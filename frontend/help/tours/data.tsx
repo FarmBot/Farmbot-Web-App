@@ -116,6 +116,9 @@ export const TOURS = (
         content: TourContent.SETTINGS_PANEL,
         beacons: ["settings"],
         url: Path.settings(),
+        dispatchActions: [
+          { type: Actions.CLOSE_POPUP, payload: undefined },
+        ],
       },
       {
         slug: "controls",
@@ -124,9 +127,10 @@ export const TOURS = (
         beacons: undefined,
         activeBeacons: [{ class: "nav-coordinates", type: "soft", keep: true }],
         url: undefined,
-        dispatchAction: {
-          type: Actions.SET_CONTROLS_PANEL_OPTION, payload: "move"
-        },
+        dispatchActions: [
+          { type: Actions.OPEN_POPUP, payload: "controls" },
+          { type: Actions.SET_CONTROLS_PANEL_OPTION, payload: "move" },
+        ],
       },
       {
         slug: "jobs",
@@ -135,7 +139,10 @@ export const TOURS = (
         beacons: undefined,
         activeBeacons: [{ class: "jobs-button", type: "soft", keep: true }],
         url: undefined,
-        dispatchAction: { type: Actions.SET_JOBS_PANEL_OPTION, payload: "jobs" },
+        dispatchActions: [
+          { type: Actions.OPEN_POPUP, payload: "jobs" },
+          { type: Actions.SET_JOBS_PANEL_OPTION, payload: "jobs" },
+        ],
       },
       {
         slug: "connectivityPopup",
@@ -147,6 +154,9 @@ export const TOURS = (
           { class: "connectivity-icon", type: "hard" },
         ],
         url: undefined,
+        dispatchActions: [
+          { type: Actions.OPEN_POPUP, payload: "connectivity" },
+        ],
       },
       {
         slug: "estopButton",
@@ -155,6 +165,9 @@ export const TOURS = (
         beacons: undefined,
         activeBeacons: [{ class: "e-stop-btn", type: "soft", keep: true }],
         url: undefined,
+        dispatchActions: [
+          { type: Actions.CLOSE_POPUP, payload: undefined },
+        ],
       },
       {
         slug: "accountMenu",
@@ -397,9 +410,10 @@ export const TOURS = (
         beacons: undefined,
         activeBeacons: [{ class: "nav-coordinates", type: "soft", keep: true }],
         url: undefined,
-        dispatchAction: {
-          type: Actions.SET_CONTROLS_PANEL_OPTION, payload: "move"
-        },
+        dispatchActions: [
+          // { type: Actions.OPEN_POPUP, payload: "controls" },
+          // { type: Actions.SET_CONTROLS_PANEL_OPTION, payload: "move" },
+        ],
       },
       {
         slug: "virtual",
@@ -408,6 +422,10 @@ export const TOURS = (
         beacons: undefined,
         activeBeacons: [{ class: "farm-designer", type: "soft", keep: true }],
         url: undefined,
+        dispatchActions: [
+          { type: Actions.CLOSE_POPUP, payload: undefined },
+          { type: Actions.SET_PROFILE_OPEN, payload: false },
+        ],
       },
       {
         slug: "profile",
@@ -416,6 +434,10 @@ export const TOURS = (
         beacons: undefined,
         activeBeacons: [{ class: "profile-button", type: "hard", keep: true }],
         url: undefined,
+        dispatchActions: [
+          { type: Actions.CLOSE_POPUP, payload: undefined },
+          { type: Actions.SET_PROFILE_OPEN, payload: true },
+        ],
       },
       {
         slug: "logs",
@@ -424,7 +446,11 @@ export const TOURS = (
         beacons: undefined,
         activeBeacons: [{ class: "jobs-button", type: "soft", keep: true }],
         url: undefined,
-        dispatchAction: { type: Actions.SET_JOBS_PANEL_OPTION, payload: "logs" },
+        dispatchActions: [
+          { type: Actions.SET_PROFILE_OPEN, payload: false },
+          { type: Actions.OPEN_POPUP, payload: "jobs" },
+          { type: Actions.SET_JOBS_PANEL_OPTION, payload: "logs" },
+        ],
       },
       {
         slug: "photos",
@@ -432,6 +458,9 @@ export const TOURS = (
         content: TourContent.PHOTOS,
         beacons: ["photos"],
         url: Path.photos(),
+        dispatchActions: [
+          { type: Actions.CLOSE_POPUP, payload: undefined },
+        ],
       },
     ],
   },

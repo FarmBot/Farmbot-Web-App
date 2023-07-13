@@ -100,6 +100,7 @@ export interface BotPositionRowsProps {
   firmwareHardware: FirmwareHardware | undefined;
   botOnline: boolean;
   dispatch: Function;
+  showCurrentPosition?: boolean;
 }
 
 export interface AxisActionsProps {

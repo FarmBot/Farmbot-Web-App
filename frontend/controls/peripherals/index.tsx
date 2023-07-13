@@ -111,14 +111,6 @@ export class Peripherals
       ? t("Back")
       : t("Edit");
     return <div className={"peripherals-widget"}>
-      <EmptyStateWrapper
-        notEmpty={this.props.peripherals.length > 0 || isEditing}
-        graphic={EmptyStateGraphic.regimens}
-        title={t("No Peripherals yet.")}
-        text={Content.NO_PERIPHERALS}
-        colorScheme={"peripherals"}>
-        {this.showPins()}
-      </EmptyStateWrapper>
       {!this.props.hidePinBindings &&
         <BoxTopButtons
           firmwareHardware={this.props.firmwareHardware}
@@ -128,6 +120,15 @@ export class Peripherals
           syncStatus={this.props.bot.hardware.informational_settings.sync_status}
           locked={this.props.bot.hardware.informational_settings.locked}
           isEditing={isEditing} />}
+      <hr />
+      <EmptyStateWrapper
+        notEmpty={this.props.peripherals.length > 0 || isEditing}
+        graphic={EmptyStateGraphic.regimens}
+        title={t("No Peripherals yet.")}
+        text={Content.NO_PERIPHERALS}
+        colorScheme={"peripherals"}>
+        {this.showPins()}
+      </EmptyStateWrapper>
       <div className={"peripherals-buttons"}>
         <button
           className="fb-button gray"

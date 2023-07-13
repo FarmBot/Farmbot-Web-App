@@ -9,6 +9,7 @@ import {
   MovementState,
   PlantsPanelState,
   PointsPanelState,
+  PopupsState,
   SequencesPanelState,
   SettingsPanelState,
   WeedsPanelState,
@@ -27,6 +28,7 @@ export interface AppState {
   movement: MovementState,
   jobs: JobsAndLogsState;
   controls: ControlsState;
+  popups: PopupsState;
 }
 
 export const emptyState = (): AppState => {
@@ -93,6 +95,11 @@ export const emptyState = (): AppState => {
     movement: {
       start: { x: undefined, y: undefined, z: undefined },
       distance: { x: 0, y: 0, z: 0 },
+    },
+    popups: {
+      controls: false,
+      jobs: false,
+      connectivity: false,
     },
   };
 };
@@ -170,6 +177,23 @@ export const appReducer =
         s.jobs[payload] = true;
         return s;
       })
+    .add<keyof PopupsState>(Actions.TOGGLE_POPUP, (s, { payload }) => {
+      s.popups[payload] = !s.popups[payload];
+      return s;
+    })
+    .add<keyof PopupsState>(Actions.OPEN_POPUP, (s, { payload }) => {
+      s.popups.controls = false;
+      s.popups.jobs = false;
+      s.popups.connectivity = false;
+      s.popups[payload] = true;
+      return s;
+    })
+    .add<undefined>(Actions.CLOSE_POPUP, (s) => {
+      s.popups.controls = false;
+      s.popups.jobs = false;
+      s.popups.connectivity = false;
+      return s;
+    })
     .add<ToastMessageProps>(Actions.CREATE_TOAST, (s, { payload }) => {
       s.toasts = { ...s.toasts, [payload.id]: payload };
       return s;

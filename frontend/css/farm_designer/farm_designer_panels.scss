@@ -55,6 +55,7 @@
 }
 
 .move {
+  position: relative;
   .move {
     .unavailable,
     .bot-is-online-wrapper {
@@ -62,7 +63,9 @@
     }
   }
   .move-settings.bp4-popover-wrapper {
-    float: right;
+    position: absolute;
+    top: 6rem;
+    right: 1rem;
     .fa-gear {
       color: $dark_gray;
     }
@@ -3364,13 +3367,16 @@ li {
       border-radius: 0;
       pointer-events: none;
     }
+    .fa-clock-o {
+      cursor: default !important;
+    }
   }
 }
 
 .jobs-panel-portal {
   .bp4-popover-content {
     padding: 0;
-    max-width: 450px;
+    width: min(500px, 100vw - 1rem);
     max-height: 510px;
     overflow: hidden;
     padding-top: 1rem;

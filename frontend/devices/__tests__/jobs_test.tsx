@@ -27,7 +27,7 @@ describe("<JobsPanel />", () => {
     const wrapper = mount(<JobsPanel {...fakeProps()} />);
     [
       "job count: 4",
-      "job", "type", "ext", "progress", "status", "time", "duration",
+      "job", "type", "ext", "progress", "status", "time",
       "job1", "100%", "complete", "ota", ".fw", "pm",
       "job2", "50", "working",
       "job3", "99%", "working",

@@ -23,6 +23,7 @@ export interface DiagnosisProps {
 export interface DiagnosisSaucerProps extends ConnectionStatusFlags {
   className?: string;
   syncStatus?: SyncStatus;
+  onClick?(): void;
 }
 
 const diagnosisStatus = (flags: ConnectionStatusFlags): boolean =>
@@ -39,6 +40,7 @@ export const DiagnosisSaucer = (props: DiagnosisSaucerProps) => {
     "diagnosis-indicator", "saucer", "active", diagnosisColor, props.className,
   ];
   return <div className={classes.join(" ")}
+    onClick={props.onClick}
     title={props.syncStatus ? syncText(props.syncStatus) : title}>
     <i className={`fa fa-${diagnosisIconClass}`} />
   </div>;

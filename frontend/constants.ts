@@ -1371,8 +1371,7 @@ export namespace TourContent {
     will create a new curve.`);
 
   export const CONTROLS_PANEL =
-    trim(`Click the current position indicator to open the controls panel.
-    Here you can control your FarmBot in
+    trim(`Here you can control your FarmBot in
     realtime by pressing the movement arrow buttons, toggling peripherals,
     and executing pinned sequences. You can also view current status
     information about your FarmBot including its position and an optional
@@ -1385,8 +1384,7 @@ export namespace TourContent {
     readings in the Sensor History section.`);
 
   export const JOBS_AND_LOGS_PANEL =
-    trim(`Click the job status button to open the Jobs panel. Here you can
-    view running and completed jobs as well as log messages.`);
+    trim(`Here you can view running and completed jobs as well as log messages.`);
 
   export const PHOTOS_PANEL =
     trim(`This is the photos panel. Here you can view and manage all of the
@@ -1417,7 +1415,7 @@ export namespace TourContent {
     documentation for information about each setting.`);
 
   export const CONNECTIVITY_POPUP =
-    trim(`This is the connectivity popup. Click it to view information
+    trim(`This is the connectivity popup. View information
     about the connection between your web browser, your FarmBot, and the
     FarmBot web app servers. Whenever your FarmBot is online and ready for
     action, you will see a green checkmark.`);
@@ -1591,8 +1589,7 @@ export namespace TourContent {
 
   // Monitoring
   export const LOCATION_GRID =
-    trim(`Click the current position indicator to open the controls pop-up
-    and view FarmBot's current location using the axis position display.`);
+    trim(`View FarmBot's current location in the navigation bar.`);
 
   export const VIRTUAL_FARMBOT =
     trim(`Or view FarmBot's current location in the virtual garden.`);
@@ -1602,8 +1599,7 @@ export namespace TourContent {
     garden, open the profile viewer.`);
 
   export const LOGS_TABLE =
-    trim(`Click the job status button to open the jobs and logs pop-up
-    and view recent log messages.
+    trim(`View recent log messages in the logs pop-up.
     More detailed log messages can be shown by adjusting filter settings.`);
 
   export const PHOTOS =
@@ -2138,8 +2134,10 @@ export enum DeviceSetting {
   displayRawEncoderPosition = `Raw encoder position`,
   swapJogButtonsXAndYAxis = `x and y axis`,
   swapXAndYAxisJogButtons = `swap x and y axis jog buttons`,
-  showMotorPositionPlot = `show`,
+  showMotorPositionPlot = `motor position`,
+  showMotorLoadPlot = `motor load`,
   showMotorPositionPlotDisplay = `show motor position plot display`,
+  showMotorLoadPlotDisplay = `show motor load plot display`,
 
   // Sequences
   confirmStepDeletion = `Confirm step deletion`,
@@ -2304,6 +2302,9 @@ export enum Actions {
   BULK_TOGGLE_SETTINGS_PANEL = "BULK_TOGGLE_SETTINGS_PANEL",
   SET_CONTROLS_PANEL_OPTION = "SET_CONTROLS_PANEL_OPTION",
   SET_JOBS_PANEL_OPTION = "SET_JOBS_PANEL_OPTION",
+  TOGGLE_POPUP = "TOGGLE_POPUP",
+  OPEN_POPUP = "OPEN_POPUP",
+  CLOSE_POPUP = "CLOSE_POPUP",
 
   // Devices
   CHANGE_STEP_SIZE = "CHANGE_STEP_SIZE",

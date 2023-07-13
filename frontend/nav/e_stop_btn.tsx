@@ -15,13 +15,16 @@ export class EStopButton extends React.Component<EStopButtonProps, {}> {
       : emergencyLock;
     const color = isLocked ? "yellow" : "red";
     const emergencyLockStatusColor = isBotUp(i.sync_status) ? color : GRAY;
-    const emergencyLockStatusText = isLocked ? t("UNLOCK") : "E-STOP";
+    const stop = window.innerWidth <= 450
+      ? <i className={"fa fa-pause"} />
+      : t("E-STOP");
+    const emergencyLockStatusText = isLocked ? t("UNLOCK") : stop;
 
     return <button
       title={isLocked ? t("unlock device") : t("emergency stop")}
       className={`fb-button red e-stop ${emergencyLockStatusColor}`}
       onClick={toggleEmergencyLock}>
-      {t(emergencyLockStatusText)}
+      {emergencyLockStatusText}
     </button>;
   }
 }

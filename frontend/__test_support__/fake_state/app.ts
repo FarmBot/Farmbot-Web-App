@@ -7,6 +7,7 @@ import {
   metricPanelState,
   plantsPanelState,
   pointsPanelState,
+  popUpsState,
   sequencesPanelState,
   settingsPanelState,
   weedsPanelState,
@@ -25,4 +26,5 @@ export const app: AppState = {
   movement: fakeMovementState(),
   controls: controlsState(),
   jobs: jobsState(),
+  popups: popUpsState(),
 };

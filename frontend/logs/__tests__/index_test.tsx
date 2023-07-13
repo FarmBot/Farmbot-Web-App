@@ -39,7 +39,7 @@ describe("<Logs />", () => {
 
   const verifyFilterState = (wrapper: ReactWrapper<unknown>, enabled: boolean) => {
     const filterBtn = wrapper.find(".fa-filter");
-    expect(filterBtn.props().style?.color).toEqual(enabled ? "white" : "black");
+    expect(filterBtn.props().style?.color).toEqual(enabled ? "white" : "#434343");
   };
 
   it("renders", () => {
@@ -243,13 +243,8 @@ describe("<Logs />", () => {
   it("deletes log", () => {
     const p = fakeProps();
     const wrapper = mount(<Logs {...p} />);
-    expect(wrapper.find(".fa-trash").length).toEqual(0);
-    wrapper.find("tr").at(1).simulate("mouseEnter");
-    expect(wrapper.find(".fa-trash").length).toEqual(1);
     wrapper.find(".fa-trash").first().simulate("click");
     expect(destroy).toHaveBeenCalledWith(p.logs[0].uuid);
-    wrapper.find("tr").at(1).simulate("mouseLeave");
-    expect(wrapper.find(".fa-trash").length).toEqual(0);
   });
 });
 

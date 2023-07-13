@@ -103,3 +103,9 @@ export interface ControlsState {
   peripherals: boolean;
   webcams: boolean;
 }
+
+export interface PopupsState {
+  controls: boolean;
+  jobs: boolean;
+  connectivity: boolean;
+}

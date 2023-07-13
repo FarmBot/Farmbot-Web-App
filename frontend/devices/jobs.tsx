@@ -119,7 +119,7 @@ export const JobsTable = (props: JobsTableProps) => {
         <th>{props.more ? t("Progress") : "%"}</th>
         <th>{t("Status")}</th>
         {props.more && <th>{t("Time")}</th>}
-        <th>{t("Duration")}</th>
+        <th><i className={"fa fa-clock-o"} title={t("duration")} /></th>
       </tr>
     </thead>
     <tbody>

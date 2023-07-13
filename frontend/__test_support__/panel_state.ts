@@ -8,6 +8,7 @@ import {
   CurvesPanelState,
   JobsAndLogsState,
   ControlsState,
+  PopupsState,
 } from "../interfaces";
 
 export const settingsPanelState = (): SettingsPanelState => {
@@ -76,4 +77,10 @@ export const controlsState = (): ControlsState => ({
 export const jobsState = (): JobsAndLogsState => ({
   jobs: true,
   logs: false,
+});
+
+export const popUpsState = (): PopupsState => ({
+  controls: false,
+  jobs: false,
+  connectivity: false,
 });

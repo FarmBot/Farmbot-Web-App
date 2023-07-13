@@ -8,24 +8,34 @@ export const bot: Everything["bot"] = {
     mcu_params: {
       encoder_enabled_x: 1,
       encoder_enabled_y: 1,
-      encoder_enabled_z: 0
+      encoder_enabled_z: 0,
     },
     jobs: {},
     location_data: {
       position: {
         x: undefined,
         y: undefined,
-        z: undefined
+        z: undefined,
       },
       scaled_encoders: {
         x: undefined,
         y: undefined,
-        z: undefined
+        z: undefined,
       },
       raw_encoders: {
         x: undefined,
         y: undefined,
-        z: undefined
+        z: undefined,
+      },
+      load: {
+        x: undefined,
+        y: undefined,
+        z: undefined,
+      },
+      axis_states: {
+        x: undefined,
+        y: undefined,
+        z: undefined,
       },
     },
     pins: {},

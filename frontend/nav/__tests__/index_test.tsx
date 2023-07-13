@@ -25,6 +25,7 @@ import {
   fakeFirmwareConfig, fakeUser,
 } from "../../__test_support__/fake_state/resources";
 import { app } from "../../__test_support__/fake_state/app";
+import { Actions } from "../../constants";
 
 describe("<NavBar />", () => {
   const fakeProps = (): NavBarProps => ({
@@ -90,6 +91,15 @@ describe("<NavBar />", () => {
     expect(wrapper.state().mobileMenuOpen).toEqual(false);
     wrapper.instance().toggle("mobileMenuOpen")();
     expect(wrapper.state().mobileMenuOpen).toEqual(true);
+  });
+
+  it("toggles popup", () => {
+    const p = fakeProps();
+    const wrapper = shallow<NavBar>(<NavBar {...p} />);
+    wrapper.instance().togglePopup("controls")();
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_POPUP, payload: "controls",
+    });
   });
 
   it("refreshes device", () => {

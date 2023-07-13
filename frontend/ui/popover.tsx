@@ -7,4 +7,5 @@ export interface PopoverProps extends IPopoverProps {
 }
 
 export const Popover = (props: PopoverProps) =>
-  <Popover1 {...props} targetClassName={`${props.className} bp-popover-target`} />;
+  <Popover1 {...props} minimal={true}
+    targetClassName={`${props.className} bp-popover-target`} />;

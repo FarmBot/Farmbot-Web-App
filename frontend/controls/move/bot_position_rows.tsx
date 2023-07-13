@@ -39,6 +39,10 @@ export const BotPositionRows = (props: BotPositionRowsProps) => {
     botPosition: locationData.position,
     sourceFwConfig: props.sourceFwConfig,
   };
+  const showCurrentPosition = props.showCurrentPosition
+    || (hasEncoders(props.firmwareHardware) &&
+      (getConfigValue(BooleanSetting.scaled_encoders)
+        || getConfigValue(BooleanSetting.raw_encoders)));
   return <div className={"bot-position-rows"}>
     <div className={"axis-titles"}>
       <Row>
@@ -63,6 +67,7 @@ export const BotPositionRows = (props: BotPositionRowsProps) => {
       </Row>
     </div>
     <AxisDisplayGroup
+      noValues={!showCurrentPosition}
       position={locationData.position}
       firmwareSettings={props.firmwareSettings}
       missedSteps={locationData.load}

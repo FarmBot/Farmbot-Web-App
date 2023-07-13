@@ -130,13 +130,13 @@ describe("<TourStepContainer />", () => {
   });
 
   it("dispatches", () => {
-    location.search = "?tour=monitoring?tourStep=move";
+    location.search = "?tour=monitoring?tourStep=logs";
     const p = fakeProps();
     p.helpState.currentTour = "monitoring";
     p.helpState.currentTourStep = undefined;
     mount(<TourStepContainer {...p} />);
     expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.SET_CONTROLS_PANEL_OPTION, payload: "move",
+      type: Actions.SET_JOBS_PANEL_OPTION, payload: "logs",
     });
   });
 

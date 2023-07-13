@@ -169,14 +169,12 @@ export const PAGE_SLUGS = (): { [x: string]: string } => ({
   "sequences": t("Sequences"),
   "regimens": t("Regimens"),
   "events": t("Events"),
-  "controls": t("Controls"),
   "sensors": t("Sensors"),
   "photos": t("Photos"),
   "tools": t("Tools"),
   "messages": t("Messages"),
   "help": t("Help"),
   "settings": t("Settings"),
-  "logs": t("Logs"),
   "tours": t("Tours"),
 });
 

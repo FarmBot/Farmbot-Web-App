@@ -105,4 +105,11 @@ describe("<AxisDisplayGroup />", () => {
     const wrapper = mount(AxisDisplayGroup(p));
     expect(wrapper.text()).not.toContain("idle");
   });
+
+  it("highlights", () => {
+    const p = fakeProps();
+    p.highlightAxis = "x";
+    const wrapper = mount(AxisDisplayGroup(p));
+    expect(wrapper.html()).toContain("border");
+  });
 });

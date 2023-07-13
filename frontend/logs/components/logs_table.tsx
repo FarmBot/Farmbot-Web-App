@@ -67,17 +67,12 @@ const LogsRow = (props: LogsRowProps) => {
   const oneDay = 24 * 60 * 60 * 1000;
   const dateFormat = moment().diff(at) > oneDay ? "MMM D" : "";
   const time = formatTime(at, timeSettings, dateFormat);
-  const [trash, setTrash] = React.useState(false);
-  return <tr key={uuid} id={"" + id}
-    style={{ background: trash ? "#ddd" : "none" }}
-    onMouseEnter={() => setTrash(true)}
-    onMouseLeave={() => setTrash(false)}>
+  return <tr key={uuid} id={"" + id}>
     <td>
-      {trash
-        ? <i className={"fa fa-trash"} title={t("delete log")}
-          onClick={() => dispatch(destroy(uuid))} />
-        : <LogVerbositySaucer
-          uuid={uuid} dispatch={dispatch} verbosity={verbosity} type={type} />}
+      <i className={"fa fa-trash"} title={t("delete log")}
+        onClick={() => dispatch(destroy(uuid))} />
+      <LogVerbositySaucer
+        uuid={uuid} dispatch={dispatch} verbosity={verbosity} type={type} />
     </td>
     <td>
       {markdown ? <Markdown>{message}</Markdown> : message || t("Loading")}
@@ -101,7 +96,7 @@ const LOG_TABLE_CLASS = [
 
 /** All log messages with select data in table form for display in the app. */
 export const LogsTable = (props: LogsTableProps) => {
-  return <div className={"table-responsive"}>
+  return <div className={"logs-table-wrapper"}>
     <table className={LOG_TABLE_CLASS}>
       <thead>
         <tr>
@@ -136,10 +131,8 @@ const FilterPopover = (props: FilterPopoverProps) => {
     <Popover position={Position.TOP_RIGHT}
       target={<i className={"fa fa-filter"}
         style={{
-          border: "1px black solid", borderRadius: "50%",
-          padding: "0.25rem",
           backgroundColor: filterActive ? "#6a4" : "",
-          color: filterActive ? "white" : "black",
+          color: filterActive ? "white" : "#434343",
         }}
         title={t("edit filter settings")} />}
       content={<LogsFilterMenu

@@ -53,6 +53,7 @@ const DEFAULT_WEB_APP_CONFIG_VALUES: Record<Key, Value> = {
   xy_swap: false,
   home_button_homing: true,
   show_motor_plot: false,
+  ["show_missed_step_plot" as BooleanWebAppConfigKey]: false,
   show_historic_points: false,
   show_soil_interpolation_map: false,
   show_sensor_readings: false,

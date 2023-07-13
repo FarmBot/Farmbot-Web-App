@@ -264,7 +264,7 @@ export const ToolSlotInventoryItem = (props: ToolSlotInventoryItemProps) => {
       </Col>
       <Col xs={4} className={"tool-slot-position-info"}>
         <p className="tool-slot-position">
-          <i>{botPositionLabel({ x, y, z }, gantry_mounted)}</i>
+          <i>{botPositionLabel({ x, y, z }, { gantryMounted: gantry_mounted })}</i>
         </p>
       </Col>
     </Row>
