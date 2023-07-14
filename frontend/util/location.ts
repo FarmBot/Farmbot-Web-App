@@ -1,7 +1,7 @@
 import { AxisState, Xyz } from "farmbot";
 import { BotLocationData } from "../devices/interfaces";
 import { forceOnline } from "../devices/must_be_online";
-import { betterMerge } from "./util";
+import { fullLocationData } from "./util";
 
 type NumberRecord = Record<Xyz, number | undefined>;
 
@@ -27,11 +27,5 @@ export function validBotLocationData(
       load: { x: 0, y: 0, z: 0 },
       axis_states: { x: "idle", y: "idle", z: "idle" },
     }
-    : betterMerge({
-      position: { x: undefined, y: undefined, z: undefined },
-      scaled_encoders: { x: undefined, y: undefined, z: undefined },
-      raw_encoders: { x: undefined, y: undefined, z: undefined },
-      load: { x: undefined, y: undefined, z: undefined },
-      axis_states: { x: undefined, y: undefined, z: undefined },
-    }, botLocationData);
+    : fullLocationData(botLocationData);
 }

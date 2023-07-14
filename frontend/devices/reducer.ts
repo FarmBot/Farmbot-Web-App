@@ -12,6 +12,7 @@ import {
   connectivityReducer, PingResultPayload, recentPingOk,
 } from "../connectivity/reducer";
 import { versionOK } from "../util";
+import { updateMotorHistoryArray } from "../controls/move/motor_position_plot";
 
 const afterEach = (state: BotState, a: ReduxAction<{}>) => {
   state.connectivity = connectivityReducer(state.connectivity, a);
@@ -159,6 +160,9 @@ function statusHandler(state: BotState,
   action: ReduxAction<HardwareState>): BotState {
   const { payload } = action;
   state.hardware = payload;
+
+  updateMotorHistoryArray(payload.location_data);
+
   const { informational_settings } = state.hardware;
   const syncStatus = informational_settings.sync_status;
   /** USE CASE: You reboot the bot. The old state values are still hanging

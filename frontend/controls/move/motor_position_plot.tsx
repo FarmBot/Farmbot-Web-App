@@ -1,12 +1,13 @@
 import React from "react";
 import { Xyz, LocationName, Dictionary, McuParams, McuParamName } from "farmbot";
 import moment from "moment";
-import { trim } from "../../util";
+import { fullLocationData, trim } from "../../util";
 import {
   cloneDeep, max, get, isNumber, isEqual, takeRight, ceil, range,
 } from "lodash";
 import { t } from "../../i18next_wrapper";
 import { ValidLocationData } from "../../util/location";
+import { BotLocationData } from "../../devices/interfaces";
 
 const HEIGHT = 50;
 const HISTORY_LENGTH_SECONDS = 120;
@@ -19,7 +20,7 @@ const COLOR_LOOKUP: Dictionary<string> = {
   x: "red", y: "green", z: "blue"
 };
 const LINEWIDTH_LOOKUP: Dictionary<number> = {
-  position: 0.5, scaled_encoders: 0.25
+  position: 0.5, scaled_encoders: 0.25, load: 0.5,
 };
 
 export enum MotorPositionHistory {
@@ -56,21 +57,24 @@ const findYLimit = (props: PlotContentProps): number => {
   return Math.max(ceil(arrayAbsMax || 0, -2), DEFAULT_Y_MAX);
 };
 
-const updateArray = (update: Entry): Entry[] => {
-  const arr = getArray();
-  const last = getLastEntry();
-  if (update && isNumber(update.locationData.position.x) &&
-    (!last || !isEqual(last.timestamp, update.timestamp))) {
-    arr.push(update);
-  }
-  const newArray = takeRight(arr, 100)
-    .filter(x => {
-      const entryAge = (last ? last.timestamp : moment().unix()) - x.timestamp;
-      return entryAge <= HISTORY_LENGTH_SECONDS;
-    });
-  sessionStorage.setItem(MotorPositionHistory.array, JSON.stringify(newArray));
-  return newArray;
-};
+export const updateMotorHistoryArray =
+  (rawLocationData: BotLocationData): Entry[] => {
+    const locationData = fullLocationData(rawLocationData);
+    const update = { timestamp: moment().valueOf(), locationData };
+    const arr = getArray();
+    const last = getLastEntry();
+    if (update && isNumber(update.locationData.position.x) &&
+      (!last || !isEqual(last.timestamp, update.timestamp))) {
+      arr.push(update);
+    }
+    const newArray = takeRight(arr, 200)
+      .filter(x => {
+        const entryAge = (last ? last.timestamp : moment().valueOf()) - x.timestamp;
+        return entryAge / 1000 <= HISTORY_LENGTH_SECONDS;
+      });
+    sessionStorage.setItem(MotorPositionHistory.array, JSON.stringify(newArray));
+    return newArray;
+  };
 
 const newPaths = (): Paths => ({
   position: { x: "", y: "", z: "" },
@@ -106,7 +110,7 @@ const getPaths = (props: PlotContentProps): Paths => {
               const yStart = -lastPos / maxY * HEIGHT / 2;
               paths[key][axis] = `M ${MAX_X},${yStart} `;
             }
-            const x = MAX_X - (last.timestamp - entry.timestamp);
+            const x = MAX_X - (last.timestamp - entry.timestamp) / 1000;
             const y = plotY(pos);
             paths[key][axis] += `L ${x},${y} `;
           }
@@ -207,8 +211,7 @@ export interface MotorPositionPlotProps {
 }
 
 const PlotLines = (props: MotorPositionPlotProps) => {
-  const { locationData, load, encoders } = props;
-  updateArray({ timestamp: moment().unix(), locationData });
+  const { load, encoders } = props;
   const keys = getKeys({ load, encoders });
   const paths = getPaths(props);
   const plotY = calcY(props);
