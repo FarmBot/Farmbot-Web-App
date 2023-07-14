@@ -106,8 +106,9 @@ export class NumericMCUInputGroup
   render() {
     const { label } = this.props;
     return <Highlight settingName={label}
-      hidden={this.props.advanced && !(this.props.showAdvanced || this.anyModified)
-        && !this.error}
+      hidden={this.props.forceHidden ||
+        (this.props.advanced && !(this.props.showAdvanced || this.anyModified)
+          && !this.error)}
       className={this.props.advanced ? "advanced" : undefined}>
       <Row>
         <Col xs={3} className={"widget-body-tooltips"}>

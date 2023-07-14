@@ -98,6 +98,7 @@ export interface NumericMCUInputGroupProps {
   disabledBy?: string;
   advanced?: boolean;
   showAdvanced?: boolean;
+  forceHidden?: boolean;
   warnMin?: Record<Xyz, number>;
   warning?: Record<Xyz, string | undefined>;
 }

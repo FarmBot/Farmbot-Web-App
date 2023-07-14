@@ -192,6 +192,7 @@ export function Motors(props: MotorsProps) {
           x={"movement_motor_current_x"}
           y={"movement_motor_current_y"}
           z={"movement_motor_current_z"}
+          advanced={true}
           inputMax={100}
           toInput={motorCurrentMaToPercent}
           fromInput={motorCurrentPercentToMa} />}

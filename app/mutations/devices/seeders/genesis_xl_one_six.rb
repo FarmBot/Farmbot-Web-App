@@ -8,9 +8,6 @@ module Devices
       end
 
       def settings_change_firmware_config_defaults
-        device.firmware_config.update!(encoder_enabled_x: 1,
-                                       encoder_enabled_y: 1,
-                                       encoder_enabled_z: 1)
       end
 
       def settings_device_name
