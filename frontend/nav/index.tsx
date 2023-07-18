@@ -68,33 +68,35 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
 
   Coordinates = () => {
     const { hardware } = this.props.bot;
-    return <Popover position={Position.BOTTOM_RIGHT}
-      portalClassName={"controls-popover-portal"}
-      popoverClassName={"controls-popover"}
-      isOpen={this.props.appState.popups.controls}
-      enforceFocus={false}
-      target={<p className={"nav-coordinates"}
-        onClick={this.togglePopup("controls")}
-        title={t("FarmBot position (X, Y, Z)")}>
-        {botPositionLabel(validBotLocationData(hardware.location_data)
-          .position, { rounded: true })}
-      </p>}
-      content={<ControlsPanel
-        dispatch={this.props.dispatch}
-        appState={this.props.appState}
-        bot={this.props.bot}
-        getConfigValue={this.props.getConfigValue}
-        sourceFwConfig={this.props.sourceFwConfig}
-        env={this.props.env}
-        firmwareHardware={this.props.apiFirmwareValue}
-        logs={this.props.logs}
-        feeds={this.props.feeds}
-        peripherals={this.props.peripherals}
-        sequences={this.props.sequences}
-        resources={this.props.resources}
-        menuOpen={this.props.menuOpen}
-        firmwareSettings={this.props.firmwareConfig || hardware.mcu_params}
-      />} />;
+    return <div className={"nav-popup-button-wrapper"}>
+      <Popover position={Position.BOTTOM_RIGHT}
+        portalClassName={"controls-popover-portal"}
+        popoverClassName={"controls-popover"}
+        isOpen={this.props.appState.popups.controls}
+        enforceFocus={false}
+        target={<p className={"nav-coordinates"}
+          onClick={this.togglePopup("controls")}
+          title={t("FarmBot position (X, Y, Z)")}>
+          {botPositionLabel(validBotLocationData(hardware.location_data)
+            .position, { rounded: true })}
+        </p>}
+        content={<ControlsPanel
+          dispatch={this.props.dispatch}
+          appState={this.props.appState}
+          bot={this.props.bot}
+          getConfigValue={this.props.getConfigValue}
+          sourceFwConfig={this.props.sourceFwConfig}
+          env={this.props.env}
+          firmwareHardware={this.props.apiFirmwareValue}
+          logs={this.props.logs}
+          feeds={this.props.feeds}
+          peripherals={this.props.peripherals}
+          sequences={this.props.sequences}
+          resources={this.props.resources}
+          menuOpen={this.props.menuOpen}
+          firmwareSettings={this.props.firmwareConfig || hardware.mcu_params}
+        />} />
+    </div>;
   };
 
   EstopButton = () =>
@@ -132,7 +134,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
     });
     const { sync_status } = this.props.bot.hardware.informational_settings;
     const click = this.togglePopup("connectivity");
-    return <div className="connection-status-popover">
+    return <div className={"connection-status-popover nav-popup-button-wrapper"}>
       <ErrorBoundary>
         <Popover position={Position.BOTTOM_RIGHT}
           portalClassName={"connectivity-popover-portal"}
@@ -189,28 +191,31 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
     const activeText = window.innerWidth > 450 ? jobNameLookup(job) : "";
     const inactiveText = window.innerWidth > 450 ? t("idle") : t("jobs");
     const jobProgress = isPercent ? `${percent}%` : "";
-    return <Popover position={Position.BOTTOM_RIGHT}
-      portalClassName={"jobs-panel-portal"}
-      popoverClassName={"jobs-panel"}
-      isOpen={this.props.appState.popups.jobs}
-      enforceFocus={false}
-      target={<a className={"jobs-button"}
-        onClick={this.togglePopup("jobs")}>
-        <p className={"title"}>{jobActive ? activeText : inactiveText}</p>
-        {jobActive && <p className={"jobs-button-progress-text"}>{jobProgress}</p>}
-        {jobActive && <div className={"jobs-button-progress-bar"}
-          style={{ width: jobProgress }} />}
-      </a>}
-      content={<JobsAndLogs
-        dispatch={this.props.dispatch}
-        bot={this.props.bot}
-        getConfigValue={this.props.getConfigValue}
-        logs={this.props.logs}
-        jobsPanelState={this.props.appState.jobs}
-        sourceFbosConfig={this.props.sourceFbosConfig}
-        fbosVersion={this.props.device.body.fbos_version}
-        jobs={this.props.bot.hardware.jobs}
-        timeSettings={this.props.timeSettings} />} />;
+    return <div className={"nav-popup-button-wrapper"}>
+      <Popover position={Position.BOTTOM_RIGHT}
+        portalClassName={"jobs-panel-portal"}
+        popoverClassName={"jobs-panel"}
+        isOpen={this.props.appState.popups.jobs}
+        enforceFocus={false}
+        target={<a className={"jobs-button"}
+          onClick={this.togglePopup("jobs")}>
+          <p className={"title"}>{jobActive ? activeText : inactiveText}</p>
+          {jobActive &&
+            <p className={"jobs-button-progress-text"}>{jobProgress}</p>}
+          {jobActive && <div className={"jobs-button-progress-bar"}
+            style={{ width: jobProgress }} />}
+        </a>}
+        content={<JobsAndLogs
+          dispatch={this.props.dispatch}
+          bot={this.props.bot}
+          getConfigValue={this.props.getConfigValue}
+          logs={this.props.logs}
+          jobsPanelState={this.props.appState.jobs}
+          sourceFbosConfig={this.props.sourceFbosConfig}
+          fbosVersion={this.props.device.body.fbos_version}
+          jobs={this.props.bot.hardware.jobs}
+          timeSettings={this.props.timeSettings} />} />
+    </div>;
   };
 
   AppNavLinks = () =>

@@ -228,10 +228,6 @@ nav {
   }
   .connection-status-popover {
     display: inline;
-    .bp4-popover-wrapper {
-      line-height: 6rem;
-      margin-top: 0;
-    }
   }
   a {
     font-weight: normal;
@@ -256,6 +252,14 @@ nav {
       overflow: hidden;
       visibility: hidden;
     }
+  }
+}
+
+.nav-popup-button-wrapper {
+  display: inline;
+  span:first-of-type {
+    line-height: 3rem;
+    margin-top: 0.75rem;
   }
 }
 

@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { Page, Popover } from "../ui";
 import { Position } from "@blueprintjs/core";
-import { LogsState, LogsProps, Filters } from "./interfaces";
+import { LogsState, LogsProps, Filters, LogsPanelProps } from "./interfaces";
 import { LogsSettingsMenu } from "./components/settings_menu";
 import { filterStateKeys } from "./components/filter_menu";
 import { LogsTable } from "./components/logs_table";
@@ -15,16 +15,23 @@ import { t } from "../i18next_wrapper";
 import { SearchField } from "../ui/search_field";
 import { forceOnline } from "../devices/must_be_online";
 import { demoAccountLog } from "../nav/ticker_list";
+import { Actions } from "../constants";
+import { push } from "../history";
+import { Path } from "../internal_urls";
+import { mapStateToProps } from "./state_to_props";
 
-export class RawLogs extends React.Component {
+export class RawLogs extends React.Component<LogsPanelProps> {
   render() {
+    this.props.dispatch({ type: Actions.OPEN_POPUP, payload: "jobs" });
+    this.props.dispatch({ type: Actions.SET_JOBS_PANEL_OPTION, payload: "logs" });
+    push(Path.plants());
     return <Page className="logs-page">
       <p>Logs have moved to the navigation bar.</p>
     </Page>;
   }
 }
 
-export const Logs = connect()(RawLogs);
+export const Logs = connect(mapStateToProps)(RawLogs);
 
 export class LogsPanel extends React.Component<LogsProps, Partial<LogsState>> {
 

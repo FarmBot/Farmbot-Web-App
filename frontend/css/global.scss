@@ -236,7 +236,7 @@ fieldset {
       width: 600px;
       max-width: calc(100vw - 3rem);
       overflow-x: hidden;
-      max-height: 600px;
+      max-height: calc(100vh - 10rem);
       overflow-y: auto;
       .row {
         margin-bottom: 1rem;
@@ -261,7 +261,7 @@ fieldset {
       width: 600px;
       max-width: calc(100vw - 3rem);
       overflow-x: hidden;
-      max-height: 600px;
+      max-height: calc(100vh - 10rem);
       overflow-y: auto;
       .row {
         margin-bottom: 1rem;
@@ -834,7 +834,6 @@ fieldset {
 }
 
 .peripherals-tab {
-  max-height: 40rem;
   overflow-y: scroll;
   overflow-x: hidden;
 }

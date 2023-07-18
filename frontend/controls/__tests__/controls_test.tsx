@@ -32,8 +32,11 @@ describe("<DesignerControls />", () => {
   });
 
   it("renders controls", () => {
-    const wrapper = mount(<DesignerControls {...fakeProps()} />);
+    const p = fakeProps();
+    const wrapper = mount(<DesignerControls {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("controls have moved");
+    expect(p.dispatch).toHaveBeenCalledWith(
+      { type: Actions.OPEN_POPUP, payload: "controls" });
   });
 });
 

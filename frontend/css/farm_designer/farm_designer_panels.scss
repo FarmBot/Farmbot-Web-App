@@ -3308,7 +3308,6 @@ li {
 .jobs-panel {
   .panel-content {
     display: inline-block;
-    max-height: calc(100vh - 9rem);
     overflow-y: auto;
     overflow-x: auto;
     width: 100%;
@@ -3377,7 +3376,7 @@ li {
   .bp4-popover-content {
     padding: 0;
     width: min(500px, 100vw - 1rem);
-    max-height: 510px;
+    max-height: calc(100vh - 10rem);
     overflow: hidden;
     padding-top: 1rem;
     padding-bottom: 2rem;

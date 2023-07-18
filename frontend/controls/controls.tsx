@@ -20,10 +20,14 @@ import {
 } from "farmbot";
 import { ResourceIndex, UUID } from "../resources/interfaces";
 import { t } from "../i18next_wrapper";
+import { push } from "../history";
+import { Path } from "../internal_urls";
 
 export class RawDesignerControls
   extends React.Component<DesignerControlsProps, {}> {
   render() {
+    this.props.dispatch({ type: Actions.OPEN_POPUP, payload: "controls" });
+    push(Path.plants());
     return <DesignerPanel panelName={"controls"} panel={Panel.Controls}>
       <DesignerNavTabs />
       <DesignerPanelContent panelName={"controls"}>

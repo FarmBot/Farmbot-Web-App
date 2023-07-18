@@ -10,12 +10,15 @@ import { LogsPanel as Logs, RawLogs } from "../index";
 import { TaggedLog, Dictionary } from "farmbot";
 import { NumericSetting } from "../../session_keys";
 import { fakeLog } from "../../__test_support__/fake_state/resources";
-import { LogsProps } from "../interfaces";
+import { LogsPanelProps, LogsProps } from "../interfaces";
 import { MessageType } from "../../sequences/interfaces";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { SearchField } from "../../ui/search_field";
 import { bot } from "../../__test_support__/fake_state/bot";
 import { destroy } from "../../api/crud";
+import { mapStateToProps } from "../state_to_props";
+import { fakeState } from "../../__test_support__/fake_state";
+import { Actions } from "../../constants";
 
 describe("<Logs />", () => {
   function fakeLogs(): TaggedLog[] {
@@ -249,8 +252,24 @@ describe("<Logs />", () => {
 });
 
 describe("<RawLogs />", () => {
+  const fakeProps = (): LogsPanelProps => ({
+    dispatch: jest.fn(),
+  });
+
   it("renders page", () => {
-    const wrapper = mount(<RawLogs />);
+    const p = fakeProps();
+    const wrapper = mount(<RawLogs {...p} />);
     expect(wrapper.text()).toContain("moved");
+    expect(p.dispatch).toHaveBeenCalledWith(
+      { type: Actions.OPEN_POPUP, payload: "jobs" });
+    expect(p.dispatch).toHaveBeenCalledWith(
+      { type: Actions.SET_JOBS_PANEL_OPTION, payload: "logs" });
+  });
+});
+
+describe("mapStateToProps()", () => {
+  it("returns props", () => {
+    expect(mapStateToProps(fakeState())).toEqual(
+      expect.objectContaining({ dispatch: expect.any(Function) }));
   });
 });

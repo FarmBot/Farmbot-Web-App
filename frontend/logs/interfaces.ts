@@ -3,6 +3,10 @@ import { SourceFbosConfig, BotState } from "../devices/interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import { TimeSettings } from "../interfaces";
 
+export interface LogsPanelProps {
+  dispatch: Function;
+}
+
 export interface LogsProps {
   logs: TaggedLog[];
   timeSettings: TimeSettings;
