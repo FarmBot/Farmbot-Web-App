@@ -172,10 +172,7 @@ module Devices
         Sequences::Create.run!(s, device: device)
       end
 
-      def sequences_find_home
-        s = SequenceSeeds::FIND_HOME.deep_dup
-        Sequences::Create.run!(s, device: device)
-      end
+      def sequences_find_home; end
 
       def sequences_water_all
         install_sequence_version_by_name(PublicSequenceNames::WATER_ALL)

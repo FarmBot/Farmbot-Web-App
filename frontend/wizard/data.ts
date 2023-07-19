@@ -273,9 +273,15 @@ export const WIZARD_STEPS = (props: WizardStepDataProps): WizardSteps => {
     {
       section: WizardSectionSlug.intro,
       slug: WizardStepSlug.prePowerPosition,
-      title: t("Move FarmBot away from the hardstops"),
-      content: SetupWizardContent.PRE_POWER_POSITION,
-      question: t("Is FarmBot positioned away from the hardstops?"),
+      title: isExpress(firmwareHardware)
+        ? t("Manually position the FarmBot")
+        : t("Move FarmBot away from the hardstops"),
+      content: isExpress(firmwareHardware)
+        ? SetupWizardContent.PRE_POWER_POSITION_EXPRESS
+        : SetupWizardContent.PRE_POWER_POSITION,
+      question: isExpress(firmwareHardware)
+        ? t("Is FarmBot positioned?")
+        : t("Is FarmBot positioned away from the hardstops?"),
       outcomes: [
       ],
     },
@@ -755,9 +761,14 @@ export const WIZARD_STEPS = (props: WizardStepDataProps): WizardSteps => {
       slug: WizardStepSlug.zAxisFindHome,
       title: t("Home Z"),
       prerequisites: [botOnlineReq],
-      content: t(SetupWizardContent.FIND_HOME, { axis: "Z" }),
-      component: AxisActions,
-      question: SetupWizardContent.HOME,
+      content: isExpress(firmwareHardware)
+        ? SetupWizardContent.FIND_HOME_Z_EXPRESS
+        : t(SetupWizardContent.FIND_HOME, { axis: "Z" }),
+      component: isExpress(firmwareHardware) ? undefined : AxisActions,
+      controlsCheckOptions: isExpress(firmwareHardware) ? {} : undefined,
+      question: isExpress(firmwareHardware)
+        ? SetupWizardContent.HOME_Z_EXPRESS
+        : SetupWizardContent.HOME,
       outcomes: [
         {
           slug: "notAtHome",
@@ -989,9 +1000,13 @@ export const WIZARD_STEPS = (props: WizardStepDataProps): WizardSteps => {
       section: WizardSectionSlug.axisLength,
       slug: WizardStepSlug.zAxisLength,
       title: t("Z-axis length"),
-      content: t(SetupWizardContent.FIND_AXIS_LENGTH, { axis: "Z" }),
+      content: isExpress(firmwareHardware)
+        ? SetupWizardContent.FIND_AXIS_LENGTH_Z_EXPRESS
+        : t(SetupWizardContent.FIND_AXIS_LENGTH, { axis: "Z" }),
       component: AxisActions,
-      question: SetupWizardContent.FIND_LENGTH,
+      question: isExpress(firmwareHardware)
+        ? SetupWizardContent.FIND_LENGTH_Z_EXPRESS
+        : SetupWizardContent.FIND_LENGTH,
       outcomes: [
         {
           slug: "stalls",
@@ -1010,12 +1025,14 @@ export const WIZARD_STEPS = (props: WizardStepDataProps): WizardSteps => {
             intSize: "long",
           }],
         },
-        {
-          slug: "disabled",
-          description: t("The FIND LENGTH button is disabled"),
-          tips: "",
-          component: DisableStallDetection("z", false),
-        },
+        ...(isExpress(firmwareHardware)
+          ? []
+          : [{
+            slug: "disabled",
+            description: t("The FIND LENGTH button is disabled"),
+            tips: "",
+            component: DisableStallDetection("z", false),
+          }]),
       ],
     },
     {

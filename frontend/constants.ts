@@ -1631,6 +1631,13 @@ export namespace SetupWizardContent {
     the cross-slide partway across the gantry main beam, and position the
     Z-axis halfway down.`);
 
+  export const PRE_POWER_POSITION_EXPRESS =
+    trim(`With the FarmBot still powered off, manually move the gantry and
+    cross-slide roughly 150mm away from the X and Y axis hardstops.
+    In other words, position the gantry partway along the tracks and position
+    the cross-slide partway across the gantry main beam. Rotate the
+    leadscrew by hand to position the Z-axis fully raised up.`);
+
   export const DOWNLOAD_OS =
     trim(`Using a desktop computer or laptop, download the latest
     FarmBot OS .img file:`);
@@ -1727,6 +1734,19 @@ export namespace SetupWizardContent {
   export const FIND_HOME =
     trim(`Open the ... menu for the {{ axis }} axis and click **FIND HOME**.`);
 
+  export const FIND_HOME_Z_EXPRESS =
+    trim(`Automatically finding the Z-axis home position is not enabled by
+    default for Express FarmBots. To manually set the Z home position,
+    use the manual controls to move the Z-axis to the fully raised position.
+    If the Z-axis is not fully raised when the FarmBot reaches the Z=0
+    coordinate, press the E-stop button, rotate the leadscrew by hand to
+    fully raise the Z-axis, and then Unlock the FarmBot. With the Z-axis
+    fully raised, open the ... menu for the Z-axis and click **SET HOME**.`);
+
+  export const HOME_Z_EXPRESS =
+    trim(`Have you manually set the Z-axis home position with the Z-axis
+    fully raised?`);
+
   export const HOME =
     trim(`Did FarmBot reach the home position (touching the hardstop) for
     this axis and set the coordinate to 0? Note: sometimes after a movement,
@@ -1743,6 +1763,10 @@ export namespace SetupWizardContent {
   export const FIND_LENGTH =
     trim(`Did FarmBot move to the end of the axis and then move back to
     the home position for this axis?`);
+
+  export const FIND_LENGTH_Z_EXPRESS =
+    trim(`Have you manually set the Z-axis length with the Z-axis fully
+    lowered and then returned the Z-axis to the home position?`);
 
   export const HOME_AXIS =
     trim(`Try using the FIND HOME button a few more times. If FarmBot is
@@ -1809,6 +1833,13 @@ export namespace SetupWizardContent {
 
   export const FIND_AXIS_LENGTH =
     trim(`Open the ... menu for the {{ axis }} axis and click **FIND LENGTH**.`);
+
+  export const FIND_AXIS_LENGTH_Z_EXPRESS =
+    trim(`Automatically finding the Z-axis length is not enabled by default
+    for Express FarmBots. To manually set the Z length, use the manual controls
+    to move the Z-axis to the fully lowered position. With the Z-axis fully
+    lowered, open the ... menu for the Z-axis and click **SET LENGTH**.
+    Then open the ... menu again and click **MOVE TO HOME**.`);
 
   export const TOGGLE_PERIPHERAL =
     trim(`Press the **{{ toggle }}** toggle, wait a few seconds, and then press

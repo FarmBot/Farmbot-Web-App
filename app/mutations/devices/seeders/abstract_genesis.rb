@@ -139,6 +139,11 @@ module Devices
         Sequences::Create.run!(s, device: device)
       end
 
+      def sequences_find_home
+        s = SequenceSeeds::FIND_HOME.deep_dup
+        Sequences::Create.run!(s, device: device)
+      end
+
       def settings_gantry_height
         device.fbos_config.update!(gantry_height: 120)
       end
