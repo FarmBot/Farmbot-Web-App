@@ -1003,7 +1003,8 @@ export const WIZARD_STEPS = (props: WizardStepDataProps): WizardSteps => {
       content: isExpress(firmwareHardware)
         ? SetupWizardContent.FIND_AXIS_LENGTH_Z_EXPRESS
         : t(SetupWizardContent.FIND_AXIS_LENGTH, { axis: "Z" }),
-      component: AxisActions,
+      component: isExpress(firmwareHardware) ? undefined : AxisActions,
+      controlsCheckOptions: isExpress(firmwareHardware) ? {} : undefined,
       question: isExpress(firmwareHardware)
         ? SetupWizardContent.FIND_LENGTH_Z_EXPRESS
         : SetupWizardContent.FIND_LENGTH,
