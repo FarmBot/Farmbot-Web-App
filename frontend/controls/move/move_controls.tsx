@@ -11,6 +11,7 @@ import { MotorPositionPlot } from "./motor_position_plot";
 import { MoveWidgetSettingsMenu } from "./settings_menu";
 import { Popover } from "../../ui";
 import { getImageJobs } from "../../photos/state_to_props";
+import { hasEncoders } from "../../settings/firmware/firmware_hardware_support";
 
 export const MoveControls = (props: MoveControlsProps) => {
   const { location_data, informational_settings } = props.bot.hardware;
@@ -53,6 +54,11 @@ export const MoveControls = (props: MoveControlsProps) => {
       sourceFwConfig={props.sourceFwConfig}
       firmwareHardware={props.firmwareHardware} />
     {props.getConfigValue(BooleanSetting.show_motor_plot) &&
-      <MotorPositionPlot locationData={locationData} />}
+      <MotorPositionPlot locationData={locationData}
+        encoders={hasEncoders(props.firmwareHardware)} />}
+    {props.getConfigValue(BooleanSetting.show_missed_step_plot) &&
+      !hasEncoders(props.firmwareHardware) &&
+      <MotorPositionPlot locationData={locationData} load={true}
+        firmwareSettings={props.firmwareSettings} />}
   </div>;
 };

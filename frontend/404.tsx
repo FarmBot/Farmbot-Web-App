@@ -1,17 +1,17 @@
 import React from "react";
 import { t } from "./i18next_wrapper";
 
-// No reusability here. Why not just keep it from taking up sass?
-const STYLES: React.CSSProperties = {
-  "textAlign": "center",
-  "marginTop": "5rem"
-};
-
 export const FourOhFour = (_: {}) =>
   <div className="404">
     <div className="all-content-wrapper">
-      <h1 style={STYLES}>
-        {t("Page Not Found.")}
-      </h1>
+      <h2 style={{ textAlign: "center", marginTop: "5rem" }}>
+        {t("Not Found")}
+      </h2>
+      <h4 style={{ textAlign: "center", fontStyle: "italic" }}>
+        {t("Perhaps the page has moved?")}
+      </h4>
+      <h5 style={{ textAlign: "center", fontStyle: "italic" }}>
+        {t("Double-check the URL or explore the navigation bar.")}
+      </h5>
     </div>
   </div>;

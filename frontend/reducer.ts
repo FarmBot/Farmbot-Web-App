@@ -2,11 +2,14 @@ import { generateReducer } from "./redux/generate_reducer";
 import { Actions } from "./constants";
 import { ToastMessageProps, ToastMessages } from "./toast/interfaces";
 import {
+  ControlsState,
   CurvesPanelState,
+  JobsAndLogsState,
   MetricPanelState,
   MovementState,
   PlantsPanelState,
   PointsPanelState,
+  PopupsState,
   SequencesPanelState,
   SettingsPanelState,
   WeedsPanelState,
@@ -22,8 +25,10 @@ export interface AppState {
   sequencesPanelState: SequencesPanelState;
   metricPanelState: MetricPanelState;
   toasts: ToastMessages;
-  controlsPopupOpen: boolean;
   movement: MovementState,
+  jobs: JobsAndLogsState;
+  controls: ControlsState;
+  popups: PopupsState;
 }
 
 export const emptyState = (): AppState => {
@@ -78,10 +83,23 @@ export const emptyState = (): AppState => {
       history: false,
     },
     toasts: {},
-    controlsPopupOpen: false,
+    controls: {
+      move: true,
+      peripherals: false,
+      webcams: false,
+    },
+    jobs: {
+      jobs: true,
+      logs: false,
+    },
     movement: {
       start: { x: undefined, y: undefined, z: undefined },
       distance: { x: 0, y: 0, z: 0 },
+    },
+    popups: {
+      controls: false,
+      jobs: false,
+      connectivity: false,
     },
   };
 };
@@ -144,8 +162,36 @@ export const appReducer =
         s.settingsPanelState.other_settings = a.payload;
         return s;
       })
-    .add<boolean>(Actions.OPEN_CONTROLS_POPUP, (s, { payload }) => {
-      s.controlsPopupOpen = payload;
+    .add<keyof ControlsState>(
+      Actions.SET_CONTROLS_PANEL_OPTION, (s, { payload }) => {
+        s.controls.move = false;
+        s.controls.peripherals = false;
+        s.controls.webcams = false;
+        s.controls[payload] = true;
+        return s;
+      })
+    .add<keyof JobsAndLogsState>(
+      Actions.SET_JOBS_PANEL_OPTION, (s, { payload }) => {
+        s.jobs.jobs = false;
+        s.jobs.logs = false;
+        s.jobs[payload] = true;
+        return s;
+      })
+    .add<keyof PopupsState>(Actions.TOGGLE_POPUP, (s, { payload }) => {
+      s.popups[payload] = !s.popups[payload];
+      return s;
+    })
+    .add<keyof PopupsState>(Actions.OPEN_POPUP, (s, { payload }) => {
+      s.popups.controls = false;
+      s.popups.jobs = false;
+      s.popups.connectivity = false;
+      s.popups[payload] = true;
+      return s;
+    })
+    .add<undefined>(Actions.CLOSE_POPUP, (s) => {
+      s.popups.controls = false;
+      s.popups.jobs = false;
+      s.popups.connectivity = false;
       return s;
     })
     .add<ToastMessageProps>(Actions.CREATE_TOAST, (s, { payload }) => {

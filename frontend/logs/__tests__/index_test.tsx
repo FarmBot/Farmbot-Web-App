@@ -5,17 +5,20 @@ jest.mock("../../api/crud", () => ({
 }));
 
 import React from "react";
-import { mount, shallow } from "enzyme";
-import { RawLogs as Logs } from "../index";
+import { ReactWrapper, mount, shallow } from "enzyme";
+import { LogsPanel as Logs, RawLogs } from "../index";
 import { TaggedLog, Dictionary } from "farmbot";
 import { NumericSetting } from "../../session_keys";
 import { fakeLog } from "../../__test_support__/fake_state/resources";
-import { LogsProps } from "../interfaces";
+import { LogsPanelProps, LogsProps } from "../interfaces";
 import { MessageType } from "../../sequences/interfaces";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { SearchField } from "../../ui/search_field";
 import { bot } from "../../__test_support__/fake_state/bot";
 import { destroy } from "../../api/crud";
+import { mapStateToProps } from "../state_to_props";
+import { fakeState } from "../../__test_support__/fake_state";
+import { Actions } from "../../constants";
 
 describe("<Logs />", () => {
   function fakeLogs(): TaggedLog[] {
@@ -37,15 +40,17 @@ describe("<Logs />", () => {
     fbosVersion: undefined,
   });
 
+  const verifyFilterState = (wrapper: ReactWrapper<unknown>, enabled: boolean) => {
+    const filterBtn = wrapper.find(".fa-filter");
+    expect(filterBtn.props().style?.color).toEqual(enabled ? "white" : "#434343");
+  };
+
   it("renders", () => {
     const wrapper = mount(<Logs {...fakeProps()} />);
-    ["Logs", "Type", "Message", "Time", "Info",
-      "Fake log message 1", "Success", "Fake log message 2"]
+    ["Message", "Time", "Fake log message 1", "Fake log message 2"]
       .map(string =>
         expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));
-    const filterBtn = wrapper.find("button").first();
-    expect(filterBtn.text().toLowerCase()).toEqual("filters active");
-    expect(filterBtn.hasClass("green")).toBeTruthy();
+    verifyFilterState(wrapper, true);
     expect(wrapper.text().toLowerCase()).not.toContain("demo");
   });
 
@@ -54,13 +59,10 @@ describe("<Logs />", () => {
     p.logs = fakeLogs();
     p.logs[0].body.type = "unknown" as MessageType;
     const wrapper = mount(<Logs {...p} />);
-    ["Logs", "Type", "Message", "Time", "unknown",
-      "Fake log message 1", "Success", "Fake log message 2"]
+    ["Message", "Time", "Fake log message 1", "Fake log message 2"]
       .map(string =>
         expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));
-    const filterBtn = wrapper.find("button").first();
-    expect(filterBtn.text().toLowerCase()).toEqual("filters active");
-    expect(filterBtn.hasClass("green")).toBeTruthy();
+    verifyFilterState(wrapper, true);
     expect(wrapper.text().toLowerCase()).not.toContain("demo");
   });
 
@@ -76,9 +78,7 @@ describe("<Logs />", () => {
     const wrapper = mount(<Logs {...fakeProps()} />);
     wrapper.setState({ info: 0 });
     expect(wrapper.text()).not.toContain("Fake log message 1");
-    const filterBtn = wrapper.find("button").first();
-    expect(filterBtn.text().toLowerCase()).toEqual("filters active");
-    expect(filterBtn.hasClass("green")).toBeTruthy();
+    verifyFilterState(wrapper, true);
   });
 
   it("doesn't show logs of any verbosity when type is disabled", () => {
@@ -140,9 +140,7 @@ describe("<Logs />", () => {
   it("shows overall filter status", () => {
     const wrapper = mount(<Logs {...fakeProps()} />);
     wrapper.setState(fakeLogsState());
-    const filterBtn = wrapper.find("button").first();
-    expect(filterBtn.text().toLowerCase()).toEqual("filter");
-    expect(filterBtn.hasClass("gray")).toBeTruthy();
+    verifyFilterState(wrapper, false);
   });
 
   it("shows filtered overall filter status", () => {
@@ -151,9 +149,7 @@ describe("<Logs />", () => {
     const state = fakeLogsState();
     state.assertion = 2;
     wrapper.setState(state);
-    const filterBtn = wrapper.find("button").first();
-    expect(filterBtn.text().toLowerCase()).toEqual("filters active");
-    expect(filterBtn.hasClass("green")).toBeTruthy();
+    verifyFilterState(wrapper, true);
   });
 
   it("shows unfiltered overall filter status", () => {
@@ -162,9 +158,7 @@ describe("<Logs />", () => {
     const state = fakeLogsState();
     state.assertion = 3;
     wrapper.setState(state);
-    const filterBtn = wrapper.find("button").first();
-    expect(filterBtn.text().toLowerCase()).toEqual("filter");
-    expect(filterBtn.hasClass("gray")).toBeTruthy();
+    verifyFilterState(wrapper, false);
   });
 
   it("toggles filter", () => {
@@ -254,5 +248,28 @@ describe("<Logs />", () => {
     const wrapper = mount(<Logs {...p} />);
     wrapper.find(".fa-trash").first().simulate("click");
     expect(destroy).toHaveBeenCalledWith(p.logs[0].uuid);
+  });
+});
+
+describe("<RawLogs />", () => {
+  const fakeProps = (): LogsPanelProps => ({
+    dispatch: jest.fn(),
+  });
+
+  it("renders page", () => {
+    const p = fakeProps();
+    const wrapper = mount(<RawLogs {...p} />);
+    expect(wrapper.text()).toContain("moved");
+    expect(p.dispatch).toHaveBeenCalledWith(
+      { type: Actions.OPEN_POPUP, payload: "jobs" });
+    expect(p.dispatch).toHaveBeenCalledWith(
+      { type: Actions.SET_JOBS_PANEL_OPTION, payload: "logs" });
+  });
+});
+
+describe("mapStateToProps()", () => {
+  it("returns props", () => {
+    expect(mapStateToProps(fakeState())).toEqual(
+      expect.objectContaining({ dispatch: expect.any(Function) }));
   });
 });

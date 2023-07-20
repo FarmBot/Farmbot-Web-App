@@ -4,6 +4,16 @@
   padding: 1rem;
 }
 
+.bp4-popover {
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  .bp4-popover-content {
+    border-radius: 5px;
+  }
+  .bp4-popover-arrow {
+    display: none !important;
+  }
+}
+
 // Arrow is slightly off by default in the popup menu.
 .bp4-tether-element-attached-left.bp4-tether-target-attached-right>.bp4-popover>.bp4-popover-arrow {
   left: -1rem;

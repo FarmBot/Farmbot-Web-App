@@ -12,7 +12,9 @@ describe("validBotLocationData()", () => {
     expect(result).toEqual({
       position: { x: undefined, y: undefined, z: undefined },
       scaled_encoders: { x: undefined, y: undefined, z: undefined },
-      raw_encoders: { x: undefined, y: undefined, z: undefined }
+      raw_encoders: { x: undefined, y: undefined, z: undefined },
+      load: { x: undefined, y: undefined, z: undefined },
+      axis_states: { x: undefined, y: undefined, z: undefined },
     });
   });
 
@@ -22,7 +24,9 @@ describe("validBotLocationData()", () => {
     expect(result).toEqual({
       position: { x: undefined, y: undefined, z: undefined },
       scaled_encoders: { x: undefined, y: undefined, z: undefined },
-      raw_encoders: { x: 123, y: undefined, z: undefined }
+      raw_encoders: { x: 123, y: undefined, z: undefined },
+      load: { x: undefined, y: undefined, z: undefined },
+      axis_states: { x: undefined, y: undefined, z: undefined },
     });
   });
 
@@ -32,7 +36,9 @@ describe("validBotLocationData()", () => {
     expect(result).toEqual({
       position: { x: 0, y: 0, z: 0 },
       scaled_encoders: { x: 0, y: 0, z: 0 },
-      raw_encoders: { x: 0, y: 0, z: 0 }
+      raw_encoders: { x: 0, y: 0, z: 0 },
+      load: { x: 0, y: 0, z: 0 },
+      axis_states: { x: "idle", y: "idle", z: "idle" },
     });
   });
 
@@ -45,7 +51,9 @@ describe("validBotLocationData()", () => {
     expect(result).toEqual({
       position: { x: 1, y: 2, z: 3 },
       scaled_encoders: { x: 0, y: 0, z: 0 },
-      raw_encoders: { x: 0, y: 0, z: 0 }
+      raw_encoders: { x: 0, y: 0, z: 0 },
+      load: { x: 0, y: 0, z: 0 },
+      axis_states: { x: "idle", y: "idle", z: "idle" },
     });
   });
 });

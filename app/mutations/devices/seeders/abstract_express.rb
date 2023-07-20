@@ -12,25 +12,16 @@ module Devices
       def sensors_tool_verification; end
 
       def settings_change_firmware_config_defaults
-        device.firmware_config.update!(movement_max_spd_x: 800,
+        device.firmware_config.update!(encoder_enabled_z: 0,
+                                       movement_keep_active_x: 0,
+                                       movement_keep_active_y: 0,
                                        movement_max_spd_y: 900,
-                                       movement_max_spd_z: 1000,
-                                       movement_max_spd_z2: 500,
                                        movement_min_spd_x: 300,
                                        movement_min_spd_y: 300,
-                                       movement_min_spd_z: 375,
-                                       movement_min_spd_z2: 375,
-                                       movement_home_spd_x: 800,
-                                       movement_home_spd_y: 900,
-                                       movement_home_spd_z: 500,
-                                       movement_steps_acc_dec_x: 60,
-                                       movement_steps_acc_dec_y: 60,
-                                       movement_steps_acc_dec_z: 75,
-                                       movement_steps_acc_dec_z2: 75,
-                                       movement_motor_current_x: 800,
-                                       movement_motor_current_y: 800,
-                                       movement_motor_current_z: 600,
-                                       encoder_missed_steps_max_x: 60,
+                                       movement_home_spd_y: 500,
+                                       movement_steps_acc_dec_x: 250,
+                                       movement_steps_acc_dec_y: 250,
+                                       encoder_missed_steps_max_x: 70,
                                        encoder_missed_steps_max_y: 60,
                                        encoder_missed_steps_max_z: 70,
                                        encoder_missed_steps_decay_x: 100,
@@ -98,6 +89,11 @@ module Devices
         s.dig(:body, 4, :body, 0, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
         s.dig(:body, 4, :body, 1, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
         s.dig(:body, 4, :body, 2, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
+        Sequences::Create.run!(s, device: device)
+      end
+
+      def sequences_find_home
+        s = SequenceSeeds::FIND_HOME_EXPRESS.deep_dup
         Sequences::Create.run!(s, device: device)
       end
 

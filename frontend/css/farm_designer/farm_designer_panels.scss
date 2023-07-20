@@ -55,6 +55,9 @@
 }
 
 .move {
+  position: relative;
+  padding-bottom: 1rem;
+  padding-top: 1rem;
   .move {
     .unavailable,
     .bot-is-online-wrapper {
@@ -62,7 +65,9 @@
     }
   }
   .move-settings.bp4-popover-wrapper {
-    float: right;
+    position: absolute;
+    top: 6rem;
+    right: 1rem;
     .fa-gear {
       color: $dark_gray;
     }
@@ -3305,7 +3310,6 @@ li {
 .jobs-panel {
   .panel-content {
     display: inline-block;
-    max-height: calc(100vh - 9rem);
     overflow-y: auto;
     overflow-x: auto;
     width: 100%;
@@ -3313,11 +3317,14 @@ li {
   }
 }
 
-.jobs-panel {
+.jobs-tab {
   &.bp4-popover {
     margin-top: 1.5rem;
   }
   table {
+    display: block;
+    overflow: scroll;
+    max-height: 26rem;
     margin-right: 1rem;
     p {
       padding: 1rem;
@@ -3325,11 +3332,20 @@ li {
     .job-clear-notice {
       text-align: center;
       color: $medium_gray;
+      i {
+        white-space: normal;
+      }
     }
     .job-name {
       max-width: 20rem;
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+    thead {
+      position: sticky;
+      top: 0;
+      z-index: 999;
+      background: $white;
     }
     tr {
       transform: scale(1);
@@ -3352,16 +3368,18 @@ li {
       border-radius: 0;
       pointer-events: none;
     }
+    .fa-clock-o {
+      cursor: default !important;
+    }
   }
 }
 
 .jobs-panel-portal {
   .bp4-popover-content {
     padding: 0;
-    max-width: 450px;
-    max-height: 300px;
-    overflow-y: auto;
-    overflow-x: hidden;
+    width: min(500px, 100vw - 1rem);
+    max-height: calc(100vh - 10rem);
+    overflow: hidden;
     padding-top: 1rem;
     padding-bottom: 2rem;
   }

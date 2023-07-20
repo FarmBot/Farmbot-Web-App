@@ -8,7 +8,11 @@ import { ChangeRoute } from "../routes";
 
 const fakeChangeRoute: ChangeRoute = (component, info, child) => {
   if (info?.$ == "*") {
-    expect(component.name).toEqual("FourOhFour");
+    if (info?.children) {
+      expect(child?.name.split("Raw").join("")).toEqual("FourOhFour");
+    } else {
+      expect(component.name).toEqual("FourOhFour");
+    }
   }
   expect(component?.name.split("Raw").join("")).toEqual(info?.key);
   if (info?.children) {

@@ -46,6 +46,7 @@ module Devices
         WATER_PLANT = ALL.fetch(:WATER_PLANT)
         WATER_ALL_PLANTS = ALL.fetch(:WATER_ALL_PLANTS)
         FIND_HOME = ALL.fetch(:FIND_HOME)
+        FIND_HOME_EXPRESS = ALL.fetch(:FIND_HOME_EXPRESS)
       end
 
       module PublicSequenceNames

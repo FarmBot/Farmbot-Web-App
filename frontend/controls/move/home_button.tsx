@@ -6,12 +6,18 @@ import { lockedClass } from "../locked_class";
 import { Popover } from "../../ui";
 import { setMovementStateFromPosition } from "../../connectivity/log_handlers";
 import { awayFromHome } from "../../farm_designer/map/layers/logs/logs_layer";
+import {
+  disabledAxisMap,
+} from "../../settings/hardware_settings/axis_tracking_status";
 
 export const HomeButton = (props: HomeButtonProps) => {
   const { doFindHome, homeDirection, locked, arduinoBusy, botOnline } = props;
   const icon = doFindHome ? "fa-search" : "fa-arrow-right";
   const style = doFindHome ? {} : { transform: `rotate(${homeDirection}deg)` };
-  const disabled = arduinoBusy || !botOnline;
+  const disabledAxes = disabledAxisMap(props.firmwareSettings);
+  const findDisabled = disabledAxes.x || disabledAxes.y || disabledAxes.z;
+  const findHomeDisabled = doFindHome && findDisabled;
+  const disabled = arduinoBusy || !botOnline || findHomeDisabled;
   const alreadyAtHome = !doFindHome && !awayFromHome(props.botPosition, 0.5);
   const [popoverOpen, setPopoverOpen] = React.useState(false);
   const [popoverText, setPopoverText] = React.useState("");
@@ -23,9 +29,12 @@ export const HomeButton = (props: HomeButtonProps) => {
       if (arduinoBusy) { return t("FarmBot is busy"); }
       if (!botOnline) { return t("FarmBot is offline"); }
       if (alreadyAtHome) { return t("FarmBot is already at the home position"); }
+      if (findHomeDisabled) {
+        return t("Stall detection is disabled for one or more axes.");
+      }
       return "";
     };
-    if (arduinoBusy || !botOnline || locked || alreadyAtHome) {
+    if (disabled || locked || alreadyAtHome) {
       setPopoverOpen(!popoverOpen);
       setPopoverText(text());
       return;

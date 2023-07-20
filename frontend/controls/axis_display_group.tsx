@@ -13,9 +13,10 @@ const Axis = (props: AxisProps) => {
       <MissedStepIndicator
         missedSteps={axisState == "idle" ? 0 : missedSteps}
         axis={axis} />}
-    <input disabled name={axis}
-      style={props.highlight ? { border: "2px solid #fd6" } : {}}
-      value={isNumber(val) ? val : "---"} />
+    {!props.noValues &&
+      <input disabled name={axis}
+        style={props.highlight ? { border: "2px solid #fd6" } : {}}
+        value={isNumber(val) ? val : "---"} />}
     {!isUndefined(axisState) && DevSettings.futureFeaturesEnabled() &&
       <p>{t(axisState)}</p>}
   </Col>;
@@ -28,26 +29,28 @@ export const AxisDisplayGroup = (props: AxisDisplayGroupProps) => {
     y: !!props.firmwareSettings?.encoder_enabled_y,
     z: !!props.firmwareSettings?.encoder_enabled_z,
   };
+  const common = { noValues: props.noValues };
   return <Row>
-    <Axis axis={"x"} val={x} busy={props.busy} index={3}
+    <Axis {...common} axis={"x"} val={x} busy={props.busy} index={3}
       detectionEnabled={detectionEnabled.x}
       missedSteps={props.missedSteps?.x}
       highlight={props.highlightAxis == "x"}
       axisState={props.axisStates?.x} />
-    <Axis axis={"y"} val={y} busy={props.busy} index={2}
+    <Axis {...common} axis={"y"} val={y} busy={props.busy} index={2}
       detectionEnabled={detectionEnabled.y}
       missedSteps={props.missedSteps?.y}
       highlight={props.highlightAxis == "y"}
       axisState={props.axisStates?.y} />
-    <Axis axis={"z"} val={z} busy={props.busy} index={1}
+    <Axis {...common} axis={"z"} val={z} busy={props.busy} index={1}
       detectionEnabled={detectionEnabled.z}
       missedSteps={props.missedSteps?.z}
       highlight={props.highlightAxis == "z"}
       axisState={props.axisStates?.z} />
-    <Col xs={3} className={"no-pad"}>
-      <label style={props.style}>
-        {t(props.label)}
-      </label>
-    </Col>
+    {!props.noValues &&
+      <Col xs={3} className={"no-pad"}>
+        <label style={props.style}>
+          {t(props.label)}
+        </label>
+      </Col>}
   </Row>;
 };

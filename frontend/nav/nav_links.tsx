@@ -17,7 +17,6 @@ export const getLinks = (): Panel[] => [
   Panel.Sequences,
   Panel.Regimens,
   Panel.FarmEvents,
-  Panel.Controls,
   ...(showSensors() ? [Panel.Sensors] : []),
   Panel.Photos,
   ...(showFarmware() ? [Panel.Farmware] : []),

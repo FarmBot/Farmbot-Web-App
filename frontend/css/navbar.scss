@@ -26,13 +26,21 @@ nav {
 }
 
 .nav-coordinates {
+  display: inline;
+  border: 1px solid $white;
+  border-radius: 5px;
+  padding: 0.8rem;
   font-style: italic;
+  font-weight: bold;
+  font-size: 1.1rem;
   color: $white;
+  margin-right: 0.75rem;
+  margin-left: 0.5rem;
   line-height: 0;
-  float: left;
-  margin-top: 2.1rem;
-  border-radius: 10px;
-  padding: 1rem 0.5rem;
+  &.hover,
+  &:hover {
+    background: $medium_gray;
+  }
 }
 
 .links {
@@ -177,6 +185,7 @@ nav {
     color: $white;
     margin-right: 0.75rem;
     margin-left: 0.5rem;
+    &.hover,
     &:hover {
       background: $medium_gray;
     }
@@ -221,10 +230,6 @@ nav {
   }
   .connection-status-popover {
     display: inline;
-    .bp4-popover-wrapper {
-      line-height: 6rem;
-      margin-top: 0;
-    }
   }
   a {
     font-weight: normal;
@@ -249,6 +254,14 @@ nav {
       overflow: hidden;
       visibility: hidden;
     }
+  }
+}
+
+.nav-popup-button-wrapper {
+  display: inline;
+  span:first-of-type {
+    line-height: 3rem;
+    margin-top: 0.75rem;
   }
 }
 

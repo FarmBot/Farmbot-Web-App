@@ -11,6 +11,7 @@ import {
   isNumber,
 } from "lodash";
 import moment from "moment";
+import { BotLocationData } from "../devices/interfaces";
 
 export const colors: Array<ResourceColor> = [
   "blue",
@@ -168,3 +169,12 @@ export const formatTime =
       .utcOffset(timeSettings.utcOffset)
       .format(`${dateFormat}${separator}${timeFormat}`);
   };
+
+export const fullLocationData = (botLocationData: BotLocationData | undefined) =>
+  betterMerge({
+    position: { x: undefined, y: undefined, z: undefined },
+    scaled_encoders: { x: undefined, y: undefined, z: undefined },
+    raw_encoders: { x: undefined, y: undefined, z: undefined },
+    load: { x: undefined, y: undefined, z: undefined },
+    axis_states: { x: undefined, y: undefined, z: undefined },
+  }, botLocationData);

@@ -186,6 +186,11 @@ const OTHER_SETTINGS = (): SettingDescriptionProps[] => ([
     setting: BooleanSetting.show_motor_plot,
   },
   {
+    title: DeviceSetting.showMotorLoadPlotDisplay,
+    description: "",
+    setting: BooleanSetting.show_missed_step_plot,
+  },
+  {
     title: DeviceSetting.confirmStepDeletion,
     description: Content.CONFIRM_STEP_DELETION,
     setting: BooleanSetting.confirm_step_deletion,

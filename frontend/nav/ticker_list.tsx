@@ -1,6 +1,5 @@
 import React from "react";
 import moment from "moment";
-import { Collapse } from "@blueprintjs/core";
 import { Markdown } from "../ui";
 import { TickerListProps } from "./interfaces";
 import { safeNumericSetting } from "../session";
@@ -9,13 +8,11 @@ import { ALLOWED_MESSAGE_TYPES, TaggedLog, SpecialStatus } from "farmbot";
 import { filterByVerbosity } from "../logs/components/logs_table";
 import { isNumber } from "lodash";
 import { GetWebAppConfigValue } from "../config_storage/actions";
-import { Link } from "../link";
 import { MessageType } from "../sequences/interfaces";
 import { t } from "../i18next_wrapper";
 import { TimeSettings } from "../interfaces";
 import { forceOnline } from "../devices/must_be_online";
 import { formatTime } from "../util";
-import { Path } from "../internal_urls";
 
 /** Get current verbosity filter level for a message type from WebAppConfig. */
 const getFilterLevel = (getConfigValue: GetWebAppConfigValue) =>
@@ -99,34 +96,18 @@ const TickerLog = (props: TickerLogProps) => {
 /** The logs ticker, with closed/open views, and a link to the Logs page. */
 export const TickerList = (props: TickerListProps) => {
   const {
-    tickerListOpen, logs, getConfigValue, timeSettings, botOnline, lastSeen,
+    logs, getConfigValue, timeSettings, botOnline, lastSeen,
   } = props;
   const firstTickerLog =
     getFirstTickerLog(getConfigValue, logs, botOnline, lastSeen);
   return <ErrorBoundary>
-    <div className="ticker-list" onClick={props.toggle("tickerListOpen")}>
+    <div className={"ticker-list"}>
       <div className="first-ticker">
         <TickerLog log={firstTickerLog} timeSettings={timeSettings}
           prefix={!botOnline && firstTickerLog.body.created_at
             ? t("Last seen") + " "
             : ""} />
       </div>
-      <Collapse isOpen={tickerListOpen}>
-        {filterByVerbosity(getFilterLevel(getConfigValue), logs)
-          // Don't use first log again when it's already displayed in first row
-          .filter((_, index) => forceOnline() || !botOnline || index !== 0)
-          .map((log: TaggedLog) =>
-            <TickerLog key={log.uuid} log={log} timeSettings={timeSettings} />)}
-      </Collapse>
-      <Collapse isOpen={tickerListOpen}>
-        <Link to={Path.logs()}>
-          <div className="logs-page-link">
-            <label>
-              {t("View all logs")}
-            </label>
-          </div>
-        </Link>
-      </Collapse>
     </div>
   </ErrorBoundary>;
 };

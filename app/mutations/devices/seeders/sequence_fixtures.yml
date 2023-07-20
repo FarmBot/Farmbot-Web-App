@@ -569,3 +569,22 @@
       :speed: 100
       :axis: all
     :comment: Find home on all axes
+
+:FIND_HOME_EXPRESS: # =========================
+  :args:
+    :locals:
+      :kind: scope_declaration
+      :args: {}
+  :color: blue
+  :name: Find Home
+  :body:
+  - :kind: find_home
+    :args:
+      :speed: 100
+      :axis: y
+    :comment: Find home on the Y axis
+  - :kind: find_home
+    :args:
+      :speed: 100
+      :axis: x
+    :comment: Find home on the X axis

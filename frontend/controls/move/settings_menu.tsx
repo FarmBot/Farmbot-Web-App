@@ -59,10 +59,14 @@ export const MoveWidgetSettingsMenu = (
       setting={BooleanSetting.xy_swap} />
 
     <div className={"motor-position-plot-setting-row"}>
-      <p>{t("Motor position plot")}</p>
+      <p>{t("Plots")}</p>
       <Setting
         label={DeviceSetting.showMotorPositionPlot}
         setting={BooleanSetting.show_motor_plot} />
+      {!hasEncoders(firmwareHardware) &&
+        <Setting
+          label={DeviceSetting.showMotorLoadPlot}
+          setting={BooleanSetting.show_missed_step_plot} />}
     </div>
   </div>;
 };

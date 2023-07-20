@@ -44,6 +44,13 @@ describe("<RootComponent />", () => {
     expect(wrapper.state().Route).toEqual(FourOhFour);
   });
 
+  it("initializes", () => {
+    const wrapper = shallow<RootComponent>(<RootComponent store={store} />);
+    const Component = wrapper.state().Route;
+    const route = shallow(<Component />);
+    expect(route.text()).toEqual("Loading...");
+  });
+
   it("renders child route", () => {
     const wrapper = shallow<RootComponent>(<RootComponent store={store} />);
     wrapper.setState({

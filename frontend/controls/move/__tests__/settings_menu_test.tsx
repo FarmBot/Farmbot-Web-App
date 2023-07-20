@@ -32,7 +32,7 @@ describe("<MoveWidgetSettingsMenu />", () => {
 
   it("displays motor plot toggle", () => {
     const wrapper = mount(<MoveWidgetSettingsMenu {...fakeProps()} />);
-    expect(wrapper.text()).toContain("Motor position plot");
+    expect(wrapper.text()).toContain("motor position");
   });
 
   it("displays encoder toggles", () => {

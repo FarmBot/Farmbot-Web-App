@@ -57,6 +57,7 @@ export interface HomeButtonProps {
   movementState: MovementState;
   botPosition: BotPosition;
   dispatch: Function;
+  firmwareSettings: McuParams;
 }
 
 export interface StepSizeSelectorProps {
@@ -89,10 +90,6 @@ export interface JogControlsGroupProps extends JogMovementControlsProps {
   dispatch: Function;
 }
 
-export interface ControlsPopupProps extends JogControlsGroupProps {
-  isOpen: boolean;
-}
-
 export interface BotPositionRowsProps {
   locationData: BotLocationData;
   getConfigValue: GetWebAppConfigValue;
@@ -103,6 +100,7 @@ export interface BotPositionRowsProps {
   firmwareHardware: FirmwareHardware | undefined;
   botOnline: boolean;
   dispatch: Function;
+  showCurrentPosition?: boolean;
 }
 
 export interface AxisActionsProps {

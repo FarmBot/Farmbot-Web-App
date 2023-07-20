@@ -32,6 +32,5 @@ export const PinnedSequences = (props: PinnedSequencesProps) => {
             </Row>)}
         </WidgetBody>
       </Widget>}
-    {pinnedSequences.length > 0 && <hr />}
   </div>;
 };

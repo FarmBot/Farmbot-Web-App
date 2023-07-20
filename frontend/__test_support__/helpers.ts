@@ -7,6 +7,9 @@ export function clickButton(
   position: number,
   text: string,
   options?: { partial_match?: boolean, icon?: string }) {
+  if (position < 0) {
+    position = wrapper.find("button").length + position;
+  }
   const button = wrapper.find("button").at(position);
   const expectedText = text.toLowerCase();
   const actualText = button.text().toLowerCase();

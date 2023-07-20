@@ -1,17 +1,16 @@
 import React from "react";
 import { mount } from "enzyme";
-import { RawDesignerControls as DesignerControls } from "../../controls/controls";
+import {
+  ControlsPanel, ControlsPanelProps, RawDesignerControls as DesignerControls,
+} from "../../controls/controls";
 import { bot } from "../../__test_support__/fake_state/bot";
-import { fakeState } from "../../__test_support__/fake_state";
 import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
-import {
-  fakeWebAppConfig, fakeFbosConfig, fakeSequence,
-} from "../../__test_support__/fake_state/resources";
 import { DesignerControlsProps } from "../interfaces";
-import { mapStateToProps } from "../state_to_props";
 import { fakeMovementState } from "../../__test_support__/fake_bot_data";
+import { app } from "../../__test_support__/fake_state/app";
+import { Actions } from "../../constants";
 
 describe("<DesignerControls />", () => {
   const fakeProps = (): DesignerControlsProps => ({
@@ -33,57 +32,71 @@ describe("<DesignerControls />", () => {
   });
 
   it("renders controls", () => {
-    const wrapper = mount(<DesignerControls {...fakeProps()} />);
-    ["move", "peripherals", "webcam"].map(string =>
-      expect(wrapper.text().toLowerCase()).toContain(string));
-    expect(wrapper.text().toLowerCase()).not.toContain("pinned");
-  });
-
-  it("shows plot", () => {
     const p = fakeProps();
-    p.getConfigValue = () => true;
     const wrapper = mount(<DesignerControls {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("seconds ago");
-  });
-
-  it("shows pinned sequences", () => {
-    const p = fakeProps();
-    const sequence = fakeSequence();
-    sequence.body.pinned = true;
-    p.sequences = [sequence];
-    const wrapper = mount(<DesignerControls {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("pinned");
-  });
-
-  it("hides webcam feeds", () => {
-    const p = fakeProps();
-    p.getConfigValue = () => true;
-    const wrapper = mount(<DesignerControls {...p} />);
-    expect(wrapper.text().toLowerCase()).not.toContain("webcam");
+    expect(wrapper.text().toLowerCase()).toContain("controls have moved");
+    expect(p.dispatch).toHaveBeenCalledWith(
+      { type: Actions.OPEN_POPUP, payload: "controls" });
   });
 });
 
-describe("mapStateToProps()", () => {
-  it("returns props", () => {
-    const state = fakeState();
-    const config = fakeWebAppConfig();
-    config.body.busy_log = 1;
-    state.resources = buildResourceIndex([config]);
-    const props = mapStateToProps(state);
-    expect(props.firmwareSettings).toEqual({
-      encoder_enabled_x: 1,
-      encoder_enabled_y: 1,
-      encoder_enabled_z: 0,
-    });
-    expect(props.getConfigValue("busy_log")).toEqual(1);
-    expect(props.firmwareHardware).toEqual(undefined);
+describe("<ControlsPanel />", () => {
+  const fakeProps = (): ControlsPanelProps => ({
+    dispatch: jest.fn(),
+    appState: app,
+    bot,
+    getConfigValue: jest.fn(),
+    sourceFwConfig: jest.fn(),
+    env: {},
+    firmwareHardware: undefined,
+    logs: [],
+    feeds: [],
+    peripherals: [],
+    sequences: [],
+    resources: buildResourceIndex([]).index,
+    menuOpen: undefined,
+    firmwareSettings: bot.hardware.mcu_params,
   });
 
-  it("returns valid firmware value", () => {
-    const state = fakeState();
-    const config = fakeFbosConfig();
-    config.body.firmware_hardware = "arduino";
-    state.resources = buildResourceIndex([config]);
-    expect(mapStateToProps(state).firmwareHardware).toEqual("arduino");
+  it("renders move", () => {
+    const p = fakeProps();
+    p.appState.controls.move = true;
+    p.appState.controls.peripherals = false;
+    p.appState.controls.webcams = false;
+    const wrapper = mount(<ControlsPanel {...p} />);
+    expect(wrapper.html()).toContain("move-tab");
+    expect(wrapper.html()).not.toContain("peripherals-tab");
+    expect(wrapper.html()).not.toContain("webcams-tab");
+  });
+
+  it("renders peripherals", () => {
+    const p = fakeProps();
+    p.appState.controls.move = false;
+    p.appState.controls.peripherals = true;
+    p.appState.controls.webcams = false;
+    const wrapper = mount(<ControlsPanel {...p} />);
+    expect(wrapper.html()).not.toContain("move-tab");
+    expect(wrapper.html()).toContain("peripherals-tab");
+    expect(wrapper.html()).not.toContain("webcams-tab");
+  });
+
+  it("renders webcams", () => {
+    const p = fakeProps();
+    p.appState.controls.move = false;
+    p.appState.controls.peripherals = false;
+    p.appState.controls.webcams = true;
+    const wrapper = mount(<ControlsPanel {...p} />);
+    expect(wrapper.html()).not.toContain("move-tab");
+    expect(wrapper.html()).not.toContain("peripherals-tab");
+    expect(wrapper.html()).toContain("webcams-tab");
+  });
+
+  it("sets state", () => {
+    const p = fakeProps();
+    const wrapper = mount<ControlsPanel>(<ControlsPanel {...p} />);
+    wrapper.instance().setPanelState("move")();
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_CONTROLS_PANEL_OPTION, payload: "move",
+    });
   });
 });

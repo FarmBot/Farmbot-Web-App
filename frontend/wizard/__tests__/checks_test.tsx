@@ -51,7 +51,6 @@ import {
   Connectivity,
   ControlsCheck,
   ControlsCheckProps,
-  CurrentPosition,
   DisableStallDetection,
   DownloadImager,
   DownloadOS,
@@ -643,23 +642,6 @@ describe("<SetHome />", () => {
     const wrapper = mount(<Component {...fakeProps()} />);
     clickButton(wrapper, 0, "set home x");
     expect(mockDevice.setZero).toHaveBeenCalledWith("x");
-  });
-});
-
-describe("<CurrentPosition />", () => {
-  it("renders current position", () => {
-    const Component = CurrentPosition("x");
-    const p = fakeProps();
-    const config = fakeFirmwareConfig();
-    p.resources = buildResourceIndex([config]).index;
-    const wrapper = mount(<Component {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("current position");
-  });
-
-  it("handles missing settings", () => {
-    const Component = CurrentPosition("x");
-    const wrapper = mount(<Component {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("current position");
   });
 });
 

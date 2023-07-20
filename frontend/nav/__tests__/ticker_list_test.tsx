@@ -27,7 +27,6 @@ describe("<TickerList />", () => {
   const fakeProps = (): TickerListProps => ({
     timeSettings: fakeTimeSettings(),
     logs: [fakeTaggedLog(), fakeTaggedLog()],
-    tickerListOpen: false,
     toggle: jest.fn(),
     getConfigValue: x => mockStorj[x],
     botOnline: true,
@@ -89,28 +88,6 @@ describe("<TickerList />", () => {
     expect(labels.length).toEqual(2);
     expect(labels.at(0).text()).toContain("Loading");
     expect(labels.at(1).text()).toEqual("");
-  });
-
-  it("opens ticker", () => {
-    const p = fakeProps();
-    p.tickerListOpen = true;
-    const wrapper = mount(<TickerList {...p} />);
-    const labels = wrapper.find("label");
-    expect(labels.length).toEqual(5);
-    expect(labels.at(0).text()).toContain("Farmbot is up and Running!");
-    expect(labels.at(1).text()).toEqual("AUG 2, 7:50PM");
-    expect(labels.at(2).text()).toContain("Farmbot is up and Running!");
-    expect(labels.at(1).text()).toEqual("AUG 2, 7:50PM");
-    expect(labels.at(4).text()).toEqual("View all logs");
-    expectLogOccurrences(wrapper.text(), 2);
-  });
-
-  it("opens ticker when offline", () => {
-    const p = fakeProps();
-    p.botOnline = false;
-    p.tickerListOpen = true;
-    const wrapper = mount(<TickerList {...p} />);
-    expectLogOccurrences(wrapper.text(), 2);
   });
 
   it("all logs filtered out", () => {

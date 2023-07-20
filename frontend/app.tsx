@@ -2,15 +2,18 @@ import React from "react";
 import { connect, ConnectedComponent } from "react-redux";
 import { error, warning } from "./toast/toast";
 import { NavBar } from "./nav";
-import {
-  Everything, MetricPanelState, MovementState, TimeSettings,
-} from "./interfaces";
+import { Everything, TimeSettings } from "./interfaces";
 import { LoadingPlant } from "./loading_plant";
-import { BotState, UserEnv } from "./devices/interfaces";
+import {
+  BotState, SourceFbosConfig, SourceFwConfig, UserEnv,
+} from "./devices/interfaces";
 import {
   ResourceName, TaggedUser, TaggedLog, Xyz, Alert, FirmwareHardware,
   TaggedWizardStepResult,
   TaggedTelemetry,
+  TaggedWebcamFeed,
+  TaggedPeripheral,
+  TaggedSequence,
 } from "farmbot";
 import {
   maybeFetchUser,
@@ -18,12 +21,13 @@ import {
   getDeviceAccountSettings,
   selectAllWizardStepResults,
   selectAllTelemetry,
+  selectAllPeripherals,
+  selectAllSequences,
+  selectAllWebcamFeeds,
 } from "./resources/selectors";
 import { HotKeys } from "./hotkeys";
-import { ControlsPopup } from "./controls_popup";
 import { Content } from "./constants";
-import { validFwConfig } from "./util";
-import { validBotLocationData } from "./util/location";
+import { validFbosConfig, validFwConfig } from "./util";
 import { BooleanSetting, StringSetting } from "./session_keys";
 import {
   getWebAppConfigValue, GetWebAppConfigValue,
@@ -31,10 +35,9 @@ import {
 import { takeSortedLogs } from "./logs/state_to_props";
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import { getFirmwareConfig, getFbosConfig } from "./resources/getters";
-import { intersection, isString } from "lodash";
+import { intersection, isString, uniq } from "lodash";
 import { t } from "./i18next_wrapper";
-import { ResourceIndex } from "./resources/interfaces";
-import { isBotOnlineFromState } from "./devices/must_be_online";
+import { ResourceIndex, UUID } from "./resources/interfaces";
 import { getAllAlerts } from "./messages/state_to_props";
 import { PingDictionary } from "./devices/connectivity/qos";
 import { getEnv } from "./farmware/state_to_props";
@@ -44,12 +47,14 @@ import {
 } from "./settings/firmware/firmware_hardware_support";
 import { HelpState } from "./help/reducer";
 import { TourStepContainer } from "./help/tours";
-import { ToastMessages } from "./toast/interfaces";
 import { Toasts } from "./toast/fb_toast";
 import Bowser from "bowser";
 import { landingPagePath, Path } from "./internal_urls";
 import { push } from "./history";
-import { getImageJobs } from "./photos/state_to_props";
+import { AppState } from "./reducer";
+import {
+  sourceFbosConfigValue, sourceFwConfigValue,
+} from "./settings/source_config_value";
 
 export interface AppProps {
   dispatch: Function;
@@ -63,6 +68,8 @@ export interface AppProps {
   firmwareConfig: FirmwareConfig | undefined;
   animate: boolean;
   getConfigValue: GetWebAppConfigValue;
+  sourceFwConfig: SourceFwConfig;
+  sourceFbosConfig: SourceFbosConfig;
   helpState: HelpState;
   resources: ResourceIndex;
   alertCount: number;
@@ -73,10 +80,11 @@ export interface AppProps {
   authAud: string | undefined;
   wizardStepResults: TaggedWizardStepResult[];
   telemetry: TaggedTelemetry[];
-  toastMessages: ToastMessages;
-  controlsPopupOpen: boolean;
-  metricPanelState: MetricPanelState;
-  movementState: MovementState;
+  feeds: TaggedWebcamFeed[];
+  peripherals: TaggedPeripheral[];
+  sequences: TaggedSequence[];
+  menuOpen: UUID | undefined;
+  appState: AppState;
   children?: React.ReactNode;
 }
 
@@ -98,6 +106,11 @@ export function mapStateToProps(props: Everything): AppProps {
     firmwareConfig: validFwConfig(getFirmwareConfig(props.resources.index)),
     animate: !webAppConfigValue(BooleanSetting.disable_animations),
     getConfigValue: webAppConfigValue,
+    sourceFwConfig: sourceFwConfigValue(validFwConfig(getFirmwareConfig(
+      props.resources.index)), props.bot.hardware.mcu_params),
+    sourceFbosConfig: sourceFbosConfigValue(
+      validFbosConfig(getFbosConfig(props.resources.index)),
+      props.bot.hardware.configuration),
     helpState: props.resources.consumers.help,
     resources: props.resources.index,
     alertCount: getAllAlerts(props.resources).filter(filterAlerts).length,
@@ -108,10 +121,11 @@ export function mapStateToProps(props: Everything): AppProps {
     authAud: props.auth?.token.unencoded.aud,
     wizardStepResults: selectAllWizardStepResults(props.resources.index),
     telemetry: selectAllTelemetry(props.resources.index),
-    toastMessages: props.app.toasts,
-    controlsPopupOpen: props.app.controlsPopupOpen,
-    metricPanelState: props.app.metricPanelState,
-    movementState: props.app.movement,
+    appState: props.app,
+    feeds: selectAllWebcamFeeds(props.resources.index),
+    peripherals: uniq(selectAllPeripherals(props.resources.index)),
+    sequences: selectAllSequences(props.resources.index),
+    menuOpen: props.resources.consumers.sequences.menuOpen,
   };
 }
 /** Time at which the app gives up and asks the user to refresh */
@@ -154,8 +168,6 @@ export class RawApp extends React.Component<AppProps, {}> {
   render() {
     const syncLoaded = this.isLoaded;
     const { bot, dispatch, getConfigValue } = this.props;
-    const { location_data, mcu_params } = bot.hardware;
-    const { busy, locked } = bot.hardware.informational_settings;
     const landingPage = getConfigValue(StringSetting.landing_page);
     if (Path.equals("") && isString(landingPage)) {
       push(landingPagePath(landingPage));
@@ -169,33 +181,27 @@ export class RawApp extends React.Component<AppProps, {}> {
         bot={bot}
         dispatch={dispatch}
         logs={this.props.logs}
+        env={this.props.env}
+        resources={this.props.resources}
+        feeds={this.props.feeds}
+        peripherals={this.props.peripherals}
+        sequences={this.props.sequences}
         getConfigValue={getConfigValue}
+        sourceFwConfig={this.props.sourceFwConfig}
+        sourceFbosConfig={this.props.sourceFbosConfig}
         helpState={this.props.helpState}
         alertCount={this.props.alertCount}
         device={getDeviceAccountSettings(this.props.resources)}
         alerts={this.props.alerts}
         apiFirmwareValue={this.props.apiFirmwareValue}
+        firmwareConfig={this.props.firmwareConfig}
         authAud={this.props.authAud}
         wizardStepResults={this.props.wizardStepResults}
         telemetry={this.props.telemetry}
-        metricPanelState={this.props.metricPanelState}
+        appState={this.props.appState}
+        menuOpen={this.props.menuOpen}
         pings={this.props.pings} />}
       {syncLoaded && this.props.children}
-      {!Path.startsWith(Path.controls()) &&
-        <ControlsPopup
-          dispatch={dispatch}
-          isOpen={this.props.controlsPopupOpen}
-          botPosition={validBotLocationData(location_data).position}
-          firmwareSettings={this.props.firmwareConfig || mcu_params}
-          arduinoBusy={busy}
-          locked={locked}
-          botOnline={isBotOnlineFromState(bot)}
-          getConfigValue={getConfigValue}
-          env={this.props.env}
-          imageJobs={getImageJobs(this.props.bot.hardware.jobs)}
-          logs={this.props.logs}
-          movementState={this.props.movementState}
-          stepSize={bot.stepSize} />}
       <div className={"toast-container"}>
         <TourStepContainer
           key={JSON.stringify(this.props.helpState)}
@@ -203,7 +209,7 @@ export class RawApp extends React.Component<AppProps, {}> {
           firmwareHardware={this.props.apiFirmwareValue}
           helpState={this.props.helpState} />
         <Toasts
-          toastMessages={this.props.toastMessages}
+          toastMessages={this.props.appState.toasts}
           dispatch={dispatch} />
       </div>
     </div>;

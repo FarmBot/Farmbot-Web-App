@@ -6,6 +6,9 @@ import {
   SequencesPanelState,
   MetricPanelState,
   CurvesPanelState,
+  JobsAndLogsState,
+  ControlsState,
+  PopupsState,
 } from "../interfaces";
 
 export const settingsPanelState = (): SettingsPanelState => {
@@ -63,4 +66,21 @@ export const metricPanelState = (): MetricPanelState => ({
   realtime: true,
   network: false,
   history: false,
+});
+
+export const controlsState = (): ControlsState => ({
+  move: true,
+  peripherals: false,
+  webcams: false,
+});
+
+export const jobsState = (): JobsAndLogsState => ({
+  jobs: true,
+  logs: false,
+});
+
+export const popUpsState = (): PopupsState => ({
+  controls: false,
+  jobs: false,
+  connectivity: false,
 });

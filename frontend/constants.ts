@@ -229,8 +229,8 @@ export namespace ToolTips {
     (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
 
   export const MOTOR_CURRENT =
-    trim(`Motor current in milliamps.
-    (default: x: {{ x }}, y: {{ y }}, z: {{ z }})`);
+    trim(`Motor current as a percent of maximum.
+    (default: x: {{ x }}%, y: {{ y }}%, z: {{ z }}%)`);
 
   export const QUIET_MODE =
     trim(`Enable quiet motors.
@@ -777,10 +777,6 @@ export namespace Content {
 
   export const TIME_FORMAT_SECONDS =
     trim(`Display seconds in time, i.e., 10:00:00am instead of 10:00am`);
-
-  export const HIDE_WEBCAM_WIDGET =
-    trim(`If not using a webcam, use this setting to remove the
-    widget from the Controls panel.`);
 
   export const HIDE_SENSORS_WIDGET =
     trim(`If not using sensors, use this setting to remove the
@@ -1369,12 +1365,26 @@ export namespace TourContent {
     Clicking a weed will open up the weed details panel where you can
     manually edit it.`);
 
+  export const CURVES_PANEL =
+    trim(`This is the curves panel. Here you can view and manage all of the
+    water, spread, and height curves for your plants. Pressing the + button
+    will create a new curve.`);
+
   export const CONTROLS_PANEL =
-    trim(`This is the controls panel. Here you can control your FarmBot in
+    trim(`Here you can control your FarmBot in
     realtime by pressing the movement arrow buttons, toggling peripherals,
     and executing pinned sequences. You can also view current status
     information about your FarmBot including its position and an optional
     webcam stream.`);
+
+  export const SENSORS_PANEL =
+    trim(`This is the sensors panel. Here you can view and manage your
+    sensors and sensor readings. Click the Read Sensor buttons to read the
+    current value of your sensors. Create and view historical sensor
+    readings in the Sensor History section.`);
+
+  export const JOBS_AND_LOGS_PANEL =
+    trim(`Here you can view running and completed jobs as well as log messages.`);
 
   export const PHOTOS_PANEL =
     trim(`This is the photos panel. Here you can view and manage all of the
@@ -1405,7 +1415,7 @@ export namespace TourContent {
     documentation for information about each setting.`);
 
   export const CONNECTIVITY_POPUP =
-    trim(`This is the connectivity popup. Click it to view information
+    trim(`This is the connectivity popup. View information
     about the connection between your web browser, your FarmBot, and the
     FarmBot web app servers. Whenever your FarmBot is online and ready for
     action, you will see a green checkmark.`);
@@ -1503,7 +1513,8 @@ export namespace TourContent {
   export const SORT_BY =
     trim(`When you program your FarmBot to perform an operation on a group
     of plants, you may want to control the ordering at which FarmBot visits
-    each plant in the group. To do this, select one of the available Sort
+    each plant in the group. To do this, click the sort icon to open the
+    sort menu and select one of the available Sort
     By methods. Once you have chosen a method, advance the tour.`);
 
   export const FINISH_CREATING_THE_GROUP =
@@ -1578,14 +1589,18 @@ export namespace TourContent {
 
   // Monitoring
   export const LOCATION_GRID =
-    trim(`View FarmBot's current location using the axis position display.`);
+    trim(`View FarmBot's current location in the navigation bar.`);
 
   export const VIRTUAL_FARMBOT =
     trim(`Or view FarmBot's current location in the virtual garden.`);
 
+  export const VIRTUAL_FARMBOT_PROFILE =
+    trim(`For a profile view of FarmBot's current location in the virtual
+    garden, open the profile viewer.`);
+
   export const LOGS_TABLE =
-    trim(`View recent log messages here. More detailed log messages can be
-    shown by adjusting filter settings.`);
+    trim(`View recent log messages in the logs pop-up.
+    More detailed log messages can be shown by adjusting filter settings.`);
 
   export const PHOTOS =
     trim(`View photos your FarmBot has taken here.`);
@@ -1615,6 +1630,13 @@ export namespace SetupWizardContent {
     In other words, position the gantry partway along the tracks, position
     the cross-slide partway across the gantry main beam, and position the
     Z-axis halfway down.`);
+
+  export const PRE_POWER_POSITION_EXPRESS =
+    trim(`With the FarmBot still powered off, manually move the gantry and
+    cross-slide roughly 150mm away from the X and Y axis hardstops.
+    In other words, position the gantry partway along the tracks and position
+    the cross-slide partway across the gantry main beam. Rotate the
+    leadscrew by hand to position the Z-axis fully raised up.`);
 
   export const DOWNLOAD_OS =
     trim(`Using a desktop computer or laptop, download the latest
@@ -1712,6 +1734,19 @@ export namespace SetupWizardContent {
   export const FIND_HOME =
     trim(`Open the ... menu for the {{ axis }} axis and click **FIND HOME**.`);
 
+  export const FIND_HOME_Z_EXPRESS =
+    trim(`Automatically finding the Z-axis home position is not enabled by
+    default for Express FarmBots. To manually set the Z home position,
+    use the manual controls to move the Z-axis to the fully raised position.
+    If the Z-axis is not fully raised when the FarmBot reaches the Z=0
+    coordinate, press the E-stop button, rotate the leadscrew by hand to
+    fully raise the Z-axis, and then Unlock the FarmBot. With the Z-axis
+    fully raised, open the ... menu for the Z-axis and click **SET HOME**.`);
+
+  export const HOME_Z_EXPRESS =
+    trim(`Have you manually set the Z-axis home position with the Z-axis
+    fully raised?`);
+
   export const HOME =
     trim(`Did FarmBot reach the home position (touching the hardstop) for
     this axis and set the coordinate to 0? Note: sometimes after a movement,
@@ -1728,6 +1763,10 @@ export namespace SetupWizardContent {
   export const FIND_LENGTH =
     trim(`Did FarmBot move to the end of the axis and then move back to
     the home position for this axis?`);
+
+  export const FIND_LENGTH_Z_EXPRESS =
+    trim(`Have you manually set the Z-axis length with the Z-axis fully
+    lowered and then returned the Z-axis to the home position?`);
 
   export const HOME_AXIS =
     trim(`Try using the FIND HOME button a few more times. If FarmBot is
@@ -1794,6 +1833,13 @@ export namespace SetupWizardContent {
 
   export const FIND_AXIS_LENGTH =
     trim(`Open the ... menu for the {{ axis }} axis and click **FIND LENGTH**.`);
+
+  export const FIND_AXIS_LENGTH_Z_EXPRESS =
+    trim(`Automatically finding the Z-axis length is not enabled by default
+    for Express FarmBots. To manually set the Z length, use the manual controls
+    to move the Z-axis to the fully lowered position. With the Z-axis fully
+    lowered, open the ... menu for the Z-axis and click **SET LENGTH**.
+    Then open the ... menu again and click **MOVE TO HOME**.`);
 
   export const TOGGLE_PERIPHERAL =
     trim(`Press the **{{ toggle }}** toggle, wait a few seconds, and then press
@@ -1987,7 +2033,7 @@ export enum DeviceSetting {
   microstepsPerStep = `Microsteps per step`,
   alwaysPowerMotors = `Always Power Motors`,
   invertMotors = `Invert Motors`,
-  motorCurrent = `Motor Current`,
+  motorCurrent = `Motor Current (%)`,
   quietMode = `Quiet Mode`,
   enable2ndXMotor = `Enable 2nd X Motor`,
   invert2ndXMotor = `Invert 2nd X Motor`,
@@ -2119,8 +2165,10 @@ export enum DeviceSetting {
   displayRawEncoderPosition = `Raw encoder position`,
   swapJogButtonsXAndYAxis = `x and y axis`,
   swapXAndYAxisJogButtons = `swap x and y axis jog buttons`,
-  showMotorPositionPlot = `show`,
+  showMotorPositionPlot = `motor position`,
+  showMotorLoadPlot = `motor load`,
   showMotorPositionPlotDisplay = `show motor position plot display`,
+  showMotorLoadPlotDisplay = `show motor load plot display`,
 
   // Sequences
   confirmStepDeletion = `Confirm step deletion`,
@@ -2275,7 +2323,6 @@ export enum Actions {
   LOGOUT = "LOGOUT",
 
   // App
-  OPEN_CONTROLS_POPUP = "OPEN_CONTROLS_POPUP",
   TOGGLE_PLANTS_PANEL_OPTION = "TOGGLE_PLANTS_PANEL_OPTION",
   TOGGLE_WEEDS_PANEL_OPTION = "TOGGLE_WEEDS_PANEL_OPTION",
   TOGGLE_POINTS_PANEL_OPTION = "TOGGLE_POINTS_PANEL_OPTION",
@@ -2284,6 +2331,11 @@ export enum Actions {
   TOGGLE_SEQUENCES_PANEL_OPTION = "TOGGLE_SEQUENCES_PANEL_OPTION",
   SET_METRIC_PANEL_OPTION = "SET_METRIC_PANEL_OPTION",
   BULK_TOGGLE_SETTINGS_PANEL = "BULK_TOGGLE_SETTINGS_PANEL",
+  SET_CONTROLS_PANEL_OPTION = "SET_CONTROLS_PANEL_OPTION",
+  SET_JOBS_PANEL_OPTION = "SET_JOBS_PANEL_OPTION",
+  TOGGLE_POPUP = "TOGGLE_POPUP",
+  OPEN_POPUP = "OPEN_POPUP",
+  CLOSE_POPUP = "CLOSE_POPUP",
 
   // Devices
   CHANGE_STEP_SIZE = "CHANGE_STEP_SIZE",

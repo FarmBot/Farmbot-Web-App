@@ -34,6 +34,18 @@ describe("<NumericMCUInputGroup />", () => {
     expect(wrapper.find("Highlight").props().hidden).toEqual(false);
   });
 
+  it("overrides advanced hide: scaling function", () => {
+    const p = fakeProps();
+    p.advanced = true;
+    p.showAdvanced = false;
+    p.toInput = v => v;
+    bot.hardware.mcu_params.encoder_enabled_x = 0;
+    bot.hardware.mcu_params.encoder_enabled_y = 1;
+    bot.hardware.mcu_params.encoder_enabled_z = undefined;
+    const wrapper = shallow(<NumericMCUInputGroup {...p} />);
+    expect(wrapper.find("Highlight").props().hidden).toEqual(false);
+  });
+
   it("shows limit warnings", () => {
     const p = fakeProps();
     bot.hardware.mcu_params.encoder_enabled_x = 1;

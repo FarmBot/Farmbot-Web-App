@@ -96,6 +96,7 @@ export function EncodersOrStallDetection(props: EncodersOrStallDetectionProps) {
         disabledBy={settingRequiredLabel([encoderSettingName(showEncoders)])}
         gray={encodersDisabled} />
       <NumericMCUInputGroup {...commonProps}
+        forceHidden={!showEncoders}
         label={!showEncoders
           ? DeviceSetting.gracePeriod
           : DeviceSetting.missedStepDecay}

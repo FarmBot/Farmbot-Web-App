@@ -4,7 +4,7 @@ import {
   StringConfigKey as WebAppStringConfigKey,
 } from "farmbot/dist/resources/configs/web_app";
 
-type WebAppBooleanConfigKeyAll = WebAppBooleanConfigKey;
+type WebAppBooleanConfigKeyAll = WebAppBooleanConfigKey | "show_missed_step_plot";
 type WebAppNumberConfigKeyAll = WebAppNumberConfigKey;
 type WebAppStringConfigKeyAll = WebAppStringConfigKey;
 
@@ -22,6 +22,7 @@ export const BooleanSetting: BooleanSettings = {
   raw_encoders: "raw_encoders",
   home_button_homing: "home_button_homing",
   show_motor_plot: "show_motor_plot",
+  show_missed_step_plot: "show_missed_step_plot" as WebAppBooleanConfigKey,
 
   /** Designer settings */
   legend_menu_open: "legend_menu_open",

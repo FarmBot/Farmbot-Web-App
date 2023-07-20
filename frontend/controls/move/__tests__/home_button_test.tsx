@@ -11,6 +11,7 @@ import { HomeButtonProps } from "../interfaces";
 import {
   fakeBotLocationData, fakeMovementState,
 } from "../../../__test_support__/fake_bot_data";
+import { bot } from "../../../__test_support__/fake_state/bot";
 
 describe("<HomeButton />", () => {
   const fakeProps = (): HomeButtonProps => ({
@@ -23,6 +24,7 @@ describe("<HomeButton />", () => {
     movementState: fakeMovementState(),
     botPosition: fakeBotLocationData().position,
     dispatch: jest.fn(),
+    firmwareSettings: bot.hardware.mcu_params,
   });
 
   it("call has correct args", () => {
@@ -38,6 +40,7 @@ describe("<HomeButton />", () => {
   it("calls home command", () => {
     const p = fakeProps();
     p.botPosition = { x: 100, y: 100, z: 100 };
+    p.firmwareSettings.encoder_enabled_x = 0;
     const wrapper = mount(<HomeButton {...p} />);
     wrapper.find("button").simulate("click");
     expect(mockDevice.home).toHaveBeenCalledTimes(1);
@@ -46,6 +49,9 @@ describe("<HomeButton />", () => {
   it("calls find home command", () => {
     const p = fakeProps();
     p.doFindHome = true;
+    p.firmwareSettings.encoder_enabled_x = 1;
+    p.firmwareSettings.encoder_enabled_y = 1;
+    p.firmwareSettings.encoder_enabled_z = 1;
     const wrapper = mount(<HomeButton {...p} />);
     wrapper.find("button").simulate("click");
     expect(mockDevice.findHome).toHaveBeenCalledTimes(1);
@@ -81,6 +87,15 @@ describe("<HomeButton />", () => {
     const wrapper = mount(<HomeButton {...p} />);
     wrapper.find("button").simulate("click");
     expect(mockDevice.home).not.toHaveBeenCalled();
+  });
+
+  it("is detection disabled", () => {
+    const p = fakeProps();
+    p.doFindHome = true;
+    p.firmwareSettings.encoder_enabled_x = 0;
+    const wrapper = mount(<HomeButton {...p} />);
+    wrapper.find("button").simulate("click");
+    expect(mockDevice.findHome).not.toHaveBeenCalled();
   });
 });
 

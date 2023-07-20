@@ -1,12 +1,13 @@
 import React from "react";
-import { Xyz, LocationName, Dictionary } from "farmbot";
+import { Xyz, LocationName, Dictionary, McuParams, McuParamName } from "farmbot";
 import moment from "moment";
-import { BotLocationData, BotPosition } from "../../devices/interfaces";
-import { trim } from "../../util";
+import { fullLocationData, trim } from "../../util";
 import {
   cloneDeep, max, get, isNumber, isEqual, takeRight, ceil, range,
 } from "lodash";
 import { t } from "../../i18next_wrapper";
+import { ValidLocationData } from "../../util/location";
+import { BotLocationData } from "../../devices/interfaces";
 
 const HEIGHT = 50;
 const HISTORY_LENGTH_SECONDS = 120;
@@ -19,19 +20,21 @@ const COLOR_LOOKUP: Dictionary<string> = {
   x: "red", y: "green", z: "blue"
 };
 const LINEWIDTH_LOOKUP: Dictionary<number> = {
-  position: 0.5, scaled_encoders: 0.25
+  position: 0.5, scaled_encoders: 0.25, load: 0.5,
 };
 
 export enum MotorPositionHistory {
   array = "motorPositionHistoryArray",
 }
 
+type EveryLocationName = LocationName | "load" | "axis_states";
+
 type Entry = {
   timestamp: number,
-  locationData: Record<LocationName, BotPosition>
+  locationData: ValidLocationData,
 };
 
-type Paths = Record<LocationName, Record<Xyz, string>>;
+type Paths = Record<EveryLocationName, Record<Xyz, string>>;
 
 const getArray = (): Entry[] =>
   JSON.parse(get(sessionStorage, MotorPositionHistory.array, "[]") as string);
@@ -43,55 +46,72 @@ const getLastEntry = (): Entry | undefined => {
   return array[array.length - 1];
 };
 
-const findYLimit = (): number => {
+const findYLimit = (props: PlotContentProps): number => {
+  if (props.load) { return 100; }
   const array = getArray();
+  const keys = getKeys(props);
   const arrayAbsMax = max(array.map(entry =>
-    max(["position", "scaled_encoders"].map((key: LocationName) =>
+    max(keys.map((key: LocationName) =>
       max(["x", "y", "z"].map((axis: Xyz) =>
         Math.abs(entry.locationData[key][axis] || 0) + 1))))));
   return Math.max(ceil(arrayAbsMax || 0, -2), DEFAULT_Y_MAX);
 };
 
-const updateArray = (update: Entry): Entry[] => {
-  const arr = getArray();
-  const last = getLastEntry();
-  if (update && isNumber(update.locationData.position.x) &&
-    (!last || !isEqual(last.timestamp, update.timestamp))) {
-    arr.push(update);
-  }
-  const newArray = takeRight(arr, 100)
-    .filter(x => {
-      const entryAge = (last ? last.timestamp : moment().unix()) - x.timestamp;
-      return entryAge <= HISTORY_LENGTH_SECONDS;
-    });
-  sessionStorage.setItem(MotorPositionHistory.array, JSON.stringify(newArray));
-  return newArray;
-};
+export const updateMotorHistoryArray =
+  (rawLocationData: BotLocationData): Entry[] => {
+    const locationData = fullLocationData(rawLocationData);
+    const update = { timestamp: moment().valueOf(), locationData };
+    const arr = getArray();
+    const last = getLastEntry();
+    if (update && isNumber(update.locationData.position.x) &&
+      (!last || !isEqual(last.timestamp, update.timestamp))) {
+      arr.push(update);
+    }
+    const newArray = takeRight(arr, 200)
+      .filter(x => {
+        const entryAge = (last ? last.timestamp : moment().valueOf()) - x.timestamp;
+        return entryAge / 1000 <= HISTORY_LENGTH_SECONDS;
+      });
+    sessionStorage.setItem(MotorPositionHistory.array, JSON.stringify(newArray));
+    return newArray;
+  };
 
 const newPaths = (): Paths => ({
   position: { x: "", y: "", z: "" },
   scaled_encoders: { x: "", y: "", z: "" },
-  raw_encoders: { x: "", y: "", z: "" }
+  raw_encoders: { x: "", y: "", z: "" },
+  load: { x: "", y: "", z: "" },
+  axis_states: { x: "", y: "", z: "" },
 });
 
-const getPaths = (): Paths => {
+const getValue = (key: EveryLocationName, axis: Xyz, entry: Entry) => {
+  const status = entry.locationData[
+    "axis_states" as LocationName][axis] as string | undefined;
+  const value = entry.locationData[key][axis];
+  if (key == "load" && status == "idle") { return 0; }
+  return value;
+};
+
+const getPaths = (props: PlotContentProps): Paths => {
   const last = getLastEntry();
-  const maxY = findYLimit();
+  const keys = getKeys(props);
+  const maxY = findYLimit(props);
+  const plotY = calcY(props);
   const paths = newPaths();
   if (last) {
     getReversedArray().map(entry => {
-      ["position", "scaled_encoders"].map((key: LocationName) => {
+      keys.map((key: EveryLocationName) => {
         ["x", "y", "z"].map((axis: Xyz) => {
-          const lastPos = last.locationData[key][axis];
-          const pos = entry.locationData[key][axis];
+          const lastPos = getValue(key, axis, last);
+          const pos = getValue(key, axis, entry);
           if (isNumber(lastPos) && isFinite(lastPos)
             && isNumber(maxY) && isNumber(pos)) {
             if (!paths[key][axis].startsWith("M")) {
               const yStart = -lastPos / maxY * HEIGHT / 2;
               paths[key][axis] = `M ${MAX_X},${yStart} `;
             }
-            const x = MAX_X - (last.timestamp - entry.timestamp);
-            const y = -pos / maxY * HEIGHT / 2;
+            const x = MAX_X - (last.timestamp - entry.timestamp) / 1000;
+            const y = plotY(pos);
             paths[key][axis] += `L ${x},${y} `;
           }
         });
@@ -101,8 +121,9 @@ const getPaths = (): Paths => {
   return paths;
 };
 
-const TitleLegend = () => {
-  const titleY = -(HEIGHT + BORDER_WIDTH) / 2;
+const TitleLegend = (props: PlotContentProps) => {
+  const { load } = props;
+  const titleY = load ? -(HEIGHT + BORDER_WIDTH / 2) : -(HEIGHT + BORDER_WIDTH) / 2;
   const legendX = HISTORY_LENGTH_SECONDS / 4;
   return <g id="title_with_legend">
     <text fill={COLOR_LOOKUP.x} fontWeight={"bold"}
@@ -112,77 +133,136 @@ const TitleLegend = () => {
     <text fill={COLOR_LOOKUP.z} fontWeight={"bold"}
       x={legendX + 10} y={titleY}>{"Z"}</text>
     <text fontWeight={"bold"}
-      x={HISTORY_LENGTH_SECONDS / 2} y={titleY}>{t("Position (mm)")}</text>
+      x={HISTORY_LENGTH_SECONDS / 2} y={titleY}>
+      {load ? t("Load (%)") : t("Position (mm)")}
+    </text>
   </g>;
 };
 
-const YAxisLabels = () => {
-  const maxY = findYLimit();
+const calcY = (props: PlotContentProps) => (y: number) => {
+  const maxY = findYLimit(props);
+  const factor = props.load ? 1 : 2;
+  return -y / maxY * HEIGHT / factor;
+};
+
+const YAxisLabels = (props: PlotContentProps) => {
+  const { load } = props;
+  const maxY = findYLimit(props);
+  const plotY = calcY(props);
+  const positions = load
+    ? [maxY, maxY / 4, maxY / 2, maxY * 3 / 4, 0]
+    : [maxY, maxY / 2, 0, -maxY / 2, -maxY];
   return <g id="y_axis_labels">
-    {[maxY, maxY / 2, 0, -maxY / 2, -maxY].map(yPosition =>
-      <g key={"y_axis_label_" + yPosition}>
-        <text x={MAX_X + BORDER_WIDTH / 2} y={-yPosition / maxY * HEIGHT / 2}>
+    {positions.map(yPosition => {
+      const y = plotY(yPosition);
+      return <g key={"y_axis_label_" + yPosition}>
+        <text x={MAX_X + BORDER_WIDTH / 2} y={y}>
           {yPosition}
         </text>
-        <text x={-BORDER_WIDTH / 2} y={-yPosition / maxY * HEIGHT / 2}>
+        <line x1={0} y1={y} x2={MAX_X} y2={y} strokeWidth={0.1} stroke={"grey"} />
+        <text x={-BORDER_WIDTH / 2} y={y}>
           {yPosition}
         </text>
-      </g>)}
+      </g>;
+    })}
   </g>;
 };
 
-const XAxisLabels = () =>
-  <g id="x_axis_labels">
-    <text x={HISTORY_LENGTH_SECONDS / 2} y={HEIGHT / 2 + BORDER_WIDTH / 1.25}
+const XAxisLabels = (props: PlotContentProps) => {
+  const y = props.load ? BORDER_WIDTH / 3 : HEIGHT / 2 + BORDER_WIDTH / 3;
+  return <g id="x_axis_labels">
+    <text x={HISTORY_LENGTH_SECONDS / 2} y={y + 5}
       fontStyle={"italic"}>
       {t("seconds ago")}
     </text>
     {range(0, HISTORY_LENGTH_SECONDS + 1, 20).map(secondsAgo =>
       <text key={"x_axis_label_" + secondsAgo}
-        x={MAX_X - secondsAgo} y={HEIGHT / 2 + BORDER_WIDTH / 3}>
+        x={MAX_X - secondsAgo} y={y}>
         {secondsAgo}
       </text>)}
   </g>;
+};
 
-const PlotBackground = () =>
+const PlotBackground = (props: PlotContentProps) =>
   <g id="plot_background">
-    <rect fill="white" x={0} y={-HEIGHT / 2} width={"100%"} height={"100%"} />
+    <rect fill="none" x={0} y={props.load ? -HEIGHT : -HEIGHT / 2}
+      width={"100%"} height={"100%"} />
     <line x1={0} y1={0} x2={MAX_X} y2={0} strokeWidth={0.25} stroke={"grey"} />
   </g>;
 
-const PlotLines = ({ locationData }: { locationData: BotLocationData }) => {
-  updateArray({ timestamp: moment().unix(), locationData });
-  const paths = getPaths();
+interface PlotContentProps {
+  load?: boolean;
+  encoders?: boolean;
+}
+
+const getKeys = (props: PlotContentProps) => {
+  const positionKeys: LocationName[] = props.encoders
+    ? ["position", "scaled_encoders"]
+    : ["position"];
+  const keys: LocationName[] = props.load ? ["load" as LocationName] : positionKeys;
+  return keys;
+};
+
+export interface MotorPositionPlotProps {
+  locationData: ValidLocationData;
+  load?: boolean;
+  encoders?: boolean;
+  firmwareSettings?: McuParams;
+}
+
+const PlotLines = (props: MotorPositionPlotProps) => {
+  const { load, encoders } = props;
+  const keys = getKeys({ load, encoders });
+  const paths = getPaths(props);
+  const plotY = calcY(props);
   return <g id="plot_lines">
-    {["position", "scaled_encoders"].map((key: LocationName) =>
-      ["x", "y", "z"].map((axis: Xyz) =>
-        <path key={key + axis} fill={"none"}
-          stroke={COLOR_LOOKUP[axis]} strokeWidth={LINEWIDTH_LOOKUP[key]}
-          strokeLinecap={"round"} strokeLinejoin={"round"}
-          d={paths[key][axis]} />))}
+    {keys.map((key: LocationName) =>
+      ["x", "y", "z"].map((axis: Xyz) => {
+        const color = COLOR_LOOKUP[axis];
+        const settingNameLookup: Record<Xyz, McuParamName> = {
+          x: "encoder_missed_steps_max_x",
+          y: "encoder_missed_steps_max_y",
+          z: "encoder_missed_steps_max_z",
+        };
+        const maxSetting = props.firmwareSettings?.[settingNameLookup[axis]];
+        return <g key={key + axis} id={`${axis}-axis`}>
+          {load && maxSetting &&
+            <line x1={0} y1={plotY(maxSetting)} x2={MAX_X} y2={plotY(maxSetting)}
+              strokeDasharray={1} strokeWidth={0.25} stroke={color} />}
+          <path fill={"none"}
+            stroke={color} strokeWidth={LINEWIDTH_LOOKUP[key]}
+            strokeLinecap={"round"} strokeLinejoin={"round"}
+            d={paths[key][axis]} />
+        </g>;
+      }))}
   </g>;
 };
 
-export const MotorPositionPlot = (props: { locationData: BotLocationData }) => {
+export const MotorPositionPlot = (props: MotorPositionPlotProps) => {
+  const svgYMin = props.load ? -HEIGHT : -HEIGHT / 2;
+  const yMin = svgYMin - BORDER_WIDTH;
+  const height = props.load ? HEIGHT + BORDERS : HEIGHT + BORDERS;
+  const { load, encoders } = props;
+  const plotContentProps = { load, encoders };
   return <svg
     className="motor-position-plot-border"
     style={{ marginTop: "2rem", maxHeight: "250px" }}
     width="100%"
     height="100%"
-    viewBox={trim(`${-BORDER_WIDTH} ${-HEIGHT / 2 - BORDER_WIDTH}
-      ${HISTORY_LENGTH_SECONDS + BORDERS} ${HEIGHT + BORDERS}`)}>
-    <TitleLegend />
-    <YAxisLabels />
-    <XAxisLabels />
+    viewBox={trim(`${-BORDER_WIDTH} ${yMin}
+      ${HISTORY_LENGTH_SECONDS + BORDERS} ${height}`)}>
+    <TitleLegend {...plotContentProps} />
+    <YAxisLabels {...plotContentProps} />
+    <XAxisLabels {...plotContentProps} />
     <svg
       className="motor-position-plot"
       width={HISTORY_LENGTH_SECONDS}
       height={HEIGHT}
       x={0}
-      y={-HEIGHT / 2}
-      viewBox={`0 ${-HEIGHT / 2} ${HISTORY_LENGTH_SECONDS} ${HEIGHT}`}>
-      <PlotBackground />
-      <PlotLines locationData={props.locationData} />
+      y={svgYMin}
+      viewBox={`0 ${svgYMin} ${HISTORY_LENGTH_SECONDS} ${HEIGHT}`}>
+      <PlotBackground {...plotContentProps} />
+      <PlotLines {...props} />
     </svg>
   </svg>;
 };

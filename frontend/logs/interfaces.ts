@@ -3,6 +3,10 @@ import { SourceFbosConfig, BotState } from "../devices/interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import { TimeSettings } from "../interfaces";
 
+export interface LogsPanelProps {
+  dispatch: Function;
+}
+
 export interface LogsProps {
   logs: TaggedLog[];
   timeSettings: TimeSettings;
@@ -22,10 +26,13 @@ export interface LogsState extends Filters {
   currentFbosOnly: boolean;
 }
 
-export interface LogsTableProps {
+export interface FilterPopoverProps extends LogsFilterMenuProps {
+  filterActive: boolean;
+}
+
+export interface LogsTableProps extends FilterPopoverProps {
   logs: TaggedLog[];
   dispatch: Function;
-  state: LogsState;
   timeSettings: TimeSettings;
   fbosVersion: string | undefined;
 }

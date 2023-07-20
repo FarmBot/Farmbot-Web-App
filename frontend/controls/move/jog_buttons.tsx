@@ -121,10 +121,12 @@ export class JogButtons
         <tr>
           <td>
             <HomeButton {...commonProps} doFindHome={false}
+              firmwareSettings={this.props.firmwareSettings}
               homeDirection={homeDirection} />
           </td>
           <td style={style(highlight.home)}>
-            <HomeButton {...commonProps} doFindHome={true} />
+            <HomeButton {...commonProps} doFindHome={true}
+              firmwareSettings={this.props.firmwareSettings} />
           </td>
           <td />
           <td style={style(highlight.rightLeft.left)}>

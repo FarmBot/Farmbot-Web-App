@@ -32,8 +32,7 @@ import { auth } from "../__test_support__/fake_state/token";
 import { fakeHelpState } from "../__test_support__/fake_designer_state";
 import { Path } from "../internal_urls";
 import { push } from "../history";
-import { metricPanelState } from "../__test_support__/panel_state";
-import { fakeMovementState } from "../__test_support__/fake_bot_data";
+import { app } from "../__test_support__/fake_state/app";
 
 const FULLY_LOADED: ResourceName[] = [
   "Sequence", "Regimen", "FarmEvent", "Point", "Tool", "Device"];
@@ -50,6 +49,8 @@ const fakeProps = (): AppProps => ({
   xySwap: false,
   animate: false,
   getConfigValue: jest.fn(),
+  sourceFwConfig: jest.fn(),
+  sourceFbosConfig: jest.fn(),
   helpState: fakeHelpState(),
   resources: buildResourceIndex().index,
   alertCount: 0,
@@ -59,25 +60,12 @@ const fakeProps = (): AppProps => ({
   apiFirmwareValue: undefined,
   authAud: undefined,
   wizardStepResults: [],
-  toastMessages: {},
-  controlsPopupOpen: false,
   telemetry: [],
-  metricPanelState: metricPanelState(),
-  movementState: fakeMovementState(),
-});
-
-describe("<App />: Controls Pop-Up", () => {
-  it("renders controls pop-up", () => {
-    mockPath = Path.mock(Path.plants());
-    const wrapper = mount(<App {...fakeProps()} />);
-    expect(wrapper.html()).toContain("controls-popup");
-  });
-
-  it("doesn't render controls pop-up", () => {
-    mockPath = Path.mock(Path.controls());
-    const wrapper = mount(<App {...fakeProps()} />);
-    expect(wrapper.html()).not.toContain("controls-popup");
-  });
+  appState: app,
+  feeds: [],
+  peripherals: [],
+  sequences: [],
+  menuOpen: undefined,
 });
 
 describe("<App />: Loading", () => {
@@ -165,7 +153,6 @@ describe("<App />: NavBar", () => {
       "Events",
       "Points",
       "Weeds",
-      "Controls",
       "Photos",
       "Tools",
       "Messages",

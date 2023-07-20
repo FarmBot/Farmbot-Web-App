@@ -13,6 +13,8 @@ export const fakeBotLocationData = (): BotLocationData => ({
   position: { x: undefined, y: undefined, z: undefined },
   scaled_encoders: { x: undefined, y: undefined, z: undefined },
   raw_encoders: { x: undefined, y: undefined, z: undefined },
+  load: { x: undefined, y: undefined, z: undefined },
+  axis_states: { x: undefined, y: undefined, z: undefined },
 });
 
 export const fakeMovementState = (): MovementState => ({
