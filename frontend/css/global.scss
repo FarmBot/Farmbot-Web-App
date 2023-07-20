@@ -233,7 +233,7 @@ fieldset {
     .controls-content {
       padding: 1rem;
       padding-bottom: 0;
-      width: 600px;
+      width: 500px;
       max-width: calc(100vw - 3rem);
       overflow-x: hidden;
       max-height: calc(100vh - 10rem);
@@ -1111,6 +1111,7 @@ ul {
     height: 1rem;
     .missed-step-details {
       min-width: 9rem;
+      padding-bottom: 1rem;
       table tr, td {
         padding: unset;
       }
@@ -1215,10 +1216,11 @@ ul {
     .fb-button {
       width: 100%;
       float: none;
+      margin-bottom: 0.25rem;
     }
     a {
       display: block;
-      padding: 1rem 0.5rem 0 0.5rem;
+      padding: 1rem 0.5rem 0.75rem 0.5rem;
       text-decoration: none !important;
       font-size: 1.2rem;
       .fa-external-link {

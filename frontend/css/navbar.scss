@@ -37,6 +37,7 @@ nav {
   margin-right: 0.75rem;
   margin-left: 0.5rem;
   line-height: 0;
+  &.hover,
   &:hover {
     background: $medium_gray;
   }
@@ -184,6 +185,7 @@ nav {
     color: $white;
     margin-right: 0.75rem;
     margin-left: 0.5rem;
+    &.hover,
     &:hover {
       background: $medium_gray;
     }

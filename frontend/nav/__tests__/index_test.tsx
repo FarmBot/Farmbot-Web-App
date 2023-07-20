@@ -4,6 +4,11 @@ jest.mock("../../devices/timezones/guess_timezone", () => ({
 
 jest.mock("../../api/crud", () => ({ refresh: jest.fn() }));
 
+jest.mock("../../devices/actions", () => ({
+  sync: jest.fn(),
+  readStatus: jest.fn(),
+}));
+
 import React from "react";
 import { shallow, mount } from "enzyme";
 import { NavBar } from "../index";
@@ -26,6 +31,7 @@ import {
 } from "../../__test_support__/fake_state/resources";
 import { app } from "../../__test_support__/fake_state/app";
 import { Actions } from "../../constants";
+import { cloneDeep } from "lodash";
 
 describe("<NavBar />", () => {
   const fakeProps = (): NavBarProps => ({
@@ -44,7 +50,7 @@ describe("<NavBar />", () => {
     authAud: undefined,
     wizardStepResults: [],
     telemetry: [],
-    appState: app,
+    appState: cloneDeep(app),
     sourceFwConfig: jest.fn(),
     sourceFbosConfig: jest.fn(),
     firmwareConfig: fakeFirmwareConfig().body,
@@ -60,6 +66,16 @@ describe("<NavBar />", () => {
     const wrapper = shallow(<NavBar {...fakeProps()} />);
     expect(wrapper.find("div").first().hasClass("nav-wrapper")).toBeTruthy();
     expect(wrapper.find("div").first().hasClass("red")).toBeFalsy();
+    expect(wrapper.html()).not.toContain("hover");
+  });
+
+  it("shows popups as open", () => {
+    const p = fakeProps();
+    p.appState.popups.connectivity = true;
+    p.appState.popups.jobs = true;
+    p.appState.popups.controls = true;
+    const wrapper = shallow(<NavBar {...p} />);
+    expect(wrapper.html()).toContain("hover");
   });
 
   it("closes nav menu", () => {

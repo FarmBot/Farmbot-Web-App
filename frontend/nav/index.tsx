@@ -68,13 +68,14 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
 
   Coordinates = () => {
     const { hardware } = this.props.bot;
+    const isOpen = this.props.appState.popups.controls;
     return <div className={"nav-popup-button-wrapper"}>
       <Popover position={Position.BOTTOM_RIGHT}
         portalClassName={"controls-popover-portal"}
         popoverClassName={"controls-popover"}
-        isOpen={this.props.appState.popups.controls}
+        isOpen={isOpen}
         enforceFocus={false}
-        target={<p className={"nav-coordinates"}
+        target={<p className={`nav-coordinates ${isOpen ? "hover" : ""}`}
           onClick={this.togglePopup("controls")}
           title={t("FarmBot position (X, Y, Z)")}>
           {botPositionLabel(validBotLocationData(hardware.location_data)
@@ -134,19 +135,21 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
     });
     const { sync_status } = this.props.bot.hardware.informational_settings;
     const click = this.togglePopup("connectivity");
+    const isOpen = this.props.appState.popups.connectivity;
     return <div className={"connection-status-popover nav-popup-button-wrapper"}>
       <ErrorBoundary>
         <Popover position={Position.BOTTOM_RIGHT}
           portalClassName={"connectivity-popover-portal"}
           popoverClassName={"connectivity-popover"}
-          isOpen={this.props.appState.popups.connectivity}
+          isOpen={isOpen}
           enforceFocus={false}
           target={window.innerWidth <= 450
             ? <DiagnosisSaucer {...data.flags}
               onClick={click}
               syncStatus={sync_status}
               className={"nav connectivity-icon"} />
-            : <div className={"connectivity-button"} onClick={click}>
+            : <div className={`connectivity-button ${isOpen ? "hover" : ""}`}
+              onClick={click}>
               <p>{t("Connectivity")}</p>
               <DiagnosisSaucer {...data.flags} className={"nav"}
                 syncStatus={sync_status} />
@@ -191,13 +194,14 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
     const activeText = window.innerWidth > 450 ? jobNameLookup(job) : "";
     const inactiveText = window.innerWidth > 450 ? t("idle") : t("jobs");
     const jobProgress = isPercent ? `${percent}%` : "";
+    const isOpen = this.props.appState.popups.jobs;
     return <div className={"nav-popup-button-wrapper"}>
       <Popover position={Position.BOTTOM_RIGHT}
         portalClassName={"jobs-panel-portal"}
         popoverClassName={"jobs-panel"}
-        isOpen={this.props.appState.popups.jobs}
+        isOpen={isOpen}
         enforceFocus={false}
-        target={<a className={"jobs-button"}
+        target={<a className={`jobs-button ${isOpen ? "hover" : ""}`}
           onClick={this.togglePopup("jobs")}>
           <p className={"title"}>{jobActive ? activeText : inactiveText}</p>
           {jobActive &&
