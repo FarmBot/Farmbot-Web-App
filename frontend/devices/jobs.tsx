@@ -14,7 +14,7 @@ import moment from "moment";
 import { betterCompact, formatTime } from "../util";
 import { Color } from "../ui";
 import { round, sortBy } from "lodash";
-import { Actions, Content } from "../constants";
+import { Actions } from "../constants";
 import { BotState, SourceFbosConfig } from "./interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import { LogsPanel } from "../logs";
@@ -116,19 +116,16 @@ export const JobsTable = (props: JobsTableProps) => {
         <th>{t("Job")}</th>
         {props.more && <th>{t("Type")}</th>}
         {props.more && <th>{t("ext")}</th>}
-        <th>{props.more ? t("Progress") : "%"}</th>
+        <th className={"right-align"}>{props.more ? t("Progress") : "%"}</th>
         <th>{t("Status")}</th>
         {props.more && <th>{t("Time")}</th>}
-        <th><i className={"fa fa-clock-o"} title={t("duration")} /></th>
+        <th className={"right-align"}>
+          <i className={"fa fa-clock-o"} title={t("duration")} />
+        </th>
       </tr>
     </thead>
     <tbody>
       {sortedJobs.active.map(JobRow)}
-      <tr>
-        <td colSpan={props.more ? 7 : 6} className={"job-clear-notice"}>
-          <i>{t(Content.OLD_JOBS_CLEARED)}</i>
-        </td>
-      </tr>
       {sortedJobs.inactive.map(JobRow)}
     </tbody>
   </table>;
@@ -147,7 +144,7 @@ const Job = (props: JobProps) => (job: JobProgressWithTitle) => {
       {props.more ? job.title : jobNameLookup(job)}</td>
     {props.more && <td>{job.type}</td>}
     {props.more && <td>{job.file_type}</td>}
-    <td>
+    <td className={"right-align"}>
       {job.unit == "percent" ? `${round(job[job.unit], 1)}%` : job[job.unit]}
       <div className={"progress"}
         style={percent
@@ -159,7 +156,7 @@ const Job = (props: JobProps) => (job: JobProgressWithTitle) => {
       {job.time
         ? formatTime(moment(job.time), props.timeSettings)
         : ""}</td>}
-    <td>{duration(job)}</td>
+    <td className={"right-align"}>{duration(job)}</td>
   </tr>;
 };
 

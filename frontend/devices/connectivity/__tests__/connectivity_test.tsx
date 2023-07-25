@@ -6,6 +6,11 @@ jest.mock("../../actions", () => ({
   readStatus: jest.fn(),
 }));
 
+let mockDemo = false;
+jest.mock("../../must_be_online", () => ({
+  forceOnline: () => mockDemo,
+}));
+
 import React from "react";
 import { mount } from "enzyme";
 import { Connectivity, ConnectivityProps } from "../connectivity";
@@ -95,6 +100,14 @@ describe("<Connectivity />", () => {
     expect(refresh).toHaveBeenCalledWith(p.device);
     expect(sync).toHaveBeenCalled();
     expect(readStatus).toHaveBeenCalled();
+  });
+
+  it("doesn't refresh device", () => {
+    mockDemo = true;
+    mount(<Connectivity {...fakeProps()} />);
+    expect(refresh).not.toHaveBeenCalled();
+    expect(sync).not.toHaveBeenCalled();
+    expect(readStatus).not.toHaveBeenCalled();
   });
 
   it("displays fbos_version", () => {

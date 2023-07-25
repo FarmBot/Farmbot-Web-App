@@ -13,6 +13,7 @@ import { fakeLog } from "../../__test_support__/fake_state/resources";
 import { TickerListProps } from "../interfaces";
 import { MESSAGE_TYPES } from "../../sequences/interfaces";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
+import { Actions } from "../../constants";
 
 describe("<TickerList />", () => {
   beforeEach(() => { mockDemo = false; });
@@ -25,6 +26,7 @@ describe("<TickerList />", () => {
   };
 
   const fakeProps = (): TickerListProps => ({
+    dispatch: jest.fn(),
     timeSettings: fakeTimeSettings(),
     logs: [fakeTaggedLog(), fakeTaggedLog()],
     toggle: jest.fn(),
@@ -45,6 +47,16 @@ describe("<TickerList />", () => {
     expect(labels.at(0).text()).toContain("Farmbot is up and Running!");
     expect(labels.at(1).text()).toEqual("AUG 2, 7:50PM");
     expectLogOccurrences(wrapper.text(), 1);
+  });
+
+  it("opens logs popup", () => {
+    const p = fakeProps();
+    const wrapper = mount(<TickerList {...p} />);
+    wrapper.find(".ticker-list").simulate("click");
+    expect(p.dispatch).toHaveBeenCalledWith(
+      { type: Actions.TOGGLE_POPUP, payload: "jobs" });
+    expect(p.dispatch).toHaveBeenCalledWith(
+      { type: Actions.SET_JOBS_PANEL_OPTION, payload: "logs" });
   });
 
   it("shows bot offline log message", () => {

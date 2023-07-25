@@ -31,6 +31,8 @@ import { round } from "lodash";
 import { ControlsPanel } from "../controls/controls";
 import { Actions } from "../constants";
 import { PopupsState } from "../interfaces";
+import { Panel, TAB_ICON } from "../farm_designer/panel_header";
+import { movementPercentRemaining } from "../farm_designer/move_to";
 
 export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
   state: NavBarState = {
@@ -69,18 +71,29 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
   Coordinates = () => {
     const { hardware } = this.props.bot;
     const isOpen = this.props.appState.popups.controls;
+    const current = validBotLocationData(hardware.location_data).position;
+    const movementState = this.props.appState.movement;
+    const remaining = movementPercentRemaining(current, movementState);
     return <div className={"nav-popup-button-wrapper"}>
       <Popover position={Position.BOTTOM_RIGHT}
         portalClassName={"controls-popover-portal"}
         popoverClassName={"controls-popover"}
         isOpen={isOpen}
         enforceFocus={false}
-        target={<p className={`nav-coordinates ${isOpen ? "hover" : ""}`}
+        target={<div className={`nav-coordinates ${isOpen ? "hover" : ""}`}
           onClick={this.togglePopup("controls")}
           title={t("FarmBot position (X, Y, Z)")}>
-          {botPositionLabel(validBotLocationData(hardware.location_data)
-            .position, { rounded: true })}
-        </p>}
+          <img
+            src={TAB_ICON[Panel.Controls]} />
+          <p>
+            {botPositionLabel(validBotLocationData(hardware.location_data)
+              .position, { rounded: true })}
+          </p>
+          {remaining && !isNaN(remaining) && hardware.informational_settings.busy
+            ? <div className={"movement-progress"}
+              style={{ width: `${remaining}%` }} />
+            : <></>}
+        </div>}
         content={<ControlsPanel
           dispatch={this.props.dispatch}
           appState={this.props.appState}
@@ -119,10 +132,12 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
         position={Position.BOTTOM_RIGHT}
         isOpen={this.state.accountMenuOpen}
         onClose={this.close("accountMenuOpen")}
-        target={<div className="nav-name" data-title={firstName}
-          onClick={this.toggle("accountMenuOpen")}>
-          {firstName}
-        </div>}
+        target={window.innerWidth <= 450
+          ? <i className={"fa fa-user"} onClick={this.toggle("accountMenuOpen")} />
+          : <div className="nav-name" data-title={firstName}
+            onClick={this.toggle("accountMenuOpen")}>
+            {firstName}
+          </div>}
         content={<AdditionalMenu close={this.close} isStaff={this.isStaff} />} />
     </div>;
   };
@@ -143,17 +158,13 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
           popoverClassName={"connectivity-popover"}
           isOpen={isOpen}
           enforceFocus={false}
-          target={window.innerWidth <= 450
-            ? <DiagnosisSaucer {...data.flags}
-              onClick={click}
-              syncStatus={sync_status}
-              className={"nav connectivity-icon"} />
-            : <div className={`connectivity-button ${isOpen ? "hover" : ""}`}
-              onClick={click}>
-              <p>{t("Connectivity")}</p>
-              <DiagnosisSaucer {...data.flags} className={"nav"}
-                syncStatus={sync_status} />
-            </div>}
+          target={<div className={`connectivity-button ${isOpen ? "hover" : ""}`}
+            onClick={click}>
+            <DiagnosisSaucer {...data.flags}
+              className={"nav"}
+              syncStatus={sync_status} />
+            {window.innerWidth > 450 && <p>{t("Connectivity")}</p>}
+          </div>}
           content={<ErrorBoundary>
             <Connectivity
               bot={this.props.bot}
@@ -203,9 +214,13 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
         enforceFocus={false}
         target={<a className={`jobs-button ${isOpen ? "hover" : ""}`}
           onClick={this.togglePopup("jobs")}>
-          <p className={"title"}>{jobActive ? activeText : inactiveText}</p>
-          {jobActive &&
-            <p className={"jobs-button-progress-text"}>{jobProgress}</p>}
+          <i className={"fa fa-history"} />
+          {window.innerWidth > 450 &&
+            <div className={"nav-job-info"}>
+              <p className={"title"}>{jobActive ? activeText : inactiveText}</p>
+              {jobActive &&
+                <p className={"jobs-button-progress-text"}>{jobProgress}</p>}
+            </div>}
           {jobActive && <div className={"jobs-button-progress-bar"}
             style={{ width: jobProgress }} />}
         </a>}
@@ -239,6 +254,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
 
   TickerList = () =>
     <TickerList
+      dispatch={this.props.dispatch}
       logs={this.props.logs}
       toggle={this.toggle}
       timeSettings={this.props.timeSettings}

@@ -78,6 +78,18 @@ describe("<NavBar />", () => {
     expect(wrapper.html()).toContain("hover");
   });
 
+  it("displays movement progress", () => {
+    const p = fakeProps();
+    p.appState.movement = {
+      start: { x: 0, y: 0, z: 0 },
+      distance: { x: 0, y: 100, z: 0 },
+    };
+    bot.hardware.location_data.position = { x: 0, y: 50, z: 0 };
+    bot.hardware.informational_settings.busy = true;
+    const wrapper = shallow(<NavBar {...p} />);
+    expect(wrapper.html()).toContain("width:50%");
+  });
+
   it("closes nav menu", () => {
     const wrapper = mount<NavBar>(<NavBar {...fakeProps()} />);
     const link = wrapper.find(Link).first();
@@ -201,7 +213,7 @@ describe("<NavBar />", () => {
     const p = fakeProps();
     p.bot.hardware.jobs = { "job title": fakePercentJob() };
     const wrapper = mount(<NavBar {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("99%");
+    expect(wrapper.text().toLowerCase()).not.toContain("99%");
     expect(wrapper.text().toLowerCase()).not.toContain("job title");
   });
 });
