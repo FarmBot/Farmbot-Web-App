@@ -23,6 +23,7 @@ import { FlashFirmwareBtn } from "../../settings/firmware/firmware_hardware_stat
 import { readStatus, restartFirmware, sync } from "../actions";
 import { FbosMetricHistoryTable } from "./fbos_metric_history_table";
 import { Actions } from "../../constants";
+import { forceOnline } from "../must_be_online";
 
 export interface ConnectivityProps {
   bot: BotState;
@@ -49,6 +50,7 @@ export class Connectivity
   };
 
   componentDidMount = () => {
+    if (forceOnline()) { return; }
     this.props.dispatch(refresh(this.props.device));
     this.props.dispatch(sync());
     readStatus();

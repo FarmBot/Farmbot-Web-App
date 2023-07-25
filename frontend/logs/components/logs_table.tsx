@@ -128,7 +128,7 @@ export const LogsTable = (props: LogsTableProps) => {
 const FilterPopover = (props: FilterPopoverProps) => {
   const { filterActive } = props;
   return <div className={"logs-filter-settings-menu-button"}>
-    <Popover position={Position.TOP_RIGHT}
+    <Popover position={Position.BOTTOM_RIGHT}
       target={<i className={"fa fa-filter"}
         style={{
           backgroundColor: filterActive ? "#6a4" : "",

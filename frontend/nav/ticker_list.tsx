@@ -13,6 +13,7 @@ import { t } from "../i18next_wrapper";
 import { TimeSettings } from "../interfaces";
 import { forceOnline } from "../devices/must_be_online";
 import { formatTime } from "../util";
+import { Actions } from "../constants";
 
 /** Get current verbosity filter level for a message type from WebAppConfig. */
 const getFilterLevel = (getConfigValue: GetWebAppConfigValue) =>
@@ -101,7 +102,10 @@ export const TickerList = (props: TickerListProps) => {
   const firstTickerLog =
     getFirstTickerLog(getConfigValue, logs, botOnline, lastSeen);
   return <ErrorBoundary>
-    <div className={"ticker-list"}>
+    <div className={"ticker-list"} onClick={() => {
+      props.dispatch({ type: Actions.TOGGLE_POPUP, payload: "jobs" });
+      props.dispatch({ type: Actions.SET_JOBS_PANEL_OPTION, payload: "logs" });
+    }}>
       <div className="first-ticker">
         <TickerLog log={firstTickerLog} timeSettings={timeSettings}
           prefix={!botOnline && firstTickerLog.body.created_at

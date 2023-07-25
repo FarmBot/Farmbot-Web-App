@@ -178,7 +178,11 @@ export const appReducer =
         return s;
       })
     .add<keyof PopupsState>(Actions.TOGGLE_POPUP, (s, { payload }) => {
-      s.popups[payload] = !s.popups[payload];
+      const newState = !s.popups[payload];
+      s.popups.controls = false;
+      s.popups.jobs = false;
+      s.popups.connectivity = false;
+      s.popups[payload] = newState;
       return s;
     })
     .add<keyof PopupsState>(Actions.OPEN_POPUP, (s, { payload }) => {

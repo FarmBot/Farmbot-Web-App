@@ -1276,9 +1276,6 @@ export namespace Content {
   export const FEATURED_SEQUENCES =
     trim(`Featured shared sequences published by FarmBot Inc.`);
 
-  export const OLD_JOBS_CLEARED =
-    trim(`Completed jobs older than five minutes may be cleared upon refresh`);
-
   export const UNSUPPORTED_BROWSER =
     trim(`Your web browser may not work properly with the FarmBot Web App.
     If you experience any issues, try using a recent version of Chrome,

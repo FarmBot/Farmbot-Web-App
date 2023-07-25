@@ -150,8 +150,7 @@ fieldset {
 .diagnosis-indicator {
   &.nav {
     display: inline-block;
-    top: 0.5rem;
-    margin-left: 1rem;
+    border-color: transparent;
   }
   text-align: center !important;
   i {
@@ -933,10 +932,26 @@ hr {
 
 .e-stop-btn {
   float: right;
-  margin-top: 1rem;
+  margin-top: 1.5rem;
+  margin-left: 0.5rem;
   border-radius: 1rem;
   .e-stop {
-    margin: 1rem;
+    margin: 0;
+    box-shadow: none !important;
+    &.pseudo-disabled {
+      box-shadow: none !important;
+    }
+    height: 2.9rem;
+    font-size: 1.1rem !important;
+    &:hover {
+      &.red {
+        color: $white;
+      }
+      &.yellow {
+        color: $black;
+      }
+      box-shadow: 0 0 10px $translucent5, 0 0 5px inset rgba(255, 255, 255, 0.2) !important;
+    }
   }
 }
 
@@ -1265,6 +1280,10 @@ ul {
 }
 
 .fbos-metric-history-plot-border {
+  margin: 1rem;
+  width: calc(100% - 2rem) !important;
+  border-radius: 5px;
+  box-shadow: 0 0 10px $light_gray;
   animation: adjust-width 0.01s linear forwards;
   text {
     font-size: 0.6rem;
@@ -1841,6 +1860,9 @@ ul {
   }
   button {
     float: none;
+  }
+  thead {
+    width: 100%;
   }
   thead,
   th {

@@ -67,6 +67,7 @@ export interface TickerListProps {
   getConfigValue: GetWebAppConfigValue;
   botOnline: boolean;
   lastSeen: number;
+  dispatch: Function;
 }
 
 export interface NavLinksProps {
