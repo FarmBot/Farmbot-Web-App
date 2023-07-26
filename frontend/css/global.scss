@@ -2994,4 +2994,7 @@ textarea:focus {
   margin: 9px 0px 0px 9px;
   float: right;
   box-sizing: inherit;
+  .fa-pencil {
+    color: $white;
+  }
 }
