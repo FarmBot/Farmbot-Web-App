@@ -99,18 +99,17 @@ import {
 } from "../farm_designer/map/tool_graphics/all_tools";
 import { WaterFlowRateInput } from "../tools/edit_tool";
 import { RPI_OPTIONS } from "../settings/fbos_settings/rpi_model";
-import { User } from "farmbot/dist/resources/api_resources";
 
 export const Language = (props: WizardStepComponentProps) => {
   const user = getUserAccountSettings(props.resources);
   return <BlurableInput
     type="text"
     name="language"
-    value={user.body["language" as keyof User] || ""}
+    value={user.body.language || ""}
     onCommit={e => {
       props.dispatch(edit(
         user,
-        { ["language" as keyof User]: e.currentTarget.value }));
+        { language: e.currentTarget.value }));
       props.dispatch(save(user.uuid));
     }} />;
 };

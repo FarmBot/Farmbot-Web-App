@@ -48,6 +48,13 @@ describe("getUserLang", () => {
     expect(result).toEqual("en");
   });
 
+  it("defaults to `en`", async () => {
+    const result = await getUserLang();
+    expect(axios.get).toHaveBeenCalled();
+    expect(axios.get).toHaveBeenCalledWith(generateUrl("en_us", "", ""));
+    expect(result).toEqual("en");
+  });
+
   it("defaults to `en` when failure occurs", async () => {
     mockGet = Promise.reject("Simulated failure");
     const BAD_LANG_CODE = "ab_CD"; // Intentionally non-existent lang code.

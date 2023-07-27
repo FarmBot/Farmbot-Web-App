@@ -67,7 +67,7 @@ describe("retrievePrompt()", () => {
       kind: "lua",
       args: { lua: "return" },
       body: [
-        { kind: "pair", args: { label: "prompt", value: "write code" } } as never,
+        { kind: "pair", args: { label: "prompt", value: "write code" } },
       ]
     });
     expect(result).toEqual("write code");

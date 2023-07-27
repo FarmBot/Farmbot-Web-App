@@ -86,6 +86,7 @@ const tr1: TaggedResource = {
     "id": 152,
     "name": "FarmBot 1",
     "email": "farmbot1@farmbot.io",
+    "language": "English",
     "created_at": "2017-09-03T20:01:40.336Z",
     "updated_at": "2017-09-27T14:00:47.326Z",
   },

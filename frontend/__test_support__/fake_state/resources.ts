@@ -36,7 +36,6 @@ import {
 } from "farmbot/dist/resources/api_resources";
 import { MessageType } from "../../sequences/interfaces";
 import { TaggedPointGroup } from "../../resources/interfaces";
-import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 
 export const resources: Everything["resources"] = buildResourceIndex();
 let idCounter = 1;
@@ -134,6 +133,7 @@ export function fakeUser(): TaggedUser {
     id: idCounter++,
     name: "Fake User 123",
     email: "fake@fake.com",
+    language: "English",
     created_at: "---",
     updated_at: "---"
   });
@@ -376,7 +376,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     xy_swap: false,
     home_button_homing: false,
     show_motor_plot: false,
-    ["show_missed_step_plot" as BooleanConfigKey]: false,
+    show_missed_step_plot: false,
     show_historic_points: false,
     time_format_24_hour: false,
     time_format_seconds: false,
