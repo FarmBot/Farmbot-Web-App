@@ -152,7 +152,7 @@ const Job = (props: JobProps) => (job: JobProgressWithTitle) => {
           : {}} />
     </td>
     <td>{job.status}</td>
-    {props.more && <td title={`${job.time} (${moment(job.time)})`}>
+    {props.more && <td title={`${job.time} (${moment(job.time).toString()})`}>
       {job.time
         ? formatTime(moment(job.time), props.timeSettings)
         : ""}</td>}

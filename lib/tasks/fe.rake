@@ -17,11 +17,6 @@ EXCLUDE = [
     reason: "@blueprintjs/popover2",
     version: "1.14.11 (error)",
   },
-  {
-    packages: ["typescript"],
-    reason: "typescript",
-    version: "5.1.3 (crash)",
-  },
 ]
 
 # Load package.json as JSON.

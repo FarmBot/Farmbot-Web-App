@@ -12,6 +12,6 @@ export interface SafeError {
 
 /** Prevents hard-to-find NPEs and type errors inside of interceptors. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function isSafeError(x: SafeError | any): x is SafeError {
+export function isSafeError(x: any): x is SafeError {
   return typeof x?.response?.status === "number";
 }

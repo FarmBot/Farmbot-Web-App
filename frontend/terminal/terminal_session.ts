@@ -3,7 +3,7 @@ import { connect, MqttClient } from "mqtt";
 import { Terminal } from "xterm";
 
 type TerminalLike = Pick<Terminal, "write" | "onKey">;
-type KeysWeNeed = "publish" | "on" | "once" | "publish" | "subscribe";
+type KeysWeNeed = "publish" | "on" | "once" | "subscribe";
 
 const CR = "\r";
 const DELETE = String.fromCharCode(127);
