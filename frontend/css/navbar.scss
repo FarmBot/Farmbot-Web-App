@@ -295,10 +295,10 @@ nav {
 
 .menu-popover {
   display: inline;
-  .bp4-popover-wrapper {
+  .bp5-popover-wrapper {
     margin-left: 1.25rem;
   }
-  .bp4-popover-content {
+  .bp5-popover-content {
     position: relative;
     width: 22rem;
     background: $dark_gray;
@@ -341,7 +341,7 @@ nav {
       }
     }
   }
-  .bp4-popover-arrow {
+  .bp5-popover-arrow {
     visibility: hidden;
   }
 }

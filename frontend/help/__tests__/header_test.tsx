@@ -6,7 +6,7 @@ jest.mock("../../history", () => ({
 }));
 
 jest.mock("../../hotkeys", () => ({
-  openHotkeyHelpOverlay: jest.fn(),
+  openHotkeyHelpOverlay: jest.fn(() => jest.fn()),
 }));
 
 import React from "react";

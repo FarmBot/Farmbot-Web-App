@@ -24,10 +24,8 @@ import {
 import { push } from "../history";
 import { sync } from "../devices/actions";
 import { unselectPlant } from "../farm_designer/map/actions";
-import {
-  showHotkeysDialog,
-} from "@blueprintjs/core/lib/esm/components/hotkeys/hotkeysDialog";
 import { save } from "../api/crud";
+import { Actions } from "../constants";
 
 describe("hotkeysWithActions()", () => {
   it("has key bindings", () => {
@@ -74,14 +72,18 @@ describe("hotkeysWithActions()", () => {
 
 describe("openHotkeyHelpOverlay()", () => {
   it("opens overlay", () => {
-    openHotkeyHelpOverlay();
-    expect(showHotkeysDialog).toHaveBeenCalled();
+    const dispatch = jest.fn();
+    openHotkeyHelpOverlay(dispatch)();
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_HOTKEY_GUIDE, payload: undefined,
+    });
   });
 });
 
 describe("<HotKeys />", () => {
   const fakeProps = (): HotKeysProps => ({
     dispatch: jest.fn(),
+    hotkeyGuide: false,
   });
 
   it("renders", () => {

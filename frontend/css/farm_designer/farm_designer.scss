@@ -180,9 +180,9 @@
           color: $medium_dark_red;
         }
       }
-      .bp4-popover-wrapper {
+      .bp5-popover-wrapper {
         position: absolute;
-        .bp4-popover-target {
+        .bp5-popover-target {
           width: 3rem;
         }
       }
@@ -736,13 +736,13 @@
       }
       .sliders {
         height: 98%;
-        .bp4-slider {
+        .bp5-slider {
           height: 100%;
           margin-left: 1rem;
         }
         .input-slider {
           pointer-events: none;
-          .bp4-slider-handle {
+          .bp5-slider-handle {
             left: 3.8px;
             height: 8px;
             width: 9px;
@@ -750,20 +750,20 @@
             box-shadow: none;
             border: 1px solid $dark_gray;
             border-radius: 2px;
-            .bp4-slider-label {
+            .bp5-slider-label {
               margin-left: -6px;
               margin-top: -14px;
             }
           }
         }
         .data-slider {
-          .bp4-start {
+          .bp5-start {
             &:first-of-type {
               display: unset;
             }
             height: 5px;
           }
-          .bp4-slider-label {
+          .bp5-slider-label {
             margin-left: -6rem;
             opacity: 1;
           }
@@ -855,7 +855,7 @@
 .map-plants-submenu,
 .map-settings-submenu,
 .farmbot-layer-submenu {
-  .bp4-popover-wrapper {
+  .bp5-popover-wrapper {
     display: inline;
     margin-left: 0.5rem;
   }
@@ -1023,7 +1023,7 @@
     margin-left: 1rem;
     margin-right: 1rem;
   }
-  .bp4-popover-wrapper {
+  .bp5-popover-wrapper {
     display: inline;
     margin-left: 0.5rem;
   }
@@ -1038,17 +1038,17 @@
   width: 100%;
   margin-bottom: 3rem;
   margin-top: 1rem;
-  .bp4-slider {
+  .bp5-slider {
     margin-left: 3rem;
     margin-top: 1rem;
     width: 80%;
   }
   &.vertical {
-    .bp4-slider {
+    .bp5-slider {
       margin-top: 0;
     }
   }
-  .bp4-slider-label {
+  .bp5-slider-label {
     white-space: nowrap;
     text-align: center;
     &:empty {
@@ -1057,14 +1057,14 @@
   }
   .data-slider {
     pointer-events: none;
-    .bp4-slider-axis,
-    .bp4-slider-track {
+    .bp5-slider-axis,
+    .bp5-slider-track {
       display: none;
     }
-    .bp4-slider-label {
+    .bp5-slider-label {
       box-shadow: none;
     }
-    .bp4-start {
+    .bp5-start {
       &:first-of-type {
         display: none;
       }
@@ -1076,7 +1076,7 @@
       border-radius: 0;
     }
     &.vertical {
-      .bp4-start {
+      .bp5-start {
         top: unset;
         left: 0.53rem;
         height: 0.5px;

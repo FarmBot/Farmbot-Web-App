@@ -2,21 +2,20 @@ import React from "react";
 import { getLinks } from "./nav/nav_links";
 import { sync } from "./devices/actions";
 import { push } from "./history";
-import { HotkeyConfig, useHotkeys } from "@blueprintjs/core";
+import { HotkeyConfig, useHotkeys, HotkeysDialog2 } from "@blueprintjs/core";
 import { unselectPlant } from "./farm_designer/map/actions";
 import { getPanelPath, PANEL_BY_SLUG } from "./farm_designer/panel_header";
-import {
-  showHotkeysDialog,
-} from "@blueprintjs/core/lib/esm/components/hotkeys/hotkeysDialog";
 import { t } from "./i18next_wrapper";
 import { store } from "./redux/store";
 import { save } from "./api/crud";
 import { Path } from "./internal_urls";
+import { Actions } from "./constants";
 
 type HotkeyConfigs = Record<HotKey, HotkeyConfig>;
 
 export interface HotKeysProps {
   dispatch: Function;
+  hotkeyGuide: boolean;
 }
 
 export enum HotKey {
@@ -117,9 +116,8 @@ export const hotkeysWithActions = (dispatch: Function, slug: string) => {
   return list;
 };
 
-export const openHotkeyHelpOverlay = () =>
-  showHotkeysDialog(Object.values(HOTKEY_BASE_MAP())
-    .map(hotkey => ({ ...hotkey, global: true })));
+export const openHotkeyHelpOverlay = (dispatch: Function) => () =>
+  dispatch({ type: Actions.TOGGLE_HOTKEY_GUIDE, payload: undefined });
 
 export const HotKeys = (props: HotKeysProps) => {
   const slug = Path.getSlug(Path.designer()) || "plants";
@@ -129,5 +127,9 @@ export const HotKeys = (props: HotKeysProps) => {
   const { handleKeyDown, handleKeyUp } = useHotkeys(hotkeys,
     { showDialogKeyCombo: undefined });
   return <div className={"hotkeys"}
-    onKeyDown={handleKeyDown} onKeyUp={handleKeyUp} />;
+    onKeyDown={handleKeyDown} onKeyUp={handleKeyUp}>
+    <HotkeysDialog2 globalGroupName={""}
+      onClose={props.dispatch(openHotkeyHelpOverlay)}
+      hotkeys={hotkeys} isOpen={props.hotkeyGuide} />
+  </div>;
 };

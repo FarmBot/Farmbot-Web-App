@@ -29,10 +29,6 @@ jest.mock("../error_boundary", () => ({
   ErrorBoundary: (p: { children: React.ReactChild }) => <div>{p.children}</div>,
 }));
 
-jest.mock("@blueprintjs/core/lib/esm/components/hotkeys/hotkeysDialog", () => ({
-  showHotkeysDialog: jest.fn(),
-}));
-
 jest.mock("../history", () => ({
   push: jest.fn(),
   getPathArray: () => [],

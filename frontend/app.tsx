@@ -174,7 +174,7 @@ export class RawApp extends React.Component<AppProps, {}> {
     }
     return <div className="app">
       {!syncLoaded && <LoadingPlant animate={this.props.animate} />}
-      <HotKeys dispatch={dispatch} />
+      <HotKeys dispatch={dispatch} hotkeyGuide={this.props.appState.hotkeyGuide} />
       {syncLoaded && <NavBar
         timeSettings={this.props.timeSettings}
         user={this.props.user}

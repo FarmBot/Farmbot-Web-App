@@ -4,6 +4,7 @@ import { push } from "../history";
 import { openHotkeyHelpOverlay } from "../hotkeys";
 import { t } from "../i18next_wrapper";
 import { FilePath, Icon, Path } from "../internal_urls";
+import { store } from "../redux/store";
 
 interface Page {
   title: string;
@@ -55,7 +56,7 @@ const maybeAddHotkeysMenuItem = (): [string, Page][] =>
     ? [["hotkeys", {
       title: t("Hotkeys"),
       fa_icon: "keyboard-o",
-      onClick: openHotkeyHelpOverlay,
+      onClick: openHotkeyHelpOverlay(store.dispatch),
     }]]
     : [];
 

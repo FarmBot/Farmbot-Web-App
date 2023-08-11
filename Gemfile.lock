@@ -71,7 +71,7 @@ GEM
       minitest (>= 5.1)
       tzinfo (~> 2.0)
       zeitwerk (~> 2.3)
-    addressable (2.8.4)
+    addressable (2.8.5)
       public_suffix (>= 2.0.2, < 6.0)
     amq-protocol (2.3.2)
     bcrypt (3.1.19)
@@ -201,7 +201,7 @@ GEM
       activerecord
       kaminari-core (= 1.2.2)
     kaminari-core (1.2.2)
-    lograge (0.12.0)
+    lograge (0.13.0)
       actionpack (>= 4)
       activesupport (>= 4)
       railties (>= 4)
@@ -217,7 +217,7 @@ GEM
     marcel (1.0.2)
     memoist (0.16.2)
     method_source (1.0.0)
-    mini_mime (1.1.2)
+    mini_mime (1.1.5)
     minitest (5.19.0)
     multi_json (1.15.0)
     multipart-post (2.3.0)
@@ -254,7 +254,7 @@ GEM
       hashie (~> 4.1)
       multi_json (~> 1.15)
     racc (1.7.1)
-    rack (2.2.7)
+    rack (2.2.8)
     rack-attack (6.7.0)
       rack (>= 1.0, < 4)
     rack-cors (2.0.1)
@@ -276,7 +276,7 @@ GEM
       bundler (>= 1.15.0)
       railties (= 6.1.7.4)
       sprockets-rails (>= 2.0.0)
-    rails-dom-testing (2.1.1)
+    rails-dom-testing (2.2.0)
       activesupport (>= 5.0.0)
       minitest
       nokogiri (>= 1.6)
@@ -307,7 +307,7 @@ GEM
       actionpack (>= 5.2)
       railties (>= 5.2)
     retriable (3.1.2)
-    rexml (3.2.5)
+    rexml (3.2.6)
     rollbar (3.4.0)
     rspec (3.12.0)
       rspec-core (~> 3.12.0)
@@ -383,7 +383,7 @@ GEM
     websocket-driver (0.7.6)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
-    zeitwerk (2.6.9)
+    zeitwerk (2.6.11)
 
 PLATFORMS
   x86_64-linux
@@ -434,4 +434,4 @@ RUBY VERSION
    ruby 3.0.6p216
 
 BUNDLED WITH
-   2.4.17
+   2.4.18

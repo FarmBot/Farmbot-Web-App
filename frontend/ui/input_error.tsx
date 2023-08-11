@@ -12,7 +12,6 @@ export const InputError = (props: InputErrorProps) =>
       minimal={true}
       usePortal={false}
       position={Position.TOP_LEFT}
-      modifiers={{ offset: { offset: "[0, 20]" } }}
       interactionKind={PopoverInteractionKind.HOVER}
       className="input-error-wrapper"
       target={<i className="fa fa-exclamation-circle input-error" />}

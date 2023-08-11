@@ -3,7 +3,7 @@
   margin-top: 1rem;
 }
 
-.bp4-overlay {
+.bp5-overlay {
   .image-flipper {
     z-index: 20;
     margin: auto;
@@ -128,7 +128,7 @@
     font-weight: bold;
     font-size: 1.3rem;
   }
-  .bp4-popover-wrapper {
+  .bp5-popover-wrapper {
     display: inline;
   }
   i {
@@ -150,7 +150,7 @@
 }
 
 .image-show-menu-popover {
-  .bp4-popover-content {
+  .bp5-popover-content {
     padding: 0;
   }
 }
@@ -310,7 +310,7 @@
       }
     }
   }
-  .bp4-slider {
+  .bp5-slider {
     margin-left: 2rem;
     width: 90%;
   }
@@ -358,7 +358,7 @@
     .fb-button.green {
       margin-top: 1rem;
     }
-    .bp4-slider {
+    .bp5-slider {
       width: 95%;
       margin-left: 1rem;
     }
@@ -368,7 +368,7 @@
     font-size: 1.2rem;
     font-style: italic;
   }
-  .bp4-popover-wrapper {
+  .bp5-popover-wrapper {
     display: inline;
     margin-left: 0.5rem;
     &.input-error-wrapper {
@@ -376,7 +376,7 @@
     }
   }
   .filter-search {
-    .bp4-popover-wrapper {
+    .bp5-popover-wrapper {
       display: inline-block;
       margin-left: 0;
     }
@@ -414,7 +414,7 @@
     float: left;
     margin-right: 1rem;
   }
-  .bp4-popover-wrapper {
+  .bp5-popover-wrapper {
     display: inline;
     margin: 0.5rem;
   }
