@@ -1,50 +1,52 @@
 module.exports = {
-  "testEnvironment": "jsdom",
-  "clearMocks": true,
-  "logHeapUsage": true,
-  "globals": {
-    "globalConfig": {
-      "NODE_ENV": "development",
-      "TOS_URL": "https://farm.bot/tos/",
-      "PRIV_URL": "https://farm.bot/privacy/",
-      "LONG_REVISION": "------------",
-      "SHORT_REVISION": "--------"
-    }
+  testEnvironment: "jsdom",
+  clearMocks: true,
+  logHeapUsage: true,
+  globals: {
+    globalConfig: {
+      NODE_ENV: "development",
+      TOS_URL: "https://farm.bot/tos/",
+      PRIV_URL: "https://farm.bot/privacy/",
+      LONG_REVISION: "------------",
+      SHORT_REVISION: "--------"
+    },
+    TextEncoder: require('util').TextEncoder,
+    TextDecoder: require('util').TextDecoder,
   },
-  "setupFiles": [
-    "./frontend/__test_support__/setup_enzyme.js",
+  setupFiles: [
+    "./frontend/__test_support__/setup_enzyme.ts",
     "./frontend/__test_support__/localstorage.js",
     "./frontend/__test_support__/mock_fbtoaster.ts",
     "./frontend/__test_support__/mock_i18next.ts",
     "./frontend/__test_support__/additional_mocks.tsx"
   ],
-  "transform": {
+  transform: {
     ".(ts|tsx)": "ts-jest"
   },
-  "testRegex": "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
-  "moduleFileExtensions": [
+  testRegex: "(/__tests__/.*|\\.(test|spec))\\.(ts|tsx|js)$",
+  moduleFileExtensions: [
     "ts",
     "tsx",
     "js"
   ],
-  "moduleNameMapper": {
+  moduleNameMapper: {
     "^axios": require.resolve("axios"),
   },
-  "collectCoverage": true,
-  "collectCoverageFrom": [
+  collectCoverage: true,
+  collectCoverageFrom: [
     "frontend/**/*.{ts,tsx}"
   ],
-  "reporters": [
+  reporters: [
     "default",
     "jest-skipped-reporter"
   ],
-  "coverageReporters": [
+  coverageReporters: [
     "html",
     "json",
     "lcov"
   ],
-  "coverageDirectory": "<rootDir>/coverage_fe",
-  "setupFilesAfterEnv": [
+  coverageDirectory: "<rootDir>/coverage_fe",
+  setupFilesAfterEnv: [
     "<rootDir>/frontend/__test_support__/customMatchers.js"
   ]
 }
