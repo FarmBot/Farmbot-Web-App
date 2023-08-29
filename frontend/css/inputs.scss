@@ -101,6 +101,9 @@ select {
     width: 100%;
     color: $dark_gray;
   }
+  .bp5-popover-target {
+    position: relative;
+  }
   i {
     position: absolute;
     right: 1rem;

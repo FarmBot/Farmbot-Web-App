@@ -13,7 +13,7 @@ import { maybeGetTimeSettings } from "../resources/selectors";
 import moment from "moment";
 import { betterCompact, formatTime } from "../util";
 import { Color } from "../ui";
-import { round, sortBy } from "lodash";
+import { cloneDeep, round, sortBy } from "lodash";
 import { Actions } from "../constants";
 import { BotState, SourceFbosConfig } from "./interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
@@ -185,8 +185,9 @@ export const jobNameLookup = (job: JobProgressWithTitle | undefined) => {
 };
 
 export const addTitleToJobProgress = ([title, job]: [string, JobProgress]) => {
-  (job as JobProgressWithTitle).title = title;
-  return (job as JobProgressWithTitle);
+  const jobWithTitle = cloneDeep(job) as JobProgressWithTitle;
+  jobWithTitle.title = title;
+  return jobWithTitle;
 };
 
 export const sortJobs =

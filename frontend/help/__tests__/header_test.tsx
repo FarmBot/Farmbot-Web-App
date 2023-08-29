@@ -6,14 +6,14 @@ jest.mock("../../history", () => ({
 }));
 
 jest.mock("../../hotkeys", () => ({
-  openHotkeyHelpOverlay: jest.fn(() => jest.fn()),
+  toggleHotkeyHelpOverlay: jest.fn(() => jest.fn()),
 }));
 
 import React from "react";
 import { mount } from "enzyme";
 import { HelpHeader } from "../header";
 import { push } from "../../history";
-import { openHotkeyHelpOverlay } from "../../hotkeys";
+import { toggleHotkeyHelpOverlay } from "../../hotkeys";
 
 describe("<HelpHeader />", () => {
   beforeEach(() => {
@@ -65,6 +65,6 @@ describe("<HelpHeader />", () => {
     wrapper.find(".help-panel-header").simulate("click");
     wrapper.find("a").last().simulate("click");
     expect(push).not.toHaveBeenCalled();
-    expect(openHotkeyHelpOverlay).toHaveBeenCalled();
+    expect(toggleHotkeyHelpOverlay).toHaveBeenCalled();
   });
 });

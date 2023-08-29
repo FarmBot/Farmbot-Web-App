@@ -55,7 +55,7 @@ const HOTKEY_BASE_MAP = (): HotkeyConfigs => ({
     label: t("Add Event"),
   },
   [HotKey.backToPlantOverview]: {
-    combo: "esc",
+    combo: "escape",
     label: t("Back to plant overview"),
   },
   [HotKey.openGuide]: {
@@ -116,7 +116,7 @@ export const hotkeysWithActions = (dispatch: Function, slug: string) => {
   return list;
 };
 
-export const openHotkeyHelpOverlay = (dispatch: Function) => () =>
+export const toggleHotkeyHelpOverlay = (dispatch: Function) => () =>
   dispatch({ type: Actions.TOGGLE_HOTKEY_GUIDE, payload: undefined });
 
 export const HotKeys = (props: HotKeysProps) => {
@@ -129,7 +129,7 @@ export const HotKeys = (props: HotKeysProps) => {
   return <div className={"hotkeys"}
     onKeyDown={handleKeyDown} onKeyUp={handleKeyUp}>
     <HotkeysDialog2 globalGroupName={""}
-      onClose={props.dispatch(openHotkeyHelpOverlay)}
+      onClose={props.dispatch(toggleHotkeyHelpOverlay)}
       hotkeys={hotkeys} isOpen={props.hotkeyGuide} />
   </div>;
 };

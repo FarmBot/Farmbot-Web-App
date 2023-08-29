@@ -19,6 +19,8 @@ window.location = {
   hostname: "", origin: "", port: "", protocol: "", host: "",
 };
 
+console.error = jest.fn(); // enzyme
+
 window.alert = jest.fn();
 
 window.TextDecoder = jest.fn(() => ({

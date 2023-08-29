@@ -19,7 +19,7 @@ jest.mock("../api/crud", () => ({ save: jest.fn() }));
 import React from "react";
 import { shallow } from "enzyme";
 import {
-  HotKey, HotKeys, HotKeysProps, hotkeysWithActions, openHotkeyHelpOverlay,
+  HotKey, HotKeys, HotKeysProps, hotkeysWithActions, toggleHotkeyHelpOverlay,
 } from "../hotkeys";
 import { push } from "../history";
 import { sync } from "../devices/actions";
@@ -70,10 +70,10 @@ describe("hotkeysWithActions()", () => {
   });
 });
 
-describe("openHotkeyHelpOverlay()", () => {
+describe("toggleHotkeyHelpOverlay()", () => {
   it("opens overlay", () => {
     const dispatch = jest.fn();
-    openHotkeyHelpOverlay(dispatch)();
+    toggleHotkeyHelpOverlay(dispatch)();
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_HOTKEY_GUIDE, payload: undefined,
     });
