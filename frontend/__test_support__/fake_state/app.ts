@@ -27,4 +27,5 @@ export const app: AppState = {
   controls: controlsState(),
   jobs: jobsState(),
   popups: popUpsState(),
+  hotkeyGuide: false,
 };

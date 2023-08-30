@@ -36,7 +36,6 @@ import { FBSelect, ToggleButton } from "../../../ui";
 import { clickButton } from "../../../__test_support__/helpers";
 import { requestAccountExport } from "../request_account_export";
 import { changeEvent } from "../../../__test_support__/fake_html_events";
-import { User } from "farmbot/dist/resources/api_resources";
 
 describe("<AccountSettings />", () => {
   const fakeProps = (): AccountSettingsProps => ({
@@ -71,7 +70,7 @@ describe("<AccountSettings />", () => {
 
   it("changes language", () => {
     const p = fakeProps();
-    p.user.body["language" as keyof User] = "" as never;
+    p.user.body.language = "";
     const wrapper = shallow(<AccountSettings {...p} />);
     wrapper.find("BlurableInput").at(2).simulate("commit", {
       currentTarget: { value: "new language" }

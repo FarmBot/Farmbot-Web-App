@@ -28,7 +28,7 @@ describe("<ErrorBoundary/>", () => {
     const i = el.instance();
     expect(i.state.hasError).toBe(true);
     expect(catchErrors).toHaveBeenCalled();
-    expect(console.error).toHaveBeenCalledTimes(2);
+    expect(console.error).toHaveBeenCalled();
     expect(console.error).toHaveBeenCalledWith(expect.stringContaining("Kaboom"));
   });
 });

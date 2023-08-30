@@ -6,7 +6,7 @@ import { Panel, TAB_COLOR, PanelColor } from "./panel_header";
 import { t } from "../i18next_wrapper";
 import { ErrorBoundary } from "../error_boundary";
 import { maybeBeacon } from "../help/tours";
-import { Color, SpecialStatus } from "farmbot";
+import { SpecialStatus } from "farmbot";
 
 interface DesignerPanelProps {
   panelName: string;
@@ -48,7 +48,7 @@ interface DesignerPanelHeaderProps {
   onSave?: () => void;
   style?: React.CSSProperties;
   children?: React.ReactNode;
-  colorClass?: Color | string;
+  colorClass?: string;
 }
 
 const backToText = (to: string | undefined): string => {

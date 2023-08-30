@@ -25,17 +25,7 @@ export const initialState = (): BotState => ({
   hardware: {
     gpio_registry: {},
     mcu_params: {},
-    jobs: {
-      job: {
-        status: "working",
-        unit: "percent",
-        percent: 50,
-        type: "ota",
-        file_type: ".fw",
-        time: "2017-09-03T20:01:40.336Z",
-        updated_at: 0,
-      }
-    },
+    jobs: {},
     location_data: {
       "position": {
         x: undefined,

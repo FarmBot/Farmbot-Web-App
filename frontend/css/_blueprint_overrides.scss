@@ -1,44 +1,44 @@
 // Padding for the popups.
-.bp4-popover-content {
+.bp5-popover-content {
   z-index: 999;
   padding: 1rem;
 }
 
-.bp4-popover {
+.bp5-popover {
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-  .bp4-popover-content {
+  .bp5-popover-content {
     border-radius: 5px;
   }
-  .bp4-popover-arrow {
+  .bp5-popover-arrow {
     display: none !important;
   }
 }
 
 // Arrow is slightly off by default in the popup menu.
-.bp4-tether-element-attached-left.bp4-tether-target-attached-right>.bp4-popover>.bp4-popover-arrow {
+.bp5-tether-element-attached-left.bp5-tether-target-attached-right>.bp5-popover>.bp5-popover-arrow {
   left: -1rem;
 }
 
-.bp4-overlay-content.bp4-tether-abutted.bp4-tether-abutted-top.bp4-tether-element.bp4-tether-element-attached-left.bp4-tether-element-attached-top.bp4-tether-enabled.bp4-tether-target-attached-bottom.bp4-tether-target-attached-left.bp4-transition-container {
+.bp5-overlay-content.bp5-tether-abutted.bp5-tether-abutted-top.bp5-tether-element.bp5-tether-element-attached-left.bp5-tether-element-attached-top.bp5-tether-enabled.bp5-tether-target-attached-bottom.bp5-tether-target-attached-left.bp5-transition-container {
   top: 2rem !important;
 }
 
-.bp4-portal {
+.bp5-portal {
   z-index: 99;
 }
 
-.bp4-menu {
+.bp5-menu {
   max-height: 20rem !important;
   overflow-y: scroll;
 }
 
-.bp4-input-group {
-  .bp4-icon {
+.bp5-input-group {
+  .bp5-icon {
     top: 0.6rem;
   }
 }
 
-.bp4-button:not(.bp4-minimal) {
+.bp5-button:not(.bp5-minimal) {
   font-weight: normal;
   text-transform: none;
   background: $white;
@@ -63,7 +63,7 @@
   }
 }
 
-.bp4-popover-wrapper {
+.bp5-popover-wrapper {
   display: block;
   position: relative;
   * {
@@ -71,14 +71,14 @@
   }
 }
 
-.bp4-icon-standard.bp4-align-right {
+.bp5-icon-standard.bp5-align-right {
   float: right !important;
   margin-top: 0.6rem !important;
   margin-left: 0 !important;
   font-size: 1.6rem !important;
 }
 
-.nav-right .bp4-popover-wrapper {
+.nav-right .bp5-popover-wrapper {
   transition: all 0.2s ease;
   text-transform: uppercase;
   color: $gray;
@@ -94,18 +94,18 @@
   }
 }
 
-.bp4-collapse {
+.bp5-collapse {
   scrollbar-width: none;
 }
 
-.bp4-collapse::-webkit-scrollbar,
-.bp4-collapse-body::-webkit-scrollbar {
+.bp5-collapse::-webkit-scrollbar,
+.bp5-collapse-body::-webkit-scrollbar {
   display: none !important;
   width: 0px !important;
   background-color: transparent !important;
 }
 
-*[class*=bp4-] {
+*[class*=bp5-] {
   &:focus {
     outline: none;
   }

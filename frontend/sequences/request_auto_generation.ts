@@ -1,6 +1,6 @@
 import { API } from "../api";
 import { toastErrors } from "../toast_errors";
-import { Pair, SequenceBodyItem } from "farmbot";
+import { SequenceBodyItem } from "farmbot";
 import { first, noop } from "lodash";
 import { store } from "../redux/store";
 
@@ -102,7 +102,7 @@ export const PLACEHOLDER_PROMPTS = [
 
 export const retrievePrompt = (step: SequenceBodyItem): string => {
   if (step.kind != "lua") { return ""; }
-  const body = (step.body || []) as Pair[];
+  const body = step.body || [];
   const promptPair = first(body.filter(x =>
     x.kind == "pair" && x.args.label == "prompt"));
   return promptPair ? "" + promptPair.args.value : "";

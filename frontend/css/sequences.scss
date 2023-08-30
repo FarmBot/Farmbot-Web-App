@@ -14,7 +14,7 @@
   }
   padding: 3rem 1.5rem 8rem;
   overflow: hidden;
-  .bp4-popover-target .saucer {
+  .bp5-popover-target .saucer {
     float: left;
   }
   @media screen and (max-width: 767px) {
@@ -170,10 +170,10 @@
       label {
         cursor: pointer;
       }
-      .bp4-popover-wrapper {
+      .bp5-popover-wrapper {
         display: inline;
       }
-      .bp4-button-text,
+      .bp5-button-text,
       p {
         display: inline-block;
         width: max-content;
@@ -207,10 +207,10 @@
           line-height: 2.25rem;
           color: $white;
         }
-        .bp4-button {
+        .bp5-button {
           padding-left: 0.5rem;
         }
-        .bp4-button-text {
+        .bp5-button-text {
           margin-left: 0;
           padding-left: 0;
           line-height: 1.5rem;
@@ -509,7 +509,7 @@
         font-size: 1.5rem;
       }
     }
-    .bp4-popover-wrapper {
+    .bp5-popover-wrapper {
       position: absolute;
       top: 0;
       right: 4rem;
@@ -517,7 +517,7 @@
         position: relative;
         right: unset;
       }
-      .bp4-popover-content {
+      .bp5-popover-content {
         background: $off_white;
         height: 100%;
         align-content: center;
@@ -630,7 +630,7 @@
     .row {
       display: flex;
     }
-    .bp4-popover-wrapper {
+    .bp5-popover-wrapper {
       display: inline-block;
       margin-left: 1rem;
     }
@@ -684,7 +684,7 @@
     &.read-only {
       margin-top: 1rem;
       margin-bottom: 1rem;
-      .bp4-control,
+      .bp5-control,
       .filter-search,
       textarea,
       .input,
@@ -942,7 +942,7 @@
     .folder-settings-icon {
       position: absolute;
       right: 0;
-      .bp4-popover-target {
+      .bp5-popover-target {
         i {
           color: $dark_gray;
         }
@@ -1050,10 +1050,10 @@
   }
   .folder-list-item,
   .sequence-list-item {
-    .bp4-popover-wrapper.color-picker {
+    .bp5-popover-wrapper.color-picker {
       position: absolute;
       line-height: 0;
-      .bp4-popover-target {
+      .bp5-popover-target {
         width: 2rem;
         height: 3.5rem;
       }
@@ -1069,7 +1069,7 @@
   }
   .folder-list-item {
     padding-left: 0;
-    .bp4-popover-wrapper.color-picker {
+    .bp5-popover-wrapper.color-picker {
       margin-left: 3rem;
     }
     .color-picker {
@@ -1128,7 +1128,7 @@
 
 .folder-settings-icon,
 .sequence-item-action-menu {
-  .bp4-popover-content {
+  .bp5-popover-content {
     padding: 0.5rem;
   }
 }
@@ -1136,16 +1136,16 @@
 .folder-settings-icon,
 .sequence-item-description,
 .sequence-item-action-menu {
-  .bp4-popover-arrow-fill {
+  .bp5-popover-arrow-fill {
     fill: $dark_gray;
   }
-  .bp4-popover-content {
+  .bp5-popover-content {
     background: $dark_gray;
   }
 }
 
 .sequence-item-description {
-  .bp4-popover-content {
+  .bp5-popover-content {
     max-height: 20rem;
     overflow-y: auto;
     width: 32rem;
@@ -1287,7 +1287,7 @@
     }
   }
   &.last {
-    .bp4-collapse {
+    .bp5-collapse {
       margin-left: 1rem;
       margin-right: 3rem;
     }
@@ -1349,7 +1349,7 @@
     display: inline-block;
     padding-left: 1rem;
   }
-  .bp4-popover-wrapper {
+  .bp5-popover-wrapper {
     display: inline-block;
     margin-left: 1rem;
   }

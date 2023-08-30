@@ -66,7 +66,7 @@ export class RawCreatePoints
     this.state = {};
   }
 
-  attr = <T extends (keyof DrawnPointPayl & keyof CreatePointsState)>(key: T,
+  attr = <T extends (keyof DrawnPointPayl)>(key: T,
     fallback = DEFAULTS[key]): DrawnPointPayl[T] => {
     const p = this.props.drawnPoint;
     const userValue = this.state[key] as DrawnPointPayl[T] | undefined;

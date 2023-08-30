@@ -3,7 +3,7 @@ import {
   ComponentClass,
   Attributes,
 } from "react";
-import { render } from "react-dom";
+import { createRoot } from "react-dom/client";
 import { capitalize } from "lodash";
 import { t } from "../i18next_wrapper";
 import { stopIE } from "./stop_ie";
@@ -35,7 +35,7 @@ export function attachToRoot<P extends {}>(
   const reactElem = createElement<P>(type, props);
   const domElem = document.getElementById("root");
 
-  domElem && render(reactElem, domElem);
+  domElem && createRoot(domElem).render(reactElem);
 }
 
 export function entryPoint(page: ComponentClass | React.FunctionComponent) {

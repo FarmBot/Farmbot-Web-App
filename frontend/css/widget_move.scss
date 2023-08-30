@@ -56,17 +56,17 @@
   margin-top: 15px;
   width: auto;
   border: 0;
-  .bp4-popover-wrapper {
+  .bp5-popover-wrapper {
     line-height: 0;
   }
   .fa-camera {
-    .bp4-popover-wrapper {
+    .bp5-popover-wrapper {
       z-index: 1;
       width: 4rem;
       height: 4rem;
       margin-top: -3rem;
       margin-left: -1rem;
-      .bp4-popover-target {
+      .bp5-popover-target {
         width: 100%;
         height: 100%;
       }
@@ -106,16 +106,16 @@
   label {
     color: $off_white;
   }
-  .bp4-popover-wrapper {
+  .bp5-popover-wrapper {
     display: inline;
     margin-left: 0.5rem;
     color: $off_white;
   }
-  .bp4-popover-content {
+  .bp5-popover-content {
     width: 310px;
     background: $dark_gray;
   }
-  .bp4-popover-arrow-fill {
+  .bp5-popover-arrow-fill {
     fill: $dark_gray;
   }
   .fa-anchor {
@@ -168,7 +168,7 @@
 
 .camera-message,
 .movement-message {
-  .bp4-popover-content {
+  .bp5-popover-content {
     width: unset !important;
   }
 }

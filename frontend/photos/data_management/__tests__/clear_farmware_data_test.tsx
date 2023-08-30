@@ -1,4 +1,4 @@
-let mockDestroyAllPromise: Promise<void | never> =
+let mockDestroyAllPromise: Promise<void> =
   Promise.reject("error").catch(() => { });
 jest.mock("../../../api/crud", () => ({
   destroyAll: jest.fn(() => mockDestroyAllPromise)

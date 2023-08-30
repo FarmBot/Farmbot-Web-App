@@ -675,9 +675,9 @@ CREATE TABLE public.firmware_configs (
     movement_stop_at_max_x integer DEFAULT 1,
     movement_stop_at_max_y integer DEFAULT 1,
     movement_stop_at_max_z integer DEFAULT 1,
-    movement_timeout_x integer DEFAULT 120,
-    movement_timeout_y integer DEFAULT 120,
-    movement_timeout_z integer DEFAULT 120,
+    movement_timeout_x integer DEFAULT 180,
+    movement_timeout_y integer DEFAULT 180,
+    movement_timeout_z integer DEFAULT 180,
     param_config_ok integer DEFAULT 0,
     param_e_stop_on_mov_err integer DEFAULT 0,
     param_mov_nr_retry integer DEFAULT 3,
@@ -3978,6 +3978,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20230616184850'),
 ('20230712201622'),
 ('20230714010144'),
-('20230714173031');
+('20230714173031'),
+('20230808192946');
 
 

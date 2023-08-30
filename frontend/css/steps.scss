@@ -58,7 +58,7 @@
     border-radius: 3px;
   }
   margin-bottom: -1px;
-  .bp4-popover-wrapper {
+  .bp5-popover-wrapper {
     float: right;
     margin-top: 0.35rem;
   }
@@ -206,7 +206,7 @@
   .step-warning {
     font-size: 1.4rem;
     color: $darkest_red;
-    .bp4-popover-wrapper {
+    .bp5-popover-wrapper {
       float: left;
     }
   }
@@ -264,14 +264,14 @@
 }
 
 .step-control-icons i,
-.step-control-icons .bp4-popover-wrapper,
+.step-control-icons .bp5-popover-wrapper,
 .step-control {
   width: 1.2rem;
   margin-top: 0.5rem;
   margin-left: 2rem;
   float: right;
   line-height: 1rem;
-  .bp4-popover-target {
+  .bp5-popover-target {
     display: block;
     margin-top: -0.5rem;
   }
@@ -472,7 +472,7 @@
   .expandable-header {
     font-size: 1.6rem;
   }
-  .bp4-collapse {
+  .bp5-collapse {
     overflow: hidden;
   }
   p {

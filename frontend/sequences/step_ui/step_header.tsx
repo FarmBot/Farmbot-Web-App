@@ -129,7 +129,7 @@ export class StepHeader
                     c.body = [{
                       kind: "pair",
                       args: { label: "prompt", value: aiPrompt },
-                    } as never];
+                    }];
                   },
                 }));
                 localStorage.removeItem(key);
