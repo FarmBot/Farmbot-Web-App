@@ -5,6 +5,8 @@ import { BotFigure } from "./bot_figure";
 import { BotTrail } from "./bot_trail";
 import { BotPeripherals } from "./bot_peripherals";
 import { NegativePositionLabel } from "./negative_position_labels";
+import { demoPos } from "../../../../demo/demo_support_framework/supports";
+import { forceOnline } from "../../../../devices/must_be_online";
 
 export function VirtualFarmBot(props: VirtualFarmBotProps) {
   const {
@@ -19,20 +21,27 @@ export function VirtualFarmBot(props: VirtualFarmBotProps) {
   const showUncroppedArea = !!getConfigValue(
     BooleanSetting.show_uncropped_camera_view_area);
   const cropPhotos = !!getConfigValue(BooleanSetting.crop_images);
+  var pos;
+  if (forceOnline()){
+    pos = demoPos;
+  }else{
+    pos = props.botLocationData.position;
+  }
+
 
   return <g id="virtual-farmbot">
     <NegativePositionLabel
-      position={props.botLocationData.position}
+      position={pos}
       mapTransformProps={mapTransformProps}
       plantAreaOffset={plantAreaOffset} />
     <BotPeripherals
-      position={props.botLocationData.position}
+      position={pos}
       mapTransformProps={mapTransformProps}
       plantAreaOffset={plantAreaOffset}
       peripheralValues={peripheralValues}
       getConfigValue={getConfigValue} />
     <BotFigure figureName={"motor-position"}
-      position={props.botLocationData.position}
+      position={pos}
       mapTransformProps={mapTransformProps}
       plantAreaOffset={plantAreaOffset}
       mountedToolInfo={props.mountedToolInfo}
