@@ -20,6 +20,7 @@ export function directionDisabled(props: DirectionButtonProps): boolean {
   const directionDisableHome = stopAtHome && loc === 0 &&
     (negativeOnly ? jog > 0 : jog < 0);
 
+  // there was problem with the original movement logic
   const directionDisableEnd = stopAtMax && axisLength > 0 &&
     (Math.abs(loc) == axisLength || Math.abs(loc + jog) > axisLength);
   console.log(directionDisableEnd);

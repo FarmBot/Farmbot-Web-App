@@ -22,6 +22,7 @@ export function VirtualFarmBot(props: VirtualFarmBotProps) {
     BooleanSetting.show_uncropped_camera_view_area);
   const cropPhotos = !!getConfigValue(BooleanSetting.crop_images);
   var pos;
+  // replace with local simulation when demo
   if (forceOnline()){
     pos = demoPos;
   }else{
