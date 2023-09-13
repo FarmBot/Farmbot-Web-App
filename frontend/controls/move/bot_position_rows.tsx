@@ -27,11 +27,24 @@ import {
 import { NumberConfigKey } from "farmbot/dist/resources/configs/firmware";
 import { isUndefined } from "lodash";
 import { calculateScale } from "../../settings/hardware_settings";
+import { demoPos } from "../../demo/demo_support_framework/supports";
+import { forceOnline } from "../../devices/must_be_online";
 
 export const BotPositionRows = (props: BotPositionRowsProps) => {
   const { locationData, getConfigValue, arduinoBusy, locked } = props;
   const hardwareDisabled = disabledAxisMap(props.firmwareSettings);
-  const commonAxisActionProps = {
+  var commonAxisActionProps;
+  if(forceOnline()){
+    commonAxisActionProps = {
+      botOnline: props.botOnline,
+      arduinoBusy,
+      locked,
+      dispatch: props.dispatch,
+      botPosition: demoPos,
+      sourceFwConfig: props.sourceFwConfig,
+    };
+  }
+  commonAxisActionProps = {
     botOnline: props.botOnline,
     arduinoBusy,
     locked,
