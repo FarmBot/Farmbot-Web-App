@@ -17,7 +17,7 @@ export function directionDisabled(props: DirectionButtonProps): boolean {
   const { direction } = props;
   const loc = position || 0;
   const jog = calculateDistance(props);
-  const directionDisableHome = stopAtHome && loc === 0 &&
+  const directionDisableHome = stopAtHome && loc == 0 && (Math.abs(loc - jog) < 0) &&
     (negativeOnly ? jog > 0 : jog < 0);
 
   // there was problem with the original movement logic
