@@ -11,7 +11,7 @@ import { forceOnline } from "../../devices/must_be_online";
 import {demoPos} from "../../demo/demo_support_framework/supports";
 
 export function directionDisabled(props: DirectionButtonProps): boolean {
-  var {
+  const {
     stopAtHome, stopAtMax, axisLength, position, isInverted, negativeOnly
   } = props.directionAxisProps;
   const { direction } = props;
@@ -29,7 +29,7 @@ export function directionDisabled(props: DirectionButtonProps): boolean {
     
   // there was problem with the original movement logic
   const directionDisableEnd = stopAtMax && axisLength > 0 &&
-    (Math.abs(loc) == axisLength || Math.abs(loc + jog) > axisLength);
+    Math.abs(loc) === axisLength && Math.abs(loc + jog) > axisLength;
 
 
   switch (direction) {
