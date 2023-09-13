@@ -18,6 +18,7 @@ export const MoveControls = (props: MoveControlsProps) => {
   const locationData = validBotLocationData(location_data);
   const botOnline = isBotOnlineFromState(props.bot);
   const { busy, locked } = props.bot.hardware.informational_settings;
+
   return <div className={"move"}>
     <Popover position={Position.LEFT_TOP} className={"move-settings"}
       target={<i className="fa fa-gear" />}

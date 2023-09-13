@@ -3057,10 +3057,10 @@ CREATE INDEX index_fragments_on_device_id ON public.fragments USING btree (devic
 
 
 --
--- Name: index_fragments_on_owner; Type: INDEX; Schema: public; Owner: -
+-- Name: index_fragments_on_owner_type_and_owner_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_fragments_on_owner ON public.fragments USING btree (owner_type, owner_id);
+CREATE INDEX index_fragments_on_owner_type_and_owner_id ON public.fragments USING btree (owner_type, owner_id);
 
 
 --

@@ -19,7 +19,7 @@ import { maybeSetTimezone } from "../devices/timezones/guess_timezone";
 import { BooleanSetting } from "../session_keys";
 import { ReadOnlyIcon } from "../read_only_mode";
 import { refresh } from "../api/crud";
-import { isBotOnlineFromState } from "../devices/must_be_online";
+import { forceOnline, isBotOnlineFromState } from "../devices/must_be_online";
 import { setupProgressString } from "../wizard/data";
 import { lastSeenNumber } from "../settings/fbos_settings/last_seen_row";
 import { Path } from "../internal_urls";
@@ -33,6 +33,7 @@ import { Actions } from "../constants";
 import { PopupsState } from "../interfaces";
 import { Panel, TAB_ICON } from "../farm_designer/panel_header";
 import { movementPercentRemaining } from "../farm_designer/move_to";
+import {demoPos} from "../demo/demo_support_framework/supports";
 
 export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
   state: NavBarState = {
@@ -71,7 +72,13 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
   Coordinates = () => {
     const { hardware } = this.props.bot;
     const isOpen = this.props.appState.popups.controls;
-    const current = validBotLocationData(hardware.location_data).position;
+    // read from simulated position if in demo
+    var current;
+    if(forceOnline()){
+      current = demoPos;
+    }else{
+      current = validBotLocationData(hardware.location_data).position;
+    }
     const movementState = this.props.appState.movement;
     const remaining = movementPercentRemaining(current, movementState);
     return <div className={"nav-popup-button-wrapper"}>
@@ -86,8 +93,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
           <img
             src={TAB_ICON[Panel.Controls]} />
           <p>
-            {botPositionLabel(validBotLocationData(hardware.location_data)
-              .position, { rounded: true })}
+            {botPositionLabel(current, { rounded: true })}
           </p>
           {remaining && !isNaN(remaining) && hardware.informational_settings.busy
             ? <div className={"movement-progress"}

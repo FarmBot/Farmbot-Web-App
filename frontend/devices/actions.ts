@@ -35,6 +35,7 @@ import { goToFbosSettings } from "../settings/maybe_highlight";
 import { ToastOptions } from "../toast/interfaces";
 import { forceOnline } from "./must_be_online";
 import { store } from "../redux/store";
+import {demoPos} from "../demo/demo_support_framework/supports";
 
 const ON = 1, OFF = 0;
 export type ConfigKey = keyof McuParams;
@@ -71,9 +72,16 @@ export const commandOK = (noun = "Command", message?: string) => () => {
 
 const maybeNoop = () =>
   forceOnline() &&
-  info(t("Sorry, that feature is unavailable in demo accounts."), {
-    title: t("Unavailable")
+  info(t("HarvestX"), {
+    title: t("HarvestX")
   });
+
+// simple function tests whether no initial values exist
+const maybeUninitialised = () =>
+  forceOnline() &&
+  info(t("location data uninitialised"), {
+    title: t("Demo Warning")
+});
 
 const maybeAlertLocked = () =>
   store.getState().bot.hardware.informational_settings.locked &&
@@ -338,9 +346,21 @@ export function settingToggle(
 export function moveRelative(props: MoveRelProps) {
   maybeNoop();
   maybeAlertLocked();
-  return getDevice()
+  // use force bot online to determine if its demo
+    return getDevice()
     .moveRelative(props)
     .then(maybeNoop, commandErr("Relative movement"));
+}
+
+// simulated movement sending no rpc
+export function moveRelativeDemo(props: MoveRelProps){
+  if(demoPos.x!==undefined&&demoPos.y!==undefined&&demoPos.z!==undefined){
+    demoPos.x = demoPos.x+props.x;
+    demoPos.y = demoPos.y+props.y;
+    demoPos.z = demoPos.z+props.z;
+  }else{
+    maybeUninitialised();
+  }
 }
 
 export function moveAbsolute(props: MoveRelProps) {
