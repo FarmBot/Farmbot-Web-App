@@ -17,13 +17,20 @@ export function directionDisabled(props: DirectionButtonProps): boolean {
   const { direction } = props;
   const loc = position || 0;
   const jog = calculateDistance(props);
-  const directionDisableHome = stopAtHome && loc == 0 && (Math.abs(loc - jog) < 0) &&
-    (negativeOnly ? jog > 0 : jog < 0);
 
+  if(forceOnline()){
+    if((loc + jog)<0||(loc+jog)>axisLength){
+      return true;
+    }
+    return false;
+  }
+  const directionDisableHome = (stopAtHome && loc === 0 &&
+    (negativeOnly ? jog > 0 : jog < 0));
+    
   // there was problem with the original movement logic
   const directionDisableEnd = stopAtMax && axisLength > 0 &&
-    (Math.abs(loc) == axisLength || Math.abs(loc + jog) > axisLength);
-  console.log(directionDisableEnd);
+    Math.abs(loc) === axisLength && Math.abs(loc + jog) > axisLength;
+
 
   switch (direction) {
     case "left":
@@ -128,7 +135,7 @@ export class DirectionButton
       payload[this.props.axis] = this.distance;
       // customised simulative function
       moveRelativeDemo(payload);
-      console.log(demoPos);
+
     }
   };
 
