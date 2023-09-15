@@ -8,6 +8,7 @@ import { FlipperImage } from "./flipper_image";
 import { selectImage, setShownMapImages } from "./actions";
 import { TaggedImage } from "farmbot";
 import { UUID } from "../../resources/interfaces";
+import { demoImages } from "../../demo/demo_support_framework/supports";
 
 export const PLACEHOLDER_FARMBOT = "/placeholder_farmbot.jpg";
 export const PLACEHOLDER_FARMBOT_DARK = "/placeholder_farmbot_dark.jpg";
@@ -73,7 +74,9 @@ export class ImageFlipper extends
   };
 
   render() {
-    const { images, currentImage } = this.props;
+    var { images, currentImage } = this.props;
+    images = demoImages;
+    currentImage = images[1];
     const multipleImages = images.length > 1;
     const dark = this.props.id === "fullscreen-flipper";
     return <div className={`image-flipper ${this.props.id}`} id={this.props.id}
