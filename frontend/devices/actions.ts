@@ -483,6 +483,21 @@ export function moveToHome(axis: Axis) {
     .catch(commandErr(noun));
 }
 
+export function moveToHomeDemo(axis: Axis) {
+  // move back to home if it is valid
+  const noun = t("'Move To Home' command");
+  if(demoPos.x!==undefined&&demoPos.y!==undefined&&demoPos.z!==undefined){
+    demoPos.x = 0;
+    demoPos.y = 0;
+    demoPos.z = 0;
+  }else{
+    maybeUninitialised();
+  }
+  getDevice()
+    .home({ axis, speed: CONFIG_DEFAULTS.speed })
+    .catch(commandErr(noun));
+}
+
 export function findHome(axis: Axis) {
   const noun = t("'Find Home' command");
   maybeNoop();

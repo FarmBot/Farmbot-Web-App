@@ -1,7 +1,7 @@
 import React from "react";
 import { t } from "../../i18next_wrapper";
 import { HomeButtonProps } from "./interfaces";
-import { findHome, moveToHome } from "../../devices/actions";
+import { findHome, moveToHome, moveToHomeDemo } from "../../devices/actions";
 import { lockedClass } from "../locked_class";
 import { Popover } from "../../ui";
 import { setMovementStateFromPosition } from "../../connectivity/log_handlers";
@@ -9,6 +9,8 @@ import { awayFromHome } from "../../farm_designer/map/layers/logs/logs_layer";
 import {
   disabledAxisMap,
 } from "../../settings/hardware_settings/axis_tracking_status";
+import { forceOnline } from "../../devices/must_be_online";
+import { demoPos } from "../../demo/demo_support_framework/supports";
 
 export const HomeButton = (props: HomeButtonProps) => {
   const { doFindHome, homeDirection, locked, arduinoBusy, botOnline } = props;
@@ -18,12 +20,19 @@ export const HomeButton = (props: HomeButtonProps) => {
   const findDisabled = disabledAxes.x || disabledAxes.y || disabledAxes.z;
   const findHomeDisabled = doFindHome && findDisabled;
   const disabled = arduinoBusy || !botOnline || findHomeDisabled;
-  const alreadyAtHome = !doFindHome && !awayFromHome(props.botPosition, 0.5);
+  var alreadyAtHome = !doFindHome && !awayFromHome(props.botPosition, 0.5);
+  if(forceOnline()){
+    alreadyAtHome = !doFindHome && !awayFromHome(demoPos, 0.5);
+  }
   const [popoverOpen, setPopoverOpen] = React.useState(false);
   const [popoverText, setPopoverText] = React.useState("");
   const sendCommand = () => {
     props.setActivePopover(icon);
-    props.dispatch(setMovementStateFromPosition(props.botPosition));
+    if(forceOnline()){
+      props.dispatch(setMovementStateFromPosition(demoPos));
+    }else{
+      props.dispatch(setMovementStateFromPosition(props.botPosition));
+    }
     const text = () => {
       if (locked) { return t("FarmBot is locked"); }
       if (arduinoBusy) { return t("FarmBot is busy"); }
@@ -41,7 +50,11 @@ export const HomeButton = (props: HomeButtonProps) => {
     }
     setPopoverOpen(false);
     setPopoverText(text());
-    (doFindHome ? findHome : moveToHome)("all");
+    if(!forceOnline()){
+      (doFindHome ? findHome : moveToHome)("all");
+    }else{
+      (doFindHome ? findHome : moveToHomeDemo)("all");
+    }
   };
   return <button
     className={[
