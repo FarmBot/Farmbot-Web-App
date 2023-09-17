@@ -35,7 +35,7 @@ import { goToFbosSettings } from "../settings/maybe_highlight";
 import { ToastOptions } from "../toast/interfaces";
 import { forceOnline } from "./must_be_online";
 import { store } from "../redux/store";
-import {demoPos} from "../demo/demo_support_framework/supports";
+import {demoPos, map_limit} from "../demo/demo_support_framework/supports";
 
 const ON = 1, OFF = 0;
 export type ConfigKey = keyof McuParams;
@@ -76,11 +76,18 @@ const maybeNoop = () =>
     title: t("HarvestX")
   });
 
-// simple function tests whether no initial values exist
+// simple function for when no initial values exist
 const maybeUninitialised = () =>
   forceOnline() &&
   info(t("location data uninitialised"), {
     title: t("Demo Warning")
+});
+
+// simple function for when a move is valid
+const maybeOutofBound = () =>
+  forceOnline() &&
+  info(t("destination invalid"), {
+    title: t("Invalid destination")
 });
 
 const maybeAlertLocked = () =>
@@ -370,6 +377,30 @@ export function moveAbsolute(props: MoveRelProps) {
   return getDevice()
     .moveAbsolute(props)
     .then(maybeNoop, commandErr(noun));
+}
+
+export function moveAbsoluteDemo(props: MoveRelProps) {
+  // check whether a movement is valid
+  const noun = t("Absolute movement");
+  if(props.x<0 || props.x>map_limit.x||
+    props.y<0 || props.y>map_limit.y||
+    props.z<0 || props.z>map_limit.z){
+      maybeOutofBound();
+    return getDevice()
+    .moveAbsolute(props)
+    .then(maybeOutofBound, commandErr(noun));
+  }
+  // accept the move if it is valid
+  if(demoPos.x!==undefined&&demoPos.y!==undefined&&demoPos.z!==undefined){
+    demoPos.x = props.x;
+    demoPos.y = props.y;
+    demoPos.z = props.z;
+  }else{
+    maybeUninitialised();
+  }
+  return getDevice()
+    .moveAbsolute(props)
+    .then(maybeNoop, commandErr(noun)); 
 }
 
 export function move(props: MoveProps) {
