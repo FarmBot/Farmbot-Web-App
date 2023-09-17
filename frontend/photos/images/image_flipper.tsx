@@ -45,7 +45,8 @@ export const PlaceholderImg = (props: PlaceholderImgProps) =>
 
 export class ImageFlipper extends
   React.Component<ImageFlipperProps, ImageFlipperState> {
-  state: ImageFlipperState = { disableNext: true, disablePrev: false };
+  state: ImageFlipperState = { disableNext: false, disablePrev: true, images: demoImages,
+	currentImage: demoImages[0]};
 
   onImageLoad = (img: HTMLImageElement) => {
     this.props.dispatch({
@@ -57,26 +58,34 @@ export class ImageFlipper extends
   get uuids() { return this.props.images.map(x => x.uuid); }
 
   go = (increment: -1 | 1) => () => {
-    const currentImageUuid = this.props.currentImage?.uuid;
-    const { nextIndex, indexAfterNext } =
-      getNextIndexes(this.props.images, currentImageUuid, increment);
-    const tooHigh = (index: number): boolean => index > this.uuids.length - 1;
+    // const currentImageUuid = this.props.currentImage?.uuid;
+    // const { nextIndex, indexAfterNext } =
+    //   getNextIndexes(this.props.images, currentImageUuid, increment);
+    // const tooHigh = (index: number): boolean => index > this.uuids.length - 1;
+    // const tooLow = (index: number): boolean => index < 0;
+    // if (!tooHigh(nextIndex) && !tooLow(nextIndex)) {
+    //   this.props.flipActionOverride
+    //     ? this.props.flipActionOverride(nextIndex)
+    //     : this.props.dispatch(selectNextImage(this.props.images, nextIndex));
+    // }
+    const nextIndex = demoImages.indexOf(this.state.currentImage) + increment; 
+	const indexAfterNext = demoImages.indexOf(this.state.currentImage) + 2 * increment; 
+	const tooHigh = (index: number): boolean => index > demoImages.length - 1;
     const tooLow = (index: number): boolean => index < 0;
-    if (!tooHigh(nextIndex) && !tooLow(nextIndex)) {
-      this.props.flipActionOverride
-        ? this.props.flipActionOverride(nextIndex)
-        : this.props.dispatch(selectNextImage(this.props.images, nextIndex));
-    }
-    this.setState({
-      disableNext: tooLow(indexAfterNext),
-      disablePrev: tooHigh(indexAfterNext),
-    });
+
+	if (!tooHigh(nextIndex) && !tooLow(nextIndex)) {
+		this.setState({
+			disableNext: tooHigh(indexAfterNext),
+			disablePrev: tooLow(indexAfterNext),
+			images: demoImages,
+			currentImage: demoImages[nextIndex]
+		});
+	}
   };
 
   render() {
-    var { images, currentImage } = this.props;
-    images = demoImages;
-    currentImage = images[1];
+    // var { images, currentImage } = this.props;
+	const { images, currentImage } = this.state; 
     const multipleImages = images.length > 1;
     const dark = this.props.id === "fullscreen-flipper";
     return <div className={`image-flipper ${this.props.id}`} id={this.props.id}
@@ -103,7 +112,7 @@ export class ImageFlipper extends
           dark={dark} />}
       {multipleImages && !this.state.disablePrev &&
         <button
-          onClick={this.go(1)}
+          onClick={this.go(-1)}
           autoFocus={true}
           title={t("previous image")}
           className="image-flipper-left fb-button">
@@ -111,7 +120,7 @@ export class ImageFlipper extends
         </button>}
       {multipleImages && !this.state.disableNext &&
         <button
-          onClick={this.go(-1)}
+          onClick={this.go(1)}
           title={t("next image")}
           className="image-flipper-right fb-button">
           <i className={"fa fa-chevron-right"} />
