@@ -70,6 +70,12 @@ export const commandOK = (noun = "Command", message?: string) => () => {
   success(msg, { title: t("Request sent") });
 };
 
+const popUp = (title: string, message:string) =>
+  forceOnline() &&
+  info(t(message), {
+    title: t(title)
+  });
+
 const maybeNoop = () =>
   forceOnline() &&
   info(t("HarvestX"), {
@@ -129,7 +135,7 @@ export function checkControllerUpdates() {
 /** Shutdown FBOS. */
 export function powerOff() {
   const noun = t("Power Off Bot");
-  maybeNoop();
+  popUp("Shut Down", "Buy FarmBot device to unlock this feature~ 😍");
   getDevice()
     .powerOff()
     .then(commandOK(noun), commandErr(noun));
@@ -140,17 +146,21 @@ export function softReset() {
   if (!confirm(t(Content.SOFT_RESET_ALERT))) {
     return;
   }
-  maybeNoop();
+  popUp("Soft Reset", "FarmBot reset successfully!");
+  moveToHomeDemo("all");
+
   getDevice().resetOS();
 }
 
 /** Reboot FBOS. */
 export function reboot() {
   const noun = t("Reboot Bot");
-  maybeNoop();
+  popUp("Restart", "FarmBot restart successfully!");
+  moveToHomeDemo("all");
   getDevice()
     .reboot()
     .then(commandOK(noun), commandErr(noun));
+
 }
 
 /** Restart Farmduino firmware serial connection. */
