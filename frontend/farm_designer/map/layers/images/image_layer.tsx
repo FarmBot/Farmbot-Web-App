@@ -2,6 +2,7 @@ import React from "react";
 import { MapTransformProps } from "../../interfaces";
 import { CameraCalibrationData, DesignerState } from "../../../interfaces";
 import { SpecialStatus, TaggedImage } from "farmbot";
+import { forceOnline } from "../../../../devices/must_be_online";
 
 import { MapImage } from "./map_image";
 import { reverse, cloneDeep, some } from "lodash";
@@ -83,9 +84,7 @@ export class ImageLayer extends React.Component<ImageLayerProps> {
     ];
     
 
-    const DEMO_MODE = true;
-
-    const images = DEMO_MODE ? demoImages : originalImages;
+    const images = forceOnline() ? demoImages : originalImages;
 
     console.log(images);
 
