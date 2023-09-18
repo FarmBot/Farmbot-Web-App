@@ -4,6 +4,7 @@ import { CameraCalibrationData, DesignerState } from "../../../interfaces";
 import { SpecialStatus, TaggedImage } from "farmbot";
 import { forceOnline } from "../../../../devices/must_be_online";
 
+
 import { MapImage } from "./map_image";
 import { reverse, cloneDeep, some } from "lodash";
 import { equals } from "../../../../util";
@@ -85,6 +86,7 @@ export class ImageLayer extends React.Component<ImageLayerProps> {
     
 
     const images = forceOnline() ? demoImages : originalImages;
+
 
     console.log(images);
 
