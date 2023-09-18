@@ -77,6 +77,7 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
 
   /** Called on blur. */
   maybeCommit = (e: React.SyntheticEvent<HTMLInputElement>) => {
+		console.log("cleared!"); 
     const bufferOk = this.state.buffer || this.props.allowEmpty;
     const shouldPassToParent = bufferOk && this.withinLimits({ toasts: true });
     shouldPassToParent && this.props.onCommit(e);
@@ -119,6 +120,7 @@ export class BlurableInput extends React.Component<BIProps, Partial<BIState>> {
       onKeyUp: this.keyUp,
       onSubmit: this.maybeCommit,
       onBlur: this.maybeCommit,
+			onInput: this.maybeCommit,
       name: this.props.name,
       id: this.props.id,
       min: this.props.min,

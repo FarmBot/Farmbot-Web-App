@@ -26,6 +26,7 @@ import { Highlight } from "../../settings/maybe_highlight";
 import { DeviceSetting } from "../../constants";
 import { Path } from "../../internal_urls";
 import { demoImages } from "../../demo/demo_support_framework/supports";
+import { forceOnline } from "../../devices/must_be_online";
 
 export const PhotoFilterSettings = (props: PhotoFilterSettingsProps) => {
   const { dispatch, flags } = props;
@@ -46,6 +47,9 @@ export const PhotoFilterSettings = (props: PhotoFilterSettingsProps) => {
     photo_filter_begin: "", photo_filter_end: "",
   }));
   const commonToggleProps = { dispatch, layerOff };
+	
+	const images = forceOnline() ? demoImages : [];
+
   return <div className={"photo-filter-settings"}>
     <div className={className}>
       <p className={"banner"}>
@@ -62,8 +66,8 @@ export const PhotoFilterSettings = (props: PhotoFilterSettingsProps) => {
         dispatch={dispatch}
         getConfigValue={props.getConfigValue}
         timeSettings={props.timeSettings}
-        images={demoImages}
-        imageAgeInfo={calculateImageAgeInfo(demoImages)} />
+        images={images}
+        imageAgeInfo={calculateImageAgeInfo(images)} />
       <FilterNearTime {...commonProps} />
       <FilterOlderOrNewer {...commonProps} />
     </div>

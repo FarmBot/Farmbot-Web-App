@@ -78,7 +78,13 @@ export class ImageFilterMenu
   setDatetime = (datetime: keyof ImageFilterMenuState) => {
     return (e: React.SyntheticEvent<HTMLInputElement>) => {
       const input = e.currentTarget.value;
-      this.setState({ [datetime]: input });
+			
+			
+      this.setState({ [datetime]: input }, () => {
+				console.log(this.state); 
+			})
+
+			// 下面是根据key的不同来
       const { beginDate, beginTime, endDate, endTime } = this.state;
       const { timeSettings } = this.props;
       let value = undefined;
