@@ -84,7 +84,6 @@ export class ImageFlipper extends
   };
 
   render() {
-    // var { images, currentImage } = this.props;
 	const { images, currentImage } = this.state; 
     const multipleImages = images.length > 1;
     const dark = this.props.id === "fullscreen-flipper";
