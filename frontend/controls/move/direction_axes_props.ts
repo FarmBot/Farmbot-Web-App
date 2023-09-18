@@ -1,6 +1,8 @@
 import { DirectionAxesProps } from "./interfaces";
 import { McuParams } from "farmbot";
 import { BooleanSetting } from "../../session_keys";
+import { forceOnline } from "../../devices/must_be_online";
+import { demoPos, map_limit } from "../../demo/demo_support_framework/supports";
 
 export const calcMicrostepsPerMm = (
   steps_per_mm: number | undefined,
@@ -35,8 +37,15 @@ export function calculateAxialLengths(props: { firmwareSettings: McuParams }) {
 }
 
 export function buildDirectionProps(props: DirectionAxesProps) {
-  const { firmwareSettings, botPosition, getConfigValue } = props;
-  const lengths = calculateAxialLengths(props);
+  const { firmwareSettings, getConfigValue } = props;
+  var {botPosition} = props;
+  var lengths = calculateAxialLengths(props);
+
+  if (forceOnline()){
+    botPosition = demoPos;
+    lengths = map_limit;
+  }
+  
   return {
     x: {
       isInverted: !!getConfigValue(BooleanSetting.x_axis_inverted),

@@ -1,7 +1,7 @@
 import React from "react";
 import { Row, Col, Popover } from "../../ui";
 import {
-  findAxisLength, findHome, moveAbsolute, moveToHome, setHome, updateMCU,
+  findAxisLength, findHome, moveAbsolute, moveAbsoluteDemo, moveToHome, setHome, updateMCU,
 } from "../../devices/actions";
 import { AxisDisplayGroup } from "../axis_display_group";
 import { AxisInputBoxGroup } from "../axis_input_box_group";
@@ -27,22 +27,37 @@ import {
 import { NumberConfigKey } from "farmbot/dist/resources/configs/firmware";
 import { isUndefined } from "lodash";
 import { calculateScale } from "../../settings/hardware_settings";
+import { demoPos } from "../../demo/demo_support_framework/supports";
+import { forceOnline } from "../../devices/must_be_online";
 
 export const BotPositionRows = (props: BotPositionRowsProps) => {
   const { locationData, getConfigValue, arduinoBusy, locked } = props;
   const hardwareDisabled = disabledAxisMap(props.firmwareSettings);
-  const commonAxisActionProps = {
+  var commonAxisActionProps;
+  if(forceOnline()){
+    commonAxisActionProps = {
+      botOnline: props.botOnline,
+      arduinoBusy,
+      locked,
+      dispatch: props.dispatch,
+      botPosition: demoPos,
+      sourceFwConfig: props.sourceFwConfig,
+    };
+  }else{
+  commonAxisActionProps = {
     botOnline: props.botOnline,
     arduinoBusy,
     locked,
     dispatch: props.dispatch,
     botPosition: locationData.position,
     sourceFwConfig: props.sourceFwConfig,
-  };
+  };}
   const showCurrentPosition = props.showCurrentPosition
     || (hasEncoders(props.firmwareHardware) &&
       (getConfigValue(BooleanSetting.scaled_encoders)
         || getConfigValue(BooleanSetting.raw_encoders)));
+
+  if(!forceOnline()){
   return <div className={"bot-position-rows"}>
     <div className={"axis-titles"}>
       <Row>
@@ -88,6 +103,56 @@ export const BotPositionRows = (props: BotPositionRowsProps) => {
     <AxisInputBoxGroup
       position={locationData.position}
       onCommit={moveAbsolute}
+      locked={locked}
+      dispatch={props.dispatch}
+      disabled={arduinoBusy} />
+  </div>;
+  }
+  return <div className={"bot-position-rows"}>
+    <div className={"axis-titles"}>
+      <Row>
+        <Col xs={3}>
+          <label>{t("X AXIS")}</label>
+          <AxisActions axis={"x"}
+            hardwareDisabled={hardwareDisabled.x}
+            {...commonAxisActionProps} />
+        </Col>
+        <Col xs={3}>
+          <label>{t("Y AXIS")}</label>
+          <AxisActions axis={"y"}
+            hardwareDisabled={hardwareDisabled.y}
+            {...commonAxisActionProps} />
+        </Col>
+        <Col xs={3}>
+          <label>{t("Z AXIS")}</label>
+          <AxisActions axis={"z"}
+            hardwareDisabled={hardwareDisabled.z}
+            {...commonAxisActionProps} />
+        </Col>
+      </Row>
+    </div>
+    <AxisDisplayGroup
+      noValues={!showCurrentPosition}
+      position={demoPos}
+      firmwareSettings={props.firmwareSettings}
+      missedSteps={locationData.load}
+      axisStates={locationData.axis_states}
+      busy={arduinoBusy}
+      style={{ overflowWrap: "break-word" }}
+      label={t("Current position (mm)")} />
+    {hasEncoders(props.firmwareHardware) &&
+      getConfigValue(BooleanSetting.scaled_encoders) &&
+      <AxisDisplayGroup
+        position={locationData.scaled_encoders}
+        label={t("Scaled Encoder (mm)")} />}
+    {hasEncoders(props.firmwareHardware) &&
+      getConfigValue(BooleanSetting.raw_encoders) &&
+      <AxisDisplayGroup
+        position={locationData.raw_encoders}
+        label={t("Raw Encoder data")} />}
+    <AxisInputBoxGroup
+      position={demoPos}
+      onCommit={moveAbsoluteDemo}
       locked={locked}
       dispatch={props.dispatch}
       disabled={arduinoBusy} />
