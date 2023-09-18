@@ -25,6 +25,7 @@ import {
 import { Highlight } from "../../settings/maybe_highlight";
 import { DeviceSetting } from "../../constants";
 import { Path } from "../../internal_urls";
+import { demoImages } from "../../demo/demo_support_framework/supports";
 
 export const PhotoFilterSettings = (props: PhotoFilterSettingsProps) => {
   const { dispatch, flags } = props;
@@ -61,8 +62,8 @@ export const PhotoFilterSettings = (props: PhotoFilterSettingsProps) => {
         dispatch={dispatch}
         getConfigValue={props.getConfigValue}
         timeSettings={props.timeSettings}
-        images={props.images}
-        imageAgeInfo={calculateImageAgeInfo(props.images)} />
+        images={demoImages}
+        imageAgeInfo={calculateImageAgeInfo(demoImages)} />
       <FilterNearTime {...commonProps} />
       <FilterOlderOrNewer {...commonProps} />
     </div>
