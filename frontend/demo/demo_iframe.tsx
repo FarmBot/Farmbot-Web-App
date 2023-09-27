@@ -1,4 +1,4 @@
-import { connect, MqttClient } from "mqtt";
+import { ClientSubscribeCallback, connect, IConnackPacket } from "mqtt";
 import React from "react";
 import { uuid } from "farmbot";
 import axios from "axios";
@@ -30,11 +30,11 @@ export class DemoIframe extends React.Component<{}, State> {
 
   setError = (error?: Error) => this.setState({ error });
 
-  connectMqtt = (): Promise<MqttClient> => {
+  connectMqtt = (): Promise<IConnackPacket> => {
     const client = connect(globalConfig.MQTT_WS, WS_CONFIG);
     return new Promise(resolve => {
       client.on("message", this.handleMessage);
-      client.subscribe(MQTT_CHAN, this.setError);
+      client.subscribe(MQTT_CHAN, this.setError as ClientSubscribeCallback);
       client.on("connect", resolve);
     });
   };
