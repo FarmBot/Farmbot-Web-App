@@ -122,8 +122,7 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
           grid: this.initGridState,
           gridId: uuid(),
           status: "clean",
-        });
-        this.props.close?.();
+        }, this.props.close);
       });
 
   Buttons = () => {

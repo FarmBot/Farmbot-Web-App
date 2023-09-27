@@ -54,6 +54,8 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
 
   newTool = (name: string) => this.props.dispatch(initSave("Tool", { name }));
 
+  back = () => push(Path.tools());
+
   save = () => {
     const initTool = init("Tool", {
       name: this.state.toolName,
@@ -63,10 +65,8 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
     const { uuid } = initTool.payload;
     this.setState({ uuid });
     this.props.dispatch(save(uuid))
-      .then(() => {
-        this.setState({ uuid: undefined });
-        push(Path.tools());
-      }).catch(() => { });
+      .then(() => this.setState({ uuid: undefined }, this.back))
+      .catch(() => { });
   };
 
   componentWillUnmount = () =>

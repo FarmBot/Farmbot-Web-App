@@ -40,7 +40,8 @@ export class FilterSearch
           "filter-search-popover",
           Classes.MINIMAL,
           this.props.items.length < 4 ? "few-items" : "",
-        ].join(" ")
+        ].join(" "),
+        modifiers: { offset: { options: { offset: [0, 5] } } },
       }}>
       <i className="fa fa-caret-down fa-md" />
       <Button

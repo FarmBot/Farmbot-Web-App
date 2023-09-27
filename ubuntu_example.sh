@@ -1,4 +1,4 @@
-# How to install FarmBot Web API on a Fresh Ubuntu 22.10 Machine
+# How to install FarmBot Web API on a Fresh Ubuntu 22.04 Machine
 
 # IMPORTANT NOTE: Resources are limited and Farmbot, inc. cannot provide
 # longterm support to self-hosted users. If you have never administered a
@@ -16,19 +16,18 @@
 sudo apt remove docker-engine
 sudo apt remove docker docker.io containerd runc
 
-# Install docker
+# Install docker and docker compose
 sudo apt update
 sudo apt install ca-certificates curl gnupg lsb-release -y
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 sudo apt update
-sudo apt install docker-ce docker-ce-cli containerd.io docker-compose-plugin -y
-sudo docker run hello-world # Should run!
-# Install docker-compose
-sudo mkdir -p /usr/local/lib/docker/cli-plugins
-sudo curl -SL "https://github.com/docker/compose/releases/download/v2.15.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/lib/docker/cli-plugins/docker-compose
-sudo chmod +x /usr/local/lib/docker/cli-plugins/docker-compose
-sudo docker compose version # test installation
+sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+# Verify installation
+sudo docker run hello-world
+sudo docker compose version
 
 # Install FarmBot Web App
 # ⚠ SKIP THIS STEP IF UPGRADING!
