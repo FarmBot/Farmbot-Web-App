@@ -6,15 +6,15 @@ describe Device do
   # [timezone, local_ota_hour, expected]
   conversions = [
     # DST-free Timezones for easy testing:
-    ["Africa/Addis_Ababa", 6, 9],
-    ["Africa/Kampala", 22, 1],
-    ["Africa/Lagos", 15, 16],
-    ["Asia/Makassar", 2, 10],
-    ["Asia/Omsk", 11, 17],
-    ["Asia/Qatar", 0, 3],
-    ["Asia/Seoul", 18, 3],
-    ["Australia/Perth", 21, 5],
-    ["Etc/GMT+4", 20, 16],
+    ["Africa/Addis_Ababa", 6, 3],
+    ["Africa/Kampala", 22, 19],
+    ["Africa/Lagos", 15, 14],
+    ["Asia/Makassar", 2, 18],
+    ["Asia/Omsk", 11, 5],
+    ["Asia/Qatar", 0, 21],
+    ["Asia/Seoul", 18, 9],
+    ["Australia/Perth", 21, 13],
+    ["Etc/GMT+4", 20, 0],
   ]
 
   it "converts legacy ota_hour to ota_hour_utc" do
@@ -28,7 +28,7 @@ describe Device do
     d = Device.new(timezone: "US/Arizona", ota_hour: 4)
     expect(d.ota_hour_utc).to eq(nil)
     d.validate
-    expect(d.ota_hour_utc).to eq(21)
+    expect(d.ota_hour_utc).to eq(11)
   end
 
   it "creates a token" do
