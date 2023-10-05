@@ -5,12 +5,6 @@ describe Api::AisController do
   let(:user) { FactoryBot.create(:user) }
   let(:sequence) { FakeSequence.create(device: user.device) }
 
-  class MockGet
-    def read
-      "---\n---# section\ncontent```lua\n```"
-    end
-  end
-
   def chunk(content, done=nil)
     "data: {\"id\":\"id\",\"object\":\"chat.completion.chunk\"," \
     "\"created\":12345,\"model\":\"gpt-4\",\"choices\":[{\"delta\":{" \
@@ -27,7 +21,9 @@ describe Api::AisController do
       context_key: "lua",
       sequence_id: nil,
     }
-    expect(URI).to receive(:open).exactly(15).times.and_return(MockGet.new())
+
+    stub_request(:get, /raw.githubusercontent.com/).to_return(
+      body: "---\n---# section\ncontent```lua\n```")
 
     stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(
       body: chunk("return") + chunk("done", done="stop"))
@@ -44,7 +40,6 @@ describe Api::AisController do
       context_key: "color",
       sequence_id: sequence.id,
     }
-    expect(URI).to receive(:open).exactly(0).times
 
     stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(
       body: chunk("red"))
@@ -63,7 +58,8 @@ describe Api::AisController do
       context_key: "lua",
       sequence_id: nil,
     }
-    expect(URI).to receive(:open).exactly(15).times.and_return(MockGet.new())
+    stub_request(:get, /raw.githubusercontent.com/).to_return(
+      body: "---\n---# section\ncontent```lua\n```")
 
     stub_request(:post, "https://api.openai.com/v1/chat/completions").to_timeout
 
@@ -79,12 +75,7 @@ describe Api::AisController do
       sequence_id: nil,
     }
 
-    class MockGetError
-      def read
-        raise SocketError
-      end
-    end
-    expect(URI).to receive(:open).exactly(1).times.and_return(MockGetError.new())
+    stub_request(:get, /raw.githubusercontent.com/).to_raise(SocketError)
 
     stub_request(:post, "https://api.openai.com/v1/chat/completions").to_timeout
 
@@ -100,12 +91,8 @@ describe Api::AisController do
       sequence_id: nil,
     }
 
-    class MockGetEmpty
-      def read
-        "---\n---# nothing for now\n"
-      end
-    end
-    expect(URI).to receive(:open).at_least(1).times.and_return(MockGetEmpty.new())
+    stub_request(:get, /raw.githubusercontent.com/).to_return(
+      body: "---\n---# nothing for now\n")
 
     stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(
       body: chunk("red"))

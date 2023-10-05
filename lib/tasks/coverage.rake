@@ -15,7 +15,7 @@ FRACTION_DELIM = "/"
 # Fetch JSON over HTTP. Rails probably already has a helper for this :shrug:
 def open_json(url)
   begin
-    JSON.parse(URI.open(url).read)
+    JSON.parse(URI.parse(url).open.read)
   rescue *[OpenURI::HTTPError, SocketError] => exception
     puts exception.message
     return {}
@@ -131,7 +131,7 @@ end
 def get_json_coverage_results()
   results = { lines: { covered: 0, total: 0 }, branches: { covered: 0, total: 0 } }
   begin
-    data = open_json(JSON_COVERAGE_FILE_PATH)
+    data = JSON.parse(File.open(JSON_COVERAGE_FILE_PATH).read)
   rescue Errno::ENOENT
     return results
   end
@@ -191,7 +191,7 @@ namespace :coverage do
     begin
       # Fetch current build coverage data from the HTML summary.
       statements, branches, functions, lines =
-        Nokogiri::HTML(URI.open(COVERAGE_FILE_PATH))
+        Nokogiri::HTML(File.open(COVERAGE_FILE_PATH))
           .css(CSS_SELECTOR)
           .map(&:text)
           .map { |x| x.split(FRACTION_DELIM).map(&:to_f) }
