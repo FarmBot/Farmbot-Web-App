@@ -221,7 +221,7 @@ GEM
     multipart-post (2.3.0)
     mutations (0.9.1)
       activesupport
-    net-imap (0.3.7)
+    net-imap (0.4.0)
       date
       net-protocol
     net-pop (0.1.2)
