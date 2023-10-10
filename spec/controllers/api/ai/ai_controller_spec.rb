@@ -11,6 +11,8 @@ describe Api::AisController do
     "\"content\":\"#{content}\"},\"index\":0,\"finish_reason\":#{done.to_json}}]}"
   end
 
+  URL_PATTERN = /raw\.githubusercontent\.com/
+
   it "makes a successful request for code" do
     sign_in user
     FactoryBot.create(:peripheral, device: user.device)
@@ -22,7 +24,7 @@ describe Api::AisController do
       sequence_id: nil,
     }
 
-    stub_request(:get, /raw.githubusercontent.com/).to_return(
+    stub_request(:get, URL_PATTERN).to_return(
       body: "---\n---# section\ncontent```lua\n```")
 
     stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(
@@ -58,7 +60,7 @@ describe Api::AisController do
       context_key: "lua",
       sequence_id: nil,
     }
-    stub_request(:get, /raw.githubusercontent.com/).to_return(
+    stub_request(:get, URL_PATTERN).to_return(
       body: "---\n---# section\ncontent```lua\n```")
 
     stub_request(:post, "https://api.openai.com/v1/chat/completions").to_timeout
@@ -75,7 +77,7 @@ describe Api::AisController do
       sequence_id: nil,
     }
 
-    stub_request(:get, /raw.githubusercontent.com/).to_raise(SocketError)
+    stub_request(:get, URL_PATTERN).to_raise(SocketError)
 
     stub_request(:post, "https://api.openai.com/v1/chat/completions").to_timeout
 
@@ -91,7 +93,7 @@ describe Api::AisController do
       sequence_id: nil,
     }
 
-    stub_request(:get, /raw.githubusercontent.com/).to_return(
+    stub_request(:get, URL_PATTERN).to_return(
       body: "---\n---# nothing for now\n")
 
     stub_request(:post, "https://api.openai.com/v1/chat/completions").to_return(
