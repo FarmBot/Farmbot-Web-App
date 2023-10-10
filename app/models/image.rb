@@ -43,7 +43,7 @@ class Image < ApplicationRecord
   has_one_attached :attachment
 
   def set_attachment_by_url(url)
-    io = URI.open(url)
+    io = URI.parse(url).open
     fname = "image_#{self.id}"
     params = { io: io, filename: fname }
     attachment.attach(**params)

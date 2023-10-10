@@ -217,7 +217,7 @@ class Device < ApplicationRecord
 
   def self.get_utc_ota_hour(timezone, local_ota_hour)
     utc_offset = Time.now.in_time_zone(timezone).utc_offset / 60 / 60
-    (local_ota_hour + utc_offset) % 24
+    (local_ota_hour - utc_offset) % 24
   end
 
   # PROBLEM:  The device table has an `ota_hour` column. The

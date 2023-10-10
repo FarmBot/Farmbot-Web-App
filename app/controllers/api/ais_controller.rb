@@ -232,7 +232,7 @@ module Api
     def get_page_data(page_name)
       url = page_url(page_name)
       begin
-        URI.open(url).read
+        URI.parse(url).open.read
       rescue SocketError => exception
         puts "AI Lua docs fetch error: #{exception.message}" unless Rails.env.test?
       end

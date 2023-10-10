@@ -17,7 +17,7 @@ import React from "react";
 import axios from "axios";
 import { shallow } from "enzyme";
 import { DemoIframe, WAITING_ON_API, EASTER_EGG, MQTT_CHAN } from "../demo_iframe";
-import { MqttClient } from "mqtt";
+import { IConnackPacket } from "mqtt";
 import { tourPath } from "../../help/tours";
 import { Path } from "../../internal_urls";
 
@@ -27,7 +27,7 @@ describe("<DemoIframe />", () => {
     const el = shallow<DemoIframe>(<DemoIframe />);
     expect(el.text()).toContain("DEMO THE APP");
     el.instance().connectMqtt = () =>
-      Promise.resolve() as unknown as Promise<MqttClient>;
+      Promise.resolve() as unknown as Promise<IConnackPacket>;
     await el.instance().requestAccount();
     await expect(axios.post).toHaveBeenCalled();
     expect(el.state().stage).toContain(WAITING_ON_API);

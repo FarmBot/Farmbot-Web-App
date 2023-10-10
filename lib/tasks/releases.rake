@@ -17,7 +17,7 @@ namespace :releases do
   module ReleaseTask
     def self.download_metadata(tag_name)
       real_url = "https://api.github.com/repos/farmbot/farmbot_os/releases/tags/#{tag_name}"
-      JSON.parse(URI.open(real_url).read, symbolize_names: true)
+      JSON.parse(URI.parse(real_url).open.read, symbolize_names: true)
     end
 
     def self.select_version(choices)
@@ -31,7 +31,7 @@ namespace :releases do
 
     def self.get_release_list
       uri = "https://api.github.com/repos/farmbot/farmbot_os/releases"
-      file = URI.open(uri)
+      file = URI.parse(uri).open
       raw_json = file.read
       json = JSON.parse(raw_json, symbolize_names: true).pluck(:tag_name)
       json.first(9).sort.reverse

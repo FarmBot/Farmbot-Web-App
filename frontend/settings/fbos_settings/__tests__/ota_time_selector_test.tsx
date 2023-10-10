@@ -11,6 +11,7 @@ import React from "react";
 import { shallow, mount } from "enzyme";
 import {
   OtaTimeSelector, OtaTimeSelectorRow, DDI_ASAP,
+  localHourToUtcHour, utcHourToLocalHour,
 } from "../ota_time_selector";
 import { FBSelect } from "../../../ui";
 import { fakeDevice } from "../../../__test_support__/resource_index_builder";
@@ -18,6 +19,18 @@ import { OtaTimeSelectorProps, OtaTimeSelectorRowProps } from "../interfaces";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { edit } from "../../../api/crud";
 import { updateConfig } from "../../../devices/actions";
+
+describe("localHourToUtcHour()", () => {
+  it("converts hour", () => {
+    expect(localHourToUtcHour(10, -2)).toEqual(12);
+  });
+});
+
+describe("utcHourToLocalHour()", () => {
+  it("converts hour", () => {
+    expect(utcHourToLocalHour(12, -2)).toEqual(10);
+  });
+});
 
 describe("<OtaTimeSelector />", () => {
   const fakeProps = (): OtaTimeSelectorProps => ({

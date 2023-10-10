@@ -5,6 +5,7 @@
 .vscode
 *.log
 *.pem
+passenger.*.pid
 *.tsbuildinfo
 *.pid.lock
 *scratchpad*

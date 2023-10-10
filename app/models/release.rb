@@ -22,7 +22,7 @@ class Release < ApplicationRecord
   def self.transload(url, gcs = Google::Cloud::Storage.new)
     file_name = url.split("/").last
     tempdir = "#{Rails.root.join("tmp").to_s}/#{file_name}"
-    download = URI.open(url)
+    download = URI.parse(url).open
     IO.copy_stream(download, tempdir)
     bucket = gcs.bucket(ENV.fetch("GCS_BUCKET"))
     file = bucket.upload_file tempdir, "releases/#{file_name}"

@@ -11,12 +11,12 @@ EXCLUDE = [
 
 # Load package.json as JSON.
 def load_package_json()
-  return JSON.parse(URI.open(PACKAGE_JSON_FILE).read)
+  return JSON.parse(File.open(PACKAGE_JSON_FILE).read)
 end
 
 # Save JSON to package.json.
 def save_package_json(json)
-  URI.open(PACKAGE_JSON_FILE, "w") { |file|
+  File.open(PACKAGE_JSON_FILE, "w") { |file|
     file.write(JSON.pretty_generate(json))
     file.puts
   }
