@@ -177,52 +177,55 @@ const Data = (props: DataProps) => {
       {Object.entries(populatedData(data)).map(bar())}
       {bar(true)(["" + lastDay, data[maxDay(data)]])}
     </g>
-    <path id={"line"}
-      stroke={curveColor(curve)} strokeWidth={0.5} fill={"none"}
-      d={Object.entries(data)
-        .map(([day, value], index) => {
-          const prefix = index == 0 ? "M" : "L";
-          return `${prefix}${normX(day)},${normY(value)}`;
-        }).join(" ")} />
-    <g id={"values"}
-      stroke={curveColor(curve)}
-      strokeWidth={0.5}
-      fill={curveColor(curve)}
-      fillOpacity={0.5}>
-      {Object.entries(data)
-        .map(([day, value]) => {
-          return <circle key={day}
-            style={props.editable ? { cursor: "row-resize" } : {}}
-            onMouseDown={() => props.editable && props.setDragging(day)}
-            cx={normX(day)}
-            cy={normY(value)}
-            r={1} />;
-        })}
-    </g>
-    <g id={"other-values"}
-      stroke={Color.gray}
-      strokeWidth={0.5}
-      fill={Color.white}
-      fillOpacity={0.5}>
-      {Object.entries(populatedData(data))
-        .map(([day, value]) => {
-          if (inData(data, day)) { return; }
-          const show = props.editable && hoveredValue == day && !dragging;
-          const opacity = show ? 1 : 0;
-          const cursor = dataFull(data) ? "not-allowed" : "copy";
-          return <circle key={day}
-            style={props.editable ? { cursor } : {}}
-            onMouseEnter={() => setHoveredValue(day)}
-            onMouseLeave={() => setHoveredValue(undefined)}
-            onClick={() => props.editable && props.dispatch(editCurve(curve, {
-              data: addOrRemoveItem(curve.body.data, day, value),
-            }))}
-            opacity={opacity} fillOpacity={opacity}
-            cx={normX(day)}
-            cy={normY(value)}
-            r={1.5} />;
-        })}
-    </g>
+    {props.editable &&
+      <path id={"line"}
+        stroke={curveColor(curve)} strokeWidth={0.5} fill={"none"}
+        d={Object.entries(data)
+          .map(([day, value], index) => {
+            const prefix = index == 0 ? "M" : "L";
+            return `${prefix}${normX(day)},${normY(value)}`;
+          }).join(" ")} />}
+    {props.editable &&
+      <g id={"values"}
+        stroke={curveColor(curve)}
+        strokeWidth={0.5}
+        fill={curveColor(curve)}
+        fillOpacity={0.5}>
+        {Object.entries(data)
+          .map(([day, value]) => {
+            return <circle key={day}
+              style={{ cursor: "row-resize" }}
+              onMouseDown={() => props.setDragging(day)}
+              cx={normX(day)}
+              cy={normY(value)}
+              r={1} />;
+          })}
+      </g>}
+    {props.editable &&
+      <g id={"other-values"}
+        stroke={Color.gray}
+        strokeWidth={0.5}
+        fill={Color.white}
+        fillOpacity={0.5}>
+        {Object.entries(populatedData(data))
+          .map(([day, value]) => {
+            if (inData(data, day)) { return; }
+            const show = hoveredValue == day && !dragging;
+            const opacity = show ? 1 : 0;
+            const cursor = dataFull(data) ? "not-allowed" : "copy";
+            return <circle key={day}
+              style={{ cursor }}
+              onMouseEnter={() => setHoveredValue(day)}
+              onMouseLeave={() => setHoveredValue(undefined)}
+              onClick={() => props.editable && props.dispatch(editCurve(curve, {
+                data: addOrRemoveItem(curve.body.data, day, value),
+              }))}
+              opacity={opacity} fillOpacity={opacity}
+              cx={normX(day)}
+              cy={normY(value)}
+              r={1.5} />;
+          })}
+      </g>}
   </g>;
 };
 

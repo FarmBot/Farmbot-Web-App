@@ -128,7 +128,7 @@ export interface MovePointsProps {
  */
 export interface CropLiveSearchResult {
   crop: OpenFarm.OFCrop;
-  image: string;
+  images: string[];
   companions: OpenFarm.CompanionsData[];
 }
 
@@ -298,6 +298,7 @@ export interface GardenMapState {
   selectionBox: SelectionBoxData | undefined;
   previousSelectionBoxArea: number | undefined;
   toLocation: Vector3 | undefined;
+  cursorPosition: AxisNumberProperty | undefined;
 }
 
 export type PlantOptions = Partial<PlantPointer>;

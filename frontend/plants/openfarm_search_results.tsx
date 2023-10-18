@@ -6,7 +6,7 @@ import {
 import { Actions, Content } from "../constants";
 import { t } from "../i18next_wrapper";
 import { ExternalUrl } from "../external_urls";
-import { Path } from "../internal_urls";
+import { FilePath, Path } from "../internal_urls";
 import { edit, save } from "../api/crud";
 import { TaggedPlantPointer } from "farmbot";
 import { setHoveredPlant } from "../farm_designer/map/actions";
@@ -18,8 +18,9 @@ interface Result {
     slug: string;
     name: string;
     svg_icon?: string | undefined;
+    main_image_path: string;
   };
-  image: string;
+  images: string[];
 }
 
 export interface SearchResultProps {
@@ -87,7 +88,10 @@ export class OpenFarmResults extends React.Component<SearchResultProps, {}> {
       colorScheme={"plants"}>
       <div className={"openfarm-search-results-wrapper"}>
         {cropSearchResults.map(resp => {
-          const { crop, image } = resp;
+          const { crop } = resp;
+          const image = crop.main_image_path.startsWith("https")
+            ? crop.main_image_path
+            : FilePath.DEFAULT_ICON;
           return <Link
             key={crop.slug}
             draggable={false}

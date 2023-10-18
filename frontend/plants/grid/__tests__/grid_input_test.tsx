@@ -26,7 +26,7 @@ describe("<GridInput/>", () => {
 
   it("renders", () => {
     const wrapper = mount(<GridInput {...fakeProps()} />);
-    ["Starting X", "starting Y", "# of plants", "Spacing (MM)"]
+    ["XYStart", "# of plants", "Spacing (MM)"]
       .map(string => expect(wrapper.text()).toContain(string));
   });
 

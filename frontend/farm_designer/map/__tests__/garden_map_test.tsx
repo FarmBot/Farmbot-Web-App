@@ -442,6 +442,15 @@ describe("<GardenMap/>", () => {
     }));
   });
 
+  it("sets cursor position", () => {
+    const wrapper = shallow<GardenMap>(<GardenMap {...fakeProps()} />);
+    mockMode = Mode.clickToAdd;
+    wrapper.find(".drop-area-svg").simulate("mouseMove", {
+      pageX: 10, pageY: 20
+    });
+    expect(wrapper.state().cursorPosition).toEqual({ x: 100, y: 200 });
+  });
+
   it("lays eggs", () => {
     setEggStatus(EggKeys.BRING_ON_THE_BUGS, "");
     setEggStatus(EggKeys.BUGS_ARE_STILL_ALIVE, "");

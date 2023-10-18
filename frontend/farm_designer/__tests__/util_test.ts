@@ -29,7 +29,7 @@ describe("OFSearch()", () => {
     expect(dispatch).toHaveBeenCalledWith(START);
     await expect(dispatch).toHaveBeenCalledWith({
       type: Actions.OF_SEARCH_RESULTS_OK, payload: [
-        { crop: {}, image: FilePath.DEFAULT_ICON, companions: [] }]
+        { crop: {}, images: [FilePath.DEFAULT_ICON], companions: [] }]
     });
     await expect(dispatch).not.toHaveBeenCalledWith(NO);
   });
@@ -61,7 +61,7 @@ describe("OFSearch()", () => {
     await expect(dispatch).toHaveBeenCalledWith({
       type: Actions.OF_SEARCH_RESULTS_OK, payload: [{
         crop: {},
-        image: "thumbnail_url",
+        images: ["thumbnail_url"],
         companions: [{ name: "name", slug: "slug", svg_icon: "svg_icon" }]
       }]
     });
@@ -95,7 +95,7 @@ describe("OFSearch()", () => {
     await expect(dispatch).toHaveBeenCalledWith({
       type: Actions.OF_SEARCH_RESULTS_OK, payload: [{
         crop: {},
-        image: "thumbnail_url",
+        images: ["thumbnail_url"],
         companions: [{ name: "name", slug: "slug", svg_icon: "svg_icon" }]
       }]
     });

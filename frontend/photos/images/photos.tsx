@@ -166,6 +166,7 @@ export class Photos extends React.Component<PhotosProps, PhotosComponentState> {
 
   ImageFlipper = ({ id }: { id: string }) =>
     <ImageFlipper id={id}
+      autoFocus={true}
       currentImage={this.props.currentImage}
       dispatch={this.props.dispatch}
       currentImageSize={this.props.currentImageSize}

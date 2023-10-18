@@ -9,7 +9,7 @@ describe("findBySlug()", () => {
     const result = findBySlug([fakeCropLiveSearchResult()], "some-crop");
     expect(result).toEqual({
       crop: expect.objectContaining({ name: "Some Crop" }),
-      image: FilePath.DEFAULT_ICON,
+      images: [FilePath.DEFAULT_ICON],
       companions: [],
     });
   });
@@ -18,7 +18,7 @@ describe("findBySlug()", () => {
     const result = findBySlug([fakeCropLiveSearchResult()]);
     expect(result).toEqual({
       crop: expect.objectContaining({ name: "" }),
-      image: FilePath.DEFAULT_ICON,
+      images: [FilePath.DEFAULT_ICON],
       companions: [],
     });
   });
@@ -27,7 +27,7 @@ describe("findBySlug()", () => {
     const result = findBySlug([fakeCropLiveSearchResult()], "mint");
     expect(result).toEqual({
       crop: expect.objectContaining({ name: "Mint" }),
-      image: "fake-mint-svg",
+      images: ["fake-mint-svg"],
       companions: [
         { name: "Strawberry", slug: "strawberry", svg_icon: "fake-strawberry-svg" },
       ],

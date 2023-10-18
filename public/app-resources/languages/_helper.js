@@ -16,7 +16,7 @@
  *
  *
  * */
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.ATTENTION = void 0;
 exports.ATTENTION = "Run `_helper.js`, not `_helper.ts`.";
 var path_1 = require("path");
@@ -76,7 +76,7 @@ var EXTRA_TAGS = [
     "For IT Security Professionals", "visualize", "{{ axis }}-axis profile",
     "Using another device, search for and connect to the `farmbot-xxxx` WiFi network",
     "GROUP MEMBERS ({{count}})", "FarmBot's current position", "# of plants",
-    "Binomial Name", "Common Names", "Sun Requirements", "Sowing Method",
+    "Binomial Name", "Common Names", "Sun", "Sowing", "Companions",
 ];
 /** For debugging. Replace all characters except whitespace and {{ words }}. */
 function repl(string, character) {
@@ -330,7 +330,7 @@ var Helper;
             var jsonContent = {
                 translated: translated_1,
                 untranslated: untranslated_1,
-                other_translations: other_translations_1
+                other_translations: other_translations_1,
             };
             var stringJson = JSON.stringify(jsonContent, undefined, 2) + "\n";
             if (!metricsOnly) {
