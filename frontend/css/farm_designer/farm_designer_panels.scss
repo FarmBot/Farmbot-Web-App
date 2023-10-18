@@ -3146,7 +3146,7 @@ li {
 
 .designer-sequence-list-panel {
   .panel-content {
-    max-height: calc(100vh - 15rem);
+    height: calc(100vh - 14rem);
     @media screen and (max-width: 450px) {
       max-height: calc(100vh - 19rem);
     }
@@ -3167,6 +3167,15 @@ li {
     .folders-panel {
       margin-left: -1rem;
       margin-right: -1rem;
+    }
+  }
+  .fullscreen {
+    white-space: nowrap;
+    height: 3rem;
+    margin-top: 0.75rem;
+    margin-right: 1rem;
+    i {
+      margin-left: 1rem;
     }
   }
 }
@@ -3205,6 +3214,9 @@ li {
   }
   .panel-content {
     .sequence-editor-content {
+      hr {
+        margin-top: 1rem;
+      }
       @media screen and (max-width: 767px) {
         margin-left: 5px;
         padding-right: 0;

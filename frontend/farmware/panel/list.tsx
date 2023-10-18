@@ -55,7 +55,8 @@ export class RawDesignerFarmwareList
         panel={Panel.Farmware}
         linkTo={Path.farmware("add")}
         title={t("Install Farmware")}>
-        <SearchField searchTerm={this.state.searchTerm}
+        <SearchField nameKey={"farmware"}
+          searchTerm={this.state.searchTerm}
           placeholder={t("Search your Farmware...")}
           onChange={searchTerm => this.setState({ searchTerm })} />
       </DesignerPanelTop>

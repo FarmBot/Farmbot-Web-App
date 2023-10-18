@@ -7,6 +7,7 @@ import {
 
 describe("<SearchField />", () => {
   const fakeProps = (): SearchFieldProps => ({
+    nameKey: "test",
     onChange: jest.fn(),
     searchTerm: "",
     placeholder: "search...",

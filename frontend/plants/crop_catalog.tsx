@@ -85,7 +85,7 @@ export class RawCropCatalog extends React.Component<CropCatalogProps, {}> {
         title={t("Choose a crop")}
         backTo={Path.plants()} />
       <DesignerPanelTop panel={Panel.Plants}>
-        <SearchField
+        <SearchField nameKey={"crops"}
           searchTerm={this.cropSearchQuery}
           placeholder={t("Search OpenFarm...")}
           onChange={this.handleChange}

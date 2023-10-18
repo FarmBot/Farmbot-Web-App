@@ -30,6 +30,13 @@ jest.mock("../../../folders/actions", () => ({
   updateSearchTerm: jest.fn(),
 }));
 
+import { Path } from "../../../internal_urls";
+let mockPath = "";
+jest.mock("../../../history", () => ({
+  push: jest.fn(),
+  getPathArray: jest.fn(() => mockPath.split("/")),
+}));
+
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
@@ -54,6 +61,7 @@ import { installSequence } from "../../actions";
 import { sequencesPanelState } from "../../../__test_support__/panel_state";
 import { Actions } from "../../../constants";
 import { emptyState } from "../../../resources/reducer";
+import { push } from "../../../history";
 
 API.setBaseUrl("");
 
@@ -90,19 +98,19 @@ describe("<DesignerSequenceList />", () => {
 
   it("adds new sequence", () => {
     const wrapper = mount(<DesignerSequenceList {...fakeProps()} />);
-    clickButton(wrapper, 0, "", { icon: "fa-plus" });
+    clickButton(wrapper, 1, "", { icon: "fa-plus" });
     expect(addNewSequenceToFolder).toHaveBeenCalled();
   });
 
   it("adds new folder", () => {
     const wrapper = mount(<DesignerSequenceList {...fakeProps()} />);
-    clickButton(wrapper, 1, "", { icon: "fa-folder" });
+    clickButton(wrapper, 2, "", { icon: "fa-folder" });
     expect(createFolder).toHaveBeenCalled();
   });
 
   it("opens folders", () => {
     const wrapper = mount(<DesignerSequenceList {...fakeProps()} />);
-    clickButton(wrapper, 2, "", { icon: "fa-chevron-right" });
+    clickButton(wrapper, 3, "", { icon: "fa-chevron-right" });
     expect(toggleAll).toHaveBeenCalled();
   });
 
@@ -134,5 +142,19 @@ describe("<DesignerSequenceList />", () => {
     const wrapper = await mount(<DesignerSequenceList {...p} />);
     expect(wrapper.text().toLowerCase()).not.toContain("first");
     expect(wrapper.text().toLowerCase()).toContain("second");
+  });
+
+  it("navigates to sequence page", () => {
+    mockPath = Path.mock(Path.designerSequences());
+    const wrapper = mount(<DesignerSequenceList {...fakeProps()} />);
+    clickButton(wrapper, 0, "fullscreen");
+    expect(push).toHaveBeenCalledWith(Path.sequencePage());
+  });
+
+  it("navigates to designer sequence page", () => {
+    mockPath = Path.mock(Path.sequencePage());
+    const wrapper = mount(<DesignerSequenceList {...fakeProps()} />);
+    clickButton(wrapper, 0, "collapse");
+    expect(push).toHaveBeenCalledWith(Path.designerSequences());
   });
 });

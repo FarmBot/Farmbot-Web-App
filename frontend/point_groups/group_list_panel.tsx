@@ -51,7 +51,8 @@ export class RawGroupListPanel
         panel={Panel.Groups}
         onClick={() => this.props.dispatch(createGroup({ pointUuids: [] }))}
         title={t("Add group")}>
-        <SearchField searchTerm={this.state.searchTerm}
+        <SearchField nameKey={"groups"}
+          searchTerm={this.state.searchTerm}
           placeholder={t("Search your groups...")}
           onChange={searchTerm => this.setState({ searchTerm })} />
       </DesignerPanelTop>

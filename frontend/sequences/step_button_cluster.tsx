@@ -232,7 +232,6 @@ export class StepButtonCluster
       .filter(x => x.title.toLowerCase()
         .includes(searchTerm.toLowerCase()));
     const sequences = (this.props.sequences || [])
-      .filter(s => Path.inDesigner() || s.body.pinned)
       .filter(x => x.body.name.toLowerCase()
         .includes(searchTerm.toLowerCase()));
     const first = commands[0]?.step || (sequences[0] && {
@@ -244,10 +243,11 @@ export class StepButtonCluster
       "step-button-cluster",
       Path.inDesigner() ? "designer-cluster" : "",
     ].join(" ")}>
-      <SearchField searchTerm={searchTerm}
+      <SearchField nameKey={"commands"}
+        searchTerm={searchTerm}
         placeholder={t("Search commands and sequences...")}
         customLeftIcon={<i />}
-        autoFocus={Path.inDesigner()}
+        autoFocus={true}
         onEnter={() => {
           if (first) {
             click();
@@ -267,7 +267,7 @@ export class StepButtonCluster
               color={stepButton.color} />
           </div>)}
         {!Path.inDesigner() && sequences.length > 0 &&
-          <Col xs={12}><label>{t("pinned sequences")}</label></Col>}
+          <Col xs={12}><label></label></Col>}
         <div className={"pinned-sequences"}>
           {sequences.map((s, inx) => s.body.id &&
             <div className={[

@@ -58,6 +58,7 @@ import { ResourceIndex, UUID, VariableNameSet } from "../resources/interfaces";
 import { newVariableDataValue, newVariableLabel } from "./locals_list/new_variable";
 import { StepButtonCluster } from "./step_button_cluster";
 import { requestAutoGeneration } from "./request_auto_generation";
+import { AutoGenerateButton, ResourceTitle } from "./panel/editor";
 
 export const onDrop =
   (dispatch1: Function, sequence: TaggedSequence) =>
@@ -266,8 +267,11 @@ export const SequenceBtnGroup = ({
   toggleViewSequenceCeleryScript,
   viewCeleryScript,
   visualized,
-}: SequenceBtnGroupProps) =>
-  <div className="button-group">
+}: SequenceBtnGroupProps) => {
+  const [processingTitle, setProcessingTitle] = React.useState(false);
+  const [processingColor, setProcessingColor] = React.useState(false);
+  const isProcessing = processingColor || processingTitle;
+  return <div className="button-group">
     <SaveBtn status={sequence.specialStatus}
       onClick={() => dispatch(save(sequence.uuid)).then(() =>
         push(Path.sequences(urlFriendly(sequence.body.name))))} />
@@ -289,10 +293,6 @@ export const SequenceBtnGroup = ({
       <i className={`fa fa-code ${viewCeleryScript ? "enabled" : ""} step-control`}
         title={t("toggle celery script view")}
         onClick={toggleViewSequenceCeleryScript} />}
-    {!Path.inDesigner() && <ColorPicker
-      current={sequence.body.color}
-      onChange={color =>
-        editCurrentSequence(dispatch, sequence, { color })} />}
     <i title={sequence.body.pinned ? t("unpin sequence") : t("pin sequence")}
       className={[
         "fa",
@@ -322,7 +322,20 @@ export const SequenceBtnGroup = ({
           ? <SequenceShareMenu sequence={sequence} />
           : <SequencePublishMenu sequence={sequence} />} />
     </div>
+    {!Path.inDesigner() && <ColorPicker
+      targetElement={<i title={t("select color")}
+        className={"icon-saucer fa fa-paint-brush"} />}
+      current={sequence.body.color}
+      onChange={color =>
+        editCurrentSequence(dispatch, sequence, { color })} />}
+    {!Path.inDesigner() && <AutoGenerateButton
+      dispatch={dispatch}
+      sequence={sequence}
+      isProcessing={isProcessing}
+      setTitleProcessing={setProcessingTitle}
+      setColorProcessing={setProcessingColor} />}
   </div>;
+};
 
 interface DeleteSequenceProps {
   getWebAppConfigValue: GetWebAppConfigValue;
@@ -366,7 +379,16 @@ export const SequenceName =
 export const SequenceHeader = (props: SequenceHeaderProps) => {
   const { sequence, dispatch } = props;
   const sequenceAndDispatch = { sequence, dispatch };
-  return <div id="sequence-editor-tools" className="sequence-editor-tools">
+  const color = Path.inDesigner() ? "" : sequence.body.color;
+  const page = Path.inDesigner() ? "" : "page";
+  return <div id="sequence-editor-tools"
+    className={`sequence-editor-tools ${color} ${page}`}>
+    {props.showName &&
+      <ResourceTitle
+        key={sequence.body.name}
+        resource={sequence}
+        fallback={t("No Sequence selected")}
+        dispatch={dispatch} />}
     <SequenceBtnGroup {...sequenceAndDispatch}
       syncStatus={props.syncStatus}
       resources={props.resources}
@@ -375,8 +397,6 @@ export const SequenceHeader = (props: SequenceHeaderProps) => {
       viewCeleryScript={props.viewCeleryScript}
       visualized={props.visualized}
       sequencesState={props.sequencesState} />
-    {props.showName &&
-      <SequenceName {...sequenceAndDispatch} />}
   </div>;
 };
 
@@ -506,7 +526,7 @@ export class SequenceEditorMiddleActive extends
           toggleViewSequenceCeleryScript={
             this.toggleSection("viewSequenceCeleryScript")}
           showName={this.props.showName} />}
-      <hr />
+      {Path.inDesigner() && <hr />}
       {view == "local"
         ? <div className={"sequence-editor-sections"}>
           <Description

@@ -35,7 +35,8 @@ export class RawDesignerRegimenList
         onClick={() =>
           this.props.dispatch(addRegimen(this.props.regimens.length))}
         title={t("add new regimen")}>
-        <SearchField searchTerm={this.state.searchTerm}
+        <SearchField nameKey={"regimens"}
+          searchTerm={this.state.searchTerm}
           placeholder={t("Search your regimens...")}
           onChange={searchTerm => this.setState({ searchTerm })} />
       </DesignerPanelTop>

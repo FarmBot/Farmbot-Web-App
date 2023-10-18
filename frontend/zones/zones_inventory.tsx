@@ -44,7 +44,8 @@ export const RawZones = (props: ZonesProps) => {
       }))
         .then((id: number) => navigate(id)).catch(() => { })}
       title={t("Add zone")}>
-      <SearchField searchTerm={searchTerm}
+      <SearchField nameKey={"zones"}
+        searchTerm={searchTerm}
         placeholder={t("Search your zones...")}
         onChange={setSearchTerm} />
     </DesignerPanelTop>

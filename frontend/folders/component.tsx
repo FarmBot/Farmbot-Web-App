@@ -451,10 +451,10 @@ export class Folders extends React.Component<FolderProps, FolderState> {
         graphic={EmptyStateGraphic.sequences}
         title={t("No Sequences.")}
         text={Content.NO_SEQUENCES}>
+        <this.Graph />
         <ul className="sequences-not-in-folders">
           {this.rootSequences()}
         </ul>
-        <this.Graph />
         <SequenceDropArea
           dropAreaVisible={!!this.state.movedSequenceUuid}
           onMoveEnd={this.endSequenceMove}
@@ -468,7 +468,7 @@ export class Folders extends React.Component<FolderProps, FolderState> {
 
 export const FolderPanelTop = (props: FolderPanelTopProps) =>
   <div className="panel-top with-button">
-    <SearchField
+    <SearchField nameKey={"sequences"}
       placeholder={t("Search sequences...")}
       searchTerm={props.searchTerm || ""}
       onChange={updateSearchTerm} />

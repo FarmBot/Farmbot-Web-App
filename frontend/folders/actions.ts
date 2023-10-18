@@ -41,7 +41,7 @@ export const addNewSequenceToFolder = (config: DeepPartial<Folder> = {}) => {
   const uuidMap = store.getState().resources.index.byKind["Sequence"];
   const seqCount = Object.keys(uuidMap).length;
   const newSequence = {
-    name: t("new sequence {{ num }}", { num: seqCount }),
+    name: t("New Sequence {{ num }}", { num: seqCount }),
     args: {
       version: -999,
       locals: { kind: "scope_declaration", args: {} },

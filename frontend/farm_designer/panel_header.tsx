@@ -170,7 +170,7 @@ export const getCurrentPanel = (): Tabs | undefined => {
   if (getPathArray().join("/") === Path.withApp(Path.designer())) {
     return Panel.Map;
   } else if (Path.getSlug(Path.app()) == "sequences") {
-    return undefined;
+    return Panel.Sequences;
   } else if (Path.getSlug(Path.app()) == "logs") {
     return undefined;
   } else if (Path.getSlug(Path.savedGardens()) == "templates") {

@@ -45,7 +45,8 @@ export class RawSavedGardens
           panel={Panel.SavedGardens}
           linkTo={Path.savedGardens("add")}
           title={t("Add garden")}>
-          <SearchField searchTerm={this.state.searchTerm}
+          <SearchField nameKey={"gardens"}
+            searchTerm={this.state.searchTerm}
             placeholder={t("Search your gardens...")}
             onChange={searchTerm => this.setState({ searchTerm })} />
         </DesignerPanelTop>
