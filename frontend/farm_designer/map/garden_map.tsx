@@ -119,7 +119,7 @@ export class GardenMap extends
       boxSelected: this.props.designer.selectedPoints,
     });
     this.setState({
-      isDragging: false, qPageX: 0, qPageY: 0,
+      isDragging: false,
       activeDragXY: { x: undefined, y: undefined, z: undefined },
       activeDragSpread: undefined,
       selectionBox: undefined,
@@ -340,10 +340,7 @@ export class GardenMap extends
           isDragging: this.state.isDragging,
           dispatch: this.props.dispatch,
           setMapState: this.setMapState,
-          qPageX: this.state.qPageX,
-          qPageY: this.state.qPageY,
-          pageX: e.pageX,
-          pageY: e.pageY,
+          gardenCoords: this.getGardenCoordinates(e),
         });
         break;
       case Mode.createPoint:

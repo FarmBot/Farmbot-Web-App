@@ -1,4 +1,4 @@
-import { MovePointsProps, DraggableEvent } from "../interfaces";
+import { MovePointsProps, DraggableEvent, MovePointToProps } from "../interfaces";
 import { defensiveClone } from "../../util";
 import { edit } from "../../api/crud";
 import { push } from "../../history";
@@ -25,6 +25,14 @@ export const movePoints = (payload: MovePointsProps) => (dispatch: Function) => 
     update.y = clamp(update.y, 0, payload.gridSize.y);
     dispatch(edit(tr, update));
   });
+};
+
+export const movePointTo = (payload: MovePointToProps) => (dispatch: Function) => {
+  const tr = payload.point;
+  const update = defensiveClone(payload.point).body;
+  update.x = clamp(payload.x, 0, payload.gridSize.x);
+  update.y = clamp(payload.y, 0, payload.gridSize.y);
+  dispatch(edit(tr, update));
 };
 
 export const selectPoint = (payload: string[] | undefined) => {

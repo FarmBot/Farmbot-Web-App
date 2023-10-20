@@ -323,7 +323,7 @@ export const savedGardenOpen = () =>
     ? parseInt(Path.getSlug(Path.savedGardens()))
     : false;
 
-export const getZoomLevelFromMap = (map: Element) =>
+const getZoomLevelFromMap = (map: Element) =>
   parseFloat((window.getComputedStyle(map).transform || "(1").split("(")[1]);
 
 /** Get the garden map coordinate of a cursor or screen interaction. */

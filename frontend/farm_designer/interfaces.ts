@@ -123,6 +123,13 @@ export interface MovePointsProps {
   gridSize: AxisNumberProperty;
 }
 
+export interface MovePointToProps {
+  x: number;
+  y: number;
+  point: TaggedPoint | TaggedPlantTemplate;
+  gridSize: AxisNumberProperty;
+}
+
 /**
  * OFCrop bundled with corresponding profile image from OpenFarm API.
  */
@@ -291,8 +298,6 @@ export interface GardenMapProps {
 export interface GardenMapState {
   isDragging: boolean | undefined;
   botOriginQuadrant: BotOriginQuadrant;
-  qPageX: number | undefined;
-  qPageY: number | undefined;
   activeDragXY: BotPosition | undefined;
   activeDragSpread: number | undefined;
   selectionBox: SelectionBoxData | undefined;

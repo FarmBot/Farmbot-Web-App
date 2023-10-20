@@ -10,10 +10,8 @@ import {
   DesignerState, GardenMapState, MovePointsProps,
 } from "../../../interfaces";
 import { findBySlug } from "../../../search_selectors";
-import {
-  transformXY, round, getZoomLevelFromMap, defaultSpreadCmDia,
-} from "../../util";
-import { movePoints } from "../../actions";
+import { round, defaultSpreadCmDia } from "../../util";
+import { movePointTo, movePoints } from "../../actions";
 import { cachedCrop } from "../../../../open_farm/cached_crop";
 import { t } from "../../../../i18next_wrapper";
 import { error } from "../../../../toast/toast";
@@ -153,31 +151,21 @@ export interface DragPlantProps {
   isDragging: boolean | undefined;
   dispatch: Function;
   setMapState(x: Partial<GardenMapState>): void;
-  pageX: number;
-  pageY: number;
-  qPageX: number | undefined;
-  qPageY: number | undefined;
+  gardenCoords: AxisNumberProperty | undefined;
 }
 
 /** Move a plant in the garden map. */
 export const dragPlant = (props: DragPlantProps) => {
   const plant = props.getPlant();
-  const map = document.querySelector(".farm-designer-map");
-  const { isDragging, pageX, pageY, qPageX, qPageY } = props;
-  const { quadrant, xySwap, gridSize } = props.mapTransformProps;
-  if (isDragging && plant && map) {
-    const zoomLvl = getZoomLevelFromMap(map);
-    const { qx, qy } = transformXY(pageX, pageY, props.mapTransformProps);
-    const deltaX = Math.round((qx - (qPageX || qx)) / zoomLvl);
-    const deltaY = Math.round((qy - (qPageY || qy)) / zoomLvl);
-    const dX = xySwap && (quadrant % 2 === 1) ? -deltaX : deltaX;
-    const dY = xySwap && (quadrant % 2 === 1) ? -deltaY : deltaY;
+  const { isDragging, gardenCoords } = props;
+  const { gridSize } = props.mapTransformProps;
+  if (isDragging && plant && gardenCoords) {
+    const newX = gardenCoords.x;
+    const newY = gardenCoords.y;
     props.setMapState({
-      qPageX: qx, qPageY: qy,
-      activeDragXY: { x: plant.body.x + dX, y: plant.body.y + dY, z: 0 }
+      activeDragXY: { x: newX, y: newY, z: plant.body.z }
     });
-    const points = [plant];
-    props.dispatch(movePoints({ deltaX: dX, deltaY: dY, points, gridSize }));
+    props.dispatch(movePointTo({ x: newX, y: newY, point: plant, gridSize }));
   }
 };
 
