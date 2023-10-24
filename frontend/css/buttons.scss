@@ -18,28 +18,6 @@
     pointer-events: none !important;
     cursor: not-allowed !important;
   }
-  &.is-saved,
-  &.is-saving {
-    color: $off_white !important;
-    background: $medium_gray !important;
-    box-shadow: 0 2px 0px 0px $dark_gray !important;
-    pointer-events: none;
-  }
-  .btn-spinner {
-    margin: 0.2rem 0px 0 0.6rem;
-    width: 0.8rem;
-    height: 0.8rem;
-    animation: rotate 0.8s infinite linear;
-    border: 1px solid $white;
-    border-right-color: transparent;
-    border-radius: 50%;
-    float: right;
-    &.sync {
-      border-color: $dark_gray;
-      border-right-color: transparent;
-      margin-top: 0.4rem;
-    }
-  }
   &:active {
     box-shadow: none !important;
     transform: translateY(2px);
@@ -288,6 +266,11 @@
   }
 }
 
+.is-saved,
+.is-saving {
+  pointer-events: none;
+}
+
 .block {
   height: 3.5rem;
   font-size: 1.2rem;
@@ -454,4 +437,50 @@
   padding: ".5rem 1.6rem";
   font-size: "1.2rem";
   border-bottom: "none";
+}
+
+.fb-button-2 {
+  margin: 0.25em 0.5em;
+  float: right;
+  font-weight: bold;
+  padding: 0.4em 0.8em;
+  border-radius: 5px;
+  font-size: 1rem;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  color: $off_white;
+  border: none !important;
+  box-shadow: inset 0 -1px 0px 0px $translucent2, 0 0 5px $translucent15;
+  &:hover:not(.pseudo-disabled) {
+    filter: brightness(1.05);
+    box-shadow: inset 0 -1px 0px 0px $translucent2, 0 0 5px $translucent15, inset 0 0 5px rgba(255, 255, 255, 0.3);
+  }
+  &:active:not(.pseudo-disabled) {
+    filter: brightness(1);
+    box-shadow: inset 0 1px 0px 0px $translucent1, inset 0 0 5px $translucent2;
+  }
+  &.pseudo-disabled {
+    filter: brightness(0.7) contrast(0.8);
+    cursor: not-allowed;
+  }
+  .fa-check,
+  .fa-spinner {
+    margin: 0;
+    color: $off_white !important;
+    line-height: 1rem;
+    margin-left: 0.5rem;
+    float: none;
+  }
+  &.gray {
+    background: $medium_gray !important;
+  }
+  &.yellow,
+  &.orange {
+    color: $dark_gray;
+    .fa-spinner {
+      color: $dark_gray !important;
+    }
+  }
 }

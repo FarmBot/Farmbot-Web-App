@@ -636,11 +636,6 @@
         margin: 0;
       }
     }
-    .run-btn {
-      .pseudo-disabled {
-        background: $placeholder_gray !important;
-      }
-    }
     &.blue,
     &.yellow,
     &.orange,
@@ -691,7 +686,6 @@
     transform: rotate(45deg);
     &.pinned {
       transform: rotate(0deg);
-      color: $dark_gray;
     }
   }
   hr {

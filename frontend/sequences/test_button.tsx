@@ -81,12 +81,12 @@ interface TestProps {
 
 /** Sequence test button. Turns grey when sequence is not saved and synced. */
 const Test = (props: TestProps) => {
-  const normalColor = props.canTest ? "orange" : "pseudo-disabled";
+  const normalColor = `orange ${props.canTest ? "" : "pseudo-disabled"}`;
   const buttonText = props.menuIsOpen
     ? t("Close")
     : t("Run");
   return <button
-    className={`fb-button ${props.menuIsOpen ? "gray" : normalColor}`}
+    className={`fb-button-2 ${props.menuIsOpen ? "gray" : normalColor}`}
     title={buttonText}
     onClick={props.onClick}>
     {buttonText}
@@ -147,6 +147,7 @@ export class TestButton extends React.Component<TestBtnProps, TestBtnState> {
 
   render() {
     const { menuOpen, sequence } = this.props;
+    const hasMenu = isParameterized(this.props.sequence.body);
     const isOpen = menuOpen == sequence.uuid;
     return <Popover className={"fb-button-popover-wrapper run-btn"} isOpen={isOpen}
       popoverClassName="parameter-assignment-menu-popover"
@@ -154,7 +155,7 @@ export class TestButton extends React.Component<TestBtnProps, TestBtnState> {
         canTest={this.canTest}
         onClick={this.onClick}
         menuIsOpen={isOpen} />}
-      content={isParameterized(this.props.sequence.body) ?
+      content={hasMenu ?
         <ParameterAssignmentMenu
           dispatch={this.props.dispatch}
           canTest={this.canTest}

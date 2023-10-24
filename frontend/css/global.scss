@@ -1048,9 +1048,14 @@ ul {
   .run-btn {
     margin-right: 0.5rem;
   }
+  .fb-button-2 {
+    margin: 0;
+  }
   .settings-menu-button {
-    margin-right: 1rem;
     margin-top: 0.15rem;
+    .bp5-popover-wrapper {
+      margin-left: 0;
+    }
   }
   .fa {
     margin: 0 0.75rem;

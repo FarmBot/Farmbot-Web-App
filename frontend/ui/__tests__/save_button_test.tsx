@@ -6,6 +6,7 @@ import { SpecialStatus } from "farmbot";
 describe("<SaveBtn />", () => {
   const fakeProps = (): SaveBtnProps => ({
     status: SpecialStatus.SAVED,
+    onClick: jest.fn(),
   });
 
   it("returns button", () => {

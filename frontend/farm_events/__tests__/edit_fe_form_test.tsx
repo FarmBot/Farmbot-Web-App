@@ -186,7 +186,7 @@ describe("<EditFEForm />", () => {
       resources={buildResourceIndex([]).index} />);
     el.update();
     const txt = el.text().replace(/\s+/g, " ");
-    expect(txt).toContain("Save *");
+    expect(txt).toContain("Save");
   });
 
   it("displays success message on save", async () => {
