@@ -2,6 +2,7 @@ import { Color } from "farmbot/dist/corpus";
 import { SyncStatus, TaggedSequence } from "farmbot";
 import { VariableNameSet, UUID, ResourceIndex } from "../resources/interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
+import { RunButtonMenuOpen } from "../sequences/interfaces";
 
 export interface FolderMeta {
   open: boolean;
@@ -65,7 +66,7 @@ export interface FolderProps {
   sequenceMetas: Record<UUID, VariableNameSet | undefined>;
   getWebAppConfigValue: GetWebAppConfigValue;
   resources: ResourceIndex;
-  menuOpen: UUID | undefined;
+  menuOpen: RunButtonMenuOpen;
   syncStatus: SyncStatus | undefined;
 }
 
@@ -95,7 +96,7 @@ export interface FolderNodeProps {
   sequenceMetas: Record<UUID, VariableNameSet | undefined>;
   getWebAppConfigValue: GetWebAppConfigValue;
   resources: ResourceIndex;
-  menuOpen: UUID | undefined;
+  menuOpen: RunButtonMenuOpen;
   syncStatus: SyncStatus | undefined;
   searchTerm: string | undefined;
 }
@@ -127,7 +128,7 @@ export interface FolderItemProps {
   inUse: boolean;
   getWebAppConfigValue: GetWebAppConfigValue;
   resources: ResourceIndex;
-  menuOpen: UUID | undefined;
+  menuOpen: RunButtonMenuOpen;
   syncStatus: SyncStatus | undefined;
   searchTerm: string | undefined;
 }

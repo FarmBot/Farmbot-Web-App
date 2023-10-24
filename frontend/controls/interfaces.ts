@@ -5,10 +5,11 @@ import {
   Vector3, McuParams, Xyz, AxisState, SyncStatus, TaggedSequence,
   FirmwareHardware, TaggedPeripheral, TaggedWebcamFeed, TaggedLog,
 } from "farmbot";
-import { ResourceIndex, UUID } from "../resources/interfaces";
+import { ResourceIndex } from "../resources/interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import { MovementState } from "../interfaces";
 import { PinBindingListItems } from "../settings/pin_bindings/interfaces";
+import { RunButtonMenuOpen } from "../sequences/interfaces";
 
 export interface AxisDisplayGroupProps {
   position: BotPosition;
@@ -58,7 +59,7 @@ export interface PinnedSequencesProps {
   syncStatus: SyncStatus | undefined;
   sequences: TaggedSequence[];
   resources: ResourceIndex;
-  menuOpen: UUID | undefined;
+  menuOpen: RunButtonMenuOpen;
   dispatch: Function;
 }
 
@@ -69,7 +70,7 @@ export interface DesignerControlsProps {
   peripherals: TaggedPeripheral[];
   sequences: TaggedSequence[];
   resources: ResourceIndex;
-  menuOpen: UUID | undefined;
+  menuOpen: RunButtonMenuOpen;
   firmwareSettings: McuParams;
   getConfigValue: GetWebAppConfigValue;
   sourceFwConfig: SourceFwConfig;

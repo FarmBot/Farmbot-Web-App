@@ -23,7 +23,9 @@ import { fakePings } from "../../__test_support__/fake_state/pings";
 import { Link } from "../../link";
 import { refresh } from "../../api/crud";
 import { push } from "../../history";
-import { fakeHelpState } from "../../__test_support__/fake_designer_state";
+import {
+  fakeHelpState, fakeMenuOpenState,
+} from "../../__test_support__/fake_designer_state";
 import { Path } from "../../internal_urls";
 import { fakePercentJob } from "../../__test_support__/fake_bot_data";
 import {
@@ -55,7 +57,7 @@ describe("<NavBar />", () => {
     sourceFbosConfig: jest.fn(),
     firmwareConfig: fakeFirmwareConfig().body,
     resources: buildResourceIndex([]).index,
-    menuOpen: undefined,
+    menuOpen: fakeMenuOpenState(),
     env: {},
     feeds: [],
     peripherals: [],

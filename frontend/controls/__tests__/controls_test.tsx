@@ -11,6 +11,7 @@ import { DesignerControlsProps } from "../interfaces";
 import { fakeMovementState } from "../../__test_support__/fake_bot_data";
 import { app } from "../../__test_support__/fake_state/app";
 import { Actions } from "../../constants";
+import { fakeMenuOpenState } from "../../__test_support__/fake_designer_state";
 
 describe("<DesignerControls />", () => {
   const fakeProps = (): DesignerControlsProps => ({
@@ -20,7 +21,7 @@ describe("<DesignerControls />", () => {
     peripherals: [],
     sequences: [],
     resources: buildResourceIndex([]).index,
-    menuOpen: undefined,
+    menuOpen: fakeMenuOpenState(),
     firmwareSettings: bot.hardware.mcu_params,
     getConfigValue: jest.fn(),
     sourceFwConfig: () => ({ value: 0, consistent: true }),
@@ -54,7 +55,7 @@ describe("<ControlsPanel />", () => {
     peripherals: [],
     sequences: [],
     resources: buildResourceIndex([]).index,
-    menuOpen: undefined,
+    menuOpen: fakeMenuOpenState(),
     firmwareSettings: bot.hardware.mcu_params,
   });
 

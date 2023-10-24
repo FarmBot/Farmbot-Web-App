@@ -1,5 +1,6 @@
 import { DesignerState } from "../farm_designer/interfaces";
 import { HelpState } from "../help/reducer";
+import { RunButtonMenuOpen } from "../sequences/interfaces";
 
 export const fakeDesignerState = (): DesignerState => ({
   selectedPoints: undefined,
@@ -55,4 +56,9 @@ export const fakeDesignerState = (): DesignerState => ({
 export const fakeHelpState = (): HelpState => ({
   currentTour: undefined,
   currentTourStep: undefined,
+});
+
+export const fakeMenuOpenState = (): RunButtonMenuOpen => ({
+  component: undefined,
+  uuid: undefined,
 });

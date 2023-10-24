@@ -275,7 +275,7 @@ export const SequenceBtnGroup = ({
     <SaveBtn status={sequence.specialStatus}
       onClick={() => dispatch(save(sequence.uuid)).then(() =>
         push(Path.sequences(urlFriendly(sequence.body.name))))} />
-    <TestButton
+    <TestButton component={"editor"}
       key={JSON.stringify(sequence)}
       syncStatus={syncStatus}
       sequence={sequence}

@@ -51,7 +51,7 @@ import {
 } from "../sequences/sequence_editor_middle_active";
 import { Path } from "../internal_urls";
 import { copySequence } from "../sequences/actions";
-import { TestButton } from "../sequences/test_button";
+import { TestButton, isMenuOpen } from "../sequences/test_button";
 import { TaggedSequence } from "farmbot";
 
 export const FolderListItem = (props: FolderItemProps) => {
@@ -63,7 +63,9 @@ export const FolderListItem = (props: FolderItemProps) => {
   const active = Path.lastChunkEquals(urlFriendly(seqName)) ? "active" : "";
   const [settingsOpen, setSettingsOpen] = React.useState(false);
   const [descriptionOpen, setDescriptionOpen] = React.useState(false);
-  const hovered = props.menuOpen == sequence.uuid || settingsOpen || descriptionOpen
+  const menuOpen = isMenuOpen(props.menuOpen,
+    { component: "list", uuid: sequence.uuid });
+  const hovered = menuOpen || settingsOpen || descriptionOpen
     ? "hovered"
     : "";
   const matched = (props.searchTerm &&
@@ -93,7 +95,7 @@ export const FolderListItem = (props: FolderItemProps) => {
         draggable={false}>
         <p>{nameWithSaveIndicator}</p>
       </Link>
-      <TestButton
+      <TestButton component={"list"}
         syncStatus={props.syncStatus}
         sequence={sequence}
         resources={props.resources}

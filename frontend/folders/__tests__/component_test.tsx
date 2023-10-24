@@ -73,6 +73,7 @@ import { SearchField } from "../../ui/search_field";
 import { Path } from "../../internal_urls";
 import { copySequence } from "../../sequences/actions";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
+import { fakeMenuOpenState } from "../../__test_support__/fake_designer_state";
 
 const fakeRootFolder = (): FolderNodeInitial => ({
   kind: "initial",
@@ -111,7 +112,7 @@ describe("<Folders />", () => {
     sequenceMetas: {},
     getWebAppConfigValue: jest.fn(),
     resources: buildResourceIndex([]).index,
-    menuOpen: undefined,
+    menuOpen: fakeMenuOpenState(),
     syncStatus: undefined,
   });
 
@@ -258,7 +259,7 @@ describe("<FolderListItem />", () => {
     inUse: false,
     getWebAppConfigValue: jest.fn(),
     resources: buildResourceIndex([]).index,
-    menuOpen: undefined,
+    menuOpen: fakeMenuOpenState(),
     syncStatus: undefined,
     searchTerm: undefined,
   });
@@ -523,7 +524,7 @@ describe("<FolderNameEditor />", () => {
     sequenceMetas: {},
     getWebAppConfigValue: jest.fn(),
     resources: buildResourceIndex([]).index,
-    menuOpen: undefined,
+    menuOpen: fakeMenuOpenState(),
     syncStatus: undefined,
     searchTerm: undefined,
     dragging: false,

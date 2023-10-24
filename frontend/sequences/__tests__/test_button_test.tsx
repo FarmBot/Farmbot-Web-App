@@ -27,15 +27,17 @@ import { fakeVariableNameSet } from "../../__test_support__/fake_variables";
 import { SequenceMeta } from "../../resources/sequence_meta";
 import { clickButton } from "../../__test_support__/helpers";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
+import { fakeMenuOpenState } from "../../__test_support__/fake_designer_state";
 
-describe("<TestButton/>", () => {
+describe("<TestButton />", () => {
 
   const fakeProps = (): TestBtnProps => ({
     sequence: fakeSequence(),
     syncStatus: "synced",
     resources: buildResourceIndex().index,
-    menuOpen: undefined,
+    menuOpen: fakeMenuOpenState(),
     dispatch: jest.fn(),
+    component: "list",
   });
 
   it("doesn't fire if unsaved", () => {
@@ -88,13 +90,16 @@ describe("<TestButton/>", () => {
     expect(btn.hasClass("orange")).toBeTruthy();
     expect(warning).not.toHaveBeenCalled();
     expect(mockDevice.execSequence).not.toHaveBeenCalled();
-    expect(props.dispatch).toHaveBeenCalledWith(setMenuOpen(props.sequence.uuid));
+    expect(props.dispatch).toHaveBeenCalledWith(setMenuOpen({
+      component: "list", uuid: props.sequence.uuid,
+    }));
   });
 
   it("has open parameter assignment menu", () => {
     const props = fakeProps();
     mockHasParameters = true;
-    props.menuOpen = props.sequence.uuid;
+    props.menuOpen.component = "list";
+    props.menuOpen.uuid = props.sequence.uuid;
     const result = mount(<TestButton {...props} />);
     const btn = result.find("button").first();
     expect(btn.hasClass("gray")).toBeTruthy();
@@ -104,7 +109,8 @@ describe("<TestButton/>", () => {
 
   it("closes parameter assignment menu", () => {
     const p = fakeProps();
-    p.menuOpen = p.sequence.uuid;
+    p.menuOpen.component = "list";
+    p.menuOpen.uuid = p.sequence.uuid;
     p.syncStatus = "synced";
     p.sequence.specialStatus = SpecialStatus.SAVED;
     p.sequence.body.id = 1;
@@ -115,7 +121,7 @@ describe("<TestButton/>", () => {
     expect(btn.hasClass("gray")).toBeTruthy();
     expect(warning).not.toHaveBeenCalled();
     expect(mockDevice.execSequence).not.toHaveBeenCalled();
-    expect(p.dispatch).toHaveBeenCalledWith(setMenuOpen(undefined));
+    expect(p.dispatch).toHaveBeenCalledWith(setMenuOpen(fakeMenuOpenState()));
   });
 
   it("edits body variables", () => {
@@ -185,6 +191,6 @@ describe("<TestButton/>", () => {
     const props = fakeProps();
     const wrapper = mount(<TestButton {...props} />);
     wrapper.unmount();
-    expect(props.dispatch).toHaveBeenCalledWith(setMenuOpen(undefined));
+    expect(props.dispatch).toHaveBeenCalledWith(setMenuOpen(fakeMenuOpenState()));
   });
 });

@@ -9,7 +9,7 @@ const setSequence = (uuid: string) => store.dispatch(selectSequence(uuid));
 
 export function setActiveSequenceByName() {
   const chunk = Path.getLastChunk();
-  store.dispatch(setMenuOpen(undefined));
+  store.dispatch(setMenuOpen({ component: undefined, uuid: undefined }));
   if (!chunk || chunk == "sequences") {
     return;
   }

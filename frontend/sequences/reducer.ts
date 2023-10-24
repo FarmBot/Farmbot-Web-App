@@ -1,12 +1,11 @@
-import { SequenceReducerState } from "./interfaces";
+import { RunButtonMenuOpen, SequenceReducerState } from "./interfaces";
 import { generateReducer } from "../redux/generate_reducer";
 import { TaggedResource } from "farmbot";
 import { Actions } from "../constants";
-import { UUID } from "../resources/interfaces";
 
 export const initialState: SequenceReducerState = {
   current: undefined,
-  menuOpen: undefined,
+  menuOpen: { component: undefined, uuid: undefined },
   stepIndex: undefined,
 };
 
@@ -23,7 +22,7 @@ export const sequenceReducer = generateReducer<SequenceReducerState>(initialStat
     s.current = payload;
     return s;
   })
-  .add<UUID | undefined>(Actions.SET_SEQUENCE_POPUP_STATE, (s, { payload }) => {
+  .add<RunButtonMenuOpen>(Actions.SET_SEQUENCE_POPUP_STATE, (s, { payload }) => {
     s.menuOpen = payload;
     return s;
   })
