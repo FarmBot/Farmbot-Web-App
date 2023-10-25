@@ -26,13 +26,13 @@ const OFSearchRaw = (specific: boolean) => (searchTerm: string) =>
       ? openFarmSearchQuerySpecific(searchTerm)
       : openFarmSearchQuery(searchTerm))
       .then(resp => {
-        const images: { [key: string]: string } = {};
+        const imageUrls: string[] = [];
         const companions: OpenFarm.CompanionsData[] = [];
         get(resp, "data.included", FALLBACK)
           .map((item: OpenFarm.Included) => {
             switch (item.type) {
               case "crops-pictures":
-                images[item.id] = item.attributes.thumbnail_url;
+                imageUrls.push(item.attributes.thumbnail_url);
                 break;
               case "crops":
                 const { name, slug, svg_icon } = item.attributes;
@@ -42,8 +42,8 @@ const OFSearchRaw = (specific: boolean) => (searchTerm: string) =>
           });
         const payload = flatten([resp.data.data]).map(datum => {
           const crop = datum.attributes;
-          const id = get(datum, "relationships.pictures.data[0].id", "");
-          return { crop, image: (images[id] || FilePath.DEFAULT_ICON), companions };
+          const images = imageUrls.length > 0 ? imageUrls : [FilePath.DEFAULT_ICON];
+          return { crop, images, companions };
         });
         dispatch({ type: Actions.OF_SEARCH_RESULTS_OK, payload });
       })

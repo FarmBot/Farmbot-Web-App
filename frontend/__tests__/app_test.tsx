@@ -29,7 +29,9 @@ import { fakeTimeSettings } from "../__test_support__/fake_time_settings";
 import { error, warning } from "../toast/toast";
 import { fakePings } from "../__test_support__/fake_state/pings";
 import { auth } from "../__test_support__/fake_state/token";
-import { fakeHelpState } from "../__test_support__/fake_designer_state";
+import {
+  fakeHelpState, fakeMenuOpenState,
+} from "../__test_support__/fake_designer_state";
 import { Path } from "../internal_urls";
 import { push } from "../history";
 import { app } from "../__test_support__/fake_state/app";
@@ -65,7 +67,7 @@ const fakeProps = (): AppProps => ({
   feeds: [],
   peripherals: [],
   sequences: [],
-  menuOpen: undefined,
+  menuOpen: fakeMenuOpenState(),
 });
 
 describe("<App />: Loading", () => {

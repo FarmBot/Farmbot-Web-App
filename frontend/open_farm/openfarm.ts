@@ -16,7 +16,7 @@ export namespace OpenFarm {
     height?: number;
     processing_pictures: number;
     guides_count?: number;
-    main_image_path?: string;
+    main_image_path: string;
     taxon?: string;
     tags_array?: string[];
     growing_degree_days?: number;

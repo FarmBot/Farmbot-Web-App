@@ -1,3 +1,5 @@
+require "open-uri"
+
 # A record of installation of a Farmware.
 # Useful for restoring a device after a re-flash.
 class FarmwareInstallation < ApplicationRecord
@@ -41,7 +43,7 @@ class FarmwareInstallation < ApplicationRecord
   # SLOW I/O BOUND STUFF! Don't run this on the
   # main thread!
   def infer_package_name_from_url
-    string_io = open(url)
+    string_io = URI.parse(url).open
     string = string_io.read(MAX_JSON_SIZE)
     json = JSON.parse(string)
     pkg_name = json.fetch("package")

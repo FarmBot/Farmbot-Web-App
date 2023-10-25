@@ -51,7 +51,7 @@ import {
 } from "../sequences/sequence_editor_middle_active";
 import { Path } from "../internal_urls";
 import { copySequence } from "../sequences/actions";
-import { TestButton } from "../sequences/test_button";
+import { TestButton, isMenuOpen } from "../sequences/test_button";
 import { TaggedSequence } from "farmbot";
 
 export const FolderListItem = (props: FolderItemProps) => {
@@ -63,7 +63,9 @@ export const FolderListItem = (props: FolderItemProps) => {
   const active = Path.lastChunkEquals(urlFriendly(seqName)) ? "active" : "";
   const [settingsOpen, setSettingsOpen] = React.useState(false);
   const [descriptionOpen, setDescriptionOpen] = React.useState(false);
-  const hovered = props.menuOpen == sequence.uuid || settingsOpen || descriptionOpen
+  const menuOpen = isMenuOpen(props.menuOpen,
+    { component: "list", uuid: sequence.uuid });
+  const hovered = menuOpen || settingsOpen || descriptionOpen
     ? "hovered"
     : "";
   const matched = (props.searchTerm &&
@@ -93,7 +95,7 @@ export const FolderListItem = (props: FolderItemProps) => {
         draggable={false}>
         <p>{nameWithSaveIndicator}</p>
       </Link>
-      <TestButton
+      <TestButton component={"list"}
         syncStatus={props.syncStatus}
         sequence={sequence}
         resources={props.resources}
@@ -451,10 +453,10 @@ export class Folders extends React.Component<FolderProps, FolderState> {
         graphic={EmptyStateGraphic.sequences}
         title={t("No Sequences.")}
         text={Content.NO_SEQUENCES}>
+        <this.Graph />
         <ul className="sequences-not-in-folders">
           {this.rootSequences()}
         </ul>
-        <this.Graph />
         <SequenceDropArea
           dropAreaVisible={!!this.state.movedSequenceUuid}
           onMoveEnd={this.endSequenceMove}
@@ -468,7 +470,7 @@ export class Folders extends React.Component<FolderProps, FolderState> {
 
 export const FolderPanelTop = (props: FolderPanelTopProps) =>
   <div className="panel-top with-button">
-    <SearchField
+    <SearchField nameKey={"sequences"}
       placeholder={t("Search sequences...")}
       searchTerm={props.searchTerm || ""}
       onChange={updateSearchTerm} />

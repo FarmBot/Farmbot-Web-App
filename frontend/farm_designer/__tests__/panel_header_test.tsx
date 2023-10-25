@@ -49,12 +49,6 @@ describe("<DesignerNavTabs />", () => {
     expectActive(wrapper, slug);
   });
 
-  it("shows inactive icons for sequences page", () => {
-    mockPath = Path.mock(Path.sequencePage());
-    const wrapper = mount(<DesignerNavTabs />);
-    expect(wrapper.find(".active").length).toEqual(0);
-  });
-
   it("shows inactive icons for logs page", () => {
     mockPath = Path.mock(Path.logs());
     const wrapper = mount(<DesignerNavTabs />);

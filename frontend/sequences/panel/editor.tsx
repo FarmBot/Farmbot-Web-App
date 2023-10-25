@@ -161,7 +161,7 @@ interface AutoGenerateButtonProps {
   setColorProcessing(state: boolean): void;
 }
 
-const AutoGenerateButton = (props: AutoGenerateButtonProps) => {
+export const AutoGenerateButton = (props: AutoGenerateButtonProps) => {
   const {
     dispatch, sequence, isProcessing, setTitleProcessing, setColorProcessing,
   } = props;

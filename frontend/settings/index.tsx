@@ -69,7 +69,7 @@ export class RawDesignerSettings
     return <DesignerPanel panelName={"settings"} panel={Panel.Settings}>
       <DesignerNavTabs />
       <DesignerPanelTop panel={Panel.Settings} withButton={true}>
-        <SearchField
+        <SearchField nameKey={"settings"}
           placeholder={t("Search settings...")}
           searchTerm={this.props.searchTerm}
           onChange={searchTerm => {

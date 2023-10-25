@@ -22,7 +22,7 @@ export const PinnedSequences = (props: PinnedSequencesProps) => {
                 </label>
               </Col>
               <Col xs={4}>
-                <TestButton
+                <TestButton component={"pinned"}
                   syncStatus={props.syncStatus}
                   sequence={sequence}
                   resources={props.resources}

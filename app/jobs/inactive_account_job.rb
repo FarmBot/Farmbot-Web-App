@@ -3,7 +3,7 @@ class InactiveAccountJob < ApplicationJob
   queue_as :default
   LIMIT = 1000
   ORDER = "RANDOM()"
-  INACTIVE_WITH_DEVICE = 11.months + 15.days
+  INACTIVE_WITH_DEVICE = 29.months + 15.days
   INACTIVE_NO_DEVICE = 2.months + 15.days
   WARNING_TIME = 14.days
 
@@ -26,12 +26,12 @@ class InactiveAccountJob < ApplicationJob
       .references(:devices)
   end
 
-  def inactive_3mo
+  def inactive_no_device
     no_device
       .where("last_sign_in_at < ?", INACTIVE_NO_DEVICE.ago)
   end
 
-  def inactive_11mo
+  def inactive_with_device
     ok_device
       .where("last_sign_in_at < ?", INACTIVE_WITH_DEVICE.ago)
   end
@@ -39,7 +39,7 @@ class InactiveAccountJob < ApplicationJob
   # Returns a Map. Key is the number of warnings sent, value is a User object
   # (not a device, but device is preloaded)
   def all_inactive
-    @all_inactive ||= inactive_11mo.or(inactive_3mo).order(ORDER).limit(LIMIT)
+    @all_inactive ||= inactive_with_device.or(inactive_no_device).order(ORDER).limit(LIMIT)
   end
 
   def notify_old_accounts

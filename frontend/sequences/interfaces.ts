@@ -139,9 +139,14 @@ export const MESSAGE_TYPES = Object.keys(MessageType);
 export const isMessageType = (x: any): x is ALLOWED_MESSAGE_TYPES =>
   MESSAGE_TYPES.includes(x as string);
 
+export interface RunButtonMenuOpen {
+  component: "list" | "editor" | "pinned" | undefined;
+  uuid: UUID | undefined;
+}
+
 export interface SequenceReducerState {
   current: string | undefined;
-  menuOpen: UUID | undefined;
+  menuOpen: RunButtonMenuOpen;
   stepIndex: number | undefined;
 }
 

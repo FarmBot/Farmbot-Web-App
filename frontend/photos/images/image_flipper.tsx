@@ -101,7 +101,7 @@ export class ImageFlipper extends
       {multipleImages && !this.state.disablePrev &&
         <button
           onClick={this.go(1)}
-          autoFocus={true}
+          autoFocus={this.props.autoFocus}
           title={t("previous image")}
           className="image-flipper-left fb-button">
           <i className={"fa fa-chevron-left"} />

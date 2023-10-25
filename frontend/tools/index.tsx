@@ -174,7 +174,8 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
         panel={Panel.Tools}
         linkTo={!hasTools ? Path.tools("add") : undefined}
         title={!hasTools ? this.strings.titleText : undefined}>
-        <SearchField searchTerm={this.state.searchTerm}
+        <SearchField nameKey={"tools"}
+          searchTerm={this.state.searchTerm}
           placeholder={this.strings.placeholder}
           onChange={searchTerm => this.setState({ searchTerm })} />
       </DesignerPanelTop>

@@ -14,8 +14,9 @@ import { TimeSettings } from "../interfaces";
 import { PingDictionary } from "../devices/connectivity/qos";
 import { HelpState } from "../help/reducer";
 import { AppState } from "../reducer";
-import { ResourceIndex, UUID } from "../resources/interfaces";
+import { ResourceIndex } from "../resources/interfaces";
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
+import { RunButtonMenuOpen } from "../sequences/interfaces";
 
 export interface NavBarProps {
   logs: TaggedLog[];
@@ -38,7 +39,7 @@ export interface NavBarProps {
   helpState: HelpState;
   telemetry: TaggedTelemetry[];
   appState: AppState;
-  menuOpen: UUID | undefined;
+  menuOpen: RunButtonMenuOpen;
   env: UserEnv;
   feeds: TaggedWebcamFeed[];
   peripherals: TaggedPeripheral[];

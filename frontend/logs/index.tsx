@@ -100,7 +100,7 @@ export class LogsPanel extends React.Component<LogsProps, Partial<LogsState>> {
     const { dispatch, bot } = this.props;
     return <div className={"logs-tab"}>
       <div className={"search-row"}>
-        <SearchField
+        <SearchField nameKey={"logs"}
           placeholder={t("Search logs...")}
           searchTerm={this.state.searchTerm}
           onChange={searchTerm => this.setState({ searchTerm })} />

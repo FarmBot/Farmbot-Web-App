@@ -23,8 +23,9 @@ import {
   movePoints, closePlantInfo, setDragIcon, clickMapPlant, selectPoint,
   setHoveredPlant,
   mapPointClickAction,
+  movePointTo,
 } from "../actions";
-import { MovePointsProps } from "../../interfaces";
+import { MovePointToProps, MovePointsProps } from "../../interfaces";
 import { edit } from "../../../api/crud";
 import { Actions } from "../../../constants";
 import { svgToUrl } from "../../../open_farm/icons";
@@ -63,6 +64,23 @@ describe("movePoints", () => {
           x: expected.x, y: expected.y
         }));
     });
+});
+
+describe("movePointTo", () => {
+  it("moves plant", () => {
+    const payload: MovePointToProps = {
+      x: 10000,
+      y: 10000,
+      point: fakePlant(),
+      gridSize: { x: 3000, y: 1500 }
+    };
+    movePointTo(payload)(jest.fn());
+    expect(edit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        body: expect.objectContaining({ x: 100, y: 200 })
+      }),
+      expect.objectContaining({ x: 3000, y: 1500 }));
+  });
 });
 
 describe("closePlantInfo()", () => {

@@ -48,6 +48,7 @@ import { SequenceVisualization } from "./sequence_visualization";
 import { chooseProfile, ProfileLine } from "./profile";
 import { betterCompact } from "../../util";
 import { Path } from "../../internal_urls";
+import { AddPlantIcon } from "./active_plant/add_plant_icon";
 
 const BOUND_KEYS = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
 
@@ -118,10 +119,11 @@ export class GardenMap extends
       boxSelected: this.props.designer.selectedPoints,
     });
     this.setState({
-      isDragging: false, qPageX: 0, qPageY: 0,
+      isDragging: false,
       activeDragXY: { x: undefined, y: undefined, z: undefined },
       activeDragSpread: undefined,
       selectionBox: undefined,
+      cursorPosition: undefined,
       previousSelectionBoxArea: getSelectionBoxArea(this.state.selectionBox),
     });
   }, 400);
@@ -338,10 +340,7 @@ export class GardenMap extends
           isDragging: this.state.isDragging,
           dispatch: this.props.dispatch,
           setMapState: this.setMapState,
-          qPageX: this.state.qPageX,
-          qPageY: this.state.qPageY,
-          pageX: e.pageX,
-          pageY: e.pageY,
+          gardenCoords: this.getGardenCoordinates(e),
         });
         break;
       case Mode.createPoint:
@@ -374,6 +373,9 @@ export class GardenMap extends
           dispatch: this.props.dispatch,
           plantActions: !this.props.designer.editGroupAreaInMap,
         });
+        break;
+      case Mode.clickToAdd:
+        this.setState({ cursorPosition: this.getGardenCoordinates(e) });
         break;
       case Mode.boxSelect:
       default:
@@ -682,6 +684,12 @@ export class GardenMap extends
     ? <Bugs mapTransformProps={this.mapTransformProps}
       botSize={this.props.botSize} />
     : <g />;
+  AddPlantIcon = () => getMode() == Mode.clickToAdd
+    ? <AddPlantIcon
+      cursorPosition={this.state.cursorPosition}
+      cropSearchResults={this.props.designer.cropSearchResults}
+      mapTransformProps={this.mapTransformProps} />
+    : <g />;
 
   /** Render layers in order from back to front. */
   render() {
@@ -713,6 +721,7 @@ export class GardenMap extends
             <this.GroupOrder />
             <this.SequenceVisualization />
             <this.Bugs />
+            <this.AddPlantIcon />
           </svg>
         </svg>
       </ErrorBoundary>

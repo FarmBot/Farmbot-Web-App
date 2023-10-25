@@ -179,7 +179,8 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
     return <DesignerPanel panelName={"point-inventory"} panel={Panel.Points}>
       <DesignerNavTabs />
       <DesignerPanelTop panel={Panel.Points}>
-        <SearchField searchTerm={this.state.searchTerm}
+        <SearchField nameKey={"points"}
+          searchTerm={this.state.searchTerm}
           placeholder={t("Search your points...")}
           customLeftIcon={<PointSortMenu
             sortOptions={this.state} onChange={u => this.setState(u)} />}

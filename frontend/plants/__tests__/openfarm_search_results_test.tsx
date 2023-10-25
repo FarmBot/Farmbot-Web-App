@@ -19,15 +19,17 @@ describe("<OpenFarmResults />", () => {
           slug: "potato",
           name: "S. tuberosum",
           svg_icon: "icon",
+          main_image_path: "image",
         },
-        image: "potato.jpg"
+        images: ["potato.jpg"],
       },
       {
         crop: {
           slug: "tomato",
-          name: "Solanum lycopersicum"
+          name: "Solanum lycopersicum",
+          main_image_path: "https:image",
         },
-        image: "tomato.jpg"
+        images: ["tomato.jpg"],
       },
     ],
     cropSearchInProgress: false,

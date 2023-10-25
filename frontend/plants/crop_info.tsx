@@ -19,7 +19,7 @@ import { Actions } from "../constants";
 import {
   EmptyStateWrapper, EmptyStateGraphic,
 } from "../ui/empty_state_wrapper";
-import { startCase, isArray, chain, isNumber } from "lodash";
+import { startCase, isArray, chain, isNumber, isUndefined } from "lodash";
 import { t } from "../i18next_wrapper";
 import { Panel } from "../farm_designer/panel_header";
 import { ExternalUrl } from "../external_urls";
@@ -28,7 +28,7 @@ import {
   GetWebAppConfigValue, getWebAppConfigValue,
 } from "../config_storage/actions";
 import { BooleanSetting, NumericSetting } from "../session_keys";
-import { Path } from "../internal_urls";
+import { FilePath, Path } from "../internal_urls";
 import { Link } from "../link";
 import { botSize } from "../farm_designer/state_to_props";
 import { getFbosConfig } from "../resources/getters";
@@ -40,9 +40,13 @@ import {
   AllCurveInfo, changeCurve, findCurve, findMostUsedCurveForCrop,
 } from "./curve_info";
 import { CurveType } from "../curves/templates";
-import { BlurableInput, FBSelect } from "../ui";
+import { BlurableInput, FBSelect, Popover } from "../ui";
 import { PLANT_STAGE_DDI_LOOKUP, PLANT_STAGE_LIST } from "./edit_plant_status";
 import moment from "moment";
+import { ImageFlipper } from "../photos/images/image_flipper";
+import { SpecialStatus, TaggedImage } from "farmbot";
+import { Position } from "@blueprintjs/core";
+import { DevSettings } from "../settings/dev/dev_support";
 
 interface InfoFieldProps {
   title: string;
@@ -56,11 +60,32 @@ interface SummaryItemProps {
   value: string;
 }
 
+const EMOJI: { [field: string]: string } = {
+  binomial_name: "🏷",
+  common_names: "🪪",
+  sun_requirements: "🌞",
+  sowing_method: "🌱",
+  spread: "🟢",
+  row_spacing: "📏",
+  height: "🌿",
+  growing_degree_days: "🗓",
+  companions: "🌈",
+};
+
+const shortenTitle = (title: string) => {
+  switch (title) {
+    case "sun_requirements": return "sun";
+    case "sowing_method": return "sowing";
+    default: return title;
+  }
+};
+
 /** Basic field: value display for OpenFarm crop properties. */
 const InfoField = (props: InfoFieldProps) =>
   <li>
+    <span>{EMOJI[props.title]}</span>
     <p>
-      {t(startCase(props.title))}
+      {t(startCase(shortenTitle(props.title)))}:
     </p>
     <div className={"crop-info-field-data"}>
       {props.children}
@@ -68,32 +93,18 @@ const InfoField = (props: InfoFieldProps) =>
   </li>;
 
 const OMITTED_PROPERTIES = [
+  "name",
   "slug",
   "processing_pictures",
   "description",
   "main_image_path",
   "tags_array",
   "guides_count",
+  "svg_icon",
+  "taxon",
 ];
 
 const NO_VALUE = t("Not available");
-
-/**
-* If there's a value, give it an img element to render the
-* actual graphic. If no value, return NO_VALUE.
-*/
-const SvgIcon = ({ i, field, value }: SummaryItemProps) =>
-  <InfoField key={i} title={field}>
-    {value
-      ? <div className={"svg-img"}>
-        <img
-          src={svgToUrl(value)}
-          width={100}
-          height={100}
-          onDragStart={setDragIcon(value)} />
-      </div>
-      : <span>{NO_VALUE}</span>}
-  </InfoField>;
 
 /**
  * Need to convert the `cm` provided by OpenFarm to `mm`
@@ -124,8 +135,6 @@ const DefaultPropertyDisplay = ({ i, field, value }: SummaryItemProps) =>
 const handleDisplay = ([field, value]: string[], i: number) => {
   const commonProps: SummaryItemProps = { key: field, i, field, value };
   switch (field) {
-    case "svg_icon":
-      return <SvgIcon {...commonProps} />;
     case "spread":
     case "row_spacing":
     case "height":
@@ -162,7 +171,7 @@ const CropInfoList = (props: CropInfoListProps) => {
 const Companions = (props: CropInfoListProps) => {
   const { result, dispatch, openfarmCropFetch } = props;
   if (result.companions.length == 0) { return <div />; }
-  return <InfoField title={t("Companions")}>
+  return <InfoField title={"companions"}>
     {result.companions.map((companion, index) =>
       <Link key={companion.slug}
         className={"companion"}
@@ -186,8 +195,8 @@ const Companions = (props: CropInfoListProps) => {
         to={Path.cropSearch(companion.slug)}>
         <img
           src={svgToUrl(companion.svg_icon)}
-          width={32}
-          height={32} />
+          width={20}
+          height={20} />
         <p>{companion.name}</p>
       </Link>)}
   </InfoField>;
@@ -230,14 +239,11 @@ const AddPlantHereButton = (props: AddPlantHereButtonProps) => {
 
 /** Image of crop to drag into map. */
 const CropDragInfoTile =
-  ({ image, svgIcon }: { image: string, svgIcon: string | undefined }) =>
+  ({ svgIcon }: { svgIcon: string | undefined }) =>
     <div className="crop-drag-info-tile">
       <img className="crop-drag-info-image"
-        src={image}
+        src={svgIcon}
         onDragStart={setDragIcon(svgIcon)} />
-      <div className="crop-info-overlay">
-        {t("Drag and drop into map")}
-      </div>
     </div>;
 
 /** Text and link for crop editing. */
@@ -259,7 +265,7 @@ export const getCropHeaderProps = (props: {
   const result = findBySlug(props.cropSearchResults, crop);
   const basePath = Path.cropSearch();
   const backgroundURL = `linear-gradient(
-    rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(${result.image})`;
+    rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(${result.images[0]})`;
   return { crop, result, basePath, backgroundURL };
 };
 
@@ -289,12 +295,36 @@ export const searchForCurrentCrop = (openfarmCropFetch: OpenfarmSearch) =>
 
 interface CropInfoState {
   crop: string;
+  currentImage: TaggedImage | undefined;
 }
 
+const toTaggedImage = (url: string): TaggedImage => ({
+  kind: "Image",
+  uuid: url,
+  specialStatus: SpecialStatus.SAVED,
+  body: {
+    created_at: "",
+    updated_at: "",
+    device_id: 0,
+    attachment_processed_at: "1",
+    attachment_url: url,
+    meta: {
+      x: undefined,
+      y: undefined,
+      z: undefined,
+    }
+  },
+});
+
 export class RawCropInfo extends React.Component<CropInfoProps, CropInfoState> {
-  state: CropInfoState = { crop: Path.getSlug(Path.cropSearch()) };
+  state: CropInfoState = {
+    crop: Path.getSlug(Path.cropSearch()),
+    currentImage: undefined,
+  };
 
   componentDidMount() {
+    this.clearCropSearchResults("")();
+    this.setState({ currentImage: undefined });
     this.props.dispatch(searchForCurrentCrop(this.props.openfarmCropFetch));
     this.selectMostUsedCurves(Path.getSlug(Path.cropSearch()));
   }
@@ -304,6 +334,11 @@ export class RawCropInfo extends React.Component<CropInfoProps, CropInfoState> {
     if (crop != this.state.crop) {
       this.selectMostUsedCurves(crop);
       this.setState({ crop });
+      this.clearCropSearchResults(crop)();
+      this.setState({ currentImage: undefined });
+    }
+    if (isUndefined(this.state.currentImage) && this.imageData.length > 0) {
+      this.setCurrentImage(0);
     }
   }
 
@@ -328,6 +363,18 @@ export class RawCropInfo extends React.Component<CropInfoProps, CropInfoState> {
     dispatch({ type: Actions.OF_SEARCH_RESULTS_OK, payload: [] });
   };
 
+  get images() {
+    const crop = getCropHeaderProps({
+      cropSearchResults: this.props.designer.cropSearchResults,
+    });
+    return crop.result.images
+      .filter(image => !image.includes(FilePath.DEFAULT_ICON));
+  }
+  get imageData() { return this.images.map(toTaggedImage); }
+
+  setCurrentImage = (index: number) =>
+    this.setState({ currentImage: this.imageData[index] });
+
   render() {
     const { dispatch, designer } = this.props;
     const { cropSearchResults, cropSearchInProgress } = designer;
@@ -343,18 +390,35 @@ export class RawCropInfo extends React.Component<CropInfoProps, CropInfoState> {
         onBack={this.clearCropSearchResults(crop)}
         style={{ background: backgroundURL }}
         description={result.crop.description}>
+        <CropDragInfoTile
+          svgIcon={svgToUrl(result.crop.svg_icon)} />
+        <Popover portalClassName={"dark-portal"}
+          position={Position.BOTTOM_RIGHT}
+          target={<button className={"transparent-button"}>
+            + {t("grid")}
+          </button>}
+          content={<div className={"grid-popup-content"}>
+            <PlantGrid
+              xy_swap={this.props.xySwap}
+              dispatch={dispatch}
+              openfarm_slug={result.crop.slug}
+              spread={result.crop.spread}
+              botPosition={this.props.botPosition}
+              designer={designer}
+              itemName={result.crop.name} />
+          </div>} />
       </DesignerPanelHeader>
       <DesignerPanelContent panelName={panelName}>
         <EmptyStateWrapper
           notEmpty={!cropSearchInProgress}
           graphic={EmptyStateGraphic.no_crop_results}
           title={t("Loading...")}>
-          <CropDragInfoTile image={result.image} svgIcon={result.crop.svg_icon} />
-          <EditOnOpenFarm slug={result.crop.slug} />
           <CropInfoList result={result}
             dispatch={dispatch}
             selectMostUsedCurves={this.selectMostUsedCurves}
             openfarmCropFetch={this.props.openfarmCropFetch} />
+          {DevSettings.futureFeaturesEnabled() &&
+            <EditOnOpenFarm slug={result.crop.slug} />}
           <div className={"plant-stage-selection"}>
             <label className="stage">{t("status")}</label>
             <FBSelect
@@ -396,14 +460,21 @@ export class RawCropInfo extends React.Component<CropInfoProps, CropInfoState> {
             getConfigValue={this.props.getConfigValue}
             designer={designer}
             dispatch={dispatch} />
-          <PlantGrid
-            xy_swap={this.props.xySwap}
-            dispatch={dispatch}
-            openfarm_slug={result.crop.slug}
-            spread={result.crop.spread}
-            botPosition={this.props.botPosition}
-            designer={designer}
-            itemName={result.crop.name} />
+          {this.images.length > 0 &&
+            <label style={{ display: "block" }}>
+              {t("Images")} ({this.images.length})
+            </label>}
+          {this.images.length > 0 &&
+            <ImageFlipper id={"image-items-flipper"}
+              currentImage={this.state.currentImage}
+              dispatch={this.props.dispatch}
+              flipActionOverride={this.setCurrentImage}
+              currentImageSize={{ width: undefined, height: undefined }}
+              transformImage={false}
+              getConfigValue={this.props.getConfigValue}
+              env={{}}
+              crop={false}
+              images={this.imageData} />}
         </EmptyStateWrapper>
       </DesignerPanelContent>
     </DesignerPanel>;

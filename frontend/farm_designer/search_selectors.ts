@@ -14,9 +14,10 @@ export function findBySlug(
       description: "",
       sun_requirements: "",
       sowing_method: "",
-      processing_pictures: 0
+      processing_pictures: 0,
+      main_image_path: "",
     },
-    image: FilePath.DEFAULT_ICON,
+    images: [FilePath.DEFAULT_ICON],
     companions: [],
   };
 }

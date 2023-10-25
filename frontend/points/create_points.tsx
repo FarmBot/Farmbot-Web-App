@@ -309,7 +309,7 @@ export class RawCreatePoints
 
   PointActions = () =>
     <Row>
-      <button className="fb-button green"
+      <button className="fb-button green save"
         title={t("save")}
         onClick={this.createPoint}>
         {t("Save")}
@@ -363,6 +363,7 @@ export class RawCreatePoints
       <DesignerPanelContent panelName={"point-creation"}>
         <this.PointProperties />
         <this.PointActions />
+        {panelType == Panel.Points && <hr />}
         {panelType == Panel.Points &&
           <PlantGrid
             xy_swap={this.props.xySwap}

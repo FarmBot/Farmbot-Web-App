@@ -646,7 +646,7 @@
     ul {
       margin-bottom: 0;
     }
-    margin-top: 1rem;
+    padding-top: 1rem;
     label {
       margin-top: 0 !important;
     }
@@ -657,7 +657,7 @@
       margin-top: 1rem;
     }
     .fb-button {
-      &.green {
+      &.save {
         margin-right: 1.5rem;
       }
       &.delete {
@@ -680,11 +680,11 @@
       border-color: $medium_gray;
     }
     .grid-and-row-planting {
-      hr {
-        border-color: $medium_gray;
-      }
       label {
         color: $dark_gray;
+      }
+      input {
+        box-shadow: 0 0 10px #ddd;
       }
       .update-button,
       .preview-button,
@@ -697,19 +697,12 @@
           background: $off_white;
         }
       }
-      .use-current-location {
-        margin-top: 0;
-      }
     }
     .blue {
       float: none;
     }
     .use-current-location {
       button {
-        position: absolute;
-        left: 1rem;
-        margin-top: 0.25rem;
-        height: 2.75rem;
         .fa {
           font-size: 1.5rem;
         }
@@ -884,9 +877,11 @@
     padding: 0 1.4rem 1rem;
   }
   .crop-info-description {
-    max-height: 10rem;
+    height: 8rem;
     overflow-y: auto;
     overflow-x: hidden;
+    width: 75%;
+    font-family: "Cabin", sans-serif;
   }
   .saving-indicator {
     position: absolute;
@@ -898,6 +893,46 @@
       color: $white;
     }
   }
+  .crop-drag-info-tile {
+    position: absolute;
+    right: 0;
+    margin: 1rem;
+    border: 2px solid $white;
+    border-radius: 50%;
+  }
+}
+
+.dark-portal {
+  .bp5-popover-content {
+    background: $dark_gray;
+    color: $off_white;
+  }
+}
+
+.grid-popup-content {
+  width: 25rem;
+}
+
+.grid-input {
+  .row {
+    margin-top: 0.5rem;
+    .grid-axis-label {
+      font-weight: bold;
+    }
+  }
+  .use-current-location {
+    display: inline;
+    float: none;
+    span,
+    button {
+      display: inline;
+      float: none;
+    }
+    button {
+      width: 2.25rem;
+      padding-left: 0;
+    }
+  }
 }
 
 .crop-info-panel {
@@ -906,6 +941,52 @@
     background-size: 144% !important;
     background-repeat: no-repeat !important;
     background-position: top center !important;
+    min-height: 125px;
+    .panel-title {
+      overflow: visible;
+      .title {
+        font-family: "Inknut Antiqua";
+        font-weight: bold;
+      }
+      .bp5-popover-wrapper {
+        position: absolute;
+        right: 0;
+      }
+      .transparent-button {
+        position: absolute;
+        bottom: -9.5rem;
+        right: 1.5rem;
+        margin: 0;
+        color: $white;
+        white-space: nowrap;
+      }
+      .fa-th-large,
+      .fa-plus,
+      .fa-arrows {
+        position: absolute;
+        background: $white;
+        color: $dark_gray;
+        border-radius: 50%;
+        height: 1.5rem;
+        width: 1.5rem;
+        line-height: 1.5rem;
+        text-align: center;
+        font-size: 1rem;
+        padding-left: 0.15rem;
+      }
+      .fa-th-large {
+        top: 6rem;
+        right: 1.25rem;
+      }
+      .fa-plus {
+        top: 3.8rem;
+        right: 0.25rem;
+      }
+      .fa-arrows {
+        top: 1.5rem;
+        right: 1.25rem;
+      }
+    }
   }
   .panel-content {
     max-height: calc(100vh - 19rem);
@@ -948,21 +1029,64 @@
     }
     .companion {
       display: inline-block;
-      margin-top: 0.5rem;
       text-decoration: none !important;
+      background: $light_gray;
+      border-radius: 2rem;
+      margin-right: 1rem;
+      margin-bottom: 0.5rem;
+      padding: 0.15rem;
+      padding-left: 0.5rem;
       &:hover {
-        text-decoration: underline !important;
+        background: $gray;
       }
       p {
         display: inline;
         margin-left: 0.25rem;
         margin-right: 1rem;
         font-weight: bold;
+        text-transform: none;
       }
     }
   }
   .edit-on-openfarm {
     margin-bottom: 1rem;
+    font-size: 1.3rem;
+  }
+  .object-list {
+    li {
+      position: relative;
+      margin-left: 2rem;
+    }
+    li {
+      p,
+      div {
+        display: inline;
+        font-size: 1.3rem;
+        color: $dark_gray;
+      }
+      p {
+        margin-right: 0.25rem;
+        text-transform: uppercase;
+        font-weight: bold;
+      }
+      span {
+        position: absolute;
+        left: -2rem;
+      }
+    }
+  }
+  .plant-stage-selection,
+  .planted-at-selection {
+    display: flex;
+    label {
+      margin-right: 0.5rem;
+      line-height: 1rem;
+      white-space: nowrap;
+    }
+    .filter-search,
+    .input {
+      width: 100%;
+    }
   }
 }
 
@@ -1004,7 +1128,6 @@ li {
   li {
     margin-top: 1rem;
     p {
-      font-size: 1.25rem;
       margin-bottom: 0.5rem !important;
     }
   }
@@ -1085,27 +1208,30 @@ li {
 }
 
 .grid-and-row-planting {
-  hr {
-    opacity: 0.7;
-    border-top: 1.5px solid $white;
+  h3 {
+    width: 100%;
+    text-align: center;
   }
   .row {
+    margin-left: 0;
+    margin-right: 0;
     div[class*=col-] {
-      padding-left: 1.5rem;
-      padding-right: 0;
+      padding-left: 0;
+      padding-right: 1rem;
     }
   }
+  i {
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+  }
   label {
-    color: $white;
+    color: $off_white;
+    margin-top: 0.75rem;
   }
   .use-current-location {
     padding: 0;
-    margin-top: 2rem;
+    margin-left: 1rem;
     button {
-      position: absolute;
-      left: 1rem;
-      margin-top: 0.5rem;
-      height: 2.75rem;
       .fa {
         font-size: 1.5rem;
       }
@@ -1121,13 +1247,17 @@ li {
       &.numPlantsV {
         -moz-appearance: unset !important;
       }
+      box-shadow: none;
     }
   }
   .grid-planting-toggle {
-    margin-top: 1rem;
-    margin-bottom: 1rem;
     label {
-      margin-top: 1rem;
+      margin-top: 0.5rem;
+    }
+    button {
+      float: right;
+      margin-right: 0.5rem;
+      margin-top: 0.5rem;
     }
   }
   .fb-toggle-button {
@@ -1157,6 +1287,13 @@ li {
   label {
     margin-top: 1rem !important;
   }
+  .filter-search {
+    position: relative;
+  }
+}
+
+.plant-stage-selection {
+  margin-bottom: 1rem;
 }
 
 .move-to-form {
@@ -2599,7 +2736,6 @@ li {
 }
 
 .crop-curve-info {
-  margin-top: 1.5rem;
   .bp5-collapse {
     padding-top: 0.5rem;
   }
@@ -2635,6 +2771,11 @@ li {
     label {
       line-height: 4rem;
     }
+  }
+  .curve-svg-wrapper {
+    background: $white;
+    box-shadow: 0 0 10px $light_gray;
+    border-radius: 5px;
   }
 }
 
@@ -3005,7 +3146,7 @@ li {
 
 .designer-sequence-list-panel {
   .panel-content {
-    max-height: calc(100vh - 15rem);
+    height: calc(100vh - 14rem);
     @media screen and (max-width: 450px) {
       max-height: calc(100vh - 19rem);
     }
@@ -3026,6 +3167,15 @@ li {
     .folders-panel {
       margin-left: -1rem;
       margin-right: -1rem;
+    }
+  }
+  .fullscreen {
+    white-space: nowrap;
+    height: 3rem;
+    margin-top: 0.75rem;
+    margin-right: 1rem;
+    i {
+      margin-left: 1rem;
     }
   }
 }
@@ -3064,6 +3214,9 @@ li {
   }
   .panel-content {
     .sequence-editor-content {
+      hr {
+        margin-top: 1rem;
+      }
       @media screen and (max-width: 767px) {
         margin-left: 5px;
         padding-right: 0;

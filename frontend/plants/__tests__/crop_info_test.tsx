@@ -11,6 +11,11 @@ jest.mock("../../farm_designer/map/actions", () => ({
   setDragIcon: jest.fn(),
 }));
 
+let mockDev = false;
+jest.mock("../../settings/dev/dev_support", () => ({
+  DevSettings: { futureFeaturesEnabled: () => mockDev }
+}));
+
 import React from "react";
 import {
   RawCropInfo as CropInfo, searchForCurrentCrop, mapStateToProps,
@@ -28,7 +33,7 @@ import { svgToUrl } from "../../open_farm/icons";
 import { fakeState } from "../../__test_support__/fake_state";
 import { Actions } from "../../constants";
 import { clickButton } from "../../__test_support__/helpers";
-import { Path } from "../../internal_urls";
+import { FilePath, Path } from "../../internal_urls";
 import {
   fakeCurve, fakePlant, fakeWebAppConfig,
 } from "../../__test_support__/fake_state/resources";
@@ -44,6 +49,7 @@ describe("<CropInfo />", () => {
     const cropSearchResult = fakeCropLiveSearchResult();
     cropSearchResult.crop.svg_icon = "fake_mint_svg";
     cropSearchResult.crop.row_spacing = 100;
+    cropSearchResult.crop.sowing_method = "";
     const designer = fakeDesignerState();
     designer.cropSearchResults = [cropSearchResult];
     return {
@@ -66,10 +72,19 @@ describe("<CropInfo />", () => {
     p.designer.cropSearchResults[0].companions = [];
     const wrapper = mount(<CropInfo {...p} />);
     expect(wrapper.text()).toContain("Mint");
-    expect(wrapper.text()).toContain("Drag and drop into map");
-    expect(wrapper.text()).toContain("Row Spacing1000mm");
-    expect(wrapper.find("img").at(1).props().src)
+    expect(wrapper.text()).toContain("Row Spacing:1000mm");
+    expect(wrapper.find("img").at(0).props().src)
       .toEqual(svgToUrl("fake_mint_svg"));
+    expect(wrapper.text().toLowerCase()).not.toContain("edit on");
+  });
+
+  it("renders openfarm link", () => {
+    mockDev = true;
+    mockPath = Path.mock(Path.cropSearch("mint"));
+    const p = fakeProps();
+    p.designer.cropSearchResults[0].companions = [];
+    const wrapper = mount(<CropInfo {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("edit on");
   });
 
   it("returns to crop search", () => {
@@ -135,6 +150,21 @@ describe("<CropInfo />", () => {
     });
   });
 
+  it("updates current image", () => {
+    mockPath = Path.mock(Path.cropSearch("mint"));
+    const images = [FilePath.DEFAULT_WEED_ICON];
+    const p = fakeProps();
+    const cropSearchResult = fakeCropLiveSearchResult();
+    cropSearchResult.images = [];
+    p.designer.cropSearchResults = [cropSearchResult];
+    const wrapper = mount<CropInfo>(<CropInfo {...p} />);
+    expect(wrapper.state().currentImage).toEqual(undefined);
+    cropSearchResult.images = images;
+    p.designer.cropSearchResults = [cropSearchResult];
+    wrapper.setProps(p);
+    expect(wrapper.state().currentImage?.body.attachment_url).toEqual(images[0]);
+  });
+
   it("doesn't change search query", () => {
     mockPath = Path.mock(Path.cropSearch("mint"));
     const p = fakeProps();
@@ -156,7 +186,7 @@ describe("<CropInfo />", () => {
     const p = fakeProps();
     p.botPosition = { x: 100, y: 200, z: undefined };
     const wrapper = mount(<CropInfo {...p} />);
-    clickButton(wrapper, 4, "location (100, 200)", { partial_match: true });
+    clickButton(wrapper, 5, "location (100, 200)", { partial_match: true });
     expect(initSave).toHaveBeenCalledWith("Point",
       expect.objectContaining({
         name: "Mint",
@@ -170,7 +200,7 @@ describe("<CropInfo />", () => {
     const p = fakeProps();
     p.botPosition = { x: 100, y: undefined, z: undefined };
     const wrapper = mount(<CropInfo {...p} />);
-    clickButton(wrapper, 4, "location (unknown)", { partial_match: true });
+    clickButton(wrapper, 5, "location (unknown)", { partial_match: true });
     expect(initSave).not.toHaveBeenCalled();
   });
 
@@ -186,10 +216,10 @@ describe("<CropInfo />", () => {
     p.designer.cropSearchResults[0].crop.svg_icon = undefined;
     p.designer.cropSearchResults[0].crop.row_spacing = undefined;
     p.designer.cropSearchResults[0].crop.common_names = [];
+    p.designer.cropSearchResults[0].images = [];
     const wrapper = mount(<CropInfo {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("iconnot available");
-    expect(wrapper.text().toLowerCase()).toContain("spacingnot available");
-    expect(wrapper.text().toLowerCase()).toContain("common namesnot available");
+    expect(wrapper.text().toLowerCase()).toContain("spacing:not available");
+    expect(wrapper.text().toLowerCase()).toContain("common names:not available");
   });
 
   it("handles string of names", () => {
@@ -197,7 +227,19 @@ describe("<CropInfo />", () => {
     p.designer.cropSearchResults[0].crop.common_names =
       "names" as unknown as string[];
     const wrapper = mount(<CropInfo {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("common namesnames");
+    expect(wrapper.text().toLowerCase()).toContain("common names:names");
+  });
+
+  it("sets current image", () => {
+    const images = ["/plant.jpg", FilePath.DEFAULT_WEED_ICON];
+    const p = fakeProps();
+    const cropSearchResult = fakeCropLiveSearchResult();
+    cropSearchResult.images = images;
+    p.designer.cropSearchResults = [cropSearchResult];
+    const wrapper = shallow<CropInfo>(<CropInfo {...p} />);
+    expect(wrapper.state().currentImage?.body.attachment_url).toEqual(images[0]);
+    wrapper.instance().setCurrentImage(1);
+    expect(wrapper.state().currentImage?.body.attachment_url).toEqual(images[1]);
   });
 
   it("navigates to companion plant", () => {
@@ -211,7 +253,7 @@ describe("<CropInfo />", () => {
     const wrapper = mount(<CropInfo {...p} />);
     jest.clearAllMocks();
     expect(wrapper.text().toLowerCase()).toContain("strawberry");
-    const companion = wrapper.find("a").at(1);
+    const companion = wrapper.find("a").at(0);
     expect(companion.text()).toEqual("Strawberry");
     companion.simulate("click");
     expect(p.openfarmCropFetch).toHaveBeenCalledWith("strawberry");
@@ -225,7 +267,7 @@ describe("<CropInfo />", () => {
     const wrapper = mount(<CropInfo {...p} />);
     jest.clearAllMocks();
     expect(wrapper.text().toLowerCase()).toContain("strawberry");
-    const companion = wrapper.find("a").at(1);
+    const companion = wrapper.find("a").at(0);
     expect(companion.text()).toEqual("Strawberry");
     companion.simulate("dragStart");
     expect(p.dispatch).toHaveBeenCalledWith({

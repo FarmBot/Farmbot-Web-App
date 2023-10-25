@@ -9,9 +9,9 @@ describe FarmwareInstallation do
   class Mystery < StandardError; end
 
   it "handles unknown errors while parsing farmware manifest" do
-    error    = Mystery.new("wow!")
-    fi       = FarmwareInstallation.create(device: device, url: FAKE_URL)
-    expect(fi).to receive(:open).and_raise(error)
+    error = Mystery.new("wow!")
+    fi = FarmwareInstallation.create(device: device, url: FAKE_URL)
+    stub_request(:get, FAKE_URL).to_raise(error)
     expect { fi.infer_package_name_from_url }.to raise_error(error)
     expect(fi.package_error)
       .to eq(FarmwareInstallation::OTHER_PROBLEM % Mystery.to_s)
@@ -19,9 +19,8 @@ describe FarmwareInstallation do
   end
 
   it "handles unreasonably large package names" do
-    fi       = FarmwareInstallation.create(device: device, url: FAKE_URL)
-    stringio = StringIO.new({ package: "*" * 100 }.to_json)
-    expect(fi).to receive(:open).and_return(stringio)
+    fi = FarmwareInstallation.create(device: device, url: FAKE_URL)
+    stub_request(:get, FAKE_URL).to_return(body: { package: "*" * 100 }.to_json)
     fi.infer_package_name_from_url
     error =
       FarmwareInstallation::KNOWN_PROBLEMS.fetch(ActiveRecord::ValueTooLong)
@@ -31,12 +30,11 @@ describe FarmwareInstallation do
 
   it "handles unreasonably large payloads" do
     old_value = FarmwareInstallation::MAX_JSON_SIZE
-    fi        = FarmwareInstallation.create(device: device, url: FAKE_URL)
-    stringio  = StringIO.new({hello: "world"}.to_json)
+    fi = FarmwareInstallation.create(device: device, url: FAKE_URL)
 
     const_reassign(FarmwareInstallation, :MAX_JSON_SIZE, 2)
 
-    expect(fi).to receive(:open).and_return(stringio)
+    stub_request(:get, FAKE_URL).to_return(body: {hello: "world"}.to_json)
     fi.infer_package_name_from_url
     error = FarmwareInstallation::KNOWN_PROBLEMS.fetch(JSON::ParserError)
     expect(fi.package_error).to eq(error)
@@ -46,8 +44,7 @@ describe FarmwareInstallation do
 
   it "sets the package name" do
     fi = FarmwareInstallation.create(device: device, url: FAKE_URL)
-    fake_json = StringIO.new({package: "FOO"}.to_json)
-    expect(fi).to receive(:open).and_return(fake_json)
+    stub_request(:get, FAKE_URL).to_return(body: {package: "FOO"}.to_json)
     fi.infer_package_name_from_url
     expect(fi.package_error).to eq(nil)
     expect(fi.package).to eq("FOO")
@@ -55,7 +52,7 @@ describe FarmwareInstallation do
 
   it "handles non-JSON strings" do
     fi = FarmwareInstallation.create(device: device, url: FAKE_URL)
-    expect(fi).to receive(:open).and_return(StringIO.new("{lol"))
+    stub_request(:get, FAKE_URL).to_return(body:"{lol")
     fi.infer_package_name_from_url
     error = FarmwareInstallation::KNOWN_PROBLEMS.fetch(JSON::ParserError)
     expect(fi.package_error).to eq(error)
@@ -63,9 +60,8 @@ describe FarmwareInstallation do
   end
 
   it "handles `package` fetch errors" do
-    fi            = FarmwareInstallation.create!(device: device,
-                                                 url:    "http://lycos.com")
-    expect(fi).to receive(:open).and_raise(SocketError.new("No!"))
+    fi = FarmwareInstallation.create!(device: device, url: FAKE_URL)
+    stub_request(:get, FAKE_URL).to_raise(SocketError.new("No!"))
     fi.infer_package_name_from_url
     error = FarmwareInstallation::KNOWN_PROBLEMS.fetch(SocketError)
     expect(fi.package_error).to eq(error)

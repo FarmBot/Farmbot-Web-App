@@ -23,6 +23,7 @@ import {
 } from "../../folders/actions";
 import { SequencesPanelState } from "../../interfaces";
 import { Actions } from "../../constants";
+import { push } from "../../history";
 
 interface DesignerSequenceListState {
   featuredList: FeaturedSequence[];
@@ -55,12 +56,30 @@ export class RawDesignerSequenceList
   render() {
     const panelName = "designer-sequence-list";
     const panelState = this.props.sequencesPanelState;
+    const buttonProps = Path.inDesigner()
+      ? {
+        caretDirection: "right",
+        path: Path.sequencePage(),
+        text: t("fullscreen"),
+      }
+      : {
+        caretDirection: "left",
+        path: Path.designerSequences(),
+        text: t("collapse"),
+      };
     return <DesignerPanel panelName={panelName} panel={Panel.Sequences}>
       <DesignerNavTabs />
-      <DesignerPanelTop panel={Panel.Sequences}>
-        <SearchField searchTerm={this.props.folderData.searchTerm || ""}
+      <DesignerPanelTop panel={Panel.Sequences} withButton={true}>
+        <SearchField nameKey={"sequences"}
+          searchTerm={this.props.folderData.searchTerm || ""}
           placeholder={t("Search sequences...")}
           onChange={updateSearchTerm} />
+        {window.innerWidth > 450 &&
+          <button className={"transparent-button fullscreen"}
+            onClick={() => push(buttonProps.path)}>
+            {buttonProps.text}
+            <i className={`fa fa-caret-square-o-${buttonProps.caretDirection}`} />
+          </button>}
       </DesignerPanelTop>
       <DesignerPanelContent panelName={panelName}>
         <SectionHeader title={t("My Sequences")}

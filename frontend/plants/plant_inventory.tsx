@@ -116,7 +116,8 @@ export class RawPlants
     return <DesignerPanel panelName={"plant-inventory"} panel={Panel.Plants}>
       <DesignerNavTabs />
       <DesignerPanelTop panel={Panel.Plants} withButton={true}>
-        <SearchField searchTerm={this.state.searchTerm}
+        <SearchField nameKey={"plants"}
+          searchTerm={this.state.searchTerm}
           placeholder={t("Search your plants...")}
           onChange={searchTerm => this.setState({ searchTerm })} />
         <Popover

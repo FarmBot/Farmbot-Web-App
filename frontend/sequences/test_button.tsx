@@ -13,13 +13,23 @@ import { t } from "../i18next_wrapper";
 import { warning } from "../toast/toast";
 import { forceOnline } from "../devices/must_be_online";
 import { Popover } from "../ui";
+import { RunButtonMenuOpen } from "./interfaces";
+
+export const isMenuOpen = (
+  state: RunButtonMenuOpen,
+  current: RunButtonMenuOpen,
+): boolean => (state.component == current.component) && (state.uuid == current.uuid);
+
+const closedMenu = (): RunButtonMenuOpen => ({
+  component: undefined, uuid: undefined,
+});
 
 /** Can't test without saving and syncing sequence. */
 const saveAndSyncWarning = () =>
   warning(t("Save sequence and sync device before running."));
 
 /** Open or close the sequence test parameter assignment menu. */
-export const setMenuOpen = (payload: UUID | undefined) => ({
+export const setMenuOpen = (payload: RunButtonMenuOpen) => ({
   type: Actions.SET_SEQUENCE_POPUP_STATE,
   payload
 });
@@ -43,12 +53,12 @@ class ParameterAssignmentMenu
   extends React.Component<ParameterAssignmentMenuProps> {
 
   componentWillUnmount() {
-    this.props.dispatch(setMenuOpen(undefined));
+    this.props.dispatch(setMenuOpen(closedMenu()));
   }
 
   /** Click actions for test button inside parameter assignment menu. */
   onClick = () => {
-    this.props.dispatch(setMenuOpen(undefined));
+    this.props.dispatch(setMenuOpen(closedMenu()));
     this.props.canTest
       ? execSequence(this.props.sequence.body.id, this.props.bodyVariables)
       : saveAndSyncWarning();
@@ -81,12 +91,12 @@ interface TestProps {
 
 /** Sequence test button. Turns grey when sequence is not saved and synced. */
 const Test = (props: TestProps) => {
-  const normalColor = props.canTest ? "orange" : "pseudo-disabled";
+  const normalColor = `orange ${props.canTest ? "" : "pseudo-disabled"}`;
   const buttonText = props.menuIsOpen
     ? t("Close")
     : t("Run");
   return <button
-    className={`fb-button ${props.menuIsOpen ? "gray" : normalColor}`}
+    className={`fb-button-2 ${props.menuIsOpen ? "gray" : normalColor}`}
     title={buttonText}
     onClick={props.onClick}>
     {buttonText}
@@ -98,7 +108,8 @@ export interface TestBtnProps {
   sequence: TaggedSequence;
   resources: ResourceIndex;
   /** Parameter assignment menu open? */
-  menuOpen: UUID | undefined;
+  menuOpen: RunButtonMenuOpen;
+  component: RunButtonMenuOpen["component"];
   dispatch: Function;
 }
 
@@ -131,14 +142,16 @@ export class TestButton extends React.Component<TestBtnProps, TestBtnState> {
 
   /** Click actions for test button. */
   onClick = () => {
-    const { dispatch, menuOpen, sequence } = this.props;
+    const { dispatch, menuOpen, sequence, component } = this.props;
     const sequenceBody = sequence.body;
     const bodyVariables =
       mergeParameterApplications(this.varData, this.state.bodyVariables);
     this.setState({ bodyVariables });
     /** Open the variable menu if the sequence has parameter declarations. */
     isParameterized(sequenceBody) && dispatch(setMenuOpen(
-      menuOpen == sequence.uuid ? undefined : sequence.uuid));
+      isMenuOpen(menuOpen, { component, uuid: sequence.uuid })
+        ? closedMenu()
+        : { component, uuid: sequence.uuid }));
     this.canTest
       /** Execute if sequence is synced, saved, and doesn't use parameters. */
       ? !isParameterized(sequenceBody) && execSequence(sequenceBody.id)
@@ -146,15 +159,16 @@ export class TestButton extends React.Component<TestBtnProps, TestBtnState> {
   };
 
   render() {
-    const { menuOpen, sequence } = this.props;
-    const isOpen = menuOpen == sequence.uuid;
+    const { menuOpen, sequence, component } = this.props;
+    const hasMenu = isParameterized(this.props.sequence.body);
+    const isOpen = isMenuOpen(menuOpen, { component, uuid: sequence.uuid });
     return <Popover className={"fb-button-popover-wrapper run-btn"} isOpen={isOpen}
       popoverClassName="parameter-assignment-menu-popover"
       target={<Test
         canTest={this.canTest}
         onClick={this.onClick}
         menuIsOpen={isOpen} />}
-      content={isParameterized(this.props.sequence.body) ?
+      content={hasMenu ?
         <ParameterAssignmentMenu
           dispatch={this.props.dispatch}
           canTest={this.canTest}

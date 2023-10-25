@@ -11,6 +11,7 @@ jest.mock("../../../../../open_farm/cached_crop", () => ({
 
 jest.mock("../../../actions", () => ({
   movePoints: jest.fn(),
+  movePointTo: jest.fn(),
 }));
 
 import { Path } from "../../../../../internal_urls";
@@ -36,7 +37,7 @@ import { cachedCrop } from "../../../../../open_farm/cached_crop";
 import {
   fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
-import { movePoints } from "../../../actions";
+import { movePointTo, movePoints } from "../../../actions";
 import {
   fakeCropLiveSearchResult,
 } from "../../../../../__test_support__/fake_crop_search_result";
@@ -229,58 +230,18 @@ describe("dragPlant()", () => {
     isDragging: true,
     dispatch: jest.fn(),
     setMapState: jest.fn(),
-    pageX: 100,
-    pageY: 200,
-    qPageX: 10,
-    qPageY: 20,
+    gardenCoords: { x: 100, y: 200 },
   });
 
   it("moves plant", () => {
     const p = fakeProps();
     dragPlant(p);
     expect(p.setMapState).toHaveBeenCalledWith({
-      activeDragXY: { x: 190, y: 380, z: 0 },
-      qPageX: 100, qPageY: 200
+      activeDragXY: { x: 100, y: 200, z: 0 },
     });
-    expect(movePoints).toHaveBeenCalledWith({
-      deltaX: 90, deltaY: 180, gridSize: p.mapTransformProps.gridSize,
-      points: [p.getPlant()],
-    });
-  });
-
-  it("moves plant while swapped in odd quadrant", () => {
-    Object.defineProperty(window, "getComputedStyle", {
-      value: () => ({ transform: "scale(0.5)" }), configurable: true
-    });
-    const p = fakeProps();
-    p.mapTransformProps.quadrant = 3;
-    p.mapTransformProps.xySwap = true;
-    p.qPageX = 500;
-    p.qPageY = 3000;
-    dragPlant(p);
-    expect(p.setMapState).toHaveBeenCalledWith({
-      activeDragXY: { x: 700, y: 400, z: 0 },
-      qPageX: 200, qPageY: 2900
-    });
-    expect(movePoints).toHaveBeenCalledWith({
-      deltaX: 600, deltaY: 200, gridSize: p.mapTransformProps.gridSize,
-      points: [p.getPlant()],
-    });
-  });
-
-  it("moves plant: zoom unknown", () => {
-    Object.defineProperty(window, "getComputedStyle", {
-      value: () => ({ transform: undefined }), configurable: true
-    });
-    const p = fakeProps();
-    dragPlant(p);
-    expect(p.setMapState).toHaveBeenCalledWith({
-      activeDragXY: { x: 190, y: 380, z: 0 },
-      qPageX: 100, qPageY: 200
-    });
-    expect(movePoints).toHaveBeenCalledWith({
-      deltaX: 90, deltaY: 180, gridSize: p.mapTransformProps.gridSize,
-      points: [p.getPlant()],
+    expect(movePointTo).toHaveBeenCalledWith({
+      x: 100, y: 200, gridSize: p.mapTransformProps.gridSize,
+      point: p.getPlant(),
     });
   });
 
@@ -289,24 +250,7 @@ describe("dragPlant()", () => {
     p.isDragging = false;
     dragPlant(p);
     expect(p.setMapState).not.toHaveBeenCalled();
-    expect(movePoints).not.toHaveBeenCalled();
-  });
-
-  it("moves plant: same location", () => {
-    const p = fakeProps();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    p.qPageX = undefined as any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    p.qPageY = undefined as any;
-    dragPlant(p);
-    expect(p.setMapState).toHaveBeenCalledWith({
-      activeDragXY: { x: 100, y: 200, z: 0 },
-      qPageX: 100, qPageY: 200
-    });
-    expect(movePoints).toHaveBeenCalledWith({
-      deltaX: 0, deltaY: 0, gridSize: p.mapTransformProps.gridSize,
-      points: [p.getPlant()],
-    });
+    expect(movePointTo).not.toHaveBeenCalled();
   });
 });
 

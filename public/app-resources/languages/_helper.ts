@@ -112,7 +112,7 @@ const EXTRA_TAGS = [
   "For IT Security Professionals", "visualize", "{{ axis }}-axis profile",
   "Using another device, search for and connect to the `farmbot-xxxx` WiFi network",
   "GROUP MEMBERS ({{count}})", "FarmBot's current position", "# of plants",
-  "Binomial Name", "Common Names", "Sun Requirements", "Sowing Method",
+  "Binomial Name", "Common Names", "Sun", "Sowing", "Companions",
 ];
 
 /** For debugging. Replace all characters except whitespace and {{ words }}. */

@@ -60,7 +60,9 @@
 }
 
 .crop-drag-info-image {
-  width: 100% !important;
+  width: 7rem;
+  height: 7rem;
+  padding: 1rem;
 }
 
 .plant-catalog-image {
@@ -111,22 +113,6 @@
       font-size: 1.2rem !important;
     }
   }
-}
-
-.crop-info-overlay {
-  display: flex;
-  position: relative;
-  bottom: 3rem;
-  z-index: 2;
-  background-color: $dark_gray;
-  font-style: italic;
-  color: $off_white;
-  justify-content: center;
-  /* align horizontal */
-  align-items: center;
-  /* align vertical */
-  height: 3rem;
-  width: 100%;
 }
 
 .thin-search-wrapper {

@@ -93,7 +93,8 @@ export class RawCurves extends React.Component<CurvesProps, CurvesState> {
     return <DesignerPanel panelName={"curves-inventory"} panel={Panel.Curves}>
       <DesignerNavTabs />
       <DesignerPanelTop panel={Panel.Curves}>
-        <SearchField searchTerm={this.state.searchTerm}
+        <SearchField nameKey={"curves"}
+          searchTerm={this.state.searchTerm}
           placeholder={t("Search your curves...")}
           onChange={searchTerm => this.setState({ searchTerm })} />
       </DesignerPanelTop>

@@ -179,9 +179,11 @@ fieldset {
   margin-bottom: 0;
   .tabs {
     display: flex;
-    position: sticky;
-    top: 0;
+    position: absolute;
+    top: 1rem;
+    left: 0;
     z-index: 3;
+    width: 100%;
     background: $white;
     padding-bottom: 0.5rem;
     :first-child {
@@ -205,7 +207,7 @@ fieldset {
       color: $medium_gray;
       width: 50%;
       text-align: center;
-      margin-top: -1rem;
+      margin-top: 0;
       cursor: pointer;
       &.selected {
         background: $medium_gray;
@@ -1040,7 +1042,7 @@ ul {
 
 .button-group {
   display: inline-block;
-  margin: 1rem 0 -1rem;
+  margin: 1.5rem 0 -1rem;
   width: 100%;
   button:not(:first-of-type) {
     margin-right: 1rem;
@@ -1048,9 +1050,14 @@ ul {
   .run-btn {
     margin-right: 0.5rem;
   }
+  .fb-button-2 {
+    margin: 0;
+  }
   .settings-menu-button {
-    margin-right: 1rem;
     margin-top: 0.15rem;
+    .bp5-popover-wrapper {
+      margin-left: 0;
+    }
   }
   .fa {
     margin: 0 0.75rem;
@@ -2311,6 +2318,8 @@ ul {
 }
 
 .custom-coordinate-form {
+  margin-left: -3rem;
+  margin-right: -1rem;
   .x,
   .y,
   .z {

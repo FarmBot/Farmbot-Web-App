@@ -206,7 +206,7 @@ describe("<SequenceEditorMiddleActive />", () => {
     const p = fakeProps();
     p.dispatch = () => Promise.resolve();
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
-    await clickButton(wrapper, 0, "Save * ");
+    await clickButton(wrapper, 0, "save");
     expect(save).toHaveBeenCalledWith(expect.stringContaining("Sequence"));
     expect(push).toHaveBeenCalledWith(Path.sequences("fake"));
   });

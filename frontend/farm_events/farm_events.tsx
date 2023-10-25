@@ -132,7 +132,8 @@ export class RawFarmEvents
         panel={Panel.FarmEvents}
         linkTo={Path.farmEvents("add")}
         title={t("Add event")}>
-        <SearchField searchTerm={this.state.searchTerm}
+        <SearchField nameKey={"events"}
+          searchTerm={this.state.searchTerm}
           customLeftIcon={
             <i className="fa fa-calendar" onClick={this.resetCalendar} />}
           placeholder={t("Search your events...")}

@@ -1,6 +1,13 @@
+.sequence-page {
+  max-width: unset;
+  padding: 8.6rem 0rem 0;
+  background: $dark_gray;
+}
+
 .sequence-editor-panel {
-  margin: -3rem -1.5rem -3rem;
-  height: calc(100vh - 5rem);
+  margin-left: -3.5rem;
+  margin-top: 0.4rem;
+  height: calc(100vh - 8.95rem);
   background: $light_gray;
   @media screen and (max-width: 767px) {
     display: none;
@@ -12,7 +19,22 @@
       }
     }
   }
-  padding: 3rem 1.5rem 8rem;
+  padding: 0 2rem;
+  h3 {
+    margin-top: 1rem;
+  }
+  .bp5-popover-wrapper {
+    display: inline;
+    margin-left: 1rem;
+  }
+  .sequence-editor-tools {
+    .row {
+      flex: 1;
+    }
+    .button-group {
+      width: unset;
+    }
+  }
   overflow: hidden;
   .bp5-popover-target .saucer {
     float: left;
@@ -427,6 +449,7 @@
     }
     label {
       margin: 0;
+      font-size: 1.3rem;
     }
   }
   .show-on-hover {
@@ -576,6 +599,81 @@
   }
 }
 
+.sequence-editor-tools {
+  display: flex;
+  margin-left: -1rem;
+  margin-right: -1rem !important;
+  padding-right: 2rem;
+  .row {
+    margin-left: 0;
+  }
+  .title,
+  input {
+    flex: 1;
+  }
+  input {
+    margin: 0.75rem;
+    margin-left: 2.75rem;
+  }
+  .title {
+    padding: 1.25rem;
+    font-size: 1.6rem;
+    font-weight: bold;
+    margin-left: 1.5rem;
+  }
+  &.page {
+    i {
+      color: $white;
+    }
+    .publish-button {
+      span {
+        margin: 0;
+      }
+    }
+    .color-picker {
+      span,
+      i {
+        margin: 0;
+      }
+    }
+    &.blue,
+    &.yellow,
+    &.orange,
+    &.purple,
+    &.pink,
+    &.gray {
+      i,
+      .title {
+        color: $dark_gray;
+      }
+    }
+    &.blue {
+      background: $blue;
+    }
+    &.green {
+      background: $green;
+    }
+    &.yellow {
+      background: $yellow;
+    }
+    &.orange {
+      background: $orange;
+    }
+    &.purple {
+      background: $purple;
+    }
+    &.pink {
+      background: $pink;
+    }
+    &.gray {
+      background: $gray;
+    }
+    &.red {
+      background: $red;
+    }
+  }
+}
+
 .sequence-editor-tools,
 .regimen-editor-tools {
   margin-right: 15px;
@@ -588,7 +686,6 @@
     transform: rotate(45deg);
     &.pinned {
       transform: rotate(0deg);
-      color: $dark_gray;
     }
   }
   hr {
@@ -699,10 +796,16 @@
   margin-right: -15px;
   overflow-y: auto;
   overflow-x: hidden;
-  max-height: calc(100vh - 16rem);
+  max-height: calc(100vh - 8rem);
   .text-input-wrapper {
     input {
       padding-left: 0.5rem !important;
+    }
+    .fa-times {
+      color: $red !important;
+      &:hover {
+        color: $medium_dark_red !important;
+      }
     }
   }
   .step-button {
@@ -773,6 +876,39 @@
     }
     margin-left: 15px;
     margin-right: 15px;
+  }
+  .row {
+    margin-left: -2.5rem;
+    margin-right: 3rem;
+  }
+  h3 {
+    margin-top: 1rem;
+    margin-left: -1rem;
+    color: $white;
+  }
+  .bp5-popover-wrapper {
+    display: inline;
+    margin-left: 1rem;
+    i {
+      color: $white;
+    }
+  }
+  .text-input-wrapper {
+    border-bottom-color: $white !important;
+    &:before,
+    &:after {
+      background: $white !important;
+    }
+    input {
+      color: $white;
+    }
+  }
+  .thin-search-wrapper {
+    position: sticky;
+    top: 0;
+    z-index: 9;
+    padding: 0.5rem;
+    background: $dark_gray;
   }
 }
 
@@ -1083,6 +1219,9 @@
   .matched {
     background: transparentize($yellow, 0.5);
   }
+  .non-empty-state {
+    width: 100%;
+  }
 }
 
 .sequence-list-item {
@@ -1175,11 +1314,6 @@
       margin-top: 25%;
     }
   }
-  .non-empty-state {
-    max-height: calc(100vh - 19rem);
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
   @media screen and (max-width: 767px) {
     &.open {
       display: none;
@@ -1192,10 +1326,6 @@
   }
   .panel-top {
     margin: 0;
-    .text-input-wrapper {
-      margin: 0.1rem;
-      margin-right: 1rem;
-    }
   }
 }
 

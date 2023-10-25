@@ -18,10 +18,11 @@ import {
   FirmwareHardware, McuParams, TaggedLog, TaggedPeripheral, TaggedSequence,
   TaggedWebcamFeed,
 } from "farmbot";
-import { ResourceIndex, UUID } from "../resources/interfaces";
+import { ResourceIndex } from "../resources/interfaces";
 import { t } from "../i18next_wrapper";
 import { push } from "../history";
 import { Path } from "../internal_urls";
+import { RunButtonMenuOpen } from "../sequences/interfaces";
 
 export class RawDesignerControls
   extends React.Component<DesignerControlsProps, {}> {
@@ -52,7 +53,7 @@ export interface ControlsPanelProps {
   peripherals: TaggedPeripheral[];
   sequences: TaggedSequence[];
   resources: ResourceIndex;
-  menuOpen: UUID | undefined;
+  menuOpen: RunButtonMenuOpen;
   firmwareSettings: McuParams;
 }
 

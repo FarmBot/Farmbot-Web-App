@@ -211,7 +211,8 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
     return <DesignerPanel panelName={"weeds-inventory"} panel={Panel.Weeds}>
       <DesignerNavTabs />
       <DesignerPanelTop panel={Panel.Weeds}>
-        <SearchField searchTerm={this.state.searchTerm}
+        <SearchField nameKey={"weeds"}
+          searchTerm={this.state.searchTerm}
           placeholder={t("Search your weeds...")}
           customLeftIcon={<PointSortMenu
             sortOptions={this.state} onChange={u => this.setState(u)} />}

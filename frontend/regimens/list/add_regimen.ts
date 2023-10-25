@@ -7,7 +7,7 @@ import { t } from "../../i18next_wrapper";
 import { Path } from "../../internal_urls";
 
 const emptyRegimenBody = (regimenCount: number): TaggedRegimen["body"] => ({
-  name: (t("New regimen ") + (regimenCount++)),
+  name: (t("New Regimen ") + (regimenCount++)),
   color: "gray",
   regimen_items: [],
   body: [],

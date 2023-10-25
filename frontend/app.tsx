@@ -37,7 +37,7 @@ import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import { getFirmwareConfig, getFbosConfig } from "./resources/getters";
 import { intersection, isString, uniq } from "lodash";
 import { t } from "./i18next_wrapper";
-import { ResourceIndex, UUID } from "./resources/interfaces";
+import { ResourceIndex } from "./resources/interfaces";
 import { getAllAlerts } from "./messages/state_to_props";
 import { PingDictionary } from "./devices/connectivity/qos";
 import { getEnv } from "./farmware/state_to_props";
@@ -55,6 +55,7 @@ import { AppState } from "./reducer";
 import {
   sourceFbosConfigValue, sourceFwConfigValue,
 } from "./settings/source_config_value";
+import { RunButtonMenuOpen } from "./sequences/interfaces";
 
 export interface AppProps {
   dispatch: Function;
@@ -83,7 +84,7 @@ export interface AppProps {
   feeds: TaggedWebcamFeed[];
   peripherals: TaggedPeripheral[];
   sequences: TaggedSequence[];
-  menuOpen: UUID | undefined;
+  menuOpen: RunButtonMenuOpen;
   appState: AppState;
   children?: React.ReactNode;
 }
