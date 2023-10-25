@@ -133,7 +133,7 @@
           :pin_type: Peripheral
     :comment: Turn off water
 
-:PLANT_SEED: # ===================================
+:PLANT_SEED_GENESIS: # ===================================
   :args:
     :locals:
       :kind: scope_declaration
@@ -272,19 +272,159 @@
       :axis: z
     :comment: Move to safe Z position
 
+:PLANT_SEED_EXPRESS: # ===================================
+  :args:
+    :locals:
+      :kind: scope_declaration
+      :args: {}
+      :body:
+      - :kind: parameter_declaration
+        :args:
+          :label: parent
+          :default_value:
+            :kind: coordinate
+            :args:
+              :z: 0
+              :y: 0
+              :x: 0
+  :color: yellow
+  :name: Plant seed
+  :body:
+  - :kind: move
+    :args: {}
+    :body:
+      - :kind: axis_overwrite
+        :args:
+          :axis: x
+          :axis_operand:
+            :kind: identifier
+            :args:
+              :label: parent
+      - :kind: axis_overwrite
+        :args:
+          :axis: y
+          :axis_operand:
+            :kind: identifier
+            :args:
+              :label: parent
+      - :kind: axis_overwrite
+        :args:
+          :axis: z
+          :axis_operand:
+            :kind: special_value
+            :args:
+              :label: "soil_height"
+      - :kind: axis_addition
+        :args:
+          :axis: z
+          :axis_operand:
+            :kind: numeric
+            :args:
+              :number: 150
+      - :kind: safe_z
+        :args: {}
+    :comment: Move to above plant
+  - :kind: move
+    :args: {}
+    :body:
+      - :kind: axis_overwrite
+        :args:
+          :axis: x
+          :axis_operand:
+            :kind: identifier
+            :args:
+              :label: parent
+      - :kind: axis_overwrite
+        :args:
+          :axis: y
+          :axis_operand:
+            :kind: identifier
+            :args:
+              :label: parent
+      - :kind: axis_overwrite
+        :args:
+          :axis: z
+          :axis_operand:
+            :kind: special_value
+            :args:
+              :label: "soil_height"
+      - :kind: axis_addition
+        :args:
+          :axis: z
+          :axis_operand:
+            :kind: numeric
+            :args:
+              :number: -25
+      - :kind: speed_overwrite
+        :args:
+          :axis: z
+          :speed_setting:
+            :kind: numeric
+            :args:
+              :number: 25
+    :comment: Plant seed
+  - :kind: write_pin
+    :args:
+      :pin_mode: 0
+      :pin_value: 0
+      :pin_number:
+        :kind: named_pin
+        :args:
+          :pin_id: 0
+          :pin_type: Peripheral
+    :comment: Turn off vacuum pump
+  - :kind: move
+    :args: {}
+    :body:
+      - :kind: axis_overwrite
+        :args:
+          :axis: x
+          :axis_operand:
+            :kind: identifier
+            :args:
+              :label: parent
+      - :kind: axis_overwrite
+        :args:
+          :axis: y
+          :axis_operand:
+            :kind: identifier
+            :args:
+              :label: parent
+      - :kind: axis_overwrite
+        :args:
+          :axis: z
+          :axis_operand:
+            :kind: special_value
+            :args:
+              :label: "soil_height"
+      - :kind: axis_addition
+        :args:
+          :axis: z
+          :axis_operand:
+            :kind: numeric
+            :args:
+              :number: 150
+    :comment: Retract needle
+  - :kind: move
+    :args: {}
+    :body:
+      - :kind: axis_overwrite
+        :args:
+          :axis: z
+          :axis_operand:
+            :kind: numeric
+            :args:
+              :number: 0
+    :comment: Move Z to home position
+
 :PICK_UP_SEED_EXPRESS: # =========================
   :args:
     :locals:
       :kind: scope_declaration
       :args: {}
   :color: yellow
-  :name: Pick up seed (Express)
+  :name: Pick up seed
   :body:
-  - :kind: find_home
-    :args:
-      :speed: 100
-      :axis: z
-    :comment: Find home
   - :kind: move
     :args: {}
     :body:
@@ -400,7 +540,7 @@
       :kind: scope_declaration
       :args: {}
   :color: yellow
-  :name: Pick up seed (Genesis)
+  :name: Pick up seed
   :body:
   - :kind: execute
     :args:
@@ -556,7 +696,7 @@
             :point_group_id: 0
     :comment: Water all plants
 
-:FIND_HOME: # =========================
+:FIND_HOME_GENESIS: # =========================
   :args:
     :locals:
       :kind: scope_declaration

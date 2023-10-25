@@ -122,13 +122,7 @@ module Devices
       def sequences_mount_tool; end
       def sequences_dismount_tool; end
       def sequences_pick_up_seed; end
-
-      def sequences_plant_seed
-        s = SequenceSeeds::PLANT_SEED.deep_dup
-
-        s.dig(:body, 2, :args, :pin_number, :args)[:pin_id] = vacuum_id
-        Sequences::Create.run!(s, device: device)
-      end
+      def sequences_plant_seed; end
 
       def sequences_take_photo_of_plant
         s = SequenceSeeds::TAKE_PHOTO_OF_PLANT.deep_dup

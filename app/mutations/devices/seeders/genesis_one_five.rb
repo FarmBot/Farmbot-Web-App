@@ -11,7 +11,7 @@ module Devices
         add_tool_slot(name: ToolNames::SEED_TROUGH_1,
                       x: 0,
                       y: 25,
-                      z: 0,
+                      z: -100,
                       tool: tools_seed_trough_1,
                       pullout_direction: ToolSlot::NONE,
                       gantry_mounted: true)
@@ -21,7 +21,7 @@ module Devices
         add_tool_slot(name: ToolNames::SEED_TROUGH_2,
                       x: 0,
                       y: 50,
-                      z: 0,
+                      z: -100,
                       tool: tools_seed_trough_2,
                       pullout_direction: ToolSlot::NONE,
                       gantry_mounted: true)
