@@ -1,0 +1,5 @@
+en:
+  activerecord:
+    attributes:
+      device:
+        fb_order_number: "Order number"
