@@ -75,6 +75,8 @@ module Devices
       def tools_rotary; end
       def sequences_mount_tool; end
       def sequences_dismount_tool; end
+      def sequences_mow_all_weeds; end
+      def sequences_pick_from_seed_tray; end
 
       def sequences_pick_up_seed
         s = SequenceSeeds::PICK_UP_SEED_EXPRESS.deep_dup

@@ -158,11 +158,19 @@ describe Api::DevicesController do
     end
 
     def sequences_mount_tool?(device)
-      device.sequences.find_by(name: "Mount Tool")
+      device.sequences.find_by(name: PublicSequenceNames::MOUNT_TOOL)
     end
 
     def sequences_dismount_tool?(device)
-      device.sequences.find_by(name: "Dismount Tool")
+      device.sequences.find_by(name: PublicSequenceNames::DISMOUNT_TOOL)
+    end
+
+    def sequences_mow_all_weeds?(device)
+      device.sequences.find_by(name: PublicSequenceNames::MOW_ALL_WEEDS)
+    end
+
+    def sequences_pick_from_seed_tray?(device)
+      device.sequences.find_by(name: PublicSequenceNames::PICK_FROM_SEED_TRAY)
     end
 
     def sequences_pickup_seed?(device)
@@ -273,6 +281,8 @@ describe Api::DevicesController do
             PublicSequenceNames::WEED_DETECTION_GRID,
             PublicSequenceNames::MOUNT_TOOL,
             PublicSequenceNames::DISMOUNT_TOOL,
+            PublicSequenceNames::MOW_ALL_WEEDS,
+            PublicSequenceNames::PICK_FROM_SEED_TRAY,
           ].map do |name|
             s = Sequences::Create.run!(device: u.device,
                                         name: name,
@@ -367,6 +377,8 @@ describe Api::DevicesController do
       expect(sequences_dispense_water?(device)).to be_kind_of(Sequence)
       expect(sequences_mount_tool?(device)).to be_kind_of(Sequence)
       expect(sequences_dismount_tool?(device)).to be_kind_of(Sequence)
+      expect(sequences_mow_all_weeds?(device)).to_not be
+      expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(2900)
       expect(settings_default_map_size_y?(device)).to eq(1400)
     end
@@ -438,6 +450,8 @@ describe Api::DevicesController do
       expect(sequences_dispense_water?(device)).to be_kind_of(Sequence)
       expect(sequences_mount_tool?(device)).to be_kind_of(Sequence)
       expect(sequences_dismount_tool?(device)).to be_kind_of(Sequence)
+      expect(sequences_mow_all_weeds?(device)).to_not be
+      expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(2900)
       expect(settings_default_map_size_y?(device)).to eq(1400)
     end
@@ -509,6 +523,8 @@ describe Api::DevicesController do
       expect(sequences_dispense_water?(device)).to be_kind_of(Sequence)
       expect(sequences_mount_tool?(device)).to be_kind_of(Sequence)
       expect(sequences_dismount_tool?(device)).to be_kind_of(Sequence)
+      expect(sequences_mow_all_weeds?(device)).to_not be
+      expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(2900)
       expect(settings_default_map_size_y?(device)).to eq(1400)
     end
@@ -582,6 +598,8 @@ describe Api::DevicesController do
       expect(sequences_dispense_water?(device)).to be_kind_of(Sequence)
       expect(sequences_mount_tool?(device)).to be_kind_of(Sequence)
       expect(sequences_dismount_tool?(device)).to be_kind_of(Sequence)
+      expect(sequences_mow_all_weeds?(device)).to_not be
+      expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(2900)
       expect(settings_default_map_size_y?(device)).to eq(1400)
     end
@@ -656,6 +674,8 @@ describe Api::DevicesController do
       expect(sequences_dispense_water?(device)).to be_kind_of(Sequence)
       expect(sequences_mount_tool?(device)).to be_kind_of(Sequence)
       expect(sequences_dismount_tool?(device)).to be_kind_of(Sequence)
+      expect(sequences_mow_all_weeds?(device)).to be_kind_of(Sequence)
+      expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(2900)
       expect(settings_default_map_size_y?(device)).to eq(1400)
     end
@@ -727,6 +747,8 @@ describe Api::DevicesController do
       expect(sequences_dispense_water?(device)).to be_kind_of(Sequence)
       expect(sequences_mount_tool?(device)).to be_kind_of(Sequence)
       expect(sequences_dismount_tool?(device)).to be_kind_of(Sequence)
+      expect(sequences_mow_all_weeds?(device)).to_not be
+      expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(5900)
       expect(settings_default_map_size_y?(device)).to eq(2900)
     end
@@ -800,6 +822,8 @@ describe Api::DevicesController do
       expect(sequences_dispense_water?(device)).to be_kind_of(Sequence)
       expect(sequences_mount_tool?(device)).to be_kind_of(Sequence)
       expect(sequences_dismount_tool?(device)).to be_kind_of(Sequence)
+      expect(sequences_mow_all_weeds?(device)).to_not be
+      expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(5900)
       expect(settings_default_map_size_y?(device)).to eq(2900)
     end
@@ -874,6 +898,8 @@ describe Api::DevicesController do
       expect(sequences_dispense_water?(device)).to be_kind_of(Sequence)
       expect(sequences_mount_tool?(device)).to be_kind_of(Sequence)
       expect(sequences_dismount_tool?(device)).to be_kind_of(Sequence)
+      expect(sequences_mow_all_weeds?(device)).to be_kind_of(Sequence)
+      expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(5900)
       expect(settings_default_map_size_y?(device)).to eq(2900)
     end
@@ -941,6 +967,8 @@ describe Api::DevicesController do
       expect(sequences_dispense_water?(device)).to be_kind_of(Sequence)
       expect(sequences_mount_tool?(device)).to_not be
       expect(sequences_dismount_tool?(device)).to_not be
+      expect(sequences_mow_all_weeds?(device)).to_not be
+      expect(sequences_pick_from_seed_tray?(device)).to_not be
       expect(settings_default_map_size_x?(device)).to eq(2900)
       expect(settings_default_map_size_y?(device)).to eq(1200)
     end
@@ -1008,6 +1036,8 @@ describe Api::DevicesController do
       expect(sequences_dispense_water?(device)).to be_kind_of(Sequence)
       expect(sequences_mount_tool?(device)).to_not be
       expect(sequences_dismount_tool?(device)).to_not be
+      expect(sequences_mow_all_weeds?(device)).to_not be
+      expect(sequences_pick_from_seed_tray?(device)).to_not be
       expect(settings_default_map_size_x?(device)).to eq(2900)
       expect(settings_default_map_size_y?(device)).to eq(1200)
     end
@@ -1075,6 +1105,8 @@ describe Api::DevicesController do
       expect(sequences_dispense_water?(device)).to be_kind_of(Sequence)
       expect(sequences_mount_tool?(device)).to_not be
       expect(sequences_dismount_tool?(device)).to_not be
+      expect(sequences_mow_all_weeds?(device)).to_not be
+      expect(sequences_pick_from_seed_tray?(device)).to_not be
       expect(settings_default_map_size_x?(device)).to eq(6000)
       expect(settings_default_map_size_y?(device)).to eq(2400)
     end
@@ -1142,6 +1174,8 @@ describe Api::DevicesController do
       expect(sequences_dispense_water?(device)).to be_kind_of(Sequence)
       expect(sequences_mount_tool?(device)).to_not be
       expect(sequences_dismount_tool?(device)).to_not be
+      expect(sequences_mow_all_weeds?(device)).to_not be
+      expect(sequences_pick_from_seed_tray?(device)).to_not be
       expect(settings_default_map_size_x?(device)).to eq(6000)
       expect(settings_default_map_size_y?(device)).to eq(2400)
     end
@@ -1155,10 +1189,22 @@ describe Api::DevicesController do
       expect(point_groups_beet?(device)).to be_kind_of(PointGroup)
     end
 
-    it "seeds accounts when sequence versions not available" do
+    it "seeds accounts when sequence versions not available: demo account" do
       start_tests "demo_account", false
 
-      expect(sequences_grid?(device)).to_not be
+      expect(sequences_grid?(device)).to be_kind_of(Sequence)
+    end
+
+    it "seeds accounts when sequence versions not available:  Genesis XL 1.6" do
+      start_tests "genesis_xl_1.6", false
+
+      expect(sequences_mow_all_weeds?(device)).to be_kind_of(Sequence)
+    end
+
+    it "seeds accounts when sequence versions not available:  Genesis 1.6" do
+      start_tests "genesis_1.6", false
+
+      expect(sequences_mow_all_weeds?(device)).to be_kind_of(Sequence)
     end
 
     it "does not seed accounts" do

@@ -19,6 +19,8 @@ module Devices
       def sequences_plant_seed; end
       def sequences_take_photo_of_plant; end
       def sequences_water_plant; end
+      def sequences_mow_all_weeds; end
+      def sequences_pick_from_seed_tray; end
       def point_groups_spinach; end
       def point_groups_broccoli; end
       def point_groups_beet; end

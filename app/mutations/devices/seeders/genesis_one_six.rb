@@ -60,6 +60,14 @@ module Devices
         @tools_seed_trough_2 ||=
           add_tool(ToolNames::SEED_TROUGH_2)
       end
+
+      def sequences_mow_all_weeds
+        success = install_sequence_version_by_name(PublicSequenceNames::MOW_ALL_WEEDS)
+        if !success
+          s = SequenceSeeds::MOW_ALL_WEEDS.deep_dup
+          Sequences::Create.run!(s, device: device)
+        end
+      end
     end
   end
 end
