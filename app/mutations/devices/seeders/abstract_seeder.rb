@@ -84,6 +84,8 @@ module Devices
         :sequences_soil_height_grid,
         :sequences_grid,
         :sequences_dispense_water,
+        :sequences_mow_all_weeds,
+        :sequences_pick_from_seed_tray,
 
         # EVERYTHING ELSE ========================
         :misc,
@@ -122,13 +124,9 @@ module Devices
       def sequences_mount_tool; end
       def sequences_dismount_tool; end
       def sequences_pick_up_seed; end
-
-      def sequences_plant_seed
-        s = SequenceSeeds::PLANT_SEED.deep_dup
-
-        s.dig(:body, 2, :args, :pin_number, :args)[:pin_id] = vacuum_id
-        Sequences::Create.run!(s, device: device)
-      end
+      def sequences_plant_seed; end
+      def sequences_mow_all_weeds; end
+      def sequences_pick_from_seed_tray; end
 
       def sequences_take_photo_of_plant
         s = SequenceSeeds::TAKE_PHOTO_OF_PLANT.deep_dup
@@ -175,27 +173,51 @@ module Devices
       def sequences_find_home; end
 
       def sequences_water_all
-        install_sequence_version_by_name(PublicSequenceNames::WATER_ALL)
+        success = install_sequence_version_by_name(PublicSequenceNames::WATER_ALL)
+        if !success
+          s = SequenceSeeds::WATER_ALL.deep_dup
+          Sequences::Create.run!(s, device: device)
+        end
       end
 
       def sequences_photo_grid
-        install_sequence_version_by_name(PublicSequenceNames::PHOTO_GRID)
+        success = install_sequence_version_by_name(PublicSequenceNames::PHOTO_GRID)
+        if !success
+          s = SequenceSeeds::PHOTO_GRID.deep_dup
+          Sequences::Create.run!(s, device: device)
+        end
       end
 
       def sequences_weed_detection_grid
-        install_sequence_version_by_name(PublicSequenceNames::WEED_DETECTION_GRID)
+        success = install_sequence_version_by_name(PublicSequenceNames::WEED_DETECTION_GRID)
+        if !success
+          s = SequenceSeeds::WEED_DETECTION_GRID.deep_dup
+          Sequences::Create.run!(s, device: device)
+        end
       end
 
       def sequences_soil_height_grid
-        install_sequence_version_by_name(PublicSequenceNames::SOIL_HEIGHT_GRID)
+        success = install_sequence_version_by_name(PublicSequenceNames::SOIL_HEIGHT_GRID)
+        if !success
+          s = SequenceSeeds::SOIL_HEIGHT_GRID.deep_dup
+          Sequences::Create.run!(s, device: device)
+        end
       end
 
       def sequences_grid
-        install_sequence_version_by_name(PublicSequenceNames::GRID)
+        success = install_sequence_version_by_name(PublicSequenceNames::GRID)
+        if !success
+          s = SequenceSeeds::GRID.deep_dup
+          Sequences::Create.run!(s, device: device)
+        end
       end
 
       def sequences_dispense_water
-        install_sequence_version_by_name(PublicSequenceNames::DISPENSE_WATER)
+        success = install_sequence_version_by_name(PublicSequenceNames::DISPENSE_WATER)
+        if !success
+          s = SequenceSeeds::DISPENSE_WATER.deep_dup
+          Sequences::Create.run!(s, device: device)
+        end
       end
 
       def settings_default_map_size_x; end
@@ -249,10 +271,12 @@ module Devices
           msg = "Unable to install public sequence: #{name}"
           device.tell(msg)
           Rollbar.error(msg)
+          return false
         else
           Sequences::Install.run!(
             sequence_version: sv,
             device: device)
+          return true
         end
       end
 

@@ -8,6 +8,11 @@ class Device < ApplicationRecord
   TIMEZONES = TZInfo::Timezone.all_identifiers
   BAD_TZ = "%{value} is not a valid timezone"
   BAD_OTA_HOUR = "must be a value from 0 to 23."
+  ORDER_NUMBER_TAKEN = "has already been taken. " \
+                       "If you purchased multiple FarmBots with the same " \
+                       "order number, you may add -1, -2, -3, etc. to " \
+                       "the end of the order number to register additional " \
+                       "FarmBots after the first one."
   THROTTLE_ON = "Device is sending too many logs (%s). " \
                 "Suspending log storage and display until %s."
   THROTTLE_OFF = "Cooldown period has ended. " \
@@ -43,7 +48,8 @@ class Device < ApplicationRecord
                        }
   validates :ota_hour,
     inclusion: { in: [*0..23], message: BAD_OTA_HOUR, allow_nil: true }
-  validates :fb_order_number, uniqueness: true, allow_nil: true
+  validates :fb_order_number,
+    uniqueness: { message: ORDER_NUMBER_TAKEN, allow_nil: true }
   before_validation :perform_gradual_upgrade
 
   # Give the user back the amount of logs they are allowed to view.

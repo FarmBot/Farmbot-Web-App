@@ -110,18 +110,34 @@ module Devices
       def tools_rotary; end
 
       def sequences_mount_tool
-        install_sequence_version_by_name("Mount Tool")
+        success = install_sequence_version_by_name(PublicSequenceNames::MOUNT_TOOL)
+        if !success
+          s = SequenceSeeds::MOUNT_TOOL.deep_dup
+          Sequences::Create.run!(s, device: device)
+        end
       end
 
       def sequences_dismount_tool
-        install_sequence_version_by_name("Dismount Tool")
+        success = install_sequence_version_by_name(PublicSequenceNames::DISMOUNT_TOOL)
+        if !success
+          s = SequenceSeeds::DISMOUNT_TOOL.deep_dup
+          Sequences::Create.run!(s, device: device)
+        end
+      end
+
+      def sequences_pick_from_seed_tray
+        success = install_sequence_version_by_name(PublicSequenceNames::PICK_FROM_SEED_TRAY)
+        if !success
+          s = SequenceSeeds::PICK_FROM_SEED_TRAY.deep_dup
+          Sequences::Create.run!(s, device: device)
+        end
       end
 
       def sequences_pick_up_seed
         s = SequenceSeeds::PICK_UP_SEED_GENESIS.deep_dup
 
         seed_bin_id = device.tools.find_by!(name: ToolNames::SEED_BIN).id
-        mount_tool_id = device.sequences.find_by!(name: "Mount Tool").id
+        mount_tool_id = device.sequences.find_by!(name: PublicSequenceNames::MOUNT_TOOL).id
 
         s.dig(:body, 0, :args)[:sequence_id] = mount_tool_id
         s.dig(:body, 0, :body, 0, :args, :data_value, :args)[:tool_id] = seeder_id
@@ -139,8 +155,15 @@ module Devices
         Sequences::Create.run!(s, device: device)
       end
 
+      def sequences_plant_seed
+        s = SequenceSeeds::PLANT_SEED_GENESIS.deep_dup
+
+        s.dig(:body, 2, :args, :pin_number, :args)[:pin_id] = vacuum_id
+        Sequences::Create.run!(s, device: device)
+      end
+
       def sequences_find_home
-        s = SequenceSeeds::FIND_HOME.deep_dup
+        s = SequenceSeeds::FIND_HOME_GENESIS.deep_dup
         Sequences::Create.run!(s, device: device)
       end
 

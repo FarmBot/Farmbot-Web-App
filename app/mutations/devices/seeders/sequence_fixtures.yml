@@ -133,7 +133,7 @@
           :pin_type: Peripheral
     :comment: Turn off water
 
-:PLANT_SEED: # ===================================
+:PLANT_SEED_GENESIS: # ===================================
   :args:
     :locals:
       :kind: scope_declaration
@@ -272,19 +272,159 @@
       :axis: z
     :comment: Move to safe Z position
 
+:PLANT_SEED_EXPRESS: # ===================================
+  :args:
+    :locals:
+      :kind: scope_declaration
+      :args: {}
+      :body:
+      - :kind: parameter_declaration
+        :args:
+          :label: parent
+          :default_value:
+            :kind: coordinate
+            :args:
+              :z: 0
+              :y: 0
+              :x: 0
+  :color: yellow
+  :name: Plant seed
+  :body:
+  - :kind: move
+    :args: {}
+    :body:
+      - :kind: axis_overwrite
+        :args:
+          :axis: x
+          :axis_operand:
+            :kind: identifier
+            :args:
+              :label: parent
+      - :kind: axis_overwrite
+        :args:
+          :axis: y
+          :axis_operand:
+            :kind: identifier
+            :args:
+              :label: parent
+      - :kind: axis_overwrite
+        :args:
+          :axis: z
+          :axis_operand:
+            :kind: special_value
+            :args:
+              :label: "soil_height"
+      - :kind: axis_addition
+        :args:
+          :axis: z
+          :axis_operand:
+            :kind: numeric
+            :args:
+              :number: 150
+      - :kind: safe_z
+        :args: {}
+    :comment: Move to above plant
+  - :kind: move
+    :args: {}
+    :body:
+      - :kind: axis_overwrite
+        :args:
+          :axis: x
+          :axis_operand:
+            :kind: identifier
+            :args:
+              :label: parent
+      - :kind: axis_overwrite
+        :args:
+          :axis: y
+          :axis_operand:
+            :kind: identifier
+            :args:
+              :label: parent
+      - :kind: axis_overwrite
+        :args:
+          :axis: z
+          :axis_operand:
+            :kind: special_value
+            :args:
+              :label: "soil_height"
+      - :kind: axis_addition
+        :args:
+          :axis: z
+          :axis_operand:
+            :kind: numeric
+            :args:
+              :number: -25
+      - :kind: speed_overwrite
+        :args:
+          :axis: z
+          :speed_setting:
+            :kind: numeric
+            :args:
+              :number: 25
+    :comment: Plant seed
+  - :kind: write_pin
+    :args:
+      :pin_mode: 0
+      :pin_value: 0
+      :pin_number:
+        :kind: named_pin
+        :args:
+          :pin_id: 0
+          :pin_type: Peripheral
+    :comment: Turn off vacuum pump
+  - :kind: move
+    :args: {}
+    :body:
+      - :kind: axis_overwrite
+        :args:
+          :axis: x
+          :axis_operand:
+            :kind: identifier
+            :args:
+              :label: parent
+      - :kind: axis_overwrite
+        :args:
+          :axis: y
+          :axis_operand:
+            :kind: identifier
+            :args:
+              :label: parent
+      - :kind: axis_overwrite
+        :args:
+          :axis: z
+          :axis_operand:
+            :kind: special_value
+            :args:
+              :label: "soil_height"
+      - :kind: axis_addition
+        :args:
+          :axis: z
+          :axis_operand:
+            :kind: numeric
+            :args:
+              :number: 150
+    :comment: Retract needle
+  - :kind: move
+    :args: {}
+    :body:
+      - :kind: axis_overwrite
+        :args:
+          :axis: z
+          :axis_operand:
+            :kind: numeric
+            :args:
+              :number: 0
+    :comment: Move Z to home position
+
 :PICK_UP_SEED_EXPRESS: # =========================
   :args:
     :locals:
       :kind: scope_declaration
       :args: {}
   :color: yellow
-  :name: Pick up seed (Express)
+  :name: Pick up seed
   :body:
-  - :kind: find_home
-    :args:
-      :speed: 100
-      :axis: z
-    :comment: Find home
   - :kind: move
     :args: {}
     :body:
@@ -400,7 +540,7 @@
       :kind: scope_declaration
       :args: {}
   :color: yellow
-  :name: Pick up seed (Genesis)
+  :name: Pick up seed
   :body:
   - :kind: execute
     :args:
@@ -408,7 +548,7 @@
     :body:
     - :kind: parameter_application
       :args:
-        :label: parent
+        :label: Tool
         :data_value:
           :kind: tool
           :args:
@@ -556,7 +696,7 @@
             :point_group_id: 0
     :comment: Water all plants
 
-:FIND_HOME: # =========================
+:FIND_HOME_GENESIS: # =========================
   :args:
     :locals:
       :kind: scope_declaration
@@ -588,3 +728,186 @@
       :speed: 100
       :axis: x
     :comment: Find home on the X axis
+
+:MOUNT_TOOL: # ===================================
+  :args:
+    :locals:
+      :kind: scope_declaration
+      :args: {}
+      :body:
+      - :kind: parameter_declaration
+        :args:
+          :label: Tool
+          :default_value:
+            :kind: location_placeholder
+            :args: {}
+  :color: gray
+  :name: Mount Tool
+  :body:
+  - :kind: lua
+    :args:
+      :lua: "mount_tool(variable(\"Tool\"))"
+
+:DISMOUNT_TOOL: # ===================================
+  :args:
+    :locals:
+      :kind: scope_declaration
+      :args: {}
+  :color: gray
+  :name: Dismount Tool
+  :body:
+  - :kind: lua
+    :args:
+      :lua: "dismount_tool()"
+
+:WATER_ALL: # ===================================
+  :args:
+    :locals:
+      :kind: scope_declaration
+      :args: {}
+      :body:
+      - :kind: parameter_declaration
+        :args:
+          :label: Watering Time (Seconds)
+          :default_value:
+            :kind: numeric
+            :args:
+              :number: 2
+  :color: blue
+  :name: Water All
+  :body:
+  - :kind: lua
+    :args:
+      :lua: "local watering_time = variable(\"Watering Time (Seconds)\")\nstart_time = os.time() * 1000\n\nlocal points = api({method = \"GET\", url = \"/api/points\"})\n\nlocal plants = {}\n\nfor k, v in pairs(points) do\n    if v.pointer_type == \"Plant\" then\n        table.insert(plants, {name = v.name, x = v.x, y = v.y})\n    end\nend\n\ntable.sort(plants, function(l, r)\n    -- \"close enough\" approximation.\n    if math.abs(l.x - r.x) < 150 then\n        return l.y < r.y\n    else\n        return l.x < r.x\n    end\nend)\n\ncount = 0\ntotal = #plants\njob = \"Watering all \" .. total .. \" plants\"\n\nsend_message(\n    \"info\",\n    \"Watering all \" .. total .. \" plants for \" .. watering_time .. \" seconds each\",\n    \"toast\")\n\nfor k, v in pairs(plants) do\n    coordinates = \"(\" .. v.x .. \", \" .. v.y .. \")\"\n    set_job_progress(job, {\n        percent = 100 * (count) / total,\n        status = \"Moving to \" .. (v.name or \"plant\") .. \" at \" .. coordinates,\n        time = start_time\n    })\n    move_absolute(v.x, v.y, 0)\n    set_job_progress(job, {\n        percent = 100 * (count + 0.5) / total,\n        status = \"Watering \" .. (v.name or \"plant\") .. \" for \" .. watering_time .. \" seconds\",\n        time = start_time\n    })\n    write_pin(8, \"digital\", 1)\n    wait(watering_time * 1000)\n    write_pin(8, \"digital\", 0)\n    count = count + 1\nend\n\nset_job_progress(job, {\n    percent = 100,\n    status = \"Complete\",\n    time = start_time\n})"
+
+:SOIL_HEIGHT_GRID: # ===================================
+  :args:
+    :locals:
+      :kind: scope_declaration
+      :args: {}
+  :color: gray
+  :name: Soil Height Grid
+  :body:
+  - :kind: lua
+    :args:
+      :lua: "local grid = photo_grid()\ntype = \"Scan\"\njob = \"Soil Height Grid\"\nstart_time = os.time() * 1000\n\ngrid.each(function(cell)\n    set_job_progress(job, {\n        percent = 100 * (cell.count - 0.5) / grid.total,\n        status = \"Moving\",\n        time = start_time\n    })\n    move_absolute(cell.x, cell.y, cell.z)\n    set_job_progress(job, {\n        percent = 100 * (cell.count / grid.total),\n        status = \"Measuring soil height\",\n        time = start_time\n    })\n    local msg = \"Measuring height at point \" .. cell.count .. \" of \" .. grid.total\n    send_message(\"info\", msg)\n    measure_soil_height()\nend)\n\nset_job_progress(job, {\n    percent = 100,\n    status = \"Complete\",\n    time = start_time\n})"
+
+:PICK_FROM_SEED_TRAY: # ===================================
+  :args:
+    :locals:
+      :kind: scope_declaration
+      :args: {}
+      :body:
+      - :kind: parameter_declaration
+        :args:
+          :label: Seed Tray
+          :default_value:
+            :kind: location_placeholder
+            :args: {}
+      - :kind: parameter_declaration
+        :args:
+          :label: Seed Tray Cell
+          :default_value:
+            :kind: text
+            :args:
+              :string: B3
+  :color: yellow
+  :name: Pick from Seed Tray
+  :body:
+  - :kind: lua
+    :args:
+      :lua: "tray = variable(\"Seed Tray\")\ncell_label = variable(\"Seed Tray Cell\")\ncell = get_seed_tray_cell(tray, cell_label)\ncell_depth = 5\nvacuum_pump_pin = 9\n\n-- Checks\nif not verify_tool() then\n    return\nend\n\n-- Send message with cell info\nlocal cell_coordinates = \" (\" .. cell.x .. \", \" .. cell.y .. \", \" .. cell.z - cell_depth .. \")\"\nsend_message(\"info\", \"Picking up seed from cell \" .. cell_label .. cell_coordinates, \"toast\")\n\n-- Job\nstart_time = os.time() * 1000\nfunction job(status, percent)\n    set_job_progress(\"Pick from Seed Tray\", {\n        status = status,\n        percent = percent,\n        time = start_time\n    })\nend\n\n-- Safe Z move to above the cell\njob(\"Moving to Seed Tray\", 25)\nmove_absolute({\n    x = cell.x,\n    y = cell.y,\n    z = cell.z + 25,\n    safe_z = true\n})\n\n-- Pick up seed\njob(\"Picking up seed\", 75)\nwrite_pin(vacuum_pump_pin, \"digital\", 1)\nmove_absolute(cell.x, cell.y, cell.z - cell_depth)\n\n-- Retract Z\njob(\"Retracting Z\", 90)\nmove_absolute(cell.x, cell.y, cell.z + 25)\njob(\"Complete\", 100)"
+
+:PHOTO_GRID: # ===================================
+  :args:
+    :locals:
+      :kind: scope_declaration
+      :args: {}
+  :color: gray
+  :name: Photo Grid
+  :body:
+  - :kind: lua
+    :args:
+      :lua: "local grid = photo_grid()\ntype = \"Scan\"\njob = \"Photo Grid\"\nstart_time = os.time() * 1000\n\ngrid.each(function(cell)\n    set_job_progress(job, {\n        percent = 100 * (cell.count - 0.5) / grid.total,\n        status = \"Moving\",\n        time = start_time\n    })\n    move_absolute(cell.x, cell.y, cell.z)\n    set_job_progress(job, {\n        percent = 100 * (cell.count / grid.total),\n        status = \"Taking photo\",\n        time = start_time\n    })\n    local msg = \"Taking photo \" .. cell.count .. \" of \" .. grid.total\n    send_message(\"info\", msg)\n    take_photo()\nend)\n\nset_job_progress(job, {\n    percent = 100,\n    status = \"Complete\",\n    time = start_time\n})"
+
+:MOW_ALL_WEEDS: # ===================================
+  :args:
+    :locals:
+      :kind: scope_declaration
+      :args: {}
+  :color: red
+  :name: Mow All Weeds
+  :body:
+  - :kind: lua
+    :args:
+      :lua: "rotary_tool_pin = 2 -- 3 for REV\nmax_load = tonumber(env(\"rotary_tool_max_load\")) or 90\nrotary_tool_height = tonumber(env(\"rotary_tool_height\")) or 80\nmax_attempts = tonumber(env(\"rotary_tool_max_attempts\")) or 3\nweeds = {}\ncount = 0\n\nfunction job(status, percent)\n    set_job_progress(\"Mowing weed at \" .. coords, {\n        status = status,\n        percent = percent,\n        time = job_time\n    })\nend\n\npjob_time = os.time() * 1000\nfunction pjob(status, percent)\n    set_job_progress(\"Mowing \" .. #weeds .. \" weeds\", {\n        status = status,\n        percent = percent,\n        time = pjob_time\n    })\nend\n\nwatcher = function(data)\n    if (data.value > max_load) and (env(\"load\") ~= \"stalled\") then\n        env(\"load\", \"stalled\")\n        soft_stop()\n        off(rotary_tool_pin)\n        toast(\"Rotary tool max load exceeded (load = \" .. data.value .. \")\", \"warn\")\n    end\nend\n\nfunction attempt_weeding()\n    attempts = attempts + 1\n    env(\"load\", \"nominal\")\n    job(\"Moving to weed\", 10)\n    move{\n        x = weed.x - (weed.radius + 50),\n        y = weed.y,\n        z = weed.z + rotary_tool_height + 20,\n        safe_z = true\n    }\n\n    on(rotary_tool_pin)\n\n    if env(\"load\") == \"stalled\" then\n        wait(1500)\n        return\n    end\n    job(\"Descending\", 40)\n    move{\n        z = weed.z + rotary_tool_height,\n        speed = 25\n    }\n\n    if env(\"load\") == \"stalled\" then\n        wait(1500)\n        return\n    end\n    job(\"Mowing\", 50)\n    move{\n        x = weed.x + (weed.radius + 50),\n        speed = 25\n    }\n\n    if env(\"load\") == \"stalled\" then\n        wait(1500)\n        return\n    end\n    job(\"Ascending\", 90)\n    move{\n        z = weed.z + rotary_tool_height + 20,\n        speed = 25\n    }\n\n    if env(\"load\") == \"stalled\" then\n        wait(1500)\n        return\n    end\n    off(rotary_tool_pin)\n    success = true\nend\n\nif not verify_tool() then\n    return\nend\n\npoints = api({\n    method = \"GET\",\n    url = \"/api/points\"\n})\n\nfor k, v in pairs(points) do\n    if v.pointer_type == \"Weed\" then\n        table.insert(weeds, {x = v.x, y = v.y, z = soil_height(v.x, v.y), radius = v.radius})\n    end\nend\n\nwatch_pin(60, watcher)\n\nfor k, v in pairs(weeds) do\n    weed = v\n    count = count + 1\n    job_time = os.time() * 1000\n    pjob(\"Mowing weed \" .. count .. \" of \" .. #weeds, count / (#weeds + 1) * 100)\n    coords = \"(\" .. weed.x .. \", \" .. weed.y .. \", \" .. weed.z .. \")\"\n    attempts = 0\n    success = false\n    while (attempts < max_attempts) and (success == false) do\n        attempt_weeding()\n    end\n    if env(\"load\") == \"stalled\" then\n        toast(\"Mowing weed at \" .. coords .. \" failed after \" .. attempts .. \" attempt(s); proceeding...\", \"warn\")\n    end\n    job(\"Complete\", 100)\nend\npjob(\"Complete\", 100)\ntoast(\"Mowing complete\", \"success\")"
+
+:GRID: # ===================================
+  :args:
+    :locals:
+      :kind: scope_declaration
+      :args: {}
+      :body:
+      - :kind: parameter_declaration
+        :args:
+          :label: Number of points
+          :default_value:
+            :kind: coordinate
+            :args:
+              :x: 2
+              :y: 3
+              :z: 1
+      - :kind: parameter_declaration
+        :args:
+          :label: Spacing
+          :default_value:
+            :kind: coordinate
+            :args:
+              :x: 50
+              :y: 100
+              :z: 0
+      - :kind: parameter_declaration
+        :args:
+          :label: Subsequence
+          :default_value:
+            :kind: resource_placeholder
+            :args:
+              :resource_type: Sequence
+  :color: gray
+  :name: Grid
+  :body:
+  - :kind: lua
+    :args:
+      :lua: "subsequence = variable(\"Subsequence\")\nstart = variable(\"Starting location\")\nspacing = variable(\"Spacing\")\ngrid_points = variable(\"Number of points\")\ngrid_points_total = grid_points.x * grid_points.y * grid_points.z\njob = subsequence.name .. \" x\" .. grid_points_total\nindex = 0\ngrid_max_x = start.x + (spacing.x * grid_points.x)\ngrid_max_y = start.y + (spacing.y * grid_points.y)\nstart_time = os.time() * 1000\n\nfunction failure(reason) send_message(\"error\", reason, \"toast\") end\n\nif grid_points.x <= 0 or grid_points.y <= 0 or grid_points.z <= 0 then\n    failure(\"Number of points must be greater than 0 for all three axes\")\n    return\nelseif grid_max_x > garden_size().x or grid_max_y > garden_size().y then\n    failure(\"Grid must not exceed the **AXIS LENGTH** for the X or Y axes\")\n    return\nend\n\nmsg = \"Executing `\" .. subsequence.name .. \"` \" .. grid_points_total ..\n    \" times in a \" .. grid_points.x .. \" x \" .. grid_points.y ..\n    \" x \" .. grid_points.z .. \" grid\"\nsend_message(\"info\", msg, \"toast\")\n\n-- Move to each grid point and execute the subsequence\n\nfor grid_index_z = 0, (grid_points.z - 1) do\n    z = start.z + (spacing.z * grid_index_z)\n    for grid_index_x = 0, (grid_points.x - 1) do\n        x = start.x + (spacing.x * grid_index_x)\n        for grid_index_y = 0, (grid_points.y - 1) do\n            if (grid_index_x % 2) == 0 then\n                y = start.y + (spacing.y * grid_index_y)\n            else\n                reversed_index_y = grid_points.y - 1 - grid_index_y\n                y = start.y + (spacing.y * reversed_index_y)\n            end\n            set_job_progress(job, {\n                percent = 100 * index / grid_points_total,\n                status = \"Moving\",\n                time = start_time\n            })\n            move_absolute(x, y, z)\n            set_job_progress(job, {\n                percent = 100 * (index + 0.5) / grid_points_total,\n                status = \"Executing subsequence\",\n                time = start_time\n            })\n            cs_eval(subsequence)\n            index = index + 1\n        end\n    end\nend\n\nset_job_progress(job, {\n    percent = 100,\n    status = \"Complete\",\n    time = start_time\n})"
+
+:DISPENSE_WATER: # ===================================
+  :args:
+    :locals:
+      :kind: scope_declaration
+      :args: {}
+      :body:
+      - :kind: parameter_declaration
+        :args:
+          :label: Water (mL)
+          :default_value:
+            :kind: numeric
+            :args:
+              :number: 250
+  :color: blue
+  :name: Dispense Water
+  :body:
+  - :kind: lua
+    :args:
+      :lua: "-- Get all tools\ntools = api({ url = \"/api/tools/\" })\nif not tools then\n    toast(\"API error\", \"error\")\n    return\nend\n\n-- Pluck the Watering Nozzle tool\nfor key, tool in pairs(tools) do\n    if tool.name == \"Watering Nozzle\" then\n        watering_nozzle = tool\n        wfr = watering_nozzle.flow_rate_ml_per_s\n    end\nend\n\nml = variable(\"Water (mL)\")\n\nif not wfr then\n    toast('You must have a tool named \"Watering Nozzle\" to use this sequence.', 'error')\n    return\nelseif wfr == 0 then\n    toast(\"**WATER FLOW RATE (mL/s)** must be greater than 0 for the Watering Nozzle tool. Refer to the sequence description for setup instructions.\", \"error\")\n    return\nelseif ml <= 0 then\n    toast(\"Water (mL) must be greater than 0\", \"error\")\n    return\nelseif ml > 10000 then\n    toast(\"Water (mL) cannot be more than 10,000\", \"error\")\n    return\nend\n\nseconds = math.floor(ml / wfr * 100) / 100\ntoast(\"Dispensing \" .. ml .. \"mL of water over \" .. seconds .. \" seconds\")\non(8)\nwait(seconds * 1000)\noff(8)"
+
+:WEED_DETECTION_GRID: # ===================================
+  :args:
+    :locals:
+      :kind: scope_declaration
+      :args: {}
+  :color: gray
+  :name: Weed Detection Grid
+  :body:
+  - :kind: lua
+    :args:
+      :lua: "local grid = photo_grid()\ntype = \"Scan\"\njob = \"Weed Detection Grid\"\nstart_time = os.time() * 1000\n\ngrid.each(function(cell)\n    set_job_progress(job, {\n        percent = 100 * (cell.count - 0.5) / grid.total,\n        status = \"Moving\",\n        time = start_time\n    })\n    move_absolute(cell.x, cell.y, cell.z)\n    set_job_progress(job, {\n        percent = 100 * (cell.count / grid.total),\n        status = \"Detecting weeds\",\n        time = start_time\n    })\n    local msg = \"Detecting weeds at location \" .. cell.count .. \" of \" ..\n                    grid.total\n    send_message(\"info\", msg)\n    detect_weeds()\nend)\n\nset_job_progress(job, {\n    percent = 100,\n    status = \"Complete\",\n    time = start_time\n})"

@@ -33,7 +33,7 @@ module Devices
         add_tool_slot(name: ToolNames::SEED_TROUGH_1,
                       x: 0,
                       y: 25,
-                      z: 0,
+                      z: -100,
                       tool: tools_seed_trough_1,
                       pullout_direction: ToolSlot::NONE,
                       gantry_mounted: true)
@@ -43,7 +43,7 @@ module Devices
         add_tool_slot(name: ToolNames::SEED_TROUGH_2,
                       x: 0,
                       y: 50,
-                      z: 0,
+                      z: -100,
                       tool: tools_seed_trough_2,
                       pullout_direction: ToolSlot::NONE,
                       gantry_mounted: true)
@@ -75,20 +75,29 @@ module Devices
       def tools_rotary; end
       def sequences_mount_tool; end
       def sequences_dismount_tool; end
+      def sequences_mow_all_weeds; end
+      def sequences_pick_from_seed_tray; end
 
       def sequences_pick_up_seed
         s = SequenceSeeds::PICK_UP_SEED_EXPRESS.deep_dup
 
-        s.dig(:body, 1, :body, 0, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
-        s.dig(:body, 1, :body, 1, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
-        s.dig(:body, 1, :body, 2, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
-        s.dig(:body, 2, :args, :pin_number, :args)[:pin_id] = vacuum_id
+        s.dig(:body, 0, :body, 0, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
+        s.dig(:body, 0, :body, 1, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
+        s.dig(:body, 0, :body, 2, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
+        s.dig(:body, 1, :args, :pin_number, :args)[:pin_id] = vacuum_id
+        s.dig(:body, 2, :body, 0, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
+        s.dig(:body, 2, :body, 1, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
+        s.dig(:body, 2, :body, 2, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
         s.dig(:body, 3, :body, 0, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
         s.dig(:body, 3, :body, 1, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
         s.dig(:body, 3, :body, 2, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
-        s.dig(:body, 4, :body, 0, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
-        s.dig(:body, 4, :body, 1, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
-        s.dig(:body, 4, :body, 2, :args, :axis_operand, :args)[:tool_id] = seed_trough_1_id
+        Sequences::Create.run!(s, device: device)
+      end
+
+      def sequences_plant_seed
+        s = SequenceSeeds::PLANT_SEED_EXPRESS.deep_dup
+
+        s.dig(:body, 2, :args, :pin_number, :args)[:pin_id] = vacuum_id
         Sequences::Create.run!(s, device: device)
       end
 
