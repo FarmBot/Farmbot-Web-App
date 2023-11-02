@@ -67,6 +67,8 @@ const PLATFORM_DATA = (): PlatformContent[] => [
       "Genesis XL v1.6.1 (white cable)",
       "Genesis v1.6.2 (white cable or 2 HDMI ports)",
       "Genesis XL v1.6.2 (white cable or 2 HDMI ports)",
+      "Genesis v1.7",
+      "Genesis XL v1.7",
     ],
   },
   {
@@ -135,6 +137,7 @@ enum Version {
   "v1.4" = "v1.4",
   "v1.5" = "v1.5",
   "v1.6" = "v1.6",
+  "v1.7" = "v1.7",
 }
 
 const VERSIONS = () => ({
@@ -143,6 +146,7 @@ const VERSIONS = () => ({
     Version["v1.1"],
   ],
   [Model.Genesis]: [
+    // Version["v1.7"],
     Version["v1.6"],
     Version["v1.5"],
     Version["v1.4"],
@@ -222,6 +226,9 @@ const DOWNLOADS = (): Downloads => ({
       [Run.first]: RPI3(),
       [Run.second]: RPI4(),
       [Run.third]: RPI4(),
+    },
+    [Version["v1.7"]]: {
+      [Run.first]: RPI4(),
     },
   }
 });

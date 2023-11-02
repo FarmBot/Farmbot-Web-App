@@ -1,9 +1,11 @@
 import { FirmwareHardware, TaggedFbosConfig } from "farmbot";
+import { shouldDisplayFeature } from "../../devices/should_display";
+import { Feature } from "../../devices/interfaces";
 
 export const isFwHardwareValue = (x?: unknown): x is FirmwareHardware => {
   const values: FirmwareHardware[] = [
     "arduino",
-    "farmduino", "farmduino_k14", "farmduino_k15", "farmduino_k16",
+    "farmduino", "farmduino_k14", "farmduino_k15", "farmduino_k16", "farmduino_k17",
     "express_k10", "express_k11",
     "none",
   ];
@@ -18,6 +20,7 @@ const ordered: FirmwareHardware[] = [
   "farmduino_k14",
   "farmduino_k15",
   "farmduino_k16",
+  "farmduino_k17",
   "none",
 ];
 
@@ -112,6 +115,7 @@ const FIRMWARE_LOOKUP: { [id: string]: FirmwareHardware } = {
   G: "farmduino_k14",
   H: "farmduino_k15",
   I: "farmduino_k16",
+  J: "farmduino_k17",
   E: "express_k10",
   D: "express_k11",
 };
@@ -122,6 +126,7 @@ enum BoardLabels {
   farmduino_k14 = "Farmduino (Genesis v1.4)",
   farmduino_k15 = "Farmduino (Genesis v1.5)",
   farmduino_k16 = "Farmduino (Genesis v1.6)",
+  farmduino_k17 = "Farmduino (Genesis v1.7)",
   express_k10 = "Farmduino (Express v1.0)",
   express_k11 = "Farmduino (Express v1.1)",
   none = "None",
@@ -133,6 +138,7 @@ enum KitLabels {
   farmduino_k14 = "Genesis v1.4",
   farmduino_k15 = "Genesis v1.5",
   farmduino_k16 = "Genesis v1.6",
+  farmduino_k17 = "Genesis v1.7",
   express_k10 = "Express v1.0",
   express_k11 = "Express v1.1",
   none = "None",
@@ -145,6 +151,7 @@ const KIT_LOOKUP = {
   farmduino_k14: KitLabels.farmduino_k14,
   farmduino_k15: KitLabels.farmduino_k15,
   farmduino_k16: KitLabels.farmduino_k16,
+  farmduino_k17: KitLabels.farmduino_k17,
   express_k10: KitLabels.express_k10,
   express_k11: KitLabels.express_k11,
   none: KitLabels.none,
@@ -156,6 +163,7 @@ const FARMDUINO = { label: BoardLabels.farmduino, value: "farmduino" };
 const FARMDUINO_K14 = { label: BoardLabels.farmduino_k14, value: "farmduino_k14" };
 const FARMDUINO_K15 = { label: BoardLabels.farmduino_k15, value: "farmduino_k15" };
 const FARMDUINO_K16 = { label: BoardLabels.farmduino_k16, value: "farmduino_k16" };
+const FARMDUINO_K17 = { label: BoardLabels.farmduino_k17, value: "farmduino_k17" };
 const EXPRESS_K10 = { label: BoardLabels.express_k10, value: "express_k10" };
 const EXPRESS_K11 = { label: BoardLabels.express_k11, value: "express_k11" };
 const NONE = { label: BoardLabels.none, value: "none" };
@@ -166,6 +174,7 @@ export const FIRMWARE_CHOICES_DDI = {
   [FARMDUINO_K14.value]: FARMDUINO_K14,
   [FARMDUINO_K15.value]: FARMDUINO_K15,
   [FARMDUINO_K16.value]: FARMDUINO_K16,
+  [FARMDUINO_K17.value]: FARMDUINO_K17,
   [EXPRESS_K10.value]: EXPRESS_K10,
   [EXPRESS_K11.value]: EXPRESS_K11,
   [NONE.value]: NONE,
@@ -177,6 +186,7 @@ export const getFirmwareChoices = () => ([
   FARMDUINO_K14,
   FARMDUINO_K15,
   FARMDUINO_K16,
+  ...(shouldDisplayFeature(Feature.farmduino_k17) ? [FARMDUINO_K17] : []),
   EXPRESS_K10,
   EXPRESS_K11,
   NONE,

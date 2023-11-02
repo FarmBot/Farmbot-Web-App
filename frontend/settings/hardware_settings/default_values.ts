@@ -155,6 +155,7 @@ export const getDefaultFwConfigValue =
         case "farmduino_k14":
         case "farmduino_k15":
         case "farmduino_k16":
+        case "farmduino_k17":
           return DEFAULT_GENESIS_FIRMWARE_CONFIG_VALUES[key];
         case "express_k10":
         case "express_k11":

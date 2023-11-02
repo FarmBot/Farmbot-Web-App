@@ -93,6 +93,7 @@ export class Peripherals
           ...EXTRA_PERIPHERALS,
         ];
       case "farmduino_k16":
+      case "farmduino_k17":
         return [
           ...BASE_PERIPHERALS,
           ...ROTARY_TOOL,

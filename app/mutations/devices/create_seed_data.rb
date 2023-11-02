@@ -11,9 +11,11 @@ module Devices
       "genesis_1.4" => Devices::Seeders::GenesisOneFour,
       "genesis_1.5" => Devices::Seeders::GenesisOneFive,
       "genesis_1.6" => Devices::Seeders::GenesisOneSix,
+      "genesis_1.7" => Devices::Seeders::GenesisOneSeven,
       "genesis_xl_1.4" => Devices::Seeders::GenesisXlOneFour,
       "genesis_xl_1.5" => Devices::Seeders::GenesisXlOneFive,
       "genesis_xl_1.6" => Devices::Seeders::GenesisXlOneSix,
+      "genesis_xl_1.7" => Devices::Seeders::GenesisXlOneSeven,
 
       "demo_account" => Devices::Seeders::DemoAccountSeeder,
       "none" => Devices::Seeders::None,

@@ -39,6 +39,7 @@ export enum Feature {
   farmduino_k14 = "farmduino_k14",
   farmduino_k15 = "farmduino_k15",
   farmduino_k16 = "farmduino_k16",
+  farmduino_k17 = "farmduino_k17",
   firmware_restart = "firmware_restart",
   flash_firmware = "flash_firmware",
   groups = "groups",

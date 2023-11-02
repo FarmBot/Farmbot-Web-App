@@ -107,6 +107,7 @@ describe("<AddTool />", () => {
     ["farmduino_k14", 6],
     ["farmduino_k15", 8],
     ["farmduino_k16", 9],
+    ["farmduino_k17", 9],
     ["express_k10", 3],
     ["express_k11", 3],
   ])("adds peripherals: %s", (firmware, expectedAdds) => {

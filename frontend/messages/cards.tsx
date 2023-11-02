@@ -32,6 +32,8 @@ import { push } from "../history";
 import moment from "moment";
 import { Path } from "../internal_urls";
 import { logout } from "../logout";
+import { shouldDisplayFeature } from "../devices/should_display";
+import { Feature } from "../devices/interfaces";
 
 export const AlertCard = (props: AlertCardProps) => {
   const { alert, timeSettings, findApiAlertById, dispatch } = props;
@@ -188,6 +190,11 @@ const FirmwareChoiceTable = () =>
         <td><code>{FIRMWARE_CHOICES_DDI["farmduino_k16"].label}</code></td>
       </tr>
       <tr>
+        <td>{"Genesis v1.7"}</td>
+        <td>{"Farmduino"}</td>
+        <td><code>{FIRMWARE_CHOICES_DDI["farmduino_k17"].label}</code></td>
+      </tr>
+      <tr>
         <td>{"Express v1.0"}</td>
         <td>{"Farmduino"}</td>
         <td><code>{FIRMWARE_CHOICES_DDI["express_k10"].label}</code></td>
@@ -245,9 +252,15 @@ export const SEED_DATA_OPTIONS = (): DropDownItem[] => [
   { label: "Genesis v1.4", value: "genesis_1.4" },
   { label: "Genesis v1.5", value: "genesis_1.5" },
   { label: "Genesis v1.6", value: "genesis_1.6" },
+  ...(shouldDisplayFeature(Feature.farmduino_k17)
+    ? [{ label: "Genesis v1.7", value: "genesis_1.7" }]
+    : []),
   { label: "Genesis v1.4 XL", value: "genesis_xl_1.4" },
   { label: "Genesis v1.5 XL", value: "genesis_xl_1.5" },
   { label: "Genesis v1.6 XL", value: "genesis_xl_1.6" },
+  ...(shouldDisplayFeature(Feature.farmduino_k17)
+    ? [{ label: "Genesis v1.7 XL", value: "genesis_xl_1.7" }]
+    : []),
   { label: "Express v1.0", value: "express_1.0" },
   { label: "Express v1.1", value: "express_1.1" },
   { label: "Express v1.0 XL", value: "express_xl_1.0" },
