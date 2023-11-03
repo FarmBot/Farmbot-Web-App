@@ -54,6 +54,17 @@ namespace :releases do
       release
     end
 
+    def self.get_brief_release_info
+      info = []
+      Release.all.map do |r|
+        if r.platform == "rpi"
+          info.push("#{r.channel.ljust(8)} #{r.version.ljust(14)}" +
+                    "#{r.created_at.to_s.slice(0, 10)}")
+        end
+      end
+      info.join("\n")
+    end
+
     def self.print_all_existing_releases
       puts ""
       Release.all.map do |r|
@@ -61,12 +72,7 @@ namespace :releases do
              "#{r.platform.ljust(6)} #{r.version.ljust(14)} #{r.created_at}"
       end
       puts ""
-      Release.all.map do |r|
-        if r.platform == "rpi"
-          puts "#{r.channel.ljust(8)} #{r.version.ljust(14)}" +
-               "#{r.created_at.to_s.slice(0, 10)}"
-        end
-      end
+      puts get_brief_release_info
       puts ""
     end
 
@@ -91,6 +97,31 @@ namespace :releases do
       if version.include?("rc") && chan == Release::STABLE
         puts "Refusing to publish unstable release candidate to stable channel."
         exit 1
+      end
+    end
+
+    def self.post_summary
+      webhook_url = ENV["RELEASE_WEBHOOK_URL"]
+      if webhook_url
+        server = Release.first.image_url.split("/")[3].split("-")[1]
+        title = "current releases: #{server}"
+        info = title + "\n```#{get_brief_release_info}```"
+        payload = {
+          "mrkdwn": true,
+          "text": title,
+          "blocks": [
+            {
+              "type": "section",
+              "text": {
+                "type": "mrkdwn",
+                "text": info,
+              }
+            }
+          ],
+        }.to_json
+        Faraday.post(webhook_url,
+                     payload,
+                     "Content-Type" => "application/json")
       end
     end
   end
@@ -118,5 +149,6 @@ namespace :releases do
       release.destroy!
     end
     ReleaseTask.print_all_existing_releases
+    ReleaseTask.post_summary
   end
 end
