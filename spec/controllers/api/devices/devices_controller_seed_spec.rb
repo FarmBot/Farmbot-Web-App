@@ -1359,6 +1359,18 @@ describe Api::DevicesController do
       expect(sequences_mow_all_weeds?(device)).to be_kind_of(Sequence)
     end
 
+    it "seeds accounts when sequence versions not available:  Genesis XL 1.7" do
+      start_tests "genesis_xl_1.7", false
+
+      expect(sequences_mow_all_weeds?(device)).to be_kind_of(Sequence)
+    end
+
+    it "seeds accounts when sequence versions not available:  Genesis 1.7" do
+      start_tests "genesis_1.7", false
+
+      expect(sequences_mow_all_weeds?(device)).to be_kind_of(Sequence)
+    end
+
     it "does not seed accounts" do
       start_tests "none"
 
