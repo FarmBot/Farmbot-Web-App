@@ -340,8 +340,10 @@ const SEED_DATA_OPTION_TO_FW_HARDWARE: Record<string, FirmwareHardware> = {
   "genesis_xl_1.7": "farmduino_k17",
   "express_1.0": "express_k10",
   "express_1.1": "express_k11",
+  "express_1.2": "express_k12",
   "express_xl_1.0": "express_k10",
   "express_xl_1.1": "express_k11",
+  "express_xl_1.2": "express_k12",
   "none": "none",
 };
 
@@ -354,6 +356,7 @@ const FW_HARDWARE_TO_RPI: Record<FirmwareHardware, string | undefined> = {
   "farmduino_k17": "4",
   "express_k10": "01",
   "express_k11": "02",
+  "express_k12": "02",
   "none": "3",
 };
 

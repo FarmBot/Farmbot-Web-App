@@ -32,6 +32,10 @@ describe("boardType()", () => {
     expect(boardType("5.0.3.D")).toEqual("express_k11");
   });
 
+  it("returns Farmduino Express k1.2", () => {
+    expect(boardType("5.0.3.C")).toEqual("express_k12");
+  });
+
   it("returns Arduino/RAMPS", () => {
     expect(boardType("5.0.3.R")).toEqual("arduino");
   });

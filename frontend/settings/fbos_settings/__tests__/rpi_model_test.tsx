@@ -22,6 +22,7 @@ const TEST_CASES: TestCase[] = [
   ["4", "rpi4", "farmduino_k17", "pi 4"],
   ["01", "rpi", "express_k10", "zero w"],
   ["02", "rpi3", "express_k11", "zero 2 w"],
+  ["02", "rpi3", "express_k12", "zero 2 w"],
 ];
 
 describe("<RpiModel />", () => {

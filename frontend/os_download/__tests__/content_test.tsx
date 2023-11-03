@@ -50,7 +50,7 @@ describe("<OsDownloadPage />", () => {
   it("runs the wizard: express", () => {
     const wrapper = mount(<OsDownloadPage />);
     clickButton(wrapper, 1, "express", { partial_match: true });
-    clickButton(wrapper, 0, "express v1.0");
+    clickButton(wrapper, 1, "express v1.0");
     expect(wrapper.text().toLowerCase()).toContain("zero");
   });
 

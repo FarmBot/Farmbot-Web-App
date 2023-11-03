@@ -1919,7 +1919,7 @@ export namespace SetupWizardContent {
   export const CHECK_CAMERA_CABLE =
     trim(`Check that the camera is plugged in correctly to either a
     Raspberry Pi USB port (Express v1.0 kits and all Genesis kits) or into
-    one of the vertically oriented USB ports on the Farmduino (Express v1.1
+    one of the vertically oriented USB ports on the Farmduino (Express v1.1+
     kits). For cameras with a 90 degree intermediary connector at the
     cross-slide, ensure the connectors are fully connected.`);
 

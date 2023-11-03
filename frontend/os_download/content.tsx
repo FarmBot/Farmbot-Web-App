@@ -55,7 +55,9 @@ const PLATFORM_DATA = (): PlatformContent[] => [
       "Genesis XL v1.5",
       "Genesis XL v1.6 (black cable)",
       "Express v1.1 (USB)",
+      "Express v1.2 (USB)",
       "Express XL v1.1 (USB)",
+      "Express XL v1.2 (USB)",
     ],
   },
   {
@@ -142,8 +144,9 @@ enum Version {
 
 const VERSIONS = () => ({
   [Model.Express]: [
-    Version["v1.0"],
+    // Version["v1.2"],
     Version["v1.1"],
+    Version["v1.0"],
   ],
   [Model.Genesis]: [
     // Version["v1.7"],
@@ -206,6 +209,9 @@ const DOWNLOADS = (): Downloads => ({
       [Run.first]: RPIZ(),
     },
     [Version["v1.1"]]: {
+      [Run.first]: RPIZ2(),
+    },
+    [Version["v1.2"]]: {
       [Run.first]: RPIZ2(),
     },
   },

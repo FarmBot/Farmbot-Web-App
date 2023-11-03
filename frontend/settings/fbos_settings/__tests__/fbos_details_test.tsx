@@ -296,6 +296,7 @@ describe("<PiDisplay />", () => {
     ["Zero W", "rpi", "arduino"],
     ["3", "rpi3", "arduino"],
     ["Zero 2 W", "rpi3", "express_k11"],
+    ["Zero 2 W", "rpi3", "express_k12"],
     ["4", "rpi4", "arduino"],
     ["Unknown", "", undefined],
   ])("returns correct pi model: %s", (expected, chip, firmware) => {

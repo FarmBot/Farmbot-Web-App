@@ -10,7 +10,7 @@ import { LastSeen } from "./last_seen_row";
 import moment from "moment";
 import { formatTime } from "../../util";
 import {
-  boardType, FIRMWARE_CHOICES_DDI, validFirmwareHardware,
+  boardType, FIRMWARE_CHOICES_DDI, hasZero2, validFirmwareHardware,
 } from "../firmware/firmware_hardware_support";
 import { ExternalUrl, FarmBotRepo } from "../../external_urls";
 import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
@@ -63,7 +63,7 @@ export const PiDisplay = ({ chip, firmware }: PiDisplayProps): JSX.Element => {
   const pi = () => {
     switch (chip) {
       case "rpi": return "Zero W";
-      case "rpi3": return firmware == "express_k11" ? "Zero 2 W" : "3";
+      case "rpi3": return hasZero2(firmware) ? "Zero 2 W" : "3";
       case "rpi4": return "4";
       default: return t("Unknown");
     }

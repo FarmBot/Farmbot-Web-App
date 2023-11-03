@@ -3,8 +3,10 @@ module Devices
     PRODUCT_LINES = {
       "express_1.0" => Devices::Seeders::ExpressOneZero,
       "express_1.1" => Devices::Seeders::ExpressOneOne,
+      "express_1.2" => Devices::Seeders::ExpressOneTwo,
       "express_xl_1.0" => Devices::Seeders::ExpressXlOneZero,
       "express_xl_1.1" => Devices::Seeders::ExpressXlOneOne,
+      "express_xl_1.2" => Devices::Seeders::ExpressXlOneTwo,
 
       "genesis_1.2" => Devices::Seeders::GenesisOneTwo,
       "genesis_1.3" => Devices::Seeders::GenesisOneThree,

@@ -101,6 +101,7 @@ export class Peripherals
         ];
       case "express_k10":
       case "express_k11":
+      case "express_k12":
         return BASE_PERIPHERALS;
     }
   }

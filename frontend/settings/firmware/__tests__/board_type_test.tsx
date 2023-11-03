@@ -103,6 +103,6 @@ describe("<BoardType/>", () => {
     mockFeatureBoolean = true;
     const wrapper = mount(<BoardType {...fakeProps()} />);
     const { list } = wrapper.find("FBSelect").props();
-    expect(list?.length).toEqual(9);
+    expect(list?.length).toEqual(10);
   });
 });

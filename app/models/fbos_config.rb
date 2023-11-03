@@ -15,5 +15,6 @@ class FbosConfig < ApplicationRecord
     FARMDUINO_K17 = "farmduino_k17",
     EXPRESS_K10 = "express_k10",
     EXPRESS_K11 = "express_k11",
+    EXPRESS_K12 = "express_k12",
   ]
 end

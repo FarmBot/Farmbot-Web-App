@@ -35,6 +35,7 @@ export enum Feature {
   endstop_invert = "endstop_invert",
   express_k10 = "express_k10",
   express_k11 = "express_k11",
+  express_k12 = "express_k12",
   express_stall_detection = "express_stall_detection",
   farmduino_k14 = "farmduino_k14",
   farmduino_k15 = "farmduino_k15",

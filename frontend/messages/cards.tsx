@@ -204,6 +204,11 @@ const FirmwareChoiceTable = () =>
         <td>{"Farmduino"}</td>
         <td><code>{FIRMWARE_CHOICES_DDI["express_k11"].label}</code></td>
       </tr>
+      <tr>
+        <td>{"Express v1.2"}</td>
+        <td>{"Farmduino"}</td>
+        <td><code>{FIRMWARE_CHOICES_DDI["express_k12"].label}</code></td>
+      </tr>
     </tbody>
   </table>;
 
