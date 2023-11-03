@@ -119,7 +119,7 @@ GEM
     factory_bot_rails (6.2.0)
       factory_bot (~> 6.2.0)
       railties (>= 5.0.0)
-    faker (3.2.1)
+    faker (3.2.2)
       i18n (>= 1.8.11, < 2)
     faraday (1.10.3)
       faraday-em_http (~> 1.0)
@@ -221,7 +221,7 @@ GEM
     multipart-post (2.3.0)
     mutations (0.9.1)
       activesupport
-    net-imap (0.4.2)
+    net-imap (0.4.4)
       date
       net-protocol
     net-pop (0.1.2)
@@ -251,7 +251,7 @@ GEM
       faraday_middleware (~> 1.2)
       hashie (~> 4.1)
       multi_json (~> 1.15)
-    racc (1.7.1)
+    racc (1.7.2)
     rack (2.2.8)
     rack-attack (6.7.0)
       rack (>= 1.0, < 4)
@@ -292,7 +292,7 @@ GEM
       method_source
       rake (>= 12.2)
       thor (~> 1.0)
-    rake (13.0.6)
+    rake (13.1.0)
     rbtree (0.4.6)
     redis (4.8.1)
     representable (3.2.0)
