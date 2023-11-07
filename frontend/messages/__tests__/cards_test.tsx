@@ -264,7 +264,7 @@ describe("SEED_DATA_OPTIONS()", () => {
 
   it("returns more options", () => {
     mockFeatureBoolean = true;
-    expect(SEED_DATA_OPTIONS().length).toEqual(15);
+    expect(SEED_DATA_OPTIONS().length).toEqual(17);
   });
 });
 

@@ -19,13 +19,16 @@ module Devices
       "genesis_xl_1.6" => Devices::Seeders::GenesisXlOneSix,
       "genesis_xl_1.7" => Devices::Seeders::GenesisXlOneSeven,
 
-      "demo_account" => Devices::Seeders::DemoAccountSeeder,
       "none" => Devices::Seeders::None,
     }
 
     required do
       model :device
       string :product_line, in: PRODUCT_LINES.keys
+    end
+
+    optional do
+      boolean :demo
     end
 
     def execute
@@ -40,6 +43,10 @@ module Devices
     def run_seeds!
       seeder.class::COMMAND_ORDER.map do |cmd|
         seeder.send(cmd)
+      end
+
+      if demo
+        Devices::Seeders::DemoAccountSeeder.new(device).misc(product_line)
       end
     end
   end

@@ -6,10 +6,13 @@ import { ExternalUrl } from "../external_urls";
 import { t } from "../i18next_wrapper";
 import { tourPath } from "../help/tours";
 import { Path } from "../internal_urls";
+import { FBSelect } from "../ui";
+import { SEED_DATA_OPTIONS, SEED_DATA_OPTIONS_DDI } from "../messages/cards";
 
 interface State {
   error: Error | undefined;
   stage: string;
+  productLine: string;
 }
 
 const WS_CONFIG = {
@@ -25,8 +28,11 @@ export const WAITING_ON_API = "Planting your demo garden...";
 
 // APPLICATION CODE ==============================
 export class DemoIframe extends React.Component<{}, State> {
-  state: State =
-    { error: undefined, stage: t("DEMO THE APP") };
+  state: State = {
+    error: undefined,
+    stage: t("DEMO THE APP"),
+    productLine: "genesis_1.7",
+  };
 
   setError = (error?: Error) => this.setState({ error });
 
@@ -44,7 +50,10 @@ export class DemoIframe extends React.Component<{}, State> {
     is51 && this.setState({ stage: EASTER_EGG });
 
     return axios
-      .post<string>(HTTP_URL, { secret: SECRET })
+      .post<string>(HTTP_URL, {
+        secret: SECRET,
+        product_line: this.state.productLine,
+      })
       .then(() => this.setState({ stage: WAITING_ON_API }))
       .catch(this.setError);
   };
@@ -61,7 +70,7 @@ export class DemoIframe extends React.Component<{}, State> {
   };
 
   ok = () => {
-
+    const selection = this.state.productLine;
     return <div className="demo-container">
       <video muted={true} autoPlay={true} loop={true} className="demo-video">
         <source src={ExternalUrl.Video.desktop} type="video/mp4" />
@@ -72,6 +81,13 @@ export class DemoIframe extends React.Component<{}, State> {
         onClick={this.requestAccount}>
         {this.state.stage}
       </button>
+      <FBSelect
+        key={selection}
+        extraClass={"demo-options"}
+        list={SEED_DATA_OPTIONS(true).filter(x => x.value != "none")}
+        customNullLabel={t("Select a model")}
+        selectedItem={SEED_DATA_OPTIONS_DDI()[selection]}
+        onChange={ddi => this.setState({ productLine: "" + ddi.value })} />
     </div>;
   };
 

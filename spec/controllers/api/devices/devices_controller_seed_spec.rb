@@ -268,7 +268,7 @@ describe Api::DevicesController do
       expect(device.reload.name).to eq(old_name)
     end
 
-    def start_tests(product_line, publish = true)
+    def start_tests(product_line, publish = true, demo = false)
       u = FactoryBot.create(:user)
       ClimateControl.modify AUTHORIZED_PUBLISHER: u.email do
         if publish
@@ -295,7 +295,7 @@ describe Api::DevicesController do
         end
         sign_in user
         run_jobs_now do
-          post :seed, body: { product_line: product_line }.to_json
+          post :seed, body: { product_line: product_line, demo: demo }.to_json
         end
         expect(response.status).to eq(200)
         device.reload
@@ -1471,7 +1471,7 @@ describe Api::DevicesController do
     end
 
     it "seeds accounts with demo account data" do
-      start_tests "demo_account"
+      start_tests "genesis_1.7", true, true
 
       expect(plants?(device)).to be true
       expect(point_groups_spinach?(device)).to be_kind_of(PointGroup)
@@ -1480,7 +1480,7 @@ describe Api::DevicesController do
     end
 
     it "seeds accounts when sequence versions not available: demo account" do
-      start_tests "demo_account", false
+      start_tests "genesis_1.7", false, true
 
       expect(sequences_grid?(device)).to be_kind_of(Sequence)
     end

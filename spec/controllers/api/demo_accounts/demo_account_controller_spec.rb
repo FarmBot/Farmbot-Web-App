@@ -7,7 +7,7 @@ describe Api::DemoAccountsController do
     it "creates a guest account", :slow do
       Transport.current.clear!
       secret = SecureRandom.alphanumeric.downcase
-      p = { secret: secret }
+      p = { secret: secret, product_line: "genesis_1.7" }
       run_jobs_now { post :create, body: p.to_json }
       user, secret_again = Transport
         .current

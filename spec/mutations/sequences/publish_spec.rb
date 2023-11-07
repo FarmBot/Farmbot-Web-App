@@ -138,7 +138,7 @@ describe Sequences::Publish do
 
   it "does not allow guests to publish" do
     run_jobs_now do
-      Users::CreateDemo.run!(secret: SecureRandom.hex)
+      Users::CreateDemo.run!(secret: SecureRandom.hex, product_line: "genesis_1.7")
     end
     guest = User.find_by!("email LIKE '%@farmbot.guest'")
     device = guest.device
