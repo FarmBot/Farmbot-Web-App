@@ -30,15 +30,15 @@ module Devices
         add_peripheral(3, ToolNames::ROTARY_TOOL_REVERSE)
       end
 
-      def tool_slots_slot_7
+      def tool_slots_slot_6
         add_tool_slot(name: ToolNames::ROTARY_TOOL,
                       x: 50,
-                      y: 800,
+                      y: 700,
                       z: -200,
                       tool: tools_rotary)
       end
 
-      def tool_slots_slot_8
+      def tool_slots_slot_7
         add_tool_slot(name: ToolNames::SEED_TROUGH_1,
                       x: 0,
                       y: 25,
@@ -48,7 +48,7 @@ module Devices
                       gantry_mounted: true)
       end
 
-      def tool_slots_slot_9
+      def tool_slots_slot_8
         add_tool_slot(name: ToolNames::SEED_TROUGH_2,
                       x: 0,
                       y: 50,
@@ -57,6 +57,10 @@ module Devices
                       pullout_direction: ToolSlot::NONE,
                       gantry_mounted: true)
       end
+
+      def tool_slots_slot_9; end
+
+      def tools_weeder; end
 
       def tools_rotary
         @tools_rotary ||=

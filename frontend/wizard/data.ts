@@ -46,7 +46,7 @@ import {
 } from "./checks";
 import { TaggedWizardStepResult } from "farmbot";
 import {
-  hasEthernet, hasExtraButtons, hasRotaryTool, hasUTM, isExpress,
+  hasEthernet, hasExtraButtons, hasRotaryTool, hasUTM, hasWeeder, isExpress,
 } from "../settings/firmware/firmware_hardware_support";
 import { BooleanSetting } from "../session_keys";
 import { ExternalUrl } from "../external_urls";
@@ -1397,7 +1397,7 @@ export const WIZARD_STEPS = (props: WizardStepDataProps): WizardSteps => {
       outcomes: [
       ],
     },
-    ...(hasUTM(firmwareHardware)
+    ...(hasWeeder(firmwareHardware)
       ? [{
         section: WizardSectionSlug.tools,
         slug: WizardStepSlug.weeder,
