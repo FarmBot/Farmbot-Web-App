@@ -3020,6 +3020,24 @@ li {
             height: 3rem;
           }
         }
+        .resolution-change-warning {
+          i {
+            color: $darkest_red;
+            margin-right: 1rem;
+          }
+          p {
+            display: inline;
+            margin-right: 0.5rem;
+            font-size: 1.2rem;
+          }
+          .click {
+            cursor: pointer;
+            font-weight: bold;
+            &:hover {
+              color: $black;
+            }
+          }
+        }
       }
       .update-take-photo {
         margin-top: 1rem;

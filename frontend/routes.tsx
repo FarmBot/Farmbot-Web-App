@@ -66,7 +66,10 @@ export class RootComponent
         <HotkeysProvider>
           <App>
             <Route>
-              {ChildRoute && <ChildRoute />}
+              {ChildRoute &&
+                <ErrorBoundary>
+                  <ChildRoute />
+                </ErrorBoundary>}
             </Route>
           </App>
         </HotkeysProvider>

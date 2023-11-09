@@ -27,7 +27,7 @@ export function Apology(_: {}) {
       <h1 style={{ fontSize: "175%" }}>Page Error</h1>
       <span>
         {"We can't render this part of the page due to an unrecoverable error."}
-        Here are some things you can try:
+        &nbsp;Here are some things you can try:
       </span>
       <ol>
         <li>
@@ -35,7 +35,7 @@ export function Apology(_: {}) {
         </li>
         <li>
           {"Perform a \"hard refresh\""}
-          (<strong>CTRL + SHIFT + R</strong> on most machines).
+          &nbsp;(<strong>CTRL + SHIFT + R</strong> on most machines).
         </li>
         <li>
           <span>
@@ -48,8 +48,8 @@ export function Apology(_: {}) {
         <li>
           <span>
             Send a report to our developer team via the&nbsp;
-            <a href={ExternalUrl.softwareForum}>FarmBot software
-            forum</a>. Including additional information (such as steps leading up
+            <a href={ExternalUrl.softwareForum}>FarmBot software forum</a>.
+            Including additional information (such as steps leading up
             to the error) helps us identify solutions more quickly.
           </span>
         </li>
