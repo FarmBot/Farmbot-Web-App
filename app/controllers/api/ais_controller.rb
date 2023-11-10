@@ -131,9 +131,11 @@ module Api
         full = ""
         response = conn.post("") do |req|
           req.body = payload
+          buffer = ""
           total = 0
           missed = false
           req.options.on_data = Proc.new do |chunk, size|
+            buffer += chunk
             total += chunk.bytes.length
             diff = size - total
             if (diff != 0 && !missed) || Rails.env.test?
@@ -142,9 +144,12 @@ module Api
               current_device.tell("Response stream incomplete.", ["toast"], "warn")
               missed = true
             end
-            data_strings = chunk.split("data: ")[1,999]
-            for data_str in data_strings
-              data = JSON.parse(data_str)
+            boundary = buffer.index("\n\n")
+            while not boundary.nil?
+              data_str = buffer.slice(0, boundary)
+              buffer = buffer.slice(boundary + 2, buffer.length)
+              json_string = data_str.split("data: ")[1]
+              data = JSON.parse(json_string)
               output = data["choices"][0]
               if output["finish_reason"].nil?
                 content = output["delta"].dig("content") || ""
@@ -157,6 +162,7 @@ module Api
                 stream.close
                 return {}
               end
+              boundary = buffer.index("\n\n")
             end
           end
         end

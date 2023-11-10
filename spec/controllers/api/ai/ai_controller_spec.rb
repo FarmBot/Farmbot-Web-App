@@ -8,7 +8,7 @@ describe Api::AisController do
   def chunk(content, done=nil)
     "data: {\"id\":\"id\",\"object\":\"chat.completion.chunk\"," \
     "\"created\":12345,\"model\":\"gpt-4\",\"choices\":[{\"delta\":{" \
-    "\"content\":\"#{content}\"},\"index\":0,\"finish_reason\":#{done.to_json}}]}"
+    "\"content\":\"#{content}\"},\"index\":0,\"finish_reason\":#{done.to_json}}]}\n\n"
   end
 
   URL_PATTERN = /raw\.githubusercontent\.com/
