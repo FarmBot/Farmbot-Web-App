@@ -76,6 +76,7 @@ export function semverCompare(left: string, right: string): SemverResult {
  * for shouldDisplay()
  */
 export enum MinVersionOverride {
+  DEMO = "99.99.99",
   NEVER = "999.999.999",
 }
 
@@ -84,6 +85,8 @@ export enum FbosVersionFallback {
 }
 
 const fallbackData: MinOsFeatureLookup = {
+  [Feature.express_k12]: MinVersionOverride.NEVER, // available: "15.4.6",
+  [Feature.farmduino_k17]: MinVersionOverride.DEMO, // available: "15.4.6",
   [Feature.planted_at_now]: MinVersionOverride.NEVER,
 };
 

@@ -3,6 +3,11 @@ jest.mock("../../../api/crud", () => ({
   save: jest.fn(),
 }));
 
+let mockFeatureBoolean = false;
+jest.mock("../../../devices/should_display", () => ({
+  shouldDisplayFeature: () => mockFeatureBoolean,
+}));
+
 import React from "react";
 import { mount, shallow } from "enzyme";
 import { BoardType } from "../board_type";
@@ -78,6 +83,7 @@ describe("<BoardType/>", () => {
   });
 
   it("displays boards", () => {
+    mockFeatureBoolean = false;
     const wrapper = mount(<BoardType {...fakeProps()} />);
     const { list } = wrapper.find("FBSelect").props();
     expect(list).toEqual([
@@ -90,5 +96,13 @@ describe("<BoardType/>", () => {
       { label: "Farmduino (Express v1.1)", value: "express_k11" },
       { label: "None", value: "none" },
     ]);
+    expect(list?.length).toEqual(8);
+  });
+
+  it("displays more boards", () => {
+    mockFeatureBoolean = true;
+    const wrapper = mount(<BoardType {...fakeProps()} />);
+    const { list } = wrapper.find("FBSelect").props();
+    expect(list?.length).toEqual(10);
   });
 });

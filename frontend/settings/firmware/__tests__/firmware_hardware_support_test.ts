@@ -20,12 +20,20 @@ describe("boardType()", () => {
     expect(boardType("5.0.3.I")).toEqual("farmduino_k16");
   });
 
+  it("returns Farmduino k1.7", () => {
+    expect(boardType("5.0.3.J")).toEqual("farmduino_k17");
+  });
+
   it("returns Farmduino Express k1.0", () => {
     expect(boardType("5.0.3.E")).toEqual("express_k10");
   });
 
   it("returns Farmduino Express k1.1", () => {
     expect(boardType("5.0.3.D")).toEqual("express_k11");
+  });
+
+  it("returns Farmduino Express k1.2", () => {
+    expect(boardType("5.0.3.C")).toEqual("express_k12");
   });
 
   it("returns Arduino/RAMPS", () => {

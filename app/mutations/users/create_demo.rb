@@ -1,6 +1,9 @@
 module Users
   class CreateDemo < Mutations::Command
-    required { string :secret }
+    required do
+      string :secret
+      string :product_line
+    end
 
     def execute
       self.delay.doing_it_asap
@@ -41,7 +44,8 @@ module Users
 
     def seed_user
       Devices::CreateSeedData.run!(device: user.device,
-                                   product_line: "demo_account")
+                                   product_line: product_line,
+                                   demo: true)
     end
 
     def broadcast_the_token

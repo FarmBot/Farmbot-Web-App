@@ -8,6 +8,7 @@ import { FirmwareHardware, TaggedDevice } from "farmbot";
 import { BotState } from "../../devices/interfaces";
 import { StatusIcon } from "../firmware/firmware_hardware_status";
 import { Position } from "@blueprintjs/core";
+import { hasZero2 } from "../firmware/firmware_hardware_support";
 
 export const RPI_OPTIONS: Record<string, DropDownItem> = {
   "3": { label: "Raspberry Pi 3", value: "3" },
@@ -16,13 +17,14 @@ export const RPI_OPTIONS: Record<string, DropDownItem> = {
   "02": { label: "Raspberry Pi Zero 2 W", value: "02" },
 };
 
-const TARGETS = (firmwareHardware: string): { [x: string]: string } => ({
-  "rpi3": firmwareHardware == "express_k11"
-    ? "Raspberry Pi Zero 2 W"
-    : "Raspberry Pi 3",
-  "rpi4": "Raspberry Pi 4",
-  "rpi": "Raspberry Pi Zero W",
-});
+const TARGETS =
+  (firmwareHardware: FirmwareHardware | undefined): { [x: string]: string } => ({
+    "rpi3": hasZero2(firmwareHardware)
+      ? "Raspberry Pi Zero 2 W"
+      : "Raspberry Pi 3",
+    "rpi4": "Raspberry Pi 4",
+    "rpi": "Raspberry Pi Zero W",
+  });
 
 export interface RpiModelProps {
   dispatch: Function;
@@ -89,7 +91,6 @@ export const StatusDetails = (props: StatusDetailsProps) => {
     <p>{selection ? RPI_OPTIONS[selection].label : t("none")}</p>
     <label>{t("FarmBot OS")}</label>
     <Help text={ToolTips.RPI_VALUE_FBOS} />
-    <p>{TARGETS("" + firmwareHardware)["" + target]
-      || t("unknown")}</p>
+    <p>{TARGETS(firmwareHardware)["" + target] || t("unknown")}</p>
   </div>;
 };

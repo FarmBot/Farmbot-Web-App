@@ -2,6 +2,11 @@ jest.mock("../../devices/actions", () => ({ updateConfig: jest.fn() }));
 
 jest.mock("../../api/crud", () => ({ destroy: jest.fn() }));
 
+let mockFeatureBoolean = false;
+jest.mock("../../devices/should_display", () => ({
+  shouldDisplayFeature: () => mockFeatureBoolean,
+}));
+
 const fakeBulletin: Bulletin = {
   content: "Alert content.",
   href: "https://farm.bot",
@@ -28,7 +33,9 @@ jest.mock("../../redux/store", () => ({
 
 import React from "react";
 import { mount, shallow } from "enzyme";
-import { AlertCard, changeFirmwareHardware, ReSeedAccount } from "../cards";
+import {
+  AlertCard, changeFirmwareHardware, ReSeedAccount, SEED_DATA_OPTIONS,
+} from "../cards";
 import { AlertCardProps, Bulletin } from "../interfaces";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { FBSelect } from "../../ui";
@@ -246,6 +253,18 @@ describe("changeFirmwareHardware()", () => {
   it("doesn't change firmware hardware value: no dispatch", () => {
     changeFirmwareHardware(undefined)({ label: "Arduino", value: "arduino" });
     expect(updateConfig).not.toHaveBeenCalled();
+  });
+});
+
+describe("SEED_DATA_OPTIONS()", () => {
+  it("returns options", () => {
+    mockFeatureBoolean = false;
+    expect(SEED_DATA_OPTIONS().length).toEqual(13);
+  });
+
+  it("returns more options", () => {
+    mockFeatureBoolean = true;
+    expect(SEED_DATA_OPTIONS().length).toEqual(17);
   });
 });
 

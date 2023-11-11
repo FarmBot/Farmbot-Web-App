@@ -18,7 +18,7 @@ export const ChangeFirmwarePath = (props: ChangeFirmwarePathProps) => {
       label: t("ttyAMA0 (recommended for Express v1.0)"), value: "ttyAMA0",
     },
     ttyUSB0: {
-      label: t("ttyUSB0 (recommended for Express v1.1)"), value: "ttyUSB0",
+      label: t("ttyUSB0 (recommended for Express v1.1+)"), value: "ttyUSB0",
     },
     manual: { label: t("Manual input"), value: "manual" },
   };

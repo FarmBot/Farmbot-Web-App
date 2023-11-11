@@ -1,8 +1,70 @@
 import React from "react";
 import { shallow } from "enzyme";
-import { CaptureSizeSelection } from "../capture_size_selection";
+import {
+  CaptureSizeSelection, PhotoResolutionSettingChanged,
+} from "../capture_size_selection";
 import { CaptureSizeSelectionProps } from "../interfaces";
 import { FBSelect } from "../../../ui";
+
+describe("<PhotoResolutionSettingChanged />", () => {
+  const fakeProps = (): CaptureSizeSelectionProps => ({
+    env: {},
+    saveFarmwareEnv: jest.fn(),
+    dispatch: jest.fn(),
+  });
+
+  it("doesn't display warning: not calibrated", () => {
+    const p = fakeProps();
+    p.env = {
+      take_photo_width: "200",
+      take_photo_height: "100",
+    };
+    const wrapper = shallow(<PhotoResolutionSettingChanged {...p} />);
+    expect(wrapper.find("i").length).toEqual(0);
+  });
+
+  it("doesn't display warning: not changed", () => {
+    const p = fakeProps();
+    p.env = {
+      take_photo_width: "200",
+      take_photo_height: "100",
+      CAMERA_CALIBRATION_center_pixel_location_x: "100",
+      CAMERA_CALIBRATION_center_pixel_location_y: "50",
+    };
+    const wrapper = shallow(<PhotoResolutionSettingChanged {...p} />);
+    expect(wrapper.find("i").length).toEqual(0);
+    expect(wrapper.find(".click").length).toEqual(0);
+  });
+
+  it("doesn't display revert option", () => {
+    const p = fakeProps();
+    p.env = {
+      take_photo_width: "200",
+      take_photo_height: "100",
+      CAMERA_CALIBRATION_center_pixel_location_x: "1",
+      CAMERA_CALIBRATION_center_pixel_location_y: "50",
+    };
+    const wrapper = shallow(<PhotoResolutionSettingChanged {...p} />);
+    expect(wrapper.find("i").length).toEqual(1);
+    expect(wrapper.find(".click").length).toEqual(0);
+  });
+
+  it("changes value", () => {
+    const p = fakeProps();
+    p.env = {
+      take_photo_width: "200",
+      take_photo_height: "100",
+      CAMERA_CALIBRATION_center_pixel_location_x: "320",
+      CAMERA_CALIBRATION_center_pixel_location_y: "50",
+    };
+    const wrapper = shallow(<PhotoResolutionSettingChanged {...p} />);
+    expect(wrapper.find("i").length).toEqual(1);
+    expect(wrapper.find(".click").length).toEqual(1);
+    wrapper.find(".click").simulate("click");
+    expect(p.saveFarmwareEnv).toHaveBeenCalledWith("take_photo_width", "640");
+    expect(p.saveFarmwareEnv).toHaveBeenCalledWith("take_photo_height", "480");
+  });
+});
 
 describe("<CaptureSizeSelection />", () => {
   const fakeProps = (): CaptureSizeSelectionProps => ({

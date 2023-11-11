@@ -55,7 +55,9 @@ const PLATFORM_DATA = (): PlatformContent[] => [
       "Genesis XL v1.5",
       "Genesis XL v1.6 (black cable)",
       "Express v1.1 (USB)",
+      "Express v1.2 (USB)",
       "Express XL v1.1 (USB)",
+      "Express XL v1.2 (USB)",
     ],
   },
   {
@@ -67,6 +69,8 @@ const PLATFORM_DATA = (): PlatformContent[] => [
       "Genesis XL v1.6.1 (white cable)",
       "Genesis v1.6.2 (white cable or 2 HDMI ports)",
       "Genesis XL v1.6.2 (white cable or 2 HDMI ports)",
+      "Genesis v1.7",
+      "Genesis XL v1.7",
     ],
   },
   {
@@ -135,14 +139,17 @@ enum Version {
   "v1.4" = "v1.4",
   "v1.5" = "v1.5",
   "v1.6" = "v1.6",
+  "v1.7" = "v1.7",
 }
 
 const VERSIONS = () => ({
   [Model.Express]: [
-    Version["v1.0"],
+    // Version["v1.2"],
     Version["v1.1"],
+    Version["v1.0"],
   ],
   [Model.Genesis]: [
+    // Version["v1.7"],
     Version["v1.6"],
     Version["v1.5"],
     Version["v1.4"],
@@ -204,6 +211,9 @@ const DOWNLOADS = (): Downloads => ({
     [Version["v1.1"]]: {
       [Run.first]: RPIZ2(),
     },
+    [Version["v1.2"]]: {
+      [Run.first]: RPIZ2(),
+    },
   },
   [Model.Genesis]: {
     [Version["v1.2"]]: {
@@ -222,6 +232,9 @@ const DOWNLOADS = (): Downloads => ({
       [Run.first]: RPI3(),
       [Run.second]: RPI4(),
       [Run.third]: RPI4(),
+    },
+    [Version["v1.7"]]: {
+      [Run.first]: RPI4(),
     },
   }
 });

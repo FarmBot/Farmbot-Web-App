@@ -1,6 +1,6 @@
 module Devices
   module Seeders
-    class DemoAccountSeeder < ExpressOneZero
+    class DemoAccountSeeder < AbstractSeeder
       BASE_URL = "/app-resources/img/demo_accounts/"
       FEEDS = {
         "Express XL" => "Express_XL_Demo_Webcam.JPG",
@@ -10,14 +10,19 @@ module Devices
       }
       UNUSED_ALERTS = ["api.seed_data.missing", "api.user.not_welcomed"]
 
-      def webcam_feeds
-        # device.webcam_feeds.destroy_all!
-        FEEDS.map do |(name, url)|
-          p = { name: name,
-                url: (BASE_URL + url),
-                device: device }
-          WebcamFeeds::Create.run!(p)
-        end
+      def feed(product_line)
+        feed_name = ""
+        feed_name += "Genesis" if product_line.include?("genesis")
+        feed_name += "Express" if product_line.include?("express")
+        feed_name += " XL" if product_line.include?("xl")
+        feed_name
+      end
+
+      def create_webcam_feed(product_line)
+        feed_name = feed(product_line)
+        WebcamFeeds::Create.run!({ name: feed_name,
+                                   url: BASE_URL + FEEDS[feed_name],
+                                   device: device })
       end
 
       def plants
@@ -69,7 +74,13 @@ module Devices
       #    tester FBOS version `1000.0.0`.
       READ_COMMENT_ABOVE = "100.0.0"
 
-      def misc
+      def misc(product_line)
+        create_webcam_feed(product_line)
+        plants
+        point_groups_spinach
+        point_groups_broccoli
+        point_groups_beet
+
         device.alerts.where(problem_tag: UNUSED_ALERTS).destroy_all
         DEMO_ALERTS
           .map { |p| p.merge(device: device) }

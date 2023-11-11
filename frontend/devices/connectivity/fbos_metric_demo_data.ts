@@ -21,7 +21,7 @@ export const generateDemoTelemetry = (): TaggedTelemetry[] => {
         cpu_usage: 5 + random(-4, 4),
         target: "demo",
         fbos_version: "100.0.0",
-        firmware_hardware: "farmduino_k16",
+        firmware_hardware: "farmduino_k17",
         created_at: at,
         updated_at: (new Date(at)).toISOString(),
       }

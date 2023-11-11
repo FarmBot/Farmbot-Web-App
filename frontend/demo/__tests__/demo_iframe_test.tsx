@@ -43,6 +43,13 @@ describe("<DemoIframe />", () => {
     expect(console.error).toHaveBeenCalledWith(mockResponse);
   });
 
+  it("changes model", () => {
+    const wrapper = shallow<DemoIframe>(<DemoIframe />);
+    expect(wrapper.state().productLine).toEqual("genesis_1.7");
+    wrapper.find("FBSelect").simulate("change", { value: "express_1.2" });
+    expect(wrapper.state().productLine).toEqual("express_1.2");
+  });
+
   it("handles MQTT messages", () => {
     const el = shallow<DemoIframe>(<DemoIframe />);
     el.instance().handleMessage("foo", Buffer.from("bar"));
