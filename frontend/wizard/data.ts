@@ -50,6 +50,15 @@ import {
 } from "../settings/firmware/firmware_hardware_support";
 import { BooleanSetting } from "../session_keys";
 import { ExternalUrl } from "../external_urls";
+import {
+  motorCurrentMaToPercent, motorCurrentPercentToMa,
+} from "../settings/hardware_settings";
+
+const motorCurrentProps = ({
+  inputMax: 100,
+  toInput: motorCurrentMaToPercent,
+  fromInput: motorCurrentPercentToMa,
+});
 
 export const setupProgressString = (
   results: TaggedWizardStepResult[],
@@ -824,7 +833,9 @@ export const WIZARD_STEPS = (props: WizardStepDataProps): WizardSteps => {
           tips: SetupWizardContent.MOVEMENT_STALLS,
           component: MotorCurrentContent,
           firmwareNumberSettings: [{
-            key: "movement_motor_current_x", label: t("x-axis motor current")
+            key: "movement_motor_current_x",
+            label: t("x-axis motor current (%)"),
+            ...motorCurrentProps,
           }],
         },
         {
@@ -833,7 +844,9 @@ export const WIZARD_STEPS = (props: WizardStepDataProps): WizardSteps => {
           tips: SetupWizardContent.MOVEMENT_ALL_X,
           component: MotorCurrentContent,
           firmwareNumberSettings: [{
-            key: "movement_motor_current_x", label: t("x-axis motor current")
+            key: "movement_motor_current_x",
+            label: t("x-axis motor current (%)"),
+            ...motorCurrentProps,
           }],
         },
         {
@@ -842,10 +855,26 @@ export const WIZARD_STEPS = (props: WizardStepDataProps): WizardSteps => {
           tips: SetupWizardContent.MOVEMENT_SETTINGS,
           video: ExternalUrl.Video.motorTuning,
           firmwareNumberSettings: [
-            { key: "movement_min_spd_x", label: t("x-axis minimum speed") },
-            { key: "movement_max_spd_x", label: t("x-axis maximum speed") },
-            { key: "movement_steps_acc_dec_x", label: t("x-axis acceleration") },
-            { key: "movement_motor_current_x", label: t("x-axis motor current") },
+            {
+              key: "movement_min_spd_x",
+              label: t("x-axis minimum speed (mm/s)"),
+              scale: "x",
+            },
+            {
+              key: "movement_max_spd_x",
+              label: t("x-axis maximum speed (mm/s)"),
+              scale: "x",
+            },
+            {
+              key: "movement_steps_acc_dec_x",
+              label: t("x-axis acceleration (mm)"),
+              scale: "x",
+            },
+            {
+              key: "movement_motor_current_x",
+              label: t("x-axis motor current (%)"),
+              ...motorCurrentProps,
+            },
           ],
         },
       ],
@@ -864,7 +893,9 @@ export const WIZARD_STEPS = (props: WizardStepDataProps): WizardSteps => {
           tips: SetupWizardContent.MOVEMENT_STALLS,
           component: MotorCurrentContent,
           firmwareNumberSettings: [{
-            key: "movement_motor_current_y", label: t("y-axis motor current")
+            key: "movement_motor_current_y",
+            label: t("y-axis motor current (%)"),
+            ...motorCurrentProps,
           }],
         },
         {
@@ -873,7 +904,9 @@ export const WIZARD_STEPS = (props: WizardStepDataProps): WizardSteps => {
           tips: SetupWizardContent.MOVEMENT_ALL_Y_AND_Z,
           component: MotorCurrentContent,
           firmwareNumberSettings: [{
-            key: "movement_motor_current_y", label: t("y-axis motor current")
+            key: "movement_motor_current_y",
+            label: t("y-axis motor current (%)"),
+            ...motorCurrentProps,
           }],
         },
         {
@@ -882,10 +915,26 @@ export const WIZARD_STEPS = (props: WizardStepDataProps): WizardSteps => {
           tips: SetupWizardContent.MOVEMENT_SETTINGS,
           video: ExternalUrl.Video.motorTuning,
           firmwareNumberSettings: [
-            { key: "movement_min_spd_y", label: t("y-axis minimum speed") },
-            { key: "movement_max_spd_y", label: t("y-axis maximum speed") },
-            { key: "movement_steps_acc_dec_y", label: t("y-axis acceleration") },
-            { key: "movement_motor_current_y", label: t("y-axis motor current") },
+            {
+              key: "movement_min_spd_y",
+              label: t("y-axis minimum speed (mm/s)"),
+              scale: "y",
+            },
+            {
+              key: "movement_max_spd_y",
+              label: t("y-axis maximum speed (mm/s)"),
+              scale: "y",
+            },
+            {
+              key: "movement_steps_acc_dec_y",
+              label: t("y-axis acceleration (mm)"),
+              scale: "y",
+            },
+            {
+              key: "movement_motor_current_y",
+              label: t("y-axis motor current (%)"),
+              ...motorCurrentProps,
+            },
           ],
         },
       ],
@@ -904,7 +953,9 @@ export const WIZARD_STEPS = (props: WizardStepDataProps): WizardSteps => {
           tips: SetupWizardContent.MOVEMENT_STALLS,
           component: MotorCurrentContent,
           firmwareNumberSettings: [{
-            key: "movement_motor_current_z", label: t("z-axis motor current")
+            key: "movement_motor_current_z",
+            label: t("z-axis motor current (%)"),
+            ...motorCurrentProps,
           }],
         },
         {
@@ -913,7 +964,9 @@ export const WIZARD_STEPS = (props: WizardStepDataProps): WizardSteps => {
           tips: SetupWizardContent.MOVEMENT_ALL_Y_AND_Z,
           component: MotorCurrentContent,
           firmwareNumberSettings: [{
-            key: "movement_motor_current_z", label: t("z-axis motor current")
+            key: "movement_motor_current_z",
+            label: t("z-axis motor current (%)"),
+            ...motorCurrentProps,
           }],
         },
         {
@@ -922,10 +975,26 @@ export const WIZARD_STEPS = (props: WizardStepDataProps): WizardSteps => {
           tips: SetupWizardContent.MOVEMENT_SETTINGS,
           video: ExternalUrl.Video.motorTuning,
           firmwareNumberSettings: [
-            { key: "movement_min_spd_z", label: t("z-axis minimum speed") },
-            { key: "movement_max_spd_z", label: t("z-axis maximum speed") },
-            { key: "movement_steps_acc_dec_z", label: t("z-axis acceleration") },
-            { key: "movement_motor_current_z", label: t("z-axis motor current") },
+            {
+              key: "movement_min_spd_z",
+              label: t("z-axis minimum speed (mm/s)"),
+              scale: "z",
+            },
+            {
+              key: "movement_max_spd_z",
+              label: t("z-axis maximum speed (mm/s)"),
+              scale: "z",
+            },
+            {
+              key: "movement_steps_acc_dec_z",
+              label: t("z-axis acceleration (mm)"),
+              scale: "z",
+            },
+            {
+              key: "movement_motor_current_z",
+              label: t("z-axis motor current (%)"),
+              ...motorCurrentProps,
+            },
           ],
         },
       ],
