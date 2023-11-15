@@ -30,7 +30,7 @@ export function SaveBtn(props: SaveBtnProps) {
 
   const { status } = props;
   return <button
-    className={`fb-button-2 save-btn ${COLOR[status]} ${CLASS[status]}`}
+    className={`fb-button save-btn ${COLOR[status]} ${CLASS[status]}`}
     onClick={props.onClick}
     title={t("save")}
     disabled={props.disabled}

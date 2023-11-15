@@ -1,30 +1,42 @@
 .fb-button {
-  position: relative;
-  font-size: 1rem;
+  margin: 0.25em 0.5em;
   float: right;
+  font-weight: bold;
+  padding: 0.4em 0.8em;
+  border-radius: 5px;
+  font-size: 1rem;
   text-transform: uppercase;
-  text-align: center;
-  font-weight: 700;
-  padding: .2rem .8rem;
-  border-radius: 3px;
-  border: none;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
   color: $off_white;
-  transition: all 0.1s ease-in-out !important;
-  &.disabled,
-  &:disabled {
-    background: $gray !important;
-    color: $off_white !important;
-    box-shadow: 0 2px 0px 0px lighten($gray, 5%) !important;
-    pointer-events: none !important;
+  border: none !important;
+  box-shadow: inset 0 -1px 0px 0px $translucent2, 0 0 5px $translucent15;
+  &:hover:not(.pseudo-disabled) {
+    filter: brightness(1.05);
+    box-shadow: inset 0 -1px 0px 0px $translucent2, 0 0 5px $translucent15, inset 0 0 5px rgba(255, 255, 255, 0.3);
+  }
+  &:active:not(.pseudo-disabled) {
+    filter: brightness(1);
+    box-shadow: inset 0 1px 0px 0px $translucent1, inset 0 0 5px $translucent2;
+  }
+  &.pseudo-disabled {
+    filter: brightness(0.7) contrast(0.8);
     cursor: not-allowed !important;
   }
-  &:active {
-    box-shadow: none !important;
-    transform: translateY(2px);
+  .fa-check,
+  .fa-spinner {
+    margin: 0;
+    color: $off_white !important;
+    line-height: 1rem;
+    margin-left: 0.5rem;
+    float: none;
   }
-  &.arrow-button:active {
-    border-bottom: none !important;
-    transform: translateY(2px);
+  &.yellow,
+  &.orange {
+    .fa-spinner {
+      color: $dark_gray !important;
+    }
   }
   &.go {
     background-color: $green;
@@ -33,216 +45,74 @@
   }
   &.green {
     background-color: $green;
-    box-shadow: 0 2px 0px 0px darken($green, 12%);
-    &:focus,
-    &:hover,
-    &.active {
-      background-color: darken($green, 5%) !important;
-    }
   }
   &.blue {
     background-color: $blue;
-    box-shadow: 0 2px 0px 0px darken($blue, 12%);
-    &:focus,
-    &:hover,
-    &.active {
-      background-color: darken($blue, 5%) !important;
-    }
   }
   &.dark-blue {
     background-color: $dark-blue;
-    box-shadow: 0 2px 0px 0px darken($dark-blue, 12%);
-    &:focus,
-    &:hover,
-    &.active {
-      background-color: darken($dark-blue, 5%) !important;
-    }
   }
   &.red {
     background-color: $red;
-    box-shadow: 0 2px 0px 0px darken($red, 12%);
-    &:focus,
-    &:hover,
-    &.active {
-      background-color: darken($red, 5%) !important;
-    }
   }
   &.gray {
     background-color: $medium_gray !important;
-    box-shadow: 0 2px 0px 0px darken($medium_gray, 12%);
-    &:disabled,
-    &.disabled {
-      background: $gray !important;
-    }
-    &:focus,
-    &:hover,
-    &.active {
-      background-color: darken($medium_gray, 5%) !important;
-    }
   }
   &.yellow {
     color: $dark_gray;
     background-color: $yellow;
-    box-shadow: 0 2px 0px 0px darken($yellow, 12%);
-    &:focus,
-    &:hover,
-    &.active {
-      background-color: darken($yellow, 5%) !important;
-    }
   }
   &.orange {
     color: $dark_gray;
     background-color: $orange;
-    box-shadow: 0 2px 0px 0px darken($orange, 12%);
-    &:focus,
-    &:hover,
-    &.active {
-      background-color: darken($orange, 5%) !important;
-    }
   }
   &.magenta {
     background-color: $magenta;
-    box-shadow: 0 2px 0px 0px darken($magenta, 12%);
-    &:focus,
-    &:hover,
-    &.active {
-      background-color: darken($magenta, 5%) !important;
-    }
   }
   &.cyan {
     background-color: $cyan;
-    box-shadow: 0 2px 0px 0px darken($cyan, 12%);
-    &:focus,
-    &:hover,
-    &.active {
-      background-color: darken($cyan, 5%) !important;
-    }
   }
   &.brown {
     background-color: $brown;
-    box-shadow: 0 2px 0px 0px darken($brown, 12%);
-    &:focus,
-    &:hover,
-    &.active {
-      background-color: darken($brown, 5%) !important;
-    }
   }
   &.purple {
     background-color: $purple;
-    box-shadow: 0 2px 0px 0px darken($purple, 12%);
-    &:focus,
-    &:hover,
-    &.active {
-      background-color: darken($purple, 5%) !important;
-    }
   }
   &.pink {
     background-color: $pink;
-    box-shadow: 0 2px 0px 0px darken($pink, 12%);
-    &:focus,
-    &:hover,
-    &.active {
-      background-color: darken($pink, 5%) !important;
-    }
   }
   &.panel-green {
     background-color: $panel_green;
-    box-shadow: 0 2px 0px 0px darken($panel_green, 12%);
-    &:focus,
-    &:hover,
-    &.active {
-      background-color: darken($panel_green, 5%) !important;
-    }
   }
   &.panel-yellow {
     background-color: $panel_yellow;
-    box-shadow: 0 2px 0px 0px darken($panel_yellow, 12%);
-    &:focus,
-    &:hover,
-    &.active {
-      background-color: darken($panel_yellow, 5%) !important;
-    }
   }
   &.panel-gray {
     background-color: $panel_gray;
-    box-shadow: 0 2px 0px 0px darken($panel_gray, 12%);
-    &:focus,
-    &:hover,
-    &.active {
-      background-color: darken($panel_gray, 5%) !important;
-    }
   }
   &.panel-light-gray {
     background-color: $panel_medium_light_gray;
-    box-shadow: 0 2px 0px 0px darken($panel_medium_light_gray, 12%);
-    &:focus,
-    &:hover,
-    &.active {
-      background-color: darken($panel_medium_light_gray, 5%) !important;
-    }
   }
   &.panel-blue {
     background-color: $panel_blue;
-    box-shadow: 0 2px 0px 0px darken($panel_blue, 12%);
-    &:focus,
-    &:hover,
-    &.active {
-      background-color: darken($panel_blue, 5%) !important;
-    }
   }
   &.panel-navy {
     background-color: $panel_navy;
-    box-shadow: 0 2px 0px 0px darken($panel_navy, 12%);
-    &:focus,
-    &:hover,
-    &.active {
-      background-color: darken($panel_navy, 5%) !important;
-    }
   }
   &.panel-brown {
     background-color: $panel_brown;
-    box-shadow: 0 2px 0px 0px darken($panel_brown, 12%);
-    &:focus,
-    &:hover,
-    &.active {
-      background-color: darken($panel_brown, 5%) !important;
-    }
   }
   &.panel-teal {
     background-color: $panel_teal;
-    box-shadow: 0 2px 0px 0px darken($panel_teal, 12%);
-    &:focus,
-    &:hover,
-    &.active {
-      background-color: darken($panel_teal, 5%) !important;
-    }
   }
   &.panel-red {
     background-color: $panel_red;
-    box-shadow: 0 2px 0px 0px darken($panel_red, 12%);
-    &:focus,
-    &:hover,
-    &.active {
-      background-color: darken($panel_red, 5%) !important;
-    }
   }
   &.panel-magenta {
     background-color: $magenta;
-    box-shadow: 0 2px 0px 0px darken($magenta, 12%);
-    &:focus,
-    &:hover,
-    &.active {
-      background-color: darken($magenta, 5%) !important;
-    }
   }
   &.panel-cyan {
     background-color: $cyan;
-    box-shadow: 0 2px 0px 0px darken($cyan, 12%);
-    &:focus,
-    &:hover,
-    &.active {
-      background-color: darken($cyan, 5%) !important;
-    }
   }
   &.zoom {
     padding: 8px 12px;
@@ -253,16 +123,6 @@
   &.no-float {
     float: none;
     margin-right: 1rem;
-  }
-  &.pseudo-disabled {
-    background: $medium_light_gray !important;
-    box-shadow: 0 2px 0px 0px lighten($medium_light_gray, 5%) !important;
-    border-bottom: none !important;
-    &:focus,
-    &:hover,
-    &.active {
-      background: $medium_light_gray !important;
-    }
   }
 }
 
@@ -349,7 +209,7 @@
   border-bottom: none !important;
   box-shadow: none !important;
   padding: 0.3rem 0.10rem;
-  border-radius: 10px;
+  border-radius: 10px !important;
   width: 5rem;
   border-bottom: none;
   transition: all 0.4s ease;
@@ -437,50 +297,4 @@
   padding: ".5rem 1.6rem";
   font-size: "1.2rem";
   border-bottom: "none";
-}
-
-.fb-button-2 {
-  margin: 0.25em 0.5em;
-  float: right;
-  font-weight: bold;
-  padding: 0.4em 0.8em;
-  border-radius: 5px;
-  font-size: 1rem;
-  text-transform: uppercase;
-  white-space: nowrap;
-  cursor: pointer;
-  user-select: none;
-  color: $off_white;
-  border: none !important;
-  box-shadow: inset 0 -1px 0px 0px $translucent2, 0 0 5px $translucent15;
-  &:hover:not(.pseudo-disabled) {
-    filter: brightness(1.05);
-    box-shadow: inset 0 -1px 0px 0px $translucent2, 0 0 5px $translucent15, inset 0 0 5px rgba(255, 255, 255, 0.3);
-  }
-  &:active:not(.pseudo-disabled) {
-    filter: brightness(1);
-    box-shadow: inset 0 1px 0px 0px $translucent1, inset 0 0 5px $translucent2;
-  }
-  &.pseudo-disabled {
-    filter: brightness(0.7) contrast(0.8);
-    cursor: not-allowed;
-  }
-  .fa-check,
-  .fa-spinner {
-    margin: 0;
-    color: $off_white !important;
-    line-height: 1rem;
-    margin-left: 0.5rem;
-    float: none;
-  }
-  &.gray {
-    background: $medium_gray !important;
-  }
-  &.yellow,
-  &.orange {
-    color: $dark_gray;
-    .fa-spinner {
-      color: $dark_gray !important;
-    }
-  }
 }

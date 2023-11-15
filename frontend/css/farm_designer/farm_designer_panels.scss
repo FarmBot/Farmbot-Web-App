@@ -2329,6 +2329,9 @@ li {
       display: inline;
       margin-left: 0.5rem;
     }
+    .fb-button {
+      margin: 0;
+    }
   }
 }
 
@@ -3977,6 +3980,10 @@ li {
       line-height: 3rem;
     }
   }
+}
+
+.peripherals-check {
+  margin: 1rem;
 }
 
 .camera-calibration-card {

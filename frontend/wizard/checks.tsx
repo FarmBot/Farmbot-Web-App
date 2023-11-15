@@ -230,7 +230,7 @@ const MeasureSoilHeight = (props: CameraCheckBaseProps) => {
       hideAdvanced={true}
       hideResets={true}
       dispatch={props.dispatch} />
-    : <button className={"fb-button"} disabled={true}>
+    : <button className={"fb-button gray pseudo-disabled"} disabled={true}>
       {t("Missing dependency")}
     </button>;
 };

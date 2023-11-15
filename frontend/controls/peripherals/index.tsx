@@ -133,7 +133,7 @@ export class Peripherals
       </EmptyStateWrapper>
       <div className={"peripherals-buttons"}>
         <button
-          className="fb-button-2 gray"
+          className="fb-button gray"
           onClick={this.toggle}
           title={editButtonText}
           disabled={!!status && isEditing}>
@@ -145,7 +145,7 @@ export class Peripherals
           onClick={this.maybeSave} />
         <button
           hidden={!isEditing}
-          className="fb-button-2 green"
+          className="fb-button green"
           type="button"
           title={t("add peripheral")}
           onClick={() => this.newPeripheral()}>
@@ -153,7 +153,7 @@ export class Peripherals
         </button>
         <button
           hidden={!isEditing || this.props.firmwareHardware == "none"}
-          className="fb-button-2 green"
+          className="fb-button green"
           type="button"
           title={t("add stock peripherals")}
           onClick={() => this.stockPeripherals.map(p =>
