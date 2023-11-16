@@ -247,7 +247,7 @@ export class StepButtonCluster
         searchTerm={searchTerm}
         placeholder={t("Search commands and sequences...")}
         customLeftIcon={<i />}
-        autoFocus={true}
+        autoFocus={Path.inDesigner()}
         onEnter={() => {
           if (first) {
             click();
