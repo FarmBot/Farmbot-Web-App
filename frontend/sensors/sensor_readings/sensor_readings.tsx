@@ -62,14 +62,14 @@ export class SensorReadings
       <WidgetHeader
         title={t("Sensor History")}
         helpText={ToolTips.SENSOR_HISTORY}>
-        <button className="fb-button-2 gray"
+        <button className="fb-button gray"
           title={t("clear filters")}
           onClick={this.clearFilters}>
           {t("clear filters")}
         </button>
         <Popover position={Position.TOP} usePortal={false}
           isOpen={this.state.addReadingMenuOpen}
-          target={<button className={"fb-button-2 green"}
+          target={<button className={"fb-button green"}
             title={t("add sensor reading")}
             onClick={this.toggleAddReadingMenu}>
             <i className={"fa fa-plus"} />

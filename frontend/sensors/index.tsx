@@ -66,7 +66,7 @@ export class Sensors extends React.Component<SensorsProps, SensorState> {
     return <Widget className="sensors-widget">
       <WidgetHeader title={t("Sensors")} helpText={ToolTips.SENSORS}>
         <button
-          className="fb-button-2 gray"
+          className="fb-button gray"
           onClick={this.toggle}
           title={editButtonText}
           disabled={!!status && isEditing}>
@@ -78,7 +78,7 @@ export class Sensors extends React.Component<SensorsProps, SensorState> {
           onClick={this.maybeSave} />
         <button
           hidden={!isEditing}
-          className="fb-button-2 green"
+          className="fb-button green"
           type="button"
           title={t("add sensors")}
           onClick={() => this.newSensor()}>
@@ -86,7 +86,7 @@ export class Sensors extends React.Component<SensorsProps, SensorState> {
         </button>
         <button
           hidden={!isEditing || this.props.firmwareHardware == "none"}
-          className="fb-button-2 green"
+          className="fb-button green"
           type="button"
           title={t("add stock sensors")}
           onClick={this.stockSensors}>

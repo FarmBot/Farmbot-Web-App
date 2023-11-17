@@ -135,7 +135,7 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
         </p>
       </div>
       <button
-        className={`fb-button-2 red no-float ${activeOrMounted
+        className={`fb-button red no-float ${activeOrMounted
           ? "pseudo-disabled"
           : ""}`}
         title={activeOrMounted ? message : t("delete")}

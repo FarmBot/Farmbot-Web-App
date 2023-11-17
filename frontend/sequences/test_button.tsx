@@ -96,7 +96,7 @@ const Test = (props: TestProps) => {
     ? t("Close")
     : t("Run");
   return <button
-    className={`fb-button-2 ${props.menuIsOpen ? "gray" : normalColor}`}
+    className={`fb-button ${props.menuIsOpen ? "gray" : normalColor}`}
     title={buttonText}
     onClick={props.onClick}>
     {buttonText}

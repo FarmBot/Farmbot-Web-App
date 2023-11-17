@@ -38,6 +38,9 @@ export const FirmwareNumberSettings = (props: FirmwareNumberSettingsProps) => {
               ? calculateScale(sourceFwConfig)[setting.scale]
               : undefined}
             intSize={setting.intSize}
+            inputMax={setting.inputMax}
+            toInput={setting.toInput}
+            fromInput={setting.fromInput}
             setting={setting.key} />
         </Col>
       </Row>)}

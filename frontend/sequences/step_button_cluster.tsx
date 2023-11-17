@@ -2,7 +2,7 @@ import React from "react";
 import { t } from "../i18next_wrapper";
 import { StepButton, stepClick } from "./step_buttons";
 import { equals, scrollToBottom } from "../util";
-import { Col, Row } from "../ui";
+import { Col } from "../ui";
 import { Color, SequenceBodyItem, TaggedSequence } from "farmbot";
 import { FarmwareData, MessageType } from "./interfaces";
 import { FarmwareName } from "./step_tiles/tile_execute_script";
@@ -239,53 +239,54 @@ export class StepButtonCluster
       args: { sequence_id: sequences[0].body.id },
       body: variableList(resources.sequenceMetas[sequences[0].uuid])
     });
-    const Cluster = () => <div className={[
-      "step-button-cluster",
-      Path.inDesigner() ? "designer-cluster" : "",
-    ].join(" ")}>
-      <SearchField nameKey={"commands"}
-        searchTerm={searchTerm}
-        placeholder={t("Search commands and sequences...")}
-        customLeftIcon={<i />}
-        autoFocus={true}
-        onEnter={() => {
-          if (first) {
-            click();
-            stepClick(dispatch, first, current, stepIndex)();
-          }
-        }}
-        onChange={this.setSearchTerm} />
-      <div className={"commands"}>
-        {commands.map((stepButton, inx) =>
-          <div className={[
-            "step-button",
-            inx == 0 ? "highlight" : "",
-          ].join(" ")} key={inx} onClick={click}>
-            <StepButton {...commonStepProps}
-              step={stepButton.step}
-              label={stepButton.title}
-              color={stepButton.color} />
-          </div>)}
-        {!Path.inDesigner() && sequences.length > 0 &&
-          <Col xs={12}><label></label></Col>}
-        <div className={"pinned-sequences"}>
-          {sequences.map((s, inx) => s.body.id &&
+    return <div className={Path.inDesigner() ? "" : "row"}>
+      <div className={[
+        "step-button-cluster",
+        Path.inDesigner() ? "designer-cluster" : "",
+      ].join(" ")}>
+        <SearchField nameKey={"commands"}
+          searchTerm={searchTerm}
+          placeholder={t("Search commands and sequences...")}
+          customLeftIcon={<i />}
+          autoFocus={Path.inDesigner()}
+          onEnter={() => {
+            if (first) {
+              click();
+              stepClick(dispatch, first, current, stepIndex)();
+            }
+          }}
+          onChange={this.setSearchTerm} />
+        <div className={"commands"}>
+          {commands.map((stepButton, inx) =>
             <div className={[
               "step-button",
-              commands.length == 0 && inx == 0 ? "highlight" : "",
-            ].join(" ")} key={s.uuid} onClick={click}>
+              inx == 0 ? "highlight" : "",
+            ].join(" ")} key={inx} onClick={click}>
               <StepButton {...commonStepProps}
-                step={{
-                  kind: "execute",
-                  args: { sequence_id: s.body.id },
-                  body: variableList(resources.sequenceMetas[s.uuid])
-                }}
-                label={s.body.name}
-                color={s.body.color} />
+                step={stepButton.step}
+                label={stepButton.title}
+                color={stepButton.color} />
             </div>)}
+          {!Path.inDesigner() && sequences.length > 0 &&
+            <Col xs={12}><label></label></Col>}
+          <div className={"pinned-sequences"}>
+            {sequences.map((s, inx) => s.body.id &&
+              <div className={[
+                "step-button",
+                commands.length == 0 && inx == 0 ? "highlight" : "",
+              ].join(" ")} key={s.uuid} onClick={click}>
+                <StepButton {...commonStepProps}
+                  step={{
+                    kind: "execute",
+                    args: { sequence_id: s.body.id },
+                    body: variableList(resources.sequenceMetas[s.uuid])
+                  }}
+                  label={s.body.name}
+                  color={s.body.color} />
+              </div>)}
+          </div>
         </div>
       </div>
     </div>;
-    return Path.inDesigner() ? <Cluster /> : <Row><Cluster /></Row>;
   }
 }

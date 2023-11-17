@@ -164,6 +164,9 @@ interface FirmwareSettingInputProps {
   label: string;
   scale?: Xyz;
   intSize?: "long";
+  inputMax?: number;
+  toInput?: (input: number) => number;
+  fromInput?: (input: number) => number;
 }
 
 export interface FirmwareNumberSettingsProps {

@@ -1310,6 +1310,7 @@ li {
 .go-button-axes-wrapper {
   margin-top: 1rem;
   button {
+    margin: 0;
     float: none;
   }
   .go-button-axes {
@@ -1355,6 +1356,7 @@ li {
       display: grid;
       gap: 0.75rem;
       button {
+        margin: 0;
         padding: 0.5rem 1rem;
         float: none;
         &.x,
@@ -2320,6 +2322,7 @@ li {
   margin-bottom: 1rem;
   .manual-group-member-count,
   .criteria-group-member-count {
+    margin-bottom: 0.5rem;
     div {
       display: inline;
       padding: 0.25rem;
@@ -2328,6 +2331,9 @@ li {
     p {
       display: inline;
       margin-left: 0.5rem;
+    }
+    .fb-button {
+      margin: 0;
     }
   }
 }
@@ -3977,6 +3983,10 @@ li {
       line-height: 3rem;
     }
   }
+}
+
+.peripherals-check {
+  margin: 1rem;
 }
 
 .camera-calibration-card {

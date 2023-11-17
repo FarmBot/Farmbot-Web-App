@@ -835,6 +835,16 @@ fieldset {
   }
 }
 
+.move-tab,
+.peripherals-tab,
+.webcams-tab {
+  margin-top: 1rem;
+}
+
+.webcams-tab {
+  margin-top: 2rem;
+}
+
 .peripherals-tab {
   overflow-y: scroll;
   overflow-x: hidden;
@@ -1051,7 +1061,7 @@ ul {
   .run-btn {
     margin-right: 0.5rem;
   }
-  .fb-button-2 {
+  .fb-button {
     margin: 0;
   }
   .settings-menu-button {
@@ -1948,6 +1958,9 @@ ul {
   }
   .sensor-list {
     min-width: 33rem;
+    .fb-button {
+      white-space: unset;
+    }
   }
   .sensor-reading-display {
     &.moisture-sensor {
@@ -2305,6 +2318,9 @@ ul {
   margin: auto;
   max-width: 300px;
   margin-top: 1rem;
+  .fb-button {
+    margin: 0;
+  }
 }
 
 .location-form {
