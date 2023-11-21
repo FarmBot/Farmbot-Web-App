@@ -1,5 +1,6 @@
-const mockTerminal: Pick<Terminal, "open"> = {
+const mockTerminal: Pick<Terminal, "open" | "resize"> = {
   open: jest.fn(),
+  resize: jest.fn(),
 };
 
 jest.mock("xterm", () => {
