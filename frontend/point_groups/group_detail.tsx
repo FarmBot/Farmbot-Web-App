@@ -115,14 +115,14 @@ export class RawGroupDetail extends React.Component<GroupDetailProps, {}> {
         <div className={"panel-header-icon-group"}>
           {group &&
             <Popover
-              target={<i className={"fa fa-sort"}
+              target={<i className={"fa fa-sort fb-icon-button"}
                 title={t("Sort by")} />}
               content={
                 <GroupSortSelection group={group} dispatch={this.props.dispatch}
                   pointsSelectedByGroup={pointsSelectedByGroup(
                     group, this.props.allPoints)} />} />}
           {group &&
-            <i className={"fa fa-trash"}
+            <i className={"fa fa-trash fb-icon-button"}
               title={t("Delete group")}
               onClick={() => this.props.dispatch(destroy(group.uuid))} />}
         </div>

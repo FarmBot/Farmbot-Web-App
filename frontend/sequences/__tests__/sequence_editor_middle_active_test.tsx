@@ -55,6 +55,11 @@ jest.mock("../request_auto_generation", () => ({
   requestAutoGeneration: jest.fn(),
 }));
 
+import { PopoverProps } from "../../ui/popover";
+jest.mock("../../ui/popover", () => ({
+  Popover: ({ target, content }: PopoverProps) => <div>{target}{content}</div>,
+}));
+
 import React from "react";
 import {
   SequenceEditorMiddleActive, onDrop, SequenceName, AddCommandButton,
@@ -141,7 +146,7 @@ describe("<SequenceEditorMiddleActive />", () => {
     p.sequence.body.sequence_versions = [];
     p.sequence.body.forked = false;
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("upgrade");
+    expect(wrapper.text().toLowerCase()).toContain("upgrade to latest");
   });
 
   it("shows revert available", () => {
@@ -151,8 +156,8 @@ describe("<SequenceEditorMiddleActive />", () => {
     p.sequence.body.sequence_versions = [1];
     p.sequence.body.forked = true;
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
-    expect(wrapper.text().toLowerCase()).not.toContain("upgrade");
-    expect(wrapper.text().toLowerCase()).toContain("revert");
+    expect(wrapper.text().toLowerCase()).not.toContain("upgrade to latest");
+    expect(wrapper.text().toLowerCase()).toContain("revert changes");
   });
 
   it("upgrades sequence", () => {
@@ -412,7 +417,7 @@ describe("<SequenceEditorMiddleActive />", () => {
       view: "public", sequencePreview: previewSequence,
       viewSequenceCeleryScript: true,
     });
-    expect(wrapper.find(".fa-code").hasClass("enabled")).toBeTruthy();
+    expect(wrapper.find(".fa-code").hasClass("inactive")).toBeFalsy();
     expect(wrapper.text()).toContain("upgrade");
   });
 
@@ -427,7 +432,7 @@ describe("<SequenceEditorMiddleActive />", () => {
       view: "public", sequencePreview: previewSequence,
       viewSequenceCeleryScript: false,
     });
-    expect(wrapper.find(".fa-code").hasClass("enabled")).toBeFalsy();
+    expect(wrapper.find(".fa-code").hasClass("inactive")).toBeTruthy();
   });
 
   it("makes selections", () => {
@@ -497,7 +502,7 @@ describe("<SequenceEditorMiddleActive />", () => {
     mockPath = Path.mock(Path.sequences("1"));
     const p = fakeProps();
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
-    expect(wrapper.find("Popover").length).toEqual(4);
+    expect(wrapper.find("Popover").length).toEqual(10);
   });
 
   it("opens add variable menu", () => {
@@ -573,12 +578,12 @@ describe("<SequenceBtnGroup />", () => {
   it("edits color", () => {
     mockPath = Path.mock(Path.sequencePage("1"));
     const p = fakeProps();
-    const wrapper = shallow(<SequenceBtnGroup {...p} />);
-    wrapper.find("ColorPicker").simulate("change", "red");
+    const wrapper = mount(<SequenceBtnGroup {...p} />);
+    wrapper.find(".color-picker-item-wrapper").first().simulate("click");
     expect(editCurrentSequence).toHaveBeenCalledWith(
       expect.any(Function),
       expect.objectContaining({ uuid: p.sequence.uuid }),
-      { color: "red" });
+      { color: "blue" });
   });
 
   it("shows view celery script enabled", () => {
@@ -586,7 +591,7 @@ describe("<SequenceBtnGroup />", () => {
     p.getWebAppConfigValue = () => true;
     p.viewCeleryScript = true;
     const wrapper = shallow(<SequenceBtnGroup {...p} />);
-    expect(wrapper.find(".fa-code").hasClass("enabled")).toBeTruthy();
+    expect(wrapper.find(".fa-code").hasClass("inactive")).toBeFalsy();
   });
 
   it("shows publish menu", () => {

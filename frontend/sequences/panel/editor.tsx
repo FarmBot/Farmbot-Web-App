@@ -7,7 +7,9 @@ import { Panel } from "../../farm_designer/panel_header";
 import { mapStateToProps } from "../state_to_props";
 import { SequencesProps } from "../interfaces";
 import { t } from "../../i18next_wrapper";
-import { EmptyStateWrapper, EmptyStateGraphic, ColorPicker } from "../../ui";
+import {
+  EmptyStateWrapper, EmptyStateGraphic, Popover, ColorPickerCluster,
+} from "../../ui";
 import {
   SequenceEditorMiddleActive,
 } from "../sequence_editor_middle_active";
@@ -29,6 +31,7 @@ import { requestAutoGeneration } from "../request_auto_generation";
 import { error } from "../../toast/toast";
 import { noop } from "lodash";
 import { addNewSequenceToFolder } from "../../folders/actions";
+import { Position } from "@blueprintjs/core";
 
 interface SequencesState {
   processingTitle: boolean;
@@ -74,13 +77,16 @@ export class RawDesignerSequenceEditor
                 this.setState({ processingTitle })}
               setColorProcessing={processingColor =>
                 this.setState({ processingColor })} />}
-          {sequence && <ColorPicker
-            current={sequence.body.color || "gray"}
-            targetElement={<i title={t("select color")}
-              className={"icon-saucer fa fa-paint-brush"} />}
-            onChange={color => this.props.dispatch(edit(sequence, { color }))} />}
+          {sequence && <Popover className={"color-picker"}
+            position={Position.BOTTOM}
+            popoverClassName={"colorpicker-menu gray"}
+            target={<i title={t("select color")}
+              className={"fa fa-paint-brush fb-icon-button"} />}
+            content={<ColorPickerCluster
+              onChange={color => this.props.dispatch(edit(sequence, { color }))}
+              current={sequence.body.color} />} />}
           {sequence && window.innerWidth > 450 &&
-            <i className={"fa fa-expand"}
+            <i className={"fa fa-expand fb-icon-button"}
               title={t("open full-page editor")}
               onClick={() =>
                 push(Path.sequencePage(urlFriendly(sequence.body.name)))} />}
@@ -166,9 +172,11 @@ export const AutoGenerateButton = (props: AutoGenerateButtonProps) => {
     dispatch, sequence, isProcessing, setTitleProcessing, setColorProcessing,
   } = props;
   return <i title={t("auto-generate sequence title and color")}
-    className={`fa fa-${isProcessing
-      ? "spinner fa-pulse"
-      : "magic"}`}
+    className={[
+      "fa",
+      isProcessing ? "fa-spinner fa-pulse" : "fa-magic",
+      "fb-icon-button",
+    ].join(" ")}
     onClick={() => {
       if (!sequence.body.id) {
         error(t("Save sequence first."));

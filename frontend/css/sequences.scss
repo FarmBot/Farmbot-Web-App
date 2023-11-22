@@ -23,10 +23,6 @@
   h3 {
     margin-top: 1rem;
   }
-  .bp5-popover-wrapper {
-    display: inline;
-    margin-left: 1rem;
-  }
   .sequence-editor-tools {
     .row {
       flex: 1;
@@ -625,6 +621,9 @@
   &.page {
     i {
       color: $white;
+      &.inactive {
+        color: $gray;
+      }
     }
     .publish-button {
       span {
@@ -646,6 +645,9 @@
       i,
       .title {
         color: $dark_gray;
+        &.inactive {
+          color: $placeholder_gray;
+        }
       }
     }
     &.blue {
@@ -680,14 +682,6 @@
   margin-right: 15px;
   @media screen and (max-width: 767px) {
     margin-right: 10px;
-  }
-  .fa-thumb-tack {
-    color: $placeholder_gray;
-    line-height: 2rem;
-    transform: rotate(45deg);
-    &.pinned {
-      transform: rotate(0deg);
-    }
   }
   hr {
     margin: 0.5rem 0;

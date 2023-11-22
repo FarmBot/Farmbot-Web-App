@@ -1066,13 +1066,12 @@ ul {
   }
   .settings-menu-button {
     margin-top: 0.15rem;
+    margin-right: 0.5rem;
     .bp5-popover-wrapper {
       margin-left: 0;
     }
   }
   .fa {
-    margin: 0 0.75rem;
-    line-height: 2rem;
     float: right;
   }
   .fa-code {
@@ -1082,21 +1081,13 @@ ul {
       color: $dark_gray;
     }
   }
-  .fa-trash {
-    color: $darkest_red;
-  }
-  .fa-clone,
-  .fa-copy {
-    color: $yellow;
-  }
-  .fa-eye {
-    color: $orange;
+  .inactive {
+    color: $gray;
   }
   .fa-eye-slash {
     color: $gray;
   }
   .color-picker {
-    margin: 0 0.5rem;
     float: right;
     vertical-align: middle;
     .saucer {

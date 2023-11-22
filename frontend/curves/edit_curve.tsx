@@ -148,11 +148,11 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
         backTo={curvesPath}>
         <div className={"panel-header-icon-group"}>
           {curve &&
-            <i className={"fa fa-copy"}
+            <i className={"fa fa-copy fb-icon-button"}
               title={t("Copy curve")}
               onClick={dispatch(copyCurve(this.props.curves, curve))} />}
           {curve &&
-            <i className={"fa fa-trash"}
+            <i className={"fa fa-trash fb-icon-button"}
               title={t("Delete curve")}
               onClick={() => this.props.resourceUsage[curve.uuid]
                 ? error(t("Curve in use."))
