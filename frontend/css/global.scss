@@ -1097,6 +1097,14 @@ ul {
   }
 }
 
+.button-group,
+.panel-header-icon-group {
+  .fa-spinner {
+    background: none !important;
+    box-shadow: none !important;
+  }
+}
+
 .fb-button-popover-wrapper {
   float: right;
   margin-right: 1rem;

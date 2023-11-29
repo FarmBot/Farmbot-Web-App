@@ -491,11 +491,10 @@
 .sequence-editor-sections {
   .sequence-section-header {
     position: relative;
-    line-height: 3rem;
     cursor: pointer;
     padding-left: 1.5rem;
     height: 4rem;
-    line-height: 3.75rem !important;
+    line-height: 3.75rem;
     &:hover {
       background: $light_gray;
     }
@@ -543,11 +542,11 @@
         align-content: center;
         .add-variable-options {
           text-align: center;
+          line-height: 0;
         }
         .fb-button {
           float: none;
           height: 2rem;
-          line-height: 2rem;
         }
       }
     }
