@@ -1251,13 +1251,13 @@ li {
     }
   }
   .grid-planting-toggle {
+    margin: 0.5rem;
+    margin-left: 0;
     label {
       margin-top: 0.5rem;
     }
     button {
       float: right;
-      margin-right: 0.5rem;
-      margin-top: 0.5rem;
     }
   }
   .fb-toggle-button {
@@ -2073,26 +2073,16 @@ li {
   padding: 1.5rem;
   .fa-copy,
   .fa-sort {
-    margin-top: 0.25rem;
     color: $white;
   }
   .fa-trash {
-    margin-top: 0.25rem;
-    margin-left: 2rem;
     color: $white;
   }
-  .color-picker {
-    margin-right: 0.5rem;
-  }
   .fa-expand {
-    margin-top: 0.25rem;
     color: $dark_gray;
   }
   .fa-magic,
   .fa-spinner {
-    margin-top: 0.25rem;
-    margin-bottom: 0.25rem;
-    margin-right: 2rem;
     color: $dark_gray;
   }
 }
@@ -3224,11 +3214,7 @@ li {
   .green,
   .red {
     .panel-title {
-      .color-picker {
-        .icon-saucer {
-          color: $white;
-        }
-      }
+      .fa-paint-brush,
       .fa-expand,
       .fa-magic,
       .fa-spinner {

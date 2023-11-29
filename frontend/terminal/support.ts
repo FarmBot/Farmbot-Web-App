@@ -6,6 +6,7 @@ export const attachTerminal = () => {
   const terminal = new Terminal({});
   if (node) {
     terminal.open(node);
+    terminal.resize(84, 24);
   }
   return terminal;
 };

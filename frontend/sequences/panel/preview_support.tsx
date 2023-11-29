@@ -173,9 +173,10 @@ const PreviewToolbar = (props: PreviewToolbarProps) =>
       <div className={"button-group"}
         style={{ marginBottom: "0", marginTop: "0" }}>
         <i
-          className={`fa fa-code ${props.viewSequenceCeleryScript
-            ? "enabled"
-            : ""} step-control`}
+          className={[
+            "fa fa-code fb-icon-button",
+            props.viewSequenceCeleryScript ? "" : "inactive",
+          ].join(" ")}
           title={t("toggle celery script view")}
           onClick={props.toggleViewCeleryScript} />
       </div>

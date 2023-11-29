@@ -23,10 +23,6 @@
   h3 {
     margin-top: 1rem;
   }
-  .bp5-popover-wrapper {
-    display: inline;
-    margin-left: 1rem;
-  }
   .sequence-editor-tools {
     .row {
       flex: 1;
@@ -495,11 +491,10 @@
 .sequence-editor-sections {
   .sequence-section-header {
     position: relative;
-    line-height: 3rem;
     cursor: pointer;
     padding-left: 1.5rem;
     height: 4rem;
-    line-height: 3.75rem !important;
+    line-height: 3.75rem;
     &:hover {
       background: $light_gray;
     }
@@ -547,11 +542,11 @@
         align-content: center;
         .add-variable-options {
           text-align: center;
+          line-height: 0;
         }
         .fb-button {
           float: none;
           height: 2rem;
-          line-height: 2rem;
         }
       }
     }
@@ -625,6 +620,9 @@
   &.page {
     i {
       color: $white;
+      &.inactive {
+        color: $gray;
+      }
     }
     .publish-button {
       span {
@@ -646,6 +644,9 @@
       i,
       .title {
         color: $dark_gray;
+        &.inactive {
+          color: $placeholder_gray;
+        }
       }
     }
     &.blue {
@@ -680,14 +681,6 @@
   margin-right: 15px;
   @media screen and (max-width: 767px) {
     margin-right: 10px;
-  }
-  .fa-thumb-tack {
-    color: $placeholder_gray;
-    line-height: 2rem;
-    transform: rotate(45deg);
-    &.pinned {
-      transform: rotate(0deg);
-    }
   }
   hr {
     margin: 0.5rem 0;

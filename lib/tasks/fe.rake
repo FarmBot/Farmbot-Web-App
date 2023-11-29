@@ -7,6 +7,16 @@ EXCLUDE = [
     reason: "@types/react",
     version: "3.10.12 (latest working)",
   },
+  {
+    packages: ["punycode"],
+    reason: "dependency needs",
+    version: "1.4.1",
+  },
+  {
+    packages: ["mqtt"],
+    reason: "import error",
+    version: "5.3.0",
+  },
 ]
 
 # Load package.json as JSON.

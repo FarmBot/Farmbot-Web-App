@@ -15,8 +15,13 @@ jest.mock("../../../folders/actions", () => ({
   addNewSequenceToFolder: jest.fn(),
 }));
 
+import { PopoverProps } from "../../../ui/popover";
+jest.mock("../../../ui/popover", () => ({
+  Popover: ({ target, content }: PopoverProps) => <div>{target}{content}</div>,
+}));
+
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { mount } from "enzyme";
 import {
   RawDesignerSequenceEditor as DesignerSequenceEditor, ResourceTitle,
   ResourceTitleProps,
@@ -83,9 +88,9 @@ describe("<DesignerSequenceEditor />", () => {
     const sequence = fakeSequence();
     sequence.body.color = "" as Color;
     p.sequence = sequence;
-    const wrapper = shallow(<DesignerSequenceEditor {...p} />);
-    wrapper.find("ColorPicker").simulate("change", "red");
-    expect(edit).toHaveBeenCalledWith(p.sequence, { color: "red" });
+    const wrapper = mount(<DesignerSequenceEditor {...p} />);
+    wrapper.find(".color-picker-item-wrapper").first().simulate("click");
+    expect(edit).toHaveBeenCalledWith(p.sequence, { color: "blue" });
   });
 
   it("generates name and color", () => {
