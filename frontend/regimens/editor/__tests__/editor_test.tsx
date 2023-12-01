@@ -6,8 +6,17 @@ jest.mock("../../../api/crud", () => ({
   edit: jest.fn(),
 }));
 
+jest.mock("../../list/add_regimen", () => ({
+  addRegimen: jest.fn(),
+}));
+
+import { PopoverProps } from "../../../ui/popover";
+jest.mock("../../../ui/popover", () => ({
+  Popover: ({ target, content }: PopoverProps) => <div>{target}{content}</div>,
+}));
+
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { mount } from "enzyme";
 import {
   RawDesignerRegimenEditor as DesignerRegimenEditor,
 } from "../../editor/editor";
@@ -21,6 +30,7 @@ import {
 } from "../../set_active_regimen_by_name";
 import { Color } from "farmbot";
 import { edit } from "../../../api/crud";
+import { addRegimen } from "../../list/add_regimen";
 
 describe("<DesignerRegimenEditor />", () => {
   const fakeProps = (): RegimenEditorProps => ({
@@ -42,6 +52,9 @@ describe("<DesignerRegimenEditor />", () => {
     const wrapper = mount(<DesignerRegimenEditor {...p} />);
     expect(setActiveRegimenByName).toHaveBeenCalled();
     expect(wrapper.text().toLowerCase()).toContain("no regimen selected");
+    expect(wrapper.html()).not.toContain("select color");
+    wrapper.find("button").first().simulate("click");
+    expect(addRegimen).toHaveBeenCalled();
   });
 
   it("changes color", () => {
@@ -49,9 +62,9 @@ describe("<DesignerRegimenEditor />", () => {
     const regimen = fakeRegimen();
     regimen.body.color = "" as Color;
     p.current = regimen;
-    const wrapper = shallow(<DesignerRegimenEditor {...p} />);
-    wrapper.find("ColorPicker").simulate("change", "red");
-    expect(edit).toHaveBeenCalledWith(p.current, { color: "red" });
+    const wrapper = mount(<DesignerRegimenEditor {...p} />);
+    wrapper.find(".color-picker-item-wrapper").first().simulate("click");
+    expect(edit).toHaveBeenCalledWith(p.current, { color: "blue" });
   });
 
   it("active editor", () => {
