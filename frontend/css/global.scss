@@ -591,7 +591,6 @@ a {
   position: relative;
   .setting-status-indicator {
     position: absolute;
-    top: 0.35rem;
     z-index: 1;
   }
   .fa-exclamation-triangle {
@@ -616,6 +615,18 @@ a {
     .bp5-popover-arrow-fill {
       fill: $dark_gray;
     }
+  }
+}
+
+.mcu-input-box {
+  .setting-status-indicator {
+    top: 0.5rem;
+  }
+}
+
+.fb-toggle-button {
+  .setting-status-indicator {
+    top: 0.25rem;
   }
 }
 

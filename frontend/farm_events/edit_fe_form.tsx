@@ -562,7 +562,7 @@ export const FarmEventForm = (props: FarmEventFormProps) => {
     {props.executableOptions.filter(x => !x.heading).length < 1 &&
       <Help
         text={Content.MISSING_EXECUTABLE}
-        customIcon={"exclamation-triangle"} />}
+        customIcon={"fa-exclamation-triangle"} />}
     <FBSelect
       list={props.executableOptions}
       onChange={props.executableSet}

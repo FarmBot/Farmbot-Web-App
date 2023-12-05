@@ -16,6 +16,7 @@ export interface HelpProps {
   enableMarkdown?: boolean;
   isOpen?: boolean;
   setOpen?(): void;
+  iconButton?: boolean;
 }
 
 export function Help(props: HelpProps) {
@@ -28,9 +29,14 @@ export function Help(props: HelpProps) {
     isOpen={props.isOpen}
     popoverClassName={"help"}
     target={
-      <i className={`fa fa-${props.customIcon || "question-circle"} help-icon`}
-        onClick={props.setOpen}
-        title={props.title} />}
+      <i title={props.title}
+        className={[
+          "fa",
+          props.customIcon || "fa-question-circle",
+          "help-icon",
+          props.iconButton ? "fb-icon-button" : "",
+        ].filter(c => c).join(" ")}
+        onClick={props.setOpen} />}
     content={<div className={"help-text-content"}>
       {props.enableMarkdown
         ? <Markdown>{props.text}</Markdown>
