@@ -73,16 +73,17 @@ export class TileExecute
         "execute-step",
         pinned ? "pinned" : "",
         hasVariables ? "" : "no-inputs",
+        sequence_id ? "sequence-selected" : "",
       ].join(" ")}
       helpText={callee?.body.description || ToolTips.EXECUTE_SEQUENCE}
       enableMarkdown={!!callee?.body.description}>
-      {!currentStep.args.sequence_id &&
+      {!sequence_id &&
         <Row>
           <Col>
             <SequenceSelectBox
               onChange={this.changeSelection}
               resources={resources}
-              sequenceId={currentStep.args.sequence_id} />
+              sequenceId={sequence_id} />
           </Col>
         </Row>}
       {hasVariables &&
