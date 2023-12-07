@@ -63,7 +63,7 @@ export const PhotoButtons = (props: PhotoButtonsProps) => {
         popoverClassName={"image-show-menu-popover"}
         target={<ImageShowMenuTarget {...imageShowMenuProps} flags={flags} />}
         content={<ImageShowMenu {...imageShowMenuProps} flags={flags} />} />}
-    {imageUrl && <i className={"fa fa-trash"}
+    {imageUrl && <i className={"fa fa-trash fb-icon-button"}
       title={t("Delete Photo")}
       onClick={props.deletePhoto} />}
     {imageUrl && <a
@@ -72,17 +72,25 @@ export const PhotoButtons = (props: PhotoButtonsProps) => {
       target={"_blank"}
       rel={"noreferrer"}
       download={true}>
-      <i className={"fa fa-download"} />
+      <i className={"fa fa-download fb-icon-button"} />
     </a>}
     {imageUrl &&
-      <i className={`fa fa-scissors ${props.canCrop ? "" : "disabled"}`}
-        title={t("Toggle crop")}
+      <i title={t("Toggle crop")}
+        className={[
+          "fa fa-scissors",
+          props.canCrop ? "" : "disabled",
+          "fb-icon-button",
+        ].join(" ")}
         onClick={props.canCrop ? props.toggleCrop : undefined} />}
     {imageUrl &&
-      <i className={`fa fa-repeat ${props.canTransform ? "" : "disabled"}`}
-        title={t("Toggle rotation")}
+      <i title={t("Toggle rotation")}
+        className={[
+          "fa fa-repeat",
+          props.canTransform ? "" : "disabled",
+          "fb-icon-button",
+        ].join(" ")}
         onClick={props.canTransform ? props.toggleRotation : undefined} />}
-    <i className={"fa fa-arrows-alt desktop-only"}
+    <i className={"fa fa-arrows-alt desktop-only fb-icon-button"}
       title={t("View fullscreen")}
       onClick={props.toggleFullscreen} />
   </div>;

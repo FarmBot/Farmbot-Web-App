@@ -536,12 +536,12 @@
     }
     .plant-slug-bulk-update {
       .fa-pencil {
-        margin-left: 1rem;
+        margin-left: 0.25rem;
       }
       .fb-button {
         float: none;
         height: 2rem;
-        line-height: 1.75rem;
+        line-height: 0;
         margin-left: 1rem;
         vertical-align: top;
       }
@@ -1774,7 +1774,7 @@ li {
     .fa-gear {
       color: $dark_gray;
       margin-right: 1rem;
-      margin-top: 2rem;
+      margin-top: 1.5rem;
     }
   }
 }
@@ -1965,6 +1965,7 @@ li {
 }
 
 .non-layer-config-toggle {
+  margin-top: 0.1rem;
   &.disabled {
     input {
       background: $gray !important;
@@ -2742,10 +2743,10 @@ li {
   label {
     margin-top: 0 !important;
   }
-  i {
+  .fa-external-link {
     position: absolute;
-    right: 0.5rem;
-    line-height: 4rem;
+    top: 1rem;
+    right: 0;
   }
   .active-curve-name {
     position: relative;
@@ -3211,17 +3212,6 @@ li {
 }
 
 .designer-sequence-editor-panel {
-  .green,
-  .red {
-    .panel-title {
-      .fa-paint-brush,
-      .fa-expand,
-      .fa-magic,
-      .fa-spinner {
-        color: $white;
-      }
-    }
-  }
   .panel-content {
     .sequence-editor-content {
       hr {
@@ -3243,6 +3233,23 @@ li {
     }
     @media screen and (max-width: 767px) {
       padding: 0;
+    }
+  }
+}
+
+.weed-info-panel,
+.point-info-panel,
+.designer-regimen-editor-panel,
+.designer-sequence-editor-panel {
+  .green,
+  .red {
+    .panel-title {
+      .fa-paint-brush,
+      .fa-expand,
+      .fa-magic,
+      .fa-spinner {
+        color: $white;
+      }
     }
   }
 }

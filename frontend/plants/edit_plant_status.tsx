@@ -315,7 +315,7 @@ export const PlantSlugBulkUpdate = (props: PlantSlugBulkUpdateProps) => {
       to={Path.cropSearch(slug)}>
       {startCase(slug)}
     </Link>
-    <i className={"fa fa-pencil"}
+    <i className={"fa fa-pencil fb-icon-button"}
       onClick={() => {
         props.dispatch({ type: Actions.SET_SLUG_BULK, payload: slug });
         push(Path.cropSearch());

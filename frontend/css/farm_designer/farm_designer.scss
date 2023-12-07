@@ -684,7 +684,7 @@
       display: flex;
       flex-direction: column;
       flex-wrap: wrap;
-      max-width: 134px;
+      max-width: 140px;
       padding: 1rem;
       background: rgba(255, 255, 255, .75);
       border-radius: 5px;
@@ -775,7 +775,7 @@
   }
   .caret-menu-button {
     display: inline;
-    margin-left: 0.25rem;
+    margin-left: 0.1rem;
     font-weight: bold;
     font-size: medium;
     cursor: pointer;
@@ -979,7 +979,6 @@
   .fa-caret-left,
   .fa-caret-right,
   .fa-step-forward {
-    line-height: 1.3rem;
     font-weight: bold;
     vertical-align: middle;
   }
@@ -993,11 +992,11 @@
   }
   .fa-step-backward,
   .fa-caret-left {
-    margin-right: 1rem;
+    margin-right: 0.1rem;
   }
   .fa-caret-right,
   .fa-step-forward {
-    margin-left: 1rem;
+    margin-left: 0.1rem;
   }
 }
 

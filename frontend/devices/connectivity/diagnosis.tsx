@@ -32,9 +32,9 @@ const diagnosisStatus = (flags: ConnectionStatusFlags): boolean =>
 export const DiagnosisSaucer = (props: DiagnosisSaucerProps) => {
   const diagnosisBoolean = diagnosisStatus(props);
   const diagnosisColor = diagnosisBoolean ? "green" : "red";
-  const diagnosisIcon = diagnosisBoolean ? "check" : "times";
+  const diagnosisIcon = diagnosisBoolean ? "fa-check" : "fa-times";
   const spinner = props.syncStatus == "syncing";
-  const diagnosisIconClass = spinner ? "spinner fa-pulse" : diagnosisIcon;
+  const diagnosisIconClass = spinner ? "fa-spinner fa-pulse" : diagnosisIcon;
   const title = diagnosisBoolean ? t("Ok") : t("Error");
   const classes = [
     "diagnosis-indicator", "saucer", "active", diagnosisColor, props.className,
@@ -42,7 +42,7 @@ export const DiagnosisSaucer = (props: DiagnosisSaucerProps) => {
   return <div className={classes.join(" ")}
     onClick={props.onClick}
     title={props.syncStatus ? syncText(props.syncStatus) : title}>
-    <i className={`fa fa-${diagnosisIconClass}`} />
+    <i className={`fa ${diagnosisIconClass}`} />
   </div>;
 };
 

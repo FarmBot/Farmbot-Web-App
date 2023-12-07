@@ -233,7 +233,7 @@ export const SequenceShareMenu = (props: SequenceShareMenuProps) => {
             publishAction(setPublishing);
           }
         }}>
-        <i className={`fa fa-${publishing ? "spinner fa-pulse" : "plus"}`} />
+        <i className={`fa ${publishing ? "fa-spinner fa-pulse" : "fa-plus"}`} />
       </button>
       {sequenceVersionList(ids).map(version =>
         <Row key={version.label}>
@@ -675,8 +675,12 @@ const Description = (props: DescriptionProps) => {
       collapsed={!props.isOpen}
       toggle={props.toggleOpen} />
     {props.isOpen &&
-      <i className={`fa fa-${isProcessing ? "spinner fa-pulse" : "magic"}`}
-        title={t("auto-generate sequence description")}
+      <i title={t("auto-generate sequence description")}
+        className={[
+          "fa",
+          isProcessing ? "fa-spinner fa-pulse" : "fa-magic",
+          "fb-icon-button",
+        ].join(" ")}
         onClick={() => {
           if (!props.sequence.body.id) {
             error(t("Save sequence first."));
@@ -695,8 +699,12 @@ const Description = (props: DescriptionProps) => {
           });
         }} />}
     {props.isOpen &&
-      <i className={`fa fa-${isEditing ? "eye" : "pencil"}`}
-        title={t("toggle editor view")}
+      <i title={t("toggle editor view")}
+        className={[
+          "fa",
+          isEditing ? "fa-eye" : "fa-pencil",
+          "fb-icon-button",
+        ].join(" ")}
         onClick={() => setIsEditing(!isEditing)} />}
     <Collapse isOpen={props.isOpen}>
       <div className={"sequence-description"}
@@ -742,7 +750,7 @@ export const ImportedBanner = (props: ImportedBannerProps) => {
   const revertAvailable = (versionId == latestId) && forked;
   const currentVersionLabel = <p>
     {currentVersionItem?.label}
-    <i className={`fa fa-${forked ? "chain-broken" : "link"}`} />
+    <i className={`fa ${forked ? "fa-chain-broken" : "fa-link"}`} />
   </p>;
   return versionId
     ? <div className={"import-banners"}>

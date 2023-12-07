@@ -10,7 +10,7 @@ export interface ExpandableHeaderProps {
 
 export const ExpandableHeader = (props: ExpandableHeaderProps) => {
   const { onClick, title, expanded } = props;
-  const icon_string = expanded ? "minus" : "plus";
+  const icon_string = expanded ? "fa-minus" : "fa-plus";
   const nbwhitespace = title != "";
   return <h4 className="expandable-header" onClick={onClick}>
     {t(title)}
@@ -18,7 +18,7 @@ export const ExpandableHeader = (props: ExpandableHeaderProps) => {
       "\u00A0\u00A0"
     }
     <span className="icon-toggle">
-      [<i className={`fa fa-${icon_string}`} />]
+      [<i className={`fa ${icon_string}`} />]
     </span>
     {props.children}
   </h4>;

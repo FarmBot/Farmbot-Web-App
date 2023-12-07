@@ -17,12 +17,13 @@ import { ListItem } from "../plants/plant_panel";
 import { isBotOnlineFromState } from "../devices/must_be_online";
 import { save } from "../api/crud";
 import { Path } from "../internal_urls";
-import { ColorPicker } from "../ui";
+import { ColorPickerCluster, Popover } from "../ui";
 import { ResourceTitle } from "../sequences/panel/editor";
 import { BotPosition } from "../devices/interfaces";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { validBotLocationData } from "../util/location";
 import { validGoButtonAxes } from "../farm_designer/move_to";
+import { Position } from "@blueprintjs/core";
 
 export interface EditPointProps {
   dispatch: Function;
@@ -58,11 +59,12 @@ export class RawEditPoint extends React.Component<EditPointProps, {}> {
     const { dispatch } = this.props;
     const pointsPath = Path.points();
     !this.point && Path.startsWith(pointsPath) && push(pointsPath);
+    const pointColor = this.point?.body.meta.color || "green";
     return <DesignerPanel panelName={this.panelName} panel={Panel.Points}>
       <DesignerPanelHeader
         panelName={this.panelName}
         panel={Panel.Points}
-        colorClass={this.point?.body.meta.color}
+        colorClass={pointColor}
         titleElement={<ResourceTitle
           key={this.point?.body.name}
           resource={this.point}
@@ -75,12 +77,15 @@ export class RawEditPoint extends React.Component<EditPointProps, {}> {
         onBack={() => dispatch({
           type: Actions.TOGGLE_HOVERED_POINT, payload: undefined
         })}>
-        <ColorPicker
-          current={(this.point?.body.meta.color || "green") as ResourceColor}
-          targetElement={<i title={t("select color")}
-            className={"icon-saucer fa fa-paint-brush"} />}
-          onChange={color =>
-            updatePoint(this.point, dispatch)({ meta: { color } })} />
+        <Popover className={"color-picker"}
+          position={Position.BOTTOM}
+          popoverClassName={"colorpicker-menu gray"}
+          target={<i title={t("select color")}
+            className={"fa fa-paint-brush fb-icon-button"} />}
+          content={<ColorPickerCluster
+            onChange={color =>
+              updatePoint(this.point, dispatch)({ meta: { color } })}
+            current={pointColor as ResourceColor} />} />
       </DesignerPanelHeader>
       <DesignerPanelContent panelName={this.panelName}>
         {this.point

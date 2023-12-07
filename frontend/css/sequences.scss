@@ -291,13 +291,13 @@
   .fa-magic,
   .fa-spinner {
     position: absolute;
-    top: 1.25rem;
-    right: 6rem;
+    top: 1rem;
+    right: 6.5rem;
   }
   .fa-pencil,
   .fa-eye {
     position: absolute;
-    top: 1.25rem;
+    top: 1rem;
     right: 4rem;
   }
 }
@@ -742,6 +742,7 @@
     .fa-trash {
       color: $darkest_red;
       margin-top: 0.5rem;
+      margin-left: -1rem;
     }
     .numeric-variable-input,
     .text-variable-input {
@@ -1152,7 +1153,7 @@
       .folder-name-input {
         display: flex;
         button {
-          top: 0.5rem;
+          margin-top: 0.75rem;
           width: auto;
           height: 2rem;
           i {
@@ -1503,5 +1504,10 @@
   float: right;
   &:hover {
     background: rgba(255, 255, 255, 0.2);
+  }
+  &.light {
+    &:hover {
+      background: rgba(0, 0, 0, 0.08);
+    }
   }
 }

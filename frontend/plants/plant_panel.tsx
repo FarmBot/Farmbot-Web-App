@@ -199,7 +199,7 @@ export function PlantPanel(props: PlantPanelProps) {
           to={Path.cropSearch(slug)}>
           {startCase(slug)}
         </Link>
-        <i className={"fa fa-pencil"}
+        <i className={"fa fa-pencil fb-icon-button"}
           onClick={() => {
             dispatch({ type: Actions.SET_PLANT_TYPE_CHANGE_ID, payload: info.id });
             dispatch({ type: Actions.SET_SLUG_BULK, payload: undefined });

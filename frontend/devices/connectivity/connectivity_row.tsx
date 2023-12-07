@@ -24,9 +24,9 @@ const colorLookup: Record<string, string> = {
 };
 
 const iconLookup: Record<string, string> = {
-  true: "check",
-  false: "times",
-  undefined: "question"
+  true: "fa-check",
+  false: "fa-times",
+  undefined: "fa-question"
 };
 
 export function ConnectivityRow(props: StatusRowProps) {
@@ -44,7 +44,7 @@ export function ConnectivityRow(props: StatusRowProps) {
     ? "saucer active grey"
     : `diagnosis-indicator saucer active ${colorClass} ${hoverClass}`;
   const icon = iconLookup["" + connectionStatus];
-  const iconClass = syncStatus == "syncing" ? "spinner fa-pulse" : icon;
+  const iconClass = syncStatus == "syncing" ? "fa-spinner fa-pulse" : icon;
 
   const getTitle = (header?: boolean) => {
     if (header) { return t("Status"); }
@@ -65,7 +65,7 @@ export function ConnectivityRow(props: StatusRowProps) {
         title={syncStatus ? syncText(syncStatus) : getTitle(props.header)}
         onMouseEnter={hoverOver(connectionName)}
         onMouseLeave={hoverOver(undefined)}>
-        {!props.header && <i className={`fa fa-${iconClass}`} />}
+        {!props.header && <i className={`fa ${iconClass}`} />}
       </div>
       {!props.header &&
         <div className={`saucer-connector ${connectorColorClass}`} />}

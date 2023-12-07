@@ -25,7 +25,8 @@ export const StatusIcon =
     const statusText = props.available ? okNoStatusText : t("unknown");
     const okNoIcon = props.status ? "fa-check-circle" : "fa-times-circle";
     const icon = props.available ? okNoIcon : "fa-question-circle";
-    return <i className={`fa ${icon} status-icon ${status}`} title={statusText} />;
+    return <i className={`fa ${icon} status-icon ${status} fb-icon-button`}
+      title={statusText} />;
   };
 
 export const lookup = (value: string | undefined) =>

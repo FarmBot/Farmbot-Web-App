@@ -1108,6 +1108,7 @@ ul {
   }
 }
 
+.sequence-description-wrapper,
 .button-group,
 .panel-header-icon-group {
   .fa-spinner {
@@ -1765,8 +1766,8 @@ ul {
       .fa-trash {
         display: inline;
         color: $darkest_red;
-        margin-left: 7px;
-        padding: 0.25rem;
+        margin-left: 6px;
+        padding: 0.5rem;
         line-height: 2rem;
       }
       .log-verbosity-saucer {
@@ -1864,7 +1865,7 @@ ul {
 .logs-tab {
   .thin-search-wrapper {
     display: inline-block;
-    width: 95%;
+    width: 94%;
     background: $white;
   }
   .logs-settings-menu-button {
@@ -2371,9 +2372,6 @@ ul {
 }
 
 .status-icon {
-  padding: 0.5rem;
-  float: right !important;
-  font-size: 1.75rem;
   &.ok {
     color: $green;
   }

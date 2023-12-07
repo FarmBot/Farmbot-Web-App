@@ -75,7 +75,7 @@ export class RawDesignerSequenceList
           placeholder={t("Search sequences...")}
           onChange={updateSearchTerm} />
         {window.innerWidth > 450 &&
-          <button className={"transparent-button fullscreen"}
+          <button className={"transparent-button fullscreen light"}
             onClick={() => push(buttonProps.path)}>
             {buttonProps.text}
             <i className={`fa fa-caret-square-o-${buttonProps.caretDirection}`} />

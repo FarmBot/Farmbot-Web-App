@@ -176,7 +176,7 @@ export const VariableForm =
               onChange={onChange} isDefaultValueForm={isDefaultValueForm} />}
           {removeVariable && !isDefaultValueForm &&
             <Col xs={1} className={"trash"}>
-              <i className={"fa fa-trash"}
+              <i className={"fa fa-trash fb-icon-button"}
                 style={props.inUse ? { color: Color.gray } : {}}
                 onClick={() => removeVariable(label)} />
             </Col>}

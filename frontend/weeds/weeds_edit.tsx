@@ -18,11 +18,12 @@ import { isBotOnlineFromState } from "../devices/must_be_online";
 import { save } from "../api/crud";
 import { Path } from "../internal_urls";
 import { ResourceTitle } from "../sequences/panel/editor";
-import { ColorPicker } from "../ui";
+import { ColorPickerCluster, Popover } from "../ui";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { BotPosition } from "../devices/interfaces";
 import { validBotLocationData } from "../util/location";
 import { validGoButtonAxes } from "../farm_designer/move_to";
+import { Position } from "@blueprintjs/core";
 
 export interface EditWeedProps {
   dispatch: Function;
@@ -58,11 +59,12 @@ export class RawEditWeed extends React.Component<EditWeedProps, {}> {
     const { dispatch } = this.props;
     const weedsPath = Path.weeds();
     !this.weed && Path.startsWith(weedsPath) && push(weedsPath);
+    const weedColor = this.weed?.body.meta.color || "red";
     return <DesignerPanel panelName={this.panelName} panel={Panel.Weeds}>
       <DesignerPanelHeader
         panelName={this.panelName}
         panel={Panel.Weeds}
-        colorClass={this.weed?.body.meta.color}
+        colorClass={weedColor}
         titleElement={<ResourceTitle
           key={this.weed?.body.name}
           resource={this.weed}
@@ -76,12 +78,15 @@ export class RawEditWeed extends React.Component<EditWeedProps, {}> {
           dispatch({ type: Actions.TOGGLE_HOVERED_POINT, payload: undefined });
           dispatch(selectPoint(undefined));
         }}>
-        <ColorPicker
-          current={(this.weed?.body.meta.color || "green") as ResourceColor}
-          targetElement={<i title={t("select color")}
-            className={"icon-saucer fa fa-paint-brush"} />}
-          onChange={color =>
-            updatePoint(this.weed, dispatch)({ meta: { color } })} />
+        <Popover className={"color-picker"}
+          position={Position.BOTTOM}
+          popoverClassName={"colorpicker-menu gray"}
+          target={<i title={t("select color")}
+            className={"fa fa-paint-brush fb-icon-button"} />}
+          content={<ColorPickerCluster
+            onChange={color =>
+              updatePoint(this.weed, dispatch)({ meta: { color } })}
+            current={weedColor as ResourceColor} />} />
       </DesignerPanelHeader>
       <DesignerPanelContent panelName={this.panelName}>
         {this.weed

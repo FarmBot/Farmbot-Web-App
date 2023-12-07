@@ -27,7 +27,10 @@ export const SettingStatusIndicator = (props: SettingStatusIndicatorProps) => {
   const { dispatch } = props;
   return <div className={"setting-status-indicator"}>
     {props.wasSyncing && dispatch &&
-      <i className={`fa fa-${props.isSyncing ? "spinner fa-pulse" : "check"}`} />}
+      <i className={[
+        "fa",
+        props.isSyncing ? "fa-spinner fa-pulse" : "fa-check",
+      ].join(" ")} />}
     {(!props.wasSyncing && props.isSyncing) && dispatch && !forceOnline() &&
       <i className={"fa fa-exclamation-triangle"}
         title={t("Save error. Click to retry.")}

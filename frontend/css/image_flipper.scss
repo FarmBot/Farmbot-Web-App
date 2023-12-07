@@ -207,13 +207,22 @@
 .photos-footer,
 .image-show-menu {
   i {
-    margin: 0.25rem;
     background: none !important;
     &.green {
       color: $green;
     }
     &.gray {
       color: $medium_gray;
+    }
+  }
+  .fb-icon-button {
+    &:hover {
+      background: rgba(255, 255, 255, 0.2) !important;
+    }
+  }
+  .shown-in-map-details {
+    i {
+      margin-right: 0.25rem;
     }
   }
 }

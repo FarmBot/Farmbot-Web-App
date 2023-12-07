@@ -194,7 +194,8 @@ nav {
       p {
         color: $white;
       }
-      box-shadow: 0 0 10px $translucent5, 0 0 5px inset rgba(255, 255, 255, 0.2);
+      filter: brightness(1.05);
+      box-shadow: inset 0 -1px 0px 0px $translucent2, 0 0 5px $translucent15, inset 0 0 5px rgba(255, 255, 255, 0.3);
     }
   }
   .nav-coordinates {
@@ -272,9 +273,13 @@ nav {
     }
   }
   .nav-name {
-    padding: 1rem;
-    border-radius: 1rem;
-    margin-top: -1rem;
+    padding: 0.75rem;
+    border-radius: 5px;
+    margin-top: -0.75rem;
+    font-weight: normal;
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
     &:after{
       content: attr(data-title);
       display: block;
@@ -343,6 +348,16 @@ nav {
   }
   .bp5-popover-arrow {
     visibility: hidden;
+  }
+  .fa-user {
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0.75rem;
+    margin-top: -0.75rem;
+    border-radius: 5px;
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
   }
 }
 

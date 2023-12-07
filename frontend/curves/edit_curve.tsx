@@ -165,7 +165,7 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
             <Popover
               isOpen={this.state.scale}
               popoverClassName={"curve-action-popover"}
-              target={<button className={"transparent-button"}
+              target={<button className={"transparent-button light"}
                 onClick={this.toggle("scale")}>
                 {t("scale")}
               </button>}
@@ -174,7 +174,7 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
             <Popover
               isOpen={this.state.templates}
               popoverClassName={"curve-action-popover"}
-              target={<button className={"transparent-button"}
+              target={<button className={"transparent-button light"}
                 onClick={this.toggle("templates")}>
                 {t("templates")}
               </button>}
