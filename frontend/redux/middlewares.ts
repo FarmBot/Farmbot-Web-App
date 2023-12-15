@@ -1,4 +1,4 @@
-import thunk from "redux-thunk";
+import { thunk } from "redux-thunk";
 import { Store, Middleware, applyMiddleware, compose, StoreEnhancer } from "redux";
 import { EnvName, ReduxAction } from "./interfaces";
 import { stateFetchMiddlewareConfig } from "./state_fetch_middleware";

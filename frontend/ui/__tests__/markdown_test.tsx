@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Token } from "markdown-it";
 import { Markdown, md_for_tests } from "../markdown";
 import { mount } from "enzyme";
 
@@ -16,13 +19,14 @@ describe("<Markdown />", () => {
 describe("link_open_for_tests()", () => {
   const fakeTokens = () => [
     { attrPush: jest.fn(), attrIndex: () => 0, attrs: [["", ""]] },
-  ];
+  ] as unknown as Token[];
 
   it("adds new attribute", () => {
     const tokens = fakeTokens();
     tokens[0].attrIndex = () => -1;
     const renderToken = jest.fn();
-    md_for_tests.renderer.rules.link_open(tokens, 0, {}, {}, { renderToken });
+    md_for_tests.renderer.rules.link_open?.(tokens, 0, {}, {},
+      { renderToken } as any);
     expect(tokens[0].attrPush).toHaveBeenCalledWith(["target", "_blank"]);
     expect(renderToken).toHaveBeenCalledWith(tokens, 0, {});
   });
@@ -30,8 +34,9 @@ describe("link_open_for_tests()", () => {
   it("updates attribute", () => {
     const tokens = fakeTokens();
     const renderToken = jest.fn();
-    md_for_tests.renderer.rules.link_open(tokens, 0, {}, {}, { renderToken });
-    expect(tokens[0].attrs[0][1]).toEqual("_blank");
+    md_for_tests.renderer.rules.link_open?.(tokens, 0, {}, {},
+      { renderToken } as any);
+    expect(tokens[0].attrs?.[0][1]).toEqual("_blank");
     expect(renderToken).toHaveBeenCalledWith(tokens, 0, {});
   });
 });

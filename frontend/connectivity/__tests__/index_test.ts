@@ -26,11 +26,10 @@ import {
   networkUptimeThrottleStats,
 } from "../index";
 import { networkUp, networkDown } from "../actions";
-import { GetState } from "../../redux/interfaces";
+import { GetState, DeepPartial } from "../../redux/interfaces";
 import { autoSync, routeMqttData } from "../auto_sync";
 import { handleInbound } from "../auto_sync_handle_inbound";
 import { store } from "../../redux/store";
-import { DeepPartial } from "redux";
 import { Everything } from "../../interfaces";
 import { Actions } from "../../constants";
 

@@ -1,4 +1,4 @@
-import { DeepPartial } from "redux";
+import { DeepPartial } from "../redux/interfaces";
 
 type DomEvent = React.SyntheticEvent<HTMLInputElement>;
 export const inputEvent = (value: string, name?: string): DomEvent => {

@@ -17,7 +17,7 @@ import { destroy, saveAll, initSave, initSaveGetId } from "../crud";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { createStore, applyMiddleware } from "redux";
 import { resourceReducer } from "../../resources/reducer";
-import thunk from "redux-thunk";
+import { thunk } from "redux-thunk";
 import { ReduxAction } from "../../redux/interfaces";
 import { maybeStartTracking } from "../maybe_start_tracking";
 import { API } from "../api";

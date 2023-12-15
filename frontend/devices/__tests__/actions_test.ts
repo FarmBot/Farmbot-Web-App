@@ -55,7 +55,7 @@ import { buildResourceIndex } from "../../__test_support__/resource_index_builde
 import axios from "axios";
 import { success, error, warning, info } from "../../toast/toast";
 import { edit, save } from "../../api/crud";
-import { DeepPartial } from "redux";
+import { DeepPartial } from "../../redux/interfaces";
 import { Farmbot } from "farmbot";
 import { goToFbosSettings } from "../../settings/maybe_highlight";
 

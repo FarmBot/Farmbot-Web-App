@@ -21,7 +21,7 @@ import {
   sequenceEditMaybeSave,
 } from "../actions";
 import { store } from "../../redux/store";
-import { DeepPartial } from "redux";
+import { DeepPartial } from "../../redux/interfaces";
 import { Everything } from "../../interfaces";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { newTaggedResource } from "../../sync/actions";

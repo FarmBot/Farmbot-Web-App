@@ -1,10 +1,11 @@
-import { Middleware, DeepPartial } from "redux";
+import { Middleware } from "redux";
 import { MiddlewareConfig } from "./middlewares";
 import { ResourceName, TaggedWebAppConfig } from "farmbot";
 import { Actions } from "../constants";
 import { revertToEnglish } from "../revert_to_english";
 import { SyncResponse } from "../sync/actions";
 import { arrayUnwrap } from "../resources/util";
+import { DeepPartial } from "./interfaces";
 
 const WEB_APP_CONFIG: ResourceName = "WebAppConfig";
 

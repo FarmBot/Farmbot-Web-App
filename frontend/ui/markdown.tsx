@@ -1,12 +1,15 @@
 import React from "react";
-const emoji = require("markdown-it-emoji");
-const md = require("markdown-it")({
+import { full as emoji } from "markdown-it-emoji";
+import markdownit from "markdown-it";
+
+const md = markdownit({
   breaks: true,
   linkify: true,
   typographer: true,
-});
+})
+  .use(emoji as markdownit.PluginSimple);
 
-const md_with_html = require("markdown-it")({
+const md_with_html = markdownit({
   /** Enable HTML tags in source */
   html: true,
   /** Convert '\n' in paragraphs into <br> */
@@ -15,10 +18,8 @@ const md_with_html = require("markdown-it")({
   linkify: true,
   /** Enable some language-neutral replacement + quotes beautification */
   typographer: true,
-});
-
-md.use(emoji);
-md_with_html.use(emoji);
+})
+  .use(emoji as markdownit.PluginSimple);
 
 const defaultRenderer = md.renderer.rules.link_open ||
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -40,15 +41,15 @@ md.renderer.rules.link_open =
 export const md_for_tests = md;
 
 interface MarkdownProps {
-  children?: React.ReactNode;
+  children?: string;
   html?: boolean;
   className?: string;
 }
 
 export function Markdown(props: MarkdownProps) {
   const result = props.html
-    ? md_with_html.render(props.children)
-    : md.render(props.children);
+    ? md_with_html.render("" + props.children)
+    : md.render("" + props.children);
   return <span
     className={["markdown", props.className].join(" ")}
     dangerouslySetInnerHTML={{ __html: result }}>
