@@ -69,7 +69,7 @@ export class GroupCriteria extends
     return <div className="group-criteria">
       <label className="criteria-heading">{t("filters")}</label>
       <Popover
-        target={<i className="fa fa-gear dark" />}
+        target={<i className={"fa fa-gear dark fb-icon-button"} />}
         content={<this.AdvancedToggleMenu />} />
       {!this.state.advanced
         ? <div className={"basic"}>

@@ -240,7 +240,7 @@ export const ScaleMenu = (props: ActionMenuProps) => {
         }} />
     </div>
     <div className={"curve-menu-row last"}>
-      <button className={"transparent-button"}
+      <button className={"transparent-button light"}
         onClick={() => {
           props.dispatch(editCurve(props.curve, {
             data: scaleData(props.curve.body.data, maxDayNum, maxValueNum)
@@ -302,7 +302,7 @@ export const TemplatesMenu = (props: ActionMenuProps) => {
         }} />
     </div>
     <div className={"curve-menu-row last"}>
-      <button className={"transparent-button"}
+      <button className={"transparent-button light"}
         onClick={() => {
           props.dispatch(editCurve(props.curve, {
             data: scaleData(CURVE_TEMPLATES[shape], maxDay, maxValue,

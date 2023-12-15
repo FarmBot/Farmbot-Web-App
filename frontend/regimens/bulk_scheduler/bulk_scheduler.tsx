@@ -53,7 +53,7 @@ export class BulkScheduler extends React.Component<BulkEditorProps, {}> {
     <Col xs={6}>
       <div className={"time-selection"}>
         <label>{t("Time")}</label>
-        <i className="fa fa-clock-o" onClick={() =>
+        <i className="fa fa-clock-o fb-icon-button" onClick={() =>
           this.props.dispatch(setTimeOffset(timeToMs(
             moment().add(3, "minutes").format("HH:mm"))))} />
         <BlurableInput type="time"

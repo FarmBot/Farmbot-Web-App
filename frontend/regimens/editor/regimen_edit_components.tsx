@@ -29,7 +29,7 @@ export const RegimenButtonGroup = (props: RegimenProps) => {
       status={regimen.specialStatus}
       onClick={() => dispatch(save(regimen.uuid))} />
     <CopyButton regimen={regimen} dispatch={dispatch} />
-    <i className={"fa fa-trash"}
+    <i className={"fa fa-trash fb-icon-button"}
       title={t("delete regimen")}
       onClick={() => dispatch(destroy(regimen.uuid))
         .then(() => push(Path.regimens()))} />

@@ -50,7 +50,6 @@ describe("<PlantPanel />", () => {
 
   const fakeProps = (): PlantPanelProps => ({
     info,
-    onDestroy: jest.fn(),
     updatePlant: jest.fn(),
     dispatch: jest.fn(),
     inSavedGarden: false,
@@ -82,20 +81,12 @@ describe("<PlantPanel />", () => {
     expect(y).toEqual(34);
   });
 
-  it("calls destroy", () => {
-    const p = fakeProps();
-    p.info.meta = undefined;
-    const wrapper = mount(<PlantPanel {...p} />);
-    clickButton(wrapper, 6, "Delete");
-    expect(p.onDestroy).toHaveBeenCalledWith("Point.0.0");
-  });
-
   it("renders", () => {
     const p = fakeProps();
     const wrapper = mount(<PlantPanel {...p} />);
     const txt = wrapper.text().toLowerCase();
     expect(txt).toContain("1 day old");
-    expect(wrapper.find("button").length).toEqual(8);
+    expect(wrapper.find("button").length).toEqual(6);
   });
 
   it("renders plant stage", () => {
@@ -114,14 +105,7 @@ describe("<PlantPanel />", () => {
     const wrapper = mount(<PlantPanel {...p} />);
     const txt = wrapper.text().toLowerCase();
     expect(txt).not.toContain("old");
-    expect(wrapper.find("button").length).toEqual(7);
-  });
-
-  it("enters select mode", () => {
-    const p = fakeProps();
-    const wrapper = mount(<PlantPanel {...p} />);
-    clickButton(wrapper, 7, "Delete multiple");
-    expect(push).toHaveBeenCalledWith(Path.plants("select"));
+    expect(wrapper.find("button").length).toEqual(5);
   });
 
   it("moves to plant location", () => {

@@ -9,7 +9,7 @@ import { t } from "../../i18next_wrapper";
 import { Path } from "../../internal_urls";
 
 export const CopyButton = ({ dispatch, regimen }: CopyButtonProps) =>
-  <i className={"fa fa-clone"}
+  <i className={"fa fa-clone fb-icon-button"}
     title={t("copy")}
     onClick={() => dispatch(copyRegimen(regimen))} />;
 

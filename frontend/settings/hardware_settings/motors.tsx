@@ -60,7 +60,7 @@ export function Motors(props: MotorsProps) {
       dispatch={dispatch} />
     {settingsPanelState.motors &&
       <Help customClass={"hw-warn"} text={ToolTips.HW_SETTINGS}
-        customIcon={"exclamation-triangle"} />}
+        customIcon={"fa-exclamation-triangle"} />}
     <Collapse isOpen={!!settingsPanelState.motors}>
       <SpacePanelHeader />
       <NumericMCUInputGroup {...commonProps}

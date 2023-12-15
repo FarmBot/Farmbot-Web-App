@@ -10,13 +10,19 @@ import { t } from "../../i18next_wrapper";
 import {
   setActiveRegimenByName,
 } from "../set_active_regimen_by_name";
-import { EmptyStateWrapper, EmptyStateGraphic, ColorPicker } from "../../ui";
+import {
+  EmptyStateWrapper, EmptyStateGraphic, Popover, ColorPickerCluster,
+} from "../../ui";
 import { isTaggedRegimen } from "../../resources/tagged_resources";
 import { Content } from "../../constants";
 import { ActiveEditor } from "./active_editor";
 import { ResourceTitle } from "../../sequences/panel/editor";
 import { Path } from "../../internal_urls";
 import { edit } from "../../api/crud";
+import { Position } from "@blueprintjs/core";
+import { addRegimen } from "../list/add_regimen";
+import { selectAllRegimens } from "../../resources/selectors_by_kind";
+import { RegimenButtonGroup } from "./regimen_edit_components";
 
 export class RawDesignerRegimenEditor
   extends React.Component<RegimenEditorProps> {
@@ -28,6 +34,7 @@ export class RawDesignerRegimenEditor
   render() {
     const panelName = "designer-regimen-editor";
     const regimen = this.props.current;
+    const regimenCount = selectAllRegimens(this.props.resources).length;
     return <DesignerPanel panelName={panelName} panel={Panel.Regimens}>
       <DesignerPanelHeader
         panelName={panelName}
@@ -39,11 +46,22 @@ export class RawDesignerRegimenEditor
           fallback={t("No Regimen selected")}
           dispatch={this.props.dispatch} />}
         backTo={Path.regimens()}>
-        {regimen && <ColorPicker
-          current={regimen.body.color || "gray"}
-          targetElement={<i title={t("select color")}
-            className={"icon-saucer fa fa-paint-brush"} />}
-          onChange={color => this.props.dispatch(edit(regimen, { color }))} />}
+        {regimen &&
+          <RegimenButtonGroup regimen={regimen} dispatch={this.props.dispatch} />}
+        {regimen && <Popover className={"color-picker"}
+          position={Position.BOTTOM}
+          popoverClassName={"colorpicker-menu gray"}
+          target={<i title={t("select color")}
+            className={"fa fa-paint-brush fb-icon-button"} />}
+          content={<ColorPickerCluster
+            onChange={color => this.props.dispatch(edit(regimen, { color }))}
+            current={regimen.body.color} />} />}
+        {!regimen && <button
+          className={"fb-button green"}
+          title={t("add new regimen")}
+          onClick={() => this.props.dispatch(addRegimen(regimenCount))}>
+          <i className="fa fa-plus" />
+        </button>}
       </DesignerPanelHeader>
       <DesignerPanelContent panelName={panelName}>
         <EmptyStateWrapper

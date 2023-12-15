@@ -26,7 +26,7 @@ import {
 import { BooleanSetting } from "../session_keys";
 import { UUID } from "../resources/interfaces";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
-import { destroy, edit, save } from "../api/crud";
+import { edit, save } from "../api/crud";
 import { Collapse } from "@blueprintjs/core";
 import { PanelSection } from "../plants/plant_inventory";
 import { pointGroupSubset } from "../plants/select_plants";
@@ -35,6 +35,7 @@ import { createGroup } from "../point_groups/actions";
 import { GroupInventoryItem } from "../point_groups/group_inventory_item";
 import { push } from "../history";
 import { Path } from "../internal_urls";
+import { deleteAllIds } from "../api/delete_points_handler";
 
 export interface WeedsProps {
   weeds: TaggedWeedPointer[];
@@ -96,10 +97,8 @@ export const WeedsSection = (props: WeedsSectionProps) => {
           }}>
             <i className={"fa fa-check"} />{t("all")}
           </button>
-          <button className={"fb-button red"} onClick={e => {
-            e.stopPropagation();
-            props.items.map(weed => props.dispatch(destroy(weed.uuid, true)));
-          }}>
+          <button className={"fb-button red"}
+            onClick={deleteAllIds("weeds", props.items)}>
             <i className={"fa fa-times"} />{t("all")}
           </button>
         </div>}
@@ -161,45 +160,68 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
     clickOpen={this.toggleOpen("pending")}
     dispatch={this.props.dispatch} />;
 
-  ActiveWeeds = () => <WeedsSection
-    category={"active"}
-    sectionTitle={t("Active")}
-    emptyStateText={t("No active weeds.")}
-    items={this.weeds.filter(p =>
-      !["removed", "pending"].includes(p.body.plant_stage))}
-    open={this.props.weedsPanelState.active}
-    hoveredPoint={this.props.hoveredPoint}
-    clickOpen={this.toggleOpen("active")}
-    layerSetting={BooleanSetting.show_weeds}
-    layerValue={!!this.props.getConfigValue(BooleanSetting.show_weeds)}
-    allWeeds={this.props.weeds}
-    dispatch={this.props.dispatch}>
-    <div
-      className={[
-        "fb-button",
-        `panel-${TAB_COLOR[Panel.Weeds]}`,
-        "plus-weed",
-      ].join(" ")}
-      onClick={e => {
-        e.stopPropagation();
-        push(Path.weeds("add"));
-      }}>
-      <i className={"fa fa-plus"} title={t("add weed")} />
-    </div>
-  </WeedsSection>;
+  ActiveWeeds = () => {
+    const items = this.weeds.filter(p =>
+      !["removed", "pending"].includes(p.body.plant_stage));
+    return <WeedsSection
+      category={"active"}
+      sectionTitle={t("Active")}
+      emptyStateText={t("No active weeds.")}
+      items={items}
+      open={this.props.weedsPanelState.active}
+      hoveredPoint={this.props.hoveredPoint}
+      clickOpen={this.toggleOpen("active")}
+      layerSetting={BooleanSetting.show_weeds}
+      layerValue={!!this.props.getConfigValue(BooleanSetting.show_weeds)}
+      allWeeds={this.props.weeds}
+      dispatch={this.props.dispatch}>
+      <div className={"section-action-btn-group"}>
+        {items.length > 0 &&
+          <button className={"fb-button red delete"}
+            title={t("delete all")}
+            onClick={deleteAllIds("weeds", items)}>
+            {t("delete all")}
+          </button>}
+        <div
+          className={[
+            "fb-button",
+            `panel-${TAB_COLOR[Panel.Weeds]}`,
+            "plus-weed",
+          ].join(" ")}
+          onClick={e => {
+            e.stopPropagation();
+            push(Path.weeds("add"));
+          }}>
+          <i className={"fa fa-plus"} title={t("add weed")} />
+        </div>
+      </div>
+    </WeedsSection>;
+  };
 
-  RemovedWeeds = () => <WeedsSection
-    category={"removed"}
-    sectionTitle={t("Removed")}
-    emptyStateText={t("No removed weeds.")}
-    items={this.weeds.filter(p => p.body.plant_stage === "removed")}
-    open={this.props.weedsPanelState.removed}
-    hoveredPoint={this.props.hoveredPoint}
-    clickOpen={this.toggleOpen("removed")}
-    layerSetting={BooleanSetting.show_historic_points}
-    layerValue={!!this.props.getConfigValue(BooleanSetting.show_historic_points)}
-    layerDisabled={!this.props.getConfigValue(BooleanSetting.show_weeds)}
-    dispatch={this.props.dispatch} />;
+  RemovedWeeds = () => {
+    const items = this.weeds.filter(p => p.body.plant_stage === "removed");
+    return <WeedsSection
+      category={"removed"}
+      sectionTitle={t("Removed")}
+      emptyStateText={t("No removed weeds.")}
+      items={items}
+      open={this.props.weedsPanelState.removed}
+      hoveredPoint={this.props.hoveredPoint}
+      clickOpen={this.toggleOpen("removed")}
+      layerSetting={BooleanSetting.show_historic_points}
+      layerValue={!!this.props.getConfigValue(BooleanSetting.show_historic_points)}
+      layerDisabled={!this.props.getConfigValue(BooleanSetting.show_weeds)}
+      dispatch={this.props.dispatch}>
+      <div className={"section-action-btn-group"}>
+        {items.length > 0 &&
+          <button className={"fb-button red delete"}
+            title={t("delete all")}
+            onClick={deleteAllIds("weeds", items)}>
+            {t("delete all")}
+          </button>}
+      </div>
+    </WeedsSection>;
+  };
 
   navigate = (id: number | undefined) => () => push(Path.groups(id));
 

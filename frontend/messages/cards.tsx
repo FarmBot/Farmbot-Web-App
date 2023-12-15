@@ -74,14 +74,14 @@ const AlertCardTemplate = (props: AlertCardTemplateProps) => {
   return <div className={
     `problem-alert ${props.className} priority-${props.alert.priority}`}>
     <div className="problem-alert-title">
-      <i className={`fa fa-${props.iconName || "exclamation-triangle"}`} />
+      <i className={`fa ${props.iconName || "fa-exclamation-triangle"}`} />
       <h3>{t(props.title)}</h3>
       {timeOk(alert.created_at) &&
         <p>
           {formatTime(moment.unix(alert.created_at), timeSettings, "MMM D")}
         </p>}
     </div>
-    {alert.id && !props.noDismiss && <i className="fa fa-times"
+    {alert.id && !props.noDismiss && <i className={"fa fa-times fb-icon-button"}
       onClick={dismissAlert({ id: alert.id, findApiAlertById, dispatch })} />}
     <div className="problem-alert-content">
       <Markdown html={true}>{t(props.message)}</Markdown>
@@ -91,9 +91,9 @@ const AlertCardTemplate = (props: AlertCardTemplateProps) => {
 };
 
 const ICON_LOOKUP: { [x: string]: string } = {
-  "info": "info-circle",
-  "success": "check-square",
-  "warn": "exclamation-triangle",
+  "info": "fa-info-circle",
+  "success": "fa-check-square",
+  "warn": "fa-exclamation-triangle",
 };
 
 class BulletinAlert
@@ -126,7 +126,7 @@ class BulletinAlert
       alert={this.props.alert}
       className={"bulletin-alert"}
       title={title || startCase(this.props.alert.slug)}
-      iconName={ICON_LOOKUP[type] || "info-circle"}
+      iconName={ICON_LOOKUP[type] || "fa-info-circle"}
       message={t(content)}
       timeSettings={this.props.timeSettings}
       dispatch={this.props.dispatch}
@@ -304,7 +304,7 @@ class SeedDataMissing
       dispatch={this.props.dispatch}
       noDismiss={true}
       findApiAlertById={this.props.findApiAlertById}
-      iconName={"check-square"}>
+      iconName={"fa-check-square"}>
       <Row>
         <Col xs={4}>
           <label>{t("Choose your FarmBot")}</label>
@@ -351,7 +351,7 @@ const TourNotTaken = (props: TourNotTakenProps) =>
     timeSettings={props.timeSettings}
     dispatch={props.dispatch}
     findApiAlertById={props.findApiAlertById}
-    iconName={"info-circle"}>
+    iconName={"fa-info-circle"}>
     <a className="link-button fb-button green"
       onClick={() => push(Path.tours())}
       title={t("View available tours")}>
@@ -368,7 +368,7 @@ const UserNotWelcomed = (props: CommonAlertCardProps) =>
     timeSettings={props.timeSettings}
     dispatch={props.dispatch}
     findApiAlertById={props.findApiAlertById}
-    iconName={"info-circle"}>
+    iconName={"fa-info-circle"}>
     <p>
       {t("You're currently viewing the")} <b>{t("Message Center")}</b>.
       {" "}{t(Content.MESSAGE_CENTER_WELCOME)}
@@ -387,7 +387,7 @@ const DocumentationUnread = (props: CommonAlertCardProps) =>
     timeSettings={props.timeSettings}
     dispatch={props.dispatch}
     findApiAlertById={props.findApiAlertById}
-    iconName={"info-circle"}>
+    iconName={"fa-info-circle"}>
     <p className={"documentation-card"}>
       {t("Head over to")}
       &nbsp;<a href={docLink()} target="_blank" rel={"noreferrer"}
@@ -414,7 +414,7 @@ const DemoAccount = (props: CommonAlertCardProps) =>
     timeSettings={props.timeSettings}
     dispatch={props.dispatch}
     findApiAlertById={props.findApiAlertById}
-    iconName={"info-circle"}>
+    iconName={"fa-info-circle"}>
     <p>
       <i>{t("Please note:")}</i>&nbsp;
       {t(Content.DEMO_NOTE)}
@@ -454,7 +454,7 @@ const SetupIncomplete = (props: SetupIncompleteProps) => {
     dispatch={props.dispatch}
     noDismiss={true}
     findApiAlertById={props.findApiAlertById}
-    iconName={"info-circle"}>
+    iconName={"fa-info-circle"}>
     <a className="link-button fb-button green"
       onClick={() => push(Path.setup())}
       title={buttonText}>

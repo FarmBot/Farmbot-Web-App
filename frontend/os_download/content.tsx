@@ -93,7 +93,7 @@ const OsDownloadRow = (content: PlatformContent) =>
       {content.computer}
     </td>
     <td>
-      <a className="transparent-link-button" href={content.imageUrl}>
+      <a className="transparent-button light" href={content.imageUrl}>
         {`${t("DOWNLOAD")} v${content.releaseTag}`}
       </a>
     </td>
@@ -243,7 +243,7 @@ const DownloadLink = (content: Partial<ReleaseItem>) =>
   <div className={"download-link"}>
     <p className={"os-download-wizard-note"}>
       {`${t("Your FarmBot's internal computer is the")} ${content.computer}`}</p>
-    <a className="transparent-link-button" href={content.imageUrl}>
+    <a className="transparent-button light" href={content.imageUrl}>
       {`${t("DOWNLOAD")} v${content.releaseTag}`}
     </a>
   </div>;
@@ -256,7 +256,7 @@ interface SimpleButtonProps {
 
 const SimpleButton = (props: SimpleButtonProps) =>
   <div className={"download-wizard-button"}>
-    <button className={`transparent-button ${props.extraClass}`}
+    <button className={`transparent-button light ${props.extraClass}`}
       onClick={props.click}>
       {props.content}
     </button>

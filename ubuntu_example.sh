@@ -1,16 +1,16 @@
-# How to install FarmBot Web API on a Fresh Ubuntu 22.04 Machine
+# How to install FarmBot Web API on a fresh Ubuntu 22.04 machine
 
-# IMPORTANT NOTE: Resources are limited and Farmbot, inc. cannot provide
+# IMPORTANT NOTE: Resources are limited and FarmBot Inc cannot provide
 # longterm support to self-hosted users. If you have never administered a
-# Ruby on Rails application, we highly advise stopping now. this presents an
+# Ruby on Rails application, we highly advise stopping now. This presents an
 # extremely high risk of data loss. Free hosting is provided at
 # https://my.farm.bot and eliminates the risks and troubles of self-hosting.
 #
-# You are highly encouraged to use the my.farm.bot servers. Self hosted
+# You are highly encouraged to use the my.farm.bot servers. Self-hosted
 # documentation is provided with the assumption that you have experience with
 # Ruby/Javascript development.
 #
-# Self-hosting a Farmbot server is not a simple task.
+# Self-hosting a FarmBot server is not a simple task.
 
 # Remove old (possibly broke) docker versions
 sudo apt remove docker-engine
@@ -18,11 +18,12 @@ sudo apt remove docker docker.io containerd runc
 
 # Install docker and docker compose
 sudo apt update
-sudo apt install ca-certificates curl gnupg lsb-release -y
+sudo apt install ca-certificates curl gnupg -y
+. /etc/os-release
 sudo install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+curl -fsSL https://download.docker.com/linux/$ID/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 sudo chmod a+r /etc/apt/keyrings/docker.gpg
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/$ID $VERSION_CODENAME stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 sudo apt update
 sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
 # Verify installation

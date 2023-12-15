@@ -66,7 +66,11 @@ export class RawAddToolSlot
         panelName={panelName}
         title={t("Add new slot")}
         backTo={Path.tools()}
-        panel={Panel.Tools} />
+        panel={Panel.Tools}>
+        <div className={"tool-action-btn-group"}>
+          <SaveBtn onClick={this.save} status={SpecialStatus.DIRTY} />
+        </div>
+      </DesignerPanelHeader>
       <DesignerPanelContent panelName={panelName}>
         {this.toolSlot
           ? <SlotEditRows
@@ -84,7 +88,6 @@ export class RawAddToolSlot
             isActive={this.props.isActive}
             updateToolSlot={this.updateSlot(this.toolSlot)} />
           : "initializing"}
-        <SaveBtn onClick={this.save} status={SpecialStatus.DIRTY} />
       </DesignerPanelContent>
     </DesignerPanel>;
   }

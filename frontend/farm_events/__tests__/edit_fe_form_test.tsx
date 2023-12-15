@@ -713,7 +713,7 @@ describe("<FarmEventDeleteButton />", () => {
   it("deletes farm event", async () => {
     const p = fakeProps();
     const wrapper = shallow(<FarmEventDeleteButton {...p} />);
-    await wrapper.find("button").simulate("click");
+    await wrapper.find("i").simulate("click");
     expect(destroy).toHaveBeenCalledWith(p.farmEvent.uuid);
     expect(push).toHaveBeenCalledWith(Path.farmEvents());
     expect(success).toHaveBeenCalledWith("Deleted event.", { title: "Deleted" });

@@ -133,11 +133,13 @@
 .regimen-event-variable {
   display: block;
   margin-right: 1.5rem;
+  i {
+    cursor: default !important;
+  }
 }
 
 .regimen-control {
   position: absolute;
-  top: 1rem;
   right: 1rem;
 }
 

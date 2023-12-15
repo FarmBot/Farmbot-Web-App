@@ -28,7 +28,6 @@ import { UpdatePlant } from "./plant_info";
 
 export interface PlantPanelProps {
   info: FormattedPlantInfo;
-  onDestroy(uuid: string): void;
   updatePlant: UpdatePlant;
   inSavedGarden: boolean;
   dispatch: Function;
@@ -141,32 +140,6 @@ export const EditPlantDepth = (props: EditPlantDepthProps) =>
     </Col>
   </Row>;
 
-interface DeleteButtonsProps {
-  destroy(): void;
-}
-
-const DeleteButtons = (props: DeleteButtonsProps) =>
-  <div className={"plant-delete-buttons"}>
-    <div className={"plant-delete-button-label"}>
-      <label>
-        {t("Delete this plant")}
-      </label>
-    </div>
-    <button
-      className="fb-button red no-float"
-      title={t("Delete")}
-      onClick={props.destroy}>
-      {t("Delete")}
-    </button>
-    <button
-      className="fb-button gray no-float"
-      style={{ marginRight: "10px" }}
-      title={t("Delete multiple")}
-      onClick={() => push(Path.plants("select"))}>
-      {t("Delete multiple")}
-    </button>
-  </div>;
-
 interface ListItemProps {
   name?: string;
   children: React.ReactChild | React.ReactChild[];
@@ -185,11 +158,10 @@ export const ListItem = (props: ListItemProps) =>
 
 export function PlantPanel(props: PlantPanelProps) {
   const {
-    info, onDestroy, updatePlant, dispatch, inSavedGarden, timeSettings
+    info, updatePlant, dispatch, inSavedGarden, timeSettings
   } = props;
   const { slug, plantedAt, daysOld, uuid, plantStatus } = info;
   const { x, y, z } = info;
-  const destroy = () => onDestroy(uuid);
   const commonProps = { uuid, updatePlant };
   return <DesignerPanelContent panelName={"plants"}>
     <ul>
@@ -199,7 +171,7 @@ export function PlantPanel(props: PlantPanelProps) {
           to={Path.cropSearch(slug)}>
           {startCase(slug)}
         </Link>
-        <i className={"fa fa-pencil"}
+        <i className={"fa fa-pencil fb-icon-button"}
           onClick={() => {
             dispatch({ type: Actions.SET_PLANT_TYPE_CHANGE_ID, payload: info.id });
             dispatch({ type: Actions.SET_SLUG_BULK, payload: undefined });
@@ -270,6 +242,5 @@ export function PlantPanel(props: PlantPanelProps) {
         }
       })}
     </ul>
-    <DeleteButtons destroy={destroy} />
   </DesignerPanelContent>;
 }

@@ -86,7 +86,7 @@ describe("<EditGarden />", () => {
     const p = fakeProps();
     p.savedGarden = fakeSavedGarden();
     const wrapper = mount(<EditGarden {...p} />);
-    clickButton(wrapper, 1, "delete");
+    wrapper.find(".fa-trash").first().simulate("click");
     expect(destroySavedGarden).toHaveBeenCalledWith(p.savedGarden.uuid);
   });
 

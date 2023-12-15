@@ -33,7 +33,7 @@ export class RawPlantInfo extends React.Component<EditPlantInfoProps, {}> {
     return confirmSetting ?? true;
   }
 
-  destroy = (plantUUID: string) => {
+  destroy = (plantUUID: string) => () => {
     this.props.dispatch(destroy(plantUUID, !this.confirmDelete));
   };
 
@@ -73,10 +73,15 @@ export class RawPlantInfo extends React.Component<EditPlantInfoProps, {}> {
         onSave={() => plant.uuid &&
           this.props.dispatch(save(plant.uuid))}
         backTo={Path.plants()}
-        onBack={unselectPlant(this.props.dispatch)} />
+        onBack={unselectPlant(this.props.dispatch)}>
+        <div className={"panel-header-icon-group"}>
+          <i title={t("delete")}
+            className={"fa fa-trash fb-icon-button"}
+            onClick={this.destroy(info.uuid)} />
+        </div>
+      </DesignerPanelHeader>
       <PlantPanel
         info={info}
-        onDestroy={this.destroy}
         updatePlant={this.updatePlant}
         dispatch={this.props.dispatch}
         timeSettings={this.props.timeSettings}

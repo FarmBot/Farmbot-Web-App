@@ -36,7 +36,7 @@ const resourceLink =
       onClick={resourceKind == "Regimen"
         ? setActiveRegimenByName
         : setActiveSequenceByName}>
-      <i className="fa fa-external-link" />
+      <i className="fa fa-external-link fb-icon-button" />
     </Link>;
   };
 
@@ -83,7 +83,7 @@ export class RawFarmEvents
           </div>
           <Link className={"edit-link"}
             to={Path.farmEvents(occur.id || "UNSAVED_EVENT")}>
-            <i className="fa fa-pencil-square-o edit-icon" />
+            <i className={"fa fa-pencil-square-o edit-icon fb-icon-button"} />
           </Link>
         </div>;
       });

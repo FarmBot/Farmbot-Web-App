@@ -54,14 +54,10 @@
   .step-header-flex {
     display: flex;
   }
-  &.pinned.no-inputs {
+  &.sequence-selected.no-inputs {
     border-radius: 3px;
   }
   margin-bottom: -1px;
-  .bp5-popover-wrapper {
-    float: right;
-    margin-top: 0.35rem;
-  }
   .step-comment {
     display: inline;
     width: 100%;
@@ -204,10 +200,9 @@
     float: right;
   }
   .step-warning {
-    font-size: 1.4rem;
-    color: $darkest_red;
-    .bp5-popover-wrapper {
-      float: left;
+    i {
+      color: $darkest_red;
+      font-size: 1.2rem;
     }
   }
   .input {
@@ -259,32 +254,17 @@
 
 .step-control-icons {
   display: flex;
-}
-
-.step-control-icons i,
-.step-control-icons .bp5-popover-wrapper,
-.step-control {
-  width: 1.2rem;
-  margin-top: 0.5rem;
-  margin-left: 2rem;
-  float: right;
-  line-height: 1rem;
-  .bp5-popover-target {
-    display: block;
-    margin-top: -0.5rem;
-  }
-  &.fa-external-link {
-    padding-top: 0.2rem;
-  }
-  &.fa-code {
-    font-weight: bold;
-  }
-  &.fa-thumb-tack,
-  &.fa-font,
-  &.fa-code {
-    color: $placeholder_gray;
-    &.enabled {
-      color: $dark_gray;
+  i {
+    &.fa-code {
+      font-weight: bold;
+    }
+    &.fa-thumb-tack,
+    &.fa-font,
+    &.fa-code {
+      color: $placeholder_gray;
+      &.enabled {
+        color: $dark_gray;
+      }
     }
   }
 }

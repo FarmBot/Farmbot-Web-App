@@ -536,12 +536,12 @@
     }
     .plant-slug-bulk-update {
       .fa-pencil {
-        margin-left: 1rem;
+        margin-left: 0.25rem;
       }
       .fb-button {
         float: none;
         height: 2rem;
-        line-height: 1.75rem;
+        line-height: 0;
         margin-left: 1rem;
         vertical-align: top;
       }
@@ -603,6 +603,15 @@
   }
 }
 
+.group-detail-panel,
+.plant-info-panel {
+  .panel-header-icon-group {
+    i {
+      color: $white;
+    }
+  }
+}
+
 .curve-info-panel,
 .weed-info-panel,
 .point-info-panel,
@@ -611,24 +620,6 @@
     input {
       margin: 1rem;
       width: 75%;
-    }
-    .color-picker {
-      margin: 0.5rem;
-      margin-top: 0.75rem;
-      float: right;
-      .icon-saucer {
-        color: $dark_gray;
-      }
-    }
-  }
-  .green,
-  .red {
-    .panel-title {
-      .color-picker {
-        .icon-saucer {
-          color: $white;
-        }
-      }
     }
   }
   .panel-content {
@@ -847,13 +838,21 @@
     margin-left: 1rem;
     margin-right: 1rem;
   }
+  .save-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0;
+  }
 }
 
-.add-farm-event-panel button.red,
-.edit-farm-event-panel button.red {
-  margin-top: 1rem;
-  margin-left: 1rem;
-  margin-right: 0.5rem;
+.add-farm-event-panel,
+.edit-farm-event-panel {
+  .fa-trash {
+    position: absolute;
+    top: 1.25rem;
+    right: 8rem;
+    color: $white;
+  }
 }
 
 .panel-nav {
@@ -885,7 +884,7 @@
   }
   .saving-indicator {
     position: absolute;
-    right: 4rem;
+    right: 7rem;
     line-height: 6rem;
     color: $white;
     i {
@@ -1573,6 +1572,22 @@ li {
   }
 }
 
+.add-tool-slot-panel,
+.edit-tool-slot-panel,
+.add-tool-panel,
+.edit-tool-panel {
+  .tool-action-btn-group {
+    margin: 1.5rem;
+    float: right;
+    .fb-icon-button,
+    .save-btn {
+      float: right;
+      color: $white;
+      margin-left: 1rem;
+    }
+  }
+}
+
 .add-tool-panel-content,
 .edit-tool-panel-content {
   max-height: calc(100vh - 14rem);
@@ -1774,7 +1789,7 @@ li {
     .fa-gear {
       color: $dark_gray;
       margin-right: 1rem;
-      margin-top: 2rem;
+      margin-top: 1.5rem;
     }
   }
 }
@@ -1965,6 +1980,7 @@ li {
 }
 
 .non-layer-config-toggle {
+  margin-top: 0.1rem;
   &.disabled {
     input {
       background: $gray !important;
@@ -2071,20 +2087,6 @@ li {
   display: flex;
   float: right;
   padding: 1.5rem;
-  .fa-copy,
-  .fa-sort {
-    color: $white;
-  }
-  .fa-trash {
-    color: $white;
-  }
-  .fa-expand {
-    color: $dark_gray;
-  }
-  .fa-magic,
-  .fa-spinner {
-    color: $dark_gray;
-  }
 }
 
 .group-detail-panel {
@@ -2443,6 +2445,14 @@ li {
         line-height: 0;
       }
     }
+    .section-action-btn-group {
+      float: right;
+      margin-top: 0.3rem;
+      line-height: 1.5rem;
+      .delete {
+        line-height: 1.5rem;
+      }
+    }
     .points-section {
       &.open {
         background: rgba(0, 0, 0, 0.05);
@@ -2467,9 +2477,12 @@ li {
           display: none;
         }
       }
+    }
+    .points-section,
+    .panel-section {
       .delete {
         float: right;
-        line-height: 1.5rem;
+        line-height: revert;
       }
     }
     .no-points,
@@ -2495,6 +2508,13 @@ li {
     }
     .approval-buttons {
       display: inline;
+      button {
+        height: 2.5rem;
+        line-height: 0 !important;
+      }
+      i {
+        padding-right: 0.5rem;
+      }
     }
     .active-weeds {
       .empty-state-graphic {
@@ -2742,10 +2762,10 @@ li {
   label {
     margin-top: 0 !important;
   }
-  i {
+  .fa-external-link {
     position: absolute;
-    right: 0.5rem;
-    line-height: 4rem;
+    top: 1rem;
+    right: 0;
   }
   .active-curve-name {
     position: relative;
@@ -3211,17 +3231,6 @@ li {
 }
 
 .designer-sequence-editor-panel {
-  .green,
-  .red {
-    .panel-title {
-      .fa-paint-brush,
-      .fa-expand,
-      .fa-magic,
-      .fa-spinner {
-        color: $white;
-      }
-    }
-  }
   .panel-content {
     .sequence-editor-content {
       hr {
@@ -3247,6 +3256,25 @@ li {
   }
 }
 
+.weed-info-panel,
+.point-info-panel,
+.designer-regimen-editor-panel,
+.designer-sequence-editor-panel {
+  .green,
+  .red {
+    .panel-title {
+      .fa-paint-brush,
+      .fa-expand,
+      .fa-trash,
+      .fa-clone,
+      .fa-magic,
+      .fa-spinner {
+        color: $white;
+      }
+    }
+  }
+}
+
 .designer-regimen-scheduler-panel {
   .panel-content {
     display: inline-block;
@@ -3266,13 +3294,22 @@ li {
       margin: 1rem;
       width: 75%;
     }
-    .color-picker {
-      margin: 0.5rem;
-      margin-top: 0.75rem;
+    .fa-clone,
+    .fa-trash,
+    .fa-paint-brush {
       float: right;
-      .icon-saucer {
-        color: $dark_gray;
-      }
+      margin-top: 1.5rem;
+    }
+    .button-group {
+      margin: 0;
+      float: right;
+      width: unset;
+    }
+    .color-picker {
+      float: right;
+    }
+    .fb-button {
+      margin: 1.5rem;
     }
   }
   .green,
@@ -3541,6 +3578,17 @@ li {
   }
 }
 
+.saved-garden-edit-panel {
+  .buttons {
+    position: absolute;
+    top: 1.25rem;
+    right: 0.5rem;
+    .fa-trash {
+      color: $white;
+    }
+  }
+}
+
 .saved-garden-edit-panel-content {
   button {
     margin-left: 0.5rem;
@@ -3590,7 +3638,8 @@ li {
     h3 {
       margin-bottom: 0;
       cursor: pointer;
-      i {
+      .fa-caret-up,
+      .fa-caret-down {
         font-size: 2.5rem;
         float: right;
         line-height: 1rem;
@@ -3603,14 +3652,6 @@ li {
         margin-left: 1rem;
         margin-top: 0;
         vertical-align: top;
-        i {
-          margin: 0;
-          margin-top: 0.2rem;
-          margin-right: 0.1rem;
-          &.fa-times {
-            margin-right: 0.2rem;
-          }
-        }
       }
     }
     .saucer {
@@ -3620,12 +3661,12 @@ li {
       height: 1.5rem;
       width: 1.5rem;
       i {
-        font-size: 1.4rem;
+        font-size: 1rem;
         color: $white;
         vertical-align: top;
-        &.fa-times {
-          padding-left: 0.2rem;
-        }
+        width: 1.5rem;
+        line-height: 1.5rem;
+        text-align: center;
       }
     }
     h1 {

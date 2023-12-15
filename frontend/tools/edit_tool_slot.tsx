@@ -48,12 +48,18 @@ export class RawEditToolSlot
         title={t("Edit slot")}
         backTo={toolsPath}
         panel={Panel.Tools}>
-        {toolSlot?.specialStatus == SpecialStatus.DIRTY &&
-          this.state.saveError &&
-          <Popover className={"save-error"}
-            target={<i className={"fa fa-exclamation-triangle"}
-              title={t("Unable to save changes.")} />}
-            content={<p>{t("Unable to save changes.")}</p>} />}
+        <div className={"tool-action-btn-group"}>
+          {toolSlot?.specialStatus == SpecialStatus.DIRTY &&
+            this.state.saveError &&
+            <Popover className={"save-error"}
+              target={<i className={"fa fa-exclamation-triangle"}
+                title={t("Unable to save changes.")} />}
+              content={<p>{t("Unable to save changes.")}</p>} />}
+          {toolSlot && <i
+            className={"fa fa-trash fb-icon-button"}
+            title={t("Delete")}
+            onClick={() => this.props.dispatch(destroy(toolSlot.uuid))} />}
+        </div>
       </DesignerPanelHeader>
       <DesignerPanelContent panelName={panelName}>
         {toolSlot
@@ -86,12 +92,6 @@ export class RawEditToolSlot
                 }
               })}
             </ul>
-            <button
-              className="fb-button red no-float"
-              title={t("Delete")}
-              onClick={() => this.props.dispatch(destroy(toolSlot.uuid))}>
-              {t("Delete")}
-            </button>
           </div>
           : <span>{t("Redirecting")}...</span>}
       </DesignerPanelContent>

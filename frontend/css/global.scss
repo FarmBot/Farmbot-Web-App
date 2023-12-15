@@ -591,7 +591,6 @@ a {
   position: relative;
   .setting-status-indicator {
     position: absolute;
-    top: 0.35rem;
     z-index: 1;
   }
   .fa-exclamation-triangle {
@@ -616,6 +615,18 @@ a {
     .bp5-popover-arrow-fill {
       fill: $dark_gray;
     }
+  }
+}
+
+.mcu-input-box {
+  .setting-status-indicator {
+    top: 0.5rem;
+  }
+}
+
+.fb-toggle-button {
+  .setting-status-indicator {
+    top: 0.25rem;
   }
 }
 
@@ -1097,6 +1108,7 @@ ul {
   }
 }
 
+.sequence-description-wrapper,
 .button-group,
 .panel-header-icon-group {
   .fa-spinner {
@@ -1754,8 +1766,8 @@ ul {
       .fa-trash {
         display: inline;
         color: $darkest_red;
-        margin-left: 7px;
-        padding: 0.25rem;
+        margin-left: 6px;
+        padding: 0.5rem;
         line-height: 2rem;
       }
       .log-verbosity-saucer {
@@ -1853,7 +1865,7 @@ ul {
 .logs-tab {
   .thin-search-wrapper {
     display: inline-block;
-    width: 95%;
+    width: 94%;
     background: $white;
   }
   .logs-settings-menu-button {
@@ -2360,9 +2372,6 @@ ul {
 }
 
 .status-icon {
-  padding: 0.5rem;
-  float: right !important;
-  font-size: 1.75rem;
   &.ok {
     color: $green;
   }
@@ -2618,16 +2627,11 @@ textarea:focus {
   }
 }
 
-.transparent-link-button {
-  font-size: 1rem;
-  border: 1px solid;
-  padding: 0.4rem 1.2rem;
-  font-weight: bold;
-  letter-spacing: 1px;
-  border-radius: 4px;
-  color: $off_white;
-  &:hover {
-    color: $white;
+.os-download-page {
+  table {
+    a {
+      text-transform: none;
+    }
   }
 }
 
@@ -2662,7 +2666,7 @@ textarea:focus {
       color: $off_white;
     }
     &:active {
-      color: $dark_gray !important;
+      color: $white !important;
     }
   }
   table {
@@ -2809,6 +2813,9 @@ textarea:focus {
     }
     .download-link {
       display: inline-block;
+      a {
+        text-transform: none;
+      }
     }
     .buttons-with-image {
       display: flex;

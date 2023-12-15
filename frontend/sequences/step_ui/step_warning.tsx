@@ -27,12 +27,12 @@ export function StepWarning(props: StepWarningProps) {
     return (titleBase || TITLE_BASE()) +
       (conflicts ? ": " + conflictsString(conflicts) : "");
   };
-  return <div className={"step-warning step-control"} title={warningTitle()}>
+  return <div className={"step-warning"} title={warningTitle()}>
     <Popover
       position={Position.RIGHT_TOP}
       interactionKind={PopoverInteractionKind.CLICK}
       popoverClassName={"help"}
-      target={<i className="fa fa-exclamation-triangle" />}
+      target={<i className={"fa fa-exclamation-triangle fb-icon-button"} />}
       content={<div className={"step-warning-text"}>
         {warningTitle()}
         <br />

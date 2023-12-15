@@ -146,7 +146,7 @@ export const VariableForm =
                 <Help text={ToolTips.DEFAULT_VALUE} position={Position.TOP_LEFT} />}
               {isDefaultValueForm && isDefault &&
                 <Help text={ToolTips.USING_DEFAULT_VARIABLE_VALUE}
-                  customIcon={"exclamation-triangle"} onHover={true} />}
+                  customIcon={"fa-exclamation-triangle"} onHover={true} />}
             </Col>}
           {([VariableType.Location, VariableType.Resource]
             .includes(variableType)
@@ -176,7 +176,7 @@ export const VariableForm =
               onChange={onChange} isDefaultValueForm={isDefaultValueForm} />}
           {removeVariable && !isDefaultValueForm &&
             <Col xs={1} className={"trash"}>
-              <i className={"fa fa-trash"}
+              <i className={"fa fa-trash fb-icon-button"}
                 style={props.inUse ? { color: Color.gray } : {}}
                 onClick={() => removeVariable(label)} />
             </Col>}

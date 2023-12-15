@@ -30,6 +30,7 @@ class BroadcastToAll < Mutations::Command
 
   def execute
     create_bulletin
+    print_bulletin(@bulletin)
     attach_alerts
   end
 
@@ -61,6 +62,88 @@ class BroadcastToAll < Mutations::Command
   end
 end
 
+class BroadcastToOne < BroadcastToAll
+  required do
+    string :device_id
+  end
+
+  def devices
+    @devices ||= [Device.find(device_id.to_i)]
+  end
+end
+
+def print_bulletin(bulletin)
+  puts "=" * 100
+  puts "bulletin slug: #{bulletin.slug}"
+  puts
+  puts JSON.pretty_generate(JSON.parse(bulletin.to_json))
+  puts "=" * 100
+end
+
+class BroadcastExistingToAll < Mutations::Command
+  required do
+    string :slug
+  end
+
+  def execute
+    maybe_edit
+    attach_alerts
+  end
+
+  def maybe_edit
+    while true
+      bulletin = GlobalBulletin.find_by!(slug: slug)
+      print_bulletin(bulletin)
+      ok = simple_prompt("Edit? (y/N)") || "n"
+      if ok.downcase != "n"
+        while true
+          field = simple_prompt("field to edit")
+          if ["href", "href_label", "title", "type", "content"].include?(field)
+            break
+          else
+            puts "Can't edit that field."
+          end
+        end
+        content = simple_prompt("new value")
+        bulletin.update(field => content)
+        puts "Refresh browser to view changes."
+      else
+        break
+      end
+    end
+  end
+
+  def devices
+    @devices ||= Device.where.not(id: alerts.pluck(:device_id))
+  end
+
+  def alerts
+    @alerts ||= Alert.where(slug: slug)
+  end
+
+  def attach_alerts
+    count = alerts.count
+    if count > 5
+      puts "This alert has already been broadcast to #{count} users. " \
+           "Edits will show to users upon refresh. Exiting."
+      return
+    end
+    ok = simple_prompt("Broadcast to all users? (Y/n)") || "y"
+    if ok.downcase != "y"
+      puts "exiting"
+      return
+    end
+    puts "This will take a while..."
+    devices.map do |d|
+      puts "attaching Alert to Device #{d.id}"
+      Alerts::Create.run!(problem_tag: Alert::BULLETIN.fetch(:problem_tag),
+                          device: d,
+                          slug: slug)
+    end
+    puts "done"
+  end
+end
+
 def simple_prompt(query)
   puts "=== #{query}"
   output = STDIN.gets.chomp
@@ -89,5 +172,33 @@ namespace :broadcast do
                         title: simple_prompt("Enter title"),
                         content: multiline_prompt("Enter content"))
     puts "DONE"
+  end
+
+  desc "Create a global bulletin for one user"
+  task to_one: :environment do
+    type = simple_prompt("(optional) Enter `type`")
+    href = simple_prompt("(optional) Enter href")
+    href_label = simple_prompt("(optional) Enter href label")
+    while true
+      title = simple_prompt("Enter title")
+      if GlobalBulletin.find_by(title: title).nil?
+        break
+      else
+        puts "Title already exists. Try another."
+      end
+    end
+    content = multiline_prompt("Enter content")
+    device_id = simple_prompt("Enter device ID")
+    BroadcastToOne.run!(type: type,
+                        href: href,
+                        href_label: href_label,
+                        title: title,
+                        content: content,
+                        device_id: device_id)
+  end
+
+  desc "Broadcast existing bulletin to all users"
+  task existing_to_all: :environment do
+    BroadcastExistingToAll.run!(slug: simple_prompt("Bulletin slug"))
   end
 end

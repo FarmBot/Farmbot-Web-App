@@ -47,7 +47,7 @@ export const TimePeriodSelection = (props: TimePeriodSelectionProps) => {
       </Col>
       <Col xs={ColWidth.endDate}>
         <label style={{ display: "inline" }}>{t("Period End Date")}</label>
-        <i className="fa fa-clock-o"
+        <i className={"fa fa-clock-o fb-icon-button"}
           style={{ marginLeft: "1rem" }}
           onClick={() => setEndDate(today)} />
       </Col>

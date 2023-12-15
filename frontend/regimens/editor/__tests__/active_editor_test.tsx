@@ -26,7 +26,7 @@ describe("<ActiveEditor />", () => {
 
   it("renders", () => {
     const wrapper = mount(<ActiveEditor {...fakeProps()} />);
-    ["Saved", "Schedule item"].map(string =>
+    ["Variables", "Schedule item"].map(string =>
       expect(wrapper.text()).toContain(string));
   });
 

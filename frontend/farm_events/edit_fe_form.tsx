@@ -528,16 +528,14 @@ export interface FarmEventDeleteButtonProps {
 }
 
 export const FarmEventDeleteButton = (props: FarmEventDeleteButtonProps) =>
-  <button className="fb-button red" hidden={props.hidden}
+  <i className={"fa fa-trash fb-icon-button"} hidden={props.hidden}
     title={t("Delete")}
     onClick={() =>
       props.dispatch(destroy(props.farmEvent.uuid))
         .then(() => {
           push(Path.farmEvents());
           success(t("Deleted event."), { title: t("Deleted") });
-        })}>
-    {t("Delete")}
-  </button>;
+        })} />;
 
 interface FarmEventFormProps {
   isRegimen: boolean;
@@ -562,7 +560,7 @@ export const FarmEventForm = (props: FarmEventFormProps) => {
     {props.executableOptions.filter(x => !x.heading).length < 1 &&
       <Help
         text={Content.MISSING_EXECUTABLE}
-        customIcon={"exclamation-triangle"} />}
+        customIcon={"fa-exclamation-triangle"} />}
     <FBSelect
       list={props.executableOptions}
       onChange={props.executableSet}

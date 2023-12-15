@@ -12,8 +12,8 @@ export const ImageShowMenuTarget = (props: ImageFilterProps) => {
   const shownInMap = every(Object.values(props.flags));
   return <i
     className={shownInMap
-      ? "fa fa-eye green"
-      : "fa fa-eye-slash gray"}
+      ? "fa fa-eye green fb-icon-button"
+      : "fa fa-eye-slash gray fb-icon-button"}
     onMouseEnter={() => shownInMap &&
       props.dispatch(highlightMapImage(props.image?.body.id))}
     onMouseLeave={() => shownInMap &&

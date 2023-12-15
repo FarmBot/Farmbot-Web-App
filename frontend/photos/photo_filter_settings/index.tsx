@@ -147,7 +147,7 @@ export const FiltersEnabledWarning = (props: FiltersEnabledWarningProps) => {
       title={t("Map filters enabled.")}
       onClick={e => e.stopPropagation()}>
       <Help text={t("Map filters enabled.")}
-        customIcon={"exclamation-triangle"} />
+        customIcon={"fa-exclamation-triangle"} />
     </div>
     : <div className={"filters-enabled-warning"} />;
 };

@@ -10,19 +10,20 @@ import { TaggedWeedPointer } from "farmbot";
 import { maybeFindWeedPointerById } from "../resources/selectors";
 import { Panel } from "../farm_designer/panel_header";
 import {
-  EditPointProperties, PointActions, updatePoint, AdditionalWeedProperties,
+  EditPointProperties, updatePoint, AdditionalWeedProperties,
 } from "../points/point_edit_actions";
 import { Actions } from "../constants";
 import { selectPoint } from "../farm_designer/map/actions";
 import { isBotOnlineFromState } from "../devices/must_be_online";
-import { save } from "../api/crud";
+import { destroy, save } from "../api/crud";
 import { Path } from "../internal_urls";
 import { ResourceTitle } from "../sequences/panel/editor";
-import { ColorPicker } from "../ui";
+import { ColorPickerCluster, Popover } from "../ui";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { BotPosition } from "../devices/interfaces";
 import { validBotLocationData } from "../util/location";
 import { validGoButtonAxes } from "../farm_designer/move_to";
+import { Position } from "@blueprintjs/core";
 
 export interface EditWeedProps {
   dispatch: Function;
@@ -55,48 +56,59 @@ export class RawEditWeed extends React.Component<EditWeedProps, {}> {
   get panelName() { return "weed-info"; }
 
   render() {
+    const { weed } = this;
     const { dispatch } = this.props;
     const weedsPath = Path.weeds();
-    !this.weed && Path.startsWith(weedsPath) && push(weedsPath);
+    !weed && Path.startsWith(weedsPath) && push(weedsPath);
+    const weedColor = weed?.body.meta.color || "red";
     return <DesignerPanel panelName={this.panelName} panel={Panel.Weeds}>
       <DesignerPanelHeader
         panelName={this.panelName}
         panel={Panel.Weeds}
-        colorClass={this.weed?.body.meta.color}
+        colorClass={weedColor}
         titleElement={<ResourceTitle
-          key={this.weed?.body.name}
-          resource={this.weed}
+          key={weed?.body.name}
+          resource={weed}
+          save={true}
           fallback={t("Edit weed")}
           dispatch={dispatch} />}
-        specialStatus={this.weed?.specialStatus}
-        onSave={() => this.weed?.uuid &&
-          dispatch(save(this.weed.uuid))}
+        specialStatus={weed?.specialStatus}
+        onSave={() => weed?.uuid &&
+          dispatch(save(weed.uuid))}
         backTo={weedsPath}
         onBack={() => {
           dispatch({ type: Actions.TOGGLE_HOVERED_POINT, payload: undefined });
           dispatch(selectPoint(undefined));
         }}>
-        <ColorPicker
-          current={(this.weed?.body.meta.color || "green") as ResourceColor}
-          targetElement={<i title={t("select color")}
-            className={"icon-saucer fa fa-paint-brush"} />}
-          onChange={color =>
-            updatePoint(this.weed, dispatch)({ meta: { color } })} />
+        <div className={"panel-header-icon-group"}>
+          <Popover className={"color-picker"}
+            position={Position.BOTTOM}
+            popoverClassName={"colorpicker-menu gray"}
+            target={<i title={t("select color")}
+              className={"fa fa-paint-brush fb-icon-button"} />}
+            content={<ColorPickerCluster
+              onChange={color =>
+                updatePoint(weed, dispatch)({ meta: { color } })}
+              current={weedColor as ResourceColor} />} />
+          {weed &&
+            <i title={t("delete")}
+              className={"fa fa-trash fb-icon-button"}
+              onClick={() => dispatch(destroy(weed.uuid))} />}
+        </div>
       </DesignerPanelHeader>
       <DesignerPanelContent panelName={this.panelName}>
-        {this.weed
+        {weed
           ? <div className={"weed-panel-content-wrapper"}>
-            <EditPointProperties point={this.weed}
+            <EditPointProperties point={weed}
               botOnline={this.props.botOnline}
               dispatch={this.props.dispatch}
               arduinoBusy={this.props.arduinoBusy}
               currentBotLocation={this.props.currentBotLocation}
               movementState={this.props.movementState}
               defaultAxes={this.props.defaultAxes}
-              updatePoint={updatePoint(this.weed, dispatch)} />
-            <AdditionalWeedProperties point={this.weed}
-              updatePoint={updatePoint(this.weed, dispatch)} />
-            <PointActions uuid={this.weed.uuid} dispatch={dispatch} />
+              updatePoint={updatePoint(weed, dispatch)} />
+            <AdditionalWeedProperties point={weed}
+              updatePoint={updatePoint(weed, dispatch)} />
           </div>
           : <span>{t("Redirecting")}...</span>}
       </DesignerPanelContent>

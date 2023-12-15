@@ -41,14 +41,16 @@ const regimenItemRow = (
           {row.sequenceName}
           <Link to={Path.sequences(urlFriendly(row.sequenceName))}
             onClick={setActiveSequenceByName}>
-            <i className="fa fa-external-link" />
+            <i className={"fa fa-external-link fb-icon-button"} />
           </Link>
         </span>
         <span className="regimen-event-time">{row.hhmm}</span>
-        <i className="fa fa-trash regimen-control" onClick={() =>
-          dispatch(removeRegimenItem(row.item, row.regimen))} />
+        <i className={"fa fa-trash regimen-control fb-icon-button"}
+          onClick={() =>
+            dispatch(removeRegimenItem(row.item, row.regimen))} />
       </div>
-      <DisplayVarValue row={row} resources={resources} />
+      {row.variables.length > 0 &&
+        <DisplayVarValue row={row} resources={resources} />}
     </div>;
 
 const removeRegimenItem = (item: RegimenItem, r: TaggedRegimen) => {

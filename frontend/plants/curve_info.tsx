@@ -48,7 +48,7 @@ export const CurveInfo = (props: CurveInfoProps) => {
             && onChange(ddi.isNull ? undefined : ddi.value, props.curveType);
         }} />
       {curve && <Link to={Path.curves(curve.body.id)} title={t("edit curve")}>
-        <i className="fa fa-external-link" />
+        <i className={"fa fa-external-link fb-icon-button"} />
       </Link>}
     </div>
     {curve && <CurveSvgWithPopover dispatch={props.dispatch} curve={curve}

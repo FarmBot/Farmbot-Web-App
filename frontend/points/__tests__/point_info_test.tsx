@@ -13,6 +13,11 @@ jest.mock("../../api/crud", () => ({
 
 jest.mock("../../devices/actions", () => ({ move: jest.fn() }));
 
+import { PopoverProps } from "../../ui/popover";
+jest.mock("../../ui/popover", () => ({
+  Popover: ({ target, content }: PopoverProps) => <div>{target}{content}</div>,
+}));
+
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
@@ -31,7 +36,6 @@ import { destroy, edit, save } from "../../api/crud";
 import { DesignerPanelHeader } from "../../farm_designer/designer_panel";
 import { Actions } from "../../constants";
 import { push } from "../../history";
-import { ColorPicker } from "../../ui";
 import { move } from "../../devices/actions";
 import { fakeMovementState } from "../../__test_support__/fake_bot_data";
 
@@ -104,8 +108,8 @@ describe("<EditPoint />", () => {
   it("changes color", () => {
     mockPath = Path.mock(Path.points(1));
     const p = fakeProps();
-    const wrapper = shallow(<EditPoint {...p} />);
-    wrapper.find(ColorPicker).simulate("change", "blue");
+    const wrapper = mount(<EditPoint {...p} />);
+    wrapper.find(".color-picker-item-wrapper").first().simulate("click");
     expect(edit).toHaveBeenCalledWith(expect.any(Object),
       { meta: { color: "blue" } });
   });
@@ -138,7 +142,7 @@ describe("<EditPoint />", () => {
     const point = fakePoint();
     p.findPoint = () => point;
     const wrapper = mount(<EditPoint {...p} />);
-    clickButton(wrapper, 2, "delete");
+    wrapper.find(".fa-trash").first().simulate("click");
     expect(destroy).toHaveBeenCalledWith(point.uuid);
   });
 });

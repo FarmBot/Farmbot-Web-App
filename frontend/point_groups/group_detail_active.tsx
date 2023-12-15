@@ -81,7 +81,7 @@ export const GroupSortSelection = (props: GroupSortSelectionProps) =>
     {props.group.body.sort_type == "random" &&
       <Help
         text={ToolTips.SORT_DESCRIPTION}
-        customIcon={"exclamation-triangle"} />}
+        customIcon={"fa-exclamation-triangle"} />}
     <Paths
       key={JSON.stringify(props.pointsSelectedByGroup
         .map(p => p.body.id))}

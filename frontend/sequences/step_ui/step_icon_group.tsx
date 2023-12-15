@@ -34,7 +34,7 @@ export interface StepIconBarProps {
 export function StepUpDownButtonPopover(
   { onMove }: { onMove: (d: number) => () => void }) {
   return <Popover position={Position.TOP} usePortal={false}
-    target={<i title={t("move step")} className="fa fa-arrows-v" />}
+    target={<i title={t("move step")} className="fa fa-arrows-v fb-icon-button" />}
     content={<div className={"step-up-down-arrows"}>
       <i className="fa fa-arrow-circle-up" onClick={onMove(-1)} />
       <i className="fa fa-arrow-circle-down" onClick={onMove(2)} />
@@ -65,31 +65,36 @@ export function StepIconGroup(props: StepIconBarProps) {
 
   return <span className={"step-control-icons"}>
     {!readOnly && props.step.kind == "lua" &&
-      <i className={"fa fa-magic"}
+      <i className={"fa fa-magic fb-icon-button"}
         title={t("auto-generate Lua code")}
         onClick={props.togglePrompt} />}
     {props.executeSequenceName &&
-      <i className={"fa fa-external-link"}
+      <i className={"fa fa-external-link fb-icon-button"}
         title={t("open linked sequence")}
         onClick={onSequenceLinkNav(props.executeSequenceName)} />}
     {monaco &&
-      <i className={`fa fa-font ${monaco.enabled ? "enabled" : ""}`}
+      <i className={`fa fa-font ${monaco.enabled ? "enabled" : ""} fb-icon-button`}
         title={t("toggle fancy editor")}
         onClick={monaco.toggle} />}
     {expanded &&
-      <i className={`fa fa-${expanded.enabled ? "compress" : "expand"}`}
-        title={t("toggle increased editor height")}
+      <i title={t("toggle increased editor height")}
+        className={[
+          "fa",
+          expanded.enabled ? "fa-compress" : "fa-expand",
+          "fb-icon-button",
+        ].join(" ")}
         onClick={expanded.toggle} />}
     {props.toggleViewRaw &&
-      <i className={`fa fa-code ${props.viewRaw ? "enabled" : ""}`}
+      <i className={`fa fa-code ${props.viewRaw ? "enabled" : ""} fb-icon-button`}
         title={t("toggle code view")}
         onClick={props.toggleViewRaw} />}
-    <Help text={helpText} position={Position.TOP} title={t("help")}
+    <Help iconButton={true}
+      text={helpText} position={Position.TOP} title={t("help")}
       links={props.links} enableMarkdown={props.enableMarkdown} />
-    {!readOnly && <i className={"fa fa-trash"}
+    {!readOnly && <i className={"fa fa-trash fb-icon-button"}
       title={t("delete step")}
       onClick={onTrash} />}
-    {!readOnly && <i className={"fa fa-clone"}
+    {!readOnly && <i className={"fa fa-clone fb-icon-button"}
       title={t("duplicate step")}
       onClick={onClone} />}
     {!readOnly && <StepUpDownButtonPopover onMove={onMove} />}

@@ -8,6 +8,12 @@ jest.mock("../../history", () => ({
 jest.mock("../../api/crud", () => ({
   save: jest.fn(),
   edit: jest.fn(),
+  destroy: jest.fn(),
+}));
+
+import { PopoverProps } from "../../ui/popover";
+jest.mock("../../ui/popover", () => ({
+  Popover: ({ target, content }: PopoverProps) => <div>{target}{content}</div>,
 }));
 
 import React from "react";
@@ -25,8 +31,7 @@ import {
 import { Actions } from "../../constants";
 import { DesignerPanelHeader } from "../../farm_designer/designer_panel";
 import { push } from "../../history";
-import { edit, save } from "../../api/crud";
-import { ColorPicker } from "../../ui";
+import { destroy, edit, save } from "../../api/crud";
 import { fakeMovementState } from "../../__test_support__/fake_bot_data";
 
 describe("<EditWeed />", () => {
@@ -82,10 +87,20 @@ describe("<EditWeed />", () => {
     mockPath = Path.mock(Path.weeds(1));
     const p = fakeProps();
     p.findPoint = fakeWeed;
-    const wrapper = shallow(<EditWeed {...p} />);
-    wrapper.find(ColorPicker).simulate("change", "blue");
+    const wrapper = mount(<EditWeed {...p} />);
+    wrapper.find(".color-picker-item-wrapper").first().simulate("click");
     expect(edit).toHaveBeenCalledWith(expect.any(Object),
       { meta: { color: "blue" } });
+  });
+
+  it("deletes weed", () => {
+    mockPath = Path.mock(Path.weeds(1));
+    const p = fakeProps();
+    const weed = fakeWeed();
+    p.findPoint = () => weed;
+    const wrapper = mount(<EditWeed {...p} />);
+    wrapper.find(".fa-trash").first().simulate("click");
+    expect(destroy).toHaveBeenCalledWith(weed.uuid);
   });
 
   it("saves", () => {

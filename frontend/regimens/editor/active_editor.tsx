@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  editRegimenVariables, RegimenButtonGroup, OpenSchedulerButton,
+  editRegimenVariables, OpenSchedulerButton,
 } from "./regimen_edit_components";
 import { ActiveEditorProps, ActiveEditorState } from "./interfaces";
 import {
@@ -51,7 +51,6 @@ export class ActiveEditor
   render() {
     return <div className="regimen-editor-content">
       <div id="regimen-editor-tools" className="regimen-editor-tools">
-        <RegimenButtonGroup {...this.regimenProps} />
         <SectionHeader title={t("Variables")}
           count={Object.values(this.props.variableData)
             .filter(v => v?.celeryNode.kind == "parameter_declaration")

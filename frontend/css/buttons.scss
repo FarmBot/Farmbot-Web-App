@@ -290,6 +290,14 @@
   &.modified {
     box-shadow: 0 0 0px 3px $yellow !important;
   }
+  .fa-spinner {
+    margin: 0;
+    color: $dark_gray !important;
+  }
+  .fa-check {
+    margin: 0;
+    color: $green !important;
+  }
 }
 
 .front-page-button {

@@ -285,7 +285,10 @@ export const FolderNameEditor = (props: FolderNodeProps) => {
       onClick={() => toggleFolderOpenState(node.id)} />
     <div className={"drop-visual"} />
     <ColorPicker
-      saucerIcon={`fa-folder${props.movedSequenceUuid ? "-open" : ""}`}
+      saucerIcon={[
+        "fa",
+        props.movedSequenceUuid ? "fa-folder-open" : "fa-folder",
+      ].join(" ")}
       current={node.color}
       onChange={color => setFolderColor(node.id, color)} />
     <div className="folder-name">

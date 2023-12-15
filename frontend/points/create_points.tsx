@@ -5,7 +5,6 @@ import { initSave } from "../api/crud";
 import { Row, Col, BlurableInput, ColorPicker } from "../ui";
 import { DrawnPointPayl } from "../farm_designer/interfaces";
 import { Actions, Content } from "../constants";
-import { deletePoints } from "../api/delete_points";
 import {
   GenericPointer, WeedPointer,
 } from "farmbot/dist/resources/api_resources";
@@ -316,35 +315,6 @@ export class RawCreatePoints
       </button>
     </Row>;
 
-  DeleteAllPoints = (type: "point" | "weed") => {
-    const meta = { created_by: "farm-designer" };
-    return <Row>
-      <div className="delete-row">
-        <label>{t("delete")}</label>
-        <p>{type === "weed"
-          ? t("Delete all of the weeds created through this panel.")
-          : t("Delete all of the points created through this panel.")}</p>
-        <button className="fb-button red delete"
-          title={t("delete all")}
-          onClick={() => {
-            if (confirm(type === "weed"
-              ? t("Delete all the weeds you have created?")
-              : t("Delete all the points you have created?"))) {
-              this.props.dispatch(deletePoints("points", {
-                pointer_type: type === "weed" ? "Weed" : "GenericPointer",
-                meta,
-              }));
-              this.cancel();
-            }
-          }}>
-          {type === "weed"
-            ? t("Delete all created weeds")
-            : t("Delete all created points")}
-        </button>
-      </div>
-    </Row>;
-  };
-
   render() {
     const panelType = this.panel == "weeds" ? Panel.Weeds : Panel.Points;
     const panelDescription = this.panel == "weeds"
@@ -374,8 +344,6 @@ export class RawCreatePoints
             z={this.attr("z", this.props.botPosition.z)}
             meta={meta}
             close={this.closePanel} />}
-        <hr />
-        {this.DeleteAllPoints(this.panel == "weeds" ? "weed" : "point")}
       </DesignerPanelContent>
     </DesignerPanel>;
   }

@@ -2111,7 +2111,7 @@ export enum DeviceSetting {
   cameraView = `Camera view`,
   uncroppedCameraView = `Uncropped Camera view`,
   confirmPlantDeletion = `Confirm plant deletion`,
-  defaultPlantDepth = `Default plant depth`,
+  defaultPlantDepth = `Default plant depth (mm)`,
 
   // Account
   accountSettings = `Account`,
