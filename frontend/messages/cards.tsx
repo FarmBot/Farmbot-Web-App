@@ -81,7 +81,7 @@ const AlertCardTemplate = (props: AlertCardTemplateProps) => {
           {formatTime(moment.unix(alert.created_at), timeSettings, "MMM D")}
         </p>}
     </div>
-    {alert.id && !props.noDismiss && <i className="fa fa-times"
+    {alert.id && !props.noDismiss && <i className={"fa fa-times fb-icon-button"}
       onClick={dismissAlert({ id: alert.id, findApiAlertById, dispatch })} />}
     <div className="problem-alert-content">
       <Markdown html={true}>{t(props.message)}</Markdown>
@@ -91,9 +91,9 @@ const AlertCardTemplate = (props: AlertCardTemplateProps) => {
 };
 
 const ICON_LOOKUP: { [x: string]: string } = {
-  "info": "info-circle",
-  "success": "check-square",
-  "warn": "exclamation-triangle",
+  "info": "fa-info-circle",
+  "success": "fa-check-square",
+  "warn": "fa-exclamation-triangle",
 };
 
 class BulletinAlert

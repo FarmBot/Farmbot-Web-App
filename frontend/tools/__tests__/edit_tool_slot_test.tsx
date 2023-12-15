@@ -123,7 +123,7 @@ describe("<EditToolSlot />", () => {
     const toolSlot = fakeToolSlot();
     p.findToolSlot = () => toolSlot;
     const wrapper = shallow(<EditToolSlot {...p} />);
-    wrapper.find("button").last().simulate("click");
+    wrapper.find(".fa-trash").first().simulate("click");
     expect(destroy).toHaveBeenCalledWith(toolSlot.uuid);
   });
 

@@ -1,11 +1,14 @@
 jest.mock("../../api/crud", () => ({
-  destroy: jest.fn(),
   edit: jest.fn(),
   save: jest.fn(),
 }));
 
 jest.mock("../../point_groups/actions", () => ({
   createGroup: jest.fn(),
+}));
+
+jest.mock("../../api/delete_points", () => ({
+  deletePointsByIds: jest.fn(),
 }));
 
 import React from "react";
@@ -24,7 +27,7 @@ import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
 import { BooleanSetting } from "../../session_keys";
-import { destroy, edit, save } from "../../api/crud";
+import { edit, save } from "../../api/crud";
 import { PanelSection } from "../../plants/plant_inventory";
 import { createGroup } from "../../point_groups/actions";
 import { DEFAULT_CRITERIA } from "../../point_groups/criteria/interfaces";
@@ -32,6 +35,7 @@ import { push } from "../../history";
 import { weedsPanelState } from "../../__test_support__/panel_state";
 import { Actions } from "../../constants";
 import { Path } from "../../internal_urls";
+import { deletePointsByIds } from "../../api/delete_points";
 
 describe("<Weeds> />", () => {
   const fakeProps = (): WeedsProps => ({
@@ -192,11 +196,13 @@ describe("<WeedsSection />", () => {
   });
 
   it("rejects all", () => {
+    window.confirm = () => true;
     const p = fakeProps();
     p.open = true;
     const wrapper = mount(<WeedsSection {...p} />);
     wrapper.find(".fb-button.red").first().simulate("click");
-    expect(destroy).toHaveBeenCalledWith(p.items[0].uuid, true);
+    expect(deletePointsByIds).toHaveBeenCalledWith("weeds",
+      p.items.map(x => x.body.id));
   });
 
   it("renders", () => {

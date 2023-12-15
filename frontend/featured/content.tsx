@@ -26,7 +26,7 @@ const FeaturedSequenceRow = (content: FeaturedSequence) =>
       </details>
     </td>
     <td style={{ verticalAlign: "top" }}>
-      <a className={"transparent-link-button"}
+      <a className={"transparent-button light"}
         href={API.current.baseUrl + content.path}>
         {t("View")}
       </a>

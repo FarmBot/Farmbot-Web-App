@@ -142,7 +142,7 @@ describe("<EditPoint />", () => {
     const point = fakePoint();
     p.findPoint = () => point;
     const wrapper = mount(<EditPoint {...p} />);
-    clickButton(wrapper, 7, "delete");
+    wrapper.find(".fa-trash").first().simulate("click");
     expect(destroy).toHaveBeenCalledWith(point.uuid);
   });
 });

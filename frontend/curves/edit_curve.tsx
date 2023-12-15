@@ -165,7 +165,7 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
             <Popover
               isOpen={this.state.scale}
               popoverClassName={"curve-action-popover"}
-              target={<button className={"transparent-button light"}
+              target={<button className={"transparent-button"}
                 onClick={this.toggle("scale")}>
                 {t("scale")}
               </button>}
@@ -174,7 +174,7 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
             <Popover
               isOpen={this.state.templates}
               popoverClassName={"curve-action-popover"}
-              target={<button className={"transparent-button light"}
+              target={<button className={"transparent-button"}
                 onClick={this.toggle("templates")}>
                 {t("templates")}
               </button>}
@@ -240,7 +240,7 @@ export const ScaleMenu = (props: ActionMenuProps) => {
         }} />
     </div>
     <div className={"curve-menu-row last"}>
-      <button className={"transparent-button"}
+      <button className={"transparent-button light"}
         onClick={() => {
           props.dispatch(editCurve(props.curve, {
             data: scaleData(props.curve.body.data, maxDayNum, maxValueNum)
@@ -302,7 +302,7 @@ export const TemplatesMenu = (props: ActionMenuProps) => {
         }} />
     </div>
     <div className={"curve-menu-row last"}>
-      <button className={"transparent-button"}
+      <button className={"transparent-button light"}
         onClick={() => {
           props.dispatch(editCurve(props.curve, {
             data: scaleData(CURVE_TEMPLATES[shape], maxDay, maxValue,

@@ -49,7 +49,8 @@ const regimenItemRow = (
           onClick={() =>
             dispatch(removeRegimenItem(row.item, row.regimen))} />
       </div>
-      <DisplayVarValue row={row} resources={resources} />
+      {row.variables.length > 0 &&
+        <DisplayVarValue row={row} resources={resources} />}
     </div>;
 
 const removeRegimenItem = (item: RegimenItem, r: TaggedRegimen) => {

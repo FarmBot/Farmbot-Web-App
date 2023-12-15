@@ -39,6 +39,7 @@ import { createGroup } from "../point_groups/actions";
 import { pointGroupSubset } from "../plants/select_plants";
 import { push } from "../history";
 import { Path } from "../internal_urls";
+import { deleteAllIds } from "../api/delete_points_handler";
 
 interface PointsSectionProps {
   title: string;
@@ -158,6 +159,7 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
   navigate = (id: number | undefined) => () => push(Path.groups(id));
 
   render() {
+    const { dispatch } = this.props;
     const gridIds = compact(uniq(this.props.genericPoints
       .map(p => p.body.meta.gridId)));
     const points = orderedPoints(this.props.genericPoints, this.state)
@@ -191,7 +193,7 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
           panel={Panel.Points}
           toggleOpen={this.toggleOpen("groups")}
           itemCount={pointGroups.length}
-          addNew={() => this.props.dispatch(createGroup({
+          addNew={() => dispatch(createGroup({
             criteria: {
               ...DEFAULT_CRITERIA,
               string_eq: { pointer_type: ["GenericPointer"] },
@@ -206,7 +208,7 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
               group={group}
               allPoints={this.props.allPoints}
               hovered={false}
-              dispatch={this.props.dispatch}
+              dispatch={dispatch}
               onClick={this.navigate(group.body.id)}
             />)}
         </PanelSection>
@@ -217,6 +219,13 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
           addNew={() => push(Path.points("add"))}
           addTitle={t("add point")}
           addClassName={"plus-point"}
+          extraHeaderContent={this.props.pointsPanelState.points &&
+            standardPoints.length > 0 &&
+            <button className={"fb-button red delete"}
+              title={t("delete all")}
+              onClick={deleteAllIds("points", standardPoints)}>
+              {t("delete all")}
+            </button>}
           title={t("Points")}>
           <EmptyStateWrapper
             notEmpty={this.props.genericPoints.length > 0}
@@ -229,7 +238,7 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
                 key={p.uuid}
                 tpp={p}
                 hovered={this.props.hoveredPoint === p.uuid}
-                dispatch={this.props.dispatch} />)}
+                dispatch={dispatch} />)}
           </EmptyStateWrapper>
         </PanelSection>
         {sortedSoilHeightPoints.length > 0 &&
@@ -240,7 +249,7 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
             isOpen={this.props.pointsPanelState.soilHeight}
             toggleOpen={this.toggleOpen("soilHeight")}
             toggleValue={this.props.soilHeightLabels}
-            toggleAction={() => this.props.dispatch({
+            toggleAction={() => dispatch({
               type: Actions.TOGGLE_SOIL_HEIGHT_LABELS, payload: undefined
             })}
             genericPoints={sortedSoilHeightPoints}
@@ -249,7 +258,7 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
             averageZ={round(mean(sortedSoilHeightPoints.map(p => p.body.z)))}
             sourceFbosConfig={this.props.sourceFbosConfig}
             hoveredPoint={this.props.hoveredPoint}
-            dispatch={this.props.dispatch} />}
+            dispatch={dispatch} />}
         {soilHeightPointColors.length > 1 &&
           soilHeightPointColors.map(color =>
             <PointsSection key={color}
@@ -264,7 +273,7 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
               averageZ={round(mean(sortedSoilHeightPoints
                 .filter(p => p.body.meta.color == color).map(p => p.body.z)))}
               hoveredPoint={this.props.hoveredPoint}
-              dispatch={this.props.dispatch} />)}
+              dispatch={dispatch} />)}
         {gridIds.map(gridId => {
           const gridPoints = points.filter(p => p.body.meta.gridId == gridId);
           const pointName = gridPoints[0].body.name;
@@ -274,13 +283,13 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
             isOpen={this.state.gridIds.includes(gridId)}
             toggleOpen={this.toggleGrid(gridId)}
             toggleValue={!this.props.gridIds.includes(gridId)}
-            toggleAction={() => this.props.dispatch({
+            toggleAction={() => dispatch({
               type: Actions.TOGGLE_GRID_ID, payload: gridId
             })}
             genericPoints={gridPoints}
             metaQuery={{ gridId }}
             hoveredPoint={this.props.hoveredPoint}
-            dispatch={this.props.dispatch} />;
+            dispatch={dispatch} />;
         })}
       </DesignerPanelContent>
     </DesignerPanel>;

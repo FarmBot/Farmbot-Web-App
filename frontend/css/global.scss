@@ -2627,16 +2627,11 @@ textarea:focus {
   }
 }
 
-.transparent-link-button {
-  font-size: 1rem;
-  border: 1px solid;
-  padding: 0.4rem 1.2rem;
-  font-weight: bold;
-  letter-spacing: 1px;
-  border-radius: 4px;
-  color: $off_white;
-  &:hover {
-    color: $white;
+.os-download-page {
+  table {
+    a {
+      text-transform: none;
+    }
   }
 }
 
@@ -2671,7 +2666,7 @@ textarea:focus {
       color: $off_white;
     }
     &:active {
-      color: $dark_gray !important;
+      color: $white !important;
     }
   }
   table {
@@ -2818,6 +2813,9 @@ textarea:focus {
     }
     .download-link {
       display: inline-block;
+      a {
+        text-transform: none;
+      }
     }
     .buttons-with-image {
       display: flex;

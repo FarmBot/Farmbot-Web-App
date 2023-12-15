@@ -50,3 +50,15 @@ export function deletePoints(
       });
   };
 }
+
+export const deletePointsByIds = (pointName: string, ids: number[]) =>
+  Promise
+    .all(chunk(ids, 100).map(c => axios
+      .delete(API.current.pointsPath + c.join(","))))
+    .then(() =>
+      success(t("Deleted {{num}} {{points}}", {
+        num: ids.length, points: pointName,
+      })))
+    .catch(() =>
+      error(trim(`${t("Some {{points}} failed to delete.", { points: pointName })}
+                  ${t("Are they in use by sequences?")}`)));

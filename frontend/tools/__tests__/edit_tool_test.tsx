@@ -26,10 +26,8 @@ import { fakeState } from "../../__test_support__/fake_state";
 import {
   buildResourceIndex, fakeDevice,
 } from "../../__test_support__/resource_index_builder";
-import { SaveBtn } from "../../ui";
 import { push } from "../../history";
 import { edit, destroy, save } from "../../api/crud";
-import { clickButton } from "../../__test_support__/helpers";
 import { EditToolProps } from "../interfaces";
 import { sendRPC } from "../../devices/actions";
 
@@ -103,28 +101,28 @@ describe("<EditTool />", () => {
   });
 
   it("disables save until name in entered", () => {
-    const wrapper = shallow<EditTool>(<EditTool {...fakeProps()} />);
+    const wrapper = mount<EditTool>(<EditTool {...fakeProps()} />);
     wrapper.setState({ toolName: "" });
-    expect(wrapper.find("SaveBtn").first().props().disabled).toBeTruthy();
+    expect(wrapper.find(".save-btn").first().props().disabled).toBeTruthy();
     wrapper.setState({ toolName: "fake tool name" });
-    expect(wrapper.find("SaveBtn").first().props().disabled).toBeFalsy();
+    expect(wrapper.find(".save-btn").first().props().disabled).toBeFalsy();
   });
 
   it("shows name collision message", () => {
     const p = fakeProps();
     p.existingToolNames = ["tool"];
-    const wrapper = shallow<EditTool>(<EditTool {...p} />);
+    const wrapper = mount<EditTool>(<EditTool {...p} />);
     wrapper.setState({ toolName: "tool" });
-    expect(wrapper.find("p").first().text()).toEqual("Name already taken.");
-    expect(wrapper.find("SaveBtn").first().props().disabled).toBeTruthy();
+    expect(wrapper.find("p").last().text()).toEqual("Name already taken.");
+    expect(wrapper.find(".save-btn").first().props().disabled).toBeTruthy();
   });
 
   it("saves", () => {
     const p = fakeProps();
     const tool = fakeTool();
     p.findTool = () => tool;
-    const wrapper = shallow(<EditTool {...p} />);
-    wrapper.find(SaveBtn).simulate("click");
+    const wrapper = mount(<EditTool {...p} />);
+    wrapper.find(".save-btn").simulate("click");
     expect(edit).toHaveBeenCalledWith(expect.any(Object), {
       name: "Foo", flow_rate_ml_per_s: 0,
     });
@@ -139,8 +137,8 @@ describe("<EditTool />", () => {
     p.findTool = () => tool;
     p.isActive = () => false;
     p.mountedToolId = undefined;
-    const wrapper = shallow(<EditTool {...p} />);
-    clickButton(wrapper, 0, "delete");
+    const wrapper = mount(<EditTool {...p} />);
+    wrapper.find(".fa-trash").first().simulate("click");
     expect(destroy).toHaveBeenCalledWith(tool.uuid);
   });
 
@@ -151,8 +149,8 @@ describe("<EditTool />", () => {
     p.findTool = () => tool;
     p.isActive = () => true;
     p.mountedToolId = undefined;
-    const wrapper = shallow(<EditTool {...p} />);
-    clickButton(wrapper, 0, "delete");
+    const wrapper = mount(<EditTool {...p} />);
+    wrapper.find(".fa-trash").first().simulate("click");
     expect(destroy).not.toHaveBeenCalledWith(tool.uuid);
   });
 
@@ -163,8 +161,8 @@ describe("<EditTool />", () => {
     p.findTool = () => tool;
     p.isActive = () => false;
     p.mountedToolId = tool.body.id;
-    const wrapper = shallow(<EditTool {...p} />);
-    clickButton(wrapper, 0, "delete");
+    const wrapper = mount(<EditTool {...p} />);
+    wrapper.find(".fa-trash").first().simulate("click");
     expect(destroy).not.toHaveBeenCalledWith(tool.uuid);
   });
 });

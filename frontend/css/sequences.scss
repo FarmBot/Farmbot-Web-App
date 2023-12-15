@@ -1491,23 +1491,34 @@
   background: transparentize($blue, 0.4);
 }
 
+$border_width: 1.4px;
 .transparent-button {
   text-transform: uppercase;
-  font-size: 1rem;
-  border: 1px solid;
-  padding: 0.4rem 1.2rem;
+  font-size: 1.1rem;
+  border: none;
+  padding: 0.4rem 0.8rem;
   font-weight: bold;
   letter-spacing: 1px;
-  border-radius: 4px;
+  border-radius: 5px;
   color: $dark_gray;
   background: none;
+  box-shadow: inset 0 0 0 $border_width $dark_gray;
   float: right;
   &:hover {
-    background: rgba(255, 255, 255, 0.2);
+    background: $translucent1_white;
+    box-shadow: inset 0 0 0 $border_width $dark_gray, 0 0 5px $translucent15, inset 0 0 5px $translucent3_white;
+  }
+  &:active {
+    background: $translucent1;
+    box-shadow: inset 0 0 0 $border_width $dark_gray;
   }
   &.light {
+    box-shadow: inset 0 0 0 $border_width $off_white;
     &:hover {
-      background: rgba(0, 0, 0, 0.08);
+      box-shadow: inset 0 0 0 $border_width $off_white, 0 0 5px $translucent15, inset 0 0 5px $translucent3_white;
+    }
+    &:active {
+      box-shadow: inset 0 0 0 $border_width $off_white;
     }
   }
 }

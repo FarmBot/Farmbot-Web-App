@@ -528,16 +528,14 @@ export interface FarmEventDeleteButtonProps {
 }
 
 export const FarmEventDeleteButton = (props: FarmEventDeleteButtonProps) =>
-  <button className="fb-button red" hidden={props.hidden}
+  <i className={"fa fa-trash fb-icon-button"} hidden={props.hidden}
     title={t("Delete")}
     onClick={() =>
       props.dispatch(destroy(props.farmEvent.uuid))
         .then(() => {
           push(Path.farmEvents());
           success(t("Deleted event."), { title: t("Deleted") });
-        })}>
-    {t("Delete")}
-  </button>;
+        })} />;
 
 interface FarmEventFormProps {
   isRegimen: boolean;

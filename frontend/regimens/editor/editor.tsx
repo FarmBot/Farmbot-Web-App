@@ -22,6 +22,7 @@ import { edit } from "../../api/crud";
 import { Position } from "@blueprintjs/core";
 import { addRegimen } from "../list/add_regimen";
 import { selectAllRegimens } from "../../resources/selectors_by_kind";
+import { RegimenButtonGroup } from "./regimen_edit_components";
 
 export class RawDesignerRegimenEditor
   extends React.Component<RegimenEditorProps> {
@@ -45,6 +46,8 @@ export class RawDesignerRegimenEditor
           fallback={t("No Regimen selected")}
           dispatch={this.props.dispatch} />}
         backTo={Path.regimens()}>
+        {regimen &&
+          <RegimenButtonGroup regimen={regimen} dispatch={this.props.dispatch} />}
         {regimen && <Popover className={"color-picker"}
           position={Position.BOTTOM}
           popoverClassName={"colorpicker-menu gray"}

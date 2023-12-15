@@ -1,9 +1,5 @@
 jest.mock("../../api/crud", () => ({ initSave: jest.fn() }));
 
-jest.mock("../../api/delete_points", () => ({
-  deletePoints: jest.fn()
-}));
-
 import { Path } from "../../internal_urls";
 let mockPath = Path.mock(Path.points("add"));
 jest.mock("../../history", () => ({
@@ -19,7 +15,6 @@ import {
   mapStateToProps,
 } from "../create_points";
 import { initSave } from "../../api/crud";
-import { deletePoints } from "../../api/delete_points";
 import { Actions } from "../../constants";
 import { clickButton } from "../../__test_support__/helpers";
 import { fakeState } from "../../__test_support__/fake_state";
@@ -64,14 +59,14 @@ describe("<CreatePoints />", () => {
   it("renders for points", () => {
     mockPath = Path.mock(Path.designer());
     const wrapper = mount(<CreatePoints {...fakeProps()} />);
-    ["add point", "delete", "x", "y", "z", "radius"]
+    ["add point", "x", "y", "z", "radius"]
       .map(string => expect(wrapper.text().toLowerCase()).toContain(string));
   });
 
   it("renders for weeds", () => {
     mockPath = Path.mock(Path.weeds("add"));
     const wrapper = mount(<CreatePoints {...fakeProps()} />);
-    ["add weed", "delete", "x", "y", "z", "radius"]
+    ["add weed", "x", "y", "z", "radius"]
       .map(string => expect(wrapper.text().toLowerCase()).toContain(string));
   });
 
@@ -236,45 +231,6 @@ describe("<CreatePoints />", () => {
       pointer_type: "Weed",
       plant_stage: "active",
       radius: 30, x: 10, y: 20, z: 0,
-    });
-  });
-
-  it("deletes all points", () => {
-    const p = fakeProps();
-    const wrapper = mount(<CreatePoints {...p} />);
-    const button = wrapper.find("button").last();
-    expect(button.text()).toEqual("Delete all created points");
-    window.confirm = jest.fn();
-    button.simulate("click");
-    expect(window.confirm).toHaveBeenCalledWith(
-      expect.stringContaining("all the points"));
-    expect(deletePoints).not.toHaveBeenCalled();
-    window.confirm = () => true;
-    p.dispatch = jest.fn(x => x());
-    button.simulate("click");
-    expect(deletePoints).toHaveBeenCalledWith("points", {
-      pointer_type: "GenericPointer",
-      meta: { created_by: "farm-designer" }
-    });
-  });
-
-  it("deletes all weeds", () => {
-    mockPath = Path.mock(Path.weeds("add"));
-    const p = fakeProps();
-    const wrapper = mount(<CreatePoints {...p} />);
-    const button = wrapper.find("button").last();
-    expect(button.text()).toEqual("Delete all created weeds");
-    window.confirm = jest.fn();
-    button.simulate("click");
-    expect(window.confirm).toHaveBeenCalledWith(
-      expect.stringContaining("all the weeds"));
-    expect(deletePoints).not.toHaveBeenCalled();
-    window.confirm = () => true;
-    p.dispatch = jest.fn(x => x());
-    button.simulate("click");
-    expect(deletePoints).toHaveBeenCalledWith("points", {
-      pointer_type: "Weed",
-      meta: { created_by: "farm-designer" }
     });
   });
 

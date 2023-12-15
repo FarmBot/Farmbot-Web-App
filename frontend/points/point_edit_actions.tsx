@@ -1,6 +1,6 @@
 import React from "react";
 import { t } from "../i18next_wrapper";
-import { destroy, edit, save } from "../api/crud";
+import { edit, save } from "../api/crud";
 import { MovementState, ResourceColor } from "../interfaces";
 import {
   TaggedGenericPointer, TaggedPoint, TaggedWeedPointer, Xyz,
@@ -9,7 +9,6 @@ import { ListItem } from "../plants/plant_panel";
 import { round, cloneDeep } from "lodash";
 import { Row, Col, BlurableInput, ColorPicker } from "../ui";
 import { parseIntInput } from "../util";
-import { UUID } from "../resources/interfaces";
 import { plantAgeAndStage } from "../plants/map_state_to_props";
 import { EditWeedStatus } from "../plants/edit_plant_status";
 import {
@@ -129,21 +128,6 @@ const SOURCE_LOOKUP = (): Record<string, string> => ({
 
 export const lookupPointSource = (createdBy: string | undefined) =>
   SOURCE_LOOKUP()[createdBy || ""] || t("unknown");
-
-interface PointActionsProps {
-  uuid: UUID;
-  dispatch: Function;
-}
-
-export const PointActions = ({ uuid, dispatch }: PointActionsProps) =>
-  <div className={"point-actions"}>
-    <button
-      className="fb-button red no-float"
-      title={t("delete")}
-      onClick={() => dispatch(destroy(uuid))}>
-      {t("Delete")}
-    </button>
-  </div>;
 
 export interface EditPointNameProps {
   updatePoint(update: PointUpdate): void;

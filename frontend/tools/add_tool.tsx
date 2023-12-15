@@ -170,7 +170,14 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
         panelName={panelName}
         title={t("Add new")}
         backTo={Path.tools()}
-        panel={Panel.Tools} />
+        panel={Panel.Tools}>
+        <div className={"tool-action-btn-group"}>
+          <SaveBtn
+            onClick={this.save}
+            disabled={!this.state.toolName || alreadyAdded}
+            status={SpecialStatus.DIRTY} />
+        </div>
+      </DesignerPanelHeader>
       <DesignerPanelContent panelName={panelName}>
         <div className="add-new-tool">
           <ToolSVG toolName={this.state.toolName} profile={true} />
@@ -187,10 +194,6 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
           {reduceToolName(toolName) == ToolName.wateringNozzle &&
             <WaterFlowRateInput value={this.state.flowRate}
               onChange={this.changeFlowRate} />}
-          <SaveBtn
-            onClick={this.save}
-            disabled={!this.state.toolName || alreadyAdded}
-            status={SpecialStatus.DIRTY} />
           <p className="name-error">
             {alreadyAdded ? t("Already added.") : ""}
           </p>

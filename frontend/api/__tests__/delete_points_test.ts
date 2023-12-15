@@ -12,7 +12,7 @@ jest.mock("../../util", () => ({
   trim: jest.fn(x => x),
 }));
 
-import { deletePoints } from "../delete_points";
+import { deletePoints, deletePointsByIds } from "../delete_points";
 import axios from "axios";
 import { API } from "../api";
 import { times } from "lodash";
@@ -80,5 +80,26 @@ describe("deletePoints()", () => {
     expect(mockInc).toHaveBeenCalledTimes(3);
     expect(mockFinish).toHaveBeenCalledTimes(1);
     expect(success).toHaveBeenCalledWith("Deleted 200 weeds");
+  });
+});
+
+describe("deletePointsByIds()", () => {
+  it("deletes points", async () => {
+    mockDelete = Promise.resolve();
+    await deletePointsByIds("points", [1, 2, 3]);
+    expect(axios.delete).toHaveBeenCalledWith(EXPECTED_BASE_URL + "1,2,3");
+    expect(error).not.toHaveBeenCalled();
+    expect(success).toHaveBeenCalledWith("Deleted 3 points");
+  });
+
+  it("doesn't delete points", async () => {
+    mockDelete = Promise.reject("error");
+    await deletePointsByIds("points", [1, 2, 3]);
+    expect(axios.delete).toHaveBeenCalledWith(EXPECTED_BASE_URL + "1,2,3");
+    expect(error).toHaveBeenCalledWith(expect.stringContaining(
+      "Some points failed to delete."));
+    expect(error).toHaveBeenCalledWith(expect.stringContaining(
+      "Are they in use by sequences?"));
+    expect(success).not.toHaveBeenCalled();
   });
 });

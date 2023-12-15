@@ -344,7 +344,7 @@ const MUST_CONFIRM_LIST: ResourceName[] = [
   "PointGroup",
 ];
 
-const confirmationChecker = (resourceName: ResourceName, force = false) =>
+const confirmationChecker = (resourceName: ResourceName, force: boolean) =>
   <T>(proceed: () => T): T | undefined => {
     if (MUST_CONFIRM_LIST.includes(resourceName)) {
       if (force || confirm(t("Are you sure you want to delete this item?"))) {
