@@ -188,7 +188,7 @@ export const designer = generateReducer<DesignerState>(initialState)
       push(Path.location({ x: payload.x, y: payload.y }));
     return s;
   })
-  .add<string | undefined>(Actions.CHOOSE_SAVED_GARDEN, (s, { payload }) => {
+  .add<number | undefined>(Actions.CHOOSE_SAVED_GARDEN, (s, { payload }) => {
     s.openedSavedGarden = payload;
     return s;
   })

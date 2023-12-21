@@ -63,7 +63,7 @@ describe("<SelectPlants />", () => {
       getConfigValue: () => true,
       plants: [plant1, plant2],
       dispatch: jest.fn(x => x),
-      gardenOpen: undefined,
+      gardenOpenId: undefined,
       allPoints: [],
       toolTransformProps: fakeToolTransformProps(),
       isActive: () => false,
@@ -377,7 +377,7 @@ describe("<SelectPlants />", () => {
 
   it("doesn't create group", () => {
     const p = fakeProps();
-    p.gardenOpen = "uuid";
+    p.gardenOpenId = 1;
     const wrapper = mount(<SelectPlants {...p} />);
     wrapper.find(".dark-blue").simulate("click");
     expect(createGroup).not.toHaveBeenCalled();

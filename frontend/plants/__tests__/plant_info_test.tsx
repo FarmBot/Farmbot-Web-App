@@ -98,7 +98,7 @@ describe("<PlantInfo />", () => {
   it("gets template id", () => {
     mockPath = Path.mock(Path.plantTemplates(2));
     const p = fakeProps();
-    p.openedSavedGarden = "uuid";
+    p.openedSavedGarden = 1;
     const wrapper = mount<PlantInfo>(<PlantInfo {...p} />);
     expect(wrapper.instance().stringyID).toEqual("2");
   });

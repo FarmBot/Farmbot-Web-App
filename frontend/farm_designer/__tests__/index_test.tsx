@@ -126,7 +126,7 @@ describe("<FarmDesigner />", () => {
 
   it("renders saved garden indicator", () => {
     const p = fakeProps();
-    p.designer.openedSavedGarden = "SavedGardenUuid";
+    p.designer.openedSavedGarden = 1;
     const wrapper = mount(<FarmDesigner {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("viewing saved garden");
   });

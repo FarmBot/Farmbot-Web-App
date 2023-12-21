@@ -26,8 +26,8 @@ import {
 
 /** Open or close a SavedGarden. */
 const GardenViewButton = (props: GardenViewButtonProps) => {
-  const { dispatch, savedGarden, gardenIsOpen } = props;
-  const onClick = openOrCloseGarden({ savedGarden, gardenIsOpen, dispatch });
+  const { dispatch, savedGardenId, gardenIsOpen } = props;
+  const onClick = openOrCloseGarden({ savedGardenId, gardenIsOpen, dispatch });
   const btnText = gardenIsOpen
     ? t("exit")
     : t("view");
@@ -71,7 +71,7 @@ export const mapStateToProps = (props: Everything): EditGardenProps => {
   const savedGarden = findSavedGardenByUrl(props.resources.index);
   return {
     savedGarden,
-    gardenIsOpen: !!(savedGarden?.uuid === openedSavedGarden),
+    gardenIsOpen: !!(savedGarden?.body.id === openedSavedGarden),
     dispatch: props.dispatch,
     plantPointerCount: selectAllPlantPointers(props.resources.index).length,
     gardenPlants: selectAllPlantTemplates(props.resources.index)
@@ -117,7 +117,7 @@ export class RawEditGarden
               gardenUuid={savedGarden.uuid} />
             <GardenViewButton
               dispatch={this.props.dispatch}
-              savedGarden={savedGarden.uuid}
+              savedGardenId={savedGarden.body.id}
               gardenIsOpen={this.props.gardenIsOpen} />
           </div>}
       </DesignerPanelHeader>

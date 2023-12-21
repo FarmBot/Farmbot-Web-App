@@ -4,8 +4,6 @@ import { success, info } from "../toast/toast";
 import { push } from "../history";
 import { Actions } from "../constants";
 import { destroy, initSave, initSaveGetId } from "../api/crud";
-import { unpackUUID } from "../util";
-import { isString } from "lodash";
 import { TaggedSavedGarden, TaggedPlantTemplate } from "farmbot";
 import { t } from "../i18next_wrapper";
 import { stopTracking } from "../connectivity/data_consistency";
@@ -53,21 +51,21 @@ export const closeSavedGarden = () => {
     dispatch(unselectSavedGarden);
 };
 
-export const openSavedGarden = (savedGarden: string) => {
-  push(Path.savedGardens(unpackUUID(savedGarden).remoteId));
+export const openSavedGarden = (savedGardenId: number | undefined) => {
+  push(Path.savedGardens(savedGardenId));
   return (dispatch: Function) =>
-    dispatch({ type: Actions.CHOOSE_SAVED_GARDEN, payload: savedGarden });
+    dispatch({ type: Actions.CHOOSE_SAVED_GARDEN, payload: savedGardenId });
 };
 
 /** Open a SavedGarden if it is closed, otherwise close it. */
 export const openOrCloseGarden = (props: {
-  savedGarden: string | undefined,
+  savedGardenId: number | undefined,
   gardenIsOpen: boolean,
   dispatch: Function
 }) =>
   () =>
-    !props.gardenIsOpen && isString(props.savedGarden)
-      ? props.dispatch(openSavedGarden(props.savedGarden))
+    !props.gardenIsOpen && props.savedGardenId
+      ? props.dispatch(openSavedGarden(props.savedGardenId))
       : props.dispatch(closeSavedGarden());
 
 /** Create a new SavedGarden with the chosen name. */

@@ -204,7 +204,7 @@ const Companions = (props: CropInfoListProps) => {
 
 interface AddPlantHereButtonProps {
   botPosition: BotPosition;
-  openedSavedGarden: string | undefined;
+  openedSavedGarden: number | undefined;
   cropName: string;
   slug: string;
   dispatch: Function;

@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Everything } from "../interfaces";
 import { GardenSnapshotProps, GardenSnapshot } from "./garden_snapshot";
 import {
-  selectAllPlantTemplates, findSavedGarden,
+  selectAllPlantTemplates, maybeFindSavedGardenById,
 } from "../resources/selectors";
 import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent,
@@ -18,7 +18,7 @@ export const mapStateToProps = (props: Everything): GardenSnapshotProps => {
   const { openedSavedGarden } = props.resources.consumers.farm_designer;
   return {
     currentSavedGarden: openedSavedGarden
-      ? findSavedGarden(props.resources.index, openedSavedGarden)
+      ? maybeFindSavedGardenById(props.resources.index, openedSavedGarden)
       : undefined,
     dispatch: props.dispatch,
     plantTemplates: selectAllPlantTemplates(props.resources.index),

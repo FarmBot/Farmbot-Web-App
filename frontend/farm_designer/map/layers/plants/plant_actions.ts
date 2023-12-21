@@ -4,8 +4,7 @@ import {
   AxisNumberProperty, TaggedPlant, MapTransformProps,
 } from "../../interfaces";
 import { Plant, DEFAULT_PLANT_RADIUS } from "../../../plant";
-import { unpackUUID } from "../../../../util";
-import { isNumber, isString } from "lodash";
+import { isNumber } from "lodash";
 import {
   DesignerState, GardenMapState, MovePointsProps,
 } from "../../../interfaces";
@@ -25,7 +24,7 @@ export interface NewPlantKindAndBodyProps {
   y: number;
   slug: string;
   cropName: string;
-  openedSavedGarden: string | undefined;
+  openedSavedGarden: number | undefined;
   depth: number;
   designer: DesignerState;
 }
@@ -35,9 +34,7 @@ export const newPlantKindAndBody = (props: NewPlantKindAndBodyProps): {
   kind: TaggedPlant["kind"],
   body: TaggedPlant["body"],
 } => {
-  const savedGardenId = isString(props.openedSavedGarden)
-    ? unpackUUID(props.openedSavedGarden).remoteId
-    : undefined;
+  const savedGardenId = props.openedSavedGarden || undefined;
   return isNumber(savedGardenId)
     ? {
       kind: "PlantTemplate",
@@ -75,7 +72,7 @@ export interface CreatePlantProps {
   gardenCoords: AxisNumberProperty;
   gridSize: AxisNumberProperty | undefined;
   dispatch: Function;
-  openedSavedGarden: string | undefined;
+  openedSavedGarden: number | undefined;
   depth: number;
   designer: DesignerState;
 }

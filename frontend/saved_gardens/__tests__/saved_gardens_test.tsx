@@ -74,7 +74,7 @@ describe("<SavedGardens />", () => {
   it("shows when garden is open", () => {
     const p = fakeProps();
     p.savedGardens = [fakeSavedGarden(), fakeSavedGarden()];
-    p.openedSavedGarden = p.savedGardens[0].uuid;
+    p.openedSavedGarden = p.savedGardens[0].body.id;
     const wrapper = mount(<SavedGardens {...p} />);
     expect(wrapper.html()).toContain("selected");
   });

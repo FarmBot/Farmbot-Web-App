@@ -9,7 +9,7 @@ import {
 } from "../farm_designer/designer_panel";
 import { t } from "../i18next_wrapper";
 import { EditPlantInfoProps, PlantOptions } from "../farm_designer/interfaces";
-import { isString } from "lodash";
+import { isFinite } from "lodash";
 import { push } from "../history";
 import { destroy, edit, save } from "../api/crud";
 import { BooleanSetting } from "../session_keys";
@@ -20,7 +20,7 @@ import { validGoButtonAxes } from "../farm_designer/move_to";
 export type UpdatePlant = (uuid: string, update: PlantOptions) => void;
 
 export class RawPlantInfo extends React.Component<EditPlantInfoProps, {}> {
-  get templates() { return isString(this.props.openedSavedGarden); }
+  get templates() { return isFinite(this.props.openedSavedGarden); }
   get stringyID() {
     return Path.getSlug((this.templates
       ? Path.plantTemplates

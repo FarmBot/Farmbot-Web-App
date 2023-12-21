@@ -29,7 +29,7 @@ describe("mapStateToProps()", () => {
     template.body.id = 10;
     state.resources = buildResourceIndex([template]);
     const uuid = Object.keys(state.resources.index.all)[0];
-    state.resources.consumers.farm_designer.openedSavedGarden = "uuid";
+    state.resources.consumers.farm_designer.openedSavedGarden = 1;
     const result = mapStateToProps(state);
     expect(result.findPlant("10")).toEqual(
       expect.objectContaining({ uuid }));

@@ -73,12 +73,12 @@ describe("closeSavedGarden", () => {
 describe("openSavedGarden", () => {
   it("opens garden", () => {
     const dispatch = jest.fn();
-    const uuid = "SavedGardenUuid.1.0";
-    openSavedGarden(uuid)(dispatch);
+    const id = 1;
+    openSavedGarden(id)(dispatch);
     expect(push).toHaveBeenCalledWith(Path.savedGardens(1));
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.CHOOSE_SAVED_GARDEN,
-      payload: uuid
+      payload: id,
     });
   });
 });
@@ -86,7 +86,7 @@ describe("openSavedGarden", () => {
 describe("openOrCloseGarden", () => {
   it("opens garden", () => {
     const props = {
-      savedGarden: "SavedGardenUuid.1.0",
+      savedGardenId: 1,
       dispatch: jest.fn(),
       gardenIsOpen: false,
     };
@@ -96,7 +96,7 @@ describe("openOrCloseGarden", () => {
 
   it("closes garden", () => {
     const props = {
-      savedGarden: "SavedGardenUuid.1.0",
+      savedGardenId: 1,
       dispatch: jest.fn(),
       gardenIsOpen: true,
     };

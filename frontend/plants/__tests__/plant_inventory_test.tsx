@@ -158,7 +158,7 @@ describe("<PlantInventory />", () => {
     window.confirm = () => true;
     const p = fakeProps();
     p.plantsPanelState.plants = true;
-    p.openedSavedGarden = "fake";
+    p.openedSavedGarden = 1;
     const wrapper = mount(<Plants {...p} />);
     const plantsSection = wrapper.find(PanelSection).at(2);
     expect(plantsSection.text().toLowerCase()).not.toContain("delete all");
