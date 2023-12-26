@@ -256,10 +256,10 @@ describe("designer reducer", () => {
   });
 
   it("sets opened saved garden", () => {
-    const payload = "savedGardenUuid";
-    const action: ReduxAction<string | undefined> = {
+    const payload = 1;
+    const action: ReduxAction<number | undefined> = {
       type: Actions.CHOOSE_SAVED_GARDEN,
-      payload
+      payload,
     };
     const newState = designer(oldState(), action);
     expect(newState.openedSavedGarden).toEqual(payload);

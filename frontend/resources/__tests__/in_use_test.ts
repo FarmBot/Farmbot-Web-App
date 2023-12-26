@@ -4,7 +4,7 @@ import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
 import { EVERY_USAGE_KIND, UsageIndex, resourceUsageList } from "../in_use";
-import { DeepPartial } from "redux";
+import { DeepPartial } from "../../redux/interfaces";
 import {
   fakeSequence,
   fakeFarmEvent,

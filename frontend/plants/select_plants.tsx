@@ -116,7 +116,7 @@ export const mapStateToProps = (props: Everything): SelectPlantsProps => {
     plants: getPlants(props.resources),
     allPoints: selectAllActivePoints(props.resources.index),
     dispatch: props.dispatch,
-    gardenOpen: openedSavedGarden,
+    gardenOpenId: openedSavedGarden,
     tools: selectAllTools(props.resources.index),
     groups: selectAllPointGroups(props.resources.index),
     isActive: isActive(selectAllToolSlotPointers(props.resources.index)),
@@ -135,7 +135,7 @@ export interface SelectPlantsProps {
   selected: UUID[] | undefined;
   selectionPointType: PointType[] | undefined;
   getConfigValue: GetWebAppConfigValue;
-  gardenOpen: string | undefined;
+  gardenOpenId: number | undefined;
   toolTransformProps: ToolTransformProps;
   isActive(id: number | undefined): boolean;
   tools: TaggedTool[];
@@ -288,7 +288,7 @@ export class RawSelectPlants
         </button>
         <button className="fb-button dark-blue"
           title={t("Create group")}
-          onClick={() => !this.props.gardenOpen
+          onClick={() => !this.props.gardenOpenId
             ? this.props.dispatch(createGroup({ pointUuids: this.selected }))
             : error(t(Content.ERROR_PLANT_TEMPLATE_GROUP))}>
           {t("Create group")}

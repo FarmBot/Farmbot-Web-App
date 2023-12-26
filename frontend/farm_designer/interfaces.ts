@@ -165,7 +165,7 @@ export interface DesignerState {
   chosenLocation: BotPosition;
   drawnPoint: DrawnPointPayl | undefined;
   drawnWeed: DrawnWeedPayl | undefined;
-  openedSavedGarden: string | undefined;
+  openedSavedGarden: number | undefined;
   tryGroupSortType: ExtendedPointGroupSortType | undefined;
   editGroupAreaInMap: boolean;
   visualizedSequence: UUID | undefined;
@@ -311,7 +311,7 @@ export type PlantOptions = Partial<PlantPointer>;
 export interface EditPlantInfoProps {
   dispatch: Function;
   findPlant(stringyID: string | undefined): TaggedPlant | undefined;
-  openedSavedGarden: string | undefined;
+  openedSavedGarden: number | undefined;
   timeSettings: TimeSettings;
   getConfigValue: GetWebAppConfigValue;
   soilHeightPoints: TaggedGenericPointer[];

@@ -21,7 +21,7 @@ import {
 import {
   fakePoint, fakePlant, fakeToolSlot, fakePointGroup,
 } from "../../__test_support__/fake_state/resources";
-import { DeepPartial } from "redux";
+import { DeepPartial } from "../../redux/interfaces";
 import { Everything } from "../../interfaces";
 import { DEFAULT_CRITERIA } from "../criteria/interfaces";
 import { cloneDeep } from "lodash";

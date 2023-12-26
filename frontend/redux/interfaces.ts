@@ -20,3 +20,5 @@ export interface Thunk {
 export type EnvName = "test" | "production" | "development" | "*";
 
 export type Reducers = Reducer<Omit<Everything, "dispatch">, AnyAction>;
+
+export type DeepPartial<T> = { [K in keyof T]?: DeepPartial<T[K]> }

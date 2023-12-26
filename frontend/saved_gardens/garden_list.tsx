@@ -11,7 +11,7 @@ import { t } from "../i18next_wrapper";
 export const GardenInfo = (props: SavedGardenInfoProps) => {
   const { savedGarden, dispatch } = props;
   return <div className="saved-garden-info"
-    onClick={() => dispatch(openSavedGarden(savedGarden.uuid))}>
+    onClick={() => dispatch(openSavedGarden(savedGarden.body.id))}>
     <Col>
       <span className={"saved-garden-search-item-name"}>
         {savedGarden.body.name}
@@ -43,7 +43,7 @@ export const SavedGardenList = (props: SavedGardenListProps) =>
         return <SavedGardenItem
           key={sg.uuid}
           savedGarden={sg}
-          gardenIsOpen={sg.uuid === props.openedSavedGarden}
+          gardenIsOpen={sg.body.id === props.openedSavedGarden}
           dispatch={props.dispatch}
           plantPointerCount={props.plantPointerCount}
           plantTemplateCount={props.plantTemplates.filter(pt =>

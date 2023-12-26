@@ -2,7 +2,7 @@ import { Color, SpecialStatus, TaggedSequence } from "farmbot";
 import { store } from "../redux/store";
 import { initSave, destroy, edit, save, init } from "../api/crud";
 import { Folder } from "farmbot/dist/resources/api_resources";
-import { DeepPartial } from "redux";
+import { DeepPartial } from "../redux/interfaces";
 import { findFolderById } from "../resources/selectors_by_id";
 import { Actions } from "../constants";
 import { t } from "../i18next_wrapper";

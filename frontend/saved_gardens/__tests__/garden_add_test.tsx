@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { RawAddGarden as AddGarden, mapStateToProps } from "../garden_add";
 import { GardenSnapshotProps } from "../garden_snapshot";
@@ -31,7 +31,7 @@ describe("mapStateToProps()", () => {
     const state = fakeState();
     const savedGarden = fakeSavedGarden();
     state.resources = buildResourceIndex([savedGarden]);
-    state.resources.consumers.farm_designer.openedSavedGarden = savedGarden.uuid;
+    state.resources.consumers.farm_designer.openedSavedGarden = savedGarden.body.id;
     const props = mapStateToProps(state);
     expect(props.currentSavedGarden).toEqual(savedGarden);
   });

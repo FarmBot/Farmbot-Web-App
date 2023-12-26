@@ -14,7 +14,7 @@ import {
 import { Farmbot } from "farmbot";
 import { FarmBotInternalConfig } from "farmbot/dist/config";
 import { pingNO } from "../index";
-import { DeepPartial } from "redux";
+import { DeepPartial } from "../../redux/interfaces";
 
 const state: Partial<FarmBotInternalConfig> = {
   LAST_PING_IN: 123,

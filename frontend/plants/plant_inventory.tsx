@@ -48,7 +48,7 @@ export interface PlantInventoryProps {
   allPoints: TaggedPoint[];
   plantTemplates: TaggedPlantTemplate[];
   plantPointerCount: number;
-  openedSavedGarden: string | undefined;
+  openedSavedGarden: number | undefined;
   plantsPanelState: PlantsPanelState;
   getConfigValue: GetWebAppConfigValue;
 }

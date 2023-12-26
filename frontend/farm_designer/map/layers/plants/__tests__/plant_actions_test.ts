@@ -54,7 +54,7 @@ describe("newPlantKindAndBody()", () => {
       y: 0,
       slug: "mint",
       cropName: "Mint",
-      openedSavedGarden: "SavedGarden.1.1",
+      openedSavedGarden: 1,
       depth: 0,
       designer: fakeDesignerState(),
     };

@@ -136,7 +136,7 @@ describe("mapStateToProps()", () => {
     mockPath = Path.mock(Path.savedGardens(1));
     const state = fakeState();
     state.resources = buildResourceIndex([sg, fakePlantTemplate()]);
-    state.resources.consumers.farm_designer.openedSavedGarden = sg.uuid;
+    state.resources.consumers.farm_designer.openedSavedGarden = sg.body.id;
     const props = mapStateToProps(state);
     expect(props.gardenIsOpen).toEqual(true);
     expect(props.savedGarden).toEqual(sg);
@@ -148,7 +148,7 @@ describe("mapStateToProps()", () => {
     mockPath = Path.mock(Path.savedGardens());
     const state = fakeState();
     state.resources = buildResourceIndex([sg, fakePlantTemplate()]);
-    state.resources.consumers.farm_designer.openedSavedGarden = sg.uuid;
+    state.resources.consumers.farm_designer.openedSavedGarden = sg.body.id;
     const props = mapStateToProps(state);
     expect(props.gardenIsOpen).toEqual(false);
     expect(props.savedGarden).toEqual(undefined);

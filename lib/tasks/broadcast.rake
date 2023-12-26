@@ -181,14 +181,32 @@ namespace :broadcast do
     href_label = simple_prompt("(optional) Enter href label")
     while true
       title = simple_prompt("Enter title")
-      if GlobalBulletin.find_by(title: title).nil?
+      if title.nil?
+        next
+      end
+      if GlobalBulletin.find_by(slug: title.parameterize).nil?
         break
       else
         puts "Title already exists. Try another."
       end
     end
-    content = multiline_prompt("Enter content")
-    device_id = simple_prompt("Enter device ID")
+    while true
+      content = multiline_prompt("Enter content")
+      if content.nil? || content.strip.length == 0
+        puts "Content cannot be blank."
+      else
+        break
+      end
+    end
+    while true
+      device_id = simple_prompt("Enter device ID")
+      device = Device.find_by(id: device_id.to_i)
+      if device.nil?
+        puts "Device not found."
+      else
+        break
+      end
+    end
     BroadcastToOne.run!(type: type,
                         href: href,
                         href_label: href_label,
@@ -199,6 +217,15 @@ namespace :broadcast do
 
   desc "Broadcast existing bulletin to all users"
   task existing_to_all: :environment do
-    BroadcastExistingToAll.run!(slug: simple_prompt("Bulletin slug"))
+    while true
+      slug = simple_prompt("Bulletin slug")
+      bulletin = GlobalBulletin.find_by(slug: slug)
+      if bulletin.nil?
+        puts "Bulletin not found."
+      else
+        break
+      end
+    end
+    BroadcastExistingToAll.run!(slug: slug)
   end
 end

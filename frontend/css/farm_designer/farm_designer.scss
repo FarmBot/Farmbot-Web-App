@@ -671,11 +671,11 @@
 .garden-map-legend {
   position: fixed;
   top: 110px;
-  right: -140px;
+  right: -155px;
   z-index: 3;
   transition: all 0.4s ease;
   &.active {
-    transform: translateX(-150px);
+    transform: translateX(-165px);
   }
   .content {
     display: flex;

@@ -759,7 +759,7 @@ a {
   .sensor-selection,
   .sensor-history-time-selection,
   .sensor-history-location-selection {
-    margin-bottom: 1rem;
+    margin-bottom: 1rem !important;
   }
   .row {
     margin-bottom: 0 !important;
@@ -775,7 +775,9 @@ a {
 .add-sensor-reading-menu {
   width: 300px;
   .green {
-    margin-bottom: 1rem;
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
   }
   .reading-location,
   .add-reading-value-form {
@@ -1782,7 +1784,7 @@ ul {
     width: 2rem;
     height: 2rem;
     text-align: center;
-    line-height: 1.7rem;
+    line-height: 1.3rem;
     margin-left: 5px;
   }
   .markdown {
