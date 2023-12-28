@@ -60,7 +60,7 @@ const handleTime = (
         .toISOString();
 
       // Set the time of the already existing iso string
-      const newStartISO = moment(currentStartISO)
+      const newStartISO = "" + moment(currentStartISO)
         .set("hours", hours)
         .set("minutes", minutes)
         .toISOString();
@@ -71,7 +71,7 @@ const handleTime = (
       const currentEndISO = new Date((currentISO || "").toString())
         .toISOString();
 
-      const newEndISO = moment(currentEndISO)
+      const newEndISO = "" + moment(currentEndISO)
         .set("hours", hours)
         .set("minutes", minutes)
         .toISOString();

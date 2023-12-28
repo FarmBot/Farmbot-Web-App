@@ -114,7 +114,7 @@ GEM
     docile (1.4.0)
     e2mmap (0.1.0)
     erubi (1.12.0)
-    factory_bot (6.4.2)
+    factory_bot (6.4.4)
       activesupport (>= 5.0.0)
     factory_bot_rails (6.4.2)
       factory_bot (~> 6.4)
@@ -222,7 +222,7 @@ GEM
     multipart-post (2.3.0)
     mutations (0.9.1)
       activesupport
-    net-imap (0.4.8)
+    net-imap (0.4.9)
       date
       net-protocol
     net-pop (0.1.2)
@@ -232,7 +232,7 @@ GEM
     net-smtp (0.4.0)
       net-protocol
     nio4r (2.7.0)
-    nokogiri (1.15.5-x86_64-linux)
+    nokogiri (1.16.0-x86_64-linux)
       racc (~> 1.4)
     orm_adapter (0.5.0)
     os (1.1.4)
@@ -336,7 +336,7 @@ GEM
       activerecord (>= 4.0.0)
       railties (>= 4.0.0)
     secure_headers (6.5.0)
-    set (1.0.4)
+    set (1.1.0)
     signet (0.18.0)
       addressable (~> 2.8)
       faraday (>= 0.17.5, < 3.a)
@@ -433,4 +433,4 @@ RUBY VERSION
    ruby 3.1.4p223
 
 BUNDLED WITH
-   2.5.0
+   2.5.3

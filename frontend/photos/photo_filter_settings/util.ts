@@ -32,7 +32,7 @@ export const parseFilterSetting = (getConfigValue: GetWebAppConfigValue) =>
   };
 
 export const filterTime = (direction: "before" | "after", seconds = 1) =>
-  (image: TaggedImage) =>
+  (image: TaggedImage): string =>
     moment(image.body.created_at)
       .add(direction == "before" ? -seconds : seconds, "second")
       .toISOString();

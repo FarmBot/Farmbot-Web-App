@@ -84,7 +84,9 @@ export class ImageFilterMenu
       let value = undefined;
       switch (datetime) {
         case "beginDate":
-          value = offsetTime(input, beginTime || "00:00", timeSettings);
+          if (input) {
+            value = offsetTime(input, beginTime || "00:00", timeSettings);
+          }
           this.setValues({ photo_filter_begin: value });
           break;
         case "beginTime":
@@ -94,7 +96,9 @@ export class ImageFilterMenu
           }
           break;
         case "endDate":
-          value = offsetTime(input, endTime || "00:00", timeSettings);
+          if (input) {
+            value = offsetTime(input, endTime || "00:00", timeSettings);
+          }
           this.setValues({ photo_filter_end: value });
           break;
         case "endTime":

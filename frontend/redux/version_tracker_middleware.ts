@@ -18,7 +18,7 @@ function getVersionFromState(state: Everything) {
 
 const fn: MW =
   (store: Store<Everything>) =>
-    (dispatch: Dispatch<Action<object>>) =>
+    (dispatch: Dispatch<Action<string>>) =>
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (action: any) => {
         const fbos = getVersionFromState(store.getState());

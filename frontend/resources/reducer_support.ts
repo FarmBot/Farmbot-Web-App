@@ -1,7 +1,7 @@
 import {
   ResourceName, SpecialStatus, TaggedResource, TaggedSequence,
 } from "farmbot";
-import { combineReducers, ReducersMapObject } from "redux";
+import { combineReducers, ReducersMapObject, UnknownAction } from "redux";
 import { helpReducer as help } from "../help/reducer";
 import { designer as farm_designer } from "../farm_designer/reducer";
 import { photosReducer as photos } from "../photos/reducer";
@@ -40,6 +40,7 @@ import { getFbosConfig } from "./getters";
 import { ingest, PARENTLESS as NO_PARENT } from "../folders/data_transfer";
 import { FolderNode, FolderMeta } from "../folders/interfaces";
 import { pointsSelectedByGroup } from "../point_groups/criteria/apply";
+import { Everything } from "../interfaces";
 
 export function findByUuid(index: ResourceIndex, uuid: string): TaggedResource {
   const x = index.references[uuid];
@@ -275,8 +276,8 @@ const consumerReducer = combineReducers<RestResources["consumers"]>({
   farmware,
   help,
   alerts
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-} as ReducersMapObject<RestResources["consumers"], any>);
+} as ReducersMapObject<RestResources["consumers"], UnknownAction, Everything>,
+) as Function;
 
 /** The resource reducer must have the first say when a resource-related action
  * fires off. Afterwards, sub-reducers are allowed to make sense of data

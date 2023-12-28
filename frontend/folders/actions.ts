@@ -13,6 +13,7 @@ import { stepGet, STEP_DATATRANSFER_IDENTIFER } from "../draggable/actions";
 import { joinKindAndId } from "../resources/reducer_support";
 import { maybeGetSequence } from "../resources/selectors";
 import { Path } from "../internal_urls";
+import { UnknownAction } from "redux";
 
 export const setFolderColor = (id: number, color: Color) => {
   const d = store.dispatch as Function;
@@ -51,7 +52,7 @@ export const addNewSequenceToFolder = (config: DeepPartial<Folder> = {}) => {
     kind: "sequence",
     body: [],
   };
-  store.dispatch(init("Sequence", newSequence));
+  store.dispatch(init("Sequence", newSequence) as unknown as UnknownAction);
   push(Path.sequences(urlFriendly(newSequence.name)));
   setActiveSequenceByName();
 };

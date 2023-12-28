@@ -3,6 +3,7 @@ import { store } from "../redux/store";
 import { batchInitResources, bothUp } from "./connect_device";
 import { maybeGetDevice } from "../resources/selectors";
 import { deviceIsThrottled } from "./device_is_throttled";
+import { UnknownAction } from "redux";
 
 /** Performs resource initialization (Eg: a storm of incoming logs) in batches
  * at a regular interval. We only need one work queue for the whole app,
@@ -25,7 +26,7 @@ export class BatchQueue {
   work = () => {
     const dev = maybeGetDevice(store.getState().resources.index);
     if (!deviceIsThrottled(dev ? dev.body : undefined)) {
-      store.dispatch(batchInitResources(this.queue));
+      store.dispatch(batchInitResources(this.queue) as unknown as UnknownAction);
     }
     this.clear();
     bothUp();
