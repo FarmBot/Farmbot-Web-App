@@ -134,7 +134,7 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
           saveFarmwareEnv={this.props.saveFarmwareEnv}
           env={this.props.env} />
         <label>{t("Name")}</label>
-        <input name="name"
+        <input name="toolName"
           value={toolName}
           onChange={e => this.setState({ toolName: e.currentTarget.value })} />
         {reduceToolName(toolName) == ToolName.wateringNozzle &&

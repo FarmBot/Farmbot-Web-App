@@ -40,7 +40,7 @@ export const AccountSettings = (props: AccountSettingsProps) =>
           </label>
           <BlurableInput
             type="text"
-            name="name"
+            name="userName"
             value={props.user.body.name || ""}
             onCommit={e => {
               props.dispatch(edit(

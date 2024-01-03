@@ -220,7 +220,7 @@ export class RawCreatePoints
             <Col xs={10}>
               <label>{t("Name")}</label>
               <BlurableInput
-                name="name"
+                name="pointName"
                 type="text"
                 onCommit={this.updateValue("name")}
                 value={this.attr("name") || this.defaultName} />
