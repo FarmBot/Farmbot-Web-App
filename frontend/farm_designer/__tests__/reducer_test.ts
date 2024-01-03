@@ -503,6 +503,16 @@ describe("designer reducer", () => {
     expect(newState.gridIds).toEqual([]);
   });
 
+  it("sets grid start", () => {
+    const state = oldState();
+    state.gridStart = { x: 100, y: 100 };
+    const action: ReduxAction<Record<"x" | "y", number>> = {
+      type: Actions.SET_GRID_START, payload: { x: 200, y: 300 }
+    };
+    const newState = designer(state, action);
+    expect(newState.gridStart).toEqual({ x: 200, y: 300 });
+  });
+
   it("toggle soil height labels", () => {
     const state = oldState();
     state.soilHeightLabels = false;

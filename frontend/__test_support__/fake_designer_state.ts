@@ -40,6 +40,7 @@ export const fakeDesignerState = (): DesignerState => ({
   hoveredMapImage: undefined,
   cameraViewGridId: undefined,
   gridIds: [],
+  gridStart: { x: 100, y: 100 },
   soilHeightLabels: false,
   profileOpen: false,
   profileAxis: "x",
