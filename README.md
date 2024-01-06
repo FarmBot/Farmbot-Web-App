@@ -4,6 +4,8 @@
 [![codecov](https://codecov.io/gh/FarmBot/Farmbot-Web-App/branch/main/graph/badge.svg)](https://codecov.io/gh/FarmBot/Farmbot-Web-App)
 [![Coverage Status](https://coveralls.io/repos/github/FarmBot/Farmbot-Web-App/badge.svg)](https://coveralls.io/github/FarmBot/Farmbot-Web-App)
 [![Maintainability](https://api.codeclimate.com/v1/badges/74091163d8a02bb8988f/maintainability)](https://codeclimate.com/github/FarmBot/Farmbot-Web-App/maintainability)
+[![OpenSSF Scorecard](https://api.securityscorecards.dev/projects/github.com/FarmBot/Farmbot-Web-App/badge)](https://securityscorecards.dev/viewer/?uri=github.com/FarmBot/Farmbot-Web-App)
+
 
 This codebase contains FarmBot's web based user interface, a RESTful JSON API, and a Dockerized MQTT server. The API stores data such as user account information, farm designs, sequences, authorization tokens, and a variety of other resources. The MQTT server facilitates realtime messaging from the browser to the device.
 
