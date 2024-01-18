@@ -601,6 +601,7 @@ describe("<PinBinding />", () => {
     const p = fakeProps();
     const pinBinding = fakePinBinding();
     p.resources = buildResourceIndex([pinBinding]).index;
+    p.getConfigValue = () => false;
     const wrapper = mount(<PinBinding {...p}
       pinBindingOptions={{ editing: false }} />);
     expect(wrapper.text().toLowerCase()).toContain("button 5");

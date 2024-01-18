@@ -205,6 +205,7 @@ const APP_SETTINGS = [
   DeviceSetting.showSecondsInTime,
   DeviceSetting.hideWebcamWidget,
   DeviceSetting.hideSensorsPanel,
+  DeviceSetting.enable3dElectronicsBox,
   DeviceSetting.readSpeakLogsInBrowser,
   DeviceSetting.landingPage,
   DeviceSetting.browserFarmbotActivityBeep,

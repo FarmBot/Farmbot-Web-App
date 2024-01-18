@@ -18,6 +18,7 @@ describe("<Peripherals />", () => {
     dispatch: jest.fn(),
     firmwareHardware: undefined,
     resources: buildResourceIndex([]).index,
+    getConfigValue: () => false,
   });
 
   it("renders", () => {

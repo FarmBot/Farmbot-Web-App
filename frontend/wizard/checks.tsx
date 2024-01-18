@@ -63,7 +63,7 @@ import { BooleanSetting } from "../session_keys";
 import {
   BooleanConfigKey as BooleanWebAppConfigKey,
 } from "farmbot/dist/resources/configs/web_app";
-import { toggleWebAppBool } from "../config_storage/actions";
+import { GetWebAppConfigValue, toggleWebAppBool } from "../config_storage/actions";
 import { PLACEHOLDER_FARMBOT } from "../photos/images/image_flipper";
 import { OriginSelector } from "../settings/farm_designer_settings";
 import { Sensors } from "../sensors";
@@ -90,7 +90,6 @@ import { BotPositionRows } from "../controls/move/bot_position_rows";
 import {
   BootSequenceSelector,
 } from "../settings/fbos_settings/boot_sequence_selector";
-import { BoxTopButtons } from "../settings/pin_bindings/box_top_gpio_diagram";
 import { getImageJobs } from "../photos/state_to_props";
 import { ResourceIndex } from "../resources/interfaces";
 import { BotState } from "../devices/interfaces";
@@ -99,6 +98,7 @@ import {
 } from "../farm_designer/map/tool_graphics/all_tools";
 import { WaterFlowRateInput } from "../tools/edit_tool";
 import { RPI_OPTIONS } from "../settings/fbos_settings/rpi_model";
+import { BoxTop } from "../settings/pin_bindings/box_top";
 
 export const Language = (props: WizardStepComponentProps) => {
   const user = getUserAccountSettings(props.resources);
@@ -575,6 +575,7 @@ export const PeripheralsCheck = (props: WizardStepComponentProps) => {
   const firmwareHardware = getFwHardwareValue(getFbosConfig(props.resources));
   return <div className={"peripherals-check"}>
     <Peripherals
+      getConfigValue={props.getConfigValue}
       firmwareHardware={firmwareHardware}
       bot={props.bot}
       peripherals={peripherals}
@@ -594,6 +595,7 @@ interface PinBindingProps {
   pinBindingOptions: PinBindingOptions;
   resources: ResourceIndex;
   bot: BotState;
+  getConfigValue: GetWebAppConfigValue;
 }
 
 export const PinBinding = (props: PinBindingProps) => {
@@ -605,13 +607,14 @@ export const PinBinding = (props: PinBindingProps) => {
       onClick={() => emergencyUnlock()}>
       {t("UNLOCK")}
     </button>
-    : <BoxTopButtons
+    : <BoxTop
+      threeDimensions={!!props.getConfigValue(
+        BooleanSetting.enable_3d_electronics_box_top)}
       firmwareHardware={firmwareHardware}
       resources={props.resources}
       dispatch={props.dispatch}
       botOnline={isBotOnlineFromState(props.bot)}
-      syncStatus={props.bot.hardware.informational_settings.sync_status}
-      locked={props.bot.hardware.informational_settings.locked}
+      bot={props.bot}
       isEditing={props.pinBindingOptions.editing} />;
 };
 

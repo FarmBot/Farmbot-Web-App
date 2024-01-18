@@ -782,6 +782,10 @@ export namespace Content {
     trim(`If not using sensors, use this setting to remove the
     panel from the Farm Designer.`);
 
+  export const ENABLE_3D_ELECTRONICS_BOX_TOP =
+    trim(`Show a 3D model of FarmBot's electronics box instead of a 2D view
+    in the Peripherals tab of the Controls pop-up.`);
+
   export const BROWSER_SPEAK_LOGS =
     trim(`Have the browser also read aloud log messages on the
     "Speak" channel that are spoken by FarmBot.`);
@@ -1868,7 +1872,7 @@ export namespace SetupWizardContent {
     trim(`Customize which Action or Sequence you want FarmBot to execute
     when you press Button 3, 4, or 5 on the electronics box. To start, we
     recommend setting Button 5 to the 'Find Home' sequence. You can change
-    this later from the controls panel.`);
+    this later from the controls pop-up.`);
 
   export const PROBLEM_GETTING_IMAGE =
     trim(`There is a 'camera not detected' or 'problem getting image' error
@@ -2197,6 +2201,7 @@ export enum DeviceSetting {
   showSecondsInTime = `Show seconds in time`,
   hideWebcamWidget = `Hide Webcam widget`,
   hideSensorsPanel = `Hide Sensors panel`,
+  enable3dElectronicsBox = `Enable 3D electronics box`,
   readSpeakLogsInBrowser = `Read speak logs in browser`,
   landingPage = `Landing page`,
   browserFarmbotActivityBeep = `Browser FarmBot activity beep`,

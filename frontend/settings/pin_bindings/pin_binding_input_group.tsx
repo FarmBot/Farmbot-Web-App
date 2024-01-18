@@ -7,8 +7,6 @@ import {
   PinBindingInputGroupState,
 } from "./interfaces";
 import { isNumber, includes } from "lodash";
-import { initSave } from "../../api/crud";
-import { pinBindingBody } from "./tagged_pin_binding_init";
 import { error, warning } from "../../toast/toast";
 import {
   validGpioPins, sysBindings, generatePinLabel, RpiPinList,
@@ -25,6 +23,7 @@ import { BoxTopGpioDiagram } from "./box_top_gpio_diagram";
 import { findSequenceById, selectAllSequences } from "../../resources/selectors";
 import { ResourceIndex } from "../../resources/interfaces";
 import { FirmwareHardware } from "farmbot";
+import { setPinBinding } from "./actions";
 
 export class PinBindingInputGroup
   extends React.Component<PinBindingInputGroupProps, PinBindingInputGroupState> {
@@ -60,34 +59,26 @@ export class PinBindingInputGroup
 
   /** Validate and save a pin binding. */
   bindPin = () => {
-    const { dispatch } = this.props;
+    const { dispatch, resources } = this.props;
     const {
       pinNumberInput, sequenceIdInput, bindingType, specialActionInput
     } = this.state;
-    if (isNumber(pinNumberInput)) {
-      if (bindingType && (sequenceIdInput || specialActionInput)) {
-        bindingType == PinBindingType.special
-          ? dispatch(initSave("PinBinding", pinBindingBody({
-            pin_num: pinNumberInput,
-            special_action: specialActionInput,
-            binding_type: bindingType
-          })))
-          : dispatch(initSave("PinBinding", pinBindingBody({
-            pin_num: pinNumberInput,
-            sequence_id: sequenceIdInput,
-            binding_type: bindingType
-          })));
-        this.setState({
-          pinNumberInput: undefined,
-          sequenceIdInput: undefined,
-          specialActionInput: undefined,
-          bindingType: PinBindingType.standard,
-        });
-      } else {
-        error(t("Please select a sequence or action."));
-      }
-    } else {
-      error(t("Pin number cannot be blank."));
+    const success = setPinBinding({
+      binding: undefined,
+      dispatch,
+      resources,
+      pinNumber: pinNumberInput,
+    })({
+      headingId: bindingType, label: "",
+      value: "" + (sequenceIdInput || specialActionInput),
+    });
+    if (success) {
+      this.setState({
+        pinNumberInput: undefined,
+        sequenceIdInput: undefined,
+        specialActionInput: undefined,
+        bindingType: PinBindingType.standard,
+      });
     }
   };
 
@@ -219,12 +210,13 @@ export const BindingTargetDropdown = (props: BindingTargetDropdownProps) => {
       });
     return dropDownList;
   };
-
+  const selectedItem = pinBindingLabel(props);
   return <FBSelect
+    key={JSON.stringify(selectedItem)}
     onChange={props.change}
-    selectedItem={pinBindingLabel(props)}
+    selectedItem={selectedItem}
     list={list()}
-    customNullLabel={t("Select an action")} />;
+    customNullLabel={t("Select")} />;
 };
 
 interface PinBindingLabelProps {

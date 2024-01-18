@@ -126,6 +126,7 @@ module FarmBot
           "'unsafe-inline'",
           "'unsafe-eval'",
           "'self'",
+          "blob:", # 3D
         ],
         style_src: %w(
           maxcdn.bootstrapcdn.com

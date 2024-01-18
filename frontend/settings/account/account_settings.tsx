@@ -156,6 +156,11 @@ const APP_SETTINGS = (): SettingDescriptionProps[] => ([
     setting: BooleanSetting.hide_sensors,
   },
   {
+    title: DeviceSetting.enable3dElectronicsBox,
+    description: Content.ENABLE_3D_ELECTRONICS_BOX_TOP,
+    setting: BooleanSetting.enable_3d_electronics_box_top,
+  },
+  {
     title: DeviceSetting.readSpeakLogsInBrowser,
     description: Content.BROWSER_SPEAK_LOGS,
     setting: BooleanSetting.enable_browser_speak,
