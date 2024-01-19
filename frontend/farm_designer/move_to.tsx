@@ -131,7 +131,9 @@ export const chooseLocation = (props: {
 }) => {
   if (props.gardenCoords) {
     props.dispatch(chooseLocationAction({
-      x: props.gardenCoords.x, y: props.gardenCoords.y, z: 0
+      x: Math.max(0, props.gardenCoords.x),
+      y: Math.max(0, props.gardenCoords.y),
+      z: 0,
     }));
   }
 };
@@ -156,7 +158,7 @@ interface GoToThisLocationButtonState {
 
 export class GoToThisLocationButton
   extends React.Component<GoToThisLocationButtonProps,
-  GoToThisLocationButtonState> {
+    GoToThisLocationButtonState> {
   state: GoToThisLocationButtonState = { open: false, setAsDefault: false };
 
   toggle = (key: keyof GoToThisLocationButtonState) => () =>
