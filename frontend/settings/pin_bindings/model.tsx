@@ -141,7 +141,7 @@ export const Model = (props: BoxTopBaseProps) => {
 
   const BUTTONS: ButtonOrLedItem[] = [
     {
-      label: t("E-Stop"),
+      label: t("Button 1"),
       pinNumber: ButtonPin.estop,
       on: props.botOnline && !locked,
       position: -60,
@@ -152,7 +152,7 @@ export const Model = (props: BoxTopBaseProps) => {
       ref: estop,
     },
     {
-      label: t("Unlock"),
+      label: t("Button 2"),
       pinNumber: ButtonPin.unlock,
       blink: props.botOnline && locked,
       position: -30,
@@ -321,7 +321,7 @@ export const Model = (props: BoxTopBaseProps) => {
               position={[-30, btnPosition, Z]}
               rotation={[Math.PI / 2, 0, 0]} />
             <Cylinder name={"button-center"}
-              material-color={isHovered ? 0xdddddd : 0xcccccc}
+              material-color={(binding && isHovered) ? 0xdddddd : 0xcccccc}
               args={[6.75, 0, 4]}
               position={[-30, btnPosition, Z]}
               rotation={[Math.PI / 2, 0, 0]} />
@@ -339,7 +339,11 @@ export const Model = (props: BoxTopBaseProps) => {
                   resources={props.resources}
                   sequenceIdInput={binding?.sequence_id}
                   specialActionInput={binding?.special_action} />
-                : <p className={`btn-label ${isHovered ? "hovered" : ""}`}>
+                : <p className={[
+                  "btn-label",
+                  isHovered ? "hovered" : "",
+                  binding ? "" : "unbound",
+                ].join(" ")}>
                   {getLabel(binding) || label}
                 </p>}
             </Html>

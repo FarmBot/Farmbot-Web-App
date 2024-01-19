@@ -2027,6 +2027,9 @@ ul {
     &.hovered {
       background: $black;
     }
+    &.unbound {
+      background: $placeholder_gray;
+    }
   }
   .led-label {
     max-width: 7rem;
