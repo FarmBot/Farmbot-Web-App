@@ -13,7 +13,6 @@
     "url": "https://github.com/farmbot/farmbot-web-app"
   },
   "scripts": {
-    "coverage": "cat **/*lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "test-very-slow": "node --expose-gc ./node_modules/.bin/jest -i --colors --coverage",
     "test-slow": "./node_modules/.bin/jest -w 6 --colors",
     "test": "./node_modules/.bin/jest -w 5 --no-coverage",
@@ -85,7 +84,6 @@
     "@typescript-eslint/eslint-plugin": "6.16.0",
     "@typescript-eslint/parser": "6.16.0",
     "@wojtekmaj/enzyme-adapter-react-17": "0.8.0",
-    "coveralls": "3.1.1",
     "enzyme": "3.11.0",
     "eslint": "8.56.0",
     "eslint-plugin-eslint-comments": "3.2.0",
