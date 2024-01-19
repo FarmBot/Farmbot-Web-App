@@ -21,6 +21,6 @@ describe("<FallbackWidget />", () => {
     p.helpText = "This is a fake widget.";
     const wrapper = shallow(<FallbackWidget {...p} />);
     expect(wrapper.html())
-      .toContain("<i class=\"fa fa-question-circle help-icon\">");
+      .toContain("<i class=\"fa fa-question-circle help-icon\"");
   });
 });
