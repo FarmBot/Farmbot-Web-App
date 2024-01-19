@@ -35,3 +35,10 @@ jest.mock("../history", () => ({
   push: jest.fn(),
   getPathArray: () => [],
 }));
+
+window.ResizeObserver = (() => ({
+  observe: jest.fn(),
+  unobserve: jest.fn(),
+  disconnect: jest.fn(),
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+})) as any;

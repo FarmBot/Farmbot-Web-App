@@ -66,7 +66,7 @@ export const EditDatePlanted = (props: EditDatePlantedProps) => {
     value={datePlanted?.utcOffset(timeSettings.utcOffset)
       .format("YYYY-MM-DD") || ""}
     onCommit={e => updatePlant(uuid, {
-      planted_at: moment(e.currentTarget.value)
+      planted_at: "" + moment(e.currentTarget.value)
         .utcOffset(timeSettings.utcOffset).toISOString()
     })} />;
 };

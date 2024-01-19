@@ -176,6 +176,16 @@ describe("<PlantGrid />", () => {
     expect(wrapper.state().grid.numPlantsH).toEqual(6);
   });
 
+  it("handles data changes: starting coordinates", () => {
+    const props = fakeProps();
+    const wrapper = mount<PlantGrid>(<PlantGrid {...props} />);
+    wrapper.instance().onChange("startX", 600);
+    expect(wrapper.state().grid.startX).toEqual(600);
+    expect(props.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_GRID_START, payload: { x: 600, y: 100 },
+    });
+  });
+
   it("uses current position", () => {
     const props = fakeProps();
     const wrapper = mount<PlantGrid>(<PlantGrid {...props} />);

@@ -48,7 +48,7 @@ describe("<PlantInventoryItem />", () => {
     const p = fakeProps();
     const plant = fakePlant();
     plant.body.name = "";
-    plant.body.planted_at = moment().toISOString();
+    plant.body.planted_at = "" + moment().toISOString();
     p.plant = plant;
     const wrapper = shallow(<PlantInventoryItem {...p} />);
     expect(wrapper.text()).toEqual("Unknown plant1 day old");

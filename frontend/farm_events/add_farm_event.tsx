@@ -57,8 +57,8 @@ export class RawAddFarmEvent
       const { uuid } = this.props.findExecutable(executable_type, executable_id);
       const varData = this.props.resources.sequenceMetas[uuid];
       const action = init("FarmEvent", {
-        end_time: moment().add(63, "minutes").toISOString(),
-        start_time: moment().add(3, "minutes").toISOString(),
+        end_time: "" + moment().add(63, "minutes").toISOString(),
+        start_time: "" + moment().add(3, "minutes").toISOString(),
         time_unit: "never",
         executable_id,
         executable_type,

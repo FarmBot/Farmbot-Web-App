@@ -19,6 +19,7 @@ const DEFAULT_WEB_APP_CONFIG_VALUES: Record<Key, Value> = {
   disable_i18n: false,
   display_trail: true,
   dynamic_map: false,
+  ["enable_3d_electronics_box_top" as Key]: true,
   encoder_figure: false,
   go_button_axes: "XY",
   hide_webcam_widget: false,

@@ -50,7 +50,7 @@ export class RawEditZone extends React.Component<EditZoneProps, {}> {
         {zone
           ? <div className={"zone-info-panel-content-wrapper"}>
             <label>{t("zone name")}</label>
-            <input name="name"
+            <input name="zoneName"
               defaultValue={zone.body.name}
               onBlur={e => {
                 this.props.dispatch(edit(zone, { name: e.currentTarget.value }));

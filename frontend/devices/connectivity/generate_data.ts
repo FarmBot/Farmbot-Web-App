@@ -26,7 +26,7 @@ export const connectivityData = (props: ConnectivityDataProps) => {
         userMQTT: browserToMQTT({ state: "up", at: moment().valueOf() }),
         userAPI: browserToAPI({ state: "up", at: moment().valueOf() }),
         botMQTT: botToMQTT({ state: "up", at: moment().valueOf() }),
-        botAPI: botToAPI(moment().toISOString()),
+        botAPI: botToAPI("" + moment().toISOString()),
         botFirmware: botToFirmware("0.0.0.E", "express_k10"),
       }
       : {

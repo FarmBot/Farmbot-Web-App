@@ -2,6 +2,7 @@ import { store } from "../redux/store";
 import { networkUp, networkDown } from "./actions";
 import { Edge } from "./interfaces";
 import { Actions } from "../constants";
+import { UnknownAction } from "redux";
 
 /* ABOUT THIS FILE: These functions allow us to mark the network as up or
 down from anywhere within the app (even outside of React-Redux). I usually avoid
@@ -39,13 +40,13 @@ export const dispatchQosStart = (id: string) => {
 
 export const dispatchNetworkUp = (edge: Edge, at: number) => {
   if (shouldThrottle(edge, at)) { return; }
-  store.dispatch(networkUp(edge, at));
+  store.dispatch(networkUp(edge, at) as unknown as UnknownAction);
   bumpThrottle(edge, at);
 };
 
 export const dispatchNetworkDown = (edge: Edge, at: number) => {
   if (shouldThrottle(edge, at)) { return; }
-  store.dispatch(networkDown(edge, at));
+  store.dispatch(networkDown(edge, at) as unknown as UnknownAction);
   bumpThrottle(edge, at);
 };
 

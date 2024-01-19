@@ -31,7 +31,7 @@ export const destroyAllWizardStepResults =
 export const completeSetup = (device: TaggedDevice | undefined) =>
   device &&
   setDeviceProperty(device, {
-    setup_completed_at: moment().toISOString()
+    setup_completed_at: "" + moment().toISOString()
   });
 
 export const resetSetup = (device: TaggedDevice | undefined) =>

@@ -188,7 +188,7 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
             env={this.props.env} />
           <label>{t("Name")}</label>
           <input defaultValue={this.state.toolName}
-            name="name"
+            name="toolName"
             onChange={e =>
               this.setState({ toolName: e.currentTarget.value })} />
           {reduceToolName(toolName) == ToolName.wateringNozzle &&

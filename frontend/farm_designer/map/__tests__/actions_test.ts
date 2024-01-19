@@ -194,7 +194,7 @@ describe("clickMapPlant", () => {
     mockPath = Path.mock(Path.plants("select"));
     const state = fakeState();
     const plant = fakePlant();
-    plant.uuid = "fakePlantUuid";
+    plant.uuid = "Point.fakePlantUuid";
     state.resources = buildResourceIndex([plant]);
     const dispatch = jest.fn();
     const getState: GetState = jest.fn(() => state);
@@ -209,7 +209,7 @@ describe("clickMapPlant", () => {
     mockPath = Path.mock(Path.plants("select"));
     const state = fakeState();
     const plant = fakePlant();
-    plant.uuid = "fakePlantUuid";
+    plant.uuid = "Point.fakePlantUuid";
     state.resources = buildResourceIndex([plant]);
     state.resources.consumers.farm_designer.selectedPoints = [plant.uuid];
     const dispatch = jest.fn();

@@ -4,7 +4,8 @@ import {
   StringConfigKey as WebAppStringConfigKey,
 } from "farmbot/dist/resources/configs/web_app";
 
-type WebAppBooleanConfigKeyAll = WebAppBooleanConfigKey;
+type WebAppBooleanConfigKeyAll = WebAppBooleanConfigKey
+  | "enable_3d_electronics_box_top";
 type WebAppNumberConfigKeyAll = WebAppNumberConfigKey;
 type WebAppStringConfigKeyAll = WebAppStringConfigKey;
 
@@ -62,6 +63,8 @@ export const BooleanSetting: BooleanSettings = {
   disable_i18n: "disable_i18n",
   hide_webcam_widget: "hide_webcam_widget",
   hide_sensors: "hide_sensors",
+  enable_3d_electronics_box_top:
+    "enable_3d_electronics_box_top" as WebAppBooleanConfigKey,
   enable_browser_speak: "enable_browser_speak",
   discard_unsaved: "discard_unsaved",
   time_format_24_hour: "time_format_24_hour",

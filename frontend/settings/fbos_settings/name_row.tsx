@@ -9,7 +9,7 @@ import { getModifiedClassNameSpecifyDefault } from "../default_values";
 
 export class NameRow extends React.Component<NameRowProps> {
   NameInput = () =>
-    <input name="name"
+    <input name="farmbotName"
       className={getModifiedClassNameSpecifyDefault(
         this.props.device.body.name, "FarmBot",
       )}

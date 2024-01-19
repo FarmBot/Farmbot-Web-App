@@ -42,7 +42,7 @@ export class GardenSnapshot
   render() {
     return <div className="garden-snapshot">
       <label>{t("name")}</label>
-      <input name="name"
+      <input name="gardenName"
         onChange={e => this.setState({ gardenName: e.currentTarget.value })}
         value={this.state.gardenName} />
       <label>{t("notes")}</label>

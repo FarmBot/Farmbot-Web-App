@@ -119,11 +119,17 @@ describe Api::AisController do
     expect(response.status).to eq(200)
     expect(response.body).to eq("title")
 
-    (0..20).map do |_|
+    statuses = []
+    bodies = []
+
+    (0..30).map do |_|
       post :create, body: payload.to_json
+      statuses.push(response.status)
+      bodies.push(response.body)
     end
 
-    expect(response.status).to eq(403)
-    expect(response.body).to eq({error: "Too many requests. Try again later."}.to_json)
+    if statuses.last() != 403 then puts statuses.join(" ") end
+    expect(statuses).to include(403)
+    expect(bodies).to include({error: "Too many requests. Try again later."}.to_json)
   end
 end

@@ -181,6 +181,7 @@ export interface DesignerState {
   hoveredMapImage: number | undefined;
   cameraViewGridId: string | undefined;
   gridIds: string[];
+  gridStart: Record<"x" | "y", number>;
   soilHeightLabels: boolean;
   profileOpen: boolean;
   profileAxis: "x" | "y";

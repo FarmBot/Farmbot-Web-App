@@ -19,7 +19,7 @@ interface NameInputBoxProps {
 
 export const NameInputBox = (props: NameInputBoxProps) =>
   <input type="text"
-    name="name"
+    name="pinName"
     placeholder={t("Name")}
     value={props.value}
     onChange={e => props.dispatch(edit(props.resource, {

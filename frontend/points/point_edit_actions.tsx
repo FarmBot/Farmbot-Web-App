@@ -140,7 +140,7 @@ export const EditPointName = (props: EditPointNameProps) =>
       <label>{t("Name")}</label>
       <BlurableInput
         type="text"
-        name="name"
+        name="pointName"
         value={props.name}
         onCommit={e => props.updatePoint({ name: e.currentTarget.value })} />
     </Col>

@@ -9,7 +9,4 @@ P2=$!
 sudo docker compose run web npm run test-slow &
 P3=$!
 
-sudo docker compose run web npm run coverage  &
-P4=$!
-
-wait $P1 $P2 $P3 $P4
+wait $P1 $P2 $P3

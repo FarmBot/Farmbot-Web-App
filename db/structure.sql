@@ -2032,7 +2032,8 @@ CREATE TABLE public.web_app_configs (
     go_button_axes character varying(3) DEFAULT 'XY'::character varying NOT NULL,
     show_uncropped_camera_view_area boolean DEFAULT false,
     default_plant_depth integer DEFAULT 5,
-    show_missed_step_plot boolean DEFAULT false
+    show_missed_step_plot boolean DEFAULT false,
+    enable_3d_electronics_box_top boolean DEFAULT true
 );
 
 
@@ -3979,6 +3980,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20230712201622'),
 ('20230714010144'),
 ('20230714173031'),
-('20230808192946');
+('20230808192946'),
+('20240118204046');
 
 

@@ -29,9 +29,10 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
 
   get initGridState() {
     const spread = (this.props.spread || DEFAULT_PLANT_RADIUS) * 10;
+    const gridStart = this.props.designer?.gridStart || { x: 100, y: 100 };
     return {
-      startX: 100,
-      startY: 100,
+      startX: gridStart.x,
+      startY: gridStart.y,
       spacingH: spread,
       spacingV: spread,
       numPlantsH: 2,
@@ -46,6 +47,11 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
 
   onChange = (key: PlantGridKey, val: number) => {
     const grid = { ...this.state.grid, [key]: val };
+    ["startX", "startY"].includes(key) &&
+      this.props.dispatch({
+        type: Actions.SET_GRID_START,
+        payload: { x: grid.startX, y: grid.startY },
+      });
     this.setState({ grid }, this.performPreview());
   };
 

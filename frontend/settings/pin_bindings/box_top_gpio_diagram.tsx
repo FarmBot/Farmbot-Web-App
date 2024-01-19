@@ -1,21 +1,12 @@
 import React from "react";
 import { t } from "../../i18next_wrapper";
 import { Color } from "../../ui/colors";
-import { FirmwareHardware, RpcRequestBodyItem, SyncStatus } from "farmbot";
+import { FirmwareHardware, SyncStatus } from "farmbot";
 import { hasExtraButtons } from "../firmware/firmware_hardware_support";
-import { DropDownItem } from "../../ui";
 import { BindingTargetDropdown, pinBindingLabel } from "./pin_binding_input_group";
-import {
-  PinBinding,
-  PinBindingSpecialAction, PinBindingType, SpecialPinBinding, StandardPinBinding,
-} from "farmbot/dist/resources/api_resources";
-import { initSave, overwrite, save, destroy } from "../../api/crud";
-import { pinBindingBody } from "./tagged_pin_binding_init";
-import { ResourceIndex } from "../../resources/interfaces";
-import { findByUuid } from "../../resources/reducer_support";
-import { apiPinBindings } from "./pin_bindings_content";
-import { execSequence, sendRPC } from "../../devices/actions";
-import { cloneDeep, isUndefined } from "lodash";
+import { isUndefined } from "lodash";
+import { findBinding, setPinBinding, triggerBinding } from "./actions";
+import { BoxTopBaseProps } from "./interfaces";
 
 export interface BoxTopGpioDiagramProps {
   boundPins: number[] | undefined;
@@ -126,22 +117,12 @@ export class BoxTopGpioDiagram
   }
 }
 
-export interface BoxTopButtonsProps {
-  firmwareHardware: FirmwareHardware | undefined;
-  isEditing: boolean;
-  dispatch: Function;
-  resources: ResourceIndex;
-  botOnline: boolean;
-  syncStatus: SyncStatus | undefined;
-  locked: boolean;
-}
-
 interface BoxTopButtonsState {
   hoveredPin: number | undefined;
 }
 
 export class BoxTopButtons
-  extends React.Component<BoxTopButtonsProps, BoxTopButtonsState> {
+  extends React.Component<BoxTopBaseProps, BoxTopButtonsState> {
   state: BoxTopGpioDiagramState = { hoveredPin: undefined };
 
   hover = (hovered: number | undefined) =>
@@ -154,73 +135,34 @@ export class BoxTopButtons
         this.setState({ hoveredPin: hovered });
     };
 
-  findBinding = (pin: number) => apiPinBindings(this.props.resources)
-    .filter(b => b.pin_number == pin)[0];
-
-  bind = (pin: number) => (ddi: DropDownItem) => {
-    const bindingUuid = this.findBinding(pin)?.uuid;
-    if (bindingUuid && ddi.isNull) {
-      this.props.dispatch(destroy(bindingUuid));
-      return;
-    }
-    const bindingType = ddi.headingId as PinBindingType;
-    const sequenceIdInput = ddi.headingId == PinBindingType.standard
-      ? parseInt("" + ddi.value)
-      : undefined;
-    const specialActionInput = ddi.headingId == PinBindingType.special
-      ? ddi.value as PinBindingSpecialAction
-      : undefined;
-    const body = pinBindingBody(bindingType == PinBindingType.special
-      ? {
-        pin_num: pin,
-        special_action: specialActionInput,
-        binding_type: bindingType
-      }
-      : {
-        pin_num: pin,
-        sequence_id: sequenceIdInput,
-        binding_type: bindingType
-      });
-    if (bindingUuid) {
-      const binding = findByUuid(this.props.resources, bindingUuid);
-      const newBody = cloneDeep(binding.body as PinBinding);
-      newBody.binding_type = bindingType;
-      if (bindingType == PinBindingType.standard && sequenceIdInput) {
-        (newBody as StandardPinBinding).sequence_id = sequenceIdInput;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (newBody as any).special_action = undefined;
-      }
-      if (bindingType == PinBindingType.special && specialActionInput) {
-        (newBody as SpecialPinBinding).special_action = specialActionInput;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (newBody as any).sequence_id = undefined;
-      }
-      this.props.dispatch(overwrite(binding, newBody));
-      this.props.dispatch(save(binding.uuid));
-    } else {
-      this.props.dispatch(initSave("PinBinding", body));
-    }
-  };
+  findBinding = findBinding(this.props.resources);
 
   render() {
-    const { firmwareHardware, botOnline, locked, syncStatus } = this.props;
+    const {
+      firmwareHardware, botOnline, resources, dispatch, bot,
+    } = this.props;
+    const { locked, sync_status } = bot.hardware.informational_settings;
+    const syncStatus = sync_status;
     const circlesProps = { firmwareHardware, clean: true };
     const buttons = CIRCLES(circlesProps).filter(circle => circle.r > 4);
     const leds = CIRCLES(circlesProps).filter(circle => circle.r < 5);
-    return <div className={"box-top-wrapper"}>
+    return <div className={"box-top-2d-wrapper"}>
       <div className={"box-top-buttons"}
         style={hasExtraButtons(firmwareHardware) ? {} : { display: "block" }}>
         {buttons.map(circle => {
           const binding = this.findBinding(circle.pin);
           return this.props.isEditing && [5, 20, 26].includes(circle.pin)
             ? <BindingTargetDropdown key={circle.cx}
-              change={this.bind(circle.pin)}
-              resources={this.props.resources}
+              change={setPinBinding({
+                binding, dispatch, resources,
+                pinNumber: circle.pin,
+              })}
+              resources={resources}
               sequenceIdInput={binding?.sequence_id}
               specialActionInput={binding?.special_action} />
             : <p key={circle.cx}>
               {(pinBindingLabel({
-                resources: this.props.resources,
+                resources: resources,
                 sequenceIdInput: binding?.sequence_id,
                 specialActionInput: binding?.special_action,
               }) || circle).label}
@@ -236,18 +178,7 @@ export class BoxTopButtons
             on={ledOn(statusProps)}
             blinking={ledBlinking(statusProps)}
             hasBinding={!!binding}
-            press={() => {
-              const binding = this.findBinding(circle.pin);
-              if (!botOnline || !binding) { return; }
-              if (binding.sequence_id) {
-                execSequence(binding.sequence_id);
-              }
-              if (binding.special_action) {
-                sendRPC({
-                  kind: binding.special_action, args: {},
-                } as RpcRequestBodyItem);
-              }
-            }} />;
+            press={triggerBinding(resources, botOnline)(circle.pin)} />;
         })}
       </div>
       <div className={"box-top-leds"}>

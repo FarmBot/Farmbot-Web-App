@@ -40,7 +40,7 @@ export const AccountSettings = (props: AccountSettingsProps) =>
           </label>
           <BlurableInput
             type="text"
-            name="name"
+            name="userName"
             value={props.user.body.name || ""}
             onCommit={e => {
               props.dispatch(edit(
@@ -154,6 +154,11 @@ const APP_SETTINGS = (): SettingDescriptionProps[] => ([
     title: DeviceSetting.hideSensorsPanel,
     description: Content.HIDE_SENSORS_WIDGET,
     setting: BooleanSetting.hide_sensors,
+  },
+  {
+    title: DeviceSetting.enable3dElectronicsBox,
+    description: Content.ENABLE_3D_ELECTRONICS_BOX_TOP,
+    setting: BooleanSetting.enable_3d_electronics_box_top,
   },
   {
     title: DeviceSetting.readSpeakLogsInBrowser,

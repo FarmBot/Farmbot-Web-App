@@ -83,6 +83,7 @@ export class ControlsPanel extends React.Component<ControlsPanelProps> {
   Peripherals = () => {
     return <div className={"peripherals-tab"}>
       <Peripherals
+        getConfigValue={this.props.getConfigValue}
         firmwareHardware={this.props.firmwareHardware}
         bot={this.props.bot}
         peripherals={this.props.peripherals}

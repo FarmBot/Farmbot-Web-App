@@ -858,11 +858,6 @@ fieldset {
   margin-top: 2rem;
 }
 
-.peripherals-tab {
-  overflow-y: scroll;
-  overflow-x: hidden;
-}
-
 .webcam-stream-unavailable {
   position: relative;
   width: 100%;
@@ -2011,6 +2006,69 @@ ul {
   }
 }
 
+.electronics-box-3d-model {
+  margin-bottom: 1rem;
+  .led-label,
+  .btn-label {
+    display: block;
+    margin: auto;
+    width: max-content;
+    color: $off_white;
+    font-size: 1rem;
+    background: $dark_gray;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.5rem;
+    white-space: normal;
+    max-height: 3.4rem;
+    overflow-y: hidden;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    &.hovered {
+      background: $black;
+    }
+  }
+  .led-label {
+    max-width: 7rem;
+  }
+  .btn-label {
+    max-width: 5.8rem;
+  }
+  .filter-search {
+    max-width: 5.5rem;
+    .fa-caret-down {
+      bottom: -0.5rem;
+      right: 0.25rem;
+      color: $off_white;
+    }
+    button {
+      padding: 0.25rem;
+      background: $dark_gray !important;
+      border-radius: 0.5rem;
+      height: max-content !important;
+      min-height: 0;
+      &:hover {
+        background: $dark_gray !important;
+      }
+    }
+    span {
+      color: $off_white;
+      white-space: normal !important;
+      text-overflow: revert !important;
+      font-weight: 700;
+      font-size: 1rem;
+      text-align: center;
+      margin-right: 0.5rem;
+    }
+  }
+  div {
+    z-index: 0 !important;
+  }
+  canvas {
+    height: 23rem;
+  }
+}
+
 .webcam-widget {
   .no-flipper-image-container {
     background: none !important;
@@ -2030,7 +2088,6 @@ ul {
 }
 
 .peripheral-list {
-  margin-top: 1rem;
   label {
     margin-top: 0 !important;
   }
@@ -2043,7 +2100,12 @@ ul {
   }
 }
 
-.box-top-wrapper {
+.peripheral-form,
+.peripheral-list {
+  padding-top: 1rem;
+}
+
+.box-top-2d-wrapper {
   margin-top: 2rem;
   .box-top-leds,
   .box-top-buttons {

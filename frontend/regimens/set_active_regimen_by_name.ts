@@ -3,8 +3,10 @@ import { store } from "../redux/store";
 import { urlFriendly } from "../util";
 import { selectRegimen } from "./actions";
 import { Path } from "../internal_urls";
+import { UnknownAction } from "redux";
 
-const setRegimen = (uuid: string) => store.dispatch(selectRegimen(uuid));
+const setRegimen = (uuid: string) =>
+  store.dispatch(selectRegimen(uuid) as unknown as UnknownAction);
 
 export function setActiveRegimenByName() {
   const chunk = Path.getLastChunk();

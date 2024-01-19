@@ -95,6 +95,7 @@ export const WizardStepContainer = (props: WizardStepContainerProps) => {
             controlsCheckOptions={step.controlsCheckOptions} />}
         {step.pinBindingOptions &&
           <PinBinding
+            getConfigValue={props.getConfigValue}
             dispatch={props.dispatch}
             pinBindingOptions={step.pinBindingOptions}
             bot={props.bot}

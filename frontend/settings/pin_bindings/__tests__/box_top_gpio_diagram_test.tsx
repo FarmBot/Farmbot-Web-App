@@ -3,18 +3,10 @@ jest.mock("../../../devices/actions", () => ({
   sendRPC: jest.fn(),
 }));
 
-jest.mock("../../../api/crud", () => ({
-  overwrite: jest.fn(),
-  save: jest.fn(),
-  destroy: jest.fn(),
-  initSave: jest.fn(),
-}));
-
 import React from "react";
 import { mount } from "enzyme";
 import {
   BoxTopButtons,
-  BoxTopButtonsProps,
   BoxTopGpioDiagram,
   BoxTopGpioDiagramProps,
 } from "../box_top_gpio_diagram";
@@ -29,7 +21,8 @@ import {
   PinBindingSpecialAction,
   PinBindingType, SpecialPinBinding, StandardPinBinding,
 } from "farmbot/dist/resources/api_resources";
-import { destroy, overwrite, initSave, save } from "../../../api/crud";
+import { BoxTopBaseProps } from "../interfaces";
+import { bot } from "../../../__test_support__/fake_state/bot";
 
 describe("<BoxTopGpioDiagram />", () => {
   const fakeProps = (): BoxTopGpioDiagramProps => ({
@@ -76,7 +69,7 @@ describe("<BoxTopGpioDiagram />", () => {
 });
 
 describe("<BoxTopButtons />", () => {
-  const fakeProps = (): BoxTopButtonsProps => {
+  const fakeProps = (): BoxTopBaseProps => {
     const pinBinding = fakePinBinding();
     pinBinding.body.pin_num = 20;
     pinBinding.body.binding_type = PinBindingType.standard;
@@ -85,16 +78,31 @@ describe("<BoxTopButtons />", () => {
     sequence.body.id = 1;
     sequence.body.name = "my sequence";
     const resources = buildResourceIndex([sequence, pinBinding]).index;
+    bot.hardware.informational_settings.sync_status = "synced";
+    bot.hardware.informational_settings.locked = false;
     return {
       firmwareHardware: "arduino",
       isEditing: true,
       dispatch: jest.fn(),
       resources,
       botOnline: true,
-      syncStatus: "synced",
-      locked: false,
+      bot,
     };
   };
+
+  it("renders: genesis", () => {
+    const p = fakeProps();
+    p.firmwareHardware = "arduino";
+    const wrapper = mount(<BoxTopButtons {...p} />);
+    expect(wrapper.find("#button").length).toEqual(9);
+  });
+
+  it("renders: express", () => {
+    const p = fakeProps();
+    p.firmwareHardware = "express_k10";
+    const wrapper = mount(<BoxTopButtons {...p} />);
+    expect(wrapper.find("#button").length).toEqual(1);
+  });
 
   it("renders: not editing", () => {
     const p = fakeProps();
@@ -107,56 +115,11 @@ describe("<BoxTopButtons />", () => {
 
   it("renders: blinking", () => {
     const p = fakeProps();
-    p.syncStatus = "syncing";
-    p.locked = true;
+    p.bot.hardware.informational_settings.sync_status = "syncing";
+    p.bot.hardware.informational_settings.locked = true;
     const wrapper = mount(<BoxTopButtons {...p} />);
     expect(wrapper.find(".fast-blink").length).toEqual(1);
     expect(wrapper.find(".slow-blink").length).toEqual(1);
-  });
-
-  it("un-binds pin", () => {
-    const wrapper = mount<BoxTopButtons>(<BoxTopButtons {...fakeProps()} />);
-    wrapper.instance().bind(20)({
-      isNull: true, label: "", value: "",
-    });
-    expect(destroy).toHaveBeenCalled();
-    expect(save).not.toHaveBeenCalled();
-  });
-
-  it("re-binds pin: standard", () => {
-    const wrapper = mount<BoxTopButtons>(<BoxTopButtons {...fakeProps()} />);
-    wrapper.instance().bind(20)({
-      headingId: PinBindingType.standard, label: "", value: 1,
-    });
-    expect(overwrite).toHaveBeenCalledWith(expect.any(Object),
-      expect.objectContaining({
-        pin_num: 20, sequence_id: 1, binding_type: PinBindingType.standard,
-        special_action: undefined,
-      }));
-    expect(save).toHaveBeenCalled();
-  });
-
-  it("re-binds pin: special", () => {
-    const wrapper = mount<BoxTopButtons>(<BoxTopButtons {...fakeProps()} />);
-    wrapper.instance().bind(20)({
-      headingId: PinBindingType.special, label: "", value: "sync",
-    });
-    expect(overwrite).toHaveBeenCalledWith(expect.any(Object),
-      expect.objectContaining({
-        pin_num: 20, special_action: "sync", binding_type: PinBindingType.special,
-        sequence_id: undefined,
-      }));
-    expect(save).toHaveBeenCalled();
-  });
-
-  it("binds new pin", () => {
-    const wrapper = mount<BoxTopButtons>(<BoxTopButtons {...fakeProps()} />);
-    wrapper.instance().bind(5)({
-      headingId: PinBindingType.special, label: "", value: "sync",
-    });
-    expect(initSave).toHaveBeenCalledWith("PinBinding", {
-      pin_num: 5, special_action: "sync", binding_type: PinBindingType.special,
-    });
   });
 
   it("executes sequence", () => {

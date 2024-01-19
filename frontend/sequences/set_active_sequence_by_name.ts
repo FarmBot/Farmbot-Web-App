@@ -4,8 +4,10 @@ import { urlFriendly } from "../util";
 import { selectSequence } from "./actions";
 import { setMenuOpen } from "./test_button";
 import { Path } from "../internal_urls";
+import { UnknownAction } from "redux";
 
-const setSequence = (uuid: string) => store.dispatch(selectSequence(uuid));
+const setSequence = (uuid: string) =>
+  store.dispatch(selectSequence(uuid) as unknown as UnknownAction);
 
 export function setActiveSequenceByName() {
   const chunk = Path.getLastChunk();

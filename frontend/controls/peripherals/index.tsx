@@ -10,8 +10,10 @@ import { Content } from "../../constants";
 import { uniq, isNumber } from "lodash";
 import { t } from "../../i18next_wrapper";
 import { DIGITAL } from "farmbot";
-import { isBotOnlineFromState } from "../../devices/must_be_online";
-import { BoxTopButtons } from "../../settings/pin_bindings/box_top_gpio_diagram";
+import { isBotOnline } from "../../devices/must_be_online";
+import { getStatus } from "../../connectivity/reducer_support";
+import { BoxTop } from "../../settings/pin_bindings/box_top";
+import { BooleanSetting } from "../../session_keys";
 
 export class Peripherals
   extends React.Component<PeripheralsProps, PeripheralState> {
@@ -20,9 +22,16 @@ export class Peripherals
     this.state = { isEditing: false };
   }
 
+  get botOnline() {
+    const { hardware, connectivity } = this.props.bot;
+    const { sync_status } = hardware.informational_settings;
+    const botToMqttStatus = getStatus(connectivity.uptime["bot.mqtt"]);
+    return isBotOnline(sync_status, botToMqttStatus);
+  }
+
   get disabled() {
     return !!this.props.bot.hardware.informational_settings.busy
-      || !isBotOnlineFromState(this.props.bot);
+      || !this.botOnline;
   }
 
   toggle = () => this.setState({ isEditing: !this.state.isEditing });
@@ -114,15 +123,15 @@ export class Peripherals
       : t("Edit");
     return <div className={"peripherals-widget"}>
       {!this.props.hidePinBindings &&
-        <BoxTopButtons
-          firmwareHardware={this.props.firmwareHardware}
+        <BoxTop
+          threeDimensions={!!this.props.getConfigValue(
+            BooleanSetting.enable_3d_electronics_box_top)}
+          isEditing={isEditing}
           dispatch={this.props.dispatch}
           resources={this.props.resources}
-          botOnline={isBotOnlineFromState(this.props.bot)}
-          syncStatus={this.props.bot.hardware.informational_settings.sync_status}
-          locked={this.props.bot.hardware.informational_settings.locked}
-          isEditing={isEditing} />}
-      <hr />
+          firmwareHardware={this.props.firmwareHardware}
+          bot={this.props.bot}
+          botOnline={this.botOnline} />}
       <EmptyStateWrapper
         notEmpty={this.props.peripherals.length > 0 || isEditing}
         graphic={EmptyStateGraphic.regimens}
