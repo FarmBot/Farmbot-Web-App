@@ -1475,7 +1475,7 @@ export namespace TourContent {
     lot of plants at once? Go to the next step of the tour!`);
 
   export const GRID_AND_ROW_PLANTING =
-    trim(`To add a grid or row of plants, scroll to the bottom of the panel,
+    trim(`To add a grid or row of plants, press the + GRID button,
     enter values into the grid and row planting fields and click PREVIEW.
     The previewed plants will show in the map in grayscale. Make adjustments
     as necessary and when you are happy with the preview, click SAVE.

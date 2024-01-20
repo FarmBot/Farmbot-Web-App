@@ -163,7 +163,7 @@ export const TOURS = (
         title: t("E-STOP Button"),
         content: TourContent.ESTOP_BUTTON,
         beacons: undefined,
-        activeBeacons: [{ class: "e-stop-btn", type: "soft", keep: true }],
+        activeBeacons: [{ class: "e-stop-btn", type: "hard", keep: true }],
         url: undefined,
         dispatchActions: [
           { type: Actions.CLOSE_POPUP, payload: undefined },
@@ -240,6 +240,7 @@ export const TOURS = (
         content: TourContent.GRID_AND_ROW_PLANTING,
         beacons: undefined,
         activeBeacons: [
+          { class: "plus-grid-btn", type: "soft", keep: true },
           { class: "grid-and-row-planting", type: "soft" },
           { class: "preview-button", type: "hard" },
           { class: "save-button", type: "hard" },

@@ -974,6 +974,9 @@ hr {
       box-shadow: 0 0 10px $translucent5, 0 0 5px inset rgba(255, 255, 255, 0.2) !important;
     }
   }
+  &.hard {
+    border-radius: 5px;
+  }
 }
 
 a {
