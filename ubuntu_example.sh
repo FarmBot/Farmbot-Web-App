@@ -19,7 +19,7 @@ sudo apt remove docker docker.io containerd runc
 # Install docker and docker compose
 sudo apt update
 sudo apt install ca-certificates curl gnupg -y
-. /etc/os-release
+source /etc/os-release
 sudo install -m 0755 -d /etc/apt/keyrings
 curl -fsSL https://download.docker.com/linux/$ID/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
 sudo chmod a+r /etc/apt/keyrings/docker.gpg
