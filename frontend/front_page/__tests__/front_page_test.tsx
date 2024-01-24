@@ -79,9 +79,10 @@ describe("<FrontPage />", () => {
     expect(location.assign).toHaveBeenCalledWith(DEFAULT_APP_PAGE);
   });
 
-  it("updates login state", () => {
+  it("updates state", () => {
     const wrapper = mount<FrontPage>(<FrontPage />);
-    changeBlurableInput(wrapper, "email", 1);
+    wrapper.setState({ activePanel: "forgotPassword" });
+    changeBlurableInput(wrapper, "email", 0);
     expect(wrapper.state().email).toEqual("email");
   });
 
