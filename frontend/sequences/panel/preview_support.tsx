@@ -146,6 +146,7 @@ interface ImportBannerProps {
 export const ImportBanner = (props: ImportBannerProps) => {
   const [importing, setImporting] = React.useState(false);
   const { sequence } = props;
+  const includesLua = sequence?.body.body?.map(x => x.kind).includes("lua");
   return <div className={"import-banner"}>
     <label>{t("viewing a publicly shared sequence")}</label>
     <Help text={Content.IMPORT_SEQUENCE} />
@@ -159,6 +160,7 @@ export const ImportBanner = (props: ImportBannerProps) => {
         {importing ? t("importing") : t("import")}
         {importing && <i className={"fa fa-spinner fa-pulse"} />}
       </button>}
+    {includesLua && <p>{t(Content.INCLUDES_LUA_WARNING)}</p>}
   </div>;
 };
 

@@ -752,6 +752,7 @@ export const ImportedBanner = (props: ImportedBannerProps) => {
     {currentVersionItem?.label}
     <i className={`fa ${forked ? "fa-chain-broken" : "fa-link"}`} />
   </p>;
+  const includesLua = props.sequence.body.body?.map(x => x.kind).includes("lua");
   return versionId
     ? <div className={"import-banners"}>
       <div className={"imported-banner"}>
@@ -762,6 +763,7 @@ export const ImportedBanner = (props: ImportedBannerProps) => {
             onClick={upgradeSequence(props.sequence.body.id, latestId)}>
             {revertAvailable ? t("revert changes") : t("upgrade to latest")}
           </button>}
+        {includesLua && <p>{t(Content.INCLUDES_LUA_WARNING)}</p>}
       </div>
       <div className={"upgrade-compare-banner"}>
         <div className={`copy-item ${props.view == "local" ? "selected" : ""}`}

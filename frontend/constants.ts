@@ -1105,6 +1105,9 @@ export namespace Content {
     FarmBot and make changes. If the original author of the sequence
     publishes a new version, you will have the option to upgrade your copy.`);
 
+  export const INCLUDES_LUA_WARNING =
+    trim(`This sequence includes Lua code. Review carefully before executing.`);
+
   export const IMPORTED_SEQUENCE =
     trim(`This sequence was imported from a publicly shared sequence. If
     the original author publishes a new version, you may upgrade your copy.

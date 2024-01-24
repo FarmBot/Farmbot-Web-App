@@ -51,9 +51,9 @@ describe Sequences::Publish do
   it "disallows denied nodes and args" do
     bad = FakeSequence.with_parameters(device: device, body: [
                                          {
-                                           kind: "lua",
+                                           kind: "factory_reset",
                                            args: {
-                                             lua: "os.cmd('cat /etc/password')",
+                                             package: "farmbot_os"
                                            },
                                          },
                                        ])
@@ -61,7 +61,7 @@ describe Sequences::Publish do
                                       device: device,
                                       copyright: "FarmBot, Inc. 2021")
     expected = "For security reasons, we can't publish sequences " \
-               "that contain the following content: lua"
+               "that contain the following content: factory_reset"
     actual = problems.errors["sequence"].message
     expect(actual).to eq(expected)
   end
