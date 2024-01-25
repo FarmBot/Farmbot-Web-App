@@ -2027,6 +2027,7 @@ ul {
     font-weight: 700;
     line-height: 1;
     text-align: center;
+    user-select: none;
     &.hovered {
       background: $black;
     }
