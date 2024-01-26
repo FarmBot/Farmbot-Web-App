@@ -4,9 +4,10 @@ require "bunny"
 # change protocols
 class Transport
   OPTS = { read_timeout: 10, heartbeat: 10, log_level: "warn" }
+  CLOUDAMQP_ENV_KEY = ENV.fetch("WHERE_IS_CLOUDAMQP_URL", "CLOUDAMQP_URL")
 
   def self.amqp_url
-    @amqp_url ||= ENV["CLOUDAMQP_URL"] ||
+    @amqp_url ||= ENV[CLOUDAMQP_ENV_KEY] ||
                   ENV["RABBITMQ_URL"] ||
                   "amqp://admin:#{ENV.fetch("ADMIN_PASSWORD")}@mqtt:5672"
   end
