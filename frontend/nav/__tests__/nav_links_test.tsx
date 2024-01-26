@@ -4,13 +4,6 @@ jest.mock("../../history", () => ({
   getPathArray: jest.fn(() => mockPath.split("/")),
 }));
 
-let mockHasSensors = false;
-jest.mock("../../settings/firmware/firmware_hardware_support", () => ({
-  hasSensors: () => mockHasSensors,
-  getFwHardwareValue: jest.fn(),
-  isExpress: jest.fn(),
-}));
-
 import { fakeState } from "../../__test_support__/fake_state";
 const mockState = fakeState();
 jest.mock("../../redux/store", () => ({ store: { getState: () => mockState } }));
@@ -21,7 +14,7 @@ import { NavLinks } from "../nav_links";
 import { NavLinksProps } from "../interfaces";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import {
-  fakeFarmwareInstallation,
+  fakeFarmwareInstallation, fakeWebAppConfig,
 } from "../../__test_support__/fake_state/resources";
 import { fakeHelpState } from "../../__test_support__/fake_designer_state";
 
@@ -60,14 +53,24 @@ describe("<NavLinks />", () => {
     mockPath = Path.mock(Path.plants());
     const wrapper = shallow(<NavLinks {...fakeProps()} />);
     expect(wrapper.find("Link").at(1).hasClass("active")).toBeTruthy();
-    expect(wrapper.html().toLowerCase()).not.toContain("sensors");
   });
 
   it("shows sensors link", () => {
-    mockHasSensors = true;
+    const config = fakeWebAppConfig();
+    config.body.hide_sensors = false;
+    mockState.resources = buildResourceIndex([config]);
     const p = fakeProps();
     const wrapper = shallow(<NavLinks {...p} />);
     expect(wrapper.html().toLowerCase()).toContain("sensors");
+  });
+
+  it("doesn't show sensors link", () => {
+    const config = fakeWebAppConfig();
+    config.body.hide_sensors = true;
+    mockState.resources = buildResourceIndex([config]);
+    const p = fakeProps();
+    const wrapper = shallow(<NavLinks {...p} />);
+    expect(wrapper.html().toLowerCase()).not.toContain("sensors");
   });
 
   it("doesn't show farmware link", () => {
