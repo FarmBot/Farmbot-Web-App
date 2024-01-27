@@ -36,9 +36,6 @@ import {
 } from "farmbot/dist/resources/api_resources";
 import { MessageType } from "../../sequences/interfaces";
 import { TaggedPointGroup } from "../../resources/interfaces";
-import {
-  BooleanConfigKey as BooleanWebAppConfigKey,
-} from "farmbot/dist/resources/configs/web_app";
 
 export const resources: Everything["resources"] = buildResourceIndex();
 let idCounter = 1;
@@ -336,7 +333,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     display_map_missed_steps: false,
     display_trail: false,
     dynamic_map: false,
-    ["enable_3d_electronics_box_top" as BooleanWebAppConfigKey]: true,
+    enable_3d_electronics_box_top: true,
     encoder_figure: false,
     go_button_axes: "XY",
     hide_webcam_widget: false,

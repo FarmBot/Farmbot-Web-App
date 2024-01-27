@@ -96,7 +96,7 @@ import { execSequence } from "../../devices/actions";
 import { clickButton } from "../../__test_support__/helpers";
 import { fakeVariableNameSet } from "../../__test_support__/fake_variables";
 import { DropAreaProps } from "../../draggable/interfaces";
-import { Actions, DeviceSetting } from "../../constants";
+import { Actions, Content, DeviceSetting } from "../../constants";
 import { setWebAppConfigValue } from "../../config_storage/actions";
 import { BooleanSetting } from "../../session_keys";
 import { push } from "../../history";
@@ -446,6 +446,26 @@ describe("<SequenceEditorMiddleActive />", () => {
     expect(wrapper.state().view).toEqual("local");
     props.selectView("public")();
     expect(wrapper.state().view).toEqual("public");
+  });
+
+  it("shows warning", () => {
+    mockPath = Path.mock(Path.sequences("1"));
+    const p = fakeProps();
+    p.sequence.body.sequence_version_id = 1;
+    p.sequence.body.body = [{ kind: "lua", args: { lua: "" } }];
+    maybeTagStep(p.sequence.body.body[0]);
+    const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
+    expect(wrapper.text()).toContain(Content.INCLUDES_LUA_WARNING);
+  });
+
+  it("doesn't show warning", () => {
+    mockPath = Path.mock(Path.sequences("1"));
+    const p = fakeProps();
+    p.sequence.body.sequence_version_id = 1;
+    p.sequence.body.body = [{ kind: "sync", args: {} }];
+    maybeTagStep(p.sequence.body.body[0]);
+    const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
+    expect(wrapper.text()).not.toContain(Content.INCLUDES_LUA_WARNING);
   });
 
   it("edits description", () => {

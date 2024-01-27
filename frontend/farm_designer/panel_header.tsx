@@ -6,10 +6,6 @@ import { DevSettings } from "../settings/dev/dev_support";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { store } from "../redux/store";
 import { BooleanSetting } from "../session_keys";
-import {
-  getFwHardwareValue, hasSensors,
-} from "../settings/firmware/firmware_hardware_support";
-import { getFbosConfig } from "../resources/getters";
 import { computeEditorUrlFromState } from "../nav/compute_editor_url_from_state";
 import { compact } from "lodash";
 import { selectAllFarmwareInstallations } from "../resources/selectors";
@@ -218,10 +214,7 @@ const displayScrollIndicator = () => {
 
 export const showSensors = () => {
   const getWebAppConfigVal = getWebAppConfigValue(store.getState);
-  const firmwareHardware = getFwHardwareValue(getFbosConfig(
-    store.getState().resources.index));
-  return !getWebAppConfigVal(BooleanSetting.hide_sensors)
-    && hasSensors(firmwareHardware);
+  return !getWebAppConfigVal(BooleanSetting.hide_sensors);
 };
 
 export const showFarmware = () => {

@@ -14,6 +14,8 @@
     text-shadow: 0 0 25px rgba(0, 0, 0, 0.1), 0 0 25px rgba(0, 0, 0, 0.1);
   }
   h1 {
+    font-family: "Inknut Antiqua" !important;
+    font-weight: bold !important;
     font-size: 3.4rem;
     line-height: 3.6rem;
   }
@@ -25,6 +27,8 @@
   }
   input {
     margin-bottom: 1rem;
+    font-family: revert;
+    font-size: revert;
   }
   .all-content-wrapper {
     max-width: 50rem;

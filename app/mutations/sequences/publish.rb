@@ -3,7 +3,7 @@ module Sequences
     NOT_YOURS = "Can't publish sequences you didn't create."
     OK_KINDS = %w( axis axis_addition axis_overwrite calibrate channel
                    channel_name coordinate emergency_lock execute execute_script
-                   find_home identifier is_outdated label location_placeholder
+                   find_home identifier is_outdated label location_placeholder lua
                    message message_type milliseconds move move_absolute
                    move_relative nothing number number_placeholder numeric
                    op package pair parameter_application parameter_declaration

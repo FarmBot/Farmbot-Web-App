@@ -394,7 +394,7 @@ export class RawCropInfo extends React.Component<CropInfoProps, CropInfoState> {
           svgIcon={svgToUrl(result.crop.svg_icon)} />
         <Popover portalClassName={"dark-portal"}
           position={Position.BOTTOM_RIGHT}
-          target={<button className={"transparent-button light"}>
+          target={<button className={"plus-grid-btn transparent-button light"}>
             + {t("grid")}
           </button>}
           content={<div className={"grid-popup-content"}>

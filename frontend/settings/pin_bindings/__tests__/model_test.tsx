@@ -180,6 +180,22 @@ describe("<ElectronicsBoxModel />", () => {
     expect(e.object.parent?.children[0].position.z).toEqual(131);
   });
 
+  it("changes cursor: bound", () => {
+    const wrapper = mount(<Model {...fakeProps()} />);
+    expect(document.body.style.cursor).toEqual("default");
+    wrapper.find({ name: "action-group" }).first().simulate("pointermove");
+    expect(document.body.style.cursor).toEqual("pointer");
+    document.body.style.cursor = "default";
+  });
+
+  it("changes cursor: unbound", () => {
+    const wrapper = mount(<Model {...fakeProps()} />);
+    expect(document.body.style.cursor).toEqual("default");
+    wrapper.find({ name: "action-group" }).last().simulate("pointermove");
+    expect(document.body.style.cursor).toEqual("not-allowed");
+    document.body.style.cursor = "default";
+  });
+
   it("renders: off", () => {
     const p = fakeProps();
     p.isEditing = true;

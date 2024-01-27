@@ -1105,6 +1105,9 @@ export namespace Content {
     FarmBot and make changes. If the original author of the sequence
     publishes a new version, you will have the option to upgrade your copy.`);
 
+  export const INCLUDES_LUA_WARNING =
+    trim(`This sequence includes Lua code. Review carefully before executing.`);
+
   export const IMPORTED_SEQUENCE =
     trim(`This sequence was imported from a publicly shared sequence. If
     the original author publishes a new version, you may upgrade your copy.
@@ -1475,7 +1478,7 @@ export namespace TourContent {
     lot of plants at once? Go to the next step of the tour!`);
 
   export const GRID_AND_ROW_PLANTING =
-    trim(`To add a grid or row of plants, scroll to the bottom of the panel,
+    trim(`To add a grid or row of plants, press the + GRID button,
     enter values into the grid and row planting fields and click PREVIEW.
     The previewed plants will show in the map in grayscale. Make adjustments
     as necessary and when you are happy with the preview, click SAVE.

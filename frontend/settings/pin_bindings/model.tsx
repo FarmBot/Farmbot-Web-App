@@ -2,7 +2,7 @@
 /* eslint-disable no-null/no-null */
 import React, { useRef } from "react";
 import {
-  Cylinder, Html, PerspectiveCamera, useCursor, useGLTF,
+  Cylinder, Html, PerspectiveCamera, useGLTF,
 } from "@react-three/drei";
 import { Canvas, ThreeEvent, useFrame } from "@react-three/fiber";
 import { GLTF } from "three-stdlib";
@@ -10,7 +10,7 @@ import { BindingTargetDropdown, pinBindingLabel } from "./pin_binding_input_grou
 import { BoxTopBaseProps, PinBindingListItems } from "./interfaces";
 import { setPinBinding, findBinding, triggerBinding } from "./actions";
 import { BufferGeometry } from "three";
-import { debounce, isUndefined, some } from "lodash";
+import { debounce, some } from "lodash";
 import { t } from "../../i18next_wrapper";
 import { isExpress } from "../../settings/firmware/firmware_hardware_support";
 import { ButtonPin } from "./list_and_label_support";
@@ -141,7 +141,7 @@ export const Model = (props: BoxTopBaseProps) => {
 
   const BUTTONS: ButtonOrLedItem[] = [
     {
-      label: t("E-Stop"),
+      label: t("Button 1"),
       pinNumber: ButtonPin.estop,
       on: props.botOnline && !locked,
       position: -60,
@@ -152,7 +152,7 @@ export const Model = (props: BoxTopBaseProps) => {
       ref: estop,
     },
     {
-      label: t("Unlock"),
+      label: t("Button 2"),
       pinNumber: ButtonPin.unlock,
       blink: props.botOnline && locked,
       position: -30,
@@ -259,10 +259,10 @@ export const Model = (props: BoxTopBaseProps) => {
   };
 
   const [hovered, setHovered] = React.useState<number | undefined>();
-  useCursor(!isUndefined(hovered));
   const leave = (e: ThreeEvent<PointerEvent>) => {
     setHovered(undefined);
     setZForAllInGroup(e, Z);
+    document.body.style.cursor = "default";
   };
   return <group dispose={null}
     rotation={[0, 0, Math.PI / 2]}>
@@ -296,7 +296,12 @@ export const Model = (props: BoxTopBaseProps) => {
         const binding = findPinBinding(pinNumber);
         const isHovered = hovered == pinNumber;
         const click = debounce(clickBinding(pinNumber));
-        const enter = () => !props.isEditing && setHovered(pinNumber);
+        const setCursor = () =>
+          document.body.style.cursor = binding ? "pointer" : "not-allowed";
+        const enter = () => {
+          !props.isEditing && setHovered(pinNumber);
+          setCursor();
+        };
         return <group key={btnPosition} name={"button-group"}
           onPointerUp={leave}>
           <mesh name={"button-housing"}
@@ -307,6 +312,8 @@ export const Model = (props: BoxTopBaseProps) => {
             material-color={0xcccccc} />
           <group name={"action-group"}
             onPointerOver={enter}
+            onPointerMove={setCursor}
+            onClick={setCursor}
             onPointerOut={leave}
             onPointerDown={e => {
               if (!props.isEditing) {
@@ -321,7 +328,7 @@ export const Model = (props: BoxTopBaseProps) => {
               position={[-30, btnPosition, Z]}
               rotation={[Math.PI / 2, 0, 0]} />
             <Cylinder name={"button-center"}
-              material-color={isHovered ? 0xdddddd : 0xcccccc}
+              material-color={(binding && isHovered) ? 0xdddddd : 0xcccccc}
               args={[6.75, 0, 4]}
               position={[-30, btnPosition, Z]}
               rotation={[Math.PI / 2, 0, 0]} />
@@ -339,7 +346,11 @@ export const Model = (props: BoxTopBaseProps) => {
                   resources={props.resources}
                   sequenceIdInput={binding?.sequence_id}
                   specialActionInput={binding?.special_action} />
-                : <p className={`btn-label ${isHovered ? "hovered" : ""}`}>
+                : <p className={[
+                  "btn-label",
+                  isHovered ? "hovered" : "",
+                  binding ? "" : "unbound",
+                ].join(" ")}>
                   {getLabel(binding) || label}
                 </p>}
             </Html>

@@ -974,6 +974,9 @@ hr {
       box-shadow: 0 0 10px $translucent5, 0 0 5px inset rgba(255, 255, 255, 0.2) !important;
     }
   }
+  &.hard {
+    border-radius: 5px;
+  }
 }
 
 a {
@@ -2024,8 +2027,12 @@ ul {
     font-weight: 700;
     line-height: 1;
     text-align: center;
+    user-select: none;
     &.hovered {
       background: $black;
+    }
+    &.unbound {
+      background: $placeholder_gray;
     }
   }
   .led-label {
