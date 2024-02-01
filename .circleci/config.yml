@@ -4,7 +4,7 @@ executors:
   build-executor:
     machine:
       image: ubuntu-2204:edge
-    resource_class: large
+    resource_class: xlarge
     working_directory: /home/circleci/project
 
 commands:
