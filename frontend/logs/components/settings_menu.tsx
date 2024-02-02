@@ -12,6 +12,9 @@ import { DevSettings } from "../../settings/dev/dev_support";
 import { getModifiedClassName } from "../../settings/fbos_settings/default_values";
 import { getModifiedClassNameSpecifyDefault } from "../../settings/default_values";
 import { destroyAll } from "../../api/crud";
+import {
+  validFirmwareHardware,
+} from "../../settings/firmware/firmware_hardware_support";
 
 interface LogSettingRecord {
   label: string;
@@ -48,6 +51,8 @@ const LogSetting = (props: LogSettingProps) => {
     if (+currentLevel < level) { setFilterLevel(key)(level); }
   };
   const config = sourceFbosConfig(setting);
+  const firmwareHardware = validFirmwareHardware(
+    sourceFbosConfig("firmware_hardware").value);
   return <fieldset>
     <label>
       {t(label)}
@@ -56,7 +61,7 @@ const LogSetting = (props: LogSettingProps) => {
     <ToggleButton
       toggleValue={config.value}
       dim={!config.consistent}
-      className={getModifiedClassName(setting, config.value)}
+      className={getModifiedClassName(setting, config.value, firmwareHardware)}
       toggleAction={() => {
         props.dispatch(updateConfig({ [setting]: !config.value }));
         if (!config.value === true) {

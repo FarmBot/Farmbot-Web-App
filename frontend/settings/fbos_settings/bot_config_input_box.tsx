@@ -4,16 +4,15 @@ import { SourceFbosConfig } from "../../devices/interfaces";
 import { ConfigurationName } from "farmbot";
 import { updateConfig } from "../../devices/actions";
 import { parseIntInput } from "../../util";
-import { isNumber, isBoolean, isNaN, isUndefined } from "lodash";
+import { isNumber, isBoolean, isNaN } from "lodash";
 import { getModifiedClassName } from "./default_values";
-import { getModifiedClassNameSpecifyModified } from "../default_values";
+import { validFirmwareHardware } from "../firmware/firmware_hardware_support";
 
 export interface BotConfigInputBoxProps {
   setting: ConfigurationName;
   dispatch: Function;
   disabled?: boolean;
   sourceFbosConfig: SourceFbosConfig;
-  modifiedOverride?: boolean;
 }
 
 export class BotConfigInputBox
@@ -38,12 +37,13 @@ export class BotConfigInputBox
     const boxValue = (isNumber(current) || isBoolean(current))
       ? current.toString()
       : "";
+    const firmwareHardware = validFirmwareHardware(
+      this.props.sourceFbosConfig("firmware_hardware").value);
     return <BlurableInput
       type="number"
       className={!this.config.consistent ? "dim" : ""}
-      wrapperClassName={!isUndefined(this.props.modifiedOverride)
-        ? getModifiedClassNameSpecifyModified(this.props.modifiedOverride)
-        : getModifiedClassName(this.props.setting, current)}
+      wrapperClassName={getModifiedClassName(this.props.setting, current,
+        firmwareHardware)}
       onCommit={this.change(this.props.setting, this.props.dispatch)}
       value={boxValue}
       disabled={this.props.disabled} />;

@@ -37,16 +37,19 @@ export class BoardType extends React.Component<BoardTypeProps, {}> {
     }
   };
 
-  FirmwareSelection = () =>
-    <FBSelect
-      key={this.props.firmwareHardware + "" + this.sending}
+  FirmwareSelection = () => {
+    const { firmwareHardware } = this.props;
+    return <FBSelect
+      key={firmwareHardware + "" + this.sending}
       extraClass={[
         this.sending ? "dim" : "",
-        getModifiedClassName("firmware_hardware", this.props.firmwareHardware),
+        getModifiedClassName("firmware_hardware",
+          firmwareHardware, firmwareHardware),
       ].join(" ")}
       list={getFirmwareChoices()}
       selectedItem={this.selectedBoard}
       onChange={this.sendOffConfig} />;
+  };
 
   render() {
     return <Highlight settingName={DeviceSetting.firmware}>

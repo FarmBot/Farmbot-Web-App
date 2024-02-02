@@ -6,6 +6,10 @@ import {
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { store } from "../redux/store";
 import { BooleanSetting } from "../session_keys";
+import { FirmwareHardware } from "farmbot";
+import { cloneDeep } from "lodash";
+import { getFbosConfig } from "../resources/getters";
+import { getFwHardwareValue } from "./firmware/firmware_hardware_support";
 
 type Key = BooleanWebAppConfigKey | StringWebAppConfigKey | NumberWebAppConfigKey;
 type Value = string | number | boolean | undefined;
@@ -85,6 +89,32 @@ const DEFAULT_WEB_APP_CONFIG_VALUES: Record<Key, Value> = {
   show_advanced_settings: false,
 };
 
+const DEFAULT_EXPRESS_WEB_APP_CONFIG_VALUES =
+  cloneDeep(DEFAULT_WEB_APP_CONFIG_VALUES);
+DEFAULT_EXPRESS_WEB_APP_CONFIG_VALUES.hide_sensors = true;
+DEFAULT_EXPRESS_WEB_APP_CONFIG_VALUES.map_size_y = 1200;
+const DEFAULT_GENESIS_WEB_APP_CONFIG_VALUES = DEFAULT_WEB_APP_CONFIG_VALUES;
+
+const getDefaultConfigValue =
+  (firmwareHardware: FirmwareHardware | undefined) =>
+    (key: Key): Value => {
+      switch (firmwareHardware) {
+        case "arduino":
+        case "farmduino":
+        case "farmduino_k14":
+        case "farmduino_k15":
+        case "farmduino_k16":
+        case "farmduino_k17":
+          return DEFAULT_GENESIS_WEB_APP_CONFIG_VALUES[key];
+        case "express_k10":
+        case "express_k11":
+        case "express_k12":
+          return DEFAULT_EXPRESS_WEB_APP_CONFIG_VALUES[key];
+        default:
+          return DEFAULT_WEB_APP_CONFIG_VALUES[key];
+      }
+    };
+
 export const getModifiedClassNameSpecifyModified = (modified: boolean) => {
   const getValue = getWebAppConfigValue(store.getState);
   const authAud = store.getState().auth?.token.unencoded.aud;
@@ -102,9 +132,11 @@ export const getModifiedClassNameDefaultFalse = (value: Value) =>
 export const getModifiedClassName = (key: Key) =>
   getModifiedClassNameSpecifyModified(modifiedFromDefault(key));
 
-export const modifiedFromDefault = (key: Key) => {
+const modifiedFromDefault = (key: Key) => {
   const getValue = getWebAppConfigValue(store.getState);
   const value = getValue(key);
-  const defaultValue = DEFAULT_WEB_APP_CONFIG_VALUES[key];
+  const firmwareHardware = getFwHardwareValue(getFbosConfig(
+    store.getState().resources.index));
+  const defaultValue = getDefaultConfigValue(firmwareHardware)(key);
   return defaultValue != value;
 };
