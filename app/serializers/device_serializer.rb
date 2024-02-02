@@ -15,5 +15,6 @@ class DeviceSerializer < ApplicationSerializer
              :throttled_at,
              :throttled_until,
              :timezone,
+             :max_log_age_in_days,
              :tz_offset_hrs
 end

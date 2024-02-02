@@ -11,6 +11,7 @@ import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { bot } from "../../__test_support__/fake_state/bot";
 import { jobsState } from "../../__test_support__/panel_state";
 import { Actions } from "../../constants";
+import { fakeDevice } from "../../__test_support__/resource_index_builder";
 
 describe("<JobsPanel />", () => {
   const fakeProps = (): JobsPanelProps => ({
@@ -46,6 +47,7 @@ describe("<JobsAndLogs />", () => {
     fbosVersion: undefined,
     jobsPanelState: jobsState(),
     jobs: {},
+    device: fakeDevice(),
   });
 
   it("renders jobs", () => {

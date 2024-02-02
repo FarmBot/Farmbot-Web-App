@@ -128,6 +128,7 @@ export class LogsPanel extends React.Component<LogsProps, Partial<LogsState>> {
         toggle={this.toggle}
         setFilterLevel={this.setFilterLevel}
         toggleCurrentFbosOnly={this.toggleCurrentFbosOnly}
+        device={this.props.device}
         timeSettings={this.props.timeSettings} />
     </div>;
   }

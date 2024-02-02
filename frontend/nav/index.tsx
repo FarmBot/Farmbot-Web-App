@@ -233,6 +233,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
           sourceFbosConfig={this.props.sourceFbosConfig}
           fbosVersion={this.props.device.body.fbos_version}
           jobs={this.props.bot.hardware.jobs}
+          device={this.props.device}
           timeSettings={this.props.timeSettings} />} />
     </div>;
   };

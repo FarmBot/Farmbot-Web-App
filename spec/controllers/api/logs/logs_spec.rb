@@ -10,6 +10,7 @@ describe Api::LogsController do
       sign_in user
       get :index
       expect(response.status).to eq(200)
+      expect(json.length).to eq(logs.length)
       expect(json.first[:id]).to eq(logs.first.id)
       expect(json.first[:created_at]).to eq(logs.first.created_at.to_i)
       expect(json.last[:type]).to eq(logs.last.type)
@@ -107,14 +108,27 @@ describe Api::LogsController do
       expect(Log.count).to eq(0)
     end
 
-    it "runs compaction when the logs pile up" do
+    it "runs compaction when the logs pile up over max count" do
       Log.destroy_all
       100.times { Log.create!(device: user.device) }
       sign_in user
+      user.device.update!(max_log_age_in_days: 100)
       user.device.update!(max_log_count: 15)
       get :index, params: { format: :json }
       expect(response.status).to eq(200)
       expect(json.length).to eq(user.device.max_log_count)
+    end
+
+    it "runs compaction when the logs pile up over max age" do
+      Log.destroy_all
+      50.times { Log.create!(device: user.device) }
+      50.times { Log.create!(device: user.device, created_at: 2.days.ago) }
+      sign_in user
+      user.device.update!(max_log_age_in_days: 1)
+      user.device.update!(max_log_count: 100)
+      get :index, params: { format: :json }
+      expect(response.status).to eq(200)
+      expect(json.length).to eq(50)
     end
 
     it "deletes ALL logs" do

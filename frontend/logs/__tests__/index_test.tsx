@@ -19,6 +19,7 @@ import { destroy } from "../../api/crud";
 import { mapStateToProps } from "../state_to_props";
 import { fakeState } from "../../__test_support__/fake_state";
 import { Actions } from "../../constants";
+import { fakeDevice } from "../../__test_support__/resource_index_builder";
 
 describe("<Logs />", () => {
   function fakeLogs(): TaggedLog[] {
@@ -38,6 +39,7 @@ describe("<Logs />", () => {
     getConfigValue: x => mockStorj[x],
     bot: bot,
     fbosVersion: undefined,
+    device: fakeDevice(),
   });
 
   const verifyFilterState = (wrapper: ReactWrapper<unknown>, enabled: boolean) => {
