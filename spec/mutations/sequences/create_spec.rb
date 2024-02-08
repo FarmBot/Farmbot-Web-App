@@ -75,7 +75,7 @@ describe Sequences::Create do
     Sequences::Create.run(sequence_params)
     seq = Sequences::Create.run(sequence_params)
     expect(seq.success?).to be(false)
-    expected = "Your account has 2 sequences. The maximum allowed is 1."
+    expected = "Your account has 1 sequences. The maximum allowed is 1."
     expect(seq.errors["sequence_count"].message).to include(expected)
   end
 

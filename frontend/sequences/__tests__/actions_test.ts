@@ -13,6 +13,12 @@ jest.mock("axios", () => ({
   post: jest.fn(() => mockPost),
 }));
 
+import { fakeState } from "../../__test_support__/fake_state";
+const mockState = fakeState();
+jest.mock("../../redux/store", () => ({
+  store: { getState: () => mockState, dispatch: jest.fn() },
+}));
+
 import {
   copySequence, editCurrentSequence, selectSequence, pushStep, pinSequenceToggle,
   publishSequence,
@@ -30,25 +36,42 @@ import axios from "axios";
 import { API } from "../../api";
 import { error, success } from "../../toast/toast";
 import { Path } from "../../internal_urls";
+import {
+  buildResourceIndex, fakeDevice,
+} from "../../__test_support__/resource_index_builder";
+import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
 
 describe("copySequence()", () => {
   it("copies sequence", () => {
     const sequence = fakeSequence();
     sequence.body.body = [{ kind: "wait", args: { milliseconds: 100 } }];
     const { body } = sequence.body;
-    copySequence(sequence)(jest.fn());
+    copySequence(sequence)(jest.fn(), fakeState);
     expect(init).toHaveBeenCalledWith("Sequence",
       expect.objectContaining({ name: "fake copy 1", body }));
   });
 
   it("updates current path", () => {
-    copySequence(fakeSequence())(jest.fn());
+    copySequence(fakeSequence())(jest.fn(), fakeState);
     expect(push).toHaveBeenCalledWith(Path.sequences("fake_copy_2"));
   });
 
   it("selects sequence", () => {
-    copySequence(fakeSequence())(jest.fn());
+    copySequence(fakeSequence())(jest.fn(), fakeState);
     expect(setActiveSequenceByName).toHaveBeenCalled();
+  });
+
+  it("exceeds limit", () => {
+    const state = fakeState();
+    const sequence = fakeSequence();
+    const device = fakeDevice();
+    device.body[
+      "max_sequence_count" as keyof DeviceAccountSettings] = 1 as never;
+    state.resources = buildResourceIndex([sequence, device]);
+    copySequence(fakeSequence())(jest.fn(), () => state);
+    expect(push).not.toHaveBeenCalled();
+    expect(error).toHaveBeenCalledWith(expect.stringContaining(
+      "The maximum number of sequences allowed is 1."));
   });
 });
 
@@ -117,6 +140,18 @@ describe("pushStep()", () => {
     pushStep(NEW_STEP, jest.fn(), sequence);
     expect(overwrite).toHaveBeenCalledWith(sequence,
       expect.objectContaining({ body: [NEW_STEP] }));
+  });
+
+  it("exceeds limit", () => {
+    const sequence = fakeSequence({ body: [{ kind: "sync", args: {} }] });
+    const device = fakeDevice();
+    device.body[
+      "max_sequence_length" as keyof DeviceAccountSettings] = 1 as never;
+    mockState.resources = buildResourceIndex([sequence, device]);
+    pushStep(NEW_STEP, jest.fn(), sequence);
+    expect(overwrite).not.toHaveBeenCalled();
+    expect(error).toHaveBeenCalledWith(expect.stringContaining(
+      "The maximum number of steps allowed in one sequence is 1."));
   });
 });
 

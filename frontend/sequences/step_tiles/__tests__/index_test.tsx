@@ -2,6 +2,11 @@ jest.mock("../../../api/crud", () => ({
   overwrite: jest.fn(),
 }));
 
+let mockExceeded = false;
+jest.mock("../../actions", () => ({
+  sequenceLengthExceeded: () => mockExceeded,
+}));
+
 import {
   remove, move, splice, renderCeleryNode, stringifySequenceData,
   updateStep, updateStepTitle,
@@ -97,6 +102,13 @@ describe("splice()", () => {
           uuid: expect.stringContaining("-"),
         }]
       }));
+  });
+
+  it("exceeds limit", () => {
+    mockExceeded = true;
+    const p = fakeProps();
+    splice(p);
+    expect(overwrite).not.toHaveBeenCalled();
   });
 });
 

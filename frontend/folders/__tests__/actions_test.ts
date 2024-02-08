@@ -6,6 +6,11 @@ jest.mock("../../draggable/actions", () => ({
   stepGet: jest.fn(() => () => mockStepGetResult),
 }));
 
+let mockExceeded = false;
+jest.mock("../../sequences/actions", () => ({
+  sequenceLimitExceeded: () => mockExceeded,
+}));
+
 import {
   setFolderColor,
   setFolderName,
@@ -123,6 +128,12 @@ describe("addNewSequenceToFolder", () => {
       folder_id: 11,
     }));
     expect(push).toHaveBeenCalledWith(Path.sequences("New_Sequence_1"));
+  });
+
+  it("exceeds limit", () => {
+    mockExceeded = true;
+    addNewSequenceToFolder();
+    expect(init).not.toHaveBeenCalled();
   });
 });
 

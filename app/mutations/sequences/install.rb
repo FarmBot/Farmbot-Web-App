@@ -2,6 +2,7 @@ module Sequences
   # Installing a sequence version creates a new sequence on
   # the user's account.
   class Install < Mutations::Command
+    include CeleryScriptValidators
     NOT_PUBLISHED = "Can't install unpublished sequences"
 
     required do
@@ -11,6 +12,7 @@ module Sequences
 
     def validate
       validate_publication
+      validate_sequence_count
     end
 
     def execute

@@ -21,6 +21,22 @@ module Sequences
       :comment,
     ]
 
+    def validate_step_count
+      step_count = inputs[:body].length
+      if step_count > device.max_seq_length
+        message = TOO_MANY_STEPS % [step_count, device.max_seq_length]
+        add_error(:step_count, :limit, message)
+      end
+    end
+
+    def validate_sequence_count
+      seq_count = Sequence.where(device_id: device.id).count
+      if seq_count >= device.max_seq_count
+        message = TOO_MANY_SEQUENCES % [seq_count, device.max_seq_count]
+        add_error(:sequence_count, :limit, message)
+      end
+    end
+
     def validate_sequence
       # The code below strips out unneeded attributes, or attributes that
       # are not part of CeleryScript. We're only stripping attributes out of the
@@ -28,16 +44,8 @@ module Sequences
       # superfluous attributes will disappear on save and that's OK.
       (inputs[:body] || []).map! { |x| x.slice(*ALLOWED_NODE_KEYS) }
       add_error :body, :syntax_error, checker.error.message if !checker.valid?
-      step_count = inputs[:body].length
-      if step_count > device.max_seq_length
-        message = TOO_MANY_STEPS % [step_count, device.max_seq_length]
-        add_error(:step_count, :limit, message)
-      end
-      seq_count = Sequence.where(device_id: device.id).count
-      if seq_count > device.max_seq_count
-        message = TOO_MANY_SEQUENCES % [seq_count, device.max_seq_count]
-        add_error(:sequence_count, :limit, message)
-      end
+      validate_step_count
+      validate_sequence_count
     end
 
     def symbolized_input
