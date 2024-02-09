@@ -85,6 +85,7 @@ describe("<RawBootSequenceSelector />", () => {
     selectedItem: undefined,
     config: fakeFbosConfig(),
     dispatch: jest.fn(),
+    firmwareHardware: "arduino",
   });
 
   it("handles the `onChange` event", () => {

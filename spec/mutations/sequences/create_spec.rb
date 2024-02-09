@@ -70,6 +70,23 @@ describe Sequences::Create do
     expect(seq.errors["body"].message).to include(expected)
   end
 
+  it 'gives validation error for too many sequences' do
+    device.update(max_sequence_count: 1)
+    Sequences::Create.run(sequence_params)
+    seq = Sequences::Create.run(sequence_params)
+    expect(seq.success?).to be(false)
+    expected = "Your account has 1 sequences. The maximum allowed is 1."
+    expect(seq.errors["sequence_count"].message).to include(expected)
+  end
+
+  it 'gives validation error for too many steps' do
+    device.update(max_sequence_length: 1)
+    seq = Sequences::Create.run(sequence_params)
+    expect(seq.success?).to be(false)
+    expected = "Your sequence has 9 steps. The maximum allowed is 1."
+    expect(seq.errors["step_count"].message).to include(expected)
+  end
+
   it 'builds a send_message sequence' do
     app = {
       name: "New Sequence",

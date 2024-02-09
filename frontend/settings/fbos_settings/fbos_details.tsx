@@ -359,12 +359,14 @@ export const OSReleaseChannelSelection = (
   { dispatch, sourceFbosConfig }: OSReleaseChannelSelectionProps,
 ): JSX.Element => {
   const channel = sourceFbosConfig("update_channel").value;
+  const firmwareHardware = validFirmwareHardware(
+    sourceFbosConfig("firmware_hardware").value);
   return <fieldset className={"os-release-channel"}>
     <label>
       {t("OS release channel")}
     </label>
     <FBSelect
-      extraClass={getModifiedClassName("update_channel", channel)}
+      extraClass={getModifiedClassName("update_channel", channel, firmwareHardware)}
       selectedItem={{ label: t("" + channel), value: "" + channel }}
       onChange={ddi =>
         (ddi.value == "stable" ||

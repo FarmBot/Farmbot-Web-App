@@ -6,7 +6,8 @@ import {
 import { Panel, DesignerNavTabs } from "../farm_designer/panel_header";
 import { Everything, JobsAndLogsState, TimeSettings } from "../interfaces";
 import {
-  BytesProgress, Dictionary, JobProgress, PercentageProgress, TaggedLog,
+  BytesProgress, Dictionary, JobProgress, PercentageProgress, TaggedDevice,
+  TaggedLog,
 } from "farmbot";
 import { t } from "../i18next_wrapper";
 import { maybeGetTimeSettings } from "../resources/selectors";
@@ -54,6 +55,7 @@ export interface JobsAndLogsProps {
   fbosVersion: string | undefined;
   jobsPanelState: JobsAndLogsState;
   jobs: Dictionary<JobProgress | undefined>;
+  device: TaggedDevice;
 }
 
 export class JobsAndLogs
@@ -81,6 +83,7 @@ export class JobsAndLogs
         sourceFbosConfig={this.props.sourceFbosConfig}
         getConfigValue={this.props.getConfigValue}
         bot={this.props.bot}
+        device={this.props.device}
         fbosVersion={this.props.fbosVersion}
       />
     </div>;

@@ -14,6 +14,7 @@ import { joinKindAndId } from "../resources/reducer_support";
 import { maybeGetSequence } from "../resources/selectors";
 import { Path } from "../internal_urls";
 import { UnknownAction } from "redux";
+import { sequenceLimitExceeded } from "../sequences/actions";
 
 export const setFolderColor = (id: number, color: Color) => {
   const d = store.dispatch as Function;
@@ -39,7 +40,11 @@ const DEFAULTS = (): Folder => ({
 });
 
 export const addNewSequenceToFolder = (config: DeepPartial<Folder> = {}) => {
-  const uuidMap = store.getState().resources.index.byKind["Sequence"];
+  const ri = store.getState().resources.index;
+  if (sequenceLimitExceeded(ri)) {
+    return;
+  }
+  const uuidMap = ri.byKind["Sequence"];
   const seqCount = Object.keys(uuidMap).length;
   const newSequence = {
     name: t("New Sequence {{ num }}", { num: seqCount }),

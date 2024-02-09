@@ -4,7 +4,7 @@ import { Everything } from "../../interfaces";
 import { getFbosConfig } from "../../resources/getters";
 import { FBSelect, DropDownItem, Row, Col } from "../../ui";
 import { edit, save } from "../../api/crud";
-import { TaggedFbosConfig, TaggedSequence } from "farmbot";
+import { FirmwareHardware, TaggedFbosConfig, TaggedSequence } from "farmbot";
 import {
   selectAllSequences, findSequenceById,
 } from "../../resources/selectors";
@@ -13,12 +13,14 @@ import { t } from "../../i18next_wrapper";
 import { Highlight } from "../maybe_highlight";
 import { DeviceSetting } from "../../constants";
 import { getModifiedClassName } from "./default_values";
+import { getFwHardwareValue } from "../firmware/firmware_hardware_support";
 
 export interface BootSequenceSelectorProps {
   list: DropDownItem[];
   selectedItem: Readonly<DropDownItem> | undefined;
   config: TaggedFbosConfig;
   dispatch: Function;
+  firmwareHardware: FirmwareHardware | undefined;
 }
 
 export const sequence2ddi = (x: TaggedSequence): DropDownItem | undefined => {
@@ -40,11 +42,13 @@ export function mapStateToProps(p: Everything): BootSequenceSelectorProps {
     const bs = boot_sequence_id
       ? findSequenceById(index, boot_sequence_id)
       : undefined;
+    const firmwareHardware = getFwHardwareValue(fbosConfig);
     return {
       list,
       selectedItem: bs ? sequence2ddi(bs) : undefined,
       config: fbosConfig,
-      dispatch: p.dispatch
+      dispatch: p.dispatch,
+      firmwareHardware,
     };
 
   } else {
@@ -63,7 +67,7 @@ export class RawBootSequenceSelector
   SelectionInput = () =>
     <FBSelect
       extraClass={getModifiedClassName("boot_sequence_id",
-        this.props.selectedItem?.value)}
+        this.props.selectedItem?.value, this.props.firmwareHardware)}
       allowEmpty={true}
       list={this.props.list}
       selectedItem={this.props.selectedItem}

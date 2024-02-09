@@ -40,6 +40,7 @@ import { TileShutdown } from "./tile_shutdown";
 import { TileComputedMove } from "./tile_computed_move";
 import { SequenceResource } from "farmbot/dist/resources/api_resources";
 import { TileLua } from "./tile_lua";
+import { sequenceLengthExceeded } from "../actions";
 
 export function move({ step, sequence, to, from }: MoveParams) {
   const copy = defensiveClone(step);
@@ -57,6 +58,9 @@ export function move({ step, sequence, to, from }: MoveParams) {
 }
 
 export function splice({ step, sequence, index }: SpliceParams) {
+  if (sequenceLengthExceeded(sequence)) {
+    return;
+  }
   const copy = forceSetStepTag(defensiveClone(step));
   const next = defensiveClone(sequence);
   const seq = next.body;

@@ -6,16 +6,16 @@ import { Highlight } from "../maybe_highlight";
 import { BotConfigInputBox } from "./bot_config_input_box";
 import { ZHeightInputProps } from "./interfaces";
 import {
-  isExpress, validFirmwareHardware,
+  validFirmwareHardware,
 } from "../firmware/firmware_hardware_support";
+import { getDefaultConfigValue } from "./default_values";
 
 export const GantryHeight = (props: ZHeightInputProps) => {
   const { sourceFbosConfig } = props;
-  const value = sourceFbosConfig("gantry_height").value as number;
   const firmwareHardware = validFirmwareHardware(
     sourceFbosConfig("firmware_hardware").value);
-  const defaultValue = isExpress(firmwareHardware) ? 140 : 120;
-  const modified = value != defaultValue;
+  const defaultValue =
+    getDefaultConfigValue(firmwareHardware)("gantry_height") as number;
   return <Highlight settingName={DeviceSetting.gantryHeight}>
     <Row>
       <Col xs={8}>
@@ -29,7 +29,6 @@ export const GantryHeight = (props: ZHeightInputProps) => {
         <BotConfigInputBox
           setting={"gantry_height"}
           dispatch={props.dispatch}
-          modifiedOverride={modified}
           sourceFbosConfig={sourceFbosConfig} />
       </Col>
     </Row>

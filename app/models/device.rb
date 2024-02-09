@@ -4,6 +4,9 @@ class Device < ApplicationRecord
   DEFAULT_MAX_IMAGES = 100
   DEFAULT_MAX_LOGS = 1000
   DEFAULT_MAX_TELEMETRY = 300
+  DEFAULT_MAX_LOG_AGE_IN_DAYS = 60
+  DEFAULT_MAX_SEQUENCE_COUNT = 75
+  DEFAULT_MAX_SEQUENCE_LENGTH = 30
 
   TIMEZONES = TZInfo::Timezone.all_identifiers
   BAD_TZ = "%{value} is not a valid timezone"
@@ -52,11 +55,36 @@ class Device < ApplicationRecord
     uniqueness: { message: ORDER_NUMBER_TAKEN, allow_nil: true }
   before_validation :perform_gradual_upgrade
 
+  def max_seq_count
+    if max_sequence_count > 0
+      max_sequence_count
+    else
+      DEFAULT_MAX_SEQUENCE_COUNT
+    end
+  end
+
+  def max_seq_length
+    if max_sequence_length > 0
+      max_sequence_length
+    else
+      DEFAULT_MAX_SEQUENCE_LENGTH
+    end
+  end
+
+  def max_log_age
+    if max_log_age_in_days > 0
+      max_log_age_in_days
+    else
+      DEFAULT_MAX_LOG_AGE_IN_DAYS
+    end
+  end
+
   # Give the user back the amount of logs they are allowed to view.
   def limited_log_list
     Log
       .order(created_at: :desc)
       .where(device_id: self.id)
+      .where("created_at > ?", max_log_age.days.ago)
       .limit(max_log_count || DEFAULT_MAX_LOGS)
   end
 

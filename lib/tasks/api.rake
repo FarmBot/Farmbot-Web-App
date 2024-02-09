@@ -164,10 +164,15 @@ namespace :api do
     end
   end
 
+  def trim_logs
+    Device.all.map{ |device| device.trim_excess_logs }
+  end
+
   desc "Deprecate old FBOS version, delete inactive accounts, etc.."
   task tidy: :environment do
     deprecate!
     InactiveAccountJob.perform_later
+    trim_logs
   end
 end
 Rake::Task["assets:precompile"].enhance ["api:parcel_compile"]

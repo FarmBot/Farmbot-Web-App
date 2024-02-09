@@ -18,7 +18,7 @@ import { getModifiedClassName } from "../default_values";
 
 describe("getModifiedClassName()", () => {
   it("returns class name", () => {
-    expect(getModifiedClassName("soil_height", 0)).toEqual("");
-    expect(getModifiedClassName("soil_height", 1)).toEqual("modified");
+    expect(getModifiedClassName("soil_height", 0, "arduino")).toEqual("");
+    expect(getModifiedClassName("soil_height", 1, "arduino")).toEqual("modified");
   });
 });

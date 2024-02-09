@@ -390,7 +390,10 @@ CREATE TABLE public.devices (
     lat numeric,
     lng numeric,
     indoor boolean DEFAULT false,
-    rpi character varying(3)
+    rpi character varying(3),
+    max_log_age_in_days integer DEFAULT 0,
+    max_sequence_count integer DEFAULT 0,
+    max_sequence_length integer DEFAULT 0
 );
 
 
@@ -3981,6 +3984,8 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20230714010144'),
 ('20230714173031'),
 ('20230808192946'),
-('20240118204046');
+('20240118204046'),
+('20240202171922'),
+('20240207234421');
 
 
