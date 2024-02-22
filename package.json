@@ -29,6 +29,9 @@
   ],
   "author": "farmbot.io",
   "license": "MIT",
+  "overrides": {
+    "@parcel/watcher": "2.1.0"
+  },
   "dependencies": {
     "@blueprintjs/core": "5.9.1",
     "@blueprintjs/select": "5.1.1",
