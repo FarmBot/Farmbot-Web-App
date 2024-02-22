@@ -5,8 +5,8 @@ import { clickButton } from "../../__test_support__/helpers";
 
 describe("<OsDownloadPage />", () => {
   it("renders", () => {
-    globalConfig.rpi3_release_url = "fake rpi3 img url";
-    globalConfig.rpi3_release_tag = "1.0.1";
+    globalConfig.rpi4_release_url = "fake rpi4 img url";
+    globalConfig.rpi4_release_tag = "1.0.1";
 
     globalConfig.rpi_release_url = "fake rpi img url";
     globalConfig.rpi_release_tag = "1.0.0";
@@ -16,7 +16,7 @@ describe("<OsDownloadPage />", () => {
 
     const rpi3Link = wrapper.find("a").first();
     expect(rpi3Link.text()).toEqual("DOWNLOAD v1.0.1");
-    expect(rpi3Link.props().href).toEqual("fake rpi3 img url");
+    expect(rpi3Link.props().href).toEqual("fake rpi4 img url");
 
     const rpiLink = wrapper.find("a").last();
     expect(rpiLink.text()).toEqual("DOWNLOAD v1.0.0");
@@ -57,14 +57,14 @@ describe("<OsDownloadPage />", () => {
   it("runs the wizard: genesis", () => {
     const wrapper = mount(<OsDownloadPage />);
     clickButton(wrapper, 0, "genesis", { partial_match: true });
-    clickButton(wrapper, 4, "genesis v1.2");
+    clickButton(wrapper, 5, "genesis v1.2");
     expect(wrapper.text().toLowerCase()).toContain("pi 3");
   });
 
   it("runs the wizard: genesis v1.6.0", () => {
     const wrapper = mount(<OsDownloadPage />);
     clickButton(wrapper, 0, "genesis", { partial_match: true });
-    clickButton(wrapper, 0, "genesis v1.6");
+    clickButton(wrapper, 1, "genesis v1.6");
     clickButton(wrapper, 0, "black");
     clickButton(wrapper, 0, "raspberry pi model 3");
     expect(wrapper.text().toLowerCase()).toContain("pi 3");
@@ -73,7 +73,7 @@ describe("<OsDownloadPage />", () => {
   it("runs the wizard: genesis v1.6.1 & some v1.6.2", () => {
     const wrapper = mount(<OsDownloadPage />);
     clickButton(wrapper, 0, "genesis", { partial_match: true });
-    clickButton(wrapper, 0, "genesis v1.6");
+    clickButton(wrapper, 1, "genesis v1.6");
     clickButton(wrapper, 1, "white");
     expect(wrapper.text().toLowerCase()).toContain("pi 4");
   });
@@ -81,9 +81,16 @@ describe("<OsDownloadPage />", () => {
   it("runs the wizard: genesis other v1.6.2", () => {
     const wrapper = mount(<OsDownloadPage />);
     clickButton(wrapper, 0, "genesis", { partial_match: true });
-    clickButton(wrapper, 0, "genesis v1.6");
+    clickButton(wrapper, 1, "genesis v1.6");
     clickButton(wrapper, 0, "black");
     clickButton(wrapper, 1, "raspberry pi model 4");
+    expect(wrapper.text().toLowerCase()).toContain("pi 4");
+  });
+
+  it("runs the wizard: genesis v1.7", () => {
+    const wrapper = mount(<OsDownloadPage />);
+    clickButton(wrapper, 0, "genesis", { partial_match: true });
+    clickButton(wrapper, 0, "genesis v1.7");
     expect(wrapper.text().toLowerCase()).toContain("pi 4");
   });
 });

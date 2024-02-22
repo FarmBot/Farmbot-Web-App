@@ -15,10 +15,9 @@ import {
 } from "./data";
 import {
   SetupWizardProps, SetupWizardState, WizardHeaderProps, WizardResults,
-  WizardSectionHeaderProps, WizardSectionsOpen,
+  WizardSectionHeaderProps, WizardSectionsOpen, WizardStepDataProps,
 } from "./interfaces";
 import {
-  getDeviceAccountSettings,
   maybeGetDevice,
   maybeGetTimeSettings, selectAllWizardStepResults,
 } from "../resources/selectors";
@@ -48,10 +47,10 @@ export const mapStateToProps = (props: Everything): SetupWizardProps => ({
 export class RawSetupWizard
   extends React.Component<SetupWizardProps, SetupWizardState> {
 
-  get stepDataProps() {
+  get stepDataProps(): WizardStepDataProps {
     return {
       firmwareHardware: this.props.firmwareHardware,
-      rpi: getDeviceAccountSettings(this.props.resources).body.rpi,
+      getConfigValue: this.props.getConfigValue,
     };
   }
 

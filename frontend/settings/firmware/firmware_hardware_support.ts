@@ -186,27 +186,27 @@ const EXPRESS_K12 = { label: BoardLabels.express_k12, value: "express_k12" };
 const NONE = { label: BoardLabels.none, value: "none" };
 
 export const FIRMWARE_CHOICES_DDI = {
-  [ARDUINO.value]: ARDUINO,
-  [FARMDUINO.value]: FARMDUINO,
-  [FARMDUINO_K14.value]: FARMDUINO_K14,
-  [FARMDUINO_K15.value]: FARMDUINO_K15,
-  [FARMDUINO_K16.value]: FARMDUINO_K16,
   [FARMDUINO_K17.value]: FARMDUINO_K17,
-  [EXPRESS_K10.value]: EXPRESS_K10,
-  [EXPRESS_K11.value]: EXPRESS_K11,
+  [FARMDUINO_K16.value]: FARMDUINO_K16,
+  [FARMDUINO_K15.value]: FARMDUINO_K15,
+  [FARMDUINO_K14.value]: FARMDUINO_K14,
+  [FARMDUINO.value]: FARMDUINO,
+  [ARDUINO.value]: ARDUINO,
   [EXPRESS_K12.value]: EXPRESS_K12,
+  [EXPRESS_K11.value]: EXPRESS_K11,
+  [EXPRESS_K10.value]: EXPRESS_K10,
   [NONE.value]: NONE,
 };
 
 export const getFirmwareChoices = () => ([
-  ARDUINO,
-  FARMDUINO,
-  FARMDUINO_K14,
-  FARMDUINO_K15,
+  FARMDUINO_K17,
   FARMDUINO_K16,
-  ...(shouldDisplayFeature(Feature.farmduino_k17) ? [FARMDUINO_K17] : []),
-  EXPRESS_K10,
-  EXPRESS_K11,
+  FARMDUINO_K15,
+  FARMDUINO_K14,
+  FARMDUINO,
+  ARDUINO,
   ...(shouldDisplayFeature(Feature.express_k12) ? [EXPRESS_K12] : []),
+  EXPRESS_K11,
+  EXPRESS_K10,
   NONE,
 ]);
