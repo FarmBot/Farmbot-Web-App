@@ -87,16 +87,17 @@ describe("<BoardType/>", () => {
     const wrapper = mount(<BoardType {...fakeProps()} />);
     const { list } = wrapper.find("FBSelect").props();
     expect(list).toEqual([
-      { label: "Arduino/RAMPS (Genesis v1.2)", value: "arduino" },
-      { label: "Farmduino (Genesis v1.3)", value: "farmduino" },
-      { label: "Farmduino (Genesis v1.4)", value: "farmduino_k14" },
-      { label: "Farmduino (Genesis v1.5)", value: "farmduino_k15" },
+      { label: "Farmduino (Genesis v1.7)", value: "farmduino_k17" },
       { label: "Farmduino (Genesis v1.6)", value: "farmduino_k16" },
-      { label: "Farmduino (Express v1.0)", value: "express_k10" },
+      { label: "Farmduino (Genesis v1.5)", value: "farmduino_k15" },
+      { label: "Farmduino (Genesis v1.4)", value: "farmduino_k14" },
+      { label: "Farmduino (Genesis v1.3)", value: "farmduino" },
+      { label: "Arduino/RAMPS (Genesis v1.2)", value: "arduino" },
       { label: "Farmduino (Express v1.1)", value: "express_k11" },
+      { label: "Farmduino (Express v1.0)", value: "express_k10" },
       { label: "None", value: "none" },
     ]);
-    expect(list?.length).toEqual(8);
+    expect(list?.length).toEqual(9);
   });
 
   it("displays more boards", () => {

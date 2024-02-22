@@ -259,7 +259,7 @@ describe("changeFirmwareHardware()", () => {
 describe("SEED_DATA_OPTIONS()", () => {
   it("returns options", () => {
     mockFeatureBoolean = false;
-    expect(SEED_DATA_OPTIONS().length).toEqual(13);
+    expect(SEED_DATA_OPTIONS().length).toEqual(15);
   });
 
   it("returns more options", () => {

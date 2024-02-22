@@ -86,7 +86,6 @@ export enum FbosVersionFallback {
 
 const fallbackData: MinOsFeatureLookup = {
   [Feature.express_k12]: MinVersionOverride.NEVER, // available: "15.4.6",
-  [Feature.farmduino_k17]: MinVersionOverride.DEMO, // available: "15.4.6",
   [Feature.planted_at_now]: MinVersionOverride.NEVER,
 };
 
