@@ -17,13 +17,11 @@ import { GetState } from "../redux/interfaces";
 import { selectAllSequences } from "../resources/selectors_by_kind";
 import { ResourceIndex } from "../resources/interfaces";
 import { getDeviceAccountSettings } from "../resources/selectors";
-import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
 import { store } from "../redux/store";
 
 export const sequenceLengthExceeded = (sequence: TaggedSequence): boolean => {
   const device = getDeviceAccountSettings(store.getState().resources.index);
-  const max = device.body[
-    "max_sequence_length" as keyof DeviceAccountSettings] as number || 30;
+  const max = device.body.max_sequence_length || 30;
   if ((sequence.body.body || []).length >= max) {
     error(t("The maximum number of steps allowed in one sequence is {{ num }}.",
       { num: max }) + " "
@@ -55,8 +53,7 @@ export function editCurrentSequence(dispatch: Function, seq: TaggedSequence,
 export const sequenceLimitExceeded = (ri: ResourceIndex): boolean => {
   const sequences = selectAllSequences(ri);
   const device = getDeviceAccountSettings(ri);
-  const max = device.body[
-    "max_sequence_count" as keyof DeviceAccountSettings] as number || 75;
+  const max = device.body.max_sequence_count || 75;
   if (sequences.length >= max) {
     error(t("The maximum number of sequences allowed is {{ num }}.", { num: max }));
     return true;

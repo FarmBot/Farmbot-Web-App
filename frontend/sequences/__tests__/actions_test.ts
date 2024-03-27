@@ -39,7 +39,6 @@ import { Path } from "../../internal_urls";
 import {
   buildResourceIndex, fakeDevice,
 } from "../../__test_support__/resource_index_builder";
-import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
 
 describe("copySequence()", () => {
   it("copies sequence", () => {
@@ -65,8 +64,7 @@ describe("copySequence()", () => {
     const state = fakeState();
     const sequence = fakeSequence();
     const device = fakeDevice();
-    device.body[
-      "max_sequence_count" as keyof DeviceAccountSettings] = 1 as never;
+    device.body.max_sequence_count = 1;
     state.resources = buildResourceIndex([sequence, device]);
     copySequence(fakeSequence())(jest.fn(), () => state);
     expect(push).not.toHaveBeenCalled();
@@ -145,8 +143,7 @@ describe("pushStep()", () => {
   it("exceeds limit", () => {
     const sequence = fakeSequence({ body: [{ kind: "sync", args: {} }] });
     const device = fakeDevice();
-    device.body[
-      "max_sequence_length" as keyof DeviceAccountSettings] = 1 as never;
+    device.body.max_sequence_length = 1;
     mockState.resources = buildResourceIndex([sequence, device]);
     pushStep(NEW_STEP, jest.fn(), sequence);
     expect(overwrite).not.toHaveBeenCalled();

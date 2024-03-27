@@ -23,6 +23,9 @@ const DEFAULT_DEVICE_BODY: TaggedDevice["body"] = {
   lng: undefined,
   indoor: false,
   rpi: "3",
+  max_log_age_in_days: 0,
+  max_sequence_count: 0,
+  max_sequence_length: 0,
 };
 
 export function fakeDevice(body: Partial<TaggedDevice["body"]> = {}):

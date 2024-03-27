@@ -13,7 +13,6 @@ import { semverCompare, SemverResult, formatTime } from "../../util";
 import { destroy } from "../../api/crud";
 import { Position } from "@blueprintjs/core";
 import { LogsFilterMenu } from "./filter_menu";
-import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
 
 interface LogsRowProps {
   tlog: TaggedLog;
@@ -124,8 +123,7 @@ export const LogsTable = (props: LogsTableProps) => {
     </table>
     <p className={"notice"}>
       {t("Logs older than {{ days }} days are automatically deleted", {
-        days: props.device.body["max_log_age_in_days" as keyof DeviceAccountSettings
-        ] as number || 60,
+        days: props.device.body.max_log_age_in_days || 60,
       })}
     </p>
   </div>;
