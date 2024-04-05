@@ -22,9 +22,7 @@ module Devices
       end
 
       def settings_change_firmware_config_defaults
-        device.firmware_config.update!(encoder_enabled_x: 1,
-                                       encoder_enabled_y: 1,
-                                       encoder_enabled_z: 1)
+        device.firmware_config.update!(movement_motor_current_x: 1646)
       end
 
       def tool_slots_slot_1

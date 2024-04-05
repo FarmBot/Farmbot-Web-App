@@ -13,8 +13,6 @@ module Devices
 
       def settings_change_firmware_config_defaults
         device.firmware_config.update!(encoder_enabled_z: 0,
-                                       movement_keep_active_x: 0,
-                                       movement_keep_active_y: 0,
                                        movement_max_spd_y: 900,
                                        movement_min_spd_x: 300,
                                        movement_min_spd_y: 300,
