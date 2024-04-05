@@ -1,5 +1,5 @@
 import { times } from "lodash";
-import { connect, MqttClient } from "mqtt";
+import mqtt, { MqttClient } from "mqtt";
 import { Terminal } from "xterm";
 
 type TerminalLike = Pick<Terminal, "write" | "onKey">;
@@ -17,7 +17,7 @@ export class TerminalSession {
   constructor(url: string, public username: string,
     password: string,
     private terminal: TerminalLike) {
-    this.client = connect(url, { username, password });
+    this.client = mqtt.connect(url, { username, password });
   }
 
   get rx() { return `bot/${this.username}/terminal_output`; }

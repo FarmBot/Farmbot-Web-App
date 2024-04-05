@@ -1,3 +1,10 @@
+jest.mock("mqtt", () => ({
+  connect: () => ({
+    on: jest.fn(),
+    subscribe: jest.fn(),
+  })
+}));
+
 import React from "react";
 import { shallow } from "enzyme";
 import { DEMO_LOADING, TryFarmbot } from "../try_farmbot";
