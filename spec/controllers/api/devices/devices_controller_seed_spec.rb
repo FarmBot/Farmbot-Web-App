@@ -68,9 +68,7 @@ describe Api::DevicesController do
     def settings_change_firmware_config_defaults?(device)
       c = device.firmware_config
 
-      return c.encoder_enabled_x != 0 &&
-             c.encoder_enabled_y != 0 &&
-             c.encoder_enabled_z != 0
+      return c.movement_motor_current_x == 1646
     end
 
     def settings_soil_height?(device)

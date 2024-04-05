@@ -7,9 +7,6 @@ module Devices
           .update!(firmware_hardware: FbosConfig::FARMDUINO_K16)
       end
 
-      def settings_change_firmware_config_defaults
-      end
-
       def peripherals_rotary_tool
         add_peripheral(2, ToolNames::ROTARY_TOOL)
       end

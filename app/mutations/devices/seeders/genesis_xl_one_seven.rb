@@ -7,9 +7,6 @@ module Devices
           .update!(firmware_hardware: FbosConfig::FARMDUINO_K17)
       end
 
-      def settings_change_firmware_config_defaults
-      end
-
       def settings_device_name
         device.update!(name: Names::GENESIS_XL)
       end
