@@ -3,7 +3,7 @@ jest.mock("../../../api/crud", () => ({
   save: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import {
   FwParamExportMenu, condenseFwConfig, uncondenseFwConfig, importParameters,
@@ -24,7 +24,7 @@ describe("<FwParamExportMenu />", () => {
     const config = fakeFirmwareConfig().body;
     const wrapper = mount(<FwParamExportMenu firmwareConfig={config} />);
     expect(wrapper.text()).toContain(
-      "\"encoder_enabled\": {\"x\": 0, \"y\": 0, \"z\": 0 },");
+      "\"encoder_enabled\": {\"x\": 1, \"y\": 1, \"z\": 0 },");
     expect(wrapper.text()).toContain(
       "\"pin_guard_1\": {\"active_state\": 1, " +
       "\"pin_nr\": 0, \"time_out\": 60 },");
@@ -37,7 +37,7 @@ describe("condenseFwConfig()", () => {
   it("condenses config", () => {
     const config = fakeFirmwareConfig().body;
     expect(condenseFwConfig(config)).toEqual(expect.objectContaining({
-      encoder_enabled: { x: 0, y: 0, z: 0 }
+      encoder_enabled: { x: 1, y: 1, z: 0 }
     }));
     expect(condenseFwConfig(config)).toEqual(expect.objectContaining({
       pin_guard_1: { active_state: 1, pin_nr: 0, time_out: 60 }

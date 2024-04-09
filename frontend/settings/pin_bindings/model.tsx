@@ -1,6 +1,7 @@
 /* eslint-disable react/no-unknown-property */
 /* eslint-disable no-null/no-null */
 import React, { useRef } from "react";
+import * as THREE from "three";
 import {
   Cylinder, Html, PerspectiveCamera, useGLTF,
 } from "@react-three/drei";

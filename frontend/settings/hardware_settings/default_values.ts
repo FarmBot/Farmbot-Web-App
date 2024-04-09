@@ -60,8 +60,8 @@ const DEFAULT_FIRMWARE_CONFIG_VALUES: Record<NumberFirmwareConfigKey, number> = 
   movement_invert_motor_x: 0,
   movement_invert_motor_y: 0,
   movement_invert_motor_z: 0,
-  movement_keep_active_x: 1,
-  movement_keep_active_y: 1,
+  movement_keep_active_x: 0,
+  movement_keep_active_y: 0,
   movement_keep_active_z: 1,
   movement_max_spd_x: 400,
   movement_max_spd_y: 400,
@@ -129,8 +129,6 @@ const DEFAULT_FIRMWARE_CONFIG_VALUES: Record<NumberFirmwareConfigKey, number> = 
 const DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES =
   cloneDeep(DEFAULT_FIRMWARE_CONFIG_VALUES);
 DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.encoder_enabled_z = 0;
-DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.movement_keep_active_x = 0;
-DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.movement_keep_active_y = 0;
 DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.movement_max_spd_y = 900;
 DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.movement_min_spd_x = 300;
 DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.movement_min_spd_y = 300;
@@ -144,7 +142,9 @@ DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.encoder_missed_steps_decay_x = 100;
 DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.encoder_missed_steps_decay_y = 100;
 DEFAULT_EXPRESS_FIRMWARE_CONFIG_VALUES.encoder_missed_steps_decay_z = 100;
 
-const DEFAULT_GENESIS_FIRMWARE_CONFIG_VALUES = DEFAULT_FIRMWARE_CONFIG_VALUES;
+const DEFAULT_GENESIS_FIRMWARE_CONFIG_VALUES =
+  cloneDeep(DEFAULT_FIRMWARE_CONFIG_VALUES);
+DEFAULT_GENESIS_FIRMWARE_CONFIG_VALUES.movement_motor_current_x = 1646;
 
 export const getDefaultFwConfigValue =
   (firmwareHardware: FirmwareHardware | undefined) =>
