@@ -23,7 +23,7 @@ module Images
           "GoogleAccessId" => post_object[:GoogleAccessId] || HMM,
           "file" => "REPLACE_THIS_WITH_A_BINARY_JPEG_FILE",
         },
-        instructions: "Send a 'from-data' request to the URL provided." \
+        instructions: "Send a 'form-data' request to the URL provided. " \
                       "Then POST the resulting URL as an 'attachment_url' " \
                       "(json) to api/images/.",
       }
