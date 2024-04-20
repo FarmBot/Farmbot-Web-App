@@ -12,6 +12,11 @@ EXCLUDE = [
     reason: "dependency needs",
     version: "1.4.1",
   },
+  {
+    packages: ["eslint"],
+    reason: "breaking changes in",
+    version: "9",
+  },
 ]
 
 # Load package.json as JSON.
