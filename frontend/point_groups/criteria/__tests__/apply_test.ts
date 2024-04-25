@@ -97,6 +97,18 @@ describe("selectPointsByCriteria()", () => {
     const result = selectPointsByCriteria(criteria, allPoints, now);
     expect(result).toEqual([matchingPoint]);
   });
+
+  it("doesn't match plant without planted date", () => {
+    const criteria = fakeCriteria();
+    criteria.day = { days_ago: 1, op: "<" };
+    const otherPoint = fakePlant();
+    otherPoint.body.planted_at = undefined;
+    otherPoint.body.created_at = "2020-01-20T20:00:00.000Z";
+    const allPoints = [otherPoint];
+    const now = moment("2020-02-20T20:00:00.000Z");
+    const result = selectPointsByCriteria(criteria, allPoints, now);
+    expect(result).toEqual([]);
+  });
 });
 
 describe("pointsSelectedByGroup()", () => {
