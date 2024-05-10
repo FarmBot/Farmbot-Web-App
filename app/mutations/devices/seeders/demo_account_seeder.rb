@@ -25,8 +25,49 @@ module Devices
                                    device: device })
       end
 
-      def plants
-        PLANTS.map { |x| Points::Create.run!(x, device: device) }
+      def plants(product_line)
+        spinach_row_count = product_line.include?("xl") ? 28 : 13
+        spinach_col_count = product_line.include?("xl") ? 4 : 2
+        (0..(spinach_row_count - 1)).map do |i|
+          (0..(spinach_col_count - 1)).map do |j|
+            Points::Create.run!(device: device,
+                                pointer_type: "Plant",
+                                name: "Spinach",
+                                openfarm_slug: "spinach",
+                                plant_stage: "planned",
+                                x: 400 + i * 200,
+                                y: 100 + j * 200 + (j > 1 ? 2100 : 0),
+                                z: 0)
+          end
+        end
+        broccoli_row_count = product_line.include?("xl") ? 9 : 4
+        broccoli_col_count = product_line.include?("xl") ? 3 : 1
+        (0..(broccoli_row_count - 1)).map do |i|
+          (0..(broccoli_col_count - 1)).map do |j|
+            Points::Create.run!(device: device,
+                                pointer_type: "Plant",
+                                name: "Broccoli",
+                                openfarm_slug: "broccoli",
+                                plant_stage: "planned",
+                                x: 600 + i * 600,
+                                y: 700 + j * 600 + (j > 0 ? 300 : 0),
+                                z: 0)
+          end
+        end
+        beet_row_count = product_line.include?("xl") ? 57 : 27
+        beet_col_count = product_line.include?("xl") ? 2 : 2
+        (0..(beet_row_count - 1)).map do |i|
+          (0..(beet_col_count - 1)).map do |j|
+            Points::Create.run!(device: device,
+                                pointer_type: "Plant",
+                                name: "Beet",
+                                openfarm_slug: "beet",
+                                plant_stage: "planned",
+                                x: 200 + i * 100,
+                                y: 1100 + j * 100 + (j > 1 ? 200 : 0),
+                                z: 0)
+          end
+        end
       end
 
       def point_groups_spinach
@@ -76,7 +117,7 @@ module Devices
 
       def misc(product_line)
         create_webcam_feed(product_line)
-        plants
+        plants(product_line)
         point_groups_spinach
         point_groups_broccoli
         point_groups_beet

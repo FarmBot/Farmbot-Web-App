@@ -28,11 +28,6 @@ module Devices
         SEED_TROUGH_2 = "Seed Trough 2"
       end
 
-      # Stub plants ==============================
-      PLANT_FIXTURE_PATH =
-        "app/mutations/devices/seeders/plant_fixtures.yml"
-      PLANTS = YAML.load(File.read(PLANT_FIXTURE_PATH))
-
       # Stub sequences ===========================
       SEQUENCE_FIXTURE_PATH =
         "app/mutations/devices/seeders/sequence_fixtures.yml"
