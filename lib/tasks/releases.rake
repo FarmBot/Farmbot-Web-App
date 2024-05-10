@@ -100,15 +100,19 @@ namespace :releases do
       end
     end
 
-    def self.post_summary
+    def self.post_summary(metadata)
       webhook_url = ENV["RELEASE_WEBHOOK_URL"]
       if webhook_url
         server = Release.first.image_url.split("/")[3].split("-")[1]
+        tag_name = metadata.fetch(:tag_name)
         title = "current releases: #{server}"
-        info = title + "\n```#{get_brief_release_info}```"
+        info = title
+        info += "\n```#{get_brief_release_info}```"
+        info += "\n\n<#{metadata.fetch(:html_url)}|#{tag_name}>"
+        info += "\n#{metadata.fetch(:body)}"
         payload = {
           "mrkdwn": true,
-          "text": title,
+          "text": title + " (new: #{tag_name})",
           "blocks": [
             {
               "type": "section",
@@ -149,6 +153,6 @@ namespace :releases do
       release.destroy!
     end
     ReleaseTask.print_all_existing_releases
-    ReleaseTask.post_summary
+    ReleaseTask.post_summary(json)
   end
 end

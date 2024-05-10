@@ -7,7 +7,6 @@ module Devices
     optional do
       string :timezone
       string :name
-      string :webcam_url
       float :lat
       float :lng
       boolean :indoor

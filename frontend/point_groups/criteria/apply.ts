@@ -31,16 +31,18 @@ const checkCriteria =
             .map(([key, value]) => isNumber(value) &&
               compare[criteriaKey](get(point.body, key), value)));
         case "day":
-          const pointDate = moment(point.body.pointer_type == "Plant"
-            && point.body.planted_at
+          if (dayCriteriaEmpty(criteria.day)) { return true; }
+          const maybePointDate = point.body.pointer_type == "Plant"
             ? point.body.planted_at
-            : point.body.created_at);
+            : point.body.created_at;
+          if (!maybePointDate) { return false; }
+          const pointDate = moment(maybePointDate);
           const compareDate = moment(now)
             .subtract(criteria.day.days_ago, "days");
           const matchesDays = criteria.day.op == "<"
             ? pointDate.isAfter(compareDate)
             : pointDate.isBefore(compareDate);
-          return matchesDays || dayCriteriaEmpty(criteria.day);
+          return matchesDays;
       }
     };
 
