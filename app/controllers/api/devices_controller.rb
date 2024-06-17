@@ -10,20 +10,9 @@ module Api
       render json: current_device
     end
 
-    # POST /api/device
-    def create
-      mutate Devices::Create.run(raw_json, user: current_user)
-    end
-
     # PATCH/PUT /api/device
     def update
       mutate Devices::Update.run(raw_json, device: current_device)
-    end
-
-    # DELETE /api/devices/1
-    def destroy
-      Devices::Destroy.run!(user: current_user, device: current_device)
-      render json: "", status: 204
     end
 
     def dump

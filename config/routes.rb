@@ -38,7 +38,7 @@ FarmBot::Application.routes.draw do
       ai: [:create],
       feedback: [:create],
       demo_account: [:create],
-      device: [:create, :destroy, :show, :update],
+      device: [:show, :update],
       fbos_config: [:destroy, :show, :update],
       firmware_config: [:destroy, :show, :update],
       public_key: [:show],

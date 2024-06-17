@@ -350,6 +350,7 @@ export interface EditWeedStatusProps {
 /** Select a `plant_stage` for a weed. */
 export const EditWeedStatus = (props: EditWeedStatusProps) =>
   <FBSelect
+    key={props.weed.uuid}
     list={WEED_STAGE_LIST()}
     selectedItem={WEED_STAGE_DDI_LOOKUP()[props.weed.body.plant_stage]}
     onChange={ddi =>

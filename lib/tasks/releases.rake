@@ -20,13 +20,33 @@ namespace :releases do
       JSON.parse(URI.parse(real_url).open.read, symbolize_names: true)
     end
 
+    def self.get_choice(choices)
+      input = STDIN.gets.chomp
+      if input.empty?
+        puts "Input empty. Exiting."
+        exit 0
+      end
+      index = input.to_i
+      if index >= choices.length
+        puts "Invalid choice. Exiting."
+        exit 0
+      end
+      if index == 0 and input != "0"
+        puts "Invalid choice. Exiting."
+        exit 0
+      end
+      choice = choices.fetch(index)
+      puts "\n#{choice}\n\n"
+      choice
+    end
+
     def self.select_version(choices)
-      puts "=== AVAILABLE RELEASES ==="
+      puts "\n=== AVAILABLE RELEASES ==="
       choices.each_with_index do |version, index|
         puts "#{index}) #{version}"
       end
-      puts "Select a release to publish:"
-      choices.fetch(STDIN.gets.chomp.to_i)
+      print "Select a release to publish: "
+      get_choice(choices)
     end
 
     def self.get_release_list
@@ -38,12 +58,12 @@ namespace :releases do
     end
 
     def self.get_channel
-      puts "=== AVAILABLE CHANNELS ==="
-      puts "Select a channel to publish to:"
+      puts "\n=== AVAILABLE CHANNELS ==="
       Release::CHANNEL.each_with_index do |chan, inx|
         puts "#{inx}) #{chan}"
       end
-      Release::CHANNEL.fetch(STDIN.gets.chomp.to_i)
+      print "Select a channel to publish to: "
+      get_choice(Release::CHANNEL)
     end
 
     def self.print_release(release)
@@ -100,19 +120,51 @@ namespace :releases do
       end
     end
 
+    def self.select_summary_type
+      puts "\n=== SUMMARY OPTIONS ==="
+      choices = ["none", "message", "link", "body"]
+      choices.each_with_index do |version, index|
+        puts "#{index}) #{version}"
+      end
+      print "Select a summary type (cumulative): "
+      get_choice(choices)
+    end
+
+    def self.prepare_summary(server, metadata)
+      title = "current releases: #{server}"
+      tag_name = metadata.fetch(:tag_name)
+      notification_text = title + " (new: #{tag_name})"
+      puts "\n=== notification ===\n"
+      puts notification_text
+      puts "\n=== message ===\n"
+      info = title
+      info += "\n```#{get_brief_release_info}```"
+      puts info
+      puts "\n=== link ==="
+      link = "\n\n<#{metadata.fetch(:html_url)}|#{tag_name}>"
+      puts link
+      puts "\n=== body ==="
+      body = "\n#{metadata.fetch(:body)}"
+      puts body
+      [notification_text, info, link, body]
+    end
+
     def self.post_summary(metadata)
       webhook_url = ENV["RELEASE_WEBHOOK_URL"]
       if webhook_url
         server = Release.first.image_url.split("/")[3].split("-")[1]
-        tag_name = metadata.fetch(:tag_name)
-        title = "current releases: #{server}"
-        info = title
-        info += "\n```#{get_brief_release_info}```"
-        info += "\n\n<#{metadata.fetch(:html_url)}|#{tag_name}>"
-        info += "\n#{metadata.fetch(:body)}"
+        notification_text, info, link, body = prepare_summary(server, metadata)
+        summary_type = select_summary_type
+        return if summary_type == "none"
+        if ["link", "body"].include?(summary_type)
+          info += link
+        end
+        if ["body"].include?(summary_type)
+          info += body
+        end
         payload = {
           "mrkdwn": true,
-          "text": title + " (new: #{tag_name})",
+          "text": notification_text,
           "blocks": [
             {
               "type": "section",
