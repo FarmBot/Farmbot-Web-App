@@ -1,6 +1,8 @@
 import { fakeState } from "../../__test_support__/fake_state";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
-import { fakeFbosConfig, fakeWebAppConfig } from "../../__test_support__/fake_state/resources";
+import {
+  fakeFbosConfig, fakeWebAppConfig,
+} from "../../__test_support__/fake_state/resources";
 const mockState = fakeState();
 const config = fakeWebAppConfig();
 config.body.highlight_modified_settings = true;

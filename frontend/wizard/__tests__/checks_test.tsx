@@ -40,6 +40,7 @@ import {
 } from "../../__test_support__/resource_index_builder";
 import {
   AssemblyDocs,
+  AutoUpdate,
   AxisActions,
   BootSequence,
   CameraCalibrationCard,
@@ -475,6 +476,19 @@ describe("<Connectivity />", () => {
     p.resources = buildResourceIndex([fakeDevice()]).index;
     const wrapper = mount(<Connectivity {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("web app");
+  });
+});
+
+describe("<AutoUpdate />", () => {
+  it("renders OTA time selector", () => {
+    const p = fakeProps();
+    const config = fakeFbosConfig();
+    config.body.os_auto_update = true;
+    const device = fakeDevice();
+    device.body.ota_hour = 1;
+    p.resources = buildResourceIndex([config, device]).index;
+    const wrapper = mount(<AutoUpdate {...p} />);
+    expect(wrapper.text()).toEqual("1:00 AM");
   });
 });
 
