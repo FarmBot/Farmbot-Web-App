@@ -43,6 +43,7 @@ import {
   DownloadOS,
   DownloadImager,
   Language,
+  AutoUpdate,
 } from "./checks";
 import { TaggedWizardStepResult } from "farmbot";
 import {
@@ -128,6 +129,7 @@ export enum WizardStepSlug {
   configuratorBrowser = "configuratorBrowser",
   configuratorSteps = "configuratorSteps",
   connection = "connection",
+  autoUpdate = "autoUpdate",
   mapOrientation = "mapOrientation",
   xMotor = "xMotor",
   yMotor = "yMotor",
@@ -481,6 +483,16 @@ export const WIZARD_STEPS = (props: WizardStepDataProps): WizardSteps => {
       ],
     },
     {
+      section: WizardSectionSlug.connectivity,
+      slug: WizardStepSlug.autoUpdate,
+      title: t("Auto update"),
+      content: SetupWizardContent.AUTO_UPDATE,
+      component: AutoUpdate,
+      question: t(SetupWizardContent.AUTO_UPDATE_QUESTION),
+      outcomes: [
+      ],
+    },
+    {
       section: WizardSectionSlug.map,
       slug: WizardStepSlug.mapOrientation,
       title: t("Map orientation"),
@@ -719,17 +731,22 @@ export const WIZARD_STEPS = (props: WizardStepDataProps): WizardSteps => {
     },
     {
       section: WizardSectionSlug.home,
-      slug: WizardStepSlug.xAxisFindHome,
-      title: t("Home X"),
+      slug: WizardStepSlug.zAxisFindHome,
+      title: t("Home Z"),
       prerequisites: [botOnlineReq],
-      content: t(SetupWizardContent.FIND_HOME, { axis: "X" }),
-      component: AxisActions,
-      question: SetupWizardContent.HOME,
+      content: isExpress(firmwareHardware)
+        ? SetupWizardContent.FIND_HOME_Z_EXPRESS
+        : t(SetupWizardContent.FIND_HOME, { axis: "Z" }),
+      component: isExpress(firmwareHardware) ? undefined : AxisActions,
+      controlsCheckOptions: isExpress(firmwareHardware) ? {} : undefined,
+      question: isExpress(firmwareHardware)
+        ? SetupWizardContent.HOME_Z_EXPRESS
+        : SetupWizardContent.HOME,
       outcomes: [
         {
           slug: "notAtHome",
           description: t("The axis is not at the home position"),
-          tips: t(SetupWizardContent.HOME_AXIS, { axis: "x" }),
+          tips: t(SetupWizardContent.HOME_AXIS, { axis: "z" }),
           component: CheckForResistance,
           controlsCheckOptions: { home: true },
         },
@@ -737,7 +754,7 @@ export const WIZARD_STEPS = (props: WizardStepDataProps): WizardSteps => {
           slug: "notZero",
           description: t("The coordinate is not zero"),
           tips: "",
-          component: SetHome("x"),
+          component: SetHome("z"),
         },
       ],
     },
@@ -767,22 +784,17 @@ export const WIZARD_STEPS = (props: WizardStepDataProps): WizardSteps => {
     },
     {
       section: WizardSectionSlug.home,
-      slug: WizardStepSlug.zAxisFindHome,
-      title: t("Home Z"),
+      slug: WizardStepSlug.xAxisFindHome,
+      title: t("Home X"),
       prerequisites: [botOnlineReq],
-      content: isExpress(firmwareHardware)
-        ? SetupWizardContent.FIND_HOME_Z_EXPRESS
-        : t(SetupWizardContent.FIND_HOME, { axis: "Z" }),
-      component: isExpress(firmwareHardware) ? undefined : AxisActions,
-      controlsCheckOptions: isExpress(firmwareHardware) ? {} : undefined,
-      question: isExpress(firmwareHardware)
-        ? SetupWizardContent.HOME_Z_EXPRESS
-        : SetupWizardContent.HOME,
+      content: t(SetupWizardContent.FIND_HOME, { axis: "X" }),
+      component: AxisActions,
+      question: SetupWizardContent.HOME,
       outcomes: [
         {
           slug: "notAtHome",
           description: t("The axis is not at the home position"),
-          tips: t(SetupWizardContent.HOME_AXIS, { axis: "z" }),
+          tips: t(SetupWizardContent.HOME_AXIS, { axis: "x" }),
           component: CheckForResistance,
           controlsCheckOptions: { home: true },
         },
@@ -790,7 +802,7 @@ export const WIZARD_STEPS = (props: WizardStepDataProps): WizardSteps => {
           slug: "notZero",
           description: t("The coordinate is not zero"),
           tips: "",
-          component: SetHome("z"),
+          component: SetHome("x"),
         },
       ],
     },

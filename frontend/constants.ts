@@ -1702,6 +1702,15 @@ export namespace SetupWizardContent {
     re-flashing the SD card via Etcher. If possible, ensure line-of-sight
     between devices when trying to connect.`);
 
+  export const AUTO_UPDATE =
+    trim(`Set the time you wish for FarmBot to automatically download and
+    install updates when available. During this time FarmBot will reboot
+    to apply the update, so you should never schedule any events to occur
+    during the same hour. We recommend selecting 3 AM.`);
+
+  export const AUTO_UPDATE_QUESTION =
+    trim(`Did you select a time when you will not need to use your FarmBot?`);
+
   export const MAP_ORIENTATION =
     trim(`Watch the video below showing how to match the virtual FarmBot
     map to your real life FarmBot. The relevant controls are available

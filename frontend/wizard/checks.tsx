@@ -13,6 +13,7 @@ import {
   selectAllFarmwareEnvs,
   selectAllImages, selectAllLogs, selectAllPeripherals, selectAllSensors,
   selectAllTools,
+  maybeGetTimeSettings,
 } from "../resources/selectors";
 import { last, some, uniq } from "lodash";
 import {
@@ -25,7 +26,7 @@ import {
 } from "../settings/fbos_settings/fbos_details";
 import { ExternalUrl } from "../external_urls";
 import { getFbosConfig, getFirmwareConfig } from "../resources/getters";
-import { validFwConfig } from "../util";
+import { validFbosConfig, validFwConfig } from "../util";
 import { validBotLocationData } from "../util/location";
 import {
   getFwHardwareValue, isExpress,
@@ -43,7 +44,9 @@ import { FirmwareHardware, TaggedLog, Xyz } from "farmbot";
 import { ConnectivityDiagram } from "../devices/connectivity/diagram";
 import { Diagnosis } from "../devices/connectivity/diagnosis";
 import { connectivityData } from "../devices/connectivity/generate_data";
-import { sourceFwConfigValue } from "../settings/source_config_value";
+import {
+  sourceFbosConfigValue, sourceFwConfigValue,
+} from "../settings/source_config_value";
 import {
   emergencyUnlock, findAxisLength, findHome, setHome, settingToggle,
 } from "../devices/actions";
@@ -99,6 +102,7 @@ import {
 import { WaterFlowRateInput } from "../tools/edit_tool";
 import { RPI_OPTIONS } from "../settings/fbos_settings/rpi_model";
 import { BoxTop } from "../settings/pin_bindings/box_top";
+import { OtaTimeSelector } from "../settings/fbos_settings/ota_time_selector";
 
 export const Language = (props: WizardStepComponentProps) => {
   const user = getUserAccountSettings(props.resources);
@@ -459,6 +463,17 @@ export const Connectivity = (props: WizardStepComponentProps) => {
     <ConnectivityDiagram rowData={data.rowData} />
     <Diagnosis statusFlags={data.flags} />
   </div>;
+};
+
+export const AutoUpdate = (props: WizardStepComponentProps) => {
+  return <OtaTimeSelector
+    dispatch={props.dispatch}
+    device={getDeviceAccountSettings(props.resources)}
+    timeSettings={maybeGetTimeSettings(props.resources)}
+    sourceFbosConfig={sourceFbosConfigValue(
+      validFbosConfig(getFbosConfig(props.resources)),
+      props.bot.hardware.configuration)}
+  />;
 };
 
 export const InvertJogButton = (axis: Xyz) =>
