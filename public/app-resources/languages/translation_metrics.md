@@ -21,21 +21,21 @@ For example, `sudo docker compose run web npm run translation-check`._
 
 See the [README](https://github.com/FarmBot/Farmbot-Web-App#translating-the-web-app) for contribution instructions.
 
-Total number of phrases identified by the language helper for translation: __2369__
+Total number of phrases identified by the language helper for translation: __2373__
 
 |Language|Percent translated|Translated|Untranslated|Other Translations|
 |:---:|---:|---:|---:|---:|
-|da|4%|84|2285|28|
-|de|78%|1854|515|593|
-|es|57%|1362|1007|547|
-|fr|39%|927|1442|456|
-|it|97%|2309|60|150|
-|ko|98%|2312|57|38|
-|nl|3%|62|2307|76|
-|pt|2%|55|2314|98|
-|ru|19%|441|1928|356|
-|th|0%|0|2369|0|
-|zh|3%|69|2300|82|
+|da|3%|83|2290|29|
+|de|77%|1833|540|614|
+|es|57%|1353|1020|556|
+|fr|39%|919|1454|464|
+|it|96%|2283|90|176|
+|ko|96%|2286|87|64|
+|nl|3%|61|2312|77|
+|pt|2%|55|2318|98|
+|ru|18%|436|1937|361|
+|th|0%|0|2373|0|
+|zh|91%|2159|214|156|
 
 **Percent translated** refers to the percent of phrases identified by the
 language helper that have been translated. Additional phrases not identified
