@@ -3,7 +3,7 @@ version: 2.1
 executors:
   build-executor:
     machine:
-      image: ubuntu-2204:edge
+      image: ubuntu-2404:current
     resource_class: xlarge
     working_directory: /home/circleci/project
 
