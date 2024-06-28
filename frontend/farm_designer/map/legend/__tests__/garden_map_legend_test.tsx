@@ -10,6 +10,11 @@ jest.mock("../../../../config_storage/actions", () => ({
   setWebAppConfigValue: jest.fn(),
 }));
 
+let mockDev = false;
+jest.mock("../../../../settings/dev/dev_support", () => ({
+  DevSettings: { futureFeaturesEnabled: () => mockDev }
+}));
+
 import React from "react";
 import { shallow, mount } from "enzyme";
 import {
@@ -63,6 +68,7 @@ describe("<GardenMapLegend />", () => {
     expect(wrapper.html()).toContain("filter");
     expect(wrapper.html()).toContain("extras");
     expect(wrapper.html()).not.toContain("-100");
+    expect(wrapper.text().toLowerCase()).not.toContain("3d map");
   });
 
   it("renders with readings", () => {
@@ -76,6 +82,16 @@ describe("<GardenMapLegend />", () => {
     const wrapper = mount(<GardenMapLegend {...fakeProps()} />);
     wrapper.find(".fb-toggle-button").last().simulate("click");
     expect(wrapper.html()).toContain("-100");
+  });
+
+  it("renders 3D map toggle", () => {
+    mockDev = true;
+    const p = fakeProps();
+    const wrapper = mount(<GardenMapLegend {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("3d map");
+    wrapper.find(".fb-layer-toggle").last().simulate("click");
+    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+      BooleanSetting.three_d_garden, true);
   });
 });
 

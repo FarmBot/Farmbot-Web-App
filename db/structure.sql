@@ -2036,7 +2036,8 @@ CREATE TABLE public.web_app_configs (
     show_uncropped_camera_view_area boolean DEFAULT false,
     default_plant_depth integer DEFAULT 5,
     show_missed_step_plot boolean DEFAULT false,
-    enable_3d_electronics_box_top boolean DEFAULT true
+    enable_3d_electronics_box_top boolean DEFAULT true,
+    three_d_garden boolean DEFAULT false
 );
 
 
@@ -3987,6 +3988,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20240118204046'),
 ('20240202171922'),
 ('20240207234421'),
-('20240405171128');
+('20240405171128'),
+('20240625195838');
 
 

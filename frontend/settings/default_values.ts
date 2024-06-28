@@ -87,6 +87,7 @@ const DEFAULT_WEB_APP_CONFIG_VALUES: Record<Key, Value> = {
   view_celery_script: false,
   highlight_modified_settings: true,
   show_advanced_settings: false,
+  ["three_d_garden" as Key]: false,
 };
 
 const DEFAULT_EXPRESS_WEB_APP_CONFIG_VALUES =

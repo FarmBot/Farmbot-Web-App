@@ -13,6 +13,7 @@ class DashboardController < ApplicationController
                         :terminal,
                         :tos_update,
                         :try_farmbot,
+                        :promo,
                       ]
 
   OUTPUT_URL = "/" + File.join("assets", "parcel") # <= served from public/ dir
@@ -32,6 +33,7 @@ class DashboardController < ApplicationController
     tos_update: "/tos_update/index.tsx",
     demo: "/demo/index.tsx",
     try_farmbot: "/try_farmbot/index.tsx",
+    promo: "/promo/index.tsx",
     os_download: "/os_download/index.tsx",
     featured: "/featured/index.tsx",
     terminal: "/terminal/index.tsx",

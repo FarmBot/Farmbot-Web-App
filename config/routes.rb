@@ -130,6 +130,7 @@ FarmBot::Application.routes.draw do
 
   get "/demo" => "dashboard#demo", as: :demo_main
   get "/try_farmbot" => "dashboard#try_farmbot", as: :try_farmbot_main
+  get "/promo" => "dashboard#promo", as: :promo_main
   get "/os" => "dashboard#os_download", as: :os_download
   get "/featured" => "dashboard#featured", as: :featured
   get "/password_reset/*token" => "dashboard#password_reset", as: :password_reset

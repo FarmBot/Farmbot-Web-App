@@ -23,6 +23,7 @@ import { getModifiedClassName } from "../../../settings/default_values";
 import { Position } from "@blueprintjs/core";
 import { MapSizeInputs } from "../../map_size_setting";
 import { OriginSelector } from "../../../settings/farm_designer_settings";
+import { DevSettings } from "../../../settings/dev/dev_support";
 
 export const ZoomControls = ({ zoom, getConfigValue }: {
   zoom: (value: number) => () => void,
@@ -115,6 +116,7 @@ export const FarmbotSubMenu = (props: SettingsSubMenuProps) =>
 const LayerToggles = (props: GardenMapLegendProps) => {
   const { toggle, getConfigValue, dispatch } = props;
   const subMenuProps = { dispatch, getConfigValue };
+  const threeDGarden = !!props.getConfigValue(BooleanSetting.three_d_garden);
   return <div className="toggle-buttons">
     <LayerToggle
       settingName={BooleanSetting.show_plants}
@@ -196,6 +198,13 @@ const LayerToggles = (props: GardenMapLegendProps) => {
         value={props.showMoistureInterpolationMap}
         label={DeviceSetting.showMoisture}
         onClick={toggle(BooleanSetting.show_moisture_interpolation_map)} />}
+    {DevSettings.futureFeaturesEnabled() &&
+      <LayerToggle
+        settingName={BooleanSetting.three_d_garden}
+        value={threeDGarden}
+        label={DeviceSetting.show3DMap}
+        onClick={() => dispatch(setWebAppConfigValue(
+          BooleanSetting.three_d_garden, !threeDGarden))} />}
   </div>;
 };
 
