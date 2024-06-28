@@ -1,7 +1,7 @@
-/* eslint-disable react/no-unknown-property */
 import { Circle, PerspectiveCamera, OrbitControls, Box } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import React from "react";
+import { AmbientLight, DirectionalLight } from "./components";
 
 export interface ThreeDGardenProps {
 }
@@ -29,8 +29,8 @@ export const ThreeDGardenModel = (props: ThreeDGardenModelProps) => {
     <OrbitControls maxPolarAngle={Math.PI / 2} dampingFactor={0.2}
       target={[0, 0, 0]}
       minDistance={500} maxDistance={12000} />
-    <ambientLight intensity={1} />
-    <directionalLight intensity={0.5} position={[0, 0, 1000]} />
+    <AmbientLight intensity={1} />
+    <DirectionalLight intensity={0.5} position={[0, 0, 1000]} />
     <Circle name={"ground"}
       receiveShadow={true}
       args={[30000, 16]}

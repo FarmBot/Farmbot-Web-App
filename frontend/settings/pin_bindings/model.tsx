@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unknown-property */
 /* eslint-disable no-null/no-null */
 import React, { useRef } from "react";
 import * as THREE from "three";
@@ -15,6 +14,9 @@ import { debounce, some } from "lodash";
 import { t } from "../../i18next_wrapper";
 import { isExpress } from "../../settings/firmware/firmware_hardware_support";
 import { ButtonPin } from "./list_and_label_support";
+import {
+  AmbientLight, DirectionalLight, Group, Mesh, PointLight,
+} from "../../three_d_garden/components";
 
 const ASSETS = "/3D/";
 const LIB_DIR = `${ASSETS}lib/`;
@@ -265,27 +267,27 @@ export const Model = (props: BoxTopBaseProps) => {
     setZForAllInGroup(e, Z);
     document.body.style.cursor = "default";
   };
-  return <group dispose={null}
+  return <Group dispose={null}
     rotation={[0, 0, Math.PI / 2]}>
     <PerspectiveCamera makeDefault name="camera" fov={30} near={0.1} far={1000}
       position={[-150, 0, 300]}
       rotation={[0, -Math.PI / 6, -Math.PI / 2]} />
-    <pointLight intensity={2} position={[0, 0, 200]} rotation={[0, 0, 0]}
+    <PointLight intensity={2} position={[0, 0, 200]} rotation={[0, 0, 0]}
       distance={0} decay={0} />
-    <directionalLight intensity={0.1}
+    <DirectionalLight intensity={0.1}
       position={[-100, 0, 100]} rotation={[0, 0, 0]} />
-    <ambientLight intensity={0.5} />
-    <mesh name={"electronicsBox"}
+    <AmbientLight intensity={0.5} />
+    <Mesh name={"electronicsBox"}
       geometry={box.nodes.Electronics_Box.geometry}
       material={box.materials[Material.box]}
       scale={SCALE}
       material-color={0xffffff}
       material-emissive={0x999999} />
-    <mesh name={"electronicsBoxGasket"}
+    <Mesh name={"electronicsBoxGasket"}
       geometry={box.nodes.Electronics_Box_Gasket.geometry}
       material={box.materials[Material.gasket]}
       scale={SCALE} />
-    <mesh name={"electronicsBoxLid"}
+    <Mesh name={"electronicsBoxLid"}
       geometry={box.nodes.Electronics_Box_Lid.geometry}
       material={box.materials[Material.lid]}
       scale={SCALE} />
@@ -305,7 +307,7 @@ export const Model = (props: BoxTopBaseProps) => {
         };
         return <group key={btnPosition} name={"button-group"}
           onPointerUp={leave}>
-          <mesh name={"button-housing"}
+          <Mesh name={"button-housing"}
             geometry={btn.nodes["Push_Button_-_Red"].geometry}
             material={btn.materials[Material.button]}
             position={[-30, btnPosition, Z]}
@@ -363,7 +365,7 @@ export const Model = (props: BoxTopBaseProps) => {
       .map(ledIndicator => {
         const { position, color, ref } = ledIndicator;
         return <group key={position}>
-          <mesh name={"led-housing"}
+          <Mesh name={"led-housing"}
             geometry={led.nodes.LED.geometry}
             material={led.materials[Material.led]}
             position={[-50, position, Z]}
@@ -381,7 +383,7 @@ export const Model = (props: BoxTopBaseProps) => {
           </Html>
         </group>;
       })}
-  </group>;
+  </Group>;
 };
 
 export const ElectronicsBoxModel = (props: BoxTopBaseProps) => {
