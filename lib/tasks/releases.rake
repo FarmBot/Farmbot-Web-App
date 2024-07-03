@@ -54,7 +54,7 @@ namespace :releases do
       file = URI.parse(uri).open
       raw_json = file.read
       json = JSON.parse(raw_json, symbolize_names: true).pluck(:tag_name)
-      json.first(9).sort.reverse
+      json
     end
 
     def self.get_channel
