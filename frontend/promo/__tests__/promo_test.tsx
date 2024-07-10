@@ -1,11 +1,11 @@
 import React from "react";
-import { shallow } from "enzyme";
+import { mount } from "enzyme";
 import { Promo } from "../promo";
 
 describe("<Promo />", () => {
   it("renders", () => {
     console.error = jest.fn();
-    const wrapper = shallow(<Promo />);
+    const wrapper = mount(<Promo />);
     expect(wrapper.html()).toContain("three-d-garden");
   });
 });

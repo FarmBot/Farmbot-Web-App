@@ -3,6 +3,7 @@ import {
   AmbientLightProps,
   DirectionalLightProps,
   GroupProps,
+  MeshPhongMaterialProps,
   MeshProps,
   PointLightProps,
 } from "@react-three/fiber";
@@ -24,3 +25,6 @@ export const Mesh = (props: MeshProps) =>
 
 export const PointLight = (props: PointLightProps) =>
   <pointLight {...props} />;
+
+export const MeshPhongMaterial = (props: MeshPhongMaterialProps) =>
+  <meshPhongMaterial {...props} />;

@@ -19,9 +19,12 @@ import {
 
 } from "..";
 import React from "react";
+import { INITIAL } from "../config";
+import { clone } from "lodash";
 
 describe("<ThreeDGarden />", () => {
   const fakeProps = (): ThreeDGardenProps => ({
+    config: clone(INITIAL),
   });
 
   it("renders", () => {
@@ -32,6 +35,7 @@ describe("<ThreeDGarden />", () => {
 
 describe("<ThreeDGardenModel />", () => {
   const fakeProps = (): ThreeDGardenModelProps => ({
+    config: clone(INITIAL),
   });
 
   it("renders model", () => {

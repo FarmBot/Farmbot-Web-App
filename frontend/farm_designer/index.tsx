@@ -194,7 +194,10 @@ export class RawFarmDesigner
       </div>
 
       {this.props.getConfigValue(BooleanSetting.three_d_garden)
-        ? <ThreeDGardenMap />
+        ? <ThreeDGardenMap
+          gridOffset={gridOffset}
+          mapTransformProps={this.mapTransformProps}
+          botSize={this.props.botSize} />
         : <div
           className={`farm-designer-map ${this.mapPanelClassName}`}
           style={{
