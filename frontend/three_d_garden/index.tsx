@@ -1,9 +1,10 @@
 import { Circle, PerspectiveCamera, OrbitControls } from "@react-three/drei";
 import { Canvas } from "@react-three/fiber";
 import React from "react";
-import { AmbientLight, DirectionalLight } from "./components";
+import { AmbientLight, DirectionalLight, MeshPhongMaterial } from "./components";
 import { Config } from "./config";
 import { Bed } from "./bed";
+import { RepeatWrapping, TextureLoader } from "three";
 
 export interface ThreeDGardenProps {
   config: Config;
@@ -16,6 +17,14 @@ export const ThreeDGarden = (props: ThreeDGardenProps) => {
     </Canvas>
   </div>;
 };
+
+const grassTexture = new TextureLoader()
+  .load("/3D/textures/grass.avif",
+    texture => {
+      texture.wrapS = RepeatWrapping;
+      texture.wrapT = RepeatWrapping;
+      texture.repeat.set(24, 24);
+    });
 
 export interface ThreeDGardenModelProps {
   config: Config;
@@ -42,7 +51,7 @@ export const ThreeDGardenModel = (props: ThreeDGardenModelProps) => {
       receiveShadow={true}
       args={[30000, 16]}
       position={[0, 0, -10]}>
-      <meshPhongMaterial color={"darkgreen"} />
+      <MeshPhongMaterial map={grassTexture} />
       <Bed config={props.config} />
     </Circle>
   </group>;

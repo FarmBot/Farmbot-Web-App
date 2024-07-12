@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Extrude } from "@react-three/drei";
-import { DoubleSide, Path, Shape } from "three";
+import { DoubleSide, Path, RepeatWrapping, Shape, TextureLoader } from "three";
 import { range } from "lodash";
 import { Config } from "./config";
 import { Group, MeshPhongMaterial } from "./components";
@@ -38,6 +38,30 @@ const bedStructure2D = (
 
   return shape;
 };
+
+const woodTexture = new TextureLoader()
+  .load("/3D/textures/wood.avif",
+    texture => {
+      texture.wrapS = RepeatWrapping;
+      texture.wrapT = RepeatWrapping;
+      texture.repeat.set(.0003, .003);
+    });
+
+const legWoodTexture = new TextureLoader()
+  .load("/3D/textures/wood.avif",
+    texture => {
+      texture.wrapS = RepeatWrapping;
+      texture.wrapT = RepeatWrapping;
+      texture.repeat.set(.02, .05);
+    });
+
+const soilTexture = new TextureLoader()
+  .load("/3D/textures/soil.avif",
+    texture => {
+      texture.wrapS = RepeatWrapping;
+      texture.wrapT = RepeatWrapping;
+      texture.repeat.set(.00034, .00068);
+    });
 
 export interface BedProps {
   config: Config;
@@ -103,10 +127,9 @@ export const Bed = (props: BedProps) => {
     </Extrude>;
   };
 
-  const bedColor = "#ad7039";
   return <Group name={"bed-group"}>
     <Bed>
-      <MeshPhongMaterial color={"#ad7039"} side={DoubleSide} />
+      <MeshPhongMaterial map={woodTexture} side={DoubleSide} />
     </Bed>
     <Box name={"lower-cc-support"}
       castShadow={true}
@@ -115,9 +138,9 @@ export const Bed = (props: BedProps) => {
       position={[
         bedLengthOuter / 4,
         -ccSupportSize / 2,
-        -Math.min(150, bedHeight / 2) - ccSupportSize / 2,
+        Math.min(150, bedHeight / 2) - ccSupportSize / 2,
       ]}>
-      <MeshPhongMaterial color={bedColor} side={DoubleSide} />
+      <MeshPhongMaterial map={woodTexture} side={DoubleSide} />
     </Box>
     <Box name={"upper-cc-support"}
       castShadow={true}
@@ -126,12 +149,12 @@ export const Bed = (props: BedProps) => {
       position={[
         bedLengthOuter * 3 / 4,
         -ccSupportSize / 2,
-        -50 - ccSupportSize / 2,
+        50 - ccSupportSize / 2,
       ]}>
-      <MeshPhongMaterial color={bedColor} side={DoubleSide} />
+      <MeshPhongMaterial map={woodTexture} side={DoubleSide} />
     </Box>
     <Soil>
-      <MeshPhongMaterial color={"#29231e"}
+      <MeshPhongMaterial map={soilTexture}
         shininess={0} />
     </Soil>
     {legXPositions.map((x, index) =>
@@ -142,7 +165,7 @@ export const Bed = (props: BedProps) => {
             position={[
               x,
               y,
-              -bedZOffset / 2 - legTopOffset + (casterHeight / 2),
+              bedZOffset / 2 + legTopOffset + (casterHeight / 2),
             ]}>
             <Box name={"bed-leg-wood"}
               castShadow={true}
@@ -152,7 +175,7 @@ export const Bed = (props: BedProps) => {
                 legSize,
                 bedZOffset + (legsFlush ? bedHeight : 0) - casterHeight,
               ]}>
-              <MeshPhongMaterial color={bedColor} />
+              <MeshPhongMaterial map={legWoodTexture} />
             </Box>
           </Group>;
         })}
