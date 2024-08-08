@@ -7,13 +7,14 @@ import { clone } from "lodash";
 describe("<Bed />", () => {
   const fakeProps = (): BedProps => ({
     config: clone(INITIAL),
+    activeFocus: "",
   });
 
   it("renders bed", () => {
     const p = fakeProps();
     p.config.extraLegsX = 0;
     const wrapper = mount(<Bed {...p} />);
-    expect(wrapper.html()).toContain("args=\"1500,50,50\"");
+    expect(wrapper.html()).toContain("bed-group");
   });
 
   it("renders bed with extra legs", () => {
@@ -22,6 +23,6 @@ describe("<Bed />", () => {
     p.config.extraLegsY = 2;
     p.config.legsFlush = false;
     const wrapper = mount(<Bed {...p} />);
-    expect(wrapper.html()).toContain("args=\"1500,50,50\"");
+    expect(wrapper.html()).toContain("bed-group");
   });
 });

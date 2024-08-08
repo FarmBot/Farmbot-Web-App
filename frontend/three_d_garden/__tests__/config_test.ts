@@ -1,5 +1,7 @@
 import { clone } from "lodash";
-import { INITIAL, modifyConfig, modifyConfigsFromUrlParams } from "../config";
+import {
+  detailLevels, INITIAL, modifyConfig, modifyConfigsFromUrlParams,
+} from "../config";
 
 describe("modifyConfig()", () => {
   it("modifies config: lab", () => {
@@ -72,5 +74,13 @@ describe("modifyConfigsFromUrlParams()", () => {
     expect(result.sizePreset).toEqual("Jr");
     expect(result.x).toEqual(1);
     expect(result.ground).toEqual(true);
+  });
+});
+
+describe("detailLevels()", () => {
+  it("returns detail level", () => {
+    const config = clone(INITIAL);
+    config.lowDetail = true;
+    expect(detailLevels(config)).toEqual([0, 0]);
   });
 });

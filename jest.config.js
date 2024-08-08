@@ -19,6 +19,7 @@ module.exports = {
     "./frontend/__test_support__/mock_fbtoaster.ts",
     "./frontend/__test_support__/mock_i18next.ts",
     "./frontend/__test_support__/additional_mocks.tsx",
+    "./frontend/__test_support__/three_d_mocks.tsx",
     "jest-canvas-mock",
   ],
   transform: {

@@ -61,6 +61,10 @@ export interface Config {
   people: boolean;
   scene: string;
   lowDetail: boolean;
+  eventDebug: boolean;
+  cableDebug: boolean;
+  zoomBeaconDebug: boolean;
+  animate: boolean;
 }
 
 export const INITIAL: Config = {
@@ -126,6 +130,10 @@ export const INITIAL: Config = {
   people: false,
   scene: "Outdoor",
   lowDetail: false,
+  eventDebug: false,
+  cableDebug: false,
+  zoomBeaconDebug: false,
+  animate: true,
 };
 
 export const STRING_KEYS = [
@@ -145,7 +153,8 @@ export const BOOLEAN_KEYS = [
   "tracks", "clouds", "perspective", "bot", "laser", "cableCarriers",
   "viewCube", "stats", "config", "zoom", "pan", "bounds", "threeAxes",
   "xyDimensions", "zDimension", "promoInfo", "solar", "utilitiesPost",
-  "packaging", "lab", "people", "lowDetail",
+  "packaging", "lab", "people", "lowDetail", "eventDebug", "cableDebug",
+  "zoomBeaconDebug", "animate",
 ];
 
 export const PRESETS: Record<string, Config> = {
@@ -257,6 +266,10 @@ export const PRESETS: Record<string, Config> = {
     people: false,
     scene: "Outdoor",
     lowDetail: false,
+    eventDebug: false,
+    cableDebug: false,
+    zoomBeaconDebug: false,
+    animate: true,
   },
   "Maximal": {
     ...INITIAL,
@@ -302,6 +315,10 @@ export const PRESETS: Record<string, Config> = {
     people: true,
     scene: "outdoor",
     lowDetail: false,
+    eventDebug: false,
+    cableDebug: true,
+    zoomBeaconDebug: true,
+    animate: true,
   },
 };
 
@@ -320,6 +337,7 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "tool", "cableCarriers", "viewCube", "stats", "config", "zoom", "bounds",
   "threeAxes", "xyDimensions", "zDimension", "labelsOnHover", "promoInfo", "pan",
   "solar", "utilitiesPost", "packaging", "lab", "people", "scene", "lowDetail",
+  "eventDebug", "cableDebug", "zoomBeaconDebug", "animate",
 ];
 
 export const modifyConfig = (config: Config, update: Partial<Config>) => {
@@ -408,3 +426,6 @@ export const seasonProperties: Record<string, SeasonProperties> = {
   Summer: { sunIntensity: 9 / 4, sunColor: "#FFFFFF", cloudOpacity: 0 },
   Fall: { sunIntensity: 5.5 / 4, sunColor: "#FFD6BC", cloudOpacity: 0.3 },
 };
+
+export const detailLevels = (config: Config) =>
+  config.lowDetail ? [0, 0] : [0, 25000];

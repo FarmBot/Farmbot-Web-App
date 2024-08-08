@@ -1,7 +1,19 @@
 import React from "react";
 import { mount } from "enzyme";
-import { AmbientLight, Mesh, PointLight } from "../components";
-import { AmbientLightProps, MeshProps, PointLightProps } from "@react-three/fiber";
+import {
+  AmbientLight,
+  DirectionalLight,
+  Mesh,
+  MeshBasicMaterial,
+  PointLight,
+} from "../components";
+import {
+  AmbientLightProps,
+  DirectionalLightProps,
+  MeshBasicMaterialProps,
+  MeshProps,
+  PointLightProps,
+} from "@react-three/fiber";
 
 describe("<AmbientLight />", () => {
   const fakeProps = (): AmbientLightProps => ({
@@ -25,6 +37,17 @@ describe("<PointLight />", () => {
   });
 });
 
+describe("<DirectionalLight />", () => {
+  const fakeProps = (): DirectionalLightProps => ({
+    intensity: 0.5,
+  });
+
+  it("adds props", () => {
+    const wrapper = mount(<DirectionalLight {...fakeProps()} />);
+    expect(wrapper.props().intensity).toEqual(0.5);
+  });
+});
+
 describe("<Mesh />", () => {
   const fakeProps = (): MeshProps => ({
     name: "mesh",
@@ -33,5 +56,16 @@ describe("<Mesh />", () => {
   it("adds props", () => {
     const wrapper = mount(<Mesh {...fakeProps()} />);
     expect(wrapper.props().name).toEqual("mesh");
+  });
+});
+
+describe("<MeshBasicMaterial />", () => {
+  const fakeProps = (): MeshBasicMaterialProps => ({
+    name: "material",
+  });
+
+  it("adds props", () => {
+    const wrapper = mount(<MeshBasicMaterial {...fakeProps()} />);
+    expect(wrapper.props().name).toEqual("material");
   });
 });

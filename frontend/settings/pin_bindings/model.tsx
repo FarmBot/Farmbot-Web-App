@@ -17,15 +17,9 @@ import { ButtonPin } from "./list_and_label_support";
 import {
   AmbientLight, DirectionalLight, Group, Mesh, PointLight,
 } from "../../three_d_garden/components";
-
-const ASSETS = "/3D/";
-const LIB_DIR = `${ASSETS}lib/`;
-
-const MODELS = {
-  box: `${ASSETS}models/box.glb`,
-  btn: `${ASSETS}models/push_button.glb`,
-  led: `${ASSETS}models/led_indicator.glb`,
-};
+import {
+  ASSETS, ElectronicsBoxMaterial, LIB_DIR,
+} from "../../three_d_garden/constants";
 
 type Box = GLTF & {
   nodes: {
@@ -34,18 +28,10 @@ type Box = GLTF & {
     Electronics_Box_Lid: THREE.Mesh;
   };
   materials: {
-    [Material.box]: THREE.MeshStandardMaterial;
-    [Material.gasket]: THREE.MeshStandardMaterial;
-    [Material.lid]: THREE.MeshStandardMaterial;
+    [ElectronicsBoxMaterial.box]: THREE.MeshStandardMaterial;
+    [ElectronicsBoxMaterial.gasket]: THREE.MeshStandardMaterial;
+    [ElectronicsBoxMaterial.lid]: THREE.MeshStandardMaterial;
   };
-}
-
-export enum Material {
-  box = "0.901961_0.901961_0.901961_0.000000_0.000000",
-  gasket = "0.301961_0.301961_0.301961_0.000000_0.000000",
-  lid = "0.564706_0.811765_0.945098_0.000000_0.623529",
-  button = "0.701961_0.701961_0.701961_0.000000_0.000000",
-  led = "0.600000_0.600000_0.600000_0.000000_0.000000",
 }
 
 type Btn = GLTF & {
@@ -53,7 +39,7 @@ type Btn = GLTF & {
     ["Push_Button_-_Red"]: THREE.Mesh;
   };
   materials: {
-    [Material.button]: THREE.MeshStandardMaterial;
+    [ElectronicsBoxMaterial.button]: THREE.MeshStandardMaterial;
   };
 }
 
@@ -62,9 +48,15 @@ type Led = GLTF & {
     LED: THREE.Mesh;
   };
   materials: {
-    [Material.led]: THREE.MeshStandardMaterial;
+    [ElectronicsBoxMaterial.led]: THREE.MeshStandardMaterial;
   };
 }
+
+const MODELS = {
+  box: ASSETS.models.box,
+  btn: ASSETS.models.btn,
+  led: ASSETS.models.led,
+};
 
 Object.values(MODELS).map(model => useGLTF.preload(model, LIB_DIR));
 
@@ -125,9 +117,9 @@ interface ButtonOrLedItem {
 }
 
 export const Model = (props: BoxTopBaseProps) => {
-  const box = useGLTF(MODELS.box, LIB_DIR) as Box;
-  const btn = useGLTF(MODELS.btn, LIB_DIR) as Btn;
-  const led = useGLTF(MODELS.led, LIB_DIR) as Led;
+  const box = useGLTF(ASSETS.models.box, LIB_DIR) as Box;
+  const btn = useGLTF(ASSETS.models.btn, LIB_DIR) as Btn;
+  const led = useGLTF(ASSETS.models.led, LIB_DIR) as Led;
   const SCALE = 1000;
 
   const syncLed = useRef<MeshObject>(null);
@@ -279,17 +271,17 @@ export const Model = (props: BoxTopBaseProps) => {
     <AmbientLight intensity={0.5} />
     <Mesh name={"electronicsBox"}
       geometry={box.nodes.Electronics_Box.geometry}
-      material={box.materials[Material.box]}
+      material={box.materials[ElectronicsBoxMaterial.box]}
       scale={SCALE}
       material-color={0xffffff}
       material-emissive={0x999999} />
     <Mesh name={"electronicsBoxGasket"}
       geometry={box.nodes.Electronics_Box_Gasket.geometry}
-      material={box.materials[Material.gasket]}
+      material={box.materials[ElectronicsBoxMaterial.gasket]}
       scale={SCALE} />
     <Mesh name={"electronicsBoxLid"}
       geometry={box.nodes.Electronics_Box_Lid.geometry}
-      material={box.materials[Material.lid]}
+      material={box.materials[ElectronicsBoxMaterial.lid]}
       scale={SCALE} />
     {BUTTONS
       .filter((_, index) => express ? index == 0 : true)
@@ -309,7 +301,7 @@ export const Model = (props: BoxTopBaseProps) => {
           onPointerUp={leave}>
           <Mesh name={"button-housing"}
             geometry={btn.nodes["Push_Button_-_Red"].geometry}
-            material={btn.materials[Material.button]}
+            material={btn.materials[ElectronicsBoxMaterial.button]}
             position={[-30, btnPosition, Z]}
             scale={SCALE}
             material-color={0xcccccc} />
@@ -367,7 +359,7 @@ export const Model = (props: BoxTopBaseProps) => {
         return <group key={position}>
           <Mesh name={"led-housing"}
             geometry={led.nodes.LED.geometry}
-            material={led.materials[Material.led]}
+            material={led.materials[ElectronicsBoxMaterial.led]}
             position={[-50, position, Z]}
             material-color={0xcccccc}
             scale={SCALE} />

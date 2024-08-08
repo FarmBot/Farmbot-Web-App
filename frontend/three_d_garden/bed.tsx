@@ -1,8 +1,15 @@
 import React from "react";
-import { Box, Extrude } from "@react-three/drei";
-import { DoubleSide, Path, RepeatWrapping, Shape, TextureLoader } from "three";
+import { Box, Detailed, Extrude, useTexture } from "@react-three/drei";
+import { DoubleSide, Path, Shape, RepeatWrapping } from "three";
 import { range } from "lodash";
-import { Config } from "./config";
+import { threeSpace, zZero, getColorFromBrightness } from "./helpers";
+import { Config, detailLevels } from "./config";
+import { ASSETS } from "./constants";
+import { DistanceIndicator } from "./distance_indicator";
+import { FarmbotAxes } from "./farmbot_axes";
+import { Packaging } from "./packaging";
+import { Caster } from "./caster";
+import { UtilitiesPost } from "./utilities_post";
 import { Group, MeshPhongMaterial } from "./components";
 
 const soil = (
@@ -39,43 +46,23 @@ const bedStructure2D = (
   return shape;
 };
 
-const woodTexture = new TextureLoader()
-  .load("/3D/textures/wood.avif",
-    texture => {
-      texture.wrapS = RepeatWrapping;
-      texture.wrapT = RepeatWrapping;
-      texture.repeat.set(.0003, .003);
-    });
-
-const legWoodTexture = new TextureLoader()
-  .load("/3D/textures/wood.avif",
-    texture => {
-      texture.wrapS = RepeatWrapping;
-      texture.wrapT = RepeatWrapping;
-      texture.repeat.set(.02, .05);
-    });
-
-const soilTexture = new TextureLoader()
-  .load("/3D/textures/soil.avif",
-    texture => {
-      texture.wrapS = RepeatWrapping;
-      texture.wrapT = RepeatWrapping;
-      texture.repeat.set(.00034, .00068);
-    });
-
 export interface BedProps {
   config: Config;
+  activeFocus: string;
 }
 
 export const Bed = (props: BedProps) => {
   const {
     bedWidthOuter, bedLengthOuter, botSizeZ, bedHeight, bedZOffset,
-    legSize, legsFlush, extraLegsX, extraLegsY,
-    soilHeight, ccSupportSize,
+    legSize, legsFlush, extraLegsX, extraLegsY, bedBrightness, soilBrightness,
+    soilHeight, ccSupportSize, axes, xyDimensions,
   } = props.config;
   const thickness = props.config.bedWallThickness;
   const botSize = { x: bedLengthOuter, y: bedWidthOuter, z: botSizeZ, thickness };
-  const bedStartZ = 0;
+  const bedStartZ = bedHeight;
+  const bedColor = getColorFromBrightness(bedBrightness);
+  const soilColor = getColorFromBrightness(soilBrightness);
+  const groundZ = -bedHeight - bedZOffset;
   const legXPositions = [
     0 + legSize / 2 + thickness,
     ...(extraLegsX
@@ -93,6 +80,19 @@ export const Bed = (props: BedProps) => {
     ];
   const casterHeight = legSize * 1.375;
 
+  const woodTexture = useTexture(ASSETS.textures.wood);
+  woodTexture.wrapS = RepeatWrapping;
+  woodTexture.wrapT = RepeatWrapping;
+  woodTexture.repeat.set(0.0003, 0.003);
+  const legWoodTexture = useTexture(ASSETS.textures.wood);
+  legWoodTexture.wrapS = RepeatWrapping;
+  legWoodTexture.wrapT = RepeatWrapping;
+  legWoodTexture.repeat.set(0.02, 0.05);
+  const soilTexture = useTexture(ASSETS.textures.soil);
+  soilTexture.wrapS = RepeatWrapping;
+  soilTexture.wrapT = RepeatWrapping;
+  soilTexture.repeat.set(0.00034, 0.00068);
+
   const Bed = ({ children }: { children: React.ReactElement }) =>
     <Extrude name={"bed"}
       castShadow={true}
@@ -102,15 +102,15 @@ export const Bed = (props: BedProps) => {
         { steps: 1, depth: bedHeight, bevelEnabled: false },
       ]}
       position={[
-        0,
-        0,
+        threeSpace(0, bedLengthOuter),
+        threeSpace(0, bedWidthOuter),
         -bedStartZ,
       ]}>
       {children}
     </Extrude>;
 
   const Soil = ({ children }: { children: React.ReactElement }) => {
-    const soilDepth = bedHeight + (soilHeight - 50) - soilHeight;
+    const soilDepth = bedHeight + zZero(props.config) - soilHeight;
     return <Extrude name={"soil"}
       castShadow={true}
       receiveShadow={true}
@@ -119,8 +119,8 @@ export const Bed = (props: BedProps) => {
         { steps: 1, depth: soilDepth, bevelEnabled: false },
       ]}
       position={[
-        0,
-        0,
+        threeSpace(0, bedLengthOuter),
+        threeSpace(0, bedWidthOuter),
         -bedStartZ,
       ]}>
       {children}
@@ -128,44 +128,84 @@ export const Bed = (props: BedProps) => {
   };
 
   return <Group name={"bed-group"}>
-    <Bed>
-      <MeshPhongMaterial map={woodTexture} side={DoubleSide} />
-    </Bed>
+    <Detailed distances={detailLevels(props.config)}>
+      <Bed>
+        <MeshPhongMaterial map={woodTexture} color={bedColor} side={DoubleSide} />
+      </Bed>
+      <Bed>
+        <MeshPhongMaterial color={"#ad7039"} side={DoubleSide} />
+      </Bed>
+    </Detailed>
+    <Group name={"distance-indicator-group"}
+      visible={xyDimensions || props.activeFocus == "Planter bed"}>
+      <DistanceIndicator
+        start={{
+          x: threeSpace(0, bedLengthOuter),
+          y: threeSpace(0, bedWidthOuter) - 100,
+          z: groundZ,
+        }}
+        end={{
+          x: threeSpace(bedLengthOuter, bedLengthOuter),
+          y: threeSpace(0, bedWidthOuter) - 100,
+          z: groundZ,
+        }} />
+      <DistanceIndicator
+        start={{
+          x: threeSpace(bedLengthOuter, bedLengthOuter) + 100,
+          y: threeSpace(0, bedWidthOuter),
+          z: groundZ,
+        }}
+        end={{
+          x: threeSpace(bedLengthOuter, bedLengthOuter) + 100,
+          y: threeSpace(bedWidthOuter, bedWidthOuter),
+          z: groundZ,
+        }} />
+    </Group>
+    <Group name={"axes-group"} visible={axes}>
+      <FarmbotAxes config={props.config} />
+    </Group>
     <Box name={"lower-cc-support"}
       castShadow={true}
       receiveShadow={true}
       args={[bedLengthOuter / 2, ccSupportSize, ccSupportSize]}
       position={[
-        bedLengthOuter / 4,
-        -ccSupportSize / 2,
-        Math.min(150, bedHeight / 2) - ccSupportSize / 2,
+        threeSpace(bedLengthOuter / 4, bedLengthOuter),
+        threeSpace(-ccSupportSize / 2, bedWidthOuter),
+        -Math.min(150, bedHeight / 2) - ccSupportSize / 2,
       ]}>
-      <MeshPhongMaterial map={woodTexture} side={DoubleSide} />
+      <MeshPhongMaterial map={legWoodTexture} color={bedColor} side={DoubleSide} />
     </Box>
     <Box name={"upper-cc-support"}
       castShadow={true}
       receiveShadow={true}
       args={[bedLengthOuter / 2, ccSupportSize, ccSupportSize]}
       position={[
-        bedLengthOuter * 3 / 4,
-        -ccSupportSize / 2,
-        50 - ccSupportSize / 2,
+        threeSpace(bedLengthOuter * 3 / 4, bedLengthOuter),
+        threeSpace(-ccSupportSize / 2, bedWidthOuter),
+        -50 - ccSupportSize / 2,
       ]}>
-      <MeshPhongMaterial map={woodTexture} side={DoubleSide} />
+      <MeshPhongMaterial map={legWoodTexture} color={bedColor} side={DoubleSide} />
     </Box>
-    <Soil>
-      <MeshPhongMaterial map={soilTexture}
-        shininess={0} />
-    </Soil>
+    <Detailed distances={detailLevels(props.config)}>
+      <Soil>
+        <MeshPhongMaterial map={soilTexture} color={soilColor}
+          shininess={0} />
+      </Soil>
+      <Soil>
+        <MeshPhongMaterial color={"#29231e"}
+          shininess={0} />
+      </Soil>
+    </Detailed>
     {legXPositions.map((x, index) =>
       <Group key={index}>
-        {legYPositions(index).map(y => {
-          const legTopOffset = legsFlush ? bedHeight / 2 : bedHeight;
-          return <Group name={"bed-leg"} key={y}
+        {legYPositions(index).map(y =>
+          <Group name={"bed-leg"} key={y}
             position={[
-              x,
-              y,
-              bedZOffset / 2 + legTopOffset + (casterHeight / 2),
+              threeSpace(x, bedLengthOuter),
+              threeSpace(y, bedWidthOuter),
+              -bedZOffset / 2
+              - (legsFlush ? bedHeight / 2 : bedHeight)
+              + (casterHeight / 2),
             ]}>
             <Box name={"bed-leg-wood"}
               castShadow={true}
@@ -175,10 +215,12 @@ export const Bed = (props: BedProps) => {
                 legSize,
                 bedZOffset + (legsFlush ? bedHeight : 0) - casterHeight,
               ]}>
-              <MeshPhongMaterial map={legWoodTexture} />
+              <MeshPhongMaterial map={legWoodTexture} color={bedColor} />
             </Box>
-          </Group>;
-        })}
+            <Caster config={props.config} />
+          </Group>)}
       </Group>)}
+    <UtilitiesPost config={props.config} activeFocus={props.activeFocus} />
+    <Packaging config={props.config} />
   </Group>;
 };
