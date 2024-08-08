@@ -11,9 +11,13 @@ BASE_BRANCHES = ["main", "staging"]
 CURRENT_COMMIT = ENV.fetch("CIRCLE_SHA1", "")
 CSS_SELECTOR = ".fraction"
 FRACTION_DELIM = "/"
+REMOTE_COVERAGE_OVERRIDE = ENV.fetch('REMOTE_COVERAGE_OVERRIDE', '0').to_f
 
 # Fetch JSON over HTTP. Rails probably already has a helper for this :shrug:
 def open_json(url)
+  if REMOTE_COVERAGE_OVERRIDE > 0
+    return {}
+  end
   begin
     JSON.parse(URI.parse(url).open.read)
   rescue *[OpenURI::HTTPError, SocketError] => exception
@@ -272,6 +276,16 @@ namespace :coverage do
 
     if remote[:percent].nil?
       puts "Error getting coveralls data."
+      puts "Checking for override."
+      percent = REMOTE_COVERAGE_OVERRIDE
+      if percent > 0
+        puts "Using override of #{percent}% for remote coverage value."
+        remote = { branch: "N/A", commit: "", percent: percent }
+      end
+    end
+
+    if remote[:percent].nil?
+      puts "No override available."
       puts "Using 100 instead of nil for remote coverage value."
       remote = { branch: "N/A", commit: "", percent: 100 }
     end
