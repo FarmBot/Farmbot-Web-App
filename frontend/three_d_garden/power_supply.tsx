@@ -30,10 +30,10 @@ export const PowerSupply = (props: PowerSupplyProps) => {
   } = props.config;
   const zGround = -bedHeight - bedZOffset;
 
-  const aluminumTexture = useTexture(ASSETS.textures.aluminum);
-  aluminumTexture.wrapS = RepeatWrapping;
-  aluminumTexture.wrapT = RepeatWrapping;
-  aluminumTexture.repeat.set(0.01, 0.003);
+  const powerSupplyTexture = useTexture(ASSETS.textures.aluminum + "?=powerSupply");
+  powerSupplyTexture.wrapS = RepeatWrapping;
+  powerSupplyTexture.wrapT = RepeatWrapping;
+  powerSupplyTexture.repeat.set(0.01, 0.003);
 
   const combinedCablePath = new THREE.CurvePath<THREE.Vector3>();
 
@@ -145,7 +145,7 @@ export const PowerSupply = (props: PowerSupplyProps) => {
         threeSpace(-21, bedWidthOuter),
         -90 - ccSupportSize,
       ]}>
-      <MeshPhongMaterial map={aluminumTexture} color={"white"} />
+      <MeshPhongMaterial map={powerSupplyTexture} color={"white"} />
     </Box>
     <Tube name={"powerCable"}
       castShadow={true}

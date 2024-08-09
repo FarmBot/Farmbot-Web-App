@@ -145,14 +145,14 @@ export const GardenModel = (props: GardenModelProps) => {
     },
   });
 
-  const grassTexture = useTexture(ASSETS.textures.grass);
+  const grassTexture = useTexture(ASSETS.textures.grass + "?=grass");
   grassTexture.wrapS = RepeatWrapping;
   grassTexture.wrapT = RepeatWrapping;
   grassTexture.repeat.set(24, 24);
-  const concreteTexture = useTexture(ASSETS.textures.concrete);
-  concreteTexture.wrapS = RepeatWrapping;
-  concreteTexture.wrapT = RepeatWrapping;
-  concreteTexture.repeat.set(16, 24);
+  const labFloorTexture = useTexture(ASSETS.textures.concrete + "?=labFloor");
+  labFloorTexture.wrapS = RepeatWrapping;
+  labFloorTexture.wrapT = RepeatWrapping;
+  labFloorTexture.repeat.set(16, 24);
 
   const Ground = ({ children }: { children: React.ReactElement }) =>
     <Circle name={"ground"}
@@ -208,7 +208,7 @@ export const GardenModel = (props: GardenModelProps) => {
     <Detailed distances={detailLevels(config)}>
       <Ground>
         <MeshPhongMaterial
-          map={config.lab ? concreteTexture : grassTexture}
+          map={config.lab ? labFloorTexture : grassTexture}
           color={"#ddd"}
           shininess={0} />
       </Ground>

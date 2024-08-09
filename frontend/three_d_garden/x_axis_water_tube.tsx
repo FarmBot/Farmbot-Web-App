@@ -11,11 +11,15 @@ export interface XAxisWaterTubeProps {
 export const XAxisWaterTube = (props: XAxisWaterTubeProps) => {
   const { config } = props;
   const groundZ = -config.bedHeight - config.bedZOffset;
-  const barbX = 400;
+  const barbX = threeSpace(config.bedLengthOuter / 2 + 400, config.bedLengthOuter);
   const barbY = threeSpace(-50, config.bedWidthOuter);
   const barbZ = groundZ + 20;
   const tubePath = easyCubicBezierCurve3(
-    [-20, threeSpace(-30, config.bedWidthOuter), -140],
+    [
+      threeSpace(config.bedLengthOuter / 2 - 20, config.bedLengthOuter),
+      threeSpace(-30, config.bedWidthOuter),
+      -140,
+    ],
     [300, 0, 0],
     [-300, 0, 0],
     [barbX, barbY, barbZ],

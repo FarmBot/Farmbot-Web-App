@@ -8,6 +8,7 @@ import {
   PrivateOverlay, PublicOverlay, ToolTip,
 } from "../three_d_garden/config_overlays";
 import { ASSETS } from "../three_d_garden/constants";
+import { getFocusFromUrlParams } from "../three_d_garden/zoom_beacons_constants";
 
 export const Promo = () => {
   const [config, setConfig] = React.useState<Config>(INITIAL);
@@ -22,6 +23,7 @@ export const Promo = () => {
 
   React.useEffect(() => {
     setConfig(modifyConfigsFromUrlParams(config));
+    setActiveFocus(getFocusFromUrlParams());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // intentionally empty dependency array
 

@@ -80,15 +80,16 @@ export const Bed = (props: BedProps) => {
     ];
   const casterHeight = legSize * 1.375;
 
-  const woodTexture = useTexture(ASSETS.textures.wood);
-  woodTexture.wrapS = RepeatWrapping;
-  woodTexture.wrapT = RepeatWrapping;
-  woodTexture.repeat.set(0.0003, 0.003);
-  const legWoodTexture = useTexture(ASSETS.textures.wood);
+  const bedWoodTexture = useTexture(ASSETS.textures.wood + "?=bedWood");
+  bedWoodTexture.wrapS = RepeatWrapping;
+  bedWoodTexture.wrapT = RepeatWrapping;
+  bedWoodTexture.rotation = Math.PI / 2;
+  bedWoodTexture.repeat.set(0.003, 0.0003);
+  const legWoodTexture = useTexture(ASSETS.textures.wood + "?=legWood");
   legWoodTexture.wrapS = RepeatWrapping;
   legWoodTexture.wrapT = RepeatWrapping;
   legWoodTexture.repeat.set(0.02, 0.05);
-  const soilTexture = useTexture(ASSETS.textures.soil);
+  const soilTexture = useTexture(ASSETS.textures.soil + "?=soil");
   soilTexture.wrapS = RepeatWrapping;
   soilTexture.wrapT = RepeatWrapping;
   soilTexture.repeat.set(0.00034, 0.00068);
@@ -130,7 +131,7 @@ export const Bed = (props: BedProps) => {
   return <Group name={"bed-group"}>
     <Detailed distances={detailLevels(props.config)}>
       <Bed>
-        <MeshPhongMaterial map={woodTexture} color={bedColor} side={DoubleSide} />
+        <MeshPhongMaterial map={bedWoodTexture} color={bedColor} side={DoubleSide} />
       </Bed>
       <Bed>
         <MeshPhongMaterial color={"#ad7039"} side={DoubleSide} />

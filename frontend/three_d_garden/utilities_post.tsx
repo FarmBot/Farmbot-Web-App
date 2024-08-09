@@ -41,22 +41,22 @@ export const UtilitiesPost = (props: UtilitiesPostProps) => {
     new THREE.Vector3(barbX, barbY, barbZ),
   );
 
-  const woodTexture = useTexture(ASSETS.textures.wood);
-  woodTexture.wrapS = RepeatWrapping;
-  woodTexture.wrapT = RepeatWrapping;
-  woodTexture.repeat.set(0.02, 0.05);
+  const postWoodTexture = useTexture(ASSETS.textures.wood + "?=post");
+  postWoodTexture.wrapS = RepeatWrapping;
+  postWoodTexture.wrapT = RepeatWrapping;
+  postWoodTexture.repeat.set(0.02, 0.05);
 
   return <Group name={"utilities"}
     visible={utilitiesPost && props.activeFocus != "Planter bed"}
     position={[
-      threeSpace(600, -bedLengthOuter),
+      threeSpace(bedLengthOuter + 600, bedLengthOuter),
       threeSpace(legSize / 2, bedWidthOuter),
       groundZ + 150,
     ]}>
     <Box name={"utilities-post"}
       castShadow={true}
       args={[legSize, legSize, 300]}>
-      <MeshPhongMaterial map={woodTexture} color={postColor} />
+      <MeshPhongMaterial map={postWoodTexture} color={postColor} />
     </Box>
     <Cylinder name={"pipe"}
       castShadow={true}

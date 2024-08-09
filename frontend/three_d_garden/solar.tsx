@@ -66,7 +66,7 @@ export const Solar = (props: SolarProps) => {
     visible={config.solar || props.activeFocus == "What you need to provide"}>
     <Group name={"solar-array"}
       position={[
-        threeSpace(2000, -config.bedLengthOuter),
+        threeSpace(config.bedLengthOuter + 2000, config.bedLengthOuter),
         threeSpace(750, config.bedWidthOuter),
         zGround + 150,
       ]}
@@ -92,7 +92,7 @@ export const Solar = (props: SolarProps) => {
           zGround + 20,
         ],
         [
-          threeSpace(2500, -config.bedLengthOuter),
+          threeSpace(config.bedLengthOuter + 2500, config.bedLengthOuter),
           threeSpace(750, config.bedWidthOuter),
           zGround + 20,
         ]]}

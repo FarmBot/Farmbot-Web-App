@@ -94,9 +94,9 @@ export const ASSETS = {
     cameraMountHalf: "/3D/models/camera_mount_half.glb",
     solenoid: "/3D/models/solenoid.glb",
     xAxisCCMount: "/3D/models/x_axis_cc_mount.glb",
-    box: "/3d/models/box.glb",
-    btn: "/3d/models/push_button.glb",
-    led: "/3d/models/led_indicator.glb",
+    box: "/3D/models/box.glb",
+    btn: "/3D/models/push_button.glb",
+    led: "/3D/models/led_indicator.glb",
   },
   other: {
     gear: "/app-resources/img/icons/settings.svg",

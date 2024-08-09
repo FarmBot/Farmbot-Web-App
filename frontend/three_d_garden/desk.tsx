@@ -21,18 +21,18 @@ const deskWoodDarkness = "#666";
 export const Desk = (props: DeskProps) => {
   const { config } = props;
   const zGround = -config.bedZOffset - config.bedHeight;
-  const woodTexture = useTexture(ASSETS.textures.wood);
-  woodTexture.wrapS = RepeatWrapping;
-  woodTexture.wrapT = RepeatWrapping;
-  woodTexture.repeat.set(0.3, 0.3);
-  const screenTexture = useTexture(ASSETS.textures.screen);
+  const deskWoodTexture = useTexture(ASSETS.textures.wood + "?=desk");
+  deskWoodTexture.wrapS = RepeatWrapping;
+  deskWoodTexture.wrapT = RepeatWrapping;
+  deskWoodTexture.repeat.set(0.3, 0.3);
+  const screenTexture = useTexture(ASSETS.textures.screen + "?=screen");
   screenTexture.rotation = Math.PI / 2;
   screenTexture.wrapT = RepeatWrapping;
   return <Group name={"desk"}
     visible={props.activeFocus == ""}
     position={[
-      threeSpace(deskOffset, -config.bedLengthOuter),
-      0,
+      threeSpace(config.bedLengthOuter + deskOffset, config.bedLengthOuter),
+      threeSpace(config.bedWidthOuter / 2, config.bedWidthOuter),
       zGround,
     ]}>
     <Box
@@ -41,7 +41,7 @@ export const Desk = (props: DeskProps) => {
       receiveShadow={true}
       args={[deskDepth, deskWidth, 50]}
       position={[0, 0, deskHeight + 25]}>
-      <MeshPhongMaterial map={woodTexture} color={deskWoodDarkness} />
+      <MeshPhongMaterial map={deskWoodTexture} color={deskWoodDarkness} />
     </Box>
     <Group name={"desk-legs"}>
       {[
@@ -57,7 +57,7 @@ export const Desk = (props: DeskProps) => {
           receiveShadow={true}
           args={[deskLegWidth, deskLegWidth, deskHeight]}
           position={[xOffset, yOffset, deskHeight / 2]}>
-          <MeshPhongMaterial map={woodTexture} color={deskWoodDarkness} />
+          <MeshPhongMaterial map={deskWoodTexture} color={deskWoodDarkness} />
         </Box>)}
     </Group>
     <Group name={"laptop"}

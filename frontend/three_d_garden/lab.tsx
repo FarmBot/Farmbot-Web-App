@@ -37,17 +37,17 @@ export const Lab = (props: LabProps) => {
   const { config } = props;
   const groundZ = -config.bedZOffset - config.bedHeight;
 
-  const woodTexture = useTexture(ASSETS.textures.wood);
-  woodTexture.wrapS = RepeatWrapping;
-  woodTexture.wrapT = RepeatWrapping;
-  woodTexture.repeat.set(0.3, 0.3);
+  const shelfWoodTexture = useTexture(ASSETS.textures.wood + "?=shelf");
+  shelfWoodTexture.wrapS = RepeatWrapping;
+  shelfWoodTexture.wrapT = RepeatWrapping;
+  shelfWoodTexture.repeat.set(0.3, 0.3);
 
   return <Group name={"lab-environment"} visible={config.lab}>
     <Group
       name={"lab-walls"}
       position={[
         threeSpace(-wallOffset, config.bedLengthOuter),
-        threeSpace(wallOffset, -config.bedWidthOuter),
+        threeSpace(config.bedWidthOuter + wallOffset, config.bedWidthOuter),
         groundZ,
       ]}>
       <Extrude
@@ -73,7 +73,7 @@ export const Lab = (props: LabProps) => {
             shelfHeight,
           ]}>
           <MeshPhongMaterial
-            map={woodTexture}
+            map={shelfWoodTexture}
             color={"#999"}
             side={DoubleSide} />
         </Box>
@@ -98,8 +98,8 @@ export const Lab = (props: LabProps) => {
       </Billboard>
       <Billboard
         position={[
-          0,
-          threeSpace(500, -config.bedWidthOuter),
+          threeSpace(0, config.bedLengthOuter),
+          threeSpace(config.bedWidthOuter + 500, config.bedWidthOuter),
           groundZ,
         ]}>
         <Image

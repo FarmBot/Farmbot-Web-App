@@ -257,7 +257,7 @@ export const Bot = (props: FarmbotModelProps) => {
         });
     }
   });
-  const aluminumTexture = useTexture(ASSETS.textures.aluminum);
+  const aluminumTexture = useTexture(ASSETS.textures.aluminum + "?=bot");
   aluminumTexture.wrapS = RepeatWrapping;
   aluminumTexture.wrapT = RepeatWrapping;
   aluminumTexture.repeat.set(0.01, 0.0003);
