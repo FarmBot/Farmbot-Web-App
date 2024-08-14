@@ -357,14 +357,14 @@
   height: 50px;
   overflow: hidden;
   .back-arrow {
-    &.black-text{
-      color: $medium_gray;
-    }
     float: left;
     text-align: center;
     font-size: 1.8rem;
     width: 50px;
     line-height: 50px;
+    &.black-text{
+      color: $medium_gray;
+    }
     &:hover {
       &.black-text{
         color: $darker_gray !important;
@@ -634,10 +634,10 @@
     max-height: calc(100vh - 17rem);
     overflow-y: auto;
     overflow-x: hidden;
+    padding-top: 1rem;
     ul {
       margin-bottom: 0;
     }
-    padding-top: 1rem;
     label {
       margin-top: 0 !important;
     }
@@ -704,6 +704,7 @@
 
 .weed-info-panel-content,
 .point-info-panel-content {
+  font-size: 1.4rem;
   .point-color-input {
     div[class*=col-] {
       padding-left: 0.5rem;
@@ -716,7 +717,6 @@
     display: block;
     margin-top: 3rem;
   }
-  font-size: 1.4rem;
   p {
     margin-top: 1rem;
     margin-bottom: 0.5rem !important;
@@ -1242,11 +1242,11 @@ li {
       cursor: default !important;
     }
     input {
+      box-shadow: none;
       &.numPlantsH,
       &.numPlantsV {
         -moz-appearance: unset !important;
       }
-      box-shadow: none;
     }
   }
   .grid-planting-toggle {
@@ -2022,11 +2022,11 @@ li {
   padding-bottom: inherit;
   .non-empty-state {
     max-height: calc(100vh - 14rem);
+    overflow-y: auto;
+    overflow-x: hidden;
     @media screen and (max-width: 450px) {
       max-height: calc(100vh - 19rem);
     }
-    overflow-y: auto;
-    overflow-x: hidden;
   }
   .row {
     margin: 0;
@@ -2066,11 +2066,11 @@ li {
   &.more-indicator {
     height: 20px;
     width: 20px;
+    cursor: pointer;
     p {
       display: inline;
       text-align: center;
     }
-    cursor: pointer;
   }
 }
 
@@ -2343,11 +2343,11 @@ li {
   .row {
     margin-left: 0;
     margin-right: -2.5rem;
+    margin-top: 1rem;
     div[class*=col-] {
       padding: 0;
       text-align: center;
     }
-    margin-top: 1rem;
     p {
       display: block !important;
       text-transform: uppercase;
@@ -2845,10 +2845,10 @@ li {
         border: none;
       }
       .widget-footer {
+        background: none;
         * {
           color: $dark_gray;
         }
-        background: none;
       }
     }
     .title-help-icon:hover {
@@ -3181,12 +3181,12 @@ li {
 .designer-sequence-list-panel {
   .panel-content {
     height: calc(100vh - 14rem);
-    @media screen and (max-width: 450px) {
-      max-height: calc(100vh - 19rem);
-    }
     overflow-y: scroll;
     overflow-x: hidden;
     padding-bottom: 6rem;
+    @media screen and (max-width: 450px) {
+      max-height: calc(100vh - 19rem);
+    }
     .panel-top {
       margin-left: 0 !important;
     }

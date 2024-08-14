@@ -189,13 +189,13 @@ nav {
     &.hover,
     &:hover {
       color: $white;
+      filter: brightness(1.05);
+      box-shadow: inset 0 -1px 0px 0px $translucent2, 0 0 5px $translucent15, inset 0 0 5px rgba(255, 255, 255, 0.3);
       .jobs-button-progress-text,
       .title,
       p {
         color: $white;
       }
-      filter: brightness(1.05);
-      box-shadow: inset 0 -1px 0px 0px $translucent2, 0 0 5px $translucent15, inset 0 0 5px rgba(255, 255, 255, 0.3);
     }
   }
   .nav-coordinates {
@@ -308,11 +308,11 @@ nav {
     width: 22rem;
     background: $dark_gray;
     padding: 0;
+    font-size: 1.2rem;
+    letter-spacing: 1.2px;
     i {
       margin-right: 0.8rem;
     }
-    font-size: 1.2rem;
-    letter-spacing: 1.2px;
     a:not(.app-version) {
       display: inline-block;
       width: 100%;

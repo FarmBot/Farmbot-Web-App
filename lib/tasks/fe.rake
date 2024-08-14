@@ -17,6 +17,16 @@ EXCLUDE = [
     reason: "breaking changes in",
     version: "9",
   },
+  {
+    packages: ["@typescript-eslint/eslint-plugin"],
+    reason: "breaking changes in",
+    version: "8",
+  },
+  {
+    packages: ["@typescript-eslint/parser"],
+    reason: "breaking changes in",
+    version: "8",
+  },
 ]
 
 # Load package.json as JSON.

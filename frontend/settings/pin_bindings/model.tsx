@@ -297,7 +297,7 @@ export const Model = (props: BoxTopBaseProps) => {
           !props.isEditing && setHovered(pinNumber);
           setCursor();
         };
-        return <group key={btnPosition} name={"button-group"}
+        return <Group key={btnPosition} name={"button-group"}
           onPointerUp={leave}>
           <Mesh name={"button-housing"}
             geometry={btn.nodes["Push_Button_-_Red"].geometry}
@@ -305,7 +305,7 @@ export const Model = (props: BoxTopBaseProps) => {
             position={[-30, btnPosition, Z]}
             scale={SCALE}
             material-color={0xcccccc} />
-          <group name={"action-group"}
+          <Group name={"action-group"}
             onPointerOver={enter}
             onPointerMove={setCursor}
             onClick={setCursor}
@@ -349,14 +349,14 @@ export const Model = (props: BoxTopBaseProps) => {
                   {getLabel(binding) || label}
                 </p>}
             </Html>
-          </group>
-        </group>;
+          </Group>
+        </Group>;
       })}
     {LEDS
       .filter(() => !express)
       .map(ledIndicator => {
         const { position, color, ref } = ledIndicator;
-        return <group key={position}>
+        return <Group key={position}>
           <Mesh name={"led-housing"}
             geometry={led.nodes.LED.geometry}
             material={led.materials[ElectronicsBoxMaterial.led]}
@@ -373,7 +373,7 @@ export const Model = (props: BoxTopBaseProps) => {
             position={[-66, position, Z]}>
             <p className={"led-label"}>{ledIndicator.label}</p>
           </Html>
-        </group>;
+        </Group>;
       })}
   </Group>;
 };

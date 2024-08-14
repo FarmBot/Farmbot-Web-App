@@ -90,7 +90,6 @@ module FarmBot
       config.csp = {
         default_src: %w(https: 'self'),
         base_uri: %w('self'),
-        block_all_mixed_content: false, # :( Some webcam feeds use http://
         connect_src: connect_src,
         font_src: %w(
           maxcdn.bootstrapcdn.com
