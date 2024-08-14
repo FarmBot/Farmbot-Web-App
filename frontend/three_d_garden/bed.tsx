@@ -83,8 +83,7 @@ export const Bed = (props: BedProps) => {
   const bedWoodTexture = useTexture(ASSETS.textures.wood + "?=bedWood");
   bedWoodTexture.wrapS = RepeatWrapping;
   bedWoodTexture.wrapT = RepeatWrapping;
-  bedWoodTexture.rotation = Math.PI / 2;
-  bedWoodTexture.repeat.set(0.003, 0.0003);
+  bedWoodTexture.repeat.set(0.0003, 0.003);
   const legWoodTexture = useTexture(ASSETS.textures.wood + "?=legWood");
   legWoodTexture.wrapS = RepeatWrapping;
   legWoodTexture.wrapT = RepeatWrapping;
