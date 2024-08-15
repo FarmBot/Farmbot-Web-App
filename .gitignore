@@ -5,6 +5,7 @@
 .vscode
 *.log
 *.pem
+*.sql
 passenger.*.pid
 *.tsbuildinfo
 *.pid.lock
@@ -27,7 +28,3 @@ public/dist
 # ActiveStorage blobs:
 storage/*
 tmp
-
-# === Legacy
-# v13 upgrade creates a DB backup as dump.sql:
-dump.sql

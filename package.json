@@ -4,7 +4,7 @@
   "description": "Farmbot web frontend.",
   "engines": {
     "browsers": "defaults",
-    "node": "20.x",
+    "node": "22.x",
     "npm": "10.x",
     "parcel": "2.x"
   },
