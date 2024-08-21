@@ -1,4 +1,4 @@
-# How to install FarmBot Web API on a fresh Ubuntu 24.04 machine
+# How to install FarmBot Web API on a local machine
 
 # IMPORTANT NOTE: Resources are limited and FarmBot Inc cannot provide
 # longterm support to self-hosted users. If you have never administered a
@@ -12,7 +12,7 @@
 #
 # Self-hosting a FarmBot server is not a simple task.
 
-# Install docker and docker compose (Ubuntu)
+# Linux (Debian/Ubuntu): Install docker and docker compose
 sudo apt update
 sudo apt install ca-certificates curl gnupg -y
 source /etc/os-release
@@ -23,14 +23,14 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.
 sudo apt update
 sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
 
-# Install docker and docker compose (Mac)
+# Mac: Install docker and docker compose
 # Install Homebrew
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 # Install Docker Desktop from https://www.docker.com/products/docker-desktop/
 # Open the Docker Desktop app
 # Install docker-compose
 brew install docker-compose
-# From here on out, all commands are the same for both Ubuntu and Mac, but `sudo` is not required for Mac.
+# From here on out, all commands are the same for both Linux and Mac, but `sudo` is not required for Mac.
 
 # Verify docker installation
 sudo docker run hello-world
@@ -70,6 +70,13 @@ sudo docker compose run web rake keys:generate # ⚠ SKIP THIS STEP IF UPGRADING
 # You will just get an empty screen otherwise.
 # This only happens during initialization and may take a long time on slow machines.
 sudo docker compose up
+# If you get an MQTT authentication error, it could be a config file issue.
+# Verify that you've used your computer's real IP address (`hostname -I`)
+# for the values of `API_HOST` and `MQTT_HOST` in the `.env` file, and then:
+# Stop the server with `Ctrl + C` and
+sudo docker compose down
+# Start the server again with
+sudo docker compose up
 
 # At this point, setup is complete.
 # Content should be visible at http://YOUR_HOST:3000/.
@@ -96,11 +103,13 @@ sudo docker compose up
   sudo docker compose exec db pg_dumpall -U postgres > dump.sql
   # Create a backup of the dump.sql file
   cp -vi dump.sql dump_$(date +%Y%m%d%H%M%S).sql
+  git add .
+  git stash save "dump.sql backup"
   # Stop and remove containers
-  sudo docker stop $(sudo docker ps -a -q)
-  sudo docker rm $(sudo docker ps -a -q)
+  sudo docker stop $(sudo docker ps -a -f farmbot -q)
+  sudo docker rm $(sudo docker ps -a -f farmbot -q)
   # Remove docker images. This will later require re-download of large amounts of data.
-  sudo docker system prune -af --volumes
+  sudo docker system prune -af
   # Delete the database. This will delete all of your data!
   # Only run after verifying your data is backed up in dump.sql.
   # Commented with `#` for safety. Run the command without `#`.
@@ -114,7 +123,8 @@ sudo docker compose up
   sudo docker compose run web bundle install
   # Install NPM packages
   sudo docker compose run web npm install
-  # Replace the dump.sql password value with the value of POSTGRES_PASSWORD from .env
+  # Edit the `dump.sql` file to replace the PASSWORD value at the end of line 15
+  # with the value of POSTGRES_PASSWORD from .env
   nano dump.sql
   # Verify that the correct database service is running
   sudo docker compose exec db pg_dumpall -V
@@ -130,5 +140,4 @@ sudo docker compose up
   sudo docker compose run web rails db:migrate
   # Run the server
   sudo docker compose up
-  # If you get a MQTT authentification error, stop and start the server again.
 # === END OPTIONAL UPGRADES ===
