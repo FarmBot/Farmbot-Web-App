@@ -12,7 +12,7 @@
 #
 # Self-hosting a FarmBot server is not a simple task.
 
-# Install docker and docker compose
+# Install docker and docker compose (Ubuntu)
 sudo apt update
 sudo apt install ca-certificates curl gnupg -y
 source /etc/os-release
@@ -22,7 +22,17 @@ sudo chmod a+r /etc/apt/keyrings/docker.gpg
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/$ID $VERSION_CODENAME stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 sudo apt update
 sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
-# Verify installation
+
+# Install docker and docker compose (Mac)
+# Install Homebrew
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+# Install Docker Desktop from https://www.docker.com/products/docker-desktop/
+# Open the Docker Desktop app
+# Install docker-compose
+brew install docker-compose
+# From here on out, all commands are the same for both Ubuntu and Mac, but `sudo` is not required for Mac.
+
+# Verify docker installation
 sudo docker run hello-world
 sudo docker compose version
 
@@ -122,4 +132,3 @@ sudo docker compose up
   sudo docker compose up
   # If you get a MQTT authentification error, stop and start the server again.
 # === END OPTIONAL UPGRADES ===
-
