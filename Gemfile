@@ -41,7 +41,6 @@ group :development, :test do
   gem "rspec_junit_formatter"
   gem "simplecov"
   gem "simplecov-cobertura"
-  gem "smarf_doc", git: "https://github.com/RickCarlino/smarf_doc.git"
   gem "webmock"
 end
 

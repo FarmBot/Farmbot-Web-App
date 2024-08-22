@@ -23,9 +23,6 @@ describe DashboardController do
     it "renders the front page" do
       get :front_page
       expect(response.status).to eq(200)
-      # first entry in api_docs.md
-      SmarfDoc.note("Documentation generated for the " +
-                    "[FarmBot Web App](https://github.com/FarmBot/Farmbot-Web-App).")
     end
 
     it "returns error on invalid path" do

@@ -126,7 +126,6 @@ describe Api::PointsController do
 
     it "handles bad data" do
       sign_in user
-      SmarfDoc.note("This is what happens when you post bad JSON")
       post :create, body: "{'x': 0, 'this isnt': 'JSON'}", params: { format: :json }
       expect(response.status).to eq(422)
       expect(json[:error]).to include("Please use a _valid_ JSON object or array")
