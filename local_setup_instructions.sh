@@ -105,17 +105,28 @@ sudo docker compose up
   cp -vi dump.sql dump_$(date +%Y%m%d%H%M%S).sql
   git add .
   git stash save "dump.sql backup"
+  # Shut down the server again to stop the database service
+  sudo docker compose down
   # Stop and remove containers
-  sudo docker stop $(sudo docker ps -a -f farmbot -q)
-  sudo docker rm $(sudo docker ps -a -f farmbot -q)
+  sudo docker stop $(sudo docker ps -aq --filter name=farmbot)
+  sudo docker rm $(sudo docker ps -aq --filter name=farmbot)
   # Remove docker images. This will later require re-download of large amounts of data.
-  sudo docker system prune -af
+  sudo docker rmi $(sudo docker images -q --filter reference=farmbot*)
+  sudo docker system prune -af --filter label=farmbot
   # Delete the database. This will delete all of your data!
   # Only run after verifying your data is backed up in dump.sql.
   # Commented with `#` for safety. Run the command without `#`.
-  # sudo rm -rf docker_volumes/db
+  # sudo rm -rf docker_volumes
+  # If your system is a fresh machine that is only used as a farmbot server,
+  # you can run these commands to delete all docker data.
+  # sudo docker system prune -af --volumes
+  # sudo docker volume rm $(sudo docker volume ls -q)
   # Verify that the database has been deleted. Do not continue on until "OK".
   if [ -d docker_volumes/db ]; then echo "ERROR"; else echo "OK"; fi
+  # Delete the parcel cache
+  sudo rm -rf .parcel-cache/
+  # Remove installed NPM packages
+  sudo rm -rf node_modules/
   # Download the latest version of the web app
   git pull https://github.com/FarmBot/Farmbot-Web-App.git main
   # Install Ruby gems
@@ -138,6 +149,8 @@ sudo docker compose up
   # --- end db container shell commands ---
   # Migrate the database
   sudo docker compose run web rails db:migrate
+  # Verify that parcel builds successfully
+  sudo docker compose run web rake assets:precompile
   # Run the server
   sudo docker compose up
 # === END OPTIONAL UPGRADES ===
