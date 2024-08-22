@@ -32,11 +32,12 @@ describe Fragments::Create do
         },
       ],
     }
-    boom = ->() { Fragments::Preprocessor.run!(**params) }
 
     err = CeleryScript::TypeCheckError
     msg = CeleryScriptSettingsBag::BAD_PLACEHOLDER
-    expect(boom).to raise_error(err, msg)
+    expect{
+      Fragments::Preprocessor.run!(**params)
+    }.to raise_error(err, msg)
   end
 
   it "loads CeleryScript from the database" do
