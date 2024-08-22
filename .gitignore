@@ -25,6 +25,8 @@ package-lock.json
 public/assets/
 public/direct_upload/temp/*.jpg
 public/dist
+core
+upgrade_deps.sh
 # ActiveStorage blobs:
 storage/*
 tmp
