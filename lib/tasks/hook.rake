@@ -1,6 +1,7 @@
 COMPARE_URL_API = "https://api.github.com/repos/Farmbot/Farmbot-Web-App/compare/"
 COMPARE_URL_WEB = "https://github.com/Farmbot/Farmbot-Web-App/compare/"
-COMMIT_SHA = ENV["HEROKU_SLUG_COMMIT"]
+COMMIT_SHA = ENV["HEROKU_BUILD_COMMIT"]
+DESCRIPTION = ENV["HEROKU_BUILD_DESCRIPTION"]
 WEBHOOK_URL = ENV["RELEASE_WEBHOOK_URL"]
 
 def open_json(url)
@@ -13,14 +14,18 @@ def open_json(url)
 end
 
 def commit_messages
-  base_head = "#{COMMIT_SHA}...staging"
+  base_head = "main...#{COMMIT_SHA}"
   url = "#{COMPARE_URL_API}#{base_head}"
   data = open_json(url)
   commits = data.fetch("commits", [])
   web_url = "#{COMPARE_URL_WEB}#{base_head}"
-  output = "\n\n<#{web_url}|compare>\n"
+  output = "\n\n"
+  if !DESCRIPTION.nil?
+    output += "#{DESCRIPTION}\n\n"
+  end
+  output += "<#{web_url}|compare>\n"
   messages = commits.map do |x|
-    output += "\n + #{x["commit"]["message"]}"
+    output += "\n + #{x["commit"]["message"].gsub("\n", " ")}"
   end
   output
 end
