@@ -101,10 +101,13 @@ sudo docker compose up
   # Create a database backup (this will overwrite dump.sql!)
   # If you do not do this before `git pull`, you will need to `git reset` first.
   sudo docker compose exec db pg_dumpall -U postgres > dump.sql
-  # Create a backup of the dump.sql file
+  # Create a backup of the dump.sql file. This will be gitignored
+  # or stashed in the next step to not interfere with the git pull later.
   cp -vi dump.sql dump_$(date +%Y%m%d%H%M%S).sql
+  # Stage and stash to avoid conflicts with the `git pull`. Stage:
   git add .
-  git stash save "dump.sql backup"
+  # And stash. Any output from this command is fine.
+  git stash save "pre-upgrade"
   # Shut down the server again to stop the database service
   sudo docker compose down
   # Stop and remove containers
