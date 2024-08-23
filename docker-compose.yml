@@ -28,7 +28,7 @@
 services:
   redis:
     env_file: ".env"
-    image: redis:5
+    image: redis:7
     volumes:
       - "./docker_volumes/redis/data:/data"
       - "./docker_volumes/redis/conf:/usr/local/etc/redis"
