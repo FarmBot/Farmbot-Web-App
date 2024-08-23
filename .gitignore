@@ -5,7 +5,7 @@
 .vscode
 *.log
 *.pem
-*.sql
+dump.sql
 passenger.*.pid
 *.tsbuildinfo
 *.pid.lock
