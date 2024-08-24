@@ -44,7 +44,7 @@ def details
   if !DESCRIPTION.nil?
     output += "#{DESCRIPTION}\n\n"
   end
-  web_compare_url = "#{COMPARE_URL_WEB}#{COMMIT_SHA}...#{last_deploy_commit}"
+  web_compare_url = "#{COMPARE_URL_WEB}#{last_deploy_commit}...#{COMMIT_SHA}"
   output += "<#{web_compare_url}|compare>\n"
   messages = commits_since_last_deploy.reverse.map do |commit|
     output += "\n + #{commit}"
