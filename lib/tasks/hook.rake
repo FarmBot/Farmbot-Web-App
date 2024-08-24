@@ -24,7 +24,7 @@ end
 
 def last_deploy_commit
   data = open_json(DEPLOYS_URL_API)
-  (data[0] || {}).fetch("sha", nil)
+  (data[1] || {}).fetch("sha", nil)
 end
 
 def commits_since_last_deploy
