@@ -57,4 +57,37 @@ describe Points::Create do
       expect(errors.fetch("point_limit")).to be
     end
   end
+
+  it "validates curve ids: ok" do
+    water_curve = FactoryBot.create(:curve, type: "water", device: device)
+    spread_curve = FactoryBot.create(:curve, type: "spread", device: device)
+    height_curve = FactoryBot.create(:curve, type: "height", device: device)
+    params = { x: 0,
+               y: 0,
+               z: 0,
+               water_curve_id: water_curve.id,
+               spread_curve_id: spread_curve.id,
+               height_curve_id: height_curve.id,
+               device: device,
+               pointer_type: "GenericPointer" }
+    expect(Points::Create.run(params).errors).to be nil
+  end
+
+  it "validates curve ids: ko" do
+    curve = FactoryBot.create(:curve, type: "water", device: device)
+    params = { x: 0,
+               y: 0,
+               z: 0,
+               water_curve_id: -1,
+               height_curve_id: -1,
+               spread_curve_id: -1,
+               device: device,
+               pointer_type: "GenericPointer" }
+
+    errors = Points::Create.run(params).errors
+    expect(errors).to be
+    expect(errors.fetch("water_curve_id")).to be
+    expect(errors.fetch("spread_curve_id")).to be
+    expect(errors.fetch("height_curve_id")).to be
+  end
 end

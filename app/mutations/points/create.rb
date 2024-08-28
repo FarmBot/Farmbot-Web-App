@@ -2,6 +2,7 @@ require_relative "../../lib/mutations/hstore_filter.rb"
 
 module Points
   class Create < Mutations::Command
+    include Points::Helpers
     # WHY 1000?:
     #  * This limit is placed for _technical_
     #    reasons, not business reasons. If it were
@@ -65,6 +66,9 @@ module Points
       return unless safe_pointer_kind? # Security critical always goes first.
       validate_resource_count
       validate_tool if klass_ == ToolSlot
+      validate_water_curve_id
+      validate_spread_curve_id
+      validate_height_curve_id
       name ||= default_name
     end
 

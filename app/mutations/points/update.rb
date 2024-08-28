@@ -2,6 +2,7 @@ require_relative "../../lib/mutations/hstore_filter"
 
 module Points
   class Update < Mutations::Command
+    include Points::Helpers
     required do
       model :device, class: Device
       model :point, class: Point
@@ -28,6 +29,9 @@ module Points
 
     def validate
       prevent_removal_of_in_use_tools
+      validate_water_curve_id
+      validate_spread_curve_id
+      validate_height_curve_id
     end
 
     def execute
