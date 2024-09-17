@@ -138,4 +138,5 @@ FarmBot::Application.routes.draw do
   get "/verify/:token" => "dashboard#confirmation_page", as: :confirmation_page
   post "/csp_reports" => "dashboard#csp_reports", as: :csp_report
   post "/direct_upload" => "dashboard#direct_upload", as: :direct_upload
+  post "/webhooks" => "webhooks#create", as: :webhooks
 end
