@@ -30,8 +30,8 @@ describe("<GardenLocationRow />", () => {
         timestamp: 1,
         coords: {
           accuracy: 1, altitude: 1, altitudeAccuracy: 1, heading: 1, speed: 1,
-          latitude: 100, longitude: 50
-        }
+          latitude: 100, longitude: 50, toJSON: jest.fn(),
+        }, toJSON: jest.fn(),
       });
     const p = fakeProps();
     const wrapper = mount(<GardenLocationRow {...p} />);

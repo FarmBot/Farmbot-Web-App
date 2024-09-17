@@ -14,7 +14,7 @@ import React from "react";
 import { shallow } from "enzyme";
 import { LuaTextArea, LuaTextAreaProps } from "../tile_lua_support";
 import { Lua } from "farmbot";
-import Editor from "@monaco-editor/react";
+import { Editor } from "@monaco-editor/react";
 import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 import { StateToggleKey } from "../../step_ui";
 
