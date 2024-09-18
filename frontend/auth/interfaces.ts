@@ -1,3 +1,5 @@
+import { User } from "farmbot/dist/resources/api_resources";
+
 interface Token {
   unencoded: UnencodedToken;
   encoded: string;
@@ -5,6 +7,7 @@ interface Token {
 
 export interface AuthState {
   token: Token;
+  user: User;
 }
 
 interface UnencodedToken {

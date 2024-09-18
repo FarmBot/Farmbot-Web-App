@@ -10,6 +10,7 @@ import { UnboundRouteConfig, UNBOUND_ROUTES } from "./route_config";
 import { App } from "./app";
 import { ConnectedComponent, Provider } from "react-redux";
 import { HotkeysProvider } from "@blueprintjs/core";
+import { Provider as RollbarProvider } from "@rollbar/react";
 
 interface RootComponentProps { store: Store; }
 
@@ -61,19 +62,41 @@ export class RootComponent
     const Route = this.state.Route as React.FunctionComponent<{
       children: React.ReactNode
     }>;
-    return <ErrorBoundary>
-      <Provider store={_store}>
-        <HotkeysProvider>
-          <App>
-            <Route>
-              {ChildRoute &&
-                <ErrorBoundary>
-                  <ChildRoute />
-                </ErrorBoundary>}
-            </Route>
-          </App>
-        </HotkeysProvider>
-      </Provider>
-    </ErrorBoundary>;
+    const OuterWrapper = ({ children }: { children: React.ReactNode }) =>
+      globalConfig.ROLLBAR_CLIENT_TOKEN
+        ? <RollbarProvider config={{
+          accessToken: globalConfig.ROLLBAR_CLIENT_TOKEN,
+          captureUncaught: true,
+          captureUnhandledRejections: true,
+          payload: {
+            person: { id: "" + (Session.fetchStoredToken()?.user.id || 0) },
+            environment: window.location.host,
+            client: {
+              javascript: {
+                source_map_enabled: true,
+                code_version: globalConfig.SHORT_REVISION,
+                guess_uncaught_frames: true,
+              },
+            },
+          },
+        }}>{children}</RollbarProvider>
+        : <>{children}</>;
+
+    return <OuterWrapper>
+      <ErrorBoundary>
+        <Provider store={_store}>
+          <HotkeysProvider>
+            <App>
+              <Route>
+                {ChildRoute &&
+                  <ErrorBoundary>
+                    <ChildRoute />
+                  </ErrorBoundary>}
+              </Route>
+            </App>
+          </HotkeysProvider>
+        </Provider>
+      </ErrorBoundary>
+    </OuterWrapper>;
   }
 }

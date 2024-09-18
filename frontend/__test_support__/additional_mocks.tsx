@@ -42,3 +42,8 @@ window.ResizeObserver = (() => ({
   disconnect: jest.fn(),
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
 })) as any;
+
+jest.mock("@rollbar/react", () => ({
+  Provider: ({ children }: { children: React.ReactNode }) =>
+    <div className={"rollbar"}>{children}</div>,
+}));

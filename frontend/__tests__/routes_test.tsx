@@ -12,7 +12,7 @@ jest.mock("takeme", () => ({
 }));
 
 import React from "react";
-import { shallow } from "enzyme";
+import { mount, shallow } from "enzyme";
 import { AnyConnectedComponent, RootComponent } from "../routes";
 import { store } from "../redux/store";
 import { AuthState } from "../auth/interfaces";
@@ -24,17 +24,30 @@ import { Path } from "../internal_urls";
 describe("<RootComponent />", () => {
   it("clears session when not authorized", () => {
     mockAuth = undefined;
+    globalConfig.ROLLBAR_CLIENT_TOKEN = "abc";
     window.location.pathname = Path.mock(Path.logs());
-    const wrapper = shallow(<RootComponent store={store} />);
+    const wrapper = mount(<RootComponent store={store} />);
     expect(Session.clear).toHaveBeenCalled();
     wrapper.unmount();
   });
 
   it("authorized", () => {
     mockAuth = auth;
+    globalConfig.ROLLBAR_CLIENT_TOKEN = "abc";
     window.location.pathname = Path.mock(Path.logs());
-    const wrapper = shallow(<RootComponent store={store} />);
+    const wrapper = mount(<RootComponent store={store} />);
     expect(Session.clear).not.toHaveBeenCalled();
+    expect(wrapper.html()).toContain("rollbar");
+    wrapper.unmount();
+  });
+
+  it("doesn't add rollbar", () => {
+    mockAuth = auth;
+    globalConfig.ROLLBAR_CLIENT_TOKEN = "";
+    window.location.pathname = Path.mock(Path.logs());
+    const wrapper = mount(<RootComponent store={store} />);
+    expect(Session.clear).not.toHaveBeenCalled();
+    expect(wrapper.html()).not.toContain("rollbar");
     wrapper.unmount();
   });
 
