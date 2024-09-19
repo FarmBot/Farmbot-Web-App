@@ -11,7 +11,7 @@ jest.mock("mqtt", () => {
   };
 });
 
-import { Terminal } from "xterm";
+import { Terminal } from "@xterm/xterm";
 import { TerminalSession } from "../terminal_session";
 
 type FakeTerminal = Pick<Terminal, "write" | "onKey">;

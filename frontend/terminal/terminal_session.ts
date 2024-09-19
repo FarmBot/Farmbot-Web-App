@@ -1,6 +1,6 @@
 import { times } from "lodash";
 import mqtt, { MqttClient } from "mqtt";
-import { Terminal } from "xterm";
+import { Terminal } from "@xterm/xterm";
 
 type TerminalLike = Pick<Terminal, "write" | "onKey">;
 type KeysWeNeed = "publish" | "on" | "once" | "subscribe";

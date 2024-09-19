@@ -1,4 +1,4 @@
-import { Terminal } from "xterm";
+import { Terminal } from "@xterm/xterm";
 import { AuthState } from "../auth/interfaces";
 
 export const attachTerminal = () => {

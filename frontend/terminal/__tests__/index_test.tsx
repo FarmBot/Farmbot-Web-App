@@ -1,4 +1,4 @@
-jest.mock("xterm/css/xterm.css", () => { });
+jest.mock("@xterm/xterm/css/xterm.css", () => { });
 const mockTS = { connect: jest.fn() };
 jest.mock("../terminal_session", () => ({ TerminalSession: () => mockTS }));
 jest.mock("../support", () => ({

@@ -3,7 +3,7 @@ const mockTerminal: Pick<Terminal, "open" | "resize"> = {
   resize: jest.fn(),
 };
 
-jest.mock("xterm", () => {
+jest.mock("@xterm/xterm", () => {
   return {
     Terminal: function () {
       return mockTerminal;
@@ -11,7 +11,7 @@ jest.mock("xterm", () => {
   };
 });
 
-import { Terminal } from "xterm";
+import { Terminal } from "@xterm/xterm";
 import { attachTerminal, getCredentials } from "../support";
 
 describe("getCredentials", () => {
