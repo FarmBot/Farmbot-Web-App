@@ -86,6 +86,7 @@ module FarmBot
         "browser-http-intake.logs.datadoghq.com",
         "#{ENV.fetch("API_HOST")}:#{API_PORT}",
         "#{ENV.fetch("API_HOST")}:3808",
+        "blob:", # 3D
       ]
       config.csp = {
         default_src: %w(https: 'self'),
