@@ -146,6 +146,7 @@ const MUST_LOAD: ResourceName[] = [
 ];
 
 export class RawApp extends React.Component<AppProps, {}> {
+  private _isMounted = false;
   private get isLoaded() {
     return (MUST_LOAD.length ===
       intersection(this.props.loaded, MUST_LOAD).length);
@@ -156,14 +157,19 @@ export class RawApp extends React.Component<AppProps, {}> {
  * access into the app, but still warned.
  */
   componentDidMount() {
+    this._isMounted = true;
     setTimeout(() => {
-      if (!this.isLoaded) {
+      if (this._isMounted && !this.isLoaded) {
         error(t(Content.APP_LOAD_TIMEOUT_MESSAGE), { title: t("Warning") });
       }
     }, LOAD_TIME_FAILURE_MS);
     const browser = Bowser.getParser(window.navigator.userAgent);
     !browser.satisfies({ chrome: ">85", firefox: ">75", edge: ">85" }) &&
       warning(t(Content.UNSUPPORTED_BROWSER));
+  }
+
+  componentWillUnmount() {
+    this._isMounted = false;
   }
 
   render() {
