@@ -1,3 +1,8 @@
+let mockIsDesktop = false;
+jest.mock("../../screen_size", () => ({
+  isDesktop: () => mockIsDesktop,
+}));
+
 import {
   Camera,
   FOCI,
@@ -35,20 +40,14 @@ describe("getFocus()", () => {
 
 describe("getCameraOffset()", () => {
   it("returns camera offset: wide", () => {
-    Object.defineProperty(window, "innerWidth", {
-      value: 1000,
-      configurable: true
-    });
+    mockIsDesktop = true;
     const config = clone(INITIAL);
     const focus = FOCI(config)[0];
     expect(getCameraOffset(focus).position[1]).toEqual(0);
   });
 
   it("returns camera offset: narrow", () => {
-    Object.defineProperty(window, "innerWidth", {
-      value: 400,
-      configurable: true
-    });
+    mockIsDesktop = false;
     const config = clone(INITIAL);
     const focus = FOCI(config)[0];
     expect(getCameraOffset(focus).position[1]).toEqual(-1000);

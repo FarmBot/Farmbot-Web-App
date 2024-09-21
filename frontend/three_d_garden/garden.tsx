@@ -23,6 +23,7 @@ import { getCamera, Camera as CameraInterface } from "./zoom_beacons_constants";
 import {
   AmbientLight, AxesHelper, Group, MeshBasicMaterial, MeshPhongMaterial,
 } from "./components";
+import { isDesktop } from "../screen_size";
 
 export interface GardenModelProps {
   config: Config;
@@ -164,7 +165,7 @@ export const GardenModel = (props: GardenModelProps) => {
     </Circle>;
 
   const initCamera: CameraInterface = {
-    position: window.innerWidth > 768 ? [2000, -4000, 2500] : [5400, -2500, 3400],
+    position: isDesktop() ? [2000, -4000, 2500] : [5400, -2500, 3400],
     target: [0, 0, 0],
   };
   const camera = getCamera(config, props.activeFocus, initCamera);

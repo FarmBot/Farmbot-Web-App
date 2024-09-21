@@ -1,3 +1,8 @@
+let mockIsDesktop = true;
+jest.mock("../../screen_size", () => ({
+  isDesktop: () => mockIsDesktop,
+}));
+
 import React from "react";
 import { mount } from "enzyme";
 import { ZoomBeacons, ZoomBeaconsProps } from "../zoom_beacons";
@@ -36,10 +41,7 @@ describe("<ZoomBeacons />", () => {
   });
 
   it("renders mobile", () => {
-    Object.defineProperty(window, "innerWidth", {
-      value: 400,
-      configurable: true,
-    });
+    mockIsDesktop = false;
     const wrapper = mount(<ZoomBeacons {...fakeProps()} />);
     expect(wrapper.html()).toContain("60");
   });

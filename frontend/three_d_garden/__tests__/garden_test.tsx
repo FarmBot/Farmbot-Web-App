@@ -1,3 +1,8 @@
+let mockIsDesktop = false;
+jest.mock("../../screen_size", () => ({
+  isDesktop: () => mockIsDesktop,
+}));
+
 import React from "react";
 import { mount } from "enzyme";
 import { GardenModelProps, GardenModel } from "../garden";
@@ -20,10 +25,7 @@ describe("<GardenModel />", () => {
   });
 
   it("renders other options", () => {
-    Object.defineProperty(window, "innerWidth", {
-      value: 400,
-      configurable: true,
-    });
+    mockIsDesktop = false;
     const p = fakeProps();
     p.config.perspective = false;
     p.config.plants = "";

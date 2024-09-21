@@ -1,3 +1,8 @@
+let mockIsMobile = false;
+jest.mock("../../../screen_size", () => ({
+  isMobile: () => mockIsMobile,
+}));
+
 jest.mock("../../../sequences/set_active_sequence_by_name", () => ({
   setActiveSequenceByName: jest.fn()
 }));
@@ -129,10 +134,7 @@ describe("<DesignerSequenceEditor />", () => {
   });
 
   it("navigates to full page editor", () => {
-    Object.defineProperty(window, "innerWidth", {
-      value: 500,
-      configurable: true
-    });
+    mockIsMobile = false;
     const p = fakeProps();
     const wrapper = mount(<DesignerSequenceEditor {...p} />);
     wrapper.find(".fa-expand").first().simulate("click");

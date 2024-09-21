@@ -4,21 +4,21 @@
   top: 8.9rem;
   width: 45rem;
   box-shadow: 0 0 10px $translucent;
-  @media screen and (max-width: 450px) {
+  @media screen and (max-width: $mobile_max_width) {
     width: 100%;
   }
 }
 
 .panel-nav {
   display: none;
-  @media screen and (max-width: 450px) {
+  @media screen and (max-width: $mobile_max_width) {
     display: block;
   }
 }
 
 .panel-top {
   margin-top: 0;
-  @media screen and (max-width: 450px) {
+  @media screen and (max-width: $mobile_max_width) {
     margin-top: 5rem;
   }
 }
@@ -31,7 +31,7 @@
   .panel-content {
     padding-top: 1rem;
     max-height: calc(100vh - 3rem);
-    @media screen and (max-width: 450px) {
+    @media screen and (max-width: $mobile_max_width) {
       padding-top: 6rem;
       max-height: calc(100vh - 9rem);
     }
@@ -48,7 +48,7 @@
 .controls-panel {
   .panel-content {
     padding-top: 0;
-    @media screen and (max-width: 450px) {
+    @media screen and (max-width: $mobile_max_width) {
       padding-top: 4rem;
     }
   }
@@ -103,7 +103,7 @@
 .settings-panel {
   .panel-content {
     max-height: calc(100vh - 14rem);
-    @media screen and (max-width: 450px) {
+    @media screen and (max-width: $mobile_max_width) {
       max-height: calc(100vh - 19rem);
     }
   }
@@ -121,6 +121,7 @@
 .farm-designer-panels {
   bottom: 0;
   z-index: 1;
+  &.panel-closed-mobile,
   &.panel-closed {
     display: none !important;
   }
@@ -2024,7 +2025,7 @@ li {
     max-height: calc(100vh - 14rem);
     overflow-y: auto;
     overflow-x: hidden;
-    @media screen and (max-width: 450px) {
+    @media screen and (max-width: $mobile_max_width) {
       max-height: calc(100vh - 19rem);
     }
   }
@@ -3184,7 +3185,7 @@ li {
     overflow-y: scroll;
     overflow-x: hidden;
     padding-bottom: 6rem;
-    @media screen and (max-width: 450px) {
+    @media screen and (max-width: $mobile_max_width) {
       max-height: calc(100vh - 19rem);
     }
     .panel-top {
@@ -3223,7 +3224,7 @@ li {
       z-index: 1;
       margin: 1rem;
       width: 84%;
-      @media screen and (max-width: 450px) {
+      @media screen and (max-width: $mobile_max_width) {
         width: 65%;
       }
     }
@@ -3355,7 +3356,7 @@ li {
 .support-panel,
 .tours-panel,
 .help-panel {
-  @media screen and (max-width: 450px) {
+  @media screen and (max-width: $mobile_max_width) {
     .help-panel-header {
       position: relative;
       margin-top: 5rem;

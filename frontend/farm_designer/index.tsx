@@ -188,7 +188,10 @@ export class RawFarmDesigner
         botSize={this.props.botSize}
         imageAgeInfo={calculateImageAgeInfo(this.props.latestImages)} />
 
-      <DesignerNavTabs hidden={!(getPanelStatus() === MapPanelStatus.closed)} />
+      <DesignerNavTabs hidden={![
+        MapPanelStatus.closed,
+        MapPanelStatus.mobileClosed,
+      ].includes(getPanelStatus())} />
       <div className={`farm-designer-panels ${this.mapPanelClassName}`}>
         {this.props.children || React.createElement(Plants)}
       </div>

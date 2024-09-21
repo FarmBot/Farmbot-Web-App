@@ -4,6 +4,7 @@ import { Config } from "./config";
 import { FOCI, getCameraOffset, setUrlParam } from "./zoom_beacons_constants";
 import { useSpring, animated } from "@react-spring/three";
 import { Group, MeshPhongMaterial } from "./components";
+import { isDesktop } from "../screen_size";
 
 const beaconColor = "#0266b5";
 
@@ -50,7 +51,7 @@ export const ZoomBeacons = (props: ZoomBeaconsProps) => {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     document.querySelector(".garden-bed-3d-model") as HTMLElement | null;
 
-  const beaconSize = window.innerWidth > 768 ? 40 : 60;
+  const beaconSize = isDesktop() ? 40 : 60;
   return <Group name={"zoom-beacons"}>
     {FOCI(props.config).map(focus => {
       const camera = getCameraOffset(focus);

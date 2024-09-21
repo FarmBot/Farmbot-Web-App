@@ -3,6 +3,7 @@ import { emergencyLock, emergencyUnlock } from "../devices/actions";
 import { EStopButtonProps } from "./interfaces";
 import { isBotUp } from "../devices/must_be_online";
 import { t } from "../i18next_wrapper";
+import { isMobile } from "../screen_size";
 
 const GRAY = "pseudo-disabled";
 
@@ -15,7 +16,7 @@ export class EStopButton extends React.Component<EStopButtonProps, {}> {
       : emergencyLock;
     const color = isLocked ? "yellow" : "red";
     const emergencyLockStatusColor = isBotUp(i.sync_status) ? color : GRAY;
-    const stop = window.innerWidth <= 450
+    const stop = isMobile()
       ? <i className={"fa fa-pause"} />
       : t("E-STOP");
     const emergencyLockStatusText = isLocked ? t("UNLOCK") : stop;

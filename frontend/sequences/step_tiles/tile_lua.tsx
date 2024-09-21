@@ -6,9 +6,10 @@ import { StateToggleKey, StepWrapper } from "../step_ui";
 import { Lua } from "farmbot/dist/corpus";
 import { ToolTips } from "../../constants";
 import { LuaTextArea } from "./tile_lua_support";
+import { isMobile } from "../../screen_size";
 
 export const TileLua = (props: StepParams<Lua>) => {
-  const [monaco, setMonaco] = React.useState(window.innerWidth > 450);
+  const [monaco, setMonaco] = React.useState(!isMobile());
   const [expanded, setExpanded] = React.useState(false);
   const stateToggles = {
     [StateToggleKey.monacoEditor]:

@@ -24,6 +24,7 @@ import { readStatus, restartFirmware, sync } from "../actions";
 import { FbosMetricHistoryTable } from "./fbos_metric_history_table";
 import { Actions } from "../../constants";
 import { forceOnline } from "../must_be_online";
+import { isMobile } from "../../screen_size";
 
 export interface ConnectivityProps {
   bot: BotState;
@@ -156,7 +157,7 @@ export class Connectivity
       <Col md={12} lg={4} className={"connectivity-right-column"}>
         <div className="port-info">
           <label>{t("Ports")}</label>
-          <i>{window.innerWidth <= 450 ? t("This phone") : t("This computer")}</i>
+          <i>{isMobile() ? t("This phone") : t("This computer")}</i>
           <PortRow port={"80 - HTTP"} status={flags["userAPI"]} />
           <PortRow port={"443 - HTTPS"} status={flags["userAPI"]} />
           <PortRow port={"3002 - WebSockets"} status={flags["userMQTT"]} />

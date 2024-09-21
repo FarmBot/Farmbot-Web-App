@@ -451,7 +451,7 @@
   .show-on-hover {
     display: none !important;
   }
-  @media screen and (max-width: 450px) {
+  @media screen and (max-width: $mobile_max_width) {
     .show-on-hover {
       display: flex !important;
     }
@@ -1100,7 +1100,7 @@
         display: block;
       }
     }
-    @media screen and (max-width: 450px) {
+    @media screen and (max-width: $mobile_max_width) {
       .fa-question-circle,
       .run-btn,
       .fa-ellipsis-v {

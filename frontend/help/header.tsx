@@ -5,6 +5,7 @@ import { toggleHotkeyHelpOverlay } from "../hotkeys";
 import { t } from "../i18next_wrapper";
 import { FilePath, Icon, Path } from "../internal_urls";
 import { store } from "../redux/store";
+import { isMobile } from "../screen_size";
 
 interface Page {
   title: string;
@@ -52,7 +53,7 @@ const PAGES = (): Pages => ({
 });
 
 const maybeAddHotkeysMenuItem = (): [string, Page][] =>
-  window.innerWidth > 450
+  !isMobile()
     ? [["hotkeys", {
       title: t("Hotkeys"),
       fa_icon: "fa-keyboard-o",

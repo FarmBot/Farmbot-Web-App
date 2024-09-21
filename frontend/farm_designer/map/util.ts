@@ -8,6 +8,7 @@ import {
 import { trim } from "../../util";
 import { store } from "../../redux/store";
 import { Path } from "../../internal_urls";
+import { isMobile } from "../../screen_size";
 
 /*
  * Farm Designer Map Utilities
@@ -54,6 +55,7 @@ export function round(num: number) {
 /** Status of farm designer side panel. */
 export enum MapPanelStatus {
   open = "open",
+  mobileClosed = "mobileClosed",
   closed = "closed",
   short = "short",
 }
@@ -61,10 +63,10 @@ export enum MapPanelStatus {
 /** Get farm designer side panel status. */
 export const getPanelStatus = (): MapPanelStatus => {
   if (Path.equals(Path.designer())) {
-    return MapPanelStatus.closed;
+    return isMobile() ? MapPanelStatus.mobileClosed : MapPanelStatus.closed;
   }
   const mode = getMode();
-  if (window.innerWidth <= 450 &&
+  if (isMobile() &&
     (mode === Mode.locationInfo ||
       mode === Mode.clickToAdd)) {
     return MapPanelStatus.short;
@@ -76,6 +78,7 @@ export const getPanelStatus = (): MapPanelStatus => {
 export const mapPanelClassName = () => {
   switch (getPanelStatus()) {
     case MapPanelStatus.short: return "short-panel";
+    case MapPanelStatus.mobileClosed: return "panel-closed-mobile";
     case MapPanelStatus.closed: return "panel-closed";
     case MapPanelStatus.open:
     default:
@@ -88,6 +91,7 @@ export const getMapPadding =
   (panelStatus: MapPanelStatus): { left: number, top: number } => {
     switch (panelStatus) {
       case MapPanelStatus.short: return { left: 20, top: 350 };
+      case MapPanelStatus.mobileClosed: return { left: 20, top: 160 };
       case MapPanelStatus.closed: return { left: 20, top: 110 };
       case MapPanelStatus.open:
       default:

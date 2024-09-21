@@ -1,4 +1,9 @@
-import * as React from "react";
+let mockIsMobile = false;
+jest.mock("../../../screen_size", () => ({
+  isMobile: () => mockIsMobile,
+}));
+
+import React from "react";
 import {
   ConnectivityDiagram,
   ConnectivityDiagramProps,
@@ -10,7 +15,7 @@ import {
   DiagramNodes,
   getConnectionColor,
 } from "../diagram";
-import { Color } from "../../../ui/index";
+import { Color } from "../../../ui";
 import { svgMount } from "../../../__test_support__/svg_mount";
 
 describe("<ConnectivityDiagram/>", () => {
@@ -64,10 +69,7 @@ describe("<ConnectivityDiagram/>", () => {
   });
 
   it("renders small diagram", () => {
-    Object.defineProperty(window, "innerWidth", {
-      value: 400,
-      configurable: true
-    });
+    mockIsMobile = true;
     const wrapper = svgMount(<ConnectivityDiagram {...fakeProps()} />);
     expect(wrapper.text())
       .toContain("This phoneWeb AppMessage BrokerFarmBotRaspberry PiF");

@@ -3,6 +3,7 @@ import { Row, Col } from "../../ui";
 import { t } from "../../i18next_wrapper";
 import { syncText } from "../../nav/sync_text";
 import { SyncStatus } from "farmbot";
+import { isMobile } from "../../screen_size";
 
 /** Data model for a single row within the <ConnectivityPanel /> */
 export interface StatusRowProps {
@@ -55,7 +56,7 @@ export function ConnectivityRow(props: StatusRowProps) {
     }
   };
 
-  const browserFrom = window.innerWidth <= 450
+  const browserFrom = isMobile()
     ? t("This phone")
     : t("This computer");
 

@@ -3,6 +3,7 @@ import { findIndex } from "lodash";
 import { Config } from "./config";
 import { threeSpace, zDir, zZero } from "./helpers";
 import { ExternalUrl } from "../external_urls";
+import { isDesktop } from "../screen_size";
 
 export type VectorXyz = [x: number, y: number, z: number];
 
@@ -385,7 +386,7 @@ export const getFocus = (config: Config, activeFocus: string) =>
   FOCI(config)[findIndex(FOCI(config), ["label", activeFocus])];
 
 export const getCameraOffset = (focus: Focus) =>
-  window.innerWidth > 768
+  isDesktop()
     ? focus.camera.wide
     : focus.camera.narrow;
 
