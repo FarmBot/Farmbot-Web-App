@@ -1288,19 +1288,26 @@
 
       .row {
         display: flex;
+        margin: 0;
         background: rgba(255, 255, 255, 0.6);
-        box-shadow: $translucent2 0px 0px 10px;
-        border-radius: 25px;
-        height: 40px;
-        padding: 5px;
+        box-shadow: $translucent2 0px 0px 1rem;
+        border-radius: 2.5rem;
+        height: 3.1rem;
+        padding: 0.3rem;
         justify-content: space-evenly;
         backdrop-filter: blur(5px);
-        gap: 5px;
+        gap: 0.5rem;
+        &:after,
+        &:before {
+          content: unset;
+          display: unset;
+          clear: unset;
+        }
       }
 
       button {
-        padding: 0 1rem;
-        border-radius: 25px;
+        padding: 0 0.85rem;
+        border-radius: 2.5rem;
         font-weight: bold;
         border: none;
         background: none;
@@ -1496,17 +1503,18 @@
       font-family: 'Inknut Antiqua';
       font-size: 3.5rem;
       line-height: 5rem;
+      font-weight: bold;
     }
 
     .description {
       margin: 0;
-      font-weight: normal;
       max-width: 40vw;
 
       p {
         color: $off_white;
         font-size: 1.25rem;
         line-height: 1.7rem;
+        font-weight: bold;
       }
 
       .short {
@@ -1537,6 +1545,7 @@
         color: $off_white;
         font-size: 1.5rem;
         line-height: 4rem;
+        font-weight: bold;
       }
 
       .genesis-xl {

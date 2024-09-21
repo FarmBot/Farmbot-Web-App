@@ -98,7 +98,7 @@ export const Lab = (props: LabProps) => {
       </Billboard>
       <Billboard
         position={[
-          threeSpace(0, config.bedLengthOuter),
+          threeSpace(config.bedLengthOuter / 2, config.bedLengthOuter),
           threeSpace(config.bedWidthOuter + 500, config.bedWidthOuter),
           groundZ,
         ]}>
