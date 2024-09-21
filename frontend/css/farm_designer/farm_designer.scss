@@ -1533,7 +1533,7 @@
       border-radius: 7px;
       box-shadow: $translucent2 0px 0px 10px;
       backdrop-filter: blur(5px);
-      padding: 0 1.75rem;
+      padding: 0.1rem 1.75rem;
       text-shadow: none;
       text-transform: uppercase;
       text-decoration: none;
@@ -1557,7 +1557,7 @@
         width: 2.5rem;
         line-height: 2.5rem;
         text-align: center;
-        font-size: 80%;
+        font-size: 1.2rem;
         vertical-align: middle;
       }
 
@@ -1568,24 +1568,35 @@
   }
 
   .beacon-info {
-    width: 500px;
-    font-size: 20px;
+    width: 34rem;
     background: $white;
     background: rgba(255, 255, 255, 0.8);
     box-shadow: $translucent2 0px 0px 10px;
-    border-radius: 10px;
-    padding: 25px;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
     backdrop-filter: blur(5px);
     text-align: left;
     user-select: none;
     p {
       margin-bottom: 0;
+      margin-top: 1rem;
+      font-weight: bold;
+      font-size: 1.25rem;
+      color: $black;
+      line-height: 1.6rem;
+    }
+    a {
+      text-decoration: underline !important;
+      text-underline-offset: 0.1rem;
+      text-underline-position: from-font;
+      font-weight: bold;
+      color: $dark_blue;
     }
     iframe {
-      margin-top: 20px;
+      margin-top: 1rem;
       width: 100%;
       height: auto;
-      border-radius: 5px;
+      border-radius: 0.35rem;
       aspect-ratio: 16 / 9;
     }
     .header {
@@ -1595,18 +1606,19 @@
         margin: 0;
         font-family: 'Inknut Antiqua';
         line-height: 100%;
+        font-weight: bold;
       }
       .exit-button {
-        width: 30px;
-        height: 30px;
+        width: 2rem;
+        height: 2rem;
         aspect-ratio: 1 / 1;
         border-radius: 50%;
         filter: grayscale(100%);
-        font-size: 12px;
-        line-height: 30px;
+        font-size: 0.75rem;
+        line-height: 2rem;
         text-align: center;
         background: rgba(255, 255, 255, 0.4);
-        box-shadow: $translucent2 0px 0px 10px;
+        box-shadow: $translucent2 0px 0px 0.75rem;
         &:hover {
           cursor: pointer;
           background: rgba(255, 255, 255, 0.6);
@@ -1632,8 +1644,19 @@
         border-bottom-left-radius: 0px;
         border-bottom-right-radius: 0px;
         overflow: scroll;
-        height: 25vh;
+        height: 33vh;
         font-size: 100%;
+
+        .header {
+          h2 {
+            font-size: 1.3rem;
+          }
+        }
+
+        p {
+          font-size: 1rem;
+          line-height: 1.2rem;
+        }
       }
     }
     .promo-info {
@@ -1666,13 +1689,19 @@
       .buy-button {
         font-size: 0.85rem;
         line-height: 2.2rem;
-        padding: 0 0.75rem;
+        padding: 0.1rem 0.8rem;
         border-radius: 5px;
+
+        p {
+          font-size: 0.85rem;
+          line-height: 2rem;
+        }
 
         .genesis-xl {
           height: 1.5rem;
           width: 1.5rem;
           line-height: 1.5rem;
+          font-size: 0.7rem;
         }
       }
     }
