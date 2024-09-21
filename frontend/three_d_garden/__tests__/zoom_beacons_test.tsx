@@ -27,7 +27,7 @@ describe("<ZoomBeacons />", () => {
     await jest.runAllTimers();
     expect(wrapper.html()).toContain("zoom-beacons");
     expect(wrapper.html()).not.toContain("debug-group");
-    expect(wrapper.html()).toContain("40");
+    expect(wrapper.html()).toContain("60,12,12");
     jest.runAllTimers();
   });
 
@@ -43,7 +43,7 @@ describe("<ZoomBeacons />", () => {
   it("renders mobile", () => {
     mockIsDesktop = false;
     const wrapper = mount(<ZoomBeacons {...fakeProps()} />);
-    expect(wrapper.html()).toContain("60");
+    expect(wrapper.html()).toContain("80,12,12");
   });
 
   it("shows beacon", () => {

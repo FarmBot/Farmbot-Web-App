@@ -51,7 +51,7 @@ export const ZoomBeacons = (props: ZoomBeaconsProps) => {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     document.querySelector(".garden-bed-3d-model") as HTMLElement | null;
 
-  const beaconSize = isDesktop() ? 40 : 60;
+  const beaconSize = isDesktop() ? 60 : 80;
   return <Group name={"zoom-beacons"}>
     {FOCI(props.config).map(focus => {
       const camera = getCameraOffset(focus);
