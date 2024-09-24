@@ -162,7 +162,7 @@
     div[class*="search-item"] {
       &:hover,
       &.hovered {
-        background: darken($panel_light_green, 10%);
+        background: color.adjust($panel_light_green, $lightness: -10%);
       }
     }
   }
@@ -171,7 +171,7 @@
     div[class*="search-item"] {
       &:hover,
       &.hovered {
-        background: darken($light_cyan, 10%);
+        background: color.adjust($light_cyan, $lightness: -10%);
       }
     }
   }
@@ -180,7 +180,7 @@
     div[class*="search-item"] {
       &:hover,
       &.hovered {
-        background: darken($panel_light_brown, 10%);
+        background: color.adjust($panel_light_brown, $lightness: -10%);
       }
     }
   }
@@ -189,7 +189,7 @@
     div[class*="search-item"] {
       &:hover,
       &.hovered {
-        background: darken($light_magenta, 10%);
+        background: color.adjust($light_magenta, $lightness: -10%);
       }
     }
   }
@@ -199,7 +199,7 @@
     div[class*="search-item"] {
       &:hover,
       &.hovered {
-        background: darken($panel_light_gray, 10%);
+        background: color.adjust($panel_light_gray, $lightness: -10%);
       }
     }
   }
@@ -208,7 +208,7 @@
     div[class*="search-item"] {
       &:hover,
       &.hovered {
-        background: darken($panel_light_yellow, 10%);
+        background: color.adjust($panel_light_yellow, $lightness: -10%);
       }
     }
   }
@@ -217,7 +217,7 @@
     div[class*="search-item"] {
       &:hover,
       &.hovered {
-        background: darken($panel_light_blue, 10%);
+        background: color.adjust($panel_light_blue, $lightness: -10%);
       }
     }
   }
@@ -226,7 +226,7 @@
     div[class*="search-item"] {
       &:hover,
       &.hovered {
-        background: darken($panel_light_navy, 10%);
+        background: color.adjust($panel_light_navy, $lightness: -10%);
       }
     }
   }
@@ -235,7 +235,7 @@
     div[class*="search-item"] {
       &:hover,
       &.hovered {
-        background: darken($panel_light_teal, 10%);
+        background: color.adjust($panel_light_teal, $lightness: -10%);
       }
     }
   }
@@ -244,7 +244,7 @@
     div[class*="search-item"] {
       &:hover,
       &.hovered {
-        background: darken($panel_light_red, 10%);
+        background: color.adjust($panel_light_red, $lightness: -10%);
       }
     }
   }
@@ -1885,7 +1885,7 @@ li {
   .limit-switch-warning {
     margin: 1rem -15px -1rem -15px;
     padding: 1rem 1.5rem 1rem 2rem;
-    background: transparentize($orange, 0.6);
+    background: color.adjust($orange, $alpha: -0.6);
     p {
       line-height: 1.75rem;
       font-size: 1.3rem;
@@ -3155,7 +3155,7 @@ li {
   .env-editor-warning {
     margin: 0 -15px 2rem -15px;
     padding: 1rem 1.5rem 1rem 2rem;
-    background: transparentize($orange, 0.6);
+    background: color.adjust($orange, $alpha: -0.6);
     p {
       line-height: 1.75rem;
       font-size: 1.2rem;
@@ -3171,7 +3171,7 @@ li {
 .env-editor-lua {
   margin: 0 -15px 0 -15px;
   padding: 1rem 1.5rem 1rem 2rem;
-  background: transparentize($blue, 0.6);
+  background: color.adjust($blue, $alpha: -0.6);
   p {
     line-height: 1.75rem;
     font-size: 1.2rem;
@@ -3730,7 +3730,7 @@ li {
     .warning-banner {
       margin: 0 -15px 1rem -15px;
       padding: 1rem 1.5rem 1rem 2rem;
-      background: transparentize($orange, 0.6);
+      background: color.adjust($orange, $alpha: -0.6);
       p {
         line-height: 1.75rem;
         font-size: 1.3rem;

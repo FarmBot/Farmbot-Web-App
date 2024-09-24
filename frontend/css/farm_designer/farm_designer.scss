@@ -227,7 +227,7 @@
     }
     &.quick-del {
       &:hover {
-        background: lighten($red, 10%) !important;
+        background: color.adjust($red, $lightness: 10%) !important;
         &:after {
           content: "x";
           margin-left: 1rem;
@@ -1058,7 +1058,7 @@
     .bp5-start {
       top: 0.53rem;
       width: 0.5px;
-      background: transparentize($dark_gray, 0.75);
+      background: color.adjust($dark_gray, $alpha: -0.75);
       box-shadow: none;
       height: 0.55rem;
       border-radius: 0;
@@ -1132,7 +1132,7 @@
     text-align: center;
     box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, .3);
     &:hover {
-      background: lighten($magenta, 5%);
+      background: color.adjust($magenta, $lightness: 5%);
     }
     i {
       color: $off_white;

@@ -107,7 +107,7 @@
       line-height: 4rem;
     }
     &:hover {
-      background: darken($panel_light_yellow, 10%) !important;
+      background: color.adjust($panel_light_yellow, $lightness: -10%) !important;
     }
   }
 }
@@ -1215,7 +1215,7 @@
     }
   }
   .matched {
-    background: transparentize($yellow, 0.5);
+    background: color.adjust($yellow, $alpha: -0.5);
   }
   .non-empty-state {
     width: 100%;
@@ -1469,7 +1469,7 @@
 .import-banner {
   margin: 0 -15px 0 -15px;
   padding: 1rem 1.5rem 1rem 2rem;
-  background: transparentize($orange, 0.4);
+  background: color.adjust($orange, $alpha: -0.4);
   button {
     margin-right: 1rem;
   }
@@ -1491,7 +1491,7 @@
 }
 
 .imported-banner {
-  background: transparentize($blue, 0.4);
+  background: color.adjust($blue, $alpha: -0.4);
 }
 
 $border_width: 1.4px;

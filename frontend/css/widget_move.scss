@@ -25,7 +25,7 @@
   width: 20%;
   float: left;
   &:hover {
-    background-color: darken($white, 40%);
+    background-color: color.adjust($white, $lightness: -40%);
     color: $off_white;
   }
   &:nth-child(n+2) {
@@ -136,7 +136,7 @@
   width: 40px;
   box-shadow: rgba(0, 0, 0, 0.15) 0px 2px 7px 0px;
   &:hover {
-    background-color: darken($medium_gray, 5%);
+    background-color: color.adjust($medium_gray, $lightness: -5%);
   }
   &:disabled {
     border-bottom: none;
