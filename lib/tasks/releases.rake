@@ -54,7 +54,7 @@ namespace :releases do
       file = URI.parse(uri).open
       raw_json = file.read
       json = JSON.parse(raw_json, symbolize_names: true).pluck(:tag_name)
-      json.first(9).sort.reverse
+      json
     end
 
     def self.get_channel
@@ -96,6 +96,20 @@ namespace :releases do
       puts ""
     end
 
+    def self.device_version_list
+      Device
+        .where("last_saw_api > ?", 24.hours.ago)
+        .pluck(:fbos_version)
+        .compact
+        .map{|x| x}
+        .tally
+        .sort_by{|(k, v)| v}
+        .reverse
+        .to_a
+        .map{|v, c| "#{v.ljust(17)} #{c.to_s.rjust(5)}"}
+        .join("\n")
+    end
+
     def self.create_releases(metadata, channel)
       output = Releases::Parse.run!(metadata)
         .map { |params| Releases::Create.run!(params.merge(channel: channel)) }
@@ -122,7 +136,7 @@ namespace :releases do
 
     def self.select_summary_type
       puts "\n=== SUMMARY OPTIONS ==="
-      choices = ["none", "message", "link", "body"]
+      choices = ["none", "message", "link", "body", "versions"]
       choices.each_with_index do |version, index|
         puts "#{index}) #{version}"
       end
@@ -146,21 +160,28 @@ namespace :releases do
       puts "\n=== body ==="
       body = "\n#{metadata.fetch(:body)}"
       puts body
-      [notification_text, info, link, body]
+      puts "\n=== versions ==="
+      versions = "\n\nVersions of devices active in the last 24 hours:"
+      versions += "\n```#{self.device_version_list}```"
+      puts versions
+      [notification_text, info, link, body, versions]
     end
 
     def self.post_summary(metadata)
       webhook_url = ENV["RELEASE_WEBHOOK_URL"]
       if webhook_url
         server = Release.first.image_url.split("/")[3].split("-")[1]
-        notification_text, info, link, body = prepare_summary(server, metadata)
+        notification_text, info, link, body, versions = prepare_summary(server, metadata)
         summary_type = select_summary_type
         return if summary_type == "none"
-        if ["link", "body"].include?(summary_type)
+        if ["link", "body", "versions"].include?(summary_type)
           info += link
         end
-        if ["body"].include?(summary_type)
+        if ["body", "versions"].include?(summary_type)
           info += body
+        end
+        if ["versions"].include?(summary_type)
+          info += versions
         end
         payload = {
           "mrkdwn": true,

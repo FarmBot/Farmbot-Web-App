@@ -51,13 +51,13 @@
   padding: .75rem 1rem;
   border-top-left-radius: 3px;
   border-top-right-radius: 3px;
+  margin-bottom: -1px;
   .step-header-flex {
     display: flex;
   }
   &.sequence-selected.no-inputs {
     border-radius: 3px;
   }
-  margin-bottom: -1px;
   .step-comment {
     display: inline;
     width: 100%;

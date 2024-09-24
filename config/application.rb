@@ -86,11 +86,11 @@ module FarmBot
         "browser-http-intake.logs.datadoghq.com",
         "#{ENV.fetch("API_HOST")}:#{API_PORT}",
         "#{ENV.fetch("API_HOST")}:3808",
+        "blob:", # 3D
       ]
       config.csp = {
         default_src: %w(https: 'self'),
         base_uri: %w('self'),
-        block_all_mixed_content: false, # :( Some webcam feeds use http://
         connect_src: connect_src,
         font_src: %w(
           maxcdn.bootstrapcdn.com

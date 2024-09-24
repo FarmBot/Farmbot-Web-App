@@ -66,8 +66,7 @@ export const isPointType = (x: any): x is PointType =>
 
 export const validPointTypes =
   (pointerTypes: unknown[] | undefined): PointType[] | undefined => {
-    const validValues = (pointerTypes || [])
-      .filter(x => isPointType(x)).map(x => x as PointType);
+    const validValues = (pointerTypes || []).filter(x => isPointType(x));
     return validValues.length > 0 ? validValues : undefined;
   };
 

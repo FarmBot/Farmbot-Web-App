@@ -84,8 +84,6 @@ describe Api::FarmEventsController do
 
     it "prevents creation of unusually large farm_events" do
       sign_in user
-      SmarfDoc.note("This is how you could create a FarmEvent that fires " +
-                    "every 4 minutes.")
       input = { executable_id: sequence.id,
                 executable_type: sequence.class.name,
                 start_time: (Time.now + 1.minute).as_json,
@@ -100,8 +98,6 @@ describe Api::FarmEventsController do
 
     it "makes a farm_event" do
       sign_in user
-      SmarfDoc.note("This is how you could create a FarmEvent that fires " +
-                    "every 4 days.")
       input = { executable_id: sequence.id,
                 executable_type: sequence.class.name,
                 start_time: (Time.now + 1.minute).as_json,

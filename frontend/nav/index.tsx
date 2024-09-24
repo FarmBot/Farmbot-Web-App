@@ -33,6 +33,7 @@ import { Actions } from "../constants";
 import { PopupsState } from "../interfaces";
 import { Panel, TAB_ICON } from "../farm_designer/panel_header";
 import { movementPercentRemaining } from "../farm_designer/move_to";
+import { isMobile } from "../screen_size";
 
 export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
   state: NavBarState = {
@@ -132,7 +133,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
         position={Position.BOTTOM_RIGHT}
         isOpen={this.state.accountMenuOpen}
         onClose={this.close("accountMenuOpen")}
-        target={window.innerWidth <= 450
+        target={isMobile()
           ? <i className={"fa fa-user"} onClick={this.toggle("accountMenuOpen")} />
           : <div className="nav-name" data-title={firstName}
             onClick={this.toggle("accountMenuOpen")}>
@@ -163,7 +164,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
             <DiagnosisSaucer {...data.flags}
               className={"nav"}
               syncStatus={sync_status} />
-            {window.innerWidth > 450 && <p>{t("Connectivity")}</p>}
+            {!isMobile() && <p>{t("Connectivity")}</p>}
           </div>}
           content={<ErrorBoundary>
             <Connectivity
@@ -190,7 +191,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
       ? <a className={"setup-button"}
         onClick={() => push(Path.setup())}>
         {t("Setup")}
-        {window.innerWidth > 450 &&
+        {!isMobile() &&
           `: ${setupProgressString(wizardStepResults, { firmwareHardware })}`}
       </a>
       : <div style={{ display: "inline" }} />;
@@ -202,8 +203,8 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
     const job = jobActive ? sortedJobs[0] : undefined;
     const isPercent = job?.unit == "percent";
     const percent = isPercent ? round(job.percent, 1) : "";
-    const activeText = window.innerWidth > 450 ? jobNameLookup(job) : "";
-    const inactiveText = window.innerWidth > 450 ? t("idle") : t("jobs");
+    const activeText = !isMobile() ? jobNameLookup(job) : "";
+    const inactiveText = !isMobile() ? t("idle") : t("jobs");
     const jobProgress = isPercent ? `${percent}%` : "";
     const isOpen = this.props.appState.popups.jobs;
     return <div className={"nav-popup-button-wrapper"}>
@@ -215,7 +216,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
         target={<a className={`jobs-button ${isOpen ? "hover" : ""}`}
           onClick={this.togglePopup("jobs")}>
           <i className={"fa fa-history"} />
-          {window.innerWidth > 450 &&
+          {!isMobile() &&
             <div className={"nav-job-info"}>
               <p className={"title"}>{jobActive ? activeText : inactiveText}</p>
               {jobActive &&

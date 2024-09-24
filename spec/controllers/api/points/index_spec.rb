@@ -35,8 +35,6 @@ describe Api::PointsController do
                     openfarm_slug: "cabbage",
                     pointer_type: "Plant",
                     discarded_at: nil)
-      SmarfDoc.note("If you want to see previously deleted points, " +
-                    "add `?filter=old` to the end of the URL.")
       sign_in user
       get :index, params: { filter: "old" }
       expect(response.status).to eq(200)
@@ -65,8 +63,6 @@ describe Api::PointsController do
                     openfarm_slug: "cabbage",
                     pointer_type: "Plant",
                     discarded_at: nil)
-      SmarfDoc.note("If you want to see previously deleted points, " +
-                    "add `?filter=old` to the end of the URL.")
       sign_in user
       get :index, params: {}
       expect(response.status).to eq(200)
@@ -95,9 +91,6 @@ describe Api::PointsController do
                     openfarm_slug: "cabbage",
                     pointer_type: "Plant",
                     discarded_at: nil)
-      SmarfDoc.note("If you want to see previously deleted points alongside" \
-                    " your active points, add `?filter=all` to the end of " \
-                    "the URL.")
       sign_in user
       get :index, params: { filter: "all" }
       expect(response.status).to eq(200)

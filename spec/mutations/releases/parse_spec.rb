@@ -104,14 +104,13 @@ describe Releases::Parse do
   end
 
   it "refuses to parse drafts" do
-    boom = -> do
+    expect {
       Releases::Parse.run!({ draft: true, prerelease: false, tag_name: "11.0.1", assets: [] })
-    end
-    expect(boom).to raise_error(Mutations::ValidationException, "Don't publish drafts.")
+     }.to raise_error(Mutations::ValidationException, "Don't publish drafts.")
   end
 
   it "double checks the platform detection regex" do
-    boom = -> do
+    expect{
       Releases::Parse.run!({
         draft: false,
         prerelease: false,
@@ -125,8 +124,6 @@ describe Releases::Parse do
           },
         ],
       })
-    end
-
-    expect(boom).to raise_error("Invalid platform?: bbb3")
+    }.to raise_error("Invalid platform?: bbb3")
   end
 end

@@ -24,13 +24,13 @@ Hosting your own server requires an understanding of how Ruby on Rails applicati
 
 ## Local setup
 
-We recommend all self hosted installations be installed on a fresh Ubuntu server using the instructions provided in [ubuntu_example.sh](https://github.com/FarmBot/Farmbot-Web-App/blob/main/ubuntu_example.sh). These instructions are regularly checked and updated to ensure they work. **At this time we cannot provide assistance for running the web app in different environments.**
+We recommend all self hosted installations be installed on a fresh Ubuntu server using the instructions provided in [local_setup_instructions.sh](local_setup_instructions.sh). These instructions are regularly checked and updated to ensure they work. **At this time we cannot provide assistance for running the web app in different environments.**
 
 If you raise an issue indicating that you haven't followed the setup instructions, looked through past issues, or done a cursory internet search for basic help, expect the issue to be closed and we'll point you to the setup instructions. *Again, if you do not have at least intermediate Linux and Ruby experience, please use [my.farm.bot](https://my.farm.bot).* Running a self-hosted server is not easy!
 
 ## Configuration settings (important)
 
-**Your server won't run without setting ENV variables first**. Set the ENV variables directly from your shell / server management tool or by writing a `.env` file in the server's base directory. See [example.env](https://github.com/FarmBot/Farmbot-Web-App/blob/main/example.env) for a list of all the variables that must be set.
+**Your server won't run without setting ENV variables first**. Set the ENV variables directly from your shell / server management tool or by writing a `.env` file in the server's base directory. See [example.env](example.env) for a list of all the variables that must be set.
 
 Encryption keys will be auto-generated if not present. They can be reset using `rake keys:generate`. If `ENV['RSA_KEY']` is set, it will be used in place of the `*.pem` files. This is useful for environments like Heroku and Docker, where file system access is not allowed.
 

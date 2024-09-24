@@ -129,6 +129,7 @@ describe("<FarmDesigner />", () => {
     p.designer.openedSavedGarden = 1;
     const wrapper = mount(<FarmDesigner {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("viewing saved garden");
+    expect(wrapper.html()).not.toContain("three-d-garden");
   });
 
   it("toggles setting", () => {
@@ -156,6 +157,13 @@ describe("<FarmDesigner />", () => {
     p.getConfigValue = () => 1;
     const i = new FarmDesigner(p);
     expect(i.getBotOriginQuadrant()).toEqual(1);
+  });
+
+  it("renders 3D garden", () => {
+    const p = fakeProps();
+    p.getConfigValue = () => true;
+    const wrapper = mount(<FarmDesigner {...p} />);
+    expect(wrapper.html()).toContain("three-d-garden");
   });
 });
 

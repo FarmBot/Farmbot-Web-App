@@ -9,6 +9,8 @@
   margin-top: 0.4rem;
   height: calc(100vh - 8.95rem);
   background: $light_gray;
+  padding: 0 2rem;
+  overflow: hidden;
   @media screen and (max-width: 767px) {
     display: none;
     &.open {
@@ -19,7 +21,6 @@
       }
     }
   }
-  padding: 0 2rem;
   h3 {
     margin-top: 1rem;
   }
@@ -31,7 +32,6 @@
       width: unset;
     }
   }
-  overflow: hidden;
   .bp5-popover-target .saucer {
     float: left;
   }
@@ -107,7 +107,7 @@
       line-height: 4rem;
     }
     &:hover {
-      background: darken($panel_light_yellow, 10%) !important;
+      background: color.adjust($panel_light_yellow, $lightness: -10%) !important;
     }
   }
 }
@@ -451,7 +451,7 @@
   .show-on-hover {
     display: none !important;
   }
-  @media screen and (max-width: 450px) {
+  @media screen and (max-width: $mobile_max_width) {
     .show-on-hover {
       display: flex !important;
     }
@@ -851,10 +851,10 @@
     }
     .text-input-wrapper {
       margin: 0;
+      border-bottom-color: $white !important;
       input {
         color: $white;
       }
-      border-bottom-color: $white !important;
       &:before,
       &:after {
         background: $white !important;
@@ -869,11 +869,11 @@
 .step-button-cluster-panel {
   @media screen and (max-width: 767px) {
     display: none;
+    margin-left: 15px;
+    margin-right: 15px;
     &.inserting-step {
       display: block;
     }
-    margin-left: 15px;
-    margin-right: 15px;
   }
   .row {
     margin-left: -2.5rem;
@@ -1100,7 +1100,7 @@
         display: block;
       }
     }
-    @media screen and (max-width: 450px) {
+    @media screen and (max-width: $mobile_max_width) {
       .fa-question-circle,
       .run-btn,
       .fa-ellipsis-v {
@@ -1184,6 +1184,7 @@
   }
   .folder-list-item,
   .sequence-list-item {
+    padding-left: 3rem;
     .bp5-popover-wrapper.color-picker {
       position: absolute;
       line-height: 0;
@@ -1192,7 +1193,6 @@
         height: 3.5rem;
       }
     }
-    padding-left: 3rem;
     .saucer, .icon-saucer {
       position: relative;
       top: 0.55rem;
@@ -1215,7 +1215,7 @@
     }
   }
   .matched {
-    background: transparentize($yellow, 0.5);
+    background: color.adjust($yellow, $alpha: -0.5);
   }
   .non-empty-state {
     width: 100%;
@@ -1313,11 +1313,11 @@
     }
   }
   @media screen and (max-width: 767px) {
+    margin-left: 15px;
+    margin-right: 15px;
     &.open {
       display: none;
     }
-    margin-left: 15px;
-    margin-right: 15px;
     .empty-state {
       display: block;
     }
@@ -1469,7 +1469,7 @@
 .import-banner {
   margin: 0 -15px 0 -15px;
   padding: 1rem 1.5rem 1rem 2rem;
-  background: transparentize($orange, 0.4);
+  background: color.adjust($orange, $alpha: -0.4);
   button {
     margin-right: 1rem;
   }
@@ -1491,7 +1491,7 @@
 }
 
 .imported-banner {
-  background: transparentize($blue, 0.4);
+  background: color.adjust($blue, $alpha: -0.4);
 }
 
 $border_width: 1.4px;

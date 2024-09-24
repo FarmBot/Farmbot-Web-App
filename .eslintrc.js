@@ -16,6 +16,7 @@ module.exports = {
         "no-null",
         "import",
         "promise",
+        "@react-three",
     ],
     extends: [
         "eslint:recommended",
@@ -29,6 +30,7 @@ module.exports = {
         "plugin:import/errors",
         "plugin:import/warnings",
         "plugin:import/typescript",
+        "plugin:@react-three/recommended",
     ],
     settings: {
         react: {

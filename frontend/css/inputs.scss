@@ -29,9 +29,9 @@ input:not([role="combobox"]) {
     display: none;
   }
   &.dim {
-    background: darken($white, 2%) !important;
+    background: color.adjust($white, $lightness: -2%) !important;
     &.gray {
-      background: darken($medium_light_gray, 2%) !important;
+      background: color.adjust($medium_light_gray, $lightness: -2%) !important;
     }
   }
   &.error {
@@ -112,16 +112,16 @@ select {
   }
   &.dim {
     Button {
-      background: darken($white, 2%) !important;
+      background: color.adjust($white, $lightness: -2%) !important;
       &:hover {
-        background: darken($white, 2%) !important;
+        background: color.adjust($white, $lightness: -2%) !important;
       }
     }
   }
   &.disabled {
     pointer-events: none;
     button {
-      background: darken($white, 10%) !important;
+      background: color.adjust($white, $lightness: -10%) !important;
     }
   }
   &.warning {

@@ -1,3 +1,8 @@
+let mockIsMobile = false;
+jest.mock("../../screen_size", () => ({
+  isMobile: () => mockIsMobile,
+}));
+
 import { Path } from "../../internal_urls";
 let mockPath = "";
 jest.mock("../../history", () => ({
@@ -59,10 +64,7 @@ describe("<Sequences />", () => {
 
   it("redirects to mobile interface", () => {
     mockPath = Path.mock(Path.sequencePage());
-    Object.defineProperty(window, "innerWidth", {
-      value: 400,
-      configurable: true,
-    });
+    mockIsMobile = true;
     const p = fakeProps();
     p.sequence = undefined;
     shallow(<Sequences {...p} />);
@@ -71,10 +73,7 @@ describe("<Sequences />", () => {
 
   it("redirects to mobile interface: sequence selected", () => {
     mockPath = Path.mock(Path.sequencePage());
-    Object.defineProperty(window, "innerWidth", {
-      value: 400,
-      configurable: true,
-    });
+    mockIsMobile = true;
     const p = fakeProps();
     p.sequence = fakeSequence();
     shallow(<Sequences {...p} />);

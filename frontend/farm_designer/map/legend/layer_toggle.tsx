@@ -22,6 +22,7 @@ export function LayerToggle(props: LayerToggleProps) {
   const classNames = [
     "fb-button",
     "fb-toggle-button",
+    "fb-layer-toggle",
     value ? "green" : "red",
     getModifiedClassName(props.settingName),
   ].join(" ");

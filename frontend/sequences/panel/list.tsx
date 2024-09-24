@@ -24,6 +24,7 @@ import {
 import { SequencesPanelState } from "../../interfaces";
 import { Actions } from "../../constants";
 import { push } from "../../history";
+import { isMobile } from "../../screen_size";
 
 interface DesignerSequenceListState {
   featuredList: FeaturedSequence[];
@@ -74,7 +75,7 @@ export class RawDesignerSequenceList
           searchTerm={this.props.folderData.searchTerm || ""}
           placeholder={t("Search sequences...")}
           onChange={updateSearchTerm} />
-        {window.innerWidth > 450 &&
+        {!isMobile() &&
           <button className={"transparent-button fullscreen"}
             onClick={() => push(buttonProps.path)}>
             {buttonProps.text}

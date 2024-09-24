@@ -21,6 +21,7 @@ import {
 import { t } from "../../i18next_wrapper";
 import { Collapse } from "@blueprintjs/core";
 import { ExpandableHeader } from "../../ui/expandable_header";
+import { isDesktop } from "../../screen_size";
 
 export class TileMoveAbsolute
   extends React.Component<StepParams<MoveAbsolute>, MoveAbsState> {
@@ -152,7 +153,7 @@ export class TileMoveAbsolute
           <div className="more-options">
             <ExpandableHeader
               expanded={this.state.more}
-              title={window.innerWidth < 660 ? "" : t("Options")}
+              title={isDesktop() ? t("Options") : ""}
               onClick={() => this.setState({ more: !this.state.more })} />
           </div>
         </div>

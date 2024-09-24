@@ -25,11 +25,10 @@
 #             +--------+ +------------+
 # ================================================
 
-version: "3"
 services:
   redis:
     env_file: ".env"
-    image: redis:5
+    image: redis:7
     volumes:
       - "./docker_volumes/redis/data:/data"
       - "./docker_volumes/redis/conf:/usr/local/etc/redis"
@@ -37,8 +36,7 @@ services:
 
   db:
     env_file: ".env"
-    # Know to work: 10, 11
-    image: postgres:13
+    image: postgres:16
     restart: always
     volumes: ["./docker_volumes/db:/var/lib/postgresql/data"]
 

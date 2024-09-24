@@ -1,4 +1,3 @@
-/* eslint-disable react/no-unknown-property */
 /* eslint-disable no-null/no-null */
 import React, { useRef } from "react";
 import * as THREE from "three";
@@ -15,15 +14,12 @@ import { debounce, some } from "lodash";
 import { t } from "../../i18next_wrapper";
 import { isExpress } from "../../settings/firmware/firmware_hardware_support";
 import { ButtonPin } from "./list_and_label_support";
-
-const ASSETS = "/3D/";
-const LIB_DIR = `${ASSETS}lib/`;
-
-const MODELS = {
-  box: `${ASSETS}models/box.glb`,
-  btn: `${ASSETS}models/push_button.glb`,
-  led: `${ASSETS}models/led_indicator.glb`,
-};
+import {
+  AmbientLight, DirectionalLight, Group, Mesh, PointLight,
+} from "../../three_d_garden/components";
+import {
+  ASSETS, ElectronicsBoxMaterial, LIB_DIR,
+} from "../../three_d_garden/constants";
 
 type Box = GLTF & {
   nodes: {
@@ -32,18 +28,10 @@ type Box = GLTF & {
     Electronics_Box_Lid: THREE.Mesh;
   };
   materials: {
-    [Material.box]: THREE.MeshStandardMaterial;
-    [Material.gasket]: THREE.MeshStandardMaterial;
-    [Material.lid]: THREE.MeshStandardMaterial;
+    [ElectronicsBoxMaterial.box]: THREE.MeshStandardMaterial;
+    [ElectronicsBoxMaterial.gasket]: THREE.MeshStandardMaterial;
+    [ElectronicsBoxMaterial.lid]: THREE.MeshStandardMaterial;
   };
-}
-
-export enum Material {
-  box = "0.901961_0.901961_0.901961_0.000000_0.000000",
-  gasket = "0.301961_0.301961_0.301961_0.000000_0.000000",
-  lid = "0.564706_0.811765_0.945098_0.000000_0.623529",
-  button = "0.701961_0.701961_0.701961_0.000000_0.000000",
-  led = "0.600000_0.600000_0.600000_0.000000_0.000000",
 }
 
 type Btn = GLTF & {
@@ -51,7 +39,7 @@ type Btn = GLTF & {
     ["Push_Button_-_Red"]: THREE.Mesh;
   };
   materials: {
-    [Material.button]: THREE.MeshStandardMaterial;
+    [ElectronicsBoxMaterial.button]: THREE.MeshStandardMaterial;
   };
 }
 
@@ -60,9 +48,15 @@ type Led = GLTF & {
     LED: THREE.Mesh;
   };
   materials: {
-    [Material.led]: THREE.MeshStandardMaterial;
+    [ElectronicsBoxMaterial.led]: THREE.MeshStandardMaterial;
   };
 }
+
+const MODELS = {
+  box: ASSETS.models.box,
+  btn: ASSETS.models.btn,
+  led: ASSETS.models.led,
+};
 
 Object.values(MODELS).map(model => useGLTF.preload(model, LIB_DIR));
 
@@ -123,9 +117,9 @@ interface ButtonOrLedItem {
 }
 
 export const Model = (props: BoxTopBaseProps) => {
-  const box = useGLTF(MODELS.box, LIB_DIR) as Box;
-  const btn = useGLTF(MODELS.btn, LIB_DIR) as Btn;
-  const led = useGLTF(MODELS.led, LIB_DIR) as Led;
+  const box = useGLTF(ASSETS.models.box, LIB_DIR) as Box;
+  const btn = useGLTF(ASSETS.models.btn, LIB_DIR) as Btn;
+  const led = useGLTF(ASSETS.models.led, LIB_DIR) as Led;
   const SCALE = 1000;
 
   const syncLed = useRef<MeshObject>(null);
@@ -265,29 +259,29 @@ export const Model = (props: BoxTopBaseProps) => {
     setZForAllInGroup(e, Z);
     document.body.style.cursor = "default";
   };
-  return <group dispose={null}
+  return <Group dispose={null}
     rotation={[0, 0, Math.PI / 2]}>
     <PerspectiveCamera makeDefault name="camera" fov={30} near={0.1} far={1000}
       position={[-150, 0, 300]}
       rotation={[0, -Math.PI / 6, -Math.PI / 2]} />
-    <pointLight intensity={2} position={[0, 0, 200]} rotation={[0, 0, 0]}
+    <PointLight intensity={2} position={[0, 0, 200]} rotation={[0, 0, 0]}
       distance={0} decay={0} />
-    <directionalLight intensity={0.1}
+    <DirectionalLight intensity={0.1}
       position={[-100, 0, 100]} rotation={[0, 0, 0]} />
-    <ambientLight intensity={0.5} />
-    <mesh name={"electronicsBox"}
+    <AmbientLight intensity={0.5} />
+    <Mesh name={"electronicsBox"}
       geometry={box.nodes.Electronics_Box.geometry}
-      material={box.materials[Material.box]}
+      material={box.materials[ElectronicsBoxMaterial.box]}
       scale={SCALE}
       material-color={0xffffff}
       material-emissive={0x999999} />
-    <mesh name={"electronicsBoxGasket"}
+    <Mesh name={"electronicsBoxGasket"}
       geometry={box.nodes.Electronics_Box_Gasket.geometry}
-      material={box.materials[Material.gasket]}
+      material={box.materials[ElectronicsBoxMaterial.gasket]}
       scale={SCALE} />
-    <mesh name={"electronicsBoxLid"}
+    <Mesh name={"electronicsBoxLid"}
       geometry={box.nodes.Electronics_Box_Lid.geometry}
-      material={box.materials[Material.lid]}
+      material={box.materials[ElectronicsBoxMaterial.lid]}
       scale={SCALE} />
     {BUTTONS
       .filter((_, index) => express ? index == 0 : true)
@@ -303,15 +297,15 @@ export const Model = (props: BoxTopBaseProps) => {
           !props.isEditing && setHovered(pinNumber);
           setCursor();
         };
-        return <group key={btnPosition} name={"button-group"}
+        return <Group key={btnPosition} name={"button-group"}
           onPointerUp={leave}>
-          <mesh name={"button-housing"}
+          <Mesh name={"button-housing"}
             geometry={btn.nodes["Push_Button_-_Red"].geometry}
-            material={btn.materials[Material.button]}
+            material={btn.materials[ElectronicsBoxMaterial.button]}
             position={[-30, btnPosition, Z]}
             scale={SCALE}
             material-color={0xcccccc} />
-          <group name={"action-group"}
+          <Group name={"action-group"}
             onPointerOver={enter}
             onPointerMove={setCursor}
             onClick={setCursor}
@@ -355,17 +349,17 @@ export const Model = (props: BoxTopBaseProps) => {
                   {getLabel(binding) || label}
                 </p>}
             </Html>
-          </group>
-        </group>;
+          </Group>
+        </Group>;
       })}
     {LEDS
       .filter(() => !express)
       .map(ledIndicator => {
         const { position, color, ref } = ledIndicator;
-        return <group key={position}>
-          <mesh name={"led-housing"}
+        return <Group key={position}>
+          <Mesh name={"led-housing"}
             geometry={led.nodes.LED.geometry}
-            material={led.materials[Material.led]}
+            material={led.materials[ElectronicsBoxMaterial.led]}
             position={[-50, position, Z]}
             material-color={0xcccccc}
             scale={SCALE} />
@@ -379,9 +373,9 @@ export const Model = (props: BoxTopBaseProps) => {
             position={[-66, position, Z]}>
             <p className={"led-label"}>{ledIndicator.label}</p>
           </Html>
-        </group>;
+        </Group>;
       })}
-  </group>;
+  </Group>;
 };
 
 export const ElectronicsBoxModel = (props: BoxTopBaseProps) => {

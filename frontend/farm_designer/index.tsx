@@ -24,6 +24,7 @@ import { SavedGardenHUD } from "../saved_gardens/saved_gardens";
 import { calculateImageAgeInfo } from "../photos/photo_filter_settings/util";
 import { Xyz } from "farmbot";
 import { ProfileViewer } from "./map/profile";
+import { ThreeDGardenMap } from "./three_d_garden_map";
 
 export const getDefaultAxisLength =
   (getConfigValue: GetWebAppConfigValue): Record<Xyz, number> => {
@@ -187,77 +188,86 @@ export class RawFarmDesigner
         botSize={this.props.botSize}
         imageAgeInfo={calculateImageAgeInfo(this.props.latestImages)} />
 
-      <DesignerNavTabs hidden={!(getPanelStatus() === MapPanelStatus.closed)} />
+      <DesignerNavTabs hidden={![
+        MapPanelStatus.closed,
+        MapPanelStatus.mobileClosed,
+      ].includes(getPanelStatus())} />
       <div className={`farm-designer-panels ${this.mapPanelClassName}`}>
         {this.props.children || React.createElement(Plants)}
       </div>
 
-      <div
-        className={`farm-designer-map ${this.mapPanelClassName}`}
-        style={{
-          transform: `scale(${zoom_level})`,
-          transformOrigin: `${mapPadding.left}px ${mapPadding.top}px`,
-          height: `calc(${100 / zoom_level}% + ${padHeightOffset}px)`
-        }}>
-        <GardenMap
-          showPoints={show_points}
-          showPlants={show_plants}
-          showWeeds={show_weeds}
-          showSpread={show_spread}
-          showFarmbot={show_farmbot}
-          showImages={show_images}
-          showZones={show_zones}
-          showSensorReadings={show_sensor_readings}
-          selectedPlant={this.props.selectedPlant}
-          crops={this.props.crops}
-          designer={this.props.designer}
-          plants={this.props.plants}
-          genericPoints={this.props.genericPoints}
-          weeds={this.props.weeds}
-          allPoints={this.props.allPoints}
-          toolSlots={this.props.toolSlots}
-          botLocationData={this.props.botLocationData}
-          botSize={this.props.botSize}
-          stopAtHome={stopAtHome}
-          hoveredPlant={this.props.hoveredPlant}
-          zoomLvl={zoom_level}
-          mapTransformProps={this.mapTransformProps}
+      {this.props.getConfigValue(BooleanSetting.three_d_garden)
+        ? <ThreeDGardenMap
           gridOffset={gridOffset}
-          peripheralValues={this.props.peripheralValues}
-          eStopStatus={this.props.eStopStatus}
-          latestImages={this.props.latestImages}
-          cameraCalibrationData={this.props.cameraCalibrationData}
-          getConfigValue={this.props.getConfigValue}
-          sensorReadings={this.props.sensorReadings}
-          timeSettings={this.props.timeSettings}
-          sensors={this.props.sensors}
-          groups={this.props.groups}
-          logs={this.props.logs}
-          deviceTarget={this.props.deviceTarget}
-          mountedToolInfo={this.props.mountedToolInfo}
-          visualizedSequenceBody={this.props.visualizedSequenceBody}
-          farmwareEnvs={this.props.farmwareEnvs}
-          curves={this.props.curves}
-          dispatch={this.props.dispatch} />
-      </div>
+          mapTransformProps={this.mapTransformProps}
+          botSize={this.props.botSize} />
+        : <div
+          className={`farm-designer-map ${this.mapPanelClassName}`}
+          style={{
+            transform: `scale(${zoom_level})`,
+            transformOrigin: `${mapPadding.left}px ${mapPadding.top}px`,
+            height: `calc(${100 / zoom_level}% + ${padHeightOffset}px)`
+          }}>
+          <GardenMap
+            showPoints={show_points}
+            showPlants={show_plants}
+            showWeeds={show_weeds}
+            showSpread={show_spread}
+            showFarmbot={show_farmbot}
+            showImages={show_images}
+            showZones={show_zones}
+            showSensorReadings={show_sensor_readings}
+            selectedPlant={this.props.selectedPlant}
+            crops={this.props.crops}
+            designer={this.props.designer}
+            plants={this.props.plants}
+            genericPoints={this.props.genericPoints}
+            weeds={this.props.weeds}
+            allPoints={this.props.allPoints}
+            toolSlots={this.props.toolSlots}
+            botLocationData={this.props.botLocationData}
+            botSize={this.props.botSize}
+            stopAtHome={stopAtHome}
+            hoveredPlant={this.props.hoveredPlant}
+            zoomLvl={zoom_level}
+            mapTransformProps={this.mapTransformProps}
+            gridOffset={gridOffset}
+            peripheralValues={this.props.peripheralValues}
+            eStopStatus={this.props.eStopStatus}
+            latestImages={this.props.latestImages}
+            cameraCalibrationData={this.props.cameraCalibrationData}
+            getConfigValue={this.props.getConfigValue}
+            sensorReadings={this.props.sensorReadings}
+            timeSettings={this.props.timeSettings}
+            sensors={this.props.sensors}
+            groups={this.props.groups}
+            logs={this.props.logs}
+            deviceTarget={this.props.deviceTarget}
+            mountedToolInfo={this.props.mountedToolInfo}
+            visualizedSequenceBody={this.props.visualizedSequenceBody}
+            farmwareEnvs={this.props.farmwareEnvs}
+            curves={this.props.curves}
+            dispatch={this.props.dispatch} />
+        </div>}
 
       {this.props.designer.openedSavedGarden &&
         <SavedGardenHUD dispatch={this.props.dispatch} />}
 
-      <ProfileViewer
-        getConfigValue={this.props.getConfigValue}
-        dispatch={this.props.dispatch}
-        designer={this.props.designer}
-        botSize={this.props.botSize}
-        botLocationData={this.props.botLocationData}
-        peripheralValues={this.props.peripheralValues}
-        negativeZ={!!this.props.botMcuParams.movement_home_up_z}
-        sourceFbosConfig={this.props.sourceFbosConfig}
-        mountedToolInfo={this.props.mountedToolInfo}
-        tools={this.props.tools}
-        farmwareEnvs={this.props.farmwareEnvs}
-        mapTransformProps={this.mapTransformProps}
-        allPoints={this.props.allPoints} />
+      {!this.props.getConfigValue(BooleanSetting.three_d_garden) &&
+        <ProfileViewer
+          getConfigValue={this.props.getConfigValue}
+          dispatch={this.props.dispatch}
+          designer={this.props.designer}
+          botSize={this.props.botSize}
+          botLocationData={this.props.botLocationData}
+          peripheralValues={this.props.peripheralValues}
+          negativeZ={!!this.props.botMcuParams.movement_home_up_z}
+          sourceFbosConfig={this.props.sourceFbosConfig}
+          mountedToolInfo={this.props.mountedToolInfo}
+          tools={this.props.tools}
+          farmwareEnvs={this.props.farmwareEnvs}
+          mapTransformProps={this.mapTransformProps}
+          allPoints={this.props.allPoints} />}
     </div>;
   }
 }

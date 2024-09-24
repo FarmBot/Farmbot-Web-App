@@ -148,11 +148,11 @@ fieldset {
 }
 
 .diagnosis-indicator {
+  text-align: center !important;
   &.nav {
     display: inline-block;
     border-color: transparent;
   }
-  text-align: center !important;
   i {
     display: block;
     position: absolute;
@@ -215,7 +215,7 @@ fieldset {
         color: $off_white;
       }
       &:hover {
-        background-color: darken($white, 40%);
+        background-color: color.adjust($white, $lightness: -40%);
         color: $off_white;
       }
     }
@@ -515,10 +515,10 @@ a {
 }
 
 .input-group {
+  width: 100% !important;
   input[type=checkbox] {
     box-shadow: none;
   }
-  width: 100% !important;
 }
 
 .fa {
@@ -567,14 +567,14 @@ a {
 }
 
 .centered-button-div {
+  text-align: center;
+  padding: 0.25rem;
   .fb-button {
     float: none !important;
   }
   label {
     padding: 0;
   }
-  text-align: center;
-  padding: 0.25rem;
 }
 
 .single-setting-row {
@@ -959,19 +959,19 @@ hr {
   .e-stop {
     margin: 0;
     box-shadow: none !important;
+    height: 2.9rem;
+    font-size: 1.1rem !important;
     &.pseudo-disabled {
       box-shadow: none !important;
     }
-    height: 2.9rem;
-    font-size: 1.1rem !important;
     &:hover {
+      box-shadow: 0 0 10px $translucent5, 0 0 5px inset rgba(255, 255, 255, 0.2) !important;
       &.red {
         color: $white;
       }
       &.yellow {
         color: $black;
       }
-      box-shadow: 0 0 10px $translucent5, 0 0 5px inset rgba(255, 255, 255, 0.2) !important;
     }
   }
   &.hard {
@@ -1341,7 +1341,7 @@ ul {
 
 .controls-popup {
   color: $off_white;
-  @media screen and (max-width: 450px) {
+  @media screen and (max-width: $mobile_max_width) {
     &.panel-open {
       display: none;
     }
@@ -1649,7 +1649,7 @@ ul {
       display: flex;
       margin: 0.75rem -10px 1rem -10px;
       padding: 1rem 1rem 0 1rem;
-      background: transparentize($orange, 0.6);
+      background: color.adjust($orange, $alpha: -0.6);
       i {
         margin-right: 1rem;
         margin-top: 0.25rem;
@@ -1980,6 +1980,12 @@ ul {
     }
   }
   .sensor-reading-display {
+    border-style: solid;
+    border-color: $dark_gray;
+    border-width: 0.1px;
+    height: 2rem;
+    width: 100%;
+    margin-top: 0.5rem;
     &.moisture-sensor {
       background: linear-gradient(to right, rgba($blue, 0) 20%, $blue 80%, rgba($blue, 0) 85%);
     }
@@ -1988,12 +1994,6 @@ ul {
         text-align: center;
       }
     }
-    border-style: solid;
-    border-color: $dark_gray;
-    border-width: 0.1px;
-    height: 2rem;
-    width: 100%;
-    margin-top: 0.5rem;
     .indicator {
       position: relative;
       background: $dark_gray;
@@ -2166,10 +2166,10 @@ ul {
   }
   .update-resource-pair {
     margin-top: 1rem;
+    margin-right: -2rem;
     &.first {
       margin-top: 0;
     }
-    margin-right: -2rem;
     div[class*=col-] {
       padding: 0;
       padding-right: 2rem;
@@ -2636,10 +2636,10 @@ ul {
 
 .firmware-path-selection {
   .manual-selection {
+    margin: 1rem -15px;
     p {
       padding: 0rem 1.5rem 1rem;
     }
-    margin: 1rem -15px;
   }
 }
 
@@ -2682,21 +2682,21 @@ textarea:focus {
   cursor: pointer;
   margin-top: 0.25rem;
   margin-bottom: 0.25rem;
-  border: 2px solid darken($panel_light_blue, 30%);
+  border: 2px solid color.adjust($panel_light_blue, $lightness: -30%);
   border-radius: 5px;
   &:hover, &.selected {
     .sort-path-info-bar {
-      background: darken($panel_light_blue, 40%);
+      background: color.adjust($panel_light_blue, $lightness: -40%);
     }
   }
   &:hover {
-    border: 2px solid darken($panel_light_blue, 40%);
+    border: 2px solid color.adjust($panel_light_blue, $lightness: -40%);
   }
   &.selected {
     border: 2px solid $medium_gray;
   }
   .sort-path-info-bar {
-    background: darken($panel_light_blue, 30%);
+    background: color.adjust($panel_light_blue, $lightness: -30%);
     font-size: 1.2rem;
     padding-left: 0.5rem;
     white-space: nowrap;
@@ -2824,7 +2824,7 @@ textarea:focus {
         &:hover {
           border-color: $off_white;
           .btn-text {
-            background: darken($cyan, 10%);
+            background: color.adjust($cyan, $lightness: -10%);
           }
         }
       }

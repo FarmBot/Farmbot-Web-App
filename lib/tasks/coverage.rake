@@ -11,9 +11,13 @@ BASE_BRANCHES = ["main", "staging"]
 CURRENT_COMMIT = ENV.fetch("CIRCLE_SHA1", "")
 CSS_SELECTOR = ".fraction"
 FRACTION_DELIM = "/"
+REMOTE_COVERAGE_OVERRIDE = ENV.fetch('REMOTE_COVERAGE_OVERRIDE', '0').to_f
 
 # Fetch JSON over HTTP. Rails probably already has a helper for this :shrug:
-def open_json(url)
+def maybe_open_json(url)
+  if REMOTE_COVERAGE_OVERRIDE > 0
+    return {}
+  end
   begin
     JSON.parse(URI.parse(url).open.read)
   rescue *[OpenURI::HTTPError, SocketError] => exception
@@ -35,7 +39,7 @@ end
 # Get pull request information from the GitHub API.
 def fetch_pull_data()
   if pr_number != 0
-    return open_json("#{REPO_URL}/pulls/#{pr_number}")
+    return maybe_open_json("#{REPO_URL}/pulls/#{pr_number}")
   end
   return {}
 end
@@ -62,14 +66,14 @@ def fetch_build_data_from_commit(commit)
     puts "Commit not found."
     build_data = {}
   else
-    build_data = open_json("https://coveralls.io/builds/#{commit}.json")
+    build_data = maybe_open_json("https://coveralls.io/builds/#{commit}.json")
   end
   return relevant_data(build_data)
 end
 
 # Fetch relevant remote coverage data for the latest commit on a branch.
 def fetch_latest_branch_build(branch)
-  github_data = open_json("#{REPO_URL}/git/refs/heads/#{branch}")
+  github_data = maybe_open_json("#{REPO_URL}/git/refs/heads/#{branch}")
   if github_data.is_a? Array
     github_data = {} # Didn't match a branch
   end
@@ -79,14 +83,14 @@ end
 
 # Fetch latest remote coverage data for a branch (commit fetched via GH PR API).
 def fetch_latest_pr_base_branch_build(branch)
-  github_data = open_json("#{REPO_URL}/pulls?state=closed&base=#{branch}")
+  github_data = maybe_open_json("#{REPO_URL}/pulls?state=closed&base=#{branch}")
   commit = (github_data[0] || {}).dig("base", "sha")
   return fetch_build_data_from_commit(commit)
 end
 
 # Fetch a page of build coverage report results.
 def fetch_builds_for_page(page_number)
-  open_json("#{LATEST_COV_URL}?page=#{page_number}")["builds"] || []
+  maybe_open_json("#{LATEST_COV_URL}?page=#{page_number}")["builds"] || []
 end
 
 # Number of coverage build data pages required to fetch the desired build count.
@@ -272,6 +276,16 @@ namespace :coverage do
 
     if remote[:percent].nil?
       puts "Error getting coveralls data."
+      puts "Checking for override."
+      percent = REMOTE_COVERAGE_OVERRIDE
+      if percent > 0
+        puts "Using override of #{percent}% for remote coverage value."
+        remote = { branch: "N/A", commit: "", percent: percent }
+      end
+    end
+
+    if remote[:percent].nil?
+      puts "No override available."
       puts "Using 100 instead of nil for remote coverage value."
       remote = { branch: "N/A", commit: "", percent: 100 }
     end

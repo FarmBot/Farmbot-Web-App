@@ -26,11 +26,11 @@
   background: $dark_gray;
   letter-spacing: .05rem;
   padding: .75rem 1rem;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
   >*:not(h5):not(.title-help-icon):not(.title-help) {
     margin-left: 1rem;
   }
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
   .title-help{
     display: inline;
     .title-help-text {
@@ -108,11 +108,11 @@
   border-color: $light_gray;
   color: $dark_gray;
   padding: 1.25rem;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
   >.row:not(:first-of-type) {
     margin-top: 1rem;
   }
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
 }
 
 .widget-footer {

@@ -130,6 +130,7 @@ FarmBot::Application.routes.draw do
 
   get "/demo" => "dashboard#demo", as: :demo_main
   get "/try_farmbot" => "dashboard#try_farmbot", as: :try_farmbot_main
+  get "/promo" => "dashboard#promo", as: :promo_main
   get "/os" => "dashboard#os_download", as: :os_download
   get "/featured" => "dashboard#featured", as: :featured
   get "/password_reset/*token" => "dashboard#password_reset", as: :password_reset
@@ -137,4 +138,5 @@ FarmBot::Application.routes.draw do
   get "/verify/:token" => "dashboard#confirmation_page", as: :confirmation_page
   post "/csp_reports" => "dashboard#csp_reports", as: :csp_report
   post "/direct_upload" => "dashboard#direct_upload", as: :direct_upload
+  post "/webhooks" => "webhooks#create", as: :webhooks
 end

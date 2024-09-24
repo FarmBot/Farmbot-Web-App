@@ -207,7 +207,7 @@ const NavTab = (props: NavTabProps) =>
 
 const displayScrollIndicator = () => {
   const element = document.getElementsByClassName("panel-tabs")[1];
-  const mobile = element?.clientWidth < 450;
+  const mobile = element?.clientWidth <= 500;
   const end = element?.scrollWidth - element?.scrollLeft == element?.clientWidth;
   return mobile && !end;
 };

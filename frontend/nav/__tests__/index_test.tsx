@@ -1,3 +1,8 @@
+let mockIsMobile = false;
+jest.mock("../../screen_size", () => ({
+  isMobile: () => mockIsMobile,
+}));
+
 jest.mock("../../devices/timezones/guess_timezone", () => ({
   maybeSetTimezone: jest.fn()
 }));
@@ -146,20 +151,14 @@ describe("<NavBar />", () => {
   });
 
   it("displays connectivity saucer", () => {
-    Object.defineProperty(window, "innerWidth", {
-      value: 400,
-      configurable: true
-    });
+    mockIsMobile = true;
     const wrapper = mount(<NavBar {...fakeProps()} />);
     expect(wrapper.find(".saucer").length).toEqual(2);
     expect(wrapper.text().toLowerCase()).not.toContain("connectivity");
   });
 
   it("displays connectivity saucer and button", () => {
-    Object.defineProperty(window, "innerWidth", {
-      value: 500,
-      configurable: true
-    });
+    mockIsMobile = false;
     const wrapper = mount(<NavBar {...fakeProps()} />);
     expect(wrapper.find(".saucer").length).toEqual(2);
     expect(wrapper.text().toLowerCase()).toContain("connectivity");
@@ -173,10 +172,7 @@ describe("<NavBar />", () => {
   });
 
   it("displays setup button: small screens", () => {
-    Object.defineProperty(window, "innerWidth", {
-      value: 400,
-      configurable: true
-    });
+    mockIsMobile = true;
     const wrapper = mount(<NavBar {...fakeProps()} />);
     expect(wrapper.text().toLowerCase()).not.toContain("complete");
   });
@@ -196,10 +192,7 @@ describe("<NavBar />", () => {
   });
 
   it("displays active job", () => {
-    Object.defineProperty(window, "innerWidth", {
-      value: 500,
-      configurable: true
-    });
+    mockIsMobile = false;
     const p = fakeProps();
     p.bot.hardware.jobs = { "job title": fakePercentJob() };
     const wrapper = mount(<NavBar {...p} />);
@@ -208,10 +201,7 @@ describe("<NavBar />", () => {
   });
 
   it("displays active job on small screens", () => {
-    Object.defineProperty(window, "innerWidth", {
-      value: 400,
-      configurable: true
-    });
+    mockIsMobile = true;
     const p = fakeProps();
     p.bot.hardware.jobs = { "job title": fakePercentJob() };
     const wrapper = mount(<NavBar {...p} />);

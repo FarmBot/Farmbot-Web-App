@@ -116,11 +116,8 @@ export function formatPlantInfo(plant: TaggedPlant): FormattedPlantInfo {
     radius: plant.body.radius,
     depth: plant.kind == "Point" ? plant.body.depth : undefined,
     uuid: plant.uuid,
-    plantedAt: (get(plant, "body.planted_at")
-      || get(plant, "body.pointer_type") == "Weed")
-      ? plantDate(plant)
-      : undefined,
-    plantStatus: get(plant, "body.plant_stage", "planned") as PlantStage,
+    plantedAt: get(plant, "body.planted_at") ? plantDate(plant) : undefined,
+    plantStatus: get(plant, "body.plant_stage", "planned"),
     meta: plant.kind == "Point" ? plant.body.meta : undefined,
     water_curve_id: plant.body["water_curve_id" as keyof (
       PlantPointer | PlantTemplate)] as number,

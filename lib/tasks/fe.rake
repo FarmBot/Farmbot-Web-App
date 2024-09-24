@@ -17,6 +17,16 @@ EXCLUDE = [
     reason: "breaking changes in",
     version: "9",
   },
+  {
+    packages: ["@typescript-eslint/eslint-plugin"],
+    reason: "breaking changes in",
+    version: "8",
+  },
+  {
+    packages: ["@typescript-eslint/parser"],
+    reason: "breaking changes in",
+    version: "8",
+  },
 ]
 
 # Load package.json as JSON.
@@ -75,6 +85,26 @@ namespace :fe do
       max_key_length     = available_upgrades.keys.max_by(&:length).length
       package_json       = load_package_json()
 
+      bash_file_string = "#!/bin/bash\n\n"
+      bash_file_string += "# CONTENTS WILL BE OVERWRITTEN BY `rake fe:upgrade_deps`\n\n"
+      bash_file_string += "title() { echo -e \"\\n$1\\n" + "=" * 100 + "\\n\"; }\n\n"
+      bash_file_string += "check_dep() {\n"
+      bash_file_string += "    okay=0\n"
+      bash_file_string += "    title \"Installing $1\"\n"
+      bash_file_string += "    sudo docker compose run web npm install $1\n"
+      bash_file_string += "    if [ $? -ne 0 ]; then okay=1; fi\n"
+      bash_file_string += "    title \"Typechecking with $1\"\n"
+      bash_file_string += "    sudo docker compose run web npm run typecheck\n"
+      bash_file_string += "    if [ $? -ne 0 ]; then okay=1; fi\n"
+      bash_file_string += "    title \"Building with $1\"\n"
+      bash_file_string += "    sudo docker compose run web rake assets:precompile\n"
+      bash_file_string += "    if [ $? -ne 0 ]; then okay=1; fi\n"
+      bash_file_string += "    if [ $okay -ne 0 ]; then\n"
+      bash_file_string += "        title \"\"\n"
+      bash_file_string += "        title \"Failed on: $1\"\n"
+      bash_file_string += "        exit 1\n"
+      bash_file_string += "    fi\n"
+      bash_file_string += "}\n\n"
       puts
       puts "=" * 40
       puts "#{PACKAGE_JSON_FILE} AVAILABLE UPDATES:"
@@ -87,9 +117,14 @@ namespace :fe do
         end
         padding         = ' ' * (max_key_length - dep.length)
         puts "  #{dep} #{padding} #{current_version} -> #{new_version}"
+        bash_file_string += "check_dep \"#{dep}@#{new_version}\"\n"
         package_json[deps_key][dep] = new_version
       end
       puts "=" * 40
+
+      File.open("upgrade_deps.sh", "w") { |file|
+        file.write(bash_file_string)
+      }
 
       puts "Type 'save' to update #{PACKAGE_JSON_FILE}, enter to abort."
       if user_typed?("save")
@@ -97,6 +132,7 @@ namespace :fe do
         puts "Saved. Use 'sudo docker compose run web npm install' to upgrade."
       else
         puts "Aborted. No changes made."
+        puts "Run the following script to upgrade incrementally: `bash upgrade_deps.sh`"
       end
     else
       puts "\n"

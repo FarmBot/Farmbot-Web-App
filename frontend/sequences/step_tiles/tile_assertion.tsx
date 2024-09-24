@@ -9,9 +9,10 @@ import { Assertion } from "farmbot/dist/corpus";
 import { ToolTips } from "../../constants";
 import { LuaTextArea } from "./tile_lua_support";
 import { VariablesPart } from "./tile_assertion/variables_part";
+import { isMobile } from "../../screen_size";
 
 export const TileAssertion = (props: StepParams<Assertion>) => {
-  const [monaco, setMonaco] = React.useState(window.innerWidth > 450);
+  const [monaco, setMonaco] = React.useState(!isMobile());
   const [expanded, setExpanded] = React.useState(false);
   const stateToggles = {
     [StateToggleKey.monacoEditor]:

@@ -23,5 +23,11 @@ export const auth: AuthState = {
       "hXSbH3k4PyxqvPOLYso-R7kjfpOnfFCMfMZLW8TQtg-yj82zs93RP2DHOOx-jxek69" +
       "tmgNyP3FJaoWHwHW7bXOEv09p3dhNVTCSVNKD9LZczLpuXV7U4oSmL6KLkbzsM6G0P" +
       "9rrbJ9ASYaOw"
+  },
+  user: {
+    id: 0,
+    name: "name",
+    email: "email",
+    language: "english",
   }
 };

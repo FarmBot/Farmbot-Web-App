@@ -1,5 +1,5 @@
 import React from "react";
-import Editor, { loader } from "@monaco-editor/react";
+import { Editor, loader } from "@monaco-editor/react";
 loader.config({ paths: { vs: "/assets/monaco" } });
 import { StepParams } from "../interfaces";
 import { Assertion, Lua } from "farmbot/dist/corpus";

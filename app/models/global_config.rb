@@ -18,7 +18,7 @@ class GlobalConfig < ApplicationRecord
     self.create!(key: key, value: value) unless x
   end
 
-  LONG_REVISION = ENV["BUILT_AT"] || ENV["HEROKU_SLUG_COMMIT"] || "NONE"
+  LONG_REVISION = ENV["BUILT_AT"] || ENV["HEROKU_BUILD_COMMIT"] || "NONE"
   # Bootstrap these values, and ALWAYS clobber pre-existing ones:
   {
     "NODE_ENV" => Rails.env || "development",

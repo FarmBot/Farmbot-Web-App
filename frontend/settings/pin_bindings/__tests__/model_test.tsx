@@ -1,61 +1,3 @@
-jest.mock("@react-three/drei", () => {
-  const useGLTF = jest.fn(() => ({
-    nodes: {
-      Electronics_Box: {
-        geometry: jest.fn(),
-        material: { color: { set: jest.fn() } },
-      },
-      Electronics_Box_Gasket: {
-        geometry: jest.fn(),
-        material: { color: { set: jest.fn() } },
-      },
-      Electronics_Box_Lid: {
-        geometry: jest.fn(),
-        material: { color: { set: jest.fn() } },
-      },
-      ["Push_Button_-_Red"]: {
-        geometry: jest.fn(),
-        material: { color: { set: jest.fn() } },
-      },
-      LED: {
-        geometry: jest.fn(),
-        material: { color: { set: jest.fn() } },
-      },
-    },
-    materials: {
-      [Material.box]: {
-        color: { set: jest.fn() },
-        transparent: false,
-      },
-      [Material.gasket]: {
-        color: { set: jest.fn() },
-        transparent: false,
-      },
-      [Material.lid]: {
-        color: { set: jest.fn() },
-        transparent: false,
-      },
-      [Material.button]: {
-        color: { set: jest.fn() },
-        transparent: false,
-      },
-      [Material.led]: {
-        color: { set: jest.fn() },
-        transparent: false,
-      },
-    },
-  }));
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (useGLTF as any).preload = jest.fn();
-  return {
-    useGLTF,
-    Cylinder: () => <div />,
-    Html: ({ children }: { children: ReactNode }) => <div>{children}</div>,
-    PerspectiveCamera: () => <div />,
-    useCursor: jest.fn(),
-  };
-});
-
 let mockElapsedTime = 0;
 jest.mock("@react-three/fiber", () => ({
   Canvas: () => <div />,
@@ -63,6 +5,7 @@ jest.mock("@react-three/fiber", () => ({
   useFrame: jest.fn(x => x({
     clock: { getElapsedTime: jest.fn(() => mockElapsedTime) }
   })),
+  addEffect: jest.fn(),
 }));
 
 const mockSetColor = jest.fn();
@@ -87,10 +30,10 @@ jest.mock("../../../devices/actions", () => ({
   execSequence: jest.fn(),
 }));
 
-import React, { ReactNode } from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { ThreeEvent } from "@react-three/fiber";
-import { IColor, Material, Model, setZForAllInGroup } from "../model";
+import { IColor, Model, setZForAllInGroup } from "../model";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
@@ -218,6 +161,7 @@ describe("<ElectronicsBoxModel />", () => {
   });
 
   it("renders: blinking on", () => {
+    mockElapsedTime = 0;
     const p = fakeProps();
     p.isEditing = true;
     p.bot.hardware.informational_settings.locked = true;

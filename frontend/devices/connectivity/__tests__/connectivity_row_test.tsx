@@ -1,3 +1,8 @@
+let mockIsMobile = false;
+jest.mock("../../../screen_size", () => ({
+  isMobile: () => mockIsMobile,
+}));
+
 import React from "react";
 import { render } from "enzyme";
 import { ConnectivityRow, StatusRowProps } from "../connectivity_row";
@@ -36,10 +41,7 @@ describe("<ConnectivityRow />", () => {
   });
 
   it("renders small row", () => {
-    Object.defineProperty(window, "innerWidth", {
-      value: 400,
-      configurable: true
-    });
+    mockIsMobile = true;
     const p = fakeProps();
     p.from = "browser";
     const wrapper = render(<ConnectivityRow {...p} />);

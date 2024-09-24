@@ -1,3 +1,8 @@
+let mockIsMobile = false;
+jest.mock("../../screen_size", () => ({
+  isMobile: () => mockIsMobile,
+}));
+
 import { Path } from "../../internal_urls";
 let mockPath = Path.mock(Path.designer());
 jest.mock("../../history", () => ({
@@ -17,8 +22,7 @@ import { toggleHotkeyHelpOverlay } from "../../hotkeys";
 
 describe("<HelpHeader />", () => {
   beforeEach(() => {
-    Object.defineProperty(window, "innerWidth",
-      { value: 500, configurable: true });
+    mockIsMobile = false;
   });
 
   it.each<[string, string]>([
@@ -38,8 +42,7 @@ describe("<HelpHeader />", () => {
   });
 
   it("hides hotkeys menu item", () => {
-    Object.defineProperty(window, "innerWidth",
-      { value: 400, configurable: true });
+    mockIsMobile = true;
     const wrapper = mount(<HelpHeader />);
     wrapper.find(".help-panel-header").simulate("click");
     expect(wrapper.text().toLowerCase()).not.toContain("hotkeys");

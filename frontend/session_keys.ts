@@ -4,7 +4,7 @@ import {
   StringConfigKey as WebAppStringConfigKey,
 } from "farmbot/dist/resources/configs/web_app";
 
-type WebAppBooleanConfigKeyAll = WebAppBooleanConfigKey;
+type WebAppBooleanConfigKeyAll = WebAppBooleanConfigKey | "three_d_garden";
 type WebAppNumberConfigKeyAll = WebAppNumberConfigKey;
 type WebAppStringConfigKeyAll = WebAppStringConfigKey;
 
@@ -49,6 +49,7 @@ export const BooleanSetting: BooleanSettings = {
   crop_images: "crop_images",
   clip_image_layer: "clip_image_layer",
   highlight_modified_settings: "highlight_modified_settings",
+  three_d_garden: "three_d_garden" as WebAppBooleanConfigKey,
 
   /** Sequence settings */
   confirm_step_deletion: "confirm_step_deletion",

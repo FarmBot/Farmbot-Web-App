@@ -1,3 +1,8 @@
+let mockIsMobile = false;
+jest.mock("../../screen_size", () => ({
+  isMobile: () => mockIsMobile,
+}));
+
 import React from "react";
 import { mount } from "enzyme";
 import { OsDownloadPage } from "../content";
@@ -24,13 +29,13 @@ describe("<OsDownloadPage />", () => {
   });
 
   it("renders on small screens", () => {
-    Object.defineProperty(window, "innerWidth", { value: 400, configurable: true });
+    mockIsMobile = true;
     const wrapper = mount(<OsDownloadPage />);
     expect(wrapper.text().toLowerCase()).toContain("download");
   });
 
   it("renders on large screens", () => {
-    Object.defineProperty(window, "innerWidth", { value: 500, configurable: true });
+    mockIsMobile = false;
     const wrapper = mount(<OsDownloadPage />);
     expect(wrapper.text().toLowerCase()).toContain("download");
   });

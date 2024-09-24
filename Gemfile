@@ -1,5 +1,5 @@
 source "https://rubygems.org"
-ruby "~> 3.1.6"
+ruby "~> 3.3.5"
 
 gem "rails", "~> 6"
 gem "active_model_serializers"
@@ -41,7 +41,6 @@ group :development, :test do
   gem "rspec_junit_formatter"
   gem "simplecov"
   gem "simplecov-cobertura"
-  gem "smarf_doc", git: "https://github.com/RickCarlino/smarf_doc.git"
   gem "webmock"
 end
 

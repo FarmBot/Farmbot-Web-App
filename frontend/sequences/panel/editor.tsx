@@ -32,6 +32,7 @@ import { error } from "../../toast/toast";
 import { noop } from "lodash";
 import { addNewSequenceToFolder } from "../../folders/actions";
 import { Position } from "@blueprintjs/core";
+import { isMobile } from "../../screen_size";
 
 interface SequencesState {
   processingTitle: boolean;
@@ -85,7 +86,7 @@ export class RawDesignerSequenceEditor
             content={<ColorPickerCluster
               onChange={color => this.props.dispatch(edit(sequence, { color }))}
               current={sequence.body.color} />} />}
-          {sequence && window.innerWidth > 450 &&
+          {sequence && !isMobile() &&
             <i className={"fa fa-expand fb-icon-button"}
               title={t("open full-page editor")}
               onClick={() =>

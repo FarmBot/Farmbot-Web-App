@@ -15,6 +15,7 @@ import { Path } from "../internal_urls";
 import { push } from "../history";
 import { urlFriendly } from "../util";
 import { ErrorBoundary } from "../error_boundary";
+import { isMobile } from "../screen_size";
 
 export interface SequenceBackButtonProps {
   dispatch: Function;
@@ -42,7 +43,7 @@ export class RawSequences extends React.Component<SequencesProps, {}> {
     const sequenceOpen = sequenceSelected ? "open" : "";
     const insertingStep = isNumber(stepIndex) ? "inserting-step" : "";
     const activeClasses = [sequenceOpen, insertingStep].join(" ");
-    window.innerWidth <= 450 && !Path.inDesigner() && push(Path.designerSequences(
+    isMobile() && !Path.inDesigner() && push(Path.designerSequences(
       sequenceSelected ? urlFriendly(sequence.body.name) : undefined));
     return <Page className="sequence-page">
       <Row>

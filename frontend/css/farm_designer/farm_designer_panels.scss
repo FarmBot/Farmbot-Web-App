@@ -4,21 +4,21 @@
   top: 8.9rem;
   width: 45rem;
   box-shadow: 0 0 10px $translucent;
-  @media screen and (max-width: 450px) {
+  @media screen and (max-width: $mobile_max_width) {
     width: 100%;
   }
 }
 
 .panel-nav {
   display: none;
-  @media screen and (max-width: 450px) {
+  @media screen and (max-width: $mobile_max_width) {
     display: block;
   }
 }
 
 .panel-top {
   margin-top: 0;
-  @media screen and (max-width: 450px) {
+  @media screen and (max-width: $mobile_max_width) {
     margin-top: 5rem;
   }
 }
@@ -31,7 +31,7 @@
   .panel-content {
     padding-top: 1rem;
     max-height: calc(100vh - 3rem);
-    @media screen and (max-width: 450px) {
+    @media screen and (max-width: $mobile_max_width) {
       padding-top: 6rem;
       max-height: calc(100vh - 9rem);
     }
@@ -48,7 +48,7 @@
 .controls-panel {
   .panel-content {
     padding-top: 0;
-    @media screen and (max-width: 450px) {
+    @media screen and (max-width: $mobile_max_width) {
       padding-top: 4rem;
     }
   }
@@ -103,7 +103,7 @@
 .settings-panel {
   .panel-content {
     max-height: calc(100vh - 14rem);
-    @media screen and (max-width: 450px) {
+    @media screen and (max-width: $mobile_max_width) {
       max-height: calc(100vh - 19rem);
     }
   }
@@ -121,6 +121,7 @@
 .farm-designer-panels {
   bottom: 0;
   z-index: 1;
+  &.panel-closed-mobile,
   &.panel-closed {
     display: none !important;
   }
@@ -161,7 +162,7 @@
     div[class*="search-item"] {
       &:hover,
       &.hovered {
-        background: darken($panel_light_green, 10%);
+        background: color.adjust($panel_light_green, $lightness: -10%);
       }
     }
   }
@@ -170,7 +171,7 @@
     div[class*="search-item"] {
       &:hover,
       &.hovered {
-        background: darken($light_cyan, 10%);
+        background: color.adjust($light_cyan, $lightness: -10%);
       }
     }
   }
@@ -179,7 +180,7 @@
     div[class*="search-item"] {
       &:hover,
       &.hovered {
-        background: darken($panel_light_brown, 10%);
+        background: color.adjust($panel_light_brown, $lightness: -10%);
       }
     }
   }
@@ -188,7 +189,7 @@
     div[class*="search-item"] {
       &:hover,
       &.hovered {
-        background: darken($light_magenta, 10%);
+        background: color.adjust($light_magenta, $lightness: -10%);
       }
     }
   }
@@ -198,7 +199,7 @@
     div[class*="search-item"] {
       &:hover,
       &.hovered {
-        background: darken($panel_light_gray, 10%);
+        background: color.adjust($panel_light_gray, $lightness: -10%);
       }
     }
   }
@@ -207,7 +208,7 @@
     div[class*="search-item"] {
       &:hover,
       &.hovered {
-        background: darken($panel_light_yellow, 10%);
+        background: color.adjust($panel_light_yellow, $lightness: -10%);
       }
     }
   }
@@ -216,7 +217,7 @@
     div[class*="search-item"] {
       &:hover,
       &.hovered {
-        background: darken($panel_light_blue, 10%);
+        background: color.adjust($panel_light_blue, $lightness: -10%);
       }
     }
   }
@@ -225,7 +226,7 @@
     div[class*="search-item"] {
       &:hover,
       &.hovered {
-        background: darken($panel_light_navy, 10%);
+        background: color.adjust($panel_light_navy, $lightness: -10%);
       }
     }
   }
@@ -234,7 +235,7 @@
     div[class*="search-item"] {
       &:hover,
       &.hovered {
-        background: darken($panel_light_teal, 10%);
+        background: color.adjust($panel_light_teal, $lightness: -10%);
       }
     }
   }
@@ -243,7 +244,7 @@
     div[class*="search-item"] {
       &:hover,
       &.hovered {
-        background: darken($panel_light_red, 10%);
+        background: color.adjust($panel_light_red, $lightness: -10%);
       }
     }
   }
@@ -357,14 +358,14 @@
   height: 50px;
   overflow: hidden;
   .back-arrow {
-    &.black-text{
-      color: $medium_gray;
-    }
     float: left;
     text-align: center;
     font-size: 1.8rem;
     width: 50px;
     line-height: 50px;
+    &.black-text{
+      color: $medium_gray;
+    }
     &:hover {
       &.black-text{
         color: $darker_gray !important;
@@ -634,10 +635,10 @@
     max-height: calc(100vh - 17rem);
     overflow-y: auto;
     overflow-x: hidden;
+    padding-top: 1rem;
     ul {
       margin-bottom: 0;
     }
-    padding-top: 1rem;
     label {
       margin-top: 0 !important;
     }
@@ -704,6 +705,7 @@
 
 .weed-info-panel-content,
 .point-info-panel-content {
+  font-size: 1.4rem;
   .point-color-input {
     div[class*=col-] {
       padding-left: 0.5rem;
@@ -716,7 +718,6 @@
     display: block;
     margin-top: 3rem;
   }
-  font-size: 1.4rem;
   p {
     margin-top: 1rem;
     margin-bottom: 0.5rem !important;
@@ -1242,11 +1243,11 @@ li {
       cursor: default !important;
     }
     input {
+      box-shadow: none;
       &.numPlantsH,
       &.numPlantsV {
         -moz-appearance: unset !important;
       }
-      box-shadow: none;
     }
   }
   .grid-planting-toggle {
@@ -1884,7 +1885,7 @@ li {
   .limit-switch-warning {
     margin: 1rem -15px -1rem -15px;
     padding: 1rem 1.5rem 1rem 2rem;
-    background: transparentize($orange, 0.6);
+    background: color.adjust($orange, $alpha: -0.6);
     p {
       line-height: 1.75rem;
       font-size: 1.3rem;
@@ -2022,11 +2023,11 @@ li {
   padding-bottom: inherit;
   .non-empty-state {
     max-height: calc(100vh - 14rem);
-    @media screen and (max-width: 450px) {
-      max-height: calc(100vh - 19rem);
-    }
     overflow-y: auto;
     overflow-x: hidden;
+    @media screen and (max-width: $mobile_max_width) {
+      max-height: calc(100vh - 19rem);
+    }
   }
   .row {
     margin: 0;
@@ -2066,11 +2067,11 @@ li {
   &.more-indicator {
     height: 20px;
     width: 20px;
+    cursor: pointer;
     p {
       display: inline;
       text-align: center;
     }
-    cursor: pointer;
   }
 }
 
@@ -2343,11 +2344,11 @@ li {
   .row {
     margin-left: 0;
     margin-right: -2.5rem;
+    margin-top: 1rem;
     div[class*=col-] {
       padding: 0;
       text-align: center;
     }
-    margin-top: 1rem;
     p {
       display: block !important;
       text-transform: uppercase;
@@ -2845,10 +2846,10 @@ li {
         border: none;
       }
       .widget-footer {
+        background: none;
         * {
           color: $dark_gray;
         }
-        background: none;
       }
     }
     .title-help-icon:hover {
@@ -3154,7 +3155,7 @@ li {
   .env-editor-warning {
     margin: 0 -15px 2rem -15px;
     padding: 1rem 1.5rem 1rem 2rem;
-    background: transparentize($orange, 0.6);
+    background: color.adjust($orange, $alpha: -0.6);
     p {
       line-height: 1.75rem;
       font-size: 1.2rem;
@@ -3170,7 +3171,7 @@ li {
 .env-editor-lua {
   margin: 0 -15px 0 -15px;
   padding: 1rem 1.5rem 1rem 2rem;
-  background: transparentize($blue, 0.6);
+  background: color.adjust($blue, $alpha: -0.6);
   p {
     line-height: 1.75rem;
     font-size: 1.2rem;
@@ -3181,12 +3182,12 @@ li {
 .designer-sequence-list-panel {
   .panel-content {
     height: calc(100vh - 14rem);
-    @media screen and (max-width: 450px) {
-      max-height: calc(100vh - 19rem);
-    }
     overflow-y: scroll;
     overflow-x: hidden;
     padding-bottom: 6rem;
+    @media screen and (max-width: $mobile_max_width) {
+      max-height: calc(100vh - 19rem);
+    }
     .panel-top {
       margin-left: 0 !important;
     }
@@ -3223,7 +3224,7 @@ li {
       z-index: 1;
       margin: 1rem;
       width: 84%;
-      @media screen and (max-width: 450px) {
+      @media screen and (max-width: $mobile_max_width) {
         width: 65%;
       }
     }
@@ -3355,7 +3356,7 @@ li {
 .support-panel,
 .tours-panel,
 .help-panel {
-  @media screen and (max-width: 450px) {
+  @media screen and (max-width: $mobile_max_width) {
     .help-panel-header {
       position: relative;
       margin-top: 5rem;
@@ -3729,7 +3730,7 @@ li {
     .warning-banner {
       margin: 0 -15px 1rem -15px;
       padding: 1rem 1.5rem 1rem 2rem;
-      background: transparentize($orange, 0.6);
+      background: color.adjust($orange, $alpha: -0.6);
       p {
         line-height: 1.75rem;
         font-size: 1.3rem;

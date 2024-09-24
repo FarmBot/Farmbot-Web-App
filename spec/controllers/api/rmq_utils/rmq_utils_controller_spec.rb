@@ -102,7 +102,6 @@ describe Api::RmqUtilsController do
   end
 
   it "allows public_broadcast read access to non-admin users" do
-    SmarfDoc.skip
     routing_key = Api::RmqUtilsController::PUBLIC_CHANNELS.sample
     permission = "read"
     p = credentials.merge(routing_key: routing_key, permission: permission)
@@ -112,7 +111,6 @@ describe Api::RmqUtilsController do
   end
 
   it "allows access to ones own topic" do
-    SmarfDoc.skip
     p = credentials.merge(routing_key: "bot.#{credentials[:username]}.logs")
     post :topic_action, params: p
     expect(response.body).to include("allow")

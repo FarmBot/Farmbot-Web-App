@@ -47,7 +47,7 @@ class User < ApplicationRecord
   def self.refresh_everyones_ui
     msg = {
       "type" => "reload",
-      "commit" => (ENV["HEROKU_SLUG_COMMIT"] || "NONE").first(8),
+      "commit" => (ENV["HEROKU_BUILD_COMMIT"] || "NONE").first(8),
     }
 
     Transport
