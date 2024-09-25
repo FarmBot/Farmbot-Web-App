@@ -47,6 +47,7 @@ import { buildResourceIndex } from "../../__test_support__/resource_index_builde
 import { fakeWizardStepResult } from "../../__test_support__/fake_state/resources";
 import { Path } from "../../internal_urls";
 import { API } from "../../api";
+import moment from "moment";
 
 API.setBaseUrl("");
 
@@ -83,6 +84,7 @@ describe("<AlertCard />", () => {
     expect(wrapper.text()).toContain("Your device has no firmware");
     expect(wrapper.find(".fa-times").length).toEqual(0);
     expect(wrapper.text()).toContain("Apr");
+    expect(wrapper.text()).toContain("2019");
     expect(wrapper.text()).toContain("Select one");
   });
 
@@ -236,6 +238,17 @@ describe("<AlertCard />", () => {
     p.timeSettings.utcOffset = 0;
     const wrapper = mount(<AlertCard {...p} />);
     expect(wrapper.text()).not.toContain("Jan 1, 12:00am");
+  });
+
+  it("doesn't show current year", () => {
+    const p = fakeProps();
+    p.alert.problem_tag = "farmbot_os.firmware.missing";
+    p.alert.created_at = Date.now().valueOf() / 1000;
+    p.timeSettings.hour24 = false;
+    p.timeSettings.utcOffset = 0;
+    const wrapper = mount(<AlertCard {...p} />);
+    const currentYear = moment().format("YYYY");
+    expect(wrapper.text()).not.toContain(currentYear);
   });
 });
 
