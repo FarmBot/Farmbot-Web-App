@@ -364,6 +364,8 @@ GEM
     trailblazer-option (0.1.2)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
+    tzinfo-data (1.2024.2)
+      tzinfo (>= 1.0.0)
     uber (0.1.0)
     uri (0.13.1)
     valid_url (0.0.4)
@@ -424,6 +426,7 @@ DEPENDENCIES
   simplecov-cobertura
   thwait
   tzinfo
+  tzinfo-data
   valid_url
   webmock
 
