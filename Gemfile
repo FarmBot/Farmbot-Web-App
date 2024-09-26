@@ -23,6 +23,7 @@ gem "rollbar"
 gem "scenic"
 gem "secure_headers"
 gem "tzinfo" # For validation of user selected timezone names
+gem "tzinfo-data" # For validation of user selected timezone names
 gem "valid_url"
 gem "thwait"
 gem "lograge" # Used to filter repetitive RabbitMQ logs.

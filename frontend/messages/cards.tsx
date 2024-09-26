@@ -71,6 +71,8 @@ const timeOk = (timestamp: number) => timestamp > 1550000000;
 
 const AlertCardTemplate = (props: AlertCardTemplateProps) => {
   const { alert, findApiAlertById, dispatch, timeSettings } = props;
+  const thisYear = moment.unix(alert.created_at).year() == moment().year();
+  const timeFormat = thisYear ? "MMM D" : "MMM D, YYYY";
   return <div className={
     `problem-alert ${props.className} priority-${props.alert.priority}`}>
     <div className="problem-alert-title">
@@ -78,7 +80,7 @@ const AlertCardTemplate = (props: AlertCardTemplateProps) => {
       <h3>{t(props.title)}</h3>
       {timeOk(alert.created_at) &&
         <p>
-          {formatTime(moment.unix(alert.created_at), timeSettings, "MMM D")}
+          {formatTime(moment.unix(alert.created_at), timeSettings, timeFormat)}
         </p>}
     </div>
     {alert.id && !props.noDismiss && <i className={"fa fa-times fb-icon-button"}
