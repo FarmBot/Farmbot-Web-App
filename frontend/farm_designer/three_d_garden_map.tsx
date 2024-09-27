@@ -17,6 +17,7 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   config.botSizeY = gridSize.y;
   config.bedWidthOuter = gridSize.y + 160;
   config.bedLengthOuter = gridSize.x + 160;
+  config.zoomBeacons = false;
 
   return <ThreeDGarden config={config} />;
 };
