@@ -4,6 +4,27 @@ import { ASSETS } from "./constants";
 import { Arrow } from "./arrow";
 import { Group, MeshPhongMaterial } from "./components";
 
+enum BoxDimension {
+  width = 300,
+  height = 100,
+  depth = 75,
+}
+
+const depthOffset = BoxDimension.depth / 2 + 0.5;
+const heightOffset = BoxDimension.height / 2 + 0.5;
+
+interface Label {
+  position: [number, number, number];
+  rotation: [number, number, number];
+}
+
+const LABELS: Label[] = [
+  { position: [0, 0, depthOffset], rotation: [0 * Math.PI / 2, 0, 0] },
+  { position: [0, -heightOffset, 0], rotation: [1 * Math.PI / 2, 0, 0] },
+  { position: [0, 0, -depthOffset], rotation: [2 * Math.PI / 2, 0, 0] },
+  { position: [0, heightOffset, 0], rotation: [3 * Math.PI / 2, 0, 0] },
+];
+
 export interface DistanceIndicatorProps {
   start: Record<"x" | "y" | "z", number>;
   end: Record<"x" | "y" | "z", number>;
@@ -28,20 +49,22 @@ export const DistanceIndicator = (props: DistanceIndicatorProps) => {
     <Arrow length={distance / 2} width={25} rotation={[0, 0, Math.PI]} />
     <Group rotation={[Math.PI / 6, 0, 0]}>
       <Box
-        args={[300, 100, 75]}
+        args={[BoxDimension.width, BoxDimension.height, BoxDimension.depth]}
         receiveShadow={true}>
         <MeshPhongMaterial color={"#c49f7a"} />
       </Box>
-      <Text name={"distance-label"}
-        fontSize={50}
-        font={ASSETS.fonts.cabinBold}
-        color={"black"}
-        strokeColor={"black"}
-        strokeWidth={7}
-        fontWeight={"bold"}
-        position={[0, 0, 38]}>
-        {distance.toFixed(0)}mm
-      </Text>
+      {LABELS.map(({ position, rotation }) =>
+        <Text name={"distance-label"}
+          fontSize={50}
+          font={ASSETS.fonts.cabinBold}
+          color={"black"}
+          strokeColor={"black"}
+          strokeWidth={7}
+          fontWeight={"bold"}
+          rotation={rotation}
+          position={position}>
+          {distance.toFixed(0)}mm
+        </Text>)}
     </Group>
   </Group>;
 };
