@@ -29,7 +29,6 @@ export interface GardenModelProps {
   config: Config;
   activeFocus: string;
   setActiveFocus(focus: string): void;
-  showBeacons: boolean;
 }
 
 interface Plant {
@@ -176,7 +175,7 @@ export const GardenModel = (props: GardenModelProps) => {
       ? e => console.log(e.intersections.map(x => x.object.name))
       : undefined}>
     {config.stats && <Stats />}
-    {props.showBeacons && <ZoomBeacons
+    {config.zoomBeacons && <ZoomBeacons
       config={config}
       activeFocus={props.activeFocus}
       setActiveFocus={props.setActiveFocus} />}

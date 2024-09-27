@@ -18,7 +18,6 @@ export const Promo = () => {
     config, setConfig,
     toolTip, setToolTip,
     activeFocus, setActiveFocus,
-    showBeacons: true,
   };
 
   React.useEffect(() => {

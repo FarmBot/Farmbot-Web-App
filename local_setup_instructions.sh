@@ -1,18 +1,15 @@
-# How to install FarmBot Web API on a local machine
+# How to install the FarmBot Web App on a local machine
 
 # IMPORTANT NOTE: Resources are limited and FarmBot Inc cannot provide
 # longterm support to self-hosted users. If you have never administered a
-# Ruby on Rails application, we highly advise stopping now. This presents an
-# extremely high risk of data loss. Free hosting is provided at
+# Ruby on Rails/Javascript application, we highly advise stopping now. This
+# presents an extremely high risk of data loss. Free hosting is provided at
 # https://my.farm.bot and eliminates the risks and troubles of self-hosting.
-#
-# You are highly encouraged to use the my.farm.bot servers. Self-hosted
-# documentation is provided with the assumption that you have experience with
-# Ruby/Javascript development.
-#
-# Self-hosting a FarmBot server is not a simple task.
+# Self-hosting a FarmBot server is not a simple task!
 
-# Linux (Debian/Ubuntu): Install docker and docker compose
+# Install docker and docker compose
+# =================================
+# Linux (Debian/Ubuntu):
 sudo apt update
 sudo apt install ca-certificates curl gnupg -y
 source /etc/os-release
@@ -23,37 +20,41 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.
 sudo apt update
 sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
 
-# Mac: Install docker and docker compose
+# Mac:
 # Install Homebrew
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 # Install Docker Desktop from https://www.docker.com/products/docker-desktop/
 # Open the Docker Desktop app
 # Install docker-compose
 brew install docker-compose
-# From here on out, all commands are the same for both Linux and Mac, but `sudo` is not required for Mac.
+
+#####################################################################
+# From here on out, all commands are the same for both Linux and Mac,
+# but `sudo` is not required for Mac.
+#####################################################################
 
 # Verify docker installation
+# ==========================
 sudo docker run hello-world
 sudo docker compose version
 
-# Install FarmBot Web App
+# Clone the FarmBot Web App repository
+# ====================================
 # ⚠ SKIP THIS STEP IF UPGRADING!
 git clone https://github.com/FarmBot/Farmbot-Web-App --depth=5 --branch=main
-
+# Change directory to the project
 cd Farmbot-Web-App
 
-cp example.env .env # ⚠ SKIP THIS STEP IF UPGRADING!
-
-# == This is a very important step!!! ==
-#
+# Set your ENVs
+# =============
+# ⚠ SKIP THIS IF UPGRADING!
+cp example.env .env
 # Open `.env` in a text editor and change all the values.
-#
-# == Nothing will work if you skip this step!!! ==
+# ⚠ SKIP THIS STEP IF UPGRADING!
+nano .env
 
-nano .env          # ⚠ SKIP THIS STEP IF UPGRADING!
-# ^ This is the most important step
-# READ NOTE ABOVE. Very important!
-
+# Install project dependencies
+# ============================
 # Install the correct version of bundler for the project
 sudo docker compose run web gem install bundler
 # Install application specific Ruby dependencies
@@ -63,32 +64,37 @@ sudo docker compose run web npm install
 # Create a database in PostgreSQL
 sudo docker compose run web bundle exec rails db:create db:migrate
 # Generate a set of *.pem files for data encryption
-sudo docker compose run web rake keys:generate # ⚠ SKIP THIS STEP IF UPGRADING!
-# Run the server! ٩(^‿^)۶
+# ⚠ SKIP THIS STEP IF UPGRADING!
+sudo docker compose run web rake keys:generate
+
+# Run the server! 🌱
+# ==================
 # Note: You won't be able to log in until you see a message similar to this:
 #   "✨  Built in 44.92s"
 # You will just get an empty screen otherwise.
 # This only happens during initialization and may take a long time on slow machines.
 sudo docker compose up
 # If you get an MQTT authentication error, it could be a config file issue.
-# Verify that you've used your computer's real IP address (`hostname -I`)
+# Verify that you've used your computer's real IP address
+# (`hostname -I` on Linux or `ipconfig getifaddr en0` on Mac)
 # for the values of `API_HOST` and `MQTT_HOST` in the `.env` file, and then:
 # Stop the server with `Ctrl + C` and
 sudo docker compose down
 # Start the server again with
 sudo docker compose up
-
 # At this point, setup is complete.
-# Content should be visible at http://YOUR_HOST:3000/.
+# Content should be visible at http://API_HOST:3000/.
 
-# --- You can optionally verify installation by running unit tests. ---
-  # Create the database for the app to use
-  sudo docker compose run -e RAILS_ENV=test web bundle exec rails db:setup
-  # Run the tests in the "test" RAILS_ENV
-  sudo docker compose run -e RAILS_ENV=test web rspec spec
-  # Run user-interface unit tests (requires a large amount of RAM)
-  sudo docker compose run web npm run test
-# --- end of optional tests ---
+# Verify installation (optional)
+# ==============================
+# You can optionally verify installation by running unit tests.
+# Create the database for the app to use
+sudo docker compose run -e RAILS_ENV=test web bundle exec rails db:setup
+# Run the tests in the "test" RAILS_ENV
+sudo docker compose run -e RAILS_ENV=test web rspec spec
+# Run user-interface unit tests (requires a large amount of RAM)
+sudo docker compose run web npm run test
+
 
 # === BEGIN OPTIONAL UPGRADES to later versions of the FarmBot Web App ===
   # Shut down the server

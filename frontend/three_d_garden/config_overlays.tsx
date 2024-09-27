@@ -64,7 +64,7 @@ export const PublicOverlay = (props: OverlayProps) => {
   };
 
   return <div className={"overlay"}>
-    {!props.activeFocus &&
+    {config.settingsBar && !props.activeFocus &&
       <div className={"settings-bar"}>
         <Section
           title={"FarmBot"}
@@ -271,6 +271,8 @@ export const PrivateOverlay = (props: OverlayProps) => {
           onChange={e => setParamAdd(e.target.checked)} />
       </div>
       <Toggle {...common} configKey={"promoInfo"} />
+      <Toggle {...common} configKey={"settingsBar"} />
+      <Toggle {...common} configKey={"zoomBeacons"} />
       <label>{"Presets"}</label>
       <Radio {...common} configKey={"sizePreset"}
         options={["Jr", "Genesis", "Genesis XL"]} />

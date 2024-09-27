@@ -12,7 +12,7 @@ export const ThreeDGarden = (props: ThreeDGardenProps) => {
   return <div className={"three-d-garden"}>
     <div className={"garden-bed-3d-model"}>
       <Canvas shadows={true}>
-        <GardenModel config={props.config} showBeacons={false}
+        <GardenModel config={props.config}
           activeFocus={""} setActiveFocus={noop} />
       </Canvas>
     </div>
