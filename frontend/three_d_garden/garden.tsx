@@ -176,7 +176,7 @@ export const GardenModel = (props: GardenModelProps) => {
       ? e => console.log(e.intersections.map(x => x.object.name))
       : undefined}>
     {config.stats && <Stats />}
-    {props.showBeacons && <ZoomBeacons
+    {props.showBeacons && config.zoomBeacons && <ZoomBeacons
       config={config}
       activeFocus={props.activeFocus}
       setActiveFocus={props.setActiveFocus} />}

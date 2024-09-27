@@ -54,6 +54,8 @@ export interface Config {
   xyDimensions: boolean;
   zDimension: boolean;
   promoInfo: boolean;
+  settingsBar: boolean;
+  zoomBeacons: boolean;
   solar: boolean;
   utilitiesPost: boolean;
   packaging: boolean;
@@ -123,6 +125,8 @@ export const INITIAL: Config = {
   xyDimensions: false,
   zDimension: false,
   promoInfo: true,
+  settingsBar: true,
+  zoomBeacons: true,
   solar: false,
   utilitiesPost: true,
   packaging: false,
@@ -152,9 +156,9 @@ export const BOOLEAN_KEYS = [
   "legsFlush", "labels", "labelsOnHover", "ground", "grid", "axes", "trail",
   "tracks", "clouds", "perspective", "bot", "laser", "cableCarriers",
   "viewCube", "stats", "config", "zoom", "pan", "bounds", "threeAxes",
-  "xyDimensions", "zDimension", "promoInfo", "solar", "utilitiesPost",
-  "packaging", "lab", "people", "lowDetail", "eventDebug", "cableDebug",
-  "zoomBeaconDebug", "animate",
+  "xyDimensions", "zDimension", "promoInfo", "settingsBar", "zoomBeacons",
+  "solar", "utilitiesPost", "packaging", "lab", "people", "lowDetail",
+  "eventDebug", "cableDebug", "zoomBeaconDebug", "animate",
 ];
 
 export const PRESETS: Record<string, Config> = {
@@ -259,6 +263,8 @@ export const PRESETS: Record<string, Config> = {
     xyDimensions: false,
     zDimension: false,
     promoInfo: false,
+    settingsBar: false,
+    zoomBeacons: false,
     solar: false,
     utilitiesPost: false,
     packaging: false,
@@ -308,6 +314,8 @@ export const PRESETS: Record<string, Config> = {
     xyDimensions: true,
     zDimension: true,
     promoInfo: true,
+    settingsBar: true,
+    zoomBeacons: true,
     solar: true,
     utilitiesPost: true,
     packaging: true,
@@ -335,9 +343,10 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "bedBrightness", "soilBrightness", "plants", "labels", "ground", "grid", "axes",
   "trail", "clouds", "sunInclination", "sunAzimuth", "perspective", "bot", "laser",
   "tool", "cableCarriers", "viewCube", "stats", "config", "zoom", "bounds",
-  "threeAxes", "xyDimensions", "zDimension", "labelsOnHover", "promoInfo", "pan",
-  "solar", "utilitiesPost", "packaging", "lab", "people", "scene", "lowDetail",
-  "eventDebug", "cableDebug", "zoomBeaconDebug", "animate",
+  "threeAxes", "xyDimensions", "zDimension", "labelsOnHover", "promoInfo",
+  "settingsBar", "zoomBeacons", "pan", "solar", "utilitiesPost", "packaging", "lab",
+  "people", "scene", "lowDetail", "eventDebug", "cableDebug", "zoomBeaconDebug",
+  "animate",
 ];
 
 export const modifyConfig = (config: Config, update: Partial<Config>) => {

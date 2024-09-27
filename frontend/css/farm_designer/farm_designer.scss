@@ -1268,6 +1268,7 @@
       padding: 1rem;
       overflow-x: scroll;
       background: linear-gradient(0deg, $translucent5, transparent);
+      scrollbar-width: none;
 
       @media screen and (max-width: 768px) {
         justify-content: left;
