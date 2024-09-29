@@ -78,8 +78,6 @@
     }
   }
   .bot-position-rows {
-    padding-left: 1rem;
-    padding-right: 1rem;
     label {
       margin-top: 0;
       font-size: 1.2rem;
@@ -130,11 +128,11 @@
 .farm-designer-panels {
   bottom: 0;
   z-index: 1;
-  animation: panel-show 0.3s ease forwards;
-  &.panel-closed-mobile,
-  &.panel-closed {
-    animation: panel-hide 0.3s ease forwards;
-  }
+  // animation: panel-show 0.3s ease forwards;
+  // &.panel-closed-mobile,
+  // &.panel-closed {
+  //   animation: panel-hide 0.3s ease forwards;
+  // }
   &.short-panel {
     height: 24rem;
     .location-info-panel {
@@ -203,7 +201,7 @@
   }
   &.light-gray-panel,
   &.gray-panel {
-    background-color: $translucent9_white;
+    background-color: $translucent8_white;
     div[class*="search-item"] {
       &:hover,
       &.hovered {
@@ -807,18 +805,9 @@
 .edit-farm-event-panel,
 .add-farm-event-panel {
   .panel-content {
-    max-height: calc(100vh - 14rem);
     overflow-y: auto;
     overflow-x: hidden;
-  }
-  input {
-    background: $white;
-  }
-  .save-btn {
-    margin: 1rem;
-  }
-  .location-form {
-    width: 100% !important;
+    padding: 1rem 1rem 0;
   }
   .bp5-popover-wrapper {
     display: inline-block;
@@ -841,11 +830,6 @@
         min-height: 34px;
       }
     }
-  }
-  .locals-list {
-    margin-top: 1rem;
-    margin-left: 1rem;
-    margin-right: 1rem;
   }
   .save-btn {
     position: absolute;
@@ -1177,7 +1161,7 @@ li {
   cursor: pointer;
   padding-left: 1rem;
   &:hover {
-    background: $light_gray;
+    background: $translucent1;
   }
   label {
     margin: 0 !important;
@@ -2523,11 +2507,6 @@ li {
       }
       i {
         padding-right: 0.5rem;
-      }
-    }
-    .active-weeds {
-      .empty-state-graphic {
-        margin-top: 1rem;
       }
     }
   }

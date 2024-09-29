@@ -75,7 +75,7 @@ export class Connectivity
     } = informational_settings;
     const { id, fbos_version } = this.props.device.body;
     return <div className={"realtime-wrapper"}>
-      <Col md={12} lg={4} className={"connectivity-left-column"}>
+      <Col className={"connectivity-left-column"}>
         <ConnectivityDiagram
           rowData={this.props.rowData}
           hover={this.hover}
@@ -99,7 +99,7 @@ export class Connectivity
             getDiagnosisCode(this.props.flags)}</p>
         </div>
       </Col>
-      <Col md={12} lg={8} className={"connectivity-right-column"}>
+      <Col className={"connectivity-right-column"}>
         <ConnectivityRow from={t("from")} to={t("to")} header={true} />
         {this.props.rowData
           .map((statusRowProps, index) =>
@@ -109,7 +109,6 @@ export class Connectivity
                 : undefined}
               hover={this.hover}
               hoveredConnection={this.state.hoveredConnection} />)}
-        <hr style={{ marginLeft: "3rem" }} />
         <Diagnosis statusFlags={this.props.flags} />
         {this.props.flags.userAPI && this.props.flags.userMQTT
           && this.props.flags.botAPI && this.props.flags.botMQTT
@@ -142,42 +141,38 @@ export class Connectivity
       wifi_level, wifi_level_percent, private_ip, node_name, target,
     } = informational_settings;
     const wifi = isWifi(wifi_level, wifi_level_percent);
-    return <div className={"realtime-wrapper"}>
-      <Col md={12} lg={4} lgOffset={2} className={"connectivity-left-column"}>
-        <div className="fbos-info">
-          <label>{t("FarmBot Connection")}</label>
-          <p><b>{t("Connection type")}: </b>{wifi ? "WiFi" : t("Unknown")}</p>
-          <WiFiStrengthDisplay wifiStrength={wifi_level}
-            wifiStrengthPercent={wifi_level_percent} />
-          <MacAddress nodeName={node_name} target={target} wifi={wifi} />
-          <LocalIpAddress address={private_ip} />
-        </div>
-        <QosPanel pings={this.props.pings} dispatch={this.props.dispatch} />
-      </Col>
-      <Col md={12} lg={4} className={"connectivity-right-column"}>
-        <div className="port-info">
-          <label>{t("Ports")}</label>
-          <i>{isMobile() ? t("This phone") : t("This computer")}</i>
-          <PortRow port={"80 - HTTP"} status={flags["userAPI"]} />
-          <PortRow port={"443 - HTTPS"} status={flags["userAPI"]} />
-          <PortRow port={"3002 - WebSockets"} status={flags["userMQTT"]} />
-          <i style={{ marginTop: "1rem" }}>{t("FarmBot")}</i>
-          <PortRow port={"80 - HTTP"} status={flags["botAPI"]} />
-          <PortRow port={"443 - HTTPS"} status={flags["botAPI"]} />
-          <PortRow port={"8883 - MQTT"} status={flags["botMQTT"]} />
-          <a onClick={docLinkClick("for-it-security-professionals")}>
-            <i className="fa fa-external-link" />
-            {t("Learn more about ports")}
-          </a>
-        </div>
-      </Col>
+    return <div className={"network-wrapper grid-3-col"}>
+      <div className="fbos-info">
+        <label>{t("FarmBot Connection")}</label>
+        <p><b>{t("Connection type")}: </b>{wifi ? "WiFi" : t("Unknown")}</p>
+        <WiFiStrengthDisplay wifiStrength={wifi_level}
+          wifiStrengthPercent={wifi_level_percent} />
+        <MacAddress nodeName={node_name} target={target} wifi={wifi} />
+        <LocalIpAddress address={private_ip} />
+      </div>
+      <QosPanel pings={this.props.pings} dispatch={this.props.dispatch} />
+      <div className="port-info">
+        <label>{t("Ports")}</label>
+        <i>{isMobile() ? t("This phone") : t("This computer")}</i>
+        <PortRow port={"80 - HTTP"} status={flags["userAPI"]} />
+        <PortRow port={"443 - HTTPS"} status={flags["userAPI"]} />
+        <PortRow port={"3002 - WebSockets"} status={flags["userMQTT"]} />
+        <i style={{ marginTop: "1rem" }}>{t("FarmBot")}</i>
+        <PortRow port={"80 - HTTP"} status={flags["botAPI"]} />
+        <PortRow port={"443 - HTTPS"} status={flags["botAPI"]} />
+        <PortRow port={"8883 - MQTT"} status={flags["botMQTT"]} />
+        <a onClick={docLinkClick("for-it-security-professionals")}>
+          <i className="fa fa-external-link" />
+          {t("Learn more about ports")}
+        </a>
+      </div>
     </div>;
   };
 
   render() {
     const { realtime, network, history } = this.props.metricPanelState;
     return <div className="connectivity">
-      <Row className={"connectivity-content"}>
+      <div className={"connectivity-content"}>
         <div className={"tabs"}>
           <label className={realtime ? "selected" : ""}
             onClick={this.setPanelState("realtime")}>{t("realtime")}</label>
@@ -190,7 +185,7 @@ export class Connectivity
         {network && <this.Network />}
         {history && <FbosMetricHistoryTable telemetry={this.props.telemetry}
           timeSettings={this.props.timeSettings} />}
-      </Row>
+      </div>
       {firmwareAlerts(this.props.alerts).length > 0 &&
         <Row>
           <FirmwareAlerts

@@ -348,13 +348,9 @@ nav {
     overflow-x: hidden;
     padding-bottom: 3rem;
     &::-webkit-scrollbar {
-      background-color: $medium_gray;
-    }
-    &::-webkit-scrollbar-track {
-      background-color: $medium_gray;
-    }
-    &::-webkit-scrollbar-thumb {
-      background-color: $light_gray;
+      display: none !important;
+      width: 0px !important;
+      background-color: transparent !important;
     }
   }
   .nav-links {

@@ -1154,22 +1154,22 @@ export namespace Content {
     Try leaving the saved garden first.`);
 
   export const NO_PLANTS =
-    trim(`Press "+" to add a plant to your garden.`);
+    trim(`Press + to add a plant to your garden`);
 
   export const NO_GARDENS =
-    trim(`Press "+" to add a garden.`);
+    trim(`Press + to add a garden`);
 
   export const NO_POINTS =
-    trim(`Press "+" to add a point to your garden.`);
+    trim(`Press + to add a point to your garden`);
 
   export const NO_GROUPS =
-    trim(`Press "+" to add a group.`);
+    trim(`Press + to add a group`);
 
   export const NO_WEEDS =
-    trim(`Press "+" to add a weed.`);
+    trim(`Press + to add a weed`);
 
   export const NO_FARMWARE =
-    trim(`Press "+" to add a Farmware.`);
+    trim(`Press + to add a Farmware`);
 
   export const NO_PERIPHERALS =
     trim(`Press "edit" to add a peripheral.`);
@@ -1178,10 +1178,10 @@ export namespace Content {
     trim(`Press "edit" to add a sensor.`);
 
   export const NO_ZONES =
-    trim(`Press "+" to add a zone.`);
+    trim(`Press + to add a zone`);
 
   export const NO_CURVES =
-    trim(`Press "+" to add a curve.`);
+    trim(`Press + to add a curve`);
 
   export const ENTER_CROP_SEARCH_TERM =
     trim(`Search for a crop to add to your garden.`);
@@ -1193,10 +1193,10 @@ export namespace Content {
     trim(`add this crop on OpenFarm?`);
 
   export const NO_TOOLS =
-    trim(`Press "+" to add a new tool or seed container.`);
+    trim(`Press + to add a new tool or seed container`);
 
   export const NO_SEED_CONTAINERS =
-    trim(`Press "+" to add a seed container.`);
+    trim(`Press + to add a seed container`);
 
   export const MOUNTED_TOOL =
     trim(`The tool currently mounted to the UTM can be set here or by using
@@ -1205,7 +1205,7 @@ export namespace Content {
 
   // Farm Events
   export const NOTHING_SCHEDULED =
-    trim(`Press "+" to schedule an event.`);
+    trim(`Press + to schedule an event`);
 
   export const REGIMEN_TODAY_SKIPPED_ITEM_RISK =
     trim(`You are scheduling a regimen to run today. Be aware that

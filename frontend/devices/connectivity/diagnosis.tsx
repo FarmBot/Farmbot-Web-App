@@ -49,16 +49,13 @@ export const DiagnosisSaucer = (props: DiagnosisSaucerProps) => {
 export function Diagnosis(props: DiagnosisProps) {
   const diagnosisBoolean = diagnosisStatus(props.statusFlags);
   const diagnosisColor = diagnosisBoolean ? "green" : "red";
-  return <div className={"diagnosis-section"}>
-    <div className={"connectivity-diagnosis"}>
-      <h4>{t("Diagnosis")}</h4>
-    </div>
-    <Row>
-      <Col xs={1} hidden={props.hideGraphic}>
+  return <Row className="diagnosis-section grid-exp-2">
+      <Col hidden={props.hideGraphic}>
         <DiagnosisSaucer {...props.statusFlags} />
         <div className={"saucer-connector last " + diagnosisColor} />
       </Col>
-      <Col xs={10} className={"connectivity-diagnosis"}>
+      <Col className={"connectivity-diagnosis"}>
+        <h4>{t("Diagnosis")}</h4>
         <p className="blinking">
           {t("Always")}&nbsp;
           <a className="blinking" onClick={goToFbosSettings}>
@@ -78,8 +75,7 @@ export function Diagnosis(props: DiagnosisProps) {
           {t("Click here for document to show to your IT department.")}
         </a>
       </Col>
-    </Row>
-  </div>;
+    </Row>;
 }
 
 export function getDiagnosisCode(statusFlags: ConnectionStatusFlags) {

@@ -1,0 +1,52 @@
+.row {
+  display: grid;
+  grid-auto-flow: column;
+  gap: 1rem;
+  align-items: center;
+  // background: #f6ff8d;
+}
+
+.grid-exp-1 {
+  grid-template-columns: 1fr;
+}
+
+.grid-exp-2 {
+  grid-template-columns: auto 1fr;
+}
+
+.grid-exp-3 {
+  grid-template-columns: auto auto 1fr;
+}
+
+.grid-3-col {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.grid-4-col {
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+.key-value-edit-row {
+  grid-template-columns: 1fr 1fr auto;
+}
+
+.connectivity-grid {
+  grid-template-columns: auto 1fr 1fr 1fr;
+}
+
+.realtime-wrapper {
+  grid-template-columns: auto 1fr;
+  display: grid;
+  gap: 1rem;
+}
+
+.network-wrapper {
+  display: grid;
+  grid-auto-flow: column;
+  gap: 1rem;
+}
+
+fieldset {
+  margin: 0;
+  padding: 0;
+}

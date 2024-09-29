@@ -39,8 +39,7 @@ export const CoordinateInputBoxes = (props: CoordinateInputBoxesProps) => {
   const visible = determineEditable(variableNode);
   const editableVariable = defensiveClone(variableNode);
   return (vector && visible)
-    ? <Row className={"custom-coordinate-form"}>
-      {!props.hideWrapper && <Col xs={props.narrowLabel ? 5 : 6} />}
+    ? <Row>
       {["x", "y", "z"].map((axis: Xyz) =>
         <Col xs={props.hideWrapper ? 3 : 2} className={`${axis} no-pad`} key={axis}>
           <BlurableInput type="number"

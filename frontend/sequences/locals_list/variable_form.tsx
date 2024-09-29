@@ -128,46 +128,38 @@ export const VariableForm =
     const narrowLabel = !!removeVariable;
     return <div className={"location-form"}>
       <div className={"location-form-content"}>
-        <Row>
-          {!props.hideWrapper &&
-            <Col xs={1}>
-              {!isDefaultValueForm &&
-                <VariableIcon variableType={variableType} />}
-            </Col>}
-          {!props.hideWrapper &&
-            <Col xs={narrowLabel ? 4 : 5}>
-              {isDefaultValueForm
-                ? <p>{t("Default value")}</p>
-                : <Label label={label} inUse={props.inUse || !removeVariable}
-                  allowedVariableNodes={allowedVariableNodes}
-                  labelOnly={props.labelOnly}
-                  variable={variable} onChange={onChange} />}
-              {isDefaultValueForm &&
-                <Help text={ToolTips.DEFAULT_VALUE} position={Position.TOP_LEFT} />}
-              {isDefaultValueForm && isDefault &&
-                <Help text={ToolTips.USING_DEFAULT_VARIABLE_VALUE}
-                  customIcon={"fa-exclamation-triangle"} onHover={true} />}
-            </Col>}
+        <Row className="grid-exp-3">
+          {!props.hideWrapper && !isDefaultValueForm &&
+            <VariableIcon variableType={variableType} />}
+          {!props.hideWrapper && isDefaultValueForm
+              ? <p>{t("Default value")}</p>
+              : <Label label={label} inUse={props.inUse || !removeVariable}
+                allowedVariableNodes={allowedVariableNodes}
+                labelOnly={props.labelOnly}
+                variable={variable} onChange={onChange} />}
+            {isDefaultValueForm &&
+              <Help text={ToolTips.DEFAULT_VALUE} position={Position.TOP_LEFT} />}
+            {isDefaultValueForm && isDefault &&
+              <Help text={ToolTips.USING_DEFAULT_VARIABLE_VALUE}
+                customIcon={"fa-exclamation-triangle"} onHover={true} />}
           {([VariableType.Location, VariableType.Resource]
             .includes(variableType)
             || !isDefaultValueForm) &&
-            <Col xs={props.hideWrapper ? 12 : 6}>
-              <FBSelect
-                key={props.locationDropdownKey}
-                list={list}
-                selectedItem={dropdown}
-                customNullLabel={isDefaultValueForm
-                  ? LOCATION_PLACEHOLDER_DDI().label
-                  : NO_VALUE_SELECTED_DDI().label}
-                onChange={ddi => {
-                  onChange(convertDDItoVariable({
-                    identifierLabel: label,
-                    allowedVariableNodes,
-                    dropdown: ddi,
-                    variableType,
-                  }), label);
-                }} />
-            </Col>}
+            <FBSelect
+              key={props.locationDropdownKey}
+              list={list}
+              selectedItem={dropdown}
+              customNullLabel={isDefaultValueForm
+                ? LOCATION_PLACEHOLDER_DDI().label
+                : NO_VALUE_SELECTED_DDI().label}
+              onChange={ddi => {
+                onChange(convertDDItoVariable({
+                  identifierLabel: label,
+                  allowedVariableNodes,
+                  dropdown: ddi,
+                  variableType,
+                }), label);
+              }} />}
           {variableType == VariableType.Number && isDefaultValueForm &&
             <NumericInput label={label} variableNode={variable.celeryNode}
               onChange={onChange} isDefaultValueForm={isDefaultValueForm} />}

@@ -435,27 +435,23 @@ export const StartTimeForm = (props: StartTimeFormProps) => {
       {t("Starts")}
     </label>
     <Row>
-      <Col xs={6}>
-        <BlurableInput
-          type="date"
-          disabled={props.disabled}
-          className="add-event-start-date"
-          name="start_date"
-          value={props.fieldGet("startDate")}
-          error={startDatetimeError}
-          onCommit={e => props.fieldSet("startDate", e.currentTarget.value)} />
-      </Col>
-      <Col xs={6}>
-        <EventTimePicker
-          className="add-event-start-time"
-          name="start_time"
-          timeSettings={props.timeSettings}
-          value={props.fieldGet("startTime")}
-          error={startDatetimeError}
-          onCommit={e => props.fieldSet("startTime", e.currentTarget.value)}
-          disabled={props.disabled || forceMidnight}
-          hidden={forceMidnight} />
-      </Col>
+      <BlurableInput
+        type="date"
+        disabled={props.disabled}
+        className="add-event-start-date"
+        name="start_date"
+        value={props.fieldGet("startDate")}
+        error={startDatetimeError}
+        onCommit={e => props.fieldSet("startDate", e.currentTarget.value)} />
+      <EventTimePicker
+        className="add-event-start-time"
+        name="start_time"
+        timeSettings={props.timeSettings}
+        value={props.fieldGet("startTime")}
+        error={startDatetimeError}
+        onCommit={e => props.fieldSet("startTime", e.currentTarget.value)}
+        disabled={props.disabled || forceMidnight}
+        hidden={forceMidnight} />
     </Row>
   </div>;
 };

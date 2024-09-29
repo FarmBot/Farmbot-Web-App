@@ -2,7 +2,7 @@ import React from "react";
 import { t } from "../i18next_wrapper";
 import { ToolTips } from "../constants";
 import { TestButton } from "../sequences/test_button";
-import { Widget, WidgetHeader, WidgetBody, Row, Col } from "../ui";
+import { Widget, WidgetHeader, WidgetBody, Row } from "../ui";
 import { PinnedSequencesProps } from "./interfaces";
 
 export const PinnedSequences = (props: PinnedSequencesProps) => {
@@ -15,20 +15,16 @@ export const PinnedSequences = (props: PinnedSequencesProps) => {
           helpText={ToolTips.PINNED_SEQUENCES} />
         <WidgetBody>
           {pinnedSequences.map(sequence =>
-            <Row key={sequence.uuid}>
-              <Col xs={8}>
-                <label style={{ marginTop: 0, verticalAlign: "top" }}>
-                  {sequence.body.name}
-                </label>
-              </Col>
-              <Col xs={4}>
-                <TestButton component={"pinned"}
-                  syncStatus={props.syncStatus}
-                  sequence={sequence}
-                  resources={props.resources}
-                  menuOpen={props.menuOpen}
-                  dispatch={props.dispatch} />
-              </Col>
+            <Row key={sequence.uuid} className="grid-exp-1">
+              <label style={{ marginTop: 0, verticalAlign: "top" }}>
+                {sequence.body.name}
+              </label>
+              <TestButton component={"pinned"}
+                syncStatus={props.syncStatus}
+                sequence={sequence}
+                resources={props.resources}
+                menuOpen={props.menuOpen}
+                dispatch={props.dispatch} />
             </Row>)}
         </WidgetBody>
       </Widget>}

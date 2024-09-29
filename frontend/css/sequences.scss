@@ -80,7 +80,7 @@
 .sequence-editor-panel {
   .sequence-section-header {
     &:hover {
-      background: $lighter_gray !important;
+      background: $translucent1!important;
     }
   }
 }
@@ -493,7 +493,7 @@
     height: 4rem;
     line-height: 3.75rem;
     &:hover {
-      background: $light_gray;
+      background: $translucent1!important;
     }
     label {
       cursor: pointer;
@@ -579,7 +579,7 @@
   }
   .sequence-section-header {
     &:hover {
-      background: $light_gray !important;
+      background: $translucent!important;
     }
   }
 }
@@ -718,16 +718,12 @@
     }
   }
   .location-form-content {
-    .row {
-      display: flex;
-    }
     .bp5-popover-wrapper {
       display: inline-block;
       margin-left: 1rem;
     }
     .variable-icon {
       cursor: default !important;
-      margin-top: 0.5rem;
     }
     p {
       display: inline;
@@ -987,7 +983,7 @@
     }
   }
   ul {
-    margin-bottom: 0;
+    margin: 0;
   }
   .folder-drop-area {
     height: 0;
@@ -1020,7 +1016,7 @@
   }
   .folders {
     .folder > div:not(:first-child), ul {
-      margin-left: 1rem;
+      margin-left: 2rem;
     }
     .folder-list-item {
       &.moving {
@@ -1054,9 +1050,8 @@
     position: relative;
     width: 100%;
     height: 3.5rem;
-    border-bottom: 1px solid $light_gray;
+    border-bottom: 1.5px solid $translucent1;
     cursor: pointer;
-    background: $lighter_gray;
     border-left: 4px solid transparent;
     &.active {
       border-left: 4px solid $dark_gray;
@@ -1305,9 +1300,6 @@
   }
   .empty-state {
     display: none;
-    .empty-state-graphic {
-      margin-top: 25%;
-    }
   }
   @media screen and (max-width: 767px) {
     margin-left: 15px;

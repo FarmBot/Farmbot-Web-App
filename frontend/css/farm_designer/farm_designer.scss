@@ -122,74 +122,57 @@
 
 .thin-search-wrapper {
   width: 100%;
-  .thin-search {
-    .spinner-container {
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 2rem;
-      height: 2rem;
-      padding: 0;
-      margin-right: 1rem;
+  .spinner-container {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    margin-right: 1rem;
+  }
+  .text-input-wrapper {
+    position: relative;
+    margin: 1rem;
+    border-bottom: 1.5px solid $translucent1;
+    i {
+      font-size: 1.5rem;
     }
-    .text-input-wrapper {
-      position: relative;
-      margin: 1rem;
-      border-bottom: 1px solid $dark_gray;
-      &:before,
-      &:after {
-        content: "";
-        position: absolute;
-        bottom: 0;
-        background: $dark_gray;
-        width: 1px;
-        height: 3px;
+    .fa-search {
+      position: absolute;
+      top: 0.8rem;
+      left: 1rem;
+      cursor: default !important;
+    }
+    .fa-times {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      padding: 0.5rem;
+      color: $darkest_red;
+      font-size: 1.3rem;
+      &:hover {
+        color: $medium_dark_red;
       }
-      &:before {
-        left: 0;
+    }
+    .bp5-popover-wrapper {
+      position: absolute;
+      .bp5-popover-target {
+        width: 3rem;
       }
-      &:after {
-        right: 0;
+    }
+    .point-sort-menu {
+      width: 110px;
+      label {
+        margin-top: 0;
       }
       i {
-        font-size: 1.5rem;
-      }
-      .fa-search {
-        position: absolute;
-        top: 0.8rem;
-        left: 1rem;
-        cursor: default !important;
-      }
-      .fa-times {
-        position: absolute;
-        bottom: 0;
-        right: 0;
+        cursor: pointer;
         padding: 0.5rem;
-        color: $darkest_red;
-        font-size: 1.3rem;
-        &:hover {
-          color: $medium_dark_red;
-        }
-      }
-      .bp5-popover-wrapper {
-        position: absolute;
-        .bp5-popover-target {
-          width: 3rem;
-        }
-      }
-      .point-sort-menu {
-        width: 110px;
-        label {
-          margin-top: 0;
-        }
-        i {
-          cursor: pointer;
-          padding: 0.5rem;
-          color: $medium_light_gray;
-          &.selected {
-            font-weight: bold;
-            color: $dark_gray;
-          }
+        color: $medium_light_gray;
+        &.selected {
+          font-weight: bold;
+          color: $dark_gray;
         }
       }
     }
@@ -684,7 +667,7 @@
     flex-direction: row-reverse;
     gap: 1.25rem;
     .menu-content, .z-display {
-      background: rgba(255, 255, 255, .65);
+      background-color: $translucent8_white;
       border-radius: 1rem;
       box-shadow: 0px 1px 5px rgba(0, 0, 0, .3);
       backdrop-filter: blur(5px);
