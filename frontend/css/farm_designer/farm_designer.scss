@@ -2,6 +2,7 @@
   position: relative;
   height: 100vh;
   overflow: scroll;
+  scrollbar-width: none;
   .garden-map-legend {
     @media screen and (max-width: $mobile_max_width) {
       &.panel-open {
@@ -356,9 +357,6 @@
       }
     }
   }
-  .padding {
-    height: 6rem;
-  }
   &.scrolled {
     box-shadow: inset 0 5px 10px rgba(0, 0, 0, 0.1);
   }
@@ -679,35 +677,30 @@
   z-index: 3;
   transition: all 0.4s ease;
   &.active {
-    transform: translateX(-165px);
+    transform: translateX(-175px);
   }
   .content {
     display: flex;
     flex-direction: row-reverse;
+    gap: 1.25rem;
+    .menu-content, .z-display {
+      background: rgba(255, 255, 255, .65);
+      border-radius: 1rem;
+      box-shadow: 0px 1px 5px rgba(0, 0, 0, .3);
+      backdrop-filter: blur(5px);
+    }
     .menu-content {
-      display: flex;
-      flex-direction: column;
-      flex-wrap: wrap;
+      display: grid;
       max-width: 155px;
-      padding: 1rem;
-      background: rgba(255, 255, 255, .75);
-      border-radius: 5px;
-      box-shadow: 0px 1px 4px #555;
-      >*+* {
-        margin: auto;
-        margin-top: 0.75rem;
-      }
+      padding: 1.25rem;
+      gap: 0.75rem;
+      justify-items: center;
       .zoom-buttons {
-        display: grid;
-        margin: auto;
-        width: 90%;
+        display: flex;
+        flex-direction: row-reverse;
+        gap: 1rem;
         button {
           margin: auto;
-          grid-row: 1;
-          grid-column: 2;
-          &.zoom-out {
-            grid-column: 1;
-          }
         }
       }
     }
@@ -715,10 +708,6 @@
       position: relative;
       padding: 2rem;
       padding-left: 3rem;
-      margin-right: 1.25rem;
-      background: rgba(255, 255, 255, .75);
-      border-radius: 5px;
-      box-shadow: 0px 1px 4px #555;
       label {
         position: absolute;
         top: 0.5rem;
@@ -790,8 +779,6 @@
   .select-mode,
   .map-settings,
   .move-to-mode {
-    margin: auto;
-    margin-top: 1rem;
     p {
       text-align: center;
       padding-top: 2rem;
@@ -806,9 +793,9 @@
   .menu-pullout {
     position: absolute;
     left: -4.5rem;
-    color: $white;
+    color: $off_white;
     cursor: pointer;
-    transition: all 0.4s ease;
+    transition: all 0.3s ease;
     text-shadow: 0px 1px 1px #555;
     &.active {
       left: -4.5rem;
@@ -1209,6 +1196,14 @@
   }
 }
 
+.farm-designer-panels.panel-closed ~ .three-d-garden .garden-bed-3d-model {
+  width: 100vw;
+}
+
+.farm-designer-panels.panel-open ~ .three-d-garden .garden-bed-3d-model {
+  width: calc(100vw + 45rem);
+}
+
 .three-d-garden {
   position: relative;
   height: 100vh;
@@ -1222,7 +1217,6 @@
   .garden-bed-3d-model {
     position: relative;
     height: 100vh;
-    width: 100vw;
     cursor: grab;
 
     &:active {

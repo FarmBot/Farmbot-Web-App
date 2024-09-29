@@ -644,12 +644,12 @@ a {
   }
   &.green {
     .setting-status-indicator {
-      right: 0.5rem;
+      right: 0.4rem;
     }
   }
   &.red {
     .setting-status-indicator {
-      left: 0.5rem;
+      left: 0.4rem;
     }
   }
 }
@@ -941,7 +941,7 @@ h4 {
 }
 
 hr {
-  border-top: 1px solid rgba(16, 22, 26, 0.15);
+  border-top: 1.5px solid $translucent1;
 }
 
 .e-stop {

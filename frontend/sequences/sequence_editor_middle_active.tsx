@@ -643,7 +643,6 @@ export class SequenceEditorMiddleActive extends
               sequence={sequence}
               dispatch={dispatch}
               toggle={this.toggleSection("licenseCollapsed")} />}
-          <div className={"padding"} />
         </div>
         : <SequencePreviewContent
           viewCeleryScript={!!this.props.getWebAppConfigValue(

@@ -4,8 +4,7 @@
   right: 0;
   z-index: 99;
   height: 8.9rem;
-  background: $dark_gray;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, .2);
+  background: linear-gradient(0deg, transparent, $translucent2 30%, $black);
 }
 
 nav {
@@ -104,12 +103,9 @@ nav {
       &.active {
         font-weight: bold;
         color: $white;
+        border-bottom: 3px solid $white;
         img {
           opacity: 1;
-        }
-        &:after {
-          transition: all 0.4s ease;
-          transform: translateY(-3px);
         }
       }
       &.beacon {
@@ -118,24 +114,6 @@ nav {
             background: none;
           }
         }
-      }
-      &:before {
-        content: "";
-        position: absolute;
-        left: 0;
-        bottom: 0;
-        right: 0;
-        height: 3px;
-        background: $white;
-      }
-      &:after {
-        content: "";
-        position: absolute;
-        left: 0;
-        bottom: 0;
-        right: 0;
-        height: 3px;
-        background: $dark_gray;
       }
       div .saucer, .external-icon {
         display: inline-flex;

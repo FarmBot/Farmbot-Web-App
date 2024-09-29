@@ -145,6 +145,5 @@ export const DesignerPanelContent = (props: DesignerPanelContentProps) => {
     <ErrorBoundary>
       {props.children}
     </ErrorBoundary>
-    <div className={"padding"}></div>
   </div>;
 };

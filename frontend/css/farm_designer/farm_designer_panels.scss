@@ -3,7 +3,7 @@
   position: fixed;
   top: 8.9rem;
   width: 45rem;
-  box-shadow: 0 0 10px $translucent;
+  margin: 1.25rem;
   @media screen and (max-width: $mobile_max_width) {
     width: 100%;
   }
@@ -109,21 +109,31 @@
   }
 }
 
-@keyframes panel-pullout {
+@keyframes panel-show {
   0% {
-    transform: translateY(-100%);
+    transform: translateX(-100%);
   }
   100% {
-    transform: translateY(0);
+    transform: translateX(0);
+  }
+}
+
+@keyframes panel-hide {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-120%);
   }
 }
 
 .farm-designer-panels {
   bottom: 0;
   z-index: 1;
+  animation: panel-show 0.3s ease forwards;
   &.panel-closed-mobile,
   &.panel-closed {
-    display: none !important;
+    animation: panel-hide 0.3s ease forwards;
   }
   &.short-panel {
     height: 24rem;
@@ -135,22 +145,20 @@
   }
   .panel-container {
     width: 100%;
-    height: 100%;
+    border-radius: 1rem;
     overflow-x: hidden;
     font-size: 1.6rem;
-    padding-bottom: 6rem;
     label {
       font-size: 1.3rem;
       margin-top: 2rem;
     }
   }
-  div {
-    animation: panel-pullout 0s ease;
-  }
 }
 
 .panel-container {
   overflow: hidden;
+  box-shadow: 0 0 1rem $translucent;
+  backdrop-filter: blur(5px);
   div[class*="search-item"] {
     &:hover,
     &.hovered {
@@ -195,7 +203,7 @@
   }
   &.light-gray-panel,
   &.gray-panel {
-    background-color: $panel_light_gray;
+    background-color: $translucent9_white;
     div[class*="search-item"] {
       &:hover,
       &.hovered {
@@ -3181,10 +3189,9 @@ li {
 
 .designer-sequence-list-panel {
   .panel-content {
-    height: calc(100vh - 14rem);
+    max-height: calc(100vh - 16.5rem);
     overflow-y: scroll;
     overflow-x: hidden;
-    padding-bottom: 6rem;
     @media screen and (max-width: $mobile_max_width) {
       max-height: calc(100vh - 19rem);
     }
@@ -3279,7 +3286,7 @@ li {
 .designer-regimen-scheduler-panel {
   .panel-content {
     display: inline-block;
-    max-height: calc(100vh - 9rem);
+    max-height: calc(100vh - 16.5rem);
     overflow-y: auto;
     overflow-x: hidden;
     width: 100%;
@@ -3327,6 +3334,7 @@ li {
     max-height: calc(100vh - 14rem);
     overflow-y: auto;
     overflow-x: hidden;
+    scrollbar-width: none;
     label {
       margin-top: 0;
     }
