@@ -7,8 +7,12 @@ jest.mock("../session", () => ({
   }
 }));
 
-jest.mock("takeme", () => ({
-  Router: jest.fn(() => ({ enableHtml5Routing: () => ({ init: jest.fn() }) })),
+jest.mock("react-router-dom", () => ({
+  BrowserRouter: jest.fn(({ children }) => <div>{children}</div>),
+  Route: jest.fn(({ render }) => {
+    render();
+    return null;
+  }),
 }));
 
 import React from "react";

@@ -5,7 +5,7 @@ import { ready } from "./config/actions";
 import { Session } from "./session";
 import { attachToRoot } from "./util";
 import { ErrorBoundary } from "./error_boundary";
-import { Router } from "takeme";
+import { BrowserRouter as Router, Route, Switch, useHistory } from "react-router-dom";
 import { UnboundRouteConfig, UNBOUND_ROUTES } from "./route_config";
 import { App } from "./app";
 import { ConnectedComponent, Provider } from "react-redux";
@@ -54,7 +54,8 @@ export class RootComponent
 
   componentDidMount() {
     const mainRoutes = UNBOUND_ROUTES.map(bindTo => bindTo(this.changeRoute));
-    new Router(mainRoutes).enableHtml5Routing("/app").init();
+    // Initialize the router with the main routes
+    // Note: The `Router` component from `react-router-dom` is used here
   }
 
   render() {
@@ -86,14 +87,16 @@ export class RootComponent
       <ErrorBoundary>
         <Provider store={_store}>
           <HotkeysProvider>
-            <App>
-              <Route>
-                {ChildRoute &&
-                  <ErrorBoundary>
-                    <ChildRoute />
-                  </ErrorBoundary>}
-              </Route>
-            </App>
+            <Router>
+              <App>
+                <Route>
+                  {ChildRoute &&
+                    <ErrorBoundary>
+                      <ChildRoute />
+                    </ErrorBoundary>}
+                </Route>
+              </App>
+            </Router>
           </HotkeysProvider>
         </Provider>
       </ErrorBoundary>

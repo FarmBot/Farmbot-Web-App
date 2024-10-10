@@ -1,4 +1,4 @@
-import { RouteConfig } from "takeme";
+import { Route } from "react-router-dom";
 import { Apology } from "./apology";
 import { Path } from "./internal_urls";
 import { AnyConnectedComponent, ChangeRoute } from "./routes";
@@ -46,37 +46,38 @@ export type UnboundRouteConfig<T, U> =
  *      information but does NOT yet have a callback to trigger when a route
  *      changes. Such a function is generated later (at runtime, in
  *      componentDidMount) and passed to the "unbound" route to create a "real"
- *      URL route that is needed by the `takeme` routing library.
+ *      URL route that is needed by the `react-router-dom` routing library.
  *      Workflow:
  *
  *      Determine how to load the route and children =>
  *        Pass that information to route() =>
- *          Pass the resulting UnboundRoute to `takeme` router. =>
+ *          Pass the resulting UnboundRoute to `react-router-dom` router. =>
  *            DONE.
  */
 function route<T, U>(info: UnboundRouteConfig<T, U>) {
-  return (changeRoute: ChangeRoute): RouteConfig => {
+  return (changeRoute: ChangeRoute): JSX.Element => {
     const { $ } = info;
-    return {
-      $,
-      // eslint-disable-next-line @typescript-eslint/no-misused-promises
-      enter: async () => {
-        try {
-          const comp = (await info.getModule())[info.key];
-          if (info.children) {
-            const child = (await info.getChild())[info.childKey];
-            changeRoute(comp as unknown as AnyConnectedComponent,
-              info,
-              child as unknown as AnyConnectedComponent);
-          } else {
-            changeRoute(comp as unknown as AnyConnectedComponent, info);
+    return (
+      <Route
+        path={$}
+        render={async () => {
+          try {
+            const comp = (await info.getModule())[info.key];
+            if (info.children) {
+              const child = (await info.getChild())[info.childKey];
+              changeRoute(comp as unknown as AnyConnectedComponent,
+                info,
+                child as unknown as AnyConnectedComponent);
+            } else {
+              changeRoute(comp as unknown as AnyConnectedComponent, info);
+            }
+          } catch (e) {
+            console.error(e);
+            changeRoute(Apology, info);
           }
-        } catch (e) {
-          console.error(e);
-          changeRoute(Apology, info);
-        }
-      }
-    };
+        }}
+      />
+    );
   };
 }
 

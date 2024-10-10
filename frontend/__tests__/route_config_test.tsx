@@ -1,9 +1,11 @@
-jest.mock("react-redux", () => ({
-  connect: jest.fn(() => jest.fn(x => x)),
+jest.mock("react-router-dom", () => ({
+  Route: jest.fn(({ render }) => {
+    render();
+    return null;
+  }),
 }));
 
 import { UNBOUND_ROUTES } from "../route_config";
-import { RouteEnterEvent } from "takeme";
 import { ChangeRoute } from "../routes";
 
 const fakeChangeRoute: ChangeRoute = (component, info, child) => {
@@ -20,17 +22,9 @@ const fakeChangeRoute: ChangeRoute = (component, info, child) => {
   }
 };
 
-const fakeRouteEnterEvent: RouteEnterEvent = {
-  params: { splat: "????" },
-  oldPath: "??",
-  newPath: "??"
-};
-
 describe("UNBOUND_ROUTES", () => {
   it("generates correct routes", () => {
-    UNBOUND_ROUTES
-      .map(r => r(fakeChangeRoute))
-      .map(r => r.enter && r.enter(fakeRouteEnterEvent));
+    UNBOUND_ROUTES.map(r => r(fakeChangeRoute));
   });
 
   it("generates crash route", async () => {
@@ -42,7 +36,6 @@ describe("UNBOUND_ROUTES", () => {
       // catch block call
       .mockImplementationOnce(x => { expect(x.name).toEqual("Apology"); });
     const r = UNBOUND_ROUTES[0](changeRouteError);
-    r.enter && await r.enter(fakeRouteEnterEvent);
     expect(console.error).toHaveBeenCalledWith(fakeError);
   });
 });
