@@ -2,7 +2,7 @@ import React from "react";
 import { t } from "../i18next_wrapper";
 import { Xyz } from "farmbot";
 import {
-  Row, Col, BlurableInput, FBSelect, NULL_CHOICE, DropDownItem, Popover,
+  Row, BlurableInput, FBSelect, NULL_CHOICE, DropDownItem, Popover,
 } from "../ui";
 import { BotPosition } from "../devices/interfaces";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
@@ -46,20 +46,24 @@ export const FlipToolDirection = (props: EditToolSlotMetaProps) => {
 export const SlotDirectionInputRow = (props: SlotDirectionInputRowProps) => {
   const iconClass = directionIconClass(props.toolPulloutDirection);
   return <fieldset className="tool-slot-direction-input">
-    <label>
-      {t("slot direction")}
-    </label>
-    <i className={`direction-icon ${iconClass} fb-icon-button`}
-      onClick={() => props.onChange({
-        pullout_direction: newSlotDirection(props.toolPulloutDirection)
-      })} />
-    <FBSelect
-      key={props.toolPulloutDirection}
-      list={DIRECTION_CHOICES()}
-      selectedItem={DIRECTION_CHOICES_DDI()[props.toolPulloutDirection]}
-      onChange={ddi => props.onChange({
-        pullout_direction: parseInt("" + ddi.value)
-      })} />
+    <Row className="grid-2-col">
+      <div>
+        <label>
+          {t("slot direction")}
+        </label>
+        <i className={`direction-icon ${iconClass} fb-icon-button`}
+          onClick={() => props.onChange({
+            pullout_direction: newSlotDirection(props.toolPulloutDirection)
+          })} />
+      </div>
+      <FBSelect
+        key={props.toolPulloutDirection}
+        list={DIRECTION_CHOICES()}
+        selectedItem={DIRECTION_CHOICES_DDI()[props.toolPulloutDirection]}
+        onChange={ddi => props.onChange({
+          pullout_direction: parseInt("" + ddi.value)
+        })} />
+    </Row>
   </fieldset>;
 };
 
@@ -89,22 +93,20 @@ export const ToolSelection = (props: ToolSelectionProps) =>
 
 export const ToolInputRow = (props: ToolInputRowProps) =>
   <div className="tool-slot-tool-input">
-    <Row>
-      <Col xs={12}>
-        <label>
-          {props.noUTM
-            ? t("Seed Container")
-            : t("Tool or Seed Container")}
-        </label>
-        <ToolSelection
-          tools={props.tools}
-          selectedTool={props.selectedTool}
-          onChange={props.onChange}
-          isActive={props.isActive}
-          noUTM={props.noUTM}
-          filterSelectedTool={false}
-          filterActiveTools={true} />
-      </Col>
+    <Row className="grid-2-col">
+      <label>
+        {props.noUTM
+          ? t("Seed Container")
+          : t("Tool or Seed Container")}
+      </label>
+      <ToolSelection
+        tools={props.tools}
+        selectedTool={props.selectedTool}
+        onChange={props.onChange}
+        isActive={props.isActive}
+        noUTM={props.noUTM}
+        filterSelectedTool={false}
+        filterActiveTools={true} />
     </Row>
   </div>;
 
@@ -114,10 +116,9 @@ export const SlotLocationInputRow = (props: SlotLocationInputRowProps) => {
     : props.slotLocation.x;
   const { y, z } = props.slotLocation;
   return <div className="tool-slot-location-input">
-    <Row>
-      <Col xs={11} className="axis-inputs">
+    <Row className="tool-slot-location-grid">
         {["x", "y", "z"].map((axis: Xyz) =>
-          <Col xs={4} key={axis}>
+          <div key={axis}>
             <label>{t("{{axis}} (mm)", { axis })}</label>
             {axis == "x" && props.gantryMounted
               ? <input disabled value={t("Gantry")} name={axis} />
@@ -128,8 +129,7 @@ export const SlotLocationInputRow = (props: SlotLocationInputRowProps) => {
                 onCommit={e => props.onChange({
                   [axis]: parseFloat(e.currentTarget.value)
                 })} />}
-          </Col>)}
-      </Col>
+          </div>)}
       <UseCurrentLocation botPosition={props.botPosition}
         onChange={props.onChange} />
     </Row>
@@ -150,7 +150,7 @@ export interface UseCurrentLocationProps {
 }
 
 export const UseCurrentLocation = (props: UseCurrentLocationProps) =>
-  <Col xs={1} className="use-current-location">
+  <div className="use-current-location">
     <Popover
       target={<i className="fa fa-question-circle help-icon" />}
       content={<div className="current-location-info">
@@ -166,7 +166,7 @@ export const UseCurrentLocation = (props: UseCurrentLocationProps) =>
       }}>
       <i className="fa fa-crosshairs" />
     </button>
-  </Col>;
+  </div>;
 
 export const SlotEditRows = (props: SlotEditRowsProps) =>
   <div className="tool-slot-edit-rows">

@@ -62,7 +62,6 @@ export class ActiveEditor
             <this.LocalsList />
           </ErrorBoundary>
         </Collapse>
-        <hr />
       </div>
       <OpenSchedulerButton />
       <ErrorBoundary>

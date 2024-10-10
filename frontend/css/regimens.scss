@@ -50,7 +50,6 @@
 // Regimen Editor
 .regimen-day {
   margin: 1.5rem 0;
-  margin-right: 10px;
 }
 
 .regimen-event {
@@ -154,7 +153,7 @@
   text-align: center;
   button {
     float: none;
-    margin-bottom: 1rem;
+    margin: 1rem auto;
   }
   .open-bulk-scheduler-btn {
     display: none;

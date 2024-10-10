@@ -114,11 +114,6 @@
 
 .sequence-editor-content,
 .regimen-editor-content {
-  margin-right: -10px;
-  margin-left: -10px;
-  .regimen {
-    padding-left: 1rem;
-  }
   .sequence {
     margin-bottom: 1rem;
   }
@@ -126,9 +121,6 @@
     margin-left: 5px;
     margin-right: 0;
     padding-right: 2rem;
-    .regimen {
-      padding-left: 0;
-    }
   }
 }
 
@@ -542,22 +534,13 @@
 }
 
 .regimen-editor-content {
-  margin-left: -1rem;
-  .regimen {
-    margin-left: 2rem;
-    padding-right: 3rem;
-  }
+  padding: 0 1rem;
   .button-group {
     padding-right: 1rem;
-  }
-  .regimen-editor-tools {
-    margin-left: 1rem;
-    margin-right: 1rem;
   }
   .location-form-content {
     .row {
       white-space: nowrap;
-      padding-right: 1rem;
       .trash {
         display: inline;
         float: none;
@@ -662,13 +645,7 @@
 
 .sequence-editor-tools,
 .regimen-editor-tools {
-  margin-right: 15px;
-  @media screen and (max-width: 767px) {
-    margin-right: 10px;
-  }
-  hr {
-    margin: 0.5rem 0;
-  }
+  border-bottom: 1.5px solid $translucent1;
   .sequence-name {
     margin-top: 1rem;
   }
@@ -687,23 +664,7 @@
   }
 }
 
-.regimen-editor-tools {
-  .button-group {
-    margin-bottom: 1rem;
-    .save-btn {
-      margin-left: 0.5rem;
-    }
-  }
-}
-
 .locals-list {
-  margin-left: 1.5rem;
-  margin-right: 2rem;
-  .location-form {
-    label {
-      margin-top: 0;
-    }
-  }
   .location-form-content {
     .bp5-popover-wrapper {
       display: inline-block;

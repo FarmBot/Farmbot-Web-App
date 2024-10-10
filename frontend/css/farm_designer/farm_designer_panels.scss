@@ -1699,7 +1699,7 @@ li {
     margin-top: 0 !important;
   }
   .row, fieldset {
-    margin-top: 2rem;
+    margin-top: 0.5rem;
   }
   fieldset button {
     margin: 0;
@@ -1715,13 +1715,10 @@ li {
       padding-left: 0;
     }
     .use-current-location {
-      padding: 0;
-      margin-left: -1rem;
+      text-align: center;
     }
     button.blue {
-      margin-top: 0.5rem;
-      margin-right: 0.5rem;
-      height: 2.5rem;
+      margin: 0;
       .fa {
         font-size: 1.5rem;
       }
@@ -1867,6 +1864,12 @@ li {
       font-size: 1.3rem;
       font-weight: bold;
     }
+  }
+  .pin-guard-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr 1fr auto;
+    grid-auto-flow: column;
   }
   .pin-reporting-input-row,
   .pin-guard-input-row {
