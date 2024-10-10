@@ -128,11 +128,11 @@
 .farm-designer-panels {
   bottom: 0;
   z-index: 1;
-  // animation: panel-show 0.3s ease forwards;
-  // &.panel-closed-mobile,
-  // &.panel-closed {
-  //   animation: panel-hide 0.3s ease forwards;
-  // }
+  animation: panel-show 0.3s ease forwards;
+  &.panel-closed-mobile,
+  &.panel-closed {
+    animation: panel-hide 0.3s ease forwards;
+  }
   &.short-panel {
     height: 24rem;
     .location-info-panel {
@@ -772,7 +772,7 @@
     margin-top: 0;
   }
   .panel-content {
-    padding: 1rem 1rem 6rem;
+    padding: 0;
     padding-bottom: inherit;
   }
 }
@@ -1289,13 +1289,11 @@ li {
 }
 
 .move-to-form {
+  display: grid;
+  gap: 1rem;
   .bp5-popover-wrapper {
     display: inline;
     margin-left: 0.5rem;
-  }
-  .speed {
-    margin: 2rem;
-    margin-left: -15px;
   }
 }
 
@@ -1401,7 +1399,13 @@ li {
     overflow-y: auto;
     overflow-x: hidden;
     padding-top: 1rem;
+    .location-info-content {
+      display: grid;
+      gap: 1rem;
+    }
     .location-actions {
+      display: grid;
+      gap: 1rem;
       p {
         margin-top: 1rem;
       }
@@ -1481,10 +1485,6 @@ li {
     overflow-x: hidden;
     .tool-search-item,
     .tool-slot-search-item {
-      margin-left: -15px;
-      margin-right: -15px;
-      width: calc(100% + 25px);
-      padding-right: 3.5rem;
       .filter-search {
         .bp5-button {
           min-height: 2.5rem;
@@ -1812,8 +1812,7 @@ li {
   overflow-x: hidden;
   padding-bottom: inherit;
   .expandable-header {
-    margin-top: 1.5rem;
-    margin-bottom: 0;
+    margin: 0;
   }
   .section {
     position: relative;
@@ -1826,21 +1825,6 @@ li {
         font-size: 1.4rem;
       }
     }
-  }
-  .section {
-    margin-bottom: 2rem;
-  }
-  .row:first-child {
-    margin-right: 0;
-    margin-top: 1rem;
-  }
-  .row:nth-child(2) {
-    padding-left: 1.5rem;
-    padding-right: 3rem;
-  }
-  .row.zero-side-margins {
-    margin-left: 0;
-    margin-right: 0;
   }
   .export-data,
   .change-password {
@@ -1961,6 +1945,9 @@ li {
     margin-left: 0.5rem;
   }
   .designer-setting {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr auto;
     &.disabled {
       input {
         background: $gray;
@@ -1973,7 +1960,11 @@ li {
 }
 
 .non-layer-config-toggle {
-  margin-top: 0.1rem;
+  display: grid;
+  gap: 1rem;
+  align-items: center;
+  grid-auto-flow: column;
+  grid-template-columns: 1fr auto auto;
   &.disabled {
     input {
       background: $gray !important;
@@ -2711,32 +2702,20 @@ li {
 
 .curves-inventory-panel-content {
   padding: 0;
-  .curve-search-item {
-    height: 4rem;
-    line-height: 4rem;
-    cursor: pointer;
+  cursor: pointer;
     .curve-search-item-info {
-      text-align: right;
       font-size: 1rem;
-      padding-right: 1rem;
-      line-height: 4rem;
-      float: right;
     }
-    .curve-search-item-name {
-      width: 40%;
-      margin-left: 1.25rem;
+    .section-header {
+      .fb-button {
+        margin-top: 0.75rem;
+      }
+      .fa-caret-up,
+      .fa-caret-down {
+        line-height: 3.75rem;
+        margin-top: 0 !important;
+      }
     }
-  }
-  .section-header {
-    .fb-button {
-      margin-top: 0.75rem;
-    }
-    .fa-caret-up,
-    .fa-caret-down {
-      line-height: 3.75rem;
-      margin-top: 0 !important;
-    }
-  }
 }
 
 .crop-curve-info {
@@ -2790,11 +2769,6 @@ li {
       user-select: none;
     }
   }
-}
-
-.curve-icon {
-  margin-left: 1rem;
-  vertical-align: middle;
 }
 
 .curve-usage-display {
@@ -2908,11 +2882,6 @@ li {
     .farmware-input-group {
       margin-left: 0;
     }
-    .advanced-configs {
-      .expandable-header {
-        margin-top: 2rem;
-      }
-    }
   }
 }
 
@@ -2942,9 +2911,6 @@ li {
         float: left;
         height: 2rem;
       }
-    }
-    .expandable-header {
-      margin-top: 2rem;
     }
     .filters-enabled-warning {
       float: right;

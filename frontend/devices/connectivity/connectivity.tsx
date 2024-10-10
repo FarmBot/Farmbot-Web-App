@@ -114,22 +114,18 @@ export class Connectivity
           && this.props.flags.botAPI && this.props.flags.botMQTT
           && this.props.apiFirmwareValue
           && !this.props.flags.botFirmware &&
-          <div className={"fix-firmware-buttons"}>
-            <Col xs={6}>
-              <FlashFirmwareBtn
-                apiFirmwareValue={this.props.apiFirmwareValue}
-                botOnline={true} />
-            </Col>
-            <Col xs={6}>
-              <button
-                className={"fb-button yellow"}
-                type={"button"}
-                onClick={() => { restartFirmware(); }}
-                title={t("restart firmware")}>
-                {t("restart firmware")}
-              </button>
-            </Col>
-          </div>}
+          <Row className={"fix-firmware-buttons "}>
+            <FlashFirmwareBtn
+              apiFirmwareValue={this.props.apiFirmwareValue}
+              botOnline={true} />
+            <button
+              className={"fb-button yellow"}
+              type={"button"}
+              onClick={() => { restartFirmware(); }}
+              title={t("restart firmware")}>
+              {t("restart firmware")}
+            </button>
+          </Row>}
       </Col>
     </div>;
   };

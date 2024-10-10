@@ -17,7 +17,7 @@ export class DangerousDeleteWidget extends
     this.props.dispatch(this.props.onClick({ password: this.state.password }));
 
   render() {
-    return <Row className={"zero-side-margins"}>
+    return <Row>
       <label>
         {t(this.props.title)}
       </label>

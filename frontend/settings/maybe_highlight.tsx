@@ -503,11 +503,11 @@ export class Highlight extends React.Component<HighlightProps, HighlightState> {
       onMouseEnter={this.toggleHover(true)}
       onMouseLeave={this.toggleHover(false)}
       hidden={this.searchTerm ? !this.searchMatch : this.hidden}>
-      {this.props.children}
       {this.props.settingName &&
         <i className={`fa fa-anchor ${this.props.className} ${hoverClass}`}
           onClick={() => push(linkToSetting(this.props.settingName,
             this.props.pathPrefix))} />}
+      {this.props.children}
     </div>;
   }
 }

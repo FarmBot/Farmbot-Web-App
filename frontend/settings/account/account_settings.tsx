@@ -34,7 +34,7 @@ export const AccountSettings = (props: AccountSettingsProps) =>
       dispatch={props.dispatch} />
     <Collapse isOpen={!!props.settingsPanelState.account}>
       <Highlight settingName={DeviceSetting.accountName}>
-        <Row className={"zero-side-margins"}>
+        <Row>
           <label>
             {t(DeviceSetting.accountName)}
           </label>
@@ -55,7 +55,7 @@ export const AccountSettings = (props: AccountSettingsProps) =>
         </div>
       </Highlight>
       <Highlight settingName={DeviceSetting.accountEmail}>
-        <Row className={"zero-side-margins"}>
+        <Row>
           <label>
             {t(DeviceSetting.accountEmail)}
           </label>
@@ -116,7 +116,7 @@ export const AccountSettings = (props: AccountSettingsProps) =>
           onClick={deleteUser} />
       </Highlight>
       <Highlight settingName={DeviceSetting.exportAccountData}>
-        <Row className={"export-data zero-side-margins"}>
+        <Row className={"export-data"}>
           <label>
             {t(DeviceSetting.exportAccountData)}
           </label>

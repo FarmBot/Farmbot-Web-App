@@ -9,7 +9,7 @@ import { ExecutableQuery } from "../farm_designer/interfaces";
 import { formatTimeField, formatDateField } from "./map_state_to_props_add_edit";
 import {
   BlurableInput,
-  Col, Row,
+  Row,
   SaveBtn,
   FBSelect,
   DropDownItem,

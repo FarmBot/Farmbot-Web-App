@@ -888,6 +888,6 @@ export const SectionHeader = (props: SectionHeaderProps) =>
     <label>{!isUndefined(props.count)
       ? `${t(props.title)} (${props.count})`
       : t(props.title)}</label>
-    <i className={`fa fa-caret-${props.collapsed ? "down" : "up"}`} />
     {!props.collapsed && props.buttonElement}
+    <i className={`fa fa-caret-${props.collapsed ? "down" : "up"}`} />
   </div>;

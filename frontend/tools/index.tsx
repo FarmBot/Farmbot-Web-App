@@ -12,7 +12,7 @@ import {
 import { t } from "../i18next_wrapper";
 import { Content } from "../constants";
 import { push } from "../history";
-import { Row, Col, Help } from "../ui";
+import { Row, Help } from "../ui";
 import {
   botPositionLabel,
 } from "../farm_designer/map/layers/farmbot/bot_position_label";
@@ -235,39 +235,35 @@ export const ToolSlotInventoryItem = (props: ToolSlotInventoryItemProps) => {
     }}
     onMouseEnter={() => props.dispatch(setToolHover(props.toolSlot.uuid))}
     onMouseLeave={() => props.dispatch(setToolHover(undefined))}>
-    <Row>
-      <Col xs={2} className={"tool-slot-search-item-icon"}>
+    <Row className="grid-exp-2">
+      <div className={"tool-slot-search-item-icon"}>
         <ToolSlotSVG
           toolSlot={props.toolSlot}
           toolName={tool_id ? toolName : "Empty"}
           toolTransformProps={props.toolTransformProps} />
-      </Col>
-      <Col xs={6}>
-        {props.hideDropdown
-          ? <span className={"tool-slot-search-item-name"}>
-            {toolName || t("Empty")}
-          </span>
-          : <div className={"tool-selection-wrapper"}
-            onClick={e => e.stopPropagation()}>
-            <ToolSelection
-              tools={props.tools}
-              selectedTool={props.tools
-                .filter(tool => tool.body.id == tool_id)[0]}
-              onChange={update => {
-                props.dispatch(edit(props.toolSlot, update));
-                props.dispatch(save(props.toolSlot.uuid));
-              }}
-              noUTM={props.noUTM}
-              isActive={props.isActive}
-              filterSelectedTool={false}
-              filterActiveTools={true} />
-          </div>}
-      </Col>
-      <Col xs={4} className={"tool-slot-position-info"}>
-        <p className="tool-slot-position">
-          <i>{botPositionLabel({ x, y, z }, { gantryMounted: gantry_mounted })}</i>
-        </p>
-      </Col>
+      </div>
+      {props.hideDropdown
+        ? <span className={"tool-slot-search-item-name"}>
+          {toolName || t("Empty")}
+        </span>
+        : <div className={"tool-selection-wrapper"}
+          onClick={e => e.stopPropagation()}>
+          <ToolSelection
+            tools={props.tools}
+            selectedTool={props.tools
+              .filter(tool => tool.body.id == tool_id)[0]}
+            onChange={update => {
+              props.dispatch(edit(props.toolSlot, update));
+              props.dispatch(save(props.toolSlot.uuid));
+            }}
+            noUTM={props.noUTM}
+            isActive={props.isActive}
+            filterSelectedTool={false}
+            filterActiveTools={true} />
+        </div>}
+      <p className="tool-slot-position">
+        <i>{botPositionLabel({ x, y, z }, { gantryMounted: gantry_mounted })}</i>
+      </p>
     </Row>
   </div>;
 };
@@ -276,18 +272,12 @@ const ToolInventoryItem = (props: ToolInventoryItemProps) => {
   const activeText = props.active ? t("in slot") : t("inactive");
   return <div className={"tool-search-item"}
     onClick={() => push(Path.tools(props.toolId))}>
-    <Row>
-      <Col xs={2} className={"tool-search-item-icon"}>
-        <ToolSVG toolName={props.toolName} />
-      </Col>
-      <Col xs={7} className={"tool-search-item-name"}>
-        <p>{t(props.toolName)}</p>
-      </Col>
-      <Col xs={3} className={"tool-status"}>
-        <p className="tool-status">
-          <i>{props.mounted ? t("mounted") : activeText}</i>
-        </p>
-      </Col>
+    <Row className="grid-exp-2">
+      <ToolSVG toolName={props.toolName} />
+      <p className={"tool-search-item-name"}>{t(props.toolName)}</p>
+      <p className="tool-status">
+        <i>{props.mounted ? t("mounted") : activeText}</i>
+      </p>
     </Row>
   </div>;
 };

@@ -2,7 +2,7 @@ import React from "react";
 import { Content, DeviceSetting } from "../constants";
 import { t } from "../i18next_wrapper";
 import { setWebAppConfigValue } from "../config_storage/actions";
-import { Row, Col, Help, ToggleButton, BlurableInput } from "../ui";
+import { Row, Help, ToggleButton, BlurableInput } from "../ui";
 import { BooleanSetting, NumericSetting } from "../session_keys";
 import { resetVirtualTrail } from "../farm_designer/map/layers/farmbot/bot_trail";
 import { MapSizeInputs } from "../farm_designer/map_size_setting";
@@ -45,27 +45,21 @@ export const Setting = (props: SettingProps) => {
   return <Highlight settingName={title}>
     <div
       className={`designer-setting ${props.disabled ? "disabled" : ""}`}>
-      <Row>
-        <Col xs={9}>
-          <label>{t(title)}</label>
-          {props.useToolTip && <Help text={props.description} />}
-        </Col>
-        <Col xs={3}>
-          {setting && <ToggleButton
-            toggleValue={props.invert ? !value : value}
-            toggleAction={() => {
-              if (value || !props.confirm || confirm(t(props.confirm))) {
-                props.dispatch(setWebAppConfigValue(setting, !value));
-                callback?.();
-              }
-            }}
-            title={`${t("toggle")} ${title}`}
-            className={getModifiedClassName(setting)}
-            customText={{ textFalse: t("off"), textTrue: t("on") }} />}
-          {numberSetting && <WebAppNumberSetting {...props}
-            numberSetting={numberSetting} />}
-        </Col>
-      </Row>
+      <label>{t(title)}</label>
+      {props.useToolTip && <Help text={props.description} />}
+      {setting && <ToggleButton
+        toggleValue={props.invert ? !value : value}
+        toggleAction={() => {
+          if (value || !props.confirm || confirm(t(props.confirm))) {
+            props.dispatch(setWebAppConfigValue(setting, !value));
+            callback?.();
+          }
+        }}
+        title={`${t("toggle")} ${title}`}
+        className={getModifiedClassName(setting)}
+        customText={{ textFalse: t("off"), textTrue: t("on") }} />}
+      {numberSetting && <WebAppNumberSetting {...props}
+        numberSetting={numberSetting} />}
       {!props.useToolTip && <Row>
         <p>{t(props.description)}</p>
       </Row>}

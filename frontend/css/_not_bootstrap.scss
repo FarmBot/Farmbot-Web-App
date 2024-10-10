@@ -18,6 +18,10 @@
   grid-template-columns: auto auto 1fr;
 }
 
+.grid-2-col {
+  grid-template-columns: 1fr 1fr;
+}
+
 .grid-3-col {
   grid-template-columns: 1fr 1fr 1fr;
 }
@@ -32,6 +36,23 @@
 
 .connectivity-grid {
   grid-template-columns: auto 1fr 1fr 1fr;
+}
+
+.move-to-grid {
+  grid-auto-flow: unset;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  row-gap: 0.25rem;
+}
+
+.speed-grid {
+  grid-template-columns: 25% 1fr;
+  align-items: start;
+}
+
+.change-ownership-grid {
+  grid-auto-flow: unset;
+  grid-template-columns: auto 1fr;
+  row-gap: 0.25rem;
 }
 
 .realtime-wrapper {

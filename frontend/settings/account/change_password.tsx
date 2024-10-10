@@ -86,7 +86,7 @@ export class ChangePassword extends React.Component<{}, ChangePWState> {
   };
 
   render() {
-    return <Row className={"change-password zero-side-margins"}>
+    return <Row className={"change-password"}>
       <label>
         {t(DeviceSetting.changePassword)}
       </label>

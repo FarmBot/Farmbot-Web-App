@@ -1,7 +1,7 @@
 import React from "react";
 import { NavBarProps, NavBarState } from "./interfaces";
 import { EStopButton } from "./e_stop_btn";
-import { Row, Col, Popover } from "../ui";
+import { Popover } from "../ui";
 import { push } from "../history";
 import { updatePageInfo } from "../util";
 import { validBotLocationData } from "../util/location";
@@ -274,29 +274,25 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
         this.isStaff ? "red" : "",
       ].join(" ")}>
         <nav role="navigation">
-          <Row>
-            <Col xs={12}>
-              <div className="nav-bar">
-                <this.TickerList />
-                <div className="nav-group">
-                  <div className="nav-left">
-                    <this.AppNavLinks />
-                  </div>
-                  <div className="nav-right">
-                    <ErrorBoundary>
-                      <this.ReadOnlyStatus />
-                      <this.AccountMenu />
-                      <this.EstopButton />
-                      <this.ConnectionStatus />
-                      <this.SetupButton />
-                      <this.JobsButton />
-                      <this.Coordinates />
-                    </ErrorBoundary>
-                  </div>
-                </div>
+          <div className="nav-bar">
+            <this.TickerList />
+            <div className="nav-group">
+              <div className="nav-left">
+                <this.AppNavLinks />
               </div>
-            </Col>
-          </Row>
+              <div className="nav-right">
+                <ErrorBoundary>
+                  <this.ReadOnlyStatus />
+                  <this.AccountMenu />
+                  <this.EstopButton />
+                  <this.ConnectionStatus />
+                  <this.SetupButton />
+                  <this.JobsButton />
+                  <this.Coordinates />
+                </ErrorBoundary>
+              </div>
+            </div>
+          </div>
         </nav>
       </div>
     </ErrorBoundary>;
