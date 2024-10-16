@@ -419,7 +419,7 @@ export class RawCropInfo extends React.Component<CropInfoProps, CropInfoState> {
             openfarmCropFetch={this.props.openfarmCropFetch} />
           {DevSettings.futureFeaturesEnabled() &&
             <EditOnOpenFarm slug={result.crop.slug} />}
-          <div className={"plant-stage-selection"}>
+          <div className={"row grid-2-col"}>
             <label className="stage">{t("status")}</label>
             <FBSelect
               list={PLANT_STAGE_LIST()}
@@ -431,7 +431,7 @@ export class RawCropInfo extends React.Component<CropInfoProps, CropInfoState> {
                 payload: ddi.value,
               })} />
           </div>
-          <div className={"planted-at-selection"}>
+          <div className={"row grid-2-col"}>
             <label className="planted-at">{t("start date")}</label>
             <BlurableInput
               type="date"

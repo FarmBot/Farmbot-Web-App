@@ -259,20 +259,22 @@ export const PanelSection = (props: PanelSectionProps) => {
       onClick={props.toggleOpen}>
       <label>{`${props.title} (${props.itemCount})`}</label>
       {props.extraHeaderTitle}
-      <i className={`fa fa-caret-${isOpen ? "up" : "down"}`} />
-      {isOpen && <div
-        onClick={e => {
-          e.stopPropagation();
-          props.addNew();
-        }}
-        className={[
-          "fb-button",
-          `panel-${TAB_COLOR[props.panel]}`,
-          props.addClassName,
-        ].join(" ")}>
-        <i className={"fa fa-plus"} title={props.addTitle} />
-      </div>}
-      {props.extraHeaderContent}
+      <div className="row">
+        {props.extraHeaderContent}
+        {isOpen && <div
+          onClick={e => {
+            e.stopPropagation();
+            props.addNew();
+          }}
+          className={[
+            "fb-button",
+            `panel-${TAB_COLOR[props.panel]}`,
+            props.addClassName,
+          ].join(" ")}>
+          <i className={"fa fa-plus"} title={props.addTitle} />
+        </div>}
+        <i className={`fa fa-caret-${isOpen ? "up" : "down"}`} />
+      </div>
     </div>
     <Collapse isOpen={isOpen}>
       {props.children}

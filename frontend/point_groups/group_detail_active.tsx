@@ -105,17 +105,19 @@ interface GroupMemberDisplayProps {
 /** View group point counts and icon list. */
 const GroupMemberDisplay = (props: GroupMemberDisplayProps) => {
   return <div className="group-member-display">
-    <label>
-      {t("GROUP MEMBERS ({{count}})", {
-        count: props.pointsSelectedByGroup.length
-      })}
-    </label>
-    <Help text={ToolTips.CRITERIA_SELECTION_COUNT} />
-    <i onClick={props.toggleIconShow}
-      className={`fa fa-caret-${props.iconDisplay ? "up" : "down"}`}
-      title={props.iconDisplay
-        ? t("hide icons")
-        : t("show icons")} />
+    <div className={"row grid-exp-1"}>
+      <label>
+        {t("GROUP MEMBERS ({{count}})", {
+          count: props.pointsSelectedByGroup.length
+        })}
+      </label>
+      <Help text={ToolTips.CRITERIA_SELECTION_COUNT} />
+      <i onClick={props.toggleIconShow}
+        className={`fa fa-caret-${props.iconDisplay ? "up" : "down"}`}
+        title={props.iconDisplay
+          ? t("hide icons")
+          : t("show icons")} />
+    </div>
     <GroupPointCountBreakdown
       group={props.group}
       dispatch={props.dispatch}

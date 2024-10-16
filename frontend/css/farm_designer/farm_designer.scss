@@ -128,7 +128,7 @@
     margin-right: 1rem;
   }
   .text-input-wrapper {
-    margin: 1rem;
+    margin: 1rem 1.5rem;
     border-bottom: 1.5px solid $translucent1;
     display: flex;
     align-items: center;
@@ -180,6 +180,9 @@
   %panel-item-base {
     font-size: 1rem;
   }
+  .group-search-item {
+    grid-template-columns: 1fr auto!important;
+  }
   .plant-search-item,
   .group-search-item,
   .curve-search-item {
@@ -207,7 +210,6 @@
   }
   .curve-search-item-name,
   .plant-search-item-name,
-  .group-search-item-name,
   .regimen-search-item-name,
   .saved-garden-search-item-name,
   .weed-search-item-name,
@@ -216,9 +218,6 @@
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
-  }
-  .group-search-item-name {
-    margin-left: 0;
   }
   .plant-search-item-age {
     @extend %panel-item-base;
@@ -258,6 +257,8 @@
   .tool-search-item,
   .tool-slot-search-item {
     line-height: 4rem;
+    margin: 0 -1rem;
+    padding: 0 1rem;
     cursor: pointer;
     .tool-svg,
     .tool-slot-search-item-icon {

@@ -11,6 +11,10 @@
   // background: #f6ff8d;
 }
 
+.no-gap {
+  gap: 0;
+}
+
 .grid-exp-1 {
   grid-template-columns: 1fr;
 }
@@ -90,8 +94,20 @@ fieldset {
 .panel-title {
   font-family: 'Inknut Antiqua', serif;
   font-weight: bold;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
 }
 
 .sensor-form-grid {
   grid-template-columns: 2fr 1fr 1fr auto;
+}
+
+.add-point-grid {
+  grid-template-columns: 2fr 1fr 1fr 1fr auto;
+}
+
+.criteria-operators-grid {
+  gap: 0;
+  text-align: center;
 }

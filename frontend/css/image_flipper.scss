@@ -1,6 +1,5 @@
 .image-flipper {
   position: relative;
-  margin-top: 1rem;
 }
 
 .bp5-overlay {
@@ -56,12 +55,12 @@
   max-width: 100%;
   max-height: 650px;
   min-height: 200px;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
+  border-radius: 5px;
+  display: block;
 }
 
 .image-flipper-left {
-  left: -5px;
+  left: 0;
   background: linear-gradient(to left, transparent, $translucent3);
   &:hover {
     background: linear-gradient(to left, transparent, $translucent4);
@@ -69,7 +68,7 @@
 }
 
 .image-flipper-right {
-  right: -5px;
+  right: 0;
   background: linear-gradient(to right, transparent, $translucent3);
   &:hover {
     background: linear-gradient(to right, transparent, $translucent4);
@@ -79,10 +78,11 @@
 .image-flipper-left,
 .image-flipper-right {
   position: absolute;
-  top: -5px;
-  bottom: -5px;
+  top: 0;
+  bottom: 0;
   width: 4rem;
-  text-align: center;
+  margin: 0;
+  padding: 0;
   i {
     color: $white;
     font-size: 2rem;
@@ -388,24 +388,6 @@
     .bp5-popover-wrapper {
       display: inline-block;
       margin-left: 0;
-    }
-  }
-  .camera-calibration-config {
-    label {
-      display: inline;
-    }
-    .dropdown-camera-calibration-config {
-      margin-top: 1.5rem;
-      .filter-search {
-        float: right;
-        margin-top: -0.25rem;
-        min-width: 16.5rem;
-      }
-      &.narrow {
-        .filter-search {
-          min-width: 8rem;
-        }
-      }
     }
   }
 }

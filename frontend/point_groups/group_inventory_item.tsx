@@ -19,12 +19,12 @@ export function GroupInventoryItem(props: GroupInventoryItemProps) {
   const delMode = DevSettings.quickDeleteEnabled();
   return <div
     onClick={delMode ? () => props.dispatch(destroy(group.uuid)) : props.onClick}
-    className={["group-search-item",
+    className={["group-search-item row grid-exp-1",
       props.hovered ? "hovered" : "",
       delMode ? "quick-del" : ""].join(" ")}>
-    <span className="group-search-item-name">
+    <div>
       {group.body.name}
-    </span>
+    </div>
     <ErrorBoundary fallback={<i className="group-item-count">{t("? items")}</i>}>
       <GroupItemCount group={group} allPoints={props.allPoints} />
     </ErrorBoundary>

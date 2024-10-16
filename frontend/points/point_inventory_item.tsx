@@ -68,7 +68,7 @@ export class PointInventoryItem extends
     };
 
     return <div
-      className={`point-search-item ${hovered ? "hovered" : ""}`}
+      className={`row grid-exp-2 point-search-item ${hovered ? "hovered" : ""}`}
       key={pointId}
       onMouseEnter={() => toggle("enter")}
       onMouseLeave={() => toggle("leave")}

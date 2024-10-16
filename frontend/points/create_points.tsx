@@ -215,52 +215,55 @@ export class RawCreatePoints
   PointProperties = () =>
     <ul>
       <li>
-        <Row>
+        <Row className="grid-exp-1">
           <div className={"point-name-input"}>
-            <Col xs={10}>
-              <label>{t("Name")}</label>
-              <BlurableInput
-                name="pointName"
-                type="text"
-                onCommit={this.updateValue("name")}
-                value={this.attr("name") || this.defaultName} />
-            </Col>
+            <label>{t("Name")}</label>
+            <BlurableInput
+              name="pointName"
+              type="text"
+              onCommit={this.updateValue("name")}
+              value={this.attr("name") || this.defaultName} />
           </div>
-          <div className={"point-color-input"}>
-            <Col xs={2}>
-              <ColorPicker
-                current={(this.attr("color") || this.defaultColor) as ResourceColor}
-                onChange={this.changeColor} />
-            </Col>
-          </div>
+          <ColorPicker
+            current={(this.attr("color") || this.defaultColor) as ResourceColor}
+            onChange={this.changeColor} />
         </Row>
       </li>
       <ListItem>
-        <Row>
-          <Col xs={3}>
-            <label>{t("X (mm)")}</label>
+        <Row className="add-point-grid">
+          <div>
+            <label>{t("radius (mm)")}</label>
+            <BlurableInput
+              name="r"
+              type="number"
+              onCommit={this.updateValue("r")}
+              value={this.attr("r")}
+              min={0} />
+          </div>
+          <div>
+            <label>{t("X")}</label>
             <BlurableInput
               name="cx"
               type="number"
               onCommit={this.updateValue("cx")}
               value={this.attr("cx", this.props.botPosition.x)} />
-          </Col>
-          <Col xs={3}>
-            <label>{t("Y (mm)")}</label>
+          </div>
+          <div>
+            <label>{t("Y")}</label>
             <BlurableInput
               name="cy"
               type="number"
               onCommit={this.updateValue("cy")}
               value={this.attr("cy", this.props.botPosition.y)} />
-          </Col>
-          <Col xs={3}>
-            <label>{t("Z (mm)")}</label>
+          </div>
+          <div>
+            <label>{t("Z")}</label>
             <BlurableInput
               name="z"
               type="number"
               onCommit={this.updateValue("z")}
               value={this.attr("z", this.props.botPosition.z)} />
-          </Col>
+          </div>
           <UseCurrentLocation botPosition={this.props.botPosition}
             onChange={() => {
               const position = definedPosition(this.props.botPosition);
@@ -275,19 +278,6 @@ export class RawCreatePoints
                   }));
               }
             }} />
-        </Row>
-      </ListItem>
-      <ListItem>
-        <Row>
-          <Col xs={6}>
-            <label>{t("radius (mm)")}</label>
-            <BlurableInput
-              name="r"
-              type="number"
-              onCommit={this.updateValue("r")}
-              value={this.attr("r")}
-              min={0} />
-          </Col>
         </Row>
       </ListItem>
       {this.panel == "points" &&

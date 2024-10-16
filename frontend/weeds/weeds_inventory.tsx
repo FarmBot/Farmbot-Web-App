@@ -86,33 +86,35 @@ export const WeedsSection = (props: WeedsSectionProps) => {
     <div className={`${props.category}-weeds-header section-header`}
       onClick={props.clickOpen}>
       <label>{`${t(props.sectionTitle)} (${props.items.length})`}</label>
-      {props.category == "pending" && props.items.length > 0 && props.open &&
-        <div className={"approval-buttons"}>
-          <button className={"fb-button green"} onClick={e => {
-            e.stopPropagation();
-            props.items.map(weed => {
-              props.dispatch(edit(weed, { plant_stage: "active" }));
-              props.dispatch(save(weed.uuid));
-            });
-          }}>
-            <i className={"fa fa-check"} />{t("all")}
-          </button>
-          <button className={"fb-button red"}
-            onClick={deleteAllIds("weeds", props.items)}>
-            <i className={"fa fa-times"} />{t("all")}
-          </button>
-        </div>}
-      <i className={`fa fa-caret-${props.open ? "up" : "down"}`} />
-      {layerSetting && props.open &&
-        <ToggleButton disabled={props.layerDisabled}
-          toggleValue={props.layerValue}
-          customText={{ textFalse: t("off"), textTrue: t("on") }}
-          toggleAction={e => {
-            e.stopPropagation();
-            props.dispatch(setWebAppConfigValue(
-              layerSetting, !props.layerValue));
-          }} />}
-      {props.open && props.children}
+      <div className="row">
+        {props.category == "pending" && props.items.length > 0 && props.open &&
+          <div className={"approval-buttons"}>
+            <button className={"fb-button green"} onClick={e => {
+              e.stopPropagation();
+              props.items.map(weed => {
+                props.dispatch(edit(weed, { plant_stage: "active" }));
+                props.dispatch(save(weed.uuid));
+              });
+            }}>
+              <i className={"fa fa-check"} />{t("all")}
+            </button>
+            <button className={"fb-button red"}
+              onClick={deleteAllIds("weeds", props.items)}>
+              <i className={"fa fa-times"} />{t("all")}
+            </button>
+          </div>}
+        {layerSetting && props.open &&
+          <ToggleButton disabled={props.layerDisabled}
+            toggleValue={props.layerValue}
+            customText={{ textFalse: t("off"), textTrue: t("on") }}
+            toggleAction={e => {
+              e.stopPropagation();
+              props.dispatch(setWebAppConfigValue(
+                layerSetting, !props.layerValue));
+            }} />}
+        {props.open && props.children}
+        <i className={`fa fa-caret-${props.open ? "up" : "down"}`} />
+      </div>
     </div>
     <Collapse isOpen={props.open}>
       {noWeeds && <EmptyStateWrapper

@@ -456,22 +456,6 @@ fieldset {
   max-width: 350px;
 }
 
-.os-release-channel {
-  margin-top: 0.5rem;
-  label {
-    margin: 0;
-    margin-right: 1rem;
-    line-height: 3rem;
-  }
-  .filter-search {
-    display: inline-block;
-    width: 50%;
-    button {
-      margin: 0;
-    }
-  }
-}
-
 .garden-location {
   .fa-map {
     margin: 0.5rem;
@@ -763,6 +747,9 @@ a {
   font-size: 1.2rem;
   background: $translucent1;
   border-radius: 0.5rem;
+  table {
+    border-collapse: collapse;
+  }
   th,
   td {
     width: 1%;
@@ -895,7 +882,7 @@ h4 {
 }
 
 hr {
-  border-top: 1.5px solid $translucent1;
+  border: 1px solid $translucent1;
 }
 
 .e-stop {
@@ -1344,12 +1331,6 @@ ul {
         height: 2rem;
       }
     }
-  }
-  .filter-search {
-    display: inline-block;
-    width: 9rem;
-    padding: 1rem;
-    margin-left: 1rem;
   }
   .arrow-button {
     margin: 5px;
@@ -1829,6 +1810,7 @@ ul {
   overflow: scroll;
   max-height: 42rem;
   background: $white;
+  border-collapse: collapse;
   .log-verbosity-saucer, .saucer {
     float: left;
     margin-right: 5px;
@@ -1838,7 +1820,7 @@ ul {
     float: none;
   }
   thead {
-    width: 100%;
+    text-align: left;
   }
   thead,
   th {
@@ -2147,9 +2129,6 @@ ul {
 }
 
 .write-pin-step {
-  .filter-search {
-    margin-bottom: 1rem;
-  }
   .slider-container {
     padding-left: 0.5rem;
     padding-right: 1rem;
@@ -3017,4 +2996,8 @@ textarea:focus {
   .fa-pencil {
     color: $white;
   }
+}
+
+ul {
+  margin: 0;
 }

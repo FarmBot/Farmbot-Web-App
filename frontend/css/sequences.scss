@@ -131,12 +131,6 @@
 }
 
 .sequence-editor-content {
-  hr {
-    margin-right: 15px;
-    margin-bottom: 0;
-    margin-top: 0.5rem;
-    margin-left: 15px;
-  }
   .import-banners {
     margin-bottom: 1rem;
   }
@@ -1184,13 +1178,6 @@
     .fa-exclamation-triangle {
       color: $orange;
     }
-  }
-  hr {
-    border-color: $medium_gray;
-    margin-left: -1rem;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-    width: 106.5%;
   }
   label {
     display: block;

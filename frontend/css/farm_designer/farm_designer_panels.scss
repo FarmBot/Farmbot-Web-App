@@ -87,25 +87,6 @@
   }
 }
 
-.plant-inventory-panel,
-.groups-panel,
-.designer-regimen-list-panel,
-.events-panel,
-.point-inventory-panel,
-.weeds-inventory-panel,
-.zones-inventory-panel,
-.tools-panel,
-.tool-slots-panel-content,
-.designer-farmware-list-panel,
-.settings-panel {
-  .panel-content {
-    max-height: calc(100vh - 14rem);
-    @media screen and (max-width: $mobile_max_width) {
-      max-height: calc(100vh - 19rem);
-    }
-  }
-}
-
 @keyframes panel-show {
   0% {
     transform: translateX(-100%);
@@ -147,7 +128,6 @@
     font-size: 1.6rem;
     label {
       font-size: 1.3rem;
-      margin-top: 2rem;
     }
   }
 }
@@ -155,102 +135,13 @@
 .panel-container {
   overflow: hidden;
   box-shadow: 0 0 1rem $translucent;
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(10px);
+  background-color: $translucent8_white;
   div[class*="search-item"] {
     &:hover,
     &.hovered {
+      background: $translucent1;
       transition: background 0.2s ease;
-    }
-  }
-  &.green-panel {
-    background-color: $panel_light_green;
-    div[class*="search-item"] {
-      &:hover,
-      &.hovered {
-        background: color.adjust($panel_light_green, $lightness: -10%);
-      }
-    }
-  }
-  &.cyan-panel {
-    background-color: $light_cyan;
-    div[class*="search-item"] {
-      &:hover,
-      &.hovered {
-        background: color.adjust($light_cyan, $lightness: -10%);
-      }
-    }
-  }
-  &.brown-panel {
-    background-color: $panel_light_brown;
-    div[class*="search-item"] {
-      &:hover,
-      &.hovered {
-        background: color.adjust($panel_light_brown, $lightness: -10%);
-      }
-    }
-  }
-  &.magenta-panel {
-    background-color: $light_magenta;
-    div[class*="search-item"] {
-      &:hover,
-      &.hovered {
-        background: color.adjust($light_magenta, $lightness: -10%);
-      }
-    }
-  }
-  &.light-gray-panel,
-  &.gray-panel {
-    background-color: $translucent8_white;
-    div[class*="search-item"] {
-      &:hover,
-      &.hovered {
-        background: color.adjust($panel_light_gray, $lightness: -10%);
-      }
-    }
-  }
-  &.yellow-panel {
-    background-color: $panel_light_yellow;
-    div[class*="search-item"] {
-      &:hover,
-      &.hovered {
-        background: color.adjust($panel_light_yellow, $lightness: -10%);
-      }
-    }
-  }
-  &.blue-panel {
-    background-color: $panel_light_blue;
-    div[class*="search-item"] {
-      &:hover,
-      &.hovered {
-        background: color.adjust($panel_light_blue, $lightness: -10%);
-      }
-    }
-  }
-  &.navy-panel {
-    background-color: $panel_light_navy;
-    div[class*="search-item"] {
-      &:hover,
-      &.hovered {
-        background: color.adjust($panel_light_navy, $lightness: -10%);
-      }
-    }
-  }
-  &.teal-panel {
-    background-color: $panel_light_teal;
-    div[class*="search-item"] {
-      &:hover,
-      &.hovered {
-        background: color.adjust($panel_light_teal, $lightness: -10%);
-      }
-    }
-  }
-  &.red-panel {
-    background-color: $panel_light_red;
-    div[class*="search-item"] {
-      &:hover,
-      &.hovered {
-        background: color.adjust($panel_light_red, $lightness: -10%);
-      }
     }
   }
 }
@@ -360,7 +251,6 @@
 }
 
 .panel-title {
-  height: 50px;
   overflow: hidden;
   .back-arrow {
     float: left;
@@ -622,14 +512,7 @@
 .weed-info-panel,
 .point-info-panel,
 .plant-info-panel {
-  .panel-title {
-    input {
-      margin: 1rem;
-      width: 75%;
-    }
-  }
   .panel-content {
-    max-height: calc(100vh - 14rem);
     overflow-y: auto;
     overflow-x: hidden;
   }
@@ -642,7 +525,7 @@
     overflow-x: hidden;
     padding-top: 1rem;
     ul {
-      margin-bottom: 0;
+      margin: 0;
     }
     label {
       margin-top: 0 !important;
@@ -672,9 +555,6 @@
     }
     .delete-row {
       margin: 1.5rem;
-    }
-    hr {
-      border-color: $medium_gray;
     }
     .grid-and-row-planting {
       label {
@@ -980,11 +860,9 @@
     }
   }
   .panel-content {
-    max-height: calc(100vh - 19rem);
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 2rem 1rem 6rem;
-    padding-bottom: 12rem;
+    padding: 1rem;
     li {
       margin-bottom: 1rem;
       p {
@@ -997,9 +875,6 @@
       margin-right: -1rem;
       padding-left: 1rem;
       padding-right: 1rem;
-      hr {
-        border-color: $medium_gray;
-      }
       label {
         color: $dark_gray;
       }
@@ -1040,7 +915,6 @@
     }
   }
   .edit-on-openfarm {
-    margin-bottom: 1rem;
     font-size: 1.3rem;
   }
   .object-list {
@@ -1066,30 +940,18 @@
       }
     }
   }
-  .plant-stage-selection,
-  .planted-at-selection {
-    display: flex;
-    label {
-      margin-right: 0.5rem;
-      line-height: 1rem;
-      white-space: nowrap;
-    }
-    .filter-search,
-    .input {
-      width: 100%;
-    }
-  }
 }
 
 .weeds-inventory-panel-content,
 .plant-panel-content,
 .points-panel-content {
-  padding: 0;
+  padding: 0!important;
   .empty-state {
     margin-bottom: 4rem;
   }
   .non-empty-state {
     margin-bottom: 1rem;
+    gap: 0;
   }
 }
 
@@ -1153,36 +1015,24 @@ li {
 }
 
 .section-header {
-  display: inline-block;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
   height: 4rem;
-  width: 100%;
-  line-height: 3.75rem;
+  padding: 0 1rem;
   cursor: pointer;
-  padding-left: 1rem;
   &:hover {
     background: $translucent1;
   }
   label {
-    margin: 0 !important;
     cursor: pointer;
   }
   .fb-button {
-    line-height: 1rem;
-    margin-top: 0.5rem;
-    margin-right: 1rem;
-    padding: 0.25rem 0.75rem;
-    i {
-      margin: 0 !important;
-      font-size: 1.5rem;
-    }
+    line-height: 1.2rem;
   }
   .fa-caret-up,
   .fa-caret-down {
-    float: right;
-    line-height: 0;
     font-size: 2rem;
-    margin-right: 2rem;
-    margin-top: 2rem !important;
     color: $dark_gray;
   }
 }
@@ -1271,20 +1121,6 @@ li {
     margin-right: 1.5rem;
     &:hover { color: $white; }
   }
-}
-
-.planted-at-selection,
-.plant-stage-selection {
-  label {
-    margin-top: 1rem !important;
-  }
-  .filter-search {
-    position: relative;
-  }
-}
-
-.plant-stage-selection {
-  margin-bottom: 1rem;
 }
 
 .move-to-form {
@@ -1466,10 +1302,6 @@ li {
         margin-top: 3px;
       }
     }
-    hr {
-      margin: 1rem;
-      margin-bottom: 0.5rem;
-    }
   }
 }
 
@@ -1525,22 +1357,6 @@ li {
         margin-left: 1rem;
         vertical-align: top;
         font-size: 1.4rem;
-      }
-    }
-    .tools-header,
-    .tool-slots-header {
-      display: flex;
-      margin-top: 1rem;
-      margin-bottom: 1rem;
-      label {
-        margin: 0;
-        line-height: 2.1rem;
-      }
-      a {
-        margin-left: auto;
-      }
-      .fa-plus {
-        font-size: 1.5rem;
       }
     }
     button:not(.bp5-button) {
@@ -1980,18 +1796,6 @@ li {
   }
 }
 
-.map-size-inputs {
-  .row {
-    margin: 0;
-    padding: 0;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-  }
-  label {
-    margin-top: 0.5rem;
-  }
-}
-
 .factory-reset-options {
   a {
     color: $white;
@@ -2019,10 +1823,6 @@ li {
     margin-top: 1rem;
     margin-left: 1rem;
     margin-right: 1rem;
-  }
-  hr {
-    width: 100%;
-    padding-top: 1rem;
   }
   button {
     margin-left: 0.5rem;
@@ -2077,41 +1877,25 @@ li {
 
 .group-detail-panel {
   .panel-content {
-    max-height: calc(100vh - 14rem);
     overflow-y: auto;
     overflow-x: hidden;
-    .clear-day-criteria,
-    .clear-point-ids,
-    .clear-criteria {
-      margin-top: 0.2rem;
-    }
-    .group-member-display {
-      i[class*=fa-caret-] {
-        float: right;
-        font-size: 2rem;
-      }
-      .point-list-wrapper {
-        padding: 0.5em 0em;
-      }
-    }
-    .group-name-input,
-    .group-member-display,
-    .group-sort-section {
-      margin-top: 1rem;
-      label {
-        margin-top: 0;
-      }
-      .bp5-popover-wrapper {
-        display: inline;
-        margin-left: 1rem;
-      }
-    }
-    .group-delete-btn {
-      float: left;
-      margin-top: 1em;
-    }
+    padding: 1rem;
     .group-criteria {
-      margin-top: 1rem;
+      .basic, .plant-criteria-options {
+        display: grid;
+        gap: 1rem;
+      }
+      .plant-stage-criteria,
+      .plant-type-criteria,
+      .radius-criteria,
+      .day-criteria,
+      .location-criteria {
+        background: $translucent1;
+        border-radius: 0.5rem;
+        padding: 1rem;
+        display: grid;
+        gap: 1rem;
+      }
       .criteria-heading {
         margin-top: 0;
       }
@@ -2124,10 +1908,6 @@ li {
       }
       p {
         &.category {
-          display: block;
-          padding-top: 1rem;
-          padding-bottom: 1rem;
-          text-transform: none;
           font-size: 1.2rem;
           font-weight: bold;
         }
@@ -2138,15 +1918,24 @@ li {
       .fb-button {
         margin-top: 0.5rem;
       }
+      .criteria-checkbox-list {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
       .point-type-section,
       .criteria-checkbox-list-item {
+        background: $translucent1;
+        height: 3rem;
+        border-radius: 3rem;
+        display: flex;
+        align-items: center;
+        padding: 0 1rem;
+        gap: 1rem;
         .fb-checkbox {
-          display: inline;
-          margin-right: 1rem;
-          vertical-align: top;
+          display: contents;
         }
         p {
-          display: inline;
           text-transform: uppercase;
         }
         input[type="text"] {
@@ -2177,9 +1966,6 @@ li {
           .weed-criteria-options,
           .point-criteria-options,
           .tool-criteria-options {
-            hr {
-              margin: 0.5rem;
-            }
             .lt-gt-criteria {
               margin-bottom: 1rem;
               .row {
@@ -2237,31 +2023,10 @@ li {
       }
       .number-eq-criteria,
       .number-gt-lt-criteria {
-        margin-top: 1rem;
-        .row {
-          margin-top: 1rem;
-        }
         p {
           text-align: center;
           line-height: 2.75rem;
           font-size: 1.2rem;
-        }
-      }
-      .basic,
-      .advanced {
-        margin-left: 1rem;
-        .filter-search {
-          height: 3rem;
-          margin-bottom: 1rem;
-        }
-        .day-criteria {
-          .row {
-            margin-left: 0;
-          }
-          div[class*=col-] {
-            padding: 0;
-            padding-right: 0.75rem;
-          }
         }
       }
       .advanced {
@@ -2275,21 +2040,6 @@ li {
           .bp5-popover-wrapper {
             margin-left: 0;
           }
-        }
-        .row {
-          margin-left: 0;
-        }
-        div[class*=col-] {
-          padding: 0;
-        }
-        .col-xs-9 {
-          margin-right: 0.5rem;
-        }
-        .col-xs-1 {
-          margin-left: 0.25rem;
-          margin-right: 0.25rem;
-          margin-top: 0.4rem;
-          text-align: center;
         }
       }
     }
@@ -2324,40 +2074,10 @@ li {
 
 .lt-gt-criteria,
 .location-criteria {
-  display: inline-block;
-  position: relative;
   .row {
-    margin-left: 0;
-    margin-right: -2.5rem;
-    margin-top: 1rem;
-    div[class*=col-] {
-      padding: 0;
-      text-align: center;
-    }
     p {
-      display: block !important;
       text-transform: uppercase;
       font-size: 1.1rem;
-      margin-top: 0.75rem;
-    }
-    label {
-      margin-top: 0.5rem;
-    }
-  }
-  button {
-    margin-top: 2rem !important;
-  }
-  .edit-in-map {
-    position: absolute;
-    top: 0;
-    right: 0;
-    button {
-      margin: 1rem !important;
-      width: 5rem !important;
-      margin-right: 0 !important;
-    }
-    label {
-      margin-top: 1.1rem !important;
     }
   }
   .location-selection-warning {
@@ -2397,46 +2117,6 @@ li {
       }
       i {
         margin-top: 0.5rem;
-      }
-    }
-    .section-header {
-      padding-top: 0.5rem;
-      padding-bottom: 0.5rem;
-      line-height: 2.75rem;
-      .fb-button {
-        margin-top: 0.3rem;
-        margin-right: 0.75rem;
-      }
-      .fa-caret-down,
-      .fa-caret-up {
-        margin-top: 1.5rem !important;
-      }
-    }
-    .points-section-header,
-    .pending-weeds-header,
-    .active-weeds-header,
-    .removed-weeds-header {
-      padding-top: 0.5rem;
-      padding-bottom: 0.5rem;
-      label {
-        margin: 0;
-        width: 44%;
-        margin-left: 1rem;
-        line-height: 2.1rem;
-      }
-      .fb-toggle-button {
-        margin-right: 2rem;
-        margin-top: 0.6rem;
-        float: right;
-        line-height: 0;
-      }
-    }
-    .section-action-btn-group {
-      float: right;
-      margin-top: 0.3rem;
-      line-height: 1.5rem;
-      .delete {
-        line-height: 1.5rem;
       }
     }
     .points-section {
@@ -2500,28 +2180,6 @@ li {
       }
       i {
         padding-right: 0.5rem;
-      }
-    }
-  }
-}
-
-.plant-inventory-panel {
-  .section-header {
-    .fb-button {
-      margin-top: 0.75rem;
-    }
-  }
-}
-
-.weeds-inventory-panel {
-  .active-weeds-header {
-    .fb-button {
-      line-height: 1rem;
-      margin-top: 0.5rem;
-      margin-right: 1rem;
-      i {
-        margin: 0 !important;
-        font-size: 1.5rem;
       }
     }
   }
@@ -2709,9 +2367,6 @@ li {
       font-size: 1rem;
     }
     .section-header {
-      .fb-button {
-        margin-top: 0.75rem;
-      }
       .fa-caret-up,
       .fa-caret-down {
         line-height: 3.75rem;
@@ -2737,24 +2392,10 @@ li {
     right: 0;
   }
   .active-curve-name {
-    position: relative;
-    height: 4rem;
-    line-height: 3rem;
-    p,
-    .filter-search {
-      display: inline-block;
-      position: absolute;
-      right: 3rem;
-      width: 75%;
-      margin-top: 0.5rem;
-    }
     p {
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
-    }
-    label {
-      line-height: 4rem;
     }
   }
   .curve-svg-wrapper {
@@ -2835,7 +2476,7 @@ li {
 }
 
 .sensors-panel-content {
-  padding: 1rem;
+  padding: 1.5rem;
 }
 
 .sensors-panel {
@@ -3190,28 +2831,9 @@ li {
   }
 }
 
-.group-detail-panel,
-.designer-regimen-editor-panel,
-.designer-sequence-editor-panel {
-  .panel-header {
-    input {
-      position: relative;
-      z-index: 1;
-      margin: 1rem;
-      width: 84%;
-      @media screen and (max-width: $mobile_max_width) {
-        width: 65%;
-      }
-    }
-  }
-}
-
 .designer-sequence-editor-panel {
   .panel-content {
     .sequence-editor-content {
-      hr {
-        margin-top: 1rem;
-      }
       @media screen and (max-width: 767px) {
         margin-left: 5px;
         padding-right: 0;
@@ -3262,14 +2884,7 @@ li {
 }
 
 .designer-regimen-editor-panel {
-  .title {
-    width: 45%;
-  }
   .panel-title {
-    input {
-      margin: 1rem;
-      width: 75%;
-    }
     .fa-clone,
     .fa-trash,
     .fa-paint-brush {
