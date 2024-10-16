@@ -6,28 +6,18 @@ import { AxiosErrorResponse, prettyPrintApiErrors } from "../util";
 import { API } from "../api";
 import { Session } from "../session";
 import { FrontPageState, SetterCB } from "./interfaces";
-import { Row, Col } from "../ui";
 import { LoginProps, Login } from "./login";
 import { ForgotPassword, ForgotPasswordProps } from "./forgot_password";
 import { ResendVerification } from "./resend_verification";
 import { CreateAccount } from "./create_account";
 import { Content } from "../constants";
-import { LaptopSplash } from "./laptop_splash";
 import { TermsCheckbox } from "./terms_checkbox";
 import { get } from "lodash";
 import { t } from "../i18next_wrapper";
 import { ToastContainer } from "../toast/fb_toast";
-import { FilePath, Path } from "../internal_urls";
+import { Path } from "../internal_urls";
 
 export const DEFAULT_APP_PAGE = Path.app();
-
-const showFor = (size: string[], extraClass?: string): string => {
-  const ALL_SIZES = ["xs", "sm", "md", "lg", "xl"];
-  const HIDDEN_SIZES = ALL_SIZES.filter(x => !size.includes(x));
-  const classNames = HIDDEN_SIZES.map(x => "hidden-" + x);
-  if (extraClass) { classNames.push(extraClass); }
-  return classNames.join(" ");
-};
 
 export interface PartialFormEvent {
   currentTarget: {
@@ -222,50 +212,25 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
 
   defaultContent() {
     return <div className="static-page">
-      <Row>
-        <Col xs={12}>
-          <h1 className="text-center">
-            {t("Welcome to the")}
-            <br className={showFor(["xs"])} />
-            &nbsp;
-            {t("FarmBot Web App")}
-          </h1>
-        </Col>
-      </Row>
-
-      <div className="inner-width">
-        <Row>
-          <h2 className="text-center">
-            <Col xs={12}>
-              {t("Setup, customize, and control FarmBot from your")}
-              &nbsp;
-              <span className={showFor(["md", "lg", "xl"])}>
-                {t("computer")}
-              </span>
-              <span className={showFor(["sm"])}>
-                {t("tablet")}
-              </span>
-              <span className={showFor(["xs"])}>
-                {t("smartphone")}
-              </span>
-            </Col>
-          </h2>
-        </Row>
-        <LaptopSplash className={showFor(["md", "lg", "xl"], "col-md-7")} />
-        <img
-          className={showFor(["sm"], "col-md-7")}
-          src={FilePath.image("farmbot-tablet", "png")} />
-        <Row>
-          <this.activePanel />
-          <CreateAccount
-            submitRegistration={this.submitRegistration}
-            callback={this.update}
-            sent={!!this.state.registrationSent}
-            get={(key) => this.state[key]}
-            set={(key, val) => this.setState({ [key]: val })}>
-            {this.maybeRenderTos()}
-          </CreateAccount>
-        </Row>
+      <div className="front-page-container">
+        <div className="titles text-center">
+          <h1>{t("The FarmBot Web App")}</h1>
+          <h2>{t("Setup, customize, and control your garden from anywhere")}</h2>
+        </div>
+        <this.activePanel />
+        <div className="or-divider">
+          <hr />
+          <span>{t("OR")}</span>
+          <hr />
+        </div>
+        <CreateAccount
+          submitRegistration={this.submitRegistration}
+          callback={this.update}
+          sent={!!this.state.registrationSent}
+          get={(key) => this.state[key]}
+          set={(key, val) => this.setState({ [key]: val })}>
+          {this.maybeRenderTos()}
+        </CreateAccount>
       </div>
       <ToastContainer />
     </div>;

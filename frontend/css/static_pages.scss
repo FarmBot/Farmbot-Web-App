@@ -1,11 +1,8 @@
 .static-page {
   min-height: 100vh;
   max-height: 100%;
-  background: linear-gradient(-135deg, #6db1ec, #35a274);
-  padding-top: 4rem;
-  .row {
-    margin: 0 auto;
-  }
+  background: url(/public/app-resources/img/plant-icon-background.png), linear-gradient(#00b685, #003f53);
+  padding: 8rem 2rem;
   h1,
   h2 {
     font-family: "Cabin", Arial, Helvetica, sans-serif !important;
@@ -20,13 +17,14 @@
     line-height: 3.6rem;
   }
   h2 {
-    margin-top: 1rem;
-    margin-bottom: 8rem;
+    margin: 0;
     font-size: 2.2rem;
-    line-height: 2.6rem;
+  }
+  form {
+    display: grid;
+    gap: 1rem;
   }
   input {
-    margin-bottom: 1rem;
     font-family: revert;
     font-size: revert;
   }
@@ -36,18 +34,43 @@
     padding-right: 1rem;
   }
   .widget-wrapper {
-    margin-top: 1.5rem;
     text-align: start;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    width: 40rem;
+    max-width: 40rem;
+    margin: 0 auto;
   }
-  .inner-width {
-    margin: auto;
-    max-width: 1024px;
+  .or-divider {
     text-align: center;
+    color: $white;
+    width: 10rem;
+    display: flex;
+    gap: 1rem;
+    justify-self: center;
+    font-style: italic;
+    hr {
+      width: 100%;
+      border: 1.5px solid rgb(255 255 255 / 50%)
+    }
+  }
+  .front-page-container {
+    display: grid;
+    grid-auto-flow: row;
+    gap: 3rem;
+    justify-items: stretch;
+  }
+  .forgot-password-login-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    align-items: center;
   }
   .forgot-password {
     display: inline-block;
     color: $blue;
+  }
+  .create-account-button, .reset-password-button {
+    justify-self: right;
   }
   .tos {
     margin-bottom: 1.5rem;
@@ -77,9 +100,5 @@
   .fa-external-link {
     margin-left: 1rem;
     margin-bottom: 0.5rem;
-  }
-  img {
-    width: 55%;
-    margin-bottom: 2rem;
   }
 }

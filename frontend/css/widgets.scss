@@ -22,12 +22,16 @@
 }
 
 .widget-header {
-  min-height: 3.3rem;
   background: $dark_gray;
   letter-spacing: .05rem;
-  padding: .75rem 1rem;
+  padding: 0 1.25rem;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  height: 3.5rem;
   >*:not(h5):not(.title-help-icon):not(.title-help) {
     margin-left: 1rem;
   }
@@ -87,6 +91,7 @@
     display: inline;
     color: $gray;
     font-size: 1.2rem;
+    margin: 0;
     text-transform: uppercase;
   }
   .bp5-popover-wrapper {
