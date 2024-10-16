@@ -38,6 +38,10 @@ body {
   }
 }
 
+.bp5-popover {
+  font-size: 1.3rem;
+}
+
 .bp5-popover.help {
   .bp5-popover-arrow {
     display: none !important;
@@ -75,7 +79,6 @@ input[type=time] {
   -webkit-appearance: none;
   -moz-appearance: textfield;
   margin: 0;
-  border-radius: 0;
 }
 
 .char-limit {
@@ -458,16 +461,7 @@ fieldset {
 
 .garden-location {
   .fa-map {
-    margin: 0.5rem;
-    float: right;
-    margin-bottom: 0;
     color: $medium_gray;
-  }
-  .latitude {
-    padding-right: 0;
-  }
-  .longitude {
-    padding-left: 0;
   }
 }
 
@@ -547,13 +541,8 @@ a {
   }
 }
 
-.single-setting-row {
-  .col-xs-5 {
-    padding-left: 4.75rem;
-    &.centered-button-div {
-      padding-left: 6rem;
-    }
-  }
+.mcu-input-box {
+  width: 100%;
 }
 
 .fb-toggle-button,
@@ -2371,22 +2360,17 @@ ul {
   }
 }
 
+.problem-alerts {
+  padding: 1rem;
+}
+
 .problem-alert {
-  position: relative;
-  margin: 1rem;
-  margin-bottom: 3rem;
-  padding: 2rem;
-  border-radius: 4px;
-  box-shadow: 0px 2px 5px $medium_gray;
+  padding: 1.5rem 2rem;
+  border-radius: 1rem;
+  box-shadow: 0px 2px 8px $translucent2;
   background: $off_white;
-  .fa-exclamation-triangle,
-  .fa-check-square,
-  .fa-info-circle {
-    position: absolute;
-    top: 2rem;
-    left: 2rem;
+  .fa {
     font-size: 1.6rem;
-    padding-right: 0.5rem;
   }
   .fa-exclamation-triangle {
     color: $orange;
@@ -2405,29 +2389,22 @@ ul {
     }
   }
   .problem-alert-title {
-    margin-top: 0.15rem;
-    margin-bottom: 1rem;
-    margin-left: 2rem;
-    margin-right: 2rem;
-    line-height: 1rem;
+    align-items: baseline;
     h3 {
       display: inline;
       color: $dark_gray;
       font-size: 1.5rem;
       font-weight: bold;
+      margin: 0;
     }
     p {
       display: inline;
       color: $medium_gray;
       font-size: 1.2rem;
       white-space: nowrap;
-      margin-left: 0.5rem;
     }
   }
   .fa-times {
-    position: absolute;
-    top: 2rem;
-    right: 2rem;
     color: $medium_light_gray;
     &:hover {
       color: $dark_gray;
@@ -2468,11 +2445,7 @@ ul {
     .link-button {
       color: $off_white !important;
       font-weight: bold !important;
-      float: none;
-      margin-bottom: 2rem;
-    }
-    .fb-button {
-      margin-top: 0.5rem;
+      float: left;
     }
     a {
       text-decoration: none !important;
@@ -2896,6 +2869,9 @@ textarea:focus {
     display: grid;
     grid-template-columns: auto 1fr;
     gap: 0.5rem;
+    .farmbot-os-setting {
+      text-align: left;
+    }
   }
 }
 

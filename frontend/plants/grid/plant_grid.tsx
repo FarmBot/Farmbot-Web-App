@@ -194,7 +194,7 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
             this.setState({ cameraView: !this.state.cameraView },
               this.performPreview());
           }} />}
-      <div className={"grid-planting-toggle"}>
+      <div className={"row grid-exp-1"}>
         <label>{t("auto-update preview")}</label>
         <ToggleButton
           toggleValue={this.state.autoPreview}
@@ -221,7 +221,7 @@ interface ToggleProps {
 }
 
 const HexPackingToggle = (props: ToggleProps) =>
-  <div className={"grid-planting-toggle"}>
+  <div className={"row grid-exp-1"}>
     <label className="packing-method">{t("hexagonal packing")}</label>
     <ToggleButton
       toggleValue={props.value}

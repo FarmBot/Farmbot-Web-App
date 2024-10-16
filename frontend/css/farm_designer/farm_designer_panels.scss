@@ -4,6 +4,8 @@
   top: 8.9rem;
   width: 45rem;
   margin: 1.25rem;
+  overflow-y: scroll;
+  border-radius: 1rem;
   @media screen and (max-width: $mobile_max_width) {
     width: 100%;
   }
@@ -698,18 +700,6 @@
 }
 
 .farm-event-form {
-  .farm-event-repeat-options {
-    input[type=checkbox] {
-      margin-right: 0.5rem;
-      margin-top: 0;
-      vertical-align: middle;
-    }
-    .farm-event-repeat-form {
-      .add-event-repeat-frequency {
-        min-height: 34px;
-      }
-    }
-  }
   .save-btn {
     position: absolute;
     top: 0.5rem;
@@ -766,6 +756,7 @@
   }
   .crop-drag-info-tile {
     position: absolute;
+    top: 0;
     right: 0;
     margin: 1rem;
     border: 2px solid $white;
@@ -785,12 +776,6 @@
 }
 
 .grid-input {
-  .row {
-    margin-top: 0.5rem;
-    .grid-axis-label {
-      font-weight: bold;
-    }
-  }
   .use-current-location {
     display: inline;
     float: none;
@@ -825,7 +810,7 @@
       }
       .transparent-button {
         position: absolute;
-        bottom: -9.5rem;
+        bottom: -8.5rem;
         right: 1.5rem;
         margin: 0;
         color: $white;
@@ -893,22 +878,24 @@
         margin-top: 1.5rem;
       }
     }
+    .crop-companions {
+      display: flex;
+      gap: 0.75rem 1rem;
+      flex-wrap: wrap;
+    }
     .companion {
       display: inline-block;
       text-decoration: none !important;
-      background: $light_gray;
+      background: $translucent1;
       border-radius: 2rem;
-      margin-right: 1rem;
-      margin-bottom: 0.5rem;
-      padding: 0.15rem;
-      padding-left: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: .25rem .75rem .25rem .5rem;
       &:hover {
-        background: $gray;
+        background: $translucent15;
       }
       p {
-        display: inline;
-        margin-left: 0.25rem;
-        margin-right: 1rem;
         font-weight: bold;
         text-transform: none;
       }
@@ -918,25 +905,23 @@
     font-size: 1.3rem;
   }
   .object-list {
-    li {
-      position: relative;
-      margin-left: 2rem;
+    ul {
+      display: grid;
+      gap: 1rem;
     }
     li {
+      display: flex;
+      gap: 0.5rem;
+      align-items: baseline;
+      margin: 0;
       p,
       div {
-        display: inline;
         font-size: 1.3rem;
         color: $dark_gray;
       }
       p {
-        margin-right: 0.25rem;
         text-transform: uppercase;
         font-weight: bold;
-      }
-      span {
-        position: absolute;
-        left: -2rem;
       }
     }
   }
@@ -1049,56 +1034,26 @@ li {
 }
 
 .grid-and-row-planting {
+  display: grid;
+  gap: 1rem;
   h3 {
     width: 100%;
     text-align: center;
+    margin: 0;
   }
-  .row {
-    margin-left: 0;
-    margin-right: 0;
-    div[class*=col-] {
-      padding-left: 0;
-      padding-right: 1rem;
-    }
-  }
-  i {
+  .fa-arrows-h, .fa-arrows-v {
     margin-left: 0.5rem;
-    margin-right: 0.5rem;
   }
   label {
     color: $off_white;
-    margin-top: 0.75rem;
   }
   .use-current-location {
-    padding: 0;
-    margin-left: 1rem;
+    display: flex;
+    align-items: center;
     button {
       .fa {
         font-size: 1.5rem;
       }
-    }
-  }
-  .grid-input {
-    i[class*=fa-arrow] {
-      margin-right: 0.35rem;
-      cursor: default !important;
-    }
-    input {
-      box-shadow: none;
-      &.numPlantsH,
-      &.numPlantsV {
-        -moz-appearance: unset !important;
-      }
-    }
-  }
-  .grid-planting-toggle {
-    margin: 0.5rem;
-    margin-left: 0;
-    label {
-      margin-top: 0.5rem;
-    }
-    button {
-      float: right;
     }
   }
   .fb-toggle-button {
@@ -1627,8 +1582,19 @@ li {
     margin: 0;
   }
   .section {
-    position: relative;
-    margin-bottom: 0;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    &.setting {
+      gap: 0.5rem;
+    }
+    .bp5-collapse {
+      grid-column: span 2;
+    }
+    .bp5-collapse-body {
+      display: grid;
+      gap: 1rem;
+    }
     .hw-warn {
       position: absolute;
       top: -0.35rem;
@@ -1658,7 +1624,6 @@ li {
     }
   }
   .release-notes-wrapper {
-    margin-top: 0.75rem;
     float: right !important;
   }
   .settings-warning-banner {
@@ -1741,11 +1706,6 @@ li {
       }
     }
   }
-  .show-advanced-toggle,
-  .highlight-modified-toggle {
-    margin-right: 4.5rem;
-    margin-top: 1rem;
-  }
   .fb-button {
     margin-top: 0.5rem;
   }
@@ -1753,11 +1713,6 @@ li {
     margin: auto 0 !important;
     line-height: 1;
     font-size: 1.2rem !important;
-  }
-  .bp5-popover-wrapper {
-    display: inline-block;
-    margin: auto;
-    float: none;
   }
   .help-icon {
     margin-left: 0.5rem;
@@ -1925,13 +1880,13 @@ li {
       }
       .point-type-section,
       .criteria-checkbox-list-item {
-        background: $translucent1;
         height: 3rem;
         border-radius: 3rem;
         display: flex;
         align-items: center;
         padding: 0 1rem;
         gap: 1rem;
+        box-shadow: inset 0 0 3px $translucent3;
         .fb-checkbox {
           display: contents;
         }
@@ -1990,21 +1945,6 @@ li {
       .criteria-plant-status,
       .criteria-slug {
         margin-top: 1rem;
-      }
-      .day-criteria {
-        .criteria-checkbox-list-item {
-          margin-bottom: 1rem;
-          p {
-            vertical-align: middle;
-          }
-        }
-        .days-old-text {
-          display: inline;
-          vertical-align: bottom;
-        }
-        input {
-          line-height: 1.75rem;
-        }
       }
       .number-eq-criteria,
       .string-eq-criteria {

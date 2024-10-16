@@ -77,6 +77,10 @@
   background-color: $translucent;
   aspect-ratio: 3 / 2;
   border-radius: 5px;
+  &.fallback-image {
+    background-size: 50% !important;
+    background-color: $translucent15 !important;
+  }
 }
 
 .crop-search-result-wrapper {
@@ -106,8 +110,8 @@
       left: 0;
       bottom: 0;
       right: 0;
-      padding: 0.4rem 0.6rem 0.2rem;
-      background: linear-gradient(transparent, $translucent5);
+      padding: 3rem 0.6rem 0.2rem;
+      background: linear-gradient(transparent, $translucent15 50%, $translucent4);
       border-bottom-left-radius: 5px;
       border-bottom-right-radius: 5px;
       color: $white;

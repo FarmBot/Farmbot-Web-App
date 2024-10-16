@@ -75,16 +75,16 @@ const AlertCardTemplate = (props: AlertCardTemplateProps) => {
   const timeFormat = thisYear ? "MMM D" : "MMM D, YYYY";
   return <div className={
     `problem-alert ${props.className} priority-${props.alert.priority}`}>
-    <div className="problem-alert-title">
+    <div className="problem-alert-title row grid-exp-2">
       <i className={`fa ${props.iconName || "fa-exclamation-triangle"}`} />
       <h3>{t(props.title)}</h3>
       {timeOk(alert.created_at) &&
         <p>
           {formatTime(moment.unix(alert.created_at), timeSettings, timeFormat)}
         </p>}
+      {alert.id && !props.noDismiss && <i className={"fa fa-times fb-icon-button"}
+        onClick={dismissAlert({ id: alert.id, findApiAlertById, dispatch })} />}
     </div>
-    {alert.id && !props.noDismiss && <i className={"fa fa-times fb-icon-button"}
-      onClick={dismissAlert({ id: alert.id, findApiAlertById, dispatch })} />}
     <div className="problem-alert-content">
       <Markdown html={true}>{t(props.message)}</Markdown>
       {props.children}

@@ -45,8 +45,10 @@ export const Setting = (props: SettingProps) => {
   return <Highlight settingName={title}>
     <div
       className={`designer-setting ${props.disabled ? "disabled" : ""}`}>
-      <label>{t(title)}</label>
-      {props.useToolTip && <Help text={props.description} />}
+      <div>
+        <label>{t(title)}</label>
+        {props.useToolTip && <Help text={props.description} />}
+      </div>
       {setting && <ToggleButton
         toggleValue={props.invert ? !value : value}
         toggleAction={() => {

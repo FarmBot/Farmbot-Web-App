@@ -11,6 +11,14 @@
   // background: #f6ff8d;
 }
 
+.half-gap {
+  gap: 0.5rem;
+}
+
+.double-gap {
+  gap: 2rem;
+}
+
 .no-gap {
   gap: 0;
 }
@@ -110,4 +118,21 @@ fieldset {
 .criteria-operators-grid {
   gap: 0;
   text-align: center;
+}
+
+.grid-planting-grid {
+  grid-template-columns: 1fr 50px 50px;
+}
+
+.axes-grid {
+  grid-template-columns: 22% 1fr;
+}
+
+.axes-grid-header {
+  text-align: center;
+  grid-template-columns: 24% 1fr 1fr 1fr;
+}
+
+.mcu-inputs, .calibration-row-axes {
+  justify-items: center;
 }

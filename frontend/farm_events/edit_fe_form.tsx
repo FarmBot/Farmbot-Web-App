@@ -466,7 +466,7 @@ export interface RepeatFormProps {
 
 export const RepeatForm = (props: RepeatFormProps) => {
   const allowRepeat = !props.isRegimen && props.fieldGet("timeUnit") !== NEVER;
-  return <div className="farm-event-repeat-options">
+  return <div className="farm-event-repeat-options grid">
     {!props.isRegimen
       ? <label>
         <input type="checkbox"
@@ -549,19 +549,21 @@ interface FarmEventFormProps {
 
 export const FarmEventForm = (props: FarmEventFormProps) => {
   const { isRegimen, fieldGet, fieldSet, timeSettings } = props;
-  return <div className="farm-event-form">
-    <label>
-      {t("Sequence or Regimen")}
-    </label>
-    {props.executableOptions.filter(x => !x.heading).length < 1 &&
-      <Help
-        text={Content.MISSING_EXECUTABLE}
-        customIcon={"fa-exclamation-triangle"} />}
-    <FBSelect
-      list={props.executableOptions}
-      onChange={props.executableSet}
-      selectedItem={props.executableGet()} />
-    {props.children}
+  return <div className="farm-event-form grid">
+    <div>
+      <label>
+        {t("Sequence or Regimen")}
+      </label>
+      {props.executableOptions.filter(x => !x.heading).length < 1 &&
+        <Help
+          text={Content.MISSING_EXECUTABLE}
+          customIcon={"fa-exclamation-triangle"} />}
+        <FBSelect
+          list={props.executableOptions}
+          onChange={props.executableSet}
+          selectedItem={props.executableGet()} />
+        {props.children}
+    </div>
     <StartTimeForm
       disabled={!props.executableGet()}
       isRegimen={isRegimen}

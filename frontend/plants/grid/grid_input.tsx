@@ -2,7 +2,7 @@ import React from "react";
 import {
   PlantGridKey, GridInputProps, InputCellProps,
 } from "./interfaces";
-import { Col, Row } from "../../ui";
+import { Row } from "../../ui";
 import { t } from "../../i18next_wrapper";
 import { UseCurrentLocation } from "../../tools/tool_slot_edit_components";
 
@@ -26,7 +26,7 @@ export const getLabel = (
 export function InputCell(props: InputCellProps) {
   const { gridKey, onChange, grid, preview } = props;
   const [value, setValue] = React.useState("" + grid[gridKey]);
-  return <Col xs={3}>
+  return <div>
     <input name={gridKey} className={gridKey}
       type={"number"}
       value={value}
@@ -38,7 +38,7 @@ export function InputCell(props: InputCellProps) {
           : preview();
       }}
       onChange={e => setValue(e.currentTarget.value)} />
-  </Col>;
+  </div>;
 }
 
 const pairs: [PlantGridKey, PlantGridKey][] = [
@@ -51,25 +51,26 @@ export function GridInput(props: GridInputProps) {
   const { xy_swap } = props;
   const vertical = "fa-arrows-v";
   const horizontal = "fa-arrows-h";
-  return <div className="grid-input">
-    <Row>
-      <Col xsOffset={6} xs={3} className={"grid-axis-label"}>
-        X
+  return <div className="grid">
+    <Row className="grid-planting-grid">
+      <div></div>
+      <div>
+        <label>X</label>
         <i className={`fa ${xy_swap ? vertical : horizontal}`} />
-      </Col>
-      <Col xs={3} className={"grid-axis-label"}>
-        Y
+      </div>
+      <div>
+        <label>Y</label>
         <i className={`fa ${xy_swap ? horizontal : vertical}`} />
-      </Col>
+      </div>
     </Row>
     {pairs.map(([left, right]) =>
-      <Row key={left + right}>
-        <Col xs={6}>
+      <Row key={left + right} className="grid-planting-grid">
+        <div className="row grid-exp-1">
           <label>{getLabel(left, props.itemType)}</label>
           {left == "startX" &&
             <UseCurrentLocation botPosition={props.botPosition}
               onChange={props.onUseCurrentPosition} />}
-        </Col>
+        </div>
         <InputCell
           itemType={props.itemType}
           xy_swap={props.xy_swap}

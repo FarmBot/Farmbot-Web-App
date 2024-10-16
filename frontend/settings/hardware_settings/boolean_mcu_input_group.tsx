@@ -1,6 +1,6 @@
 import React from "react";
 import { settingToggle } from "../../devices/actions";
-import { Row, Col, Help, ToggleButton } from "../../ui";
+import { Row, Help, ToggleButton } from "../../ui";
 import { BooleanMCUInputGroupProps } from "./interfaces";
 import { t } from "../../i18next_wrapper";
 import { Highlight } from "../maybe_highlight";
@@ -25,41 +25,34 @@ export class BooleanMCUInputGroup
     const xParam = sourceFwConfig(x);
     const yParam = sourceFwConfig(y);
     const zParam = sourceFwConfig(z);
-    const width = 3;
-    return <div className={"mcu-inputs"}>
-      <Col xs={width} className={"centered-button-div low-pad"}>
-        <ToggleButton dispatch={dispatch}
-          grayscale={grayscale?.x}
-          disabled={this.props.disabled || disable?.x}
-          dim={!xParam.consistent}
-          title={grayscale?.x ? disabledBy : undefined}
-          toggleValue={xParam.value}
-          className={this.wrapperClassName(x, xParam.value)}
-          toggleAction={() =>
-            dispatch(settingToggle(x, sourceFwConfig, displayAlert))} />
-      </Col>
-      <Col xs={width} className={"centered-button-div low-pad"}>
-        <ToggleButton dispatch={dispatch}
-          grayscale={grayscale?.y}
-          disabled={this.props.disabled || disable?.y}
-          dim={!yParam.consistent}
-          title={grayscale?.y ? disabledBy : undefined}
-          toggleValue={yParam.value}
-          className={this.wrapperClassName(y, yParam.value)}
-          toggleAction={() =>
-            dispatch(settingToggle(y, sourceFwConfig, displayAlert))} />
-      </Col>
-      <Col xs={width} className={"centered-button-div low-pad"}>
-        <ToggleButton dispatch={dispatch}
-          grayscale={grayscale?.z}
-          disabled={this.props.disabled || disable?.z}
-          dim={!zParam.consistent}
-          title={grayscale?.z ? disabledBy : undefined}
-          toggleValue={zParam.value}
-          className={this.wrapperClassName(z, zParam.value)}
-          toggleAction={() =>
-            dispatch(settingToggle(z, sourceFwConfig, displayAlert))} />
-      </Col>
+    return <div className={"mcu-inputs row no-gap"}>
+      <ToggleButton dispatch={dispatch}
+        grayscale={grayscale?.x}
+        disabled={this.props.disabled || disable?.x}
+        dim={!xParam.consistent}
+        title={grayscale?.x ? disabledBy : undefined}
+        toggleValue={xParam.value}
+        className={this.wrapperClassName(x, xParam.value)}
+        toggleAction={() =>
+          dispatch(settingToggle(x, sourceFwConfig, displayAlert))} />
+      <ToggleButton dispatch={dispatch}
+        grayscale={grayscale?.y}
+        disabled={this.props.disabled || disable?.y}
+        dim={!yParam.consistent}
+        title={grayscale?.y ? disabledBy : undefined}
+        toggleValue={yParam.value}
+        className={this.wrapperClassName(y, yParam.value)}
+        toggleAction={() =>
+          dispatch(settingToggle(y, sourceFwConfig, displayAlert))} />
+      <ToggleButton dispatch={dispatch}
+        grayscale={grayscale?.z}
+        disabled={this.props.disabled || disable?.z}
+        dim={!zParam.consistent}
+        title={grayscale?.z ? disabledBy : undefined}
+        toggleValue={zParam.value}
+        className={this.wrapperClassName(z, zParam.value)}
+        toggleAction={() =>
+          dispatch(settingToggle(z, sourceFwConfig, displayAlert))} />
     </div>;
   };
 
@@ -85,15 +78,15 @@ export class BooleanMCUInputGroup
     return <Highlight settingName={this.props.label}
       hidden={this.props.advanced && !(this.props.showAdvanced || this.anyModified)}
       className={this.props.advanced ? "advanced" : undefined}>
-      <Row>
-        <Col xs={3} className={"widget-body-tooltips"}>
+      <Row className="axes-grid">
+        <div>
           <label>
             {t(this.props.label)}
             {this.props.caution &&
               <i className="fa fa-exclamation-triangle caution-icon" />}
           </label>
           <Help text={this.tooltip} />
-        </Col>
+        </div>
         <this.Toggles />
       </Row>
     </Highlight>;

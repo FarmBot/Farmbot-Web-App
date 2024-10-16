@@ -172,33 +172,35 @@ const Companions = (props: CropInfoListProps) => {
   const { result, dispatch, openfarmCropFetch } = props;
   if (result.companions.length == 0) { return <div />; }
   return <InfoField title={"companions"}>
-    {result.companions.map((companion, index) =>
-      <Link key={companion.slug}
-        className={"companion"}
-        onClick={() => {
-          openfarmCropFetch(companion.slug)(dispatch);
-          unselectPlant(dispatch)();
-          props.selectMostUsedCurves(companion.slug);
-        }}
-        onDragStart={() => {
-          dispatch({
-            type: Actions.SET_COMPANION_INDEX,
-            payload: index,
-          });
-        }}
-        onDragEnd={() => {
-          setTimeout(() => dispatch({
-            type: Actions.SET_COMPANION_INDEX,
-            payload: undefined,
-          }), 500);
-        }}
-        to={Path.cropSearch(companion.slug)}>
-        <img
-          src={svgToUrl(companion.svg_icon)}
-          width={20}
-          height={20} />
-        <p>{companion.name}</p>
-      </Link>)}
+    <div className="crop-companions">
+      {result.companions.map((companion, index) =>
+        <Link key={companion.slug}
+          className={"companion"}
+          onClick={() => {
+            openfarmCropFetch(companion.slug)(dispatch);
+            unselectPlant(dispatch)();
+            props.selectMostUsedCurves(companion.slug);
+          }}
+          onDragStart={() => {
+            dispatch({
+              type: Actions.SET_COMPANION_INDEX,
+              payload: index,
+            });
+          }}
+          onDragEnd={() => {
+            setTimeout(() => dispatch({
+              type: Actions.SET_COMPANION_INDEX,
+              payload: undefined,
+            }), 500);
+          }}
+          to={Path.cropSearch(companion.slug)}>
+          <img
+            src={svgToUrl(companion.svg_icon)}
+            width={20}
+            height={20} />
+          <p>{companion.name}</p>
+        </Link>)}
+      </div>
   </InfoField>;
 };
 

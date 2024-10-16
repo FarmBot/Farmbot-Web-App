@@ -883,7 +883,7 @@ export interface SectionHeaderProps {
 }
 
 export const SectionHeader = (props: SectionHeaderProps) =>
-  <div className={`sequence-section-header ${props.extraClass}`}
+  <div className={`sequence-section-header row grid-exp-1 ${props.extraClass}`}
     onClick={props.toggle}>
     <label>{!isUndefined(props.count)
       ? `${t(props.title)} (${props.count})`
