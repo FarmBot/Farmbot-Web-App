@@ -114,7 +114,7 @@ export class Connectivity
           && this.props.flags.botAPI && this.props.flags.botMQTT
           && this.props.apiFirmwareValue
           && !this.props.flags.botFirmware &&
-          <Row className={"fix-firmware-buttons "}>
+          <Row className={"fix-firmware-buttons"}>
             <FlashFirmwareBtn
               apiFirmwareValue={this.props.apiFirmwareValue}
               botOnline={true} />

@@ -267,7 +267,7 @@ describe("<CreatePoints />", () => {
     const wrapper = shallow<CreatePoints>(<CreatePoints {...p} />);
     const PP = wrapper.instance().PointProperties;
     const component = shallow(<PP />);
-    component.find("BlurableInput").at(1).simulate("commit", {
+    component.find("BlurableInput[name='cx']").simulate("commit", {
       currentTarget: { value: "10" }
     });
     expect(p.dispatch).toHaveBeenCalledWith({

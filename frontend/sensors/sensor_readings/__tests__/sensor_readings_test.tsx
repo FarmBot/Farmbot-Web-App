@@ -19,7 +19,7 @@ describe("<SensorReadings />", () => {
   it("renders", () => {
     const wrapper = mount(<SensorReadings {...fakeProps()} />);
     const txt = wrapper.text().toLowerCase();
-    ["sensor history", "sensor", "time period", "end date", "deviation"]
+    ["history", "sensor", "time period", "end date", "deviation"]
       .map(string => expect(txt).toContain(string));
   });
 

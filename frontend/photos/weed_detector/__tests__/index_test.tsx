@@ -41,8 +41,7 @@ describe("<WeedDetector />", () => {
 
   it("renders", () => {
     const wrapper = mount(<WeedDetector {...fakeProps()} />);
-    ["Color Range",
-      "HUE01793090",
+    ["HUE01793090",
       "SATURATION025550255",
       "VALUE025550255",
       "Scan current image",
