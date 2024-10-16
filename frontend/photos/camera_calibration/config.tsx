@@ -155,11 +155,13 @@ export interface NumberBoxConfigProps {
 
 export const NumberBoxConfig = (props: NumberBoxConfigProps) => {
   return <Highlight settingName={props.settingName} pathPrefix={Path.photos}>
-    <div className={"camera-config-number-box"}>
-      <label htmlFor={props.configKey}>
-        {t(props.settingName)}
-      </label>
-      <Help text={props.helpText} />
+    <div className={"row grid-exp-1"}>
+      <div>
+        <label htmlFor={props.configKey}>
+          {t(props.settingName)}
+        </label>
+        <Help text={props.helpText} />
+      </div>
       <BlurableInput type="number"
         id={props.configKey}
         className={getModifiedClassName(props.configKey,

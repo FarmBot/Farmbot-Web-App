@@ -3,7 +3,7 @@ import axios from "axios";
 import { error as log } from "../toast/toast";
 import { prettyPrintApiErrors } from "../util";
 import { API } from "../api";
-import { Widget, WidgetHeader, WidgetBody, Row, Col } from "../ui";
+import { Widget, WidgetHeader, WidgetBody } from "../ui";
 import { Session } from "../session";
 import { t } from "../i18next_wrapper";
 import { ToastContainer } from "../toast/fb_toast";
@@ -68,54 +68,42 @@ export class PasswordReset extends React.Component<{}, State> {
 
   render() {
 
-    const buttonStylesUniqueToOnlyThisPage = {
-      marginTop: "1rem",
-      padding: ".5rem 1.6rem",
-      fontSize: "1.2rem",
-      borderBottom: "none"
-    };
-
     return <div className="static-page">
       <div className="all-content-wrapper">
         <h1 className="text-center">
           {t("Reset your password")}
         </h1>
         <br />
-        <Row>
-          <Col xs={12} sm={6} className="col-sm-push-3">
-            <Widget>
-              <WidgetHeader
-                title={"Reset Password"}
-                helpText={t("Password must be 8 or more characters.")} />
-              <WidgetBody>
-                <form onSubmit={this.submit.bind(this)}>
-                  <label>
-                    {t("New Password")}
-                  </label>
-                  <input
-                    type="password"
-                    onChange={this.set("password").bind(this)} />
-                  <label>
-                    {t("Confirm New Password")}
-                  </label>
-                  <input
-                    type="password"
-                    onChange={this.set("passwordConfirmation").bind(this)} />
-                  <Row>
-                    <Col xs={12}>
-                      <button
-                        className="fb-button green pull-right"
-                        title={t("Reset password")}
-                        style={buttonStylesUniqueToOnlyThisPage}>
-                        {t("Reset")}
-                      </button>
-                    </Col>
-                  </Row>
-                </form>
-              </WidgetBody>
-            </Widget>
-          </Col>
-        </Row>
+        <Widget>
+          <WidgetHeader
+            title={"Reset Password"}
+            helpText={t("Password must be 8 or more characters.")} />
+          <WidgetBody>
+            <form onSubmit={this.submit.bind(this)}>
+              <div>
+                <label>
+                  {t("New Password")}
+                </label>
+                <input
+                  type="password"
+                  onChange={this.set("password").bind(this)} />
+              </div>
+              <div>
+                <label>
+                  {t("Confirm New Password")}
+                </label>
+                <input
+                  type="password"
+                  onChange={this.set("passwordConfirmation").bind(this)} />
+              </div>
+              <button
+                className="fb-button green pull-right"
+                title={t("Reset password")}>
+                {t("Reset")}
+              </button>
+            </form>
+          </WidgetBody>
+        </Widget>
       </div>
       <ToastContainer />
     </div>;

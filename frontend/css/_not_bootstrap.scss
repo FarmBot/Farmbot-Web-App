@@ -1,3 +1,8 @@
+.grid {
+  display: grid;
+  gap: 1rem;
+}
+
 .row {
   display: grid;
   grid-auto-flow: column;
@@ -70,4 +75,23 @@
 fieldset {
   margin: 0;
   padding: 0;
+}
+
+.advanced-group-criteria {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto;
+  gap: 1rem;
+}
+
+.weed-detection-grid {
+  gap: 3rem;
+}
+
+.panel-title {
+  font-family: 'Inknut Antiqua', serif;
+  font-weight: bold;
+}
+
+.sensor-form-grid {
+  grid-template-columns: 2fr 1fr 1fr auto;
 }

@@ -14,7 +14,7 @@ import { store } from "../redux/store";
 import { maybeGetDevice } from "../resources/selectors";
 import { DevSettings } from "../settings/dev/dev_support";
 import { success } from "../toast/toast";
-import { Col, Help, Row } from "../ui";
+import { Help, Row } from "../ui";
 import { WizardStepSlug } from "../wizard/data";
 import { HelpHeader } from "./header";
 
@@ -34,28 +34,22 @@ export const SupportPanel = () =>
               {t("Learn more")}
             </a>
           </p>
-          <Row>
-            <Col xs={4}>
-              <a className={"button"}
-                href={"mailto:support@farm.bot"}>
-                <b>{t("email")}</b>
-                <i>{t("24 hour response time")}</i>
-              </a>
-            </Col>
-            <Col xs={4}>
-              <a className={"button"}
-                href={""}>
-                <b>{t("live chat")}</b>
-                <i>{t("M-F 9-5 PST")}</i>
-              </a>
-            </Col>
-            <Col xs={4}>
-              <a className={"button"}
-                href={""}>
-                <b>{t("phone")}</b>
-                <i>{t("M-F 9-5 PST")}</i>
-              </a>
-            </Col>
+          <Row className="grid-3-col">
+            <a className={"button"}
+              href={"mailto:support@farm.bot"}>
+              <b>{t("email")}</b>
+              <i>{t("24 hour response time")}</i>
+            </a>
+            <a className={"button"}
+              href={""}>
+              <b>{t("live chat")}</b>
+              <i>{t("M-F 9-5 PST")}</i>
+            </a>
+            <a className={"button"}
+              href={""}>
+              <b>{t("phone")}</b>
+              <i>{t("M-F 9-5 PST")}</i>
+            </a>
           </Row>
         </div>}
       <div className={"standard-support"}>
@@ -67,14 +61,12 @@ export const SupportPanel = () =>
             {t("Learn more")}
           </a>
         </p>
-        <Row>
-          <Col xs={4}>
-            <a className={"button"}
-              href={"mailto:support@farm.bot"}>
-              <b>{t("email")}</b>
-              <i>{t("72 hour response time")}</i>
-            </a>
-          </Col>
+        <Row className="grid-4-col">
+          <a className={"button"}
+            href={"mailto:support@farm.bot"}>
+            <b>{t("email")}</b>
+            <i>{t("72 hour response time")}</i>
+          </a>
         </Row>
       </div>
       <div className={"community-support"}>

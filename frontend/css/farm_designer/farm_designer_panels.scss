@@ -24,7 +24,6 @@
 }
 
 .controls-panel,
-.sensors-panel,
 .photos-panel,
 .messages-panel,
 .help-panel {
@@ -2835,11 +2834,32 @@ li {
   }
 }
 
+.sensors-panel-content {
+  padding: 1rem;
+}
+
 .sensors-panel {
+  display: grid;
+  gap: 1rem;
+  .panel-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    align-items: center;
+    .panel-title {
+      margin: 0;
+      height: unset;
+      color: $dark_gray;
+    }
+  }
   .panel-content {
     label {
       margin-top: 0;
     }
+  }
+  .sensor-history-widget {
+    display: grid;
+    gap: 1rem;
   }
 }
 
@@ -3886,13 +3906,6 @@ li {
       .motor-settings {
         .row {
           margin-top: 1rem;
-        }
-      }
-      .dropdown-camera-calibration-config,
-      .camera-config-number-box {
-        .bp5-popover-wrapper {
-          display: inline-block;
-          margin-left: 1rem;
         }
       }
       .filter-search {

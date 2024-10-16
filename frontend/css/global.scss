@@ -738,23 +738,6 @@ a {
   }
 }
 
-.sensor-history-widget {
-  .sensor-selection,
-  .sensor-history-time-selection,
-  .sensor-history-location-selection {
-    margin-bottom: 1rem !important;
-  }
-  .row {
-    margin-bottom: 0 !important;
-  }
-  label {
-    margin-bottom: 5px;
-  }
-  .bp5-popover-wrapper {
-    float: right;
-  }
-}
-
 .add-sensor-reading-menu {
   width: 300px;
   .green {
@@ -768,10 +751,6 @@ a {
   }
 }
 
-.sensor-selection {
-  margin-bottom: 4rem !important;
-}
-
 .sensor-readings-plot {
   max-height: 300px;
   stroke: $black;
@@ -780,7 +759,10 @@ a {
 }
 
 .sensor-history-table {
+  text-align: left;
   font-size: 1.2rem;
+  background: $translucent1;
+  border-radius: 0.5rem;
   th,
   td {
     width: 1%;
@@ -791,7 +773,7 @@ a {
       color: $medium_gray;
     }
     &.selected {
-      background: $gray;
+      background: $translucent1;
     }
   }
   .sensor-history-table-contents {
@@ -1931,12 +1913,6 @@ ul {
 .sensors-widget {
   p {
     margin-top: 0.75rem;
-  }
-  .sensor-list {
-    min-width: 33rem;
-    .fb-button {
-      white-space: unset;
-    }
   }
   .sensor-reading-display {
     border-style: solid;
