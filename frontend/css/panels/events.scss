@@ -1,5 +1,5 @@
 .farm-event {
-  align-items: start;
+  align-items: start!important;
 }
 
 .farm-event-calendar-rows {
@@ -31,13 +31,14 @@
   background: $translucent8_white;
   padding: 0.25rem 0.5rem;
   display: inline-block;
+  margin: 0.25rem;
 }
 
 .farm-event-data-block {
   grid-template-columns: 6rem 1fr auto;
   padding: 0.5rem 1rem;
   font-size: 1.2rem;
-  align-items: baseline;
+  align-items: baseline!important;
   border-radius: 0.5rem;
   overflow: hidden;
   box-shadow: 0 0 1rem $translucent1;
@@ -54,5 +55,39 @@
     i {
       opacity: 1;
     }
+  }
+}
+
+.edit-farm-event-panel,
+.add-farm-event-panel {
+  .panel-content {
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 1rem 1rem 0;
+  }
+  .bp5-popover-wrapper {
+    display: inline-block;
+    margin-left: 0.5rem;
+    &.input-error-wrapper {
+      display: block;
+    }
+  }
+}
+
+.farm-event-form {
+  .save-btn {
+    position: absolute;
+    top: 0.5rem;
+    right: 0;
+  }
+}
+
+.add-farm-event-panel,
+.edit-farm-event-panel {
+  .fa-trash {
+    position: absolute;
+    top: 1.25rem;
+    right: 8rem;
+    color: $white;
   }
 }

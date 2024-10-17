@@ -679,40 +679,6 @@
   }
 }
 
-.edit-farm-event-panel,
-.add-farm-event-panel {
-  .panel-content {
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding: 1rem 1rem 0;
-  }
-  .bp5-popover-wrapper {
-    display: inline-block;
-    margin-left: 0.5rem;
-    &.input-error-wrapper {
-      display: block;
-    }
-  }
-}
-
-.farm-event-form {
-  .save-btn {
-    position: absolute;
-    top: 0.5rem;
-    right: 0;
-  }
-}
-
-.add-farm-event-panel,
-.edit-farm-event-panel {
-  .fa-trash {
-    position: absolute;
-    top: 1.25rem;
-    right: 8rem;
-    color: $white;
-  }
-}
-
 .panel-nav {
   position: fixed;
   z-index: 11;
