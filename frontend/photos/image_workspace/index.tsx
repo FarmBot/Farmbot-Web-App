@@ -111,16 +111,18 @@ export class ImageWorkspace
     const defaultHHigh = this.getDefault(cameraCalibrationEnv ? "H_LO" : "H_HI");
     return <div className="image-workspace">
       <Row className="grid-2-col weed-detection-grid">
-        <div>
+        <div className="grid">
           <Highlight settingName={this.props.sectionKey == "calibration"
             ? DeviceSetting.calibrationHue
             : DeviceSetting.detectionHue} pathPrefix={Path.photos}>
-            <label htmlFor="hue">{t("HUE")}</label>
-            <Help text={t(ToolTips.COLOR_HUE_RANGE, {
-              defaultLow: defaultHLow,
-              defaultHigh: defaultHHigh,
-              defaultColor: cameraCalibrationEnv ? t("red") : t("green"),
-            })} />
+            <div>
+              <label htmlFor="hue">{t("HUE")}</label>
+              <Help text={t(ToolTips.COLOR_HUE_RANGE, {
+                defaultLow: defaultHLow,
+                defaultHigh: defaultHHigh,
+                defaultColor: cameraCalibrationEnv ? t("red") : t("green"),
+              })} />
+            </div>
             <WeedDetectorSlider
               className={[
                 getModifiedClassNameDefaultFalse(
@@ -137,11 +139,13 @@ export class ImageWorkspace
           <Highlight settingName={this.props.sectionKey == "calibration"
             ? DeviceSetting.calibrationSaturation
             : DeviceSetting.detectionSaturation} pathPrefix={Path.photos}>
-            <label htmlFor="saturation">{t("SATURATION")}</label>
-            <Help text={t(ToolTips.COLOR_SATURATION_RANGE, {
-              defaultLow: this.getDefault("S_LO"),
-              defaultHigh: this.getDefault("S_HI"),
-            })} />
+            <div>
+              <label htmlFor="saturation">{t("SATURATION")}</label>
+              <Help text={t(ToolTips.COLOR_SATURATION_RANGE, {
+                defaultLow: this.getDefault("S_LO"),
+                defaultHigh: this.getDefault("S_HI"),
+              })} />
+            </div>
             <WeedDetectorSlider
               className={[
                 getModifiedClassNameDefaultFalse(
@@ -158,11 +162,13 @@ export class ImageWorkspace
           <Highlight settingName={this.props.sectionKey == "calibration"
             ? DeviceSetting.calibrationValue
             : DeviceSetting.detectionValue} pathPrefix={Path.photos}>
-            <label htmlFor="value">{t("VALUE")}</label>
-            <Help text={t(ToolTips.COLOR_VALUE_RANGE, {
-              defaultLow: this.getDefault("V_LO"),
-              defaultHigh: this.getDefault("V_HI"),
-            })} />
+            <div>
+              <label htmlFor="value">{t("VALUE")}</label>
+              <Help text={t(ToolTips.COLOR_VALUE_RANGE, {
+                defaultLow: this.getDefault("V_LO"),
+                defaultHigh: this.getDefault("V_HI"),
+              })} />
+            </div>
             <WeedDetectorSlider
               className={[
                 getModifiedClassNameDefaultFalse(

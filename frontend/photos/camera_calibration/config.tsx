@@ -187,11 +187,13 @@ export interface DropdownConfigProps {
 
 export const DropdownConfig = (props: DropdownConfigProps) =>
   <Highlight settingName={props.settingName} pathPrefix={Path.photos}>
-    <div className={`dropdown-camera-calibration-config ${props.extraClass}`}>
-      <label htmlFor={props.configKey}>
-        {t(props.settingName)}
-      </label>
-      <Help text={props.helpText} />
+    <div className={`dropdown-camera-calibration-config row grid-col-2 ${props.extraClass}`}>
+      <div className="row grid-exp-2">
+        <label htmlFor={props.configKey}>
+          {t(props.settingName)}
+        </label>
+        <Help text={props.helpText} />
+      </div>
       <FBSelect
         extraClass={getModifiedClassName(props.configKey,
           props.wdEnvGet(props.configKey))}

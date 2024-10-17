@@ -269,3 +269,19 @@
     font-size: 0.6rem;
   }
 }
+
+.connectivity-grid {
+  grid-template-columns: auto 1fr 1fr 1fr;
+}
+
+.realtime-wrapper {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: auto 1fr;
+}
+
+.network-wrapper {
+  display: grid;
+  grid-auto-flow: column;
+  gap: 1rem;
+}

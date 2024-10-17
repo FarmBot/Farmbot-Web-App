@@ -1,0 +1,202 @@
+.photos-panel {
+  .expandable-header {
+    margin: 0;
+  }
+  .panel-content {
+    display: grid;
+    gap: 1rem;
+    .filters-enabled-warning {
+      float: right;
+    }
+    .fa-exclamation-triangle {
+      font-size: 1.3rem;
+      color: $orange;
+    }
+    .toggle-label {
+      margin-top: 0 !important;
+      margin-bottom: 1rem;
+    }
+    .fb-toggle-button {
+      margin-top: 0.5rem !important;
+    }
+    .photo-filter-settings {
+      .filter-controls {
+        .banner {
+          display: none;
+        }
+        &.single-image-mode,
+        &.image-layer-disabled {
+          opacity: 0.40;
+          * {
+            pointer-events: none;
+          }
+          .banner {
+            display: inline-block;
+            position: absolute;
+            top: 25%;
+            left: -2.5%;
+            z-index: 10;
+            width: 105%;
+            padding: 0.5rem;
+            background-color: $dark_gray;
+            opacity: 0.90;
+            color: $off_white;
+            font-size: 1.8rem;
+            vertical-align: middle;
+            text-align: center;
+          }
+        }
+      }
+    }
+    .capture-settings {
+      .image-size-inputs {
+        .resolution-change-warning {
+          i {
+            color: $darkest_red;
+            margin-right: 1rem;
+          }
+          p {
+            display: inline;
+            margin-right: 0.5rem;
+            font-size: 1.2rem;
+          }
+          .click {
+            cursor: pointer;
+            font-weight: bold;
+            &:hover {
+              color: $black;
+            }
+          }
+        }
+      }
+      .update-take-photo {
+        margin-top: 1rem;
+        .version-string {
+          display: inline;
+          margin-left: 1rem;
+        }
+      }
+      .capture-rotate-setting {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+      }
+    }
+    .imaging-data-management {
+      label {
+        line-height: 3rem;
+      }
+      .highlight-modified-toggle {
+        label {
+          margin-top: 0.5rem;
+          margin-left: 0.5rem;
+        }
+      }
+    }
+    .farmware-form {
+      button {
+        float: none;
+      }
+    }
+    .weed-detection-grid .bp5-slider {
+      grid-column: span 2;
+    }
+  }
+  .setting {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.5rem;
+  }
+  .title-help {
+    font-size: 1.3rem;
+    .fa-question-circle {
+      position: absolute;
+      top: -3rem;
+      right: 0;
+      font-size: 1.4rem;
+    }
+    a {
+      text-decoration: none !important;
+    }
+    .fa-external-link {
+      margin-left: 1rem;
+    }
+    .update {
+      display: inline;
+      p {
+        display: inline;
+        margin-left: 1rem;
+      }
+      .fa-refresh {
+        display: inline;
+        margin-left: 1rem;
+        color: $dark_gray;
+      }
+    }
+    .title-help-text.open {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.camera-calibration,
+.weed-detector {
+  .farmware-button {
+    position: relative;
+    top: 0rem;
+    z-index: 9;
+    height: 0px;
+    float: right;
+  }
+  .simple-camera-calibration-checkbox {
+    display: inline-block;
+    p {
+      display: inline-block;
+      margin: 0;
+      margin-top: 5rem;
+    }
+    svg {
+      position: absolute;
+      top: 0;
+      background: $black;
+    }
+    input {
+      float: left;
+      margin-right: 1rem;
+    }
+  }
+  .image-workspace {
+    .fb-button.green {
+      margin-top: 1rem;
+    }
+    .bp5-slider {
+      width: 95%;
+      margin-left: 1rem;
+    }
+  }
+  p {
+    margin: 1.5rem;
+    font-size: 1.2rem;
+    font-style: italic;
+  }
+  .bp5-popover-wrapper {
+    display: inline;
+    margin-left: 0.5rem;
+    &.input-error-wrapper {
+      display: block;
+    }
+  }
+  .filter-search {
+    .bp5-popover-wrapper {
+      display: inline-block;
+      margin-left: 0;
+    }
+  }
+}
+
+.boolean-camera-calibration-config {
+  input[type=checkbox] {
+    display: block;
+    float: left;
+    margin-right: 1rem;
+  }
+}

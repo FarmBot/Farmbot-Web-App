@@ -32,10 +32,8 @@ body {
     color: $white;
     text-overflow: ellipsis;
     overflow: hidden;
-    width: calc(100% - 14rem);
     white-space: nowrap;
     text-transform: none;
-    margin-top: 0.3rem;
   }
 }
 

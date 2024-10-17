@@ -430,3 +430,9 @@
   transition: all 0.1s ease-in-out;
   transition-delay: 0.2s !important;
 }
+
+.move-to-grid {
+  grid-auto-flow: unset;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  row-gap: 0.25rem;
+}

@@ -21,10 +21,13 @@ export const ImagingDataManagement = (props: ImagingDataManagementProps) => {
         dispatch={props.dispatch}
         getConfigValue={props.getConfigValue} />
     </Highlight>
-    <fieldset>
-      <label>{t("clear all config data")}</label>
-      <ClearFarmwareData farmwareEnvs={props.farmwareEnvs} />
-    </fieldset>
+    <Highlight settingName={DeviceSetting.showAdvancedSettings}
+      pathPrefix={Path.photos}>
+      <div className="row grid-exp-1">
+        <label>{t("clear all config data")}</label>
+        <ClearFarmwareData farmwareEnvs={props.farmwareEnvs} />
+      </div>
+    </Highlight>
     <Highlight settingName={DeviceSetting.showAdvancedSettings}
       pathPrefix={Path.photos}>
       <ShowAdvancedToggle

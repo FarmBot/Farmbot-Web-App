@@ -11,7 +11,7 @@ export class CaptureSettings
   render() {
     const { dispatch, saveFarmwareEnv, env, botOnline } = this.props;
     const common = { dispatch, env, saveFarmwareEnv };
-    return <div className="capture-settings">
+    return <div className="capture-settings grid">
       <CameraSelection {...common} botOnline={botOnline} />
       <CaptureSizeSelection {...common} />
       <RotationSetting {...common} version={this.props.version} />

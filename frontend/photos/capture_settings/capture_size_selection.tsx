@@ -1,7 +1,7 @@
 import React from "react";
 import { DeviceSetting, ToolTips } from "../../constants";
 import { t } from "../../i18next_wrapper";
-import { Help, BlurableInput, Row, Col, FBSelect, DropDownItem } from "../../ui";
+import { Help, BlurableInput, Row, FBSelect, DropDownItem } from "../../ui";
 import { CaptureSizeSelectionProps, CaptureSizeSelectionState } from "./interfaces";
 import { Camera, parseCameraSelection } from "./camera_selection";
 import { getModifiedClassNameSpecifyDefault } from "../../settings/default_values";
@@ -64,60 +64,50 @@ export class CaptureSizeSelection
 
     return <Highlight settingName={DeviceSetting.imageResolution}
       pathPrefix={Path.photos}>
-      <div className={"image-size-inputs"}>
-        <Row>
-          <Col xs={5}>
+      <div className={"image-size-inputs grid"}>
+        <Row className="row grid-2-col">
+          <div className="row grid-exp-2">
             <label>{t("resolution")}</label>
             <Help text={ToolTips.IMAGE_RESOLUTION} />
-          </Col>
-          <Col xs={7}>
-            <FBSelect
-              key={selectedSize.value}
-              extraClass={getModifiedClassNameSpecifyDefault(
-                selectedSize.value, Size.r640x480)}
-              list={Object.values(SIZE_OPTIONS(parseCameraSelection(env)))
-                .filter(ddi => !!ddi)
-                .map((ddi: DropDownItem) => ddi)}
-              selectedItem={selectedSize}
-              onChange={ddi => {
-                if (ddi.value == Size.custom) {
-                  this.setState({ custom: true });
-                  return;
-                } else {
-                  this.setState({ custom: false });
-                }
-                const size = SIZES[ddi.value as Size];
-                dispatch(saveFarmwareEnv("take_photo_width", "" + size.width));
-                dispatch(saveFarmwareEnv("take_photo_height", "" + size.height));
-              }} />
-          </Col>
+          </div>
+          <FBSelect
+            key={selectedSize.value}
+            extraClass={getModifiedClassNameSpecifyDefault(
+              selectedSize.value, Size.r640x480)}
+            list={Object.values(SIZE_OPTIONS(parseCameraSelection(env)))
+              .filter(ddi => !!ddi)
+              .map((ddi: DropDownItem) => ddi)}
+            selectedItem={selectedSize}
+            onChange={ddi => {
+              if (ddi.value == Size.custom) {
+                this.setState({ custom: true });
+                return;
+              } else {
+                this.setState({ custom: false });
+              }
+              const size = SIZES[ddi.value as Size];
+              dispatch(saveFarmwareEnv("take_photo_width", "" + size.width));
+              dispatch(saveFarmwareEnv("take_photo_height", "" + size.height));
+            }} />
         </Row>
-        <PhotoResolutionSettingChanged {...this.props} />
         {(this.state.custom || selectedSize.value == Size.custom) &&
-          <div className={"size-inputs"}>
-            <Row>
-              <Col xs={4} xsOffset={1}>
-                <label>{t("width")}</label>
-              </Col>
-              <Col xs={7}>
-                <BlurableInput type="number"
-                  value={width}
-                  onCommit={e => dispatch(saveFarmwareEnv(
-                    "take_photo_width", e.currentTarget.value))} />
-              </Col>
+          <div className={"size-inputs grid"}>
+            <Row className="row grid-2-col">
+              <label>{t("width")}</label>
+              <BlurableInput type="number"
+                value={width}
+                onCommit={e => dispatch(saveFarmwareEnv(
+                  "take_photo_width", e.currentTarget.value))} />
             </Row>
-            <Row>
-              <Col xs={4} xsOffset={1}>
-                <label>{t("height")}</label>
-              </Col>
-              <Col xs={7}>
-                <BlurableInput type="number"
-                  value={height}
-                  onCommit={e => dispatch(saveFarmwareEnv(
-                    "take_photo_height", e.currentTarget.value))} />
-              </Col>
+            <Row className="row grid-2-col">
+              <label>{t("height")}</label>
+              <BlurableInput type="number"
+                value={height}
+                onCommit={e => dispatch(saveFarmwareEnv(
+                  "take_photo_height", e.currentTarget.value))} />
             </Row>
           </div>}
+          <PhotoResolutionSettingChanged {...this.props} />
       </div>
     </Highlight>;
   }

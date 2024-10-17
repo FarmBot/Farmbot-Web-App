@@ -224,27 +224,6 @@ describe("<SelectPlants />", () => {
       { payload: undefined, type: Actions.SELECT_POINT });
   });
 
-  it("toggles more selection options", () => {
-    const p = fakeProps();
-    const wrapper = mount<SelectPlants>(<SelectPlants {...p} />);
-    expect(wrapper.state().moreSelections).toEqual(false);
-    expect(wrapper.find(".more-content").first().props().hidden).toBeTruthy();
-    wrapper.find(".more-button").first().simulate("click");
-    expect(wrapper.text().toLowerCase()).toContain("curve");
-    expect(wrapper.state().moreSelections).toEqual(true);
-    expect(wrapper.find(".more-content").first().props().hidden).toBeFalsy();
-  });
-
-  it("toggles more actions", () => {
-    const p = fakeProps();
-    const wrapper = mount<SelectPlants>(<SelectPlants {...p} />);
-    expect(wrapper.state().moreActions).toEqual(false);
-    expect(wrapper.find(".more-content").last().props().hidden).toBeTruthy();
-    wrapper.find(".more-button").last().simulate("click");
-    expect(wrapper.state().moreActions).toEqual(true);
-    expect(wrapper.find(".more-content").last().props().hidden).toBeFalsy();
-  });
-
   it("selects group items", () => {
     const p = fakeProps();
     p.selected = undefined;

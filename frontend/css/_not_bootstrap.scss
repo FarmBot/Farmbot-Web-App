@@ -51,16 +51,6 @@
   grid-template-columns: 1fr 1fr auto;
 }
 
-.connectivity-grid {
-  grid-template-columns: auto 1fr 1fr 1fr;
-}
-
-.move-to-grid {
-  grid-auto-flow: unset;
-  grid-template-columns: 1fr 1fr 1fr auto;
-  row-gap: 0.25rem;
-}
-
 .speed-grid {
   grid-template-columns: 25% 1fr;
   align-items: start;
@@ -70,18 +60,6 @@
   grid-auto-flow: unset;
   grid-template-columns: auto 1fr;
   row-gap: 0.25rem;
-}
-
-.realtime-wrapper {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: auto 1fr;
-}
-
-.network-wrapper {
-  display: grid;
-  grid-auto-flow: column;
-  gap: 1rem;
 }
 
 fieldset {
@@ -105,10 +83,6 @@ fieldset {
   font-weight: bold;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-}
-
-.sensor-form-grid {
-  grid-template-columns: 2fr 1fr 1fr auto;
 }
 
 .add-point-grid {

@@ -34,20 +34,20 @@
     padding-right: 1rem;
   }
   .widget-wrapper {
-    text-align: start;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
-    width: 40rem;
-    max-width: 40rem;
     margin: 0 auto;
+    max-width: 40rem;
+    text-align: start;
+    width: 40rem;
   }
   .or-divider {
-    text-align: center;
     color: $white;
-    width: 10rem;
     display: flex;
+    font-style: italic;
     gap: 1rem;
     justify-self: center;
-    font-style: italic;
+    text-align: center;
+    width: 10rem;
     hr {
       width: 100%;
       border: 1.5px solid rgb(255 255 255 / 50%)

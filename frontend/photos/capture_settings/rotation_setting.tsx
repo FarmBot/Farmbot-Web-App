@@ -20,9 +20,11 @@ export const RotationSetting = (props: RotationSettingProps) => {
     : disableRotationEnv?.includes("1");
   return <Highlight settingName={DeviceSetting.rotateDuringCapture}
     pathPrefix={Path.photos}>
-    <div className={"capture-rotate-setting"}>
-      <label>{t("Rotate during capture")}</label>
-      <Help text={ToolTips.ROTATE_IMAGE_AT_CAPTURE} />
+    <div className={"capture-rotate-setting row grid-exp-1"}>
+      <div className="row grid-exp-2">
+        <label>{t("Rotate during capture")}</label>
+        <Help text={ToolTips.ROTATE_IMAGE_AT_CAPTURE} />
+      </div>
       <ToggleButton toggleValue={!disableRotation}
         className={getModifiedClassNameDefaultFalse(!disableRotation)}
         toggleAction={() => props.dispatch(props.saveFarmwareEnv(

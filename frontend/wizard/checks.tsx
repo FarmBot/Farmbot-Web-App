@@ -155,7 +155,7 @@ const CameraCheckBase = (props: CameraCheckBaseProps) => {
     setError(true);
   }
 
-  return <div className={"camera-check"}
+  return <div className={"camera-check grid"}
     onClick={() => {
       setPrevImageId(getLastImageId());
       setPrevLogTime(getLastLogTimestamp());
