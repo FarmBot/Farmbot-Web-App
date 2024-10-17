@@ -14,7 +14,6 @@ describe("<GardenModel />", () => {
     config: clone(INITIAL),
     activeFocus: "",
     setActiveFocus: jest.fn(),
-    showBeacons: true,
   });
 
   it("renders", () => {
