@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col, FBSelect, Color, BlurableInput, Help } from "../../ui";
+import { Row, FBSelect, Color, BlurableInput, Help } from "../../ui";
 import {
   variableFormList, NO_VALUE_SELECTED_DDI, sortVariables, heading, sequences2Ddi,
   LOCATION_PLACEHOLDER_DDI,

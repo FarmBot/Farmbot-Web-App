@@ -457,3 +457,46 @@
     font-size: 1.3rem;
   }
 }
+
+.lua-input {
+  .lua-editor {
+    height: 20rem;
+    &.full {
+      height: 40rem;
+    }
+    &.expanded {
+      height: 70vh;
+    }
+  }
+  .char-limit {
+    padding: 0.5rem;
+  }
+  textarea {
+    height: 100% !important;
+    font-family: monospace;
+    pointer-events: revert !important;
+    font-size: 1.4rem;
+    padding: 0 3rem 0 2.6rem;
+    line-height: 1.9rem;
+  }
+}
+
+.move-absolute-form {
+  display: flex;
+  .location-form,
+  .expandable-header {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+  .input-line {
+    flex: auto;
+  }
+  .more-options {
+    min-width: 110px;
+    margin-top: 0.5rem;
+  }
+  .custom-coordinate-form {
+    margin-left: -2.5rem;
+    margin-right: -11.25rem;
+  }
+}

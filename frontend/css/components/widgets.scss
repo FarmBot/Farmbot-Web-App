@@ -118,7 +118,12 @@
   >.row:not(:first-of-type) {
     margin-top: 1rem;
   }
+  .row:not(:last-child) {
+    margin-bottom: 1rem;
+  }
 }
+
+
 
 .widget-footer {
   background: $dark_gray;
