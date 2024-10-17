@@ -542,7 +542,6 @@ export class SequenceEditorMiddleActive extends
           toggleViewSequenceCeleryScript={
             this.toggleSection("viewSequenceCeleryScript")}
           showName={this.props.showName} />}
-      {Path.inDesigner() && <hr />}
       {view == "local"
         ? <div className={"sequence-editor-sections"}>
           <Description

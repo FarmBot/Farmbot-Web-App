@@ -136,3 +136,10 @@ fieldset {
 .mcu-inputs, .calibration-row-axes {
   justify-items: center;
 }
+
+.z-setting-grid, .single-setting-grid {
+  grid-template-columns: 1fr 23.6%;
+  button {
+    justify-self: center;
+  }
+}

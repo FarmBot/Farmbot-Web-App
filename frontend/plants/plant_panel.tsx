@@ -1,7 +1,7 @@
 import React from "react";
 import { FormattedPlantInfo } from "./map_state_to_props";
 import { push } from "../history";
-import { BlurableInput, Row, Col, Help } from "../ui";
+import { BlurableInput, Row, Help } from "../ui";
 import {
   PlantStage, TaggedCurve, TaggedFarmwareEnv, TaggedGenericPointer,
   TaggedPlantPointer, Xyz,
@@ -87,7 +87,7 @@ export const EditPlantLocation = (props: EditPlantLocationProps) => {
   });
   return <Row>
     {["x", "y", "z"].map((axis: Xyz) =>
-      <Col xs={4} key={axis}>
+      <div key={axis}>
         <label style={{ marginTop: 0 }}>{t("{{axis}} (mm)", { axis })}</label>
         {axis == "z" && !isUndefined(soilZ) &&
           <Help text={`${t("soil height at plant location")}: ${soilZ}mm`} />}
@@ -98,7 +98,7 @@ export const EditPlantLocation = (props: EditPlantLocationProps) => {
           onCommit={e => updatePlant(uuid, {
             [axis]: parseIntInput(e.currentTarget.value)
           })} />
-      </Col>)}
+      </div>)}
   </Row>;
 };
 
@@ -107,18 +107,16 @@ export interface EditPlantRadiusProps extends EditPlantProperty {
 }
 
 export const EditPlantRadius = (props: EditPlantRadiusProps) =>
-  <Row>
-    <Col xs={6}>
-      <label style={{ marginTop: 0 }}>{t("radius (mm)")}</label>
-      <BlurableInput
-        type="number"
-        name="radius"
-        value={props.radius}
-        min={0}
-        onCommit={e => props.updatePlant(props.uuid, {
-          radius: parseIntInput(e.currentTarget.value)
-        })} />
-    </Col>
+  <Row className="grid-exp-1">
+    <label style={{ marginTop: 0 }}>{t("radius (mm)")}</label>
+    <BlurableInput
+      type="number"
+      name="radius"
+      value={props.radius}
+      min={0}
+      onCommit={e => props.updatePlant(props.uuid, {
+        radius: parseIntInput(e.currentTarget.value)
+      })} />
   </Row>;
 
 export interface EditPlantDepthProps extends EditPlantProperty {
@@ -126,18 +124,16 @@ export interface EditPlantDepthProps extends EditPlantProperty {
 }
 
 export const EditPlantDepth = (props: EditPlantDepthProps) =>
-  <Row>
-    <Col xs={6}>
-      <label style={{ marginTop: 0 }}>{t("depth (mm)")}</label>
-      <BlurableInput
-        type="number"
-        name="depth"
-        value={props.depth}
-        min={0}
-        onCommit={e => props.updatePlant(props.uuid, {
-          depth: parseIntInput(e.currentTarget.value)
-        })} />
-    </Col>
+  <Row className="grid-exp-1">
+    <label style={{ marginTop: 0 }}>{t("depth (mm)")}</label>
+    <BlurableInput
+      type="number"
+      name="depth"
+      value={props.depth}
+      min={0}
+      onCommit={e => props.updatePlant(props.uuid, {
+        depth: parseIntInput(e.currentTarget.value)
+      })} />
   </Row>;
 
 interface ListItemProps {
@@ -180,18 +176,18 @@ export function PlantPanel(props: PlantPanelProps) {
       </ListItem>
       {(timeSettings && !inSavedGarden) &&
         <Row>
-          <Col xs={7}>
+          <div>
             <ListItem name={t("Started")}>
               <EditDatePlanted {...commonProps}
                 datePlanted={plantedAt}
                 timeSettings={timeSettings} />
             </ListItem>
-          </Col>
-          <Col xs={5}>
+          </div>
+          <div>
             <ListItem name={t("Age")}>
               {daysOldText({ age: daysOld, stage: plantStatus })}
             </ListItem>
-          </Col>
+          </div>
         </Row>}
       <ListItem>
         <EditPlantLocation {...commonProps}

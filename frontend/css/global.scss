@@ -736,9 +736,6 @@ a {
   font-size: 1.2rem;
   background: $translucent1;
   border-radius: 0.5rem;
-  table {
-    border-collapse: collapse;
-  }
   th,
   td {
     width: 1%;
@@ -993,24 +990,12 @@ ul {
 }
 
 .button-group {
-  display: inline-block;
-  margin: 1.5rem 0 -1rem;
-  width: 100%;
-  button:not(:first-of-type) {
-    margin-right: 1rem;
-  }
-  .fb-button {
-    margin: 0;
-  }
   .settings-menu-button {
     margin-top: 0.15rem;
     margin-right: 0.5rem;
     .bp5-popover-wrapper {
       margin-left: 0;
     }
-  }
-  .fa {
-    float: right;
   }
   .fa-code {
     font-weight: bold;
@@ -1026,8 +1011,6 @@ ul {
     color: $gray;
   }
   .color-picker {
-    float: right;
-    vertical-align: middle;
     .saucer {
       height: 1.5rem;
       width: 1.5rem;
@@ -1799,7 +1782,6 @@ ul {
   overflow: scroll;
   max-height: 42rem;
   background: $white;
-  border-collapse: collapse;
   .log-verbosity-saucer, .saucer {
     float: left;
     margin-right: 5px;

@@ -17,14 +17,12 @@
   .week-grid {
     margin-top: 2rem;
   }
+  .regimen-days-label {
+    text-align: center;
+  }
   .week-grid-meta-buttons {
-    margin-top: 1rem;
     text-align: right;
-    button {
-      float: none;
-      margin-left: 1rem;
-      margin-bottom: 1rem;
-    }
+    justify-content: end;
   }
   @media screen and (max-width: 974px) {
     margin-left: 15px;
@@ -48,121 +46,34 @@
 }
 
 // Regimen Editor
-.regimen-day {
-  margin: 1.5rem 0;
+
+.schedule-regimen-item {
+  justify-self: center;
 }
 
 .regimen-event {
-  position: relative;
   background: $gray;
-  border-radius: 3px;
-  min-height: 3.5rem;
-  margin-bottom: 1rem;
-  &.blue {
-    .regimen-item-variables {
-      background: $panel_light_blue;
-    }
-  }
-  &.green {
-    .regimen-item-variables {
-      background: $light_green;
-    }
-  }
-  &.yellow {
-    .regimen-item-variables {
-      background: $light_yellow;
-    }
-  }
-  &.orange {
-    .regimen-item-variables {
-      background: $light_orange;
-    }
-  }
-  &.purple {
-    .regimen-item-variables {
-      background: $light_purple;
-    }
-  }
-  &.pink {
-    .regimen-item-variables {
-      background: $light_pink;
-    }
-  }
-  &.gray {
-    .regimen-item-variables {
-      background: $light_gray;
-    }
-  }
-  &.red {
-    .regimen-item-variables {
-      background: $light_red;
-    }
-  }
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 0 1rem $translucent2;
 }
 
 .regimen-event-titlebar {
-  padding: 0.5rem;
-  padding-left: 1rem;
-}
-
-.regimen-event-title {
+  padding: 0.5rem 0.75rem;
   color: $dark_gray;
   font-size: 1.2rem;
   font-weight: bold;
   text-transform: uppercase;
-  .fa-external-link {
-    margin-left: 0.5rem;
-  }
-}
-
-.regimen-event-time {
-  margin-left: 1.5rem;
-  margin-right: 1.5rem;
 }
 
 .regimen-item-variables {
+  background: $translucent8_white;
   padding: 1rem;
-  border-bottom-left-radius: 3px;
-  border-bottom-right-radius: 3px;
-  .variable-icon {
-    margin-right: 1rem;
-  }
 }
 
 .regimen-event-variable {
-  display: block;
-  margin-right: 1.5rem;
+  align-items: baseline;
   i {
     cursor: default !important;
   }
 }
-
-.regimen-control {
-  position: absolute;
-  right: 1rem;
-}
-
-.regimen-days-label {
-  margin-left: 50%;
-  margin-top: 2rem;
-}
-
-.open-bulk-scheduler-btn-wrapper {
-  margin: auto;
-  width: fit-content;
-  text-align: center;
-  button {
-    float: none;
-    margin: 1rem auto;
-  }
-  .open-bulk-scheduler-btn {
-    display: none;
-    @media screen and (max-width: 768px) {
-      display: block;
-      margin: auto;
-      float: none !important;
-    }
-  }
-}
-
-// Regimen List styles in sequences.scss

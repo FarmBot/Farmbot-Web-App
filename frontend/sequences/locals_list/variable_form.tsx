@@ -128,10 +128,11 @@ export const VariableForm =
     const narrowLabel = !!removeVariable;
     return <div className={"location-form"}>
       <div className={"location-form-content"}>
-        <Row className="grid-exp-3">
+        <Row className={isDefaultValueForm ? "grid-exp-2" : "grid-exp-3"}>
           {!props.hideWrapper && !isDefaultValueForm &&
             <VariableIcon variableType={variableType} />}
-          {!props.hideWrapper && isDefaultValueForm
+          <div>
+            {!props.hideWrapper && isDefaultValueForm
               ? <p>{t("Default value")}</p>
               : <Label label={label} inUse={props.inUse || !removeVariable}
                 allowedVariableNodes={allowedVariableNodes}
@@ -142,6 +143,7 @@ export const VariableForm =
             {isDefaultValueForm && isDefault &&
               <Help text={ToolTips.USING_DEFAULT_VARIABLE_VALUE}
                 customIcon={"fa-exclamation-triangle"} onHover={true} />}
+          </div>
           {([VariableType.Location, VariableType.Resource]
             .includes(variableType)
             || !isDefaultValueForm) &&
@@ -167,25 +169,25 @@ export const VariableForm =
             <TextInput label={label} variableNode={variable.celeryNode}
               onChange={onChange} isDefaultValueForm={isDefaultValueForm} />}
           {removeVariable && !isDefaultValueForm &&
-            <Col xs={1} className={"trash"}>
+            <div className={"trash"}>
               <i className={"fa fa-trash fb-icon-button"}
                 style={props.inUse ? { color: Color.gray } : {}}
                 onClick={() => removeVariable(label)} />
-            </Col>}
+            </div>}
         </Row>
         {!isDefaultValueForm && variableType == VariableType.Number &&
           celeryNode.kind != "parameter_declaration" &&
           !usingDefaultValue && celeryNode.args.data_value.kind != "identifier" &&
-          <Row>
-            <Col xs={narrowLabel ? 5 : 6} />
+          <Row className="grid-2-col">
+            <div></div>
             <NumericInput label={label} variableNode={celeryNode}
               onChange={onChange} isDefaultValueForm={isDefaultValueForm} />
           </Row>}
         {!isDefaultValueForm && variableType == VariableType.Text &&
           celeryNode.kind != "parameter_declaration" &&
           !usingDefaultValue && celeryNode.args.data_value.kind != "identifier" &&
-          <Row>
-            <Col xs={narrowLabel ? 5 : 6} />
+          <Row className="grid-2-col">
+            <div></div>
             <TextInput label={label} variableNode={celeryNode}
               onChange={onChange} isDefaultValueForm={isDefaultValueForm} />
           </Row>}
@@ -221,7 +223,7 @@ export const NumericInput = (props: NumericInputProps) => {
   const argsValue = variableNode.kind == "parameter_declaration"
     ? (variableNode.args.default_value as Numeric).args.number
     : (variableNode.args.data_value as Numeric).args.number;
-  return <Col xs={6} className={"numeric-variable-input"}>
+  return <div className={"numeric-variable-input"}>
     <BlurableInput type={isPlaceholder ? "text" : "number"}
       className={"number-input"}
       clearBtn={props.isDefaultValueForm}
@@ -260,7 +262,7 @@ export const NumericInput = (props: NumericInputProps) => {
         props.onChange(editableVariable, props.label);
       }}
       value={isPlaceholder ? t("None") : argsValue} />
-  </Col>;
+  </div>;
 };
 
 export interface TextInputProps {
@@ -277,7 +279,7 @@ export const TextInput = (props: TextInputProps) => {
   const argsValue = variableNode.kind == "parameter_declaration"
     ? (variableNode.args.default_value as Text).args.string
     : (variableNode.args.data_value as Text).args.string;
-  return <Col xs={6} className={"text-variable-input"}>
+  return <div className={"text-variable-input"}>
     <BlurableInput type={"text"}
       className={"string-input"}
       clearBtn={props.isDefaultValueForm}
@@ -316,7 +318,7 @@ export const TextInput = (props: TextInputProps) => {
         props.onChange(editableVariable, props.label);
       }}
       value={isPlaceholder ? t("None") : argsValue} />
-  </Col>;
+  </div>;
 };
 
 export interface LabelProps {

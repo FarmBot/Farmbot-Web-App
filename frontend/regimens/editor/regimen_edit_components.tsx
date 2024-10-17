@@ -1,6 +1,6 @@
 import React from "react";
 import { RegimenProps } from "../interfaces";
-import { SaveBtn } from "../../ui";
+import { SaveBtn, Popover, ColorPickerCluster } from "../../ui";
 import { t } from "../../i18next_wrapper";
 import { VariableNode } from "../../sequences/locals_list/locals_list_support";
 import { ScopeDeclarationBodyItem } from "farmbot";
@@ -12,6 +12,8 @@ import { overwrite, save, destroy } from "../../api/crud";
 import { CopyButton } from "./copy_button";
 import { push } from "../../history";
 import { Path } from "../../internal_urls";
+import { Position } from "@blueprintjs/core";
+import { edit } from "../../api/crud";
 
 export const editRegimenVariables = (props: RegimenProps) =>
   (bodyVariables: VariableNode[]) =>
@@ -33,14 +35,20 @@ export const RegimenButtonGroup = (props: RegimenProps) => {
       title={t("delete regimen")}
       onClick={() => dispatch(destroy(regimen.uuid))
         .then(() => push(Path.regimens()))} />
+    <Popover className={"color-picker"}
+      position={Position.BOTTOM}
+      popoverClassName={"colorpicker-menu gray"}
+      target={<i title={t("select color")}
+        className={"fa fa-paint-brush fb-icon-button"} />}
+      content={<ColorPickerCluster
+        onChange={color => props.dispatch(edit(regimen, { color }))}
+        current={regimen.body.color} />} />
   </div>;
 };
 
 export const OpenSchedulerButton = () =>
-  <div className={"open-bulk-scheduler-btn-wrapper"}>
-    <button className={"fb-button gray"}
-      title={t("open scheduler panel")}
-      onClick={() => push(Path.regimens("scheduler"))}>
-      {t("Schedule item")}
-    </button>
-  </div>;
+  <button className={"fb-button gray schedule-regimen-item"}
+    title={t("open scheduler panel")}
+    onClick={() => push(Path.regimens("scheduler"))}>
+    {t("Schedule item")}
+  </button>;

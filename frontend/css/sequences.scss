@@ -24,14 +24,6 @@
   h3 {
     margin-top: 1rem;
   }
-  .sequence-editor-tools {
-    .row {
-      flex: 1;
-    }
-    .button-group {
-      width: unset;
-    }
-  }
   .bp5-popover-target .saucer {
     float: left;
   }
@@ -47,10 +39,6 @@
       margin-right: 0;
       margin-bottom: 2.5rem;
       padding-left: 0 !important;
-    }
-    .button-group {
-      margin-right: 15px;
-      margin-top: -1rem;
     }
     .title-help-text {
       padding-left: 15px;
@@ -121,12 +109,6 @@
     margin-left: 5px;
     margin-right: 0;
     padding-right: 2rem;
-  }
-}
-
-.regimen-editor-content {
-  @media screen and (max-width: 767px) {
-    padding-right: 0;
   }
 }
 
@@ -228,9 +210,6 @@
 }
 
 .sequence-editor-sections {
-  overflow-y: auto;
-  overflow-x: hidden;
-  max-height: calc(100vh - 17.5rem);
   pre {
     margin-top: 2rem;
   }
@@ -528,10 +507,7 @@
 }
 
 .regimen-editor-content {
-  padding: 0 1rem;
-  .button-group {
-    padding-right: 1rem;
-  }
+  padding: 0 1rem 1rem;
   .location-form-content {
     .row {
       white-space: nowrap;
@@ -558,12 +534,7 @@
 
 .sequence-editor-tools {
   display: flex;
-  margin-left: -1rem;
-  margin-right: -1rem !important;
-  padding-right: 2rem;
-  .row {
-    margin-left: 0;
-  }
+  margin: 1rem;
   .title,
   input {
     flex: 1;
@@ -640,16 +611,6 @@
 .sequence-editor-tools,
 .regimen-editor-tools {
   border-bottom: 1.5px solid $translucent1;
-  .sequence-name {
-    margin-top: 1rem;
-  }
-  &.preview {
-    .filter-search,
-    .input,
-    input {
-      pointer-events: none;
-    }
-  }
 }
 
 .preview-variables {
@@ -659,12 +620,26 @@
 }
 
 .locals-list {
+  display: grid;
+  gap: 1rem;
+  margin: 1rem 0;
+  .location-form, .custom-coordinate-form {
+    background: $translucent8_white;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 0 1rem $translucent1;
+  }
+  .default-value-form, .custom-coordinate-form {
+    margin: 0 3.5rem;
+  }
   .location-form-content {
     .bp5-popover-wrapper {
       display: inline-block;
       margin-left: 1rem;
     }
     .variable-icon {
+      width: 2.5rem;
+      text-align: center;
       cursor: default !important;
     }
     p {
@@ -676,22 +651,16 @@
     }
     .fa-trash {
       color: $darkest_red;
-      margin-top: 0.5rem;
-      margin-left: -1rem;
     }
-    .numeric-variable-input,
-    .text-variable-input {
-      padding-right: 0.5rem;
-      padding-left: 2.5rem;
+    .no-location-coordinate-input-boxes,
+    .no-default-value-form {
+      display: none;
     }
   }
-}
-
-.regimen {
-  width: 100%;
-  height: calc(100vh - 25rem);
-  overflow-y: auto;
-  overflow-x: hidden;
+  .numeric-variable-input, 
+  .text-variable-input {
+    margin-right: 3.5rem;
+  }
 }
 
 .license {

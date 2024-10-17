@@ -48,14 +48,6 @@ export class RawDesignerRegimenEditor
         backTo={Path.regimens()}>
         {regimen &&
           <RegimenButtonGroup regimen={regimen} dispatch={this.props.dispatch} />}
-        {regimen && <Popover className={"color-picker"}
-          position={Position.BOTTOM}
-          popoverClassName={"colorpicker-menu gray"}
-          target={<i title={t("select color")}
-            className={"fa fa-paint-brush fb-icon-button"} />}
-          content={<ColorPickerCluster
-            onChange={color => this.props.dispatch(edit(regimen, { color }))}
-            current={regimen.body.color} />} />}
         {!regimen && <button
           className={"fb-button green"}
           title={t("add new regimen")}

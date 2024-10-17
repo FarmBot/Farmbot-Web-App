@@ -84,9 +84,9 @@ input:not([role="combobox"]):not([type="checkbox"]):not([type="radio"]) {
 }
 
 .week-row {
-  height: 30.5px;
-  width: 108%;
-  margin-left: -1rem;
+  display: grid;
+  grid-template-columns: 1fr repeat(7, 4.5rem);
+  align-items: center;
 }
 
 select {

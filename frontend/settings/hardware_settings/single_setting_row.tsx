@@ -20,7 +20,7 @@ export const SingleSettingRow = (props: SingleSettingRowProps) => {
   return <Highlight settingName={label}
     hidden={props.advanced && !(props.showAdvanced || props.modified)}
     className={props.advanced ? "advanced" : undefined}>
-    <Row className={"grid-exp-1"}>
+    <Row className={"single-setting-grid"}>
       <div>
         <label>{t(label)}</label>
         <Help text={tooltip} position={Position.RIGHT} />

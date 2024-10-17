@@ -111,6 +111,7 @@
   bottom: 0;
   z-index: 1;
   animation: panel-show 0.3s ease forwards;
+  pointer-events: none;
   &.panel-closed-mobile,
   &.panel-closed {
     animation: panel-hide 0.3s ease forwards;
@@ -128,22 +129,20 @@
     border-radius: 1rem;
     overflow-x: hidden;
     font-size: 1.6rem;
+    pointer-events: auto;
+    overflow: hidden;
+    box-shadow: 0 0 1rem $translucent;
+    backdrop-filter: blur(10px);
+    background-color: $translucent8_white;
+    div[class*="search-item"] {
+      &:hover,
+      &.hovered {
+        background: $translucent1;
+        transition: background 0.2s ease;
+      }
+    }
     label {
       font-size: 1.3rem;
-    }
-  }
-}
-
-.panel-container {
-  overflow: hidden;
-  box-shadow: 0 0 1rem $translucent;
-  backdrop-filter: blur(10px);
-  background-color: $translucent8_white;
-  div[class*="search-item"] {
-    &:hover,
-    &.hovered {
-      background: $translucent1;
-      transition: background 0.2s ease;
     }
   }
 }
@@ -273,13 +272,10 @@
     }
   }
   .title {
-    float: left;
     font-size: 1.8rem;
     white-space: nowrap;
-    width: 60%;
     overflow: hidden;
     text-overflow: ellipsis;
-    line-height: 50px;
   }
   .right-button {
     position: absolute;
@@ -1533,9 +1529,6 @@ li {
 .low-pad {
   padding-left: 0.5rem;
   padding-right: 0.5rem;
-  &.z-param-input {
-    padding-left: 4.25rem;
-  }
 }
 
 .plant-inventory-panel,
@@ -1595,14 +1588,6 @@ li {
       display: grid;
       gap: 1rem;
     }
-    .hw-warn {
-      position: absolute;
-      top: -0.35rem;
-      right: 2rem;
-      i {
-        font-size: 1.4rem;
-      }
-    }
   }
   .export-data,
   .change-password {
@@ -1635,8 +1620,9 @@ li {
   .credentials-change-warning-banner,
   .settings-warning-banner,
   .stall-detection-note,
-  .limit-switch-warning {
-    margin: 1rem -15px -1rem -15px;
+  .limit-switch-warning,
+  .motors-warning {
+    margin: 0 -1.5rem;
     padding: 1rem 1.5rem 1rem 2rem;
     background: color.adjust($orange, $alpha: -0.6);
     p {
@@ -2162,38 +2148,21 @@ li {
   }
   .curve-action-menu {
     .transparent-button {
-      position: absolute;
-      right: 0;
-      width: 50%;
+      justify-self: right;
+      grid-column: 2;
       color: $off_white
     }
     label {
-      width: 100%;
       color: $off_white;
-      margin-top: 0.75rem;
-      margin-right: 1rem;
     }
     .filter-search {
       width: 100%;
-      .bp5-popover-wrapper {
-        width: 120px;
-      }
       button {
         box-shadow: none !important;
       }
     }
     input {
       box-shadow: none;
-      width: 120px;
-    }
-    .curve-menu-row {
-      display: flex;
-      position: relative;
-      height: 3rem;
-      margin-top: 0.5rem;
-      &.last {
-        height: 2rem;
-      }
     }
   }
 }
@@ -2831,11 +2800,6 @@ li {
       float: right;
       margin-top: 1.5rem;
     }
-    .button-group {
-      margin: 0;
-      float: right;
-      width: unset;
-    }
     .color-picker {
       float: right;
     }
@@ -2910,7 +2874,7 @@ li {
 
 .documentation-panel {
   .panel-content {
-    height: 102.5%;
+    height: 100vh;
     padding: 0;
     overflow: hidden;
     iframe {
@@ -2924,37 +2888,30 @@ li {
 .help-panel-header {
   background: $lighter_gray;
   height: 4rem;
-  padding: 1rem;
-  padding-top: 0.5rem;
+  padding: 0.5rem 1rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
   i {
     font-size: 2rem;
-    margin-left: 0.25rem;
-    width: 2.25rem;
   }
   i,
   img {
-    margin-right: 1rem;
-    margin-bottom: 0.5rem;
-    vertical-align: middle;
     filter: brightness(0) opacity(0.75);
-    text-align: center;
   }
   a {
-    display: block;
     font-weight: bold;
-    line-height: 3.5rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
   }
   .fa-chevron-down,
   .fa-chevron-up {
-    position: absolute;
-    top: 0.25rem;
-    right: 0;
     padding: 1rem;
     font-size: 1.25rem;
-    color: $medium_gray;
   }
   .bp5-collapse {
     overflow: visible;
+    grid-column: span 2;
   }
   .bp5-collapse-body {
     position: relative;
