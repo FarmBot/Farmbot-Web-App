@@ -2889,16 +2889,7 @@ textarea:focus {
     height: unset;
     transform: none;
     .previous,
-    .next,
-    .exit {
-      padding: 0.5rem;
-      &:hover {
-        font-weight: bold;
-      }
-    }
-    .previous,
     .next {
-      margin-right: 0.5rem;
       &.disabled {
         pointer-events: none;
         color: $dark_gray;

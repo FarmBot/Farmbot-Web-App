@@ -292,7 +292,7 @@
   .regimen-search-item {
     display: grid;
     gap: 1rem;
-    grid-template-columns: auto 1fr;
+    grid-template-columns: auto 1fr auto;
     align-items: center;
     cursor: pointer;
     height: 3.5rem;

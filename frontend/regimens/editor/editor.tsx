@@ -11,15 +11,13 @@ import {
   setActiveRegimenByName,
 } from "../set_active_regimen_by_name";
 import {
-  EmptyStateWrapper, EmptyStateGraphic, Popover, ColorPickerCluster,
+  EmptyStateWrapper, EmptyStateGraphic,
 } from "../../ui";
 import { isTaggedRegimen } from "../../resources/tagged_resources";
 import { Content } from "../../constants";
 import { ActiveEditor } from "./active_editor";
 import { ResourceTitle } from "../../sequences/panel/editor";
 import { Path } from "../../internal_urls";
-import { edit } from "../../api/crud";
-import { Position } from "@blueprintjs/core";
 import { addRegimen } from "../list/add_regimen";
 import { selectAllRegimens } from "../../resources/selectors_by_kind";
 import { RegimenButtonGroup } from "./regimen_edit_components";
