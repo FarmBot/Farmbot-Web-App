@@ -22,6 +22,7 @@
 @import "app/status_ticker";
 @import "app/toastr";
 // Components
+@import "components/go_button";
 @import "components/image_flipper";
 @import "components/widgets";
 // Farm Designer
@@ -32,7 +33,9 @@
 @import "panels/controls";
 @import "panels/events";
 @import "panels/logs";
+@import "panels/plants";
 @import "panels/regimens";
+@import "panels/select";
 @import "panels/sensors";
 @import "panels/sequences";
 @import "panels/sequence_steps";

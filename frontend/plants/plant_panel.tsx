@@ -160,7 +160,7 @@ export function PlantPanel(props: PlantPanelProps) {
   const { x, y, z } = info;
   const commonProps = { uuid, updatePlant };
   return <DesignerPanelContent panelName={"plants"}>
-    <ul>
+    <ul className="grid">
       <ListItem name={t("Plant Type")}>
         <Link
           title={t("View crop info")}

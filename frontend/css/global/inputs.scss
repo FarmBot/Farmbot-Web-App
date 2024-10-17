@@ -191,15 +191,15 @@ select {
 
 .fb-checkbox {
   input[type="checkbox"] {
-    position: relative;
-    border-radius: 0;
     -webkit-appearance: none;
-    border-radius: 3px;
-    overflow: hidden;
-    width: 2rem;
-    height: 2rem;
     background: $white;
+    border-radius: 0;
+    border-radius: 3px;
+    height: 2rem;
     margin: 0;
+    overflow: hidden;
+    position: relative;
+    width: 2rem;
     cursor: pointer;
     &:before {
       content: "";

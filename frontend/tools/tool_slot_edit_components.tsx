@@ -117,19 +117,19 @@ export const SlotLocationInputRow = (props: SlotLocationInputRowProps) => {
   const { y, z } = props.slotLocation;
   return <div className="tool-slot-location-input">
     <Row className="tool-slot-location-grid">
-        {["x", "y", "z"].map((axis: Xyz) =>
-          <div key={axis}>
-            <label>{t("{{axis}} (mm)", { axis })}</label>
-            {axis == "x" && props.gantryMounted
-              ? <input disabled value={t("Gantry")} name={axis} />
-              : <BlurableInput
-                type="number"
-                value={props.slotLocation[axis]}
-                min={axis == "z" ? undefined : 0}
-                onCommit={e => props.onChange({
-                  [axis]: parseFloat(e.currentTarget.value)
-                })} />}
-          </div>)}
+      {["x", "y", "z"].map((axis: Xyz) =>
+        <div key={axis}>
+          <label>{t("{{axis}} (mm)", { axis })}</label>
+          {axis == "x" && props.gantryMounted
+            ? <input disabled value={t("Gantry")} name={axis} />
+            : <BlurableInput
+              type="number"
+              value={props.slotLocation[axis]}
+              min={axis == "z" ? undefined : 0}
+              onCommit={e => props.onChange({
+                [axis]: parseFloat(e.currentTarget.value)
+              })} />}
+        </div>)}
       <UseCurrentLocation botPosition={props.botPosition}
         onChange={props.onChange} />
     </Row>

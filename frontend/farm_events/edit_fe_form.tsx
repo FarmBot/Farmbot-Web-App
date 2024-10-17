@@ -558,11 +558,11 @@ export const FarmEventForm = (props: FarmEventFormProps) => {
         <Help
           text={Content.MISSING_EXECUTABLE}
           customIcon={"fa-exclamation-triangle"} />}
-        <FBSelect
-          list={props.executableOptions}
-          onChange={props.executableSet}
-          selectedItem={props.executableGet()} />
-        {props.children}
+      <FBSelect
+        list={props.executableOptions}
+        onChange={props.executableSet}
+        selectedItem={props.executableGet()} />
+      {props.children}
     </div>
     <StartTimeForm
       disabled={!props.executableGet()}

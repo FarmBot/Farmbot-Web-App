@@ -61,22 +61,22 @@ export function ConnectivityRow(props: StatusRowProps) {
     : t("This computer");
 
   return <Row className="connectivity-grid">
-      <div className={className}
-        title={syncStatus ? syncText(syncStatus) : getTitle(props.header)}
-        onMouseEnter={hoverOver(connectionName)}
-        onMouseLeave={hoverOver(undefined)}>
-        {!props.header && <i className={`fa ${iconClass}`} />}
-      </div>
-      {!props.header &&
-        <div className={`saucer-connector ${connectorColorClass}`} />}
-      <p>
-        {props.from == "browser" ? browserFrom : props.from}
-      </p>
-      <p>
-        {props.to}
-      </p>
-      <p>
-        {props.header ? t("last message seen ") : props.connectionMsg}
-      </p>
+    <div className={className}
+      title={syncStatus ? syncText(syncStatus) : getTitle(props.header)}
+      onMouseEnter={hoverOver(connectionName)}
+      onMouseLeave={hoverOver(undefined)}>
+      {!props.header && <i className={`fa ${iconClass}`} />}
+    </div>
+    {!props.header &&
+      <div className={`saucer-connector ${connectorColorClass}`} />}
+    <p>
+      {props.from == "browser" ? browserFrom : props.from}
+    </p>
+    <p>
+      {props.to}
+    </p>
+    <p>
+      {props.header ? t("last message seen ") : props.connectionMsg}
+    </p>
   </Row>;
 }

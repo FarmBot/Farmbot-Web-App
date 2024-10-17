@@ -316,187 +316,6 @@
   }
 }
 
-.plant-selection-panel {
-  .panel-action-buttons {
-    position: absolute;
-    z-index: 9;
-    height: 16rem;
-    width: 100%;
-    background: $panel_medium_light_gray;
-    padding: 0.5rem;
-    .selection-type {
-      display: flex;
-      label {
-        line-height: 4rem;
-      }
-      .filter-search {
-        position: absolute;
-        right: 1rem;
-        width: 70%;
-        .bp5-button {
-          margin-left: 0.5rem;
-        }
-        i {
-          margin-right: -0.5rem;
-        }
-      }
-    }
-    &.more-select {
-      height: 20rem;
-    }
-    &.more-action {
-      height: 35rem;
-    }
-    &.more-select.more-action {
-      height: 38rem;
-    }
-    .fb-button {
-      margin: 0.5rem;
-      float: left;
-    }
-    label {
-      min-width: -webkit-fill-available;
-      margin-bottom: 0px;
-      margin-left: .5rem;
-      margin-top: 0;
-    }
-    .button-row {
-      float: left;
-      width: 100%;
-      margin-bottom: 1rem;
-      &.group-select {
-        .filter-search {
-          margin-top: 0.5rem;
-        }
-      }
-    }
-    .filter-search {
-      padding-right: 1rem;
-    }
-    .plant-curves-bulk-update,
-    .point-size-bulk-update,
-    .plant-depth-bulk-update,
-    .plant-date-bulk-update,
-    .point-color-bulk-update,
-    .plant-slug-bulk-update,
-    .plant-status-bulk-update {
-      display: inline-block;
-      width: 100%;
-      line-height: 3.5rem;
-    }
-    .plant-curves-bulk-update,
-    .plant-status-bulk-update {
-      .filter-search {
-        display: inline-block;
-        width: 50% !important;
-        margin-top: 0.5rem;
-      }
-      p {
-        display: inline-block;
-        font-size: 1.2rem;
-        vertical-align: top;
-      }
-    }
-    .plant-depth-bulk-update,
-    .point-size-bulk-update {
-      p {
-        display: inline-block;
-        font-size: 1.2rem;
-        vertical-align: middle;
-      }
-      input {
-        margin: 0;
-        width: 48%;
-        height: 3rem;
-      }
-    }
-    .plant-date-bulk-update {
-      .input {
-        display: inline-block;
-        width: 48%;
-        input {
-          height: 3rem;
-          padding: 0;
-          padding-left: 1rem;
-          padding-right: 1rem;
-        }
-      }
-    }
-    .point-color-bulk-update {
-      .color-picker {
-        display: inline-block;
-        margin-bottom: -0.5rem;
-      }
-    }
-    .plant-slug-bulk-update {
-      .fa-pencil {
-        margin-left: 0.25rem;
-      }
-      .fb-button {
-        float: none;
-        height: 2rem;
-        line-height: 0;
-        margin-left: 1rem;
-        vertical-align: top;
-      }
-    }
-    .more {
-      cursor: pointer;
-      margin-left: 0.5rem;
-      line-height: 2.5rem;
-      p {
-        display: inline;
-        font-size: 1.4rem;
-        margin-right: 1rem;
-      }
-    }
-    .more-button {
-      float: right;
-      width: max-content;
-      margin-right: 1rem;
-    }
-    .more-content {
-      margin-top: 0.5rem;
-      max-height: 20.5rem;
-      overflow: scroll;
-      width: 330px;
-      label {
-        width: 100%;
-      }
-      .filter-search {
-        display: inline-block;
-        width: 50.75% !important;
-        line-height: 1rem;
-      }
-      p {
-        display: inline-block;
-        width: 150px;
-        line-height: 3.5rem;
-      }
-    }
-  }
-  .panel-content {
-    padding-top: 16rem;
-    padding-right: 0;
-    padding-left: 0;
-    max-height: calc(100vh - 13rem);
-    overflow-y: auto;
-    overflow-x: hidden;
-    &.more-select {
-      padding-top: 20rem;
-    }
-    &.more-action {
-      padding-top: 35rem;
-    }
-    &.more-select.more-action {
-      padding-top: 38rem;
-    }
-    .tool-slot-search-item-icon {
-      padding-left: 5px !important;
-    }
-  }
-}
-
 .group-detail-panel,
 .plant-info-panel {
   .panel-header-icon-group {
@@ -924,32 +743,6 @@ li {
   }
 }
 
-.plants-panel-content {
-  li {
-    margin-top: 1rem;
-    p {
-      margin-bottom: 0.5rem !important;
-    }
-  }
-  .plant-info-field-data {
-    .bp5-popover-wrapper {
-      display: inline-block;
-      margin-left: 0.5rem;
-    }
-    .filter-search {
-      .bp5-popover-wrapper {
-        margin-left: 0;
-      }
-    }
-  }
-  input {
-    background: $white;
-  }
-  .fa-pencil {
-    margin-left: 0.5rem;
-  }
-}
-
 .panel-section {
   .delete {
     height: 2rem;
@@ -987,12 +780,6 @@ li {
 .add-plant-panel,
 .location-info-panel {
   padding-bottom: 0 !important;
-}
-
-.add-plant-panel {
-  .panel-header {
-    height: 100%;
-  }
 }
 
 .grid-and-row-planting {
@@ -1046,102 +833,6 @@ li {
   .bp5-popover-wrapper {
     display: inline;
     margin-left: 0.5rem;
-  }
-}
-
-.go-button-axes-wrapper {
-  margin-top: 1rem;
-  button {
-    margin: 0;
-    float: none;
-  }
-  .go-button-axes {
-    display: inline;
-  }
-  .go-button-axes-text {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    p {
-      display: inline-block;
-      position: relative;
-      z-index: 1;
-      margin: 0 !important;
-      font-weight: bold;
-      color: $off_white;
-      height: 0;
-      line-height: 0;
-      font-size: 1.1rem;
-    }
-  }
-  .go-button-axes-dropdown {
-    border-left: 1px solid $dark_gray;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-    &.pseudo-disabled {
-      border-left: 1px solid $gray;
-    }
-  }
-}
-
-.go-button-axes-popover {
-  .bp5-popover-arrow {
-    &::before {
-      position: relative;
-      background: $dark_gray;
-    }
-  }
-  .bp5-popover-content {
-    color: $off_white;
-    background: $dark_gray;
-    width: 200px;
-    .go-axes {
-      display: grid;
-      gap: 0.75rem;
-      button {
-        margin: 0;
-        padding: 0.5rem 1rem;
-        float: none;
-        &.x,
-        &.y,
-        &.z {
-          grid-row: 1;
-          grid-column: span 4;
-        }
-        &.xy,
-        &.xyz {
-          grid-row: 2;
-          grid-column: span 6;
-        }
-      }
-      a,
-      p {
-        display: inline;
-        color: $off_white;
-        font-size: 1.2rem;
-        text-decoration: none !important;
-        font-weight: normal;
-      }
-      a {
-        grid-column: span 12;
-        i {
-          margin-left: 0.5rem;
-        }
-        &:hover {
-          text-decoration: underline !important;
-        }
-      }
-      input {
-        float: right;
-        width: auto;
-        box-shadow: none;
-        cursor: pointer;
-      }
-      .save-as-default-wrapper {
-        display: inline-block;
-        grid-column: span 12;
-        width: 100%;
-      }
-    }
   }
 }
 
@@ -2007,9 +1698,6 @@ li {
       &:hover {
         background: $light_gray;
       }
-      i {
-        margin-top: 0.5rem;
-      }
     }
     .points-section {
       &.open {
@@ -2057,19 +1745,10 @@ li {
       margin-top: 0;
       color: $dark_gray;
     }
-    i {
-      margin: 0.25rem;
-    }
     button {
-      margin: 0.5rem;
       float: none;
     }
     .approval-buttons {
-      display: inline;
-      button {
-        height: 2.5rem;
-        line-height: 0 !important;
-      }
       i {
         padding-right: 0.5rem;
       }
@@ -2238,16 +1917,16 @@ li {
 .curves-inventory-panel-content {
   padding: 0;
   cursor: pointer;
-    .curve-search-item-info {
-      font-size: 1rem;
+  .curve-search-item-info {
+    font-size: 1rem;
+  }
+  .section-header {
+    .fa-caret-up,
+    .fa-caret-down {
+      line-height: 3.75rem;
+      margin-top: 0 !important;
     }
-    .section-header {
-      .fa-caret-up,
-      .fa-caret-down {
-        line-height: 3.75rem;
-        margin-top: 0 !important;
-      }
-    }
+  }
 }
 
 .crop-curve-info {

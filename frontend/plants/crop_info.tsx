@@ -200,7 +200,7 @@ const Companions = (props: CropInfoListProps) => {
             height={20} />
           <p>{companion.name}</p>
         </Link>)}
-      </div>
+    </div>
   </InfoField>;
 };
 

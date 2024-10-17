@@ -3,8 +3,8 @@ $mobile_max_width: 500px;
 
 body {
   background: $gray;
-  margin: 0;
   color: $dark_gray;
+  margin: 0;
 }
 
 .initial-loading-text {
@@ -55,14 +55,14 @@ fieldset {
   display: grid;
   gap: 1rem;
   .tabs {
-    display: grid;
     background: $white;
     border-radius: 0.5rem;
+    display: grid;
     gap: 0.2rem;
-    overflow: hidden;
     grid-auto-flow: column;
     justify-content: center;
     margin: 0 auto;
+    overflow: hidden;
     label {
       padding: 0.5rem 3rem;
       background: $light_gray;
@@ -518,8 +518,8 @@ input:disabled {
 }
 
 .empty-state {
-  text-align: center;
   margin: 2rem 0;
+  text-align: center;
   h5 {
     font-weight: bold;
   }
@@ -1141,8 +1141,8 @@ input:disabled {
   .problem-alert-title {
     align-items: baseline;
     h3 {
-      display: inline;
       color: $dark_gray;
+      display: inline;
       font-size: 1.5rem;
       font-weight: bold;
       margin: 0;

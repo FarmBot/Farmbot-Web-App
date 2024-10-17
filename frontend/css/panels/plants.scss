@@ -1,0 +1,26 @@
+.plants-panel-content {
+  padding: 1rem;
+  .plant-info-field-data {
+    .bp5-popover-wrapper {
+      display: inline-block;
+      margin-left: 0.5rem;
+    }
+    .filter-search {
+      .bp5-popover-wrapper {
+        margin-left: 0;
+      }
+    }
+  }
+  input {
+    background: $white;
+  }
+  .fa-pencil {
+    margin-left: 0.5rem;
+  }
+}
+
+.add-plant-panel {
+  .panel-header {
+    height: 100%;
+  }
+}

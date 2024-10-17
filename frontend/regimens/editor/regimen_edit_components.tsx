@@ -8,12 +8,11 @@ import { defensiveClone } from "../../util";
 import {
   addOrEditBodyVariables,
 } from "../../sequences/locals_list/handle_select";
-import { overwrite, save, destroy } from "../../api/crud";
+import { overwrite, save, destroy, edit } from "../../api/crud";
 import { CopyButton } from "./copy_button";
 import { push } from "../../history";
 import { Path } from "../../internal_urls";
 import { Position } from "@blueprintjs/core";
-import { edit } from "../../api/crud";
 
 export const editRegimenVariables = (props: RegimenProps) =>
   (bodyVariables: VariableNode[]) =>

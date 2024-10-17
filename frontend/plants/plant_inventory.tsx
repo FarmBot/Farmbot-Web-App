@@ -34,7 +34,7 @@ import { deletePoints } from "../api/delete_points";
 import { Path } from "../internal_urls";
 import { WebAppNumberSetting } from "../settings/farm_designer_settings";
 import { NumericSetting } from "../session_keys";
-import { Col, Help, Popover, Row } from "../ui";
+import { Help, Popover, Row } from "../ui";
 import {
   GetWebAppConfigValue, getWebAppConfigValue,
 } from "../config_storage/actions";
@@ -125,15 +125,11 @@ export class RawPlants
           popoverClassName={"plants-panel-settings-menu"}
           target={<i className={"fa fa-gear fb-icon-button"} />}
           content={<Row>
-            <Col xs={9}>
-              <label>{t(DeviceSetting.defaultPlantDepth)}</label>
-              <Help text={Content.DEFAULT_PLANT_DEPTH} />
-            </Col>
-            <Col xs={3}>
-              <WebAppNumberSetting dispatch={dispatch}
-                getConfigValue={this.props.getConfigValue}
-                numberSetting={NumericSetting.default_plant_depth} />
-            </Col>
+            <label>{t(DeviceSetting.defaultPlantDepth)}</label>
+            <Help text={Content.DEFAULT_PLANT_DEPTH} />
+            <WebAppNumberSetting dispatch={dispatch}
+              getConfigValue={this.props.getConfigValue}
+              numberSetting={NumericSetting.default_plant_depth} />
           </Row>} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"plant"}>

@@ -73,9 +73,9 @@
 }
 
 .realtime-wrapper {
-  grid-template-columns: auto 1fr;
   display: grid;
   gap: 1rem;
+  grid-template-columns: auto 1fr;
 }
 
 .network-wrapper {
@@ -100,9 +100,9 @@ fieldset {
 }
 
 .panel-title {
+  display: grid;
   font-family: 'Inknut Antiqua', serif;
   font-weight: bold;
-  display: grid;
   grid-template-columns: auto 1fr auto;
   align-items: center;
 }
