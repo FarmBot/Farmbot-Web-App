@@ -1,13 +1,7 @@
 .add-sensor-reading-menu {
-  width: 300px;
-  .green {
-    position: absolute;
-    bottom: 1rem;
-    right: 1rem;
-  }
-  .reading-location,
-  .add-reading-value-form {
-    margin-top: 1rem;
+  width: 25rem;
+  button {
+    margin-left: auto;
   }
 }
 

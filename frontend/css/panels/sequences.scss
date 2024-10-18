@@ -248,22 +248,6 @@
   }
 }
 
-.sequence-description-wrapper {
-  position: relative;
-  .fa-magic,
-  .fa-spinner {
-    position: absolute;
-    top: 1rem;
-    right: 6.5rem;
-  }
-  .fa-pencil,
-  .fa-eye {
-    position: absolute;
-    top: 1rem;
-    right: 4rem;
-  }
-}
-
 .sequence-description {
   .markdown {
     display: block;
@@ -422,20 +406,6 @@
   }
 }
 
-.folder-icon-wrapper {
-  display: grid;
-  width: min-content;
-  grid-auto-flow: column;
-  align-items: center;
-  button {
-    height: 2rem;
-    padding: 0 0.75rem;
-    i {
-      display: block;
-    }
-  }
-}
-
 .farm-event-form-content,
 .regimen-editor-content,
 .designer-sequence-list-panel-content,
@@ -460,66 +430,8 @@
       margin-right: 0.5rem;
       color: $dark_gray;
     }
-    .add-variable-btn {
-      position: absolute;
-      right: 4rem;
-      width: 2.8rem;
-      height: 2rem;
-      line-height: 1rem;
-      margin-top: 0.75rem;
-      margin-right: 0.25rem;
-      padding: 0.25rem;
-      .fa-plus {
-        vertical-align: top;
-        padding-top: 0.1rem;
-        padding-left: 0.1rem;
-        font-size: 1.5rem;
-      }
-    }
     .bp5-popover-wrapper {
-      position: absolute;
-      top: 0;
-      right: 4rem;
-      .add-variable-btn {
-        position: relative;
-        right: unset;
-        text-align: center;
-      }
-      .bp5-popover-content {
-        background: $off_white;
-        height: 100%;
-        align-content: center;
-        .add-variable-options {
-          text-align: center;
-          line-height: 0;
-        }
-        .fb-button {
-          float: none;
-          height: 2rem;
-        }
-      }
-    }
-  }
-}
-
-.designer-regimen-editor-panel-content {
-  padding: 0;
-}
-
-.regimen-editor-content {
-  padding: 0 1rem 1rem;
-  .location-form-content {
-    .row {
-      white-space: nowrap;
-      .trash {
-        display: inline;
-        float: none;
-      }
-    }
-  }
-  .sequence-section-header {
-    &:hover {
-      background: $translucent!important;
+      display: contents;
     }
   }
 }
@@ -625,7 +537,7 @@
   margin: 1rem 0;
   .location-form, .custom-coordinate-form {
     background: $translucent8_white;
-    padding: 0.75rem;
+    padding: 1rem;
     border-radius: 0.5rem;
     box-shadow: 0 0 1rem $translucent1;
   }
@@ -1214,9 +1126,6 @@
     .empty-state {
       display: block;
     }
-  }
-  .panel-top {
-    margin: 0;
   }
 }
 

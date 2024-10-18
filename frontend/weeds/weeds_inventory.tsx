@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Everything, WeedsPanelState } from "../interfaces";
-import { DesignerNavTabs, Panel, TAB_COLOR } from "../farm_designer/panel_header";
+import { DesignerNavTabs, Panel } from "../farm_designer/panel_header";
 import {
   EmptyStateWrapper, EmptyStateGraphic,
 } from "../ui/empty_state_wrapper";
@@ -88,7 +88,7 @@ export const WeedsSection = (props: WeedsSectionProps) => {
       <label>{`${t(props.sectionTitle)} (${props.items.length})`}</label>
       <div className="row">
         {props.category == "pending" && props.items.length > 0 && props.open &&
-          <div className={"approval-buttons"}>
+          <div className={"approval-buttons row"}>
             <button className={"fb-button green"} onClick={e => {
               e.stopPropagation();
               props.items.map(weed => {
@@ -177,7 +177,7 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
       layerValue={!!this.props.getConfigValue(BooleanSetting.show_weeds)}
       allWeeds={this.props.weeds}
       dispatch={this.props.dispatch}>
-      <div className={"section-action-btn-group"}>
+      <div className={"section-action-btn-group row"}>
         {items.length > 0 &&
           <button className={"fb-button red delete"}
             title={t("delete all")}
@@ -185,11 +185,7 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
             {t("delete all")}
           </button>}
         <div
-          className={[
-            "fb-button",
-            `panel-${TAB_COLOR[Panel.Weeds]}`,
-            "plus-weed",
-          ].join(" ")}
+          className={"fb-button green plus-weed"}
           onClick={e => {
             e.stopPropagation();
             push(Path.weeds("add"));
@@ -214,7 +210,7 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
       layerValue={!!this.props.getConfigValue(BooleanSetting.show_historic_points)}
       layerDisabled={!this.props.getConfigValue(BooleanSetting.show_weeds)}
       dispatch={this.props.dispatch}>
-      <div className={"section-action-btn-group"}>
+      <div className={"section-action-btn-group row"}>
         {items.length > 0 &&
           <button className={"fb-button red delete"}
             title={t("delete all")}

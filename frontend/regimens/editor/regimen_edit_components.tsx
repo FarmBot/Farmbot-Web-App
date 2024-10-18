@@ -25,23 +25,25 @@ export const editRegimenVariables = (props: RegimenProps) =>
 
 export const RegimenButtonGroup = (props: RegimenProps) => {
   const { regimen, dispatch } = props;
-  return <div className="button-group">
+  return <div className="row panel-header-icon-group">
+    <div className="row no-gap">
+      <Popover className={"color-picker"}
+        position={Position.BOTTOM}
+        popoverClassName={"colorpicker-menu gray"}
+        target={<i title={t("select color")}
+          className={"fa fa-paint-brush fb-icon-button"} />}
+        content={<ColorPickerCluster
+          onChange={color => props.dispatch(edit(regimen, { color }))}
+          current={regimen.body.color} />} />
+      <i className={"fa fa-trash fb-icon-button"}
+        title={t("delete regimen")}
+        onClick={() => dispatch(destroy(regimen.uuid))
+          .then(() => push(Path.regimens()))} />
+      <CopyButton regimen={regimen} dispatch={dispatch} />
+    </div>
     <SaveBtn
       status={regimen.specialStatus}
       onClick={() => dispatch(save(regimen.uuid))} />
-    <CopyButton regimen={regimen} dispatch={dispatch} />
-    <i className={"fa fa-trash fb-icon-button"}
-      title={t("delete regimen")}
-      onClick={() => dispatch(destroy(regimen.uuid))
-        .then(() => push(Path.regimens()))} />
-    <Popover className={"color-picker"}
-      position={Position.BOTTOM}
-      popoverClassName={"colorpicker-menu gray"}
-      target={<i title={t("select color")}
-        className={"fa fa-paint-brush fb-icon-button"} />}
-      content={<ColorPickerCluster
-        onChange={color => props.dispatch(edit(regimen, { color }))}
-        current={regimen.body.color} />} />
   </div>;
 };
 

@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { PlantInventoryItem } from "./plant_inventory_item";
 import { Everything, PlantsPanelState } from "../interfaces";
-import { Panel, DesignerNavTabs, TAB_COLOR } from "../farm_designer/panel_header";
+import { Panel, DesignerNavTabs } from "../farm_designer/panel_header";
 import { getPlants } from "../farm_designer/state_to_props";
 import { TaggedPlant } from "../farm_designer/map/interfaces";
 import {
@@ -263,8 +263,7 @@ export const PanelSection = (props: PanelSectionProps) => {
             props.addNew();
           }}
           className={[
-            "fb-button",
-            `panel-${TAB_COLOR[props.panel]}`,
+            "fb-button green",
             props.addClassName,
           ].join(" ")}>
           <i className={"fa fa-plus"} title={props.addTitle} />

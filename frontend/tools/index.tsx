@@ -95,7 +95,7 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
       <div className="row grid-exp-1">
         <label>{this.strings.toolSlots}</label>
         <Link to={Path.toolSlots("add")}>
-          <div className={`fb-button panel-${TAB_COLOR[Panel.Tools]}`}>
+          <div className={"fb-button green"}>
             <i className="fa fa-plus" title={this.strings.addSlot} />
           </div>
         </Link>
@@ -119,7 +119,7 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
       <div className="row grid-exp-1">
         <label>{this.strings.tools}</label>
         <Link to={Path.tools("add")}>
-          <div className={`fb-button panel-${TAB_COLOR[Panel.Tools]} add-tool-btn`}>
+          <div className={"fb-button green add-tool-btn"}>
             <i className="fa fa-plus" title={this.strings.titleText} />
           </div>
         </Link>

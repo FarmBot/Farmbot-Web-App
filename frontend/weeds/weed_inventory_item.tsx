@@ -70,7 +70,7 @@ export class WeedInventoryItem extends
       <span className="weed-search-item-name">
         {weed.name || t("Untitled weed")}
       </span>
-      <div>
+      <div className="row">
         {this.props.pending &&
           <button className={"fb-button green"} onClick={e => {
             e.stopPropagation();

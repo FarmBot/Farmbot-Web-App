@@ -77,3 +77,25 @@
     cursor: default !important;
   }
 }
+
+.designer-regimen-editor-panel-content {
+  padding: 0;
+}
+
+.regimen-editor-content {
+  padding: 0 1rem 1rem;
+  .location-form-content {
+    .row {
+      white-space: nowrap;
+      .trash {
+        display: inline;
+        float: none;
+      }
+    }
+  }
+  .sequence-section-header {
+    &:hover {
+      background: $translucent!important;
+    }
+  }
+}

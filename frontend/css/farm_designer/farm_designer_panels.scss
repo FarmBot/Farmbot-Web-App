@@ -18,13 +18,6 @@
   }
 }
 
-.panel-top {
-  margin-top: 0;
-  @media screen and (max-width: $mobile_max_width) {
-    margin-top: 5rem;
-  }
-}
-
 .controls-panel,
 .photos-panel,
 .messages-panel,
@@ -464,9 +457,6 @@
 }
 
 .crop-catalog-panel {
-  .panel-top {
-    margin-top: 0;
-  }
   .panel-content {
     padding: 0;
     padding-bottom: inherit;
@@ -474,18 +464,12 @@
 }
 
 .panel-top {
+  padding: 1rem;
   &.with-button {
-    display: flex;
-    .fb-button {
-      margin: 1rem;
-      margin-left: 0;
-    }
-    a {
-      margin-top: 0.5rem;
-    }
-    i:not(.fa-stack-2x) {
-      font-size: 1.5rem;
-    }
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    align-items: center;
   }
 }
 
@@ -915,9 +899,6 @@ li {
 
 .tool-slots-panel,
 .tools-panel {
-  .panel-top {
-    display: flex;
-  }
   .tool-slots-panel-content,
   .tools-panel-content {
     overflow-y: auto;
@@ -1198,8 +1179,6 @@ li {
     }
     .fa-gear {
       color: $dark_gray;
-      margin-right: 1rem;
-      margin-top: 1.5rem;
     }
   }
 }
@@ -1468,9 +1447,8 @@ li {
 }
 
 .panel-header-icon-group {
-  display: flex;
-  float: right;
-  padding: 1.5rem;
+  margin-left: 1rem;
+  margin-right: 1.5rem;
 }
 
 .group-detail-panel {
@@ -1739,11 +1717,7 @@ li {
     }
     .fa-caret-down,
     .fa-caret-up {
-      float: right;
-      font-size: 2rem;
-      margin-right: 2rem;
-      margin-top: 0;
-      color: $dark_gray;
+      margin: 1rem;
     }
     button {
       float: none;
@@ -2149,9 +2123,6 @@ li {
     @media screen and (max-width: $mobile_max_width) {
       max-height: calc(100vh - 19rem);
     }
-    .panel-top {
-      margin-left: 0 !important;
-    }
     a {
       text-decoration: none !important;
       p {
@@ -2163,15 +2134,6 @@ li {
     .folders-panel {
       margin-left: -1rem;
       margin-right: -1rem;
-    }
-  }
-  .fullscreen {
-    white-space: nowrap;
-    height: 3rem;
-    margin-top: 0.75rem;
-    margin-right: 1rem;
-    i {
-      margin-left: 1rem;
     }
   }
 }
@@ -2229,20 +2191,6 @@ li {
 }
 
 .designer-regimen-editor-panel {
-  .panel-title {
-    .fa-clone,
-    .fa-trash,
-    .fa-paint-brush {
-      float: right;
-      margin-top: 1.5rem;
-    }
-    .color-picker {
-      float: right;
-    }
-    .fb-button {
-      margin: 1.5rem;
-    }
-  }
   .green,
   .red {
     .panel-title {

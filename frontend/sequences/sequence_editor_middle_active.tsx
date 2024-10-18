@@ -556,12 +556,12 @@ export class SequenceEditorMiddleActive extends
               buttonElement={<Popover position={Position.TOP} usePortal={false}
                 isOpen={this.state.addVariableMenuOpen}
                 target={<button
-                  className={"fb-button gray add-variable-btn"}
+                  className={"fb-button green"}
                   onClick={this.openAddVariableMenu}
                   title={t("Add variable")}>
                   <i className={"fa fa-plus"} />
                 </button>}
-                content={<div className={"add-variable-options"}>
+                content={<div className={"grid"}>
                   <button className={"fb-button gray"}
                     onClick={this.addVariable(variableData, declarations,
                       VariableType.Location)}>

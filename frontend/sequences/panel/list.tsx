@@ -59,12 +59,12 @@ export class RawDesignerSequenceList
     const panelState = this.props.sequencesPanelState;
     const buttonProps = Path.inDesigner()
       ? {
-        caretDirection: "right",
+        icon: "expand",
         path: Path.sequencePage(),
         text: t("fullscreen"),
       }
       : {
-        caretDirection: "left",
+        icon: "compress",
         path: Path.designerSequences(),
         text: t("collapse"),
       };
@@ -76,10 +76,10 @@ export class RawDesignerSequenceList
           placeholder={t("Search sequences...")}
           onChange={updateSearchTerm} />
         {!isMobile() &&
-          <button className={"transparent-button fullscreen"}
+          <button className={"fb-button clear-dark row half-gap"}
             onClick={() => push(buttonProps.path)}>
             {buttonProps.text}
-            <i className={`fa fa-caret-square-o-${buttonProps.caretDirection}`} />
+            <i className={`fa fa-${buttonProps.icon}`} />
           </button>}
       </DesignerPanelTop>
       <DesignerPanelContent panelName={panelName}>
@@ -120,7 +120,7 @@ interface SequenceListActionsProps {
 }
 
 const SequenceListActions = (props: SequenceListActionsProps) =>
-  <div className={"folder-icon-wrapper"}>
+  <div className={"row"}>
     <button
       className={"fb-button green"}
       title={t("add new sequence")}
