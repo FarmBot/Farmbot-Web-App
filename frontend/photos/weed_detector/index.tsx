@@ -1,6 +1,5 @@
 import React from "react";
 import { WeedDetectorState, WeedDetectorProps } from "./interfaces";
-import { Row } from "../../ui";
 import { scanImage, detectPlants } from "./actions";
 import { deletePoints } from "../../api/delete_points";
 import { Progress } from "../../util";

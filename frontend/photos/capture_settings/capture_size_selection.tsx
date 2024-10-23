@@ -107,7 +107,7 @@ export class CaptureSizeSelection
                   "take_photo_height", e.currentTarget.value))} />
             </Row>
           </div>}
-          <PhotoResolutionSettingChanged {...this.props} />
+        <PhotoResolutionSettingChanged {...this.props} />
       </div>
     </Highlight>;
   }
