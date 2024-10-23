@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import {
   DesignerPanel, DesignerPanelContent,
 } from "../farm_designer/designer_panel";
-import { DesignerNavTabs, Panel } from "../farm_designer/panel_header";
+import { Panel } from "../farm_designer/panel_header";
 import { envGet } from "./remote_env/selectors";
 import { Photos } from "./images/photos";
 import { CameraCalibration } from "./camera_calibration";
@@ -68,7 +68,6 @@ export class RawDesignerPhotos
     };
     const farmwareNames = Object.keys(this.props.farmwares);
     return <DesignerPanel panelName={"photos"} panel={Panel.Photos}>
-      <DesignerNavTabs />
       <DesignerPanelContent panelName={"photos"}>
         <label>{t("Photos")}</label>
         <Photos {...common} {...imageCommon}

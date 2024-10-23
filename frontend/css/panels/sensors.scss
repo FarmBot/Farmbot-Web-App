@@ -91,3 +91,32 @@
 .sensor-form-grid {
   grid-template-columns: 2fr 1fr 1fr auto;
 }
+
+.sensors-panel-content {
+  padding: 1.5rem;
+}
+
+.sensors-panel {
+  display: grid;
+  gap: 1rem;
+  .panel-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    align-items: center;
+    .panel-title {
+      margin: 0;
+      height: unset;
+      color: $dark_gray;
+    }
+  }
+  .panel-content {
+    label {
+      margin-top: 0;
+    }
+  }
+  .sensor-history-widget {
+    display: grid;
+    gap: 1rem;
+  }
+}

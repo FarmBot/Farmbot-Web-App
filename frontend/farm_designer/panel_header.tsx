@@ -244,10 +244,8 @@ export class DesignerNavTabs
   updateScroll = () => this.setState({ atEnd: !displayScrollIndicator() });
 
   render() {
-    const tab = getCurrentPanel();
     const hidden = this.props.hidden ? "hidden" : "";
-    const color = TAB_COLOR[tab || Panel.Plants];
-    return <div className={`panel-nav ${color}-panel ${hidden}`}>
+    return <div className={`panel-nav ${hidden}`}>
       {!this.state.atEnd && <div className={"scroll-indicator"} />}
       <div className={"panel-tabs"} onScroll={this.updateScroll}>
         <NavTab panel={Panel.Map} />

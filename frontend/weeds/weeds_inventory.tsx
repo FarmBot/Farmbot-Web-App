@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Everything, WeedsPanelState } from "../interfaces";
-import { DesignerNavTabs, Panel } from "../farm_designer/panel_header";
+import { Panel } from "../farm_designer/panel_header";
 import {
   EmptyStateWrapper, EmptyStateGraphic,
 } from "../ui/empty_state_wrapper";
@@ -229,7 +229,6 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
       .filter(p => p.body.name.toLowerCase()
         .includes(this.state.searchTerm.toLowerCase()));
     return <DesignerPanel panelName={"weeds-inventory"} panel={Panel.Weeds}>
-      <DesignerNavTabs />
       <DesignerPanelTop panel={Panel.Weeds}>
         <SearchField nameKey={"weeds"}
           searchTerm={this.state.searchTerm}

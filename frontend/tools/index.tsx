@@ -3,9 +3,7 @@ import { connect } from "react-redux";
 import {
   DesignerPanel, DesignerPanelTop, DesignerPanelContent,
 } from "../farm_designer/designer_panel";
-import {
-  DesignerNavTabs, Panel, TAB_COLOR,
-} from "../farm_designer/panel_header";
+import { Panel } from "../farm_designer/panel_header";
 import {
   EmptyStateWrapper, EmptyStateGraphic,
 } from "../ui/empty_state_wrapper";
@@ -169,7 +167,6 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
       .filter(p => p.body.name.toLowerCase()
         .includes(this.state.searchTerm.toLowerCase()));
     return <DesignerPanel panelName={panelName} panel={Panel.Tools}>
-      <DesignerNavTabs />
       <DesignerPanelTop
         panel={Panel.Tools}
         linkTo={!hasTools ? Path.tools("add") : undefined}

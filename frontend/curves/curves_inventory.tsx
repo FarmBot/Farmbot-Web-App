@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { CurvesPanelState, Everything } from "../interfaces";
-import { DesignerNavTabs, Panel } from "../farm_designer/panel_header";
+import { Panel } from "../farm_designer/panel_header";
 import {
   EmptyStateWrapper, EmptyStateGraphic,
 } from "../ui/empty_state_wrapper";
@@ -91,7 +91,6 @@ export class RawCurves extends React.Component<CurvesProps, CurvesState> {
     const heightCurves = filteredCurves
       .filter(curve => curve.body.type == CurveType.height);
     return <DesignerPanel panelName={"curves-inventory"} panel={Panel.Curves}>
-      <DesignerNavTabs />
       <DesignerPanelTop panel={Panel.Curves}>
         <SearchField nameKey={"curves"}
           searchTerm={this.state.searchTerm}

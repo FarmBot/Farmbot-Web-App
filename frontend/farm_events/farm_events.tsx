@@ -6,7 +6,7 @@ import {
 } from "../farm_designer/interfaces";
 import moment from "moment";
 import { Content } from "../constants";
-import { Panel, DesignerNavTabs } from "../farm_designer/panel_header";
+import { Panel } from "../farm_designer/panel_header";
 import { Link } from "../link";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelTop,
@@ -127,7 +127,6 @@ export class RawFarmEvents
 
   render() {
     return <DesignerPanel panelName={"farm-event"} panel={Panel.FarmEvents}>
-      <DesignerNavTabs />
       <DesignerPanelTop
         panel={Panel.FarmEvents}
         linkTo={Path.farmEvents("add")}

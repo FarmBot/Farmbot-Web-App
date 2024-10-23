@@ -715,19 +715,15 @@ export const CameraOffset = (props: WizardStepComponentProps) => {
       props.dispatch(saveOrEditFarmwareEnv(props.resources)(
         key, JSON.stringify(formatEnvKey(key, value)))),
   };
-  return <Row>
-    <Col xs={6}>
-      <NumberBoxConfig {...common}
-        settingName={DeviceSetting.cameraOffsetX}
-        configKey={"CAMERA_CALIBRATION_camera_offset_x"}
-        helpText={helpText} />
-    </Col>
-    <Col xs={6}>
-      <NumberBoxConfig {...common}
-        settingName={DeviceSetting.cameraOffsetY}
-        configKey={"CAMERA_CALIBRATION_camera_offset_y"}
-        helpText={helpText} />
-    </Col>
+  return <Row className="grid-2-col">
+    <NumberBoxConfig {...common}
+      settingName={DeviceSetting.cameraOffsetX}
+      configKey={"CAMERA_CALIBRATION_camera_offset_x"}
+      helpText={helpText} />
+    <NumberBoxConfig {...common}
+      settingName={DeviceSetting.cameraOffsetY}
+      configKey={"CAMERA_CALIBRATION_camera_offset_y"}
+      helpText={helpText} />
   </Row>;
 };
 

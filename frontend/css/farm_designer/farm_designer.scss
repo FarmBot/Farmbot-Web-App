@@ -1141,11 +1141,29 @@
 }
 
 .farm-designer-panels.panel-closed ~ .three-d-garden .garden-bed-3d-model {
-  width: 100vw;
+  animation: panel-hide-shift-3d 0.3s ease forwards;
 }
 
 .farm-designer-panels.panel-open ~ .three-d-garden .garden-bed-3d-model {
-  width: calc(100vw + 45rem);
+  animation: panel-show-shift-3d 0.3s ease forwards;
+}
+
+@keyframes panel-show-shift-3d {
+  0% {
+    transform: translateX(-22.5rem);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes panel-hide-shift-3d {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-22.5rem);
+  }
 }
 
 .three-d-garden {
@@ -1159,6 +1177,7 @@
   }
 
   .garden-bed-3d-model {
+    width: calc(100vw + 45rem);
     position: relative;
     height: 100vh;
     cursor: grab;

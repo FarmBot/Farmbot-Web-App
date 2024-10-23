@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import {
   DesignerPanel, DesignerPanelContent,
 } from "../farm_designer/designer_panel";
-import { DesignerNavTabs, Panel } from "../farm_designer/panel_header";
+import { Panel } from "../farm_designer/panel_header";
 import { Peripherals } from "./peripherals";
 import { WebcamPanel } from "./webcam";
 import { PinnedSequences } from "./pinned_sequence_list";
@@ -30,7 +30,6 @@ export class RawDesignerControls
     this.props.dispatch({ type: Actions.OPEN_POPUP, payload: "controls" });
     push(Path.plants());
     return <DesignerPanel panelName={"controls"} panel={Panel.Controls}>
-      <DesignerNavTabs />
       <DesignerPanelContent panelName={"controls"}>
         <p>Controls have moved to the navigation bar.</p>
       </DesignerPanelContent>

@@ -1,0 +1,231 @@
+
+
+.curve-svg-wrapper {
+  .bp5-popover-target {
+    width: 100%;
+  }
+}
+
+.warning-line-text-popover {
+  border-radius: 5px;
+  .bp5-popover-content {
+    background: $dark_gray;
+    border-radius: 5px;
+  }
+  .bp5-popover-arrow {
+    display: none;
+  }
+  p {
+    color: $white;
+    font-size: 1.3rem;
+    margin-bottom: 0.5rem !important;
+  }
+  .warning-text {
+    max-width: 200px;
+    .top {
+      font-weight: bold;
+    }
+  }
+}
+
+.curve-action-popover {
+  .bp5-popover-content {
+    background: $dark_gray;
+  }
+  .bp5-popover-arrow-fill {
+    fill: $dark_gray;
+  }
+  .curve-action-menu {
+    .transparent-button {
+      justify-self: right;
+      grid-column: 2;
+      color: $off_white
+    }
+    label {
+      color: $off_white;
+    }
+    .filter-search {
+      width: 100%;
+      button {
+        box-shadow: none !important;
+      }
+    }
+    input {
+      box-shadow: none;
+    }
+  }
+}
+
+.curve-svg {
+  .data-labels,
+  .y-axis-line,
+  .warning-line {
+    pointer-events: none;
+  }
+}
+
+.curve-info-panel {
+  .panel-title {
+    .white-text {
+      color: $dark_gray;
+      &:hover {
+        color: $dark_gray;
+      }
+    }
+  }
+  .panel-header-icon-group {
+    i {
+      color: $dark_gray;
+    }
+  }
+}
+
+.curve-info-panel-content-wrapper {
+  .bp5-popover-wrapper {
+    float: right;
+    margin-left: 1rem;
+    margin-top: 1rem;
+  }
+  .full-indicator {
+    height: 2rem;
+    text-align: center;
+    color: $darkest_red;
+  }
+  .input-error-wrapper {
+    position: absolute;
+    margin: 0;
+  }
+  table {
+    th {
+      text-transform: uppercase;
+      color: $dark_gray;
+      font-size: 1.3rem;
+    }
+    td,
+    th {
+      background: $lighter_gray;
+      border: 1px solid $light_gray;
+      padding-left: 1rem;
+      p {
+        display: inline;
+        font-size: 1.4rem;
+        color: $dark_gray;
+      }
+      &.active {
+        background: $white;
+      }
+      &.active-input {
+        padding: 0;
+      }
+      .percent-green {
+        color: $green;
+      }
+      .percent-red {
+        color: $red;
+      }
+      input {
+        font-size: 1.4rem;
+        padding-left: 1rem;
+      }
+    }
+    tr {
+      &.hovered {
+        border: 2px solid $gray;
+        border-top-width: 0;
+        border-bottom-width: 0;
+      }
+    }
+  }
+  .row-radio {
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    vertical-align: middle;
+    margin-left: 1rem;
+    margin-top: -0.25rem;
+    &.active {
+      &.full {
+        background: revert;
+        border: revert;
+        cursor: pointer;
+      }
+    }
+    &.full {
+      background: $light_gray;
+      border: $gray;
+      cursor: not-allowed;
+    }
+  }
+}
+
+.curves-inventory-panel-content {
+  padding: 0;
+  cursor: pointer;
+  .curve-search-item-info {
+    font-size: 1rem;
+  }
+  .section-header {
+    .fa-caret-up,
+    .fa-caret-down {
+      line-height: 3.75rem;
+      margin-top: 0 !important;
+    }
+  }
+}
+
+.crop-curve-info {
+  .bp5-collapse {
+    padding-top: 0.5rem;
+  }
+  p {
+    line-height: 4rem;
+    font-size: 1.3rem;
+  }
+  label {
+    margin-top: 0 !important;
+  }
+  .fa-external-link {
+    position: absolute;
+    top: 1rem;
+    right: 0;
+  }
+  .active-curve-name {
+    p {
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+  }
+  .curve-svg-wrapper {
+    background: $white;
+    box-shadow: 0 0 10px $light_gray;
+    border-radius: 5px;
+  }
+}
+
+.curve-info-panel-content-wrapper,
+.all-curve-info {
+  svg {
+    text {
+      user-select: none;
+    }
+  }
+}
+
+.curve-usage-display {
+  margin-bottom: 2rem;
+  i[class*=fa-caret-] {
+    float: right;
+    font-size: 2rem;
+  }
+  label {
+    margin-top: 0 !important;
+  }
+  .bp5-popover-wrapper {
+    display: inline;
+    margin-left: 1rem;
+  }
+  img {
+    cursor: pointer;
+  }
+}

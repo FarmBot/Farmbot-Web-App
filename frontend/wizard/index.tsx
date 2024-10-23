@@ -6,7 +6,7 @@ import { every, isUndefined, noop, some } from "lodash";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelTop,
 } from "../farm_designer/designer_panel";
-import { DesignerNavTabs, Panel } from "../farm_designer/panel_header";
+import { Panel } from "../farm_designer/panel_header";
 import { Everything } from "../interfaces";
 import { Saucer } from "../ui";
 import {
@@ -156,7 +156,6 @@ export class RawSetupWizard
   render() {
     const panelName = "setup";
     return <DesignerPanel panelName={panelName} panel={Panel.Controls}>
-      <DesignerNavTabs />
       <DesignerPanelTop panel={Panel.Controls} />
       <DesignerPanelContent panelName={panelName}>
         <WizardHeader reset={this.reset} results={this.props.wizardStepResults}

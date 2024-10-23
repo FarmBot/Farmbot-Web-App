@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelTop,
 } from "../../farm_designer/designer_panel";
-import { DesignerNavTabs, Panel } from "../../farm_designer/panel_header";
+import { Panel } from "../../farm_designer/panel_header";
 import { RegimensListProps, RegimensListState } from "./interfaces";
 import { t } from "../../i18next_wrapper";
 import { SearchField } from "../../ui/search_field";
@@ -29,7 +29,6 @@ export class RawDesignerRegimenList
   render() {
     const panelName = "designer-regimen-list";
     return <DesignerPanel panelName={panelName} panel={Panel.Regimens}>
-      <DesignerNavTabs />
       <DesignerPanelTop
         panel={Panel.Regimens}
         onClick={() =>

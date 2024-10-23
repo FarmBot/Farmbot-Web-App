@@ -6,7 +6,7 @@ import { ExternalUrl } from "../external_urls";
 import {
   DesignerPanel, DesignerPanelContent,
 } from "../farm_designer/designer_panel";
-import { Panel, DesignerNavTabs } from "../farm_designer/panel_header";
+import { Panel } from "../farm_designer/panel_header";
 import { push } from "../history";
 import { t } from "../i18next_wrapper";
 import { Path } from "../internal_urls";
@@ -20,7 +20,6 @@ import { HelpHeader } from "./header";
 
 export const SupportPanel = () =>
   <DesignerPanel panelName={"support"} panel={Panel.Help}>
-    <DesignerNavTabs />
     <HelpHeader />
     <DesignerPanelContent panelName={"support"}>
       {DevSettings.futureFeaturesEnabled() &&

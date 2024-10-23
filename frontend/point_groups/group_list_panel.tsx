@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Everything } from "../interfaces";
-import { Panel, DesignerNavTabs } from "../farm_designer/panel_header";
+import { Panel } from "../farm_designer/panel_header";
 import { t } from "../i18next_wrapper";
 import {
   DesignerPanel, DesignerPanelTop, DesignerPanelContent,
@@ -46,7 +46,6 @@ export class RawGroupListPanel
 
   render() {
     return <DesignerPanel panelName={"groups"} panel={Panel.Groups}>
-      <DesignerNavTabs />
       <DesignerPanelTop
         panel={Panel.Groups}
         onClick={() => this.props.dispatch(createGroup({ pointUuids: [] }))}

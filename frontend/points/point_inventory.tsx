@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { PointInventoryItem } from "./point_inventory_item";
 import { Everything, PointsPanelState } from "../interfaces";
-import { DesignerNavTabs, Panel } from "../farm_designer/panel_header";
+import { Panel } from "../farm_designer/panel_header";
 import {
   EmptyStateWrapper, EmptyStateGraphic,
 } from "../ui/empty_state_wrapper";
@@ -179,7 +179,6 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
       .filter(p => !soilHeightPoint(p))
       .filter(p => !p.body.meta.gridId);
     return <DesignerPanel panelName={"point-inventory"} panel={Panel.Points}>
-      <DesignerNavTabs />
       <DesignerPanelTop panel={Panel.Points}>
         <SearchField nameKey={"points"}
           searchTerm={this.state.searchTerm}

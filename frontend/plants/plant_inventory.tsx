@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { PlantInventoryItem } from "./plant_inventory_item";
 import { Everything, PlantsPanelState } from "../interfaces";
-import { Panel, DesignerNavTabs } from "../farm_designer/panel_header";
+import { Panel } from "../farm_designer/panel_header";
 import { getPlants } from "../farm_designer/state_to_props";
 import { TaggedPlant } from "../farm_designer/map/interfaces";
 import {
@@ -114,7 +114,6 @@ export class RawPlants
     const uncategorizedGroups = uncategorizedGroupSubset(this.props.groups);
     const noSearchResults = this.state.searchTerm && filteredPlants.length == 0;
     return <DesignerPanel panelName={"plant-inventory"} panel={Panel.Plants}>
-      <DesignerNavTabs />
       <DesignerPanelTop panel={Panel.Plants} withButton={true}>
         <SearchField nameKey={"plants"}
           searchTerm={this.state.searchTerm}

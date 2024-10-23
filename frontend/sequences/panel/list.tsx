@@ -4,7 +4,7 @@ import { t } from "../../i18next_wrapper";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelTop,
 } from "../../farm_designer/designer_panel";
-import { DesignerNavTabs, Panel } from "../../farm_designer/panel_header";
+import { Panel } from "../../farm_designer/panel_header";
 import { Folders } from "../../folders/component";
 import { mapStateToProps } from "../state_to_props";
 import { SequencesProps } from "../interfaces";
@@ -69,7 +69,6 @@ export class RawDesignerSequenceList
         text: t("collapse"),
       };
     return <DesignerPanel panelName={panelName} panel={Panel.Sequences}>
-      <DesignerNavTabs />
       <DesignerPanelTop panel={Panel.Sequences} withButton={true}>
         <SearchField nameKey={"sequences"}
           searchTerm={this.props.folderData.searchTerm || ""}

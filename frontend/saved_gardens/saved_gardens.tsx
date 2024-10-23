@@ -12,7 +12,7 @@ import { closeSavedGarden } from "./actions";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelTop,
 } from "../farm_designer/designer_panel";
-import { DesignerNavTabs, Panel } from "../farm_designer/panel_header";
+import { Panel } from "../farm_designer/panel_header";
 import { t } from "../i18next_wrapper";
 import {
   EmptyStateWrapper, EmptyStateGraphic,
@@ -39,7 +39,6 @@ export class RawSavedGardens
 
   render() {
     return <DesignerPanel panelName={"saved-garden"} panel={Panel.SavedGardens}>
-      <DesignerNavTabs />
       <DesignerPanelContent panelName={"saved-garden"}>
         <DesignerPanelTop
           panel={Panel.SavedGardens}
