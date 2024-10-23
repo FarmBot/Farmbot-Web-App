@@ -140,7 +140,7 @@ export class ParameterImport
 export const ShowAdvancedToggle = (props: ShowAdvancedToggleProps) => {
   const showAdvanced = !!props.getConfigValue(
     BooleanSetting.show_advanced_settings);
-  return <div className={"show-advanced-toggle"}>
+  return <div className={"row grid-exp-1"}>
     <label>{t(DeviceSetting.showAdvancedSettings)}</label>
     <ToggleButton
       className={getModifiedClassName(BooleanSetting.show_advanced_settings)}

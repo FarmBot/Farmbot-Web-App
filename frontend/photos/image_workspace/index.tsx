@@ -109,13 +109,13 @@ export class ImageWorkspace
     const cameraCalibrationEnv = this.props.namespace("H_LO").includes("CAMERA");
     const defaultHLow = this.getDefault(cameraCalibrationEnv ? "H_HI" : "H_LO");
     const defaultHHigh = this.getDefault(cameraCalibrationEnv ? "H_LO" : "H_HI");
-    return <div className="image-workspace">
+    return <div className="image-workspace grid">
       <Row className="grid-2-col weed-detection-grid">
         <div className="grid">
           <Highlight settingName={this.props.sectionKey == "calibration"
             ? DeviceSetting.calibrationHue
             : DeviceSetting.detectionHue} pathPrefix={Path.photos}>
-            <div>
+            <div className="row grid-exp-2 half-gap">
               <label htmlFor="hue">{t("HUE")}</label>
               <Help text={t(ToolTips.COLOR_HUE_RANGE, {
                 defaultLow: defaultHLow,
@@ -139,7 +139,7 @@ export class ImageWorkspace
           <Highlight settingName={this.props.sectionKey == "calibration"
             ? DeviceSetting.calibrationSaturation
             : DeviceSetting.detectionSaturation} pathPrefix={Path.photos}>
-            <div>
+            <div className="row grid-exp-2 half-gap">
               <label htmlFor="saturation">{t("SATURATION")}</label>
               <Help text={t(ToolTips.COLOR_SATURATION_RANGE, {
                 defaultLow: this.getDefault("S_LO"),
@@ -162,7 +162,7 @@ export class ImageWorkspace
           <Highlight settingName={this.props.sectionKey == "calibration"
             ? DeviceSetting.calibrationValue
             : DeviceSetting.detectionValue} pathPrefix={Path.photos}>
-            <div>
+            <div className="row grid-exp-2 half-gap">
               <label htmlFor="value">{t("VALUE")}</label>
               <Help text={t(ToolTips.COLOR_VALUE_RANGE, {
                 defaultLow: this.getDefault("V_LO"),
@@ -210,52 +210,65 @@ export class ImageWorkspace
                 : DeviceSetting.detectionBlur}
               className={"advanced"}
               pathPrefix={Path.photos}>
-              <label>{t("BLUR")}</label>
-              <Help text={t(ToolTips.BLUR, {
-                defaultBlur: this.getDefault("blur")
-              })} />
-              <BlurableInput type="number"
-                wrapperClassName={this.getModifiedClass("blur")}
-                min={RANGES.BLUR.LOWEST}
-                max={RANGES.BLUR.HIGHEST}
-                onCommit={this.numericChange("blur")}
-                value={"" + this.props.blur} />
+              <div className="grid no-gap">
+                <div className="row grid-exp-2 half-gap">
+                  <label>{t("BLUR")}</label>
+                  <Help text={t(ToolTips.BLUR, {
+                    defaultBlur: this.getDefault("blur")
+                  })} />
+                </div>
+                <BlurableInput type="number"
+                  wrapperClassName={this.getModifiedClass("blur")}
+                  min={RANGES.BLUR.LOWEST}
+                  max={RANGES.BLUR.HIGHEST}
+                  onCommit={this.numericChange("blur")}
+                  value={"" + this.props.blur} />
+              </div>
             </Highlight>
             <Highlight
               settingName={this.props.sectionKey == "calibration"
                 ? DeviceSetting.calibrationMorph
                 : DeviceSetting.detectionMorph}
               pathPrefix={Path.photos}>
-              <label>{t("MORPH")}</label>
-              <Help text={t(ToolTips.MORPH, {
-                defaultMorph: this.getDefault("morph")
-              })} />
-              <BlurableInput type="number"
-                wrapperClassName={this.getModifiedClass("morph")}
-                min={RANGES.MORPH.LOWEST}
-                max={RANGES.MORPH.HIGHEST}
-                onCommit={this.numericChange("morph")}
-                value={"" + this.props.morph} />
+              <div className="grid no-gap">
+                <div className="row grid-exp-2 half-gap">
+                  <label>{t("MORPH")}</label>
+                  <Help text={t(ToolTips.MORPH, {
+                    defaultMorph: this.getDefault("morph")
+                  })} />
+                </div>
+                <BlurableInput type="number"
+                  wrapperClassName={this.getModifiedClass("morph")}
+                  min={RANGES.MORPH.LOWEST}
+                  max={RANGES.MORPH.HIGHEST}
+                  onCommit={this.numericChange("morph")}
+                  value={"" + this.props.morph} />
+              </div>
             </Highlight>
             <Highlight
               settingName={this.props.sectionKey == "calibration"
                 ? DeviceSetting.calibrationIterations
                 : DeviceSetting.detectionIterations}
               pathPrefix={Path.photos}>
-              <label>{t("ITERATIONS")}</label>
-              <Help text={t(ToolTips.ITERATIONS, {
-                defaultIteration: this.getDefault("iteration")
-              })} />
-              <BlurableInput type="number"
-                wrapperClassName={this.getModifiedClass("iteration")}
-                min={RANGES.ITERATION.LOWEST}
-                max={RANGES.ITERATION.HIGHEST}
-                onCommit={this.numericChange("iteration")}
-                value={"" + this.props.iteration} />
+              <div className="grid no-gap">
+                <div className="row grid-exp-2 half-gap">
+                  <label>{t("ITERATIONS")}</label>
+                  <Help text={t(ToolTips.ITERATIONS, {
+                    defaultIteration: this.getDefault("iteration")
+                  })} />
+                </div>
+                <BlurableInput type="number"
+                  wrapperClassName={this.getModifiedClass("iteration")}
+                  min={RANGES.ITERATION.LOWEST}
+                  max={RANGES.ITERATION.HIGHEST}
+                  onCommit={this.numericChange("iteration")}
+                  value={"" + this.props.iteration} />
+              </div>
             </Highlight>
           </Row>
         </Collapse>}
-      <Row>
+      <Row className="grid-exp-1">
+        <div />
         <button
           className="green fb-button"
           title={t("Scan this image")}

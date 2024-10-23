@@ -14,12 +14,12 @@ import { Collapse } from "@blueprintjs/core";
 import { ExpandableHeader, ToolTip } from "../ui";
 import { Actions, ToolTips } from "../constants";
 import { requestFarmwareUpdate } from "../farmware/farmware_info";
-import { isBotOnline } from "../devices/must_be_online";
+import { isBotOnline, MustBeOnline } from "../devices/must_be_online";
 import { CaptureSettings } from "./capture_settings";
 import {
   PhotoFilterSettings, FiltersEnabledWarning,
 } from "./photo_filter_settings";
-import { ImageShowFlags } from "./images/interfaces";
+import { ImageShowFlags, NewPhotoButtonsProps } from "./images/interfaces";
 import { DesignerPhotosProps, PhotosPanelState } from "./interfaces";
 import { mapStateToProps } from "./state_to_props";
 import { ImagingDataManagement } from "./data_management";
@@ -29,6 +29,33 @@ import { FarmwareForm } from "../farmware/farmware_forms";
 import { BooleanSetting } from "../session_keys";
 import { maybeOpenPanel } from "../settings/maybe_highlight";
 import { DevSettings } from "../settings/dev/dev_support";
+import { takePhoto } from "../devices/actions";
+import { cameraBtnProps } from "./capture_settings/camera_selection";
+import { downloadProgress } from "../settings/fbos_settings/os_update_button";
+
+const NewPhotoButtons = (props: NewPhotoButtonsProps) => {
+  const imageUploadJobProgress = downloadProgress(props.imageJobs[0]);
+  const { syncStatus, botToMqttStatus } = props;
+  const botOnline = isBotOnline(syncStatus, botToMqttStatus);
+  const camDisabled = cameraBtnProps(props.env, botOnline);
+  return <div className={"row"}>
+    <p>
+      {imageUploadJobProgress &&
+        `${t("uploading photo")}...${imageUploadJobProgress}`}
+    </p>
+    <MustBeOnline
+      syncStatus={props.syncStatus}
+      networkState={props.botToMqttStatus}
+      hideBanner={true}>
+      <button
+        className={`fb-button green ${camDisabled.class}`}
+        title={camDisabled.title}
+        onClick={camDisabled.click || props.takePhoto}>
+        {t("Take Photo")}
+      </button>
+    </MustBeOnline>
+  </div>;
+};
 
 export class RawDesignerPhotos
   extends React.Component<DesignerPhotosProps> {
@@ -69,7 +96,15 @@ export class RawDesignerPhotos
     const farmwareNames = Object.keys(this.props.farmwares);
     return <DesignerPanel panelName={"photos"} panel={Panel.Photos}>
       <DesignerPanelContent panelName={"photos"}>
-        <label>{t("Photos")}</label>
+        <div className="row grid-exp-1">
+          <h2 className="panel-title">{t("Photos")}</h2>
+          <NewPhotoButtons
+            syncStatus={this.props.syncStatus}
+            botToMqttStatus={this.props.botToMqttStatus}
+            takePhoto={takePhoto}
+            env={this.props.env}
+            imageJobs={this.props.imageJobs} />
+        </div>
         <Photos {...common} {...imageCommon}
           currentBotLocation={this.props.currentBotLocation}
           movementState={this.props.movementState}

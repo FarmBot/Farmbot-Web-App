@@ -1,22 +1,5 @@
 // Bulk Scheduler
 .bulk-scheduler {
-  &.page {
-    @media screen and (max-width: 768px) {
-      display: none;
-      margin-bottom: 3rem;
-      &.open {
-        &.inserting-item {
-          display: block;
-        }
-      }
-    }
-  }
-  label {
-    margin-top: 0 !important;
-  }
-  .week-grid {
-    margin-top: 2rem;
-  }
   .regimen-days-label {
     text-align: center;
   }
@@ -29,20 +12,12 @@
     margin-right: 15px;
   }
   .fa-clock-o {
-    margin-left: 0.75rem;
     color: $dark_gray;
-  }
-  input {
-    background-color: $white !important;
   }
 }
 
 .bulk-scheduler-add {
   margin: 1.5rem !important;
-}
-
-.bulk-scheduler-content {
-  margin-top: 1rem;
 }
 
 // Regimen Editor

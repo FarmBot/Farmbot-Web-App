@@ -59,7 +59,7 @@ export class SensorReadings
 
     return <div className="sensor-history-widget">
       <div className="panel-header">
-        <h2 className="panel-title">History</h2>
+        <h2 className="panel-title">{t("History")}</h2>
         <div className="row">
           <button className="fb-button gray"
             title={t("clear filters")}

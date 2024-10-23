@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col, docLinkClick, Color } from "../../ui";
+import { docLinkClick, Color } from "../../ui";
 import { CameraCalibrationProps } from "./interfaces";
 import { ImageWorkspace, NumericKeyName } from "../image_workspace";
 import { WDENVKey } from "../remote_env/interfaces";
@@ -36,62 +36,58 @@ export class CameraCalibration extends
     const botOnline = isBotOnline(syncStatus, botToMqttStatus);
     const camDisabled = cameraBtnProps(this.props.env, botOnline);
     const easyCalibration = !!wdEnvGet(this.namespace("easy_calibration"));
-    return <div className="camera-calibration">
-      <div className="farmware-button">
-        <MustBeOnline
-          syncStatus={this.props.syncStatus}
-          networkState={this.props.botToMqttStatus}
-          hideBanner={true}>
-          <button
-            className={`fb-button green ${camDisabled.class}`}
-            title={camDisabled.title}
-            onClick={camDisabled.click || calibrate(easyCalibration)}>
-            {t("Calibrate")}
-          </button>
-        </MustBeOnline>
+    return <div className="camera-calibration grid">
+      <div className="grid">
+        <div className={"row grid-exp-1"}>
+          <CalibrationCardSVG grid={easyCalibration} />
+          <MustBeOnline
+            syncStatus={this.props.syncStatus}
+            networkState={this.props.botToMqttStatus}
+            hideBanner={true}>
+            <button
+              className={`fb-button green ${camDisabled.class}`}
+              title={camDisabled.title}
+              onClick={camDisabled.click || calibrate(easyCalibration)}>
+              {t("Calibrate")}
+            </button>
+          </MustBeOnline>
+        </div>
+        <p>{easyCalibration
+          ? t(Content.CAMERA_CALIBRATION_GRID_PATTERN)
+          : t(Content.CAMERA_CALIBRATION_RED_OBJECTS)}</p>
+        <CameraCalibrationMethodConfig
+          wdEnvGet={wdEnvGet}
+          saveEnvVar={this.saveEnvVar} />
       </div>
-      <Row>
-        <Col sm={12}>
-          <div className={"simple-camera-calibration-checkbox"}>
-            <CalibrationCardSVG grid={easyCalibration} />
-            <p>{easyCalibration
-              ? t(Content.CAMERA_CALIBRATION_GRID_PATTERN)
-              : t(Content.CAMERA_CALIBRATION_RED_OBJECTS)}</p>
-            <CameraCalibrationMethodConfig
-              wdEnvGet={wdEnvGet}
-              saveEnvVar={this.saveEnvVar} />
-          </div>
-          {!easyCalibration &&
-            <ImageWorkspace
-              sectionKey={"calibration"}
-              dispatch={this.props.dispatch}
-              advancedSectionOpen={this.props.photosPanelState.calibrationPP}
-              botOnline={isBotOnline(
-                this.props.syncStatus, this.props.botToMqttStatus)}
-              onProcessPhoto={scanImage(easyCalibration)}
-              images={this.props.images}
-              currentImage={this.props.currentImage}
-              onChange={this.change}
-              timeSettings={this.props.timeSettings}
-              showAdvanced={this.props.showAdvanced}
-              iteration={this.props.iteration}
-              morph={this.props.morph}
-              blur={this.props.blur}
-              H_LO={this.props.H_LO}
-              S_LO={this.props.S_LO}
-              V_LO={this.props.V_LO}
-              H_HI={this.props.H_HI}
-              S_HI={this.props.S_HI}
-              V_HI={this.props.V_HI}
-              namespace={this.namespace}
-              invertHue={!!wdEnvGet(this.namespace("invert_hue_selection"))} />}
-          <CameraCalibrationConfig
-            values={this.props.wDEnv}
-            calibrationZ={this.props.env["CAMERA_CALIBRATION_camera_z"]}
-            calibrationImageCenter={getCalibratedImageCenter(this.props.env)}
-            onChange={this.saveEnvVar} />
-        </Col>
-      </Row>
+      {!easyCalibration &&
+        <ImageWorkspace
+          sectionKey={"calibration"}
+          dispatch={this.props.dispatch}
+          advancedSectionOpen={this.props.photosPanelState.calibrationPP}
+          botOnline={isBotOnline(
+            this.props.syncStatus, this.props.botToMqttStatus)}
+          onProcessPhoto={scanImage(easyCalibration)}
+          images={this.props.images}
+          currentImage={this.props.currentImage}
+          onChange={this.change}
+          timeSettings={this.props.timeSettings}
+          showAdvanced={this.props.showAdvanced}
+          iteration={this.props.iteration}
+          morph={this.props.morph}
+          blur={this.props.blur}
+          H_LO={this.props.H_LO}
+          S_LO={this.props.S_LO}
+          V_LO={this.props.V_LO}
+          H_HI={this.props.H_HI}
+          S_HI={this.props.S_HI}
+          V_HI={this.props.V_HI}
+          namespace={this.namespace}
+          invertHue={!!wdEnvGet(this.namespace("invert_hue_selection"))} />}
+      <CameraCalibrationConfig
+        values={this.props.wDEnv}
+        calibrationZ={this.props.env["CAMERA_CALIBRATION_camera_z"]}
+        calibrationImageCenter={getCalibratedImageCenter(this.props.env)}
+        onChange={this.saveEnvVar} />
     </div>;
   }
 }

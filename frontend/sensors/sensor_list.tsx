@@ -60,7 +60,7 @@ const SensorReadingDisplay =
   };
 
 export const SensorList = (props: SensorListProps) =>
-  <div>
+  <div className="grid">
     {sortResourcesById(props.sensors).map(sensor => {
       const { label, mode, pin } = sensor.body;
       const pinNumber = (isNumber(pin) && isFinite(pin)) ? pin : -1;

@@ -1,4 +1,7 @@
 .photos-panel {
+  .panel-title {
+    margin: 0;
+  }
   .expandable-header {
     margin: 0;
   }
@@ -11,13 +14,6 @@
     .fa-exclamation-triangle {
       font-size: 1.3rem;
       color: $orange;
-    }
-    .toggle-label {
-      margin-top: 0 !important;
-      margin-bottom: 1rem;
-    }
-    .fb-toggle-button {
-      margin-top: 0.5rem !important;
     }
     .photo-filter-settings {
       .filter-controls {
@@ -75,10 +71,6 @@
           display: inline;
           margin-left: 1rem;
         }
-      }
-      .capture-rotate-setting {
-        margin-top: 1rem;
-        margin-bottom: 1rem;
       }
     }
     .imaging-data-management {
@@ -140,63 +132,14 @@
 
 .camera-calibration,
 .weed-detector {
-  .farmware-button {
-    position: relative;
-    top: 0rem;
-    z-index: 9;
-    height: 0px;
-    float: right;
-  }
-  .simple-camera-calibration-checkbox {
-    display: inline-block;
-    p {
-      display: inline-block;
-      margin: 0;
-      margin-top: 5rem;
-    }
-    svg {
-      position: absolute;
-      top: 0;
-      background: $black;
-    }
-    input {
-      float: left;
-      margin-right: 1rem;
-    }
-  }
-  .image-workspace {
-    .fb-button.green {
-      margin-top: 1rem;
-    }
-    .bp5-slider {
-      width: 95%;
-      margin-left: 1rem;
-    }
+  svg {
+    background: $black;
   }
   p {
-    margin: 1.5rem;
     font-size: 1.2rem;
     font-style: italic;
   }
-  .bp5-popover-wrapper {
-    display: inline;
-    margin-left: 0.5rem;
-    &.input-error-wrapper {
-      display: block;
-    }
-  }
-  .filter-search {
-    .bp5-popover-wrapper {
-      display: inline-block;
-      margin-left: 0;
-    }
-  }
-}
-
-.boolean-camera-calibration-config {
-  input[type=checkbox] {
-    display: block;
-    float: left;
-    margin-right: 1rem;
+  .camera-calibration-setting-grid {
+    grid-template-columns: 65% auto;
   }
 }

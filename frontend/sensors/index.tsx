@@ -64,7 +64,7 @@ export class Sensors extends React.Component<SensorsProps, SensorState> {
       : t("Edit");
     return <div className="sensors-panel">
       <div className="panel-header">
-        <h2 className="panel-title">Sensors</h2>
+        <h2 className="panel-title">{t("Sensors")}</h2>
         <div>
           <button
             className="fb-button gray"

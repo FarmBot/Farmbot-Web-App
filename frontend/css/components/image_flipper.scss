@@ -292,16 +292,6 @@
 }
 
 .photos {
-  .new-photo-button {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    p {
-      float: left;
-      margin-top: 0.75rem;
-      margin-right: 1rem;
-    }
-  }
   .photo-action-buttons {
     display: flex;
     gap: 1rem;
@@ -338,13 +328,7 @@
 }
 
 .farmware-button {
-  div {
-    float: right;
-  }
   p {
-    float: right;
-    margin-top: 0.75rem;
-    margin-right: 1rem;
     color: $medium_gray;
   }
 }
