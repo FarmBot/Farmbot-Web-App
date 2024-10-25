@@ -70,7 +70,7 @@ export class BoardType extends React.Component<BoardTypeProps, {}> {
             apiFirmwareValue={this.props.firmwareHardware}
             botOnline={this.props.botOnline} />
         </div>
-          <this.FirmwareSelection />
+        <this.FirmwareSelection />
       </Row>
     </Highlight>;
   }

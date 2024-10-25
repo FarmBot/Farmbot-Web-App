@@ -274,7 +274,7 @@ export class ComputedMove
         onCommit={this.commit}
         setAxisState={this.setAxisState}
         setAxisOverwriteState={this.setAxisOverwriteState} />
-      : null;
+      : undefined;
 
   OffsetInputRow = () =>
     (this.state.locationSelection == "offset"
@@ -285,7 +285,7 @@ export class ComputedMove
         disabledAxes={this.disabledAxes}
         onCommit={this.commit}
         setAxisState={this.setAxisState} />
-      : null;
+      : undefined;
 
   VarianceInputRow = () =>
     (some(this.varianceNodes) || this.state.more)
@@ -293,7 +293,7 @@ export class ComputedMove
         variance={this.state.variance}
         disabledAxes={this.disabledAxes}
         onCommit={this.commit} />
-      : null;
+      : undefined;
 
   SpeedInputRow = () =>
     (some(this.speedNodes) || this.state.more)
@@ -302,13 +302,13 @@ export class ComputedMove
         disabledAxes={this.disabledAxes}
         onCommit={this.commit}
         setAxisState={this.setAxisState} />
-      : null;
+      : undefined;
 
   SafeZCheckbox = () =>
     (this.state.safeZ || this.state.more)
       ? <SafeZCheckbox checked={this.state.safeZ}
         onChange={this.toggleSafeZ} />
-      : null;
+      : undefined;
 
   render() {
     return <StepWrapper {...this.props}
