@@ -75,15 +75,15 @@ export class JobsAndLogs
 
   Logs = () => {
     return <LogsPanel
-        logs={this.props.logs}
-        timeSettings={this.props.timeSettings}
-        dispatch={this.props.dispatch}
-        sourceFbosConfig={this.props.sourceFbosConfig}
-        getConfigValue={this.props.getConfigValue}
-        bot={this.props.bot}
-        device={this.props.device}
-        fbosVersion={this.props.fbosVersion}
-      />;
+      logs={this.props.logs}
+      timeSettings={this.props.timeSettings}
+      dispatch={this.props.dispatch}
+      sourceFbosConfig={this.props.sourceFbosConfig}
+      getConfigValue={this.props.getConfigValue}
+      bot={this.props.bot}
+      device={this.props.device}
+      fbosVersion={this.props.fbosVersion}
+    />;
   };
 
   render() {
