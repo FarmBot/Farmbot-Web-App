@@ -18,7 +18,7 @@ interface LengthInputProps {
 }
 
 const LengthInput = (props: LengthInputProps) =>
-  <Row className="grid-2-col">
+  <Row className="grid-2-col map-size-grid">
     <label>{t(props.label)}</label>
     <input
       type="number"

@@ -3,7 +3,7 @@ import { GardenViewButtonProps, EditGardenProps } from "./interfaces";
 import { openOrCloseGarden, applyGarden, destroySavedGarden } from "./actions";
 import { error } from "../toast/toast";
 import { trim } from "../util";
-import { BlurableInput, Row } from "../ui";
+import { BlurableInput } from "../ui";
 import { edit, save } from "../api/crud";
 import { connect } from "react-redux";
 import {
@@ -123,38 +123,35 @@ export class RawEditGarden
       </DesignerPanelHeader>
       <DesignerPanelContent panelName={"saved-garden-edit"}>
         {savedGarden
-          ? <div className={"saved-garden-content"}>
-            <Row>
-              <label>{t("name")}</label>
-              <BlurableInput
-                value={savedGarden.body.name || ""}
-                onCommit={e => {
-                  this.props.dispatch(edit(savedGarden, {
-                    name: e.currentTarget.value
-                  }));
-                  this.props.dispatch(save(savedGarden.uuid));
-                }} />
-            </Row>
-            <Row>
-              <label>{t("notes")}</label>
-              <textarea
-                value={this.state.notes}
-                onChange={e => this.setState({ notes: e.currentTarget.value })}
-                onBlur={() => {
-                  this.props.dispatch(edit(savedGarden, {
-                    notes: this.state.notes
-                  }));
-                  this.props.dispatch(save(savedGarden.uuid));
-                }} />
-            </Row>
+          ? <div className={"grid saved-garden-grid"}>
+            <label>{t("name")}</label>
+            <BlurableInput
+              value={savedGarden.body.name || ""}
+              onCommit={e => {
+                this.props.dispatch(edit(savedGarden, {
+                  name: e.currentTarget.value
+                }));
+                this.props.dispatch(save(savedGarden.uuid));
+              }} />
+            <label>{t("notes")}</label>
+            <textarea
+              value={this.state.notes}
+              onChange={e => this.setState({ notes: e.currentTarget.value })}
+              onBlur={() => {
+                this.props.dispatch(edit(savedGarden, {
+                  notes: this.state.notes
+                }));
+                this.props.dispatch(save(savedGarden.uuid));
+              }} />
+            <label>{t("plants")}</label>
+            <div className={"point-list-wrapper"}>
+              {take(this.props.gardenPlants, maxCount).map(point =>
+                <PointGroupItem key={point.uuid} point={point} />)}
+              <MoreIndicatorIcon count={this.props.gardenPlants.length}
+                maxCount={maxCount} onClick={this.toggleExpand} />
+            </div>
           </div>
           : <p>{t("Garden not found.")}</p>}
-        <div className={"point-list-wrapper"}>
-          {take(this.props.gardenPlants, maxCount).map(point =>
-            <PointGroupItem key={point.uuid} point={point} />)}
-          <MoreIndicatorIcon count={this.props.gardenPlants.length}
-            maxCount={maxCount} onClick={this.toggleExpand} />
-        </div>
       </DesignerPanelContent>
     </DesignerPanel>;
   }

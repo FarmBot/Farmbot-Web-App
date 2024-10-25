@@ -43,16 +43,16 @@ export const LogsFilterMenu = (props: LogsFilterMenuProps) => {
   const values = filterStateKeys(props.state)
     .map((key: keyof LogsState) => props.state[key]);
   const [value, setValue] = React.useState(round(mean(values)));
-  return <div className={"logs-filter-menu"}>
+  return <div className={"logs-filter-menu grid"}>
     <div className={"lines"}>
       {range(0, 4).map(i =>
         <div key={i} className={"line"}
-          style={{ left: `${10.5 + i * 5}rem` }}>
+          style={{ left: `${12.5 + i * 5}rem` }}>
           <div className={"line-label"}>{i}</div>
         </div>)}
     </div>
-    <fieldset>
-      <label>
+    <fieldset className="row log-filters-grid">
+      <label className="row grid-exp-2 half-gap">
         <div className={"saucer"} style={{
           background: "white",
           border: "2px black solid",
@@ -66,8 +66,8 @@ export const LogsFilterMenu = (props: LogsFilterMenuProps) => {
     </fieldset>
     {filterStateKeys(props.state).sort(menuSort)
       .map((logType: keyof Filters) =>
-        <fieldset key={logType}>
-          <label>
+        <fieldset key={logType} className="row log-filters-grid">
+          <label className="row grid-exp-2 half-gap">
             <div className={`saucer ${logType}`} />
             {t(startCase(logType))}
           </label>
@@ -76,7 +76,7 @@ export const LogsFilterMenu = (props: LogsFilterMenuProps) => {
             onChange={props.setFilterLevel(logType)}
             value={props.state[logType]} />
         </fieldset>)}
-    <fieldset>
+    <fieldset className="row grid-exp-1">
       <label>
         {t("Current version only")}
       </label>

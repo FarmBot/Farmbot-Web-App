@@ -1,7 +1,6 @@
-
-
 .electronics-box-3d-model {
-  margin-bottom: 1rem;
+  max-width: calc(100vw - 4rem);
+  width: 100%;
   .led-label,
   .btn-label {
     display: block;
@@ -80,9 +79,8 @@
   }
 }
 
-.peripheral-form,
-.peripheral-list {
-  padding-top: 1rem;
+.peripheral-edit-grid {
+  grid-template-columns: 1fr 20% 20% auto;
 }
 
 .box-top-2d-wrapper {

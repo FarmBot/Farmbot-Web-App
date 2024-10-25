@@ -1,4 +1,5 @@
 .go-button-axes-wrapper {
+  justify-content: left;
   button {
     margin: 0;
     float: none;
@@ -7,16 +8,19 @@
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
     p {
-      display: inline-block;
       font-weight: bold;
       color: $off_white;
-      line-height: 0;
+      margin: 0 !important;
     }
+  }
+  .go-button-axes {
+    height: 2.6rem;
   }
   .go-button-axes-dropdown {
     border-left: 1px solid $dark_gray!important;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
+    height: 2.2rem;
     &.pseudo-disabled {
       border-left: 1px solid $gray;
     }

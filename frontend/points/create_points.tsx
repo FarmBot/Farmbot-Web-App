@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { Everything, ResourceColor } from "../interfaces";
 import { initSave } from "../api/crud";
-import { Row, Col, BlurableInput, ColorPicker } from "../ui";
+import { Row, BlurableInput, ColorPicker } from "../ui";
 import { DrawnPointPayl } from "../farm_designer/interfaces";
 import { Actions, Content } from "../constants";
 import {
@@ -282,16 +282,14 @@ export class RawCreatePoints
       </ListItem>
       {this.panel == "points" &&
         <ListItem>
-          <Row>
-            <Col xs={6} className={"soil-height-checkbox"}>
-              <label>{t("at soil level")}</label>
-              <input
-                name="at_soil_level"
-                type="checkbox"
-                onChange={e =>
-                  this.updateAttr("at_soil_level", e.currentTarget.checked)}
-                checked={!!this.attr("at_soil_level")} />
-            </Col>
+          <Row className="grid-exp-1">
+            <label>{t("at soil level")}</label>
+            <input
+              name="at_soil_level"
+              type="checkbox"
+              onChange={e =>
+                this.updateAttr("at_soil_level", e.currentTarget.checked)}
+              checked={!!this.attr("at_soil_level")} />
           </Row>
         </ListItem>}
     </ul>;

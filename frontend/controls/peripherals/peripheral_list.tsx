@@ -9,7 +9,7 @@ import { ANALOG } from "farmbot";
 import { lockedClass } from "../locked_class";
 
 export const PeripheralList = (props: PeripheralListProps) =>
-  <div className="peripheral-list">
+  <div className="peripheral-list grid">
     {sortResourcesById(props.peripherals).map(peripheral => {
       const toggleValue =
         (props.pins[peripheral.body.pin || -1] || { value: undefined }).value;

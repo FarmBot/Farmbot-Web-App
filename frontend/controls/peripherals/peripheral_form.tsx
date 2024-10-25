@@ -6,9 +6,9 @@ import { DeleteButton } from "../../ui/delete_button";
 import { NameInputBox, PinDropdown, ModeDropdown } from "../pin_form_fields";
 
 export const PeripheralForm = (props: PeripheralFormProps) =>
-  <div className="peripheral-form">
+  <div className="peripheral-form grid">
     {sortResourcesById(props.peripherals).map(peripheral =>
-      <Row key={peripheral.uuid} className="grid-exp-1">
+      <Row key={peripheral.uuid} className="peripheral-edit-grid">
         <NameInputBox
           dispatch={props.dispatch}
           value={peripheral.body.label}

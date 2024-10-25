@@ -1,5 +1,7 @@
 .image-flipper {
   position: relative;
+  border-radius: 0.5rem;
+  overflow: hidden;
 }
 
 .bp5-overlay {
@@ -7,7 +9,6 @@
     z-index: 20;
     margin: auto;
     width: fit-content;
-    margin-top: 3%;
     .no-flipper-image-container,
     .flipper-image {
       height: 80vh;
@@ -331,6 +332,10 @@
   p {
     color: $medium_gray;
   }
+}
+
+.index-indicator-wrapper {
+  position: relative;
 }
 
 .index-indicator {

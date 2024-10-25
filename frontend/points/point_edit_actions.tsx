@@ -7,7 +7,7 @@ import {
 } from "farmbot";
 import { ListItem } from "../plants/plant_panel";
 import { round, cloneDeep } from "lodash";
-import { Row, Col, BlurableInput, ColorPicker } from "../ui";
+import { Row, BlurableInput, ColorPicker } from "../ui";
 import { parseIntInput } from "../util";
 import { plantAgeAndStage } from "../plants/map_state_to_props";
 import { EditWeedStatus } from "../plants/edit_plant_status";
@@ -48,7 +48,7 @@ export interface AdditionalWeedPropertiesProps {
 }
 
 export const EditPointProperties = (props: EditPointPropertiesProps) =>
-  <ul>
+  <ul className="grid">
     <ListItem>
       <EditPointLocation
         pointLocation={{
@@ -79,11 +79,11 @@ export const EditPointProperties = (props: EditPointPropertiesProps) =>
 
 export const AdditionalWeedProperties = (props: AdditionalWeedPropertiesProps) =>
   <ul className="additional-weed-properties">
-    <ListItem name={t("Age")}>
-      {daysOldText(plantAgeAndStage(props.point))}
-    </ListItem>
     <ListItem name={t("Status")}>
       <EditWeedStatus weed={props.point} updateWeed={props.updatePoint} />
+    </ListItem>
+    <ListItem name={t("Age")}>
+      {daysOldText(plantAgeAndStage(props.point))}
     </ListItem>
     {Object.entries(props.point.body.meta).map(([key, value]) => {
       switch (key) {
@@ -135,15 +135,13 @@ export interface EditPointNameProps {
 }
 
 export const EditPointName = (props: EditPointNameProps) =>
-  <div className={"point-name-input"}>
-    <Col xs={10}>
-      <label>{t("Name")}</label>
-      <BlurableInput
-        type="text"
-        name="pointName"
-        value={props.name}
-        onCommit={e => props.updatePoint({ name: e.currentTarget.value })} />
-    </Col>
+  <div className={"point-name-input row grid-exp-2"}>
+    <label>{t("Name")}</label>
+    <BlurableInput
+      type="text"
+      name="pointName"
+      value={props.name}
+      onCommit={e => props.updatePoint({ name: e.currentTarget.value })} />
   </div>;
 
 export interface EditPointLocationProps {
@@ -160,7 +158,7 @@ export interface EditPointLocationProps {
 export const EditPointLocation = (props: EditPointLocationProps) =>
   <Row className={"edit-point-location"}>
     {["x", "y", "z"].map((axis: Xyz) =>
-      <Col xs={4} key={axis}>
+      <div key={axis}>
         <label style={{ marginTop: 0 }}>{t("{{axis}} (mm)", { axis })}</label>
         <BlurableInput
           type="number"
@@ -170,7 +168,7 @@ export const EditPointLocation = (props: EditPointLocationProps) =>
           onCommit={e => props.updatePoint({
             [axis]: round(parseIntInput(e.currentTarget.value))
           })} />
-      </Col>)}
+      </div>)}
     <GoToThisLocationButton
       dispatch={props.dispatch}
       locationCoordinate={props.pointLocation}
@@ -187,18 +185,16 @@ export interface EditPointRadiusProps {
 }
 
 export const EditPointRadius = (props: EditPointRadiusProps) =>
-  <Row>
-    <Col xs={6}>
-      <label style={{ marginTop: 0 }}>{t("radius (mm)")}</label>
-      <BlurableInput
-        type="number"
-        name="radius"
-        value={props.radius}
-        min={0}
-        onCommit={e => props.updatePoint({
-          radius: round(parseIntInput(e.currentTarget.value))
-        })} />
-    </Col>
+  <Row className="grid-2-col">
+    <label style={{ marginTop: 0 }}>{t("radius (mm)")}</label>
+    <BlurableInput
+      type="number"
+      name="radius"
+      value={props.radius}
+      min={0}
+      onCommit={e => props.updatePoint({
+        radius: round(parseIntInput(e.currentTarget.value))
+      })} />
   </Row>;
 
 export interface EditPointColorProps {
@@ -208,11 +204,9 @@ export interface EditPointColorProps {
 
 export const EditPointColor = (props: EditPointColorProps) =>
   <div className={"point-color-input"}>
-    <Col xs={2}>
-      <ColorPicker
-        current={(props.color || "green") as ResourceColor}
-        onChange={color => props.updatePoint({ meta: { color } })} />
-    </Col>
+    <ColorPicker
+      current={(props.color || "green") as ResourceColor}
+      onChange={color => props.updatePoint({ meta: { color } })} />
   </div>;
 
 export interface EditPointSoilHeightTagProps {
@@ -221,11 +215,9 @@ export interface EditPointSoilHeightTagProps {
 }
 
 export const EditPointSoilHeightTag = (props: EditPointSoilHeightTagProps) =>
-  <Row>
-    <Col xs={6} className={"soil-height-checkbox"}>
-      <label>{t("at soil level")}</label>
-      <input type="checkbox" name="is_soil_height"
-        onChange={() => props.updatePoint(toggleSoilHeight(props.point))}
-        checked={soilHeightPoint(props.point)} />
-    </Col>
+  <Row className="grid-exp-1">
+    <label>{t("at soil level")}</label>
+    <input type="checkbox" name="is_soil_height"
+      onChange={() => props.updatePoint(toggleSoilHeight(props.point))}
+      checked={soilHeightPoint(props.point)} />
   </Row>;

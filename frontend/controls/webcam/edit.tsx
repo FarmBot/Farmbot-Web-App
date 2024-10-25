@@ -25,8 +25,8 @@ export function Edit(props: WebcamPanelProps) {
   const unsaved = props
     .feeds
     .filter(x => x.specialStatus === SpecialStatus.DIRTY);
-  return <div className={"webcam-widget"}>
-    <div className={"webcam-rows"}>
+  return <div className={"webcam-widget grid"}>
+    <div className={"grid"}>
       {rows}
     </div>
     <div className={"webcam-buttons"}>

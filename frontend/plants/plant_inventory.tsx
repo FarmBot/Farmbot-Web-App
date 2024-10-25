@@ -192,8 +192,6 @@ export class RawPlants
           addTitle={t("add plant")}
           addClassName={"plus-plant"}
           title={t("Plants")}
-          extraHeaderTitle={!!this.props.openedSavedGarden &&
-            <i className={"garden-indicator"}>{t("saved garden")}</i>}
           extraHeaderContent={
             !this.props.openedSavedGarden && plantsPanelState.plants &&
             <button className={"fb-button red delete"}

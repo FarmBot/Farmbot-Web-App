@@ -59,7 +59,7 @@ export const ClearCategory = (props: ClearCategoryProps) => {
   const all =
     !some(criteriaKeys.map(criteriaKey =>
       criteriaHasKey(group.body.criteria, criteriaCategories, criteriaKey)));
-  return <div className="all-criteria-checkbox row">
+  return <div className="row grid-exp-1">
     <Checkbox
       onChange={() =>
         dispatch(clearCriteriaField(group, criteriaCategories, criteriaKeys))}
@@ -128,12 +128,14 @@ const PlantStage = (props: PointSubCriteriaProps) =>
 
 const RemovalMethod = (props: PointSubCriteriaProps) =>
   <div className={"removal-method-criteria"}>
-    <p className={"category"}>{t("Removal Method")}</p>
-    <ClearCategory
-      group={props.group}
-      criteriaCategories={["string_eq"]}
-      criteriaKeys={["meta.removal_method"]}
-      dispatch={props.dispatch} />
+    <div className={"row grid-exp-1"}>
+      <p className={"category"}>{t("Removal Method")}</p>
+      <ClearCategory
+        group={props.group}
+        criteriaCategories={["string_eq"]}
+        criteriaKeys={["meta.removal_method"]}
+        dispatch={props.dispatch} />
+    </div>
     <CheckboxList
       disabled={props.disabled}
       pointerType={props.pointerType}
@@ -173,7 +175,7 @@ const WeedCriteria = (props: SubCriteriaProps) => {
   const { group, dispatch, disabled } = props;
   const pointerType: PointType = "Weed";
   const commonProps = { group, dispatch, disabled, pointerType };
-  return <div className={"weed-criteria-options"}>
+  return <div className={"weed-criteria-options grid"}>
     <PointSource {...commonProps} />
     <PlantStage {...commonProps} />
     <RemovalMethod {...commonProps} />
@@ -239,12 +241,14 @@ const Radius = (props: PointSubCriteriaProps) =>
 
 const Color = (props: PointSubCriteriaProps) =>
   <div className={"color-criteria"}>
-    <p className={"category"}>{t("Color")}</p>
-    <ClearCategory
-      group={props.group}
-      criteriaCategories={["string_eq"]}
-      criteriaKeys={["meta.color"]}
-      dispatch={props.dispatch} />
+    <div className={"row grid-exp-1"}>
+      <p className={"category"}>{t("Color")}</p>
+      <ClearCategory
+        group={props.group}
+        criteriaCategories={["string_eq"]}
+        criteriaKeys={["meta.color"]}
+        dispatch={props.dispatch} />
+    </div>
     <CheckboxList
       disabled={props.disabled}
       pointerType={props.pointerType}

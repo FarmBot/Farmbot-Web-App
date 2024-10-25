@@ -15,7 +15,7 @@
           }
         }
         i {
-          top: 0.75rem;
+          line-height: 2.5rem;
         }
       }
       p {
@@ -200,53 +200,8 @@
     height: 10rem;
     margin-top: 2rem;
   }
-  label {
-    margin-top: 0 !important;
-  }
-  .row, fieldset {
-    margin-top: 0.5rem;
-  }
-  fieldset button {
-    margin: 0;
-  }
-  .direction-icon {
-    margin-left: 1rem;
-  }
   .help-icon {
     color: $dark_gray;
-  }
-  .tool-slot-location-input {
-    .axis-inputs {
-      padding-left: 0;
-    }
-    .use-current-location {
-      text-align: center;
-    }
-    button.blue {
-      margin: 0;
-      .fa {
-        font-size: 1.5rem;
-      }
-    }
-    button.gray {
-      margin-top: 1rem;
-    }
-  }
-  .tool-direction-input,
-  .gantry-mounted-input {
-    label {
-      margin-top: 0;
-    }
-    input[type="checkbox"] {
-      float: left;
-      margin-right: 1rem;
-    }
-  }
-  .fb-button.green {
-    margin-top: 1rem;
-  }
-  .tool-direction-input {
-    margin-top: 0;
   }
 }
 
@@ -259,4 +214,8 @@
       font-style: italic;
     }
   }
+}
+
+.tool-slot-location-grid {
+  align-items: end !important;
 }

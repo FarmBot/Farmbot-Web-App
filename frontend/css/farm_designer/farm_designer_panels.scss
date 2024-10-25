@@ -38,10 +38,26 @@
   }
 }
 
+.panel-content {
+  padding: 1rem;
+  a {
+    color: $black;
+    text-decoration: underline !important;
+  }
+}
+
 .controls-panel,
 .photos-panel {
   .panel-content {
     max-height: calc(100vh - 9rem);
+  }
+}
+
+.group-detail-panel {
+  .panel-content {
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 1rem;
   }
 }
 
@@ -54,37 +70,31 @@
   }
 }
 
-.move {
-  position: relative;
-  padding-bottom: 1rem;
-  padding-top: 1rem;
-  .move {
-    .unavailable,
-    .bot-is-online-wrapper {
-      display: inline-block;
-    }
+.point-inventory-panel,
+.plant-inventory-panel {
+  .panel-content {
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: inherit;
   }
-  .move-settings.bp5-popover-wrapper {
-    position: absolute;
-    top: 6rem;
-    right: 1rem;
-    .fa-gear {
-      color: $dark_gray;
-    }
+}
+
+.curve-info-panel,
+.weed-info-panel,
+.point-info-panel,
+.plant-info-panel {
+  .panel-content {
+    overflow-y: auto;
+    overflow-x: hidden;
   }
-  .jog-controls-group {
-    label {
-      margin-top: 0;
-    }
-  }
-  .bot-position-rows {
-    label {
-      margin-top: 0;
-      font-size: 1.2rem;
-    }
-    .axis-titles {
-      margin-bottom: 1rem;
-    }
+}
+
+.weeds-inventory-panel,
+.zones-inventory-panel,
+.groups-panel {
+  .panel-content {
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 }
 
@@ -114,14 +124,6 @@
   &.panel-closed-mobile,
   &.panel-closed {
     animation: panel-hide 0.3s ease forwards;
-  }
-  &.short-panel {
-    height: 24rem;
-    .location-info-panel {
-      .panel-content {
-        max-height: 19rem;
-      }
-    }
   }
   .panel-container {
     width: 100%;
@@ -299,111 +301,6 @@
   }
 }
 
-.white-text{
-  color: $off_white;
-}
-.black-text{
-  color: $black;
-}
-
-.point-inventory-panel,
-.plant-inventory-panel {
-  .panel-content {
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding-bottom: inherit;
-  }
-}
-
-.group-detail-panel,
-.plant-info-panel {
-  .panel-header-icon-group {
-    i {
-      color: $white;
-    }
-  }
-}
-
-.curve-info-panel,
-.weed-info-panel,
-.point-info-panel,
-.plant-info-panel {
-  .panel-content {
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
-}
-
-.point-creation-panel {
-  .panel-content {
-    max-height: calc(100vh - 17rem);
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding-top: 1rem;
-    ul {
-      margin: 0;
-    }
-    label {
-      margin-top: 0 !important;
-    }
-    .plant-info-field-data {
-      margin-top: 1rem;
-    }
-    p {
-      margin-top: 1rem;
-    }
-    .fb-button {
-      &.save {
-        margin-right: 1.5rem;
-      }
-      &.delete {
-        float: left;
-        margin-top: 1rem;
-      }
-    }
-    .point-color-input {
-      div[class*=col-] {
-        padding-left: 0.5rem;
-      }
-      .saucer {
-        margin-top: 2.75rem;
-      }
-    }
-    .delete-row {
-      margin: 1.5rem;
-    }
-    .grid-and-row-planting {
-      label {
-        color: $dark_gray;
-      }
-      input {
-        box-shadow: 0 0 10px #ddd;
-      }
-      .update-button,
-      .preview-button,
-      .cancel-button,
-      .save-button {
-        text-decoration: none !important;
-        color: $dark_gray;
-        &:hover {
-          color: $black;
-          background: $off_white;
-        }
-      }
-    }
-    .blue {
-      float: none;
-    }
-    .use-current-location {
-      button {
-        .fa {
-          font-size: 1.5rem;
-        }
-      }
-    }
-  }
-}
-
 .weed-info-panel-content,
 .point-info-panel-content {
   font-size: 1.4rem;
@@ -440,33 +337,6 @@
       }
     }
   }
-  .go-button-axes-wrapper {
-    display: inline-block;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-    margin-left: 1.5rem;
-  }
-}
-
-.soil-height-checkbox {
-  margin-top: 1rem;
-  input {
-    float: left;
-    width: 2rem !important;
-    box-shadow: none !important;
-    margin-right: 0.5rem;
-    cursor: pointer;
-  }
-  label {
-    margin-top: 0 !important;
-  }
-}
-
-.crop-catalog-panel {
-  .panel-content {
-    padding: 0;
-    padding-bottom: inherit;
-  }
 }
 
 .panel-top {
@@ -476,14 +346,6 @@
     grid-template-columns: 1fr auto;
     gap: 1rem;
     align-items: center;
-  }
-}
-
-.panel-content {
-  padding: 1rem;
-  a {
-    color: $black;
-    text-decoration: underline !important;
   }
 }
 
@@ -560,17 +422,10 @@
 .plant-panel-content,
 .points-panel-content {
   padding: 0!important;
-  .empty-state {
-    margin-bottom: 4rem;
-  }
   .non-empty-state {
     margin-bottom: 1rem;
     gap: 0;
   }
-}
-
-.edit-point-location {
-  margin-top: 1rem;
 }
 
 .point-name-input {
@@ -587,6 +442,10 @@ li {
 
 .additional-weed-properties {
   li {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    align-items: center;
     margin-top: 1rem;
   }
 }
@@ -594,11 +453,6 @@ li {
 .panel-section {
   .delete {
     height: 2rem;
-  }
-  .garden-indicator {
-    display: inline;
-    margin-left: 2rem;
-    font-size: 1rem;
   }
 }
 
@@ -623,11 +477,6 @@ li {
     font-size: 2rem;
     color: $dark_gray;
   }
-}
-
-.add-plant-panel,
-.location-info-panel {
-  padding-bottom: 0 !important;
 }
 
 .grid-and-row-planting {
@@ -684,83 +533,6 @@ li {
   }
 }
 
-.location-info-panel {
-  .panel-content {
-    max-height: calc(100vh - 14rem);
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding-top: 1rem;
-    .location-info-content {
-      display: grid;
-      gap: 1rem;
-    }
-    .location-actions {
-      display: grid;
-      gap: 1rem;
-      p {
-        margin-top: 1rem;
-      }
-    }
-    h1 {
-      text-align: center;
-      font-size: 2rem;
-      margin-top: 4rem;
-      margin-bottom: 0;
-    }
-    .expandable-header {
-      text-transform: uppercase;
-      font-weight: bold;
-      font-size: 1.2rem;
-    }
-    label {
-      margin-top: 0;
-      &.no-items {
-        display: block;
-      }
-    }
-    button {
-      float: none;
-    }
-    .add-point {
-      margin-top: 2rem;
-    }
-    .point-search-item,
-    .plant-search-item{
-      margin-left: -15px;
-      margin-right: -15px;
-      padding-left: 2rem;
-      padding-right: 2rem;
-    }
-    .sensor-history-table {
-      margin-left: -15px;
-      margin-right: -15px;
-      .table-row {
-        height: 4rem;
-        td:first-of-type {
-          padding-left: 2rem;
-        }
-      }
-
-    }
-    .interpolated-soil-height {
-      .title {
-        display: inline;
-        font-weight: bold;
-      }
-      p {
-        display: inline;
-        margin-left: 1rem;
-      }
-    }
-    .photos-footer {
-      margin-top: 1rem;
-      .bp5-popover-wrapper {
-        margin-top: 3px;
-      }
-    }
-  }
-}
-
 .no-pad {
   padding: 0;
 }
@@ -768,205 +540,6 @@ li {
 .low-pad {
   padding-left: 0.5rem;
   padding-right: 0.5rem;
-}
-
-.plant-inventory-panel,
-.settings-panel {
-  .panel-top {
-    .fa-gear {
-      color: $dark_gray;
-    }
-  }
-}
-
-.settings-panel-settings-menu {
-  button {
-    margin-left: 1rem;
-  }
-}
-
-.plants-panel-settings-menu {
-  label {
-    line-height: 3rem;
-    vertical-align: bottom;
-    margin-bottom: 0;
-  }
-  .bp5-popover-wrapper {
-    display: inline;
-    margin-left: 0.5rem;
-    line-height: 3rem;
-  }
-}
-
-.settings-panel-content {
-  max-height: calc(100vh - 22rem);
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding-bottom: inherit;
-  .expandable-header {
-    margin: 0;
-  }
-  .section {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    align-items: center;
-    &.setting {
-      gap: 0.5rem;
-    }
-    .bp5-collapse {
-      grid-column: span 2;
-    }
-    .bp5-collapse-body {
-      display: grid;
-      gap: 1rem;
-    }
-  }
-  .export-data,
-  .change-password {
-    .old-password,
-    .new-password {
-      margin-top: 1.5rem;
-      input {
-        width: 50%;
-        float: right;
-      }
-    }
-    form {
-      margin-left: 2rem;
-    }
-  }
-  .label-headings {
-    label {
-      line-height: 1rem;
-    }
-  }
-  .release-notes-wrapper {
-    float: right !important;
-  }
-  .settings-warning-banner {
-    margin-bottom: 1rem !important;
-    p {
-      display: inline;
-    }
-  }
-  .credentials-change-warning-banner,
-  .settings-warning-banner,
-  .stall-detection-note,
-  .limit-switch-warning,
-  .motors-warning {
-    margin: 0 -1.5rem;
-    padding: 1rem 1.5rem 1rem 2rem;
-    background: color.adjust($orange, $alpha: -0.6);
-    p {
-      line-height: 1.75rem;
-      font-size: 1.3rem;
-      font-weight: bold;
-    }
-  }
-  .pin-guard-grid {
-    display: grid;
-    gap: 1rem;
-    grid-template-columns: 1fr 1fr auto;
-    grid-auto-flow: column;
-  }
-  .pin-reporting-input-row,
-  .pin-guard-input-row {
-    .row {
-      margin-left: -15px;
-      margin-right: -15px;
-      padding-left: 0;
-      padding-right: 1rem;
-      margin-bottom: 1rem;
-    }
-    button {
-      float: none;
-    }
-  }
-  .pin-bindings {
-    margin-right: 1rem;
-    .row {
-      padding-left: 0;
-      padding-right: 0;
-      margin-left: 1rem;
-      margin-right: 0;
-      margin-top: 1rem;
-    }
-    div[class*=col-] {
-      padding: 0;
-      padding-right: 1rem;
-    }
-    .bindings-list {
-      margin-left: -5px;
-      .binding-action {
-        font-weight: bold;
-        font-size: 1.2rem;
-      }
-    }
-    .pin-binding-input-rows {
-      margin-right: 1rem;
-      margin-left: -15px;
-      label {
-        margin-left: 1rem !important;
-      }
-      .green {
-        float: left;
-        margin-left: 1rem;
-      }
-      .row:last-child {
-        margin-top: 0;
-      }
-    }
-    .stock-pin-bindings-button {
-      display: inline;
-      button {
-        margin: 0;
-        margin-top: 0.5rem;
-      }
-    }
-  }
-  .fb-button {
-    margin-top: 0.5rem;
-  }
-  label {
-    margin: auto 0 !important;
-    line-height: 1;
-    font-size: 1.2rem !important;
-  }
-  .help-icon {
-    margin-left: 0.5rem;
-  }
-  .designer-setting {
-    display: grid;
-    gap: 1rem;
-    grid-template-columns: 1fr auto;
-    &.disabled {
-      input {
-        background: $gray;
-      }
-      button {
-        background: $medium_light_gray !important;
-      }
-    }
-  }
-}
-
-.non-layer-config-toggle {
-  display: grid;
-  gap: 1rem;
-  align-items: center;
-  grid-auto-flow: column;
-  grid-template-columns: 1fr auto auto;
-  &.disabled {
-    input {
-      background: $gray !important;
-    }
-    button {
-      background: $medium_light_gray !important;
-      &:hover {
-        background: $medium_light_gray !important;
-      }
-    }
-  }
 }
 
 .factory-reset-options {
@@ -977,37 +550,6 @@ li {
   }
   .fa-external-link {
     margin-left: 0.5rem;
-  }
-}
-
-.saved-garden-panel-content {
-  padding: 0;
-  padding-bottom: inherit;
-  .non-empty-state {
-    max-height: calc(100vh - 14rem);
-    overflow-y: auto;
-    overflow-x: hidden;
-    @media screen and (max-width: $mobile_max_width) {
-      max-height: calc(100vh - 19rem);
-    }
-  }
-  .row {
-    margin: 0;
-    margin-top: 1rem;
-    margin-left: 1rem;
-    margin-right: 1rem;
-  }
-  button {
-    margin-left: 0.5rem;
-    &.wide {
-      margin: 1rem;
-      margin-left: 2rem;
-      width: 88%;
-      float: left;
-    }
-  }
-  input {
-    min-width: 7rem;
   }
 }
 
@@ -1033,15 +575,6 @@ li {
   }
 }
 
-.weeds-inventory-panel,
-.zones-inventory-panel,
-.groups-panel {
-  .panel-content {
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
-}
-
 .panel-header-icon-group {
   margin-left: 1rem;
   margin-right: 1.5rem;
@@ -1049,9 +582,6 @@ li {
 
 .group-detail-panel {
   .panel-content {
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding: 1rem;
     .group-criteria {
       .basic, .plant-criteria-options {
         display: grid;
@@ -1061,7 +591,10 @@ li {
       .plant-type-criteria,
       .radius-criteria,
       .day-criteria,
-      .location-criteria {
+      .location-criteria,
+      .removal-method-criteria,
+      .color-criteria,
+      .point-source-criteria {
         background: $translucent1;
         border-radius: 0.5rem;
         padding: 1rem;
@@ -1125,13 +658,6 @@ li {
             .fb-checkbox {
               display: inline-block;
               height: 2rem;
-            }
-            i[class*=fa-caret-] {
-              position: absolute;
-              right: -0.5rem;
-              width: 3rem;
-              font-size: 2rem;
-              padding-left: 1rem;
             }
           }
           .plant-criteria-options,
@@ -1252,8 +778,6 @@ li {
 .point-inventory-panel,
 .groups-panel {
   .panel-content {
-    padding: 0;
-    padding-bottom: inherit;
     .points-section-header {
       cursor: pointer;
       height: 4rem;
@@ -1323,14 +847,17 @@ li {
         padding-right: 0.5rem;
       }
     }
+    .pending-weeds {
+      .fa-check {
+        margin: 0 !important;
+      }
+    }
   }
 }
 
 .sensors-panel,
 .controls-panel {
   .panel-content {
-    overflow-y: auto;
-    overflow-x: hidden;
     .widget-wrapper {
       box-shadow: none;
       .widget-header {
@@ -1360,87 +887,6 @@ li {
   }
 }
 
-.controls-panel {
-  .move-settings.bp5-popover-wrapper {
-    padding-top: 2rem;
-  }
-  .index-indicator {
-    background: $dark_gray;
-  }
-}
-
-.farmware-panel,
-.designer-farmware-list-panel,
-.designer-farmware-info-panel,
-.farmware-add-panel {
-  .panel-content {
-    max-height: calc(100vh - 9rem);
-    overflow-y: auto;
-    overflow-x: hidden;
-    a {
-      text-decoration: none !important;
-      p {
-        font-size: 1.4rem;
-        font-weight: normal !important;
-        line-height: 2rem;
-      }
-    }
-  }
-}
-
-.designer-farmware-info-panel {
-  .panel-content {
-    position: relative;
-    padding-top: 2rem;
-    padding-bottom: 12rem;
-    button {
-      float: none;
-    }
-    .reset-configs {
-      margin-right: 1rem;
-      margin-top: 2rem;
-    }
-    .farmware-button {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-    }
-    .farmware-form {
-      margin-top: 1rem;
-    }
-    .farmware-input-group {
-      margin-left: 0;
-    }
-  }
-}
-
-.farmware-env-editor {
-  .row {
-    margin-bottom: 1rem;
-    &.no-margin {
-      margin: 0;
-    }
-  }
-  .env-hide-toggle {
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-  }
-  .env-editor-warning {
-    margin: 0 -15px 2rem -15px;
-    padding: 1rem 1.5rem 1rem 2rem;
-    background: color.adjust($orange, $alpha: -0.6);
-    p {
-      line-height: 1.75rem;
-      font-size: 1.2rem;
-      font-weight: bold;
-    }
-  }
-  .bp5-popover-wrapper {
-    display: inline;
-    margin-left: 1rem;
-  }
-}
-
 .env-editor-lua {
   margin: 0 -15px 0 -15px;
   padding: 1rem 1.5rem 1rem 2rem;
@@ -1449,52 +895,6 @@ li {
     line-height: 1.75rem;
     font-size: 1.2rem;
     font-weight: bold;
-  }
-}
-
-.designer-sequence-list-panel {
-  .panel-content {
-    max-height: calc(100vh - 16.5rem);
-    overflow-y: scroll;
-    overflow-x: hidden;
-    @media screen and (max-width: $mobile_max_width) {
-      max-height: calc(100vh - 19rem);
-    }
-    a {
-      text-decoration: none !important;
-      p {
-        font-size: 1.4rem;
-        font-weight: normal !important;
-        line-height: 2rem;
-      }
-    }
-    .folders-panel {
-      margin-left: -1rem;
-      margin-right: -1rem;
-    }
-  }
-}
-
-.designer-sequence-editor-panel {
-  .panel-content {
-    .sequence-editor-content {
-      @media screen and (max-width: 767px) {
-        margin-left: 5px;
-        padding-right: 0;
-      }
-    }
-    .add-command-button-container {
-      display: block;
-    }
-    .drag-drop-area {
-      display: none;
-    }
-    label {
-      margin-top: 0;
-    }
-    @media screen and (max-width: 767px) {
-      padding: 0;
-    }
   }
 }
 
@@ -1514,33 +914,6 @@ li {
         color: $white;
       }
     }
-  }
-}
-
-.saved-garden-edit-panel {
-  .buttons {
-    position: absolute;
-    top: 1.25rem;
-    right: 0.5rem;
-    .fa-trash {
-      color: $white;
-    }
-  }
-}
-
-.saved-garden-edit-panel-content {
-  button {
-    margin-left: 0.5rem;
-    margin-top: 1rem;
-  }
-  .point-list-wrapper {
-    margin-top: 2rem;
-  }
-  .row {
-    margin: 0;
-  }
-  textarea {
-    font-size: 1.2rem;
   }
 }
 

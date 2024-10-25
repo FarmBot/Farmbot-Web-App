@@ -1,0 +1,68 @@
+.farmware-panel,
+.designer-farmware-list-panel,
+.designer-farmware-info-panel,
+.farmware-add-panel {
+  .panel-content {
+    a {
+      text-decoration: none !important;
+      p {
+        font-size: 1.4rem;
+        font-weight: normal !important;
+        line-height: 2rem;
+      }
+    }
+  }
+}
+
+.designer-farmware-info-panel {
+  .panel-content {
+    position: relative;
+    padding-top: 2rem;
+    padding-bottom: 12rem;
+    button {
+      float: none;
+    }
+    .reset-configs {
+      margin-right: 1rem;
+      margin-top: 2rem;
+    }
+    .farmware-button {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+    }
+    .farmware-form {
+      margin-top: 1rem;
+    }
+    .farmware-input-group {
+      margin-left: 0;
+    }
+  }
+}
+
+.farmware-env-editor {
+  .row {
+    margin-bottom: 1rem;
+    &.no-margin {
+      margin: 0;
+    }
+  }
+  .env-hide-toggle {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+  .env-editor-warning {
+    margin: 0 -15px 2rem -15px;
+    padding: 1rem 1.5rem 1rem 2rem;
+    background: color.adjust($orange, $alpha: -0.6);
+    p {
+      line-height: 1.75rem;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+  }
+  .bp5-popover-wrapper {
+    display: inline;
+    margin-left: 1rem;
+  }
+}

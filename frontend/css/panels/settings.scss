@@ -1,0 +1,165 @@
+.settings-panel {
+  .panel-top {
+    .fa-gear {
+      color: $dark_gray;
+    }
+  }
+}
+
+.settings-panel-settings-menu {
+  button {
+    margin-left: 1rem;
+  }
+}
+
+.settings-panel-content {
+  max-height: calc(100vh - 22rem);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: inherit;
+  .expandable-header {
+    margin: 0;
+  }
+  .section {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    &.setting {
+      gap: 0.5rem;
+    }
+    .bp5-collapse {
+      grid-column: span 2;
+    }
+    .bp5-collapse-body {
+      display: grid;
+      gap: 1rem;
+    }
+  }
+  .export-data,
+  .change-password {
+    .old-password,
+    .new-password {
+      margin-top: 1.5rem;
+      input {
+        width: 50%;
+        float: right;
+      }
+    }
+    form {
+      margin-left: 2rem;
+    }
+  }
+  .label-headings {
+    label {
+      line-height: 1rem;
+    }
+  }
+  .release-notes-wrapper {
+    float: right !important;
+  }
+  .settings-warning-banner {
+    margin-bottom: 1rem !important;
+    p {
+      display: inline;
+    }
+  }
+  .credentials-change-warning-banner,
+  .settings-warning-banner,
+  .stall-detection-note,
+  .limit-switch-warning,
+  .motors-warning {
+    margin: 0 -1.5rem;
+    padding: 1rem 1.5rem 1rem 2rem;
+    background: color.adjust($orange, $alpha: -0.6);
+    p {
+      line-height: 1.75rem;
+      font-size: 1.3rem;
+      font-weight: bold;
+    }
+  }
+  .pin-guard-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr 1fr auto;
+    grid-auto-flow: column;
+  }
+  .pin-reporting-input-row,
+  .pin-guard-input-row {
+    .row {
+      margin-left: -15px;
+      margin-right: -15px;
+      padding-left: 0;
+      padding-right: 1rem;
+      margin-bottom: 1rem;
+    }
+    button {
+      float: none;
+    }
+  }
+  .pin-bindings {
+    margin-right: 1rem;
+    .row {
+      padding-left: 0;
+      padding-right: 0;
+      margin-left: 1rem;
+      margin-right: 0;
+      margin-top: 1rem;
+    }
+    div[class*=col-] {
+      padding: 0;
+      padding-right: 1rem;
+    }
+    .bindings-list {
+      margin-left: -5px;
+      .binding-action {
+        font-weight: bold;
+        font-size: 1.2rem;
+      }
+    }
+    .pin-binding-input-rows {
+      margin-right: 1rem;
+      margin-left: -15px;
+      label {
+        margin-left: 1rem !important;
+      }
+      .green {
+        float: left;
+        margin-left: 1rem;
+      }
+      .row:last-child {
+        margin-top: 0;
+      }
+    }
+    .stock-pin-bindings-button {
+      display: inline;
+      button {
+        margin: 0;
+        margin-top: 0.5rem;
+      }
+    }
+  }
+  .fb-button {
+    margin-top: 0.5rem;
+  }
+  label {
+    margin: auto 0 !important;
+    line-height: 1;
+    font-size: 1.2rem !important;
+  }
+  .help-icon {
+    margin-left: 0.5rem;
+  }
+  .designer-setting {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr auto;
+    &.disabled {
+      input {
+        background: $gray;
+      }
+      button {
+        background: $medium_light_gray !important;
+      }
+    }
+  }
+}

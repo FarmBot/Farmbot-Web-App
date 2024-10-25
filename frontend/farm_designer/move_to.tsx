@@ -58,7 +58,7 @@ export class MoveToForm extends React.Component<MoveToFormProps, MoveToFormState
         <label>{t("X AXIS")}</label>
         <label>{t("Y AXIS")}</label>
         <label>{t("Z AXIS")}</label>
-        <div></div>
+        <div />
         <input disabled name="x" value={isNumber(x) ? x : "---"} />
         <input disabled name="y" value={isNumber(y) ? y : "---"} />
         <AxisInputBox
@@ -164,7 +164,7 @@ export class GoToThisLocationButton
     ].join(" ");
     const defaultDestination = coordinateFromAxes(target, current, defaultAxes);
     const remaining = movementPercentRemaining(current, this.props.movementState);
-    return <div className={"go-button-axes-wrapper"}>
+    return <div className={"go-button-axes-wrapper row no-gap"}>
       <button
         className={classes("go-button-axes-text")}
         title={goText(this.props.defaultAxes)}

@@ -10,6 +10,7 @@
 @import "global/inputs";
 @import "global/labels";
 @import "global/saucers";
+@import "global/sliders";
 @import "global/tables";
 @import "global/tooltips";
 // Animations
@@ -28,22 +29,29 @@
 // Farm Designer
 @import "farm_designer/farm_designer_panels";
 @import "farm_designer/farm_designer";
+@import "farm_designer/profile_viewer";
+@import "farm_designer/three_d_garden";
 // Panels
 @import "panels/connectivity";
 @import "panels/controls";
 @import "panels/curves";
 @import "panels/events";
+@import "panels/farmware";
+@import "panels/gardens";
 @import "panels/help";
 @import "panels/jobs";
+@import "panels/location_info";
 @import "panels/logs";
 @import "panels/peripherals";
 @import "panels/photos";
 @import "panels/plants";
+@import "panels/points";
 @import "panels/regimens";
 @import "panels/select";
 @import "panels/sensors";
 @import "panels/sequence_steps";
 @import "panels/sequences";
+@import "panels/settings";
 @import "panels/setup_wizard";
 @import "panels/tools";
 @import "panels/webcams";

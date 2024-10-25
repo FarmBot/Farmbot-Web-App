@@ -43,22 +43,22 @@ export const BotPositionRows = (props: BotPositionRowsProps) => {
     || (hasEncoders(props.firmwareHardware) &&
       (getConfigValue(BooleanSetting.scaled_encoders)
         || getConfigValue(BooleanSetting.raw_encoders)));
-  return <div className={"bot-position-rows"}>
+  return <div className={"bot-position-rows grid"}>
     <div className={"axis-titles"}>
       <Row className="grid-4-col">
-        <div>
+        <div className="row grid-exp-1">
           <label>{t("X AXIS")}</label>
           <AxisActions axis={"x"}
             hardwareDisabled={hardwareDisabled.x}
             {...commonAxisActionProps} />
         </div>
-        <div>
+        <div className="row grid-exp-1">
           <label>{t("Y AXIS")}</label>
           <AxisActions axis={"y"}
             hardwareDisabled={hardwareDisabled.y}
             {...commonAxisActionProps} />
         </div>
-        <div>
+        <div className="row grid-exp-1">
           <label>{t("Z AXIS")}</label>
           <AxisActions axis={"z"}
             hardwareDisabled={hardwareDisabled.z}

@@ -1,0 +1,56 @@
+.point-creation-panel {
+  .panel-content {
+    p {
+      margin-top: 1rem;
+    }
+    .fb-button {
+      &.save {
+        margin-right: 1.5rem;
+      }
+      &.delete {
+        float: left;
+        margin-top: 1rem;
+      }
+    }
+    .point-color-input {
+      div[class*=col-] {
+        padding-left: 0.5rem;
+      }
+      .saucer {
+        margin-top: 2.75rem;
+      }
+    }
+    .delete-row {
+      margin: 1.5rem;
+    }
+    .grid-and-row-planting {
+      label {
+        color: $dark_gray;
+      }
+      input {
+        box-shadow: 0 0 10px #ddd;
+      }
+      .update-button,
+      .preview-button,
+      .cancel-button,
+      .save-button {
+        text-decoration: none !important;
+        color: $dark_gray;
+        &:hover {
+          color: $black;
+          background: $off_white;
+        }
+      }
+    }
+    .blue {
+      float: none;
+    }
+    .use-current-location {
+      button {
+        .fa {
+          font-size: 1.5rem;
+        }
+      }
+    }
+  }
+}

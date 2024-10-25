@@ -9,36 +9,6 @@
   font-size: 1.5rem;
 }
 
-.webcam-rows {
-  height: 40rem;
-  overflow-y: scroll;
-  overflow-x: hidden;
-}
-
-.webcam-buttons {
-  position: relative;
-}
-
-.webcam-buttons,
-.peripherals-buttons {
-  display: flex;
-  margin-top: 1rem;
-  .bp5-popover-wrapper {
-    margin-top: 0.5rem;
-  }
-  p {
-    width: 100%;
-    margin-left: 1rem;
-    margin-top: 0.5rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  button {
-    margin: 0.25rem;
-    margin-bottom: 1rem;
-  }
-}
-
 .webcam-widget {
   .no-flipper-image-container {
     background: none !important;
@@ -52,7 +22,7 @@
   .image-flipper {
     p,
     button {
-      color: $dark_gray !important;
+      color: $white;
     }
   }
 }

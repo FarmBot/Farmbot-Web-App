@@ -107,7 +107,7 @@ export interface EditPlantRadiusProps extends EditPlantProperty {
 }
 
 export const EditPlantRadius = (props: EditPlantRadiusProps) =>
-  <Row className="grid-exp-1">
+  <Row className="grid-2-col">
     <label style={{ marginTop: 0 }}>{t("radius (mm)")}</label>
     <BlurableInput
       type="number"

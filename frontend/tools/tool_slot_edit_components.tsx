@@ -17,7 +17,7 @@ import { betterMerge } from "../util";
 import { GoToThisLocationButton } from "../farm_designer/move_to";
 
 export const GantryMountedInput = (props: GantryMountedInputProps) =>
-  <fieldset className="gantry-mounted-input">
+  <fieldset className="row grid-exp-1">
     <label>{t("Gantry-mounted")}</label>
     <input type="checkbox" name="gantry_mounted"
       onChange={() => props.onChange({ gantry_mounted: !props.gantryMounted })}
@@ -31,7 +31,7 @@ export const isToolFlipped =
 export const FlipToolDirection = (props: EditToolSlotMetaProps) => {
   const { toolSlotMeta } = props;
   const value = isToolFlipped(toolSlotMeta);
-  return <fieldset className="tool-direction-input">
+  return <fieldset className="row grid-exp-1">
     <label>{t("rotate tool 180 degrees")}</label>
     <input type="checkbox" name="tool_direction"
       onChange={() => {
@@ -45,7 +45,7 @@ export const FlipToolDirection = (props: EditToolSlotMetaProps) => {
 
 export const SlotDirectionInputRow = (props: SlotDirectionInputRowProps) => {
   const iconClass = directionIconClass(props.toolPulloutDirection);
-  return <fieldset className="tool-slot-direction-input">
+  return <fieldset>
     <Row className="grid-2-col">
       <div>
         <label>
@@ -132,15 +132,15 @@ export const SlotLocationInputRow = (props: SlotLocationInputRowProps) => {
         </div>)}
       <UseCurrentLocation botPosition={props.botPosition}
         onChange={props.onChange} />
+      <GoToThisLocationButton
+        dispatch={props.dispatch}
+        locationCoordinate={{ x, y, z }}
+        botOnline={props.botOnline}
+        arduinoBusy={props.arduinoBusy}
+        currentBotLocation={props.botPosition}
+        movementState={props.movementState}
+        defaultAxes={props.defaultAxes} />
     </Row>
-    <GoToThisLocationButton
-      dispatch={props.dispatch}
-      locationCoordinate={{ x, y, z }}
-      botOnline={props.botOnline}
-      arduinoBusy={props.arduinoBusy}
-      currentBotLocation={props.botPosition}
-      movementState={props.movementState}
-      defaultAxes={props.defaultAxes} />
   </div>;
 };
 
@@ -150,7 +150,7 @@ export interface UseCurrentLocationProps {
 }
 
 export const UseCurrentLocation = (props: UseCurrentLocationProps) =>
-  <div className="use-current-location">
+  <div className="grid">
     <Popover
       target={<i className="fa fa-question-circle help-icon" />}
       content={<div className="current-location-info">
@@ -169,7 +169,7 @@ export const UseCurrentLocation = (props: UseCurrentLocationProps) =>
   </div>;
 
 export const SlotEditRows = (props: SlotEditRowsProps) =>
-  <div className="tool-slot-edit-rows">
+  <div className="grid">
     <ToolSlotSVG toolSlot={props.toolSlot} profile={true}
       toolName={props.tool ? props.tool.body.name : "Empty"}
       toolTransformProps={props.toolTransformProps} />

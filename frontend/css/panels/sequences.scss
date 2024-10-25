@@ -4,6 +4,52 @@
   background: $dark_gray;
 }
 
+.designer-sequence-list-panel {
+  .panel-content {
+    max-height: calc(100vh - 16.5rem);
+    overflow-y: scroll;
+    overflow-x: hidden;
+    @media screen and (max-width: $mobile_max_width) {
+      max-height: calc(100vh - 19rem);
+    }
+    a {
+      text-decoration: none !important;
+      p {
+        font-size: 1.4rem;
+        font-weight: normal !important;
+        line-height: 2rem;
+      }
+    }
+    .folders-panel {
+      margin-left: -1rem;
+      margin-right: -1rem;
+    }
+  }
+}
+
+.designer-sequence-editor-panel {
+  .panel-content {
+    .sequence-editor-content {
+      @media screen and (max-width: 767px) {
+        margin-left: 5px;
+        padding-right: 0;
+      }
+    }
+    .add-command-button-container {
+      display: block;
+    }
+    .drag-drop-area {
+      display: none;
+    }
+    label {
+      margin-top: 0;
+    }
+    @media screen and (max-width: 767px) {
+      padding: 0;
+    }
+  }
+}
+
 .sequence-editor-panel {
   margin-left: -3.5rem;
   margin-top: 0.4rem;

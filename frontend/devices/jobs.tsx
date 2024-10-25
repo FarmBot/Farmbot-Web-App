@@ -74,8 +74,7 @@ export class JobsAndLogs
   };
 
   Logs = () => {
-    return <div className={"logs-tab"}>
-      <LogsPanel
+    return <LogsPanel
         logs={this.props.logs}
         timeSettings={this.props.timeSettings}
         dispatch={this.props.dispatch}
@@ -84,8 +83,7 @@ export class JobsAndLogs
         bot={this.props.bot}
         device={this.props.device}
         fbosVersion={this.props.fbosVersion}
-      />
-    </div>;
+      />;
   };
 
   render() {

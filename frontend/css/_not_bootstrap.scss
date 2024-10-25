@@ -26,6 +26,10 @@
   gap: 0;
 }
 
+.align-baseline {
+  align-items: baseline;
+}
+
 .grid-exp-1 {
   grid-template-columns: 1fr;
 }
