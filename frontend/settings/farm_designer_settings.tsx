@@ -44,7 +44,7 @@ export const Setting = (props: SettingProps) => {
   const value = (defaultOn && isUndefined(raw_value)) ? true : !!raw_value;
   return <Highlight settingName={title}>
     <div
-      className={`designer-setting ${props.disabled ? "disabled" : ""}`}>
+      className={`designer-setting row grid-exp-1 ${props.disabled ? "disabled" : ""}`}>
       <div>
         <label>{t(title)}</label>
         {props.useToolTip && <Help text={props.description} />}

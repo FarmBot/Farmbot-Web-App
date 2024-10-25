@@ -1,6 +1,6 @@
 import React from "react";
 import { DiagnosticMessages } from "../../constants";
-import { Col, Row, docLinkClick } from "../../ui";
+import { Row, docLinkClick } from "../../ui";
 import { bitArray } from "../../util";
 import { TRUTH_TABLE } from "./truth_table";
 import { t } from "../../i18next_wrapper";
@@ -50,11 +50,11 @@ export function Diagnosis(props: DiagnosisProps) {
   const diagnosisBoolean = diagnosisStatus(props.statusFlags);
   const diagnosisColor = diagnosisBoolean ? "green" : "red";
   return <Row className="diagnosis-section grid-exp-2">
-    <Col hidden={props.hideGraphic}>
+    <div hidden={props.hideGraphic}>
       <DiagnosisSaucer {...props.statusFlags} />
       <div className={"saucer-connector last " + diagnosisColor} />
-    </Col>
-    <Col className={"connectivity-diagnosis"}>
+    </div>
+    <div className={"connectivity-diagnosis"}>
       <h4>{t("Diagnosis")}</h4>
       <p className="blinking">
         {t("Always")}&nbsp;
@@ -74,7 +74,7 @@ export function Diagnosis(props: DiagnosisProps) {
         <i className="fa fa-external-link" />
         {t("Click here for document to show to your IT department.")}
       </a>
-    </Col>
+    </div>
   </Row>;
 }
 

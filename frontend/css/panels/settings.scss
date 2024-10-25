@@ -17,6 +17,8 @@
   overflow-y: auto;
   overflow-x: hidden;
   padding-bottom: inherit;
+  display: grid;
+  gap: 2rem;
   .expandable-header {
     margin: 0;
   }
@@ -37,14 +39,6 @@
   }
   .export-data,
   .change-password {
-    .old-password,
-    .new-password {
-      margin-top: 1.5rem;
-      input {
-        width: 50%;
-        float: right;
-      }
-    }
     form {
       margin-left: 2rem;
     }
@@ -58,23 +52,15 @@
     float: right !important;
   }
   .settings-warning-banner {
-    margin-bottom: 1rem !important;
-    p {
-      display: inline;
-    }
-  }
-  .credentials-change-warning-banner,
-  .settings-warning-banner,
-  .stall-detection-note,
-  .limit-switch-warning,
-  .motors-warning {
-    margin: 0 -1.5rem;
-    padding: 1rem 1.5rem 1rem 2rem;
+    margin: 0 -2.5rem;
+    padding: 1rem 2.5rem;
     background: color.adjust($orange, $alpha: -0.6);
     p {
-      line-height: 1.75rem;
       font-size: 1.3rem;
       font-weight: bold;
+    }
+    &.env-editor-lua {
+      background: color.adjust($blue, $alpha: -0.6);
     }
   }
   .pin-guard-grid {
@@ -83,59 +69,20 @@
     grid-template-columns: 1fr 1fr auto;
     grid-auto-flow: column;
   }
-  .pin-reporting-input-row,
-  .pin-guard-input-row {
-    .row {
-      margin-left: -15px;
-      margin-right: -15px;
-      padding-left: 0;
-      padding-right: 1rem;
-      margin-bottom: 1rem;
-    }
-    button {
-      float: none;
-    }
-  }
   .pin-bindings {
-    margin-right: 1rem;
-    .row {
-      padding-left: 0;
-      padding-right: 0;
-      margin-left: 1rem;
-      margin-right: 0;
-      margin-top: 1rem;
-    }
-    div[class*=col-] {
-      padding: 0;
-      padding-right: 1rem;
-    }
-    .bindings-list {
-      margin-left: -5px;
-      .binding-action {
-        font-weight: bold;
-        font-size: 1.2rem;
-      }
-    }
-    .pin-binding-input-rows {
-      margin-right: 1rem;
-      margin-left: -15px;
-      label {
-        margin-left: 1rem !important;
-      }
-      .green {
-        float: left;
-        margin-left: 1rem;
-      }
-      .row:last-child {
-        margin-top: 0;
-      }
-    }
     .stock-pin-bindings-button {
-      display: inline;
-      button {
-        margin: 0;
-        margin-top: 0.5rem;
+      display: block;
+      justify-self: right;
+      i {
+        margin-right: 0.5rem;
       }
+    }
+    .pin-binding-grid {
+      grid-template-columns: 1fr 30% auto;
+    }
+    .binding-action {
+      font-weight: bold;
+      font-size: 1.2rem;
     }
   }
   .fb-button {
@@ -150,9 +97,6 @@
     margin-left: 0.5rem;
   }
   .designer-setting {
-    display: grid;
-    gap: 1rem;
-    grid-template-columns: 1fr auto;
     &.disabled {
       input {
         background: $gray;
@@ -161,5 +105,54 @@
         background: $medium_light_gray !important;
       }
     }
+  }
+}
+
+.load-progress-bar-wrapper {
+  position: relative;
+  margin: 0.5rem;
+  margin-top: 0;
+  margin-left: 0;
+  width: 90%;
+  height: 1.5rem;
+  border: 1px solid $dark_gray;
+  .load-progress-bar {
+    height: 100%;
+    background: $dark_gray !important;
+    p {
+      position: absolute;
+      color: $gray;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+  }
+}
+
+.firmware-setting-export-menu {
+  button {
+    margin-bottom: 1rem;
+  }
+  ul {
+    font-size: 0.75rem;
+  }
+}
+
+.change-ownership-form {
+  p {
+    padding: 1rem;
+    margin-left: 0.5rem;
+  }
+  .row {
+    margin-bottom: 1rem;
+    &:empty {
+      margin-bottom: 0;
+    }
+  }
+  label {
+    margin-top: 0.5rem;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: 1rem;
   }
 }

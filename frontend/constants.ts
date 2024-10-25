@@ -2089,7 +2089,7 @@ export enum DeviceSetting {
   addNewPinBinding = `Add new pin binding`,
 
   // Pin Guard
-  pinGuardLabels = ``,
+  pinGuardLabels = `Pin Guard`,
   pinGuardTitles = `pin timeout (sec) to state`,
   pinGuard = `Pin Guard`,
   pinGuard1 = `Pin Guard 1`,

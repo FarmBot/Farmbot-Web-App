@@ -21,17 +21,6 @@
 
 .plants-panel-content {
   padding: 1rem;
-  .plant-info-field-data {
-    .bp5-popover-wrapper {
-      display: inline-block;
-      margin-left: 0.5rem;
-    }
-    .filter-search {
-      .bp5-popover-wrapper {
-        margin-left: 0;
-      }
-    }
-  }
   input {
     background: $white;
   }
@@ -131,34 +120,13 @@
     overflow-y: auto;
     overflow-x: hidden;
     padding: 1rem;
+    .non-empty-state {
+      gap: 1rem;
+    }
     li {
       margin-bottom: 1rem;
       p {
         font-size: 1.25rem;
-      }
-    }
-    .grid-and-row-planting {
-      padding-bottom: 2rem;
-      margin-left: -1rem;
-      margin-right: -1rem;
-      padding-left: 1rem;
-      padding-right: 1rem;
-      label {
-        color: $dark_gray;
-      }
-      .update-button,
-      .preview-button,
-      .cancel-button,
-      .save-button {
-        text-decoration: none !important;
-        color: $dark_gray;
-        &:hover {
-          color: $black;
-          background: $off_white;
-        }
-      }
-      .use-current-location {
-        margin-top: 1.5rem;
       }
     }
     .crop-companions {
@@ -183,9 +151,6 @@
         text-transform: none;
       }
     }
-  }
-  .edit-on-openfarm {
-    font-size: 1.3rem;
   }
   .object-list {
     ul {

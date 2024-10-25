@@ -4,7 +4,7 @@ import { t } from "../../../i18next_wrapper";
 import { Xyz, Move, AxisOverwrite } from "farmbot";
 import { Axis } from "../../../devices/interfaces";
 import { isUndefined } from "lodash";
-import { Col, FBSelect, Row } from "../../../ui";
+import { FBSelect, Row } from "../../../ui";
 import { MoveStepInput } from "./input";
 import { LOCATION_NODES } from "./location";
 
@@ -71,16 +71,14 @@ export const getOverwriteNode = (
 };
 
 export const OverwriteInputRow = (props: OverwriteInputRowProps) =>
-  <Row>
-    <Col xs={3}>
-      <label>
-        {props.locationSelection == "custom"
-          ? t("X, Y, Z (mm)")
-          : t("override")}
-      </label>
-    </Col>
+  <Row className="grid-4-col">
+    <label>
+      {props.locationSelection == "custom"
+        ? t("X, Y, Z (mm)")
+        : t("override")}
+    </label>
     {["x", "y", "z"].map((axis: Xyz) =>
-      <Col xs={3} key={axis}>
+      <div key={axis}>
         {showDropdown(props.selection[axis])
           ? <FBSelect
             key={props.selection[axis]}
@@ -94,7 +92,7 @@ export const OverwriteInputRow = (props: OverwriteInputRowProps) =>
             onClear={() =>
               props.setAxisOverwriteState(axis, AxisSelection.none)}
             setValue={props.setAxisState("overwrite", axis, 0)} />}
-      </Col>)}
+      </div>)}
   </Row>;
 
 export const OVERWRITE_OPTION_LOOKUP = () => ({

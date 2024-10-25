@@ -67,7 +67,7 @@ export const PhotoFilterSettings = (props: PhotoFilterSettingsProps) => {
       <FilterOlderOrNewer {...commonProps} />
     </div>
     <Highlight settingName={DeviceSetting.showPhotos} pathPrefix={Path.photos}>
-      <div className={"toggle-group"}>
+      <div className={"row grid-exp-1"}>
         <label className={"toggle-label"}>{t("show photos in map")}</label>
         <ToggleButton toggleValue={!layerOff}
           className={getModifiedClassName(BooleanSetting.show_images)}
@@ -116,7 +116,7 @@ interface PhotoSettingToggleProps {
 const PhotoSettingToggle = (props: PhotoSettingToggleProps) =>
   <Highlight settingName={props.settingName}
     pathPrefix={Path.photos}>
-    <div className={"toggle-group"}>
+    <div className={"row grid-exp-1"}>
       <label className={"toggle-label"}>
         {t(props.settingName)}
       </label>

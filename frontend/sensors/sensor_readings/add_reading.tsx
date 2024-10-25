@@ -9,7 +9,7 @@ import { formatDateField } from "../../farm_events/map_state_to_props_add_edit";
 import { t } from "../../i18next_wrapper";
 import { TimeSettings } from "../../interfaces";
 import { error } from "../../toast/toast";
-import { BlurableInput, Col, Row } from "../../ui";
+import { BlurableInput, Row } from "../../ui";
 import { SensorSelection } from "./sensor_selection";
 
 export interface AddSensorReadingMenuProps {
@@ -88,9 +88,9 @@ export class AddSensorReadingMenu
       <div className={"reading-location"}>
         <Row>
           {["x", "y", "z"].map(axis =>
-            <Col key={axis + "_heading"}>
+            <div key={axis + "_heading"}>
               <label>{axis}</label>
-            </Col>)}
+            </div>)}
         </Row>
         <Row>
           {["x", "y", "z"].map((axis: Xyz) =>

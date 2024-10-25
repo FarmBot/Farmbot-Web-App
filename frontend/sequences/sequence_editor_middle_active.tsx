@@ -14,7 +14,7 @@ import {
 import { splice, move, stringifySequenceData } from "./step_tiles";
 import { push } from "../history";
 import {
-  BlurableInput, Row, Col, SaveBtn, Help, ToggleButton, Popover,
+  BlurableInput, Row, SaveBtn, Help, ToggleButton, Popover,
   Markdown,
   FBSelect,
   DropDownItem,
@@ -236,15 +236,11 @@ export const SequenceShareMenu = (props: SequenceShareMenuProps) => {
         <i className={`fa ${publishing ? "fa-spinner fa-pulse" : "fa-plus"}`} />
       </button>
       {sequenceVersionList(ids).map(version =>
-        <Row key={version.label}>
-          <Col xs={6}>
-            <p>{version.label}</p>
-          </Col>
-          <Col xs={6}>
-            <Link to={Path.sequenceVersion(version.value)}>
-              <i className={"fa fa-link"} />
-            </Link>
-          </Col>
+        <Row key={version.label} className="grid-2-col">
+          <p>{version.label}</p>
+          <Link to={Path.sequenceVersion(version.value)}>
+            <i className={"fa fa-link"} />
+          </Link>
         </Row>)}
     </div>
     <button className={"fb-button white"}
@@ -383,13 +379,11 @@ interface SequenceNameProps {
 export const SequenceName =
   ({ dispatch, sequence }: SequenceNameProps) =>
     <Row>
-      <Col xs={12}>
-        <BlurableInput className={"sequence-name"}
-          value={sequence.body.name}
-          placeholder={t("Sequence Name")}
-          onCommit={e =>
-            dispatch(edit(sequence, { name: e.currentTarget.value }))} />
-      </Col>
+      <BlurableInput className={"sequence-name"}
+        value={sequence.body.name}
+        placeholder={t("Sequence Name")}
+        onCommit={e =>
+          dispatch(edit(sequence, { name: e.currentTarget.value }))} />
     </Row>;
 
 export const SequenceHeader = (props: SequenceHeaderProps) => {
@@ -626,12 +620,10 @@ export class SequenceEditorMiddleActive extends
                       index={Infinity} />
                   </ErrorBoundary>
                   <Row>
-                    <Col xs={12}>
-                      <DropArea isLocked={true}
-                        callback={key => onDrop(dispatch, sequence)(Infinity, key)}>
-                        {t("DRAG COMMAND HERE")}
-                      </DropArea>
-                    </Col>
+                    <DropArea isLocked={true}
+                      callback={key => onDrop(dispatch, sequence)(Infinity, key)}>
+                      {t("DRAG COMMAND HERE")}
+                    </DropArea>
                   </Row>
                 </div>
               </div>

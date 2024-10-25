@@ -1,7 +1,11 @@
 .sequence-page {
   max-width: unset;
   padding: 8.6rem 0rem 0;
-  background: $dark_gray;
+  .sequences-page-grid {
+    grid-template-columns: 1fr 2fr 1fr;
+    align-items: stretch;
+    gap: 0;
+  }
 }
 
 .designer-sequence-list-panel {
@@ -36,7 +40,7 @@
       }
     }
     .add-command-button-container {
-      display: block;
+      display: inline;
     }
     .drag-drop-area {
       display: none;
@@ -51,12 +55,8 @@
 }
 
 .sequence-editor-panel {
-  margin-left: -3.5rem;
-  margin-top: 0.4rem;
-  height: calc(100vh - 8.95rem);
   background: $light_gray;
-  padding: 0 2rem;
-  overflow: hidden;
+  padding: 0 1rem;
   @media screen and (max-width: 767px) {
     display: none;
     &.open {
@@ -492,7 +492,7 @@
 
 .sequence-editor-tools {
   display: flex;
-  margin: 1rem;
+  justify-content: right;
   .title,
   input {
     flex: 1;
@@ -631,9 +631,7 @@
 }
 
 .sequence-steps {
-  margin-right: 30px;
-  margin-left: 10px;
-  margin-top: 10px;
+  margin-right: 2.5rem;
   .sequence-step {
     &.hovered {
       box-shadow: 0px 0px 15px #ff7700;
@@ -653,7 +651,6 @@
 }
 
 .step-button-cluster {
-  margin-right: -15px;
   overflow-y: auto;
   overflow-x: hidden;
   max-height: calc(100vh - 8rem);
@@ -729,6 +726,8 @@
 }
 
 .step-button-cluster-panel {
+  padding: 1rem;
+  background: $dark_gray;
   @media screen and (max-width: 767px) {
     display: none;
     margin-left: 15px;
@@ -736,10 +735,6 @@
     &.inserting-step {
       display: block;
     }
-  }
-  .row {
-    margin-left: -2.5rem;
-    margin-right: 3rem;
   }
   h3 {
     margin-top: 1rem;
@@ -1102,9 +1097,6 @@
       line-height: 1.75rem;
       color: $off_white;
     }
-    .fa-exclamation-triangle {
-      color: $orange;
-    }
   }
   label {
     display: block;
@@ -1155,8 +1147,6 @@
 }
 
 .sequence-list-panel {
-  padding-top: 0.4rem;
-  margin-right: 5px;
   @media screen and (max-width: 1075px) {
     margin-left: 15px;
   }
@@ -1226,6 +1216,9 @@
   z-index: 9;
   width: 100%;
   height: 0;
+  button {
+    margin: 0;
+  }
   &.first,
   &.middle,
   &.last {
@@ -1247,7 +1240,6 @@
     .add-command {
       transform: rotate(-45deg);
       margin-top: -1.5rem;
-      margin-right: 1.5rem;
       border-top-left-radius: 0;
       i {
         transform: rotate(45deg);
@@ -1257,7 +1249,6 @@
   &.first {
     .add-command {
       margin-top: -0.25rem;
-      margin-right: 1.5rem;
       border-top-left-radius: 0;
     }
   }
@@ -1268,7 +1259,6 @@
     }
     .add-command {
       margin-top: -1.75rem;
-      margin-right: 0.5rem;
       border-bottom-left-radius: 0;
     }
   }
@@ -1293,11 +1283,10 @@
   }
   &.open {
     position: relative;
-    height: 100%;
     .add-command {
       position: absolute;
       top: 50%;
-      right: -4rem;
+      right: -2.5rem;
       transform: rotate(-45deg);
       i {
         transform: rotate(0);

@@ -8,7 +8,7 @@ import { SafeZCheckboxProps } from "./interfaces";
 
 export const SafeZCheckbox = (props: SafeZCheckboxProps) =>
   <Row className="grid-4-col">
-    <div>
+    <div className="row half-gap grid-exp-2">
       <label className={"safe-z"}>{t("Safe Z")}</label>
       <Help text={ToolTips.SAFE_Z} customClass={"help-icon"} />
     </div>

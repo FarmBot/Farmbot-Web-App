@@ -3,7 +3,7 @@ import {
   selectAllSavedPeripherals, selectAllSavedSensors,
 } from "../../../resources/selectors";
 import { ResourceIndex } from "../../../resources/interfaces";
-import { DropDownItem, Col, FBSelect } from "../../../ui";
+import { DropDownItem, FBSelect } from "../../../ui";
 import { range, isNumber, isString } from "lodash";
 import {
   TaggedPeripheral, TaggedSensor, ResourceName, Nothing, SequenceBodyItem,
@@ -271,9 +271,8 @@ export const PinSelect = (props: PinSelectProps): JSX.Element => {
   const step = props.currentStep;
   const { currentSequence, resources, showPins } = props;
   const { pin_number } = step.args;
-  const width = props.width || 6;
 
-  return <Col xs={width} md={width}>
+  return <div className="row grid-2-col">
     <label>{props.label || t("Peripheral")}</label>
     <FBSelect
       key={JSON.stringify(currentSequence)}
@@ -281,5 +280,5 @@ export const PinSelect = (props: PinSelectProps): JSX.Element => {
       customNullLabel={props.placeholder || t("Select a peripheral")}
       onChange={setArgsDotPinNumber(props)}
       list={pinsAsDropdowns(step.kind)(resources, !!showPins)} />
-  </Col>;
+  </div>;
 };

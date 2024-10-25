@@ -42,7 +42,7 @@ export function LimitSwitches(props: LimitSwitchesProps) {
       dispatch={dispatch} />
     <Collapse isOpen={!!limit_switches}>
       <Highlight settingName={DeviceSetting.limitSwitchesWarning}>
-        <div className="limit-switch-warning">
+        <div className="settings-warning-banner">
           <p>{t(Content.LIMIT_SWITCH_WARNING)}</p>
         </div>
       </Highlight>

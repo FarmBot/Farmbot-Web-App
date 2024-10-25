@@ -63,6 +63,12 @@ input:not([role="combobox"]):not([type="checkbox"]):not([type="radio"]) {
   height: 3rem;
 }
 
+input[type="radio"] {
+  box-shadow: none !important;
+  margin: 0;
+  cursor: pointer;
+}
+
 .input {
   position: relative;
   .bp5-popover-wrapper {

@@ -40,29 +40,6 @@
   }
 }
 
-.farmware-env-editor {
-  .row {
-    margin-bottom: 1rem;
-    &.no-margin {
-      margin: 0;
-    }
-  }
-  .env-hide-toggle {
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-  }
-  .env-editor-warning {
-    margin: 0 -15px 2rem -15px;
-    padding: 1rem 1.5rem 1rem 2rem;
-    background: color.adjust($orange, $alpha: -0.6);
-    p {
-      line-height: 1.75rem;
-      font-size: 1.2rem;
-      font-weight: bold;
-    }
-  }
-  .bp5-popover-wrapper {
-    display: inline;
-    margin-left: 1rem;
-  }
+.custom-setting-grid {
+  grid-template-columns: 1fr 1fr auto;
 }

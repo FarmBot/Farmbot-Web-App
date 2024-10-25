@@ -59,7 +59,7 @@ export function Motors(props: MotorsProps) {
       panel={"motors"}
       dispatch={dispatch} />
     <Collapse isOpen={!!settingsPanelState.motors}>
-      <div className="motors-warning">
+      <div className="settings-warning-banner">
         <p>{t(ToolTips.HW_SETTINGS)}</p>
       </div>
       <SpacePanelHeader />

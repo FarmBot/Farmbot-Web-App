@@ -60,10 +60,9 @@ interface PointsSectionProps {
 const PointsSection = (props: PointsSectionProps) => {
   const { genericPoints, isOpen, dispatch, averageZ, toggleAction } = props;
   return <div className={`points-section ${isOpen ? "open" : ""}`}>
-    <div className={"points-section-header"} onClick={props.toggleOpen}>
+    <div className={"points-section-header row grid-exp-1"} onClick={props.toggleOpen}>
       {props.color && <Saucer color={props.color} />}
       <label>{`${props.title} (${genericPoints.length})`}</label>
-      <i className={`fa fa-caret-${isOpen ? "up" : "down"}`} />
       {isOpen && toggleAction && <ToggleButton
         toggleValue={props.toggleValue}
         customText={{ textFalse: t("off"), textTrue: t("on") }}
@@ -78,6 +77,7 @@ const PointsSection = (props: PointsSectionProps) => {
         }}>
         {t("delete all")}
       </button>}
+      <i className={`fa fa-caret-${isOpen ? "up" : "down"}`} />
     </div>
     <Collapse isOpen={isOpen}>
       {!isUndefined(averageZ) &&

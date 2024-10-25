@@ -1,49 +1,19 @@
 // Styles for ALL STEPS
 .step-wrapper {
-  box-shadow: 0px 0px 10px $gray;
-  border-radius: 3px;
-  .bottom-content {
-    display: flex;
-    fieldset {
-      text-align: right;
-    }
-    .channel-options {
-      flex: 1;
-      margin-top: 2rem;
-    }
-    .channel-fields {
-      flex: 1;
-      input,
-      label {
-        display: inline-block;
-        width: auto;
-        cursor: pointer;
-      }
-      input {
-        margin-left: 1rem;
-        box-shadow: none;
-      }
-      input[type="radio"] {
-        margin-right: 0.25rem;
-        margin-bottom: 0.25rem;
-        margin-top: 0;
-        vertical-align: middle;
-      }
-      form {
-        padding-top: 0.5rem;
-        .options {
-          display: inline;
-          label {
-            margin-left: 0.25rem;
-          }
-        }
-      }
-    }
+  box-shadow: 0px 0px 1rem $translucent1;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  fieldset {
+    text-align: right;
   }
   pre {
     border: none;
     border-radius: 0;
   }
+}
+
+.sequence-step-radio-grid {
+  justify-content: left;
 }
 
 .step-header {
@@ -317,6 +287,8 @@
     background: $light_purple;
     .lua-input {
       margin-bottom: 1rem;
+      border-radius: 0.5rem;
+      overflow: hidden;
     }
   }
   &.lua-step {
@@ -325,21 +297,8 @@
   }
   &.execute-step {
     background: $light_gray;
-    padding-bottom: 1rem;
-    .row {
-      margin: 0;
-    }
     .locals-list {
-      margin-left: -1rem;
-      margin-right: 0;
-    }
-    .location-form:not(:first-of-type) {
-      margin-top: 1rem;
-    }
-    .location-form {
-      .row:not(:first-of-type) {
-        margin-top: 1rem;
-      }
+      margin: 0;
     }
     &.pinned-view {
       .location-form {

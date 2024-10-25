@@ -124,7 +124,7 @@ export interface EditPlantDepthProps extends EditPlantProperty {
 }
 
 export const EditPlantDepth = (props: EditPlantDepthProps) =>
-  <Row className="grid-exp-1">
+  <Row className="grid-2-col">
     <label style={{ marginTop: 0 }}>{t("depth (mm)")}</label>
     <BlurableInput
       type="number"
@@ -209,7 +209,7 @@ export function PlantPanel(props: PlantPanelProps) {
       {!isUndefined(info.depth) && <ListItem>
         <EditPlantDepth {...commonProps} depth={info.depth} />
       </ListItem>}
-      <ListItem name={t("Status")}>
+      <ListItem>
         {(!inSavedGarden)
           ? <EditPlantStatus {...commonProps} plantStatus={plantStatus} />
           : t(startCase(plantStatus))}

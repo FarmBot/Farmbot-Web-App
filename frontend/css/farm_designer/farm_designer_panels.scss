@@ -545,7 +545,6 @@ li {
 .factory-reset-options {
   a {
     color: $white;
-    font-weight: bold;
     text-decoration: none !important;
   }
   .fa-external-link {
@@ -803,23 +802,7 @@ li {
         margin-bottom: 1rem;
       }
       .row {
-        margin-left: -5px;
-        margin-right: 0;
-        label {
-          line-height: 3.5rem;
-          margin-top: 0;
-          margin-bottom: 0;
-        }
-        .input {
-          height: 3rem;
-        }
-        button {
-          margin-top: 0.85rem;
-          float: right;
-        }
-        .bp5-popover-wrapper {
-          display: none;
-        }
+        padding: 0 1rem;
       }
     }
     .points-section,
@@ -884,17 +867,6 @@ li {
       color: $dark_gray !important;
       font-size: 1.2rem;
     }
-  }
-}
-
-.env-editor-lua {
-  margin: 0 -15px 0 -15px;
-  padding: 1rem 1.5rem 1rem 2rem;
-  background: color.adjust($blue, $alpha: -0.6);
-  p {
-    line-height: 1.75rem;
-    font-size: 1.2rem;
-    font-weight: bold;
   }
 }
 

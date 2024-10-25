@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col } from "../../ui";
+import { Row } from "../../ui";
 import { t } from "../../i18next_wrapper";
 import {
   TaggedSequence, ALLOWED_AXIS, FindHome, Home, Calibrate, Zero,
@@ -15,22 +15,16 @@ export interface StepRadioProps<T extends string> {
 
 export const StepRadio = <T extends string>(props: StepRadioProps<T>) =>
   <Row>
-    <Col xs={12}>
-      <div className={"bottom-content"}>
-        <div className={"channel-fields"}>
-          <form>
-            {props.choices.map((choice, i) =>
-              <div className={"options"} key={i}>
-                <input type={"radio"} name={choice}
-                  value={choice}
-                  onChange={() => props.onChange(choice)}
-                  checked={props.currentChoice === choice} />
-                <label>{t(props.choiceLabelLookup[choice])}</label>
-              </div>)}
-          </form>
-        </div>
-      </div>
-    </Col>
+    <form className="row sequence-step-radio-grid double-gap">
+      {props.choices.map((choice, i) =>
+        <div className={"row half-gap grid-exp-2"} key={i}>
+          <input type={"radio"} name={choice}
+            value={choice}
+            onChange={() => props.onChange(choice)}
+            checked={props.currentChoice === choice} />
+          <label>{t(props.choiceLabelLookup[choice])}</label>
+        </div>)}
+    </form>
   </Row>;
 
 type AxisStep = FindHome | Home | Calibrate | Zero;

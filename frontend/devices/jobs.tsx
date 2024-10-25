@@ -88,7 +88,7 @@ export class JobsAndLogs
 
   render() {
     const { jobs, logs } = this.props.jobsPanelState;
-    return <div className={"jobs-and-logs"}>
+    return <div className={"jobs-and-logs grid double-gap"}>
       <div className={"tabs"}>
         <label className={jobs ? "selected" : ""}
           onClick={this.setPanelState("jobs")}>{t("jobs")}</label>

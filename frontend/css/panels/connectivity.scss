@@ -197,9 +197,6 @@
   margin: auto;
   width: 20rem;
   background: $white;
-  svg {
-    animation: adjust-width 0.01s linear forwards;
-  }
 }
 
 .port-info,
@@ -261,7 +258,6 @@
   width: 100%;
   border-radius: 5px;
   box-shadow: 0 0 10px $light_gray;
-  animation: adjust-width 0.01s linear forwards;
   max-height: 30rem;
   text {
     font-size: 0.6rem;

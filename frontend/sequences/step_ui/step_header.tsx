@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col } from "../../ui";
+import { Row } from "../../ui";
 import { TaggedSequence, SequenceBodyItem, Lua } from "farmbot";
 import { StepTitleBar } from "../step_tiles/step_title_bar";
 import { StepIconGroup } from "./step_icon_group";
@@ -157,40 +157,38 @@ export class StepHeader
       executeSequence,
     } = this.props;
     return <Row>
-      <Col sm={12}>
-        <div className={`step-header ${className} ${executeSequence?.color}`}
-          draggable={this.state.draggable}>
-          <div className={"step-header-flex"}>
-            <StepTitleBar
-              index={index}
-              dispatch={dispatch}
-              readOnly={readOnly}
-              step={currentStep}
-              sequence={currentSequence}
-              pinnedSequenceName={executeSequence?.name}
-              toggleDraggable={this.toggle} />
-            {this.props.children}
-            <StepIconGroup
-              index={index}
-              dispatch={dispatch}
-              readOnly={readOnly}
-              step={currentStep}
-              sequence={currentSequence}
-              executeSequenceName={executeSequence?.name}
-              helpText={t(this.props.helpText)}
-              enableMarkdown={this.props.enableMarkdown}
-              links={this.props.links}
-              viewRaw={this.props.viewRaw}
-              toggleViewRaw={this.props.toggleViewRaw}
-              stateToggles={this.props.stateToggles}
-              isProcessing={this.state.isProcessing}
-              togglePrompt={this.togglePrompt}
-              sequencesState={this.props.sequencesState}
-              confirmStepDeletion={this.props.confirmStepDeletion} />
-          </div>
-          {this.state.promptOpen && <this.AutoLuaPrompt />}
+      <div className={`step-header ${className} ${executeSequence?.color}`}
+        draggable={this.state.draggable}>
+        <div className={"step-header-flex"}>
+          <StepTitleBar
+            index={index}
+            dispatch={dispatch}
+            readOnly={readOnly}
+            step={currentStep}
+            sequence={currentSequence}
+            pinnedSequenceName={executeSequence?.name}
+            toggleDraggable={this.toggle} />
+          {this.props.children}
+          <StepIconGroup
+            index={index}
+            dispatch={dispatch}
+            readOnly={readOnly}
+            step={currentStep}
+            sequence={currentSequence}
+            executeSequenceName={executeSequence?.name}
+            helpText={t(this.props.helpText)}
+            enableMarkdown={this.props.enableMarkdown}
+            links={this.props.links}
+            viewRaw={this.props.viewRaw}
+            toggleViewRaw={this.props.toggleViewRaw}
+            stateToggles={this.props.stateToggles}
+            isProcessing={this.state.isProcessing}
+            togglePrompt={this.togglePrompt}
+            sequencesState={this.props.sequencesState}
+            confirmStepDeletion={this.props.confirmStepDeletion} />
         </div>
-      </Col>
+        {this.state.promptOpen && <this.AutoLuaPrompt />}
+      </div>
     </Row>;
   }
 }

@@ -92,11 +92,14 @@ const getUpdateByPlantStage = (plant_stage: PlantStage): PlantOptions => {
 /** Select a `plant_stage` for a plant. */
 export function EditPlantStatus(props: EditPlantStatusProps) {
   const { plantStatus, updatePlant, uuid } = props;
-  return <FBSelect
-    list={PLANT_STAGE_LIST()}
-    selectedItem={PLANT_STAGE_DDI_LOOKUP()[plantStatus]}
-    onChange={ddi =>
-      updatePlant(uuid, getUpdateByPlantStage(ddi.value as PlantStage))} />;
+  return <div className="row grid-2-col">
+    <label>{t("Status")}</label>
+      <FBSelect
+      list={PLANT_STAGE_LIST()}
+      selectedItem={PLANT_STAGE_DDI_LOOKUP()[plantStatus]}
+      onChange={ddi =>
+        updatePlant(uuid, getUpdateByPlantStage(ddi.value as PlantStage))} />
+    </div>;
 }
 
 export interface BulkUpdateBaseProps {

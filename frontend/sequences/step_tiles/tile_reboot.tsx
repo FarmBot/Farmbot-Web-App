@@ -36,9 +36,6 @@ export const TileReboot = (props: StepParams<Reboot>) =>
   <StepWrapper {...props}
     className={"reboot-step"}
     helpText={Content.RESTART_FARMBOT}>
-    <p>
-      {t(Content.REBOOT_STEP)}
-    </p>
     {DevSettings.futureFeaturesEnabled() &&
       <StepRadio
         choices={Object.keys(PACKAGE_CHOICES()) as ALLOWED_PACKAGES[]}

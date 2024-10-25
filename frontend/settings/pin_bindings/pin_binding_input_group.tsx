@@ -101,17 +101,15 @@ export class PinBindingInputGroup
     });
 
   render() {
-    return <div className="pin-binding-input-rows">
+    return <div className="grid">
       <Row><label>{t(DeviceSetting.addNewPinBinding)}</label></Row>
-      <this.Number />
-      <div>
+      <div className="row grid-exp-2">
+        <this.Number />
         <BindingTargetDropdown
           change={this.changeBinding}
           resources={this.props.resources}
           sequenceIdInput={this.state.sequenceIdInput}
           specialActionInput={this.state.specialActionInput} />
-      </div>
-      <div>
         <button
           className="fb-button green"
           type="button"

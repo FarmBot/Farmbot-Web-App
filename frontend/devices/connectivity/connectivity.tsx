@@ -2,7 +2,7 @@ import React from "react";
 import { BotState } from "../interfaces";
 import { Diagnosis, ConnectionStatusFlags, getDiagnosisCode } from "./diagnosis";
 import { ConnectivityRow, StatusRowProps } from "./connectivity_row";
-import { Row, Col, docLinkClick, Saucer } from "../../ui";
+import { Row, docLinkClick, Saucer } from "../../ui";
 import { ConnectivityDiagram } from "./diagram";
 import {
   ChipTemperatureDisplay, WiFiStrengthDisplay, VoltageDisplay,
@@ -75,7 +75,7 @@ export class Connectivity
     } = informational_settings;
     const { id, fbos_version } = this.props.device.body;
     return <div className={"realtime-wrapper"}>
-      <Col className={"connectivity-left-column"}>
+      <div className={"connectivity-left-column"}>
         <ConnectivityDiagram
           rowData={this.props.rowData}
           hover={this.hover}
@@ -98,8 +98,8 @@ export class Connectivity
           <p><b>{t("Connectivity code")}: </b>{
             getDiagnosisCode(this.props.flags)}</p>
         </div>
-      </Col>
-      <Col className={"connectivity-right-column"}>
+      </div>
+      <div className={"connectivity-right-column"}>
         <ConnectivityRow from={t("from")} to={t("to")} header={true} />
         {this.props.rowData
           .map((statusRowProps, index) =>
@@ -126,7 +126,7 @@ export class Connectivity
               {t("restart firmware")}
             </button>
           </Row>}
-      </Col>
+      </div>
     </div>;
   };
 

@@ -13,7 +13,7 @@ import { formatTime } from "../util";
 import {
   FlashFirmwareBtn,
 } from "../settings/firmware/firmware_hardware_status";
-import { DropDownItem, Row, Col, FBSelect, docLink, Markdown } from "../ui";
+import { DropDownItem, Row, FBSelect, docLink, Markdown } from "../ui";
 import { Content } from "../constants";
 import { splitProblemTag } from "./alerts";
 import { destroy } from "../api/crud";
@@ -232,10 +232,8 @@ const FirmwareMissing = (props: FirmwareMissingProps) =>
     findApiAlertById={props.findApiAlertById}>
     <Row>
       <FirmwareChoiceTable />
-      <Col xs={4}>
+      <div className="row grid-3-col">
         <label>{t("Choose Firmware")}</label>
-      </Col>
-      <Col xs={5}>
         <FBSelect
           key={props.apiFirmwareValue}
           list={getFirmwareChoices()}
@@ -244,12 +242,10 @@ const FirmwareMissing = (props: FirmwareMissingProps) =>
             ? FIRMWARE_CHOICES_DDI[props.apiFirmwareValue]
             : undefined}
           onChange={changeFirmwareHardware(props.dispatch)} />
-      </Col>
-      <Col xs={3} hidden={true}>
         <FlashFirmwareBtn
           apiFirmwareValue={props.apiFirmwareValue}
           botOnline={true} />
-      </Col>
+      </div>
     </Row>
   </AlertCardTemplate>;
 
@@ -303,17 +299,13 @@ class SeedDataMissing
       noDismiss={true}
       findApiAlertById={this.props.findApiAlertById}
       iconName={"fa-check-square"}>
-      <Row>
-        <Col xs={4}>
-          <label>{t("Choose your FarmBot")}</label>
-        </Col>
-        <Col xs={5}>
-          <FBSelect
-            key={this.state.selection}
-            list={SEED_DATA_OPTIONS()}
-            selectedItem={SEED_DATA_OPTIONS_DDI()[this.state.selection]}
-            onChange={seedAccount(this.dismiss)} />
-        </Col>
+      <Row className="grid-2-col">
+        <label>{t("Choose your FarmBot")}</label>
+        <FBSelect
+          key={this.state.selection}
+          list={SEED_DATA_OPTIONS()}
+          selectedItem={SEED_DATA_OPTIONS_DDI()[this.state.selection]}
+          onChange={seedAccount(this.dismiss)} />
       </Row>
     </AlertCardTemplate>;
   }
@@ -321,22 +313,18 @@ class SeedDataMissing
 
 export const ReSeedAccount = () => {
   const [selection, setSelection] = React.useState("");
-  return <Row className={"re-seed"}>
-    <Col xs={7}>
-      <FBSelect
-        key={selection}
-        list={SEED_DATA_OPTIONS().filter(x => x.value != "none")}
-        customNullLabel={t("Select a model")}
-        selectedItem={SEED_DATA_OPTIONS_DDI()[selection]}
-        onChange={ddi => setSelection("" + ddi.value)} />
-    </Col>
-    <Col xs={5}>
-      <button className={"fb-button green"}
-        onClick={() => selection && confirm(t(Content.RE_SEED_ACCOUNT)) &&
-          seedAccount()({ label: "", value: selection })}>
-        {t("re-seed account")}
-      </button>
-    </Col>
+  return <Row className={"re-seed grid-2-col"}>
+    <FBSelect
+      key={selection}
+      list={SEED_DATA_OPTIONS().filter(x => x.value != "none")}
+      customNullLabel={t("Select a model")}
+      selectedItem={SEED_DATA_OPTIONS_DDI()[selection]}
+      onChange={ddi => setSelection("" + ddi.value)} />
+    <button className={"fb-button green"}
+      onClick={() => selection && confirm(t(Content.RE_SEED_ACCOUNT)) &&
+        seedAccount()({ label: "", value: selection })}>
+      {t("re-seed account")}
+    </button>
   </Row>;
 };
 

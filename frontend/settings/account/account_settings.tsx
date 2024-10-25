@@ -4,7 +4,7 @@ import { DeviceSetting, Content } from "../../constants";
 import { Header } from "../hardware_settings/header";
 import { Collapse, Slider } from "@blueprintjs/core";
 import { t } from "../../i18next_wrapper";
-import { BlurableInput, Col, FBSelect, Help, Row, ToggleButton } from "../../ui";
+import { BlurableInput, FBSelect, Help, Row, ToggleButton } from "../../ui";
 import { edit, save } from "../../api/crud";
 import { SettingDescriptionProps } from "../interfaces";
 import { BooleanSetting, NumericSetting, StringSetting } from "../../session_keys";
@@ -34,7 +34,7 @@ export const AccountSettings = (props: AccountSettingsProps) =>
       dispatch={props.dispatch} />
     <Collapse isOpen={!!props.settingsPanelState.account}>
       <Highlight settingName={DeviceSetting.accountName}>
-        <Row>
+        <Row className="grid-2-col">
           <label>
             {t(DeviceSetting.accountName)}
           </label>
@@ -50,12 +50,12 @@ export const AccountSettings = (props: AccountSettingsProps) =>
         </Row>
       </Highlight>
       <Highlight settingName={DeviceSetting.accountEmail}>
-        <div className={"credentials-change-warning-banner"}>
+        <div className={"settings-warning-banner"}>
           <p>{t(Content.ACCOUNT_EMAIL_CHANGE)}</p>
         </div>
       </Highlight>
       <Highlight settingName={DeviceSetting.accountEmail}>
-        <Row>
+        <Row className="grid-2-col">
           <label>
             {t(DeviceSetting.accountEmail)}
           </label>
@@ -75,24 +75,20 @@ export const AccountSettings = (props: AccountSettingsProps) =>
         <ChangePassword />
       </Highlight>
       <Highlight settingName={DeviceSetting.language}>
-        <Row>
-          <Col xs={3}>
-            <label>
-              {t(DeviceSetting.language)}
-            </label>
-          </Col>
-          <Col xs={9}>
-            <BlurableInput
-              type="text"
-              name="language"
-              value={props.user.body.language || ""}
-              onCommit={e => {
-                props.dispatch(edit(
-                  props.user,
-                  { language: e.currentTarget.value }));
-                props.dispatch(save(props.user.uuid));
-              }} />
-          </Col>
+        <Row className="grid-2-col">
+          <label>
+            {t(DeviceSetting.language)}
+          </label>
+          <BlurableInput
+            type="text"
+            name="language"
+            value={props.user.body.language || ""}
+            onCommit={e => {
+              props.dispatch(edit(
+                props.user,
+                { language: e.currentTarget.value }));
+              props.dispatch(save(props.user.uuid));
+            }} />
         </Row>
       </Highlight>
       {APP_SETTINGS().map(setting => <Setting key={setting.title}
@@ -222,12 +218,12 @@ export const LandingPageSetting = (props: LandingPageSettingProps) => {
     StringSetting.landing_page, page));
   const [page, setPage] = React.useState(value);
   return <Highlight settingName={DeviceSetting.landingPage}>
-    <Row className={"landing-page-setting"}>
-      <Col xs={5}>
+    <Row className={"grid-2-col align-baseline"}>
+      <div className="row grid-exp-2">
         <label>{t(DeviceSetting.landingPage)}</label>
         <Help text={Content.LANDING_PAGE} />
-      </Col>
-      <Col xs={7}>
+      </div>
+      <div className="grid">
         <FBSelect
           key={value}
           list={Object.entries(PAGE_SLUGS())
@@ -242,7 +238,7 @@ export const LandingPageSetting = (props: LandingPageSettingProps) => {
           <input value={page}
             onBlur={() => change(page)}
             onChange={e => setPage(e.currentTarget.value)} />}
-      </Col>
+      </div>
     </Row>
   </Highlight>;
 };

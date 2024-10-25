@@ -34,7 +34,7 @@ import {
 import { t } from "../i18next_wrapper";
 import {
   BlurableInput,
-  Checkbox, Col, docLink, DropDownItem, FBSelect, genesisDocLink, Row, ToggleButton,
+  Checkbox, docLink, DropDownItem, FBSelect, genesisDocLink, Row, ToggleButton,
 } from "../ui";
 import {
   changeFirmwareHardware, SEED_DATA_OPTIONS, SEED_DATA_OPTIONS_DDI,
@@ -731,20 +731,18 @@ export const CameraImageOrigin = (props: WizardStepComponentProps) => {
   const env = getEnv(props.resources);
   const wDEnv = prepopulateEnv(env);
   return <Row>
-    <Col xs={12}>
-      <DropdownConfig
-        settingName={DeviceSetting.originLocationInImage}
-        wdEnvGet={key => envGet(key, wDEnv)}
-        onChange={(key, value) =>
-          props.dispatch(saveOrEditFarmwareEnv(props.resources)(
-            key, JSON.stringify(formatEnvKey(key, value))))}
-        list={ORIGIN_DROPDOWNS()}
-        configKey={"CAMERA_CALIBRATION_image_bot_origin_location"}
-        helpText={t(ToolTips.IMAGE_BOT_ORIGIN_LOCATION, {
-          defaultOrigin: SPECIAL_VALUE_DDI()[WD_KEY_DEFAULTS[
-            "CAMERA_CALIBRATION_image_bot_origin_location"]].label
-        })} />
-    </Col>
+    <DropdownConfig
+      settingName={DeviceSetting.originLocationInImage}
+      wdEnvGet={key => envGet(key, wDEnv)}
+      onChange={(key, value) =>
+        props.dispatch(saveOrEditFarmwareEnv(props.resources)(
+          key, JSON.stringify(formatEnvKey(key, value))))}
+      list={ORIGIN_DROPDOWNS()}
+      configKey={"CAMERA_CALIBRATION_image_bot_origin_location"}
+      helpText={t(ToolTips.IMAGE_BOT_ORIGIN_LOCATION, {
+        defaultOrigin: SPECIAL_VALUE_DDI()[WD_KEY_DEFAULTS[
+          "CAMERA_CALIBRATION_image_bot_origin_location"]].label
+      })} />
   </Row>;
 };
 

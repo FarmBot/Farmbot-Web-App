@@ -1,6 +1,6 @@
 import React from "react";
 import { t } from "../../i18next_wrapper";
-import { FBSelect, DropDownItem, Row, Col } from "../../ui";
+import { FBSelect, DropDownItem, Row } from "../../ui";
 import { updateConfig } from "../../devices/actions";
 import { Highlight } from "../maybe_highlight";
 import { DeviceSetting } from "../../constants";
@@ -28,7 +28,7 @@ export const ChangeFirmwarePath = (props: ChangeFirmwarePathProps) => {
   const [manualInput, setManualInput] = React.useState("");
   const submit = (value: string) =>
     value && props.dispatch(updateConfig({ firmware_path: value }));
-  return <div className={"firmware-path-selection"}>
+  return <div className={"grid"}>
     <FBSelect
       key={selection + props.firmwarePath + fuzz}
       selectedItem={OPTIONS[selection]}
@@ -39,25 +39,21 @@ export const ChangeFirmwarePath = (props: ChangeFirmwarePathProps) => {
       }}
       list={Object.values(OPTIONS).filter(ddi => ddi.value)} />
     {selection == "manual" &&
-      <div className={"manual-selection"}>
+      <div className={"grid"}>
         <p>{t("Look for the 'Available UART devices' log message.")}</p>
-        <Col xs={7}>
-          <input type={"text"}
-            value={manualInput}
-            onChange={e => setManualInput(e.currentTarget.value)} />
-        </Col>
-        <Col xs={5}>
-          <button
-            className={"fb-button green"}
-            onClick={() => {
-              submit(manualInput);
-              setManualInput("");
-            }}
-            title={t("submit")}
-            disabled={!manualInput}>
-            {t("submit")}
-          </button>
-        </Col>
+        <input type={"text"}
+          value={manualInput}
+          onChange={e => setManualInput(e.currentTarget.value)} />
+        <button
+          className={"fb-button green"}
+          onClick={() => {
+            submit(manualInput);
+            setManualInput("");
+          }}
+          title={t("submit")}
+          disabled={!manualInput}>
+          {t("submit")}
+        </button>
       </div>}
   </div>;
 };
@@ -72,19 +68,15 @@ export const FirmwarePathRow = (props: FirmwarePathRowProps) =>
   <Highlight settingName={DeviceSetting.firmwarePath}
     hidden={!props.showAdvanced}
     className={"advanced"}>
-    <Row>
-      <Col xs={4}>
+    <Row className="grid-2-col align-baseline">
+      <div className="row grid-exp-1">
         <label>
           {t("Firmware path")}
         </label>
-      </Col>
-      <Col xs={3}>
         <code>{props.firmwarePath || t("not set")}</code>
-      </Col>
-      <Col xs={5} className={"no-pad"}>
-        <ChangeFirmwarePath
-          dispatch={props.dispatch}
-          firmwarePath={props.firmwarePath} />
-      </Col>
+      </div>
+      <ChangeFirmwarePath
+        dispatch={props.dispatch}
+        firmwarePath={props.firmwarePath} />
     </Row>
   </Highlight>;

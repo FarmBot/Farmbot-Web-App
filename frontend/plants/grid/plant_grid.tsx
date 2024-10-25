@@ -231,7 +231,7 @@ const HexPackingToggle = (props: ToggleProps) =>
   </div>;
 
 const ToggleCameraViewArea = (props: ToggleProps) =>
-  <div className={"grid-planting-toggle"}>
+  <div className={"row grid-exp-1"}>
     <label>{t("camera view area")}</label>
     <ToggleButton
       toggleValue={props.value}
