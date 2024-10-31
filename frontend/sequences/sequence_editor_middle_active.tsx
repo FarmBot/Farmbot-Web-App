@@ -308,6 +308,7 @@ export const SequenceBtnGroup = ({
       <i className={"fa fa-trash fb-icon-button"}
         title={t("delete sequence")}
         onClick={deleteSequence({
+          navigate,
           sequenceUuid: sequence.uuid,
           getWebAppConfigValue,
           dispatch,
@@ -353,6 +354,7 @@ export const SequenceBtnGroup = ({
 };
 
 interface DeleteSequenceProps {
+  navigate(url: string): void;
   getWebAppConfigValue: GetWebAppConfigValue;
   dispatch: Function;
   sequenceUuid: UUID;
@@ -362,9 +364,8 @@ export const deleteSequence = (props: DeleteSequenceProps) => () => {
   const confirm = props.getWebAppConfigValue(
     BooleanSetting.confirm_sequence_deletion);
   const force = !(confirm ?? true);
-  const navigate = useNavigate();
   props.dispatch(destroy(props.sequenceUuid, force))
-    .then(() => navigate(Path.sequences()));
+    .then(() => props.navigate(Path.sequences()));
 };
 
 export const isSequencePublished = (sequence: TaggedSequence) =>

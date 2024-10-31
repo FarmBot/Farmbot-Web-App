@@ -181,6 +181,7 @@ export const SequenceButtonCluster =
         className={"fa fa-trash cluster-icon"}
         title={t("delete sequence")}
         onClick={deleteSequence({
+          navigate,
           sequenceUuid: sequence.uuid,
           getWebAppConfigValue,
           dispatch,
