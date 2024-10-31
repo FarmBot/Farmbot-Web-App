@@ -144,10 +144,8 @@
 }
 
 .block {
-  height: 3.5rem;
   font-size: 1.2rem;
   color: $dark_gray;
-  text-align: left;
   &.active {
     box-shadow: none !important;
     border: 1px solid $white;
@@ -161,30 +159,12 @@
       background-color: color.adjust($medium_light_gray, $lightness: -5%) !important;
     }
   }
-  &:hover {
-    .block-control {
-      transition: all 0.2s ease-out;
-      opacity: 1;
-    }
-  }
   .step-block {
     display: flex;
     padding: 0;
     box-shadow: none;
     .step-block-drag {
-      margin: auto;
-      width: 100%;
-      padding: 0.2rem 0.8rem;
-      label {
-        display: -webkit-box;
-        margin: 0;
-        width: 90%;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        word-wrap: break-word;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-      }
+      padding: 0.5rem 0.8rem;
     }
   }
   &.quick-del {
@@ -201,18 +181,6 @@
       }
     }
   }
-}
-
-.block-control {
-  position: absolute;
-  top: 30%;
-  right: 0.75rem;
-  transition: all 0.2s ease-out;
-  opacity: 0;
-  float: right;
-  font-size: 1.4rem !important;
-  pointer-events: none;
-
 }
 
 .fb-toggle-button {

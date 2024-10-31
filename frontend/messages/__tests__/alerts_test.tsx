@@ -45,7 +45,7 @@ describe("<Alerts />", () => {
   it("renders no alerts", () => {
     const wrapper = mount(<Alerts {...fakeProps()} />);
     expect(wrapper.html())
-      .toContain("<div class=\"problem-alerts-content\"></div>");
+      .toContain("<div class=\"problem-alerts\"><div class=\"problem-alerts-content grid double-gap\"></div></div>");
   });
 
   it("renders alerts", () => {

@@ -42,7 +42,7 @@ describe("<FarmEvents />", () => {
     const wrapper = mount(<FarmEvents {...p} />);
     expect(wrapper.text()).toContain("Every 4 hours");
     const item = wrapper.find(".farm-event-data-block");
-    expect(item.hasClass("gray")).toBeFalsy();
+    expect(item.hasClass("gray")).toBeTruthy();
     expect(item.find(".farm-event-variable").length).toEqual(2);
     expect(item.find("a").first().props().href)
       .toEqual(Path.sequences("Every_4_hours"));
@@ -67,7 +67,7 @@ describe("<FarmEvents />", () => {
     const wrapper = mount(<FarmEvents {...p} />);
     expect(wrapper.text()).toContain("Every 4 hours");
     const item = wrapper.find(".farm-event-data-block");
-    expect(item.hasClass("gray")).toBeFalsy();
+    expect(item.hasClass("gray")).toBeTruthy();
     expect(item.find(".farm-event-variable").length).toEqual(2);
     expect(item.find("a").first().props().href)
       .toEqual(Path.regimens("Every_4_hours"));

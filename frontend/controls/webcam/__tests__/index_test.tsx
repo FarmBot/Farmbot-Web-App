@@ -24,7 +24,7 @@ describe("<WebcamPanel />", () => {
     expect(wrapper.instance().state.activeMenu).toEqual("show");
     const text = allButtonText(wrapper);
     expect(text.toLowerCase()).not.toContain("view");
-    clickButton(wrapper, 2, "edit");
+    clickButton(wrapper, 0, "edit");
     expect(wrapper.instance().state.activeMenu).toEqual("edit");
   });
 

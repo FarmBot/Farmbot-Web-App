@@ -35,7 +35,7 @@ describe("<StepHeader />", () => {
 
   it("renders", () => {
     const wrapper = mount(<StepHeader {...fakeProps()} />);
-    const div = wrapper.find("div").at(2);
+    const div = wrapper.find("div").at(1);
     expect(div.hasClass("step-header")).toBeTruthy();
     expect(div.hasClass("step-class")).toBeTruthy();
   });

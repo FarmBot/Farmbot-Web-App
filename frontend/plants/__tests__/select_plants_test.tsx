@@ -211,7 +211,8 @@ describe("<SelectPlants />", () => {
   it("selects all", () => {
     const p = fakeProps();
     const wrapper = mount(<SelectPlants {...p} />);
-    clickButton(wrapper, 2, "select all");
+    const button = wrapper.find('[title="Select all"]');
+    clickButton(button, 0, "select all");
     expect(p.dispatch).toHaveBeenCalledWith(
       { payload: ["plant.1", "plant.2"], type: Actions.SELECT_POINT });
   });
@@ -219,7 +220,8 @@ describe("<SelectPlants />", () => {
   it("selects none", () => {
     const p = fakeProps();
     const wrapper = mount(<SelectPlants {...p} />);
-    clickButton(wrapper, 1, "select none");
+    const button = wrapper.find('[title="Select none"]');
+    clickButton(button, 0, "select none");
     expect(p.dispatch).toHaveBeenCalledWith(
       { payload: undefined, type: Actions.SELECT_POINT });
   });

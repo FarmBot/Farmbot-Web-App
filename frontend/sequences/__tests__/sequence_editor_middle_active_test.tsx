@@ -211,7 +211,8 @@ describe("<SequenceEditorMiddleActive />", () => {
     const p = fakeProps();
     p.dispatch = () => Promise.resolve();
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
-    await clickButton(wrapper, 0, "save");
+    const button = wrapper.find(".save-btn");
+    await clickButton(button, 0, "save");
     expect(save).toHaveBeenCalledWith(expect.stringContaining("Sequence"));
     expect(push).toHaveBeenCalledWith(Path.sequences("fake"));
   });
@@ -221,7 +222,8 @@ describe("<SequenceEditorMiddleActive />", () => {
     p.syncStatus = "synced";
     p.sequence.specialStatus = SpecialStatus.SAVED;
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
-    clickButton(wrapper, 1, "Run");
+    const button = wrapper.find(".run-btn");
+    clickButton(button, 0, "Run");
     expect(execSequence).toHaveBeenCalledWith(p.sequence.body.id);
   });
 

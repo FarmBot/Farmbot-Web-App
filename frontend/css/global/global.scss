@@ -88,12 +88,6 @@ a {
 
 .fa {
   cursor: pointer !important;
-  &.fa-gear {
-    color: $white;
-    &.dark {
-      color: $dark_gray;
-    }
-  }
 }
 
 .caution-icon {

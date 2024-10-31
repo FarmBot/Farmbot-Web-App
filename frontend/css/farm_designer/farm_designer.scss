@@ -99,10 +99,10 @@
       cursor: default !important;
     }
     .fa-times {
-      color: $darkest_red;
+      color: $medium_dark_red;
       font-size: 1.3rem;
       &:hover {
-        color: $medium_dark_red;
+        color: $red;
       }
     }
     .point-sort-menu {

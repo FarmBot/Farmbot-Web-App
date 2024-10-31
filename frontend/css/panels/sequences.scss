@@ -618,33 +618,18 @@
   overflow-y: auto;
   overflow-x: hidden;
   max-height: calc(100vh - 8rem);
-  .text-input-wrapper {
-    input {
-      padding-left: 0.5rem !important;
-    }
-    .fa-times {
-      color: $red !important;
-      &:hover {
-        color: $medium_dark_red !important;
-      }
-    }
+  .commands, .pinned-sequences {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
   }
   .step-button {
     label {
       cursor: pointer;
     }
-    .step-block-wrapper {
-      margin-bottom: 1rem;
-    }
     .clustered {
-      margin: 0.5rem;
       float: left;
-      margin-bottom: 0.25rem;
       box-shadow: none;
-      padding-bottom: 0;
-      label {
-        margin-bottom: 3px;
-      }
       &.gray {
         background: $light_gray !important;
       }
@@ -669,21 +654,15 @@
       height: 10rem;
       overflow-y: auto;
       overflow-x: hidden;
-      padding-top: 0.5rem;
-      padding-bottom: 0.5rem;
     }
     .text-input-wrapper {
-      margin: 0;
-      border-bottom-color: $white !important;
+      border-bottom-color: $translucent8_white !important;
       input {
         color: $white;
       }
       &:before,
       &:after {
         background: $white !important;
-      }
-      .fa-times {
-        color: $red;
       }
     }
   }
