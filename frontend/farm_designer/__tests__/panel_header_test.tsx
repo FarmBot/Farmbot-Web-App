@@ -34,6 +34,7 @@ const expectActive = (wrapper: ReactWrapper<any>, slug: string) =>
 describe("<DesignerNavTabs />", () => {
   it.each<[string, string]>([
     ["map", Path.designer()],
+    ["sequences", Path.sequencePage()],
     ["plants", Path.plants()],
     ["plants", Path.plantTemplates(1)],
     ["tools", Path.toolSlots()],
