@@ -1,7 +1,6 @@
 import { MovePointsProps, DraggableEvent, MovePointToProps } from "../interfaces";
 import { defensiveClone } from "../../util";
 import { edit } from "../../api/crud";
-import { push } from "../../history";
 import { Actions } from "../../constants";
 import { svgToUrl } from "../../open_farm/icons";
 import { Mode } from "../map/interfaces";
@@ -100,11 +99,14 @@ export const unselectPlant = (dispatch: Function) => () => {
 };
 
 /** Unselect plant and close plant info or select panel if selected and open. */
-export const closePlantInfo = (dispatch: Function) => () => {
+export const closePlantInfo = (
+  navigate: (url: string) => void,
+  dispatch: Function,
+) => () => {
   const mode = getMode();
   if (mode == Mode.editPlant || mode == Mode.boxSelect) {
     unselectPlant(dispatch)();
-    push(Path.plants());
+    navigate(Path.plants());
   }
 };
 
@@ -119,12 +121,16 @@ export const setDragIcon =
   };
 
 export const mapPointClickAction =
-  (dispatch: Function, uuid: UUID, path?: string) => () => {
+  (navigate: (url: string) => void,
+    dispatch: Function,
+    uuid: UUID,
+    path?: string,
+  ) => () => {
     switch (getMode()) {
       case Mode.editGroup:
       case Mode.boxSelect:
         return dispatch(clickMapPlant(uuid, ""));
       default:
-        return path && push(path);
+        return path && navigate(path);
     }
   };

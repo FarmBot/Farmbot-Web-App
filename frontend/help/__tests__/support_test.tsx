@@ -18,7 +18,6 @@ import axios from "axios";
 import { success } from "../../toast/toast";
 import { API } from "../../api";
 import { Help } from "../../ui";
-import { push } from "../../history";
 import {
   buildResourceIndex, fakeDevice,
 } from "../../__test_support__/resource_index_builder";
@@ -77,7 +76,7 @@ describe("<Feedback />", () => {
     const wrapper = shallow(<Feedback keep={true} />);
     const link = mount(wrapper.find(Help).props().links?.[0] || <div />);
     link.find("a").simulate("click");
-    expect(push)
+    expect(mockNavigate)
       .toHaveBeenCalledWith(Path.settings("order_number"));
   });
 });

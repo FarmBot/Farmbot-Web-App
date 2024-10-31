@@ -3,11 +3,6 @@ jest.mock("../../../screen_size", () => ({
   isMobile: () => mockIsMobile,
 }));
 
-let mockPath = "";
-jest.mock("../../../history", () => ({
-  getPathArray: jest.fn(() => mockPath.split("/")),
-}));
-
 import { fakeState } from "../../../__test_support__/fake_state";
 const mockState = fakeState();
 jest.mock("../../../redux/store", () => ({
@@ -52,23 +47,23 @@ describe("round()", () => {
 describe("mapPanelClassName()", () => {
   it("returns correct panel status: short panel", () => {
     mockIsMobile = true;
-    mockPath = Path.mock(Path.location());
+    location.pathname = Path.mock(Path.location());
     expect(mapPanelClassName()).toEqual("short-panel");
-    mockPath = Path.mock(Path.cropSearch("mint/add"));
+    location.pathname = Path.mock(Path.cropSearch("mint/add"));
     expect(mapPanelClassName()).toEqual("short-panel");
   });
 
   it("returns correct panel status: panel open", () => {
     mockIsMobile = false;
-    mockPath = Path.mock(Path.location());
+    location.pathname = Path.mock(Path.location());
     expect(mapPanelClassName()).toEqual("panel-open");
-    mockPath = Path.mock(Path.cropSearch("mint/add"));
+    location.pathname = Path.mock(Path.cropSearch("mint/add"));
     expect(mapPanelClassName()).toEqual("panel-open");
   });
 
   it("returns correct panel status: panel closed", () => {
     mockIsMobile = false;
-    mockPath = Path.mock(Path.designer());
+    location.pathname = Path.mock(Path.designer());
     expect(mapPanelClassName()).toEqual("panel-closed");
     mockIsMobile = true;
     expect(mapPanelClassName()).toEqual("panel-closed-mobile");
@@ -393,42 +388,42 @@ describe("transformForQuadrant()", () => {
 
 describe("getMode()", () => {
   it("returns correct Mode", () => {
-    mockPath = Path.mock(Path.cropSearch("mint/add"));
+    location.pathname = Path.mock(Path.cropSearch("mint/add"));
     expect(getMode()).toEqual(Mode.clickToAdd);
-    mockPath = Path.mock(Path.plants(1));
+    location.pathname = Path.mock(Path.plants(1));
     expect(getMode()).toEqual(Mode.editPlant);
-    mockPath = Path.mock(Path.plantTemplates(1));
+    location.pathname = Path.mock(Path.plantTemplates(1));
     expect(getMode()).toEqual(Mode.editPlant);
-    mockPath = Path.mock(Path.plants("select"));
+    location.pathname = Path.mock(Path.plants("select"));
     expect(getMode()).toEqual(Mode.boxSelect);
-    mockPath = Path.mock(Path.cropSearch("mint"));
+    location.pathname = Path.mock(Path.cropSearch("mint"));
     expect(getMode()).toEqual(Mode.clickToAdd);
-    mockPath = Path.mock(Path.location());
+    location.pathname = Path.mock(Path.location());
     expect(getMode()).toEqual(Mode.locationInfo);
-    mockPath = Path.mock(Path.points());
+    location.pathname = Path.mock(Path.points());
     expect(getMode()).toEqual(Mode.points);
-    mockPath = Path.mock(Path.points("add"));
+    location.pathname = Path.mock(Path.points("add"));
     expect(getMode()).toEqual(Mode.createPoint);
-    mockPath = Path.mock(Path.weeds());
+    location.pathname = Path.mock(Path.weeds());
     expect(getMode()).toEqual(Mode.weeds);
-    mockPath = Path.mock(Path.weeds("add"));
+    location.pathname = Path.mock(Path.weeds("add"));
     expect(getMode()).toEqual(Mode.createWeed);
-    mockPath = Path.mock(Path.savedGardens(1));
+    location.pathname = Path.mock(Path.savedGardens(1));
     expect(getMode()).toEqual(Mode.templateView);
-    mockPath = Path.mock(Path.groups(1));
+    location.pathname = Path.mock(Path.groups(1));
     expect(getMode()).toEqual(Mode.editGroup);
-    mockPath = "";
+    location.pathname = "";
     mockState.resources.consumers.farm_designer.profileOpen = true;
     expect(getMode()).toEqual(Mode.profile);
     mockState.resources.consumers.farm_designer.profileOpen = false;
-    mockPath = "";
+    location.pathname = "";
     expect(getMode()).toEqual(Mode.none);
   });
 });
 
 describe("savedGardenOpen", () => {
   it("is open", () => {
-    mockPath = Path.mock(Path.savedGardens(4));
+    location.pathname = Path.mock(Path.savedGardens(4));
     const result = savedGardenOpen();
     expect(result).toEqual(4);
   });
@@ -477,34 +472,34 @@ describe("getGardenCoordinates()", () => {
 
 describe("allowInteraction()", () => {
   it("allows interaction", () => {
-    mockPath = Path.mock(Path.plants());
+    location.pathname = Path.mock(Path.plants());
     expect(allowInteraction()).toBeTruthy();
   });
 
   it("disallows interaction", () => {
-    mockPath = Path.mock(Path.cropSearch("mint/add"));
+    location.pathname = Path.mock(Path.cropSearch("mint/add"));
     expect(allowInteraction()).toBeFalsy();
-    mockPath = Path.mock(Path.location());
+    location.pathname = Path.mock(Path.location());
     expect(allowInteraction()).toBeFalsy();
-    mockPath = Path.mock(Path.points("add"));
+    location.pathname = Path.mock(Path.points("add"));
     expect(allowInteraction()).toBeFalsy();
-    mockPath = Path.mock(Path.weeds("add"));
+    location.pathname = Path.mock(Path.weeds("add"));
     expect(allowInteraction()).toBeFalsy();
   });
 });
 
 describe("allowGroupAreaInteraction()", () => {
   it("allows interaction", () => {
-    mockPath = Path.mock(Path.plants());
+    location.pathname = Path.mock(Path.plants());
     expect(allowGroupAreaInteraction()).toBeTruthy();
   });
 
   it("disallows interaction", () => {
-    mockPath = Path.mock(Path.plants("select"));
+    location.pathname = Path.mock(Path.plants("select"));
     expect(allowGroupAreaInteraction()).toBeFalsy();
-    mockPath = Path.mock(Path.location());
+    location.pathname = Path.mock(Path.location());
     expect(allowGroupAreaInteraction()).toBeFalsy();
-    mockPath = Path.mock(Path.groups(1));
+    location.pathname = Path.mock(Path.groups(1));
     expect(allowGroupAreaInteraction()).toBeFalsy();
   });
 });

@@ -236,3 +236,5 @@ const WizardSectionHeader = (props: WizardSectionHeaderProps) =>
   </h2>;
 
 export const SetupWizard = connect(mapStateToProps)(RawSetupWizard);
+// eslint-disable-next-line import/no-default-export
+export default SetupWizard;

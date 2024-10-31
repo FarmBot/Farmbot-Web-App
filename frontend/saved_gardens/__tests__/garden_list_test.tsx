@@ -18,7 +18,8 @@ describe("<GardenInfo />", () => {
     const p = fakeProps();
     const wrapper = shallow(<GardenInfo {...p} />);
     wrapper.simulate("click");
-    expect(openSavedGarden).toHaveBeenCalledWith(p.savedGarden.body.id);
+    expect(openSavedGarden).toHaveBeenCalledWith(expect.any(Function),
+      p.savedGarden.body.id);
   });
 });
 

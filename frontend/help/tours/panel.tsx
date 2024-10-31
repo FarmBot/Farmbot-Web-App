@@ -28,3 +28,5 @@ export class RawToursPanel extends React.Component<ToursPanelProps, {}> {
 }
 
 export const ToursPanel = connect(mapStateToProps)(RawToursPanel);
+// eslint-disable-next-line import/no-default-export
+export default ToursPanel;

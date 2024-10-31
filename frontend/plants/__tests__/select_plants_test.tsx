@@ -1,9 +1,3 @@
-let mockPath = "";
-jest.mock("../../history", () => ({
-  push: jest.fn(),
-  getPathArray: jest.fn(() => mockPath.split("/"))
-}));
-
 let mockDestroy = jest.fn(() => Promise.resolve());
 jest.mock("../../api/crud", () => ({ destroy: mockDestroy }));
 
@@ -37,17 +31,17 @@ import { mockDispatch } from "../../__test_support__/fake_dispatch";
 import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
-import { push } from "../../history";
 import { POINTER_TYPES } from "../../point_groups/criteria/interfaces";
 import { fakeToolTransformProps } from "../../__test_support__/fake_tool_info";
 import { SpecialStatus } from "farmbot";
 import { savePoints } from "../../farm_designer/map/layers/plants/plant_actions";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { Path } from "../../internal_urls";
+import { mountWithContext } from "../../__test_support__/mount_with_context";
 
 describe("<SelectPlants />", () => {
   beforeEach(() => {
-    mockPath = Path.mock(Path.plants("select"));
+    location.pathname = Path.mock(Path.plants("select"));
   });
 
   function fakeProps(): SelectPlantsProps {
@@ -479,8 +473,8 @@ describe("uncategorizedGroupSubset()", () => {
 
 describe("<SelectModeLink />", () => {
   it("navigates to panel", () => {
-    const wrapper = shallow(<SelectModeLink />);
+    const wrapper = mountWithContext(<SelectModeLink />);
     wrapper.find("button").simulate("click");
-    expect(push).toHaveBeenCalledWith(Path.plants("select"));
+    expect(mockNavigate).toHaveBeenCalledWith(Path.plants("select"));
   });
 });

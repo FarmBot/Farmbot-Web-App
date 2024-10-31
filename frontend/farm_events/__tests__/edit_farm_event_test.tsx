@@ -1,10 +1,3 @@
-import { Path } from "../../internal_urls";
-let mockPath = Path.mock(Path.farmEvents(1));
-jest.mock("../../history", () => ({
-  getPathArray: jest.fn(() => mockPath.split("/")),
-  push: jest.fn(),
-}));
-
 import React from "react";
 import { mount } from "enzyme";
 import { RawEditFarmEvent as EditFarmEvent } from "../edit_farm_event";
@@ -16,7 +9,7 @@ import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
-import { push } from "../../history";
+import { Path } from "../../internal_urls";
 
 describe("<EditFarmEvent />", () => {
   function fakeProps(): AddEditFarmEventProps {
@@ -33,7 +26,7 @@ describe("<EditFarmEvent />", () => {
       repeatOptions: [],
       handleTime: jest.fn(),
       farmEvents: [],
-      getFarmEvent: () => farmEvent,
+      getFarmEvent: _ => farmEvent,
       findFarmEventByUuid: () => farmEvent,
       findExecutable: () => sequence,
       timeSettings: fakeTimeSettings(),
@@ -50,20 +43,21 @@ describe("<EditFarmEvent />", () => {
   });
 
   it("redirects", () => {
-    mockPath = Path.mock(Path.farmEvents("nope"));
+    location.pathname = Path.mock(Path.farmEvents("nope"));
     const p = fakeProps();
-    p.getFarmEvent = jest.fn();
+    const navigate = jest.fn();
+    p.getFarmEvent = jest.fn(url => navigate(url));
     const wrapper = mount(<EditFarmEvent {...p} />);
     expect(wrapper.text()).toContain("Redirecting");
-    expect(push).toHaveBeenCalledWith(Path.farmEvents());
+    expect(mockNavigate).toHaveBeenCalledWith(Path.farmEvents());
   });
 
   it("doesn't redirect", () => {
-    mockPath = Path.mock(Path.logs());
+    location.pathname = Path.mock(Path.logs());
     const p = fakeProps();
     p.getFarmEvent = jest.fn();
     const wrapper = mount(<EditFarmEvent {...p} />);
     expect(wrapper.text()).toContain("Redirecting");
-    expect(push).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 });

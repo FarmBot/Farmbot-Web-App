@@ -1,5 +1,5 @@
 import React from "react";
-import { push } from "../history";
+import { useNavigate } from "react-router-dom";
 import { last, trim } from "lodash";
 import { Link } from "../link";
 import { Panel, TAB_COLOR, PanelColor } from "./panel_header";
@@ -60,13 +60,14 @@ const backToText = (to: string | undefined): string => {
 export const DesignerPanelHeader = (props: DesignerPanelHeaderProps) => {
   const panelColor = props.panel ? TAB_COLOR[props.panel] : props.panelColor;
   const colorClass = props.colorClass || `${panelColor || PanelColor.gray}-panel`;
+  const navigate = useNavigate();
   return <div className={`panel-header ${colorClass}`}
     style={props.style || {}}>
     <div className="panel-title">
       <i className={"fa fa-arrow-left back-arrow"}
         title={t("go back") + backToText(props.backTo)}
         onClick={() => {
-          props.backTo ? push(props.backTo) : history.back();
+          props.backTo ? navigate(props.backTo) : history.back();
           props.onBack?.();
         }} />
       {props.title &&

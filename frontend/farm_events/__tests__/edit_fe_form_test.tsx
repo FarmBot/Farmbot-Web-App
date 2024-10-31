@@ -28,7 +28,6 @@ import { isString, isFunction } from "lodash";
 import { repeatOptions } from "../map_state_to_props_add_edit";
 import { SpecialStatus, ParameterApplication } from "farmbot";
 import moment from "moment";
-import { push } from "../../history";
 import {
   buildResourceIndex, fakeDevice,
 } from "../../__test_support__/resource_index_builder";
@@ -40,6 +39,7 @@ import { BlurableInput } from "../../ui";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
 import { Path } from "../../internal_urls";
 import { Content } from "../../constants";
+import { mountWithContext } from "../../__test_support__/mount_with_context";
 
 const mockSequence = fakeSequence();
 
@@ -119,9 +119,10 @@ describe("<EditFEForm />", () => {
     p.farmEvent.body.id = 0;
     p.farmEvent.body.executable_type = "Sequence";
     const i = instance(p);
+    i.navigate = jest.fn();
     i.executableSet({ value: "wow", label: "hey", headingId: "Regimen" });
     expect(error).not.toHaveBeenCalled();
-    expect(push).not.toHaveBeenCalled();
+    expect(i.navigate).not.toHaveBeenCalled();
   });
 
   it("doesn't allow improper changes to the executable", () => {
@@ -129,10 +130,11 @@ describe("<EditFEForm />", () => {
     p.farmEvent.body.id = 1;
     p.farmEvent.body.executable_type = "Regimen";
     const i = instance(p);
+    i.navigate = jest.fn();
     i.executableSet({ value: "wow", label: "hey", headingId: "Sequence" });
     expect(error).toHaveBeenCalledWith(
       "Cannot change between Sequences and Regimens.");
-    expect(push).toHaveBeenCalledWith(Path.farmEvents());
+    expect(i.navigate).toHaveBeenCalledWith(Path.farmEvents());
   });
 
   it("handles empty dropdown value", () => {
@@ -140,9 +142,10 @@ describe("<EditFEForm />", () => {
     p.farmEvent.body.id = 1;
     p.farmEvent.body.executable_type = "Regimen";
     const i = instance(p);
+    i.navigate = jest.fn();
     i.executableSet({ value: "", label: "hey", headingId: "Sequence" });
     expect(error).not.toHaveBeenCalled();
-    expect(push).not.toHaveBeenCalled();
+    expect(i.navigate).not.toHaveBeenCalled();
   });
 
   it("gets executable info", () => {
@@ -712,10 +715,10 @@ describe("<FarmEventDeleteButton />", () => {
 
   it("deletes farm event", async () => {
     const p = fakeProps();
-    const wrapper = shallow(<FarmEventDeleteButton {...p} />);
+    const wrapper = mountWithContext(<FarmEventDeleteButton {...p} />);
     await wrapper.find("i").simulate("click");
     expect(destroy).toHaveBeenCalledWith(p.farmEvent.uuid);
-    expect(push).toHaveBeenCalledWith(Path.farmEvents());
+    expect(mockNavigate).toHaveBeenCalledWith(Path.farmEvents());
     expect(success).toHaveBeenCalledWith("Deleted event.", { title: "Deleted" });
   });
 });

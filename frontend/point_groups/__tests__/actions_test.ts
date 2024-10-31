@@ -14,7 +14,6 @@ jest.mock("../../resources/selectors", () => ({
 
 import { createGroup, overwriteGroup } from "../actions";
 import { init, save, overwrite } from "../../api/crud";
-import { push } from "../../history";
 import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
@@ -45,7 +44,7 @@ describe("createGroup()", () => {
       criteria: DEFAULT_CRITERIA,
     }));
     expect(save).toHaveBeenCalledWith("???");
-    expect(push)
+    expect(mockNavigate)
       .toHaveBeenCalledWith(Path.groups(323232332));
   });
 
@@ -67,7 +66,7 @@ describe("createGroup()", () => {
       criteria: DEFAULT_CRITERIA,
     }));
     expect(save).toHaveBeenCalledWith("???");
-    expect(push).toHaveBeenCalledWith(Path.groups());
+    expect(mockNavigate).toHaveBeenCalledWith(Path.groups());
   });
 });
 

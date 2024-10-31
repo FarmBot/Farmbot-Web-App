@@ -16,7 +16,6 @@ import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
 import { init, save, edit, destroy } from "../../api/crud";
-import { push } from "../../history";
 import { SpecialStatus } from "farmbot";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
 import { mapStateToPropsAdd } from "../state_to_props";
@@ -73,7 +72,7 @@ describe("<AddToolSlot />", () => {
     const wrapper = shallow<AddToolSlot>(<AddToolSlot {...fakeProps()} />);
     wrapper.find("SaveBtn").simulate("click");
     expect(save).toHaveBeenCalled();
-    expect(push).toHaveBeenCalledWith(Path.tools());
+    expect(mockNavigate).toHaveBeenCalledWith(Path.tools());
   });
 
   it("saves on unmount", () => {

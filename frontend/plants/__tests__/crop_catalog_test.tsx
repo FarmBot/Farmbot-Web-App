@@ -8,7 +8,6 @@ import {
 import { mount, shallow } from "enzyme";
 import { CropCatalogProps } from "../../farm_designer/interfaces";
 import { Actions } from "../../constants";
-import { push } from "../../history";
 import {
   fakeCropLiveSearchResult,
 } from "../../__test_support__/fake_crop_search_result";
@@ -52,7 +51,7 @@ describe("<CropCatalog />", () => {
   it("goes back", () => {
     const wrapper = mount(<CropCatalog {...fakeProps()} />);
     wrapper.find("i").first().simulate("click");
-    expect(push).toHaveBeenCalledWith(Path.plants());
+    expect(mockNavigate).toHaveBeenCalledWith(Path.plants());
   });
 
   it("search term is too short", () => {

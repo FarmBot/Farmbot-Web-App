@@ -1,12 +1,13 @@
 import React from "react";
-import { DiagnosticMessages } from "../../constants";
+import { DeviceSetting, DiagnosticMessages } from "../../constants";
 import { Row, docLinkClick } from "../../ui";
 import { bitArray } from "../../util";
 import { TRUTH_TABLE } from "./truth_table";
 import { t } from "../../i18next_wrapper";
-import { goToFbosSettings } from "../../settings/maybe_highlight";
 import { SyncStatus } from "farmbot";
 import { syncText } from "../../nav/sync_text";
+import { useNavigate } from "react-router-dom";
+import { linkToSetting } from "../../settings/maybe_highlight";
 
 export type ConnectionName =
   | "userAPI"
@@ -49,6 +50,7 @@ export const DiagnosisSaucer = (props: DiagnosisSaucerProps) => {
 export function Diagnosis(props: DiagnosisProps) {
   const diagnosisBoolean = diagnosisStatus(props.statusFlags);
   const diagnosisColor = diagnosisBoolean ? "green" : "red";
+  const navigate = useNavigate();
   return <Row className="diagnosis-section grid-exp-2">
     <div hidden={props.hideGraphic}>
       <DiagnosisSaucer {...props.statusFlags} />
@@ -58,7 +60,8 @@ export function Diagnosis(props: DiagnosisProps) {
       <h4>{t("Diagnosis")}</h4>
       <p className="blinking">
         {t("Always")}&nbsp;
-        <a className="blinking" onClick={goToFbosSettings}>
+        <a className="blinking"
+          onClick={() => navigate(linkToSetting(DeviceSetting.farmbotOS))}>
           <u>{t("upgrade FarmBot OS")}</u>
         </a>
         &nbsp;{t("before troubleshooting.")}

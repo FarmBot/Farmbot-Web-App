@@ -4,13 +4,6 @@ jest.mock("../../api/crud", () => ({
   destroy: jest.fn(),
 }));
 
-import { Path } from "../../internal_urls";
-let mockPath = Path.mock(Path.tools(1));
-jest.mock("../../history", () => ({
-  push: jest.fn(),
-  getPathArray: () => mockPath.split("/"),
-}));
-
 jest.mock("../../devices/actions", () => ({ sendRPC: jest.fn() }));
 
 import React from "react";
@@ -26,14 +19,15 @@ import { fakeState } from "../../__test_support__/fake_state";
 import {
   buildResourceIndex, fakeDevice,
 } from "../../__test_support__/resource_index_builder";
-import { push } from "../../history";
 import { edit, destroy, save } from "../../api/crud";
 import { EditToolProps } from "../interfaces";
 import { sendRPC } from "../../devices/actions";
+import { Path } from "../../internal_urls";
+import { mountWithContext } from "../../__test_support__/mount_with_context";
 
 describe("<EditTool />", () => {
   beforeEach(() => {
-    mockPath = Path.mock(Path.tools(1));
+    location.pathname = Path.mock(Path.tools(1));
   });
 
   const fakeProps = (): EditToolProps => ({
@@ -75,22 +69,22 @@ describe("<EditTool />", () => {
   });
 
   it("redirects", () => {
-    mockPath = Path.mock(Path.tools()) + "/";
+    location.pathname = Path.mock(Path.tools()) + "/";
     const p = fakeProps();
     p.findTool = jest.fn(() => undefined);
     const wrapper = mount<EditTool>(<EditTool {...p} />);
     expect(wrapper.instance().stringyID).toEqual("");
     expect(wrapper.text()).toContain("Redirecting...");
-    expect(push).toHaveBeenCalledWith(Path.tools());
+    expect(mockNavigate).toHaveBeenCalledWith(Path.tools());
   });
 
   it("doesn't redirect", () => {
-    mockPath = Path.mock(Path.logs());
+    location.pathname = Path.mock(Path.logs());
     const p = fakeProps();
     p.findTool = jest.fn(() => undefined);
-    const wrapper = mount(<EditTool {...p} />);
+    const wrapper = mountWithContext(<EditTool {...p} />);
     expect(wrapper.text()).toContain("Redirecting...");
-    expect(push).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 
   it("edits tool name", () => {
@@ -121,13 +115,13 @@ describe("<EditTool />", () => {
     const p = fakeProps();
     const tool = fakeTool();
     p.findTool = () => tool;
-    const wrapper = mount(<EditTool {...p} />);
+    const wrapper = mountWithContext(<EditTool {...p} />);
     wrapper.find(".save-btn").simulate("click");
     expect(edit).toHaveBeenCalledWith(expect.any(Object), {
       name: "Foo", flow_rate_ml_per_s: 0,
     });
     expect(save).toHaveBeenCalledWith(tool.uuid);
-    expect(push).toHaveBeenCalledWith(Path.tools());
+    expect(mockNavigate).toHaveBeenCalledWith(Path.tools());
   });
 
   it("removes tool", () => {

@@ -76,3 +76,5 @@ export class RawDesignerSequencePreview
 
 export const DesignerSequencePreview =
   connect(mapStateToProps)(RawDesignerSequencePreview);
+// eslint-disable-next-line import/no-default-export
+export default DesignerSequencePreview;

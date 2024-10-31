@@ -36,7 +36,6 @@ import {
 } from "./layers/plants/plant_actions";
 import { chooseLocation } from "../move_to";
 import { GroupOrder } from "./group_order_visual";
-import { push } from "../../history";
 import { ErrorBoundary } from "../../error_boundary";
 import { TaggedPoint, TaggedPointGroup, PointType } from "farmbot";
 import { findGroupFromUrl } from "../../point_groups/group_detail";
@@ -49,6 +48,7 @@ import { chooseProfile, ProfileLine } from "./profile";
 import { betterCompact } from "../../util";
 import { Path } from "../../internal_urls";
 import { AddPlantIcon } from "./active_plant/add_plant_icon";
+import { NavigationContext } from "../../routes_helpers";
 
 const BOUND_KEYS = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
 
@@ -59,6 +59,10 @@ export class GardenMap extends
     super(props);
     this.state = {};
   }
+
+  static contextType = NavigationContext;
+  context!: React.ContextType<typeof NavigationContext>;
+  navigate = (url: string) => this.context(url);
 
   componentDidMount = () => {
     document.onkeydown = this.onKeyDown as never;
@@ -234,7 +238,7 @@ export class GardenMap extends
             return true;
           }
         };
-        openLocationInfo(e) && push(Path.plants());
+        openLocationInfo(e) && this.navigate(Path.plants());
         startNewSelectionBox({
           gardenCoords: this.getGardenCoordinates(e),
           setMapState: this.setMapState,
@@ -315,6 +319,7 @@ export class GardenMap extends
       case Mode.locationInfo:
         e.preventDefault();
         !this.state.toLocation && chooseLocation({
+          navigate: this.navigate,
           gardenCoords: this.getGardenCoordinates(e),
           dispatch: this.props.dispatch
         });
@@ -363,6 +368,7 @@ export class GardenMap extends
         break;
       case Mode.editGroup:
         resizeBox({
+          navigate: this.navigate,
           selectionBox: this.state.selectionBox,
           plants: this.props.plants,
           allPoints: this.props.allPoints,
@@ -380,6 +386,7 @@ export class GardenMap extends
       case Mode.boxSelect:
       default:
         resizeBox({
+          navigate: this.navigate,
           selectionBox: this.state.selectionBox,
           plants: this.props.plants,
           allPoints: this.props.allPoints,
@@ -452,19 +459,19 @@ export class GardenMap extends
       case Mode.boxSelect:
         return this.props.designer.selectedPoints
           ? () => { }
-          : closePlantInfo(this.props.dispatch);
+          : closePlantInfo(this.navigate, this.props.dispatch);
       default:
         return () => {
           const area = this.state.previousSelectionBoxArea;
           const box = area && area > 10;
           if (this.state.toLocation &&
             [Mode.none, Mode.points, Mode.weeds].includes(getMode())) {
-            !box && push(Path.location(this.state.toLocation));
+            !box && this.navigate(Path.location(this.state.toLocation));
           }
           this.setState({
             toLocation: undefined, previousSelectionBoxArea: undefined,
           });
-          closePlantInfo(this.props.dispatch)();
+          closePlantInfo(this.navigate, this.props.dispatch)();
         };
     }
   };

@@ -1,9 +1,3 @@
-import { Path } from "../../internal_urls";
-let mockPath = Path.mock(Path.plants());
-jest.mock("../../history", () => ({
-  getPathArray: jest.fn(() => mockPath.split("/")),
-}));
-
 import { fakeState } from "../../__test_support__/fake_state";
 const mockState = fakeState();
 jest.mock("../../redux/store", () => ({ store: { getState: () => mockState } }));
@@ -17,6 +11,7 @@ import {
   fakeFarmwareInstallation, fakeWebAppConfig,
 } from "../../__test_support__/fake_state/resources";
 import { fakeHelpState } from "../../__test_support__/fake_designer_state";
+import { Path } from "../../internal_urls";
 
 describe("<NavLinks />", () => {
   const fakeProps = (): NavLinksProps => ({
@@ -50,7 +45,7 @@ describe("<NavLinks />", () => {
   });
 
   it("shows active link", () => {
-    mockPath = Path.mock(Path.plants());
+    location.pathname = Path.mock(Path.plants());
     const wrapper = shallow(<NavLinks {...fakeProps()} />);
     expect(wrapper.find("Link").at(1).hasClass("active")).toBeTruthy();
   });

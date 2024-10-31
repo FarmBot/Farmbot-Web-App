@@ -7,7 +7,7 @@ import {
   DesignerPanel, DesignerPanelContent,
 } from "../farm_designer/designer_panel";
 import { Panel } from "../farm_designer/panel_header";
-import { push } from "../history";
+import { useNavigate } from "react-router-dom";
 import { t } from "../i18next_wrapper";
 import { Path } from "../internal_urls";
 import { store } from "../redux/store";
@@ -95,6 +95,7 @@ export const Feedback = (props: FeedbackProps) => {
   const [sent, setSent] = React.useState(false);
   const orderNumber =
     maybeGetDevice(store.getState().resources.index)?.body.fb_order_number;
+  const navigate = useNavigate();
   return <div className={"feedback"}>
     <textarea value={message} onChange={e => {
       setSent(false);
@@ -116,9 +117,12 @@ export const Feedback = (props: FeedbackProps) => {
     </button>
     {!orderNumber && <Help text={Content.MUST_REGISTER} links={[
       <a key={0}
-        onClick={() => push(Path.settings("order_number"))}>
+        onClick={() => navigate(Path.settings("order_number"))}>
         &nbsp;{t("Register your ORDER NUMBER")}
         <i className={"fa fa-external-link"} />
       </a>]} />}
   </div>;
 };
+
+// eslint-disable-next-line import/no-default-export
+export default SupportPanel;

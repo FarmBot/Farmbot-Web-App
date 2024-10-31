@@ -23,8 +23,9 @@ import {
 } from "../../folders/actions";
 import { SequencesPanelState } from "../../interfaces";
 import { Actions } from "../../constants";
-import { push } from "../../history";
 import { isMobile } from "../../screen_size";
+import { NavigationContext } from "../../routes_helpers";
+import { useNavigate } from "react-router-dom";
 
 interface DesignerSequenceListState {
   featuredList: FeaturedSequence[];
@@ -54,6 +55,10 @@ export class RawDesignerSequenceList
     this.setState({ toggleDirection: !this.state.toggleDirection });
   };
 
+  static contextType = NavigationContext;
+  context!: React.ContextType<typeof NavigationContext>;
+  navigate = this.context;
+
   render() {
     const panelName = "designer-sequence-list";
     const panelState = this.props.sequencesPanelState;
@@ -76,7 +81,7 @@ export class RawDesignerSequenceList
           onChange={updateSearchTerm} />
         {!isMobile() &&
           <button className={"fb-button clear-dark row half-gap"}
-            onClick={() => push(buttonProps.path)}>
+            onClick={() => this.navigate(buttonProps.path)}>
             {buttonProps.text}
             <i className={`fa fa-${buttonProps.icon}`} />
           </button>}
@@ -112,20 +117,23 @@ export class RawDesignerSequenceList
 
 export const DesignerSequenceList =
   connect(mapStateToProps)(RawDesignerSequenceList);
+// eslint-disable-next-line import/no-default-export
+export default DesignerSequenceList;
 
 interface SequenceListActionsProps {
   toggleAllFolders(): void;
   toggleDirection: boolean;
 }
 
-const SequenceListActions = (props: SequenceListActionsProps) =>
-  <div className={"row"}>
+const SequenceListActions = (props: SequenceListActionsProps) => {
+  const navigate = useNavigate();
+  return <div className={"row"}>
     <button
       className={"fb-button green"}
       title={t("add new sequence")}
       onClick={e => {
         e.stopPropagation();
-        addNewSequenceToFolder();
+        addNewSequenceToFolder(navigate);
       }}>
       <i className={"fa fa-plus"} />
     </button>
@@ -149,6 +157,7 @@ const SequenceListActions = (props: SequenceListActionsProps) =>
         : "down"}`} />
     </button>
   </div>;
+};
 
 interface FeaturedSequenceListItemProps {
   item: FeaturedSequence;

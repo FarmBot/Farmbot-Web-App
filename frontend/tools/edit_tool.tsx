@@ -5,7 +5,6 @@ import {
 } from "../farm_designer/designer_panel";
 import { Everything } from "../interfaces";
 import { t } from "../i18next_wrapper";
-import { push } from "../history";
 import { TaggedTool, SpecialStatus, TaggedToolSlotPointer } from "farmbot";
 import {
   maybeFindToolById, getDeviceAccountSettings, selectAllToolSlotPointers,
@@ -28,6 +27,8 @@ import {
 } from "../farm_designer/map/tool_graphics/all_tools";
 import { ToolTips } from "../constants";
 import { sendRPC } from "../devices/actions";
+import { NavigationContext } from "../routes_helpers";
+import { Navigate } from "react-router-dom";
 
 export const isActive = (toolSlots: TaggedToolSlotPointer[]) =>
   (toolId: number | undefined) =>
@@ -84,10 +85,14 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
 
   get tool() { return this.props.findTool(this.stringyID); }
 
+  static contextType = NavigationContext;
+  context!: React.ContextType<typeof NavigationContext>;
+  navigate = this.context;
+
   fallback = () => {
     const toolsPath = Path.tools();
-    Path.startsWith(toolsPath) && push(toolsPath);
     return <this.PanelWrapper>
+      {Path.startsWith(toolsPath) && <Navigate to={toolsPath} />}
       <span>{t("Redirecting")}...</span>
     </this.PanelWrapper>;
   };
@@ -113,7 +118,7 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
               flow_rate_ml_per_s: this.state.flowRate,
             }));
             this.props.dispatch(save(tool.uuid));
-            push(Path.tools());
+            this.navigate(Path.tools());
           }}
           disabled={!toolName || nameTaken}
           status={SpecialStatus.DIRTY} />
@@ -148,7 +153,7 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
   };
 
   PanelWrapper = (props: {
-    children: React.ReactChild | React.ReactChild[],
+    children: React.ReactNode,
     headerElement?: React.ReactElement,
   }) => {
     const panelName = "edit-tool";
@@ -172,3 +177,5 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
 }
 
 export const EditTool = connect(mapStateToProps)(RawEditTool);
+// eslint-disable-next-line import/no-default-export
+export default EditTool;

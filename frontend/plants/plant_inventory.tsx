@@ -14,7 +14,6 @@ import {
 } from "../farm_designer/designer_panel";
 import { t } from "../i18next_wrapper";
 import { SearchField } from "../ui/search_field";
-import { push } from "../history";
 import {
   selectAllActivePoints,
   selectAllPlantPointers,
@@ -38,6 +37,7 @@ import { Help, Popover, Row } from "../ui";
 import {
   GetWebAppConfigValue, getWebAppConfigValue,
 } from "../config_storage/actions";
+import { NavigationContext } from "../routes_helpers";
 
 export interface PlantInventoryProps {
   plants: TaggedPlant[];
@@ -87,7 +87,7 @@ export class RawPlants
           type: Actions.SEARCH_QUERY_CHANGE,
           payload: this.state.searchTerm,
         });
-        push(Path.cropSearch());
+        this.navigate(Path.cropSearch());
         this.props.dispatch({ type: Actions.SET_SLUG_BULK, payload: undefined });
       }}>
         {t("search all crops?")}
@@ -100,7 +100,11 @@ export class RawPlants
       type: Actions.TOGGLE_PLANTS_PANEL_OPTION, payload: section,
     });
 
-  navigate = (id: number | undefined) => () => push(Path.groups(id));
+  static contextType = NavigationContext;
+  context!: React.ContextType<typeof NavigationContext>;
+  navigate = this.context;
+
+  navigateById = (id: number | undefined) => () => this.navigate(Path.groups(id));
 
   render() {
     const { dispatch, plantsPanelState, plants } = this.props;
@@ -153,7 +157,7 @@ export class RawPlants
                 allPoints={this.props.allPoints}
                 hovered={false}
                 dispatch={dispatch}
-                onClick={this.navigate(group.body.id)}
+                onClick={this.navigateById(group.body.id)}
               />)}
           </div>
           {uncategorizedGroups.length > 0
@@ -167,7 +171,7 @@ export class RawPlants
                 allPoints={this.props.allPoints}
                 hovered={false}
                 dispatch={dispatch}
-                onClick={this.navigate(group.body.id)}
+                onClick={this.navigateById(group.body.id)}
               />)}
           </div>
         </PanelSection>
@@ -175,7 +179,7 @@ export class RawPlants
           panel={Panel.Plants}
           toggleOpen={this.toggleOpen("savedGardens")}
           itemCount={this.props.savedGardens.length}
-          addNew={() => push(Path.savedGardens("add"))}
+          addNew={() => this.navigate(Path.savedGardens("add"))}
           addTitle={t("add new saved garden")}
           addClassName={"plus-saved-garden"}
           title={t("Gardens")}>
@@ -186,7 +190,7 @@ export class RawPlants
           toggleOpen={this.toggleOpen("plants")}
           itemCount={plants.length}
           addNew={() => {
-            push(Path.cropSearch());
+            this.navigate(Path.cropSearch());
             dispatch({ type: Actions.SET_SLUG_BULK, payload: undefined });
           }}
           addTitle={t("add plant")}
@@ -230,6 +234,8 @@ export class RawPlants
 }
 
 export const Plants = connect(mapStateToProps)(RawPlants);
+// eslint-disable-next-line import/no-default-export
+export default Plants;
 
 export interface PanelSectionProps {
   panel: Panel;

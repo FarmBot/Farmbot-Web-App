@@ -20,7 +20,7 @@ import {
   RpcRequestBodyItem,
 } from "farmbot";
 import { oneOf, versionOK, trim } from "../util";
-import { Actions, Content } from "../constants";
+import { Actions, Content, DeviceSetting } from "../constants";
 import { mcuParamValidator } from "./update_interceptor";
 import { edit, save as apiSave } from "../api/crud";
 import { CONFIG_DEFAULTS } from "farmbot/dist/config";
@@ -31,10 +31,10 @@ import { getFirmwareConfig, getFbosConfig } from "../resources/getters";
 import { isObject, isString, get, noop } from "lodash";
 import { t } from "../i18next_wrapper";
 import { ExternalUrl } from "../external_urls";
-import { goToFbosSettings } from "../settings/maybe_highlight";
 import { ToastOptions } from "../toast/interfaces";
 import { forceOnline } from "./must_be_online";
 import { store } from "../redux/store";
+import { linkToSetting } from "../settings/maybe_highlight";
 
 const ON = 1, OFF = 0;
 export type ConfigKey = keyof McuParams;
@@ -504,11 +504,11 @@ export function changeStepSize(integer: number) {
 }
 
 export function badVersion(options: ToastOptions = { noDismiss: true }) {
-  goToFbosSettings();
   error(t(Content.OLD_FBOS_UNSUPPORTED), {
     title: t("Please Update"),
     noTimer: true,
     idPrefix: "EOL",
+    redirect: linkToSetting(DeviceSetting.farmbotOS),
     ...options,
   });
 }

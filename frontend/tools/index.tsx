@@ -9,7 +9,7 @@ import {
 } from "../ui/empty_state_wrapper";
 import { t } from "../i18next_wrapper";
 import { Content } from "../constants";
-import { push } from "../history";
+import { useNavigate } from "react-router-dom";
 import { Row, Help } from "../ui";
 import {
   botPositionLabel,
@@ -38,6 +38,7 @@ import { pointGroupSubset } from "../plants/select_plants";
 import { Path } from "../internal_urls";
 import { UTMProfile } from "../farm_designer/map/profile/tools";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
+import { NavigationContext } from "../routes_helpers";
 
 export class RawTools extends React.Component<ToolsProps, ToolsState> {
   state: ToolsState = { searchTerm: "", groups: false };
@@ -157,7 +158,12 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
   toggleOpen = (category: keyof ToolsState) => () =>
     this.setState({ ...this.state, [category]: !this.state[category] });
 
-  navigate = (id: number | undefined) => () => push(Path.groups(id));
+  static contextType = NavigationContext;
+  context!: React.ContextType<typeof NavigationContext>;
+  navigate = this.context;
+  navigateById = (id: number | undefined) => () => {
+    this.navigate(Path.groups(id));
+  };
 
   render() {
     const panelName = "tools";
@@ -206,7 +212,7 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
                   allPoints={this.props.allPoints}
                   hovered={false}
                   dispatch={this.props.dispatch}
-                  onClick={this.navigate(group.body.id)}
+                  onClick={this.navigateById(group.body.id)}
                 />)}
             </PanelSection>}
         </EmptyStateWrapper>
@@ -219,15 +225,16 @@ export const ToolSlotInventoryItem = (props: ToolSlotInventoryItemProps) => {
   const { x, y, z, id, tool_id, gantry_mounted } = props.toolSlot.body;
   const toolName = props.tools
     .filter(tool => tool.body.id == tool_id)[0]?.body.name;
+  const navigate = useNavigate();
   return <div
     className={`tool-slot-search-item ${props.hovered ? "hovered" : ""}`}
     onClick={() => {
       if (getMode() == Mode.boxSelect) {
-        mapPointClickAction(props.dispatch, props.toolSlot.uuid)();
+        mapPointClickAction(navigate, props.dispatch, props.toolSlot.uuid)();
         props.dispatch(setToolHover(undefined));
       } else {
         props.dispatch(selectPoint([props.toolSlot.uuid]));
-        push(Path.toolSlots(id));
+        navigate(Path.toolSlots(id));
       }
     }}
     onMouseEnter={() => props.dispatch(setToolHover(props.toolSlot.uuid))}
@@ -267,8 +274,9 @@ export const ToolSlotInventoryItem = (props: ToolSlotInventoryItemProps) => {
 
 const ToolInventoryItem = (props: ToolInventoryItemProps) => {
   const activeText = props.active ? t("in slot") : t("inactive");
+  const navigate = useNavigate();
   return <div className={"tool-search-item"}
-    onClick={() => push(Path.tools(props.toolId))}>
+    onClick={() => navigate(Path.tools(props.toolId))}>
     <Row className="grid-exp-2">
       <ToolSVG toolName={props.toolName} />
       <p className={"tool-search-item-name"}>{t(props.toolName)}</p>
@@ -280,3 +288,5 @@ const ToolInventoryItem = (props: ToolInventoryItemProps) => {
 };
 
 export const Tools = connect(mapStateToProps)(RawTools);
+// eslint-disable-next-line import/no-default-export
+export default Tools;

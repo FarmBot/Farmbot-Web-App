@@ -6,7 +6,7 @@ import { Everything } from "../../interfaces";
 import { SpecialStatus, TaggedSequence } from "farmbot";
 import axios from "axios";
 import { API } from "../../api";
-import { push } from "../../history";
+import { useNavigate } from "react-router-dom";
 import { noop } from "lodash";
 import { ErrorBoundary } from "../../error_boundary";
 import { AllSteps } from "../all_steps";
@@ -146,6 +146,7 @@ export const ImportBanner = (props: ImportBannerProps) => {
   const [importing, setImporting] = React.useState(false);
   const { sequence } = props;
   const includesLua = sequence?.body.body?.map(x => x.kind).includes("lua");
+  const navigate = useNavigate();
   return <div className={"import-banner"}>
     <label>{t("viewing a publicly shared sequence")}</label>
     <Help text={Content.IMPORT_SEQUENCE} />
@@ -153,7 +154,7 @@ export const ImportBanner = (props: ImportBannerProps) => {
       <button className={"transparent-button"}
         onClick={() => {
           installSequence(sequence.body.id)()
-            .then(() => push(Path.designerSequences()));
+            .then(() => navigate(Path.designerSequences()));
           publishAction(setImporting);
         }}>
         {importing ? t("importing") : t("import")}

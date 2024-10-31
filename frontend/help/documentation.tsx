@@ -1,5 +1,4 @@
 import React from "react";
-import { ExternalUrl } from "../external_urls";
 import {
   DesignerPanel, DesignerPanelContent,
 } from "../farm_designer/designer_panel";
@@ -20,21 +19,3 @@ export const DocumentationPanel = (props: DocumentationPanelProps) => {
     </DesignerPanelContent>
   </DesignerPanel>;
 };
-
-export const SoftwareDocsPanel = () =>
-  <DocumentationPanel url={ExternalUrl.softwareDocs} />;
-
-export const DeveloperDocsPanel = () =>
-  <DocumentationPanel url={ExternalUrl.developerDocs} />;
-
-export const GenesisDocsPanel = () =>
-  <DocumentationPanel url={ExternalUrl.genesisDocs} />;
-
-export const ExpressDocsPanel = () =>
-  <DocumentationPanel url={ExternalUrl.expressDocs} />;
-
-export const MetaDocsPanel = () =>
-  <DocumentationPanel url={ExternalUrl.metaDocs} />;
-
-export const EducationDocsPanel = () =>
-  <DocumentationPanel url={ExternalUrl.eduDocs} />;

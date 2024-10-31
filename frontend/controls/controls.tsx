@@ -20,24 +20,25 @@ import {
 } from "farmbot";
 import { ResourceIndex } from "../resources/interfaces";
 import { t } from "../i18next_wrapper";
-import { push } from "../history";
 import { Path } from "../internal_urls";
 import { RunButtonMenuOpen } from "../sequences/interfaces";
+import { useNavigate } from "react-router-dom";
+import { mapStateToProps } from "./state_to_props";
 
-export class RawDesignerControls
-  extends React.Component<DesignerControlsProps, {}> {
-  render() {
-    this.props.dispatch({ type: Actions.OPEN_POPUP, payload: "controls" });
-    push(Path.plants());
-    return <DesignerPanel panelName={"controls"} panel={Panel.Controls}>
-      <DesignerPanelContent panelName={"controls"}>
-        <p>Controls have moved to the navigation bar.</p>
-      </DesignerPanelContent>
-    </DesignerPanel>;
-  }
-}
+export const RawDesignerControls = (props: DesignerControlsProps) => {
+  const navigate = useNavigate();
+  props.dispatch({ type: Actions.OPEN_POPUP, payload: "controls" });
+  navigate(Path.plants());
+  return <DesignerPanel panelName={"controls"} panel={Panel.Controls}>
+    <DesignerPanelContent panelName={"controls"}>
+      <p>Controls have moved to the navigation bar.</p>
+    </DesignerPanelContent>
+  </DesignerPanel>;
+};
 
-export const DesignerControls = connect()(RawDesignerControls);
+export const DesignerControls = connect(mapStateToProps)(RawDesignerControls);
+// eslint-disable-next-line import/no-default-export
+export default DesignerControls;
 
 export interface ControlsPanelProps {
   dispatch: Function;

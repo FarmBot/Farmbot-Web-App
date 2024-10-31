@@ -1,10 +1,3 @@
-import { Path } from "../../../../../internal_urls";
-const mockPath = Path.mock(Path.points());
-jest.mock("../../../../../history", () => ({
-  push: jest.fn(),
-  getPathArray: () => mockPath.split("/"),
-}));
-
 import React from "react";
 import { GardenPoint } from "../garden_point";
 import { GardenPointProps } from "../../../interfaces";
@@ -13,7 +6,6 @@ import {
   fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 import { Actions } from "../../../../../constants";
-import { push } from "../../../../../history";
 import { svgMount } from "../../../../../__test_support__/svg_mount";
 import {
   fakeCameraCalibrationData, fakeCameraCalibrationDataFull,
@@ -23,6 +15,7 @@ import { CameraViewArea } from "../../farmbot/bot_figure";
 import { Color } from "../../../../../ui";
 import { tagAsSoilHeight } from "../../../../../points/soil_height";
 import { SpecialStatus } from "farmbot";
+import { Path } from "../../../../../internal_urls";
 
 describe("<GardenPoint/>", () => {
   const fakeProps = (): GardenPointProps => ({
@@ -101,7 +94,7 @@ describe("<GardenPoint/>", () => {
     const p = fakeProps();
     const wrapper = svgMount(<GardenPoint {...p} />);
     wrapper.find("g").simulate("click");
-    expect(push).toHaveBeenCalledWith(Path.points(p.point.body.id));
+    expect(mockNavigate).toHaveBeenCalledWith(Path.points(p.point.body.id));
   });
 
   it("shows camera view area", () => {

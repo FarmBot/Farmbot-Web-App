@@ -213,6 +213,8 @@ export class RawDesignerPhotos
 }
 
 export const DesignerPhotos = connect(mapStateToProps)(RawDesignerPhotos);
+// eslint-disable-next-line import/no-default-export
+export default DesignerPhotos;
 
 export interface UpdateImagingPackageProps {
   farmwareName: string;

@@ -2,11 +2,6 @@ jest.mock("../../open_farm/cached_crop", () => ({
   maybeGetCachedPlantIcon: jest.fn(),
 }));
 
-jest.mock("../../history", () => ({
-  push: jest.fn(),
-  getPathArray: () => Path.mock(Path.plants()).split("/"),
-}));
-
 jest.mock("../../point_groups/actions", () => ({
   createGroup: jest.fn(),
 }));
@@ -38,7 +33,6 @@ import {
 import { fakeState } from "../../__test_support__/fake_state";
 import { SearchField } from "../../ui/search_field";
 import { Actions } from "../../constants";
-import { push } from "../../history";
 import { createGroup } from "../../point_groups/actions";
 import { DEFAULT_CRITERIA } from "../../point_groups/criteria/interfaces";
 import { deletePoints } from "../../api/delete_points";
@@ -119,8 +113,9 @@ describe("<PlantInventory />", () => {
 
   it("navigates to group", () => {
     const wrapper = shallow<Plants>(<Plants {...fakeProps()} />);
-    wrapper.instance().navigate(1)();
-    expect(push).toHaveBeenCalledWith(Path.groups(1));
+    wrapper.instance().navigate = jest.fn();
+    wrapper.instance().navigateById(1)();
+    expect(wrapper.instance().navigate).toHaveBeenCalledWith(Path.groups(1));
   });
 
   it("adds new group", () => {
@@ -132,15 +127,18 @@ describe("<PlantInventory />", () => {
   });
 
   it("adds new saved garden", () => {
-    const wrapper = shallow(<Plants {...fakeProps()} />);
+    const wrapper = shallow<Plants>(<Plants {...fakeProps()} />);
+    wrapper.instance().navigate = jest.fn();
     wrapper.find(PanelSection).at(1).props().addNew();
-    expect(push).toHaveBeenCalledWith(Path.savedGardens("add"));
+    expect(wrapper.instance().navigate).toHaveBeenCalledWith(
+      Path.savedGardens("add"));
   });
 
   it("adds new plant", () => {
-    const wrapper = shallow(<Plants {...fakeProps()} />);
+    const wrapper = shallow<Plants>(<Plants {...fakeProps()} />);
+    wrapper.instance().navigate = jest.fn();
     wrapper.find(PanelSection).last().props().addNew();
-    expect(push).toHaveBeenCalledWith(Path.cropSearch());
+    expect(wrapper.instance().navigate).toHaveBeenCalledWith(Path.cropSearch());
   });
 
   it("deletes all plants", () => {
@@ -189,13 +187,14 @@ describe("<PlantInventory />", () => {
   it("navigates to crop search", () => {
     const p = fakeProps();
     const wrapper = mount<Plants>(<Plants {...p} />);
+    wrapper.instance().navigate = jest.fn();
     wrapper.setState({ searchTerm: "mint" });
     const noResult = mount(wrapper.instance().noResult);
     noResult.find("a").first().simulate("click");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SEARCH_QUERY_CHANGE, payload: "mint",
     });
-    expect(push).toHaveBeenCalledWith(Path.cropSearch());
+    expect(wrapper.instance().navigate).toHaveBeenCalledWith(Path.cropSearch());
   });
 });
 

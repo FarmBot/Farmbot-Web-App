@@ -1,6 +1,6 @@
 import React from "react";
 import { FormattedPlantInfo } from "./map_state_to_props";
-import { push } from "../history";
+import { useNavigate } from "react-router-dom";
 import { BlurableInput, Row, Help } from "../ui";
 import {
   PlantStage, TaggedCurve, TaggedFarmwareEnv, TaggedGenericPointer,
@@ -161,6 +161,7 @@ export function PlantPanel(props: PlantPanelProps) {
   const { slug, plantedAt, daysOld, uuid, plantStatus } = info;
   const { x, y, z } = info;
   const commonProps = { uuid, updatePlant };
+  const navigate = useNavigate();
   return <DesignerPanelContent panelName={"plants"}>
     <ul className="grid">
       <ListItem name={t("Plant Type")}>
@@ -173,7 +174,7 @@ export function PlantPanel(props: PlantPanelProps) {
           onClick={() => {
             dispatch({ type: Actions.SET_PLANT_TYPE_CHANGE_ID, payload: info.id });
             dispatch({ type: Actions.SET_SLUG_BULK, payload: undefined });
-            push(Path.cropSearch());
+            navigate(Path.cropSearch());
           }} />
       </ListItem>
       {(timeSettings && !inSavedGarden) &&

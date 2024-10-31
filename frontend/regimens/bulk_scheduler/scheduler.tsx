@@ -68,3 +68,5 @@ export class RawDesignerRegimenScheduler
 
 export const DesignerRegimenScheduler =
   connect(mapStateToProps)(RawDesignerRegimenScheduler);
+// eslint-disable-next-line import/no-default-export
+export default DesignerRegimenScheduler;

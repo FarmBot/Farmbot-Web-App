@@ -31,3 +31,5 @@ export class RawAddZone extends React.Component<AddZoneProps, {}> {
 }
 
 export const AddZone = connect(mapStateToProps)(RawAddZone);
+// eslint-disable-next-line import/no-default-export
+export default AddZone;

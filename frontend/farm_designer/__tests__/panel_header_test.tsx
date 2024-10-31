@@ -1,9 +1,3 @@
-import { Path } from "../../internal_urls";
-let mockPath = Path.mock(Path.plants());
-jest.mock("../../history", () => ({
-  getPathArray: jest.fn(() => mockPath.split("/")),
-}));
-
 let mockDev = false;
 jest.mock("../../settings/dev/dev_support", () => ({
   DevSettings: {
@@ -22,6 +16,7 @@ import { buildResourceIndex } from "../../__test_support__/resource_index_builde
 import {
   fakeFarmwareInstallation, fakeWebAppConfig,
 } from "../../__test_support__/fake_state/resources";
+import { Path } from "../../internal_urls";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const expectOnlyOneActiveIcon = (wrapper: ReactWrapper<any>) =>
@@ -39,20 +34,20 @@ describe("<DesignerNavTabs />", () => {
     ["plants", Path.plantTemplates(1)],
     ["tools", Path.toolSlots()],
   ])("shows active %s icon", (slug, path) => {
-    mockPath = Path.mock(path);
+    location.pathname = Path.mock(path);
     const wrapper = mount(<DesignerNavTabs />);
     expectOnlyOneActiveIcon(wrapper);
     expectActive(wrapper, slug);
   });
 
   it("shows inactive icons for logs page", () => {
-    mockPath = Path.mock(Path.logs());
+    location.pathname = Path.mock(Path.logs());
     const wrapper = mount(<DesignerNavTabs />);
     expect(wrapper.find(".active").length).toEqual(0);
   });
 
   it("shows active zones icon", () => {
-    mockPath = Path.mock(Path.zones());
+    location.pathname = Path.mock(Path.zones());
     mockDev = true;
     const wrapper = mount(<DesignerNavTabs />);
     expectOnlyOneActiveIcon(wrapper);

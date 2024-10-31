@@ -206,7 +206,7 @@ export interface AddEditFarmEventProps {
   regimensById: Record<string, TaggedRegimen | undefined>;
   sequencesById: Record<string, TaggedSequence | undefined>;
   farmEventsById: Record<string, TaggedFarmEvent | undefined>;
-  getFarmEvent(): TaggedFarmEvent | undefined;
+  getFarmEvent(navigate: (url: string) => void): TaggedFarmEvent | undefined;
   findFarmEventByUuid(uuid: string | undefined): TaggedFarmEvent | undefined;
   handleTime(e: React.SyntheticEvent<HTMLInputElement>, currentISO: string): string;
   dispatch: Function;

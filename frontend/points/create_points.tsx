@@ -17,7 +17,6 @@ import { parseIntInput } from "../util";
 import { validBotLocationData } from "../util/location";
 import { t } from "../i18next_wrapper";
 import { Panel } from "../farm_designer/panel_header";
-import { push } from "../history";
 import { ListItem } from "../plants/plant_panel";
 import { success } from "../toast/toast";
 import { PlantGrid } from "../plants/grid/plant_grid";
@@ -29,6 +28,7 @@ import {
 import { BotPosition } from "../devices/interfaces";
 import { round } from "lodash";
 import { Path } from "../internal_urls";
+import { NavigationContext } from "../routes_helpers";
 
 export function mapStateToProps(props: Everything): CreatePointsProps {
   const { drawnPoint, drawnWeed } = props.resources.consumers.farm_designer;
@@ -210,7 +210,11 @@ export class RawCreatePoints
     this.closePanel();
   };
 
-  closePanel = () => push(Path.designer(this.panel));
+  static contextType = NavigationContext;
+  context!: React.ContextType<typeof NavigationContext>;
+  navigate = (url: string) => this.context(url);
+
+  closePanel = () => this.navigate(Path.designer(this.panel));
 
   PointProperties = () =>
     <ul className="grid">
@@ -338,3 +342,5 @@ export class RawCreatePoints
 }
 
 export const CreatePoints = connect(mapStateToProps)(RawCreatePoints);
+// eslint-disable-next-line import/no-default-export
+export default CreatePoints;

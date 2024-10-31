@@ -41,7 +41,7 @@ describe("<AddFarmEvent />", () => {
       repeatOptions: [],
       handleTime: jest.fn(),
       farmEvents: [farmEvent],
-      getFarmEvent: () => farmEvent,
+      getFarmEvent: _ => farmEvent,
       findFarmEventByUuid: () => farmEvent,
       findExecutable: () => sequence,
       timeSettings: fakeTimeSettings(),

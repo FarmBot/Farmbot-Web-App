@@ -10,7 +10,7 @@ import {
 } from "../../sequences/locals_list/handle_select";
 import { overwrite, save, destroy, edit } from "../../api/crud";
 import { CopyButton } from "./copy_button";
-import { push } from "../../history";
+import { useNavigate } from "react-router-dom";
 import { Path } from "../../internal_urls";
 import { Position } from "@blueprintjs/core";
 
@@ -25,6 +25,7 @@ export const editRegimenVariables = (props: RegimenProps) =>
 
 export const RegimenButtonGroup = (props: RegimenProps) => {
   const { regimen, dispatch } = props;
+  const navigate = useNavigate();
   return <div className="row panel-header-icon-group">
     <div className="row no-gap">
       <Popover className={"color-picker"}
@@ -38,7 +39,7 @@ export const RegimenButtonGroup = (props: RegimenProps) => {
       <i className={"fa fa-trash fb-icon-button"}
         title={t("delete regimen")}
         onClick={() => dispatch(destroy(regimen.uuid))
-          .then(() => push(Path.regimens()))} />
+          .then(() => navigate(Path.regimens()))} />
       <CopyButton regimen={regimen} dispatch={dispatch} />
     </div>
     <SaveBtn
@@ -47,9 +48,11 @@ export const RegimenButtonGroup = (props: RegimenProps) => {
   </div>;
 };
 
-export const OpenSchedulerButton = () =>
-  <button className={"fb-button gray schedule-regimen-item"}
+export const OpenSchedulerButton = () => {
+  const navigate = useNavigate();
+  return <button className={"fb-button gray schedule-regimen-item"}
     title={t("open scheduler panel")}
-    onClick={() => push(Path.regimens("scheduler"))}>
+    onClick={() => navigate(Path.regimens("scheduler"))}>
     {t("Schedule item")}
   </button>;
+};

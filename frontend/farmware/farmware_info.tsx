@@ -6,7 +6,7 @@ import { destroy } from "../api/crud";
 import { error } from "../toast/toast";
 import { isPendingInstallation } from "./state_to_props";
 import { retryFetchPackageName } from "./actions";
-import { push } from "../history";
+import { useNavigate } from "react-router-dom";
 import { FarmwareManifestInfo } from "./interfaces";
 import { t } from "../i18next_wrapper";
 import { Popover } from "../ui";
@@ -124,7 +124,8 @@ const uninstallFarmware = (props: RemoveFarmwareProps) =>
       firstPartyFarmwareNames.includes(farmwareName);
     if (!isFirstParty || confirm(Content.FIRST_PARTY_WARNING)) {
       removeFromAPI({ url, installations, dispatch });
-      push(Path.farmware());
+      const navigate = useNavigate();
+      navigate(Path.farmware());
     }
   };
 

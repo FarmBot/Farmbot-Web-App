@@ -31,7 +31,7 @@ export function Apology(_: {}) {
       </span>
       <ol>
         <li>
-          Refresh the page.
+          Click back and then refresh the page.
         </li>
         <li>
           {"Perform a \"hard refresh\""}

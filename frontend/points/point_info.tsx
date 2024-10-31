@@ -4,7 +4,7 @@ import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent,
 } from "../farm_designer/designer_panel";
 import { t } from "../i18next_wrapper";
-import { push } from "../history";
+import { useNavigate } from "react-router-dom";
 import { Panel } from "../farm_designer/panel_header";
 import { Everything, MovementState, ResourceColor } from "../interfaces";
 import { TaggedGenericPointer } from "farmbot";
@@ -46,92 +46,93 @@ export const mapStateToProps = (props: Everything): EditPointProps => ({
   movementState: props.app.movement,
 });
 
-export class RawEditPoint extends React.Component<EditPointProps, {}> {
-  get stringyID() { return Path.getSlug(Path.points()); }
-  get point() {
-    if (this.stringyID) {
-      return this.props.findPoint(parseInt(this.stringyID));
+export const RawEditPoint = (props: EditPointProps) => {
+  const getPoint = () => {
+    const stringyID = Path.getSlug(Path.points());
+    if (stringyID) {
+      return props.findPoint(parseInt(stringyID));
     }
-  }
-  get panelName() { return "point-info"; }
+  };
+  const point = getPoint();
+  const panelName = "point-info";
 
-  render() {
-    const { point } = this;
-    const { dispatch } = this.props;
-    const pointsPath = Path.points();
-    !point && Path.startsWith(pointsPath) && push(pointsPath);
-    const pointColor = point?.body.meta.color || "green";
-    return <DesignerPanel panelName={this.panelName} panel={Panel.Points}>
-      <DesignerPanelHeader
-        panelName={this.panelName}
-        panel={Panel.Points}
-        colorClass={pointColor}
-        titleElement={<ResourceTitle
-          key={point?.body.name}
-          resource={point}
-          save={true}
-          fallback={t("Edit weed")}
-          dispatch={dispatch} />}
-        specialStatus={point?.specialStatus}
-        onSave={() => point?.uuid &&
-          dispatch(save(point.uuid))}
-        backTo={pointsPath}
-        onBack={() => dispatch({
-          type: Actions.TOGGLE_HOVERED_POINT, payload: undefined
-        })}>
-        <div className={"panel-header-icon-group"}>
-          <Popover className={"color-picker"}
-            position={Position.BOTTOM}
-            popoverClassName={"colorpicker-menu gray"}
-            target={<i title={t("select color")}
-              className={"fa fa-paint-brush fb-icon-button"} />}
-            content={<ColorPickerCluster
-              onChange={color =>
-                updatePoint(point, dispatch)({ meta: { color } })}
-              current={pointColor as ResourceColor} />} />
-          {point &&
-            <i title={t("delete")}
-              className={"fa fa-trash fb-icon-button"}
-              onClick={() => dispatch(destroy(point.uuid))} />}
+  const { dispatch } = props;
+  const pointsPath = Path.points();
+  const navigate = useNavigate();
+  !point && Path.startsWith(pointsPath) && navigate(pointsPath);
+  const pointColor = point?.body.meta.color || "green";
+  return <DesignerPanel panelName={panelName} panel={Panel.Points}>
+    <DesignerPanelHeader
+      panelName={panelName}
+      panel={Panel.Points}
+      colorClass={pointColor}
+      titleElement={<ResourceTitle
+        key={point?.body.name}
+        resource={point}
+        save={true}
+        fallback={t("Edit weed")}
+        dispatch={dispatch} />}
+      specialStatus={point?.specialStatus}
+      onSave={() => point?.uuid &&
+        dispatch(save(point.uuid))}
+      backTo={pointsPath}
+      onBack={() => dispatch({
+        type: Actions.TOGGLE_HOVERED_POINT, payload: undefined
+      })}>
+      <div className={"panel-header-icon-group"}>
+        <Popover className={"color-picker"}
+          position={Position.BOTTOM}
+          popoverClassName={"colorpicker-menu gray"}
+          target={<i title={t("select color")}
+            className={"fa fa-paint-brush fb-icon-button"} />}
+          content={<ColorPickerCluster
+            onChange={color =>
+              updatePoint(point, dispatch)({ meta: { color } })}
+            current={pointColor as ResourceColor} />} />
+        {point &&
+          <i title={t("delete")}
+            className={"fa fa-trash fb-icon-button"}
+            onClick={() => dispatch(destroy(point.uuid))} />}
+      </div>
+    </DesignerPanelHeader>
+    <DesignerPanelContent panelName={panelName}>
+      {point
+        ? <div className={"point-panel-content-wrapper"}>
+          <EditPointProperties point={point}
+            botOnline={props.botOnline}
+            dispatch={props.dispatch}
+            arduinoBusy={props.arduinoBusy}
+            currentBotLocation={props.currentBotLocation}
+            movementState={props.movementState}
+            defaultAxes={props.defaultAxes}
+            updatePoint={updatePoint(point, dispatch)} />
+          <ul className="meta">
+            {Object.entries(point.body.meta).map(([key, value]) => {
+              switch (key) {
+                case "color":
+                case "at_soil_level":
+                case "removal_method":
+                case "type":
+                case "gridId":
+                  return <div key={key}
+                    className={`meta-${key}-not-displayed`} />;
+                case "created_by":
+                  return <ListItem name={t("Source")} key={key}>
+                    {lookupPointSource(value)}
+                  </ListItem>;
+                default:
+                  return <ListItem key={key} name={key}>
+                    {value || ""}
+                  </ListItem>;
+              }
+            })}
+          </ul>
         </div>
-      </DesignerPanelHeader>
-      <DesignerPanelContent panelName={this.panelName}>
-        {point
-          ? <div className={"point-panel-content-wrapper"}>
-            <EditPointProperties point={point}
-              botOnline={this.props.botOnline}
-              dispatch={this.props.dispatch}
-              arduinoBusy={this.props.arduinoBusy}
-              currentBotLocation={this.props.currentBotLocation}
-              movementState={this.props.movementState}
-              defaultAxes={this.props.defaultAxes}
-              updatePoint={updatePoint(point, dispatch)} />
-            <ul className="meta">
-              {Object.entries(point.body.meta).map(([key, value]) => {
-                switch (key) {
-                  case "color":
-                  case "at_soil_level":
-                  case "removal_method":
-                  case "type":
-                  case "gridId":
-                    return <div key={key}
-                      className={`meta-${key}-not-displayed`} />;
-                  case "created_by":
-                    return <ListItem name={t("Source")} key={key}>
-                      {lookupPointSource(value)}
-                    </ListItem>;
-                  default:
-                    return <ListItem key={key} name={key}>
-                      {value || ""}
-                    </ListItem>;
-                }
-              })}
-            </ul>
-          </div>
-          : <span>{t("Redirecting")}...</span>}
-      </DesignerPanelContent>
-    </DesignerPanel>;
-  }
-}
+        : <span>{t("Redirecting")}...</span>}
+    </DesignerPanelContent>
+  </DesignerPanel>;
+};
 
 export const EditPoint = connect(mapStateToProps)(RawEditPoint);
+// eslint-disable-next-line import/no-default-export
+export default EditPoint;

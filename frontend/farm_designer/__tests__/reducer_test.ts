@@ -1,10 +1,3 @@
-import { Path } from "../../internal_urls";
-let mockPath = Path.mock(Path.designer());
-jest.mock("../../history", () => ({
-  getPathArray: jest.fn(() => mockPath.split("/")),
-  push: jest.fn(),
-}));
-
 import { designer } from "../reducer";
 import { Actions } from "../../constants";
 import { ReduxAction } from "../../redux/interfaces";
@@ -19,7 +12,7 @@ import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 import { PlantStage, PointType } from "farmbot";
 import { UUID } from "../../resources/interfaces";
-import { push } from "../../history";
+import { Path } from "../../internal_urls";
 
 describe("designer reducer", () => {
   const oldState = fakeDesignerState;
@@ -175,14 +168,13 @@ describe("designer reducer", () => {
   });
 
   it("sets query upon chosen location", () => {
-    mockPath = Path.mock(Path.location());
+    location.pathname = Path.mock(Path.location());
     const action: ReduxAction<BotPosition> = {
       type: Actions.CHOOSE_LOCATION,
       payload: { x: 0, y: 0, z: 0 },
     };
     const newState = designer(oldState(), action);
     expect(newState.chosenLocation).toEqual({ x: 0, y: 0, z: 0 });
-    expect(push).toHaveBeenCalledWith(Path.location({ x: 0, y: 0 }));
   });
 
   it("sets current point data", () => {

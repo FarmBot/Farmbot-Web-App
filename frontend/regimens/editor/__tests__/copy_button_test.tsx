@@ -8,7 +8,6 @@ import React from "react";
 import { mount } from "enzyme";
 import { CopyButton } from "../copy_button";
 import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
-import { push } from "../../../history";
 import { setActiveRegimenByName } from "../../set_active_regimen_by_name";
 import { init } from "../../../api/crud";
 import { CopyButtonProps } from "../interfaces";
@@ -32,7 +31,7 @@ describe("<CopyButton />", () => {
     expect(init).toHaveBeenCalledWith("Regimen", {
       color: "red", name: "Foo copy 1", regimen_items, body: []
     });
-    expect(push).toHaveBeenCalledWith(Path.regimens("Foo_copy_1"));
+    expect(mockNavigate).toHaveBeenCalledWith(Path.regimens("Foo_copy_1"));
     expect(setActiveRegimenByName).toHaveBeenCalled();
   });
 });

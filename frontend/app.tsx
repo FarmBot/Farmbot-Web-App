@@ -50,12 +50,13 @@ import { TourStepContainer } from "./help/tours";
 import { Toasts } from "./toast/fb_toast";
 import Bowser from "bowser";
 import { landingPagePath, Path } from "./internal_urls";
-import { push } from "./history";
 import { AppState } from "./reducer";
 import {
   sourceFbosConfigValue, sourceFwConfigValue,
 } from "./settings/source_config_value";
 import { RunButtonMenuOpen } from "./sequences/interfaces";
+import { Navigate, Outlet } from "react-router-dom";
+import { ErrorBoundary } from "./error_boundary";
 
 export interface AppProps {
   dispatch: Function;
@@ -176,10 +177,9 @@ export class RawApp extends React.Component<AppProps, {}> {
     const syncLoaded = this.isLoaded;
     const { bot, dispatch, getConfigValue } = this.props;
     const landingPage = getConfigValue(StringSetting.landing_page);
-    if (Path.equals("") && isString(landingPage)) {
-      push(landingPagePath(landingPage));
-    }
     return <div className="app">
+      {(Path.equals("") || Path.equals(Path.app())) && isString(landingPage) &&
+        <Navigate to={landingPagePath(landingPage)} />}
       {!syncLoaded && <LoadingPlant animate={this.props.animate} />}
       <HotKeys dispatch={dispatch} hotkeyGuide={this.props.appState.hotkeyGuide} />
       {syncLoaded && <NavBar
@@ -209,6 +209,11 @@ export class RawApp extends React.Component<AppProps, {}> {
         menuOpen={this.props.menuOpen}
         pings={this.props.pings} />}
       {syncLoaded && this.props.children}
+      <ErrorBoundary>
+        <React.Suspense>
+          {syncLoaded && <Outlet />}
+        </React.Suspense>
+      </ErrorBoundary>
       <div className={"toast-container"}>
         <TourStepContainer
           key={JSON.stringify(this.props.helpState)}
@@ -225,3 +230,5 @@ export class RawApp extends React.Component<AppProps, {}> {
 
 export const App = connect(mapStateToProps)(
   RawApp) as ConnectedComponent<typeof RawApp, { children?: React.ReactNode }>;
+// eslint-disable-next-line import/no-default-export
+export default App;

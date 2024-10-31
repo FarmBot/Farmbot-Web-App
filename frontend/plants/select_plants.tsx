@@ -1,5 +1,5 @@
 import React from "react";
-import { push } from "../history";
+import { useNavigate } from "react-router-dom";
 import { connect } from "react-redux";
 import { Everything, TimeSettings } from "../interfaces";
 import { PlantInventoryItem } from "./plant_inventory_item";
@@ -59,6 +59,7 @@ import { getFbosConfig } from "../resources/getters";
 import {
   getFwHardwareValue, hasUTM,
 } from "../settings/firmware/firmware_hardware_support";
+import { NavigationContext } from "../routes_helpers";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isPointType = (x: any): x is PointType =>
@@ -170,6 +171,10 @@ export class RawSelectPlants
 
   get selected() { return this.props.selected || []; }
 
+  static contextType = NavigationContext;
+  context!: React.ContextType<typeof NavigationContext>;
+  navigate = this.context;
+
   destroySelected = (plantUUIDs: string[] | undefined) => {
     if (plantUUIDs && plantUUIDs.length > 0 &&
       confirm(t("Are you sure you want to delete {{length}} plants?",
@@ -178,7 +183,7 @@ export class RawSelectPlants
         this.props.dispatch(destroy(uuid, true))
           .then(noop, noop);
       });
-      push(Path.plants());
+      this.navigate(Path.plants());
     }
   };
 
@@ -410,6 +415,8 @@ export class RawSelectPlants
 }
 
 export const SelectPlants = connect(mapStateToProps)(RawSelectPlants);
+// eslint-disable-next-line import/no-default-export
+export default SelectPlants;
 
 export interface GetFilteredPointsProps {
   selectionPointType: PointType[] | undefined;
@@ -462,12 +469,14 @@ const getVisibleLayers = (getConfigValue: GetWebAppConfigValue): PointType[] => 
   ];
 };
 
-export const SelectModeLink = () =>
-  <div className="select-mode">
+export const SelectModeLink = () => {
+  const navigate = useNavigate();
+  return <div className="select-mode">
     <button
       className="fb-button gray"
       title={t("open point select panel")}
-      onClick={() => push(Path.plants("select"))}>
+      onClick={() => navigate(Path.plants("select"))}>
       {t("select")}
     </button>
   </div>;
+};

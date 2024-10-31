@@ -53,6 +53,7 @@ import { Path } from "../internal_urls";
 import { copySequence } from "../sequences/actions";
 import { TestButton, isMenuOpen } from "../sequences/test_button";
 import { TaggedSequence } from "farmbot";
+import { useNavigate } from "react-router-dom";
 
 export const FolderListItem = (props: FolderItemProps) => {
   const { sequence, movedSequenceUuid, inUse } = props;
@@ -174,6 +175,7 @@ const InfoRow = (props: InfoRowProps) =>
 export const SequenceButtonCluster =
   (props: SequenceButtonClusterProps) => {
     const { dispatch, getWebAppConfigValue, sequence } = props;
+    const navigate = useNavigate();
     return <div className="folder-button-cluster">
       <i
         className={"fa fa-trash cluster-icon"}
@@ -186,7 +188,7 @@ export const SequenceButtonCluster =
       <i
         className={"fa fa-copy cluster-icon"}
         title={t("copy sequence")}
-        onClick={() => dispatch(copySequence(sequence))} />
+        onClick={() => dispatch(copySequence(navigate, sequence))} />
       <i className={"fa fa-arrows-v cluster-icon"}
         title={t("move sequence")}
         onMouseDown={() => props.startSequenceMove(sequence.uuid)}
@@ -214,6 +216,7 @@ const PlusStack = (props: PlusStackProps) =>
 
 export const FolderButtonCluster =
   ({ node, close }: FolderButtonClusterProps) => {
+    const navigate = useNavigate();
     return <div className={"folder-button-cluster"}>
       <i className={"fa fa-trash cluster-icon"}
         title={t("delete folder")}
@@ -234,7 +237,7 @@ export const FolderButtonCluster =
         title={t("add new sequence")}
         onClick={() => {
           close();
-          addNewSequenceToFolder({ id: node.id, color: node.color });
+          addNewSequenceToFolder(navigate, { id: node.id, color: node.color });
         }}>
         <PlusStack icon={"fa-server"} />
       </div>
@@ -471,8 +474,9 @@ export class Folders extends React.Component<FolderProps, FolderState> {
   }
 }
 
-export const FolderPanelTop = (props: FolderPanelTopProps) =>
-  <div className="panel-top with-button">
+export const FolderPanelTop = (props: FolderPanelTopProps) => {
+  const navigate = useNavigate();
+  return <div className="panel-top with-button">
     <SearchField nameKey={"sequences"}
       placeholder={t("Search sequences...")}
       searchTerm={props.searchTerm || ""}
@@ -489,7 +493,8 @@ export const FolderPanelTop = (props: FolderPanelTopProps) =>
     <button
       className="fb-button green"
       title={t("add new sequence")}
-      onClick={() => { addNewSequenceToFolder(); }}>
+      onClick={() => { addNewSequenceToFolder(navigate); }}>
       <PlusStack icon={"fa-server"} />
     </button>
   </div>;
+};

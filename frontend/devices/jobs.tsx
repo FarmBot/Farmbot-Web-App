@@ -43,6 +43,8 @@ export class RawJobsPanel extends React.Component<JobsPanelProps, {}> {
 }
 
 export const JobsPanel = connect(mapStateToProps)(RawJobsPanel);
+// eslint-disable-next-line import/no-default-export
+export default JobsPanel;
 
 export interface JobsAndLogsProps {
   dispatch: Function;

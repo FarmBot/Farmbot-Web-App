@@ -8,7 +8,6 @@ import { mount } from "enzyme";
 import { RawCurves as Curves, mapStateToProps } from "../curves_inventory";
 import { fakeState } from "../../__test_support__/fake_state";
 import { fakeCurve } from "../../__test_support__/fake_state/resources";
-import { push } from "../../history";
 import { init, save } from "../../api/crud";
 import { SearchField } from "../../ui/search_field";
 import { Path } from "../../internal_urls";
@@ -54,9 +53,11 @@ describe("<Curves> />", () => {
     p.curves = [fakeCurve()];
     p.curves[0].body.id = 1;
     p.curvesPanelState.water = true;
-    const wrapper = mount(<Curves {...p} />);
+    const wrapper = mount<Curves>(<Curves {...p} />);
+    const navigate = jest.fn();
+    wrapper.instance().navigate = navigate;
     wrapper.find(".curve-search-item").first().simulate("click");
-    expect(push).toHaveBeenCalledWith(Path.curves(1));
+    expect(navigate).toHaveBeenCalledWith(Path.curves(1));
   });
 
   it("navigates to unsaved curve", () => {
@@ -64,9 +65,11 @@ describe("<Curves> />", () => {
     p.curves = [fakeCurve()];
     p.curves[0].body.id = 0;
     p.curvesPanelState.water = true;
-    const wrapper = mount(<Curves {...p} />);
+    const wrapper = mount<Curves>(<Curves {...p} />);
+    const navigate = jest.fn();
+    wrapper.instance().navigate = navigate;
     wrapper.find(".curve-search-item").first().simulate("click");
-    expect(push).toHaveBeenCalledWith(Path.curves(0));
+    expect(navigate).toHaveBeenCalledWith(Path.curves(0));
   });
 
   it("filters curves", () => {
@@ -97,13 +100,15 @@ describe("<Curves> />", () => {
     p.curves = [curve];
     p.dispatch = jest.fn(() => Promise.resolve());
     const wrapper = mount<Curves>(<Curves {...p} />);
+    const navigate = jest.fn();
+    wrapper.instance().navigate = navigate;
     await wrapper.instance().addNew("water")();
     expect(init).toHaveBeenCalledWith("Curve", {
       name: "Water curve 2", type: "water",
       data: { 1: 1, 30: 500, 45: 500, 60: 250 },
     });
     expect(save).toHaveBeenCalled();
-    expect(push).toHaveBeenCalledWith(Path.curves(1));
+    expect(navigate).toHaveBeenCalledWith(Path.curves(1));
   });
 
   it("creates new curve: missing curve", async () => {
@@ -115,13 +120,15 @@ describe("<Curves> />", () => {
     p.curves = [curve];
     p.dispatch = jest.fn(() => Promise.resolve());
     const wrapper = mount<Curves>(<Curves {...p} />);
+    const navigate = jest.fn();
+    wrapper.instance().navigate = navigate;
     await wrapper.instance().addNew("water")();
     expect(init).toHaveBeenCalledWith("Curve", {
       name: "Water curve 2", type: "water",
       data: { 1: 1, 30: 500, 45: 500, 60: 250 },
     });
     expect(save).toHaveBeenCalled();
-    expect(push).not.toHaveBeenCalled();
+    expect(navigate).not.toHaveBeenCalled();
   });
 
   it("creates new curve: spread", async () => {
@@ -132,13 +139,15 @@ describe("<Curves> />", () => {
     p.curves = [curve];
     p.dispatch = jest.fn(() => Promise.resolve());
     const wrapper = mount<Curves>(<Curves {...p} />);
+    const navigate = jest.fn();
+    wrapper.instance().navigate = navigate;
     await wrapper.instance().addNew("spread")();
     expect(init).toHaveBeenCalledWith("Curve", {
       name: "Spread curve 1", type: "spread",
       data: { 1: 1, 30: 300, 45: 300, 60: 150 },
     });
     expect(save).toHaveBeenCalled();
-    expect(push).toHaveBeenCalledWith(Path.curves(1));
+    expect(navigate).toHaveBeenCalledWith(Path.curves(1));
   });
 
   it("handles curve creation error", async () => {
@@ -147,13 +156,15 @@ describe("<Curves> />", () => {
       .mockImplementationOnce(jest.fn())
       .mockImplementationOnce(() => Promise.reject());
     const wrapper = mount<Curves>(<Curves {...p} />);
+    const navigate = jest.fn();
+    wrapper.instance().navigate = navigate;
     await wrapper.instance().addNew("water")();
     expect(init).toHaveBeenCalledWith("Curve", {
       name: "Water curve 1", type: "water",
       data: { 1: 1, 30: 500, 45: 500, 60: 250 },
     });
     expect(save).toHaveBeenCalled();
-    expect(push).not.toHaveBeenCalled();
+    expect(navigate).not.toHaveBeenCalled();
   });
 });
 

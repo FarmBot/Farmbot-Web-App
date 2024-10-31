@@ -2,7 +2,7 @@ import React from "react";
 import { NavBarProps, NavBarState } from "./interfaces";
 import { EStopButton } from "./e_stop_btn";
 import { Popover } from "../ui";
-import { push } from "../history";
+import { useNavigate } from "react-router-dom";
 import { updatePageInfo } from "../util";
 import { validBotLocationData } from "../util/location";
 import { NavLinks } from "./nav_links";
@@ -187,9 +187,10 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
   SetupButton = () => {
     const firmwareHardware = this.props.apiFirmwareValue;
     const { wizardStepResults, device } = this.props;
+    const navigate = useNavigate();
     return !device.body.setup_completed_at
       ? <a className={"setup-button"}
-        onClick={() => push(Path.setup())}>
+        onClick={() => navigate(Path.setup())}>
         {t("Setup")}
         {!isMobile() &&
           `: ${setupProgressString(wizardStepResults, { firmwareHardware })}`}

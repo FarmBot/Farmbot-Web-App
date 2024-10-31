@@ -35,9 +35,9 @@ import {
   InterpolationSettings,
 } from "../farm_designer/map/layers/points/interpolation_map";
 import { getUrlQuery, urlFriendly } from "../util";
-import { push } from "../history";
 import { Popover } from "../ui";
 import { Position } from "@blueprintjs/core";
+import { NavigationContext } from "../routes_helpers";
 
 export class RawDesignerSettings
   extends React.Component<DesignerSettingsProps, {}> {
@@ -50,6 +50,10 @@ export class RawDesignerSettings
       payload: ""
     });
   };
+
+  static contextType = NavigationContext;
+  context!: React.ContextType<typeof NavigationContext>;
+  navigate = this.context;
 
   render() {
     const { getConfigValue, dispatch, firmwareConfig,
@@ -72,7 +76,7 @@ export class RawDesignerSettings
           placeholder={t("Search settings...")}
           searchTerm={this.props.searchTerm}
           onChange={searchTerm => {
-            getUrlQuery("search") && push(location.pathname);
+            getUrlQuery("search") && this.navigate(location.pathname);
             dispatch(bulkToggleControlPanel(searchTerm != ""));
             dispatch({
               type: Actions.SET_SETTINGS_SEARCH_TERM,
@@ -196,3 +200,5 @@ export const showByEveryTerm = (term: string, searchTerm: string) =>
   searchTerm == term && getHighlightName() == urlFriendly(term).toLowerCase();
 
 export const DesignerSettings = connect(mapStateToProps)(RawDesignerSettings);
+// eslint-disable-next-line import/no-default-export
+export default DesignerSettings;

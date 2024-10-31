@@ -1,10 +1,3 @@
-import { Path, FilePath } from "../../../../internal_urls";
-let mockPath = Path.mock(Path.cropSearch());
-jest.mock("../../../../history", () => ({
-  getPathArray: jest.fn(() => mockPath.split("/")),
-  push: jest.fn(),
-}));
-
 import { mount } from "enzyme";
 import React from "react";
 import { AddPlantIcon, AddPlantIconProps } from "../add_plant_icon";
@@ -15,6 +8,7 @@ import {
   fakeCropLiveSearchResult,
 } from "../../../../__test_support__/fake_crop_search_result";
 import { svgToUrl } from "../../../../open_farm/icons";
+import { FilePath, Path } from "../../../../internal_urls";
 
 describe("<AddPlantIcon />", () => {
   const fakeProps = (): AddPlantIconProps => ({
@@ -37,7 +31,7 @@ describe("<AddPlantIcon />", () => {
   });
 
   it("returns specific icon", () => {
-    mockPath = Path.mock(Path.cropSearch("mint"));
+    location.pathname = Path.mock(Path.cropSearch("mint"));
     const p = fakeProps();
     const result = fakeCropLiveSearchResult();
     result.crop.svg_icon = "fake_icon";

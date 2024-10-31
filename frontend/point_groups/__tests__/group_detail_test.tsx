@@ -1,10 +1,3 @@
-import { Path } from "../../internal_urls";
-let mockPath = Path.mock(Path.groups(1));
-jest.mock("../../history", () => ({
-  getPathArray: jest.fn(() => mockPath.split("/")),
-  push: jest.fn(),
-}));
-
 jest.mock("../group_detail_active", () => ({
   GroupDetailActive: () => <div />,
   GroupSortSelection: () => <div />,
@@ -33,6 +26,7 @@ import {
 } from "../../__test_support__/fake_state/resources";
 import { PointType } from "farmbot";
 import { destroy } from "../../api/crud";
+import { Path } from "../../internal_urls";
 
 describe("<GroupDetail />", () => {
   const fakeProps = (): GroupDetailProps => {
@@ -56,7 +50,7 @@ describe("<GroupDetail />", () => {
   };
 
   it("redirects when group is not found", () => {
-    mockPath = Path.mock(Path.groups(-1));
+    location.pathname = Path.mock(Path.groups(-1));
     history.back = jest.fn();
     const p = fakeProps();
     p.group = undefined;
@@ -66,7 +60,7 @@ describe("<GroupDetail />", () => {
   });
 
   it("doesn't redirect", () => {
-    mockPath = Path.mock(Path.logs());
+    location.pathname = Path.mock(Path.logs());
     history.back = jest.fn();
     const p = fakeProps();
     p.group = undefined;
@@ -75,7 +69,7 @@ describe("<GroupDetail />", () => {
   });
 
   it("renders groups", () => {
-    mockPath = Path.mock(Path.groups(1));
+    location.pathname = Path.mock(Path.groups(1));
     history.back = jest.fn();
     const wrapper = mount(<GroupDetail {...fakeProps()} />);
     expect(wrapper.find(GroupDetailActive).length).toEqual(1);
@@ -88,7 +82,7 @@ describe("<GroupDetail />", () => {
     ["points", "GenericPointer"],
     ["tools", "ToolSlot"],
   ])("renders %s group", (title, pointerType) => {
-    mockPath = Path.mock(Path.groups(1));
+    location.pathname = Path.mock(Path.groups(1));
     const p = fakeProps();
     p.group && (p.group.body.criteria.string_eq = { pointer_type: [pointerType] });
     const wrapper = mount(<GroupDetail {...p} />);
@@ -96,7 +90,7 @@ describe("<GroupDetail />", () => {
   });
 
   it("deletes group", () => {
-    mockPath = Path.mock(Path.groups(1));
+    location.pathname = Path.mock(Path.groups(1));
     const wrapper = mount(<GroupDetail {...fakeProps()} />);
     wrapper.find(".fa-trash").first().simulate("click");
     expect(destroy).toHaveBeenCalled();
@@ -105,7 +99,7 @@ describe("<GroupDetail />", () => {
 
 describe("findGroupFromUrl()", () => {
   it("finds group from URL", () => {
-    mockPath = Path.mock(Path.groups(1));
+    location.pathname = Path.mock(Path.groups(1));
     const group = fakePointGroup();
     group.body.id = 1;
     const otherGroup = fakePointGroup();
@@ -114,17 +108,17 @@ describe("findGroupFromUrl()", () => {
   });
 
   it("fails to find group from URL", () => {
-    mockPath = Path.mock(Path.groups(1));
+    location.pathname = Path.mock(Path.groups(1));
     expect(findGroupFromUrl([])).toEqual(undefined);
   });
 
   it("fails to find group from URL: undefined array item", () => {
-    mockPath = Path.mock(Path.groups());
+    location.pathname = Path.mock(Path.groups());
     expect(findGroupFromUrl([])).toEqual(undefined);
   });
 
   it("doesn't try to find a group when at a different URL", () => {
-    mockPath = Path.mock(Path.logs());
+    location.pathname = Path.mock(Path.logs());
     const group = fakePointGroup();
     group.body.id = 1;
     expect(findGroupFromUrl([group])).toEqual(undefined);

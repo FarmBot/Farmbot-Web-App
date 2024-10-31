@@ -14,7 +14,7 @@ import { overwriteGroup } from "./actions";
 import { ToolSlotSVG } from "../farm_designer/map/layers/tool_slots/tool_graphics";
 import { ToolTransformProps } from "../tools/interfaces";
 import { FilePath, Path } from "../internal_urls";
-import { push } from "../history";
+import { NavigationContext } from "../routes_helpers";
 
 export interface PointGroupItemProps {
   point: TaggedPoint | TaggedPlantTemplate;
@@ -70,8 +70,14 @@ export class PointGroupItem
 
   leave = () => this.props.dispatch?.(setHoveredPlant(undefined));
 
+  static contextType = NavigationContext;
+  context!: React.ContextType<typeof NavigationContext>;
+  navigate = this.context;
+
   click = () => {
-    if (this.props.navigate) { push(Path.plants(this.props.point.body.id)); }
+    if (this.props.navigate) {
+      this.navigate(Path.plants(this.props.point.body.id));
+    }
     if (this.criteriaIcon) {
       return error(t("Cannot remove points selected by filters."));
     }

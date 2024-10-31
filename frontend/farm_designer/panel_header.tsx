@@ -1,5 +1,4 @@
 import React from "react";
-import { getPathArray } from "../history";
 import { Link } from "../link";
 import { t } from "../i18next_wrapper";
 import { DevSettings } from "../settings/dev/dev_support";
@@ -163,7 +162,7 @@ export const PANEL_TITLE = (): Record<Panel, string> => ({
 });
 
 export const getCurrentPanel = (): Tabs | undefined => {
-  if (getPathArray().join("/") === Path.withApp(Path.designer())) {
+  if (Path.equals(Path.designer())) {
     return Panel.Map;
   } else if (Path.getSlug(Path.app()) == "sequences") {
     return Panel.Sequences;

@@ -36,7 +36,6 @@ import {
   fakeUser, fakeWebAppConfig,
 } from "../../__test_support__/fake_state/resources";
 import { API } from "../../api";
-import { push } from "../../history";
 
 const getSetting =
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -118,7 +117,9 @@ describe("<DesignerSettings />", () => {
     location.search = "?search=search";
     location.pathname = "path";
     const p = fakeProps();
-    const wrapper = shallow(<DesignerSettings {...p} />);
+    const wrapper = shallow<DesignerSettings>(<DesignerSettings {...p} />);
+    const navigate = jest.fn();
+    wrapper.instance().navigate = navigate;
     wrapper.find(SearchField).simulate("change", "setting");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.BULK_TOGGLE_SETTINGS_PANEL,
@@ -128,7 +129,7 @@ describe("<DesignerSettings />", () => {
       type: Actions.SET_SETTINGS_SEARCH_TERM,
       payload: "setting",
     });
-    expect(push).toHaveBeenCalledWith("path");
+    expect(navigate).toHaveBeenCalledWith("path");
   });
 
   it("fetches firmware_hardware", () => {

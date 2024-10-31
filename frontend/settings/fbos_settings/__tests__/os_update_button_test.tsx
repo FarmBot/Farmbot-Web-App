@@ -20,7 +20,6 @@ import { Actions, Content } from "../../../constants";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import { API } from "../../../api";
 import { cloneDeep } from "lodash";
-import { push } from "../../../history";
 import { checkControllerUpdates } from "../../../devices/actions";
 import { toggleControlPanel } from "../../toggle_section";
 import {
@@ -196,7 +195,7 @@ describe("<OsUpdateButton />", () => {
     osUpdateButton.simulate("click");
     expect(checkControllerUpdates).not.toHaveBeenCalled();
     expect(toggleControlPanel).toHaveBeenCalledWith("power_and_reset");
-    expect(push).toHaveBeenCalledWith(Path.settings("hard_reset"));
+    expect(mockNavigate).toHaveBeenCalledWith(Path.settings("hard_reset"));
   });
 
   it("handles undefined jobs", () => {

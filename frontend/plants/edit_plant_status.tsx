@@ -17,7 +17,7 @@ import { capitalize, mean, round, startCase } from "lodash";
 import { TimeSettings } from "../interfaces";
 import { Link } from "../link";
 import { Path } from "../internal_urls";
-import { push } from "../history";
+import { useNavigate } from "react-router-dom";
 import { Actions } from "../constants";
 import { CurveType } from "../curves/templates";
 import { curveToDdi, CURVE_KEY_LOOKUP } from "./curve_info";
@@ -311,6 +311,7 @@ export const PlantSlugBulkUpdate = (props: PlantSlugBulkUpdateProps) => {
     point.body.pointer_type == "Plant")
     .map((p: TaggedPlantPointer) => p);
   const slug = props.bulkPlantSlug || plants[0]?.body.openfarm_slug;
+  const navigate = useNavigate();
   return <div className={"plant-slug-bulk-update row grid-2-col"}>
     <p>{t("Update type to")}</p>
     <div>
@@ -322,7 +323,7 @@ export const PlantSlugBulkUpdate = (props: PlantSlugBulkUpdateProps) => {
       <i className={"fa fa-pencil fb-icon-button"}
         onClick={() => {
           props.dispatch({ type: Actions.SET_SLUG_BULK, payload: slug });
-          push(Path.cropSearch());
+          navigate(Path.cropSearch());
         }} />
       <button className={"fb-button green"}
         onClick={() => {

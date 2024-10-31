@@ -37,9 +37,9 @@ import { DEFAULT_CRITERIA } from "../point_groups/criteria/interfaces";
 import { GroupInventoryItem } from "../point_groups/group_inventory_item";
 import { createGroup } from "../point_groups/actions";
 import { pointGroupSubset } from "../plants/select_plants";
-import { push } from "../history";
 import { Path } from "../internal_urls";
 import { deleteAllIds } from "../api/delete_points_handler";
+import { NavigationContext } from "../routes_helpers";
 
 interface PointsSectionProps {
   title: string;
@@ -156,7 +156,11 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
       type: Actions.TOGGLE_POINTS_PANEL_OPTION, payload: section,
     });
 
-  navigate = (id: number | undefined) => () => push(Path.groups(id));
+  static contextType = NavigationContext;
+  context!: React.ContextType<typeof NavigationContext>;
+  navigate = this.context;
+
+  navigateById = (id: number | undefined) => () => this.navigate(Path.groups(id));
 
   render() {
     const { dispatch } = this.props;
@@ -208,14 +212,14 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
               allPoints={this.props.allPoints}
               hovered={false}
               dispatch={dispatch}
-              onClick={this.navigate(group.body.id)}
+              onClick={this.navigateById(group.body.id)}
             />)}
         </PanelSection>
         <PanelSection isOpen={this.props.pointsPanelState.points}
           panel={Panel.Points}
           toggleOpen={this.toggleOpen("points")}
           itemCount={standardPoints.length}
-          addNew={() => push(Path.points("add"))}
+          addNew={() => this.navigate(Path.points("add"))}
           addTitle={t("add point")}
           addClassName={"plus-point"}
           extraHeaderContent={this.props.pointsPanelState.points &&
@@ -296,3 +300,5 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
 }
 
 export const Points = connect(mapStateToProps)(RawPoints);
+// eslint-disable-next-line import/no-default-export
+export default Points;

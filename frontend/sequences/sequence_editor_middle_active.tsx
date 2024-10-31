@@ -12,7 +12,7 @@ import {
   unpublishSequence,
 } from "./actions";
 import { splice, move, stringifySequenceData } from "./step_tiles";
-import { push } from "../history";
+import { useNavigate } from "react-router-dom";
 import {
   BlurableInput, Row, SaveBtn, Help, ToggleButton, Popover,
   Markdown,
@@ -268,6 +268,7 @@ export const SequenceBtnGroup = ({
   const [processingTitle, setProcessingTitle] = React.useState(false);
   const [processingColor, setProcessingColor] = React.useState(false);
   const isProcessing = processingColor || processingTitle;
+  const navigate = useNavigate();
   return <div className="button-group row">
     <div className={"row no-gap"}>
       <Popover position={Position.BOTTOM_RIGHT}
@@ -303,7 +304,7 @@ export const SequenceBtnGroup = ({
             dispatch(visualizeInMap(visualized ? undefined : sequence.uuid))} />}
       <i className={"fa fa-copy fb-icon-button"}
         title={t("copy sequence")}
-        onClick={() => dispatch(copySequence(sequence))} />
+        onClick={() => dispatch(copySequence(navigate, sequence))} />
       <i className={"fa fa-trash fb-icon-button"}
         title={t("delete sequence")}
         onClick={deleteSequence({
@@ -346,7 +347,7 @@ export const SequenceBtnGroup = ({
         dispatch={dispatch} />
       <SaveBtn status={sequence.specialStatus}
         onClick={() => dispatch(save(sequence.uuid)).then(() =>
-          push(Path.sequences(urlFriendly(sequence.body.name))))} />
+          navigate(Path.sequences(urlFriendly(sequence.body.name))))} />
     </div>
   </div>;
 };
@@ -361,8 +362,9 @@ export const deleteSequence = (props: DeleteSequenceProps) => () => {
   const confirm = props.getWebAppConfigValue(
     BooleanSetting.confirm_sequence_deletion);
   const force = !(confirm ?? true);
+  const navigate = useNavigate();
   props.dispatch(destroy(props.sequenceUuid, force))
-    .then(() => push(Path.sequences()));
+    .then(() => navigate(Path.sequences()));
 };
 
 export const isSequencePublished = (sequence: TaggedSequence) =>

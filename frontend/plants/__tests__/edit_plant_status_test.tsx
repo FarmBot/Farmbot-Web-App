@@ -29,7 +29,6 @@ import {
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { Actions } from "../../constants";
 import { Path } from "../../internal_urls";
-import { push } from "../../history";
 import { CurveType } from "../../curves/templates";
 
 describe("<EditPlantStatus />", () => {
@@ -362,7 +361,7 @@ describe("<PlantSlugBulkUpdate />", () => {
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_SLUG_BULK, payload: "slug",
     });
-    expect(push).toHaveBeenCalledWith(Path.cropSearch());
+    expect(mockNavigate).toHaveBeenCalledWith(Path.cropSearch());
   });
 
   it("updates plant slug", () => {

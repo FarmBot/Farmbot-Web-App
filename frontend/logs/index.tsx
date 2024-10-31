@@ -16,22 +16,23 @@ import { SearchField } from "../ui/search_field";
 import { forceOnline } from "../devices/must_be_online";
 import { demoAccountLog } from "../nav/ticker_list";
 import { Actions } from "../constants";
-import { push } from "../history";
+import { useNavigate } from "react-router-dom";
 import { Path } from "../internal_urls";
 import { mapStateToProps } from "./state_to_props";
 
-export class RawLogs extends React.Component<LogsPanelProps> {
-  render() {
-    this.props.dispatch({ type: Actions.OPEN_POPUP, payload: "jobs" });
-    this.props.dispatch({ type: Actions.SET_JOBS_PANEL_OPTION, payload: "logs" });
-    push(Path.plants());
-    return <Page className="logs-page">
-      <p>Logs have moved to the navigation bar.</p>
-    </Page>;
-  }
-}
+export const RawLogs = (props: LogsPanelProps) => {
+  props.dispatch({ type: Actions.OPEN_POPUP, payload: "jobs" });
+  props.dispatch({ type: Actions.SET_JOBS_PANEL_OPTION, payload: "logs" });
+  const navigate = useNavigate();
+  navigate(Path.plants());
+  return <Page className="logs-page">
+    <p>Logs have moved to the navigation bar.</p>
+  </Page>;
+};
 
 export const Logs = connect(mapStateToProps)(RawLogs);
+// eslint-disable-next-line import/no-default-export
+export default Logs;
 
 export class LogsPanel extends React.Component<LogsProps, Partial<LogsState>> {
 

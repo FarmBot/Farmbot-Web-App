@@ -12,10 +12,10 @@ import { unselectSequence, closeCommandMenu } from "./actions";
 import { isNumber, noop } from "lodash";
 import { RawDesignerSequenceList } from "./panel/list";
 import { Path } from "../internal_urls";
-import { push } from "../history";
 import { urlFriendly } from "../util";
 import { ErrorBoundary } from "../error_boundary";
 import { isMobile } from "../screen_size";
+import { Navigate, useNavigate } from "react-router-dom";
 
 export interface SequenceBackButtonProps {
   dispatch: Function;
@@ -24,10 +24,11 @@ export interface SequenceBackButtonProps {
 
 export const SequenceBackButton = (props: SequenceBackButtonProps) => {
   const insertingStep = props.className.includes("inserting-step");
+  const navigate = useNavigate();
   return <i
     className={`back-to-sequences fa fa-arrow-left ${props.className}`}
     onClick={() => props.dispatch(
-      insertingStep ? closeCommandMenu() : unselectSequence())}
+      insertingStep ? closeCommandMenu() : unselectSequence(navigate))}
     title={insertingStep ? t("back to sequence") : t("back to sequences")} />;
 };
 
@@ -43,9 +44,11 @@ export class RawSequences extends React.Component<SequencesProps, {}> {
     const sequenceOpen = sequenceSelected ? "open" : "";
     const insertingStep = isNumber(stepIndex) ? "inserting-step" : "";
     const activeClasses = [sequenceOpen, insertingStep].join(" ");
-    isMobile() && !Path.inDesigner() && push(Path.designerSequences(
-      sequenceSelected ? urlFriendly(sequence.body.name) : undefined));
+    const path = Path.designerSequences(sequenceSelected
+      ? urlFriendly(sequence.body.name)
+      : undefined);
     return <Page className="sequence-page">
+      {isMobile() && !Path.inDesigner() && <Navigate to={path} />}
       <Row className="sequences-page-grid">
         <div className={`sequence-list-panel ${activeClasses}`}>
           <ErrorBoundary>
@@ -85,3 +88,5 @@ export class RawSequences extends React.Component<SequencesProps, {}> {
 }
 
 export const Sequences = connect(mapStateToProps)(RawSequences);
+// eslint-disable-next-line import/no-default-export
+export default Sequences;

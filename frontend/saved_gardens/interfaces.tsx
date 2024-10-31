@@ -17,6 +17,7 @@ export interface SavedGardensState {
 }
 
 export interface GardenViewButtonProps {
+  navigate: (path: string) => void;
   dispatch: Function;
   savedGardenId: number | undefined;
   gardenIsOpen: boolean;

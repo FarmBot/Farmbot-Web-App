@@ -4,7 +4,6 @@ import {
   DesignerPanel, DesignerPanelContent, DesignerPanelHeader,
 } from "../farm_designer/designer_panel";
 import { t } from "../i18next_wrapper";
-import { push } from "../history";
 import { TaggedToolSlotPointer, SpecialStatus } from "farmbot";
 import { edit, save, destroy } from "../api/crud";
 import { Panel } from "../farm_designer/panel_header";
@@ -15,6 +14,7 @@ import { EditToolSlotProps, EditToolSlotState } from "./interfaces";
 import { setToolHover } from "../farm_designer/map/layers/tool_slots/tool_graphics";
 import { Popover } from "../ui";
 import { Path } from "../internal_urls";
+import { Navigate } from "react-router-dom";
 
 export class RawEditToolSlot
   extends React.Component<EditToolSlotProps, EditToolSlotState> {
@@ -40,9 +40,9 @@ export class RawEditToolSlot
     const { toolSlot } = this;
     const toolsPath = Path.tools();
     const toolSlotsPath = Path.toolSlots();
-    !toolSlot && Path.startsWith(toolSlotsPath) && push(toolsPath);
     const panelName = "edit-tool-slot";
     return <DesignerPanel panelName={panelName} panel={Panel.Tools}>
+      {!toolSlot && Path.startsWith(toolSlotsPath) && <Navigate to={toolsPath} />}
       <DesignerPanelHeader
         panelName={panelName}
         title={t("Edit slot")}
@@ -100,3 +100,5 @@ export class RawEditToolSlot
 }
 
 export const EditToolSlot = connect(mapStateToPropsEdit)(RawEditToolSlot);
+// eslint-disable-next-line import/no-default-export
+export default EditToolSlot;

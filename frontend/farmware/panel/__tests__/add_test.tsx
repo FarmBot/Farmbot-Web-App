@@ -8,7 +8,6 @@ import {
   mapStateToProps,
 } from "../add";
 import { initSave } from "../../../api/crud";
-import { push } from "../../../history";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { error } from "../../../toast/toast";
 import { Path } from "../../../internal_urls";
@@ -25,31 +24,30 @@ describe("<DesignerFarmwareAdd />", () => {
   });
 
   it("updates url", () => {
-    const wrapper = shallow<DesignerFarmwareAdd>(
-      <DesignerFarmwareAdd {...fakeProps()} />);
-    wrapper.find("input").simulate("change", {
-      currentTarget: { value: "fake url" }
-    });
-    expect(wrapper.state().packageUrl).toEqual("fake url");
+    const wrapper = shallow(<DesignerFarmwareAdd {...fakeProps()} />);
+    wrapper.find("input").simulate("change",
+      { currentTarget: { value: "fake url" } });
+    expect(wrapper.find("input").props().value).toEqual("fake url");
   });
 
   it("adds a new farmware", async () => {
-    const wrapper = mount(<DesignerFarmwareAdd {...fakeProps()} />);
-    wrapper.setState({ packageUrl: "fake url" });
+    const wrapper = shallow(<DesignerFarmwareAdd {...fakeProps()} />);
+    wrapper.find("input").simulate("change",
+      { currentTarget: { value: "fake url" } });
     await wrapper.find("button").simulate("click");
     expect(initSave).toHaveBeenCalledWith("FarmwareInstallation", {
       url: "fake url"
     });
-    expect(push).toHaveBeenCalledWith(Path.farmware());
+    expect(mockNavigate).toHaveBeenCalledWith(Path.farmware());
     expect(error).not.toHaveBeenCalled();
   });
 
   it("doesn't add a new farmware", () => {
-    const wrapper = mount(<DesignerFarmwareAdd {...fakeProps()} />);
-    wrapper.setState({ packageUrl: undefined });
+    const wrapper = shallow(<DesignerFarmwareAdd {...fakeProps()} />);
+    wrapper.find("input").simulate("change", { currentTarget: { value: "" } });
     wrapper.find("button").simulate("click");
     expect(initSave).not.toHaveBeenCalled();
-    expect(push).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith("Please enter a URL");
   });
 });

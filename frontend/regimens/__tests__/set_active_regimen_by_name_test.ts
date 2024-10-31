@@ -1,9 +1,3 @@
-import { Path } from "../../internal_urls";
-let mockPath = Path.mock(Path.regimens("my_regimen"));
-jest.mock("../../history", () => ({
-  getPathArray: () => mockPath.split("/"),
-}));
-
 jest.mock("../actions", () => ({ selectRegimen: jest.fn() }));
 
 import {
@@ -28,17 +22,18 @@ jest.mock("../../redux/store", () => ({
 import { setActiveRegimenByName } from "../set_active_regimen_by_name";
 import { selectRegimen } from "../actions";
 import { selectAllRegimens } from "../../resources/selectors";
+import { Path } from "../../internal_urls";
 
 describe("setActiveRegimenByName()", () => {
   it("returns early if there is nothing to compare", () => {
-    mockPath = Path.mock(Path.regimens());
+    location.pathname = Path.mock(Path.regimens());
     setActiveRegimenByName();
     expect(selectRegimen).not.toHaveBeenCalled();
   });
 
   it("sometimes can't find a regimen by name", () => {
     const regimen = mockRegimens[0];
-    mockPath = Path.mock(Path.regimens("not_" + regimen.body.name));
+    location.pathname = Path.mock(Path.regimens("not_" + regimen.body.name));
     setActiveRegimenByName();
     expect(selectAllRegimens).toHaveBeenCalled();
     expect(selectRegimen).not.toHaveBeenCalled();
@@ -47,7 +42,7 @@ describe("setActiveRegimenByName()", () => {
   it("finds a regimen by name", () => {
     const regimen = mockRegimens[0];
     jest.clearAllTimers();
-    mockPath = Path.mock(Path.regimens(regimen.body.name));
+    location.pathname = Path.mock(Path.regimens(regimen.body.name));
     setActiveRegimenByName();
     expect(selectRegimen).toHaveBeenCalledWith(regimen.uuid);
   });

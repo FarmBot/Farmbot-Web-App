@@ -1,9 +1,3 @@
-import { Path } from "../../../../internal_urls";
-let mockPath = Path.mock(Path.designer());
-jest.mock("../../../../history", () => ({
-  getPathArray: jest.fn(() => mockPath.split("/")),
-}));
-
 jest.mock("../../layers/points/interpolation_map", () => ({
   getInterpolationData: () => [{ x: 111, y: 112, z: 113 }],
   fetchInterpolationOptions: () => ({ stepSize: 100 }),
@@ -33,6 +27,7 @@ import { SlotDimensions } from "../../tool_graphics/slot";
 import {
   fakeDesignerState,
 } from "../../../../__test_support__/fake_designer_state";
+import { Path } from "../../../../internal_urls";
 
 describe("<ProfileSvg />", () => {
   const fakeProps = (): ProfileSvgProps => ({
@@ -416,7 +411,7 @@ describe("<ProfileSvg />", () => {
     });
 
   it("renders interpolated soil", () => {
-    mockPath = Path.mock(Path.location());
+    location.pathname = Path.mock(Path.location());
     const p = fakeProps();
     p.expanded = true;
     p.designer.profileAxis = "y";

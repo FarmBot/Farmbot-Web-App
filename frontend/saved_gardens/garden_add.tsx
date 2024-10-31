@@ -47,3 +47,5 @@ export class RawAddGarden extends React.Component<GardenSnapshotProps, {}> {
 }
 
 export const AddGarden = connect(mapStateToProps)(RawAddGarden);
+// eslint-disable-next-line import/no-default-export
+export default AddGarden;

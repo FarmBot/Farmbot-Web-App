@@ -2,7 +2,6 @@ import moment from "moment";
 import { t } from "../i18next_wrapper";
 import { AddEditFarmEventProps } from "../farm_designer/interfaces";
 import { Everything, TimeSettings } from "../interfaces";
-import { push } from "../history";
 import {
   selectAllFarmEvents,
   indexRegimenById,
@@ -110,14 +109,15 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
     (uuid: string | undefined): TaggedFarmEvent | undefined =>
       uuid ? farmEvents.filter(x => x.uuid === uuid)[0] : undefined;
 
-  const getFarmEvent = (): TaggedFarmEvent | undefined => {
-    const id = parseInt(Path.getSlug(Path.farmEvents()));
-    if (id && hasId(props.resources.index, "FarmEvent", id)) {
-      return findFarmEventById(props.resources.index, id);
-    } else {
-      push(Path.farmEvents());
-    }
-  };
+  const getFarmEvent =
+    (navigate: (url: string) => void): TaggedFarmEvent | undefined => {
+      const id = parseInt(Path.getSlug(Path.farmEvents()));
+      if (id && hasId(props.resources.index, "FarmEvent", id)) {
+        return findFarmEventById(props.resources.index, id);
+      } else {
+        navigate(Path.farmEvents());
+      }
+    };
 
   const findExecutable = (kind: ExecutableType, id: number):
     TaggedSequence | TaggedRegimen => {

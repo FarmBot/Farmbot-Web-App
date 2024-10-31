@@ -2,11 +2,11 @@ import React from "react";
 import { t } from "../../i18next_wrapper";
 import { round } from "lodash";
 import { Actions } from "../../constants";
-import { push } from "../../history";
 import { getUrlQuery } from "../../util";
 import { HelpState } from "../reducer";
 import { TourStepContainerProps, TourStepContainerState } from "./interfaces";
 import { TOURS } from "./data";
+import { NavigationContext } from "../../routes_helpers";
 
 export const tourPath = (
   stepUrl: string | undefined,
@@ -24,6 +24,10 @@ export class TourStepContainer
     activeBeacons: [],
   };
 
+  static contextType = NavigationContext;
+  context!: React.ContextType<typeof NavigationContext>;
+  navigate = this.context;
+
   updateTourState = (
     tour: string | undefined,
     tourStep: string | undefined,
@@ -35,11 +39,14 @@ export class TourStepContainer
     if (tour) {
       const currentStep = TOURS(this.props.firmwareHardware)[tour]?.steps
         .filter(step => step.slug == tourStep)[0];
-      push(tourPath(updateUrl ? currentStep.url : undefined, tour, tourStep));
+      this.navigate(tourPath(
+        updateUrl ? currentStep.url : undefined,
+        tour,
+        tourStep));
       currentStep?.dispatchActions
         && currentStep.dispatchActions.map(action => dispatch(action));
     } else {
-      push(location.pathname);
+      this.navigate(location.pathname);
     }
   };
 

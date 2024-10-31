@@ -16,7 +16,7 @@ import {
   Help,
 } from "../ui";
 import { destroy, save, overwrite } from "../api/crud";
-import { push } from "../history";
+import { useNavigate } from "react-router-dom";
 import { betterMerge, parseIntInput } from "../util";
 import { maybeWarnAboutMissedTasks } from "./util";
 import { FarmEventRepeatForm } from "./farm_event_repeat_form";
@@ -47,6 +47,7 @@ import { SectionHeader } from "../sequences/sequence_editor_middle_active";
 import { nearOsUpdateTime } from "../regimens/bulk_scheduler/bulk_scheduler";
 import { timeToMs } from "../regimens/bulk_scheduler/utils";
 import { getDeviceAccountSettings } from "../resources/selectors";
+import { NavigationContext } from "../routes_helpers";
 
 export const NEVER: TimeUnit = "never";
 /** Separate each of the form fields into their own interface. Recombined later
@@ -232,6 +233,10 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
     onChange={this.editBodyVariables(this.bodyVariables)}
     allowedVariableNodes={AllowedVariableNodes.variable} />;
 
+  static contextType = NavigationContext;
+  context!: React.ContextType<typeof NavigationContext>;
+  navigate = this.context;
+
   executableSet = (ddi: DropDownItem) => {
     if (ddi.value) {
       const { id, executable_type } = this.props.farmEvent.body;
@@ -239,7 +244,7 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
       const next_executable_type = executableType(ddi.headingId);
       if (id && prev_executable_type !== next_executable_type) {
         error(t("Cannot change between Sequences and Regimens."));
-        push(Path.farmEvents());
+        this.navigate(Path.farmEvents());
       } else {
         const { uuid } = this.props.findExecutable(
           next_executable_type, parseInt("" + ddi.value));
@@ -360,7 +365,7 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
             .map(item => nearOsUpdateTime(timeToMs(item.format("HH:mm")),
               getDeviceAccountSettings(this.props.resources).body.ota_hour)));
         warn && warning(Content.WITHIN_HOUR_OF_OS_UPDATE);
-        push(Path.farmEvents());
+        this.navigate(Path.farmEvents());
       })
       .catch(() => {
         error(t("Unable to save event."));
@@ -523,15 +528,17 @@ export interface FarmEventDeleteButtonProps {
   dispatch: Function;
 }
 
-export const FarmEventDeleteButton = (props: FarmEventDeleteButtonProps) =>
-  <i className={"fa fa-trash fb-icon-button"} hidden={props.hidden}
+export const FarmEventDeleteButton = (props: FarmEventDeleteButtonProps) => {
+  const navigate = useNavigate();
+  return <i className={"fa fa-trash fb-icon-button"} hidden={props.hidden}
     title={t("Delete")}
     onClick={() =>
       props.dispatch(destroy(props.farmEvent.uuid))
         .then(() => {
-          push(Path.farmEvents());
+          navigate(Path.farmEvents());
           success(t("Deleted event."), { title: t("Deleted") });
         })} />;
+};
 
 interface FarmEventFormProps {
   isRegimen: boolean;

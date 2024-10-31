@@ -1,10 +1,3 @@
-import { Path } from "../../internal_urls";
-let mockPath = "";
-jest.mock("../../history", () => ({
-  push: jest.fn(),
-  getPathArray: jest.fn(() => mockPath.split("/")),
-}));
-
 jest.mock("../../api/crud", () => ({
   destroy: jest.fn(),
   save: jest.fn(),
@@ -99,7 +92,6 @@ import { DropAreaProps } from "../../draggable/interfaces";
 import { Actions, Content, DeviceSetting } from "../../constants";
 import { setWebAppConfigValue } from "../../config_storage/actions";
 import { BooleanSetting } from "../../session_keys";
-import { push } from "../../history";
 import { maybeTagStep } from "../../resources/sequence_tagging";
 import { error } from "../../toast/toast";
 import { API } from "../../api";
@@ -111,6 +103,7 @@ import { StepButtonCluster } from "../step_button_cluster";
 import { changeEvent } from "../../__test_support__/fake_html_events";
 import { requestAutoGeneration } from "../request_auto_generation";
 import { emptyState } from "../../resources/reducer";
+import { Path } from "../../internal_urls";
 
 describe("<SequenceEditorMiddleActive />", () => {
   API.setBaseUrl("");
@@ -214,7 +207,7 @@ describe("<SequenceEditorMiddleActive />", () => {
     const button = wrapper.find(".save-btn");
     await clickButton(button, 0, "save");
     expect(save).toHaveBeenCalledWith(expect.stringContaining("Sequence"));
-    expect(push).toHaveBeenCalledWith(Path.sequences("fake"));
+    expect(mockNavigate).toHaveBeenCalledWith(Path.sequences("fake"));
   });
 
   it("tests", () => {
@@ -250,9 +243,10 @@ describe("<SequenceEditorMiddleActive />", () => {
   it("copies", () => {
     const wrapper = mount(<SequenceEditorMiddleActive {...fakeProps()} />);
     wrapper.find(".fa-copy").simulate("click");
-    expect(copySequence).toHaveBeenCalledWith(expect.objectContaining({
-      uuid: expect.stringContaining("Sequence")
-    }));
+    expect(copySequence).toHaveBeenCalledWith(expect.any(Function),
+      expect.objectContaining({
+        uuid: expect.stringContaining("Sequence")
+      }));
   });
 
   it("has drag area", () => {
@@ -308,7 +302,7 @@ describe("<SequenceEditorMiddleActive />", () => {
   });
 
   it("visualizes", () => {
-    mockPath = Path.mock(Path.designerSequences("1"));
+    location.pathname = Path.mock(Path.designerSequences("1"));
     const p = fakeProps();
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
     wrapper.find(".fa-eye-slash").simulate("click");
@@ -319,7 +313,7 @@ describe("<SequenceEditorMiddleActive />", () => {
   });
 
   it("un-visualizes", () => {
-    mockPath = Path.mock(Path.designerSequences("1"));
+    location.pathname = Path.mock(Path.designerSequences("1"));
     const p = fakeProps();
     p.visualized = true;
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
@@ -331,7 +325,7 @@ describe("<SequenceEditorMiddleActive />", () => {
   });
 
   it("pins sequence", () => {
-    mockPath = Path.mock(Path.sequences("1"));
+    location.pathname = Path.mock(Path.sequences("1"));
     const p = fakeProps();
     p.sequence.body.pinned = false;
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
@@ -340,7 +334,7 @@ describe("<SequenceEditorMiddleActive />", () => {
   });
 
   it("unpins sequence", () => {
-    mockPath = Path.mock(Path.sequences("1"));
+    location.pathname = Path.mock(Path.sequences("1"));
     const p = fakeProps();
     p.sequence.body.pinned = true;
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
@@ -349,7 +343,7 @@ describe("<SequenceEditorMiddleActive />", () => {
   });
 
   it("loads sequence preview", () => {
-    mockPath = Path.mock(Path.sequences("1"));
+    location.pathname = Path.mock(Path.sequences("1"));
     const p = fakeProps();
     p.sequence.body.sequence_versions = [1, 2, 3];
     mount(<SequenceEditorMiddleActive {...p} />);
@@ -358,7 +352,7 @@ describe("<SequenceEditorMiddleActive />", () => {
   });
 
   it("sets sequence preview", () => {
-    mockPath = Path.mock(Path.sequences("1"));
+    location.pathname = Path.mock(Path.sequences("1"));
     const p = fakeProps();
     p.sequence.body.description = "description";
     const wrapper = mount<SequenceEditorMiddleActive>(
@@ -370,7 +364,7 @@ describe("<SequenceEditorMiddleActive />", () => {
   });
 
   it("sets error", () => {
-    mockPath = Path.mock(Path.sequences("1"));
+    location.pathname = Path.mock(Path.sequences("1"));
     const p = fakeProps();
     const wrapper = mount<SequenceEditorMiddleActive>(
       <SequenceEditorMiddleActive {...p} />);
@@ -380,7 +374,7 @@ describe("<SequenceEditorMiddleActive />", () => {
   });
 
   it("renders public view", () => {
-    mockPath = Path.mock(Path.sequences("1"));
+    location.pathname = Path.mock(Path.sequences("1"));
     const p = fakeProps();
     const wrapper = mount<SequenceEditorMiddleActive>(
       <SequenceEditorMiddleActive {...p} />);
@@ -393,7 +387,7 @@ describe("<SequenceEditorMiddleActive />", () => {
   });
 
   it("renders public view with id", () => {
-    mockPath = Path.mock(Path.sequences("1"));
+    location.pathname = Path.mock(Path.sequences("1"));
     const sequence = fakeSequence();
     sequence.body.id = 1;
     const p = fakeProps();
@@ -406,7 +400,7 @@ describe("<SequenceEditorMiddleActive />", () => {
   });
 
   it("renders celery script view button: enabled", () => {
-    mockPath = Path.mock(Path.sequences("1"));
+    location.pathname = Path.mock(Path.sequences("1"));
     const p = fakeProps();
     p.sequence = fakeSequence();
     p.sequence.body.sequence_version_id = 1;
@@ -424,7 +418,7 @@ describe("<SequenceEditorMiddleActive />", () => {
   });
 
   it("renders celery script view button: disabled", () => {
-    mockPath = Path.mock(Path.sequences("1"));
+    location.pathname = Path.mock(Path.sequences("1"));
     const p = fakeProps();
     const previewSequence = fakeSequence();
     p.getWebAppConfigValue = () => true;
@@ -438,7 +432,7 @@ describe("<SequenceEditorMiddleActive />", () => {
   });
 
   it("makes selections", () => {
-    mockPath = Path.mock(Path.sequences("1"));
+    location.pathname = Path.mock(Path.sequences("1"));
     const wrapper = shallow<SequenceEditorMiddleActive>(
       <SequenceEditorMiddleActive {...fakeProps()} />);
     wrapper.instance().loadSequenceVersion = jest.fn();
@@ -451,7 +445,7 @@ describe("<SequenceEditorMiddleActive />", () => {
   });
 
   it("shows warning", () => {
-    mockPath = Path.mock(Path.sequences("1"));
+    location.pathname = Path.mock(Path.sequences("1"));
     const p = fakeProps();
     p.sequence.body.sequence_version_id = 1;
     p.sequence.body.body = [{ kind: "lua", args: { lua: "" } }];
@@ -461,7 +455,7 @@ describe("<SequenceEditorMiddleActive />", () => {
   });
 
   it("doesn't show warning", () => {
-    mockPath = Path.mock(Path.sequences("1"));
+    location.pathname = Path.mock(Path.sequences("1"));
     const p = fakeProps();
     p.sequence.body.sequence_version_id = 1;
     p.sequence.body.body = [{ kind: "sync", args: {} }];
@@ -471,7 +465,7 @@ describe("<SequenceEditorMiddleActive />", () => {
   });
 
   it("edits description", () => {
-    mockPath = Path.mock(Path.sequences("1"));
+    location.pathname = Path.mock(Path.sequences("1"));
     const p = fakeProps();
     p.sequence.body.description = "description";
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
@@ -484,7 +478,7 @@ describe("<SequenceEditorMiddleActive />", () => {
   });
 
   it("handles empty description", () => {
-    mockPath = Path.mock(Path.sequences("1"));
+    location.pathname = Path.mock(Path.sequences("1"));
     const p = fakeProps();
     p.sequence.body.description = "";
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
@@ -495,7 +489,7 @@ describe("<SequenceEditorMiddleActive />", () => {
   });
 
   it("generates description", () => {
-    mockPath = Path.mock(Path.sequences("1"));
+    location.pathname = Path.mock(Path.sequences("1"));
     const p = fakeProps();
     p.sequence.body.description = "";
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
@@ -521,14 +515,14 @@ describe("<SequenceEditorMiddleActive />", () => {
   });
 
   it("shows add variable options", () => {
-    mockPath = Path.mock(Path.sequences("1"));
+    location.pathname = Path.mock(Path.sequences("1"));
     const p = fakeProps();
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
     expect(wrapper.find("Popover").length).toEqual(10);
   });
 
   it("opens add variable menu", () => {
-    mockPath = Path.mock(Path.sequences("1"));
+    location.pathname = Path.mock(Path.sequences("1"));
     const wrapper = mount<SequenceEditorMiddleActive>(
       <SequenceEditorMiddleActive {...fakeProps()} />);
     expect(wrapper.state().addVariableMenuOpen).toEqual(false);
@@ -539,7 +533,7 @@ describe("<SequenceEditorMiddleActive />", () => {
   });
 
   it("adds new variable", () => {
-    mockPath = Path.mock(Path.sequences("1"));
+    location.pathname = Path.mock(Path.sequences("1"));
     const wrapper = mount<SequenceEditorMiddleActive>(
       <SequenceEditorMiddleActive {...fakeProps()} />);
     wrapper.setState({ addVariableMenuOpen: true });
@@ -560,7 +554,7 @@ describe("<SequenceEditorMiddleActive />", () => {
   });
 
   it("adds new resource variable", () => {
-    mockPath = Path.mock(Path.sequences("1"));
+    location.pathname = Path.mock(Path.sequences("1"));
     const wrapper = mount<SequenceEditorMiddleActive>(
       <SequenceEditorMiddleActive {...fakeProps()} />);
     wrapper.setState({ addVariableMenuOpen: true });
@@ -598,7 +592,7 @@ describe("<SequenceBtnGroup />", () => {
   });
 
   it("edits color", () => {
-    mockPath = Path.mock(Path.sequencePage("1"));
+    location.pathname = Path.mock(Path.sequencePage("1"));
     const p = fakeProps();
     const wrapper = mount(<SequenceBtnGroup {...p} />);
     wrapper.find(".color-picker-item-wrapper").first().simulate("click");
@@ -698,7 +692,7 @@ describe("<AddCommandButton />", () => {
   });
 
   it("dispatches new step position", () => {
-    mockPath = "";
+    location.pathname = "";
     const p = fakeProps();
     const wrapper = shallow(<AddCommandButton {...p} />);
     wrapper.find("button").simulate("click");
@@ -706,7 +700,7 @@ describe("<AddCommandButton />", () => {
       type: Actions.SET_SEQUENCE_STEP_POSITION,
       payload: 1,
     });
-    expect(push).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 
   it("closes cluster", () => {

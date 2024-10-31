@@ -1,10 +1,3 @@
-import { Path } from "../../../../../internal_urls";
-const mockPath = Path.mock(Path.weeds());
-jest.mock("../../../../../history", () => ({
-  push: jest.fn(),
-  getPathArray: () => mockPath.split("/"),
-}));
-
 import React from "react";
 import { GardenWeed } from "../garden_weed";
 import { GardenWeedProps } from "../../../interfaces";
@@ -13,8 +6,8 @@ import {
   fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 import { Actions } from "../../../../../constants";
-import { push } from "../../../../../history";
 import { svgMount } from "../../../../../__test_support__/svg_mount";
+import { Path } from "../../../../../internal_urls";
 
 describe("<GardenWeed />", () => {
   const fakeProps = (): GardenWeedProps => ({
@@ -97,7 +90,7 @@ describe("<GardenWeed />", () => {
     const p = fakeProps();
     const wrapper = svgMount(<GardenWeed {...p} />);
     wrapper.find("g").first().simulate("click");
-    expect(push).toHaveBeenCalledWith(Path.weeds(p.weed.body.id));
+    expect(mockNavigate).toHaveBeenCalledWith(Path.weeds(p.weed.body.id));
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SELECT_POINT,
       payload: [p.weed.uuid],
@@ -126,7 +119,7 @@ describe("<GardenWeed />", () => {
     p.selected = false;
     p.current = false;
     const wrapper = svgMount(<GardenWeed {...p} />);
-    wrapper.find(GardenWeed).setState({ iconHovered: true });
+    wrapper.find(GardenWeed).simulate("mouseEnter");
     expect(wrapper.html()).not.toContain("weed-indicator");
   });
 });

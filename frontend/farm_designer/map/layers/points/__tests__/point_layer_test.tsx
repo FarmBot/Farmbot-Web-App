@@ -1,9 +1,3 @@
-import { Path } from "../../../../../internal_urls";
-let mockPath = Path.mock(Path.plants());
-jest.mock("../../../../../history", () => ({
-  getPathArray: jest.fn(() => mockPath.split("/")),
-}));
-
 import React from "react";
 import { PointLayer, PointLayerProps } from "../point_layer";
 import { fakePoint } from "../../../../../__test_support__/fake_state/resources";
@@ -19,6 +13,7 @@ import {
   fakeDesignerState,
 } from "../../../../../__test_support__/fake_designer_state";
 import { tagAsSoilHeight } from "../../../../../points/soil_height";
+import { Path } from "../../../../../internal_urls";
 
 describe("<PointLayer/>", () => {
   const fakeProps = (): PointLayerProps => ({
@@ -55,7 +50,7 @@ describe("<PointLayer/>", () => {
   });
 
   it("allows point mode interaction", () => {
-    mockPath = Path.mock(Path.points());
+    location.pathname = Path.mock(Path.points());
     const p = fakeProps();
     p.interactions = true;
     const wrapper = svgMount(<PointLayer {...p} />);

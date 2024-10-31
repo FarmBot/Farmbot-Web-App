@@ -3,11 +3,12 @@ jest.mock("../../screen_size", () => ({
   isMobile: () => mockIsMobile,
 }));
 
-import { Path } from "../../internal_urls";
-let mockPath = "";
-jest.mock("../../history", () => ({
-  push: jest.fn(),
-  getPathArray: jest.fn(() => mockPath.split("/")),
+jest.mock("axios", () => ({
+  get: () => Promise.resolve({
+    data: [
+      { id: 1, name: "name", description: "", path: "", color: "gray" },
+    ]
+  }),
 }));
 
 import React from "react";
@@ -22,13 +23,16 @@ import { Actions } from "../../constants";
 import {
   fakeHardwareFlags, fakeFarmwareData,
 } from "../../__test_support__/fake_sequence_step_data";
-import { push } from "../../history";
 import { mapStateToFolderProps } from "../../folders/map_state_to_props";
 import { fakeState } from "../../__test_support__/fake_state";
 import { sequencesPanelState } from "../../__test_support__/panel_state";
 import { emptyState } from "../../resources/reducer";
+import { Path } from "../../internal_urls";
+import { API } from "../../api";
 
 describe("<Sequences />", () => {
+  API.setBaseUrl("");
+
   const fakeProps = (): SequencesProps => ({
     dispatch: jest.fn(),
     sequence: fakeSequence(),
@@ -63,21 +67,21 @@ describe("<Sequences />", () => {
   });
 
   it("redirects to mobile interface", () => {
-    mockPath = Path.mock(Path.sequencePage());
+    location.pathname = Path.mock(Path.sequencePage());
     mockIsMobile = true;
     const p = fakeProps();
     p.sequence = undefined;
-    shallow(<Sequences {...p} />);
-    expect(push).toHaveBeenCalledWith(Path.designerSequences());
+    mount(<Sequences {...p} />);
+    expect(mockNavigate).toHaveBeenCalledWith(Path.designerSequences());
   });
 
   it("redirects to mobile interface: sequence selected", () => {
-    mockPath = Path.mock(Path.sequencePage());
+    location.pathname = Path.mock(Path.sequencePage());
     mockIsMobile = true;
     const p = fakeProps();
     p.sequence = fakeSequence();
-    shallow(<Sequences {...p} />);
-    expect(push).toHaveBeenCalledWith(Path.designerSequences("fake"));
+    mount(<Sequences {...p} />);
+    expect(mockNavigate).toHaveBeenCalledWith(Path.designerSequences("fake"));
   });
 });
 
@@ -95,7 +99,7 @@ describe("<SequenceBackButton />", () => {
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_SEQUENCE_STEP_POSITION, payload: undefined
     });
-    expect(push).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 
   it("goes back to sequence list", () => {
@@ -106,6 +110,6 @@ describe("<SequenceBackButton />", () => {
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SELECT_SEQUENCE, payload: undefined
     });
-    expect(push).toHaveBeenCalledWith(Path.sequences());
+    expect(mockNavigate).toHaveBeenCalledWith(Path.sequences());
   });
 });

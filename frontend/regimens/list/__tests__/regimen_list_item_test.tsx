@@ -1,10 +1,3 @@
-import { Path } from "../../../internal_urls";
-let mockPath = Path.mock(Path.regimens());
-jest.mock("../../../history", () => ({
-  push: jest.fn(),
-  getPathArray: () => mockPath.split("/"),
-}));
-
 jest.mock("../../actions", () => ({ selectRegimen: jest.fn() }));
 
 jest.mock("../../../api/crud", () => ({
@@ -17,9 +10,9 @@ import { RegimenListItem } from "../regimen_list_item";
 import { render, shallow, mount } from "enzyme";
 import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
 import { SpecialStatus, Color } from "farmbot";
-import { push } from "../../../history";
 import { selectRegimen } from "../../actions";
 import { edit } from "../../../api/crud";
+import { Path } from "../../../internal_urls";
 
 describe("<RegimenListItem/>", () => {
   const fakeProps = (): RegimenListItemProps => ({
@@ -61,7 +54,7 @@ describe("<RegimenListItem/>", () => {
     const wrapper = shallow(<RegimenListItem {...p} />);
     wrapper.simulate("click");
     expect(selectRegimen).toHaveBeenCalledWith(p.regimen.uuid);
-    expect(push).toHaveBeenCalledWith(Path.regimens("foo"));
+    expect(mockNavigate).toHaveBeenCalledWith(Path.regimens("foo"));
   });
 
   it("changes color", () => {
@@ -76,7 +69,7 @@ describe("<RegimenListItem/>", () => {
     p.regimen.body.name = "";
     p.regimen.body.color = "" as Color;
     p.regimen.specialStatus = SpecialStatus.DIRTY;
-    mockPath = Path.mock(Path.regimens());
+    location.pathname = Path.mock(Path.regimens());
     const wrapper = mount(<RegimenListItem {...p} />);
     expect(wrapper.text()).toEqual(" *");
     expect(wrapper.find(".saucer").hasClass("gray")).toBeTruthy();

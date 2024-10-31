@@ -1,11 +1,5 @@
 jest.mock("../../devices/actions", () => ({ move: jest.fn() }));
 
-const mockPath = "";
-jest.mock("../../history", () => ({
-  getPathArray: jest.fn(() => mockPath.split("/")),
-  push: jest.fn(),
-}));
-
 jest.mock("../../config_storage/actions", () => ({
   setWebAppConfigValue: jest.fn(),
 }));
@@ -21,7 +15,6 @@ import {
   MoveToForm, MoveToFormProps, MoveModeLink, chooseLocation,
   GoToThisLocationButtonProps, GoToThisLocationButton, movementPercentRemaining,
 } from "../move_to";
-import { push } from "../../history";
 import { Actions } from "../../constants";
 import { clickButton } from "../../__test_support__/helpers";
 import { move } from "../../devices/actions";
@@ -104,24 +97,54 @@ describe("<MoveModeLink />", () => {
   it("enters 'move to' mode", () => {
     const wrapper = shallow(<MoveModeLink />);
     clickButton(wrapper, 0, "move mode");
-    expect(push).toHaveBeenCalledWith(Path.location());
+    expect(mockNavigate).toHaveBeenCalledWith(Path.location());
   });
 });
 
 describe("chooseLocation()", () => {
   it("updates chosen coordinates", () => {
+    location.pathname = Path.mock(Path.location());
+    const navigate = jest.fn();
     const dispatch = jest.fn();
-    chooseLocation({ dispatch, gardenCoords: { x: 1, y: 2 } });
+    chooseLocation({ navigate, dispatch, gardenCoords: { x: 1, y: 2 } });
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.CHOOSE_LOCATION,
-      payload: { x: 1, y: 2, z: 0 }
+      payload: { x: 1, y: 2, z: 0 },
     });
+    expect(navigate).toHaveBeenCalledWith(Path.location({ x: 1, y: 2 }));
   });
 
-  it("doesn't update coordinates", () => {
+  it("doesn't update coordinates or navigate", () => {
+    location.pathname = Path.mock(Path.location());
+    const navigate = jest.fn();
     const dispatch = jest.fn();
-    chooseLocation({ dispatch, gardenCoords: undefined });
+    chooseLocation({ navigate, dispatch, gardenCoords: undefined });
     expect(dispatch).not.toHaveBeenCalled();
+    expect(navigate).not.toHaveBeenCalled();
+  });
+
+  it("doesn't navigate: same location", () => {
+    location.pathname = Path.mock(Path.location({ x: 1, y: 2 }));
+    const navigate = jest.fn();
+    const dispatch = jest.fn();
+    chooseLocation({ navigate, dispatch, gardenCoords: { x: 1, y: 2 } });
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.CHOOSE_LOCATION,
+      payload: { x: 1, y: 2, z: 0 },
+    });
+    expect(navigate).not.toHaveBeenCalled();
+  });
+
+  it("doesn't navigate: not in location panel", () => {
+    location.pathname = Path.mock(Path.plants());
+    const navigate = jest.fn();
+    const dispatch = jest.fn();
+    chooseLocation({ navigate, dispatch, gardenCoords: { x: 1, y: 2 } });
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.CHOOSE_LOCATION,
+      payload: { x: 1, y: 2, z: 0 },
+    });
+    expect(navigate).not.toHaveBeenCalled();
   });
 });
 

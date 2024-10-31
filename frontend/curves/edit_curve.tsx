@@ -1,7 +1,6 @@
 import React from "react";
 import { t } from "../i18next_wrapper";
 import { connect } from "react-redux";
-import { push } from "../history";
 import { SpecialStatus, TaggedCurve } from "farmbot";
 import { round, take } from "lodash";
 import {
@@ -42,6 +41,7 @@ import {
   calcMaxCount, MoreIndicatorIcon,
 } from "../point_groups/criteria/component";
 import { GetState } from "../redux/interfaces";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const columnTitle = (curve: TaggedCurve) => {
   switch (curve.body.type) {
@@ -134,8 +134,8 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
     const { dispatch } = this.props;
     const { hovered } = this.state;
     const curvesPath = Path.curves();
-    !curve && Path.startsWith(curvesPath) && push(curvesPath);
     return <DesignerPanel panelName={"curve-info"} panel={Panel.Curves}>
+      {!curve && Path.startsWith(curvesPath) && <Navigate to={curvesPath} />}
       <DesignerPanelHeader
         panelName={Panel.Curves}
         style={{ background: curvePanelColor(curve) }}
@@ -214,6 +214,8 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
 }
 
 export const EditCurve = connect(mapStateToProps)(RawEditCurve);
+// eslint-disable-next-line import/no-default-export
+export default EditCurve;
 
 export const ScaleMenu = (props: ActionMenuProps) => {
   const { data } = props.curve.body;
@@ -320,6 +322,7 @@ export const copyCurve =
   (curves: TaggedCurve[], curve: TaggedCurve) =>
     (dispatch: Function, getState: GetState) =>
       () => {
+        const navigate = useNavigate();
         const existingNames = curves.map(c => c.body.name);
         let i = 1;
         const newName = (count: number) =>
@@ -337,7 +340,7 @@ export const copyCurve =
           .then(() => {
             const id = selectAllCurves(getState().resources.index).filter(curve =>
               curve.uuid == action.payload.uuid)[0]?.body.id;
-            id && push(Path.curves(id));
+            id && navigate(Path.curves(id));
           })
           .catch(() => { });
       };

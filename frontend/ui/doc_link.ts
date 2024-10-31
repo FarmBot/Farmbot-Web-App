@@ -1,5 +1,5 @@
 import { ExternalUrl } from "../external_urls";
-import { push } from "../history";
+import { useNavigate } from "react-router-dom";
 import { Path } from "../internal_urls";
 
 /** A centralized list of all documentation slugs in the app makes it easier to
@@ -43,7 +43,8 @@ const genericDocLinkClick = <T>(slug: T, page: "help" | "developer") => () => {
   if (Path.getSlug(Path.designer()) == page) {
     location.assign(window.location.origin + Path.withApp(path("" + slug)));
   } else {
-    push(path("" + slug));
+    const navigate = useNavigate();
+    navigate(path("" + slug));
   }
 };
 

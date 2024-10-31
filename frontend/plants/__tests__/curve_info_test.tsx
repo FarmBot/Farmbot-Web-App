@@ -1,9 +1,3 @@
-import { Path } from "../../internal_urls";
-let mockPath = Path.mock(Path.cropSearch("mint"));
-jest.mock("../../history", () => ({
-  getPathArray: () => mockPath.split("/"),
-}));
-
 import React from "react";
 import { CurveInfo } from "../curve_info";
 import { mount, shallow } from "enzyme";
@@ -15,6 +9,7 @@ import { CurveInfoProps } from "../../curves/interfaces";
 import { CurveType } from "../../curves/templates";
 import { formatPlantInfo } from "../map_state_to_props";
 import { FBSelect } from "../../ui";
+import { Path } from "../../internal_urls";
 
 describe("<CurveInfo />", () => {
   const fakeProps = (): CurveInfoProps => ({
@@ -41,7 +36,7 @@ describe("<CurveInfo />", () => {
   });
 
   it("displays curve with x, y", () => {
-    mockPath = Path.mock(Path.cropSearch("mint"));
+    location.pathname = Path.mock(Path.cropSearch("mint"));
     const p = fakeProps();
     const curve = fakeCurve();
     curve.body.type = "water";

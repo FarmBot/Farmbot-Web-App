@@ -5,9 +5,9 @@ import { toggleControlPanel, bulkToggleControlPanel } from "./toggle_section";
 import { getUrlQuery, urlFriendly } from "../util";
 import { Actions, DeviceSetting } from "../constants";
 import { trim, some } from "lodash";
-import { push } from "../history";
 import { Path } from "../internal_urls";
 import { PhotosPanelState } from "../photos/interfaces";
+import { NavigationContext } from "../routes_helpers";
 
 const FARMBOT_PANEL = [
   DeviceSetting.farmbotSettings,
@@ -492,6 +492,10 @@ export class Highlight extends React.Component<HighlightProps, HighlightState> {
     return this.props.hidden ? !highlightInSection : notHighlighted;
   }
 
+  static contextType = NavigationContext;
+  context!: React.ContextType<typeof NavigationContext>;
+  navigate = this.context;
+
   render() {
     const hoverClass = this.state.hovered ? "hovered" : "";
     return <div
@@ -505,16 +509,13 @@ export class Highlight extends React.Component<HighlightProps, HighlightState> {
       hidden={this.searchTerm ? !this.searchMatch : this.hidden}>
       {this.props.settingName &&
         <i className={`fa fa-anchor ${this.props.className} ${hoverClass}`}
-          onClick={() => push(linkToSetting(this.props.settingName,
+          onClick={() => this.navigate(linkToSetting(this.props.settingName,
             this.props.pathPrefix))} />}
       {this.props.children}
     </div>;
   }
 }
 
-const linkToSetting =
+export const linkToSetting =
   (settingName: DeviceSetting, pathPrefix = Path.settings) =>
     pathPrefix(urlFriendly(stripUnits(settingName)).toLowerCase());
-
-export const goToFbosSettings = () => push(linkToSetting(DeviceSetting.farmbotOS));
-export const goToHardReset = () => push(linkToSetting(DeviceSetting.hardReset));

@@ -28,7 +28,7 @@ import { ExternalUrl } from "../external_urls";
 import { setupProgressString } from "../wizard/data";
 import { store } from "../redux/store";
 import { selectAllWizardStepResults } from "../resources/selectors_by_kind";
-import { push } from "../history";
+import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import { Path } from "../internal_urls";
 import { logout } from "../logout";
@@ -328,8 +328,9 @@ export const ReSeedAccount = () => {
   </Row>;
 };
 
-const TourNotTaken = (props: TourNotTakenProps) =>
-  <AlertCardTemplate
+const TourNotTaken = (props: TourNotTakenProps) => {
+  const navigate = useNavigate();
+  return <AlertCardTemplate
     alert={props.alert}
     className={"tour-not-taken-alert"}
     title={t("Take a guided tour")}
@@ -339,11 +340,12 @@ const TourNotTaken = (props: TourNotTakenProps) =>
     findApiAlertById={props.findApiAlertById}
     iconName={"fa-info-circle"}>
     <a className="link-button fb-button green"
-      onClick={() => push(Path.tours())}
+      onClick={() => navigate(Path.tours())}
       title={t("View available tours")}>
       {t("View available tours")}
     </a>
   </AlertCardTemplate>;
+};
 
 const UserNotWelcomed = (props: CommonAlertCardProps) =>
   <AlertCardTemplate
@@ -431,6 +433,7 @@ const SetupIncomplete = (props: SetupIncompleteProps) => {
   const buttonText = percentComplete != "0% complete"
     ? t("Continue setup")
     : t("Get Started");
+  const navigate = useNavigate();
   return <AlertCardTemplate
     alert={props.alert}
     className={"setup-alert"}
@@ -442,7 +445,7 @@ const SetupIncomplete = (props: SetupIncompleteProps) => {
     findApiAlertById={props.findApiAlertById}
     iconName={"fa-info-circle"}>
     <a className="link-button fb-button green"
-      onClick={() => push(Path.setup())}
+      onClick={() => navigate(Path.setup())}
       title={buttonText}>
       {buttonText}
     </a>

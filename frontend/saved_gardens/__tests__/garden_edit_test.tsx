@@ -10,13 +10,6 @@ jest.mock("../../api/crud", () => ({
   save: jest.fn(),
 }));
 
-import { Path } from "../../internal_urls";
-let mockPath = Path.mock(Path.savedGardens(1));
-jest.mock("../../history", () => ({
-  push: jest.fn(),
-  getPathArray: jest.fn(() => mockPath.split("/")),
-}));
-
 import React from "react";
 import { mount, shallow } from "enzyme";
 import { RawEditGarden as EditGarden, mapStateToProps } from "../garden_edit";
@@ -32,7 +25,8 @@ import { fakeState } from "../../__test_support__/fake_state";
 import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
-import { push } from "../../history";
+import { Path } from "../../internal_urls";
+import { times } from "lodash";
 
 describe("<EditGarden />", () => {
   const fakeProps = (): EditGardenProps => ({
@@ -69,7 +63,7 @@ describe("<EditGarden />", () => {
     p.plantPointerCount = 0;
     const wrapper = mount(<EditGarden {...p} />);
     clickButton(wrapper, 0, "apply");
-    expect(applyGarden).toHaveBeenCalledWith(1);
+    expect(applyGarden).toHaveBeenCalledWith(expect.any(Function), 1);
   });
 
   it("plants still in garden", () => {
@@ -87,24 +81,25 @@ describe("<EditGarden />", () => {
     p.savedGarden = fakeSavedGarden();
     const wrapper = mount(<EditGarden {...p} />);
     wrapper.find(".fa-trash").first().simulate("click");
-    expect(destroySavedGarden).toHaveBeenCalledWith(p.savedGarden.uuid);
+    expect(destroySavedGarden).toHaveBeenCalledWith(expect.any(Function),
+      p.savedGarden.uuid);
   });
 
   it("shows garden not found", () => {
-    mockPath = Path.mock(Path.savedGardens("nope"));
+    location.pathname = Path.mock(Path.savedGardens("nope"));
     const wrapper = mount(<EditGarden {...fakeProps()} />);
     expect(wrapper.text()).toContain("not found");
-    expect(push).toHaveBeenCalledWith(Path.plants());
+    expect(mockNavigate).toHaveBeenCalledWith(Path.plants());
   });
 
   it("doesn't redirect", () => {
-    mockPath = Path.mock(Path.logs());
+    location.pathname = Path.mock(Path.logs());
     const wrapper = mount(<EditGarden {...fakeProps()} />);
     expect(wrapper.text()).toContain("not found");
-    expect(push).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 
-  it("show when garden is open", () => {
+  it("shows when garden is open", () => {
     const p = fakeProps();
     p.savedGarden = fakeSavedGarden();
     p.gardenIsOpen = true;
@@ -122,10 +117,13 @@ describe("<EditGarden />", () => {
   });
 
   it("expands", () => {
-    const wrapper = mount<EditGarden>(<EditGarden {...fakeProps()} />);
-    expect(wrapper.state().expand).toEqual(false);
-    wrapper.instance().toggleExpand();
-    expect(wrapper.state().expand).toEqual(true);
+    const p = fakeProps();
+    p.savedGarden = fakeSavedGarden();
+    p.gardenPlants = times(100, fakePlantTemplate);
+    const wrapper = mount(<EditGarden {...p} />);
+    expect(wrapper.find(".group-item-icon").length).toEqual(63);
+    wrapper.find(".more-indicator").simulate("click");
+    expect(wrapper.find(".group-item-icon").length).toEqual(100);
   });
 });
 
@@ -133,7 +131,7 @@ describe("mapStateToProps()", () => {
   it("returns props", () => {
     const sg = fakeSavedGarden();
     sg.body.id = 1;
-    mockPath = Path.mock(Path.savedGardens(1));
+    location.pathname = Path.mock(Path.savedGardens(1));
     const state = fakeState();
     state.resources = buildResourceIndex([sg, fakePlantTemplate()]);
     state.resources.consumers.farm_designer.openedSavedGarden = sg.body.id;
@@ -145,7 +143,7 @@ describe("mapStateToProps()", () => {
   it("doesn't find saved garden", () => {
     const sg = fakeSavedGarden();
     sg.body.id = 1;
-    mockPath = Path.mock(Path.savedGardens());
+    location.pathname = Path.mock(Path.savedGardens());
     const state = fakeState();
     state.resources = buildResourceIndex([sg, fakePlantTemplate()]);
     state.resources.consumers.farm_designer.openedSavedGarden = sg.body.id;

@@ -31,11 +31,6 @@ jest.mock("../error_boundary", () => ({
   ErrorBoundary: (p: { children: React.ReactChild }) => <div>{p.children}</div>,
 }));
 
-jest.mock("../history", () => ({
-  push: jest.fn(),
-  getPathArray: () => [],
-}));
-
 window.ResizeObserver = (() => ({
   observe: jest.fn(),
   unobserve: jest.fn(),
@@ -46,4 +41,15 @@ window.ResizeObserver = (() => ({
 jest.mock("@rollbar/react", () => ({
   Provider: ({ children }: { children: React.ReactNode }) =>
     <div className={"rollbar"}>{children}</div>,
+}));
+
+global.mockNavigate = jest.fn(() => jest.fn());
+
+jest.mock("react-router-dom", () => ({
+  BrowserRouter: jest.fn(({ children }) => <div>{children}</div>),
+  Route: jest.fn(({ children }) => <div>{children}</div>),
+  Routes: jest.fn(({ children }) => <div>{children}</div>),
+  useNavigate: () => mockNavigate,
+  Navigate: ({ to }: { to: string }) => <div>{mockNavigate(to)}</div>,
+  Outlet: jest.fn(() => <div />),
 }));

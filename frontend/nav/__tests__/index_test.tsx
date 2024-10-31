@@ -27,7 +27,6 @@ import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { fakePings } from "../../__test_support__/fake_state/pings";
 import { Link } from "../../link";
 import { refresh } from "../../api/crud";
-import { push } from "../../history";
 import {
   fakeHelpState, fakeMenuOpenState,
 } from "../../__test_support__/fake_designer_state";
@@ -167,7 +166,7 @@ describe("<NavBar />", () => {
   it("displays setup button", () => {
     const wrapper = mount(<NavBar {...fakeProps()} />);
     wrapper.find(".setup-button").simulate("click");
-    expect(push).toHaveBeenCalledWith(Path.setup());
+    expect(mockNavigate).toHaveBeenCalledWith(Path.setup());
     expect(wrapper.text().toLowerCase()).toContain("complete");
   });
 

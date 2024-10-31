@@ -484,3 +484,5 @@ export class RawCropInfo extends React.Component<CropInfoProps, CropInfoState> {
 }
 
 export const CropInfo = connect(mapStateToProps)(RawCropInfo);
+// eslint-disable-next-line import/no-default-export
+export default CropInfo;

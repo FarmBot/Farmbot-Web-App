@@ -20,7 +20,6 @@ import {
   MaybeUpdateGroupProps,
 } from "../selection_box_actions";
 import { Actions } from "../../../../constants";
-import { push } from "../../../../history";
 import { editGtLtCriteria } from "../../../../point_groups/criteria";
 import { cloneDeep } from "lodash";
 import { overwriteGroup } from "../../../../point_groups/actions";
@@ -60,6 +59,7 @@ describe("resizeBox", () => {
     setMapState: jest.fn(),
     dispatch: jest.fn(),
     plantActions: true,
+    navigate: jest.fn(),
   });
 
   it("resizes selection box without point selection", () => {
@@ -117,7 +117,7 @@ describe("resizeBox", () => {
       type: Actions.SELECT_POINT,
       payload: [plant.uuid]
     });
-    expect(push).toHaveBeenCalledWith(Path.plants("select"));
+    expect(p.navigate).toHaveBeenCalledWith(Path.plants("select"));
   });
 });
 

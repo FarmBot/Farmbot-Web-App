@@ -42,7 +42,6 @@ import { FBSelect } from "../../ui";
 import { destroy } from "../../api/crud";
 import { updateConfig } from "../../devices/actions";
 import { Session } from "../../session";
-import { push } from "../../history";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { fakeWizardStepResult } from "../../__test_support__/fake_state/resources";
 import { Path } from "../../internal_urls";
@@ -143,7 +142,7 @@ describe("<AlertCard />", () => {
     const wrapper = mount(<AlertCard {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("wizard");
     wrapper.find("a").simulate("click");
-    expect(push).toHaveBeenCalledWith(Path.setup());
+    expect(mockNavigate).toHaveBeenCalledWith(Path.setup());
     expect(wrapper.text().toLowerCase()).toContain("get started");
   });
 
@@ -163,7 +162,7 @@ describe("<AlertCard />", () => {
     const wrapper = mount(<AlertCard {...p} />);
     expect(wrapper.text()).toContain("tour");
     wrapper.find(".link-button").first().simulate("click");
-    expect(push).toHaveBeenCalledWith(Path.tours());
+    expect(mockNavigate).toHaveBeenCalledWith(Path.tours());
   });
 
   it("renders welcome card", () => {

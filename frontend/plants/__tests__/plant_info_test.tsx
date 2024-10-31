@@ -1,10 +1,3 @@
-import { Path } from "../../internal_urls";
-let mockPath = Path.mock(Path.plants(1));
-jest.mock("../../history", () => ({
-  getPathArray: jest.fn(() => mockPath.split("/")),
-  push: jest.fn(),
-}));
-
 jest.mock("../../api/crud", () => ({
   destroy: jest.fn(),
   save: jest.fn(),
@@ -16,13 +9,13 @@ import { RawPlantInfo as PlantInfo } from "../plant_info";
 import { mount, shallow } from "enzyme";
 import { fakePlant } from "../../__test_support__/fake_state/resources";
 import { EditPlantInfoProps } from "../../farm_designer/interfaces";
-import { push } from "../../history";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { edit, save, destroy } from "../../api/crud";
 import { DesignerPanelHeader } from "../../farm_designer/designer_panel";
 import {
   fakeBotSize, fakeMovementState,
 } from "../../__test_support__/fake_bot_data";
+import { Path } from "../../internal_urls";
 
 describe("<PlantInfo />", () => {
   const fakeProps = (): EditPlantInfoProps => ({
@@ -53,30 +46,30 @@ describe("<PlantInfo />", () => {
   });
 
   it("renders: no plant", () => {
-    mockPath = Path.mock(Path.plants("nope"));
+    location.pathname = Path.mock(Path.plants("nope"));
     const p = fakeProps();
     p.findPlant = () => undefined;
     const wrapper = mount(<PlantInfo {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("redirecting...");
-    expect(push).toHaveBeenCalledWith(Path.plants());
+    expect(mockNavigate).toHaveBeenCalledWith(Path.plants());
   });
 
   it("renders: no plant template", () => {
-    mockPath = Path.mock(Path.plantTemplates("nope"));
+    location.pathname = Path.mock(Path.plantTemplates("nope"));
     const p = fakeProps();
     p.findPlant = () => undefined;
     const wrapper = mount(<PlantInfo {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("redirecting...");
-    expect(push).toHaveBeenCalledWith(Path.plants());
+    expect(mockNavigate).toHaveBeenCalledWith(Path.plants());
   });
 
   it("doesn't redirect", () => {
-    mockPath = Path.mock(Path.logs());
+    location.pathname = Path.mock(Path.logs());
     const p = fakeProps();
     p.findPlant = () => undefined;
     const wrapper = mount(<PlantInfo {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("redirecting...");
-    expect(push).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 
   it("has link to plants", () => {
@@ -88,7 +81,7 @@ describe("<PlantInfo />", () => {
   });
 
   it("gets plant id", () => {
-    mockPath = Path.mock(Path.plants(1));
+    location.pathname = Path.mock(Path.plants(1));
     const p = fakeProps();
     p.openedSavedGarden = undefined;
     const wrapper = mount<PlantInfo>(<PlantInfo {...p} />);
@@ -96,7 +89,7 @@ describe("<PlantInfo />", () => {
   });
 
   it("gets template id", () => {
-    mockPath = Path.mock(Path.plantTemplates(2));
+    location.pathname = Path.mock(Path.plantTemplates(2));
     const p = fakeProps();
     p.openedSavedGarden = 1;
     const wrapper = mount<PlantInfo>(<PlantInfo {...p} />);
@@ -104,7 +97,7 @@ describe("<PlantInfo />", () => {
   });
 
   it("handles missing plant id", () => {
-    mockPath = Path.mock(Path.plants());
+    location.pathname = Path.mock(Path.plants());
     const p = fakeProps();
     p.openedSavedGarden = undefined;
     const wrapper = mount<PlantInfo>(<PlantInfo {...p} />);
@@ -127,7 +120,7 @@ describe("<PlantInfo />", () => {
   });
 
   it("saves", () => {
-    mockPath = Path.mock(Path.plants(1));
+    location.pathname = Path.mock(Path.plants(1));
     const p = fakeProps();
     const plant = fakePlant();
     plant.body.id = 1;
@@ -138,7 +131,7 @@ describe("<PlantInfo />", () => {
   });
 
   it("doesn't save", () => {
-    mockPath = Path.mock(Path.logs());
+    location.pathname = Path.mock(Path.logs());
     const p = fakeProps();
     const plant = fakePlant();
     plant.body.id = 1;

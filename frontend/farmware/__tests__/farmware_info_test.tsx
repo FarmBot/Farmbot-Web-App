@@ -16,7 +16,6 @@ import {
 } from "../../__test_support__/fake_state/resources";
 import { error } from "../../toast/toast";
 import { retryFetchPackageName } from "../actions";
-import { push } from "../../history";
 import { Path } from "../../internal_urls";
 
 describe("<FarmwareInfo />", () => {
@@ -97,7 +96,7 @@ describe("<FarmwareInfo />", () => {
     const wrapper = mount(<FarmwareInfo {...p} />);
     clickButton(wrapper, 1, "Remove");
     expect(destroy).toHaveBeenCalledWith(p.installations[0].uuid);
-    expect(push).toHaveBeenCalledWith(Path.farmware());
+    expect(mockNavigate).toHaveBeenCalledWith(Path.farmware());
   });
 
   it("doesn't remove Farmware from API", () => {
@@ -110,7 +109,7 @@ describe("<FarmwareInfo />", () => {
     const wrapper = mount(<FarmwareInfo {...p} />);
     clickButton(wrapper, 1, "Remove");
     expect(destroy).not.toHaveBeenCalled();
-    expect(push).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 
   it("errors during removal of Farmware from API: not found", () => {

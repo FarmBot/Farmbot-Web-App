@@ -2,9 +2,9 @@ import React from "react";
 import { Row, Popover } from "../ui";
 import { BotPosition } from "../devices/interfaces";
 import { move } from "../devices/actions";
-import { push } from "../history";
+import { useNavigate } from "react-router-dom";
 import { AxisInputBox } from "../controls/axis_input_box";
-import { isNumber, sum } from "lodash";
+import { isNumber, isUndefined, sum } from "lodash";
 import { Actions, Content } from "../constants";
 import { AxisNumberProperty } from "./map/interfaces";
 import { t } from "../i18next_wrapper";
@@ -19,6 +19,7 @@ import {
 } from "../config_storage/actions";
 import { StringSetting } from "../session_keys";
 import { MovementState } from "../interfaces";
+import { getUrlQuery } from "../util";
 
 export interface MoveToFormProps {
   chosenLocation: BotPosition;
@@ -97,27 +98,32 @@ export class MoveToForm extends React.Component<MoveToFormProps, MoveToFormState
   }
 }
 
-export const MoveModeLink = () =>
-  <div className="move-to-mode">
+export const MoveModeLink = () => {
+  const navigate = useNavigate();
+  return <div className="move-to-mode">
     <button
       className="fb-button gray"
       title={t("open move mode panel")}
-      onClick={() => push(Path.location())}>
+      onClick={() => navigate(Path.location())}>
       {t("move mode")}
     </button>
   </div>;
+};
 
 /** Mark a new bot target location on the map. */
 export const chooseLocation = (props: {
+  navigate: (url: string) => void,
   gardenCoords: AxisNumberProperty | undefined,
   dispatch: Function,
 }) => {
   if (props.gardenCoords) {
-    props.dispatch(chooseLocationAction({
+    const loc = {
       x: Math.max(0, props.gardenCoords.x),
       y: Math.max(0, props.gardenCoords.y),
       z: 0,
-    }));
+    };
+    props.dispatch(chooseLocationAction(loc));
+    navigateToLocation(props.navigate, loc);
   }
 };
 
@@ -253,6 +259,17 @@ export const unChooseLocationAction = () => ({
   type: Actions.CHOOSE_LOCATION,
   payload: { x: undefined, y: undefined, z: undefined },
 });
+
+const navigateToLocation = (
+  navigate: (path: string) => void,
+  location: BotPosition,
+) => {
+  !isUndefined(location.x) &&
+    Path.getSlug(Path.designer()) === "location" &&
+    parseFloat("" + getUrlQuery("x")) != location.x &&
+    parseFloat("" + getUrlQuery("y")) != location.y &&
+    navigate(Path.location({ x: location.x, y: location.y }));
+};
 
 export const movementPercentRemaining =
   (botPosition: BotPosition, movementState: MovementState) => {

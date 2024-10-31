@@ -15,10 +15,10 @@ import {
   selectAllPointGroups, selectAllActivePoints,
 } from "../resources/selectors";
 import { GroupInventoryItem } from "../point_groups/group_inventory_item";
-import { push } from "../history";
 import { initSaveGetId } from "../api/crud";
 import { SearchField } from "../ui/search_field";
 import { Path } from "../internal_urls";
+import { useNavigate } from "react-router-dom";
 
 export interface ZonesProps {
   dispatch: Function;
@@ -33,7 +33,8 @@ export const mapStateToProps = (props: Everything): ZonesProps => ({
 });
 
 export const RawZones = (props: ZonesProps) => {
-  const navigate = (id: number) => push(Path.zones(id));
+  const navigate = useNavigate();
+  const navigateById = (id: number) => navigate(Path.zones(id));
   const [searchTerm, setSearchTerm] = React.useState("");
   return <DesignerPanel panelName={"zones-inventory"} panel={Panel.Zones}>
     <DesignerPanelTop
@@ -41,7 +42,7 @@ export const RawZones = (props: ZonesProps) => {
       onClick={() => props.dispatch(initSaveGetId("PointGroup", {
         name: t("Untitled Zone"), point_ids: []
       }))
-        .then((id: number) => navigate(id)).catch(() => { })}
+        .then((id: number) => navigateById(id)).catch(() => { })}
       title={t("Add zone")}>
       <SearchField nameKey={"zones"}
         searchTerm={searchTerm}
@@ -64,7 +65,7 @@ export const RawZones = (props: ZonesProps) => {
             allPoints={props.allPoints}
             hovered={false}
             dispatch={props.dispatch}
-            onClick={() => navigate(group.body.id || 0)}
+            onClick={() => navigateById(group.body.id || 0)}
           />)}
       </EmptyStateWrapper>
     </DesignerPanelContent>
@@ -72,3 +73,5 @@ export const RawZones = (props: ZonesProps) => {
 };
 
 export const Zones = connect(mapStateToProps)(RawZones);
+// eslint-disable-next-line import/no-default-export
+export default Zones;

@@ -126,3 +126,5 @@ export class RawAddFarmEvent
 }
 
 export const AddFarmEvent = connect(mapStateToPropsAddEdit)(RawAddFarmEvent);
+// eslint-disable-next-line import/no-default-export
+export default AddFarmEvent;

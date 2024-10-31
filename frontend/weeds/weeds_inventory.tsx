@@ -33,9 +33,9 @@ import { pointGroupSubset } from "../plants/select_plants";
 import { DEFAULT_CRITERIA } from "../point_groups/criteria/interfaces";
 import { createGroup } from "../point_groups/actions";
 import { GroupInventoryItem } from "../point_groups/group_inventory_item";
-import { push } from "../history";
 import { Path } from "../internal_urls";
 import { deleteAllIds } from "../api/delete_points_handler";
+import { NavigationContext } from "../routes_helpers";
 
 export interface WeedsProps {
   weeds: TaggedWeedPointer[];
@@ -188,7 +188,7 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
           className={"fb-button green plus-weed"}
           onClick={e => {
             e.stopPropagation();
-            push(Path.weeds("add"));
+            this.navigate(Path.weeds("add"));
           }}>
           <i className={"fa fa-plus"} title={t("add weed")} />
         </div>
@@ -221,7 +221,12 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
     </WeedsSection>;
   };
 
-  navigate = (id: number | undefined) => () => push(Path.groups(id));
+  static contextType = NavigationContext;
+  context!: React.ContextType<typeof NavigationContext>;
+  navigate = this.context;
+  navigateById = (id: number | undefined) => () => {
+    this.navigate(Path.groups(id));
+  };
 
   render() {
     const weedGroups = pointGroupSubset(this.props.groups, "Weed");
@@ -258,7 +263,7 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
               allPoints={this.props.allPoints}
               hovered={false}
               dispatch={this.props.dispatch}
-              onClick={this.navigate(group.body.id)}
+              onClick={this.navigateById(group.body.id)}
             />)}
         </PanelSection>
         <this.PendingWeeds />
@@ -270,3 +275,5 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
 }
 
 export const Weeds = connect(mapStateToProps)(RawWeeds);
+// eslint-disable-next-line import/no-default-export
+export default Weeds;

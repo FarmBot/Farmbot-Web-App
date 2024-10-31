@@ -13,7 +13,7 @@ import { Position } from "@blueprintjs/core";
 import {
   disabledAxisMap,
 } from "../../settings/hardware_settings/axis_tracking_status";
-import { push } from "../../history";
+import { useNavigate } from "react-router-dom";
 import {
   AxisActionsProps, BotPositionRowsProps, SetAxisLengthProps,
 } from "./interfaces";
@@ -100,6 +100,7 @@ export const AxisActions = (props: AxisActionsProps) => {
     dispatch, botPosition, sourceFwConfig,
   } = props;
   const className = lockedClass(locked);
+  const navigate = useNavigate();
   return <Popover position={Position.BOTTOM_RIGHT} usePortal={false}
     target={<i className="fa fa-ellipsis-v" />}
     content={<div className={"axis-actions"}>
@@ -140,7 +141,7 @@ export const AxisActions = (props: AxisActionsProps) => {
         onClick={setAxisLength({ axis, dispatch, botPosition, sourceFwConfig })}>
         {t("SET LENGTH")}
       </LockableButton>
-      <a onClick={() => push(Path.settings("axes"))}>
+      <a onClick={() => navigate(Path.settings("axes"))}>
         <i className="fa fa-external-link" />
         {t("Settings")}
       </a>

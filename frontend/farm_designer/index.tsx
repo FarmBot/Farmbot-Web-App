@@ -5,7 +5,6 @@ import {
   FarmDesignerProps, State, BotOriginQuadrant, isBotOriginQuadrant,
 } from "./interfaces";
 import { mapStateToProps } from "./state_to_props";
-import { Plants } from "../plants/plant_inventory";
 import { GardenMapLegend } from "./map/legend/garden_map_legend";
 import { NumericSetting, BooleanSetting } from "../session_keys";
 import { isUndefined, isFinite, isEqual, filter } from "lodash";
@@ -25,6 +24,8 @@ import { calculateImageAgeInfo } from "../photos/photo_filter_settings/util";
 import { Xyz } from "farmbot";
 import { ProfileViewer } from "./map/profile";
 import { ThreeDGardenMap } from "./three_d_garden_map";
+import { Outlet } from "react-router-dom";
+import { ErrorBoundary } from "../error_boundary";
 
 export const getDefaultAxisLength =
   (getConfigValue: GetWebAppConfigValue): Record<Xyz, number> => {
@@ -193,7 +194,11 @@ export class RawFarmDesigner
         MapPanelStatus.mobileClosed,
       ].includes(getPanelStatus())} />
       <div className={`farm-designer-panels ${this.mapPanelClassName}`}>
-        {this.props.children || React.createElement(Plants)}
+        <ErrorBoundary>
+          <React.Suspense>
+            <Outlet />
+          </React.Suspense>
+        </ErrorBoundary>
       </div>
 
       {this.props.getConfigValue(BooleanSetting.three_d_garden)
@@ -273,3 +278,5 @@ export class RawFarmDesigner
 }
 
 export const FarmDesigner = connect(mapStateToProps)(RawFarmDesigner);
+// eslint-disable-next-line import/no-default-export
+export default FarmDesigner;

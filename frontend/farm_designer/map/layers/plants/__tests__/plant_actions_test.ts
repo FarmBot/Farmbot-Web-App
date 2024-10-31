@@ -14,12 +14,6 @@ jest.mock("../../../actions", () => ({
   movePointTo: jest.fn(),
 }));
 
-import { Path } from "../../../../../internal_urls";
-let mockPath = Path.mock(Path.cropSearch("mint"));
-jest.mock("../../../../../history", () => ({
-  getPathArray: () => mockPath.split("/"),
-}));
-
 import {
   newPlantKindAndBody, NewPlantKindAndBodyProps,
   maybeSavePlantLocation, MaybeSavePlantLocationProps,
@@ -46,6 +40,7 @@ import { BotOriginQuadrant } from "../../../../interfaces";
 import {
   fakeDesignerState,
 } from "../../../../../__test_support__/fake_designer_state";
+import { Path } from "../../../../../internal_urls";
 
 describe("newPlantKindAndBody()", () => {
   it("returns new PlantTemplate", () => {
@@ -101,6 +96,10 @@ describe("createPlant()", () => {
 });
 
 describe("dropPlant()", () => {
+  beforeEach(() => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+  });
+
   const fakeProps = (): DropPlantProps => {
     const designer = fakeDesignerState();
     designer.cropSearchResults = [fakeCropLiveSearchResult()];
@@ -131,7 +130,7 @@ describe("dropPlant()", () => {
 
   it("doesn't drop plant", () => {
     console.log = jest.fn();
-    mockPath = Path.mock(Path.cropSearch()) + "/";
+    location.pathname = Path.mock(Path.cropSearch()) + "/";
     dropPlant(fakeProps());
     expect(initSave).not.toHaveBeenCalled();
     expect(console.log).toHaveBeenCalledWith("Missing slug.");
@@ -139,7 +138,7 @@ describe("dropPlant()", () => {
 
   it("doesn't drop plant: no crop", () => {
     console.log = jest.fn();
-    mockPath = Path.mock(Path.cropSearch("mint"));
+    location.pathname = Path.mock(Path.cropSearch("mint"));
     const p = fakeProps();
     p.designer.companionIndex = 1;
     p.designer.cropSearchResults = [];
@@ -202,7 +201,7 @@ describe("dropPlant()", () => {
   });
 
   it("throws error", () => {
-    mockPath = Path.mock(Path.cropSearch("mint"));
+    location.pathname = Path.mock(Path.cropSearch("mint"));
     const p = fakeProps();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     p.gardenCoords = undefined as any;
