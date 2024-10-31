@@ -1,3 +1,6 @@
+@use "../variables" as *;
+@use "sass:color";
+
 .location-info-panel {
   .panel-content {
     max-height: calc(100vh - 14rem);

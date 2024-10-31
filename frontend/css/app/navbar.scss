@@ -1,3 +1,6 @@
+@use "../variables" as *;
+@use "sass:color";
+
 .nav-wrapper {
   position: fixed;
   left: 0;

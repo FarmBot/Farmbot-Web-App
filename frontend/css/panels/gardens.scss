@@ -1,3 +1,6 @@
+@use "../variables" as *;
+@use "sass:color";
+
 .saved-garden-panel-content {
   padding: 0;
   button {

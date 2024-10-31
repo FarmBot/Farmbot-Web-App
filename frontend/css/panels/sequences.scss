@@ -1,3 +1,6 @@
+@use "../variables" as *;
+@use "sass:color";
+
 .sequence-page {
   max-width: unset;
   padding: 8.6rem 0rem 0;
@@ -579,7 +582,7 @@
       display: none;
     }
   }
-  .numeric-variable-input, 
+  .numeric-variable-input,
   .text-variable-input {
     margin-right: 3.5rem;
   }

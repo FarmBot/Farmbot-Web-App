@@ -1,3 +1,6 @@
+@use "../variables" as *;
+@use "sass:color";
+
 .farm-event {
   align-items: start!important;
 }

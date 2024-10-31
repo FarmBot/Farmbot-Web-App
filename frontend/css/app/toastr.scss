@@ -1,3 +1,6 @@
+@use "../variables" as *;
+@use "sass:color";
+
 .toast-container {
   display: flex;
   position: fixed;

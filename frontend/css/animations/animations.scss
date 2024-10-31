@@ -1,3 +1,6 @@
+@use "../variables" as *;
+@use "sass:color";
+
 @keyframes rotate {
   0% {
     transform: rotate(0deg);
@@ -85,7 +88,7 @@
 
 @keyframes flash {
   0% {
-    text-shadow: white 0px 0px 10px;
+    text-shadow: $white 0px 0px 10px;
   }
   100% {
     text-shadow: none;

@@ -1,3 +1,6 @@
+@use "../variables" as *;
+@use "sass:color";
+
 .fb-button {
   margin: 0.25em 0.5em;
   float: right;

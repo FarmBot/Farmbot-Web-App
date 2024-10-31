@@ -1,3 +1,6 @@
+@use "../variables" as *;
+@use "sass:color";
+
 .point-creation-panel {
   .point-creation-description {
     color: $dark_gray;

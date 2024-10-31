@@ -1,3 +1,6 @@
+@use "../variables" as *;
+@use "sass:color";
+
 .image-flipper {
   position: relative;
   border-radius: 0.5rem;

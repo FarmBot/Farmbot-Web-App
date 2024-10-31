@@ -1,3 +1,6 @@
+@use "../variables" as *;
+@use "sass:color";
+
 .add-sensor-reading-menu {
   width: 25rem;
   button {

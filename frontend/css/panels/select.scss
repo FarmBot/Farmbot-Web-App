@@ -1,3 +1,6 @@
+@use "../variables" as *;
+@use "sass:color";
+
 .plant-selection-panel {
   .panel-action-buttons {
     padding: 1rem;

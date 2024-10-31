@@ -1,3 +1,6 @@
+@use "../variables" as *;
+@use "sass:color";
+
 .photos-panel {
   .panel-title {
     margin: 0;

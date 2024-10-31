@@ -1,3 +1,6 @@
+@use "../variables" as *;
+@use "sass:color";
+
 .tool-slots-panel,
 .tools-panel {
   .tool-slots-panel-content,

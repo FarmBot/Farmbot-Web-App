@@ -1,6 +1,10 @@
+@use "../variables" as *;
+@use "sass:color";
+
 $offset: 187;
 $quarterOffset: 46.75;
 $duration: 1.3s;
+
 .spinner-container {
   display: flex;
   position: fixed;

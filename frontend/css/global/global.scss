@@ -1,4 +1,5 @@
-$mobile_max_width: 500px;
+@use "../variables" as *;
+@use "sass:color";
 
 body {
   background: $gray;

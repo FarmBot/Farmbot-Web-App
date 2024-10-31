@@ -1,3 +1,6 @@
+@use "../variables" as *;
+@use "sass:color";
+
 .help-icon {
   font-size: 1.3rem;
 }

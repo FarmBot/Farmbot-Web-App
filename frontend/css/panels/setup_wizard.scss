@@ -1,3 +1,6 @@
+@use "../variables" as *;
+@use "sass:color";
+
 .setup-panel {
   .panel-top {
     padding: 0;

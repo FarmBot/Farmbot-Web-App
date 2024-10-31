@@ -1,3 +1,6 @@
+@use "variables" as *;
+@use "sass:color";
+
 @media screen and (max-width: 1075px) {
   .all-content-wrapper {
     padding: 11rem 0 0;

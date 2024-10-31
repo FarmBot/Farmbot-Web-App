@@ -1,3 +1,6 @@
+@use "../variables" as *;
+@use "sass:color";
+
 .electronics-box-3d-model {
   max-width: calc(100vw - 4rem);
   width: 100%;

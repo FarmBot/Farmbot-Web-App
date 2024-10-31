@@ -1,3 +1,6 @@
+@use "variables" as *;
+@use "sass:color";
+
 // Padding for the popups.
 .bp5-popover-content {
   z-index: 999;

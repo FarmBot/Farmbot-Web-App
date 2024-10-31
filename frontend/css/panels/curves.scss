@@ -1,4 +1,5 @@
-
+@use "../variables" as *;
+@use "sass:color";
 
 .curve-svg-wrapper {
   .bp5-popover-target {

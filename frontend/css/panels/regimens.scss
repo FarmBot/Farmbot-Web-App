@@ -1,3 +1,6 @@
+@use "../variables" as *;
+@use "sass:color";
+
 // Bulk Scheduler
 .bulk-scheduler {
   .regimen-days-label {

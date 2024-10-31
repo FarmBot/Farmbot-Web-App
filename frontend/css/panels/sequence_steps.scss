@@ -1,3 +1,6 @@
+@use "../variables" as *;
+@use "sass:color";
+
 // Styles for ALL STEPS
 .step-wrapper {
   box-shadow: 0px 0px 1rem $translucent1;
