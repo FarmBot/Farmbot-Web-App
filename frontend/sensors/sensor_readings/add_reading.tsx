@@ -9,7 +9,7 @@ import { formatDateField } from "../../farm_events/map_state_to_props_add_edit";
 import { t } from "../../i18next_wrapper";
 import { TimeSettings } from "../../interfaces";
 import { error } from "../../toast/toast";
-import { BlurableInput, Col, Row } from "../../ui";
+import { BlurableInput, Row } from "../../ui";
 import { SensorSelection } from "./sensor_selection";
 
 export interface AddSensorReadingMenuProps {
@@ -44,40 +44,53 @@ export class AddSensorReadingMenu
   };
 
   render() {
-    return <div className={"add-sensor-reading-menu"}>
-      <SensorSelection
-        selectedSensor={this.state.sensor}
-        sensors={this.props.sensors}
-        setSensor={sensor => this.setState({ sensor })} />
-      <div className={"reading-date-time-form"}>
-        <label>
-          {t("When")}
-        </label>
-        <Row>
-          <Col xs={6}>
-            <BlurableInput
-              type={"date"}
-              className={"reading-date"}
-              name={"date"}
-              value={this.state.date}
-              onCommit={e => this.setState({ date: e.currentTarget.value })} />
-          </Col>
-          <Col xs={6}>
-            <BlurableInput
-              type={"time"}
-              className={"reading-time"}
-              name={"time"}
-              value={this.state.time}
-              onCommit={e => this.setState({ time: e.currentTarget.value })} />
-          </Col>
-        </Row>
+    return <div className={"add-sensor-reading-menu grid"}>
+      <div className="row grid-2-col">
+        <SensorSelection
+          selectedSensor={this.state.sensor}
+          sensors={this.props.sensors}
+          setSensor={sensor => this.setState({ sensor })} />
+        <div className={"add-reading-value-form grid no-gap"}>
+          <label>{t("value")}</label>
+          <BlurableInput
+            type={"number"}
+            className={"add-reading-value"}
+            value={this.state.value || 0}
+            onCommit={e => this.setState({
+              value: parseInt(e.currentTarget.value)
+            })} />
+        </div>
+      </div>
+      <div className="row grid-2-col">
+        <div className={"add-reading-value-form grid no-gap"}>
+          <label>
+            {t("Date")}
+          </label>
+          <BlurableInput
+            type={"date"}
+            className={"reading-date"}
+            name={"date"}
+            value={this.state.date}
+            onCommit={e => this.setState({ date: e.currentTarget.value })} />
+        </div>
+        <div className={"add-reading-value-form grid no-gap"}>
+          <label>
+            {t("Time")}
+          </label>
+          <BlurableInput
+            type={"time"}
+            className={"reading-time"}
+            name={"time"}
+            value={this.state.time}
+            onCommit={e => this.setState({ time: e.currentTarget.value })} />
+        </div>
       </div>
       <div className={"reading-location"}>
         <Row>
           {["x", "y", "z"].map(axis =>
-            <Col key={axis + "_heading"} xs={3}>
+            <div key={axis + "_heading"}>
               <label>{axis}</label>
-            </Col>)}
+            </div>)}
         </Row>
         <Row>
           {["x", "y", "z"].map((axis: Xyz) =>
@@ -87,24 +100,6 @@ export class AddSensorReadingMenu
               value={this.state[axis]}
               onChange={(a: Xyz, v) =>
                 this.setState({ ...this.state, [a]: v })} />)}
-        </Row>
-      </div>
-      <div className={"add-reading-value-form"}>
-        <Row>
-          <Col xs={6}>
-            <label>{t("value")}</label>
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={6}>
-            <BlurableInput
-              type={"number"}
-              className={"add-reading-value"}
-              value={this.state.value || 0}
-              onCommit={e => this.setState({
-                value: parseInt(e.currentTarget.value)
-              })} />
-          </Col>
         </Row>
       </div>
       <button className={"fb-button green"}

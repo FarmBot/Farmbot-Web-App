@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col, docLinkClick, Help } from "../../ui";
+import { Row, docLinkClick, Help } from "../../ui";
 import { Content, DeviceSetting } from "../../constants";
 import { softReset } from "../../devices/actions";
 import { FactoryResetRowsProps } from "./interfaces";
@@ -8,44 +8,40 @@ import { Highlight } from "../maybe_highlight";
 
 export const FactoryResetRows = (props: FactoryResetRowsProps) => {
   const { botOnline } = props;
-  return <div className={"factory-reset-options"}>
+  return <div className={"factory-reset-options grid"}>
     <Highlight settingName={DeviceSetting.softReset}>
-      <Row>
-        <Col xs={6}>
+      <Row className="grid-exp-1">
+        <div>
           <label>
             {t(DeviceSetting.softReset)}
           </label>
           <Help text={`${Content.SOFT_RESET_WARNING}
             ${t(Content.OS_RESET_WARNING, { resetMethod: t("Soft") })}`} />
-        </Col>
-        <Col xs={6}>
-          <button
-            className="fb-button red"
-            type="button"
-            onClick={softReset}
-            title={t("SOFT RESET")}
-            disabled={!botOnline}>
-            {t("SOFT RESET")}
-          </button>
-        </Col>
+        </div>
+        <button
+          className="fb-button red"
+          type="button"
+          onClick={softReset}
+          title={t("SOFT RESET")}
+          disabled={!botOnline}>
+          {t("SOFT RESET")}
+        </button>
       </Row>
     </Highlight>
     <Highlight settingName={DeviceSetting.hardReset}>
-      <Row>
-        <Col xs={6}>
+      <Row className="grid-exp-1">
+        <div>
           <label>
             {t(DeviceSetting.hardReset)}
           </label>
           <Help text={`${Content.HARD_RESET_WARNING}
             ${t(Content.OS_RESET_WARNING, { resetMethod: t("Hard") })}`} />
-        </Col>
-        <Col xs={6}>
-          <a className="link-button fb-button red"
-            onClick={docLinkClick("farmbot-os")}>
-            {t("HARD RESET")}
-            <i className="fa fa-external-link" />
-          </a>
-        </Col>
+        </div>
+        <a className="link-button fb-button red"
+          onClick={docLinkClick("farmbot-os")}>
+          {t("HARD RESET")}
+          <i className="fa fa-external-link" />
+        </a>
       </Row>
     </Highlight>
   </div>;

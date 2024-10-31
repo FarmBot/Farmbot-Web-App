@@ -1,6 +1,6 @@
 import React from "react";
 import { DiagnosticMessages } from "../../constants";
-import { Col, Row, docLinkClick } from "../../ui";
+import { Row, docLinkClick } from "../../ui";
 import { bitArray } from "../../util";
 import { TRUTH_TABLE } from "./truth_table";
 import { t } from "../../i18next_wrapper";
@@ -49,37 +49,33 @@ export const DiagnosisSaucer = (props: DiagnosisSaucerProps) => {
 export function Diagnosis(props: DiagnosisProps) {
   const diagnosisBoolean = diagnosisStatus(props.statusFlags);
   const diagnosisColor = diagnosisBoolean ? "green" : "red";
-  return <div className={"diagnosis-section"}>
+  return <Row className="diagnosis-section grid-exp-2">
+    <div hidden={props.hideGraphic}>
+      <DiagnosisSaucer {...props.statusFlags} />
+      <div className={"saucer-connector last " + diagnosisColor} />
+    </div>
     <div className={"connectivity-diagnosis"}>
       <h4>{t("Diagnosis")}</h4>
+      <p className="blinking">
+        {t("Always")}&nbsp;
+        <a className="blinking" onClick={goToFbosSettings}>
+          <u>{t("upgrade FarmBot OS")}</u>
+        </a>
+        &nbsp;{t("before troubleshooting.")}
+      </p>
+      <p>
+        {diagnosisMessage(getDiagnosisCode(props.statusFlags))}
+      </p>
+      <a onClick={docLinkClick("connecting-farmbot-to-the-internet")}>
+        <i className="fa fa-external-link" />
+        {t("Click here to learn more about connectivity codes.")}
+      </a>
+      <a onClick={docLinkClick("for-it-security-professionals")}>
+        <i className="fa fa-external-link" />
+        {t("Click here for document to show to your IT department.")}
+      </a>
     </div>
-    <Row>
-      <Col xs={1} hidden={props.hideGraphic}>
-        <DiagnosisSaucer {...props.statusFlags} />
-        <div className={"saucer-connector last " + diagnosisColor} />
-      </Col>
-      <Col xs={10} className={"connectivity-diagnosis"}>
-        <p className="blinking">
-          {t("Always")}&nbsp;
-          <a className="blinking" onClick={goToFbosSettings}>
-            <u>{t("upgrade FarmBot OS")}</u>
-          </a>
-          &nbsp;{t("before troubleshooting.")}
-        </p>
-        <p>
-          {diagnosisMessage(getDiagnosisCode(props.statusFlags))}
-        </p>
-        <a onClick={docLinkClick("connecting-farmbot-to-the-internet")}>
-          <i className="fa fa-external-link" />
-          {t("Click here to learn more about connectivity codes.")}
-        </a>
-        <a onClick={docLinkClick("for-it-security-professionals")}>
-          <i className="fa fa-external-link" />
-          {t("Click here for document to show to your IT department.")}
-        </a>
-      </Col>
-    </Row>
-  </div>;
+  </Row>;
 }
 
 export function getDiagnosisCode(statusFlags: ConnectionStatusFlags) {

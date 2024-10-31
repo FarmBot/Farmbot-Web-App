@@ -1,6 +1,6 @@
 import React from "react";
 import { t } from "../i18next_wrapper";
-import { Col, Widget, WidgetBody, WidgetHeader, Row } from "../ui";
+import { Widget, WidgetBody, WidgetHeader } from "../ui";
 import { updatePageInfo } from "../util";
 
 export interface LoginProps {
@@ -21,11 +21,11 @@ export class Login extends React.Component<LoginProps, {}> {
       onToggleForgotPassword,
     } = this.props;
     updatePageInfo("login");
-    return <Col xs={12} sm={5} smOffset={1} mdOffset={0}>
-      <Widget>
-        <WidgetHeader title={"Login"} />
-        <WidgetBody>
-          <form onSubmit={onSubmit}>
+    return <Widget>
+      <WidgetHeader title={"Login"} />
+      <WidgetBody>
+        <form onSubmit={onSubmit}>
+          <div>
             <label>
               {t("Email")}
             </label>
@@ -35,6 +35,8 @@ export class Login extends React.Component<LoginProps, {}> {
               value={email || ""}
               autoFocus={true}
               onChange={onEmailChange} />
+          </div>
+          <div>
             <label>
               {t("Password")}
             </label>
@@ -42,20 +44,20 @@ export class Login extends React.Component<LoginProps, {}> {
               type={"password"}
               name={"password"}
               onChange={onLoginPasswordChange} />
+          </div>
+          <div className="forgot-password-login-row">
             <a className="forgot-password"
               title={t("Forgot password?")}
               onClick={onToggleForgotPassword}>
               {t("Forgot password?")}
             </a>
-            <Row>
-              <button className="fb-button green pull-right front-page-button"
-                title={t("Login")}>
-                {t("Login")}
-              </button>
-            </Row>
-          </form>
-        </WidgetBody>
-      </Widget>
-    </Col>;
+            <button className="fb-button green pull-right front-page-button"
+              title={t("Login")}>
+              {t("Login")}
+            </button>
+          </div>
+        </form>
+      </WidgetBody>
+    </Widget>;
   }
 }

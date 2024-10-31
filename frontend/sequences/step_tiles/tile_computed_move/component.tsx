@@ -1,6 +1,6 @@
 import React from "react";
 import { StepWrapper } from "../../step_ui";
-import { Row, Col, ExpandableHeader } from "../../../ui";
+import { Row, ExpandableHeader } from "../../../ui";
 import { ToolTips } from "../../../constants";
 import { t } from "../../../i18next_wrapper";
 import { Move, Xyz } from "farmbot";
@@ -245,11 +245,9 @@ export class ComputedMove
   toggleMore = () => this.setState({ more: !this.state.more });
 
   LocationInputRow = () =>
-    <Row>
-      <Col xs={3}>
-        <label>{t("Location")}</label>
-      </Col>
-      <Col xs={8}>
+    <Row className="move-location-grid">
+      <label>{t("Location")}</label>
+      <div className="row grid-exp-1">
         <LocationSelection
           locationNode={this.state.location}
           locationSelection={this.state.locationSelection}
@@ -257,13 +255,11 @@ export class ComputedMove
           onChange={this.setLocationState}
           sequence={this.props.currentSequence}
           sequenceUuid={this.props.currentSequence.uuid} />
-      </Col>
-      <Col xs={1} className={"no-pad"}>
         <ExpandableHeader
           expanded={this.state.more}
           title={""}
           onClick={this.toggleMore} />
-      </Col>
+      </div>
     </Row>;
 
   OverwriteInputRow = () =>
@@ -278,7 +274,7 @@ export class ComputedMove
         onCommit={this.commit}
         setAxisState={this.setAxisState}
         setAxisOverwriteState={this.setAxisOverwriteState} />
-      : <div className={"overwrite-row-hidden"} />;
+      : undefined;
 
   OffsetInputRow = () =>
     (this.state.locationSelection == "offset"
@@ -289,7 +285,7 @@ export class ComputedMove
         disabledAxes={this.disabledAxes}
         onCommit={this.commit}
         setAxisState={this.setAxisState} />
-      : <div className={"offset-row-hidden"} />;
+      : undefined;
 
   VarianceInputRow = () =>
     (some(this.varianceNodes) || this.state.more)
@@ -297,7 +293,7 @@ export class ComputedMove
         variance={this.state.variance}
         disabledAxes={this.disabledAxes}
         onCommit={this.commit} />
-      : <div className={"variance-row-hidden"} />;
+      : undefined;
 
   SpeedInputRow = () =>
     (some(this.speedNodes) || this.state.more)
@@ -306,13 +302,13 @@ export class ComputedMove
         disabledAxes={this.disabledAxes}
         onCommit={this.commit}
         setAxisState={this.setAxisState} />
-      : <div className={"speed-row-hidden"} />;
+      : undefined;
 
   SafeZCheckbox = () =>
     (this.state.safeZ || this.state.more)
       ? <SafeZCheckbox checked={this.state.safeZ}
         onChange={this.toggleSafeZ} />
-      : <div className={"safe-z-checkbox-hidden"} />;
+      : undefined;
 
   render() {
     return <StepWrapper {...this.props}

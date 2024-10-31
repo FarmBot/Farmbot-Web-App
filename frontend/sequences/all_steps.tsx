@@ -85,6 +85,6 @@ export class AllSteps extends React.Component<AllStepsProps, {}> {
         </div>;
       });
 
-    return <div className="all-steps">{items}</div>;
+    return <div className="grid">{items}</div>;
   }
 }

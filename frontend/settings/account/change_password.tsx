@@ -1,5 +1,5 @@
 import React from "react";
-import { SaveBtn, Row } from "../../ui";
+import { SaveBtn } from "../../ui";
 import { SpecialStatus } from "farmbot";
 import axios from "axios";
 import { API } from "../../api/index";
@@ -86,37 +86,33 @@ export class ChangePassword extends React.Component<{}, ChangePWState> {
   };
 
   render() {
-    return <Row className={"change-password zero-side-margins"}>
-      <label>
-        {t(DeviceSetting.changePassword)}
-      </label>
-      <SaveBtn onClick={this.save} status={this.state.status} />
-      <form>
-        <div className={"old-password"}>
-          <label>
-            {t("Old Password")}
-          </label>
-          <BlurablePassword
-            onCommit={this.set("password")}
-            name="password" />
-        </div>
-        <div className={"new-password"}>
-          <label>
-            {t("New Password")}
-          </label>
-          <BlurablePassword
-            onCommit={this.set("new_password")}
-            name="new_password" />
-        </div>
-        <div className={"new-password"}>
-          <label>
-            {t("Confirm New Password")}
-          </label>
-          <BlurablePassword
-            onCommit={this.set("new_password_confirmation")}
-            name={"new_password_confirmation"} />
-        </div>
+    return <div className={"change-password grid"}>
+      <div className="row grid-exp-1">
+        <label>
+          {t(DeviceSetting.changePassword)}
+        </label>
+        <SaveBtn onClick={this.save} status={this.state.status} />
+      </div>
+      <form className="grid grid-2-col">
+        <label>
+          {t("Old Password")}
+        </label>
+        <BlurablePassword
+          onCommit={this.set("password")}
+          name="password" />
+        <label>
+          {t("New Password")}
+        </label>
+        <BlurablePassword
+          onCommit={this.set("new_password")}
+          name="new_password" />
+        <label>
+          {t("Confirm New Password")}
+        </label>
+        <BlurablePassword
+          onCommit={this.set("new_password_confirmation")}
+          name={"new_password_confirmation"} />
       </form>
-    </Row>;
+    </div>;
   }
 }

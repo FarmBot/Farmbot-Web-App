@@ -1,6 +1,6 @@
 import React from "react";
 import { editStep } from "../../../api/crud";
-import { Row, Col } from "../../../ui";
+import { Row } from "../../../ui";
 import { StepWrapper } from "../../step_ui";
 import { ToolTips } from "../../../constants";
 import { UpdateResource, Resource, Identifier } from "farmbot";
@@ -99,34 +99,28 @@ export class MarkAs
       className={"update-resource-step"}
       helpText={ToolTips.MARK_AS}>
       <Row>
-        <Col>
-          <ResourceSelection {...commonProps}
-            sequenceUuid={this.props.currentSequence.uuid}
-            updateResource={this.updateResource} />
-        </Col>
+        <ResourceSelection {...commonProps}
+          sequenceUuid={this.props.currentSequence.uuid}
+          updateResource={this.updateResource} />
       </Row>
       {this.state.fieldsAndValues.map((fieldAndValue, index) => {
         const isPlantedAtRow = index > 0
           && fieldAndValue.field == "planted_at"
           && fieldAndValue.value == UPDATE_RESOURCE_DDIS().NOW.value;
         return <Row key={index}>
-          <div className={`update-resource-pair ${index == 0 ? "first" : ""}`}>
-            <Col xs={6}>
-              <FieldSelection {...commonProps}
-                field={fieldAndValue.field}
-                disabled={isPlantedAtRow}
-                update={this.updateFieldOrValue(index)} />
-            </Col>
-            <Col xs={6}>
-              <ValueSelection {...commonProps}
-                field={fieldAndValue.field}
-                value={fieldAndValue.value}
-                update={this.updateFieldOrValue(index)}
-                add={this.updateFieldOrValue(
-                  this.state.fieldsAndValues.length)}
-                disabled={isPlantedAtRow}
-                commitSelection={this.commitSelection} />
-            </Col>
+          <div className={`update-resource-pair grid ${index == 0 ? "first" : ""}`}>
+            <FieldSelection {...commonProps}
+              field={fieldAndValue.field}
+              disabled={isPlantedAtRow}
+              update={this.updateFieldOrValue(index)} />
+            <ValueSelection {...commonProps}
+              field={fieldAndValue.field}
+              value={fieldAndValue.value}
+              update={this.updateFieldOrValue(index)}
+              add={this.updateFieldOrValue(
+                this.state.fieldsAndValues.length)}
+              disabled={isPlantedAtRow}
+              commitSelection={this.commitSelection} />
             <CustomFieldWarning
               resource={this.state.resource}
               field={fieldAndValue.field}

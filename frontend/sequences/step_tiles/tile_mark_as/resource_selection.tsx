@@ -27,7 +27,7 @@ import {
 export const ResourceSelection = (props: ResourceSelectionProps) => {
   const selected = getSelectedResource(
     props.resource, props.resources, props.sequenceUuid);
-  return <div className={"update-resource-step-resource"}>
+  return <div className={"row grid-2-col"}>
     <label>{t("Mark")}</label>
     <FBSelect
       key={selected.value}

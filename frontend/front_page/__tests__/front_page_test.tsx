@@ -26,8 +26,6 @@ jest.mock("../../api", () => ({
   }
 }));
 
-jest.mock("../laptop_splash", () => ({ LaptopSplash: () => <div /> }));
-
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {

@@ -41,8 +41,7 @@ describe("<WeedDetector />", () => {
 
   it("renders", () => {
     const wrapper = mount(<WeedDetector {...fakeProps()} />);
-    ["Color Range",
-      "HUE01793090",
+    ["HUE01793090",
       "SATURATION025550255",
       "VALUE025550255",
       "Scan current image",
@@ -56,7 +55,7 @@ describe("<WeedDetector />", () => {
     const wrapper = shallow(<WeedDetector {...p} />);
     const btn = wrapper.find("button").first();
     expect(btn.props().title).not.toEqual(Content.NO_CAMERA_SELECTED);
-    clickButton(wrapper, 0, "detect weeds");
+    clickButton(wrapper, 1, "detect weeds");
     expect(detectPlants).toHaveBeenCalledWith(0);
     expect(error).not.toHaveBeenCalled();
   });
@@ -65,7 +64,7 @@ describe("<WeedDetector />", () => {
     const p = fakeProps();
     p.env = { camera: "NONE" };
     const wrapper = shallow(<WeedDetector {...p} />);
-    const btn = wrapper.find("button").first();
+    const btn = wrapper.find("button").at(1);
     expect(btn.props().title).toEqual(Content.NO_CAMERA_SELECTED);
     btn.simulate("click");
     expect(error).toHaveBeenCalledWith(
@@ -76,7 +75,7 @@ describe("<WeedDetector />", () => {
   it("executes clear weeds", () => {
     const wrapper = shallow<WeedDetector>(<WeedDetector {...fakeProps()} />);
     expect(wrapper.instance().state.deletionProgress).toBeUndefined();
-    clickButton(wrapper, 1, "clear weeds");
+    clickButton(wrapper, 0, "clear weeds");
     expect(deletePoints).toHaveBeenCalledWith(
       "weeds", { meta: { created_by: "plant-detection" } }, expect.any(Function));
     expect(wrapper.instance().state.deletionProgress).toEqual("Deleting...");

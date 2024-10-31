@@ -152,7 +152,7 @@ export const ResourceTitle = (props: ResourceTitleProps) => {
       onChange={e => {
         setNameValue(e.currentTarget.value);
       }} />
-    : <span className={"title white-text"}
+    : <span className={"title"}
       style={props.readOnly ? { pointerEvents: "none" } : {}}
       title={t("click to edit")}
       onClick={() => setIsEditing(true)}>

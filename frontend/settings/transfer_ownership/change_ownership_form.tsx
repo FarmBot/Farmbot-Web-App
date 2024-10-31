@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col, BlurableInput, ExpandableHeader } from "../../ui";
+import { Row, BlurableInput, ExpandableHeader } from "../../ui";
 import { success, error } from "../../toast/toast";
 import { getDevice } from "../../device";
 import { transferOwnership } from "./transfer_ownership";
@@ -41,46 +41,30 @@ export class ChangeOwnershipForm
         title={t(DeviceSetting.changeOwnership)}
         onClick={() => this.setState({ open: !this.state.open })} />
       <Collapse isOpen={!!this.state.open}>
-        <form className={"change-ownership-form"}>
-          <Row />
-          <Row />
-          <Row>
+        <form className={"change-ownership-grid"}>
+          <div>
             <p>
               {t("Change the account FarmBot is connected to.")}
             </p>
-            <Col xs={4}>
+            <div className="change-ownership-grid">
               <label>
                 {t("Email")}
               </label>
-            </Col>
-            <Col xs={8}>
               <BlurableInput
                 allowEmpty={true}
                 onCommit={e => this.setState({ email: e.currentTarget.value })}
                 name="email"
                 value={this.state.email}
                 type="email" />
-            </Col>
-          </Row>
-          <Row>
-            <Col xs={4}>
               <label>
                 {t("Password")}
               </label>
-            </Col>
-            <Col xs={8}>
               <BlurablePassword
                 onCommit={e => this.setState({ password: e.currentTarget.value })}
                 name="password" />
-            </Col>
-          </Row>
-          <Row>
-            <Col xs={4}>
               <label>
                 {t("Server")}
               </label>
-            </Col>
-            <Col xs={8}>
               <BlurableInput
                 allowEmpty={true}
                 onCommit={() => { }}
@@ -88,19 +72,19 @@ export class ChangeOwnershipForm
                 disabled={true}
                 value={API.current.baseUrl}
                 type="text" />
-            </Col>
-          </Row>
+            </div>
+          </div>
           <Row>
             <NonsecureContentWarning
               urls={[API.current.baseUrl, location.protocol]}>
-              <Col xs={12}>
+              <div>
                 <strong>
                   {t(Content.NOT_HTTPS)}
                 </strong>
                 <p>
                   {t(Content.CONTACT_SYSADMIN)}
                 </p>
-              </Col>
+              </div>
             </NonsecureContentWarning>
           </Row>
           <Row>

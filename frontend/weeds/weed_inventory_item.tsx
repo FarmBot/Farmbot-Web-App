@@ -51,7 +51,7 @@ export class WeedInventoryItem extends
     };
 
     return <div
-      className={`weed-search-item ${this.props.hovered ? "hovered" : ""}`}
+      className={`weed-search-item row grid-exp-2 ${this.props.hovered ? "hovered" : ""}`}
       key={weedId}
       onMouseEnter={() => toggle("enter")}
       onMouseLeave={() => toggle("leave")}
@@ -70,21 +70,23 @@ export class WeedInventoryItem extends
       <span className="weed-search-item-name">
         {weed.name || t("Untitled weed")}
       </span>
-      {this.props.pending &&
-        <button className={"fb-button green"} onClick={e => {
-          e.stopPropagation();
-          this.props.dispatch(edit(tpp, { plant_stage: "active" }));
-          this.props.dispatch(save(tpp.uuid));
-        }}>
-          <i className={"fa fa-check"} />
-        </button>}
-      {this.props.pending &&
-        <button className={"fb-button red"} onClick={e => {
-          e.stopPropagation();
-          this.props.dispatch(destroy(tpp.uuid, true));
-        }}>
-          <i className={"fa fa-times"} />
-        </button>}
+      <div className="row">
+        {this.props.pending &&
+          <button className={"fb-button green"} onClick={e => {
+            e.stopPropagation();
+            this.props.dispatch(edit(tpp, { plant_stage: "active" }));
+            this.props.dispatch(save(tpp.uuid));
+          }}>
+            <i className={"fa fa-check"} />
+          </button>}
+        {this.props.pending &&
+          <button className={"fb-button red"} onClick={e => {
+            e.stopPropagation();
+            this.props.dispatch(destroy(tpp.uuid, true));
+          }}>
+            <i className={"fa fa-times"} />
+          </button>}
+      </div>
       <p className="weed-search-item-info">
         <i>{`(${round(weed.x)}, ${round(weed.y)}) r${round(weed.radius)}`}</i>
       </p>

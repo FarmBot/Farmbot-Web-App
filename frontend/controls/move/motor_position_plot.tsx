@@ -246,9 +246,6 @@ export const MotorPositionPlot = (props: MotorPositionPlotProps) => {
   const plotContentProps = { load, encoders };
   return <svg
     className="motor-position-plot-border"
-    style={{ marginTop: "2rem", maxHeight: "250px" }}
-    width="100%"
-    height="100%"
     viewBox={trim(`${-BORDER_WIDTH} ${yMin}
       ${HISTORY_LENGTH_SECONDS + BORDERS} ${height}`)}>
     <TitleLegend {...plotContentProps} />

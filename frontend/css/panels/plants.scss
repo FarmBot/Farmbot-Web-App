@@ -1,0 +1,127 @@
+.plant-inventory-panel {
+  .panel-top {
+    .fa-gear {
+      color: $dark_gray;
+    }
+  }
+}
+
+.plants-panel-settings-menu {
+  label {
+    line-height: 3rem;
+    vertical-align: bottom;
+    margin-bottom: 0;
+  }
+  .bp5-popover-wrapper {
+    display: inline;
+    margin-left: 0.5rem;
+    line-height: 3rem;
+  }
+}
+
+.plants-panel-content {
+  padding: 1rem;
+  input {
+    background: $white;
+  }
+  .fa-pencil {
+    margin-left: 0.5rem;
+  }
+}
+
+.crop-search-result-wrapper {
+  .openfarm-search-results-wrapper {
+    display: grid;
+    gap: 1.5rem 1rem;
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .plant-catalog-tile {
+    position: relative;
+    cursor: pointer;
+    text-align: center;
+    border-radius: 5px;
+    box-shadow: 0px 4px 7px 2px $translucent;
+    transition: transform 0.2s ease;
+    padding: 0;
+    &:hover {
+      box-shadow: 0px 5px 8px 2px rgba(0, 0, 0, 0.25);
+      transform: translateY(-1px);
+    }
+    label {
+      position: absolute;
+      cursor: pointer;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      padding: 3rem 0.6rem 0.2rem;
+      background: linear-gradient(transparent, $translucent15 50%, $translucent4);
+      border-bottom-left-radius: 5px;
+      border-bottom-right-radius: 5px;
+      color: $white;
+      font-size: 1.2rem !important;
+    }
+  }
+}
+
+.crop-info-panel {
+  .panel-header {
+    position: inherit;
+    background-size: 144% !important;
+    background-repeat: no-repeat !important;
+    background-position: top center !important;
+    min-height: 125px;
+    .panel-title {
+      overflow: visible;
+      color: $off_white;
+      .back-arrow {
+        color: $off_white;
+      }
+      .title {
+        font-family: "Inknut Antiqua";
+        font-weight: bold;
+      }
+      .bp5-popover-wrapper {
+        position: absolute;
+        right: 0;
+      }
+      .plus-grid-btn {
+        position: absolute;
+        bottom: -8.5rem;
+        right: 1.5rem;
+      }
+    }
+  }
+  .panel-content {
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 1rem;
+    .non-empty-state {
+      gap: 1rem;
+    }
+    .crop-companions {
+      display: flex;
+      gap: 0.75rem 1rem;
+      flex-wrap: wrap;
+    }
+    .companion {
+      display: inline-block;
+      text-decoration: none !important;
+      background: $translucent1;
+      border-radius: 2rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: .25rem .75rem .25rem .5rem;
+      &:hover {
+        background: $translucent15;
+      }
+      p {
+        font-weight: bold;
+        text-transform: none;
+      }
+    }
+  }
+  .crop-info-field-data {
+    font-size: 1.3rem;
+  }
+}

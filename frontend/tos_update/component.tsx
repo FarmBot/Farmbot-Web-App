@@ -5,7 +5,7 @@ import { AuthState } from "../auth/interfaces";
 import { Session } from "../session";
 import { AxiosErrorResponse, prettyPrintApiErrors } from "../util";
 import { API } from "../api";
-import { Row, Col, Widget, WidgetHeader, WidgetBody } from "../ui";
+import { Row, Widget, WidgetHeader, WidgetBody } from "../ui";
 import { TermsCheckbox } from "../front_page/terms_checkbox";
 import { t } from "../i18next_wrapper";
 import { ExternalUrl } from "../external_urls";
@@ -72,18 +72,16 @@ export class TosUpdate extends React.Component<{}, Partial<State>> {
               this.setState({ agree_to_terms: e.currentTarget.checked })}
             agree={agree} />
           <Row>
-            <Col xs={12}>
-              <button
-                className="green fb-button"
-                title={t("agree")}
-                onClick={() => {
-                  !agree && logError(t("Please agree to the terms."));
-                  this.update();
-                }}
-                type={agree ? "submit" : "button"}>
-                {t("I Agree to the Terms of Service")}
-              </button>
-            </Col>
+            <button
+              className="green fb-button"
+              title={t("agree")}
+              onClick={() => {
+                !agree && logError(t("Please agree to the terms."));
+                this.update();
+              }}
+              type={agree ? "submit" : "button"}>
+              {t("I Agree to the Terms of Service")}
+            </button>
           </Row>
         </div>
       </form>;

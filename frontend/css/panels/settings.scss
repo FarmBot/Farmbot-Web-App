@@ -1,0 +1,158 @@
+.settings-panel {
+  .panel-top {
+    .fa-gear {
+      color: $dark_gray;
+    }
+  }
+}
+
+.settings-panel-settings-menu {
+  button {
+    margin-left: 1rem;
+  }
+}
+
+.settings-panel-content {
+  max-height: calc(100vh - 22rem);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: inherit;
+  display: grid;
+  gap: 2rem;
+  .expandable-header {
+    margin: 0;
+  }
+  .section {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    &.setting {
+      gap: 0.5rem;
+    }
+    .bp5-collapse {
+      grid-column: span 2;
+    }
+    .bp5-collapse-body {
+      display: grid;
+      gap: 1rem;
+    }
+  }
+  .export-data,
+  .change-password {
+    form {
+      margin-left: 2rem;
+    }
+  }
+  .label-headings {
+    label {
+      line-height: 1rem;
+    }
+  }
+  .release-notes-wrapper {
+    float: right !important;
+  }
+  .settings-warning-banner {
+    margin: 0 -2.5rem;
+    padding: 1rem 2.5rem;
+    background: color.adjust($orange, $alpha: -0.6);
+    p {
+      font-size: 1.3rem;
+      font-weight: bold;
+    }
+    &.env-editor-lua {
+      background: color.adjust($blue, $alpha: -0.6);
+    }
+  }
+  .pin-guard-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr 1fr auto;
+    grid-auto-flow: column;
+  }
+  .pin-bindings {
+    .stock-pin-bindings-button {
+      display: block;
+      justify-self: right;
+      i {
+        margin-right: 0.5rem;
+      }
+    }
+    .pin-binding-grid {
+      grid-template-columns: 1fr 30% auto;
+    }
+    .binding-action {
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+  }
+  .fb-button {
+    margin-top: 0.5rem;
+  }
+  label {
+    margin: auto 0 !important;
+    line-height: 1;
+    font-size: 1.2rem !important;
+  }
+  .help-icon {
+    margin-left: 0.5rem;
+  }
+  .designer-setting {
+    &.disabled {
+      input {
+        background: $gray;
+      }
+      button {
+        background: $medium_light_gray !important;
+      }
+    }
+  }
+}
+
+.load-progress-bar-wrapper {
+  position: relative;
+  margin: 0.5rem;
+  margin-top: 0;
+  margin-left: 0;
+  width: 90%;
+  height: 1.5rem;
+  border: 1px solid $dark_gray;
+  .load-progress-bar {
+    height: 100%;
+    background: $dark_gray !important;
+    p {
+      position: absolute;
+      color: $gray;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+  }
+}
+
+.firmware-setting-export-menu {
+  button {
+    margin-bottom: 1rem;
+  }
+  ul {
+    font-size: 0.75rem;
+  }
+}
+
+.change-ownership-form {
+  p {
+    padding: 1rem;
+    margin-left: 0.5rem;
+  }
+  .row {
+    margin-bottom: 1rem;
+    &:empty {
+      margin-bottom: 0;
+    }
+  }
+  label {
+    margin-top: 0.5rem;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: 1rem;
+  }
+}

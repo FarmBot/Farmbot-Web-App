@@ -21,7 +21,6 @@ class DashboardController < ApplicationController
   CACHE_DIR = File.join(".cache")
 
   CSS_INPUTS = {
-    front_page: "/css/laptop_splash.scss",
     default: "/css/_index.scss",
     terminal: "/css/xterm.css",
   }.with_indifferent_access

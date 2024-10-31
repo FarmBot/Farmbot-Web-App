@@ -35,7 +35,7 @@ export const FirmwareAlerts = (props: FirmwareAlertsProps) =>
 
 export const Alerts = (props: AlertsProps) =>
   <div className="problem-alerts">
-    <div className="problem-alerts-content">
+    <div className="problem-alerts-content grid double-gap">
       {sortAlerts(props.alerts)
         .filter(filterIncompleteAlerts)
         .filter(filterAlerts)

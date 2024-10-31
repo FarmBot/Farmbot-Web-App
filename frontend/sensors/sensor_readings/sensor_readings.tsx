@@ -1,6 +1,6 @@
 import React from "react";
 import { t } from "../../i18next_wrapper";
-import { Widget, WidgetHeader, WidgetBody, WidgetFooter, Popover } from "../../ui";
+import { Popover } from "../../ui";
 import { SensorReadingsProps, SensorReadingsState } from "./interfaces";
 import { SensorReadingsTable } from "./table";
 import { filterSensorReadings } from "./filter_readings";
@@ -9,7 +9,6 @@ import {
 } from "./time_period_selection";
 import { LocationSelection, LocationDisplay } from "./location_selection";
 import { SensorSelection } from "./sensor_selection";
-import { ToolTips } from "../../constants";
 import { TaggedSensor } from "farmbot";
 import { AxisInputBoxGroupState } from "../../controls/interfaces";
 import { SensorReadingsPlot } from "./graph";
@@ -58,29 +57,30 @@ export class SensorReadings
     const readingsForPeriod =
       filterSensorReadings(this.props.sensorReadings, this.state);
 
-    return <Widget className="sensor-history-widget">
-      <WidgetHeader
-        title={t("Sensor History")}
-        helpText={ToolTips.SENSOR_HISTORY}>
-        <button className="fb-button gray"
-          title={t("clear filters")}
-          onClick={this.clearFilters}>
-          {t("clear filters")}
-        </button>
-        <Popover position={Position.TOP} usePortal={false}
-          isOpen={this.state.addReadingMenuOpen}
-          target={<button className={"fb-button green"}
-            title={t("add sensor reading")}
-            onClick={this.toggleAddReadingMenu}>
-            <i className={"fa fa-plus"} />
-          </button>}
-          content={<AddSensorReadingMenu
-            sensors={this.props.sensors}
-            closeMenu={this.toggleAddReadingMenu}
-            timeSettings={this.props.timeSettings}
-            dispatch={this.props.dispatch} />} />
-      </WidgetHeader>
-      <WidgetBody>
+    return <div className="sensor-history-widget">
+      <div className="panel-header">
+        <h2 className="panel-title">{t("History")}</h2>
+        <div className="row">
+          <button className="fb-button gray"
+            title={t("clear filters")}
+            onClick={this.clearFilters}>
+            {t("clear filters")}
+          </button>
+          <Popover position={Position.TOP} usePortal={false}
+            isOpen={this.state.addReadingMenuOpen}
+            target={<button className={"fb-button green"}
+              title={t("add sensor reading")}
+              onClick={this.toggleAddReadingMenu}>
+              <i className={"fa fa-plus"} />
+            </button>}
+            content={<AddSensorReadingMenu
+              sensors={this.props.sensors}
+              closeMenu={this.toggleAddReadingMenu}
+              timeSettings={this.props.timeSettings}
+              dispatch={this.props.dispatch} />} />
+        </div>
+      </div>
+      <div className="grid">
         <SensorSelection
           selectedSensor={this.state.sensor}
           sensors={this.props.sensors}
@@ -98,7 +98,6 @@ export class SensorReadings
           deviation={this.state.deviation}
           setLocation={this.setLocation}
           setDeviation={this.setDeviation} />
-        <hr />
         <SensorReadingsPlot
           readingsForPeriod={readingsForPeriod}
           endDate={this.state.endDate}
@@ -113,19 +112,17 @@ export class SensorReadings
           timeSettings={this.props.timeSettings}
           hover={this.hover}
           hovered={this.state.hovered} />
-      </WidgetBody>
-      <WidgetFooter>
-        <div className="sensor-history-footer">
-          <DateDisplay
-            endDate={this.state.endDate}
-            showPreviousPeriod={this.state.showPreviousPeriod}
-            timePeriod={this.state.timePeriod}
-            timeSettings={this.props.timeSettings} />
-          <LocationDisplay
-            xyzLocation={this.state.xyzLocation}
-            deviation={this.state.deviation} />
-        </div>
-      </WidgetFooter>
-    </Widget>;
+      </div>
+      <div className="sensor-history-footer">
+        <DateDisplay
+          endDate={this.state.endDate}
+          showPreviousPeriod={this.state.showPreviousPeriod}
+          timePeriod={this.state.timePeriod}
+          timeSettings={this.props.timeSettings} />
+        <LocationDisplay
+          xyzLocation={this.state.xyzLocation}
+          deviation={this.state.deviation} />
+      </div>
+    </div>;
   }
 }

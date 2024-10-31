@@ -1,0 +1,45 @@
+.farmware-panel,
+.designer-farmware-list-panel,
+.designer-farmware-info-panel,
+.farmware-add-panel {
+  .panel-content {
+    a {
+      text-decoration: none !important;
+      p {
+        font-size: 1.4rem;
+        font-weight: normal !important;
+        line-height: 2rem;
+      }
+    }
+  }
+}
+
+.designer-farmware-info-panel {
+  .panel-content {
+    position: relative;
+    padding-top: 2rem;
+    padding-bottom: 12rem;
+    button {
+      float: none;
+    }
+    .reset-configs {
+      margin-right: 1rem;
+      margin-top: 2rem;
+    }
+    .farmware-button {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+    }
+    .farmware-form {
+      margin-top: 1rem;
+    }
+    .farmware-input-group {
+      margin-left: 0;
+    }
+  }
+}
+
+.custom-setting-grid {
+  grid-template-columns: 1fr 1fr auto;
+}

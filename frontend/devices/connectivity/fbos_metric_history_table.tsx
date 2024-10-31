@@ -118,7 +118,7 @@ export class FbosMetricHistoryTable
     const rightAlignProps = { ...commonProps, rightAlign: true };
     const sortedTelemetry = sortBy(cloneDeep(this.telemetry), "body.created_at")
       .reverse();
-    return <div className={"fbos-metric-history"}>
+    return <div className={"fbos-metric-history grid"}>
       <FbosMetricHistoryPlot {...commonProps} telemetry={this.telemetry} />
       <div className={"fbos-metric-history-table-wrapper"}>
         <table>

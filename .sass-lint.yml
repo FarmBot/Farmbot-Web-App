@@ -31,15 +31,7 @@ rules:
     - 1
     -
       order:
-        - content
-        - display
-        - position
-        - top
-        - left
-        - bottom
-        - right
-        - z-index
-        - margin
+        - 
       ignore-custom-properties: true
   variable-for-property:
     - 2

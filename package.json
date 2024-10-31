@@ -20,7 +20,7 @@
     "dev-typecheck": "./node_modules/typescript/bin/tsc --project tsconfig.dev.json --noEmit",
     "eslint": "./node_modules/.bin/eslint frontend public/app-resources/languages --ext .ts,.tsx",
     "sass-lint": "./node_modules/sass-lint/bin/sass-lint.js -c .sass-lint.yml -v -q",
-    "sass-check": "./node_modules/sass/sass.js --no-source-map frontend/css/_index.scss:sass_index.log frontend/css/laptop_splash.scss:sass_splash.log",
+    "sass-check": "./node_modules/sass/sass.js --no-source-map frontend/css/_index.scss:sass_index.log",
     "translation-check": " ./node_modules/jshint/bin/jshint --config public/app-resources/languages/.config public/app-resources/languages/*.json",
     "linters": "npm run typecheck --cache=/tmp;X=$(($X+$?));npm run dev-typecheck --cache=/tmp;X=$(($X+$?));npm run eslint --cache=/tmp;X=$(($X+$?));npm run sass-lint --cache=/tmp;X=$(($X+$?));npm run sass-check --cache=/tmp;X=$(($X+$?));npm run translation-check --cache=/tmp;X=$(($X+$?));[ $X = 0 ]"
   },

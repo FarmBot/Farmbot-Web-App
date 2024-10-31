@@ -1,7 +1,7 @@
 import React from "react";
 import { McuInputBox } from "./mcu_input_box";
 import { PinGuardMCUInputGroupProps } from "./interfaces";
-import { Row, Col, ToggleButton } from "../../ui";
+import { Row, ToggleButton } from "../../ui";
 import { settingToggle } from "../../devices/actions";
 import { isUndefined } from "lodash";
 import { t } from "../../i18next_wrapper";
@@ -52,16 +52,10 @@ export class PinGuardMCUInputGroup
     const { label } = this.props;
     return <Highlight settingName={label}>
       <div className={"pin-guard-input-row"}>
-        <Row>
-          <Col xs={5}>
-            <this.Number />
-          </Col>
-          <Col xs={4}>
-            <this.Timeout />
-          </Col>
-          <Col xs={3}>
-            <this.State />
-          </Col>
+        <Row className="pin-guard-grid">
+          <this.Number />
+          <this.Timeout />
+          <this.State />
         </Row>
       </div>
     </Highlight>;

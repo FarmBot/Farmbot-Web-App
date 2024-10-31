@@ -133,7 +133,6 @@ export const SequencePreviewContent = (props: SequencePreviewContentProps) => {
             sequence={sequence}
             dispatch={noop}
             toggle={props.toggleSection("licenseCollapsed")} />
-          <div className={"padding"} />
         </div>
       </div>}
   </EmptyStateWrapper>;

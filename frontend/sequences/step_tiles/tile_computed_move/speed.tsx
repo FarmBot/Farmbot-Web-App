@@ -1,7 +1,7 @@
 import React from "react";
 import { Xyz, SpeedOverwrite, Move } from "farmbot";
 import { SpeedInputRowProps } from "./interfaces";
-import { Row, Col } from "../../../ui";
+import { Row } from "../../../ui";
 import { t } from "../../../i18next_wrapper";
 import { MoveStepInput } from "./input";
 import { isUndefined } from "lodash";
@@ -41,18 +41,16 @@ export const getSpeedNode = (
 };
 
 export const SpeedInputRow = (props: SpeedInputRowProps) =>
-  <Row>
-    <Col xs={3}>
-      <label>
-        {t("Speed (%)")}
-      </label>
-    </Col>
+  <Row className="grid-4-col">
+    <label>
+      {t("Speed (%)")}
+    </label>
     {["x", "y", "z"].map((axis: Xyz) =>
-      <Col xs={3} key={axis}>
+      <div key={axis}>
         <MoveStepInput field={"speed"} axis={axis}
           value={props.speed[axis]}
           onCommit={props.onCommit} min={1} max={100}
           disabled={props.disabledAxes[axis]} defaultValue={100}
           setValue={props.setAxisState("speed", axis, 100)} />
-      </Col>)}
+      </div>)}
   </Row>;

@@ -4,7 +4,7 @@ import {
   DesignerPanel, DesignerPanelContent, DesignerPanelTop,
 } from "../farm_designer/designer_panel";
 import { t } from "../i18next_wrapper";
-import { DesignerNavTabs, Panel } from "../farm_designer/panel_header";
+import { Panel } from "../farm_designer/panel_header";
 import { MCUFactoryReset } from "../devices/actions";
 import { FarmBotSettings } from "./fbos_settings/farmbot_os_settings";
 import { PowerAndReset } from "./fbos_settings/power_and_reset";
@@ -67,7 +67,6 @@ export class RawDesignerSettings
       payload: urlSearchTerm,
     });
     return <DesignerPanel panelName={"settings"} panel={Panel.Settings}>
-      <DesignerNavTabs />
       <DesignerPanelTop panel={Panel.Settings} withButton={true}>
         <SearchField nameKey={"settings"}
           placeholder={t("Search settings...")}
@@ -80,14 +79,16 @@ export class RawDesignerSettings
               payload: searchTerm,
             });
           }} />
-        <Popover
-          position={Position.BOTTOM}
-          popoverClassName={"settings-panel-settings-menu"}
-          target={<i className={"fa fa-gear fb-icon-button"} />}
-          content={<ShowAdvancedToggle
-            dispatch={dispatch}
-            getConfigValue={getConfigValue} />} />
-        <ToggleSettingsOpen dispatch={dispatch} panels={settingsPanelState} />
+        <div className="row no-gap">
+          <Popover
+            position={Position.BOTTOM}
+            popoverClassName={"settings-panel-settings-menu"}
+            target={<i className={"fa fa-gear fb-icon-button"} />}
+            content={<ShowAdvancedToggle
+              dispatch={dispatch}
+              getConfigValue={getConfigValue} />} />
+          <ToggleSettingsOpen dispatch={dispatch} panels={settingsPanelState} />
+        </div>
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"settings"}>
         {getUrlQuery("only") && !this.props.searchTerm &&

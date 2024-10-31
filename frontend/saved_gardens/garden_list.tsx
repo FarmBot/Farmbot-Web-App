@@ -1,5 +1,4 @@
 import React from "react";
-import { Col } from "../ui";
 import { isNumber, isString } from "lodash";
 import { openSavedGarden } from "./actions";
 import {
@@ -12,12 +11,12 @@ export const GardenInfo = (props: SavedGardenInfoProps) => {
   const { savedGarden, dispatch } = props;
   return <div className="saved-garden-info"
     onClick={() => dispatch(openSavedGarden(savedGarden.body.id))}>
-    <Col>
+    <div>
       <span className={"saved-garden-search-item-name"}>
         {savedGarden.body.name}
       </span>
       <p><i>{props.plantTemplateCount} {t("plants")}</i></p>
-    </Col>
+    </div>
   </div>;
 };
 

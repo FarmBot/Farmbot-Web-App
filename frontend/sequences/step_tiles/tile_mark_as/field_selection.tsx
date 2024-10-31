@@ -8,7 +8,7 @@ import {
 } from "./interfaces";
 
 export const FieldSelection = (props: FieldSelectionProps) =>
-  <div className={"update-resource-step-field"}>
+  <div className={"row grid-2-col"}>
     <label>{t("property")}</label>
     {(isCustomMetaField(props.field) && !isUndefined(props.field))
       ? <CustomMetaField {...props} field={props.field} />

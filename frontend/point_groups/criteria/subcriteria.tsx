@@ -59,7 +59,7 @@ export const ClearCategory = (props: ClearCategoryProps) => {
   const all =
     !some(criteriaKeys.map(criteriaKey =>
       criteriaHasKey(group.body.criteria, criteriaCategories, criteriaKey)));
-  return <div className="criteria-checkbox-list-item">
+  return <div className="row grid-exp-1">
     <Checkbox
       onChange={() =>
         dispatch(clearCriteriaField(group, criteriaCategories, criteriaKeys))}
@@ -67,7 +67,7 @@ export const ClearCategory = (props: ClearCategoryProps) => {
       disabled={all}
       title={t("clear selections")}
       customDisabledText={t("selections empty")} />
-    <p>{t("all")}</p>
+    <p>{t("ALL")}</p>
   </div>;
 };
 
@@ -105,14 +105,16 @@ const PlantCriteria = (props: PlantSubCriteriaProps) => {
 
 const PlantStage = (props: PointSubCriteriaProps) =>
   <div className={"plant-stage-criteria"}>
-    <p className={"category"}>
-      {props.pointerType == "Plant" ? t("Stage") : t("Status")}
-    </p>
-    <ClearCategory
-      group={props.group}
-      criteriaCategories={["string_eq"]}
-      criteriaKeys={["plant_stage"]}
-      dispatch={props.dispatch} />
+    <div className={"row grid-exp-1"}>
+      <p className={"category"}>
+        {props.pointerType == "Plant" ? t("Stage") : t("Status")}
+      </p>
+      <ClearCategory
+        group={props.group}
+        criteriaCategories={["string_eq"]}
+        criteriaKeys={["plant_stage"]}
+        dispatch={props.dispatch} />
+    </div>
     <CheckboxList<string>
       disabled={props.disabled}
       pointerType={props.pointerType}
@@ -126,12 +128,14 @@ const PlantStage = (props: PointSubCriteriaProps) =>
 
 const RemovalMethod = (props: PointSubCriteriaProps) =>
   <div className={"removal-method-criteria"}>
-    <p className={"category"}>{t("Removal Method")}</p>
-    <ClearCategory
-      group={props.group}
-      criteriaCategories={["string_eq"]}
-      criteriaKeys={["meta.removal_method"]}
-      dispatch={props.dispatch} />
+    <div className={"row grid-exp-1"}>
+      <p className={"category"}>{t("Removal Method")}</p>
+      <ClearCategory
+        group={props.group}
+        criteriaCategories={["string_eq"]}
+        criteriaKeys={["meta.removal_method"]}
+        dispatch={props.dispatch} />
+    </div>
     <CheckboxList
       disabled={props.disabled}
       pointerType={props.pointerType}
@@ -146,12 +150,14 @@ const RemovalMethod = (props: PointSubCriteriaProps) =>
 
 const PlantType = (props: PlantSubCriteriaProps) =>
   <div className={"plant-type-criteria"}>
-    <p className={"category"}>{t("Type")}</p>
-    <ClearCategory
-      group={props.group}
-      criteriaCategories={["string_eq"]}
-      criteriaKeys={["openfarm_slug"]}
-      dispatch={props.dispatch} />
+    <div className={"row grid-exp-1"}>
+      <p className={"category"}>{t("Type")}</p>
+      <ClearCategory
+        group={props.group}
+        criteriaCategories={["string_eq"]}
+        criteriaKeys={["openfarm_slug"]}
+        dispatch={props.dispatch} />
+    </div>
     <CheckboxList<string>
       disabled={props.disabled}
       pointerType={"Plant"}
@@ -169,7 +175,7 @@ const WeedCriteria = (props: SubCriteriaProps) => {
   const { group, dispatch, disabled } = props;
   const pointerType: PointType = "Weed";
   const commonProps = { group, dispatch, disabled, pointerType };
-  return <div className={"weed-criteria-options"}>
+  return <div className={"weed-criteria-options grid"}>
     <PointSource {...commonProps} />
     <PlantStage {...commonProps} />
     <RemovalMethod {...commonProps} />
@@ -191,12 +197,14 @@ const PointCriteria = (props: SubCriteriaProps) => {
 
 const PointSource = (props: PointSubCriteriaProps) =>
   <div className={"point-source-criteria"}>
-    <p className={"category"}>{t("Source")}</p>
-    <ClearCategory
-      group={props.group}
-      criteriaCategories={["string_eq"]}
-      criteriaKeys={["meta.created_by"]}
-      dispatch={props.dispatch} />
+    <div className={"row grid-exp-1"}>
+      <p className={"category"}>{t("Source")}</p>
+      <ClearCategory
+        group={props.group}
+        criteriaCategories={["string_eq"]}
+        criteriaKeys={["meta.created_by"]}
+        dispatch={props.dispatch} />
+    </div>
     <CheckboxList
       disabled={props.disabled}
       pointerType={props.pointerType}
@@ -211,12 +219,14 @@ const PointSource = (props: PointSubCriteriaProps) =>
 
 const Radius = (props: PointSubCriteriaProps) =>
   <div className={"radius-criteria"}>
-    <p className={"category"}>{t("Radius")}</p>
-    <ClearCategory
-      group={props.group}
-      criteriaCategories={["number_gt", "number_lt"]}
-      criteriaKeys={["radius"]}
-      dispatch={props.dispatch} />
+    <div className={"row grid-exp-1"}>
+      <p className={"category"}>{t("Radius")}</p>
+      <ClearCategory
+        group={props.group}
+        criteriaCategories={["number_gt", "number_lt"]}
+        criteriaKeys={["radius"]}
+        dispatch={props.dispatch} />
+    </div>
     <div className={"lt-gt-criteria"}>
       <NumberLtGtInput
         disabled={props.disabled}
@@ -231,12 +241,14 @@ const Radius = (props: PointSubCriteriaProps) =>
 
 const Color = (props: PointSubCriteriaProps) =>
   <div className={"color-criteria"}>
-    <p className={"category"}>{t("Color")}</p>
-    <ClearCategory
-      group={props.group}
-      criteriaCategories={["string_eq"]}
-      criteriaKeys={["meta.color"]}
-      dispatch={props.dispatch} />
+    <div className={"row grid-exp-1"}>
+      <p className={"category"}>{t("Color")}</p>
+      <ClearCategory
+        group={props.group}
+        criteriaCategories={["string_eq"]}
+        criteriaKeys={["meta.color"]}
+        dispatch={props.dispatch} />
+    </div>
     <CheckboxList
       disabled={props.disabled}
       pointerType={props.pointerType}

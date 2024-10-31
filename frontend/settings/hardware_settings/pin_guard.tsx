@@ -5,7 +5,7 @@ import { Header } from "./header";
 import { Collapse } from "@blueprintjs/core";
 import { DeviceSetting, ToolTips } from "../../constants";
 import { Highlight } from "../maybe_highlight";
-import { Col, Help, Row } from "../../ui";
+import { Help, Row } from "../../ui";
 import { t } from "../../i18next_wrapper";
 
 export function PinGuard(props: PinGuardProps) {
@@ -25,23 +25,19 @@ export function PinGuard(props: PinGuardProps) {
       dispatch={props.dispatch} />
     <Collapse isOpen={!!props.settingsPanelState.pin_guard}>
       <Highlight settingName={DeviceSetting.pinGuardLabels}>
-        <Row>
-          <Col xs={5}>
+        <Row className="pin-guard-grid">
+          <div>
             <label>
               {t("Pin")}
             </label>
             <Help text={ToolTips.PIN_GUARD_PIN_NUMBER} />
-          </Col>
-          <Col xs={4}>
-            <label>
-              {t("Timeout (sec)")}
-            </label>
-          </Col>
-          <Col xs={3}>
-            <label>
-              {t("To State")}
-            </label>
-          </Col>
+          </div>
+          <label>
+            {t("Timeout (sec)")}
+          </label>
+          <label>
+            {t("To State")}
+          </label>
         </Row>
       </Highlight>
       <PinGuardMCUInputGroup {...commonProps}

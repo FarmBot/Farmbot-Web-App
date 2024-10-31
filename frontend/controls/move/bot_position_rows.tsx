@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col, Popover } from "../../ui";
+import { Row, Popover } from "../../ui";
 import {
   findAxisLength, findHome, moveAbsolute, moveToHome, setHome, updateMCU,
 } from "../../devices/actions";
@@ -43,27 +43,27 @@ export const BotPositionRows = (props: BotPositionRowsProps) => {
     || (hasEncoders(props.firmwareHardware) &&
       (getConfigValue(BooleanSetting.scaled_encoders)
         || getConfigValue(BooleanSetting.raw_encoders)));
-  return <div className={"bot-position-rows"}>
+  return <div className={"bot-position-rows grid"}>
     <div className={"axis-titles"}>
-      <Row>
-        <Col xs={3}>
+      <Row className="grid-4-col">
+        <div className="row grid-exp-1">
           <label>{t("X AXIS")}</label>
           <AxisActions axis={"x"}
             hardwareDisabled={hardwareDisabled.x}
             {...commonAxisActionProps} />
-        </Col>
-        <Col xs={3}>
+        </div>
+        <div className="row grid-exp-1">
           <label>{t("Y AXIS")}</label>
           <AxisActions axis={"y"}
             hardwareDisabled={hardwareDisabled.y}
             {...commonAxisActionProps} />
-        </Col>
-        <Col xs={3}>
+        </div>
+        <div className="row grid-exp-1">
           <label>{t("Z AXIS")}</label>
           <AxisActions axis={"z"}
             hardwareDisabled={hardwareDisabled.z}
             {...commonAxisActionProps} />
-        </Col>
+        </div>
       </Row>
     </div>
     <AxisDisplayGroup
@@ -74,17 +74,17 @@ export const BotPositionRows = (props: BotPositionRowsProps) => {
       axisStates={locationData.axis_states}
       busy={arduinoBusy}
       style={{ overflowWrap: "break-word" }}
-      label={t("Current position (mm)")} />
+      label={t("Position (mm)")} />
     {hasEncoders(props.firmwareHardware) &&
       getConfigValue(BooleanSetting.scaled_encoders) &&
       <AxisDisplayGroup
         position={locationData.scaled_encoders}
-        label={t("Scaled Encoder (mm)")} />}
+        label={t("Encoder (mm)")} />}
     {hasEncoders(props.firmwareHardware) &&
       getConfigValue(BooleanSetting.raw_encoders) &&
       <AxisDisplayGroup
         position={locationData.raw_encoders}
-        label={t("Raw Encoder data")} />}
+        label={t("Encoder (raw)")} />}
     <AxisInputBoxGroup
       position={locationData.position}
       onCommit={moveAbsolute}

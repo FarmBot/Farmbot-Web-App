@@ -3,7 +3,7 @@ import { LHSOptions, operatorOptions } from "./index";
 import { StepInputBox } from "../../inputs/step_input_box";
 import { defensiveClone } from "../../../util";
 import { overwrite } from "../../../api/crud";
-import { Col, Row, FBSelect, DropDownItem } from "../../../ui";
+import { Row, FBSelect, DropDownItem } from "../../../ui";
 import { ALLOWED_OPS, If } from "farmbot";
 import { updateLhs } from "./update_lhs";
 import { displayLhs } from "./display_lhs";
@@ -40,30 +40,30 @@ export function If_(props: StepParams<If>) {
   const { op } = currentStep.args;
   const lhsOptions = LHSOptions(resources, !!props.showPins);
 
-  return <Row>
-    <Col xs={4}>
+  return <Row className="grid-3-col">
+    <div>
       <label>{t("Variable")}</label>
       <FBSelect
         key={JSON.stringify(sequence)}
         list={lhsOptions}
         onChange={updateLhs(props)}
         selectedItem={displayLhs({ currentStep, resources, lhsOptions })} />
-    </Col>
-    <Col xs={4}>
+    </div>
+    <div>
       <label>{t("Operator")}</label>
       <FBSelect
         key={JSON.stringify(sequence)}
         list={operatorOptions()}
         onChange={updateOp(props)}
         selectedItem={{ label: label_ops()[op] || op, value: op }} />
-    </Col>
-    <Col xs={4} hidden={op === IS_UNDEFINED}>
+    </div>
+    <div hidden={op === IS_UNDEFINED}>
       <label>{t("Value")}</label>
       <StepInputBox dispatch={props.dispatch}
         step={currentStep}
         sequence={sequence}
         index={props.index}
         field="rhs" />
-    </Col>
+    </div>
   </Row>;
 }

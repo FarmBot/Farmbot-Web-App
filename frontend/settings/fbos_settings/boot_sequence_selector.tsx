@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { Everything } from "../../interfaces";
 import { getFbosConfig } from "../../resources/getters";
-import { FBSelect, DropDownItem, Row, Col } from "../../ui";
+import { FBSelect, DropDownItem, Row } from "../../ui";
 import { edit, save } from "../../api/crud";
 import { FirmwareHardware, TaggedFbosConfig, TaggedSequence } from "farmbot";
 import {
@@ -75,15 +75,11 @@ export class RawBootSequenceSelector
 
   render() {
     return <Highlight settingName={DeviceSetting.bootSequence}>
-      <Row>
-        <Col xs={5}>
-          <label>
-            {t("BOOT SEQUENCE")}
-          </label>
-        </Col>
-        <Col xs={7} className="no-pad">
-          <this.SelectionInput />
-        </Col>
+      <Row className="grid-2-col">
+        <label>
+          {t("BOOT SEQUENCE")}
+        </label>
+        <this.SelectionInput />
       </Row>
     </Highlight>;
   }

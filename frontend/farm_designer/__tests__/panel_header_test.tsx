@@ -28,24 +28,20 @@ const expectOnlyOneActiveIcon = (wrapper: ReactWrapper<any>) =>
   expect(wrapper.html().match(/active/)?.length).toEqual(1);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const expectColor = (wrapper: ReactWrapper<any>, color: string) =>
-  expect(wrapper.find(".panel-nav").hasClass(`${color}-panel`)).toBeTruthy();
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const expectActive = (wrapper: ReactWrapper<any>, slug: string) =>
   expect(wrapper.find(`#${slug}`).first().hasClass("active")).toBeTruthy();
 
 describe("<DesignerNavTabs />", () => {
-  it.each<[string, string, string]>([
-    ["map", Path.designer(), "gray"],
-    ["plants", Path.plants(), "green"],
-    ["plants", Path.plantTemplates(1), "green"],
-    ["tools", Path.toolSlots(), "gray"],
-  ])("shows active %s icon", (slug, path, color) => {
+  it.each<[string, string]>([
+    ["map", Path.designer()],
+    ["sequences", Path.sequencePage()],
+    ["plants", Path.plants()],
+    ["plants", Path.plantTemplates(1)],
+    ["tools", Path.toolSlots()],
+  ])("shows active %s icon", (slug, path) => {
     mockPath = Path.mock(path);
     const wrapper = mount(<DesignerNavTabs />);
     expectOnlyOneActiveIcon(wrapper);
-    expectColor(wrapper, color);
     expectActive(wrapper, slug);
   });
 
@@ -60,7 +56,6 @@ describe("<DesignerNavTabs />", () => {
     mockDev = true;
     const wrapper = mount(<DesignerNavTabs />);
     expectOnlyOneActiveIcon(wrapper);
-    expectColor(wrapper, "brown");
     expectActive(wrapper, "zones");
   });
 

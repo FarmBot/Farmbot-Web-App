@@ -133,7 +133,7 @@ export class PointGroupItem
   };
 
   render() {
-    const size = 20;
+    const size = 30;
     return <span
       key={this.key}
       className={"group-item-icon"}

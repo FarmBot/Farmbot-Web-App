@@ -10,7 +10,7 @@ import { getModifiedClassName } from "../../settings/default_values";
 export const ToggleHighlightModified = (props: ToggleHighlightModifiedProps) => {
   const { getConfigValue, dispatch } = props;
   const value = !!getConfigValue(BooleanSetting.highlight_modified_settings);
-  return <div className={"highlight-modified-toggle"}>
+  return <div className={"row grid-exp-1"}>
     <label>{t(DeviceSetting.highlightModifiedSettings)}</label>
     <ToggleButton
       className={getModifiedClassName(BooleanSetting.highlight_modified_settings)}

@@ -51,10 +51,8 @@ export const PinBindingsContent = (props: PinBindingsContentProps) => {
   const pinBindings = apiPinBindings(resources);
   return <div className="pin-bindings">
     <Highlight settingName={DeviceSetting.stockPinBindings}>
-      <Row>
+      <Row className="grid-exp-3">
         <Help text={ToolTips.PIN_BINDINGS} />
-        <StockPinBindingsButton
-          dispatch={dispatch} firmwareHardware={firmwareHardware} />
         <Popover
           position={Position.TOP_RIGHT}
           interactionKind={PopoverInteractionKind.HOVER}
@@ -64,9 +62,11 @@ export const PinBindingsContent = (props: PinBindingsContentProps) => {
           content={<div className={"pin-binding-warning"}>
             {t(ToolTips.PIN_BINDING_WARNING)}
           </div>} />
+        <StockPinBindingsButton
+          dispatch={dispatch} firmwareHardware={firmwareHardware} />
       </Row>
     </Highlight>
-    <div className={"pin-bindings-list-and-input"}>
+    <div className={"grid"}>
       <Highlight settingName={DeviceSetting.savedPinBindings}>
         <PinBindingsList
           pinBindings={pinBindings}

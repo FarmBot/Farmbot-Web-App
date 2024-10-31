@@ -1,0 +1,503 @@
+.three-d-garden {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  cursor: grab;
+
+  body {
+    margin: 0;
+  }
+
+  .garden-bed-3d-model {
+    width: calc(100vw + 45rem);
+    position: relative;
+    height: 100vh;
+    cursor: grab;
+
+    &:active {
+      cursor: grabbing;
+    }
+
+    @media screen and (max-width: 768px) {
+      width: 100vw;
+    }
+  }
+
+  .gear {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 1rem;
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.4);
+    box-shadow: $translucent2 0px 0px 5px;
+    padding: 7px;
+    border-radius: 5px;
+    backdrop-filter: blur(5px);
+    opacity: 0;
+
+    &:hover {
+      opacity: 1;
+    }
+  }
+
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    pointer-events: none;
+    user-select: none;
+
+    .settings-bar {
+      display: flex;
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      justify-content: center;
+      gap: 1.25rem;
+      padding: 1rem;
+      overflow-x: scroll;
+      background: linear-gradient(0deg, $translucent5, transparent);
+      scrollbar-width: none;
+
+      @media screen and (max-width: 768px) {
+        justify-content: left;
+        pointer-events: all;
+      }
+
+      .setting-section {
+        pointer-events: all;
+      }
+
+      .setting-title {
+        color: $off_white;
+        font-family: 'Inknut Antiqua';
+        text-shadow: 0 0 10px black;
+        line-height: 1.8rem;
+        text-align: center;
+      }
+
+      .row {
+        display: flex;
+        margin: 0;
+        background: rgba(255, 255, 255, 0.6);
+        box-shadow: $translucent2 0px 0px 1rem;
+        border-radius: 2.5rem;
+        height: 3.1rem;
+        padding: 0.3rem;
+        justify-content: space-evenly;
+        backdrop-filter: blur(5px);
+        gap: 0.5rem;
+        &:after,
+        &:before {
+          content: unset;
+          display: unset;
+          clear: unset;
+        }
+      }
+
+      button {
+        padding: 0 0.85rem;
+        border-radius: 2.5rem;
+        font-weight: bold;
+        border: none;
+        background: none;
+        white-space: nowrap;
+        color: $off_black;
+
+        &.outdoor.active,
+        &.lab.active,
+        &.genesis.active,
+        &.standard.active,
+        &.mobile.active {
+          background: rgba(255, 255, 255, 0.6);
+        }
+
+        &.genesis-xl.active {
+          background: linear-gradient(315deg, #22a36d, #4ea3ed);
+          color: $off_white;
+        }
+
+        &.winter.active {
+          background: linear-gradient(-15deg, #152e40, #3e8dc2);
+          color: $off_white;
+        }
+
+        &.spring.active {
+          background: linear-gradient(15deg, #055b08, #49cc78);
+          color: $off_white;
+        }
+
+        &.summer.active {
+          background: linear-gradient(-15deg, #d87f09, #f5e40a);
+        }
+
+        &.fall.active {
+          background: linear-gradient(15deg, #502402, #c69075);
+          color: $off_white
+        }
+
+        &:hover {
+          cursor: pointer;
+          background: $translucent3_white;
+        }
+
+        &.disabled {
+          color: $placeholder_gray;
+
+          &:hover {
+            cursor: not-allowed;
+            background: none;
+          }
+        }
+      }
+    }
+  }
+
+  .tool-tip {
+    position: absolute;
+    left: 0;
+    bottom: 6.5rem;
+    right: 0;
+    margin: auto;
+    width: fit-content;
+    color: $off_white;
+    background: rgba(120, 0, 0, 0.65);
+    padding: 0.75rem 1rem;
+    border-radius: 5px;
+    text-align: center;
+    pointer-events: none;
+    backdrop-filter: blur(5px);
+    box-shadow: $translucent2 0px 0px 5px;
+
+    @media screen and (max-width: 768px) {
+      margin: 0 1rem;
+    }
+  }
+
+  .all-configs {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 22rem;
+    background: $dark_gray;
+    text-align: left;
+    padding: 1rem;
+    border-radius: 5px;
+    max-height: 30rem;
+    overflow-y: scroll;
+
+    .close {
+      position: absolute;
+      top: 0.5rem;
+      right: 1rem;
+      margin: 0;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 0.5rem 0.75rem;
+      background: none;
+      border-radius: 5px;
+
+      &:hover {
+        background: $medium_gray;
+      }
+    }
+
+    .spacer {
+      margin-top: 1rem;
+    }
+
+    details {
+      color: $off_white;
+
+      label {
+        font-weight: bold;
+        color: $off_white;
+        text-transform: none;
+        font-size: 0.9rem;
+      }
+    }
+
+    summary {
+      margin: -1rem;
+      cursor: pointer;
+      padding: 1rem;
+
+      &:hover {
+        background: $dark_gray;
+      }
+    }
+
+    .config-row {
+      display: grid;
+      grid-template-columns: min-content minmax(30%, 200px) auto;
+      margin-bottom: 0.25rem;
+
+      span {
+        width: 8rem;
+        padding-left: 1rem;
+        color: $gray;
+      }
+
+      input[type="checkbox"] {
+        width: 1.1rem;
+        height: 1.1rem;
+        justify-self: left;
+        cursor: pointer;
+        box-shadow: none;
+      }
+
+      input[type="number"] {
+        width: 100%;
+        max-width: 4rem;
+        height: 1rem;
+        font-size: 0.9rem;
+        box-shadow: none;
+      }
+
+      input[type="radio"] {
+        width: 1.1rem;
+        height: 1.1rem;
+        cursor: pointer;
+        box-shadow: none;
+      }
+
+      .options {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      input[type="range"] {
+        width: 4rem;
+        margin-left: -2rem;
+        cursor: pointer;
+        box-shadow: none;
+        height: 1rem;
+      }
+    }
+  }
+
+  .promo-info {
+    display: grid;
+    position: absolute;
+    top: 3rem;
+    right: 4rem;
+    color: $off_white;
+    text-align: right;
+    pointer-events: none;
+    text-shadow: 0 0 3.5rem $black, 0 0 1rem $black;
+    gap: 1rem;
+    justify-items: right;
+
+    .title {
+      margin: 0;
+      font-family: 'Inknut Antiqua';
+      font-size: 3.5rem;
+      line-height: 5rem;
+      font-weight: bold;
+    }
+
+    .description {
+      margin: 0;
+      max-width: 40vw;
+
+      p {
+        color: $off_white;
+        font-size: 1.25rem;
+        line-height: 1.7rem;
+        font-weight: bold;
+      }
+
+      .short {
+        display: none;
+      }
+
+      .full {
+        display: inline;
+      }
+    }
+
+    .buy-button {
+      display: flex;
+      pointer-events: all;
+      background: #00a579e0;
+      border-radius: 7px;
+      box-shadow: $translucent2 0px 0px 10px;
+      backdrop-filter: blur(5px);
+      padding: 0.1rem 1.75rem;
+      text-shadow: none;
+      text-transform: uppercase;
+      text-decoration: none;
+      gap: 0.4rem;
+      align-items: center;
+
+      p {
+        margin: 0;
+        color: $off_white;
+        font-size: 1.5rem;
+        line-height: 4rem;
+        font-weight: bold;
+      }
+
+      .genesis-xl {
+        background: linear-gradient(315deg, #22a36d, #4ea3ed);
+        box-shadow: 0 0 8px rgba(0, 0, 0, 0.25);
+        color: $off_white;
+        border-radius: 50%;
+        height: 2.5rem;
+        width: 2.5rem;
+        line-height: 2.5rem;
+        text-align: center;
+        font-size: 1.2rem;
+        vertical-align: middle;
+      }
+
+      &:hover {
+        background: #00bb89e5;
+      }
+    }
+  }
+
+  .beacon-info {
+    width: 34rem;
+    background: $white;
+    background: rgba(255, 255, 255, 0.8);
+    box-shadow: $translucent2 0px 0px 10px;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    backdrop-filter: blur(5px);
+    text-align: left;
+    user-select: none;
+    p {
+      margin-bottom: 0;
+      margin-top: 1rem;
+      font-weight: bold;
+      font-size: 1.25rem;
+      color: $black;
+      line-height: 1.6rem;
+    }
+    a {
+      text-decoration: underline !important;
+      text-underline-offset: 0.1rem;
+      text-underline-position: from-font;
+      font-weight: bold;
+      color: $dark_blue;
+    }
+    iframe {
+      margin-top: 1rem;
+      width: 100%;
+      height: auto;
+      border-radius: 0.35rem;
+      aspect-ratio: 16 / 9;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      h2 {
+        margin: 0;
+        font-family: 'Inknut Antiqua';
+        line-height: 100%;
+        font-weight: bold;
+      }
+      .exit-button {
+        width: 2rem;
+        height: 2rem;
+        aspect-ratio: 1 / 1;
+        border-radius: 50%;
+        filter: grayscale(100%);
+        font-size: 0.75rem;
+        line-height: 2rem;
+        text-align: center;
+        background: rgba(255, 255, 255, 0.4);
+        box-shadow: $translucent2 0px 0px 0.75rem;
+        &:hover {
+          cursor: pointer;
+          background: rgba(255, 255, 255, 0.6);
+        }
+      }
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .beacon-info-wrapper {
+      display: grid;
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      align-items: end;
+      transform: none!important;
+      * {
+        transform: none!important;
+      }
+      .beacon-info {
+        width: initial;
+        border-bottom-left-radius: 0px;
+        border-bottom-right-radius: 0px;
+        overflow: scroll;
+        height: 33vh;
+        font-size: 100%;
+
+        .header {
+          h2 {
+            font-size: 1.3rem;
+          }
+        }
+
+        p {
+          font-size: 1rem;
+          line-height: 1.2rem;
+        }
+      }
+    }
+    .promo-info {
+      top: 1rem;
+      right: 1rem;
+      gap: 0.5rem;
+
+      .title {
+        font-size: 1.5rem;
+        line-height: 2rem;
+      }
+
+      .description {
+        max-width: 80vw;
+
+        p {
+          font-size: 1rem;
+          line-height: 1.5rem;
+        }
+
+        .short {
+          display: inline;
+        }
+
+        .full {
+          display: none;
+        }
+      }
+
+      .buy-button {
+        font-size: 0.85rem;
+        line-height: 2.2rem;
+        padding: 0.1rem 0.8rem;
+        border-radius: 5px;
+
+        p {
+          font-size: 0.85rem;
+          line-height: 2rem;
+        }
+
+        .genesis-xl {
+          height: 1.5rem;
+          width: 1.5rem;
+          line-height: 1.5rem;
+          font-size: 0.7rem;
+        }
+      }
+    }
+  }
+}

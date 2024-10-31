@@ -49,7 +49,7 @@ interface LogVerbositySaucerProps {
 
 const LogVerbositySaucer = (props: LogVerbositySaucerProps) =>
   <div className="log-verbosity-saucer">
-    <div className={`saucer ${props.type}`}>
+    <div className={`row saucer ${props.type}`}>
       <p style={{
         color: ["busy", "info"].includes(props.type) ? "black" : "white"
       }}>

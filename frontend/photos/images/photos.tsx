@@ -7,51 +7,23 @@ import {
 import {
   PhotosProps, PhotoButtonsProps, PhotoFooterProps, PhotosComponentState,
   MoveToLocationProps,
-  NewPhotoButtonsProps,
 } from "./interfaces";
 import { formatTime } from "../../util";
 import { destroy } from "../../api/crud";
-import { downloadProgress } from "../../settings/fbos_settings/os_update_button";
 import { isNumber, isUndefined, round } from "lodash";
-import { isBotOnline, MustBeOnline } from "../../devices/must_be_online";
+import { isBotOnline } from "../../devices/must_be_online";
 import { t } from "../../i18next_wrapper";
-import { cameraBtnProps } from "../capture_settings/camera_selection";
 import { Overlay } from "@blueprintjs/core";
 import { ImageShowMenu, ImageShowMenuTarget } from "./image_show_menu";
 import { setShownMapImages } from "./actions";
 import { TaggedImage } from "farmbot";
 import { MarkedSlider, Popover } from "../../ui";
-import { takePhoto } from "../../devices/actions";
 import {
   botPositionLabel,
 } from "../../farm_designer/map/layers/farmbot/bot_position_label";
 import {
   GoToThisLocationButton, validGoButtonAxes,
 } from "../../farm_designer/move_to";
-
-const NewPhotoButtons = (props: NewPhotoButtonsProps) => {
-  const imageUploadJobProgress = downloadProgress(props.imageJobs[0]);
-  const { syncStatus, botToMqttStatus } = props;
-  const botOnline = isBotOnline(syncStatus, botToMqttStatus);
-  const camDisabled = cameraBtnProps(props.env, botOnline);
-  return <div className={"new-photo-button"}>
-    <MustBeOnline
-      syncStatus={props.syncStatus}
-      networkState={props.botToMqttStatus}
-      hideBanner={true}>
-      <button
-        className={`fb-button green ${camDisabled.class}`}
-        title={camDisabled.title}
-        onClick={camDisabled.click || props.takePhoto}>
-        {t("Take Photo")}
-      </button>
-    </MustBeOnline>
-    <p>
-      {imageUploadJobProgress &&
-        `${t("uploading photo")}...${imageUploadJobProgress}`}
-    </p>
-  </div>;
-};
 
 export const PhotoButtons = (props: PhotoButtonsProps) => {
   const { imageUrl } = props;
@@ -202,12 +174,6 @@ export class Photos extends React.Component<PhotosProps, PhotosComponentState> {
 
   render() {
     return <div className="photos">
-      <NewPhotoButtons
-        syncStatus={this.props.syncStatus}
-        botToMqttStatus={this.props.botToMqttStatus}
-        takePhoto={takePhoto}
-        env={this.props.env}
-        imageJobs={this.props.imageJobs} />
       <Overlay isOpen={this.state.fullscreen}
         onClose={this.toggleFullscreen}
         backdropProps={{ style: { background: "#000d" } }}>

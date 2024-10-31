@@ -53,16 +53,16 @@ export enum PanelColor {
 
 export const TAB_COLOR: Record<Panel, PanelColor> = {
   [Panel.Map]: PanelColor.gray,
-  [Panel.Plants]: PanelColor.green,
-  [Panel.Weeds]: PanelColor.red,
-  [Panel.Points]: PanelColor.teal,
-  [Panel.Groups]: PanelColor.blue,
+  [Panel.Plants]: PanelColor.gray,
+  [Panel.Weeds]: PanelColor.gray,
+  [Panel.Points]: PanelColor.gray,
+  [Panel.Groups]: PanelColor.gray,
   [Panel.Curves]: PanelColor.gray,
   [Panel.Sequences]: PanelColor.gray,
   [Panel.Regimens]: PanelColor.gray,
-  [Panel.SavedGardens]: PanelColor.navy,
-  [Panel.FarmEvents]: PanelColor.yellow,
-  [Panel.Zones]: PanelColor.brown,
+  [Panel.SavedGardens]: PanelColor.gray,
+  [Panel.FarmEvents]: PanelColor.gray,
+  [Panel.Zones]: PanelColor.gray,
   [Panel.Controls]: PanelColor.gray,
   [Panel.Sensors]: PanelColor.gray,
   [Panel.Photos]: PanelColor.gray,
@@ -244,10 +244,8 @@ export class DesignerNavTabs
   updateScroll = () => this.setState({ atEnd: !displayScrollIndicator() });
 
   render() {
-    const tab = getCurrentPanel();
     const hidden = this.props.hidden ? "hidden" : "";
-    const color = TAB_COLOR[tab || Panel.Plants];
-    return <div className={`panel-nav ${color}-panel ${hidden}`}>
+    return <div className={`panel-nav ${hidden}`}>
       {!this.state.atEnd && <div className={"scroll-indicator"} />}
       <div className={"panel-tabs"} onScroll={this.updateScroll}>
         <NavTab panel={Panel.Map} />

@@ -165,7 +165,7 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
             <Popover
               isOpen={this.state.scale}
               popoverClassName={"curve-action-popover"}
-              target={<button className={"transparent-button"}
+              target={<button className={"fb-button clear-dark"}
                 onClick={this.toggle("scale")}>
                 {t("scale")}
               </button>}
@@ -174,7 +174,7 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
             <Popover
               isOpen={this.state.templates}
               popoverClassName={"curve-action-popover"}
-              target={<button className={"transparent-button"}
+              target={<button className={"fb-button clear-dark"}
                 onClick={this.toggle("templates")}>
                 {t("templates")}
               </button>}
@@ -219,8 +219,8 @@ export const ScaleMenu = (props: ActionMenuProps) => {
   const { data } = props.curve.body;
   const [maxDayNum, setMaxDay] = React.useState(maxDay(data));
   const [maxValueNum, setMaxValue] = React.useState(maxValue(data));
-  return <div className={"curve-action-menu"}>
-    <div className={"curve-menu-row"}>
+  return <div className={"curve-action-menu grid"}>
+    <div className={"row grid-2-col"}>
       <label>{t("max value")}</label>
       <input type={"number"}
         defaultValue={maxValueNum}
@@ -229,7 +229,7 @@ export const ScaleMenu = (props: ActionMenuProps) => {
           isFinite(value) && value > 0 && setMaxValue(value);
         }} />
     </div>
-    <div className={"curve-menu-row"}>
+    <div className={"row grid-2-col"}>
       <label>{t("days")}</label>
       <input type={"number"}
         defaultValue={maxDayNum}
@@ -239,8 +239,8 @@ export const ScaleMenu = (props: ActionMenuProps) => {
           isFinite(day) && day > 0 && day < 201 && setMaxDay(day);
         }} />
     </div>
-    <div className={"curve-menu-row last"}>
-      <button className={"transparent-button light"}
+    <div className={"row grid-2-col"}>
+      <button className={"fb-button clear-light"}
         onClick={() => {
           props.dispatch(editCurve(props.curve, {
             data: scaleData(props.curve.body.data, maxDayNum, maxValueNum)
@@ -274,15 +274,15 @@ export const TemplatesMenu = (props: ActionMenuProps) => {
     setMaxValueState(value);
     setMaxValueCache(value);
   };
-  return <div className={"curve-action-menu"}>
-    <div className={"curve-menu-row"}>
+  return <div className={"curve-action-menu grid"}>
+    <div className={"row grid-2-col"}>
       <label>{t("shape")}</label>
       <FBSelect key={shape}
         list={Object.values(CURVE_SHAPE_DDIS())}
         selectedItem={CURVE_SHAPE_DDIS()[shape]}
         onChange={ddi => setShape("" + ddi.value)} />
     </div>
-    <div className={"curve-menu-row"}>
+    <div className={"row grid-2-col"}>
       <label>{t("max value")}</label>
       <input type={"number"}
         defaultValue={maxValue}
@@ -291,7 +291,7 @@ export const TemplatesMenu = (props: ActionMenuProps) => {
           isFinite(value) && value > 0 && setMaxValue(value);
         }} />
     </div>
-    <div className={"curve-menu-row"}>
+    <div className={"row grid-2-col"}>
       <label>{t("days")}</label>
       <input type={"number"}
         defaultValue={maxDay}
@@ -301,8 +301,8 @@ export const TemplatesMenu = (props: ActionMenuProps) => {
           isFinite(day) && day > 0 && day < 201 && setMaxDay(day);
         }} />
     </div>
-    <div className={"curve-menu-row last"}>
-      <button className={"transparent-button light"}
+    <div className={"row grid-2-col"}>
+      <button className={"fb-button clear-light"}
         onClick={() => {
           props.dispatch(editCurve(props.curve, {
             data: scaleData(CURVE_TEMPLATES[shape], maxDay, maxValue,

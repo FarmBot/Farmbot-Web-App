@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col, DropDownItem, FBSelect } from "../../ui";
+import { Row, DropDownItem, FBSelect } from "../../ui";
 import { info, warning } from "../../toast/toast";
 import { updateConfig } from "../../devices/actions";
 import { BoardTypeProps } from "./interfaces";
@@ -53,13 +53,11 @@ export class BoardType extends React.Component<BoardTypeProps, {}> {
 
   render() {
     return <Highlight settingName={DeviceSetting.firmware}>
-      <Row>
-        <Col xs={2}>
+      <Row className="grid-2-col">
+        <div className="row grid-exp-2">
           <label>
             {t("FIRMWARE")}
           </label>
-        </Col>
-        <Col xs={1}>
           <FirmwareHardwareStatus
             botOnline={this.props.botOnline}
             apiFirmwareValue={this.props.firmwareHardware}
@@ -67,16 +65,12 @@ export class BoardType extends React.Component<BoardTypeProps, {}> {
             bot={this.props.bot}
             dispatch={this.props.dispatch}
             timeSettings={this.props.timeSettings} />
-        </Col>
-        <Col xs={2}>
           <FlashFirmwareBtn
             short={true}
             apiFirmwareValue={this.props.firmwareHardware}
             botOnline={this.props.botOnline} />
-        </Col>
-        <Col xs={7} className="no-pad">
-          <this.FirmwareSelection />
-        </Col>
+        </div>
+        <this.FirmwareSelection />
       </Row>
     </Highlight>;
   }

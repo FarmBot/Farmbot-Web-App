@@ -4,7 +4,7 @@ import { MapTransformProps, BotSize } from "../interfaces";
 import { random, range, some, clamp, sample } from "lodash";
 import { getEggStatus, setEggStatus, EggKeys } from "./status";
 import { t } from "../../../i18next_wrapper";
-import { Row, Col, ToggleButton } from "../../../ui";
+import { Row, ToggleButton } from "../../../ui";
 import { BUGS, FilePath, Bug as BugSlug } from "../../../internal_urls";
 import { showByEveryTerm } from "../../../settings";
 
@@ -135,18 +135,12 @@ export const BugsControls = () =>
 
 const Setting = (title: string, key: string, value: string) => {
   const on = localStorage.getItem(key) == value;
-  return <div className={"setting"}>
-    <Row>
-      <Col xs={9}>
-        <label>{title}</label>
-      </Col>
-      <Col xs={3}>
-        <ToggleButton
-          toggleValue={on}
-          toggleAction={() => localStorage.setItem(key, on ? "" : value)} />
-      </Col>
-    </Row>
-  </div>;
+  return <Row className={"setting grid-exp-1"}>
+    <label>{title}</label>
+    <ToggleButton
+      toggleValue={on}
+      toggleAction={() => localStorage.setItem(key, on ? "" : value)} />
+  </Row>;
 };
 
 export const ExtraSettings = (searchTerm: string) => {

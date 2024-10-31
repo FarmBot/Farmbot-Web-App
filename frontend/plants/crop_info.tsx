@@ -82,11 +82,11 @@ const shortenTitle = (title: string) => {
 
 /** Basic field: value display for OpenFarm crop properties. */
 const InfoField = (props: InfoFieldProps) =>
-  <li>
+  <li className="row half-gap grid-exp-3 align-baseline">
     <span>{EMOJI[props.title]}</span>
-    <p>
+    <label>
       {t(startCase(shortenTitle(props.title)))}:
-    </p>
+    </label>
     <div className={"crop-info-field-data"}>
       {props.children}
     </div>
@@ -156,7 +156,7 @@ interface CropInfoListProps {
 /** Display crop properties from OpenFarm. */
 const CropInfoList = (props: CropInfoListProps) => {
   return <div className="object-list">
-    <ul>
+    <ul className="grid">
       {chain(props.result.crop)
         .omit(OMITTED_PROPERTIES)
         .toPairs()
@@ -172,33 +172,35 @@ const Companions = (props: CropInfoListProps) => {
   const { result, dispatch, openfarmCropFetch } = props;
   if (result.companions.length == 0) { return <div />; }
   return <InfoField title={"companions"}>
-    {result.companions.map((companion, index) =>
-      <Link key={companion.slug}
-        className={"companion"}
-        onClick={() => {
-          openfarmCropFetch(companion.slug)(dispatch);
-          unselectPlant(dispatch)();
-          props.selectMostUsedCurves(companion.slug);
-        }}
-        onDragStart={() => {
-          dispatch({
-            type: Actions.SET_COMPANION_INDEX,
-            payload: index,
-          });
-        }}
-        onDragEnd={() => {
-          setTimeout(() => dispatch({
-            type: Actions.SET_COMPANION_INDEX,
-            payload: undefined,
-          }), 500);
-        }}
-        to={Path.cropSearch(companion.slug)}>
-        <img
-          src={svgToUrl(companion.svg_icon)}
-          width={20}
-          height={20} />
-        <p>{companion.name}</p>
-      </Link>)}
+    <div className="crop-companions">
+      {result.companions.map((companion, index) =>
+        <Link key={companion.slug}
+          className={"companion"}
+          onClick={() => {
+            openfarmCropFetch(companion.slug)(dispatch);
+            unselectPlant(dispatch)();
+            props.selectMostUsedCurves(companion.slug);
+          }}
+          onDragStart={() => {
+            dispatch({
+              type: Actions.SET_COMPANION_INDEX,
+              payload: index,
+            });
+          }}
+          onDragEnd={() => {
+            setTimeout(() => dispatch({
+              type: Actions.SET_COMPANION_INDEX,
+              payload: undefined,
+            }), 500);
+          }}
+          to={Path.cropSearch(companion.slug)}>
+          <img
+            src={svgToUrl(companion.svg_icon)}
+            width={20}
+            height={20} />
+          <p>{companion.name}</p>
+        </Link>)}
+    </div>
   </InfoField>;
 };
 
@@ -394,7 +396,7 @@ export class RawCropInfo extends React.Component<CropInfoProps, CropInfoState> {
           svgIcon={svgToUrl(result.crop.svg_icon)} />
         <Popover portalClassName={"dark-portal"}
           position={Position.BOTTOM_RIGHT}
-          target={<button className={"plus-grid-btn transparent-button light"}>
+          target={<button className={"plus-grid-btn fb-button clear-light"}>
             + {t("grid")}
           </button>}
           content={<div className={"grid-popup-content"}>
@@ -419,7 +421,7 @@ export class RawCropInfo extends React.Component<CropInfoProps, CropInfoState> {
             openfarmCropFetch={this.props.openfarmCropFetch} />
           {DevSettings.futureFeaturesEnabled() &&
             <EditOnOpenFarm slug={result.crop.slug} />}
-          <div className={"plant-stage-selection"}>
+          <div className={"row grid-2-col"}>
             <label className="stage">{t("status")}</label>
             <FBSelect
               list={PLANT_STAGE_LIST()}
@@ -431,7 +433,7 @@ export class RawCropInfo extends React.Component<CropInfoProps, CropInfoState> {
                 payload: ddi.value,
               })} />
           </div>
-          <div className={"planted-at-selection"}>
+          <div className={"row grid-2-col"}>
             <label className="planted-at">{t("start date")}</label>
             <BlurableInput
               type="date"

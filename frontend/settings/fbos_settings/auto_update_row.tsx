@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col, Help, ToggleButton } from "../../ui";
+import { Row, Help, ToggleButton } from "../../ui";
 import { updateConfig } from "../../devices/actions";
 import { Content, DeviceSetting } from "../../constants";
 import { AutoUpdateRowProps } from "./interfaces";
@@ -13,23 +13,21 @@ export function AutoUpdateRow(props: AutoUpdateRowProps) {
   const firmwareHardware = validFirmwareHardware(
     props.sourceFbosConfig("firmware_hardware").value);
   return <Highlight settingName={DeviceSetting.osAutoUpdate} hidden={true}>
-    <Row>
-      <Col xs={9}>
+    <Row className="grid-2-col">
+      <div>
         <label>
           {t(DeviceSetting.osAutoUpdate)}
         </label>
         <Help text={Content.OS_AUTO_UPDATE} />
-      </Col>
-      <Col xs={3}>
-        <ToggleButton
-          toggleValue={osAutoUpdate.value}
-          dim={!osAutoUpdate.consistent}
-          className={getModifiedClassName("os_auto_update",
-            !!osAutoUpdate.value, firmwareHardware)}
-          toggleAction={() => props.dispatch(updateConfig({
-            os_auto_update: !osAutoUpdate.value
-          }))} />
-      </Col>
+      </div>
+      <ToggleButton
+        toggleValue={osAutoUpdate.value}
+        dim={!osAutoUpdate.consistent}
+        className={getModifiedClassName("os_auto_update",
+          !!osAutoUpdate.value, firmwareHardware)}
+        toggleAction={() => props.dispatch(updateConfig({
+          os_auto_update: !osAutoUpdate.value
+        }))} />
     </Row>
   </Highlight>;
 }

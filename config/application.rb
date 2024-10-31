@@ -93,7 +93,6 @@ module FarmBot
         base_uri: %w('self'),
         connect_src: connect_src,
         font_src: %w(
-          maxcdn.bootstrapcdn.com
           fonts.gstatic.com
           fonts.googleapis.com
           data:
@@ -129,7 +128,6 @@ module FarmBot
           "blob:", # 3D
         ],
         style_src: %w(
-          maxcdn.bootstrapcdn.com
           fonts.gstatic.com
           fonts.googleapis.com
           cdnjs.cloudflare.com

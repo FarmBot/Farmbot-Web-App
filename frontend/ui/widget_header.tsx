@@ -11,10 +11,12 @@ export interface WidgetHeaderProps {
 
 export function WidgetHeader(props: WidgetHeaderProps) {
   return <div className="widget-header">
-    <ErrorBoundary>
-      {props.children}
-    </ErrorBoundary>
     <h5>{t(props.title)}</h5>
-    {props.helpText && <Help text={props.helpText} />}
+    <div>
+      {props.helpText && <Help text={props.helpText} />}
+      <ErrorBoundary>
+        {props.children}
+      </ErrorBoundary>
+    </div>
   </div>;
 }

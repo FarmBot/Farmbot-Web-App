@@ -19,13 +19,13 @@ import {
 } from "../../sequences/locals_list/new_variable";
 
 export const RegimenRows = (props: RegimenRowsProps) =>
-  <div className={"regimen"}>
+  <div className={"regimen grid double-gap"}>
     {props.calendar.map(regimenDay(props.dispatch, props.resources))}
   </div>;
 
 const regimenDay = (dispatch: Function, resources: ResourceIndex) =>
   (group: CalendarRow, dayIndex: number) =>
-    <div className="regimen-day" key={dayIndex}>
+    <div className="regimen-day grid" key={dayIndex}>
       <label> {t("Day {{day}}", { day: group.day })} </label>
       {group.items.map(regimenItemRow(dispatch, resources, dayIndex))}
     </div>;
@@ -36,18 +36,18 @@ const regimenItemRow = (
   (row: RegimenItemCalendarRow, itemIndex: number) =>
     <div className={`${row.color} regimen-event`}
       key={`${dayIndex}.${itemIndex}`}>
-      <div className={"regimen-event-titlebar"}>
-        <span className={"regimen-event-title"}>
-          {row.sequenceName}
+      <div className={"regimen-event-titlebar row grid-exp-2"}>
+        <span className="regimen-event-time">{row.hhmm}</span>
+        {row.sequenceName}
+        <div>
           <Link to={Path.sequences(urlFriendly(row.sequenceName))}
             onClick={setActiveSequenceByName}>
             <i className={"fa fa-external-link fb-icon-button"} />
           </Link>
-        </span>
-        <span className="regimen-event-time">{row.hhmm}</span>
-        <i className={"fa fa-trash regimen-control fb-icon-button"}
-          onClick={() =>
-            dispatch(removeRegimenItem(row.item, row.regimen))} />
+          <i className={"fa fa-trash regimen-control fb-icon-button"}
+            onClick={() =>
+              dispatch(removeRegimenItem(row.item, row.regimen))} />
+        </div>
       </div>
       {row.variables.length > 0 &&
         <DisplayVarValue row={row} resources={resources} />}
@@ -61,13 +61,13 @@ const removeRegimenItem = (item: RegimenItem, r: TaggedRegimen) => {
 
 const DisplayVarValue = (props: DisplayVarValueProps) => {
   const { variables, regimen } = props.row;
-  return <div className={"regimen-item-variables"}>
+  return <div className={"regimen-item-variables grid half-gap"}>
     {variables.map(variable => {
       if (variable) {
         const variableNode = reduceVariables(regimen.body.body)[variable];
         if (variableNode) {
           return <span key={variable}
-            className="regimen-event-variable">
+            className="regimen-event-variable row grid-exp-2">
             <VariableIcon variableType={determineVariableType(variableNode)} />
             {withPrefix(variable,
               determineDropdown(variableNode, props.resources).label)}

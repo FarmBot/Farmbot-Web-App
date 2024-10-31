@@ -1,0 +1,126 @@
+.grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.row {
+  display: grid;
+  grid-auto-flow: column;
+  gap: 1rem;
+  align-items: center;
+  // background: #f6ff8d;
+  .fb-button {
+    margin: 0;
+  }
+}
+
+.half-gap {
+  gap: 0.5rem;
+}
+
+.double-gap {
+  gap: 2rem;
+}
+
+.no-gap {
+  gap: 0;
+}
+
+.align-baseline {
+  align-items: baseline;
+}
+
+.grid-exp-1 {
+  grid-template-columns: 1fr;
+}
+
+.grid-exp-2 {
+  grid-template-columns: auto 1fr;
+}
+
+.grid-exp-3 {
+  grid-template-columns: auto auto 1fr;
+}
+
+.grid-2-col {
+  grid-template-columns: 1fr 1fr;
+}
+
+.grid-3-col {
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.grid-4-col {
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+.key-value-edit-row {
+  grid-template-columns: 1fr 1fr auto;
+}
+
+.speed-grid {
+  grid-template-columns: 25% 1fr;
+  align-items: start;
+}
+
+.change-ownership-grid {
+  grid-auto-flow: unset;
+  grid-template-columns: auto 1fr;
+  row-gap: 0.25rem;
+}
+
+fieldset {
+  margin: 0;
+  padding: 0;
+}
+
+.advanced-group-criteria {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto;
+  gap: 1rem;
+}
+
+.weed-detection-grid {
+  gap: 3rem;
+}
+
+.panel-title {
+  display: grid;
+  font-family: 'Inknut Antiqua', serif;
+  font-weight: bold;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+}
+
+.add-point-grid {
+  grid-template-columns: 2fr 1fr 1fr 1fr auto;
+}
+
+.criteria-operators-grid {
+  gap: 0;
+  text-align: center;
+}
+
+.grid-planting-grid {
+  grid-template-columns: 1fr 50px 50px;
+}
+
+.axes-grid {
+  grid-template-columns: 22% 1fr;
+}
+
+.axes-grid-header {
+  text-align: center;
+  grid-template-columns: 24% 1fr 1fr 1fr;
+}
+
+.mcu-inputs, .calibration-row-axes {
+  justify-items: center;
+}
+
+.z-setting-grid, .single-setting-grid {
+  grid-template-columns: 1fr 23.6%;
+  button {
+    justify-self: center;
+  }
+}

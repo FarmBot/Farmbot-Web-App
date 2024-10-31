@@ -1,6 +1,6 @@
 import React from "react";
 import { t } from "../i18next_wrapper";
-import { Row, Col } from "../ui";
+import { Row } from "../ui";
 import { FirmwareNumberSettingsProps } from "./interfaces";
 import { sourceFwConfigValue } from "../settings/source_config_value";
 import { validFwConfig } from "../util";
@@ -24,25 +24,21 @@ export const FirmwareNumberSettings = (props: FirmwareNumberSettingsProps) => {
     props.bot.hardware.mcu_params);
   return <div className={"motor-settings"}>
     {props.firmwareNumberSettings?.map(setting =>
-      <Row key={setting.key}>
-        <Col xs={6}>
-          <label>{t(setting.label)}</label>
-        </Col>
-        <Col xs={6}>
-          <McuInputBox
-            dispatch={props.dispatch}
-            sourceFwConfig={sourceFwConfig}
-            firmwareHardware={getFwHardwareValue(getFbosConfig(
-              props.resources))}
-            scale={setting.scale
-              ? calculateScale(sourceFwConfig)[setting.scale]
-              : undefined}
-            intSize={setting.intSize}
-            inputMax={setting.inputMax}
-            toInput={setting.toInput}
-            fromInput={setting.fromInput}
-            setting={setting.key} />
-        </Col>
+      <Row key={setting.key} className="grid-2-col">
+        <label>{t(setting.label)}</label>
+        <McuInputBox
+          dispatch={props.dispatch}
+          sourceFwConfig={sourceFwConfig}
+          firmwareHardware={getFwHardwareValue(getFbosConfig(
+            props.resources))}
+          scale={setting.scale
+            ? calculateScale(sourceFwConfig)[setting.scale]
+            : undefined}
+          intSize={setting.intSize}
+          inputMax={setting.inputMax}
+          toInput={setting.toInput}
+          fromInput={setting.fromInput}
+          setting={setting.key} />
       </Row>)}
   </div>;
 };

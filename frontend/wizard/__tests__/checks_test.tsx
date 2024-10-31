@@ -666,12 +666,12 @@ describe("<AxisActions />", () => {
     const config = fakeFirmwareConfig();
     p.resources = buildResourceIndex([config]).index;
     const wrapper = mount(<AxisActions {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("current position");
+    expect(wrapper.text().toLowerCase()).toContain("position (mm)");
   });
 
   it("handles missing settings", () => {
     const wrapper = mount(<AxisActions {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).not.toContain("current position");
+    expect(wrapper.text().toLowerCase()).not.toContain("position (mm)");
   });
 });
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col, FBSelect, DropDownItem, Popover } from "../../ui";
+import { Row, FBSelect, DropDownItem, Popover } from "../../ui";
 import { Position } from "@blueprintjs/core";
 import { RpiGpioDiagram } from "./rpi_gpio_diagram";
 import {
@@ -101,29 +101,23 @@ export class PinBindingInputGroup
     });
 
   render() {
-    return <div className="pin-binding-input-rows">
+    return <div className="grid">
       <Row><label>{t(DeviceSetting.addNewPinBinding)}</label></Row>
-      <this.Number />
-      <Row>
-        <Col xs={12}>
-          <BindingTargetDropdown
-            change={this.changeBinding}
-            resources={this.props.resources}
-            sequenceIdInput={this.state.sequenceIdInput}
-            specialActionInput={this.state.specialActionInput} />
-        </Col>
-      </Row>
-      <Row>
-        <Col xs={12}>
-          <button
-            className="fb-button green"
-            type="button"
-            title={t("BIND")}
-            onClick={this.bindPin}>
-            {t("Save")}
-          </button>
-        </Col>
-      </Row>
+      <div className="row grid-exp-2">
+        <this.Number />
+        <BindingTargetDropdown
+          change={this.changeBinding}
+          resources={this.props.resources}
+          sequenceIdInput={this.state.sequenceIdInput}
+          specialActionInput={this.state.specialActionInput} />
+        <button
+          className="fb-button green"
+          type="button"
+          title={t("BIND")}
+          onClick={this.bindPin}>
+          {t("Save")}
+        </button>
+      </div>
     </div>;
   }
 }
@@ -144,32 +138,26 @@ export const PinNumberInputGroup = (props: PinNumberInputGroupProps) => {
       value: "" + pinNumberInput
     }
     : undefined;
-  return <Row>
-    <Col xs={1}>
-      <Popover position={Position.TOP}
-        target={<i className="fa fa-circle-o-notch" />}
-        content={<BoxTopGpioDiagram
-          firmwareHardware={props.firmwareHardware}
-          boundPins={boundPins}
-          setSelectedPin={setSelectedPin}
-          selectedPin={pinNumberInput} />} />
-    </Col>
-    <Col xs={1}>
-      <Popover position={Position.TOP}
-        target={<i className="fa fa-th-large" />}
-        content={<RpiGpioDiagram
-          boundPins={boundPins}
-          setSelectedPin={setSelectedPin}
-          selectedPin={pinNumberInput} />} />
-    </Col>
-    <Col xs={10}>
-      <FBSelect
-        key={"pin_number_input_" + pinNumberInput}
-        onChange={ddi =>
-          setSelectedPin(parseInt("" + ddi.value))}
-        selectedItem={selectedPinNumber}
-        list={RpiPinList(boundPins)} />
-    </Col>
+  return <Row className="grid-exp-3">
+    <Popover position={Position.TOP}
+      target={<i className="fa fa-circle-o-notch" />}
+      content={<BoxTopGpioDiagram
+        firmwareHardware={props.firmwareHardware}
+        boundPins={boundPins}
+        setSelectedPin={setSelectedPin}
+        selectedPin={pinNumberInput} />} />
+    <Popover position={Position.TOP}
+      target={<i className="fa fa-th-large" />}
+      content={<RpiGpioDiagram
+        boundPins={boundPins}
+        setSelectedPin={setSelectedPin}
+        selectedPin={pinNumberInput} />} />
+    <FBSelect
+      key={"pin_number_input_" + pinNumberInput}
+      onChange={ddi =>
+        setSelectedPin(parseInt("" + ddi.value))}
+      selectedItem={selectedPinNumber}
+      list={RpiPinList(boundPins)} />
   </Row>;
 };
 

@@ -92,6 +92,9 @@ export class OpenFarmResults extends React.Component<SearchResultProps, {}> {
           const image = crop.main_image_path.startsWith("https")
             ? crop.main_image_path
             : FilePath.DEFAULT_ICON;
+          const fallbackImageClass = crop.main_image_path.startsWith("https")
+            ? ""
+            : " fallback-image";
           return <Link
             key={crop.slug}
             draggable={false}
@@ -102,7 +105,7 @@ export class OpenFarmResults extends React.Component<SearchResultProps, {}> {
                 {crop.name}
               </label>
               <div
-                className={"plant-catalog-image"}
+                className={"plant-catalog-image" + fallbackImageClass}
                 style={{ background: `url(${image}) top center no-repeat` }}
                 draggable={false} />
             </div>

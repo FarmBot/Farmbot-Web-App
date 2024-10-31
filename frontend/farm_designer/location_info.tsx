@@ -141,7 +141,7 @@ export class RawLocationInfo extends React.Component<LocationInfoProps, {}> {
               botOnline={this.props.botOnline}
               locked={this.props.locked}
               dispatch={this.props.dispatch} />
-            <h1>{t("Nearby")}</h1>
+            <h2>{t("Nearby")}</h2>
             {[
               {
                 title: t("Plants"),

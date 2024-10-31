@@ -3,7 +3,6 @@ import { StepInputBox } from "../inputs/step_input_box";
 import { StepParams } from "../interfaces";
 import { ToolTips } from "../../constants";
 import { StepWrapper } from "../step_ui";
-import { Row, Col } from "../../ui";
 import { t } from "../../i18next_wrapper";
 import { SetServoAngle, TaggedSequence } from "farmbot";
 import { editStep } from "../../api/crud";
@@ -52,8 +51,12 @@ export const TileSetServoAngle = (props: StepParams<SetServoAngle>) =>
   <StepWrapper {...props}
     className={"set-servo-angle-step"}
     helpText={ToolTips.SET_SERVO_ANGLE}>
-    <Row>
-      <Col lg={4} xs={6}>
+    <div className="grid">
+      <div className="row grid-2-col">
+        <label>{t("Servo pin")}</label>
+        <ServoPinSelection {...props} />
+      </div>
+      <div className="row grid-2-col">
         <label>
           {t("Angle (0-180)")}
         </label>
@@ -63,10 +66,6 @@ export const TileSetServoAngle = (props: StepParams<SetServoAngle>) =>
           step={props.currentStep}
           sequence={props.currentSequence}
           index={props.index} />
-      </Col>
-      <Col lg={8} xs={6}>
-        <label>{t("Servo pin")}</label>
-        <ServoPinSelection {...props} />
-      </Col>
-    </Row>
+      </div>
+    </div>
   </StepWrapper>;

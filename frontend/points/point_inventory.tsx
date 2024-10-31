@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { PointInventoryItem } from "./point_inventory_item";
 import { Everything, PointsPanelState } from "../interfaces";
-import { DesignerNavTabs, Panel } from "../farm_designer/panel_header";
+import { Panel } from "../farm_designer/panel_header";
 import {
   EmptyStateWrapper, EmptyStateGraphic,
 } from "../ui/empty_state_wrapper";
@@ -60,10 +60,9 @@ interface PointsSectionProps {
 const PointsSection = (props: PointsSectionProps) => {
   const { genericPoints, isOpen, dispatch, averageZ, toggleAction } = props;
   return <div className={`points-section ${isOpen ? "open" : ""}`}>
-    <div className={"points-section-header"} onClick={props.toggleOpen}>
+    <div className={"points-section-header row grid-exp-1"} onClick={props.toggleOpen}>
       {props.color && <Saucer color={props.color} />}
       <label>{`${props.title} (${genericPoints.length})`}</label>
-      <i className={`fa fa-caret-${isOpen ? "up" : "down"}`} />
       {isOpen && toggleAction && <ToggleButton
         toggleValue={props.toggleValue}
         customText={{ textFalse: t("off"), textTrue: t("on") }}
@@ -78,6 +77,7 @@ const PointsSection = (props: PointsSectionProps) => {
         }}>
         {t("delete all")}
       </button>}
+      <i className={`fa fa-caret-${isOpen ? "up" : "down"}`} />
     </div>
     <Collapse isOpen={isOpen}>
       {!isUndefined(averageZ) &&
@@ -179,7 +179,6 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
       .filter(p => !soilHeightPoint(p))
       .filter(p => !p.body.meta.gridId);
     return <DesignerPanel panelName={"point-inventory"} panel={Panel.Points}>
-      <DesignerNavTabs />
       <DesignerPanelTop panel={Panel.Points}>
         <SearchField nameKey={"points"}
           searchTerm={this.state.searchTerm}

@@ -3,16 +3,14 @@ import { connect } from "react-redux";
 import {
   DesignerPanel, DesignerPanelTop, DesignerPanelContent,
 } from "../farm_designer/designer_panel";
-import {
-  DesignerNavTabs, Panel, TAB_COLOR,
-} from "../farm_designer/panel_header";
+import { Panel } from "../farm_designer/panel_header";
 import {
   EmptyStateWrapper, EmptyStateGraphic,
 } from "../ui/empty_state_wrapper";
 import { t } from "../i18next_wrapper";
 import { Content } from "../constants";
 import { push } from "../history";
-import { Row, Col, Help } from "../ui";
+import { Row, Help } from "../ui";
 import {
   botPositionLabel,
 } from "../farm_designer/map/layers/farmbot/bot_position_label";
@@ -92,10 +90,10 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
 
   ToolSlots = () =>
     <div className="tool-slots">
-      <div className="tool-slots-header">
+      <div className="row grid-exp-1">
         <label>{this.strings.toolSlots}</label>
         <Link to={Path.toolSlots("add")}>
-          <div className={`fb-button panel-${TAB_COLOR[Panel.Tools]}`}>
+          <div className={"fb-button green"}>
             <i className="fa fa-plus" title={this.strings.addSlot} />
           </div>
         </Link>
@@ -116,10 +114,10 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
 
   Tools = () =>
     <div className="tools">
-      <div className="tools-header">
+      <div className="row grid-exp-1">
         <label>{this.strings.tools}</label>
         <Link to={Path.tools("add")}>
-          <div className={`fb-button panel-${TAB_COLOR[Panel.Tools]} add-tool-btn`}>
+          <div className={"fb-button green add-tool-btn"}>
             <i className="fa fa-plus" title={this.strings.titleText} />
           </div>
         </Link>
@@ -169,7 +167,6 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
       .filter(p => p.body.name.toLowerCase()
         .includes(this.state.searchTerm.toLowerCase()));
     return <DesignerPanel panelName={panelName} panel={Panel.Tools}>
-      <DesignerNavTabs />
       <DesignerPanelTop
         panel={Panel.Tools}
         linkTo={!hasTools ? Path.tools("add") : undefined}
@@ -235,39 +232,35 @@ export const ToolSlotInventoryItem = (props: ToolSlotInventoryItemProps) => {
     }}
     onMouseEnter={() => props.dispatch(setToolHover(props.toolSlot.uuid))}
     onMouseLeave={() => props.dispatch(setToolHover(undefined))}>
-    <Row>
-      <Col xs={2} className={"tool-slot-search-item-icon"}>
+    <Row className="grid-exp-2">
+      <div className={"tool-slot-search-item-icon"}>
         <ToolSlotSVG
           toolSlot={props.toolSlot}
           toolName={tool_id ? toolName : "Empty"}
           toolTransformProps={props.toolTransformProps} />
-      </Col>
-      <Col xs={6}>
-        {props.hideDropdown
-          ? <span className={"tool-slot-search-item-name"}>
-            {toolName || t("Empty")}
-          </span>
-          : <div className={"tool-selection-wrapper"}
-            onClick={e => e.stopPropagation()}>
-            <ToolSelection
-              tools={props.tools}
-              selectedTool={props.tools
-                .filter(tool => tool.body.id == tool_id)[0]}
-              onChange={update => {
-                props.dispatch(edit(props.toolSlot, update));
-                props.dispatch(save(props.toolSlot.uuid));
-              }}
-              noUTM={props.noUTM}
-              isActive={props.isActive}
-              filterSelectedTool={false}
-              filterActiveTools={true} />
-          </div>}
-      </Col>
-      <Col xs={4} className={"tool-slot-position-info"}>
-        <p className="tool-slot-position">
-          <i>{botPositionLabel({ x, y, z }, { gantryMounted: gantry_mounted })}</i>
-        </p>
-      </Col>
+      </div>
+      {props.hideDropdown
+        ? <span className={"tool-slot-search-item-name"}>
+          {toolName || t("Empty")}
+        </span>
+        : <div className={"tool-selection-wrapper"}
+          onClick={e => e.stopPropagation()}>
+          <ToolSelection
+            tools={props.tools}
+            selectedTool={props.tools
+              .filter(tool => tool.body.id == tool_id)[0]}
+            onChange={update => {
+              props.dispatch(edit(props.toolSlot, update));
+              props.dispatch(save(props.toolSlot.uuid));
+            }}
+            noUTM={props.noUTM}
+            isActive={props.isActive}
+            filterSelectedTool={false}
+            filterActiveTools={true} />
+        </div>}
+      <p className="tool-slot-position">
+        <i>{botPositionLabel({ x, y, z }, { gantryMounted: gantry_mounted })}</i>
+      </p>
     </Row>
   </div>;
 };
@@ -276,18 +269,12 @@ const ToolInventoryItem = (props: ToolInventoryItemProps) => {
   const activeText = props.active ? t("in slot") : t("inactive");
   return <div className={"tool-search-item"}
     onClick={() => push(Path.tools(props.toolId))}>
-    <Row>
-      <Col xs={2} className={"tool-search-item-icon"}>
-        <ToolSVG toolName={props.toolName} />
-      </Col>
-      <Col xs={7} className={"tool-search-item-name"}>
-        <p>{t(props.toolName)}</p>
-      </Col>
-      <Col xs={3} className={"tool-status"}>
-        <p className="tool-status">
-          <i>{props.mounted ? t("mounted") : activeText}</i>
-        </p>
-      </Col>
+    <Row className="grid-exp-2">
+      <ToolSVG toolName={props.toolName} />
+      <p className={"tool-search-item-name"}>{t(props.toolName)}</p>
+      <p className="tool-status">
+        <i>{props.mounted ? t("mounted") : activeText}</i>
+      </p>
     </Row>
   </div>;
 };

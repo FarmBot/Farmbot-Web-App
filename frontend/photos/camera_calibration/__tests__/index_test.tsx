@@ -44,8 +44,7 @@ describe("<CameraCalibration/>", () => {
     const p = fakeProps();
     p.wDEnv = { CAMERA_CALIBRATION_easy_calibration: SPECIAL_VALUES.FALSE };
     const wrapper = mount(<CameraCalibration {...p} />);
-    ["Color Range",
-      "HUE017947",
+    ["HUE017947",
       "SATURATION025558",
       "VALUE025569",
       "Scan current image",

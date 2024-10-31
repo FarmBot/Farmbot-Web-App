@@ -1,7 +1,7 @@
 import React from "react";
 import { LockableButton } from "./lockable_button";
 import { axisTrackingStatus } from "./axis_tracking_status";
-import { Row, Col, Help } from "../../ui";
+import { Row, Help } from "../../ui";
 import { CalibrationRowProps } from "./interfaces";
 import { t } from "../../i18next_wrapper";
 import { Highlight } from "../maybe_highlight";
@@ -12,13 +12,12 @@ export class CalibrationRow extends React.Component<CalibrationRowProps> {
     const {
       type, botOnline, axisTitle, mcuParams, action, arduinoBusy, locked,
     } = this.props;
-    return <div className="calibration-row-axes">
+    return <div className="calibration-row-axes row no-gap">
       {axisTrackingStatus(mcuParams, this.props.stallUseDisabled)
         .map(row => {
           const { axis } = row;
           const hardwareDisabled = type == "zero" ? false : row.disabled;
-          return <Col xs={3} key={axis}
-            className={"centered-button-div low-pad"}>
+          return <div key={axis}>
             <LockableButton
               disabled={arduinoBusy || hardwareDisabled || !botOnline}
               className={lockedClass(locked)}
@@ -26,20 +25,20 @@ export class CalibrationRow extends React.Component<CalibrationRowProps> {
               onClick={() => action(axis)}>
               {`${t(axisTitle)} ${axis}`}
             </LockableButton>
-          </Col>;
+          </div>;
         })}
     </div>;
   };
 
   render() {
     return <Highlight settingName={this.props.title}>
-      <Row>
-        <Col xs={3} className={"widget-body-tooltips"}>
+      <Row className="axes-grid">
+        <div>
           <label>
             {t(this.props.title)}
           </label>
           <Help text={t(this.props.toolTip)} />
-        </Col>
+        </div>
         <this.Axes />
       </Row>
     </Highlight>;

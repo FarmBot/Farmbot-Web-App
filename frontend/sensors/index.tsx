@@ -3,13 +3,12 @@ import { error } from "../toast/toast";
 import { SensorList } from "./sensor_list";
 import { SensorForm } from "./sensor_form";
 import {
-  Widget, WidgetBody, WidgetHeader, SaveBtn, EmptyStateWrapper,
-  EmptyStateGraphic,
+  SaveBtn, EmptyStateWrapper, EmptyStateGraphic,
 } from "../ui";
 import { SensorsProps, SensorState } from "./interfaces";
 import { getArrayStatus } from "../resources/tagged_resources";
 import { saveAll, init } from "../api/crud";
-import { ToolTips, Content } from "../constants";
+import { Content } from "../constants";
 import { uniq } from "lodash";
 import { t } from "../i18next_wrapper";
 
@@ -63,47 +62,48 @@ export class Sensors extends React.Component<SensorsProps, SensorState> {
     const editButtonText = isEditing
       ? t("Back")
       : t("Edit");
-    return <Widget className="sensors-widget">
-      <WidgetHeader title={t("Sensors")} helpText={ToolTips.SENSORS}>
-        <button
-          className="fb-button gray"
-          onClick={this.toggle}
-          title={editButtonText}
-          disabled={!!status && isEditing}>
-          {editButtonText}
-        </button>
-        <SaveBtn
-          hidden={!isEditing}
-          status={status}
-          onClick={this.maybeSave} />
-        <button
-          hidden={!isEditing}
-          className="fb-button green"
-          type="button"
-          title={t("add sensors")}
-          onClick={() => this.newSensor()}>
-          <i className="fa fa-plus" />
-        </button>
-        <button
-          hidden={!isEditing || this.props.firmwareHardware == "none"}
-          className="fb-button green"
-          type="button"
-          title={t("add stock sensors")}
-          onClick={this.stockSensors}>
-          <i className="fa fa-plus" style={{ marginRight: "0.5rem" }} />
-          {t("Stock sensors")}
-        </button>
-      </WidgetHeader>
-      <WidgetBody>
-        <EmptyStateWrapper
-          notEmpty={this.props.sensors.length > 0 || isEditing}
-          graphic={EmptyStateGraphic.tools}
-          title={t("No Sensors yet.")}
-          text={Content.NO_SENSORS}
-          colorScheme={"sensors"}>
-          {this.showPins()}
-        </EmptyStateWrapper>
-      </WidgetBody>
-    </Widget>;
+    return <div className="sensors-panel">
+      <div className="panel-header">
+        <h2 className="panel-title">{t("Sensors")}</h2>
+        <div>
+          <button
+            className="fb-button gray"
+            onClick={this.toggle}
+            title={editButtonText}
+            disabled={!!status && isEditing}>
+            {editButtonText}
+          </button>
+          <SaveBtn
+            hidden={!isEditing}
+            status={status}
+            onClick={this.maybeSave} />
+          <button
+            hidden={!isEditing}
+            className="fb-button green"
+            type="button"
+            title={t("add sensors")}
+            onClick={() => this.newSensor()}>
+            <i className="fa fa-plus" />
+          </button>
+          <button
+            hidden={!isEditing || this.props.firmwareHardware == "none"}
+            className="fb-button green"
+            type="button"
+            title={t("add stock sensors")}
+            onClick={this.stockSensors}>
+            <i className="fa fa-plus" style={{ marginRight: "0.5rem" }} />
+            {t("Stock sensors")}
+          </button>
+        </div>
+      </div>
+      <EmptyStateWrapper
+        notEmpty={this.props.sensors.length > 0 || isEditing}
+        graphic={EmptyStateGraphic.tools}
+        title={t("No Sensors yet.")}
+        text={Content.NO_SENSORS}
+        colorScheme={"sensors"}>
+        {this.showPins()}
+      </EmptyStateWrapper>
+    </div>;
   }
 }

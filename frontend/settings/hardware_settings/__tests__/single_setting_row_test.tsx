@@ -11,18 +11,9 @@ describe("<SingleSettingRow />", () => {
     settingType: "button",
   });
 
-  it("renders button", () => {
+  it("renders", () => {
     const p = fakeProps();
     const wrapper = mount(<SingleSettingRow {...p} />);
     expect(wrapper.text()).toContain("child");
-    expect(wrapper.html()).toContain("centered-button-div");
-  });
-
-  it("renders input", () => {
-    const p = fakeProps();
-    p.settingType = "input";
-    const wrapper = mount(<SingleSettingRow {...p} />);
-    expect(wrapper.text()).toContain("child");
-    expect(wrapper.html()).not.toContain("centered-button-div");
   });
 });

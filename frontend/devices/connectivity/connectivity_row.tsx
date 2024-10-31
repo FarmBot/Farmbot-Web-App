@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col } from "../../ui";
+import { Row } from "../../ui";
 import { t } from "../../i18next_wrapper";
 import { syncText } from "../../nav/sync_text";
 import { SyncStatus } from "farmbot";
@@ -60,31 +60,23 @@ export function ConnectivityRow(props: StatusRowProps) {
     ? t("This phone")
     : t("This computer");
 
-  return <Row>
-    <Col xs={1}>
-      <div className={className}
-        title={syncStatus ? syncText(syncStatus) : getTitle(props.header)}
-        onMouseEnter={hoverOver(connectionName)}
-        onMouseLeave={hoverOver(undefined)}>
-        {!props.header && <i className={`fa ${iconClass}`} />}
-      </div>
-      {!props.header &&
-        <div className={`saucer-connector ${connectorColorClass}`} />}
-    </Col>
-    <Col xs={2}>
-      <p>
-        {props.from == "browser" ? browserFrom : props.from}
-      </p>
-    </Col>
-    <Col xs={2}>
-      <p>
-        {props.to}
-      </p>
-    </Col>
-    <Col xs={7}>
-      <p>
-        {props.header ? t("last message seen ") : props.connectionMsg}
-      </p>
-    </Col>
+  return <Row className="connectivity-grid">
+    <div className={className}
+      title={syncStatus ? syncText(syncStatus) : getTitle(props.header)}
+      onMouseEnter={hoverOver(connectionName)}
+      onMouseLeave={hoverOver(undefined)}>
+      {!props.header && <i className={`fa ${iconClass}`} />}
+    </div>
+    {!props.header &&
+      <div className={`saucer-connector ${connectorColorClass}`} />}
+    <p>
+      {props.from == "browser" ? browserFrom : props.from}
+    </p>
+    <p>
+      {props.to}
+    </p>
+    <p>
+      {props.header ? t("last message seen ") : props.connectionMsg}
+    </p>
   </Row>;
 }

@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col } from "../../ui";
+import { Row } from "../../ui";
 import { DeviceSetting } from "../../constants";
 import { NameRowProps } from "./interfaces";
 import { t } from "../../i18next_wrapper";
@@ -21,15 +21,11 @@ export class NameRow extends React.Component<NameRowProps> {
 
   render() {
     return <Highlight settingName={DeviceSetting.name}>
-      <Row>
-        <Col xs={5}>
-          <label>
-            {t(DeviceSetting.name)}
-          </label>
-        </Col>
-        <Col xs={7}>
-          <this.NameInput />
-        </Col>
+      <Row className="grid-2-col">
+        <label>
+          {t(DeviceSetting.name)}
+        </label>
+        <this.NameInput />
       </Row>
     </Highlight>;
   }

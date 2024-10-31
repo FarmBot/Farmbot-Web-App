@@ -1,6 +1,5 @@
 jest.mock("../../../devices/actions", () => ({
   move: jest.fn(),
-  takePhoto: jest.fn(),
 }));
 
 jest.mock("../../../api/crud", () => ({ destroy: jest.fn() }));
@@ -16,7 +15,7 @@ import {
 } from "../interfaces";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { success, error } from "../../../toast/toast";
-import { Content, ToolTips, Actions } from "../../../constants";
+import { Actions } from "../../../constants";
 import {
   fakeImage, fakeWebAppConfig,
 } from "../../../__test_support__/fake_state/resources";
@@ -26,7 +25,7 @@ import { fakeDesignerState } from "../../../__test_support__/fake_designer_state
 import {
   fakeMovementState, fakePercentJob,
 } from "../../../__test_support__/fake_bot_data";
-import { move, takePhoto } from "../../../devices/actions";
+import { move } from "../../../devices/actions";
 
 describe("<Photos />", () => {
   const fakeProps = (): PhotosProps => ({
@@ -80,27 +79,6 @@ describe("<Photos />", () => {
     expect(wrapper.text()).toContain("yet taken any photos");
   });
 
-  it("takes photo", () => {
-    const wrapper = mount(<Photos {...fakeProps()} />);
-    const btn = wrapper.find("button").first();
-    expect(btn.props().title).not.toEqual(Content.NO_CAMERA_SELECTED);
-    clickButton(wrapper, 0, "take photo");
-    expect(takePhoto).toHaveBeenCalled();
-  });
-
-  it("shows disabled take photo button", () => {
-    const p = fakeProps();
-    p.env = { camera: "NONE" };
-    const wrapper = mount(<Photos {...p} />);
-    const btn = wrapper.find("button").first();
-    expect(btn.text()).toEqual("Take Photo");
-    expect(btn.props().title).toEqual(Content.NO_CAMERA_SELECTED);
-    btn.simulate("click");
-    expect(error).toHaveBeenCalledWith(
-      ToolTips.SELECT_A_CAMERA, { title: Content.NO_CAMERA_SELECTED });
-    expect(takePhoto).not.toHaveBeenCalled();
-  });
-
   it("deletes photo", async () => {
     const p = fakeProps();
     p.dispatch = jest.fn(() => Promise.resolve());
@@ -132,13 +110,6 @@ describe("<Photos />", () => {
     expect(wrapper.html()).not.toContain("fa-trash");
     wrapper.instance().deletePhoto();
     expect(destroy).not.toHaveBeenCalled();
-  });
-
-  it("shows image download progress", () => {
-    const p = fakeProps();
-    p.imageJobs = [fakePercentJob({ percent: 15 })];
-    const wrapper = mount(<Photos {...p} />);
-    expect(wrapper.text()).toContain("uploading photo...15%");
   });
 
   it("doesn't show image download progress", () => {

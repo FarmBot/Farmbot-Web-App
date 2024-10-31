@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Everything } from "../interfaces";
-import { DesignerNavTabs, Panel } from "../farm_designer/panel_header";
+import { Panel } from "../farm_designer/panel_header";
 import {
   EmptyStateWrapper, EmptyStateGraphic,
 } from "../ui/empty_state_wrapper";
@@ -36,7 +36,6 @@ export const RawZones = (props: ZonesProps) => {
   const navigate = (id: number) => push(Path.zones(id));
   const [searchTerm, setSearchTerm] = React.useState("");
   return <DesignerPanel panelName={"zones-inventory"} panel={Panel.Zones}>
-    <DesignerNavTabs />
     <DesignerPanelTop
       panel={Panel.Zones}
       onClick={() => props.dispatch(initSaveGetId("PointGroup", {

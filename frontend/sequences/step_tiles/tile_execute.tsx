@@ -1,6 +1,6 @@
 import React from "react";
 import { StepParams } from "../interfaces";
-import { Row, Col, DropDownItem } from "../../ui";
+import { Row, DropDownItem } from "../../ui";
 import { Execute, ParameterApplication } from "farmbot";
 import { editStep } from "../../api/crud";
 import { ToolTips } from "../../constants";
@@ -79,25 +79,21 @@ export class TileExecute
       enableMarkdown={!!callee?.body.description}>
       {!sequence_id &&
         <Row>
-          <Col>
-            <SequenceSelectBox
-              onChange={this.changeSelection}
-              resources={resources}
-              sequenceId={sequence_id} />
-          </Col>
+          <SequenceSelectBox
+            onChange={this.changeSelection}
+            resources={resources}
+            sequenceId={sequence_id} />
         </Row>}
       {hasVariables &&
         <Row>
-          <Col>
-            <LocalsList
-              bodyVariables={currentStep.body}
-              variableData={calledSequenceVariableData}
-              sequenceUuid={currentSequence.uuid}
-              resources={resources}
-              onChange={assignVariable(this.props)(currentStep.body || [])}
-              locationDropdownKey={JSON.stringify(currentSequence)}
-              allowedVariableNodes={AllowedVariableNodes.identifier} />
-          </Col>
+          <LocalsList
+            bodyVariables={currentStep.body}
+            variableData={calledSequenceVariableData}
+            sequenceUuid={currentSequence.uuid}
+            resources={resources}
+            onChange={assignVariable(this.props)(currentStep.body || [])}
+            locationDropdownKey={JSON.stringify(currentSequence)}
+            allowedVariableNodes={AllowedVariableNodes.identifier} />
         </Row>}
     </StepWrapper>;
   }

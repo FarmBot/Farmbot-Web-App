@@ -32,7 +32,7 @@ export interface EmptyStateWrapperProps {
 
 export const EmptyStateWrapper = (props: EmptyStateWrapperProps) =>
   props.notEmpty
-    ? <div className="non-empty-state">
+    ? <div className="non-empty-state grid no-gap">
       <ErrorBoundary>
         {props.children}
       </ErrorBoundary>

@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { PlantInventoryItem } from "./plant_inventory_item";
 import { Everything, PlantsPanelState } from "../interfaces";
-import { Panel, DesignerNavTabs, TAB_COLOR } from "../farm_designer/panel_header";
+import { Panel } from "../farm_designer/panel_header";
 import { getPlants } from "../farm_designer/state_to_props";
 import { TaggedPlant } from "../farm_designer/map/interfaces";
 import {
@@ -34,7 +34,7 @@ import { deletePoints } from "../api/delete_points";
 import { Path } from "../internal_urls";
 import { WebAppNumberSetting } from "../settings/farm_designer_settings";
 import { NumericSetting } from "../session_keys";
-import { Col, Help, Popover, Row } from "../ui";
+import { Help, Popover, Row } from "../ui";
 import {
   GetWebAppConfigValue, getWebAppConfigValue,
 } from "../config_storage/actions";
@@ -114,7 +114,6 @@ export class RawPlants
     const uncategorizedGroups = uncategorizedGroupSubset(this.props.groups);
     const noSearchResults = this.state.searchTerm && filteredPlants.length == 0;
     return <DesignerPanel panelName={"plant-inventory"} panel={Panel.Plants}>
-      <DesignerNavTabs />
       <DesignerPanelTop panel={Panel.Plants} withButton={true}>
         <SearchField nameKey={"plants"}
           searchTerm={this.state.searchTerm}
@@ -125,15 +124,11 @@ export class RawPlants
           popoverClassName={"plants-panel-settings-menu"}
           target={<i className={"fa fa-gear fb-icon-button"} />}
           content={<Row>
-            <Col xs={9}>
-              <label>{t(DeviceSetting.defaultPlantDepth)}</label>
-              <Help text={Content.DEFAULT_PLANT_DEPTH} />
-            </Col>
-            <Col xs={3}>
-              <WebAppNumberSetting dispatch={dispatch}
-                getConfigValue={this.props.getConfigValue}
-                numberSetting={NumericSetting.default_plant_depth} />
-            </Col>
+            <label>{t(DeviceSetting.defaultPlantDepth)}</label>
+            <Help text={Content.DEFAULT_PLANT_DEPTH} />
+            <WebAppNumberSetting dispatch={dispatch}
+              getConfigValue={this.props.getConfigValue}
+              numberSetting={NumericSetting.default_plant_depth} />
           </Row>} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"plant"}>
@@ -197,8 +192,6 @@ export class RawPlants
           addTitle={t("add plant")}
           addClassName={"plus-plant"}
           title={t("Plants")}
-          extraHeaderTitle={!!this.props.openedSavedGarden &&
-            <i className={"garden-indicator"}>{t("saved garden")}</i>}
           extraHeaderContent={
             !this.props.openedSavedGarden && plantsPanelState.plants &&
             <button className={"fb-button red delete"}
@@ -259,20 +252,21 @@ export const PanelSection = (props: PanelSectionProps) => {
       onClick={props.toggleOpen}>
       <label>{`${props.title} (${props.itemCount})`}</label>
       {props.extraHeaderTitle}
-      <i className={`fa fa-caret-${isOpen ? "up" : "down"}`} />
-      {isOpen && <div
-        onClick={e => {
-          e.stopPropagation();
-          props.addNew();
-        }}
-        className={[
-          "fb-button",
-          `panel-${TAB_COLOR[props.panel]}`,
-          props.addClassName,
-        ].join(" ")}>
-        <i className={"fa fa-plus"} title={props.addTitle} />
-      </div>}
-      {props.extraHeaderContent}
+      <div className="row">
+        {props.extraHeaderContent}
+        {isOpen && <div
+          onClick={e => {
+            e.stopPropagation();
+            props.addNew();
+          }}
+          className={[
+            "fb-button green",
+            props.addClassName,
+          ].join(" ")}>
+          <i className={"fa fa-plus"} title={props.addTitle} />
+        </div>}
+        <i className={`fa fa-caret-${isOpen ? "up" : "down"}`} />
+      </div>
     </div>
     <Collapse isOpen={isOpen}>
       {props.children}

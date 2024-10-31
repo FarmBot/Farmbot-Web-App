@@ -31,7 +31,7 @@ describe("<AddSensorReadingMenu />", () => {
     const wrapper = shallow<AddSensorReadingMenu>(
       <AddSensorReadingMenu {...fakeProps()} />);
     const e = inputEvent("");
-    wrapper.find(BlurableInput).at(0).props().onCommit(e);
+    wrapper.find(BlurableInput).at(1).props().onCommit(e);
     expect(wrapper.state().date).toEqual("");
   });
 
@@ -39,7 +39,7 @@ describe("<AddSensorReadingMenu />", () => {
     const wrapper = shallow<AddSensorReadingMenu>(
       <AddSensorReadingMenu {...fakeProps()} />);
     const e = inputEvent("");
-    wrapper.find(BlurableInput).at(1).props().onCommit(e);
+    wrapper.find(BlurableInput).at(2).props().onCommit(e);
     expect(wrapper.state().time).toEqual("");
   });
 
@@ -67,7 +67,7 @@ describe("<AddSensorReadingMenu />", () => {
   it("changes value", () => {
     const wrapper = shallow<AddSensorReadingMenu>(
       <AddSensorReadingMenu {...fakeProps()} />);
-    wrapper.find("BlurableInput").last().simulate("commit", {
+    wrapper.find("BlurableInput").first().simulate("commit", {
       currentTarget: { value: 1 },
     });
     expect(wrapper.state().value).toEqual(1);

@@ -6,6 +6,7 @@
 
 .bp5-popover {
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  font-size: 1.3rem;
   .bp5-popover-content {
     border-radius: 5px;
   }
@@ -38,11 +39,34 @@
   }
 }
 
+.bp5-popover.help {
+  .bp5-popover-arrow {
+    display: none !important;
+  }
+  .bp5-popover-arrow-fill {
+    fill: $dark_gray;
+  }
+  .bp5-popover-content {
+    width: 32rem;
+    color: $white;
+    background: $dark_gray;
+  }
+}
+
+.bp5-slider {
+  margin: 0 2.5rem 0 1.5rem;
+  width: initial;
+}
+
+.bp5-control {
+  margin: 0;
+}
+
 .bp5-button:not(.bp5-minimal) {
   font-weight: normal;
   text-transform: none;
   background: $white;
-  border-radius: 0;
+  border-radius: 3px;
   font-size: 1.2rem !important;
   color: $black !important;
   height: 27px !important;
@@ -59,15 +83,7 @@
     width: 73%;
     overflow: hidden;
     text-overflow: ellipsis;
-    padding-right: 1rem;
-  }
-}
-
-.bp5-popover-wrapper {
-  display: block;
-  position: relative;
-  * {
-    text-align: left;
+    padding-right: 1.5rem;
   }
 }
 
