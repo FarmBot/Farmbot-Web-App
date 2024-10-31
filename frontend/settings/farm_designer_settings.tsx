@@ -2,7 +2,7 @@ import React from "react";
 import { Content, DeviceSetting } from "../constants";
 import { t } from "../i18next_wrapper";
 import { setWebAppConfigValue } from "../config_storage/actions";
-import { Row, Help, ToggleButton, BlurableInput } from "../ui";
+import { Help, ToggleButton, BlurableInput } from "../ui";
 import { BooleanSetting, NumericSetting } from "../session_keys";
 import { resetVirtualTrail } from "../farm_designer/map/layers/farmbot/bot_trail";
 import { MapSizeInputs } from "../farm_designer/map_size_setting";
