@@ -34,6 +34,7 @@
 .designer-sequence-editor-panel {
   .panel-content {
     .sequence-editor-content {
+      overflow: hidden;
       @media screen and (max-width: 767px) {
         margin-left: 5px;
         padding-right: 0;
@@ -57,6 +58,8 @@
 .sequence-editor-panel {
   background: $light_gray;
   padding: 0 1rem;
+  height: calc(100vh - 8.5rem);
+  overflow: scroll;
   @media screen and (max-width: 767px) {
     display: none;
     &.open {
@@ -92,7 +95,6 @@
     }
   }
   .sequence-editor-content {
-    margin-right: -15px;
     .sequence-description {
       .description-input {
         padding-right: 1rem;
@@ -261,30 +263,28 @@
   }
   .sequence {
     pre {
-      margin-top: 0;
+      margin: 0;
+      background: $dark_gray;
+      color: $off_white;
+      padding: 1rem;
+      font-size: 1.2rem;
+      white-space: pre-wrap;
     }
   }
   .sequence-description {
-    position: relative;
-    width: 100%;
-    padding-right: 3rem;
+    box-shadow: 0 0 1rem #0000001a;
+    background: $translucent8_white;
+    border-radius: 0.5rem;
     textarea {
-      margin-left: 2rem;
-      height: 100%;
-      box-shadow: 0px 0px 10px $gray;
+      height: 10rem;
       padding-bottom: 2rem;
     }
+    .markdown {
+      padding: 1rem;
+    }
     .description-editor-tools {
-      position: absolute;
-      bottom: 0;
-      right: 3.5rem;
-      .fa-pencil {
-        margin-bottom: 1rem;
-      }
       .char-limit {
         font-size: 1rem;
-        line-height: 1.75rem;
-        margin-left: 1rem;
         color: $medium_gray;
         &.over {
           color: $darkest_red;
@@ -300,10 +300,7 @@
     min-height: 10rem;
     max-height: 20rem;
     overflow-y: auto;
-    border: 2px solid $gray;
-    padding: 0.5rem;
-    margin-left: 1.5rem;
-    margin-right: -1.5rem;
+    border-radius: 0.5rem;
     p {
       display: revert;
       margin: revert;
@@ -491,52 +488,19 @@
 }
 
 .sequence-editor-tools {
-  display: flex;
-  justify-content: right;
-  .title,
-  input {
-    flex: 1;
-  }
   input {
     margin: 0.75rem;
-    margin-left: 2.75rem;
   }
   .title {
     padding: 1.25rem;
     font-size: 1.6rem;
     font-weight: bold;
-    margin-left: 1.5rem;
   }
   &.page {
     i {
-      color: $white;
+      color: $dark_gray;
       &.inactive {
-        color: $gray;
-      }
-    }
-    .publish-button {
-      span {
-        margin: 0;
-      }
-    }
-    .color-picker {
-      span,
-      i {
-        margin: 0;
-      }
-    }
-    &.blue,
-    &.yellow,
-    &.orange,
-    &.purple,
-    &.pink,
-    &.gray {
-      i,
-      .title {
-        color: $dark_gray;
-        &.inactive {
-          color: $placeholder_gray;
-        }
+        color: $placeholder_gray;
       }
     }
     &.blue {

@@ -268,84 +268,86 @@ export const SequenceBtnGroup = ({
   const [processingTitle, setProcessingTitle] = React.useState(false);
   const [processingColor, setProcessingColor] = React.useState(false);
   const isProcessing = processingColor || processingTitle;
-  return <div className="button-group">
-    <SaveBtn status={sequence.specialStatus}
-      onClick={() => dispatch(save(sequence.uuid)).then(() =>
-        push(Path.sequences(urlFriendly(sequence.body.name))))} />
-    <TestButton component={"editor"}
-      key={JSON.stringify(sequence)}
-      syncStatus={syncStatus}
-      sequence={sequence}
-      resources={resources}
-      menuOpen={sequencesState.menuOpen}
-      dispatch={dispatch} />
-    <div className={"settings-menu-button"}>
+  return <div className="button-group row">
+    <div className={"row no-gap"}>
       <Popover position={Position.BOTTOM_RIGHT}
         target={<i className={"fa fa-gear fb-icon-button"}
           title={t("settings")} />}
         content={<SequenceSettingsMenu
           dispatch={dispatch}
           getWebAppConfigValue={getWebAppConfigValue} />} />
-    </div>
-    {getWebAppConfigValue(BooleanSetting.view_celery_script) &&
-      <i title={t("toggle celery script view")}
-        className={[
-          "fa fa-code fb-icon-button",
-          viewCeleryScript ? "" : "inactive",
-        ].join(" ")}
-        onClick={toggleViewSequenceCeleryScript} />}
-    <i title={sequence.body.pinned ? t("unpin sequence") : t("pin sequence")}
-      className={[
-        "fa",
-        "fa-thumb-tack",
-        "fb-icon-button",
-        sequence.body.pinned ? "" : "inactive",
-      ].join(" ")}
-      onClick={() => dispatch(pinSequenceToggle(sequence))} />
-    {Path.inDesigner() &&
-      <i
+      {getWebAppConfigValue(BooleanSetting.view_celery_script) &&
+        <i title={t("toggle celery script view")}
+          className={[
+            "fa fa-code fb-icon-button",
+            viewCeleryScript ? "" : "inactive",
+          ].join(" ")}
+          onClick={toggleViewSequenceCeleryScript} />}
+      <i title={sequence.body.pinned ? t("unpin sequence") : t("pin sequence")}
         className={[
           "fa",
-          visualized ? "fa-eye" : "fa-eye-slash inactive",
+          "fa-thumb-tack",
           "fb-icon-button",
+          sequence.body.pinned ? "" : "inactive",
         ].join(" ")}
-        title={visualized ? t("unvisualize") : t("visualize")}
-        onClick={() =>
-          dispatch(visualizeInMap(visualized ? undefined : sequence.uuid))} />}
-    <i className={"fa fa-copy fb-icon-button"}
-      title={t("copy sequence")}
-      onClick={() => dispatch(copySequence(sequence))} />
-    <i className={"fa fa-trash fb-icon-button"}
-      title={t("delete sequence")}
-      onClick={deleteSequence({
-        sequenceUuid: sequence.uuid,
-        getWebAppConfigValue,
-        dispatch,
-      })} />
-    <div className={"publish-button"}>
-      <Popover position={Position.BOTTOM_RIGHT}
-        target={<i className={"fa fa-share fb-icon-button"}
-          title={t("share sequence")} />}
-        content={isSequencePublished(sequence)
-          ? <SequenceShareMenu sequence={sequence} />
-          : <SequencePublishMenu sequence={sequence} />} />
+        onClick={() => dispatch(pinSequenceToggle(sequence))} />
+      {Path.inDesigner() &&
+        <i
+          className={[
+            "fa",
+            visualized ? "fa-eye" : "fa-eye-slash inactive",
+            "fb-icon-button",
+          ].join(" ")}
+          title={visualized ? t("unvisualize") : t("visualize")}
+          onClick={() =>
+            dispatch(visualizeInMap(visualized ? undefined : sequence.uuid))} />}
+      <i className={"fa fa-copy fb-icon-button"}
+        title={t("copy sequence")}
+        onClick={() => dispatch(copySequence(sequence))} />
+      <i className={"fa fa-trash fb-icon-button"}
+        title={t("delete sequence")}
+        onClick={deleteSequence({
+          sequenceUuid: sequence.uuid,
+          getWebAppConfigValue,
+          dispatch,
+        })} />
+      <div className={"publish-button"}>
+        <Popover position={Position.BOTTOM_RIGHT}
+          target={<i className={"fa fa-share fb-icon-button"}
+            title={t("share sequence")} />}
+          content={isSequencePublished(sequence)
+            ? <SequenceShareMenu sequence={sequence} />
+            : <SequencePublishMenu sequence={sequence} />} />
+      </div>
+      {!Path.inDesigner() &&
+        <Popover className={"color-picker"}
+          position={Position.BOTTOM}
+          popoverClassName={"colorpicker-menu gray"}
+          target={<i title={t("select color")}
+            className={"fa fa-paint-brush fb-icon-button"} />}
+          content={<ColorPickerCluster
+            onChange={color =>
+              editCurrentSequence(dispatch, sequence, { color })}
+            current={sequence.body.color} />} />}
+      {!Path.inDesigner() && <AutoGenerateButton
+        dispatch={dispatch}
+        sequence={sequence}
+        isProcessing={isProcessing}
+        setTitleProcessing={setProcessingTitle}
+        setColorProcessing={setProcessingColor} />}
     </div>
-    {!Path.inDesigner() &&
-      <Popover className={"color-picker"}
-        position={Position.BOTTOM}
-        popoverClassName={"colorpicker-menu gray"}
-        target={<i title={t("select color")}
-          className={"fa fa-paint-brush fb-icon-button"} />}
-        content={<ColorPickerCluster
-          onChange={color =>
-            editCurrentSequence(dispatch, sequence, { color })}
-          current={sequence.body.color} />} />}
-    {!Path.inDesigner() && <AutoGenerateButton
-      dispatch={dispatch}
-      sequence={sequence}
-      isProcessing={isProcessing}
-      setTitleProcessing={setProcessingTitle}
-      setColorProcessing={setProcessingColor} />}
+    <div className="row">
+      <TestButton component={"editor"}
+        key={JSON.stringify(sequence)}
+        syncStatus={syncStatus}
+        sequence={sequence}
+        resources={resources}
+        menuOpen={sequencesState.menuOpen}
+        dispatch={dispatch} />
+      <SaveBtn status={sequence.specialStatus}
+        onClick={() => dispatch(save(sequence.uuid)).then(() =>
+          push(Path.sequences(urlFriendly(sequence.body.name))))} />
+    </div>
   </div>;
 };
 
@@ -389,10 +391,9 @@ export const SequenceName =
 export const SequenceHeader = (props: SequenceHeaderProps) => {
   const { sequence, dispatch } = props;
   const sequenceAndDispatch = { sequence, dispatch };
-  const color = Path.inDesigner() ? "" : sequence.body.color;
   const page = Path.inDesigner() ? "" : "page";
   return <div id="sequence-editor-tools"
-    className={`sequence-editor-tools ${color} ${page}`}>
+    className={`sequence-editor-tools row grid-exp-1 ${page}`}>
     {props.showName &&
       <ResourceTitle
         key={sequence.body.name}
@@ -697,7 +698,7 @@ const Description = (props: DescriptionProps) => {
         ].join(" ")}
         onClick={() => setIsEditing(!isEditing)} />}
     <Collapse isOpen={props.isOpen}>
-      <div className={"sequence-description"}
+      <div className={"sequence-description grid no-gap"}
         key={props.sequence.uuid + props.sequence.body.description}>
         {isEditing
           ? <div className={"description-input"}>

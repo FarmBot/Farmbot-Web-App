@@ -26,15 +26,16 @@ export class EqCriteriaSelection<T extends string | number>
   extends React.Component<EqCriteriaSelectionProps<T>> {
   render() {
     const { eqCriteria, criteriaKey, group, dispatch } = this.props;
-    return <div className={`${this.props.type}-eq-criteria`}>
+    return <div className={`${this.props.type}-eq-criteria grid`}>
       <AddEqCriteria<T> group={group} dispatch={dispatch}
         type={this.props.type} eqCriteria={eqCriteria}
         criteriaKey={criteriaKey} />
       {eqCriteria && Object.entries(eqCriteria)
         .map(([key, values]: [string, T[]], keyIndex) =>
           values && values.length > 0 &&
-          <div key={keyIndex}>
+          <div key={keyIndex} className="row advanced-group-criteria">
             <code>{key}</code>
+            <p>=</p>
             {values.map((value, valueIndex) =>
               <Row key={"" + keyIndex + valueIndex} className="grid-exp-1">
                 <input name="value"
@@ -55,7 +56,7 @@ export class EqCriteriaSelection<T extends string | number>
 /** Add and view > or < number criteria. */
 export const NumberCriteriaSelection = (props: NumberCriteriaProps) => {
   const criteriaField = props.criteria[props.criteriaKey];
-  return <div className={"number-gt-lt-criteria"}>
+  return <div className={"number-gt-lt-criteria grid"}>
     <AddNumberCriteria {...props} />
     {criteriaField && Object.entries(criteriaField)
       .map(([key, value], keyIndex) =>

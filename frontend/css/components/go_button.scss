@@ -13,14 +13,11 @@
       margin: 0 !important;
     }
   }
-  .go-button-axes {
-    height: 2.6rem;
-  }
   .go-button-axes-dropdown {
     border-left: 1px solid $dark_gray!important;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
-    height: 2.2rem;
+    line-height: 1.5rem;
     &.pseudo-disabled {
       border-left: 1px solid $gray;
     }

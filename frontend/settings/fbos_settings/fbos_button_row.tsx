@@ -19,7 +19,7 @@ export const FbosButtonRow = (props: FbosButtonRowProps) => {
   return <Highlight settingName={props.label}
     hidden={props.advanced && !props.showAdvanced}
     className={props.advanced ? "advanced" : ""}>
-    <Row className="grid-2-col">
+    <Row className="grid-exp-1">
       <div>
         <label>
           {t(props.label)}

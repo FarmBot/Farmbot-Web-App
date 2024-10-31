@@ -288,13 +288,7 @@ input:disabled {
 }
 
 .button-group {
-  .settings-menu-button {
-    margin-top: 0.15rem;
-    margin-right: 0.5rem;
-    .bp5-popover-wrapper {
-      margin-left: 0;
-    }
-  }
+  justify-content: right;
   .fa-code {
     font-weight: bold;
     color: $gray;
@@ -307,12 +301,6 @@ input:disabled {
   }
   .fa-eye-slash {
     color: $gray;
-  }
-  .color-picker {
-    .saucer {
-      height: 1.5rem;
-      width: 1.5rem;
-    }
   }
 }
 
@@ -359,6 +347,7 @@ input:disabled {
 
 .empty-state-graphic {
   width: 40%;
+  filter: grayscale(1) brightness(0.7)
 }
 
 .empty-state {
@@ -367,110 +356,9 @@ input:disabled {
   h5 {
     font-weight: bold;
   }
-  &.plants {
-    p,
-    h5,
-    a {
-      color: $panel_green;
-    }
-  }
-  &.curves {
-    .empty-state-graphic {
-      filter: grayscale(1);
-    }
-  }
-  &.gardens {
-    p,
-    h5,
-    a {
-      color: $panel_navy;
-    }
-    .empty-state-graphic {
-      filter: hue-rotate(135deg) brightness(0.5);
-      color: $panel_navy;
-    }
-  }
-  &.events {
-    p,
-    h5,
-    a {
-      color: $panel_yellow;
-    }
-  }
-  &.farmware {
-    p,
-    h5,
-    a {
-      color: $panel_gray;
-    }
-  }
-  &.peripherals {
-    img {
-      margin-top: 0;
-      max-width: 20rem;
-    }
-    p,
-    h5,
-    a {
-      color: $dark_gray;
-    }
-  }
-  &.sensors {
-    img {
-      margin-top: 0;
-      max-width: 20rem;
-      filter: grayscale(1);
-      padding: 1rem;
-    }
-    p,
-    h5,
-    a {
-      color: $dark_gray;
-    }
-  }
-  &.points {
-    p,
-    h5,
-    a {
-      color: $panel_teal;
-    }
-  }
-  &.tools {
-    p,
-    h5,
-    a {
-      color: $panel_gray;
-    }
-  }
-  &.groups {
-    p,
-    h5,
-    a {
-      color: $panel_blue;
-    }
-  }
-  &.weeds {
-    p,
-    h5,
-    a {
-      color: $panel_red;
-    }
-  }
-  &.zones {
-    p,
-    h5,
-    a {
-      color: $panel_brown;
-    }
-  }
   &.location {
     img {
       filter: grayscale(1);
-    }
-    p,
-    h5,
-    a {
-      color: $dark_gray;
     }
   }
 }
@@ -505,10 +393,6 @@ input:disabled {
 
 .settings-menu-button {
   float: right;
-  .fa-gear {
-    margin-top: -0.25rem;
-    color: $dark_gray;
-  }
 }
 
 .publish-button {
@@ -911,15 +795,6 @@ input:disabled {
   gap: 1rem;
 }
 
-textarea {
-  width: 100%;
-  border: 0;
-  padding: 6px 8px;
-  box-shadow: 0 0 10px #ddd;
-  outline: none!important;
-  resize: vertical;
-}
-
 textarea:focus {
   box-shadow: 0 0 10px rgba(0,0,0,.2);
 }
@@ -1024,6 +899,9 @@ textarea:focus {
 
 ul {
   margin: 0;
+  li {
+    margin: 0;
+  }
 }
 
 *::-webkit-scrollbar {

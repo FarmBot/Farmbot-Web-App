@@ -45,7 +45,7 @@ export const PhotoFilterSettings = (props: PhotoFilterSettingsProps) => {
     photo_filter_begin: "", photo_filter_end: "",
   }));
   const commonToggleProps = { dispatch, layerOff };
-  return <div className={"photo-filter-settings"}>
+  return <div className={"photo-filter-settings grid"}>
     <div className={className}>
       <p className={"banner"}>
         {layerOff

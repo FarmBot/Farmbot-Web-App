@@ -57,7 +57,7 @@ $panel_green: rgb(53, 118, 27, $alpha90);
 $panel_light_green: rgb(243, 249, 241, $alpha90);
 $panel_yellow: rgb(233, 157, 24, $alpha90);
 $panel_light_yellow: rgb(255, 250, 240, $alpha90);
-$panel_gray: rgb(146, 167, 179, $alpha90);
+$panel_gray: rgb(20, 92, 128, 0.3);
 $panel_medium_light_gray: rgb(230, 230, 230, $alpha90);
 $panel_light_gray: rgb(249, 251, 252, $alpha90);
 $panel_blue: rgb(2, 99, 101, $alpha90);
@@ -176,11 +176,4 @@ $panel_light_red: rgb(255, 247, 246, $alpha90);
   &.red {
     color: $red;
   }
-}
-
-.white-text{
-  color: $off_white;
-}
-.black-text{
-  color: $black;
 }

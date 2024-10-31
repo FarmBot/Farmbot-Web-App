@@ -28,7 +28,7 @@ export class AddEqCriteria<T extends string | number>
   };
 
   render() {
-    return <div className={`add-${this.props.type}-eq-criteria`}>
+    return <div className={`add-${this.props.type}-eq-criteria grid`}>
       <Row className="advanced-group-criteria">
         <input type="string"
           placeholder={t("field")}

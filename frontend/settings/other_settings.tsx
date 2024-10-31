@@ -77,9 +77,6 @@ export const LogEnableSetting = (props: LogEnableSettingProps) => {
           props.dispatch(updateConfig({ [props.setting]: !value }))}
         title={`${t("toggle")} ${props.title}`} />
     </Row>
-    <Row>
-      <p>{t(props.description)}</p>
-    </Row>
   </Highlight>;
 };
 

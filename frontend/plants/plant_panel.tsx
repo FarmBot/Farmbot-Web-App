@@ -88,9 +88,11 @@ export const EditPlantLocation = (props: EditPlantLocationProps) => {
   return <Row>
     {["x", "y", "z"].map((axis: Xyz) =>
       <div key={axis}>
-        <label style={{ marginTop: 0 }}>{t("{{axis}} (mm)", { axis })}</label>
-        {axis == "z" && !isUndefined(soilZ) &&
-          <Help text={`${t("soil height at plant location")}: ${soilZ}mm`} />}
+        <div className="row grid-exp-2 half-gap">
+          <label style={{ marginTop: 0 }}>{t("{{axis}} (mm)", { axis })}</label>
+          {axis == "z" && !isUndefined(soilZ) &&
+            <Help text={`${t("soil height at plant location")}: ${soilZ}mm`} />}
+        </div>
         <BlurableInput
           type="number"
           value={plantLocation[axis]}

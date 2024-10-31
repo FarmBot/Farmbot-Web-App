@@ -47,7 +47,7 @@ export const Setting = (props: SettingProps) => {
       className={`designer-setting row grid-exp-1 ${props.disabled ? "disabled" : ""}`}>
       <div>
         <label>{t(title)}</label>
-        {props.useToolTip && <Help text={props.description} />}
+        <Help text={props.description} />
       </div>
       {setting && <ToggleButton
         toggleValue={props.invert ? !value : value}
@@ -62,9 +62,6 @@ export const Setting = (props: SettingProps) => {
         customText={{ textFalse: t("off"), textTrue: t("on") }} />}
       {numberSetting && <WebAppNumberSetting {...props}
         numberSetting={numberSetting} />}
-      {!props.useToolTip && <Row>
-        <p>{t(props.description)}</p>
-      </Row>}
       {props.children}
     </div>
   </Highlight>;

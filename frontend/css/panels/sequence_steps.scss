@@ -31,7 +31,6 @@
   .step-comment {
     display: inline;
     width: 100%;
-    overflow: hidden;
     ::-webkit-input-placeholder {
       color: $dark_gray;
       font-weight: bold;
@@ -56,7 +55,8 @@
   }
   input {
     width: 100%;
-    padding: 0rem;
+    margin-left: -0.5rem;
+    padding-left: 0.5rem;
     background-color: transparent;
     box-shadow: none;
     color: $dark_gray;
@@ -179,32 +179,9 @@
     display: inline-block;
   }
   .prompt-wrapper {
-    margin-top: 1rem;
+    margin: 0.5rem 0;
     textarea {
-      font-size: 1rem;
-      height: 8rem;
-    }
-    .generate-code {
-      display: flex;
-      height: 3rem;
-      .feedback {
-        width: 7rem;
-        margin-top: 0.75rem;
-        transition: opacity 2s ease;
-        i:first-of-type {
-          margin-right: 0.5rem;
-        }
-      }
-      p {
-        display: inline-block;
-        width: 100%;
-        line-height: 1rem;
-        color: $medium_gray;
-        padding: 0.75rem;
-      }
-      button {
-        margin-top: 0.5rem;
-      }
+      height: 10rem;
     }
   }
 }

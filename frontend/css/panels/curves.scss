@@ -32,20 +32,11 @@
   .bp5-popover-content {
     background: $dark_gray;
   }
-  .bp5-popover-arrow-fill {
-    fill: $dark_gray;
-  }
   .curve-action-menu {
-    .transparent-button {
-      justify-self: right;
-      grid-column: 2;
-      color: $off_white
-    }
     label {
       color: $off_white;
     }
     .filter-search {
-      width: 100%;
       button {
         box-shadow: none !important;
       }
@@ -61,22 +52,6 @@
   .y-axis-line,
   .warning-line {
     pointer-events: none;
-  }
-}
-
-.curve-info-panel {
-  .panel-title {
-    .white-text {
-      color: $dark_gray;
-      &:hover {
-        color: $dark_gray;
-      }
-    }
-  }
-  .panel-header-icon-group {
-    i {
-      color: $dark_gray;
-    }
   }
 }
 

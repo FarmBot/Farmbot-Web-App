@@ -184,24 +184,6 @@
   &.red-panel {
     background-color: $panel_red;
   }
-  &.blue,
-  &.yellow,
-  &.orange,
-  &.purple,
-  &.pink,
-  &.gray {
-    .right-button,
-    .back-arrow,
-    .title {
-      color: $dark_gray;
-    }
-    .right-button,
-    .back-arrow {
-      &:hover {
-        color: $black !important;
-      }
-    }
-  }
 }
 
 .panel-tabs {
@@ -254,23 +236,14 @@
 
 .panel-title {
   overflow: hidden;
+  color: $dark_gray;
   .back-arrow {
     float: left;
     text-align: center;
     font-size: 1.8rem;
     width: 50px;
     line-height: 50px;
-    &.black-text{
-      color: $medium_gray;
-    }
-    &:hover {
-      &.black-text{
-        color: $darker_gray !important;
-      }
-      &.white-text{
-        color: $white;
-      }
-    }
+    color: $dark_gray;
   }
   .title {
     font-size: 1.8rem;
@@ -368,7 +341,7 @@
     height: 8rem;
     overflow-y: auto;
     overflow-x: hidden;
-    width: 75%;
+    width: calc(100% - 75px);
     font-family: "Cabin", sans-serif;
   }
   .saving-indicator {
@@ -619,9 +592,6 @@ li {
       .bp5-popover-wrapper {
         float: right;
       }
-      .fb-button {
-        margin-top: 0.5rem;
-      }
       .criteria-checkbox-list {
         display: flex;
         gap: 1rem;
@@ -690,24 +660,17 @@ li {
       }
       .number-eq-criteria,
       .string-eq-criteria {
-        margin-top: 1rem;
-        .row {
-          margin-top: 1rem;
-        }
         code {
           display: inline-block;
-          margin-top: 2rem;
           font-size: 1.2rem;
           font-weight: bold;
           color: $black;
-          background: none;
         }
       }
       .number-eq-criteria,
       .number-gt-lt-criteria {
         p {
           text-align: center;
-          line-height: 2.75rem;
           font-size: 1.2rem;
         }
       }
@@ -745,12 +708,6 @@ li {
     .fb-button {
       margin: 0;
     }
-  }
-}
-
-.criteria-options-menu {
-  label {
-    margin-right: 1rem;
   }
 }
 
@@ -798,18 +755,10 @@ li {
     }
     .points-section {
       &.open {
-        background: rgba(0, 0, 0, 0.05);
         margin-bottom: 1rem;
       }
       .row {
         padding: 0 1rem;
-      }
-    }
-    .points-section,
-    .panel-section {
-      .delete {
-        float: right;
-        line-height: revert;
       }
     }
     .no-points,
@@ -866,25 +815,6 @@ li {
     .title-help-text.open {
       color: $dark_gray !important;
       font-size: 1.2rem;
-    }
-  }
-}
-
-.weed-info-panel,
-.point-info-panel,
-.designer-regimen-editor-panel,
-.designer-sequence-editor-panel {
-  .green,
-  .red {
-    .panel-title {
-      .fa-paint-brush,
-      .fa-expand,
-      .fa-trash,
-      .fa-clone,
-      .fa-magic,
-      .fa-spinner {
-        color: $white;
-      }
     }
   }
 }

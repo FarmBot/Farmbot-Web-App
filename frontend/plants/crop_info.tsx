@@ -82,11 +82,11 @@ const shortenTitle = (title: string) => {
 
 /** Basic field: value display for OpenFarm crop properties. */
 const InfoField = (props: InfoFieldProps) =>
-  <li>
+  <li className="row half-gap grid-exp-3 align-baseline">
     <span>{EMOJI[props.title]}</span>
-    <p>
+    <label>
       {t(startCase(shortenTitle(props.title)))}:
-    </p>
+    </label>
     <div className={"crop-info-field-data"}>
       {props.children}
     </div>
@@ -156,7 +156,7 @@ interface CropInfoListProps {
 /** Display crop properties from OpenFarm. */
 const CropInfoList = (props: CropInfoListProps) => {
   return <div className="object-list">
-    <ul>
+    <ul className="grid">
       {chain(props.result.crop)
         .omit(OMITTED_PROPERTIES)
         .toPairs()
@@ -396,7 +396,7 @@ export class RawCropInfo extends React.Component<CropInfoProps, CropInfoState> {
           svgIcon={svgToUrl(result.crop.svg_icon)} />
         <Popover portalClassName={"dark-portal"}
           position={Position.BOTTOM_RIGHT}
-          target={<button className={"plus-grid-btn transparent-button light"}>
+          target={<button className={"plus-grid-btn fb-button clear-light"}>
             + {t("grid")}
           </button>}
           content={<div className={"grid-popup-content"}>

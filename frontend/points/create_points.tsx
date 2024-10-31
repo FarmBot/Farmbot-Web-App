@@ -213,7 +213,7 @@ export class RawCreatePoints
   closePanel = () => push(Path.designer(this.panel));
 
   PointProperties = () =>
-    <ul>
+    <ul className="grid">
       <li>
         <Row className="grid-exp-1">
           <div className={"point-name-input"}>

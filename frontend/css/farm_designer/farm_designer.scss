@@ -240,7 +240,8 @@
       line-height: 4rem;
       &.tool-status,
       &.tool-slot-position {
-        float: right;
+        min-width: 10rem;
+        text-align: right;
       }
     }
   }

@@ -22,9 +22,6 @@
 .saved-garden-edit-panel-content {
   display: grid;
   gap: 1rem;
-  textarea {
-    font-size: 1.2rem;
-  }
 }
 
 .saved-garden-grid {
@@ -37,7 +34,7 @@
   top: 80px;
   left: 50%;
   z-index: 3;
-  padding: 2rem;
+  padding: 1rem 2rem;
   background: rgba(255, 255, 255, .75);
   border-radius: 5px;
   box-shadow: 0px 1px 4px #555;
@@ -56,9 +53,6 @@
     &.pseudo-disabled {
       cursor: not-allowed;
     }
-  }
-  textarea {
-    font-size: 1.2rem;
   }
 }
 

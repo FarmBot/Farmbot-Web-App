@@ -60,18 +60,17 @@ const backToText = (to: string | undefined): string => {
 export const DesignerPanelHeader = (props: DesignerPanelHeaderProps) => {
   const panelColor = props.panel ? TAB_COLOR[props.panel] : props.panelColor;
   const colorClass = props.colorClass || `${panelColor || PanelColor.gray}-panel`;
-  const textColor = props.blackText ? "black" : "white";
   return <div className={`panel-header ${colorClass}`}
     style={props.style || {}}>
     <div className="panel-title">
-      <i className={`fa fa-arrow-left back-arrow ${textColor}-text`}
+      <i className={`fa fa-arrow-left back-arrow`}
         title={t("go back") + backToText(props.backTo)}
         onClick={() => {
           props.backTo ? push(props.backTo) : history.back();
           props.onBack?.();
         }} />
       {props.title &&
-        <span className={`title ${textColor}-text`}>
+        <span className={`title`}>
           {t(props.title)}
         </span>}
       {props.titleElement}
@@ -87,7 +86,6 @@ export const DesignerPanelHeader = (props: DesignerPanelHeaderProps) => {
       <div className={[
         "panel-header-description",
         `${props.panelName}-description`,
-        `${textColor}-text`,
       ].join(" ")}>
         {props.description && t(props.description)}
         {props.descriptionElement}

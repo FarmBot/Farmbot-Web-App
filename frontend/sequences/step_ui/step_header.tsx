@@ -83,7 +83,7 @@ export class StepHeader
     } = this.state;
     const aiPrompt = promptText || PLACEHOLDER_PROMPTS[placeholderIndex];
     const key = `lua_code_${this.props.index}`;
-    return <div className={"prompt-wrapper"}>
+    return <div className={"prompt-wrapper grid"}>
       <textarea className={"prompt"}
         onMouseEnter={this.toggle("enter")}
         onMouseLeave={this.toggle("leave")}
@@ -91,9 +91,9 @@ export class StepHeader
         placeholder={PLACEHOLDER_PROMPTS[placeholderIndex]}
         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
           this.setState({ promptText: e.currentTarget.value })} />
-      <div className={"generate-code"}>
+      <div className={"row grid-exp-1"}>
         <p>{t("Always review and test auto-generated code")}</p>
-        <div className={"feedback"} style={{
+        <div className={"row"} style={{
           opacity: showFeedback ? 1 : 0,
           pointerEvents: showFeedback ? "unset" : "none",
         }}>
