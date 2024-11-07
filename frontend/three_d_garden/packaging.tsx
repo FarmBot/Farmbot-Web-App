@@ -1,9 +1,9 @@
 import React from "react";
-import { Box, Text } from "@react-three/drei";
+import { Box } from "@react-three/drei";
 import { threeSpace } from "./helpers";
 import { Config } from "./config";
 import { Group, MeshPhongMaterial } from "./components";
-import { ASSETS } from "./constants";
+import { Text } from "./text";
 
 export interface PackagingProps {
   config: Config;
@@ -45,8 +45,8 @@ export const Packaging = (props: PackagingProps) => {
         args={[mainCartonLength, mainCartonWidth, mainCartonHeight]}>
         <MeshPhongMaterial color={boxColor} />
       </Box>
-      <Text fontSize={55}
-        font={ASSETS.fonts.cabinBold}
+      <Text
+        fontSize={55}
         color={"black"}
         position={[0, -mainCartonWidth / 2 - 1, 0]}
         rotation={[Math.PI / 2, 0, 0]}>

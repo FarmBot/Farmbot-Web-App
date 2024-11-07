@@ -1,6 +1,22 @@
 @use "../variables" as *;
 @use "sass:color";
 
+.promo {
+  &.three-d-garden {
+    .garden-bed-3d-model {
+      width: 100vw;
+    }
+
+    .overlay {
+      .settings-bar {
+        button {
+          height: 100%;
+        }
+      }
+    }
+  }
+}
+
 .three-d-garden {
   position: relative;
   height: 100vh;

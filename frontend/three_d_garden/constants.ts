@@ -5,7 +5,7 @@ export const LIB_DIR = "/3D/lib/";
 
 export const ASSETS = {
   fonts: {
-    cabinBold: "/3D/fonts/Cabin_Bold.ttf",
+    cabinBold: "/3D/fonts/Cabin_Bold.json",
   },
   textures: {
     cloud: "/3D/textures/cloud.avif",

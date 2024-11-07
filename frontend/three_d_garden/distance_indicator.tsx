@@ -1,8 +1,8 @@
 import React from "react";
-import { Box, Text } from "@react-three/drei";
-import { ASSETS } from "./constants";
+import { Box } from "@react-three/drei";
 import { Arrow } from "./arrow";
 import { Group, MeshPhongMaterial } from "./components";
+import { Text } from "./text";
 
 enum BoxDimension {
   width = 300,
@@ -56,11 +56,7 @@ export const DistanceIndicator = (props: DistanceIndicatorProps) => {
       {LABELS.map(({ position, rotation }) =>
         <Text name={"distance-label"}
           fontSize={50}
-          font={ASSETS.fonts.cabinBold}
           color={"black"}
-          strokeColor={"black"}
-          strokeWidth={7}
-          fontWeight={"bold"}
           rotation={rotation}
           position={position}>
           {distance.toFixed(0)}mm

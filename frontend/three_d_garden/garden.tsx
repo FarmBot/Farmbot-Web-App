@@ -3,7 +3,7 @@ import { ThreeEvent } from "@react-three/fiber";
 import {
   GizmoHelper, GizmoViewcube,
   OrbitControls, PerspectiveCamera,
-  Circle, Stats, Billboard, Text, Image, Clouds, Cloud, OrthographicCamera,
+  Circle, Stats, Billboard, Image, Clouds, Cloud, OrthographicCamera,
   Detailed, Sphere,
   useTexture,
 } from "@react-three/drei";
@@ -24,6 +24,7 @@ import {
   AmbientLight, AxesHelper, Group, MeshBasicMaterial, MeshPhongMaterial,
 } from "./components";
 import { isDesktop } from "../screen_size";
+import { Text } from "./text";
 
 export interface GardenModelProps {
   config: Config;
@@ -121,14 +122,10 @@ export const GardenModel = (props: GardenModelProps) => {
       {labelOnly
         ? <Text visible={alwaysShowLabels || i === hoveredPlant}
           renderOrder={2}
-          material-depthTest={false}
           fontSize={50}
+          color={"dark-gray"}
           position={[0, plant.size / 2 + 40, 0]}
-          font={ASSETS.fonts.cabinBold}
-          outlineColor={"black"}
-          outlineWidth={3}
-          outlineBlur={15}
-          outlineOpacity={0.7}>
+          rotation={[0, 0, 0]}>
           {plant.label}
         </Text>
         : <Image url={plant.icon} scale={plant.size} name={"" + i}
