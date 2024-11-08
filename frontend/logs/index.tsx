@@ -16,16 +16,15 @@ import { SearchField } from "../ui/search_field";
 import { forceOnline } from "../devices/must_be_online";
 import { demoAccountLog } from "../nav/ticker_list";
 import { Actions } from "../constants";
-import { useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { Path } from "../internal_urls";
 import { mapStateToProps } from "./state_to_props";
 
 export const RawLogs = (props: LogsPanelProps) => {
   props.dispatch({ type: Actions.OPEN_POPUP, payload: "jobs" });
   props.dispatch({ type: Actions.SET_JOBS_PANEL_OPTION, payload: "logs" });
-  const navigate = useNavigate();
-  navigate(Path.plants());
   return <Page className="logs-page">
+    <Navigate to={Path.plants()} />
     <p>Logs have moved to the navigation bar.</p>
   </Page>;
 };

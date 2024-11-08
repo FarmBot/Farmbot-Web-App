@@ -1,6 +1,6 @@
 import React from "react";
 import { Path } from "./internal_urls";
-import { RouteObject } from "react-router-dom";
+import { Navigate, RouteObject } from "react-router-dom";
 
 const FarmEvents = React.lazy(() => import("./farm_events/farm_events"));
 const AddFarmEvent = React.lazy(() => import("./farm_events/add_farm_event"));
@@ -20,7 +20,6 @@ const CropInfo = React.lazy(() => import("./plants/crop_info"));
 const PlantInfo = React.lazy(() => import("./plants/plant_info"));
 const AddGarden = React.lazy(() => import("./saved_gardens/garden_add"));
 const EditGarden = React.lazy(() => import("./saved_gardens/garden_edit"));
-const Controls = React.lazy(() => import("./controls/controls_page"));
 const DesignerControls = React.lazy(() => import("./controls/controls"));
 const SetupWizard = React.lazy(() => import("./wizard/index"));
 const DesignerSensors = React.lazy(() => import("./sensors/sensors"));
@@ -57,7 +56,6 @@ const EditWeed = React.lazy(() => import("./weeds/weeds_edit"));
 const Zones = React.lazy(() => import("./zones/zones_inventory"));
 const AddZone = React.lazy(() => import("./zones/add_zone"));
 const EditZone = React.lazy(() => import("./zones/edit_zone"));
-const Messages = React.lazy(() => import("./messages/messages_page"));
 const Logs = React.lazy(() => import("./logs"));
 const Sequences = React.lazy(() => import("./sequences/sequences"));
 const FarmDesigner = React.lazy(() => import("./farm_designer"));
@@ -94,8 +92,6 @@ export const CHILD_ROUTES: RouteObject[] = [
   { path: Path.farmware(":farmware_name"), element: <DesignerFarmwareInfo /> },
   { path: Path.designerSequences(), element: <DesignerSequenceList /> },
   { path: Path.designerSequences(":sequence_name"), element: <DesignerSequenceEditor /> },
-  { path: Path.sequenceVersion(), element: <DesignerSequencePreview /> },
-  { path: Path.sequenceVersion(":sequence_version_id"), element: <DesignerSequencePreview /> },
   { path: Path.regimens(), element: <DesignerRegimenList /> },
   { path: Path.regimens("scheduler"), element: <DesignerRegimenScheduler /> },
   { path: Path.regimens(":regimen_name"), element: <DesignerRegimenEditor /> },
@@ -127,10 +123,21 @@ export const CHILD_ROUTES: RouteObject[] = [
 ];
 
 export const ROUTE_DATA: RouteObject[] = [
-  { path: Path.app("controls"), element: <Controls /> },
-  { path: Path.app("messages"), element: <Messages /> },
+  { path: Path.app("controls"), element: <Navigate to={Path.controls()} /> },
+  { path: Path.app("messages"), element: <Navigate to={Path.messages()} /> },
   { path: Path.logs(), element: <Logs /> },
   { path: Path.sequencePage() + "(/:sequence)", element: <Sequences /> },
-  { path: Path.designer(), children: CHILD_ROUTES, element: <FarmDesigner /> },
+  {
+    path: Path.sequenceVersion(), element: <FarmDesigner />,
+    children: [{ path: "", element: <DesignerSequencePreview /> }],
+  },
+  {
+    path: Path.sequenceVersion(":sequence_version_id"), element: <FarmDesigner />,
+    children: [{ path: "", element: <DesignerSequencePreview /> }],
+  },
+  {
+    path: Path.designer(), element: <FarmDesigner />,
+    children: CHILD_ROUTES,
+  },
   { path: "*", element: <FourOhFour /> },
 ];

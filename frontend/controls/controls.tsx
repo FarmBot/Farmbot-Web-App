@@ -22,15 +22,14 @@ import { ResourceIndex } from "../resources/interfaces";
 import { t } from "../i18next_wrapper";
 import { Path } from "../internal_urls";
 import { RunButtonMenuOpen } from "../sequences/interfaces";
-import { useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { mapStateToProps } from "./state_to_props";
 
 export const RawDesignerControls = (props: DesignerControlsProps) => {
-  const navigate = useNavigate();
   props.dispatch({ type: Actions.OPEN_POPUP, payload: "controls" });
-  navigate(Path.plants());
   return <DesignerPanel panelName={"controls"} panel={Panel.Controls}>
     <DesignerPanelContent panelName={"controls"}>
+      <Navigate to={Path.plants()} />
       <p>Controls have moved to the navigation bar.</p>
     </DesignerPanelContent>
   </DesignerPanel>;
