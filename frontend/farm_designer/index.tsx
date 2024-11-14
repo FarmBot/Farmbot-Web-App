@@ -26,6 +26,7 @@ import { ProfileViewer } from "./map/profile";
 import { ThreeDGardenMap } from "./three_d_garden_map";
 import { Outlet } from "react-router-dom";
 import { ErrorBoundary } from "../error_boundary";
+import { get3DConfigValueFunction } from "../settings/three_d_settings";
 
 export const getDefaultAxisLength =
   (getConfigValue: GetWebAppConfigValue): Record<Xyz, number> => {
@@ -203,6 +204,9 @@ export class RawFarmDesigner
 
       {this.props.getConfigValue(BooleanSetting.three_d_garden)
         ? <ThreeDGardenMap
+          designer={this.props.designer}
+          get3DConfigValue={get3DConfigValueFunction(this.props.farmwareEnvs)}
+          sourceFbosConfig={this.props.sourceFbosConfig}
           gridOffset={gridOffset}
           mapTransformProps={this.mapTransformProps}
           botSize={this.props.botSize} />

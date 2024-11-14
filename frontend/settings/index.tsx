@@ -38,6 +38,7 @@ import { getUrlQuery, urlFriendly } from "../util";
 import { Popover } from "../ui";
 import { Position } from "@blueprintjs/core";
 import { NavigationContext } from "../routes_helpers";
+import { ThreeDSettings } from "./three_d_settings";
 
 export class RawDesignerSettings
   extends React.Component<DesignerSettingsProps, {}> {
@@ -166,6 +167,10 @@ export class RawDesignerSettings
           farmwareEnvs={this.props.farmwareEnvs} />
         <Designer {...commonProps}
           getConfigValue={getConfigValue} />
+        {showByTerm("3d", this.props.searchTerm) &&
+          <ThreeDSettings {...commonProps}
+            distanceIndicator={this.props.distanceIndicator}
+            farmwareEnvs={this.props.farmwareEnvs} />}
         <AccountSettings {...commonProps}
           user={this.props.user}
           getConfigValue={getConfigValue} />

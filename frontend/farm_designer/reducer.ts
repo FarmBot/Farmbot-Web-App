@@ -63,6 +63,7 @@ export const initialState: DesignerState = {
   cropHeightCurveId: undefined,
   cropStage: undefined,
   cropPlantedAt: undefined,
+  distanceIndicator: "",
 };
 
 export const designer = generateReducer<DesignerState>(initialState)
@@ -261,6 +262,10 @@ export const designer = generateReducer<DesignerState>(initialState)
   })
   .add<boolean>(Actions.TOGGLE_SOIL_HEIGHT_LABELS, (s) => {
     s.soilHeightLabels = !s.soilHeightLabels;
+    return s;
+  })
+  .add<string>(Actions.SET_DISTANCE_INDICATOR, (s, { payload }) => {
+    s.distanceIndicator = payload;
     return s;
   })
   .add<boolean>(Actions.SET_PROFILE_OPEN, (s, { payload }) => {

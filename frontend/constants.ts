@@ -606,6 +606,37 @@ export namespace ToolTips {
   export const UNKNOWN_STEP =
     trim(`Unable to properly display this step.`);
 
+  // 3D
+  export const THREE_D_BED_WALL_THICKNESS =
+    trim(`Bed wood thickness. (default: {{ defaultConfigValue }}mm)`);
+
+  export const THREE_D_BED_HEIGHT =
+    trim(`Bed height. (default: {{ defaultConfigValue }}mm)`);
+
+  export const THREE_D_CC_SUPPORT_SIZE =
+    trim(`Cable carrier support size. (default: {{ defaultConfigValue }}mm)`);
+
+  export const THREE_D_BEAM_LENGTH =
+    trim(`Gantry beam extrusion length. (default: {{ defaultConfigValue }}mm)`);
+
+  export const THREE_D_COLUMN_LENGTH =
+    trim(`Gantry column extrusion length. (default: {{ defaultConfigValue }}mm)`);
+
+  export const THREE_D_Z_AXIS_LENGTH =
+    trim(`Z axis extrusion length. (default: {{ defaultConfigValue }}mm)`);
+
+  export const THREE_D_BED_X_OFFSET =
+    trim(`Bed X offset. (default: {{ defaultConfigValue }}mm)`);
+
+  export const THREE_D_BED_Y_OFFSET =
+    trim(`Bed Y offset. (default: {{ defaultConfigValue }}mm)`);
+
+  export const THREE_D_BED_Z_OFFSET =
+    trim(`Bed Z offset. (default: {{ defaultConfigValue }}mm)`);
+
+  export const THREE_D_LEG_SIZE =
+    trim(`Leg size. (default: {{ defaultConfigValue }}mm)`);
+
   // Tools
   export const WATER_FLOW_RATE =
     trim(`To calculate **WATER FLOW RATE**, hold a measuring cup below the
@@ -2143,6 +2174,19 @@ export enum DeviceSetting {
   customSettings = `Custom Settings`,
   envEditor = `ENV Editor`,
 
+  // 3D
+  threeDGarden = `3D Garden`,
+  bedWallThickness = `Bed Wall Thickness`,
+  bedHeight = `Bed Height`,
+  ccSupportSize = `Cable Carrier Support Size`,
+  beamLength = `Beam Length`,
+  columnLength = `Column Length`,
+  zAxisLength = `Z Axis Length`,
+  bedXOffset = `Bed X Offset`,
+  bedYOffset = `Bed Y Offset`,
+  bedZOffset = `Bed Z Offset`,
+  legSize = `Leg Size`,
+
   // Map
   showPlants = `Plants`,
   showPlantsMapLayer = `Show Plants Map Layer`,
@@ -2421,6 +2465,9 @@ export enum Actions {
   SET_CROP_HEIGHT_CURVE_ID = "SET_CROP_HEIGHT_CURVE_ID",
   SET_CROP_STAGE = "SET_CROP_STAGE",
   SET_CROP_PLANTED_AT = "SET_CROP_PLANTED_AT",
+
+  // 3D
+  SET_DISTANCE_INDICATOR = "SET_DISTANCE_INDICATOR",
 
   // Regimens
   PUSH_WEEK = "PUSH_WEEK",

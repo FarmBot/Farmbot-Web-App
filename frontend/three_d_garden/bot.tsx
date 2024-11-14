@@ -1019,5 +1019,44 @@ export const Bot = (props: FarmbotModelProps) => {
           z: zZero - z + zAxisLength,
         }} />
     </Group>
+    <Group visible={config.distanceIndicator == "beamLength"}>
+      <DistanceIndicator
+        start={{
+          x: threeSpace(x + 100, bedLengthOuter) + bedXOffset,
+          y: threeSpace(bedWidthOuter / 2 - beamLength / 2, bedWidthOuter),
+          z: columnLength + 200,
+        }}
+        end={{
+          x: threeSpace(x + 100, bedLengthOuter) + bedXOffset,
+          y: threeSpace(bedWidthOuter / 2 + beamLength / 2, bedWidthOuter),
+          z: columnLength + 200,
+        }} />
+    </Group>
+    <Group visible={config.distanceIndicator == "columnLength"}>
+      <DistanceIndicator
+        start={{
+          x: threeSpace(x + 100, bedLengthOuter) + bedXOffset,
+          y: threeSpace(bedWidthOuter + 200, bedWidthOuter),
+          z: 30,
+        }}
+        end={{
+          x: threeSpace(x + 100, bedLengthOuter) + bedXOffset,
+          y: threeSpace(bedWidthOuter + 200, bedWidthOuter),
+          z: 30 + columnLength,
+        }} />
+    </Group>
+    <Group visible={config.distanceIndicator == "zAxisLength"}>
+      <DistanceIndicator
+        start={{
+          x: threeSpace(x + 100, bedLengthOuter) + bedXOffset,
+          y: threeSpace(y, bedWidthOuter) + bedYOffset,
+          z: zZero + zDir * z,
+        }}
+        end={{
+          x: threeSpace(x + 100, bedLengthOuter) + bedXOffset,
+          y: threeSpace(y, bedWidthOuter) + bedYOffset,
+          z: zZero + zDir * z + zAxisLength,
+        }} />
+    </Group>
   </Group>;
 };

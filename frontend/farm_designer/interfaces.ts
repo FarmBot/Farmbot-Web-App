@@ -193,6 +193,7 @@ export interface DesignerState {
   cropHeightCurveId: number | undefined;
   cropStage: PlantStage | undefined;
   cropPlantedAt: string | undefined;
+  distanceIndicator: string;
 }
 
 export type TaggedExecutable = TaggedSequence | TaggedRegimen;

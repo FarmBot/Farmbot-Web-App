@@ -161,6 +161,19 @@ export const Bed = (props: BedProps) => {
           z: groundZ,
         }} />
     </Group>
+    <Group visible={props.config.distanceIndicator == "bedHeight"}>
+      <DistanceIndicator
+        start={{
+          x: threeSpace(bedLengthOuter, bedLengthOuter) + 100,
+          y: threeSpace(0, bedWidthOuter),
+          z: groundZ,
+        }}
+        end={{
+          x: threeSpace(bedLengthOuter, bedLengthOuter) + 100,
+          y: threeSpace(0, bedWidthOuter),
+          z: 0,
+        }} />
+    </Group>
     <Group name={"axes-group"} visible={axes}>
       <FarmbotAxes config={props.config} />
     </Group>

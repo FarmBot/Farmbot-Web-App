@@ -64,7 +64,7 @@ describe("<FarmDesigner />", () => {
     visualizedSequenceBody: [],
     logs: [],
     deviceTarget: "",
-    sourceFbosConfig: jest.fn(),
+    sourceFbosConfig: () => ({ value: 1, consistent: true }),
     farmwareEnvs: [],
     curves: [],
   });

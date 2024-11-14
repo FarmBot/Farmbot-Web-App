@@ -67,6 +67,7 @@ export interface Config {
   cableDebug: boolean;
   zoomBeaconDebug: boolean;
   animate: boolean;
+  distanceIndicator: string;
 }
 
 export const INITIAL: Config = {
@@ -138,10 +139,12 @@ export const INITIAL: Config = {
   cableDebug: false,
   zoomBeaconDebug: false,
   animate: true,
+  distanceIndicator: "",
 };
 
 export const STRING_KEYS = [
   "sizePreset", "bedType", "otherPreset", "label", "plants", "tool", "scene",
+  "distanceIndicator",
 ];
 
 export const NUMBER_KEYS = [
@@ -276,6 +279,7 @@ export const PRESETS: Record<string, Config> = {
     cableDebug: false,
     zoomBeaconDebug: false,
     animate: true,
+    distanceIndicator: "",
   },
   "Maximal": {
     ...INITIAL,
@@ -327,6 +331,7 @@ export const PRESETS: Record<string, Config> = {
     cableDebug: true,
     zoomBeaconDebug: true,
     animate: true,
+    distanceIndicator: "",
   },
 };
 
@@ -346,7 +351,7 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "threeAxes", "xyDimensions", "zDimension", "labelsOnHover", "promoInfo",
   "settingsBar", "zoomBeacons", "pan", "solar", "utilitiesPost", "packaging", "lab",
   "people", "scene", "lowDetail", "eventDebug", "cableDebug", "zoomBeaconDebug",
-  "animate",
+  "animate", "distanceIndicator",
 ];
 
 export const modifyConfig = (config: Config, update: Partial<Config>) => {

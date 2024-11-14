@@ -68,6 +68,7 @@ describe("<DesignerSettings />", () => {
     farmwareEnvs: [],
     wizardStepResults: [],
     settingsPanelState: fakePanelState,
+    distanceIndicator: "",
   });
 
   it("renders settings", () => {
@@ -220,6 +221,13 @@ describe("<DesignerSettings />", () => {
     p.searchTerm = "interpolation";
     const wrapper = mount(<DesignerSettings {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("interpolation");
+  });
+
+  it("renders 3D settings", () => {
+    const p = fakeProps();
+    p.searchTerm = "3d";
+    const wrapper = mount(<DesignerSettings {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("3d");
   });
 
   it("renders dev settings", () => {

@@ -113,6 +113,15 @@ describe("designer reducer", () => {
     expect(newState.cropPlantedAt).toEqual("2020-01-20T20:00:00.000Z");
   });
 
+  it("sets distance indicator", () => {
+    const action: ReduxAction<string> = {
+      type: Actions.SET_DISTANCE_INDICATOR,
+      payload: "setting",
+    };
+    const newState = designer(oldState(), action);
+    expect(newState.distanceIndicator).toEqual("setting");
+  });
+
   it("sets hovered plant list item", () => {
     const action: ReduxAction<string> = {
       type: Actions.HOVER_PLANT_LIST_ITEM,

@@ -48,6 +48,7 @@ export interface SettingsPanelState {
   parameter_management: boolean;
   custom_settings: boolean;
   farm_designer: boolean;
+  three_d: boolean;
   account: boolean;
   other_settings: boolean;
 }
