@@ -5,6 +5,7 @@
   min-height: 100vh;
   max-height: 100%;
   background: url(/public/app-resources/img/plant-icon-background.png), linear-gradient(#00b685, #003f53);
+  background-size: 600px;
   padding: 8rem 2rem;
   h1,
   h2 {
@@ -32,9 +33,7 @@
     font-size: revert;
   }
   .all-content-wrapper {
-    max-width: 50rem;
-    padding-left: 1rem;
-    padding-right: 1rem;
+    max-width: 60rem;
   }
   .widget-wrapper {
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
@@ -75,9 +74,6 @@
   .create-account-button, .reset-password-button {
     justify-self: right;
   }
-  .tos {
-    margin-bottom: 1.5rem;
-  }
   input[type="checkbox"] {
     float: left;
     margin-right: 0.5rem;
@@ -103,6 +99,9 @@
   .fa-external-link {
     margin-left: 1rem;
     margin-bottom: 0.5rem;
+  }
+  .pull-right {
+    justify-self: right;
   }
 }
 
@@ -149,22 +148,22 @@
     }
   }
   table {
-    margin: auto;
-    margin-top: 3rem;
-    width: 93%;
-    font-size: 1.2rem;
-    color: $off_white;
+    font-size: 1.1rem;
+    color: $gray;
     text-align: left;
-    thead {
-      border-bottom: 2px solid $off_white;
-    }
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    border-radius: 2rem;
+    thead,
     tr:not(:last-child) {
-      border-bottom: 1px solid $gray;
+      border-bottom: 2px solid $translucent2_white;
+    }
+    th {
+      padding: 1rem 1.5rem;
     }
     td {
-      padding-top: 1rem;
-      padding-bottom: 1rem;
-      white-space: pre-wrap;
+      padding: 1rem 1.5rem;
+      white-space: pre;
       span {
         display: block;
         white-space: nowrap;
@@ -181,8 +180,10 @@
     margin-top: 7rem;
   }
   .os-download-wizard {
-    position: relative;
-    margin-top: 2rem;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 2rem;
+    backdrop-filter: blur(10px);
+    padding: 2rem;
     .transparent-button {
       margin: 1rem;
       float: none;
@@ -191,10 +192,9 @@
       width: 15rem;
     }
     .back {
-      display: block;
       position: absolute;
-      top: -1rem;
-      float: left;
+      top: 1rem;
+      left: 1rem;
       height: unset;
       width: unset;
     }
@@ -204,24 +204,24 @@
     }
     p {
       font-size: 1.4rem;
-      margin-bottom: 1rem !important;
     }
     .os-download-wizard-note {
       font-size: 1.4rem;
       font-weight: bold;
     }
+    .os-download-wizard-run {
+      img {
+        width: 100%;
+        border-radius: 1rem;
+      }
+    }
     .buttons {
-      display: flex;
       button {
-        width: 75%;
         border-radius: 0;
         padding: 0;
         border: 3px solid $white;
-        width: 75%;
         img {
-          margin: 0;
           width: 100%;
-          margin-top: -1rem;
         }
         &:hover {
           border-color: $off_white;
@@ -291,9 +291,10 @@
       }
     }
     .download-link {
-      display: inline-block;
+      justify-items: center;
       a {
         text-transform: none;
+        height: unset;
       }
     }
     .buttons-with-image {
@@ -323,7 +324,7 @@
       line-height: 2rem;
     }
     h1 {
-      margin-top: 0;
+      margin: 0;
       font-family: "Inknut Antiqua" !important;
       font-weight: 600 !important;
     }
