@@ -147,7 +147,7 @@ describe("<Connector/>", () => {
     expect(lines.length).toEqual(3);
     expect(lines.at(0).props())
       .toEqual({
-        id: "connector-border", stroke: Color.white, strokeWidth: 9,
+        id: "connector-border", stroke: Color.darkGray, strokeWidth: 9,
         x1: -25, x2: -50, y1: -55, y2: -20
       });
     expect(lines.at(1).props())
