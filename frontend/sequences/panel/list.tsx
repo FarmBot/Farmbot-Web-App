@@ -10,7 +10,6 @@ import { mapStateToProps } from "../state_to_props";
 import { SequencesProps } from "../interfaces";
 import { publishAction, SectionHeader } from "../sequence_editor_middle_active";
 import { Collapse } from "@blueprintjs/core";
-import { FeaturedSequence } from "../../featured/content";
 import axios from "axios";
 import { API } from "../../api";
 import { ColorPicker, Markdown, Popover } from "../../ui";
@@ -26,6 +25,15 @@ import { Actions } from "../../constants";
 import { isMobile } from "../../screen_size";
 import { NavigationContext } from "../../routes_helpers";
 import { useNavigate } from "react-router-dom";
+import { Color } from "farmbot";
+
+interface FeaturedSequence {
+  id: number;
+  path: string;
+  name: string;
+  description: string;
+  color: Color;
+}
 
 interface DesignerSequenceListState {
   featuredList: FeaturedSequence[];

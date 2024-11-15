@@ -34,7 +34,6 @@ class DashboardController < ApplicationController
     try_farmbot: "/try_farmbot/index.tsx",
     promo: "/promo/index.tsx",
     os_download: "/os_download/index.tsx",
-    featured: "/featured/index.tsx",
     terminal: "/terminal/index.tsx",
   }.with_indifferent_access
 
