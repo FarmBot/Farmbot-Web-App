@@ -773,12 +773,13 @@
   }
 }
 
-.farm-designer-panels.panel-closed ~ .three-d-garden .garden-bed-3d-model {
-  animation: panel-hide-shift-3d 0.3s ease forwards;
-}
-
-.farm-designer-panels.panel-open ~ .three-d-garden .garden-bed-3d-model {
-  animation: panel-show-shift-3d 0.3s ease forwards;
+@media screen and (min-width: $mobile_max_width) {
+  .farm-designer-panels.panel-closed ~ .three-d-garden .garden-bed-3d-model {
+    animation: panel-hide-shift-3d 0.3s ease forwards;
+  }
+  .farm-designer-panels.panel-open ~ .three-d-garden .garden-bed-3d-model {
+    animation: panel-show-shift-3d 0.3s ease forwards;
+  }
 }
 
 @keyframes panel-show-shift-3d {

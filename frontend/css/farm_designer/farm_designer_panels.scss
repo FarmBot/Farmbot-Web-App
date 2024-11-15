@@ -71,24 +71,6 @@
   }
 }
 
-@keyframes panel-show {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(0);
-  }
-}
-
-@keyframes panel-hide {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-120%);
-  }
-}
-
 .farm-designer-panels {
   bottom: 0;
   z-index: 1;
