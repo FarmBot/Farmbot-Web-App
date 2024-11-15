@@ -29,26 +29,26 @@ a {
   text-decoration: none !important;
   outline: none !important;
   cursor: pointer !important;
-  color: $dark_gray;
+  color: inherit;
   &:link {
     font-weight: 500;
-    color: $dark_gray;
+    color: inherit;
   }
   &:visited {
-    color: $dark_gray;
+    color: inherit;
   }
   &:hover {
     font-weight: bold;
-    color: $dark_gray;
+    color: inherit;
   }
   &:active {
-    color: $dark_gray;
+    color: inherit;
   }
 }
 
 p {
   font-size: 1.1rem;
-  color: $dark_gray;
+  color: inherit;
   line-height: 1.4rem;
   margin-bottom: 0 !important;
 }
@@ -62,11 +62,11 @@ h3 {
 h4 {
   line-height: 1.1rem;
   font-size: 1.8rem;
-  color: $darker_gray;
+  color: inherit;
 }
 
 hr {
-  border: 1px solid $translucent1;
+  border: 1px solid $translucent3;
 }
 
 ul {

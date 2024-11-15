@@ -40,26 +40,30 @@ export const GardenSnapshot = (props: GardenSnapshotProps) => {
     setGardenNotes("");
   };
 
-  return <div className="garden-snapshot">
-    <label>{t("name")}</label>
-    <input name="gardenName"
-      onChange={e => setGardenName(e.currentTarget.value)}
-      value={gardenName} />
-    <label>{t("notes")}</label>
-    <textarea name="notes"
-      onChange={e => setGardenNotes(e.currentTarget.value)}
-      value={gardenNotes} />
-    <button
-      className={"fb-button gray wide"}
-      title={t("Snapshot current garden")}
-      onClick={snapshot}>
-      {t("Snapshot current garden")}
-    </button>
-    <button
-      className="fb-button green wide"
-      title={t("Add new garden")}
-      onClick={newGarden}>
-      {t("Add new garden")}
-    </button>
+  return <div className="grid">
+    <div className="grid add-garden-grid">
+      <label>{t("name")}</label>
+      <input name="gardenName"
+        onChange={e => setGardenName(e.currentTarget.value)}
+        value={gardenName} />
+      <label>{t("notes")}</label>
+      <textarea name="notes"
+        onChange={e => setGardenNotes(e.currentTarget.value)}
+        value={gardenNotes} />
+    </div>
+    <div className="add-new-garden-buttons row">
+      <button
+        className={"fb-button gray"}
+        title={t("Snapshot current garden")}
+        onClick={snapshot}>
+        {t("Snapshot current garden")}
+      </button>
+      <button
+        className="fb-button green"
+        title={t("Add new garden")}
+        onClick={newGarden}>
+        {t("Add new garden")}
+      </button>
+    </div>
   </div>;
 };

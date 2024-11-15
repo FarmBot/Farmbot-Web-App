@@ -3,26 +3,24 @@
 
 .image-flipper {
   position: relative;
-  border-radius: 0.5rem;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
   overflow: hidden;
 }
 
 .bp5-overlay {
   .image-flipper {
     z-index: 20;
-    margin: auto;
-    width: fit-content;
+    width: 100%;
+    display: grid;
+    justify-content: center;
+    align-content: center;
     .no-flipper-image-container,
     .flipper-image {
-      height: 80vh;
-      width: 80vw;
       text-align: center;
       .image-flipper-image,
       svg {
-        height: 100%;
-        max-width: unset;
-        max-height: unset;
-        min-height: unset;
+        filter: none;
       }
     }
     .image-flipper-left,
@@ -55,7 +53,6 @@
 }
 
 .image-flipper-image {
-  border-radius: 5px;
   display: block;
   margin: auto;
   max-height: 650px;
@@ -95,9 +92,10 @@
 }
 
 .no-flipper-image-container {
-  background: $panel_light_gray;
   img {
-    opacity: 0.4;
+    border-radius: 3px;
+    overflow: hidden;
+    filter: invert(1);
   }
   p {
     position: absolute;
@@ -117,7 +115,7 @@
   display: flex;
   position: relative;
   justify-content: space-between;
-  background: $black;
+  background: $translucent2_white;
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
   height: 3.5rem;
@@ -134,16 +132,6 @@
   }
   .bp5-popover-wrapper {
     display: inline;
-  }
-  i {
-    color: $white;
-  }
-  .gradient {
-    position: absolute;
-    top: -3rem;
-    width: 100%;
-    height: 3rem;
-    background: linear-gradient(to top, $black 0%, transparent 30%);
   }
 }
 

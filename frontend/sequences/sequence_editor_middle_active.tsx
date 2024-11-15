@@ -272,7 +272,7 @@ export const SequenceBtnGroup = ({
   return <div className="button-group row">
     <div className={"row no-gap"}>
       <Popover position={Position.BOTTOM_RIGHT}
-        target={<i className={"fa fa-gear fb-icon-button"}
+        target={<i className={"fa fa-gear fb-icon-button light"}
           title={t("settings")} />}
         content={<SequenceSettingsMenu
           dispatch={dispatch}
@@ -280,7 +280,7 @@ export const SequenceBtnGroup = ({
       {getWebAppConfigValue(BooleanSetting.view_celery_script) &&
         <i title={t("toggle celery script view")}
           className={[
-            "fa fa-code fb-icon-button",
+            "fa fa-code fb-icon-button light",
             viewCeleryScript ? "" : "inactive",
           ].join(" ")}
           onClick={toggleViewSequenceCeleryScript} />}
@@ -288,7 +288,7 @@ export const SequenceBtnGroup = ({
         className={[
           "fa",
           "fa-thumb-tack",
-          "fb-icon-button",
+          "fb-icon-button light",
           sequence.body.pinned ? "" : "inactive",
         ].join(" ")}
         onClick={() => dispatch(pinSequenceToggle(sequence))} />
@@ -297,15 +297,15 @@ export const SequenceBtnGroup = ({
           className={[
             "fa",
             visualized ? "fa-eye" : "fa-eye-slash inactive",
-            "fb-icon-button",
+            "fb-icon-button light",
           ].join(" ")}
           title={visualized ? t("unvisualize") : t("visualize")}
           onClick={() =>
             dispatch(visualizeInMap(visualized ? undefined : sequence.uuid))} />}
-      <i className={"fa fa-copy fb-icon-button"}
+      <i className={"fa fa-copy fb-icon-button light"}
         title={t("copy sequence")}
         onClick={() => dispatch(copySequence(navigate, sequence))} />
-      <i className={"fa fa-trash fb-icon-button"}
+      <i className={"fa fa-trash fb-icon-button light"}
         title={t("delete sequence")}
         onClick={deleteSequence({
           navigate,
@@ -315,7 +315,7 @@ export const SequenceBtnGroup = ({
         })} />
       <div className={"publish-button"}>
         <Popover position={Position.BOTTOM_RIGHT}
-          target={<i className={"fa fa-share fb-icon-button"}
+          target={<i className={"fa fa-share fb-icon-button light"}
             title={t("share sequence")} />}
           content={isSequencePublished(sequence)
             ? <SequenceShareMenu sequence={sequence} />
@@ -326,7 +326,7 @@ export const SequenceBtnGroup = ({
           position={Position.BOTTOM}
           popoverClassName={"colorpicker-menu gray"}
           target={<i title={t("select color")}
-            className={"fa fa-paint-brush fb-icon-button"} />}
+            className={"fa fa-paint-brush fb-icon-button light"} />}
           content={<ColorPickerCluster
             onChange={color =>
               editCurrentSequence(dispatch, sequence, { color })}
@@ -602,7 +602,7 @@ export class SequenceEditorMiddleActive extends
               </ErrorBoundary>
             </Collapse>}
           {viewSequenceCeleryScript &&
-            <pre>{stringifySequenceData(this.props.sequence.body)}</pre>}
+            <pre className="celeryscript">{stringifySequenceData(this.props.sequence.body)}</pre>}
           {!viewSequenceCeleryScript &&
             <SectionHeader title={t("sequence steps")}
               count={stepCount}
@@ -673,7 +673,7 @@ const Description = (props: DescriptionProps) => {
         className={[
           "fa",
           isProcessing ? "fa-spinner fa-pulse" : "fa-magic",
-          "fb-icon-button",
+          "fb-icon-button light",
         ].join(" ")}
         onClick={() => {
           if (!props.sequence.body.id) {
@@ -697,7 +697,7 @@ const Description = (props: DescriptionProps) => {
         className={[
           "fa",
           isEditing ? "fa-eye" : "fa-pencil",
-          "fb-icon-button",
+          "fb-icon-button light",
         ].join(" ")}
         onClick={() => setIsEditing(!isEditing)} />}
     <Collapse isOpen={props.isOpen}>
@@ -803,7 +803,7 @@ const PublicCopyToolbar = (props: PublicCopyToolbarProps) => {
     {props.showName && <p>{props.sequencePreview?.body.name}</p>}
     {props.viewCeleryScript &&
       <i title={t("toggle celery script view")}
-        className={["fa fa-code fb-icon-button",
+        className={["fa fa-code fb-icon-button light",
           props.viewSequenceCeleryScript ? "" : "inactive",
         ].join(" ")}
         onClick={props.toggleViewSequenceCeleryScript} />}

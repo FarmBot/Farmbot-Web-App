@@ -80,7 +80,7 @@ export class RawDesignerSequenceList
           placeholder={t("Search sequences...")}
           onChange={updateSearchTerm} />
         {!isMobile() &&
-          <button className={"fb-button clear-dark row half-gap"}
+          <button className={"fb-button clear-light row half-gap"}
             onClick={() => this.navigate(buttonProps.path)}>
             {buttonProps.text}
             <i className={`fa fa-${buttonProps.icon}`} />

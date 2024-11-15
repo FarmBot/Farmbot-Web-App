@@ -18,7 +18,7 @@ export class ToggleSettingsOpen extends React.Component<ToggleSettingsOpenProps>
 
   render() {
     return <a>
-      <button className="fb-icon-button"
+      <button className="fb-icon-button light"
         title={t("toggle settings open")}
         onClick={() =>
           this.props.dispatch(bulkToggleControlPanel(!this.open))}>

@@ -2,7 +2,7 @@
 @use "sass:color";
 
 body {
-  background: $gray;
+  background: $body_bg;
   color: $dark_gray;
   margin: 0;
 }
@@ -14,7 +14,7 @@ body {
   text-align: center;
   width: 100%;
   padding-top: 10%;
-  color: $dark_gray;
+  color: $gray;
 }
 
 .char-limit {
@@ -29,11 +29,18 @@ body {
 .markdown {
   p {
     display: inline-block;
-    color: $white;
     text-overflow: ellipsis;
     overflow: hidden;
     white-space: nowrap;
     text-transform: none;
+  }
+}
+
+.controls-popover,
+.jobs-panel,
+.connectivity-popover {
+  .bp5-popover-content {
+    background: $body_bg;
   }
 }
 
@@ -42,6 +49,7 @@ body {
 .connectivity-content {
   display: grid;
   gap: 2rem;
+  color: $gray;
   .tabs {
     border-radius: 0.5rem;
     display: grid;
@@ -247,10 +255,6 @@ input {
   outline: none !important;
 }
 
-input:disabled {
-  background: rgba(0, 0, 0, 0.1) !important;
-}
-
 .unavailable {
   display: inline-block;
   position: relative;
@@ -326,9 +330,9 @@ input:disabled {
 }
 
 .note {
-  margin-top: 1rem;
   font-style: italic;
-  font-size: 1.2rem;
+  font-size: 1.4rem;
+  margin: 1rem 0;
 }
 
 @keyframes page-transition {
@@ -342,7 +346,7 @@ input:disabled {
 
 .empty-state-graphic {
   width: 40%;
-  filter: grayscale(1) brightness(0.7)
+  filter: grayscale(1)
 }
 
 .empty-state {
@@ -649,16 +653,16 @@ input:disabled {
 
 .problem-alerts {
   padding: 1rem;
+  color: $gray;
 }
 
 .problem-alert {
   padding: 1.5rem 2rem;
   border-radius: 1rem;
   box-shadow: 0px 2px 8px $translucent2;
-  background: $off_white;
-  .fa {
-    font-size: 1.6rem;
-  }
+  background: $translucent2_white;
+  display: grid;
+  gap: 0.5rem;
   .fa-check-square {
     color: $green;
   }
@@ -675,30 +679,24 @@ input:disabled {
   .problem-alert-title {
     align-items: baseline;
     h3 {
-      color: $dark_gray;
       display: inline;
       font-size: 1.5rem;
       font-weight: bold;
       margin: 0;
+      font-family: 'Inknut Antiqua';
     }
     p {
       display: inline;
-      color: $medium_gray;
       font-size: 1.2rem;
       white-space: nowrap;
     }
   }
-  .fa-times {
-    color: $medium_light_gray;
-    &:hover {
-      color: $dark_gray;
-    }
-  }
   .problem-alert-content {
+    display: grid;
+    gap: 0.5rem;
     .markdown {
       p {
         display: block;
-        color: $dark_gray;
         text-overflow: inherit;
         overflow: inherit;
         width: inherit;
@@ -729,26 +727,21 @@ input:disabled {
     .link-button {
       color: $off_white !important;
       font-weight: bold !important;
-      float: left;
+      justify-self: left;
+      margin: 0;
     }
     a {
-      text-decoration: none !important;
+      text-decoration: underline;
       outline: none !important;
       cursor: pointer !important;
-      color: $dark_gray;
       &:link {
         font-weight: 500;
-        color: $dark_gray;
-      }
-      &:visited {
-        color: $dark_gray;
       }
       &:hover {
-        font-weight: bold;
-        color: $dark_gray;
+        color: $off_white;
       }
-      &:active {
-        color: $dark_gray;
+      &.fb-button {
+        text-decoration: none !important;
       }
     }
   }
@@ -822,8 +815,8 @@ textarea:focus {
 
 .setting {
   &.highlight {
-    background-color: $light_yellow;
-    box-shadow: 0px 0px 7px 4px $light_yellow;
+    background-color: $translucent2_white;
+    box-shadow: 0px 0px 7px 4px $translucent2_white;
   }
   &.unhighlight {
     transition: background-color 10s linear, box-shadow 10s linear;
@@ -836,7 +829,6 @@ textarea:focus {
     margin-left: -1rem;
   }
   .fa-anchor {
-    color: $dark_gray;
     font-size: 0.8rem;
     visibility: hidden;
     &.hovered {

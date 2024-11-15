@@ -56,7 +56,7 @@ export class RawEditToolSlot
                 title={t("Unable to save changes.")} />}
               content={<p>{t("Unable to save changes.")}</p>} />}
           {toolSlot && <i
-            className={"fa fa-trash fb-icon-button"}
+            className={"fa fa-trash fb-icon-button light"}
             title={t("Delete")}
             onClick={() => this.props.dispatch(destroy(toolSlot.uuid))} />}
         </div>

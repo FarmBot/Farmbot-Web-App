@@ -14,16 +14,11 @@
     margin-left: 15px;
     margin-right: 15px;
   }
-  .fa-clock-o {
-    color: $dark_gray;
-  }
 }
 
 .bulk-scheduler-add {
   margin: 1.5rem !important;
 }
-
-// Regimen Editor
 
 .schedule-regimen-item {
   justify-self: center;
@@ -34,11 +29,11 @@
   border-radius: 0.5rem;
   overflow: hidden;
   box-shadow: 0 0 1rem $translucent2;
+  color: $dark_gray;
 }
 
 .regimen-event-titlebar {
   padding: 0.5rem 0.75rem;
-  color: $dark_gray;
   font-size: 1.2rem;
   font-weight: bold;
   text-transform: uppercase;
@@ -89,15 +84,8 @@
 }
 
 .designer-regimen-editor-panel {
-  .green,
-  .red {
-    .panel-title {
-      .color-picker {
-        .icon-saucer {
-          color: $white;
-        }
-      }
-    }
+  .panel-header {
+    color: $dark_gray;
   }
   .panel-content {
     max-height: calc(100vh - 14rem);

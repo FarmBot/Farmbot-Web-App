@@ -69,7 +69,7 @@ const LogsRow = (props: LogsRowProps) => {
   const time = formatTime(at, timeSettings, dateFormat);
   return <tr key={uuid} id={"" + id}>
     <td>
-      <i className={"fa fa-trash fb-icon-button"} title={t("delete log")}
+      <i className={"fa fa-trash fb-icon-button light"} title={t("delete log")}
         onClick={() => dispatch(destroy(uuid))} />
       <LogVerbositySaucer
         uuid={uuid} dispatch={dispatch} verbosity={verbosity} type={type} />

@@ -25,10 +25,10 @@ import {
   ValueInputProps,
 } from "./interfaces";
 import {
-  curveColor,
-  curvePanelColor, CurveShape, CurveType, CURVE_SHAPE_DDIS, CURVE_TEMPLATES,
+  curveColor, CurveShape, CurveType, CURVE_SHAPE_DDIS, CURVE_TEMPLATES,
   TemplateOption, templateScale, templateShape,
 } from "./templates";
+import { PanelColor } from "../farm_designer/panel_header";
 import { sourceFbosConfigValue } from "../settings/source_config_value";
 import { unpackUUID, validFbosConfig } from "../util";
 import { getFbosConfig } from "../resources/getters";
@@ -138,7 +138,7 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
       {!curve && Path.startsWith(curvesPath) && <Navigate to={curvesPath} />}
       <DesignerPanelHeader
         panelName={Panel.Curves}
-        style={{ background: curvePanelColor(curve) }}
+        panelColor={PanelColor.gray}
         titleElement={<ResourceTitle
           key={curve?.body.name}
           resource={curve}
@@ -148,11 +148,11 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
         backTo={curvesPath}>
         <div className={"panel-header-icon-group"}>
           {curve &&
-            <i className={"fa fa-copy fb-icon-button"}
+            <i className={"fa fa-copy fb-icon-button light"}
               title={t("Copy curve")}
               onClick={dispatch(copyCurve(this.props.curves, curve))} />}
           {curve &&
-            <i className={"fa fa-trash fb-icon-button"}
+            <i className={"fa fa-trash fb-icon-button light"}
               title={t("Delete curve")}
               onClick={() => this.props.resourceUsage[curve.uuid]
                 ? error(t("Curve in use."))
@@ -165,7 +165,7 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
             <Popover
               isOpen={this.state.scale}
               popoverClassName={"curve-action-popover"}
-              target={<button className={"fb-button clear-dark"}
+              target={<button className={"fb-button clear-light"}
                 onClick={this.toggle("scale")}>
                 {t("scale")}
               </button>}
@@ -174,7 +174,7 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
             <Popover
               isOpen={this.state.templates}
               popoverClassName={"curve-action-popover"}
-              target={<button className={"fb-button clear-dark"}
+              target={<button className={"fb-button clear-light"}
                 onClick={this.toggle("templates")}>
                 {t("templates")}
               </button>}

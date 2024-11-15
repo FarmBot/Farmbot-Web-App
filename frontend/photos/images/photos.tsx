@@ -35,7 +35,7 @@ export const PhotoButtons = (props: PhotoButtonsProps) => {
         popoverClassName={"image-show-menu-popover"}
         target={<ImageShowMenuTarget {...imageShowMenuProps} flags={flags} />}
         content={<ImageShowMenu {...imageShowMenuProps} flags={flags} />} />}
-    {imageUrl && <i className={"fa fa-trash fb-icon-button"}
+    {imageUrl && <i className={"fa fa-trash fb-icon-button light"}
       title={t("Delete Photo")}
       onClick={props.deletePhoto} />}
     {imageUrl && <a
@@ -44,14 +44,14 @@ export const PhotoButtons = (props: PhotoButtonsProps) => {
       target={"_blank"}
       rel={"noreferrer"}
       download={true}>
-      <i className={"fa fa-download fb-icon-button"} />
+      <i className={"fa fa-download fb-icon-button light"} />
     </a>}
     {imageUrl &&
       <i title={t("Toggle crop")}
         className={[
           "fa fa-scissors",
           props.canCrop ? "" : "disabled",
-          "fb-icon-button",
+          "fb-icon-button light",
         ].join(" ")}
         onClick={props.canCrop ? props.toggleCrop : undefined} />}
     {imageUrl &&
@@ -59,10 +59,10 @@ export const PhotoButtons = (props: PhotoButtonsProps) => {
         className={[
           "fa fa-repeat",
           props.canTransform ? "" : "disabled",
-          "fb-icon-button",
+          "fb-icon-button light",
         ].join(" ")}
         onClick={props.canTransform ? props.toggleRotation : undefined} />}
-    <i className={"fa fa-arrows-alt desktop-only fb-icon-button"}
+    <i className={"fa fa-arrows-alt desktop-only fb-icon-button light"}
       title={t("View fullscreen")}
       onClick={props.toggleFullscreen} />
   </div>;
@@ -74,7 +74,6 @@ export const PhotoFooter = (props: PhotoFooterProps) => {
     ? formatTime(moment(image.body.created_at), timeSettings, "MMMM Do, YYYY")
     : "";
   return <div className="photos-footer">
-    <div className={"gradient"} />
     <div className={"footer-text"}>
       <div className={"image-metadata"}>
         {image && <Popover

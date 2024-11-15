@@ -49,7 +49,7 @@ const TableHeaderCell = (props: TableHeaderCellProps) =>
   <th
     style={{
       color: COLORS[props.metricName],
-      background: props.hoveredMetric == props.metricName ? "#eee" : undefined,
+      background: props.hoveredMetric == props.metricName ? "rgba(255,255,255,0.2)" : undefined,
       textAlign: props.rightAlign ? "right" : undefined,
       ...props.style,
     }}
@@ -71,7 +71,7 @@ const TableBodyCell = (props: TableBodyCellProps) => {
   const selected = props.recordSelected || props.hoveredMetric == props.metricName;
   return <td
     style={{
-      background: selected ? "#eee" : undefined,
+      background: selected ? "rgba(255,255,255,0.2)" : undefined,
       textAlign: props.rightAlign ? "right" : undefined,
     }}
     onMouseEnter={props.onHover(props.metricName)}
@@ -142,7 +142,7 @@ export class FbosMetricHistoryTable
               .map(m => {
                 const recordSelected = this.state.hoveredTime == m.body.created_at;
                 const recordProps = {
-                  style: { background: recordSelected ? "#eee" : undefined },
+                  style: { background: recordSelected ? "rgba(255,255,255,0.2)" : undefined },
                 };
                 const cellProps = { ...commonProps, recordSelected };
                 const rightCellProps = { ...cellProps, rightAlign: true };

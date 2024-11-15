@@ -7,9 +7,9 @@
   left: 0;
   right: 0;
   z-index: 3;
-  background: $black;
+  background: $body_bg;
   opacity: 0.9;
-  min-height: 3.25rem;
+  min-height: 3rem;
   cursor: pointer;
   label {
     cursor: pointer;
@@ -55,14 +55,8 @@
 }
 
 .status-ticker-wrapper {
-  padding: 0.6rem 1rem 0.4rem 1rem;
-  transition: all 0.2s ease;
-  &:hover {
-    background: rgba(255, 255, 255, 0.2);
-  }
+  padding: 0.7rem 1rem;
   .saucer {
-    margin: 0.2rem 0.6rem 0rem 0;
-    float: left;
     width: 1.6rem;
     height: 1.6rem;
     border-radius: 50%;
@@ -73,6 +67,7 @@
 .first-ticker {
   .markdown p {
     font-weight: 600;
+    display: block;
     code {
       background: $dark_gray;
     }
@@ -82,8 +77,6 @@
 .first-ticker {
   height: 3rem;
   overflow: hidden;
-  padding-bottom: 0.5rem;
-  background: $black;
   .status-ticker-created-at {
     font-size: 1.2rem;
     font-weight: 600;
@@ -110,13 +103,6 @@
   span {
     -webkit-animation: flash 1.5s ease-in;
     animation: flash 1.5s ease-in;
-  }
-  &.prefix {
-    .markdown {
-      p {
-        width: calc(100% - 21rem);
-      }
-    }
   }
 }
 

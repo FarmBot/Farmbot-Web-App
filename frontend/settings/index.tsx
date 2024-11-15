@@ -87,7 +87,7 @@ export class RawDesignerSettings
           <Popover
             position={Position.BOTTOM}
             popoverClassName={"settings-panel-settings-menu"}
-            target={<i className={"fa fa-gear fb-icon-button"} />}
+            target={<i className={"fa fa-gear fb-icon-button light"} />}
             content={<ShowAdvancedToggle
               dispatch={dispatch}
               getConfigValue={getConfigValue} />} />

@@ -123,7 +123,7 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
           disabled={!toolName || nameTaken}
           status={SpecialStatus.DIRTY} />
         <i
-          className={`fa fa-trash fb-icon-button ${activeOrMounted
+          className={`fa fa-trash fb-icon-button light ${activeOrMounted
             ? "pseudo-disabled"
             : ""}`}
           title={activeOrMounted ? message : t("delete")}
@@ -131,20 +131,22 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
             ? error(t(message))
             : dispatch(destroy(tool.uuid))} />
       </div>}>
-      <div className="edit-tool">
+      <div className="edit-tool grid">
         <ToolSVG toolName={toolName} profile={true} />
         <CustomToolGraphicsInput
           toolName={toolName}
           dispatch={this.props.dispatch}
           saveFarmwareEnv={this.props.saveFarmwareEnv}
           env={this.props.env} />
-        <label>{t("Name")}</label>
-        <input name="toolName"
-          value={toolName}
-          onChange={e => this.setState({ toolName: e.currentTarget.value })} />
-        {reduceToolName(toolName) == ToolName.wateringNozzle &&
-          <WaterFlowRateInput value={this.state.flowRate}
-            onChange={this.changeFlowRate} />}
+        <div className="row grid-exp-2">
+          <label>{t("Name")}</label>
+          <input name="toolName"
+            value={toolName}
+            onChange={e => this.setState({ toolName: e.currentTarget.value })} />
+          {reduceToolName(toolName) == ToolName.wateringNozzle &&
+            <WaterFlowRateInput value={this.state.flowRate}
+              onChange={this.changeFlowRate} />}
+        </div>
         <p className="name-error">
           {nameTaken ? t("Name already taken.") : ""}
         </p>

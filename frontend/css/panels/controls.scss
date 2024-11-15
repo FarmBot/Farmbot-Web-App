@@ -34,9 +34,6 @@
     position: absolute;
     top: 10rem;
     right: 2rem;
-    .fa-gear {
-      color: $dark_gray;
-    }
   }
 }
 
@@ -356,8 +353,9 @@
 }
 
 .motor-position-plot-border {
-  box-shadow: 0 0 10px $light_gray;
+  background: $translucent2_white;
   border-radius: 5px;
+  fill: $gray;
   text {
     font-size: 0.4rem;
     text-anchor: middle;

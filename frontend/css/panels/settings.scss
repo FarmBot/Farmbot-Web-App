@@ -1,22 +1,7 @@
 @use "../variables" as *;
 @use "sass:color";
 
-.settings-panel {
-  .panel-top {
-    .fa-gear {
-      color: $dark_gray;
-    }
-  }
-}
-
-.settings-panel-settings-menu {
-  button {
-    margin-left: 1rem;
-  }
-}
-
 .settings-panel-content {
-  max-height: calc(100vh - 22rem);
   overflow-y: auto;
   overflow-x: hidden;
   padding-bottom: inherit;

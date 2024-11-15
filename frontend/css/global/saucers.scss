@@ -10,10 +10,10 @@
   border-radius: 50%;
   cursor: pointer;
   &.active {
-    border: 2px solid white;
+    border: 2px solid $dark_gray;
   }
   &.hover {
-    border: 2px solid $dark_gray;
+    border: 2px solid $off_white;
   }
   p {
     font-weight: 900;

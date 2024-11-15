@@ -89,8 +89,7 @@ export const UTMProfile = (props: ProfileUtmProps) => {
         x={profileUtmH - 2} y={profileUtmV - 2}
         width={4} height={4} />}
     <image x={profileUtmH - 25} y={profileUtmV - 35} width={50} height={30}
-      xlinkHref={FilePath.image("farmbot")} opacity={1}
-      style={{ filter: "invert(1)" }} />
+      xlinkHref={FilePath.image("farmbot")} opacity={1} />
     {toolInfo.name
       ? <ToolProfile toolName={toolInfo.name}
         x={profileUtmH - ToolDimensions.radius} y={profileUtmV}

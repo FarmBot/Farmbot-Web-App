@@ -146,7 +146,7 @@ const Data = (props: DataProps) => {
         stroke={last || showHoverEffect(day) ? curveColor(curve) : "none"}
         strokeWidth={0.5} strokeDasharray={last ? 0.5 : undefined}
         x={x(fullWidth * 0.75)} y={y}
-        fill={last ? Color.white : undefined}
+        fill={last ? "transparent" : undefined}
         width={fullWidth * 0.75} height={height} />
       <rect id={"hover-bar"}
         onMouseEnter={() => {
@@ -269,16 +269,16 @@ const XAxis = (props: XAxisProps) => {
   const step = maxDay(data) > 100 ? 20 : 10;
   const dayLabels = [1].concat(range(step, lastLabel + 1, step));
   return <g id={"x-axis"}>
-    <g id={"day-labels"} fontSize={5} textAnchor={"middle"} fill={Color.darkGray}>
+    <g id={"day-labels"} fontSize={5} textAnchor={"middle"} fill={Color.gray}>
       {dayLabels.map(day =>
         <text key={day} x={normX(day)} y={yZero + 6}>{day}</text>)}
     </g>
     <line id={"y-axis-vertical-line"}
-      stroke={Color.darkGray} opacity={0.1} strokeWidth={0.3}
+      stroke={Color.gray} opacity={0.1} strokeWidth={0.3}
       x1={0} y1={yZero} x2={0} y2={yMax} />
     <text id={"x-axis-label"}
       fontSize={5} textAnchor={"middle"}
-      fill={Color.darkGray} fontWeight={"bold"}
+      fill={Color.gray} fontWeight={"bold"}
       x={xMax / 2} y={yZero + 14}>
       {t("DAY")}
     </text>
@@ -296,19 +296,19 @@ const YAxis = (props: YAxisProps) => {
         const y = normY(value);
         return <g id={"" + value} key={value}>
           {y > -1 &&
-            <text fontSize={5} textAnchor={"end"} fill={Color.darkGray}
+            <text fontSize={5} textAnchor={"end"} fill={Color.gray}
               x={-2} y={y + 1.5}>
               {value}
             </text>}
           <line className={"y-axis-line"}
-            stroke={Color.darkGray} opacity={0.1} strokeWidth={0.3}
+            stroke={Color.gray} opacity={0.1} strokeWidth={0.3}
             x1={0} y1={y} x2={xMax} y2={y} />
         </g>;
       })}
     </g>
     <text id={"y-axis-label"}
       fontSize={5} textAnchor={"end"}
-      fill={Color.darkGray} fontWeight={"bold"}
+      fill={Color.gray} fontWeight={"bold"}
       x={0} y={-5}>
       {props.curve.body.type == CurveType.water ? t("mL") : t("mm")}
     </text>

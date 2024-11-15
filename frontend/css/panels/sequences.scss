@@ -35,6 +35,9 @@
 }
 
 .designer-sequence-editor-panel {
+  .panel-header {
+    color: $dark_gray;
+  }
   .panel-content {
     .sequence-editor-content {
       overflow: hidden;
@@ -120,15 +123,6 @@
   .sequence-section-header {
     &:hover {
       background: $translucent1!important;
-    }
-  }
-}
-
-.designer-sequence-editor-panel,
-.sequence-editor-panel {
-  .assertion-step {
-    .locals-list {
-      margin: 1rem;
     }
   }
 }
@@ -261,22 +255,9 @@
 }
 
 .sequence-editor-sections {
-  pre {
-    margin-top: 2rem;
-  }
-  .sequence {
-    pre {
-      margin: 0;
-      background: $dark_gray;
-      color: $off_white;
-      padding: 1rem;
-      font-size: 1.2rem;
-      white-space: pre-wrap;
-    }
-  }
   .sequence-description {
     box-shadow: 0 0 1rem #0000001a;
-    background: $translucent8_white;
+    background: $translucent2_white;
     border-radius: 0.5rem;
     textarea {
       height: 10rem;
@@ -391,17 +372,6 @@
   }
 }
 
-.sequence-description {
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    color: $black;
-  }
-}
-
 .sequence-item-help {
   h1,
   h2,
@@ -474,7 +444,6 @@
     .fa-caret-down {
       font-size: 2rem;
       margin-right: 0.5rem;
-      color: $dark_gray;
     }
     .bp5-popover-wrapper {
       display: contents;
@@ -547,9 +516,8 @@
 .locals-list {
   display: grid;
   gap: 1rem;
-  margin: 1rem 0;
   .location-form, .custom-coordinate-form {
-    background: $translucent8_white;
+    background: $translucent2_white;
     padding: 1rem;
     border-radius: 0.5rem;
     box-shadow: 0 0 1rem $translucent1;
@@ -573,9 +541,6 @@
     }
     .variable-label {
       font-weight: bold;
-    }
-    .fa-trash {
-      color: $darkest_red;
     }
     .no-location-coordinate-input-boxes,
     .no-default-value-form {
@@ -633,6 +598,7 @@
     .clustered {
       float: left;
       box-shadow: none;
+      color: $dark_gray;
       &.gray {
         background: $light_gray !important;
       }
@@ -648,7 +614,6 @@
     background: $dark_gray;
     margin-bottom: 1rem;
     border-radius: 5px;
-    box-shadow: 0px 0px 10px $gray;
     overflow: unset;
     padding: 0.75rem;
     padding-top: 0.5rem;
@@ -832,12 +797,12 @@
       &.moving {
         .drop-visual {
           position: absolute;
-          width: 75%;
-          height: 75%;
-          margin-top: 0.5rem;
-          margin-left: 3rem;
-          border: 2px dashed $gray;
-          background: $white;
+          top: 0.5rem;
+          bottom: 0.5rem;
+          left: 2.75rem;
+          right: 3rem;
+          border: 1px dashed $gray;
+          border-radius: 3px;
         }
       }
       &.hovered {
@@ -874,15 +839,6 @@
       z-index: 2;
       width: 3rem;
       font-size: 1.1rem;
-    }
-    .folder-settings-icon {
-      position: absolute;
-      right: 0;
-      .bp5-popover-target {
-        i {
-          color: $dark_gray;
-        }
-      }
     }
     .fb-button-popover-wrapper {
       margin-right: 0.25rem;
@@ -1017,7 +973,7 @@
     }
   }
   .matched {
-    background: color.adjust($yellow, $alpha: -0.5);
+    background: $translucent2_white;
   }
   .non-empty-state {
     width: 100%;
@@ -1433,4 +1389,14 @@ $border_width: 1.4px;
       background: $off_white;
     }
   }
+}
+
+.celeryscript {
+  font-size: 1.25rem;
+  margin: 0;
+  background: $dark_gray;
+  color: $off_white;
+  padding: 1rem;
+  font-size: 1.2rem;
+  white-space: pre-wrap;
 }

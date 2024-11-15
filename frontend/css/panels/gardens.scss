@@ -1,27 +1,6 @@
 @use "../variables" as *;
 @use "sass:color";
 
-.saved-garden-panel-content {
-  padding: 0;
-  button {
-    margin-left: 0.5rem;
-    &.wide {
-      margin: 1rem;
-      margin-left: 2rem;
-      width: 88%;
-      float: left;
-    }
-  }
-}
-
-.saved-garden-edit-panel {
-  .buttons {
-    .fa-trash {
-      color: $white;
-    }
-  }
-}
-
 .saved-garden-edit-panel-content {
   display: grid;
   gap: 1rem;
@@ -51,14 +30,6 @@
   }
 }
 
-.garden-snapshot {
-  button {
-    &.pseudo-disabled {
-      cursor: not-allowed;
-    }
-  }
-}
-
 .saved-garden-list {
   .saved-garden-search-item {
     padding: 0.25rem;
@@ -83,4 +54,12 @@
       }
     }
   }
+}
+
+.add-garden-grid {
+  grid-template-columns: auto 1fr;
+}
+
+.add-new-garden-buttons {
+  justify-content: right;
 }

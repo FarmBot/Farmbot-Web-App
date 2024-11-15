@@ -68,7 +68,7 @@ const DestroyGardenButton =
     dispatch: Function,
     gardenUuid: string,
   }) =>
-    <i className={"fa fa-trash fb-icon-button"}
+    <i className={"fa fa-trash fb-icon-button light"}
       title={t("delete garden")}
       onClick={() => props.dispatch(destroySavedGarden(
         props.navigate, props.gardenUuid))} />;

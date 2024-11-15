@@ -126,7 +126,7 @@ export class RawPlants
         <Popover
           position={Position.BOTTOM}
           popoverClassName={"plants-panel-settings-menu"}
-          target={<i className={"fa fa-gear fb-icon-button"} />}
+          target={<i className={"fa fa-gear fb-icon-button light"} />}
           content={<Row>
             <label>{t(DeviceSetting.defaultPlantDepth)}</label>
             <Help text={Content.DEFAULT_PLANT_DEPTH} />

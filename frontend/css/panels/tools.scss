@@ -106,12 +106,9 @@
   }
   .edit-tool,
   .add-new-tool {
-    margin-bottom: 3rem;
     .name-error {
-      margin-top: 1.2rem;
-      margin-right: 1rem;
+      justify-self: right;
       color: $dark_red;
-      float: right;
     }
     .save-btn {
       float: right;
@@ -134,7 +131,6 @@
     }
     ul {
       font-size: 1.2rem;
-      padding-left: 1rem;
       li {
         margin-top: 0.5rem;
         line-height: 2rem;
@@ -156,7 +152,6 @@
       }
     }
     button {
-      margin-bottom: 2rem;
       .fa-plus {
         margin-right: 0.5rem;
       }

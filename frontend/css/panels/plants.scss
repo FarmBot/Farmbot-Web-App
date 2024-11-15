@@ -1,14 +1,6 @@
 @use "../variables" as *;
 @use "sass:color";
 
-.plant-inventory-panel {
-  .panel-top {
-    .fa-gear {
-      color: $dark_gray;
-    }
-  }
-}
-
 .plants-panel-settings-menu {
   label {
     line-height: 3rem;
@@ -19,16 +11,6 @@
     display: inline;
     margin-left: 0.5rem;
     line-height: 3rem;
-  }
-}
-
-.plants-panel-content {
-  padding: 1rem;
-  input {
-    background: $white;
-  }
-  .fa-pencil {
-    margin-left: 0.5rem;
   }
 }
 
@@ -44,6 +26,7 @@
     text-align: center;
     border-radius: 5px;
     box-shadow: 0px 4px 7px 2px $translucent;
+    background: $translucent5_white;
     transition: transform 0.2s ease;
     padding: 0;
     &:hover {
