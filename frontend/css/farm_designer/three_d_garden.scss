@@ -21,7 +21,7 @@
   font-family: 'Inknut Antiqua', sans-serif;
   font-size: 2rem;
   font-weight: bold;
-  color: #f4f4f4;
+  color: $off_white;
   text-shadow: 0 0 3.5rem #000, 0 0 1rem #000;
   text-align: center;
   margin: 0;
@@ -414,8 +414,8 @@
   .beacon-info {
     width: 34rem;
     background: $white;
-    background: rgba(255, 255, 255, 0.8);
-    color: black;
+    background: $translucent8_white;
+    color: $black;
     box-shadow: $translucent2 0px 0px 10px;
     border-radius: 0.5rem;
     padding: 1.5rem;

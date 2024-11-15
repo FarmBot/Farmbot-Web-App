@@ -7,7 +7,7 @@ import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent,
 } from "../farm_designer/designer_panel";
 import { Everything } from "../interfaces";
-import { Panel } from "../farm_designer/panel_header";
+import { Panel, PanelColor } from "../farm_designer/panel_header";
 import { selectAllCurves, selectAllPlantPointers } from "../resources/selectors";
 import { destroy, init, overwrite, save } from "../api/crud";
 import { Path } from "../internal_urls";
@@ -28,7 +28,6 @@ import {
   curveColor, CurveShape, CurveType, CURVE_SHAPE_DDIS, CURVE_TEMPLATES,
   TemplateOption, templateScale, templateShape,
 } from "./templates";
-import { PanelColor } from "../farm_designer/panel_header";
 import { sourceFbosConfigValue } from "../settings/source_config_value";
 import { unpackUUID, validFbosConfig } from "../util";
 import { getFbosConfig } from "../resources/getters";
