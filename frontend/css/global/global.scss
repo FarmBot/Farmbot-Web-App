@@ -821,6 +821,9 @@ textarea:focus {
 }
 
 .setting {
+  &[hidden] {
+    display: none !important;
+  }
   &.highlight {
     background-color: $light_yellow;
     box-shadow: 0px 0px 7px 4px $light_yellow;
