@@ -667,39 +667,43 @@ const Description = (props: DescriptionProps) => {
   return <div className={"sequence-description-wrapper"}>
     <SectionHeader title={t("Description")}
       collapsed={!props.isOpen}
-      toggle={props.toggleOpen} />
-    {props.isOpen &&
-      <i title={t("auto-generate sequence description")}
-        className={[
-          "fa",
-          isProcessing ? "fa-spinner fa-pulse" : "fa-magic",
-          "fb-icon-button",
-        ].join(" ")}
-        onClick={() => {
-          if (!props.sequence.body.id) {
-            error(t("Save sequence first."));
-            return;
-          }
-          setIsProcessing(true);
-          requestAutoGeneration({
-            contextKey: "description",
-            sequenceId: props.sequence.body.id,
-            onUpdate: description => setDescription(description),
-            onSuccess: description => {
-              setIsProcessing(false);
-              props.dispatch(edit(props.sequence, { description }));
-            },
-            onError: () => setIsProcessing(false),
-          });
-        }} />}
-    {props.isOpen &&
-      <i title={t("toggle editor view")}
-        className={[
-          "fa",
-          isEditing ? "fa-eye" : "fa-pencil",
-          "fb-icon-button",
-        ].join(" ")}
-        onClick={() => setIsEditing(!isEditing)} />}
+      toggle={props.toggleOpen}
+      buttonElement={<div className={"description-actions"}>
+        <i title={t("auto-generate sequence description")}
+          className={[
+            "fa",
+            isProcessing ? "fa-spinner fa-pulse" : "fa-magic",
+            "fb-icon-button",
+          ].join(" ")}
+          onClick={e => {
+            e.stopPropagation();
+            if (!props.sequence.body.id) {
+              error(t("Save sequence first."));
+              return;
+            }
+            setIsProcessing(true);
+            requestAutoGeneration({
+              contextKey: "description",
+              sequenceId: props.sequence.body.id,
+              onUpdate: description => setDescription(description),
+              onSuccess: description => {
+                setIsProcessing(false);
+                props.dispatch(edit(props.sequence, { description }));
+              },
+              onError: () => setIsProcessing(false),
+            });
+          }} />
+        <i title={t("toggle editor view")}
+          className={[
+            "fa",
+            isEditing ? "fa-eye" : "fa-pencil",
+            "fb-icon-button",
+          ].join(" ")}
+          onClick={e => {
+            e.stopPropagation();
+            setIsEditing(!isEditing);
+          }} />
+      </div>} />
     <Collapse isOpen={props.isOpen}>
       <div className={"sequence-description grid no-gap"}
         key={props.sequence.uuid + props.sequence.body.description}>

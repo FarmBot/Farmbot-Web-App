@@ -298,15 +298,6 @@ export class RawCreatePoints
         </ListItem>}
     </ul>;
 
-  PointActions = () =>
-    <Row>
-      <button className="fb-button green save"
-        title={t("save")}
-        onClick={this.createPoint}>
-        {t("Save")}
-      </button>
-    </Row>;
-
   render() {
     const panelType = this.panel == "weeds" ? Panel.Weeds : Panel.Points;
     const panelDescription = this.panel == "weeds"
@@ -321,10 +312,15 @@ export class RawCreatePoints
         panel={panelType}
         title={this.panel == "weeds" ? t("Add weed") : t("Add point")}
         backTo={Path.designer(this.panel)}
-        description={panelDescription} />
+        description={panelDescription}>
+        <button className="fb-button green save"
+          title={t("save")}
+          onClick={this.createPoint}>
+          {t("Save")}
+        </button>
+      </DesignerPanelHeader>
       <DesignerPanelContent panelName={"point-creation"}>
         <this.PointProperties />
-        <this.PointActions />
         {panelType == Panel.Points && <hr />}
         {panelType == Panel.Points &&
           <PlantGrid

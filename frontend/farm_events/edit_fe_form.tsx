@@ -10,13 +10,11 @@ import { formatTimeField, formatDateField } from "./map_state_to_props_add_edit"
 import {
   BlurableInput,
   Row,
-  SaveBtn,
   FBSelect,
   DropDownItem,
   Help,
 } from "../ui";
-import { destroy, save, overwrite } from "../api/crud";
-import { useNavigate } from "react-router-dom";
+import { save, overwrite } from "../api/crud";
 import { betterMerge, parseIntInput } from "../util";
 import { maybeWarnAboutMissedTasks } from "./util";
 import { FarmEventRepeatForm } from "./farm_event_repeat_form";
@@ -147,9 +145,9 @@ export interface EditFEProps {
   dispatch: Function;
   findExecutable: ExecutableQuery;
   title: string;
-  deleteBtn?: boolean;
   timeSettings: TimeSettings;
   resources: ResourceIndex;
+  setSpecialStatus(specialStatus: SpecialStatus): void;
 }
 
 interface EditFEFormState {
@@ -157,20 +155,18 @@ interface EditFEFormState {
    * Hold a partial FarmEvent locally containing only updates made by the form.
    */
   fe: Partial<FarmEventViewModel>;
-  /**
-   * This form has local state and does not cause any global state changes when
-   * editing.
-   *
-   * Example: Navigating away from the page while editing will discard changes.
-   */
-  specialStatusLocal: SpecialStatus;
   variablesCollapsed: boolean;
 }
 
+/**
+ * This form has local state and does not cause any global state changes when
+ * editing.
+ *
+ * Example: Navigating away from the page while editing will discard changes.
+ */
 export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
   state: EditFEFormState = {
     fe: {},
-    specialStatusLocal: SpecialStatus.SAVED,
     variablesCollapsed: false,
   };
 
@@ -221,7 +217,7 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
     (variable: ParameterApplication) => {
       const body = addOrEditParamApps(bodyVariables, variable);
       this.overwriteStateFEBody(body);
-      this.setState({ specialStatusLocal: SpecialStatus.DIRTY });
+      this.props.setSpecialStatus(SpecialStatus.DIRTY);
     };
 
   LocalsList = () => <LocalsList
@@ -254,11 +250,11 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
             executable_type: next_executable_type,
             executable_id: ddi.value.toString(),
           },
-          specialStatusLocal: SpecialStatus.DIRTY,
           variablesCollapsed: this.state.variablesCollapsed,
         };
         this.overwriteStateFEBody(variableList(varData) || []);
         this.setState(betterMerge(this.state, update));
+        this.props.setSpecialStatus(SpecialStatus.DIRTY);
       }
     }
   };
@@ -273,12 +269,11 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
     };
   };
 
-  fieldSet = (key: FarmEventViewModelKey, value: string) =>
+  fieldSet = (key: FarmEventViewModelKey, value: string) => {
     // A merge is required to not overwrite `fe`.
-    this.setState(betterMerge(this.state, {
-      fe: { [key]: value },
-      specialStatusLocal: SpecialStatus.DIRTY
-    }));
+    this.setState(betterMerge(this.state, { fe: { [key]: value } }));
+    this.props.setSpecialStatus(SpecialStatus.DIRTY);
+  };
 
   fieldGet = (key: FarmEventViewModelKey): string =>
     (this.state.fe[key] || this.viewModel[key] || "").toString();
@@ -355,7 +350,7 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
     dispatch(overwrite(this.props.farmEvent, this.updatedFarmEvent));
     dispatch(save(this.props.farmEvent.uuid))
       .then(() => {
-        this.setState({ specialStatusLocal: SpecialStatus.SAVED });
+        this.props.setSpecialStatus(SpecialStatus.SAVED);
         dispatch(maybeWarnAboutMissedTasks(this.props.farmEvent,
           () => alert(t(Content.REGIMEN_TODAY_SKIPPED_ITEM_RISK)), now));
         success(t("The next item in this event will run {{timeFromNow}}.",
@@ -369,7 +364,7 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
       })
       .catch(() => {
         error(t("Unable to save event."));
-        this.setState({ specialStatusLocal: SpecialStatus.DIRTY });
+        this.props.setSpecialStatus(SpecialStatus.DIRTY);
       });
   };
 
@@ -377,7 +372,6 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
     this.setState({ variablesCollapsed: !this.state.variablesCollapsed });
 
   render() {
-    const { farmEvent } = this.props;
     const variableCount = Object.values(this.variableData || {})
       .filter(v => v?.celeryNode.kind == "parameter_declaration")
       .length;
@@ -391,10 +385,7 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
           executableOptions={this.props.executableOptions}
           executableSet={this.executableSet}
           executableGet={this.executableGet}
-          dispatch={this.props.dispatch}
-          specialStatus={farmEvent.specialStatus
-            || this.state.specialStatusLocal}
-          onSave={() => this.commitViewModel()}>
+          dispatch={this.props.dispatch}>
           <div className={"farm-event-form-content"}>
             {variableCount > 0 &&
               <SectionHeader title={t("Variables")}
@@ -409,10 +400,6 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
           </div>
         </FarmEventForm>
       </ErrorBoundary>
-      <FarmEventDeleteButton
-        hidden={!this.props.deleteBtn}
-        farmEvent={this.props.farmEvent}
-        dispatch={this.props.dispatch} />
       <TzWarning deviceTimezone={this.props.deviceTimezone} />
     </div>;
   }
@@ -522,24 +509,6 @@ const timeCheck = (
   }
 };
 
-export interface FarmEventDeleteButtonProps {
-  hidden: boolean;
-  farmEvent: TaggedFarmEvent;
-  dispatch: Function;
-}
-
-export const FarmEventDeleteButton = (props: FarmEventDeleteButtonProps) => {
-  const navigate = useNavigate();
-  return <i className={"fa fa-trash fb-icon-button"} hidden={props.hidden}
-    title={t("Delete")}
-    onClick={() =>
-      props.dispatch(destroy(props.farmEvent.uuid))
-        .then(() => {
-          navigate(Path.farmEvents());
-          success(t("Deleted event."), { title: t("Deleted") });
-        })} />;
-};
-
 interface FarmEventFormProps {
   isRegimen: boolean;
   fieldGet(key: FarmEventViewModelKey): string;
@@ -549,9 +518,7 @@ interface FarmEventFormProps {
   executableSet(ddi: DropDownItem): void;
   executableGet(): DropDownItem | undefined;
   dispatch: Function;
-  specialStatus: SpecialStatus;
-  onSave(): void;
-  children?: React.ReactChild;
+  children?: React.ReactNode;
 }
 
 export const FarmEventForm = (props: FarmEventFormProps) => {
@@ -583,8 +550,5 @@ export const FarmEventForm = (props: FarmEventFormProps) => {
       fieldGet={fieldGet}
       fieldSet={fieldSet}
       timeSettings={props.timeSettings} />
-    <SaveBtn
-      status={props.specialStatus}
-      onClick={props.onSave} />
   </div>;
 };

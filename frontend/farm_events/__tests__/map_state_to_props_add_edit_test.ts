@@ -31,6 +31,12 @@ describe("mapStateToPropsAddEdit()", () => {
       const boom = () => handleTime(e, "2017-05-21T22:00:00.000");
       expect(boom).toThrow("Expected a name attribute from time field.");
     });
+
+    it("handles missing hours and minutes", () => {
+      const e = inputEvent(":", "start_time");
+      const result = handleTime(e, "2017-05-21T22:00:00.000");
+      expect(result).toContain("00:00:00");
+    });
   });
 
   describe("executableOptions()", () => {

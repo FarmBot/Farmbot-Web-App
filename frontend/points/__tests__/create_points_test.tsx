@@ -138,7 +138,7 @@ describe("<CreatePoints />", () => {
     const wrapper = mount<CreatePoints>(<CreatePoints {...p} />);
     wrapper.setState({ at_soil_level: true });
     wrapper.update();
-    clickButton(wrapper, 1, "save");
+    clickButton(wrapper, 0, "save");
     expect(initSave).toHaveBeenCalledWith("Point", {
       meta: {
         color: "red", created_by: "farm-designer", type: "point",
@@ -161,7 +161,7 @@ describe("<CreatePoints />", () => {
     p.botPosition = { x: 1, y: 2, z: 3 };
     const wrapper = mount<CreatePoints>(<CreatePoints {...p} />);
     wrapper.setState({ cx: 10, cy: 20, r: 30 });
-    clickButton(wrapper, 0, "", { icon: "fa-crosshairs" });
+    clickButton(wrapper, 1, "", { icon: "fa-crosshairs" });
     expect(p.dispatch).toHaveBeenCalledWith({
       payload: { color: "red", cx: 1, cy: 2, z: 3, r: 30, name: "My Point" },
       type: type == "point"
@@ -179,7 +179,7 @@ describe("<CreatePoints />", () => {
     const wrapper = mount<CreatePoints>(<CreatePoints {...p} />);
     wrapper.setState({ cx: 10, cy: 20, r: 30 });
     jest.resetAllMocks();
-    clickButton(wrapper, 0, "", { icon: "fa-crosshairs" });
+    clickButton(wrapper, 1, "", { icon: "fa-crosshairs" });
     expect(p.dispatch).not.toHaveBeenCalled();
     expect(wrapper.state()).toEqual({ cx: 10, cy: 20, r: 30 });
   });
@@ -204,7 +204,7 @@ describe("<CreatePoints />", () => {
     location.pathname = Path.mock(Path.points("add"));
     const wrapper = mount(<CreatePoints {...fakeProps()} />);
     wrapper.setState({ cx: 10, cy: 20, r: 30 });
-    clickButton(wrapper, 1, "save");
+    clickButton(wrapper, 0, "save");
     expect(initSave).toHaveBeenCalledWith("Point", {
       meta: { color: "green", created_by: "farm-designer", type: "point" },
       name: "Created Point",
@@ -218,7 +218,7 @@ describe("<CreatePoints />", () => {
     location.pathname = Path.mock(Path.weeds("add"));
     const wrapper = mount(<CreatePoints {...fakeProps()} />);
     wrapper.setState({ cx: 10, cy: 20, r: 30 });
-    clickButton(wrapper, 1, "save");
+    clickButton(wrapper, 0, "save");
     expect(initSave).toHaveBeenCalledWith("Point", {
       meta: { color: "red", created_by: "farm-designer", type: "weed" },
       name: "Created Weed",

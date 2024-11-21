@@ -55,7 +55,7 @@ const handleTime = (
   switch (e.currentTarget.name) {
     case "start_time":
       // Put the current ISO established by the date field into a var
-      const currentStartISO = new Date((currentISO || "").toString())
+      const currentStartISO = new Date(currentISO.toString())
         .toISOString();
 
       // Set the time of the already existing iso string
@@ -67,7 +67,7 @@ const handleTime = (
       return newStartISO;
 
     case "end_time":
-      const currentEndISO = new Date((currentISO || "").toString())
+      const currentEndISO = new Date(currentISO.toString())
         .toISOString();
 
       const newEndISO = "" + moment(currentEndISO)
