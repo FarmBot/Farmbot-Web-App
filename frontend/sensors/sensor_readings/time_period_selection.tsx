@@ -39,7 +39,7 @@ export const TimePeriodSelection = (props: TimePeriodSelectionProps) => {
       <label>{t("Time period")}</label>
       <div className="row">
         <label style={{ display: "inline" }}>{t("Period End Date")}</label>
-        <i className={"fa fa-clock-o fb-icon-button"}
+        <i className={"fa fa-clock-o fb-icon-button light"}
           onClick={() => setEndDate(today)} />
       </div>
       <label>{t("Show Previous Period")}</label>

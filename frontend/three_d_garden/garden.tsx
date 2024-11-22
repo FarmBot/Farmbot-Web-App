@@ -123,7 +123,7 @@ export const GardenModel = (props: GardenModelProps) => {
         ? <Text visible={alwaysShowLabels || i === hoveredPlant}
           renderOrder={2}
           fontSize={50}
-          color={"dark-gray"}
+          color={"white"}
           position={[0, plant.size / 2 + 40, 0]}
           rotation={[0, 0, 0]}>
           {plant.label}

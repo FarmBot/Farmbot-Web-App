@@ -29,16 +29,16 @@ export const TileAssertion = (props: StepParams<Assertion>) => {
         <i className="fa fa-external-link" />
       </a>]}
     stateToggles={stateToggles}>
-    <Row>
+    <div className="grid">
       <LuaTextArea<Assertion> {...props} stateToggles={stateToggles} />
-    </Row>
-    <Row className="grid-2-col">
-      <TypePart key={JSON.stringify(props.currentSequence)}
-        {...props} />
-      {props.currentStep.args.assertion_type.includes("recover") &&
-        <SequencePart key={JSON.stringify(props.currentSequence)}
-          {...props} />}
-    </Row>
-    <VariablesPart {...props} />
+      <Row className="grid-2-col">
+        <TypePart key={JSON.stringify(props.currentSequence)}
+          {...props} />
+        {props.currentStep.args.assertion_type.includes("recover") &&
+          <SequencePart key={JSON.stringify(props.currentSequence)}
+            {...props} />}
+      </Row>
+      <VariablesPart {...props} />
+    </div>
   </StepWrapper>;
 };

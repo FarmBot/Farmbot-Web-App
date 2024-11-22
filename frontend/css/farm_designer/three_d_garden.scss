@@ -1,6 +1,36 @@
 @use "../variables" as *;
 @use "sass:color";
 
+.promo-loading-container {
+  display: grid;
+  align-content: center;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: -9999999;
+}
+
+.promo-loading-image {
+  height: 100vh;
+}
+
+.promo-loading-text {
+  font-family: 'Inknut Antiqua', sans-serif;
+  font-size: 2rem;
+  font-weight: bold;
+  color: $off_white;
+  text-shadow: 0 0 3.5rem #000, 0 0 1rem #000;
+  text-align: center;
+  margin: 0;
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  align-content: center;
+}
+
 .promo {
   &.three-d-garden {
     .garden-bed-3d-model {
@@ -97,6 +127,7 @@
         text-shadow: 0 0 10px black;
         line-height: 1.8rem;
         text-align: center;
+        font-size: 1rem;
       }
 
       .row {
@@ -383,7 +414,8 @@
   .beacon-info {
     width: 34rem;
     background: $white;
-    background: rgba(255, 255, 255, 0.8);
+    background: $translucent8_white;
+    color: $black;
     box-shadow: $translucent2 0px 0px 10px;
     border-radius: 0.5rem;
     padding: 1.5rem;
@@ -415,6 +447,7 @@
     .header {
       display: flex;
       justify-content: space-between;
+      font-size: 1rem;
       h2 {
         margin: 0;
         font-family: 'Inknut Antiqua';

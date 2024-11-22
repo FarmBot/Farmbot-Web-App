@@ -82,7 +82,7 @@ const AlertCardTemplate = (props: AlertCardTemplateProps) => {
         <p>
           {formatTime(moment.unix(alert.created_at), timeSettings, timeFormat)}
         </p>}
-      {alert.id && !props.noDismiss && <i className={"fa fa-times fb-icon-button"}
+      {alert.id && !props.noDismiss && <i className={"fa fa-times fb-icon-button light"}
         onClick={dismissAlert({ id: alert.id, findApiAlertById, dispatch })} />}
     </div>
     <div className="problem-alert-content">

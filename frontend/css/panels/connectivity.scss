@@ -178,9 +178,8 @@
 .port-info,
 .network-info,
 .fbos-info {
-  background: $white;
+  background: $translucent2_white;
   padding: 1rem;
-  box-shadow: 0px 0px 10px $light_gray;
   border-radius: 5px;
   .ip-address {
     word-break: break-all;
@@ -199,7 +198,7 @@
 .connectivity-diagram {
   margin: auto;
   width: 20rem;
-  background: $white;
+  fill: $gray;
 }
 
 .port-info,
@@ -245,7 +244,7 @@
         position: sticky;
         top: 0;
         z-index: 3;
-        background: $white;
+        background: $body_bg;
       }
       .saucer {
         margin: 0 auto;
@@ -260,7 +259,7 @@
 .fbos-metric-history-plot-border {
   width: 100%;
   border-radius: 5px;
-  box-shadow: 0 0 10px $light_gray;
+  background: $translucent9_white;
   max-height: 30rem;
   text {
     font-size: 0.6rem;

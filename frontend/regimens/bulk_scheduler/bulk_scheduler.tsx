@@ -51,7 +51,7 @@ export class BulkScheduler extends React.Component<BulkEditorProps, {}> {
     <div className={"grid no-gap"}>
       <div className={"row no-gap grid-exp-2"}>
         <label>{t("Time")}</label>
-        <i className="fa fa-clock-o fb-icon-button" onClick={() =>
+        <i className="fa fa-clock-o fb-icon-button light" onClick={() =>
           this.props.dispatch(setTimeOffset(timeToMs(
             moment().add(3, "minutes").format("HH:mm"))))} />
       </div>

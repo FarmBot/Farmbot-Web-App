@@ -15,7 +15,6 @@
 }
 
 .help-panel-header {
-  background: $lighter_gray;
   height: 4rem;
   padding: 0.5rem 1rem;
   display: grid;
@@ -23,9 +22,8 @@
   i {
     font-size: 2rem;
   }
-  i,
   img {
-    filter: brightness(0) opacity(0.75);
+    filter: invert(0.75);
   }
   a {
     font-weight: bold;

@@ -361,10 +361,10 @@ export class RawSelectPlants
   render() {
     const { dispatch } = this.props;
     return <DesignerPanel panelName={"plant-selection"}
-      panelColor={PanelColor.lightGray}>
+      panelColor={PanelColor.gray}>
       <DesignerPanelHeader
         panelName={"plant-selection"}
-        panelColor={PanelColor.lightGray}
+        panelColor={PanelColor.gray}
         blackText={true}
         title={t("{{length}} {{name}} selected",
           { length: this.selected.length, name: this.itemName })}

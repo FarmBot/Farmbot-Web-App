@@ -106,8 +106,8 @@ export function Connector(props: ConnectorProps): JSX.Element {
   const lineProps = customLineProps ? customLineProps : getLineProps(from, to);
   const hoverIndicatorColor =
     hoveredConnection === connectionData.connectionName
-      ? Color.darkGray
-      : Color.white;
+      ? Color.white
+      : Color.darkGray;
   return <g
     id={connectionData.connectionName + "-connector"}
     strokeLinecap="round">

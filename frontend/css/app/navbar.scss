@@ -11,7 +11,7 @@
 }
 
 nav {
-  margin: 3.4rem auto 0;
+  margin-top: 3rem;
   button {
     margin: 1.8rem 1.8rem 0 0;
     font-size: 1.3rem !important;
@@ -287,10 +287,12 @@ nav {
   .bp5-popover-content {
     position: relative;
     width: 22rem;
-    background: $dark_gray;
+    background: $translucent8;
+    backdrop-filter: blur(10px);
     padding: 0;
     font-size: 1.2rem;
     letter-spacing: 1.2px;
+    color: $gray;
     i {
       margin-right: 0.8rem;
     }
@@ -298,31 +300,21 @@ nav {
       display: inline-block;
       width: 100%;
       text-transform: uppercase;
-      color: $off_white;
       padding: 0.5rem 1rem;
     }
     img {
       margin-right: 0.8rem;
-      margin-left: -0.1rem;
-      margin-bottom: 0.25rem;
-      filter: invert(1);
+      filter: invert(0.75);
     }
     .app-version {
-      background: $dark_gray;
-      color: $white;
       padding: 0.5rem 0 0 1rem;
       border-bottom-left-radius: 4px;
       border-bottom-right-radius: 4px;
-      label {
-        color: $white;
-      }
       a {
         width: auto;
-        color: $white;
       }
       p {
         display: inline;
-        color: $gray;
         font-size: 1.2rem;
       }
     }

@@ -99,14 +99,14 @@ export class LogsPanel extends React.Component<LogsProps, Partial<LogsState>> {
   render() {
     const { dispatch, bot } = this.props;
     return <div className={"logs-tab grid"}>
-      <div className={"search-row"}>
+      <div className={"search-row row grid-exp-1"}>
         <SearchField nameKey={"logs"}
           placeholder={t("Search logs...")}
           searchTerm={this.state.searchTerm}
           onChange={searchTerm => this.setState({ searchTerm })} />
         <div className={"logs-settings-menu-button"}>
           <Popover position={Position.TOP_RIGHT}
-            target={<i className={"fa fa-gear fb-icon-button"} />}
+            target={<i className={"fa fa-gear fb-icon-button light"} />}
             content={<LogsSettingsMenu
               markdown={this.state.markdown}
               toggleMarkdown={this.toggleMarkdown}

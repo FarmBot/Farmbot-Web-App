@@ -119,7 +119,7 @@ export const SequencePreviewContent = (props: SequencePreviewContentProps) => {
               resources={props.resources}
               toggle={props.toggleSection("variablesCollapsed")} />}
           {viewSequenceCeleryScript &&
-            <pre>{stringifySequenceData(sequence.body)}</pre>}
+            <pre className="celeryscript">{stringifySequenceData(sequence.body)}</pre>}
           {!viewSequenceCeleryScript &&
             <Steps
               collapsed={props.stepsCollapsed}

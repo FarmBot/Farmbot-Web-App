@@ -34,7 +34,7 @@ export function LayerToggle(props: LayerToggleProps) {
           <Popover
             position={Position.BOTTOM_RIGHT}
             className={"caret-menu-button"}
-            target={<i className={"fa fa-caret-down fb-icon-button"}
+            target={<i className={"fa fa-caret-down fb-icon-button light"}
               title={t(title)} />}
             content={popover} />}
       </span>

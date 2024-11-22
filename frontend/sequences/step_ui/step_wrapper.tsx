@@ -90,7 +90,7 @@ export class StepWrapper extends React.Component<StepWrapperProps, StepState> {
         {this.props.warning}
       </StepHeader>
       {this.viewRaw
-        ? <pre>{stringifySequenceData(this.props.currentStep)}</pre>
+        ? <pre className="celeryscript">{stringifySequenceData(this.props.currentStep)}</pre>
         : <Row>
           <div className={[
             "step-content", this.props.className, executeSequence?.color,

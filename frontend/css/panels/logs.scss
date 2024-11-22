@@ -9,10 +9,9 @@
   tr {
     vertical-align: top;
     &:hover {
-      background: #eee;
+      background: $translucent2_white;
       .fa-trash {
         display: inline;
-        color: $darkest_red;
         margin-left: 6px;
         padding: 0.5rem;
         line-height: 2rem;
@@ -88,25 +87,12 @@
   .search-row {
     margin: 0 1rem;
   }
-  .thin-search-wrapper {
-    display: inline-block;
-    width: 94%;
-    background: $white;
-  }
-  .logs-settings-menu-button {
-    display: inline-block;
-    vertical-align: middle;
-    .fa-gear {
-      color: $dark_gray;
-    }
-  }
 }
 
 .logs-table {
   display: block;
   overflow: scroll;
   max-height: 42rem;
-  background: $white;
   .log-verbosity-saucer .saucer {
     text-align: center;
     margin-left: 6px;
@@ -119,21 +105,19 @@
   }
   thead {
     text-align: left;
+    background: $body_bg;
   }
   thead,
   th {
     position: sticky;
     top: 0;
     z-index: 999;
-    background: $white;
   }
   td {
-    color: $dark_gray !important;
     word-break: break-word;
     .markdown {
       p {
         display: block;
-        color: $dark_gray;
         font: inherit;
         font-size: inherit;
         text-overflow: inherit;

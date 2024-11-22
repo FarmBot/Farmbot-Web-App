@@ -15,7 +15,7 @@ export const curvePanelColor = (curve: TaggedCurve | undefined) => {
     case CurveType.water: return Color.curveBlue;
     case CurveType.spread: return Color.curveGreen;
     case CurveType.height: return Color.curvePurple;
-    default: return PanelColor.lightGray;
+    default: return PanelColor.gray;
   }
 };
 

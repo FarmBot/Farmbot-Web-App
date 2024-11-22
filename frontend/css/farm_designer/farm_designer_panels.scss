@@ -27,32 +27,11 @@
   }
 }
 
-.controls-panel,
-.photos-panel,
-.messages-panel,
-.help-panel {
-  .panel-content {
-    padding-top: 1rem;
-    max-height: calc(100vh - 3rem);
-    @media screen and (max-width: $mobile_max_width) {
-      padding-top: 6rem;
-      max-height: calc(100vh - 9rem);
-    }
-  }
-}
-
 .panel-content {
   padding: 1rem;
   a {
-    color: $black;
+    color: inherit;
     text-decoration: underline !important;
-  }
-}
-
-.controls-panel,
-.photos-panel {
-  .panel-content {
-    max-height: calc(100vh - 9rem);
   }
 }
 
@@ -61,15 +40,6 @@
     overflow-y: auto;
     overflow-x: hidden;
     padding: 1rem;
-  }
-}
-
-.controls-panel {
-  .panel-content {
-    padding-top: 0;
-    @media screen and (max-width: $mobile_max_width) {
-      padding-top: 4rem;
-    }
   }
 }
 
@@ -101,24 +71,6 @@
   }
 }
 
-@keyframes panel-show {
-  0% {
-    transform: translateX(-100%);
-  }
-  100% {
-    transform: translateX(0);
-  }
-}
-
-@keyframes panel-hide {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-120%);
-  }
-}
-
 .farm-designer-panels {
   bottom: 0;
   z-index: 1;
@@ -137,12 +89,12 @@
     overflow: hidden;
     box-shadow: 0 0 1rem $translucent;
     backdrop-filter: blur(10px);
-    background-color: $translucent8_white;
+    background-color: $translucent8;
+    color: $gray;
     div[class*="search-item"] {
       &:hover,
       &.hovered {
-        background: $translucent1;
-        transition: background 0.2s ease;
+        background: $translucent2_white;
       }
     }
     label {
@@ -167,7 +119,7 @@
     background-color: $magenta;
   }
   &.gray-panel {
-    background-color: $panel_gray;
+    background-color: $translucent3;
   }
   &.light-gray-panel{
     background-color: $panel_medium_light_gray;
@@ -239,14 +191,12 @@
 
 .panel-title {
   overflow: hidden;
-  color: $dark_gray;
   .back-arrow {
     float: left;
     text-align: center;
     font-size: 1.8rem;
     width: 50px;
     line-height: 50px;
-    color: $dark_gray;
   }
   .title {
     font-size: 1.8rem;
@@ -440,7 +390,7 @@ li {
   padding: 0 1rem;
   cursor: pointer;
   &:hover {
-    background: $translucent1;
+    background: $translucent2_white;
   }
   label {
     cursor: pointer;
@@ -451,7 +401,6 @@ li {
   .fa-caret-up,
   .fa-caret-down {
     font-size: 2rem;
-    color: $dark_gray;
   }
 }
 
@@ -570,7 +519,7 @@ li {
       .removal-method-criteria,
       .color-criteria,
       .point-source-criteria {
-        background: $translucent1;
+        background: $translucent1_white;
         border-radius: 0.5rem;
         padding: 1rem;
         display: grid;
@@ -608,7 +557,7 @@ li {
         align-items: center;
         padding: 0 1rem;
         gap: 1rem;
-        box-shadow: inset 0 0 3px $translucent3;
+        background: $translucent2_white;
         .fb-checkbox {
           display: contents;
         }
@@ -752,9 +701,6 @@ li {
         margin-right: 0.25rem;
         margin-left: 1rem;
       }
-      &:hover {
-        background: $light_gray;
-      }
     }
     .points-section {
       &.open {
@@ -766,9 +712,8 @@ li {
     }
     .no-points,
     .no-weeds {
-      margin-left: 2rem;
-      padding-top: 0.5rem;
-      padding-bottom: 0.5rem;
+      margin-left: 1rem;
+      padding-bottom: 1rem;
     }
     .fa-caret-down,
     .fa-caret-up {

@@ -81,7 +81,7 @@ const TickerLog = (props: TickerLogProps) => {
   const time = created_at
     ? formatTime(moment.unix(created_at), timeSettings, "MMM D")
     : "";
-  return <div className="status-ticker-wrapper">
+  return <div className="status-ticker-wrapper row grid-exp-2">
     <div className={`saucer ${type}`} />
     <label className={`status-ticker-message ${prefix ? "prefix" : ""}`}>
       <Markdown>

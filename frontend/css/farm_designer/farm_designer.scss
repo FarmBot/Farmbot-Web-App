@@ -92,7 +92,7 @@
   }
   .text-input-wrapper {
     align-items: center;
-    border-bottom: 1.5px solid $translucent1;
+    border-bottom: 1.5px solid $translucent3_white;
     display: flex;
     padding: 0 0.75rem;
     i {
@@ -127,6 +127,7 @@
       background: transparent;
       box-shadow: none !important;
       font-size: 1.4rem !important;
+      color: inherit;
       &:active,
       &:focus {
         background: transparent !important;
@@ -257,8 +258,7 @@
     height: 3.5rem;
     padding: 1rem;
     .regimen-search-item-name {
-      font-size: 1.2rem;
-      color: $dark_gray;
+      font-size: 1.4rem;
     }
     .regimen-color {
       .color-picker {
@@ -533,6 +533,7 @@
   right: -155px;
   z-index: 3;
   transition: all 0.4s ease;
+  color: $gray;
   &.active {
     transform: translateX(-175px);
   }
@@ -541,7 +542,7 @@
     flex-direction: row-reverse;
     gap: 1.25rem;
     .menu-content, .z-display {
-      background-color: $translucent8_white;
+      background-color: $translucent8;
       border-radius: 1rem;
       box-shadow: 0px 1px 5px rgba(0, 0, 0, .3);
       backdrop-filter: blur(5px);
@@ -772,12 +773,13 @@
   }
 }
 
-.farm-designer-panels.panel-closed ~ .three-d-garden .garden-bed-3d-model {
-  animation: panel-hide-shift-3d 0.3s ease forwards;
-}
-
-.farm-designer-panels.panel-open ~ .three-d-garden .garden-bed-3d-model {
-  animation: panel-show-shift-3d 0.3s ease forwards;
+@media screen and (min-width: $mobile_max_width) {
+  .farm-designer-panels.panel-closed ~ .three-d-garden .garden-bed-3d-model {
+    animation: panel-hide-shift-3d 0.3s ease forwards;
+  }
+  .farm-designer-panels.panel-open ~ .three-d-garden .garden-bed-3d-model {
+    animation: panel-show-shift-3d 0.3s ease forwards;
+  }
 }
 
 @keyframes panel-show-shift-3d {

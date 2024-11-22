@@ -171,7 +171,7 @@ const XAxisLabels = () =>
 /** plot background color and top and bottom lines */
 const PlotBackground = () =>
   <g id="plot_background">
-    <rect fill="white" x={0} y={0} width={"100%"} height={"100%"} />
+    <rect fill="none" x={0} y={0} width={"100%"} height={"100%"} />
     <line x1={0} y1={0} x2={MAX_X} y2={0} strokeWidth={0.25} stroke={"grey"} />
     <line x1={0} y1={MAX_Y} x2={MAX_X} y2={MAX_Y}
       strokeWidth={0.25} stroke={"grey"} />

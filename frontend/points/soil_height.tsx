@@ -72,7 +72,7 @@ export const EditSoilHeight = (props: EditSoilHeightProps) => {
       onCommit={e =>
         props.dispatch(setSoilHeight(parseFloat(e.currentTarget.value)))}
       value={parseFloat("" + sourceFbosConfig("soil_height").value)} />}
-    <button className={"fb-button blue"}
+    <button className={"fb-button gray"}
       title={t("use average soil height")}
       onClick={() => props.dispatch(setSoilHeight(props.averageZ))}>
       {t("use average z: {{ value }}", { value: props.averageZ })}

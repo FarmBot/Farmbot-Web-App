@@ -3,6 +3,10 @@
 
 input {
   border-radius: 3px;
+  &:disabled {
+    background: $translucent5_white !important;
+    cursor: not-allowed;
+  }
 }
 
 input[type=number]::-webkit-inner-spin-button,
@@ -19,18 +23,17 @@ input[type=time] {
 
 input:not([role="combobox"]) {
   font-size: 1.2rem;
-  color: $dark_gray;
   height: auto;
   width: 100%;
   border: 0;
   padding: 6px 8px;
-  box-shadow: 0px 0px 10px $light_gray;
+  background: $translucent9_white;
   &[type="checkbox"] {
     width: inherit;
   }
   &:focus {
     background-color: $white;
-    box-shadow: 0px 0px 10px $translucent;
+    box-shadow: 0px 0px 10px $translucent1_white;
   }
   &.bulk-day-selector {
     width: 10%;
@@ -116,7 +119,7 @@ input[type="radio"] {
 select {
   border: none;
   padding: 7px;
-  background: $white;
+  background: $translucent9_white;
   width: 100%;
 }
 
@@ -201,7 +204,7 @@ select {
 .fb-checkbox {
   input[type="checkbox"] {
     -webkit-appearance: none;
-    background: $white;
+    background: $translucent9_white;
     border-radius: 0;
     border-radius: 3px;
     height: 2rem;
@@ -217,7 +220,7 @@ select {
       left: 0;
       width: 100%;
       height: 100%;
-      background: $white;
+      background: $translucent9_white;
       opacity: 0.5;
     }
     &:checked:after {
@@ -271,7 +274,6 @@ select {
 
 textarea {
   border-radius: 0.5rem;
-  box-shadow: 0px 0px 10px $light_gray;
   width: 100%;
   border: 0;
   outline: none!important;

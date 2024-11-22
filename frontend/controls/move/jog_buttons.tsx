@@ -152,9 +152,6 @@ export class JogButtons
               directionAxisProps={directionAxesProps.z} />
           </td>
         </tr>
-        <tr>
-          <td />
-        </tr>
       </tbody>
     </table>;
   }
