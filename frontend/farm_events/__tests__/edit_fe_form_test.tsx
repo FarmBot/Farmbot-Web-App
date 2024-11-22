@@ -3,6 +3,11 @@ jest.mock("../../api/crud", () => ({
   overwrite: jest.fn(),
 }));
 
+let mockTzMismatch = false;
+jest.mock("../../devices/timezones/guess_timezone", () => ({
+  timezoneMismatch: () => mockTzMismatch,
+}));
+
 import React from "react";
 import {
   fakeFarmEvent, fakeSequence, fakeRegimen, fakePlant,
@@ -165,6 +170,20 @@ describe("<EditFEForm />", () => {
     p.executableOptions = [{ label: "", value: 0, heading: false }];
     const wrapper = mount(<EditFEForm {...p} />);
     expect(wrapper.html()).not.toContain("fa-exclamation-triangle");
+  });
+
+  it("doesn't show tz warning", () => {
+    mockTzMismatch = false;
+    const p = fakeProps();
+    const wrapper = mount(<EditFEForm {...p} />);
+    expect(wrapper.html()).not.toContain(Content.FARM_EVENT_TZ_WARNING);
+  });
+
+  it("shows tz warning", () => {
+    mockTzMismatch = true;
+    const p = fakeProps();
+    const wrapper = mount(<EditFEForm {...p} />);
+    expect(wrapper.html()).toContain(Content.FARM_EVENT_TZ_WARNING);
   });
 
   it("sets a subfield of state.fe", () => {
