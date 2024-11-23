@@ -682,15 +682,21 @@ export const Bot = (props: FarmbotModelProps) => {
         [
           threeSpace(x + 28, bedLengthOuter) + bedXOffset,
           threeSpace(y, bedWidthOuter) + bedYOffset,
-          zZero + zDir * z + 40,
+          zZero + zDir * z + 35,
         ],
         [0, 0, 100],
         [0, 0, -200],
-        [
-          threeSpace(x + 80, bedLengthOuter) + bedXOffset,
-          threeSpace(y + 100, bedWidthOuter) + bedYOffset,
-          zZero + zDir * z + 245,
-        ],
+        config.kitVersion == "v1.7"
+          ? [
+              threeSpace(x + 80, bedLengthOuter) + bedXOffset,
+              threeSpace(y + 100, bedWidthOuter) + bedYOffset,
+              zZero + zDir * z + 245,
+            ]
+          : [
+              threeSpace(x + 35, bedLengthOuter) + bedXOffset,
+              threeSpace(y, bedWidthOuter) + bedYOffset,
+              zZero + zDir * z + 245,
+            ],
       ), 20, 5, 8]}>
       <MeshPhongMaterial
         color={"white"}
@@ -699,13 +705,25 @@ export const Bot = (props: FarmbotModelProps) => {
       />
     </Tube>
     <VacuumPumpCoverComponent
-      rotation={[0, 0, Math.PI / 2]}
+      rotation={
+        config.kitVersion == "v1.7"
+          ? [0, 0, Math.PI / 2]
+          : [0, 0, -Math.PI / 2]
+      }
       scale={1000}
-      position={[
-        threeSpace(x + 12, bedLengthOuter) + bedXOffset,
-        threeSpace(y + 55, bedWidthOuter) + bedYOffset,
-        zZero + zDir * z + 490,
-      ]} />
+      position={
+        config.kitVersion == "v1.7"
+          ? [
+              threeSpace(x + 12, bedLengthOuter) + bedXOffset,
+              threeSpace(y + 55, bedWidthOuter) + bedYOffset,
+              zZero + zDir * z + 490,
+            ]
+          : [
+              threeSpace(x + 2, bedLengthOuter) + bedXOffset,
+              threeSpace(y + 110, bedWidthOuter) + bedYOffset,
+              zZero + columnLength + 25,
+            ]
+      } />
     <Group name={"camera"}
       rotation={[Math.PI, 0, 0]}
       position={[
