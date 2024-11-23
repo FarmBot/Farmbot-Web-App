@@ -840,15 +840,23 @@ export const Bot = (props: FarmbotModelProps) => {
           geometry={box.nodes.Electronics_Box_Lid.geometry}
           material={box.materials[ElectronicsBoxMaterial.lid]}
           scale={1000} />
-        <Group name={"buttons-and-leds"}
+        <Group name={"buttons"}
           position={[0, 0, 130]}>
-          {[
-            { position: -60, color: IColor.estop.on },
-            { position: -30, color: IColor.unlock.on },
-            { position: 0, color: IColor.blank.on },
-            { position: 30, color: IColor.blank.on },
-            { position: 60, color: IColor.blank.on },
-          ].map(button => {
+          {(
+            config.kitVersion === "v1.7"
+              ? [
+                  { position: -60, color: IColor.estop.on },
+                  { position: -30, color: IColor.unlock.on },
+                  { position: 0, color: IColor.blank.on },
+                  { position: 30, color: IColor.blank.on },
+                  { position: 60, color: IColor.blank.on },
+                ]
+              : [
+                  { position: -30, color: IColor.estop.on },
+                  { position: 0, color: IColor.unlock.on },
+                  { position: 30, color: IColor.blank.on },
+                ]
+          ).map(button => {
             const { position, color } = button;
             const btnPosition = position;
             return <Group key={btnPosition} name={"button-group"}>
@@ -871,6 +879,10 @@ export const Bot = (props: FarmbotModelProps) => {
                 rotation={[Math.PI / 2, 0, 0]} />
             </Group>;
           })}
+        </Group>
+        <Group name={"leds"}
+          position={[0, 0, 130]}
+          visible={config.kitVersion == "v1.7"}>
           {[
             { position: -45, color: IColor.sync.on },
             { position: -15, color: IColor.connect.on },
