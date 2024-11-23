@@ -579,18 +579,55 @@ export const Bot = (props: FarmbotModelProps) => {
       ]}
       rotation={[Math.PI / 2, 0, 0]} />
     <Group name={"ccVertical"}>
-      {range((zAxisLength - 350) / 200).map(i =>
-        <Mesh key={i}
+      {config.kitVersion === "v1.7" ? (
+        range((zAxisLength - 350) / 200).map((i) => (
+          <Mesh key={i}
+            position={[
+              threeSpace(x + 20, bedLengthOuter) + bedXOffset,
+              threeSpace(y + 55, bedWidthOuter) + bedYOffset,
+              zZero + zDir * z + i * 200 + 125,
+            ]}
+            rotation={[0, 0, Math.PI / 2]}
+            scale={1000}
+            geometry={ccVertical.nodes[PartName.ccVertical].geometry}>
+            <MeshPhongMaterial color={"silver"} />
+          </Mesh>
+        ))
+      ) : (
+        <Mesh
           position={[
             threeSpace(x + 20, bedLengthOuter) + bedXOffset,
-            threeSpace(y + 55, bedWidthOuter) + bedYOffset,
-            zZero + zDir * z + i * 200 + 125,
+            threeSpace(y + 35, bedWidthOuter) + bedYOffset,
+            zZero + zDir * z + 125,
           ]}
-          rotation={[0, 0, Math.PI / 2]}
-          scale={1000}
-          geometry={ccVertical.nodes[PartName.ccVertical].geometry}>
-          <MeshPhongMaterial color={"silver"} />
-        </Mesh>)}
+          rotation={[0, 0, 0]}
+          geometry={new THREE.ExtrudeGeometry(
+            (() => {
+              const shape = new THREE.Shape();
+              shape.moveTo(0, 0);
+              shape.lineTo(0, 20);
+              shape.lineTo(15, 20);
+              shape.lineTo(20, 1.5);
+              shape.lineTo(28.5, 1.5);
+              shape.lineTo(28.5, -61);
+              shape.lineTo(24, -63);
+              shape.lineTo(24, -61.5);
+              shape.lineTo(27, -60);
+              shape.lineTo(27, 0);
+              shape.lineTo(0, 0);
+              return shape;
+            })(),
+            {
+              depth: zAxisLength - 350,
+              bevelEnabled: false,
+            }
+          )}
+        >
+          <MeshPhongMaterial color={"white"}
+            opacity={0.8}
+            transparent={true} />
+        </Mesh>
+      )}
     </Group>
     <Extrude name={"zCC"} visible={cableCarriers}
       castShadow={true}
@@ -746,24 +783,60 @@ export const Bot = (props: FarmbotModelProps) => {
       <MeshPhongMaterial color={"white"} map={aluminumTexture} side={DoubleSide} />
     </Extrude>
     <Group name={"ccHorizontal"}>
-      {range((botSizeY - 10) / 300).map(i =>
-        <Mesh key={i}
+      {config.kitVersion === "v1.7" ? (
+        range((botSizeY - 10) / 300).map((i) => (
+          <Mesh key={i}
+            position={[
+              threeSpace(x - 28, bedLengthOuter) + bedXOffset,
+              threeSpace(50 + i * 300, bedWidthOuter) + bedYOffset,
+              columnLength + 60,
+            ]}
+            rotation={[Math.PI / 2, 0, 0]}
+            scale={1000}
+            geometry={ccHorizontal.nodes[PartName.ccHorizontal].geometry}>
+            <MeshPhongMaterial color={"silver"} />
+          </Mesh>
+        ))
+      ) : (
+        <Mesh
           position={[
             threeSpace(x - 28, bedLengthOuter) + bedXOffset,
-            threeSpace(50 + i * 300, bedWidthOuter) + bedYOffset,
+            -(threeSpace(20, bedWidthOuter) + bedYOffset),
             columnLength + 60,
           ]}
           rotation={[Math.PI / 2, 0, 0]}
-          scale={1000}
-          geometry={ccHorizontal.nodes[PartName.ccHorizontal].geometry}>
-          <MeshPhongMaterial color={"silver"} />
-        </Mesh>)}
+          geometry={new THREE.ExtrudeGeometry(
+            (() => {
+              const shape = new THREE.Shape();
+
+              shape.moveTo(0, 0);
+              shape.lineTo(0, 20);
+              shape.lineTo(-40, 20);
+              shape.lineTo(-41, 22.5);
+              shape.lineTo(-42.5, 22.5);
+              shape.lineTo(-41.5, 18.5);
+              shape.lineTo(-30, 18.5);
+              shape.lineTo(-25, 0);
+              shape.lineTo(0, 0);
+              return shape;
+            })(),
+            {
+              depth: botSizeY - 30,
+              bevelEnabled: false,
+            }
+          )}
+        >
+          <MeshPhongMaterial color={"white"}
+            opacity={0.8}
+            transparent={true} />
+        </Mesh>
+      )}
     </Group>
     <Extrude name={"yCC"} visible={cableCarriers}
       castShadow={true}
       args={[
         ccPath(botSizeY, y + 40, 70),
-        { steps: 1, depth: 60, bevelEnabled: false },
+        { steps: 1, depth: config.kitVersion === "v1.7" ? 60 : 40, bevelEnabled: false },
       ]}
       position={[
         threeSpace(x - 28, bedLengthOuter) + bedXOffset,
