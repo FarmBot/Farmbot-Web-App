@@ -68,13 +68,14 @@ export interface Config {
   zoomBeaconDebug: boolean;
   animate: boolean;
   distanceIndicator: string;
+  kitVersion: string;
 }
 
 export const INITIAL: Config = {
   sizePreset: "Genesis",
   bedType: "Standard",
   otherPreset: "Initial",
-  label: "FarmBot Genesis v1.7",
+  label: "FarmBot Genesis",
   botSizeX: 2720,
   botSizeY: 1230,
   botSizeZ: 500,
@@ -140,11 +141,12 @@ export const INITIAL: Config = {
   zoomBeaconDebug: false,
   animate: true,
   distanceIndicator: "",
+  kitVersion: "v1.7",
 };
 
 export const STRING_KEYS = [
   "sizePreset", "bedType", "otherPreset", "label", "plants", "tool", "scene",
-  "distanceIndicator",
+  "distanceIndicator", "kitVersion",
 ];
 
 export const NUMBER_KEYS = [
@@ -190,7 +192,7 @@ export const PRESETS: Record<string, Config> = {
     ...INITIAL,
     sizePreset: "Genesis",
     bedType: "Standard",
-    label: "FarmBot Genesis v1.7",
+    label: "FarmBot Genesis",
     botSizeX: 2720,
     botSizeY: 1230,
     botSizeZ: 500,
@@ -211,7 +213,7 @@ export const PRESETS: Record<string, Config> = {
     ...INITIAL,
     sizePreset: "Genesis XL",
     bedType: "Standard",
-    label: "FarmBot Genesis XL v1.7",
+    label: "FarmBot Genesis XL",
     botSizeX: 5720,
     botSizeY: 2730,
     botSizeZ: 500,
@@ -351,7 +353,7 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "threeAxes", "xyDimensions", "zDimension", "labelsOnHover", "promoInfo",
   "settingsBar", "zoomBeacons", "pan", "solar", "utilitiesPost", "packaging", "lab",
   "people", "scene", "lowDetail", "eventDebug", "cableDebug", "zoomBeaconDebug",
-  "animate", "distanceIndicator",
+  "animate", "distanceIndicator", "kitVersion",
 ];
 
 export const modifyConfig = (config: Config, update: Partial<Config>) => {

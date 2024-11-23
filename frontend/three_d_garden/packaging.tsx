@@ -14,7 +14,7 @@ export const Packaging = (props: PackagingProps) => {
   const isXL = config.sizePreset == "Genesis XL";
   const mainCartonLength = 1060;
   const mainCartonWidth = 420;
-  const mainCartonHeight = 220;
+  const mainCartonHeight = config.kitVersion == "v1.7" ? 220 : 245;
   const extrusionKitLength = 1540;
   const extrusionKitWidth = isXL ? 170 : 100;
   const extrusionKitHeight = 60;
@@ -36,7 +36,7 @@ export const Packaging = (props: PackagingProps) => {
     position={[
       threeSpace(config.bedLengthOuter - 800, config.bedLengthOuter),
       threeSpace(-700, config.bedWidthOuter),
-      zGround + 110,
+      zGround + (mainCartonHeight / 2),
     ]}>
     <Group name={"main-carton"}>
       <Box name={"main-carton-box"}
@@ -50,7 +50,7 @@ export const Packaging = (props: PackagingProps) => {
         color={"black"}
         position={[0, -mainCartonWidth / 2 - 1, 0]}
         rotation={[Math.PI / 2, 0, 0]}>
-        {config.label}
+        {`${config.label} ${config.kitVersion}`}
       </Text>
       {[-450, 0, 450].map(x =>
         <Box name={"main-carton-strap"} key={x}
@@ -71,6 +71,7 @@ export const Packaging = (props: PackagingProps) => {
         </Box>)}
     </Group>
     <Group name={"extrusion-kit"}
+      visible={config.kitVersion == "v1.7"}
       position={[0, 0, (220 + 60) / 2]}>
       <Box name={"extrusion-kit-box"}
         castShadow={true}
