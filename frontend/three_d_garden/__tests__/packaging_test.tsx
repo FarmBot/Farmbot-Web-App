@@ -10,7 +10,9 @@ describe("<Packaging />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<Packaging {...fakeProps()} />);
+    const p = fakeProps();
+    p.config.kitVersion = "v1.7";
+    const wrapper = mount(<Packaging {...p} />);
     expect(wrapper.html()).toContain("packaging");
     expect(wrapper.html()).toContain("100");
     expect(wrapper.html()).not.toContain("170");
@@ -19,6 +21,7 @@ describe("<Packaging />", () => {
   it("renders: XL", () => {
     const p = fakeProps();
     p.config.sizePreset = "Genesis XL";
+    p.config.kitVersion = "v1.8";
     const wrapper = mount(<Packaging {...p} />);
     expect(wrapper.html()).toContain("170");
     expect(wrapper.html()).not.toContain("100");
