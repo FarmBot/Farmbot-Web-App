@@ -2037,7 +2037,8 @@ CREATE TABLE public.web_app_configs (
     default_plant_depth integer DEFAULT 5,
     show_missed_step_plot boolean DEFAULT false,
     enable_3d_electronics_box_top boolean DEFAULT true,
-    three_d_garden boolean DEFAULT false
+    three_d_garden boolean DEFAULT false,
+    dark_mode boolean DEFAULT false
 );
 
 
@@ -3989,6 +3990,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20240202171922'),
 ('20240207234421'),
 ('20240405171128'),
-('20240625195838');
+('20240625195838'),
+('20241203194030');
 
 

@@ -137,6 +137,20 @@ describe("<App />: Loading", () => {
     mount(<App {...p} />);
     expect(mockNavigate).not.toHaveBeenCalled();
   });
+
+  it("enables the dark theme", () => {
+    const p = fakeProps();
+    p.getConfigValue = () => true;
+    const wrapper = mount(<App {...p} />);
+    expect(wrapper.find(".app").hasClass("dark")).toBeTruthy();
+  });
+
+  it("enables the light theme", () => {
+    const p = fakeProps();
+    p.getConfigValue = () => false;
+    const wrapper = mount(<App {...p} />);
+    expect(wrapper.find(".app").hasClass("light")).toBeTruthy();
+  });
 });
 
 describe("<App />: NavBar", () => {

@@ -177,7 +177,8 @@ export class RawApp extends React.Component<AppProps, {}> {
     const syncLoaded = this.isLoaded;
     const { bot, dispatch, getConfigValue } = this.props;
     const landingPage = getConfigValue(StringSetting.landing_page);
-    return <div className="app">
+    const themeClass = getConfigValue(BooleanSetting.dark_mode) ? "dark" : "light";
+    return <div className={["app", themeClass].join(" ")}>
       {(Path.equals("") || Path.equals(Path.app())) && isString(landingPage) &&
         <Navigate to={landingPagePath(landingPage)} />}
       {!syncLoaded && <LoadingPlant animate={this.props.animate} />}

@@ -850,6 +850,9 @@ export namespace Content {
     trim(`Disallow account data changes. This does
     not prevent Farmwares or FarmBot OS from changing settings.`);
 
+  export const DARK_MODE =
+    trim(`Enable a dark interface theme.`);
+
   // Sequence Settings
   export const CONFIRM_STEP_DELETION =
     trim(`Show a confirmation dialog when deleting a sequence step.`);
@@ -2265,6 +2268,7 @@ export enum DeviceSetting {
   discardUnsavedChanges = `Discard Unsaved Changes`,
   confirmEmergencyUnlock = `Confirm emergency unlock`,
   userInterfaceReadOnlyMode = `User Interface Read Only Mode`,
+  darkMode = `Dark Mode`,
 
   // Photos: Filters
   alwaysHighlightCurrentPhotoInMap = `always highlight current photo in map`,

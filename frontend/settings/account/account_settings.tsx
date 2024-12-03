@@ -179,6 +179,11 @@ const APP_SETTINGS = (): SettingDescriptionProps[] => ([
     description: Content.USER_INTERFACE_READ_ONLY_MODE,
     setting: BooleanSetting.user_interface_read_only_mode,
   },
+  {
+    title: DeviceSetting.darkMode,
+    description: Content.DARK_MODE,
+    setting: BooleanSetting.dark_mode,
+  },
 ]);
 
 export interface ActivityBeepSettingProps {
