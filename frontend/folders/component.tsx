@@ -178,7 +178,7 @@ export const SequenceButtonCluster =
     const navigate = useNavigate();
     return <div className="folder-button-cluster">
       <i
-        className={"fa fa-trash cluster-icon"}
+        className={"fa fa-trash fb-icon-button invert"}
         title={t("delete sequence")}
         onClick={deleteSequence({
           navigate,
@@ -187,10 +187,10 @@ export const SequenceButtonCluster =
           dispatch,
         })} />
       <i
-        className={"fa fa-copy cluster-icon"}
+        className={"fa fa-copy fb-icon-button invert"}
         title={t("copy sequence")}
         onClick={() => dispatch(copySequence(navigate, sequence))} />
-      <i className={"fa fa-arrows-v cluster-icon"}
+      <i className={"fa fa-arrows-v fb-icon-button invert"}
         title={t("move sequence")}
         onMouseDown={() => props.startSequenceMove(sequence.uuid)}
         onMouseUp={() => props.toggleSequenceMove(sequence.uuid)} />
@@ -219,14 +219,14 @@ export const FolderButtonCluster =
   ({ node, close }: FolderButtonClusterProps) => {
     const navigate = useNavigate();
     return <div className={"folder-button-cluster"}>
-      <i className={"fa fa-trash cluster-icon"}
+      <i className={"fa fa-trash fb-icon-button invert"}
         title={t("delete folder")}
         onClick={() => { deleteFolder(node.id); }} />
-      <i className={"fa fa-pencil cluster-icon"}
+      <i className={"fa fa-pencil fb-icon-button invert"}
         title={t("edit folder")}
         onClick={() => { close(); toggleFolderEditState(node.id); }} />
       {node.kind !== "terminal" &&
-        <div className={"stack-wrapper cluster-icon"}
+        <div className={"stack-wrapper fb-icon-button invert"}
           title={t("Create subfolder")}
           onClick={() => {
             close();
@@ -234,7 +234,7 @@ export const FolderButtonCluster =
           }}>
           <PlusStack icon={"fa-folder"} />
         </div>}
-      <div className={"stack-wrapper cluster-icon"}
+      <div className={"stack-wrapper fb-icon-button invert"}
         title={t("add new sequence")}
         onClick={() => {
           close();

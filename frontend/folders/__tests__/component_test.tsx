@@ -436,14 +436,14 @@ describe("<FolderButtonCluster />", () => {
 
   it("renders", () => {
     const wrapper = mount(<FolderButtonCluster {...fakeProps()} />);
-    expect(wrapper.find(".cluster-icon").length).toEqual(4);
+    expect(wrapper.find(".fb-icon-button").length).toEqual(4);
   });
 
   it("deletes folder", () => {
     const p = fakeProps();
     p.node.id = 1;
     const wrapper = mount(<FolderButtonCluster {...p} />);
-    wrapper.find(".cluster-icon").at(0).simulate("click");
+    wrapper.find(".fb-icon-button").at(0).simulate("click");
     expect(deleteFolder).toHaveBeenCalledWith(1);
   });
 
@@ -451,7 +451,7 @@ describe("<FolderButtonCluster />", () => {
     const p = fakeProps();
     p.node.id = 1;
     const wrapper = mount(<FolderButtonCluster {...p} />);
-    wrapper.find(".cluster-icon").at(1).simulate("click");
+    wrapper.find(".fb-icon-button").at(1).simulate("click");
     expect(p.close).toHaveBeenCalled();
     expect(toggleFolderEditState).toHaveBeenCalledWith(1);
   });
@@ -460,7 +460,7 @@ describe("<FolderButtonCluster />", () => {
     const p = fakeProps();
     p.node.id = 1;
     const wrapper = mount(<FolderButtonCluster {...p} />);
-    wrapper.find(".cluster-icon").at(2).simulate("click");
+    wrapper.find(".fb-icon-button").at(2).simulate("click");
     expect(p.close).toHaveBeenCalled();
     expect(createFolder).toHaveBeenCalledWith({
       parent_id: p.node.id,
@@ -472,7 +472,7 @@ describe("<FolderButtonCluster />", () => {
     const p = fakeProps();
     p.node.id = 1;
     const wrapper = mount(<FolderButtonCluster {...p} />);
-    wrapper.find(".cluster-icon").at(3).simulate("click");
+    wrapper.find(".fb-icon-button").at(3).simulate("click");
     expect(p.close).toHaveBeenCalled();
     expect(addNewSequenceToFolder).toHaveBeenCalledWith(expect.any(Function), {
       id: 1,
@@ -615,7 +615,7 @@ describe("<FolderNameEditor />", () => {
     const wrapper = mount(<FolderNameEditor {...p} />);
     wrapper.find(".fa-ellipsis-v").simulate("click");
     expect(wrapper.find(".fa-ellipsis-v").hasClass("open")).toBeTruthy();
-    wrapper.find(".cluster-icon").last().simulate("click");
+    wrapper.find(".fb-icon-button").last().simulate("click");
     expect(wrapper.find(".fa-ellipsis-v").hasClass("open")).toBeFalsy();
   });
 });

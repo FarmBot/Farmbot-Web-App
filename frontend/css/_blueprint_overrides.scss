@@ -5,8 +5,9 @@
 .bp5-popover-content {
   z-index: 999;
   padding: 1rem;
-  color: $medium_gray!important;
-  background: $off_white!important;
+  color: var(--text-color) !important;
+  background: var(--body-bg) !important;
+  box-shadow: var(--box-shadow) !important;
 }
 
 .bp5-popover {
@@ -44,18 +45,9 @@
   }
 }
 
-.bp5-popover.help,
-.bp5-popover.sequence-item-description {
-  .bp5-popover-arrow {
-    display: none !important;
-  }
-  .bp5-popover-arrow-fill {
-    fill: $dark_gray;
-  }
+.bp5-popover.help {
   .bp5-popover-content {
     width: 32rem;
-    color: $off_white!important;
-    background: $dark_gray!important;
   }
 }
 

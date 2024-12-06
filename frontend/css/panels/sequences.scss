@@ -697,10 +697,6 @@
       cursor: pointer;
     }
   }
-  i {
-    float: right;
-    margin-top: 0.75rem;
-  }
 }
 
 .folders-panel {
@@ -732,26 +728,20 @@
       font-size: 1.5rem;
       line-height: 1.5rem;
       margin-left: 0.75rem;
-      filter: drop-shadow(0 0 0.2rem  $dark_green);
+      filter: drop-shadow(0 0 0.25rem var(--body-bg));
       text-align: center;
     }
   }
   .folder-button-cluster {
     display: flex;
-    .cluster-icon {
-      padding: 0.5rem;
-      border-radius: 3px;
-      line-height: 2rem !important;
-      color: $off_white;
-      &:hover {
-        background: $medium_gray;
+    .fb-icon-button {
+      .fa-stack-1x {
+        line-height: unset;
+        margin-top: -1.25rem;
       }
       .fa-stack-2x {
         width: unset;
         line-height: unset;
-      }
-      .fa-stack-1x {
-        width: unset;
       }
     }
   }
@@ -871,7 +861,7 @@
         display: block;
       }
     }
-    i {
+    i:not(.fb-icon-button) {
       margin: 0;
       line-height: 3.5rem;
       width: 3rem;
@@ -995,17 +985,15 @@
     }
     p {
       line-height: 1.75rem;
-      color: $off_white;
     }
   }
   label {
     display: block;
-    color: $off_white;
   }
   img {
     max-width: 100%;
     border-radius: 5px;
-    border: 2px solid $medium_gray;
+    border: 2px solid var(--border-color);
   }
 }
 
@@ -1016,24 +1004,11 @@
   }
 }
 
-.folder-settings-icon,
-.sequence-item-description,
-.sequence-item-action-menu {
-  .bp5-popover-arrow-fill {
-    fill: $dark_gray;
-  }
-  .bp5-popover-content {
-    background: $dark_gray;
-  }
-}
-
 .sequence-item-description {
   .bp5-popover-content {
     max-height: 20rem;
     overflow-y: auto;
     width: 32rem;
-    color: $off_white !important;
-    background: $dark_gray;
   }
 }
 

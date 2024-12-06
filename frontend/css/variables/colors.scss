@@ -27,7 +27,7 @@ $medium_gray: #666;
 $placeholder_gray: #999;
 $dark_gray: #434343;
 $darker_gray: #182026;
-$dark-bg: #031104;
+$dark_bg: hsl(135 30% 7% / 1);
 $black: #000;
 $off_black: #222;
 $light_blue: #cdf;
@@ -82,13 +82,15 @@ body:has(.app.light) {
   --secondary-bg: #{$translucent1};
   --text-color: #{$dark_gray};
   --border-color: #{$translucent2};
+  --box-shadow: #{0 0 5px 2px $translucent1};
 }
 
 body:has(.app.dark) {
-  --body-bg: #{$dark-bg};
+  --body-bg: #{$dark_bg};
   --secondary-bg: #{$translucent1_white};
   --text-color: #{$gray};
   --border-color: #{$translucent3_white};
+  --box-shadow: #{0 0 5px 2px $translucent1_white};
 }
 
 .dark-gray {

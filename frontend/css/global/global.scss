@@ -2,9 +2,14 @@
 @use "sass:color";
 
 body {
+  background: $dark_bg;
+  margin: 0;
+}
+
+.app,
+.bp5-portal {
   background: var(--body-bg);
   color: var(--text-color);
-  margin: 0;
 }
 
 .initial-loading-text {
