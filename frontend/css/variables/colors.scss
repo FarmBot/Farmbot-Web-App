@@ -78,11 +78,11 @@ $panel_red: rgb(255, 79, 55, $alpha90);
 $panel_light_red: rgb(255, 247, 246, $alpha90);
 
 body:has(.app.light) {
-  --body-bg: #{$off-white};
+  --body-bg: #{$off_white};
   --secondary-bg: #{$translucent1};
   --text-color: #{$dark_gray};
   --border-color: #{$translucent2};
-  --box-shadow: #{0 0 5px 2px $translucent1};
+  --box-shadow: 0 0 5px 2px #{$translucent1};
 }
 
 body:has(.app.dark) {
@@ -90,7 +90,7 @@ body:has(.app.dark) {
   --secondary-bg: #{$translucent1_white};
   --text-color: #{$gray};
   --border-color: #{$translucent3_white};
-  --box-shadow: #{0 0 5px 2px $translucent1_white};
+  --box-shadow: 0 0 5px 2px #{$translucent1_white};
 }
 
 .dark-gray {
