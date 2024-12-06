@@ -1,9 +1,11 @@
-import * as React from "react";
+import React from "react";
 import { SensorFormProps } from "./interfaces";
 import { sortResourcesById } from "../util";
 import { Row } from "../ui";
 import { DeleteButton } from "../ui/delete_button";
-import { NameInputBox, PinDropdown, ModeDropdown } from "../controls/pin_form_fields";
+import {
+  NameInputBox, PinDropdown, ModeDropdown,
+} from "../controls/pin_form_fields";
 
 export const SensorForm = (props: SensorFormProps) =>
   <div className="grid">

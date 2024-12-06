@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { MapBackground } from "../map_background";
 import { shallow } from "enzyme";
 import { MapBackgroundProps } from "../../interfaces";

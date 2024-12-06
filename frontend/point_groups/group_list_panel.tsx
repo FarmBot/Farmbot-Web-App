@@ -7,7 +7,7 @@ import {
   DesignerPanel, DesignerPanelTop, DesignerPanelContent,
 } from "../farm_designer/designer_panel";
 import { TaggedPointGroup, TaggedPoint } from "farmbot";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { GroupInventoryItem } from "./group_inventory_item";
 import {
   EmptyStateWrapper, EmptyStateGraphic,
@@ -38,7 +38,9 @@ export const RawGroupListPanel = (props: GroupListPanelProps) => {
   const [searchTerm, setSearchTerm] = React.useState("");
 
   const navigate = useNavigate();
-  const navigateById = (id: number | undefined) => () => navigate(Path.groups(id));
+  const navigateById = (id: number | undefined) => () => {
+    navigate(Path.groups(id));
+  };
 
   return <DesignerPanel panelName={"groups"} panel={Panel.Groups}>
     <DesignerPanelTop

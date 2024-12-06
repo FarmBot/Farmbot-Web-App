@@ -2,7 +2,7 @@ import React from "react";
 import { snapshotGarden, newSavedGarden, copySavedGarden } from "./actions";
 import { TaggedPlantTemplate, TaggedSavedGarden } from "farmbot";
 import { t } from "../i18next_wrapper";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 export interface GardenSnapshotProps {
   currentSavedGarden: TaggedSavedGarden | undefined;

@@ -5,7 +5,7 @@ export interface ExpandableHeaderProps {
   onClick(): void;
   title: string;
   expanded: boolean;
-  children?: React.ReactChild;
+  children?: React.ReactNode;
 }
 
 export const ExpandableHeader = (props: ExpandableHeaderProps) => {

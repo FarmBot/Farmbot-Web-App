@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { ActivePlantDragHelperProps } from "../interfaces";
 import { DragHelpers } from "./drag_helpers";
 

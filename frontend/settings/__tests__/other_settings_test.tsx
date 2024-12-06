@@ -6,7 +6,7 @@ jest.mock("../../devices/actions", () => ({
   updateConfig: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import {
   LogLevelSetting, LogLevelSettingProps, LogEnableSettingProps,

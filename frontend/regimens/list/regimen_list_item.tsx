@@ -4,7 +4,7 @@ import { urlFriendly } from "../../util";
 import { selectRegimen } from "../actions";
 import { Content } from "../../constants";
 import { t } from "../../i18next_wrapper";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { Path } from "../../internal_urls";
 import { edit } from "../../api/crud";
 import { ColorPicker } from "../../ui";

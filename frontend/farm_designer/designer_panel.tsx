@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { last, trim } from "lodash";
 import { Link } from "../link";
 import { Panel, TAB_COLOR, PanelColor } from "./panel_header";
@@ -38,10 +38,10 @@ interface DesignerPanelHeaderProps {
   panel?: Panel;
   panelColor?: PanelColor;
   title?: string;
-  titleElement?: JSX.Element;
+  titleElement?: React.ReactNode;
   blackText?: boolean;
   description?: string;
-  descriptionElement?: JSX.Element;
+  descriptionElement?: React.ReactNode;
   backTo?: string;
   onBack?: () => void;
   specialStatus?: SpecialStatus;

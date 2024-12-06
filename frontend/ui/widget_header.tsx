@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { t } from "../i18next_wrapper";
 import { ErrorBoundary } from "../error_boundary";
 import { Help } from "./help";

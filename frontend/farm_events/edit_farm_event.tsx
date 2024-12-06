@@ -2,7 +2,7 @@ import React from "react";
 import { AddEditFarmEventProps } from "../farm_designer/interfaces";
 import { connect } from "react-redux";
 import { mapStateToPropsAddEdit } from "./map_state_to_props_add_edit";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { EditFEForm } from "./edit_fe_form";
 import { t } from "../i18next_wrapper";
 import { Panel } from "../farm_designer/panel_header";

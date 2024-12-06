@@ -417,10 +417,7 @@ export const maybeHighlight = (settingName: DeviceSetting) => {
 
 export interface HighlightProps {
   settingName: DeviceSetting;
-  children: React.ReactChild
-  | React.ReactChild[]
-  | (React.ReactChild | false)[]
-  | (React.ReactChild | React.ReactChild[])[];
+  children: React.ReactNode;
   className?: string;
   searchTerm?: string;
   hidden?: boolean;
@@ -509,8 +506,10 @@ export class Highlight extends React.Component<HighlightProps, HighlightState> {
       hidden={this.searchTerm ? !this.searchMatch : this.hidden}>
       {this.props.settingName &&
         <i className={`fa fa-anchor ${this.props.className} ${hoverClass}`}
-          onClick={() => this.navigate(linkToSetting(this.props.settingName,
-            this.props.pathPrefix))} />}
+          onClick={() => {
+            this.navigate(
+              linkToSetting(this.props.settingName, this.props.pathPrefix));
+          }} />}
       {this.props.children}
     </div>;
   }

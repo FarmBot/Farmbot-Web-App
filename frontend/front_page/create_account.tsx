@@ -21,7 +21,7 @@ type KeySetter = (keyName: RegKeyName, val: string) => void;
 type KeyGetter = (keyName: RegKeyName) => string | undefined;
 
 export interface CreateAccountProps {
-  children?: React.ReactChild
+  children?: React.ReactNode
   submitRegistration(e: React.FormEvent<{}>): void;
   sent: boolean;
   get: KeyGetter;

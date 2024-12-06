@@ -51,7 +51,7 @@ export interface SettingDescriptionProps {
   description: string;
   invert?: boolean;
   callback?: () => void;
-  children?: React.ReactChild;
+  children?: React.ReactNode;
   defaultOn?: boolean;
   disabled?: boolean;
   confirm?: string;

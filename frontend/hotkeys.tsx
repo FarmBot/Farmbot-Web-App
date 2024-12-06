@@ -9,7 +9,7 @@ import { store } from "./redux/store";
 import { save } from "./api/crud";
 import { Path } from "./internal_urls";
 import { Actions } from "./constants";
-import { useNavigate } from "react-router-dom";
+import { NavigateFunction, useNavigate } from "react-router";
 
 type HotkeyConfigs = Record<HotKey, HotkeyConfig>;
 
@@ -65,7 +65,7 @@ const HOTKEY_BASE_MAP = (): HotkeyConfigs => ({
 });
 
 export const hotkeysWithActions = (
-  navigate: (path: string) => void,
+  navigate: NavigateFunction,
   dispatch: Function,
   slug: string,
 ) => {
@@ -92,19 +92,19 @@ export const hotkeysWithActions = (
     },
     [HotKey.navigateRight]: {
       ...hotkeysBase[HotKey.navigateRight],
-      onKeyDown: () => navigate(getPanelPath(panelPlus)),
+      onKeyDown: () => { navigate(getPanelPath(panelPlus)); },
     },
     [HotKey.navigateLeft]: {
       ...hotkeysBase[HotKey.navigateLeft],
-      onKeyDown: () => navigate(getPanelPath(panelMinus)),
+      onKeyDown: () => { navigate(getPanelPath(panelMinus)); },
     },
     [HotKey.addPlant]: {
       ...hotkeysBase[HotKey.addPlant],
-      onKeyDown: () => navigate(Path.cropSearch()),
+      onKeyDown: () => { navigate(Path.cropSearch()); },
     },
     [HotKey.addEvent]: {
       ...hotkeysBase[HotKey.addEvent],
-      onKeyDown: () => navigate(Path.farmEvents("add")),
+      onKeyDown: () => { navigate(Path.farmEvents("add")); },
     },
     [HotKey.backToPlantOverview]: {
       ...hotkeysBase[HotKey.backToPlantOverview],

@@ -28,7 +28,7 @@ import {
 import { ToolTips } from "../constants";
 import { sendRPC } from "../devices/actions";
 import { NavigationContext } from "../routes_helpers";
-import { Navigate } from "react-router-dom";
+import { Navigate } from "react-router";
 
 export const isActive = (toolSlots: TaggedToolSlotPointer[]) =>
   (toolId: number | undefined) =>

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { allAreHttps, NonsecureContentWarning } from "../nonsecure_content_warning";
 import { shallow } from "enzyme";
 

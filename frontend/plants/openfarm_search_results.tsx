@@ -34,7 +34,7 @@ export interface SearchResultProps {
 
 export class OpenFarmResults extends React.Component<SearchResultProps, {}> {
 
-  get text(): JSX.Element {
+  get text(): React.ReactNode {
     return <p>{`${t(Content.CROP_NOT_FOUND_INTRO)} `}
       <a href={ExternalUrl.OpenFarm.newCrop} target="_blank" rel={"noreferrer"}>
         {t(Content.CROP_NOT_FOUND_LINK)}

@@ -9,7 +9,7 @@ import { SaveBtn } from "../ui";
 import { SpecialStatus } from "farmbot";
 import { initSave, destroy, init, save } from "../api/crud";
 import { Panel } from "../farm_designer/panel_header";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { selectAllTools } from "../resources/selectors";
 import { betterCompact } from "../util";
 import {

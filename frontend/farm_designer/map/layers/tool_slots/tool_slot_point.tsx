@@ -13,7 +13,7 @@ import { reduceToolName } from "../../tool_graphics/all_tools";
 import { Path } from "../../../../internal_urls";
 import { Actions } from "../../../../constants";
 import { Circle } from "../plants/circle";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 export interface TSPProps {
   slot: SlotWithTool;

@@ -10,7 +10,7 @@ import { PlantStageAndAge, plantAgeAndStage } from "./map_state_to_props";
 import { getMode } from "../farm_designer/map/util";
 import { isUndefined, round } from "lodash";
 import { FilePath, Path } from "../internal_urls";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 export interface PlantInventoryItemProps {
   plant: TaggedPlant;

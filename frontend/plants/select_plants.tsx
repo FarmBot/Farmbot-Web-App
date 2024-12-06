@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { connect } from "react-redux";
 import { Everything, TimeSettings } from "../interfaces";
 import { PlantInventoryItem } from "./plant_inventory_item";
@@ -298,7 +298,7 @@ export class RawSelectPlants
             {t("save")}
           </button>}
         {(this.selectionPointType == "Plant" ||
-        this.selectionPointType == "Weed") &&
+          this.selectionPointType == "Weed") &&
           <PlantStatusBulkUpdate {...bulkUpdateProps}
             pointerType={this.selectionPointType} />}
         {["Plant"].includes(this.selectionPointType) &&
@@ -475,7 +475,7 @@ export const SelectModeLink = () => {
     <button
       className="fb-button gray"
       title={t("open point select panel")}
-      onClick={() => navigate(Path.plants("select"))}>
+      onClick={() => { navigate(Path.plants("select")); }}>
       {t("select")}
     </button>
   </div>;

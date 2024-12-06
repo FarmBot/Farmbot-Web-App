@@ -11,7 +11,7 @@ import { t } from "../../i18next_wrapper";
 import { API } from "../../api";
 import { highlight, linkToSetting } from "../maybe_highlight";
 import { isJobDone } from "../../devices/jobs";
-import { useNavigate } from "react-router-dom";
+import { NavigateFunction, useNavigate } from "react-router";
 
 /**
  * FBOS versions older than this can't connect to the available OTA system
@@ -131,7 +131,7 @@ export const OsUpdateButton = (props: OsUpdateButtonProps) => {
   </button>;
 };
 
-const onTooOld = (dispatch: Function, navigate: (url: string) => void) => () => {
+const onTooOld = (dispatch: Function, navigate: NavigateFunction) => () => {
   highlight.highlighted = false;
   dispatch(bulkToggleControlPanel(false));
   dispatch(toggleControlPanel("power_and_reset"));

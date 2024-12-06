@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { SequenceSelectBox, SequenceSelectBoxProps } from "../sequence_select_box";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";

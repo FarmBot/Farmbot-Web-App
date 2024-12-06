@@ -5,7 +5,7 @@ import { ToastProps, ToastsProps, ToastState } from "./interfaces";
 import { store } from "../redux/store";
 import { Markdown } from "../ui";
 import { Path } from "../internal_urls";
-import { Navigate } from "react-router-dom";
+import { Navigate } from "react-router";
 
 export class Toast extends React.Component<ToastProps, ToastState> {
   state: ToastState = {

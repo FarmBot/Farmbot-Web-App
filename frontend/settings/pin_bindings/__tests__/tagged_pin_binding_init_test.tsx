@@ -1,6 +1,6 @@
 jest.mock("../../../api/crud", () => ({ initSave: jest.fn() }));
 
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import {
   StockPinBindingsButton, StockPinBindingsButtonProps,

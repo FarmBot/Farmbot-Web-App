@@ -6,7 +6,7 @@ import { TRUTH_TABLE } from "./truth_table";
 import { t } from "../../i18next_wrapper";
 import { SyncStatus } from "farmbot";
 import { syncText } from "../../nav/sync_text";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { linkToSetting } from "../../settings/maybe_highlight";
 
 export type ConnectionName =
@@ -61,7 +61,7 @@ export function Diagnosis(props: DiagnosisProps) {
       <p className="blinking">
         {t("Always")}&nbsp;
         <a className="blinking"
-          onClick={() => navigate(linkToSetting(DeviceSetting.farmbotOS))}>
+          onClick={() => { navigate(linkToSetting(DeviceSetting.farmbotOS)); }}>
           <u>{t("upgrade FarmBot OS")}</u>
         </a>
         &nbsp;{t("before troubleshooting.")}

@@ -29,14 +29,18 @@ jest.mock("@react-spring/three", () => ({
     (props.to as TransitionFn)?.(next);
     return { ...props, ...props.from };
   },
-  animated: {
-    mesh: ({ children }: { children: ReactNode }) =>
-      <div className={"animated"}>{children}</div>,
-    meshPhongMaterial: () => <div />,
-    group: ({ children }: { children: ReactNode }) =>
-      <div className={"group"}>{children}</div>,
-    pointLight: () => <div />,
-  }
+  // mocks for `<animated.mesh...` and similar:
+  //   animated: {
+  //     mesh: ({ children }: { children: ReactNode }) =>
+  //       <div className={"animated"}>{children}</div>,
+  //     meshPhongMaterial: () => <div />,
+  //     group: ({ children }: { children: ReactNode }) =>
+  //       <div className={"group"}>{children}</div>,
+  //     pointLight: () => <div />,
+  //   },
+  // mocks for `const AnimatedMesh = animated(Mesh); ... <AnimatedMesh...`:
+  animated: () => ({ children }: { children?: ReactNode }) =>
+    <div className={"animated"}>{children}</div>,
 }));
 
 jest.mock("@react-three/drei", () => {

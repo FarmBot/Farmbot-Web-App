@@ -6,7 +6,7 @@ import { Color } from "../../../../ui";
 import { mapPointClickAction, selectPoint, setHoveredPlant } from "../../actions";
 import { Circle } from "../plants/circle";
 import { FilePath, Path } from "../../../../internal_urls";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 // eslint-disable-next-line complexity
 export const GardenWeed = (props: GardenWeedProps) => {

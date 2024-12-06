@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { fakeWebcamFeed } from "../../../__test_support__/fake_state/resources";
 import { mount } from "enzyme";
 import { Show, IndexIndicator } from "../show";

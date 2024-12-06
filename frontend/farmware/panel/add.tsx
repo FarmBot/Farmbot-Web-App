@@ -7,7 +7,7 @@ import { Panel } from "../../farm_designer/panel_header";
 import { Everything } from "../../interfaces";
 import { t } from "../../i18next_wrapper";
 import { initSave } from "../../api/crud";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { error } from "../../toast/toast";
 import { Path } from "../../internal_urls";
 
@@ -24,7 +24,7 @@ export const mapStateToProps = (props: Everything): DesignerFarmwareAddProps => 
 export const RawDesignerFarmwareAdd = (props: DesignerFarmwareAddProps) => {
   const [packageUrl, setPackageUrl] = React.useState("");
   const navigate = useNavigate();
-  const clearUrl = () => navigate(Path.farmware());
+  const clearUrl = () => { navigate(Path.farmware()); };
 
   const install = () => {
     const url = packageUrl;

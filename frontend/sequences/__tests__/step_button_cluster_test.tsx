@@ -2,9 +2,8 @@ const step_buttons = require("../step_buttons");
 const mockStepClick = jest.fn();
 step_buttons.stepClick = jest.fn(() => mockStepClick);
 
-import React from "react";
+import React, { act } from "react";
 import { mount } from "enzyme";
-import { act } from "react-dom/test-utils";
 import { StepButtonCluster, StepButtonProps } from "../step_button_cluster";
 import { Actions } from "../../constants";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";

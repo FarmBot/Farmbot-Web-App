@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { StepInputProps } from "../interfaces";
 
 export function InputUnknown({ field }: StepInputProps) {

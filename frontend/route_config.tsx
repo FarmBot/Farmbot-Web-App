@@ -1,6 +1,6 @@
 import React from "react";
 import { Path } from "./internal_urls";
-import { Navigate, RouteObject } from "react-router-dom";
+import { Navigate, RouteObject } from "react-router";
 
 const FarmEvents = React.lazy(() => import("./farm_events/farm_events"));
 const AddFarmEvent = React.lazy(() => import("./farm_events/add_farm_event"));

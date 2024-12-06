@@ -104,7 +104,9 @@ export class RawPlants
   context!: React.ContextType<typeof NavigationContext>;
   navigate = this.context;
 
-  navigateById = (id: number | undefined) => () => this.navigate(Path.groups(id));
+  navigateById = (id: number | undefined) => () => {
+    this.navigate(Path.groups(id));
+  };
 
   render() {
     const { dispatch, plantsPanelState, plants } = this.props;
@@ -179,7 +181,7 @@ export class RawPlants
           panel={Panel.Plants}
           toggleOpen={this.toggleOpen("savedGardens")}
           itemCount={this.props.savedGardens.length}
-          addNew={() => this.navigate(Path.savedGardens("add"))}
+          addNew={() => { this.navigate(Path.savedGardens("add")); }}
           addTitle={t("add new saved garden")}
           addClassName={"plus-saved-garden"}
           title={t("Gardens")}>
@@ -246,9 +248,9 @@ export interface PanelSectionProps {
   addNew(): void;
   addTitle: string;
   addClassName: string;
-  children: JSX.Element | JSX.Element[];
-  extraHeaderContent?: JSX.Element | false;
-  extraHeaderTitle?: JSX.Element | false;
+  children: React.ReactNode | React.ReactNode[];
+  extraHeaderContent?: React.ReactNode | false;
+  extraHeaderTitle?: React.ReactNode | false;
 }
 
 export const PanelSection = (props: PanelSectionProps) => {

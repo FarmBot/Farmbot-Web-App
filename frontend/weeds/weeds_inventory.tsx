@@ -73,7 +73,7 @@ export interface WeedsSectionProps {
   layerValue?: boolean;
   layerSetting?: BooleanConfigKey;
   layerDisabled?: boolean;
-  children?: JSX.Element;
+  children?: React.ReactNode;
   allWeeds?: TaggedWeedPointer[];
 }
 

@@ -11,7 +11,7 @@ export interface StatusRowProps {
   from: string;
   to: string;
   header?: boolean;
-  connectionMsg?: React.ReactChild;
+  connectionMsg?: React.ReactNode;
   connectionName?: string;
   hover?: Function;
   hoveredConnection?: string | undefined;

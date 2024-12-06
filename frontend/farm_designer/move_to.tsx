@@ -2,7 +2,7 @@ import React from "react";
 import { Row, Popover } from "../ui";
 import { BotPosition } from "../devices/interfaces";
 import { move } from "../devices/actions";
-import { useNavigate } from "react-router-dom";
+import { NavigateFunction, useNavigate } from "react-router";
 import { AxisInputBox } from "../controls/axis_input_box";
 import { isNumber, isUndefined, sum } from "lodash";
 import { Actions, Content } from "../constants";
@@ -104,7 +104,7 @@ export const MoveModeLink = () => {
     <button
       className="fb-button gray"
       title={t("open move mode panel")}
-      onClick={() => navigate(Path.location())}>
+      onClick={() => { navigate(Path.location()); }}>
       {t("move mode")}
     </button>
   </div>;
@@ -112,7 +112,7 @@ export const MoveModeLink = () => {
 
 /** Mark a new bot target location on the map. */
 export const chooseLocation = (props: {
-  navigate: (url: string) => void,
+  navigate: NavigateFunction,
   gardenCoords: AxisNumberProperty | undefined,
   dispatch: Function,
 }) => {
@@ -261,7 +261,7 @@ export const unChooseLocationAction = () => ({
 });
 
 const navigateToLocation = (
-  navigate: (path: string) => void,
+  navigate: NavigateFunction,
   location: BotPosition,
 ) => {
   !isUndefined(location.x) &&

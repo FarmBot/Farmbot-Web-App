@@ -5,7 +5,7 @@ import {
   SavedGardenItemProps, SavedGardenInfoProps, SavedGardenListProps,
 } from "./interfaces";
 import { t } from "../i18next_wrapper";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 /** Name input and PlantTemplate count for a single SavedGarden. */
 export const GardenInfo = (props: SavedGardenInfoProps) => {

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { CalibrationRow } from "../calibration_row";
 import { bot } from "../../../__test_support__/fake_state/bot";

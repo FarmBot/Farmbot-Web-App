@@ -1,7 +1,7 @@
 import React from "react";
 import { Everything } from "../interfaces";
 import { connect } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { unselectPlant } from "../farm_designer/map/actions";
 import {
   selectAllSavedGardens, selectAllPlantTemplates, selectAllPlantPointers,

@@ -11,7 +11,7 @@ export interface PinValueFieldProps extends StepParams {
   currentStep: WritePin;
 }
 
-export const PinValueField = (props: PinValueFieldProps): JSX.Element => {
+export const PinValueField = (props: PinValueFieldProps): React.ReactNode => {
   const { currentStep, currentSequence } = props;
   const analogMode = !(currentStep.args.pin_mode === 0);
   const analogValue = currentStep.args.pin_value > 1;

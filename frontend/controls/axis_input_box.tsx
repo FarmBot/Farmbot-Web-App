@@ -1,6 +1,6 @@
-import * as React from "react";
+import React from "react";
 import { AxisInputBoxProps } from "./interfaces";
-import { BlurableInput } from "../ui/index";
+import { BlurableInput } from "../ui";
 
 export const AxisInputBox = ({ onChange, value, axis }: AxisInputBoxProps) => {
   return <BlurableInput

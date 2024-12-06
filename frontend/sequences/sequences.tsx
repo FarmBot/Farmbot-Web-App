@@ -15,7 +15,7 @@ import { Path } from "../internal_urls";
 import { urlFriendly } from "../util";
 import { ErrorBoundary } from "../error_boundary";
 import { isMobile } from "../screen_size";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router";
 
 export interface SequenceBackButtonProps {
   dispatch: Function;

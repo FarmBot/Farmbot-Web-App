@@ -26,6 +26,8 @@ import {
 import { isDesktop } from "../screen_size";
 import { Text } from "./text";
 
+const AnimatedGroup = animated(Group);
+
 export interface GardenModelProps {
   config: Config;
   activeFocus: string;
@@ -185,13 +187,13 @@ export const GardenModel = (props: GardenModelProps) => {
     <Sphere args={[30000, 8, 16]}>
       <MeshBasicMaterial color={"#59d8ff"} side={BackSide} />
     </Sphere>
-    <animated.group scale={props.activeFocus ? 1 : scale}>
+    <AnimatedGroup scale={props.activeFocus ? 1 : scale}>
       <Camera makeDefault={true} name={"camera"}
         fov={40} near={10} far={75000}
         position={camera.position}
         rotation={[0, 0, 0]}
         up={[0, 0, 1]} />
-    </animated.group>
+    </AnimatedGroup>
     <OrbitControls maxPolarAngle={Math.PI / 2}
       enableZoom={config.zoom} enablePan={config.pan} dampingFactor={0.2}
       target={camera.target}

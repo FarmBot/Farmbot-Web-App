@@ -14,6 +14,7 @@ import { maybeGetSequence } from "../resources/selectors";
 import { Path } from "../internal_urls";
 import { UnknownAction } from "redux";
 import { sequenceLimitExceeded } from "../sequences/actions";
+import { NavigateFunction } from "react-router";
 
 export const setFolderColor = (id: number, color: Color) => {
   const d = store.dispatch as Function;
@@ -39,7 +40,7 @@ const DEFAULTS = (): Folder => ({
 });
 
 export const addNewSequenceToFolder = (
-  navigate: (url: string) => void,
+  navigate: NavigateFunction,
   config: DeepPartial<Folder> = {},
 ) => {
   const ri = store.getState().resources.index;

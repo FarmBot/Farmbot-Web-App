@@ -13,6 +13,7 @@ import { ResourceIndex, UUID } from "../../resources/interfaces";
 import { selectAllPointGroups } from "../../resources/selectors";
 import { overwriteGroup } from "../../point_groups/actions";
 import { FilePath, Path } from "../../internal_urls";
+import { NavigateFunction } from "react-router";
 
 export const movePoints = (payload: MovePointsProps) => (dispatch: Function) => {
   payload.points.map(point => {
@@ -100,7 +101,7 @@ export const unselectPlant = (dispatch: Function) => () => {
 
 /** Unselect plant and close plant info or select panel if selected and open. */
 export const closePlantInfo = (
-  navigate: (url: string) => void,
+  navigate: NavigateFunction,
   dispatch: Function,
 ) => () => {
   const mode = getMode();
@@ -121,7 +122,7 @@ export const setDragIcon =
   };
 
 export const mapPointClickAction =
-  (navigate: (url: string) => void,
+  (navigate: NavigateFunction,
     dispatch: Function,
     uuid: UUID,
     path?: string,

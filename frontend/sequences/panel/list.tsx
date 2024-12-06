@@ -24,7 +24,7 @@ import { SequencesPanelState } from "../../interfaces";
 import { Actions } from "../../constants";
 import { isMobile } from "../../screen_size";
 import { NavigationContext } from "../../routes_helpers";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { Color } from "farmbot";
 
 interface FeaturedSequence {
@@ -89,7 +89,7 @@ export class RawDesignerSequenceList
           onChange={updateSearchTerm} />
         {!isMobile() &&
           <button className={"fb-button clear row half-gap"}
-            onClick={() => this.navigate(buttonProps.path)}>
+            onClick={() => { this.navigate(buttonProps.path); }}>
             {buttonProps.text}
             <i className={`fa fa-${buttonProps.icon}`} />
           </button>}

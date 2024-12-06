@@ -1,7 +1,7 @@
 import React from "react";
 import { t } from "../../i18next_wrapper";
 import { tourPath } from ".";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { TOURS } from "./data";
 import { Actions } from "../../constants";
 import { TourListProps } from "./interfaces";

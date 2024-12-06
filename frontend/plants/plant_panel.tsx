@@ -1,6 +1,6 @@
 import React from "react";
 import { FormattedPlantInfo } from "./map_state_to_props";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { BlurableInput, Row, Help } from "../ui";
 import {
   PlantStage, TaggedCurve, TaggedFarmwareEnv, TaggedGenericPointer,
@@ -140,7 +140,7 @@ export const EditPlantDepth = (props: EditPlantDepthProps) =>
 
 interface ListItemProps {
   name?: string;
-  children: React.ReactChild | React.ReactChild[];
+  children: React.ReactNode;
 }
 
 export const ListItem = (props: ListItemProps) =>

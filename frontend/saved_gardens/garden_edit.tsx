@@ -22,7 +22,7 @@ import { PointGroupItem } from "../point_groups/point_group_item";
 import {
   calcMaxCount, MoreIndicatorIcon,
 } from "../point_groups/criteria/component";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, NavigateFunction, useNavigate } from "react-router";
 
 /** Open or close a SavedGarden. */
 const GardenViewButton = (props: GardenViewButtonProps) => {
@@ -50,7 +50,7 @@ const ApplyGardenButton =
     plantPointerCount: number,
     gardenId: number,
     dispatch: Function,
-    navigate: (path: string) => void,
+    navigate: NavigateFunction,
   }) =>
     <button
       className="fb-button green"
@@ -64,7 +64,7 @@ const ApplyGardenButton =
 
 const DestroyGardenButton =
   (props: {
-    navigate: (path: string) => void,
+    navigate: NavigateFunction,
     dispatch: Function,
     gardenUuid: string,
   }) =>

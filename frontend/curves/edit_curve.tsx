@@ -40,7 +40,7 @@ import {
   calcMaxCount, MoreIndicatorIcon,
 } from "../point_groups/criteria/component";
 import { GetState } from "../redux/interfaces";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router";
 
 const columnTitle = (curve: TaggedCurve) => {
   switch (curve.body.type) {
@@ -319,9 +319,9 @@ export const TemplatesMenu = (props: ActionMenuProps) => {
 
 export const copyCurve =
   (curves: TaggedCurve[], curve: TaggedCurve) =>
-    (dispatch: Function, getState: GetState) =>
-      () => {
-        const navigate = useNavigate();
+    (dispatch: Function, getState: GetState) => {
+      const navigate = useNavigate();
+      return () => {
         const existingNames = curves.map(c => c.body.name);
         let i = 1;
         const newName = (count: number) =>
@@ -343,6 +343,7 @@ export const copyCurve =
           })
           .catch(() => { });
       };
+    };
 
 export const curveDataTableRow = (props: CurveDataTableRowProps) =>
   ([day, value]: [string, number], index: number) => {

@@ -11,7 +11,7 @@ export interface LayerToggleProps {
   label: DeviceSetting;
   value: boolean | undefined;
   onClick(): void;
-  popover?: JSX.Element | undefined;
+  popover?: React.ReactElement;
   submenuTitle?: string;
 }
 

@@ -2,7 +2,9 @@ import React from "react";
 import { Config, seasonProperties } from "./config";
 import { Vector3 } from "three";
 import { useSpring, animated } from "@react-spring/three";
-import { Group } from "./components";
+import { Group, PointLight } from "./components";
+
+const AnimatedPointLight = animated(PointLight);
 
 export interface SunProps {
   config: Config;
@@ -44,7 +46,7 @@ export const Sun = (props: SunProps) => {
       [offset, offset],
       [offset, 0],
     ].map(([xOffset, yOffset], index) =>
-      <animated.pointLight key={index}
+      <AnimatedPointLight key={index}
         intensity={sunIntensity}
         color={sunColor}
         distance={sunDistance}

@@ -53,7 +53,7 @@ jest.mock("../../ui/popover", () => ({
   Popover: ({ target, content }: PopoverProps) => <div>{target}{content}</div>,
 }));
 
-import React from "react";
+import React, { act } from "react";
 import {
   SequenceEditorMiddleActive, onDrop, SequenceName, AddCommandButton,
   SequenceSettingsMenu,
@@ -96,7 +96,6 @@ import { maybeTagStep } from "../../resources/sequence_tagging";
 import { error } from "../../toast/toast";
 import { API } from "../../api";
 import { loadSequenceVersion } from "../panel/preview_support";
-import { act } from "react-dom/test-utils";
 import { VariableType } from "../locals_list/locals_list_support";
 import { generateNewVariableLabel } from "../locals_list/locals_list";
 import { StepButtonCluster } from "../step_button_cluster";

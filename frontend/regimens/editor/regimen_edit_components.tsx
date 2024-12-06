@@ -10,7 +10,7 @@ import {
 } from "../../sequences/locals_list/handle_select";
 import { overwrite, save, destroy, edit } from "../../api/crud";
 import { CopyButton } from "./copy_button";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { Path } from "../../internal_urls";
 import { Position } from "@blueprintjs/core";
 
@@ -39,7 +39,7 @@ export const RegimenButtonGroup = (props: RegimenProps) => {
       <i className={"fa fa-trash fb-icon-button"}
         title={t("delete regimen")}
         onClick={() => dispatch(destroy(regimen.uuid))
-          .then(() => navigate(Path.regimens()))} />
+          .then(() => { navigate(Path.regimens()); })} />
       <CopyButton regimen={regimen} dispatch={dispatch} />
     </div>
     <SaveBtn
@@ -52,7 +52,7 @@ export const OpenSchedulerButton = () => {
   const navigate = useNavigate();
   return <button className={"fb-button gray schedule-regimen-item"}
     title={t("open scheduler panel")}
-    onClick={() => navigate(Path.regimens("scheduler"))}>
+    onClick={() => { navigate(Path.regimens("scheduler")); }}>
     {t("Schedule item")}
   </button>;
 };

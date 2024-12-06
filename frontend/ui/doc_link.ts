@@ -1,5 +1,5 @@
 import { ExternalUrl } from "../external_urls";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { Path } from "../internal_urls";
 
 /** A centralized list of all documentation slugs in the app makes it easier to

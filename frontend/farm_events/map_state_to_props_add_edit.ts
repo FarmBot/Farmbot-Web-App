@@ -24,6 +24,7 @@ import { DropDownItem } from "../ui";
 import { hasId } from "../resources/util";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
 import { Path } from "../internal_urls";
+import { NavigateFunction } from "react-router";
 
 export const formatTimeField = (input: string, timeSettings: TimeSettings) => {
   const iso = new Date(input).toISOString();
@@ -110,7 +111,7 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
       uuid ? farmEvents.filter(x => x.uuid === uuid)[0] : undefined;
 
   const getFarmEvent =
-    (navigate: (url: string) => void): TaggedFarmEvent | undefined => {
+    (navigate: NavigateFunction): TaggedFarmEvent | undefined => {
       const id = parseInt(Path.getSlug(Path.farmEvents()));
       if (id && hasId(props.resources.index, "FarmEvent", id)) {
         return findFarmEventById(props.resources.index, id);

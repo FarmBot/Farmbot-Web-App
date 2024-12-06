@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { TaggedRegimen } from "farmbot";
 import { init } from "../../api/crud";
 import { setActiveRegimenByName } from "../set_active_regimen_by_name";

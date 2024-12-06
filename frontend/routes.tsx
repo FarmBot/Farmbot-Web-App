@@ -5,7 +5,7 @@ import { ready } from "./config/actions";
 import { Session } from "./session";
 import { attachToRoot } from "./util";
 import { ErrorBoundary } from "./error_boundary";
-import { Route, BrowserRouter, Routes } from "react-router-dom";
+import { Route, BrowserRouter, Routes } from "react-router";
 import { ROUTE_DATA } from "./route_config";
 import { Provider } from "react-redux";
 import { HotkeysProvider } from "@blueprintjs/core";

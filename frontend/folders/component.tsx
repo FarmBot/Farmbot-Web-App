@@ -53,7 +53,7 @@ import { Path } from "../internal_urls";
 import { copySequence } from "../sequences/actions";
 import { TestButton, isMenuOpen } from "../sequences/test_button";
 import { TaggedSequence } from "farmbot";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 export const FolderListItem = (props: FolderItemProps) => {
   const { sequence, movedSequenceUuid, inUse } = props;

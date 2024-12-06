@@ -1,7 +1,7 @@
-import * as React from "react";
+import React from "react";
 import {
   Row, BlurableInput, FBSelect, DropDownItem,
-} from "../ui/index";
+} from "../ui";
 import { repeatOptions } from "./map_state_to_props_add_edit";
 import { keyBy } from "lodash";
 import { FarmEventViewModel } from "./edit_fe_form";

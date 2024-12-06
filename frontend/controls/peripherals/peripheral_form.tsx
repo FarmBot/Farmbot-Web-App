@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { PeripheralFormProps } from "./interfaces";
 import { sortResourcesById } from "../../util";
 import { Row } from "../../ui";

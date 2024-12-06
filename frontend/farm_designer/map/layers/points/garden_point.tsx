@@ -8,7 +8,7 @@ import { Color } from "../../../../ui";
 import { soilHeightPoint } from "../../../../points/soil_height";
 import { SpecialStatus } from "farmbot";
 import { Path } from "../../../../internal_urls";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 // eslint-disable-next-line complexity
 export const GardenPoint = (props: GardenPointProps) => {

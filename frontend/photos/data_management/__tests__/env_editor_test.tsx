@@ -12,8 +12,7 @@ jest.mock("../../../settings/dev/dev_support", () => ({
   }
 }));
 
-import React from "react";
-import { act } from "react-dom/test-utils";
+import React, { act } from "react";
 import { mount, ReactWrapper } from "enzyme";
 import { EnvEditor } from "../env_editor";
 import { EnvEditorProps } from "../interfaces";

@@ -1,5 +1,5 @@
-import * as React from "react";
-import { WidgetBody } from "../ui/index";
+import React from "react";
+import { WidgetBody } from "../ui";
 import { t } from "../i18next_wrapper";
 
 export function ResendPanelBody(props: { onClick(): void; }) {

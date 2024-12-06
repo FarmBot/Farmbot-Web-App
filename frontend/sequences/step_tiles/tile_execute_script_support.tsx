@@ -1,6 +1,6 @@
 import React from "react";
 import { FarmwareData } from "../interfaces";
-import { DropDownItem, BlurableInput, Help } from "../../ui/index";
+import { DropDownItem, BlurableInput, Help } from "../../ui";
 import { without, isNumber } from "lodash";
 import { ExecuteScript, Pair, FarmwareConfig } from "farmbot";
 import { getConfigEnvName } from "../../farmware/farmware_forms";

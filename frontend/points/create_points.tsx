@@ -214,7 +214,7 @@ export class RawCreatePoints
   context!: React.ContextType<typeof NavigationContext>;
   navigate = (url: string) => this.context(url);
 
-  closePanel = () => this.navigate(Path.designer(this.panel));
+  closePanel = () => { this.navigate(Path.designer(this.panel)); };
 
   PointProperties = () =>
     <ul className="grid">

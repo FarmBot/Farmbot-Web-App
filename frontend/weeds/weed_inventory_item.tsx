@@ -1,7 +1,7 @@
 import React from "react";
 import { TaggedWeedPointer } from "farmbot";
 import { Actions } from "../constants";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { t } from "../i18next_wrapper";
 import { svgToUrl } from "../open_farm/icons";
 import { genericWeedIcon } from "../point_groups/point_group_item";

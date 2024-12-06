@@ -5,7 +5,7 @@ import {
 } from "@blueprintjs/core";
 
 export interface PopoverProps extends BasePopoverProps {
-  target: JSX.Element;
+  target: React.ReactNode;
 }
 
 export const Popover = (props: PopoverProps) => {

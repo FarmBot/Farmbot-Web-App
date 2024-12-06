@@ -17,6 +17,7 @@ import { selectAllSequences } from "../resources/selectors_by_kind";
 import { ResourceIndex } from "../resources/interfaces";
 import { getDeviceAccountSettings } from "../resources/selectors";
 import { store } from "../redux/store";
+import { NavigateFunction } from "react-router";
 
 export const sequenceLengthExceeded = (sequence: TaggedSequence): boolean => {
   const device = getDeviceAccountSettings(store.getState().resources.index);
@@ -63,7 +64,7 @@ export const sequenceLimitExceeded = (ri: ResourceIndex): boolean => {
 let count = 1;
 
 export const copySequence = (
-  navigate: (url: string) => void,
+  navigate: NavigateFunction,
   payload: TaggedSequence,
 ) =>
   (dispatch: Function, getState: GetState) => {
@@ -92,7 +93,7 @@ export function selectSequence(uuid: string): SelectSequence {
   };
 }
 
-export const unselectSequence = (navigate: (url: string) => void) => {
+export const unselectSequence = (navigate: NavigateFunction) => {
   navigate(Path.sequences());
   return { type: Actions.SELECT_SEQUENCE, payload: undefined };
 };

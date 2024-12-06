@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Row, BlurableInput } from "../../ui";
 import { AxisInputBoxGroupState } from "../../controls/interfaces";
 import { AxisInputBox } from "../../controls/axis_input_box";

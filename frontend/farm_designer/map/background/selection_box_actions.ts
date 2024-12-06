@@ -12,6 +12,7 @@ import { getFilteredPoints } from "../../../plants/select_plants";
 import { GetWebAppConfigValue } from "../../../config_storage/actions";
 import { overwriteGroup } from "../../../point_groups/actions";
 import { Path } from "../../../internal_urls";
+import { NavigateFunction } from "react-router";
 
 /** Return all plants within the selection box. */
 export const getSelected = (
@@ -43,7 +44,7 @@ export interface ResizeSelectionBoxProps {
   setMapState: (x: Partial<GardenMapState>) => void;
   dispatch: Function;
   plantActions: boolean;
-  navigate(url: string): void;
+  navigate: NavigateFunction;
 }
 
 /** Resize a selection box. */

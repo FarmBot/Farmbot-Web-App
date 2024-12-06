@@ -3,10 +3,13 @@ import React from "react";
 import { Config } from "./config";
 import { FOCI, getCameraOffset, setUrlParam } from "./zoom_beacons_constants";
 import { useSpring, animated } from "@react-spring/three";
-import { Group, MeshPhongMaterial } from "./components";
+import { Group, Mesh, MeshPhongMaterial } from "./components";
 import { isDesktop } from "../screen_size";
 
 const beaconColor = "#0266b5";
+
+const AnimatedMesh = animated(Mesh);
+const AnimatedMeshPhongMaterial = animated(MeshPhongMaterial);
 
 export interface ZoomBeaconsProps {
   config: Config;
@@ -33,15 +36,15 @@ const BeaconPulse = (props: BeaconPulseProps) => {
     config: { duration: 1500 }
   });
 
-  return <animated.mesh scale={scale}>
+  return <AnimatedMesh scale={scale}>
     <Sphere args={[beaconSize, 12, 12]}
       renderOrder={1}>
-      <animated.meshPhongMaterial
+      <AnimatedMeshPhongMaterial
         color={beaconColor}
         opacity={opacity}
         transparent={true} />
     </Sphere>
-  </animated.mesh>;
+  </AnimatedMesh>;
 };
 
 export const ZoomBeacons = (props: ZoomBeaconsProps) => {

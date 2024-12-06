@@ -4,7 +4,7 @@ import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent,
 } from "../farm_designer/designer_panel";
 import { t } from "../i18next_wrapper";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { Everything, MovementState, ResourceColor } from "../interfaces";
 import { TaggedWeedPointer } from "farmbot";
 import { maybeFindWeedPointerById } from "../resources/selectors";

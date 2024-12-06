@@ -4,7 +4,7 @@ import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent,
 } from "../farm_designer/designer_panel";
 import { t } from "../i18next_wrapper";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { Everything } from "../interfaces";
 import { Panel } from "../farm_designer/panel_header";
 import { selectAllPointGroups } from "../resources/selectors";

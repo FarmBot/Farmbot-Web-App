@@ -310,7 +310,7 @@ export const Model = (props: BoxTopBaseProps) => {
             onPointerMove={setCursor}
             onClick={setCursor}
             onPointerOut={leave}
-            onPointerDown={e => {
+            onPointerDown={(e: ThreeEvent<PointerEvent>) => {
               if (!props.isEditing) {
                 setZForAllInGroup(e, Z - 3);
                 click();

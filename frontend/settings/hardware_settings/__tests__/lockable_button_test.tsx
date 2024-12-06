@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { LockableButton, LockableButtonProps } from "../lockable_button";
 import { shallow } from "enzyme";
 

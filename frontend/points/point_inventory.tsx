@@ -60,7 +60,8 @@ interface PointsSectionProps {
 const PointsSection = (props: PointsSectionProps) => {
   const { genericPoints, isOpen, dispatch, averageZ, toggleAction } = props;
   return <div className={`points-section ${isOpen ? "open" : ""}`}>
-    <div className={"points-section-header row grid-exp-1"} onClick={props.toggleOpen}>
+    <div className={"points-section-header row grid-exp-1"}
+      onClick={props.toggleOpen}>
       {props.color && <Saucer color={props.color} />}
       <label>{`${props.title} (${genericPoints.length})`}</label>
       {isOpen && toggleAction && <ToggleButton
@@ -160,7 +161,9 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
   context!: React.ContextType<typeof NavigationContext>;
   navigate = this.context;
 
-  navigateById = (id: number | undefined) => () => this.navigate(Path.groups(id));
+  navigateById = (id: number | undefined) => () => {
+    this.navigate(Path.groups(id));
+  };
 
   render() {
     const { dispatch } = this.props;
@@ -219,7 +222,7 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
           panel={Panel.Points}
           toggleOpen={this.toggleOpen("points")}
           itemCount={standardPoints.length}
-          addNew={() => this.navigate(Path.points("add"))}
+          addNew={() => { this.navigate(Path.points("add")); }}
           addTitle={t("add point")}
           addClassName={"plus-point"}
           extraHeaderContent={this.props.pointsPanelState.points &&

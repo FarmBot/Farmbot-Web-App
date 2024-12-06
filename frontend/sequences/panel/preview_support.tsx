@@ -6,7 +6,7 @@ import { Everything } from "../../interfaces";
 import { SpecialStatus, TaggedSequence } from "farmbot";
 import axios from "axios";
 import { API } from "../../api";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { noop } from "lodash";
 import { ErrorBoundary } from "../../error_boundary";
 import { AllSteps } from "../all_steps";
@@ -119,7 +119,9 @@ export const SequencePreviewContent = (props: SequencePreviewContentProps) => {
               resources={props.resources}
               toggle={props.toggleSection("variablesCollapsed")} />}
           {viewSequenceCeleryScript &&
-            <pre className="celeryscript">{stringifySequenceData(sequence.body)}</pre>}
+            <pre className="celeryscript">
+              {stringifySequenceData(sequence.body)}
+            </pre>}
           {!viewSequenceCeleryScript &&
             <Steps
               collapsed={props.stepsCollapsed}
@@ -154,7 +156,7 @@ export const ImportBanner = (props: ImportBannerProps) => {
       <button className={"transparent-button"}
         onClick={() => {
           installSequence(sequence.body.id)()
-            .then(() => navigate(Path.designerSequences()));
+            .then(() => { navigate(Path.designerSequences()); });
           publishAction(setImporting);
         }}>
         {importing ? t("importing") : t("import")}

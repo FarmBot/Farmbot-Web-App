@@ -71,7 +71,7 @@ const settingConflicts = (
 };
 
 export const MoveAbsoluteWarning =
-  (props: MoveAbsoluteWarningProps): JSX.Element => {
+  (props: MoveAbsoluteWarningProps): React.ReactNode => {
 
     const conflicts = settingConflicts(props.coordinate, props.hardwareFlags);
 

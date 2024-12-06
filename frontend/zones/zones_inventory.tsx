@@ -18,7 +18,7 @@ import { GroupInventoryItem } from "../point_groups/group_inventory_item";
 import { initSaveGetId } from "../api/crud";
 import { SearchField } from "../ui/search_field";
 import { Path } from "../internal_urls";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 export interface ZonesProps {
   dispatch: Function;
@@ -34,7 +34,7 @@ export const mapStateToProps = (props: Everything): ZonesProps => ({
 
 export const RawZones = (props: ZonesProps) => {
   const navigate = useNavigate();
-  const navigateById = (id: number) => navigate(Path.zones(id));
+  const navigateById = (id: number) => { navigate(Path.zones(id)); };
   const [searchTerm, setSearchTerm] = React.useState("");
   return <DesignerPanel panelName={"zones-inventory"} panel={Panel.Zones}>
     <DesignerPanelTop

@@ -6,7 +6,7 @@ jest.mock("../../config_storage/actions", () => ({
 let mockHighlightName = "";
 jest.mock("../../settings/maybe_highlight", () => ({
   maybeOpenPanel: jest.fn(),
-  Highlight: (p: { children: React.ReactChild }) => <div>{p.children}</div>,
+  Highlight: (p: { children: React.ReactNode }) => <div>{p.children}</div>,
   getHighlightName: jest.fn(() => mockHighlightName),
 }));
 

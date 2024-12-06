@@ -28,7 +28,7 @@ import { ExternalUrl } from "../external_urls";
 import { setupProgressString } from "../wizard/data";
 import { store } from "../redux/store";
 import { selectAllWizardStepResults } from "../resources/selectors_by_kind";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import moment from "moment";
 import { Path } from "../internal_urls";
 import { logout } from "../logout";
@@ -82,8 +82,9 @@ const AlertCardTemplate = (props: AlertCardTemplateProps) => {
         <p>
           {formatTime(moment.unix(alert.created_at), timeSettings, timeFormat)}
         </p>}
-      {alert.id && !props.noDismiss && <i className={"fa fa-times fb-icon-button invert"}
-        onClick={dismissAlert({ id: alert.id, findApiAlertById, dispatch })} />}
+      {alert.id && !props.noDismiss &&
+        <i className={"fa fa-times fb-icon-button invert"}
+          onClick={dismissAlert({ id: alert.id, findApiAlertById, dispatch })} />}
     </div>
     <div className="problem-alert-content">
       <Markdown html={true}>{t(props.message)}</Markdown>
@@ -340,7 +341,7 @@ const TourNotTaken = (props: TourNotTakenProps) => {
     findApiAlertById={props.findApiAlertById}
     iconName={"fa-info-circle"}>
     <a className="link-button fb-button green"
-      onClick={() => navigate(Path.tours())}
+      onClick={() => { navigate(Path.tours()); }}
       title={t("View available tours")}>
       {t("View available tours")}
     </a>
@@ -445,7 +446,7 @@ const SetupIncomplete = (props: SetupIncompleteProps) => {
     findApiAlertById={props.findApiAlertById}
     iconName={"fa-info-circle"}>
     <a className="link-button fb-button green"
-      onClick={() => navigate(Path.setup())}
+      onClick={() => { navigate(Path.setup()); }}
       title={buttonText}>
       {buttonText}
     </a>

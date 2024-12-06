@@ -1,5 +1,5 @@
 import React from "react";
-import { BlurableInput } from "../ui/index";
+import { BlurableInput } from "../ui";
 import { TimeSettings } from "../interfaces";
 
 interface EventTimePickerProps {

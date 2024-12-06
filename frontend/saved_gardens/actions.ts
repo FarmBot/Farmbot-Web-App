@@ -7,6 +7,7 @@ import { TaggedSavedGarden, TaggedPlantTemplate } from "farmbot";
 import { t } from "../i18next_wrapper";
 import { stopTracking } from "../connectivity/data_consistency";
 import { Path } from "../internal_urls";
+import { NavigateFunction } from "react-router";
 
 /** Save all Plant to PlantTemplates in a new SavedGarden. */
 export const snapshotGarden = (
@@ -42,7 +43,7 @@ export const applyGarden = (navigate: Function, gardenId: number) =>
     });
 
 export const destroySavedGarden = (
-  navigate: (path: string) => void,
+  navigate: NavigateFunction,
   uuid: string,
 ) => (dispatch: Function) => {
   dispatch(unselectSavedGarden);
@@ -50,14 +51,14 @@ export const destroySavedGarden = (
   dispatch(destroy(uuid));
 };
 
-export const closeSavedGarden = (navigate: (path: string) => void) => {
+export const closeSavedGarden = (navigate: NavigateFunction) => {
   navigate(Path.plants());
   return (dispatch: Function) =>
     dispatch(unselectSavedGarden);
 };
 
 export const openSavedGarden = (
-  navigate: (path: string) => void,
+  navigate: NavigateFunction,
   savedGardenId: number | undefined,
 ) => {
   navigate(Path.savedGardens(savedGardenId));
@@ -67,7 +68,7 @@ export const openSavedGarden = (
 
 /** Open a SavedGarden if it is closed, otherwise close it. */
 export const openOrCloseGarden = (props: {
-  navigate: (path: string) => void,
+  navigate: NavigateFunction,
   savedGardenId: number | undefined,
   gardenIsOpen: boolean,
   dispatch: Function
@@ -79,7 +80,7 @@ export const openOrCloseGarden = (props: {
 
 /** Create a new SavedGarden with the chosen name. */
 export const newSavedGarden = (
-  navigate: (path: string) => void,
+  navigate: NavigateFunction,
   gardenName: string,
   gardenNotes: string,
 ) =>
@@ -108,7 +109,7 @@ const newPTBody =
 
 /** Copy a SavedGarden and all of its PlantTemplates. */
 export const copySavedGarden = (props: {
-  navigate: (path: string) => void,
+  navigate: NavigateFunction,
   newSGName: string,
   savedGarden: TaggedSavedGarden,
   plantTemplates: TaggedPlantTemplate[]

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { render, mount } from "enzyme";
 import { WeekRow } from "../week_row";
 import { WeekRowProps } from "../interfaces";

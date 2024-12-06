@@ -7,7 +7,7 @@ import {
   DesignerPanel, DesignerPanelContent,
 } from "../farm_designer/designer_panel";
 import { Panel } from "../farm_designer/panel_header";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { t } from "../i18next_wrapper";
 import { Path } from "../internal_urls";
 import { store } from "../redux/store";
@@ -117,7 +117,7 @@ export const Feedback = (props: FeedbackProps) => {
     </button>
     {!orderNumber && <Help text={Content.MUST_REGISTER} links={[
       <a key={0}
-        onClick={() => navigate(Path.settings("order_number"))}>
+        onClick={() => { navigate(Path.settings("order_number")); }}>
         &nbsp;{t("Register your ORDER NUMBER")}
         <i className={"fa fa-external-link"} />
       </a>]} />}

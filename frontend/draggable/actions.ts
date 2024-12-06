@@ -2,7 +2,7 @@ import { DataXfer, DataXferIntent, DataXferBase } from "./interfaces";
 import { SequenceBodyItem as Step, uuid as id } from "farmbot";
 import { Everything } from "../interfaces";
 import { ReduxAction } from "../redux/interfaces";
-import * as React from "react";
+import React from "react";
 import { Actions } from "../constants";
 import { UUID } from "../resources/interfaces";
 export const STEP_DATATRANSFER_IDENTIFER = "farmbot/sequence-step";

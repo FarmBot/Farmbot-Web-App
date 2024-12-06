@@ -20,7 +20,7 @@ jest.mock("../tagged_pin_binding_init", () => ({
   sysBtnBindings: [1]
 }));
 
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import {
   buildResourceIndex,

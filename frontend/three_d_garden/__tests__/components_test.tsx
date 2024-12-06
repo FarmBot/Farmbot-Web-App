@@ -7,16 +7,10 @@ import {
   MeshBasicMaterial,
   PointLight,
 } from "../components";
-import {
-  AmbientLightProps,
-  DirectionalLightProps,
-  MeshBasicMaterialProps,
-  MeshProps,
-  PointLightProps,
-} from "@react-three/fiber";
+import { ThreeElements } from "@react-three/fiber";
 
 describe("<AmbientLight />", () => {
-  const fakeProps = (): AmbientLightProps => ({
+  const fakeProps = (): ThreeElements["ambientLight"] => ({
     intensity: 0.5,
   });
 
@@ -27,7 +21,7 @@ describe("<AmbientLight />", () => {
 });
 
 describe("<PointLight />", () => {
-  const fakeProps = (): PointLightProps => ({
+  const fakeProps = (): ThreeElements["pointLight"] => ({
     intensity: 0.5,
   });
 
@@ -38,7 +32,7 @@ describe("<PointLight />", () => {
 });
 
 describe("<DirectionalLight />", () => {
-  const fakeProps = (): DirectionalLightProps => ({
+  const fakeProps = (): ThreeElements["directionalLight"] => ({
     intensity: 0.5,
   });
 
@@ -49,7 +43,7 @@ describe("<DirectionalLight />", () => {
 });
 
 describe("<Mesh />", () => {
-  const fakeProps = (): MeshProps => ({
+  const fakeProps = (): ThreeElements["mesh"] => ({
     name: "mesh",
   });
 
@@ -60,7 +54,7 @@ describe("<Mesh />", () => {
 });
 
 describe("<MeshBasicMaterial />", () => {
-  const fakeProps = (): MeshBasicMaterialProps => ({
+  const fakeProps = (): ThreeElements["meshBasicMaterial"] => ({
     name: "material",
   });
 

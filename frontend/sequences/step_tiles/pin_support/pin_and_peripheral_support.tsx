@@ -267,7 +267,7 @@ interface PinSelectProps extends StepParams<WritePin | TogglePin | ReadPin> {
   width?: number;
 }
 
-export const PinSelect = (props: PinSelectProps): JSX.Element => {
+export const PinSelect = (props: PinSelectProps): React.ReactNode => {
   const step = props.currentStep;
   const { currentSequence, resources, showPins } = props;
   const { pin_number } = step.args;

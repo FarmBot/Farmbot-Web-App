@@ -9,7 +9,7 @@ import {
 } from "../ui/empty_state_wrapper";
 import { t } from "../i18next_wrapper";
 import { Content } from "../constants";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { Row, Help } from "../ui";
 import {
   botPositionLabel,
@@ -276,7 +276,7 @@ const ToolInventoryItem = (props: ToolInventoryItemProps) => {
   const activeText = props.active ? t("in slot") : t("inactive");
   const navigate = useNavigate();
   return <div className={"tool-search-item"}
-    onClick={() => navigate(Path.tools(props.toolId))}>
+    onClick={() => { navigate(Path.tools(props.toolId)); }}>
     <Row className="grid-exp-2">
       <ToolSVG toolName={props.toolName} />
       <p className={"tool-search-item-name"}>{t(props.toolName)}</p>

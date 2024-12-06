@@ -8,7 +8,7 @@ import { t } from "../../i18next_wrapper";
 export interface SingleSettingRowProps {
   label: DeviceSetting;
   tooltip: string;
-  children: React.ReactChild;
+  children: React.ReactNode;
   settingType: "button" | "input";
   advanced?: boolean;
   showAdvanced?: boolean;

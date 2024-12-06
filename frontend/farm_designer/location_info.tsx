@@ -25,7 +25,7 @@ import {
   chooseLocationAction, MoveToForm, unChooseLocationAction, validGoButtonAxes,
 } from "./move_to";
 import { Actions } from "../constants";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { distance } from "../point_groups/paths";
 import { isUndefined, round, sortBy, sum } from "lodash";
 import { PlantInventoryItem } from "../plants/plant_inventory_item";

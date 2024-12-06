@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { ForgotPassword } from "../forgot_password";
 import { shallow } from "enzyme";
 

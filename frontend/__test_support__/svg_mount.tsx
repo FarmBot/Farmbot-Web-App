@@ -1,6 +1,6 @@
 import React from "react";
 import { mount } from "enzyme";
 
-export function svgMount(element: React.ReactElement) {
-  return mount<React.ReactElement>(<svg>{element}</svg>);
+export function svgMount(element: React.ReactNode) {
+  return mount<React.ReactNode>(<svg>{element}</svg>);
 }

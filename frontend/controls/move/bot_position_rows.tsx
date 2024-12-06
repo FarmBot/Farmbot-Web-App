@@ -13,7 +13,7 @@ import { Position } from "@blueprintjs/core";
 import {
   disabledAxisMap,
 } from "../../settings/hardware_settings/axis_tracking_status";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import {
   AxisActionsProps, BotPositionRowsProps, SetAxisLengthProps,
 } from "./interfaces";
@@ -141,7 +141,7 @@ export const AxisActions = (props: AxisActionsProps) => {
         onClick={setAxisLength({ axis, dispatch, botPosition, sourceFwConfig })}>
         {t("SET LENGTH")}
       </LockableButton>
-      <a onClick={() => navigate(Path.settings("axes"))}>
+      <a onClick={() => { navigate(Path.settings("axes")); }}>
         <i className="fa fa-external-link" />
         {t("Settings")}
       </a>

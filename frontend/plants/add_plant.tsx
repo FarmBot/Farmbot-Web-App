@@ -26,7 +26,7 @@ export const mapStateToProps = (props: Everything): AddPlantProps => ({
 
 interface APDProps {
   svgIcon: string | undefined;
-  children?: React.ReactChild;
+  children?: React.ReactNode;
 }
 
 const AddPlantDescription = ({ svgIcon, children }: APDProps) =>

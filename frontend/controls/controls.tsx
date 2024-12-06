@@ -22,7 +22,7 @@ import { ResourceIndex } from "../resources/interfaces";
 import { t } from "../i18next_wrapper";
 import { Path } from "../internal_urls";
 import { RunButtonMenuOpen } from "../sequences/interfaces";
-import { Navigate } from "react-router-dom";
+import { Navigate } from "react-router";
 import { mapStateToProps } from "./state_to_props";
 
 export const RawDesignerControls = (props: DesignerControlsProps) => {

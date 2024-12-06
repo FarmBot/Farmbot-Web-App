@@ -1,6 +1,6 @@
 import { Collapse } from "@blueprintjs/core";
 import React from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { toggleHotkeyHelpOverlay } from "../hotkeys";
 import { t } from "../i18next_wrapper";
 import { FilePath, Icon, Path } from "../internal_urls";
@@ -84,7 +84,9 @@ const PageLink = ([slug, page]: [string, Page]) => {
   const navigate = useNavigate();
   return <a key={slug}
     title={page.title}
-    onClick={() => page.onClick ? page.onClick() : navigate(Path.designer(slug))}>
+    onClick={() => {
+      page.onClick ? page.onClick() : navigate(Path.designer(slug));
+    }}>
     {page.fa_icon
       ? <i className={`fa ${page.fa_icon}`} />
       : <img width={25} height={25} src={iconSrc} />}

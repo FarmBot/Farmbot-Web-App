@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { SpreadOverlapHelperProps } from "../../interfaces";
 import { round, transformXY, defaultSpreadCmDia } from "../../util";
 import { BotPosition } from "../../../../devices/interfaces";
@@ -104,7 +104,7 @@ export function overlapText(
   qy: number,
   overlap: number,
   spreadData: SpreadRadii,
-): JSX.Element {
+): React.ReactNode {
   // Display spread overlap percentages for debugging purposes.
   const activeSpreadDia = spreadData.active * 2;
   const inactiveSpreadDia = spreadData.inactive * 2;

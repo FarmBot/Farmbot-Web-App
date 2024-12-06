@@ -12,7 +12,7 @@ import {
   unpublishSequence,
 } from "./actions";
 import { splice, move, stringifySequenceData } from "./step_tiles";
-import { useNavigate } from "react-router-dom";
+import { NavigateFunction, useNavigate } from "react-router";
 import {
   BlurableInput, Row, SaveBtn, Help, ToggleButton, Popover,
   Markdown,
@@ -354,7 +354,7 @@ export const SequenceBtnGroup = ({
 };
 
 interface DeleteSequenceProps {
-  navigate(url: string): void;
+  navigate: NavigateFunction;
   getWebAppConfigValue: GetWebAppConfigValue;
   dispatch: Function;
   sequenceUuid: UUID;
@@ -602,7 +602,9 @@ export class SequenceEditorMiddleActive extends
               </ErrorBoundary>
             </Collapse>}
           {viewSequenceCeleryScript &&
-            <pre className="celeryscript">{stringifySequenceData(this.props.sequence.body)}</pre>}
+            <pre className="celeryscript">
+              {stringifySequenceData(this.props.sequence.body)}
+            </pre>}
           {!viewSequenceCeleryScript &&
             <SectionHeader title={t("sequence steps")}
               count={stepCount}
@@ -877,7 +879,7 @@ export interface SectionHeaderProps {
   collapsed: boolean;
   toggle(): void;
   count?: number;
-  buttonElement?: JSX.Element | false;
+  buttonElement?: React.ReactNode | false;
   extraClass?: string;
 }
 

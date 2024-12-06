@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Color } from "../../ui/colors";
 import { reservedPiGPIO } from "./list_and_label_support";
 import { range, isNumber, includes, noop } from "lodash";

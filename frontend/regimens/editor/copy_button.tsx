@@ -3,7 +3,7 @@ import { CopyButtonProps } from "./interfaces";
 import { init } from "../../api/crud";
 import { TaggedRegimen } from "farmbot";
 import { defensiveClone, urlFriendly } from "../../util";
-import { useNavigate } from "react-router-dom";
+import { NavigateFunction, useNavigate } from "react-router";
 import { setActiveRegimenByName } from "../set_active_regimen_by_name";
 import { t } from "../../i18next_wrapper";
 import { Path } from "../../internal_urls";
@@ -18,7 +18,7 @@ export const CopyButton = ({ dispatch, regimen }: CopyButtonProps) => {
 let count = 1;
 
 const copyRegimen = (
-  navigate: (url: string) => void,
+  navigate: NavigateFunction,
   payload: TaggedRegimen,
 ) =>
   (dispatch: Function) => {

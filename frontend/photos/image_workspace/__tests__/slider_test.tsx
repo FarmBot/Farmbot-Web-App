@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { WeedDetectorSlider, SliderProps } from "../slider";
 import { shallow } from "enzyme";
 

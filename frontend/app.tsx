@@ -55,7 +55,7 @@ import {
   sourceFbosConfigValue, sourceFwConfigValue,
 } from "./settings/source_config_value";
 import { RunButtonMenuOpen } from "./sequences/interfaces";
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet } from "react-router";
 import { ErrorBoundary } from "./error_boundary";
 
 export interface AppProps {

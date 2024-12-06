@@ -10,7 +10,7 @@ import {
 import { t } from "../i18next_wrapper";
 import { EditPlantInfoProps, PlantOptions } from "../farm_designer/interfaces";
 import { isFinite } from "lodash";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { destroy, edit, save } from "../api/crud";
 import { BooleanSetting } from "../session_keys";
 import { Panel } from "../farm_designer/panel_header";

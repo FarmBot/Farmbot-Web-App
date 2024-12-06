@@ -1,7 +1,7 @@
 import { betterCompact } from "../util";
 import { PointGroup } from "farmbot/dist/resources/api_resources";
 import { init, save, overwrite } from "../api/crud";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { GetState } from "../redux/interfaces";
 import { findPointGroup } from "../resources/selectors";
 import { t } from "../i18next_wrapper";

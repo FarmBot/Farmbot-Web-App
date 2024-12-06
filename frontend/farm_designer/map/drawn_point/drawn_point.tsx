@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { MapTransformProps } from "../interfaces";
 import { transformXY } from "../util";
 import { DrawnPointPayl } from "../../interfaces";

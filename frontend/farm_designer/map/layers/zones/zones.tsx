@@ -4,7 +4,7 @@ import { MapTransformProps, BotSize } from "../../interfaces";
 import { transformXY } from "../../util";
 import { isUndefined } from "lodash";
 import { UUID } from "../../../../resources/interfaces";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { Path } from "../../../../internal_urls";
 
 export interface ZonesProps {

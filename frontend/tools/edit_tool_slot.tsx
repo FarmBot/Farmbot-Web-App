@@ -14,7 +14,7 @@ import { EditToolSlotProps, EditToolSlotState } from "./interfaces";
 import { setToolHover } from "../farm_designer/map/layers/tool_slots/tool_graphics";
 import { Popover } from "../ui";
 import { Path } from "../internal_urls";
-import { Navigate } from "react-router-dom";
+import { Navigate } from "react-router";
 
 export class RawEditToolSlot
   extends React.Component<EditToolSlotProps, EditToolSlotState> {

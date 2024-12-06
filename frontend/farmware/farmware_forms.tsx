@@ -89,7 +89,7 @@ export interface ConfigFieldsProps {
 }
 
 /** Return a div that includes all Farmware input fields. */
-export function ConfigFields(props: ConfigFieldsProps): JSX.Element {
+export function ConfigFields(props: ConfigFieldsProps): React.ReactNode {
   const { farmwareName, farmwareConfigs, getValue, userEnv } = props;
   return <div className={"farmware-config-fields"}>
     {farmwareConfigs.map(config => {

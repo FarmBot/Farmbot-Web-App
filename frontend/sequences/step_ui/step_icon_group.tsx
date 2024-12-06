@@ -3,7 +3,7 @@ import { Help } from "../../ui/help";
 import { Position } from "@blueprintjs/core";
 import { SequenceBodyItem, TaggedSequence } from "farmbot";
 import { splice, remove, move } from "../step_tiles";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { urlFriendly } from "../../util";
 import { setActiveSequenceByName } from "../set_active_sequence_by_name";
 import { t } from "../../i18next_wrapper";

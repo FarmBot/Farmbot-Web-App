@@ -251,7 +251,7 @@ const DownloadLink = (content: Partial<ReleaseItem>) =>
 
 interface SimpleButtonProps {
   click(): void;
-  content: string | JSX.Element;
+  content: string | React.ReactNode;
   extraClass?: string;
 }
 
@@ -265,7 +265,7 @@ const SimpleButton = (props: SimpleButtonProps) =>
 
 interface ContentButtonProps {
   click(): void;
-  content: string | JSX.Element;
+  content: string | React.ReactNode;
   extraClass?: string;
   label?: string;
   image?: string;
@@ -390,7 +390,8 @@ class OsDownloadWizard
           <p className={"os-download-wizard-note"}>
             {t(SetupWizardContent.RPI)}
           </p>
-          <img className="pi-image" src={FilePath.setupWizardImage("rpi_3_vs_4.jpg")} />
+          <img className="pi-image"
+            src={FilePath.setupWizardImage("rpi_3_vs_4.jpg")} />
           <div className={"buttons row grid-2-col double-gap"}>
             {PIS()[Version["v1.6"]].map(pi =>
               <ContentButton key={pi.value}

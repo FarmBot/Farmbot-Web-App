@@ -1,7 +1,7 @@
 import React from "react";
 import { TaggedGenericPointer } from "farmbot";
 import { Actions } from "../constants";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { t } from "../i18next_wrapper";
 import { getMode } from "../farm_designer/map/util";
 import { Mode } from "../farm_designer/map/interfaces";

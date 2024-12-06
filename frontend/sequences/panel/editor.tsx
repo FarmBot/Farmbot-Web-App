@@ -93,8 +93,9 @@ export class RawDesignerSequenceEditor
           {sequence && !isMobile() &&
             <i className={"fa fa-expand fb-icon-button"}
               title={t("open full-page editor")}
-              onClick={() => this.navigate(
-                Path.sequencePage(urlFriendly(sequence.body.name)))} />}
+              onClick={() => {
+                this.navigate(Path.sequencePage(urlFriendly(sequence.body.name)));
+              }} />}
           {!sequence && <button
             className={"fb-button green"}
             title={t("add new sequence")}

@@ -17,7 +17,7 @@ import { capitalize, mean, round, startCase } from "lodash";
 import { TimeSettings } from "../interfaces";
 import { Link } from "../link";
 import { Path } from "../internal_urls";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { Actions } from "../constants";
 import { CurveType } from "../curves/templates";
 import { curveToDdi, CURVE_KEY_LOOKUP } from "./curve_info";
