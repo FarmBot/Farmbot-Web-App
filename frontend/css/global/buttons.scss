@@ -84,20 +84,12 @@
   &.pink {
     background-color: $pink;
   }
-  &.clear-light {
+  &.clear {
     background-color: transparent;
-    box-shadow: inset 0 0 0 1.5px $gray;
-    color: $gray;
+    box-shadow: inset 0 0 0 1.5px var(--text-color);
+    color: var(--text-color);
     &:hover {
-      box-shadow: inset 0 0 0 1.5px $gray,0 0 5px rgba(255,255,255,0.25),inset 0 0 5px rgba(255,255,255,0.3)
-    }
-  }
-  &.clear-dark {
-    color: $dark_gray;
-    background-color: transparent;
-    box-shadow: inset 0 0 0 1.5px $dark_gray;
-    &:hover {
-      box-shadow: inset 0 0 0 1.5px $dark_gray,0 0 5px rgba(0,0,0,0.15),inset 0 0 5px rgba(255,255,255,0.3)
+      box-shadow: inset 0 0 0 1.5px var(--text-color),0 0 5px var(--secondary-bg),inset 0 0 5px var(--secondary-bg);
     }
   }
   &.panel-green {
@@ -292,5 +284,34 @@
   &:disabled {
     filter: invert(0.5);
     cursor: not-allowed;
+  }
+}
+
+body:has(.app.dark) {
+  .fb-icon-button {
+    &.light {
+      color: $off_white;
+    }
+  }
+}
+
+.header-button-group {
+  margin-right: 1.5rem;
+}
+
+.button-group {
+  justify-content: right;
+  .fa-code {
+    font-weight: bold;
+    color: $gray;
+    &.enabled {
+      color: $dark_gray;
+    }
+  }
+  .inactive {
+    color: $gray;
+  }
+  .fa-eye-slash {
+    color: $gray;
   }
 }

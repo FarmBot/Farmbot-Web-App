@@ -95,7 +95,6 @@
   img {
     border-radius: 3px;
     overflow: hidden;
-    filter: invert(1);
   }
   p {
     position: absolute;
@@ -108,6 +107,14 @@
     line-height: 2.4rem;
     margin-left: 50px;
     margin-right: 50px;
+  }
+}
+
+body:has(.app.darl) {
+  .no-flipper-image-container {
+    img {
+      filter: invert(1);
+    }
   }
 }
 

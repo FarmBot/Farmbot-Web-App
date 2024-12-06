@@ -27,13 +27,11 @@ export class TimezoneRow extends React.Component<TimezoneRowProps> {
 
   render() {
     return <Highlight settingName={DeviceSetting.timezone}>
-      <Row className="grid-2-col">
+      <Row className="grid-2-col timezone-grid">
         <label>
           {t(DeviceSetting.timezone)}
         </label>
         <this.Selector />
-      </Row>
-      <Row>
         <this.Note />
       </Row>
     </Highlight>;

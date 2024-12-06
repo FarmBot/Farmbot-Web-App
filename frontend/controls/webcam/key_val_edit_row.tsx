@@ -31,7 +31,7 @@ export function KeyValEditRow(p: KeyValEditRowProps) {
       placeholder={p.valuePlaceholder}
       onChange={p.onValueChange} />
     <button
-      className="red fb-button del-button"
+      className="red fb-button"
       title={t("Delete")}
       onClick={p.onClick}>
       <i className="fa fa-times" />

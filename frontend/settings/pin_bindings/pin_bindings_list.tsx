@@ -47,7 +47,7 @@ export const PinBindingsList = (props: PinBindingsListProps) => {
           <p>{generatePinLabel(pin_number)}</p>
           <p className="binding-action">{binding}</p>
           <button
-            className={`fb-button ${delBtnColor(pin_number)} del-button`}
+            className={`fb-button ${delBtnColor(pin_number)}`}
             title={t("Delete")}
             onClick={() => deleteBinding(pin_number, x.uuid)}>
             <i className="fa fa-times" />

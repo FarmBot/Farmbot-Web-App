@@ -4,7 +4,7 @@
 .settings-panel-content {
   overflow-y: auto;
   overflow-x: hidden;
-  padding-bottom: inherit;
+  padding-bottom: 1.5rem;
   display: grid;
   gap: 2rem;
   .expandable-header {
@@ -96,6 +96,42 @@
   }
 }
 
+.setting {
+  &[hidden] {
+    display: none !important;
+  }
+  &.highlight {
+    background-color: $translucent2_white;
+    box-shadow: 0px 0px 7px 4px $translucent2_white;
+  }
+  &.unhighlight {
+    transition: background-color 10s linear, box-shadow 10s linear;
+    background-color: transparent;
+    box-shadow: none;
+  }
+  &.advanced {
+    border-left: 3px solid $blue;
+    padding-left: 0.7rem;
+    margin-left: -1rem;
+  }
+  .fa-anchor {
+    font-size: 0.8rem;
+    visibility: hidden;
+    &.hovered {
+      visibility: visible;
+    }
+  }
+  .setting {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.5rem;
+    align-items: baseline;
+    .farmbot-os-setting {
+      text-align: left;
+    }
+  }
+}
+
 .load-progress-bar-wrapper {
   position: relative;
   margin: 0.5rem;
@@ -143,4 +179,83 @@
     margin-top: 1rem;
     margin-right: 1rem;
   }
+}
+
+.mcu-input-box {
+  width: 100%;
+}
+
+.fb-toggle-button,
+.mcu-input-box {
+  position: relative;
+  .setting-status-indicator {
+    position: absolute;
+    z-index: 1;
+  }
+  .fa-spinner {
+    color: $dark_gray;
+  }
+  .fa-check {
+    color: $green;
+    animation: fade-out 1s 0.4s forwards;
+  }
+  .save-error {
+    .bp5-popover-content {
+      background: $dark_gray;
+      min-width: 200px;
+      p {
+        text-transform: none;
+        color: $off_white;
+      }
+    }
+    .bp5-popover-arrow-fill {
+      fill: $dark_gray;
+    }
+  }
+}
+
+.mcu-input-box {
+  .setting-status-indicator {
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+}
+
+.release-notes-button {
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.release-notes {
+  max-width: 250px;
+  h1 {
+    font-weight: 300;
+    font-size: 1.4rem;
+    line-height: 2rem;
+    margin-top: 0;
+  }
+  li {
+    font-weight: 300;
+    font-size: 1.1rem;
+    line-height: 1.75rem;
+    margin-bottom: 1rem;
+  }
+  p {
+    display: block;
+    color: $dark_gray;
+    text-overflow: inherit;
+    overflow: inherit;
+    width: inherit;
+    white-space: inherit;
+  }
+}
+
+.timezone-grid {
+  grid-auto-flow: dense!important;
+}
+
+.note {
+  font-style: italic;
+  grid-column: span 2;
+  margin-bottom: 1rem;
 }

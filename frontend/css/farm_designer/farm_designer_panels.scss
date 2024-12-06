@@ -89,8 +89,8 @@
     overflow: hidden;
     box-shadow: 0 0 1rem $translucent;
     backdrop-filter: blur(10px);
-    background-color: $translucent8;
-    color: $gray;
+    background-color: var(--body-bg);
+    color: var(--text-color);
     div[class*="search-item"] {
       &:hover,
       &.hovered {
@@ -105,7 +105,6 @@
 
 .panel-nav,
 .panel-header {
-  color: $light_gray;
   &.green-panel {
     background-color: $panel_green;
   }
@@ -519,7 +518,7 @@ li {
       .removal-method-criteria,
       .color-criteria,
       .point-source-criteria {
-        background: $translucent1_white;
+        background: var(--secondary-bg);
         border-radius: 0.5rem;
         padding: 1rem;
         display: grid;

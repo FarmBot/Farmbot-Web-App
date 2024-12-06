@@ -17,9 +17,9 @@
   left: 50%;
   z-index: 3;
   padding: 1rem 2rem;
-  background: rgba(255, 255, 255, .75);
+  background: var(--body-bg);
   border-radius: 5px;
-  box-shadow: 0px 1px 4px #555;
+  box-shadow: 0px 1px 5px $translucent3;
   text-align: center;
   label {
     display: block;

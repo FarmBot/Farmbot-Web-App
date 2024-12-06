@@ -1,6 +1,13 @@
 @use "../variables" as *;
 @use "sass:color";
 
+button,
+select,
+summary,
+input {
+  outline: none !important;
+}
+
 input {
   border-radius: 3px;
   &:disabled {
@@ -280,4 +287,38 @@ textarea {
   resize: vertical;
   font-size: 1.2rem;
   padding: 1rem;
+}
+
+.input-group {
+  width: 100% !important;
+  input[type=checkbox] {
+    box-shadow: none;
+  }
+}
+
+fieldset {
+  border: none;
+  legend {
+    background: transparent;
+  }
+}
+
+.modified {
+  box-shadow: 0 0 0px 3px $yellow !important;
+  border-radius: 3px;
+  &.bp5-slider {
+    box-shadow: none !important;
+    .bp5-slider-handle {
+      box-shadow: 0 0 0px 3px $yellow;
+    }
+  }
+}
+
+.input {
+  .fa-undo {
+    position: absolute;
+    top: 1rem;
+    right: 0.25rem;
+    font-size: 1rem;
+  }
 }

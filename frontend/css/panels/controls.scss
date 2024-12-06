@@ -295,13 +295,13 @@
 }
 
 .move-settings-menu {
+  color: $medium_gray;
   label {
     margin-top: 7px;
   }
   p {
     margin-top: 0.7rem;
     font-size: 1.4rem;
-    color: $medium_gray;
     font-weight: 400;
   }
 }
@@ -353,9 +353,8 @@
 }
 
 .motor-position-plot-border {
-  background: $translucent2_white;
+  background: var(--secondary-bg);
   border-radius: 5px;
-  fill: $gray;
   text {
     font-size: 0.4rem;
     text-anchor: middle;

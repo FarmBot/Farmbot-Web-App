@@ -2,8 +2,8 @@
 @use "sass:color";
 
 body {
-  background: $body_bg;
-  color: $dark_gray;
+  background: var(--body-bg);
+  color: var(--text-color);
   margin: 0;
 }
 
@@ -40,7 +40,7 @@ body {
 .jobs-panel,
 .connectivity-popover {
   .bp5-popover-content {
-    background: $body_bg;
+    background: var(--body-bg);
   }
 }
 
@@ -49,7 +49,7 @@ body {
 .connectivity-content {
   display: grid;
   gap: 2rem;
-  color: $gray;
+  color: var(--text-color);
   .tabs {
     border-radius: 0.5rem;
     display: grid;
@@ -86,13 +86,6 @@ body {
 a {
   cursor: pointer !important;
   outline: none !important;
-}
-
-.input-group {
-  width: 100% !important;
-  input[type=checkbox] {
-    box-shadow: none;
-  }
 }
 
 .fa {
@@ -138,46 +131,6 @@ a {
   color: $orange;
 }
 
-.mcu-input-box {
-  width: 100%;
-}
-
-.fb-toggle-button,
-.mcu-input-box {
-  position: relative;
-  .setting-status-indicator {
-    position: absolute;
-    z-index: 1;
-  }
-  .fa-spinner {
-    color: $dark_gray;
-  }
-  .fa-check {
-    color: $green;
-    animation: fade-out 1s 0.4s forwards;
-  }
-  .save-error {
-    .bp5-popover-content {
-      background: $dark_gray;
-      min-width: 200px;
-      p {
-        text-transform: none;
-        color: $off_white;
-      }
-    }
-    .bp5-popover-arrow-fill {
-      fill: $dark_gray;
-    }
-  }
-}
-
-.mcu-input-box {
-  .setting-status-indicator {
-    top: 0.5rem;
-    right: 0.5rem;
-  }
-}
-
 .fb-toggle-button {
   .setting-status-indicator {
     top: 0.25rem;
@@ -204,13 +157,6 @@ a {
 
 .full-width {
   width: 100%;
-}
-
-fieldset {
-  border: none;
-  legend {
-    background: transparent;
-  }
 }
 
 .e-stop {
@@ -248,13 +194,6 @@ fieldset {
   }
 }
 
-button,
-select,
-summary,
-input {
-  outline: none !important;
-}
-
 .unavailable {
   display: inline-block;
   position: relative;
@@ -279,27 +218,6 @@ input {
       vertical-align: middle;
       text-align: center;
     }
-  }
-}
-
-.header-button-group {
-  margin-right: 1.5rem;
-}
-
-.button-group {
-  justify-content: right;
-  .fa-code {
-    font-weight: bold;
-    color: $gray;
-    &.enabled {
-      color: $dark_gray;
-    }
-  }
-  .inactive {
-    color: $gray;
-  }
-  .fa-eye-slash {
-    color: $gray;
   }
 }
 
@@ -329,12 +247,6 @@ input {
   max-width: 400px;
 }
 
-.note {
-  font-style: italic;
-  font-size: 1.4rem;
-  margin: 1rem 0;
-}
-
 @keyframes page-transition {
   0% {
     opacity: 0;
@@ -359,97 +271,6 @@ input {
     img {
       filter: grayscale(1);
     }
-  }
-}
-
-.farmware-info {
-  margin-top: 1rem;
-}
-
-.farmware-list-items {
-  margin-left: -30px;
-  margin-right: -20px;
-  padding: 0.5rem;
-  padding-left: 1.5rem;
-  padding-top: 0.75rem;
-  cursor: pointer;
-  label {
-    cursor: pointer;
-  }
-  &:hover  {
-    background: $medium_light_gray;
-    p {
-      font-weight: bold;
-    }
-  }
-}
-
-.farmware-url {
-  font-size: 1rem;
-  width: 100px;
-  word-wrap: break-word;
-}
-
-.settings-menu-button {
-  float: right;
-}
-
-.publish-button {
-  float: right;
-}
-
-.map-size-setting {
-  margin-top: 1rem;
-}
-
-.release-notes-button {
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.release-notes {
-  max-width: 250px;
-  h1 {
-    font-weight: 300;
-    font-size: 1.4rem;
-    line-height: 2rem;
-    margin-top: 0;
-  }
-  li {
-    font-weight: 300;
-    font-size: 1.1rem;
-    line-height: 1.75rem;
-    margin-bottom: 1rem;
-  }
-  p {
-    display: block;
-    color: $dark_gray;
-    text-overflow: inherit;
-    overflow: inherit;
-    width: inherit;
-    white-space: inherit;
-  }
-}
-
-.sensors-widget,
-.webcam-widget,
-.peripherals-widget {
-  .del-button {
-    margin-top: 0.5rem;
-  }
-}
-
-.farmware-step-input-fields {
-  label {
-    padding-top: 1rem;
-  }
-  fieldset {
-    width: 95%;
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-  button {
-    position: absolute;
   }
 }
 
@@ -481,10 +302,6 @@ input {
       }
     }
   }
-}
-
-.farmware-name-manual-input {
-  margin-top: 1rem;
 }
 
 .computed-move-step {
@@ -525,39 +342,6 @@ input {
   }
 }
 
-.modified {
-  box-shadow: 0 0 0px 3px $yellow !important;
-  &.bp5-slider {
-    box-shadow: none !important;
-    .bp5-slider-handle {
-      box-shadow: 0 0 0px 3px $yellow;
-    }
-  }
-}
-
-.modified-start {
-  box-shadow: none !important;
-  .bp5-start {
-    box-shadow: 0 0 0px 3px $yellow;
-  }
-}
-
-.modified-end {
-  box-shadow: none !important;
-  .bp5-end {
-    box-shadow: 0 0 0px 3px $yellow;
-  }
-}
-
-.input {
-  .fa-undo {
-    position: absolute;
-    top: 1rem;
-    right: 0.25rem;
-    font-size: 1rem;
-  }
-}
-
 .checkbox-row {
   display: flex;
   margin-top: 1rem;
@@ -577,54 +361,8 @@ input {
   }
 }
 
-.farmware-input-group {
-  position: relative;
-  margin-left: 3rem;
-  .fa-times-circle,
-  .fa-refresh {
-    position: absolute;
-    top: 0.85rem;
-    color: $light_gray;
-    &:hover {
-      color: $dark_gray;
-    }
-  }
-  .fa-times-circle {
-    right: 1rem;
-  }
-  .fa-refresh {
-    right: 3rem;
-  }
-  &.dropdown {
-    .filter-search {
-      border: 3px solid $transparent;
-    }
-    .fa-times-circle {
-      right: 3rem;
-    }
-    .fa-refresh {
-      right: 5rem;
-    }
-  }
-}
-
 .default-value-form {
   position: relative;
-}
-
-.error-with-button {
-  margin-top: 1rem;
-  background: $pink;
-  border: 1px solid $red;
-  border-radius: 5px;
-  label,
-  p {
-    margin: 0.5rem;
-    color: $red;
-  }
-  button {
-    margin: 0.5rem !important;
-  }
 }
 
 .status-icon {
@@ -648,133 +386,6 @@ input {
     display: inline;
     margin-left: 0.5rem;
     font-size: 1.3rem;
-  }
-}
-
-.problem-alerts {
-  padding: 1rem;
-  color: $gray;
-}
-
-.problem-alert {
-  padding: 1.5rem 2rem;
-  border-radius: 1rem;
-  box-shadow: 0px 2px 8px $translucent2;
-  background: $translucent2_white;
-  display: grid;
-  gap: 0.5rem;
-  .fa-check-square {
-    color: $green;
-  }
-  .fa-info-circle {
-    color: $blue;
-  }
-  &.bulletin-alert {
-    img, iframe {
-      margin: 1rem auto;
-      width: 100%;
-      border-radius: 5px;
-    }
-  }
-  .problem-alert-title {
-    align-items: baseline;
-    h3 {
-      display: inline;
-      font-size: 1.5rem;
-      font-weight: bold;
-      margin: 0;
-      font-family: 'Inknut Antiqua';
-    }
-    p {
-      display: inline;
-      font-size: 1.2rem;
-      white-space: nowrap;
-    }
-  }
-  .problem-alert-content {
-    display: grid;
-    gap: 0.5rem;
-    .markdown {
-      p {
-        display: block;
-        text-overflow: inherit;
-        overflow: inherit;
-        width: inherit;
-        white-space: inherit;
-      }
-      ul {
-        list-style-type: disc !important;
-        padding-inline-start: 40px;
-      }
-    }
-    p {
-      margin-bottom: 0.75rem !important;
-      font-size: 1.4rem;
-      line-height: 2rem;
-    }
-    label {
-      margin-top: 0.5rem;
-    }
-    .row {
-      margin-top: 2rem;
-    }
-    .tour-list {
-      margin: 0;
-      label {
-        max-width: 57%;
-      }
-    }
-    .link-button {
-      color: $off_white !important;
-      font-weight: bold !important;
-      justify-self: left;
-      margin: 0;
-    }
-    a {
-      text-decoration: underline;
-      outline: none !important;
-      cursor: pointer !important;
-      &:link {
-        font-weight: 500;
-      }
-      &:hover {
-        color: $off_white;
-      }
-      &.fb-button {
-        text-decoration: none !important;
-      }
-    }
-  }
-  .documentation-card {
-    .fa-question {
-      cursor: default !important;
-      margin-left: 0.25rem;
-      margin-right: 0.25rem;
-    }
-  }
-}
-
-.firmware-alerts {
-  max-width: 600px;
-}
-
-.firmware-hardware-choice-table {
-  margin: 2rem;
-  margin-top: 1rem;
-  width: 93%;
-  border: 1px solid $gray;
-  font-size: 1.2rem;
-  th {
-    background: $light_gray;
-    font-weight: normal;
-  }
-  td {
-    background: $off_white;
-    color: $medium_gray;
-  }
-  code {
-    background: $light_gray;
-    color: $dark_gray;
   }
 }
 
@@ -813,44 +424,8 @@ textarea:focus {
   }
 }
 
-.setting {
-  &[hidden] {
-    display: none !important;
-  }
-  &.highlight {
-    background-color: $translucent2_white;
-    box-shadow: 0px 0px 7px 4px $translucent2_white;
-  }
-  &.unhighlight {
-    transition: background-color 10s linear, box-shadow 10s linear;
-    background-color: transparent;
-    box-shadow: none;
-  }
-  &.advanced {
-    border-left: 3px solid $blue;
-    padding-left: 0.7rem;
-    margin-left: -1rem;
-  }
-  .fa-anchor {
-    font-size: 0.8rem;
-    visibility: hidden;
-    &.hovered {
-      visibility: visible;
-    }
-  }
-  .setting {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 0.5rem;
-    align-items: baseline;
-    .farmbot-os-setting {
-      text-align: left;
-    }
-  }
-}
-
 .beacon-transition {
-  transition: border 1s, border-radius 1s, background 1s;
+  transition: border 1s, border-radius 1s;
 }
 
 .beacon {
@@ -859,31 +434,6 @@ textarea:focus {
   }
   &.soft {
     background: #ffe53e52 !important;
-  }
-}
-
-.widget-body-tooltips {
-  display: flex;
-  padding-right: 0.5rem;
-  .bp5-popover-wrapper {
-    line-height: 3rem;
-  }
-}
-
-.z-param-label {
-  margin-top: 0.2rem;
-  padding-right: 0;
-  label {
-    font-size: 1.2rem !important;
-  }
-}
-
-.read-only-icon {
-  margin: 9px 0px 0px 9px;
-  float: right;
-  box-sizing: inherit;
-  .fa-pencil {
-    color: $white;
   }
 }
 
@@ -898,4 +448,8 @@ ul {
   display: none !important;
   width: 0px !important;
   background-color: transparent !important;
+}
+
+svg {
+  fill: var(--text-color);
 }

@@ -1,5 +1,4 @@
 // COLORS used throughout the web app
-$body_bg: #031104;
 $alpha90: 0.90;
 $transparent: #00000000;
 $translucent: rgba(0, 0, 0, 0.2);
@@ -28,6 +27,7 @@ $medium_gray: #666;
 $placeholder_gray: #999;
 $dark_gray: #434343;
 $darker_gray: #182026;
+$dark-bg: #031104;
 $black: #000;
 $off_black: #222;
 $light_blue: #cdf;
@@ -76,6 +76,21 @@ $panel_teal: rgb(30, 178, 135, $alpha90);
 $panel_light_teal: rgb(241, 252, 249, $alpha90);
 $panel_red: rgb(255, 79, 55, $alpha90);
 $panel_light_red: rgb(255, 247, 246, $alpha90);
+
+body:has(.app.light) {
+  --body-bg: #{$off-white};
+  --secondary-bg: #{$translucent1};
+  --text-color: #{$dark_gray};
+  --border-color: #{$translucent2};
+}
+
+body:has(.app.dark) {
+  --body-bg: #{$dark-bg};
+  --secondary-bg: #{$translucent1_white};
+  --text-color: #{$gray};
+  --border-color: #{$translucent3_white};
+}
+
 .dark-gray {
   background-color: $dark_gray !important;
 }

@@ -35,7 +35,7 @@
       position: sticky;
       top: 0;
       z-index: 999;
-      background: $body_bg;
+      background: var(--body-bg);
     }
     tr {
       transform: scale(1);

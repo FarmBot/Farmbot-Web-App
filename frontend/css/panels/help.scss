@@ -14,6 +14,14 @@
   }
 }
 
+body:has(.app.dark) {
+  .help-panel-header {
+    img {
+      filter: invert(0.75);
+    }
+  }
+}
+
 .help-panel-header {
   height: 4rem;
   padding: 0.5rem 1rem;
@@ -21,9 +29,6 @@
   grid-template-columns: 1fr auto;
   i {
     font-size: 2rem;
-  }
-  img {
-    filter: invert(0.75);
   }
   a {
     font-weight: bold;

@@ -269,7 +269,7 @@ const XAxis = (props: XAxisProps) => {
   const step = maxDay(data) > 100 ? 20 : 10;
   const dayLabels = [1].concat(range(step, lastLabel + 1, step));
   return <g id={"x-axis"}>
-    <g id={"day-labels"} fontSize={5} textAnchor={"middle"} fill={Color.gray}>
+    <g id={"day-labels"} fontSize={5} textAnchor={"middle"}>
       {dayLabels.map(day =>
         <text key={day} x={normX(day)} y={yZero + 6}>{day}</text>)}
     </g>
@@ -278,7 +278,7 @@ const XAxis = (props: XAxisProps) => {
       x1={0} y1={yZero} x2={0} y2={yMax} />
     <text id={"x-axis-label"}
       fontSize={5} textAnchor={"middle"}
-      fill={Color.gray} fontWeight={"bold"}
+      fontWeight={"bold"}
       x={xMax / 2} y={yZero + 14}>
       {t("DAY")}
     </text>
@@ -296,7 +296,7 @@ const YAxis = (props: YAxisProps) => {
         const y = normY(value);
         return <g id={"" + value} key={value}>
           {y > -1 &&
-            <text fontSize={5} textAnchor={"end"} fill={Color.gray}
+            <text fontSize={5} textAnchor={"end"}
               x={-2} y={y + 1.5}>
               {value}
             </text>}
@@ -308,7 +308,7 @@ const YAxis = (props: YAxisProps) => {
     </g>
     <text id={"y-axis-label"}
       fontSize={5} textAnchor={"end"}
-      fill={Color.gray} fontWeight={"bold"}
+      fontWeight={"bold"}
       x={0} y={-5}>
       {props.curve.body.type == CurveType.water ? t("mL") : t("mm")}
     </text>

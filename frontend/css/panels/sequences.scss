@@ -256,8 +256,7 @@
 
 .sequence-editor-sections {
   .sequence-description {
-    box-shadow: 0 0 1rem #0000001a;
-    background: $translucent2_white;
+    background: var(--secondary-bg);
     border-radius: 0.5rem;
     textarea {
       height: 10rem;
@@ -517,10 +516,9 @@
   display: grid;
   gap: 1rem;
   .location-form, .custom-coordinate-form {
-    background: $translucent2_white;
+    background: var(--secondary-bg);
     padding: 1rem;
     border-radius: 0.5rem;
-    box-shadow: 0 0 1rem $translucent1;
   }
   .default-value-form, .custom-coordinate-form {
     margin: 0 3.5rem;

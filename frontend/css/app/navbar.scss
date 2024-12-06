@@ -150,7 +150,8 @@ nav {
   .nav-coordinates,
   .jobs-button,
   .setup-button,
-  .connectivity-button {
+  .connectivity-button,
+  .nav-name {
     display: flex;
     position: relative;
     gap: 1rem;
@@ -167,6 +168,7 @@ nav {
     line-height: 3rem;
     color: $light_gray;
     background: $medium_gray;
+    user-select: none;
     &.hover,
     &:hover {
       color: $white;
@@ -254,21 +256,7 @@ nav {
     }
   }
   .nav-name {
-    padding: 0.75rem;
-    border-radius: 5px;
     margin-top: -0.75rem;
-    font-weight: normal;
-    &:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
-    &:after{
-      content: attr(data-title);
-      display: block;
-      font-weight: bold;
-      height: 0;
-      overflow: hidden;
-      visibility: hidden;
-    }
   }
 }
 
@@ -287,12 +275,12 @@ nav {
   .bp5-popover-content {
     position: relative;
     width: 22rem;
-    background: $translucent8;
+    background: var(--body-bg);
     backdrop-filter: blur(10px);
     padding: 0;
     font-size: 1.2rem;
     letter-spacing: 1.2px;
-    color: $gray;
+    color: var(--text-color);
     i {
       margin-right: 0.8rem;
     }
@@ -304,12 +292,9 @@ nav {
     }
     img {
       margin-right: 0.8rem;
-      filter: invert(0.75);
     }
     .app-version {
       padding: 0.5rem 0 0 1rem;
-      border-bottom-left-radius: 4px;
-      border-bottom-right-radius: 4px;
       a {
         width: auto;
       }
@@ -330,6 +315,16 @@ nav {
     border-radius: 5px;
     &:hover {
       background: rgba(255, 255, 255, 0.2);
+    }
+  }
+}
+
+body:has(.app.dark) {
+  .menu-popover {
+    .bp5-popover-content {
+      img {
+        filter: invert(0.75);
+      }
     }
   }
 }
@@ -378,6 +373,19 @@ nav {
       margin-left: 1rem;
       margin-top: 0.4rem;
     }
+  }
+}
+
+.nav-additional-menu {
+  padding: 0.5rem 0;
+}
+
+.read-only-icon {
+  margin: 9px 0px 0px 9px;
+  float: right;
+  box-sizing: inherit;
+  .fa-pencil {
+    color: $white;
   }
 }
 

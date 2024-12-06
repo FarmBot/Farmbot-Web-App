@@ -105,7 +105,7 @@
   }
   thead {
     text-align: left;
-    background: $body_bg;
+    background: var(--body-bg);
   }
   thead,
   th {

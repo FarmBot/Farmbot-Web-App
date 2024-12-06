@@ -92,7 +92,7 @@
   }
   .text-input-wrapper {
     align-items: center;
-    border-bottom: 1.5px solid $translucent3_white;
+    border-bottom: 1.5px solid var(--border-color);
     display: flex;
     padding: 0 0.75rem;
     i {
@@ -533,7 +533,6 @@
   right: -155px;
   z-index: 3;
   transition: all 0.4s ease;
-  color: $gray;
   &.active {
     transform: translateX(-175px);
   }
@@ -542,7 +541,7 @@
     flex-direction: row-reverse;
     gap: 1.25rem;
     .menu-content, .z-display {
-      background-color: $translucent8;
+      background-color: var(--body-bg);
       border-radius: 1rem;
       box-shadow: 0px 1px 5px rgba(0, 0, 0, .3);
       backdrop-filter: blur(5px);

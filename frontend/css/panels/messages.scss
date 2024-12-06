@@ -1,0 +1,128 @@
+@use "../variables" as *;
+@use "sass:color";
+
+.problem-alerts {
+  padding: 1rem;
+}
+
+.problem-alert {
+  padding: 1.5rem 2rem;
+  border-radius: 1rem;
+  box-shadow: 0px 2px 8px $translucent2;
+  background: $translucent2_white;
+  display: grid;
+  gap: 0.5rem;
+  .fa-check-square {
+    color: $green;
+  }
+  .fa-info-circle {
+    color: $blue;
+  }
+  &.bulletin-alert {
+    img, iframe {
+      margin: 1rem auto;
+      width: 100%;
+      border-radius: 5px;
+    }
+  }
+  .problem-alert-title {
+    align-items: baseline;
+    h3 {
+      display: inline;
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin: 0;
+      font-family: 'Inknut Antiqua';
+    }
+    p {
+      display: inline;
+      font-size: 1.2rem;
+      white-space: nowrap;
+    }
+  }
+  .problem-alert-content {
+    display: grid;
+    gap: 0.5rem;
+    .markdown {
+      p {
+        display: block;
+        text-overflow: inherit;
+        overflow: inherit;
+        width: inherit;
+        white-space: inherit;
+      }
+      ul {
+        list-style-type: disc !important;
+        padding-inline-start: 40px;
+      }
+    }
+    p {
+      margin-bottom: 0.75rem !important;
+      font-size: 1.4rem;
+      line-height: 2rem;
+    }
+    label {
+      margin-top: 0.5rem;
+    }
+    .row {
+      margin-top: 2rem;
+    }
+    .tour-list {
+      margin: 0;
+      label {
+        max-width: 57%;
+      }
+    }
+    .link-button {
+      color: $off_white !important;
+      font-weight: bold !important;
+      justify-self: left;
+      margin: 0;
+    }
+    a {
+      text-decoration: underline;
+      outline: none !important;
+      cursor: pointer !important;
+      &:link {
+        font-weight: 500;
+      }
+      &:hover {
+        color: $off_white;
+      }
+      &.fb-button {
+        text-decoration: none !important;
+      }
+    }
+  }
+  .documentation-card {
+    .fa-question {
+      cursor: default !important;
+      margin-left: 0.25rem;
+      margin-right: 0.25rem;
+    }
+  }
+}
+
+.firmware-alerts {
+  max-width: 600px;
+}
+
+.firmware-hardware-choice-table {
+  margin: 2rem;
+  margin-top: 1rem;
+  width: 93%;
+  border: 1px solid $gray;
+  font-size: 1.2rem;
+  th {
+    background: $light_gray;
+    font-weight: normal;
+  }
+  td {
+    background: $off_white;
+    color: $medium_gray;
+  }
+  code {
+    background: $light_gray;
+    color: $dark_gray;
+  }
+}
