@@ -80,7 +80,7 @@ describe("translateScreenToGarden()", () => {
       gridOffset: { x: 30, y: 40 },
       panelStatus: MapPanelStatus.open,
     });
-    expect(result).toEqual({ x: 30, y: 80 });
+    expect(result).toEqual({ x: 30, y: 100 });
   });
 
   it("translates screen coords to garden coords: zoomLvl < 1", () => {
@@ -92,7 +92,7 @@ describe("translateScreenToGarden()", () => {
       gridOffset: { x: 30, y: 40 },
       panelStatus: MapPanelStatus.open,
     });
-    expect(result).toEqual({ x: 2010, y: 840 });
+    expect(result).toEqual({ x: 1990, y: 910 });
   });
 
   it("translates screen coords to garden coords: zoomLvl > 1", () => {
@@ -104,7 +104,7 @@ describe("translateScreenToGarden()", () => {
       gridOffset: { x: 30, y: 40 },
       panelStatus: MapPanelStatus.open,
     });
-    expect(result).toEqual({ x: 420, y: 150 });
+    expect(result).toEqual({ x: 410, y: 170 });
   });
 
   it("translates screen coords to garden coords: other case", () => {
@@ -119,7 +119,7 @@ describe("translateScreenToGarden()", () => {
       gridOffset: { x: 30, y: 40 },
       panelStatus: MapPanelStatus.open,
     });
-    expect(result).toEqual({ x: 70, y: 130 });
+    expect(result).toEqual({ x: 60, y: 110 });
   });
 
   it("translates screen coords to garden coords: swapped X&Y", () => {
@@ -135,7 +135,7 @@ describe("translateScreenToGarden()", () => {
       gridOffset: { x: 30, y: 40 },
       panelStatus: MapPanelStatus.open,
     });
-    expect(result).toEqual({ x: 130, y: 70 });
+    expect(result).toEqual({ x: 110, y: 60 });
   });
 
   it("translates screen coords to garden coords: panel closed", () => {
@@ -147,7 +147,7 @@ describe("translateScreenToGarden()", () => {
       gridOffset: { x: 30, y: 40 },
       panelStatus: MapPanelStatus.closed,
     });
-    expect(result).toEqual({ x: 480, y: 80 });
+    expect(result).toEqual({ x: 490, y: 100 });
   });
 
   it("translates screen coords to garden coords: panel closed mobile", () => {
@@ -159,7 +159,7 @@ describe("translateScreenToGarden()", () => {
       gridOffset: { x: 30, y: 40 },
       panelStatus: MapPanelStatus.mobileClosed,
     });
-    expect(result).toEqual({ x: 480, y: 30 });
+    expect(result).toEqual({ x: 490, y: 30 });
   });
 
   it("translates screen coords to garden coords: short panel", () => {
@@ -171,7 +171,7 @@ describe("translateScreenToGarden()", () => {
       gridOffset: { x: 30, y: 40 },
       panelStatus: MapPanelStatus.short,
     });
-    expect(result).toEqual({ x: 480, y: 40 });
+    expect(result).toEqual({ x: 490, y: 40 });
   });
 });
 
@@ -449,7 +449,7 @@ describe("getGardenCoordinates()", () => {
 
   it("returns garden coordinates", () => {
     const result = getGardenCoordinates(fakeProps());
-    expect(result).toEqual({ x: 20, y: 70 });
+    expect(result).toEqual({ x: 20, y: 90 });
   });
 
   it("falls back to zoom level", () => {
@@ -457,7 +457,7 @@ describe("getGardenCoordinates()", () => {
       value: () => ({ transform: undefined }), configurable: true
     });
     const result = getGardenCoordinates(fakeProps());
-    expect(result).toEqual({ x: 20, y: 70 });
+    expect(result).toEqual({ x: 20, y: 90 });
   });
 
   it("returns undefined", () => {

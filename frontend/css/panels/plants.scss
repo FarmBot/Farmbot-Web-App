@@ -56,12 +56,9 @@
     background-repeat: no-repeat !important;
     background-position: top center !important;
     min-height: 125px;
+    color: $off_white;
     .panel-title {
       overflow: visible;
-      color: $off_white;
-      .back-arrow {
-        color: $off_white;
-      }
       .title {
         font-family: "Inknut Antiqua";
         font-weight: bold;
@@ -74,6 +71,8 @@
         position: absolute;
         bottom: -8.5rem;
         right: 1.5rem;
+        box-shadow: inset 0 0 0 1.5px $off_white !important;
+        color: $off_white !important;
       }
     }
   }
