@@ -272,7 +272,7 @@ export const SequenceBtnGroup = ({
   return <div className="button-group row">
     <div className={"row no-gap"}>
       <Popover position={Position.BOTTOM_RIGHT}
-        target={<i className={"fa fa-gear fb-icon-button light"}
+        target={<i className={"fa fa-gear fb-icon-button invert"}
           title={t("settings")} />}
         content={<SequenceSettingsMenu
           dispatch={dispatch}
@@ -280,7 +280,7 @@ export const SequenceBtnGroup = ({
       {getWebAppConfigValue(BooleanSetting.view_celery_script) &&
         <i title={t("toggle celery script view")}
           className={[
-            "fa fa-code fb-icon-button light",
+            "fa fa-code fb-icon-button invert",
             viewCeleryScript ? "" : "inactive",
           ].join(" ")}
           onClick={toggleViewSequenceCeleryScript} />}
@@ -288,7 +288,7 @@ export const SequenceBtnGroup = ({
         className={[
           "fa",
           "fa-thumb-tack",
-          "fb-icon-button light",
+          "fb-icon-button invert",
           sequence.body.pinned ? "" : "inactive",
         ].join(" ")}
         onClick={() => dispatch(pinSequenceToggle(sequence))} />
@@ -297,15 +297,15 @@ export const SequenceBtnGroup = ({
           className={[
             "fa",
             visualized ? "fa-eye" : "fa-eye-slash inactive",
-            "fb-icon-button light",
+            "fb-icon-button invert",
           ].join(" ")}
           title={visualized ? t("unvisualize") : t("visualize")}
           onClick={() =>
             dispatch(visualizeInMap(visualized ? undefined : sequence.uuid))} />}
-      <i className={"fa fa-copy fb-icon-button light"}
+      <i className={"fa fa-copy fb-icon-button invert"}
         title={t("copy sequence")}
         onClick={() => dispatch(copySequence(navigate, sequence))} />
-      <i className={"fa fa-trash fb-icon-button light"}
+      <i className={"fa fa-trash fb-icon-button invert"}
         title={t("delete sequence")}
         onClick={deleteSequence({
           navigate,
@@ -315,7 +315,7 @@ export const SequenceBtnGroup = ({
         })} />
       <div className={"publish-button"}>
         <Popover position={Position.BOTTOM_RIGHT}
-          target={<i className={"fa fa-share fb-icon-button light"}
+          target={<i className={"fa fa-share fb-icon-button invert"}
             title={t("share sequence")} />}
           content={isSequencePublished(sequence)
             ? <SequenceShareMenu sequence={sequence} />
@@ -326,7 +326,7 @@ export const SequenceBtnGroup = ({
           position={Position.BOTTOM}
           popoverClassName={"colorpicker-menu gray"}
           target={<i title={t("select color")}
-            className={"fa fa-paint-brush fb-icon-button light"} />}
+            className={"fa fa-paint-brush fb-icon-button invert"} />}
           content={<ColorPickerCluster
             onChange={color =>
               editCurrentSequence(dispatch, sequence, { color })}
@@ -673,7 +673,7 @@ const Description = (props: DescriptionProps) => {
           className={[
             "fa",
             isProcessing ? "fa-spinner fa-pulse" : "fa-magic",
-            "fb-icon-button light",
+            "fb-icon-button invert",
           ].join(" ")}
           onClick={e => {
             e.stopPropagation();
@@ -697,7 +697,7 @@ const Description = (props: DescriptionProps) => {
           className={[
             "fa",
             isEditing ? "fa-eye" : "fa-pencil",
-            "fb-icon-button light",
+            "fb-icon-button invert",
           ].join(" ")}
           onClick={e => {
             e.stopPropagation();
@@ -807,7 +807,7 @@ const PublicCopyToolbar = (props: PublicCopyToolbarProps) => {
     {props.showName && <p>{props.sequencePreview?.body.name}</p>}
     {props.viewCeleryScript &&
       <i title={t("toggle celery script view")}
-        className={["fa fa-code fb-icon-button light",
+        className={["fa fa-code fb-icon-button invert",
           props.viewSequenceCeleryScript ? "" : "inactive",
         ].join(" ")}
         onClick={props.toggleViewSequenceCeleryScript} />}

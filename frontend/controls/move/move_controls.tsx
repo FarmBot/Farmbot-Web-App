@@ -20,7 +20,7 @@ export const MoveControls = (props: MoveControlsProps) => {
   const { busy, locked } = props.bot.hardware.informational_settings;
   return <div className={"move grid double-gap"}>
     <Popover position={Position.LEFT_TOP} className={"move-settings"}
-      target={<i className={"fa fa-gear fb-icon-button light"} />}
+      target={<i className={"fa fa-gear fb-icon-button invert"} />}
       content={<MoveWidgetSettingsMenu
         dispatch={props.dispatch}
         getConfigValue={props.getConfigValue}

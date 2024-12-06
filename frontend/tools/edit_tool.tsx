@@ -123,7 +123,7 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
           disabled={!toolName || nameTaken}
           status={SpecialStatus.DIRTY} />
         <i
-          className={`fa fa-trash fb-icon-button light ${activeOrMounted
+          className={`fa fa-trash fb-icon-button invert ${activeOrMounted
             ? "pseudo-disabled"
             : ""}`}
           title={activeOrMounted ? message : t("delete")}

@@ -77,7 +77,7 @@ export class RawPlantInfo extends React.Component<EditPlantInfoProps, {}> {
         onBack={unselectPlant(this.props.dispatch)}>
         <div className={"panel-header-icon-group"}>
           <i title={t("delete")}
-            className={"fa fa-trash fb-icon-button light"}
+            className={"fa fa-trash fb-icon-button invert"}
             onClick={this.destroy(info.uuid)} />
         </div>
       </DesignerPanelHeader>

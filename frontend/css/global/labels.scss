@@ -11,12 +11,12 @@ label {
     width: 10%;
     margin-bottom: 0px;
     line-height: 3rem;
-    border: solid $translucent2_white;
+    border: solid var(--border-color);
     border-width: 1px;
   }
 }
 
 input[type=checkbox]:checked+label.day-label {
-  color: $off_white;
-  background: $translucent3_white;
+  color: var(--body-bg);
+  background: var(--text-color);
 }

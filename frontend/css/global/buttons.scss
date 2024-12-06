@@ -264,10 +264,10 @@
   background: transparent;
   color: $dark_gray;
   text-align: center;
-  &.light {
-    color: $off_white;
+  &.invert {
+    color: var(--text-color);
     &:hover:not(:disabled) {
-      background: rgba(255, 255, 255, 0.12);
+      background: var(--secondary-bg);
     }
     &:disabled {
       color: $off_white;
@@ -284,14 +284,6 @@
   &:disabled {
     filter: invert(0.5);
     cursor: not-allowed;
-  }
-}
-
-body:has(.app.dark) {
-  .fb-icon-button {
-    &.light {
-      color: $off_white;
-    }
   }
 }
 
