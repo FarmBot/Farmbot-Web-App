@@ -87,6 +87,9 @@
   },
   "devDependencies": {
     "@react-three/eslint-plugin": "0.1.1",
+    "@testing-library/dom": "10.4.0",
+    "@testing-library/jest-dom": "6.6.3",
+    "@testing-library/react": "16.1.0",
     "@types/enzyme": "3.10.12",
     "@types/jest": "29.5.14",
     "@types/readable-stream": "4.0.18",

@@ -49,6 +49,6 @@ module.exports = {
   ],
   coverageDirectory: "<rootDir>/coverage_fe",
   setupFilesAfterEnv: [
-    "<rootDir>/frontend/__test_support__/customMatchers.js"
+    "<rootDir>/frontend/__test_support__/setup_tests.js"
   ]
 }

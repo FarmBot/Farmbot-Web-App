@@ -1,5 +1,5 @@
 import React from "react";
-import { shallow } from "enzyme";
+import { render, screen } from "@testing-library/react";
 import { MobileMenu } from "../mobile_menu";
 import { MobileMenuProps } from "../interfaces";
 import {
@@ -17,7 +17,8 @@ describe("<MobileMenu />", () => {
   });
 
   it("renders", () => {
-    const wrapper = shallow(<MobileMenu {...fakeProps()} />);
-    expect(wrapper.find(".mobile-menu").hasClass("active")).toBeTruthy();
+    render(<MobileMenu {...fakeProps()} />);
+    const mobileMenu = screen.getByRole("navigation", { name: "Mobile Panel Menu" });
+    expect(mobileMenu).toHaveClass("mobile-menu active");
   });
 });

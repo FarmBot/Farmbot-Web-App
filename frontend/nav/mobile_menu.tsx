@@ -11,7 +11,9 @@ export const MobileMenu = (props: MobileMenuProps) => {
     <Overlay2
       isOpen={props.mobileMenuOpen}
       onClose={props.close("mobileMenuOpen")}>
-      <div className={`${classes.join(" ")} ${isActive}`}>
+      <div className={`${classes.join(" ")} ${isActive}`}
+        role={"navigation"}
+        aria-label={"Mobile Panel Menu"}>
         <NavLinks
           designer={props.designer}
           dispatch={props.dispatch}
