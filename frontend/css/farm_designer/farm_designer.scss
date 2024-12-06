@@ -22,15 +22,15 @@
 .farm-designer-map {
   display: inline-block;
   min-width: 100%;
-  padding: 11rem 2rem 2rem 2rem; // at zoom = 1.0: 110px 20px 20px 20px
+  padding: 9rem 2rem 2rem 2rem; // at zoom = 1.0: 90px 20px 20px 20px
   height: 100%;
   overflow: visible;
   transition: 0.2s ease;
   &.panel-open {
-    padding: 11rem 2rem 2rem 46.8rem; // at zoom = 1.0: 110px 20px 20px 468px
+    padding: 9rem 2rem 2rem 47.5rem; // at zoom = 1.0: 90px 20px 20px 475px
   }
   &.panel-closed-mobile {
-    padding: 16rem 2rem 2rem 2rem; // at zoom = 1.0: 160px 20px 20px 20px
+    padding: 16rem 1rem 1rem 1rem; // at zoom = 1.0: 160px 10px 10px 10px
   }
   &::-webkit-scrollbar {
     display: none;
@@ -529,7 +529,7 @@
 
 .garden-map-legend {
   position: fixed;
-  top: 110px;
+  top: 90px;
   right: -155px;
   z-index: 3;
   transition: all 0.4s ease;
@@ -541,7 +541,7 @@
     flex-direction: row-reverse;
     gap: 1.25rem;
     .menu-content, .z-display {
-      background-color: var(--body-bg);
+      background-color: var(--main-bg);
       border-radius: 1rem;
       box-shadow: 0px 1px 5px rgba(0, 0, 0, .3);
       backdrop-filter: blur(5px);

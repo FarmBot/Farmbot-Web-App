@@ -6,6 +6,7 @@
   top: 9rem;
   width: 45rem;
   margin: 1.25rem;
+  margin-top: 0;
   overflow-y: scroll;
   border-radius: 1rem;
   @media screen and (max-width: $mobile_max_width) {
@@ -89,7 +90,7 @@
     overflow: hidden;
     box-shadow: 0 0 1rem $translucent;
     backdrop-filter: blur(10px);
-    background-color: var(--body-bg);
+    background-color: var(--main-bg);
     color: var(--text-color);
     div[class*="search-item"] {
       &:hover,

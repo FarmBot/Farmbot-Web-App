@@ -90,12 +90,12 @@ export const mapPanelClassName = () => {
 export const getMapPadding =
   (panelStatus: MapPanelStatus): { left: number, top: number } => {
     switch (panelStatus) {
-      case MapPanelStatus.short: return { left: 20, top: 350 };
-      case MapPanelStatus.mobileClosed: return { left: 20, top: 160 };
-      case MapPanelStatus.closed: return { left: 20, top: 110 };
+      case MapPanelStatus.short: return { left: 10, top: 350 };
+      case MapPanelStatus.mobileClosed: return { left: 10, top: 160 };
+      case MapPanelStatus.closed: return { left: 10, top: 90 };
       case MapPanelStatus.open:
       default:
-        return { left: 468, top: 110 };
+        return { left: 475, top: 90 };
     }
   };
 

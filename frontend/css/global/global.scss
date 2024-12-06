@@ -8,8 +8,16 @@ body {
 
 .app,
 .bp5-portal {
-  background: var(--body-bg);
+  background: var(--main-bg);
   color: var(--text-color);
+}
+
+.app.dark {
+  background: hsl(135 10% 20% / 1);
+}
+
+.app.light {
+  background: $gray;
 }
 
 .initial-loading-text {
@@ -45,7 +53,7 @@ body {
 .jobs-panel,
 .connectivity-popover {
   .bp5-popover-content {
-    background: var(--body-bg);
+    background: var(--main-bg);
   }
 }
 

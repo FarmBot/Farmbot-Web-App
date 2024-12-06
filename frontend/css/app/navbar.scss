@@ -85,7 +85,7 @@ nav {
     a {
       display: inline-block;
       position: relative;
-      height: 5.5rem;
+      height: 5rem;
       font-size: 1.2rem;
       white-space: nowrap;
       padding: 1.5rem 0.5rem;
@@ -275,7 +275,7 @@ nav {
   .bp5-popover-content {
     position: relative;
     width: 22rem;
-    background: var(--body-bg);
+    background: var(--main-bg);
     backdrop-filter: blur(10px);
     padding: 0;
     font-size: 1.2rem;

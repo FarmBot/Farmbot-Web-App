@@ -21,12 +21,12 @@ export function MapBackground(props: MapBackgroundProps) {
     </defs>
 
     <rect id="bed-border"
-      x={0} y={0} width={mapSize.w} height={mapSize.h}
+      x={0} y={0} width={mapSize.w} height={mapSize.h} rx={10}
       fill={bkgdColor} />
     <rect id="bed-interior" x={boardWidth / 2} y={boardWidth / 2}
       width={mapSize.w - boardWidth} height={mapSize.h - boardWidth}
       stroke={edgeColor} strokeWidth={boardWidth}
-      fill={bkgdColor} />
+      fill={bkgdColor} rx={1} />
     <rect id="no-access-perimeter" x={boardWidth} y={boardWidth}
       width={mapSize.w - boardWidth * 2} height={mapSize.h - boardWidth * 2}
       fill="url(#diagonalHatch)" />

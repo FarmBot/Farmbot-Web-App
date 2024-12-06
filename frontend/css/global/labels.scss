@@ -17,6 +17,6 @@ label {
 }
 
 input[type=checkbox]:checked+label.day-label {
-  color: var(--body-bg);
+  color: var(--main-bg);
   background: var(--text-color);
 }
