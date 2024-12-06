@@ -148,7 +148,7 @@ export class RawDesignerSettings
           resources={resources}
           firmwareHardware={firmwareHardware}
           sourceFwConfig={sourceFwConfig} />
-        {showByEveryTerm("pin reporting", this.props.searchTerm) &&
+        {showByTerm("pin reporting", this.props.searchTerm) &&
           <PinReporting {...commonProps}
             arduinoBusy={busy}
             resources={resources}

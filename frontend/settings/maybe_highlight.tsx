@@ -146,6 +146,19 @@ const FARM_DESIGNER_PANEL = [
   DeviceSetting.confirmPlantDeletion,
   DeviceSetting.defaultPlantDepth,
 ];
+const THREE_D_PANEL = [
+  DeviceSetting.threeDGarden,
+  DeviceSetting.bedWallThickness,
+  DeviceSetting.bedHeight,
+  DeviceSetting.ccSupportSize,
+  DeviceSetting.beamLength,
+  DeviceSetting.columnLength,
+  DeviceSetting.zAxisLength,
+  DeviceSetting.bedXOffset,
+  DeviceSetting.bedYOffset,
+  DeviceSetting.bedZOffset,
+  DeviceSetting.legSize,
+];
 const ACCOUNT_PANEL = [
   DeviceSetting.accountSettings,
   DeviceSetting.accountName,
@@ -168,6 +181,7 @@ const MAP_SETTINGS = [
   DeviceSetting.showAreasMapLayer,
   DeviceSetting.showReadingsMapLayer,
   DeviceSetting.showMoistureInterpolationMapLayer,
+  DeviceSetting.show3DMap,
 ];
 const CONTROLS_SETTINGS = [
   DeviceSetting.invertXAxisJogButton,
@@ -212,6 +226,7 @@ const APP_SETTINGS = [
   DeviceSetting.discardUnsavedChanges,
   DeviceSetting.confirmEmergencyUnlock,
   DeviceSetting.userInterfaceReadOnlyMode,
+  DeviceSetting.darkMode,
 ];
 const FILTER = [
   DeviceSetting.showPhotos,
@@ -286,6 +301,7 @@ PIN_REPORTING_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "pin_reporting");
 PARAMETER_MANAGEMENT.map(s => SETTING_PANEL_LOOKUP[s] = "parameter_management");
 CUSTOM_SETTINGS_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "custom_settings");
 FARM_DESIGNER_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "farm_designer");
+THREE_D_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "three_d");
 ACCOUNT_PANEL.map(s => SETTING_PANEL_LOOKUP[s] = "account");
 APP_SETTINGS.map(s => SETTING_PANEL_LOOKUP[s] = "account");
 CONTROLS_SETTINGS.map(s => SETTING_PANEL_LOOKUP[s] = "other_settings");
@@ -318,6 +334,7 @@ CONTENT_LOOKUP[DeviceSetting.pinBindings] = PIN_BINDINGS_PANEL;
 CONTENT_LOOKUP[DeviceSetting.pinGuard] = PIN_GUARD_PANEL;
 CONTENT_LOOKUP[DeviceSetting.parameterManagement] = PARAMETER_MANAGEMENT;
 CONTENT_LOOKUP[DeviceSetting.customSettings] = CUSTOM_SETTINGS_PANEL;
+CONTENT_LOOKUP[DeviceSetting.threeDGarden] = THREE_D_PANEL;
 CONTENT_LOOKUP[DeviceSetting.farmDesigner] = FARM_DESIGNER_PANEL;
 CONTENT_LOOKUP[DeviceSetting.accountSettings] = ACCOUNT_PANEL
   .concat(APP_SETTINGS);
@@ -368,6 +385,8 @@ ALTERNATE_NAMES[DeviceSetting.pinGuard2].push(DeviceSetting.pinGuardTitles);
 ALTERNATE_NAMES[DeviceSetting.pinGuard3].push(DeviceSetting.pinGuardTitles);
 ALTERNATE_NAMES[DeviceSetting.pinGuard4].push(DeviceSetting.pinGuardTitles);
 ALTERNATE_NAMES[DeviceSetting.pinGuard5].push(DeviceSetting.pinGuardTitles);
+THREE_D_PANEL.map(settingName =>
+  ALTERNATE_NAMES[settingName].push(DeviceSetting.threeDGarden));
 
 /** Generate array of names for the same setting. Most only have one. */
 const compareValues = (settingName: DeviceSetting) =>
