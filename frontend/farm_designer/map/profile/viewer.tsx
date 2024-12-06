@@ -12,7 +12,7 @@ export const ProfileViewer = (props: ProfileViewerProps) => {
   const { dispatch } = props;
   const { profileOpen, profileFollowBot } = props.designer;
   const axis = props.designer.profileAxis;
-  const panelStatus = getPanelStatus();
+  const panelStatus = getPanelStatus(props.designer);
   const { x, y } = profileFollowBot
     ? props.botLocationData.position
     : props.designer.profilePosition;

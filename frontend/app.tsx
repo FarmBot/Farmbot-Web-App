@@ -57,6 +57,7 @@ import {
 import { RunButtonMenuOpen } from "./sequences/interfaces";
 import { Navigate, Outlet } from "react-router";
 import { ErrorBoundary } from "./error_boundary";
+import { DesignerState } from "./farm_designer/interfaces";
 
 export interface AppProps {
   dispatch: Function;
@@ -87,6 +88,7 @@ export interface AppProps {
   sequences: TaggedSequence[];
   menuOpen: RunButtonMenuOpen;
   appState: AppState;
+  designer: DesignerState;
   children?: React.ReactNode;
 }
 
@@ -128,6 +130,7 @@ export function mapStateToProps(props: Everything): AppProps {
     peripherals: uniq(selectAllPeripherals(props.resources.index)),
     sequences: selectAllSequences(props.resources.index),
     menuOpen: props.resources.consumers.sequences.menuOpen,
+    designer: props.resources.consumers.farm_designer,
   };
 }
 /** Time at which the app gives up and asks the user to refresh */
@@ -184,6 +187,7 @@ export class RawApp extends React.Component<AppProps, {}> {
       {!syncLoaded && <LoadingPlant animate={this.props.animate} />}
       <HotKeys dispatch={dispatch} hotkeyGuide={this.props.appState.hotkeyGuide} />
       {syncLoaded && <NavBar
+        designer={this.props.designer}
         timeSettings={this.props.timeSettings}
         user={this.props.user}
         bot={bot}

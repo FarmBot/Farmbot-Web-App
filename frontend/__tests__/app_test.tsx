@@ -24,6 +24,7 @@ import { error, warning } from "../toast/toast";
 import { fakePings } from "../__test_support__/fake_state/pings";
 import { auth } from "../__test_support__/fake_state/token";
 import {
+  fakeDesignerState,
   fakeHelpState, fakeMenuOpenState,
 } from "../__test_support__/fake_designer_state";
 import { Path } from "../internal_urls";
@@ -61,6 +62,7 @@ const fakeProps = (): AppProps => ({
   peripherals: [],
   sequences: [],
   menuOpen: fakeMenuOpenState(),
+  designer: fakeDesignerState(),
 });
 
 describe("<App />: Loading", () => {

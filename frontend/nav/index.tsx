@@ -245,12 +245,20 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
       <i className={"fa fa-bars mobile-menu-icon"}
         onClick={this.toggle("mobileMenuOpen")} />
       <span className="mobile-menu-container">
-        <MobileMenu close={this.close} alertCount={this.props.alertCount}
+        <MobileMenu
+          designer={this.props.designer}
+          dispatch={this.props.dispatch}
+          close={this.close}
+          alertCount={this.props.alertCount}
           mobileMenuOpen={this.state.mobileMenuOpen}
           helpState={this.props.helpState} />
       </span>
       <span className="top-menu-container">
-        <NavLinks close={this.close} alertCount={this.props.alertCount}
+        <NavLinks
+          designer={this.props.designer}
+          dispatch={this.props.dispatch}
+          close={this.close}
+          alertCount={this.props.alertCount}
           helpState={this.props.helpState} />
       </span>
     </div>;

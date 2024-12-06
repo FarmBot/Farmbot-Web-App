@@ -195,6 +195,7 @@ export interface DesignerState {
   cropStage: PlantStage | undefined;
   cropPlantedAt: string | undefined;
   distanceIndicator: string;
+  panelOpen: boolean;
 }
 
 export type TaggedExecutable = TaggedSequence | TaggedRegimen;

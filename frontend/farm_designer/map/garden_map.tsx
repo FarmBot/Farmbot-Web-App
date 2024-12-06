@@ -141,6 +141,7 @@ export class GardenMap extends
         gridOffset: this.props.gridOffset,
         pageX: e.pageX,
         pageY: e.pageY,
+        designer: this.props.designer,
       });
     };
 

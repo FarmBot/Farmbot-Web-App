@@ -2,7 +2,9 @@ import React from "react";
 import { shallow } from "enzyme";
 import { MobileMenu } from "../mobile_menu";
 import { MobileMenuProps } from "../interfaces";
-import { fakeHelpState } from "../../__test_support__/fake_designer_state";
+import {
+  fakeDesignerState, fakeHelpState,
+} from "../../__test_support__/fake_designer_state";
 
 describe("<MobileMenu />", () => {
   const fakeProps = (): MobileMenuProps => ({
@@ -10,6 +12,8 @@ describe("<MobileMenu />", () => {
     mobileMenuOpen: true,
     alertCount: 1,
     helpState: fakeHelpState(),
+    designer: fakeDesignerState(),
+    dispatch: jest.fn(),
   });
 
   it("renders", () => {

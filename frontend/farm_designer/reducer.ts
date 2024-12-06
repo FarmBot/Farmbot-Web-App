@@ -64,6 +64,7 @@ export const initialState: DesignerState = {
   cropStage: undefined,
   cropPlantedAt: undefined,
   distanceIndicator: "",
+  panelOpen: true,
 };
 
 export const designer = generateReducer<DesignerState>(initialState)
@@ -266,6 +267,10 @@ export const designer = generateReducer<DesignerState>(initialState)
   })
   .add<string>(Actions.SET_DISTANCE_INDICATOR, (s, { payload }) => {
     s.distanceIndicator = payload;
+    return s;
+  })
+  .add<boolean>(Actions.SET_PANEL_OPEN, (s, { payload }) => {
+    s.panelOpen = payload;
     return s;
   })
   .add<boolean>(Actions.SET_PROFILE_OPEN, (s, { payload }) => {

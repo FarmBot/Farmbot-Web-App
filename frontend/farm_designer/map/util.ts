@@ -1,4 +1,4 @@
-import { BotOriginQuadrant } from "../interfaces";
+import { BotOriginQuadrant, DesignerState } from "../interfaces";
 import { McuParams, Xyz } from "farmbot";
 import { StepsPerMm } from "../../devices/interfaces";
 import {
@@ -61,8 +61,8 @@ export enum MapPanelStatus {
 }
 
 /** Get farm designer side panel status. */
-export const getPanelStatus = (): MapPanelStatus => {
-  if (Path.equals(Path.designer())) {
+export const getPanelStatus = (designer: DesignerState): MapPanelStatus => {
+  if (!designer.panelOpen) {
     return isMobile() ? MapPanelStatus.mobileClosed : MapPanelStatus.closed;
   }
   const mode = getMode();
@@ -75,8 +75,8 @@ export const getPanelStatus = (): MapPanelStatus => {
 };
 
 /** Get panel status class name for farm designer. */
-export const mapPanelClassName = () => {
-  switch (getPanelStatus()) {
+export const mapPanelClassName = (designer: DesignerState) => {
+  switch (getPanelStatus(designer)) {
     case MapPanelStatus.short: return "short-panel";
     case MapPanelStatus.mobileClosed: return "panel-closed-mobile";
     case MapPanelStatus.closed: return "panel-closed";
@@ -330,13 +330,18 @@ export const savedGardenOpen = () =>
 const getZoomLevelFromMap = (map: Element) =>
   parseFloat((window.getComputedStyle(map).transform || "(1").split("(")[1]);
 
+export interface GetGardenCoordinatesProps {
+  mapTransformProps: MapTransformProps;
+  gridOffset: AxisNumberProperty;
+  pageX: number;
+  pageY: number;
+  designer: DesignerState;
+}
+
 /** Get the garden map coordinate of a cursor or screen interaction. */
-export const getGardenCoordinates = (props: {
-  mapTransformProps: MapTransformProps,
-  gridOffset: AxisNumberProperty,
-  pageX: number,
-  pageY: number,
-}): AxisNumberProperty | undefined => {
+export const getGardenCoordinates = (
+  props: GetGardenCoordinatesProps,
+): AxisNumberProperty | undefined => {
   const el = document.querySelector(".drop-area-svg");
   const map = document.querySelector(".farm-designer-map");
   const page = document.querySelector(".farm-designer");
@@ -348,7 +353,7 @@ export const getGardenCoordinates = (props: {
       mapTransformProps: props.mapTransformProps,
       gridOffset: props.gridOffset,
       zoomLvl,
-      panelStatus: getPanelStatus(),
+      panelStatus: getPanelStatus(props.designer),
     };
     return translateScreenToGarden(params);
   } else {

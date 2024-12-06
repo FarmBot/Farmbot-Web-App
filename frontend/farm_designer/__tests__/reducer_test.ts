@@ -122,6 +122,15 @@ describe("designer reducer", () => {
     expect(newState.distanceIndicator).toEqual("setting");
   });
 
+  it("sets panel open state", () => {
+    const action: ReduxAction<boolean> = {
+      type: Actions.SET_PANEL_OPEN,
+      payload: false,
+    };
+    const newState = designer(oldState(), action);
+    expect(newState.panelOpen).toEqual(false);
+  });
+
   it("sets hovered plant list item", () => {
     const action: ReduxAction<string> = {
       type: Actions.HOVER_PLANT_LIST_ITEM,

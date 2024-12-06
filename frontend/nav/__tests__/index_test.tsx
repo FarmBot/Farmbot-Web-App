@@ -28,6 +28,7 @@ import { fakePings } from "../../__test_support__/fake_state/pings";
 import { Link } from "../../link";
 import { refresh } from "../../api/crud";
 import {
+  fakeDesignerState,
   fakeHelpState, fakeMenuOpenState,
 } from "../../__test_support__/fake_designer_state";
 import { Path } from "../../internal_urls";
@@ -66,6 +67,7 @@ describe("<NavBar />", () => {
     feeds: [],
     peripherals: [],
     sequences: [],
+    designer: fakeDesignerState(),
   });
 
   it("has correct parent className", () => {

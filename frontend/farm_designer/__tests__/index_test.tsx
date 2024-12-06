@@ -109,8 +109,10 @@ describe("<FarmDesigner />", () => {
   });
 
   it("hides panel", () => {
-    location.pathname = Path.mock(Path.designer());
-    const wrapper = mount(<FarmDesigner {...fakeProps()} />);
+    location.pathname = Path.mock(Path.plants());
+    const p = fakeProps();
+    p.designer.panelOpen = false;
+    const wrapper = mount(<FarmDesigner {...p} />);
     expect(wrapper.find(".panel-nav").first().hasClass("hidden"))
       .toBeFalsy();
     expect(wrapper.find(".farm-designer-panels").hasClass("panel-open"))

@@ -26,6 +26,7 @@ import {
   savedGardenOpen,
   scaleIcon,
   defaultSpreadCmDia,
+  GetGardenCoordinatesProps,
 } from "../util";
 import { McuParams, Xyz } from "farmbot";
 import { BotSize, MapTransformProps, Mode } from "../interfaces";
@@ -36,6 +37,7 @@ import {
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
 import { Path } from "../../../internal_urls";
 import { BotOriginQuadrant } from "../../interfaces";
+import { fakeDesignerState } from "../../../__test_support__/fake_designer_state";
 
 describe("round()", () => {
   it("rounds a number", () => {
@@ -46,27 +48,31 @@ describe("round()", () => {
 
 describe("mapPanelClassName()", () => {
   it("returns correct panel status: short panel", () => {
-    mockIsMobile = true;
     location.pathname = Path.mock(Path.location());
-    expect(mapPanelClassName()).toEqual("short-panel");
+    const designer = fakeDesignerState();
+    mockIsMobile = true;
+    expect(mapPanelClassName(designer)).toEqual("short-panel");
     location.pathname = Path.mock(Path.cropSearch("mint/add"));
-    expect(mapPanelClassName()).toEqual("short-panel");
+    expect(mapPanelClassName(designer)).toEqual("short-panel");
   });
 
   it("returns correct panel status: panel open", () => {
-    mockIsMobile = false;
     location.pathname = Path.mock(Path.location());
-    expect(mapPanelClassName()).toEqual("panel-open");
+    const designer = fakeDesignerState();
+    mockIsMobile = false;
+    expect(mapPanelClassName(designer)).toEqual("panel-open");
     location.pathname = Path.mock(Path.cropSearch("mint/add"));
-    expect(mapPanelClassName()).toEqual("panel-open");
+    expect(mapPanelClassName(designer)).toEqual("panel-open");
   });
 
   it("returns correct panel status: panel closed", () => {
+    location.pathname = Path.mock(Path.plants());
+    const designer = fakeDesignerState();
+    designer.panelOpen = false;
     mockIsMobile = false;
-    location.pathname = Path.mock(Path.designer());
-    expect(mapPanelClassName()).toEqual("panel-closed");
+    expect(mapPanelClassName(designer)).toEqual("panel-closed");
     mockIsMobile = true;
-    expect(mapPanelClassName()).toEqual("panel-closed-mobile");
+    expect(mapPanelClassName(designer)).toEqual("panel-closed-mobile");
   });
 });
 
@@ -440,11 +446,12 @@ describe("getGardenCoordinates()", () => {
     });
   });
 
-  const fakeProps = () => ({
+  const fakeProps = (): GetGardenCoordinatesProps => ({
     mapTransformProps: fakeMapTransformProps(),
     gridOffset: { x: 10, y: 20 },
     pageX: 500,
     pageY: 200,
+    designer: fakeDesignerState(),
   });
 
   it("returns garden coordinates", () => {

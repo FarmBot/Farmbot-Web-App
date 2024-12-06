@@ -9,6 +9,8 @@ import { computeEditorUrlFromState } from "../nav/compute_editor_url_from_state"
 import { compact } from "lodash";
 import { selectAllFarmwareInstallations } from "../resources/selectors";
 import { FilePath, Icon, Path } from "../internal_urls";
+import { Actions } from "../constants";
+import { DesignerState } from "./interfaces";
 
 export enum Panel {
   Map = "Map",
@@ -161,8 +163,8 @@ export const PANEL_TITLE = (): Record<Panel, string> => ({
   [Panel.Shop]: t("Shop"),
 });
 
-export const getCurrentPanel = (): Tabs | undefined => {
-  if (Path.equals(Path.designer())) {
+export const getCurrentPanel = (designer: DesignerState): Tabs | undefined => {
+  if (!designer.panelOpen) {
     return Panel.Map;
   } else if (Path.getSlug(Path.app()) == "sequences") {
     return Panel.Sequences;
@@ -190,14 +192,17 @@ export const getPanelPath = (panel: Panel) => {
 
 interface NavTabProps {
   panel: Panel;
+  dispatch: Function;
+  designer: DesignerState;
 }
 
 const NavTab = (props: NavTabProps) =>
-  <Link id={PANEL_SLUG[props.panel] || "map"}
+  <Link id={PANEL_SLUG[props.panel]}
     to={getPanelPath(props.panel)}
     style={{ flex: 0.3 }}
+    onClick={() => props.dispatch(setPanelOpen(true))}
     className={[
-      getCurrentPanel() === props.panel ? "active" : "",
+      getCurrentPanel(props.designer) === props.panel ? "active" : "",
     ].join(" ")}>
     <img width={35} height={30}
       src={TAB_ICON[props.panel]}
@@ -226,8 +231,17 @@ export const showFarmware = () => {
   return installs.length > 0;
 };
 
-interface DesignerNavTabsProps {
-  hidden?: boolean;
+export const setPanelOpen = (state: boolean) =>
+  (dispatch: Function) =>
+    dispatch({
+      type: Actions.SET_PANEL_OPEN,
+      payload: state,
+    });
+
+export interface DesignerNavTabsProps {
+  dispatch: Function;
+  designer: DesignerState;
+  hidden: boolean;
 }
 
 interface DesignerNavTabsState {
@@ -244,25 +258,40 @@ export class DesignerNavTabs
 
   render() {
     const hidden = this.props.hidden ? "hidden" : "";
+    const { dispatch, designer } = this.props;
+    const common = { dispatch, designer };
     return <div className={`panel-nav ${hidden}`}>
       {!this.state.atEnd && <div className={"scroll-indicator"} />}
       <div className={"panel-tabs"} onScroll={this.updateScroll}>
-        <NavTab panel={Panel.Map} />
-        <NavTab panel={Panel.Plants} />
-        <NavTab panel={Panel.Weeds} />
-        <NavTab panel={Panel.Points} />
-        <NavTab panel={Panel.Curves} />
-        <NavTab panel={Panel.Sequences} />
-        <NavTab panel={Panel.Regimens} />
-        <NavTab panel={Panel.FarmEvents} />
-        {DevSettings.futureFeaturesEnabled() && <NavTab panel={Panel.Zones} />}
-        {showSensors() && <NavTab panel={Panel.Sensors} />}
-        <NavTab panel={Panel.Photos} />
-        {showFarmware() && <NavTab panel={Panel.Farmware} />}
-        <NavTab panel={Panel.Tools} />
-        <NavTab panel={Panel.Messages} />
-        <NavTab panel={Panel.Help} />
-        <NavTab panel={Panel.Settings} />
+        <a id={Panel.Map}
+          style={{ flex: 0.3 }}
+          className={getCurrentPanel(this.props.designer) === Panel.Map
+            ? "active"
+            : ""}
+          onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
+            e.preventDefault();
+            this.props.dispatch(setPanelOpen(false));
+          }}>
+          <img width={35} height={30}
+            src={FilePath.icon(Icon.map)}
+            title={PANEL_TITLE()[Panel.Map]} />
+        </a>
+        <NavTab {...common} panel={Panel.Plants} />
+        <NavTab {...common} panel={Panel.Weeds} />
+        <NavTab {...common} panel={Panel.Points} />
+        <NavTab {...common} panel={Panel.Curves} />
+        <NavTab {...common} panel={Panel.Sequences} />
+        <NavTab {...common} panel={Panel.Regimens} />
+        <NavTab {...common} panel={Panel.FarmEvents} />
+        {DevSettings.futureFeaturesEnabled() &&
+          <NavTab {...common} panel={Panel.Zones} />}
+        {showSensors() && <NavTab {...common} panel={Panel.Sensors} />}
+        <NavTab {...common} panel={Panel.Photos} />
+        {showFarmware() && <NavTab {...common} panel={Panel.Farmware} />}
+        <NavTab {...common} panel={Panel.Tools} />
+        <NavTab {...common} panel={Panel.Messages} />
+        <NavTab {...common} panel={Panel.Help} />
+        <NavTab {...common} panel={Panel.Settings} />
       </div>
     </div>;
   }

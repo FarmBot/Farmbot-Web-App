@@ -136,7 +136,7 @@ export class RawFarmDesigner
     };
   }
 
-  get mapPanelClassName() { return mapPanelClassName(); }
+  get mapPanelClassName() { return mapPanelClassName(this.props.designer); }
 
   render() {
     const {
@@ -159,7 +159,7 @@ export class RawFarmDesigner
       y: !!this.props.botMcuParams.movement_stop_at_home_y
     };
 
-    const mapPadding = getMapPadding(getPanelStatus());
+    const mapPadding = getMapPadding(getPanelStatus(this.props.designer));
     const padHeightOffset = mapPadding.top - mapPadding.top / zoom_level;
 
     return <div className="farm-designer">
@@ -190,10 +190,13 @@ export class RawFarmDesigner
         botSize={this.props.botSize}
         imageAgeInfo={calculateImageAgeInfo(this.props.latestImages)} />
 
-      <DesignerNavTabs hidden={![
-        MapPanelStatus.closed,
-        MapPanelStatus.mobileClosed,
-      ].includes(getPanelStatus())} />
+      <DesignerNavTabs
+        designer={this.props.designer}
+        dispatch={this.props.dispatch}
+        hidden={![
+          MapPanelStatus.closed,
+          MapPanelStatus.mobileClosed,
+        ].includes(getPanelStatus(this.props.designer))} />
       <div className={`farm-designer-panels ${this.mapPanelClassName}`}>
         <ErrorBoundary>
           <React.Suspense>
