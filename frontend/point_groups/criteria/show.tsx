@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, FBSelect, DropDownItem, Checkbox } from "../../ui";
+import { Row, FBSelect, DropDownItem, Checkbox, ToggleButton } from "../../ui";
 import {
   AddEqCriteria, editCriteria, AddNumberCriteria,
   editGtLtCriteriaField,
@@ -17,7 +17,6 @@ import {
   DaySelectionProps,
 } from "./interfaces";
 import { t } from "../../i18next_wrapper";
-import { ToggleButton } from "../../ui/toggle_button";
 import { Actions } from "../../constants";
 import { spaceSelected } from "../../farm_designer/map/layers/zones/zones";
 
@@ -144,7 +143,7 @@ export const NumberLtGtInput = (props: NumberLtGtInputProps) => {
   const gtCriteria = props.group.body.criteria.number_gt;
   const ltCriteria = props.group.body.criteria.number_lt;
   return <Row className="grid-col-3">
-    <input key={JSON.stringify(gtCriteria)}
+    <input key={"gt-" + JSON.stringify(gtCriteria)}
       type="number"
       name={`${criteriaKey}-number-gt`}
       defaultValue={gtCriteria[criteriaKey]}
@@ -156,7 +155,7 @@ export const NumberLtGtInput = (props: NumberLtGtInputProps) => {
       <p>{criteriaKey}</p>
       <p>{"<"}</p>
     </div>
-    <input key={JSON.stringify(ltCriteria)}
+    <input key={"lt-" + JSON.stringify(ltCriteria)}
       type="number"
       name={`${criteriaKey}-number-lt`}
       defaultValue={ltCriteria[criteriaKey]}

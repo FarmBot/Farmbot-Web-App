@@ -94,7 +94,8 @@ describe("<Points />", () => {
       criteria: {
         ...DEFAULT_CRITERIA,
         string_eq: { pointer_type: ["GenericPointer"] },
-      }
+      },
+      navigate: expect.anything(),
     });
   });
 

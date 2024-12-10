@@ -10,7 +10,7 @@ import {
 import { t } from "../i18next_wrapper";
 import { EditPlantInfoProps, PlantOptions } from "../farm_designer/interfaces";
 import { isFinite } from "lodash";
-import { useNavigate } from "react-router";
+import { Navigate } from "react-router";
 import { destroy, edit, save } from "../api/crud";
 import { BooleanSetting } from "../session_keys";
 import { Panel } from "../farm_designer/panel_header";
@@ -47,10 +47,10 @@ export class RawPlantInfo extends React.Component<EditPlantInfoProps, {}> {
   fallback = () => {
     const plantsPath = Path.plants();
     const templatePath = Path.plantTemplates();
-    const navigate = useNavigate();
-    (Path.startsWith(plantsPath) || Path.startsWith(templatePath))
-      && !Path.startsWith(Path.cropSearch()) && navigate(plantsPath);
     return <DesignerPanel panelName={"plant-info"} panel={Panel.Plants}>
+      {(Path.startsWith(plantsPath) || Path.startsWith(templatePath))
+        && !Path.startsWith(Path.cropSearch()) &&
+        <Navigate to={plantsPath} />}
       <DesignerPanelHeader
         panelName={"plant-info"}
         panel={Panel.Plants}

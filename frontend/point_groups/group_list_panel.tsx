@@ -45,7 +45,7 @@ export const RawGroupListPanel = (props: GroupListPanelProps) => {
   return <DesignerPanel panelName={"groups"} panel={Panel.Groups}>
     <DesignerPanelTop
       panel={Panel.Groups}
-      onClick={() => props.dispatch(createGroup({ pointUuids: [] }))}
+      onClick={() => props.dispatch(createGroup({ pointUuids: [], navigate }))}
       title={t("Add group")}>
       <SearchField nameKey={"groups"}
         searchTerm={searchTerm}

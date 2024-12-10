@@ -122,7 +122,8 @@ describe("<PlantInventory />", () => {
     const wrapper = shallow(<Plants {...fakeProps()} />);
     wrapper.find(PanelSection).first().props().addNew();
     expect(createGroup).toHaveBeenCalledWith({
-      criteria: { ...DEFAULT_CRITERIA, string_eq: { pointer_type: ["Plant"] } }
+      criteria: { ...DEFAULT_CRITERIA, string_eq: { pointer_type: ["Plant"] } },
+      navigate: expect.anything(),
     });
   });
 

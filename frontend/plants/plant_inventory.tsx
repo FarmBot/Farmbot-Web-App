@@ -147,6 +147,7 @@ export class RawPlants
               ...DEFAULT_CRITERIA,
               string_eq: { pointer_type: ["Plant"] },
             },
+            navigate: this.navigate,
           }))}
           addTitle={t("add new group")}
           addClassName={"plus-group"}

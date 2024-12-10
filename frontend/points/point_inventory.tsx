@@ -204,6 +204,7 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
               ...DEFAULT_CRITERIA,
               string_eq: { pointer_type: ["GenericPointer"] },
             },
+            navigate: this.navigate,
           }))}
           addTitle={t("add new group")}
           addClassName={"plus-group"}

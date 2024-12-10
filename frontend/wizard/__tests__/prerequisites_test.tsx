@@ -22,6 +22,7 @@ describe("<ProductRegistration />", () => {
     resources: buildResourceIndex([fakeDevice()]).index,
     bot: bot,
     dispatch: mockDispatch(),
+    navigate: jest.fn(),
     getConfigValue: jest.fn(),
   });
 

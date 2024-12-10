@@ -32,6 +32,7 @@ import {
   completeSetup,
   resetSetup,
 } from "./actions";
+import { NavigationContext } from "../routes_helpers";
 
 export const mapStateToProps = (props: Everything): SetupWizardProps => ({
   resources: props.resources.index,
@@ -153,6 +154,10 @@ export class RawSetupWizard
     [this.stepSection(stepSlug)]: true,
   });
 
+  static contextType = NavigationContext;
+  context!: React.ContextType<typeof NavigationContext>;
+  navigate = this.context;
+
   render() {
     const panelName = "setup";
     return <DesignerPanel panelName={panelName} panel={Panel.Controls}>
@@ -182,6 +187,7 @@ export class RawSetupWizard
                     bot={this.props.bot}
                     dispatch={this.props.dispatch}
                     getConfigValue={this.props.getConfigValue}
+                    navigate={this.navigate}
                     resources={this.props.resources} />)}
               </Collapse>
             </div>)}

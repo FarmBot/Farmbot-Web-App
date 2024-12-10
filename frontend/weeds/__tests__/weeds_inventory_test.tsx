@@ -127,7 +127,8 @@ describe("<Weeds> />", () => {
     const wrapper = shallow(<Weeds {...fakeProps()} />);
     wrapper.find(PanelSection).first().props().addNew();
     expect(createGroup).toHaveBeenCalledWith({
-      criteria: { ...DEFAULT_CRITERIA, string_eq: { pointer_type: ["Weed"] } }
+      criteria: { ...DEFAULT_CRITERIA, string_eq: { pointer_type: ["Weed"] } },
+      navigate: expect.anything(),
     });
   });
 

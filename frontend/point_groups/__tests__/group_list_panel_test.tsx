@@ -46,7 +46,10 @@ describe("<GroupListPanel />", () => {
     const p = fakeProps();
     const wrapper = shallow(<GroupListPanel {...p} />);
     wrapper.find(DesignerPanelTop).simulate("click");
-    expect(createGroup).toHaveBeenCalledWith({ pointUuids: [] });
+    expect(createGroup).toHaveBeenCalledWith({
+      pointUuids: [],
+      navigate: expect.any(Function),
+    });
   });
 
   it("changes search term", () => {

@@ -40,7 +40,8 @@ import {
   calcMaxCount, MoreIndicatorIcon,
 } from "../point_groups/criteria/component";
 import { GetState } from "../redux/interfaces";
-import { Navigate, useNavigate } from "react-router";
+import { Navigate, NavigateFunction } from "react-router";
+import { NavigationContext } from "../routes_helpers";
 
 const columnTitle = (curve: TaggedCurve) => {
   switch (curve.body.type) {
@@ -128,6 +129,10 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
     </div>;
   };
 
+  static contextType = NavigationContext;
+  context!: React.ContextType<typeof NavigationContext>;
+  navigate = this.context;
+
   render() {
     const { curve, setHovered } = this;
     const { dispatch } = this.props;
@@ -149,7 +154,10 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
           {curve &&
             <i className={"fa fa-copy fb-icon-button invert"}
               title={t("Copy curve")}
-              onClick={dispatch(copyCurve(this.props.curves, curve))} />}
+              onClick={dispatch(copyCurve(
+                this.props.curves,
+                curve,
+                this.navigate))} />}
           {curve &&
             <i className={"fa fa-trash fb-icon-button invert"}
               title={t("Delete curve")}
@@ -318,9 +326,8 @@ export const TemplatesMenu = (props: ActionMenuProps) => {
 };
 
 export const copyCurve =
-  (curves: TaggedCurve[], curve: TaggedCurve) =>
+  (curves: TaggedCurve[], curve: TaggedCurve, navigate: NavigateFunction) =>
     (dispatch: Function, getState: GetState) => {
-      const navigate = useNavigate();
       return () => {
         const existingNames = curves.map(c => c.body.name);
         let i = 1;

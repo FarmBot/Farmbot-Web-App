@@ -280,23 +280,28 @@ describe("copyCurve()", () => {
     existingCurve.body.name = "Fake copy 1";
     const curves = [existingCurve];
     const curve = fakeCurve();
-    await copyCurve(curves, curve)(jest.fn(() => Promise.resolve()), jest.fn())();
+    const navigate = jest.fn();
+    await copyCurve(curves, curve, navigate)(
+      jest.fn(() => Promise.resolve()),
+      jest.fn(),
+    )();
     expect(init).toHaveBeenCalledWith("Curve", {
       ...curve.body,
       name: "Fake copy 2",
       id: undefined,
     });
     expect(save).toHaveBeenCalled();
-    expect(mockNavigate).not.toHaveBeenCalled();
+    expect(navigate).not.toHaveBeenCalled();
   });
 
   it("handles promise rejection", async () => {
     const dispatch = jest.fn()
       .mockImplementationOnce(jest.fn())
       .mockImplementationOnce(() => Promise.reject());
-    await copyCurve([], fakeCurve())(dispatch, jest.fn())();
+    const navigate = jest.fn();
+    await copyCurve([], fakeCurve(), navigate)(dispatch, jest.fn())();
     expect(save).toHaveBeenCalled();
-    expect(mockNavigate).not.toHaveBeenCalled();
+    expect(navigate).not.toHaveBeenCalled();
   });
 
   it("copies curve and navigates", async () => {
@@ -308,14 +313,18 @@ describe("copyCurve()", () => {
     curve.body.id = 1;
     const state = fakeState();
     state.resources = buildResourceIndex([curve]);
-    await copyCurve(curves, curve)(jest.fn(() => Promise.resolve()), () => state)();
+    const navigate = jest.fn();
+    await copyCurve(curves, curve, navigate)(
+      jest.fn(() => Promise.resolve()),
+      () => state,
+    )();
     expect(init).toHaveBeenCalledWith("Curve", {
       ...curve.body,
       name: "Fake copy 2",
       id: undefined,
     });
     expect(save).toHaveBeenCalled();
-    expect(mockNavigate).toHaveBeenCalledWith(Path.curves(1));
+    expect(navigate).toHaveBeenCalledWith(Path.curves(1));
   });
 
   it("copies curve and doesn't navigate", async () => {
@@ -327,14 +336,18 @@ describe("copyCurve()", () => {
     curve.body.id = 1;
     const state = fakeState();
     state.resources = buildResourceIndex([curve]);
-    await copyCurve(curves, curve)(jest.fn(() => Promise.resolve()), () => state)();
+    const navigate = jest.fn();
+    await copyCurve(curves, curve, navigate)(
+      jest.fn(() => Promise.resolve()),
+      () => state,
+    )();
     expect(init).toHaveBeenCalledWith("Curve", {
       ...curve.body,
       name: "Fake copy 2",
       id: undefined,
     });
     expect(save).toHaveBeenCalled();
-    expect(mockNavigate).not.toHaveBeenCalled();
+    expect(navigate).not.toHaveBeenCalled();
   });
 });
 

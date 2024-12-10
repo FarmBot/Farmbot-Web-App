@@ -283,7 +283,10 @@ export class RawSelectPlants
           <button className="fb-button dark-blue"
             title={t("Create group")}
             onClick={() => !this.props.gardenOpenId
-              ? this.props.dispatch(createGroup({ pointUuids: this.selected }))
+              ? this.props.dispatch(createGroup({
+                pointUuids: this.selected,
+                navigate: this.navigate,
+              }))
               : error(t(Content.ERROR_PLANT_TEMPLATE_GROUP))}>
             {t("Create group")}
           </button>

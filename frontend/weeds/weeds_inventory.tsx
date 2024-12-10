@@ -252,6 +252,7 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
               ...DEFAULT_CRITERIA,
               string_eq: { pointer_type: ["Weed"] },
             },
+            navigate: this.navigate,
           }))}
           addTitle={t("add new group")}
           addClassName={"plus-group"}

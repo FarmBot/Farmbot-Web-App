@@ -201,6 +201,7 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
                   ...DEFAULT_CRITERIA,
                   string_eq: { pointer_type: ["ToolSlot"] },
                 },
+                navigate: this.navigate,
               }))}
               addTitle={t("add new group")}
               addClassName={"plus-group"}

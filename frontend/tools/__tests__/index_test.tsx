@@ -123,7 +123,8 @@ describe("<Tools />", () => {
       criteria: {
         ...DEFAULT_CRITERIA,
         string_eq: { pointer_type: ["ToolSlot"] },
-      }
+      },
+      navigate: expect.anything(),
     });
   });
 
