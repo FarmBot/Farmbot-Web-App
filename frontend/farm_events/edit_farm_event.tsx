@@ -30,7 +30,7 @@ export const RawEditFarmEvent = (props: AddEditFarmEventProps) => {
       title={t("Edit event")}>
       <div className={"panel-header-icon-group"}>
         {fe &&
-          <i className={"fa fa-trash fb-icon-button"}
+          <i className={"fa fa-trash fb-icon-button invert"}
             title={t("Delete")}
             onClick={() =>
               props.dispatch(destroy(fe.uuid))

@@ -51,7 +51,7 @@ export const SlotDirectionInputRow = (props: SlotDirectionInputRowProps) => {
         <label>
           {t("slot direction")}
         </label>
-        <i className={`direction-icon ${iconClass} fb-icon-button`}
+        <i className={`direction-icon ${iconClass} fb-icon-button invert`}
           onClick={() => props.onChange({
             pullout_direction: newSlotDirection(props.toolPulloutDirection)
           })} />

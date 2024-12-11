@@ -63,6 +63,12 @@
   }
 }
 
+.weed-info-panel {
+  .panel-title {
+    color: $dark_gray;
+  }
+}
+
 .weeds-inventory-panel,
 .zones-inventory-panel,
 .groups-panel {
@@ -89,7 +95,6 @@
     pointer-events: auto;
     overflow: hidden;
     box-shadow: 0 0 1rem $translucent;
-    backdrop-filter: blur(10px);
     background-color: var(--main-bg);
     color: var(--text-color);
     div[class*="search-item"] {

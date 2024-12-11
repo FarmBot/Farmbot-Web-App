@@ -8,7 +8,7 @@ import { TourListProps } from "./interfaces";
 
 export const TourList = (props: TourListProps) => {
   const navigate = useNavigate();
-  return <div className="tour-list">
+  return <div className="tour-list grid half-gap">
     {Object.entries(TOURS()).map(([tourSlug, tour]) => {
       const firstStep = tour.steps[0];
       const click = () => {

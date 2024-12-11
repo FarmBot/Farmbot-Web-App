@@ -22,15 +22,18 @@
 .farm-designer-map {
   display: inline-block;
   min-width: 100%;
-  padding: 9rem 2rem 2rem 2rem; // at zoom = 1.0: 90px 20px 20px 20px
+  padding: 9rem 2rem 2rem 2rem;
   height: 100%;
   overflow: visible;
-  transition: 0.2s ease;
+  transition: 0.3s ease;
   &.panel-open {
-    padding: 9rem 2rem 2rem 47.5rem; // at zoom = 1.0: 90px 20px 20px 475px
+    padding: 9rem 2rem 2rem 47.5rem;
+    @media screen and (max-width: $mobile_max_width) {
+      padding: 18rem 2rem 2rem 47.5rem;
+    }
   }
   &.panel-closed-mobile {
-    padding: 16rem 1rem 1rem 1rem; // at zoom = 1.0: 160px 10px 10px 10px
+    padding: 16rem 1rem 1rem 1rem;
   }
   &::-webkit-scrollbar {
     display: none;
@@ -677,7 +680,7 @@
   .quadrants {
     display: flex;
     flex-wrap: wrap;
-    border: 1px solid $dark_gray;
+    border: 1px solid var(--border-color);
   }
   .quadrant {
     display: inline-block;
@@ -685,7 +688,7 @@
     background-image: linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px), linear-gradient(rgba(0, 0, 0, 0.05) 2px, transparent 2px), linear-gradient(90deg, rgba(0, 0, 0, 0.05) 2px, transparent 2px);
     background-size: 4px 4px, 4px 4px, 100px 100px, 100px 100px;
     cursor: pointer;
-    border: 1px solid $dark_gray;
+    border: 1px solid var(--border-color);
     width: 50%;
     height: 24px;
     transition: all 0.2s ease-in-out;
@@ -693,7 +696,7 @@
       background-color: rgba(0, 0, 0, 0.1);
     }
     &.selected {
-      box-shadow: inset 0 0 8px $dark_gray;
+      box-shadow: inset 0 0 8px var(--border-color);
     } // Quadrant 1
     &:nth-child(2) {
       &:before {

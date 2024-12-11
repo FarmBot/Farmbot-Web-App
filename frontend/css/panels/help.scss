@@ -50,12 +50,12 @@ body:has(.app.dark) {
     z-index: 1;
     margin: -1rem;
     margin-top: 0;
-    background: $lighter_gray;
+    background: var(--main-bg);
     a {
       padding: 1rem;
       line-height: 0;
       &:hover {
-        background: $light_gray;
+        background: var(--secondary-bg);
       }
     }
   }
@@ -92,7 +92,7 @@ body:has(.app.dark) {
         font-weight: normal;
       }
       &:hover {
-        background: $lighter_gray;
+        background: var(--secondary-bg);
       }
     }
     &.inline {
@@ -117,14 +117,5 @@ body:has(.app.dark) {
   }
   .bp5-popover-wrapper {
     margin-left: 1rem;
-  }
-}
-
-.tour-list {
-  margin: auto;
-  max-width: 300px;
-  margin-top: 1rem;
-  .fb-button {
-    margin: 0;
   }
 }

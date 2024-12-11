@@ -190,32 +190,34 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
           text={this.strings.emptyStateText}
           colorScheme={"tools"}>
           {!this.noUTM && <this.MountedToolInfo />}
-          <this.ToolSlots />
-          <this.Tools />
-          {toolSlotGroups.length > 0 &&
-            <PanelSection isOpen={this.state.groups} panel={Panel.Tools}
-              toggleOpen={this.toggleOpen("groups")}
-              itemCount={toolSlotGroups.length}
-              addNew={() => this.props.dispatch(createGroup({
-                criteria: {
-                  ...DEFAULT_CRITERIA,
-                  string_eq: { pointer_type: ["ToolSlot"] },
-                },
-                navigate: this.navigate,
-              }))}
-              addTitle={t("add new group")}
-              addClassName={"plus-group"}
-              title={t("Groups")}>
-              {filteredGroups
-                .map(group => <GroupInventoryItem
-                  key={group.uuid}
-                  group={group}
-                  allPoints={this.props.allPoints}
-                  hovered={false}
-                  dispatch={this.props.dispatch}
-                  onClick={this.navigateById(group.body.id)}
-                />)}
-            </PanelSection>}
+          <div className="grid double-gap">
+            <this.ToolSlots />
+            <this.Tools />
+            {toolSlotGroups.length > 0 &&
+              <PanelSection isOpen={this.state.groups} panel={Panel.Tools}
+                toggleOpen={this.toggleOpen("groups")}
+                itemCount={toolSlotGroups.length}
+                addNew={() => this.props.dispatch(createGroup({
+                  criteria: {
+                    ...DEFAULT_CRITERIA,
+                    string_eq: { pointer_type: ["ToolSlot"] },
+                  },
+                  navigate: this.navigate,
+                }))}
+                addTitle={t("add new group")}
+                addClassName={"plus-group"}
+                title={t("Groups")}>
+                {filteredGroups
+                  .map(group => <GroupInventoryItem
+                    key={group.uuid}
+                    group={group}
+                    allPoints={this.props.allPoints}
+                    hovered={false}
+                    dispatch={this.props.dispatch}
+                    onClick={this.navigateById(group.body.id)}
+                  />)}
+              </PanelSection>}
+          </div>
         </EmptyStateWrapper>
       </DesignerPanelContent>
     </DesignerPanel>;

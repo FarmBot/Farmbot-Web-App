@@ -3,8 +3,7 @@
 
 .image-flipper {
   position: relative;
-  border-top-left-radius: 0.5rem;
-  border-top-right-radius: 0.5rem;
+  border-radius: 0.5rem;
   overflow: hidden;
 }
 
@@ -31,13 +30,21 @@
       }
     }
     .no-flipper-image-container {
-      background: $black;
+      background: var(--main-bg);
     }
     .placeholder {
       opacity: 1 !important;
     }
     p {
       color: $white;
+    }
+  }
+}
+
+body:has(.app.dark) {
+  .image-flipper-image {
+    &.placeholder {
+      filter: invert(1);
     }
   }
 }
@@ -63,6 +70,7 @@
 .image-flipper-left {
   left: 0;
   background: linear-gradient(to left, transparent, $translucent3);
+  box-shadow: none !important;
   &:hover {
     background: linear-gradient(to left, transparent, $translucent4);
   }
@@ -71,6 +79,7 @@
 .image-flipper-right {
   right: 0;
   background: linear-gradient(to right, transparent, $translucent3);
+  box-shadow: none !important;
   &:hover {
     background: linear-gradient(to right, transparent, $translucent4);
   }
@@ -122,13 +131,13 @@ body:has(.app.darl) {
   display: flex;
   position: relative;
   justify-content: space-between;
-  background: $translucent2_white;
+  background: var(--secondary-bg);
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
   height: 3.5rem;
   padding-top: 0.5rem;
   .footer-text {
-    margin-top: -1rem;
+    margin-top: -0.5rem;
   }
   label {
     font-weight: normal;
@@ -166,7 +175,6 @@ body:has(.app.darl) {
   }
   .shown-in-map-details {
     padding: 1rem;
-    background: $lighter_gray;
     &.shown {
       cursor: pointer;
       &:hover {
@@ -273,14 +281,11 @@ body:has(.app.darl) {
     margin-left: 1rem;
     margin-right: 0.5rem;
   }
-  p {
-    color: $off_white !important;
-  }
 }
 
 .image-created-at {
-  color: $white;
   margin-left: 1rem;
+  line-height: 1.25rem;
   span {
     white-space: nowrap;
   }

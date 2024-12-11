@@ -13,9 +13,9 @@
 .bp5-popover {
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
   font-size: 1.3rem;
-  .bp5-popover-content {
-    border-radius: 5px;
-  }
+  border-bottom-right-radius: 0.5rem;
+  border-bottom-left-radius: 0.5rem;
+  overflow: hidden;
   .bp5-popover-arrow {
     display: none !important;
   }
@@ -39,7 +39,13 @@
   overflow-y: scroll;
 }
 
+.bp5-input {
+  box-shadow: none;
+  border-radius: 0;
+}
+
 .bp5-input-group {
+  border-bottom: 1.5px solid var(--border-color);
   .bp5-icon {
     top: 0.6rem;
   }

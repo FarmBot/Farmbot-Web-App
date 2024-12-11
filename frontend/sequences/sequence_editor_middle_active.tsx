@@ -87,7 +87,7 @@ export const SequenceSetting = (props: SequenceSettingProps) => {
   const value = (props.defaultOn && isUndefined(raw_value)) ? true : !!raw_value;
   const proceed = () =>
     (props.confirmation && !value) ? confirm(t(props.confirmation)) : true;
-  return <fieldset>
+  return <fieldset className="row half-gap grid-exp-2">
     <label>
       {t(props.label)}
     </label>
@@ -104,7 +104,7 @@ export const SequenceSettingsMenu =
   (props: SequenceSettingsMenuProps) => {
     const { dispatch, getWebAppConfigValue } = props;
     const commonProps = { dispatch, getWebAppConfigValue };
-    return <div className="sequence-settings-menu">
+    return <div className="grid">
       <SequenceSetting {...commonProps}
         setting={BooleanSetting.confirm_step_deletion}
         label={DeviceSetting.confirmStepDeletion}

@@ -27,7 +27,7 @@ export const GardenLocationRow = (props: GardenLocationRowProps) => {
           <a href={`${ExternalUrl.openStreetMap(latitude, longitude)}`}
             title={t("view in map (opens in new tab)")}
             target={"_blank"} rel={"noreferrer"}>
-            <i className={"fa fa-map fb-icon-button"} />
+            <i className={"fa fa-map fb-icon-button invert"} />
           </a>
           {navigator.geolocation &&
             <button

@@ -60,7 +60,7 @@ export const SupportPanel = () =>
             {t("Learn more")}
           </a>
         </p>
-        <Row className="grid-4-col">
+        <Row className="grid-3-col">
           <a className={"button"}
             href={"mailto:support@farm.bot"}>
             <b>{t("email")}</b>

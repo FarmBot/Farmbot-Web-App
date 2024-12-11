@@ -9,7 +9,6 @@
     overflow-y: auto;
     overflow-x: hidden;
     padding: 0;
-    background-color: $panel_light_gray;
     .progress-meter {
       font-weight: bold;
       color: $medium_gray;
@@ -48,7 +47,7 @@
     .prereq-not-met {
       font-size: 1.3rem;
       padding: 1rem;
-      background: $panel_light_red;
+      background: var(--secondary-bg);
       border: 1px solid $dark_red;
       border-radius: 5px;
     }
@@ -70,7 +69,6 @@
       }
     }
     .wizard-step {
-      background: $lighter_gray;
       .bp5-collapse-body {
         margin-bottom: 0;
       }
@@ -91,28 +89,24 @@
     }
     h2,
     .wizard-step-header {
-      background: $panel_light_gray;
       padding: 0.5rem 1.5rem;
       cursor: pointer;
       &.open {
-        background: $lighter_gray;
+        background: var(--secondary-bg);
         h3 {
           font-weight: bold;
         }
       }
       &:hover {
-        background: $light_gray;
-      }
-      p {
-        color: $medium_gray;
+        background: var(--secondary-bg);
       }
     }
     .wizard-step-content {
       padding: 0.5rem 1.5rem 2rem;
+      background: var(--secondary-bg);
       .markdown {
         display: contents;
         p {
-          color: $dark_gray;
           font-size: 1.4rem;
           white-space: pre-wrap;
           line-height: 1.8rem;
@@ -153,9 +147,8 @@
       margin: 0 auto;
       width: fit-content;
       border-radius: 5px;
-      box-shadow: 0 0 7px $translucent;
       padding: 1rem 1.5rem;
-      background: $panel_light_gray;
+      background: var(--secondary-bg);
       &.no-border {
         border: none;
         width: 100%;
