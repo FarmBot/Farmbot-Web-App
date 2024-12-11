@@ -139,7 +139,11 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
             onClick={this.toggle("accountMenuOpen")}>
             {firstName}
           </div>}
-        content={<AdditionalMenu close={this.close} isStaff={this.isStaff} />} />
+        content={<AdditionalMenu
+          close={this.close}
+          dispatch={this.props.dispatch}
+          darkMode={!!this.props.getConfigValue(BooleanSetting.dark_mode)}
+          isStaff={this.isStaff} />} />
     </div>;
   };
 

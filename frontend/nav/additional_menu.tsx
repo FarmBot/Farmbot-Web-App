@@ -6,6 +6,9 @@ import { t } from "../i18next_wrapper";
 import { ExternalUrl } from "../external_urls";
 import { FilePath, Icon, Path } from "../internal_urls";
 import { logout } from "../logout";
+import { setWebAppConfigValue } from "../config_storage/actions";
+import { BooleanSetting } from "../session_keys";
+import { ToggleButton } from "../ui";
 
 export const AdditionalMenu = (props: AccountMenuProps) => {
   return <div className="nav-additional-menu">
@@ -40,6 +43,17 @@ export const AdditionalMenu = (props: AccountMenuProps) => {
         {t("Logout and destroy token")}
       </a>
     </div>}
+    <div className={"dark-mode-toggle"}>
+      <label>{t("Dark Mode")}</label>
+      <ToggleButton
+        className={"no-float"}
+        toggleValue={props.darkMode}
+        toggleAction={() => {
+          props.dispatch(setWebAppConfigValue(
+            BooleanSetting.dark_mode, !props.darkMode));
+        }}
+        customText={{ textFalse: "🌣", textTrue: "☽" }} />
+    </div>
     <div className="app-version">
       <label>{t("APP VERSION")}</label>:&nbsp;
       <a href={ExternalUrl.webAppRepo} target="_blank" rel={"noreferrer"}>

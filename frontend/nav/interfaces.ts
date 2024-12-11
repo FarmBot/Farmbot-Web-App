@@ -86,6 +86,8 @@ export interface NavLinksProps {
 export interface AccountMenuProps {
   isStaff: boolean;
   close: (property: keyof NavBarState) => ToggleEventHandler;
+  dispatch: Function;
+  darkMode: boolean;
 }
 
 export interface EStopButtonProps {
