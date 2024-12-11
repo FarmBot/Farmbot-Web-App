@@ -76,6 +76,15 @@ namespace :api do
     ].join(" ") unless ENV["NO_CLEAN"]
   end
 
+  def clean_build_files
+    # clear out build files, keeping public assets
+    sh [
+      "rm -rf",
+      ".parcel-cache",
+      "node_modules",
+    ].join(" ")
+  end
+
   def add_monaco
     src = "node_modules/monaco-editor/min/vs"
     dst = "public/assets/monaco"
@@ -98,6 +107,11 @@ namespace :api do
   task parcel_compile: :environment do
     add_monaco
     parcel "build"
+  end
+
+  desc "Don't call this directly. Use `rake assets:clean`."
+  task parcel_clean: :environment do
+    clean_build_files
   end
 
   desc "Clean out old demo accounts"
@@ -176,3 +190,4 @@ namespace :api do
   end
 end
 Rake::Task["assets:precompile"].enhance ["api:parcel_compile"]
+Rake::Task["assets:clean"].enhance ["api:parcel_clean"]
