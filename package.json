@@ -4,7 +4,7 @@
   "description": "Farmbot web frontend.",
   "engines": {
     "browsers": "defaults",
-    "node": "20.x",
+    "node": "22.x",
     "npm": "10.x",
     "parcel": "2.x"
   },
@@ -31,6 +31,7 @@
   "license": "MIT",
   "overrides": {
     "cheerio": "1.0.0-rc.12",
+    "get-intrinsic": "1.2.4",
     "@parcel/watcher": "2.1.0"
   },
   "dependencies": {
