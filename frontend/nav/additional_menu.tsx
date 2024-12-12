@@ -52,7 +52,7 @@ export const AdditionalMenu = (props: AccountMenuProps) => {
           props.dispatch(setWebAppConfigValue(
             BooleanSetting.dark_mode, !props.darkMode));
         }}
-        customText={{ textFalse: "🌣", textTrue: "☽" }} />
+        customText={{ textFalse: t("off"), textTrue: t("on") }} />
     </div>
     <div className="app-version">
       <label>{t("APP VERSION")}</label>:&nbsp;

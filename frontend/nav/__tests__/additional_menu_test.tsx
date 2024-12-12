@@ -52,7 +52,7 @@ describe("AdditionalMenu", () => {
 
   it("toggles dark mode", () => {
     render(<AdditionalMenu {...fakeProps()} />);
-    const toggle = screen.getByText("🌣");
+    const toggle = screen.getByText("off");
     fireEvent.click(toggle);
     expect(setWebAppConfigValue).toHaveBeenCalledWith(
       BooleanSetting.dark_mode, true);
