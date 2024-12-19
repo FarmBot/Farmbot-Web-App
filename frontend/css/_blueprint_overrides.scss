@@ -11,10 +11,9 @@
 }
 
 .bp5-popover {
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--box-shadow);
   font-size: 1.3rem;
-  border-bottom-right-radius: 0.5rem;
-  border-bottom-left-radius: 0.5rem;
+  border-radius: 0.5rem;
   overflow: hidden;
   .bp5-popover-arrow {
     display: none !important;
