@@ -294,17 +294,26 @@ nav {
       margin-right: 0.8rem;
     }
     .app-version {
-      padding: 0.5rem 0 0 1rem;
-      a {
-        width: auto;
+      padding: 0.5rem 1rem 0;
+      margin-top: 0.5rem;
+      border-top: 1px solid var(--border-color);
+      label {
+        font-weight: normal;
       }
-      p {
-        display: inline;
-        font-size: 1.2rem;
+      a {
+        text-align: right;
+        border-radius: 0.5rem;
       }
     }
     .dark-mode-toggle {
-      padding: 0.5rem 0 0 1rem;
+      padding: 0.5rem 1rem;
+      line-height: 1.8rem;
+      label {
+        font-weight: normal;
+      }
+      .fb-button {
+        margin: 0;
+      }
     }
   }
   .bp5-popover-arrow {
@@ -381,6 +390,9 @@ body:has(.app.dark) {
 
 .nav-additional-menu {
   padding: 0.5rem 0;
+  a:hover {
+    background: var(--secondary-bg);
+  }
 }
 
 .read-only-icon {

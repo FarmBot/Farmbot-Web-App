@@ -44,9 +44,9 @@ export const AdditionalMenu = (props: AccountMenuProps) => {
       </a>
     </div>}
     <div className={"dark-mode-toggle"}>
+      <i className="fa fa-moon-o" />
       <label>{t("Dark Mode")}</label>
       <ToggleButton
-        className={"no-float"}
         toggleValue={props.darkMode}
         toggleAction={() => {
           props.dispatch(setWebAppConfigValue(
@@ -54,8 +54,9 @@ export const AdditionalMenu = (props: AccountMenuProps) => {
         }}
         customText={{ textFalse: t("off"), textTrue: t("on") }} />
     </div>
-    <div className="app-version">
-      <label>{t("APP VERSION")}</label>:&nbsp;
+    <div className="app-version row grid-exp-2 no-gap">
+      <img width={12} height={12} src={FilePath.icon(Icon.developer)} />
+      <label>{t("APP VERSION")}</label>
       <a href={ExternalUrl.webAppRepo} target="_blank" rel={"noreferrer"}>
         {shortRevision().slice(0, 8)}
       </a>
