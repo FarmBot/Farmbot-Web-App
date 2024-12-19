@@ -173,13 +173,13 @@ const TourStepNavigation = (props: TourStepNavigationProps) => {
   const prevStepSlug = getAdjacentTourStepSlug(-1);
   const nextStepSlug = getAdjacentTourStepSlug(1);
   return <div className={"toast-loader"}>
-    <i className={`fa fa-backward fb-icon-button invert previous ${prevStepSlug ? "" : "disabled"}`}
+    <i className={`fa fa-backward fb-icon-button previous ${prevStepSlug ? "" : "disabled"}`}
       title={t("back")}
       onClick={() => updateTourState(urlTourSlug, prevStepSlug)} />
-    <i className={`fa fa-forward fb-icon-button invert next ${nextStepSlug ? "" : "disabled"}`}
+    <i className={`fa fa-forward fb-icon-button next ${nextStepSlug ? "" : "disabled"}`}
       title={t("advance")}
       onClick={() => updateTourState(urlTourSlug, nextStepSlug)} />
-    <i className={"fa fa-times fb-icon-button invert exit"}
+    <i className={"fa fa-times fb-icon-button exit"}
       title={t("quit")}
       onClick={() => updateTourState(undefined, undefined)} />
   </div>;

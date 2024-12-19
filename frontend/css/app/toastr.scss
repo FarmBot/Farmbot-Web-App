@@ -118,6 +118,12 @@
   height: 1.6rem;
   overflow: hidden;
   transform: rotate(180deg);
+  .fb-icon-button {
+    color: $off_white !important;
+    &.disabled {
+      opacity: 0.25;
+    }
+  }
 }
 
 .toast-loader-left,
