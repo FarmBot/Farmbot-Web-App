@@ -8,7 +8,8 @@
   scrollbar-width: none;
   .garden-map-legend {
     @media screen and (max-width: $mobile_max_width) {
-      &.panel-open {
+      &.panel-open,
+      &.short-panel {
         display: none;
       }
       &.panel-closed-mobile,
@@ -34,6 +35,9 @@
   }
   &.panel-closed-mobile {
     padding: 16rem 1rem 1rem 1rem;
+  }
+  &.short-panel {
+    padding: 35rem 1rem 1rem;
   }
   &::-webkit-scrollbar {
     display: none;

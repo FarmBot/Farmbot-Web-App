@@ -14,6 +14,9 @@
     width: 100vw;
     margin: 0;
   }
+  &.short-panel {
+    max-height: 19rem;
+  }
 }
 
 .panel-nav {
