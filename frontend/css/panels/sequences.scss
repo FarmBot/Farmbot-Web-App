@@ -146,9 +146,6 @@
 
 .sequence-editor-content,
 .regimen-editor-content {
-  .sequence {
-    margin-bottom: 1rem;
-  }
   @media screen and (max-width: 767px) {
     margin-left: 5px;
     margin-right: 0;
@@ -1110,18 +1107,24 @@
   }
   &.first {
     .add-command {
-      margin-top: -0.25rem;
       border-top-left-radius: 0;
     }
   }
   &.last {
     .bp5-collapse {
-      margin-left: 1rem;
-      margin-right: 3rem;
+      margin-top: 1rem;
+      margin-right: 2.5rem;
     }
     .add-command {
-      margin-top: -1.75rem;
+      margin-top: -2rem;
       border-bottom-left-radius: 0;
+    }
+  }
+  &.last {
+    &.open {
+      .add-command {
+        margin-top: -1.5rem;
+      }
     }
   }
   &.only {
@@ -1147,7 +1150,6 @@
     position: relative;
     .add-command {
       position: absolute;
-      top: 50%;
       right: -2.5rem;
       transform: rotate(-45deg);
       i {
