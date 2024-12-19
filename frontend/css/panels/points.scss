@@ -9,17 +9,5 @@
     .delete-row {
       margin: 1.5rem;
     }
-    .grid-and-row-planting {
-      .update-button,
-      .preview-button,
-      .cancel-button,
-      .save-button {
-        text-decoration: none !important;
-        &:hover {
-          color: $black;
-          background: $off_white;
-        }
-      }
-    }
   }
 }

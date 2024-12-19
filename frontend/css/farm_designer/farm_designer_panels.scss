@@ -420,9 +420,6 @@ li {
   .fa-arrows-h, .fa-arrows-v {
     margin-left: 0.5rem;
   }
-  label {
-    color: $off_white;
-  }
   .use-current-location {
     display: flex;
     align-items: center;
@@ -440,17 +437,7 @@ li {
   .preview-button,
   .cancel-button,
   .save-button {
-    text-transform: uppercase;
-    font-size: 1rem;
-    border: 1px solid;
-    padding: 0.4rem 1.2rem;
-    font-weight: bold;
-    letter-spacing: 1px;
-    border-radius: 4px;
-    color: $off_white;
-    margin-top: 1.25rem;
-    margin-right: 1.5rem;
-    &:hover { color: $white; }
+    text-decoration: none !important;
   }
 }
 
