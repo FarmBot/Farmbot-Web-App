@@ -1,3 +1,5 @@
+require "find"
+
 COVERAGE_FILE_PATH = "./coverage_fe/index.html"
 JSON_COVERAGE_FILE_PATH = "./coverage_fe/coverage-final.json"
 THRESHOLD = 0.001
@@ -182,6 +184,43 @@ def to_percent(pair)
   return ((pair.head / pair.tail) * 100).round(4)
 end
 
+def print_lib_progress
+  counts = {
+    "file" => { "enzyme" => 0, "rtl" => 0 },
+    "line" => { "enzyme" => 0, "rtl" => 0 },
+  }
+  Find.find("frontend") do |path|
+    next unless File.file?(path)
+    includesEnzyme = false
+    includesRTL = false
+    File.foreach(path) do |line|
+      if line.include?("mount(") || line.include?("shallow(") || line.include?("svgMount(")
+        counts["line"]["enzyme"] += 1
+        includesEnzyme = true
+      end
+      if line.include?("render(<")
+        counts["line"]["rtl"] += 1
+        includesRTL = true
+      end
+    end
+    if includesEnzyme
+      counts["file"]["enzyme"] += 1
+    end
+    if includesRTL
+      counts["file"]["rtl"] += 1
+    end
+  end
+  puts
+  puts "enzyme -> RTL progress:"
+  counts.each do |text, counts|
+    total = counts["enzyme"] + counts["rtl"]
+    percent = (counts["rtl"] / total.to_f * 100).round(2)
+    puts "#{text}s: #{counts["rtl"]} / #{total} (#{percent}%)"
+    puts "█" * percent.round + "░" * (100 - percent.round)
+  end
+  puts
+end
+
 namespace :coverage do
   desc "Verify code test coverage changes remain within acceptable thresholds." \
        "Compares current test coverage percentage from Jest output to previous" \
@@ -312,6 +351,8 @@ namespace :coverage do
     puts
 
     print_summary_text(build_percent, remote, pull_request_data)
+
+    print_lib_progress
 
     exit (pass || exit_0?) ? 0 : 1
   end
