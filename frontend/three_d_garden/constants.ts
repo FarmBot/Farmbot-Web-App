@@ -3,7 +3,7 @@ import { sampleSize } from "lodash";
 
 export const LIB_DIR = "/3D/lib/";
 
-export const ASSETS = {
+export const ASSETS: Record<string, Record<string, string>> = {
   fonts: {
     cabinBold: "/3D/fonts/Cabin_Bold.json",
   },

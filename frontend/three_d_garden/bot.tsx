@@ -6,7 +6,10 @@ import {
 } from "@react-three/drei";
 import { DoubleSide, Shape, RepeatWrapping } from "three";
 import {
-  easyCubicBezierCurve3, threeSpace, zDir, zZero as zZeroFunc,
+  easyCubicBezierCurve3, threeSpace, zDir,
+  zZero as zZeroFunc,
+  zero as zeroFunc,
+  extents as extentsFunc,
 } from "./helpers";
 import { Config } from "./config";
 import { GLTF } from "three-stdlib";
@@ -185,17 +188,9 @@ export const Bot = (props: FarmbotModelProps) => {
     columnLength, zAxisLength, zGantryOffset, bedWallThickness, tool, bedHeight,
     cableCarriers, bounds,
   } = props.config;
-  const zZero = zZeroFunc(props.config);
-  const zero = {
-    x: threeSpace(bedXOffset, bedLengthOuter),
-    y: threeSpace(bedYOffset, bedWidthOuter),
-    z: zZero,
-  };
-  const extents = {
-    x: threeSpace(bedXOffset + botSizeX, bedLengthOuter),
-    y: threeSpace(bedYOffset + botSizeY, bedWidthOuter),
-    z: zZero + zDir * botSizeZ,
-  };
+  const zZero = zZeroFunc(config);
+  const zero = zeroFunc(config);
+  const extents = extentsFunc(config);
   const zDip = (x: number, y: number): [number, number, number][] => [
     [x, y, extents.z],
     [x, y, zero.z],

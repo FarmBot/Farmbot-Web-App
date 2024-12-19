@@ -54,7 +54,7 @@ export const DistanceIndicator = (props: DistanceIndicatorProps) => {
         <MeshPhongMaterial color={"#c49f7a"} />
       </Box>
       {LABELS.map(({ position, rotation }) =>
-        <Text name={"distance-label"}
+        <Text name={"distance-label"} key={JSON.stringify([position, rotation])}
           fontSize={50}
           color={"black"}
           rotation={rotation}

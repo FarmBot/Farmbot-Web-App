@@ -1,11 +1,14 @@
 import React from "react";
 import { ThreeDGarden } from "../three_d_garden";
 import { INITIAL } from "../three_d_garden/config";
-import { BotSize, MapTransformProps, AxisNumberProperty } from "./map/interfaces";
-import { clone } from "lodash";
+import {
+  BotSize, MapTransformProps, AxisNumberProperty, TaggedPlant,
+} from "./map/interfaces";
+import { camelCase, clone } from "lodash";
 import { SourceFbosConfig } from "../devices/interfaces";
 import { ConfigurationName } from "farmbot";
 import { DesignerState } from "./interfaces";
+import { ASSETS } from "../three_d_garden/constants";
 
 export interface ThreeDGardenMapProps {
   botSize: BotSize;
@@ -14,6 +17,7 @@ export interface ThreeDGardenMapProps {
   get3DConfigValue(key: string): number;
   sourceFbosConfig: SourceFbosConfig;
   designer: DesignerState;
+  plants: TaggedPlant[];
 }
 
 export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
@@ -44,6 +48,23 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   config.bedYOffset = getValue("bedYOffset");
   config.bedZOffset = getValue("bedZOffset");
   config.legSize = getValue("legSize");
+  config.bounds = !!getValue("bounds");
+  config.grid = !!getValue("grid");
 
-  return <ThreeDGarden config={config} />;
+  const plants = props.plants.map(plant => {
+    return {
+      label: plant.body.name,
+      icon: ASSETS.icons[camelCase(plant.body.openfarm_slug)]
+        || ASSETS.icons.arugula,
+      size: plant.body.radius * 2,
+      spread: 0,
+      x: plant.body.x + config.bedXOffset,
+      y: plant.body.y + config.bedYOffset,
+    };
+  });
+
+  config.zoom = true;
+  config.pan = true;
+
+  return <ThreeDGarden config={config} plants={plants} />;
 };

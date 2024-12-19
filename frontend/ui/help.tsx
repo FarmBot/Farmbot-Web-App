@@ -30,6 +30,7 @@ export function Help(props: HelpProps) {
     popoverClassName={"help"}
     target={
       <i title={props.title}
+        role={"tooltip"}
         className={[
           "fa",
           props.customIcon || "fa-question-circle",

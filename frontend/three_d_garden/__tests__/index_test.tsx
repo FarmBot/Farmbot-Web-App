@@ -9,6 +9,7 @@ import { clone } from "lodash";
 describe("<ThreeDGarden />", () => {
   const fakeProps = (): ThreeDGardenProps => ({
     config: clone(INITIAL),
+    plants: [],
   });
 
   it("renders", () => {

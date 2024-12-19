@@ -4,7 +4,7 @@ import { Highlight } from "./maybe_highlight";
 import { Actions, DeviceSetting, ToolTips } from "../constants";
 import { Header } from "./hardware_settings/header";
 import { Collapse } from "@blueprintjs/core";
-import { BlurableInput, Help, Row } from "../ui";
+import { BlurableInput, Help, Row, ToggleButton } from "../ui";
 import { t } from "../i18next_wrapper";
 import { TaggedFarmwareEnv } from "farmbot";
 import { isUndefined } from "lodash";
@@ -22,6 +22,8 @@ const DEFAULTS: Record<string, number> = {
   bedYOffset: 60,
   bedZOffset: 0,
   legSize: 100,
+  bounds: 0,
+  grid: 0,
 };
 
 export const namespace3D = (key: string): string => "3D_" + key;
@@ -59,11 +61,15 @@ interface ConfigProps {
   tooltip: string;
   getValue(key: string): number;
   findOrCreate(key: string, value: string): void;
+  isToggle?: boolean;
 }
 
 const Config = (props: ConfigProps) => {
   const { dispatch, configKey, distanceIndicator } = props;
   const value = props.getValue(configKey);
+  const modifiedClassName = getModifiedClassNameSpecifyDefault(
+    value, DEFAULTS[configKey]);
+  const action = (newValue: string) => props.findOrCreate(configKey, newValue);
   return <Highlight settingName={props.setting}>
     <Row className="grid-2-col">
       <div className={"labels"}>
@@ -79,13 +85,17 @@ const Config = (props: ConfigProps) => {
             payload: distanceIndicator ? "" : configKey,
           })} />
       </div>
-      <BlurableInput
-        type="number"
-        wrapperClassName={getModifiedClassNameSpecifyDefault(
-          value, DEFAULTS[configKey])}
-        value={value}
-        onCommit={e =>
-          props.findOrCreate(configKey, e.currentTarget.value)} />
+      {props.isToggle
+        ? <ToggleButton
+          className={modifiedClassName}
+          toggleValue={value}
+          toggleAction={() => action(value ? "0" : "1")} />
+        :
+        <BlurableInput
+          type="number"
+          wrapperClassName={modifiedClassName}
+          value={value}
+          onCommit={e => action(e.currentTarget.value)} />}
     </Row>
   </Highlight>;
 };
@@ -143,6 +153,16 @@ export const ThreeDSettings = (props: ThreeDSettingsProps) => {
         tooltip={ToolTips.THREE_D_LEG_SIZE}
         setting={DeviceSetting.legSize}
         configKey={"legSize"} />
+      <Config {...common}
+        tooltip={ToolTips.THREE_D_BOUNDS}
+        setting={DeviceSetting.bounds}
+        configKey={"bounds"}
+        isToggle={true} />
+      <Config {...common}
+        tooltip={ToolTips.THREE_D_GRID}
+        setting={DeviceSetting.grid}
+        configKey={"grid"}
+        isToggle={true} />
     </Collapse>
   </Highlight>;
 };

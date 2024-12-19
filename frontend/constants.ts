@@ -637,6 +637,12 @@ export namespace ToolTips {
   export const THREE_D_LEG_SIZE =
     trim(`Leg size. (default: {{ defaultConfigValue }}mm)`);
 
+  export const THREE_D_BOUNDS =
+    trim(`Display bounds. (default: 0)`);
+
+  export const THREE_D_GRID =
+    trim(`Display grid. (default: 0)`);
+
   // Tools
   export const WATER_FLOW_RATE =
     trim(`To calculate **WATER FLOW RATE**, hold a measuring cup below the
@@ -2189,6 +2195,8 @@ export enum DeviceSetting {
   bedYOffset = `Bed Y Offset`,
   bedZOffset = `Bed Z Offset`,
   legSize = `Leg Size`,
+  bounds = `Bounds`,
+  grid = `Grid`,
 
   // Map
   showPlants = `Plants`,

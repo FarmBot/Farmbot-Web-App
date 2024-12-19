@@ -8,6 +8,8 @@ import { mount } from "enzyme";
 import { GardenModelProps, GardenModel } from "../garden";
 import { clone } from "lodash";
 import { INITIAL } from "../config";
+import { render, screen } from "@testing-library/react";
+import { ASSETS } from "../constants";
 
 describe("<GardenModel />", () => {
   const fakeProps = (): GardenModelProps => ({
@@ -21,6 +23,39 @@ describe("<GardenModel />", () => {
     expect(wrapper.html()).toContain("zoom-beacons");
     expect(wrapper.html()).not.toContain("stats");
     expect(wrapper.html()).toContain("darkgreen");
+  });
+
+  it("renders no user plants", () => {
+    const p = fakeProps();
+    p.plants = [];
+    render(<GardenModel {...p} />);
+    const plantLabels = screen.queryAllByText("Beet");
+    expect(plantLabels.length).toEqual(0);
+  });
+
+  it("renders user plant", () => {
+    const p = fakeProps();
+    p.plants = [
+      {
+        label: "Beet",
+        icon: ASSETS.icons.beet,
+        spread: 175,
+        size: 150,
+        x: 0,
+        y: 0,
+      },
+    ];
+    render(<GardenModel {...p} />);
+    const plantLabels = screen.queryAllByText("Beet");
+    expect(plantLabels.length).toEqual(1);
+  });
+
+  it("renders promo plants", () => {
+    const p = fakeProps();
+    p.plants = undefined;
+    render(<GardenModel {...p} />);
+    const plantLabels = screen.queryAllByText("Beet");
+    expect(plantLabels.length).toEqual(7);
   });
 
   it("renders other options", () => {

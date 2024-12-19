@@ -208,6 +208,7 @@ export class RawFarmDesigner
       {this.props.getConfigValue(BooleanSetting.three_d_garden)
         ? <ThreeDGardenMap
           designer={this.props.designer}
+          plants={this.props.plants}
           get3DConfigValue={get3DConfigValueFunction(this.props.farmwareEnvs)}
           sourceFbosConfig={this.props.sourceFbosConfig}
           gridOffset={gridOffset}

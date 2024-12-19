@@ -158,6 +158,8 @@ const THREE_D_PANEL = [
   DeviceSetting.bedYOffset,
   DeviceSetting.bedZOffset,
   DeviceSetting.legSize,
+  DeviceSetting.bounds,
+  DeviceSetting.grid,
 ];
 const ACCOUNT_PANEL = [
   DeviceSetting.accountSettings,

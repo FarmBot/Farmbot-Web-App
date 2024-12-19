@@ -6,11 +6,17 @@ import {
   Circle, Stats, Billboard, Image, Clouds, Cloud, OrthographicCamera,
   Detailed, Sphere,
   useTexture,
+  Line,
 } from "@react-three/drei";
 import { RepeatWrapping, Vector3, BackSide } from "three";
 import { Bot } from "./bot";
 import { Bed } from "./bed";
-import { threeSpace, zZero } from "./helpers";
+import {
+  threeSpace,
+  zZero as zZeroFunc,
+  zero as zeroFunc,
+  extents as extentsFunc,
+} from "./helpers";
 import { Sky } from "./sky";
 import { Config, detailLevels, seasonProperties } from "./config";
 import { ASSETS, GARDENS, PLANTS } from "./constants";
@@ -25,6 +31,7 @@ import {
 } from "./components";
 import { isDesktop } from "../screen_size";
 import { Text } from "./text";
+import { isUndefined, range } from "lodash";
 
 const AnimatedGroup = animated(Group);
 
@@ -32,6 +39,7 @@ export interface GardenModelProps {
   config: Config;
   activeFocus: string;
   setActiveFocus(focus: string): void;
+  plants?: Plant[];
 }
 
 interface Plant {
@@ -42,6 +50,8 @@ interface Plant {
   x: number;
   y: number;
 }
+
+export interface ThreeDGardenPlant extends Plant { }
 
 export const GardenModel = (props: GardenModelProps) => {
   const { config } = props;
@@ -89,7 +99,9 @@ export const GardenModel = (props: GardenModelProps) => {
     }
     return positions;
   };
-  const plants = calculatePlantPositions();
+  const plants = isUndefined(props.plants)
+    ? calculatePlantPositions()
+    : props.plants;
 
   const [hoveredPlant, setHoveredPlant] =
     React.useState<number | undefined>(undefined);
@@ -119,7 +131,7 @@ export const GardenModel = (props: GardenModelProps) => {
       position={new Vector3(
         threeSpace(plant.x, config.bedLengthOuter),
         threeSpace(plant.y, config.bedWidthOuter),
-        zZero(config) - config.soilHeight + plant.size / 2,
+        zZeroFunc(config) - config.soilHeight + plant.size / 2,
       )}>
       {labelOnly
         ? <Text visible={alwaysShowLabels || i === hoveredPlant}
@@ -167,6 +179,10 @@ export const GardenModel = (props: GardenModelProps) => {
     target: [0, 0, 0],
   };
   const camera = getCamera(config, props.activeFocus, initCamera);
+
+  const zero = zeroFunc(config);
+  const gridZ = zero.z - config.soilHeight;
+  const extents = extentsFunc(config);
 
   // eslint-disable-next-line no-null/no-null
   return <Group dispose={null}
@@ -243,6 +259,22 @@ export const GardenModel = (props: GardenModelProps) => {
     <Group name={"plant-labels"} visible={!props.activeFocus}>
       {plants.map((plant, i) =>
         <Plant key={i} i={i} plant={plant} labelOnly={true} />)}
+    </Group>
+    <Group name={"garden-grid"} visible={config.grid}>
+      {range(0, config.botSizeX + 100, 100).map(x =>
+        <Line key={x}
+          color={"white"}
+          points={[
+            [zero.x + x, zero.y, gridZ],
+            [zero.x + x, extents.y, gridZ],
+          ]} />)}
+      {range(0, config.botSizeY + 100, 100).map(y =>
+        <Line key={y}
+          color={"white"}
+          points={[
+            [zero.x, zero.y + y, gridZ],
+            [extents.x, zero.y + y, gridZ],
+          ]} />)}
     </Group>
     <Group name={"plants"}
       visible={props.activeFocus != "Planter bed"}
