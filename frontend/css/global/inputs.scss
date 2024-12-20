@@ -82,6 +82,10 @@ input[type="radio"] {
   cursor: pointer;
 }
 
+input[type="checkbox"] {
+  padding: 0;
+}
+
 .input {
   position: relative;
   .bp5-popover-wrapper {

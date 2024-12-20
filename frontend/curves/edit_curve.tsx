@@ -228,7 +228,7 @@ export const ScaleMenu = (props: ActionMenuProps) => {
   const { data } = props.curve.body;
   const [maxDayNum, setMaxDay] = React.useState(maxDay(data));
   const [maxValueNum, setMaxValue] = React.useState(maxValue(data));
-  return <div className={"curve-action-menu grid"}>
+  return <div className={"curve-action-menu grid half-gap"}>
     <div className={"row grid-2-col"}>
       <label>{t("max value")}</label>
       <input type={"number"}
@@ -249,6 +249,7 @@ export const ScaleMenu = (props: ActionMenuProps) => {
         }} />
     </div>
     <div className={"row grid-2-col"}>
+      <div />
       <button className={"fb-button clear"}
         onClick={() => {
           props.dispatch(editCurve(props.curve, {
@@ -283,7 +284,7 @@ export const TemplatesMenu = (props: ActionMenuProps) => {
     setMaxValueState(value);
     setMaxValueCache(value);
   };
-  return <div className={"curve-action-menu grid"}>
+  return <div className={"curve-action-menu grid half-gap"}>
     <div className={"row grid-2-col"}>
       <label>{t("shape")}</label>
       <FBSelect key={shape}
@@ -311,6 +312,7 @@ export const TemplatesMenu = (props: ActionMenuProps) => {
         }} />
     </div>
     <div className={"row grid-2-col"}>
+      <div />
       <button className={"fb-button clear"}
         onClick={() => {
           props.dispatch(editCurve(props.curve, {

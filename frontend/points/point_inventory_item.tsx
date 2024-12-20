@@ -57,10 +57,10 @@ export const PointInventoryItem = (props: PointInventoryItemProps) => {
     return <img
       className={colorOverride ? "soil-point-graphic" : "point-graphic"}
       src={svgToUrl(
-        `<svg xmlns='http://www.w3.org/2000/svg'
+        `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50'
            fill='none' stroke-width='1.5' stroke='${color}'>
-           <circle cx='15' cy='15' r='12' fill='${colorOverride || "none"}' />
-           <circle cx='15' cy='15' r='2' />
+           <circle cx='25' cy='25' r='18' fill='${colorOverride || "none"}' />
+           <circle cx='25' cy='25' r='2' />
            </svg>`)}
       width={32} height={32} />;
   };
