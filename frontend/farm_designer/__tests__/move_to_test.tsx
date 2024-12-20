@@ -11,17 +11,19 @@ jest.mock("../../ui/popover", () => ({
 
 import React from "react";
 import { mount, shallow } from "enzyme";
+import { render, screen, fireEvent } from "@testing-library/react";
 import {
   MoveToForm, MoveToFormProps, MoveModeLink, chooseLocation,
   GoToThisLocationButtonProps, GoToThisLocationButton, movementPercentRemaining,
+  MoveModeLinkProps,
 } from "../move_to";
 import { Actions } from "../../constants";
-import { clickButton } from "../../__test_support__/helpers";
 import { move } from "../../devices/actions";
 import { Path } from "../../internal_urls";
 import { setWebAppConfigValue } from "../../config_storage/actions";
 import { StringSetting } from "../../session_keys";
 import { fakeMovementState } from "../../__test_support__/fake_bot_data";
+import { mockDispatch } from "../../__test_support__/fake_dispatch";
 
 describe("<MoveToForm />", () => {
   const fakeProps = (): MoveToFormProps => ({
@@ -94,10 +96,22 @@ describe("<MoveToForm />", () => {
 });
 
 describe("<MoveModeLink />", () => {
+  const fakeProps = (): MoveModeLinkProps => ({
+    dispatch: jest.fn(),
+  });
+
   it("enters 'move to' mode", () => {
-    const wrapper = shallow(<MoveModeLink />);
-    clickButton(wrapper, 0, "move mode");
+    const p = fakeProps();
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
+    render(<MoveModeLink {...p} />);
+    const button = screen.getByTitle("open move mode panel");
+    fireEvent.click(button);
     expect(mockNavigate).toHaveBeenCalledWith(Path.location());
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_PANEL_OPEN,
+      payload: true,
+    });
   });
 });
 

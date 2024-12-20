@@ -9,11 +9,13 @@ jest.mock("../../farm_designer/map/layers/plants/plant_actions", () => ({
 
 import React from "react";
 import { mount, shallow } from "enzyme";
+import { render, screen, fireEvent } from "@testing-library/react";
 import {
   RawSelectPlants as SelectPlants, SelectPlantsProps, mapStateToProps,
   getFilteredPoints, GetFilteredPointsProps, validPointTypes, SelectModeLink,
   pointGroupSubset,
   uncategorizedGroupSubset,
+  SelectModeLinkProps,
 } from "../select_plants";
 import {
   fakePlant, fakePoint, fakeWeed, fakeToolSlot, fakeTool,
@@ -37,7 +39,6 @@ import { SpecialStatus } from "farmbot";
 import { savePoints } from "../../farm_designer/map/layers/plants/plant_actions";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { Path } from "../../internal_urls";
-import { mountWithContext } from "../../__test_support__/mount_with_context";
 
 describe("<SelectPlants />", () => {
   beforeEach(() => {
@@ -472,9 +473,21 @@ describe("uncategorizedGroupSubset()", () => {
 });
 
 describe("<SelectModeLink />", () => {
+  const fakeProps = (): SelectModeLinkProps => ({
+    dispatch: jest.fn(),
+  });
+
   it("navigates to panel", () => {
-    const wrapper = mountWithContext(<SelectModeLink />);
-    wrapper.find("button").simulate("click");
+    const p = fakeProps();
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
+    render(<SelectModeLink {...p} />);
+    const button = screen.getByTitle("open point select panel");
+    fireEvent.click(button);
     expect(mockNavigate).toHaveBeenCalledWith(Path.plants("select"));
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_PANEL_OPEN,
+      payload: true,
+    });
   });
 });

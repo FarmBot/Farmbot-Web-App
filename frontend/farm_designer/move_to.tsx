@@ -20,6 +20,7 @@ import {
 import { StringSetting } from "../session_keys";
 import { MovementState } from "../interfaces";
 import { getUrlQuery } from "../util";
+import { setPanelOpen } from "./panel_header";
 
 export interface MoveToFormProps {
   chosenLocation: BotPosition;
@@ -98,13 +99,20 @@ export class MoveToForm extends React.Component<MoveToFormProps, MoveToFormState
   }
 }
 
-export const MoveModeLink = () => {
+export interface MoveModeLinkProps {
+  dispatch: Function;
+}
+
+export const MoveModeLink = (props: MoveModeLinkProps) => {
   const navigate = useNavigate();
   return <div className="move-to-mode">
     <button
       className="fb-button gray"
       title={t("open move mode panel")}
-      onClick={() => { navigate(Path.location()); }}>
+      onClick={() => {
+        props.dispatch(setPanelOpen(true));
+        navigate(Path.location());
+      }}>
       {t("move mode")}
     </button>
   </div>;

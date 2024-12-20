@@ -15,7 +15,7 @@ import {
 } from "../farm_designer/designer_panel";
 import { t } from "../i18next_wrapper";
 import { createGroup } from "../point_groups/actions";
-import { PanelColor } from "../farm_designer/panel_header";
+import { PanelColor, setPanelOpen } from "../farm_designer/panel_header";
 import { error } from "../toast/toast";
 import {
   PlantDateBulkUpdate, PlantSlugBulkUpdate, PlantStatusBulkUpdate,
@@ -472,13 +472,20 @@ const getVisibleLayers = (getConfigValue: GetWebAppConfigValue): PointType[] => 
   ];
 };
 
-export const SelectModeLink = () => {
+export interface SelectModeLinkProps {
+  dispatch: Function;
+}
+
+export const SelectModeLink = (props: SelectModeLinkProps) => {
   const navigate = useNavigate();
   return <div className="select-mode">
     <button
       className="fb-button gray"
       title={t("open point select panel")}
-      onClick={() => { navigate(Path.plants("select")); }}>
+      onClick={() => {
+        props.dispatch(setPanelOpen(true));
+        navigate(Path.plants("select"));
+      }}>
       {t("select")}
     </button>
   </div>;

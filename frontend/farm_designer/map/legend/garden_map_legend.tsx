@@ -260,9 +260,9 @@ export function GardenMapLegend(props: GardenMapLegendProps) {
       <div className="menu-content">
         <ZoomControls zoom={props.zoom} getConfigValue={getConfigValue} />
         <LayerToggles {...props} />
-        <MoveModeLink />
+        <MoveModeLink dispatch={props.dispatch} />
         <MapSettings getConfigValue={getConfigValue} dispatch={props.dispatch} />
-        <SelectModeLink />
+        <SelectModeLink dispatch={props.dispatch} />
         <BugsControls />
         <ZDisplayToggle open={zDisplayOpen} setOpen={setZDisplayOpen} />
       </div>
