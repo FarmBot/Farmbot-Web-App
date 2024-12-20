@@ -50,6 +50,7 @@ import { Path } from "../../internal_urls";
 import { AddPlantIcon } from "./active_plant/add_plant_icon";
 import { NavigationContext } from "../../routes_helpers";
 import { NavigateFunction } from "react-router";
+import { setPanelOpen } from "../panel_header";
 
 const BOUND_KEYS = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
 
@@ -320,6 +321,7 @@ export class GardenMap extends
         break;
       case Mode.locationInfo:
         e.preventDefault();
+        this.props.dispatch(setPanelOpen(true));
         !this.state.toLocation && chooseLocation({
           navigate: this.navigate,
           gardenCoords: this.getGardenCoordinates(e),

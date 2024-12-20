@@ -223,26 +223,40 @@ describe("mapPointClickAction()", () => {
     location.pathname = Path.mock(Path.plants());
     const navigate = jest.fn();
     const dispatch = jest.fn();
-    mapPointClickAction(navigate, dispatch, "uuid", "fake path")();
+    const outerDispatch = mockDispatch(dispatch, fakeState);
+    mapPointClickAction(navigate, outerDispatch, "uuid", "fake path")();
     expect(navigate).toHaveBeenCalledWith("fake path");
-    expect(dispatch).not.toHaveBeenCalled();
+    expect(dispatch).toHaveBeenCalledTimes(1);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_PANEL_OPEN,
+      payload: true,
+    });
   });
 
   it("doesn't navigate: box select", () => {
     location.pathname = Path.mock(Path.plants("select"));
     const navigate = jest.fn();
     const dispatch = jest.fn();
-    mapPointClickAction(navigate, dispatch, "uuid", "fake path")();
+    const outerDispatch = mockDispatch(dispatch, fakeState);
+    mapPointClickAction(navigate, outerDispatch, "uuid", "fake path")();
     expect(navigate).not.toHaveBeenCalled();
-    expect(dispatch).toHaveBeenCalled();
+    expect(dispatch).toHaveBeenCalledTimes(1);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SELECT_POINT,
+      payload: ["uuid"],
+    });
   });
 
   it("doesn't navigate: group edit", () => {
     location.pathname = Path.mock(Path.groups(1));
     const navigate = jest.fn();
     const dispatch = jest.fn();
-    mapPointClickAction(navigate, dispatch, "uuid", "fake path")();
+    const outerDispatch = mockDispatch(dispatch, fakeState);
+    mapPointClickAction(navigate, outerDispatch, "uuid", "fake path")();
     expect(navigate).not.toHaveBeenCalled();
-    expect(dispatch).toHaveBeenCalled();
+    expect(dispatch).toHaveBeenCalledTimes(1);
+    expect(dispatch).not.toHaveBeenCalledWith(expect.objectContaining({
+      type: expect.any(String),
+    }));
   });
 });

@@ -14,6 +14,7 @@ import { selectAllPointGroups } from "../../resources/selectors";
 import { overwriteGroup } from "../../point_groups/actions";
 import { FilePath, Path } from "../../internal_urls";
 import { NavigateFunction } from "react-router";
+import { setPanelOpen } from "../panel_header";
 
 export const movePoints = (payload: MovePointsProps) => (dispatch: Function) => {
   payload.points.map(point => {
@@ -132,6 +133,7 @@ export const mapPointClickAction =
       case Mode.boxSelect:
         return dispatch(clickMapPlant(uuid, ""));
       default:
+        dispatch(setPanelOpen(true));
         return path && navigate(path);
     }
   };

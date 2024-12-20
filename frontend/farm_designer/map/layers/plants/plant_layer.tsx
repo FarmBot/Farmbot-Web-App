@@ -5,6 +5,7 @@ import { unpackUUID } from "../../../../util";
 import { getMode } from "../../util";
 import { Link } from "../../../../link";
 import { Path } from "../../../../internal_urls";
+import { setPanelOpen } from "../../../panel_header";
 
 export function PlantLayer(props: PlantLayerProps) {
   const {
@@ -59,6 +60,7 @@ export function PlantLayer(props: PlantLayerProps) {
       return (getMode() === Mode.editGroup || getMode() === Mode.boxSelect)
         ? <g {...wrapperProps}>{plant}</g>
         : <Link {...wrapperProps}
+          onClick={() => dispatch(setPanelOpen(true))}
           to={path(p.body.id)}>
           {plant}
         </Link>;

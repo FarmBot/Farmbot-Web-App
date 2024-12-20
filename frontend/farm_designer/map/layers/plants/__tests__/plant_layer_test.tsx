@@ -11,6 +11,8 @@ import { svgMount } from "../../../../../__test_support__/svg_mount";
 import { shallow } from "enzyme";
 import { GardenPlant } from "../garden_plant";
 import { FilePath, Path } from "../../../../../internal_urls";
+import { Actions } from "../../../../../constants";
+import { mockDispatch } from "../../../../../__test_support__/fake_dispatch";
 
 describe("<PlantLayer />", () => {
   const fakeProps = (): PlantLayerProps => ({
@@ -82,6 +84,20 @@ describe("<PlantLayer />", () => {
     const wrapper = svgMount(<PlantLayer {...p} />);
     expect(wrapper.find("Link").props().to)
       .toEqual(Path.plants(5));
+  });
+
+  it("clicks plant", () => {
+    location.pathname = Path.mock(Path.plants());
+    const p = fakeProps();
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
+    p.plants[0].body.id = 5;
+    const wrapper = svgMount(<PlantLayer {...p} />);
+    wrapper.find("Link").first().simulate("click");
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_PANEL_OPEN,
+      payload: true,
+    });
   });
 
   it("has link to plant template", () => {
