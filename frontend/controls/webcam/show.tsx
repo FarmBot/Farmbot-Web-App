@@ -19,16 +19,17 @@ type State = {
 
 const FALLBACK_FEED = { name: "", url: PLACEHOLDER_FARMBOT };
 
-export function IndexIndicator(props: { i: number, total: number }): JSX.Element {
-  const percentWidth = 100 / props.total;
-  return props.total > 1
-    ? <div className="index-indicator"
-      style={{
-        width: `${percentWidth}%`,
-        left: `calc(-10px + ${props.i} * ${percentWidth}%)`
-      }} />
-    : <div className={"no-index-indicator"} />;
-}
+export const IndexIndicator =
+  (props: { i: number, total: number }): React.ReactNode => {
+    const percentWidth = 100 / props.total;
+    return props.total > 1
+      ? <div className="index-indicator"
+        style={{
+          width: `${percentWidth}%`,
+          left: `calc(${props.i} * ${percentWidth}%)`
+        }} />
+      : <div className={"no-index-indicator"} />;
+  };
 
 export class Show extends React.Component<WebcamPanelProps, State> {
   NO_FEED = t("No webcams yet. Click the edit button to add a feed URL.");
@@ -54,7 +55,22 @@ export class Show extends React.Component<WebcamPanelProps, State> {
     const flipper = new Flipper(feeds, FALLBACK_FEED, this.state.current);
     const msg = this.getMessage(flipper.current.url);
     const imageClass = msg.length > 0 ? "no-flipper-image-container" : "";
-    return <div className={"webcam-widget"}>
+    return <div className={"webcam-widget grid no-gap"}>
+      <div className="grid half-gap">
+        <div className={"webcam-buttons row grid-exp-1"}>
+          <label>{flipper.current.name}</label>
+          <Help text={ToolTips.WEBCAM} />
+          <button
+            className="fb-button gray"
+            title={t("Edit")}
+            onClick={props.onToggle}>
+            {t("Edit")}
+          </button>
+        </div>
+        <div className="index-indicator-wrapper">
+          <IndexIndicator i={this.state.current} total={feeds.length} />
+        </div>
+      </div>
       <div className="image-flipper">
         <div className={imageClass}>
           <p>{msg}</p>
@@ -76,17 +92,6 @@ export class Show extends React.Component<WebcamPanelProps, State> {
           className="image-flipper-right fb-button">
           {t("Next")}
         </button>
-      </div>
-      <div className={"webcam-buttons"}>
-        <Help text={ToolTips.WEBCAM} />
-        <p>{flipper.current.name}</p>
-        <button
-          className="fb-button gray"
-          title={t("Edit")}
-          onClick={props.onToggle}>
-          {t("Edit")}
-        </button>
-        <IndexIndicator i={this.state.current} total={feeds.length} />
       </div>
     </div>;
   }

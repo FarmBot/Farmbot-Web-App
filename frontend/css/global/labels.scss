@@ -1,0 +1,22 @@
+@use "../variables" as *;
+@use "sass:color";
+
+label {
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  &.day-label {
+    position: absolute;
+    text-align: center;
+    width: 10%;
+    margin-bottom: 0px;
+    line-height: 3rem;
+    border: solid var(--border-color);
+    border-width: 1px;
+  }
+}
+
+input[type=checkbox]:checked+label.day-label {
+  color: var(--main-bg);
+  background: var(--text-color);
+}

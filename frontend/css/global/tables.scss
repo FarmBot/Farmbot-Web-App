@@ -1,0 +1,23 @@
+@use "../variables" as *;
+@use "sass:color";
+
+table {
+  width: 100%;
+  margin-bottom: 0;
+  border-collapse: collapse;
+  border-radius: 1rem;
+  overflow: hidden;
+}
+
+table.plain tr:nth-of-type(1n) {
+  background: $off-white;
+  border: .5rem solid $off-white;
+}
+
+table tr td {
+  padding: .5rem;
+}
+
+table thead tr th {
+  padding: .5rem;
+}

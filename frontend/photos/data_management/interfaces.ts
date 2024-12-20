@@ -20,5 +20,5 @@ export interface EnvEditorProps {
 
 export interface ClearFarmwareDataProps {
   farmwareEnvs: TaggedFarmwareEnv[];
-  children?: React.ReactChild;
+  children?: React.ReactNode;
 }

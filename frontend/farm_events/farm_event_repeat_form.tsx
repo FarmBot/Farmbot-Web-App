@@ -1,7 +1,7 @@
-import * as React from "react";
+import React from "react";
 import {
-  Row, Col, BlurableInput, FBSelect, DropDownItem,
-} from "../ui/index";
+  Row, BlurableInput, FBSelect, DropDownItem,
+} from "../ui";
 import { repeatOptions } from "./map_state_to_props_add_edit";
 import { keyBy } from "lodash";
 import { FarmEventViewModel } from "./edit_fe_form";
@@ -32,12 +32,12 @@ export function FarmEventRepeatForm(props: FarmEventRepeatFormProps) {
   const { disabled, fieldSet, repeat, endDate, endTime, timeUnit } = props;
   return props.hidden
     ? <div className={"no-repeat-form"} />
-    : <div className="farm-event-repeat-form">
-      <label>
-        {t("Every")}
-      </label>
-      <Row>
-        <Col xs={4}>
+    : <div className="farm-event-repeat-form row">
+      <div className="grid no-gap">
+        <label>
+          {t("Every")}
+        </label>
+        <Row className="grid-exp-2">
           <BlurableInput
             disabled={disabled}
             placeholder="(Number)"
@@ -47,19 +47,17 @@ export function FarmEventRepeatForm(props: FarmEventRepeatFormProps) {
             value={repeat}
             onCommit={e => fieldSet("repeat", e.currentTarget.value)}
             min={1} />
-        </Col>
-        <Col xs={8}>
           <FBSelect
             list={repeatOptions()}
             onChange={ddi => fieldSet("timeUnit", "" + ddi.value)}
             selectedItem={OPTN_LOOKUP()[timeUnit] || OPTN_LOOKUP()["daily"]} />
-        </Col>
-      </Row>
-      <label>
-        {t("Until")}
-      </label>
-      <Row>
-        <Col xs={6}>
+        </Row>
+      </div>
+      <div className="grid no-gap">
+        <label>
+          {t("Until")}
+        </label>
+        <Row className="grid-2-col">
           <BlurableInput
             disabled={disabled}
             type="date"
@@ -68,8 +66,6 @@ export function FarmEventRepeatForm(props: FarmEventRepeatFormProps) {
             value={endDate}
             onCommit={e => fieldSet("endDate", e.currentTarget.value)}
             error={props.dateError} />
-        </Col>
-        <Col xs={6}>
           <EventTimePicker
             disabled={disabled}
             className="add-event-end-time"
@@ -78,7 +74,7 @@ export function FarmEventRepeatForm(props: FarmEventRepeatFormProps) {
             value={endTime}
             onCommit={e => fieldSet("endTime", e.currentTarget.value)}
             error={props.timeError} />
-        </Col>
-      </Row>
+        </Row>
+      </div>
     </div>;
 }

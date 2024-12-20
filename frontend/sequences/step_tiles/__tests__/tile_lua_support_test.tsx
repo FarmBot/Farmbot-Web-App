@@ -4,12 +4,6 @@ lodash.debounce = jest.fn(x => x);
 const mockEditStep = jest.fn();
 jest.mock("../../../api/crud", () => ({ editStep: mockEditStep }));
 
-import { Path } from "../../../internal_urls";
-let mockPath = Path.mock(Path.designer());
-jest.mock("../../../history", () => ({
-  getPathArray: jest.fn(() => mockPath.split("/")),
-}));
-
 import React from "react";
 import { shallow } from "enzyme";
 import { LuaTextArea, LuaTextAreaProps } from "../tile_lua_support";
@@ -17,6 +11,7 @@ import { Lua } from "farmbot";
 import { Editor } from "@monaco-editor/react";
 import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 import { StateToggleKey } from "../../step_ui";
+import { Path } from "../../../internal_urls";
 
 describe("<LuaTextArea />", () => {
   const fakeProps = (): LuaTextAreaProps<Lua> => ({
@@ -71,13 +66,13 @@ describe("<LuaTextArea />", () => {
   });
 
   it("renders for designer", () => {
-    mockPath = Path.mock(Path.designer());
+    location.pathname = Path.mock(Path.designer());
     const wrapper = shallow(<LuaTextArea {...fakeProps()} />);
     expect(wrapper.find(".lua-editor").hasClass("full")).toBeFalsy();
   });
 
   it("renders full editor", () => {
-    mockPath = Path.mock(Path.sequencePage());
+    location.pathname = Path.mock(Path.sequencePage());
     const wrapper = shallow(<LuaTextArea {...fakeProps()} />);
     expect(wrapper.find(".lua-editor").hasClass("full")).toBeTruthy();
   });
@@ -90,7 +85,7 @@ describe("<LuaTextArea />", () => {
   });
 
   it("renders expanded", () => {
-    mockPath = Path.mock(Path.sequencePage());
+    location.pathname = Path.mock(Path.sequencePage());
     const p = fakeProps();
     p.stateToggles[StateToggleKey.luaExpanded] =
       { enabled: true, toggle: jest.fn() };

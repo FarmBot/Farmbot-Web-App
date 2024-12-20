@@ -121,7 +121,7 @@ export class Peripherals
     const editButtonText = isEditing
       ? t("Back")
       : t("Edit");
-    return <div className={"peripherals-widget"}>
+    return <div className={"peripherals-widget grid"}>
       {!this.props.hidePinBindings &&
         <BoxTop
           threeDimensions={!!this.props.getConfigValue(

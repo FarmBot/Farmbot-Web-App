@@ -1,12 +1,21 @@
+jest.mock("../../config_storage/actions", () => ({
+  setWebAppConfigValue: jest.fn()
+}));
+
 import React from "react";
 import { mount, shallow } from "enzyme";
 import { AdditionalMenu } from "../additional_menu";
 import { AccountMenuProps } from "../interfaces";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { setWebAppConfigValue } from "../../config_storage/actions";
+import { BooleanSetting } from "../../session_keys";
 
 describe("AdditionalMenu", () => {
   const fakeProps = (): AccountMenuProps => ({
     isStaff: false,
     close: jest.fn(),
+    dispatch: jest.fn(),
+    darkMode: false,
   });
 
   it("renders the account menu", () => {
@@ -39,5 +48,13 @@ describe("AdditionalMenu", () => {
   it("navigates to help page", () => {
     const wrapper = shallow(<AdditionalMenu {...fakeProps()} />);
     wrapper.find("Link").at(2).simulate("click");
+  });
+
+  it("toggles dark mode", () => {
+    render(<AdditionalMenu {...fakeProps()} />);
+    const toggle = screen.getByText("off");
+    fireEvent.click(toggle);
+    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+      BooleanSetting.dark_mode, true);
   });
 });

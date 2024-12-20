@@ -1,0 +1,68 @@
+@use "../variables" as *;
+@use "sass:color";
+
+$offset: 187;
+$quarterOffset: 46.75;
+$duration: 1.3s;
+
+.spinner-container {
+  display: flex;
+  position: fixed;
+  z-index: 1;
+  width: 100vw;
+  height: 100vh;
+  padding-top: 16%;
+  justify-content: center;
+}
+
+.spinner {
+  animation: rotator $duration linear infinite;
+}
+
+@keyframes rotator {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(270deg);
+  }
+}
+
+.spinner-path {
+  stroke-dasharray: $offset;
+  stroke-dashoffset: 0;
+  transform-origin: center;
+  animation: dash $duration ease-in-out infinite, colors ($duration * 3) ease-in-out infinite;
+}
+
+@keyframes colors {
+  0% {
+    stroke: #783f04;
+  }
+  25% {
+    stroke: #ee6666;
+  }
+  50% {
+    stroke: #66aa44;
+  }
+  75% {
+    stroke: #274e13;
+  }
+  100% {
+    stroke: #666666;
+  }
+}
+
+@keyframes dash {
+  0% {
+    stroke-dashoffset: $offset;
+  }
+  50% {
+    stroke-dashoffset: $quarterOffset;
+    transform: rotate(135deg);
+  }
+  100% {
+    stroke-dashoffset: $offset;
+    transform: rotate(450deg);
+  }
+}

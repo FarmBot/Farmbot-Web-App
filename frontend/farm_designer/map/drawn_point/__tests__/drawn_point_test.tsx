@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { DrawnPoint, DrawnPointProps } from "../drawn_point";
 import {
   fakeMapTransformProps,

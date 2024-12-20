@@ -17,7 +17,7 @@ import { capitalize, mean, round, startCase } from "lodash";
 import { TimeSettings } from "../interfaces";
 import { Link } from "../link";
 import { Path } from "../internal_urls";
-import { push } from "../history";
+import { useNavigate } from "react-router";
 import { Actions } from "../constants";
 import { CurveType } from "../curves/templates";
 import { curveToDdi, CURVE_KEY_LOOKUP } from "./curve_info";
@@ -92,11 +92,14 @@ const getUpdateByPlantStage = (plant_stage: PlantStage): PlantOptions => {
 /** Select a `plant_stage` for a plant. */
 export function EditPlantStatus(props: EditPlantStatusProps) {
   const { plantStatus, updatePlant, uuid } = props;
-  return <FBSelect
-    list={PLANT_STAGE_LIST()}
-    selectedItem={PLANT_STAGE_DDI_LOOKUP()[plantStatus]}
-    onChange={ddi =>
-      updatePlant(uuid, getUpdateByPlantStage(ddi.value as PlantStage))} />;
+  return <div className="row grid-2-col">
+    <label>{t("Status")}</label>
+    <FBSelect
+      list={PLANT_STAGE_LIST()}
+      selectedItem={PLANT_STAGE_DDI_LOOKUP()[plantStatus]}
+      onChange={ddi =>
+        updatePlant(uuid, getUpdateByPlantStage(ddi.value as PlantStage))} />
+  </div>;
 }
 
 export interface BulkUpdateBaseProps {
@@ -111,7 +114,7 @@ export interface PlantStatusBulkUpdateProps extends BulkUpdateBaseProps {
 
 /** Update `plant_stage` for multiple plants at once. */
 export const PlantStatusBulkUpdate = (props: PlantStatusBulkUpdateProps) =>
-  <div className="plant-status-bulk-update">
+  <div className="plant-status-bulk-update row grid-2-col">
     <p>{t("Update status to")}</p>
     <FBSelect
       key={JSON.stringify(props.selected)}
@@ -151,7 +154,7 @@ export const PlantDateBulkUpdate = (props: PlantDateBulkUpdateProps) => {
     props.selected.includes(point.uuid) && point.kind === "Point" &&
     point.body.pointer_type == "Plant")
     .map((p: TaggedPlantPointer) => p);
-  return <div className={"plant-date-bulk-update"}>
+  return <div className={"plant-date-bulk-update row grid-2-col"}>
     <p>{t("Update start to")}</p>
     <BlurableInput
       type="date"
@@ -181,7 +184,7 @@ export const PointSizeBulkUpdate = (props: BulkUpdateBaseProps) => {
     .map((p: TaggedPlantPointer | TaggedWeedPointer | TaggedGenericPointer) => p);
   const averageSize = round(mean(points.map(p => p.body.radius)));
   const [radius, setRadius] = React.useState("" + (averageSize || 25));
-  return <div className={"point-size-bulk-update"}>
+  return <div className={"point-size-bulk-update row grid-2-col"}>
     <p>{t("Update radius to")}</p>
     <input
       value={radius}
@@ -208,7 +211,7 @@ export const PlantDepthBulkUpdate = (props: BulkUpdateBaseProps) => {
     .map((p: TaggedPlantPointer) => p);
   const averageDepth = round(mean(points.map(p => p.body.depth)));
   const [depth, setDepth] = React.useState("" + (averageDepth || 0));
-  return <div className={"plant-depth-bulk-update"}>
+  return <div className={"plant-depth-bulk-update row grid-2-col"}>
     <p>{t("Update depth to")}</p>
     <input
       value={depth}
@@ -242,7 +245,7 @@ export const PlantCurveBulkUpdate = (props: PlantCurveBulkUpdateProps) => {
     .map((p: TaggedPlantPointer) => p);
   const curveName = CURVE_TYPES()[props.curveType];
   const curveKey = CURVE_KEY_LOOKUP[props.curveType];
-  return <div className={"plant-curve-bulk-update"}>
+  return <div className={"plant-curve-bulk-update row grid-2-col"}>
     <p>{t("Update {{ curveName }} curve to", { curveName })}</p>
     <FBSelect
       key={JSON.stringify(props.selected)}
@@ -269,7 +272,7 @@ export const PlantCurveBulkUpdate = (props: PlantCurveBulkUpdateProps) => {
 
 /** Update curves for multiple points at once. */
 export const PlantCurvesBulkUpdate = (props: PlantCurvesBulkUpdateProps) => {
-  return <div className={"plant-curves-bulk-update"}>
+  return <div className={"plant-curves-bulk-update grid"}>
     {[CurveType.water, CurveType.spread, CurveType.height].map(curveType =>
       <PlantCurveBulkUpdate key={curveType} {...props} curveType={curveType} />)}
   </div>;
@@ -281,7 +284,7 @@ export const PointColorBulkUpdate = (props: BulkUpdateBaseProps) => {
     props.selected.includes(point.uuid) && point.kind === "Point" &&
     point.body.pointer_type != "ToolSlot")
     .map((p: TaggedWeedPointer | TaggedGenericPointer) => p);
-  return <div className={"point-color-bulk-update"}>
+  return <div className={"point-color-bulk-update row grid-2-col"}>
     <p>{t("Update color to")}</p>
     <ColorPicker
       current={"green"}
@@ -308,37 +311,40 @@ export const PlantSlugBulkUpdate = (props: PlantSlugBulkUpdateProps) => {
     point.body.pointer_type == "Plant")
     .map((p: TaggedPlantPointer) => p);
   const slug = props.bulkPlantSlug || plants[0]?.body.openfarm_slug;
-  return <div className={"plant-slug-bulk-update"}>
+  const navigate = useNavigate();
+  return <div className={"plant-slug-bulk-update row grid-2-col"}>
     <p>{t("Update type to")}</p>
-    <Link
-      title={t("View crop info")}
-      to={Path.cropSearch(slug)}>
-      {startCase(slug)}
-    </Link>
-    <i className={"fa fa-pencil fb-icon-button"}
-      onClick={() => {
-        props.dispatch({ type: Actions.SET_SLUG_BULK, payload: slug });
-        push(Path.cropSearch());
-      }} />
-    <button className={"fb-button green"}
-      onClick={() => {
-        if (slug && plants.length > 0 && confirm(
-          t("Change crop type to {{ slug }} for {{ num }} plants?", {
-            slug,
-            num: plants.length,
-          }))) {
-          plants.map(plant => {
-            props.dispatch(edit(plant, {
-              openfarm_slug: slug,
-              name: capitalize(slug).replace(/-/g, " "),
-            }));
-            props.dispatch(save(plant.uuid));
-          });
-          props.dispatch({ type: Actions.SET_SLUG_BULK, payload: undefined });
-        }
-      }}>
-      {t("apply")}
-    </button>
+    <div>
+      <Link
+        title={t("View crop info")}
+        to={Path.cropSearch(slug)}>
+        {startCase(slug)}
+      </Link>
+      <i className={"fa fa-pencil fb-icon-button"}
+        onClick={() => {
+          props.dispatch({ type: Actions.SET_SLUG_BULK, payload: slug });
+          navigate(Path.cropSearch());
+        }} />
+      <button className={"fb-button green"}
+        onClick={() => {
+          if (slug && plants.length > 0 && confirm(
+            t("Change crop type to {{ slug }} for {{ num }} plants?", {
+              slug,
+              num: plants.length,
+            }))) {
+            plants.map(plant => {
+              props.dispatch(edit(plant, {
+                openfarm_slug: slug,
+                name: capitalize(slug).replace(/-/g, " "),
+              }));
+              props.dispatch(save(plant.uuid));
+            });
+            props.dispatch({ type: Actions.SET_SLUG_BULK, payload: undefined });
+          }
+        }}>
+        {t("apply")}
+      </button>
+    </div>
   </div>;
 };
 

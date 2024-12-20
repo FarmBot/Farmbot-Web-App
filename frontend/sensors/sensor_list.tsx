@@ -2,7 +2,7 @@ import React from "react";
 import { readPin } from "../devices/actions";
 import { SensorListProps } from "./interfaces";
 import { sortResourcesById } from "../util";
-import { Row, Col } from "../ui";
+import { Row } from "../ui";
 import { isNumber } from "lodash";
 import { ALLOWED_PIN_MODES } from "farmbot";
 import { t } from "../i18next_wrapper";
@@ -60,28 +60,20 @@ const SensorReadingDisplay =
   };
 
 export const SensorList = (props: SensorListProps) =>
-  <div className="sensor-list">
+  <div className="grid">
     {sortResourcesById(props.sensors).map(sensor => {
       const { label, mode, pin } = sensor.body;
       const pinNumber = (isNumber(pin) && isFinite(pin)) ? pin : -1;
       const value = (props.pins[pinNumber] || { value: undefined }).value;
-      return <Row key={sensor.uuid}>
-        <Col xs={3}>
-          <label>{label}</label>
-        </Col>
-        <Col xs={1}>
-          <p>{pinNumber}</p>
-        </Col>
-        <Col xs={6}>
-          <SensorReadingDisplay label={label} value={value} mode={mode} />
-        </Col>
-        <Col xs={2}>
-          <ReadSensorButton
-            disabled={!!props.disabled}
-            sensorLabel={label}
-            pinNumber={pinNumber}
-            mode={mode} />
-        </Col>
+      return <Row key={sensor.uuid} className="grid-exp-1">
+        <label>{label}</label>
+        <p>{pinNumber}</p>
+        <SensorReadingDisplay label={label} value={value} mode={mode} />
+        <ReadSensorButton
+          disabled={!!props.disabled}
+          sensorLabel={label}
+          pinNumber={pinNumber}
+          mode={mode} />
       </Row>;
     })}
   </div>;

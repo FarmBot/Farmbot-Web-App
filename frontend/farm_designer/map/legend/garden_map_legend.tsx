@@ -62,7 +62,7 @@ const NonLayerToggle = (props: NonLayerToggleProps) => {
   const { setting, getConfigValue } = props;
   const value = !!(setting ? getConfigValue(setting) : undefined);
   return <div
-    className={`non-layer-config-toggle ${props.disabled ? "disabled" : ""}`}>
+    className={`row grid-exp-1 align-baseline ${props.disabled ? "disabled" : ""}`}>
     <label>{t(props.label)}</label>
     {props.helpText && <Help text={props.helpText} />}
     {setting && <ToggleButton
@@ -88,7 +88,7 @@ export const PointsSubMenu = (props: SettingsSubMenuProps) =>
   </div>;
 
 export const PlantsSubMenu = (props: SettingsSubMenuProps) =>
-  <div className="map-plants-submenu">
+  <div className="grid">
     <NonLayerToggle {...props}
       setting={BooleanSetting.disable_animations}
       label={DeviceSetting.animations}
@@ -101,7 +101,7 @@ export const PlantsSubMenu = (props: SettingsSubMenuProps) =>
   </div>;
 
 export const FarmbotSubMenu = (props: SettingsSubMenuProps) =>
-  <div className="farmbot-layer-submenu">
+  <div className="grid">
     <NonLayerToggle {...props}
       setting={BooleanSetting.display_trail}
       label={DeviceSetting.trail}
@@ -160,7 +160,7 @@ const LayerToggles = (props: GardenMapLegendProps) => {
       label={DeviceSetting.showPhotos}
       onClick={toggle(BooleanSetting.show_images)}
       submenuTitle={t("filter")}
-      popover={<div className={"image-options"}>
+      popover={<div className={"grid"}>
         <ImageFilterMenu {...subMenuProps}
           timeSettings={props.timeSettings}
           imageAgeInfo={props.imageAgeInfo} />
@@ -209,7 +209,7 @@ const LayerToggles = (props: GardenMapLegendProps) => {
 };
 
 export const MapSettingsContent = (props: SettingsSubMenuProps) =>
-  <div className="map-settings-submenu">
+  <div className="grid">
     <NonLayerToggle {...props}
       setting={BooleanSetting.dynamic_map}
       label={DeviceSetting.dynamicMap}
@@ -260,9 +260,9 @@ export function GardenMapLegend(props: GardenMapLegendProps) {
       <div className="menu-content">
         <ZoomControls zoom={props.zoom} getConfigValue={getConfigValue} />
         <LayerToggles {...props} />
-        <MoveModeLink />
+        <MoveModeLink dispatch={props.dispatch} />
         <MapSettings getConfigValue={getConfigValue} dispatch={props.dispatch} />
-        <SelectModeLink />
+        <SelectModeLink dispatch={props.dispatch} />
         <BugsControls />
         <ZDisplayToggle open={zDisplayOpen} setOpen={setZDisplayOpen} />
       </div>

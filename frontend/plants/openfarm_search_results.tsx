@@ -34,7 +34,7 @@ export interface SearchResultProps {
 
 export class OpenFarmResults extends React.Component<SearchResultProps, {}> {
 
-  get text(): JSX.Element {
+  get text(): React.ReactNode {
     return <p>{`${t(Content.CROP_NOT_FOUND_INTRO)} `}
       <a href={ExternalUrl.OpenFarm.newCrop} target="_blank" rel={"noreferrer"}>
         {t(Content.CROP_NOT_FOUND_LINK)}
@@ -92,6 +92,9 @@ export class OpenFarmResults extends React.Component<SearchResultProps, {}> {
           const image = crop.main_image_path.startsWith("https")
             ? crop.main_image_path
             : FilePath.DEFAULT_ICON;
+          const fallbackImageClass = crop.main_image_path.startsWith("https")
+            ? ""
+            : " fallback-image";
           return <Link
             key={crop.slug}
             draggable={false}
@@ -102,7 +105,7 @@ export class OpenFarmResults extends React.Component<SearchResultProps, {}> {
                 {crop.name}
               </label>
               <div
-                className={"plant-catalog-image"}
+                className={"plant-catalog-image" + fallbackImageClass}
                 style={{ background: `url(${image}) top center no-repeat` }}
                 draggable={false} />
             </div>

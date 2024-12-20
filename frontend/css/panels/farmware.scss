@@ -1,0 +1,140 @@
+@use "../variables" as *;
+@use "sass:color";
+
+.farmware-panel,
+.designer-farmware-list-panel,
+.designer-farmware-info-panel,
+.farmware-add-panel {
+  .panel-content {
+    a {
+      text-decoration: none !important;
+      p {
+        font-size: 1.4rem;
+        font-weight: normal !important;
+        line-height: 2rem;
+      }
+    }
+  }
+}
+
+.designer-farmware-info-panel {
+  .panel-content {
+    position: relative;
+    padding-top: 2rem;
+    padding-bottom: 12rem;
+    button {
+      float: none;
+    }
+    .reset-configs {
+      margin-right: 1rem;
+      margin-top: 2rem;
+    }
+    .farmware-button {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+    }
+    .farmware-form {
+      margin-top: 1rem;
+    }
+    .farmware-input-group {
+      margin-left: 0;
+    }
+  }
+}
+
+.custom-setting-grid {
+  grid-template-columns: 1fr 1fr auto;
+}
+
+.farmware-info {
+  margin-top: 1rem;
+}
+
+.farmware-list-items {
+  margin-left: -30px;
+  margin-right: -20px;
+  padding: 0.5rem;
+  padding-left: 1.5rem;
+  padding-top: 0.75rem;
+  cursor: pointer;
+  label {
+    cursor: pointer;
+  }
+  &:hover  {
+    background: $medium_light_gray;
+    p {
+      font-weight: bold;
+    }
+  }
+}
+
+.farmware-url {
+  font-size: 1rem;
+  width: 100px;
+  word-wrap: break-word;
+}
+
+.farmware-step-input-fields {
+  label {
+    padding-top: 1rem;
+  }
+  fieldset {
+    width: 95%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  button {
+    position: absolute;
+  }
+}
+
+.farmware-name-manual-input {
+  margin-top: 1rem;
+}
+
+.farmware-input-group {
+  position: relative;
+  margin-left: 3rem;
+  .fa-times-circle,
+  .fa-refresh {
+    position: absolute;
+    top: 0.85rem;
+    color: $light_gray;
+    &:hover {
+      color: $dark_gray;
+    }
+  }
+  .fa-times-circle {
+    right: 1rem;
+  }
+  .fa-refresh {
+    right: 3rem;
+  }
+  &.dropdown {
+    .filter-search {
+      border: 3px solid $transparent;
+    }
+    .fa-times-circle {
+      right: 3rem;
+    }
+    .fa-refresh {
+      right: 5rem;
+    }
+  }
+}
+
+.error-with-button {
+  margin-top: 1rem;
+  background: $pink;
+  border: 1px solid $red;
+  border-radius: 5px;
+  label,
+  p {
+    margin: 0.5rem;
+    color: $red;
+  }
+  button {
+    margin: 0.5rem !important;
+  }
+}

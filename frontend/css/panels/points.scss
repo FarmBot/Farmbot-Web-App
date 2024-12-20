@@ -1,0 +1,13 @@
+@use "../variables" as *;
+@use "sass:color";
+
+.point-info-panel {
+  .panel-title {
+    color: $dark_gray;
+  }
+  .panel-content {
+    .delete-row {
+      margin: 1.5rem;
+    }
+  }
+}

@@ -3,14 +3,20 @@ import { ThreeEvent } from "@react-three/fiber";
 import {
   GizmoHelper, GizmoViewcube,
   OrbitControls, PerspectiveCamera,
-  Circle, Stats, Billboard, Text, Image, Clouds, Cloud, OrthographicCamera,
+  Circle, Stats, Billboard, Image, Clouds, Cloud, OrthographicCamera,
   Detailed, Sphere,
   useTexture,
+  Line,
 } from "@react-three/drei";
 import { RepeatWrapping, Vector3, BackSide } from "three";
 import { Bot } from "./bot";
 import { Bed } from "./bed";
-import { threeSpace, zZero } from "./helpers";
+import {
+  threeSpace,
+  zZero as zZeroFunc,
+  zero as zeroFunc,
+  extents as extentsFunc,
+} from "./helpers";
 import { Sky } from "./sky";
 import { Config, detailLevels, seasonProperties } from "./config";
 import { ASSETS, GARDENS, PLANTS } from "./constants";
@@ -24,11 +30,16 @@ import {
   AmbientLight, AxesHelper, Group, MeshBasicMaterial, MeshPhongMaterial,
 } from "./components";
 import { isDesktop } from "../screen_size";
+import { Text } from "./text";
+import { isUndefined, range } from "lodash";
+
+const AnimatedGroup = animated(Group);
 
 export interface GardenModelProps {
   config: Config;
   activeFocus: string;
   setActiveFocus(focus: string): void;
+  plants?: Plant[];
 }
 
 interface Plant {
@@ -39,6 +50,8 @@ interface Plant {
   x: number;
   y: number;
 }
+
+export interface ThreeDGardenPlant extends Plant { }
 
 export const GardenModel = (props: GardenModelProps) => {
   const { config } = props;
@@ -86,7 +99,9 @@ export const GardenModel = (props: GardenModelProps) => {
     }
     return positions;
   };
-  const plants = calculatePlantPositions();
+  const plants = isUndefined(props.plants)
+    ? calculatePlantPositions()
+    : props.plants;
 
   const [hoveredPlant, setHoveredPlant] =
     React.useState<number | undefined>(undefined);
@@ -116,19 +131,15 @@ export const GardenModel = (props: GardenModelProps) => {
       position={new Vector3(
         threeSpace(plant.x, config.bedLengthOuter),
         threeSpace(plant.y, config.bedWidthOuter),
-        zZero(config) - config.soilHeight + plant.size / 2,
+        zZeroFunc(config) - config.soilHeight + plant.size / 2,
       )}>
       {labelOnly
         ? <Text visible={alwaysShowLabels || i === hoveredPlant}
           renderOrder={2}
-          material-depthTest={false}
           fontSize={50}
+          color={"white"}
           position={[0, plant.size / 2 + 40, 0]}
-          font={ASSETS.fonts.cabinBold}
-          outlineColor={"black"}
-          outlineWidth={3}
-          outlineBlur={15}
-          outlineOpacity={0.7}>
+          rotation={[0, 0, 0]}>
           {plant.label}
         </Text>
         : <Image url={plant.icon} scale={plant.size} name={"" + i}
@@ -169,6 +180,10 @@ export const GardenModel = (props: GardenModelProps) => {
   };
   const camera = getCamera(config, props.activeFocus, initCamera);
 
+  const zero = zeroFunc(config);
+  const gridZ = zero.z - config.soilHeight;
+  const extents = extentsFunc(config);
+
   // eslint-disable-next-line no-null/no-null
   return <Group dispose={null}
     onPointerMove={config.eventDebug
@@ -188,13 +203,13 @@ export const GardenModel = (props: GardenModelProps) => {
     <Sphere args={[30000, 8, 16]}>
       <MeshBasicMaterial color={"#59d8ff"} side={BackSide} />
     </Sphere>
-    <animated.group scale={props.activeFocus ? 1 : scale}>
+    <AnimatedGroup scale={props.activeFocus ? 1 : scale}>
       <Camera makeDefault={true} name={"camera"}
         fov={40} near={10} far={75000}
         position={camera.position}
         rotation={[0, 0, 0]}
         up={[0, 0, 1]} />
-    </animated.group>
+    </AnimatedGroup>
     <OrbitControls maxPolarAngle={Math.PI / 2}
       enableZoom={config.zoom} enablePan={config.pan} dampingFactor={0.2}
       target={camera.target}
@@ -244,6 +259,22 @@ export const GardenModel = (props: GardenModelProps) => {
     <Group name={"plant-labels"} visible={!props.activeFocus}>
       {plants.map((plant, i) =>
         <Plant key={i} i={i} plant={plant} labelOnly={true} />)}
+    </Group>
+    <Group name={"garden-grid"} visible={config.grid}>
+      {range(0, config.botSizeX + 100, 100).map(x =>
+        <Line key={x}
+          color={"white"}
+          points={[
+            [zero.x + x, zero.y, gridZ],
+            [zero.x + x, extents.y, gridZ],
+          ]} />)}
+      {range(0, config.botSizeY + 100, 100).map(y =>
+        <Line key={y}
+          color={"white"}
+          points={[
+            [zero.x, zero.y + y, gridZ],
+            [extents.x, zero.y + y, gridZ],
+          ]} />)}
     </Group>
     <Group name={"plants"}
       visible={props.activeFocus != "Planter bed"}

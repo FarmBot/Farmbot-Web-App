@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { Everything, ResourceColor } from "../interfaces";
 import { initSave } from "../api/crud";
-import { Row, Col, BlurableInput, ColorPicker } from "../ui";
+import { Row, BlurableInput, ColorPicker } from "../ui";
 import { DrawnPointPayl } from "../farm_designer/interfaces";
 import { Actions, Content } from "../constants";
 import {
@@ -17,7 +17,6 @@ import { parseIntInput } from "../util";
 import { validBotLocationData } from "../util/location";
 import { t } from "../i18next_wrapper";
 import { Panel } from "../farm_designer/panel_header";
-import { push } from "../history";
 import { ListItem } from "../plants/plant_panel";
 import { success } from "../toast/toast";
 import { PlantGrid } from "../plants/grid/plant_grid";
@@ -29,6 +28,7 @@ import {
 import { BotPosition } from "../devices/interfaces";
 import { round } from "lodash";
 import { Path } from "../internal_urls";
+import { NavigationContext } from "../routes_helpers";
 
 export function mapStateToProps(props: Everything): CreatePointsProps {
   const { drawnPoint, drawnWeed } = props.resources.consumers.farm_designer;
@@ -210,57 +210,64 @@ export class RawCreatePoints
     this.closePanel();
   };
 
-  closePanel = () => push(Path.designer(this.panel));
+  static contextType = NavigationContext;
+  context!: React.ContextType<typeof NavigationContext>;
+  navigate = (url: string) => this.context(url);
+
+  closePanel = () => { this.navigate(Path.designer(this.panel)); };
 
   PointProperties = () =>
-    <ul>
+    <ul className="grid">
       <li>
-        <Row>
+        <Row className="grid-exp-1">
           <div className={"point-name-input"}>
-            <Col xs={10}>
-              <label>{t("Name")}</label>
-              <BlurableInput
-                name="pointName"
-                type="text"
-                onCommit={this.updateValue("name")}
-                value={this.attr("name") || this.defaultName} />
-            </Col>
+            <label>{t("Name")}</label>
+            <BlurableInput
+              name="pointName"
+              type="text"
+              onCommit={this.updateValue("name")}
+              value={this.attr("name") || this.defaultName} />
           </div>
-          <div className={"point-color-input"}>
-            <Col xs={2}>
-              <ColorPicker
-                current={(this.attr("color") || this.defaultColor) as ResourceColor}
-                onChange={this.changeColor} />
-            </Col>
-          </div>
+          <ColorPicker
+            current={(this.attr("color") || this.defaultColor) as ResourceColor}
+            onChange={this.changeColor} />
         </Row>
       </li>
       <ListItem>
-        <Row>
-          <Col xs={3}>
-            <label>{t("X (mm)")}</label>
+        <Row className="add-point-grid">
+          <div>
+            <label>{t("radius (mm)")}</label>
+            <BlurableInput
+              name="r"
+              type="number"
+              onCommit={this.updateValue("r")}
+              value={this.attr("r")}
+              min={0} />
+          </div>
+          <div>
+            <label>{t("X")}</label>
             <BlurableInput
               name="cx"
               type="number"
               onCommit={this.updateValue("cx")}
               value={this.attr("cx", this.props.botPosition.x)} />
-          </Col>
-          <Col xs={3}>
-            <label>{t("Y (mm)")}</label>
+          </div>
+          <div>
+            <label>{t("Y")}</label>
             <BlurableInput
               name="cy"
               type="number"
               onCommit={this.updateValue("cy")}
               value={this.attr("cy", this.props.botPosition.y)} />
-          </Col>
-          <Col xs={3}>
-            <label>{t("Z (mm)")}</label>
+          </div>
+          <div>
+            <label>{t("Z")}</label>
             <BlurableInput
               name="z"
               type="number"
               onCommit={this.updateValue("z")}
               value={this.attr("z", this.props.botPosition.z)} />
-          </Col>
+          </div>
           <UseCurrentLocation botPosition={this.props.botPosition}
             onChange={() => {
               const position = definedPosition(this.props.botPosition);
@@ -277,43 +284,19 @@ export class RawCreatePoints
             }} />
         </Row>
       </ListItem>
-      <ListItem>
-        <Row>
-          <Col xs={6}>
-            <label>{t("radius (mm)")}</label>
-            <BlurableInput
-              name="r"
-              type="number"
-              onCommit={this.updateValue("r")}
-              value={this.attr("r")}
-              min={0} />
-          </Col>
-        </Row>
-      </ListItem>
       {this.panel == "points" &&
         <ListItem>
-          <Row>
-            <Col xs={6} className={"soil-height-checkbox"}>
-              <label>{t("at soil level")}</label>
-              <input
-                name="at_soil_level"
-                type="checkbox"
-                onChange={e =>
-                  this.updateAttr("at_soil_level", e.currentTarget.checked)}
-                checked={!!this.attr("at_soil_level")} />
-            </Col>
+          <Row className="grid-exp-1">
+            <label>{t("at soil level")}</label>
+            <input
+              name="at_soil_level"
+              type="checkbox"
+              onChange={e =>
+                this.updateAttr("at_soil_level", e.currentTarget.checked)}
+              checked={!!this.attr("at_soil_level")} />
           </Row>
         </ListItem>}
     </ul>;
-
-  PointActions = () =>
-    <Row>
-      <button className="fb-button green save"
-        title={t("save")}
-        onClick={this.createPoint}>
-        {t("Save")}
-      </button>
-    </Row>;
 
   render() {
     const panelType = this.panel == "weeds" ? Panel.Weeds : Panel.Points;
@@ -329,10 +312,15 @@ export class RawCreatePoints
         panel={panelType}
         title={this.panel == "weeds" ? t("Add weed") : t("Add point")}
         backTo={Path.designer(this.panel)}
-        description={panelDescription} />
+        description={panelDescription}>
+        <button className="fb-button green save"
+          title={t("save")}
+          onClick={this.createPoint}>
+          {t("Save")}
+        </button>
+      </DesignerPanelHeader>
       <DesignerPanelContent panelName={"point-creation"}>
         <this.PointProperties />
-        <this.PointActions />
         {panelType == Panel.Points && <hr />}
         {panelType == Panel.Points &&
           <PlantGrid
@@ -350,3 +338,5 @@ export class RawCreatePoints
 }
 
 export const CreatePoints = connect(mapStateToProps)(RawCreatePoints);
+// eslint-disable-next-line import/no-default-export
+export default CreatePoints;

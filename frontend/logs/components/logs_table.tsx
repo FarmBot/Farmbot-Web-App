@@ -49,7 +49,7 @@ interface LogVerbositySaucerProps {
 
 const LogVerbositySaucer = (props: LogVerbositySaucerProps) =>
   <div className="log-verbosity-saucer">
-    <div className={`saucer ${props.type}`}>
+    <div className={`row saucer ${props.type}`}>
       <p style={{
         color: ["busy", "info"].includes(props.type) ? "black" : "white"
       }}>
@@ -69,7 +69,7 @@ const LogsRow = (props: LogsRowProps) => {
   const time = formatTime(at, timeSettings, dateFormat);
   return <tr key={uuid} id={"" + id}>
     <td>
-      <i className={"fa fa-trash fb-icon-button"} title={t("delete log")}
+      <i className={"fa fa-trash fb-icon-button invert"} title={t("delete log")}
         onClick={() => dispatch(destroy(uuid))} />
       <LogVerbositySaucer
         uuid={uuid} dispatch={dispatch} verbosity={verbosity} type={type} />

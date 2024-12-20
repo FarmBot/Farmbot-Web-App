@@ -1,6 +1,6 @@
 import React from "react";
 import { Move, Xyz, AxisAddition, Random } from "farmbot";
-import { Row, Col, BlurableInput } from "../../../ui";
+import { Row, BlurableInput } from "../../../ui";
 import { t } from "../../../i18next_wrapper";
 import { VarianceInputRowProps, OffsetInputRowProps } from "./interfaces";
 import { MoveStepInput } from "./input";
@@ -43,20 +43,18 @@ export const getOffsetNode = (
 };
 
 export const OffsetInputRow = (props: OffsetInputRowProps) =>
-  <Row>
-    <Col xs={3}>
-      <label>
-        {t("offset")}
-      </label>
-    </Col>
+  <Row className="grid-4-col">
+    <label>
+      {t("offset")}
+    </label>
     {["x", "y", "z"].map((axis: Xyz) =>
-      <Col xs={3} key={axis}>
+      <div key={axis}>
         <MoveStepInput field={"offset"} axis={axis}
           value={props.offset[axis]}
           disabled={props.disabledAxes[axis]}
           onCommit={props.onCommit}
           setValue={props.setAxisState("offset", axis, 0)} />
-      </Col>)}
+      </div>)}
   </Row>;
 
 export const getVarianceState = (step: Move, axis: Xyz) => {
@@ -81,14 +79,12 @@ export const getVarianceNode = (
 };
 
 export const VarianceInputRow = (props: VarianceInputRowProps) =>
-  <Row>
-    <Col xs={3}>
-      <label>
-        {t("Variance")}
-      </label>
-    </Col>
+  <Row className="grid-4-col">
+    <label>
+      {t("Variance")}
+    </label>
     {["x", "y", "z"].map((axis: Xyz) =>
-      <Col xs={3} key={axis}>
+      <div key={axis}>
         <BlurableInput
           type={"number"}
           name={"variance.x"}
@@ -96,5 +92,5 @@ export const VarianceInputRow = (props: VarianceInputRowProps) =>
           min={0}
           disabled={props.disabledAxes[axis]}
           onCommit={props.onCommit("variance", axis)} />
-      </Col>)}
+      </div>)}
   </Row>;

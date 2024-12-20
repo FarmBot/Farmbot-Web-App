@@ -1,5 +1,5 @@
 import React from "react";
-import { DropDownItem, Col, FBSelect } from "../../../ui";
+import { DropDownItem, FBSelect } from "../../../ui";
 import { SequenceBodyItem, ALLOWED_PIN_MODES, WritePin, ReadPin } from "farmbot";
 import { StepParams } from "../../interfaces";
 import { editStep } from "../../../api/crud";
@@ -7,14 +7,14 @@ import { t } from "../../../i18next_wrapper";
 import { isBoxLed } from "./index";
 
 export function PinModeDropdown(props: StepParams<ReadPin | WritePin>) {
-  return <Col xs={6} md={3}>
+  return <div className="row grid-2-col">
     <label>{t("Mode")}</label>
     <FBSelect
       key={JSON.stringify(props.currentSequence)}
       onChange={ddi => setPinMode(ddi, props)}
       selectedItem={currentModeSelection(props.currentStep)}
       list={getPinModes(props.currentStep)} />
-  </Col>;
+  </div>;
 }
 
 export function setPinMode(ddi: DropDownItem, stepParams: StepParams) {

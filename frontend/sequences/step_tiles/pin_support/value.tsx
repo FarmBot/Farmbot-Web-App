@@ -1,5 +1,5 @@
 import React from "react";
-import { DropDownItem, Col, FBSelect } from "../../../ui";
+import { DropDownItem, FBSelect } from "../../../ui";
 import { isNumber } from "lodash";
 import { WritePin } from "farmbot";
 import { StepParams } from "../../interfaces";
@@ -11,11 +11,11 @@ export interface PinValueFieldProps extends StepParams {
   currentStep: WritePin;
 }
 
-export const PinValueField = (props: PinValueFieldProps): JSX.Element => {
+export const PinValueField = (props: PinValueFieldProps): React.ReactNode => {
   const { currentStep, currentSequence } = props;
   const analogMode = !(currentStep.args.pin_mode === 0);
   const analogValue = currentStep.args.pin_value > 1;
-  return <Col xs={12} md={3}>
+  return <div className="row grid-2-col">
     <label>{t("set to")}</label>
     {analogMode || analogValue
       /** Analog pin mode: display slider for pin value. */
@@ -33,7 +33,7 @@ export const PinValueField = (props: PinValueFieldProps): JSX.Element => {
         onChange={ddi => setPinValueFromDdi(ddi, props)}
         selectedItem={currentValueSelection(currentStep)}
         list={PIN_VALUES()} />}
-  </Col>;
+  </div>;
 };
 
 export function setPinValue(value: number, stepParams: StepParams) {

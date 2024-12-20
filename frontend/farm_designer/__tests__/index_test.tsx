@@ -1,9 +1,3 @@
-import { Path } from "../../internal_urls";
-let mockPath = Path.mock(Path.plants());
-jest.mock("../../history", () => ({
-  getPathArray: jest.fn(() => mockPath.split("/")),
-}));
-
 jest.mock("../../api/crud", () => ({
   edit: jest.fn(),
   save: jest.fn(),
@@ -39,6 +33,7 @@ import {
   fakeBotLocationData, fakeBotSize,
 } from "../../__test_support__/fake_bot_data";
 import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
+import { Path } from "../../internal_urls";
 
 describe("<FarmDesigner />", () => {
   const fakeProps = (): FarmDesignerProps => ({
@@ -69,7 +64,7 @@ describe("<FarmDesigner />", () => {
     visualizedSequenceBody: [],
     logs: [],
     deviceTarget: "",
-    sourceFbosConfig: jest.fn(),
+    sourceFbosConfig: () => ({ value: 1, consistent: true }),
     farmwareEnvs: [],
     curves: [],
   });
@@ -103,7 +98,7 @@ describe("<FarmDesigner />", () => {
   });
 
   it("renders nav titles", () => {
-    mockPath = Path.mock(Path.plants());
+    location.pathname = Path.mock(Path.plants());
     const wrapper = mount(<FarmDesigner {...fakeProps()} />);
     expect(wrapper.find(".panel-nav").first().hasClass("hidden"))
       .toBeTruthy();
@@ -114,8 +109,10 @@ describe("<FarmDesigner />", () => {
   });
 
   it("hides panel", () => {
-    mockPath = Path.mock(Path.designer());
-    const wrapper = mount(<FarmDesigner {...fakeProps()} />);
+    location.pathname = Path.mock(Path.plants());
+    const p = fakeProps();
+    p.designer.panelOpen = false;
+    const wrapper = mount(<FarmDesigner {...p} />);
     expect(wrapper.find(".panel-nav").first().hasClass("hidden"))
       .toBeFalsy();
     expect(wrapper.find(".farm-designer-panels").hasClass("panel-open"))

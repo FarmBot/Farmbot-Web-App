@@ -21,7 +21,6 @@ import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import { API } from "../../../api";
-import { push } from "../../../history";
 import { installSequence } from "../../actions";
 import { Path } from "../../../internal_urls";
 import { emptyState } from "../../../resources/reducer";
@@ -53,7 +52,7 @@ describe("<DesignerSequencePreview />", () => {
     expect(importBtn.text()).toEqual("import");
     await importBtn.simulate("click");
     expect(installSequence).toHaveBeenCalledWith(sequence.body.id);
-    expect(push).toHaveBeenCalledWith(Path.designerSequences());
+    expect(mockNavigate).toHaveBeenCalledWith(Path.designerSequences());
   });
 
   it("loads sequence", async () => {

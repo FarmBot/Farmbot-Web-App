@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import { LocationSelection, LocationDisplay } from "../location_selection";
 import { LocationSelectionProps } from "../interfaces";

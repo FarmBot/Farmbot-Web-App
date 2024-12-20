@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { shallow } from "enzyme";
 import { NameInputBox, PinDropdown, ModeDropdown } from "../pin_form_fields";
 import { fakeSensor } from "../../__test_support__/fake_state/resources";

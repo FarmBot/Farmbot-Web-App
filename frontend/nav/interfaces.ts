@@ -17,6 +17,7 @@ import { AppState } from "../reducer";
 import { ResourceIndex } from "../resources/interfaces";
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import { RunButtonMenuOpen } from "../sequences/interfaces";
+import { DesignerState } from "../farm_designer/interfaces";
 
 export interface NavBarProps {
   logs: TaggedLog[];
@@ -44,6 +45,7 @@ export interface NavBarProps {
   feeds: TaggedWebcamFeed[];
   peripherals: TaggedPeripheral[];
   sequences: TaggedSequence[];
+  designer: DesignerState;
 }
 
 export interface NavBarState {
@@ -59,6 +61,8 @@ export interface MobileMenuProps {
   mobileMenuOpen: boolean;
   alertCount: number;
   helpState: HelpState;
+  dispatch: Function;
+  designer: DesignerState;
 }
 
 export interface TickerListProps {
@@ -75,11 +79,15 @@ export interface NavLinksProps {
   close: (property: keyof NavBarState) => ToggleEventHandler;
   alertCount: number;
   helpState: HelpState;
+  dispatch: Function;
+  designer: DesignerState;
 }
 
 export interface AccountMenuProps {
   isStaff: boolean;
   close: (property: keyof NavBarState) => ToggleEventHandler;
+  dispatch: Function;
+  darkMode: boolean;
 }
 
 export interface EStopButtonProps {

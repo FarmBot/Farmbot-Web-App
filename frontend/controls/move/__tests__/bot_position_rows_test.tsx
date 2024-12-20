@@ -19,7 +19,6 @@ import { bot } from "../../../__test_support__/fake_state/bot";
 import { Dictionary } from "farmbot";
 import { BooleanSetting } from "../../../session_keys";
 import { clickButton } from "../../../__test_support__/helpers";
-import { push } from "../../../history";
 import { Path } from "../../../internal_urls";
 
 describe("<BotPositionRows />", () => {
@@ -100,6 +99,6 @@ describe("<BotPositionRows />", () => {
     const wrapper = mount(<BotPositionRows {...fakeProps()} />);
     wrapper.find(".fa-ellipsis-v").first().simulate("click");
     wrapper.find("a").simulate("click");
-    expect(push).toHaveBeenCalledWith(Path.settings("axes"));
+    expect(mockNavigate).toHaveBeenCalledWith(Path.settings("axes"));
   });
 });

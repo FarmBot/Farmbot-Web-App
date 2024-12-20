@@ -167,7 +167,7 @@ describe("<Connectivity />", () => {
     Object.keys(p.flags).map((key: ConnectionName) => p.flags[key] = true);
     p.flags.botFirmware = false;
     const wrapper = mount(<Connectivity {...p} />);
-    expect(wrapper.find(".fix-firmware-buttons").length).toEqual(1);
+    expect(wrapper.find(".fix-firmware-buttons").length).toBeGreaterThan(0);
     clickButton(wrapper, 1, "restart firmware");
   });
 

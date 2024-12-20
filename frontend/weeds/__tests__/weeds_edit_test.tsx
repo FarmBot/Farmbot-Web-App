@@ -1,10 +1,3 @@
-import { Path } from "../../internal_urls";
-let mockPath = Path.mock(Path.weeds(1));
-jest.mock("../../history", () => ({
-  getPathArray: jest.fn(() => mockPath.split("/")),
-  push: jest.fn(),
-}));
-
 jest.mock("../../api/crud", () => ({
   save: jest.fn(),
   edit: jest.fn(),
@@ -30,9 +23,9 @@ import {
 } from "../../__test_support__/resource_index_builder";
 import { Actions } from "../../constants";
 import { DesignerPanelHeader } from "../../farm_designer/designer_panel";
-import { push } from "../../history";
 import { destroy, edit, save } from "../../api/crud";
 import { fakeMovementState } from "../../__test_support__/fake_bot_data";
+import { Path } from "../../internal_urls";
 
 describe("<EditWeed />", () => {
   const fakeProps = (): EditWeedProps => ({
@@ -46,21 +39,21 @@ describe("<EditWeed />", () => {
   });
 
   it("redirects", () => {
-    mockPath = Path.mock(Path.weeds("nope"));
+    location.pathname = Path.mock(Path.weeds("nope"));
     const wrapper = mount(<EditWeed {...fakeProps()} />);
     expect(wrapper.text()).toContain("Redirecting...");
-    expect(push).toHaveBeenCalledWith(Path.weeds());
+    expect(mockNavigate).toHaveBeenCalledWith(Path.weeds());
   });
 
   it("doesn't redirect", () => {
-    mockPath = Path.mock(Path.logs());
+    location.pathname = Path.mock(Path.logs());
     const wrapper = mount(<EditWeed {...fakeProps()} />);
     expect(wrapper.text()).toContain("Redirecting...");
-    expect(push).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 
   it("renders", () => {
-    mockPath = Path.mock(Path.weeds(1));
+    location.pathname = Path.mock(Path.weeds(1));
     const p = fakeProps();
     const weed = fakeWeed();
     weed.body.name = "weed 1";
@@ -71,7 +64,7 @@ describe("<EditWeed />", () => {
   });
 
   it("goes back", () => {
-    mockPath = Path.mock(Path.weeds(1));
+    location.pathname = Path.mock(Path.weeds(1));
     const p = fakeProps();
     const weed = fakeWeed();
     weed.body.id = 1;
@@ -84,7 +77,7 @@ describe("<EditWeed />", () => {
   });
 
   it("changes color", () => {
-    mockPath = Path.mock(Path.weeds(1));
+    location.pathname = Path.mock(Path.weeds(1));
     const p = fakeProps();
     p.findPoint = fakeWeed;
     const wrapper = mount(<EditWeed {...p} />);
@@ -94,7 +87,7 @@ describe("<EditWeed />", () => {
   });
 
   it("deletes weed", () => {
-    mockPath = Path.mock(Path.weeds(1));
+    location.pathname = Path.mock(Path.weeds(1));
     const p = fakeProps();
     const weed = fakeWeed();
     p.findPoint = () => weed;
@@ -104,7 +97,7 @@ describe("<EditWeed />", () => {
   });
 
   it("saves", () => {
-    mockPath = Path.mock(Path.weeds(1));
+    location.pathname = Path.mock(Path.weeds(1));
     const p = fakeProps();
     const weed = fakeWeed();
     weed.body.id = 1;
@@ -115,7 +108,7 @@ describe("<EditWeed />", () => {
   });
 
   it("doesn't save", () => {
-    mockPath = Path.mock(Path.logs());
+    location.pathname = Path.mock(Path.logs());
     const p = fakeProps();
     const weed = fakeWeed();
     weed.body.id = 1;

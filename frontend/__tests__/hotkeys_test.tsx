@@ -1,9 +1,3 @@
-import { Path } from "../internal_urls";
-let mockPath = Path.mock(Path.designer());
-jest.mock("../history", () => ({
-  push: jest.fn(),
-  getPathArray: () => mockPath.split("/"),
-}));
 const mockSyncThunk = jest.fn();
 jest.mock("../devices/actions", () => ({ sync: () => mockSyncThunk }));
 jest.mock("../farm_designer/map/actions", () => ({ unselectPlant: jest.fn() }));
@@ -21,26 +15,32 @@ import { shallow } from "enzyme";
 import {
   HotKey, HotKeys, HotKeysProps, hotkeysWithActions, toggleHotkeyHelpOverlay,
 } from "../hotkeys";
-import { push } from "../history";
 import { sync } from "../devices/actions";
 import { unselectPlant } from "../farm_designer/map/actions";
 import { save } from "../api/crud";
 import { Actions } from "../constants";
+import { Path } from "../internal_urls";
 
 describe("hotkeysWithActions()", () => {
+  beforeEach(() => {
+    location.pathname = Path.mock(Path.designer());
+  });
+
   it("has key bindings", () => {
     const dispatch = jest.fn();
-    const hotkeys = hotkeysWithActions(dispatch, "");
+    const navigate = jest.fn();
+    const hotkeys = hotkeysWithActions(navigate, dispatch, "");
     expect(Object.values(hotkeys).length).toBe(8);
     const e = {} as KeyboardEvent;
 
     hotkeys[HotKey.save].onKeyDown?.(e);
     expect(save).not.toHaveBeenCalled();
     mockState.resources.consumers.sequences.current = "uuid";
-    const hotkeysSettingsPath = hotkeysWithActions(dispatch, "settings");
+    const hotkeysSettingsPath = hotkeysWithActions(navigate, dispatch, "settings");
     hotkeysSettingsPath[HotKey.save].onKeyDown?.(e);
     expect(save).not.toHaveBeenCalled();
-    const hotkeysSequencesPath = hotkeysWithActions(dispatch, "sequences");
+    const hotkeysSequencesPath = hotkeysWithActions(
+      navigate, dispatch, "sequences");
     hotkeysSequencesPath[HotKey.save].onKeyDown?.(e);
     expect(save).toHaveBeenCalledWith("uuid");
 
@@ -48,24 +48,24 @@ describe("hotkeysWithActions()", () => {
     expect(dispatch).toHaveBeenCalledWith(sync());
 
     hotkeys[HotKey.navigateRight].onKeyDown?.(e);
-    expect(push).toHaveBeenCalledWith(Path.plants());
+    expect(navigate).toHaveBeenCalledWith(Path.plants());
 
     hotkeys[HotKey.navigateLeft].onKeyDown?.(e);
-    expect(push).toHaveBeenCalledWith(Path.settings());
+    expect(navigate).toHaveBeenCalledWith(Path.settings());
 
     hotkeys[HotKey.addPlant].onKeyDown?.(e);
-    expect(push).toHaveBeenCalledWith(Path.cropSearch());
+    expect(navigate).toHaveBeenCalledWith(Path.cropSearch());
 
     hotkeys[HotKey.addEvent].onKeyDown?.(e);
-    expect(push).toHaveBeenCalledWith(Path.farmEvents("add"));
+    expect(navigate).toHaveBeenCalledWith(Path.farmEvents("add"));
 
     hotkeysSettingsPath[HotKey.backToPlantOverview].onKeyDown?.(e);
-    expect(push).toHaveBeenCalledWith(Path.plants());
+    expect(navigate).toHaveBeenCalledWith(Path.plants());
     expect(unselectPlant).toHaveBeenCalled();
     jest.clearAllMocks();
-    const hotkeysPhotosPath = hotkeysWithActions(dispatch, "photos");
+    const hotkeysPhotosPath = hotkeysWithActions(navigate, dispatch, "photos");
     hotkeysPhotosPath[HotKey.backToPlantOverview].onKeyDown?.(e);
-    expect(push).not.toHaveBeenCalled();
+    expect(navigate).not.toHaveBeenCalled();
     expect(unselectPlant).not.toHaveBeenCalled();
   });
 });
@@ -87,13 +87,13 @@ describe("<HotKeys />", () => {
   });
 
   it("renders", () => {
-    mockPath = Path.mock(Path.designer("nope"));
+    location.pathname = Path.mock(Path.designer("nope"));
     const wrapper = shallow(<HotKeys {...fakeProps()} />);
     expect(wrapper.html()).toEqual("<div class=\"hotkeys\"></div>");
   });
 
   it("renders default", () => {
-    mockPath = Path.mock(Path.designer());
+    location.pathname = Path.mock(Path.designer());
     const wrapper = shallow(<HotKeys {...fakeProps()} />);
     expect(wrapper.html()).toEqual("<div class=\"hotkeys\"></div>");
   });

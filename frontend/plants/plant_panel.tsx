@@ -1,7 +1,7 @@
 import React from "react";
 import { FormattedPlantInfo } from "./map_state_to_props";
-import { push } from "../history";
-import { BlurableInput, Row, Col, Help } from "../ui";
+import { useNavigate } from "react-router";
+import { BlurableInput, Row, Help } from "../ui";
 import {
   PlantStage, TaggedCurve, TaggedFarmwareEnv, TaggedGenericPointer,
   TaggedPlantPointer, Xyz,
@@ -87,10 +87,12 @@ export const EditPlantLocation = (props: EditPlantLocationProps) => {
   });
   return <Row>
     {["x", "y", "z"].map((axis: Xyz) =>
-      <Col xs={4} key={axis}>
-        <label style={{ marginTop: 0 }}>{t("{{axis}} (mm)", { axis })}</label>
-        {axis == "z" && !isUndefined(soilZ) &&
-          <Help text={`${t("soil height at plant location")}: ${soilZ}mm`} />}
+      <div key={axis}>
+        <div className="row grid-exp-2 half-gap">
+          <label style={{ marginTop: 0 }}>{t("{{axis}} (mm)", { axis })}</label>
+          {axis == "z" && !isUndefined(soilZ) &&
+            <Help text={`${t("soil height at plant location")}: ${soilZ}mm`} />}
+        </div>
         <BlurableInput
           type="number"
           value={plantLocation[axis]}
@@ -98,7 +100,7 @@ export const EditPlantLocation = (props: EditPlantLocationProps) => {
           onCommit={e => updatePlant(uuid, {
             [axis]: parseIntInput(e.currentTarget.value)
           })} />
-      </Col>)}
+      </div>)}
   </Row>;
 };
 
@@ -107,18 +109,16 @@ export interface EditPlantRadiusProps extends EditPlantProperty {
 }
 
 export const EditPlantRadius = (props: EditPlantRadiusProps) =>
-  <Row>
-    <Col xs={6}>
-      <label style={{ marginTop: 0 }}>{t("radius (mm)")}</label>
-      <BlurableInput
-        type="number"
-        name="radius"
-        value={props.radius}
-        min={0}
-        onCommit={e => props.updatePlant(props.uuid, {
-          radius: parseIntInput(e.currentTarget.value)
-        })} />
-    </Col>
+  <Row className="grid-2-col">
+    <label style={{ marginTop: 0 }}>{t("radius (mm)")}</label>
+    <BlurableInput
+      type="number"
+      name="radius"
+      value={props.radius}
+      min={0}
+      onCommit={e => props.updatePlant(props.uuid, {
+        radius: parseIntInput(e.currentTarget.value)
+      })} />
   </Row>;
 
 export interface EditPlantDepthProps extends EditPlantProperty {
@@ -126,23 +126,21 @@ export interface EditPlantDepthProps extends EditPlantProperty {
 }
 
 export const EditPlantDepth = (props: EditPlantDepthProps) =>
-  <Row>
-    <Col xs={6}>
-      <label style={{ marginTop: 0 }}>{t("depth (mm)")}</label>
-      <BlurableInput
-        type="number"
-        name="depth"
-        value={props.depth}
-        min={0}
-        onCommit={e => props.updatePlant(props.uuid, {
-          depth: parseIntInput(e.currentTarget.value)
-        })} />
-    </Col>
+  <Row className="grid-2-col">
+    <label style={{ marginTop: 0 }}>{t("depth (mm)")}</label>
+    <BlurableInput
+      type="number"
+      name="depth"
+      value={props.depth}
+      min={0}
+      onCommit={e => props.updatePlant(props.uuid, {
+        depth: parseIntInput(e.currentTarget.value)
+      })} />
   </Row>;
 
 interface ListItemProps {
   name?: string;
-  children: React.ReactChild | React.ReactChild[];
+  children: React.ReactNode;
 }
 
 export const ListItem = (props: ListItemProps) =>
@@ -163,35 +161,36 @@ export function PlantPanel(props: PlantPanelProps) {
   const { slug, plantedAt, daysOld, uuid, plantStatus } = info;
   const { x, y, z } = info;
   const commonProps = { uuid, updatePlant };
+  const navigate = useNavigate();
   return <DesignerPanelContent panelName={"plants"}>
-    <ul>
+    <ul className="grid">
       <ListItem name={t("Plant Type")}>
         <Link
           title={t("View crop info")}
           to={Path.cropSearch(slug)}>
           {startCase(slug)}
         </Link>
-        <i className={"fa fa-pencil fb-icon-button"}
+        <i className={"fa fa-pencil fb-icon-button invert"}
           onClick={() => {
             dispatch({ type: Actions.SET_PLANT_TYPE_CHANGE_ID, payload: info.id });
             dispatch({ type: Actions.SET_SLUG_BULK, payload: undefined });
-            push(Path.cropSearch());
+            navigate(Path.cropSearch());
           }} />
       </ListItem>
       {(timeSettings && !inSavedGarden) &&
         <Row>
-          <Col xs={7}>
+          <div>
             <ListItem name={t("Started")}>
               <EditDatePlanted {...commonProps}
                 datePlanted={plantedAt}
                 timeSettings={timeSettings} />
             </ListItem>
-          </Col>
-          <Col xs={5}>
+          </div>
+          <div>
             <ListItem name={t("Age")}>
               {daysOldText({ age: daysOld, stage: plantStatus })}
             </ListItem>
-          </Col>
+          </div>
         </Row>}
       <ListItem>
         <EditPlantLocation {...commonProps}
@@ -213,7 +212,7 @@ export function PlantPanel(props: PlantPanelProps) {
       {!isUndefined(info.depth) && <ListItem>
         <EditPlantDepth {...commonProps} depth={info.depth} />
       </ListItem>}
-      <ListItem name={t("Status")}>
+      <ListItem>
         {(!inSavedGarden)
           ? <EditPlantStatus {...commonProps} plantStatus={plantStatus} />
           : t(startCase(plantStatus))}

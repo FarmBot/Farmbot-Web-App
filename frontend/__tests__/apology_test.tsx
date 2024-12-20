@@ -1,6 +1,6 @@
 jest.mock("../session", () => ({ Session: { clear: jest.fn() } }));
 
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { Apology } from "../apology";
 import { Session } from "../session";

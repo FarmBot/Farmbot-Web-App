@@ -1,14 +1,16 @@
+@use "../variables" as *;
+@use "sass:color";
+
 .farm-designer {
   position: relative;
   height: 100vh;
   overflow: scroll;
+  scrollbar-width: none;
   .garden-map-legend {
     @media screen and (max-width: $mobile_max_width) {
-      &.panel-open {
-        display: none;
-      }
+      &.panel-open,
       &.short-panel {
-        top: 35rem;
+        display: none;
       }
       &.panel-closed-mobile,
       &.panel-closed {
@@ -21,18 +23,21 @@
 .farm-designer-map {
   display: inline-block;
   min-width: 100%;
-  padding: 11rem 2rem 2rem 2rem; // at zoom = 1.0: 110px 20px 20px 20px
+  padding: 9rem 2rem 2rem 2rem;
   height: 100%;
   overflow: visible;
-  transition: 0.2s ease;
+  transition: 0.3s ease;
   &.panel-open {
-    padding: 11rem 2rem 2rem 46.8rem; // at zoom = 1.0: 110px 20px 20px 468px
+    padding: 9rem 2rem 2rem 47.5rem;
+    @media screen and (max-width: $mobile_max_width) {
+      padding: 18rem 2rem 2rem 47.5rem;
+    }
   }
   &.panel-closed-mobile {
-    padding: 16rem 2rem 2rem 2rem; // at zoom = 1.0: 160px 20px 20px 20px
+    padding: 16rem 1rem 1rem 1rem;
   }
   &.short-panel {
-    padding: 35rem 2rem 2rem 2rem; // at zoom = 1.0: 350px 20px 20px 20px
+    padding: 35rem 1rem 1rem;
   }
   &::-webkit-scrollbar {
     display: none;
@@ -72,131 +77,64 @@
 .plant-catalog-image {
   width: 100%;
   background-position: center center !important;
-  background-size: 158% !important;
+  background-size: cover !important;
   background-color: $translucent;
-  height: 12rem;
+  aspect-ratio: 3 / 2;
   border-radius: 5px;
-}
-
-.crop-search-result-wrapper {
-  max-height: calc(100vh - 19rem);
-  overflow-y: auto;
-  overflow-x: hidden;
-  margin-right: -10px;
-  padding-bottom: inherit;
-  .openfarm-search-results-wrapper {
-    display: grid;
-    gap: 2rem;
-    grid-template-columns: repeat(2, 1fr);
-    margin-left: 2.5rem;
-    margin-right: 2rem;
-  }
-  .plant-catalog-tile {
-    position: relative;
-    cursor: pointer;
-    text-align: center;
-    border-radius: 5px;
-    box-shadow: 0px 4px 7px 2px $translucent;
-    transition: transform 0.2s ease;
-    padding: 0;
-    &:hover {
-      box-shadow: 0px 5px 8px 2px rgba(0, 0, 0, 0.25);
-      transform: translateY(-1px);
-    }
-    label {
-      position: absolute;
-      left: 0;
-      bottom: -5px;
-      right: 0;
-      margin-top: 0 !important;
-      padding: 0.4rem 0.6rem 0.2rem;
-      background: linear-gradient(transparent, $translucent5);
-      border-bottom-left-radius: 5px;
-      border-bottom-right-radius: 5px;
-      color: $white;
-      font-size: 1.2rem !important;
-    }
+  &.fallback-image {
+    background-size: 50% !important;
+    background-color: $translucent15 !important;
   }
 }
 
 .thin-search-wrapper {
-  width: 100%;
-  .thin-search {
-    .spinner-container {
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 2rem;
-      height: 2rem;
-      padding: 0;
-      margin-right: 1rem;
+  .spinner-container {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    margin-right: 1rem;
+  }
+  .text-input-wrapper {
+    align-items: center;
+    border-bottom: 1.5px solid var(--border-color);
+    display: flex;
+    padding: 0 0.75rem;
+    i {
+      font-size: 1.5rem;
     }
-    .text-input-wrapper {
-      position: relative;
-      margin: 1rem;
-      border-bottom: 1px solid $dark_gray;
-      &:before,
-      &:after {
-        content: "";
-        position: absolute;
-        bottom: 0;
-        background: $dark_gray;
-        width: 1px;
-        height: 3px;
+    .fa-search {
+      cursor: default !important;
+    }
+    .fa-times {
+      color: $medium_dark_red;
+      font-size: 1.3rem;
+      &:hover {
+        color: $red;
       }
-      &:before {
-        left: 0;
-      }
-      &:after {
-        right: 0;
+    }
+    .point-sort-menu {
+      width: 110px;
+      label {
+        margin-top: 0;
       }
       i {
-        font-size: 1.5rem;
-      }
-      .fa-search {
-        position: absolute;
-        top: 0.8rem;
-        left: 1rem;
-        cursor: default !important;
-      }
-      .fa-times {
-        position: absolute;
-        bottom: 0;
-        right: 0;
+        cursor: pointer;
         padding: 0.5rem;
-        color: $darkest_red;
-        font-size: 1.3rem;
-        &:hover {
-          color: $medium_dark_red;
-        }
-      }
-      .bp5-popover-wrapper {
-        position: absolute;
-        .bp5-popover-target {
-          width: 3rem;
-        }
-      }
-      .point-sort-menu {
-        width: 110px;
-        label {
-          margin-top: 0;
-        }
-        i {
-          cursor: pointer;
-          padding: 0.5rem;
-          color: $medium_light_gray;
-          &.selected {
-            font-weight: bold;
-            color: $dark_gray;
-          }
+        color: $medium_light_gray;
+        &.selected {
+          font-weight: bold;
+          color: $dark_gray;
         }
       }
     }
     input {
       background: transparent;
       box-shadow: none !important;
-      padding-left: 3rem !important;
       font-size: 1.4rem !important;
+      color: inherit;
       &:active,
       &:focus {
         background: transparent !important;
@@ -210,18 +148,21 @@
 
 .panel-content {
   %panel-item-base {
-    text-align: right;
     font-size: 1rem;
-    padding-right: 1rem;
-    line-height: 3rem;
-    float: right;
+  }
+  .group-search-item {
+    grid-template-columns: 1fr auto!important;
   }
   .plant-search-item,
-  .group-search-item {
+  .group-search-item,
+  .curve-search-item {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
     cursor: pointer;
     padding: 0.5rem 1rem;
     img {
-      margin-right: 0.5rem;
       height: 3rem;
       width: 3rem;
     }
@@ -239,21 +180,14 @@
   }
   .curve-search-item-name,
   .plant-search-item-name,
-  .group-search-item-name,
   .regimen-search-item-name,
   .saved-garden-search-item-name,
   .weed-search-item-name,
   .point-search-item-name {
     display: inline-block;
     white-space: nowrap;
-    max-width: 60%;
     text-overflow: ellipsis;
     overflow: hidden;
-    vertical-align: middle;
-    margin-left: 1rem;
-  }
-  .group-search-item-name {
-    margin-left: 0;
   }
   .plant-search-item-age {
     @extend %panel-item-base;
@@ -290,25 +224,13 @@
     line-height: 3rem;
     float: right;
   }
-  .regimen-search-item-name,
-  .weed-search-item-name,
-  .point-search-item-name {
-    width: 40%;
-    margin-left: 1.25rem;
-  }
   .tool-search-item,
   .tool-slot-search-item {
-    line-height: 4rem;
+    margin: 0 -1rem;
+    padding: 0 1rem;
     cursor: pointer;
-    .row {
-      margin-left: 0.5rem;
-      margin-right: -25px;
-    }
-    .tool-search-item-icon,
+    .tool-svg,
     .tool-slot-search-item-icon {
-      width: fit-content;
-      padding-left: 10px;
-      padding-right: 0;
       svg {
         vertical-align: middle;
       }
@@ -329,35 +251,31 @@
       line-height: 4rem;
       &.tool-status,
       &.tool-slot-position {
-        float: right;
+        min-width: 10rem;
+        text-align: right;
       }
     }
   }
   .regimen-search-item {
-    position: relative;
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
     cursor: pointer;
     height: 3.5rem;
+    padding: 1rem;
     .regimen-search-item-name {
-      font-size: 1.2rem;
-      color: $dark_gray;
-      line-height: 3.5rem;
-      width: 80%;
+      font-size: 1.4rem;
     }
     .regimen-color {
-      display: inline-block;
-      vertical-align: middle;
       .color-picker {
         display: inline;
         .saucer {
-          margin-left: 3rem;
           width: 1.2rem;
           height: 1.2rem;
         }
       }
     }
-  }
-  .padding {
-    height: 6rem;
   }
   &.scrolled {
     box-shadow: inset 0 5px 10px rgba(0, 0, 0, 0.1);
@@ -616,98 +534,37 @@
   }
 }
 
-.saved-garden-indicator {
-  position: fixed;
-  top: 80px;
-  left: 50%;
-  z-index: 3;
-  padding: 2rem;
-  background: rgba(255, 255, 255, .75);
-  border-radius: 5px;
-  box-shadow: 0px 1px 4px #555;
-  text-align: center;
-  label {
-    display: block;
-  }
-  button {
-    margin: 0.5rem;
-    float: unset;
-  }
-}
-
-.garden-snapshot {
-  button {
-    &.pseudo-disabled {
-      cursor: not-allowed;
-    }
-  }
-  textarea {
-    font-size: 1.2rem;
-  }
-}
-
-.saved-garden-list {
-  .saved-garden-search-item {
-    padding: 0.25rem;
-    button {
-      margin-bottom: 1rem;
-    }
-    .saved-garden-info div {
-      height: 3rem;
-      line-height: 3rem;
-      cursor: pointer;
-      padding-right: 0;
-      span {
-        margin: 0;
-        pointer-events: none;
-        margin-left: 1rem;
-      }
-      p {
-        float: right;
-        line-height: 3rem;
-        text-align: center;
-        margin-right: 1rem;
-      }
-    }
-  }
-}
-
 .garden-map-legend {
   position: fixed;
-  top: 110px;
+  top: 90px;
   right: -155px;
   z-index: 3;
   transition: all 0.4s ease;
   &.active {
-    transform: translateX(-165px);
+    transform: translateX(-175px);
   }
   .content {
     display: flex;
     flex-direction: row-reverse;
+    gap: 1.25rem;
+    .menu-content, .z-display {
+      background-color: var(--main-bg);
+      border-radius: 1rem;
+      box-shadow: 0px 1px 5px rgba(0, 0, 0, .3);
+      backdrop-filter: blur(5px);
+    }
     .menu-content {
-      display: flex;
-      flex-direction: column;
-      flex-wrap: wrap;
+      display: grid;
       max-width: 155px;
-      padding: 1rem;
-      background: rgba(255, 255, 255, .75);
-      border-radius: 5px;
-      box-shadow: 0px 1px 4px #555;
-      >*+* {
-        margin: auto;
-        margin-top: 0.75rem;
-      }
+      padding: 1.25rem;
+      gap: 0.75rem;
+      justify-items: center;
       .zoom-buttons {
-        display: grid;
-        margin: auto;
-        width: 90%;
+        display: flex;
+        flex-direction: row-reverse;
+        gap: 1rem;
         button {
           margin: auto;
-          grid-row: 1;
-          grid-column: 2;
-          &.zoom-out {
-            grid-column: 1;
-          }
         }
       }
     }
@@ -715,10 +572,6 @@
       position: relative;
       padding: 2rem;
       padding-left: 3rem;
-      margin-right: 1.25rem;
-      background: rgba(255, 255, 255, .75);
-      border-radius: 5px;
-      box-shadow: 0px 1px 4px #555;
       label {
         position: absolute;
         top: 0.5rem;
@@ -777,26 +630,6 @@
       width: 5rem;
     }
   }
-  .caret-menu-button {
-    display: inline;
-    font-weight: bold;
-    font-size: medium;
-    cursor: pointer;
-    span {
-      margin-left: 0.25rem;
-    }
-  }
-  .more-bugs,
-  .select-mode,
-  .map-settings,
-  .move-to-mode {
-    margin: auto;
-    margin-top: 1rem;
-    p {
-      text-align: center;
-      padding-top: 2rem;
-    }
-  }
   .move-to-mode {
     display: none;
     @media screen and (max-width: $mobile_max_width) {
@@ -806,10 +639,11 @@
   .menu-pullout {
     position: absolute;
     left: -4.5rem;
-    color: $white;
+    color: $off_white;
     cursor: pointer;
-    transition: all 0.4s ease;
+    transition: all 0.3s ease;
     text-shadow: 0px 1px 1px #555;
+    font-size: 1.5rem;
     &.active {
       left: -4.5rem;
       transform: rotate(180deg);
@@ -836,24 +670,6 @@
       opacity: 0;
     }
   }
-  .map-rotate-button {
-    text-align: center;
-    .fb-button {
-      float: none;
-    }
-  }
-}
-
-.map-plants-submenu,
-.map-settings-submenu,
-.farmbot-layer-submenu {
-  .bp5-popover-wrapper {
-    display: inline;
-    margin-left: 0.5rem;
-  }
-  .fb-toggle-button {
-    margin-left: 1rem;
-  }
 }
 
 .farmbot-origin {
@@ -868,7 +684,7 @@
   .quadrants {
     display: flex;
     flex-wrap: wrap;
-    border: 1px solid $dark_gray;
+    border: 1px solid var(--border-color);
   }
   .quadrant {
     display: inline-block;
@@ -876,7 +692,7 @@
     background-image: linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px), linear-gradient(rgba(0, 0, 0, 0.05) 2px, transparent 2px), linear-gradient(90deg, rgba(0, 0, 0, 0.05) 2px, transparent 2px);
     background-size: 4px 4px, 4px 4px, 100px 100px, 100px 100px;
     cursor: pointer;
-    border: 1px solid $dark_gray;
+    border: 1px solid var(--border-color);
     width: 50%;
     height: 24px;
     transition: all 0.2s ease-in-out;
@@ -884,7 +700,7 @@
       background-color: rgba(0, 0, 0, 0.1);
     }
     &.selected {
-      box-shadow: inset 0 0 8px $dark_gray;
+      box-shadow: inset 0 0 8px var(--border-color);
     } // Quadrant 1
     &:nth-child(2) {
       &:before {
@@ -945,48 +761,13 @@
   }
 }
 
-.map-plants-submenu,
-.map-settings-submenu,
-.map-points-submenu {
-  display: flex;
-  flex-direction: column;
-  fieldset {
-    display: flex;
-    margin-top: 0;
-    flex-direction: column;
-    align-items: center;
-  }
-  label {
-    margin-top: 0;
-  }
-  button {
-    margin: auto;
-  }
-  .fb-toggle-button {
-    margin-left: 1rem;
-  }
+.map-size-grid {
+  grid-template-columns: auto 6rem !important;
 }
 
 .image-filter-menu {
-  label {
-    margin-top: 0 !important;
-  }
-  th {
-    text-align: center;
-    label {
-      margin: 0;
-      line-height: unset !important;
-    }
-  }
-  input {
-    background: $white;
-  }
-  .fa-step-backward,
-  .fa-caret-left,
-  .fa-caret-right,
-  .fa-step-forward {
+  .fa {
     font-weight: bold;
-    vertical-align: middle;
   }
   .fa-caret-left,
   .fa-caret-right {
@@ -996,715 +777,31 @@
   .fa-step-forward {
     font-size: 1rem;
   }
-  .fa-step-backward,
-  .fa-caret-left {
-    margin-right: 0.1rem;
+}
+
+@media screen and (min-width: $mobile_max_width) {
+  .farm-designer-panels.panel-closed ~ .three-d-garden .garden-bed-3d-model {
+    animation: panel-hide-shift-3d 0.3s ease forwards;
   }
-  .fa-caret-right,
-  .fa-step-forward {
-    margin-left: 0.1rem;
+  .farm-designer-panels.panel-open ~ .three-d-garden .garden-bed-3d-model {
+    animation: panel-show-shift-3d 0.3s ease forwards;
   }
 }
 
-.image-options {
-  .image-filter-menu {
-    margin-bottom: 1rem;
+@keyframes panel-show-shift-3d {
+  0% {
+    transform: translateX(-22.5rem);
   }
-  .non-layer-config-toggle {
-    margin-left: 1rem;
-    margin-right: 1rem;
-  }
-  .bp5-popover-wrapper {
-    display: inline;
-    margin-left: 0.5rem;
-  }
-  .fb-toggle-button {
-    margin-left: 1rem;
+  100% {
+    transform: translateX(0);
   }
 }
 
-.sliders {
-  display: inline-block;
-  position: relative;
-  width: 100%;
-  margin-bottom: 3rem;
-  margin-top: 1rem;
-  .bp5-slider {
-    margin-left: 3rem;
-    margin-top: 1rem;
-    width: 80%;
+@keyframes panel-hide-shift-3d {
+  0% {
+    transform: translateX(0);
   }
-  &.vertical {
-    .bp5-slider {
-      margin-top: 0;
-    }
-  }
-  .bp5-slider-label {
-    white-space: nowrap;
-    text-align: center;
-    &:empty {
-      display: none;
-    }
-  }
-  .data-slider {
-    pointer-events: none;
-    .bp5-slider-axis,
-    .bp5-slider-track {
-      display: none;
-    }
-    .bp5-slider-label {
-      box-shadow: none;
-    }
-    .bp5-start {
-      top: 0.53rem;
-      width: 0.5px;
-      background: color.adjust($dark_gray, $alpha: -0.75);
-      box-shadow: none;
-      height: 0.55rem;
-      border-radius: 0;
-      &:first-of-type {
-        display: none;
-      }
-    }
-    &.vertical {
-      .bp5-start {
-        top: unset;
-        left: 0.53rem;
-        height: 0.5px;
-        width: 0.55rem;
-        border-radius: 0;
-      }
-    }
-  }
-  .input-slider {
-    position: absolute;
-    top: 0;
-  }
-}
-
-.profile-viewer {
-  position: fixed;
-  bottom: 0;
-  z-index: 2;
-  width: calc(100% - $mobile_max_width);
-  background: #e5e5e5;
-  transition: transform 0.5s ease-out;
-  box-shadow: 0 0 1px rgba(0, 0, 0, .3);
-  transform: translateY(10rem) translateX($mobile_max_width);
-  &.panel-closed-mobile,
-  &.panel-closed {
-    width: 100%;
-    transform: translateY(10rem);
-  }
-  &.none-chosen {
-    transform: translateY(21rem) translateX($mobile_max_width);
-    &.panel-closed-mobile,
-    &.panel-closed {
-      transform: translateY(21rem);
-    }
-  }
-  @media screen and (max-width: $mobile_max_width) {
-    &.panel-open {
-      display: none;
-    }
-  }
-  &.open {
-    transform: translateY(0) translateX($mobile_max_width);
-    &.panel-closed-mobile,
-    &.panel-closed {
-      transform: translateY(0);
-    }
-    .profile-button {
-      i {
-        line-height: 6rem;
-      }
-    }
-  }
-  .profile-button {
-    margin: auto;
-    cursor: pointer;
-    margin-top: -3rem;
-    border-radius: 50%;
-    width: 6rem;
-    height: 6rem;
-    background: $magenta;
-    transition: background-color 0.3s ease-out;
-    text-align: center;
-    box-shadow: 0px 0px 2px 0px rgba(0, 0, 0, .3);
-    &:hover {
-      background: color.adjust($magenta, $lightness: 5%);
-    }
-    i {
-      color: $off_white;
-      line-height: 3.25rem;
-      font-size: 2rem;
-      transition: line-height 0.5s ease-out;
-    }
-  }
-  .profile-content {
-    label {
-      display: block;
-      margin: auto;
-      margin-top: 1rem;
-      margin-bottom: 0.5rem;
-      text-align: center;
-    }
-    .no-profile {
-      height: 12.5rem;
-      text-align: center;
-      margin-top: 1.5rem;
-    }
-    .left-label,
-    .right-label {
-      position: absolute;
-      top: 50%;
-      font-weight: bold;
-    }
-    .left-label {
-      left: 2rem;
-    }
-    .right-label {
-      right: 2rem;
-    }
-    svg {
-      display: block;
-      margin: auto;
-      height: 10rem;
-      width: 90%;
-      border-radius: 5px;
-      padding: 1rem;
-      margin-bottom: 1rem;
-      background: #fafafa;
-      box-shadow: 0 0 4px rgba(0, 0, 0, .1);
-      &.expand {
-        height: unset;
-        max-height: 60vh;
-      }
-    }
-    .profile-options {
-      width: 100%;
-      height: 4rem;
-      text-align: center;
-      padding-top: 1rem;
-      padding-bottom: 1rem;
-      background: #f2f2f2;
-      box-shadow: 0px 0px 1px 0px #666666;
-      button {
-        display: inline;
-        float: none;
-        margin-right: 3rem;
-      }
-      label {
-        display: inline;
-        margin-right: 0.5rem;
-        line-height: 2rem;
-        vertical-align: text-top;
-      }
-      input {
-        height: 2rem !important;
-        width: 5rem;
-        margin-right: 3rem;
-      }
-    }
-  }
-}
-
-.three-d-garden {
-  position: relative;
-  height: 100vh;
-  width: 100vw;
-  cursor: grab;
-
-  body {
-    margin: 0;
-  }
-
-  .garden-bed-3d-model {
-    position: relative;
-    height: 100vh;
-    width: 100vw;
-    cursor: grab;
-
-    &:active {
-      cursor: grabbing;
-    }
-  }
-
-  .gear {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    width: 1rem;
-    cursor: pointer;
-    background: rgba(255, 255, 255, 0.4);
-    box-shadow: $translucent2 0px 0px 5px;
-    padding: 7px;
-    border-radius: 5px;
-    backdrop-filter: blur(5px);
-    opacity: 0;
-
-    &:hover {
-      opacity: 1;
-    }
-  }
-
-  .overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    pointer-events: none;
-    user-select: none;
-
-    .settings-bar {
-      display: flex;
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      right: 0;
-      justify-content: center;
-      gap: 1.25rem;
-      padding: 1rem;
-      overflow-x: scroll;
-      background: linear-gradient(0deg, $translucent5, transparent);
-      scrollbar-width: none;
-
-      @media screen and (max-width: 768px) {
-        justify-content: left;
-        pointer-events: all;
-      }
-
-      .setting-section {
-        pointer-events: all;
-      }
-
-      .setting-title {
-        color: $off_white;
-        font-family: 'Inknut Antiqua';
-        text-shadow: 0 0 10px black;
-        line-height: 1.8rem;
-        text-align: center;
-      }
-
-      .row {
-        display: flex;
-        margin: 0;
-        background: rgba(255, 255, 255, 0.6);
-        box-shadow: $translucent2 0px 0px 1rem;
-        border-radius: 2.5rem;
-        height: 3.1rem;
-        padding: 0.3rem;
-        justify-content: space-evenly;
-        backdrop-filter: blur(5px);
-        gap: 0.5rem;
-        &:after,
-        &:before {
-          content: unset;
-          display: unset;
-          clear: unset;
-        }
-      }
-
-      button {
-        padding: 0 0.85rem;
-        border-radius: 2.5rem;
-        font-weight: bold;
-        border: none;
-        background: none;
-        white-space: nowrap;
-        color: $off_black;
-
-        &.outdoor.active,
-        &.lab.active,
-        &.genesis.active,
-        &.standard.active,
-        &.mobile.active {
-          background: rgba(255, 255, 255, 0.6);
-        }
-
-        &.genesis-xl.active {
-          background: linear-gradient(315deg, #22a36d, #4ea3ed);
-          color: $off_white;
-        }
-
-        &.winter.active {
-          background: linear-gradient(-15deg, #152e40, #3e8dc2);
-          color: $off_white;
-        }
-
-        &.spring.active {
-          background: linear-gradient(15deg, #055b08, #49cc78);
-          color: $off_white;
-        }
-
-        &.summer.active {
-          background: linear-gradient(-15deg, #d87f09, #f5e40a);
-        }
-
-        &.fall.active {
-          background: linear-gradient(15deg, #502402, #c69075);
-          color: $off_white
-        }
-
-        &:hover {
-          cursor: pointer;
-          background: $translucent3_white;
-        }
-
-        &.disabled {
-          color: $placeholder_gray;
-
-          &:hover {
-            cursor: not-allowed;
-            background: none;
-          }
-        }
-      }
-    }
-  }
-
-  .tool-tip {
-    position: absolute;
-    left: 0;
-    bottom: 6.5rem;
-    right: 0;
-    margin: auto;
-    width: fit-content;
-    color: $off_white;
-    background: rgba(120, 0, 0, 0.65);
-    padding: 0.75rem 1rem;
-    border-radius: 5px;
-    text-align: center;
-    pointer-events: none;
-    backdrop-filter: blur(5px);
-    box-shadow: $translucent2 0px 0px 5px;
-
-    @media screen and (max-width: 768px) {
-      margin: 0 1rem;
-    }
-  }
-
-  .all-configs {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    width: 22rem;
-    background: $dark_gray;
-    text-align: left;
-    padding: 1rem;
-    border-radius: 5px;
-    max-height: 30rem;
-    overflow-y: scroll;
-
-    .close {
-      position: absolute;
-      top: 0.5rem;
-      right: 1rem;
-      margin: 0;
-      cursor: pointer;
-      font-size: 1rem;
-      padding: 0.5rem 0.75rem;
-      background: none;
-      border-radius: 5px;
-
-      &:hover {
-        background: $medium_gray;
-      }
-    }
-
-    .spacer {
-      margin-top: 1rem;
-    }
-
-    details {
-      color: $off_white;
-
-      label {
-        font-weight: bold;
-        color: $off_white;
-        text-transform: none;
-        font-size: 0.9rem;
-      }
-    }
-
-    summary {
-      margin: -1rem;
-      cursor: pointer;
-      padding: 1rem;
-
-      &:hover {
-        background: $dark_gray;
-      }
-    }
-
-    .config-row {
-      display: grid;
-      grid-template-columns: min-content minmax(30%, 200px) auto;
-      margin-bottom: 0.25rem;
-
-      span {
-        width: 8rem;
-        padding-left: 1rem;
-        color: $gray;
-      }
-
-      input[type="checkbox"] {
-        width: 1.1rem;
-        height: 1.1rem;
-        justify-self: left;
-        cursor: pointer;
-        box-shadow: none;
-      }
-
-      input[type="number"] {
-        width: 100%;
-        max-width: 4rem;
-        height: 1rem;
-        font-size: 0.9rem;
-        box-shadow: none;
-      }
-
-      input[type="radio"] {
-        width: 1.1rem;
-        height: 1.1rem;
-        cursor: pointer;
-        box-shadow: none;
-      }
-
-      .options {
-        width: 100%;
-        justify-content: space-between;
-      }
-
-      input[type="range"] {
-        width: 4rem;
-        margin-left: -2rem;
-        cursor: pointer;
-        box-shadow: none;
-        height: 1rem;
-      }
-    }
-  }
-
-  .promo-info {
-    display: grid;
-    position: absolute;
-    top: 3rem;
-    right: 4rem;
-    color: $off_white;
-    text-align: right;
-    pointer-events: none;
-    text-shadow: 0 0 3.5rem $black, 0 0 1rem $black;
-    gap: 1rem;
-    justify-items: right;
-
-    .title {
-      margin: 0;
-      font-family: 'Inknut Antiqua';
-      font-size: 3.5rem;
-      line-height: 5rem;
-      font-weight: bold;
-    }
-
-    .description {
-      margin: 0;
-      max-width: 40vw;
-
-      p {
-        color: $off_white;
-        font-size: 1.25rem;
-        line-height: 1.7rem;
-        font-weight: bold;
-      }
-
-      .short {
-        display: none;
-      }
-
-      .full {
-        display: inline;
-      }
-    }
-
-    .buy-button {
-      display: flex;
-      pointer-events: all;
-      background: #00a579e0;
-      border-radius: 7px;
-      box-shadow: $translucent2 0px 0px 10px;
-      backdrop-filter: blur(5px);
-      padding: 0.1rem 1.75rem;
-      text-shadow: none;
-      text-transform: uppercase;
-      text-decoration: none;
-      gap: 0.4rem;
-      align-items: center;
-
-      p {
-        margin: 0;
-        color: $off_white;
-        font-size: 1.5rem;
-        line-height: 4rem;
-        font-weight: bold;
-      }
-
-      .genesis-xl {
-        background: linear-gradient(315deg, #22a36d, #4ea3ed);
-        box-shadow: 0 0 8px rgba(0, 0, 0, 0.25);
-        color: $off_white;
-        border-radius: 50%;
-        height: 2.5rem;
-        width: 2.5rem;
-        line-height: 2.5rem;
-        text-align: center;
-        font-size: 1.2rem;
-        vertical-align: middle;
-      }
-
-      &:hover {
-        background: #00bb89e5;
-      }
-    }
-  }
-
-  .beacon-info {
-    width: 34rem;
-    background: $white;
-    background: rgba(255, 255, 255, 0.8);
-    box-shadow: $translucent2 0px 0px 10px;
-    border-radius: 0.5rem;
-    padding: 1.5rem;
-    backdrop-filter: blur(5px);
-    text-align: left;
-    user-select: none;
-    p {
-      margin-bottom: 0;
-      margin-top: 1rem;
-      font-weight: bold;
-      font-size: 1.25rem;
-      color: $black;
-      line-height: 1.6rem;
-    }
-    a {
-      text-decoration: underline !important;
-      text-underline-offset: 0.1rem;
-      text-underline-position: from-font;
-      font-weight: bold;
-      color: $dark_blue;
-    }
-    iframe {
-      margin-top: 1rem;
-      width: 100%;
-      height: auto;
-      border-radius: 0.35rem;
-      aspect-ratio: 16 / 9;
-    }
-    .header {
-      display: flex;
-      justify-content: space-between;
-      h2 {
-        margin: 0;
-        font-family: 'Inknut Antiqua';
-        line-height: 100%;
-        font-weight: bold;
-      }
-      .exit-button {
-        width: 2rem;
-        height: 2rem;
-        aspect-ratio: 1 / 1;
-        border-radius: 50%;
-        filter: grayscale(100%);
-        font-size: 0.75rem;
-        line-height: 2rem;
-        text-align: center;
-        background: rgba(255, 255, 255, 0.4);
-        box-shadow: $translucent2 0px 0px 0.75rem;
-        &:hover {
-          cursor: pointer;
-          background: rgba(255, 255, 255, 0.6);
-        }
-      }
-    }
-  }
-
-  @media screen and (max-width: 768px) {
-    .beacon-info-wrapper {
-      display: grid;
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      right: 0;
-      align-items: end;
-      transform: none!important;
-      * {
-        transform: none!important;
-      }
-      .beacon-info {
-        width: initial;
-        border-bottom-left-radius: 0px;
-        border-bottom-right-radius: 0px;
-        overflow: scroll;
-        height: 33vh;
-        font-size: 100%;
-
-        .header {
-          h2 {
-            font-size: 1.3rem;
-          }
-        }
-
-        p {
-          font-size: 1rem;
-          line-height: 1.2rem;
-        }
-      }
-    }
-    .promo-info {
-      top: 1rem;
-      right: 1rem;
-      gap: 0.5rem;
-
-      .title {
-        font-size: 1.5rem;
-        line-height: 2rem;
-      }
-
-      .description {
-        max-width: 80vw;
-
-        p {
-          font-size: 1rem;
-          line-height: 1.5rem;
-        }
-
-        .short {
-          display: inline;
-        }
-
-        .full {
-          display: none;
-        }
-      }
-
-      .buy-button {
-        font-size: 0.85rem;
-        line-height: 2.2rem;
-        padding: 0.1rem 0.8rem;
-        border-radius: 5px;
-
-        p {
-          font-size: 0.85rem;
-          line-height: 2rem;
-        }
-
-        .genesis-xl {
-          height: 1.5rem;
-          width: 1.5rem;
-          line-height: 1.5rem;
-          font-size: 0.7rem;
-        }
-      }
-    }
+  100% {
+    transform: translateX(-22.5rem);
   }
 }

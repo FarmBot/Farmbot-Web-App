@@ -6,7 +6,6 @@ import { DeepPartial } from "../redux/interfaces";
 import { findFolderById } from "../resources/selectors_by_id";
 import { Actions } from "../constants";
 import { t } from "../i18next_wrapper";
-import { push } from "../history";
 import { urlFriendly } from "../util";
 import { setActiveSequenceByName } from "../sequences/set_active_sequence_by_name";
 import { stepGet, STEP_DATATRANSFER_IDENTIFER } from "../draggable/actions";
@@ -15,6 +14,7 @@ import { maybeGetSequence } from "../resources/selectors";
 import { Path } from "../internal_urls";
 import { UnknownAction } from "redux";
 import { sequenceLimitExceeded } from "../sequences/actions";
+import { NavigateFunction } from "react-router";
 
 export const setFolderColor = (id: number, color: Color) => {
   const d = store.dispatch as Function;
@@ -39,7 +39,10 @@ const DEFAULTS = (): Folder => ({
   parent_id: 0,
 });
 
-export const addNewSequenceToFolder = (config: DeepPartial<Folder> = {}) => {
+export const addNewSequenceToFolder = (
+  navigate: NavigateFunction,
+  config: DeepPartial<Folder> = {},
+) => {
   const ri = store.getState().resources.index;
   if (sequenceLimitExceeded(ri)) {
     return;
@@ -58,7 +61,7 @@ export const addNewSequenceToFolder = (config: DeepPartial<Folder> = {}) => {
     body: [],
   };
   store.dispatch(init("Sequence", newSequence) as unknown as UnknownAction);
-  push(Path.sequences(urlFriendly(newSequence.name)));
+  navigate(Path.sequences(urlFriendly(newSequence.name)));
   setActiveSequenceByName();
 };
 

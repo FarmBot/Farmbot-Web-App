@@ -1,0 +1,125 @@
+@use "../variables" as *;
+@use "sass:color";
+
+.documentation-panel {
+  .panel-content {
+    height: 100vh;
+    padding: 0;
+    overflow: hidden;
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+  }
+}
+
+body:has(.app.dark) {
+  .help-panel-header {
+    img {
+      filter: invert(0.75);
+    }
+  }
+}
+
+.help-panel-header {
+  height: 4rem;
+  padding: 0.5rem 1rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  i {
+    font-size: 2rem;
+  }
+  a {
+    font-weight: bold;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+  }
+  .fa-chevron-down,
+  .fa-chevron-up {
+    padding: 1rem;
+    font-size: 1.25rem;
+  }
+  .bp5-collapse {
+    overflow: visible;
+    grid-column: span 2;
+  }
+  .bp5-collapse-body {
+    position: relative;
+    z-index: 1;
+    margin: -1rem;
+    margin-top: 0;
+    background: var(--main-bg);
+    a {
+      padding: 1rem;
+      line-height: 0;
+      &:hover {
+        background: var(--secondary-bg);
+      }
+    }
+  }
+}
+
+.support-panel-content {
+  padding: 2rem;
+  padding-top: 0;
+  h1 {
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+  .row {
+    margin-bottom: 3rem;
+  }
+  a {
+    &.button {
+      display: block;
+      margin-top: 1rem;
+      text-decoration: none !important;
+      text-align: center;
+      border: 1.5px solid $dark_gray;
+      border-radius: 5px;
+      padding: 0.75rem;
+      line-height: 1.3rem;
+      b {
+        display: block;
+        font-size: 1.1rem;
+        text-transform: uppercase;
+      }
+      i {
+        font-size: 0.9rem;
+        color: $medium_gray;
+        font-weight: normal;
+      }
+      &:hover {
+        background: var(--secondary-bg);
+      }
+    }
+    &.inline {
+      text-decoration: underline;
+      margin-left: 0.25rem;
+    }
+  }
+}
+
+.feedback {
+  p {
+    color: $dark_gray !important;
+    margin-bottom: 1rem !important;
+    font-weight: normal !important;
+    font-style: italic;
+  }
+  textarea {
+    height: 7.5rem;
+  }
+  button {
+    float: none;
+  }
+  .bp5-popover-wrapper {
+    margin-left: 1rem;
+  }
+}
+
+.tours-panel-content {
+  min-height: 35rem;
+}

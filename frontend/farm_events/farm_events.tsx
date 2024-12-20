@@ -6,7 +6,7 @@ import {
 } from "../farm_designer/interfaces";
 import moment from "moment";
 import { Content } from "../constants";
-import { Panel, DesignerNavTabs } from "../farm_designer/panel_header";
+import { Panel } from "../farm_designer/panel_header";
 import { Link } from "../link";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelTop,
@@ -71,7 +71,7 @@ export class RawFarmEvents
 
         return <div
           className={
-            `farm-event-data-block ${occur.color == "gray" ? "" : occur.color}`}
+            `farm-event-data-block row ${occur.color}`}
           key={`${occur.sortKey}.${index}`}>
           <div className="farm-event-data-time">
             {occur.timeStr}
@@ -96,8 +96,8 @@ export class RawFarmEvents
       .filter(item => !this.searchTerm ||
         some(item.items.map(filterSearch(this.searchTerm))))
       .map(item => {
-        return <div className="farm-event" key={item.sortKey}>
-          <div className="farm-event-date">
+        return <div className="farm-event row grid-exp-2" key={item.sortKey}>
+          <div className="farm-event-date grid no-gap">
             <div className="farm-event-date-month">
               {item.month}
             </div>
@@ -105,7 +105,7 @@ export class RawFarmEvents
               <b>{item.day}</b>
             </div>
           </div>
-          <div className="farm-event-data">
+          <div className="farm-event-data grid half-gap">
             {this.innerRows(item.items)}
           </div>
         </div>;
@@ -116,7 +116,7 @@ export class RawFarmEvents
     const years = uniq(map(this.props.calendarRows, "year"));
     return years.map(year => {
       return <div key={moment(year, "YY").unix()}
-        className="farm-event-calendar-rows">
+        className="farm-event-calendar-rows grid">
         <div className="farm-event-year">
           20{year}
         </div>
@@ -127,15 +127,12 @@ export class RawFarmEvents
 
   render() {
     return <DesignerPanel panelName={"farm-event"} panel={Panel.FarmEvents}>
-      <DesignerNavTabs />
       <DesignerPanelTop
         panel={Panel.FarmEvents}
         linkTo={Path.farmEvents("add")}
         title={t("Add event")}>
         <SearchField nameKey={"events"}
           searchTerm={this.state.searchTerm}
-          customLeftIcon={
-            <i className="fa fa-calendar" onClick={this.resetCalendar} />}
           placeholder={t("Search your events...")}
           onChange={searchTerm => this.setState({ searchTerm })} />
       </DesignerPanelTop>
@@ -156,3 +153,5 @@ export class RawFarmEvents
 }
 
 export const FarmEvents = connect(mapStateToProps)(RawFarmEvents);
+// eslint-disable-next-line import/no-default-export
+export default FarmEvents;

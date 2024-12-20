@@ -1,0 +1,61 @@
+@use "../variables" as *;
+@use "sass:color";
+
+.sliders {
+  display: inline-block;
+  position: relative;
+  width: 100%;
+  margin-bottom: 3rem;
+  margin-top: 1rem;
+  .bp5-slider {
+    margin-left: 3rem;
+    margin-top: 1rem;
+    width: 80%;
+  }
+  &.vertical {
+    .bp5-slider {
+      margin-top: 0;
+    }
+  }
+  .bp5-slider-label {
+    white-space: nowrap;
+    text-align: center;
+    &:empty {
+      display: none;
+    }
+  }
+  .data-slider {
+    pointer-events: none;
+    .bp5-slider-axis,
+    .bp5-slider-track {
+      display: none;
+    }
+    .bp5-slider-label {
+      box-shadow: none;
+    }
+    .bp5-start {
+      top: 0.53rem;
+      width: 0.5px;
+      background: color.adjust($dark_gray, $alpha: -0.75);
+      box-shadow: none;
+      height: 0.55rem;
+      border-radius: 0;
+      &:first-of-type {
+        display: none;
+      }
+    }
+    &.vertical {
+      .bp5-start {
+        top: unset;
+        left: 0.53rem;
+        height: 0.5px;
+        width: 0.55rem;
+        border-radius: 0;
+      }
+    }
+  }
+  .input-slider {
+    position: absolute;
+    top: 0;
+  }
+}

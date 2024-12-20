@@ -34,7 +34,7 @@ export interface TourStep {
   beacons: string[] | undefined;
   activeBeacons?: ActiveBeacons[];
   url: string | undefined;
-  extraContent?: JSX.Element;
+  extraContent?: React.ReactNode;
   dispatchActions?: AnyAction[];
 }
 

@@ -1,4 +1,4 @@
-import { push } from "../../history";
+import { useNavigate } from "react-router";
 import { TaggedRegimen } from "farmbot";
 import { init } from "../../api/crud";
 import { setActiveRegimenByName } from "../set_active_regimen_by_name";
@@ -16,6 +16,7 @@ const emptyRegimenBody = (regimenCount: number): TaggedRegimen["body"] => ({
 export const addRegimen = (regimenCount: number) => (dispatch: Function) => {
   const newRegimen = emptyRegimenBody(regimenCount);
   dispatch(init("Regimen", newRegimen));
-  push(Path.regimens(urlFriendly(newRegimen.name)));
+  const navigate = useNavigate();
+  navigate(Path.regimens(urlFriendly(newRegimen.name)));
   setActiveRegimenByName();
 };

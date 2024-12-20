@@ -93,7 +93,6 @@ import { mockDispatch } from "../../__test_support__/fake_dispatch";
 import { calibrate } from "../../photos/camera_calibration/actions";
 import { FarmwareName } from "../../sequences/step_tiles/tile_execute_script";
 import { ExternalUrl } from "../../external_urls";
-import { push } from "../../history";
 import { PLACEHOLDER_FARMBOT } from "../../photos/images/image_flipper";
 import { changeBlurableInput, clickButton } from "../../__test_support__/helpers";
 import { Actions } from "../../constants";
@@ -105,6 +104,7 @@ const fakeProps = (): WizardStepComponentProps => ({
   resources: buildResourceIndex([fakeDevice()]).index,
   bot: bot,
   dispatch: mockDispatch(),
+  navigate: jest.fn(),
   getConfigValue: jest.fn(),
 });
 
@@ -666,12 +666,12 @@ describe("<AxisActions />", () => {
     const config = fakeFirmwareConfig();
     p.resources = buildResourceIndex([config]).index;
     const wrapper = mount(<AxisActions {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("current position");
+    expect(wrapper.text().toLowerCase()).toContain("position (mm)");
   });
 
   it("handles missing settings", () => {
     const wrapper = mount(<AxisActions {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).not.toContain("current position");
+    expect(wrapper.text().toLowerCase()).not.toContain("position (mm)");
   });
 });
 
@@ -792,6 +792,7 @@ describe("<Tour />", () => {
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_TOUR, payload: "gettingStarted",
     });
-    expect(push).toHaveBeenCalledWith(tourPath("", "gettingStarted", "intro"));
+    expect(p.navigate).toHaveBeenCalledWith(
+      tourPath("", "gettingStarted", "intro"));
   });
 });

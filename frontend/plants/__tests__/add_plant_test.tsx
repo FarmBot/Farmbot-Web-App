@@ -1,9 +1,3 @@
-let mockPath = "";
-jest.mock("../../history", () => ({
-  push: jest.fn(),
-  getPathArray: jest.fn(() => mockPath.split("/")),
-}));
-
 import React from "react";
 import { mount } from "enzyme";
 import {
@@ -39,7 +33,7 @@ describe("<AddPlant />", () => {
   };
 
   it("renders", () => {
-    mockPath = Path.mock(Path.cropSearch("mint/add"));
+    location.pathname = Path.mock(Path.cropSearch("mint/add"));
     const p = fakeProps();
     p.dispatch = jest.fn(x => x(jest.fn()));
     const wrapper = mount(<AddPlant {...p} />);

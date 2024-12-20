@@ -10,7 +10,7 @@ import {
 import { t } from "../i18next_wrapper";
 import { EditPlantInfoProps, PlantOptions } from "../farm_designer/interfaces";
 import { isFinite } from "lodash";
-import { push } from "../history";
+import { Navigate } from "react-router";
 import { destroy, edit, save } from "../api/crud";
 import { BooleanSetting } from "../session_keys";
 import { Panel } from "../farm_designer/panel_header";
@@ -47,9 +47,10 @@ export class RawPlantInfo extends React.Component<EditPlantInfoProps, {}> {
   fallback = () => {
     const plantsPath = Path.plants();
     const templatePath = Path.plantTemplates();
-    (Path.startsWith(plantsPath) || Path.startsWith(templatePath))
-      && !Path.startsWith(Path.cropSearch()) && push(plantsPath);
     return <DesignerPanel panelName={"plant-info"} panel={Panel.Plants}>
+      {(Path.startsWith(plantsPath) || Path.startsWith(templatePath))
+        && !Path.startsWith(Path.cropSearch()) &&
+        <Navigate to={plantsPath} />}
       <DesignerPanelHeader
         panelName={"plant-info"}
         panel={Panel.Plants}
@@ -76,7 +77,7 @@ export class RawPlantInfo extends React.Component<EditPlantInfoProps, {}> {
         onBack={unselectPlant(this.props.dispatch)}>
         <div className={"panel-header-icon-group"}>
           <i title={t("delete")}
-            className={"fa fa-trash fb-icon-button"}
+            className={"fa fa-trash fb-icon-button invert"}
             onClick={this.destroy(info.uuid)} />
         </div>
       </DesignerPanelHeader>
@@ -106,3 +107,5 @@ export class RawPlantInfo extends React.Component<EditPlantInfoProps, {}> {
 }
 
 export const PlantInfo = connect(mapStateToProps)(RawPlantInfo);
+// eslint-disable-next-line import/no-default-export
+export default PlantInfo;

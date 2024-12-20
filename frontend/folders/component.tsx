@@ -53,6 +53,7 @@ import { Path } from "../internal_urls";
 import { copySequence } from "../sequences/actions";
 import { TestButton, isMenuOpen } from "../sequences/test_button";
 import { TaggedSequence } from "farmbot";
+import { useNavigate } from "react-router";
 
 export const FolderListItem = (props: FolderItemProps) => {
   const { sequence, movedSequenceUuid, inUse } = props;
@@ -174,20 +175,22 @@ const InfoRow = (props: InfoRowProps) =>
 export const SequenceButtonCluster =
   (props: SequenceButtonClusterProps) => {
     const { dispatch, getWebAppConfigValue, sequence } = props;
+    const navigate = useNavigate();
     return <div className="folder-button-cluster">
       <i
-        className={"fa fa-trash cluster-icon"}
+        className={"fa fa-trash fb-icon-button invert"}
         title={t("delete sequence")}
         onClick={deleteSequence({
+          navigate,
           sequenceUuid: sequence.uuid,
           getWebAppConfigValue,
           dispatch,
         })} />
       <i
-        className={"fa fa-copy cluster-icon"}
+        className={"fa fa-copy fb-icon-button invert"}
         title={t("copy sequence")}
-        onClick={() => dispatch(copySequence(sequence))} />
-      <i className={"fa fa-arrows-v cluster-icon"}
+        onClick={() => dispatch(copySequence(navigate, sequence))} />
+      <i className={"fa fa-arrows-v fb-icon-button invert"}
         title={t("move sequence")}
         onMouseDown={() => props.startSequenceMove(sequence.uuid)}
         onMouseUp={() => props.toggleSequenceMove(sequence.uuid)} />
@@ -214,15 +217,16 @@ const PlusStack = (props: PlusStackProps) =>
 
 export const FolderButtonCluster =
   ({ node, close }: FolderButtonClusterProps) => {
+    const navigate = useNavigate();
     return <div className={"folder-button-cluster"}>
-      <i className={"fa fa-trash cluster-icon"}
+      <i className={"fa fa-trash fb-icon-button invert"}
         title={t("delete folder")}
         onClick={() => { deleteFolder(node.id); }} />
-      <i className={"fa fa-pencil cluster-icon"}
+      <i className={"fa fa-pencil fb-icon-button invert"}
         title={t("edit folder")}
         onClick={() => { close(); toggleFolderEditState(node.id); }} />
       {node.kind !== "terminal" &&
-        <div className={"stack-wrapper cluster-icon"}
+        <div className={"stack-wrapper fb-icon-button invert"}
           title={t("Create subfolder")}
           onClick={() => {
             close();
@@ -230,11 +234,11 @@ export const FolderButtonCluster =
           }}>
           <PlusStack icon={"fa-folder"} />
         </div>}
-      <div className={"stack-wrapper cluster-icon"}
+      <div className={"stack-wrapper fb-icon-button invert"}
         title={t("add new sequence")}
         onClick={() => {
           close();
-          addNewSequenceToFolder({ id: node.id, color: node.color });
+          addNewSequenceToFolder(navigate, { id: node.id, color: node.color });
         }}>
         <PlusStack icon={"fa-server"} />
       </div>
@@ -471,8 +475,9 @@ export class Folders extends React.Component<FolderProps, FolderState> {
   }
 }
 
-export const FolderPanelTop = (props: FolderPanelTopProps) =>
-  <div className="panel-top with-button">
+export const FolderPanelTop = (props: FolderPanelTopProps) => {
+  const navigate = useNavigate();
+  return <div className="panel-top with-button">
     <SearchField nameKey={"sequences"}
       placeholder={t("Search sequences...")}
       searchTerm={props.searchTerm || ""}
@@ -489,7 +494,8 @@ export const FolderPanelTop = (props: FolderPanelTopProps) =>
     <button
       className="fb-button green"
       title={t("add new sequence")}
-      onClick={() => { addNewSequenceToFolder(); }}>
+      onClick={() => { addNewSequenceToFolder(navigate); }}>
       <PlusStack icon={"fa-server"} />
     </button>
   </div>;
+};

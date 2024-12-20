@@ -15,3 +15,6 @@ export const FourOhFour = (_: {}) =>
       </h5>
     </div>
   </div>;
+
+// eslint-disable-next-line import/no-default-export
+export default FourOhFour;

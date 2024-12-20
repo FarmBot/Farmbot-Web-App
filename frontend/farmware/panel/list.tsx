@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelTop,
 } from "../../farm_designer/designer_panel";
-import { DesignerNavTabs, Panel } from "../../farm_designer/panel_header";
+import { Panel } from "../../farm_designer/panel_header";
 import { Everything } from "../../interfaces";
 import { Farmwares } from "../interfaces";
 import { t } from "../../i18next_wrapper";
@@ -50,7 +50,6 @@ export class RawDesignerFarmwareList
       .filter(fwName => !this.props.firstPartyFarmwareNames.includes(fwName));
     const panelName = "designer-farmware-list";
     return <DesignerPanel panelName={panelName} panel={Panel.Farmware}>
-      <DesignerNavTabs />
       <DesignerPanelTop
         panel={Panel.Farmware}
         linkTo={Path.farmware("add")}
@@ -83,6 +82,8 @@ export class RawDesignerFarmwareList
 
 export const DesignerFarmwareList =
   connect(mapStateToProps)(RawDesignerFarmwareList);
+// eslint-disable-next-line import/no-default-export
+export default DesignerFarmwareList;
 
 export interface FarmwareListItemProps {
   dispatch: Function;

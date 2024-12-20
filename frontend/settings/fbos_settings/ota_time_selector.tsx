@@ -1,7 +1,7 @@
 import React from "react";
 import moment from "moment";
 import { t } from "../../i18next_wrapper";
-import { FBSelect, Row, Col, DropDownItem, Help } from "../../ui";
+import { FBSelect, Row, DropDownItem, Help } from "../../ui";
 import { edit, save } from "../../api/crud";
 import { Content, DeviceSetting } from "../../constants";
 import { Highlight } from "../maybe_highlight";
@@ -72,20 +72,18 @@ export function OtaTimeSelectorRow(props: OtaTimeSelectorRowProps) {
   return <Highlight settingName={DeviceSetting.osAutoUpdate}
     hidden={!props.showAdvanced}
     className={"advanced"}>
-    <Row>
-      <Col xs={5}>
+    <Row className="grid-2-col">
+      <div>
         <label>
           {t(DeviceSetting.osAutoUpdate)}
         </label>
         <Help text={Content.OS_AUTO_UPDATE} />
-      </Col>
-      <Col xs={7}>
-        <OtaTimeSelector
-          sourceFbosConfig={props.sourceFbosConfig}
-          timeSettings={props.timeSettings}
-          dispatch={props.dispatch}
-          device={props.device} />
-      </Col>
+      </div>
+      <OtaTimeSelector
+        sourceFbosConfig={props.sourceFbosConfig}
+        timeSettings={props.timeSettings}
+        dispatch={props.dispatch}
+        device={props.device} />
     </Row>
   </Highlight>;
 }

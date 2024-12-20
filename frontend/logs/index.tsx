@@ -16,22 +16,22 @@ import { SearchField } from "../ui/search_field";
 import { forceOnline } from "../devices/must_be_online";
 import { demoAccountLog } from "../nav/ticker_list";
 import { Actions } from "../constants";
-import { push } from "../history";
+import { Navigate } from "react-router";
 import { Path } from "../internal_urls";
 import { mapStateToProps } from "./state_to_props";
 
-export class RawLogs extends React.Component<LogsPanelProps> {
-  render() {
-    this.props.dispatch({ type: Actions.OPEN_POPUP, payload: "jobs" });
-    this.props.dispatch({ type: Actions.SET_JOBS_PANEL_OPTION, payload: "logs" });
-    push(Path.plants());
-    return <Page className="logs-page">
-      <p>Logs have moved to the navigation bar.</p>
-    </Page>;
-  }
-}
+export const RawLogs = (props: LogsPanelProps) => {
+  props.dispatch({ type: Actions.OPEN_POPUP, payload: "jobs" });
+  props.dispatch({ type: Actions.SET_JOBS_PANEL_OPTION, payload: "logs" });
+  return <Page className="logs-page">
+    <Navigate to={Path.plants()} />
+    <p>Logs have moved to the navigation bar.</p>
+  </Page>;
+};
 
 export const Logs = connect(mapStateToProps)(RawLogs);
+// eslint-disable-next-line import/no-default-export
+export default Logs;
 
 export class LogsPanel extends React.Component<LogsProps, Partial<LogsState>> {
 
@@ -98,15 +98,15 @@ export class LogsPanel extends React.Component<LogsProps, Partial<LogsState>> {
 
   render() {
     const { dispatch, bot } = this.props;
-    return <div className={"logs-tab"}>
-      <div className={"search-row"}>
+    return <div className={"logs-tab grid"}>
+      <div className={"search-row row grid-exp-1"}>
         <SearchField nameKey={"logs"}
           placeholder={t("Search logs...")}
           searchTerm={this.state.searchTerm}
           onChange={searchTerm => this.setState({ searchTerm })} />
         <div className={"logs-settings-menu-button"}>
           <Popover position={Position.TOP_RIGHT}
-            target={<i className={"fa fa-gear fb-icon-button"} />}
+            target={<i className={"fa fa-gear fb-icon-button invert"} />}
             content={<LogsSettingsMenu
               markdown={this.state.markdown}
               toggleMarkdown={this.toggleMarkdown}

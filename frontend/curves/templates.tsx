@@ -2,7 +2,6 @@ import { t } from "i18next";
 import { Color, DropDownItem } from "../ui";
 import { Curve } from "farmbot/dist/resources/api_resources";
 import { TaggedCurve } from "farmbot";
-import { PanelColor } from "../farm_designer/panel_header";
 
 export enum CurveType {
   water = "water",
@@ -10,12 +9,11 @@ export enum CurveType {
   height = "height",
 }
 
-export const curvePanelColor = (curve: TaggedCurve | undefined) => {
-  switch (curve?.body.type) {
+export const curvePanelColor = (curve: TaggedCurve) => {
+  switch (curve.body.type) {
     case CurveType.water: return Color.curveBlue;
     case CurveType.spread: return Color.curveGreen;
     case CurveType.height: return Color.curvePurple;
-    default: return PanelColor.lightGray;
   }
 };
 

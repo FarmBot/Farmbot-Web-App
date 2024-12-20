@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { TaggedPointGroup } from "farmbot";
 import { MapTransformProps, BotSize } from "../../interfaces";
 import { Zones0D, Zones1D, Zones2D, getZoneType, ZoneType } from "./zones";

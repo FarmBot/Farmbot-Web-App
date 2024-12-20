@@ -74,7 +74,7 @@ const HorizontalGridlines = (props: PlotProps) =>
           x={-50} y={props.yZero - y}>
           {y}
         </text>
-        <line stroke="gray"
+        <line stroke="#777"
           x1={0} y1={props.yZero - y} x2={props.xMax} y2={props.yZero - y} />
       </g>;
     })}
@@ -114,12 +114,12 @@ const VerticalGridlines = (props: PlotProps) =>
             {createLabel("current")}
           </text>}
         {major && props.showPreviousPeriod &&
-          <text textAnchor="middle" stroke={"gray"}
+          <text textAnchor="middle" stroke={"#777"}
             x={x / props.timeScale}
             y={props.yZero + 200}>
             {createLabel("previous")}
           </text>}
-        <line stroke={major ? "black" : "gray"}
+        <line stroke={major ? "#ccc" : "#777"}
           x1={x / props.timeScale}
           y1={props.yZero}
           x2={x / props.timeScale}
@@ -145,7 +145,7 @@ const DataPoints = ({ plotProps, parentProps }: {
             - (unixMax - read_at.unix()) / plotProps.timeScale;
           const cy = plotProps.yZero - clamp(r.body.value
             * (r.body.mode == 0 && r.body.value <= 1 ? 1023 : 1), 0, 1023);
-          const color = period === "current" ? "black" : "gray";
+          const color = period === "current" ? "#ccc" : "#777";
           const selected = parentProps.hovered === r.uuid;
           return <g id={r.uuid} key={r.uuid}>
             <circle fill={color} stroke={color}

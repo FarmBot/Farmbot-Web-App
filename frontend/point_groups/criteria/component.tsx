@@ -44,7 +44,7 @@ export class GroupCriteria extends
   }
 
   AdvancedToggleMenu = () =>
-    <div className="criteria-options-menu">
+    <div className="row">
       <label>{t("advanced mode")}</label>
       <ToggleButton
         title={t("toggle advanced view")}
@@ -67,10 +67,12 @@ export class GroupCriteria extends
     };
     const pointTypes = validPointTypes(criteria.string_eq.pointer_type) || [];
     return <div className="group-criteria">
-      <label className="criteria-heading">{t("filters")}</label>
-      <Popover
-        target={<i className={"fa fa-gear dark fb-icon-button"} />}
-        content={<this.AdvancedToggleMenu />} />
+      <div className="row grid-exp-1">
+        <label className="criteria-heading">{t("filters")}</label>
+        <Popover
+          target={<i className={"fa fa-gear fb-icon-button invert"} />}
+          content={<this.AdvancedToggleMenu />} />
+      </div>
       {!this.state.advanced
         ? <div className={"basic"}>
           {pointTypes.length < 1 &&
@@ -84,19 +86,23 @@ export class GroupCriteria extends
           <LocationSelection {...commonProps} botSize={this.props.botSize}
             editGroupAreaInMap={this.props.editGroupAreaInMap} />
         </div>
-        : <div className={"advanced"}>
+        : <div className={"advanced grid"}>
           <DaySelection {...commonProps} {...dayProps} />
-          <label>{t("strings")}</label>
-          <Help text={t(ToolTips.DOT_NOTATION_TIP)} />
+          <div className="row grid-exp-2">
+            <label>{t("strings")}</label>
+            <Help text={t(ToolTips.DOT_NOTATION_TIP)} />
+          </div>
           <EqCriteriaSelection<string> {...commonProps}
             type={"string"} eqCriteria={criteria.string_eq}
             criteriaKey={"string_eq"} />
-          <label>{t("numbers")}</label>
-          <EqCriteriaSelection<number> {...commonProps}
-            type={"number"} eqCriteria={criteria.number_eq}
-            criteriaKey={"number_eq"} />
-          <NumberCriteriaSelection {...commonProps} criteriaKey={"number_lt"} />
-          <NumberCriteriaSelection {...commonProps} criteriaKey={"number_gt"} />
+          <div className="grid">
+            <label>{t("numbers")}</label>
+            <EqCriteriaSelection<number> {...commonProps}
+              type={"number"} eqCriteria={criteria.number_eq}
+              criteriaKey={"number_eq"} />
+            <NumberCriteriaSelection {...commonProps} criteriaKey={"number_lt"} />
+            <NumberCriteriaSelection {...commonProps} criteriaKey={"number_gt"} />
+          </div>
         </div>}
     </div>;
   }
@@ -231,7 +237,7 @@ export const MoreIndicatorIcon = (props: MoreIndicatorIconProps) =>
 /** Select pointer_type string equal criteria,
  *  which determines if any additional criteria is shown. */
 export const PointTypeSelection = (props: PointTypeSelectionProps) =>
-  <div className={"point-type-selection"}>
+  <div className={"row grid-2-col"}>
     <p className={"category"}>{t("Select all")}</p>
     <FBSelect
       key={JSON.stringify(props.group.body)}

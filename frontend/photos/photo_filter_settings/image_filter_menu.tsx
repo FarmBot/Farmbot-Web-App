@@ -188,16 +188,16 @@ export class ImageFilterMenu
           <tr>
             <th />
             <th>
-              <i className={"fa fa-step-backward fb-icon-button"}
+              <i className={"fa fa-step-backward fb-icon-button invert"}
                 onClick={this.oldest} />
               {beginDate &&
-                <i className={"fa fa-caret-left fb-icon-button"}
+                <i className={"fa fa-caret-left fb-icon-button invert"}
                   onClick={this.dateStep(-1)} />}
               <label>{t("Date")}</label>
               {beginDate &&
-                <i className={"fa fa-caret-right fb-icon-button"}
+                <i className={"fa fa-caret-right fb-icon-button invert"}
                   onClick={this.dateStep(1)} />}
-              <i className={"fa fa-step-forward fb-icon-button"}
+              <i className={"fa fa-step-forward fb-icon-button invert"}
                 onClick={this.newest} />
             </th>
             <th><label>{t("Time")}</label></th>

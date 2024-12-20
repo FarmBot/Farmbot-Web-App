@@ -1,7 +1,7 @@
 import { betterCompact } from "../util";
 import { PointGroup } from "farmbot/dist/resources/api_resources";
 import { init, save, overwrite } from "../api/crud";
-import { push } from "../history";
+import { NavigateFunction } from "react-router";
 import { GetState } from "../redux/interfaces";
 import { findPointGroup } from "../resources/selectors";
 import { t } from "../i18next_wrapper";
@@ -10,10 +10,11 @@ import { DEFAULT_CRITERIA, PointGroupCriteria } from "./criteria/interfaces";
 import { TaggedPointGroup } from "farmbot";
 import { Path } from "../internal_urls";
 
-interface CreateGroupProps {
+export interface CreateGroupProps {
   pointUuids?: UUID[];
   groupName?: string;
   criteria?: PointGroupCriteria;
+  navigate: NavigateFunction;
 }
 
 export const createGroup = (props: CreateGroupProps) =>
@@ -36,7 +37,7 @@ export const createGroup = (props: CreateGroupProps) =>
       .then(() => {
         const pg = findPointGroup(getState().resources.index, action.payload.uuid);
         const { id } = pg.body;
-        push(Path.groups(id));
+        props.navigate(Path.groups(id));
       });
   };
 

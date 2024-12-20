@@ -1,0 +1,417 @@
+@use "../variables" as *;
+@use "sass:color";
+
+.nav-wrapper {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 99;
+  height: 8.9rem;
+  background: linear-gradient(0deg, transparent, $translucent2 30%, $black);
+}
+
+nav {
+  margin-top: 3rem;
+  button {
+    margin: 1.8rem 1.8rem 0 0;
+    font-size: 1.3rem !important;
+  }
+}
+
+.nav-group {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 1rem;
+  .nav-left {
+    flex: 0;
+  }
+}
+
+.nav-coordinates {
+  font-style: italic;
+  img {
+    height: 1.5rem;
+    width: 1.5rem;
+    filter: brightness(0%) invert(100%);
+    opacity: 0.8;
+    margin-bottom: 0.1rem;
+  }
+}
+
+.links {
+  display: inline-block;
+  a {
+    text-transform: uppercase;
+    color: $gray;
+    .link-icon {
+      img {
+        filter: brightness(0%) invert(100%);
+        opacity: 0.8;
+      }
+      .saucer, .external-icon {
+        margin-left: -1rem !important;
+        width: 1.5rem;
+        height: 1.5rem;
+        p {
+          margin-top: 0;
+          font-size: 0.9rem;
+        }
+      }
+      .external-icon {
+        position: relative;
+        visibility: hidden;
+        background: $dark_gray;
+        width: 0.9rem;
+        height: 0.9rem;
+        border-radius: 2px;
+        i {
+          margin-top: -1px;
+          color: $medium_light_gray;
+        }
+        &:before {
+          z-index: 0;
+        }
+      }
+    }
+    .nav-link-text {
+      display: none;
+    }
+  }
+  .external-links {
+    display: none;
+  }
+  .nav-links {
+    display: inline-flex;
+    a {
+      display: inline-block;
+      position: relative;
+      height: 5rem;
+      font-size: 1.2rem;
+      white-space: nowrap;
+      padding: 1.5rem 0.5rem;
+      letter-spacing: 1.2px;
+      &:focus {
+        font-weight: bold;
+      }
+      &:hover {
+        font-weight: bold;
+        color: $white;
+        img {
+          opacity: 0.9;
+        }
+        .external-icon {
+          visibility: visible;
+        }
+      }
+      &.active {
+        font-weight: bold;
+        color: $white;
+        border-bottom: 3px solid $white;
+        img {
+          opacity: 1;
+        }
+      }
+      &.beacon {
+        &.active {
+          &:after {
+            background: none;
+          }
+        }
+      }
+      div .saucer, .external-icon {
+        display: inline-flex;
+        margin-left: 1rem;
+        text-align: center;
+        vertical-align: top;
+        margin-top: -0.2rem;
+        p {
+          width: 100%;
+          margin-left: 0.2rem;
+        }
+      }
+    }
+    div {
+      vertical-align: middle;
+      &:after{
+        content: attr(data-title);
+        display: block;
+        font-weight: bold;
+        height: 0;
+        overflow: hidden;
+        visibility: hidden;
+      }
+    }
+  }
+}
+
+.nav-right {
+  height: 5rem;
+  overflow: hidden;
+  .nav-coordinates,
+  .jobs-button,
+  .setup-button,
+  .connectivity-button,
+  .nav-name {
+    display: flex;
+    position: relative;
+    gap: 1rem;
+    align-items: center;
+    height: 2.9rem;
+    overflow: hidden;
+    border-radius: 5px;
+    margin-right: 0.75rem;
+    margin-left: 0.5rem;
+    padding-left: 0.8rem;
+    padding-right: 0.8rem;
+    font-weight: bold;
+    font-size: 1.1rem;
+    line-height: 3rem;
+    color: $light_gray;
+    background: $medium_gray;
+    user-select: none;
+    &.hover,
+    &:hover {
+      color: $white;
+      filter: brightness(1.05);
+      box-shadow: inset 0 -1px 0px 0px $translucent2, 0 0 5px $translucent15, inset 0 0 5px rgba(255, 255, 255, 0.3);
+      .jobs-button-progress-text,
+      .title,
+      p {
+        color: $white;
+      }
+    }
+  }
+  .nav-coordinates {
+    p {
+      display: inline;
+      color: $light_gray;
+    }
+    img,
+    p {
+      position: relative;
+      z-index: 1;
+    }
+    .movement-progress {
+      top: 0;
+      left: 0;
+      background: $placeholder_gray;
+      border-radius: 0;
+    }
+  }
+  .setup-button {
+    display: inline-block;
+    margin-top: 1.5rem;
+  }
+  .jobs-button {
+    position: relative;
+    .nav-job-info {
+      display: inline;
+    }
+    .fa-history,
+    .nav-job-info {
+      position: relative;
+      z-index: 1;
+      margin-right: 0;
+    }
+    .jobs-button-progress-text,
+    .title {
+      display: inline-block;
+      color: $light_gray;
+      font-weight: bold;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      vertical-align: middle;
+    }
+    .jobs-button-progress-text {
+      margin-left: 1.5rem;
+    }
+    .jobs-button-progress-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      background: $placeholder_gray;
+    }
+  }
+  .connectivity-button {
+    p {
+      display: inline;
+      color: $light_gray;
+      font-weight: bold;
+    }
+  }
+  .connection-status-popover {
+    display: inline;
+  }
+  a {
+    font-weight: normal;
+    color: $black;
+    cursor: pointer;
+    &:hover {
+      font-weight: bold;
+    }
+    i {
+      margin-right: 0.8rem;
+    }
+  }
+  .nav-name {
+    margin-top: -0.75rem;
+  }
+}
+
+.nav-popup-button-wrapper {
+  display: inline;
+  span:first-of-type {
+    margin-top: 0.75rem;
+  }
+}
+
+.menu-popover {
+  display: inline;
+  .bp5-popover-wrapper {
+    margin-left: 1.25rem;
+  }
+  .bp5-popover-content {
+    position: relative;
+    width: 22rem;
+    background: var(--main-bg);
+    backdrop-filter: blur(10px);
+    padding: 0;
+    font-size: 1.2rem;
+    letter-spacing: 1.2px;
+    color: var(--text-color);
+    i {
+      margin-right: 0.8rem;
+    }
+    a:not(.app-version) {
+      display: inline-block;
+      width: 100%;
+      text-transform: uppercase;
+      padding: 0.5rem 1rem;
+    }
+    img {
+      margin-right: 0.8rem;
+    }
+    .app-version {
+      padding: 0.5rem 1rem 0;
+      margin-top: 0.5rem;
+      border-top: 1px solid var(--border-color);
+      label {
+        font-weight: normal;
+      }
+      a {
+        text-align: right;
+        border-radius: 0.5rem;
+      }
+    }
+    .dark-mode-toggle {
+      padding: 0.5rem 1rem;
+      line-height: 1.8rem;
+      label {
+        font-weight: normal;
+      }
+      .fb-button {
+        margin: 0;
+      }
+    }
+  }
+  .bp5-popover-arrow {
+    visibility: hidden;
+  }
+  .fa-user {
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0.75rem;
+    margin-top: -0.75rem;
+    border-radius: 5px;
+    &:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+  }
+}
+
+body:has(.app.dark) {
+  .menu-popover {
+    .bp5-popover-content {
+      img {
+        filter: invert(0.75);
+      }
+    }
+  }
+}
+
+.mobile-menu {
+  padding: 0;
+  .links {
+    width: 100%;
+    height: calc(100vh);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 3rem;
+    &::-webkit-scrollbar {
+      display: none !important;
+      width: 0px !important;
+      background-color: transparent !important;
+    }
+  }
+  .nav-links {
+    display: block;
+    a {
+      display: block;
+      padding-left: 1rem;
+      &:before {
+        content: unset;
+      }
+      &:after {
+        content: unset;
+      }
+      div .saucer, .external-icon {
+        display: inline-flex;
+        margin-left: 1rem;
+      }
+      div .external-icon {
+        vertical-align: unset;
+      }
+      .link-icon {
+        display: inline-block;
+        .saucer, .external-icon {
+          display: none;
+        }
+      }
+    }
+    .nav-link-text {
+      display: inline-block;
+      margin-left: 1rem;
+      margin-top: 0.4rem;
+    }
+  }
+}
+
+.nav-additional-menu {
+  padding: 0.5rem 0;
+  a:hover {
+    background: var(--secondary-bg);
+  }
+}
+
+.read-only-icon {
+  margin: 9px 0px 0px 9px;
+  float: right;
+  box-sizing: inherit;
+  .fa-pencil {
+    color: $white;
+  }
+}
+
+@media screen and (max-width: 1075px) {
+  .top-menu-container .nav-links {
+    display: none !important;
+  }
+}
+
+@media screen and (min-width: 1075px) {
+  .mobile-menu-icon {
+    display: none !important;
+  }
+}

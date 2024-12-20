@@ -3,7 +3,6 @@ export * from "./blurable_input";
 export * from "./checkbox";
 export * from "./color_picker";
 export * from "./colors";
-export * from "./column";
 // export * from "./delete_button";
 export * from "./doc_link";
 export * from "./empty_state_wrapper";

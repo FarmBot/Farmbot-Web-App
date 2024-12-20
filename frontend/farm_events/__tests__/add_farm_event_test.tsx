@@ -3,6 +3,26 @@ jest.mock("../../api/crud", () => ({
   init: jest.fn(() => ({ payload: { uuid: "fakeUuid" } })),
 }));
 
+jest.mock("../edit_fe_form", () => ({
+  EditFEForm: () => <div>EditFEForm</div>,
+  FarmEventForm: () => <div />,
+  FarmEventViewModel: {},
+  NEVER: "never",
+}));
+
+const mockSave = jest.fn();
+interface MockRefCurrent {
+  commitViewModel(): void;
+}
+interface MockRef {
+  current: MockRefCurrent | undefined;
+}
+const mockRef: MockRef = { current: { commitViewModel: mockSave } };
+jest.mock("react", () => ({
+  ...jest.requireActual("react"),
+  createRef: () => mockRef,
+}));
+
 jest.mock("../../resources/actions", () => ({ destroyOK: jest.fn() }));
 
 import React from "react";
@@ -23,7 +43,7 @@ import { init, destroy } from "../../api/crud";
 import { DesignerPanelHeader } from "../../farm_designer/designer_panel";
 import { Content } from "../../constants";
 import { error } from "../../toast/toast";
-import { FarmEventForm } from "../edit_fe_form";
+import { SaveBtn } from "../../ui";
 
 describe("<AddFarmEvent />", () => {
   function fakeProps(): AddEditFarmEventProps {
@@ -41,7 +61,7 @@ describe("<AddFarmEvent />", () => {
       repeatOptions: [],
       handleTime: jest.fn(),
       farmEvents: [farmEvent],
-      getFarmEvent: () => farmEvent,
+      getFarmEvent: _ => farmEvent,
       findFarmEventByUuid: () => farmEvent,
       findExecutable: () => sequence,
       timeSettings: fakeTimeSettings(),
@@ -52,19 +72,8 @@ describe("<AddFarmEvent />", () => {
   it("renders", () => {
     const wrapper = mount(<AddFarmEvent {...fakeProps()} />);
     wrapper.setState({ uuid: "FarmEvent" });
-    ["Add Event", "Sequence or Regimen", "fake", "Save"].map(string =>
+    ["Add Event", "Save"].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));
-    const deleteBtn = wrapper.find(".fa-trash").first();
-    expect(deleteBtn.props().hidden).toBeTruthy();
-  });
-
-  it("renders with no executables", () => {
-    const p = fakeProps();
-    p.findFarmEventByUuid = jest.fn();
-    p.sequencesById = {};
-    p.regimensById = {};
-    const wrapper = mount(<AddFarmEvent {...p} />);
-    expect(wrapper.html()).toContain("fa-exclamation-triangle");
   });
 
   it("changes temporary values", () => {
@@ -171,7 +180,8 @@ describe("<AddFarmEvent />", () => {
     p.sequencesById = {};
     p.regimensById = {};
     const wrapper = shallow(<AddFarmEvent {...p} />);
-    wrapper.find(FarmEventForm).simulate("save");
+    wrapper.find(SaveBtn).simulate("click");
+    expect(mockSave).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith(Content.MISSING_EXECUTABLE);
   });
 
@@ -180,7 +190,29 @@ describe("<AddFarmEvent />", () => {
     p.executableOptions = [{ label: "", value: "1" }];
     p.findFarmEventByUuid = jest.fn();
     const wrapper = shallow(<AddFarmEvent {...p} />);
-    wrapper.find(FarmEventForm).simulate("save");
+    wrapper.find(SaveBtn).simulate("click");
+    expect(mockSave).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith("Please select a sequence or regimen.");
+  });
+
+  it("saves", () => {
+    const p = fakeProps();
+    const farmEvent = fakeFarmEvent("Sequence", 1);
+    p.findFarmEventByUuid = () => farmEvent;
+    const wrapper = mount(<AddFarmEvent {...p} />);
+    wrapper.find(".save-btn").simulate("click");
+    expect(mockSave).toHaveBeenCalled();
+    expect(error).not.toHaveBeenCalled();
+  });
+
+  it("handles missing ref", () => {
+    mockRef.current = undefined;
+    const p = fakeProps();
+    const farmEvent = fakeFarmEvent("Sequence", 1);
+    p.findFarmEventByUuid = () => farmEvent;
+    const wrapper = mount(<AddFarmEvent {...p} />);
+    wrapper.find(".save-btn").simulate("click");
+    expect(mockSave).not.toHaveBeenCalled();
+    expect(error).not.toHaveBeenCalled();
   });
 });

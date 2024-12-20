@@ -59,7 +59,7 @@ describe("<FbosMetricHistoryTable />", () => {
     expect(wrapper.instance().state.hoveredMetric).toEqual("wifi_level_percent");
     wrapper.update();
     const backgroundAfter = wrapper.find("th").last().props().style?.background;
-    expect(backgroundAfter).toEqual("#eee");
+    expect(backgroundAfter).toEqual("rgba(255,255,255,0.2)");
   });
 
   it("sets time hover state", () => {
@@ -73,6 +73,6 @@ describe("<FbosMetricHistoryTable />", () => {
     expect(wrapper.instance().state.hoveredTime).toEqual(2);
     wrapper.update();
     const backgroundAfter = wrapper.find("td").first().props().style?.background;
-    expect(backgroundAfter).toEqual("#eee");
+    expect(backgroundAfter).toEqual("rgba(255,255,255,0.2)");
   });
 });

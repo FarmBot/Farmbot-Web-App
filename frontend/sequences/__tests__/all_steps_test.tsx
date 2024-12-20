@@ -22,7 +22,7 @@ describe("<AllSteps />", () => {
     const p = fakeProps();
     p.sequence.body.body = undefined;
     const wrapper = shallow(<AllSteps {...p} />);
-    expect(wrapper.html()).toEqual("<div class=\"all-steps\"></div>");
+    expect(wrapper.html()).toEqual("<div class=\"grid\"></div>");
   });
 
   it("renders steps", () => {

@@ -1,5 +1,4 @@
-import React from "react";
-import { act } from "react-dom/test-utils";
+import React, { act } from "react";
 import { svgMount } from "../../../../../__test_support__/svg_mount";
 import { awayFromHome, LogsLayer, positionDifferent } from "../logs_layer";
 import { LogsLayerProps } from "../interfaces";

@@ -1,7 +1,7 @@
 import React from "react";
 import { StepParams, MoveAbsState } from "../interfaces";
 import { MoveAbsolute, Vector3, ParameterApplication, Xyz } from "farmbot";
-import { Row, Col, BlurableInput } from "../../ui";
+import { Row, BlurableInput } from "../../ui";
 import { defensiveClone, betterMerge } from "../../util";
 import { overwrite } from "../../api/crud";
 import { ToolTips } from "../../constants";
@@ -108,7 +108,7 @@ export class TileMoveAbsolute
       variableType={VariableType.Location} />;
 
   SpeedInput = () =>
-    <Col xs={3}>
+    <div>
       <label>
         {t("Speed (%)")}
       </label>
@@ -118,10 +118,10 @@ export class TileMoveAbsolute
         index={this.props.index}
         dispatch={this.props.dispatch}
         sequence={this.props.currentSequence} />
-    </Col>;
+    </div>;
 
   OffsetInput = (axis: Xyz) =>
-    <Col xs={3} key={axis}>
+    <div key={axis}>
       <label>
         {t("{{axis}}-Offset", { axis })}
       </label>
@@ -130,10 +130,10 @@ export class TileMoveAbsolute
         onCommit={this.updateInputValue(axis, "offset")}
         name={`offset-${axis}`}
         value={(this.args.offset.args[axis] || 0).toString()} />
-    </Col>;
+    </div>;
 
   OptionsForm = () =>
-    <Row>
+    <Row className="grid-4-col">
       {["x", "y", "z"].map(this.OffsetInput)}
       <this.SpeedInput />
     </Row>;

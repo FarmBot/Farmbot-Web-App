@@ -1,6 +1,6 @@
 import React from "react";
 import { AxisInputBox } from "./axis_input_box";
-import { Row, Col } from "../ui";
+import { Row } from "../ui";
 import { AxisInputBoxGroupProps, AxisInputBoxGroupState } from "./interfaces";
 import { isNumber } from "lodash";
 import { Vector3 } from "farmbot";
@@ -44,7 +44,7 @@ export class AxisInputBoxGroup extends
   render() {
     const { x, y, z } = this.state;
 
-    return <Row>
+    return <Row className="grid-4-col">
       <AxisInputBox
         onChange={this.change}
         axis={"x"}
@@ -57,18 +57,16 @@ export class AxisInputBoxGroup extends
         onChange={this.change}
         axis={"z"}
         value={z} />
-      <Col xs={3}>
-        <button
-          onClick={this.clicked}
-          disabled={this.props.disabled || false}
-          title={t("Move to chosen location")}
-          className={[
-            "full-width green go fb-button",
-            lockedClass(this.props.locked),
-          ].join(" ")}>
-          {t("GO")}
-        </button>
-      </Col>
+      <button
+        onClick={this.clicked}
+        disabled={this.props.disabled || false}
+        title={t("Move to chosen location")}
+        className={[
+          "full-width green go fb-button",
+          lockedClass(this.props.locked),
+        ].join(" ")}>
+        {t("GO")}
+      </button>
     </Row>;
   }
 }

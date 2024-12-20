@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { CurvesPanelState, Everything } from "../interfaces";
-import { DesignerNavTabs, Panel } from "../farm_designer/panel_header";
+import { Panel } from "../farm_designer/panel_header";
 import {
   EmptyStateWrapper, EmptyStateGraphic,
 } from "../ui/empty_state_wrapper";
@@ -11,7 +11,6 @@ import {
 } from "../farm_designer/designer_panel";
 import { t } from "../i18next_wrapper";
 import { selectAllCurves } from "../resources/selectors";
-import { push } from "../history";
 import { init, save } from "../api/crud";
 import { SearchField } from "../ui/search_field";
 import { Path } from "../internal_urls";
@@ -25,6 +24,7 @@ import {
 } from "./templates";
 import { Curve } from "farmbot/dist/resources/api_resources";
 import { CurveIcon } from "./chart";
+import { NavigationContext } from "../routes_helpers";
 
 export const mapStateToProps = (props: Everything): CurvesProps => ({
   dispatch: props.dispatch,
@@ -46,7 +46,13 @@ export class RawCurves extends React.Component<CurvesProps, CurvesState> {
       type: Actions.TOGGLE_CURVES_PANEL_OPTION, payload: section,
     });
 
-  navigate = (id: number) => push(Path.curves(id));
+  static contextType = NavigationContext;
+  context!: React.ContextType<typeof NavigationContext>;
+  navigate = this.context;
+
+  navigateById = (id: number) => {
+    this.navigate(Path.curves(id));
+  };
 
   addNew = (type: Curve["type"]) => () => {
     let num = 1;
@@ -68,7 +74,7 @@ export class RawCurves extends React.Component<CurvesProps, CurvesState> {
       .then(() => {
         const id = this.props.curves.filter(curve =>
           curve.uuid == action.payload.uuid)[0]?.body.id;
-        id && this.navigate(id);
+        id && this.navigateById(id);
       })
       .catch(() => { });
   };
@@ -77,7 +83,7 @@ export class RawCurves extends React.Component<CurvesProps, CurvesState> {
     <CurveInventoryItem
       key={curve.uuid}
       curve={curve}
-      onClick={() => this.navigate(curve.body.id || 0)} />;
+      onClick={() => this.navigateById(curve.body.id || 0)} />;
 
   render() {
     const { curves } = this.props;
@@ -91,7 +97,6 @@ export class RawCurves extends React.Component<CurvesProps, CurvesState> {
     const heightCurves = filteredCurves
       .filter(curve => curve.body.type == CurveType.height);
     return <DesignerPanel panelName={"curves-inventory"} panel={Panel.Curves}>
-      <DesignerNavTabs />
       <DesignerPanelTop panel={Panel.Curves}>
         <SearchField nameKey={"curves"}
           searchTerm={this.state.searchTerm}
@@ -147,6 +152,8 @@ export class RawCurves extends React.Component<CurvesProps, CurvesState> {
 }
 
 export const Curves = connect(mapStateToProps)(RawCurves);
+// eslint-disable-next-line import/no-default-export
+export default Curves;
 
 const CurveInventoryItem = (props: CurveInventoryItemProps) => {
   return <div

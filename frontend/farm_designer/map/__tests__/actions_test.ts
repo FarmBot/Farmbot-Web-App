@@ -1,10 +1,3 @@
-import { FilePath, Path } from "../../../internal_urls";
-let mockPath = Path.mock(Path.plants());
-jest.mock("../../../history", () => ({
-  getPathArray: jest.fn(() => mockPath.split("/")),
-  push: jest.fn(),
-}));
-
 jest.mock("../../../api/crud", () => ({ edit: jest.fn() }));
 
 jest.mock("../../../point_groups/actions", () => ({
@@ -29,7 +22,6 @@ import { MovePointToProps, MovePointsProps } from "../../interfaces";
 import { edit } from "../../../api/crud";
 import { Actions } from "../../../constants";
 import { svgToUrl } from "../../../open_farm/icons";
-import { push } from "../../../history";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { GetState } from "../../../redux/interfaces";
 import {
@@ -37,6 +29,7 @@ import {
 } from "../../../__test_support__/resource_index_builder";
 import { overwriteGroup } from "../../../point_groups/actions";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
+import { FilePath, Path } from "../../../internal_urls";
 
 describe("movePoints", () => {
   it.each<[string, Record<"x" | "y", number>, Record<"x" | "y", number>]>([
@@ -85,28 +78,31 @@ describe("movePointTo", () => {
 
 describe("closePlantInfo()", () => {
   it("no plant info open", () => {
-    mockPath = Path.mock(Path.plants());
+    location.pathname = Path.mock(Path.plants());
+    const navigate = jest.fn();
     const dispatch = jest.fn();
-    closePlantInfo(dispatch)();
-    expect(push).not.toHaveBeenCalled();
+    closePlantInfo(navigate, dispatch)();
+    expect(navigate).not.toHaveBeenCalled();
     expect(dispatch).not.toHaveBeenCalled();
   });
 
   it("plant edit open", () => {
-    mockPath = Path.mock(Path.plants(1));
+    location.pathname = Path.mock(Path.plants(1));
+    const navigate = jest.fn();
     const dispatch = jest.fn();
-    closePlantInfo(dispatch)();
-    expect(push).toHaveBeenCalledWith(Path.plants());
+    closePlantInfo(navigate, dispatch)();
+    expect(navigate).toHaveBeenCalledWith(Path.plants());
     expect(dispatch).toHaveBeenCalledWith({
       payload: undefined, type: Actions.SELECT_POINT
     });
   });
 
   it("plant info open", () => {
-    mockPath = Path.mock(Path.plants(1));
+    location.pathname = Path.mock(Path.plants(1));
+    const navigate = jest.fn();
     const dispatch = jest.fn();
-    closePlantInfo(dispatch)();
-    expect(push).toHaveBeenCalledWith(Path.plants());
+    closePlantInfo(navigate, dispatch)();
+    expect(navigate).toHaveBeenCalledWith(Path.plants());
     expect(dispatch).toHaveBeenCalledWith({
       payload: undefined, type: Actions.SELECT_POINT
     });
@@ -145,7 +141,7 @@ describe("clickMapPlant", () => {
   });
 
   it("adds a point to current group if group editor is active", () => {
-    mockPath = Path.mock(Path.groups(1));
+    location.pathname = Path.mock(Path.groups(1));
     mockGroup.body.point_ids = [1];
     const state = fakeState();
     const plant = fakePlant();
@@ -162,7 +158,7 @@ describe("clickMapPlant", () => {
   });
 
   it("doesn't add a point to current group", () => {
-    mockPath = Path.mock(Path.groups(1));
+    location.pathname = Path.mock(Path.groups(1));
     mockGroup.body.point_ids = [1];
     const state = fakeState();
     state.resources = buildResourceIndex([]);
@@ -174,7 +170,7 @@ describe("clickMapPlant", () => {
   });
 
   it("removes a point from the current group if group editor is active", () => {
-    mockPath = Path.mock(Path.groups(1));
+    location.pathname = Path.mock(Path.groups(1));
     mockGroup.body.point_ids = [1, 2];
     const state = fakeState();
     const plant = fakePlant();
@@ -191,7 +187,7 @@ describe("clickMapPlant", () => {
   });
 
   it("adds a plant to the current selection if plant select is active", () => {
-    mockPath = Path.mock(Path.plants("select"));
+    location.pathname = Path.mock(Path.plants("select"));
     const state = fakeState();
     const plant = fakePlant();
     plant.uuid = "Point.fakePlantUuid";
@@ -206,7 +202,7 @@ describe("clickMapPlant", () => {
   });
 
   it("removes a plant to the current selection if plant select is active", () => {
-    mockPath = Path.mock(Path.plants("select"));
+    location.pathname = Path.mock(Path.plants("select"));
     const state = fakeState();
     const plant = fakePlant();
     plant.uuid = "Point.fakePlantUuid";
@@ -224,26 +220,43 @@ describe("clickMapPlant", () => {
 
 describe("mapPointClickAction()", () => {
   it("navigates", () => {
-    mockPath = Path.mock(Path.plants());
+    location.pathname = Path.mock(Path.plants());
+    const navigate = jest.fn();
     const dispatch = jest.fn();
-    mapPointClickAction(dispatch, "uuid", "fake path")();
-    expect(push).toHaveBeenCalledWith("fake path");
-    expect(dispatch).not.toHaveBeenCalled();
+    const outerDispatch = mockDispatch(dispatch, fakeState);
+    mapPointClickAction(navigate, outerDispatch, "uuid", "fake path")();
+    expect(navigate).toHaveBeenCalledWith("fake path");
+    expect(dispatch).toHaveBeenCalledTimes(1);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_PANEL_OPEN,
+      payload: true,
+    });
   });
 
   it("doesn't navigate: box select", () => {
-    mockPath = Path.mock(Path.plants("select"));
+    location.pathname = Path.mock(Path.plants("select"));
+    const navigate = jest.fn();
     const dispatch = jest.fn();
-    mapPointClickAction(dispatch, "uuid", "fake path")();
-    expect(push).not.toHaveBeenCalled();
-    expect(dispatch).toHaveBeenCalled();
+    const outerDispatch = mockDispatch(dispatch, fakeState);
+    mapPointClickAction(navigate, outerDispatch, "uuid", "fake path")();
+    expect(navigate).not.toHaveBeenCalled();
+    expect(dispatch).toHaveBeenCalledTimes(1);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SELECT_POINT,
+      payload: ["uuid"],
+    });
   });
 
   it("doesn't navigate: group edit", () => {
-    mockPath = Path.mock(Path.groups(1));
+    location.pathname = Path.mock(Path.groups(1));
+    const navigate = jest.fn();
     const dispatch = jest.fn();
-    mapPointClickAction(dispatch, "uuid", "fake path")();
-    expect(push).not.toHaveBeenCalled();
-    expect(dispatch).toHaveBeenCalled();
+    const outerDispatch = mockDispatch(dispatch, fakeState);
+    mapPointClickAction(navigate, outerDispatch, "uuid", "fake path")();
+    expect(navigate).not.toHaveBeenCalled();
+    expect(dispatch).toHaveBeenCalledTimes(1);
+    expect(dispatch).not.toHaveBeenCalledWith(expect.objectContaining({
+      type: expect.any(String),
+    }));
   });
 });

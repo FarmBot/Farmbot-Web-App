@@ -6,21 +6,20 @@ import { ExternalUrl } from "../external_urls";
 import {
   DesignerPanel, DesignerPanelContent,
 } from "../farm_designer/designer_panel";
-import { Panel, DesignerNavTabs } from "../farm_designer/panel_header";
-import { push } from "../history";
+import { Panel } from "../farm_designer/panel_header";
+import { useNavigate } from "react-router";
 import { t } from "../i18next_wrapper";
 import { Path } from "../internal_urls";
 import { store } from "../redux/store";
 import { maybeGetDevice } from "../resources/selectors";
 import { DevSettings } from "../settings/dev/dev_support";
 import { success } from "../toast/toast";
-import { Col, Help, Row } from "../ui";
+import { Help, Row } from "../ui";
 import { WizardStepSlug } from "../wizard/data";
 import { HelpHeader } from "./header";
 
 export const SupportPanel = () =>
   <DesignerPanel panelName={"support"} panel={Panel.Help}>
-    <DesignerNavTabs />
     <HelpHeader />
     <DesignerPanelContent panelName={"support"}>
       {DevSettings.futureFeaturesEnabled() &&
@@ -34,28 +33,22 @@ export const SupportPanel = () =>
               {t("Learn more")}
             </a>
           </p>
-          <Row>
-            <Col xs={4}>
-              <a className={"button"}
-                href={"mailto:support@farm.bot"}>
-                <b>{t("email")}</b>
-                <i>{t("24 hour response time")}</i>
-              </a>
-            </Col>
-            <Col xs={4}>
-              <a className={"button"}
-                href={""}>
-                <b>{t("live chat")}</b>
-                <i>{t("M-F 9-5 PST")}</i>
-              </a>
-            </Col>
-            <Col xs={4}>
-              <a className={"button"}
-                href={""}>
-                <b>{t("phone")}</b>
-                <i>{t("M-F 9-5 PST")}</i>
-              </a>
-            </Col>
+          <Row className="grid-3-col">
+            <a className={"button"}
+              href={"mailto:support@farm.bot"}>
+              <b>{t("email")}</b>
+              <i>{t("24 hour response time")}</i>
+            </a>
+            <a className={"button"}
+              href={""}>
+              <b>{t("live chat")}</b>
+              <i>{t("M-F 9-5 PST")}</i>
+            </a>
+            <a className={"button"}
+              href={""}>
+              <b>{t("phone")}</b>
+              <i>{t("M-F 9-5 PST")}</i>
+            </a>
           </Row>
         </div>}
       <div className={"standard-support"}>
@@ -67,14 +60,12 @@ export const SupportPanel = () =>
             {t("Learn more")}
           </a>
         </p>
-        <Row>
-          <Col xs={4}>
-            <a className={"button"}
-              href={"mailto:support@farm.bot"}>
-              <b>{t("email")}</b>
-              <i>{t("72 hour response time")}</i>
-            </a>
-          </Col>
+        <Row className="grid-3-col">
+          <a className={"button"}
+            href={"mailto:support@farm.bot"}>
+            <b>{t("email")}</b>
+            <i>{t("72 hour response time")}</i>
+          </a>
         </Row>
       </div>
       <div className={"community-support"}>
@@ -104,6 +95,7 @@ export const Feedback = (props: FeedbackProps) => {
   const [sent, setSent] = React.useState(false);
   const orderNumber =
     maybeGetDevice(store.getState().resources.index)?.body.fb_order_number;
+  const navigate = useNavigate();
   return <div className={"feedback"}>
     <textarea value={message} onChange={e => {
       setSent(false);
@@ -125,9 +117,12 @@ export const Feedback = (props: FeedbackProps) => {
     </button>
     {!orderNumber && <Help text={Content.MUST_REGISTER} links={[
       <a key={0}
-        onClick={() => push(Path.settings("order_number"))}>
+        onClick={() => { navigate(Path.settings("order_number")); }}>
         &nbsp;{t("Register your ORDER NUMBER")}
         <i className={"fa fa-external-link"} />
       </a>]} />}
   </div>;
 };
+
+// eslint-disable-next-line import/no-default-export
+export default SupportPanel;

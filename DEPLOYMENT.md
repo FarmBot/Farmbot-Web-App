@@ -24,7 +24,7 @@ If you want to run a server on a LAN for personal use, this is the easiest and c
 
 **Affordability:** :broken_heart:
 
- 1. Deploy as you would normally [deploy to Heroku](https://devcenter.heroku.com/articles/getting-started-with-rails4#deploy-your-application-to-heroku)
+ 1. Deploy as you would normally [deploy to Heroku](https://devcenter.heroku.com/articles/getting-started-with-rails6#deploy-the-app-to-heroku) (buildpacks: _heroku/nodejs_, _heroku/ruby_)
  2. Enable Dyno metadata: `heroku labs:enable runtime-dyno-metadata --app <app name>` (we need this to know the version number of the web app).
  3. (If emails are enabled) Enable the [Heroku scheduler](https://elements.heroku.com/addons/scheduler) and configure it to run `rake api:log_digest` every 10 minutes. This is required for Device log digests via email.
 

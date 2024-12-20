@@ -1,6 +1,5 @@
 import React from "react";
 import { WeedDetectorState, WeedDetectorProps } from "./interfaces";
-import { Row, Col } from "../../ui";
 import { scanImage, detectPlants } from "./actions";
 import { deletePoints } from "../../api/delete_points";
 import { Progress } from "../../util";
@@ -74,7 +73,14 @@ export class WeedDetector
     const botOnline = isBotOnline(syncStatus, botToMqttStatus);
     const camDisabled = cameraBtnProps(this.props.env, botOnline);
     return <div className="weed-detector">
-      <div className="farmware-button">
+      <div className="row grid-exp-1">
+        <div />
+        <button
+          title={t("clear weeds")}
+          onClick={this.clearWeeds}
+          className="fb-button red">
+          {this.state.deletionProgress || t("CLEAR WEEDS")}
+        </button>
         <MustBeOnline
           syncStatus={this.props.syncStatus}
           networkState={this.props.botToMqttStatus}
@@ -87,73 +93,61 @@ export class WeedDetector
             {t("detect weeds")}
           </button>
         </MustBeOnline>
-        <button
-          title={t("clear weeds")}
-          onClick={this.clearWeeds}
-          className="fb-button red">
-          {this.state.deletionProgress || t("CLEAR WEEDS")}
-        </button>
       </div>
-      <Row>
-        <Col sm={12}>
-          <ImageWorkspace
-            sectionKey={"detection"}
-            dispatch={this.props.dispatch}
-            advancedSectionOpen={this.props.photosPanelState.detectionPP}
-            botOnline={
-              isBotOnline(this.props.syncStatus, this.props.botToMqttStatus)}
-            onProcessPhoto={scanImage(wDEnvGet("CAMERA_CALIBRATION_coord_scale"))}
-            currentImage={this.props.currentImage}
-            images={this.props.images}
-            onChange={this.change}
-            timeSettings={this.props.timeSettings}
-            showAdvanced={this.props.showAdvanced}
-            namespace={this.namespace}
-            iteration={wDEnvGet(this.namespace("iteration"))}
-            morph={wDEnvGet(this.namespace("morph"))}
-            blur={wDEnvGet(this.namespace("blur"))}
-            H_LO={wDEnvGet(this.namespace("H_LO"))}
-            H_HI={wDEnvGet(this.namespace("H_HI"))}
-            S_LO={wDEnvGet(this.namespace("S_LO"))}
-            S_HI={wDEnvGet(this.namespace("S_HI"))}
-            V_LO={wDEnvGet(this.namespace("V_LO"))}
-            V_HI={wDEnvGet(this.namespace("V_HI"))} />
-          <div className={"camera-calibration-config"}>
-            <div className={"camera-calibration-configs"}>
-              <BoolConfig {...this.commonProps}
-                settingName={DeviceSetting.saveDetectedPlants}
-                advanced={true}
-                showAdvanced={this.props.showAdvanced}
-                modified={this.anyAdvancedModified}
-                helpText={t(ToolTips.SAVE_DETECTED_PLANTS, {
-                  defaultSavePlants:
-                    this.getLabeledDefault("save_detected_plants")
-                })}
-                configKey={this.namespace("save_detected_plants")} />
-              <BoolConfig {...this.commonProps}
-                settingName={DeviceSetting.ignoreDetectionsOutOfBounds}
-                helpText={t(ToolTips.USE_BOUNDS, {
-                  defaultUseBounds: this.getLabeledDefault("use_bounds")
-                })}
-                configKey={this.namespace("use_bounds")} />
-              <NumberBoxConfig {...this.commonProps}
-                settingName={DeviceSetting.minimumWeedSize}
-                configKey={this.namespace("min_radius")}
-                scale={2}
-                helpText={t(ToolTips.MIN_RADIUS, {
-                  defaultMinDiameter: this.getDefault("min_radius") * 2
-                })} />
-              <NumberBoxConfig {...this.commonProps}
-                settingName={DeviceSetting.maximumWeedSize}
-                configKey={this.namespace("max_radius")}
-                scale={2}
-                helpText={t(ToolTips.MAX_RADIUS, {
-                  defaultMaxDiameter: this.getDefault("max_radius") * 2
-                })} />
-            </div>
-          </div>
-        </Col>
-      </Row>
+      <ImageWorkspace
+        sectionKey={"detection"}
+        dispatch={this.props.dispatch}
+        advancedSectionOpen={this.props.photosPanelState.detectionPP}
+        botOnline={
+          isBotOnline(this.props.syncStatus, this.props.botToMqttStatus)}
+        onProcessPhoto={scanImage(wDEnvGet("CAMERA_CALIBRATION_coord_scale"))}
+        currentImage={this.props.currentImage}
+        images={this.props.images}
+        onChange={this.change}
+        timeSettings={this.props.timeSettings}
+        showAdvanced={this.props.showAdvanced}
+        namespace={this.namespace}
+        iteration={wDEnvGet(this.namespace("iteration"))}
+        morph={wDEnvGet(this.namespace("morph"))}
+        blur={wDEnvGet(this.namespace("blur"))}
+        H_LO={wDEnvGet(this.namespace("H_LO"))}
+        H_HI={wDEnvGet(this.namespace("H_HI"))}
+        S_LO={wDEnvGet(this.namespace("S_LO"))}
+        S_HI={wDEnvGet(this.namespace("S_HI"))}
+        V_LO={wDEnvGet(this.namespace("V_LO"))}
+        V_HI={wDEnvGet(this.namespace("V_HI"))} />
+      <div className={"grid"}>
+        <BoolConfig {...this.commonProps}
+          settingName={DeviceSetting.saveDetectedPlants}
+          advanced={true}
+          showAdvanced={this.props.showAdvanced}
+          modified={this.anyAdvancedModified}
+          helpText={t(ToolTips.SAVE_DETECTED_PLANTS, {
+            defaultSavePlants:
+              this.getLabeledDefault("save_detected_plants")
+          })}
+          configKey={this.namespace("save_detected_plants")} />
+        <BoolConfig {...this.commonProps}
+          settingName={DeviceSetting.ignoreDetectionsOutOfBounds}
+          helpText={t(ToolTips.USE_BOUNDS, {
+            defaultUseBounds: this.getLabeledDefault("use_bounds")
+          })}
+          configKey={this.namespace("use_bounds")} />
+        <NumberBoxConfig {...this.commonProps}
+          settingName={DeviceSetting.minimumWeedSize}
+          configKey={this.namespace("min_radius")}
+          scale={2}
+          helpText={t(ToolTips.MIN_RADIUS, {
+            defaultMinDiameter: this.getDefault("min_radius") * 2
+          })} />
+        <NumberBoxConfig {...this.commonProps}
+          settingName={DeviceSetting.maximumWeedSize}
+          configKey={this.namespace("max_radius")}
+          scale={2}
+          helpText={t(ToolTips.MAX_RADIUS, {
+            defaultMaxDiameter: this.getDefault("max_radius") * 2
+          })} />
+      </div>
     </div>;
   }
 }

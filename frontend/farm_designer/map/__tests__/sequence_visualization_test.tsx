@@ -1,8 +1,3 @@
-let mockPath = "";
-jest.mock("../../../history", () => ({
-  getPathArray: jest.fn(() => mockPath.split("/")),
-}));
-
 import {
   fakeToolSlot, fakePoint,
 } from "../../../__test_support__/fake_state/resources";
@@ -155,7 +150,7 @@ describe("<SequenceVisualization />", () => {
 
 describe("hoverSequenceStep()", () => {
   it("sets hovered step", () => {
-    mockPath = Path.mock(Path.designerSequences("1"));
+    location.pathname = Path.mock(Path.designerSequences("1"));
     const dispatch = jest.fn();
     hoverSequenceStep("uuid")(dispatch)();
     expect(dispatch).toHaveBeenCalledWith({
@@ -165,7 +160,7 @@ describe("hoverSequenceStep()", () => {
   });
 
   it("doesn't set hovered step", () => {
-    mockPath = Path.mock(Path.sequencePage("1"));
+    location.pathname = Path.mock(Path.sequencePage("1"));
     const dispatch = jest.fn();
     hoverSequenceStep("uuid")(dispatch)();
     expect(dispatch).not.toHaveBeenCalled();

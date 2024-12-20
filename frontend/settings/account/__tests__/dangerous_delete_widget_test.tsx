@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { DangerousDeleteWidget } from "../dangerous_delete_widget";
 import { mount, shallow } from "enzyme";
 import { DangerousDeleteProps } from "../interfaces";

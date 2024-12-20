@@ -21,7 +21,6 @@ class DashboardController < ApplicationController
   CACHE_DIR = File.join(".cache")
 
   CSS_INPUTS = {
-    front_page: "/css/laptop_splash.scss",
     default: "/css/_index.scss",
     terminal: "/css/xterm.css",
   }.with_indifferent_access
@@ -35,7 +34,6 @@ class DashboardController < ApplicationController
     try_farmbot: "/try_farmbot/index.tsx",
     promo: "/promo/index.tsx",
     os_download: "/os_download/index.tsx",
-    featured: "/featured/index.tsx",
     terminal: "/terminal/index.tsx",
   }.with_indifferent_access
 

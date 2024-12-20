@@ -24,6 +24,18 @@ export const getColorFromBrightness = (value: number) => {
 };
 export const zDir = -1;
 
+export const zero = (config: Config): Record<"x" | "y" | "z", number> => ({
+  x: threeSpace(config.bedXOffset, config.bedLengthOuter),
+  y: threeSpace(config.bedYOffset, config.bedWidthOuter),
+  z: zZero(config),
+});
+
+export const extents = (config: Config): Record<"x" | "y" | "z", number> => ({
+  x: threeSpace(config.bedXOffset + config.botSizeX, config.bedLengthOuter),
+  y: threeSpace(config.bedYOffset + config.botSizeY, config.bedWidthOuter),
+  z: zZero(config) + zDir * config.botSizeZ,
+});
+
 interface Vector3Array extends Array<number> {
   0: number;
   1: number;

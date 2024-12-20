@@ -1,8 +1,8 @@
-import * as React from "react";
+import React from "react";
 import { DragHelpersProps } from "../interfaces";
 import { round, transformXY, getMapSize } from "../util";
 import { BotPosition } from "../../../devices/interfaces";
-import { Color } from "../../../ui/index";
+import { Color } from "../../../ui";
 import { isUndefined } from "lodash";
 
 enum Alignment {

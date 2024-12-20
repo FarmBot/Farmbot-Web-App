@@ -5,7 +5,6 @@ import {
 } from "../panel";
 import { clickButton } from "../../../__test_support__/helpers";
 import { fakeState } from "../../../__test_support__/fake_state";
-import { push } from "../../../history";
 
 describe("<ToursPanel />", () => {
   const fakeProps = (): ToursPanelProps => ({
@@ -15,7 +14,8 @@ describe("<ToursPanel />", () => {
   it("renders tours panel", () => {
     const wrapper = mount(<ToursPanel {...fakeProps()} />);
     clickButton(wrapper, 0, "start tour");
-    expect(push).toHaveBeenCalledWith("?tour=gettingStarted?tourStep=intro");
+    expect(mockNavigate).toHaveBeenCalledWith(
+      "?tour=gettingStarted?tourStep=intro");
   });
 });
 

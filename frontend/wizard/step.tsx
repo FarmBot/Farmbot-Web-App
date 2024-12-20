@@ -23,15 +23,15 @@ export const WizardStepHeader = (props: WizardStepHeaderProps) => {
   const normalStepColor = stepDone ? "green" : "gray";
   const stepColor = stepFail ? "red" : normalStepColor;
 
-  return <div className={`wizard-step-header ${stepOpen ? "open" : ""}`}
+  return <div className={`wizard-step-header row grid-exp-2 ${stepOpen ? "open" : ""}`}
     onClick={props.openStep(props.step.slug)}>
-    <h3>{t(props.step.title)}</h3>
     <Saucer color={stepColor}>
       <div className={"step-icon"}>
         {stepDone && <i className={"fa fa-check"} />}
         {stepFail && <i className={"fa fa-times"} />}
       </div>
     </Saucer>
+    <h3>{t(props.step.title)}</h3>
     {stepOpen && <div className={"wizard-step-info"}>
       {props.showProgress && <p>
         {t("Step {{ num }} of {{ total }}", {
@@ -64,77 +64,82 @@ export const WizardStepContainer = (props: WizardStepContainerProps) => {
       openStep={props.openStep}
       timeSettings={props.timeSettings} />
     <Collapse isOpen={props.stepOpen == step.slug}>
-      {step.prerequisites &&
-        some(step.prerequisites.map(pre => !pre.status())) &&
-        <div className={"prerequisites"}>
-          {step.prerequisites.map((prerequisite, index) =>
-            !prerequisite.status() && <prerequisite.indicator key={index} />)}
-        </div>}
-      <Markdown>{t(step.content)}</Markdown>
-      {step.warning &&
-        <div className={"warning-banner"}>
-          <p>{t(step.warning)}</p>
-        </div>}
-      {step.video && <Video url={step.video} />}
-      {step.images && <Image imageFilenames={step.images} />}
-      <div className={[
-        "wizard-components",
-        step.componentOptions?.border ?? true ? "" : "no-border",
-        step.componentOptions?.fullWidth ? "full-width" : "",
-        step.componentOptions?.background ?? true ? "" : "no-background",
-      ].join(" ")}>
-        {step.component &&
-          <step.component setStepSuccess={setSuccess}
+      <div className="grid wizard-step-content">
+        {step.prerequisites &&
+          some(step.prerequisites.map(pre => !pre.status())) &&
+          <div className={"prerequisites"}>
+            {step.prerequisites.map((prerequisite, index) =>
+              !prerequisite.status() && <prerequisite.indicator key={index} />)}
+          </div>}
+        <Markdown>{t(step.content)}</Markdown>
+        {step.warning &&
+          <div className={"warning-banner"}>
+            <p>{t(step.warning)}</p>
+          </div>}
+        {step.video && <Video url={step.video} />}
+        {step.images && <Image imageFilenames={step.images} />}
+        <div className={[
+          "wizard-components",
+          step.componentOptions?.border ?? true ? "" : "no-border",
+          step.componentOptions?.fullWidth ? "full-width" : "",
+          step.componentOptions?.background ?? true ? "" : "no-background",
+        ].join(" ")}>
+          {step.component &&
+            <step.component setStepSuccess={setSuccess}
+              bot={props.bot}
+              dispatch={props.dispatch}
+              navigate={props.navigate}
+              getConfigValue={props.getConfigValue}
+              resources={props.resources} />}
+          {step.controlsCheckOptions &&
+            <ControlsCheck
+              dispatch={props.dispatch}
+              controlsCheckOptions={step.controlsCheckOptions} />}
+          {step.pinBindingOptions &&
+            <PinBinding
+              getConfigValue={props.getConfigValue}
+              dispatch={props.dispatch}
+              pinBindingOptions={step.pinBindingOptions}
+              bot={props.bot}
+              resources={props.resources} />}
+        </div>
+        <div className={"wizard-step-q-and-a"}>
+          <Markdown className={"wizard-step-question"}>{t(step.question)}</Markdown>
+          {!requirementsMet &&
+            <p className={"prereq-not-met"}>
+              {t("Fix issues above to continue.")}
+            </p>}
+          <div className={"wizard-answer row"}>
+            <button className={"fb-button gray"}
+              disabled={!requirementsMet}
+              onClick={setSuccess(false)}>
+              {t("no")}
+            </button>
+            <button className={"fb-button green"}
+              disabled={!requirementsMet}
+              onClick={setSuccess(true)}>
+              {t("yes")}
+            </button>
+          </div>
+        </div>
+        {stepResult?.answer == false &&
+          <TroubleshootingTips
+            selectedOutcome={stepResult.outcome}
+            step={step}
+            openStep={props.openStep}
             bot={props.bot}
+            resources={props.resources}
             dispatch={props.dispatch}
             getConfigValue={props.getConfigValue}
-            resources={props.resources} />}
-        {step.controlsCheckOptions &&
-          <ControlsCheck
-            dispatch={props.dispatch}
-            controlsCheckOptions={step.controlsCheckOptions} />}
-        {step.pinBindingOptions &&
-          <PinBinding
-            getConfigValue={props.getConfigValue}
-            dispatch={props.dispatch}
-            pinBindingOptions={step.pinBindingOptions}
-            bot={props.bot}
-            resources={props.resources} />}
+            setSuccess={setSuccess} />}
       </div>
-      <Markdown className={"wizard-step-question"}>{t(step.question)}</Markdown>
-      {!requirementsMet &&
-        <p className={"prereq-not-met"}>
-          {t("Fix issues above to continue.")}
-        </p>}
-      <div className={"wizard-answer"}>
-        <button className={"fb-button gray"}
-          disabled={!requirementsMet}
-          onClick={setSuccess(false)}>
-          {t("no")}
-        </button>
-        <button className={"fb-button green"}
-          disabled={!requirementsMet}
-          onClick={setSuccess(true)}>
-          {t("yes")}
-        </button>
-      </div>
-      {stepResult?.answer == false &&
-        <TroubleshootingTips
-          selectedOutcome={stepResult.outcome}
-          step={step}
-          openStep={props.openStep}
-          bot={props.bot}
-          resources={props.resources}
-          dispatch={props.dispatch}
-          getConfigValue={props.getConfigValue}
-          setSuccess={setSuccess} />}
     </Collapse>
   </div>;
 };
 
 const TroubleshootingTips = (props: TroubleshootingTipsProps) => {
   const otherSelected = props.selectedOutcome == "other";
-  return <div className={"troubleshooting"}>
+  return <div className={"troubleshooting grid"}>
     {props.step.outcomes.map(
       // eslint-disable-next-line complexity
       outcome => {
@@ -144,7 +149,7 @@ const TroubleshootingTips = (props: TroubleshootingTipsProps) => {
         if (hidden) { return <div key={outcome.slug} />; }
         return <div key={outcome.slug}
           className={
-            `troubleshooting-tip ${selected ? "selected" : ""}`}
+            `troubleshooting-tip grid ${selected ? "selected" : ""}`}
           onClick={props.setSuccess(false, outcome.slug)}>
           <p>{t(outcome.description)}</p>
           {selected &&
@@ -183,7 +188,7 @@ const TroubleshootingTips = (props: TroubleshootingTipsProps) => {
               resources={props.resources} />}
         </div>;
       })}
-    <div className={`troubleshooting-tip ${otherSelected ? "selected" : ""}`}
+    <div className={`troubleshooting-tip grid half-gap ${otherSelected ? "selected" : ""}`}
       onClick={props.setSuccess(false, "other")}>
       <p>{t("Something else happened and I need additional help")}</p>
       {otherSelected && <p>

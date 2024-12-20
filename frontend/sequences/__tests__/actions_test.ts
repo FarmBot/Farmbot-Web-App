@@ -28,7 +28,6 @@ import {
 } from "../actions";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { init, edit, overwrite } from "../../api/crud";
-import { push } from "../../history";
 import { Actions } from "../../constants";
 import { setActiveSequenceByName } from "../set_active_sequence_by_name";
 import { TakePhoto, Wait } from "farmbot";
@@ -45,18 +44,21 @@ describe("copySequence()", () => {
     const sequence = fakeSequence();
     sequence.body.body = [{ kind: "wait", args: { milliseconds: 100 } }];
     const { body } = sequence.body;
-    copySequence(sequence)(jest.fn(), fakeState);
+    const navigate = jest.fn();
+    copySequence(navigate, sequence)(jest.fn(), fakeState);
     expect(init).toHaveBeenCalledWith("Sequence",
       expect.objectContaining({ name: "fake copy 1", body }));
   });
 
   it("updates current path", () => {
-    copySequence(fakeSequence())(jest.fn(), fakeState);
-    expect(push).toHaveBeenCalledWith(Path.sequences("fake_copy_2"));
+    const navigate = jest.fn();
+    copySequence(navigate, fakeSequence())(jest.fn(), fakeState);
+    expect(navigate).toHaveBeenCalledWith(Path.sequences("fake_copy_2"));
   });
 
   it("selects sequence", () => {
-    copySequence(fakeSequence())(jest.fn(), fakeState);
+    const navigate = jest.fn();
+    copySequence(navigate, fakeSequence())(jest.fn(), fakeState);
     expect(setActiveSequenceByName).toHaveBeenCalled();
   });
 
@@ -66,8 +68,9 @@ describe("copySequence()", () => {
     const device = fakeDevice();
     device.body.max_sequence_count = 1;
     state.resources = buildResourceIndex([sequence, device]);
-    copySequence(fakeSequence())(jest.fn(), () => state);
-    expect(push).not.toHaveBeenCalled();
+    const navigate = jest.fn();
+    copySequence(navigate, fakeSequence())(jest.fn(), () => state);
+    expect(navigate).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith(expect.stringContaining(
       "The maximum number of sequences allowed is 1."));
   });

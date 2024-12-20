@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import {
   PinBindingType,
   PinBindingSpecialAction,
@@ -43,17 +43,15 @@ export interface StockPinBindingsButtonProps {
 
 /** Add default pin bindings. */
 export const StockPinBindingsButton = (props: StockPinBindingsButtonProps) =>
-  <div className="stock-pin-bindings-button">
-    <button
-      className="fb-button green"
-      hidden={!hasButtons(props.firmwareHardware)}
-      title={t("add stock pin bindings")}
-      onClick={() => stockPinBindings.map(binding =>
-        props.dispatch(initSave("PinBinding", pinBindingBody(binding))))}>
-      <i className="fa fa-plus" />
-      {t("Stock Bindings")}
-    </button>
-  </div>;
+  <button
+    className="fb-button green stock-pin-bindings-button"
+    hidden={!hasButtons(props.firmwareHardware)}
+    title={t("add stock pin bindings")}
+    onClick={() => stockPinBindings.map(binding =>
+      props.dispatch(initSave("PinBinding", pinBindingBody(binding))))}>
+    <i className="fa fa-plus" />
+    {t("Stock Bindings")}
+  </button>;
 
 /** FarmBot OS built-in pin binding data used by Pin Bindings widget. */
 export const sysBtnBindingData: PinBindingListItems[] = [];

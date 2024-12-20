@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { timezoneMismatch } from "../devices/timezones/guess_timezone";
 import { Content } from "../constants";
 import { t } from "../i18next_wrapper";

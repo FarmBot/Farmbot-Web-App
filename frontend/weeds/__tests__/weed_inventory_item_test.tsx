@@ -1,10 +1,3 @@
-import { Path } from "../../internal_urls";
-let mockPath = Path.mock(Path.weeds());
-jest.mock("../../history", () => ({
-  push: jest.fn(),
-  getPathArray: () => mockPath.split("/"),
-}));
-
 jest.mock("../../farm_designer/map/actions", () => ({
   mapPointClickAction: jest.fn(() => jest.fn()),
   selectPoint: jest.fn(),
@@ -22,10 +15,10 @@ import {
   WeedInventoryItem, WeedInventoryItemProps,
 } from "../weed_inventory_item";
 import { fakeWeed } from "../../__test_support__/fake_state/resources";
-import { push } from "../../history";
 import { Actions } from "../../constants";
 import { mapPointClickAction } from "../../farm_designer/map/actions";
 import { edit, save, destroy } from "../../api/crud";
+import { Path } from "../../internal_urls";
 
 describe("<WeedInventoryItem /> />", () => {
   const fakeProps = (): WeedInventoryItemProps => ({
@@ -55,7 +48,7 @@ describe("<WeedInventoryItem /> />", () => {
     const wrapper = shallow(<WeedInventoryItem {...p} />);
     wrapper.simulate("click");
     expect(mapPointClickAction).not.toHaveBeenCalled();
-    expect(push).toHaveBeenCalledWith(Path.weeds(1));
+    expect(mockNavigate).toHaveBeenCalledWith(Path.weeds(1));
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_HOVERED_POINT,
       payload: p.tpp.uuid,
@@ -68,7 +61,7 @@ describe("<WeedInventoryItem /> />", () => {
     const wrapper = shallow(<WeedInventoryItem {...p} />);
     wrapper.simulate("click");
     expect(mapPointClickAction).not.toHaveBeenCalled();
-    expect(push).toHaveBeenCalledWith(Path.weeds("ERR_NO_POINT_ID"));
+    expect(mockNavigate).toHaveBeenCalledWith(Path.weeds("ERR_NO_POINT_ID"));
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_HOVERED_POINT,
       payload: p.tpp.uuid,
@@ -76,13 +69,15 @@ describe("<WeedInventoryItem /> />", () => {
   });
 
   it("removes item in box select mode", () => {
-    mockPath = Path.mock(Path.plants("select"));
+    location.pathname = Path.mock(Path.plants("select"));
     const p = fakeProps();
     const wrapper = shallow(<WeedInventoryItem {...p} />);
     wrapper.simulate("click");
-    expect(mapPointClickAction).toHaveBeenCalledWith(expect.any(Function),
+    expect(mapPointClickAction).toHaveBeenCalledWith(
+      expect.any(Function),
+      expect.any(Function),
       p.tpp.uuid);
-    expect(push).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_HOVERED_POINT,
       payload: undefined,

@@ -30,13 +30,6 @@ jest.mock("../../../folders/actions", () => ({
   updateSearchTerm: jest.fn(),
 }));
 
-import { Path } from "../../../internal_urls";
-let mockPath = "";
-jest.mock("../../../history", () => ({
-  push: jest.fn(),
-  getPathArray: jest.fn(() => mockPath.split("/")),
-}));
-
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
@@ -61,7 +54,8 @@ import { installSequence } from "../../actions";
 import { sequencesPanelState } from "../../../__test_support__/panel_state";
 import { Actions } from "../../../constants";
 import { emptyState } from "../../../resources/reducer";
-import { push } from "../../../history";
+import { Path } from "../../../internal_urls";
+import { mountWithContext } from "../../../__test_support__/mount_with_context";
 
 API.setBaseUrl("");
 
@@ -145,16 +139,16 @@ describe("<DesignerSequenceList />", () => {
   });
 
   it("navigates to sequence page", () => {
-    mockPath = Path.mock(Path.designerSequences());
-    const wrapper = mount(<DesignerSequenceList {...fakeProps()} />);
+    location.pathname = Path.mock(Path.designerSequences());
+    const wrapper = mountWithContext(<DesignerSequenceList {...fakeProps()} />);
     clickButton(wrapper, 0, "fullscreen");
-    expect(push).toHaveBeenCalledWith(Path.sequencePage());
+    expect(mockNavigate).toHaveBeenCalledWith(Path.sequencePage());
   });
 
   it("navigates to designer sequence page", () => {
-    mockPath = Path.mock(Path.sequencePage());
-    const wrapper = mount(<DesignerSequenceList {...fakeProps()} />);
+    location.pathname = Path.mock(Path.sequencePage());
+    const wrapper = mountWithContext(<DesignerSequenceList {...fakeProps()} />);
     clickButton(wrapper, 0, "collapse");
-    expect(push).toHaveBeenCalledWith(Path.designerSequences());
+    expect(mockNavigate).toHaveBeenCalledWith(Path.designerSequences());
   });
 });

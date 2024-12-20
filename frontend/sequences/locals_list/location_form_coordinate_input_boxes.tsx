@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col, BlurableInput } from "../../ui";
+import { Row, BlurableInput } from "../../ui";
 import { OnChange, VariableNode } from "../locals_list/locals_list_support";
 import { defensiveClone } from "../../util/util";
 import { Xyz, Vector3 } from "farmbot";
@@ -40,14 +40,13 @@ export const CoordinateInputBoxes = (props: CoordinateInputBoxesProps) => {
   const editableVariable = defensiveClone(variableNode);
   return (vector && visible)
     ? <Row className={"custom-coordinate-form"}>
-      {!props.hideWrapper && <Col xs={props.narrowLabel ? 5 : 6} />}
       {["x", "y", "z"].map((axis: Xyz) =>
-        <Col xs={props.hideWrapper ? 3 : 2} className={`${axis} no-pad`} key={axis}>
+        <div className={`${axis} no-pad`} key={axis}>
           <BlurableInput type="number"
             onCommit={manuallyEditAxis({ axis, onChange, editableVariable })}
             name={`location-${axis}`}
             value={"" + vector[axis]} />
-        </Col>)}
+        </div>)}
     </Row>
     : <div className={"no-location-coordinate-input-boxes"} />;
 };

@@ -10,7 +10,7 @@ import {
 } from "farmbot/dist/resources/configs/web_app";
 import { BooleanSetting, NumericSetting } from "../session_keys";
 import { Setting } from "./farm_designer_settings";
-import { Row, Col, ToggleButton } from "../ui";
+import { Row, ToggleButton } from "../ui";
 import {
   setWebAppConfigValue, GetWebAppConfigValue,
 } from "../config_storage/actions";
@@ -47,20 +47,13 @@ export interface LogLevelSettingProps {
 export const LogLevelSetting = (props: LogLevelSettingProps) => {
   const value = !!props.getConfigValue(props.setting);
   return <Highlight settingName={props.title}>
-    <Row>
-      <Col xs={9}>
-        <label>{t(props.title)}</label>
-      </Col>
-      <Col xs={3}>
-        <ToggleButton
-          toggleValue={value}
-          toggleAction={() =>
-            props.dispatch(setWebAppConfigValue(props.setting, !value))}
-          title={`${t("toggle")} ${props.title}`} />
-      </Col>
-    </Row>
-    <Row>
-      <p>{t(props.description)}</p>
+    <Row className="grid-exp-1">
+      <label>{t(props.title)}</label>
+      <ToggleButton
+        toggleValue={value}
+        toggleAction={() =>
+          props.dispatch(setWebAppConfigValue(props.setting, !value))}
+        title={`${t("toggle")} ${props.title}`} />
     </Row>
   </Highlight>;
 };
@@ -76,20 +69,13 @@ export interface LogEnableSettingProps {
 export const LogEnableSetting = (props: LogEnableSettingProps) => {
   const value = props.sourceFbosConfig(props.setting).value;
   return <Highlight settingName={props.title}>
-    <Row>
-      <Col xs={9}>
-        <label>{t(props.title)}</label>
-      </Col>
-      <Col xs={3}>
-        <ToggleButton
-          toggleValue={value}
-          toggleAction={() =>
-            props.dispatch(updateConfig({ [props.setting]: !value }))}
-          title={`${t("toggle")} ${props.title}`} />
-      </Col>
-    </Row>
-    <Row>
-      <p>{t(props.description)}</p>
+    <Row className="grid-exp-1">
+      <label>{t(props.title)}</label>
+      <ToggleButton
+        toggleValue={value}
+        toggleAction={() =>
+          props.dispatch(updateConfig({ [props.setting]: !value }))}
+        title={`${t("toggle")} ${props.title}`} />
     </Row>
   </Highlight>;
 };

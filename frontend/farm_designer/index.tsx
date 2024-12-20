@@ -5,7 +5,6 @@ import {
   FarmDesignerProps, State, BotOriginQuadrant, isBotOriginQuadrant,
 } from "./interfaces";
 import { mapStateToProps } from "./state_to_props";
-import { Plants } from "../plants/plant_inventory";
 import { GardenMapLegend } from "./map/legend/garden_map_legend";
 import { NumericSetting, BooleanSetting } from "../session_keys";
 import { isUndefined, isFinite, isEqual, filter } from "lodash";
@@ -25,6 +24,9 @@ import { calculateImageAgeInfo } from "../photos/photo_filter_settings/util";
 import { Xyz } from "farmbot";
 import { ProfileViewer } from "./map/profile";
 import { ThreeDGardenMap } from "./three_d_garden_map";
+import { Outlet } from "react-router";
+import { ErrorBoundary } from "../error_boundary";
+import { get3DConfigValueFunction } from "../settings/three_d_settings";
 
 export const getDefaultAxisLength =
   (getConfigValue: GetWebAppConfigValue): Record<Xyz, number> => {
@@ -134,7 +136,7 @@ export class RawFarmDesigner
     };
   }
 
-  get mapPanelClassName() { return mapPanelClassName(); }
+  get mapPanelClassName() { return mapPanelClassName(this.props.designer); }
 
   render() {
     const {
@@ -157,7 +159,7 @@ export class RawFarmDesigner
       y: !!this.props.botMcuParams.movement_stop_at_home_y
     };
 
-    const mapPadding = getMapPadding(getPanelStatus());
+    const mapPadding = getMapPadding(getPanelStatus(this.props.designer));
     const padHeightOffset = mapPadding.top - mapPadding.top / zoom_level;
 
     return <div className="farm-designer">
@@ -188,16 +190,27 @@ export class RawFarmDesigner
         botSize={this.props.botSize}
         imageAgeInfo={calculateImageAgeInfo(this.props.latestImages)} />
 
-      <DesignerNavTabs hidden={![
-        MapPanelStatus.closed,
-        MapPanelStatus.mobileClosed,
-      ].includes(getPanelStatus())} />
+      <DesignerNavTabs
+        designer={this.props.designer}
+        dispatch={this.props.dispatch}
+        hidden={![
+          MapPanelStatus.closed,
+          MapPanelStatus.mobileClosed,
+        ].includes(getPanelStatus(this.props.designer))} />
       <div className={`farm-designer-panels ${this.mapPanelClassName}`}>
-        {this.props.children || React.createElement(Plants)}
+        <ErrorBoundary>
+          <React.Suspense>
+            <Outlet />
+          </React.Suspense>
+        </ErrorBoundary>
       </div>
 
       {this.props.getConfigValue(BooleanSetting.three_d_garden)
         ? <ThreeDGardenMap
+          designer={this.props.designer}
+          plants={this.props.plants}
+          get3DConfigValue={get3DConfigValueFunction(this.props.farmwareEnvs)}
+          sourceFbosConfig={this.props.sourceFbosConfig}
           gridOffset={gridOffset}
           mapTransformProps={this.mapTransformProps}
           botSize={this.props.botSize} />
@@ -273,3 +286,5 @@ export class RawFarmDesigner
 }
 
 export const FarmDesigner = connect(mapStateToProps)(RawFarmDesigner);
+// eslint-disable-next-line import/no-default-export
+export default FarmDesigner;

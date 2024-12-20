@@ -1,5 +1,5 @@
-import * as React from "react";
-import { Row, Col, BlurableInput } from "../../ui";
+import React from "react";
+import { Row, BlurableInput } from "../../ui";
 import { AxisInputBoxGroupState } from "../../controls/interfaces";
 import { AxisInputBox } from "../../controls/axis_input_box";
 import { isNumber } from "lodash";
@@ -11,17 +11,15 @@ import { Xyz } from "farmbot";
 /** Select a location filter for sensor readings. */
 export const LocationSelection =
   ({ xyzLocation, deviation, setDeviation, setLocation }: LocationSelectionProps) =>
-    <div className="sensor-history-location-selection">
-      <Row>
+    <div>
+      <Row className="grid-4-col">
         {["x", "y", "z"].map(axis =>
-          <Col key={axis + "_heading"} xs={3}>
+          <div key={axis + "_heading"}>
             <label>{axis}</label>
-          </Col>)}
-        <Col xs={3}>
-          <label>{t("Deviation")}</label>
-        </Col>
+          </div>)}
+        <label>{t("Deviation")}</label>
       </Row>
-      <Row>
+      <Row className="grid-4-col">
         {["x", "y", "z"].map((axis: Xyz) =>
           <AxisInputBox
             key={axis}
@@ -32,12 +30,10 @@ export const LocationSelection =
               newLocation[a] = v;
               setLocation(newLocation);
             }} />)}
-        <Col xs={3}>
-          <BlurableInput
-            type="number"
-            value={deviation}
-            onCommit={e => setDeviation(parseIntInput(e.currentTarget.value))} />
-        </Col>
+        <BlurableInput
+          type="number"
+          value={deviation}
+          onCommit={e => setDeviation(parseIntInput(e.currentTarget.value))} />
       </Row>
     </div>;
 

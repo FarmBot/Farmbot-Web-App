@@ -1,28 +1,26 @@
 import React from "react";
-import { push } from "./history";
+import { useNavigate } from "react-router";
 
 interface LinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   to: string;
-  children?: React.ReactChild | React.ReactChild[];
+  children?: React.ReactNode | React.ReactNode[];
   style?: React.CSSProperties;
   className?: string;
   disabled?: boolean;
   draggable?: boolean;
 }
 
-export const clickHandler =
-  (props: LinkProps) => (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    const { onClick, to } = props;
-    push(to);
-    onClick?.(e);
-  };
-
-export class Link extends React.Component<LinkProps, {}> {
-  render() {
-    const { props } = this;
-    return props.disabled
-      ? <a {...props} />
-      : <a {...props} href={props.to} onClick={clickHandler(props)} />;
-  }
-}
+export const Link = (props: LinkProps) => {
+  const navigate = useNavigate();
+  return props.disabled
+    ? <a {...props} />
+    : <a {...props}
+      href={props.to}
+      onClick={
+        (e: React.MouseEvent<HTMLAnchorElement>) => {
+          e.preventDefault();
+          const { onClick, to } = props;
+          navigate(to);
+          onClick?.(e);
+        }} />;
+};

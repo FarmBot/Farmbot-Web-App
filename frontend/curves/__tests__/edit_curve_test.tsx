@@ -1,10 +1,3 @@
-import { Path } from "../../internal_urls";
-let mockPath = Path.mock(Path.curves(1));
-jest.mock("../../history", () => ({
-  getPathArray: jest.fn(() => mockPath.split("/")),
-  push: jest.fn(),
-}));
-
 jest.mock("../../api/crud", () => ({
   overwrite: jest.fn(),
   init: jest.fn(() => ({ payload: { uuid: "uuid" } })),
@@ -31,14 +24,18 @@ import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
 import { destroy, overwrite, init, save } from "../../api/crud";
-import { push } from "../../history";
 import { mockDispatch } from "../../__test_support__/fake_dispatch";
 import { fakeBotSize } from "../../__test_support__/fake_bot_data";
 import { changeBlurableInput } from "../../__test_support__/helpers";
 import { error } from "../../toast/toast";
 import { SpecialStatus } from "farmbot";
+import { Path } from "../../internal_urls";
 
 describe("<EditCurve />", () => {
+  beforeEach(() => {
+    location.pathname = Path.mock(Path.curves(1));
+  });
+
   const fakeProps = (): EditCurveProps => ({
     dispatch: mockDispatch(),
     findCurve: () => undefined,
@@ -50,21 +47,20 @@ describe("<EditCurve />", () => {
   });
 
   it("redirects", () => {
-    mockPath = Path.mock(Path.curves("nope"));
+    location.pathname = Path.mock(Path.curves("nope"));
     const wrapper = mount(<EditCurve {...fakeProps()} />);
-    expect(wrapper.text()).toContain("Redirecting...");
-    expect(push).toHaveBeenCalledWith(Path.curves());
+    expect(wrapper.text().toLowerCase()).toContain("redirecting");
+    expect(mockNavigate).toHaveBeenCalledWith(Path.curves());
   });
 
   it("doesn't redirect", () => {
-    mockPath = Path.mock(Path.logs());
+    location.pathname = Path.mock(Path.logs());
     const wrapper = mount(<EditCurve {...fakeProps()} />);
-    expect(wrapper.text()).toContain("Redirecting...");
-    expect(push).not.toHaveBeenCalled();
+    expect(wrapper.text().toLowerCase()).toContain("redirecting");
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 
   it("renders", () => {
-    mockPath = Path.mock(Path.curves(1));
     const p = fakeProps();
     p.findCurve = () => fakeCurve();
     const wrapper = mount(<EditCurve {...p} />);
@@ -74,7 +70,6 @@ describe("<EditCurve />", () => {
   });
 
   it("renders: data full", () => {
-    mockPath = Path.mock(Path.curves(1));
     const p = fakeProps();
     const curve = fakeCurve();
     curve.body.data = {
@@ -152,7 +147,6 @@ describe("<EditCurve />", () => {
   });
 
   it("toggles state", () => {
-    mockPath = Path.mock(Path.curves(1));
     const p = fakeProps();
     p.findCurve = () => fakeCurve();
     const wrapper = mount<EditCurve>(<EditCurve {...p} />);
@@ -162,7 +156,6 @@ describe("<EditCurve />", () => {
   });
 
   it("sets hovered state", () => {
-    mockPath = Path.mock(Path.curves(1));
     const p = fakeProps();
     p.findCurve = () => fakeCurve();
     const wrapper = mount<EditCurve>(<EditCurve {...p} />);
@@ -172,7 +165,6 @@ describe("<EditCurve />", () => {
   });
 
   it("sets maxCount state high", () => {
-    mockPath = Path.mock(Path.curves(1));
     const p = fakeProps();
     p.findCurve = () => fakeCurve();
     const wrapper = mount<EditCurve>(<EditCurve {...p} />);
@@ -182,7 +174,6 @@ describe("<EditCurve />", () => {
   });
 
   it("sets maxCount state low", () => {
-    mockPath = Path.mock(Path.curves(1));
     const p = fakeProps();
     p.findCurve = () => fakeCurve();
     const wrapper = mount<EditCurve>(<EditCurve {...p} />);
@@ -193,7 +184,6 @@ describe("<EditCurve />", () => {
   });
 
   it("sets iconDisplay state", () => {
-    mockPath = Path.mock(Path.curves(1));
     const p = fakeProps();
     p.findCurve = () => fakeCurve();
     const wrapper = mount<EditCurve>(<EditCurve {...p} />);
@@ -203,7 +193,6 @@ describe("<EditCurve />", () => {
   });
 
   it("renders no icons", () => {
-    mockPath = Path.mock(Path.curves(1));
     const p = fakeProps();
     p.findCurve = () => undefined;
     const wrapper = mount<EditCurve>(<EditCurve {...p} />);
@@ -212,7 +201,6 @@ describe("<EditCurve />", () => {
   });
 
   it("renders icons", () => {
-    mockPath = Path.mock(Path.curves(1));
     const p = fakeProps();
     const curve = fakeCurve();
     curve.body.id = 1;
@@ -231,7 +219,6 @@ describe("<EditCurve />", () => {
   });
 
   it("hides icons", () => {
-    mockPath = Path.mock(Path.curves(1));
     const p = fakeProps();
     const curve = fakeCurve();
     curve.body.id = 1;
@@ -247,7 +234,6 @@ describe("<EditCurve />", () => {
   });
 
   it("deletes curve", () => {
-    mockPath = Path.mock(Path.curves(1));
     const p = fakeProps();
     const curve = fakeCurve();
     p.findCurve = () => curve;
@@ -257,7 +243,6 @@ describe("<EditCurve />", () => {
   });
 
   it("handles curve in use", () => {
-    mockPath = Path.mock(Path.curves(1));
     const p = fakeProps();
     const curve = fakeCurve();
     p.findCurve = () => curve;
@@ -269,7 +254,6 @@ describe("<EditCurve />", () => {
   });
 
   it("renders spread", () => {
-    mockPath = Path.mock(Path.curves(1));
     const p = fakeProps();
     const curve = fakeCurve();
     curve.body.type = "spread";
@@ -280,7 +264,6 @@ describe("<EditCurve />", () => {
   });
 
   it("renders height", () => {
-    mockPath = Path.mock(Path.curves(1));
     const p = fakeProps();
     const curve = fakeCurve();
     curve.body.type = "height";
@@ -297,23 +280,28 @@ describe("copyCurve()", () => {
     existingCurve.body.name = "Fake copy 1";
     const curves = [existingCurve];
     const curve = fakeCurve();
-    await copyCurve(curves, curve)(jest.fn(() => Promise.resolve()), jest.fn())();
+    const navigate = jest.fn();
+    await copyCurve(curves, curve, navigate)(
+      jest.fn(() => Promise.resolve()),
+      jest.fn(),
+    )();
     expect(init).toHaveBeenCalledWith("Curve", {
       ...curve.body,
       name: "Fake copy 2",
       id: undefined,
     });
     expect(save).toHaveBeenCalled();
-    expect(push).not.toHaveBeenCalled();
+    expect(navigate).not.toHaveBeenCalled();
   });
 
   it("handles promise rejection", async () => {
     const dispatch = jest.fn()
       .mockImplementationOnce(jest.fn())
       .mockImplementationOnce(() => Promise.reject());
-    await copyCurve([], fakeCurve())(dispatch, jest.fn())();
+    const navigate = jest.fn();
+    await copyCurve([], fakeCurve(), navigate)(dispatch, jest.fn())();
     expect(save).toHaveBeenCalled();
-    expect(push).not.toHaveBeenCalled();
+    expect(navigate).not.toHaveBeenCalled();
   });
 
   it("copies curve and navigates", async () => {
@@ -325,14 +313,18 @@ describe("copyCurve()", () => {
     curve.body.id = 1;
     const state = fakeState();
     state.resources = buildResourceIndex([curve]);
-    await copyCurve(curves, curve)(jest.fn(() => Promise.resolve()), () => state)();
+    const navigate = jest.fn();
+    await copyCurve(curves, curve, navigate)(
+      jest.fn(() => Promise.resolve()),
+      () => state,
+    )();
     expect(init).toHaveBeenCalledWith("Curve", {
       ...curve.body,
       name: "Fake copy 2",
       id: undefined,
     });
     expect(save).toHaveBeenCalled();
-    expect(push).toHaveBeenCalledWith(Path.curves(1));
+    expect(navigate).toHaveBeenCalledWith(Path.curves(1));
   });
 
   it("copies curve and doesn't navigate", async () => {
@@ -344,14 +336,18 @@ describe("copyCurve()", () => {
     curve.body.id = 1;
     const state = fakeState();
     state.resources = buildResourceIndex([curve]);
-    await copyCurve(curves, curve)(jest.fn(() => Promise.resolve()), () => state)();
+    const navigate = jest.fn();
+    await copyCurve(curves, curve, navigate)(
+      jest.fn(() => Promise.resolve()),
+      () => state,
+    )();
     expect(init).toHaveBeenCalledWith("Curve", {
       ...curve.body,
       name: "Fake copy 2",
       id: undefined,
     });
     expect(save).toHaveBeenCalled();
-    expect(push).not.toHaveBeenCalled();
+    expect(navigate).not.toHaveBeenCalled();
   });
 });
 

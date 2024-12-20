@@ -9,6 +9,7 @@ import { TimeSettings } from "../interfaces";
 import { ResourceIndex } from "../resources/interfaces";
 import { ControlsCheckOptions, PinBindingOptions } from "./checks";
 import { WizardSectionSlug, WizardStepSlug } from "./data";
+import { NavigateFunction } from "react-router";
 
 export interface SetupWizardProps extends WizardOutcomeComponentProps {
   timeSettings: TimeSettings;
@@ -55,6 +56,7 @@ export interface WizardOutcomeComponentProps {
 
 export interface WizardStepComponentProps extends WizardOutcomeComponentProps {
   setStepSuccess(success: boolean, outcome?: string): () => void;
+  navigate: NavigateFunction
 }
 
 interface ComponentOptions {
@@ -139,6 +141,7 @@ export interface WizardStepContainerProps extends WizardOutcomeComponentProps {
   setStepSuccess(stepSlug: WizardStepSlug):
     (success: boolean, outcome?: string) => () => void;
   timeSettings: TimeSettings;
+  navigate: NavigateFunction;
 }
 
 export interface TroubleshootingTipsProps extends WizardOutcomeComponentProps {

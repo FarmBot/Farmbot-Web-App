@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Everything } from "../interfaces";
-import { DesignerNavTabs, Panel } from "../farm_designer/panel_header";
+import { Panel } from "../farm_designer/panel_header";
 import {
   EmptyStateWrapper, EmptyStateGraphic,
 } from "../ui/empty_state_wrapper";
@@ -15,10 +15,10 @@ import {
   selectAllPointGroups, selectAllActivePoints,
 } from "../resources/selectors";
 import { GroupInventoryItem } from "../point_groups/group_inventory_item";
-import { push } from "../history";
 import { initSaveGetId } from "../api/crud";
 import { SearchField } from "../ui/search_field";
 import { Path } from "../internal_urls";
+import { useNavigate } from "react-router";
 
 export interface ZonesProps {
   dispatch: Function;
@@ -33,16 +33,16 @@ export const mapStateToProps = (props: Everything): ZonesProps => ({
 });
 
 export const RawZones = (props: ZonesProps) => {
-  const navigate = (id: number) => push(Path.zones(id));
+  const navigate = useNavigate();
+  const navigateById = (id: number) => { navigate(Path.zones(id)); };
   const [searchTerm, setSearchTerm] = React.useState("");
   return <DesignerPanel panelName={"zones-inventory"} panel={Panel.Zones}>
-    <DesignerNavTabs />
     <DesignerPanelTop
       panel={Panel.Zones}
       onClick={() => props.dispatch(initSaveGetId("PointGroup", {
         name: t("Untitled Zone"), point_ids: []
       }))
-        .then((id: number) => navigate(id)).catch(() => { })}
+        .then((id: number) => navigateById(id)).catch(() => { })}
       title={t("Add zone")}>
       <SearchField nameKey={"zones"}
         searchTerm={searchTerm}
@@ -65,7 +65,7 @@ export const RawZones = (props: ZonesProps) => {
             allPoints={props.allPoints}
             hovered={false}
             dispatch={props.dispatch}
-            onClick={() => navigate(group.body.id || 0)}
+            onClick={() => navigateById(group.body.id || 0)}
           />)}
       </EmptyStateWrapper>
     </DesignerPanelContent>
@@ -73,3 +73,5 @@ export const RawZones = (props: ZonesProps) => {
 };
 
 export const Zones = connect(mapStateToProps)(RawZones);
+// eslint-disable-next-line import/no-default-export
+export default Zones;

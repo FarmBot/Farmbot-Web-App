@@ -1,9 +1,3 @@
-import { Path } from "../../internal_urls";
-let mockPath = Path.mock(Path.designerSequences("my_sequence"));
-jest.mock("../../history", () => ({
-  getPathArray: () => mockPath.split("/"),
-}));
-
 jest.mock("../actions", () => ({
   selectSequence: jest.fn(),
 }));
@@ -32,17 +26,19 @@ jest.mock("../test_button", () => ({
 import { setActiveSequenceByName } from "../set_active_sequence_by_name";
 import { selectSequence } from "../actions";
 import { selectAllSequences } from "../../resources/selectors";
+import { Path } from "../../internal_urls";
 
 describe("setActiveSequenceByName()", () => {
   it("returns early if there is nothing to compare", () => {
-    mockPath = Path.mock(Path.designerSequences());
+    location.pathname = Path.mock(Path.designerSequences());
     setActiveSequenceByName();
     expect(selectSequence).not.toHaveBeenCalled();
   });
 
   it("sometimes can't find a sequence by name", () => {
     const sequence = mockSequences[0];
-    mockPath = Path.mock(Path.designerSequences("not_" + sequence.body.name));
+    location.pathname = Path.mock(Path.designerSequences(
+      "not_" + sequence.body.name));
     setActiveSequenceByName();
     expect(selectAllSequences).toHaveBeenCalled();
     expect(selectSequence).not.toHaveBeenCalled();
@@ -51,7 +47,7 @@ describe("setActiveSequenceByName()", () => {
   it("finds a sequence by name", () => {
     const sequence = mockSequences[0];
     jest.clearAllTimers();
-    mockPath = Path.mock(Path.designerSequences(sequence.body.name));
+    location.pathname = Path.mock(Path.designerSequences(sequence.body.name));
     setActiveSequenceByName();
     expect(selectSequence).toHaveBeenCalledWith(sequence.uuid);
   });

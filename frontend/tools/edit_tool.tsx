@@ -5,7 +5,6 @@ import {
 } from "../farm_designer/designer_panel";
 import { Everything } from "../interfaces";
 import { t } from "../i18next_wrapper";
-import { push } from "../history";
 import { TaggedTool, SpecialStatus, TaggedToolSlotPointer } from "farmbot";
 import {
   maybeFindToolById, getDeviceAccountSettings, selectAllToolSlotPointers,
@@ -28,6 +27,8 @@ import {
 } from "../farm_designer/map/tool_graphics/all_tools";
 import { ToolTips } from "../constants";
 import { sendRPC } from "../devices/actions";
+import { NavigationContext } from "../routes_helpers";
+import { Navigate } from "react-router";
 
 export const isActive = (toolSlots: TaggedToolSlotPointer[]) =>
   (toolId: number | undefined) =>
@@ -84,10 +85,14 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
 
   get tool() { return this.props.findTool(this.stringyID); }
 
+  static contextType = NavigationContext;
+  context!: React.ContextType<typeof NavigationContext>;
+  navigate = this.context;
+
   fallback = () => {
     const toolsPath = Path.tools();
-    Path.startsWith(toolsPath) && push(toolsPath);
     return <this.PanelWrapper>
+      {Path.startsWith(toolsPath) && <Navigate to={toolsPath} />}
       <span>{t("Redirecting")}...</span>
     </this.PanelWrapper>;
   };
@@ -113,12 +118,12 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
               flow_rate_ml_per_s: this.state.flowRate,
             }));
             this.props.dispatch(save(tool.uuid));
-            push(Path.tools());
+            this.navigate(Path.tools());
           }}
           disabled={!toolName || nameTaken}
           status={SpecialStatus.DIRTY} />
         <i
-          className={`fa fa-trash fb-icon-button ${activeOrMounted
+          className={`fa fa-trash fb-icon-button invert ${activeOrMounted
             ? "pseudo-disabled"
             : ""}`}
           title={activeOrMounted ? message : t("delete")}
@@ -126,20 +131,22 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
             ? error(t(message))
             : dispatch(destroy(tool.uuid))} />
       </div>}>
-      <div className="edit-tool">
+      <div className="edit-tool grid">
         <ToolSVG toolName={toolName} profile={true} />
         <CustomToolGraphicsInput
           toolName={toolName}
           dispatch={this.props.dispatch}
           saveFarmwareEnv={this.props.saveFarmwareEnv}
           env={this.props.env} />
-        <label>{t("Name")}</label>
-        <input name="toolName"
-          value={toolName}
-          onChange={e => this.setState({ toolName: e.currentTarget.value })} />
-        {reduceToolName(toolName) == ToolName.wateringNozzle &&
-          <WaterFlowRateInput value={this.state.flowRate}
-            onChange={this.changeFlowRate} />}
+        <div className="row grid-exp-2">
+          <label>{t("Name")}</label>
+          <input name="toolName"
+            value={toolName}
+            onChange={e => this.setState({ toolName: e.currentTarget.value })} />
+          {reduceToolName(toolName) == ToolName.wateringNozzle &&
+            <WaterFlowRateInput value={this.state.flowRate}
+              onChange={this.changeFlowRate} />}
+        </div>
         <p className="name-error">
           {nameTaken ? t("Name already taken.") : ""}
         </p>
@@ -148,7 +155,7 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
   };
 
   PanelWrapper = (props: {
-    children: React.ReactChild | React.ReactChild[],
+    children: React.ReactNode,
     headerElement?: React.ReactElement,
   }) => {
     const panelName = "edit-tool";
@@ -172,3 +179,5 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
 }
 
 export const EditTool = connect(mapStateToProps)(RawEditTool);
+// eslint-disable-next-line import/no-default-export
+export default EditTool;

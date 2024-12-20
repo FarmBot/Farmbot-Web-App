@@ -3,7 +3,7 @@ import { Help } from "../../ui/help";
 import { Position } from "@blueprintjs/core";
 import { SequenceBodyItem, TaggedSequence } from "farmbot";
 import { splice, remove, move } from "../step_tiles";
-import { push } from "../../history";
+import { useNavigate } from "react-router";
 import { urlFriendly } from "../../util";
 import { setActiveSequenceByName } from "../set_active_sequence_by_name";
 import { t } from "../../i18next_wrapper";
@@ -56,8 +56,9 @@ export function StepIconGroup(props: StepIconBarProps) {
     const to = Math.max(index + delta, 0);
     dispatch(move({ step, sequence, from: index, to }));
   };
+  const navigate = useNavigate();
   const onSequenceLinkNav = (sequenceName: string) => () => {
-    push(Path.sequences(urlFriendly(sequenceName)));
+    navigate(Path.sequences(urlFriendly(sequenceName)));
     setActiveSequenceByName();
   };
   const monaco = props.stateToggles?.[StateToggleKey.monacoEditor];

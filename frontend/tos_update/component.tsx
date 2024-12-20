@@ -5,7 +5,7 @@ import { AuthState } from "../auth/interfaces";
 import { Session } from "../session";
 import { AxiosErrorResponse, prettyPrintApiErrors } from "../util";
 import { API } from "../api";
-import { Row, Col, Widget, WidgetHeader, WidgetBody } from "../ui";
+import { Widget, WidgetHeader, WidgetBody } from "../ui";
 import { TermsCheckbox } from "../front_page/terms_checkbox";
 import { t } from "../i18next_wrapper";
 import { ExternalUrl } from "../external_urls";
@@ -56,35 +56,35 @@ export class TosUpdate extends React.Component<{}, Partial<State>> {
     if (this.tosLoadOk) {
       const agree = this.state.agree_to_terms;
       return <form onSubmit={this.submit}>
-        <div className="input-group">
-          <label> {t("Email")} </label>
-          <input type="email" name="email"
-            onChange={this.set("email").bind(this)}>
-          </input>
-          <label>{t("Password")}</label>
-          <input type="password"
-            onChange={this.set("password").bind(this)}>
-          </input>
+        <div className="input-group grid">
+          <div>
+            <label> {t("Email")} </label>
+            <input type="email" name="email"
+              onChange={this.set("email").bind(this)}>
+            </input>
+          </div>
+          <div>
+            <label>{t("Password")}</label>
+            <input type="password"
+              onChange={this.set("password").bind(this)}>
+            </input>
+          </div>
           <TermsCheckbox
             privUrl={globalConfig.PRIV_URL}
             tosUrl={globalConfig.TOS_URL}
             onChange={e =>
               this.setState({ agree_to_terms: e.currentTarget.checked })}
             agree={agree} />
-          <Row>
-            <Col xs={12}>
-              <button
-                className="green fb-button"
-                title={t("agree")}
-                onClick={() => {
-                  !agree && logError(t("Please agree to the terms."));
-                  this.update();
-                }}
-                type={agree ? "submit" : "button"}>
-                {t("I Agree to the Terms of Service")}
-              </button>
-            </Col>
-          </Row>
+          <button
+            className="green fb-button pull-right"
+            title={t("agree")}
+            onClick={() => {
+              !agree && logError(t("Please agree to the terms."));
+              this.update();
+            }}
+            type={agree ? "submit" : "button"}>
+            {t("I Agree to the Terms of Service")}
+          </button>
         </div>
       </form>;
     } else {

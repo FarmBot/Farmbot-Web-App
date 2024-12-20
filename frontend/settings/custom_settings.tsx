@@ -17,7 +17,7 @@ export const CustomSettings = (props: CustomSettingsProps) =>
       dispatch={props.dispatch}
       expanded={props.settingsPanelState.custom_settings} />
     <Collapse isOpen={!!props.settingsPanelState.custom_settings}>
-      <div className={"env-editor-lua"}>
+      <div className={"settings-warning-banner env-editor-lua"}>
         <p>
           {t(Content.FARMWARE_ENV_EDITOR_LUA)}
           {" "}

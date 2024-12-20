@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col, Markdown, Popover } from "../../ui";
+import { Row, Markdown, Popover } from "../../ui";
 import { fetchOsUpdateVersion, OsUpdateButton } from "./os_update_button";
 import { Position } from "@blueprintjs/core";
 import { FarmbotOsRowProps, FarmbotOsRowState } from "./interfaces";
@@ -96,30 +96,26 @@ export class FarmbotOsRow
     return <Highlight settingName={DeviceSetting.farmbotOS}
       hidden={!this.props.showAdvanced}
       className={"advanced"}>
-      <Row>
-        <Col xs={5}>
+      <div className="grid half-gap farmbot-os-setting">
+        <Row className="grid-exp-1">
           <label>
             {t(DeviceSetting.farmbotOS)}
           </label>
-        </Col>
-        <Col xs={7}>
           <OsUpdateButton
             bot={this.props.bot}
             dispatch={this.props.dispatch}
             botOnline={this.props.botOnline} />
-        </Col>
-      </Row>
-      <Row>
-        <Col xs={7} className="no-pad"><this.Version /></Col>
-        <Col xs={5} className="no-pad">
+        </Row>
+        <Row className="grid-2-col">
+          <this.Version />
           <Popover position={Position.BOTTOM} className="release-notes-wrapper"
             target={<p className="release-notes-button">
               {t("Release Notes")}&nbsp;
               <i className="fa fa-caret-down" />
             </p>}
             content={<this.ReleaseNotes />} />
-        </Col>
-      </Row>
+        </Row>
+      </div>
     </Highlight>;
   }
 }

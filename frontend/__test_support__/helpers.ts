@@ -1,3 +1,4 @@
+import { fireEvent } from "@testing-library/react";
 import { ReactWrapper, shallow, ShallowWrapper } from "enzyme";
 import { range } from "lodash";
 
@@ -40,6 +41,16 @@ export function changeBlurableInput(
   const input = shallow(wrapper.find("input").at(position).getElement());
   input.simulate("change", { currentTarget: { value } });
   input.simulate("blur", { currentTarget: { value } });
+}
+
+/** Simulate BlurableInput commit. */
+export function changeBlurableInputRTL(
+  input: HTMLElement,
+  value: string,
+) {
+  fireEvent.focus(input);
+  fireEvent.change(input, { target: { value } });
+  fireEvent.blur(input);
 }
 
 export const fetchResponse = (

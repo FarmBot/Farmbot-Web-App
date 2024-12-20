@@ -1,6 +1,6 @@
 import React from "react";
 import { RegimenProps } from "../interfaces";
-import { SaveBtn } from "../../ui";
+import { SaveBtn, Popover, ColorPickerCluster } from "../../ui";
 import { t } from "../../i18next_wrapper";
 import { VariableNode } from "../../sequences/locals_list/locals_list_support";
 import { ScopeDeclarationBodyItem } from "farmbot";
@@ -8,10 +8,11 @@ import { defensiveClone } from "../../util";
 import {
   addOrEditBodyVariables,
 } from "../../sequences/locals_list/handle_select";
-import { overwrite, save, destroy } from "../../api/crud";
+import { overwrite, save, destroy, edit } from "../../api/crud";
 import { CopyButton } from "./copy_button";
-import { push } from "../../history";
+import { useNavigate } from "react-router";
 import { Path } from "../../internal_urls";
+import { Position } from "@blueprintjs/core";
 
 export const editRegimenVariables = (props: RegimenProps) =>
   (bodyVariables: VariableNode[]) =>
@@ -24,23 +25,34 @@ export const editRegimenVariables = (props: RegimenProps) =>
 
 export const RegimenButtonGroup = (props: RegimenProps) => {
   const { regimen, dispatch } = props;
-  return <div className="button-group">
+  const navigate = useNavigate();
+  return <div className="row panel-header-icon-group">
+    <div className="row no-gap">
+      <Popover className={"color-picker"}
+        position={Position.BOTTOM}
+        popoverClassName={"colorpicker-menu gray"}
+        target={<i title={t("select color")}
+          className={"fa fa-paint-brush fb-icon-button"} />}
+        content={<ColorPickerCluster
+          onChange={color => props.dispatch(edit(regimen, { color }))}
+          current={regimen.body.color} />} />
+      <i className={"fa fa-trash fb-icon-button"}
+        title={t("delete regimen")}
+        onClick={() => dispatch(destroy(regimen.uuid))
+          .then(() => { navigate(Path.regimens()); })} />
+      <CopyButton regimen={regimen} dispatch={dispatch} />
+    </div>
     <SaveBtn
       status={regimen.specialStatus}
       onClick={() => dispatch(save(regimen.uuid))} />
-    <CopyButton regimen={regimen} dispatch={dispatch} />
-    <i className={"fa fa-trash fb-icon-button"}
-      title={t("delete regimen")}
-      onClick={() => dispatch(destroy(regimen.uuid))
-        .then(() => push(Path.regimens()))} />
   </div>;
 };
 
-export const OpenSchedulerButton = () =>
-  <div className={"open-bulk-scheduler-btn-wrapper"}>
-    <button className={"fb-button gray"}
-      title={t("open scheduler panel")}
-      onClick={() => push(Path.regimens("scheduler"))}>
-      {t("Schedule item")}
-    </button>
-  </div>;
+export const OpenSchedulerButton = () => {
+  const navigate = useNavigate();
+  return <button className={"fb-button gray schedule-regimen-item"}
+    title={t("open scheduler panel")}
+    onClick={() => { navigate(Path.regimens("scheduler")); }}>
+    {t("Schedule item")}
+  </button>;
+};

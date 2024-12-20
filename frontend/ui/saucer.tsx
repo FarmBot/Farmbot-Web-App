@@ -5,7 +5,7 @@ export interface SaucerProps {
   active?: boolean;
   className?: string;
   title?: string;
-  children?: React.ReactChild | false;
+  children?: React.ReactNode;
 }
 
 /** A colored UI disc/circle. */

@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { PointInventoryItem } from "./point_inventory_item";
 import { Everything, PointsPanelState } from "../interfaces";
-import { DesignerNavTabs, Panel } from "../farm_designer/panel_header";
+import { Panel } from "../farm_designer/panel_header";
 import {
   EmptyStateWrapper, EmptyStateGraphic,
 } from "../ui/empty_state_wrapper";
@@ -37,9 +37,9 @@ import { DEFAULT_CRITERIA } from "../point_groups/criteria/interfaces";
 import { GroupInventoryItem } from "../point_groups/group_inventory_item";
 import { createGroup } from "../point_groups/actions";
 import { pointGroupSubset } from "../plants/select_plants";
-import { push } from "../history";
 import { Path } from "../internal_urls";
 import { deleteAllIds } from "../api/delete_points_handler";
+import { NavigationContext } from "../routes_helpers";
 
 interface PointsSectionProps {
   title: string;
@@ -60,10 +60,10 @@ interface PointsSectionProps {
 const PointsSection = (props: PointsSectionProps) => {
   const { genericPoints, isOpen, dispatch, averageZ, toggleAction } = props;
   return <div className={`points-section ${isOpen ? "open" : ""}`}>
-    <div className={"points-section-header"} onClick={props.toggleOpen}>
+    <div className={"points-section-header row grid-exp-1"}
+      onClick={props.toggleOpen}>
       {props.color && <Saucer color={props.color} />}
       <label>{`${props.title} (${genericPoints.length})`}</label>
-      <i className={`fa fa-caret-${isOpen ? "up" : "down"}`} />
       {isOpen && toggleAction && <ToggleButton
         toggleValue={props.toggleValue}
         customText={{ textFalse: t("off"), textTrue: t("on") }}
@@ -78,6 +78,7 @@ const PointsSection = (props: PointsSectionProps) => {
         }}>
         {t("delete all")}
       </button>}
+      <i className={`fa fa-caret-${isOpen ? "up" : "down"}`} />
     </div>
     <Collapse isOpen={isOpen}>
       {!isUndefined(averageZ) &&
@@ -156,7 +157,13 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
       type: Actions.TOGGLE_POINTS_PANEL_OPTION, payload: section,
     });
 
-  navigate = (id: number | undefined) => () => push(Path.groups(id));
+  static contextType = NavigationContext;
+  context!: React.ContextType<typeof NavigationContext>;
+  navigate = this.context;
+
+  navigateById = (id: number | undefined) => () => {
+    this.navigate(Path.groups(id));
+  };
 
   render() {
     const { dispatch } = this.props;
@@ -179,7 +186,6 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
       .filter(p => !soilHeightPoint(p))
       .filter(p => !p.body.meta.gridId);
     return <DesignerPanel panelName={"point-inventory"} panel={Panel.Points}>
-      <DesignerNavTabs />
       <DesignerPanelTop panel={Panel.Points}>
         <SearchField nameKey={"points"}
           searchTerm={this.state.searchTerm}
@@ -198,6 +204,7 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
               ...DEFAULT_CRITERIA,
               string_eq: { pointer_type: ["GenericPointer"] },
             },
+            navigate: this.navigate,
           }))}
           addTitle={t("add new group")}
           addClassName={"plus-group"}
@@ -209,14 +216,14 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
               allPoints={this.props.allPoints}
               hovered={false}
               dispatch={dispatch}
-              onClick={this.navigate(group.body.id)}
+              onClick={this.navigateById(group.body.id)}
             />)}
         </PanelSection>
         <PanelSection isOpen={this.props.pointsPanelState.points}
           panel={Panel.Points}
           toggleOpen={this.toggleOpen("points")}
           itemCount={standardPoints.length}
-          addNew={() => push(Path.points("add"))}
+          addNew={() => { this.navigate(Path.points("add")); }}
           addTitle={t("add point")}
           addClassName={"plus-point"}
           extraHeaderContent={this.props.pointsPanelState.points &&
@@ -297,3 +304,5 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
 }
 
 export const Points = connect(mapStateToProps)(RawPoints);
+// eslint-disable-next-line import/no-default-export
+export default Points;

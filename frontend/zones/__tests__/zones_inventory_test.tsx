@@ -1,14 +1,12 @@
 jest.mock("../../api/crud", () => ({ initSaveGetId: jest.fn() }));
 
-import React from "react";
-import { act } from "react-dom/test-utils";
+import React, { act } from "react";
 import { mount, shallow } from "enzyme";
 import {
   RawZones as Zones, ZonesProps, mapStateToProps,
 } from "../zones_inventory";
 import { fakeState } from "../../__test_support__/fake_state";
 import { fakePointGroup } from "../../__test_support__/fake_state/resources";
-import { push } from "../../history";
 import { initSaveGetId } from "../../api/crud";
 import { DesignerPanelTop } from "../../farm_designer/designer_panel";
 import { SearchField } from "../../ui/search_field";
@@ -32,7 +30,7 @@ describe("<Zones> />", () => {
     p.zones[0].body.id = 1;
     const wrapper = mount(<Zones {...p} />);
     wrapper.find(".group-search-item").first().simulate("click");
-    expect(push).toHaveBeenCalledWith(Path.zones(1));
+    expect(mockNavigate).toHaveBeenCalledWith(Path.zones(1));
   });
 
   it("navigates to unsaved zone", () => {
@@ -41,7 +39,7 @@ describe("<Zones> />", () => {
     p.zones[0].body.id = 0;
     const wrapper = mount(<Zones {...p} />);
     wrapper.find(".group-search-item").first().simulate("click");
-    expect(push).toHaveBeenCalledWith(Path.zones(0));
+    expect(mockNavigate).toHaveBeenCalledWith(Path.zones(0));
   });
 
   it("filters points", () => {
@@ -62,7 +60,7 @@ describe("<Zones> />", () => {
     expect(initSaveGetId).toHaveBeenCalledWith("PointGroup", {
       name: "Untitled Zone", point_ids: []
     });
-    expect(push).toHaveBeenCalledWith(Path.zones(1));
+    expect(mockNavigate).toHaveBeenCalledWith(Path.zones(1));
   });
 
   it("handles zone creation error", async () => {
@@ -73,7 +71,7 @@ describe("<Zones> />", () => {
     expect(initSaveGetId).toHaveBeenCalledWith("PointGroup", {
       name: "Untitled Zone", point_ids: []
     });
-    expect(push).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 });
 

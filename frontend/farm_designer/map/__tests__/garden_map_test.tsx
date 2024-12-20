@@ -52,13 +52,6 @@ jest.mock("../profile", () => ({
   ProfileLine: () => <g />,
 }));
 
-import { Path } from "../../../internal_urls";
-let mockPath = Path.mock(Path.plants());
-jest.mock("../../../history", () => ({
-  push: jest.fn(),
-  getPathArray: () => mockPath.split("/"),
-}));
-
 let mockGroup: TaggedPointGroup | undefined = undefined;
 jest.mock("../../../point_groups/group_detail", () => ({
   findGroupFromUrl: () => mockGroup,
@@ -87,7 +80,6 @@ import {
   fakePlant, fakePointGroup, fakePoint, fakeSensorReading,
 } from "../../../__test_support__/fake_state/resources";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
-import { push } from "../../../history";
 import { TaggedPointGroup } from "farmbot";
 import { fakeMountedToolInfo } from "../../../__test_support__/fake_tool_info";
 import {
@@ -102,6 +94,8 @@ import {
 } from "../../../__test_support__/map_transform_props";
 import { keyboardEvent } from "../../../__test_support__/fake_html_events";
 import { times } from "lodash";
+import { Path } from "../../../internal_urls";
+import { mountWithContext } from "../../../__test_support__/mount_with_context";
 
 const DEFAULT_EVENT = { preventDefault: jest.fn(), pageX: NaN, pageY: NaN };
 
@@ -244,65 +238,65 @@ describe("<GardenMap/>", () => {
   it("starts drag on background: selecting", () => {
     const p = fakeProps();
     p.designer.selectedPoints = ["fakePointUuid"];
-    const wrapper = mount(<GardenMap {...p} />);
+    const wrapper = mountWithContext(<GardenMap {...p} />);
     mockMode = Mode.addPlant;
     const e = { pageX: 1000, pageY: 2000 };
     wrapper.find(".drop-area-background").simulate("mouseDown", e);
     expect(startNewSelectionBox).toHaveBeenCalled();
-    expect(push).toHaveBeenCalledWith(Path.plants());
+    expect(mockNavigate).toHaveBeenCalledWith(Path.plants());
     expect(getGardenCoordinates).toHaveBeenCalledWith(
       expect.objectContaining(e));
   });
 
   it("starts drag on background: selecting again", () => {
-    const wrapper = mount(<GardenMap {...fakeProps()} />);
+    const wrapper = mountWithContext(<GardenMap {...fakeProps()} />);
     mockMode = Mode.boxSelect;
     const e = { pageX: 1000, pageY: 2000 };
     wrapper.find(".drop-area-background").simulate("mouseDown", e);
     expect(startNewSelectionBox).toHaveBeenCalled();
-    expect(push).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
     expect(getGardenCoordinates).toHaveBeenCalledWith(
       expect.objectContaining(e));
   });
 
   it("starts drag on background: does nothing when adding plants", () => {
-    const wrapper = mount(<GardenMap {...fakeProps()} />);
+    const wrapper = mountWithContext(<GardenMap {...fakeProps()} />);
     mockMode = Mode.clickToAdd;
     const e = { pageX: 1000, pageY: 2000 };
     wrapper.find(".drop-area-background").simulate("mouseDown", e);
     expect(startNewSelectionBox).not.toHaveBeenCalled();
-    expect(push).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
     expect(getGardenCoordinates).not.toHaveBeenCalled();
   });
 
   it("starts drag on background: does nothing when in move mode", () => {
-    const wrapper = mount(<GardenMap {...fakeProps()} />);
+    const wrapper = mountWithContext(<GardenMap {...fakeProps()} />);
     mockMode = Mode.locationInfo;
     const e = { pageX: 1000, pageY: 2000 };
     wrapper.find(".drop-area-background").simulate("mouseDown", e);
     expect(startNewSelectionBox).not.toHaveBeenCalled();
-    expect(push).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
     expect(getGardenCoordinates).not.toHaveBeenCalled();
   });
 
   it("starts drag on background: does nothing when in profile mode", () => {
-    const wrapper = mount(<GardenMap {...fakeProps()} />);
+    const wrapper = mountWithContext(<GardenMap {...fakeProps()} />);
     mockMode = Mode.profile;
     const e = { pageX: 1000, pageY: 2000 };
     wrapper.find(".drop-area-background").simulate("mouseDown", e);
     expect(startNewSelectionBox).not.toHaveBeenCalled();
-    expect(push).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
     expect(getGardenCoordinates).not.toHaveBeenCalled();
   });
 
   it("starts drag on background: creating points", () => {
-    const wrapper = mount(<GardenMap {...fakeProps()} />);
+    const wrapper = mountWithContext(<GardenMap {...fakeProps()} />);
     mockMode = Mode.createPoint;
     const e = { pageX: 1000, pageY: 2000 };
     wrapper.find(".drop-area-background").simulate("mouseDown", e);
     expect(startNewPoint).toHaveBeenCalled();
     expect(startNewSelectionBox).not.toHaveBeenCalled();
-    expect(push).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
     expect(getGardenCoordinates).toHaveBeenCalledWith(
       expect.objectContaining(e));
   });
@@ -310,19 +304,19 @@ describe("<GardenMap/>", () => {
   it("starts drag on background: selecting zone", () => {
     const p = fakeProps();
     p.designer.editGroupAreaInMap = true;
-    const wrapper = mount(<GardenMap {...p} />);
+    const wrapper = mountWithContext(<GardenMap {...p} />);
     mockMode = Mode.editGroup;
     const e = { pageX: 1000, pageY: 2000 };
     wrapper.find(".drop-area-background").simulate("mouseDown", e);
     expect(startNewSelectionBox).toHaveBeenCalledWith(
       expect.objectContaining({ plantActions: false }));
-    expect(push).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
     expect(getGardenCoordinates).toHaveBeenCalledWith(
       expect.objectContaining(e));
   });
 
   it("starts drag on background: opening location info", () => {
-    mockPath = Path.mock(Path.plants());
+    location.pathname = Path.mock(Path.plants());
     const p = fakeProps();
     p.designer.selectedPoints = [];
     p.designer.hoveredPlant = { icon: "", plantUUID: undefined };
@@ -548,8 +542,9 @@ describe("<GardenMap/>", () => {
     wrapper.setState({
       toLocation: { x: 100, y: 100, z: 0 }, previousSelectionBoxArea: 0,
     });
+    wrapper.instance().navigate = jest.fn();
     wrapper.instance().closePanel()();
-    expect(push).toHaveBeenCalledWith(
+    expect(wrapper.instance().navigate).toHaveBeenCalledWith(
       expect.stringContaining(Path.location()));
     expect(closePlantInfo).toHaveBeenCalled();
     expect(wrapper.state().toLocation).toEqual(undefined);
@@ -562,8 +557,9 @@ describe("<GardenMap/>", () => {
     wrapper.setState({
       toLocation: { x: 100, y: 100, z: 0 }, previousSelectionBoxArea: 1000,
     });
+    wrapper.instance().navigate = jest.fn();
     wrapper.instance().closePanel()();
-    expect(push).not.toHaveBeenCalledWith(
+    expect(wrapper.instance().navigate).not.toHaveBeenCalledWith(
       expect.stringContaining(Path.location()));
     expect(closePlantInfo).toHaveBeenCalled();
     expect(wrapper.state().toLocation).toEqual(undefined);

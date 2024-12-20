@@ -1,6 +1,6 @@
 import { Collapse } from "@blueprintjs/core";
 import React from "react";
-import { push } from "../history";
+import { NavigateFunction, useNavigate } from "react-router";
 import { toggleHotkeyHelpOverlay } from "../hotkeys";
 import { t } from "../i18next_wrapper";
 import { FilePath, Icon, Path } from "../internal_urls";
@@ -66,24 +66,27 @@ export const HelpHeader = () => {
   const click = () => setOpen(!isOpen);
   const currentSlug = Path.getSlug(Path.designer());
   const currentPage = PAGES()[currentSlug] || PAGES().help;
+  const navigate = useNavigate();
   return <div className={"help-panel-header"} onClick={click}>
-    {PageLink([currentSlug, currentPage])}
+    {PageLink(navigate)([currentSlug, currentPage])}
     <i className={`fa fa-chevron-${isOpen ? "up" : "down"}`} />
     {isOpen &&
       <Collapse isOpen={isOpen}>
         {Object.entries(PAGES())
           .filter(([slug, _page]) => slug != currentSlug)
           .concat(maybeAddHotkeysMenuItem())
-          .map(PageLink)}
+          .map(PageLink(navigate))}
       </Collapse>}
   </div>;
 };
 
-const PageLink = ([slug, page]: [string, Page]) => {
+const PageLink = (navigate: NavigateFunction) => ([slug, page]: [string, Page]) => {
   const iconSrc = page.icon ? FilePath.icon(page.icon) : page.iconPath;
   return <a key={slug}
     title={page.title}
-    onClick={() => page.onClick ? page.onClick() : push(Path.designer(slug))}>
+    onClick={() => {
+      page.onClick ? page.onClick() : navigate(Path.designer(slug));
+    }}>
     {page.fa_icon
       ? <i className={`fa ${page.fa_icon}`} />
       : <img width={25} height={25} src={iconSrc} />}

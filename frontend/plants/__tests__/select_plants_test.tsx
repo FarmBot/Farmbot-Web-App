@@ -1,9 +1,3 @@
-let mockPath = "";
-jest.mock("../../history", () => ({
-  push: jest.fn(),
-  getPathArray: jest.fn(() => mockPath.split("/"))
-}));
-
 let mockDestroy = jest.fn(() => Promise.resolve());
 jest.mock("../../api/crud", () => ({ destroy: mockDestroy }));
 
@@ -15,11 +9,13 @@ jest.mock("../../farm_designer/map/layers/plants/plant_actions", () => ({
 
 import React from "react";
 import { mount, shallow } from "enzyme";
+import { render, screen, fireEvent } from "@testing-library/react";
 import {
   RawSelectPlants as SelectPlants, SelectPlantsProps, mapStateToProps,
   getFilteredPoints, GetFilteredPointsProps, validPointTypes, SelectModeLink,
   pointGroupSubset,
   uncategorizedGroupSubset,
+  SelectModeLinkProps,
 } from "../select_plants";
 import {
   fakePlant, fakePoint, fakeWeed, fakeToolSlot, fakeTool,
@@ -37,7 +33,6 @@ import { mockDispatch } from "../../__test_support__/fake_dispatch";
 import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
-import { push } from "../../history";
 import { POINTER_TYPES } from "../../point_groups/criteria/interfaces";
 import { fakeToolTransformProps } from "../../__test_support__/fake_tool_info";
 import { SpecialStatus } from "farmbot";
@@ -47,7 +42,7 @@ import { Path } from "../../internal_urls";
 
 describe("<SelectPlants />", () => {
   beforeEach(() => {
-    mockPath = Path.mock(Path.plants("select"));
+    location.pathname = Path.mock(Path.plants("select"));
   });
 
   function fakeProps(): SelectPlantsProps {
@@ -211,7 +206,8 @@ describe("<SelectPlants />", () => {
   it("selects all", () => {
     const p = fakeProps();
     const wrapper = mount(<SelectPlants {...p} />);
-    clickButton(wrapper, 2, "select all");
+    const button = wrapper.find('[title="Select all"]');
+    clickButton(button, 0, "select all");
     expect(p.dispatch).toHaveBeenCalledWith(
       { payload: ["plant.1", "plant.2"], type: Actions.SELECT_POINT });
   });
@@ -219,30 +215,10 @@ describe("<SelectPlants />", () => {
   it("selects none", () => {
     const p = fakeProps();
     const wrapper = mount(<SelectPlants {...p} />);
-    clickButton(wrapper, 1, "select none");
+    const button = wrapper.find('[title="Select none"]');
+    clickButton(button, 0, "select none");
     expect(p.dispatch).toHaveBeenCalledWith(
       { payload: undefined, type: Actions.SELECT_POINT });
-  });
-
-  it("toggles more selection options", () => {
-    const p = fakeProps();
-    const wrapper = mount<SelectPlants>(<SelectPlants {...p} />);
-    expect(wrapper.state().moreSelections).toEqual(false);
-    expect(wrapper.find(".more-content").first().props().hidden).toBeTruthy();
-    wrapper.find(".more-button").first().simulate("click");
-    expect(wrapper.text().toLowerCase()).toContain("curve");
-    expect(wrapper.state().moreSelections).toEqual(true);
-    expect(wrapper.find(".more-content").first().props().hidden).toBeFalsy();
-  });
-
-  it("toggles more actions", () => {
-    const p = fakeProps();
-    const wrapper = mount<SelectPlants>(<SelectPlants {...p} />);
-    expect(wrapper.state().moreActions).toEqual(false);
-    expect(wrapper.find(".more-content").last().props().hidden).toBeTruthy();
-    wrapper.find(".more-button").last().simulate("click");
-    expect(wrapper.state().moreActions).toEqual(true);
-    expect(wrapper.find(".more-content").last().props().hidden).toBeFalsy();
   });
 
   it("selects group items", () => {
@@ -497,9 +473,21 @@ describe("uncategorizedGroupSubset()", () => {
 });
 
 describe("<SelectModeLink />", () => {
+  const fakeProps = (): SelectModeLinkProps => ({
+    dispatch: jest.fn(),
+  });
+
   it("navigates to panel", () => {
-    const wrapper = shallow(<SelectModeLink />);
-    wrapper.find("button").simulate("click");
-    expect(push).toHaveBeenCalledWith(Path.plants("select"));
+    const p = fakeProps();
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
+    render(<SelectModeLink {...p} />);
+    const button = screen.getByTitle("open point select panel");
+    fireEvent.click(button);
+    expect(mockNavigate).toHaveBeenCalledWith(Path.plants("select"));
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_PANEL_OPEN,
+      payload: true,
+    });
   });
 });

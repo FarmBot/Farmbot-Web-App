@@ -34,6 +34,20 @@ describe("<Bot />", () => {
       .toEqual([-1344, 110, 75]);
   });
 
+  it("renders: v1.7", () => {
+    const p = fakeProps();
+    p.config.kitVersion = "v1.7";
+    const wrapper = mount(<Bot {...p} />);
+    expect(wrapper.find({ name: "button-group" }).length).toEqual(10);
+  });
+
+  it("renders: v1.8", () => {
+    const p = fakeProps();
+    p.config.kitVersion = "v1.8";
+    const wrapper = mount(<Bot {...p} />);
+    expect(wrapper.find({ name: "button-group" }).length).toEqual(6);
+  });
+
   it("loads shapes", () => {
     const p = fakeProps();
     mount(<Bot {...p} />);

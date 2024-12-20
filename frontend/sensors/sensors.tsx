@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import {
   DesignerPanel, DesignerPanelContent,
 } from "../farm_designer/designer_panel";
-import { DesignerNavTabs, Panel } from "../farm_designer/panel_header";
+import { Panel } from "../farm_designer/panel_header";
 import { uniq } from "lodash";
 import { BotState } from "../devices/interfaces";
 import { TaggedSensor, FirmwareHardware, TaggedSensorReading } from "farmbot";
@@ -54,7 +54,6 @@ export class RawDesignerSensors
 
   render() {
     return <DesignerPanel panelName={"sensors"} panel={Panel.Sensors}>
-      <DesignerNavTabs />
       <DesignerPanelContent panelName={"sensors"}>
         <Sensors
           firmwareHardware={this.props.firmwareHardware}
@@ -74,3 +73,5 @@ export class RawDesignerSensors
 }
 
 export const DesignerSensors = connect(mapStateToProps)(RawDesignerSensors);
+// eslint-disable-next-line import/no-default-export
+export default DesignerSensors;

@@ -1,5 +1,5 @@
 import React from "react";
-import { push } from "../history";
+import { useNavigate } from "react-router";
 import { last, trim } from "lodash";
 import { Link } from "../link";
 import { Panel, TAB_COLOR, PanelColor } from "./panel_header";
@@ -38,10 +38,10 @@ interface DesignerPanelHeaderProps {
   panel?: Panel;
   panelColor?: PanelColor;
   title?: string;
-  titleElement?: JSX.Element;
+  titleElement?: React.ReactNode;
   blackText?: boolean;
   description?: string;
-  descriptionElement?: JSX.Element;
+  descriptionElement?: React.ReactNode;
   backTo?: string;
   onBack?: () => void;
   specialStatus?: SpecialStatus;
@@ -60,18 +60,18 @@ const backToText = (to: string | undefined): string => {
 export const DesignerPanelHeader = (props: DesignerPanelHeaderProps) => {
   const panelColor = props.panel ? TAB_COLOR[props.panel] : props.panelColor;
   const colorClass = props.colorClass || `${panelColor || PanelColor.gray}-panel`;
-  const textColor = props.blackText ? "black" : "white";
+  const navigate = useNavigate();
   return <div className={`panel-header ${colorClass}`}
     style={props.style || {}}>
     <div className="panel-title">
-      <i className={`fa fa-arrow-left back-arrow ${textColor}-text`}
+      <i className={"fa fa-arrow-left back-arrow"}
         title={t("go back") + backToText(props.backTo)}
         onClick={() => {
-          props.backTo ? push(props.backTo) : history.back();
+          props.backTo ? navigate(props.backTo) : history.back();
           props.onBack?.();
         }} />
       {props.title &&
-        <span className={`title ${textColor}-text`}>
+        <span className={"title"}>
           {t(props.title)}
         </span>}
       {props.titleElement}
@@ -87,7 +87,6 @@ export const DesignerPanelHeader = (props: DesignerPanelHeaderProps) => {
       <div className={[
         "panel-header-description",
         `${props.panelName}-description`,
-        `${textColor}-text`,
       ].join(" ")}>
         {props.description && t(props.description)}
         {props.descriptionElement}
@@ -113,14 +112,14 @@ export const DesignerPanelTop = (props: DesignerPanelTopProps) => {
     {props.children}
     {props.onClick &&
       <a>
-        <div className={`fb-button panel-${TAB_COLOR[props.panel]}`}
+        <div className={"fb-button green"}
           onClick={props.onClick}>
           <i className="fa fa-plus" title={props.title} />
         </div>
       </a>}
     {props.linkTo &&
       <Link to={props.linkTo}>
-        <div className={`fb-button panel-${TAB_COLOR[props.panel]}`}>
+        <div className={"fb-button green"}>
           <i className="fa fa-plus" title={props.title} />
         </div>
       </Link>}
@@ -145,6 +144,5 @@ export const DesignerPanelContent = (props: DesignerPanelContentProps) => {
     <ErrorBoundary>
       {props.children}
     </ErrorBoundary>
-    <div className={"padding"}></div>
   </div>;
 };

@@ -3,7 +3,7 @@ import {
   GetWebAppConfigValue, setWebAppConfigValue,
 } from "../config_storage/actions";
 import { t } from "../i18next_wrapper";
-import { Row, Col } from "../ui";
+import { Row } from "../ui";
 import { NumericSetting } from "../session_keys";
 import {
   NumberConfigKey as WebAppNumberConfigKey,
@@ -18,19 +18,15 @@ interface LengthInputProps {
 }
 
 const LengthInput = (props: LengthInputProps) =>
-  <Row>
-    <Col xs={4}>
-      <label style={{ float: "right" }}>{t(props.label)}</label>
-    </Col>
-    <Col xs={5}>
-      <input
-        type="number"
-        name={props.setting}
-        className={getModifiedClassName(props.setting)}
-        value={"" + props.value}
-        onChange={e => props.dispatch(setWebAppConfigValue(
-          props.setting, e.currentTarget.value))} />
-    </Col>
+  <Row className="grid-2-col map-size-grid">
+    <label>{t(props.label)}</label>
+    <input
+      type="number"
+      name={props.setting}
+      className={getModifiedClassName(props.setting)}
+      value={"" + props.value}
+      onChange={e => props.dispatch(setWebAppConfigValue(
+        props.setting, e.currentTarget.value))} />
   </Row>;
 
 export interface MapSizeInputsProps {
@@ -39,7 +35,7 @@ export interface MapSizeInputsProps {
 }
 
 export const MapSizeInputs = (props: MapSizeInputsProps) =>
-  <div className="map-size-inputs">
+  <div className="grid">
     <LengthInput
       value={parseInt("" + props.getConfigValue(NumericSetting.map_size_x))}
       label={t("x (mm)")}

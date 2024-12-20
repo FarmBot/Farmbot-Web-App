@@ -1,7 +1,6 @@
 import React from "react";
 import { getLinks } from "./nav/nav_links";
 import { sync } from "./devices/actions";
-import { push } from "./history";
 import { HotkeyConfig, useHotkeys, HotkeysDialog2 } from "@blueprintjs/core";
 import { unselectPlant } from "./farm_designer/map/actions";
 import { getPanelPath, PANEL_BY_SLUG } from "./farm_designer/panel_header";
@@ -10,6 +9,7 @@ import { store } from "./redux/store";
 import { save } from "./api/crud";
 import { Path } from "./internal_urls";
 import { Actions } from "./constants";
+import { NavigateFunction, useNavigate } from "react-router";
 
 type HotkeyConfigs = Record<HotKey, HotkeyConfig>;
 
@@ -64,7 +64,11 @@ const HOTKEY_BASE_MAP = (): HotkeyConfigs => ({
   },
 });
 
-export const hotkeysWithActions = (dispatch: Function, slug: string) => {
+export const hotkeysWithActions = (
+  navigate: NavigateFunction,
+  dispatch: Function,
+  slug: string,
+) => {
   const links = getLinks();
   const idx = links.indexOf(PANEL_BY_SLUG[slug]);
   const panelPlus = links[idx + 1] || links[0];
@@ -88,25 +92,25 @@ export const hotkeysWithActions = (dispatch: Function, slug: string) => {
     },
     [HotKey.navigateRight]: {
       ...hotkeysBase[HotKey.navigateRight],
-      onKeyDown: () => push(getPanelPath(panelPlus)),
+      onKeyDown: () => { navigate(getPanelPath(panelPlus)); },
     },
     [HotKey.navigateLeft]: {
       ...hotkeysBase[HotKey.navigateLeft],
-      onKeyDown: () => push(getPanelPath(panelMinus)),
+      onKeyDown: () => { navigate(getPanelPath(panelMinus)); },
     },
     [HotKey.addPlant]: {
       ...hotkeysBase[HotKey.addPlant],
-      onKeyDown: () => push(Path.cropSearch()),
+      onKeyDown: () => { navigate(Path.cropSearch()); },
     },
     [HotKey.addEvent]: {
       ...hotkeysBase[HotKey.addEvent],
-      onKeyDown: () => push(Path.farmEvents("add")),
+      onKeyDown: () => { navigate(Path.farmEvents("add")); },
     },
     [HotKey.backToPlantOverview]: {
       ...hotkeysBase[HotKey.backToPlantOverview],
       onKeyDown: () => {
         if (slug != "photos") {
-          push(Path.plants());
+          navigate(Path.plants());
           dispatch(unselectPlant(dispatch));
         }
       },
@@ -120,10 +124,12 @@ export const toggleHotkeyHelpOverlay = (dispatch: Function) => () =>
   dispatch({ type: Actions.TOGGLE_HOTKEY_GUIDE, payload: undefined });
 
 export const HotKeys = (props: HotKeysProps) => {
+  const navigate = useNavigate();
   const slug = Path.getSlug(Path.designer()) || "plants";
-  const hotkeys = React.useMemo(() =>
-    Object.values(hotkeysWithActions(props.dispatch, slug))
-      .map(hotkey => ({ ...hotkey, global: true })), [props.dispatch, slug]);
+  const hotkeys = React.useMemo(
+    () => Object.values(hotkeysWithActions(navigate, props.dispatch, slug))
+      .map(hotkey => ({ ...hotkey, global: true })),
+    [navigate, props.dispatch, slug]);
   const { handleKeyDown, handleKeyUp } = useHotkeys(hotkeys,
     { showDialogKeyCombo: undefined });
   return <div className={"hotkeys"}

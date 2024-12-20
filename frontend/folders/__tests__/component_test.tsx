@@ -13,11 +13,6 @@ jest.mock("../actions", () => ({
   setFolderColor: jest.fn(),
 }));
 
-let mockPath = "";
-jest.mock("../../history", () => ({
-  getPathArray: jest.fn(() => mockPath.split("/")),
-}));
-
 jest.mock("@blueprintjs/core", () => ({
   Position: jest.fn(),
   PopoverInteractionKind: jest.fn(),
@@ -296,7 +291,7 @@ describe("<FolderListItem />", () => {
   it("renders: active", () => {
     const p = fakeProps();
     p.sequence.body.name = "sequence";
-    mockPath = Path.mock(Path.sequences("sequence"));
+    location.pathname = Path.mock(Path.sequences("sequence"));
     const wrapper = mount(<FolderListItem {...p} />);
     expect(wrapper.find("li").hasClass("active")).toBeTruthy();
   });
@@ -429,7 +424,7 @@ describe("<FolderListItem />", () => {
     const wrapper = mount(<FolderListItem {...p} />);
     wrapper.find(".fa-ellipsis-v").simulate("click");
     wrapper.find(".fa-copy").simulate("click");
-    expect(copySequence).toHaveBeenCalledWith(p.sequence);
+    expect(copySequence).toHaveBeenCalledWith(expect.any(Function), p.sequence);
   });
 });
 
@@ -441,14 +436,14 @@ describe("<FolderButtonCluster />", () => {
 
   it("renders", () => {
     const wrapper = mount(<FolderButtonCluster {...fakeProps()} />);
-    expect(wrapper.find(".cluster-icon").length).toEqual(4);
+    expect(wrapper.find(".fb-icon-button").length).toEqual(4);
   });
 
   it("deletes folder", () => {
     const p = fakeProps();
     p.node.id = 1;
     const wrapper = mount(<FolderButtonCluster {...p} />);
-    wrapper.find(".cluster-icon").at(0).simulate("click");
+    wrapper.find(".fb-icon-button").at(0).simulate("click");
     expect(deleteFolder).toHaveBeenCalledWith(1);
   });
 
@@ -456,7 +451,7 @@ describe("<FolderButtonCluster />", () => {
     const p = fakeProps();
     p.node.id = 1;
     const wrapper = mount(<FolderButtonCluster {...p} />);
-    wrapper.find(".cluster-icon").at(1).simulate("click");
+    wrapper.find(".fb-icon-button").at(1).simulate("click");
     expect(p.close).toHaveBeenCalled();
     expect(toggleFolderEditState).toHaveBeenCalledWith(1);
   });
@@ -465,7 +460,7 @@ describe("<FolderButtonCluster />", () => {
     const p = fakeProps();
     p.node.id = 1;
     const wrapper = mount(<FolderButtonCluster {...p} />);
-    wrapper.find(".cluster-icon").at(2).simulate("click");
+    wrapper.find(".fb-icon-button").at(2).simulate("click");
     expect(p.close).toHaveBeenCalled();
     expect(createFolder).toHaveBeenCalledWith({
       parent_id: p.node.id,
@@ -477,9 +472,9 @@ describe("<FolderButtonCluster />", () => {
     const p = fakeProps();
     p.node.id = 1;
     const wrapper = mount(<FolderButtonCluster {...p} />);
-    wrapper.find(".cluster-icon").at(3).simulate("click");
+    wrapper.find(".fb-icon-button").at(3).simulate("click");
     expect(p.close).toHaveBeenCalled();
-    expect(addNewSequenceToFolder).toHaveBeenCalledWith({
+    expect(addNewSequenceToFolder).toHaveBeenCalledWith(expect.any(Function), {
       id: 1,
       color: "gray",
     });
@@ -620,7 +615,7 @@ describe("<FolderNameEditor />", () => {
     const wrapper = mount(<FolderNameEditor {...p} />);
     wrapper.find(".fa-ellipsis-v").simulate("click");
     expect(wrapper.find(".fa-ellipsis-v").hasClass("open")).toBeTruthy();
-    wrapper.find(".cluster-icon").last().simulate("click");
+    wrapper.find(".fb-icon-button").last().simulate("click");
     expect(wrapper.find(".fa-ellipsis-v").hasClass("open")).toBeFalsy();
   });
 });

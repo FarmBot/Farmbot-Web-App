@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { WeekGrid } from "../week_grid";
 import { WeekGridProps } from "../interfaces";

@@ -2,13 +2,6 @@ jest.mock("../edit_curve", () => ({
   editCurve: jest.fn(),
 }));
 
-import { Path } from "../../internal_urls";
-let mockPath = Path.mock(Path.curves(1));
-jest.mock("../../history", () => ({
-  getPathArray: jest.fn(() => mockPath.split("/")),
-  push: jest.fn(),
-}));
-
 import { mount } from "enzyme";
 import React from "react";
 import { Actions } from "../../constants";
@@ -18,6 +11,7 @@ import { fakeCurve, fakePoint } from "../../__test_support__/fake_state/resource
 import { CurveIcon, CurveSvg, getWarningLinesContent } from "../chart";
 import { editCurve } from "../edit_curve";
 import { CurveIconProps, CurveSvgProps } from "../interfaces";
+import { Path } from "../../internal_urls";
 
 const TEST_DATA = { 1: 0, 10: 10, 50: 500, 100: 1000 };
 
@@ -217,7 +211,7 @@ describe("<CurveSvg />", () => {
   });
 
   it("shows warning lines: height in plants panels", () => {
-    mockPath = Path.mock(Path.cropSearch());
+    location.pathname = Path.mock(Path.cropSearch());
     const p = fakeProps();
     p.curve.body.type = "height";
     p.sourceFbosConfig = () => ({ value: 100, consistent: true });

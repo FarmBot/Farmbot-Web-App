@@ -1,7 +1,10 @@
 module Api
   class AiFeedbacksController < Api::AbstractController
     def create
-      render json: AiFeedback.create!(update_params)
+      render json: AiFeedback.create!(update_params.merge(
+        model: ENV["OPENAI_MODEL_LUA"],
+        temperature: ENV["OPENAI_API_TEMPERATURE"]
+      ))
     end
 
     private

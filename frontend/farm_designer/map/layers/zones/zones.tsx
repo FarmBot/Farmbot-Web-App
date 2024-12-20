@@ -4,7 +4,7 @@ import { MapTransformProps, BotSize } from "../../interfaces";
 import { transformXY } from "../../util";
 import { isUndefined } from "lodash";
 import { UUID } from "../../../../resources/interfaces";
-import { push } from "../../../../history";
+import { useNavigate } from "react-router";
 import { Path } from "../../../../internal_urls";
 
 export interface ZonesProps {
@@ -44,9 +44,6 @@ export const getZoneType = (group: TaggedPointGroup): ZoneType => {
   }
   return ZoneType.none;
 };
-
-const openGroup = (id: number | undefined) =>
-  () => push(Path.groups(id));
 
 /** Bounds for area selected by criteria or bot extents. */
 const getBoundary = (props: GetBoundaryProps): Boundary => {
@@ -91,7 +88,11 @@ const zone0D = (props: ZonesProps) =>
 export const Zones0D = (props: ZonesProps) => {
   const current = props.group.uuid == props.currentGroup;
   const { id } = props.group.body;
-  return <g id={`zones-0D-${id}`} onClick={openGroup(id)}
+  const navigate = useNavigate();
+  return <g id={`zones-0D-${id}`}
+    onClick={() => {
+      navigate(Path.groups(id));
+    }}
     className={current ? "current" : ""}>
     {zone0D(props).map((point, i) =>
       <circle key={i} cx={point.x} cy={point.y} r={5} />)}
@@ -133,7 +134,11 @@ const zone1D = (props: ZonesProps) => {
 export const Zones1D = (props: ZonesProps) => {
   const current = props.group.uuid == props.currentGroup;
   const { id } = props.group.body;
-  return <g id={`zones-1D-${id}`} onClick={openGroup(id)}
+  const navigate = useNavigate();
+  return <g id={`zones-1D-${id}`}
+    onClick={() => {
+      navigate(Path.groups(id));
+    }}
     className={current ? "current" : ""}>
     {zone1D(props).map((line, i) =>
       <line key={i} x1={line.x1} y1={line.y1}
@@ -172,7 +177,11 @@ export const Zones2D = (props: ZonesProps) => {
     }
     : {};
   const { id } = props.group.body;
-  return <g id={`zones-2D-${id}`} onClick={openGroup(id)}
+  const navigate = useNavigate();
+  return <g id={`zones-2D-${id}`}
+    onClick={() => {
+      navigate(Path.groups(id));
+    }}
     className={current ? "current" : ""}>
     {!zone.selectsAll &&
       <rect x={zone.x} y={zone.y} width={zone.width} height={zone.height}

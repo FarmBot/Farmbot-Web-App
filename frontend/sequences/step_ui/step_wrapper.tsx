@@ -3,7 +3,7 @@ import { ErrorBoundary } from "../../error_boundary";
 import { TaggedSequence, SequenceBodyItem } from "farmbot";
 import { SequenceReducerState, StepState } from "../interfaces";
 import { stringifySequenceData } from "../step_tiles";
-import { Row, Col } from "../../ui";
+import { Row } from "../../ui";
 import { StepHeader } from "./step_header";
 import { getWebAppConfigValueFromResources } from "../../config_storage/actions";
 import { ResourceIndex } from "../../resources/interfaces";
@@ -90,17 +90,17 @@ export class StepWrapper extends React.Component<StepWrapperProps, StepState> {
         {this.props.warning}
       </StepHeader>
       {this.viewRaw
-        ? <pre>{stringifySequenceData(this.props.currentStep)}</pre>
+        ? <pre className="celeryscript">
+          {stringifySequenceData(this.props.currentStep)}
+        </pre>
         : <Row>
-          <Col sm={12}>
-            <div className={[
-              "step-content", this.props.className, executeSequence?.color,
-            ].join(" ")}>
-              <ErrorBoundary key={this.state.updateKey}>
-                {this.props.children}
-              </ErrorBoundary>
-            </div>
-          </Col>
+          <div className={[
+            "step-content", this.props.className, executeSequence?.color,
+          ].join(" ")}>
+            <ErrorBoundary key={this.state.updateKey}>
+              {this.props.children}
+            </ErrorBoundary>
+          </div>
         </Row>}
     </div>;
   }

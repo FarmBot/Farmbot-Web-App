@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { mount, shallow } from "enzyme";
 import { FallbackWidget, FallbackWidgetProps } from "../fallback_widget";
 
@@ -21,6 +21,6 @@ describe("<FallbackWidget />", () => {
     p.helpText = "This is a fake widget.";
     const wrapper = shallow(<FallbackWidget {...p} />);
     expect(wrapper.html())
-      .toContain("<i class=\"fa fa-question-circle help-icon\"");
+      .toContain("<i role=\"tooltip\" class=\"fa fa-question-circle help-icon\"");
   });
 });

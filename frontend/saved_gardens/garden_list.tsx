@@ -1,23 +1,24 @@
 import React from "react";
-import { Col } from "../ui";
 import { isNumber, isString } from "lodash";
 import { openSavedGarden } from "./actions";
 import {
   SavedGardenItemProps, SavedGardenInfoProps, SavedGardenListProps,
 } from "./interfaces";
 import { t } from "../i18next_wrapper";
+import { useNavigate } from "react-router";
 
 /** Name input and PlantTemplate count for a single SavedGarden. */
 export const GardenInfo = (props: SavedGardenInfoProps) => {
   const { savedGarden, dispatch } = props;
+  const navigate = useNavigate();
   return <div className="saved-garden-info"
-    onClick={() => dispatch(openSavedGarden(savedGarden.body.id))}>
-    <Col>
+    onClick={() => dispatch(openSavedGarden(navigate, savedGarden.body.id))}>
+    <div>
       <span className={"saved-garden-search-item-name"}>
         {savedGarden.body.name}
       </span>
       <p><i>{props.plantTemplateCount} {t("plants")}</i></p>
-    </Col>
+    </div>
   </div>;
 };
 

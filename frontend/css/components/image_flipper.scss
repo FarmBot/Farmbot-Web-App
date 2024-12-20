@@ -1,0 +1,350 @@
+@use "../variables" as *;
+@use "sass:color";
+
+.image-flipper {
+  position: relative;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.bp5-overlay {
+  .image-flipper {
+    z-index: 20;
+    width: 100%;
+    display: grid;
+    justify-content: center;
+    align-content: center;
+    .no-flipper-image-container,
+    .flipper-image {
+      text-align: center;
+      .image-flipper-image,
+      svg {
+        filter: none;
+      }
+    }
+    .image-flipper-left,
+    .image-flipper-right {
+      width: 8rem;
+      i {
+        font-size: 4rem;
+      }
+    }
+    .no-flipper-image-container {
+      background: var(--main-bg);
+    }
+    .placeholder {
+      opacity: 1 !important;
+    }
+    p {
+      color: $white;
+    }
+  }
+}
+
+body:has(.app.dark) {
+  .image-flipper-image {
+    &.placeholder {
+      filter: invert(1);
+    }
+  }
+}
+
+.desktop-only {
+  @media screen and (max-width: 767px) {
+    display: none;
+  }
+}
+
+.image-jsx {
+  overflow: hidden;
+}
+
+.image-flipper-image {
+  display: block;
+  margin: auto;
+  max-height: 650px;
+  max-width: 100%;
+  min-height: 200px;
+}
+
+.image-flipper-left {
+  left: 0;
+  background: linear-gradient(to left, transparent, $translucent3);
+  box-shadow: none !important;
+  &:hover {
+    background: linear-gradient(to left, transparent, $translucent4);
+  }
+}
+
+.image-flipper-right {
+  right: 0;
+  background: linear-gradient(to right, transparent, $translucent3);
+  box-shadow: none !important;
+  &:hover {
+    background: linear-gradient(to right, transparent, $translucent4);
+  }
+}
+
+.image-flipper-left,
+.image-flipper-right {
+  bottom: 0;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  top: 0;
+  width: 4rem;
+  i {
+    color: $white;
+    font-size: 2rem;
+    text-shadow: 0px 0px 5px $translucent3;
+  }
+}
+
+.no-flipper-image-container {
+  img {
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  p {
+    position: absolute;
+    left: 0;
+    right: 0;
+    z-index: 1;
+    font-size: 1.5rem;
+    text-align: center;
+    padding: 20% 1rem 0;
+    line-height: 2.4rem;
+    margin-left: 50px;
+    margin-right: 50px;
+  }
+}
+
+body:has(.app.darl) {
+  .no-flipper-image-container {
+    img {
+      filter: invert(1);
+    }
+  }
+}
+
+.photos-footer {
+  display: flex;
+  position: relative;
+  justify-content: space-between;
+  background: var(--secondary-bg);
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  height: 3.5rem;
+  padding-top: 0.5rem;
+  .footer-text {
+    margin-top: -0.5rem;
+  }
+  label {
+    font-weight: normal;
+  }
+  span {
+    font-weight: bold;
+    font-size: 1.3rem;
+  }
+  .bp5-popover-wrapper {
+    display: inline;
+  }
+}
+
+.image-show-menu-target {
+  i {
+    color: $white;
+  }
+}
+
+.image-show-menu-popover {
+  .bp5-popover-content {
+    padding: 0;
+  }
+}
+
+.image-show-menu {
+  max-width: 25rem;
+  .hide-single-image-section {
+    padding: 1rem;
+    line-height: 2.5rem;
+    align-content: center;
+  }
+  p {
+    display: inline;
+  }
+  .shown-in-map-details {
+    padding: 1rem;
+    &.shown {
+      cursor: pointer;
+      &:hover {
+        background: $light_gray;
+      }
+    }
+    p {
+      font-weight: bold;
+    }
+  }
+  .fb-toggle-button {
+    vertical-align: top;
+    margin-top: 1.5rem;
+  }
+  .hide-single-image-section {
+    .content {
+      margin: auto;
+      width: fit-content;
+    }
+  }
+  button {
+    margin: 0.5rem;
+    float: none;
+    line-height: 1.5rem;
+  }
+  .header-label {
+    display: block;
+    margin: auto !important;
+    width: fit-content;
+  }
+  .toggle-label {
+    margin: 1rem;
+    width: 50%;
+  }
+}
+
+.photos-footer,
+.image-show-menu {
+  i {
+    background: none !important;
+    &.green {
+      color: $green;
+    }
+    &.gray {
+      color: $medium_gray;
+    }
+  }
+  .fb-icon-button {
+    &:hover {
+      background: rgba(255, 255, 255, 0.2) !important;
+    }
+  }
+  .shown-in-map-details {
+    i {
+      margin-right: 0.25rem;
+    }
+  }
+}
+
+.this-image-section {
+  margin: 2rem;
+  .content {
+    display: inline;
+    input {
+      margin: 0.5rem;
+      height: 2rem;
+      width: 3rem;
+    }
+  }
+  p {
+    display: inline;
+    margin: 0;
+  }
+  button {
+    margin: 0.5rem;
+    vertical-align: middle;
+    float: none;
+  }
+}
+
+.newer-older-images-section {
+  margin: 2rem;
+  i {
+    margin: 0.25rem;
+  }
+  p {
+    display: inline;
+  }
+  .buttons {
+    display: inline;
+  }
+  button {
+    margin: 0.5rem;
+    vertical-align: middle;
+    float: none;
+  }
+}
+
+.image-metadata {
+  display: flex;
+  margin-left: 1rem;
+  label {
+    margin-top: 0 !important;
+    margin-left: 1rem;
+    margin-right: 0.5rem;
+  }
+}
+
+.image-created-at {
+  margin-left: 1rem;
+  line-height: 1.25rem;
+  span {
+    white-space: nowrap;
+  }
+  label {
+    margin-top: 0 !important;
+    margin-right: 0.5rem;
+  }
+}
+
+.photos {
+  .photo-action-buttons {
+    display: flex;
+    gap: 1rem;
+    height: 0px;
+    float: right !important;
+    margin-right: 1rem;
+    a {
+      margin: 0;
+    }
+    i {
+      font-size: 1.6rem;
+      &.disabled {
+        pointer-events: none;
+        color: $medium_gray;
+      }
+    }
+  }
+  .bp5-slider {
+    margin-left: 2rem;
+    width: 90%;
+  }
+}
+
+.image-items {
+  .footer-text {
+    display: flex;
+    * {
+      color: $white;
+    }
+  }
+  .photos-footer {
+    height: 2rem;
+  }
+}
+
+.farmware-button {
+  p {
+    color: $medium_gray;
+  }
+}
+
+.index-indicator-wrapper {
+  position: relative;
+}
+
+.index-indicator {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: $dark_gray;
+  height: 3px;
+}

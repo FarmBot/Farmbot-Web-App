@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col } from "../ui";
+import { Row } from "../ui";
 import { AxisDisplayGroupProps, AxisProps } from "./interfaces";
 import { isNumber, isUndefined } from "lodash";
 import { t } from "../i18next_wrapper";
@@ -8,7 +8,7 @@ import { DevSettings } from "../settings/dev/dev_support";
 
 const Axis = (props: AxisProps) => {
   const { axis, val, missedSteps, axisState, index, detectionEnabled } = props;
-  return <Col xs={3} className={"index-" + index}>
+  return <div className={"index-" + index}>
     {isNumber(missedSteps) && missedSteps >= 0 && detectionEnabled &&
       <MissedStepIndicator
         missedSteps={axisState == "idle" ? 0 : missedSteps}
@@ -19,7 +19,7 @@ const Axis = (props: AxisProps) => {
         value={isNumber(val) ? val : "---"} />}
     {!isUndefined(axisState) && DevSettings.futureFeaturesEnabled() &&
       <p>{t(axisState)}</p>}
-  </Col>;
+  </div>;
 };
 
 export const AxisDisplayGroup = (props: AxisDisplayGroupProps) => {
@@ -30,7 +30,7 @@ export const AxisDisplayGroup = (props: AxisDisplayGroupProps) => {
     z: !!props.firmwareSettings?.encoder_enabled_z,
   };
   const common = { noValues: props.noValues };
-  return <Row>
+  return <Row className="grid-4-col">
     <Axis {...common} axis={"x"} val={x} busy={props.busy} index={3}
       detectionEnabled={detectionEnabled.x}
       missedSteps={props.missedSteps?.x}
@@ -47,10 +47,8 @@ export const AxisDisplayGroup = (props: AxisDisplayGroupProps) => {
       highlight={props.highlightAxis == "z"}
       axisState={props.axisStates?.z} />
     {!props.noValues &&
-      <Col xs={3} className={"no-pad"}>
-        <label style={props.style}>
-          {t(props.label)}
-        </label>
-      </Col>}
+      <label style={props.style}>
+        {t(props.label)}
+      </label>}
   </Row>;
 };

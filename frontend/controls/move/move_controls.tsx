@@ -18,9 +18,9 @@ export const MoveControls = (props: MoveControlsProps) => {
   const locationData = validBotLocationData(location_data);
   const botOnline = isBotOnlineFromState(props.bot);
   const { busy, locked } = props.bot.hardware.informational_settings;
-  return <div className={"move"}>
+  return <div className={"move grid double-gap"}>
     <Popover position={Position.LEFT_TOP} className={"move-settings"}
-      target={<i className={"fa fa-gear fb-icon-button"} />}
+      target={<i className={"fa fa-gear fb-icon-button invert"} />}
       content={<MoveWidgetSettingsMenu
         dispatch={props.dispatch}
         getConfigValue={props.getConfigValue}

@@ -1,14 +1,20 @@
+@use "variables" as *;
+@use "sass:color";
+
 // Padding for the popups.
 .bp5-popover-content {
   z-index: 999;
   padding: 1rem;
+  color: var(--text-color) !important;
+  background: var(--main-bg) !important;
+  box-shadow: var(--box-shadow) !important;
 }
 
 .bp5-popover {
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-  .bp5-popover-content {
-    border-radius: 5px;
-  }
+  box-shadow: var(--box-shadow);
+  font-size: 1.3rem;
+  border-radius: 0.5rem;
+  overflow: hidden;
   .bp5-popover-arrow {
     display: none !important;
   }
@@ -32,26 +38,50 @@
   overflow-y: scroll;
 }
 
+.bp5-input {
+  box-shadow: none;
+  border-radius: 0;
+}
+
 .bp5-input-group {
+  border-bottom: 1.5px solid var(--border-color);
   .bp5-icon {
     top: 0.6rem;
   }
 }
 
+.bp5-popover.help {
+  .bp5-popover-content {
+    width: 32rem;
+  }
+}
+
+.bp5-slider {
+  margin: 0 2.5rem 0 1.5rem;
+  width: initial;
+}
+
+.bp5-slider-progress {
+  background: var(--secondary-bg);
+}
+
+.bp5-control {
+  margin: 0;
+}
+
 .bp5-button:not(.bp5-minimal) {
   font-weight: normal;
   text-transform: none;
-  background: $white;
-  border-radius: 0;
+  border-radius: 3px;
   font-size: 1.2rem !important;
   color: $black !important;
   height: 27px !important;
   width: 100% !important;
   border: 0 !important;
-  box-shadow: 0px 0px 10px #ddd !important;
-  background: $white !important;
+  box-shadow: none !important;
+  background: $translucent9_white !important;
   &:hover {
-    background: $white !important;
+    background: $translucent9_white !important;
   }
   :first-child {
     display: inline-block;
@@ -59,15 +89,7 @@
     width: 73%;
     overflow: hidden;
     text-overflow: ellipsis;
-    padding-right: 1rem;
-  }
-}
-
-.bp5-popover-wrapper {
-  display: block;
-  position: relative;
-  * {
-    text-align: left;
+    padding-right: 1.5rem;
   }
 }
 

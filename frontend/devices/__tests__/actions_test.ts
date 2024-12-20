@@ -30,10 +30,6 @@ jest.mock("../../api/crud", () => ({
   save: jest.fn(),
 }));
 
-jest.mock("../../settings/maybe_highlight", () => ({
-  goToFbosSettings: jest.fn(),
-}));
-
 let mockGet: Promise<{}> = Promise.resolve({});
 jest.mock("axios", () => ({ get: jest.fn(() => mockGet) }));
 
@@ -57,7 +53,7 @@ import { success, error, warning, info } from "../../toast/toast";
 import { edit, save } from "../../api/crud";
 import { DeepPartial } from "../../redux/interfaces";
 import { Farmbot } from "farmbot";
-import { goToFbosSettings } from "../../settings/maybe_highlight";
+import { Path } from "../../internal_urls";
 
 const replaceDeviceWith = async (d: DeepPartial<Farmbot>, cb: Function) => {
   jest.clearAllMocks();
@@ -697,12 +693,12 @@ describe("updateConfig()", () => {
   });
 });
 
-const expectBadVersionCall = () => {
-  expect(goToFbosSettings).toHaveBeenCalled();
+const expectBadVersionCall = (noDismiss = true) => {
   expect(error).toHaveBeenCalledWith(expect.stringContaining("old version"), {
     title: "Please Update",
     noTimer: true,
-    noDismiss: true,
+    redirect: Path.settings("farmbot_os"),
+    noDismiss,
     idPrefix: "EOL",
   });
 };
@@ -715,12 +711,6 @@ describe("badVersion()", () => {
 
   it("warns of old FBOS version: dismiss-able", () => {
     actions.badVersion({ noDismiss: false });
-    expect(goToFbosSettings).toHaveBeenCalled();
-    expect(error).toHaveBeenCalledWith(expect.stringContaining("old version"), {
-      title: "Please Update",
-      noTimer: true,
-      noDismiss: false,
-      idPrefix: "EOL",
-    });
+    expectBadVersionCall(false);
   });
 });

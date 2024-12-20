@@ -1,0 +1,123 @@
+@use "../variables" as *;
+@use "sass:color";
+
+.add-sensor-reading-menu {
+  width: 25rem;
+  button {
+    margin-left: auto;
+  }
+}
+
+.sensor-readings-plot {
+  max-height: 300px;
+  stroke: var(--text-color);
+  font-size: 60px;
+  font-weight: 100;
+}
+
+.sensor-history-table {
+  text-align: left;
+  font-size: 1.2rem;
+  background: $translucent1_white;
+  border-radius: 0.5rem;
+  th,
+  td {
+    width: 1%;
+  }
+  tr {
+    &.previous {
+      color: $medium_gray;
+    }
+    &.selected {
+      background: $translucent1_white;
+    }
+  }
+  .sensor-history-table-contents {
+    max-height: 20rem;
+    overflow-y: auto;
+  }
+}
+
+.sensor-history-footer {
+  display: flex;
+  justify-content: space-between;
+  .date {
+    span {
+      white-space: nowrap;
+    }
+    label {
+      margin-right: 0.5rem;
+    }
+  }
+  .location {
+    display: flex;
+    label {
+      margin-left: 1rem;
+      margin-right: 0.5rem;
+    }
+  }
+}
+
+.sensors-widget {
+  p {
+    margin-top: 0.75rem;
+  }
+  .sensor-reading-display {
+    border-style: solid;
+    border-color: $dark_gray;
+    border-width: 0.1px;
+    height: 2rem;
+    width: 100%;
+    margin-top: 0.5rem;
+    &.moisture-sensor {
+      background: linear-gradient(to right, rgba($blue, 0) 20%, $blue 80%, rgba($blue, 0) 85%);
+    }
+    &.digital {
+      .indicator {
+        text-align: center;
+      }
+    }
+    .indicator {
+      position: relative;
+      background: $dark_gray;
+      height: 2rem;
+      span {
+        position: relative;
+        top: -0.1rem;
+        font-size: 1.3rem;
+      }
+    }
+  }
+}
+
+.sensor-form-grid {
+  grid-template-columns: 2fr 1fr 1fr auto;
+}
+
+.sensors-panel-content {
+  padding: 1.5rem;
+}
+
+.sensors-panel {
+  display: grid;
+  gap: 1rem;
+  .panel-header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    align-items: center;
+    .panel-title {
+      margin: 0;
+      height: unset;
+    }
+  }
+  .panel-content {
+    label {
+      margin-top: 0;
+    }
+  }
+  .sensor-history-widget {
+    display: grid;
+    gap: 1rem;
+  }
+}

@@ -120,3 +120,5 @@ export class RawCropCatalog extends React.Component<CropCatalogProps, {}> {
 }
 
 export const CropCatalog = connect(mapStateToProps)(RawCropCatalog);
+// eslint-disable-next-line import/no-default-export
+export default CropCatalog;

@@ -35,6 +35,7 @@ export interface DesignerSettingsProps extends DesignerSettingsPropsBase {
   farmwareEnvs: TaggedFarmwareEnv[];
   wizardStepResults: TaggedWizardStepResult[];
   settingsPanelState: SettingsPanelState;
+  distanceIndicator: string;
 }
 
 export interface DesignerSettingsSectionProps {
@@ -50,7 +51,7 @@ export interface SettingDescriptionProps {
   description: string;
   invert?: boolean;
   callback?: () => void;
-  children?: React.ReactChild;
+  children?: React.ReactNode;
   defaultOn?: boolean;
   disabled?: boolean;
   confirm?: string;
@@ -68,6 +69,13 @@ export interface CustomSettingsProps {
   dispatch: Function;
   settingsPanelState: SettingsPanelState;
   farmwareEnvs: TaggedFarmwareEnv[];
+}
+
+export interface ThreeDSettingsProps {
+  dispatch: Function;
+  settingsPanelState: SettingsPanelState;
+  farmwareEnvs: TaggedFarmwareEnv[];
+  distanceIndicator: string;
 }
 
 export interface OtherSettingsProps {

@@ -1,0 +1,116 @@
+@use "../variables" as *;
+@use "sass:color";
+
+.electronics-box-3d-model {
+  max-width: calc(100vw - 4rem);
+  width: 100%;
+  .led-label,
+  .btn-label {
+    display: block;
+    margin: auto;
+    width: max-content;
+    color: $off_white;
+    font-size: 1rem;
+    background: $dark_gray;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.5rem;
+    white-space: normal;
+    max-height: 3.4rem;
+    overflow-y: hidden;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    user-select: none;
+    &.hovered {
+      background: $black;
+    }
+    &.unbound {
+      background: $placeholder_gray;
+    }
+  }
+  .led-label {
+    max-width: 7rem;
+  }
+  .btn-label {
+    max-width: 5.8rem;
+  }
+  .filter-search {
+    max-width: 5.5rem;
+    .fa-caret-down {
+      bottom: -0.5rem;
+      right: 0.25rem;
+      color: $off_white;
+    }
+    button {
+      padding: 0.25rem;
+      background: $dark_gray !important;
+      border-radius: 0.5rem;
+      height: max-content !important;
+      min-height: 0;
+      &:hover {
+        background: $dark_gray !important;
+      }
+    }
+    span {
+      color: $off_white;
+      white-space: normal !important;
+      text-overflow: revert !important;
+      font-weight: 700;
+      font-size: 1rem;
+      text-align: center;
+      margin-right: 0.5rem;
+    }
+  }
+  div {
+    z-index: 0 !important;
+  }
+  canvas {
+    height: 23rem;
+  }
+}
+
+.peripheral-list {
+  label {
+    margin-top: 0 !important;
+  }
+  .slider-container {
+    padding-left: 0.5rem;
+    padding-right: 1rem;
+    .bp5-slider {
+      min-width: 100%;
+    }
+  }
+}
+
+.peripheral-edit-grid {
+  grid-template-columns: 1fr 20% 20% auto;
+}
+
+.box-top-2d-wrapper {
+  margin-top: 2rem;
+  .box-top-leds,
+  .box-top-buttons {
+    display: grid;
+    text-align: center;
+  }
+  .box-top-buttons {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  .box-top-leds {
+    margin: auto;
+    width: 80%;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  .fast-blink {
+    animation: fill-blink 0.2s linear infinite;
+  }
+  .slow-blink {
+    animation: fill-blink 2s linear infinite;
+  }
+}
+
+.pinned-sequence-list {
+  .help-icon {
+    color: $gray !important;
+  }
+}

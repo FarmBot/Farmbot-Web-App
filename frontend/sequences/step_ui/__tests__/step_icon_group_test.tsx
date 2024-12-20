@@ -9,7 +9,6 @@ import { mount, shallow } from "enzyme";
 import { StepIconGroup, StepIconBarProps } from "../step_icon_group";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { splice, remove, move } from "../../step_tiles";
-import { push } from "../../../history";
 import { Path } from "../../../internal_urls";
 import { emptyState } from "../../../resources/reducer";
 import { StateToggleKey } from "../step_wrapper";
@@ -131,6 +130,6 @@ describe("<StepIconGroup />", () => {
     p.executeSequenceName = "My Sequence";
     const wrapper = mount(<StepIconGroup {...p} />);
     wrapper.find(".fa-external-link").simulate("click");
-    expect(push).toHaveBeenCalledWith(Path.sequences("My_Sequence"));
+    expect(mockNavigate).toHaveBeenCalledWith(Path.sequences("My_Sequence"));
   });
 });

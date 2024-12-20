@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  Col, Widget, WidgetHeader, WidgetBody, BlurableInput, Row,
+  Widget, WidgetHeader, WidgetBody, BlurableInput,
 } from "../ui";
 import { t } from "../i18next_wrapper";
 
@@ -19,32 +19,30 @@ export function ForgotPassword(props: ForgotPasswordProps) {
     onEmailChange,
   } = props;
 
-  return <Col xs={12} sm={5} smOffset={1} mdOffset={0}>
-    <Widget>
-      <WidgetHeader title={"Reset Password"}>
-        <button
-          className="fb-button gray"
-          title={t("go back")}
-          onClick={onGoBack}>
-          {t("BACK")}
-        </button>
-      </WidgetHeader>
-      <WidgetBody>
-        <form onSubmit={onSubmit}>
+  return <Widget>
+    <WidgetHeader title={"Reset Password"}>
+      <button
+        className="fb-button gray"
+        title={t("go back")}
+        onClick={onGoBack}>
+        {t("BACK")}
+      </button>
+    </WidgetHeader>
+    <WidgetBody>
+      <form onSubmit={onSubmit}>
+        <div>
           <label>{t("Enter Email")}</label>
           <BlurableInput
             type="email"
             value={email}
             onCommit={onEmailChange} />
-          <Row>
-            <button
-              title={t("Reset Password")}
-              className="fb-button green front-page-button">
-              {t("Reset Password")}
-            </button>
-          </Row>
-        </form>
-      </WidgetBody>
-    </Widget>
-  </Col>;
+        </div>
+        <button
+          title={t("Reset Password")}
+          className="fb-button green reset-password-button">
+          {t("Reset Password")}
+        </button>
+      </form>
+    </WidgetBody>
+  </Widget>;
 }

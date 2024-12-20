@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col } from "../../ui";
+import { Row } from "../../ui";
 import { t } from "../../i18next_wrapper";
 
 export interface KeyValEditRowProps {
@@ -19,28 +19,22 @@ export interface KeyValEditRowProps {
 /** A row containing two textboxes and a delete button. Useful for maintaining
  * lists of things (peripherals, feeds, tools etc). */
 export function KeyValEditRow(p: KeyValEditRowProps) {
-  return <Row>
-    <Col xs={6}>
-      <input type="text"
-        name="label"
-        placeholder={p.labelPlaceholder}
-        value={p.label}
-        onChange={p.onLabelChange} />
-    </Col>
-    <Col xs={4}>
-      <input type={p.valueType}
-        name="value"
-        value={p.value}
-        placeholder={p.valuePlaceholder}
-        onChange={p.onValueChange} />
-    </Col>
-    <Col xs={2}>
-      <button
-        className="red fb-button del-button"
-        title={t("Delete")}
-        onClick={p.onClick}>
-        <i className="fa fa-times" />
-      </button>
-    </Col>
+  return <Row className="key-value-edit-row">
+    <input type="text"
+      name="label"
+      placeholder={p.labelPlaceholder}
+      value={p.label}
+      onChange={p.onLabelChange} />
+    <input type={p.valueType}
+      name="value"
+      value={p.value}
+      placeholder={p.valuePlaceholder}
+      onChange={p.onValueChange} />
+    <button
+      className="red fb-button"
+      title={t("Delete")}
+      onClick={p.onClick}>
+      <i className="fa fa-times" />
+    </button>
   </Row>;
 }

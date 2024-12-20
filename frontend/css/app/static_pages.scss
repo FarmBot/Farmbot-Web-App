@@ -1,0 +1,362 @@
+@use "../variables" as *;
+@use "sass:color";
+
+.static-page {
+  min-height: 100vh;
+  max-height: 100%;
+  background: url(/public/app-resources/img/plant-icon-background.png), linear-gradient(#00b685, #003f53);
+  background-size: 600px;
+  padding: 8rem 2rem;
+  h1,
+  h2 {
+    font-family: "Cabin", Arial, Helvetica, sans-serif !important;
+    font-weight: 100 !important;
+    color: $white;
+    text-shadow: 0 0 25px rgba(0, 0, 0, 0.1), 0 0 25px rgba(0, 0, 0, 0.1);
+  }
+  h1 {
+    font-family: "Inknut Antiqua" !important;
+    font-weight: bold !important;
+    font-size: 3.4rem;
+    line-height: 3.6rem;
+  }
+  h2 {
+    margin: 0;
+    font-size: 2.2rem;
+  }
+  form {
+    display: grid;
+    gap: 1rem;
+  }
+  input {
+    font-family: revert;
+    font-size: revert;
+  }
+  .all-content-wrapper {
+    max-width: 60rem;
+  }
+  .widget-wrapper {
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+    margin: 0 auto;
+    max-width: 40rem;
+    text-align: start;
+    width: 40rem;
+  }
+  .or-divider {
+    color: $white;
+    display: flex;
+    font-style: italic;
+    gap: 1rem;
+    justify-self: center;
+    text-align: center;
+    width: 10rem;
+    hr {
+      width: 100%;
+      border: 1.5px solid rgb(255 255 255 / 50%)
+    }
+  }
+  .front-page-container {
+    display: grid;
+    grid-auto-flow: row;
+    gap: 3rem;
+    justify-items: stretch;
+  }
+  .forgot-password-login-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    align-items: center;
+  }
+  .forgot-password {
+    display: inline-block;
+    color: $blue;
+  }
+  .create-account-button, .reset-password-button {
+    justify-self: right;
+  }
+  input[type="checkbox"] {
+    float: left;
+    margin-right: 0.5rem;
+    margin-top: 0.25rem;
+  }
+  a:link {
+    font-weight: 300;
+    color: $dark_gray;
+  }
+  a:visited {
+    color: $medium_gray;
+  }
+  a:hover {
+    font-weight: 500;
+  }
+  a:active {
+    color: $medium_gray;
+    font-weight: 500;
+  }
+  .fa-gear {
+    float: right;
+  }
+  .fa-external-link {
+    margin-left: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  .pull-right {
+    justify-self: right;
+  }
+}
+
+.os-download-page {
+  table {
+    a {
+      text-transform: none;
+    }
+  }
+}
+
+.featured-sequences-page,
+.os-download-page {
+  text-align: center;
+  .all-content-wrapper {
+    padding-top: 0 !important;
+    min-height: 30rem;
+  }
+  h1 {
+    margin-top: 5rem;
+    font-size: 2rem !important;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.1), 0 0 25px rgba(0, 0, 0, 0.1) !important;
+  }
+  p {
+    margin: auto;
+    width: 70%;
+    color: $off_white;
+  }
+  a {
+    white-space: nowrap;
+    font-weight: bold !important;
+    color: $off_white !important;
+    &:hover {
+      color: $white !important;
+    }
+    &:visited {
+      color: $off_white;
+    }
+    &:link {
+      color: $off_white;
+    }
+    &:active {
+      color: $white !important;
+    }
+  }
+  table {
+    font-size: 1.1rem;
+    color: $gray;
+    text-align: left;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+    border-radius: 2rem;
+    thead,
+    tr:not(:last-child) {
+      border-bottom: 2px solid $translucent2_white;
+    }
+    th {
+      padding: 1rem 1.5rem;
+    }
+    td {
+      padding: 1rem 1.5rem;
+      white-space: pre;
+      span {
+        display: block;
+        white-space: nowrap;
+      }
+    }
+  }
+  button {
+    cursor: pointer;
+  }
+  .wizard-btn {
+    margin: 1rem;
+    float: none;
+    color: $white;
+    margin-top: 7rem;
+  }
+  .os-download-wizard {
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 2rem;
+    backdrop-filter: blur(10px);
+    padding: 2rem;
+    .transparent-button {
+      margin: 1rem;
+      float: none;
+      color: $white;
+      height: 5rem;
+      width: 15rem;
+    }
+    .back {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      height: unset;
+      width: unset;
+    }
+    .start {
+      height: unset;
+      width: unset;
+    }
+    p {
+      font-size: 1.4rem;
+    }
+    .os-download-wizard-note {
+      font-size: 1.4rem;
+      font-weight: bold;
+    }
+    .os-download-wizard-run {
+      img {
+        width: 100%;
+        border-radius: 1rem;
+      }
+    }
+    .buttons {
+      button {
+        border-radius: 0;
+        padding: 0;
+        border: 3px solid $white;
+        img {
+          width: 100%;
+        }
+        &:hover {
+          border-color: $off_white;
+          .btn-text {
+            background: color.adjust($cyan, $lightness: -10%);
+          }
+        }
+      }
+    }
+    .download-wizard-button {
+      .os-wizard-content-button {
+        border-radius: 8px;
+        .btn-text {
+          background: $cyan;
+          border-radius: 5px 5px 0 0;
+          .btn-title {
+            font-family: "Inknut Antiqua";
+            font-weight: bold;
+            margin-bottom: 0.5rem !important;
+            padding-top: 0.75rem;
+            font-size: 1.7rem;
+          }
+          .os-download-wizard-btn-label {
+            width: 75%;
+            font-size: 1.2rem;
+            padding-bottom: 0.5rem;
+            line-height: 1.5rem;
+          }
+        }
+        img {
+          border-radius: 0 0 5px 5px;
+        }
+        &.white {
+          background: $white !important;
+          border-color: $off_white;
+          .btn-text {
+            background: $off_white;
+            .btn-title {
+              color: $dark_gray;
+            }
+          }
+          &:hover {
+            background: $off_white !important;
+            border-color: $white;
+            .btn-text {
+              background: $white;
+            }
+          }
+        }
+        &.black {
+          background: $white !important;
+          border-color: $dark_gray;
+          .btn-text {
+            background: $dark_gray;
+            .btn-title {
+              color: $white;
+            }
+          }
+          &:hover {
+            background: $off_white !important;
+            border-color: $darker_gray;
+            .btn-text {
+              background: $darker_gray;
+            }
+          }
+        }
+      }
+    }
+    .download-link {
+      justify-items: center;
+      a {
+        text-transform: none;
+        height: unset;
+      }
+    }
+    .buttons-with-image {
+      display: flex;
+      .buttons {
+        margin: auto;
+        margin-right: 0;
+      }
+      img {
+        margin: auto;
+        margin-left: 3rem;
+        width: 12rem;
+        border-radius: 5px;
+        border: 3px solid $lighter_gray;
+      }
+    }
+  }
+}
+
+.static-page {
+  &.os-download-page {
+    .os-download-description {
+      width: 80%;
+    }
+    p {
+      font-size: 1.5rem;
+      line-height: 2rem;
+    }
+    h1 {
+      margin: 0;
+      font-family: "Inknut Antiqua" !important;
+      font-weight: 600 !important;
+    }
+  }
+}
+
+.featured-sequences-page {
+  summary {
+    color: $light_gray;
+    cursor: pointer;
+  }
+  .sequence-description {
+    margin-left: -1.5rem;
+    margin-right: -5rem;
+  }
+  .markdown {
+    p {
+      color: $white !important;
+    }
+  }
+  details {
+    max-width: calc(min(70vw, 370px));
+  }
+  summary {
+    margin-bottom: 0.5rem;
+  }
+  h1,
+  h2 {
+    margin-bottom: 0;
+  }
+  li,
+  p {
+    white-space: pre-wrap;
+  }
+}

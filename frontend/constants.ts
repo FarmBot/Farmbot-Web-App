@@ -606,6 +606,43 @@ export namespace ToolTips {
   export const UNKNOWN_STEP =
     trim(`Unable to properly display this step.`);
 
+  // 3D
+  export const THREE_D_BED_WALL_THICKNESS =
+    trim(`Bed wood thickness. (default: {{ defaultConfigValue }}mm)`);
+
+  export const THREE_D_BED_HEIGHT =
+    trim(`Bed height. (default: {{ defaultConfigValue }}mm)`);
+
+  export const THREE_D_CC_SUPPORT_SIZE =
+    trim(`Cable carrier support size. (default: {{ defaultConfigValue }}mm)`);
+
+  export const THREE_D_BEAM_LENGTH =
+    trim(`Gantry beam extrusion length. (default: {{ defaultConfigValue }}mm)`);
+
+  export const THREE_D_COLUMN_LENGTH =
+    trim(`Gantry column extrusion length. (default: {{ defaultConfigValue }}mm)`);
+
+  export const THREE_D_Z_AXIS_LENGTH =
+    trim(`Z axis extrusion length. (default: {{ defaultConfigValue }}mm)`);
+
+  export const THREE_D_BED_X_OFFSET =
+    trim(`Bed X offset. (default: {{ defaultConfigValue }}mm)`);
+
+  export const THREE_D_BED_Y_OFFSET =
+    trim(`Bed Y offset. (default: {{ defaultConfigValue }}mm)`);
+
+  export const THREE_D_BED_Z_OFFSET =
+    trim(`Bed Z offset. (default: {{ defaultConfigValue }}mm)`);
+
+  export const THREE_D_LEG_SIZE =
+    trim(`Leg size. (default: {{ defaultConfigValue }}mm)`);
+
+  export const THREE_D_BOUNDS =
+    trim(`Display bounds. (default: 0)`);
+
+  export const THREE_D_GRID =
+    trim(`Display grid. (default: 0)`);
+
   // Tools
   export const WATER_FLOW_RATE =
     trim(`To calculate **WATER FLOW RATE**, hold a measuring cup below the
@@ -818,6 +855,9 @@ export namespace Content {
   export const USER_INTERFACE_READ_ONLY_MODE =
     trim(`Disallow account data changes. This does
     not prevent Farmwares or FarmBot OS from changing settings.`);
+
+  export const DARK_MODE =
+    trim(`Enable a dark interface theme.`);
 
   // Sequence Settings
   export const CONFIRM_STEP_DELETION =
@@ -1154,22 +1194,22 @@ export namespace Content {
     Try leaving the saved garden first.`);
 
   export const NO_PLANTS =
-    trim(`Press "+" to add a plant to your garden.`);
+    trim(`Press + to add a plant to your garden`);
 
   export const NO_GARDENS =
-    trim(`Press "+" to add a garden.`);
+    trim(`Press + to add a garden`);
 
   export const NO_POINTS =
-    trim(`Press "+" to add a point to your garden.`);
+    trim(`Press + to add a point to your garden`);
 
   export const NO_GROUPS =
-    trim(`Press "+" to add a group.`);
+    trim(`Press + to add a group`);
 
   export const NO_WEEDS =
-    trim(`Press "+" to add a weed.`);
+    trim(`Press + to add a weed`);
 
   export const NO_FARMWARE =
-    trim(`Press "+" to add a Farmware.`);
+    trim(`Press + to add a Farmware`);
 
   export const NO_PERIPHERALS =
     trim(`Press "edit" to add a peripheral.`);
@@ -1178,10 +1218,10 @@ export namespace Content {
     trim(`Press "edit" to add a sensor.`);
 
   export const NO_ZONES =
-    trim(`Press "+" to add a zone.`);
+    trim(`Press + to add a zone`);
 
   export const NO_CURVES =
-    trim(`Press "+" to add a curve.`);
+    trim(`Press + to add a curve`);
 
   export const ENTER_CROP_SEARCH_TERM =
     trim(`Search for a crop to add to your garden.`);
@@ -1193,10 +1233,10 @@ export namespace Content {
     trim(`add this crop on OpenFarm?`);
 
   export const NO_TOOLS =
-    trim(`Press "+" to add a new tool or seed container.`);
+    trim(`Press + to add a new tool or seed container`);
 
   export const NO_SEED_CONTAINERS =
-    trim(`Press "+" to add a seed container.`);
+    trim(`Press + to add a seed container`);
 
   export const MOUNTED_TOOL =
     trim(`The tool currently mounted to the UTM can be set here or by using
@@ -1205,7 +1245,7 @@ export namespace Content {
 
   // Farm Events
   export const NOTHING_SCHEDULED =
-    trim(`Press "+" to schedule an event.`);
+    trim(`Press + to schedule an event`);
 
   export const REGIMEN_TODAY_SKIPPED_ITEM_RISK =
     trim(`You are scheduling a regimen to run today. Be aware that
@@ -2089,7 +2129,7 @@ export enum DeviceSetting {
   addNewPinBinding = `Add new pin binding`,
 
   // Pin Guard
-  pinGuardLabels = ``,
+  pinGuardLabels = `Pin Guard`,
   pinGuardTitles = `pin timeout (sec) to state`,
   pinGuard = `Pin Guard`,
   pinGuard1 = `Pin Guard 1`,
@@ -2142,6 +2182,21 @@ export enum DeviceSetting {
   otherSettings = `Other`,
   customSettings = `Custom Settings`,
   envEditor = `ENV Editor`,
+
+  // 3D
+  threeDGarden = `3D Garden`,
+  bedWallThickness = `Bed Wall Thickness`,
+  bedHeight = `Bed Height`,
+  ccSupportSize = `Cable Carrier Support Size`,
+  beamLength = `Beam Length`,
+  columnLength = `Column Length`,
+  zAxisLength = `Z Axis Length`,
+  bedXOffset = `Bed X Offset`,
+  bedYOffset = `Bed Y Offset`,
+  bedZOffset = `Bed Z Offset`,
+  legSize = `Leg Size`,
+  bounds = `Bounds`,
+  grid = `Grid`,
 
   // Map
   showPlants = `Plants`,
@@ -2221,6 +2276,7 @@ export enum DeviceSetting {
   discardUnsavedChanges = `Discard Unsaved Changes`,
   confirmEmergencyUnlock = `Confirm emergency unlock`,
   userInterfaceReadOnlyMode = `User Interface Read Only Mode`,
+  darkMode = `Dark Mode`,
 
   // Photos: Filters
   alwaysHighlightCurrentPhotoInMap = `always highlight current photo in map`,
@@ -2411,6 +2467,7 @@ export enum Actions {
   TOGGLE_GRID_ID = "TOGGLE_GRID_ID",
   SET_GRID_START = "SET_GRID_START",
   TOGGLE_SOIL_HEIGHT_LABELS = "TOGGLE_SOIL_HEIGHT_LABELS",
+  SET_PANEL_OPEN = "SET_PANEL_OPEN",
   SET_PROFILE_OPEN = "SET_PROFILE_OPEN",
   SET_PROFILE_AXIS = "SET_PROFILE_AXIS",
   SET_PROFILE_POSITION = "SET_PROFILE_POSITION",
@@ -2421,6 +2478,9 @@ export enum Actions {
   SET_CROP_HEIGHT_CURVE_ID = "SET_CROP_HEIGHT_CURVE_ID",
   SET_CROP_STAGE = "SET_CROP_STAGE",
   SET_CROP_PLANTED_AT = "SET_CROP_PLANTED_AT",
+
+  // 3D
+  SET_DISTANCE_INDICATOR = "SET_DISTANCE_INDICATOR",
 
   // Regimens
   PUSH_WEEK = "PUSH_WEEK",

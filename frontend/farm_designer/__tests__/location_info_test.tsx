@@ -13,10 +13,10 @@ import {
 } from "../../__test_support__/fake_state/resources";
 import { tagAsSoilHeight } from "../../points/soil_height";
 import { Actions } from "../../constants";
-import { push } from "../../history";
 import { ImageFlipper } from "../../photos/images/image_flipper";
 import { Path } from "../../internal_urls";
 import { fakeMovementState } from "../../__test_support__/fake_bot_data";
+import { mountWithContext } from "../../__test_support__/mount_with_context";
 
 describe("<LocationInfo />", () => {
   const fakeProps = (): LocationInfoProps => ({
@@ -145,7 +145,7 @@ describe("<LocationInfo />", () => {
     const p = fakeProps();
     p.chosenLocation = { x: 1, y: 1, z: 0 };
     p.currentBotLocation = { x: 10, y: 1, z: 0 };
-    const wrapper = mount(<LocationInfo {...p} />);
+    const wrapper = mountWithContext(<LocationInfo {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("9mm from farmbot");
     jest.clearAllMocks();
     wrapper.find(".add-point").simulate("click");
@@ -153,7 +153,7 @@ describe("<LocationInfo />", () => {
       type: Actions.SET_DRAWN_POINT_DATA,
       payload: { cx: 1, cy: 1 }
     });
-    expect(push).toHaveBeenCalledWith(Path.points("add"));
+    expect(mockNavigate).toHaveBeenCalledWith(Path.points("add"));
   });
 });
 

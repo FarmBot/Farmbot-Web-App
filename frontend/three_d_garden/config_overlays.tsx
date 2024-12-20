@@ -304,6 +304,8 @@ export const PrivateOverlay = (props: OverlayProps) => {
       <Toggle {...common} configKey={"tracks"} />
       <Toggle {...common} configKey={"cableCarriers"} />
       <Toggle {...common} configKey={"bot"} />
+      <Radio {...common} configKey={"distanceIndicator"}
+        options={["", "bedHeight", "beamLength", "columnLength", "zAxisLength"]} />
       <label>{"Bed Properties"}</label>
       <Slider {...common} configKey={"bedWallThickness"} min={0} max={200} />
       <Slider {...common} configKey={"bedHeight"} min={0} max={1000} />

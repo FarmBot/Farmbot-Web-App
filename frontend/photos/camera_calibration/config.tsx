@@ -38,7 +38,7 @@ export class CameraCalibrationConfig
       onChange: this.props.onChange,
     };
     const { calibrationZ } = this.props;
-    return <div className={"camera-calibration-config"}>
+    return <div className={"grid"}>
       {!simple &&
         <div className={"camera-calibration-configs"}>
           <BoolConfig {...commonProps}
@@ -123,11 +123,13 @@ export const BoolConfig = (props: BoolConfigProps) => {
     hidden={props.advanced && !(props.showAdvanced || props.modified)}
     className={props.advanced ? "advanced" : undefined}
     pathPrefix={Path.photos}>
-    <div className="boolean-camera-calibration-config">
-      <label htmlFor={props.configKey}>
-        {t(props.settingName)}
-      </label>
-      {props.helpText && <Help text={props.helpText} links={props.links} />}
+    <div className="row grid-exp-1">
+      <div className="row grid-exp-2 half-gap">
+        <label htmlFor={props.configKey}>
+          {t(props.settingName)}
+        </label>
+        {props.helpText && <Help text={props.helpText} links={props.links} />}
+      </div>
       <input
         type="checkbox"
         name={props.configKey}
@@ -155,11 +157,13 @@ export interface NumberBoxConfigProps {
 
 export const NumberBoxConfig = (props: NumberBoxConfigProps) => {
   return <Highlight settingName={props.settingName} pathPrefix={Path.photos}>
-    <div className={"camera-config-number-box"}>
-      <label htmlFor={props.configKey}>
-        {t(props.settingName)}
-      </label>
-      <Help text={props.helpText} />
+    <div className={"row camera-calibration-setting-grid"}>
+      <div className="row grid-exp-2 half-gap">
+        <label htmlFor={props.configKey}>
+          {t(props.settingName)}
+        </label>
+        <Help text={props.helpText} />
+      </div>
       <BlurableInput type="number"
         id={props.configKey}
         className={getModifiedClassName(props.configKey,
@@ -185,11 +189,13 @@ export interface DropdownConfigProps {
 
 export const DropdownConfig = (props: DropdownConfigProps) =>
   <Highlight settingName={props.settingName} pathPrefix={Path.photos}>
-    <div className={`dropdown-camera-calibration-config ${props.extraClass}`}>
-      <label htmlFor={props.configKey}>
-        {t(props.settingName)}
-      </label>
-      <Help text={props.helpText} />
+    <div className={`camera-calibration-setting-grid row ${props.extraClass}`}>
+      <div className="row grid-exp-2 half-gap">
+        <label htmlFor={props.configKey}>
+          {t(props.settingName)}
+        </label>
+        <Help text={props.helpText} />
+      </div>
       <FBSelect
         extraClass={getModifiedClassName(props.configKey,
           props.wdEnvGet(props.configKey))}

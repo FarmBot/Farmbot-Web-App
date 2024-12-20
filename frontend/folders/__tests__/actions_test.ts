@@ -34,7 +34,6 @@ import { save, edit, init, initSave, destroy } from "../../api/crud";
 import {
   setActiveSequenceByName,
 } from "../../sequences/set_active_sequence_by_name";
-import { push } from "../../history";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { stepGet } from "../../draggable/actions";
 import { SpecialStatus } from "farmbot";
@@ -98,41 +97,45 @@ describe("setFolderName", () => {
 
 describe("addNewSequenceToFolder", () => {
   it("adds a new sequence", () => {
-    addNewSequenceToFolder();
+    const navigate = jest.fn();
+    addNewSequenceToFolder(navigate);
     expect(setActiveSequenceByName).toHaveBeenCalled();
     expect(init).toHaveBeenCalledWith("Sequence", expect.objectContaining({
       name: "New Sequence 1",
       color: "gray",
       folder_id: undefined,
     }));
-    expect(push).toHaveBeenCalledWith(Path.sequences("New_Sequence_1"));
+    expect(navigate).toHaveBeenCalledWith(Path.sequences("New_Sequence_1"));
   });
 
   it("adds a new sequence to a folder", () => {
-    addNewSequenceToFolder({ id: 11 });
+    const navigate = jest.fn();
+    addNewSequenceToFolder(navigate, { id: 11 });
     expect(setActiveSequenceByName).toHaveBeenCalled();
     expect(init).toHaveBeenCalledWith("Sequence", expect.objectContaining({
       name: "New Sequence 1",
       color: "gray",
       folder_id: 11,
     }));
-    expect(push).toHaveBeenCalledWith(Path.sequences("New_Sequence_1"));
+    expect(navigate).toHaveBeenCalledWith(Path.sequences("New_Sequence_1"));
   });
 
   it("adds a new sequence to a folder with a color", () => {
-    addNewSequenceToFolder({ id: 11, color: "blue" });
+    const navigate = jest.fn();
+    addNewSequenceToFolder(navigate, { id: 11, color: "blue" });
     expect(setActiveSequenceByName).toHaveBeenCalled();
     expect(init).toHaveBeenCalledWith("Sequence", expect.objectContaining({
       name: "New Sequence 1",
       color: "blue",
       folder_id: 11,
     }));
-    expect(push).toHaveBeenCalledWith(Path.sequences("New_Sequence_1"));
+    expect(navigate).toHaveBeenCalledWith(Path.sequences("New_Sequence_1"));
   });
 
   it("exceeds limit", () => {
     mockExceeded = true;
-    addNewSequenceToFolder();
+    const navigate = jest.fn();
+    addNewSequenceToFolder(navigate);
     expect(init).not.toHaveBeenCalled();
   });
 });

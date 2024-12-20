@@ -6,15 +6,12 @@ import {
   HoveredPlantPayl,
 } from "./interfaces";
 import { generateReducer } from "../redux/generate_reducer";
-import { cloneDeep, isUndefined } from "lodash";
+import { cloneDeep } from "lodash";
 import { TaggedResource, PointType, PlantStage } from "farmbot";
 import { Actions } from "../constants";
 import { BotPosition } from "../devices/interfaces";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 import { UUID } from "../resources/interfaces";
-import { push } from "../history";
-import { getUrlQuery } from "../util";
-import { Path } from "../internal_urls";
 
 export const initialState: DesignerState = {
   selectedPoints: undefined,
@@ -66,6 +63,8 @@ export const initialState: DesignerState = {
   cropHeightCurveId: undefined,
   cropStage: undefined,
   cropPlantedAt: undefined,
+  distanceIndicator: "",
+  panelOpen: true,
 };
 
 export const designer = generateReducer<DesignerState>(initialState)
@@ -182,11 +181,6 @@ export const designer = generateReducer<DesignerState>(initialState)
   })
   .add<BotPosition>(Actions.CHOOSE_LOCATION, (s, { payload }) => {
     s.chosenLocation = payload;
-    !isUndefined(payload.x) &&
-      Path.getSlug(Path.designer()) === "location" &&
-      parseFloat("" + getUrlQuery("x")) != payload.x &&
-      parseFloat("" + getUrlQuery("y")) != payload.y &&
-      push(Path.location({ x: payload.x, y: payload.y }));
     return s;
   })
   .add<number | undefined>(Actions.CHOOSE_SAVED_GARDEN, (s, { payload }) => {
@@ -269,6 +263,14 @@ export const designer = generateReducer<DesignerState>(initialState)
   })
   .add<boolean>(Actions.TOGGLE_SOIL_HEIGHT_LABELS, (s) => {
     s.soilHeightLabels = !s.soilHeightLabels;
+    return s;
+  })
+  .add<string>(Actions.SET_DISTANCE_INDICATOR, (s, { payload }) => {
+    s.distanceIndicator = payload;
+    return s;
+  })
+  .add<boolean>(Actions.SET_PANEL_OPEN, (s, { payload }) => {
+    s.panelOpen = payload;
     return s;
   })
   .add<boolean>(Actions.SET_PROFILE_OPEN, (s, { payload }) => {

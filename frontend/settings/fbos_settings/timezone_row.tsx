@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col } from "../../ui";
+import { Row } from "../../ui";
 import { DeviceSetting, Content } from "../../constants";
 import { TimezoneRowProps } from "./interfaces";
 import { t } from "../../i18next_wrapper";
@@ -27,18 +27,12 @@ export class TimezoneRow extends React.Component<TimezoneRowProps> {
 
   render() {
     return <Highlight settingName={DeviceSetting.timezone}>
-      <Row>
-        <Col xs={5}>
-          <label>
-            {t(DeviceSetting.timezone)}
-          </label>
-        </Col>
-        <Col xs={7}>
-          <this.Selector />
-        </Col>
-      </Row>
-      <Row>
-        <Col xs={12}><this.Note /></Col>
+      <Row className="grid-2-col timezone-grid">
+        <label>
+          {t(DeviceSetting.timezone)}
+        </label>
+        <this.Selector />
+        <this.Note />
       </Row>
     </Highlight>;
   }

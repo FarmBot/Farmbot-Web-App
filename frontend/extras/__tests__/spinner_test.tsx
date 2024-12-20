@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Spinner } from "../spinner";
 import { mount } from "enzyme";
 

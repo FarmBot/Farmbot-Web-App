@@ -1,0 +1,126 @@
+@use "../variables" as *;
+@use "sass:color";
+
+/**
+ * Styling for the <Widget /> component.
+ * Example output (w = widget):
+ *
+ * .w-wrapper
+ * ┏━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+ * ┃ .w-header   [.w-control] ┃
+ * ┣━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+ * ┃ .w-body                  ┃
+ * ┃                          ┃
+ * ┃                          ┃
+ * ┃                          ┃
+ * ┣━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+ * ┃ .w-footer                ┃
+ * ┗━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+ */
+
+.widget-wrapper {
+  position: relative;
+  box-shadow: 0px 0px 1rem $translucent2;
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.widget-header {
+  background: $dark_gray;
+  letter-spacing: .05rem;
+  padding: 0 1.25rem;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem;
+  align-items: center;
+  height: 3.5rem;
+  >*:not(h5):not(.title-help-icon):not(.title-help) {
+    margin: 0;
+  }
+  .title-help{
+    display: inline;
+    .title-help-text {
+      &.open{
+        display: block;
+        opacity: 100;
+        padding: 0.5rem 0.3rem;
+        max-height: 200px;
+        transition: 0.5s;
+        color: $white;
+        margin-bottom: 0%;
+      }
+    }
+    .title-help-icon {
+      display: inline;
+      padding: 1rem 0;
+      color: $medium_gray;
+      &:hover {
+        color: $gray;
+        transition-delay: 0.1s;
+      }
+  }
+  }
+  i.fa-cog {
+    color: $white;
+  }
+  .title-help-text {
+    display: table-column-group;
+    font-style: italic;
+    color: $off_white;
+    line-height: 2rem;
+    font-family: sans-serif;
+    padding: 0 0.3rem;
+    opacity: 0;
+    max-height: 0px;
+    transition: all 0.5s ease;
+    transition-delay: 0.2s;
+    a {
+      pointer-events: all;
+    }
+    a:link {
+      font-style: normal;
+      color: $off_white;
+    }
+    a:hover {
+      font-weight: 600;
+      color: $white;
+    }
+    a:active {
+      color: $white;
+    }
+  }
+  h5 {
+    display: inline;
+    color: $gray;
+    font-size: 1.2rem;
+    margin: 0;
+    text-transform: uppercase;
+  }
+  .bp5-popover-wrapper {
+    display: inline;
+  }
+}
+
+.help-icon:hover .help-text,
+.help-icon:active .help-text {
+  opacity: 100;
+  padding: 0.5rem 0.3rem;
+  max-height: 200px;
+  transition: 0.5s;
+  transition-delay: 0.5s;
+}
+
+.widget-body {
+  background: $off_white;
+  border-color: $light_gray;
+  color: $dark_gray;
+  padding: 1.25rem;
+}
+
+.widget-footer {
+  background: $dark_gray;
+  padding: 0.5rem 1rem 0;
+  * {
+    color: $white;
+  }
+}

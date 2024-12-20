@@ -373,7 +373,7 @@ describe("renderCeleryNode()", () => {
     },
     {
       node: { kind: "reboot", args: { package: "farmbot_os" } },
-      expected: "power cycle farmbot's onboard computer."
+      expected: ""
     },
     {
       node: { kind: "check_updates", args: { package: "farmbot_os" } },

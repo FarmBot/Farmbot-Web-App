@@ -1,7 +1,11 @@
 jest.mock("../../api/crud", () => ({
-  destroy: jest.fn(),
-  overwrite: jest.fn(),
   save: jest.fn(),
+  overwrite: jest.fn(),
+}));
+
+let mockTzMismatch = false;
+jest.mock("../../devices/timezones/guess_timezone", () => ({
+  timezoneMismatch: () => mockTzMismatch,
 }));
 
 import React from "react";
@@ -16,24 +20,19 @@ import {
   recombine,
   destructureFarmEvent,
   offsetTime,
-  FarmEventDeleteButtonProps,
-  FarmEventDeleteButton,
   RepeatForm,
   RepeatFormProps,
   StartTimeForm,
   StartTimeFormProps,
-  FarmEventForm,
 } from "../edit_fe_form";
 import { isString, isFunction } from "lodash";
-import { repeatOptions } from "../map_state_to_props_add_edit";
 import { SpecialStatus, ParameterApplication } from "farmbot";
 import moment from "moment";
-import { push } from "../../history";
 import {
   buildResourceIndex, fakeDevice,
 } from "../../__test_support__/resource_index_builder";
 import { fakeVariableNameSet } from "../../__test_support__/fake_variables";
-import { save, destroy } from "../../api/crud";
+import { save } from "../../api/crud";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { error, success, warning } from "../../toast/toast";
 import { BlurableInput } from "../../ui";
@@ -54,6 +53,7 @@ describe("<EditFEForm />", () => {
     title: "title",
     timeSettings: fakeTimeSettings(),
     resources: buildResourceIndex([]).index,
+    setSpecialStatus: jest.fn(),
   });
 
   function instance(p: EditFEProps) {
@@ -119,9 +119,10 @@ describe("<EditFEForm />", () => {
     p.farmEvent.body.id = 0;
     p.farmEvent.body.executable_type = "Sequence";
     const i = instance(p);
+    i.navigate = jest.fn();
     i.executableSet({ value: "wow", label: "hey", headingId: "Regimen" });
     expect(error).not.toHaveBeenCalled();
-    expect(push).not.toHaveBeenCalled();
+    expect(i.navigate).not.toHaveBeenCalled();
   });
 
   it("doesn't allow improper changes to the executable", () => {
@@ -129,10 +130,11 @@ describe("<EditFEForm />", () => {
     p.farmEvent.body.id = 1;
     p.farmEvent.body.executable_type = "Regimen";
     const i = instance(p);
+    i.navigate = jest.fn();
     i.executableSet({ value: "wow", label: "hey", headingId: "Sequence" });
     expect(error).toHaveBeenCalledWith(
       "Cannot change between Sequences and Regimens.");
-    expect(push).toHaveBeenCalledWith(Path.farmEvents());
+    expect(i.navigate).toHaveBeenCalledWith(Path.farmEvents());
   });
 
   it("handles empty dropdown value", () => {
@@ -140,9 +142,10 @@ describe("<EditFEForm />", () => {
     p.farmEvent.body.id = 1;
     p.farmEvent.body.executable_type = "Regimen";
     const i = instance(p);
+    i.navigate = jest.fn();
     i.executableSet({ value: "", label: "hey", headingId: "Sequence" });
     expect(error).not.toHaveBeenCalled();
-    expect(push).not.toHaveBeenCalled();
+    expect(i.navigate).not.toHaveBeenCalled();
   });
 
   it("gets executable info", () => {
@@ -155,6 +158,34 @@ describe("<EditFEForm />", () => {
     expect(exe.headingId).toBe("Sequence");
   });
 
+  it("shows missing executable warning", () => {
+    const p = fakeProps();
+    p.executableOptions = [{ label: "", value: 0, heading: true }];
+    const wrapper = mount(<EditFEForm {...p} />);
+    expect(wrapper.html()).toContain("fa-exclamation-triangle");
+  });
+
+  it("doesn't show missing executable warning", () => {
+    const p = fakeProps();
+    p.executableOptions = [{ label: "", value: 0, heading: false }];
+    const wrapper = mount(<EditFEForm {...p} />);
+    expect(wrapper.html()).not.toContain("fa-exclamation-triangle");
+  });
+
+  it("doesn't show tz warning", () => {
+    mockTzMismatch = false;
+    const p = fakeProps();
+    const wrapper = mount(<EditFEForm {...p} />);
+    expect(wrapper.html()).not.toContain(Content.FARM_EVENT_TZ_WARNING);
+  });
+
+  it("shows tz warning", () => {
+    mockTzMismatch = true;
+    const p = fakeProps();
+    const wrapper = mount(<EditFEForm {...p} />);
+    expect(wrapper.html()).toContain(Content.FARM_EVENT_TZ_WARNING);
+  });
+
   it("sets a subfield of state.fe", () => {
     const p = fakeProps();
     const i = instance(p);
@@ -162,31 +193,6 @@ describe("<EditFEForm />", () => {
     i.fieldSet("executable_id", "1");
     i.forceUpdate();
     expect(i.state.fe.executable_id).toEqual("1");
-  });
-
-  it("renders the correct save button text when adding", () => {
-    const seq = fakeSequence();
-    const fe = fakeFarmEvent("Sequence", seq.body.id || 0);
-    fe.specialStatus = SpecialStatus.DIRTY;
-    const el = mount(<EditFEForm
-      farmEvent={fe}
-      title=""
-      deviceTimezone="America/Chicago"
-      executableOptions={[
-        {
-          label: "Sequence: Every Node",
-          value: 11,
-          headingId: "Sequence"
-        },
-      ]}
-      findExecutable={jest.fn(() => seq)}
-      dispatch={jest.fn()}
-      repeatOptions={repeatOptions()}
-      timeSettings={fakeTimeSettings()}
-      resources={buildResourceIndex([]).index} />);
-    el.update();
-    const txt = el.text().replace(/\s+/g, " ");
-    expect(txt).toContain("Save");
   });
 
   it("displays success message on save", async () => {
@@ -412,10 +418,9 @@ describe("<EditFEForm />", () => {
     const inst = instance(p);
     inst.setState({ fe: { body: [oldVariable] } });
     expect(inst.state.fe.body).toEqual([oldVariable]);
-    expect(inst.state.specialStatusLocal).toEqual(SpecialStatus.SAVED);
     inst.editBodyVariables([oldVariable])(newVariable);
     expect(inst.state.fe.body).toEqual([newVariable]);
-    expect(inst.state.specialStatusLocal).toEqual(SpecialStatus.DIRTY);
+    expect(p.setSpecialStatus).toHaveBeenCalledWith(SpecialStatus.DIRTY);
   });
 
   it("saves an updated variable", () => {
@@ -466,13 +471,6 @@ describe("<EditFEForm />", () => {
     p.farmEvent.body.body = [oldVariable];
     const inst = instance(p);
     expect(inst.updatedFarmEvent.body).toEqual([oldVariable]);
-  });
-
-  it("shows error message upon farm event save", () => {
-    const p = fakeProps();
-    const wrapper = shallow(<EditFEForm {...p} />);
-    wrapper.find(FarmEventForm).simulate("save");
-    expect(error).toHaveBeenCalled();
   });
 
   it("displays correct variable count", () => {
@@ -700,22 +698,5 @@ describe("<RepeatForm />", () => {
       currentTarget: { checked: false }
     });
     expect(p.fieldSet).toHaveBeenCalledWith("timeUnit", "never");
-  });
-});
-
-describe("<FarmEventDeleteButton />", () => {
-  const fakeProps = (): FarmEventDeleteButtonProps => ({
-    hidden: false,
-    farmEvent: fakeFarmEvent("Sequence", 1),
-    dispatch: jest.fn(() => Promise.resolve()),
-  });
-
-  it("deletes farm event", async () => {
-    const p = fakeProps();
-    const wrapper = shallow(<FarmEventDeleteButton {...p} />);
-    await wrapper.find("i").simulate("click");
-    expect(destroy).toHaveBeenCalledWith(p.farmEvent.uuid);
-    expect(push).toHaveBeenCalledWith(Path.farmEvents());
-    expect(success).toHaveBeenCalledWith("Deleted event.", { title: "Deleted" });
   });
 });

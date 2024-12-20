@@ -3,12 +3,6 @@ jest.mock("bowser", () => ({
   getParser: () => ({ satisfies: () => mockSatisfies }),
 }));
 
-let mockPath = "";
-jest.mock("../history", () => ({
-  getPathArray: () => mockPath.split("/"),
-  push: jest.fn(),
-}));
-
 jest.mock("../hotkeys", () => ({
   HotKeys: () => <div />,
 }));
@@ -30,10 +24,10 @@ import { error, warning } from "../toast/toast";
 import { fakePings } from "../__test_support__/fake_state/pings";
 import { auth } from "../__test_support__/fake_state/token";
 import {
+  fakeDesignerState,
   fakeHelpState, fakeMenuOpenState,
 } from "../__test_support__/fake_designer_state";
 import { Path } from "../internal_urls";
-import { push } from "../history";
 import { app } from "../__test_support__/fake_state/app";
 
 const FULLY_LOADED: ResourceName[] = [
@@ -68,9 +62,14 @@ const fakeProps = (): AppProps => ({
   peripherals: [],
   sequences: [],
   menuOpen: fakeMenuOpenState(),
+  designer: fakeDesignerState(),
 });
 
 describe("<App />: Loading", () => {
+  beforeEach(() => {
+    location.pathname = Path.mock(Path.app());
+  });
+
   it("MUST_LOADs not loaded", () => {
     const wrapper = mount(<App {...fakeProps()} />);
     expect(wrapper.text()).toContain("Loading...");
@@ -126,19 +125,33 @@ describe("<App />: Loading", () => {
   });
 
   it("navigates to landing page", () => {
-    mockPath = Path.mock(Path.app());
+    location.pathname = Path.mock(Path.app());
     const p = fakeProps();
     p.getConfigValue = () => "controls";
     mount(<App {...p} />);
-    expect(push).toHaveBeenCalledWith(Path.controls());
+    expect(mockNavigate).toHaveBeenCalledWith(Path.controls());
   });
 
   it("doesn't navigate to landing page", () => {
-    mockPath = Path.mock(Path.controls());
+    location.pathname = Path.mock(Path.controls());
     const p = fakeProps();
     p.getConfigValue = () => "controls";
     mount(<App {...p} />);
-    expect(push).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  it("enables the dark theme", () => {
+    const p = fakeProps();
+    p.getConfigValue = () => true;
+    const wrapper = mount(<App {...p} />);
+    expect(wrapper.find(".app").hasClass("dark")).toBeTruthy();
+  });
+
+  it("enables the light theme", () => {
+    const p = fakeProps();
+    p.getConfigValue = () => false;
+    const wrapper = mount(<App {...p} />);
+    expect(wrapper.find(".app").hasClass("light")).toBeTruthy();
   });
 });
 

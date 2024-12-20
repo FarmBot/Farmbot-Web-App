@@ -11,7 +11,6 @@ import { TileReboot, editTheRebootStep, rebootExecutor } from "../tile_reboot";
 import { StepParams } from "../../interfaces";
 import { editStep } from "../../../api/crud";
 import { Reboot } from "farmbot";
-import { Content } from "../../../constants";
 import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 
 describe("<TileReboot />", () => {
@@ -26,7 +25,6 @@ describe("<TileReboot />", () => {
 
   it("renders", () => {
     const block = render(<TileReboot {...fakeProps()} />);
-    expect(block.text()).toContain(Content.REBOOT_STEP);
     expect(block.text().toLowerCase()).not.toContain("arduino");
   });
 

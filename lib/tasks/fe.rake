@@ -27,6 +27,11 @@ EXCLUDE = [
     reason: "breaking changes in",
     version: "8",
   },
+  {
+    packages: ["react", "react-dom", "react-test-renderer"],
+    reason: "not compatible with enzyme",
+    version: "3",
+  },
 ]
 
 # Load package.json as JSON.

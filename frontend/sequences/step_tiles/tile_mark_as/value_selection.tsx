@@ -18,7 +18,7 @@ import {
 import { DevSettings } from "../../../settings/dev/dev_support";
 
 export const ValueSelection = (props: ValueSelectionProps) =>
-  <div className={"update-resource-step-value"}>
+  <div className={"row grid-2-col"}>
     <label onClick={() => DevSettings.futureFeaturesEnabled() && props.add({})}>
       {t("as")}
     </label>

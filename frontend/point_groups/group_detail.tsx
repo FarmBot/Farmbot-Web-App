@@ -6,7 +6,6 @@ import {
   selectAllActivePoints, selectAllPlantPointers, selectAllPointGroups,
   selectAllTools,
 } from "../resources/selectors";
-import { getPathArray } from "../history";
 import { GroupDetailActive, GroupSortSelection } from "./group_detail_active";
 import { uniq } from "lodash";
 import { UUID } from "../resources/interfaces";
@@ -45,9 +44,9 @@ export interface GroupDetailProps {
 
 /** Find a group from a URL-provided ID. */
 export const findGroupFromUrl = (groups: TaggedPointGroup[]) => {
-  const urlIncludes = (string: string) => getPathArray().includes(string);
-  if (!urlIncludes("groups") && !urlIncludes("zones")) { return; }
-  const groupId = parseInt(getPathArray().pop() || "?", 10);
+  if (!Path.startsWith(Path.groups()) &&
+    !Path.startsWith(Path.zones())) { return; }
+  const groupId = parseInt(Path.getLastChunk());
   return groups.filter(group => group.body.id === groupId)[0];
 };
 
@@ -115,14 +114,14 @@ export class RawGroupDetail extends React.Component<GroupDetailProps, {}> {
         <div className={"panel-header-icon-group"}>
           {group &&
             <Popover
-              target={<i className={"fa fa-sort fb-icon-button"}
+              target={<i className={"fa fa-sort fb-icon-button invert"}
                 title={t("Sort by")} />}
               content={
                 <GroupSortSelection group={group} dispatch={this.props.dispatch}
                   pointsSelectedByGroup={pointsSelectedByGroup(
                     group, this.props.allPoints)} />} />}
           {group &&
-            <i className={"fa fa-trash fb-icon-button"}
+            <i className={"fa fa-trash fb-icon-button invert"}
               title={t("Delete group")}
               onClick={() => this.props.dispatch(destroy(group.uuid))} />}
         </div>
@@ -136,3 +135,5 @@ export class RawGroupDetail extends React.Component<GroupDetailProps, {}> {
   }
 }
 export const GroupDetail = connect(mapStateToProps)(RawGroupDetail);
+// eslint-disable-next-line import/no-default-export
+export default GroupDetail;

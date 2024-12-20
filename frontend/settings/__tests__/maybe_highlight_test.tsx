@@ -13,12 +13,11 @@ import React from "react";
 import { mount, shallow } from "enzyme";
 import {
   Highlight, HighlightProps, maybeHighlight, maybeOpenPanel, highlight,
-  goToFbosSettings,
 } from "../maybe_highlight";
 import { Actions, DeviceSetting } from "../../constants";
 import { toggleControlPanel, bulkToggleControlPanel } from "../toggle_section";
-import { push } from "../../history";
 import { Path } from "../../internal_urls";
+import { mountWithContext } from "../../__test_support__/mount_with_context";
 
 describe("<Highlight />", () => {
   const fakeProps = (): HighlightProps => ({
@@ -122,9 +121,9 @@ describe("<Highlight />", () => {
   });
 
   it("adds anchor link to url bar", () => {
-    const wrapper = mount(<Highlight {...fakeProps()} />);
+    const wrapper = mountWithContext(<Highlight {...fakeProps()} />);
     wrapper.find("i").last().simulate("click");
-    expect(push).toHaveBeenCalledWith(Path.settings("motors"));
+    expect(mockNavigate).toHaveBeenCalledWith(Path.settings("motors"));
   });
 
   it("doesn't show anchor for non-setting sections", () => {
@@ -215,13 +214,5 @@ describe("maybeOpenPanel()", () => {
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_PHOTOS_PANEL_OPTION, payload: "detectionPP",
     });
-  });
-});
-
-describe("goToFbosSettings()", () => {
-  it("renders correct path", () => {
-    goToFbosSettings();
-    expect(push).toHaveBeenCalledWith(
-      Path.settings("farmbot_os"));
   });
 });

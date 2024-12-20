@@ -1,0 +1,153 @@
+@use "../variables" as *;
+@use "sass:color";
+
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes pulse-and-rotate {
+  0% {
+    transform: scale(1.2);
+    stroke-dashoffset: 0;
+  }
+  50% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.2);
+    stroke-dashoffset: -200;
+  }
+}
+
+@keyframes dashed-rotate {
+  0% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: -200;
+  }
+}
+
+@keyframes plant-selection-pop {
+  0% {
+    transform: rotate(270deg) scale(0.2);
+    fill-opacity: 0;
+    stroke-opacity: 0;
+  }
+  100% {
+    transform: rotate(360deg) scale(1.2);
+    fill-opacity: 0.25;
+    stroke-opacity: 0.7;
+  }
+}
+
+@keyframes plant-growth {
+  0% {
+    transform: scale(0);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes soil-poof {
+  0% {
+    transform: scale(0);
+    fill-opacity: 0.5;
+  }
+  100% {
+    transform: scale(2.5);
+    fill-opacity: 0;
+  }
+}
+
+@keyframes spread-pop {
+  0% {
+    transform: scale(0.9);
+    fill-opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    fill-opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  0% {
+    transform: translateY(0px);
+  }
+  100% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes flash {
+  0% {
+    text-shadow: $white 0px 0px 10px;
+  }
+  100% {
+    text-shadow: none;
+  }
+}
+
+@keyframes bright-flash {
+  0% {
+    filter: none;
+  }
+  50% {
+    filter: none;
+  }
+  51% {
+    filter: brightness(0.85);
+  }
+  100% {
+    filter: brightness(0.85);
+  }
+}
+
+@keyframes fill-blink {
+  0% {
+    fill-opacity: 0.5;
+  }
+  50% {
+    fill-opacity: 0.5;
+  }
+  51% {
+    fill-opacity: 1;
+  }
+  100% {
+    fill-opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes panel-show {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes panel-hide {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-120%);
+  }
+}

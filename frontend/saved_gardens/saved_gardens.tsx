@@ -1,7 +1,7 @@
 import React from "react";
 import { Everything } from "../interfaces";
 import { connect } from "react-redux";
-import { push } from "../history";
+import { useNavigate } from "react-router";
 import { unselectPlant } from "../farm_designer/map/actions";
 import {
   selectAllSavedGardens, selectAllPlantTemplates, selectAllPlantPointers,
@@ -12,7 +12,7 @@ import { closeSavedGarden } from "./actions";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelTop,
 } from "../farm_designer/designer_panel";
-import { DesignerNavTabs, Panel } from "../farm_designer/panel_header";
+import { Panel } from "../farm_designer/panel_header";
 import { t } from "../i18next_wrapper";
 import {
   EmptyStateWrapper, EmptyStateGraphic,
@@ -39,7 +39,6 @@ export class RawSavedGardens
 
   render() {
     return <DesignerPanel panelName={"saved-garden"} panel={Panel.SavedGardens}>
-      <DesignerNavTabs />
       <DesignerPanelContent panelName={"saved-garden"}>
         <DesignerPanelTop
           panel={Panel.SavedGardens}
@@ -64,22 +63,26 @@ export class RawSavedGardens
 }
 
 /** Sticky an indicator and actions menu when a SavedGarden is open. */
-export const SavedGardenHUD = (props: { dispatch: Function }) =>
-  <div className="saved-garden-indicator">
+export const SavedGardenHUD = (props: { dispatch: Function }) => {
+  const navigate = useNavigate();
+  return <div className="saved-garden-indicator">
     <label>{t("Viewing saved garden")}</label>
     <button className="fb-button green"
       title={t("open plants panel")}
       onClick={() => {
-        push(Path.plants());
+        navigate(Path.plants());
         unselectPlant(props.dispatch)();
       }}>
       {t("Edit")}
     </button>
     <button className="fb-button red"
       title={t("close saved garden")}
-      onClick={() => props.dispatch(closeSavedGarden())}>
+      onClick={() => props.dispatch(closeSavedGarden(navigate))}>
       {t("Exit")}
     </button>
   </div>;
+};
 
 export const SavedGardens = connect(mapStateToProps)(RawSavedGardens);
+// eslint-disable-next-line import/no-default-export
+export default SavedGardens;

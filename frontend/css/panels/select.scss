@@ -1,0 +1,17 @@
+@use "../variables" as *;
+@use "sass:color";
+
+.plant-selection-panel {
+  .panel-action-buttons {
+    padding: 1rem;
+    .quick-select {
+      align-items: start;
+    }
+  }
+  .panel-content {
+    padding: 0;
+    .tool-slot-search-item {
+      padding: 0 2rem !important;
+    }
+  }
+}

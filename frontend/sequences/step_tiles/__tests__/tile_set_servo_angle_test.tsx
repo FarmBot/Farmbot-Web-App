@@ -32,9 +32,9 @@ describe("<TileSetServoAngle/>", () => {
     expect(inputs.length).toEqual(6);
     expect(labels.length).toEqual(6);
     expect(inputs.first().props().placeholder).toEqual("Control Servo");
-    expect(labels.at(0).text()).toContain("Angle (0-180)");
-    expect(inputs.at(1).props().value).toEqual(stepArgs.pin_value);
-    expect(inputs.at(2).props().value).toEqual("" + stepArgs.pin_number);
+    expect(inputs.at(1).props().value).toEqual("" + stepArgs.pin_number);
+    expect(labels.at(5).text()).toContain("Angle (0-180)");
+    expect(inputs.at(5).props().value).toEqual(stepArgs.pin_value);
   });
 
   it("changes pin number", () => {

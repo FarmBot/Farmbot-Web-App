@@ -4,13 +4,6 @@ jest.mock("../../api/crud", () => ({
   destroy: jest.fn(),
 }));
 
-import { Path } from "../../internal_urls";
-let mockPath = Path.mock(Path.toolSlots(1));
-jest.mock("../../history", () => ({
-  push: jest.fn(),
-  getPathArray: jest.fn(() => mockPath.split("/")),
-}));
-
 jest.mock("../../farm_designer/map/layers/tool_slots/tool_graphics", () => ({
   setToolHover: jest.fn(),
   ToolSlotSVG: () => <div />,
@@ -31,12 +24,12 @@ import { mapStateToPropsEdit } from "../state_to_props";
 import { SlotEditRows } from "../tool_slot_edit_components";
 import { fakeToolTransformProps } from "../../__test_support__/fake_tool_info";
 import { EditToolSlotProps } from "../interfaces";
-import { push } from "../../history";
 import {
   setToolHover,
 } from "../../farm_designer/map/layers/tool_slots/tool_graphics";
 import { SpecialStatus } from "farmbot";
 import { fakeMovementState } from "../../__test_support__/fake_bot_data";
+import { Path } from "../../internal_urls";
 
 describe("<EditToolSlot />", () => {
   const fakeProps = (): EditToolSlotProps => ({
@@ -55,17 +48,17 @@ describe("<EditToolSlot />", () => {
   });
 
   it("redirects", () => {
-    mockPath = Path.mock(Path.toolSlots("nope"));
+    location.pathname = Path.mock(Path.toolSlots("nope"));
     const wrapper = mount(<EditToolSlot {...fakeProps()} />);
     expect(wrapper.text().toLowerCase()).toContain("redirecting");
-    expect(push).toHaveBeenCalledWith(Path.tools());
+    expect(mockNavigate).toHaveBeenCalledWith(Path.tools());
   });
 
   it("doesn't redirect", () => {
-    mockPath = Path.mock(Path.logs());
+    location.pathname = Path.mock(Path.logs());
     const wrapper = mount(<EditToolSlot {...fakeProps()} />);
     expect(wrapper.text().toLowerCase()).toContain("redirecting");
-    expect(push).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 
   it("renders", () => {

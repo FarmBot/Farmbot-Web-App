@@ -3,7 +3,7 @@ jest.mock("../../../api/crud", () => ({
   save: jest.fn(),
 }));
 
-import * as React from "react";
+import React from "react";
 import { shallow } from "enzyme";
 import { BotConfigInputBox, BotConfigInputBoxProps } from "../bot_config_input_box";
 import { fakeState } from "../../../__test_support__/fake_state";

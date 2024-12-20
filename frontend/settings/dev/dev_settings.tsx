@@ -1,77 +1,59 @@
 import React from "react";
-import { Row, Col, BlurableInput, ToggleButton } from "../../ui";
+import { Row, BlurableInput, ToggleButton } from "../../ui";
 import { DevSettings } from "./dev_support";
 
 export const DevWidgetFERow = () =>
-  <Row>
-    <Col xs={8}>
-      <label>
-        {"Enable unstable FE features"}
-      </label>
-    </Col>
-    <Col xs={4}>
-      <ToggleButton
-        toggleValue={DevSettings.futureFeaturesEnabled()}
-        toggleAction={DevSettings.futureFeaturesEnabled()
-          ? DevSettings.disableFutureFeatures
-          : DevSettings.enableFutureFeatures} />
-    </Col>
+  <Row className="grid-exp-1">
+    <label>
+      {"Enable unstable FE features"}
+    </label>
+    <ToggleButton
+      toggleValue={DevSettings.futureFeaturesEnabled()}
+      toggleAction={DevSettings.futureFeaturesEnabled()
+        ? DevSettings.disableFutureFeatures
+        : DevSettings.enableFutureFeatures} />
   </Row>;
 
 export const DevWidgetFBOSRow = () => {
-  return <Row>
-    <Col xs={6}>
-      <label>
-        {"Change FBOS version"}
-      </label>
-    </Col>
-    <Col xs={1}>
+  return <Row className="grid-2-col">
+    <label>
+      {"Change FBOS version"}
+    </label>
+    <div className="row grid-exp-3">
       <button className="fb-button red fa fa-times"
         onClick={DevSettings.resetFbosVersionOverride} />
-    </Col>
-    <Col xs={1}>
       <button className="fb-button green fa fa-angle-double-up"
         onClick={DevSettings.setMaxFbosVersionOverride} />
-    </Col>
-    <Col xs={4}>
       <BlurableInput type="text"
         value={DevSettings.overriddenFbosVersion() || ""}
         onCommit={e =>
           DevSettings.setFbosVersionOverride(e.currentTarget.value)} />
-    </Col>
+    </div>
   </Row>;
 };
 
 export const DevWidgetDelModeRow = () =>
-  <Row>
-    <Col xs={8}>
-      <label>
-        {"Enable quick delete mode"}
-      </label>
-    </Col>
-    <Col xs={4}>
-      <ToggleButton
-        toggleValue={DevSettings.quickDeleteEnabled()}
-        toggleAction={DevSettings.quickDeleteEnabled()
-          ? DevSettings.disableQuickDelete
-          : DevSettings.enableQuickDelete} />
-    </Col>
+  <Row className="grid-exp-1">
+    <label>
+      {"Enable quick delete mode"}
+    </label>
+    <ToggleButton
+      toggleValue={DevSettings.quickDeleteEnabled()}
+      toggleAction={DevSettings.quickDeleteEnabled()
+        ? DevSettings.disableQuickDelete
+        : DevSettings.enableQuickDelete} />
   </Row>;
 
 export const DevWidgetShowInternalEnvsRow = () =>
-  <Row>
-    <Col xs={8}>
-      <label>
-        {"Show internal envs"}
-      </label>
-    </Col>
-    <Col xs={4}>
-      <ToggleButton
-        toggleValue={DevSettings.showInternalEnvsEnabled()}
-        toggleAction={DevSettings.showInternalEnvsEnabled()
-          ? DevSettings.disableShowInternalEnvs
-          : DevSettings.enableShowInternalEnvs} />
-    </Col>
+  <Row className="grid-exp-1">
+    <label>
+      {"Show internal envs"}
+    </label>
+    <ToggleButton
+      toggleValue={DevSettings.showInternalEnvsEnabled()}
+      toggleAction={DevSettings.showInternalEnvsEnabled()
+        ? DevSettings.disableShowInternalEnvs
+        : DevSettings.enableShowInternalEnvs} />
   </Row>;
 
 export const DevSettingsRows = () =>

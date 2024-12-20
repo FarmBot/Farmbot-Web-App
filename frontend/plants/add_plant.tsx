@@ -26,7 +26,7 @@ export const mapStateToProps = (props: Everything): AddPlantProps => ({
 
 interface APDProps {
   svgIcon: string | undefined;
-  children?: React.ReactChild;
+  children?: React.ReactNode;
 }
 
 const AddPlantDescription = ({ svgIcon, children }: APDProps) =>
@@ -90,3 +90,5 @@ export class RawAddPlant extends React.Component<AddPlantProps, {}> {
 }
 
 export const AddPlant = connect(mapStateToProps)(RawAddPlant);
+// eslint-disable-next-line import/no-default-export
+export default AddPlant;

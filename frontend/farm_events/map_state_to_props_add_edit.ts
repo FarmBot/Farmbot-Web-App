@@ -2,7 +2,6 @@ import moment from "moment";
 import { t } from "../i18next_wrapper";
 import { AddEditFarmEventProps } from "../farm_designer/interfaces";
 import { Everything, TimeSettings } from "../interfaces";
-import { push } from "../history";
 import {
   selectAllFarmEvents,
   indexRegimenById,
@@ -25,6 +24,7 @@ import { DropDownItem } from "../ui";
 import { hasId } from "../resources/util";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
 import { Path } from "../internal_urls";
+import { NavigateFunction } from "react-router";
 
 export const formatTimeField = (input: string, timeSettings: TimeSettings) => {
   const iso = new Date(input).toISOString();
@@ -56,7 +56,7 @@ const handleTime = (
   switch (e.currentTarget.name) {
     case "start_time":
       // Put the current ISO established by the date field into a var
-      const currentStartISO = new Date((currentISO || "").toString())
+      const currentStartISO = new Date(currentISO.toString())
         .toISOString();
 
       // Set the time of the already existing iso string
@@ -68,7 +68,7 @@ const handleTime = (
       return newStartISO;
 
     case "end_time":
-      const currentEndISO = new Date((currentISO || "").toString())
+      const currentEndISO = new Date(currentISO.toString())
         .toISOString();
 
       const newEndISO = "" + moment(currentEndISO)
@@ -110,14 +110,15 @@ export function mapStateToPropsAddEdit(props: Everything): AddEditFarmEventProps
     (uuid: string | undefined): TaggedFarmEvent | undefined =>
       uuid ? farmEvents.filter(x => x.uuid === uuid)[0] : undefined;
 
-  const getFarmEvent = (): TaggedFarmEvent | undefined => {
-    const id = parseInt(Path.getSlug(Path.farmEvents()));
-    if (id && hasId(props.resources.index, "FarmEvent", id)) {
-      return findFarmEventById(props.resources.index, id);
-    } else {
-      push(Path.farmEvents());
-    }
-  };
+  const getFarmEvent =
+    (navigate: NavigateFunction): TaggedFarmEvent | undefined => {
+      const id = parseInt(Path.getSlug(Path.farmEvents()));
+      if (id && hasId(props.resources.index, "FarmEvent", id)) {
+        return findFarmEventById(props.resources.index, id);
+      } else {
+        navigate(Path.farmEvents());
+      }
+    };
 
   const findExecutable = (kind: ExecutableType, id: number):
     TaggedSequence | TaggedRegimen => {

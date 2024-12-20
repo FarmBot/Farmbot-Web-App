@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col, FBSelect, DropDownItem, Popover, Help } from "../../ui";
+import { Row, FBSelect, DropDownItem, Popover, Help } from "../../ui";
 import { DeviceSetting, ToolTips } from "../../constants";
 import { t } from "../../i18next_wrapper";
 import { Highlight } from "../maybe_highlight";
@@ -49,30 +49,25 @@ export const RpiModel = (props: RpiModelProps) => {
   return <Highlight settingName={DeviceSetting.raspberryPiModel}
     hidden={!props.showAdvanced}
     className={"advanced"}>
-    <Row>
-      <Col xs={5}>
+    <Row className="grid-2-col">
+      <div className="row grid-exp-2">
         <label>
           {t("Raspberry Pi model")}
         </label>
-      </Col>
-      <Col xs={1}>
         <Popover position={Position.TOP}
-          className={"status-details-target"}
           target={<StatusIcon available={!!target && target != "---"}
             status={check(selection, target)} />}
           content={<StatusDetails selection={selection} target={target}
             firmwareHardware={props.firmwareHardware} />} />
-      </Col>
-      <Col xs={6} className={"no-pad"}>
-        <FBSelect
-          key={selection}
-          list={Object.values(RPI_OPTIONS)}
-          selectedItem={RPI_OPTIONS["" + selection]}
-          onChange={ddi => {
-            props.dispatch(edit(props.device, { rpi: "" + ddi.value }));
-            props.dispatch(save(props.device.uuid));
-          }} />
-      </Col>
+      </div>
+      <FBSelect
+        key={selection}
+        list={Object.values(RPI_OPTIONS)}
+        selectedItem={RPI_OPTIONS["" + selection]}
+        onChange={ddi => {
+          props.dispatch(edit(props.device, { rpi: "" + ddi.value }));
+          props.dispatch(save(props.device.uuid));
+        }} />
     </Row>
   </Highlight>;
 };

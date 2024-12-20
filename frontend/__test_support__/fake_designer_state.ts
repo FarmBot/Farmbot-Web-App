@@ -52,6 +52,8 @@ export const fakeDesignerState = (): DesignerState => ({
   cropHeightCurveId: undefined,
   cropStage: undefined,
   cropPlantedAt: undefined,
+  distanceIndicator: "",
+  panelOpen: true,
 });
 
 export const fakeHelpState = (): HelpState => ({

@@ -4,13 +4,12 @@ import { t } from "../../i18next_wrapper";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelTop,
 } from "../../farm_designer/designer_panel";
-import { DesignerNavTabs, Panel } from "../../farm_designer/panel_header";
+import { Panel } from "../../farm_designer/panel_header";
 import { Folders } from "../../folders/component";
 import { mapStateToProps } from "../state_to_props";
 import { SequencesProps } from "../interfaces";
 import { publishAction, SectionHeader } from "../sequence_editor_middle_active";
 import { Collapse } from "@blueprintjs/core";
-import { FeaturedSequence } from "../../featured/content";
 import axios from "axios";
 import { API } from "../../api";
 import { ColorPicker, Markdown, Popover } from "../../ui";
@@ -23,8 +22,18 @@ import {
 } from "../../folders/actions";
 import { SequencesPanelState } from "../../interfaces";
 import { Actions } from "../../constants";
-import { push } from "../../history";
 import { isMobile } from "../../screen_size";
+import { NavigationContext } from "../../routes_helpers";
+import { useNavigate } from "react-router";
+import { Color } from "farmbot";
+
+interface FeaturedSequence {
+  id: number;
+  path: string;
+  name: string;
+  description: string;
+  color: Color;
+}
 
 interface DesignerSequenceListState {
   featuredList: FeaturedSequence[];
@@ -54,32 +63,35 @@ export class RawDesignerSequenceList
     this.setState({ toggleDirection: !this.state.toggleDirection });
   };
 
+  static contextType = NavigationContext;
+  context!: React.ContextType<typeof NavigationContext>;
+  navigate = this.context;
+
   render() {
     const panelName = "designer-sequence-list";
     const panelState = this.props.sequencesPanelState;
     const buttonProps = Path.inDesigner()
       ? {
-        caretDirection: "right",
+        icon: "expand",
         path: Path.sequencePage(),
         text: t("fullscreen"),
       }
       : {
-        caretDirection: "left",
+        icon: "compress",
         path: Path.designerSequences(),
         text: t("collapse"),
       };
     return <DesignerPanel panelName={panelName} panel={Panel.Sequences}>
-      <DesignerNavTabs />
       <DesignerPanelTop panel={Panel.Sequences} withButton={true}>
         <SearchField nameKey={"sequences"}
           searchTerm={this.props.folderData.searchTerm || ""}
           placeholder={t("Search sequences...")}
           onChange={updateSearchTerm} />
         {!isMobile() &&
-          <button className={"transparent-button fullscreen"}
-            onClick={() => push(buttonProps.path)}>
+          <button className={"fb-button clear row half-gap"}
+            onClick={() => { this.navigate(buttonProps.path); }}>
             {buttonProps.text}
-            <i className={`fa fa-caret-square-o-${buttonProps.caretDirection}`} />
+            <i className={`fa fa-${buttonProps.icon}`} />
           </button>}
       </DesignerPanelTop>
       <DesignerPanelContent panelName={panelName}>
@@ -113,20 +125,23 @@ export class RawDesignerSequenceList
 
 export const DesignerSequenceList =
   connect(mapStateToProps)(RawDesignerSequenceList);
+// eslint-disable-next-line import/no-default-export
+export default DesignerSequenceList;
 
 interface SequenceListActionsProps {
   toggleAllFolders(): void;
   toggleDirection: boolean;
 }
 
-const SequenceListActions = (props: SequenceListActionsProps) =>
-  <div className={"folder-icon-wrapper"}>
+const SequenceListActions = (props: SequenceListActionsProps) => {
+  const navigate = useNavigate();
+  return <div className={"row"}>
     <button
       className={"fb-button green"}
       title={t("add new sequence")}
       onClick={e => {
         e.stopPropagation();
-        addNewSequenceToFolder();
+        addNewSequenceToFolder(navigate);
       }}>
       <i className={"fa fa-plus"} />
     </button>
@@ -150,6 +165,7 @@ const SequenceListActions = (props: SequenceListActionsProps) =>
         : "down"}`} />
     </button>
   </div>;
+};
 
 interface FeaturedSequenceListItemProps {
   item: FeaturedSequence;

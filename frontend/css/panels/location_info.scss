@@ -1,0 +1,80 @@
+@use "../variables" as *;
+@use "sass:color";
+
+.location-info-panel {
+  .panel-content {
+    max-height: calc(100vh - 14rem);
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-top: 1rem;
+    padding-bottom: 0 !important;
+    .location-info-content {
+      display: grid;
+      gap: 1rem;
+    }
+    .location-actions {
+      display: grid;
+      gap: 1rem;
+      p {
+        margin-top: 1rem;
+      }
+    }
+    h2 {
+      font-family: 'Inknut Antiqua';
+      font-weight: bold;
+      margin: 0;
+      font-size: 2rem;
+    }
+    .expandable-header {
+      text-transform: uppercase;
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+    label {
+      margin-top: 0;
+      &.no-items {
+        display: block;
+      }
+    }
+    button {
+      float: none;
+    }
+    .add-point {
+      margin-top: 2rem;
+    }
+    .point-search-item,
+    .plant-search-item{
+      margin-left: -15px;
+      margin-right: -15px;
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+    .sensor-history-table {
+      margin-left: -15px;
+      margin-right: -15px;
+      .table-row {
+        height: 4rem;
+        td:first-of-type {
+          padding-left: 2rem;
+        }
+      }
+
+    }
+    .interpolated-soil-height {
+      .title {
+        display: inline;
+        font-weight: bold;
+      }
+      p {
+        display: inline;
+        margin-left: 1rem;
+      }
+    }
+    .photos-footer {
+      margin-top: 1rem;
+      .bp5-popover-wrapper {
+        margin-top: 3px;
+      }
+    }
+  }
+}

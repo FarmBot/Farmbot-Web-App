@@ -15,7 +15,6 @@ import {
 import {
   fakePoint, fakePointGroup,
 } from "../../__test_support__/fake_state/resources";
-import { push } from "../../history";
 import { fakeState } from "../../__test_support__/fake_state";
 import {
   buildResourceIndex,
@@ -30,6 +29,7 @@ import { DEFAULT_CRITERIA } from "../../point_groups/criteria/interfaces";
 import { pointsPanelState } from "../../__test_support__/panel_state";
 import { Path } from "../../internal_urls";
 import { deletePoints, deletePointsByIds } from "../../api/delete_points";
+import { mountWithContext } from "../../__test_support__/mount_with_context";
 
 describe("<Points />", () => {
   const fakeProps = (): PointsProps => ({
@@ -81,8 +81,10 @@ describe("<Points />", () => {
 
   it("navigates to group", () => {
     const wrapper = shallow<Points>(<Points {...fakeProps()} />);
-    wrapper.instance().navigate(1)();
-    expect(push).toHaveBeenCalledWith(Path.groups(1));
+    const navigate = jest.fn();
+    wrapper.instance().navigate = navigate;
+    wrapper.instance().navigateById(1)();
+    expect(navigate).toHaveBeenCalledWith(Path.groups(1));
   });
 
   it("adds new group", () => {
@@ -92,23 +94,26 @@ describe("<Points />", () => {
       criteria: {
         ...DEFAULT_CRITERIA,
         string_eq: { pointer_type: ["GenericPointer"] },
-      }
+      },
+      navigate: expect.anything(),
     });
   });
 
   it("adds new point", () => {
-    const wrapper = shallow(<Points {...fakeProps()} />);
+    const wrapper = shallow<Points>(<Points {...fakeProps()} />);
+    const navigate = jest.fn();
+    wrapper.instance().navigate = navigate;
     wrapper.find(PanelSection).last().props().addNew();
-    expect(push).toHaveBeenCalledWith(Path.points("add"));
+    expect(navigate).toHaveBeenCalledWith(Path.points("add"));
   });
 
   it("navigates to point info", () => {
     const p = fakeProps();
     p.genericPoints = [fakePoint()];
     p.genericPoints[0].body.id = 1;
-    const wrapper = mount(<Points {...p} />);
+    const wrapper = mountWithContext(<Points {...p} />);
     wrapper.find(".point-search-item").first().simulate("click");
-    expect(push).toHaveBeenCalledWith(Path.points(1));
+    expect(mockNavigate).toHaveBeenCalledWith(Path.points(1));
   });
 
   it("changes search term", () => {

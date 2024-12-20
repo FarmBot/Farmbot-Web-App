@@ -3,7 +3,7 @@ import { GardenViewButtonProps, EditGardenProps } from "./interfaces";
 import { openOrCloseGarden, applyGarden, destroySavedGarden } from "./actions";
 import { error } from "../toast/toast";
 import { trim } from "../util";
-import { BlurableInput, Row } from "../ui";
+import { BlurableInput } from "../ui";
 import { edit, save } from "../api/crud";
 import { connect } from "react-redux";
 import {
@@ -13,7 +13,6 @@ import { Everything } from "../interfaces";
 import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent,
 } from "../farm_designer/designer_panel";
-import { push } from "../history";
 import { isNumber, take } from "lodash";
 import { ResourceIndex } from "../resources/interfaces";
 import { t } from "../i18next_wrapper";
@@ -23,11 +22,17 @@ import { PointGroupItem } from "../point_groups/point_group_item";
 import {
   calcMaxCount, MoreIndicatorIcon,
 } from "../point_groups/criteria/component";
+import { Navigate, NavigateFunction, useNavigate } from "react-router";
 
 /** Open or close a SavedGarden. */
 const GardenViewButton = (props: GardenViewButtonProps) => {
-  const { dispatch, savedGardenId, gardenIsOpen } = props;
-  const onClick = openOrCloseGarden({ savedGardenId, gardenIsOpen, dispatch });
+  const { navigate, dispatch, savedGardenId, gardenIsOpen } = props;
+  const onClick = openOrCloseGarden({
+    navigate,
+    savedGardenId,
+    gardenIsOpen,
+    dispatch,
+  });
   const btnText = gardenIsOpen
     ? t("exit")
     : t("view");
@@ -41,22 +46,32 @@ const GardenViewButton = (props: GardenViewButtonProps) => {
 
 /** Apply a SavedGarden after checking that the current garden is empty. */
 const ApplyGardenButton =
-  (props: { plantPointerCount: number, gardenId: number, dispatch: Function }) =>
+  (props: {
+    plantPointerCount: number,
+    gardenId: number,
+    dispatch: Function,
+    navigate: NavigateFunction,
+  }) =>
     <button
       className="fb-button green"
       title={t("apply garden")}
       onClick={() => props.plantPointerCount > 0
         ? error(trim(`${t("Please clear current garden first.")}
         (${props.plantPointerCount} ${t("plants")})`))
-        : props.dispatch(applyGarden(props.gardenId))}>
+        : props.dispatch(applyGarden(props.navigate, props.gardenId))}>
       {t("apply")}
     </button>;
 
 const DestroyGardenButton =
-  (props: { dispatch: Function, gardenUuid: string }) =>
-    <i className={"fa fa-trash fb-icon-button"}
+  (props: {
+    navigate: NavigateFunction,
+    dispatch: Function,
+    gardenUuid: string,
+  }) =>
+    <i className={"fa fa-trash fb-icon-button invert"}
       title={t("delete garden")}
-      onClick={() => props.dispatch(destroySavedGarden(props.gardenUuid))} />;
+      onClick={() => props.dispatch(destroySavedGarden(
+        props.navigate, props.gardenUuid))} />;
 
 const findSavedGardenByUrl = (ri: ResourceIndex) => {
   const id = Path.getSlug(Path.savedGardens());
@@ -79,85 +94,78 @@ export const mapStateToProps = (props: Everything): EditGardenProps => {
   };
 };
 
-interface EditGardenState {
-  notes: string;
-  expand: boolean;
-}
+export const RawEditGarden = (props: EditGardenProps) => {
+  const navigate = useNavigate();
+  const [notes, setNotes] = React.useState(props.savedGarden?.body.notes || "");
+  const [expand, setExpand] = React.useState(false);
 
-export class RawEditGarden
-  extends React.Component<EditGardenProps, EditGardenState> {
-  state: EditGardenState = {
-    notes: this.props.savedGarden?.body.notes || "",
-    expand: false,
-  };
+  const toggleExpand = () => setExpand(!expand);
 
-  toggleExpand = () => this.setState({ expand: !this.state.expand });
-
-  render() {
-    const { savedGarden } = this.props;
-    const gardensPath = Path.savedGardens();
-    const plantsPath = Path.plants();
-    !savedGarden && Path.startsWith(gardensPath) && push(plantsPath);
-    const maxCount = this.state.expand ? 1000 : calcMaxCount(3);
-    return <DesignerPanel panelName={"saved-garden-edit"}
-      panel={Panel.SavedGardens}>
-      <DesignerPanelHeader
-        panelName={"saved-garden"}
-        panel={Panel.SavedGardens}
-        title={t("Edit garden")}
-        backTo={plantsPath}>
-        {savedGarden &&
-          <div className={"buttons"}>
-            <ApplyGardenButton
-              dispatch={this.props.dispatch}
-              plantPointerCount={this.props.plantPointerCount}
-              gardenId={savedGarden.body.id || -1} />
-            <DestroyGardenButton
-              dispatch={this.props.dispatch}
-              gardenUuid={savedGarden.uuid} />
-            <GardenViewButton
-              dispatch={this.props.dispatch}
-              savedGardenId={savedGarden.body.id}
-              gardenIsOpen={this.props.gardenIsOpen} />
-          </div>}
-      </DesignerPanelHeader>
-      <DesignerPanelContent panelName={"saved-garden-edit"}>
-        {savedGarden
-          ? <div className={"saved-garden-content"}>
-            <Row>
-              <label>{t("name")}</label>
-              <BlurableInput
-                value={savedGarden.body.name || ""}
-                onCommit={e => {
-                  this.props.dispatch(edit(savedGarden, {
-                    name: e.currentTarget.value
-                  }));
-                  this.props.dispatch(save(savedGarden.uuid));
-                }} />
-            </Row>
-            <Row>
-              <label>{t("notes")}</label>
-              <textarea
-                value={this.state.notes}
-                onChange={e => this.setState({ notes: e.currentTarget.value })}
-                onBlur={() => {
-                  this.props.dispatch(edit(savedGarden, {
-                    notes: this.state.notes
-                  }));
-                  this.props.dispatch(save(savedGarden.uuid));
-                }} />
-            </Row>
+  const { savedGarden } = props;
+  const gardensPath = Path.savedGardens();
+  const plantsPath = Path.plants();
+  const maxCount = expand ? 1000 : calcMaxCount(3);
+  return <DesignerPanel panelName={"saved-garden-edit"}
+    panel={Panel.SavedGardens}>
+    {!savedGarden && Path.startsWith(gardensPath) && <Navigate to={plantsPath} />}
+    <DesignerPanelHeader
+      panelName={"saved-garden"}
+      panel={Panel.SavedGardens}
+      title={t("Edit garden")}
+      backTo={plantsPath}>
+      {savedGarden &&
+        <div className={"buttons"}>
+          <ApplyGardenButton
+            navigate={navigate}
+            dispatch={props.dispatch}
+            plantPointerCount={props.plantPointerCount}
+            gardenId={savedGarden.body.id || -1} />
+          <DestroyGardenButton
+            navigate={navigate}
+            dispatch={props.dispatch}
+            gardenUuid={savedGarden.uuid} />
+          <GardenViewButton
+            navigate={navigate}
+            dispatch={props.dispatch}
+            savedGardenId={savedGarden.body.id}
+            gardenIsOpen={props.gardenIsOpen} />
+        </div>}
+    </DesignerPanelHeader>
+    <DesignerPanelContent panelName={"saved-garden-edit"}>
+      {savedGarden
+        ? <div className={"grid saved-garden-grid"}>
+          <label>{t("name")}</label>
+          <BlurableInput
+            value={savedGarden.body.name || ""}
+            onCommit={e => {
+              props.dispatch(edit(savedGarden, {
+                name: e.currentTarget.value
+              }));
+              props.dispatch(save(savedGarden.uuid));
+            }} />
+          <label>{t("notes")}</label>
+          <textarea
+            value={notes}
+            onChange={e => setNotes(e.currentTarget.value)}
+            onBlur={() => {
+              props.dispatch(edit(savedGarden, {
+                notes: notes
+              }));
+              props.dispatch(save(savedGarden.uuid));
+            }} />
+          <label>{t("plants")}</label>
+          <div className={"point-list-wrapper"}>
+            {take(props.gardenPlants, maxCount).map(point =>
+              <PointGroupItem key={point.uuid} point={point} />)}
+            <MoreIndicatorIcon count={props.gardenPlants.length}
+              maxCount={maxCount} onClick={toggleExpand} />
           </div>
-          : <p>{t("Garden not found.")}</p>}
-        <div className={"point-list-wrapper"}>
-          {take(this.props.gardenPlants, maxCount).map(point =>
-            <PointGroupItem key={point.uuid} point={point} />)}
-          <MoreIndicatorIcon count={this.props.gardenPlants.length}
-            maxCount={maxCount} onClick={this.toggleExpand} />
         </div>
-      </DesignerPanelContent>
-    </DesignerPanel>;
-  }
-}
+        : <p>{t("Garden not found.")}</p>}
+    </DesignerPanelContent>
+  </DesignerPanel>;
+};
 
 export const EditGarden = connect(mapStateToProps)(RawEditGarden);
+// eslint-disable-next-line import/no-default-export
+export default EditGarden;

@@ -8,6 +8,7 @@ import { Color } from "../../../../ui";
 import { soilHeightPoint } from "../../../../points/soil_height";
 import { SpecialStatus } from "farmbot";
 import { Path } from "../../../../internal_urls";
+import { useNavigate } from "react-router";
 
 // eslint-disable-next-line complexity
 export const GardenPoint = (props: GardenPointProps) => {
@@ -26,6 +27,7 @@ export const GardenPoint = (props: GardenPointProps) => {
   const color = meta.color || "green";
   const unsaved = point.specialStatus !== SpecialStatus.SAVED;
   const selected = current || hovered;
+  const navigate = useNavigate();
   return <g id={`point-${id}`}
     className={`map-point ${selected ? "is-selected" : ""}`} stroke={color}
     onMouseEnter={iconHover("start")}
@@ -33,7 +35,7 @@ export const GardenPoint = (props: GardenPointProps) => {
     onClick={() => {
       props.dispatch(selectPoint([point.uuid]));
       props.dispatch(setHoveredPlant(undefined));
-      mapPointClickAction(props.dispatch, point.uuid, Path.points(id))();
+      mapPointClickAction(navigate, props.dispatch, point.uuid, Path.points(id))();
     }}>
     <circle id={"point-radius"}
       className={`point-radius ${animate ? "animate" : ""}`}

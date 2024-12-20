@@ -18,7 +18,6 @@ import { isTaggedSequence } from "../../resources/tagged_resources";
 import {
   setActiveSequenceByName,
 } from "../set_active_sequence_by_name";
-import { push } from "../../history";
 import { colors, urlFriendly } from "../../util";
 import { edit, save } from "../../api/crud";
 import {
@@ -33,6 +32,7 @@ import { noop } from "lodash";
 import { addNewSequenceToFolder } from "../../folders/actions";
 import { Position } from "@blueprintjs/core";
 import { isMobile } from "../../screen_size";
+import { NavigationContext } from "../../routes_helpers";
 
 interface SequencesState {
   processingTitle: boolean;
@@ -53,6 +53,10 @@ export class RawDesignerSequenceEditor
   get isProcessing() {
     return this.state.processingColor || this.state.processingTitle;
   }
+
+  static contextType = NavigationContext;
+  context!: React.ContextType<typeof NavigationContext>;
+  navigate = this.context;
 
   render() {
     const panelName = "designer-sequence-editor";
@@ -89,12 +93,13 @@ export class RawDesignerSequenceEditor
           {sequence && !isMobile() &&
             <i className={"fa fa-expand fb-icon-button"}
               title={t("open full-page editor")}
-              onClick={() =>
-                push(Path.sequencePage(urlFriendly(sequence.body.name)))} />}
+              onClick={() => {
+                this.navigate(Path.sequencePage(urlFriendly(sequence.body.name)));
+              }} />}
           {!sequence && <button
             className={"fb-button green"}
             title={t("add new sequence")}
-            onClick={() => addNewSequenceToFolder()}>
+            onClick={() => addNewSequenceToFolder(this.navigate)}>
             <i className="fa fa-plus" />
           </button>}
         </div>
@@ -152,7 +157,7 @@ export const ResourceTitle = (props: ResourceTitleProps) => {
       onChange={e => {
         setNameValue(e.currentTarget.value);
       }} />
-    : <span className={"title white-text"}
+    : <span className={"title"}
       style={props.readOnly ? { pointerEvents: "none" } : {}}
       title={t("click to edit")}
       onClick={() => setIsEditing(true)}>
@@ -220,3 +225,5 @@ export const AutoGenerateButton = (props: AutoGenerateButtonProps) => {
 
 export const DesignerSequenceEditor =
   connect(mapStateToProps)(RawDesignerSequenceEditor);
+// eslint-disable-next-line import/no-default-export
+export default DesignerSequenceEditor;

@@ -9,7 +9,7 @@ import { SpecialStatus, TaggedToolSlotPointer } from "farmbot";
 import { init, save, edit, destroy } from "../api/crud";
 import { Panel } from "../farm_designer/panel_header";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
-import { push } from "../history";
+import { useNavigate } from "react-router";
 import { SlotEditRows } from "./tool_slot_edit_components";
 import { hasUTM } from "../settings/firmware/firmware_hardware_support";
 import { mapStateToPropsAdd } from "./state_to_props";
@@ -56,7 +56,8 @@ export class RawAddToolSlot
 
   save = () => {
     this.state.uuid && this.props.dispatch(save(this.state.uuid));
-    push(Path.tools());
+    const navigate = useNavigate();
+    navigate(Path.tools());
   };
 
   render() {
@@ -94,3 +95,5 @@ export class RawAddToolSlot
 }
 
 export const AddToolSlot = connect(mapStateToPropsAdd)(RawAddToolSlot);
+// eslint-disable-next-line import/no-default-export
+export default AddToolSlot;

@@ -4,12 +4,12 @@ import { Link } from "../link";
 import {
   Panel, showSensors, showFarmware, PANEL_SLUG, TAB_ICON, PANEL_TITLE,
   getPanelPath, getCurrentPanel,
+  setPanelOpen,
 } from "../farm_designer/panel_header";
 import { ExternalUrl } from "../external_urls";
 import { maybeBeacon } from "../help/tours";
 
 export const getLinks = (): Panel[] => [
-  Panel.Map,
   Panel.Plants,
   Panel.Weeds,
   Panel.Points,
@@ -29,16 +29,28 @@ export const getLinks = (): Panel[] => [
 export const NavLinks = (props: NavLinksProps) =>
   <div className={"links"}>
     <div className={"nav-links"}>
+      <a id={"map"}
+        draggable={false}
+        onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
+          e.preventDefault();
+          props.close("mobileMenuOpen")(e);
+          props.dispatch(setPanelOpen(false));
+        }}>
+        <NavIconAndText panel={Panel.Map} alertCount={props.alertCount} />
+      </a>
       {getLinks().map(panel =>
         <Link
           to={getPanelPath(panel)}
           className={[
-            getCurrentPanel() === panel ? "active" : "",
+            getCurrentPanel(props.designer) === panel ? "active" : "",
             maybeBeacon(PANEL_SLUG[panel], "soft", props.helpState),
           ].join(" ")}
           key={PANEL_SLUG[panel]}
           draggable={false}
-          onClick={props.close("mobileMenuOpen")}>
+          onClick={e => {
+            props.close("mobileMenuOpen")(e);
+            props.dispatch(setPanelOpen(true));
+          }}>
           <NavIconAndText panel={panel} alertCount={props.alertCount} />
         </Link>)}
       <a className={"shop-link"} key={"shop"}

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { t } from "../i18next_wrapper";
 import { ErrorBoundary } from "../error_boundary";
 import { Help } from "./help";
@@ -11,10 +11,12 @@ export interface WidgetHeaderProps {
 
 export function WidgetHeader(props: WidgetHeaderProps) {
   return <div className="widget-header">
-    <ErrorBoundary>
-      {props.children}
-    </ErrorBoundary>
     <h5>{t(props.title)}</h5>
-    {props.helpText && <Help text={props.helpText} />}
+    <div>
+      {props.helpText && <Help text={props.helpText} />}
+      <ErrorBoundary>
+        {props.children}
+      </ErrorBoundary>
+    </div>
   </div>;
 }

@@ -41,6 +41,7 @@ import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 import { MovementState, TimeSettings } from "../interfaces";
 import { ExtendedPointGroupSortType } from "../point_groups/paths";
 import { PeripheralValues } from "./map/layers/farmbot/bot_trail";
+import { NavigateFunction } from "react-router";
 
 /* BotOriginQuadrant diagram
 
@@ -193,6 +194,8 @@ export interface DesignerState {
   cropHeightCurveId: number | undefined;
   cropStage: PlantStage | undefined;
   cropPlantedAt: string | undefined;
+  distanceIndicator: string;
+  panelOpen: boolean;
 }
 
 export type TaggedExecutable = TaggedSequence | TaggedRegimen;
@@ -206,7 +209,7 @@ export interface AddEditFarmEventProps {
   regimensById: Record<string, TaggedRegimen | undefined>;
   sequencesById: Record<string, TaggedSequence | undefined>;
   farmEventsById: Record<string, TaggedFarmEvent | undefined>;
-  getFarmEvent(): TaggedFarmEvent | undefined;
+  getFarmEvent(navigate: NavigateFunction): TaggedFarmEvent | undefined;
   findFarmEventByUuid(uuid: string | undefined): TaggedFarmEvent | undefined;
   handleTime(e: React.SyntheticEvent<HTMLInputElement>, currentISO: string): string;
   dispatch: Function;

@@ -16,7 +16,7 @@ import { FormattedPlantInfo } from "./map_state_to_props";
 import { DesignerState } from "../farm_designer/interfaces";
 
 export const AllCurveInfo = (props: AllCurveInfoProps) => {
-  return <div className={"all-curve-info"}>
+  return <div className={"all-curve-info grid"}>
     {[CurveType.water, CurveType.spread, CurveType.height].map(curveType => {
       return <CurveInfo key={curveType}
         dispatch={props.dispatch}
@@ -38,7 +38,7 @@ export const CurveInfo = (props: CurveInfoProps) => {
   const { plant, onChange, curve, curves, plants, curveType } = props;
   const [hovered, setHovered] = React.useState<string | undefined>(undefined);
   return <div className={"crop-curve-info"}>
-    <div className={"active-curve-name"}>
+    <div className={"active-curve-name row grid-2-col"}>
       <label>{t(CURVE_TYPES()[props.curveType])}</label>
       <FBSelect key={curve?.uuid}
         list={curvesDropdownList({ curves, curveType, plants, plant })}

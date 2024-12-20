@@ -2,6 +2,7 @@ import React from "react";
 import { snapshotGarden, newSavedGarden, copySavedGarden } from "./actions";
 import { TaggedPlantTemplate, TaggedSavedGarden } from "farmbot";
 import { t } from "../i18next_wrapper";
+import { useNavigate } from "react-router";
 
 export interface GardenSnapshotProps {
   currentSavedGarden: TaggedSavedGarden | undefined;
@@ -9,58 +10,60 @@ export interface GardenSnapshotProps {
   dispatch: Function;
 }
 
-interface GardenSnapshotState {
-  gardenName: string;
-  gardenNotes: string;
-}
-
 /** New SavedGarden name input and snapshot/create buttons. */
-export class GardenSnapshot
-  extends React.Component<GardenSnapshotProps, GardenSnapshotState> {
-  state = { gardenName: "", gardenNotes: "" };
+export const GardenSnapshot = (props: GardenSnapshotProps) => {
+  const [gardenName, setGardenName] = React.useState("");
+  const [gardenNotes, setGardenNotes] = React.useState("");
+  const navigate = useNavigate();
 
-  snapshot = () => {
-    const { currentSavedGarden, plantTemplates } = this.props;
+  const snapshot = () => {
+    const { currentSavedGarden, plantTemplates } = props;
     !currentSavedGarden
-      ? snapshotGarden(this.state.gardenName, this.state.gardenNotes)
-      : this.props.dispatch(copySavedGarden({
-        newSGName: this.state.gardenName,
+      ? snapshotGarden(navigate, gardenName, gardenNotes)
+      : props.dispatch(copySavedGarden({
+        navigate,
+        newSGName: gardenName,
         savedGarden: currentSavedGarden,
         plantTemplates
       }));
-    this.setState({ gardenName: "", gardenNotes: "" });
+    setGardenName("");
+    setGardenNotes("");
   };
 
-  new = () => {
-    this.props.dispatch(newSavedGarden(
-      this.state.gardenName,
-      this.state.gardenNotes,
+  const newGarden = () => {
+    props.dispatch(newSavedGarden(
+      navigate,
+      gardenName,
+      gardenNotes,
     ));
-    this.setState({ gardenName: "", gardenNotes: "" });
+    setGardenName("");
+    setGardenNotes("");
   };
 
-  render() {
-    return <div className="garden-snapshot">
+  return <div className="grid">
+    <div className="grid add-garden-grid">
       <label>{t("name")}</label>
       <input name="gardenName"
-        onChange={e => this.setState({ gardenName: e.currentTarget.value })}
-        value={this.state.gardenName} />
+        onChange={e => setGardenName(e.currentTarget.value)}
+        value={gardenName} />
       <label>{t("notes")}</label>
       <textarea name="notes"
-        onChange={e => this.setState({ gardenNotes: e.currentTarget.value })}
-        value={this.state.gardenNotes} />
+        onChange={e => setGardenNotes(e.currentTarget.value)}
+        value={gardenNotes} />
+    </div>
+    <div className="add-new-garden-buttons row">
       <button
-        className={"fb-button gray wide"}
+        className={"fb-button gray"}
         title={t("Snapshot current garden")}
-        onClick={this.snapshot}>
+        onClick={snapshot}>
         {t("Snapshot current garden")}
       </button>
       <button
-        className="fb-button green wide"
+        className="fb-button green"
         title={t("Add new garden")}
-        onClick={this.new}>
+        onClick={newGarden}>
         {t("Add new garden")}
       </button>
-    </div>;
-  }
-}
+    </div>
+  </div>;
+};

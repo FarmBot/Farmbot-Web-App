@@ -2,11 +2,11 @@ import React from "react";
 import { t } from "../../i18next_wrapper";
 import { round } from "lodash";
 import { Actions } from "../../constants";
-import { push } from "../../history";
 import { getUrlQuery } from "../../util";
 import { HelpState } from "../reducer";
 import { TourStepContainerProps, TourStepContainerState } from "./interfaces";
 import { TOURS } from "./data";
+import { NavigationContext } from "../../routes_helpers";
 
 export const tourPath = (
   stepUrl: string | undefined,
@@ -24,6 +24,10 @@ export class TourStepContainer
     activeBeacons: [],
   };
 
+  static contextType = NavigationContext;
+  context!: React.ContextType<typeof NavigationContext>;
+  navigate = this.context;
+
   updateTourState = (
     tour: string | undefined,
     tourStep: string | undefined,
@@ -35,11 +39,14 @@ export class TourStepContainer
     if (tour) {
       const currentStep = TOURS(this.props.firmwareHardware)[tour]?.steps
         .filter(step => step.slug == tourStep)[0];
-      push(tourPath(updateUrl ? currentStep.url : undefined, tour, tourStep));
+      this.navigate(tourPath(
+        updateUrl ? currentStep.url : undefined,
+        tour,
+        tourStep));
       currentStep?.dispatchActions
         && currentStep.dispatchActions.map(action => dispatch(action));
     } else {
-      push(location.pathname);
+      this.navigate(location.pathname);
     }
   };
 
@@ -166,13 +173,13 @@ const TourStepNavigation = (props: TourStepNavigationProps) => {
   const prevStepSlug = getAdjacentTourStepSlug(-1);
   const nextStepSlug = getAdjacentTourStepSlug(1);
   return <div className={"toast-loader"}>
-    <i className={`fa fa-backward previous ${prevStepSlug ? "" : "disabled"}`}
+    <i className={`fa fa-backward fb-icon-button previous ${prevStepSlug ? "" : "disabled"}`}
       title={t("back")}
       onClick={() => updateTourState(urlTourSlug, prevStepSlug)} />
-    <i className={`fa fa-forward next ${nextStepSlug ? "" : "disabled"}`}
+    <i className={`fa fa-forward fb-icon-button next ${nextStepSlug ? "" : "disabled"}`}
       title={t("advance")}
       onClick={() => updateTourState(urlTourSlug, nextStepSlug)} />
-    <i className={"fa fa-times exit"}
+    <i className={"fa fa-times fb-icon-button exit"}
       title={t("quit")}
       onClick={() => updateTourState(undefined, undefined)} />
   </div>;

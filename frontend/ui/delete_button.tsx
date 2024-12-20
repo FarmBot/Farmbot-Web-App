@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { destroy } from "../api/crud";
 import { t } from "../i18next_wrapper";
 import { UUID } from "../resources/interfaces";
@@ -7,7 +7,7 @@ import { omit } from "lodash";
 interface ButtonCustomProps {
   dispatch: Function;
   uuid: UUID;
-  children?: React.ReactChild
+  children?: React.ReactNode;
   onDestroy?: Function;
 }
 
@@ -29,7 +29,7 @@ const OMIT_THESE: Record<keyof ButtonCustomProps, true> = {
 export const DeleteButton = (props: DeleteButtonProps) =>
   <button
     {...omit(props, Object.keys(OMIT_THESE))}
-    className={`red fb-button del-button ${props.className}`}
+    className={`red fb-button ${props.className}`}
     title={t("Delete")}
     onClick={() =>
       props.dispatch(destroy(props.uuid))

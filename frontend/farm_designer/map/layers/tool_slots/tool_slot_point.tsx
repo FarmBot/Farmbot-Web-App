@@ -13,6 +13,7 @@ import { reduceToolName } from "../../tool_graphics/all_tools";
 import { Path } from "../../../../internal_urls";
 import { Actions } from "../../../../constants";
 import { Circle } from "../plants/circle";
+import { useNavigate } from "react-router";
 
 export interface TSPProps {
   slot: SlotWithTool;
@@ -54,12 +55,13 @@ export const ToolSlotPoint = (props: TSPProps) => {
       payload: hover ? toolSlot.uuid : undefined
     });
   };
+  const navigate = useNavigate();
   return <g id={"toolslot-" + id}
     onMouseEnter={iconHover("start")}
     onMouseLeave={iconHover("end")}
     onClick={() => {
       props.dispatch(selectPoint([toolSlot.uuid]));
-      mapPointClickAction(props.dispatch, toolSlot.uuid,
+      mapPointClickAction(navigate, props.dispatch, toolSlot.uuid,
         Path.toolSlots(id))();
       props.dispatch(setHoveredPlant(undefined));
     }}>

@@ -1,0 +1,261 @@
+@use "../variables" as *;
+@use "sass:color";
+
+.settings-panel-content {
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-bottom: 1.5rem;
+  display: grid;
+  gap: 2rem;
+  .expandable-header {
+    margin: 0;
+  }
+  .section {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    &.setting {
+      gap: 0.5rem;
+    }
+    .bp5-collapse {
+      grid-column: span 2;
+    }
+    .bp5-collapse-body {
+      display: grid;
+      gap: 1rem;
+    }
+  }
+  .export-data,
+  .change-password {
+    form {
+      margin-left: 2rem;
+    }
+  }
+  .label-headings {
+    label {
+      line-height: 1rem;
+    }
+  }
+  .release-notes-wrapper {
+    float: right !important;
+  }
+  .settings-warning-banner {
+    margin: 0 -2.5rem;
+    padding: 1rem 2.5rem;
+    background: color.adjust($orange, $alpha: -0.6);
+    p {
+      font-size: 1.3rem;
+      font-weight: bold;
+    }
+    &.env-editor-lua {
+      background: color.adjust($blue, $alpha: -0.6);
+    }
+  }
+  .pin-guard-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr 1fr auto;
+    grid-auto-flow: column;
+  }
+  .pin-bindings {
+    .stock-pin-bindings-button {
+      display: block;
+      justify-self: right;
+      i {
+        margin-right: 0.5rem;
+      }
+    }
+    .pin-binding-grid {
+      grid-template-columns: 1fr 30% auto;
+    }
+    .binding-action {
+      font-weight: bold;
+      font-size: 1.2rem;
+    }
+  }
+  .fb-button {
+    margin-top: 0.5rem;
+  }
+  label {
+    margin: auto 0 !important;
+    line-height: 1;
+    font-size: 1.2rem !important;
+  }
+  .help-icon {
+    margin-left: 0.5rem;
+  }
+  .designer-setting {
+    &.disabled {
+      input {
+        background: $gray;
+      }
+      button {
+        background: $medium_light_gray !important;
+      }
+    }
+  }
+}
+
+.setting {
+  &[hidden] {
+    display: none !important;
+  }
+  &.highlight {
+    background-color: $translucent2_white;
+    box-shadow: 0px 0px 7px 4px $translucent2_white;
+  }
+  &.unhighlight {
+    transition: background-color 10s linear, box-shadow 10s linear;
+    background-color: transparent;
+    box-shadow: none;
+  }
+  &.advanced {
+    border-left: 3px solid $blue;
+    padding-left: 0.7rem;
+    margin-left: -1rem;
+  }
+  .fa-anchor {
+    font-size: 0.8rem;
+    visibility: hidden;
+    &.hovered {
+      visibility: visible;
+    }
+  }
+  .setting {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.5rem;
+    align-items: baseline;
+    .farmbot-os-setting {
+      text-align: left;
+    }
+  }
+}
+
+.load-progress-bar-wrapper {
+  position: relative;
+  margin: 0.5rem;
+  margin-top: 0;
+  margin-left: 0;
+  width: 90%;
+  height: 1.5rem;
+  border: 1px solid $dark_gray;
+  .load-progress-bar {
+    height: 100%;
+    background: $dark_gray !important;
+    p {
+      position: absolute;
+      color: $gray;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+  }
+}
+
+.firmware-setting-export-menu {
+  button {
+    margin-bottom: 1rem;
+  }
+  ul {
+    font-size: 0.75rem;
+  }
+}
+
+.change-ownership-form {
+  p {
+    padding: 1rem;
+    margin-left: 0.5rem;
+  }
+  .row {
+    margin-bottom: 1rem;
+    &:empty {
+      margin-bottom: 0;
+    }
+  }
+  label {
+    margin-top: 0.5rem;
+  }
+  button {
+    margin-top: 1rem;
+    margin-right: 1rem;
+  }
+}
+
+.mcu-input-box {
+  width: 100%;
+}
+
+.fb-toggle-button,
+.mcu-input-box {
+  position: relative;
+  .setting-status-indicator {
+    position: absolute;
+    z-index: 1;
+  }
+  .fa-spinner {
+    color: $dark_gray;
+  }
+  .fa-check {
+    color: $green;
+    animation: fade-out 1s 0.4s forwards;
+  }
+  .save-error {
+    .bp5-popover-content {
+      background: $dark_gray;
+      min-width: 200px;
+      p {
+        text-transform: none;
+        color: $off_white;
+      }
+    }
+    .bp5-popover-arrow-fill {
+      fill: $dark_gray;
+    }
+  }
+}
+
+.mcu-input-box {
+  .setting-status-indicator {
+    top: 0.5rem;
+    right: 0.5rem;
+  }
+}
+
+.release-notes-button {
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.release-notes {
+  max-width: 250px;
+  h1 {
+    font-weight: 300;
+    font-size: 1.4rem;
+    line-height: 2rem;
+    margin-top: 0;
+  }
+  li {
+    font-weight: 300;
+    font-size: 1.1rem;
+    line-height: 1.75rem;
+    margin-bottom: 1rem;
+  }
+  p {
+    display: block;
+    color: $dark_gray;
+    text-overflow: inherit;
+    overflow: inherit;
+    width: inherit;
+    white-space: inherit;
+  }
+}
+
+.timezone-grid {
+  grid-auto-flow: dense!important;
+}
+
+.note {
+  font-style: italic;
+  grid-column: span 2;
+  margin-bottom: 1rem;
+}

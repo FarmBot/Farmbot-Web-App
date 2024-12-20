@@ -31,11 +31,11 @@ import { edit, save } from "../../api/crud";
 import { PanelSection } from "../../plants/plant_inventory";
 import { createGroup } from "../../point_groups/actions";
 import { DEFAULT_CRITERIA } from "../../point_groups/criteria/interfaces";
-import { push } from "../../history";
 import { weedsPanelState } from "../../__test_support__/panel_state";
 import { Actions } from "../../constants";
 import { Path } from "../../internal_urls";
 import { deletePointsByIds } from "../../api/delete_points";
+import { mountWithContext } from "../../__test_support__/mount_with_context";
 
 describe("<Weeds> />", () => {
   const fakeProps = (): WeedsProps => ({
@@ -111,21 +111,24 @@ describe("<Weeds> />", () => {
 
   it("navigates to group", () => {
     const wrapper = shallow<Weeds>(<Weeds {...fakeProps()} />);
-    wrapper.instance().navigate(1)();
-    expect(push).toHaveBeenCalledWith(Path.groups(1));
+    const navigate = jest.fn();
+    wrapper.instance().navigate = navigate;
+    wrapper.instance().navigateById(1)();
+    expect(navigate).toHaveBeenCalledWith(Path.groups(1));
   });
 
   it("adds new weed", () => {
-    const wrapper = mount(<Weeds {...fakeProps()} />);
+    const wrapper = mountWithContext(<Weeds {...fakeProps()} />);
     wrapper.find(".plus-weed").simulate("click");
-    expect(push).toHaveBeenCalledWith(Path.weeds("add"));
+    expect(mockNavigate).toHaveBeenCalledWith(Path.weeds("add"));
   });
 
   it("adds new group", () => {
     const wrapper = shallow(<Weeds {...fakeProps()} />);
     wrapper.find(PanelSection).first().props().addNew();
     expect(createGroup).toHaveBeenCalledWith({
-      criteria: { ...DEFAULT_CRITERIA, string_eq: { pointer_type: ["Weed"] } }
+      criteria: { ...DEFAULT_CRITERIA, string_eq: { pointer_type: ["Weed"] } },
+      navigate: expect.anything(),
     });
   });
 

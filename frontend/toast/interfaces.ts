@@ -4,6 +4,7 @@ export interface ToastOptions {
   idPrefix?: string;
   noTimer?: boolean;
   noDismiss?: boolean;
+  redirect?: string;
 }
 
 interface CreateToastProps {
@@ -13,6 +14,7 @@ interface CreateToastProps {
   idPrefix?: string;
   noTimer?: boolean;
   noDismiss?: boolean;
+  redirect?: string;
 }
 
 export interface CreateToastOnceProps extends CreateToastProps {

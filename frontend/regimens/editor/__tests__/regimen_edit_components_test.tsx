@@ -4,13 +4,6 @@ jest.mock("../../../api/crud", () => ({
   overwrite: jest.fn(),
 }));
 
-import { Path } from "../../../internal_urls";
-const mockPath = Path.mock(Path.regimens("1"));
-jest.mock("../../../history", () => ({
-  getPathArray: jest.fn(() => mockPath.split("/")),
-  push: jest.fn(),
-}));
-
 import React from "react";
 import { mount } from "enzyme";
 import {
@@ -22,8 +15,8 @@ import { RegimenProps } from "../../interfaces";
 import { VariableDeclaration } from "farmbot";
 import { clickButton } from "../../../__test_support__/helpers";
 import { destroy, save, overwrite } from "../../../api/crud";
-import { push } from "../../../history";
 import { cloneDeep } from "lodash";
+import { Path } from "../../../internal_urls";
 
 const fakeProps = (): RegimenProps => ({
   regimen: fakeRegimen(),
@@ -83,6 +76,6 @@ describe("<OpenSchedulerButton />", () => {
   it("opens scheduler", () => {
     const wrapper = mount(<OpenSchedulerButton />);
     clickButton(wrapper, 0, "schedule item");
-    expect(push).toHaveBeenCalledWith(Path.regimens("scheduler"));
+    expect(mockNavigate).toHaveBeenCalledWith(Path.regimens("scheduler"));
   });
 });

@@ -1,4 +1,5 @@
 import { TaggedSavedGarden, TaggedPlantTemplate } from "farmbot";
+import { NavigateFunction } from "react-router";
 
 export interface SavedGardensProps {
   savedGardens: TaggedSavedGarden[];
@@ -17,6 +18,7 @@ export interface SavedGardensState {
 }
 
 export interface GardenViewButtonProps {
+  navigate: NavigateFunction;
   dispatch: Function;
   savedGardenId: number | undefined;
   gardenIsOpen: boolean;

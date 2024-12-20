@@ -1,10 +1,9 @@
 import React from "react";
 import { t } from "../../../i18next_wrapper";
 import { ConfigurationName, McuParams, TaggedPoint } from "farmbot";
-import { ToggleButton } from "../../../ui/toggle_button";
 import { BotLocationData, SourceFbosConfig } from "../../../devices/interfaces";
 import { BotSize } from "../interfaces";
-import { MarkedSlider } from "../../../ui";
+import { MarkedSlider, ToggleButton } from "../../../ui";
 import { ceil, round } from "lodash";
 import { soilHeightPoint } from "../../../points/soil_height";
 

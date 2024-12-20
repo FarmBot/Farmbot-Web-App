@@ -1,13 +1,13 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Everything } from "../interfaces";
-import { Panel, DesignerNavTabs } from "../farm_designer/panel_header";
+import { Panel } from "../farm_designer/panel_header";
 import { t } from "../i18next_wrapper";
 import {
   DesignerPanel, DesignerPanelTop, DesignerPanelContent,
 } from "../farm_designer/designer_panel";
 import { TaggedPointGroup, TaggedPoint } from "farmbot";
-import { push } from "../history";
+import { useNavigate } from "react-router";
 import { GroupInventoryItem } from "./group_inventory_item";
 import {
   EmptyStateWrapper, EmptyStateGraphic,
@@ -26,10 +26,6 @@ export interface GroupListPanelProps {
   allPoints: TaggedPoint[];
 }
 
-interface State {
-  searchTerm: string;
-}
-
 export function mapStateToProps(props: Everything): GroupListPanelProps {
   return {
     groups: selectAllPointGroups(props.resources.index),
@@ -38,46 +34,47 @@ export function mapStateToProps(props: Everything): GroupListPanelProps {
   };
 }
 
-export class RawGroupListPanel
-  extends React.Component<GroupListPanelProps, State> {
-  state: State = { searchTerm: "" };
+export const RawGroupListPanel = (props: GroupListPanelProps) => {
+  const [searchTerm, setSearchTerm] = React.useState("");
 
-  navigate = (id: number | undefined) => () => push(Path.groups(id));
+  const navigate = useNavigate();
+  const navigateById = (id: number | undefined) => () => {
+    navigate(Path.groups(id));
+  };
 
-  render() {
-    return <DesignerPanel panelName={"groups"} panel={Panel.Groups}>
-      <DesignerNavTabs />
-      <DesignerPanelTop
-        panel={Panel.Groups}
-        onClick={() => this.props.dispatch(createGroup({ pointUuids: [] }))}
-        title={t("Add group")}>
-        <SearchField nameKey={"groups"}
-          searchTerm={this.state.searchTerm}
-          placeholder={t("Search your groups...")}
-          onChange={searchTerm => this.setState({ searchTerm })} />
-      </DesignerPanelTop>
-      <DesignerPanelContent panelName={"groups"}>
-        <EmptyStateWrapper
-          notEmpty={this.props.groups.length > 0}
-          title={t("No groups yet.")}
-          text={t(Content.NO_GROUPS)}
-          colorScheme="groups"
-          graphic={EmptyStateGraphic.groups}>
-          {this.props.groups
-            .filter(p => p.body.name.toLowerCase()
-              .includes(this.state.searchTerm.toLowerCase()))
-            .map(group => <GroupInventoryItem
-              key={group.uuid}
-              group={group}
-              allPoints={this.props.allPoints}
-              hovered={false}
-              dispatch={this.props.dispatch}
-              onClick={this.navigate(group.body.id)}
-            />)}
-        </EmptyStateWrapper>
-      </DesignerPanelContent>
-    </DesignerPanel>;
-  }
-}
+  return <DesignerPanel panelName={"groups"} panel={Panel.Groups}>
+    <DesignerPanelTop
+      panel={Panel.Groups}
+      onClick={() => props.dispatch(createGroup({ pointUuids: [], navigate }))}
+      title={t("Add group")}>
+      <SearchField nameKey={"groups"}
+        searchTerm={searchTerm}
+        placeholder={t("Search your groups...")}
+        onChange={setSearchTerm} />
+    </DesignerPanelTop>
+    <DesignerPanelContent panelName={"groups"}>
+      <EmptyStateWrapper
+        notEmpty={props.groups.length > 0}
+        title={t("No groups yet.")}
+        text={t(Content.NO_GROUPS)}
+        colorScheme="groups"
+        graphic={EmptyStateGraphic.groups}>
+        {props.groups
+          .filter(p => p.body.name.toLowerCase()
+            .includes(searchTerm.toLowerCase()))
+          .map(group => <GroupInventoryItem
+            key={group.uuid}
+            group={group}
+            allPoints={props.allPoints}
+            hovered={false}
+            dispatch={props.dispatch}
+            onClick={navigateById(group.body.id)}
+          />)}
+      </EmptyStateWrapper>
+    </DesignerPanelContent>
+  </DesignerPanel>;
+};
 
 export const GroupListPanel = connect(mapStateToProps)(RawGroupListPanel);
+// eslint-disable-next-line import/no-default-export
+export default GroupListPanel;

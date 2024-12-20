@@ -1,0 +1,70 @@
+@use "../variables" as *;
+@use "sass:color";
+
+.saucer {
+  position: relative;
+  z-index: 2;
+  height: 2rem;
+  width: 2rem;
+  background: $dark_gray;
+  border-radius: 50%;
+  cursor: pointer;
+  &.active {
+    border: 2px solid $dark_gray;
+  }
+  &.hover {
+    border: 2px solid $off_white;
+  }
+  p {
+    font-weight: 900;
+    color: $white;
+    margin-left: 0.7rem;
+    margin-top: 0.3rem;
+  }
+}
+
+.icon-saucer {
+  position: relative;
+  z-index: 2;
+  height: 2rem;
+  width: 2rem;
+  color: $dark_gray;
+  cursor: pointer;
+  &.active {
+    border: 2px solid white;
+  }
+  &.hover {
+    border: 2px solid $dark_gray;
+  }
+}
+
+.saucer-connector {
+  position: absolute;
+  z-index: 1;
+  height: 6rem;
+  width: 1rem;
+  margin-left: 0.5rem;
+  margin-top: -1rem;
+  &.last {
+    margin-top: -9rem;
+    height: 8rem;
+  }
+}
+
+.colorpicker-menu {
+  padding: 0;
+  .bp5-popover-arrow-fill {
+    fill: $dark_gray;
+  }
+  .bp5-popover-content {
+    width: 13rem;
+    background: $dark_gray;
+  }
+  .bp5-popover-content,
+  .color-picker-cluster,
+  .color-picker-item-wrapper,
+  .saucer {
+    display: inline-block;
+    padding: 0.4rem;
+  }
+}

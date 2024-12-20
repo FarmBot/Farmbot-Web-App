@@ -1,5 +1,5 @@
 import React from "react";
-import { DropDownItem, Row, Col, FBSelect } from "../../ui";
+import { DropDownItem, Row, FBSelect } from "../../ui";
 import {
   CameraSelectionProps, CameraSelectionState,
 } from "./interfaces";
@@ -79,23 +79,19 @@ export class CameraSelection
 
   render() {
     return <Highlight settingName={DeviceSetting.camera} pathPrefix={Path.photos}>
-      <Row>
-        <Col xs={5}>
-          <label>
-            {t("CAMERA")}
-          </label>
-        </Col>
-        <Col xs={7}>
-          <FBSelect
-            allowEmpty={false}
-            list={CAMERA_CHOICES()}
-            selectedItem={this.selectedCamera()}
-            onChange={ddi =>
-              this.props.dispatch(this.props.saveFarmwareEnv("camera",
-                JSON.stringify(ddi.value)))}
-            extraClass={getModifiedClassNameSpecifyDefault(
-              this.selectedCamera().value, Camera.USB)} />
-        </Col>
+      <Row className="row grid-2-col">
+        <label>
+          {t("CAMERA")}
+        </label>
+        <FBSelect
+          allowEmpty={false}
+          list={CAMERA_CHOICES()}
+          selectedItem={this.selectedCamera()}
+          onChange={ddi =>
+            this.props.dispatch(this.props.saveFarmwareEnv("camera",
+              JSON.stringify(ddi.value)))}
+          extraClass={getModifiedClassNameSpecifyDefault(
+            this.selectedCamera().value, Camera.USB)} />
       </Row>
     </Highlight>;
   }

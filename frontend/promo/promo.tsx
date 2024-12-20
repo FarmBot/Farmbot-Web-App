@@ -26,7 +26,7 @@ export const Promo = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // intentionally empty dependency array
 
-  return <div className={"three-d-garden"}>
+  return <div className={"three-d-garden promo"}>
     <div className={"garden-bed-3d-model"}>
       <Canvas shadows={true}>
         <GardenModel {...common} />

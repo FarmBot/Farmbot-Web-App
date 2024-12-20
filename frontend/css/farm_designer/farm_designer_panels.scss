@@ -1,258 +1,119 @@
-.panel-nav,
+@use "../variables" as *;
+@use "sass:color";
+
 .farm-designer-panels {
   position: fixed;
-  top: 8.9rem;
+  top: 9rem;
   width: 45rem;
-  box-shadow: 0 0 10px $translucent;
+  margin: 1.25rem;
+  margin-top: 0;
+  overflow-y: scroll;
+  border-radius: 1rem;
   @media screen and (max-width: $mobile_max_width) {
-    width: 100%;
+    top: 15rem;
+    width: 100vw;
+    margin: 0;
+  }
+  &.short-panel {
+    max-height: 19rem;
   }
 }
 
 .panel-nav {
+  position: fixed;
+  top: 10rem;
+  width: 100vw;
   display: none;
+  overflow-x: scroll;
+  z-index: 11;
   @media screen and (max-width: $mobile_max_width) {
     display: block;
   }
 }
 
-.panel-top {
-  margin-top: 0;
-  @media screen and (max-width: $mobile_max_width) {
-    margin-top: 5rem;
+.panel-content {
+  padding: 1rem;
+  a {
+    color: inherit;
+    text-decoration: underline !important;
   }
 }
 
-.controls-panel,
-.sensors-panel,
-.photos-panel,
-.messages-panel,
-.help-panel {
+.group-detail-panel {
   .panel-content {
-    padding-top: 1rem;
-    max-height: calc(100vh - 3rem);
-    @media screen and (max-width: $mobile_max_width) {
-      padding-top: 6rem;
-      max-height: calc(100vh - 9rem);
-    }
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 1rem;
   }
 }
 
-.controls-panel,
-.photos-panel {
-  .panel-content {
-    max-height: calc(100vh - 9rem);
-  }
-}
-
-.controls-panel {
-  .panel-content {
-    padding-top: 0;
-    @media screen and (max-width: $mobile_max_width) {
-      padding-top: 4rem;
-    }
-  }
-}
-
-.move {
-  position: relative;
-  padding-bottom: 1rem;
-  padding-top: 1rem;
-  .move {
-    .unavailable,
-    .bot-is-online-wrapper {
-      display: inline-block;
-    }
-  }
-  .move-settings.bp5-popover-wrapper {
-    position: absolute;
-    top: 6rem;
-    right: 1rem;
-    .fa-gear {
-      color: $dark_gray;
-    }
-  }
-  .jog-controls-group {
-    label {
-      margin-top: 0;
-    }
-  }
-  .bot-position-rows {
-    padding-left: 1rem;
-    padding-right: 1rem;
-    label {
-      margin-top: 0;
-      font-size: 1.2rem;
-    }
-    .axis-titles {
-      margin-bottom: 1rem;
-    }
-  }
-}
-
-.plant-inventory-panel,
-.groups-panel,
-.designer-regimen-list-panel,
-.events-panel,
 .point-inventory-panel,
+.plant-inventory-panel {
+  .panel-content {
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: inherit;
+  }
+}
+
+.curve-info-panel,
+.weed-info-panel,
+.point-info-panel,
+.plant-info-panel {
+  .panel-content {
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+}
+
+.weed-info-panel {
+  .panel-title {
+    color: $dark_gray;
+  }
+}
+
 .weeds-inventory-panel,
 .zones-inventory-panel,
-.tools-panel,
-.tool-slots-panel-content,
-.designer-farmware-list-panel,
-.settings-panel {
+.groups-panel {
   .panel-content {
-    max-height: calc(100vh - 14rem);
-    @media screen and (max-width: $mobile_max_width) {
-      max-height: calc(100vh - 19rem);
-    }
-  }
-}
-
-@keyframes panel-pullout {
-  0% {
-    transform: translateY(-100%);
-  }
-  100% {
-    transform: translateY(0);
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 }
 
 .farm-designer-panels {
   bottom: 0;
   z-index: 1;
+  animation: panel-show 0.3s ease forwards;
+  pointer-events: none;
   &.panel-closed-mobile,
   &.panel-closed {
-    display: none !important;
-  }
-  &.short-panel {
-    height: 24rem;
-    .location-info-panel {
-      .panel-content {
-        max-height: 19rem;
-      }
-    }
+    animation: panel-hide 0.3s ease forwards;
   }
   .panel-container {
     width: 100%;
-    height: 100%;
+    border-radius: 1rem;
     overflow-x: hidden;
     font-size: 1.6rem;
-    padding-bottom: 6rem;
+    pointer-events: auto;
+    overflow: hidden;
+    box-shadow: 0 0 1rem $translucent;
+    background-color: var(--main-bg);
+    color: var(--text-color);
+    div[class*="search-item"] {
+      &:hover,
+      &.hovered {
+        background: $translucent2_white;
+      }
+    }
     label {
       font-size: 1.3rem;
-      margin-top: 2rem;
-    }
-  }
-  div {
-    animation: panel-pullout 0s ease;
-  }
-}
-
-.panel-container {
-  overflow: hidden;
-  div[class*="search-item"] {
-    &:hover,
-    &.hovered {
-      transition: background 0.2s ease;
-    }
-  }
-  &.green-panel {
-    background-color: $panel_light_green;
-    div[class*="search-item"] {
-      &:hover,
-      &.hovered {
-        background: color.adjust($panel_light_green, $lightness: -10%);
-      }
-    }
-  }
-  &.cyan-panel {
-    background-color: $light_cyan;
-    div[class*="search-item"] {
-      &:hover,
-      &.hovered {
-        background: color.adjust($light_cyan, $lightness: -10%);
-      }
-    }
-  }
-  &.brown-panel {
-    background-color: $panel_light_brown;
-    div[class*="search-item"] {
-      &:hover,
-      &.hovered {
-        background: color.adjust($panel_light_brown, $lightness: -10%);
-      }
-    }
-  }
-  &.magenta-panel {
-    background-color: $light_magenta;
-    div[class*="search-item"] {
-      &:hover,
-      &.hovered {
-        background: color.adjust($light_magenta, $lightness: -10%);
-      }
-    }
-  }
-  &.light-gray-panel,
-  &.gray-panel {
-    background-color: $panel_light_gray;
-    div[class*="search-item"] {
-      &:hover,
-      &.hovered {
-        background: color.adjust($panel_light_gray, $lightness: -10%);
-      }
-    }
-  }
-  &.yellow-panel {
-    background-color: $panel_light_yellow;
-    div[class*="search-item"] {
-      &:hover,
-      &.hovered {
-        background: color.adjust($panel_light_yellow, $lightness: -10%);
-      }
-    }
-  }
-  &.blue-panel {
-    background-color: $panel_light_blue;
-    div[class*="search-item"] {
-      &:hover,
-      &.hovered {
-        background: color.adjust($panel_light_blue, $lightness: -10%);
-      }
-    }
-  }
-  &.navy-panel {
-    background-color: $panel_light_navy;
-    div[class*="search-item"] {
-      &:hover,
-      &.hovered {
-        background: color.adjust($panel_light_navy, $lightness: -10%);
-      }
-    }
-  }
-  &.teal-panel {
-    background-color: $panel_light_teal;
-    div[class*="search-item"] {
-      &:hover,
-      &.hovered {
-        background: color.adjust($panel_light_teal, $lightness: -10%);
-      }
-    }
-  }
-  &.red-panel {
-    background-color: $panel_light_red;
-    div[class*="search-item"] {
-      &:hover,
-      &.hovered {
-        background: color.adjust($panel_light_red, $lightness: -10%);
-      }
     }
   }
 }
 
 .panel-nav,
 .panel-header {
-  color: $light_gray;
   &.green-panel {
     background-color: $panel_green;
   }
@@ -266,7 +127,7 @@
     background-color: $magenta;
   }
   &.gray-panel {
-    background-color: $panel_gray;
+    background-color: $translucent3;
   }
   &.light-gray-panel{
     background-color: $panel_medium_light_gray;
@@ -285,24 +146,6 @@
   }
   &.red-panel {
     background-color: $panel_red;
-  }
-  &.blue,
-  &.yellow,
-  &.orange,
-  &.purple,
-  &.pink,
-  &.gray {
-    .right-button,
-    .back-arrow,
-    .title {
-      color: $dark_gray;
-    }
-    .right-button,
-    .back-arrow {
-      &:hover {
-        color: $black !important;
-      }
-    }
   }
 }
 
@@ -331,8 +174,8 @@
     line-height: 5rem;
     height: 5rem;
     color: $light_gray;
-    padding-left: 0.1rem;
-    padding-right: 0.1rem;
+    padding-left: 0.2rem;
+    padding-right: 0.2rem;
     &.active {
       border-bottom: 3px solid $white;
       font-weight: bold;
@@ -355,7 +198,6 @@
 }
 
 .panel-title {
-  height: 50px;
   overflow: hidden;
   .back-arrow {
     float: left;
@@ -363,26 +205,12 @@
     font-size: 1.8rem;
     width: 50px;
     line-height: 50px;
-    &.black-text{
-      color: $medium_gray;
-    }
-    &:hover {
-      &.black-text{
-        color: $darker_gray !important;
-      }
-      &.white-text{
-        color: $white;
-      }
-    }
   }
   .title {
-    float: left;
     font-size: 1.8rem;
     white-space: nowrap;
-    width: 60%;
     overflow: hidden;
     text-overflow: ellipsis;
-    line-height: 50px;
   }
   .right-button {
     position: absolute;
@@ -404,302 +232,6 @@
   }
   button {
     margin-left: 4px;
-  }
-}
-
-.white-text{
-  color: $off_white;
-}
-.black-text{
-  color: $black;
-}
-
-.point-inventory-panel,
-.plant-inventory-panel {
-  .panel-content {
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding-bottom: inherit;
-  }
-}
-
-.plant-selection-panel {
-  .panel-action-buttons {
-    position: absolute;
-    z-index: 9;
-    height: 16rem;
-    width: 100%;
-    background: $panel_medium_light_gray;
-    padding: 0.5rem;
-    .selection-type {
-      display: flex;
-      label {
-        line-height: 4rem;
-      }
-      .filter-search {
-        position: absolute;
-        right: 1rem;
-        width: 70%;
-        .bp5-button {
-          margin-left: 0.5rem;
-        }
-        i {
-          margin-right: -0.5rem;
-        }
-      }
-    }
-    &.more-select {
-      height: 20rem;
-    }
-    &.more-action {
-      height: 35rem;
-    }
-    &.more-select.more-action {
-      height: 38rem;
-    }
-    .fb-button {
-      margin: 0.5rem;
-      float: left;
-    }
-    label {
-      min-width: -webkit-fill-available;
-      margin-bottom: 0px;
-      margin-left: .5rem;
-      margin-top: 0;
-    }
-    .button-row {
-      float: left;
-      width: 100%;
-      margin-bottom: 1rem;
-      &.group-select {
-        .filter-search {
-          margin-top: 0.5rem;
-        }
-      }
-    }
-    .filter-search {
-      padding-right: 1rem;
-    }
-    .plant-curves-bulk-update,
-    .point-size-bulk-update,
-    .plant-depth-bulk-update,
-    .plant-date-bulk-update,
-    .point-color-bulk-update,
-    .plant-slug-bulk-update,
-    .plant-status-bulk-update {
-      display: inline-block;
-      width: 100%;
-      line-height: 3.5rem;
-    }
-    .plant-curves-bulk-update,
-    .plant-status-bulk-update {
-      .filter-search {
-        display: inline-block;
-        width: 50% !important;
-        margin-top: 0.5rem;
-      }
-      p {
-        display: inline-block;
-        font-size: 1.2rem;
-        vertical-align: top;
-      }
-    }
-    .plant-depth-bulk-update,
-    .point-size-bulk-update {
-      p {
-        display: inline-block;
-        font-size: 1.2rem;
-        vertical-align: middle;
-      }
-      input {
-        margin: 0;
-        width: 48%;
-        height: 3rem;
-      }
-    }
-    .plant-date-bulk-update {
-      .input {
-        display: inline-block;
-        width: 48%;
-        input {
-          height: 3rem;
-          padding: 0;
-          padding-left: 1rem;
-          padding-right: 1rem;
-        }
-      }
-    }
-    .point-color-bulk-update {
-      .color-picker {
-        display: inline-block;
-        margin-bottom: -0.5rem;
-      }
-    }
-    .plant-slug-bulk-update {
-      .fa-pencil {
-        margin-left: 0.25rem;
-      }
-      .fb-button {
-        float: none;
-        height: 2rem;
-        line-height: 0;
-        margin-left: 1rem;
-        vertical-align: top;
-      }
-    }
-    .more {
-      cursor: pointer;
-      margin-left: 0.5rem;
-      line-height: 2.5rem;
-      p {
-        display: inline;
-        font-size: 1.4rem;
-        margin-right: 1rem;
-      }
-    }
-    .more-button {
-      float: right;
-      width: max-content;
-      margin-right: 1rem;
-    }
-    .more-content {
-      margin-top: 0.5rem;
-      max-height: 20.5rem;
-      overflow: scroll;
-      width: 330px;
-      label {
-        width: 100%;
-      }
-      .filter-search {
-        display: inline-block;
-        width: 50.75% !important;
-        line-height: 1rem;
-      }
-      p {
-        display: inline-block;
-        width: 150px;
-        line-height: 3.5rem;
-      }
-    }
-  }
-  .panel-content {
-    padding-top: 16rem;
-    padding-right: 0;
-    padding-left: 0;
-    max-height: calc(100vh - 13rem);
-    overflow-y: auto;
-    overflow-x: hidden;
-    &.more-select {
-      padding-top: 20rem;
-    }
-    &.more-action {
-      padding-top: 35rem;
-    }
-    &.more-select.more-action {
-      padding-top: 38rem;
-    }
-    .tool-slot-search-item-icon {
-      padding-left: 5px !important;
-    }
-  }
-}
-
-.group-detail-panel,
-.plant-info-panel {
-  .panel-header-icon-group {
-    i {
-      color: $white;
-    }
-  }
-}
-
-.curve-info-panel,
-.weed-info-panel,
-.point-info-panel,
-.plant-info-panel {
-  .panel-title {
-    input {
-      margin: 1rem;
-      width: 75%;
-    }
-  }
-  .panel-content {
-    max-height: calc(100vh - 14rem);
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
-}
-
-.point-creation-panel {
-  .panel-content {
-    max-height: calc(100vh - 17rem);
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding-top: 1rem;
-    ul {
-      margin-bottom: 0;
-    }
-    label {
-      margin-top: 0 !important;
-    }
-    .plant-info-field-data {
-      margin-top: 1rem;
-    }
-    p {
-      margin-top: 1rem;
-    }
-    .fb-button {
-      &.save {
-        margin-right: 1.5rem;
-      }
-      &.delete {
-        float: left;
-        margin-top: 1rem;
-      }
-    }
-    .point-color-input {
-      div[class*=col-] {
-        padding-left: 0.5rem;
-      }
-      .saucer {
-        margin-top: 2.75rem;
-      }
-    }
-    .delete-row {
-      margin: 1.5rem;
-    }
-    hr {
-      border-color: $medium_gray;
-    }
-    .grid-and-row-planting {
-      label {
-        color: $dark_gray;
-      }
-      input {
-        box-shadow: 0 0 10px #ddd;
-      }
-      .update-button,
-      .preview-button,
-      .cancel-button,
-      .save-button {
-        text-decoration: none !important;
-        color: $dark_gray;
-        &:hover {
-          color: $black;
-          background: $off_white;
-        }
-      }
-    }
-    .blue {
-      float: none;
-    }
-    .use-current-location {
-      button {
-        .fa {
-          font-size: 1.5rem;
-        }
-      }
-    }
   }
 }
 
@@ -739,126 +271,16 @@
       }
     }
   }
-  .go-button-axes-wrapper {
-    display: inline-block;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-    margin-left: 1.5rem;
-  }
-}
-
-.soil-height-checkbox {
-  margin-top: 1rem;
-  input {
-    float: left;
-    width: 2rem !important;
-    box-shadow: none !important;
-    margin-right: 0.5rem;
-    cursor: pointer;
-  }
-  label {
-    margin-top: 0 !important;
-  }
-}
-
-.crop-catalog-panel {
-  .panel-top {
-    margin-top: 0;
-  }
-  .panel-content {
-    padding: 1rem 1rem 6rem;
-    padding-bottom: inherit;
-  }
 }
 
 .panel-top {
+  padding: 1rem;
   &.with-button {
-    display: flex;
-    .fb-button {
-      margin: 1rem;
-      margin-left: 0;
-    }
-    a {
-      margin-top: 0.5rem;
-    }
-    i:not(.fa-stack-2x) {
-      font-size: 1.5rem;
-    }
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 1rem;
+    align-items: center;
   }
-}
-
-.panel-content {
-  padding: 0 1rem;
-  padding-bottom: inherit;
-  a {
-    color: $black;
-    text-decoration: underline !important;
-  }
-}
-
-.edit-farm-event-panel,
-.add-farm-event-panel {
-  .panel-content {
-    max-height: calc(100vh - 14rem);
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
-  input {
-    background: $white;
-  }
-  .save-btn {
-    margin: 1rem;
-  }
-  .location-form {
-    width: 100% !important;
-  }
-  .bp5-popover-wrapper {
-    display: inline-block;
-    margin-left: 0.5rem;
-    &.input-error-wrapper {
-      display: block;
-    }
-  }
-}
-
-.farm-event-form {
-  .farm-event-repeat-options {
-    input[type=checkbox] {
-      margin-right: 0.5rem;
-      margin-top: 0;
-      vertical-align: middle;
-    }
-    .farm-event-repeat-form {
-      .add-event-repeat-frequency {
-        min-height: 34px;
-      }
-    }
-  }
-  .locals-list {
-    margin-top: 1rem;
-    margin-left: 1rem;
-    margin-right: 1rem;
-  }
-  .save-btn {
-    position: absolute;
-    top: 0.5rem;
-    right: 0;
-  }
-}
-
-.add-farm-event-panel,
-.edit-farm-event-panel {
-  .fa-trash {
-    position: absolute;
-    top: 1.25rem;
-    right: 8rem;
-    color: $white;
-  }
-}
-
-.panel-nav {
-  position: fixed;
-  z-index: 11;
 }
 
 .scroll-indicator {
@@ -880,7 +302,7 @@
     height: 8rem;
     overflow-y: auto;
     overflow-x: hidden;
-    width: 75%;
+    width: calc(100% - 75px);
     font-family: "Cabin", sans-serif;
   }
   .saving-indicator {
@@ -895,6 +317,7 @@
   }
   .crop-drag-info-tile {
     position: absolute;
+    top: 0;
     right: 0;
     margin: 1rem;
     border: 2px solid $white;
@@ -914,12 +337,6 @@
 }
 
 .grid-input {
-  .row {
-    margin-top: 0.5rem;
-    .grid-axis-label {
-      font-weight: bold;
-    }
-  }
   .use-current-location {
     display: inline;
     float: none;
@@ -935,175 +352,14 @@
   }
 }
 
-.crop-info-panel {
-  .panel-header {
-    position: inherit;
-    background-size: 144% !important;
-    background-repeat: no-repeat !important;
-    background-position: top center !important;
-    min-height: 125px;
-    .panel-title {
-      overflow: visible;
-      .title {
-        font-family: "Inknut Antiqua";
-        font-weight: bold;
-      }
-      .bp5-popover-wrapper {
-        position: absolute;
-        right: 0;
-      }
-      .transparent-button {
-        position: absolute;
-        bottom: -9.5rem;
-        right: 1.5rem;
-        margin: 0;
-        color: $white;
-        white-space: nowrap;
-      }
-      .fa-th-large,
-      .fa-plus,
-      .fa-arrows {
-        position: absolute;
-        background: $white;
-        color: $dark_gray;
-        border-radius: 50%;
-        height: 1.5rem;
-        width: 1.5rem;
-        line-height: 1.5rem;
-        text-align: center;
-        font-size: 1rem;
-        padding-left: 0.15rem;
-      }
-      .fa-th-large {
-        top: 6rem;
-        right: 1.25rem;
-      }
-      .fa-plus {
-        top: 3.8rem;
-        right: 0.25rem;
-      }
-      .fa-arrows {
-        top: 1.5rem;
-        right: 1.25rem;
-      }
-    }
-  }
-  .panel-content {
-    max-height: calc(100vh - 19rem);
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding: 2rem 1rem 6rem;
-    padding-bottom: 12rem;
-    li {
-      margin-bottom: 1rem;
-      p {
-        font-size: 1.25rem;
-      }
-    }
-    .grid-and-row-planting {
-      padding-bottom: 2rem;
-      margin-left: -1rem;
-      margin-right: -1rem;
-      padding-left: 1rem;
-      padding-right: 1rem;
-      hr {
-        border-color: $medium_gray;
-      }
-      label {
-        color: $dark_gray;
-      }
-      .update-button,
-      .preview-button,
-      .cancel-button,
-      .save-button {
-        text-decoration: none !important;
-        color: $dark_gray;
-        &:hover {
-          color: $black;
-          background: $off_white;
-        }
-      }
-      .use-current-location {
-        margin-top: 1.5rem;
-      }
-    }
-    .companion {
-      display: inline-block;
-      text-decoration: none !important;
-      background: $light_gray;
-      border-radius: 2rem;
-      margin-right: 1rem;
-      margin-bottom: 0.5rem;
-      padding: 0.15rem;
-      padding-left: 0.5rem;
-      &:hover {
-        background: $gray;
-      }
-      p {
-        display: inline;
-        margin-left: 0.25rem;
-        margin-right: 1rem;
-        font-weight: bold;
-        text-transform: none;
-      }
-    }
-  }
-  .edit-on-openfarm {
-    margin-bottom: 1rem;
-    font-size: 1.3rem;
-  }
-  .object-list {
-    li {
-      position: relative;
-      margin-left: 2rem;
-    }
-    li {
-      p,
-      div {
-        display: inline;
-        font-size: 1.3rem;
-        color: $dark_gray;
-      }
-      p {
-        margin-right: 0.25rem;
-        text-transform: uppercase;
-        font-weight: bold;
-      }
-      span {
-        position: absolute;
-        left: -2rem;
-      }
-    }
-  }
-  .plant-stage-selection,
-  .planted-at-selection {
-    display: flex;
-    label {
-      margin-right: 0.5rem;
-      line-height: 1rem;
-      white-space: nowrap;
-    }
-    .filter-search,
-    .input {
-      width: 100%;
-    }
-  }
-}
-
 .weeds-inventory-panel-content,
 .plant-panel-content,
 .points-panel-content {
-  padding: 0;
-  .empty-state {
-    margin-bottom: 4rem;
-  }
+  padding: 0!important;
   .non-empty-state {
     margin-bottom: 1rem;
+    gap: 0;
   }
-}
-
-.edit-point-location {
-  margin-top: 1rem;
 }
 
 .point-name-input {
@@ -1120,33 +376,11 @@ li {
 
 .additional-weed-properties {
   li {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    align-items: center;
     margin-top: 1rem;
-  }
-}
-
-.plants-panel-content {
-  li {
-    margin-top: 1rem;
-    p {
-      margin-bottom: 0.5rem !important;
-    }
-  }
-  .plant-info-field-data {
-    .bp5-popover-wrapper {
-      display: inline-block;
-      margin-left: 0.5rem;
-    }
-    .filter-search {
-      .bp5-popover-wrapper {
-        margin-left: 0;
-      }
-    }
-  }
-  input {
-    background: $white;
-  }
-  .fa-pencil {
-    margin-left: 0.5rem;
   }
 }
 
@@ -1154,110 +388,48 @@ li {
   .delete {
     height: 2rem;
   }
-  .garden-indicator {
-    display: inline;
-    margin-left: 2rem;
-    font-size: 1rem;
-  }
 }
 
 .section-header {
-  display: inline-block;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
   height: 4rem;
-  width: 100%;
-  line-height: 3.75rem;
+  padding: 0 1rem;
   cursor: pointer;
-  padding-left: 1rem;
   &:hover {
-    background: $light_gray;
+    background: $translucent2_white;
   }
   label {
-    margin: 0 !important;
     cursor: pointer;
   }
   .fb-button {
-    line-height: 1rem;
-    margin-top: 0.5rem;
-    margin-right: 1rem;
-    padding: 0.25rem 0.75rem;
-    i {
-      margin: 0 !important;
-      font-size: 1.5rem;
-    }
+    line-height: 1.2rem;
   }
   .fa-caret-up,
   .fa-caret-down {
-    float: right;
-    line-height: 0;
     font-size: 2rem;
-    margin-right: 2rem;
-    margin-top: 2rem !important;
-    color: $dark_gray;
-  }
-}
-
-.add-plant-panel,
-.location-info-panel {
-  padding-bottom: 0 !important;
-}
-
-.add-plant-panel {
-  .panel-header {
-    height: 100%;
   }
 }
 
 .grid-and-row-planting {
+  display: grid;
+  gap: 1rem;
   h3 {
     width: 100%;
     text-align: center;
+    margin: 0;
   }
-  .row {
-    margin-left: 0;
-    margin-right: 0;
-    div[class*=col-] {
-      padding-left: 0;
-      padding-right: 1rem;
-    }
-  }
-  i {
+  .fa-arrows-h, .fa-arrows-v {
     margin-left: 0.5rem;
-    margin-right: 0.5rem;
-  }
-  label {
-    color: $off_white;
-    margin-top: 0.75rem;
   }
   .use-current-location {
-    padding: 0;
-    margin-left: 1rem;
+    display: flex;
+    align-items: center;
     button {
       .fa {
         font-size: 1.5rem;
       }
-    }
-  }
-  .grid-input {
-    i[class*=fa-arrow] {
-      margin-right: 0.35rem;
-      cursor: default !important;
-    }
-    input {
-      box-shadow: none;
-      &.numPlantsH,
-      &.numPlantsV {
-        -moz-appearance: unset !important;
-      }
-    }
-  }
-  .grid-planting-toggle {
-    margin: 0.5rem;
-    margin-left: 0;
-    label {
-      margin-top: 0.5rem;
-    }
-    button {
-      float: right;
     }
   }
   .fb-toggle-button {
@@ -1268,502 +440,16 @@ li {
   .preview-button,
   .cancel-button,
   .save-button {
-    text-transform: uppercase;
-    font-size: 1rem;
-    border: 1px solid;
-    padding: 0.4rem 1.2rem;
-    font-weight: bold;
-    letter-spacing: 1px;
-    border-radius: 4px;
-    color: $off_white;
-    margin-top: 1.25rem;
-    margin-right: 1.5rem;
-    &:hover { color: $white; }
+    text-decoration: none !important;
   }
-}
-
-.planted-at-selection,
-.plant-stage-selection {
-  label {
-    margin-top: 1rem !important;
-  }
-  .filter-search {
-    position: relative;
-  }
-}
-
-.plant-stage-selection {
-  margin-bottom: 1rem;
 }
 
 .move-to-form {
+  display: grid;
+  gap: 1rem;
   .bp5-popover-wrapper {
     display: inline;
     margin-left: 0.5rem;
-  }
-  .speed {
-    margin: 2rem;
-    margin-left: -15px;
-  }
-}
-
-.go-button-axes-wrapper {
-  margin-top: 1rem;
-  button {
-    margin: 0;
-    float: none;
-  }
-  .go-button-axes {
-    display: inline;
-  }
-  .go-button-axes-text {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    p {
-      display: inline-block;
-      position: relative;
-      z-index: 1;
-      margin: 0 !important;
-      font-weight: bold;
-      color: $off_white;
-      height: 0;
-      line-height: 0;
-      font-size: 1.1rem;
-    }
-  }
-  .go-button-axes-dropdown {
-    border-left: 1px solid $dark_gray;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-    &.pseudo-disabled {
-      border-left: 1px solid $gray;
-    }
-  }
-}
-
-.go-button-axes-popover {
-  .bp5-popover-arrow {
-    &::before {
-      position: relative;
-      background: $dark_gray;
-    }
-  }
-  .bp5-popover-content {
-    color: $off_white;
-    background: $dark_gray;
-    width: 200px;
-    .go-axes {
-      display: grid;
-      gap: 0.75rem;
-      button {
-        margin: 0;
-        padding: 0.5rem 1rem;
-        float: none;
-        &.x,
-        &.y,
-        &.z {
-          grid-row: 1;
-          grid-column: span 4;
-        }
-        &.xy,
-        &.xyz {
-          grid-row: 2;
-          grid-column: span 6;
-        }
-      }
-      a,
-      p {
-        display: inline;
-        color: $off_white;
-        font-size: 1.2rem;
-        text-decoration: none !important;
-        font-weight: normal;
-      }
-      a {
-        grid-column: span 12;
-        i {
-          margin-left: 0.5rem;
-        }
-        &:hover {
-          text-decoration: underline !important;
-        }
-      }
-      input {
-        float: right;
-        width: auto;
-        box-shadow: none;
-        cursor: pointer;
-      }
-      .save-as-default-wrapper {
-        display: inline-block;
-        grid-column: span 12;
-        width: 100%;
-      }
-    }
-  }
-}
-
-.location-info-panel {
-  .panel-content {
-    max-height: calc(100vh - 14rem);
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding-top: 1rem;
-    .location-actions {
-      p {
-        margin-top: 1rem;
-      }
-    }
-    h1 {
-      text-align: center;
-      font-size: 2rem;
-      margin-top: 4rem;
-      margin-bottom: 0;
-    }
-    .expandable-header {
-      text-transform: uppercase;
-      font-weight: bold;
-      font-size: 1.2rem;
-    }
-    label {
-      margin-top: 0;
-      &.no-items {
-        display: block;
-      }
-    }
-    button {
-      float: none;
-    }
-    .add-point {
-      margin-top: 2rem;
-    }
-    .point-search-item,
-    .plant-search-item{
-      margin-left: -15px;
-      margin-right: -15px;
-      padding-left: 2rem;
-      padding-right: 2rem;
-    }
-    .sensor-history-table {
-      margin-left: -15px;
-      margin-right: -15px;
-      .table-row {
-        height: 4rem;
-        td:first-of-type {
-          padding-left: 2rem;
-        }
-      }
-
-    }
-    .interpolated-soil-height {
-      .title {
-        display: inline;
-        font-weight: bold;
-      }
-      p {
-        display: inline;
-        margin-left: 1rem;
-      }
-    }
-    .photos-footer {
-      margin-top: 1rem;
-      .bp5-popover-wrapper {
-        margin-top: 3px;
-      }
-    }
-    hr {
-      margin: 1rem;
-      margin-bottom: 0.5rem;
-    }
-  }
-}
-
-.tool-slots-panel,
-.tools-panel {
-  .panel-top {
-    display: flex;
-  }
-  .tool-slots-panel-content,
-  .tools-panel-content {
-    overflow-y: auto;
-    overflow-x: hidden;
-    .tool-search-item,
-    .tool-slot-search-item {
-      margin-left: -15px;
-      margin-right: -15px;
-      width: calc(100% + 25px);
-      padding-right: 3.5rem;
-      .filter-search {
-        .bp5-button {
-          min-height: 2.5rem;
-          max-height: 2.5rem;
-          span {
-            line-height: 1.5rem;
-          }
-        }
-        i {
-          top: 0.75rem;
-        }
-      }
-      p {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-    }
-    .mounted-tool {
-      .filter-search {
-        width: 50%;
-        float: right;
-      }
-      .utm-and-mounted-tool-graphic {
-        width: 30%;
-        margin-left: 32%;
-      }
-    }
-    .mounted-tool-header {
-      display: inline;
-      margin-top: 1rem;
-      label {
-        margin: 0;
-      }
-      .bp5-popover-wrapper {
-        display: inline;
-      }
-      .help-icon {
-        margin-left: 1rem;
-        vertical-align: top;
-        font-size: 1.4rem;
-      }
-    }
-    .tools-header,
-    .tool-slots-header {
-      display: flex;
-      margin-top: 1rem;
-      margin-bottom: 1rem;
-      label {
-        margin: 0;
-        line-height: 2.1rem;
-      }
-      a {
-        margin-left: auto;
-      }
-      .fa-plus {
-        font-size: 1.5rem;
-      }
-    }
-    button:not(.bp5-button) {
-      display: block;
-      margin-left: auto;
-      float: none;
-      margin-top: 1rem;
-    }
-    .tool-verification-status {
-      display: flex;
-      margin-top: 1rem;
-      margin-bottom: 2rem;
-      button {
-        margin-top: 0;
-      }
-    }
-    .panel-section {
-      margin-left: -10px;
-      margin-right: -10px;
-    }
-  }
-}
-
-.add-tool-slot-panel,
-.edit-tool-slot-panel,
-.add-tool-panel,
-.edit-tool-panel {
-  .tool-action-btn-group {
-    margin: 1.5rem;
-    float: right;
-    .fb-icon-button,
-    .save-btn {
-      float: right;
-      color: $white;
-      margin-left: 1rem;
-    }
-  }
-}
-
-.add-tool-panel-content,
-.edit-tool-panel-content {
-  max-height: calc(100vh - 14rem);
-  overflow-y: auto;
-  overflow-x: hidden;
-  button {
-    display: block;
-    margin-left: auto;
-    float: none;
-    margin-top: 1rem;
-    &.red {
-      float: left;
-      margin-bottom: 1rem;
-    }
-  }
-  svg {
-    display: block;
-    margin: auto;
-    width: 10rem;
-    height: 10rem;
-    margin-top: 2rem;
-  }
-  .edit-tool,
-  .add-new-tool {
-    margin-bottom: 3rem;
-    .name-error {
-      margin-top: 1.2rem;
-      margin-right: 1rem;
-      color: $dark_red;
-      float: right;
-    }
-    .save-btn {
-      float: right;
-    }
-    details {
-      padding: 2rem;
-      .graphics-input {
-        input {
-          width: 97%;
-        }
-      }
-    }
-  }
-  .add-stock-tools {
-    .filter-search {
-      margin-bottom: 1rem;
-      button {
-        margin-top: 0.2rem;
-      }
-    }
-    ul {
-      font-size: 1.2rem;
-      padding-left: 1rem;
-      li {
-        margin-top: 0.5rem;
-        line-height: 2rem;
-        cursor: pointer;
-        width: 50%;
-        &:hover {
-          font-weight: bold;
-        }
-        .fb-checkbox {
-          display: inline;
-        }
-        p {
-          display: inline;
-          line-height: 2.25rem;
-          font-size: 1.2rem;
-          vertical-align: top;
-          margin-left: 1rem;
-        }
-      }
-    }
-    button {
-      margin-bottom: 2rem;
-      .fa-plus {
-        margin-right: 0.5rem;
-      }
-    }
-  }
-}
-
-.flow-rate-input {
-  .bp5-popover-wrapper {
-    display: inline;
-    margin-left: 0.5rem;
-  }
-  .fb-button {
-    float: right;
-    margin-top: 1.5rem;
-  }
-}
-
-.edit-tool-slot-panel {
-  .save-error {
-    position: absolute;
-    top: 1.5rem;
-    right: 1rem;
-    color: $darkest_red;
-  }
-}
-
-.add-tool-slot-panel-content,
-.edit-tool-slot-panel-content {
-  max-height: calc(100vh - 14rem);
-  overflow-y: auto;
-  overflow-x: hidden;
-  svg {
-    display: block;
-    margin: auto;
-    width: 10rem;
-    height: 10rem;
-    margin-top: 2rem;
-  }
-  label {
-    margin-top: 0 !important;
-  }
-  .row, fieldset {
-    margin-top: 2rem;
-  }
-  fieldset button {
-    margin: 0;
-  }
-  .direction-icon {
-    margin-left: 1rem;
-  }
-  .help-icon {
-    color: $dark_gray;
-  }
-  .tool-slot-location-input {
-    .axis-inputs {
-      padding-left: 0;
-    }
-    .use-current-location {
-      padding: 0;
-      margin-left: -1rem;
-    }
-    button.blue {
-      margin-top: 0.5rem;
-      margin-right: 0.5rem;
-      height: 2.5rem;
-      .fa {
-        font-size: 1.5rem;
-      }
-    }
-    button.gray {
-      margin-top: 1rem;
-    }
-  }
-  .tool-direction-input,
-  .gantry-mounted-input {
-    label {
-      margin-top: 0;
-    }
-    input[type="checkbox"] {
-      float: left;
-      margin-right: 1rem;
-    }
-  }
-  .fb-button.green {
-    margin-top: 1rem;
-  }
-  .tool-direction-input {
-    margin-top: 0;
-  }
-}
-
-.tool-svg {
-  display: flex;
-  div {
-    margin: auto;
-    text-align: center;
-    p {
-      font-style: italic;
-    }
   }
 }
 
@@ -1774,282 +460,15 @@ li {
 .low-pad {
   padding-left: 0.5rem;
   padding-right: 0.5rem;
-  &.z-param-input {
-    padding-left: 4.25rem;
-  }
-}
-
-.plant-inventory-panel,
-.settings-panel {
-  .panel-top {
-    .fa-chevron-right,
-    .fa-chevron-down {
-      font-size: 1.25rem !important;
-      padding: 0.1rem;
-    }
-    .fa-gear {
-      color: $dark_gray;
-      margin-right: 1rem;
-      margin-top: 1.5rem;
-    }
-  }
-}
-
-.settings-panel-settings-menu {
-  button {
-    margin-left: 1rem;
-  }
-}
-
-.plants-panel-settings-menu {
-  label {
-    line-height: 3rem;
-    vertical-align: bottom;
-    margin-bottom: 0;
-  }
-  .bp5-popover-wrapper {
-    display: inline;
-    margin-left: 0.5rem;
-    line-height: 3rem;
-  }
-}
-
-.settings-panel-content {
-  max-height: calc(100vh - 22rem);
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding-bottom: inherit;
-  .expandable-header {
-    margin-top: 1.5rem;
-    margin-bottom: 0;
-  }
-  .section {
-    position: relative;
-    margin-bottom: 0;
-    .hw-warn {
-      position: absolute;
-      top: -0.35rem;
-      right: 2rem;
-      i {
-        font-size: 1.4rem;
-      }
-    }
-  }
-  .section {
-    margin-bottom: 2rem;
-  }
-  .row:first-child {
-    margin-right: 0;
-    margin-top: 1rem;
-  }
-  .row:nth-child(2) {
-    padding-left: 1.5rem;
-    padding-right: 3rem;
-  }
-  .row.zero-side-margins {
-    margin-left: 0;
-    margin-right: 0;
-  }
-  .export-data,
-  .change-password {
-    .old-password,
-    .new-password {
-      margin-top: 1.5rem;
-      input {
-        width: 50%;
-        float: right;
-      }
-    }
-    form {
-      margin-left: 2rem;
-    }
-  }
-  .label-headings {
-    label {
-      line-height: 1rem;
-    }
-  }
-  .release-notes-wrapper {
-    margin-top: 0.75rem;
-    float: right !important;
-  }
-  .settings-warning-banner {
-    margin-bottom: 1rem !important;
-    p {
-      display: inline;
-    }
-  }
-  .credentials-change-warning-banner,
-  .settings-warning-banner,
-  .stall-detection-note,
-  .limit-switch-warning {
-    margin: 1rem -15px -1rem -15px;
-    padding: 1rem 1.5rem 1rem 2rem;
-    background: color.adjust($orange, $alpha: -0.6);
-    p {
-      line-height: 1.75rem;
-      font-size: 1.3rem;
-      font-weight: bold;
-    }
-  }
-  .pin-reporting-input-row,
-  .pin-guard-input-row {
-    .row {
-      margin-left: -15px;
-      margin-right: -15px;
-      padding-left: 0;
-      padding-right: 1rem;
-      margin-bottom: 1rem;
-    }
-    button {
-      float: none;
-    }
-  }
-  .pin-bindings {
-    margin-right: 1rem;
-    .row {
-      padding-left: 0;
-      padding-right: 0;
-      margin-left: 1rem;
-      margin-right: 0;
-      margin-top: 1rem;
-    }
-    div[class*=col-] {
-      padding: 0;
-      padding-right: 1rem;
-    }
-    .bindings-list {
-      margin-left: -5px;
-      .binding-action {
-        font-weight: bold;
-        font-size: 1.2rem;
-      }
-    }
-    .pin-binding-input-rows {
-      margin-right: 1rem;
-      margin-left: -15px;
-      label {
-        margin-left: 1rem !important;
-      }
-      .green {
-        float: left;
-        margin-left: 1rem;
-      }
-      .row:last-child {
-        margin-top: 0;
-      }
-    }
-    .stock-pin-bindings-button {
-      display: inline;
-      button {
-        margin: 0;
-        margin-top: 0.5rem;
-      }
-    }
-  }
-  .show-advanced-toggle,
-  .highlight-modified-toggle {
-    margin-right: 4.5rem;
-    margin-top: 1rem;
-  }
-  .fb-button {
-    margin-top: 0.5rem;
-  }
-  label {
-    margin: auto 0 !important;
-    line-height: 1;
-    font-size: 1.2rem !important;
-  }
-  .bp5-popover-wrapper {
-    display: inline-block;
-    margin: auto;
-    float: none;
-  }
-  .help-icon {
-    margin-left: 0.5rem;
-  }
-  .designer-setting {
-    &.disabled {
-      input {
-        background: $gray;
-      }
-      button {
-        background: $medium_light_gray !important;
-      }
-    }
-  }
-}
-
-.non-layer-config-toggle {
-  margin-top: 0.1rem;
-  &.disabled {
-    input {
-      background: $gray !important;
-    }
-    button {
-      background: $medium_light_gray !important;
-      &:hover {
-        background: $medium_light_gray !important;
-      }
-    }
-  }
-}
-
-.map-size-inputs {
-  .row {
-    margin: 0;
-    padding: 0;
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-  }
-  label {
-    margin-top: 0.5rem;
-  }
 }
 
 .factory-reset-options {
   a {
     color: $white;
-    font-weight: bold;
     text-decoration: none !important;
   }
   .fa-external-link {
     margin-left: 0.5rem;
-  }
-}
-
-.saved-garden-panel-content {
-  padding: 0;
-  padding-bottom: inherit;
-  .non-empty-state {
-    max-height: calc(100vh - 14rem);
-    overflow-y: auto;
-    overflow-x: hidden;
-    @media screen and (max-width: $mobile_max_width) {
-      max-height: calc(100vh - 19rem);
-    }
-  }
-  .row {
-    margin: 0;
-    margin-top: 1rem;
-    margin-left: 1rem;
-    margin-right: 1rem;
-  }
-  hr {
-    width: 100%;
-    padding-top: 1rem;
-  }
-  button {
-    margin-left: 0.5rem;
-    &.wide {
-      margin: 1rem;
-      margin-left: 2rem;
-      width: 88%;
-      float: left;
-    }
-  }
-  input {
-    min-width: 7rem;
   }
 }
 
@@ -2059,8 +478,8 @@ li {
   position: relative;
   .weed-icon {
     position: absolute;
-    top: 13%;
-    left: 12%;
+    top: 11%;
+    left: 14%;
     width: 70%;
     height: 70%;
   }
@@ -2075,58 +494,32 @@ li {
   }
 }
 
-.weeds-inventory-panel,
-.zones-inventory-panel,
-.groups-panel {
-  .panel-content {
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
-}
-
 .panel-header-icon-group {
-  display: flex;
-  float: right;
-  padding: 1.5rem;
+  margin-left: 1rem;
+  margin-right: 1.5rem;
 }
 
 .group-detail-panel {
   .panel-content {
-    max-height: calc(100vh - 14rem);
-    overflow-y: auto;
-    overflow-x: hidden;
-    .clear-day-criteria,
-    .clear-point-ids,
-    .clear-criteria {
-      margin-top: 0.2rem;
-    }
-    .group-member-display {
-      i[class*=fa-caret-] {
-        float: right;
-        font-size: 2rem;
-      }
-      .point-list-wrapper {
-        padding: 0.5em 0em;
-      }
-    }
-    .group-name-input,
-    .group-member-display,
-    .group-sort-section {
-      margin-top: 1rem;
-      label {
-        margin-top: 0;
-      }
-      .bp5-popover-wrapper {
-        display: inline;
-        margin-left: 1rem;
-      }
-    }
-    .group-delete-btn {
-      float: left;
-      margin-top: 1em;
-    }
     .group-criteria {
-      margin-top: 1rem;
+      .basic, .plant-criteria-options {
+        display: grid;
+        gap: 1rem;
+      }
+      .plant-stage-criteria,
+      .plant-type-criteria,
+      .radius-criteria,
+      .day-criteria,
+      .location-criteria,
+      .removal-method-criteria,
+      .color-criteria,
+      .point-source-criteria {
+        background: var(--secondary-bg);
+        border-radius: 0.5rem;
+        padding: 1rem;
+        display: grid;
+        gap: 1rem;
+      }
       .criteria-heading {
         margin-top: 0;
       }
@@ -2139,10 +532,6 @@ li {
       }
       p {
         &.category {
-          display: block;
-          padding-top: 1rem;
-          padding-bottom: 1rem;
-          text-transform: none;
           font-size: 1.2rem;
           font-weight: bold;
         }
@@ -2150,18 +539,24 @@ li {
       .bp5-popover-wrapper {
         float: right;
       }
-      .fb-button {
-        margin-top: 0.5rem;
+      .criteria-checkbox-list {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
       }
       .point-type-section,
       .criteria-checkbox-list-item {
+        height: 3rem;
+        border-radius: 3rem;
+        display: flex;
+        align-items: center;
+        padding: 0 1rem;
+        gap: 1rem;
+        background: $translucent2_white;
         .fb-checkbox {
-          display: inline;
-          margin-right: 1rem;
-          vertical-align: top;
+          display: contents;
         }
         p {
-          display: inline;
           text-transform: uppercase;
         }
         input[type="text"] {
@@ -2180,21 +575,11 @@ li {
               display: inline-block;
               height: 2rem;
             }
-            i[class*=fa-caret-] {
-              position: absolute;
-              right: -0.5rem;
-              width: 3rem;
-              font-size: 2rem;
-              padding-left: 1rem;
-            }
           }
           .plant-criteria-options,
           .weed-criteria-options,
           .point-criteria-options,
           .tool-criteria-options {
-            hr {
-              margin: 0.5rem;
-            }
             .lt-gt-criteria {
               margin-bottom: 1rem;
               .row {
@@ -2220,63 +605,20 @@ li {
       .criteria-slug {
         margin-top: 1rem;
       }
-      .day-criteria {
-        .criteria-checkbox-list-item {
-          margin-bottom: 1rem;
-          p {
-            vertical-align: middle;
-          }
-        }
-        .days-old-text {
-          display: inline;
-          vertical-align: bottom;
-        }
-        input {
-          line-height: 1.75rem;
-        }
-      }
       .number-eq-criteria,
       .string-eq-criteria {
-        margin-top: 1rem;
-        .row {
-          margin-top: 1rem;
-        }
         code {
           display: inline-block;
-          margin-top: 2rem;
           font-size: 1.2rem;
           font-weight: bold;
           color: $black;
-          background: none;
         }
       }
       .number-eq-criteria,
       .number-gt-lt-criteria {
-        margin-top: 1rem;
-        .row {
-          margin-top: 1rem;
-        }
         p {
           text-align: center;
-          line-height: 2.75rem;
           font-size: 1.2rem;
-        }
-      }
-      .basic,
-      .advanced {
-        margin-left: 1rem;
-        .filter-search {
-          height: 3rem;
-          margin-bottom: 1rem;
-        }
-        .day-criteria {
-          .row {
-            margin-left: 0;
-          }
-          div[class*=col-] {
-            padding: 0;
-            padding-right: 0.75rem;
-          }
         }
       }
       .advanced {
@@ -2290,21 +632,6 @@ li {
           .bp5-popover-wrapper {
             margin-left: 0;
           }
-        }
-        .row {
-          margin-left: 0;
-        }
-        div[class*=col-] {
-          padding: 0;
-        }
-        .col-xs-9 {
-          margin-right: 0.5rem;
-        }
-        .col-xs-1 {
-          margin-left: 0.25rem;
-          margin-right: 0.25rem;
-          margin-top: 0.4rem;
-          text-align: center;
         }
       }
     }
@@ -2331,48 +658,12 @@ li {
   }
 }
 
-.criteria-options-menu {
-  label {
-    margin-right: 1rem;
-  }
-}
-
 .lt-gt-criteria,
 .location-criteria {
-  display: inline-block;
-  position: relative;
   .row {
-    margin-left: 0;
-    margin-right: -2.5rem;
-    margin-top: 1rem;
-    div[class*=col-] {
-      padding: 0;
-      text-align: center;
-    }
     p {
-      display: block !important;
       text-transform: uppercase;
       font-size: 1.1rem;
-      margin-top: 0.75rem;
-    }
-    label {
-      margin-top: 0.5rem;
-    }
-  }
-  button {
-    margin-top: 2rem !important;
-  }
-  .edit-in-map {
-    position: absolute;
-    top: 0;
-    right: 0;
-    button {
-      margin: 1rem !important;
-      width: 5rem !important;
-      margin-right: 0 !important;
-    }
-    label {
-      margin-top: 1.1rem !important;
     }
   }
   .location-selection-warning {
@@ -2390,8 +681,6 @@ li {
 .point-inventory-panel,
 .groups-panel {
   .panel-content {
-    padding: 0;
-    padding-bottom: inherit;
     .points-section-header {
       cursor: pointer;
       height: 4rem;
@@ -2407,432 +696,43 @@ li {
         margin-right: 0.25rem;
         margin-left: 1rem;
       }
-      &:hover {
-        background: $light_gray;
-      }
-      i {
-        margin-top: 0.5rem;
-      }
-    }
-    .section-header {
-      padding-top: 0.5rem;
-      padding-bottom: 0.5rem;
-      line-height: 2.75rem;
-      .fb-button {
-        margin-top: 0.3rem;
-        margin-right: 0.75rem;
-      }
-      .fa-caret-down,
-      .fa-caret-up {
-        margin-top: 1.5rem !important;
-      }
-    }
-    .points-section-header,
-    .pending-weeds-header,
-    .active-weeds-header,
-    .removed-weeds-header {
-      padding-top: 0.5rem;
-      padding-bottom: 0.5rem;
-      label {
-        margin: 0;
-        width: 44%;
-        margin-left: 1rem;
-        line-height: 2.1rem;
-      }
-      .fb-toggle-button {
-        margin-right: 2rem;
-        margin-top: 0.6rem;
-        float: right;
-        line-height: 0;
-      }
-    }
-    .section-action-btn-group {
-      float: right;
-      margin-top: 0.3rem;
-      line-height: 1.5rem;
-      .delete {
-        line-height: 1.5rem;
-      }
     }
     .points-section {
       &.open {
-        background: rgba(0, 0, 0, 0.05);
         margin-bottom: 1rem;
       }
       .row {
-        margin-left: -5px;
-        margin-right: 0;
-        label {
-          line-height: 3.5rem;
-          margin-top: 0;
-          margin-bottom: 0;
-        }
-        .input {
-          height: 3rem;
-        }
-        button {
-          margin-top: 0.85rem;
-          float: right;
-        }
-        .bp5-popover-wrapper {
-          display: none;
-        }
-      }
-    }
-    .points-section,
-    .panel-section {
-      .delete {
-        float: right;
-        line-height: revert;
+        padding: 0 1rem;
       }
     }
     .no-points,
     .no-weeds {
-      margin-left: 2rem;
-      padding-top: 0.5rem;
-      padding-bottom: 0.5rem;
+      margin-left: 1rem;
+      padding-bottom: 1rem;
     }
     .fa-caret-down,
     .fa-caret-up {
-      float: right;
-      font-size: 2rem;
-      margin-right: 2rem;
-      margin-top: 0;
-      color: $dark_gray;
-    }
-    i {
-      margin: 0.25rem;
+      margin: 1rem;
     }
     button {
-      margin: 0.5rem;
       float: none;
     }
     .approval-buttons {
-      display: inline;
-      button {
-        height: 2.5rem;
-        line-height: 0 !important;
-      }
       i {
         padding-right: 0.5rem;
       }
     }
-    .active-weeds {
-      .empty-state-graphic {
-        margin-top: 1rem;
-      }
-    }
-  }
-}
-
-.plant-inventory-panel {
-  .section-header {
-    .fb-button {
-      margin-top: 0.75rem;
-    }
-  }
-}
-
-.weeds-inventory-panel {
-  .active-weeds-header {
-    .fb-button {
-      line-height: 1rem;
-      margin-top: 0.5rem;
-      margin-right: 1rem;
-      i {
+    .pending-weeds {
+      .fa-check {
         margin: 0 !important;
-        font-size: 1.5rem;
       }
     }
-  }
-}
-
-.curve-svg-wrapper {
-  .bp5-popover-target {
-    width: 100%;
-  }
-}
-
-.warning-line-text-popover {
-  border-radius: 5px;
-  .bp5-popover-content {
-    background: $dark_gray;
-    border-radius: 5px;
-  }
-  .bp5-popover-arrow {
-    display: none;
-  }
-  p {
-    color: $white;
-    font-size: 1.3rem;
-    margin-bottom: 0.5rem !important;
-  }
-  .warning-text {
-    max-width: 200px;
-    .top {
-      font-weight: bold;
-    }
-  }
-}
-
-.curve-action-popover {
-  .bp5-popover-content {
-    background: $dark_gray;
-  }
-  .bp5-popover-arrow-fill {
-    fill: $dark_gray;
-  }
-  .curve-action-menu {
-    .transparent-button {
-      position: absolute;
-      right: 0;
-      width: 50%;
-      color: $off_white
-    }
-    label {
-      width: 100%;
-      color: $off_white;
-      margin-top: 0.75rem;
-      margin-right: 1rem;
-    }
-    .filter-search {
-      width: 100%;
-      .bp5-popover-wrapper {
-        width: 120px;
-      }
-      button {
-        box-shadow: none !important;
-      }
-    }
-    input {
-      box-shadow: none;
-      width: 120px;
-    }
-    .curve-menu-row {
-      display: flex;
-      position: relative;
-      height: 3rem;
-      margin-top: 0.5rem;
-      &.last {
-        height: 2rem;
-      }
-    }
-  }
-}
-
-.curve-svg {
-  .data-labels,
-  .y-axis-line,
-  .warning-line {
-    pointer-events: none;
-  }
-}
-
-.curve-info-panel {
-  .panel-title {
-    .white-text {
-      color: $dark_gray;
-      &:hover {
-        color: $dark_gray;
-      }
-    }
-  }
-  .panel-header-icon-group {
-    i {
-      color: $dark_gray;
-    }
-  }
-}
-
-.curve-info-panel-content-wrapper {
-  .bp5-popover-wrapper {
-    float: right;
-    margin-left: 1rem;
-    margin-top: 1rem;
-  }
-  .full-indicator {
-    height: 2rem;
-    text-align: center;
-    color: $darkest_red;
-  }
-  .input-error-wrapper {
-    position: absolute;
-    margin: 0;
-  }
-  table {
-    th {
-      text-transform: uppercase;
-      color: $dark_gray;
-      font-size: 1.3rem;
-    }
-    td,
-    th {
-      background: $lighter_gray;
-      border: 1px solid $light_gray;
-      padding-left: 1rem;
-      p {
-        display: inline;
-        font-size: 1.4rem;
-        color: $dark_gray;
-      }
-      &.active {
-        background: $white;
-      }
-      &.active-input {
-        padding: 0;
-      }
-      .percent-green {
-        color: $green;
-      }
-      .percent-red {
-        color: $red;
-      }
-      input {
-        font-size: 1.4rem;
-        padding-left: 1rem;
-      }
-    }
-    tr {
-      &.hovered {
-        border: 2px solid $gray;
-        border-top-width: 0;
-        border-bottom-width: 0;
-      }
-    }
-  }
-  .row-radio {
-    width: 1.5rem;
-    height: 1.5rem;
-    border-radius: 50%;
-    vertical-align: middle;
-    margin-left: 1rem;
-    margin-top: -0.25rem;
-    &.active {
-      &.full {
-        background: revert;
-        border: revert;
-        cursor: pointer;
-      }
-    }
-    &.full {
-      background: $light_gray;
-      border: $gray;
-      cursor: not-allowed;
-    }
-  }
-}
-
-.curves-inventory-panel-content {
-  padding: 0;
-  .curve-search-item {
-    height: 4rem;
-    line-height: 4rem;
-    cursor: pointer;
-    .curve-search-item-info {
-      text-align: right;
-      font-size: 1rem;
-      padding-right: 1rem;
-      line-height: 4rem;
-      float: right;
-    }
-    .curve-search-item-name {
-      width: 40%;
-      margin-left: 1.25rem;
-    }
-  }
-  .section-header {
-    .fb-button {
-      margin-top: 0.75rem;
-    }
-    .fa-caret-up,
-    .fa-caret-down {
-      line-height: 3.75rem;
-      margin-top: 0 !important;
-    }
-  }
-}
-
-.crop-curve-info {
-  .bp5-collapse {
-    padding-top: 0.5rem;
-  }
-  p {
-    line-height: 4rem;
-    font-size: 1.3rem;
-  }
-  label {
-    margin-top: 0 !important;
-  }
-  .fa-external-link {
-    position: absolute;
-    top: 1rem;
-    right: 0;
-  }
-  .active-curve-name {
-    position: relative;
-    height: 4rem;
-    line-height: 3rem;
-    p,
-    .filter-search {
-      display: inline-block;
-      position: absolute;
-      right: 3rem;
-      width: 75%;
-      margin-top: 0.5rem;
-    }
-    p {
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      overflow: hidden;
-    }
-    label {
-      line-height: 4rem;
-    }
-  }
-  .curve-svg-wrapper {
-    background: $white;
-    box-shadow: 0 0 10px $light_gray;
-    border-radius: 5px;
-  }
-}
-
-.curve-info-panel-content-wrapper,
-.all-curve-info {
-  svg {
-    text {
-      user-select: none;
-    }
-  }
-}
-
-.curve-icon {
-  margin-left: 1rem;
-  vertical-align: middle;
-}
-
-.curve-usage-display {
-  margin-bottom: 2rem;
-  i[class*=fa-caret-] {
-    float: right;
-    font-size: 2rem;
-  }
-  label {
-    margin-top: 0 !important;
-  }
-  .bp5-popover-wrapper {
-    display: inline;
-    margin-left: 1rem;
-  }
-  img {
-    cursor: pointer;
   }
 }
 
 .sensors-panel,
 .controls-panel {
   .panel-content {
-    overflow-y: auto;
-    overflow-x: hidden;
     .widget-wrapper {
       box-shadow: none;
       .widget-header {
@@ -2862,1167 +762,9 @@ li {
   }
 }
 
-.controls-panel {
-  .move-settings.bp5-popover-wrapper {
-    padding-top: 2rem;
-  }
-  .index-indicator {
-    background: $dark_gray;
-  }
-}
-
-.sensors-panel {
-  .panel-content {
-    label {
-      margin-top: 0;
-    }
-  }
-}
-
-.farmware-panel,
-.designer-farmware-list-panel,
-.designer-farmware-info-panel,
-.farmware-add-panel {
-  .panel-content {
-    max-height: calc(100vh - 9rem);
-    overflow-y: auto;
-    overflow-x: hidden;
-    a {
-      text-decoration: none !important;
-      p {
-        font-size: 1.4rem;
-        font-weight: normal !important;
-        line-height: 2rem;
-      }
-    }
-  }
-}
-
-.designer-farmware-info-panel {
-  .panel-content {
-    position: relative;
-    padding-top: 2rem;
-    padding-bottom: 12rem;
-    button {
-      float: none;
-    }
-    .reset-configs {
-      margin-right: 1rem;
-      margin-top: 2rem;
-    }
-    .farmware-button {
-      position: absolute;
-      top: 1rem;
-      right: 1rem;
-    }
-    .farmware-form {
-      margin-top: 1rem;
-    }
-    .farmware-input-group {
-      margin-left: 0;
-    }
-    .advanced-configs {
-      .expandable-header {
-        margin-top: 2rem;
-      }
-    }
-  }
-}
-
-.photos-panel {
-  .panel-content {
-    position: relative;
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding-bottom: 12rem;
-    label {
-      margin-top: 0 !important;
-    }
-    a,
-    button {
-      margin: 0.5rem;
-    }
-    .filter-search {
-      button {
-        margin: 0;
-      }
-    }
-    fieldset {
-      label {
-        margin-top: 0.7rem;
-      }
-      button {
-        float: left;
-        height: 2rem;
-      }
-    }
-    .expandable-header {
-      margin-top: 2rem;
-    }
-    .filters-enabled-warning {
-      float: right;
-    }
-    .fa-exclamation-triangle {
-      font-size: 1.3rem;
-      color: $orange;
-    }
-    .toggle-label {
-      margin-top: 0 !important;
-      margin-bottom: 1rem;
-    }
-    .fb-toggle-button {
-      margin-top: 0.5rem !important;
-    }
-    .photo-filter-settings {
-      .filter-controls {
-        .banner {
-          display: none;
-        }
-        &.single-image-mode,
-        &.image-layer-disabled {
-          opacity: 0.40;
-          * {
-            pointer-events: none;
-          }
-          .banner {
-            display: inline-block;
-            position: absolute;
-            top: 25%;
-            left: -2.5%;
-            z-index: 10;
-            width: 105%;
-            padding: 0.5rem;
-            background-color: $dark_gray;
-            opacity: 0.90;
-            color: $off_white;
-            font-size: 1.8rem;
-            vertical-align: middle;
-            text-align: center;
-          }
-        }
-      }
-    }
-    .capture-settings {
-      .help-icon {
-        margin-left: 1rem;
-        font-size: 1.2rem;
-      }
-      .row {
-        margin-right: 0;
-        margin-top: 0.5rem;
-      }
-      label {
-        margin: 0;
-        line-height: 3rem;
-        font-style: normal;
-      }
-      .filter-search {
-        margin-right: -1rem;
-      }
-      .bp5-popover-wrapper {
-        display: inline-block;
-      }
-      .fb-toggle-button {
-        margin-top: 2rem;
-      }
-      .image-size-inputs {
-        margin-top: 1rem;
-        .size-inputs {
-          margin-top: 1rem;
-        }
-        .input {
-          margin-left: 0.25rem;
-          margin-right: -0.75rem;
-          input {
-            height: 3rem;
-          }
-        }
-        .resolution-change-warning {
-          i {
-            color: $darkest_red;
-            margin-right: 1rem;
-          }
-          p {
-            display: inline;
-            margin-right: 0.5rem;
-            font-size: 1.2rem;
-          }
-          .click {
-            cursor: pointer;
-            font-weight: bold;
-            &:hover {
-              color: $black;
-            }
-          }
-        }
-      }
-      .update-take-photo {
-        margin-top: 1rem;
-        .version-string {
-          display: inline;
-          margin-left: 1rem;
-        }
-      }
-      .capture-rotate-setting {
-        margin-top: 1rem;
-        margin-bottom: 1rem;
-      }
-    }
-    .imaging-data-management {
-      label {
-        line-height: 3rem;
-      }
-      .highlight-modified-toggle {
-        label {
-          margin-top: 0.5rem;
-          margin-left: 0.5rem;
-        }
-      }
-    }
-    .farmware-form {
-      button {
-        float: none;
-      }
-    }
-    .farmware-input-group {
-      margin-left: 0;
-    }
-    .farmware-config-fields {
-      margin-left: 1rem;
-      .config-field {
-        margin-top: 1rem;
-      }
-    }
-    .advanced-configs {
-      margin-left: 1rem;
-      .farmware-config-fields {
-        margin-left: 0;
-      }
-      h4 {
-        font-size: 1.5rem;
-        .icon-toggle {
-          font-size: 1.1rem;
-          i {
-            font-size: 0.9rem;
-          }
-        }
-      }
-    }
-  }
-  .title-help {
-    font-size: 1.3rem;
-    .fa-question-circle {
-      position: absolute;
-      top: -3rem;
-      right: 0;
-      font-size: 1.4rem;
-    }
-    a {
-      text-decoration: none !important;
-    }
-    .fa-external-link {
-      margin-left: 1rem;
-    }
-    .update {
-      display: inline;
-      p {
-        display: inline;
-        margin-left: 1rem;
-      }
-      .fa-refresh {
-        display: inline;
-        margin-left: 1rem;
-        color: $dark_gray;
-      }
-    }
-    .title-help-text.open {
-      margin-bottom: 0;
-    }
-  }
-}
-
-.farmware-env-editor {
-  .row {
-    margin-bottom: 1rem;
-    &.no-margin {
-      margin: 0;
-    }
-  }
-  .env-hide-toggle {
-    margin-top: 1rem;
-    margin-bottom: 1rem;
-  }
-  .env-editor-warning {
-    margin: 0 -15px 2rem -15px;
-    padding: 1rem 1.5rem 1rem 2rem;
-    background: color.adjust($orange, $alpha: -0.6);
-    p {
-      line-height: 1.75rem;
-      font-size: 1.2rem;
-      font-weight: bold;
-    }
-  }
-  .bp5-popover-wrapper {
-    display: inline;
-    margin-left: 1rem;
-  }
-}
-
-.env-editor-lua {
-  margin: 0 -15px 0 -15px;
-  padding: 1rem 1.5rem 1rem 2rem;
-  background: color.adjust($blue, $alpha: -0.6);
-  p {
-    line-height: 1.75rem;
-    font-size: 1.2rem;
-    font-weight: bold;
-  }
-}
-
-.designer-sequence-list-panel {
-  .panel-content {
-    height: calc(100vh - 14rem);
-    overflow-y: scroll;
-    overflow-x: hidden;
-    padding-bottom: 6rem;
-    @media screen and (max-width: $mobile_max_width) {
-      max-height: calc(100vh - 19rem);
-    }
-    .panel-top {
-      margin-left: 0 !important;
-    }
-    a {
-      text-decoration: none !important;
-      p {
-        font-size: 1.4rem;
-        font-weight: normal !important;
-        line-height: 2rem;
-      }
-    }
-    .folders-panel {
-      margin-left: -1rem;
-      margin-right: -1rem;
-    }
-  }
-  .fullscreen {
-    white-space: nowrap;
-    height: 3rem;
-    margin-top: 0.75rem;
-    margin-right: 1rem;
-    i {
-      margin-left: 1rem;
-    }
-  }
-}
-
-.group-detail-panel,
-.designer-regimen-editor-panel,
-.designer-sequence-editor-panel {
-  .panel-header {
-    input {
-      position: relative;
-      z-index: 1;
-      margin: 1rem;
-      width: 84%;
-      @media screen and (max-width: $mobile_max_width) {
-        width: 65%;
-      }
-    }
-  }
-}
-
-.designer-sequence-editor-panel {
-  .panel-content {
-    .sequence-editor-content {
-      hr {
-        margin-top: 1rem;
-      }
-      @media screen and (max-width: 767px) {
-        margin-left: 5px;
-        padding-right: 0;
-      }
-    }
-    .add-command-button-container {
-      display: block;
-    }
-    .drag-drop-area {
-      display: none;
-    }
-    label {
-      margin-top: 0;
-    }
-    @media screen and (max-width: 767px) {
-      padding: 0;
-    }
-  }
-}
-
-.weed-info-panel,
-.point-info-panel,
-.designer-regimen-editor-panel,
-.designer-sequence-editor-panel {
-  .green,
-  .red {
-    .panel-title {
-      .fa-paint-brush,
-      .fa-expand,
-      .fa-trash,
-      .fa-clone,
-      .fa-magic,
-      .fa-spinner {
-        color: $white;
-      }
-    }
-  }
-}
-
-.designer-regimen-scheduler-panel {
-  .panel-content {
-    display: inline-block;
-    max-height: calc(100vh - 9rem);
-    overflow-y: auto;
-    overflow-x: hidden;
-    width: 100%;
-  }
-}
-
-.designer-regimen-editor-panel {
-  .title {
-    width: 45%;
-  }
-  .panel-title {
-    input {
-      margin: 1rem;
-      width: 75%;
-    }
-    .fa-clone,
-    .fa-trash,
-    .fa-paint-brush {
-      float: right;
-      margin-top: 1.5rem;
-    }
-    .button-group {
-      margin: 0;
-      float: right;
-      width: unset;
-    }
-    .color-picker {
-      float: right;
-    }
-    .fb-button {
-      margin: 1.5rem;
-    }
-  }
-  .green,
-  .red {
-    .panel-title {
-      .color-picker {
-        .icon-saucer {
-          color: $white;
-        }
-      }
-    }
-  }
-  .panel-content {
-    max-height: calc(100vh - 14rem);
-    overflow-y: auto;
-    overflow-x: hidden;
-    label {
-      margin-top: 0;
-    }
-  }
-}
-
-.messages-panel {
-  .panel-content {
-    overflow-y: auto;
-    overflow-x: hidden;
-    label {
-      margin-top: 0;
-    }
-  }
-}
-
-.logs-panel {
-  .panel-content {
-    margin-top: 6rem;
-    max-height: calc(100vh - 9rem);
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
-}
-
-.documentation-panel,
-.support-panel,
-.tours-panel,
-.help-panel {
-  @media screen and (max-width: $mobile_max_width) {
-    .help-panel-header {
-      position: relative;
-      margin-top: 5rem;
-    }
-    .panel-content {
-      padding: 1rem;
-      padding-top: 0;
-    }
-  }
-  .panel-content {
-    max-height: calc(100vh - 12rem);
-    overflow-y: auto;
-    overflow-x: hidden;
-    padding-bottom: 12rem;
-    label {
-      margin-top: 0 !important;
-    }
-  }
-}
-
-.documentation-panel {
-  .panel-content {
-    height: 102.5%;
-    padding: 0;
-    overflow: hidden;
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
-  }
-}
-
-.help-panel-header {
-  background: $lighter_gray;
-  height: 4rem;
-  padding: 1rem;
-  padding-top: 0.5rem;
-  i {
-    font-size: 2rem;
-    margin-left: 0.25rem;
-    width: 2.25rem;
-  }
-  i,
-  img {
-    margin-right: 1rem;
-    margin-bottom: 0.5rem;
-    vertical-align: middle;
-    filter: brightness(0) opacity(0.75);
-    text-align: center;
-  }
-  a {
-    display: block;
-    font-weight: bold;
-    line-height: 3.5rem;
-  }
-  .fa-chevron-down,
-  .fa-chevron-up {
-    position: absolute;
-    top: 0.25rem;
-    right: 0;
-    padding: 1rem;
-    font-size: 1.25rem;
-    color: $medium_gray;
-  }
-  .bp5-collapse {
-    overflow: visible;
-  }
-  .bp5-collapse-body {
-    position: relative;
-    z-index: 1;
-    margin: -1rem;
-    margin-top: 0;
-    background: $lighter_gray;
-    a {
-      padding: 1rem;
-      line-height: 0;
-      &:hover {
-        background: $light_gray;
-      }
-    }
-  }
-}
-
-.support-panel-content {
-  padding: 2rem;
-  padding-top: 0;
-  h1 {
-    font-size: 1.2rem;
-    font-weight: bold;
-  }
-  .row {
-    margin-bottom: 3rem;
-  }
-  a {
-    &.button {
-      display: block;
-      margin-top: 1rem;
-      text-decoration: none !important;
-      text-align: center;
-      border: 1.5px solid $dark_gray;
-      border-radius: 5px;
-      padding: 0.75rem;
-      line-height: 1.3rem;
-      b {
-        display: block;
-        font-size: 1.1rem;
-        text-transform: uppercase;
-      }
-      i {
-        font-size: 0.9rem;
-        color: $medium_gray;
-        font-weight: normal;
-      }
-      &:hover {
-        background: $lighter_gray;
-      }
-    }
-    &.inline {
-      text-decoration: underline;
-      margin-left: 0.25rem;
-    }
-  }
-}
-
-.feedback {
-  p {
-    color: $dark_gray !important;
-    margin-bottom: 1rem !important;
-    font-weight: normal !important;
-    font-style: italic;
-  }
-  textarea {
-    font-size: 1.1rem;
-    height: 7.5rem;
-  }
-  button {
-    margin-top: 1rem;
-    float: none;
-    &:hover {
-      font-size: 1rem !important;
-    }
-  }
-  .bp5-popover-wrapper {
-    display: inline;
-    line-height: 0;
-    vertical-align: bottom;
-    margin-left: 1rem;
-  }
-}
-
-.jobs-panel {
-  .panel-content {
-    display: inline-block;
-    overflow-y: auto;
-    overflow-x: auto;
-    width: 100%;
-    padding: 0;
-  }
-}
-
-.jobs-tab {
-  overflow-y: scroll;
-  max-height: 26rem;
-  &.bp5-popover {
-    margin-top: 1.5rem;
-  }
-  table {
-    p {
-      padding: 1rem;
-    }
-    .job-name {
-      max-width: 20rem;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    thead {
-      position: sticky;
-      top: 0;
-      z-index: 999;
-      background: $white;
-    }
-    tr {
-      transform: scale(1);
-    }
-    th,
-    td {
-      white-space: nowrap;
-      font-size: 1.2rem;
-      padding: 0.75rem;
-    }
-    th {
-      text-transform: uppercase;
-    }
-    .right-align {
-      text-align: right;
-    }
-    .progress {
-      position: absolute;
-      top: 0;
-      left: 0;
-      height: 99%;
-      opacity: 0.5;
-      border-radius: 0;
-      pointer-events: none;
-    }
-    .fa-clock-o {
-      cursor: default !important;
-    }
-  }
-}
-
-.jobs-panel-portal {
-  .bp5-popover-content {
-    padding: 0;
-    width: min(500px, 100vw - 1rem);
-    max-height: calc(100vh - 10rem);
-    overflow: hidden;
-    padding-top: 1rem;
-  }
-}
-
-.saved-garden-edit-panel {
-  .buttons {
-    position: absolute;
-    top: 1.25rem;
-    right: 0.5rem;
-    .fa-trash {
-      color: $white;
-    }
-  }
-}
-
-.saved-garden-edit-panel-content {
-  button {
-    margin-left: 0.5rem;
-    margin-top: 1rem;
-  }
-  .point-list-wrapper {
-    margin-top: 2rem;
-  }
-  .row {
-    margin: 0;
-  }
-  textarea {
-    font-size: 1.2rem;
-  }
-}
-
 .desktop-hide {
   display: none !important;
   @media screen and (max-width: 1075px) {
     display: block !important;
-  }
-}
-
-.setup-panel {
-  label {
-    margin-top: 0 !important;
-  }
-  .panel-content {
-    max-height: calc(100vh - 9rem);
-    overflow-y: auto;
-    overflow-x: hidden;
-    h1 {
-      display: inline-block;
-      cursor: default;
-    }
-    .progress-meter {
-      display: inline;
-      margin-left: 2rem;
-      font-weight: bold;
-      color: $medium_light_gray;
-    }
-    .start-over {
-      margin-top: 2rem;
-    }
-    h1,
-    h2,
-    h3 {
-      margin-bottom: 0;
-      cursor: pointer;
-      .fa-caret-up,
-      .fa-caret-down {
-        font-size: 2.5rem;
-        float: right;
-        line-height: 1rem;
-        margin-right: 1rem;
-        margin-top: 0.25rem;
-      }
-      .saucer {
-        display: inline-block;
-        float: none;
-        margin-left: 1rem;
-        margin-top: 0;
-        vertical-align: top;
-      }
-    }
-    .saucer {
-      float: right;
-      margin-right: 0.5rem;
-      margin-top: 0.5rem;
-      height: 1.5rem;
-      width: 1.5rem;
-      i {
-        font-size: 1rem;
-        color: $white;
-        vertical-align: top;
-        width: 1.5rem;
-        line-height: 1.5rem;
-        text-align: center;
-      }
-    }
-    h1 {
-      font-weight: bold;
-      font-size: 2rem;
-      cursor: default;
-    }
-    h2 {
-      font-weight: bold;
-      font-size: 1.4rem;
-      padding: 1rem 1.5rem 1rem 1.5rem;
-    }
-    h3 {
-      font-size: 1.4rem;
-      margin-bottom: 1rem;
-    }
-    .prerequisites {
-      margin-top: 1rem;
-      p {
-        font-size: 1.3rem;
-      }
-    }
-    .prerequisites,
-    .prereq-not-met {
-      font-size: 1.3rem;
-      padding: 1rem;
-      background: $panel_light_red;
-      border: 1px solid $dark_red;
-      border-radius: 5px;
-    }
-    .wizard-header {
-      margin-bottom: 2rem;
-    }
-    .wizard-section {
-      h2 {
-        margin-top: 0;
-      }
-      .bp5-collapse-body {
-        margin-bottom: 2rem;
-      }
-    }
-    .wizard-step {
-      margin-left: -15px;
-      margin-right: -15px;
-      padding-left: 2rem;
-      padding-right: 2rem;
-      background: $lighter_gray;
-      .bp5-collapse-body {
-        margin-bottom: 0;
-      }
-      img {
-        width: 100%;
-        border-radius: 5px;
-        margin-bottom: 1rem;
-      }
-    }
-    .wizard-step-info {
-      display: inline;
-    }
-    .warning-banner {
-      margin: 0 -15px 1rem -15px;
-      padding: 1rem 1.5rem 1rem 2rem;
-      background: color.adjust($orange, $alpha: -0.6);
-      p {
-        line-height: 1.75rem;
-        font-size: 1.3rem;
-        font-weight: bold;
-      }
-    }
-    h2,
-    .wizard-step-header {
-      margin-left: -15px;
-      margin-right: -15px;
-      background: $panel_light_gray;
-      &:hover {
-        background: $light_gray;
-      }
-    }
-    .wizard-step-header {
-      padding: 0.5rem 1.5rem 0 1.5rem;
-      cursor: pointer;
-      &.open {
-        background: $lighter_gray;
-        h3 {
-          font-weight: bold;
-        }
-      }
-      p {
-        display: inline;
-        color: $medium_light_gray;
-        margin-left: 1rem;
-      }
-    }
-    .wizard-answer {
-      button {
-        margin: 1rem;
-        float: none;
-        padding: 1rem 2rem 1rem 2rem;
-      }
-    }
-    iframe {
-      aspect-ratio: 16/9;
-      border-radius: 5px;
-      box-shadow: 0px 0px 7px 0px $translucent;
-    }
-    .wizard-components {
-      margin: auto;
-      width: fit-content;
-      border-radius: 5px;
-      box-shadow: 0 0 7px $translucent;
-      padding: 1rem;
-      background: $panel_light_gray;
-      &.no-border {
-        border: none;
-        width: 100%;
-        padding: 0;
-      }
-      &.no-background {
-        border: none;
-        width: max-content;
-        padding: 0;
-      }
-      &.full-width {
-        width: 100%;
-      }
-      &:empty {
-        display: none;
-      }
-      .widget-wrapper {
-        margin-bottom: 0;
-      }
-      .tool-verification-status {
-        text-align: center;
-        button {
-          margin: 1rem;
-          float: none;
-        }
-      }
-      .connectivity {
-        .diagnosis-indicator {
-          position: absolute;
-          top: -3rem;
-          height: 2rem;
-          width: 2rem;
-          .fa {
-            margin-left: -0.25rem;
-            margin-top: -0.1rem;
-          }
-        }
-        .saucer-connector {
-          display: none;
-        }
-      }
-      .flash-firmware {
-        display: block;
-        float: none;
-      }
-      .tour-start {
-        display: block;
-        margin: auto;
-        float: none;
-        padding: 1rem;
-      }
-      .setting {
-        .no-pad {
-          padding-left: 1.5rem;
-          padding-right: 1.5rem;
-        }
-      }
-      .pin-binding-input-rows {
-        .row {
-          margin-bottom: 0.5rem;
-        }
-        label {
-          margin-left: 1.5rem;
-        }
-      }
-      .flow-rate-input {
-        .fb-button {
-          margin-top: 0;
-        }
-      }
-    }
-    .wizard-step-question {
-      font-style: italic;
-    }
-    .markdown {
-      display: block;
-      p {
-        width: 100%;
-        overflow: visible;
-        color: $dark_gray;
-        font-size: 1.4rem;
-        white-space: pre-wrap;
-        line-height: 2rem;
-        padding-top: 1rem;
-        padding-bottom: 1rem;
-      }
-    }
-    .troubleshooting {
-      padding-bottom: 1rem;
-      a {
-        float: none;
-        padding: 0;
-        padding-left: 0.25rem;
-      }
-      .feedback {
-        textarea {
-          margin-top: 0.5rem;
-        }
-        p {
-          margin-bottom: 0 !important;
-          padding-bottom: 0 !important;
-        }
-      }
-    }
-    .troubleshooting-tip {
-      margin: 1rem 0;
-      border: 2px solid $medium_light_gray;
-      border-radius: 5px;
-      padding: 1rem;
-      cursor: pointer;
-      background: $panel_light_gray;
-      &:hover {
-        background: $white;
-        box-shadow: 0 1px 5px 0 $translucent;
-      }
-      p {
-        font-size: 1.4rem;
-        line-height: 2rem;
-      }
-      a {
-        font-size: 1.4rem;
-        text-decoration: underline;
-      }
-      &.selected {
-        border-color: $dark_gray;
-        background: $white;
-        p:first-of-type {
-          font-weight: bold;
-          padding-bottom: 0.5rem;
-        }
-        fieldset {
-          p {
-            font-weight: normal !important;
-          }
-        }
-      }
-      .fb-button {
-        float: none;
-      }
-      .arrow-button {
-        p {
-          font-size: 0.9rem;
-        }
-      }
-      .farmbot-origin {
-        margin-top: 1rem;
-      }
-      .motor-settings {
-        .row {
-          margin-top: 1rem;
-        }
-      }
-      .dropdown-camera-calibration-config,
-      .camera-config-number-box {
-        .bp5-popover-wrapper {
-          display: inline-block;
-          margin-left: 1rem;
-        }
-      }
-      .filter-search {
-        .bp5-popover-wrapper {
-          display: unset;
-          margin-left: unset;
-        }
-      }
-      .yellow {
-        float: none;
-        &:hover {
-          font-size: 1rem;
-        }
-      }
-      iframe {
-        margin-top: 1rem;
-      }
-      .wizard-find-home-btn {
-        float: none;
-      }
-    }
-    .setup-complete {
-      margin-top: 2rem;
-      text-align: center;
-      p,
-      .saucer {
-        display: inline;
-        font-size: 1.5rem;
-        font-weight: bold;
-        margin-left: 1rem;
-        float: none;
-      }
-      .saucer {
-        display: inline-block;
-      }
-    }
-  }
-}
-
-.camera-check {
-  text-align: center;
-  p {
-    margin-top: 1rem;
-  }
-  button {
-    float: none;
-  }
-  img {
-    width: 100%;
-    padding: 1rem;
-  }
-}
-
-.farmbot-model-selection {
-  width: 27rem;
-  padding: 1rem;
-  .fb-button {
-    margin: 1rem;
-  }
-  p {
-    margin-top: 0.5rem;
-  }
-  .seed-checkbox {
-    .fb-checkbox {
-      display: inline-block;
-      margin-top: 1rem;
-    }
-    p {
-      display: inline;
-      margin-left: 0.5rem;
-      vertical-align: bottom;
-      line-height: 3rem;
-    }
-  }
-}
-
-.peripherals-check {
-  margin: 1rem;
-}
-
-.camera-calibration-card {
-  padding: 1rem;
-  width: 15rem;
-  svg {
-    width: 100%;
-    height: 100%;
-    background: $dark_gray;
   }
 }

@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { PlantInventoryItem } from "./plant_inventory_item";
 import { Everything, PlantsPanelState } from "../interfaces";
-import { Panel, DesignerNavTabs, TAB_COLOR } from "../farm_designer/panel_header";
+import { Panel } from "../farm_designer/panel_header";
 import { getPlants } from "../farm_designer/state_to_props";
 import { TaggedPlant } from "../farm_designer/map/interfaces";
 import {
@@ -14,7 +14,6 @@ import {
 } from "../farm_designer/designer_panel";
 import { t } from "../i18next_wrapper";
 import { SearchField } from "../ui/search_field";
-import { push } from "../history";
 import {
   selectAllActivePoints,
   selectAllPlantPointers,
@@ -34,10 +33,11 @@ import { deletePoints } from "../api/delete_points";
 import { Path } from "../internal_urls";
 import { WebAppNumberSetting } from "../settings/farm_designer_settings";
 import { NumericSetting } from "../session_keys";
-import { Col, Help, Popover, Row } from "../ui";
+import { Help, Popover, Row } from "../ui";
 import {
   GetWebAppConfigValue, getWebAppConfigValue,
 } from "../config_storage/actions";
+import { NavigationContext } from "../routes_helpers";
 
 export interface PlantInventoryProps {
   plants: TaggedPlant[];
@@ -87,7 +87,7 @@ export class RawPlants
           type: Actions.SEARCH_QUERY_CHANGE,
           payload: this.state.searchTerm,
         });
-        push(Path.cropSearch());
+        this.navigate(Path.cropSearch());
         this.props.dispatch({ type: Actions.SET_SLUG_BULK, payload: undefined });
       }}>
         {t("search all crops?")}
@@ -100,7 +100,13 @@ export class RawPlants
       type: Actions.TOGGLE_PLANTS_PANEL_OPTION, payload: section,
     });
 
-  navigate = (id: number | undefined) => () => push(Path.groups(id));
+  static contextType = NavigationContext;
+  context!: React.ContextType<typeof NavigationContext>;
+  navigate = this.context;
+
+  navigateById = (id: number | undefined) => () => {
+    this.navigate(Path.groups(id));
+  };
 
   render() {
     const { dispatch, plantsPanelState, plants } = this.props;
@@ -114,7 +120,6 @@ export class RawPlants
     const uncategorizedGroups = uncategorizedGroupSubset(this.props.groups);
     const noSearchResults = this.state.searchTerm && filteredPlants.length == 0;
     return <DesignerPanel panelName={"plant-inventory"} panel={Panel.Plants}>
-      <DesignerNavTabs />
       <DesignerPanelTop panel={Panel.Plants} withButton={true}>
         <SearchField nameKey={"plants"}
           searchTerm={this.state.searchTerm}
@@ -123,17 +128,13 @@ export class RawPlants
         <Popover
           position={Position.BOTTOM}
           popoverClassName={"plants-panel-settings-menu"}
-          target={<i className={"fa fa-gear fb-icon-button"} />}
+          target={<i className={"fa fa-gear fb-icon-button invert"} />}
           content={<Row>
-            <Col xs={9}>
-              <label>{t(DeviceSetting.defaultPlantDepth)}</label>
-              <Help text={Content.DEFAULT_PLANT_DEPTH} />
-            </Col>
-            <Col xs={3}>
-              <WebAppNumberSetting dispatch={dispatch}
-                getConfigValue={this.props.getConfigValue}
-                numberSetting={NumericSetting.default_plant_depth} />
-            </Col>
+            <label>{t(DeviceSetting.defaultPlantDepth)}</label>
+            <Help text={Content.DEFAULT_PLANT_DEPTH} />
+            <WebAppNumberSetting dispatch={dispatch}
+              getConfigValue={this.props.getConfigValue}
+              numberSetting={NumericSetting.default_plant_depth} />
           </Row>} />
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"plant"}>
@@ -146,6 +147,7 @@ export class RawPlants
               ...DEFAULT_CRITERIA,
               string_eq: { pointer_type: ["Plant"] },
             },
+            navigate: this.navigate,
           }))}
           addTitle={t("add new group")}
           addClassName={"plus-group"}
@@ -158,7 +160,7 @@ export class RawPlants
                 allPoints={this.props.allPoints}
                 hovered={false}
                 dispatch={dispatch}
-                onClick={this.navigate(group.body.id)}
+                onClick={this.navigateById(group.body.id)}
               />)}
           </div>
           {uncategorizedGroups.length > 0
@@ -172,7 +174,7 @@ export class RawPlants
                 allPoints={this.props.allPoints}
                 hovered={false}
                 dispatch={dispatch}
-                onClick={this.navigate(group.body.id)}
+                onClick={this.navigateById(group.body.id)}
               />)}
           </div>
         </PanelSection>
@@ -180,7 +182,7 @@ export class RawPlants
           panel={Panel.Plants}
           toggleOpen={this.toggleOpen("savedGardens")}
           itemCount={this.props.savedGardens.length}
-          addNew={() => push(Path.savedGardens("add"))}
+          addNew={() => { this.navigate(Path.savedGardens("add")); }}
           addTitle={t("add new saved garden")}
           addClassName={"plus-saved-garden"}
           title={t("Gardens")}>
@@ -191,14 +193,12 @@ export class RawPlants
           toggleOpen={this.toggleOpen("plants")}
           itemCount={plants.length}
           addNew={() => {
-            push(Path.cropSearch());
+            this.navigate(Path.cropSearch());
             dispatch({ type: Actions.SET_SLUG_BULK, payload: undefined });
           }}
           addTitle={t("add plant")}
           addClassName={"plus-plant"}
           title={t("Plants")}
-          extraHeaderTitle={!!this.props.openedSavedGarden &&
-            <i className={"garden-indicator"}>{t("saved garden")}</i>}
           extraHeaderContent={
             !this.props.openedSavedGarden && plantsPanelState.plants &&
             <button className={"fb-button red delete"}
@@ -237,6 +237,8 @@ export class RawPlants
 }
 
 export const Plants = connect(mapStateToProps)(RawPlants);
+// eslint-disable-next-line import/no-default-export
+export default Plants;
 
 export interface PanelSectionProps {
   panel: Panel;
@@ -247,9 +249,9 @@ export interface PanelSectionProps {
   addNew(): void;
   addTitle: string;
   addClassName: string;
-  children: JSX.Element | JSX.Element[];
-  extraHeaderContent?: JSX.Element | false;
-  extraHeaderTitle?: JSX.Element | false;
+  children: React.ReactNode | React.ReactNode[];
+  extraHeaderContent?: React.ReactNode | false;
+  extraHeaderTitle?: React.ReactNode | false;
 }
 
 export const PanelSection = (props: PanelSectionProps) => {
@@ -259,20 +261,21 @@ export const PanelSection = (props: PanelSectionProps) => {
       onClick={props.toggleOpen}>
       <label>{`${props.title} (${props.itemCount})`}</label>
       {props.extraHeaderTitle}
-      <i className={`fa fa-caret-${isOpen ? "up" : "down"}`} />
-      {isOpen && <div
-        onClick={e => {
-          e.stopPropagation();
-          props.addNew();
-        }}
-        className={[
-          "fb-button",
-          `panel-${TAB_COLOR[props.panel]}`,
-          props.addClassName,
-        ].join(" ")}>
-        <i className={"fa fa-plus"} title={props.addTitle} />
-      </div>}
-      {props.extraHeaderContent}
+      <div className="row">
+        {props.extraHeaderContent}
+        {isOpen && <div
+          onClick={e => {
+            e.stopPropagation();
+            props.addNew();
+          }}
+          className={[
+            "fb-button green",
+            props.addClassName,
+          ].join(" ")}>
+          <i className={"fa fa-plus"} title={props.addTitle} />
+        </div>}
+        <i className={`fa fa-caret-${isOpen ? "up" : "down"}`} />
+      </div>
     </div>
     <Collapse isOpen={isOpen}>
       {props.children}

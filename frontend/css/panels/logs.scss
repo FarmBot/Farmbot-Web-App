@@ -1,0 +1,142 @@
+@use "../variables" as *;
+@use "sass:color";
+
+.logs-table-wrapper {
+  border: none;
+  .fa-trash {
+    display: none;
+  }
+  tr {
+    vertical-align: top;
+    &:hover {
+      background: $translucent2_white;
+      .fa-trash {
+        display: inline;
+        margin-left: 6px;
+        padding: 0.5rem;
+        line-height: 2rem;
+      }
+      .log-verbosity-saucer {
+        display: none;
+      }
+    }
+  }
+  .fa-filter {
+    border: 1px black solid;
+    border-radius: 50%;
+    padding: 0.25rem;
+    width: 2rem;
+    height: 2rem;
+    text-align: center;
+    line-height: 1.3rem;
+    margin-left: 5px;
+  }
+  .markdown {
+    p {
+      margin-top: 0;
+    }
+    a {
+      text-decoration: underline !important;
+      &:hover {
+        font-weight: normal;
+      }
+    }
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      margin: 0;
+      font-size: 1.4rem;
+      font-weight: bold;
+    }
+  }
+  .notice {
+    font-style: italic;
+    text-align: center;
+    font-size: 1.4rem;
+    padding: 1rem;
+  }
+}
+
+.logs-filter-menu {
+  .log-filters-grid {
+    grid-template-columns: 10rem 17rem;
+  }
+  .lines {
+    padding-bottom: 2rem;
+  }
+  .line {
+    position: absolute;
+    width: 0.5rem;
+    height: 86.5%;
+    border-right: 1.5px $light_gray solid;
+    .line-label {
+      position: absolute;
+      background: $white;
+      font-family: monospace;
+    }
+  }
+  .bp5-slider-unlabeled {
+    margin: 0 1rem;
+  }
+}
+
+.logs-tab {
+  .search-row {
+    margin: 0 1rem;
+  }
+}
+
+.logs-table {
+  display: block;
+  overflow: scroll;
+  max-height: 42rem;
+  .log-verbosity-saucer .saucer {
+    text-align: center;
+    margin-left: 6px;
+    p {
+      margin: 0;
+    }
+  }
+  button {
+    float: none;
+  }
+  thead {
+    text-align: left;
+    background: var(--main-bg);
+  }
+  thead,
+  th {
+    position: sticky;
+    top: 0;
+    z-index: 999;
+  }
+  td {
+    word-break: break-word;
+    .markdown {
+      p {
+        display: block;
+        font: inherit;
+        font-size: inherit;
+        text-overflow: inherit;
+        overflow: inherit;
+        width: inherit;
+        white-space: inherit;
+      }
+    }
+  }
+  td:nth-child(1),
+  td:nth-child(3),
+  td:nth-child(4) {
+    white-space: nowrap;
+  }
+}
+
+.link-to-logs {
+  margin-top: 2rem;
+  margin-bottom: 4rem;
+  text-align: center;
+  font-style: italic;
+}

@@ -33,4 +33,5 @@ export const mapStateToProps = (props: Everything): DesignerSettingsProps => ({
   farmwareEnvs: selectAllFarmwareEnvs(props.resources.index),
   wizardStepResults: selectAllWizardStepResults(props.resources.index),
   settingsPanelState: props.app.settingsPanelState,
+  distanceIndicator: props.resources.consumers.farm_designer.distanceIndicator,
 });

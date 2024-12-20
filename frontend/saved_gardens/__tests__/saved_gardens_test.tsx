@@ -17,7 +17,6 @@ import { clickButton } from "../../__test_support__/helpers";
 import {
   fakePlantTemplate, fakeSavedGarden,
 } from "../../__test_support__/fake_state/resources";
-import { push } from "../../history";
 import { fakeState } from "../../__test_support__/fake_state";
 import {
   buildResourceIndex,
@@ -105,7 +104,7 @@ describe("<SavedGardenHUD />", () => {
     const dispatch = jest.fn();
     const wrapper = mount(<SavedGardenHUD dispatch={dispatch} />);
     clickButton(wrapper, 0, "edit");
-    expect(push).toHaveBeenCalledWith(Path.plants());
+    expect(mockNavigate).toHaveBeenCalledWith(Path.plants());
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SELECT_POINT,
       payload: undefined

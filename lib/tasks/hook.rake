@@ -42,7 +42,7 @@ def commits_since_last_deploy
   commits
 end
 
-def details
+def details(environment)
   output = "\n\n"
   if !DESCRIPTION.nil?
     output += "#{DESCRIPTION}\n\n"
@@ -51,6 +51,13 @@ def details
   output += "<#{web_compare_url}|compare>\n"
   messages = commits_since_last_deploy.reverse.map do |commit|
     output += "\n + #{commit}"
+  end
+  output += "\n"
+  pre = environment == "production" ? "my" : environment
+  base = "#{pre}.farm.bot"
+  ["promo", "", "demo", "try_farmbot", "os"].map do |path|
+    url = "#{base}/#{path}"
+    output += "\n<https://#{url}|#{url}>"
   end
   output
 end
@@ -61,7 +68,7 @@ namespace :hook do
     if WEBHOOK_URL
       environment = ENVIRONMENT.include?("staging") ? "staging" : "production"
       notification_text = "A new release has been deployed to #{environment}."
-      info = notification_text + details
+      info = notification_text + details(environment)
       payload = {
         "mrkdwn": true,
         "text": notification_text,

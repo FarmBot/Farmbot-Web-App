@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  WidgetBody, Col, Widget, WidgetHeader, Row, BlurableInput, BIProps,
+  WidgetBody, Widget, WidgetHeader, BlurableInput, BIProps,
 } from "../ui";
 import { resendEmail } from "./resend_verification";
 import { success, error } from "../toast/toast";
@@ -21,7 +21,7 @@ type KeySetter = (keyName: RegKeyName, val: string) => void;
 type KeyGetter = (keyName: RegKeyName) => string | undefined;
 
 export interface CreateAccountProps {
-  children?: React.ReactChild
+  children?: React.ReactNode
   submitRegistration(e: React.FormEvent<{}>): void;
   sent: boolean;
   get: KeyGetter;
@@ -39,7 +39,7 @@ export interface FormFieldProps {
 }
 
 export const FormField = (props: FormFieldProps) =>
-  <div className={"account-form-field"}>
+  <div>
     <label> {t(props.label)} </label>
     <BlurableInput
       value={props.value}
@@ -87,13 +87,11 @@ export function MustRegister(props: CreateAccountProps) {
     <form onSubmit={props.submitRegistration}>
       {renderFormFields(props.get, props.set)}
       {props.children}
-      <Row>
-        <button
-          title={t("Create Account")}
-          className="fb-button green front-page-button">
-          {t("Create Account")}
-        </button>
-      </Row>
+      <button
+        title={t("Create Account")}
+        className="fb-button green create-account-button">
+        {t("Create Account")}
+      </button>
     </form>
   </WidgetBody>;
 }
@@ -123,10 +121,10 @@ export function DidRegister(props: CreateAccountProps) {
 
 export function CreateAccount(props: CreateAccountProps) {
   const RelevantForm = props.sent ? DidRegister : MustRegister;
-  return <Col xs={12} sm={5}>
+  return <div>
     <Widget>
       <WidgetHeader title={t("Create An Account")} />
       <RelevantForm {...props} />
     </Widget>
-  </Col>;
+  </div>;
 }

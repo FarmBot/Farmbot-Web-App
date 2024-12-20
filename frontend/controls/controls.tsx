@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import {
   DesignerPanel, DesignerPanelContent,
 } from "../farm_designer/designer_panel";
-import { DesignerNavTabs, Panel } from "../farm_designer/panel_header";
+import { Panel } from "../farm_designer/panel_header";
 import { Peripherals } from "./peripherals";
 import { WebcamPanel } from "./webcam";
 import { PinnedSequences } from "./pinned_sequence_list";
@@ -20,25 +20,24 @@ import {
 } from "farmbot";
 import { ResourceIndex } from "../resources/interfaces";
 import { t } from "../i18next_wrapper";
-import { push } from "../history";
 import { Path } from "../internal_urls";
 import { RunButtonMenuOpen } from "../sequences/interfaces";
+import { Navigate } from "react-router";
+import { mapStateToProps } from "./state_to_props";
 
-export class RawDesignerControls
-  extends React.Component<DesignerControlsProps, {}> {
-  render() {
-    this.props.dispatch({ type: Actions.OPEN_POPUP, payload: "controls" });
-    push(Path.plants());
-    return <DesignerPanel panelName={"controls"} panel={Panel.Controls}>
-      <DesignerNavTabs />
-      <DesignerPanelContent panelName={"controls"}>
-        <p>Controls have moved to the navigation bar.</p>
-      </DesignerPanelContent>
-    </DesignerPanel>;
-  }
-}
+export const RawDesignerControls = (props: DesignerControlsProps) => {
+  props.dispatch({ type: Actions.OPEN_POPUP, payload: "controls" });
+  return <DesignerPanel panelName={"controls"} panel={Panel.Controls}>
+    <DesignerPanelContent panelName={"controls"}>
+      <Navigate to={Path.plants()} />
+      <p>Controls have moved to the navigation bar.</p>
+    </DesignerPanelContent>
+  </DesignerPanel>;
+};
 
-export const DesignerControls = connect()(RawDesignerControls);
+export const DesignerControls = connect(mapStateToProps)(RawDesignerControls);
+// eslint-disable-next-line import/no-default-export
+export default DesignerControls;
 
 export interface ControlsPanelProps {
   dispatch: Function;
@@ -81,7 +80,7 @@ export class ControlsPanel extends React.Component<ControlsPanelProps> {
   };
 
   Peripherals = () => {
-    return <div className={"peripherals-tab"}>
+    return <div className={"peripherals-tab grid"}>
       <Peripherals
         getConfigValue={this.props.getConfigValue}
         firmwareHardware={this.props.firmwareHardware}

@@ -12,9 +12,8 @@ jest.mock("../../resources/selectors", () => ({
   findUuid: jest.fn(),
 }));
 
-import { createGroup, overwriteGroup } from "../actions";
+import { createGroup, CreateGroupProps, overwriteGroup } from "../actions";
 import { init, save, overwrite } from "../../api/crud";
-import { push } from "../../history";
 import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
@@ -29,14 +28,20 @@ import { fakeState } from "../../__test_support__/fake_state";
 import { Path } from "../../internal_urls";
 
 describe("createGroup()", () => {
+  const fakeProps = (): CreateGroupProps => ({
+    navigate: jest.fn(),
+  });
+
   it("creates group", async () => {
+    const p = fakeProps();
     const fakePoints = [fakePoint(), fakePlant(), fakeToolSlot()];
     const resources = buildResourceIndex(fakePoints);
-    const pointUuids = fakePoints.map(x => x.uuid);
+    p.pointUuids = fakePoints.map(x => x.uuid);
+    p.groupName = "Name123";
     const fakeS: DeepPartial<Everything> = { resources };
     const dispatch = jest.fn(() => Promise.resolve());
 
-    const thunk = createGroup({ pointUuids, groupName: "Name123" });
+    const thunk = createGroup(p);
     await thunk(dispatch, () => fakeS as Everything);
     expect(init).toHaveBeenCalledWith("PointGroup", expect.objectContaining({
       name: "Name123",
@@ -45,20 +50,21 @@ describe("createGroup()", () => {
       criteria: DEFAULT_CRITERIA,
     }));
     expect(save).toHaveBeenCalledWith("???");
-    expect(push)
+    expect(p.navigate)
       .toHaveBeenCalledWith(Path.groups(323232332));
   });
 
   it("creates group with default name", async () => {
+    const p = fakeProps();
     mockPointGroup = { body: { id: 0 } };
     const state = fakeState();
     const point = fakePoint();
     point.body.id = 0;
     const fakePoints = [point, fakePlant(), fakeToolSlot()];
     state.resources = buildResourceIndex(fakePoints);
-    const pointUuids = fakePoints.map(x => x.uuid);
-    pointUuids.push("missingFakeUuid");
-    const thunk = createGroup({ pointUuids });
+    p.pointUuids = fakePoints.map(x => x.uuid);
+    p.pointUuids.push("missingFakeUuid");
+    const thunk = createGroup(p);
     await thunk(jest.fn(() => Promise.resolve()), () => state);
     expect(init).toHaveBeenCalledWith("PointGroup", expect.objectContaining({
       name: "Untitled Group",
@@ -67,7 +73,7 @@ describe("createGroup()", () => {
       criteria: DEFAULT_CRITERIA,
     }));
     expect(save).toHaveBeenCalledWith("???");
-    expect(push).toHaveBeenCalledWith(Path.groups());
+    expect(p.navigate).toHaveBeenCalledWith(Path.groups());
   });
 });
 

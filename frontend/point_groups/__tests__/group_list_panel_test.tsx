@@ -17,7 +17,6 @@ import {
 import { createGroup } from "../actions";
 import { DesignerPanelTop } from "../../farm_designer/designer_panel";
 import { SearchField } from "../../ui/search_field";
-import { push } from "../../history";
 import { Path } from "../../internal_urls";
 
 describe("<GroupListPanel />", () => {
@@ -47,14 +46,17 @@ describe("<GroupListPanel />", () => {
     const p = fakeProps();
     const wrapper = shallow(<GroupListPanel {...p} />);
     wrapper.find(DesignerPanelTop).simulate("click");
-    expect(createGroup).toHaveBeenCalledWith({ pointUuids: [] });
+    expect(createGroup).toHaveBeenCalledWith({
+      pointUuids: [],
+      navigate: expect.any(Function),
+    });
   });
 
   it("changes search term", () => {
     const p = fakeProps();
-    const wrapper = shallow<GroupListPanel>(<GroupListPanel {...p} />);
+    const wrapper = shallow(<GroupListPanel {...p} />);
     wrapper.find(SearchField).simulate("change", "one");
-    expect(wrapper.state().searchTerm).toEqual("one");
+    expect(wrapper.find(SearchField).props().searchTerm).toEqual("one");
   });
 
   it("renders relevant group data as a list", () => {
@@ -71,7 +73,7 @@ describe("<GroupListPanel />", () => {
   it("navigates to group", () => {
     const wrapper = mount(<GroupListPanel {...fakeProps()} />);
     wrapper.find(".group-search-item").first().simulate("click");
-    expect(push).toHaveBeenCalledWith(Path.groups(9));
+    expect(mockNavigate).toHaveBeenCalledWith(Path.groups(9));
   });
 
   it("navigates to group: handles missing id", () => {
@@ -79,7 +81,7 @@ describe("<GroupListPanel />", () => {
     p.groups[0].body.id = undefined;
     const wrapper = mount(<GroupListPanel {...p} />);
     wrapper.find(".group-search-item").first().simulate("click");
-    expect(push).toHaveBeenCalledWith(Path.groups());
+    expect(mockNavigate).toHaveBeenCalledWith(Path.groups());
   });
 
   it("renders no groups", () => {

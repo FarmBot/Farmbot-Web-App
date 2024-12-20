@@ -2,7 +2,6 @@ import React from "react";
 import { t } from "../i18next_wrapper";
 import { StepButton, stepClick } from "./step_buttons";
 import { equals, scrollToBottom } from "../util";
-import { Col } from "../ui";
 import { Color, SequenceBodyItem, TaggedSequence } from "farmbot";
 import { FarmwareData, MessageType } from "./interfaces";
 import { FarmwareName } from "./step_tiles/tile_execute_script";
@@ -241,7 +240,7 @@ export class StepButtonCluster
     });
     return <div className={Path.inDesigner() ? "" : "row"}>
       <div className={[
-        "step-button-cluster",
+        "step-button-cluster grid half-gap",
         Path.inDesigner() ? "designer-cluster" : "",
       ].join(" ")}>
         <SearchField nameKey={"commands"}
@@ -267,8 +266,6 @@ export class StepButtonCluster
                 label={stepButton.title}
                 color={stepButton.color} />
             </div>)}
-          {!Path.inDesigner() && sequences.length > 0 &&
-            <Col xs={12}><label></label></Col>}
           <div className={"pinned-sequences"}>
             {sequences.map((s, inx) => s.body.id &&
               <div className={[

@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelTop,
 } from "../farm_designer/designer_panel";
-import { Panel, DesignerNavTabs } from "../farm_designer/panel_header";
+import { Panel } from "../farm_designer/panel_header";
 import { Everything, JobsAndLogsState, TimeSettings } from "../interfaces";
 import {
   BytesProgress, Dictionary, JobProgress, PercentageProgress, TaggedDevice,
@@ -33,7 +33,6 @@ export const mapStateToProps = (props: Everything): JobsPanelProps => ({
 export class RawJobsPanel extends React.Component<JobsPanelProps, {}> {
   render() {
     return <DesignerPanel panelName={"jobs"} panel={Panel.Logs}>
-      <DesignerNavTabs />
       <DesignerPanelTop panel={Panel.Logs} />
       <DesignerPanelContent panelName={"jobs"}>
         <p>{t("Job count")}: {Object.values(this.props.jobs).length}</p>
@@ -44,6 +43,8 @@ export class RawJobsPanel extends React.Component<JobsPanelProps, {}> {
 }
 
 export const JobsPanel = connect(mapStateToProps)(RawJobsPanel);
+// eslint-disable-next-line import/no-default-export
+export default JobsPanel;
 
 export interface JobsAndLogsProps {
   dispatch: Function;
@@ -75,23 +76,21 @@ export class JobsAndLogs
   };
 
   Logs = () => {
-    return <div className={"logs-tab"}>
-      <LogsPanel
-        logs={this.props.logs}
-        timeSettings={this.props.timeSettings}
-        dispatch={this.props.dispatch}
-        sourceFbosConfig={this.props.sourceFbosConfig}
-        getConfigValue={this.props.getConfigValue}
-        bot={this.props.bot}
-        device={this.props.device}
-        fbosVersion={this.props.fbosVersion}
-      />
-    </div>;
+    return <LogsPanel
+      logs={this.props.logs}
+      timeSettings={this.props.timeSettings}
+      dispatch={this.props.dispatch}
+      sourceFbosConfig={this.props.sourceFbosConfig}
+      getConfigValue={this.props.getConfigValue}
+      bot={this.props.bot}
+      device={this.props.device}
+      fbosVersion={this.props.fbosVersion}
+    />;
   };
 
   render() {
     const { jobs, logs } = this.props.jobsPanelState;
-    return <div className={"jobs-and-logs"}>
+    return <div className={"jobs-and-logs grid double-gap"}>
       <div className={"tabs"}>
         <label className={jobs ? "selected" : ""}
           onClick={this.setPanelState("jobs")}>{t("jobs")}</label>

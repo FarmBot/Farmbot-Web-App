@@ -1,10 +1,3 @@
-import { Path } from "../../../internal_urls";
-const mockPath = Path.mock(Path.regimens("1"));
-jest.mock("../../../history", () => ({
-  getPathArray: jest.fn(() => mockPath.split("/")),
-  push: jest.fn(),
-}));
-
 import React from "react";
 import { mount } from "enzyme";
 import { ActiveEditor } from "../active_editor";

@@ -4,6 +4,8 @@ import { Actions } from "../constants";
 import { ToastProps, ToastsProps, ToastState } from "./interfaces";
 import { store } from "../redux/store";
 import { Markdown } from "../ui";
+import { Path } from "../internal_urls";
+import { Navigate } from "react-router";
 
 export class Toast extends React.Component<ToastProps, ToastState> {
   state: ToastState = {
@@ -47,7 +49,7 @@ export class Toast extends React.Component<ToastProps, ToastState> {
   };
 
   render() {
-    const { color } = this.props;
+    const { color, redirect } = this.props;
     const style = {
       animationPlayState: this.state.isHovered ? "paused" : "running",
     };
@@ -76,6 +78,7 @@ export class Toast extends React.Component<ToastProps, ToastState> {
         <div className={"toast-loader-right"} style={style}></div>
         <div className={"toast-loader-spinner"} style={style}></div>
       </div>
+      {redirect && !Path.equals(redirect) && <Navigate to={redirect} />}
     </div>;
   }
 }

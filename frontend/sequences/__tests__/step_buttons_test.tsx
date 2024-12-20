@@ -3,11 +3,6 @@ jest.mock("../actions", () => ({
   closeCommandMenu: jest.fn(),
 }));
 
-let mockPath = "";
-jest.mock("../../history", () => ({
-  getPathArray: jest.fn(() => mockPath.split("/")),
-}));
-
 import React from "react";
 import { mount } from "enzyme";
 import { StepButtonParams } from "../interfaces";
@@ -47,7 +42,7 @@ describe("<StepButton />", () => {
   });
 
   it("renders in designer", () => {
-    mockPath = Path.mock(Path.designerSequences("1"));
+    location.pathname = Path.mock(Path.designerSequences("1"));
     const wrapper = mount(<StepButton {...fakeProps()} />);
     expect(wrapper.html()).toContain("clustered");
   });

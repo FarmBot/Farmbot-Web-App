@@ -5,7 +5,7 @@ import {
 } from "./list_and_label_support";
 import { destroy } from "../../api/crud";
 import { error } from "../../toast/toast";
-import { Row, Col } from "../../ui";
+import { Row } from "../../ui";
 import { findSequenceById } from "../../resources/selectors";
 import { PinBindingsListProps } from "./interfaces";
 import { sysBtnBindings } from "./tagged_pin_binding_init";
@@ -13,7 +13,6 @@ import { t } from "../../i18next_wrapper";
 import {
   PinBindingType, PinBindingSpecialAction,
 } from "farmbot/dist/resources/api_resources";
-import { DeviceSetting } from "../../constants";
 
 export const PinBindingsList = (props: PinBindingsListProps) => {
   const { pinBindings, resources, dispatch } = props;
@@ -38,26 +37,21 @@ export const PinBindingsList = (props: PinBindingsListProps) => {
       ? findSequenceById(resources, sequence_id).body.name
       : t(getSpecialActionLabel(special_action)))}`;
 
-  return <div className={"bindings-list"}>
-    <Row><label>{t(DeviceSetting.savedPinBindings)}</label></Row>
+  return <div className={"bindings-list grid"}>
     {pinBindings
       .sort((a, b) => sortByNameAndPin(a.pin_number, b.pin_number))
       .map(x => {
         const { pin_number, sequence_id, binding_type, special_action } = x;
         const binding = bindingText(sequence_id, binding_type, special_action);
-        return <Row key={`pin_${pin_number}_binding`}>
-          <Col xs={11}>
-            <p>{generatePinLabel(pin_number)}</p>
-            <p className="binding-action">{binding}</p>
-          </Col>
-          <Col xs={1}>
-            <button
-              className={`fb-button ${delBtnColor(pin_number)} del-button`}
-              title={t("Delete")}
-              onClick={() => deleteBinding(pin_number, x.uuid)}>
-              <i className="fa fa-times" />
-            </button>
-          </Col>
+        return <Row key={`pin_${pin_number}_binding`} className="row pin-binding-grid">
+          <p>{generatePinLabel(pin_number)}</p>
+          <p className="binding-action">{binding}</p>
+          <button
+            className={`fb-button ${delBtnColor(pin_number)}`}
+            title={t("Delete")}
+            onClick={() => deleteBinding(pin_number, x.uuid)}>
+            <i className="fa fa-times" />
+          </button>
         </Row>;
       })}
   </div>;

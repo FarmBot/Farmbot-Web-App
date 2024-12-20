@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import {
   RawDesignerSensors as DesignerSensors,
@@ -21,7 +21,7 @@ describe("<DesignerSensors />", () => {
 
   it("renders sensors panel", () => {
     const wrapper = mount(<DesignerSensors {...fakeProps()} />);
-    ["sensors", "sensor history"].map(string =>
+    ["sensors", "history"].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string));
   });
 });

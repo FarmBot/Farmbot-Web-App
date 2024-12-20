@@ -1,7 +1,7 @@
 import React from "react";
 import { McuInputBox, microstepScaledConfig } from "./mcu_input_box";
 import { NumericMCUInputGroupProps } from "./interfaces";
-import { Row, Col, Help } from "../../ui";
+import { Row, Help } from "../../ui";
 import { Highlight } from "../maybe_highlight";
 import { t } from "../../i18next_wrapper";
 import { getDefaultFwConfigValue } from "./default_values";
@@ -29,34 +29,28 @@ export class NumericMCUInputGroup
       toInput,
       fromInput,
     };
-    return <div className={"mcu-inputs"}>
-      <Col xs={3} className={"low-pad"}>
-        <McuInputBox {...commonProps}
-          setting={x}
-          scale={xScale}
-          title={gray?.x ? disabledBy : undefined}
-          warnMin={warnMin?.x}
-          warning={warning?.x}
-          gray={gray?.x} />
-      </Col>
-      <Col xs={3} className={"low-pad"}>
-        <McuInputBox {...commonProps}
-          setting={y}
-          scale={yScale}
-          title={gray?.y ? disabledBy : undefined}
-          warnMin={warnMin?.y}
-          warning={warning?.y}
-          gray={gray?.y} />
-      </Col>
-      <Col xs={3} className={"low-pad"}>
-        <McuInputBox {...commonProps}
-          setting={z}
-          scale={zScale}
-          title={gray?.z ? disabledBy : undefined}
-          warnMin={warnMin?.z}
-          warning={warning?.z}
-          gray={gray?.z} />
-      </Col>
+    return <div className={"mcu-inputs row"}>
+      <McuInputBox {...commonProps}
+        setting={x}
+        scale={xScale}
+        title={gray?.x ? disabledBy : undefined}
+        warnMin={warnMin?.x}
+        warning={warning?.x}
+        gray={gray?.x} />
+      <McuInputBox {...commonProps}
+        setting={y}
+        scale={yScale}
+        title={gray?.y ? disabledBy : undefined}
+        warnMin={warnMin?.y}
+        warning={warning?.y}
+        gray={gray?.y} />
+      <McuInputBox {...commonProps}
+        setting={z}
+        scale={zScale}
+        title={gray?.z ? disabledBy : undefined}
+        warnMin={warnMin?.z}
+        warning={warning?.z}
+        gray={gray?.z} />
     </div>;
   };
 
@@ -110,13 +104,13 @@ export class NumericMCUInputGroup
         (this.props.advanced && !(this.props.showAdvanced || this.anyModified)
           && !this.error)}
       className={this.props.advanced ? "advanced" : undefined}>
-      <Row>
-        <Col xs={3} className={"widget-body-tooltips"}>
+      <Row className="axes-grid">
+        <div>
           <label>
             {t(label)}
           </label>
           <Help text={this.tooltip} />
-        </Col>
+        </div>
         <this.Inputs />
       </Row>
     </Highlight>;

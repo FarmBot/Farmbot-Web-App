@@ -1,9 +1,3 @@
-import { Path } from "../../internal_urls";
-let mockPath = Path.mock(Path.plants());
-jest.mock("../../history", () => ({
-  getPathArray: jest.fn(() => mockPath.split("/")),
-}));
-
 import { fakeState } from "../../__test_support__/fake_state";
 const mockState = fakeState();
 jest.mock("../../redux/store", () => ({ store: { getState: () => mockState } }));
@@ -16,13 +10,21 @@ import { buildResourceIndex } from "../../__test_support__/resource_index_builde
 import {
   fakeFarmwareInstallation, fakeWebAppConfig,
 } from "../../__test_support__/fake_state/resources";
-import { fakeHelpState } from "../../__test_support__/fake_designer_state";
+import {
+  fakeDesignerState, fakeHelpState,
+
+} from "../../__test_support__/fake_designer_state";
+import { Path } from "../../internal_urls";
+import { Actions } from "../../constants";
+import { mockDispatch } from "../../__test_support__/fake_dispatch";
 
 describe("<NavLinks />", () => {
   const fakeProps = (): NavLinksProps => ({
-    close: jest.fn(),
+    close: jest.fn(() => jest.fn()),
     alertCount: 1,
     helpState: fakeHelpState(),
+    dispatch: jest.fn(),
+    designer: fakeDesignerState(),
   });
 
   it("toggles the mobile nav menu", () => {
@@ -41,6 +43,17 @@ describe("<NavLinks />", () => {
     expect(wrapper.text()).toContain("1");
   });
 
+  it("clicks map icon", () => {
+    const p = fakeProps();
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
+    const wrapper = mount(<NavLinks {...p} />);
+    wrapper.find("a").first().simulate("click");
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_PANEL_OPEN, payload: false,
+    });
+  });
+
   it("shows beacon", () => {
     const p = fakeProps();
     p.helpState.currentTour = "gettingStarted";
@@ -50,9 +63,9 @@ describe("<NavLinks />", () => {
   });
 
   it("shows active link", () => {
-    mockPath = Path.mock(Path.plants());
+    location.pathname = Path.mock(Path.plants());
     const wrapper = shallow(<NavLinks {...fakeProps()} />);
-    expect(wrapper.find("Link").at(1).hasClass("active")).toBeTruthy();
+    expect(wrapper.find("Link").at(0).hasClass("active")).toBeTruthy();
   });
 
   it("shows sensors link", () => {

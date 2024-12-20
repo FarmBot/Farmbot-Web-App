@@ -6,7 +6,6 @@ import { edit, init, overwrite } from "../api/crud";
 import {
   AxiosErrorResponse, defensiveClone, prettyPrintApiErrors, urlFriendly,
 } from "../util";
-import { push } from "../history";
 import { Actions } from "../constants";
 import { setActiveSequenceByName } from "./set_active_sequence_by_name";
 import { isNumber } from "lodash";
@@ -18,6 +17,7 @@ import { selectAllSequences } from "../resources/selectors_by_kind";
 import { ResourceIndex } from "../resources/interfaces";
 import { getDeviceAccountSettings } from "../resources/selectors";
 import { store } from "../redux/store";
+import { NavigateFunction } from "react-router";
 
 export const sequenceLengthExceeded = (sequence: TaggedSequence): boolean => {
   const device = getDeviceAccountSettings(store.getState().resources.index);
@@ -63,7 +63,10 @@ export const sequenceLimitExceeded = (ri: ResourceIndex): boolean => {
 
 let count = 1;
 
-export const copySequence = (payload: TaggedSequence) =>
+export const copySequence = (
+  navigate: NavigateFunction,
+  payload: TaggedSequence,
+) =>
   (dispatch: Function, getState: GetState) => {
     const ri = getState().resources.index;
     if (sequenceLimitExceeded(ri)) {
@@ -73,7 +76,7 @@ export const copySequence = (payload: TaggedSequence) =>
     copy.body.id = undefined;
     copy.body.name = copy.body.name + t(" copy ") + (count++);
     dispatch(init(copy.kind, copy.body));
-    push(Path.sequences(urlFriendly(copy.body.name)));
+    navigate(Path.sequences(urlFriendly(copy.body.name)));
     setActiveSequenceByName();
   };
 
@@ -90,8 +93,8 @@ export function selectSequence(uuid: string): SelectSequence {
   };
 }
 
-export const unselectSequence = () => {
-  push(Path.sequences());
+export const unselectSequence = (navigate: NavigateFunction) => {
+  navigate(Path.sequences());
   return { type: Actions.SELECT_SEQUENCE, payload: undefined };
 };
 

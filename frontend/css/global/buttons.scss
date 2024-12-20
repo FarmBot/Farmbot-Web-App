@@ -1,0 +1,309 @@
+@use "../variables" as *;
+@use "sass:color";
+
+.fb-button {
+  margin: 0.25em 0.5em;
+  float: right;
+  font-weight: bold;
+  padding: 0.4em 0.8em;
+  border-radius: 5px;
+  font-size: 1rem;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  color: $off_white;
+  border: none !important;
+  box-shadow: inset 0 -1px 0px 0px $translucent2, 0 0 5px $translucent15;
+  &:hover:not(.pseudo-disabled) {
+    filter: brightness(1.05);
+    box-shadow: inset 0 -1px 0px 0px $translucent2, 0 0 5px $translucent15, inset 0 0 5px rgba(255, 255, 255, 0.3);
+  }
+  &:active:not(.pseudo-disabled) {
+    filter: brightness(1);
+    box-shadow: inset 0 1px 0px 0px $translucent1, inset 0 0 5px $translucent2;
+  }
+  &.pseudo-disabled {
+    filter: brightness(0.7) contrast(0.8);
+    cursor: not-allowed !important;
+  }
+  .fa-check,
+  .fa-spinner {
+    margin: 0;
+    color: $off_white !important;
+    line-height: 1rem;
+    margin-left: 0.5rem;
+    float: none;
+  }
+  &.yellow,
+  &.orange {
+    .fa-spinner {
+      color: $dark_gray !important;
+    }
+  }
+  &.go {
+    background-color: $green;
+    padding: .4rem .8rem;
+    font-size: 1.2rem;
+  }
+  &.green {
+    background-color: $green;
+  }
+  &.blue {
+    background-color: $blue;
+  }
+  &.dark-blue {
+    background-color: $dark-blue;
+  }
+  &.red {
+    background-color: $red;
+  }
+  &.gray {
+    background-color: $medium_gray !important;
+  }
+  &.yellow {
+    color: $dark_gray;
+    background-color: $yellow;
+  }
+  &.orange {
+    color: $dark_gray;
+    background-color: $orange;
+  }
+  &.magenta {
+    background-color: $magenta;
+  }
+  &.cyan {
+    background-color: $cyan;
+  }
+  &.brown {
+    background-color: $brown;
+  }
+  &.purple {
+    background-color: $purple;
+  }
+  &.pink {
+    background-color: $pink;
+  }
+  &.clear {
+    background-color: transparent;
+    box-shadow: inset 0 0 0 1.5px var(--text-color);
+    color: var(--text-color);
+    &:hover {
+      box-shadow: inset 0 0 0 1.5px var(--text-color),0 0 5px var(--secondary-bg),inset 0 0 5px var(--secondary-bg);
+    }
+  }
+  &.panel-green {
+    background-color: $panel_green;
+  }
+  &.panel-yellow {
+    background-color: $panel_yellow;
+  }
+  &.panel-gray {
+    background-color: $panel_gray;
+  }
+  &.panel-light-gray {
+    background-color: $panel_medium_light_gray;
+  }
+  &.panel-blue {
+    background-color: $panel_blue;
+  }
+  &.panel-navy {
+    background-color: $panel_navy;
+  }
+  &.panel-brown {
+    background-color: $panel_brown;
+  }
+  &.panel-teal {
+    background-color: $panel_teal;
+  }
+  &.panel-red {
+    background-color: $panel_red;
+  }
+  &.panel-magenta {
+    background-color: $magenta;
+  }
+  &.panel-cyan {
+    background-color: $cyan;
+  }
+  &.zoom {
+    padding: 8px 12px;
+    &.zoom-out {
+      margin-right: 10px;
+    }
+  }
+  &.no-float {
+    float: none;
+    margin-right: 1rem;
+  }
+}
+
+.is-saved,
+.is-saving {
+  pointer-events: none;
+}
+
+.block {
+  font-size: 1.2rem;
+  color: $dark_gray;
+  &.active {
+    box-shadow: none !important;
+    border: 1px solid $white;
+  }
+  &.gray {
+    background-color: $medium_light_gray !important;
+    box-shadow: 0 2px 0px 0px color.adjust($medium_light_gray, $lightness: -12%);
+    &:focus,
+    &:hover,
+    &.active {
+      background-color: color.adjust($medium_light_gray, $lightness: -5%) !important;
+    }
+  }
+  .step-block {
+    display: flex;
+    padding: 0;
+    box-shadow: none;
+    .step-block-drag {
+      padding: 0.5rem 0.8rem;
+    }
+  }
+  &.quick-del {
+    &:hover {
+      background: color.adjust($red, $lightness: 10%) !important;
+      border: none;
+      box-shadow: inset 0px 0px 0px 4px $darkest_red !important;
+      &:after {
+        content: "x";
+        position: absolute;
+        right: 1rem;
+        color: $darkest_red;
+        font-size: 2rem;
+      }
+    }
+  }
+}
+
+.fb-toggle-button {
+  position: relative;
+  height: 1.8rem !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+  padding: 0.3rem 0.10rem;
+  border-radius: 10px !important;
+  width: 5rem;
+  border-bottom: none;
+  transition: all 0.4s ease;
+  &.yellow, &.green, &.red {
+    &:after {
+      content: "";
+      position: absolute;
+      top: 0.2rem;height: 1.4rem;
+      width: 1.4rem;
+      background: $off_white;
+      border-radius: 50%;
+      box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 4px 0px 0 rgba(0, 0, 0, 0.04), 0 4px 9px rgba(0, 0, 0, 0.13), 0 3px 3px rgba(0, 0, 0, 0.05);
+    }
+  }
+  &.yellow {
+    &:after {
+      left: 0;
+      right: 0;
+      margin: 0 auto;
+    }
+  }
+  &.green {
+    text-align: left;
+    padding-left: 0.6rem;
+    &:after {
+      right: 0.2rem;
+    }
+    &:hover {
+      background: $green;
+    }
+    &.dim {
+      background: color.adjust($green, $lightness: 20%) !important;
+    }
+  }
+  &.red {
+    text-align: right !important;
+    padding-right: 0.8rem;
+    &:after {
+      left: 0.2rem;
+    }
+    &.dim {
+      background: color.adjust($red, $lightness: 10%) !important;
+    }
+  }
+  &.grayscale {
+    filter: grayscale(100%);
+  }
+  &.disabled,
+  &:disabled {
+    background: $medium_light_gray !important;
+    filter: grayscale(100%);
+  }
+  &.modified {
+    box-shadow: 0 0 0px 3px $yellow !important;
+  }
+  .fa-spinner {
+    margin: 0;
+    color: $dark_gray !important;
+  }
+  .fa-check {
+    margin: 0;
+    color: $green !important;
+  }
+}
+
+.fb-icon-button {
+  width: 2.5rem;
+  height: 2.5rem;
+  line-height: 2.5rem;
+  font-size: 1.25rem;
+  border: none;
+  border-radius: 5px;
+  background: transparent;
+  color: $dark_gray;
+  text-align: center;
+  &.invert {
+    color: var(--text-color);
+    &:hover:not(:disabled) {
+      background: var(--secondary-bg);
+    }
+    &:disabled {
+      color: $off_white;
+      filter: brightness(0.8);
+    }
+  }
+  &:hover {
+    background: rgba(0, 0, 0, 0.08);
+  }
+  &:active:not(:disabled) {
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+    filter: brightness(0.95);
+  }
+  &:disabled {
+    filter: invert(0.5);
+    cursor: not-allowed;
+  }
+}
+
+.header-button-group {
+  margin-right: 1.5rem;
+}
+
+.button-group {
+  justify-content: right;
+  .fa-code {
+    font-weight: bold;
+    color: $gray;
+    &.enabled {
+      color: $dark_gray;
+    }
+  }
+  .inactive {
+    color: $gray;
+  }
+  .fa-eye-slash {
+    color: $gray;
+  }
+}

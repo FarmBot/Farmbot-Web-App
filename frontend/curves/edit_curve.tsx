@@ -1,14 +1,13 @@
 import React from "react";
 import { t } from "../i18next_wrapper";
 import { connect } from "react-redux";
-import { push } from "../history";
 import { SpecialStatus, TaggedCurve } from "farmbot";
 import { round, take } from "lodash";
 import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent,
 } from "../farm_designer/designer_panel";
 import { Everything } from "../interfaces";
-import { Panel } from "../farm_designer/panel_header";
+import { Panel, PanelColor } from "../farm_designer/panel_header";
 import { selectAllCurves, selectAllPlantPointers } from "../resources/selectors";
 import { destroy, init, overwrite, save } from "../api/crud";
 import { Path } from "../internal_urls";
@@ -26,8 +25,7 @@ import {
   ValueInputProps,
 } from "./interfaces";
 import {
-  curveColor,
-  curvePanelColor, CurveShape, CurveType, CURVE_SHAPE_DDIS, CURVE_TEMPLATES,
+  curveColor, CurveShape, CurveType, CURVE_SHAPE_DDIS, CURVE_TEMPLATES,
   TemplateOption, templateScale, templateShape,
 } from "./templates";
 import { sourceFbosConfigValue } from "../settings/source_config_value";
@@ -42,6 +40,8 @@ import {
   calcMaxCount, MoreIndicatorIcon,
 } from "../point_groups/criteria/component";
 import { GetState } from "../redux/interfaces";
+import { Navigate, NavigateFunction } from "react-router";
+import { NavigationContext } from "../routes_helpers";
 
 const columnTitle = (curve: TaggedCurve) => {
   switch (curve.body.type) {
@@ -129,16 +129,20 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
     </div>;
   };
 
+  static contextType = NavigationContext;
+  context!: React.ContextType<typeof NavigationContext>;
+  navigate = this.context;
+
   render() {
     const { curve, setHovered } = this;
     const { dispatch } = this.props;
     const { hovered } = this.state;
     const curvesPath = Path.curves();
-    !curve && Path.startsWith(curvesPath) && push(curvesPath);
     return <DesignerPanel panelName={"curve-info"} panel={Panel.Curves}>
+      {!curve && Path.startsWith(curvesPath) && <Navigate to={curvesPath} />}
       <DesignerPanelHeader
         panelName={Panel.Curves}
-        style={{ background: curvePanelColor(curve) }}
+        panelColor={PanelColor.gray}
         titleElement={<ResourceTitle
           key={curve?.body.name}
           resource={curve}
@@ -148,11 +152,14 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
         backTo={curvesPath}>
         <div className={"panel-header-icon-group"}>
           {curve &&
-            <i className={"fa fa-copy fb-icon-button"}
+            <i className={"fa fa-copy fb-icon-button invert"}
               title={t("Copy curve")}
-              onClick={dispatch(copyCurve(this.props.curves, curve))} />}
+              onClick={dispatch(copyCurve(
+                this.props.curves,
+                curve,
+                this.navigate))} />}
           {curve &&
-            <i className={"fa fa-trash fb-icon-button"}
+            <i className={"fa fa-trash fb-icon-button invert"}
               title={t("Delete curve")}
               onClick={() => this.props.resourceUsage[curve.uuid]
                 ? error(t("Curve in use."))
@@ -165,7 +172,7 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
             <Popover
               isOpen={this.state.scale}
               popoverClassName={"curve-action-popover"}
-              target={<button className={"transparent-button"}
+              target={<button className={"fb-button clear"}
                 onClick={this.toggle("scale")}>
                 {t("scale")}
               </button>}
@@ -174,7 +181,7 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
             <Popover
               isOpen={this.state.templates}
               popoverClassName={"curve-action-popover"}
-              target={<button className={"transparent-button"}
+              target={<button className={"fb-button clear"}
                 onClick={this.toggle("templates")}>
                 {t("templates")}
               </button>}
@@ -214,13 +221,15 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
 }
 
 export const EditCurve = connect(mapStateToProps)(RawEditCurve);
+// eslint-disable-next-line import/no-default-export
+export default EditCurve;
 
 export const ScaleMenu = (props: ActionMenuProps) => {
   const { data } = props.curve.body;
   const [maxDayNum, setMaxDay] = React.useState(maxDay(data));
   const [maxValueNum, setMaxValue] = React.useState(maxValue(data));
-  return <div className={"curve-action-menu"}>
-    <div className={"curve-menu-row"}>
+  return <div className={"curve-action-menu grid half-gap"}>
+    <div className={"row grid-2-col"}>
       <label>{t("max value")}</label>
       <input type={"number"}
         defaultValue={maxValueNum}
@@ -229,7 +238,7 @@ export const ScaleMenu = (props: ActionMenuProps) => {
           isFinite(value) && value > 0 && setMaxValue(value);
         }} />
     </div>
-    <div className={"curve-menu-row"}>
+    <div className={"row grid-2-col"}>
       <label>{t("days")}</label>
       <input type={"number"}
         defaultValue={maxDayNum}
@@ -239,8 +248,9 @@ export const ScaleMenu = (props: ActionMenuProps) => {
           isFinite(day) && day > 0 && day < 201 && setMaxDay(day);
         }} />
     </div>
-    <div className={"curve-menu-row last"}>
-      <button className={"transparent-button light"}
+    <div className={"row grid-2-col"}>
+      <div />
+      <button className={"fb-button clear"}
         onClick={() => {
           props.dispatch(editCurve(props.curve, {
             data: scaleData(props.curve.body.data, maxDayNum, maxValueNum)
@@ -274,15 +284,15 @@ export const TemplatesMenu = (props: ActionMenuProps) => {
     setMaxValueState(value);
     setMaxValueCache(value);
   };
-  return <div className={"curve-action-menu"}>
-    <div className={"curve-menu-row"}>
+  return <div className={"curve-action-menu grid half-gap"}>
+    <div className={"row grid-2-col"}>
       <label>{t("shape")}</label>
       <FBSelect key={shape}
         list={Object.values(CURVE_SHAPE_DDIS())}
         selectedItem={CURVE_SHAPE_DDIS()[shape]}
         onChange={ddi => setShape("" + ddi.value)} />
     </div>
-    <div className={"curve-menu-row"}>
+    <div className={"row grid-2-col"}>
       <label>{t("max value")}</label>
       <input type={"number"}
         defaultValue={maxValue}
@@ -291,7 +301,7 @@ export const TemplatesMenu = (props: ActionMenuProps) => {
           isFinite(value) && value > 0 && setMaxValue(value);
         }} />
     </div>
-    <div className={"curve-menu-row"}>
+    <div className={"row grid-2-col"}>
       <label>{t("days")}</label>
       <input type={"number"}
         defaultValue={maxDay}
@@ -301,8 +311,9 @@ export const TemplatesMenu = (props: ActionMenuProps) => {
           isFinite(day) && day > 0 && day < 201 && setMaxDay(day);
         }} />
     </div>
-    <div className={"curve-menu-row last"}>
-      <button className={"transparent-button light"}
+    <div className={"row grid-2-col"}>
+      <div />
+      <button className={"fb-button clear"}
         onClick={() => {
           props.dispatch(editCurve(props.curve, {
             data: scaleData(CURVE_TEMPLATES[shape], maxDay, maxValue,
@@ -317,9 +328,9 @@ export const TemplatesMenu = (props: ActionMenuProps) => {
 };
 
 export const copyCurve =
-  (curves: TaggedCurve[], curve: TaggedCurve) =>
-    (dispatch: Function, getState: GetState) =>
-      () => {
+  (curves: TaggedCurve[], curve: TaggedCurve, navigate: NavigateFunction) =>
+    (dispatch: Function, getState: GetState) => {
+      return () => {
         const existingNames = curves.map(c => c.body.name);
         let i = 1;
         const newName = (count: number) =>
@@ -337,10 +348,11 @@ export const copyCurve =
           .then(() => {
             const id = selectAllCurves(getState().resources.index).filter(curve =>
               curve.uuid == action.payload.uuid)[0]?.body.id;
-            id && push(Path.curves(id));
+            id && navigate(Path.curves(id));
           })
           .catch(() => { });
       };
+    };
 
 export const curveDataTableRow = (props: CurveDataTableRowProps) =>
   ([day, value]: [string, number], index: number) => {

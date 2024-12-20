@@ -3,7 +3,7 @@ import { StepParams, FarmwareData } from "../interfaces";
 import { ToolTips, Content } from "../../constants";
 import { StepInputBox } from "../inputs/step_input_box";
 import { StepWrapper, StepWarning } from "../step_ui";
-import { Row, Col, FBSelect, DropDownItem } from "../../ui";
+import { Row, FBSelect, DropDownItem } from "../../ui";
 import { editStep } from "../../api/crud";
 import { ExecuteScript, FarmwareConfig } from "farmbot";
 import { FarmwareInputs, farmwareList } from "./tile_execute_script_support";
@@ -82,7 +82,7 @@ export const DefaultFarmwareStep = (props: StepParams<ExecuteScript>) => {
       : [];
   };
 
-  return <Col xs={12}>
+  return <div>
     <label>{t("Package Name")}</label>
     <FBSelect
       key={JSON.stringify(currentSequence)}
@@ -106,7 +106,7 @@ export const DefaultFarmwareStep = (props: StepParams<ExecuteScript>) => {
       defaultConfigs={currentFarmwareConfigDefaults(farmwareName)}
       currentStep={currentStep}
       updateStep={updateStep} />
-  </Col>;
+  </div>;
 };
 
 const FarmwareStepContents = (props: StepParams<ExecuteScript>) => {
@@ -118,24 +118,20 @@ const FarmwareStepContents = (props: StepParams<ExecuteScript>) => {
 };
 
 const DetectWeedsStep = () =>
-  <Col xs={12}>
-    <p>
-      {`${t("Results are viewable from the")} `}
-      <Link to={Path.photos()}>
-        {t("photos panel")}
-      </Link>.
-    </p>
-  </Col>;
+  <p>
+    {`${t("Results are viewable from the")} `}
+    <Link to={Path.photos()}>
+      {t("photos panel")}
+    </Link>.
+  </p>;
 
 const MeasureSoilHeightStep = () =>
-  <Col xs={12}>
-    <p>
-      {`${t("Results are viewable in the")} `}
-      <Link to={Path.points()}>
-        {t("points panel")}
-      </Link>.
-    </p>
-  </Col>;
+  <p>
+    {`${t("Results are viewable in the")} `}
+    <Link to={Path.points()}>
+      {t("points panel")}
+    </Link>.
+  </p>;
 
 interface CameraRequiredStepWarningsProps {
   farmwareName: string;

@@ -1,0 +1,202 @@
+// COLORS used throughout the web app
+$alpha90: 0.90;
+$transparent: #00000000;
+$translucent: rgba(0, 0, 0, 0.2);
+$translucent1: rgba(0, 0, 0, 0.1);
+$translucent15: rgba(0, 0, 0, 0.15);
+$translucent2: rgba(0, 0, 0, 0.2);
+$translucent3: rgba(0, 0, 0, 0.3);
+$translucent4: rgba(0, 0, 0, 0.4);
+$translucent5: rgba(0, 0, 0, 0.5);
+$translucent6: rgba(0, 0, 0, 0.6);
+$translucent7: rgba(0, 0, 0, 0.7);
+$translucent8: rgba(0, 0, 0, 0.8);
+$translucent1_white: rgba(255, 255, 255, 0.1);
+$translucent2_white: rgba(255, 255, 255, 0.2);
+$translucent3_white: rgba(255, 255, 255, 0.3);
+$translucent5_white: rgba(255, 255, 255, 0.5);
+$translucent8_white: rgba(255, 255, 255, 0.8);
+$translucent9_white: rgba(255, 255, 255, 0.9);
+$white: #fff;
+$off_white: #f4f4f4;
+$lighter_gray: #eee;
+$light_gray: #ddd;
+$gray: #ccc;
+$medium_light_gray: #bcbcbc;
+$medium_gray: #666;
+$placeholder_gray: #999;
+$dark_gray: #434343;
+$darker_gray: #182026;
+$dark_bg: hsl(135 30% 7% / 1);
+$black: #000;
+$off_black: #222;
+$light_blue: #cdf;
+$blue: #a4c2f4;
+$dark_blue: #37d;
+$light_cyan: #d0e0e3;
+$cyan: #45818e;
+$light_green: #d9ead3;
+$green: #6a4;
+$dark_green: #371;
+$light_yellow: #ffc;
+$yellow: #fd6;
+$gold: #b90;
+$beige: #fec;
+$light_brown: #e9d5c3;
+$brown: #ca8;
+$dark_brown: #783f04;
+$light_orange: #fc9;
+$orange: #fa0;
+$dark_orange: #e93;
+$light_purple: #bad;
+$purple: #c68ed2;
+$light_magenta: #ead1dc;
+$magenta: #a64d79;
+$pink: #ebb;
+$light_pink: #ebdddd;
+$light_red: #e99;
+$red: #e66;
+$dark_red: #f00;
+$medium_dark_red: #c00;
+$darkest_red: #900;
+$panel_green: rgb(53, 118, 27, $alpha90);
+$panel_light_green: rgb(243, 249, 241, $alpha90);
+$panel_yellow: rgb(233, 157, 24, $alpha90);
+$panel_light_yellow: rgb(255, 250, 240, $alpha90);
+$panel_gray: rgb(20, 92, 128, 0.3);
+$panel_medium_light_gray: rgb(230, 230, 230, $alpha90);
+$panel_light_gray: rgb(249, 251, 252, $alpha90);
+$panel_blue: rgb(2, 99, 101, $alpha90);
+$panel_light_blue: rgb(240, 248, 248, $alpha90);
+$panel_navy: rgb(51, 73, 112, $alpha90);
+$panel_light_navy: rgb(243, 245, 249, $alpha90);
+$panel_brown: rgb(158, 99, 10, $alpha90);
+$panel_light_brown: rgb(251, 247, 240, $alpha90);
+$panel_teal: rgb(30, 178, 135, $alpha90);
+$panel_light_teal: rgb(241, 252, 249, $alpha90);
+$panel_red: rgb(255, 79, 55, $alpha90);
+$panel_light_red: rgb(255, 247, 246, $alpha90);
+
+body:has(.app.light) {
+  --main-bg: #{$off_white};
+  --secondary-bg: #{$translucent1};
+  --text-color: #{$dark_gray};
+  --border-color: #{$translucent2};
+  --box-shadow: 0 0 5px 2px #{$translucent1};
+}
+
+body:has(.app.dark) {
+  --main-bg: #{$dark_bg};
+  --secondary-bg: #{$translucent1_white};
+  --text-color: #{$gray};
+  --border-color: #{$translucent3_white};
+  --box-shadow: 0 0 5px 2px #{$translucent1_white};
+}
+
+.dark-gray {
+  background-color: $dark_gray !important;
+}
+
+.medium-gray {
+  background-color: $medium_gray !important;
+}
+
+.light-gray {
+  background-color: $gray !important;
+}
+
+.orange {
+  background-color: $orange !important;
+}
+
+.gray {
+  background-color: $medium_light_gray !important;
+}
+
+.purple {
+  background-color: $purple !important;
+}
+
+.pink {
+  background-color: $pink !important;
+}
+
+.black {
+  background-color: $black !important;
+}
+
+.brown {
+  background-color: $brown !important;
+}
+
+.magenta {
+  background-color: $magenta !important;
+}
+
+.green,
+.success,
+.saucer-success {
+  background: $green !important;
+}
+
+.red {
+  background: $red !important;
+}
+
+.dark-red,
+.error,
+.saucer-error {
+  background: $dark_red !important;
+}
+
+.dark-orange,
+.warn,
+.saucer-warn {
+  background: $dark_orange !important;
+}
+
+.yellow,
+.busy,
+.saucer-busy {
+  background: $yellow !important;
+}
+
+.blue,
+.info,
+.saucer-info {
+  background: $blue !important;
+}
+
+.dark-blue,
+.fun,
+.saucer-fun {
+  background: $dark_blue !important;
+}
+
+.icon-saucer {
+  background: none !important;
+  &.blue {
+    color: $blue;
+  }
+  &.green {
+    color: $green;
+  }
+  &.yellow {
+    color: $yellow;
+  }
+  &.orange {
+    color: $orange;
+  }
+  &.purple {
+    color: $purple;
+  }
+  &.pink {
+    color: $pink;
+  }
+  &.gray {
+    color: $gray;
+  }
+  &.red {
+    color: $red;
+  }
+}

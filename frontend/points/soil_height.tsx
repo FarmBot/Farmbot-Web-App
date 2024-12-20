@@ -6,7 +6,7 @@ import { edit, save } from "../api/crud";
 import { Everything } from "../interfaces";
 import { getFbosConfig } from "../resources/getters";
 import { SourceFbosConfig } from "../devices/interfaces";
-import { Row, Col, BlurableInput } from "../ui";
+import { Row, BlurableInput } from "../ui";
 
 export const MEASURE_SOIL_HEIGHT_NAME = "measure-soil-height";
 
@@ -66,22 +66,16 @@ export interface EditSoilHeightProps {
 
 export const EditSoilHeight = (props: EditSoilHeightProps) => {
   const { sourceFbosConfig } = props;
-  return <Row>
-    {sourceFbosConfig && <Col xs={4}>
-      <label>{t("FarmBot soil z")}</label>
-    </Col>}
-    {sourceFbosConfig && <Col xs={3}>
-      <BlurableInput type="number"
-        onCommit={e =>
-          props.dispatch(setSoilHeight(parseFloat(e.currentTarget.value)))}
-        value={parseFloat("" + sourceFbosConfig("soil_height").value)} />
-    </Col>}
-    <Col xs={sourceFbosConfig ? 5 : 12}>
-      <button className={"fb-button blue"}
-        title={t("use average soil height")}
-        onClick={() => props.dispatch(setSoilHeight(props.averageZ))}>
-        {t("use average z: {{ value }}", { value: props.averageZ })}
-      </button>
-    </Col>
+  return <Row className="grid-exp-1">
+    {sourceFbosConfig && <label>{t("FarmBot soil z")}</label>}
+    {sourceFbosConfig && <BlurableInput type="number"
+      onCommit={e =>
+        props.dispatch(setSoilHeight(parseFloat(e.currentTarget.value)))}
+      value={parseFloat("" + sourceFbosConfig("soil_height").value)} />}
+    <button className={"fb-button gray"}
+      title={t("use average soil height")}
+      onClick={() => props.dispatch(setSoilHeight(props.averageZ))}>
+      {t("use average z: {{ value }}", { value: props.averageZ })}
+    </button>
   </Row>;
 };

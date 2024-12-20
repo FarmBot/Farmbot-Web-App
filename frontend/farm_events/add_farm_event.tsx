@@ -21,7 +21,8 @@ import { SpecialStatus } from "farmbot";
 import { destroyOK } from "../resources/actions";
 import { Content } from "../constants";
 import { error } from "../toast/toast";
-import { DropDownItem } from "../ui";
+import { DropDownItem, SaveBtn } from "../ui";
+import { noop } from "lodash";
 
 interface State {
   uuid: string;
@@ -86,6 +87,7 @@ export class RawAddFarmEvent
   render() {
     const farmEvent = this.props.findFarmEventByUuid(this.state.uuid);
     const panelName = "add-farm-event";
+    const ref = React.createRef<EditFEForm>();
     return <DesignerPanel panelName={panelName} panel={Panel.FarmEvents}>
       <DesignerPanelHeader
         panelName={panelName}
@@ -93,10 +95,23 @@ export class RawAddFarmEvent
         title={t("Add event")}
         onBack={(farmEvent && !farmEvent.body.id)
           ? () => this.props.dispatch(destroyOK(farmEvent))
-          : undefined} />
+          : undefined}>
+        <SaveBtn
+          status={SpecialStatus.DIRTY}
+          onClick={() => {
+            if (farmEvent) {
+              ref.current?.commitViewModel();
+            } else {
+              error(this.props.executableOptions
+                .filter(x => !x.heading).length < 1
+                ? t(Content.MISSING_EXECUTABLE)
+                : t("Please select a sequence or regimen."));
+            }
+          }} />
+      </DesignerPanelHeader>
       <DesignerPanelContent panelName={panelName}>
         {farmEvent
-          ? <EditFEForm
+          ? <EditFEForm ref={ref}
             farmEvent={farmEvent}
             deviceTimezone={this.props.deviceTimezone}
             repeatOptions={this.props.repeatOptions}
@@ -104,6 +119,7 @@ export class RawAddFarmEvent
             dispatch={this.props.dispatch}
             findExecutable={this.props.findExecutable}
             title={t("Add event")}
+            setSpecialStatus={noop}
             timeSettings={this.props.timeSettings}
             resources={this.props.resources} />
           : <FarmEventForm
@@ -114,15 +130,12 @@ export class RawAddFarmEvent
             executableOptions={this.props.executableOptions}
             executableSet={this.initFarmEvent}
             executableGet={() => undefined}
-            dispatch={this.props.dispatch}
-            specialStatus={SpecialStatus.DIRTY}
-            onSave={() => error(this.props.executableOptions
-              .filter(x => !x.heading).length < 1
-              ? t(Content.MISSING_EXECUTABLE)
-              : t("Please select a sequence or regimen."))} />}
+            dispatch={this.props.dispatch} />}
       </DesignerPanelContent>
     </DesignerPanel>;
   }
 }
 
 export const AddFarmEvent = connect(mapStateToPropsAddEdit)(RawAddFarmEvent);
+// eslint-disable-next-line import/no-default-export
+export default AddFarmEvent;

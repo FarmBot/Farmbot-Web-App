@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, Col, Help } from "../../../ui";
+import { Row, Help } from "../../../ui";
 import { t } from "../../../i18next_wrapper";
 import { ToolTips } from "../../../constants";
 import { Checkbox } from "@blueprintjs/core";
@@ -7,16 +7,14 @@ import { Move, SafeZ } from "farmbot";
 import { SafeZCheckboxProps } from "./interfaces";
 
 export const SafeZCheckbox = (props: SafeZCheckboxProps) =>
-  <Row>
-    <Col xs={3}>
+  <Row className="grid-4-col">
+    <div className="row half-gap grid-exp-2">
       <label className={"safe-z"}>{t("Safe Z")}</label>
       <Help text={ToolTips.SAFE_Z} customClass={"help-icon"} />
-    </Col>
-    <Col xs={3}>
-      <Checkbox title={t("toggle safe z")}
-        checked={props.checked}
-        onChange={props.onChange} />
-    </Col>
+    </div>
+    <Checkbox title={t("toggle safe z")}
+      checked={props.checked}
+      onChange={props.onChange} />
   </Row>;
 
 export const getSafeZState = (step: Move) => {

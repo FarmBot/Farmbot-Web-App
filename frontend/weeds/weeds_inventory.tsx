@@ -1,7 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import { Everything, WeedsPanelState } from "../interfaces";
-import { DesignerNavTabs, Panel, TAB_COLOR } from "../farm_designer/panel_header";
+import { Panel } from "../farm_designer/panel_header";
 import {
   EmptyStateWrapper, EmptyStateGraphic,
 } from "../ui/empty_state_wrapper";
@@ -33,9 +33,9 @@ import { pointGroupSubset } from "../plants/select_plants";
 import { DEFAULT_CRITERIA } from "../point_groups/criteria/interfaces";
 import { createGroup } from "../point_groups/actions";
 import { GroupInventoryItem } from "../point_groups/group_inventory_item";
-import { push } from "../history";
 import { Path } from "../internal_urls";
 import { deleteAllIds } from "../api/delete_points_handler";
+import { NavigationContext } from "../routes_helpers";
 
 export interface WeedsProps {
   weeds: TaggedWeedPointer[];
@@ -73,7 +73,7 @@ export interface WeedsSectionProps {
   layerValue?: boolean;
   layerSetting?: BooleanConfigKey;
   layerDisabled?: boolean;
-  children?: JSX.Element;
+  children?: React.ReactNode;
   allWeeds?: TaggedWeedPointer[];
 }
 
@@ -86,33 +86,35 @@ export const WeedsSection = (props: WeedsSectionProps) => {
     <div className={`${props.category}-weeds-header section-header`}
       onClick={props.clickOpen}>
       <label>{`${t(props.sectionTitle)} (${props.items.length})`}</label>
-      {props.category == "pending" && props.items.length > 0 && props.open &&
-        <div className={"approval-buttons"}>
-          <button className={"fb-button green"} onClick={e => {
-            e.stopPropagation();
-            props.items.map(weed => {
-              props.dispatch(edit(weed, { plant_stage: "active" }));
-              props.dispatch(save(weed.uuid));
-            });
-          }}>
-            <i className={"fa fa-check"} />{t("all")}
-          </button>
-          <button className={"fb-button red"}
-            onClick={deleteAllIds("weeds", props.items)}>
-            <i className={"fa fa-times"} />{t("all")}
-          </button>
-        </div>}
-      <i className={`fa fa-caret-${props.open ? "up" : "down"}`} />
-      {layerSetting && props.open &&
-        <ToggleButton disabled={props.layerDisabled}
-          toggleValue={props.layerValue}
-          customText={{ textFalse: t("off"), textTrue: t("on") }}
-          toggleAction={e => {
-            e.stopPropagation();
-            props.dispatch(setWebAppConfigValue(
-              layerSetting, !props.layerValue));
-          }} />}
-      {props.open && props.children}
+      <div className="row">
+        {props.category == "pending" && props.items.length > 0 && props.open &&
+          <div className={"approval-buttons row"}>
+            <button className={"fb-button green"} onClick={e => {
+              e.stopPropagation();
+              props.items.map(weed => {
+                props.dispatch(edit(weed, { plant_stage: "active" }));
+                props.dispatch(save(weed.uuid));
+              });
+            }}>
+              <i className={"fa fa-check"} />{t("all")}
+            </button>
+            <button className={"fb-button red"}
+              onClick={deleteAllIds("weeds", props.items)}>
+              <i className={"fa fa-times"} />{t("all")}
+            </button>
+          </div>}
+        {layerSetting && props.open &&
+          <ToggleButton disabled={props.layerDisabled}
+            toggleValue={props.layerValue}
+            customText={{ textFalse: t("off"), textTrue: t("on") }}
+            toggleAction={e => {
+              e.stopPropagation();
+              props.dispatch(setWebAppConfigValue(
+                layerSetting, !props.layerValue));
+            }} />}
+        {props.open && props.children}
+        <i className={`fa fa-caret-${props.open ? "up" : "down"}`} />
+      </div>
     </div>
     <Collapse isOpen={props.open}>
       {noWeeds && <EmptyStateWrapper
@@ -175,7 +177,7 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
       layerValue={!!this.props.getConfigValue(BooleanSetting.show_weeds)}
       allWeeds={this.props.weeds}
       dispatch={this.props.dispatch}>
-      <div className={"section-action-btn-group"}>
+      <div className={"section-action-btn-group row"}>
         {items.length > 0 &&
           <button className={"fb-button red delete"}
             title={t("delete all")}
@@ -183,14 +185,10 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
             {t("delete all")}
           </button>}
         <div
-          className={[
-            "fb-button",
-            `panel-${TAB_COLOR[Panel.Weeds]}`,
-            "plus-weed",
-          ].join(" ")}
+          className={"fb-button green plus-weed"}
           onClick={e => {
             e.stopPropagation();
-            push(Path.weeds("add"));
+            this.navigate(Path.weeds("add"));
           }}>
           <i className={"fa fa-plus"} title={t("add weed")} />
         </div>
@@ -212,7 +210,7 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
       layerValue={!!this.props.getConfigValue(BooleanSetting.show_historic_points)}
       layerDisabled={!this.props.getConfigValue(BooleanSetting.show_weeds)}
       dispatch={this.props.dispatch}>
-      <div className={"section-action-btn-group"}>
+      <div className={"section-action-btn-group row"}>
         {items.length > 0 &&
           <button className={"fb-button red delete"}
             title={t("delete all")}
@@ -223,7 +221,12 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
     </WeedsSection>;
   };
 
-  navigate = (id: number | undefined) => () => push(Path.groups(id));
+  static contextType = NavigationContext;
+  context!: React.ContextType<typeof NavigationContext>;
+  navigate = this.context;
+  navigateById = (id: number | undefined) => () => {
+    this.navigate(Path.groups(id));
+  };
 
   render() {
     const weedGroups = pointGroupSubset(this.props.groups, "Weed");
@@ -231,7 +234,6 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
       .filter(p => p.body.name.toLowerCase()
         .includes(this.state.searchTerm.toLowerCase()));
     return <DesignerPanel panelName={"weeds-inventory"} panel={Panel.Weeds}>
-      <DesignerNavTabs />
       <DesignerPanelTop panel={Panel.Weeds}>
         <SearchField nameKey={"weeds"}
           searchTerm={this.state.searchTerm}
@@ -250,6 +252,7 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
               ...DEFAULT_CRITERIA,
               string_eq: { pointer_type: ["Weed"] },
             },
+            navigate: this.navigate,
           }))}
           addTitle={t("add new group")}
           addClassName={"plus-group"}
@@ -261,7 +264,7 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
               allPoints={this.props.allPoints}
               hovered={false}
               dispatch={this.props.dispatch}
-              onClick={this.navigate(group.body.id)}
+              onClick={this.navigateById(group.body.id)}
             />)}
         </PanelSection>
         <this.PendingWeeds />
@@ -273,3 +276,5 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
 }
 
 export const Weeds = connect(mapStateToProps)(RawWeeds);
+// eslint-disable-next-line import/no-default-export
+export default Weeds;

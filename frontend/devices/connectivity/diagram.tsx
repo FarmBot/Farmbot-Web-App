@@ -62,7 +62,7 @@ export function getTextPosition(
 }
 
 export function nodeLabel(
-  label: string, node: DiagramNodes, anchor = "middle"): JSX.Element {
+  label: string, node: DiagramNodes, anchor = "middle"): React.ReactNode {
   const position = getTextPosition(node);
   return <text x={position.x} y={position.y} textAnchor={anchor}>
     {label}
@@ -99,15 +99,15 @@ export function getLineProps(
   return { x1: 0, y1: 0, x2: 0, y2: 0 }; // fallback
 }
 
-export function Connector(props: ConnectorProps): JSX.Element {
+export function Connector(props: ConnectorProps): React.ReactNode {
   const {
     connectionData, from, to, hover, hoveredConnection, customLineProps
   } = props;
   const lineProps = customLineProps ? customLineProps : getLineProps(from, to);
   const hoverIndicatorColor =
     hoveredConnection === connectionData.connectionName
-      ? Color.darkGray
-      : Color.white;
+      ? Color.white
+      : Color.darkGray;
   return <g
     id={connectionData.connectionName + "-connector"}
     strokeLinecap="round">

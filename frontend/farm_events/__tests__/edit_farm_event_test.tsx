@@ -1,8 +1,22 @@
-import { Path } from "../../internal_urls";
-let mockPath = Path.mock(Path.farmEvents(1));
-jest.mock("../../history", () => ({
-  getPathArray: jest.fn(() => mockPath.split("/")),
-  push: jest.fn(),
+jest.mock("../../api/crud", () => ({
+  destroy: jest.fn(),
+}));
+
+jest.mock("../edit_fe_form", () => ({
+  EditFEForm: () => <div>EditFEForm</div>,
+}));
+
+const mockSave = jest.fn();
+interface MockRefCurrent {
+  commitViewModel(): void;
+}
+interface MockRef {
+  current: MockRefCurrent | undefined;
+}
+const mockRef: MockRef = { current: { commitViewModel: mockSave } };
+jest.mock("react", () => ({
+  ...jest.requireActual("react"),
+  createRef: () => mockRef,
 }));
 
 import React from "react";
@@ -16,7 +30,9 @@ import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
-import { push } from "../../history";
+import { Path } from "../../internal_urls";
+import { destroy } from "../../api/crud";
+import { success } from "../../toast/toast";
 
 describe("<EditFarmEvent />", () => {
   function fakeProps(): AddEditFarmEventProps {
@@ -25,7 +41,7 @@ describe("<EditFarmEvent />", () => {
     const farmEvent = fakeFarmEvent("Sequence", sequence.body.id);
     return {
       deviceTimezone: "",
-      dispatch: jest.fn(),
+      dispatch: jest.fn(() => Promise.resolve()),
       regimensById: {},
       sequencesById: { "1": sequence },
       farmEventsById: { "1": farmEvent },
@@ -33,7 +49,7 @@ describe("<EditFarmEvent />", () => {
       repeatOptions: [],
       handleTime: jest.fn(),
       farmEvents: [],
-      getFarmEvent: () => farmEvent,
+      getFarmEvent: _ => farmEvent,
       findFarmEventByUuid: () => farmEvent,
       findExecutable: () => sequence,
       timeSettings: fakeTimeSettings(),
@@ -43,27 +59,52 @@ describe("<EditFarmEvent />", () => {
 
   it("renders", () => {
     const wrapper = mount(<EditFarmEvent {...fakeProps()} />);
-    ["Sequence or Regimen", "fake", "Save"]
+    ["Edit event", "Save"]
       .map(string => expect(wrapper.text()).toContain(string));
-    const deleteBtn = wrapper.find(".fa-trash").first();
-    expect(deleteBtn.props().hidden).toBeFalsy();
   });
 
   it("redirects", () => {
-    mockPath = Path.mock(Path.farmEvents("nope"));
+    location.pathname = Path.mock(Path.farmEvents("nope"));
     const p = fakeProps();
-    p.getFarmEvent = jest.fn();
+    const navigate = jest.fn();
+    p.getFarmEvent = jest.fn(url => navigate(url));
     const wrapper = mount(<EditFarmEvent {...p} />);
     expect(wrapper.text()).toContain("Redirecting");
-    expect(push).toHaveBeenCalledWith(Path.farmEvents());
+    expect(mockNavigate).toHaveBeenCalledWith(Path.farmEvents());
   });
 
   it("doesn't redirect", () => {
-    mockPath = Path.mock(Path.logs());
+    location.pathname = Path.mock(Path.logs());
     const p = fakeProps();
     p.getFarmEvent = jest.fn();
     const wrapper = mount(<EditFarmEvent {...p} />);
     expect(wrapper.text()).toContain("Redirecting");
-    expect(push).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  it("calls farm event save", () => {
+    const wrapper = mount(<EditFarmEvent {...fakeProps()} />);
+    wrapper.find(".save-btn").simulate("click");
+    expect(mockSave).toHaveBeenCalled();
+  });
+
+  it("handles missing ref", () => {
+    mockRef.current = undefined;
+    const wrapper = mount(<EditFarmEvent {...fakeProps()} />);
+    wrapper.find(".save-btn").simulate("click");
+    expect(mockSave).not.toHaveBeenCalled();
+  });
+
+  it("deletes farm event", async () => {
+    const p = fakeProps();
+    const sequence = fakeSequence();
+    sequence.body.id = 1;
+    const farmEvent = fakeFarmEvent("Sequence", sequence.body.id);
+    p.getFarmEvent = () => farmEvent;
+    const wrapper = mount(<EditFarmEvent {...p} />);
+    await wrapper.find(".fa-trash").simulate("click");
+    expect(destroy).toHaveBeenCalledWith(farmEvent.uuid);
+    expect(mockNavigate).toHaveBeenCalledWith(Path.farmEvents());
+    expect(success).toHaveBeenCalledWith("Deleted event.", { title: "Deleted" });
   });
 });

@@ -25,7 +25,7 @@ describe("<GardenSnapshot />", () => {
   it("saves garden", () => {
     const wrapper = mount(<GardenSnapshot {...fakeProps()} />);
     clickButton(wrapper, 0, "snapshot current garden");
-    expect(snapshotGarden).toHaveBeenCalledWith("", "");
+    expect(snapshotGarden).toHaveBeenCalledWith(expect.any(Function), "", "");
   });
 
   it("copies saved garden", () => {
@@ -35,6 +35,7 @@ describe("<GardenSnapshot />", () => {
     clickButton(wrapper, 0, "snapshot current garden");
     expect(snapshotGarden).not.toHaveBeenCalled();
     expect(copySavedGarden).toHaveBeenCalledWith({
+      navigate: expect.any(Function),
       newSGName: "",
       plantTemplates: [],
       savedGarden: p.currentSavedGarden
@@ -42,26 +43,27 @@ describe("<GardenSnapshot />", () => {
   });
 
   it("changes name", () => {
-    const wrapper = shallow<GardenSnapshot>(<GardenSnapshot {...fakeProps()} />);
+    const wrapper = shallow(<GardenSnapshot {...fakeProps()} />);
     wrapper.find("input").first().simulate("change", {
       currentTarget: { value: "new name" }
     });
-    expect(wrapper.instance().state.gardenName).toEqual("new name");
+    expect(wrapper.find("input").props().value).toEqual("new name");
   });
 
   it("changes notes", () => {
-    const wrapper = shallow<GardenSnapshot>(<GardenSnapshot {...fakeProps()} />);
+    const wrapper = shallow(<GardenSnapshot {...fakeProps()} />);
     wrapper.find("textarea").first().simulate("change", {
       currentTarget: { value: "new notes" }
     });
-    expect(wrapper.instance().state.gardenNotes).toEqual("new notes");
+    expect(wrapper.find("textarea").props().value).toEqual("new notes");
   });
 
   it("creates new garden", () => {
-    const wrapper = shallow<GardenSnapshot>(<GardenSnapshot {...fakeProps()} />);
-    wrapper.setState({ gardenName: "new saved garden" });
+    const wrapper = shallow(<GardenSnapshot {...fakeProps()} />);
+    wrapper.find("input").simulate("change",
+      { currentTarget: { value: "new saved garden" } });
     wrapper.find("button").last().simulate("click");
-    expect(newSavedGarden).toHaveBeenCalledWith("new saved garden", "");
-    expect(wrapper.instance().state.gardenName).toEqual("");
+    expect(newSavedGarden).toHaveBeenCalledWith(expect.any(Function),
+      "new saved garden", "");
   });
 });

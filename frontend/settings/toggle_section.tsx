@@ -18,11 +18,11 @@ export class ToggleSettingsOpen extends React.Component<ToggleSettingsOpenProps>
 
   render() {
     return <a>
-      <button className="fb-button gray"
+      <button className="fb-icon-button invert"
         title={t("toggle settings open")}
         onClick={() =>
           this.props.dispatch(bulkToggleControlPanel(!this.open))}>
-        <i className={`fa fa-chevron-${!this.open ? "right" : "down"}`} />
+        <i className={`fa fa-${!this.open ? "expand" : "compress"}`} />
       </button>
     </a>;
   }

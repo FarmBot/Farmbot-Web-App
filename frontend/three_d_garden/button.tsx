@@ -1,9 +1,9 @@
 import React from "react";
 import * as THREE from "three";
-import { Box, Text } from "@react-three/drei";
+import { Box } from "@react-three/drei";
 import { BufferGeometry } from "three";
-import { ASSETS } from "./constants";
 import { Group, MeshPhongMaterial } from "./components";
+import { Text } from "./text";
 
 export interface PresetButtonProps {
   preset: string;
@@ -58,12 +58,9 @@ export const PresetButton = (props: PresetButtonProps) => {
         position={[0, 0, 0]}>
         <MeshPhongMaterial color={hovered == preset ? "lightgray" : "gray"} />
       </Box>
-      <Text fontSize={200}
-        font={ASSETS.fonts.cabinBold}
+      <Text
+        fontSize={200}
         color={"black"}
-        strokeColor={"black"}
-        strokeWidth={7}
-        fontWeight={"bold"}
         position={[0, 0, btnHeight / 2 + 1]}
         rotation={[0, 0, 0]}>
         {preset}

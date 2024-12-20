@@ -4,7 +4,7 @@ import {
   DesignerPanel, DesignerPanelContent, DesignerPanelTop,
 } from "../farm_designer/designer_panel";
 import { t } from "../i18next_wrapper";
-import { DesignerNavTabs, Panel } from "../farm_designer/panel_header";
+import { Panel } from "../farm_designer/panel_header";
 import { MCUFactoryReset } from "../devices/actions";
 import { FarmBotSettings } from "./fbos_settings/farmbot_os_settings";
 import { PowerAndReset } from "./fbos_settings/power_and_reset";
@@ -35,9 +35,10 @@ import {
   InterpolationSettings,
 } from "../farm_designer/map/layers/points/interpolation_map";
 import { getUrlQuery, urlFriendly } from "../util";
-import { push } from "../history";
 import { Popover } from "../ui";
 import { Position } from "@blueprintjs/core";
+import { NavigationContext } from "../routes_helpers";
+import { ThreeDSettings } from "./three_d_settings";
 
 export class RawDesignerSettings
   extends React.Component<DesignerSettingsProps, {}> {
@@ -50,6 +51,10 @@ export class RawDesignerSettings
       payload: ""
     });
   };
+
+  static contextType = NavigationContext;
+  context!: React.ContextType<typeof NavigationContext>;
+  navigate = this.context;
 
   render() {
     const { getConfigValue, dispatch, firmwareConfig,
@@ -67,27 +72,28 @@ export class RawDesignerSettings
       payload: urlSearchTerm,
     });
     return <DesignerPanel panelName={"settings"} panel={Panel.Settings}>
-      <DesignerNavTabs />
       <DesignerPanelTop panel={Panel.Settings} withButton={true}>
         <SearchField nameKey={"settings"}
           placeholder={t("Search settings...")}
           searchTerm={this.props.searchTerm}
           onChange={searchTerm => {
-            getUrlQuery("search") && push(location.pathname);
+            getUrlQuery("search") && this.navigate(location.pathname);
             dispatch(bulkToggleControlPanel(searchTerm != ""));
             dispatch({
               type: Actions.SET_SETTINGS_SEARCH_TERM,
               payload: searchTerm,
             });
           }} />
-        <Popover
-          position={Position.BOTTOM}
-          popoverClassName={"settings-panel-settings-menu"}
-          target={<i className={"fa fa-gear fb-icon-button"} />}
-          content={<ShowAdvancedToggle
-            dispatch={dispatch}
-            getConfigValue={getConfigValue} />} />
-        <ToggleSettingsOpen dispatch={dispatch} panels={settingsPanelState} />
+        <div className="row no-gap">
+          <Popover
+            position={Position.BOTTOM}
+            popoverClassName={"settings-panel-settings-menu"}
+            target={<i className={"fa fa-gear fb-icon-button invert"} />}
+            content={<ShowAdvancedToggle
+              dispatch={dispatch}
+              getConfigValue={getConfigValue} />} />
+          <ToggleSettingsOpen dispatch={dispatch} panels={settingsPanelState} />
+        </div>
       </DesignerPanelTop>
       <DesignerPanelContent panelName={"settings"}>
         {getUrlQuery("only") && !this.props.searchTerm &&
@@ -142,7 +148,7 @@ export class RawDesignerSettings
           resources={resources}
           firmwareHardware={firmwareHardware}
           sourceFwConfig={sourceFwConfig} />
-        {showByEveryTerm("pin reporting", this.props.searchTerm) &&
+        {showByTerm("pin reporting", this.props.searchTerm) &&
           <PinReporting {...commonProps}
             arduinoBusy={busy}
             resources={resources}
@@ -161,6 +167,10 @@ export class RawDesignerSettings
           farmwareEnvs={this.props.farmwareEnvs} />
         <Designer {...commonProps}
           getConfigValue={getConfigValue} />
+        {showByTerm("3d", this.props.searchTerm) &&
+          <ThreeDSettings {...commonProps}
+            distanceIndicator={this.props.distanceIndicator}
+            farmwareEnvs={this.props.farmwareEnvs} />}
         <AccountSettings {...commonProps}
           user={this.props.user}
           getConfigValue={getConfigValue} />
@@ -195,3 +205,5 @@ export const showByEveryTerm = (term: string, searchTerm: string) =>
   searchTerm == term && getHighlightName() == urlFriendly(term).toLowerCase();
 
 export const DesignerSettings = connect(mapStateToProps)(RawDesignerSettings);
+// eslint-disable-next-line import/no-default-export
+export default DesignerSettings;

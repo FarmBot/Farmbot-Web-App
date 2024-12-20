@@ -76,8 +76,7 @@ export function LoadingPlant({ animate }: { animate: boolean }) {
         y={animate ? 435 : 150}
         x={150}
         fontSize={35}
-        textAnchor="middle"
-        fill={Color.darkGray}>
+        textAnchor="middle">
         {t("Loading...")}
       </text>
     </svg>

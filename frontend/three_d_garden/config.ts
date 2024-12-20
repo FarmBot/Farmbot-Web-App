@@ -67,13 +67,15 @@ export interface Config {
   cableDebug: boolean;
   zoomBeaconDebug: boolean;
   animate: boolean;
+  distanceIndicator: string;
+  kitVersion: string;
 }
 
 export const INITIAL: Config = {
   sizePreset: "Genesis",
   bedType: "Standard",
   otherPreset: "Initial",
-  label: "FarmBot Genesis v1.7",
+  label: "FarmBot Genesis",
   botSizeX: 2720,
   botSizeY: 1230,
   botSizeZ: 500,
@@ -101,7 +103,7 @@ export const INITIAL: Config = {
   soilHeight: 500,
   plants: "Spring",
   labels: false,
-  labelsOnHover: true,
+  labelsOnHover: false,
   ground: true,
   grid: false,
   axes: false,
@@ -138,10 +140,13 @@ export const INITIAL: Config = {
   cableDebug: false,
   zoomBeaconDebug: false,
   animate: true,
+  distanceIndicator: "",
+  kitVersion: "v1.7",
 };
 
 export const STRING_KEYS = [
   "sizePreset", "bedType", "otherPreset", "label", "plants", "tool", "scene",
+  "distanceIndicator", "kitVersion",
 ];
 
 export const NUMBER_KEYS = [
@@ -187,7 +192,7 @@ export const PRESETS: Record<string, Config> = {
     ...INITIAL,
     sizePreset: "Genesis",
     bedType: "Standard",
-    label: "FarmBot Genesis v1.7",
+    label: "FarmBot Genesis",
     botSizeX: 2720,
     botSizeY: 1230,
     botSizeZ: 500,
@@ -208,7 +213,7 @@ export const PRESETS: Record<string, Config> = {
     ...INITIAL,
     sizePreset: "Genesis XL",
     bedType: "Standard",
-    label: "FarmBot Genesis XL v1.7",
+    label: "FarmBot Genesis XL",
     botSizeX: 5720,
     botSizeY: 2730,
     botSizeZ: 500,
@@ -276,6 +281,7 @@ export const PRESETS: Record<string, Config> = {
     cableDebug: false,
     zoomBeaconDebug: false,
     animate: true,
+    distanceIndicator: "",
   },
   "Maximal": {
     ...INITIAL,
@@ -327,6 +333,7 @@ export const PRESETS: Record<string, Config> = {
     cableDebug: true,
     zoomBeaconDebug: true,
     animate: true,
+    distanceIndicator: "",
   },
 };
 
@@ -346,7 +353,7 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "threeAxes", "xyDimensions", "zDimension", "labelsOnHover", "promoInfo",
   "settingsBar", "zoomBeacons", "pan", "solar", "utilitiesPost", "packaging", "lab",
   "people", "scene", "lowDetail", "eventDebug", "cableDebug", "zoomBeaconDebug",
-  "animate",
+  "animate", "distanceIndicator", "kitVersion",
 ];
 
 export const modifyConfig = (config: Config, update: Partial<Config>) => {

@@ -7,51 +7,23 @@ import {
 import {
   PhotosProps, PhotoButtonsProps, PhotoFooterProps, PhotosComponentState,
   MoveToLocationProps,
-  NewPhotoButtonsProps,
 } from "./interfaces";
 import { formatTime } from "../../util";
 import { destroy } from "../../api/crud";
-import { downloadProgress } from "../../settings/fbos_settings/os_update_button";
 import { isNumber, isUndefined, round } from "lodash";
-import { isBotOnline, MustBeOnline } from "../../devices/must_be_online";
+import { isBotOnline } from "../../devices/must_be_online";
 import { t } from "../../i18next_wrapper";
-import { cameraBtnProps } from "../capture_settings/camera_selection";
 import { Overlay } from "@blueprintjs/core";
 import { ImageShowMenu, ImageShowMenuTarget } from "./image_show_menu";
 import { setShownMapImages } from "./actions";
 import { TaggedImage } from "farmbot";
 import { MarkedSlider, Popover } from "../../ui";
-import { takePhoto } from "../../devices/actions";
 import {
   botPositionLabel,
 } from "../../farm_designer/map/layers/farmbot/bot_position_label";
 import {
   GoToThisLocationButton, validGoButtonAxes,
 } from "../../farm_designer/move_to";
-
-const NewPhotoButtons = (props: NewPhotoButtonsProps) => {
-  const imageUploadJobProgress = downloadProgress(props.imageJobs[0]);
-  const { syncStatus, botToMqttStatus } = props;
-  const botOnline = isBotOnline(syncStatus, botToMqttStatus);
-  const camDisabled = cameraBtnProps(props.env, botOnline);
-  return <div className={"new-photo-button"}>
-    <MustBeOnline
-      syncStatus={props.syncStatus}
-      networkState={props.botToMqttStatus}
-      hideBanner={true}>
-      <button
-        className={`fb-button green ${camDisabled.class}`}
-        title={camDisabled.title}
-        onClick={camDisabled.click || props.takePhoto}>
-        {t("Take Photo")}
-      </button>
-    </MustBeOnline>
-    <p>
-      {imageUploadJobProgress &&
-        `${t("uploading photo")}...${imageUploadJobProgress}`}
-    </p>
-  </div>;
-};
 
 export const PhotoButtons = (props: PhotoButtonsProps) => {
   const { imageUrl } = props;
@@ -63,7 +35,7 @@ export const PhotoButtons = (props: PhotoButtonsProps) => {
         popoverClassName={"image-show-menu-popover"}
         target={<ImageShowMenuTarget {...imageShowMenuProps} flags={flags} />}
         content={<ImageShowMenu {...imageShowMenuProps} flags={flags} />} />}
-    {imageUrl && <i className={"fa fa-trash fb-icon-button"}
+    {imageUrl && <i className={"fa fa-trash fb-icon-button invert"}
       title={t("Delete Photo")}
       onClick={props.deletePhoto} />}
     {imageUrl && <a
@@ -72,14 +44,14 @@ export const PhotoButtons = (props: PhotoButtonsProps) => {
       target={"_blank"}
       rel={"noreferrer"}
       download={true}>
-      <i className={"fa fa-download fb-icon-button"} />
+      <i className={"fa fa-download fb-icon-button invert"} />
     </a>}
     {imageUrl &&
       <i title={t("Toggle crop")}
         className={[
           "fa fa-scissors",
           props.canCrop ? "" : "disabled",
-          "fb-icon-button",
+          "fb-icon-button invert",
         ].join(" ")}
         onClick={props.canCrop ? props.toggleCrop : undefined} />}
     {imageUrl &&
@@ -87,10 +59,10 @@ export const PhotoButtons = (props: PhotoButtonsProps) => {
         className={[
           "fa fa-repeat",
           props.canTransform ? "" : "disabled",
-          "fb-icon-button",
+          "fb-icon-button invert",
         ].join(" ")}
         onClick={props.canTransform ? props.toggleRotation : undefined} />}
-    <i className={"fa fa-arrows-alt desktop-only fb-icon-button"}
+    <i className={"fa fa-arrows-alt desktop-only fb-icon-button invert"}
       title={t("View fullscreen")}
       onClick={props.toggleFullscreen} />
   </div>;
@@ -102,7 +74,6 @@ export const PhotoFooter = (props: PhotoFooterProps) => {
     ? formatTime(moment(image.body.created_at), timeSettings, "MMMM Do, YYYY")
     : "";
   return <div className="photos-footer">
-    <div className={"gradient"} />
     <div className={"footer-text"}>
       <div className={"image-metadata"}>
         {image && <Popover
@@ -202,12 +173,6 @@ export class Photos extends React.Component<PhotosProps, PhotosComponentState> {
 
   render() {
     return <div className="photos">
-      <NewPhotoButtons
-        syncStatus={this.props.syncStatus}
-        botToMqttStatus={this.props.botToMqttStatus}
-        takePhoto={takePhoto}
-        env={this.props.env}
-        imageJobs={this.props.imageJobs} />
       <Overlay isOpen={this.state.fullscreen}
         onClose={this.toggleFullscreen}
         backdropProps={{ style: { background: "#000d" } }}>

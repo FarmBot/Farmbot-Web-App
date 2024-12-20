@@ -3,13 +3,6 @@ jest.mock("../../screen_size", () => ({
   isMobile: () => mockIsMobile,
 }));
 
-import { Path } from "../../internal_urls";
-let mockPath = Path.mock(Path.designer());
-jest.mock("../../history", () => ({
-  push: jest.fn(),
-  getPathArray: () => mockPath.split("/"),
-}));
-
 jest.mock("../../hotkeys", () => ({
   toggleHotkeyHelpOverlay: jest.fn(() => jest.fn()),
 }));
@@ -17,8 +10,8 @@ jest.mock("../../hotkeys", () => ({
 import React from "react";
 import { mount } from "enzyme";
 import { HelpHeader } from "../header";
-import { push } from "../../history";
 import { toggleHotkeyHelpOverlay } from "../../hotkeys";
+import { Path } from "../../internal_urls";
 
 describe("<HelpHeader />", () => {
   beforeEach(() => {
@@ -36,7 +29,7 @@ describe("<HelpHeader />", () => {
     ["take a tour", Path.tours()],
     ["get help", Path.support()],
   ])("renders %s panel", (title, path) => {
-    mockPath = Path.mock(path);
+    location.pathname = Path.mock(path);
     const wrapper = mount(<HelpHeader />);
     expect(wrapper.text().toLowerCase()).toContain(title);
   });
@@ -60,14 +53,14 @@ describe("<HelpHeader />", () => {
     const wrapper = mount(<HelpHeader />);
     wrapper.find(".help-panel-header").simulate("click");
     wrapper.find("a").first().simulate("click");
-    expect(push).toHaveBeenCalledWith(Path.support());
+    expect(mockNavigate).toHaveBeenCalledWith(Path.support());
   });
 
   it("opens hotkeys", () => {
     const wrapper = mount(<HelpHeader />);
     wrapper.find(".help-panel-header").simulate("click");
     wrapper.find("a").last().simulate("click");
-    expect(push).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
     expect(toggleHotkeyHelpOverlay).toHaveBeenCalled();
   });
 });

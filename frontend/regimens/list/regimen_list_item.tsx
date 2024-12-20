@@ -4,7 +4,7 @@ import { urlFriendly } from "../../util";
 import { selectRegimen } from "../actions";
 import { Content } from "../../constants";
 import { t } from "../../i18next_wrapper";
-import { push } from "../../history";
+import { useNavigate } from "react-router";
 import { Path } from "../../internal_urls";
 import { edit } from "../../api/crud";
 import { ColorPicker } from "../../ui";
@@ -12,10 +12,11 @@ import { ColorPicker } from "../../ui";
 export function RegimenListItem(props: RegimenListItemProps) {
   const { regimen, dispatch, inUse } = props;
   const label = (regimen.body.name || "") + (regimen.specialStatus ? " *" : "");
+  const navigate = useNavigate();
   return <div className={"regimen-search-item"}
     onClick={() => {
       dispatch(selectRegimen(regimen.uuid));
-      push(Path.regimens(urlFriendly(regimen.body.name)));
+      navigate(Path.regimens(urlFriendly(regimen.body.name)));
     }}
     title={t("open regimen")}>
     <div className={"regimen-color"} onClick={e => e.stopPropagation()}>

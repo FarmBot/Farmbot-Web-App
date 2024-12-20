@@ -50,6 +50,7 @@ export const emptyState = (): AppState => {
       parameter_management: false,
       custom_settings: false,
       farm_designer: false,
+      three_d: false,
       account: false,
       other_settings: false,
     },
@@ -160,6 +161,7 @@ export const appReducer =
         s.settingsPanelState.parameter_management = a.payload;
         s.settingsPanelState.custom_settings = a.payload;
         s.settingsPanelState.farm_designer = a.payload;
+        s.settingsPanelState.three_d = a.payload;
         s.settingsPanelState.account = a.payload;
         s.settingsPanelState.other_settings = a.payload;
         return s;

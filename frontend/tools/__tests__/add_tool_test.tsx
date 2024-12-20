@@ -12,7 +12,6 @@ import { RawAddTool as AddTool, mapStateToProps } from "../add_tool";
 import { fakeState } from "../../__test_support__/fake_state";
 import { SaveBtn } from "../../ui";
 import { initSave, init, destroy } from "../../api/crud";
-import { push } from "../../history";
 import { FirmwareHardware } from "farmbot";
 import { AddToolProps } from "../interfaces";
 import { mockDispatch } from "../../__test_support__/fake_dispatch";
@@ -82,7 +81,7 @@ describe("<AddTool />", () => {
       name: "Foo", flow_rate_ml_per_s: 0,
     });
     expect(wrapper.state().uuid).toEqual(undefined);
-    expect(push).toHaveBeenCalledWith(Path.tools());
+    expect(mockNavigate).toHaveBeenCalledWith(Path.tools());
   });
 
   it("removes unsaved tool on exit", async () => {
@@ -96,7 +95,7 @@ describe("<AddTool />", () => {
       name: "Foo", flow_rate_ml_per_s: 0,
     });
     expect(wrapper.state().uuid).toEqual("fake uuid");
-    expect(push).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
     wrapper.unmount();
     expect(destroy).toHaveBeenCalledWith("fake uuid");
   });
@@ -117,7 +116,7 @@ describe("<AddTool />", () => {
     const wrapper = mount(<AddTool {...p} />);
     wrapper.find("button").last().simulate("click");
     expect(initSave).toHaveBeenCalledTimes(expectedAdds);
-    expect(push).toHaveBeenCalledWith(Path.tools());
+    expect(mockNavigate).toHaveBeenCalledWith(Path.tools());
   });
 
   it("doesn't add stock tools twice", () => {
@@ -127,7 +126,7 @@ describe("<AddTool />", () => {
     const wrapper = mount(<AddTool {...p} />);
     wrapper.find("button").last().simulate("click");
     expect(initSave).toHaveBeenCalledTimes(2);
-    expect(push).toHaveBeenCalledWith(Path.tools());
+    expect(mockNavigate).toHaveBeenCalledWith(Path.tools());
   });
 
   it("copies a tool name", () => {

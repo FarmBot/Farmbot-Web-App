@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { AddButtonProps } from "./interfaces";
 import { t } from "../../i18next_wrapper";
 

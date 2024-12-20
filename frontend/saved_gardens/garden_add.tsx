@@ -9,7 +9,6 @@ import {
   DesignerPanel, DesignerPanelHeader, DesignerPanelContent,
 } from "../farm_designer/designer_panel";
 import { Content } from "../constants";
-import { Row } from "../ui";
 import { t } from "../i18next_wrapper";
 import { Panel } from "../farm_designer/panel_header";
 import { Path } from "../internal_urls";
@@ -35,15 +34,15 @@ export class RawAddGarden extends React.Component<GardenSnapshotProps, {}> {
         description={Content.SAVED_GARDENS}
         backTo={Path.plants()} />
       <DesignerPanelContent panelName={"saved-garden"}>
-        <Row>
-          <GardenSnapshot
-            currentSavedGarden={this.props.currentSavedGarden}
-            plantTemplates={this.props.plantTemplates}
-            dispatch={this.props.dispatch} />
-        </Row>
+        <GardenSnapshot
+          currentSavedGarden={this.props.currentSavedGarden}
+          plantTemplates={this.props.plantTemplates}
+          dispatch={this.props.dispatch} />
       </DesignerPanelContent>
     </DesignerPanel>;
   }
 }
 
 export const AddGarden = connect(mapStateToProps)(RawAddGarden);
+// eslint-disable-next-line import/no-default-export
+export default AddGarden;

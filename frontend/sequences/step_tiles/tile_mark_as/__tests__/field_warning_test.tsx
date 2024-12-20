@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { mount } from "enzyme";
 import { CustomFieldWarning } from "../field_warning";
 import { CustomFieldWarningProps } from "../interfaces";

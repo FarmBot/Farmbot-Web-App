@@ -1,7 +1,7 @@
 import React from "react";
 import { t } from "../../i18next_wrapper";
 import { StepParams } from "../interfaces";
-import { Row, Col, devDocLinkClick } from "../../ui";
+import { Row, devDocLinkClick } from "../../ui";
 import { StateToggleKey, StepWrapper } from "../step_ui";
 import { TypePart } from "./tile_assertion/type_part";
 import { SequencePart } from "./tile_assertion/sequence_part";
@@ -29,22 +29,16 @@ export const TileAssertion = (props: StepParams<Assertion>) => {
         <i className="fa fa-external-link" />
       </a>]}
     stateToggles={stateToggles}>
-    <Row>
-      <Col xs={12}>
-        <LuaTextArea<Assertion> {...props} stateToggles={stateToggles} />
-      </Col>
-    </Row>
-    <Row>
-      <Col xs={6}>
+    <div className="grid">
+      <LuaTextArea<Assertion> {...props} stateToggles={stateToggles} />
+      <Row className="grid-2-col">
         <TypePart key={JSON.stringify(props.currentSequence)}
           {...props} />
-      </Col>
-      {props.currentStep.args.assertion_type.includes("recover") &&
-        <Col xs={6}>
+        {props.currentStep.args.assertion_type.includes("recover") &&
           <SequencePart key={JSON.stringify(props.currentSequence)}
-            {...props} />
-        </Col>}
-    </Row>
-    <VariablesPart {...props} />
+            {...props} />}
+      </Row>
+      <VariablesPart {...props} />
+    </div>
   </StepWrapper>;
 };

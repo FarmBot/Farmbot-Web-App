@@ -2,7 +2,6 @@ import { isNumber, uniq, cloneDeep, isEqual } from "lodash";
 import { TaggedPlant, AxisNumberProperty, Mode } from "../interfaces";
 import { SelectionBoxData } from "./selection_box";
 import { GardenMapState } from "../../interfaces";
-import { push } from "../../../history";
 import { selectPoint } from "../actions";
 import { getMode } from "../util";
 import { editGtLtCriteria } from "../../../point_groups/criteria";
@@ -13,6 +12,7 @@ import { getFilteredPoints } from "../../../plants/select_plants";
 import { GetWebAppConfigValue } from "../../../config_storage/actions";
 import { overwriteGroup } from "../../../point_groups/actions";
 import { Path } from "../../../internal_urls";
+import { NavigateFunction } from "react-router";
 
 /** Return all plants within the selection box. */
 export const getSelected = (
@@ -44,6 +44,7 @@ export interface ResizeSelectionBoxProps {
   setMapState: (x: Partial<GardenMapState>) => void;
   dispatch: Function;
   plantActions: boolean;
+  navigate: NavigateFunction;
 }
 
 /** Resize a selection box. */
@@ -66,7 +67,7 @@ export const resizeBox = (props: ResizeSelectionBoxProps) => {
           });
         const payload = getSelected(points, newSelectionBox);
         if (payload && getMode() === Mode.none) {
-          push(Path.plants("select"));
+          props.navigate(Path.plants("select"));
         }
         props.dispatch(selectPoint(payload));
       }

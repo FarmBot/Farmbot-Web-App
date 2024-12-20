@@ -1,0 +1,328 @@
+@use "../variables" as *;
+@use "sass:color";
+
+button,
+select,
+summary,
+input {
+  outline: none !important;
+}
+
+input {
+  border-radius: 3px;
+  &:disabled {
+    background: $translucent5_white !important;
+    cursor: not-allowed;
+  }
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button,
+input[type=date]::-webkit-inner-spin-button,
+input[type=date]::-webkit-outer-spin-button,
+input[type=time]::-webkit-inner-spin-button,
+input[type=time]::-webkit-outer-spin-button,
+input[type=time] {
+  -webkit-appearance: none;
+  -moz-appearance: textfield;
+  margin: 0;
+}
+
+input:not([role="combobox"]) {
+  font-size: 1.2rem;
+  height: auto;
+  width: 100%;
+  border: 0;
+  padding: 6px 8px;
+  background: $translucent9_white;
+  &[type="checkbox"] {
+    width: inherit;
+  }
+  &:focus {
+    background-color: $white;
+    box-shadow: 0px 0px 10px $translucent1_white;
+  }
+  &.bulk-day-selector {
+    width: 10%;
+    box-shadow: none;
+    margin-bottom: 0.75rem !important;
+    margin-top: 0.75rem !important;
+    height: 1.5rem;
+    vertical-align: top;
+    &.margin-left {
+      margin-left: 20%;
+    }
+  }
+  &.day {
+    display: none;
+  }
+  &.dim {
+    background: color.adjust($white, $lightness: -2%) !important;
+    &.gray {
+      background: color.adjust($medium_light_gray, $lightness: -2%) !important;
+    }
+  }
+  &.error {
+    border: 2px solid $red;
+    background-color: $white !important;
+    color: $red;
+  }
+  &:not([type="checkbox"]):not([type="radio"]) {
+    -moz-appearance: textfield;
+  }
+}
+
+input:not([role="combobox"]):not([type="checkbox"]):not([type="radio"]) {
+  height: 3rem;
+}
+
+input[type="radio"] {
+  box-shadow: none !important;
+  margin: 0;
+  cursor: pointer;
+}
+
+input[type="checkbox"] {
+  padding: 0;
+}
+
+.input {
+  position: relative;
+  .bp5-popover-wrapper {
+    position: unset;
+  }
+}
+
+.input-error-wrapper {
+  height: 0;
+  .bp5-popover-content {
+    min-width: 120px;
+  }
+  .bp5-overlay {
+    display: inline-block;
+  }
+}
+
+.input-error {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 15px;
+  height: 15px;
+  color: $white;
+  background: $red;
+  padding: 2px;
+  font-size: 12px;
+}
+
+.day-selector-wrapper {
+  display: inline-block;
+  width: 10%;
+  height: 3rem;
+}
+
+.week-row {
+  display: grid;
+  grid-template-columns: 1fr repeat(7, 4.5rem);
+  align-items: center;
+}
+
+select {
+  border: none;
+  padding: 7px;
+  background: $translucent9_white;
+  width: 100%;
+}
+
+.filter-search {
+  span {
+    width: 100%;
+    color: $dark_gray;
+  }
+  .bp5-popover-target {
+    position: relative;
+  }
+  i {
+    position: absolute;
+    right: 1rem;
+    line-height: 3rem;
+    color: $dark_gray
+  }
+  &.dim {
+    Button {
+      background: color.adjust($white, $lightness: -2%) !important;
+      &:hover {
+        background: color.adjust($white, $lightness: -2%) !important;
+      }
+    }
+  }
+  &.disabled {
+    pointer-events: none;
+    button {
+      background: color.adjust($white, $lightness: -10%) !important;
+    }
+  }
+  &.warning {
+    button {
+      background: $light_red !important;
+      border: 3px solid $red !important;
+      &:hover {
+        background: $light_red !important;
+      }
+    }
+  }
+}
+
+.filter-search-popover {
+  .bp5-popover-content {
+    max-width: 40rem;
+    padding: 0;
+    .bp5-menu {
+      padding-left: 0;
+      padding-right: 0;
+    }
+    .bp5-input {
+      height: auto !important;
+    }
+  }
+  &.few-items {
+    .bp5-input-group {
+      display: none;
+    }
+  }
+}
+
+.filter-search-item {
+  padding-left: 1rem;
+  font-weight: normal !important;
+  .bp5-text-overflow-ellipsis {
+    white-space: normal;
+    padding-left: 1rem;
+    text-indent: -1rem;
+  }
+}
+
+.filter-search-item-none::after {
+  content: "*";
+}
+
+.filter-search-heading-item {
+  pointer-events: none;
+  font-weight: bold !important;
+  border-bottom: 1px solid $gray;
+}
+
+.fb-checkbox {
+  input[type="checkbox"] {
+    -webkit-appearance: none;
+    background: $translucent9_white;
+    border-radius: 0;
+    border-radius: 3px;
+    height: 2rem;
+    margin: 0;
+    overflow: hidden;
+    position: relative;
+    width: 2rem;
+    cursor: pointer;
+    &:before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: $translucent9_white;
+      opacity: 0.5;
+    }
+    &:checked:after {
+      content: "";
+      position: absolute;
+      left: 0.5rem;
+      bottom: 0.5rem;
+      border: solid $dark_gray;
+      border-width: 0 3px 3px 0;
+      transform: rotate(45deg);
+      padding: 0.6rem 0.3rem;
+    }
+  }
+  &.partial:after {
+    content: "";
+    position: absolute;
+    left: 0.75rem;
+    bottom: 1.2rem;
+    border: solid $dark_gray;
+    border-width: 0 0 3px 0;
+    padding: 0.6rem 0.3rem;
+  }
+  &.large {
+    height: 3rem;
+    input[type="checkbox"] {
+      width: 3rem;
+      height: 3rem;
+      &:checked:after {
+        content: "";
+        position: absolute;
+        left: 0.9rem;
+        bottom: 0.5rem;
+        border: solid $dark_gray;
+        border-width: 0 4px 4px 0;
+        transform: rotate(45deg);
+        padding: 1rem 0.3rem;
+      }
+    }
+  }
+  &.disabled {
+    cursor: not-allowed;
+    input[type="checkbox"] {
+      background: $light_gray;
+      pointer-events: none;
+      &:checked:after {
+        border-color: $gray;
+     }
+    }
+  }
+}
+
+textarea {
+  border-radius: 0.5rem;
+  width: 100%;
+  border: 0;
+  outline: none!important;
+  resize: vertical;
+  font-size: 1.2rem;
+  padding: 1rem;
+}
+
+.input-group {
+  width: 100% !important;
+  input[type=checkbox] {
+    box-shadow: none;
+  }
+}
+
+fieldset {
+  border: none;
+  legend {
+    background: transparent;
+  }
+}
+
+.modified {
+  box-shadow: 0 0 0px 3px $yellow !important;
+  border-radius: 3px;
+  &.bp5-slider {
+    box-shadow: none !important;
+    .bp5-slider-handle {
+      box-shadow: 0 0 0px 3px $yellow;
+    }
+  }
+}
+
+.input {
+  .fa-undo {
+    position: absolute;
+    top: 1rem;
+    right: 0.25rem;
+    font-size: 1rem;
+  }
+}

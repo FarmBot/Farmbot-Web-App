@@ -1,0 +1,65 @@
+@use "../variables" as *;
+@use "sass:color";
+
+.saved-garden-edit-panel-content {
+  display: grid;
+  gap: 1rem;
+}
+
+.saved-garden-grid {
+  grid-template-columns: auto 1fr;
+  align-items: baseline;
+}
+
+.saved-garden-indicator {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  z-index: 3;
+  padding: 1rem 2rem;
+  background: var(--main-bg);
+  border-radius: 5px;
+  box-shadow: 0px 1px 5px $translucent3;
+  text-align: center;
+  label {
+    display: block;
+  }
+  button {
+    margin: 0.5rem;
+    float: unset;
+  }
+}
+
+.saved-garden-list {
+  .saved-garden-search-item {
+    padding: 0.25rem;
+    button {
+      margin-bottom: 1rem;
+    }
+    .saved-garden-info div {
+      height: 3rem;
+      line-height: 3rem;
+      cursor: pointer;
+      padding-right: 0;
+      span {
+        margin: 0;
+        pointer-events: none;
+        margin-left: 1rem;
+      }
+      p {
+        float: right;
+        line-height: 3rem;
+        text-align: center;
+        margin-right: 1rem;
+      }
+    }
+  }
+}
+
+.add-garden-grid {
+  grid-template-columns: auto 1fr;
+}
+
+.add-new-garden-buttons {
+  justify-content: right;
+}

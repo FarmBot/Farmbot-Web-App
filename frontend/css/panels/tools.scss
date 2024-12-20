@@ -1,0 +1,209 @@
+@use "../variables" as *;
+@use "sass:color";
+
+.tool-slots-panel,
+.tools-panel {
+  .tool-slots-panel-content,
+  .tools-panel-content {
+    overflow-y: auto;
+    overflow-x: hidden;
+    .tool-search-item,
+    .tool-slot-search-item {
+      .filter-search {
+        .bp5-button {
+          min-height: 2.5rem;
+          max-height: 2.5rem;
+          span {
+            line-height: 1.5rem;
+          }
+        }
+        i {
+          line-height: 2.5rem;
+        }
+      }
+      p {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+    .mounted-tool {
+      .filter-search {
+        width: 50%;
+        float: right;
+      }
+      .utm-and-mounted-tool-graphic {
+        width: 30%;
+        margin-left: 32%;
+      }
+    }
+    .mounted-tool-header {
+      display: inline;
+      margin-top: 1rem;
+      label {
+        margin: 0;
+      }
+      .bp5-popover-wrapper {
+        display: inline;
+      }
+      .help-icon {
+        margin-left: 1rem;
+        vertical-align: top;
+        font-size: 1.4rem;
+      }
+    }
+    button:not(.bp5-button) {
+      display: block;
+      margin-left: auto;
+      float: none;
+      margin-top: 1rem;
+    }
+    .tool-verification-status {
+      display: flex;
+      margin-top: 1rem;
+      margin-bottom: 2rem;
+      button {
+        margin-top: 0;
+      }
+    }
+    .panel-section {
+      margin-left: -10px;
+      margin-right: -10px;
+    }
+  }
+}
+
+.add-tool-slot-panel,
+.edit-tool-slot-panel,
+.add-tool-panel,
+.edit-tool-panel {
+  .tool-action-btn-group {
+    margin: 1.5rem;
+  }
+}
+
+.add-tool-panel-content,
+.edit-tool-panel-content {
+  max-height: calc(100vh - 14rem);
+  overflow-y: auto;
+  overflow-x: hidden;
+  button {
+    display: block;
+    margin-left: auto;
+    float: none;
+    margin-top: 1rem;
+    &.red {
+      float: left;
+      margin-bottom: 1rem;
+    }
+  }
+  svg {
+    display: block;
+    margin: auto;
+    width: 10rem;
+    height: 10rem;
+    margin-top: 2rem;
+  }
+  .edit-tool,
+  .add-new-tool {
+    .name-error {
+      justify-self: right;
+      color: $dark_red;
+    }
+    .save-btn {
+      float: right;
+    }
+    details {
+      padding: 2rem;
+      .graphics-input {
+        input {
+          width: 97%;
+        }
+      }
+    }
+  }
+  .add-stock-tools {
+    .filter-search {
+      margin-bottom: 1rem;
+      button {
+        margin-top: 0.2rem;
+      }
+    }
+    ul {
+      font-size: 1.2rem;
+      li {
+        margin-top: 0.5rem;
+        line-height: 2rem;
+        cursor: pointer;
+        width: 50%;
+        &:hover {
+          font-weight: bold;
+        }
+        .fb-checkbox {
+          display: inline;
+        }
+        p {
+          display: inline;
+          line-height: 2.25rem;
+          font-size: 1.2rem;
+          vertical-align: top;
+          margin-left: 1rem;
+        }
+      }
+    }
+    button {
+      .fa-plus {
+        margin-right: 0.5rem;
+      }
+    }
+  }
+}
+
+.flow-rate-input {
+  .bp5-popover-wrapper {
+    display: inline;
+    margin-left: 0.5rem;
+  }
+  .fb-button {
+    float: right;
+    margin-top: 1.5rem;
+  }
+}
+
+.edit-tool-slot-panel {
+  .save-error {
+    position: absolute;
+    top: 1.5rem;
+    right: 1rem;
+    color: $darkest_red;
+  }
+}
+
+.add-tool-slot-panel-content,
+.edit-tool-slot-panel-content {
+  max-height: calc(100vh - 14rem);
+  overflow-y: auto;
+  overflow-x: hidden;
+  svg {
+    display: block;
+    margin: auto;
+    width: 10rem;
+    height: 10rem;
+    margin-top: 2rem;
+  }
+}
+
+.tool-svg {
+  display: flex;
+  div {
+    margin: auto;
+    text-align: center;
+    p {
+      font-style: italic;
+    }
+  }
+}
+
+.tool-slot-location-grid {
+  align-items: end !important;
+}

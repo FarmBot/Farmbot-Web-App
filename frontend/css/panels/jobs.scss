@@ -1,0 +1,78 @@
+@use "../variables" as *;
+@use "sass:color";
+
+.jobs-and-logs {
+  margin-top: 1rem;
+}
+
+.jobs-panel {
+  .panel-content {
+    display: inline-block;
+    overflow-y: auto;
+    overflow-x: auto;
+    width: 100%;
+    padding: 0;
+  }
+}
+
+.jobs-tab {
+  overflow-y: scroll;
+  max-height: 26rem;
+  &.bp5-popover {
+    margin-top: 1.5rem;
+  }
+  table {
+    text-align: left;
+    p {
+      padding: 1rem;
+    }
+    .job-name {
+      max-width: 20rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    thead {
+      position: sticky;
+      top: 0;
+      z-index: 999;
+      background: var(--main-bg);
+    }
+    tr {
+      transform: scale(1);
+    }
+    th,
+    td {
+      white-space: nowrap;
+      font-size: 1.2rem;
+      padding: 0.75rem;
+    }
+    th {
+      text-transform: uppercase;
+    }
+    .right-align {
+      text-align: right;
+    }
+    .progress {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 99%;
+      opacity: 0.5;
+      border-radius: 0;
+      pointer-events: none;
+    }
+    .fa-clock-o {
+      cursor: default !important;
+    }
+  }
+}
+
+.jobs-panel-portal {
+  .bp5-popover-content {
+    padding: 0;
+    width: min(500px, 100vw - 1rem);
+    max-height: calc(100vh - 10rem);
+    overflow: hidden;
+    padding-top: 1rem;
+  }
+}

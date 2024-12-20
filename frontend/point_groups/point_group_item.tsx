@@ -14,7 +14,7 @@ import { overwriteGroup } from "./actions";
 import { ToolSlotSVG } from "../farm_designer/map/layers/tool_slots/tool_graphics";
 import { ToolTransformProps } from "../tools/interfaces";
 import { FilePath, Path } from "../internal_urls";
-import { push } from "../history";
+import { NavigationContext } from "../routes_helpers";
 
 export interface PointGroupItemProps {
   point: TaggedPoint | TaggedPlantTemplate;
@@ -37,14 +37,14 @@ const removePoint = (group: TaggedPointGroup, pointId: number) =>
   };
 
 export const genericPointIcon = (color: string | undefined) =>
-  `<svg xmlns='http://www.w3.org/2000/svg'
+  `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50'
     fill='none' stroke-width='1.5' stroke='${color || "green"}'>
-    <circle cx='15' cy='15' r='12' />
-    <circle cx='15' cy='15' r='2' />
+    <circle cx='25' cy='25' r='18' />
+    <circle cx='25' cy='25' r='2' />
   </svg>`;
 
 export const genericWeedIcon = (color: string | undefined) =>
-  `<svg xmlns='http://www.w3.org/2000/svg'>
+  `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50'>
       <defs>
         <radialGradient id='WeedGradient'>
           <stop offset='90%' stop-color='${color || "red"}'
@@ -53,7 +53,7 @@ export const genericWeedIcon = (color: string | undefined) =>
             stop-opacity='0'></stop>
         </radialGradient>
       </defs>
-      <circle id='weed-radius' cx='15' cy='15' r='14'
+      <circle id='weed-radius' cx='25' cy='25' r='25'
         fill='url(#WeedGradient)' opacity='0.5'></circle>
     </svg>`;
 
@@ -70,8 +70,14 @@ export class PointGroupItem
 
   leave = () => this.props.dispatch?.(setHoveredPlant(undefined));
 
+  static contextType = NavigationContext;
+  context!: React.ContextType<typeof NavigationContext>;
+  navigate = this.context;
+
   click = () => {
-    if (this.props.navigate) { push(Path.plants(this.props.point.body.id)); }
+    if (this.props.navigate) {
+      this.navigate(Path.plants(this.props.point.body.id));
+    }
     if (this.criteriaIcon) {
       return error(t("Cannot remove points selected by filters."));
     }
@@ -133,7 +139,7 @@ export class PointGroupItem
   };
 
   render() {
-    const size = 20;
+    const size = 30;
     return <span
       key={this.key}
       className={"group-item-icon"}

@@ -3,7 +3,7 @@ import { API } from "../../api";
 
 interface NonsecureContentProps {
   /** The warning to show the user if one of the URLs is insecure. */
-  children?: React.ReactChild;
+  children?: React.ReactNode;
   urls: string[];
 }
 

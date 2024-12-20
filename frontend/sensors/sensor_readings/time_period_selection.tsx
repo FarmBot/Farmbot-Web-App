@@ -1,5 +1,5 @@
 import React from "react";
-import { FBSelect, Row, Col, BlurableInput } from "../../ui";
+import { FBSelect, Row, BlurableInput } from "../../ui";
 import moment from "moment";
 import { TaggedSensorReading } from "farmbot";
 import { TimePeriodSelectionProps, DateDisplayProps } from "./interfaces";
@@ -30,55 +30,38 @@ export const getEndDate = (sensorReadings: TaggedSensorReading[]) =>
       .body.read_at).startOf("day").unix()
     : today;
 
-enum ColWidth {
-  period = 3,
-  endDate = 5,
-  showPrevious = 4,
-}
-
 /** Specify a time period by end date and duration. */
 export const TimePeriodSelection = (props: TimePeriodSelectionProps) => {
   const { timePeriod, endDate, showPreviousPeriod,
     setEndDate, setPeriod, togglePrevious } = props;
   return <div className="sensor-history-time-selection">
-    <Row>
-      <Col xs={ColWidth.period}>
-        <label>{t("Time period")}</label>
-      </Col>
-      <Col xs={ColWidth.endDate}>
+    <Row className="grid-3-col">
+      <label>{t("Time period")}</label>
+      <div className="row">
         <label style={{ display: "inline" }}>{t("Period End Date")}</label>
-        <i className={"fa fa-clock-o fb-icon-button"}
-          style={{ marginLeft: "1rem" }}
+        <i className={"fa fa-clock-o fb-icon-button invert"}
           onClick={() => setEndDate(today)} />
-      </Col>
-      <Col xs={ColWidth.showPrevious}>
-        <label>{t("Show Previous Period")}</label>
-      </Col>
+      </div>
+      <label>{t("Show Previous Period")}</label>
     </Row>
-    <Row>
-      <Col xs={ColWidth.period}>
-        <FBSelect
-          key={timePeriod}
-          selectedItem={
-            { label: timePeriodLookup()[timePeriod], value: timePeriod }}
-          onChange={ddi => setPeriod(parseInt("" + ddi.value))}
-          list={timePeriodList()} />
-      </Col>
-      <Col xs={ColWidth.endDate}>
-        <BlurableInput
-          type="date"
-          value={moment.unix(endDate).format(blurableInputDateFormat)}
-          onCommit={e => setEndDate(moment(e.currentTarget.value,
-            blurableInputDateFormat).unix())} />
-      </Col>
-      <Col xs={ColWidth.showPrevious}>
-        <div className="fb-checkbox large">
-          <input type="checkbox"
-            name="previous"
-            checked={showPreviousPeriod}
-            onChange={togglePrevious} />
-        </div>
-      </Col>
+    <Row className="grid-3-col">
+      <FBSelect
+        key={timePeriod}
+        selectedItem={
+          { label: timePeriodLookup()[timePeriod], value: timePeriod }}
+        onChange={ddi => setPeriod(parseInt("" + ddi.value))}
+        list={timePeriodList()} />
+      <BlurableInput
+        type="date"
+        value={moment.unix(endDate).format(blurableInputDateFormat)}
+        onCommit={e => setEndDate(moment(e.currentTarget.value,
+          blurableInputDateFormat).unix())} />
+      <div className="fb-checkbox large">
+        <input type="checkbox"
+          name="previous"
+          checked={showPreviousPeriod}
+          onChange={togglePrevious} />
+      </div>
     </Row>
   </div>;
 };

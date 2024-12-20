@@ -241,7 +241,7 @@ const DOWNLOADS = (): Downloads => ({
 });
 
 const DownloadLink = (content: Partial<ReleaseItem>) =>
-  <div className={"download-link"}>
+  <div className={"download-link grid"}>
     <p className={"os-download-wizard-note"}>
       {`${t("Your FarmBot's internal computer is the")} ${content.computer}`}</p>
     <a className="transparent-button light" href={content.imageUrl}>
@@ -251,7 +251,7 @@ const DownloadLink = (content: Partial<ReleaseItem>) =>
 
 interface SimpleButtonProps {
   click(): void;
-  content: string | JSX.Element;
+  content: string | React.ReactNode;
   extraClass?: string;
 }
 
@@ -265,7 +265,7 @@ const SimpleButton = (props: SimpleButtonProps) =>
 
 interface ContentButtonProps {
   click(): void;
-  content: string | JSX.Element;
+  content: string | React.ReactNode;
   extraClass?: string;
   label?: string;
   image?: string;
@@ -335,11 +335,11 @@ class OsDownloadWizard
     }
     if (!this.state.model) {
       return <div className={"os-download-wizard"}>
-        <div className={"os-download-wizard-model"}>
+        <div className={"os-download-wizard-model grid double-gap"}>
           <p className={"os-download-wizard-note"}>
             {t("Which FarmBot model do you have?")}
           </p>
-          <div className={"buttons"}>
+          <div className={"buttons row double-gap"}>
             {MODELS().map(model =>
               <ContentButton key={model.value}
                 click={this.select({ model: model.value })}
@@ -371,7 +371,7 @@ class OsDownloadWizard
           <p className={"os-download-wizard-note"}>
             {t(Content.PI_POWER_CABLE_COLOR_PROMPT)}
           </p>
-          <div className={"buttons"}>
+          <div className={"buttons row grid-2-col double-gap"}>
             {RUNS()[this.state.version].map(run =>
               <ContentButton key={run.value}
                 click={this.select({ run: run.value })}
@@ -386,12 +386,13 @@ class OsDownloadWizard
     if (this.state.version == Version["v1.6"] && this.state.run != Run.second
       && !this.state.pi) {
       return <div className={"os-download-wizard"}>
-        <div className={"os-download-wizard-run"}>
+        <div className={"os-download-wizard-run grid"}>
           <p className={"os-download-wizard-note"}>
             {t(SetupWizardContent.RPI)}
           </p>
-          <img src={FilePath.setupWizardImage("rpi_3_vs_4.jpg")} />
-          <div className={"buttons"}>
+          <img className="pi-image"
+            src={FilePath.setupWizardImage("rpi_3_vs_4.jpg")} />
+          <div className={"buttons row grid-2-col double-gap"}>
             {PIS()[Version["v1.6"]].map(pi =>
               <ContentButton key={pi.value}
                 click={this.select({
@@ -425,9 +426,11 @@ export const OsDownloadPage = () => {
     (document.querySelector("html") as HTMLElement).style.fontSize = "15px";
   }
   return <div className={"static-page os-download-page"}>
-    <div className={"all-content-wrapper"}>
-      <h1>{t("Download FarmBot OS")}</h1>
-      <p className={"os-download-description"}>{t(Content.DOWNLOAD_FBOS)}</p>
+    <div className={"all-content-wrapper grid double-gap"}>
+      <div className="header grid">
+        <h1>{t("Download FarmBot OS")}</h1>
+        <p className={"os-download-description"}>{t(Content.DOWNLOAD_FBOS)}</p>
+      </div>
       <OsDownloadWizard wizard={wizard} setWizard={setWizard} />
       {wizard
         ? <SimpleButton extraClass={"wizard-btn"}

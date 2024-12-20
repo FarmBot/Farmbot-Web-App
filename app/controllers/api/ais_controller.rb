@@ -111,7 +111,7 @@ module Api
       url = "https://api.openai.com/v1/chat/completions"
       context_key = raw_json[:context_key]
       lua_request = context_key == "lua"
-      model_lua = ENV["OPENAI_MODEL_LUA"] || "gpt-3.5-turbo-16k"
+      model_lua = ENV["OPENAI_MODEL_LUA"] || "gpt-3.5-turbo"
       model_other = ENV["OPENAI_MODEL_OTHER"] || "gpt-3.5-turbo"
       payload = {
         "model" => lua_request ? model_lua : model_other,

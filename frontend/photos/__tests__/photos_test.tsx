@@ -11,6 +11,10 @@ jest.mock("../../farmware/farmware_info", () => ({
   requestFarmwareUpdate: jest.fn(),
 }));
 
+jest.mock("../../devices/actions", () => ({
+  takePhoto: jest.fn(),
+}));
+
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
@@ -25,9 +29,14 @@ import { requestFarmwareUpdate } from "../../farmware/farmware_info";
 import { fakeFarmware } from "../../__test_support__/fake_farmwares";
 import { FarmwareName } from "../../sequences/step_tiles/tile_execute_script";
 import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
-import { fakeMovementState } from "../../__test_support__/fake_bot_data";
+import {
+  fakeMovementState, fakePercentJob,
+} from "../../__test_support__/fake_bot_data";
 import { fakePhotosPanelState } from "../../__test_support__/fake_camera_data";
-import { Actions } from "../../constants";
+import { Actions, Content, ToolTips } from "../../constants";
+import { clickButton } from "../../__test_support__/helpers";
+import { takePhoto } from "../../devices/actions";
+import { error } from "../../toast/toast";
 
 describe("<DesignerPhotos />", () => {
   const fakeProps = (): DesignerPhotosProps => ({
@@ -41,7 +50,7 @@ describe("<DesignerPhotos />", () => {
     currentImage: undefined,
     currentImageSize: { width: undefined, height: undefined },
     botToMqttStatus: "up",
-    syncStatus: undefined,
+    syncStatus: "synced",
     saveFarmwareEnv: jest.fn(),
     imageJobs: [],
     versions: {},
@@ -83,6 +92,34 @@ describe("<DesignerPhotos />", () => {
     const wrapper = mount<DesignerPhotos>(<DesignerPhotos {...p} />);
     wrapper.find(ToggleButton).last().simulate("click");
     expect(p.dispatch).toHaveBeenCalled();
+  });
+
+  it("takes photo", () => {
+    const wrapper = mount(<DesignerPhotos {...fakeProps()} />);
+    const btn = wrapper.find("button").first();
+    expect(btn.props().title).not.toEqual(Content.NO_CAMERA_SELECTED);
+    clickButton(wrapper, 0, "take photo");
+    expect(takePhoto).toHaveBeenCalled();
+  });
+
+  it("shows disabled take photo button", () => {
+    const p = fakeProps();
+    p.env = { camera: "NONE" };
+    const wrapper = mount(<DesignerPhotos {...p} />);
+    const btn = wrapper.find("button").first();
+    expect(btn.text()).toEqual("Take Photo");
+    expect(btn.props().title).toEqual(Content.NO_CAMERA_SELECTED);
+    btn.simulate("click");
+    expect(error).toHaveBeenCalledWith(
+      ToolTips.SELECT_A_CAMERA, { title: Content.NO_CAMERA_SELECTED });
+    expect(takePhoto).not.toHaveBeenCalled();
+  });
+
+  it("shows image download progress", () => {
+    const p = fakeProps();
+    p.imageJobs = [fakePercentJob({ percent: 15 })];
+    const wrapper = mount(<DesignerPhotos {...p} />);
+    expect(wrapper.text()).toContain("uploading photo...15%");
   });
 });
 

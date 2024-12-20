@@ -1,0 +1,75 @@
+@use "../variables" as *;
+@use "sass:color";
+
+$cabin: 'Cabin',
+Arial,
+Helvetica,
+sans-serif;
+
+body,
+html {
+  font-family: $cabin;
+  font-weight: 400;
+  font-size: 10px;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+fieldset {
+  font-family: $cabin;
+  font-weight: 400;
+}
+
+a {
+  text-decoration: none !important;
+  outline: none !important;
+  cursor: pointer !important;
+  color: inherit;
+  &:link {
+    font-weight: 500;
+    color: inherit;
+  }
+  &:visited {
+    color: inherit;
+  }
+  &:hover {
+    font-weight: bold;
+    color: inherit;
+  }
+  &:active {
+    color: inherit;
+  }
+}
+
+p {
+  font-size: 1.1rem;
+  color: inherit;
+  line-height: 1.4rem;
+  margin-bottom: 0 !important;
+}
+
+h3 {
+  display: inline-block;
+  margin-top: 0;
+  font-size: 2.2rem;
+}
+
+h4 {
+  line-height: 1.1rem;
+  font-size: 1.8rem;
+  color: inherit;
+}
+
+hr {
+  border: 1px solid var(--secondary-bg);
+}
+
+ul {
+  list-style-type: none !important;
+  padding: 0;
+}

@@ -1,5 +1,5 @@
 import React from "react";
-import { push } from "../history";
+import { useNavigate } from "react-router";
 import { connect } from "react-redux";
 import { Everything, TimeSettings } from "../interfaces";
 import { PlantInventoryItem } from "./plant_inventory_item";
@@ -15,7 +15,7 @@ import {
 } from "../farm_designer/designer_panel";
 import { t } from "../i18next_wrapper";
 import { createGroup } from "../point_groups/actions";
-import { PanelColor } from "../farm_designer/panel_header";
+import { PanelColor, setPanelOpen } from "../farm_designer/panel_header";
 import { error } from "../toast/toast";
 import {
   PlantDateBulkUpdate, PlantSlugBulkUpdate, PlantStatusBulkUpdate,
@@ -59,6 +59,7 @@ import { getFbosConfig } from "../resources/getters";
 import {
   getFwHardwareValue, hasUTM,
 } from "../settings/firmware/firmware_hardware_support";
+import { NavigationContext } from "../routes_helpers";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const isPointType = (x: any): x is PointType =>
@@ -147,16 +148,12 @@ export interface SelectPlantsProps {
 
 interface SelectPlantsState {
   group_id: number | undefined;
-  moreSelections: boolean;
-  moreActions: boolean;
 }
 
 export class RawSelectPlants
   extends React.Component<SelectPlantsProps, SelectPlantsState> {
   state: SelectPlantsState = {
     group_id: undefined,
-    moreSelections: false,
-    moreActions: false,
   };
 
   componentDidMount() {
@@ -174,6 +171,10 @@ export class RawSelectPlants
 
   get selected() { return this.props.selected || []; }
 
+  static contextType = NavigationContext;
+  context!: React.ContextType<typeof NavigationContext>;
+  navigate = this.context;
+
   destroySelected = (plantUUIDs: string[] | undefined) => {
     if (plantUUIDs && plantUUIDs.length > 0 &&
       confirm(t("Are you sure you want to delete {{length}} plants?",
@@ -182,7 +183,7 @@ export class RawSelectPlants
         this.props.dispatch(destroy(uuid, true))
           .then(noop, noop);
       });
-      push(Path.plants());
+      this.navigate(Path.plants());
     }
   };
 
@@ -230,11 +231,8 @@ export class RawSelectPlants
       selected: this.selected,
       dispatch: this.props.dispatch,
     };
-    return <div className={["panel-action-buttons",
-      this.state.moreSelections ? "more-select" : "",
-      this.state.moreActions ? "more-action" : "",
-    ].join(" ")}>
-      <div className={"selection-type"}>
+    return <div className={"panel-action-buttons grid"}>
+      <div className={"row grid-2-col"}>
         <label>{t("selection type")}</label>
         <FBSelect key={this.selectionPointType}
           list={POINTER_TYPE_LIST()}
@@ -246,52 +244,53 @@ export class RawSelectPlants
               ddi.value == "All" ? POINTER_TYPES : validPointTypes([ddi.value])));
           }} />
       </div>
-      <div className="button-row group-select">
-        <button className="fb-button gray"
-          title={t("Select none")}
-          onClick={() => {
-            this.setState({ group_id: undefined });
-            this.props.dispatch(selectPoint(undefined));
-          }}>
-          {t("Select none")}
-        </button>
-        <button className="fb-button gray"
-          title={t("Select all")}
-          onClick={() => {
-            this.setState({ group_id: undefined });
-            this.props.dispatch(selectPoint(this.allPointUuids));
-          }}>
-          {t("Select all")}
-        </button>
-        <More className={"more-select"} isOpen={this.state.moreSelections}
-          customText={{
-            more: t("Select all in group"), less: t("Select all in group"),
-          }}
-          toggleOpen={() =>
-            this.setState({ moreSelections: !this.state.moreSelections })}>
+      <div className="row grid-2-col quick-select">
+        <label>{t("Quick select")}</label>
+        <div className="grid">
           <FBSelect key={`${this.selectionPointType}-${this.state.group_id}`}
             list={Object.values(this.groupDDILookup)}
             selectedItem={this.state.group_id
               ? this.groupDDILookup[this.state.group_id]
               : undefined}
-            customNullLabel={t("Select a group")}
+            customNullLabel={t("Select all in group")}
             onChange={this.selectGroup} />
-        </More>
+          <button className="fb-button gray"
+            title={t("Select all")}
+            onClick={() => {
+              this.setState({ group_id: undefined });
+              this.props.dispatch(selectPoint(this.allPointUuids));
+            }}>
+            {t("Select all")}
+          </button>
+          <button className="fb-button gray"
+            title={t("Select none")}
+            onClick={() => {
+              this.setState({ group_id: undefined });
+              this.props.dispatch(selectPoint(undefined));
+            }}>
+            {t("Select none")}
+          </button>
+        </div>
       </div>
-      <label>{t("SELECTION ACTIONS")}</label>
-      <div className="buttons">
-        <button className="fb-button red"
-          title={t("Delete")}
-          onClick={() => this.destroySelected(this.props.selected)}>
-          {t("Delete")}
-        </button>
-        <button className="fb-button dark-blue"
-          title={t("Create group")}
-          onClick={() => !this.props.gardenOpenId
-            ? this.props.dispatch(createGroup({ pointUuids: this.selected }))
-            : error(t(Content.ERROR_PLANT_TEMPLATE_GROUP))}>
-          {t("Create group")}
-        </button>
+      <div className="selection-actions grid">
+        <div className="row grid-exp-1">
+          <label>{t("SELECTION ACTIONS")}</label>
+          <button className="fb-button red"
+            title={t("Delete")}
+            onClick={() => this.destroySelected(this.props.selected)}>
+            {t("Delete")}
+          </button>
+          <button className="fb-button dark-blue"
+            title={t("Create group")}
+            onClick={() => !this.props.gardenOpenId
+              ? this.props.dispatch(createGroup({
+                pointUuids: this.selected,
+                navigate: this.navigate,
+              }))
+              : error(t(Content.ERROR_PLANT_TEMPLATE_GROUP))}>
+            {t("Create group")}
+          </button>
+        </div>
         {unsavedPoints.length > 1 &&
           <button className={"fb-button green"}
             title={t("Save")}
@@ -301,35 +300,29 @@ export class RawSelectPlants
             })}>
             {t("save")}
           </button>}
-      </div>
-      <div className="button-row bulk-update">
-        <More className={"more-action"} isOpen={this.state.moreActions}
-          toggleOpen={() =>
-            this.setState({ moreActions: !this.state.moreActions })}>
-          {(this.selectionPointType == "Plant" ||
-            this.selectionPointType == "Weed") &&
-            <PlantStatusBulkUpdate {...bulkUpdateProps}
-              pointerType={this.selectionPointType} />}
-          {["Plant"].includes(this.selectionPointType) &&
-            <PlantDateBulkUpdate {...bulkUpdateProps}
-              timeSettings={this.props.timeSettings} />}
-          {["Plant", "Weed", "GenericPointer"]
-            .includes(this.selectionPointType) &&
-            <PointSizeBulkUpdate {...bulkUpdateProps} />}
-          {["Plant"]
-            .includes(this.selectionPointType) &&
-            <PlantDepthBulkUpdate {...bulkUpdateProps} />}
-          {["Plant"].includes(this.selectionPointType) &&
-            <PlantCurvesBulkUpdate {...bulkUpdateProps}
-              curves={this.props.curves} />}
-          {["Weed", "GenericPointer"]
-            .includes(this.selectionPointType) &&
-            <PointColorBulkUpdate {...bulkUpdateProps} />}
-          {["Plant"]
-            .includes(this.selectionPointType) &&
-            <PlantSlugBulkUpdate {...bulkUpdateProps}
-              bulkPlantSlug={this.props.bulkPlantSlug} />}
-        </More>
+        {(this.selectionPointType == "Plant" ||
+          this.selectionPointType == "Weed") &&
+          <PlantStatusBulkUpdate {...bulkUpdateProps}
+            pointerType={this.selectionPointType} />}
+        {["Plant"].includes(this.selectionPointType) &&
+          <PlantDateBulkUpdate {...bulkUpdateProps}
+            timeSettings={this.props.timeSettings} />}
+        {["Plant", "Weed", "GenericPointer"]
+          .includes(this.selectionPointType) &&
+          <PointSizeBulkUpdate {...bulkUpdateProps} />}
+        {["Plant"]
+          .includes(this.selectionPointType) &&
+          <PlantDepthBulkUpdate {...bulkUpdateProps} />}
+        {["Plant"].includes(this.selectionPointType) &&
+          <PlantCurvesBulkUpdate {...bulkUpdateProps}
+            curves={this.props.curves} />}
+        {["Weed", "GenericPointer"]
+          .includes(this.selectionPointType) &&
+          <PointColorBulkUpdate {...bulkUpdateProps} />}
+        {["Plant"]
+          .includes(this.selectionPointType) &&
+          <PlantSlugBulkUpdate {...bulkUpdateProps}
+            bulkPlantSlug={this.props.bulkPlantSlug} />}
       </div>
     </div>;
   };
@@ -371,10 +364,10 @@ export class RawSelectPlants
   render() {
     const { dispatch } = this.props;
     return <DesignerPanel panelName={"plant-selection"}
-      panelColor={PanelColor.lightGray}>
+      panelColor={PanelColor.gray}>
       <DesignerPanelHeader
         panelName={"plant-selection"}
-        panelColor={PanelColor.lightGray}
+        panelColor={PanelColor.gray}
         blackText={true}
         title={t("{{length}} {{name}} selected",
           { length: this.selected.length, name: this.itemName })}
@@ -383,11 +376,7 @@ export class RawSelectPlants
         description={Content.BOX_SELECT_DESCRIPTION} />
       <this.ActionButtons />
 
-      <DesignerPanelContent panelName={"plant-selection"}
-        className={[
-          this.state.moreSelections ? "more-select" : "",
-          this.state.moreActions ? "more-action" : "",
-        ].join(" ")}>
+      <DesignerPanelContent panelName={"plant-selection"}>
         {this.selectedPointData.map(p => {
           if (p.kind == "PlantTemplate" || p.body.pointer_type == "Plant") {
             return <PlantInventoryItem
@@ -429,30 +418,8 @@ export class RawSelectPlants
 }
 
 export const SelectPlants = connect(mapStateToProps)(RawSelectPlants);
-
-interface MoreProps {
-  className: string;
-  isOpen: boolean;
-  toggleOpen(): void;
-  customText?: { more: string, less: string };
-  children: JSX.Element | (JSX.Element | false)[];
-}
-
-const More = (props: MoreProps) => {
-  const more = props.customText?.more || t("More");
-  const less = props.customText?.less || t("Less");
-  return <div className={"more"}>
-    <div className={"more-button"}
-      onClick={props.toggleOpen}>
-      <p>{props.isOpen ? less : more}</p>
-      <i className={`fa fa-caret-${props.isOpen ? "up" : "down"}`}
-        title={props.isOpen ? less : more} />
-    </div>
-    <div className={"more-content"} hidden={!props.isOpen}>
-      {props.children}
-    </div>
-  </div>;
-};
+// eslint-disable-next-line import/no-default-export
+export default SelectPlants;
 
 export interface GetFilteredPointsProps {
   selectionPointType: PointType[] | undefined;
@@ -505,12 +472,21 @@ const getVisibleLayers = (getConfigValue: GetWebAppConfigValue): PointType[] => 
   ];
 };
 
-export const SelectModeLink = () =>
-  <div className="select-mode">
+export interface SelectModeLinkProps {
+  dispatch: Function;
+}
+
+export const SelectModeLink = (props: SelectModeLinkProps) => {
+  const navigate = useNavigate();
+  return <div className="select-mode">
     <button
       className="fb-button gray"
       title={t("open point select panel")}
-      onClick={() => push(Path.plants("select"))}>
+      onClick={() => {
+        props.dispatch(setPanelOpen(true));
+        navigate(Path.plants("select"));
+      }}>
       {t("select")}
     </button>
   </div>;
+};

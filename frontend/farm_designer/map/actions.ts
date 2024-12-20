@@ -1,7 +1,6 @@
 import { MovePointsProps, DraggableEvent, MovePointToProps } from "../interfaces";
 import { defensiveClone } from "../../util";
 import { edit } from "../../api/crud";
-import { push } from "../../history";
 import { Actions } from "../../constants";
 import { svgToUrl } from "../../open_farm/icons";
 import { Mode } from "../map/interfaces";
@@ -14,6 +13,8 @@ import { ResourceIndex, UUID } from "../../resources/interfaces";
 import { selectAllPointGroups } from "../../resources/selectors";
 import { overwriteGroup } from "../../point_groups/actions";
 import { FilePath, Path } from "../../internal_urls";
+import { NavigateFunction } from "react-router";
+import { setPanelOpen } from "../panel_header";
 
 export const movePoints = (payload: MovePointsProps) => (dispatch: Function) => {
   payload.points.map(point => {
@@ -100,11 +101,14 @@ export const unselectPlant = (dispatch: Function) => () => {
 };
 
 /** Unselect plant and close plant info or select panel if selected and open. */
-export const closePlantInfo = (dispatch: Function) => () => {
+export const closePlantInfo = (
+  navigate: NavigateFunction,
+  dispatch: Function,
+) => () => {
   const mode = getMode();
   if (mode == Mode.editPlant || mode == Mode.boxSelect) {
     unselectPlant(dispatch)();
-    push(Path.plants());
+    navigate(Path.plants());
   }
 };
 
@@ -119,12 +123,17 @@ export const setDragIcon =
   };
 
 export const mapPointClickAction =
-  (dispatch: Function, uuid: UUID, path?: string) => () => {
+  (navigate: NavigateFunction,
+    dispatch: Function,
+    uuid: UUID,
+    path?: string,
+  ) => () => {
     switch (getMode()) {
       case Mode.editGroup:
       case Mode.boxSelect:
         return dispatch(clickMapPlant(uuid, ""));
       default:
-        return path && push(path);
+        dispatch(setPanelOpen(true));
+        return path && navigate(path);
     }
   };

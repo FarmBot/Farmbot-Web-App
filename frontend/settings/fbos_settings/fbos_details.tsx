@@ -43,7 +43,7 @@ interface ChipTemperatureDisplayProps {
 /** RPI CPU temperature display row: label, temperature, indicator. */
 export function ChipTemperatureDisplay(
   { chip, temperature }: ChipTemperatureDisplayProps,
-): JSX.Element {
+): React.ReactNode {
   return <div className="chip-temp-display">
     <p>
       <b>{chip && chip.toUpperCase()} {t("CPU temperature")}: </b>
@@ -59,7 +59,7 @@ export interface PiDisplayProps {
 }
 
 /** RPI model display row. */
-export const PiDisplay = ({ chip, firmware }: PiDisplayProps): JSX.Element => {
+export const PiDisplay = ({ chip, firmware }: PiDisplayProps): React.ReactNode => {
   const pi = () => {
     switch (chip) {
       case "rpi": return "Zero W";
@@ -145,7 +145,7 @@ interface WiFiStrengthDisplayProps {
 /** WiFi signal strength display row: label, strength, indicator. */
 export function WiFiStrengthDisplay(
   { wifiStrength, wifiStrengthPercent, extraInfo }: WiFiStrengthDisplayProps,
-): JSX.Element {
+): React.ReactNode {
   const calculatedPercent = wifiStrength
     ? Math.round(-0.0154 * wifiStrength ** 2 - 0.4 * wifiStrength + 98)
     : 0;
@@ -314,7 +314,7 @@ interface CommitDisplayProps {
 /** GitHub commit display row: label, commit link. */
 const CommitDisplay = (
   { title, repo, commit }: CommitDisplayProps,
-): JSX.Element => {
+): React.ReactNode => {
   const shortCommit = shortenCommit(commit);
   return <p>
     <b>{title}: </b>
@@ -345,7 +345,7 @@ interface UptimeDisplayProps {
 }
 
 /** FBOS uptime display row: label and uptime in relevant unit. */
-const UptimeDisplay = ({ uptime_sec }: UptimeDisplayProps): JSX.Element => {
+const UptimeDisplay = ({ uptime_sec }: UptimeDisplayProps): React.ReactNode => {
   return <p><b>{t("Uptime")}: </b>{convertUptime(uptime_sec)}</p>;
 };
 
@@ -357,7 +357,7 @@ export interface OSReleaseChannelSelectionProps {
 /** Label and dropdown for selecting FBOS release channel. */
 export const OSReleaseChannelSelection = (
   { dispatch, sourceFbosConfig }: OSReleaseChannelSelectionProps,
-): JSX.Element => {
+): React.ReactNode => {
   const channel = sourceFbosConfig("update_channel").value;
   const firmwareHardware = validFirmwareHardware(
     sourceFbosConfig("firmware_hardware").value);

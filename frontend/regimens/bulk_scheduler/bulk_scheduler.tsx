@@ -3,7 +3,7 @@ import { BulkEditorProps } from "./interfaces";
 import { WeekGrid } from "./week_grid";
 import { setTimeOffset, setSequence } from "./actions";
 import {
-  BlurableInput, Row, Col, FBSelect, DropDownItem, NULL_CHOICE,
+  BlurableInput, Row, FBSelect, DropDownItem, NULL_CHOICE,
 } from "../../ui";
 import moment from "moment";
 import { isString, isUndefined } from "lodash";
@@ -40,39 +40,37 @@ export class BulkScheduler extends React.Component<BulkEditorProps, {}> {
   };
 
   SequenceSelectBox = () =>
-    <Col xs={6}>
-      <div className={"sequence-select-box"}>
-        <label>{t("Sequence")}</label>
-        <FBSelect onChange={this.onChange}
-          selectedItem={this.selected()}
-          list={this.all()} />
-      </div>
-    </Col>;
+    <div className="grid half-gap">
+      <label>{t("Sequence")}</label>
+      <FBSelect onChange={this.onChange}
+        selectedItem={this.selected()}
+        list={this.all()} />
+    </div>;
 
   TimeSelection = () =>
-    <Col xs={6}>
-      <div className={"time-selection"}>
+    <div className={"grid no-gap"}>
+      <div className={"row no-gap grid-exp-2"}>
         <label>{t("Time")}</label>
-        <i className="fa fa-clock-o fb-icon-button" onClick={() =>
+        <i className="fa fa-clock-o fb-icon-button invert" onClick={() =>
           this.props.dispatch(setTimeOffset(timeToMs(
             moment().add(3, "minutes").format("HH:mm"))))} />
-        <BlurableInput type="time"
-          value={msToTime(this.props.dailyOffsetMs)}
-          error={nearOsUpdateTime(
-            this.props.dailyOffsetMs,
-            this.props.device.body.ota_hour)
-            ? t(Content.WITHIN_HOUR_OF_OS_UPDATE)
-            : undefined}
-          onCommit={({ currentTarget }) => {
-            this.props.dispatch(setTimeOffset(timeToMs(currentTarget.value)));
-          }} />
       </div>
-    </Col>;
+      <BlurableInput type="time"
+        value={msToTime(this.props.dailyOffsetMs)}
+        error={nearOsUpdateTime(
+          this.props.dailyOffsetMs,
+          this.props.device.body.ota_hour)
+          ? t(Content.WITHIN_HOUR_OF_OS_UPDATE)
+          : undefined}
+        onCommit={({ currentTarget }) => {
+          this.props.dispatch(setTimeOffset(timeToMs(currentTarget.value)));
+        }} />
+    </div>;
 
   render() {
     const { dispatch, weeks } = this.props;
-    return <div className="bulk-scheduler-content">
-      <Row>
+    return <div className="grid double-gap">
+      <Row className="grid-2-col">
         <this.SequenceSelectBox />
         <this.TimeSelection />
       </Row>

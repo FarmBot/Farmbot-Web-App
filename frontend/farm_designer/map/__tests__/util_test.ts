@@ -3,11 +3,6 @@ jest.mock("../../../screen_size", () => ({
   isMobile: () => mockIsMobile,
 }));
 
-let mockPath = "";
-jest.mock("../../../history", () => ({
-  getPathArray: jest.fn(() => mockPath.split("/")),
-}));
-
 import { fakeState } from "../../../__test_support__/fake_state";
 const mockState = fakeState();
 jest.mock("../../../redux/store", () => ({
@@ -31,6 +26,7 @@ import {
   savedGardenOpen,
   scaleIcon,
   defaultSpreadCmDia,
+  GetGardenCoordinatesProps,
 } from "../util";
 import { McuParams, Xyz } from "farmbot";
 import { BotSize, MapTransformProps, Mode } from "../interfaces";
@@ -41,6 +37,7 @@ import {
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
 import { Path } from "../../../internal_urls";
 import { BotOriginQuadrant } from "../../interfaces";
+import { fakeDesignerState } from "../../../__test_support__/fake_designer_state";
 
 describe("round()", () => {
   it("rounds a number", () => {
@@ -51,27 +48,31 @@ describe("round()", () => {
 
 describe("mapPanelClassName()", () => {
   it("returns correct panel status: short panel", () => {
+    location.pathname = Path.mock(Path.location());
+    const designer = fakeDesignerState();
     mockIsMobile = true;
-    mockPath = Path.mock(Path.location());
-    expect(mapPanelClassName()).toEqual("short-panel");
-    mockPath = Path.mock(Path.cropSearch("mint/add"));
-    expect(mapPanelClassName()).toEqual("short-panel");
+    expect(mapPanelClassName(designer)).toEqual("short-panel");
+    location.pathname = Path.mock(Path.cropSearch("mint/add"));
+    expect(mapPanelClassName(designer)).toEqual("short-panel");
   });
 
   it("returns correct panel status: panel open", () => {
+    location.pathname = Path.mock(Path.location());
+    const designer = fakeDesignerState();
     mockIsMobile = false;
-    mockPath = Path.mock(Path.location());
-    expect(mapPanelClassName()).toEqual("panel-open");
-    mockPath = Path.mock(Path.cropSearch("mint/add"));
-    expect(mapPanelClassName()).toEqual("panel-open");
+    expect(mapPanelClassName(designer)).toEqual("panel-open");
+    location.pathname = Path.mock(Path.cropSearch("mint/add"));
+    expect(mapPanelClassName(designer)).toEqual("panel-open");
   });
 
   it("returns correct panel status: panel closed", () => {
+    location.pathname = Path.mock(Path.plants());
+    const designer = fakeDesignerState();
+    designer.panelOpen = false;
     mockIsMobile = false;
-    mockPath = Path.mock(Path.designer());
-    expect(mapPanelClassName()).toEqual("panel-closed");
+    expect(mapPanelClassName(designer)).toEqual("panel-closed");
     mockIsMobile = true;
-    expect(mapPanelClassName()).toEqual("panel-closed-mobile");
+    expect(mapPanelClassName(designer)).toEqual("panel-closed-mobile");
   });
 });
 
@@ -85,7 +86,7 @@ describe("translateScreenToGarden()", () => {
       gridOffset: { x: 30, y: 40 },
       panelStatus: MapPanelStatus.open,
     });
-    expect(result).toEqual({ x: 30, y: 80 });
+    expect(result).toEqual({ x: 30, y: 100 });
   });
 
   it("translates screen coords to garden coords: zoomLvl < 1", () => {
@@ -97,7 +98,7 @@ describe("translateScreenToGarden()", () => {
       gridOffset: { x: 30, y: 40 },
       panelStatus: MapPanelStatus.open,
     });
-    expect(result).toEqual({ x: 2010, y: 840 });
+    expect(result).toEqual({ x: 1990, y: 910 });
   });
 
   it("translates screen coords to garden coords: zoomLvl > 1", () => {
@@ -109,7 +110,7 @@ describe("translateScreenToGarden()", () => {
       gridOffset: { x: 30, y: 40 },
       panelStatus: MapPanelStatus.open,
     });
-    expect(result).toEqual({ x: 420, y: 150 });
+    expect(result).toEqual({ x: 410, y: 170 });
   });
 
   it("translates screen coords to garden coords: other case", () => {
@@ -124,7 +125,7 @@ describe("translateScreenToGarden()", () => {
       gridOffset: { x: 30, y: 40 },
       panelStatus: MapPanelStatus.open,
     });
-    expect(result).toEqual({ x: 70, y: 130 });
+    expect(result).toEqual({ x: 60, y: 110 });
   });
 
   it("translates screen coords to garden coords: swapped X&Y", () => {
@@ -140,7 +141,7 @@ describe("translateScreenToGarden()", () => {
       gridOffset: { x: 30, y: 40 },
       panelStatus: MapPanelStatus.open,
     });
-    expect(result).toEqual({ x: 130, y: 70 });
+    expect(result).toEqual({ x: 110, y: 60 });
   });
 
   it("translates screen coords to garden coords: panel closed", () => {
@@ -152,7 +153,7 @@ describe("translateScreenToGarden()", () => {
       gridOffset: { x: 30, y: 40 },
       panelStatus: MapPanelStatus.closed,
     });
-    expect(result).toEqual({ x: 480, y: 80 });
+    expect(result).toEqual({ x: 490, y: 100 });
   });
 
   it("translates screen coords to garden coords: panel closed mobile", () => {
@@ -164,7 +165,7 @@ describe("translateScreenToGarden()", () => {
       gridOffset: { x: 30, y: 40 },
       panelStatus: MapPanelStatus.mobileClosed,
     });
-    expect(result).toEqual({ x: 480, y: 30 });
+    expect(result).toEqual({ x: 490, y: 30 });
   });
 
   it("translates screen coords to garden coords: short panel", () => {
@@ -176,7 +177,7 @@ describe("translateScreenToGarden()", () => {
       gridOffset: { x: 30, y: 40 },
       panelStatus: MapPanelStatus.short,
     });
-    expect(result).toEqual({ x: 480, y: 40 });
+    expect(result).toEqual({ x: 490, y: 40 });
   });
 });
 
@@ -393,42 +394,42 @@ describe("transformForQuadrant()", () => {
 
 describe("getMode()", () => {
   it("returns correct Mode", () => {
-    mockPath = Path.mock(Path.cropSearch("mint/add"));
+    location.pathname = Path.mock(Path.cropSearch("mint/add"));
     expect(getMode()).toEqual(Mode.clickToAdd);
-    mockPath = Path.mock(Path.plants(1));
+    location.pathname = Path.mock(Path.plants(1));
     expect(getMode()).toEqual(Mode.editPlant);
-    mockPath = Path.mock(Path.plantTemplates(1));
+    location.pathname = Path.mock(Path.plantTemplates(1));
     expect(getMode()).toEqual(Mode.editPlant);
-    mockPath = Path.mock(Path.plants("select"));
+    location.pathname = Path.mock(Path.plants("select"));
     expect(getMode()).toEqual(Mode.boxSelect);
-    mockPath = Path.mock(Path.cropSearch("mint"));
+    location.pathname = Path.mock(Path.cropSearch("mint"));
     expect(getMode()).toEqual(Mode.clickToAdd);
-    mockPath = Path.mock(Path.location());
+    location.pathname = Path.mock(Path.location());
     expect(getMode()).toEqual(Mode.locationInfo);
-    mockPath = Path.mock(Path.points());
+    location.pathname = Path.mock(Path.points());
     expect(getMode()).toEqual(Mode.points);
-    mockPath = Path.mock(Path.points("add"));
+    location.pathname = Path.mock(Path.points("add"));
     expect(getMode()).toEqual(Mode.createPoint);
-    mockPath = Path.mock(Path.weeds());
+    location.pathname = Path.mock(Path.weeds());
     expect(getMode()).toEqual(Mode.weeds);
-    mockPath = Path.mock(Path.weeds("add"));
+    location.pathname = Path.mock(Path.weeds("add"));
     expect(getMode()).toEqual(Mode.createWeed);
-    mockPath = Path.mock(Path.savedGardens(1));
+    location.pathname = Path.mock(Path.savedGardens(1));
     expect(getMode()).toEqual(Mode.templateView);
-    mockPath = Path.mock(Path.groups(1));
+    location.pathname = Path.mock(Path.groups(1));
     expect(getMode()).toEqual(Mode.editGroup);
-    mockPath = "";
+    location.pathname = "";
     mockState.resources.consumers.farm_designer.profileOpen = true;
     expect(getMode()).toEqual(Mode.profile);
     mockState.resources.consumers.farm_designer.profileOpen = false;
-    mockPath = "";
+    location.pathname = "";
     expect(getMode()).toEqual(Mode.none);
   });
 });
 
 describe("savedGardenOpen", () => {
   it("is open", () => {
-    mockPath = Path.mock(Path.savedGardens(4));
+    location.pathname = Path.mock(Path.savedGardens(4));
     const result = savedGardenOpen();
     expect(result).toEqual(4);
   });
@@ -445,16 +446,17 @@ describe("getGardenCoordinates()", () => {
     });
   });
 
-  const fakeProps = () => ({
+  const fakeProps = (): GetGardenCoordinatesProps => ({
     mapTransformProps: fakeMapTransformProps(),
     gridOffset: { x: 10, y: 20 },
     pageX: 500,
     pageY: 200,
+    designer: fakeDesignerState(),
   });
 
   it("returns garden coordinates", () => {
     const result = getGardenCoordinates(fakeProps());
-    expect(result).toEqual({ x: 20, y: 70 });
+    expect(result).toEqual({ x: 20, y: 90 });
   });
 
   it("falls back to zoom level", () => {
@@ -462,7 +464,7 @@ describe("getGardenCoordinates()", () => {
       value: () => ({ transform: undefined }), configurable: true
     });
     const result = getGardenCoordinates(fakeProps());
-    expect(result).toEqual({ x: 20, y: 70 });
+    expect(result).toEqual({ x: 20, y: 90 });
   });
 
   it("returns undefined", () => {
@@ -477,34 +479,34 @@ describe("getGardenCoordinates()", () => {
 
 describe("allowInteraction()", () => {
   it("allows interaction", () => {
-    mockPath = Path.mock(Path.plants());
+    location.pathname = Path.mock(Path.plants());
     expect(allowInteraction()).toBeTruthy();
   });
 
   it("disallows interaction", () => {
-    mockPath = Path.mock(Path.cropSearch("mint/add"));
+    location.pathname = Path.mock(Path.cropSearch("mint/add"));
     expect(allowInteraction()).toBeFalsy();
-    mockPath = Path.mock(Path.location());
+    location.pathname = Path.mock(Path.location());
     expect(allowInteraction()).toBeFalsy();
-    mockPath = Path.mock(Path.points("add"));
+    location.pathname = Path.mock(Path.points("add"));
     expect(allowInteraction()).toBeFalsy();
-    mockPath = Path.mock(Path.weeds("add"));
+    location.pathname = Path.mock(Path.weeds("add"));
     expect(allowInteraction()).toBeFalsy();
   });
 });
 
 describe("allowGroupAreaInteraction()", () => {
   it("allows interaction", () => {
-    mockPath = Path.mock(Path.plants());
+    location.pathname = Path.mock(Path.plants());
     expect(allowGroupAreaInteraction()).toBeTruthy();
   });
 
   it("disallows interaction", () => {
-    mockPath = Path.mock(Path.plants("select"));
+    location.pathname = Path.mock(Path.plants("select"));
     expect(allowGroupAreaInteraction()).toBeFalsy();
-    mockPath = Path.mock(Path.location());
+    location.pathname = Path.mock(Path.location());
     expect(allowGroupAreaInteraction()).toBeFalsy();
-    mockPath = Path.mock(Path.groups(1));
+    location.pathname = Path.mock(Path.groups(1));
     expect(allowGroupAreaInteraction()).toBeFalsy();
   });
 });

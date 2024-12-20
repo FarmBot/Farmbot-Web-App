@@ -22,7 +22,7 @@ export interface EmptyStateWrapperProps {
   notEmpty: unknown;
   title?: string;
   text?: string;
-  textElement?: JSX.Element;
+  textElement?: React.ReactNode;
   graphic: string;
   colorScheme?: "plants" | "events" | "gardens" | "points" | "tools"
   | "groups" | "weeds" | "zones" | "farmware" | "peripherals" | "sensors"
@@ -32,7 +32,7 @@ export interface EmptyStateWrapperProps {
 
 export const EmptyStateWrapper = (props: EmptyStateWrapperProps) =>
   props.notEmpty
-    ? <div className="non-empty-state">
+    ? <div className="non-empty-state grid no-gap">
       <ErrorBoundary>
         {props.children}
       </ErrorBoundary>

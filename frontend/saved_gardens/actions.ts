@@ -1,27 +1,29 @@
 import axios from "axios";
 import { API } from "../api";
 import { success, info } from "../toast/toast";
-import { push } from "../history";
 import { Actions } from "../constants";
 import { destroy, initSave, initSaveGetId } from "../api/crud";
 import { TaggedSavedGarden, TaggedPlantTemplate } from "farmbot";
 import { t } from "../i18next_wrapper";
 import { stopTracking } from "../connectivity/data_consistency";
 import { Path } from "../internal_urls";
+import { NavigateFunction } from "react-router";
 
 /** Save all Plant to PlantTemplates in a new SavedGarden. */
 export const snapshotGarden = (
+  navigate: Function,
   gardenName?: string | undefined,
   gardenNotes?: string,
-) =>
-  axios.post<void>(API.current.snapshotPath,
+) => {
+  return axios.post<void>(API.current.snapshotPath,
     gardenName
       ? { name: gardenName, notes: gardenNotes }
       : {})
     .then(() => {
       success(t("Garden Saved."));
-      push(Path.plants());
+      navigate(Path.plants());
     });
+};
 
 export const unselectSavedGarden = {
   type: Actions.CHOOSE_SAVED_GARDEN,
@@ -29,47 +31,59 @@ export const unselectSavedGarden = {
 };
 
 /** Save a SavedGarden's PlantTemplates as Plants. */
-export const applyGarden = (gardenId: number) => (dispatch: Function) => axios
-  .patch<void>(API.current.applyGardenPath(gardenId))
-  .then(data => {
-    stopTracking(data.headers["x-farmbot-rpc-id"] as string);
-    push(Path.plants());
-    dispatch(unselectSavedGarden);
-    const busyToastTitle = t("Please wait");
-    info(t("while your garden is applied."), { title: busyToastTitle });
-  });
+export const applyGarden = (navigate: Function, gardenId: number) =>
+  (dispatch: Function) => axios
+    .patch<void>(API.current.applyGardenPath(gardenId))
+    .then(data => {
+      stopTracking(data.headers["x-farmbot-rpc-id"] as string);
+      navigate(Path.plants());
+      dispatch(unselectSavedGarden);
+      const busyToastTitle = t("Please wait");
+      info(t("while your garden is applied."), { title: busyToastTitle });
+    });
 
-export const destroySavedGarden = (uuid: string) => (dispatch: Function) => {
+export const destroySavedGarden = (
+  navigate: NavigateFunction,
+  uuid: string,
+) => (dispatch: Function) => {
   dispatch(unselectSavedGarden);
-  push(Path.plants());
+  navigate(Path.plants());
   dispatch(destroy(uuid));
 };
 
-export const closeSavedGarden = () => {
-  push(Path.plants());
+export const closeSavedGarden = (navigate: NavigateFunction) => {
+  navigate(Path.plants());
   return (dispatch: Function) =>
     dispatch(unselectSavedGarden);
 };
 
-export const openSavedGarden = (savedGardenId: number | undefined) => {
-  push(Path.savedGardens(savedGardenId));
+export const openSavedGarden = (
+  navigate: NavigateFunction,
+  savedGardenId: number | undefined,
+) => {
+  navigate(Path.savedGardens(savedGardenId));
   return (dispatch: Function) =>
     dispatch({ type: Actions.CHOOSE_SAVED_GARDEN, payload: savedGardenId });
 };
 
 /** Open a SavedGarden if it is closed, otherwise close it. */
 export const openOrCloseGarden = (props: {
+  navigate: NavigateFunction,
   savedGardenId: number | undefined,
   gardenIsOpen: boolean,
   dispatch: Function
 }) =>
   () =>
     !props.gardenIsOpen && props.savedGardenId
-      ? props.dispatch(openSavedGarden(props.savedGardenId))
-      : props.dispatch(closeSavedGarden());
+      ? props.dispatch(openSavedGarden(props.navigate, props.savedGardenId))
+      : props.dispatch(closeSavedGarden(props.navigate));
 
 /** Create a new SavedGarden with the chosen name. */
-export const newSavedGarden = (gardenName: string, gardenNotes: string) =>
+export const newSavedGarden = (
+  navigate: NavigateFunction,
+  gardenName: string,
+  gardenNotes: string,
+) =>
   (dispatch: Function) => {
     dispatch(initSave("SavedGarden", {
       name: gardenName || "Untitled Garden",
@@ -77,7 +91,7 @@ export const newSavedGarden = (gardenName: string, gardenNotes: string) =>
     }))
       .then(() => {
         success(t("Garden Saved."));
-        push(Path.plants());
+        navigate(Path.plants());
       });
   };
 
@@ -94,12 +108,14 @@ const newPTBody =
   });
 
 /** Copy a SavedGarden and all of its PlantTemplates. */
-export const copySavedGarden = ({ newSGName, savedGarden, plantTemplates }: {
+export const copySavedGarden = (props: {
+  navigate: NavigateFunction,
   newSGName: string,
   savedGarden: TaggedSavedGarden,
   plantTemplates: TaggedPlantTemplate[]
 }) =>
   (dispatch: Function) => {
+    const { newSGName, savedGarden, plantTemplates, navigate } = props;
     const sourceSavedGardenId = savedGarden.body.id;
     const gardenName = newSGName || `${savedGarden.body.name} (${t("copy")})`;
     dispatch(initSaveGetId(savedGarden.kind, { name: gardenName }))
@@ -108,6 +124,6 @@ export const copySavedGarden = ({ newSGName, savedGarden, plantTemplates }: {
           .filter(x => x.body.saved_garden_id === sourceSavedGardenId)
           .map(x => dispatch(initSave(x.kind, newPTBody(x, newSGId))));
         success(t("Garden Saved."));
-        push(Path.plants());
+        navigate(Path.plants());
       });
   };

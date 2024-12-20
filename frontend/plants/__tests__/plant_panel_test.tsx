@@ -17,7 +17,6 @@ import {
 import { shallow, mount } from "enzyme";
 import { FormattedPlantInfo } from "../map_state_to_props";
 import { clickButton } from "../../__test_support__/helpers";
-import { push } from "../../history";
 import moment from "moment";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import {
@@ -119,7 +118,7 @@ describe("<PlantPanel />", () => {
     p.info.id = 1;
     const wrapper = mount(<PlantPanel {...p} />);
     wrapper.find(".fa-pencil").simulate("click");
-    expect(push).toHaveBeenCalledWith(Path.cropSearch());
+    expect(mockNavigate).toHaveBeenCalledWith(Path.cropSearch());
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_PLANT_TYPE_CHANGE_ID, payload: 1,
     });

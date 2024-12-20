@@ -5,8 +5,8 @@ import {
 } from "../index";
 import { fakeHelpState } from "../../../__test_support__/fake_designer_state";
 import { Actions } from "../../../constants";
-import { push } from "../../../history";
 import { TourStepContainerProps } from "../interfaces";
+import { mountWithContext } from "../../../__test_support__/mount_with_context";
 
 describe("<TourStepContainer />", () => {
   const fakeProps = (): TourStepContainerProps => ({
@@ -125,8 +125,9 @@ describe("<TourStepContainer />", () => {
     const p = fakeProps();
     p.helpState.currentTour = "gettingStarted";
     p.helpState.currentTourStep = "intro";
-    mount(<TourStepContainer {...p} />);
-    expect(push).toHaveBeenCalledWith("?tour=gettingStarted?tourStep=intro");
+    mountWithContext(<TourStepContainer {...p} />);
+    expect(mockNavigate).toHaveBeenCalledWith(
+      "?tour=gettingStarted?tourStep=intro");
   });
 
   it("dispatches", () => {

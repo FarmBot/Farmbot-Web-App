@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { BotPosition } from "../../../../devices/interfaces";
 import { MapTransformProps, AxisNumberProperty } from "../../interfaces";
 import { transformXY } from "../../util";

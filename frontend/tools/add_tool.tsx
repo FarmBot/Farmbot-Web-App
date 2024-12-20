@@ -9,7 +9,7 @@ import { SaveBtn } from "../ui";
 import { SpecialStatus } from "farmbot";
 import { initSave, destroy, init, save } from "../api/crud";
 import { Panel } from "../farm_designer/panel_header";
-import { push } from "../history";
+import { useNavigate } from "react-router";
 import { selectAllTools } from "../resources/selectors";
 import { betterCompact } from "../util";
 import {
@@ -54,7 +54,10 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
 
   newTool = (name: string) => this.props.dispatch(initSave("Tool", { name }));
 
-  back = () => push(Path.tools());
+  back = () => {
+    const navigate = useNavigate();
+    navigate(Path.tools());
+  };
 
   save = () => {
     const initTool = init("Tool", {
@@ -136,6 +139,7 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
 
   AddStockTools = () => {
     const add = this.state.toAdd.filter(this.filterExisting);
+    const navigate = useNavigate();
     return <div className="add-stock-tools"
       hidden={this.props.firmwareHardware == "none"}>
       <label>{t("stock names")}</label>
@@ -151,7 +155,7 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
         title={add.length > 0 ? t("Add selected") : t("None to add")}
         onClick={() => {
           add.map(n => this.newTool(n));
-          push(Path.tools());
+          navigate(Path.tools());
         }}>
         <i className="fa fa-plus" />
         {t("selected")}
@@ -179,21 +183,23 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
         </div>
       </DesignerPanelHeader>
       <DesignerPanelContent panelName={panelName}>
-        <div className="add-new-tool">
+        <div className="add-new-tool grid">
           <ToolSVG toolName={this.state.toolName} profile={true} />
           <CustomToolGraphicsInput
             toolName={this.state.toolName}
             dispatch={this.props.dispatch}
             saveFarmwareEnv={this.props.saveFarmwareEnv}
             env={this.props.env} />
-          <label>{t("Name")}</label>
-          <input defaultValue={this.state.toolName}
-            name="toolName"
-            onChange={e =>
-              this.setState({ toolName: e.currentTarget.value })} />
-          {reduceToolName(toolName) == ToolName.wateringNozzle &&
-            <WaterFlowRateInput value={this.state.flowRate}
-              onChange={this.changeFlowRate} />}
+          <div className="row grid-exp-2">
+            <label>{t("Name")}</label>
+            <input defaultValue={this.state.toolName}
+              name="toolName"
+              onChange={e =>
+                this.setState({ toolName: e.currentTarget.value })} />
+            {reduceToolName(toolName) == ToolName.wateringNozzle &&
+              <WaterFlowRateInput value={this.state.flowRate}
+                onChange={this.changeFlowRate} />}
+          </div>
           <p className="name-error">
             {alreadyAdded ? t("Already added.") : ""}
           </p>
@@ -205,3 +211,5 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
 }
 
 export const AddTool = connect(mapStateToProps)(RawAddTool);
+// eslint-disable-next-line import/no-default-export
+export default AddTool;

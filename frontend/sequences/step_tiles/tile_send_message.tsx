@@ -1,5 +1,5 @@
 import React from "react";
-import { FBSelect, DropDownItem, Row, Col } from "../../ui";
+import { FBSelect, DropDownItem } from "../../ui";
 import { StepInputBox } from "../inputs/step_input_box";
 import { SendMessage } from "farmbot";
 import { ChannelName, isMessageType, StepParams } from "../interfaces";
@@ -73,43 +73,45 @@ export class TileSendMessage
     return <StepWrapper {...this.props}
       className={"send-message-step"}
       helpText={t(ToolTips.SEND_MESSAGE)}>
-      <Row>
-        <Col xs={12}>
-          <label>{t("Message")}</label>
-          <InputLengthIndicator field={"message"}
-            value={this.state.message} />
+      <div className="grid">
+        <div className="grid half-gap">
+          <div className="row grid-exp-1">
+            <label>{t("Message")}</label>
+            <InputLengthIndicator field={"message"}
+              value={this.state.message} />
+          </div>
           <StepInputBox dispatch={dispatch}
             step={currentStep}
             sequence={currentSequence}
             index={index}
             keyCallback={this.updateMessage}
             field="message" />
-          <div className="bottom-content">
-            <div className="channel-options">
-              <label>{t("type")}</label>
-              <FBSelect
-                onChange={this.setMsgType}
-                selectedItem={this.currentSelection}
-                list={MESSAGE_STATUSES()} />
-            </div>
-            <div className="channel-fields">
-              {EACH_CHANNEL().map((chan, inx) => {
-                return <fieldset key={inx}>
-                  <label htmlFor={chan.name}>
-                    {chan.label}
-                  </label>
-                  <input type="checkbox" name={chan.name}
-                    id={chan.name}
-                    onChange={this.toggle(chan.name)}
-                    checked={
-                      this.hasChannel(chan.name) || chan.alwaysOn}
-                    disabled={chan.alwaysOn} />
-                </fieldset>;
-              })}
-            </div>
+        </div>
+        <div className="row align-baseline">
+          <div className="grid half-gap">
+            <label>{t("type")}</label>
+            <FBSelect
+              onChange={this.setMsgType}
+              selectedItem={this.currentSelection}
+              list={MESSAGE_STATUSES()} />
           </div>
-        </Col>
-      </Row>
+          <div>
+            {EACH_CHANNEL().map((chan, inx) => {
+              return <fieldset key={inx}>
+                <label htmlFor={chan.name}>
+                  {chan.label}
+                </label>
+                <input type="checkbox" name={chan.name}
+                  id={chan.name}
+                  onChange={this.toggle(chan.name)}
+                  checked={
+                    this.hasChannel(chan.name) || chan.alwaysOn}
+                  disabled={chan.alwaysOn} />
+              </fieldset>;
+            })}
+          </div>
+        </div>
+      </div>
     </StepWrapper>;
   }
 }

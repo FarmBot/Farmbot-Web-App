@@ -1,19 +1,11 @@
-let mockPath = "";
-jest.mock("../../history", () => ({
-  push: jest.fn(),
-  getPathArray: jest.fn(() => mockPath.split("/")),
-}));
-
 const step_buttons = require("../step_buttons");
 const mockStepClick = jest.fn();
 step_buttons.stepClick = jest.fn(() => mockStepClick);
 
-import React from "react";
+import React, { act } from "react";
 import { mount } from "enzyme";
-import { act } from "react-dom/test-utils";
 import { StepButtonCluster, StepButtonProps } from "../step_button_cluster";
 import { Actions } from "../../constants";
-import { push } from "../../history";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { fakeFarmwareData } from "../../__test_support__/fake_sequence_step_data";
 import { FarmwareName } from "../step_tiles/tile_execute_script";
@@ -71,15 +63,15 @@ describe("<StepButtonCluster />", () => {
   });
 
   it("doesn't navigate", () => {
-    mockPath = Path.mock(Path.sequencePage("1"));
+    location.pathname = Path.mock(Path.sequencePage("1"));
     const p = fakeProps();
     const wrapper = mount(<StepButtonCluster {...p} />);
     wrapper.find(".step-button").last().simulate("click");
-    expect(push).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 
   it("shows pinned sequences", () => {
-    mockPath = Path.mock(Path.sequences("1"));
+    location.pathname = Path.mock(Path.sequences("1"));
     const p = fakeProps();
     const sequence = fakeSequence();
     sequence.body.name = "pinned";
@@ -90,7 +82,7 @@ describe("<StepButtonCluster />", () => {
   });
 
   it("filters out commands", () => {
-    mockPath = Path.mock(Path.designerSequences("1"));
+    location.pathname = Path.mock(Path.designerSequences("1"));
     const p = fakeProps();
     const sequence = fakeSequence();
     sequence.body.name = "pinned";
@@ -117,7 +109,7 @@ describe("<StepButtonCluster />", () => {
   });
 
   it("doesn't add command", () => {
-    mockPath = Path.mock(Path.designerSequences("1"));
+    location.pathname = Path.mock(Path.designerSequences("1"));
     const p = fakeProps();
     p.sequences = undefined;
     p.farmwareData = undefined;

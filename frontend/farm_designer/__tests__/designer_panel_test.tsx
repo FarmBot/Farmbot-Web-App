@@ -1,10 +1,9 @@
-import React from "react";
+import React, { act } from "react";
 import { mount } from "enzyme";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelContentProps,
   DesignerPanelHeader, DesignerPanelTop, DesignerPanelTopProps,
 } from "../designer_panel";
-import { act } from "react-dom/test-utils";
 import { SpecialStatus } from "farmbot";
 import { Panel } from "../panel_header";
 

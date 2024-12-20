@@ -6,7 +6,7 @@ import { every, isUndefined, noop, some } from "lodash";
 import {
   DesignerPanel, DesignerPanelContent, DesignerPanelTop,
 } from "../farm_designer/designer_panel";
-import { DesignerNavTabs, Panel } from "../farm_designer/panel_header";
+import { Panel } from "../farm_designer/panel_header";
 import { Everything } from "../interfaces";
 import { Saucer } from "../ui";
 import {
@@ -32,6 +32,7 @@ import {
   completeSetup,
   resetSetup,
 } from "./actions";
+import { NavigationContext } from "../routes_helpers";
 
 export const mapStateToProps = (props: Everything): SetupWizardProps => ({
   resources: props.resources.index,
@@ -153,10 +154,13 @@ export class RawSetupWizard
     [this.stepSection(stepSlug)]: true,
   });
 
+  static contextType = NavigationContext;
+  context!: React.ContextType<typeof NavigationContext>;
+  navigate = this.context;
+
   render() {
     const panelName = "setup";
     return <DesignerPanel panelName={panelName} panel={Panel.Controls}>
-      <DesignerNavTabs />
       <DesignerPanelTop panel={Panel.Controls} />
       <DesignerPanelContent panelName={panelName}>
         <WizardHeader reset={this.reset} results={this.props.wizardStepResults}
@@ -183,11 +187,12 @@ export class RawSetupWizard
                     bot={this.props.bot}
                     dispatch={this.props.dispatch}
                     getConfigValue={this.props.getConfigValue}
+                    navigate={this.navigate}
                     resources={this.props.resources} />)}
               </Collapse>
             </div>)}
         {this.props.device?.body.setup_completed_at &&
-          <div className={"setup-complete"}>
+          <div className={"setup-complete row half-gap"}>
             <Saucer color={"green"}><i className={"fa fa-check"} /></Saucer>
             <p>{t("Setup Complete!")}</p>
           </div>}
@@ -197,7 +202,7 @@ export class RawSetupWizard
 }
 
 const WizardHeader = (props: WizardHeaderProps) =>
-  <div className={"wizard-header"}>
+  <div className={"wizard-header row grid-exp-1"}>
     <h1>{t("Setup")}</h1>
     <p className={"progress-meter"}>
       {setupProgressString(props.results, props.stepDataProps)}
@@ -210,8 +215,8 @@ const WizardHeader = (props: WizardHeaderProps) =>
   </div>;
 
 const WizardSectionHeader = (props: WizardSectionHeaderProps) =>
-  <h2 onClick={props.toggleSection(props.section.slug)}>
-    {t(props.section.title)}
+  <h2 onClick={props.toggleSection(props.section.slug)}
+    className="row grid-exp-2">
     {every(props.section.steps.map(step =>
       props.results[step.slug]?.answer)) &&
       <Saucer color={"green"}>
@@ -226,8 +231,16 @@ const WizardSectionHeader = (props: WizardSectionHeaderProps) =>
           <i className={"fa fa-times"} />
         </div>
       </Saucer>}
+    {!every(props.section.steps.map(step =>
+      props.results[step.slug]?.answer)) &&
+      !some(props.section.steps.map(step =>
+        props.results[step.slug]?.answer == false)) &&
+      <Saucer color={"gray"} />}
+    {t(props.section.title)}
     <i className={
       `fa fa-caret-${props.sectionOpen ? "up" : "down"}`} />
   </h2>;
 
 export const SetupWizard = connect(mapStateToProps)(RawSetupWizard);
+// eslint-disable-next-line import/no-default-export
+export default SetupWizard;

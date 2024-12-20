@@ -168,8 +168,9 @@ describe("<VariableForm />", () => {
     p.hideWrapper = false;
     const wrapper = mount(<VariableForm {...p} />);
     const boxes = wrapper.find(".custom-coordinate-form");
-    expect(boxes.find(".col-xs-5").length).toEqual(1);
-    expect(boxes.find(".col-xs-6").length).toEqual(0);
+    expect(boxes.find(".x").length).toEqual(1);
+    expect(boxes.find(".y").length).toEqual(1);
+    expect(boxes.find(".z").length).toEqual(1);
   });
 
   it("renders default value warning", () => {
@@ -206,36 +207,6 @@ describe("<VariableForm />", () => {
     p.locationDropdownKey = "default_value";
     const wrapper = shallow(<VariableForm {...p} />);
     expect(wrapper.html()).toContain("string-input");
-  });
-
-  it("renders narrow number variable input", () => {
-    const p = fakeProps();
-    p.variableType = VariableType.Number;
-    p.variable.celeryNode = {
-      kind: "variable_declaration",
-      args: {
-        label: "label", data_value: { kind: "numeric", args: { number: 0 } }
-      }
-    };
-    p.locationDropdownKey = "";
-    p.removeVariable = jest.fn();
-    const wrapper = shallow(<VariableForm {...p} />);
-    expect(wrapper.html()).toContain("col-xs-5");
-  });
-
-  it("renders narrow text variable input", () => {
-    const p = fakeProps();
-    p.variableType = VariableType.Text;
-    p.variable.celeryNode = {
-      kind: "variable_declaration",
-      args: {
-        label: "label", data_value: { kind: "text", args: { string: "" } }
-      }
-    };
-    p.locationDropdownKey = "";
-    p.removeVariable = jest.fn();
-    const wrapper = shallow(<VariableForm {...p} />);
-    expect(wrapper.html()).toContain("col-xs-5");
   });
 
   it("doesn't change label", () => {

@@ -29,14 +29,18 @@ jest.mock("@react-spring/three", () => ({
     (props.to as TransitionFn)?.(next);
     return { ...props, ...props.from };
   },
-  animated: {
-    mesh: ({ children }: { children: ReactNode }) =>
-      <div className={"animated"}>{children}</div>,
-    meshPhongMaterial: () => <div />,
-    group: ({ children }: { children: ReactNode }) =>
-      <div className={"group"}>{children}</div>,
-    pointLight: () => <div />,
-  }
+  // mocks for `<animated.mesh...` and similar:
+  //   animated: {
+  //     mesh: ({ children }: { children: ReactNode }) =>
+  //       <div className={"animated"}>{children}</div>,
+  //     meshPhongMaterial: () => <div />,
+  //     group: ({ children }: { children: ReactNode }) =>
+  //       <div className={"group"}>{children}</div>,
+  //     pointLight: () => <div />,
+  //   },
+  // mocks for `const AnimatedMesh = animated(Mesh); ... <AnimatedMesh...`:
+  animated: () => ({ children }: { children?: ReactNode }) =>
+    <div className={"animated"}>{children}</div>,
 }));
 
 jest.mock("@react-three/drei", () => {
@@ -556,7 +560,9 @@ jest.mock("@react-three/drei", () => {
       <div className={"trail"}>{name}</div>,
     Tube: ({ name, children }: { name: string, children: ReactNode }) =>
       <div className={"tube" + name}>{children}</div>,
-    Text: ({ children }: { children: ReactNode }) =>
+    Center: ({ children }: { children: ReactNode }) =>
+      <div className={"center"}>{children}</div>,
+    Text3D: ({ children }: { children: ReactNode }) =>
       <div className={"text"}>{children}</div>,
     Detailed: ({ children }: { children: ReactNode }) =>
       <div className={"detailed"}>{children}</div>,
@@ -580,8 +586,8 @@ jest.mock("@react-three/drei", () => {
       <div className={"circle" + name}>{children}</div>,
     Stats: ({ name }: { name: string }) =>
       <div className={"stats"}>{name}</div>,
-    Billboard: ({ name }: { name: string }) =>
-      <div className={"billboard"}>{name}</div>,
+    Billboard: ({ name, children }: { name: string, children: ReactNode }) =>
+      <div className={"billboard" + name}>{children}</div>,
     Image: ({ name }: { name: string }) =>
       <div className={"image"}>{name}</div>,
     Clouds: ({ name }: { name: string }) =>

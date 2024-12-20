@@ -12,6 +12,7 @@ import { mount } from "enzyme";
 import { Toast, ToastContainer, Toasts } from "../fb_toast";
 import { ToastProps, ToastsProps } from "../interfaces";
 import { fakeToasts } from "../../__test_support__/fake_toasts";
+import { Path } from "../../internal_urls";
 
 describe("<Toast />", () => {
   const fakeProps = (): ToastProps => ({
@@ -109,6 +110,22 @@ describe("<Toast />", () => {
     const wrapper = mount(<Toast {...fakeProps()} />);
     wrapper.setState({ intervalId: 1 });
     wrapper.unmount();
+  });
+
+  it("redirects", () => {
+    location.pathname = Path.mock(Path.designer());
+    const p = fakeProps();
+    p.redirect = Path.plants();
+    mount(<Toast {...p} />);
+    expect(mockNavigate).toHaveBeenCalledWith(Path.plants());
+  });
+
+  it("doesn't redirect", () => {
+    location.pathname = Path.mock(Path.plants());
+    const p = fakeProps();
+    p.redirect = Path.plants();
+    mount(<Toast {...p} />);
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 });
 

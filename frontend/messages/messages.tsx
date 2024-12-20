@@ -6,7 +6,7 @@ import { MessagesProps } from "../messages/interfaces";
 import {
   DesignerPanel, DesignerPanelContent,
 } from "../farm_designer/designer_panel";
-import { Panel, DesignerNavTabs } from "../farm_designer/panel_header";
+import { Panel } from "../farm_designer/panel_header";
 import { t } from "../i18next_wrapper";
 import { Link } from "../link";
 import { Path } from "../internal_urls";
@@ -16,7 +16,6 @@ export class RawMessagesPanel
 
   render() {
     return <DesignerPanel panelName={"messages"} panel={Panel.Messages}>
-      <DesignerNavTabs />
       <DesignerPanelContent panelName={"messages"}>
         <Alerts alerts={this.props.alerts}
           dispatch={this.props.dispatch}
@@ -35,3 +34,5 @@ export class RawMessagesPanel
 }
 
 export const MessagesPanel = connect(mapStateToProps)(RawMessagesPanel);
+// eslint-disable-next-line import/no-default-export
+export default MessagesPanel;

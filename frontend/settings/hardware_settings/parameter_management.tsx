@@ -1,6 +1,6 @@
 import React from "react";
 import { ParameterManagementProps, ShowAdvancedToggleProps } from "./interfaces";
-import { Row, Col, BlurableInput, Help, ToggleButton, Popover } from "../../ui";
+import { Row, BlurableInput, Help, ToggleButton, Popover } from "../../ui";
 import { Header } from "./header";
 import { Collapse, Position } from "@blueprintjs/core";
 import { Content, DeviceSetting, ToolTips } from "../../constants";
@@ -34,51 +34,41 @@ export function ParameterManagement(props: ParameterManagementProps) {
     <Collapse isOpen={!!parameter_management}>
       <Highlight settingName={DeviceSetting.paramLoadProgress}>
         <Row>
-          <Col xs={7}>
+          <div>
             <label style={{ lineHeight: "1.5rem", display: "inline" }}>
               {t(DeviceSetting.paramLoadProgress)}
             </label>
             <Help text={ToolTips.PARAMETER_LOAD_PROGRESS} />
-          </Col>
-          <Col xs={5} className={"centered-button-div"}>
-            <SettingLoadProgress botOnline={botOnline}
-              firmwareHardware={firmwareHardware}
-              firmwareConfig={props.firmwareConfig}
-              sourceFwConfig={props.sourceFwConfig} />
-          </Col>
+          </div>
+          <SettingLoadProgress botOnline={botOnline}
+            firmwareHardware={firmwareHardware}
+            firmwareConfig={props.firmwareConfig}
+            sourceFwConfig={props.sourceFwConfig} />
         </Row>
       </Highlight>
       <Highlight settingName={DeviceSetting.paramResend}>
-        <Row>
-          <Col xs={8}>
-            <label style={{ lineHeight: "1.5rem" }}>
-              {t(DeviceSetting.paramResend)}
-            </label>
-          </Col>
-          <Col xs={4} className={"centered-button-div"}>
-            <button
-              className="fb-button yellow"
-              disabled={arduinoBusy || !botOnline}
-              title={t("RESEND")}
-              onClick={() => dispatch(resendParameters())}>
-              {t("RESEND")}
-            </button>
-          </Col>
+        <Row className="grid-exp-1">
+          <label style={{ lineHeight: "1.5rem" }}>
+            {t(DeviceSetting.paramResend)}
+          </label>
+          <button
+            className="fb-button yellow"
+            disabled={arduinoBusy || !botOnline}
+            title={t("RESEND")}
+            onClick={() => dispatch(resendParameters())}>
+            {t("RESEND")}
+          </button>
         </Row>
       </Highlight>
       <Highlight settingName={DeviceSetting.exportParameters}>
-        <Row>
-          <Col xs={8}>
-            <label style={{ lineHeight: "1.5rem" }}>
-              {t(DeviceSetting.exportParameters)}
-            </label>
-          </Col>
-          <Col xs={4} className={"centered-button-div"}>
-            <Popover position={Position.BOTTOM_RIGHT}
-              target={<i className="fa fa-download" />}
-              content={
-                <FwParamExportMenu firmwareConfig={props.firmwareConfig} />} />
-          </Col>
+        <Row className="grid-exp-1">
+          <label style={{ lineHeight: "1.5rem" }}>
+            {t(DeviceSetting.exportParameters)}
+          </label>
+          <Popover position={Position.BOTTOM_RIGHT}
+            target={<i className="fa fa-download" />}
+            content={
+              <FwParamExportMenu firmwareConfig={props.firmwareConfig} />} />
         </Row>
       </Highlight>
       <ParameterImport dispatch={dispatch} arduinoBusy={arduinoBusy} />
@@ -91,22 +81,20 @@ export function ParameterManagement(props: ParameterManagementProps) {
         <ShowAdvancedToggle dispatch={dispatch} getConfigValue={getConfigValue} />
       </Highlight>
       <Highlight settingName={DeviceSetting.resetHardwareParams}>
-        <Row>
-          <Col xs={8}>
+        <Row className="grid-exp-1">
+          <div>
             <label style={{ lineHeight: "1.5rem" }}>
               {t(DeviceSetting.resetHardwareParams)}
             </label>
             <Help text={Content.RESTORE_DEFAULT_HARDWARE_SETTINGS} />
-          </Col>
-          <Col xs={4} className={"centered-button-div"}>
-            <button
-              className="fb-button red"
-              disabled={arduinoBusy || !botOnline}
-              title={t("RESET")}
-              onClick={onReset}>
-              {t("RESET")}
-            </button>
-          </Col>
+          </div>
+          <button
+            className="fb-button red"
+            disabled={arduinoBusy || !botOnline}
+            title={t("RESET")}
+            onClick={onReset}>
+            {t("RESET")}
+          </button>
         </Row>
       </Highlight>
     </Collapse>
@@ -127,29 +115,23 @@ export class ParameterImport
   state: ParameterImportState = { input: "" };
   render() {
     return <Highlight settingName={DeviceSetting.importParameters}>
-      <Row>
-        <Col xs={12}>
+      <Row className="grid-exp-2">
+        <div>
           <label>
             {t(DeviceSetting.importParameters)}
           </label>
           <Help text={ToolTips.PARAMETER_IMPORT} />
-        </Col>
-      </Row>
-      <Row>
-        <Col xs={9} className={"centered-button-div"}>
-          <BlurableInput value={this.state.input} onCommit={e =>
-            this.setState({ input: e.currentTarget.value })} />
-        </Col>
-        <Col xs={3} className={"centered-button-div"}>
-          <button
-            className="fb-button yellow"
-            disabled={this.props.arduinoBusy}
-            title={t("IMPORT")}
-            onClick={() => confirm(Content.PARAMETER_IMPORT_CONFIRM) &&
-              this.props.dispatch(importParameters(this.state.input))}>
-            {t("IMPORT")}
-          </button>
-        </Col>
+        </div>
+        <BlurableInput value={this.state.input} onCommit={e =>
+          this.setState({ input: e.currentTarget.value })} />
+        <button
+          className="fb-button yellow"
+          disabled={this.props.arduinoBusy}
+          title={t("IMPORT")}
+          onClick={() => confirm(Content.PARAMETER_IMPORT_CONFIRM) &&
+            this.props.dispatch(importParameters(this.state.input))}>
+          {t("IMPORT")}
+        </button>
       </Row>
     </Highlight>;
   }
@@ -158,7 +140,7 @@ export class ParameterImport
 export const ShowAdvancedToggle = (props: ShowAdvancedToggleProps) => {
   const showAdvanced = !!props.getConfigValue(
     BooleanSetting.show_advanced_settings);
-  return <div className={"show-advanced-toggle"}>
+  return <div className={"row grid-exp-1"}>
     <label>{t(DeviceSetting.showAdvancedSettings)}</label>
     <ToggleButton
       className={getModifiedClassName(BooleanSetting.show_advanced_settings)}

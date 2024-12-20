@@ -1,36 +1,30 @@
-import * as React from "react";
+import React from "react";
 import { SensorFormProps } from "./interfaces";
 import { sortResourcesById } from "../util";
-import { Row, Col } from "../ui";
+import { Row } from "../ui";
 import { DeleteButton } from "../ui/delete_button";
-import { NameInputBox, PinDropdown, ModeDropdown } from "../controls/pin_form_fields";
+import {
+  NameInputBox, PinDropdown, ModeDropdown,
+} from "../controls/pin_form_fields";
 
 export const SensorForm = (props: SensorFormProps) =>
-  <div className="sensor-form">
+  <div className="grid">
     {sortResourcesById(props.sensors).map(sensor =>
-      <Row key={sensor.uuid}>
-        <Col xs={4}>
-          <NameInputBox
-            dispatch={props.dispatch}
-            value={sensor.body.label}
-            resource={sensor} />
-        </Col>
-        <Col xs={3}>
-          <PinDropdown
-            dispatch={props.dispatch}
-            value={sensor.body.pin}
-            resource={sensor} />
-        </Col>
-        <Col xs={3}>
-          <ModeDropdown
-            dispatch={props.dispatch}
-            value={sensor.body.mode}
-            resource={sensor} />
-        </Col>
-        <Col xs={2}>
-          <DeleteButton
-            dispatch={props.dispatch}
-            uuid={sensor.uuid} />
-        </Col>
+      <Row key={sensor.uuid} className="sensor-form-grid">
+        <NameInputBox
+          dispatch={props.dispatch}
+          value={sensor.body.label}
+          resource={sensor} />
+        <PinDropdown
+          dispatch={props.dispatch}
+          value={sensor.body.pin}
+          resource={sensor} />
+        <ModeDropdown
+          dispatch={props.dispatch}
+          value={sensor.body.mode}
+          resource={sensor} />
+        <DeleteButton
+          dispatch={props.dispatch}
+          uuid={sensor.uuid} />
       </Row>)}
   </div>;

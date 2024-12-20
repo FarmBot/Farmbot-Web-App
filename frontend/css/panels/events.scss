@@ -1,0 +1,75 @@
+@use "../variables" as *;
+@use "sass:color";
+
+.farm-event {
+  align-items: start!important;
+}
+
+.farm-event-calendar-rows {
+  margin-bottom: 2rem;
+}
+
+.farm-event-year {
+  text-align: center;
+  font-size: 2rem;
+  font-family: 'Inknut Antiqua', serif;
+  font-weight: bold;
+}
+
+.farm-event-date {
+  text-align: center;
+}
+
+.farm-event-date-month {
+  font-size: 1.2rem;
+}
+
+.farm-event-date-day {
+  font-size: 1.5rem;
+}
+
+.farm-event-variable {
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  background: $translucent8_white;
+  padding: 0.25rem 0.5rem;
+  display: inline-block;
+  margin: 0.25rem;
+}
+
+.farm-event-data-block {
+  grid-template-columns: 6rem 1fr auto;
+  padding: 0.5rem 1rem;
+  font-size: 1.2rem;
+  align-items: baseline!important;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  box-shadow: 0 0 1rem $translucent1;
+  font-weight: bold;
+  color: $dark_gray;
+  .fa {
+    margin-left: 0.5rem;
+    opacity: 0;
+  }
+  &:hover {
+    i {
+      opacity: 1;
+    }
+  }
+}
+
+.edit-farm-event-panel,
+.add-farm-event-panel {
+  .panel-content {
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 1rem 1rem 0;
+  }
+  .bp5-popover-wrapper {
+    display: inline-block;
+    margin-left: 0.5rem;
+    &.input-error-wrapper {
+      display: block;
+    }
+  }
+}

@@ -1,9 +1,3 @@
-let mockPath = "";
-jest.mock("../../history", () => ({
-  getPathArray: jest.fn(() => mockPath.split("/")),
-  push: jest.fn(),
-}));
-
 import { mapStateToPropsAddEdit } from "../map_state_to_props_add_edit";
 import { fakeState } from "../../__test_support__/fake_state";
 import {
@@ -12,7 +6,6 @@ import {
 import {
   fakeSequence, fakeRegimen, fakeFarmEvent,
 } from "../../__test_support__/fake_state/resources";
-import { push } from "../../history";
 import { inputEvent } from "../../__test_support__/fake_html_events";
 import { Path } from "../../internal_urls";
 
@@ -37,6 +30,12 @@ describe("mapStateToPropsAddEdit()", () => {
       const e = inputEvent("10:52", "other");
       const boom = () => handleTime(e, "2017-05-21T22:00:00.000");
       expect(boom).toThrow("Expected a name attribute from time field.");
+    });
+
+    it("handles missing hours and minutes", () => {
+      const e = inputEvent(":", "start_time");
+      const result = handleTime(e, "2017-05-21T22:00:00.000");
+      expect(result).toContain("00:00:00");
     });
   });
 
@@ -64,9 +63,10 @@ describe("mapStateToPropsAddEdit()", () => {
       const state = fakeState();
       const fe = fakeFarmEvent("Sequence", -1);
       state.resources = buildResourceIndex([fe, fakeDevice()]);
-      mockPath = Path.mock(Path.farmEvents(fe.body.id));
+      location.pathname = Path.mock(Path.farmEvents(fe.body.id));
       const { getFarmEvent } = mapStateToPropsAddEdit(state);
-      expect(getFarmEvent()).toEqual(expect.objectContaining({
+      const navigate = jest.fn();
+      expect(getFarmEvent(navigate)).toEqual(expect.objectContaining({
         kind: "FarmEvent",
         body: expect.objectContaining({ id: fe.body.id })
       }));
@@ -75,10 +75,11 @@ describe("mapStateToPropsAddEdit()", () => {
     it("doesn't find event", () => {
       const state = fakeState();
       state.resources = buildResourceIndex([fakeDevice()]);
-      mockPath = Path.mock(Path.farmEvents(999));
+      location.pathname = Path.mock(Path.farmEvents(999));
       const { getFarmEvent } = mapStateToPropsAddEdit(state);
-      getFarmEvent();
-      expect(push).toHaveBeenCalledWith(Path.farmEvents());
+      const navigate = jest.fn();
+      getFarmEvent(navigate);
+      expect(navigate).toHaveBeenCalledWith(Path.farmEvents());
     });
   });
 
