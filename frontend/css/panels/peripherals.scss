@@ -108,3 +108,9 @@
     animation: fill-blink 2s linear infinite;
   }
 }
+
+.pinned-sequence-list {
+  .help-icon {
+    color: $gray !important;
+  }
+}
