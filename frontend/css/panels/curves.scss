@@ -30,22 +30,7 @@
 }
 
 .curve-action-popover {
-  .bp5-popover-content {
-    background: $dark_gray;
-  }
-  .curve-action-menu {
-    label {
-      color: $off_white;
-    }
-    .filter-search {
-      button {
-        box-shadow: none !important;
-      }
-    }
-    input {
-      box-shadow: none;
-    }
-  }
+  max-width: 25rem;
 }
 
 .curve-svg {
