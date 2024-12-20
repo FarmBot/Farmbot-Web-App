@@ -186,8 +186,8 @@ end
 
 def print_lib_progress
   counts = {
-    "file" => { "enzyme" => 0, "rtl" => 0 },
-    "line" => { "enzyme" => 0, "rtl" => 0 },
+    "file" => { "enzyme" => 0, "rtl" => 0, "both" => 0 },
+    "line" => { "enzyme" => 0, "rtl" => 0, "both" => 0 },
   }
   Find.find("frontend") do |path|
     next unless File.file?(path)
@@ -203,20 +203,28 @@ def print_lib_progress
         includesRTL = true
       end
     end
-    if includesEnzyme
+    if includesEnzyme && includesRTL
+      counts["file"]["both"] += 1
+    elsif includesEnzyme
       counts["file"]["enzyme"] += 1
-    end
-    if includesRTL
+    elsif includesRTL
       counts["file"]["rtl"] += 1
     end
   end
   puts
   puts "enzyme -> RTL progress:"
   counts.each do |text, counts|
-    total = counts["enzyme"] + counts["rtl"]
-    percent = (counts["rtl"] / total.to_f * 100).round(2)
-    puts "#{text}s: #{counts["rtl"]} / #{total} (#{percent}%)"
-    puts "█" * percent.round + "░" * (100 - percent.round)
+    total = counts["enzyme"] + counts["rtl"] + counts["both"]
+    rtl_both_count = counts["rtl"] + counts["both"]
+    rtl_both_percent = (rtl_both_count / total.to_f * 100).round(2)
+    rtl_percent = (counts["rtl"] / total.to_f * 100).round(2)
+    both_percent = (counts["both"] / total.to_f * 100).round(2)
+    puts "#{text}s: #{rtl_both_count} / #{total} (#{rtl_both_percent}%)"
+    length = 50
+    rtl = (rtl_percent * (length.to_f / 100)).ceil
+    both = (both_percent * (length.to_f / 100)).ceil
+    remain = length - rtl - both
+    puts "█" * rtl + "▓" * both + "░" * remain
   end
   puts
 end
