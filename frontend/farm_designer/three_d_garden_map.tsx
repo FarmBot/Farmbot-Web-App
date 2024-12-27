@@ -4,11 +4,11 @@ import { INITIAL } from "../three_d_garden/config";
 import {
   BotSize, MapTransformProps, AxisNumberProperty, TaggedPlant,
 } from "./map/interfaces";
-import { camelCase, clone } from "lodash";
+import { clone } from "lodash";
 import { SourceFbosConfig } from "../devices/interfaces";
-import { ConfigurationName } from "farmbot";
+import { ConfigurationName, TaggedCurve } from "farmbot";
 import { DesignerState } from "./interfaces";
-import { ASSETS } from "../three_d_garden/constants";
+import { GetWebAppConfigValue } from "../config_storage/actions";
 
 export interface ThreeDGardenMapProps {
   botSize: BotSize;
@@ -18,6 +18,9 @@ export interface ThreeDGardenMapProps {
   sourceFbosConfig: SourceFbosConfig;
   designer: DesignerState;
   plants: TaggedPlant[];
+  dispatch: Function;
+  getWebAppConfigValue: GetWebAppConfigValue;
+  curves: TaggedCurve[];
 }
 
 export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
@@ -51,20 +54,17 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   config.bounds = !!getValue("bounds");
   config.grid = !!getValue("grid");
 
-  const plants = props.plants.map(plant => {
-    return {
-      label: plant.body.name,
-      icon: ASSETS.icons[camelCase(plant.body.openfarm_slug)]
-        || ASSETS.icons.arugula,
-      size: plant.body.radius * 2,
-      spread: 0,
-      x: plant.body.x + config.bedXOffset,
-      y: plant.body.y + config.bedYOffset,
-    };
-  });
-
   config.zoom = true;
   config.pan = true;
 
-  return <ThreeDGarden config={config} plants={plants} />;
+  return <ThreeDGarden
+    config={config}
+    addPlantProps={{
+      gridSize: props.mapTransformProps.gridSize,
+      dispatch: props.dispatch,
+      getConfigValue: props.getWebAppConfigValue,
+      plants: props.plants,
+      curves: props.curves,
+      designer: props.designer,
+    }} />;
 };

@@ -213,7 +213,10 @@ export class RawFarmDesigner
           sourceFbosConfig={this.props.sourceFbosConfig}
           gridOffset={gridOffset}
           mapTransformProps={this.mapTransformProps}
-          botSize={this.props.botSize} />
+          botSize={this.props.botSize}
+          dispatch={this.props.dispatch}
+          curves={this.props.curves}
+          getWebAppConfigValue={this.props.getConfigValue} />
         : <div
           className={`farm-designer-map ${this.mapPanelClassName}`}
           style={{

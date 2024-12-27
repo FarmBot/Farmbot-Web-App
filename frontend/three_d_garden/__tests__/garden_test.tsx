@@ -3,31 +3,63 @@ jest.mock("../../screen_size", () => ({
   isDesktop: () => mockIsDesktop,
 }));
 
+const mockSetPosition = jest.fn();
+interface MockRefCurrent {
+  position: { set: Function; };
+}
+interface MockRef {
+  current: MockRefCurrent | undefined;
+}
+const mockRef: MockRef = { current: undefined };
+jest.mock("react", () => ({
+  ...jest.requireActual("react"),
+  useRef: () => mockRef,
+}));
+
 import React from "react";
 import { mount } from "enzyme";
 import { GardenModelProps, GardenModel } from "../garden";
 import { clone } from "lodash";
 import { INITIAL } from "../config";
 import { render, screen } from "@testing-library/react";
-import { ASSETS } from "../constants";
+import { fakePlant } from "../../__test_support__/fake_state/resources";
+import { fakeAddPlantProps } from "../../__test_support__/fake_props";
+import { Path } from "../../internal_urls";
 
 describe("<GardenModel />", () => {
   const fakeProps = (): GardenModelProps => ({
     config: clone(INITIAL),
     activeFocus: "",
     setActiveFocus: jest.fn(),
+    addPlantProps: fakeAddPlantProps([]),
   });
 
   it("renders", () => {
-    const wrapper = mount(<GardenModel {...fakeProps()} />);
-    expect(wrapper.html()).toContain("zoom-beacons");
-    expect(wrapper.html()).not.toContain("stats");
-    expect(wrapper.html()).toContain("darkgreen");
+    const { container } = render(<GardenModel {...fakeProps()} />);
+    expect(container).toContainHTML("zoom-beacons");
+    expect(container).not.toContainHTML("stats");
+    expect(container).toContainHTML("darkgreen");
+  });
+
+  it("shows pointer plant", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    const p = fakeProps();
+    render(<GardenModel {...p} />);
+    const pointerPlant = screen.getByText("pointerPlant");
+    expect(pointerPlant).toBeInTheDocument();
+  });
+
+  it("doesn't show pointer plant", () => {
+    location.pathname = Path.mock(Path.plants());
+    const p = fakeProps();
+    render(<GardenModel {...p} />);
+    const pointerPlant = screen.queryByText("pointerPlant");
+    expect(pointerPlant).not.toBeInTheDocument();
   });
 
   it("renders no user plants", () => {
     const p = fakeProps();
-    p.plants = [];
+    p.addPlantProps = fakeAddPlantProps([]);
     render(<GardenModel {...p} />);
     const plantLabels = screen.queryAllByText("Beet");
     expect(plantLabels.length).toEqual(0);
@@ -35,16 +67,9 @@ describe("<GardenModel />", () => {
 
   it("renders user plant", () => {
     const p = fakeProps();
-    p.plants = [
-      {
-        label: "Beet",
-        icon: ASSETS.icons.beet,
-        spread: 175,
-        size: 150,
-        x: 0,
-        y: 0,
-      },
-    ];
+    const plant = fakePlant();
+    plant.body.name = "Beet";
+    p.addPlantProps = fakeAddPlantProps([plant]);
     render(<GardenModel {...p} />);
     const plantLabels = screen.queryAllByText("Beet");
     expect(plantLabels.length).toEqual(1);
@@ -52,7 +77,7 @@ describe("<GardenModel />", () => {
 
   it("renders promo plants", () => {
     const p = fakeProps();
-    p.plants = undefined;
+    p.addPlantProps = undefined;
     render(<GardenModel {...p} />);
     const plantLabels = screen.queryAllByText("Beet");
     expect(plantLabels.length).toEqual(7);
@@ -70,9 +95,10 @@ describe("<GardenModel />", () => {
     p.config.viewCube = true;
     p.config.lab = true;
     p.activeFocus = "plant";
-    const wrapper = mount(<GardenModel {...p} />);
-    expect(wrapper.html()).toContain("gray");
-    expect(wrapper.html()).toContain("stats");
+    p.addPlantProps = undefined;
+    const { container } = render(<GardenModel {...p} />);
+    expect(container).toContainHTML("gray");
+    expect(container).toContainHTML("stats");
   });
 
   it("sets hover", () => {
@@ -133,5 +159,18 @@ describe("<GardenModel />", () => {
       ],
     });
     expect(console.log).toHaveBeenCalledWith(["1", "2"]);
+  });
+
+  it("updates pointer plant position", () => {
+    mockRef.current = { position: { set: mockSetPosition } };
+    const p = fakeProps();
+    render(<GardenModel {...p} />);
+    expect(mockSetPosition).toHaveBeenCalledWith(0, 0, 0);
+  });
+
+  it("handles missing ref", () => {
+    mockRef.current = undefined;
+    const p = fakeProps();
+    render(<GardenModel {...p} />);
   });
 });

@@ -1,5 +1,5 @@
 import React from "react";
-import { ThreeEvent } from "@react-three/fiber";
+import { ThreeEvent, useFrame, useThree } from "@react-three/fiber";
 import {
   GizmoHelper, GizmoViewcube,
   OrbitControls, PerspectiveCamera,
@@ -8,18 +8,13 @@ import {
   useTexture,
   Line,
 } from "@react-three/drei";
-import { RepeatWrapping, Vector3, BackSide } from "three";
+import { RepeatWrapping, Vector3, BackSide, Group as GroupType } from "three";
 import { Bot } from "./bot";
-import { Bed } from "./bed";
-import {
-  threeSpace,
-  zZero as zZeroFunc,
-  zero as zeroFunc,
-  extents as extentsFunc,
-} from "./helpers";
+import { AddPlantProps, Bed } from "./bed";
+import { zero as zeroFunc, extents as extentsFunc } from "./helpers";
 import { Sky } from "./sky";
 import { Config, detailLevels, seasonProperties } from "./config";
-import { ASSETS, GARDENS, PLANTS } from "./constants";
+import { ASSETS, PLANTS } from "./constants";
 import { useSpring, animated } from "@react-spring/three";
 import { Solar } from "./solar";
 import { Sun, sunPosition } from "./sun";
@@ -30,8 +25,10 @@ import {
   AmbientLight, AxesHelper, Group, MeshBasicMaterial, MeshPhongMaterial,
 } from "./components";
 import { isDesktop } from "../screen_size";
-import { Text } from "./text";
 import { isUndefined, range } from "lodash";
+import { getMode } from "../farm_designer/map/util";
+import { Mode } from "../farm_designer/map/interfaces";
+import { calculatePlantPositions, convertPlants, ThreeDPlant } from "./plants";
 
 const AnimatedGroup = animated(Group);
 
@@ -39,69 +36,18 @@ export interface GardenModelProps {
   config: Config;
   activeFocus: string;
   setActiveFocus(focus: string): void;
-  plants?: Plant[];
+  addPlantProps?: AddPlantProps;
 }
 
-interface Plant {
-  label: string;
-  icon: string;
-  size: number;
-  spread: number;
-  x: number;
-  y: number;
-}
-
-export interface ThreeDGardenPlant extends Plant { }
-
+// eslint-disable-next-line complexity
 export const GardenModel = (props: GardenModelProps) => {
   const { config } = props;
   const groundZ = config.bedZOffset + config.bedHeight;
   const Camera = config.perspective ? PerspectiveCamera : OrthographicCamera;
 
-  const gardenPlants = GARDENS[config.plants] || [];
-  const calculatePlantPositions = (): Plant[] => {
-    const positions: Plant[] = [];
-    const startX = 350;
-    let nextX = startX;
-    let index = 0;
-    while (nextX <= config.bedLengthOuter - 100) {
-      const plantKey = gardenPlants[index];
-      const plant = PLANTS[plantKey];
-      if (!plant) { return []; }
-      positions.push({
-        ...plant,
-        x: nextX,
-        y: config.bedWidthOuter / 2,
-      });
-      const plantsPerHalfRow =
-        Math.ceil((config.bedWidthOuter - plant.spread) / 2 / plant.spread);
-      for (let i = 1; i < plantsPerHalfRow; i++) {
-        positions.push({
-          ...plant,
-          x: nextX,
-          y: config.bedWidthOuter / 2 + plant.spread * i,
-        });
-        positions.push({
-          ...plant,
-          x: nextX,
-          y: config.bedWidthOuter / 2 - plant.spread * i,
-        });
-      }
-      if (index + 1 < gardenPlants.length) {
-        const nextPlant = PLANTS[gardenPlants[index + 1]];
-        nextX += (plant.spread / 2) + (nextPlant.spread / 2);
-        index++;
-      } else {
-        index = 0;
-        const nextPlant = PLANTS[gardenPlants[0]];
-        nextX += (plant.spread / 2) + (nextPlant.spread / 2);
-      }
-    }
-    return positions;
-  };
-  const plants = isUndefined(props.plants)
-    ? calculatePlantPositions()
-    : props.plants;
+  const plants = isUndefined(props.addPlantProps)
+    ? calculatePlantPositions(config)
+    : convertPlants(config, props.addPlantProps.plants);
 
   const [hoveredPlant, setHoveredPlant] =
     React.useState<number | undefined>(undefined);
@@ -118,35 +64,6 @@ export const GardenModel = (props: GardenModelProps) => {
       : undefined;
   };
 
-  interface PlantProps {
-    plant: Plant;
-    i: number;
-    labelOnly?: boolean;
-  }
-
-  const Plant = (props: PlantProps) => {
-    const { i, plant, labelOnly } = props;
-    const alwaysShowLabels = config.labels && !config.labelsOnHover;
-    return <Billboard follow={true}
-      position={new Vector3(
-        threeSpace(plant.x, config.bedLengthOuter),
-        threeSpace(plant.y, config.bedWidthOuter),
-        zZeroFunc(config) - config.soilHeight + plant.size / 2,
-      )}>
-      {labelOnly
-        ? <Text visible={alwaysShowLabels || i === hoveredPlant}
-          renderOrder={2}
-          fontSize={50}
-          color={"white"}
-          position={[0, plant.size / 2 + 40, 0]}
-          rotation={[0, 0, 0]}>
-          {plant.label}
-        </Text>
-        : <Image url={plant.icon} scale={plant.size} name={"" + i}
-          transparent={true}
-          renderOrder={1} />}
-    </Billboard>;
-  };
   const isXL = config.sizePreset == "Genesis XL";
   const { scale } = useSpring({
     scale: isXL ? 1.75 : 1,
@@ -184,11 +101,36 @@ export const GardenModel = (props: GardenModelProps) => {
   const gridZ = zero.z - config.soilHeight;
   const extents = extentsFunc(config);
 
+  const { pointer, camera: cam } = useThree();
+  const vector = React.useMemo(() => new Vector3(), []);
+  const dir = React.useMemo(() => new Vector3(), []);
+  const pos = React.useMemo(() => new Vector3(), []);
+  // eslint-disable-next-line no-null/no-null
+  const pointerPlantRef = React.useRef<GroupType>(null);
+  useFrame(() => {
+    if (pointerPlantRef.current) {
+      vector.set(pointer.x, pointer.y, 0.5);
+      vector.unproject(cam);
+      dir.copy(vector).sub(cam.position).normalize();
+      const distance = -cam.position.z / dir.z;
+      pos.copy(cam.position).add(dir.multiplyScalar(distance));
+      pointerPlantRef.current.position.set(pos.x, pos.y, 0);
+    }
+  });
+
   // eslint-disable-next-line no-null/no-null
   return <Group dispose={null}
     onPointerMove={config.eventDebug
       ? e => console.log(e.intersections.map(x => x.object.name))
       : undefined}>
+    {getMode() == Mode.clickToAdd &&
+      <Billboard ref={pointerPlantRef}
+        follow={true} position={[0, 0, 0]}>
+        <Image
+          url={ASSETS.icons.arugula} scale={50} name={"pointerPlant"}
+          transparent={true}
+          renderOrder={1} />
+      </Billboard>}
     {config.stats && <Stats />}
     {config.zoomBeacons && <ZoomBeacons
       config={config}
@@ -250,7 +192,10 @@ export const GardenModel = (props: GardenModelProps) => {
             .cloudOpacity}
         fade={5000} />
     </Clouds>
-    <Bed config={config} activeFocus={props.activeFocus} />
+    <Bed
+      config={config}
+      activeFocus={props.activeFocus}
+      addPlantProps={props.addPlantProps} />
     <Bot config={config} activeFocus={props.activeFocus} />
     <Group name={"plant-icon-preload"} visible={false}>
       {Object.values(PLANTS).map((plant, i) =>
@@ -258,7 +203,11 @@ export const GardenModel = (props: GardenModelProps) => {
     </Group>
     <Group name={"plant-labels"} visible={!props.activeFocus}>
       {plants.map((plant, i) =>
-        <Plant key={i} i={i} plant={plant} labelOnly={true} />)}
+        <ThreeDPlant key={i} i={i}
+          plant={plant}
+          labelOnly={true}
+          config={config}
+          hoveredPlant={hoveredPlant} />)}
     </Group>
     <Group name={"garden-grid"} visible={config.grid}>
       {range(0, config.botSizeX + 100, 100).map(x =>
@@ -282,7 +231,10 @@ export const GardenModel = (props: GardenModelProps) => {
       onPointerMove={setHover(true)}
       onPointerLeave={setHover(false)}>
       {plants.map((plant, i) =>
-        <Plant key={i} i={i} plant={plant} />)}
+        <ThreeDPlant key={i} i={i}
+          plant={plant}
+          config={config}
+          hoveredPlant={hoveredPlant} />)}
     </Group>
     <Solar config={config} activeFocus={props.activeFocus} />
     <Lab config={config} activeFocus={props.activeFocus} />

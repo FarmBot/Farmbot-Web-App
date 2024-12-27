@@ -618,8 +618,7 @@ export const Bot = (props: FarmbotModelProps) => {
                 depth: zAxisLength - 350,
                 bevelEnabled: false,
               },
-            )}
-          >
+            )}>
             <MeshPhongMaterial color={"white"}
               opacity={0.8}
               transparent={true} />
@@ -841,8 +840,7 @@ export const Bot = (props: FarmbotModelProps) => {
                 depth: botSizeY - 30,
                 bevelEnabled: false,
               },
-            )}
-          >
+            )}>
             <MeshPhongMaterial color={"white"}
               opacity={0.8}
               transparent={true} />

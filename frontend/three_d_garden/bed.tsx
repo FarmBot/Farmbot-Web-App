@@ -11,6 +11,14 @@ import { Packaging } from "./packaging";
 import { Caster } from "./caster";
 import { UtilitiesPost } from "./utilities_post";
 import { Group, MeshPhongMaterial } from "./components";
+import { getMode } from "../farm_designer/map/util";
+import {
+  AxisNumberProperty, Mode, TaggedPlant,
+} from "../farm_designer/map/interfaces";
+import { dropPlant } from "../farm_designer/map/layers/plants/plant_actions";
+import { TaggedCurve } from "farmbot";
+import { GetWebAppConfigValue } from "../config_storage/actions";
+import { DesignerState } from "../farm_designer/interfaces";
 
 const soil = (
   Type: typeof Path | typeof Shape,
@@ -46,14 +54,25 @@ const bedStructure2D = (
   return shape;
 };
 
+export interface AddPlantProps {
+  gridSize: AxisNumberProperty;
+  dispatch: Function;
+  getConfigValue: GetWebAppConfigValue;
+  plants: TaggedPlant[];
+  curves: TaggedCurve[];
+  designer: DesignerState;
+}
+
 export interface BedProps {
   config: Config;
   activeFocus: string;
+  addPlantProps?: AddPlantProps;
 }
 
 export const Bed = (props: BedProps) => {
   const {
-    bedWidthOuter, bedLengthOuter, botSizeZ, bedHeight, bedZOffset,
+    bedWidthOuter, bedLengthOuter, botSizeZ, bedHeight,
+    bedXOffset, bedYOffset, bedZOffset,
     legSize, legsFlush, extraLegsX, extraLegsY, bedBrightness, soilBrightness,
     soilHeight, ccSupportSize, axes, xyDimensions,
   } = props.config;
@@ -109,9 +128,31 @@ export const Bed = (props: BedProps) => {
       {children}
     </Extrude>;
 
-  const Soil = ({ children }: { children: React.ReactElement }) => {
+  interface SoilProps {
+    children: React.ReactElement;
+    addPlantProps?: AddPlantProps;
+  }
+
+  const Soil = ({ children, addPlantProps }: SoilProps) => {
     const soilDepth = bedHeight + zZero(props.config) - soilHeight;
     return <Extrude name={"soil"}
+      onClick={e => {
+        e.stopPropagation();
+        if (addPlantProps && getMode() == Mode.clickToAdd) {
+          dropPlant({
+            gardenCoords: {
+              x: threeSpace(e.point.x, -bedLengthOuter) - bedXOffset,
+              y: threeSpace(e.point.y, -bedWidthOuter) - bedYOffset,
+            },
+            gridSize: addPlantProps.gridSize,
+            dispatch: addPlantProps.dispatch,
+            getConfigValue: addPlantProps.getConfigValue,
+            plants: addPlantProps.plants,
+            curves: addPlantProps.curves,
+            designer: addPlantProps.designer,
+          });
+        }
+      }}
       castShadow={true}
       receiveShadow={true}
       args={[
@@ -130,7 +171,8 @@ export const Bed = (props: BedProps) => {
   return <Group name={"bed-group"}>
     <Detailed distances={detailLevels(props.config)}>
       <Bed>
-        <MeshPhongMaterial map={bedWoodTexture} color={bedColor} side={DoubleSide} />
+        <MeshPhongMaterial
+          map={bedWoodTexture} color={bedColor} side={DoubleSide} />
       </Bed>
       <Bed>
         <MeshPhongMaterial color={"#ad7039"} side={DoubleSide} />
@@ -200,11 +242,11 @@ export const Bed = (props: BedProps) => {
       <MeshPhongMaterial map={legWoodTexture} color={bedColor} side={DoubleSide} />
     </Box>
     <Detailed distances={detailLevels(props.config)}>
-      <Soil>
+      <Soil addPlantProps={props.addPlantProps}>
         <MeshPhongMaterial map={soilTexture} color={soilColor}
           shininess={0} />
       </Soil>
-      <Soil>
+      <Soil addPlantProps={props.addPlantProps}>
         <MeshPhongMaterial color={"#29231e"}
           shininess={0} />
       </Soil>

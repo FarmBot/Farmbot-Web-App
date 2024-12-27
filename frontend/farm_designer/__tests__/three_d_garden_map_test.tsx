@@ -12,7 +12,6 @@ import { render } from "@testing-library/react";
 import { ThreeDGarden } from "../../three_d_garden";
 import { clone } from "lodash";
 import { INITIAL } from "../../three_d_garden/config";
-import { ASSETS } from "../../three_d_garden/constants";
 
 describe("<ThreeDGardenMap />", () => {
   const fakeProps = (): ThreeDGardenMapProps => ({
@@ -23,17 +22,13 @@ describe("<ThreeDGardenMap />", () => {
     sourceFbosConfig: () => ({ value: 0, consistent: true }),
     designer: fakeDesignerState(),
     plants: [fakePlant()],
+    dispatch: jest.fn(),
+    getWebAppConfigValue: jest.fn(),
+    curves: [],
   });
 
   it("converts props", () => {
     const p = fakeProps();
-    const plant0 = fakePlant();
-    plant0.body.name = "Spinach";
-    plant0.body.openfarm_slug = "spinach";
-    const plant1 = fakePlant();
-    plant1.body.name = "Unknown";
-    plant1.body.openfarm_slug = "not-set";
-    p.plants = [plant0, plant1];
     render(<ThreeDGardenMap {...p} />);
     const expectedConfig = clone(INITIAL);
     expectedConfig.bedWallThickness = 1;
@@ -59,24 +54,7 @@ describe("<ThreeDGardenMap />", () => {
     expectedConfig.zoomBeacons = false;
     expect(ThreeDGarden).toHaveBeenCalledWith({
       config: expectedConfig,
-      plants: [
-        {
-          icon: ASSETS.icons.spinach,
-          label: "Spinach",
-          size: 50,
-          spread: 0,
-          x: 101,
-          y: 201,
-        },
-        {
-          icon: ASSETS.icons.arugula,
-          label: "Unknown",
-          size: 50,
-          spread: 0,
-          x: 101,
-          y: 201,
-        },
-      ],
+      addPlantProps: expect.any(Object),
     }, {});
   });
 });
