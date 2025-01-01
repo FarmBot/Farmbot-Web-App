@@ -1,6 +1,10 @@
 import React from "react";
-import { Box, Detailed, Extrude, useTexture } from "@react-three/drei";
-import { DoubleSide, Path, Shape, RepeatWrapping } from "three";
+import {
+  Billboard, Box, Detailed, Extrude, useTexture, Image,
+} from "@react-three/drei";
+import {
+  DoubleSide, Path as LinePath, Shape, RepeatWrapping, Group as GroupType,
+} from "three";
 import { range } from "lodash";
 import { threeSpace, zZero, getColorFromBrightness } from "./helpers";
 import { Config, detailLevels } from "./config";
@@ -11,7 +15,7 @@ import { Packaging } from "./packaging";
 import { Caster } from "./caster";
 import { UtilitiesPost } from "./utilities_post";
 import { Group, MeshPhongMaterial } from "./components";
-import { getMode } from "../farm_designer/map/util";
+import { getMode, round } from "../farm_designer/map/util";
 import {
   AxisNumberProperty, Mode, TaggedPlant,
 } from "../farm_designer/map/interfaces";
@@ -19,11 +23,15 @@ import { dropPlant } from "../farm_designer/map/layers/plants/plant_actions";
 import { TaggedCurve } from "farmbot";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import { DesignerState } from "../farm_designer/interfaces";
+import { isMobile } from "../screen_size";
+import { ThreeEvent } from "@react-three/fiber";
+import { plantIconPath } from "./plants";
+import { Path } from "../internal_urls";
 
 const soil = (
-  Type: typeof Path | typeof Shape,
+  Type: typeof LinePath | typeof Shape,
   botSize: Record<"x" | "y" | "z" | "thickness", number>,
-): Path | Shape => {
+): LinePath | Shape => {
   const { x, y, thickness } = botSize;
 
   const hole = new Type();
@@ -49,7 +57,7 @@ const bedStructure2D = (
   shape.lineTo(0, 0);
 
   // inner edge
-  shape.holes.push(soil(Path, botSize));
+  shape.holes.push(soil(LinePath, botSize));
 
   return shape;
 };
@@ -128,6 +136,21 @@ export const Bed = (props: BedProps) => {
       {children}
     </Extrude>;
 
+  // eslint-disable-next-line no-null/no-null
+  const pointerPlantRef = React.useRef<GroupType>(null);
+
+  type XY = AxisNumberProperty;
+
+  const getGardenPosition = (e: ThreeEvent<MouseEvent>): XY => ({
+    x: round(threeSpace(e.point.x, -bedLengthOuter) - bedXOffset),
+    y: round(threeSpace(e.point.y, -bedWidthOuter) - bedYOffset),
+  });
+
+  const get3DPosition = (gardenPosition: XY): XY => ({
+    x: threeSpace(gardenPosition.x + bedXOffset, bedLengthOuter),
+    y: threeSpace(gardenPosition.y + bedYOffset, bedWidthOuter),
+  });
+
   interface SoilProps {
     children: React.ReactElement;
     addPlantProps?: AddPlantProps;
@@ -140,10 +163,7 @@ export const Bed = (props: BedProps) => {
         e.stopPropagation();
         if (addPlantProps && getMode() == Mode.clickToAdd) {
           dropPlant({
-            gardenCoords: {
-              x: threeSpace(e.point.x, -bedLengthOuter) - bedXOffset,
-              y: threeSpace(e.point.y, -bedWidthOuter) - bedYOffset,
-            },
+            gardenCoords: getGardenPosition(e),
             gridSize: addPlantProps.gridSize,
             dispatch: addPlantProps.dispatch,
             getConfigValue: addPlantProps.getConfigValue,
@@ -151,6 +171,18 @@ export const Bed = (props: BedProps) => {
             curves: addPlantProps.curves,
             designer: addPlantProps.designer,
           });
+        }
+      }}
+      onPointerMove={e => {
+        if (addPlantProps
+          && getMode() == Mode.clickToAdd
+          && !isMobile()
+          && pointerPlantRef.current) {
+          const position = get3DPosition(getGardenPosition(e));
+          pointerPlantRef.current.position.set(
+            position.x,
+            position.y,
+            zZero(props.config) - props.config.soilHeight + 50 / 2);
         }
       }}
       castShadow={true}
@@ -241,6 +273,16 @@ export const Bed = (props: BedProps) => {
       ]}>
       <MeshPhongMaterial map={legWoodTexture} color={bedColor} side={DoubleSide} />
     </Box>
+    {getMode() == Mode.clickToAdd && !isMobile() &&
+      <Billboard ref={pointerPlantRef}
+        follow={true} position={[0, 0, 0]}>
+        <Image
+          name={"pointerPlant"}
+          url={plantIconPath(Path.getSlug(Path.cropSearch()))}
+          scale={50}
+          transparent={true}
+          renderOrder={1} />
+      </Billboard>}
     <Detailed distances={detailLevels(props.config)}>
       <Soil addPlantProps={props.addPlantProps}>
         <MeshPhongMaterial map={soilTexture} color={soilColor}

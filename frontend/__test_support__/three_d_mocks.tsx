@@ -558,15 +558,26 @@ jest.mock("@react-three/drei", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Box: (props: any) =>
       <div className={"box" + props.name} {...props}>{props.children}</div>,
-    Extrude: ({ name, onClick }: {
+    Extrude: ({ name, onClick, onPointerMove }: {
       name: string,
       onClick: (event: Event) => void,
+      onPointerMove: (event: Event) => void,
     }) =>
-      <div className={"extrude"} onClick={() =>
-        onClick({
-          stopPropagation: jest.fn(),
-          point: { x: 0, y: 0 },
-        } as unknown as Event)}>{name}</div>,
+      <div className={"extrude"}
+        onPointerMove={e =>
+          onPointerMove({
+            point: { x: 0, y: 0 },
+            ...e,
+          } as unknown as Event)}
+        onClick={e =>
+          onClick({
+            // @ts-expect-error: This spread always overwrites this property.
+            stopPropagation: jest.fn(),
+            point: { x: 0, y: 0 },
+            ...e,
+          } as unknown as Event)}>
+        {name}
+      </div>,
     Line: ({ name }: { name: string }) =>
       <div className={"line"}>{name}</div>,
     Trail: ({ name }: { name: string }) =>

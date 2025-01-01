@@ -1,19 +1,7 @@
 let mockIsDesktop = false;
 jest.mock("../../screen_size", () => ({
   isDesktop: () => mockIsDesktop,
-}));
-
-const mockSetPosition = jest.fn();
-interface MockRefCurrent {
-  position: { set: Function; };
-}
-interface MockRef {
-  current: MockRefCurrent | undefined;
-}
-const mockRef: MockRef = { current: undefined };
-jest.mock("react", () => ({
-  ...jest.requireActual("react"),
-  useRef: () => mockRef,
+  isMobile: jest.fn(),
 }));
 
 import React from "react";
@@ -24,7 +12,6 @@ import { INITIAL } from "../config";
 import { render, screen } from "@testing-library/react";
 import { fakePlant } from "../../__test_support__/fake_state/resources";
 import { fakeAddPlantProps } from "../../__test_support__/fake_props";
-import { Path } from "../../internal_urls";
 
 describe("<GardenModel />", () => {
   const fakeProps = (): GardenModelProps => ({
@@ -39,22 +26,6 @@ describe("<GardenModel />", () => {
     expect(container).toContainHTML("zoom-beacons");
     expect(container).not.toContainHTML("stats");
     expect(container).toContainHTML("darkgreen");
-  });
-
-  it("shows pointer plant", () => {
-    location.pathname = Path.mock(Path.cropSearch("mint"));
-    const p = fakeProps();
-    render(<GardenModel {...p} />);
-    const pointerPlant = screen.getByText("pointerPlant");
-    expect(pointerPlant).toBeInTheDocument();
-  });
-
-  it("doesn't show pointer plant", () => {
-    location.pathname = Path.mock(Path.plants());
-    const p = fakeProps();
-    render(<GardenModel {...p} />);
-    const pointerPlant = screen.queryByText("pointerPlant");
-    expect(pointerPlant).not.toBeInTheDocument();
   });
 
   it("renders no user plants", () => {
@@ -159,18 +130,5 @@ describe("<GardenModel />", () => {
       ],
     });
     expect(console.log).toHaveBeenCalledWith(["1", "2"]);
-  });
-
-  it("updates pointer plant position", () => {
-    mockRef.current = { position: { set: mockSetPosition } };
-    const p = fakeProps();
-    render(<GardenModel {...p} />);
-    expect(mockSetPosition).toHaveBeenCalledWith(0, 0, 0);
-  });
-
-  it("handles missing ref", () => {
-    mockRef.current = undefined;
-    const p = fakeProps();
-    render(<GardenModel {...p} />);
   });
 });

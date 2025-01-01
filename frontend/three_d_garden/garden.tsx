@@ -1,14 +1,14 @@
 import React from "react";
-import { ThreeEvent, useFrame, useThree } from "@react-three/fiber";
+import { ThreeEvent } from "@react-three/fiber";
 import {
   GizmoHelper, GizmoViewcube,
   OrbitControls, PerspectiveCamera,
-  Circle, Stats, Billboard, Image, Clouds, Cloud, OrthographicCamera,
+  Circle, Stats, Image, Clouds, Cloud, OrthographicCamera,
   Detailed, Sphere,
   useTexture,
   Line,
 } from "@react-three/drei";
-import { RepeatWrapping, Vector3, BackSide, Group as GroupType } from "three";
+import { RepeatWrapping, BackSide } from "three";
 import { Bot } from "./bot";
 import { AddPlantProps, Bed } from "./bed";
 import { zero as zeroFunc, extents as extentsFunc } from "./helpers";
@@ -26,8 +26,6 @@ import {
 } from "./components";
 import { isDesktop } from "../screen_size";
 import { isUndefined, range } from "lodash";
-import { getMode } from "../farm_designer/map/util";
-import { Mode } from "../farm_designer/map/interfaces";
 import { calculatePlantPositions, convertPlants, ThreeDPlant } from "./plants";
 
 const AnimatedGroup = animated(Group);
@@ -98,39 +96,14 @@ export const GardenModel = (props: GardenModelProps) => {
   const camera = getCamera(config, props.activeFocus, initCamera);
 
   const zero = zeroFunc(config);
-  const gridZ = zero.z - config.soilHeight;
+  const gridZ = zero.z - config.soilHeight + 5;
   const extents = extentsFunc(config);
-
-  const { pointer, camera: cam } = useThree();
-  const vector = React.useMemo(() => new Vector3(), []);
-  const dir = React.useMemo(() => new Vector3(), []);
-  const pos = React.useMemo(() => new Vector3(), []);
-  // eslint-disable-next-line no-null/no-null
-  const pointerPlantRef = React.useRef<GroupType>(null);
-  useFrame(() => {
-    if (pointerPlantRef.current) {
-      vector.set(pointer.x, pointer.y, 0.5);
-      vector.unproject(cam);
-      dir.copy(vector).sub(cam.position).normalize();
-      const distance = -cam.position.z / dir.z;
-      pos.copy(cam.position).add(dir.multiplyScalar(distance));
-      pointerPlantRef.current.position.set(pos.x, pos.y, 0);
-    }
-  });
 
   // eslint-disable-next-line no-null/no-null
   return <Group dispose={null}
     onPointerMove={config.eventDebug
       ? e => console.log(e.intersections.map(x => x.object.name))
       : undefined}>
-    {getMode() == Mode.clickToAdd &&
-      <Billboard ref={pointerPlantRef}
-        follow={true} position={[0, 0, 0]}>
-        <Image
-          url={ASSETS.icons.arugula} scale={50} name={"pointerPlant"}
-          transparent={true}
-          renderOrder={1} />
-      </Billboard>}
     {config.stats && <Stats />}
     {config.zoomBeacons && <ZoomBeacons
       config={config}

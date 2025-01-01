@@ -19,12 +19,14 @@ interface Plant {
 
 export interface ThreeDGardenPlant extends Plant { }
 
+export const plantIconPath = (slug: string) =>
+  ASSETS.icons[camelCase(slug)] || ASSETS.icons.arugula;
+
 export const convertPlants = (config: Config, plants: TaggedPlant[]): Plant[] => {
   return plants.map(plant => {
     return {
       label: plant.body.name,
-      icon: ASSETS.icons[camelCase(plant.body.openfarm_slug)]
-        || ASSETS.icons.arugula,
+      icon: plantIconPath(plant.body.openfarm_slug),
       size: plant.body.radius * 2,
       spread: 0,
       x: plant.body.x + config.bedXOffset,
