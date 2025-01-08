@@ -1,0 +1,27 @@
+{
+    "name": "Borage",
+    "binomial_name": "Borago officinalis",
+    "common_names": [
+        "borage",
+        "borag",
+        "stoff\u00e9rblomma",
+        "agurkurt",
+        "hjulkrone",
+        "purasruoho",
+        "borretsch",
+        "boraginis semen",
+        "boraginis herba",
+        "oleum boraginis",
+        "starflower"
+    ],
+    "description": "Borage, or Starflower, is an annual flowering herb with blue, pink, or white flowers and bristly stems and leaves. It is a popular companion plant, particularly for tomatoes, as it is thought to confuse mother moths of tomato hornworms looking for a place to lay their eggs. It also attracts many pollinators. It's edible leaves can be used as a fresh vegetable or dried herb. When fresh, it has a cucumber-like taste and is used in salads, lemonade, or as a garnish. It's flowers have a sweet honey-like taste and can be used to decorate desserts or cocktails or candied. It is also cultivated for the borage seed oil extracted from it's seeds.",
+    "sun_requirements": "Partial Sun",
+    "sowing_method": "Direct seed outdoors, thin to 45cm apart when seedlings are 4cm tall",
+    "spread": 50,
+    "row_spacing": 30,
+    "height": 100,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/borage.jpg",
+    "icon": "/crops/icons/borage.avif"
+}

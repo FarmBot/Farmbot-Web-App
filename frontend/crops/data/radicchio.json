@@ -1,0 +1,18 @@
+{
+    "name": "Radicchio",
+    "binomial_name": "Cichorium intybus",
+    "common_names": [
+        "Radicchio",
+        "Italian chicory"
+    ],
+    "description": "Radicchio is a leaf vegetable that grows in compact, dense heads. It's leaves have a bitter, spicy taste that complement fresh salads in small doses. When saut\u00e9ed, grilled, or roasted, it's flavor deepens and it becomes less bitter. It is a cool weather crop.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, transplant seedlings outside after hardening off",
+    "spread": 10,
+    "row_spacing": 20,
+    "height": 15,
+    "growing_degree_days": 85,
+    "companions": [],
+    "image": "/crops/images/radicchio.jpg",
+    "icon": "/crops/icons/radicchio.avif"
+}

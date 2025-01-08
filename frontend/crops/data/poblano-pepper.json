@@ -1,0 +1,20 @@
+{
+    "name": "Poblano Pepper",
+    "binomial_name": "Capsicum annuum",
+    "common_names": [
+        "Ancho chile",
+        "poblano pepper",
+        "mulato pepper",
+        "pasilla"
+    ],
+    "description": "Poblanos are mild chili peppers native to Mexico. The plants produce medium to large peppers that are 7-15cm long and deep green. They are commonly harvested while still green, but can also be left on the plant until they fully ripen and turn red. Red poblanos are significantly spicier and more flavorful than green ones. Ancho chiles are dried red poblano peppers. Green poblanos are frequently grilled, stuffed, or roasted. Green poblanos usually have a mild flavor and a Scoville rating of 1,000\u20131,500 units, but they can sometimes be hotter. Poblanos are sometimes sold as Pasilla Peppers, although Pasilla is the dried Chilaca chili pepper.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, transplant seedlings outside after hardening off",
+    "spread": 40,
+    "row_spacing": 45,
+    "height": 50,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/poblano-pepper.jpg",
+    "icon": "/crops/icons/poblano-pepper.avif"
+}

@@ -1,0 +1,17 @@
+{
+    "name": "Red Giant Mustard",
+    "binomial_name": "Brassica juncea",
+    "common_names": [],
+    "description": "Red Giant Mustard is a variety of mustard that has large purple leaves with a mild mustard flavor. Red Giant can be harvested at the baby or adult stage as individual leaves or whole plants. Adult leaves will have a deeper flavor. Like other mustards, Red Giant is cold-tolerant and does best in cool weather, with spring or autumn plantings. Heat will cause plants to set seed and become unpalatably bitter. Leaves are added to salad mixes and stir fry, braised, or steamed.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed outdoors, thin to 30cm when seedlings are 5cm or taller",
+    "spread": 20,
+    "row_spacing": 60,
+    "height": 45,
+    "growing_degree_days": 0,
+    "companions": [
+        "dill"
+    ],
+    "image": "/crops/images/red-giant-mustard.jpg",
+    "icon": "/crops/icons/red-giant-mustard.avif"
+}

@@ -1,4 +1,4 @@
-import { isUndefined, last } from "lodash";
+import { isUndefined, kebabCase, last } from "lodash";
 import { t } from "./i18next_wrapper";
 
 export namespace Path {
@@ -92,6 +92,7 @@ export namespace Path {
   export const idIndex = (path: string) => path.split("/").length + 0;
   export const getSlug = (path: string): string =>
     getPathArray()[Path.idIndex(path)] || "";
+  export const getCropSlug = () => kebabCase(Path.getSlug(Path.cropSearch()));
 }
 
 export namespace FilePath {

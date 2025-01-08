@@ -1,0 +1,18 @@
+{
+    "name": "Sugarcane",
+    "binomial_name": "Saccharum officinarum",
+    "common_names": [
+        "sugarcane",
+        "sugar cane"
+    ],
+    "description": "Sugarcane is a species of tall perennial true grasses. It is a member of the grass family Poaceae, which also includes maize, wheat, and rice. Sugarcane is native to the warm temperate and tropical regions of South Asia and Melanesia. It's thick, jointed, fibrous stalks are rich in the sugar sucrose and can grow to heights of 6 meters. Sugarcane is the world's largest crop and is grown for sugar and ethanol.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Plant cuttings into trench",
+    "spread": 70,
+    "row_spacing": 15,
+    "height": 355,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/sugarcane.jpg",
+    "icon": "/crops/icons/sugarcane.avif"
+}

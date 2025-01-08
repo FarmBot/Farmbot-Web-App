@@ -1,0 +1,18 @@
+{
+    "name": "Yukon Gold Potato",
+    "binomial_name": "Solanum tuberosum",
+    "common_names": [
+        "Yukon Gold Potato",
+        "Yellow potato"
+    ],
+    "description": "Yukon Gold is a potato cultivar that was developed in the 1960s. It has smooth skin and yellow flesh that is waxy and moist. It becomes flaky and a bit starchy when cooked. Yukon Gold potatoes can be mashed, shredded, or used in soups and stews.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed cut tubers with at least one \"eye\" per piece.",
+    "spread": 30,
+    "row_spacing": 30,
+    "height": 50,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/yukon-gold-potato.jpg",
+    "icon": "/crops/icons/yukon-gold-potato.avif"
+}

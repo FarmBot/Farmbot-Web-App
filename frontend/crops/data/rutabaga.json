@@ -1,0 +1,20 @@
+{
+    "name": "Rutabaga",
+    "binomial_name": "Brassica napus",
+    "common_names": [
+        "Rutabaga",
+        "swede",
+        "neep",
+        "turnip"
+    ],
+    "description": "Often confused with turnips, the rutabaga is a root vegetable that is a cross between the cabbage and the turnip. The root has a roughly globular shape, thick purple-tinged yellow skin (which is sometimes sealed in wax after harvest to extend storage life), and yellow flesh. The flesh is slightly sweet and bitter, similar to cabbage. Rutabagas are slightly larger than turnips and more cold-tolerant. Although edible, the tops are not often eaten. The roots can be baked, boiled, and roasted.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed, thin to 15cm when seedlings at 5cm tall",
+    "spread": 17,
+    "row_spacing": 15,
+    "height": 35,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/rutabaga.jpg",
+    "icon": "/crops/icons/rutabaga.avif"
+}

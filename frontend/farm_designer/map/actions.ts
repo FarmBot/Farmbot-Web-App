@@ -2,7 +2,6 @@ import { MovePointsProps, DraggableEvent, MovePointToProps } from "../interfaces
 import { defensiveClone } from "../../util";
 import { edit } from "../../api/crud";
 import { Actions } from "../../constants";
-import { svgToUrl } from "../../open_farm/icons";
 import { Mode } from "../map/interfaces";
 import { clamp, uniq } from "lodash";
 import { GetState } from "../../redux/interfaces";
@@ -12,9 +11,10 @@ import { getMode } from "../map/util";
 import { ResourceIndex, UUID } from "../../resources/interfaces";
 import { selectAllPointGroups } from "../../resources/selectors";
 import { overwriteGroup } from "../../point_groups/actions";
-import { FilePath, Path } from "../../internal_urls";
+import { Path } from "../../internal_urls";
 import { NavigateFunction } from "react-router";
 import { setPanelOpen } from "../panel_header";
+import { findIcon } from "../../crops/find";
 
 export const movePoints = (payload: MovePointsProps) => (dispatch: Function) => {
   payload.points.map(point => {
@@ -40,9 +40,9 @@ export const selectPoint = (payload: string[] | undefined) => {
   return { type: Actions.SELECT_POINT, payload };
 };
 
-export const setHoveredPlant = (plantUUID: string | undefined, icon = "") => ({
+export const setHoveredPlant = (plantUUID: string | undefined) => ({
   type: Actions.TOGGLE_HOVERED_PLANT,
-  payload: { plantUUID, icon }
+  payload: { plantUUID }
 });
 
 const addOrRemoveFromGroup =
@@ -75,7 +75,7 @@ const addOrRemoveFromSelection =
     return selectPoint(nextSelected);
   };
 
-export const clickMapPlant = (clickedPlantUuid: UUID, icon: string) => {
+export const clickMapPlant = (clickedPlantUuid: UUID) => {
   return (dispatch: Function, getState: GetState) => {
     switch (getMode()) {
       case Mode.editGroup:
@@ -88,7 +88,7 @@ export const clickMapPlant = (clickedPlantUuid: UUID, icon: string) => {
         break;
       default:
         dispatch(selectPoint([clickedPlantUuid]));
-        dispatch(setHoveredPlant(clickedPlantUuid, icon));
+        dispatch(setHoveredPlant(clickedPlantUuid));
         break;
     }
   };
@@ -113,9 +113,9 @@ export const closePlantInfo = (
 };
 
 export const setDragIcon =
-  (icon: string | undefined) => (e: DraggableEvent) => {
+  (slug: string) => (e: DraggableEvent) => {
     const dragImg = new Image();
-    dragImg.src = icon ? svgToUrl(icon) : FilePath.DEFAULT_ICON;
+    dragImg.src = findIcon(slug);
     const width = dragImg.naturalWidth;
     const height = dragImg.naturalHeight;
     e.dataTransfer.setDragImage
@@ -131,7 +131,7 @@ export const mapPointClickAction =
     switch (getMode()) {
       case Mode.editGroup:
       case Mode.boxSelect:
-        return dispatch(clickMapPlant(uuid, ""));
+        return dispatch(clickMapPlant(uuid));
       default:
         dispatch(setPanelOpen(true));
         return path && navigate(path);

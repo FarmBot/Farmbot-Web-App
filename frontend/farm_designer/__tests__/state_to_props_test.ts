@@ -23,7 +23,7 @@ describe("mapStateToProps()", () => {
   it("hovered plantUUID is undefined", () => {
     const state = fakeState();
     state.resources.consumers.farm_designer.hoveredPlant = {
-      plantUUID: "x", icon: ""
+      plantUUID: "x"
     };
     expect(mapStateToProps(state).hoveredPlant).toBeFalsy();
   });

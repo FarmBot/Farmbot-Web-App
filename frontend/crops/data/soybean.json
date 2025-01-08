@@ -1,0 +1,20 @@
+{
+    "name": "Soybean",
+    "binomial_name": "Glycine max",
+    "common_names": [
+        "Soy",
+        "Edamame",
+        "Soya",
+        "Soybean"
+    ],
+    "description": "Soybeans are a type of legume that can be grown for many uses. Soybeans are one of the major crops grown in the United States. Like all legumes, they benefit from an inoculant at planting. They can be harvested fresh or dried. Soybeans are used to make oil, feed livestock, grown as cover crops, or processed into foods like tofu and tempeh. When harvested in an immature state and boiled whole in their pods, soybeans are known as Edamame.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed outdoors after last frost, thin to 30cm when seedlings are 4cm high",
+    "spread": 55,
+    "row_spacing": 30,
+    "height": 65,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/soybean.jpg",
+    "icon": "/crops/icons/soybean.avif"
+}

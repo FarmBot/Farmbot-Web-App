@@ -43,8 +43,8 @@ describe("Path()", () => {
   });
 
   it("returns slug", () => {
-    location.pathname = Path.mock(Path.cropSearch("slug"));
-    expect(Path.getSlug(Path.cropSearch())).toEqual("slug");
+    location.pathname = Path.mock(Path.cropSearch("green_mint"));
+    expect(Path.getCropSlug()).toEqual("green-mint");
   });
 
   it("returns path with query", () => {

@@ -3,13 +3,13 @@ import { render, screen } from "@testing-library/react";
 import { clone } from "lodash";
 import { fakePlant } from "../../__test_support__/fake_state/resources";
 import { INITIAL } from "../config";
-import { ASSETS } from "../constants";
 import {
   calculatePlantPositions,
   convertPlants,
   ThreeDPlant,
   ThreeDPlantProps,
 } from "../plants";
+import { CROPS } from "../../crops/constants";
 
 describe("calculatePlantPositions()", () => {
   it("calculates plant positions", () => {
@@ -17,7 +17,7 @@ describe("calculatePlantPositions()", () => {
     config.plants = "Spring";
     const positions = calculatePlantPositions(config);
     expect(positions).toContainEqual({
-      icon: ASSETS.icons.beet,
+      icon: CROPS.beet.icon,
       label: "Beet",
       size: 150,
       spread: 175,
@@ -58,7 +58,7 @@ describe("convertPlants()", () => {
     const convertedPlants = convertPlants(config, plants);
 
     expect(convertedPlants).toEqual([{
-      icon: ASSETS.icons.spinach,
+      icon: CROPS.spinach.icon,
       label: "Spinach",
       size: 50,
       spread: 0,
@@ -66,7 +66,7 @@ describe("convertPlants()", () => {
       y: 201,
     },
     {
-      icon: ASSETS.icons.arugula,
+      icon: CROPS["generic-plant"].icon,
       label: "Unknown",
       size: 50,
       spread: 0,

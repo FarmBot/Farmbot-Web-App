@@ -1,0 +1,18 @@
+{
+    "name": "Banana Pepper",
+    "binomial_name": "Capsicum annuum",
+    "common_names": [
+        "yellow wax pepper",
+        "banana chili"
+    ],
+    "description": "Banana peppers are Capsicum annuum cultivars that are curved like a banana and have a mild, tangy taste. They are often bright yellow, but can also be green, red, or orange. Mature, ripe peppers are sweeter than younger ones. Spicy varieties are called Hungarian wax peppers. Banana peppers are often confused with Pepperoncini, which are a separate cultivar of Capiscum annuum and Capsicum frutescens. Banana peppers can be eaten raw, stuffed, or pickled.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, transplant seedlings outside after hardening off.",
+    "spread": 30,
+    "row_spacing": 45,
+    "height": 60,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/banana-pepper.jpg",
+    "icon": "/crops/icons/banana-pepper.avif"
+}

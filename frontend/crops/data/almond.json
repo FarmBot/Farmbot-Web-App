@@ -1,0 +1,17 @@
+{
+    "name": "Almond",
+    "binomial_name": "Prunus dulcis",
+    "common_names": [
+        "almond"
+    ],
+    "description": "The almond is a deciduous tree that grows well in Mediterranean climates. It has white to pale flowers that appear before the leaves in early spring. Trees begin producing fruit within 2 to 4 years of being transplanted.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Bare root tree",
+    "spread": 0,
+    "row_spacing": 460,
+    "height": 400,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/almond.jpg",
+    "icon": "/crops/icons/almond.avif"
+}

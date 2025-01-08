@@ -1,0 +1,18 @@
+{
+    "name": "Plum",
+    "binomial_name": "Prunus",
+    "common_names": [
+        "plum",
+        "prune"
+    ],
+    "description": "The plum is a fruit of the subgenus Prunus of the genus Prunus. The Prunus genus also includes the cherry, apricot, almond, and peach. Within the subgenus Prunus, there are many species. The two largest species groups are European Plums (Prunus domestica) and Japanese Plums (Prunus salicina). Apricots are also classified as a section of the Prunus subgenus. The skin of plums can be coated with a waxy bloom or it can be shiny. Plums can be purple, green, yellow, or red. Shape varies from oval to globular. Plums can be dried to make prunes. European Plums require 800-900 hours of chilling during the winter, Japanese Plums require 300-500. Some varieties are self-pollinating, but all plum trees benefit from a pollination partner with the same bloom time within 15 meters. Standard and dwarf rootstocks are available. Dwarf trees can grow to 3 meters, standard to 4.5 meters. Depending on the size chosen, the tree will bear fruit within 3-6 years of planting.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Transplant bare-root plant",
+    "spread": 500,
+    "row_spacing": 500,
+    "height": 500,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/plum.jpg",
+    "icon": "/crops/icons/plum.avif"
+}

@@ -89,7 +89,6 @@ export interface GardenPlantProps {
 }
 
 export interface GardenPlantState {
-  icon: string;
   hover: boolean;
 }
 
@@ -183,6 +182,7 @@ export interface SpreadOverlapHelperProps {
   activeDragXY: BotPosition | undefined;
   activeDragSpread: number | undefined;
   showOverlapValues?: boolean;
+  inactiveSpread: number;
 }
 
 /** Garden map interaction modes. */

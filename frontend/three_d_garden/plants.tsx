@@ -1,12 +1,13 @@
-import { camelCase } from "lodash";
 import { TaggedPlant } from "../farm_designer/map/interfaces";
 import { Config } from "./config";
-import { ASSETS, GARDENS, PLANTS } from "./constants";
+import { GARDENS, PLANTS } from "./constants";
 import { Billboard, Image } from "@react-three/drei";
 import React from "react";
 import { Vector3 } from "three";
 import { threeSpace, zZero as zZeroFunc } from "./helpers";
 import { Text } from "./text";
+import { findIcon } from "../crops/find";
+import { kebabCase } from "lodash";
 
 interface Plant {
   label: string;
@@ -19,14 +20,11 @@ interface Plant {
 
 export interface ThreeDGardenPlant extends Plant { }
 
-export const plantIconPath = (slug: string) =>
-  ASSETS.icons[camelCase(slug)] || ASSETS.icons.arugula;
-
 export const convertPlants = (config: Config, plants: TaggedPlant[]): Plant[] => {
   return plants.map(plant => {
     return {
       label: plant.body.name,
-      icon: plantIconPath(plant.body.openfarm_slug),
+      icon: findIcon(plant.body.openfarm_slug),
       size: plant.body.radius * 2,
       spread: 0,
       x: plant.body.x + config.bedXOffset,
@@ -45,8 +43,10 @@ export const calculatePlantPositions = (config: Config): Plant[] => {
     const plantKey = gardenPlants[index];
     const plant = PLANTS[plantKey];
     if (!plant) { return []; }
+    const icon = findIcon(kebabCase(plant.label));
     positions.push({
       ...plant,
+      icon,
       x: nextX,
       y: config.bedWidthOuter / 2,
     });
@@ -55,11 +55,13 @@ export const calculatePlantPositions = (config: Config): Plant[] => {
     for (let i = 1; i < plantsPerHalfRow; i++) {
       positions.push({
         ...plant,
+        icon,
         x: nextX,
         y: config.bedWidthOuter / 2 + plant.spread * i,
       });
       positions.push({
         ...plant,
+        icon,
         x: nextX,
         y: config.bedWidthOuter / 2 - plant.spread * i,
       });

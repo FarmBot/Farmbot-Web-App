@@ -1,0 +1,20 @@
+{
+    "name": "Green Bell Pepper",
+    "binomial_name": "Capsicum annuum",
+    "common_names": [
+        "bell pepper",
+        "green bell pepper",
+        "sweet pepper",
+        "capiscum"
+    ],
+    "description": "The bell pepper is a cultivar group of the species Capsicum annuum. The fruit is often mildly sweet, because this specific cultivar does not produce capsaicin, the chemical responsible for other peppers' spiciness. Green bell peppers are unripened peppers - if left on the plant, they will turn red, orange, or yellow depending on the variety. The \"Permagreen\" variety will be green even when fully ripe. Green peppers are less sweet and slightly more bitter than yellow or orange peppers. Red bell peppers are the sweetest.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, transplant seedlings outside after hardening off",
+    "spread": 30,
+    "row_spacing": 45,
+    "height": 50,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/green-bell-pepper.jpg",
+    "icon": "/crops/icons/green-bell-pepper.avif"
+}

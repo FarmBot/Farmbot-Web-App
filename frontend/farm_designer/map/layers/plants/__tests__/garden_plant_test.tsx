@@ -8,7 +8,6 @@ import {
   fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 import { SpecialStatus } from "farmbot";
-import { cachedCrop } from "../../../../../open_farm/cached_crop";
 
 describe("<GardenPlant />", () => {
   const fakeProps = (): GardenPlantProps => ({
@@ -132,16 +131,5 @@ describe("<GardenPlant />", () => {
     p.plant = plant;
     const wrapper = shallow(<GardenPlant {...p} />);
     expect(wrapper.find("image").props().filter).toEqual("url(#grayscale)");
-  });
-
-  it("fetches icon", () => {
-    const p = fakeProps();
-    p.plant.body.openfarm_slug = "slug";
-    const np = fakeProps();
-    np.plant.body.openfarm_slug = "new-slug";
-    const wrapper = shallow(<GardenPlant {...p} />);
-    wrapper.setProps(np);
-    expect(cachedCrop).toHaveBeenCalledWith("slug");
-    expect(cachedCrop).toHaveBeenCalledWith("new-slug");
   });
 });

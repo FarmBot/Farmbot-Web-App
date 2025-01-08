@@ -1,0 +1,17 @@
+{
+    "name": "Apricot",
+    "binomial_name": "Prunus armeniaca",
+    "common_names": [
+        "apricot"
+    ],
+    "description": "The apricot is a small fruiting tree in the genus Prunus (of which other stone fruits like peaches, plums and cherries are also members). It is a section of the Prunus (Plum) subgenus. The apricot tree has a dense, spreading canopy with white to pinkish flowers. It's fruit are yellow to orange, smaller than peaches, and have smooth or velvety skin. The apricot can tolerate winter temperatures down to \u221230 \u00b0C, making it slightly more cold-hardy than peach trees. However, it is susceptible to spring frosts killing the blooms because it tends to flower very early. Some varieties are self-pollinating, but all apricot trees benefit from a pollination partner with the same bloom time within 15 meters. Standard and dwarf rootstocks are available. Dwarf trees can grow to 3 meters, standard to 4.5 meters. Depending on the size chosen, the tree will bear fruit within 2-4 years of planting.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Transplant bare-root plant",
+    "spread": 450,
+    "row_spacing": 450,
+    "height": 450,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/apricot.jpg",
+    "icon": "/crops/icons/apricot.avif"
+}

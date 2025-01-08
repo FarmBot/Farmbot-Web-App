@@ -28,7 +28,8 @@ describe("<SpreadOverlapHelper/>", () => {
       dragging: false,
       zoomLvl: 1,
       activeDragXY: { x: undefined, y: undefined, z: undefined },
-      activeDragSpread: 25
+      activeDragSpread: 25,
+      inactiveSpread: 25,
     };
   }
 
@@ -120,6 +121,7 @@ describe("<SpreadOverlapHelper/>", () => {
 
   it("shows overlap values", () => {
     const p = fakeProps();
+    p.inactiveSpread = 0;
     p.activeDragXY = { x: 100, y: 100, z: 0 };
     p.dragging = false;
     p.showOverlapValues = true;

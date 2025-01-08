@@ -1,0 +1,19 @@
+{
+    "name": "Cauliflower",
+    "binomial_name": "Brassica oleracea",
+    "common_names": [
+        "Cauliflower"
+    ],
+    "description": "Cauliflower is a vegetable in the Brassicaceae family. The solid, firm head resembles that of broccoli and is usually white, but can also be yellow, purple, or green in color. Like broccoli, it sits atop a stalk. The head is wrapped in thick leaves that begin to open when the plant is ready for harvest. All cauliflower does best in cool weather.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Sow seeds indoors, harden seedlings off before transplanting",
+    "spread": 30,
+    "row_spacing": 60,
+    "height": 75,
+    "growing_degree_days": 80,
+    "companions": [
+        "dill"
+    ],
+    "image": "/crops/images/cauliflower.jpg",
+    "icon": "/crops/icons/cauliflower.avif"
+}

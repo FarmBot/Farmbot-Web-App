@@ -1,0 +1,20 @@
+{
+    "name": "Millet",
+    "binomial_name": "Panicum miliaceum",
+    "common_names": [
+        "Sorghum",
+        "Millet",
+        "proso",
+        "broomcorn"
+    ],
+    "description": "Millets are a group of small-seeded grasses grown as cereal grains. Millet has a mild, nutty flavor and contains more essential amino acids than wheat, oats, rice, barley, and rye. Millets are heat and drought-tolerant and can grow in relatively poor soils. They are quick growing (they can be harvested in as little as 30 days after planting), have good insect resistance, and are relatively free of disease. Millets are grown for human consumption, as cover crops, and for forage, feed, and hay for livestock. The most widely grown millet is Pearl Millet (Pennisetum glaucum). In the United States, Proso Millet (Panicum miliaceum) is most commonly grown for food. Proso produces seeds the size of peppercorns that can be red, yellow, or white. Millet can be cooked as a whole grain and added to salads or soups, baked, ground into flour, or eaten as porridge.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed: broadcast or drill",
+    "spread": 0,
+    "row_spacing": 0,
+    "height": 90,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/millet.jpg",
+    "icon": "/crops/icons/millet.avif"
+}

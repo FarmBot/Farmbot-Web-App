@@ -1,0 +1,19 @@
+{
+    "name": "Scotch Bonnet Pepper",
+    "binomial_name": "Capsicum chinense",
+    "common_names": [
+        "bonney peppers",
+        "Caribbean red pepper",
+        "cachucha pepper"
+    ],
+    "description": "Scotch Bonnet Peppers are a hot pepper cultivar shaped like a hat. They have a rating of 100,000\u2013350,000 Scoville units, making them much spicier than jalapenos. Scotch Bonnets are sweeter and stouter than habaneros and used in Caribbean cuisine. Sweet varieties are known as Cachucha Peppers. The fruit is green when young and red when ripe. Scotch Bonnets are often harvested when yellow-orange. Plants grown with less water will produce hotter peppers.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed (and transplant after hardening off) or seedlings",
+    "spread": 0,
+    "row_spacing": 60,
+    "height": 120,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "",
+    "icon": "/crops/icons/orange-scotch-bonnet.avif"
+}

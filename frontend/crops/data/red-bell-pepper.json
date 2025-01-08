@@ -1,0 +1,19 @@
+{
+    "name": "Red Bell Pepper",
+    "binomial_name": "Capsicum annuum",
+    "common_names": [
+        "bell pepper",
+        "sweet pepper",
+        "red pepper"
+    ],
+    "description": "The bell pepper is a cultivar group of the species Capsicum annuum. Bell pepper cultivars produce fruits in colors including red, yellow, orange, green, brown, white, and purple. The fruit is often mildly sweet, because this specific cultivar does not produce capsaicin, the chemical responsible for other peppers' spiciness. Red bell peppers are the sweetest bell peppers.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, transplant seedlings outside after hardening off",
+    "spread": 30,
+    "row_spacing": 45,
+    "height": 50,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/red-bell-pepper.jpg",
+    "icon": "/crops/icons/red-bell-pepper.avif"
+}

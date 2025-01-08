@@ -1,0 +1,17 @@
+{
+    "name": "Trinidad Moruga Scorpion Pepper",
+    "binomial_name": "Capsicum chinense",
+    "common_names": [
+        "Trinidad Morouga Scorpion Pepper"
+    ],
+    "description": "Trinidad Moruga Scorpion Pepper is a Capsicum chinense species that was bred in Trinidad and Tobago. It is currently the hottest chili pepper in the world, with an average Scoville Heat index rating of 1.2 million units. Peppers mature from green to red and look like miniature, squished, wrinkled red bell peppers. The pepper also has a tender fruity flavor beneath it's extreme heat.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, transplant seedlings outside after hardening off",
+    "spread": 0,
+    "row_spacing": 0,
+    "height": 0,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "",
+    "icon": "/crops/icons/trinidad-moruga-scorpion-pepper.avif"
+}

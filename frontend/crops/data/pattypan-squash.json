@@ -1,0 +1,31 @@
+{
+    "name": "Pattypan Squash",
+    "binomial_name": "Cucurbita pepo",
+    "common_names": [
+        "Pattypan Squash",
+        "Patty Pan",
+        "scallop squash",
+        "peter pan squash",
+        "sunburst squash",
+        "granny squash",
+        "custard marrow",
+        "custard squash",
+        "cibl\u00e8me (Cajun French)",
+        "white squash",
+        "button squash",
+        "scallopini",
+        "schwoughksie squash (pronounced \"shwooxie squash",
+        "\" in the Poughkeepsie",
+        "New York area)"
+    ],
+    "description": "Pattypan squash is a variety of summer squash that has a bright yellow, green or white skin and is shaped like a flying saucer with scalloped edges. The squash's flesh is most tender when it is slightly immature - the squash is usually harvested when it is 5-8cm in diameter. It can be baked, grilled, fried, or boiled.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed outdoors or direct seed into peat pots and transplant pots into soil",
+    "spread": 100,
+    "row_spacing": 90,
+    "height": 80,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/pattypan-squash.jpg",
+    "icon": "/crops/icons/pattypan-squash.avif"
+}

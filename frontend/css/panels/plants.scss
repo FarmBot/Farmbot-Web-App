@@ -15,7 +15,7 @@
 }
 
 .crop-search-result-wrapper {
-  .openfarm-search-results-wrapper {
+  .crop-search-results-wrapper {
     display: grid;
     gap: 1.5rem 1rem;
     grid-template-columns: repeat(2, 1fr);
@@ -45,6 +45,20 @@
       border-bottom-right-radius: 5px;
       color: $white;
       font-size: 1.2rem !important;
+    }
+    img {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      height: 4rem;
+      width: 4rem;
+      filter: drop-shadow(0 0 15px $translucent5) drop-shadow(0 0 10px $translucent5) drop-shadow(0 0 3px $translucent5);
+      &.center {
+        top: calc(50% - 3rem);
+        left: calc(50% - 3rem);
+        width: 6rem;
+        height: 6rem;
+      }
     }
   }
 }

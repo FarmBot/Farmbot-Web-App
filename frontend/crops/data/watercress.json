@@ -1,0 +1,17 @@
+{
+    "name": "Watercress",
+    "binomial_name": "nasturtium officinale",
+    "common_names": [
+        "Watercress"
+    ],
+    "description": "Watercress is a semi-aquatic to aquatic perennial plant in the Brassica family whose leaves and stems have a clean, slightly peppery taste. In the wild, Watercress favors moderately cool climates and grows partially submerged in running water and flooded areas. It is one of the oldest known leaf vegetables eaten by humans. Watercress can be cultivated hydroponically, in containers, or in soil that is kept constantly wet. It can be harvested as sprouts or leaves.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed, transplants, or cuttings",
+    "spread": 20,
+    "row_spacing": 20,
+    "height": 0,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/watercress.jpg",
+    "icon": "/crops/icons/watercress.avif"
+}

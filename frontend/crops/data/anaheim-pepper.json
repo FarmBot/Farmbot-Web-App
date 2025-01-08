@@ -1,0 +1,22 @@
+{
+    "name": "Anaheim Pepper",
+    "binomial_name": "Capsicum annuum",
+    "common_names": [
+        "anaheim pepper",
+        "California chile",
+        "Magdalena pepper",
+        "chile seco del norte"
+    ],
+    "description": "Anaheim peppers are a mild variety of the New Mexico chile pepper cultivar No. 9. When dried, they are known as \"chile seco del norte\".",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, transplant seedlings outside after hardening off.",
+    "spread": 40,
+    "row_spacing": 40,
+    "height": 50,
+    "growing_degree_days": 0,
+    "companions": [
+        "tomato"
+    ],
+    "image": "/crops/images/anaheim-pepper.jpg",
+    "icon": "/crops/icons/anaheim-pepper.avif"
+}

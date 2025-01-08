@@ -2,13 +2,10 @@ import React from "react";
 import { round, scaleIcon, transformXY } from "../util";
 import { AxisNumberProperty, MapTransformProps } from "../interfaces";
 import { Path } from "../../../internal_urls";
-import { findBySlug } from "../../search_selectors";
-import { CropLiveSearchResult } from "../../interfaces";
-import { svgToUrl } from "../../../open_farm/icons";
+import { findIcon } from "../../../crops/find";
 
 export interface AddPlantIconProps {
   cursorPosition: AxisNumberProperty | undefined;
-  cropSearchResults: CropLiveSearchResult[];
   mapTransformProps: MapTransformProps;
 }
 
@@ -18,9 +15,7 @@ export const AddPlantIcon = (props: AddPlantIconProps) => {
   const radius = 25;
   const { qx, qy } = transformXY(round(x), round(y), props.mapTransformProps);
   const iconRadius = scaleIcon(radius);
-  const crop = Path.getSlug(Path.cropSearch());
-  const result = findBySlug(props.cropSearchResults, crop);
-  const icon = svgToUrl(result.crop.svg_icon);
+  const icon = findIcon(Path.getCropSlug());
   return <g id="adding-plant-icon">
     <image
       className={"adding-plant"}

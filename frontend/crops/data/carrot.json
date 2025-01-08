@@ -1,0 +1,19 @@
+{
+    "name": "Carrot",
+    "binomial_name": "Daucus Carota",
+    "common_names": [
+        "Carrot",
+        "Karotte",
+        "M\u00f6hre"
+    ],
+    "description": "The carrot is a root vegetable. It is usually orange in color, but some cultivars are purple, black, red, white, and yellow. The most commonly eaten part of the plant is the taproot, but the greens are sometimes eaten as well. The leaves appear first, and the taproot grows more slowly beneath the soil. Fast-growing cultivars mature within three months of sowing the seed. Slower-maturing cultivars are harvested four months after sowing.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct Seed, thin to 3cm apart when seedlings are 8cm high",
+    "spread": 10,
+    "row_spacing": 20,
+    "height": 35,
+    "growing_degree_days": 75,
+    "companions": [],
+    "image": "/crops/images/carrot.jpg",
+    "icon": "/crops/icons/carrot.avif"
+}

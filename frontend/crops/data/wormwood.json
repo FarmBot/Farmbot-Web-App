@@ -1,0 +1,21 @@
+{
+    "name": "Wormwood",
+    "binomial_name": "Artemisia absinthium",
+    "common_names": [
+        "wormwood",
+        "common wormwood",
+        "absinthe",
+        "absinthium",
+        "absinthe wormwood"
+    ],
+    "description": "Wormwood is a species of Artemisia and a member of the Daisy (Asteraceae) family. Other Artemesia species include Tarragon and Mugwort. All parts of the plant are extremely bitter. Wormwood is drought, heat, and deer resistant. It is grown as an ornamental plant and is used to make traditional bitters and absinthe. Herbal medicine has historically used wormwood to treat liver, gallbladder and digestive system disorders.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed outdoors two weeks after last spring frost",
+    "spread": 0,
+    "row_spacing": 90,
+    "height": 150,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/wormwood.jpg",
+    "icon": "/crops/icons/wormwood.avif"
+}

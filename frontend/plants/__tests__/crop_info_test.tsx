@@ -5,28 +5,22 @@ jest.mock("../../farm_designer/map/actions", () => ({
   setDragIcon: jest.fn(),
 }));
 
-let mockDev = false;
-jest.mock("../../settings/dev/dev_support", () => ({
-  DevSettings: { futureFeaturesEnabled: () => mockDev }
+import { FAKE_CROPS } from "../../__test_support__/fake_crops";
+jest.mock("../../crops/constants", () => ({
+  CROPS: FAKE_CROPS,
 }));
 
 import React from "react";
 import {
-  RawCropInfo as CropInfo, searchForCurrentCrop, mapStateToProps,
-  getCropHeaderProps,
+  RawCropInfo as CropInfo, mapStateToProps,
 } from "../crop_info";
 import { mount, shallow } from "enzyme";
 import { CropInfoProps } from "../../farm_designer/interfaces";
 import { initSave } from "../../api/crud";
-import {
-  fakeCropLiveSearchResult,
-} from "../../__test_support__/fake_crop_search_result";
-import { unselectPlant } from "../../farm_designer/map/actions";
-import { svgToUrl } from "../../open_farm/icons";
 import { fakeState } from "../../__test_support__/fake_state";
 import { Actions } from "../../constants";
 import { clickButton } from "../../__test_support__/helpers";
-import { FilePath, Path } from "../../internal_urls";
+import { Path } from "../../internal_urls";
 import {
   fakeCurve, fakePlant, fakeWebAppConfig,
 } from "../../__test_support__/fake_state/resources";
@@ -39,14 +33,8 @@ import { BlurableInput, FBSelect } from "../../ui";
 
 describe("<CropInfo />", () => {
   const fakeProps = (): CropInfoProps => {
-    const cropSearchResult = fakeCropLiveSearchResult();
-    cropSearchResult.crop.svg_icon = "fake_mint_svg";
-    cropSearchResult.crop.row_spacing = 100;
-    cropSearchResult.crop.sowing_method = "";
     const designer = fakeDesignerState();
-    designer.cropSearchResults = [cropSearchResult];
     return {
-      openfarmCropFetch: jest.fn(),
       dispatch: jest.fn(),
       designer,
       botPosition: { x: undefined, y: undefined, z: undefined },
@@ -62,22 +50,11 @@ describe("<CropInfo />", () => {
   it("renders", () => {
     location.pathname = Path.mock(Path.cropSearch("mint"));
     const p = fakeProps();
-    p.designer.cropSearchResults[0].companions = [];
     const wrapper = mount(<CropInfo {...p} />);
     expect(wrapper.text()).toContain("Mint");
-    expect(wrapper.text()).toContain("Row Spacing:1000mm");
+    expect(wrapper.text()).toContain("Row Spacing:");
     expect(wrapper.find("img").at(0).props().src)
-      .toEqual(svgToUrl("fake_mint_svg"));
-    expect(wrapper.text().toLowerCase()).not.toContain("edit on");
-  });
-
-  it("renders openfarm link", () => {
-    mockDev = true;
-    location.pathname = Path.mock(Path.cropSearch("mint"));
-    const p = fakeProps();
-    p.designer.cropSearchResults[0].companions = [];
-    const wrapper = mount(<CropInfo {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("edit on");
+      .toEqual("/crops/icons/mint.avif");
   });
 
   it("returns to crop search", () => {
@@ -134,28 +111,10 @@ describe("<CropInfo />", () => {
   it("updates curves", () => {
     location.pathname = Path.mock(Path.cropSearch("mint"));
     const p = fakeProps();
-    const wrapper = mount<CropInfo>(<CropInfo {...p} />);
-    wrapper.setState({ crop: "strawberry" });
-    wrapper.instance().componentDidUpdate();
-    expect(wrapper.state().crop).toEqual("mint");
+    mount<CropInfo>(<CropInfo {...p} />);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_CROP_WATER_CURVE_ID, payload: undefined,
     });
-  });
-
-  it("updates current image", () => {
-    location.pathname = Path.mock(Path.cropSearch("mint"));
-    const images = [FilePath.DEFAULT_WEED_ICON];
-    const p = fakeProps();
-    const cropSearchResult = fakeCropLiveSearchResult();
-    cropSearchResult.images = [];
-    p.designer.cropSearchResults = [cropSearchResult];
-    const wrapper = mount<CropInfo>(<CropInfo {...p} />);
-    expect(wrapper.state().currentImage).toEqual(undefined);
-    cropSearchResult.images = images;
-    p.designer.cropSearchResults = [cropSearchResult];
-    wrapper.setProps(p);
-    expect(wrapper.state().currentImage?.body.attachment_url).toEqual(images[0]);
   });
 
   it("doesn't change search query", () => {
@@ -176,6 +135,7 @@ describe("<CropInfo />", () => {
   });
 
   it("adds a plant at the current bot position", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
     const p = fakeProps();
     p.botPosition = { x: 100, y: 200, z: undefined };
     const wrapper = mount(<CropInfo {...p} />);
@@ -198,47 +158,30 @@ describe("<CropInfo />", () => {
   });
 
   it("renders cm in mm", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
     const p = fakeProps();
-    p.designer.cropSearchResults[0].crop.spread = 1234;
     const wrapper = mount(<CropInfo {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("12340mm");
+    expect(wrapper.text().toLowerCase()).toContain("1000mm");
   });
 
   it("renders missing values", () => {
+    location.pathname = Path.mock(Path.cropSearch("x"));
     const p = fakeProps();
-    p.designer.cropSearchResults[0].crop.svg_icon = undefined;
-    p.designer.cropSearchResults[0].crop.row_spacing = undefined;
-    p.designer.cropSearchResults[0].crop.common_names = [];
-    p.designer.cropSearchResults[0].images = [];
     const wrapper = mount(<CropInfo {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("spacing:not available");
+    expect(wrapper.text().toLowerCase()).toContain("sowing:not available");
     expect(wrapper.text().toLowerCase()).toContain("common names:not available");
   });
 
   it("handles string of names", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
     const p = fakeProps();
-    p.designer.cropSearchResults[0].crop.common_names =
-      "names" as unknown as string[];
     const wrapper = mount(<CropInfo {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("common names:names");
-  });
-
-  it("sets current image", () => {
-    const images = ["/plant.jpg", FilePath.DEFAULT_WEED_ICON];
-    const p = fakeProps();
-    const cropSearchResult = fakeCropLiveSearchResult();
-    cropSearchResult.images = images;
-    p.designer.cropSearchResults = [cropSearchResult];
-    const wrapper = shallow<CropInfo>(<CropInfo {...p} />);
-    expect(wrapper.state().currentImage?.body.attachment_url).toEqual(images[0]);
-    wrapper.instance().setCurrentImage(1);
-    expect(wrapper.state().currentImage?.body.attachment_url).toEqual(images[1]);
+    expect(wrapper.text().toLowerCase()).toContain("common names:mint, spearmint");
   });
 
   it("navigates to companion plant", () => {
     location.pathname = Path.mock(Path.cropSearch("mint"));
     const p = fakeProps();
-    p.openfarmCropFetch = jest.fn(() => jest.fn());
     p.dispatch = jest.fn(x => {
       typeof x === "function" && x();
       return Promise.resolve();
@@ -249,7 +192,6 @@ describe("<CropInfo />", () => {
     const companion = wrapper.find("a").at(0);
     expect(companion.text()).toEqual("Strawberry");
     companion.simulate("click");
-    expect(p.openfarmCropFetch).toHaveBeenCalledWith("strawberry");
     expect(mockNavigate).toHaveBeenCalledWith(Path.cropSearch("strawberry"));
   });
 
@@ -292,35 +234,14 @@ describe("<CropInfo />", () => {
   });
 });
 
-describe("searchForCurrentCrop()", () => {
-  it("searches", () => {
-    location.pathname = Path.mock(Path.cropSearch("mint"));
-    const dispatch = jest.fn();
-    const fakeOFSearch = jest.fn((_) => jest.fn());
-    searchForCurrentCrop(fakeOFSearch)(dispatch);
-    expect(fakeOFSearch).toHaveBeenCalledWith("mint");
-    expect(unselectPlant).toHaveBeenCalled();
-  });
-});
-
-describe("getCropHeaderProps()", () => {
-  it("handles missing crop", () => {
-    location.pathname = Path.mock(Path.cropSearch());
-    const result = getCropHeaderProps({ cropSearchResults: [] });
-    expect(result.result.crop.name).toEqual("");
-  });
-});
-
 describe("mapStateToProps()", () => {
   it("returns props", () => {
     const state = fakeState();
     const webAppConfig = fakeWebAppConfig();
     webAppConfig.body.show_plants = false;
     state.resources = buildResourceIndex([webAppConfig]);
-    state.resources.consumers.farm_designer.cropSearchInProgress = true;
     state.bot.hardware.location_data.position = { x: 1, y: 2, z: 3 };
     const props = mapStateToProps(state);
-    expect(props.designer.cropSearchInProgress).toEqual(true);
     expect(props.botPosition).toEqual({ x: 1, y: 2, z: 3 });
     expect(props.getConfigValue("show_plants")).toEqual(false);
   });

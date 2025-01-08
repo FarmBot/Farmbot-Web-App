@@ -1,0 +1,23 @@
+{
+    "name": "Hillbilly Tomato",
+    "binomial_name": "Solanum lycopersicum",
+    "common_names": [
+        "hillbilly tomato",
+        "flame tomato",
+        "hillbilly potato leaf tomato"
+    ],
+    "description": "Hillbilly, or Flame, tomatoes are large heirloom cultivars. The fruits are 1-2 pounds, round, heavily ribbed, and have brilliant yellow to orange skin with red marbling. They are juicy and have a rich, sweet flavor that is low in acid. They are usually eaten raw - sliced or added to sandwiches. For larger yield and improved plant health, prune and stake tomatoes.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, transplant seedlings outside after hardening off",
+    "spread": 120,
+    "row_spacing": 90,
+    "height": 120,
+    "growing_degree_days": 0,
+    "companions": [
+        "borage",
+        "carrot",
+        "mint"
+    ],
+    "image": "",
+    "icon": "/crops/icons/hillbilly-tomato.avif"
+}

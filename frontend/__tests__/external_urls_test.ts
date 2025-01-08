@@ -17,12 +17,6 @@ describe("ExternalUrl", () => {
       .toEqual("https://software.farm.bot/docs");
     expect(ExternalUrl.softwareForum)
       .toEqual("https://forum.farmbot.org/c/software");
-    expect(ExternalUrl.OpenFarm.cropApi)
-      .toEqual("https://openfarm.cc/api/v1/crops/");
-    expect(ExternalUrl.OpenFarm.cropBrowse)
-      .toEqual("https://openfarm.cc/crops/");
-    expect(ExternalUrl.OpenFarm.newCrop)
-      .toEqual("https://openfarm.cc/en/crops/new");
     expect(ExternalUrl.Video.desktop)
       .toEqual("https://cdn.shopify.com/s/files/1/2040/0289/files/Farm_Designer_Loop.mp4?9552037556691879018");
     expect(ExternalUrl.Video.mobile)

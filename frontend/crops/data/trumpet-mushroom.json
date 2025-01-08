@@ -1,0 +1,26 @@
+{
+    "name": "Trumpet Mushroom",
+    "binomial_name": "Pleurotus eryngii",
+    "common_names": [
+        "king trumpet",
+        "trumpet mushroom",
+        "king oyster mushroom",
+        "Eryngii",
+        "trumpet royale",
+        "French Horn Mushroom",
+        "King Brown Mushroom",
+        "Boletus Of The Steppes",
+        "Ali'i Oyster",
+        "Abalone mushroom"
+    ],
+    "description": "The Trumpet, King Oyster, or Trumpet Royale mushroom, is a thick, white, stumpy mushroom with a small, brown flat cap covering short gills. It is considered the tastiest member of the Oyster mushroom family, in addition to being the largest. All but the very bottom of the mushroom can be eaten. It has a rich flavor similar to umami when cooked, and a flavor and texture similar to abalone.",
+    "sun_requirements": "Partial Sun",
+    "sowing_method": "Inoculate substrate",
+    "spread": 0,
+    "row_spacing": 0,
+    "height": 0,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/trumpet-mushroom.jpg",
+    "icon": "/crops/icons/trumpet-mushroom.avif"
+}

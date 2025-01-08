@@ -1,0 +1,20 @@
+{
+    "name": "Strawberry",
+    "binomial_name": "Fragaria \u00d7 ananassa",
+    "common_names": [
+        "Aardbei",
+        "Fraisier",
+        "Erdbeere",
+        "Grandian F1"
+    ],
+    "description": "Strawberries are a hybrid species of the genus Fragaria that produce sweet, bright red fruits. \n\nThere are three main types of strawberries: \n\n1) summer-fruiting: produce a single, large crop of fruit the year after planting. To grow, transplant plugs or crowns in early spring in rows spaced at least 120cm apart. Pinch off all flowers the first season and train the plant's runners, pressing them into the soil 15-22cm apart from the mother plant. Mulch with straw or pine needles in the fall when the plants have died back. When the plants start to grow back in the spring, move the mulch aside. After harvest the second season, set a lawnmower to about 10cm high and mow, being sure not to damage crowns.\n\n The other two types are \n\n2) Ever-bearing and 3) Day Neutral, both of which send out less runners and bear several crops of smaller fruit throughout the season. These two types can be grown using raised beds about 20cm high and 60cm wide. Transplant crowns or plugs in staggered double rows, about 30cm apart. Remove runners and flowers until July of the first year to give the roots time to develop, and then allow plants to produce fruit. All types of strawberries begin to produce fewer and less sweet fruit once they are two years or older. Because strawberries are a hybrid, seeds will not breed true. Strawberries are predominantly propagated using bare root plugs or crowns or dividing runners. Make sure not to bury the crown when transplanting plugs.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Transplant bare root plants/plugs or divide runners",
+    "spread": 30,
+    "row_spacing": 35,
+    "height": 30,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/strawberry.jpg",
+    "icon": "/crops/icons/strawberry.avif"
+}

@@ -1,0 +1,26 @@
+{
+    "name": "Shallot",
+    "binomial_name": "Allium cepa var. aggregatum",
+    "common_names": [
+        "shallot",
+        " scallion",
+        " cibol",
+        " thick-neck onion",
+        " chalota",
+        " echalota",
+        " ascalonia",
+        " alho de ascalao",
+        " echalote",
+        " schalotte"
+    ],
+    "description": "Shallots are a type of small onion with a subtle, distinguished flavor. The bulb is covered in papery red skin tinted rust, gold, or purple and has a tapered oblong shape with multiple cloves. They can be used fresh or dried in a variety of dishes.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed, thin to 5cm when seedlings are 3cm tall",
+    "spread": 15,
+    "row_spacing": 5,
+    "height": 30,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/shallot.jpg",
+    "icon": "/crops/icons/shallot.avif"
+}

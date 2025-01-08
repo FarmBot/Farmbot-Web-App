@@ -1,0 +1,15 @@
+{
+    "name": "Iceberg Lettuce",
+    "binomial_name": "Lactuca sativa",
+    "common_names": [],
+    "description": "Iceberg lettuce grows in firm, round, glossy green heads. The interior is white and has a juicy, mild flavor. It is most often used in salads. Lettuce is cold-hardy. High temperatures will impede germination and/or cause the plant to bolt (go to seed quickly). Some hybrid cultivars have been bred to be more heat-resistant.",
+    "sun_requirements": "Partial Sun",
+    "sowing_method": "Direct seed",
+    "spread": 15,
+    "row_spacing": 25,
+    "height": 30,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/iceberg-lettuce.jpg",
+    "icon": "/crops/icons/iceberg-lettuce.avif"
+}

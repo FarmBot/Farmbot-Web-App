@@ -1,10 +1,10 @@
 import React from "react";
 import { round, transformXY, defaultSpreadCmDia } from "../../util";
-import { cachedCrop } from "../../../../open_farm/cached_crop";
 import { MapTransformProps, TaggedPlant } from "../../interfaces";
 import { SpreadOverlapHelper } from "./spread_overlap_helper";
 import { BotPosition } from "../../../../devices/interfaces";
 import { Color } from "../../../../ui";
+import { findCrop } from "../../../../crops/find";
 
 export interface SpreadLayerProps {
   visible: boolean;
@@ -28,6 +28,7 @@ export function SpreadLayer(props: SpreadLayerProps) {
   return <g id="spread-layer">
     {plants.map(p => {
       const selected = p.uuid === currentPlant?.uuid;
+      const { spread } = findCrop(p.body.openfarm_slug);
       return <g id={"spread-components-" + p.body.id} key={p.uuid}>
         {visible &&
           <SpreadCircle
@@ -44,6 +45,7 @@ export function SpreadLayer(props: SpreadLayerProps) {
           plant={p}
           mapTransformProps={mapTransformProps}
           zoomLvl={zoomLvl}
+          inactiveSpread={spread}
           activeDragXY={activeDragXY}
           activeDragSpread={activeDragSpread} />
       </g>;
@@ -60,54 +62,33 @@ export interface SpreadCircleProps {
   selected: boolean;
 }
 
-interface SpreadCircleState {
-  spread: number | undefined;
-  loaded: boolean;
-}
-
-export class SpreadCircle extends
-  React.Component<SpreadCircleProps, SpreadCircleState> {
-  state: SpreadCircleState = { spread: undefined, loaded: false };
-
-  fetchSpread = () => {
-    cachedCrop(this.props.plant.body.openfarm_slug)
-      .then(({ spread }) => this.setState({ spread, loaded: true }));
-  };
-
-  componentDidMount = () => this.fetchSpread();
-  componentDidUpdate = (prevProps: SpreadCircleProps) =>
-    this.props.plant.body.openfarm_slug != prevProps.plant.body.openfarm_slug &&
-    this.fetchSpread();
-
-  render() {
-    const { radius, x, y, id } = this.props.plant.body;
-    const { visible, mapTransformProps, animate } = this.props;
-    const { qx, qy } = transformXY(round(x), round(y), mapTransformProps);
-    const spreadDiaCm = this.state.loaded
-      ? this.state.spread || defaultSpreadCmDia(radius)
-      : 0;
-    return <g id={"spread-" + id}>
-      {visible &&
-        <circle
-          className={"spread " + (animate ? "animate" : "")}
-          id={"spread-" + id}
-          cx={qx}
-          cy={qy}
-          // Convert `spread` from diameter in cm to radius in mm.
-          r={spreadDiaCm / 2 * 10}
-          strokeWidth={2}
-          stroke={this.state.spread ? Color.darkGreen : Color.offWhite}
-          opacity={0.5}
-          fill={"none"} />}
-      {this.props.hoveredSpread && this.props.selected &&
-        <circle
-          cx={qx}
-          cy={qy}
-          r={this.props.hoveredSpread / 2}
-          strokeWidth={2}
-          stroke={Color.darkGreen}
-          opacity={0.5}
-          fill={"none"} />}
-    </g>;
-  }
-}
+export const SpreadCircle = (props: SpreadCircleProps) => {
+  const { radius, x, y, id } = props.plant.body;
+  const { visible, mapTransformProps, animate } = props;
+  const { qx, qy } = transformXY(round(x), round(y), mapTransformProps);
+  const { spread } = findCrop(props.plant.body.openfarm_slug);
+  const spreadDiaCm = spread || defaultSpreadCmDia(radius);
+  return <g id={"spread-" + id}>
+    {visible &&
+      <circle
+        className={"spread " + (animate ? "animate" : "")}
+        id={"spread-" + id}
+        cx={qx}
+        cy={qy}
+        // Convert `spread` from diameter in cm to radius in mm.
+        r={spreadDiaCm / 2 * 10}
+        strokeWidth={2}
+        stroke={Color.darkGreen}
+        opacity={0.5}
+        fill={"none"} />}
+    {props.hoveredSpread && props.selected &&
+      <circle
+        cx={qx}
+        cy={qy}
+        r={props.hoveredSpread / 2}
+        strokeWidth={2}
+        stroke={Color.darkGreen}
+        opacity={0.5}
+        fill={"none"} />}
+  </g>;
+};

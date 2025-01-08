@@ -1,0 +1,18 @@
+{
+    "name": "Indigo",
+    "binomial_name": "Indigofera tinctoria / Indigofera suffruticosa",
+    "common_names": [
+        "Indigo",
+        "true indigo"
+    ],
+    "description": "Indigo is a species of plant from the bean family that was one of the original sources of indigo dye. It is a shrub that grows 1-2 meters high. Depending on the climate, it can be an annual, biennial, or perennial. Because it is a legume, Indigo can also be grown to improve soil conditions. If growing the plant for dye, harvest before the flowers open. The dye is obtained by soaking and fermenting the plant's leaves.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors",
+    "spread": 0,
+    "row_spacing": 0,
+    "height": 150,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/indigo.jpg",
+    "icon": "/crops/icons/indigo.avif"
+}

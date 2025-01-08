@@ -1,0 +1,20 @@
+{
+    "name": "Purple Pod Bean",
+    "binomial_name": "Phaseolus vulgaris",
+    "common_names": [
+        "Purple pod bean"
+    ],
+    "description": "Purple pod beans come in bush and pole varieties. They can be eaten raw or cooked, but often turn green when cooked. Like other legumes, they benefit from being treated with an inoculant.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed outdoors, thin to 30cm when plants are 4cm tall",
+    "spread": 35,
+    "row_spacing": 30,
+    "height": 0,
+    "growing_degree_days": 0,
+    "companions": [
+        "corn",
+        "eggplant"
+    ],
+    "image": "/crops/images/purple-pod-bean.jpg",
+    "icon": "/crops/icons/purple-pod-bean.avif"
+}

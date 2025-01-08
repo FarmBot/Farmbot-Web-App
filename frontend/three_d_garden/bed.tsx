@@ -25,8 +25,8 @@ import { GetWebAppConfigValue } from "../config_storage/actions";
 import { DesignerState } from "../farm_designer/interfaces";
 import { isMobile } from "../screen_size";
 import { ThreeEvent } from "@react-three/fiber";
-import { plantIconPath } from "./plants";
 import { Path } from "../internal_urls";
+import { findIcon } from "../crops/find";
 
 const soil = (
   Type: typeof LinePath | typeof Shape,
@@ -278,7 +278,7 @@ export const Bed = (props: BedProps) => {
         follow={true} position={[0, 0, 0]}>
         <Image
           name={"pointerPlant"}
-          url={plantIconPath(Path.getSlug(Path.cropSearch()))}
+          url={findIcon(Path.getCropSlug())}
           scale={50}
           transparent={true}
           renderOrder={1} />

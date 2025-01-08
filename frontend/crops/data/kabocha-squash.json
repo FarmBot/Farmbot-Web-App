@@ -1,0 +1,21 @@
+{
+    "name": "Kabocha Squash",
+    "binomial_name": "Cucurbita maxima",
+    "common_names": [
+        "Kabocha Squash",
+        "Squash"
+    ],
+    "description": "Kabocha squash has a hard, knobbly skin that is deep green or orange with some light green to white stripes. It's shaped like a squat pumpkin and has wonderfully sweet, deep orange flesh. The taste and texture of it's flesh is like a combination of pumpkin and sweet potato. It is delicious roasted, and in curries, soups, and other dishes.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed. For shorter seasons, direct seed indoors in peat pots and transplant pots outdoors when soil is warm.",
+    "spread": 140,
+    "row_spacing": 90,
+    "height": 25,
+    "growing_degree_days": 120,
+    "companions": [
+        "borage",
+        "corn"
+    ],
+    "image": "/crops/images/kabocha-squash.jpg",
+    "icon": "/crops/icons/kabocha-squash.avif"
+}

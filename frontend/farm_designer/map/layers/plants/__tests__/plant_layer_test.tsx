@@ -10,7 +10,7 @@ import {
 import { svgMount } from "../../../../../__test_support__/svg_mount";
 import { shallow } from "enzyme";
 import { GardenPlant } from "../garden_plant";
-import { FilePath, Path } from "../../../../../internal_urls";
+import { Path } from "../../../../../internal_urls";
 import { Actions } from "../../../../../constants";
 import { mockDispatch } from "../../../../../__test_support__/fake_dispatch";
 
@@ -41,7 +41,7 @@ describe("<PlantLayer />", () => {
     ["soil-cloud",
       "plant-icon",
       "image visibility=\"visible\"",
-      FilePath.DEFAULT_ICON,
+      "icon",
       "height=\"40\" width=\"40\" x=\"80\" y=\"180\"",
       "drag-helpers",
       "plant-icon",

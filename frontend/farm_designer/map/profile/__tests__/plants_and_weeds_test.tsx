@@ -1,8 +1,3 @@
-let mockSpread = 0;
-jest.mock("../../../../open_farm/cached_crop", () => ({
-  cachedCrop: jest.fn(() => Promise.resolve({ icon: "", spread: mockSpread })),
-}));
-
 import React from "react";
 import { svgMount } from "../../../../__test_support__/svg_mount";
 import {
@@ -30,7 +25,6 @@ describe("<PlantPoint />", () => {
   });
 
   it("renders plant point", () => {
-    mockSpread = 100;
     const p = fakeProps();
     p.point.body.z = 0;
     p.soilHeight = 200;
@@ -56,9 +50,9 @@ describe("<PlantPoint />", () => {
   });
 
   it("renders default spread", () => {
-    mockSpread = 0;
     const p = fakeProps();
     const plant = fakePlant();
+    plant.body.openfarm_slug = "foo-bar";
     plant.body.radius = 25;
     p.point = plant;
     const wrapper = svgMount(<PlantPoint {...p} />);
@@ -68,7 +62,6 @@ describe("<PlantPoint />", () => {
   });
 
   it("renders hovered spread", () => {
-    mockSpread = 0;
     const p = fakeProps();
     const plant = fakePlant();
     plant.body.radius = 25;

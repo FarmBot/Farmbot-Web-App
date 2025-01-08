@@ -5,6 +5,7 @@ import { MapTransformProps, TaggedPlant } from "../interfaces";
 import { Circle } from "../layers/plants/circle";
 import { noop } from "lodash";
 import { SpreadCircle } from "../layers";
+import { findIcon } from "../../../crops/find";
 
 /**
  * For showing the map plant hovered in the plant panel.
@@ -42,13 +43,14 @@ export class HoveredPlant extends
       currentPlant, mapTransformProps, dragging, isEditing, visible, designer,
       animate, spreadLayerVisible,
     } = this.props;
-    const { icon } = designer.hoveredPlant;
-    const hovered = !!icon;
+    const { plantUUID } = designer.hoveredPlant;
+    const hovered = !!plantUUID;
     const { id, x, y } = this.plantInfo;
     const radius = designer.hoveredSpread
       ? designer.hoveredSpread / 2
       : this.plantInfo.radius;
     const { qx, qy } = transformXY(round(x), round(y), mapTransformProps);
+    const icon = currentPlant ? findIcon(currentPlant.body.openfarm_slug) : "";
     const iconRadius = scaleIcon(radius);
     const scaledRadius = currentPlant ? iconRadius : iconRadius * 1.2;
     const alpha = dragging ? 0.4 : 1.0;

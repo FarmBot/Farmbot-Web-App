@@ -1,0 +1,15 @@
+{
+    "name": "Nectarine",
+    "binomial_name": "Prunus persica var. nucipersic",
+    "common_names": [],
+    "description": "The nectarine is a deciduous tree that produces stone, or drupe, fruits. It is actually the same species as a Peach, it just has a recessive gene that makes it's skin smooth rather than fuzzy. Both fruits belong to the genus Prunus which includes the cherry, apricot, almond, and plum. The peach and nectarine are classified with the almond in the subgenus Amygdalus because their stones are corrugated rather than smooth. Most cultivars require 500 hours of chilling at temperatures between 0 and 10 \u00b0C during the winter, and hot temperatures in the summer to ripen fruit. Some varieties are self-pollinating, while others require pollination by a peach or nectarine tree of another variety with the same bloom period within 50 feet. Standard and dwarf rootstocks are available. Dwarf trees can grow to 3 meters, standard to 4.5 meters. Depending on the size chosen, the tree will bear fruit within 2-4 years of planting.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Transplant bare-root plant",
+    "spread": 365,
+    "row_spacing": 300,
+    "height": 1000,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/nectarine.jpg",
+    "icon": "/crops/icons/nectarine.avif"
+}

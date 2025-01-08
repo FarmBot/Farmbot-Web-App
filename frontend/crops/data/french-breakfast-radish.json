@@ -1,0 +1,18 @@
+{
+    "name": "French Breakfast Radish",
+    "binomial_name": "R. raphanistrum subsp. sativus",
+    "common_names": [
+        "French Breakfast Radish",
+        "radish"
+    ],
+    "description": "Radishes are edible root vegetable of the Brassicaceae family. They are usually eaten raw in salads. Their sharp flavor comes from various chemical compounds produced by the plants, including glucosinolate, myrosinase, and isothiocyanate. Radishes are sometimes grown as companion plants because few pests and diseases affect them.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed outdoors, thin to 2cm apart",
+    "spread": 15,
+    "row_spacing": 3,
+    "height": 20,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/french-breakfast-radish.jpg",
+    "icon": "/crops/icons/french-breakfast-radish.avif"
+}

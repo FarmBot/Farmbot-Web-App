@@ -1,0 +1,23 @@
+{
+    "name": "Bibb Lettuce",
+    "binomial_name": "Lactuca Sativa",
+    "common_names": [
+        "Butterhead",
+        "Bibb",
+        "Boston lettuce",
+        "Kropsla",
+        "Laitue",
+        "Kopfsalat",
+        "Appia"
+    ],
+    "description": "Buttercrunch (also known as Butterhead, Bibb, and Boston lettuce) is a lettuce cultivar that produces tightly clustered leaves with a buttery flavor and smooth texture. Lettuce is a cool weather crop and high temperatures will impede germination and/or cause the plant to bolt (go to seed quickly). Some hybrid cultivars have been bred to be more heat-resistant.",
+    "sun_requirements": "Partial Sun",
+    "sowing_method": "Direct seed outdoors, thin to 20cm when seedlings are 3cm tall",
+    "spread": 30,
+    "row_spacing": 40,
+    "height": 30,
+    "growing_degree_days": 60,
+    "companions": [],
+    "image": "/crops/images/bibb-lettuce.jpg",
+    "icon": "/crops/icons/bibb-lettuce.avif"
+}

@@ -1,0 +1,25 @@
+{
+    "name": "Arugula",
+    "binomial_name": "Eruca sativa",
+    "common_names": [
+        "Arugula",
+        "Rocket Salad",
+        "Rucola",
+        "Rucoli",
+        "Rugula",
+        "Colewort",
+        "Roquette",
+        "Garden Rocket",
+        "Eruca"
+    ],
+    "description": "Mildly bitter, sometimes peppery, salad green. Fast-growing with deeply lobed leaves. Prefers cooler weather, bolts in the heat.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed or transplant in wide rows or raised beds",
+    "spread": 20,
+    "row_spacing": 25,
+    "height": 30,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/arugula.jpg",
+    "icon": "/crops/icons/arugula.avif"
+}

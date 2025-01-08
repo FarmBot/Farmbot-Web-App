@@ -1,0 +1,23 @@
+{
+    "name": "Italian Sweet Pepper",
+    "binomial_name": "Capsicum annuum 'Friggitello'",
+    "common_names": [
+        "friggitello",
+        "Golden Greek pepper",
+        "Sweet Italian pepper",
+        "Tuscan pepper",
+        "pepperoncini"
+    ],
+    "description": "The Italian Sweet Pepper (also known as Friggitello, Golden Greek Sweet Pepper, and Tuscan Pepper) is a Capiscum Annum cultivar that produces tapered green to red peppers. The peppers are mild with slight heat (they have a Scoville Heat rating of 0-500 units) and a touch of bitterness. Greek varieties are sweeter than Italian. Friggitello is sometimes known as Pepperoncini in America, but the Pepperoncini is a separate cultivar and a spicier pepper, with a Scoville rating of 15,000\u201330,000 units. The plants produce heavily and benefit from being staked. Peppers are harvested while still immature and green, when they are 5\u20137.5 cm long. They are eaten fresh, saut\u00e9ed, pickled, and stuffed.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, transplant seedlings outside after hardening off",
+    "spread": 90,
+    "row_spacing": 45,
+    "height": 90,
+    "growing_degree_days": 0,
+    "companions": [
+        "carrot"
+    ],
+    "image": "",
+    "icon": "/crops/icons/sweet-italian-pepper.avif"
+}

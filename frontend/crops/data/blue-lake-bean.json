@@ -1,0 +1,19 @@
+{
+    "name": "Blue Lake Bean",
+    "binomial_name": "Phaseolus vulgaris var. nanus",
+    "common_names": [
+        "Blue Lake",
+        "Bush Bean",
+        "Green Bean"
+    ],
+    "description": "Blue Lake is an upright bush bean with medium-thick green pods that are plump, tasty, and best when harvested at 15cm long. The plant has a high yield, long season, and benefits from inoculant.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors or out. Transplant seedlings after hardening off.",
+    "spread": 25,
+    "row_spacing": 25,
+    "height": 55,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/blue-lake-bean.jpg",
+    "icon": "/crops/icons/blue-lake-bean.avif"
+}

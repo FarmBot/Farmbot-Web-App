@@ -1,0 +1,18 @@
+{
+    "name": "Spring Onion",
+    "binomial_name": "Allium cepa",
+    "common_names": [
+        "Spring Onion",
+        "fresh onion"
+    ],
+    "description": "Spring onions resemble scallions in appearance and flavor, but they are actually very young storage onions. Yellow, red, or white storage onions are pulled out of the ground before the standard harvest date, when their skins are still thin and they are mild in flavor. Their bulbs and greens can be eaten fresh or cooked.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed or plant slips or sets",
+    "spread": 8,
+    "row_spacing": 8,
+    "height": 30,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/spring-onion.jpg",
+    "icon": "/crops/icons/spring-onion.avif"
+}

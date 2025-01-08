@@ -1226,12 +1226,6 @@ export namespace Content {
   export const ENTER_CROP_SEARCH_TERM =
     trim(`Search for a crop to add to your garden.`);
 
-  export const CROP_NOT_FOUND_INTRO =
-    trim(`Would you like to`);
-
-  export const CROP_NOT_FOUND_LINK =
-    trim(`add this crop on OpenFarm?`);
-
   export const NO_TOOLS =
     trim(`Press + to add a new tool or seed container`);
 

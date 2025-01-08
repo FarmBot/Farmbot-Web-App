@@ -1,0 +1,17 @@
+{
+    "name": "White Onion",
+    "binomial_name": "Allium cepa",
+    "common_names": [
+        "White Onion"
+    ],
+    "description": "White onions are a type of onion with white skin and white flesh. They are members of the Allium family along with garlic and leeks. They tend to have a sharper, more pungent flavor than yellow onions, and thinner, papery skin. They can be eaten cooked or raw (mince and add to salsas and chutneys). Make sure to choose a variety suited to your day length.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors or plant sets (small bulbs) outside.",
+    "spread": 13,
+    "row_spacing": 10,
+    "height": 60,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/white-onion.jpg",
+    "icon": "/crops/icons/white-onion.avif"
+}

@@ -1,0 +1,15 @@
+{
+    "name": "Rye",
+    "binomial_name": "Secale cereale",
+    "common_names": [],
+    "description": "Rye is a grass grown as a cereal grain, a cover crop and a forage crop. A member of the wheat tribe (Triticeae), it is closely related to barley and wheat. It should not be confused with Ryegrass, which is in the Lolium genus, and used for lawns, pasture, and hay for livestock. Rye is more tolerant of poorer soils and cold temperatures than other grains. It is often sown in autumn and harvested for grain the following season. It's vigorous growth suppresses weeds, but can also invade winter wheat fields. When grown as a cover crop or \"green manure,\" it is often paired with hairy vetch and crimson clover, and mowed and turned in before it goes to seed to increase the amount of organic matter in the soil.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Broadcast direct seed",
+    "spread": 25,
+    "row_spacing": 0,
+    "height": 125,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/rye.jpg",
+    "icon": "/crops/icons/rye.avif"
+}

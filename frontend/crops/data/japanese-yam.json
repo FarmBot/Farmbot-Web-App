@@ -1,0 +1,22 @@
+{
+    "name": "Japanese Yam",
+    "binomial_name": "Dioscorea japonica",
+    "common_names": [
+        "Japanese Yam",
+        "mountain yam",
+        "satsuma imo",
+        "kotobuki",
+        "East Asian mountain yam",
+        "yamaimo"
+    ],
+    "description": "The Japanese yam is a roughly oblong tuber. It has a thin, rusted red colored skin and cream colored, densely textured flesh. It's flesh is dry, starchy, and mildly sweet. The skin is bitter like the roots and should be peeled before eating. The rest of the plant is a climbing vine that has opposite, smooth, shiny leaves and white flowers. \n\nYams should not be confused with sweet potatoes, even though the two words are often used as synonyms. Yams belong to the Dioscoreaceae family, while sweet potatoes are in the Convolvulaceae family.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Slips",
+    "spread": 0,
+    "row_spacing": 30,
+    "height": 20,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/japanese-yam.jpg",
+    "icon": "/crops/icons/japanese-yam.avif"
+}

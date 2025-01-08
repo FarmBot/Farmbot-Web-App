@@ -19,7 +19,6 @@ enum FbosFile {
 export namespace ExternalUrl {
   const GITHUB = "https://github.com";
   const GITHUB_RAW = "https://raw.githubusercontent.com";
-  const OPENFARM = "https://openfarm.cc";
   const DOCS_HUB = "https://docs.farm.bot";
   const GENESIS_DOCS = "https://genesis.farm.bot";
   const EXPRESS_DOCS = "https://express.farm.bot";
@@ -71,12 +70,6 @@ export namespace ExternalUrl {
 
   export const solar = SOLAR;
   export const raisedBed = RAISED_BED;
-
-  export namespace OpenFarm {
-    export const cropApi = `${OPENFARM}/api/v1/crops/`;
-    export const cropBrowse = `${OPENFARM}/crops/`;
-    export const newCrop = `${OPENFARM}/en/crops/new`;
-  }
 
   export namespace Video {
     export const desktop =

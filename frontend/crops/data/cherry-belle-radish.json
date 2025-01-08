@@ -1,0 +1,17 @@
+{
+    "name": "Cherry Belle Radish",
+    "binomial_name": "Raphanus sativus",
+    "common_names": [
+        "Cherry Bell"
+    ],
+    "description": "Cherry Belle radishes are small, fast-growing radishes that are smooth and round with bright red skin and crisp white flesh. They are harvested when they are 2cm across. Like all radishes, they prefer cooler weather. Slice and toss into salads.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed, thin to 5cm apart",
+    "spread": 15,
+    "row_spacing": 5,
+    "height": 13,
+    "growing_degree_days": 36,
+    "companions": [],
+    "image": "/crops/images/cherry-belle-radish.jpg",
+    "icon": "/crops/icons/cherry-belle-radish.avif"
+}

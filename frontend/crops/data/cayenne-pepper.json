@@ -1,0 +1,22 @@
+{
+    "name": "Cayenne Pepper",
+    "binomial_name": "Capsicum annuum",
+    "common_names": [
+        "Guinea spice",
+        "cow-horn pepper",
+        "red hot chili pepper",
+        "aleva",
+        "bird pepper",
+        "red pepper"
+    ],
+    "description": "Cayenne peppers are a cultivar of Capsicum annuum. They are members of the nightshade family, Solanaceae, and related to tomatoes and eggplant. The upright plants produce long, thin, red fruit that can be up to 25cm long. Cayenne peppers have a Scoville rating of 30,000 to 50,000 units and are slightly hotter than jalapenos. They are generally dried and ground to make cayenne spice, but they can also be used whole or in a thin, vinegar-based sauce.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, transplant seedlings outside after hardening off",
+    "spread": 60,
+    "row_spacing": 45,
+    "height": 90,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/cayenne-pepper.jpg",
+    "icon": "/crops/icons/cayenne-pepper.avif"
+}

@@ -1,0 +1,19 @@
+{
+    "name": "Lemon Drop Pepper",
+    "binomial_name": "Capsicum baccatum 'Lemon drop'",
+    "common_names": [
+        "aj\u00ed limo",
+        "lemon drop pepper",
+        "qillu uchu"
+    ],
+    "description": "The Lemon Drop pepper is a Capsicum baccatum cultivar that produces high yields of 60mm long, cone-shaped, slightly crinkled peppers that are yellow when ripe. Peppers have a spicy, citrus-like, lemon flavor and a Scoville rating of 15,000-30,000 units. They are popular in Peruvian cuisine.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, transplant seedlings outside after hardening off",
+    "spread": 0,
+    "row_spacing": 0,
+    "height": 200,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "",
+    "icon": "/crops/icons/lemon-drop-pepper.avif"
+}

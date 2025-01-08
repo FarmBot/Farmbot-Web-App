@@ -1,0 +1,19 @@
+{
+    "name": "Aleppo Pepper",
+    "binomial_name": "Capsicum annuum",
+    "common_names": [
+        "Aleppo Pepper",
+        "Halaby Pepper",
+        "pul biber"
+    ],
+    "description": "Aleppo, or Halaby, pepper is a variety of Capsicum annuum used as a spice in Middle Eastern and Mediterranean cuisine. The plant's pods are semi-dried, de-seeded, and then coarsely ground. The resulting spice is slightly oilier and milder than red pepper flakes and has notes of raisin.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, transplant seedlings outside after hardening off.",
+    "spread": 0,
+    "row_spacing": 0,
+    "height": 0,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "",
+    "icon": "/crops/icons/aleppo-pepper.avif"
+}

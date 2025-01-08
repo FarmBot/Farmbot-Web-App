@@ -1,0 +1,19 @@
+{
+    "name": "Asparagus",
+    "binomial_name": "Asparagus officinalis",
+    "common_names": [
+        "Asparagus",
+        "Sparrow Grass",
+        "Sperage"
+    ],
+    "description": "Perennial spring vegetable often sown from crowns. The vegetable has a mild flavor with earthy undertones. When mature and reproducing, the plant creates tall, stout stems with feathery foliage and small red berries.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Transplant crowns outside, or start seeds indoors",
+    "spread": 42,
+    "row_spacing": 30,
+    "height": 140,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/asparagus.jpg",
+    "icon": "/crops/icons/asparagus.avif"
+}

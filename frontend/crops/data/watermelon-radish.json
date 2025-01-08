@@ -1,0 +1,19 @@
+{
+    "name": "Watermelon Radish",
+    "binomial_name": "Raphanus sativus",
+    "common_names": [
+        "Watermelon Radish",
+        "Red Meat",
+        "White Glob"
+    ],
+    "description": "Watermelon radishes are round roots with white skin and bright red or deep pink flesh. They have a sweet, delicious taste and can be eaten raw in salads, pickled, or cooked. They are best sown in summer or fall, as they will bolt from spring sowings.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed, thin to 5cm apart when seedlings are 3cm tall",
+    "spread": 8,
+    "row_spacing": 5,
+    "height": 15,
+    "growing_degree_days": 50,
+    "companions": [],
+    "image": "/crops/images/watermelon-radish.jpg",
+    "icon": "/crops/icons/watermelon-radish.avif"
+}

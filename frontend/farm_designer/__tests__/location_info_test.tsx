@@ -122,7 +122,7 @@ describe("<LocationInfo />", () => {
     wrapper.find(".plant-search-item").simulate("mouseEnter");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_HOVERED_PLANT,
-      payload: { icon: "", plantUUID: "plantUuid" },
+      payload: { plantUUID: "plantUuid" },
     });
     jest.clearAllMocks();
     wrapper.find(".point-search-item").simulate("mouseEnter");

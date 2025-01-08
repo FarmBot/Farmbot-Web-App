@@ -1,0 +1,21 @@
+{
+    "name": "California Poppy",
+    "binomial_name": "Eschscholzia californica",
+    "common_names": [
+        "California poppy",
+        "Californian poppy",
+        "golden poppy",
+        "California sunlight",
+        "cup of gold"
+    ],
+    "description": "The California Poppy is a perennial or annual flowering plant with blue-green foliage and yellow, orange, or red flowers with 4 silky petals. The petals close at night (or in cold, windy weather) and reopen in the morning. The California Poppy is native to the Western United States and Mexico. It is drought-tolerant, self-seeding, and grows well in poor, sandy soil. All parts of the plant have medicinal uses. California Poppies should be direct-seeded outdoors: their long taproots prevent them from transplanting well. Temperatures below -4\u00b0 C will kill plants.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed outdoors after temperatures are above 20\u00b0 C",
+    "spread": 0,
+    "row_spacing": 30,
+    "height": 150,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/california-poppy.jpg",
+    "icon": "/crops/icons/california-poppy.avif"
+}

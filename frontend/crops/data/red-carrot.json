@@ -1,0 +1,17 @@
+{
+    "name": "Red Carrot",
+    "binomial_name": "Daucus carota var. sativus",
+    "common_names": [
+        "red carrot"
+    ],
+    "description": "Red carrots are a carrot cultivar with red skin and orange to red flesh. Some varieties become more red once they are cooked. Red Carrots can sometimes have a lower yield than orange carrots, but are high in lycopene.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed outdoors, thin to 3cm apart when seedlings are 7cm high",
+    "spread": 8,
+    "row_spacing": 3,
+    "height": 15,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/red-carrot.jpg",
+    "icon": "/crops/icons/red-carrot.avif"
+}

@@ -1,0 +1,18 @@
+{
+    "name": "Hemp",
+    "binomial_name": "Cannabis sativa",
+    "common_names": [
+        "hemp",
+        "industrial hemp"
+    ],
+    "description": "Hemp is a variety of Cannabis sativa that is grown for industrial uses. It can be made into paper, textiles, clothing, rope, food, animal feed, biofuel, and biodegradable plastics. Hemp has a lower concentration of THC and a higher concentration of CBD than Marijuana (the other dominant variety of Cannabis sativa), which means it has little to no psychoactive effects. Despite this, the legality of hemp cultivation varies throughout the U.S. Hemp is low maintenance, fast growing, and an extremely efficient weed suppressor. It uses significantly less water and land than cotton to produce similar textile yields.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed outdoors",
+    "spread": 450,
+    "row_spacing": 450,
+    "height": 350,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/hemp.jpg",
+    "icon": "/crops/icons/hemp.avif"
+}

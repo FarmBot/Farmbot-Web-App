@@ -1,0 +1,25 @@
+{
+    "name": "Runner Bean",
+    "binomial_name": "Phaseolus coccineus",
+    "common_names": [
+        "scarlet runner bean",
+        "runner bean",
+        "butter bean",
+        "multiflora bean",
+        "Oregon lima bean",
+        "fire bean",
+        "mammoth",
+        "red giant",
+        "scarlet emperor"
+    ],
+    "description": "The Runner, or Multiflora, Bean is a vining plant in the Fabaceae (legume) family that is native to Central America. It is sometimes called the Butter Bean, which can also refer to the Lima Bean, a separate species. The Runner Bean differs from other beans in that it can be grown as a perennial where the ground does not freeze. Runner Beans are grown for their edible beans and as an ornamental: plants produce brilliant red flowers that attract hummingbirds and multicolored seeds. Some varieties have white flowers. The seed pods have a knife-like shape and are usually green, but some purple cultivars exist. Pods are 15-30cm long and contain 6-10 2.5cm seeds. Different varieties have different colored seeds. Seeds can eaten fresh or as dried beans, but must be cooked to remove toxins. Blooms can be added to salads. Young pods can be cooked like green beans. Roots are eaten by indigenous peoples in Central America. Runner Beans benefit from trellising.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed outdoors once soil temperatures are above 10\u00b0C",
+    "spread": 30,
+    "row_spacing": 20,
+    "height": 300,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/runner-bean.jpg",
+    "icon": "/crops/icons/runner-bean.avif"
+}

@@ -1,0 +1,17 @@
+{
+    "name": "Habanero Pepper",
+    "binomial_name": "Capsicum chinense",
+    "common_names": [
+        "habanero pepper"
+    ],
+    "description": "Habaneros are a very hot chili pepper variety that have a rating of 100,000-350,000 Scoville units and a floral aroma. The fruit is green when unripe. Various cultivars turn orange, red, white, brown, yellow, or purple as they ripen. Ripe fruit are typically 2-6 cm long.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, transplant seedlings outside after hardening off",
+    "spread": 40,
+    "row_spacing": 45,
+    "height": 50,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/habanero-pepper.jpg",
+    "icon": "/crops/icons/habanero-pepper.avif"
+}

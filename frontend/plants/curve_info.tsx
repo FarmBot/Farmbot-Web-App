@@ -69,11 +69,11 @@ interface CurvesDropdownListProps {
 }
 
 const curvesDropdownList = (props: CurvesDropdownListProps) => {
-  const openfarmSlug = props.plant?.slug || Path.getSlug(Path.cropSearch());
+  const slug = props.plant?.slug || Path.getCropSlug();
   const list: (DropDownItem | undefined)[] = [];
   list.push(NULL_CHOICE);
   const usedIds = props.plants
-    .filter(plant => plant.body.openfarm_slug == openfarmSlug)
+    .filter(plant => plant.body.openfarm_slug == slug)
     .map(plant => plant.body[CURVE_KEY_LOOKUP[props.curveType]])
     .filter(id => id);
   list.push({
@@ -107,16 +107,16 @@ export const curveToDdi =
   };
 
 interface FindCurveProps {
-  openfarmSlug: string;
+  slug: string;
   plants: TaggedPlantPointer[];
   curves: TaggedCurve[];
 }
 
 export const findMostUsedCurveForCrop = (props: FindCurveProps) =>
   (curveType: CurveType): TaggedCurve | undefined => {
-    const { openfarmSlug, plants, curves } = props;
+    const { slug, plants, curves } = props;
     const counts = countBy(plants
-      .filter(p => p.body.openfarm_slug == openfarmSlug)
+      .filter(p => p.body.openfarm_slug == slug)
       .map(p => p.body[CURVE_KEY_LOOKUP[curveType]] as number | undefined)
       .filter(x => x));
     const maxCount = Math.max(...Object.values(counts));

@@ -1,0 +1,17 @@
+{
+    "name": "Ginger",
+    "binomial_name": "Zingiber officinale",
+    "common_names": [
+        "Ginger"
+    ],
+    "description": "Ginger is a flowering, perennial, herbaceous plant native to Southern Asia\u2019s tropical rainforests. It is in the Zingiberaceae family, which also includes turmeric. Ginger is grown for its root, which is also called Ginger, and as an ornamental. The ginger root is a rhizome that produces thin annual stems with narrow green leaves and clusters of white and pink flower buds that open into yellow flowers. Ginger needs ample moisture and fertilizer and temperatures between 21.6 and 25\u00b0C. Temperatures below 9\u00b0C can kill the plant, and it will not germinate in cold soil. Ginger prefers sun in the morning and shade in the afternoon. It can be grown in containers or greenhouses in colder climates to extend the growing season. Propagate ginger by planting rhizomes or roots. It can be harvested after 4-6 months as \u201cBaby Ginger.\u201d Baby Ginger does not have a skin on it yet - instead the rhizome is pink and cream-colored, very tender and juicy, and less spicy. Mature ginger has fibrous, dry, yellow flesh with a tan skin and spicier flavor. Ginger takes 10-12 months to mature and is harvested when the stalk has withered. Ginger can be used to season dishes, steeped into a tea, or candied. Ayurveda and other traditional medicines use ginger to reduce pain and inflammation, soothe upset stomachs, and boost metabolism.",
+    "sun_requirements": "Partial Sun",
+    "sowing_method": "Direct seed roots outdoors",
+    "spread": 25,
+    "row_spacing": 20,
+    "height": 100,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/ginger.jpg",
+    "icon": "/crops/icons/ginger.avif"
+}

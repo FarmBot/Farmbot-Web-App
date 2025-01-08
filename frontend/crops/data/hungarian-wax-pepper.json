@@ -1,0 +1,19 @@
+{
+    "name": "Hungarian Wax Pepper",
+    "binomial_name": "Capsicum annuum",
+    "common_names": [
+        "Hungarian Wax pepper"
+    ],
+    "description": "Hungarian Wax Peppers are a Capsicum annuum cultivar that produce 10-15cm long, tapered peppers with a broad Scoville rating of 1,000-15,000 units. Peppers have smooth, waxy skin and mature from green to orange to red. They resemble banana peppers when immature and are often harvested before maturity. Peppers are frequently pickled, stuffed, roasted, and fried.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, transplant seedlings outside after hardening off",
+    "spread": 40,
+    "row_spacing": 45,
+    "height": 60,
+    "growing_degree_days": 0,
+    "companions": [
+        "parsley"
+    ],
+    "image": "",
+    "icon": "/crops/icons/hungarian-wax-pepper.avif"
+}

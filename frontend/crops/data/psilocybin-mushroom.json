@@ -1,0 +1,19 @@
+{
+    "name": "Psilocybin",
+    "binomial_name": "Psilocybe",
+    "common_names": [
+        "Psilocybin",
+        "magic mushrooms",
+        "shrooms"
+    ],
+    "description": "Psilocybin mushrooms are a polyphyletic group of mushrooms that contain the psychedelic compounds psilocybin, psilocin and baeocystin.",
+    "sun_requirements": "",
+    "sowing_method": "Inoculate sterilized substrate",
+    "spread": 0,
+    "row_spacing": 0,
+    "height": 0,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/psilocybin-mushroom.jpg",
+    "icon": "/crops/icons/psilocybin-mushroom.avif"
+}

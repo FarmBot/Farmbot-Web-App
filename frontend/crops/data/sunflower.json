@@ -1,0 +1,18 @@
+{
+    "name": "Sunflower",
+    "binomial_name": "Helianthus annuus",
+    "common_names": [
+        "Sun Flower",
+        "Sunflower"
+    ],
+    "description": "Sunflowers are large flowers with bright to deep yellow ray florets surrounding a large circular grouping of disc florets that mature into seeds. Sunflowers are grown for ornamental purposes, cut flowers, or their edible seeds. They can reach heights of 300cm or more.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed outdoors after last frost in groups of 2-3, thin to 1 plant when true leaves appear",
+    "spread": 60,
+    "row_spacing": 30,
+    "height": 240,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/sunflower.jpg",
+    "icon": "/crops/icons/sunflower.avif"
+}

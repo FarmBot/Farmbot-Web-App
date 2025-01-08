@@ -1,0 +1,19 @@
+{
+    "name": "Okra",
+    "binomial_name": "Abelmoschus esculentus",
+    "common_names": [
+        "Okra",
+        "Gumbo",
+        "Ladies Fingers"
+    ],
+    "description": "Okra is a frost-tender annual grown for it's edible seed pods and, less commonly, it's leaves and stems. Plants can be green or red.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors or outside",
+    "spread": 25,
+    "row_spacing": 25,
+    "height": 250,
+    "growing_degree_days": 64,
+    "companions": [],
+    "image": "/crops/images/okra.jpg",
+    "icon": "/crops/icons/okra.avif"
+}

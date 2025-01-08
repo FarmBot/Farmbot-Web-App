@@ -1,0 +1,21 @@
+{
+    "name": "Red Bartlett Pear",
+    "binomial_name": "Pyrus communis 'Williams'",
+    "common_names": [
+        "Williams pear",
+        "Williams' Bon Chr\u00e9tien pear",
+        "bartlett pear"
+    ],
+    "description": "Red Bartlett pears emerged as a naturally occurring variety (known as a 'sport') of the species Pyrus communis or European Pear. They have since been cultivated. Bartlett pears have a bell shape and skin that turns red as it ripens after harvest. Both Red and Green Bartlett pears are medium-sized and juicy with soft flesh. They can be eaten fresh, baked, or canned. Bartlett pears are not as cold tolerant as other varieties. Their white blooms open early in the season and they are ready to harvest in late summer or early fall. The pear should still be relatively hard when picked. After harvest, pears take 7-10 days to ripen, during which time their flesh will soften and the skin will change to a deep crimson. Bartlett pears are not self-fertile. They require pollination by a pear tree of another variety with the same bloom period within 50 feet, such as Bosc. Standard and dwarf rootstocks are available. Standard sized trees can grow to 6 meters. Depending on the size chosen, the tree will bear fruit within 4-6 years of planting.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Transplant bare-root plant",
+    "spread": 85,
+    "row_spacing": 300,
+    "height": 300,
+    "growing_degree_days": 0,
+    "companions": [
+        "german-chamomile"
+    ],
+    "image": "/crops/images/red-bartlett-pear.jpg",
+    "icon": "/crops/icons/red-bartlett-pear.avif"
+}

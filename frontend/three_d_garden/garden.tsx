@@ -14,7 +14,7 @@ import { AddPlantProps, Bed } from "./bed";
 import { zero as zeroFunc, extents as extentsFunc } from "./helpers";
 import { Sky } from "./sky";
 import { Config, detailLevels, seasonProperties } from "./config";
-import { ASSETS, PLANTS } from "./constants";
+import { ASSETS } from "./constants";
 import { useSpring, animated } from "@react-spring/three";
 import { Solar } from "./solar";
 import { Sun, sunPosition } from "./sun";
@@ -26,7 +26,10 @@ import {
 } from "./components";
 import { isDesktop } from "../screen_size";
 import { isUndefined, range } from "lodash";
-import { calculatePlantPositions, convertPlants, ThreeDPlant } from "./plants";
+import {
+  calculatePlantPositions, convertPlants, ThreeDPlant,
+} from "./plants";
+import { ICON_URLS } from "../crops/constants";
 
 const AnimatedGroup = animated(Group);
 
@@ -171,8 +174,7 @@ export const GardenModel = (props: GardenModelProps) => {
       addPlantProps={props.addPlantProps} />
     <Bot config={config} activeFocus={props.activeFocus} />
     <Group name={"plant-icon-preload"} visible={false}>
-      {Object.values(PLANTS).map((plant, i) =>
-        <Image key={i} url={plant.icon} />)}
+      {ICON_URLS.map((url, i) => <Image key={i} url={url} />)}
     </Group>
     <Group name={"plant-labels"} visible={!props.activeFocus}>
       {plants.map((plant, i) =>

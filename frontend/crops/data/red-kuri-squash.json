@@ -1,0 +1,23 @@
+{
+    "name": "Red Kuri Squash",
+    "binomial_name": "Cucurbita maxima",
+    "common_names": [
+        "Red Kuri",
+        "Orange Hokkaido",
+        "Baby Red Hubbard",
+        "Japanese squash",
+        "Uchiki kuri squash",
+        "potimarron",
+        "onion squash"
+    ],
+    "description": "Red Kuri is a teardrop-shaped winter squash with thick, smooth, deep-orange to red skin. It's firm flesh has a delicate chestnut-like flavor and is good baked, roasted, or in pies and purees. Like other members of the squash family, it grows on a vine. Each vine produces around three squash.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct sow inside or outdoors. Transplant seedlings after hardening off.",
+    "spread": 210,
+    "row_spacing": 90,
+    "height": 50,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/red-kuri-squash.jpg",
+    "icon": "/crops/icons/red-kuri-squash.avif"
+}

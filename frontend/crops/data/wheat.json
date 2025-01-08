@@ -1,0 +1,15 @@
+{
+    "name": "Wheat",
+    "binomial_name": "Triticum aestivum",
+    "common_names": [],
+    "description": "Wheat is a grass that is grown for its seed. Many species of wheat make up the genus Triticum, with the most widely grown species being Common Wheat (Triticum aestivum). Wheat can be divided into two main groups: Winter (planted in fall and harvested in the spring or summer) and Spring (planted in spring and harvested in fall). Winter and Spring can then be divided into 1) Soft wheat (low in gluten, used for pastries and crackers), 2) Hard wheat (high in gluten, used for bread), and 3) Durum wheat (used for pasta). Winter wheat should be planted 6-8 weeks before the soil freezes to allow time for good root development. Spring wheat is planted as early as the ground can be worked in the spring.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed into furrows. Broadcast or use grain drill. Rake in, roll soil to firm the bed.",
+    "spread": 0,
+    "row_spacing": 0,
+    "height": 120,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/wheat.jpg",
+    "icon": "/crops/icons/wheat.avif"
+}

@@ -1,0 +1,21 @@
+{
+    "name": "Lemon Balm",
+    "binomial_name": "Melissa officinalis",
+    "common_names": [
+        "Lemon balm",
+        "mint balm",
+        "common balm"
+    ],
+    "description": "Lemon Balm is a perennial herb in the mint family that flowers during the summer and gives off a strong lemon scent. In hot climates, a little shade can be beneficial, helping the plant to produce larger and more flavorful leaves. Lemon Balm is used in teas, salads, as an ornamental, and in aromatherapy. Like mint, Lemon Balm can aggressively spread throughout the garden - planting it in a container can keep this in check.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, transplant seedlings outside after hardening off.",
+    "spread": 50,
+    "row_spacing": 30,
+    "height": 70,
+    "growing_degree_days": 70,
+    "companions": [
+        "rosemary"
+    ],
+    "image": "/crops/images/lemon-balm.jpg",
+    "icon": "/crops/icons/lemon-balm.avif"
+}

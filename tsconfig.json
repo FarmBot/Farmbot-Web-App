@@ -23,6 +23,7 @@
     "sourceMap": true,
     "strictNullChecks": true,
     "target": "es5",
+    "resolveJsonModule": true,
   },
   "include": [
     "frontend"

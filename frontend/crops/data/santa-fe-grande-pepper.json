@@ -1,0 +1,23 @@
+{
+    "name": "Santa Fe Grande Pepper",
+    "binomial_name": "Capsicum annuum 'Santa Fe Grande'",
+    "common_names": [
+        "yellow hot chili pepper",
+        "Guero chili pepper",
+        "Caribe"
+    ],
+    "description": "Santa Fe Grande peppers are a chili pepper cultivar that produces conical fruits 5-10cm long that resemble jalapeno peppers. Peppers ripen from pale yellow to bright orange or red and have a sweet, mildly spicy taste. They have a Scoville Heat rating of 0-999 units and are often pickled or added to salsas. Plants are resistant to the tobacco mosaic virus.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, transplant seedlings outside after hardening off",
+    "spread": 60,
+    "row_spacing": 45,
+    "height": 60,
+    "growing_degree_days": 0,
+    "companions": [
+        "tomato",
+        "eggplant",
+        "parsley"
+    ],
+    "image": "",
+    "icon": "/crops/icons/santa-fe-grande-pepper.avif"
+}

@@ -304,7 +304,7 @@ export interface PlantSlugBulkUpdateProps extends BulkUpdateBaseProps {
   bulkPlantSlug: string | undefined;
 }
 
-/** Update `openfarm_slug` for multiple plants at once. */
+/** Update slug for multiple plants at once. */
 export const PlantSlugBulkUpdate = (props: PlantSlugBulkUpdateProps) => {
   const plants = props.allPoints.filter(point =>
     props.selected.includes(point.uuid) && point.kind === "Point" &&

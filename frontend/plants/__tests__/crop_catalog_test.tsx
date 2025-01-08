@@ -8,66 +8,42 @@ import {
 import { mount, shallow } from "enzyme";
 import { CropCatalogProps } from "../../farm_designer/interfaces";
 import { Actions } from "../../constants";
-import {
-  fakeCropLiveSearchResult,
-} from "../../__test_support__/fake_crop_search_result";
-import { SearchField } from "../../ui/search_field";
 import { fakeState } from "../../__test_support__/fake_state";
 import { Path } from "../../internal_urls";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { fakePlant } from "../../__test_support__/fake_state/resources";
+import { SearchField } from "../../ui/search_field";
 
 describe("<CropCatalog />", () => {
   const fakeProps = (): CropCatalogProps => ({
     dispatch: jest.fn(),
-    openfarmSearch: jest.fn(() => jest.fn()),
-    cropSearchResults: [],
-    cropSearchQuery: undefined,
-    cropSearchInProgress: false,
     plant: undefined,
     bulkPlantSlug: undefined,
-    hoveredPlant: { plantUUID: undefined, icon: "" },
+    hoveredPlant: { plantUUID: undefined },
+    cropSearchQuery: "",
   });
 
   it("renders", () => {
     const wrapper = mount(<CropCatalog {...fakeProps()} />);
     expect(wrapper.text()).toContain("Choose a crop");
     expect(wrapper.find("input").props().placeholder)
-      .toEqual("Search OpenFarm...");
+      .toEqual("Search crops...");
   });
 
-  it("handles search term change", () => {
+  it("changes search term", () => {
     const p = fakeProps();
     const wrapper = shallow(<CropCatalog {...p} />);
-    wrapper.find(SearchField).simulate("change", "apple");
+    wrapper.find(SearchField).simulate("change", "term");
     expect(p.dispatch).toHaveBeenCalledWith({
-      payload: "apple",
-      type: Actions.SEARCH_QUERY_CHANGE
+      type: Actions.SEARCH_QUERY_CHANGE,
+      payload: "term",
     });
-    // Requires lodash.debouce to be mocked
-    expect(p.openfarmSearch).toHaveBeenCalledWith("apple");
   });
 
   it("goes back", () => {
     const wrapper = mount(<CropCatalog {...fakeProps()} />);
     wrapper.find("i").first().simulate("click");
     expect(mockNavigate).toHaveBeenCalledWith(Path.plants());
-  });
-
-  it("search term is too short", () => {
-    const p = fakeProps();
-    p.cropSearchQuery = "ab";
-    const wrapper = mount(<CropCatalog {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("too short");
-  });
-
-  it("shows result update spinner", () => {
-    const p = fakeProps();
-    p.cropSearchQuery = "abc";
-    p.cropSearchInProgress = true;
-    p.cropSearchResults = [fakeCropLiveSearchResult()];
-    const wrapper = mount(<CropCatalog {...p} />);
-    expect(wrapper.find(".spinner").length).toEqual(1);
   });
 
   it("dispatches upon unmount", () => {
@@ -83,7 +59,6 @@ describe("<CropCatalog />", () => {
 describe("mapStateToProps()", () => {
   it("returns props", () => {
     const props = mapStateToProps(fakeState());
-    expect(props.cropSearchInProgress).toEqual(false);
     expect(props.plant).toEqual(undefined);
   });
 

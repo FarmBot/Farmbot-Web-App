@@ -1,0 +1,17 @@
+{
+    "name": "Yellow Carrot",
+    "binomial_name": "Daucus carota var. sativus",
+    "common_names": [
+        "Yellow carrot"
+    ],
+    "description": "Yellow carrots are a carrot cultivar that have yellow skin and flesh. They are grown and cooked the same way as orange carrots, but can sometimes have a lower yield.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed outdoors, thin to 3cm apart when seedlings are 7cm high",
+    "spread": 8,
+    "row_spacing": 3,
+    "height": 15,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/yellow-carrot.jpg",
+    "icon": "/crops/icons/yellow-carrot.avif"
+}

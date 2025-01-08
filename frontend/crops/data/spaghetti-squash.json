@@ -1,0 +1,18 @@
+{
+    "name": "Spaghetti Squash",
+    "binomial_name": "Cucurbita pepo",
+    "common_names": [
+        "Spaghetti Squash",
+        "vegetable spaghetti"
+    ],
+    "description": "Spaghetti Squash is a winter squash cultivar that produces oblong, ivory to yellow-skinned squash with flesh like strands of spaghetti. Like other squash, it grows on sprawling vines. If starting seeds indoors, use peat pots and directly transplant them into the soil to reduce root disturbance. Harvest squash before any hard frosts and cure. Spaghetti Squash can be stored for up to 3 months in a cool, dry, well-ventilated place.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed outdoors or indoors in peat pots (transplant pots outside after hardening off seedlings)",
+    "spread": 30,
+    "row_spacing": 30,
+    "height": 1800,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/spaghetti-squash.jpg",
+    "icon": "/crops/icons/spaghetti-squash.avif"
+}

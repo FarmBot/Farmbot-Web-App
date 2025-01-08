@@ -1,0 +1,25 @@
+{
+    "name": "Sage",
+    "binomial_name": "Salvia officinalis",
+    "common_names": [
+        "Sage",
+        "garden sage",
+        "common sage",
+        "culinary sage",
+        "golden sage",
+        "dalmatian sage",
+        "broadleaf sage"
+    ],
+    "description": "Sage is an evergreen shrub with woody stems, soft green-gray leaves, and blue to purplish flowers. It is in the Mint family (Lamiaceae), and is perennial in Zones 4-8. It can be used fresh or dried, and has culinary and medicinal uses.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, harden seedlings off before transplanting outside.",
+    "spread": 50,
+    "row_spacing": 30,
+    "height": 70,
+    "growing_degree_days": 85,
+    "companions": [
+        "bok-choy"
+    ],
+    "image": "/crops/images/sage.jpg",
+    "icon": "/crops/icons/sage.avif"
+}

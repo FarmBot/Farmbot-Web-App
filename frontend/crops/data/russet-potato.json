@@ -1,0 +1,21 @@
+{
+    "name": "Potato",
+    "binomial_name": "Solanum tuberosum",
+    "common_names": [
+        "Tatie",
+        "Tater",
+        "Spud"
+    ],
+    "description": "Potatoes are starchy root vegetables in the Solanaceae, or Nightshade, family, which also includes tomatoes, eggplants, and peppers. They originated in South America, and spread to become a worldwide staple. The leaves and fruit are usually poisonous and the stem tuber is the only edible part once it is cooked. The potato can be cooked in many ways, brewed into alcohol, and also used as the basis for creating bioplastics. More growing information is available in individual species entries.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed outdoors after last frost. Each piece must have one eye.",
+    "spread": 30,
+    "row_spacing": 90,
+    "height": 60,
+    "growing_degree_days": 100,
+    "companions": [
+        "marjoram"
+    ],
+    "image": "/crops/images/russet-potato.jpg",
+    "icon": "/crops/icons/russet-potato.avif"
+}

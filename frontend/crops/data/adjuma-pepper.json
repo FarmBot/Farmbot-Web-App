@@ -1,0 +1,19 @@
+{
+    "name": "Adjuma Pepper",
+    "binomial_name": "Capsicum chinense",
+    "common_names": [
+        "Adjoema",
+        "aji umba",
+        "ojemma"
+    ],
+    "description": "Adjuma, Aji Umba, or Adjoema peppers are a variety of Capsicum chinense chili pepper originally from Suriname. The peppers are similar in heat, aroma, and flavor to Habanero, but have a boxier shape. The peppers ripen from lime-green to red or yellow on the plant. They are often mistaken for Habanero or Scotch Bonnets.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, harden off seedlings before transplanting outside",
+    "spread": 40,
+    "row_spacing": 45,
+    "height": 75,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "",
+    "icon": "/crops/icons/adjuma-pepper.avif"
+}

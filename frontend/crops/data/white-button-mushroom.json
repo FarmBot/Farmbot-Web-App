@@ -1,0 +1,15 @@
+{
+    "name": "White Button Mushroom",
+    "binomial_name": "Agaricus bisporus",
+    "common_names": [],
+    "description": "White button mushrooms are the immature version of portobello mushrooms. They are one of the easiest species of mushroom to grow. Growing white button mushrooms requires spores and partially decomposed compost and peat moss. Mushrooms can be grown indoors year-round because temperature, moisture, and light can be controlled. They can also be grown outdoors.",
+    "sun_requirements": "Full Shade",
+    "sowing_method": "Sprinkle spores on surface of compost and peat moss, gently mix in, and press down.",
+    "spread": 0,
+    "row_spacing": 0,
+    "height": 0,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/white-button-mushroom.jpg",
+    "icon": "/crops/icons/white-button-mushroom.avif"
+}

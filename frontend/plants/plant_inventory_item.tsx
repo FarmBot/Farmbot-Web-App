@@ -2,15 +2,15 @@ import React from "react";
 import { TaggedPlant, Mode } from "../farm_designer/map/interfaces";
 import { unpackUUID } from "../util";
 import { t } from "../i18next_wrapper";
-import { maybeGetCachedPlantIcon } from "../open_farm/cached_crop";
 import {
   selectPoint, setHoveredPlant, mapPointClickAction,
 } from "../farm_designer/map/actions";
 import { PlantStageAndAge, plantAgeAndStage } from "./map_state_to_props";
 import { getMode } from "../farm_designer/map/util";
 import { isUndefined, round } from "lodash";
-import { FilePath, Path } from "../internal_urls";
+import { Path } from "../internal_urls";
 import { useNavigate } from "react-router";
+import { findIcon } from "../crops/find";
 
 export interface PlantInventoryItemProps {
   plant: TaggedPlant;
@@ -21,7 +21,6 @@ export interface PlantInventoryItemProps {
 
 // The individual plants that show up in the farm designer sub nav.
 export const PlantInventoryItem = (props: PlantInventoryItemProps) => {
-  const [iconState, setIconState] = React.useState("");
   const navigate = useNavigate();
 
   const { plant, dispatch } = props;
@@ -30,8 +29,7 @@ export const PlantInventoryItem = (props: PlantInventoryItemProps) => {
   const toggle = (action: "enter" | "leave") => {
     const isEnter = action === "enter";
     const plantUUID = isEnter ? plant.uuid : undefined;
-    const icon = isEnter ? iconState : "";
-    dispatch(setHoveredPlant(plantUUID, icon));
+    dispatch(setHoveredPlant(plantUUID));
   };
 
   const click = () => {
@@ -48,12 +46,9 @@ export const PlantInventoryItem = (props: PlantInventoryItemProps) => {
     }
   };
 
-  const onLoad = (e: React.SyntheticEvent<HTMLImageElement>) =>
-    maybeGetCachedPlantIcon(slug, e.currentTarget, setIconState);
-
-  // Name given from OpenFarm's API.
   const label = plant.body.name || "Unknown plant";
   const slug = plant.body.openfarm_slug;
+  const icon = findIcon(slug);
 
   return <div
     className={`plant-search-item ${props.hovered ? "hovered" : ""}`}
@@ -63,8 +58,7 @@ export const PlantInventoryItem = (props: PlantInventoryItemProps) => {
     onClick={click}>
     <img
       className="plant-search-item-image"
-      src={FilePath.DEFAULT_ICON}
-      onLoad={onLoad} />
+      src={icon} />
     <span className="plant-search-item-name">
       {label}
     </span>

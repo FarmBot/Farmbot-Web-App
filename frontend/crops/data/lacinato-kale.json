@@ -1,0 +1,32 @@
+{
+    "name": "Lacinato Kale",
+    "binomial_name": "Brassica oleracea",
+    "common_names": [
+        "Lacinato",
+        "Dinosaur kale",
+        "Italian kale",
+        "Laminate kale",
+        "Tuscan kale",
+        "Cavolo Nero",
+        "Italian Kale",
+        "Dino Kale",
+        "laminate kale",
+        "Lacinato Kale",
+        "Tuscan Kale",
+        "Black Kale",
+        "nero de toscano"
+    ],
+    "description": "Lacinato, Dinosaur, Tuscan, or Italian Kale has very dark green or blue-green leaves that are heavily crinkled or blistered (savoyed) instead of curled. The leaves have a rich, tender taste and are softer than curly green kales. Can be harvested at baby or adult stage. Delicious raw or cooked. Light frosts increase the sweetness of the leaves.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed outdoors or transplant seedlings",
+    "spread": 75,
+    "row_spacing": 45,
+    "height": 75,
+    "growing_degree_days": 0,
+    "companions": [
+        "dill",
+        "thyme"
+    ],
+    "image": "/crops/images/lacinato-kale.jpg",
+    "icon": "/crops/icons/lacinato-kale.avif"
+}

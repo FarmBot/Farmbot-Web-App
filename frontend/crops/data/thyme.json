@@ -1,0 +1,20 @@
+{
+    "name": "Thyme",
+    "binomial_name": "Thymus vulgaris",
+    "common_names": [
+        "Thyme"
+    ],
+    "description": "Thyme is a perennial evergreen herb in the Lamiaceae (Mint) family. It is related to Oregano. Thyme is cold-hardy to -28.8 \u00b0C and a perennial in US Hardiness zones 5-8. Thyme can live for 5-6 years but needs to be divided or replaced after 3-4 years. It can be used fresh or dried to season dishes.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Transplant cuttings or seedlings or direct seed indoors",
+    "spread": 30,
+    "row_spacing": 30,
+    "height": 25,
+    "growing_degree_days": 80,
+    "companions": [
+        "lacinato-kale",
+        "red-pointed-cabbage"
+    ],
+    "image": "/crops/images/thyme.jpg",
+    "icon": "/crops/icons/thyme.avif"
+}

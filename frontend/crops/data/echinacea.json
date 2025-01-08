@@ -1,0 +1,19 @@
+{
+    "name": "Coneflower",
+    "binomial_name": "Echinacea",
+    "common_names": [
+        "Echinacea",
+        "coneflower",
+        "purple coneflower"
+    ],
+    "description": "Coneflowers, or Echinacea, are a genus of perennial flower. The genus is comprised of 9 species native to Eastern and Central North America's prairies and open wooded areas. Coneflowers grow from taproots and produce erect, unbranched stems with showy, long-lasting flowers that resemble daisies with their raised centers. Flowers are usually purple or white, but recent breeding has expanded the color selection widely. \"Deadhead,\" or remove spent flower heads, to encourage new flowers. Coneflowers attract pollinators and are drought and heat tolerant and deer resistant. They will self-seed in the fall. If starting from seed, some species benefit from stratification. The species Echinacea purpurea is used in herbal medicine. Native Americans used Echinacea purpurea externally for wounds and insect bites and internally for pains, coughs, stomach cramps, and snake bites. Contemporary herbal medicine uses Echinacea to strengthen the immune system, but scientific research is inconclusive as to its effectiveness.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed or cuttings",
+    "spread": 40,
+    "row_spacing": 45,
+    "height": 120,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/echinacea.jpg",
+    "icon": "/crops/icons/echinacea.avif"
+}

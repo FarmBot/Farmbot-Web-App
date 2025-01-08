@@ -1,0 +1,22 @@
+{
+    "name": "Yellow Bell Pepper",
+    "binomial_name": "Capsicum annuum",
+    "common_names": [
+        "bell pepper",
+        "sweet pepper",
+        "yellow pepper"
+    ],
+    "description": "Bell peppers are a cultivar group of the species Capsicum annuum. The fruit is often mildly sweet, because this specific cultivar does not produce capsaicin, the chemical responsible for other peppers' spiciness. Yellow peppers are sweeter than green peppers, but not as sweet as red bell peppers.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, transplant seedlings outside after hardening off",
+    "spread": 30,
+    "row_spacing": 45,
+    "height": 50,
+    "growing_degree_days": 0,
+    "companions": [
+        "tomato",
+        "eggplant"
+    ],
+    "image": "/crops/images/yellow-bell-pepper.jpg",
+    "icon": "/crops/icons/yellow-bell-pepper.avif"
+}

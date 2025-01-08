@@ -1,0 +1,18 @@
+{
+    "name": "Napa Cabbage",
+    "binomial_name": "Brassica rapa subsp. Pekinensis",
+    "common_names": [
+        "Napa cabbage",
+        "Chinese cabbage"
+    ],
+    "description": "Napa is one of two subgroups of Chinese Cabbage (the other being Bok choy) that creates a dense, oblong-shaped head with crinkly, thick, light-green leaves. Napa Cabbage can be eaten raw in salads, cooked in stir-fry, or used in kimchi. It is a cool weather crop and can also be used as a companion plant \"trap crop\" to attract pests away from other crops.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors or outside",
+    "spread": 45,
+    "row_spacing": 45,
+    "height": 45,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/napa-cabbage.jpg",
+    "icon": "/crops/icons/napa-cabbage.avif"
+}

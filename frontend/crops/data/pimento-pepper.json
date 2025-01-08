@@ -1,0 +1,19 @@
+{
+    "name": "Pimento Pepper",
+    "binomial_name": "Capsicum annuum 'Pimiento'",
+    "common_names": [
+        "pimiento pepper",
+        "pimento pepper",
+        "cherry pepper"
+    ],
+    "description": "Pimento, Pimiento, or Cherry Peppers are a chili pepper cultivar that produces red, heart-shaped peppers 7-10 cm long and 5-7 cm wide. Pimentos have very thick flesh that is sweeter and more aromatic than bell peppers. They have a Scoville heat rating of 100-500 units, but there are some spicy varieties. Like other peppers, Pimentos are not frost tolerant and grow best at temperatures above 13\u00b0 C. They can be grown in containers and brought inside in cooler regions. Pimentos can be eaten fresh, stuffed, pickled, or added to Pimento cheese spread.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, transplant seedlings outside after hardening off",
+    "spread": 60,
+    "row_spacing": 60,
+    "height": 60,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/pimento-pepper.jpg",
+    "icon": "/crops/icons/pimento-pepper.avif"
+}

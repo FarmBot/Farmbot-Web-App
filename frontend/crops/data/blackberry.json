@@ -1,0 +1,18 @@
+{
+    "name": "Blackberry",
+    "binomial_name": "Rubus fruticosus",
+    "common_names": [
+        "Blackberry",
+        "bramble fruit"
+    ],
+    "description": "Deeply colored, sweet, clustered berries. The blackberry plant is a perennial plant that bears biennial stems or canes. The plant often has thorns, though some cultivars do not. Most varieties have greater berry yields from the second year on. In peak season, expect to harvest twice a week.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Transplant canes into soil or pot",
+    "spread": 75,
+    "row_spacing": 100,
+    "height": 175,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/blackberry.jpg",
+    "icon": "/crops/icons/blackberry.avif"
+}

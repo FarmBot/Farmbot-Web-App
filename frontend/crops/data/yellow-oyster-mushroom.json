@@ -1,0 +1,18 @@
+{
+    "name": "Yellow Oyster",
+    "binomial_name": "Pleurotus citrinopileatus",
+    "common_names": [
+        "Yellow Oyster",
+        "Golden Oyster"
+    ],
+    "description": "Yellow, or Golden Oyster, mushrooms are members of the Oysters family with striking bright gold caps. They grow in large clusters and have the typical shelf-like shape of the Pleurotus species. The brightness of their golden caps is directly related to the intensity of light where they are growing and they thrive in high temperatures. Yellow Oysters have a thick, meaty flesh that is initially spicy and bitter, but becomes nutty after thorough cooking.",
+    "sun_requirements": "",
+    "sowing_method": "Inoculate substrate with spores",
+    "spread": 0,
+    "row_spacing": 0,
+    "height": 0,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/yellow-oyster-mushroom.jpg",
+    "icon": "/crops/icons/yellow-oyster-mushroom.avif"
+}
