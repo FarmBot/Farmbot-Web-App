@@ -249,6 +249,7 @@ import zucchini from "./data/zucchini.json";
 
 import { Crops } from "./interfaces";
 import { kebabCase } from "lodash";
+import aliases from "./aliases.json";
 
 const SNAKE_CASE_CROPS: Crops = {
   acorn_squash,
@@ -508,3 +509,14 @@ export const CROPS: Crops = Object.entries(SNAKE_CASE_CROPS)
   }, {} as Crops);
 export const SLUGS: string[] = Object.keys(CROPS).map(slug => kebabCase(slug));
 export const ICON_URLS: string[] = Object.values(CROPS).map(crop => crop.icon);
+
+export const ALIASED_SLUG_LOOKUP: Record<string, string> = Object.entries(aliases)
+  .reduce((
+    slug_lookup: Record<string, string>,
+    [slug, slug_aliases]: [string, string[]],
+  ) => {
+    slug_aliases.map(slug_alias => {
+      slug_lookup[slug_alias] = slug;
+    });
+    return slug_lookup;
+  }, {} as Record<string, string>);

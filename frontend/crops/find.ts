@@ -1,5 +1,5 @@
 import { clone, kebabCase, startCase } from "lodash";
-import { CROPS } from "./constants";
+import { CROPS, ALIASED_SLUG_LOOKUP } from "./constants";
 import { Crop, Crops } from "./interfaces";
 
 const GENERIC_PLANT_ICON = "/crops/icons/generic-plant.avif";
@@ -32,7 +32,11 @@ export const findCrops = (searchTerm: string): Crops => {
 };
 
 export const findIcon = (slug: string): string => {
-  return findCrop(slug).icon || GENERIC_PLANT_ICON;
+  let icon = findCrop(slug).icon;
+  if (icon == GENERIC_PLANT_ICON) {
+    icon = findCrop(ALIASED_SLUG_LOOKUP[slug]).icon;
+  }
+  return icon || GENERIC_PLANT_ICON;
 };
 
 export const findImage = (slug: string): string => {

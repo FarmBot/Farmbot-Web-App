@@ -25,6 +25,7 @@ import { BotPosition, SourceFbosConfig } from "../devices/interfaces";
 import { AllCurveInfo, CURVE_KEY_LOOKUP } from "./curve_info";
 import { BotSize } from "../farm_designer/map/interfaces";
 import { UpdatePlant } from "./plant_info";
+import { ALIASED_SLUG_LOOKUP } from "../crops/constants";
 
 export interface PlantPanelProps {
   info: FormattedPlantInfo;
@@ -162,13 +163,14 @@ export function PlantPanel(props: PlantPanelProps) {
   const { x, y, z } = info;
   const commonProps = { uuid, updatePlant };
   const navigate = useNavigate();
+  const slugForCropInfoLink = ALIASED_SLUG_LOOKUP[slug] || slug;
   return <DesignerPanelContent panelName={"plants"}>
     <ul className="grid">
       <ListItem name={t("Plant Type")}>
         <Link
           title={t("View crop info")}
-          to={Path.cropSearch(slug)}>
-          {startCase(slug)}
+          to={Path.cropSearch(slugForCropInfoLink)}>
+          {startCase(slugForCropInfoLink)}
         </Link>
         <i className={"fa fa-pencil fb-icon-button invert"}
           onClick={() => {
