@@ -6,7 +6,10 @@
         "black-seeded-simpson-lettuce",
         "red-butterhead-lettuce",
         "lettuce-igloo",
-        "lettuce-freedom-mix"
+        "lettuce-freedom-mix",
+        "lechuga-crespa",
+        "celtuce",
+        "miners-lettuce-1"
     ],
     "white-onion": [
         "onion",
@@ -17,12 +20,13 @@
     "spring-onion": [
         "onion-white-lisbon"
     ],
-    "cherry-bell-radish": [
+    "cherry-belle-radish": [
         "radish",
         "wild-radish"
     ],
     "green-cabbage": [
         "cabbage",
+        "cabbage-1",
         "chinese-cabbage"
     ],
     "beet": [
@@ -41,13 +45,15 @@
         "rainbow-carrot"
     ],
     "red-russian-kale": [
-        "kale"
+        "kale",
+        "kale-1"
     ],
     "onion-chive": [
         "chives"
     ],
     "cucumber": [
-        "cucumber-1"
+        "cucumber-1",
+        "wild-cucumber"
     ],
     "snap-pea": [
         "pea"
@@ -67,7 +73,8 @@
     ],
     "garlic": [
         "garlic-1",
-        "hardneck-garlic"
+        "hardneck-garlic",
+        "elephant-garlic"
     ],
     "jalapeno": [
         "jalapeno-pepper"
@@ -84,8 +91,9 @@
     "hemp": [
         "hemp-1"
     ],
-    "oregeno": [
-        "italian-oregeno"
+    "oregano": [
+        "italian-oregano",
+        "greek-oregano"
     ],
     "zucchini": [
         "green-zucchini"
@@ -98,5 +106,17 @@
     ],
     "cherry-tomato": [
         "cherry-tomato-husky-red"
+    ],
+    "watercress": [
+        "cress-1"
+    ],
+    "shallot": [
+        "shallot-1"
+    ],
+    "bok-choy": [
+        "pak-choy-bok-choy"
+    ],
+    "kohlrabi": [
+        "kohlrabi-1"
     ]
 }
