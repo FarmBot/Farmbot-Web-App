@@ -108,6 +108,25 @@ describe("<CropInfo />", () => {
     });
   });
 
+  it("renders radius", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    const p = fakeProps();
+    p.designer.cropRadius = 100;
+    const wrapper = shallow(<CropInfo {...p} />);
+    expect(wrapper.find(BlurableInput).at(1).props().value).toEqual(100);
+  });
+
+  it("updates radius", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    const p = fakeProps();
+    const wrapper = shallow(<CropInfo {...p} />);
+    wrapper.find("BlurableInput").at(1).simulate("commit",
+      { currentTarget: { value: "100" } });
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_CROP_RADIUS, payload: 100,
+    });
+  });
+
   it("updates curves", () => {
     location.pathname = Path.mock(Path.cropSearch("mint"));
     const p = fakeProps();

@@ -27,6 +27,7 @@ import { isMobile } from "../screen_size";
 import { ThreeEvent } from "@react-three/fiber";
 import { Path } from "../internal_urls";
 import { findIcon } from "../crops/find";
+import { DEFAULT_PLANT_RADIUS } from "../farm_designer/plant";
 
 const soil = (
   Type: typeof LinePath | typeof Shape,
@@ -151,6 +152,9 @@ export const Bed = (props: BedProps) => {
     y: threeSpace(gardenPosition.y + bedYOffset, bedWidthOuter),
   });
 
+  const iconSize =
+    (props.addPlantProps?.designer.cropRadius || DEFAULT_PLANT_RADIUS) * 2;
+
   interface SoilProps {
     children: React.ReactElement;
     addPlantProps?: AddPlantProps;
@@ -182,7 +186,7 @@ export const Bed = (props: BedProps) => {
           pointerPlantRef.current.position.set(
             position.x,
             position.y,
-            zZero(props.config) - props.config.soilHeight + 50 / 2);
+            zZero(props.config) - props.config.soilHeight + iconSize / 2);
         }
       }}
       castShadow={true}
@@ -279,7 +283,7 @@ export const Bed = (props: BedProps) => {
         <Image
           name={"pointerPlant"}
           url={findIcon(Path.getCropSlug())}
-          scale={50}
+          scale={iconSize}
           transparent={true}
           renderOrder={1} />
       </Billboard>}

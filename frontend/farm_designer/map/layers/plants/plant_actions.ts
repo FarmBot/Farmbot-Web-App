@@ -54,7 +54,7 @@ export const newPlantKindAndBody = (props: NewPlantKindAndBodyProps): {
         y: props.y,
         openfarm_slug: props.slug,
         name: props.cropName,
-        radius: DEFAULT_PLANT_RADIUS,
+        radius: props.designer.cropRadius,
         depth: props.depth,
         plant_stage: props.designer.cropStage,
         planted_at: props.designer.cropPlantedAt,

@@ -5,9 +5,13 @@ import {
   fakeMapTransformProps,
 } from "../../../../__test_support__/map_transform_props";
 import { Path } from "../../../../internal_urls";
+import {
+  fakeDesignerState,
+} from "../../../../__test_support__/fake_designer_state";
 
 describe("<AddPlantIcon />", () => {
   const fakeProps = (): AddPlantIconProps => ({
+    designer: fakeDesignerState(),
     cursorPosition: { x: 1, y: 2 },
     mapTransformProps: fakeMapTransformProps(),
   });

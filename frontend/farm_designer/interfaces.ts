@@ -175,6 +175,7 @@ export interface DesignerState {
   cropHeightCurveId: number | undefined;
   cropStage: PlantStage | undefined;
   cropPlantedAt: string | undefined;
+  cropRadius: number | undefined;
   distanceIndicator: string;
   panelOpen: boolean;
 }

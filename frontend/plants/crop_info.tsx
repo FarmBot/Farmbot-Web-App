@@ -39,6 +39,7 @@ import moment from "moment";
 import { Position } from "@blueprintjs/core";
 import { findCrop, findIcon, findImage } from "../crops/find";
 import { Crop } from "../crops/interfaces";
+import { DEFAULT_PLANT_RADIUS } from "../farm_designer/plant";
 
 interface InfoFieldProps {
   title: string;
@@ -347,6 +348,17 @@ export class RawCropInfo extends React.Component<CropInfoProps, {}> {
             onCommit={e => dispatch({
               type: Actions.SET_CROP_PLANTED_AT,
               payload: e.currentTarget.value,
+            })
+            } />
+        </div>
+        <div className={"row grid-2-col"}>
+          <label className="radius">{t("radius (mm)")}</label>
+          <BlurableInput
+            type="number"
+            value={designer.cropRadius || DEFAULT_PLANT_RADIUS}
+            onCommit={e => dispatch({
+              type: Actions.SET_CROP_RADIUS,
+              payload: parseInt(e.currentTarget.value),
             })
             } />
         </div>
