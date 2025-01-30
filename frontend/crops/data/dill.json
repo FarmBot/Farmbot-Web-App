@@ -21,6 +21,6 @@
     "height": 75,
     "growing_degree_days": 50,
     "companions": [],
-    "image": "",
+    "image": "/crops/images/dill.jpg",
     "icon": "/crops/icons/dill.avif"
 }

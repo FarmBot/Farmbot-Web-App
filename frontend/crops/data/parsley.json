@@ -13,6 +13,6 @@
     "height": 40,
     "growing_degree_days": 80,
     "companions": [],
-    "image": "",
+    "image": "/crops/images/parsley.jpg",
     "icon": "/crops/icons/parsley.avif"
 }

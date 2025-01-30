@@ -30,7 +30,7 @@ import bok_choy from "./data/bok-choy.json";
 import borage from "./data/borage.json";
 import brazilian_starfish_pepper from "./data/brazilian-starfish-pepper.json";
 import broccoli from "./data/broccoli.json";
-import brussel_sprout from "./data/brussel-sprout.json";
+import brussels_sprout from "./data/brussels-sprout.json";
 import butternut_squash from "./data/butternut-squash.json";
 import california_poppy from "./data/california-poppy.json";
 import cannabis from "./data/cannabis.json";
@@ -284,7 +284,7 @@ const SNAKE_CASE_CROPS: Crops = {
   borage,
   brazilian_starfish_pepper,
   broccoli,
-  brussel_sprout,
+  brussels_sprout,
   butternut_squash,
   california_poppy,
   cannabis,

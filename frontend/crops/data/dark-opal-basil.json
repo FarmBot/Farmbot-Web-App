@@ -1,5 +1,5 @@
 {
-    "name": "Basil",
+    "name": "Dark Opal Basil",
     "binomial_name": "Ocimum basilicum",
     "common_names": [
         "Basil",
@@ -13,6 +13,6 @@
     "height": 60,
     "growing_degree_days": 650,
     "companions": [],
-    "image": "",
+    "image": "/crops/images/dark-opal-basil.jpg",
     "icon": "/crops/icons/dark-opal-basil.avif"
 }

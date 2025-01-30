@@ -112,7 +112,7 @@ export const PLANTS: Record<string, Plant> = {
     size: 250,
   },
   brusselsSprout: {
-    label: "Brussel Sprout",
+    label: "Brussels Sprout",
     spread: 300,
     size: 250,
   },
