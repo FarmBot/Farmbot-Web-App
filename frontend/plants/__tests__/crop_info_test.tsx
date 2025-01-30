@@ -52,7 +52,7 @@ describe("<CropInfo />", () => {
     const p = fakeProps();
     const wrapper = mount(<CropInfo {...p} />);
     expect(wrapper.text()).toContain("Mint");
-    expect(wrapper.text()).toContain("Row Spacing:");
+    expect(wrapper.text()).toContain("Row Spacing");
     expect(wrapper.find("img").at(0).props().src)
       .toEqual("/crops/icons/mint.avif");
   });
@@ -139,7 +139,7 @@ describe("<CropInfo />", () => {
     const p = fakeProps();
     p.botPosition = { x: 100, y: 200, z: undefined };
     const wrapper = mount(<CropInfo {...p} />);
-    clickButton(wrapper, 5, "location (100, 200)", { partial_match: true });
+    clickButton(wrapper, 1, "location (100, 200)", { partial_match: true });
     expect(initSave).toHaveBeenCalledWith("Point",
       expect.objectContaining({
         name: "Mint",
@@ -153,7 +153,7 @@ describe("<CropInfo />", () => {
     const p = fakeProps();
     p.botPosition = { x: 100, y: undefined, z: undefined };
     const wrapper = mount(<CropInfo {...p} />);
-    clickButton(wrapper, 5, "location (unknown)", { partial_match: true });
+    clickButton(wrapper, 1, "location (unknown)", { partial_match: true });
     expect(initSave).not.toHaveBeenCalled();
   });
 
@@ -168,15 +168,15 @@ describe("<CropInfo />", () => {
     location.pathname = Path.mock(Path.cropSearch("x"));
     const p = fakeProps();
     const wrapper = mount(<CropInfo {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("sowing:not available");
-    expect(wrapper.text().toLowerCase()).toContain("common names:not available");
+    expect(wrapper.text().toLowerCase()).toContain("sowingnot available");
+    expect(wrapper.text().toLowerCase()).toContain("common namesnot available");
   });
 
   it("handles string of names", () => {
     location.pathname = Path.mock(Path.cropSearch("mint"));
     const p = fakeProps();
     const wrapper = mount(<CropInfo {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("common names:mint, spearmint");
+    expect(wrapper.text().toLowerCase()).toContain("common namesmint, spearmint");
   });
 
   it("navigates to companion plant", () => {

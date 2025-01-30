@@ -129,6 +129,9 @@
     border-radius: 0.5rem;
     padding: 1rem;
     align-content: baseline;
+    &:has(.crop-companions) {
+      grid-column: span 2;
+    }
   }
   .crop-info-field-data {
     font-size: 1.3rem;
