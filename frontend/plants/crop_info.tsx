@@ -172,7 +172,7 @@ const Companions = (props: CropInfoListProps) => {
   const { crop, dispatch } = props;
   const companions = crop.companions
     .filter(slug => findCrop(slug).name != "Generic plant");
-  if (companions.length == 0) { return }
+  if (companions.length == 0) { return; }
   return <InfoField title={"companions"}>
     <div className="crop-companions">
       {companions.map((companionSlug, index) => {
