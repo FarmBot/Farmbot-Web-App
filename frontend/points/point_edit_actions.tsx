@@ -64,11 +64,6 @@ export const EditPointProperties = (props: EditPointPropertiesProps) =>
         defaultAxes={props.defaultAxes}
         updatePoint={props.updatePoint} />
     </ListItem>
-    <ListItem>
-      <EditPointRadius
-        radius={props.point.body.radius}
-        updatePoint={props.updatePoint} />
-    </ListItem>
     {props.point.body.pointer_type == "GenericPointer" &&
       <ListItem>
         <EditPointSoilHeightTag
@@ -78,18 +73,26 @@ export const EditPointProperties = (props: EditPointPropertiesProps) =>
   </ul>;
 
 export const AdditionalWeedProperties = (props: AdditionalWeedPropertiesProps) =>
-  <ul className="additional-weed-properties">
-    <ListItem name={t("Status")}>
-      <EditWeedStatus weed={props.point} updateWeed={props.updatePoint} />
-    </ListItem>
-    <ListItem name={t("Age")}>
-      {daysOldText(plantAgeAndStage(props.point))}
-    </ListItem>
+  <ul className="additional-weed-properties grid">
+    <div className="row grid-exp-1 info-box">
+      <div className="grid half-gap">
+        <label>{t("Status")}</label>
+        <EditWeedStatus weed={props.point} updateWeed={props.updatePoint} />
+      </div>
+      <EditPointRadius
+        radius={props.point.body.radius}
+        updatePoint={props.updatePoint} />
+      <div className="grid half-gap">
+        <label>{t("Age")}</label>
+        {daysOldText(plantAgeAndStage(props.point))}
+      </div>
+    </div>
     {Object.entries(props.point.body.meta).map(([key, value]) => {
       switch (key) {
         case "color":
         case "type": return <div key={key}
-          className={`meta-${key}-not-displayed`} />;
+          className={`meta-${key}-not-displayed`}
+          style={{ display: "none" }} />;
         case "created_by":
           return <ListItem name={t("Source")} key={key}>
             {lookupPointSource(value)}
@@ -185,7 +188,7 @@ export interface EditPointRadiusProps {
 }
 
 export const EditPointRadius = (props: EditPointRadiusProps) =>
-  <Row className="grid-2-col">
+  <div className="grid half-gap">
     <label style={{ marginTop: 0 }}>{t("radius (mm)")}</label>
     <BlurableInput
       type="number"
@@ -195,7 +198,7 @@ export const EditPointRadius = (props: EditPointRadiusProps) =>
       onCommit={e => props.updatePoint({
         radius: round(parseIntInput(e.currentTarget.value))
       })} />
-  </Row>;
+  </div>;
 
 export interface EditPointColorProps {
   updatePoint(update: PointUpdate): void;

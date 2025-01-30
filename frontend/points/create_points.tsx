@@ -218,9 +218,9 @@ export class RawCreatePoints
 
   PointProperties = () =>
     <ul className="grid">
-      <li>
-        <Row className="grid-exp-1">
-          <div className={"point-name-input"}>
+      <div className="info-box">
+        <div className="row grid-exp-1" style={{ alignItems: "end" }}>
+          <div className={"point-name-input grid half-gap"}>
             <label>{t("Name")}</label>
             <BlurableInput
               name="pointName"
@@ -231,8 +231,8 @@ export class RawCreatePoints
           <ColorPicker
             current={(this.attr("color") || this.defaultColor) as ResourceColor}
             onChange={this.changeColor} />
-        </Row>
-      </li>
+        </div>
+      </div>
       <ListItem>
         <Row className="add-point-grid">
           <div>

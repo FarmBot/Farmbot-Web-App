@@ -1,19 +1,6 @@
 @use "../variables" as *;
 @use "sass:color";
 
-.plants-panel-settings-menu {
-  label {
-    line-height: 3rem;
-    vertical-align: bottom;
-    margin-bottom: 0;
-  }
-  .bp5-popover-wrapper {
-    display: inline;
-    margin-left: 0.5rem;
-    line-height: 3rem;
-  }
-}
-
 .crop-search-result-wrapper {
   .crop-search-results-wrapper {
     display: grid;
@@ -114,6 +101,7 @@
       p {
         font-weight: bold;
         text-transform: none;
+        white-space: nowrap;
       }
     }
     img {
@@ -124,17 +112,18 @@
   .crop-info-grid {
     grid-template-columns: auto auto;
   }
-  .crop-info-box {
-    background: var(--secondary-bg);
-    border-radius: 0.5rem;
-    padding: 1rem;
-    align-content: baseline;
-    &:has(.crop-companions) {
-      grid-column: span 2;
-    }
-  }
   .crop-info-field-data {
     font-size: 1.3rem;
     margin-left: 2.5rem;
+  }
+}
+
+.info-box {
+  background: var(--secondary-bg);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  align-content: baseline;
+  &:has(.crop-companions) {
+    grid-column: span 2;
   }
 }

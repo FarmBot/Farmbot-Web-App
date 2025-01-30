@@ -68,7 +68,7 @@ const shortenTitle = (title: string) => {
 
 /** Basic field: value display for crop properties. */
 const InfoField = (props: InfoFieldProps) =>
-  <div className="grid no-gap crop-info-box">
+  <div className="grid no-gap info-box">
     <div className={"row grid-exp-2"}>
       <span>{EMOJI[props.title]}</span>
       <label>
@@ -334,7 +334,7 @@ export class RawCropInfo extends React.Component<CropInfoProps, {}> {
         <CropInfoList crop={crop}
           dispatch={dispatch}
           selectMostUsedCurves={this.selectMostUsedCurves} />
-        <div className={"row grid-2-col crop-info-box"}>
+        <div className={"row grid-2-col info-box"}>
           <label className="stage">{t("status")}</label>
           <FBSelect
             list={PLANT_STAGE_LIST()}
@@ -346,7 +346,7 @@ export class RawCropInfo extends React.Component<CropInfoProps, {}> {
               payload: ddi.value,
             })} />
         </div>
-        <div className={"row grid-2-col crop-info-box"}>
+        <div className={"row grid-2-col info-box"}>
           <label className="planted-at">{t("start date")}</label>
           <BlurableInput
             type="date"
@@ -359,7 +359,7 @@ export class RawCropInfo extends React.Component<CropInfoProps, {}> {
             })
             } />
         </div>
-        <div className={"row grid-2-col crop-info-box"}>
+        <div className={"row grid-2-col info-box"}>
           <label className="radius">{t("radius (mm)")}</label>
           <BlurableInput
             type="number"

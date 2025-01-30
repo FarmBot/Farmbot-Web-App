@@ -93,7 +93,7 @@ const getUpdateByPlantStage = (plant_stage: PlantStage): PlantOptions => {
 /** Select a `plant_stage` for a plant. */
 export function EditPlantStatus(props: EditPlantStatusProps) {
   const { plantStatus, updatePlant, uuid } = props;
-  return <div className="row grid-2-col">
+  return <div className="grid half-gap">
     <label>{t("Status")}</label>
     <FBSelect
       list={PLANT_STAGE_LIST()}

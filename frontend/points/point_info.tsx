@@ -97,7 +97,7 @@ export const RawEditPoint = (props: EditPointProps) => {
     </DesignerPanelHeader>
     <DesignerPanelContent panelName={panelName}>
       {point
-        ? <div className={"point-panel-content-wrapper"}>
+        ? <div className={"point-panel-content-wrapper grid"}>
           <EditPointProperties point={point}
             botOnline={props.botOnline}
             dispatch={props.dispatch}
