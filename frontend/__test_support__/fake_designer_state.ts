@@ -49,6 +49,7 @@ export const fakeDesignerState = (): DesignerState => ({
   cropHeightCurveId: undefined,
   cropStage: undefined,
   cropPlantedAt: undefined,
+  cropRadius: undefined,
   distanceIndicator: "",
   panelOpen: true,
 });

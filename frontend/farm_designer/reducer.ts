@@ -58,6 +58,7 @@ export const initialState: DesignerState = {
   cropHeightCurveId: undefined,
   cropStage: undefined,
   cropPlantedAt: undefined,
+  cropRadius: undefined,
   distanceIndicator: "",
   panelOpen: true,
 };
@@ -110,6 +111,10 @@ export const designer = generateReducer<DesignerState>(initialState)
   })
   .add<string | undefined>(Actions.SET_CROP_PLANTED_AT, (s, { payload }) => {
     s.cropPlantedAt = payload;
+    return s;
+  })
+  .add<number | undefined>(Actions.SET_CROP_RADIUS, (s, { payload }) => {
+    s.cropRadius = payload;
     return s;
   })
   .add<string | undefined>(Actions.HOVER_PLANT_LIST_ITEM, (s, { payload }) => {

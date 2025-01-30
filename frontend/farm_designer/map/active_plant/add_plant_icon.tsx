@@ -3,8 +3,11 @@ import { round, scaleIcon, transformXY } from "../util";
 import { AxisNumberProperty, MapTransformProps } from "../interfaces";
 import { Path } from "../../../internal_urls";
 import { findIcon } from "../../../crops/find";
+import { DesignerState } from "../../interfaces";
+import { DEFAULT_PLANT_RADIUS } from "../../plant";
 
 export interface AddPlantIconProps {
+  designer: DesignerState;
   cursorPosition: AxisNumberProperty | undefined;
   mapTransformProps: MapTransformProps;
 }
@@ -12,9 +15,8 @@ export interface AddPlantIconProps {
 export const AddPlantIcon = (props: AddPlantIconProps) => {
   if (!props.cursorPosition) { return <g />; }
   const { x, y } = props.cursorPosition;
-  const radius = 25;
   const { qx, qy } = transformXY(round(x), round(y), props.mapTransformProps);
-  const iconRadius = scaleIcon(radius);
+  const iconRadius = scaleIcon(props.designer.cropRadius || DEFAULT_PLANT_RADIUS);
   const icon = findIcon(Path.getCropSlug());
   return <g id="adding-plant-icon">
     <image

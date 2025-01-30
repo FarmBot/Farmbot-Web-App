@@ -13,7 +13,7 @@ import { t } from "../i18next_wrapper";
 import { UUID } from "../resources/interfaces";
 import { edit, save } from "../api/crud";
 import { EditPlantStatusProps } from "./plant_panel";
-import { capitalize, mean, round, startCase } from "lodash";
+import { mean, round, startCase } from "lodash";
 import { TimeSettings } from "../interfaces";
 import { Link } from "../link";
 import { Path } from "../internal_urls";
@@ -23,6 +23,7 @@ import { CurveType } from "../curves/templates";
 import { curveToDdi, CURVE_KEY_LOOKUP } from "./curve_info";
 import { CURVE_TYPES } from "../curves/curves_inventory";
 import { betterCompact } from "../util";
+import { findCrop } from "../crops/find";
 
 export const PLANT_STAGE_DDI_LOOKUP = (): { [x: string]: DropDownItem } => ({
   planned: { label: t("Planned"), value: "planned" },
@@ -335,7 +336,7 @@ export const PlantSlugBulkUpdate = (props: PlantSlugBulkUpdateProps) => {
             plants.map(plant => {
               props.dispatch(edit(plant, {
                 openfarm_slug: slug,
-                name: capitalize(slug).replace(/-/g, " "),
+                name: findCrop(slug).name,
               }));
               props.dispatch(save(plant.uuid));
             });

@@ -64,7 +64,7 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
     itemName: this.props.itemName,
     grid: this.state.grid,
     offsetPacking: this.state.offsetPacking,
-    radius: this.props.radius,
+    radius: this.props.radius || this.props.designer?.cropRadius,
     z: this.props.z,
     meta: this.props.meta,
     plantStage: this.props.designer?.cropStage,

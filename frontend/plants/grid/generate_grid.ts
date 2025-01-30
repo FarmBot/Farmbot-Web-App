@@ -4,6 +4,7 @@ import {
 import { range } from "lodash";
 import { PlantGridData, PlantGridInitOption } from "./interfaces";
 import { DesignerState } from "../../farm_designer/interfaces";
+import { verifiedCropSlug, DEFAULT_PLANT_RADIUS } from "../../farm_designer/plant";
 
 const generateXs =
   (start: number, count: number, spacing: number, offsetCol: boolean) =>
@@ -34,7 +35,7 @@ export function vectorGrid(params: PlantGridData, offsetPacking: boolean):
 }
 
 const createPlantGridMapper = (
-  openfarm_slug: string,
+  cropSlug: string,
   cropName: string,
   meta: Record<string, string | undefined>,
   designer: DesignerState | undefined,
@@ -43,12 +44,12 @@ const createPlantGridMapper = (
     const [x, y] = vec;
     return {
       name: cropName,
-      radius: 25,
+      radius: designer?.cropRadius || DEFAULT_PLANT_RADIUS,
       depth: 0,
       z: 0,
       x,
       y,
-      openfarm_slug,
+      openfarm_slug: verifiedCropSlug(cropSlug),
       pointer_type: "Plant",
       plant_stage: designer?.cropStage || "planned",
       planted_at: designer?.cropPlantedAt,

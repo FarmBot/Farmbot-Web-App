@@ -142,6 +142,7 @@ describe("<PlantGrid />", () => {
     const p = fakeProps();
     p.openfarm_slug = "beet";
     const designer = fakeDesignerState();
+    designer.cropRadius = 100;
     designer.cropStage = "planted";
     designer.cropPlantedAt = "2020-01-20T20:00:00.000Z";
     designer.cropWaterCurveId = 1;
