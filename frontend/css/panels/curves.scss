@@ -130,6 +130,9 @@
 }
 
 .crop-curve-info {
+  background: var(--secondary-bg);
+  border-radius: 0.5rem;
+  padding: 1rem;
   .bp5-collapse {
     padding-top: 0.5rem;
   }
@@ -140,22 +143,12 @@
   label {
     margin-top: 0 !important;
   }
-  .fa-external-link {
-    position: absolute;
-    top: 1rem;
-    right: 0;
-  }
   .active-curve-name {
     p {
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
     }
-  }
-  .curve-svg-wrapper {
-    background: $white;
-    box-shadow: 0 0 10px $light_gray;
-    border-radius: 5px;
   }
 }
 

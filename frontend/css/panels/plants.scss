@@ -116,8 +116,22 @@
         text-transform: none;
       }
     }
+    img {
+      width: 100%;
+      border-radius: 0.5rem;
+    }
+  }
+  .crop-info-grid {
+    grid-template-columns: auto auto;
+  }
+  .crop-info-box {
+    background: var(--secondary-bg);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    align-content: baseline;
   }
   .crop-info-field-data {
     font-size: 1.3rem;
+    margin-left: 2.5rem;
   }
 }

@@ -57,9 +57,7 @@ export const DevWidgetShowInternalEnvsRow = () =>
   </Row>;
 
 export const DevSettingsRows = () =>
-  <div className={"dev-settings-rows"}>
-    <Row />
-    <Row />
+  <div className={"dev-settings-rows grid"}>
     <DevWidgetFERow />
     <DevWidgetDelModeRow />
     <DevWidgetShowInternalEnvsRow />

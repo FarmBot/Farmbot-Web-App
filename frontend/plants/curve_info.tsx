@@ -37,19 +37,21 @@ export const AllCurveInfo = (props: AllCurveInfoProps) => {
 export const CurveInfo = (props: CurveInfoProps) => {
   const { plant, onChange, curve, curves, plants, curveType } = props;
   const [hovered, setHovered] = React.useState<string | undefined>(undefined);
-  return <div className={"crop-curve-info"}>
-    <div className={"active-curve-name row grid-2-col"}>
+  return <div className={"crop-curve-info grid no-gap"}>
+    <div className={"active-curve-name row grid-2-col grid-exp-2"}>
       <label>{t(CURVE_TYPES()[props.curveType])}</label>
-      <FBSelect key={curve?.uuid}
-        list={curvesDropdownList({ curves, curveType, plants, plant })}
-        selectedItem={curve ? curveToDdi(curve) : undefined}
-        onChange={ddi => {
-          (ddi.headingId || ddi.isNull)
-            && onChange(ddi.isNull ? undefined : ddi.value, props.curveType);
-        }} />
-      {curve && <Link to={Path.curves(curve.body.id)} title={t("edit curve")}>
-        <i className={"fa fa-external-link fb-icon-button"} />
-      </Link>}
+      <div className={"row half-gap"}>
+        {curve && <Link to={Path.curves(curve.body.id)} title={t("edit curve")}>
+          <i className={"fa fa-external-link fb-icon-button invert"} />
+        </Link>}
+        <FBSelect key={curve?.uuid}
+          list={curvesDropdownList({ curves, curveType, plants, plant })}
+          selectedItem={curve ? curveToDdi(curve) : undefined}
+          onChange={ddi => {
+            (ddi.headingId || ddi.isNull)
+              && onChange(ddi.isNull ? undefined : ddi.value, props.curveType);
+          }} />
+      </div>
     </div>
     {curve && <CurveSvgWithPopover dispatch={props.dispatch} curve={curve}
       x={plant?.x} y={plant?.y}

@@ -67,15 +67,17 @@ const shortenTitle = (title: string) => {
 
 /** Basic field: value display for crop properties. */
 const InfoField = (props: InfoFieldProps) =>
-  <li className="row half-gap grid-exp-3 align-baseline">
-    <span>{EMOJI[props.title]}</span>
-    <label>
-      {t(startCase(shortenTitle(props.title)))}:
-    </label>
+  <div className="grid no-gap crop-info-box">
+    <div className={"row grid-exp-2"}>
+      <span>{EMOJI[props.title]}</span>
+      <label>
+        {t(startCase(shortenTitle(props.title)))}
+      </label>
+    </div>
     <div className={"crop-info-field-data"}>
       {props.children}
     </div>
-  </li>;
+  </div>;
 
 const OMITTED_PROPERTIES = [
   "name",
@@ -154,15 +156,13 @@ interface CropInfoListProps {
 
 /** Display crop properties. */
 const CropInfoList = (props: CropInfoListProps) => {
-  return <div className="object-list">
-    <ul className="grid">
-      {chain(props.crop)
-        .omit(OMITTED_PROPERTIES)
-        .toPairs()
-        .map(handleDisplay)
-        .value()}
-      <Companions {...props} />
-    </ul>
+  return <div className="grid crop-info-grid">
+    {chain(props.crop)
+      .omit(OMITTED_PROPERTIES)
+      .toPairs()
+      .map(handleDisplay)
+      .value()}
+    <Companions {...props} />
   </div>;
 };
 
@@ -171,7 +171,7 @@ const Companions = (props: CropInfoListProps) => {
   const { crop, dispatch } = props;
   const companions = crop.companions
     .filter(slug => findCrop(slug).name != "Generic plant");
-  if (companions.length == 0) { return <div />; }
+  if (companions.length == 0) { return }
   return <InfoField title={"companions"}>
     <div className="crop-companions">
       {companions.map((companionSlug, index) => {
@@ -321,11 +321,19 @@ export class RawCropInfo extends React.Component<CropInfoProps, {}> {
               itemName={crop.name} />
           </div>} />
       </DesignerPanelHeader>
-      <DesignerPanelContent panelName={panelName}>
+      <DesignerPanelContent panelName={panelName} className="grid">
+        <AddPlantHereButton
+          botPosition={this.props.botPosition}
+          openedSavedGarden={designer.openedSavedGarden}
+          cropName={crop.name}
+          slug={slug}
+          getConfigValue={this.props.getConfigValue}
+          designer={designer}
+          dispatch={dispatch} />
         <CropInfoList crop={crop}
           dispatch={dispatch}
           selectMostUsedCurves={this.selectMostUsedCurves} />
-        <div className={"row grid-2-col"}>
+        <div className={"row grid-2-col crop-info-box"}>
           <label className="stage">{t("status")}</label>
           <FBSelect
             list={PLANT_STAGE_LIST()}
@@ -337,7 +345,7 @@ export class RawCropInfo extends React.Component<CropInfoProps, {}> {
               payload: ddi.value,
             })} />
         </div>
-        <div className={"row grid-2-col"}>
+        <div className={"row grid-2-col crop-info-box"}>
           <label className="planted-at">{t("start date")}</label>
           <BlurableInput
             type="date"
@@ -358,14 +366,6 @@ export class RawCropInfo extends React.Component<CropInfoProps, {}> {
           findCurve={findCurve(this.props.curves, designer)}
           plants={this.props.plants}
           onChange={changeCurve(dispatch)} />
-        <AddPlantHereButton
-          botPosition={this.props.botPosition}
-          openedSavedGarden={designer.openedSavedGarden}
-          cropName={crop.name}
-          slug={slug}
-          getConfigValue={this.props.getConfigValue}
-          designer={designer}
-          dispatch={dispatch} />
         <img src={image} />
       </DesignerPanelContent>
     </DesignerPanel>;
