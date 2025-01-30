@@ -359,7 +359,7 @@ export class RawCropInfo extends React.Component<CropInfoProps, {}> {
             })
             } />
         </div>
-        <div className={"row grid-2-col"}>
+        <div className={"row grid-2-col crop-info-box"}>
           <label className="radius">{t("radius (mm)")}</label>
           <BlurableInput
             type="number"
