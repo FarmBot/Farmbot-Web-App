@@ -405,6 +405,7 @@ DEPENDENCIES
   hashdiff
   jwt
   kaminari
+  logger
   lograge
   mutations
   passenger
