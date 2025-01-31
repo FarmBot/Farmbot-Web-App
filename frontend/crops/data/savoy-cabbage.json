@@ -1,0 +1,19 @@
+{
+    "name": "Savoy Cabbage",
+    "binomial_name": "Brassica oleracea var. capitata",
+    "common_names": [
+        "Cavolo Verza",
+        "Savoyer Kohl",
+        "Savoy King"
+    ],
+    "description": "Savoy is a variety of cabbage with deep green crinkled leaves. It's crunchy, tender leaves can be eaten raw in salads and coleslaw or cooked in stir-fry, casserole, and soup. Like all cabbages, it prefers cool weather.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors (and harden seedlings off before transplanting) or outdoors (and thin plants to 35cm when 4 cm high)",
+    "spread": 30,
+    "row_spacing": 35,
+    "height": 35,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/savoy-cabbage.jpg",
+    "icon": "/crops/icons/savoy-cabbage.avif"
+}

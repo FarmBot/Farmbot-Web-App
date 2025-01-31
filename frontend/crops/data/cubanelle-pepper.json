@@ -1,0 +1,21 @@
+{
+    "name": "Cubanelle Pepper",
+    "binomial_name": "Capsicum annuum 'Cubanelle'",
+    "common_names": [
+        "cubanelle",
+        "cuban pepper",
+        "italian frying pepper"
+    ],
+    "description": "The Cuban, Cubanelle, or Italian Frying pepper, is a sweet Capsicum annuum cultivar popular in Cuban, Dominican, Puerto Rican, and Italian cuisine. Cubanelles have 2-3 lobes and are 12-18cm long. They have more flavor, thinner flesh, and a lower water content than bell peppers. Cubanelles ripen from light yellow-green to orange-red, but are commonly harvested at yellow-green to be roasted or fried. They have a Scoville rating of 1,000 units.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, transplant seedlings outside after hardening off",
+    "spread": 75,
+    "row_spacing": 45,
+    "height": 75,
+    "growing_degree_days": 0,
+    "companions": [
+        "parsley"
+    ],
+    "image": "/crops/images/cubanelle-pepper.jpg",
+    "icon": "/crops/icons/cubanelle-pepper.avif"
+}

@@ -24,6 +24,7 @@ import { ChannelName, MessageType } from "../sequences/interfaces";
 import { slowDown } from "./slow_down";
 import { t } from "../i18next_wrapper";
 import { now } from "../devices/connectivity/qos";
+import { forceOnline } from "../devices/must_be_online";
 
 export const TITLE = () => t("New message from bot");
 
@@ -140,17 +141,24 @@ export const onMalformed = (dispatch: Function, getState: GetState) => () => {
 
 export const onOnline = () => {
   removeToast("offline");
-  success(t("Reconnected to the message broker."), { title: t("Online") });
+  if (!forceOnline()) {
+    success(t("Reconnected to the message broker."), { title: t("Online") });
+  }
   dispatchNetworkUp("user.mqtt", now());
 };
 
-export const onReconnect = () =>
-  warning(t("Attempting to reconnect to the message broker"),
-    { title: t("Offline"), color: "yellow", idPrefix: "offline" });
+export const onReconnect = () => {
+  if (!forceOnline()) {
+    warning(t("Attempting to reconnect to the message broker"),
+      { title: t("Offline"), color: "yellow", idPrefix: "offline" });
+  }
+};
 
 export const onOffline = () => {
   dispatchNetworkDown("user.mqtt", now());
-  error(t(Content.MQTT_DISCONNECTED), { idPrefix: "offline" });
+  if (!forceOnline()) {
+    error(t(Content.MQTT_DISCONNECTED), { idPrefix: "offline" });
+  }
 };
 
 export function onPublicBroadcast(payl: unknown) {

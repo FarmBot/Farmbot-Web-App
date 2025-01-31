@@ -1,8 +1,3 @@
-jest.mock("../../open_farm/cached_crop", () => ({
-  maybeGetCachedPlantIcon: jest.fn(),
-  setImgSrc: jest.fn(),
-}));
-
 jest.mock("../../farm_designer/map/actions", () => ({
   setHoveredPlant: jest.fn(),
 }));
@@ -12,20 +7,16 @@ import React from "react";
 import {
   PointGroupItem, PointGroupItemProps, genericPointIcon,
   genericWeedIcon,
+  svgToUrl,
 } from "../point_group_item";
 import { shallow, mount } from "enzyme";
 import {
   fakePlant, fakePointGroup, fakePoint, fakeToolSlot, fakeWeed, fakeTool,
   fakePlantTemplate,
 } from "../../__test_support__/fake_state/resources";
-import {
-  maybeGetCachedPlantIcon, setImgSrc,
-} from "../../open_farm/cached_crop";
 import { setHoveredPlant } from "../../farm_designer/map/actions";
 import { cloneDeep } from "lodash";
-import { imgEvent } from "../../__test_support__/fake_html_events";
 import { error } from "../../toast/toast";
-import { svgToUrl } from "../../open_farm/icons";
 import { overwriteGroup } from "../actions";
 import { mockDispatch } from "../../__test_support__/fake_dispatch";
 import { fakeToolTransformProps } from "../../__test_support__/fake_tool_info";
@@ -50,50 +41,18 @@ describe("<PointGroupItem/>", () => {
     expect(el.first().prop("onClick")).toEqual(i.click);
   });
 
-  it("fetches plant icon", async () => {
-    const p = fakeProps();
-    p.point = fakePlant();
-    const i = new PointGroupItem(p);
-    const fakeImgEvent = imgEvent();
-    await i.maybeGetCachedIcon(fakeImgEvent);
-    const slug = i.props.point.kind == "Point" &&
-      i.props.point.body.pointer_type === "Plant"
-      ? i.props.point.body.openfarm_slug
-      : "slug";
-    expect(maybeGetCachedPlantIcon)
-      .toHaveBeenCalledWith(slug, expect.any(Object), expect.any(Function));
-    expect(setImgSrc).not.toHaveBeenCalled();
-  });
-
-  it("doesn't fetch non-plant icon", async () => {
-    const p = fakeProps();
-    p.point = fakeWeed();
-    const i = new PointGroupItem(p);
-    const fakeImgEvent = imgEvent();
-    await i.maybeGetCachedIcon(fakeImgEvent);
-    expect(maybeGetCachedPlantIcon).not.toHaveBeenCalled();
-    expect(setImgSrc).not.toHaveBeenCalled();
-  });
-
-  it("sets icon in state", () => {
-    const i = new PointGroupItem(fakeProps());
-    i.setState = jest.fn();
-    i.setIconState("fake icon");
-    expect(i.setState).toHaveBeenCalledWith({ icon: "fake icon" });
-  });
-
   it("displays default plant icon", () => {
     const p = fakeProps();
     p.point = fakePlant();
     const wrapper = mount<PointGroupItem>(<PointGroupItem {...p} />);
-    expect(wrapper.find("img").props().src).toEqual(FilePath.DEFAULT_ICON);
+    expect(wrapper.find("img").props().src).toEqual("/crops/icons/strawberry.avif");
   });
 
   it("displays default plant template icon", () => {
     const p = fakeProps();
     p.point = fakePlantTemplate();
     const wrapper = mount<PointGroupItem>(<PointGroupItem {...p} />);
-    expect(wrapper.find("img").props().src).toEqual(FilePath.DEFAULT_ICON);
+    expect(wrapper.find("img").props().src).toEqual("/crops/icons/mint.avif");
   });
 
   it("displays point icon", () => {
@@ -142,24 +101,21 @@ describe("<PointGroupItem/>", () => {
 
   it("handles mouse enter", () => {
     const i = new PointGroupItem(fakeProps());
-    i.state.icon = "X";
     i.enter();
     expect(i.props.dispatch).toHaveBeenCalledTimes(1);
-    expect(setHoveredPlant).toHaveBeenCalledWith(i.props.point.uuid, "X");
+    expect(setHoveredPlant).toHaveBeenCalledWith(i.props.point.uuid);
   });
 
   it("handles mouse enter: no action", () => {
     const p = fakeProps();
     p.dispatch = undefined;
     const i = new PointGroupItem(p);
-    i.state.icon = "X";
     i.enter();
     expect(setHoveredPlant).not.toHaveBeenCalled();
   });
 
   it("handles mouse exit", () => {
     const i = new PointGroupItem(fakeProps());
-    i.state.icon = "X";
     i.leave();
     expect(i.props.dispatch).toHaveBeenCalledTimes(1);
     expect(setHoveredPlant).toHaveBeenCalledWith(undefined);
@@ -169,7 +125,6 @@ describe("<PointGroupItem/>", () => {
     const p = fakeProps();
     p.dispatch = undefined;
     const i = new PointGroupItem(p);
-    i.state.icon = "X";
     i.leave();
     expect(setHoveredPlant).not.toHaveBeenCalled();
   });

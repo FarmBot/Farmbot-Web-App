@@ -1,0 +1,17 @@
+{
+    "name": "Raspberry",
+    "binomial_name": "Rubus idaeus",
+    "common_names": [
+        "Cultivated Raspberry"
+    ],
+    "description": "Raspberries are a perennial plant with erect to trailing canes that often have spines or thorns. The plants produce fruit in their second year of growth, but some \"primocane\" varieties exist that flower and fruit their first year. Canes are light green to blue in hue with alternate, compound leaves. Fruits are sweet, many-seeded, and hollow.",
+    "sun_requirements": "Partial Sun",
+    "sowing_method": "Transplant from roots or juvenile plants.",
+    "spread": 75,
+    "row_spacing": 200,
+    "height": 150,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/raspberry.jpg",
+    "icon": "/crops/icons/raspberry.avif"
+}

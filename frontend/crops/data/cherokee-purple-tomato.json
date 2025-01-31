@@ -1,0 +1,17 @@
+{
+    "name": "Cherokee Purple Tomato",
+    "binomial_name": "Solanum lycopersicum",
+    "common_names": [
+        "Cherokee Purple"
+    ],
+    "description": "Cherokee Purple is an heirloom tomato variety that produces flattened globe-shaped fruits that are dusky pink with dark green shoulders. Fruits are medium to large sized with a deep, rich flavor. Best eaten raw. For larger yield and improved plant health, prune and stake tomatoes.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors and transplant seedlings outside after hardening off",
+    "spread": 45,
+    "row_spacing": 90,
+    "height": 200,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "",
+    "icon": "/crops/icons/cherokee-purple-tomato.avif"
+}

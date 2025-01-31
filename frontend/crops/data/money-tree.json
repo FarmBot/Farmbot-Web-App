@@ -1,0 +1,26 @@
+{
+    "name": "Money Tree",
+    "binomial_name": "Pachira aquatica",
+    "common_names": [
+        "Money Tree",
+        "Skrilla",
+        "Malabar chestnut",
+        "French peanut",
+        "Guiana chestnut",
+        "provision tree",
+        "saba nut",
+        "monguba (Brazil)",
+        "pumpo (Guatemala)",
+        "money plant"
+    ],
+    "description": "The Money Tree is a tropical wetland tree of the mallow family Malvaceae. It is native to Central and South America where it grows in swamps to heights of up to 18m. The tree's flashy flowers have long petals that open like banana peels to reveal yellow-orange stamens. The nuts of the tree grow in a large, woody pod and are edible. They taste similar to peanuts and can be eaten raw, cooked, or ground into flour to make bread.  A common houseplant, the tree is sometimes sold with a braided trunk. Money Tree houseplants are often a similar species, P. glabra, which has a smaller growth habit, less showy flowers, and smaller green seed pods. Money Trees grown in containers should be repotted every 2 years. The Money Tree may have gotten it's name from a story about a poor man who prayed for money and then encountered this plant, took it home, and made money selling plants grown from it's seeds.",
+    "sun_requirements": "Partial Sun",
+    "sowing_method": "Direct seed or cutting",
+    "spread": 0,
+    "row_spacing": 0,
+    "height": 1800,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/money-tree.jpg",
+    "icon": "/crops/icons/money-tree.avif"
+}

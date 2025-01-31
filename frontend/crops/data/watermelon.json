@@ -1,0 +1,17 @@
+{
+    "name": "Watermelon",
+    "binomial_name": "Citrullus lanatus",
+    "common_names": [
+        "watermelon"
+    ],
+    "description": "The watermelon is a species of melon that produces round or oblong fruits with thick skin and sweet, watery flesh. It is a special kind of berry with a hard rind and no internal division, botanically known as a \"pepo.\" The rind is usually dark green with light-green stripes. The flesh can be red or yellow. Like other melons and members of the Cucurbitaceae family, the watermelon grows on sprawling vines.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed into soil or peat pots (and transplant pots directly into soil after hardening off)",
+    "spread": 200,
+    "row_spacing": 300,
+    "height": 50,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/watermelon.jpg",
+    "icon": "/crops/icons/watermelon.avif"
+}

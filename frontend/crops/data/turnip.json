@@ -1,0 +1,20 @@
+{
+    "name": "Turnip",
+    "binomial_name": "Brassica rapa",
+    "common_names": [
+        "turnip",
+        " winter oil seed turnip rape",
+        " summer oil seed",
+        " turnip rape"
+    ],
+    "description": "Turnips are smooth, round root vegetables 5-20 cm in diameter. They are often white below the soil line and bright purple or green above. Turnips usually have white flesh and a slightly sweet and bitter taste, similar to cabbage. The edible foliage tastes similar to mustard greens. Turnips are a cool-weather crop and do best as spring or fall plantings.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed outdoors, thin to 10cm when seedlings are 3cm tall",
+    "spread": 30,
+    "row_spacing": 10,
+    "height": 35,
+    "growing_degree_days": 55,
+    "companions": [],
+    "image": "/crops/images/turnip.jpg",
+    "icon": "/crops/icons/turnip.avif"
+}

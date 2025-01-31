@@ -1,0 +1,18 @@
+{
+    "name": "Blue Oyster Mushroom",
+    "binomial_name": "Pleurotus columbinus",
+    "common_names": [
+        "blue oyster mushroom",
+        "blue oyster"
+    ],
+    "description": "Blue Oysters grow in large clusters and have the typical shelf-like shape of the Pleurotus species. They start out blue and turn gray as they mature. The mushroom's size and shape varies depending on growing conditions. They can grow rapidly, sometimes doubling in size daily. Blue Oysters require a very high level of fresh air exchange and grow well outdoors. They can also be grown indoors, but will have long and thick stems with small caps if the environment is high in CO2. They have a thick, meaty flesh that is milder in flavor than shiitake. Blue Oysters can be grown with mushroom kits, or by obtaining spores and inoculating a substrate such as pasteurized cardboard, straw, sawdust, or hardwood logs.",
+    "sun_requirements": "",
+    "sowing_method": "Inoculate substrate with spores",
+    "spread": 0,
+    "row_spacing": 0,
+    "height": 0,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/blue-oyster-mushroom.jpg",
+    "icon": "/crops/icons/blue-oyster-mushroom.avif"
+}

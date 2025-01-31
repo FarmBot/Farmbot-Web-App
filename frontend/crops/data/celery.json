@@ -1,0 +1,19 @@
+{
+    "name": "Celery",
+    "binomial_name": "Apium graveolens",
+    "common_names": [
+        "celery"
+    ],
+    "description": "The celery plant has long fibrous stalks that taper into leaves. The stalks and leaves can both be eaten. Celery seed is also used as a spice. Celery seed extracts are used in medicines.",
+    "sun_requirements": "Partial Sun",
+    "sowing_method": "Sow seeds indoors 10-12 weeks before transplanting outdoors",
+    "spread": 25,
+    "row_spacing": 15,
+    "height": 40,
+    "growing_degree_days": 105,
+    "companions": [
+        "red-cabbage"
+    ],
+    "image": "/crops/images/celery.jpg",
+    "icon": "/crops/icons/celery.avif"
+}

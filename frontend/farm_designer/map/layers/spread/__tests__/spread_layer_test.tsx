@@ -8,7 +8,6 @@ import {
   fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 import { SpreadOverlapHelper } from "../spread_overlap_helper";
-import { cachedCrop } from "../../../../../open_farm/cached_crop";
 
 describe("<SpreadLayer/>", () => {
   const fakeProps = (): SpreadLayerProps => ({
@@ -29,7 +28,7 @@ describe("<SpreadLayer/>", () => {
     const p = fakeProps();
     const wrapper = shallow(<SpreadLayer {...p} />);
     const layer = wrapper.find("#spread-layer");
-    expect(layer.find("SpreadCircle").html()).toContain("r=\"0\"");
+    expect(layer.find("SpreadCircle").html()).toContain("r=\"150\"");
   });
 
   it("toggles visibility off", () => {
@@ -62,8 +61,7 @@ describe("<SpreadCircle />", () => {
 
   it("uses spread value", () => {
     const wrapper = shallow(<SpreadCircle {...fakeProps()} />);
-    wrapper.setState({ spread: 20, loaded: true });
-    expect(wrapper.find("circle").first().props().r).toEqual(100);
+    expect(wrapper.find("circle").first().props().r).toEqual(150);
     expect(wrapper.find("circle").first().hasClass("animate")).toBeTruthy();
     expect(wrapper.find("circle").first().props().fill).toEqual("none");
   });
@@ -73,7 +71,6 @@ describe("<SpreadCircle />", () => {
     p.selected = true;
     p.hoveredSpread = 100;
     const wrapper = shallow(<SpreadCircle {...p} />);
-    wrapper.setState({ spread: 1000, loaded: true });
     expect(wrapper.find("circle").last().props().r).toEqual(50);
   });
 
@@ -84,7 +81,5 @@ describe("<SpreadCircle />", () => {
     np.plant.body.openfarm_slug = "new-slug";
     const wrapper = shallow(<SpreadCircle {...p} />);
     wrapper.setProps(np);
-    expect(cachedCrop).toHaveBeenCalledWith("slug");
-    expect(cachedCrop).toHaveBeenCalledWith("new-slug");
   });
 });

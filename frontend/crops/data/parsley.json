@@ -1,0 +1,18 @@
+{
+    "name": "Parsley",
+    "binomial_name": "Petroselinum crispum",
+    "common_names": [
+        "Parsley",
+        "garden parsley"
+    ],
+    "description": "Parsley is an herb in the Apiaceae family with two main cultivars: flat leafed (or Italian) and curly. Some gardeners feel flat leaf is easier to cultivate since it is more tolerant of rain and sunshine. Curly parsley is more decorative in appearance. Both cultivars can be used fresh or dried to season food.",
+    "sun_requirements": "Partial Sun",
+    "sowing_method": "direct seed indoors or outdoors",
+    "spread": 10,
+    "row_spacing": 30,
+    "height": 40,
+    "growing_degree_days": 80,
+    "companions": [],
+    "image": "/crops/images/parsley.jpg",
+    "icon": "/crops/icons/parsley.avif"
+}

@@ -1,7 +1,3 @@
-jest.mock("../../open_farm/cached_crop", () => ({
-  maybeGetCachedPlantIcon: jest.fn((_, __, x) => x("icon")),
-}));
-
 jest.mock("../../farm_designer/map/actions", () => ({
   mapPointClickAction: jest.fn(() => jest.fn()),
   setHoveredPlant: jest.fn(),
@@ -17,7 +13,6 @@ import { shallow, mount } from "enzyme";
 import {
   fakePlant, fakePlantTemplate,
 } from "../../__test_support__/fake_state/resources";
-import { maybeGetCachedPlantIcon } from "../../open_farm/cached_crop";
 import {
   mapPointClickAction, setHoveredPlant, selectPoint,
 } from "../../farm_designer/map/actions";
@@ -59,13 +54,13 @@ describe("<PlantInventoryItem />", () => {
     const p = fakeProps();
     const wrapper = shallow(<PlantInventoryItem {...p} />);
     wrapper.simulate("mouseEnter");
-    expect(setHoveredPlant).toHaveBeenCalledWith(p.plant.uuid, "");
+    expect(setHoveredPlant).toHaveBeenCalledWith(p.plant.uuid);
   });
 
   it("hover end", () => {
     const wrapper = shallow(<PlantInventoryItem {...fakeProps()} />);
     wrapper.simulate("mouseLeave");
-    expect(setHoveredPlant).toHaveBeenCalledWith(undefined, "");
+    expect(setHoveredPlant).toHaveBeenCalledWith(undefined);
   });
 
   it("selects plant", () => {
@@ -97,7 +92,7 @@ describe("<PlantInventoryItem />", () => {
       expect.any(Function),
       p.plant.uuid);
     expect(mockNavigate).not.toHaveBeenCalled();
-    expect(setHoveredPlant).toHaveBeenCalledWith(undefined, "");
+    expect(setHoveredPlant).toHaveBeenCalledWith(undefined);
   });
 
   it("selects plant template", () => {
@@ -114,12 +109,8 @@ describe("<PlantInventoryItem />", () => {
   it("gets and sets cached icon", () => {
     const p = fakeProps();
     const wrapper = mount(<PlantInventoryItem {...p} />);
-    const img = wrapper.find("img");
-    img.simulate("load");
-    expect(maybeGetCachedPlantIcon).toHaveBeenCalledWith("strawberry",
-      img.instance(), expect.any(Function));
     wrapper.simulate("mouseEnter");
-    expect(setHoveredPlant).toHaveBeenCalledWith(p.plant.uuid, "icon");
+    expect(setHoveredPlant).toHaveBeenCalledWith(p.plant.uuid);
   });
 });
 

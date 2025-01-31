@@ -1,13 +1,8 @@
 import { designer } from "../reducer";
 import { Actions } from "../../constants";
 import { ReduxAction } from "../../redux/interfaces";
-import {
-  HoveredPlantPayl, DrawnPointPayl, CropLiveSearchResult, DrawnWeedPayl,
-} from "../interfaces";
+import { HoveredPlantPayl, DrawnPointPayl, DrawnWeedPayl } from "../interfaces";
 import { BotPosition } from "../../devices/interfaces";
-import {
-  fakeCropLiveSearchResult,
-} from "../../__test_support__/fake_crop_search_result";
 import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 import { PlantStage, PointType } from "farmbot";
@@ -24,7 +19,6 @@ describe("designer reducer", () => {
     };
     const newState = designer(oldState(), action);
     expect(newState.cropSearchQuery).toEqual("apple");
-    expect(newState.cropSearchInProgress).toEqual(true);
   });
 
   it("selects points", () => {
@@ -49,13 +43,12 @@ describe("designer reducer", () => {
     const action: ReduxAction<HoveredPlantPayl> = {
       type: Actions.TOGGLE_HOVERED_PLANT,
       payload: {
-        icon: "icon",
         plantUUID: "plantUuid"
       }
     };
     const newState = designer(oldState(), action);
     expect(newState.hoveredPlant).toEqual({
-      icon: "icon", plantUUID: "plantUuid"
+      plantUUID: "plantUuid"
     });
   });
 
@@ -111,6 +104,15 @@ describe("designer reducer", () => {
     };
     const newState = designer(oldState(), action);
     expect(newState.cropPlantedAt).toEqual("2020-01-20T20:00:00.000Z");
+  });
+
+  it("sets crop radius", () => {
+    const action: ReduxAction<number | undefined> = {
+      type: Actions.SET_CROP_RADIUS,
+      payload: 100,
+    };
+    const newState = designer(oldState(), action);
+    expect(newState.cropRadius).toEqual(100);
   });
 
   it("sets distance indicator", () => {
@@ -275,42 +277,12 @@ describe("designer reducer", () => {
     expect(newState.openedSavedGarden).toEqual(payload);
   });
 
-  it("stores new OpenFarm assets", () => {
-    const payload: CropLiveSearchResult[] = [
-      fakeCropLiveSearchResult(),
-    ];
-    const action: ReduxAction<typeof payload> = {
-      type: Actions.OF_SEARCH_RESULTS_OK, payload
-    };
-    const newState = designer(oldState(), action);
-    expect(newState.cropSearchResults).toEqual(payload);
-    expect(newState.cropSearchInProgress).toEqual(false);
-  });
-
   it("sets companion index", () => {
     const action: ReduxAction<number> = {
       type: Actions.SET_COMPANION_INDEX, payload: 1,
     };
     const newState = designer(oldState(), action);
     expect(newState.companionIndex).toEqual(1);
-  });
-
-  it("starts search", () => {
-    const action: ReduxAction<undefined> = {
-      type: Actions.OF_SEARCH_RESULTS_START, payload: undefined
-    };
-    const newState = designer(oldState(), action);
-    expect(newState.cropSearchInProgress).toEqual(true);
-  });
-
-  it("ends search", () => {
-    const state = oldState();
-    state.cropSearchInProgress = true;
-    const action: ReduxAction<undefined> = {
-      type: Actions.OF_SEARCH_RESULTS_NO, payload: undefined
-    };
-    const newState = designer(state, action);
-    expect(newState.cropSearchInProgress).toEqual(false);
   });
 
   it("sets plant type change id", () => {

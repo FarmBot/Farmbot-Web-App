@@ -1,0 +1,20 @@
+{
+    "name": "Green Zucchini",
+    "binomial_name": "Cucurbita pepo",
+    "common_names": [
+        "Zucchini",
+        "courgette",
+        "long marrow",
+        "garden marrow"
+    ],
+    "description": "Green Griller Zucchini\nAs the name suggests, this variety of zucchini squash is practically made for the grill. Oblong zucchinis are fatter and blockier than other varieties, yielding broad slices that are easy to flip. Fruits grow on a low, open bush, so picking them is a cinch. Leaves boast a green and silver variegated pattern that looks really attractive in the garden. Fruits mature quite quickly!Resistant to Zucchini Yellow Mosaic Virus.  Fruit is 6-7 in long.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed 2 seeds, thin to 1 plant when seedlings have 2 sets of leaves",
+    "spread": 100,
+    "row_spacing": 90,
+    "height": 45,
+    "growing_degree_days": 50,
+    "companions": [],
+    "image": "/crops/images/zucchini.jpg",
+    "icon": "/crops/icons/zucchini.avif"
+}

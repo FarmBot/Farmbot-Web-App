@@ -1,0 +1,17 @@
+{
+    "name": "Red Savina Pepper",
+    "binomial_name": "Capsicum chinense 'Red Savina'",
+    "common_names": [],
+    "description": "Red Savina peppers are a Habanero chili cultivar that produce hotter, larger, and heavier fruit. Fruit are 5cm long by 4cm wide and wrinkled. They mature from green to shiny red. Red Savina have a Scoville Heat rating of 200,000-577,000 units and are second only in heat to the Naga Jolokia pepper. The peppers have a fruity, mildly smoky flavor, but directly consuming them - and even touching the seeds - can be dangerous because of their extreme heat.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, transplant seedlings outside after hardening off",
+    "spread": 40,
+    "row_spacing": 60,
+    "height": 120,
+    "growing_degree_days": 0,
+    "companions": [
+        "carrot"
+    ],
+    "image": "",
+    "icon": "/crops/icons/red-savina-pepper.avif"
+}

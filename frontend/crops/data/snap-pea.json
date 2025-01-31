@@ -1,0 +1,19 @@
+{
+    "name": "Snap Pea",
+    "binomial_name": "Pisum sativum var. macrocarpon",
+    "common_names": [
+        "sugar snap",
+        "dwarf sugar",
+        "mangetout"
+    ],
+    "description": "Snap peas are a cultivar group of edible-podded peas that have round pods instead of flat pods (like snow peas). They were developed in 1952 by cross-breeding snow pea with a mutant shell pea plant. The pods are edible and contain 3-8 peas. They are harvested when they are bright green, young, and tender. Snap peas are a cool weather crop and require trellising to support their climbing vines.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed outdoors, thin to 12cm apart when seedlings are 3cm high",
+    "spread": 20,
+    "row_spacing": 12,
+    "height": 150,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/snap-pea.jpg",
+    "icon": "/crops/icons/snap-pea.avif"
+}

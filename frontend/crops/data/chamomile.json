@@ -1,0 +1,17 @@
+{
+    "name": "Chamomile",
+    "binomial_name": "chamaemelum nobile",
+    "common_names": [
+        "chamomile"
+    ],
+    "description": "",
+    "sun_requirements": "",
+    "sowing_method": "",
+    "spread": 0,
+    "row_spacing": 0,
+    "height": 0,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/chamomile.jpg",
+    "icon": "/crops/icons/chamomile.avif"
+}

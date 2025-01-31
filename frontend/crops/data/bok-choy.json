@@ -1,0 +1,21 @@
+{
+    "name": "Bok Choy",
+    "binomial_name": "Brassica rapa subsp. Chinensis",
+    "common_names": [
+        "Bok Choy",
+        "Bok Choi",
+        "Pak Choi",
+        "Toy Choi",
+        "Bok Choi Hybrid"
+    ],
+    "description": "A type of Chinese cabbage that does not form a head. It has smooth, dark or light green leaf blades and crisp white stalks that form a cluster similar to mustard greens or celery. It is often harvested while still small and tender, when it is around 10cm high. Winter hardy. Row spacing depends on desired harvest size.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed outdoors, or sow indoors and harden off before transplanting",
+    "spread": 20,
+    "row_spacing": 15,
+    "height": 20,
+    "growing_degree_days": 50,
+    "companions": [],
+    "image": "/crops/images/bok-choy.jpg",
+    "icon": "/crops/icons/bok-choy.avif"
+}

@@ -1,0 +1,17 @@
+{
+    "name": "Broccoli",
+    "binomial_name": "Brassica oleracea",
+    "common_names": [
+        "broccoli"
+    ],
+    "description": "Broccoli has large flower heads known as \"crowns\" that are green to blue-green in color, grouped tightly together atop a thick stem, and surrounded by leaves. Broccoli resembles cauliflower, a different cultivar in its species. It thrives in cool weather.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Sow seeds indoors and transplant outside",
+    "spread": 60,
+    "row_spacing": 40,
+    "height": 75,
+    "growing_degree_days": 80,
+    "companions": [],
+    "image": "/crops/images/broccoli.jpg",
+    "icon": "/crops/icons/broccoli.avif"
+}

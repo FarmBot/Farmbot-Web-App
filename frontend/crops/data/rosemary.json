@@ -1,0 +1,18 @@
+{
+    "name": "Rosemary",
+    "binomial_name": "Rosmarinus officinalis",
+    "common_names": [],
+    "description": "Rosmarinus officinalis, commonly known as rosemary, is a woody, perennial herb with fragrant, evergreen, needle-like leaves and white, pink, purple, or blue flowers, native to the Mediterranean region.\nIt is a member of the mint family Lamiaceae, which includes many other herbs. The name \"rosemary\" derives from the Latin for \"dew\" (ros) and \"sea\" (marinus), or \"dew of the sea\". The plant is also sometimes called 'anthos', from the ancient Greek word \u1f04\u03bd\u03b8\u03bf\u03c2, meaning \"flower\". Rosemary has a fibrous root system.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Purchased starter",
+    "spread": 60,
+    "row_spacing": 60,
+    "height": 90,
+    "growing_degree_days": 90,
+    "companions": [
+        "lemon-balm",
+        "arugula"
+    ],
+    "image": "/crops/images/rosemary.jpg",
+    "icon": "/crops/icons/rosemary.avif"
+}

@@ -1,0 +1,19 @@
+{
+    "name": "Cilantro",
+    "binomial_name": "Coriandrum sativum",
+    "common_names": [
+        "cilantro",
+        "Chinese parsley",
+        "coriander"
+    ],
+    "description": "Cilantro is a soft leafy green plant. It's leaves are variable in shape - they are broadly lobed at the base of the plant and become slender and feathery higher up the stems. All of the plant is edible, but the fresh leaves and dried seeds (coriander) are most commonly used. Cilantro is great in salads and as a garnish on stews, casseroles, and tacos, but tastes \"soapy\" to some people.",
+    "sun_requirements": "Partial Sun",
+    "sowing_method": "Sow seeds indoors 6-8 weeks before last frost of the season, harden off before transplanting outdoors",
+    "spread": 30,
+    "row_spacing": 30,
+    "height": 50,
+    "growing_degree_days": 45,
+    "companions": [],
+    "image": "/crops/images/cilantro.jpg",
+    "icon": "/crops/icons/cilantro.avif"
+}

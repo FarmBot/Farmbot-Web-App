@@ -4,10 +4,6 @@ jest.mock("browser-speech", () => ({
   talk: jest.fn(),
 }));
 
-jest.mock("../open_farm/cached_crop", () => ({
-  cachedCrop: jest.fn(() => Promise.resolve({ svg_icon: "icon" })),
-}));
-
 const { ancestorOrigins } = window.location;
 delete (window as { location: Location | undefined }).location;
 window.location = {

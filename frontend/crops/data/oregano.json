@@ -1,0 +1,17 @@
+{
+    "name": "Oregano",
+    "binomial_name": "Origanum vulgare",
+    "common_names": [
+        "oregano"
+    ],
+    "description": "pungent, flavorful her for cooking",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "direct or transplant",
+    "spread": 40,
+    "row_spacing": 30,
+    "height": 30,
+    "growing_degree_days": 85,
+    "companions": [],
+    "image": "/crops/images/oregano.jpg",
+    "icon": "/crops/icons/oregano.avif"
+}

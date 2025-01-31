@@ -1,0 +1,17 @@
+{
+    "name": "Galangal",
+    "binomial_name": "alpinia galanga",
+    "common_names": [
+        "galangal"
+    ],
+    "description": "",
+    "sun_requirements": "",
+    "sowing_method": "",
+    "spread": 0,
+    "row_spacing": 0,
+    "height": 0,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/galangal.jpg",
+    "icon": "/crops/icons/galangal.avif"
+}

@@ -1,0 +1,19 @@
+{
+    "name": "Chile De Aborol",
+    "binomial_name": "Capsicum annuum",
+    "common_names": [
+        "Chile de \u00e1rbol",
+        "bird's beak chile",
+        "rat's tail chile"
+    ],
+    "description": "Chile de \u00e1rbol, or Bird's Beak chiles, are a Capsicum annuum cultivar with a Scoville heat index of 15,000-30,000 units (slightly less spicy than Cayenne). They are members of the nightshade family, Solanaceae, and are related to tomatoes and eggplant. The upright plants produce slender, curved peppers 5-7.5 cm long and 1cm in diameter. The peppers turn red as they ripen, and are notable for keeping their red color after being dried. Chile de \u00e1rbol can be used fresh, dried, or powdered. They need 80-100 frost-free days for fruit to set and mature.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, transplant seedlings outside after hardening off",
+    "spread": 0,
+    "row_spacing": 60,
+    "height": 120,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/chile-de-aborol-pepper.jpg",
+    "icon": "/crops/icons/chile-de-aborol-pepper.avif"
+}

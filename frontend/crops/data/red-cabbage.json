@@ -1,0 +1,18 @@
+{
+    "name": "Red Cabbage",
+    "binomial_name": "Brassica oleracea var. capitata",
+    "common_names": [
+        "Red Cabbage",
+        "Red Jewel"
+    ],
+    "description": "Red Cabbage is a type of cabbage with red leaves. Like other cabbage, it prefers cool weather and forms round, dense heads on top of short stalks.\n\nBeautiful garnet color makes this early, delicious cabbage a standout at the table! Produces large, tightly packed hearts with crisp leaves. Size is 1.5 kilo (3 lb).\n\nSeed outdoors as soon as weather and soil conditions permit. Cover seed lightly with soil, 6 \u2013 7 seeds per 30 cm (1 ft) of row. Average garden soil and a sunny location are ideal. Thin to 30 cm (1 ft) apart when 7 cm (3 in) high. For earlier Cabbage start indoors 2 to 3 weeks in advance of intended date for moving the plants to the garden. Germinates best at 21 C (70 F) in 7 to 10 days. Reduce temperature after germination to 15 C (65 F) and provide additional light to help prevent stretching and to tone up plants before transplanting outside. Several sowings of Cabbage 10 days apart ensure a fresh supply into fall. Keep well watered during hot temperatures to avoid bolting.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors (and transplant out after hardening seedlings off) or outdoors",
+    "spread": 30,
+    "row_spacing": 60,
+    "height": 40,
+    "growing_degree_days": 75,
+    "companions": [],
+    "image": "/crops/images/red-cabbage.jpg",
+    "icon": "/crops/icons/red-cabbage.avif"
+}

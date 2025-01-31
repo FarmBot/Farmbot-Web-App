@@ -1,0 +1,22 @@
+{
+    "name": "Looseleaf Lettuce",
+    "binomial_name": "Lactuca sativa",
+    "common_names": [
+        "looseleaf",
+        "loose leaf",
+        "salad mix",
+        "salad greens",
+        "lettuce mix",
+        "lettuce blend"
+    ],
+    "description": "Looseleaf lettuces are fast growing and don't form tight heads. This makes them ideal for growing as salad mix. Seed mixes often include a variety of lettuce types that have different colors and textures. Looseleaf lettuce is harvested by cutting the outer leaves or by cutting the entire plant in a \"cut-and-come-again\" method. Lettuce is generally a cool-weather crop, but some varieties are heat-tolerant.",
+    "sun_requirements": "Partial Sun",
+    "sowing_method": "Direct seed outdoors, thin to 15cm apart when seedlings are 3cm tall",
+    "spread": 25,
+    "row_spacing": 25,
+    "height": 25,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/looseleaf-lettuce.jpg",
+    "icon": "/crops/icons/looseleaf-lettuce.avif"
+}

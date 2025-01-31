@@ -1,0 +1,26 @@
+{
+    "name": "Portobello",
+    "binomial_name": "Agaricus bisporus",
+    "common_names": [
+        "Portabello Mushroom",
+        "Swiss brown mushroom",
+        "Roman brown mushroom",
+        "Italian brown",
+        "Italian mushroom",
+        "cremini",
+        "crimini mushroom",
+        "baby bella",
+        "brown cap mushroom",
+        "chestnut mushroom"
+    ],
+    "description": "Portobello mushrooms are the mature version of white button mushrooms. They have a meaty flavor and are delicious grilled, saut\u00e9ed, stuffed, and in soups and stir frys. To grow Portobellos, you will need portobello spores and partially decomposed compost and peat moss. They can be grown outside or indoors. Portobellos can be grown indoors year-round because temperature, moisture, and light can be controlled.",
+    "sun_requirements": "Full Shade",
+    "sowing_method": "Sprinkle spores on surface of compost and peat moss, gently mix in, and press down",
+    "spread": 0,
+    "row_spacing": 0,
+    "height": 0,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/portabello-mushroom.jpg",
+    "icon": "/crops/icons/portabello-mushroom.avif"
+}

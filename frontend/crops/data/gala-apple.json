@@ -1,0 +1,17 @@
+{
+    "name": "Gala Apple",
+    "binomial_name": "Malus pumila",
+    "common_names": [
+        "Gala"
+    ],
+    "description": "Gala Apples are apple cultivars that were developed in New Zealand around 1985 by crossing Kidd's Orange Red and Golden Delicious. They produce shiny, red-striped fruit that is firm, sweet, aromatic, and juicy. They can be eaten fresh or baked. Harvest sooner for a storage life of 4 months, or let them fully ripen on the tree for a sweeter apple that won't store as long. Blossoms are white or pink. Gala apples require pollination by a tree of another variety with the same bloom period within 50 feet (Akane, Cortland, Empire, Enterprise, Fuji, Honeycrisp, Jonathan, Macoun, Red Delicious, Golden Delicious). Apples are propagated through grafting because seeds do not breed true. Semi-dwarf and standard sizes are available. Depending on the size chosen, the tree will bear fruit within 2-5 years of planting.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Transplant bare-root plant",
+    "spread": 300,
+    "row_spacing": 300,
+    "height": 300,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/gala-apple.jpg",
+    "icon": "/crops/icons/gala-apple.avif"
+}

@@ -1,0 +1,18 @@
+{
+    "name": "Yellow Cauliflower",
+    "binomial_name": "Brassica oleracea var. botrytis",
+    "common_names": [
+        "Yellow Cauliflower",
+        "Cheddar"
+    ],
+    "description": "Yellow Cauliflower is a cauliflower cultivar that forms yellow heads. It is a member of the Brassicaceae family. The solid, firm head resembles that of broccoli and sits atop a stalk. The head is wrapped in thick leaves that begin to open when the plant is ready for harvest. All cauliflower does best in cool weather.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Sow seeds indoors, harden seedlings off before transplanting",
+    "spread": 30,
+    "row_spacing": 60,
+    "height": 75,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/yellow-cauliflower.jpg",
+    "icon": "/crops/icons/yellow-cauliflower.avif"
+}

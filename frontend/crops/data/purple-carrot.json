@@ -1,0 +1,17 @@
+{
+    "name": "Purple Carrot",
+    "binomial_name": "Daucus carota var. sativus",
+    "common_names": [
+        "Purple Carrot"
+    ],
+    "description": "Purple carrots are a carrot cultivar that have purple skin and orange to purple flesh. They are a little less sweet than orange carrots and sometimes have a lower yield. They can be cooked the same way as carrots.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed outdoors, thin to 3cm apart when seedlings are 7cm high",
+    "spread": 8,
+    "row_spacing": 3,
+    "height": 15,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/purple-carrot.jpg",
+    "icon": "/crops/icons/purple-carrot.avif"
+}

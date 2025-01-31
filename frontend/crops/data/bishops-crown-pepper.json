@@ -1,0 +1,26 @@
+{
+    "name": "Bishop's Crown Pepper",
+    "binomial_name": "Capsicum baccatum var. pendulum",
+    "common_names": [
+        "bishop's crown",
+        "Christmas bell",
+        "peri peri",
+        "joker's hatAji flor",
+        "Balloon pepper",
+        "Campane",
+        "Orchid",
+        "Pimenta cambuci",
+        "Ubatuba cambuci",
+        "Atomic Starfish"
+    ],
+    "description": "Bishop's Crown, or Peri Peri, is a Capsicum baccatum cultivar that produces peppers shaped like flying saucers or bishop's hats. Each plant produces 30-50 fruits that grow to about 3.5cm wide. The peppers have thin, crisp flesh and can be sweet and mild or much spicier than jalapenos. They mature from pale green to red.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, transplant seedlings outside after hardening off.",
+    "spread": 0,
+    "row_spacing": 60,
+    "height": 120,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "",
+    "icon": "/crops/icons/bishops-crown-pepper.avif"
+}

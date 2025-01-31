@@ -21,7 +21,6 @@ import {
 import { MovePointToProps, MovePointsProps } from "../../interfaces";
 import { edit } from "../../../api/crud";
 import { Actions } from "../../../constants";
-import { svgToUrl } from "../../../open_farm/icons";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { GetState } from "../../../redux/interfaces";
 import {
@@ -29,7 +28,7 @@ import {
 } from "../../../__test_support__/resource_index_builder";
 import { overwriteGroup } from "../../../point_groups/actions";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
-import { FilePath, Path } from "../../../internal_urls";
+import { Path } from "../../../internal_urls";
 
 describe("movePoints", () => {
   it.each<[string, Record<"x" | "y", number>, Record<"x" | "y", number>]>([
@@ -113,18 +112,9 @@ describe("setDragIcon()", () => {
   it("sets the drag icon", () => {
     const setDragImage = jest.fn();
     const e = { currentTarget: new Image(), dataTransfer: { setDragImage } };
-    setDragIcon("icon")(e);
+    setDragIcon("mint")(e);
     const img = new Image();
-    img.src = svgToUrl("icon");
-    expect(setDragImage).toHaveBeenCalledWith(img, 0, 0);
-  });
-
-  it("sets a default drag icon", () => {
-    const setDragImage = jest.fn();
-    const e = { currentTarget: new Image(), dataTransfer: { setDragImage } };
-    setDragIcon(undefined)(e);
-    const img = new Image();
-    img.src = FilePath.DEFAULT_ICON;
+    img.src = "/crops/icons/mint.avif";
     expect(setDragImage).toHaveBeenCalledWith(img, 0, 0);
   });
 });
@@ -134,9 +124,9 @@ describe("clickMapPlant", () => {
     const state = fakeState();
     const dispatch = jest.fn();
     const getState: GetState = jest.fn(() => state);
-    clickMapPlant("fakeUuid", "fakeIcon")(dispatch, getState);
+    clickMapPlant("fakeUuid")(dispatch, getState);
     expect(dispatch).toHaveBeenCalledWith(selectPoint(["fakeUuid"]));
-    expect(dispatch).toHaveBeenCalledWith(setHoveredPlant("fakeUuid", "fakeIcon"));
+    expect(dispatch).toHaveBeenCalledWith(setHoveredPlant("fakeUuid"));
     expect(dispatch).toHaveBeenCalledTimes(2);
   });
 
@@ -149,7 +139,7 @@ describe("clickMapPlant", () => {
     state.resources = buildResourceIndex([plant]);
     const dispatch = mockDispatch();
     const getState: GetState = jest.fn(() => state);
-    clickMapPlant(plant.uuid, "fakeIcon")(dispatch, getState);
+    clickMapPlant(plant.uuid)(dispatch, getState);
     expect(overwriteGroup).toHaveBeenCalledWith(mockGroup,
       expect.objectContaining({
         name: "Fake", point_ids: [1, 23]
@@ -164,7 +154,7 @@ describe("clickMapPlant", () => {
     state.resources = buildResourceIndex([]);
     const dispatch = mockDispatch();
     const getState: GetState = jest.fn(() => state);
-    clickMapPlant("missing plant uuid", "fakeIcon")(dispatch, getState);
+    clickMapPlant("missing plant uuid")(dispatch, getState);
     expect(overwriteGroup).not.toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledTimes(1);
   });
@@ -178,7 +168,7 @@ describe("clickMapPlant", () => {
     state.resources = buildResourceIndex([plant]);
     const dispatch = mockDispatch();
     const getState: GetState = jest.fn(() => state);
-    clickMapPlant(plant.uuid, "fakeIcon")(dispatch, getState);
+    clickMapPlant(plant.uuid)(dispatch, getState);
     expect(overwriteGroup).toHaveBeenCalledWith(mockGroup,
       expect.objectContaining({
         name: "Fake", point_ids: [1]
@@ -194,7 +184,7 @@ describe("clickMapPlant", () => {
     state.resources = buildResourceIndex([plant]);
     const dispatch = jest.fn();
     const getState: GetState = jest.fn(() => state);
-    clickMapPlant(plant.uuid, "fakeIcon")(dispatch, getState);
+    clickMapPlant(plant.uuid)(dispatch, getState);
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SELECT_POINT, payload: [plant.uuid]
     });
@@ -210,7 +200,7 @@ describe("clickMapPlant", () => {
     state.resources.consumers.farm_designer.selectedPoints = [plant.uuid];
     const dispatch = jest.fn();
     const getState: GetState = jest.fn(() => state);
-    clickMapPlant(plant.uuid, "fakeIcon")(dispatch, getState);
+    clickMapPlant(plant.uuid)(dispatch, getState);
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SELECT_POINT, payload: []
     });

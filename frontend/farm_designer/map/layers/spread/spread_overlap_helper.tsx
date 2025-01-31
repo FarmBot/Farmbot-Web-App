@@ -2,7 +2,6 @@ import React from "react";
 import { SpreadOverlapHelperProps } from "../../interfaces";
 import { round, transformXY, defaultSpreadCmDia } from "../../util";
 import { BotPosition } from "../../../../devices/interfaces";
-import { cachedCrop } from "../../../../open_farm/cached_crop";
 import { isUndefined } from "lodash";
 
 enum OverlapColor {
@@ -21,10 +20,6 @@ export enum SpreadOption {
 }
 
 type SpreadRadii = { inactive: number, active: number };
-
-interface SpreadCircleState {
-  inactiveSpread: number | undefined;
-}
 
 export function getDiscreteColor(
   overlap: number, spreadRadius: number): OverlapColor {
@@ -129,48 +124,37 @@ export function overlapText(
   }
 }
 
-export class SpreadOverlapHelper extends
-  React.Component<SpreadOverlapHelperProps, SpreadCircleState> {
-  state: SpreadCircleState = { inactiveSpread: undefined };
+export const SpreadOverlapHelper = (props: SpreadOverlapHelperProps) => {
+  const { dragging, plant, activeDragXY, activeDragSpread, inactiveSpread,
+    mapTransformProps } = props;
+  const { radius, x, y } = plant.body;
+  const { qx, qy } = transformXY(round(x), round(y), mapTransformProps);
+  const gardenCoord: BotPosition = { x: round(x), y: round(y), z: 0 };
+  // Convert spread diameter in cm to radius in mm.
+  const spreadRadii = {
+    active: (activeDragSpread || 0) / 2 * 10,
+    inactive: (inactiveSpread || defaultSpreadCmDia(radius)) / 2 * 10,
+  };
 
-  componentDidMount() {
-    cachedCrop(this.props.plant.body.openfarm_slug)
-      .then(({ spread }) => this.setState({ inactiveSpread: spread }));
-  }
+  const overlapValue = getOverlap(activeDragXY, gardenCoord, spreadRadii);
+  // Overlap is evaluated against the inactive plant since evaluating
+  // against the active plant would require keeping a list of all plants
+  // overlapping the active plant. Therefore, the spread overlap helper
+  // should be thought of as a tool checking the inactive plants, not
+  // the plant being edited. Dragging a plant with a small spread into
+  // the area of a plant with large spread will illustrate this point.
+  const color = getContinuousColor(
+    overlapValue, getRadius(SpreadOption.InactivePlant, spreadRadii));
 
-  render() {
-    const { dragging, plant, activeDragXY, activeDragSpread,
-      mapTransformProps } = this.props;
-    const { radius, x, y } = plant.body;
-    const { qx, qy } = transformXY(round(x), round(y), mapTransformProps);
-    const gardenCoord: BotPosition = { x: round(x), y: round(y), z: 0 };
-    const { inactiveSpread } = this.state;
-    // Convert spread diameter in cm to radius in mm.
-    const spreadRadii = {
-      active: (activeDragSpread || 0) / 2 * 10,
-      inactive: (inactiveSpread || defaultSpreadCmDia(radius)) / 2 * 10,
-    };
-
-    const overlapValue = getOverlap(activeDragXY, gardenCoord, spreadRadii);
-    // Overlap is evaluated against the inactive plant since evaluating
-    // against the active plant would require keeping a list of all plants
-    // overlapping the active plant. Therefore, the spread overlap helper
-    // should be thought of as a tool checking the inactive plants, not
-    // the plant being edited. Dragging a plant with a small spread into
-    // the area of a plant with large spread will illustrate this point.
-    const color = getContinuousColor(
-      overlapValue, getRadius(SpreadOption.InactivePlant, spreadRadii));
-
-    return <g id="overlap-indicator">
-      {!dragging && // Non-active plants
-        <circle
-          className="overlap-circle"
-          cx={qx}
-          cy={qy}
-          r={spreadRadii.inactive}
-          fill={color} />}
-      {this.props.showOverlapValues && !dragging &&
-        overlapText(qx, qy, overlapValue, spreadRadii)}
-    </g>;
-  }
-}
+  return <g id="overlap-indicator">
+    {!dragging && // Non-active plants
+      <circle
+        className="overlap-circle"
+        cx={qx}
+        cy={qy}
+        r={spreadRadii.inactive}
+        fill={color} />}
+    {props.showOverlapValues && !dragging &&
+      overlapText(qx, qy, overlapValue, spreadRadii)}
+  </g>;
+};

@@ -12,6 +12,11 @@ jest.mock("../../../util/beep", () => ({
   beep: jest.fn(),
 }));
 
+let mockOnline = false;
+jest.mock("../../../devices/must_be_online", () => ({
+  forceOnline: () => mockOnline,
+}));
+
 import { HardwareState } from "../../../devices/interfaces";
 import {
   incomingStatus,
@@ -200,29 +205,53 @@ describe("bothUp()", () => {
 
 describe("onOffline", () => {
   it("tells the app MQTT is down", () => {
+    mockOnline = false;
     jest.resetAllMocks();
     onOffline();
     expect(dispatchNetworkDown).toHaveBeenCalledWith("user.mqtt", ANY_NUMBER);
     expect(error).toHaveBeenCalledWith(
       Content.MQTT_DISCONNECTED, { idPrefix: "offline" });
   });
+
+  it("doesn't show toast", () => {
+    mockOnline = true;
+    jest.resetAllMocks();
+    onOffline();
+    expect(error).not.toHaveBeenCalled();
+  });
 });
 
 describe("onOnline", () => {
   it("tells the app MQTT is up", () => {
+    mockOnline = false;
     jest.resetAllMocks();
     onOnline();
     expect(dispatchNetworkUp).toHaveBeenCalledWith("user.mqtt", ANY_NUMBER);
     expect(removeToast).toHaveBeenCalledWith("offline");
+    expect(success).toHaveBeenCalled();
+  });
+
+  it("doesn't show toast", () => {
+    mockOnline = true;
+    jest.resetAllMocks();
+    onOnline();
+    expect(success).not.toHaveBeenCalled();
   });
 });
 
 describe("onReconnect()", () => {
   it("sends reconnect toast", () => {
+    mockOnline = false;
     onReconnect();
     expect(warning).toHaveBeenCalledWith(
       "Attempting to reconnect to the message broker",
       { title: "Offline", color: "yellow", idPrefix: "offline" });
+  });
+
+  it("doesn't show toast", () => {
+    mockOnline = true;
+    onReconnect();
+    expect(warning).not.toHaveBeenCalled();
   });
 });
 

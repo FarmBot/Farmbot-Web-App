@@ -1,0 +1,18 @@
+{
+    "name": "Malagueta Pepper",
+    "binomial_name": "Capsicum frutescens 'Malagueta'",
+    "common_names": [
+        "malaguetinha",
+        "piri piri"
+    ],
+    "description": "The Malagueta is a Capsicum frutescens cultivar widely grown in Brazil, Portugal, Mozambique, and the Caribbean. The plant produces small, tapered peppers 5cm in length that are green when immature, and yellow, orange, or red when ripe. Peppers grow upright instead of hanging like a jalapeno or bell pepper. Peppers are quite spicy with a Scoville rating of 60,000100,000 units. The peppers are often available in two different sizes: the smaller, younger ones are called malaguetinha or piri piri, and the larger, mature ones are called malagueta. Malaguetas require long, hot summers. They can be grown in containers and moved indoors before a frost in colder regions.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, transplant seedlings outside after hardening off",
+    "spread": 0,
+    "row_spacing": 45,
+    "height": 75,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "",
+    "icon": "/crops/icons/malagueta-pepper.avif"
+}

@@ -77,7 +77,6 @@ module FarmBot
         ENV["MQTT_HOST"],
         "api.github.com",
         "raw.githubusercontent.com",
-        "openfarm.cc",
         "api.rollbar.com",
         PARCELJS_URL,
         ENV["FORCE_SSL"] ? "wss:" : "ws:",

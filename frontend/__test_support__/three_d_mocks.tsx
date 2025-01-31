@@ -21,6 +21,10 @@ jest.mock("@react-three/fiber", () => ({
   Canvas: ({ children }: { children: ReactNode }) => <div>{children}</div>,
   addEffect: jest.fn(),
   useFrame: jest.fn(x => x({ clock: { getElapsedTime: jest.fn(() => 0) } })),
+  useThree: jest.fn(() => ({
+    pointer: { x: 0, y: 0 },
+    camera: new THREE.PerspectiveCamera(),
+  })),
 }));
 
 jest.mock("@react-spring/three", () => ({
@@ -42,6 +46,8 @@ jest.mock("@react-spring/three", () => ({
   animated: () => ({ children }: { children?: ReactNode }) =>
     <div className={"animated"}>{children}</div>,
 }));
+
+type Event = React.MouseEvent<HTMLDivElement, MouseEvent>;
 
 jest.mock("@react-three/drei", () => {
   const useGLTF = jest.fn((key: string) => ({
@@ -552,8 +558,26 @@ jest.mock("@react-three/drei", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Box: (props: any) =>
       <div className={"box" + props.name} {...props}>{props.children}</div>,
-    Extrude: ({ name }: { name: string }) =>
-      <div className={"extrude"}>{name}</div>,
+    Extrude: ({ name, onClick, onPointerMove }: {
+      name: string,
+      onClick: (event: Event) => void,
+      onPointerMove: (event: Event) => void,
+    }) =>
+      <div className={"extrude"}
+        onPointerMove={e =>
+          onPointerMove({
+            point: { x: 0, y: 0 },
+            ...e,
+          } as unknown as Event)}
+        onClick={e =>
+          onClick({
+            // @ts-expect-error: This spread always overwrites this property.
+            stopPropagation: jest.fn(),
+            point: { x: 0, y: 0 },
+            ...e,
+          } as unknown as Event)}>
+        {name}
+      </div>,
     Line: ({ name }: { name: string }) =>
       <div className={"line"}>{name}</div>,
     Trail: ({ name }: { name: string }) =>

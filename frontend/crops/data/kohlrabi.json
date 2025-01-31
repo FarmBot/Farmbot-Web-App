@@ -1,0 +1,21 @@
+{
+    "name": "Kohlrabi",
+    "binomial_name": "Brassica oleracea var. gongylodes",
+    "common_names": [
+        "Kohlrabi",
+        "German turnip",
+        "turnip cabbage"
+    ],
+    "description": "Kohlrabi is a low, stout cultivar of cabbage that has a swollen, almost spherical stem with leaves sprouting off the top. The stem can be light green, white, or purple. Both the stem and leaves are edible. The stem's taste and texture is similar to a broccoli stem or cabbage heart, but milder and sweeter. Younger stems can be as crisp and juicy as apples, but much less sweet. Older stems tend to be woody. Like other members of the Brassica family, kohlrabi prefers mild, cool weather.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed, thin to 10cm apart when seedlings are 2-5cm tall",
+    "spread": 30,
+    "row_spacing": 10,
+    "height": 20,
+    "growing_degree_days": 700,
+    "companions": [
+        "german-chamomile"
+    ],
+    "image": "/crops/images/kohlrabi.jpg",
+    "icon": "/crops/icons/kohlrabi.avif"
+}

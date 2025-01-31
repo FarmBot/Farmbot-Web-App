@@ -1,0 +1,17 @@
+{
+    "name": "Parsnip",
+    "binomial_name": "Pastinaca sativa",
+    "common_names": [
+        "Parsnip"
+    ],
+    "description": "Parsnips are a root vegetable closely related to carrots and celery. They look like thick white carrots with larger, slightly rough foliage. Parsnips taste similar to carrots, except that they are sweeter, especially when cooked. Like carrots, they can be broiled, pureed, roasted, steamed, and baked into cakes. They become even sweeter in flavor after winter frosts. Before cane sugar arrived in Europe, they were used as a sweetener. The stems and foliage of the parsnip can cause a skin rash - wear long sleeves, pants, and gloves when weeding and harvesting.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed outdoors, thin seedlings to 5cm apart",
+    "spread": 20,
+    "row_spacing": 5,
+    "height": 45,
+    "growing_degree_days": 120,
+    "companions": [],
+    "image": "/crops/images/parsnip.jpg",
+    "icon": "/crops/icons/parsnip.avif"
+}

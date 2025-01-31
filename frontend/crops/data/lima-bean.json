@@ -1,0 +1,20 @@
+{
+    "name": "Lima Bean",
+    "binomial_name": "Phaseolus lunatus",
+    "common_names": [
+        "Lima Bean",
+        "butter bean",
+        "baby lima",
+        "sieva bean"
+    ],
+    "description": "Lima beans have bush and pole varieties. Bush types produce more quickly and create smaller beans. Pole types can grow to 3m high and produce larger seeds. Like all legumes, lima beans can benefit from inoculants. Lima beans are shelled and cooked before eating.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed outdoors after soil is at least 24\u00b0C, thin to 30cm apart when seedlings are 5cm tall",
+    "spread": 25,
+    "row_spacing": 30,
+    "height": 40,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/lima-bean.jpg",
+    "icon": "/crops/icons/lima-bean.avif"
+}

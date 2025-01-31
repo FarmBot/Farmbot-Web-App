@@ -1,0 +1,19 @@
+{
+    "name": "Fennel",
+    "binomial_name": "Foeniculum vulgare",
+    "common_names": [
+        "Fennel",
+        "finocchio",
+        "finuke"
+    ],
+    "description": "Fennel is a flowering plant species with yellow flowers and feathery leaves. It is grown primarily for its bulbous white base and green leaf stalks, which have a mild, fresh licorice flavor. It's base and stalks are delicious roasted, grilled, or eaten fresh. \n\nDo not let fennel go to seed: it can become invasive.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed outdoors, or sow indoors and harden off before transplanting outside",
+    "spread": 40,
+    "row_spacing": 15,
+    "height": 135,
+    "growing_degree_days": 90,
+    "companions": [],
+    "image": "/crops/images/fennel.jpg",
+    "icon": "/crops/icons/fennel.avif"
+}

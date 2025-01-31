@@ -1,0 +1,20 @@
+{
+    "name": "Guajillo Pepper",
+    "binomial_name": "Capsicum annuum",
+    "common_names": [
+        "Guajillo pepper",
+        "Guajillo chili",
+        "Guajillo chile",
+        "chile guajillo"
+    ],
+    "description": "Guajillo chiles are a Capsicum annuum variety of chili pepper. The upright plants produce 7-15mm tapered peppers that ripen from green to orange, red, or brown when mature. The peppers are mildly spicy and sweet, with a Scoville rating of 2,500-5,000 units. Guajillo means \"little gourd\" in Spanish and the peppers get their name from the rattling sound the seeds make in dried pods. Guajillo chiles are in the \"Holy Trinity of Chiles\" with ancho and pasilla peppers - the three are used to make Mexican mole sauces. Guajillo chiles can also be added to salsa or dried and made into a paste for flavoring meat.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, transplant seedlings outside after hardening off",
+    "spread": 0,
+    "row_spacing": 75,
+    "height": 90,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "",
+    "icon": "/crops/icons/guajillo-pepper.avif"
+}

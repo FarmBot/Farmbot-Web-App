@@ -1,0 +1,19 @@
+{
+    "name": "Belgian Endive",
+    "binomial_name": "Cichorium intybus",
+    "common_names": [
+        "Endive",
+        "Belgium Endive",
+        "witloof chicory"
+    ],
+    "description": "Belgian Endive (not to be confused with Endive) is a chicory cultivar that is grown for its small head of tender, cream-colored, slightly bitter leaves. The plant is first grown outside, then the tops are cut and the thick roots are transplanted indoors where they are grown without any sunlight in a process known as \"forcing.\" The lack of sunlight prevents the new leaf growth from turning green or opening up. The paler the leaves, the less bitter the taste. Belgian Endive can be roasted, tossed in salads, or baked into various dishes. The harder inner part of the stem at the bottom of the head can be removed before cooking to reduce bitterness.",
+    "sun_requirements": "Partial Sun",
+    "sowing_method": "Direct seed, thin to 15cm apart",
+    "spread": 0,
+    "row_spacing": 15,
+    "height": 0,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/belgian-endive.jpg",
+    "icon": "/crops/icons/belgian-endive.avif"
+}

@@ -1,0 +1,22 @@
+{
+    "name": "Butternut Squash",
+    "binomial_name": "Cucurbita moschata",
+    "common_names": [
+        "Butternut Squash",
+        "Butternut pumpkin",
+        "Gramma"
+    ],
+    "description": "Butternut squash is a winter squash cultivar that produces long squash with smooth, tan-yellow skin and a rounded compartment of seeds at the bottom. Flesh is deep orange and firm with a sweet, nutty taste. Butternut squash becomes deeper orange and sweeter and richer as it ripens. Like other squash, it grows on sprawling vines. If starting seeds indoors, use peat pots and directly transplant them into the soil to reduce root disturbance. Harvest squash before any hard frosts and cure. Winter squash can be stored for up to 3 months in a cool, dry, well-ventilated place.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed. If planting indoors, harden off before transplanting seedlings outside.",
+    "spread": 150,
+    "row_spacing": 90,
+    "height": 30,
+    "growing_degree_days": 0,
+    "companions": [
+        "borage",
+        "carrot"
+    ],
+    "image": "/crops/images/butternut-squash.jpg",
+    "icon": "/crops/icons/butternut-squash.avif"
+}

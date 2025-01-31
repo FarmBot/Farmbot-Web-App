@@ -1,0 +1,20 @@
+{
+    "name": "Sunray Tomato",
+    "binomial_name": "Solanum lycopersicum",
+    "common_names": [
+        "Sunray tomato",
+        "sungold tomato",
+        "sungold",
+        "sunsweet tomato"
+    ],
+    "description": "Sunrays or Sungolds are a cherry tomato variety that produce small, round golden to orange tomatoes. They have deeply sweet, delicious, fruity flavor. Harvest when they are at their deepest hue for the most intense flavor. Cherry tomatoes do not need to be pruned. Trellis and staking is optional.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, transplant seedlings outside after hardening off",
+    "spread": 30,
+    "row_spacing": 90,
+    "height": 300,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/sunray-tomato.jpg",
+    "icon": "/crops/icons/sunray-tomato.avif"
+}

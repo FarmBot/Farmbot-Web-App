@@ -1,0 +1,17 @@
+{
+    "name": "White Carrot",
+    "binomial_name": "Daucus carota var. sativus",
+    "common_names": [
+        "white carrot"
+    ],
+    "description": "White carrots are a carrot cultivar that have pale yellow to white skin. They sometimes have a lower yield than orange carrots. They have a mild flavor that is less earthy than other carrot varieties. They are grown and cooked the same way as standard orange carrots.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed outdoors, thin to 3cm apart when seedlings are 7cm high",
+    "spread": 8,
+    "row_spacing": 3,
+    "height": 15,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/white-carrot.jpg",
+    "icon": "/crops/icons/white-carrot.avif"
+}

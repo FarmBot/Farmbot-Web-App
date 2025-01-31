@@ -1,0 +1,22 @@
+{
+    "name": "Green Onion",
+    "binomial_name": "Allium fistulosum",
+    "common_names": [
+        "Green Onion",
+        "scallion",
+        "bunching onion",
+        "spring onion",
+        "salad onion",
+        "welsh onion"
+    ],
+    "description": "Green onions have a small bulb and tall, hollow, tubular leaves. The leaves and bulbs can be eaten raw or cooked in salads, stews, soups, and other dishes. They have a milder taste than most onions. Green onions are members of the Allium family and are related to garlic, shallots, leeks, and chives.",
+    "sun_requirements": "Partial Sun",
+    "sowing_method": "Direct seed, thin to 8cm apart when seedlings are 5cm tall.",
+    "spread": 10,
+    "row_spacing": 8,
+    "height": 25,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/green-onion.jpg",
+    "icon": "/crops/icons/green-onion.avif"
+}

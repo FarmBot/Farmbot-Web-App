@@ -1,0 +1,19 @@
+{
+    "name": "Plantain",
+    "binomial_name": "Musa paradisiaca",
+    "common_names": [
+        "plantain",
+        "cooking banana",
+        "green banana"
+    ],
+    "description": "Plantains, or cooking bananas, are banana cultivars in the genus Musa whose fruits are generally used in cooking. Plantains are firmer, starchier, and less sweet than bananas. They can be eaten while ripe or unripe. Plantains grow from a long underground rhizome. Their giant leaves (up to 1m long and 60cm across) wrap around a central trunk. The plantain tree is very frost-sensitive. It needs 10-15 months without freezing temperatures to create flowers, and another 4-8 months to grow plantains.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Transplant young tree",
+    "spread": 0,
+    "row_spacing": 0,
+    "height": 0,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/plantain.jpg",
+    "icon": "/crops/icons/plantain.avif"
+}

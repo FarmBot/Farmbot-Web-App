@@ -1,0 +1,25 @@
+{
+    "name": "Asian Pear",
+    "binomial_name": "Pyrus pyrifolia",
+    "common_names": [
+        "Asian pear",
+        "Chinese pear",
+        "Korean pear",
+        "Japanese pear",
+        "Taiwanese pear",
+        "sand pear",
+        "nashi pear"
+    ],
+    "description": "The Asian Pear tree is species of deciduous tree native to East Asia. It is also grown in India, Australia, and the United States. They can be divided into two main cultivar groups: 1) the Akanashi, or 'Russet pears,' group, which has yellowish-brown rinds, and 2) the Aonashi, or 'Green pears' group, which has yellow-green rinds. \n\nThe fruit ranges from 3-10cm in diameter and has a high water content and a crisp, grainy texture. It is often eaten raw. Unlike European pears, which can be harvested before fully ripened, Asian Pears must tree-ripen for optimum flavor and sweetness. \n\nThe trees produce white hermaphrodite flowers in the spring. Although partially self-pollinating, Asian Pears benefit from having a cultivar planted nearby. Trees produce fruit by their second or third year. Fruit should be thinned to 1 fruit per cluster or every 15cm.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Transplant bare-root plant",
+    "spread": 600,
+    "row_spacing": 600,
+    "height": 750,
+    "growing_degree_days": 0,
+    "companions": [
+        "borage"
+    ],
+    "image": "/crops/images/asian-pear.jpg",
+    "icon": "/crops/icons/asian-pear.avif"
+}

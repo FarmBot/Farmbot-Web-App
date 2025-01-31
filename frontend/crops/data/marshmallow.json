@@ -1,0 +1,21 @@
+{
+    "name": "Marshmallow",
+    "binomial_name": "Althaea officinalis",
+    "common_names": [
+        "marshmallow plant",
+        "marshmallow",
+        "marsh mallow",
+        "common marshmallow",
+        "marsh-mallow"
+    ],
+    "description": "Marshmallow is a perennial plant indigenous to Europe, Western Asia, and North Africa. It is used in herbal medicine and as an ornamental. The original marshmallow candy was made from it's roots. It likes rich, moist soil and grows well in marshes and grasses near lakes and rivers. It's tall stems that can grow to 1.2-2m, with a few lateral branches and soft, velvety leaves. Marshmallow will produce large, trumpet-shaped white to pink flowers in it's second year. The flowers resemble Hollyhocks, the plant's showier cousin. The flat, round fruit are known as \"cheeses.\" The flowers and young leaves can be eaten in salads, brewed as a tea for bronchitis and cough, or made into soothing poultices for skin irritations and bruising. The roots contain 30% mucilage that can soothe the mucous membranes and digestive tract. It may take a few years for the roots to grow large enough to be harvested.",
+    "sun_requirements": "Partial Sun",
+    "sowing_method": "Direct seed outdoors in early fall. In early spring, direct seed indoors, stratifying seeds.",
+    "spread": 0,
+    "row_spacing": 30,
+    "height": 120,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/marshmallow.jpg",
+    "icon": "/crops/icons/marshmallow.avif"
+}

@@ -1,0 +1,19 @@
+{
+    "name": "Golden Beet",
+    "binomial_name": "Beta vulgaris",
+    "common_names": [
+        "Golden Beet",
+        "Yellow Beet",
+        "Beet"
+    ],
+    "description": "Golden beets have gold rather than red taproots. The veins of their leaves are yellow rather than red. They have a sweeter, milder flavor than red beets. Like red beets, their leaves can be eaten and the roots are delicious shaved raw into salads or roasted.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct sow, thin to 8cm apart when seedlings are 5cm tall",
+    "spread": 30,
+    "row_spacing": 8,
+    "height": 20,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/golden-beet.jpg",
+    "icon": "/crops/icons/golden-beet.avif"
+}

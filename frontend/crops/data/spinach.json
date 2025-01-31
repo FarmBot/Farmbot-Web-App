@@ -1,0 +1,17 @@
+{
+    "name": "Spinach",
+    "binomial_name": "Spinacia oleracea",
+    "common_names": [
+        "Spinach"
+    ],
+    "description": "Spinach is an annual plant whose deep green leaves are eaten as a vegetable. It grows best in cooler weather. It can be eaten raw or cooked.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed outdoors, thin to 15cm when seedlings are 3cm high",
+    "spread": 20,
+    "row_spacing": 30,
+    "height": 15,
+    "growing_degree_days": 40,
+    "companions": [],
+    "image": "/crops/images/spinach.jpg",
+    "icon": "/crops/icons/spinach.avif"
+}

@@ -1,0 +1,20 @@
+{
+    "name": "Mint",
+    "binomial_name": "Mentha spicata / Mentha viridis",
+    "common_names": [
+        "Mint",
+        "spearmint"
+    ],
+    "description": "Mint is a perennial herb with a distinctive taste. It's stems are square-shaped and it has pink, purple, or white flowers. Peppermint, ginger mint, and large apple mint are hybrids of mint. Mint is often grown in pots to prevent it from overtaking the garden with its invasive, spreading rhizome root structure. It's leaves are most aromatic before the plant flowers and can be used fresh, dried, or frozen. Mint's strongly scented leaves confuse the pests of carrots, tomatoes, alliums, and brassicas, and deter flea beetles.",
+    "sun_requirements": "Partial Sun",
+    "sowing_method": "Direct seed indoors or outside",
+    "spread": 75,
+    "row_spacing": 35,
+    "height": 60,
+    "growing_degree_days": 80,
+    "companions": [
+        "green-zebra-tomato"
+    ],
+    "image": "/crops/images/mint.jpg",
+    "icon": "/crops/icons/mint.avif"
+}

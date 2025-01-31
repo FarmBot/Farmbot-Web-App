@@ -98,7 +98,7 @@ export const RawEditWeed = (props: EditWeedProps) => {
     </DesignerPanelHeader>
     <DesignerPanelContent panelName={panelName}>
       {weed
-        ? <div className={"weed-panel-content-wrapper"}>
+        ? <div className={"weed-panel-content-wrapper grid"}>
           <EditPointProperties point={weed}
             botOnline={props.botOnline}
             dispatch={props.dispatch}

@@ -1,0 +1,26 @@
+{
+    "name": "Cucumber",
+    "binomial_name": "cucumis sativus",
+    "common_names": [
+        "cucumber",
+        " gherkin",
+        " concombre",
+        " huanggua",
+        " kiukaba",
+        " kukama (tuvalu)",
+        " khira",
+        " kiukamupa",
+        " kukamba",
+        " cetriolo"
+    ],
+    "description": "",
+    "sun_requirements": "",
+    "sowing_method": "",
+    "spread": 0,
+    "row_spacing": 0,
+    "height": 0,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/cucumber.jpg",
+    "icon": "/crops/icons/cucumber.avif"
+}

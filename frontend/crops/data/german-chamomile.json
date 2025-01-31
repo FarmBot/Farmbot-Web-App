@@ -1,0 +1,24 @@
+{
+    "name": "German Chamomile",
+    "binomial_name": "Matricaria chamomilla, Matricaria recutita",
+    "common_names": [
+        "German Chamomile",
+        "Common Chamomile",
+        "camomile",
+        "Italian camomilla",
+        "Hungarian chamomile",
+        "kamilla",
+        "wild chamomile",
+        "scented mayweed"
+    ],
+    "description": "German, or Common Chamomile is an annual plant with daisy-like flowers. It is in the Daisy family (Asteraceae) along with Roman Chamomile (Chamaemelum nobile) and the two plants have similar apple-scented flowers, but they are in separate genera. German Chamomile is taller than Roman Chamomile, growing to heights of 60cm, and produces larger flowers that are 3-5cm in diameter. It has hairless stems and is more compact than it's Roman counterpart. It's essential oil is dark blue, whereas Roman Chamomile's essential oil is pale yellow to clear. German Chamomile is the most popular source of herbal chamomile and is used to calm and nourish the nervous system and support good digestion. Chamomile attracts beneficial insects like hoverflies (which eat aphids and mites) and ladybugs. Chamomile tea can be sprayed on seedlings to prevent damping-off, a fungal infection that can kill young plants.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed, do not cover. Seeds need light to germinate.",
+    "spread": 30,
+    "row_spacing": 30,
+    "height": 60,
+    "growing_degree_days": 75,
+    "companions": [],
+    "image": "/crops/images/german-chamomile.jpg",
+    "icon": "/crops/icons/german-chamomile.avif"
+}

@@ -1,0 +1,21 @@
+{
+    "name": "Porcini Mushroom",
+    "binomial_name": "Boletus edulis",
+    "common_names": [
+        "Porcini",
+        "penny bun",
+        "cep",
+        "porcino",
+        "king bolete"
+    ],
+    "description": "Porcini mushrooms have large brown caps. They are in the genus Boletus, and like other boletes, have tubes extending downward from the underside of the cap instead of gills. Their stout stems are white or yellowish in color. Porcini are often eaten in soups, pasta, or risotto. They can be grown on cardboard indoors - or outside if temperatures are between 15-17C.",
+    "sun_requirements": "Partial Sun",
+    "sowing_method": "Inoculate substrate with spores",
+    "spread": 0,
+    "row_spacing": 0,
+    "height": 0,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/porcini-mushroom.jpg",
+    "icon": "/crops/icons/porcini-mushroom.avif"
+}

@@ -1,0 +1,26 @@
+{
+    "name": "Garlic",
+    "binomial_name": "allium sativum",
+    "common_names": [
+        "garlic",
+        " cultivated garlic",
+        " ail",
+        " a\u00efl",
+        " aglio",
+        " ajo",
+        " kaliki",
+        " knoblauch",
+        " vitl\u00f6k",
+        " hvidl\u00f8g"
+    ],
+    "description": "",
+    "sun_requirements": "",
+    "sowing_method": "",
+    "spread": 0,
+    "row_spacing": 0,
+    "height": 0,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/garlic.jpg",
+    "icon": "/crops/icons/garlic.avif"
+}

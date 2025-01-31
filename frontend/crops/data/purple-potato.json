@@ -1,0 +1,17 @@
+{
+    "name": "Purple Potato",
+    "binomial_name": "Solanum tuberosum",
+    "common_names": [
+        "Purple Potato"
+    ],
+    "description": "Purple potatoes are a type of potato with purple skin and white to purple flesh. Common varieties include Magic Molly, Purple Majesty, Adirondack Blue, Peter Wilcox (yellow flesh), and Harvest Moon (purple and white swirled skin with white flesh). Flavor and texture vary based on variety.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed cut tubers with at least one \"eye\" per piece.",
+    "spread": 35,
+    "row_spacing": 30,
+    "height": 50,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/purple-potato.jpg",
+    "icon": "/crops/icons/purple-potato.avif"
+}

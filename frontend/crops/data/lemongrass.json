@@ -1,0 +1,25 @@
+{
+    "name": "Lemongrass",
+    "binomial_name": "Cymbopogon citratus",
+    "common_names": [
+        "Lemongrass",
+        "barbed wire grass",
+        "silky heads",
+        "citronella grass",
+        "cha de Dartigalongue",
+        "fever grass",
+        "tanglad",
+        "hierba Luisa",
+        "gavati chahapati"
+    ],
+    "description": "Lemongrass is a grass-like plant with long thin leaves and stalks with bulbous bases. It is used as a culinary herb in Asian cuisines and as a medicinal herb in India. It has a subtle citrus flavor and can be used fresh or dried and powdered. It is often used in teas, soups, and curries, and to season poultry, fish, beef, and seafood. It's oil has anti-fungal properties and is used as a pesticide and preservative.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed or transplant seedlings",
+    "spread": 140,
+    "row_spacing": 30,
+    "height": 100,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/lemongrass.jpg",
+    "icon": "/crops/icons/lemongrass.avif"
+}

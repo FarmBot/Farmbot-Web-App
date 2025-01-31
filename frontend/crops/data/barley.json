@@ -1,0 +1,15 @@
+{
+    "name": "Barley",
+    "binomial_name": "Hordeum vulgare",
+    "common_names": [],
+    "description": "Barley is a member of the grass family that resembles wheat, but with more compact seeds. It is a major cereal grain that can be pearled, malted, or used as animal feed. Barley is often grown as a cover crop, and can be sown in spring or winter, depending on climate and desired use.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed using 15cm spacing, or broadcast and rake in",
+    "spread": 0,
+    "row_spacing": 15,
+    "height": 0,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/barley.jpg",
+    "icon": "/crops/icons/barley.avif"
+}

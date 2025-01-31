@@ -1,0 +1,25 @@
+{
+    "name": "Cascabel Chili",
+    "binomial_name": "Capsicum annuum 'Cascabel'",
+    "common_names": [
+        "cascabel",
+        "little bell",
+        "rattle chili",
+        "ball chili",
+        "bola chili",
+        "chile bola",
+        "jingebell"
+    ],
+    "description": "Cascabel, or Rattle Chiles, are a Mirsaol Capiscum annum cultivar that produces small, nearly round peppers 2-3cm in diameter. \"Mirasol\" means \"looking at the sun\" in Spanish - the peppers borne by a Mirasol cultivar are erect and point to the sun. The peppers ripen from green to red and have a thin skin that makes them well-suited for drying. When dry, the loose seeds rattle inside. They are known as Bola Chili when fresh, and Cascabel, Guajones or Coras when dried. The peppers are mildly spicy with a Scoville rating of 1,500-2,500 SHU and a nutty, slightly smoky flavor.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, transplant seedlings outside after hardening off",
+    "spread": 0,
+    "row_spacing": 0,
+    "height": 75,
+    "growing_degree_days": 0,
+    "companions": [
+        "spinach"
+    ],
+    "image": "/crops/images/cascabel-chili.jpg",
+    "icon": "/crops/icons/cascabel-chili.avif"
+}

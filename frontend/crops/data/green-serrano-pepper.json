@@ -1,0 +1,17 @@
+{
+    "name": "Green Serrano Pepper",
+    "binomial_name": "Capsicum annuum",
+    "common_names": [
+        "serrano pepper"
+    ],
+    "description": "Serrano peppers are a type of chili pepper native to Mexico. They have a bright, biting flavor and are spicier than jalapenos with a Scoville rating of 10,000 to 25,000. They are often eaten raw, or used in pico de gallo, salsa, and soups. A plant can produce up to 50 peppers 3-8cm long. Like many other peppers, Serranos can be harvested when they are green and unripe, or red and ripe.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, transplant seedlings outside after hardening off",
+    "spread": 75,
+    "row_spacing": 45,
+    "height": 75,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/green-serrano-pepper.jpg",
+    "icon": "/crops/icons/green-serrano-pepper.avif"
+}

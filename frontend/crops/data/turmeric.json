@@ -1,0 +1,17 @@
+{
+    "name": "Turmeric",
+    "binomial_name": "curcuma longa",
+    "common_names": [
+        "turmeric"
+    ],
+    "description": "",
+    "sun_requirements": "",
+    "sowing_method": "",
+    "spread": 0,
+    "row_spacing": 0,
+    "height": 0,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/turmeric.jpg",
+    "icon": "/crops/icons/turmeric.avif"
+}

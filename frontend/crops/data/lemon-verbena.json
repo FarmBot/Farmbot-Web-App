@@ -1,0 +1,19 @@
+{
+    "name": "Lemon Verbena",
+    "binomial_name": "Aloysia citriodora",
+    "common_names": [
+        "lemon verbena",
+        "vervain",
+        "verbena"
+    ],
+    "description": "Lemon verbena is a deciduous, perennial plant or shrub grown for it's culinary, medicinal, and cosmetic uses. The plant has glossy, pointed leaves that have a strong lemon fragrance when bruised. In the late spring or early summer, Lemon Verbena produces tiny purple or white flowers. It is cold-sensitive and will lose leaves below 4.4\u00b0 C and go dormant. Wood is hardy to -10\u00b0 C. The plant can be grown in containers and brought indoors in regions with colder winters. The leaves can be used fresh or dried to add a lemon flavor to fish, poultry, salad dressings, puddings, yogurt, and beverages. The flavor is less intense when the leaves are dried. Leaves are steeped into teas and used in perfumes. Lemon Verbena has also been used to treat Candida yeast infections.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors (transplant seedlings outside after hardening off) or use plugs or cuttings",
+    "spread": 120,
+    "row_spacing": 45,
+    "height": 120,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/lemon-verbena.jpg",
+    "icon": "/crops/icons/lemon-verbena.avif"
+}

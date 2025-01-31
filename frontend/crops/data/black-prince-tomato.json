@@ -1,0 +1,18 @@
+{
+    "name": "Black Prince Tomato",
+    "binomial_name": "Solanum lycopersicum",
+    "common_names": [
+        "black prince",
+        "Czerno Prinz"
+    ],
+    "description": "Black Prince tomatoes are an heirloom tomato cultivar from Siberia. They are well suited for cooler climates with shorter growing seasons. They produce garnet to mahogany brown fruits that can be round, plum, or heart-shaped and about 7cm in diameter. The fruit has a deep, sweet, rich flavor. Stake/trellis/cage and prune plants for best results. Fruit can be eaten raw or cooked into sauce.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, transplant outside after last frost",
+    "spread": 0,
+    "row_spacing": 90,
+    "height": 150,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/black-prince-tomato.jpg",
+    "icon": "/crops/icons/black-prince-tomato.avif"
+}

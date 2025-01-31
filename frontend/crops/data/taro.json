@@ -1,0 +1,19 @@
+{
+    "name": "Taro",
+    "binomial_name": "Colocasia esculenta",
+    "common_names": [
+        "Taro",
+        "elephant ears",
+        "dasheen"
+    ],
+    "description": "Taro is a perennial, tropical plant grown for its edible starchy corm (underground plant stem) and leaves. It's big green leaves and corm must be cooked before consumption, as they are toxic when raw. When grown as an ornamental, taro is known as \"elephant ears.\" Taro is believed to have been one of the earliest cultivated plants and is a food staple in African, South Indian and Oceanic cultures. Taro comes in many varieties, from small to large and from white-fleshed to purple-flecked. It is commonly prepared like a potato, since it is starchy, but it has a nuttier, richer, and more complex taste.",
+    "sun_requirements": "Partial Sun",
+    "sowing_method": "Direct seed tubers outdoors",
+    "spread": 0,
+    "row_spacing": 45,
+    "height": 120,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/taro.jpg",
+    "icon": "/crops/icons/taro.avif"
+}

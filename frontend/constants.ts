@@ -1226,12 +1226,6 @@ export namespace Content {
   export const ENTER_CROP_SEARCH_TERM =
     trim(`Search for a crop to add to your garden.`);
 
-  export const CROP_NOT_FOUND_INTRO =
-    trim(`Would you like to`);
-
-  export const CROP_NOT_FOUND_LINK =
-    trim(`add this crop on OpenFarm?`);
-
   export const NO_TOOLS =
     trim(`Press + to add a new tool or seed container`);
 
@@ -2478,6 +2472,7 @@ export enum Actions {
   SET_CROP_HEIGHT_CURVE_ID = "SET_CROP_HEIGHT_CURVE_ID",
   SET_CROP_STAGE = "SET_CROP_STAGE",
   SET_CROP_PLANTED_AT = "SET_CROP_PLANTED_AT",
+  SET_CROP_RADIUS = "SET_CROP_RADIUS",
 
   // 3D
   SET_DISTANCE_INDICATOR = "SET_DISTANCE_INDICATOR",

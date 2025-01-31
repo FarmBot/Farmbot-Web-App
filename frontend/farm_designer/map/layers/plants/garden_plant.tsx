@@ -1,35 +1,21 @@
 import React from "react";
 import { GardenPlantProps, GardenPlantState } from "../../interfaces";
-import { svgToUrl } from "../../../../open_farm/icons";
 import { transformXY, scaleIcon } from "../../util";
 import { DragHelpers } from "../../active_plant/drag_helpers";
 import { Color } from "../../../../ui";
 import { Actions } from "../../../../constants";
-import { cachedCrop } from "../../../../open_farm/cached_crop";
 import { clickMapPlant } from "../../actions";
 import { Circle } from "./circle";
 import { SpecialStatus } from "farmbot";
-import { FilePath } from "../../../../internal_urls";
+import { findIcon } from "../../../../crops/find";
 
 export class GardenPlant extends
   React.Component<GardenPlantProps, Partial<GardenPlantState>> {
 
-  state: GardenPlantState = { icon: FilePath.DEFAULT_ICON, hover: false };
-
-  fetchIcon = () => {
-    cachedCrop(this.props.plant.body.openfarm_slug)
-      .then(({ svg_icon }) => {
-        this.setState({ icon: svgToUrl(svg_icon) });
-      });
-  };
-
-  componentDidMount = () => this.fetchIcon();
-  componentDidUpdate = (prevProps: GardenPlantProps) =>
-    this.props.plant.body.openfarm_slug != prevProps.plant.body.openfarm_slug &&
-    this.fetchIcon();
+  state: GardenPlantState = { hover: false };
 
   click = () => {
-    this.props.dispatch(clickMapPlant(this.props.uuid, this.state.icon));
+    this.props.dispatch(clickMapPlant(this.props.uuid));
   };
 
   iconHover = (action: "start" | "end") => {
@@ -56,10 +42,11 @@ export class GardenPlant extends
       activeDragXY, zoomLvl, animate, editing, hovered, hoveredSpread,
     } = this.props;
     const { id, x, y } = plant.body;
-    const { icon, hover } = this.state;
+    const { hover } = this.state;
     const radius = (current || selected) && hoveredSpread
       ? hoveredSpread / 2
       : plant.body.radius;
+    const icon = findIcon(plant.body.openfarm_slug);
     const plantIconSize = scaleIcon(radius);
     const iconRadius = hover ? plantIconSize * 1.1 : plantIconSize;
     const { qx, qy } = transformXY(x, y, mapTransformProps);

@@ -109,7 +109,7 @@ describe("<PlantPanel />", () => {
 
   it("moves to plant location", () => {
     const wrapper = mount(<PlantPanel {...fakeProps()} />);
-    clickButton(wrapper, 0, "go (x, y)");
+    clickButton(wrapper, 1, "go (x, y)");
     expect(move).toHaveBeenCalledWith({ x: 12, y: 34, z: 0 });
   });
 

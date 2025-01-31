@@ -1,0 +1,15 @@
+{
+    "name": "Red Onion",
+    "binomial_name": "Allium cepa",
+    "common_names": [],
+    "description": "Red onions are onion cultivars that have purplish red skin and white flesh tinged with red. They are members of the Allium family along with garlic and leeks. They have a sweet to mild flavor and can be eaten raw (in salads and guacamole), grilled, saut\u00e9ed, or baked. Make sure to choose a variety suited to your day length.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors or plant sets (small bulbs) outside.",
+    "spread": 13,
+    "row_spacing": 10,
+    "height": 60,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/red-onion.jpg",
+    "icon": "/crops/icons/red-onion.avif"
+}

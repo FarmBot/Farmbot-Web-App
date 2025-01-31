@@ -1,0 +1,17 @@
+{
+    "name": "Cherry Stuffer Pepper",
+    "binomial_name": "Capsicum annuum",
+    "common_names": [
+        "Cherry Stuffer"
+    ],
+    "description": "Cherry Stuffer peppers are small sweet, round peppers that can be eaten fresh, stuffed, or grilled. They resemble the spicier Cherry Bomb pepper.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, transplant seedlings outside after hardening off",
+    "spread": 70,
+    "row_spacing": 60,
+    "height": 70,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "",
+    "icon": "/crops/icons/cherry-stuffer-pepper.avif"
+}

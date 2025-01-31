@@ -116,11 +116,6 @@ export interface ProfileUtmProps {
   gantryHeight: number;
 }
 
-export interface PlantPointState {
-  icon: string;
-  spreadDiaCm: number;
-}
-
 export interface ProfilePointProps<T = TaggedPoint> {
   point: T;
   tools: TaggedTool[];

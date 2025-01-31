@@ -1,4 +1,4 @@
-import { Plant } from "../plant";
+import { Plant, verifiedCropSlug } from "../plant";
 
 describe("Plant()", () => {
   it("returns defaults", () => {
@@ -19,5 +19,13 @@ describe("Plant()", () => {
       y: 0,
       z: 0,
     });
+  });
+});
+
+describe("verifiedCropSlug()", () => {
+  it("returns verified crop slug", () => {
+    expect(verifiedCropSlug(undefined)).toEqual("not-set");
+    expect(verifiedCropSlug("mint")).toEqual("mint");
+    expect(verifiedCropSlug("random")).not.toEqual("random");
   });
 });

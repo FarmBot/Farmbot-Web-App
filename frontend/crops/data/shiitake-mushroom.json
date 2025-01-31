@@ -1,0 +1,15 @@
+{
+    "name": "Shiitake Mushroom",
+    "binomial_name": "Lentinula edodes",
+    "common_names": [],
+    "description": "Shiitake mushrooms have white stems with tightly-packed gills that are not directly attached to the stem. Their caps are brown to black. Shiitake have a long history of medicinal use, are high in Vitamins B and D, and are believed to have anti-tumor properties. Growing the mushrooms on logs outdoors (rather than the sawdust used for commercially grown mushrooms) increases their nutrient content. Spawn comes in three different forms, plugs are the easiest to use for beginners.",
+    "sun_requirements": "Partial Sun",
+    "sowing_method": "Inoculate logs with spawn",
+    "spread": 0,
+    "row_spacing": 0,
+    "height": 0,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/shiitake-mushroom.jpg",
+    "icon": "/crops/icons/shiitake-mushroom.avif"
+}

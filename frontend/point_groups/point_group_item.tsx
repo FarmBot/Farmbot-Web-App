@@ -1,11 +1,8 @@
 import React from "react";
-import { svgToUrl } from "../open_farm/icons";
-import { maybeGetCachedPlantIcon } from "../open_farm/cached_crop";
 import { setHoveredPlant } from "../farm_designer/map/actions";
 import {
   TaggedPointGroup, uuid, TaggedPoint, TaggedToolSlotPointer, TaggedTool,
   TaggedPlantTemplate,
-  TaggedPlantPointer,
 } from "farmbot";
 import { error } from "../toast/toast";
 import { t } from "../i18next_wrapper";
@@ -15,6 +12,12 @@ import { ToolSlotSVG } from "../farm_designer/map/layers/tool_slots/tool_graphic
 import { ToolTransformProps } from "../tools/interfaces";
 import { FilePath, Path } from "../internal_urls";
 import { NavigationContext } from "../routes_helpers";
+import { findIcon } from "../crops/find";
+
+export const svgToUrl = (xml: string): string => {
+  const DATA_URI = "data:image/svg+xml;utf8,";
+  return DATA_URI + encodeURIComponent(xml);
+};
 
 export interface PointGroupItemProps {
   point: TaggedPoint | TaggedPlantTemplate;
@@ -25,8 +28,6 @@ export interface PointGroupItemProps {
   toolTransformProps?: ToolTransformProps;
   navigate?: boolean;
 }
-
-interface PointGroupItemState { icon: string; }
 
 const removePoint = (group: TaggedPointGroup, pointId: number) =>
   (dispatch: Function) => {
@@ -59,14 +60,12 @@ export const genericWeedIcon = (color: string | undefined) =>
 
 // The individual plants in the point group detail page.
 export class PointGroupItem
-  extends React.Component<PointGroupItemProps, PointGroupItemState> {
-
-  state: PointGroupItemState = { icon: "" };
+  extends React.Component<PointGroupItemProps, {}> {
 
   key = uuid();
 
   enter = () => this.props.dispatch?.(
-    setHoveredPlant(this.props.point.uuid, this.state.icon));
+    setHoveredPlant(this.props.point.uuid));
 
   leave = () => this.props.dispatch?.(setHoveredPlant(undefined));
 
@@ -88,28 +87,18 @@ export class PointGroupItem
     this.leave();
   };
 
-  setIconState = (icon: string) => this.setState({ icon });
-
   get criteriaIcon() {
     return this.props.group && !this.props.group.body.point_ids
       .includes(this.props.point.body.id || 0);
   }
 
-  maybeGetCachedIcon = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    const img = e.currentTarget;
-    if (this.props.point.kind == "PlantTemplate"
-      || this.props.point.body.pointer_type == "Plant") {
-      const slug = (this.props.point as TaggedPlantPointer | TaggedPlantTemplate)
-        .body.openfarm_slug;
-      maybeGetCachedPlantIcon(slug, img, this.setIconState);
-    }
-  };
-
   get initIcon() {
-    if (this.props.point.kind == "PlantTemplate") { return FilePath.DEFAULT_ICON; }
+    if (this.props.point.kind == "PlantTemplate") {
+      return findIcon(this.props.point.body.openfarm_slug);
+    }
     switch (this.props.point.body.pointer_type) {
       case "Plant":
-        return FilePath.DEFAULT_ICON;
+        return findIcon(this.props.point.body.openfarm_slug);
       case "GenericPointer":
         const { color } = this.props.point.body.meta;
         return svgToUrl(genericPointIcon(color));
@@ -156,7 +145,6 @@ export class PointGroupItem
       <img
         style={{ background: this.props.hovered ? "lightgray" : "none" }}
         src={this.initIcon}
-        onLoad={this.maybeGetCachedIcon}
         width={size}
         height={size} />
     </span>;

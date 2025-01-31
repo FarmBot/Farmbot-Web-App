@@ -1,0 +1,18 @@
+{
+    "name": "Melon",
+    "binomial_name": "Cucumis melo",
+    "common_names": [
+        "melon",
+        "muskmelon"
+    ],
+    "description": "Melons are a group of species in the Cucurbitaceae family. They produce sweet fruits that grow on sprawling vines. Types of melons include: watermelons, cantaloupe, honeydew, casaba, and crenshaw. More growing information is available in individual species entries.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed. If planting indoors, use peat pots and harden off before transplanting seedlings outside.",
+    "spread": 130,
+    "row_spacing": 120,
+    "height": 40,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/melon.jpg",
+    "icon": "/crops/icons/melon.avif"
+}

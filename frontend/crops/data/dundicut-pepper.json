@@ -1,0 +1,20 @@
+{
+    "name": "Dundicut",
+    "binomial_name": "Capsicum annuum",
+    "common_names": [
+        "dundicut",
+        "lal mirch"
+    ],
+    "description": "Dundicut peppers are a dark red chili pepper native to Pakistan. They are a cultivar of either Capsicum frutescens or Capsicum annuum. The plants produce 2-3cm, upright, teardrop-shaped fruits that ripen from green to dark red. The fruit is similar in size and flavor to Scotch Bonnet peppers, but, with a Scoville rating of 30,000 to 65,000, not as hot. Dundicut are typically used dried in curries, chutneys, and sauces, and have a mildly fruity aroma.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, transplant seedlings outside after hardening off",
+    "spread": 0,
+    "row_spacing": 0,
+    "height": 85,
+    "growing_degree_days": 0,
+    "companions": [
+        "eggplant"
+    ],
+    "image": "",
+    "icon": "/crops/icons/dundicut-pepper.avif"
+}

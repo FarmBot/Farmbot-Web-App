@@ -1,0 +1,18 @@
+{
+    "name": "Siling Labuyo Pepper",
+    "binomial_name": "Capsicum frutescens 'Siling Labuyo'",
+    "common_names": [
+        "tagalog",
+        "wild chili"
+    ],
+    "description": "Siling labuyo peppers are a small chili pepper cultivar native to the Philippines. They are related to Malagueta Peppers and often mistaken with Bird's Eye Chilis (which are a separate species, Capsicum annuum). The small, slightly wrinkled peppers are 1.5 to 2.5 cm long and grow pointing upwards in clusters of 2 or 3. Fruit ripen from green to red, yellow, orange, purple, white, or black. Peppers are very spicy, with a Scoville Heat rating of 80,000 - 100,000 units.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, transplant seedlings outside after hardening off",
+    "spread": 0,
+    "row_spacing": 60,
+    "height": 120,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "",
+    "icon": "/crops/icons/siling-labuyo-pepper.avif"
+}

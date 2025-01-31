@@ -8,16 +8,15 @@ import { isNumber } from "lodash";
 import {
   DesignerState, GardenMapState, MovePointsProps,
 } from "../../../interfaces";
-import { findBySlug } from "../../../search_selectors";
 import { round, defaultSpreadCmDia } from "../../util";
 import { movePointTo, movePoints } from "../../actions";
-import { cachedCrop } from "../../../../open_farm/cached_crop";
 import { t } from "../../../../i18next_wrapper";
 import { error } from "../../../../toast/toast";
 import { TaggedCurve, TaggedPlantTemplate, TaggedPoint } from "farmbot";
 import { Path } from "../../../../internal_urls";
 import { GetWebAppConfigValue } from "../../../../config_storage/actions";
 import { NumericSetting } from "../../../../session_keys";
+import { findCrop } from "../../../../crops/find";
 
 export interface NewPlantKindAndBodyProps {
   x: number;
@@ -55,7 +54,7 @@ export const newPlantKindAndBody = (props: NewPlantKindAndBodyProps): {
         y: props.y,
         openfarm_slug: props.slug,
         name: props.cropName,
-        radius: DEFAULT_PLANT_RADIUS,
+        radius: props.designer.cropRadius,
         depth: props.depth,
         plant_stage: props.designer.cropStage,
         planted_at: props.designer.cropPlantedAt,
@@ -117,17 +116,17 @@ export const dropPlant = (props: DropPlantProps) => {
   const {
     gardenCoords, gridSize, dispatch, getConfigValue,
   } = props;
-  const { companionIndex, cropSearchResults, openedSavedGarden } = props.designer;
+  const { companionIndex, openedSavedGarden } = props.designer;
   if (gardenCoords) {
-    const slug = Path.getSlug(Path.plants(1));
+    const slug = Path.getCropSlug();
     if (!slug) { console.log("Missing slug."); return; }
-    const crop = isNumber(companionIndex)
-      ? cropSearchResults[0]?.companions[companionIndex]
-      : findBySlug(cropSearchResults, slug).crop;
-    if (!crop) { console.log("Missing crop."); return; }
+    const cropSlug = isNumber(companionIndex)
+      ? findCrop(slug).companions[companionIndex]
+      : slug;
+    const crop = findCrop(cropSlug);
     createPlant({
       cropName: crop.name,
-      slug: crop.slug,
+      slug: cropSlug,
       gardenCoords,
       gridSize,
       dispatch,
@@ -213,9 +212,8 @@ export const setActiveSpread = (props: SetActiveSpreadProps): void => {
   const defaultSpread = props.selectedPlant
     ? defaultSpreadCmDia(props.selectedPlant.body.radius)
     : 0;
-  cachedCrop(props.slug)
-    .then(({ spread }) =>
-      props.setMapState({ activeDragSpread: spread || defaultSpread }));
+  const crop = findCrop(props.slug);
+  props.setMapState({ activeDragSpread: crop.spread || defaultSpread });
 };
 
 export interface BeginPlantDragProps {

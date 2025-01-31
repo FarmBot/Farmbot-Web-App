@@ -1,4 +1,3 @@
-import { OpenFarm } from "../open_farm/openfarm";
 import { DropDownItem } from "../ui";
 import {
   TaggedFarmEvent,
@@ -131,22 +130,6 @@ export interface MovePointToProps {
   gridSize: AxisNumberProperty;
 }
 
-/**
- * OFCrop bundled with corresponding profile image from OpenFarm API.
- */
-export interface CropLiveSearchResult {
-  crop: OpenFarm.OFCrop;
-  images: string[];
-  companions: OpenFarm.CompanionsData[];
-}
-
-export interface Crop {
-  id?: undefined;
-  svg_icon?: string | undefined;
-  spread?: number | undefined;
-  slug: string;
-}
-
 export interface DesignerState {
   selectedPoints: UUID[] | undefined;
   selectionPointType: PointType[] | undefined;
@@ -158,8 +141,6 @@ export interface DesignerState {
   hoveredSensorReading: string | undefined;
   hoveredImage: string | undefined;
   cropSearchQuery: string;
-  cropSearchResults: CropLiveSearchResult[];
-  cropSearchInProgress: boolean;
   companionIndex: number | undefined;
   plantTypeChangeId: number | undefined;
   bulkPlantSlug: string | undefined;
@@ -194,6 +175,7 @@ export interface DesignerState {
   cropHeightCurveId: number | undefined;
   cropStage: PlantStage | undefined;
   cropPlantedAt: string | undefined;
+  cropRadius: number | undefined;
   distanceIndicator: string;
   panelOpen: boolean;
 }
@@ -339,26 +321,19 @@ export interface DraggableEvent {
 
 export interface HoveredPlantPayl {
   plantUUID: string | undefined;
-  icon: string;
 }
 
-export type OpenfarmSearch = (query: string) => (dispatch: Function) => void;
-
 export interface CropCatalogProps {
-  cropSearchQuery: string | undefined;
   dispatch: Function;
-  cropSearchResults: CropLiveSearchResult[];
-  openfarmSearch: OpenfarmSearch;
-  cropSearchInProgress: boolean;
   plant: TaggedPlantPointer | undefined;
   bulkPlantSlug: string | undefined;
   hoveredPlant: HoveredPlantPayl;
+  cropSearchQuery: string;
 }
 
 export interface CropInfoProps {
   dispatch: Function;
   designer: DesignerState;
-  openfarmCropFetch: OpenfarmSearch;
   botPosition: BotPosition;
   xySwap: boolean;
   getConfigValue: GetWebAppConfigValue;

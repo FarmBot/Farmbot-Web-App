@@ -1,0 +1,15 @@
+{
+    "name": "Blueberry",
+    "binomial_name": "Vaccinium sect. Cyanococcus",
+    "common_names": [],
+    "description": "Perennial flowering plants with sweet, indigo-colored berries. Blueberry plants are usually erect, prostrate shrubs that range in height from 10cm to 4m high, depending on the cultivar.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Plant plants into soil or pots.",
+    "spread": 150,
+    "row_spacing": 240,
+    "height": 240,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/blueberry.jpg",
+    "icon": "/crops/icons/blueberry.avif"
+}

@@ -1,0 +1,18 @@
+{
+    "name": "Artichoke",
+    "binomial_name": "Cynara cardunculus var. scolymus",
+    "common_names": [
+        "Globe Artichoke",
+        "Annual Artichoke"
+    ],
+    "description": "The globe artichoke is a variety of a species of thistle cultivated as a food. The budding artichoke flower-head is the edible part of the plant. It is a cluster of many budding small flowers (known as an \"inflorescence\") and bracts on an edible base. Once the buds bloom the head becomes coarse and barely edible. Artichokes are perennials in Zone 7 and warmer. They normally produce edible flower-heads during their second year, but recent cultivars such as 'Imperial Star' have been bred to produce in the first year. Other cultivars, such as 'Northern Star', have been bred to overwinter in more northern climates. There are green and purple varieties of artichoke. They are often steamed, saut\u00e9ed or braised, but can also be eaten raw.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors. In warmer zones, propagate \"pups.\"",
+    "spread": 120,
+    "row_spacing": 90,
+    "height": 90,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/artichoke.jpg",
+    "icon": "/crops/icons/artichoke.avif"
+}

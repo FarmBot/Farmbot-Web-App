@@ -1,0 +1,17 @@
+{
+    "name": "Beet",
+    "binomial_name": "Beta vulgaris",
+    "common_names": [
+        "Beet"
+    ],
+    "description": "Extremely sweet, perfectly round beets, 8cm across, have deep red skin and dark red flesh.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Sow in well-worked soil after danger of frost in spring. In frost-free areas, sow in fall. Sow thinly in rows 30cm apart and cover with 1.5cm of fine soil. Firm lightly and keep evenly moist. Seedlings emerge in 14-21 days. Thin to stand about 8cm apart when seedlings are 3cm to 5cm tall.",
+    "spread": 8,
+    "row_spacing": 30,
+    "height": 30,
+    "growing_degree_days": 59,
+    "companions": [],
+    "image": "/crops/images/beet.jpg",
+    "icon": "/crops/icons/beet.avif"
+}

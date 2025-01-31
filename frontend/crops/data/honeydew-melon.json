@@ -1,0 +1,19 @@
+{
+    "name": "Honeydew Melon",
+    "binomial_name": "Cucumis melo",
+    "common_names": [
+        "Honeydew",
+        "honeymelon",
+        "Bailan melon"
+    ],
+    "description": "Honeydew melons have a round to slightly oval shape. Like other melons, they grow on vines. Their sweet, tender flesh is pale green or orange in color, and the smooth peel ranges from greenish to yellow.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed",
+    "spread": 150,
+    "row_spacing": 90,
+    "height": 30,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/honeydew-melon.jpg",
+    "icon": "/crops/icons/honeydew-melon.avif"
+}

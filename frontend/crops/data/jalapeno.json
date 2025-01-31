@@ -1,0 +1,21 @@
+{
+    "name": "Jalapeno Pepper",
+    "binomial_name": "Capsicum annum",
+    "common_names": [
+        "Jalapeno",
+        "huachinango",
+        "chile gordo",
+        "cuaresme\u00f1o",
+        "xalapa"
+    ],
+    "description": "Small hot pepper, about 2.5 x 7.5cm, medium spiciness. Can be harvested green (when the fruit is younger and milder) or left on the plant longer until it turns red and becomes hotter and sweeter.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, harden seedlings off before transplanting outside.",
+    "spread": 45,
+    "row_spacing": 45,
+    "height": 40,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/jalapeno.jpg",
+    "icon": "/crops/icons/jalapeno.avif"
+}

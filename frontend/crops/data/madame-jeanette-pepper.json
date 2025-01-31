@@ -1,0 +1,18 @@
+{
+    "name": "Madame Jeannette Pepper",
+    "binomial_name": "Capsicum chinense",
+    "common_names": [
+        "Suriname Yellow",
+        "madame jeannette"
+    ],
+    "description": "The Madame Jeannette Pepper is a chili pepper cultivar originally from Suriname. The compact plant produces peppers that are a bit larger than habaneros and have curvy, erratic shapes. They can be thin, curved, and slightly wrinkled, or pumpkin-shaped, or look like slightly elongated bell peppers. Peppers ripen from green to yellow. They have a Scoville rating of 125,000 - 325,000 and a fruity taste with hints of mango and pineapple beneath all the spiciness. Like other hot peppers, Madame Jeannettes dislike cool weather. They can be grown indoors in containers. Madame Jeannettes are sometimes confused with Adjuma pepper, which are a bit more round and habanero-shaped. They are used widely in Surinamese and Antillean cuisine.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, transplant seedlings outside or to container after hardening off",
+    "spread": 0,
+    "row_spacing": 60,
+    "height": 60,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "",
+    "icon": "/crops/icons/madame-jeanette-pepper.avif"
+}

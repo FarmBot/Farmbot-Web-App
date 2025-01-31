@@ -1,0 +1,20 @@
+{
+    "name": "Black Habanero",
+    "binomial_name": "Capsicum chinense",
+    "common_names": [
+        "habanero negro"
+    ],
+    "description": "Black Habaneros are a habanero cultivar that produces brown to black peppers that rate between 400,000-450,000 Scoville units (making them hotter than regular habaneros). The plant grows well in containers or directly in soil, but takes longer to grow than other habanero varieties. The fruits are green when young and turn brown to black as they mature.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, harden off seedlings before transplanting outside",
+    "spread": 40,
+    "row_spacing": 45,
+    "height": 75,
+    "growing_degree_days": 0,
+    "companions": [
+        "spinach",
+        "tomato"
+    ],
+    "image": "",
+    "icon": "/crops/icons/black-habanero.avif"
+}

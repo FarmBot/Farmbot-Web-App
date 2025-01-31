@@ -10,7 +10,7 @@ import { DevSettings } from "../settings/dev/dev_support";
 import { destroy } from "../api/crud";
 import { isUndefined, round } from "lodash";
 import { Path } from "../internal_urls";
-import { svgToUrl } from "../open_farm/icons";
+import { svgToUrl } from "../point_groups/point_group_item";
 
 export interface PointInventoryItemProps {
   tpp: TaggedGenericPointer;

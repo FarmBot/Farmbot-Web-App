@@ -1,0 +1,24 @@
+{
+    "name": "Onion Chive",
+    "binomial_name": "Allium schoenoprasum",
+    "common_names": [
+        "Onion Chive",
+        "Chive"
+    ],
+    "description": "Chives are members of the Allium family along with garlic, onions, and leeks. They have waxy, tubular, grass-like leaves that have a mild onion taste and purple blooms. They grow in grass-like clumps and are frost tolerant. Chives are a great companion plant because they are believed to repel harmful insects including aphids, beetles, cabbage worms, slugs, and Japanese beetles. The stems and flowers are edible. Pull the florets apart and chop the stems and sprinkle them onto salads, soups, baked potatoes, egg dishes, and more.",
+    "sun_requirements": "Partial Sun",
+    "sowing_method": "Direct seed outdoors or transplant seedlings",
+    "spread": 8,
+    "row_spacing": 15,
+    "height": 30,
+    "growing_degree_days": 0,
+    "companions": [
+        "broccoli",
+        "tomato",
+        "strawberry",
+        "eggplant",
+        "parsley"
+    ],
+    "image": "/crops/images/onion-chive.jpg",
+    "icon": "/crops/icons/onion-chive.avif"
+}

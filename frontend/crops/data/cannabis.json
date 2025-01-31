@@ -1,0 +1,21 @@
+{
+    "name": "Cannabis",
+    "binomial_name": "Cannabis sativa / Cannabis indica /  Cannabis ruderalis",
+    "common_names": [
+        "Marijuana",
+        "Mary Jane",
+        "cannabis"
+    ],
+    "description": "Cannabis is a genus of a flowering plant in the family Cannabaceae. Three species may be recognized: Cannabis sativa, Cannabis indica and Cannabis ruderalis, or all three may be treated as subspecies of a single species, C. sativa. Cannabis is used for hemp, medicinal purposes, and as a recreational drug (tetrahydrocannabinol, or THC, is the principal psychoactive compound). As of 2017, growing cannabis is legal in 14 states in the United States. After harvest, the buds of cannabis are known as marijuana. \n\nThere are a few types of Cannabis seeds to consider if growing the plant for it's buds. Autoflowering strains do not rely on daylight hours and light schedules to enter the flowering stage. They are best for outdoor use, create smaller plants, and have a life cycle of 10 weeks from start to finish. Non-autoflowering strains depend light cycles to determine whether to grow or whether to flower, create bigger plants, and are best for indoor growing. Feminized cannabis seeds are bred to produce only female plants. Indica-dominant strains have thinner leaves and are better suited to tough weather conditions. Sativa-dominant strains prefer more light and warmer temperatures.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors or transplant seedlings outside, depending on growing zone",
+    "spread": 0,
+    "row_spacing": 0,
+    "height": 150,
+    "growing_degree_days": 0,
+    "companions": [
+        "lemon-balm"
+    ],
+    "image": "/crops/images/cannabis.jpg",
+    "icon": "/crops/icons/cannabis.avif"
+}

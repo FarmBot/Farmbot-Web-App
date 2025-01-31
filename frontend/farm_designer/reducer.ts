@@ -1,12 +1,10 @@
 import {
   DesignerState,
-  CropLiveSearchResult,
   DrawnPointPayl,
   DrawnWeedPayl,
   HoveredPlantPayl,
 } from "./interfaces";
 import { generateReducer } from "../redux/generate_reducer";
-import { cloneDeep } from "lodash";
 import { TaggedResource, PointType, PlantStage } from "farmbot";
 import { Actions } from "../constants";
 import { BotPosition } from "../devices/interfaces";
@@ -18,7 +16,6 @@ export const initialState: DesignerState = {
   selectionPointType: undefined,
   hoveredPlant: {
     plantUUID: undefined,
-    icon: ""
   },
   hoveredPoint: undefined,
   hoveredSpread: undefined,
@@ -27,8 +24,6 @@ export const initialState: DesignerState = {
   hoveredSensorReading: undefined,
   hoveredImage: undefined,
   cropSearchQuery: "",
-  cropSearchResults: [],
-  cropSearchInProgress: false,
   companionIndex: undefined,
   plantTypeChangeId: undefined,
   bulkPlantSlug: undefined,
@@ -63,23 +58,14 @@ export const initialState: DesignerState = {
   cropHeightCurveId: undefined,
   cropStage: undefined,
   cropPlantedAt: undefined,
+  cropRadius: undefined,
   distanceIndicator: "",
   panelOpen: true,
 };
 
 export const designer = generateReducer<DesignerState>(initialState)
   .add<string>(Actions.SEARCH_QUERY_CHANGE, (s, { payload }) => {
-    s.cropSearchInProgress = true;
-    const state = cloneDeep(s);
-    state.cropSearchQuery = payload;
-    return state;
-  })
-  .add<boolean>(Actions.OF_SEARCH_RESULTS_START, (s) => {
-    s.cropSearchInProgress = true;
-    return s;
-  })
-  .add<boolean>(Actions.OF_SEARCH_RESULTS_NO, (s) => {
-    s.cropSearchInProgress = false;
+    s.cropSearchQuery = payload;
     return s;
   })
   .add<number | undefined>(Actions.SET_PLANT_TYPE_CHANGE_ID, (s, { payload }) => {
@@ -127,6 +113,10 @@ export const designer = generateReducer<DesignerState>(initialState)
     s.cropPlantedAt = payload;
     return s;
   })
+  .add<number | undefined>(Actions.SET_CROP_RADIUS, (s, { payload }) => {
+    s.cropRadius = payload;
+    return s;
+  })
   .add<string | undefined>(Actions.HOVER_PLANT_LIST_ITEM, (s, { payload }) => {
     s.hoveredPlantListItem = payload;
     return s;
@@ -165,18 +155,13 @@ export const designer = generateReducer<DesignerState>(initialState)
       s.drawnWeed && (s.drawnWeed.color = color);
       return s;
     })
-  .add<CropLiveSearchResult[]>(Actions.OF_SEARCH_RESULTS_OK, (s, a) => {
-    s.cropSearchResults = a.payload;
-    s.cropSearchInProgress = false;
-    return s;
-  })
   .add<number>(Actions.SET_COMPANION_INDEX, (s, a) => {
     s.companionIndex = a.payload;
     return s;
   })
   .add<TaggedResource>(Actions.DESTROY_RESOURCE_OK, (s) => {
     s.selectedPoints = undefined;
-    s.hoveredPlant = { plantUUID: undefined, icon: "" };
+    s.hoveredPlant = { plantUUID: undefined };
     return s;
   })
   .add<BotPosition>(Actions.CHOOSE_LOCATION, (s, { payload }) => {

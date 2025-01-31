@@ -1,0 +1,21 @@
+{
+    "name": "Garlic Chives",
+    "binomial_name": "Allium tuberosum",
+    "common_names": [
+        "Garlic Chives",
+        "Asian chives",
+        "Chinese chives",
+        "Chinese leek",
+        "Oriental garlic"
+    ],
+    "description": "Garlic chives are a member of the Allium family and related to garlic and onions. They taste more like garlic than chives. Their long, thin, strap-shaped leaves grow from a small, elongated bulb. Their bulbous roots are rhizomes and the plant grows in slowly expanding clumps. Garlic chives are sometimes grown for ornamental purposes, and also have medicinal uses. The plant's leaves, stalks, and immature, unopened flower buds are used as seasoning in salads, spreads, flavored vinegars, and other dishes. They make great companion plants because they aid in pollination and can deter pests and disease. Their strong scent confuses the carrot root fly, which can normally smell carrots from up to a mile away.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct sow outdoors or sow indoors and transplant seedlings after hardening off",
+    "spread": 8,
+    "row_spacing": 8,
+    "height": 45,
+    "growing_degree_days": 75,
+    "companions": [],
+    "image": "/crops/images/garlic-chives.jpg",
+    "icon": "/crops/icons/garlic-chives.avif"
+}

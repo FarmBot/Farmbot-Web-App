@@ -1,0 +1,17 @@
+{
+    "name": "Pumpkin",
+    "binomial_name": "Cucurbita pepo",
+    "common_names": [
+        "pumpkin"
+    ],
+    "description": "Pumpkins are squash cultivars that are round to oval in shape with thick, slightly ribbed skin that varies from deep yellow to orange in color. Their flesh ranges from yellow to gold and has large seeds. Like other members of the Cucurbitaceae family, they grow on sprawling vines. Different varieties of pumpkins are grown for food or decoration.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors (and transplant outside after seedlings are hardened off) or outdoors",
+    "spread": 250,
+    "row_spacing": 120,
+    "height": 70,
+    "growing_degree_days": 110,
+    "companions": [],
+    "image": "/crops/images/pumpkin.jpg",
+    "icon": "/crops/icons/pumpkin.avif"
+}

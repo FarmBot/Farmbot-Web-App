@@ -1,0 +1,19 @@
+{
+    "name": "Curly Kale",
+    "binomial_name": "brassica oleracea var. fimbriata",
+    "common_names": [
+        "curly kale",
+        " borecole",
+        " scotch kale"
+    ],
+    "description": "",
+    "sun_requirements": "",
+    "sowing_method": "",
+    "spread": 0,
+    "row_spacing": 0,
+    "height": 0,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/curly-kale.jpg",
+    "icon": "/crops/icons/curly-kale.avif"
+}

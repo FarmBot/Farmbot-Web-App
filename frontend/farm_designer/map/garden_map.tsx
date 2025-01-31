@@ -697,8 +697,8 @@ export class GardenMap extends
     : <g />;
   AddPlantIcon = () => getMode() == Mode.clickToAdd
     ? <AddPlantIcon
+      designer={this.props.designer}
       cursorPosition={this.state.cursorPosition}
-      cropSearchResults={this.props.designer.cropSearchResults}
       mapTransformProps={this.mapTransformProps} />
     : <g />;
 

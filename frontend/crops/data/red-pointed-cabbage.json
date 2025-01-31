@@ -1,0 +1,15 @@
+{
+    "name": "Red Pointed Cabbage",
+    "binomial_name": "Brassica oleracea var. capitata",
+    "common_names": [],
+    "description": "Pointed red cabbage is a type of red cabbage with a pointed head. It's leaves have a softer texture and sweeter taste and are more open than typical cabbage. It can be added to stir-fries and casseroles, boiled, saut\u00e9ed, or fermented into sauerkraut.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors (and transplant seedlings after hardening off) or outdoors",
+    "spread": 30,
+    "row_spacing": 30,
+    "height": 50,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/red-pointed-cabbage.jpg",
+    "icon": "/crops/icons/red-pointed-cabbage.avif"
+}

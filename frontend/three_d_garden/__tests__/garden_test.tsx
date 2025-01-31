@@ -1,6 +1,7 @@
 let mockIsDesktop = false;
 jest.mock("../../screen_size", () => ({
   isDesktop: () => mockIsDesktop,
+  isMobile: jest.fn(),
 }));
 
 import React from "react";
@@ -9,25 +10,27 @@ import { GardenModelProps, GardenModel } from "../garden";
 import { clone } from "lodash";
 import { INITIAL } from "../config";
 import { render, screen } from "@testing-library/react";
-import { ASSETS } from "../constants";
+import { fakePlant } from "../../__test_support__/fake_state/resources";
+import { fakeAddPlantProps } from "../../__test_support__/fake_props";
 
 describe("<GardenModel />", () => {
   const fakeProps = (): GardenModelProps => ({
     config: clone(INITIAL),
     activeFocus: "",
     setActiveFocus: jest.fn(),
+    addPlantProps: fakeAddPlantProps([]),
   });
 
   it("renders", () => {
-    const wrapper = mount(<GardenModel {...fakeProps()} />);
-    expect(wrapper.html()).toContain("zoom-beacons");
-    expect(wrapper.html()).not.toContain("stats");
-    expect(wrapper.html()).toContain("darkgreen");
+    const { container } = render(<GardenModel {...fakeProps()} />);
+    expect(container).toContainHTML("zoom-beacons");
+    expect(container).not.toContainHTML("stats");
+    expect(container).toContainHTML("darkgreen");
   });
 
   it("renders no user plants", () => {
     const p = fakeProps();
-    p.plants = [];
+    p.addPlantProps = fakeAddPlantProps([]);
     render(<GardenModel {...p} />);
     const plantLabels = screen.queryAllByText("Beet");
     expect(plantLabels.length).toEqual(0);
@@ -35,16 +38,9 @@ describe("<GardenModel />", () => {
 
   it("renders user plant", () => {
     const p = fakeProps();
-    p.plants = [
-      {
-        label: "Beet",
-        icon: ASSETS.icons.beet,
-        spread: 175,
-        size: 150,
-        x: 0,
-        y: 0,
-      },
-    ];
+    const plant = fakePlant();
+    plant.body.name = "Beet";
+    p.addPlantProps = fakeAddPlantProps([plant]);
     render(<GardenModel {...p} />);
     const plantLabels = screen.queryAllByText("Beet");
     expect(plantLabels.length).toEqual(1);
@@ -52,7 +48,7 @@ describe("<GardenModel />", () => {
 
   it("renders promo plants", () => {
     const p = fakeProps();
-    p.plants = undefined;
+    p.addPlantProps = undefined;
     render(<GardenModel {...p} />);
     const plantLabels = screen.queryAllByText("Beet");
     expect(plantLabels.length).toEqual(7);
@@ -70,9 +66,10 @@ describe("<GardenModel />", () => {
     p.config.viewCube = true;
     p.config.lab = true;
     p.activeFocus = "plant";
-    const wrapper = mount(<GardenModel {...p} />);
-    expect(wrapper.html()).toContain("gray");
-    expect(wrapper.html()).toContain("stats");
+    p.addPlantProps = undefined;
+    const { container } = render(<GardenModel {...p} />);
+    expect(container).toContainHTML("gray");
+    expect(container).toContainHTML("stats");
   });
 
   it("sets hover", () => {

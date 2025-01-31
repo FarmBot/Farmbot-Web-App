@@ -1,0 +1,15 @@
+{
+    "name": "White Oyster Mushroom",
+    "binomial_name": "Pleurotus ostreatus",
+    "common_names": [],
+    "description": "White Oyster mushrooms are easily cultivated and have vigorous mycelium growth. They grow in large clusters and have the typical shelf-like shape of the Pleurotus species. White Oysters have milky white caps with a silky surface, and grow best outdoors on beech, hornbeam, birch, or poplar tree wood. They have a thick, meaty flesh that is milder in flavor than shiitake.",
+    "sun_requirements": "Partial Sun",
+    "sowing_method": "Inoculate wood substrate with grain or plug spawn",
+    "spread": 0,
+    "row_spacing": 0,
+    "height": 0,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/white-oyster-mushroom.jpg",
+    "icon": "/crops/icons/white-oyster-mushroom.avif"
+}

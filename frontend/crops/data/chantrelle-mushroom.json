@@ -1,0 +1,19 @@
+{
+    "name": "Chantrelle Mushroom",
+    "binomial_name": "Cantharellus cibarius",
+    "common_names": [
+        "chanterelles",
+        "girolle",
+        "Pfifferling"
+    ],
+    "description": "Chantrelle mushrooms are orange or yellow and funnel shaped, with gill-like ridges beneath the smooth cap. They are one of the most desirable edible mushrooms. Their flavor and aroma range from fruity to woody, earthy, or spicy. Chantrelles are a mycorrhizal fungi, growing on trees in a symbiotic relationship. Their tree of choice varies depending on what region, but they often grow on hemlock, Douglas fir, white pine, beech, spruce, and birch. They are difficult to cultivate and are usually foraged for in the wild. To cultivate, find a tree appropriate for the mushroom in your region, and test and amend soil pH to get it between 4-5.5. Rake the soil to loosen it and break up whole chanterelles, spreading mushroom bits around the loose soil to distribute the spores contained in the mushroom. Leave the area undisturbed. It can take years for the mycelium to develop and bear fruit.",
+    "sun_requirements": "",
+    "sowing_method": "Direct seed mushroom pieces",
+    "spread": 0,
+    "row_spacing": 0,
+    "height": 0,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/chantrelle-mushroom.jpg",
+    "icon": "/crops/icons/chantrelle-mushroom.avif"
+}

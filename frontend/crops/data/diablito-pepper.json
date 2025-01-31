@@ -1,0 +1,18 @@
+{
+    "name": "Diablito Pepper",
+    "binomial_name": "Capsicum annuum",
+    "common_names": [
+        "Diablito",
+        "diablito pepper"
+    ],
+    "description": "The Diablito Pepper is a hot Thai pepper that produces 5cm long conical fruit that are red when ripe. It has a rating of 5,000 to 30,000 Scoville Units.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, transplant seedlings outside after hardening off",
+    "spread": 60,
+    "row_spacing": 40,
+    "height": 60,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "",
+    "icon": "/crops/icons/diablito-pepper.avif"
+}

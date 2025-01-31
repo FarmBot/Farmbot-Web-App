@@ -1,0 +1,17 @@
+{
+    "name": "Red Potato",
+    "binomial_name": "",
+    "common_names": [
+        "Red Potato"
+    ],
+    "description": "",
+    "sun_requirements": "",
+    "sowing_method": "",
+    "spread": 0,
+    "row_spacing": 0,
+    "height": 0,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/red-gold-potato.jpg",
+    "icon": "/crops/icons/red-gold-potato.avif"
+}

@@ -1,0 +1,24 @@
+{
+    "name": "Black Salsify",
+    "binomial_name": "Scorzonera hispanica",
+    "common_names": [
+        "Spanish salsify",
+        "black oyster plant",
+        "serpent root",
+        "viper's herb",
+        "viper's grass",
+        "scorzonera"
+    ],
+    "description": "Black Salsify is a perennial member of the genus Scorzonera in the Asteraceae family that is grown as an annual. It is native to Southern Europe and the Near East. It is similar to Salsify, but they are in different genera. Both plants are grown for their edible roots and cultivated like carrots and parsnips. Black Salsify's leaves look like a clump of coarse grass with yellow ray flowers. Greens can be used in salads. The thin taproot grows up to 1 meter long and 2cm in diameter. It has a striking black skin that is inedible and removed after boiling. The white flesh tastes like a cross between oysters and asparagus. Roots can be cooked into soup, mashed, or roasted and used as a coffee substitute. Black Salsify is a cool weather crop - it's roots become stringy at temperatures above 29C. Harvest when roots are 30cm long, taking care not to break the roots. Roots can be left in the ground until a hard frost, and then stored in a root cellar through the winter.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed outdoors, thin to 15cm",
+    "spread": 0,
+    "row_spacing": 15,
+    "height": 0,
+    "growing_degree_days": 0,
+    "companions": [
+        "carrot"
+    ],
+    "image": "/crops/images/black-salsify.jpg",
+    "icon": "/crops/icons/black-salsify.avif"
+}

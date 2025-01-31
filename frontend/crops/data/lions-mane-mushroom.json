@@ -1,0 +1,22 @@
+{
+    "name": "Lion's Mane",
+    "binomial_name": "Hericium erinaceus",
+    "common_names": [
+        "lion's mane mushroom",
+        "bearded tooth mushroom",
+        "satyr's beard",
+        "bearded hedgehog mushroom",
+        "pom pom mushroom",
+        "bearded tooth fungus"
+    ],
+    "description": "Lion's Mane is an edible and medicinal mushroom in the Tooth Fungus group. It is Native to North America, Europe and Asia, and grows in a single clump of cascading long white spines. Lion's Mane can be grown by obtaining spores and inoculating a substrate like sawdust or hardwood logs. If using for culinary purposes, harvest the mushroom when young. The texture of the cooked mushroom is often compared to seafood, and some feel it's taste resembles lobster. Lion's Mane is used in Traditional Chinese Medicine, and it's anti-dementia properties are currently being researched.",
+    "sun_requirements": "",
+    "sowing_method": "Inoculate fresh logs or sawdust with spores",
+    "spread": 0,
+    "row_spacing": 0,
+    "height": 0,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "",
+    "icon": "/crops/icons/lions-mane-mushroom.avif"
+}

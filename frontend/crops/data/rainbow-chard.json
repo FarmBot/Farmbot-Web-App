@@ -1,0 +1,18 @@
+{
+    "name": "Rainbow Chard",
+    "binomial_name": "Beta vulgaris",
+    "common_names": [
+        "Rainbow Chard",
+        "Bright Lights"
+    ],
+    "description": "Rainbow Chard is grown from a seed mix that contains chard cultivars that have pink, yellow, orange, red, and white stems. Both the leaves and stems are edible and are delicious in salads, saut\u00e9ed, and baked. Chard is related to beets.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors or outdoors. Transplant seedlings outside after hardening off.",
+    "spread": 20,
+    "row_spacing": 30,
+    "height": 35,
+    "growing_degree_days": 40,
+    "companions": [],
+    "image": "/crops/images/rainbow-chard.jpg",
+    "icon": "/crops/icons/rainbow-chard.avif"
+}

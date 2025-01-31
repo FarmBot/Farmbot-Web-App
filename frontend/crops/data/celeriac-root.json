@@ -1,0 +1,18 @@
+{
+    "name": "Celeriac",
+    "binomial_name": "Apium graveolens var. rapaceum",
+    "common_names": [
+        "Celeriac Root",
+        "Celeriac"
+    ],
+    "description": "Celeriac is a large root that develops at soil level and looks like a textured turnip. It is topped with curly leaves. Celeriac root has a flavor similar to celery (they are in the same family) and is delicious in soups, stews, and casseroles. Because it is a root vegetable, it can be stored for months.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Seed indoors, then transplant outside into soil",
+    "spread": 60,
+    "row_spacing": 20,
+    "height": 50,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/celeriac-root.jpg",
+    "icon": "/crops/icons/celeriac-root.avif"
+}

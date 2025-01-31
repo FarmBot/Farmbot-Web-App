@@ -1,7 +1,3 @@
-jest.mock("../../open_farm/cached_crop", () => ({
-  maybeGetCachedPlantIcon: jest.fn(),
-}));
-
 jest.mock("../../point_groups/actions", () => ({
   createGroup: jest.fn(),
 }));

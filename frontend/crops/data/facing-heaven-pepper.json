@@ -1,0 +1,19 @@
+{
+    "name": "Facing Heaven Pepper",
+    "binomial_name": "Capsicum annuum var. conoides",
+    "common_names": [
+        "Heaven Chili",
+        "Heaven Chile",
+        "skyward-pointing chili pepper"
+    ],
+    "description": "The Facing Heaven Pepper is a Capsicum annuum variety widely grown in the Sichuan Province of southwestern China. The plant produces small, cone-shaped, medium-hot chili peppers that are 3-6cm long and 1-2cm in diameter. The peppers have very thin skin and grow with the fruit pointing upwards instead of hanging down. Facing Heaven peppers are fragrant and moderately spicy, with a Scoville heating rating of 10,000 to 50,000 units and a citrus-y flavor. The peppers ripen to a bright red and are lightly cooked in oil or dried and added to dishes whole.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, transplant seedlings outside after hardening off",
+    "spread": 0,
+    "row_spacing": 40,
+    "height": 100,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "",
+    "icon": "/crops/icons/facing-heaven-pepper.avif"
+}

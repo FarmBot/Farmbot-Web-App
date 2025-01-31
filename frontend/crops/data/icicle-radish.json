@@ -1,0 +1,17 @@
+{
+    "name": "Icicle Radish",
+    "binomial_name": "Raphanus sativus",
+    "common_names": [
+        "Icicle Radish"
+    ],
+    "description": "Icicle radishes have long, slender, snow-white roots and green leaves. The roots have a crisp flesh with a mild flavor. Radishes grow best in cool weather. Often eaten raw in salads.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed",
+    "spread": 10,
+    "row_spacing": 2,
+    "height": 20,
+    "growing_degree_days": 25,
+    "companions": [],
+    "image": "/crops/images/icicle-radish.jpg",
+    "icon": "/crops/icons/icicle-radish.avif"
+}

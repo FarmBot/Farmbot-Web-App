@@ -37,19 +37,21 @@ export const AllCurveInfo = (props: AllCurveInfoProps) => {
 export const CurveInfo = (props: CurveInfoProps) => {
   const { plant, onChange, curve, curves, plants, curveType } = props;
   const [hovered, setHovered] = React.useState<string | undefined>(undefined);
-  return <div className={"crop-curve-info"}>
-    <div className={"active-curve-name row grid-2-col"}>
+  return <div className={"crop-curve-info grid no-gap"}>
+    <div className={"active-curve-name row grid-2-col grid-exp-2"}>
       <label>{t(CURVE_TYPES()[props.curveType])}</label>
-      <FBSelect key={curve?.uuid}
-        list={curvesDropdownList({ curves, curveType, plants, plant })}
-        selectedItem={curve ? curveToDdi(curve) : undefined}
-        onChange={ddi => {
-          (ddi.headingId || ddi.isNull)
-            && onChange(ddi.isNull ? undefined : ddi.value, props.curveType);
-        }} />
-      {curve && <Link to={Path.curves(curve.body.id)} title={t("edit curve")}>
-        <i className={"fa fa-external-link fb-icon-button"} />
-      </Link>}
+      <div className={"row half-gap"}>
+        {curve && <Link to={Path.curves(curve.body.id)} title={t("edit curve")}>
+          <i className={"fa fa-external-link fb-icon-button invert"} />
+        </Link>}
+        <FBSelect key={curve?.uuid}
+          list={curvesDropdownList({ curves, curveType, plants, plant })}
+          selectedItem={curve ? curveToDdi(curve) : undefined}
+          onChange={ddi => {
+            (ddi.headingId || ddi.isNull)
+              && onChange(ddi.isNull ? undefined : ddi.value, props.curveType);
+          }} />
+      </div>
     </div>
     {curve && <CurveSvgWithPopover dispatch={props.dispatch} curve={curve}
       x={plant?.x} y={plant?.y}
@@ -69,11 +71,11 @@ interface CurvesDropdownListProps {
 }
 
 const curvesDropdownList = (props: CurvesDropdownListProps) => {
-  const openfarmSlug = props.plant?.slug || Path.getSlug(Path.cropSearch());
+  const slug = props.plant?.slug || Path.getCropSlug();
   const list: (DropDownItem | undefined)[] = [];
   list.push(NULL_CHOICE);
   const usedIds = props.plants
-    .filter(plant => plant.body.openfarm_slug == openfarmSlug)
+    .filter(plant => plant.body.openfarm_slug == slug)
     .map(plant => plant.body[CURVE_KEY_LOOKUP[props.curveType]])
     .filter(id => id);
   list.push({
@@ -107,16 +109,16 @@ export const curveToDdi =
   };
 
 interface FindCurveProps {
-  openfarmSlug: string;
+  slug: string;
   plants: TaggedPlantPointer[];
   curves: TaggedCurve[];
 }
 
 export const findMostUsedCurveForCrop = (props: FindCurveProps) =>
   (curveType: CurveType): TaggedCurve | undefined => {
-    const { openfarmSlug, plants, curves } = props;
+    const { slug, plants, curves } = props;
     const counts = countBy(plants
-      .filter(p => p.body.openfarm_slug == openfarmSlug)
+      .filter(p => p.body.openfarm_slug == slug)
       .map(p => p.body[CURVE_KEY_LOOKUP[curveType]] as number | undefined)
       .filter(x => x));
     const maxCount = Math.max(...Object.values(counts));

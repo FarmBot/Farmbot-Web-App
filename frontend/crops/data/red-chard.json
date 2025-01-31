@@ -1,0 +1,18 @@
+{
+    "name": "Red Chard",
+    "binomial_name": "Beta vulgaris subsp. vulgaris",
+    "common_names": [
+        "swiss chard",
+        "chard"
+    ],
+    "description": "Swiss Chard is a leafy green vegetable in the Beet family. The thick stems come in a variety of colors including white, pink, red, yellow, orange, and pale green. Chard has large, crinkly leaves with distinctive veins. The leaves and stems are edible and high in nutrients. Swiss chard can be eaten raw, saut\u00e9ed, baked, or steamed.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors or outdoors. Transplant seedlings after hardening off.",
+    "spread": 20,
+    "row_spacing": 30,
+    "height": 35,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/red-chard.jpg",
+    "icon": "/crops/icons/red-chard.avif"
+}

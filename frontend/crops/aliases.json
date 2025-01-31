@@ -1,0 +1,125 @@
+{
+    "looseleaf-lettuce": [
+        "lettuce",
+        "lambs-lettuce",
+        "salad-bowl-lettuce",
+        "black-seeded-simpson-lettuce",
+        "red-butterhead-lettuce",
+        "lettuce-igloo",
+        "lettuce-freedom-mix",
+        "lechuga-crespa",
+        "celtuce",
+        "miners-lettuce-1"
+    ],
+    "white-onion": [
+        "onion",
+        "onion-1",
+        "onion-2",
+        "onion-3"
+    ],
+    "spring-onion": [
+        "onion-white-lisbon"
+    ],
+    "cherry-belle-radish": [
+        "radish",
+        "wild-radish"
+    ],
+    "green-cabbage": [
+        "cabbage",
+        "cabbage-1",
+        "chinese-cabbage"
+    ],
+    "beet": [
+        "beet-detroit-dark-red-medium-top",
+        "beets"
+    ],
+    "blue-lake-bean": [
+        "green-bean"
+    ],
+    "swiss-chard": [
+        "swiss-chard-3",
+        "fordhook-giant-swiss-chard"
+    ],
+    "carrot": [
+        "carrot-scarlet-nantes",
+        "rainbow-carrot"
+    ],
+    "red-russian-kale": [
+        "kale",
+        "kale-1"
+    ],
+    "onion-chive": [
+        "chives"
+    ],
+    "cucumber": [
+        "cucumber-1",
+        "wild-cucumber"
+    ],
+    "snap-pea": [
+        "pea"
+    ],
+    "basil": [
+        "sweet-basil",
+        "thai-basil"
+    ],
+    "russet-potato": [
+        "potato"
+    ],
+    "parsley": [
+        "curled-parsley"
+    ],
+    "cayenne-pepper": [
+        "chili-pepper"
+    ],
+    "garlic": [
+        "garlic-1",
+        "hardneck-garlic",
+        "elephant-garlic"
+    ],
+    "jalapeno": [
+        "jalapeno-pepper"
+    ],
+    "purple-potato": [
+        "blue-potato"
+    ],
+    "red-bell-pepper": [
+        "bell-pepper"
+    ],
+    "icicle-radish": [
+        "daikon"
+    ],
+    "hemp": [
+        "hemp-1"
+    ],
+    "oregano": [
+        "italian-oregano",
+        "greek-oregano"
+    ],
+    "zucchini": [
+        "green-zucchini"
+    ],
+    "dill": [
+        "dill-1"
+    ],
+    "tomato": [
+        "tiny-tim-tomato"
+    ],
+    "cherry-tomato": [
+        "cherry-tomato-husky-red"
+    ],
+    "watercress": [
+        "cress-1"
+    ],
+    "shallot": [
+        "shallot-1"
+    ],
+    "bok-choy": [
+        "pak-choy-bok-choy"
+    ],
+    "kohlrabi": [
+        "kohlrabi-1"
+    ],
+    "asparagus": [
+        "asparagus-1"
+    ]
+}

@@ -1,0 +1,21 @@
+{
+    "name": "Red D'anjou Pear",
+    "binomial_name": "Pyrus communis 'D'Anjou'",
+    "common_names": [
+        "anjou pear",
+        "red anjou",
+        "Nec Plus Meuris",
+        "Beurr\u00e9 d'Anjou",
+        "red pear"
+    ],
+    "description": "Red D'Anjou pears are the red cultivar of D'Anjou pears, which are a short-necked cultivar of European pear. D'Anjou pears are medium to large, around 80mm in diameter. They have a wide base that tapers at the stem and deep red skin that changes color only slightly as they ripen. The flesh is firm, sweet, and juicy and very similar to Green D'Anjou pears. They can be eaten fresh or baked. The tree has white blooms in the spring. D'Anjou pears are not self-fertile. They require pollination by a pear tree of another variety with the same bloom period within 50 feet (Bartlett, Bosc, Seckel). Standard and dwarf rootstocks are available. Depending on the size chosen, the tree will bear fruit within 4-6 years of planting. Test ripeness by pressing the top of the pear near the stem. If it gives slightly, the pear is ripe and ready for harvest.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Transplant bare-root plant",
+    "spread": 300,
+    "row_spacing": 360,
+    "height": 300,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/red-anjou-pear.jpg",
+    "icon": "/crops/icons/red-anjou-pear.avif"
+}

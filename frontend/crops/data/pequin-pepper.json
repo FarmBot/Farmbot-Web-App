@@ -1,0 +1,18 @@
+{
+    "name": "Pequin Pepper",
+    "binomial_name": "Capsicum annuum 'Pequin'",
+    "common_names": [
+        "pequin",
+        "piquin"
+    ],
+    "description": "The Pequin, or Piquin, Pepper is a hot chili pepper cultivar that produces small, 2cm long, peppers that grow upright rather than hanging. Peppers ripen from green to bright red and are very spicy, with a Scoville Heat rating of 30,000\u201360,000 units. They have a citrusy, smoky, nutty flavor, and are often pickled or added to salsas, hot sauces, and soups. Pequin peppers have a low germination rate (15%) and can take 2-4 months to germinate.",
+    "sun_requirements": "Partial Sun",
+    "sowing_method": "Direct seed indoors, transplant seedlings outside after hardening off",
+    "spread": 0,
+    "row_spacing": 60,
+    "height": 100,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "",
+    "icon": "/crops/icons/pequin-pepper.avif"
+}

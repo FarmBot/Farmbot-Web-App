@@ -1,0 +1,19 @@
+{
+    "name": "Oat",
+    "binomial_name": "Avena sativa",
+    "common_names": [
+        "Oats",
+        "spring oats",
+        "common oat"
+    ],
+    "description": "Oats are a species of cereal grain grown for their seed. They are an annual, upright grass with a higher tolerance for rain than other cereal grains. Oats thrive in cool, moist conditions and can tolerate light frosts up to -15C. They do not do well in hot, dry weather. Oats can be eaten as rolled or steel cut oats, oat flour, muesli, or baked into granola. They can also grown as livestock feed or cover crops/green manure. Seeding rates, planting time, and spacing vary based on intended use.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed/broadcast",
+    "spread": 7,
+    "row_spacing": 7,
+    "height": 120,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/oat.jpg",
+    "icon": "/crops/icons/oat.avif"
+}

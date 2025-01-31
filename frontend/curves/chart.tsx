@@ -274,7 +274,7 @@ const XAxis = (props: XAxisProps) => {
         <text key={day} x={normX(day)} y={yZero + 6}>{day}</text>)}
     </g>
     <line id={"y-axis-vertical-line"}
-      stroke={Color.gray} opacity={0.1} strokeWidth={0.3}
+      stroke={"var(--text-color"} opacity={0.2} strokeWidth={0.3}
       x1={0} y1={yZero} x2={0} y2={yMax} />
     <text id={"x-axis-label"}
       fontSize={5} textAnchor={"middle"}
@@ -301,7 +301,7 @@ const YAxis = (props: YAxisProps) => {
               {value}
             </text>}
           <line className={"y-axis-line"}
-            stroke={Color.gray} opacity={0.1} strokeWidth={0.3}
+            stroke={"var(--text-color"} opacity={0.2} strokeWidth={0.3}
             x1={0} y1={y} x2={xMax} y2={y} />
         </g>;
       })}

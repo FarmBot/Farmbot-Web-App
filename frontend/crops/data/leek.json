@@ -1,0 +1,23 @@
+{
+    "name": "Leek",
+    "binomial_name": "Allium porrum",
+    "common_names": [
+        "Leek",
+        "Prei",
+        "Poireau",
+        "Porree",
+        "Blauwgroene winter"
+    ],
+    "description": "The leek is a vegetable, a cultivar of Allium ampeloprasum, the broadleaf wild leek. The edible part of the plant is a bundle of leaf sheaths that is sometimes erroneously called a stem or stalk. Historically, many scientific names were used for leeks, but they are now all treated as cultivars of A. ampeloprasum. The name 'leek' developed from the Anglo-Saxon word \"leac\". Two closely related vegetables, elephant garlic and kurrat, are also cultivars of A. ampeloprasum, although different in their uses as food. The onion and garlic are also related, being other species of the genus Allium.\nLeeks have thick blue-green foliage. The bundle of white leaf sheaths has a mild onion taste and can be blanched, steamed, braised, or grilled and used in soups, stews, omelet fillings, and more. The leaves can be used to make stock.\n\nPlant their leeks in autumn, and they should fatten up in time for winter picking. Plant them early to ensure they have enough time to grow before winter. Leeks take up to six months to mature after transplanting.\n\nNewer cultivars have quicker maturity \u2013 three to four months. Maturity is often affected by temperature, available nutrients and water. \n\nLeeks need a soil that is rich in organic matter. Dig in compost or manure two weeks before planting. Add fertiliser every few weeks\nLeeks like aged manure, especially chicken manure, and worm castings, another excellent source of nutrients.\n\nPlant seedlings in full sun, with moist but well-drained deep soil. Raised beds are ideal. Water young plants frequently.\n\nThe white part of the leek is edible; the green is not. You can blanch the stems to increase the proportion of stem that\u2019s edible and to sweeten the taste. Do this to fully grown leeks. Tie a paper collar around each stem and gently hill the earth up around the stem. Be careful not to get soil between the paper collar and stem as the leek may rot.\nAs the plants grow, add another collar above the first one and hill up more soil. Be aware that slugs and snails can hide in the paper collars\n\nHarvest the leeks when stems are around 2.5cm in diameter. Dig carefully around the leek and lift with a garden fork. Do not pull, as the leek is likely to break.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed or transplant seedlings",
+    "spread": 30,
+    "row_spacing": 15,
+    "height": 60,
+    "growing_degree_days": 140,
+    "companions": [
+        "spinach"
+    ],
+    "image": "/crops/images/leek.jpg",
+    "icon": "/crops/icons/leek.avif"
+}

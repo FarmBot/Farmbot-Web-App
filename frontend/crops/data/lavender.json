@@ -1,0 +1,19 @@
+{
+    "name": "Lavender",
+    "binomial_name": "Lavandula angustifolia",
+    "common_names": [
+        "Lavender"
+    ],
+    "description": "Lavender has an easily recognizable scent and purple to blue flowers that grow in whorls. Leaf shape varies across the genus. It is a natural repellant of moths, slugs, and deer, and a great companion for any plant that suffers from these pests (such as kale, cabbage, and other members of the Brassicaceae family).",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors",
+    "spread": 50,
+    "row_spacing": 30,
+    "height": 70,
+    "growing_degree_days": 110,
+    "companions": [
+        "purple-cauliflower"
+    ],
+    "image": "/crops/images/lavender.jpg",
+    "icon": "/crops/icons/lavender.avif"
+}

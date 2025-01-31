@@ -141,11 +141,11 @@ const fake =
   (responseURL: string): Partial<SafeError> => ({ request: { responseURL } });
 
 describe("isLocalRequest", () => {
-  it("determines if the URL is local vs. Github, Openfarm, etc...", () => {
+  it("determines if the URL is local vs. Github, etc...", () => {
     API.setBaseUrl("http://localhost:3000");
 
-    const openfarm = fake("http://openfarm.cc/foo/bar") as SafeError;
-    expect(isLocalRequest(openfarm)).toBe(false);
+    const github = fake("http://github.com/foo/bar") as SafeError;
+    expect(isLocalRequest(github)).toBe(false);
 
     const api = fake("http://localhost:3000/api/tools/1") as SafeError;
     expect(isLocalRequest(api)).toBe(true);

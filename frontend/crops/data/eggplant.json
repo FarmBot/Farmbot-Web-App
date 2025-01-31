@@ -1,0 +1,22 @@
+{
+    "name": "Eggplant",
+    "binomial_name": "Solanum melongena",
+    "common_names": [
+        "Brinjal",
+        "aubergine",
+        "eggplant",
+        "terong",
+        "mad apple",
+        "melongene"
+    ],
+    "description": "Eggplants commonly are egg-shaped with glossy black skin, but can come in a variety of other shapes and colors. They can be white, yellow, and pale to deep purple. Some are as small as goose eggs. The 'Rosa Bianca' cultivar is squat and round, while Asian cultivars can be long and thin. Eggplant stems are often spiny and their flowers range from white to purple. \n\nTheir flesh is generally white with a meaty texture and small seeds in the center. They are delicious grilled, roasted, in soups and stews, and breaded and fried.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Sow seeds indoors and transplant out, or plant nursery seedlings",
+    "spread": 55,
+    "row_spacing": 60,
+    "height": 150,
+    "growing_degree_days": 90,
+    "companions": [],
+    "image": "/crops/images/eggplant.jpg",
+    "icon": "/crops/icons/eggplant.avif"
+}

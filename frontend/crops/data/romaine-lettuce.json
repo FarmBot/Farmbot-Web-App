@@ -1,0 +1,17 @@
+{
+    "name": "Romaine Lettuce",
+    "binomial_name": "Lactuca sativa",
+    "common_names": [
+        "ist eine Deutsche Pflanze"
+    ],
+    "description": "Romaine is a variety of lettuce that grows into a dense, tall head. It's leaves are light to bright green and have firm ribs down their centers. It is more tolerant of heat than most lettuces.",
+    "sun_requirements": "Partial Sun",
+    "sowing_method": "Direct seed indoors or outside.",
+    "spread": 30,
+    "row_spacing": 40,
+    "height": 30,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/romaine-lettuce.jpg",
+    "icon": "/crops/icons/romaine-lettuce.avif"
+}

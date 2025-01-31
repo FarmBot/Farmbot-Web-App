@@ -1,0 +1,19 @@
+{
+    "name": "Red Tabasco Peppers",
+    "binomial_name": "Capsicum frutescens",
+    "common_names": [
+        "tabasco pepper"
+    ],
+    "description": "Red Tabasco peppers are small, thin chili peppers about 5cm long. They originated in Mexico and have a Scoville rating of 30,000 to 50,000 units. Like other Capsicum frutescens varieties, the peppers remain upright when ripe rather than hanging (like a bell pepper). They are the only Capsicum frutescens variety that is juicy (in other peppers the fruit is dry inside) and are famous for their use in Tabasco sauce. Like other peppers, Tabasco peppers ripen from green to red and can be harvested while green and unripe or red and ripe.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, transplant seedlings outside after hardening off",
+    "spread": 70,
+    "row_spacing": 45,
+    "height": 75,
+    "growing_degree_days": 0,
+    "companions": [
+        "eggplant"
+    ],
+    "image": "/crops/images/red-tabasco-pepper.jpg",
+    "icon": "/crops/icons/red-tabasco-pepper.avif"
+}

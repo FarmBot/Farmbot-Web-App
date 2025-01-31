@@ -1,0 +1,24 @@
+{
+    "name": "Bird's Eye Chili",
+    "binomial_name": "Capsicum annuum var. glabriusculum",
+    "common_names": [
+        "Bird's eye chili",
+        "bird eye chili",
+        "bird's chili",
+        "chile de arbol",
+        "Thai chili",
+        "chiltepin",
+        "piri piri",
+        "pili pili"
+    ],
+    "description": "Bird's Eye Chili, Chili de Arbol, or Piri Piri, is a Capsicum annuum cultivar grown in Ethiopia, Southeast Asia, and parts of India. It produces small, conical fruits that are much hotter than the japaleno: their Scoville rating is between 100,000\u2013225,000 units. It is used in Vietnamese and Thai cuisine. The seeds can be difficult to germinate because of their tough coating, which is designed to be passed through birds' digestive systems. For best results, soak the seeds in plain water for 6 hours before planting and keep the germination temperature between 70-90\u00baF.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, transplant seedlings outside after hardening off.",
+    "spread": 0,
+    "row_spacing": 0,
+    "height": 120,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/birds-eye-chili.jpg",
+    "icon": "/crops/icons/birds-eye-chili.avif"
+}

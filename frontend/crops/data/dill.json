@@ -1,0 +1,26 @@
+{
+    "name": "Dill",
+    "binomial_name": "anethum graveolens",
+    "common_names": [
+        "dill",
+        " garden dill",
+        " east indian dill",
+        " aneth",
+        " eneldo",
+        " dill",
+        " dill",
+        " shibith",
+        " dille",
+        " aneto"
+    ],
+    "description": "Dill is a fragrant herb commonly used in cooking, especially for its fresh leaves and seeds. It has feathery, delicate green leaves and produces yellow, umbrella-like flower clusters. The plant is known for its unique flavor, often used in pickling, salad dressings, and as a seasoning for fish and potatoes. It attracts beneficial insects, such as pollinators, and can be grown in both home gardens and containers.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed outdoors",
+    "spread": 30,
+    "row_spacing": 30,
+    "height": 75,
+    "growing_degree_days": 50,
+    "companions": [],
+    "image": "/crops/images/dill.jpg",
+    "icon": "/crops/icons/dill.avif"
+}

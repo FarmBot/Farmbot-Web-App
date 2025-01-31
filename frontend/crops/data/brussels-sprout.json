@@ -1,0 +1,17 @@
+{
+    "name": "Brussels Sprouts",
+    "binomial_name": "brassica oleracea cv. gemmifera",
+    "common_names": [
+        "brussels sprouts"
+    ],
+    "description": "Brussels sprouts grow on the sides of stalks up to 91cm tall. The stalks are covered with leaves and the sprouts look like miniature cabbages. They are a cool weather crop and are delicious roasted.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Sow seeds indoors, harden off seedlings before transplanting outdoors",
+    "spread": 80,
+    "row_spacing": 60,
+    "height": 90,
+    "growing_degree_days": 110,
+    "companions": [],
+    "image": "/crops/images/brussels-sprout.jpg",
+    "icon": "/crops/icons/brussels-sprout.avif"
+}

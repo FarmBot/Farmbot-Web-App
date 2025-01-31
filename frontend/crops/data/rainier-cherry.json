@@ -1,0 +1,17 @@
+{
+    "name": "Rainier Cherry",
+    "binomial_name": "Prunus avium 'Rainier'",
+    "common_names": [
+        "rainier"
+    ],
+    "description": "The Rainier cherry is a cultivar developed in 1952 by crossing Bing and Van cherry cultivars. It has creamy yellow skin with a red blush. The Rainier is considered the sweetest of cherries. Like all cherries, it belongs to the genus Prunus which includes the peach, apricot, almond, and plum. Rainiers require 700 hours of chilling at temperatures below 7\u00b0C during the winter. They are not self-pollinating - plant another cherry variety like Bing, Van, Lapins, or Lambert within 15 meters. Trees will bear fruit within 2-5 years of planting.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Transplant sapling",
+    "spread": 450,
+    "row_spacing": 750,
+    "height": 750,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/rainier-cherry.jpg",
+    "icon": "/crops/icons/rainier-cherry.avif"
+}

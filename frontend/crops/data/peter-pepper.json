@@ -1,0 +1,18 @@
+{
+    "name": "Peter Pepper",
+    "binomial_name": "Capsicum annuum 'annuum'",
+    "common_names": [
+        "penis pepper",
+        "chilli willy pepper"
+    ],
+    "description": "The Peter Pepper is a rare heirloom chili pepper cultivar that has a strikingly phallic appearance. The red or orange peppers are most commonly grown in East Texas or Louisiana. Peter Peppers are 8-10 cm long and quite spicy with a Scoville heat rating of 10,000-23,000 units. They can be eaten fresh, added to salsa and other dishes, dried and ground into chili powder, or grown for ornamental purposes.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed indoors, transplant seedlings outside after hardening off",
+    "spread": 0,
+    "row_spacing": 60,
+    "height": 60,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "",
+    "icon": "/crops/icons/peter-pepper.avif"
+}

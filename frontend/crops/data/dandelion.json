@@ -1,0 +1,18 @@
+{
+    "name": "Dandelion",
+    "binomial_name": "Taraxacum officinale",
+    "common_names": [
+        "dandelion",
+        "lion's tooth"
+    ],
+    "description": "Dandelions are a large genus of flowering plants in the Asteraceae family native to Eurasia and North America. The two most common species, T. officinale and T. erythrospermum, propagate as wildflowers, but they can also be cultivated for their greens, flowers, and roots. Dandelions are perennial, herbaceous plants with long taproots, lobed leaves that grow in rosettes, and yellow flower heads composed of florets. The young leaves can be used raw in salads. They are high in vitamins and minerals. Older, larger leaves are more bitter and are best saut\u00e9ed or added to soups and stews. The flower petals are used to make dandelion wine. The roots take a year to harvest, and can be brewed into a detoxifying, mildly diuretic tea or coffee substitute. Dandelions are considered a beneficial weed and have a number of uses as a companion plant. They combat fusarium wilt, a soil-borne fungal disease that afflicts tomatoes, because their roots produce an acid that \"starves\" the disease of one of its essential nutrients, iron. Their taproots loosen compacted soils and bring up nutrients for shallower-rooted plants. Dandelions attract pollinating insects and release ethylene gas, helping fruit to ripen. Deadhead flowers to prevent the plants from becoming invasive.",
+    "sun_requirements": "Full Sun",
+    "sowing_method": "Direct seed outdoors, thin to 15cm",
+    "spread": 45,
+    "row_spacing": 15,
+    "height": 45,
+    "growing_degree_days": 0,
+    "companions": [],
+    "image": "/crops/images/dandelion.jpg",
+    "icon": "/crops/icons/dandelion.avif"
+}
