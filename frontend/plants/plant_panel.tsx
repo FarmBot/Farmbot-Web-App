@@ -179,7 +179,7 @@ export function PlantPanel(props: PlantPanelProps) {
             navigate(Path.cropSearch());
           }} />
       </ListItem>
-      {(timeSettings && !inSavedGarden) &&
+      {timeSettings && !inSavedGarden &&
         <div className="row info-box">
           <div className="grid half-gap">
             <label>{t("Started")}</label>
@@ -187,9 +187,7 @@ export function PlantPanel(props: PlantPanelProps) {
               datePlanted={plantedAt}
               timeSettings={timeSettings} />
           </div>
-          {(!inSavedGarden)
-            ? <EditPlantStatus {...commonProps} plantStatus={plantStatus} />
-            : t(startCase(plantStatus))}
+          <EditPlantStatus {...commonProps} plantStatus={plantStatus} />
           <div className="grid half-gap">
             <label>{t("Age")}</label>
             {daysOldText({ age: daysOld, stage: plantStatus })}
