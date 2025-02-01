@@ -7,11 +7,13 @@ import {
   Detailed, Sphere,
   useTexture,
   Line,
+  Cylinder,
+  Billboard,
 } from "@react-three/drei";
-import { RepeatWrapping, BackSide } from "three";
+import { RepeatWrapping, BackSide, DoubleSide } from "three";
 import { Bot } from "./bot";
 import { AddPlantProps, Bed } from "./bed";
-import { zero as zeroFunc, extents as extentsFunc } from "./helpers";
+import { zero as zeroFunc, extents as extentsFunc, threeSpace } from "./helpers";
 import { Sky } from "./sky";
 import { Config, detailLevels, seasonProperties } from "./config";
 import { ASSETS } from "./constants";
@@ -26,10 +28,10 @@ import {
 } from "./components";
 import { isDesktop } from "../screen_size";
 import { isUndefined, range } from "lodash";
-import {
-  calculatePlantPositions, convertPlants, ThreeDPlant,
-} from "./plants";
 import { ICON_URLS } from "../crops/constants";
+import { calculatePlantPositions, convertPlants, ThreeDPlant } from "./plants";
+import { TaggedGenericPointer, TaggedWeedPointer } from "farmbot";
+import { BooleanSetting } from "../session_keys";
 
 const AnimatedGroup = animated(Group);
 
@@ -38,6 +40,8 @@ export interface GardenModelProps {
   activeFocus: string;
   setActiveFocus(focus: string): void;
   addPlantProps?: AddPlantProps;
+  mapPoints?: TaggedGenericPointer[];
+  weeds?: TaggedWeedPointer[];
 }
 
 // eslint-disable-next-line complexity
@@ -201,7 +205,9 @@ export const GardenModel = (props: GardenModelProps) => {
           ]} />)}
     </Group>
     <Group name={"plants"}
-      visible={props.activeFocus != "Planter bed"}
+      visible={props.activeFocus != "Planter bed" &&
+        (!props.addPlantProps
+          || !!props.addPlantProps.getConfigValue(BooleanSetting.show_plants))}
       onPointerEnter={setHover(true)}
       onPointerMove={setHover(true)}
       onPointerLeave={setHover(false)}>
@@ -210,6 +216,62 @@ export const GardenModel = (props: GardenModelProps) => {
           plant={plant}
           config={config}
           hoveredPlant={hoveredPlant} />)}
+    </Group>
+    <Group name={"points"}
+      visible={!!props.addPlantProps?.getConfigValue(BooleanSetting.show_points)}>
+      {props.mapPoints?.map(point =>
+        <Group key={point.uuid}
+          rotation={[Math.PI / 2, 0, 0]}
+          position={[
+            threeSpace(point.body.x, config.bedLengthOuter),
+            threeSpace(point.body.y, config.bedWidthOuter),
+            zeroFunc(config).z - config.soilHeight,
+          ]}>
+          <Cylinder
+            args={[5, 5, 100, 32, 32, true]}>
+            <MeshPhongMaterial
+              color={point.body.meta.color}
+              side={DoubleSide}
+              transparent={true}
+              opacity={0.5} />
+          </Cylinder>
+          <Cylinder
+            args={[point.body.radius, point.body.radius, 100, 32, 32, true]}>
+            <MeshPhongMaterial
+              color={point.body.meta.color}
+              side={DoubleSide}
+              transparent={true}
+              opacity={0.5} />
+          </Cylinder>
+        </Group>)}
+    </Group>
+    <Group name={"weeds"}
+      visible={!!props.addPlantProps?.getConfigValue(BooleanSetting.show_weeds)}>
+      {props.weeds?.map(weed =>
+        <Group key={weed.uuid}
+          position={[
+            threeSpace(weed.body.x, config.bedLengthOuter),
+            threeSpace(weed.body.y, config.bedWidthOuter),
+            zeroFunc(config).z - config.soilHeight,
+          ]}>
+          <Billboard follow={true}
+            position={[0, 0, weed.body.radius / 2]}>
+            <Image url={ASSETS.other.weed}
+              scale={weed.body.radius}
+              transparent={true}
+              position={[0, 0, 0]} />
+          </Billboard>
+          <Sphere
+            renderOrder={1}
+            args={[weed.body.radius, 8, 16]}
+            position={[0, 0, 0]}>
+            <MeshPhongMaterial
+              color={weed.body.meta.color}
+              side={DoubleSide}
+              transparent={true}
+              opacity={0.5} />
+          </Sphere>
+        </Group>)}
     </Group>
     <Solar config={config} activeFocus={props.activeFocus} />
     <Lab config={config} activeFocus={props.activeFocus} />

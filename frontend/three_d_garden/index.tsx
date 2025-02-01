@@ -4,10 +4,13 @@ import { Config } from "./config";
 import { GardenModel } from "./garden";
 import { noop } from "lodash";
 import { AddPlantProps } from "./bed";
+import { TaggedGenericPointer, TaggedWeedPointer } from "farmbot";
 
 export interface ThreeDGardenProps {
   config: Config;
   addPlantProps: AddPlantProps;
+  mapPoints: TaggedGenericPointer[];
+  weeds: TaggedWeedPointer[];
 }
 
 export const ThreeDGarden = (props: ThreeDGardenProps) => {
@@ -18,6 +21,8 @@ export const ThreeDGarden = (props: ThreeDGardenProps) => {
           config={props.config}
           activeFocus={""}
           setActiveFocus={noop}
+          mapPoints={props.mapPoints}
+          weeds={props.weeds}
           addPlantProps={props.addPlantProps} />
       </Canvas>
     </div>

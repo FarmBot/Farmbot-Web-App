@@ -56,6 +56,7 @@ export const ASSETS: Record<string, Record<string, string>> = {
   },
   other: {
     gear: "/app-resources/img/icons/settings.svg",
+    weed: "/3D/icons/generic-weed.avif",
   },
   people: {
     person1: "/3D/people/person_1.avif",

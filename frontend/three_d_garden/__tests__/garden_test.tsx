@@ -10,8 +10,9 @@ import { GardenModelProps, GardenModel } from "../garden";
 import { clone } from "lodash";
 import { INITIAL } from "../config";
 import { render, screen } from "@testing-library/react";
-import { fakePlant } from "../../__test_support__/fake_state/resources";
+import { fakePlant, fakePoint, fakeWeed } from "../../__test_support__/fake_state/resources";
 import { fakeAddPlantProps } from "../../__test_support__/fake_props";
+import { ASSETS } from "../constants";
 
 describe("<GardenModel />", () => {
   const fakeProps = (): GardenModelProps => ({
@@ -19,6 +20,8 @@ describe("<GardenModel />", () => {
     activeFocus: "",
     setActiveFocus: jest.fn(),
     addPlantProps: fakeAddPlantProps([]),
+    mapPoints: [],
+    weeds: [],
   });
 
   it("renders", () => {
@@ -44,6 +47,15 @@ describe("<GardenModel />", () => {
     render(<GardenModel {...p} />);
     const plantLabels = screen.queryAllByText("Beet");
     expect(plantLabels.length).toEqual(1);
+  });
+
+  it("renders points and weeds", () => {
+    const p = fakeProps();
+    p.mapPoints = [fakePoint()];
+    p.weeds = [fakeWeed()];
+    const { container } = render(<GardenModel {...p} />);
+    expect(container).toContainHTML("cylinder");
+    expect(container).toContainHTML(ASSETS.other.weed);
   });
 
   it("renders promo plants", () => {

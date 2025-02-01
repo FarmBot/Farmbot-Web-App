@@ -25,6 +25,8 @@ describe("<ThreeDGardenMap />", () => {
     dispatch: jest.fn(),
     getWebAppConfigValue: jest.fn(),
     curves: [],
+    mapPoints: [],
+    weeds: [],
   });
 
   it("converts props", () => {
@@ -55,6 +57,8 @@ describe("<ThreeDGardenMap />", () => {
     expect(ThreeDGarden).toHaveBeenCalledWith({
       config: expectedConfig,
       addPlantProps: expect.any(Object),
+      mapPoints: [],
+      weeds: [],
     }, {});
   });
 });

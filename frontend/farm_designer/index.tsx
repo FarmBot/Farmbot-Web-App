@@ -216,6 +216,8 @@ export class RawFarmDesigner
           botSize={this.props.botSize}
           dispatch={this.props.dispatch}
           curves={this.props.curves}
+          mapPoints={this.props.genericPoints}
+          weeds={this.props.weeds}
           getWebAppConfigValue={this.props.getConfigValue} />
         : <div
           className={`farm-designer-map ${this.mapPanelClassName}`}

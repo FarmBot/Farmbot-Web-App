@@ -6,7 +6,9 @@ import {
 } from "./map/interfaces";
 import { clone } from "lodash";
 import { SourceFbosConfig } from "../devices/interfaces";
-import { ConfigurationName, TaggedCurve } from "farmbot";
+import {
+  ConfigurationName, TaggedCurve, TaggedGenericPointer, TaggedWeedPointer,
+} from "farmbot";
 import { DesignerState } from "./interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 
@@ -21,6 +23,8 @@ export interface ThreeDGardenMapProps {
   dispatch: Function;
   getWebAppConfigValue: GetWebAppConfigValue;
   curves: TaggedCurve[];
+  mapPoints: TaggedGenericPointer[];
+  weeds: TaggedWeedPointer[];
 }
 
 export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
@@ -59,6 +63,8 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
 
   return <ThreeDGarden
     config={config}
+    mapPoints={props.mapPoints}
+    weeds={props.weeds}
     addPlantProps={{
       gridSize: props.mapTransformProps.gridSize,
       dispatch: props.dispatch,

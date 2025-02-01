@@ -11,6 +11,8 @@ describe("<ThreeDGarden />", () => {
   const fakeProps = (): ThreeDGardenProps => ({
     config: clone(INITIAL),
     addPlantProps: fakeAddPlantProps([]),
+    mapPoints: [],
+    weeds: [],
   });
 
   it("renders", () => {
