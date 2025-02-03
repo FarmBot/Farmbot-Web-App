@@ -5,6 +5,13 @@ jest.mock("../../api/crud", () => ({
 
 jest.mock("../../plants/plant_inventory", () => ({ Plants: () => <div /> }));
 
+let mockIsMobile = false;
+let mockIsDesktop = false;
+jest.mock("../../screen_size", () => ({
+  isMobile: () => mockIsMobile,
+  isDesktop: () => mockIsDesktop,
+}));
+
 import React from "react";
 import {
   getDefaultAxisLength, getGridSize, RawFarmDesigner as FarmDesigner,
@@ -122,10 +129,35 @@ describe("<FarmDesigner />", () => {
   });
 
   it("renders saved garden indicator", () => {
+    mockIsMobile = false;
+    mockIsDesktop = true;
     const p = fakeProps();
     p.designer.openedSavedGarden = 1;
+    p.designer.panelOpen = false;
     const wrapper = mount(<FarmDesigner {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("viewing saved garden");
+    expect(wrapper.html()).not.toContain("three-d-garden");
+  });
+
+  it("renders saved garden indicator on medium screens", () => {
+    mockIsMobile = false;
+    mockIsDesktop = false;
+    const p = fakeProps();
+    p.designer.openedSavedGarden = 1;
+    p.designer.panelOpen = false;
+    const wrapper = mount(<FarmDesigner {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("viewing saved garden");
+    expect(wrapper.html()).not.toContain("three-d-garden");
+  });
+
+  it("doesn't render saved garden indicator", () => {
+    mockIsMobile = true;
+    mockIsDesktop = false;
+    const p = fakeProps();
+    p.designer.openedSavedGarden = 1;
+    p.designer.panelOpen = false;
+    const wrapper = mount(<FarmDesigner {...p} />);
+    expect(wrapper.text().toLowerCase()).not.toContain("viewing saved garden");
     expect(wrapper.html()).not.toContain("three-d-garden");
   });
 

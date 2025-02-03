@@ -27,6 +27,7 @@ import { ThreeDGardenMap } from "./three_d_garden_map";
 import { Outlet } from "react-router";
 import { ErrorBoundary } from "../error_boundary";
 import { get3DConfigValueFunction } from "../settings/three_d_settings";
+import { isDesktop, isMobile } from "../screen_size";
 
 export const getDefaultAxisLength =
   (getConfigValue: GetWebAppConfigValue): Record<Xyz, number> => {
@@ -268,7 +269,9 @@ export class RawFarmDesigner
             dispatch={this.props.dispatch} />
         </div>}
 
-      {this.props.designer.openedSavedGarden &&
+      {this.props.designer.openedSavedGarden
+        && !isMobile()
+        && (isDesktop() || !this.props.designer.panelOpen) &&
         <SavedGardenHUD dispatch={this.props.dispatch} />}
 
       {!this.props.getConfigValue(BooleanSetting.three_d_garden) &&
