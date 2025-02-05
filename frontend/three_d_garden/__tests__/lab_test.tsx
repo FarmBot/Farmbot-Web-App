@@ -19,6 +19,13 @@ describe("<Lab />", () => {
     expect(wrapper.find({ name: "people" }).first().props().visible).toBeFalsy();
   });
 
+  it("not visible when scene is not lab", () => {
+    const p = fakeProps();
+    p.config.scene = "Greenhouse";
+    const wrapper = mount(<Lab {...p} />);
+    expect(wrapper.find({ name: "lab-environment" }).first().props().visible).toBeFalsy();
+  });
+
   it("renders with people", () => {
     const p = fakeProps();
     p.config.people = true;

@@ -42,7 +42,7 @@ export const Lab = (props: LabProps) => {
   shelfWoodTexture.wrapT = RepeatWrapping;
   shelfWoodTexture.repeat.set(0.3, 0.3);
 
-  return <Group name={"lab-environment"} visible={config.lab}>
+  return <Group name={"lab-environment"} visible={config.scene == "Lab"}>
     <Group
       name={"lab-walls"}
       position={[
