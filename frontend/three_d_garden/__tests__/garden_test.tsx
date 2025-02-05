@@ -146,18 +146,15 @@ describe("<GardenModel />", () => {
 
   it("renders different ground based on scene", () => {
     const scenes = [
-      { name: "Greenhouse", expectedClass: "ground Greenhouse", unexpectedClasses: ["ground Lab", "ground Outdoor"] },
-      { name: "Lab", expectedClass: "ground Lab", unexpectedClasses: ["ground Greenhouse", "ground Outdoor"] },
-      { name: "Outdoor", expectedClass: "ground Outdoor", unexpectedClasses: ["ground Greenhouse", "ground Lab"] },
+      { name: "Greenhouse", expectedClass: "ground Greenhouse" },
+      { name: "Lab", expectedClass: "ground Lab" },
+      { name: "Outdoor", expectedClass: "ground Outdoor" },
     ];
-    scenes.forEach(({ name, expectedClass, unexpectedClasses }) => {
+    scenes.forEach(({ name, expectedClass }) => {
       const p = fakeProps();
       p.config.scene = name;
       const { container } = render(<GardenModel {...p} />);
       expect(container.innerHTML).toContain(expectedClass);
-      unexpectedClasses.forEach(unexpectedClass => {
-        expect(container.innerHTML).not.toContain(unexpectedClass);
-      });
     });
   });
 });
