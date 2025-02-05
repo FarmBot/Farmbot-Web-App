@@ -144,12 +144,20 @@ describe("<GardenModel />", () => {
     expect(console.log).toHaveBeenCalledWith(["1", "2"]);
   });
 
-  it("renders different ground", () => {
-    const p = fakeProps();
-    p.config.scene = "Greenhouse";
-    const { container } = render(<GardenModel {...p} />);
-    expect(container.innerHTML).toContain("ground Greenhouse");
-    expect(container.innerHTML).not.toContain("ground Lab");
-    expect(container.innerHTML).not.toContain("ground Outdoor");
+  it("renders different ground based on scene", () => {
+    const scenes = [
+      { name: "Greenhouse", expectedClass: "ground Greenhouse", unexpectedClasses: ["ground Lab", "ground Outdoor"] },
+      { name: "Lab", expectedClass: "ground Lab", unexpectedClasses: ["ground Greenhouse", "ground Outdoor"] },
+      { name: "Outdoor", expectedClass: "ground Outdoor", unexpectedClasses: ["ground Greenhouse", "ground Lab"] },
+    ];
+    scenes.forEach(({ name, expectedClass, unexpectedClasses }) => {
+      const p = fakeProps();
+      p.config.scene = name;
+      const { container } = render(<GardenModel {...p} />);
+      expect(container.innerHTML).toContain(expectedClass);
+      unexpectedClasses.forEach(unexpectedClass => {
+        expect(container.innerHTML).not.toContain(unexpectedClass);
+      });
+    });
   });
 });
