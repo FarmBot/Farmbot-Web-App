@@ -9,6 +9,19 @@ import {
 import * as THREE from "three";
 import React, { ReactNode } from "react";
 import { TransitionFn, UseSpringProps } from "@react-spring/three";
+import { ThreeElements } from "@react-three/fiber";
+
+const GroupForTests = (props: ThreeElements["group"]) =>
+  // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
+  <group {...props} />;
+
+jest.mock("../three_d_garden/components", () => ({
+  ...jest.requireActual("../three_d_garden/components"),
+  Group: (props: ThreeElements["group"]) =>
+    props.visible === false
+      ? <></>
+      : <GroupForTests {...props} />,
+}));
 
 jest.mock("three/examples/jsm/Addons.js", () => ({
   SVGLoader: class {

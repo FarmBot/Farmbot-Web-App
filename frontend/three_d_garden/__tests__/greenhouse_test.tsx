@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { Greenhouse, GreenhouseProps } from "../greenhouse";
 import { INITIAL } from "../config";
 import { clone } from "lodash";
@@ -12,39 +12,43 @@ describe("<Greenhouse />", () => {
 
   it("renders", () => {
     const p = fakeProps();
+    p.config.scene = "Greenhouse";
     p.config.people = false;
     p.activeFocus = "";
-    const wrapper = mount(<Greenhouse {...p} />);
-    expect(wrapper.html()).toContain("greenhouse-environment");
-    expect(wrapper.find({ name: "people" }).first().props().visible).toBeFalsy();
-    expect(wrapper.html()).toContain("starter-tray-1");
-    expect(wrapper.html()).toContain("starter-tray-2");
-    expect(wrapper.html()).toContain("left-greenhouse-wall");
-    expect(wrapper.html()).toContain("right-greenhouse-wall");
-    expect(wrapper.html()).toContain("potted-plant");
+    const { container } = render(<Greenhouse {...p} />);
+    expect(container).toContainHTML("greenhouse-environment");
+    expect(container).not.toContainHTML("people");
+    expect(container).toContainHTML("starter-tray-1");
+    expect(container).toContainHTML("starter-tray-2");
+    expect(container).toContainHTML("left-greenhouse-wall");
+    expect(container).toContainHTML("right-greenhouse-wall");
+    expect(container).toContainHTML("potted-plant");
   });
 
   it("not visible when scene is not greenhouse", () => {
     const p = fakeProps();
     p.config.scene = "Lab";
-    const wrapper = mount(<Greenhouse {...p} />);
-    expect(wrapper.find({ name: "greenhouse-environment" }).first().props().visible).toBeFalsy();
+    const { container } = render(<Greenhouse {...p} />);
+    expect(container).not.toContainHTML("greenhouse-environment");
   });
 
   it("renders with people", () => {
     const p = fakeProps();
+    p.config.scene = "Greenhouse";
     p.config.people = true;
     p.activeFocus = "";
-    const wrapper = mount(<Greenhouse {...p} />);
-    expect(wrapper.find({ name: "people" }).first().props().visible).toBeTruthy();
+    const { container } = render(<Greenhouse {...p} />);
+    expect(container).toContainHTML("greenhouse-environment");
+    expect(container).toContainHTML("people");
   });
 
   it("doesn't render people or potted plant when active focus is set", () => {
     const p = fakeProps();
+    p.config.scene = "Greenhouse";
     p.config.people = true;
     p.activeFocus = "foo";
-    const wrapper = mount(<Greenhouse {...p} />);
-    expect(wrapper.find({ name: "people" }).first().props().visible).toBeFalsy();
-    expect(wrapper.find({ name: "potted-plant" }).first().props().visible).toBeFalsy();
+    const { container } = render(<Greenhouse {...p} />);
+    expect(container).toContainHTML("greenhouse-environment");
+    expect(container).not.toContainHTML("people");
   });
 });

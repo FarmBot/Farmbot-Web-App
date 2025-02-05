@@ -6,10 +6,16 @@ import { clone } from "lodash";
 import { SVGLoader } from "three/examples/jsm/Addons";
 
 describe("<Bot />", () => {
-  const fakeProps = (): FarmbotModelProps => ({
-    config: clone(INITIAL),
-    activeFocus: "",
-  });
+  const fakeProps = (): FarmbotModelProps => {
+    const config = clone(INITIAL);
+    config.bot = true;
+    config.tracks = true;
+    config.cableCarriers = true;
+    return {
+      config,
+      activeFocus: "",
+    };
+  };
 
   it("renders", () => {
     const p = fakeProps();
@@ -38,14 +44,14 @@ describe("<Bot />", () => {
     const p = fakeProps();
     p.config.kitVersion = "v1.7";
     const wrapper = mount(<Bot {...p} />);
-    expect(wrapper.find({ name: "button-group" }).length).toEqual(10);
+    expect(wrapper.find({ name: "button-group" }).length).toEqual(15); // 5 * 3
   });
 
   it("renders: v1.8", () => {
     const p = fakeProps();
     p.config.kitVersion = "v1.8";
     const wrapper = mount(<Bot {...p} />);
-    expect(wrapper.find({ name: "button-group" }).length).toEqual(6);
+    expect(wrapper.find({ name: "button-group" }).length).toEqual(9); // 3 * 3
   });
 
   it("loads shapes", () => {

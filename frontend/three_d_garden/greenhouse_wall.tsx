@@ -2,6 +2,7 @@ import React from "react";
 import { Box } from "@react-three/drei";
 import { DoubleSide } from "three";
 import { Group, MeshPhongMaterial } from "./components";
+import { range } from "lodash";
 
 const wallLength = 10000;
 const wallHeight = 2500;
@@ -21,68 +22,65 @@ const openPanels = [
 
 export const GreenhouseWall = () => {
 
-  return (
-    <Group
-      name={"greenhouse-wall"}>
-      {Array.from({ length: numWallRows }).map((_, row) =>
-        Array.from({ length: numWallCols }).map((_, col) => {
-          const isOpen = openPanels.some(
-            (panel) => panel.row === row && panel.col === col,
-          );
-          return (
-            <Box
-              castShadow={true}
-              receiveShadow={true}
-              renderOrder={1}
-              args={[paneWidth, glassThickness, paneHeight]}
-              position={[
-                wallGap + paneWidth / 2 + col * (paneWidth + wallGap),
-                0,
-                wallGap + paneHeight / 2 + row * (paneHeight + wallGap),
-              ]}
-              rotation={isOpen ? [-Math.PI / 3, 0, 0] : [0, 0, 0]}>
-              <MeshPhongMaterial
-                color={"#ccffff"}
-                side={DoubleSide}
-                transparent={true}
-                opacity={0.25}
-              />
-            </Box>
-          );
-        }),
-      )}
-      {Array.from({ length: numWallCols + 1 }).map((_, col) => (
-        <Box
+  return <Group
+    name={"greenhouse-wall"}>
+    {range(numWallRows).map(row =>
+      range(numWallCols).map(col => {
+        const isOpen = openPanels.some(panel =>
+          panel.row === row &&
+          panel.col === col,
+        );
+        return <Box
           castShadow={true}
           receiveShadow={true}
-          args={[wallGap, glassThickness, wallHeight]}
+          renderOrder={1}
+          args={[paneWidth, glassThickness, paneHeight]}
           position={[
-            col * (paneWidth + wallGap) + wallGap / 2,
+            wallGap + paneWidth / 2 + col * (paneWidth + wallGap),
             0,
-            wallHeight / 2,
-          ]}>
+            wallGap + paneHeight / 2 + row * (paneHeight + wallGap),
+          ]}
+          rotation={isOpen ? [-Math.PI / 3, 0, 0] : [0, 0, 0]}>
           <MeshPhongMaterial
-            color={"#999"}
+            color={"#ccffff"}
             side={DoubleSide}
+            transparent={true}
+            opacity={0.25}
           />
-        </Box>
-      ))}
-      {Array.from({ length: numWallRows + 1 }).map((_, row) => (
-        <Box
-          castShadow={true}
-          receiveShadow={true}
-          args={[wallLength, glassThickness, wallGap]}
-          position={[
-            wallLength / 2,
-            0,
-            wallGap + row * (paneHeight + wallGap) - wallGap / 2,
-          ]}>
-          <MeshPhongMaterial
-            color={"#999"}
-            side={DoubleSide}
-          />
-        </Box>
-      ))}
-    </Group>
-  );
+        </Box>;
+      }),
+    )}
+    {range(numWallCols + 1).map(col => (
+      <Box
+        castShadow={true}
+        receiveShadow={true}
+        args={[wallGap, glassThickness, wallHeight]}
+        position={[
+          col * (paneWidth + wallGap) + wallGap / 2,
+          0,
+          wallHeight / 2,
+        ]}>
+        <MeshPhongMaterial
+          color={"#999"}
+          side={DoubleSide}
+        />
+      </Box>
+    ))}
+    {range(numWallRows + 1).map(row => (
+      <Box
+        castShadow={true}
+        receiveShadow={true}
+        args={[wallLength, glassThickness, wallGap]}
+        position={[
+          wallLength / 2,
+          0,
+          wallGap + row * (paneHeight + wallGap) - wallGap / 2,
+        ]}>
+        <MeshPhongMaterial
+          color={"#999"}
+          side={DoubleSide}
+        />
+      </Box>
+    ))}
+  </Group>;
 };

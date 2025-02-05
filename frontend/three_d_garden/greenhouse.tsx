@@ -29,97 +29,96 @@ export const Greenhouse = (props: GreenhouseProps) => {
   shelfWoodTexture.wrapT = RepeatWrapping;
   shelfWoodTexture.repeat.set(0.3, 0.3);
 
-  return (
+  return <Group
+    name={"greenhouse-environment"}
+    visible={config.scene == "Greenhouse"}>
+
     <Group
-      name={"greenhouse-environment"}
-      visible={config.scene == "Greenhouse"}>
-
-      <Group
-        name={"right-greenhouse-wall"}
-        position={[
-          threeSpace(-wallOffset, config.bedLengthOuter),
-          threeSpace(config.bedWidthOuter + wallOffset, config.bedWidthOuter),
-          groundZ,
-        ]}>
-        <GreenhouseWall />
-        <Box
-          name={"shelf"}
-          castShadow={true}
-          receiveShadow={true}
-          args={[wallLength, shelfDepth, shelfThickness]}
-          position={[wallLength / 2, -shelfDepth / 2, shelfHeight]}>
-          <MeshPhongMaterial
-            map={shelfWoodTexture}
-            color={"#aaa"}
-            side={DoubleSide}
-          />
-        </Box>
-        <Group name={"starter-tray-1"}
-          position={[2000, -shelfDepth / 2, shelfHeight + 25]}>
-          <StarterTray />
-        </Group>
-        <Group name={"starter-tray-2"}
-          position={[3000, -shelfDepth / 2, shelfHeight + 25]}>
-          <StarterTray />
-        </Group>
+      name={"right-greenhouse-wall"}
+      position={[
+        threeSpace(-wallOffset, config.bedLengthOuter),
+        threeSpace(config.bedWidthOuter + wallOffset, config.bedWidthOuter),
+        groundZ,
+      ]}>
+      <GreenhouseWall />
+      <Box
+        name={"shelf"}
+        castShadow={true}
+        receiveShadow={true}
+        args={[wallLength, shelfDepth, shelfThickness]}
+        position={[wallLength / 2, -shelfDepth / 2, shelfHeight]}>
+        <MeshPhongMaterial
+          map={shelfWoodTexture}
+          color={"#aaa"}
+          side={DoubleSide}
+        />
+      </Box>
+      <Group name={"starter-tray-1"}
+        position={[2000, -shelfDepth / 2, shelfHeight + 25]}>
+        <StarterTray />
       </Group>
-
-      <Group
-        name={"left-greenhouse-wall"}
-        position={[
-          threeSpace(-wallOffset, config.bedLengthOuter),
-          threeSpace(config.bedWidthOuter + wallOffset - 10000, config.bedWidthOuter),
-          groundZ,
-        ]}
-        rotation={[0, 0, Math.PI / 2]}>
-        <GreenhouseWall />
-      </Group>
-
-      <Group
-        name={"people"}
-        visible={config.people && props.activeFocus == ""}>
-        <Billboard
-          position={[
-            threeSpace(-400, config.bedLengthOuter),
-            threeSpace(-400, config.bedWidthOuter),
-            groundZ,
-          ]}>
-          <Image
-            url={ASSETS.people.person3}
-            position={[0, 900, 0]}
-            scale={[875, 1800]}
-            transparent={true}
-            opacity={0.4}
-            renderOrder={1}
-          />
-        </Billboard>
-        <Billboard
-          position={[
-            threeSpace(0, config.bedLengthOuter),
-            threeSpace(config.bedWidthOuter + 900, config.bedWidthOuter),
-            groundZ,
-          ]}>
-          <Image
-            url={ASSETS.people.person4Flipped}
-            position={[0, 850, 0]}
-            scale={[580, 1700]}
-            transparent={true}
-            opacity={0.4}
-            renderOrder={1}
-          />
-        </Billboard>
-      </Group>
-
-      <Group
-        name="potted-plant"
-        visible={props.activeFocus == ""}
-        position={[
-          threeSpace(-1750, config.bedLengthOuter),
-          threeSpace(850, -config.bedWidthOuter),
-          groundZ,
-        ]}>
-        <PottedPlant />
+      <Group name={"starter-tray-2"}
+        position={[3000, -shelfDepth / 2, shelfHeight + 25]}>
+        <StarterTray />
       </Group>
     </Group>
-  );
+
+    <Group
+      name={"left-greenhouse-wall"}
+      position={[
+        threeSpace(-wallOffset, config.bedLengthOuter),
+        threeSpace(config.bedWidthOuter + wallOffset - 10000,
+          config.bedWidthOuter),
+        groundZ,
+      ]}
+      rotation={[0, 0, Math.PI / 2]}>
+      <GreenhouseWall />
+    </Group>
+
+    <Group
+      name={"people"}
+      visible={config.people && props.activeFocus == ""}>
+      <Billboard
+        position={[
+          threeSpace(-400, config.bedLengthOuter),
+          threeSpace(-400, config.bedWidthOuter),
+          groundZ,
+        ]}>
+        <Image
+          url={ASSETS.people.person3}
+          position={[0, 900, 0]}
+          scale={[875, 1800]}
+          transparent={true}
+          opacity={0.4}
+          renderOrder={1}
+        />
+      </Billboard>
+      <Billboard
+        position={[
+          threeSpace(0, config.bedLengthOuter),
+          threeSpace(config.bedWidthOuter + 900, config.bedWidthOuter),
+          groundZ,
+        ]}>
+        <Image
+          url={ASSETS.people.person4Flipped}
+          position={[0, 850, 0]}
+          scale={[580, 1700]}
+          transparent={true}
+          opacity={0.4}
+          renderOrder={1}
+        />
+      </Billboard>
+    </Group>
+
+    <Group
+      name="potted-plant"
+      visible={props.activeFocus == ""}
+      position={[
+        threeSpace(-1750, config.bedLengthOuter),
+        threeSpace(850, -config.bedWidthOuter),
+        groundZ,
+      ]}>
+      <PottedPlant />
+    </Group>
+  </Group>;
 };

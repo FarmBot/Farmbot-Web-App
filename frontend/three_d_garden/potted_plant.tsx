@@ -19,29 +19,28 @@ export const PottedPlant = () => {
     new THREE.Vector2(0, 0.6),
   ], []);
 
-  const geometry = useMemo(() => new THREE.LatheGeometry(points, 32, 0, Math.PI * 2), [points]);
+  const geometry = useMemo(() =>
+    new THREE.LatheGeometry(points, 32, 0, Math.PI * 2), [points]);
 
-  return (
-    <Group name="pot-with-plant">
-      <Mesh geometry={geometry}
-        scale={[potHeight, potHeight, potHeight]}
-        rotation={[Math.PI / 2, 0, 0]}
-        receiveShadow={true}>
-        <MeshPhongMaterial color="#E2725B" />
-      </Mesh>
-      <Circle args={[potHeight * 0.35, 16]}
-        position={[0, 0, potHeight * 0.9]}>
-        <MeshPhongMaterial color="#3A1502" />
-      </Circle>
-      <Billboard follow={true} position={[0, 0, potHeight - plantHeight / 8]}>
-        <Image
-          url={"/crops/icons/lavender.avif"}
-          scale={plantHeight}
-          transparent={true}
-          renderOrder={1}
-          position={[0, plantHeight / 2, 0]}
-        />
-      </Billboard>
-    </Group>
-  );
+  return <Group name="pot-with-plant">
+    <Mesh geometry={geometry}
+      scale={[potHeight, potHeight, potHeight]}
+      rotation={[Math.PI / 2, 0, 0]}
+      receiveShadow={true}>
+      <MeshPhongMaterial color="#E2725B" />
+    </Mesh>
+    <Circle args={[potHeight * 0.35, 16]}
+      position={[0, 0, potHeight * 0.9]}>
+      <MeshPhongMaterial color="#3A1502" />
+    </Circle>
+    <Billboard follow={true} position={[0, 0, potHeight - plantHeight / 8]}>
+      <Image
+        url={"/crops/icons/lavender.avif"}
+        scale={plantHeight}
+        transparent={true}
+        renderOrder={1}
+        position={[0, plantHeight / 2, 0]}
+      />
+    </Billboard>
+  </Group>;
 };

@@ -91,7 +91,9 @@ export namespace ExternalUrl {
     export const cameraCalibrationCard = `${PRODUCTS}/camera-calibration-card`;
     export const cameraReplacement =
       `${PRODUCTS}/genesis-v1-5-express-v1-0-camera-free-replacement`;
-    export const genesisKitBase = `${KITS}/farmbot-genesis`;
-    export const genesisXlKitBase = `${KITS}/farmbot-genesis-xl`;
+    export const genesisKit = (version: string) =>
+      `${KITS}/farmbot-genesis-${version.replace(".", "-")}`;
+    export const genesisXlKit = (version: string) =>
+      `${KITS}/farmbot-genesis-xl-${version.replace(".", "-")}`;
   }
 }

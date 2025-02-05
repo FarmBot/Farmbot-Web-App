@@ -3,11 +3,23 @@ import { mount } from "enzyme";
 import {
   AmbientLight,
   DirectionalLight,
+  Group,
   Mesh,
   MeshBasicMaterial,
   PointLight,
 } from "../components";
 import { ThreeElements } from "@react-three/fiber";
+
+describe("<Group />", () => {
+  const fakeProps = (): ThreeElements["group"] => ({
+    visible: true,
+  });
+
+  it("adds props", () => {
+    const wrapper = mount(<Group {...fakeProps()} />);
+    expect(wrapper.props().visible).toEqual(true);
+  });
+});
 
 describe("<AmbientLight />", () => {
   const fakeProps = (): ThreeElements["ambientLight"] => ({

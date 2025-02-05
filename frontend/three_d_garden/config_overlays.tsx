@@ -112,7 +112,6 @@ interface PromoInfoProps {
 
 const PromoInfo = (props: PromoInfoProps) => {
   const { isGenesis, kitVersion } = props;
-  const kitVersionSlug = kitVersion.replace(".", "-");
   return <div className="promo-info">
     <h2 className="title">Explore our models</h2>
     {isGenesis
@@ -144,8 +143,8 @@ const PromoInfo = (props: PromoInfoProps) => {
     <a className="buy-button"
       target="_top"
       href={isGenesis
-        ? ExternalUrl.Store.genesisKitBase + "-" + kitVersionSlug
-        : ExternalUrl.Store.genesisXlKitBase + "-" + kitVersionSlug}>
+        ? ExternalUrl.Store.genesisKit(kitVersion)
+        : ExternalUrl.Store.genesisXlKit(kitVersion)}>
       <p>Order Genesis</p>
       <p className="genesis-xl"
         style={{ display: isGenesis ? "none" : "inline-block" }}>

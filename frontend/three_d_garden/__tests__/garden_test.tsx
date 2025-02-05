@@ -10,7 +10,9 @@ import { GardenModelProps, GardenModel } from "../garden";
 import { clone } from "lodash";
 import { INITIAL } from "../config";
 import { render, screen } from "@testing-library/react";
-import { fakePlant, fakePoint, fakeWeed } from "../../__test_support__/fake_state/resources";
+import {
+  fakePlant, fakePoint, fakeWeed,
+} from "../../__test_support__/fake_state/resources";
 import { fakeAddPlantProps } from "../../__test_support__/fake_props";
 import { ASSETS } from "../constants";
 
@@ -144,17 +146,15 @@ describe("<GardenModel />", () => {
     expect(console.log).toHaveBeenCalledWith(["1", "2"]);
   });
 
-  it("renders different ground based on scene", () => {
-    const scenes = [
-      { name: "Greenhouse", expectedClass: "ground Greenhouse" },
-      { name: "Lab", expectedClass: "ground Lab" },
-      { name: "Outdoor", expectedClass: "ground Outdoor" },
-    ];
-    scenes.forEach(({ name, expectedClass }) => {
+  it.each<[string, string]>([
+    ["Greenhouse", "ground Greenhouse"],
+    ["Lab", "ground Lab"],
+    ["Outdoor", "ground Outdoor"],
+  ])("renders different ground based on scene: %s %s",
+    (sceneName, expectedClass) => {
       const p = fakeProps();
-      p.config.scene = name;
+      p.config.scene = sceneName;
       const { container } = render(<GardenModel {...p} />);
       expect(container.innerHTML).toContain(expectedClass);
     });
-  });
 });

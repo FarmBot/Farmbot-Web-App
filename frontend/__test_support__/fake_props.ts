@@ -6,7 +6,7 @@ export const fakeAddPlantProps =
   (plants: TaggedPlant[]): AddPlantProps => ({
     gridSize: { x: 1000, y: 2000 },
     dispatch: jest.fn(),
-    getConfigValue: jest.fn(),
+    getConfigValue: jest.fn(() => true),
     plants,
     curves: [],
     designer: fakeDesignerState(),

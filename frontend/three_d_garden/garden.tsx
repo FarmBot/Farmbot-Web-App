@@ -111,22 +111,18 @@ export const GardenModel = (props: GardenModelProps) => {
   const gridZ = zero.z - config.soilHeight + 5;
   const extents = extentsFunc(config);
 
-  let groundTexture;
-  let groundColor;
-  let lowDetailGroundColor;
-  if (config.scene === "Greenhouse") {
-    groundTexture = brickTexture;
-    groundColor = "#999";
-    lowDetailGroundColor = "#8c6f64";
-  } else if (config.scene === "Lab") {
-    groundTexture = labFloorTexture;
-    groundColor = "#aaa";
-    lowDetailGroundColor = "gray";
-  } else {
-    groundTexture = grassTexture;
-    groundColor = "#ddd";
-    lowDetailGroundColor = "darkgreen";
-  }
+  const getGroundProperties = (sceneName: string) => {
+    switch (sceneName) {
+      case "Greenhouse":
+        return { texture: brickTexture, color: "#999", lowDetailColor: "#8c6f64" };
+      case "Lab":
+        return { texture: labFloorTexture, color: "#aaa", lowDetailColor: "gray" };
+      default:
+        return { texture: grassTexture, color: "#ddd", lowDetailColor: "darkgreen" };
+    }
+  };
+
+  const groundProperties = getGroundProperties(config.scene);
 
   // eslint-disable-next-line no-null/no-null
   return <Group dispose={null}
@@ -167,13 +163,13 @@ export const GardenModel = (props: GardenModelProps) => {
     <Detailed distances={detailLevels(config)}>
       <Ground>
         <MeshPhongMaterial
-          map={groundTexture}
-          color={groundColor}
+          map={groundProperties.texture}
+          color={groundProperties.color}
           shininess={0} />
       </Ground>
       <Ground>
         <MeshPhongMaterial
-          color={lowDetailGroundColor}
+          color={groundProperties.lowDetailColor}
           shininess={0} />
       </Ground>
     </Detailed>
