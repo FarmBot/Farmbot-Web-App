@@ -32,6 +32,7 @@ import { ICON_URLS } from "../crops/constants";
 import { calculatePlantPositions, convertPlants, ThreeDPlant } from "./plants";
 import { TaggedGenericPointer, TaggedWeedPointer } from "farmbot";
 import { BooleanSetting } from "../session_keys";
+import { Greenhouse } from "./greenhouse";
 
 const AnimatedGroup = animated(Group);
 
@@ -86,6 +87,10 @@ export const GardenModel = (props: GardenModelProps) => {
   labFloorTexture.wrapS = RepeatWrapping;
   labFloorTexture.wrapT = RepeatWrapping;
   labFloorTexture.repeat.set(16, 24);
+  const brickTexture = useTexture(ASSETS.textures.bricks + "?=bricks");
+  brickTexture.wrapS = RepeatWrapping;
+  brickTexture.wrapT = RepeatWrapping;
+  brickTexture.repeat.set(30, 30);
 
   const Ground = ({ children }: { children: React.ReactElement }) =>
     <Circle name={"ground"}
@@ -145,13 +150,25 @@ export const GardenModel = (props: GardenModelProps) => {
     <Detailed distances={detailLevels(config)}>
       <Ground>
         <MeshPhongMaterial
-          map={config.lab ? labFloorTexture : grassTexture}
-          color={"#ddd"}
+          map={
+            config.scene === "Greenhouse" 
+              ? brickTexture
+              : config.scene === "Lab" 
+              ? labFloorTexture 
+              : grassTexture
+          }          
+          color={
+            config.scene === "Greenhouse" 
+              ? "#999"
+              : config.scene === "Lab" 
+              ? "#aaa" 
+              : "#ddd"
+          }
           shininess={0} />
       </Ground>
       <Ground>
         <MeshPhongMaterial
-          color={config.lab ? "gray" : "darkgreen"}
+          color={config.scene == "Outdoor" ? "darkgreen" : "gray"}
           shininess={0} />
       </Ground>
     </Detailed>
@@ -275,5 +292,6 @@ export const GardenModel = (props: GardenModelProps) => {
     </Group>
     <Solar config={config} activeFocus={props.activeFocus} />
     <Lab config={config} activeFocus={props.activeFocus} />
+    <Greenhouse config={config} activeFocus={props.activeFocus} />
   </Group>;
 };

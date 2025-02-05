@@ -95,6 +95,7 @@ export const PublicOverlay = (props: OverlayProps) => {
           options={{
             "outdoor": "Outdoor",
             "lab": "Lab",
+            "greenhouse": "Greenhouse",
           }} />
       </div>}
     {config.promoInfo && !props.activeFocus &&
@@ -334,7 +335,7 @@ export const PrivateOverlay = (props: OverlayProps) => {
       <Toggle {...common} configKey={"lowDetail"} />
       <label>{"Environment"}</label>
       <Radio {...common} configKey={"scene"}
-        options={["Outdoor", "Lab"]} />
+        options={["Outdoor", "Lab", "Greenhouse"]} />
       <Toggle {...common} configKey={"ground"} />
       <Toggle {...common} configKey={"grid"} />
       <Toggle {...common} configKey={"utilitiesPost"} />

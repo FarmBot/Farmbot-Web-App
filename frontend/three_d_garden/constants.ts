@@ -15,6 +15,7 @@ export const ASSETS: Record<string, Record<string, string>> = {
     aluminum: "/3D/textures/aluminum.avif",
     concrete: "/3D/textures/concrete.avif",
     screen: "/3D/textures/screen.avif",
+    bricks: "/3D/textures/bricks.avif",
   },
   shapes: {
     track: "/3D/shapes/track.svg",
@@ -57,12 +58,17 @@ export const ASSETS: Record<string, Record<string, string>> = {
   other: {
     gear: "/app-resources/img/icons/settings.svg",
     weed: "/3D/icons/generic-weed.avif",
+    plant: "/3D/icons/generic-plant.avif",
   },
   people: {
     person1: "/3D/people/person_1.avif",
     person1Flipped: "/3D/people/person_1_flipped.avif",
     person2: "/3D/people/person_2.avif",
     person2Flipped: "/3D/people/person_2_flipped.avif",
+    person3: "/3D/people/person_3.avif",
+    person3Flipped: "/3D/people/person_3_flipped.avif",
+    person4: "/3D/people/person_4.avif",
+    person4Flipped: "/3D/people/person_4_flipped.avif",
   },
 };
 
