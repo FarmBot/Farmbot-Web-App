@@ -93,7 +93,7 @@ export const GardenModel = (props: GardenModelProps) => {
   brickTexture.repeat.set(30, 30);
 
   const Ground = ({ children }: { children: React.ReactElement }) =>
-    <Circle name={"ground"}
+    <Circle name={`ground ${config.scene}`}
       visible={config.ground}
       receiveShadow={true}
       args={[30000, 16]}

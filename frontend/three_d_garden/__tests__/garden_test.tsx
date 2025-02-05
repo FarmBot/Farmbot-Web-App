@@ -143,4 +143,13 @@ describe("<GardenModel />", () => {
     });
     expect(console.log).toHaveBeenCalledWith(["1", "2"]);
   });
+
+  it("renders different ground", () => {
+    const p = fakeProps();
+    p.config.scene = "Greenhouse";
+    const { container } = render(<GardenModel {...p} />);
+    expect(container.innerHTML).toContain("ground Greenhouse");
+    expect(container.innerHTML).not.toContain("ground Lab");
+    expect(container.innerHTML).not.toContain("ground Outdoor");
+  });
 });
