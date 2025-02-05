@@ -1,6 +1,6 @@
 import React from "react";
-import { Box, Billboard, Image, useTexture } from "@react-three/drei";
-import { DoubleSide, RepeatWrapping } from "three";
+import { Box, useTexture } from "@react-three/drei";
+import { DoubleSide, RepeatWrapping, Vector3 } from "three";
 import { ASSETS } from "./constants";
 import { threeSpace } from "./helpers";
 import { Config } from "./config";
@@ -8,6 +8,7 @@ import { Group, MeshPhongMaterial } from "./components";
 import { StarterTray } from "./starter_tray";
 import { PottedPlant } from "./potted_plant";
 import { GreenhouseWall } from "./greenhouse_wall";
+import { People } from "./people";
 
 export interface GreenhouseProps {
   config: Config;
@@ -75,40 +76,27 @@ export const Greenhouse = (props: GreenhouseProps) => {
       <GreenhouseWall />
     </Group>
 
-    <Group
-      name={"people"}
-      visible={config.people && props.activeFocus == ""}>
-      <Billboard
-        position={[
-          threeSpace(-400, config.bedLengthOuter),
-          threeSpace(-400, config.bedWidthOuter),
-          groundZ,
-        ]}>
-        <Image
-          url={ASSETS.people.person3}
-          position={[0, 900, 0]}
-          scale={[875, 1800]}
-          transparent={true}
-          opacity={0.4}
-          renderOrder={1}
-        />
-      </Billboard>
-      <Billboard
-        position={[
-          threeSpace(0, config.bedLengthOuter),
-          threeSpace(config.bedWidthOuter + 900, config.bedWidthOuter),
-          groundZ,
-        ]}>
-        <Image
-          url={ASSETS.people.person4Flipped}
-          position={[0, 850, 0]}
-          scale={[580, 1700]}
-          transparent={true}
-          opacity={0.4}
-          renderOrder={1}
-        />
-      </Billboard>
-    </Group>
+    <People
+      activeFocus={props.activeFocus}
+      config={config}
+      people={[
+        {
+          url: ASSETS.people.person3,
+          offset: new Vector3(
+            -400,
+            -400,
+            0,
+          )
+        },
+        {
+          url: ASSETS.people.person4Flipped,
+          offset: new Vector3(
+            0,
+            config.bedWidthOuter + 900,
+            0,
+          )
+        },
+      ]} />
 
     <Group
       name="potted-plant"

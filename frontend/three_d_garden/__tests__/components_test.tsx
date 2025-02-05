@@ -1,3 +1,7 @@
+jest.mock("../components", () => ({
+  ...jest.requireActual("../components"),
+}));
+
 import React from "react";
 import { mount } from "enzyme";
 import {

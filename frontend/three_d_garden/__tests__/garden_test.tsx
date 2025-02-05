@@ -22,8 +22,6 @@ describe("<GardenModel />", () => {
     activeFocus: "",
     setActiveFocus: jest.fn(),
     addPlantProps: fakeAddPlantProps([]),
-    mapPoints: [],
-    weeds: [],
   });
 
   it("renders", () => {

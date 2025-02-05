@@ -1,11 +1,12 @@
 import React from "react";
-import { Box, Billboard, Image, Extrude, useTexture } from "@react-three/drei";
-import { DoubleSide, Shape, RepeatWrapping } from "three";
+import { Box, Extrude, useTexture } from "@react-three/drei";
+import { DoubleSide, Shape, RepeatWrapping, Vector3 } from "three";
 import { ASSETS } from "./constants";
 import { threeSpace } from "./helpers";
 import { Config } from "./config";
 import { Desk } from "./desk";
 import { Group, MeshPhongMaterial } from "./components";
+import { People } from "./people";
 
 export interface LabProps {
   config: Config;
@@ -80,36 +81,26 @@ export const Lab = (props: LabProps) => {
       ))}
     </Group>
     <Desk config={config} activeFocus={props.activeFocus} />
-    <Group name={"people"}
-      visible={config.people && props.activeFocus == ""}>
-      <Billboard
-        position={[
-          threeSpace(-300, config.bedLengthOuter),
-          threeSpace(-300, config.bedWidthOuter),
-          groundZ,
-        ]}>
-        <Image
-          url={ASSETS.people.person1Flipped}
-          position={[0, 900, 0]}
-          scale={[900, 1800]}
-          transparent={true}
-          opacity={0.4}
-          renderOrder={1} />
-      </Billboard>
-      <Billboard
-        position={[
-          threeSpace(config.bedLengthOuter / 2, config.bedLengthOuter),
-          threeSpace(config.bedWidthOuter + 500, config.bedWidthOuter),
-          groundZ,
-        ]}>
-        <Image
-          url={ASSETS.people.person2Flipped}
-          position={[0, 850, 0]}
-          scale={[700, 1700]}
-          transparent={true}
-          opacity={0.4}
-          renderOrder={1} />
-      </Billboard>
-    </Group>
+    <People
+      activeFocus={props.activeFocus}
+      config={config}
+      people={[
+        {
+          url: ASSETS.people.person1Flipped,
+          offset: new Vector3(
+            -300,
+            -300,
+            0,
+          )
+        },
+        {
+          url: ASSETS.people.person2Flipped,
+          offset: new Vector3(
+            config.bedLengthOuter / 2,
+            config.bedWidthOuter + 500,
+            0,
+          )
+        },
+      ]} />
   </Group>;
 };
