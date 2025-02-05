@@ -25,7 +25,7 @@ export const StarterTray = () => {
       range(14).map(col => {
         const x = -width / 2 + cellSize / 2 + col * cellSize;
         const y = -length / 2 + cellSize / 2 + row * cellSize;
-        return <Billboard
+        return <Billboard key={`${row}-${col}`}
           follow={true}
           position={[x, y, height + seedlingSize / 2]}>
           <Image

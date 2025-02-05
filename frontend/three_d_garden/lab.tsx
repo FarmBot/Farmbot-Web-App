@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Extrude, useTexture } from "@react-three/drei";
-import { DoubleSide, Shape, RepeatWrapping, Vector3 } from "three";
+import { DoubleSide, Shape, RepeatWrapping } from "three";
 import { ASSETS } from "./constants";
 import { threeSpace } from "./helpers";
 import { Config } from "./config";
@@ -87,19 +87,11 @@ export const Lab = (props: LabProps) => {
       people={[
         {
           url: ASSETS.people.person1Flipped,
-          offset: new Vector3(
-            -300,
-            -300,
-            0,
-          )
+          offset: [-300, -300],
         },
         {
           url: ASSETS.people.person2Flipped,
-          offset: new Vector3(
-            config.bedLengthOuter / 2,
-            config.bedWidthOuter + 500,
-            0,
-          )
+          offset: [config.bedLengthOuter / 2, config.bedWidthOuter + 500],
         },
       ]} />
   </Group>;
