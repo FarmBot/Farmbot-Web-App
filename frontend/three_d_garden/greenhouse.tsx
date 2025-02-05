@@ -6,7 +6,7 @@ import { threeSpace } from "./helpers";
 import { Config } from "./config";
 import { Group, MeshPhongMaterial } from "./components";
 import { StarterTray } from "./starter_tray";
-import PottedPlant from "./potted_plant";
+import { PottedPlant } from "./potted_plant";
 import { GreenhouseWall } from "./greenhouse_wall";
 
 export interface GreenhouseProps {
@@ -116,7 +116,7 @@ export const Greenhouse = (props: GreenhouseProps) => {
         position={[
           threeSpace(-1750, config.bedLengthOuter),
           threeSpace(850, -config.bedWidthOuter),
-          groundZ
+          groundZ,
         ]}>
         <PottedPlant />
       </Group>

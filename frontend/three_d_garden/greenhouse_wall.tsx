@@ -27,7 +27,7 @@ export const GreenhouseWall = () => {
       {Array.from({ length: numWallRows }).map((_, row) =>
         Array.from({ length: numWallCols }).map((_, col) => {
           const isOpen = openPanels.some(
-            (panel) => panel.row === row && panel.col === col
+            (panel) => panel.row === row && panel.col === col,
           );
           return (
             <Box
@@ -38,13 +38,18 @@ export const GreenhouseWall = () => {
               position={[
                 wallGap + paneWidth / 2 + col * (paneWidth + wallGap),
                 0,
-                wallGap + paneHeight / 2 + row * (paneHeight + wallGap)
+                wallGap + paneHeight / 2 + row * (paneHeight + wallGap),
               ]}
               rotation={isOpen ? [-Math.PI / 3, 0, 0] : [0, 0, 0]}>
-              <MeshPhongMaterial color={"#ccffff"} side={DoubleSide} transparent={true} opacity={0.25} />
+              <MeshPhongMaterial
+                color={"#ccffff"}
+                side={DoubleSide}
+                transparent={true}
+                opacity={0.25}
+              />
             </Box>
           );
-        })
+        }),
       )}
       {Array.from({ length: numWallCols + 1 }).map((_, col) => (
         <Box
@@ -54,7 +59,7 @@ export const GreenhouseWall = () => {
           position={[
             col * (paneWidth + wallGap) + wallGap / 2,
             0,
-            wallHeight / 2
+            wallHeight / 2,
           ]}>
           <MeshPhongMaterial
             color={"#999"}

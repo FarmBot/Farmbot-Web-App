@@ -111,6 +111,23 @@ export const GardenModel = (props: GardenModelProps) => {
   const gridZ = zero.z - config.soilHeight + 5;
   const extents = extentsFunc(config);
 
+  let groundTexture;
+  let groundColor;
+  let lowDetailGroundColor;
+  if (config.scene === "Greenhouse") {
+    groundTexture = brickTexture;
+    groundColor = "#999";
+    lowDetailGroundColor = "firebrick";
+  } else if (config.scene === "Lab") {
+    groundTexture = labFloorTexture;
+    groundColor = "#aaa";
+    lowDetailGroundColor = "gray";
+  } else {
+    groundTexture = grassTexture;
+    groundColor = "#ddd";
+    lowDetailGroundColor = "darkgreen";
+  }
+
   // eslint-disable-next-line no-null/no-null
   return <Group dispose={null}
     onPointerMove={config.eventDebug
@@ -150,25 +167,13 @@ export const GardenModel = (props: GardenModelProps) => {
     <Detailed distances={detailLevels(config)}>
       <Ground>
         <MeshPhongMaterial
-          map={
-            config.scene === "Greenhouse" 
-              ? brickTexture
-              : config.scene === "Lab" 
-              ? labFloorTexture 
-              : grassTexture
-          }          
-          color={
-            config.scene === "Greenhouse" 
-              ? "#999"
-              : config.scene === "Lab" 
-              ? "#aaa" 
-              : "#ddd"
-          }
+          map={groundTexture}
+          color={groundColor}
           shininess={0} />
       </Ground>
       <Ground>
         <MeshPhongMaterial
-          color={config.scene == "Outdoor" ? "darkgreen" : "gray"}
+          color={lowDetailGroundColor}
           shininess={0} />
       </Ground>
     </Detailed>

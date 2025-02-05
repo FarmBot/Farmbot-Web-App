@@ -1,25 +1,25 @@
-import React, { useMemo } from 'react'
-import { Billboard, Circle, Image } from '@react-three/drei'
-import * as THREE from 'three'
-import { Group, MeshPhongMaterial, Mesh } from './components'
+import React, { useMemo } from "react";
+import { Billboard, Circle, Image } from "@react-three/drei";
+import * as THREE from "three";
+import { Group, MeshPhongMaterial, Mesh } from "./components";
 
-const potHeight = 400
-const plantHeight = 500
+const potHeight = 400;
+const plantHeight = 500;
 
-const PottedPlant = () => {
+export const PottedPlant = () => {
   const points = useMemo(() => [
-    new THREE.Vector2(0, 0),      // Bottom center
-    new THREE.Vector2(0.3, 0),    // Base width
-    new THREE.Vector2(0.35, 0.1), // Slight flare at the bottom
-    new THREE.Vector2(0.25, 0.6), // Narrowing midsection
-    new THREE.Vector2(0.3, 0.8),  // Widening towards the top
-    new THREE.Vector2(0.4, 1),    // Outer lip
-    new THREE.Vector2(0.35, 1),   // Inner lip
-    new THREE.Vector2(0.2, 0.6),  // Depth
-    new THREE.Vector2(0, 0.6)     // Close the profile
-  ], [])
+    new THREE.Vector2(0, 0),
+    new THREE.Vector2(0.3, 0),
+    new THREE.Vector2(0.35, 0.1),
+    new THREE.Vector2(0.25, 0.6),
+    new THREE.Vector2(0.3, 0.8),
+    new THREE.Vector2(0.4, 1),
+    new THREE.Vector2(0.35, 1),
+    new THREE.Vector2(0.2, 0.6),
+    new THREE.Vector2(0, 0.6),
+  ], []);
 
-  const geometry = useMemo(() => new THREE.LatheGeometry(points, 32, 0, Math.PI * 2), [points])
+  const geometry = useMemo(() => new THREE.LatheGeometry(points, 32, 0, Math.PI * 2), [points]);
 
   return (
     <Group name="pot-with-plant">
@@ -43,7 +43,5 @@ const PottedPlant = () => {
         />
       </Billboard>
     </Group>
-  )
-}
-
-export default PottedPlant
+  );
+};

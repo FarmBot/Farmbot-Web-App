@@ -35,7 +35,7 @@ export const StarterTray = () => {
                 transparent={true} />
             </Billboard>
           );
-        })
+        }),
       )}
     </Group>
   );
