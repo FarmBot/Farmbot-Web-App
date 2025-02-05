@@ -117,7 +117,7 @@ export const GardenModel = (props: GardenModelProps) => {
   if (config.scene === "Greenhouse") {
     groundTexture = brickTexture;
     groundColor = "#999";
-    lowDetailGroundColor = "firebrick";
+    lowDetailGroundColor = "#8c6f64";
   } else if (config.scene === "Lab") {
     groundTexture = labFloorTexture;
     groundColor = "#aaa";

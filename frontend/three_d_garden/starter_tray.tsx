@@ -32,6 +32,7 @@ export const StarterTray = () => {
               <Image
                 url={ASSETS.other.plant}
                 scale={seedlingSize}
+                renderOrder={1}
                 transparent={true} />
             </Billboard>
           );
