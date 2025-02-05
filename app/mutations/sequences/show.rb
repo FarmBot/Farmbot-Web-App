@@ -63,7 +63,11 @@ module Sequences
     end
 
     def sequence_publication
-      @sequence_publication ||= SequencePublication.find_by(author_sequence_id: sequence.id)
+      # Cache the association if it's already loaded
+      return @sequence_publication if defined?(@sequence_publication)
+      @sequence_publication = sequence.association(:sequence_publication).loaded? ? 
+        sequence.sequence_publication : 
+        SequencePublication.find_by(author_sequence_id: sequence.id)
     end
 
     def description
@@ -71,7 +75,11 @@ module Sequences
     end
 
     def sequence_version
-      @sequence_version ||= SequenceVersion.find_by(id: sequence_version_id)
+      # Cache the association if it's already loaded
+      return @sequence_version if defined?(@sequence_version)
+      @sequence_version = sequence.association(:sequence_version).loaded? ? 
+        sequence.sequence_version :
+        SequenceVersion.find_by(id: sequence_version_id)
     end
 
     def use_upstream_version?
@@ -90,7 +98,7 @@ module Sequences
       #   If it is not published, don't show anything to the author.
       #   If it IS published, show the versions to the author.
       if is_owner?
-        return sequence_publication.sequence_versions.pluck(:id)
+        return sequence_publication&.sequence_versions&.pluck(:id) || []
       end
 
       # Second attempt:
