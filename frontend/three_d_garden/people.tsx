@@ -35,8 +35,8 @@ export const People = (props: PeopleProps) => {
     {people[1] &&
       <Billboard
         position={[
-          threeSpace(people[0].offset.x, config.bedLengthOuter),
-          threeSpace(people[0].offset.y, config.bedWidthOuter),
+          threeSpace(people[1].offset.x, config.bedLengthOuter),
+          threeSpace(people[1].offset.y, config.bedWidthOuter),
           groundZ,
         ]}>
         <Image
