@@ -3,33 +3,10 @@ module Api
     before_action :clean_expired_farm_events, only: [:destroy]
 
     def index
-      # Add performance logging
-      result = nil
-      count = 0
-      queries = 0
-
-      # Track number of SQL queries
-      ActiveSupport::Notifications.subscribe("sql.active_record") do |*args|
-        queries += 1
-      end
-
-      # Measure execution time
-      time = Benchmark.measure do
-        result = sequences
-                  .includes(:sequence_publication, :sequence_version)
-                  .to_a
-                  .map { |s| Sequences::Show.run!(sequence: s) }
-        count = result.length
-      end
-
-      # Log the results
-      Rails.logger.info "=== Performance Stats ==="
-      Rails.logger.info "Processed #{count} sequences"
-      Rails.logger.info "Total SQL queries: #{queries}"
-      Rails.logger.info "Total time: #{time.real.round(2)} seconds"
-      Rails.logger.info "======================="
-
-      render json: result
+      render json: sequences
+               .includes(:sequence_publication, :sequence_version)
+               .to_a
+               .map { |s| Sequences::Show.run!(sequence: s) }
     end
 
     def show
