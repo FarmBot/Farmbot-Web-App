@@ -30,7 +30,7 @@ export const GreenhouseWall = () => {
           panel.row === row &&
           panel.col === col,
         );
-        return <Box
+        return <Box key={`${row}-${col}`}
           castShadow={true}
           receiveShadow={true}
           renderOrder={1}
@@ -51,7 +51,7 @@ export const GreenhouseWall = () => {
       }),
     )}
     {range(numWallCols + 1).map(col => (
-      <Box
+      <Box key={col}
         castShadow={true}
         receiveShadow={true}
         args={[wallGap, glassThickness, wallHeight]}
@@ -67,7 +67,7 @@ export const GreenhouseWall = () => {
       </Box>
     ))}
     {range(numWallRows + 1).map(row => (
-      <Box
+      <Box key={row}
         castShadow={true}
         receiveShadow={true}
         args={[wallLength, glassThickness, wallGap]}

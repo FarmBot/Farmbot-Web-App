@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, useTexture } from "@react-three/drei";
-import { DoubleSide, RepeatWrapping, Vector3 } from "three";
+import { DoubleSide, RepeatWrapping } from "three";
 import { ASSETS } from "./constants";
 import { threeSpace } from "./helpers";
 import { Config } from "./config";
@@ -82,19 +82,11 @@ export const Greenhouse = (props: GreenhouseProps) => {
       people={[
         {
           url: ASSETS.people.person3,
-          offset: new Vector3(
-            -400,
-            -400,
-            0,
-          )
+          offset: [-400, -400],
         },
         {
           url: ASSETS.people.person4Flipped,
-          offset: new Vector3(
-            0,
-            config.bedWidthOuter + 900,
-            0,
-          )
+          offset: [0, config.bedWidthOuter + 900],
         },
       ]} />
 
