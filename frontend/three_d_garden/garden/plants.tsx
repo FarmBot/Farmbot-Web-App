@@ -5,7 +5,7 @@ import { Billboard, Image } from "@react-three/drei";
 import React from "react";
 import { Vector3 } from "three";
 import { threeSpace, zZero as zZeroFunc } from "../helpers";
-import { Text } from "../elements/text";
+import { Text } from "../elements";
 import { findIcon } from "../../crops/find";
 import { kebabCase } from "lodash";
 

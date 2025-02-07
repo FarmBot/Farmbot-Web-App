@@ -6,7 +6,7 @@ import { Config } from "../../config";
 import {
   threeSpace, getColorFromBrightness, easyCubicBezierCurve3,
 } from "../../helpers";
-import { outletDepth } from "../../bot/power_supply";
+import { outletDepth } from "../../bot";
 import * as THREE from "three";
 import { Group, MeshPhongMaterial } from "../../components";
 

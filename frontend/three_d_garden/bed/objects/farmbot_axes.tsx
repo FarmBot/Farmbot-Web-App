@@ -1,6 +1,6 @@
 import React from "react";
 import { Config } from "../../config";
-import { Arrow } from "../../elements/arrow";
+import { Arrow } from "../../elements";
 import { threeSpace, zZero } from "../../helpers";
 import { Group } from "../../components";
 

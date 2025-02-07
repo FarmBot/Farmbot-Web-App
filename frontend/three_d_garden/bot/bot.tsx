@@ -25,7 +25,7 @@ import {
   SeedTroughAssembly, SeedTroughAssemblyFull,
   SeedTroughHolder, SeedTroughHolderFull,
 } from "./parts";
-import { DistanceIndicator } from "../elements/distance_indicator";
+import { DistanceIndicator } from "../elements";
 import { PowerSupply } from "./power_supply";
 import { XAxisWaterTube } from "./x_axis_water_tube";
 import { Group, Mesh, MeshPhongMaterial } from "../components";

@@ -7,8 +7,8 @@ import {
   Sphere,
 } from "@react-three/drei";
 import { BackSide } from "three";
-import { Bot } from "./bot/bot";
-import { AddPlantProps, Bed } from "./bed/bed";
+import { Bot } from "./bot";
+import { AddPlantProps, Bed } from "./bed";
 import {
   Sky, Solar, Sun, sunPosition, ZoomBeacons,
   calculatePlantPositions, convertPlants, ThreeDPlant,

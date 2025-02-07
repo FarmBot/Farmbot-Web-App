@@ -9,7 +9,7 @@ import { range } from "lodash";
 import { threeSpace, zZero, getColorFromBrightness } from "../helpers";
 import { Config, detailLevels } from "../config";
 import { ASSETS } from "../constants";
-import { DistanceIndicator } from "../elements/distance_indicator";
+import { DistanceIndicator } from "../elements";
 import { FarmbotAxes, Caster, UtilitiesPost, Packaging } from "./objects";
 import { Group, MeshPhongMaterial } from "../components";
 import { getMode, round } from "../../farm_designer/map/util";

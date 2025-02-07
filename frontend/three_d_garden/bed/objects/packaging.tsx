@@ -3,7 +3,7 @@ import { Box } from "@react-three/drei";
 import { threeSpace } from "../../helpers";
 import { Config } from "../../config";
 import { Group, MeshPhongMaterial } from "../../components";
-import { Text } from "../../elements/text";
+import { Text } from "../../elements";
 
 export interface PackagingProps {
   config: Config;
