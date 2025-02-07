@@ -1,5 +1,5 @@
 import { TaggedPlant } from "../farm_designer/map/interfaces";
-import { AddPlantProps } from "../three_d_garden/bed";
+import { AddPlantProps } from "../three_d_garden/bed/bed";
 import { fakeDesignerState } from "./fake_designer_state";
 
 export const fakeAddPlantProps =

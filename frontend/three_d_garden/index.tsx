@@ -1,9 +1,9 @@
 import { Canvas } from "@react-three/fiber";
 import React from "react";
 import { Config } from "./config";
-import { GardenModel } from "./garden";
+import { GardenModel } from "./garden_model";
 import { noop } from "lodash";
-import { AddPlantProps } from "./bed";
+import { AddPlantProps } from "./bed/bed";
 import { TaggedGenericPointer, TaggedWeedPointer } from "farmbot";
 
 export interface ThreeDGardenProps {

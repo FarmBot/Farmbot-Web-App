@@ -1,0 +1,14 @@
+{
+    "excludeRegExp": [
+        "^(?!.*three_d_garden)",
+        "[/\\\\]components\\.tsx$",
+        "[/\\\\]config\\.ts$",
+        "[/\\\\]helpers\\.ts$",
+        "[/\\\\]constants\\.ts$",
+        "[/\\\\]__tests__[/\\\\]"
+    ],
+    "fileExtensions": [
+        "ts",
+        "tsx"
+    ]
+}
