@@ -118,7 +118,9 @@ export const GardenModel = (props: GardenModelProps) => {
       config={config}
       activeFocus={props.activeFocus}
       addPlantProps={props.addPlantProps} />
-    <Bot config={config} activeFocus={props.activeFocus} />
+    {(!props.addPlantProps
+      || !!props.addPlantProps.getConfigValue(BooleanSetting.show_farmbot)) &&
+      <Bot config={config} activeFocus={props.activeFocus} />}
     <Group name={"plant-icon-preload"} visible={false}>
       {ICON_URLS.map((url, i) => <Image key={i} url={url} />)}
     </Group>

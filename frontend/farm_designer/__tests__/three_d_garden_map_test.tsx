@@ -27,6 +27,7 @@ describe("<ThreeDGardenMap />", () => {
     curves: [],
     mapPoints: [],
     weeds: [],
+    botPosition: { x: 1, y: 2, z: 3 },
   });
 
   it("converts props", () => {
@@ -39,6 +40,9 @@ describe("<ThreeDGardenMap />", () => {
     expectedConfig.bedWidthOuter = 1660;
     expectedConfig.botSizeX = 3000;
     expectedConfig.botSizeY = 1500;
+    expectedConfig.x = 1;
+    expectedConfig.y = 2;
+    expectedConfig.z = 3;
     expectedConfig.ccSupportSize = 1;
     expectedConfig.beamLength = 1;
     expectedConfig.columnLength = 1;
@@ -56,6 +60,18 @@ describe("<ThreeDGardenMap />", () => {
     expectedConfig.zoomBeacons = false;
     expect(ThreeDGarden).toHaveBeenCalledWith({
       config: expectedConfig,
+      addPlantProps: expect.any(Object),
+      mapPoints: [],
+      weeds: [],
+    }, {});
+  });
+
+  it("converts props: unknown position", () => {
+    const p = fakeProps();
+    p.botPosition = { x: undefined, y: undefined, z: undefined };
+    render(<ThreeDGardenMap {...p} />);
+    expect(ThreeDGarden).toHaveBeenCalledWith({
+      config: expect.objectContaining({ x: 0, y: 0, z: 0 }),
       addPlantProps: expect.any(Object),
       mapPoints: [],
       weeds: [],

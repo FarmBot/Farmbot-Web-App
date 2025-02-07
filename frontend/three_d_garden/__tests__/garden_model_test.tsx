@@ -58,6 +58,14 @@ describe("<GardenModel />", () => {
     expect(container).toContainHTML(ASSETS.other.weed);
   });
 
+  it("doesn't render bot", () => {
+    const p = fakeProps();
+    p.addPlantProps = fakeAddPlantProps([]);
+    p.addPlantProps.getConfigValue = () => false;
+    const { container } = render(<GardenModel {...p} />);
+    expect(container).not.toContainHTML("bot");
+  });
+
   it("renders promo plants", () => {
     const p = fakeProps();
     p.addPlantProps = undefined;
