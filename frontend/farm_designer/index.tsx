@@ -212,6 +212,7 @@ export class RawFarmDesigner
           plants={this.props.plants}
           get3DConfigValue={get3DConfigValueFunction(this.props.farmwareEnvs)}
           sourceFbosConfig={this.props.sourceFbosConfig}
+          negativeZ={!!this.props.botMcuParams.movement_home_up_z}
           gridOffset={gridOffset}
           mapTransformProps={this.mapTransformProps}
           botSize={this.props.botSize}

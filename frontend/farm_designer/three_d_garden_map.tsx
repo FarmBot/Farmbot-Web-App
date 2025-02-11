@@ -19,6 +19,7 @@ export interface ThreeDGardenMapProps {
   gridOffset: AxisNumberProperty;
   get3DConfigValue(key: string): number;
   sourceFbosConfig: SourceFbosConfig;
+  negativeZ: boolean;
   designer: DesignerState;
   plants: TaggedPlant[];
   dispatch: Function;
@@ -39,9 +40,11 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   config.zoomBeacons = false;
   config.trail = !!props.getWebAppConfigValue(BooleanSetting.display_trail);
 
+  const zDir = props.negativeZ ? -1 : 1;
+
   config.x = props.botPosition.x || 0;
   config.y = props.botPosition.y || 0;
-  config.z = props.botPosition.z || 0;
+  config.z = zDir * (props.botPosition.z || 0);
 
   const { designer } = props;
   config.distanceIndicator = designer.distanceIndicator;

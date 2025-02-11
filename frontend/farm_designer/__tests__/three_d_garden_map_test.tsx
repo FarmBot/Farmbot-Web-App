@@ -28,6 +28,7 @@ describe("<ThreeDGardenMap />", () => {
     mapPoints: [],
     weeds: [],
     botPosition: { x: 1, y: 2, z: 3 },
+    negativeZ: false,
   });
 
   it("converts props", () => {
@@ -72,6 +73,19 @@ describe("<ThreeDGardenMap />", () => {
     render(<ThreeDGardenMap {...p} />);
     expect(ThreeDGarden).toHaveBeenCalledWith({
       config: expect.objectContaining({ x: 0, y: 0, z: 0 }),
+      addPlantProps: expect.any(Object),
+      mapPoints: [],
+      weeds: [],
+    }, {});
+  });
+
+  it("converts props: negative z", () => {
+    const p = fakeProps();
+    p.botPosition = { x: undefined, y: undefined, z: -100 };
+    p.negativeZ = true;
+    render(<ThreeDGardenMap {...p} />);
+    expect(ThreeDGarden).toHaveBeenCalledWith({
+      config: expect.objectContaining({ x: 0, y: 0, z: 100 }),
       addPlantProps: expect.any(Object),
       mapPoints: [],
       weeds: [],
