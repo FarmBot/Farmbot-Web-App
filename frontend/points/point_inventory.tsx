@@ -198,7 +198,7 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
         <PanelSection isOpen={this.props.pointsPanelState.groups}
           panel={Panel.Points}
           toggleOpen={this.toggleOpen("groups")}
-          itemCount={pointGroups.length}
+          itemCount={filteredGroups.length}
           addNew={() => dispatch(createGroup({
             criteria: {
               ...DEFAULT_CRITERIA,
