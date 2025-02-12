@@ -136,6 +136,17 @@ describe("<Points />", () => {
     expect(wrapper.text()).not.toContain("point 1");
   });
 
+  it("filters point grids", () => {
+    const p = fakeProps();
+    const gridPoint = fakePoint();
+    gridPoint.body.meta.gridId = "123";
+    gridPoint.body.name = "mesh";
+    p.genericPoints = [gridPoint];
+    const wrapper = mount(<Points {...p} />);
+    wrapper.setState({ searchTerm: "0" });
+    expect(wrapper.text()).not.toContain("mesh");
+  });
+
   it("changes sort term", () => {
     const wrapper = shallow<Points>(<Points {...fakeProps()} />);
     const menu = wrapper.find(SearchField).props().customLeftIcon;

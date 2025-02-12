@@ -283,6 +283,7 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
               dispatch={dispatch} />)}
         {gridIds.map(gridId => {
           const gridPoints = points.filter(p => p.body.meta.gridId == gridId);
+          if (gridPoints.length == 0) { return <div key={gridId} />; }
           const pointName = gridPoints[0].body.name;
           return <PointsSection
             key={gridId}
