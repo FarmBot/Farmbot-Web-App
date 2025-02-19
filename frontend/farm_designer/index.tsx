@@ -220,6 +220,8 @@ export class RawFarmDesigner
           curves={this.props.curves}
           mapPoints={this.props.genericPoints}
           weeds={this.props.weeds}
+          toolSlots={this.props.toolSlots}
+          mountedToolName={this.props.mountedToolInfo.name}
           botPosition={this.props.botLocationData.position}
           getWebAppConfigValue={this.props.getConfigValue} />
         : <div

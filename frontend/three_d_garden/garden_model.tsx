@@ -26,6 +26,7 @@ import { isUndefined } from "lodash";
 import { ICON_URLS } from "../crops/constants";
 import { TaggedGenericPointer, TaggedWeedPointer } from "farmbot";
 import { BooleanSetting } from "../session_keys";
+import { SlotWithTool } from "../resources/interfaces";
 
 const AnimatedGroup = animated(Group);
 
@@ -36,6 +37,8 @@ export interface GardenModelProps {
   addPlantProps?: AddPlantProps;
   mapPoints?: TaggedGenericPointer[];
   weeds?: TaggedWeedPointer[];
+  toolSlots?: SlotWithTool[];
+  mountedToolName?: string | undefined;
 }
 
 export const GardenModel = (props: GardenModelProps) => {
@@ -120,7 +123,11 @@ export const GardenModel = (props: GardenModelProps) => {
       addPlantProps={props.addPlantProps} />
     {(!props.addPlantProps
       || !!props.addPlantProps.getConfigValue(BooleanSetting.show_farmbot)) &&
-      <Bot config={config} activeFocus={props.activeFocus} />}
+      <Bot
+        config={config}
+        activeFocus={props.activeFocus}
+        mountedToolName={props.mountedToolName}
+        toolSlots={props.toolSlots} />}
     <Group name={"plant-icon-preload"} visible={false}>
       {ICON_URLS.map((url, i) => <Image key={i} url={url} />)}
     </Group>

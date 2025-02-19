@@ -29,6 +29,7 @@ describe("<ThreeDGardenMap />", () => {
     weeds: [],
     botPosition: { x: 1, y: 2, z: 3 },
     negativeZ: false,
+    mountedToolName: undefined,
   });
 
   it("converts props", () => {
@@ -85,7 +86,7 @@ describe("<ThreeDGardenMap />", () => {
     p.negativeZ = true;
     render(<ThreeDGardenMap {...p} />);
     expect(ThreeDGarden).toHaveBeenCalledWith({
-      config: expect.objectContaining({ x: 0, y: 0, z: 100 }),
+      config: expect.objectContaining({ negativeZ: true, x: 0, y: 0, z: -100 }),
       addPlantProps: expect.any(Object),
       mapPoints: [],
       weeds: [],

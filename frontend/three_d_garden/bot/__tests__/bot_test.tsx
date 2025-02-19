@@ -26,7 +26,7 @@ describe("<Bot />", () => {
     expect(wrapper.html()).toContain("bot");
     expect(wrapper.html()).toContain("water-tube");
     expect(wrapper.find({ name: "wateringNozzle" }).first().props().position)
-      .toEqual([-1344, 210, 75]);
+      .toEqual([-1333, 210, 73]);
   });
 
   it("renders: Jr", () => {
@@ -37,7 +37,7 @@ describe("<Bot />", () => {
     const wrapper = mount(<Bot {...p} />);
     expect(wrapper.html()).toContain("bot");
     expect(wrapper.find({ name: "wateringNozzle" }).first().props().position)
-      .toEqual([-1344, 110, 75]);
+      .toEqual([-1333, 110, 73]);
   });
 
   it("renders: v1.7", () => {

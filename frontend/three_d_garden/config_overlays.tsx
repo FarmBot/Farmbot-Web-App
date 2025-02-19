@@ -289,7 +289,8 @@ export const PrivateOverlay = (props: OverlayProps) => {
       <Slider {...common} configKey={"x"} min={0} max={props.config.botSizeX} />
       <Slider {...common} configKey={"y"} min={0} max={props.config.botSizeY} />
       <Slider {...common} configKey={"z"} min={0} max={props.config.botSizeZ} />
-      <Radio {...common} configKey={"tool"} options={["rotaryTool", "None"]} />
+      <Radio {...common} configKey={"tool"}
+        options={["wateringNozzle", "rotaryTool", "soilSensor", "None"]} />
       <Toggle {...common} configKey={"trail"} />
       <Toggle {...common} configKey={"laser"} />
       <label>{"Bot Dimensions"}</label>

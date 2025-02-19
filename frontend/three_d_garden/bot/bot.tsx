@@ -2,38 +2,35 @@
 import React, { useEffect, useState } from "react";
 import * as THREE from "three";
 import {
-  Cylinder, Extrude, Line, Trail, Tube, useGLTF, useTexture,
+  Cylinder, Extrude, Trail, Tube, useGLTF, useTexture,
 } from "@react-three/drei";
 import { DoubleSide, Shape, RepeatWrapping } from "three";
 import {
-  easyCubicBezierCurve3, threeSpace, zDir,
+  easyCubicBezierCurve3, threeSpace,
+  zDir as zDirFunc,
   zZero as zZeroFunc,
-  zero as zeroFunc,
-  extents as extentsFunc,
 } from "../helpers";
 import { Config } from "../config";
 import { GLTF } from "three-stdlib";
-import { ASSETS, ElectronicsBoxMaterial, LIB_DIR, PartName } from "../constants";
+import { ASSETS, LIB_DIR, PartName } from "../constants";
 import { SVGLoader } from "three/examples/jsm/Addons.js";
 import { range } from "lodash";
 import {
   CrossSlide, CrossSlideFull,
   GantryWheelPlate, GantryWheelPlateFull,
-  RotaryTool, RotaryToolFull,
   VacuumPumpCover, VacuumPumpCoverFull,
-  SoilSensor, SoilSensorFull,
-  SeedTroughAssembly, SeedTroughAssemblyFull,
-  SeedTroughHolder, SeedTroughHolderFull,
 } from "./parts";
-import { DistanceIndicator } from "../elements";
 import { PowerSupply } from "./power_supply";
 import { XAxisWaterTube } from "./x_axis_water_tube";
 import { Group, Mesh, MeshPhongMaterial } from "../components";
-import { IColor } from "../../settings/pin_bindings/model";
+import { Tools } from "./components/tools";
+import { ElectronicsBox } from "./components/electronics_box";
+import { Bounds } from "./components/bounds";
+import { SlotWithTool } from "../../resources/interfaces";
 
 const extrusionWidth = 20;
 const utmRadius = 35;
-const utmHeight = 35;
+export const utmHeight = 35;
 const xTrackPadding = 280;
 
 type LeftBracket = GLTF & {
@@ -76,65 +73,11 @@ type ZAxisMotorMount = GLTF & {
   nodes: { [PartName.zAxisMotorMount]: THREE.Mesh };
   materials: { PaletteMaterial001: THREE.MeshStandardMaterial };
 }
-type Toolbay3 = GLTF & {
-  nodes: {
-    [PartName.toolbay3]: THREE.Mesh;
-    [PartName.toolbay3Logo]: THREE.Mesh;
-  };
-  materials: never;
-}
-type WateringNozzle = GLTF & {
-  nodes: { [PartName.wateringNozzle]: THREE.Mesh };
-  materials: { PaletteMaterial001: THREE.MeshStandardMaterial };
-}
-type SeedBin = GLTF & {
-  nodes: { [PartName.seedBin]: THREE.Mesh };
-  materials: never;
-}
-type SeedTray = GLTF & {
-  nodes: { [PartName.seedTray]: THREE.Mesh };
-  materials: never;
-}
 type CameraMountHalf = GLTF & {
   nodes: { [PartName.cameraMountHalf]: THREE.Mesh };
   materials: never;
 }
-type Box = GLTF & {
-  nodes: {
-    Electronics_Box: THREE.Mesh;
-    Electronics_Box_Gasket: THREE.Mesh;
-    Electronics_Box_Lid: THREE.Mesh;
-  };
-  materials: {
-    [ElectronicsBoxMaterial.box]: THREE.MeshStandardMaterial;
-    [ElectronicsBoxMaterial.gasket]: THREE.MeshStandardMaterial;
-    [ElectronicsBoxMaterial.lid]: THREE.MeshStandardMaterial;
-  };
-}
-type Btn = GLTF & {
-  nodes: {
-    ["Push_Button_-_Red"]: THREE.Mesh;
-  };
-  materials: {
-    [ElectronicsBoxMaterial.button]: THREE.MeshStandardMaterial;
-  };
-}
-type Led = GLTF & {
-  nodes: {
-    LED: THREE.Mesh;
-  };
-  materials: {
-    [ElectronicsBoxMaterial.led]: THREE.MeshStandardMaterial;
-  };
-}
-type Pi = GLTF & {
-  nodes: { [PartName.pi]: THREE.Mesh };
-  materials: { PaletteMaterial001: THREE.MeshStandardMaterial };
-}
-type Farmduino = GLTF & {
-  nodes: { [PartName.farmduino]: THREE.Mesh };
-  materials: { PaletteMaterial001: THREE.MeshStandardMaterial };
-}
+
 type Solenoid = GLTF & {
   nodes: { [PartName.solenoid]: THREE.Mesh };
   materials: { PaletteMaterial001: THREE.MeshStandardMaterial };
@@ -178,24 +121,20 @@ const ccPath =
 export interface FarmbotModelProps {
   config: Config;
   activeFocus: string;
+  toolSlots?: SlotWithTool[];
+  mountedToolName?: string | undefined;
 }
 
 export const Bot = (props: FarmbotModelProps) => {
   const config = props.config;
   const {
     x, y, z, botSizeX, botSizeY, botSizeZ, beamLength, trail, laser, soilHeight,
-    bedXOffset, bedYOffset, bedLengthOuter, bedWidthOuter, tracks, zDimension,
-    columnLength, zAxisLength, zGantryOffset, bedWallThickness, tool, bedHeight,
-    cableCarriers, bounds,
+    bedXOffset, bedYOffset, bedLengthOuter, bedWidthOuter, tracks,
+    columnLength, zAxisLength, zGantryOffset, bedHeight,
+    cableCarriers,
   } = props.config;
   const zZero = zZeroFunc(config);
-  const zero = zeroFunc(config);
-  const extents = extentsFunc(config);
-  const zDip = (x: number, y: number): [number, number, number][] => [
-    [x, y, extents.z],
-    [x, y, zero.z],
-    [x, y, extents.z],
-  ];
+  const zDir = zDirFunc(config);
   const gantryWheelPlate =
     useGLTF(ASSETS.models.gantryWheelPlate, LIB_DIR) as GantryWheelPlateFull;
   const GantryWheelPlateComponent = GantryWheelPlate(gantryWheelPlate);
@@ -214,31 +153,11 @@ export const Bot = (props: FarmbotModelProps) => {
     ASSETS.models.horizontalMotorHousing, LIB_DIR) as HorizontalMotorHousing;
   const zAxisMotorMount = useGLTF(
     ASSETS.models.zAxisMotorMount, LIB_DIR) as ZAxisMotorMount;
-  const toolbay3 = useGLTF(ASSETS.models.toolbay3, LIB_DIR) as Toolbay3;
-  const rotaryTool = useGLTF(ASSETS.models.rotaryTool, LIB_DIR) as RotaryToolFull;
-  const RotaryToolComponent = RotaryTool(rotaryTool);
   const vacuumPumpCover = useGLTF(
     ASSETS.models.vacuumPumpCover, LIB_DIR) as VacuumPumpCoverFull;
   const VacuumPumpCoverComponent = VacuumPumpCover(vacuumPumpCover);
-  const seedBin = useGLTF(ASSETS.models.seedBin, LIB_DIR) as SeedBin;
-  const seedTray = useGLTF(ASSETS.models.seedTray, LIB_DIR) as SeedTray;
-  const seedTroughHolder = useGLTF(
-    ASSETS.models.seedTroughHolder, LIB_DIR) as SeedTroughHolderFull;
-  const SeedTroughHolderComponent = SeedTroughHolder(seedTroughHolder);
-  const seedTroughAssembly = useGLTF(
-    ASSETS.models.seedTroughAssembly, LIB_DIR) as SeedTroughAssemblyFull;
-  const SeedTroughAssemblyComponent = SeedTroughAssembly(seedTroughAssembly);
-  const soilSensor = useGLTF(ASSETS.models.soilSensor, LIB_DIR) as SoilSensorFull;
-  const SoilSensorComponent = SoilSensor(soilSensor);
-  const wateringNozzle = useGLTF(
-    ASSETS.models.wateringNozzle, LIB_DIR) as WateringNozzle;
   const cameraMountHalf = useGLTF(
     ASSETS.models.cameraMountHalf, LIB_DIR) as CameraMountHalf;
-  const box = useGLTF(ASSETS.models.box, LIB_DIR) as Box;
-  const btn = useGLTF(ASSETS.models.btn, LIB_DIR) as Btn;
-  const led = useGLTF(ASSETS.models.led, LIB_DIR) as Led;
-  const pi = useGLTF(ASSETS.models.pi, LIB_DIR) as Pi;
-  const farmduino = useGLTF(ASSETS.models.farmduino, LIB_DIR) as Farmduino;
   const solenoid = useGLTF(ASSETS.models.solenoid, LIB_DIR) as Solenoid;
   const xAxisCCMount = useGLTF(ASSETS.models.xAxisCCMount, LIB_DIR) as XAxisCCMount;
   const [trackShape, setTrackShape] = useState<Shape>();
@@ -310,9 +229,8 @@ export const Bot = (props: FarmbotModelProps) => {
     path.lineTo(-2, 0);
     return path;
   };
-  const distanceToSoil = soilHeight + zDir * z;
+  const distanceToSoil = soilHeight - zDir * z;
   const bedCCSupportHeight = Math.min(150, bedHeight / 2);
-  const isJr = props.config.sizePreset == "Jr";
   return <Group name={"bot"}
     visible={props.config.bot && props.activeFocus != "Planter bed"}>
     {[0 - extrusionWidth, bedWidthOuter].map((y, index) => {
@@ -494,7 +412,7 @@ export const Bot = (props: FarmbotModelProps) => {
       position={[
         threeSpace(x, bedLengthOuter) + bedXOffset,
         threeSpace(y + utmRadius, bedWidthOuter) + bedYOffset,
-        zZero + zDir * z,
+        zZero - zDir * z,
       ]}
       rotation={[0, 0, 0]}>
       <MeshPhongMaterial color={"white"} map={aluminumTexture} side={DoubleSide} />
@@ -504,7 +422,7 @@ export const Bot = (props: FarmbotModelProps) => {
         position={[
           threeSpace(x + 4, bedLengthOuter) + bedXOffset,
           threeSpace(y + utmRadius - 47, bedWidthOuter) + bedYOffset,
-          zZero + zDir * z + zAxisLength - 80,
+          zZero - zDir * z + zAxisLength - 80,
         ]}
         rotation={[0, 0, Math.PI]}
         scale={1000}
@@ -515,7 +433,7 @@ export const Bot = (props: FarmbotModelProps) => {
         position={[
           threeSpace(x + 10, bedLengthOuter) + bedXOffset,
           threeSpace(y + utmRadius - 5, bedWidthOuter) + bedYOffset,
-          zZero + zDir * z + zAxisLength - 140,
+          zZero - zDir * z + zAxisLength - 140,
         ]}
         rotation={[Math.PI / 2, 0, 0]}
         scale={1000}
@@ -525,7 +443,7 @@ export const Bot = (props: FarmbotModelProps) => {
         position={[
           threeSpace(x + 5, bedLengthOuter) + bedXOffset,
           threeSpace(y + utmRadius - 65, bedWidthOuter) + bedYOffset,
-          zZero + zDir * z + zAxisLength - 80,
+          zZero - zDir * z + zAxisLength - 80,
         ]}
         rotation={[0, 0, Math.PI]}
         scale={1000}
@@ -537,7 +455,7 @@ export const Bot = (props: FarmbotModelProps) => {
         position={[
           threeSpace(x + 5, bedLengthOuter) + bedXOffset,
           threeSpace(y + utmRadius - 65, bedWidthOuter) + bedYOffset,
-          zZero + zDir * z + zAxisLength - 80,
+          zZero - zDir * z + zAxisLength - 80,
         ]}
         rotation={[Math.PI / 2, 0, 0]}>
         <MeshPhongMaterial color={"#999"} />
@@ -547,7 +465,7 @@ export const Bot = (props: FarmbotModelProps) => {
       position={[
         threeSpace(x + 5, bedLengthOuter) + bedXOffset,
         threeSpace(y - 30, bedWidthOuter) + bedYOffset,
-        zZero + zDir * z + zAxisLength - 120,
+        zZero - zDir * z + zAxisLength - 120,
       ]}
       rotation={[0, 0, 0]}
       scale={1000}
@@ -559,7 +477,7 @@ export const Bot = (props: FarmbotModelProps) => {
       position={[
         threeSpace(x + 5, bedLengthOuter) + bedXOffset,
         threeSpace(y - 30, bedWidthOuter) + bedYOffset,
-        zZero + zDir * z + zAxisLength - 120 + 25 / 2,
+        zZero - zDir * z + zAxisLength - 120 + 25 / 2,
       ]}
       rotation={[Math.PI / 2, 0, 0]}>
       <MeshPhongMaterial color={"silver"} />
@@ -570,7 +488,7 @@ export const Bot = (props: FarmbotModelProps) => {
       position={[
         threeSpace(x + 6, bedLengthOuter) + bedXOffset,
         threeSpace(y - 30, bedWidthOuter) + bedYOffset,
-        zZero + zDir * z + zAxisLength / 2,
+        zZero - zDir * z + zAxisLength / 2,
       ]}
       rotation={[Math.PI / 2, 0, 0]} />
     <Group name={"ccVertical"}>
@@ -581,7 +499,7 @@ export const Bot = (props: FarmbotModelProps) => {
               position={[
                 threeSpace(x + 20, bedLengthOuter) + bedXOffset,
                 threeSpace(y + 55, bedWidthOuter) + bedYOffset,
-                zZero + zDir * z + i * 200 + 125,
+                zZero - zDir * z + i * 200 + 125,
               ]}
               rotation={[0, 0, Math.PI / 2]}
               scale={1000}
@@ -595,7 +513,7 @@ export const Bot = (props: FarmbotModelProps) => {
             position={[
               threeSpace(x + 20, bedLengthOuter) + bedXOffset,
               threeSpace(y + 35, bedWidthOuter) + bedYOffset,
-              zZero + zDir * z + 125,
+              zZero - zDir * z + 125,
             ]}
             rotation={[0, 0, 0]}
             geometry={new THREE.ExtrudeGeometry(
@@ -634,7 +552,7 @@ export const Bot = (props: FarmbotModelProps) => {
       position={[
         threeSpace(x - 41, bedLengthOuter) + bedXOffset,
         threeSpace(y - 25, bedWidthOuter) + bedYOffset,
-        zZero + zDir * z + 125,
+        zZero - zDir * z + 125,
       ]}
       rotation={[Math.PI / 2, Math.PI, Math.PI / 2]}>
       <MeshPhongMaterial color={"black"} />
@@ -643,7 +561,7 @@ export const Bot = (props: FarmbotModelProps) => {
       position={[
         threeSpace(x - 5, bedLengthOuter) + bedXOffset,
         threeSpace(y + utmRadius + extrusionWidth / 2, bedWidthOuter) + bedYOffset,
-        zZero + zDir * z - 30 + zGantryOffset,
+        zZero - zDir * z - 30 + zGantryOffset,
       ]}
       rotation={[0, Math.PI / 2, 0]}
       scale={1000}
@@ -654,7 +572,7 @@ export const Bot = (props: FarmbotModelProps) => {
       position={[
         threeSpace(x - 5, bedLengthOuter) + bedXOffset,
         threeSpace(y + utmRadius + extrusionWidth / 2, bedWidthOuter) + bedYOffset,
-        zZero + zDir * z + botSizeZ + 140 + zGantryOffset,
+        zZero - zDir * z + botSizeZ + 140 + zGantryOffset,
       ]}
       rotation={[0, Math.PI / 2, 0]}
       scale={1000}
@@ -665,7 +583,7 @@ export const Bot = (props: FarmbotModelProps) => {
       position={[
         threeSpace(x + 28, bedLengthOuter) + bedXOffset,
         threeSpace(y, bedWidthOuter) + bedYOffset,
-        zZero + zDir * z + 40,
+        zZero - zDir * z + 40,
       ]}
       rotation={[0, 0, Math.PI / 2]}
       scale={1000}
@@ -678,7 +596,7 @@ export const Bot = (props: FarmbotModelProps) => {
         [
           threeSpace(x + 28, bedLengthOuter) + bedXOffset,
           threeSpace(y, bedWidthOuter) + bedYOffset,
-          zZero + zDir * z + 35,
+          zZero - zDir * z + 35,
         ],
         [0, 0, 100],
         [0, 0, -200],
@@ -686,12 +604,12 @@ export const Bot = (props: FarmbotModelProps) => {
           ? [
             threeSpace(x + 80, bedLengthOuter) + bedXOffset,
             threeSpace(y + 100, bedWidthOuter) + bedYOffset,
-            zZero + zDir * z + 245,
+            zZero - zDir * z + 245,
           ]
           : [
             threeSpace(x + 35, bedLengthOuter) + bedXOffset,
             threeSpace(y, bedWidthOuter) + bedYOffset,
-            zZero + zDir * z + 245,
+            zZero - zDir * z + 245,
           ],
       ), 20, 5, 8]}>
       <MeshPhongMaterial
@@ -712,7 +630,7 @@ export const Bot = (props: FarmbotModelProps) => {
           ? [
             threeSpace(x + 12, bedLengthOuter) + bedXOffset,
             threeSpace(y + 55, bedWidthOuter) + bedYOffset,
-            zZero + zDir * z + 490,
+            zZero - zDir * z + 490,
           ]
           : [
             threeSpace(x + 2, bedLengthOuter) + bedXOffset,
@@ -725,7 +643,7 @@ export const Bot = (props: FarmbotModelProps) => {
       position={[
         threeSpace(x + 23, bedLengthOuter) + bedXOffset,
         threeSpace(y + 25 + extrusionWidth / 2, bedWidthOuter) + bedYOffset,
-        zZero + zDir * z - 140 + zGantryOffset,
+        zZero - zDir * z - 140 + zGantryOffset,
       ]}>
       <Mesh name={"cameraMount"}
         rotation={[0, 0, 0]}
@@ -753,7 +671,7 @@ export const Bot = (props: FarmbotModelProps) => {
         position={[
           threeSpace(x + 11, bedLengthOuter) + bedXOffset,
           threeSpace(y, bedWidthOuter) + bedYOffset,
-          zZero + zDir * z + utmHeight / 2 - 18,
+          zZero - zDir * z + utmHeight / 2 - 18,
         ]}
         rotation={[0, 0, Math.PI / 2]}
         scale={1000}>
@@ -764,14 +682,6 @@ export const Bot = (props: FarmbotModelProps) => {
           rotation={[0, 0, 2.094]} />
       </Group>
     </Trail>
-    <RotaryToolComponent name={"rotaryTool"} visible={tool == "rotaryTool"}
-      position={[
-        threeSpace(x + 11, bedLengthOuter) + bedXOffset,
-        threeSpace(y, bedWidthOuter) + bedYOffset,
-        zZero + zDir * z + utmHeight / 2 - 15,
-      ]}
-      rotation={[0, 0, Math.PI / 2]}
-      scale={1000} />
     <Cylinder
       visible={laser}
       material-color={"red"}
@@ -779,7 +689,7 @@ export const Bot = (props: FarmbotModelProps) => {
       position={[
         threeSpace(x, bedLengthOuter) + bedXOffset,
         threeSpace(y, bedWidthOuter) + bedYOffset,
-        zZero + zDir * z - distanceToSoil / 2,
+        zZero - zDir * z - distanceToSoil / 2,
       ]}
       rotation={[Math.PI / 2, 0, 0]} />
     <Extrude name={"gantry-beam"}
@@ -906,257 +816,13 @@ export const Bot = (props: FarmbotModelProps) => {
       scale={1000}
       geometry={solenoid.nodes[PartName.solenoid].geometry}
       material={solenoid.materials.PaletteMaterial001} />
-    <Group name={"electronics-box"}
-      position={new THREE.Vector3(
-        threeSpace(x - 62, bedLengthOuter) + bedXOffset,
-        threeSpace(-20, bedWidthOuter),
-        columnLength - 190,
-      )}>
-      <Group name={"box"}
-        rotation={[0, 0, Math.PI / 2]}>
-        <Mesh name={"electronicsBox"}
-          geometry={box.nodes.Electronics_Box.geometry}
-          material={box.materials[ElectronicsBoxMaterial.box]}
-          scale={1000}
-          material-color={0xffffff}
-          material-emissive={0x999999} />
-        <Mesh name={"electronicsBoxGasket"}
-          geometry={box.nodes.Electronics_Box_Gasket.geometry}
-          material={box.materials[ElectronicsBoxMaterial.gasket]}
-          scale={1000} />
-        <Mesh name={"electronicsBoxLid"}
-          geometry={box.nodes.Electronics_Box_Lid.geometry}
-          material={box.materials[ElectronicsBoxMaterial.lid]}
-          scale={1000} />
-        <Group name={"buttons"}
-          position={[0, 0, 130]}>
-          {(
-            config.kitVersion == "v1.7"
-              ? [
-                { position: -60, color: IColor.estop.on },
-                { position: -30, color: IColor.unlock.on },
-                { position: 0, color: IColor.blank.on },
-                { position: 30, color: IColor.blank.on },
-                { position: 60, color: IColor.blank.on },
-              ]
-              : [
-                { position: -30, color: IColor.estop.on },
-                { position: 0, color: IColor.unlock.on },
-                { position: 30, color: IColor.blank.on },
-              ]
-          ).map(button => {
-            const { position, color } = button;
-            const btnPosition = position;
-            return <Group key={btnPosition} name={"button-group"}>
-              <Mesh name={"button-housing"}
-                geometry={btn.nodes["Push_Button_-_Red"].geometry}
-                material={btn.materials[ElectronicsBoxMaterial.button]}
-                position={[-30, btnPosition, 0]}
-                scale={1000}
-                material-color={0xcccccc} />
-              <Cylinder
-                name={"button-color"}
-                material-color={color}
-                args={[9, 0, 3.5]}
-                position={[-30, btnPosition, 0]}
-                rotation={[Math.PI / 2, 0, 0]} />
-              <Cylinder name={"button-center"}
-                material-color={0xcccccc}
-                args={[6.75, 0, 4]}
-                position={[-30, btnPosition, 0]}
-                rotation={[Math.PI / 2, 0, 0]} />
-            </Group>;
-          })}
-        </Group>
-        <Group name={"leds"}
-          position={[0, 0, 130]}
-          visible={config.kitVersion == "v1.7"}>
-          {[
-            { position: -45, color: IColor.sync.on },
-            { position: -15, color: IColor.connect.on },
-            { position: 15, color: IColor.blank.on },
-            { position: 45, color: IColor.blank.on },
-          ].map(ledIndicator => {
-            const { position, color } = ledIndicator;
-            return <Group key={position}>
-              <Mesh name={"led-housing"}
-                geometry={led.nodes.LED.geometry}
-                material={led.materials[ElectronicsBoxMaterial.led]}
-                position={[-50, position, 0]}
-                material-color={0xcccccc}
-                scale={1000} />
-              <Cylinder name={"led-color"}
-                material-color={color}
-                args={[6.75, 6.75, 3]}
-                position={[-50, position, 0]}
-                rotation={[Math.PI / 2, 0, 0]} />
-            </Group>;
-          })}
-        </Group>
-      </Group>
-      <Mesh name={"farmduino"}
-        position={[-60, -10, -110]}
-        rotation={[Math.PI / 2, 0, 0]}
-        scale={1000}
-        geometry={farmduino.nodes[PartName.farmduino].geometry}
-        material={farmduino.materials.PaletteMaterial001} />
-      <Mesh name={"pi"}
-        position={[-15, -10, 40]}
-        rotation={[Math.PI / 2, 0, Math.PI]}
-        scale={1000}
-        geometry={pi.nodes[PartName.pi].geometry}
-        material={pi.materials.PaletteMaterial001} />
-    </Group>
-    <Group
-      position={[
-        threeSpace(x - 32, bedLengthOuter) + bedXOffset,
-        threeSpace(2, bedWidthOuter),
-        100,
-      ]}
-      rotation={[0, 0, Math.PI / 2]}>
-      <SeedTroughAssemblyComponent name={"seedTroughAssembly"}
-        position={[3, -15, 30]}
-        scale={1000} />
-      <SeedTroughHolderComponent name={"seedTroughHolder"}
-        scale={1000} />
-    </Group>
-    <Group name={"toolbay3"}>
-      {(isJr ? [0] : [-200, 200]).map(yPosition =>
-        <Group key={yPosition}>
-          {[
-            { node: PartName.toolbay3, color: "black", id: "toolbay3" },
-            { node: PartName.toolbay3Logo, color: "white", id: "toolbay3Logo" },
-          ].map(part =>
-            <Mesh name={part.id} key={part.id}
-              position={[
-                threeSpace(105 + bedWallThickness, bedLengthOuter),
-                threeSpace(yPosition + bedWidthOuter / 2, bedWidthOuter),
-                60,
-              ]}
-              rotation={[0, 0, -Math.PI / 2]}
-              scale={1000}
-              geometry={
-                toolbay3.nodes[part.node as keyof Toolbay3["nodes"]].geometry}>
-              <MeshPhongMaterial color={part.color} />
-            </Mesh>)}
-        </Group>)}
-    </Group>
-    <RotaryToolComponent name={"rotaryTool"} visible={tool != "rotaryTool"}
-      position={[
-        threeSpace(105 + bedWallThickness, bedLengthOuter),
-        threeSpace((isJr ? 0 : 100) + bedWidthOuter / 2, bedWidthOuter),
-        70,
-      ]}
-      rotation={[0, 0, Math.PI / 2]}
-      scale={1000} />
-    <Mesh name={"wateringNozzle"}
-      position={[
-        threeSpace(11 + 105 + bedWallThickness, bedLengthOuter),
-        threeSpace(10 + (isJr ? 100 : 200) + bedWidthOuter / 2, bedWidthOuter),
-        5 + 70,
-      ]}
-      rotation={[0, 0, 2.094 + Math.PI / 2]}
-      scale={1000}
-      geometry={wateringNozzle.nodes[PartName.wateringNozzle].geometry}
-      material={wateringNozzle.materials.PaletteMaterial001} />
-    <Mesh name={"seedBin"}
-      position={[
-        threeSpace(110 + bedWallThickness, bedLengthOuter),
-        threeSpace((isJr ? 200 : 300) + bedWidthOuter / 2, bedWidthOuter),
-        55,
-      ]}
-      rotation={[0, 0, Math.PI / 2]}
-      scale={1000}
-      geometry={seedBin.nodes[PartName.seedBin].geometry}>
-      <MeshPhongMaterial color={"silver"} />
-    </Mesh>
-    <Mesh name={"seedTray"}
-      position={[
-        threeSpace(110 + bedWallThickness, bedLengthOuter),
-        threeSpace((isJr ? -100 : -200) + bedWidthOuter / 2, bedWidthOuter),
-        55,
-      ]}
-      rotation={[0, 0, Math.PI / 2]}
-      scale={1000}
-      geometry={seedTray.nodes[PartName.seedTray].geometry}>
-      <MeshPhongMaterial color={"silver"} />
-    </Mesh>
-    <SoilSensorComponent name={"soilSensor"}
-      position={[
-        threeSpace(105 + bedWallThickness, bedLengthOuter),
-        threeSpace((isJr ? -200 : -300) + bedWidthOuter / 2, bedWidthOuter),
-        70,
-      ]}
-      rotation={[0, 0, Math.PI / 2]}
-      scale={1000} />
+    <ElectronicsBox config={config} />
+    <Tools
+      config={config}
+      toolSlots={props.toolSlots}
+      mountedToolName={props.mountedToolName} />
     <PowerSupply config={config} />
     <XAxisWaterTube config={config} />
-    <Line name={"bounds"}
-      visible={bounds}
-      color={"white"}
-      points={[
-        [zero.x, zero.y, zero.z],
-        [zero.x, extents.y, zero.z],
-        [extents.x, extents.y, zero.z],
-        [extents.x, zero.y, zero.z],
-        [zero.x, zero.y, zero.z],
-        ...zDip(zero.x, zero.y),
-        ...zDip(zero.x, extents.y),
-        ...zDip(extents.x, extents.y),
-        ...zDip(extents.x, zero.y),
-        [zero.x, zero.y, extents.z],
-      ]} />
-    <Group visible={zDimension}>
-      <DistanceIndicator
-        start={{
-          x: threeSpace(0, bedLengthOuter),
-          y: threeSpace(bedWidthOuter, bedWidthOuter),
-          z: 0,
-        }}
-        end={{
-          x: threeSpace(0, bedLengthOuter),
-          y: threeSpace(bedWidthOuter, bedWidthOuter),
-          z: zZero - z + zAxisLength,
-        }} />
-    </Group>
-    <Group visible={config.distanceIndicator == "beamLength"}>
-      <DistanceIndicator
-        start={{
-          x: threeSpace(x + 100, bedLengthOuter) + bedXOffset,
-          y: threeSpace(bedWidthOuter / 2 - beamLength / 2, bedWidthOuter),
-          z: columnLength + 200,
-        }}
-        end={{
-          x: threeSpace(x + 100, bedLengthOuter) + bedXOffset,
-          y: threeSpace(bedWidthOuter / 2 + beamLength / 2, bedWidthOuter),
-          z: columnLength + 200,
-        }} />
-    </Group>
-    <Group visible={config.distanceIndicator == "columnLength"}>
-      <DistanceIndicator
-        start={{
-          x: threeSpace(x + 100, bedLengthOuter) + bedXOffset,
-          y: threeSpace(bedWidthOuter + 200, bedWidthOuter),
-          z: 30,
-        }}
-        end={{
-          x: threeSpace(x + 100, bedLengthOuter) + bedXOffset,
-          y: threeSpace(bedWidthOuter + 200, bedWidthOuter),
-          z: 30 + columnLength,
-        }} />
-    </Group>
-    <Group visible={config.distanceIndicator == "zAxisLength"}>
-      <DistanceIndicator
-        start={{
-          x: threeSpace(x + 100, bedLengthOuter) + bedXOffset,
-          y: threeSpace(y, bedWidthOuter) + bedYOffset,
-          z: zZero + zDir * z,
-        }}
-        end={{
-          x: threeSpace(x + 100, bedLengthOuter) + bedXOffset,
-          y: threeSpace(y, bedWidthOuter) + bedYOffset,
-          z: zZero + zDir * z + zAxisLength,
-        }} />
-    </Group>
+    <Bounds config={config} />
   </Group>;
 };
