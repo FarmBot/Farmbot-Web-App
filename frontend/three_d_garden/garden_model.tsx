@@ -17,16 +17,16 @@ import {
 import { Config } from "./config";
 import { useSpring, animated } from "@react-spring/three";
 import { Lab, Greenhouse } from "./scenes";
-import { getCamera, Camera as CameraInterface } from "./zoom_beacons_constants";
+import { getCamera } from "./zoom_beacons_constants";
 import {
   AmbientLight, AxesHelper, Group, MeshBasicMaterial,
 } from "./components";
-import { isDesktop } from "../screen_size";
 import { isUndefined } from "lodash";
 import { ICON_URLS } from "../crops/constants";
 import { TaggedGenericPointer, TaggedWeedPointer } from "farmbot";
 import { BooleanSetting } from "../session_keys";
 import { SlotWithTool } from "../resources/interfaces";
+import { cameraInit } from "./camera";
 
 const AnimatedGroup = animated(Group);
 
@@ -73,11 +73,7 @@ export const GardenModel = (props: GardenModelProps) => {
     },
   });
 
-  const initCamera: CameraInterface = {
-    position: isDesktop() ? [2000, -4000, 2500] : [5400, -2500, 3400],
-    target: [0, 0, 0],
-  };
-  const camera = getCamera(config, props.activeFocus, initCamera);
+  const camera = getCamera(config, props.activeFocus, cameraInit());
 
   // eslint-disable-next-line no-null/no-null
   return <Group dispose={null}
