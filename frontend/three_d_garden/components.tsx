@@ -12,9 +12,9 @@ export const DirectionalLight = (props: ThreeElements["directionalLight"]) =>
   // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
   <directionalLight {...props} />;
 
-export const Group = (props: ThreeElements["group"]) =>
+export const Group = React.forwardRef((props: ThreeElements["group"], ref) =>
   // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
-  <group {...props} />;
+  <group ref={ref} {...props} />);
 
 export const Mesh = (props: ThreeElements["mesh"]) =>
   // @ts-expect-error Property does not exist on type JSX.IntrinsicElements

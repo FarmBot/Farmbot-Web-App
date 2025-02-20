@@ -467,8 +467,19 @@ jest.mock("@react-three/drei", () => {
         [PartName.toolbay3Logo]: {} as THREE.Mesh,
       },
     },
+    [ASSETS.models.toolbay1]: {
+      nodes: {
+        [PartName.toolbay1]: {} as THREE.Mesh,
+        [PartName.toolbay1Logo]: {} as THREE.Mesh,
+      },
+    },
     [ASSETS.models.seeder]: {
       nodes: { [PartName.seeder]: {} as THREE.Mesh },
+      materials: { PaletteMaterial001: {} as THREE.MeshStandardMaterial },
+    },
+    [ASSETS.models.weeder]: {
+      nodes: { [PartName.weeder]: {} as THREE.Mesh },
+      materials: { PaletteMaterial001: {} as THREE.MeshStandardMaterial },
     },
     [ASSETS.models.seedTray]: {
       nodes: { [PartName.seedTray]: {} as THREE.Mesh },
