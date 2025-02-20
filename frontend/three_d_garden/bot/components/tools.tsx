@@ -4,7 +4,9 @@ import { useGLTF } from "@react-three/drei";
 import { threeSpace, zDir as zDirFunc, zZero as zZeroFunc } from "../../helpers";
 import { Config } from "../../config";
 import { GLTF } from "three-stdlib";
-import { ASSETS, LIB_DIR, PartName } from "../../constants";
+import {
+  ASSETS, LIB_DIR, PartName, SeedTroughAssemblyMaterial,
+} from "../../constants";
 import {
   RotaryTool, RotaryToolFull,
   SoilSensor, SoilSensorFull,
@@ -12,9 +14,9 @@ import {
   SeedTroughHolder, SeedTroughHolderFull,
 } from "../parts";
 import { Group, Mesh, MeshPhongMaterial } from "../../components";
-import { utmHeight } from "../bot";
+import { distinguishableBlack, utmHeight } from "../bot";
 import { SlotWithTool } from "../../../resources/interfaces";
-import { isUndefined } from "lodash";
+import { isUndefined, sortBy } from "lodash";
 import {
   reduceToolName, ToolName,
 } from "../../../farm_designer/map/tool_graphics/all_tools";
@@ -47,6 +49,10 @@ type SeedTray = GLTF & {
   nodes: { [PartName.seedTray]: THREE.Mesh };
   materials: never;
 }
+type SeedTrough = GLTF & {
+  nodes: { [PartName.seedTrough]: THREE.Mesh };
+  materials: { [SeedTroughAssemblyMaterial.two]: THREE.MeshStandardMaterial };
+}
 type Seeder = GLTF & {
   nodes: { [PartName.seeder]: THREE.Mesh };
   materials: { PaletteMaterial001: THREE.MeshStandardMaterial };
@@ -68,17 +74,25 @@ interface ConvertedTools {
   z: number;
   toolName: string | undefined;
   toolPulloutDirection: ToolPulloutDirection;
+  firstTrough?: boolean;
 }
 
 export const convertSlotsWithTools =
-  (slotsWithTools: SlotWithTool[]): ConvertedTools[] =>
-    slotsWithTools.map(swt => ({
-      x: swt.toolSlot.body.x,
-      y: swt.toolSlot.body.y,
-      z: swt.toolSlot.body.z,
-      toolName: reduceToolName(swt.tool?.body.name),
-      toolPulloutDirection: swt.toolSlot.body.pullout_direction,
-    }));
+  (slotsWithTools: SlotWithTool[]): ConvertedTools[] => {
+    let troughIndex = 0;
+    return sortBy(slotsWithTools, "toolSlot.body.y").map(swt => {
+      const toolName = reduceToolName(swt.tool?.body.name);
+      if (toolName == ToolName.seedTrough) { troughIndex++; }
+      return {
+        x: swt.toolSlot.body.x,
+        y: swt.toolSlot.body.y,
+        z: swt.toolSlot.body.z,
+        toolName,
+        toolPulloutDirection: swt.toolSlot.body.pullout_direction,
+        firstTrough: troughIndex < 2,
+      };
+    });
+  };
 
 export const Tools = (props: ToolsProps) => {
   const {
@@ -101,6 +115,7 @@ export const Tools = (props: ToolsProps) => {
   const RotaryToolComponent = RotaryTool(rotaryTool);
   const seedBin = useGLTF(ASSETS.models.seedBin, LIB_DIR) as SeedBin;
   const seedTray = useGLTF(ASSETS.models.seedTray, LIB_DIR) as SeedTray;
+  const seedTrough = useGLTF(ASSETS.models.seedTrough, LIB_DIR) as SeedTrough;
   const seedTroughHolder = useGLTF(
     ASSETS.models.seedTroughHolder, LIB_DIR) as SeedTroughHolderFull;
   const SeedTroughHolderComponent = SeedTroughHolder(seedTroughHolder);
@@ -145,12 +160,12 @@ export const Tools = (props: ToolsProps) => {
           <Mesh name={"toolbay1"}
             scale={1000}
             geometry={toolbay1.nodes[PartName.toolbay1].geometry}>
-            <MeshPhongMaterial color={"black"} />
+            <MeshPhongMaterial color={distinguishableBlack} />
           </Mesh>
           <Mesh name={"toolbay1-logo"}
             scale={1000}
             geometry={toolbay1.nodes[PartName.toolbay1Logo].geometry}>
-            <MeshPhongMaterial color={"black"} />
+            <MeshPhongMaterial color={distinguishableBlack} />
           </Mesh>
         </Group>}
       <OpacityFilter opacity={mounted ? 0.25 : 1}>
@@ -159,12 +174,7 @@ export const Tools = (props: ToolsProps) => {
     </Group>;
   };
 
-  interface ToolProps {
-    x: number;
-    y: number;
-    z: number;
-    toolName: string | undefined;
-    toolPulloutDirection: ToolPulloutDirection;
+  interface ToolProps extends ConvertedTools {
     inToolbay: boolean;
   }
 
@@ -195,7 +205,7 @@ export const Tools = (props: ToolsProps) => {
             position={[
               5,
               10,
-              18,
+              16,
             ]}
             rotation={[0, 0, 2.094 + Math.PI / 2]}
             scale={1000}
@@ -208,7 +218,7 @@ export const Tools = (props: ToolsProps) => {
             position={[
               0,
               0,
-              0,
+              -4,
             ]}
             rotation={[0, 0, Math.PI / 2]}
             scale={1000}
@@ -222,7 +232,7 @@ export const Tools = (props: ToolsProps) => {
             position={[
               0,
               0,
-              0,
+              -4,
             ]}
             rotation={[0, 0, Math.PI / 2]}
             scale={1000}
@@ -270,16 +280,28 @@ export const Tools = (props: ToolsProps) => {
       case ToolName.seedTrough:
         return <Group
           position={[
-            position.x + 75,
-            position.y,
+            position.x - 30,
+            position.y - 15,
             position.z,
           ]}
           rotation={[0, 0, Math.PI / 2]}>
-          <SeedTroughAssemblyComponent name={"seedTroughAssembly"}
-            position={[3, -15, 30]}
-            scale={1000} />
-          <SeedTroughHolderComponent name={"seedTroughHolder"}
-            scale={1000} />
+          {toolProps.firstTrough
+            ? <Group name={"seedTroughWithAssembly"}>
+              <SeedTroughAssemblyComponent name={"seedTroughAssembly"}
+                position={[3, -15, 30]}
+                scale={1000} />
+              <SeedTroughHolderComponent name={"seedTroughHolder"}
+                scale={1000} />
+            </Group>
+            : <Mesh name={"seedTrough"}
+              position={[
+                15,
+                -15,
+                30,
+              ]}
+              scale={1000}
+              geometry={seedTrough.nodes[PartName.seedTrough].geometry}
+              material={seedTrough.materials[SeedTroughAssemblyMaterial.two]} />}
         </Group>;
       default:
         return <ToolbaySlot {...common} />;
@@ -331,11 +353,12 @@ export const Tools = (props: ToolsProps) => {
       toolPulloutDirection: ToolPulloutDirection.NONE,
     },
     {
-      x: botPosition.x - bedXOffset,
-      y: -bedYOffset,
+      x: botPosition.x - bedXOffset + 140,
+      y: -bedYOffset + 15,
       z: zZero - 100,
       toolName: ToolName.seedTrough,
       toolPulloutDirection: ToolPulloutDirection.NONE,
+      firstTrough: true,
     },
   ];
 
@@ -347,7 +370,7 @@ export const Tools = (props: ToolsProps) => {
     <Tool
       x={botPosition.x + (isUndefined(props.toolSlots) ? 10 : 12)}
       y={botPosition.y}
-      z={botPosition.z + (isUndefined(props.toolSlots) ? 10 : -15)}
+      z={botPosition.z + (isUndefined(props.toolSlots) ? 10 : -12)}
       toolName={mountedToolName}
       toolPulloutDirection={ToolPulloutDirection.NONE}
       inToolbay={false} />
@@ -355,7 +378,7 @@ export const Tools = (props: ToolsProps) => {
       {(isJr ? [0] : [-200, 200]).map(yPosition =>
         <Group key={yPosition}>
           {[
-            { node: PartName.toolbay3, color: "black", id: "toolbay3" },
+            { node: PartName.toolbay3, color: distinguishableBlack, id: "toolbay3" },
             { node: PartName.toolbay3Logo, color: "white", id: "toolbay3Logo" },
           ].map(part =>
             <Mesh name={part.id} key={part.id}
@@ -374,11 +397,7 @@ export const Tools = (props: ToolsProps) => {
     </Group>}
     {tools.map((tool, i) =>
       <Tool key={i}
-        x={tool.x}
-        y={tool.y}
-        z={tool.z}
-        toolName={tool.toolName}
-        toolPulloutDirection={tool.toolPulloutDirection}
+        {...tool}
         inToolbay={true} />)}
   </Group>;
 };

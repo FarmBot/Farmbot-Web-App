@@ -228,7 +228,7 @@ const MeasureSoilHeight = (props: CameraCheckBaseProps) => {
       env={env}
       userEnv={userEnv}
       farmwareEnvs={farmwareEnvs}
-      saveFarmwareEnv={saveOrEditFarmwareEnv(props.resources)}
+      saveFarmwareEnv={saveOrEditFarmwareEnv(props.resources, true)}
       botOnline={botOnline}
       hideAdvanced={true}
       hideResets={true}

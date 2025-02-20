@@ -59,7 +59,7 @@ describe("<Bed />", () => {
     const soil = screen.getAllByText("soil")[0];
     fireEvent.click(soil);
     expect(dropPlant).toHaveBeenCalledWith(expect.objectContaining({
-      gardenCoords: { x: 1360, y: 620 },
+      gardenCoords: { x: 1360, y: 660 },
     }));
   });
 

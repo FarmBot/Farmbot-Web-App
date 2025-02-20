@@ -396,6 +396,12 @@ jest.mock("@react-three/drei", () => {
         PaletteMaterial001: {} as THREE.MeshStandardMaterial,
       },
     },
+    [ASSETS.models.seedTrough]: {
+      nodes: { Seed_Trough: {} as THREE.Mesh },
+      materials: {
+        [SeedTroughAssemblyMaterial.two]: {} as THREE.MeshStandardMaterial,
+      },
+    },
     [ASSETS.models.seedTroughAssembly]: {
       nodes: {
         mesh0_mesh: {} as THREE.Mesh,

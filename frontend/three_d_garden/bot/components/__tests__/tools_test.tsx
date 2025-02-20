@@ -59,6 +59,12 @@ describe("<Tools />", () => {
     const tool3 = fakeTool();
     tool3.body.id = 4;
     tool3.body.name = "seeder";
+    const tool5 = fakeTool();
+    tool5.body.id = 6;
+    tool5.body.name = "seed trough 1";
+    const tool6 = fakeTool();
+    tool6.body.id = 7;
+    tool6.body.name = "seed trough 2";
     const toolSlot0 = fakeToolSlot();
     toolSlot0.body.tool_id = tool0.body.id;
     toolSlot0.body.pullout_direction = ToolPulloutDirection.NONE;
@@ -74,12 +80,18 @@ describe("<Tools />", () => {
     const toolSlot4 = fakeToolSlot();
     toolSlot4.body.tool_id = undefined;
     toolSlot4.body.pullout_direction = ToolPulloutDirection.NEGATIVE_Y;
+    const toolSlot5 = fakeToolSlot();
+    toolSlot5.body.tool_id = tool5.body.id;
+    const toolSlot6 = fakeToolSlot();
+    toolSlot6.body.tool_id = tool6.body.id;
     p.toolSlots = [
       { toolSlot: toolSlot0, tool: tool0 },
       { toolSlot: toolSlot1, tool: tool1 },
       { toolSlot: toolSlot2, tool: tool2 },
       { toolSlot: toolSlot3, tool: tool3 },
       { toolSlot: toolSlot4, tool: undefined },
+      { toolSlot: toolSlot5, tool: tool5 },
+      { toolSlot: toolSlot6, tool: tool6 },
     ];
     p.mountedToolName = "weeder";
     const { container } = render(<Tools {...p} />);

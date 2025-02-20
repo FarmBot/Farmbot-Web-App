@@ -32,6 +32,7 @@ const extrusionWidth = 20;
 const utmRadius = 35;
 export const utmHeight = 35;
 const xTrackPadding = 280;
+export const distinguishableBlack = "#333";
 
 type LeftBracket = GLTF & {
   nodes: { [PartName.leftBracket]: THREE.Mesh };
@@ -393,7 +394,7 @@ export const Bot = (props: FarmbotModelProps) => {
         -40,
       ]}
       rotation={[-Math.PI / 2, -Math.PI, 0 * Math.PI]}>
-      <MeshPhongMaterial color={"black"} />
+      <MeshPhongMaterial color={distinguishableBlack} />
     </Extrude>
     <CrossSlideComponent name={"crossSlide"}
       position={[
@@ -555,7 +556,7 @@ export const Bot = (props: FarmbotModelProps) => {
         zZero - zDir * z + 125,
       ]}
       rotation={[Math.PI / 2, Math.PI, Math.PI / 2]}>
-      <MeshPhongMaterial color={"black"} />
+      <MeshPhongMaterial color={distinguishableBlack} />
     </Extrude>
     <Mesh name={"zStopMax"}
       position={[
@@ -769,7 +770,7 @@ export const Bot = (props: FarmbotModelProps) => {
         columnLength + 150,
       ]}
       rotation={[-Math.PI / 2, -Math.PI / 2, 0]}>
-      <MeshPhongMaterial color={"black"} />
+      <MeshPhongMaterial color={distinguishableBlack} />
     </Extrude>
     <Mesh name={"yStopMin"}
       position={[
@@ -793,7 +794,7 @@ export const Bot = (props: FarmbotModelProps) => {
         columnLength + 100,
       ]}
       rotation={[0, -Math.PI / 2, 0]}>
-      <MeshPhongMaterial color={"black"} />
+      <MeshPhongMaterial color={distinguishableBlack} />
     </Extrude>
     <Mesh name={"yStopMax"}
       position={[

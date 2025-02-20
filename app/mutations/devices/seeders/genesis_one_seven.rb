@@ -17,17 +17,17 @@ module Devices
 
       def tool_slots_slot_6
         add_tool_slot(name: ToolNames::ROTARY_TOOL,
-                      x: 50,
-                      y: 700,
-                      z: -200,
+                      x: TOOL_X,
+                      y: TOOL_Y + 7 * TOOL_SPACING,
+                      z: TOOL_Z,
                       tool: tools_rotary)
       end
 
       def tool_slots_slot_7
         add_tool_slot(name: ToolNames::SEED_TROUGH_1,
                       x: 0,
-                      y: 25,
-                      z: -100,
+                      y: TROUGH_Y,
+                      z: TROUGH_Z,
                       tool: tools_seed_trough_1,
                       pullout_direction: ToolSlot::NONE,
                       gantry_mounted: true)
@@ -36,8 +36,8 @@ module Devices
       def tool_slots_slot_8
         add_tool_slot(name: ToolNames::SEED_TROUGH_2,
                       x: 0,
-                      y: 50,
-                      z: -100,
+                      y: TROUGH_Y + TROUGH_SPACING,
+                      z: TROUGH_Z,
                       tool: tools_seed_trough_2,
                       pullout_direction: ToolSlot::NONE,
                       gantry_mounted: true)
