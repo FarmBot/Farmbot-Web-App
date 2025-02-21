@@ -2,7 +2,7 @@ import React from "react";
 import {
   Config, INITIAL, modifyConfigsFromUrlParams,
 } from "../three_d_garden/config";
-import { GardenModel } from "../three_d_garden/garden";
+import { GardenModel } from "../three_d_garden/garden_model";
 import { Canvas } from "@react-three/fiber";
 import {
   PrivateOverlay, PublicOverlay, ToolTip,

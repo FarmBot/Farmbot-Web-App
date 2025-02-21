@@ -22,7 +22,7 @@ export const getColorFromBrightness = (value: number) => {
   };
   return colorMap[value];
 };
-export const zDir = -1;
+export const zDir = (config: Config) => config.negativeZ ? -1 : 1;
 
 export const zero = (config: Config): Record<"x" | "y" | "z", number> => ({
   x: threeSpace(config.bedXOffset, config.bedLengthOuter),
@@ -33,7 +33,7 @@ export const zero = (config: Config): Record<"x" | "y" | "z", number> => ({
 export const extents = (config: Config): Record<"x" | "y" | "z", number> => ({
   x: threeSpace(config.bedXOffset + config.botSizeX, config.bedLengthOuter),
   y: threeSpace(config.bedYOffset + config.botSizeY, config.bedWidthOuter),
-  z: zZero(config) + zDir * config.botSizeZ,
+  z: zZero(config) + zDir(config) * config.botSizeZ,
 });
 
 interface Vector3Array extends Array<number> {

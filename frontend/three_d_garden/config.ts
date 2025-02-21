@@ -69,6 +69,7 @@ export interface Config {
   animate: boolean;
   distanceIndicator: string;
   kitVersion: string;
+  negativeZ: boolean;
 }
 
 export const INITIAL: Config = {
@@ -89,7 +90,7 @@ export const INITIAL: Config = {
   columnLength: 500,
   zAxisLength: 1000,
   bedXOffset: 140,
-  bedYOffset: 60,
+  bedYOffset: 20,
   bedZOffset: 0,
   zGantryOffset: 140,
   bedWidthOuter: 1360,
@@ -142,6 +143,7 @@ export const INITIAL: Config = {
   animate: true,
   distanceIndicator: "",
   kitVersion: "v1.7",
+  negativeZ: false,
 };
 
 export const STRING_KEYS = [
@@ -163,7 +165,7 @@ export const BOOLEAN_KEYS = [
   "viewCube", "stats", "config", "zoom", "pan", "bounds", "threeAxes",
   "xyDimensions", "zDimension", "promoInfo", "settingsBar", "zoomBeacons",
   "solar", "utilitiesPost", "packaging", "lab", "people", "lowDetail",
-  "eventDebug", "cableDebug", "zoomBeaconDebug", "animate",
+  "eventDebug", "cableDebug", "zoomBeaconDebug", "animate", "negativeZ",
 ];
 
 export const PRESETS: Record<string, Config> = {
@@ -200,7 +202,7 @@ export const PRESETS: Record<string, Config> = {
     columnLength: 500,
     zAxisLength: 1000,
     bedXOffset: 140,
-    bedYOffset: 60,
+    bedYOffset: 20,
     zGantryOffset: 140,
     bedWidthOuter: 1360,
     bedLengthOuter: 3000,
@@ -221,7 +223,7 @@ export const PRESETS: Record<string, Config> = {
     columnLength: 500,
     zAxisLength: 1000,
     bedXOffset: 140,
-    bedYOffset: 60,
+    bedYOffset: 20,
     zGantryOffset: 140,
     bedWidthOuter: 2860,
     bedLengthOuter: 6000,
@@ -353,7 +355,7 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "threeAxes", "xyDimensions", "zDimension", "labelsOnHover", "promoInfo",
   "settingsBar", "zoomBeacons", "pan", "solar", "utilitiesPost", "packaging", "lab",
   "people", "scene", "lowDetail", "eventDebug", "cableDebug", "zoomBeaconDebug",
-  "animate", "distanceIndicator", "kitVersion",
+  "animate", "distanceIndicator", "kitVersion", "negativeZ",
 ];
 
 export const modifyConfig = (config: Config, update: Partial<Config>) => {
@@ -369,10 +371,10 @@ export const modifyConfig = (config: Config, update: Partial<Config>) => {
   }
   if (update.scene) {
     newConfig.lab = update.scene == "Lab";
-    newConfig.clouds = update.scene != "Lab";
-    newConfig.people = update.scene == "Lab";
+    newConfig.clouds = update.scene == "Outdoor";
+    newConfig.people = update.scene != "Outdoor";
     newConfig.bedType =
-      (update.scene == "Lab" && newConfig.sizePreset != "Genesis XL")
+      (update.scene != "Outdoor" && newConfig.sizePreset != "Genesis XL")
         ? "Mobile"
         : "Standard";
   }

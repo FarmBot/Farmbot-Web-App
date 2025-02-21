@@ -227,7 +227,7 @@ module Devices
       def settings_soil_height; end
 
       def settings_soil_height
-        device.fbos_config.update!(soil_height: -200)
+        device.fbos_config.update!(soil_height: -500)
       end
 
       def tool_slots_slot_1; end

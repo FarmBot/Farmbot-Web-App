@@ -5,6 +5,13 @@ jest.mock("../../api/crud", () => ({
 
 jest.mock("../../plants/plant_inventory", () => ({ Plants: () => <div /> }));
 
+let mockIsMobile = false;
+let mockIsDesktop = false;
+jest.mock("../../screen_size", () => ({
+  isMobile: () => mockIsMobile,
+  isDesktop: () => mockIsDesktop,
+}));
+
 import React from "react";
 import {
   getDefaultAxisLength, getGridSize, RawFarmDesigner as FarmDesigner,
@@ -81,7 +88,7 @@ describe("<FarmDesigner />", () => {
     expect(legendProps.imageAgeInfo).toEqual({ newestDate: "", toOldest: 1 });
     const gardenMapProps = wrapper.find(GardenMap).props();
     expect(gardenMapProps.mapTransformProps.gridSize.x).toEqual(2900);
-    expect(gardenMapProps.mapTransformProps.gridSize.y).toEqual(1400);
+    expect(gardenMapProps.mapTransformProps.gridSize.y).toEqual(1230);
   });
 
   it("loads image info", () => {
@@ -122,10 +129,35 @@ describe("<FarmDesigner />", () => {
   });
 
   it("renders saved garden indicator", () => {
+    mockIsMobile = false;
+    mockIsDesktop = true;
     const p = fakeProps();
     p.designer.openedSavedGarden = 1;
+    p.designer.panelOpen = false;
     const wrapper = mount(<FarmDesigner {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("viewing saved garden");
+    expect(wrapper.html()).not.toContain("three-d-garden");
+  });
+
+  it("renders saved garden indicator on medium screens", () => {
+    mockIsMobile = false;
+    mockIsDesktop = false;
+    const p = fakeProps();
+    p.designer.openedSavedGarden = 1;
+    p.designer.panelOpen = false;
+    const wrapper = mount(<FarmDesigner {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("viewing saved garden");
+    expect(wrapper.html()).not.toContain("three-d-garden");
+  });
+
+  it("doesn't render saved garden indicator", () => {
+    mockIsMobile = true;
+    mockIsDesktop = false;
+    const p = fakeProps();
+    p.designer.openedSavedGarden = 1;
+    p.designer.panelOpen = false;
+    const wrapper = mount(<FarmDesigner {...p} />);
+    expect(wrapper.text().toLowerCase()).not.toContain("viewing saved garden");
     expect(wrapper.html()).not.toContain("three-d-garden");
   });
 
@@ -167,7 +199,7 @@ describe("<FarmDesigner />", () => {
 describe("getDefaultAxisLength()", () => {
   it("returns axis lengths", () => {
     const axes = getDefaultAxisLength(() => false);
-    expect(axes).toEqual({ x: 2900, y: 1400, z: 400 });
+    expect(axes).toEqual({ x: 2900, y: 1230, z: 400 });
   });
 });
 
@@ -180,7 +212,7 @@ describe("getGridSize()", () => {
         y: { value: 200, isDefault: false },
         z: { value: 400, isDefault: true },
       });
-    expect(grid).toEqual({ x: 2900, y: 1400 });
+    expect(grid).toEqual({ x: 2900, y: 1230 });
   });
 
   it("returns custom grid size", () => {

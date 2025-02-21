@@ -325,7 +325,7 @@ describe Api::DevicesController do
       expect(sensors_tool_verification?(device)).to be_kind_of(Sensor)
       expect(settings_device_name?(device)).to eq(Names::GENESIS)
       expect(settings_change_firmware_config_defaults?(device)).to be(true)
-      expect(settings_soil_height?(device)).to eq(-200)
+      expect(settings_soil_height?(device)).to eq(-500)
       expect(settings_gantry_height?(device)).to eq(120)
       expect(settings_firmware?(device)).to eq("arduino")
       expect(settings_hide_sensors?(device)).to be(false)
@@ -378,7 +378,7 @@ describe Api::DevicesController do
       expect(sequences_mow_all_weeds?(device)).to_not be
       expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(2900)
-      expect(settings_default_map_size_y?(device)).to eq(1400)
+      expect(settings_default_map_size_y?(device)).to eq(1230)
     end
 
     it "seeds accounts with Genesis 1.3 data" do
@@ -398,7 +398,7 @@ describe Api::DevicesController do
       expect(sensors_tool_verification?(device).pin).to eq(63)
       expect(settings_device_name?(device)).to eq(Names::GENESIS)
       expect(settings_change_firmware_config_defaults?(device)).to be(true)
-      expect(settings_soil_height?(device)).to eq(-200)
+      expect(settings_soil_height?(device)).to eq(-500)
       expect(settings_gantry_height?(device)).to eq(120)
       expect(settings_firmware?(device)).to eq("farmduino")
       expect(settings_hide_sensors?(device)).to be(false)
@@ -451,7 +451,7 @@ describe Api::DevicesController do
       expect(sequences_mow_all_weeds?(device)).to_not be
       expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(2900)
-      expect(settings_default_map_size_y?(device)).to eq(1400)
+      expect(settings_default_map_size_y?(device)).to eq(1230)
     end
 
     it "seeds accounts with Genesis 1.4 data" do
@@ -471,7 +471,7 @@ describe Api::DevicesController do
       expect(sensors_tool_verification?(device).pin).to eq(63)
       expect(settings_device_name?(device)).to eq(Names::GENESIS)
       expect(settings_change_firmware_config_defaults?(device)).to be(true)
-      expect(settings_soil_height?(device)).to eq(-200)
+      expect(settings_soil_height?(device)).to eq(-500)
       expect(settings_gantry_height?(device)).to eq(120)
       expect(settings_firmware?(device)).to eq("farmduino_k14")
       expect(settings_hide_sensors?(device)).to be(false)
@@ -524,7 +524,7 @@ describe Api::DevicesController do
       expect(sequences_mow_all_weeds?(device)).to_not be
       expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(2900)
-      expect(settings_default_map_size_y?(device)).to eq(1400)
+      expect(settings_default_map_size_y?(device)).to eq(1230)
     end
 
     it "seeds accounts with Genesis 1.5 data" do
@@ -544,7 +544,7 @@ describe Api::DevicesController do
       expect(sensors_tool_verification?(device).pin).to eq(63)
       expect(settings_device_name?(device)).to eq(Names::GENESIS)
       expect(settings_change_firmware_config_defaults?(device)).to be(true)
-      expect(settings_soil_height?(device)).to eq(-200)
+      expect(settings_soil_height?(device)).to eq(-500)
       expect(settings_gantry_height?(device)).to eq(120)
       expect(settings_firmware?(device)).to eq("farmduino_k15")
       expect(settings_hide_sensors?(device)).to be(false)
@@ -599,7 +599,7 @@ describe Api::DevicesController do
       expect(sequences_mow_all_weeds?(device)).to_not be
       expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(2900)
-      expect(settings_default_map_size_y?(device)).to eq(1400)
+      expect(settings_default_map_size_y?(device)).to eq(1230)
     end
 
     it "seeds accounts with Genesis 1.6 data" do
@@ -619,7 +619,7 @@ describe Api::DevicesController do
       expect(sensors_tool_verification?(device).pin).to eq(63)
       expect(settings_device_name?(device)).to eq(Names::GENESIS)
       expect(settings_change_firmware_config_defaults?(device)).to be(true)
-      expect(settings_soil_height?(device)).to eq(-200)
+      expect(settings_soil_height?(device)).to eq(-500)
       expect(settings_gantry_height?(device)).to eq(120)
       expect(settings_firmware?(device)).to eq("farmduino_k16")
       expect(settings_hide_sensors?(device)).to be(false)
@@ -675,7 +675,7 @@ describe Api::DevicesController do
       expect(sequences_mow_all_weeds?(device)).to be_kind_of(Sequence)
       expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(2900)
-      expect(settings_default_map_size_y?(device)).to eq(1400)
+      expect(settings_default_map_size_y?(device)).to eq(1230)
     end
 
     it "seeds accounts with Genesis 1.7 data" do
@@ -695,7 +695,7 @@ describe Api::DevicesController do
       expect(sensors_tool_verification?(device).pin).to eq(63)
       expect(settings_device_name?(device)).to eq(Names::GENESIS)
       expect(settings_change_firmware_config_defaults?(device)).to be(true)
-      expect(settings_soil_height?(device)).to eq(-200)
+      expect(settings_soil_height?(device)).to eq(-500)
       expect(settings_gantry_height?(device)).to eq(120)
       expect(settings_firmware?(device)).to eq("farmduino_k17")
       expect(settings_hide_sensors?(device)).to be(false)
@@ -750,7 +750,7 @@ describe Api::DevicesController do
       expect(sequences_mow_all_weeds?(device)).to be_kind_of(Sequence)
       expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(2900)
-      expect(settings_default_map_size_y?(device)).to eq(1400)
+      expect(settings_default_map_size_y?(device)).to eq(1230)
     end
 
     it "seeds accounts with Genesis XL 1.4 data" do
@@ -770,7 +770,7 @@ describe Api::DevicesController do
       expect(sensors_tool_verification?(device).pin).to eq(63)
       expect(settings_device_name?(device)).to eq(Names::GENESIS_XL)
       expect(settings_change_firmware_config_defaults?(device)).to be(true)
-      expect(settings_soil_height?(device)).to eq(-200)
+      expect(settings_soil_height?(device)).to eq(-500)
       expect(settings_gantry_height?(device)).to eq(120)
       expect(settings_firmware?(device)).to eq("farmduino_k14")
       expect(settings_hide_sensors?(device)).to be(false)
@@ -823,7 +823,7 @@ describe Api::DevicesController do
       expect(sequences_mow_all_weeds?(device)).to_not be
       expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(5900)
-      expect(settings_default_map_size_y?(device)).to eq(2900)
+      expect(settings_default_map_size_y?(device)).to eq(2730)
     end
 
     it "seeds accounts with Genesis XL 1.5 data" do
@@ -843,7 +843,7 @@ describe Api::DevicesController do
       expect(sensors_tool_verification?(device).pin).to eq(63)
       expect(settings_device_name?(device)).to eq(Names::GENESIS_XL)
       expect(settings_change_firmware_config_defaults?(device)).to be(true)
-      expect(settings_soil_height?(device)).to eq(-200)
+      expect(settings_soil_height?(device)).to eq(-500)
       expect(settings_gantry_height?(device)).to eq(120)
       expect(settings_firmware?(device)).to eq("farmduino_k15")
       expect(settings_hide_sensors?(device)).to be(false)
@@ -898,7 +898,7 @@ describe Api::DevicesController do
       expect(sequences_mow_all_weeds?(device)).to_not be
       expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(5900)
-      expect(settings_default_map_size_y?(device)).to eq(2900)
+      expect(settings_default_map_size_y?(device)).to eq(2730)
     end
 
     it "seeds accounts with Genesis XL 1.7 data" do
@@ -918,7 +918,7 @@ describe Api::DevicesController do
       expect(sensors_tool_verification?(device).pin).to eq(63)
       expect(settings_device_name?(device)).to eq(Names::GENESIS_XL)
       expect(settings_change_firmware_config_defaults?(device)).to be(true)
-      expect(settings_soil_height?(device)).to eq(-200)
+      expect(settings_soil_height?(device)).to eq(-500)
       expect(settings_gantry_height?(device)).to eq(120)
       expect(settings_firmware?(device)).to eq("farmduino_k17")
       expect(settings_hide_sensors?(device)).to be(false)
@@ -973,7 +973,7 @@ describe Api::DevicesController do
       expect(sequences_mow_all_weeds?(device)).to be_kind_of(Sequence)
       expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(5900)
-      expect(settings_default_map_size_y?(device)).to eq(2900)
+      expect(settings_default_map_size_y?(device)).to eq(2730)
     end
 
     it "seeds accounts with Genesis XL 1.6 data" do
@@ -993,7 +993,7 @@ describe Api::DevicesController do
       expect(sensors_tool_verification?(device).pin).to eq(63)
       expect(settings_device_name?(device)).to eq(Names::GENESIS_XL)
       expect(settings_change_firmware_config_defaults?(device)).to be(true)
-      expect(settings_soil_height?(device)).to eq(-200)
+      expect(settings_soil_height?(device)).to eq(-500)
       expect(settings_gantry_height?(device)).to eq(120)
       expect(settings_firmware?(device)).to eq("farmduino_k16")
       expect(settings_hide_sensors?(device)).to be(false)
@@ -1049,7 +1049,7 @@ describe Api::DevicesController do
       expect(sequences_mow_all_weeds?(device)).to be_kind_of(Sequence)
       expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(5900)
-      expect(settings_default_map_size_y?(device)).to eq(2900)
+      expect(settings_default_map_size_y?(device)).to eq(2730)
     end
 
     it "seeds accounts with Express 1.0 data" do
@@ -1069,7 +1069,7 @@ describe Api::DevicesController do
       expect(sensors_tool_verification?(device)).to_not be
       expect(settings_device_name?(device)).to eq(Names::EXPRESS)
       expect(settings_change_firmware_config_defaults?(device)).to be(false)
-      expect(settings_soil_height?(device)).to eq(-200)
+      expect(settings_soil_height?(device)).to eq(-500)
       expect(settings_gantry_height?(device)).to eq(140)
       expect(settings_firmware?(device)).to eq("express_k10")
       expect(settings_hide_sensors?(device)).to be(true)
@@ -1138,7 +1138,7 @@ describe Api::DevicesController do
       expect(sensors_tool_verification?(device)).to_not be
       expect(settings_device_name?(device)).to eq(Names::EXPRESS)
       expect(settings_change_firmware_config_defaults?(device)).to be(false)
-      expect(settings_soil_height?(device)).to eq(-200)
+      expect(settings_soil_height?(device)).to eq(-500)
       expect(settings_gantry_height?(device)).to eq(140)
       expect(settings_firmware?(device)).to eq("express_k11")
       expect(settings_hide_sensors?(device)).to be(true)
@@ -1207,7 +1207,7 @@ describe Api::DevicesController do
       expect(sensors_tool_verification?(device)).to_not be
       expect(settings_device_name?(device)).to eq(Names::EXPRESS)
       expect(settings_change_firmware_config_defaults?(device)).to be(false)
-      expect(settings_soil_height?(device)).to eq(-200)
+      expect(settings_soil_height?(device)).to eq(-500)
       expect(settings_gantry_height?(device)).to eq(140)
       expect(settings_firmware?(device)).to eq("express_k12")
       expect(settings_hide_sensors?(device)).to be(true)
@@ -1276,7 +1276,7 @@ describe Api::DevicesController do
       expect(sensors_tool_verification?(device)).to_not be
       expect(settings_device_name?(device)).to eq(Names::EXPRESS_XL)
       expect(settings_change_firmware_config_defaults?(device)).to be(false)
-      expect(settings_soil_height?(device)).to eq(-200)
+      expect(settings_soil_height?(device)).to eq(-500)
       expect(settings_gantry_height?(device)).to eq(140)
       expect(settings_firmware?(device)).to eq("express_k10")
       expect(settings_hide_sensors?(device)).to be(true)
@@ -1345,7 +1345,7 @@ describe Api::DevicesController do
       expect(sensors_tool_verification?(device)).to_not be
       expect(settings_device_name?(device)).to eq(Names::EXPRESS_XL)
       expect(settings_change_firmware_config_defaults?(device)).to be(false)
-      expect(settings_soil_height?(device)).to eq(-200)
+      expect(settings_soil_height?(device)).to eq(-500)
       expect(settings_gantry_height?(device)).to eq(140)
       expect(settings_firmware?(device)).to eq("express_k11")
       expect(settings_hide_sensors?(device)).to be(true)
@@ -1414,7 +1414,7 @@ describe Api::DevicesController do
       expect(sensors_tool_verification?(device)).to_not be
       expect(settings_device_name?(device)).to eq(Names::EXPRESS_XL)
       expect(settings_change_firmware_config_defaults?(device)).to be(false)
-      expect(settings_soil_height?(device)).to eq(-200)
+      expect(settings_soil_height?(device)).to eq(-500)
       expect(settings_gantry_height?(device)).to eq(140)
       expect(settings_firmware?(device)).to eq("express_k12")
       expect(settings_hide_sensors?(device)).to be(true)

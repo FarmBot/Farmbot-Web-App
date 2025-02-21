@@ -5,10 +5,14 @@ import {
   BotSize, MapTransformProps, AxisNumberProperty, TaggedPlant,
 } from "./map/interfaces";
 import { clone } from "lodash";
-import { SourceFbosConfig } from "../devices/interfaces";
-import { ConfigurationName, TaggedCurve } from "farmbot";
+import { BotPosition, SourceFbosConfig } from "../devices/interfaces";
+import {
+  ConfigurationName, TaggedCurve, TaggedGenericPointer, TaggedWeedPointer,
+} from "farmbot";
 import { DesignerState } from "./interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
+import { BooleanSetting } from "../session_keys";
+import { SlotWithTool } from "../resources/interfaces";
 
 export interface ThreeDGardenMapProps {
   botSize: BotSize;
@@ -16,11 +20,17 @@ export interface ThreeDGardenMapProps {
   gridOffset: AxisNumberProperty;
   get3DConfigValue(key: string): number;
   sourceFbosConfig: SourceFbosConfig;
+  negativeZ: boolean;
   designer: DesignerState;
   plants: TaggedPlant[];
   dispatch: Function;
   getWebAppConfigValue: GetWebAppConfigValue;
   curves: TaggedCurve[];
+  mapPoints: TaggedGenericPointer[];
+  weeds: TaggedWeedPointer[];
+  botPosition: BotPosition;
+  toolSlots?: SlotWithTool[];
+  mountedToolName: string | undefined;
 }
 
 export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
@@ -31,6 +41,13 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   config.bedWidthOuter = gridSize.y + 160;
   config.bedLengthOuter = gridSize.x + 160;
   config.zoomBeacons = false;
+  config.trail = !!props.getWebAppConfigValue(BooleanSetting.display_trail);
+
+  config.negativeZ = props.negativeZ;
+
+  config.x = props.botPosition.x || 0;
+  config.y = props.botPosition.y || 0;
+  config.z = props.botPosition.z || 0;
 
   const { designer } = props;
   config.distanceIndicator = designer.distanceIndicator;
@@ -59,6 +76,10 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
 
   return <ThreeDGarden
     config={config}
+    mapPoints={props.mapPoints}
+    weeds={props.weeds}
+    toolSlots={props.toolSlots}
+    mountedToolName={props.mountedToolName}
     addPlantProps={{
       gridSize: props.mapTransformProps.gridSize,
       dispatch: props.dispatch,

@@ -53,6 +53,16 @@ describe("<PublicOverlay />", () => {
       text: "",
     });
   });
+
+  it("sets buy button url and text", () => {
+    const p = fakeProps();
+    p.config.sizePreset = "Genesis XL";
+    p.config.kitVersion = "v1.8";
+    const wrapper = mount(<PublicOverlay {...p} />);
+    const buyButton = wrapper.find(".buy-button").first();
+    expect(buyButton.props().href).toContain("genesis-xl-v1-8");
+    expect(buyButton.text()).toContain("GenesisXLv1.8");
+  });
 });
 
 describe("<PrivateOverlay />", () => {

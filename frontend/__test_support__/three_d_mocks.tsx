@@ -9,6 +9,19 @@ import {
 import * as THREE from "three";
 import React, { ReactNode } from "react";
 import { TransitionFn, UseSpringProps } from "@react-spring/three";
+import { ThreeElements } from "@react-three/fiber";
+
+const GroupForTests = (props: ThreeElements["group"]) =>
+  // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
+  <group {...props} />;
+
+jest.mock("../three_d_garden/components", () => ({
+  ...jest.requireActual("../three_d_garden/components"),
+  Group: (props: ThreeElements["group"]) =>
+    props.visible === false
+      ? <></>
+      : <GroupForTests {...props} />,
+}));
 
 jest.mock("three/examples/jsm/Addons.js", () => ({
   SVGLoader: class {
@@ -383,6 +396,12 @@ jest.mock("@react-three/drei", () => {
         PaletteMaterial001: {} as THREE.MeshStandardMaterial,
       },
     },
+    [ASSETS.models.seedTrough]: {
+      nodes: { Seed_Trough: {} as THREE.Mesh },
+      materials: {
+        [SeedTroughAssemblyMaterial.two]: {} as THREE.MeshStandardMaterial,
+      },
+    },
     [ASSETS.models.seedTroughAssembly]: {
       nodes: {
         mesh0_mesh: {} as THREE.Mesh,
@@ -454,8 +473,19 @@ jest.mock("@react-three/drei", () => {
         [PartName.toolbay3Logo]: {} as THREE.Mesh,
       },
     },
+    [ASSETS.models.toolbay1]: {
+      nodes: {
+        [PartName.toolbay1]: {} as THREE.Mesh,
+        [PartName.toolbay1Logo]: {} as THREE.Mesh,
+      },
+    },
     [ASSETS.models.seeder]: {
       nodes: { [PartName.seeder]: {} as THREE.Mesh },
+      materials: { PaletteMaterial001: {} as THREE.MeshStandardMaterial },
+    },
+    [ASSETS.models.weeder]: {
+      nodes: { [PartName.weeder]: {} as THREE.Mesh },
+      materials: { PaletteMaterial001: {} as THREE.MeshStandardMaterial },
     },
     [ASSETS.models.seedTray]: {
       nodes: { [PartName.seedTray]: {} as THREE.Mesh },
@@ -612,8 +642,8 @@ jest.mock("@react-three/drei", () => {
       <div className={"stats"}>{name}</div>,
     Billboard: ({ name, children }: { name: string, children: ReactNode }) =>
       <div className={"billboard" + name}>{children}</div>,
-    Image: ({ name }: { name: string }) =>
-      <div className={"image"}>{name}</div>,
+    Image: ({ name, url }: { name: string, url: string }) =>
+      <div className={"image"}>{name} {url}</div>,
     Clouds: ({ name }: { name: string }) =>
       <div className={"clouds"}>{name}</div>,
     Cloud: ({ name }: { name: string }) =>

@@ -4,6 +4,10 @@ jest.mock("../../api/crud", () => ({
   initSave: jest.fn(),
 }));
 
+jest.mock("../../devices/actions", () => ({
+  updateConfig: jest.fn(),
+}));
+
 import {
   saveOrEditFarmwareEnv, getEnv, generateFarmwareDictionary,
   isPendingInstallation,
@@ -17,6 +21,7 @@ import {
 import { edit, initSave, save } from "../../api/crud";
 import { fakeFarmware } from "../../__test_support__/fake_farmwares";
 import { fakeState } from "../../__test_support__/fake_state";
+import { updateConfig } from "../../devices/actions";
 
 describe("getEnv()", () => {
   it("returns API farmware env", () => {
@@ -85,5 +90,14 @@ describe("saveOrEditFarmwareEnv()", () => {
     saveOrEditFarmwareEnv(ri)("new_key", "new_value")(jest.fn());
     expect(initSave).toHaveBeenCalledWith("FarmwareEnv",
       { key: "new_key", value: "new_value" });
+  });
+
+  it("saves new env var and updates soil height", () => {
+    const ri = buildResourceIndex([]).index;
+    saveOrEditFarmwareEnv(ri, true)(
+      "measure_soil_height_measured_distance", "100")(jest.fn());
+    expect(initSave).toHaveBeenCalledWith("FarmwareEnv",
+      { key: "measure_soil_height_measured_distance", value: "100" });
+    expect(updateConfig).toHaveBeenCalledWith({ soil_height: -100 });
   });
 });

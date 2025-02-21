@@ -30,3 +30,4 @@ upgrade_deps.sh
 # ActiveStorage blobs:
 storage/*
 tmp
+module_graph.*

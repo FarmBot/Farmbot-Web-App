@@ -8,23 +8,28 @@ import { save, edit, initSave } from "../api/crud";
 import { FarmwareManifestInfo, Farmwares, SaveFarmwareEnv } from "./interfaces";
 import { manifestInfo, manifestInfoPending } from "./generate_manifest_info";
 import { t } from "../i18next_wrapper";
+import { updateConfig } from "../devices/actions";
 
 /** Edit an existing Farmware env variable or add a new one. */
-export const saveOrEditFarmwareEnv = (ri: ResourceIndex): SaveFarmwareEnv =>
-  (key: string, value: string) => (dispatch: Function) => {
-    const fwEnvLookup: Record<string, TaggedFarmwareEnv> = {};
-    selectAllFarmwareEnvs(ri)
-      .map(x => { fwEnvLookup[x.body.key] = x; });
-    if (Object.keys(fwEnvLookup).includes(key)) {
-      const fwEnv = fwEnvLookup[key];
-      if (value != fwEnv.body.value) {
-        dispatch(edit(fwEnv, { value }));
-        dispatch(save(fwEnv.uuid));
+export const saveOrEditFarmwareEnv =
+  (ri: ResourceIndex, copyDistance = false): SaveFarmwareEnv =>
+    (key: string, value: string) => (dispatch: Function) => {
+      const fwEnvLookup: Record<string, TaggedFarmwareEnv> = {};
+      selectAllFarmwareEnvs(ri)
+        .map(x => { fwEnvLookup[x.body.key] = x; });
+      if (Object.keys(fwEnvLookup).includes(key)) {
+        const fwEnv = fwEnvLookup[key];
+        if (value != fwEnv.body.value) {
+          dispatch(edit(fwEnv, { value }));
+          dispatch(save(fwEnv.uuid));
+        }
+      } else {
+        dispatch(initSave("FarmwareEnv", { key, value }));
       }
-    } else {
-      dispatch(initSave("FarmwareEnv", { key, value }));
-    }
-  };
+      if (copyDistance && key == "measure_soil_height_measured_distance") {
+        dispatch(updateConfig({ soil_height: -parseInt(value) }));
+      }
+    };
 
 export const isPendingInstallation = (farmware: FarmwareManifestInfo | undefined) =>
   !farmware || farmware.installation_pending;

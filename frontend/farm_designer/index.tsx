@@ -27,6 +27,7 @@ import { ThreeDGardenMap } from "./three_d_garden_map";
 import { Outlet } from "react-router";
 import { ErrorBoundary } from "../error_boundary";
 import { get3DConfigValueFunction } from "../settings/three_d_settings";
+import { isDesktop, isMobile } from "../screen_size";
 
 export const getDefaultAxisLength =
   (getConfigValue: GetWebAppConfigValue): Record<Xyz, number> => {
@@ -35,7 +36,7 @@ export const getDefaultAxisLength =
     if (isFinite(mapSizeX) && isFinite(mapSizeY)) {
       return { x: mapSizeX, y: mapSizeY, z: 400 };
     }
-    return { x: 2900, y: 1400, z: 400 };
+    return { x: 2900, y: 1230, z: 400 };
   };
 
 export const getGridSize = (
@@ -211,11 +212,17 @@ export class RawFarmDesigner
           plants={this.props.plants}
           get3DConfigValue={get3DConfigValueFunction(this.props.farmwareEnvs)}
           sourceFbosConfig={this.props.sourceFbosConfig}
+          negativeZ={!!this.props.botMcuParams.movement_home_up_z}
           gridOffset={gridOffset}
           mapTransformProps={this.mapTransformProps}
           botSize={this.props.botSize}
           dispatch={this.props.dispatch}
           curves={this.props.curves}
+          mapPoints={this.props.genericPoints}
+          weeds={this.props.weeds}
+          toolSlots={this.props.toolSlots}
+          mountedToolName={this.props.mountedToolInfo.name}
+          botPosition={this.props.botLocationData.position}
           getWebAppConfigValue={this.props.getConfigValue} />
         : <div
           className={`farm-designer-map ${this.mapPanelClassName}`}
@@ -266,7 +273,9 @@ export class RawFarmDesigner
             dispatch={this.props.dispatch} />
         </div>}
 
-      {this.props.designer.openedSavedGarden &&
+      {this.props.designer.openedSavedGarden
+        && !isMobile()
+        && (isDesktop() || !this.props.designer.panelOpen) &&
         <SavedGardenHUD dispatch={this.props.dispatch} />}
 
       {!this.props.getConfigValue(BooleanSetting.three_d_garden) &&

@@ -70,9 +70,11 @@ describe("<AddToolSlot />", () => {
 
   it("saves tool slot", () => {
     const wrapper = shallow<AddToolSlot>(<AddToolSlot {...fakeProps()} />);
+    const navigate = jest.fn();
+    wrapper.instance().navigate = navigate;
     wrapper.find("SaveBtn").simulate("click");
     expect(save).toHaveBeenCalled();
-    expect(mockNavigate).toHaveBeenCalledWith(Path.tools());
+    expect(navigate).toHaveBeenCalledWith(Path.tools());
   });
 
   it("saves on unmount", () => {

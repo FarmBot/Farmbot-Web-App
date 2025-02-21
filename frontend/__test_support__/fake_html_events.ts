@@ -12,17 +12,6 @@ export const changeEvent = (value: string): ChangeEvent => {
   return event as ChangeEvent;
 };
 
-type IMGEvent = React.SyntheticEvent<HTMLImageElement, Event>;
-export const imgEvent = (): IMGEvent => {
-  const event: DeepPartial<IMGEvent> = {
-    currentTarget: {
-      getAttribute: jest.fn(),
-      setAttribute: jest.fn(),
-    }
-  };
-  return event as IMGEvent;
-};
-
 type FormEvent = React.FormEvent<HTMLFormElement>;
 export const formEvent = (): FormEvent => {
   const event: Partial<FormEvent> = { preventDefault: jest.fn() };

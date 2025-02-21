@@ -1,6 +1,7 @@
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
 SELECT pg_catalog.set_config('search_path', '', false);
@@ -2005,7 +2006,7 @@ CREATE TABLE public.web_app_configs (
     show_pins boolean DEFAULT false,
     disable_emergency_unlock_confirmation boolean DEFAULT true,
     map_size_x integer DEFAULT 2900,
-    map_size_y integer DEFAULT 1400,
+    map_size_y integer DEFAULT 1230,
     expand_step_options boolean DEFAULT false,
     hide_sensors boolean DEFAULT false,
     confirm_plant_deletion boolean DEFAULT true,
@@ -3979,6 +3980,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20240405171128'),
 ('20240625195838'),
 ('20241203194030'),
-('20241203211516');
+('20241203211516'),
+('20250221191831');
 
 
