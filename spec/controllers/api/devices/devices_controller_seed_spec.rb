@@ -378,7 +378,7 @@ describe Api::DevicesController do
       expect(sequences_mow_all_weeds?(device)).to_not be
       expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(2900)
-      expect(settings_default_map_size_y?(device)).to eq(1400)
+      expect(settings_default_map_size_y?(device)).to eq(1230)
     end
 
     it "seeds accounts with Genesis 1.3 data" do
@@ -451,7 +451,7 @@ describe Api::DevicesController do
       expect(sequences_mow_all_weeds?(device)).to_not be
       expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(2900)
-      expect(settings_default_map_size_y?(device)).to eq(1400)
+      expect(settings_default_map_size_y?(device)).to eq(1230)
     end
 
     it "seeds accounts with Genesis 1.4 data" do
@@ -524,7 +524,7 @@ describe Api::DevicesController do
       expect(sequences_mow_all_weeds?(device)).to_not be
       expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(2900)
-      expect(settings_default_map_size_y?(device)).to eq(1400)
+      expect(settings_default_map_size_y?(device)).to eq(1230)
     end
 
     it "seeds accounts with Genesis 1.5 data" do
@@ -599,7 +599,7 @@ describe Api::DevicesController do
       expect(sequences_mow_all_weeds?(device)).to_not be
       expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(2900)
-      expect(settings_default_map_size_y?(device)).to eq(1400)
+      expect(settings_default_map_size_y?(device)).to eq(1230)
     end
 
     it "seeds accounts with Genesis 1.6 data" do
@@ -675,7 +675,7 @@ describe Api::DevicesController do
       expect(sequences_mow_all_weeds?(device)).to be_kind_of(Sequence)
       expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(2900)
-      expect(settings_default_map_size_y?(device)).to eq(1400)
+      expect(settings_default_map_size_y?(device)).to eq(1230)
     end
 
     it "seeds accounts with Genesis 1.7 data" do
@@ -750,7 +750,7 @@ describe Api::DevicesController do
       expect(sequences_mow_all_weeds?(device)).to be_kind_of(Sequence)
       expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(2900)
-      expect(settings_default_map_size_y?(device)).to eq(1400)
+      expect(settings_default_map_size_y?(device)).to eq(1230)
     end
 
     it "seeds accounts with Genesis XL 1.4 data" do
@@ -823,7 +823,7 @@ describe Api::DevicesController do
       expect(sequences_mow_all_weeds?(device)).to_not be
       expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(5900)
-      expect(settings_default_map_size_y?(device)).to eq(2900)
+      expect(settings_default_map_size_y?(device)).to eq(2730)
     end
 
     it "seeds accounts with Genesis XL 1.5 data" do
@@ -898,7 +898,7 @@ describe Api::DevicesController do
       expect(sequences_mow_all_weeds?(device)).to_not be
       expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(5900)
-      expect(settings_default_map_size_y?(device)).to eq(2900)
+      expect(settings_default_map_size_y?(device)).to eq(2730)
     end
 
     it "seeds accounts with Genesis XL 1.7 data" do
@@ -973,7 +973,7 @@ describe Api::DevicesController do
       expect(sequences_mow_all_weeds?(device)).to be_kind_of(Sequence)
       expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(5900)
-      expect(settings_default_map_size_y?(device)).to eq(2900)
+      expect(settings_default_map_size_y?(device)).to eq(2730)
     end
 
     it "seeds accounts with Genesis XL 1.6 data" do
@@ -1049,7 +1049,7 @@ describe Api::DevicesController do
       expect(sequences_mow_all_weeds?(device)).to be_kind_of(Sequence)
       expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
       expect(settings_default_map_size_x?(device)).to eq(5900)
-      expect(settings_default_map_size_y?(device)).to eq(2900)
+      expect(settings_default_map_size_y?(device)).to eq(2730)
     end
 
     it "seeds accounts with Express 1.0 data" do

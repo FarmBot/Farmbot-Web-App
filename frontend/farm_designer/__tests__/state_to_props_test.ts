@@ -190,7 +190,7 @@ describe("botSize()", () => {
     const state = fakeState();
     expect(botSize(state)).toEqual({
       x: { value: 2900, isDefault: true },
-      y: { value: 1400, isDefault: true },
+      y: { value: 1230, isDefault: true },
       z: { value: 400, isDefault: true },
     });
   });

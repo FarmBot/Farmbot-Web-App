@@ -36,7 +36,7 @@ export const getDefaultAxisLength =
     if (isFinite(mapSizeX) && isFinite(mapSizeY)) {
       return { x: mapSizeX, y: mapSizeY, z: 400 };
     }
-    return { x: 2900, y: 1400, z: 400 };
+    return { x: 2900, y: 1230, z: 400 };
   };
 
 export const getGridSize = (

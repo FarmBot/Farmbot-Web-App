@@ -701,7 +701,7 @@ export const Bot = (props: FarmbotModelProps) => {
       ]}
       position={[
         threeSpace(x - extrusionWidth - 8, bedLengthOuter) + bedXOffset,
-        threeSpace((bedWidthOuter + beamLength) / 2, bedWidthOuter),
+        threeSpace((bedWidthOuter + beamLength) / 2, bedWidthOuter) - 50,
         columnLength + 40,
       ]}
       rotation={[Math.PI / 2, 0, 0]}>

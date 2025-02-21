@@ -67,7 +67,7 @@ const DEFAULT_WEB_APP_CONFIG_VALUES: Record<Key, Value> = {
   show_pins: false,
   disable_emergency_unlock_confirmation: true,
   map_size_x: 2900,
-  map_size_y: 1400,
+  map_size_y: 1230,
   expand_step_options: false,
   hide_sensors: false,
   confirm_plant_deletion: true,
