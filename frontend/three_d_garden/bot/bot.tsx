@@ -828,7 +828,7 @@ export const Bot = (props: FarmbotModelProps) => {
           ],
         ), 40, 5, 8]}>
         <MeshPhongMaterial
-          map={config.waterFlow ? waterTexture : null}
+          map={config.waterFlow ? waterTexture : undefined}
           transparent={true}
           opacity={0.75}
         />
@@ -861,7 +861,7 @@ export const Bot = (props: FarmbotModelProps) => {
           ],
         ), 20, 5, 8]}>
         <MeshPhongMaterial
-          map={config.waterFlow ? waterTexture : null}
+          map={config.waterFlow ? waterTexture : undefined}
           transparent={true}
           opacity={0.75}
         />
@@ -884,7 +884,7 @@ export const Bot = (props: FarmbotModelProps) => {
           ],
         ), 20, 5, 8]}>
         <MeshPhongMaterial
-          map={config.waterFlow ? waterTexture : null}
+          map={config.waterFlow ? waterTexture : undefined}
           transparent={true}
           opacity={0.75}
         />
@@ -907,7 +907,7 @@ export const Bot = (props: FarmbotModelProps) => {
           ],
         ), 20, 5, 8]}>
         <MeshPhongMaterial
-          map={config.waterFlow ? waterTexture : null}
+          map={config.waterFlow ? waterTexture : undefined}
           transparent={true}
           opacity={0.75}
         />

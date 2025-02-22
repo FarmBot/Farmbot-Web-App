@@ -35,7 +35,7 @@ export const XAxisWaterTube = (props: XAxisWaterTubeProps) => {
         receiveShadow={true}
         args={[tubePath, 20, 5, 8]}>
         <MeshPhongMaterial
-          map={config.waterFlow ? waterTexture : null}
+          map={config.waterFlow ? waterTexture : undefined}
           transparent={true}
           opacity={config.waterFlow ? 0.75 : 0.5} />
       </Tube>
