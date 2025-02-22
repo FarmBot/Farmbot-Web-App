@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { useFrame } from "@react-three/fiber";
-import { TextureLoader, RepeatWrapping } from "three";
+import React from "react";
 import { Cylinder, Tube } from "@react-three/drei";
 import { Config } from "../config";
 import { threeSpace, easyCubicBezierCurve3 } from "../helpers";
 import { Group, MeshPhongMaterial } from "../components";
-import { ASSETS } from "../constants";
+import { useWaterFlowTexture } from "./water_flow_texture";
 
 export interface XAxisWaterTubeProps {
   config: Config;
@@ -18,33 +16,17 @@ export const XAxisWaterTube = (props: XAxisWaterTubeProps) => {
   const barbY = threeSpace(-50, config.bedWidthOuter);
   const barbZ = groundZ + 20;
   const tubePath = easyCubicBezierCurve3(
+    [barbX, barbY, barbZ],
+    [-300, 0, 0],
+    [300, 0, 0],
     [
       threeSpace(config.bedLengthOuter / 2 - 20, config.bedLengthOuter),
       threeSpace(-30, config.bedWidthOuter),
       -140,
     ],
-    [300, 0, 0],
-    [-300, 0, 0],
-    [barbX, barbY, barbZ],
   );
 
-  const [waterTexture, setWaterTexture] = useState(() => {
-    const texture = new TextureLoader().load(ASSETS.textures.water);
-    texture.wrapS = texture.wrapT = RepeatWrapping;
-    return texture;
-  });
-
-  useEffect(() => {
-    const newTexture = new TextureLoader().load(ASSETS.textures.water);
-    newTexture.wrapS = newTexture.wrapT = RepeatWrapping;
-    setWaterTexture(newTexture);
-  }, [config]);
-
-  useFrame((_, delta) => {
-    if (config.waterFlow && waterTexture) {
-      waterTexture.offset.x += delta * 0.5;
-    }
-  });
+  const waterTexture = useWaterFlowTexture(config.waterFlow);
 
   return (
     <Group key={config.waterFlow ? "flowing" : "static"}>

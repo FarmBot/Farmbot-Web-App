@@ -27,6 +27,7 @@ import { Tools } from "./components/tools";
 import { ElectronicsBox } from "./components/electronics_box";
 import { Bounds } from "./components/bounds";
 import { SlotWithTool } from "../../resources/interfaces";
+import { useWaterFlowTexture } from "./water_flow_texture";
 
 const extrusionWidth = 20;
 const utmRadius = 35;
@@ -165,6 +166,7 @@ export const Bot = (props: FarmbotModelProps) => {
   const [beamShape, setBeamShape] = useState<Shape>();
   const [columnShape, setColumnShape] = useState<Shape>();
   const [zAxisShape, setZAxisShape] = useState<Shape>();
+  const waterTexture = useWaterFlowTexture(config.waterFlow);
   useEffect(() => {
     if (!(trackShape && beamShape && columnShape && zAxisShape)) {
       const loader = new SVGLoader();
@@ -807,62 +809,64 @@ export const Bot = (props: FarmbotModelProps) => {
       geometry={beltClip.nodes[PartName.beltClip].geometry}>
       <MeshPhongMaterial color={"silver"} />
     </Mesh>
-    <Mesh name={"solenoid"}
-      position={[
-        threeSpace(x - 104, bedLengthOuter) + bedXOffset,
-        threeSpace(20, bedWidthOuter),
-        columnLength - 200,
-      ]}
-      rotation={[0, 0, -Math.PI / 2]}
-      scale={1000}
-      geometry={solenoid.nodes[PartName.solenoid].geometry}
-      material={solenoid.materials.PaletteMaterial001} />
-    <Tube name={"lower-solenoid-tube"}
-      castShadow={true}
-      receiveShadow={true}
-      args={[easyCubicBezierCurve3(
-        [
-          threeSpace(x - 45, bedLengthOuter) + bedXOffset,
-          threeSpace(-45, bedWidthOuter) + bedYOffset,
-          -49,
-        ],
-        [200, -55, 25],
-        [5, 10, -250],
-        [
-          threeSpace(x - 104.75, bedLengthOuter) + bedXOffset,
-          threeSpace(0, bedWidthOuter) + bedYOffset,
-          283,
-        ],
-      ), 40, 5, 8]}>
-      <MeshPhongMaterial
-        color={"white"}
-        transparent={true}
-        opacity={0.75}
-      />
-    </Tube>
-    <Tube name={"upper-solenoid-tube"}
-      castShadow={true}
-      receiveShadow={true}
-      args={[easyCubicBezierCurve3(
-        [
-          threeSpace(x - 104.25, bedLengthOuter) + bedXOffset,
-          threeSpace(0, bedWidthOuter) + bedYOffset,
-          400,
-        ],
-        [0, 0, 100],
-        [0, -75, 5],
-        [
-          threeSpace(x - 70, bedLengthOuter) + bedXOffset,
-          threeSpace(35, bedWidthOuter) + bedYOffset,
-          590,
-        ],
-      ), 20, 5, 8]}>
-      <MeshPhongMaterial
-        color={"white"}
-        transparent={true}
-        opacity={0.75}
-      />
-    </Tube>
+    <Group key={config.waterFlow ? "flowing" : "static"}>
+      <Mesh name={"solenoid"}
+        position={[
+          threeSpace(x - 104, bedLengthOuter) + bedXOffset,
+          threeSpace(20, bedWidthOuter),
+          columnLength - 200,
+        ]}
+        rotation={[0, 0, -Math.PI / 2]}
+        scale={1000}
+        geometry={solenoid.nodes[PartName.solenoid].geometry}
+        material={solenoid.materials.PaletteMaterial001} />
+      <Tube name={"lower-solenoid-tube"}
+        castShadow={true}
+        receiveShadow={true}
+        args={[easyCubicBezierCurve3(
+          [
+            threeSpace(x - 45, bedLengthOuter) + bedXOffset,
+            threeSpace(-45, bedWidthOuter) + bedYOffset,
+            -49,
+          ],
+          [200, -55, 25],
+          [5, 10, -250],
+          [
+            threeSpace(x - 104.75, bedLengthOuter) + bedXOffset,
+            threeSpace(0, bedWidthOuter) + bedYOffset,
+            283,
+          ],
+        ), 40, 5, 8]}>
+        <MeshPhongMaterial
+          map={config.waterFlow ? waterTexture : null}
+          transparent={true}
+          opacity={0.75}
+        />
+      </Tube>
+      <Tube name={"upper-solenoid-tube"}
+        castShadow={true}
+        receiveShadow={true}
+        args={[easyCubicBezierCurve3(
+          [
+            threeSpace(x - 104.25, bedLengthOuter) + bedXOffset,
+            threeSpace(0, bedWidthOuter) + bedYOffset,
+            400,
+          ],
+          [0, 0, 100],
+          [0, -75, 5],
+          [
+            threeSpace(x - 70, bedLengthOuter) + bedXOffset,
+            threeSpace(35, bedWidthOuter) + bedYOffset,
+            590,
+          ],
+        ), 20, 5, 8]}>
+        <MeshPhongMaterial
+          map={config.waterFlow ? waterTexture : null}
+          transparent={true}
+          opacity={0.75}
+        />
+      </Tube>
+    </Group>
     <ElectronicsBox config={config} />
     <Tools
       config={config}
