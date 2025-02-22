@@ -285,7 +285,7 @@ export const PrivateOverlay = (props: OverlayProps) => {
         options={["Standard", "Mobile"]} />
       <Radio {...common} configKey={"otherPreset"}
         options={["Initial", "Minimal", "Maximal", "Reset all"]} />
-      <label>{"Bot Position"}</label>
+      <label>{"Bot State"}</label>
       <Slider {...common} configKey={"x"} min={0} max={props.config.botSizeX} />
       <Slider {...common} configKey={"y"} min={0} max={props.config.botSizeY} />
       <Slider {...common} configKey={"z"} min={0} max={props.config.botSizeZ} />
@@ -294,6 +294,7 @@ export const PrivateOverlay = (props: OverlayProps) => {
           "seeder", "None"]} />
       <Toggle {...common} configKey={"trail"} />
       <Toggle {...common} configKey={"laser"} />
+      <Toggle {...common} configKey={"waterFlow"} />
       <label>{"Bot Dimensions"}</label>
       <Slider {...common} configKey={"botSizeX"} min={0} max={6000} />
       <Slider {...common} configKey={"botSizeY"} min={0} max={4000} />
