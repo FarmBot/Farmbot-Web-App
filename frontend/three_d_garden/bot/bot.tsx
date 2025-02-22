@@ -826,15 +826,15 @@ export const Bot = (props: FarmbotModelProps) => {
         args={[easyCubicBezierCurve3(
           [
             threeSpace(x - 45, bedLengthOuter) + bedXOffset,
-            threeSpace(-45, bedWidthOuter) + bedYOffset,
+            threeSpace(-25, bedWidthOuter),
             -49,
           ],
           [200, -55, 25],
           [5, 10, -250],
           [
             threeSpace(x - 104.75, bedLengthOuter) + bedXOffset,
-            threeSpace(0, bedWidthOuter) + bedYOffset,
-            283,
+            threeSpace(20, bedWidthOuter),
+            columnLength - 217,
           ],
         ), 40, 5, 8]}>
         <MeshPhongMaterial
@@ -849,15 +849,15 @@ export const Bot = (props: FarmbotModelProps) => {
         args={[easyCubicBezierCurve3(
           [
             threeSpace(x - 104.25, bedLengthOuter) + bedXOffset,
-            threeSpace(0, bedWidthOuter) + bedYOffset,
-            400,
+            threeSpace(20, bedWidthOuter),
+            columnLength - 98,
           ],
           [0, 0, 100],
           [0, -75, 5],
           [
             threeSpace(x - 70, bedLengthOuter) + bedXOffset,
             threeSpace(35, bedWidthOuter) + bedYOffset,
-            590,
+            columnLength + 90,
           ],
         ), 20, 5, 8]}>
         <MeshPhongMaterial
