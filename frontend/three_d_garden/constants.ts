@@ -16,6 +16,7 @@ export const ASSETS: Record<string, Record<string, string>> = {
     concrete: "/3D/textures/concrete.avif",
     screen: "/3D/textures/screen.avif",
     bricks: "/3D/textures/bricks.avif",
+    water: "/3D/textures/water.avif",
   },
   shapes: {
     track: "/3D/shapes/track.svg",

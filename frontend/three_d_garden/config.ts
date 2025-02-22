@@ -70,6 +70,7 @@ export interface Config {
   distanceIndicator: string;
   kitVersion: string;
   negativeZ: boolean;
+  waterFlow: boolean;
 }
 
 export const INITIAL: Config = {
@@ -144,6 +145,7 @@ export const INITIAL: Config = {
   distanceIndicator: "",
   kitVersion: "v1.7",
   negativeZ: false,
+  waterFlow: false,
 };
 
 export const STRING_KEYS = [
@@ -166,6 +168,7 @@ export const BOOLEAN_KEYS = [
   "xyDimensions", "zDimension", "promoInfo", "settingsBar", "zoomBeacons",
   "solar", "utilitiesPost", "packaging", "lab", "people", "lowDetail",
   "eventDebug", "cableDebug", "zoomBeaconDebug", "animate", "negativeZ",
+  "waterFlow",
 ];
 
 export const PRESETS: Record<string, Config> = {
@@ -336,6 +339,7 @@ export const PRESETS: Record<string, Config> = {
     zoomBeaconDebug: true,
     animate: true,
     distanceIndicator: "",
+    waterFlow: true,
   },
 };
 
@@ -355,7 +359,7 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "threeAxes", "xyDimensions", "zDimension", "labelsOnHover", "promoInfo",
   "settingsBar", "zoomBeacons", "pan", "solar", "utilitiesPost", "packaging", "lab",
   "people", "scene", "lowDetail", "eventDebug", "cableDebug", "zoomBeaconDebug",
-  "animate", "distanceIndicator", "kitVersion", "negativeZ",
+  "animate", "distanceIndicator", "kitVersion", "negativeZ", "waterFlow",
 ];
 
 export const modifyConfig = (config: Config, update: Partial<Config>) => {
