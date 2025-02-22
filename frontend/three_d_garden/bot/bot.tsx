@@ -817,6 +817,52 @@ export const Bot = (props: FarmbotModelProps) => {
       scale={1000}
       geometry={solenoid.nodes[PartName.solenoid].geometry}
       material={solenoid.materials.PaletteMaterial001} />
+    <Tube name={"lower-solenoid-tube"}
+      castShadow={true}
+      receiveShadow={true}
+      args={[easyCubicBezierCurve3(
+        [
+          threeSpace(x - 45, bedLengthOuter) + bedXOffset,
+          threeSpace(-45, bedWidthOuter) + bedYOffset,
+          -49,
+        ],
+        [200, -55, 25],
+        [5, 10, -250],
+        [
+          threeSpace(x - 104.75, bedLengthOuter) + bedXOffset,
+          threeSpace(0, bedWidthOuter) + bedYOffset,
+          283,
+        ],
+      ), 40, 5, 8]}>
+      <MeshPhongMaterial
+        color={"white"}
+        transparent={true}
+        opacity={0.75}
+      />
+    </Tube>
+    <Tube name={"upper-solenoid-tube"}
+      castShadow={true}
+      receiveShadow={true}
+      args={[easyCubicBezierCurve3(
+        [
+          threeSpace(x - 104.25, bedLengthOuter) + bedXOffset,
+          threeSpace(0, bedWidthOuter) + bedYOffset,
+          400,
+        ],
+        [0, 0, 100],
+        [0, -75, 5],
+        [
+          threeSpace(x - 70, bedLengthOuter) + bedXOffset,
+          threeSpace(35, bedWidthOuter) + bedYOffset,
+          590,
+        ],
+      ), 20, 5, 8]}>
+      <MeshPhongMaterial
+        color={"white"}
+        transparent={true}
+        opacity={0.75}
+      />
+    </Tube>
     <ElectronicsBox config={config} />
     <Tools
       config={config}
