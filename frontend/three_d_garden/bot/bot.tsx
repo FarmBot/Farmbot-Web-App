@@ -810,17 +810,7 @@ export const Bot = (props: FarmbotModelProps) => {
       <MeshPhongMaterial color={"silver"} />
     </Mesh>
     <Group key={config.waterFlow ? "flowing" : "static"}>
-      <Mesh name={"solenoid"}
-        position={[
-          threeSpace(x - 104, bedLengthOuter) + bedXOffset,
-          threeSpace(20, bedWidthOuter),
-          columnLength - 200,
-        ]}
-        rotation={[0, 0, -Math.PI / 2]}
-        scale={1000}
-        geometry={solenoid.nodes[PartName.solenoid].geometry}
-        material={solenoid.materials.PaletteMaterial001} />
-      <Tube name={"lower-solenoid-tube"}
+      <Tube name={"lower-solenoid-water-tube"}
         castShadow={true}
         receiveShadow={true}
         args={[easyCubicBezierCurve3(
@@ -843,7 +833,17 @@ export const Bot = (props: FarmbotModelProps) => {
           opacity={0.75}
         />
       </Tube>
-      <Tube name={"upper-solenoid-tube"}
+      <Mesh name={"solenoid"}
+        position={[
+          threeSpace(x - 104, bedLengthOuter) + bedXOffset,
+          threeSpace(20, bedWidthOuter),
+          columnLength - 200,
+        ]}
+        rotation={[0, 0, -Math.PI / 2]}
+        scale={1000}
+        geometry={solenoid.nodes[PartName.solenoid].geometry}
+        material={solenoid.materials.PaletteMaterial001} />
+      <Tube name={"upper-solenoid-water-tube"}
         castShadow={true}
         receiveShadow={true}
         args={[easyCubicBezierCurve3(
@@ -858,6 +858,52 @@ export const Bot = (props: FarmbotModelProps) => {
             threeSpace(x - 70, bedLengthOuter) + bedXOffset,
             threeSpace(35, bedWidthOuter) + bedYOffset,
             columnLength + 90,
+          ],
+        ), 20, 5, 8]}>
+        <MeshPhongMaterial
+          map={config.waterFlow ? waterTexture : null}
+          transparent={true}
+          opacity={0.75}
+        />
+      </Tube>
+      <Tube name={"y-z-water-tube"}
+        castShadow={true}
+        receiveShadow={true}
+        args={[easyCubicBezierCurve3(
+          [
+            threeSpace(x - 70, bedLengthOuter) + bedXOffset,
+            threeSpace(y + 80, bedWidthOuter) + bedYOffset,
+            columnLength + 140,
+          ],
+          [0, -50, 0],
+          [0, 0, -50],
+          [
+            threeSpace(x - 32.5, bedLengthOuter) + bedXOffset,
+            threeSpace(y - 10, bedWidthOuter) + bedYOffset,
+            columnLength + 180,
+          ],
+        ), 20, 5, 8]}>
+        <MeshPhongMaterial
+          map={config.waterFlow ? waterTexture : null}
+          transparent={true}
+          opacity={0.75}
+        />
+      </Tube>
+      <Tube name={"utm-water-tube"}
+        castShadow={true}
+        receiveShadow={true}
+        args={[easyCubicBezierCurve3(
+          [
+            threeSpace(x + 32.5, bedLengthOuter) + bedXOffset,
+            threeSpace(y - 10, bedWidthOuter) + bedYOffset,
+            columnLength - z - zGantryOffset + 200,
+          ],
+          [0, 0, -50],
+          [0, 0, 50],
+          [
+            threeSpace(x + 2, bedLengthOuter) + bedXOffset,
+            threeSpace(y + 15, bedWidthOuter) + bedYOffset,
+            columnLength - z - zGantryOffset + 75,
           ],
         ), 20, 5, 8]}>
         <MeshPhongMaterial
