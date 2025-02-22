@@ -1,6 +1,5 @@
 module Api
   class SensorReadingsController < Api::AbstractController
-    LIMIT = 2500
     before_action :clean_old
 
     def create
@@ -23,20 +22,14 @@ module Api
     private
 
     def clean_old
-      if current_device.sensor_readings.count > LIMIT
-        current_device
-          .sensor_readings
-          .where
-          .not(id: readings.pluck(:id))
-          .delete_all
-      end
+      current_device.delay.trim_excess_sensor_readings
     end
 
     def readings
       @readings ||= SensorReading
         .where(device: current_device)
         .order(created_at: :desc)
-        .limit(LIMIT)
+        .limit(Device::DEFAULT_MAX_SENSOR_READINGS)
     end
 
     def reading

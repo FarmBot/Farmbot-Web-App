@@ -4,6 +4,7 @@ module Api
 
     def index
       render json: sequences
+               .includes(:sequence_publication, :sequence_version)
                .to_a
                .map { |s| Sequences::Show.run!(sequence: s) }
     end
@@ -66,7 +67,9 @@ module Api
     end
 
     def sequences
-      @sequences ||= Sequence.with_usage_reports.where(device: current_device)
+      @sequences ||= Sequence
+        .with_usage_reports
+        .where(device: current_device)
     end
 
     def sequence
