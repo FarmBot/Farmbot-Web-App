@@ -1,9 +1,9 @@
 import React from "react";
-import { Cylinder, Tube } from "@react-three/drei";
+import { Cylinder } from "@react-three/drei";
 import { Config } from "../config";
 import { threeSpace, easyCubicBezierCurve3 } from "../helpers";
 import { Group, MeshPhongMaterial } from "../components";
-import { useWaterFlowTexture } from "./water_flow_texture";
+import { WaterTube } from "./components/water_tube";
 
 export interface XAxisWaterTubeProps {
   config: Config;
@@ -26,19 +26,11 @@ export const XAxisWaterTube = (props: XAxisWaterTubeProps) => {
     ],
   );
 
-  const waterTexture = useWaterFlowTexture(config.waterFlow);
-
   return (
-    <Group key={config.waterFlow ? "flowing" : "static"}>
-      <Tube name={"x-axis-water-tube"}
-        castShadow={true}
-        receiveShadow={true}
-        args={[tubePath, 20, 5, 8]}>
-        <MeshPhongMaterial
-          map={config.waterFlow ? waterTexture : undefined}
-          transparent={true}
-          opacity={config.waterFlow ? 0.75 : 0.5} />
-      </Tube>
+    <Group>
+      <WaterTube name="x-axis-water-tube"
+        waterFlow={config.waterFlow}
+        args={[tubePath, 20, 5, 8]} />
       <Cylinder name={"adapter-barb"}
         receiveShadow={true}
         args={[3.5, 3.5, 20]}

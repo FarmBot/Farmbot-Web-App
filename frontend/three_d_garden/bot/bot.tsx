@@ -27,7 +27,7 @@ import { Tools } from "./components/tools";
 import { ElectronicsBox } from "./components/electronics_box";
 import { Bounds } from "./components/bounds";
 import { SlotWithTool } from "../../resources/interfaces";
-import { useWaterFlowTexture } from "./water_flow_texture";
+import { WaterTube } from "./components/water_tube";
 
 const extrusionWidth = 20;
 const utmRadius = 35;
@@ -166,7 +166,6 @@ export const Bot = (props: FarmbotModelProps) => {
   const [beamShape, setBeamShape] = useState<Shape>();
   const [columnShape, setColumnShape] = useState<Shape>();
   const [zAxisShape, setZAxisShape] = useState<Shape>();
-  const waterTexture = useWaterFlowTexture(config.waterFlow);
   useEffect(() => {
     if (!(trackShape && beamShape && columnShape && zAxisShape)) {
       const loader = new SVGLoader();
@@ -809,10 +808,9 @@ export const Bot = (props: FarmbotModelProps) => {
       geometry={beltClip.nodes[PartName.beltClip].geometry}>
       <MeshPhongMaterial color={"silver"} />
     </Mesh>
-    <Group key={config.waterFlow ? "flowing" : "static"}>
-      <Tube name={"lower-solenoid-water-tube"}
-        castShadow={true}
-        receiveShadow={true}
+    <Group>
+      <WaterTube name="lower-solenoid-water-tube"
+        waterFlow={config.waterFlow}
         args={[easyCubicBezierCurve3(
           [
             threeSpace(x - 45, bedLengthOuter) + bedXOffset,
@@ -826,13 +824,7 @@ export const Bot = (props: FarmbotModelProps) => {
             threeSpace(20, bedWidthOuter),
             columnLength - 217,
           ],
-        ), 40, 5, 8]}>
-        <MeshPhongMaterial
-          map={config.waterFlow ? waterTexture : undefined}
-          transparent={true}
-          opacity={0.75}
-        />
-      </Tube>
+        ), 40, 5, 8]} />
       <Mesh name={"solenoid"}
         position={[
           threeSpace(x - 104, bedLengthOuter) + bedXOffset,
@@ -843,9 +835,8 @@ export const Bot = (props: FarmbotModelProps) => {
         scale={1000}
         geometry={solenoid.nodes[PartName.solenoid].geometry}
         material={solenoid.materials.PaletteMaterial001} />
-      <Tube name={"upper-solenoid-water-tube"}
-        castShadow={true}
-        receiveShadow={true}
+      <WaterTube name="upper-solenoid-water-tube"
+        waterFlow={config.waterFlow}
         args={[easyCubicBezierCurve3(
           [
             threeSpace(x - 104.25, bedLengthOuter) + bedXOffset,
@@ -859,16 +850,9 @@ export const Bot = (props: FarmbotModelProps) => {
             threeSpace(35, bedWidthOuter) + bedYOffset,
             columnLength + 90,
           ],
-        ), 20, 5, 8]}>
-        <MeshPhongMaterial
-          map={config.waterFlow ? waterTexture : undefined}
-          transparent={true}
-          opacity={0.75}
-        />
-      </Tube>
-      <Tube name={"y-z-water-tube"}
-        castShadow={true}
-        receiveShadow={true}
+        ), 20, 5, 8]} />
+      <WaterTube name="y-z-water-tube"
+        waterFlow={config.waterFlow}
         args={[easyCubicBezierCurve3(
           [
             threeSpace(x - 70, bedLengthOuter) + bedXOffset,
@@ -882,16 +866,9 @@ export const Bot = (props: FarmbotModelProps) => {
             threeSpace(y - 10, bedWidthOuter) + bedYOffset,
             columnLength + 180,
           ],
-        ), 20, 5, 8]}>
-        <MeshPhongMaterial
-          map={config.waterFlow ? waterTexture : undefined}
-          transparent={true}
-          opacity={0.75}
-        />
-      </Tube>
-      <Tube name={"utm-water-tube"}
-        castShadow={true}
-        receiveShadow={true}
+        ), 20, 5, 8]} />
+      <WaterTube name="utm-water-tube"
+        waterFlow={config.waterFlow}
         args={[easyCubicBezierCurve3(
           [
             threeSpace(x + 32.5, bedLengthOuter) + bedXOffset,
@@ -905,13 +882,7 @@ export const Bot = (props: FarmbotModelProps) => {
             threeSpace(y + 15, bedWidthOuter) + bedYOffset,
             columnLength - z - zGantryOffset + 75,
           ],
-        ), 20, 5, 8]}>
-        <MeshPhongMaterial
-          map={config.waterFlow ? waterTexture : undefined}
-          transparent={true}
-          opacity={0.75}
-        />
-      </Tube>
+        ), 20, 5, 8]} />
     </Group>
     <ElectronicsBox config={config} />
     <Tools
