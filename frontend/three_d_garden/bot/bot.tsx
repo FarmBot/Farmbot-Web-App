@@ -21,13 +21,11 @@ import {
   VacuumPumpCover, VacuumPumpCoverFull,
 } from "./parts";
 import { PowerSupply } from "./power_supply";
-import { XAxisWaterTube } from "./x_axis_water_tube";
 import { Group, Mesh, MeshPhongMaterial } from "../components";
-import { Tools } from "./components/tools";
-import { ElectronicsBox } from "./components/electronics_box";
-import { Bounds } from "./components/bounds";
+import {
+  ElectronicsBox, Bounds, Tools, Solenoid, XAxisWaterTube,
+} from "./components";
 import { SlotWithTool } from "../../resources/interfaces";
-import { WaterTube } from "./components/water_tube";
 
 const extrusionWidth = 20;
 const utmRadius = 35;
@@ -78,11 +76,6 @@ type ZAxisMotorMount = GLTF & {
 type CameraMountHalf = GLTF & {
   nodes: { [PartName.cameraMountHalf]: THREE.Mesh };
   materials: never;
-}
-
-type Solenoid = GLTF & {
-  nodes: { [PartName.solenoid]: THREE.Mesh };
-  materials: { PaletteMaterial001: THREE.MeshStandardMaterial };
 }
 type XAxisCCMount = GLTF & {
   nodes: { [PartName.xAxisCCMount]: THREE.Mesh };
@@ -160,7 +153,6 @@ export const Bot = (props: FarmbotModelProps) => {
   const VacuumPumpCoverComponent = VacuumPumpCover(vacuumPumpCover);
   const cameraMountHalf = useGLTF(
     ASSETS.models.cameraMountHalf, LIB_DIR) as CameraMountHalf;
-  const solenoid = useGLTF(ASSETS.models.solenoid, LIB_DIR) as Solenoid;
   const xAxisCCMount = useGLTF(ASSETS.models.xAxisCCMount, LIB_DIR) as XAxisCCMount;
   const [trackShape, setTrackShape] = useState<Shape>();
   const [beamShape, setBeamShape] = useState<Shape>();
@@ -808,82 +800,7 @@ export const Bot = (props: FarmbotModelProps) => {
       geometry={beltClip.nodes[PartName.beltClip].geometry}>
       <MeshPhongMaterial color={"silver"} />
     </Mesh>
-    <Group>
-      <WaterTube name="lower-solenoid-water-tube"
-        waterFlow={config.waterFlow}
-        args={[easyCubicBezierCurve3(
-          [
-            threeSpace(x - 45, bedLengthOuter) + bedXOffset,
-            threeSpace(-25, bedWidthOuter),
-            -49,
-          ],
-          [200, -55, 25],
-          [5, 10, -250],
-          [
-            threeSpace(x - 104.75, bedLengthOuter) + bedXOffset,
-            threeSpace(20, bedWidthOuter),
-            columnLength - 217,
-          ],
-        ), 40, 5, 8]} />
-      <Mesh name={"solenoid"}
-        position={[
-          threeSpace(x - 104, bedLengthOuter) + bedXOffset,
-          threeSpace(20, bedWidthOuter),
-          columnLength - 200,
-        ]}
-        rotation={[0, 0, -Math.PI / 2]}
-        scale={1000}
-        geometry={solenoid.nodes[PartName.solenoid].geometry}
-        material={solenoid.materials.PaletteMaterial001} />
-      <WaterTube name="upper-solenoid-water-tube"
-        waterFlow={config.waterFlow}
-        args={[easyCubicBezierCurve3(
-          [
-            threeSpace(x - 104.25, bedLengthOuter) + bedXOffset,
-            threeSpace(20, bedWidthOuter),
-            columnLength - 98,
-          ],
-          [0, 0, 100],
-          [0, -75, 5],
-          [
-            threeSpace(x - 70, bedLengthOuter) + bedXOffset,
-            threeSpace(35, bedWidthOuter) + bedYOffset,
-            columnLength + 90,
-          ],
-        ), 20, 5, 8]} />
-      <WaterTube name="y-z-water-tube"
-        waterFlow={config.waterFlow}
-        args={[easyCubicBezierCurve3(
-          [
-            threeSpace(x - 70, bedLengthOuter) + bedXOffset,
-            threeSpace(y + 80, bedWidthOuter) + bedYOffset,
-            columnLength + 140,
-          ],
-          [0, -50, 0],
-          [0, 0, -50],
-          [
-            threeSpace(x - 32.5, bedLengthOuter) + bedXOffset,
-            threeSpace(y - 10, bedWidthOuter) + bedYOffset,
-            columnLength + 180,
-          ],
-        ), 20, 5, 8]} />
-      <WaterTube name="utm-water-tube"
-        waterFlow={config.waterFlow}
-        args={[easyCubicBezierCurve3(
-          [
-            threeSpace(x + 32.5, bedLengthOuter) + bedXOffset,
-            threeSpace(y - 10, bedWidthOuter) + bedYOffset,
-            columnLength - z - zGantryOffset + 200,
-          ],
-          [0, 0, -50],
-          [0, 0, 50],
-          [
-            threeSpace(x + 2, bedLengthOuter) + bedXOffset,
-            threeSpace(y + 15, bedWidthOuter) + bedYOffset,
-            columnLength - z - zGantryOffset + 75,
-          ],
-        ), 20, 5, 8]} />
-    </Group>
+    <Solenoid config={config} />
     <ElectronicsBox config={config} />
     <Tools
       config={config}

@@ -2,7 +2,7 @@ import React from "react";
 import { render } from "@testing-library/react";
 import { XAxisWaterTubeProps, XAxisWaterTube } from "../x_axis_water_tube";
 import { clone } from "lodash";
-import { INITIAL } from "../../config";
+import { INITIAL } from "../../../config";
 
 describe("<XAxisWaterTube />", () => {
   const fakeProps = (): XAxisWaterTubeProps => ({
