@@ -4,6 +4,7 @@ class Device < ApplicationRecord
   DEFAULT_MAX_IMAGES = 100
   DEFAULT_MAX_LOGS = 1000
   DEFAULT_MAX_TELEMETRY = 300
+  DEFAULT_MAX_SENSOR_READINGS = 2500
   DEFAULT_MAX_LOG_AGE_IN_DAYS = 60
   DEFAULT_MAX_SEQUENCE_COUNT = 75
   DEFAULT_MAX_SEQUENCE_LENGTH = 30
@@ -118,6 +119,24 @@ class Device < ApplicationRecord
 
   def trim_excess_telemetry
     excess_telemetry.delete_all
+  end
+
+  # Give the user back the amount of sensor readings they are allowed to view.
+  def limited_sensor_readings_list
+    sensor_readings
+      .order(created_at: :desc)
+      .limit(DEFAULT_MAX_SENSOR_READINGS)
+  end
+
+  def excess_sensor_readings
+    sensor_readings
+      .where
+      .not(id: limited_sensor_readings_list.pluck(:id))
+      .where(device_id: self.id)
+  end
+
+  def trim_excess_sensor_readings
+    excess_sensor_readings.delete_all
   end
 
   def self.current

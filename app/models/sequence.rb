@@ -23,6 +23,8 @@ class Sequence < ApplicationRecord
   has_many :regimen_items
   has_many :primary_nodes, dependent: :destroy
   has_many :edge_nodes, dependent: :destroy
+  has_one :sequence_publication, foreign_key: :author_sequence_id
+  belongs_to :sequence_version, optional: true
 
   # allowable label colors for the frontend.
   [:name, :kind].each { |n| validates n, presence: true }
