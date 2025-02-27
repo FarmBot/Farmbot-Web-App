@@ -109,8 +109,6 @@ export const Tools = (props: ToolsProps) => {
     : reduceToolName(props.mountedToolName);
   const zZero = zZeroFunc(props.config);
   const zDir = zDirFunc(props.config);
-  const waterFlow = props.config.waterFlow;
-  const soilHeight = props.config.soilHeight;
 
   const toolbay3 = useGLTF(ASSETS.models.toolbay3, LIB_DIR) as Toolbay3;
   const toolbay1 = useGLTF(ASSETS.models.toolbay1, LIB_DIR) as Toolbay1;
@@ -182,8 +180,7 @@ export const Tools = (props: ToolsProps) => {
   }
 
   const Tool = (toolProps: ToolProps) => {
-    const { toolPulloutDirection } = toolProps;
-    const inToolbay = toolProps.inToolbay;
+    const { toolPulloutDirection, inToolbay } = toolProps;
     const mounted = inToolbay && toolProps.toolName == mountedToolName;
     const position = {
       x: threeSpace(toolProps.x, bedLengthOuter) + bedXOffset,
@@ -215,11 +212,11 @@ export const Tools = (props: ToolsProps) => {
             scale={1000}
             geometry={wateringNozzle.nodes[PartName.wateringNozzle].geometry}
             material={wateringNozzle.materials.PaletteMaterial001} />
-          {!inToolbay && waterFlow &&
+          {!inToolbay && props.config.waterFlow &&
             <WateringAnimations
-              waterFlow={waterFlow}
+              waterFlow={props.config.waterFlow}
               botPositionZ={botPosition.z}
-              soilHeight={soilHeight} />}
+              soilHeight={props.config.soilHeight} />}
         </ToolbaySlot>;
       case ToolName.seedBin:
         return <ToolbaySlot {...common}>

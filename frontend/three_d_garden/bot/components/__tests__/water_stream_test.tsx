@@ -1,6 +1,8 @@
 import React from "react";
 import { render, renderHook } from "@testing-library/react";
-import { WaterStream, useWaterFlowTexture } from "../water_stream";
+import {
+  WaterStream, WaterStreamProps, useWaterFlowTexture,
+} from "../water_stream";
 
 let frameCallback: (state: unknown, delta: number) => void;
 jest.mock("@react-three/fiber", () => ({
@@ -10,11 +12,14 @@ jest.mock("@react-three/fiber", () => ({
 }));
 
 describe("<WaterStream />", () => {
+  const fakeProps = (): WaterStreamProps => ({
+    name: "mock-water-stream",
+    args: [],
+    waterFlow: true,
+  });
+
   it("renders", () => {
-    const wrapper = render(<WaterStream
-      name="mock-water-stream"
-      args={[]}
-      waterFlow={true} />);
+    const wrapper = render(<WaterStream {...fakeProps()} />);
     expect(wrapper.container).toContainHTML("mock-water-stream");
   });
 });

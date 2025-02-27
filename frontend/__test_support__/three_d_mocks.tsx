@@ -10,6 +10,7 @@ import * as THREE from "three";
 import React, { ReactNode } from "react";
 import { TransitionFn, UseSpringProps } from "@react-spring/three";
 import { ThreeElements } from "@react-three/fiber";
+import { Cloud, Clouds, Tube } from "@react-three/drei";
 
 const GroupForTests = (props: ThreeElements["group"]) =>
   // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
@@ -612,8 +613,9 @@ jest.mock("@react-three/drei", () => {
       <div className={"line"}>{name}</div>,
     Trail: ({ name }: { name: string }) =>
       <div className={"trail"}>{name}</div>,
-    Tube: ({ name, children }: { name: string, children: ReactNode }) =>
-      <div className={"tube" + name}>{children}</div>,
+    Tube: (props: React.ComponentProps<typeof Tube>) =>
+      // @ts-expect-error geometry props not assignable to div
+      <div className={"tube"} {...props}>{props.children}</div>,
     Center: ({ children }: { children: ReactNode }) =>
       <div className={"center"}>{children}</div>,
     Text3D: ({ children }: { children: ReactNode }) =>
@@ -644,10 +646,12 @@ jest.mock("@react-three/drei", () => {
       <div className={"billboard" + name}>{children}</div>,
     Image: ({ name, url }: { name: string, url: string }) =>
       <div className={"image"}>{name} {url}</div>,
-    Clouds: ({ name }: { name: string }) =>
-      <div className={"clouds"}>{name}</div>,
-    Cloud: ({ name }: { name: string }) =>
-      <div className={"cloud"}>{name}</div>,
+    Clouds: (props: React.ComponentProps<typeof Clouds>) =>
+      // @ts-expect-error geometry props not assignable to div
+      <div className={"clouds"} {...props}>{props.children}</div>,
+    Cloud: (props: React.ComponentProps<typeof Cloud>) =>
+      // @ts-expect-error geometry props not assignable to div
+      <div className={"cloud"} {...props} />,
     OrthographicCamera: ({ name }: { name: string }) =>
       <div className={"orthographic-camera"}>{name}</div>,
   };

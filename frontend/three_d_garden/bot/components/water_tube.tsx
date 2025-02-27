@@ -2,27 +2,32 @@ import React from "react";
 import { Tube } from "@react-three/drei";
 import { MeshPhongMaterial, Group } from "../../components";
 import { WaterStream } from "./water_stream";
+import { Curve, Vector3 } from "three";
 
 export interface WaterTubeProps {
-  name: string;
-  args: Parameters<typeof Tube>[0]["args"];
+  tubeName: string;
+  tubePath: Curve<Vector3>;
+  tubularSegments: number;
+  radius: number;
+  radialSegments: number;
   waterFlow: boolean;
 }
 
 export const WaterTube = (props: WaterTubeProps) => {
-  const { name, args, waterFlow } = props;
-  const [tubePath, tubularSegments, radius = 5, radialSegments] = args || [];
+  const {
+    tubeName, tubePath, tubularSegments, radius, radialSegments, waterFlow,
+  } = props;
 
-  return <Group name={name}>
-    <Tube name={name + "-tube"}
+  return <Group name={tubeName}>
+    <Tube name={tubeName + "-tube"}
       castShadow={true}
       receiveShadow={true}
       renderOrder={1}
-      args={args}>
+      args={[tubePath, tubularSegments, radius, radialSegments]}>
       <MeshPhongMaterial transparent={true}
         opacity={0.4} />
     </Tube>
-    <WaterStream name={name + "-water-stream"}
+    <WaterStream name={tubeName + "-water-stream"}
       args={[tubePath, tubularSegments, radius - 2, radialSegments]}
       waterFlow={waterFlow} />
   </Group>;

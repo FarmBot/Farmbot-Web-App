@@ -27,9 +27,12 @@ export const XAxisWaterTube = (props: XAxisWaterTubeProps) => {
   );
 
   return <Group>
-    <WaterTube name="x-axis-water-tube"
-      waterFlow={config.waterFlow}
-      args={[tubePath, 20, 5, 8]} />
+    <WaterTube tubeName={"x-axis-water-tube"}
+      tubePath={tubePath}
+      tubularSegments={20}
+      radius={5}
+      radialSegments={8}
+      waterFlow={config.waterFlow} />
     <Cylinder name={"adapter-barb"}
       receiveShadow={true}
       args={[3.5, 3.5, 20]}

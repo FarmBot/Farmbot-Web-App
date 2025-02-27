@@ -37,7 +37,7 @@ import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
 import { WateringAnimations } from "../watering_animations";
 
 jest.mock("../watering_animations", () => ({
-  WateringAnimations: jest.fn(() => <div>WateringAnimations</div>),
+  WateringAnimations: jest.fn(),
 }));
 
 describe("<Tools />", () => {

@@ -8,9 +8,7 @@ import { ASSETS } from "../../constants";
 const waterTexture = new TextureLoader().load(ASSETS.textures.water);
 waterTexture.wrapS = waterTexture.wrapT = RepeatWrapping;
 
-export interface WaterStreamProps {
-  name: string;
-  args: Parameters<typeof Tube>[0]["args"];
+export interface WaterStreamProps extends React.ComponentProps<typeof Tube> {
   waterFlow: boolean;
 }
 
@@ -27,13 +25,13 @@ export const useWaterFlowTexture = (waterFlow: boolean): Texture | undefined => 
 };
 
 export const WaterStream = (props: WaterStreamProps) => {
-  const { name, args, waterFlow } = props;
+  const { waterFlow } = props;
   const waterTexture = useWaterFlowTexture(waterFlow);
 
-  return <Tube name={name}
+  return <Tube
+    {...props}
     castShadow={true}
     receiveShadow={true}
-    args={args}
     visible={waterFlow}>
     <MeshPhongMaterial map={waterTexture} />
   </Tube>;

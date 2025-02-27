@@ -1,22 +1,21 @@
 import React from "react";
 import { render } from "@testing-library/react";
-import { WaterTube } from "../water_tube";
+import { WaterTube, WaterTubeProps } from "../water_tube";
+import { easyCubicBezierCurve3 } from "../../../helpers";
 
 describe("<WaterTube />", () => {
-  it("renders", () => {
-    const wrapper = render(<WaterTube
-      name="mock-tube"
-      args={[]}
-      waterFlow={false} />);
-    expect(wrapper.container).toContainHTML("mock-tube-tube");
-    expect(wrapper.container).toContainHTML("mock-tube-water-stream");
+  const fakeProps = (): WaterTubeProps => ({
+    tubeName: "mock-tube",
+    tubePath: easyCubicBezierCurve3([0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]),
+    tubularSegments: 1,
+    radius: 1,
+    radialSegments: 1,
+    waterFlow: false,
   });
 
-  it("handles undefined args", () => {
-    const wrapper = render(<WaterTube
-      name="mock-tube"
-      args={undefined}
-      waterFlow={false} />);
+  it("renders", () => {
+    const p = fakeProps();
+    const wrapper = render(<WaterTube {...p} />);
     expect(wrapper.container).toContainHTML("mock-tube-tube");
     expect(wrapper.container).toContainHTML("mock-tube-water-stream");
   });

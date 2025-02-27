@@ -25,9 +25,9 @@ export const Solenoid = (props: SolenoidProps) => {
   } = config;
   const solenoid = useGLTF(ASSETS.models.solenoid, LIB_DIR) as SolenoidPart;
   return <Group>
-    <WaterTube name="lower-solenoid-water-tube"
+    <WaterTube tubeName={"lower-solenoid-water-tube"}
       waterFlow={config.waterFlow}
-      args={[easyCubicBezierCurve3(
+      tubePath={easyCubicBezierCurve3(
         [
           threeSpace(x - 45, bedLengthOuter) + bedXOffset,
           threeSpace(-25, bedWidthOuter),
@@ -40,7 +40,10 @@ export const Solenoid = (props: SolenoidProps) => {
           threeSpace(20, bedWidthOuter),
           columnLength - 217,
         ],
-      ), 40, 5, 8]} />
+      )}
+      tubularSegments={40}
+      radius={5}
+      radialSegments={8} />
     <Mesh name={"solenoid"}
       position={[
         threeSpace(x - 104, bedLengthOuter) + bedXOffset,
@@ -51,9 +54,9 @@ export const Solenoid = (props: SolenoidProps) => {
       scale={1000}
       geometry={solenoid.nodes[PartName.solenoid].geometry}
       material={solenoid.materials.PaletteMaterial001} />
-    <WaterTube name="upper-solenoid-water-tube"
+    <WaterTube tubeName={"upper-solenoid-water-tube"}
       waterFlow={config.waterFlow}
-      args={[easyCubicBezierCurve3(
+      tubePath={easyCubicBezierCurve3(
         [
           threeSpace(x - 104.25, bedLengthOuter) + bedXOffset,
           threeSpace(20, bedWidthOuter),
@@ -66,10 +69,13 @@ export const Solenoid = (props: SolenoidProps) => {
           threeSpace(35, bedWidthOuter) + bedYOffset,
           columnLength + 90,
         ],
-      ), 20, 5, 8]} />
-    <WaterTube name="y-z-water-tube"
+      )}
+      tubularSegments={20}
+      radius={5}
+      radialSegments={8} />
+    <WaterTube tubeName={"y-z-water-tube"}
       waterFlow={config.waterFlow}
-      args={[easyCubicBezierCurve3(
+      tubePath={easyCubicBezierCurve3(
         [
           threeSpace(x - 70, bedLengthOuter) + bedXOffset,
           threeSpace(y + 80, bedWidthOuter) + bedYOffset,
@@ -82,10 +88,13 @@ export const Solenoid = (props: SolenoidProps) => {
           threeSpace(y - 10, bedWidthOuter) + bedYOffset,
           columnLength + 180,
         ],
-      ), 20, 5, 8]} />
-    <WaterTube name="utm-water-tube"
+      )}
+      tubularSegments={20}
+      radius={5}
+      radialSegments={8} />
+    <WaterTube tubeName={"utm-water-tube"}
       waterFlow={config.waterFlow}
-      args={[easyCubicBezierCurve3(
+      tubePath={easyCubicBezierCurve3(
         [
           threeSpace(x + 32.5, bedLengthOuter) + bedXOffset,
           threeSpace(y - 10, bedWidthOuter) + bedYOffset,
@@ -98,6 +107,9 @@ export const Solenoid = (props: SolenoidProps) => {
           threeSpace(y + 15, bedWidthOuter) + bedYOffset,
           columnLength - z - zGantryOffset + 75,
         ],
-      ), 20, 5, 8]} />
+      )}
+      tubularSegments={20}
+      radius={5}
+      radialSegments={8} />
   </Group>;
 };
