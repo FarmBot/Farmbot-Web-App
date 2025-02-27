@@ -3,7 +3,15 @@ import { Config } from "../config";
 import { Group } from "../components";
 import { Line } from "@react-three/drei";
 import { zero as zeroFunc, extents as extentsFunc } from "../helpers";
-import { range } from "lodash";
+import { chain, floor, range } from "lodash";
+
+export const gridLineOffsets = (botDimension: number): number[] => {
+  const lastRegularOffset = floor(botDimension, -2);
+  return chain(range(0, lastRegularOffset + 100, 100))
+    .concat(botDimension)
+    .uniq()
+    .value();
+};
 
 export interface GridProps {
   config: Config;
@@ -15,19 +23,19 @@ export const Grid = (props: GridProps) => {
   const gridZ = zero.z - config.soilHeight + 5;
   const extents = extentsFunc(config);
   return <Group name={"garden-grid"} visible={config.grid}>
-    {range(0, config.botSizeX + 100, 100).map(x =>
-      <Line key={x}
+    {gridLineOffsets(config.botSizeX).map(xOffset =>
+      <Line key={xOffset}
         color={"white"}
         points={[
-          [zero.x + x, zero.y, gridZ],
-          [zero.x + x, extents.y, gridZ],
+          [zero.x + xOffset, zero.y, gridZ],
+          [zero.x + xOffset, extents.y, gridZ],
         ]} />)}
-    {range(0, config.botSizeY + 100, 100).map(y =>
-      <Line key={y}
+    {gridLineOffsets(config.botSizeY).map(yOffset =>
+      <Line key={yOffset}
         color={"white"}
         points={[
-          [zero.x, zero.y + y, gridZ],
-          [extents.x, zero.y + y, gridZ],
+          [zero.x, zero.y + yOffset, gridZ],
+          [extents.x, zero.y + yOffset, gridZ],
         ]} />)}
   </Group>;
 };
