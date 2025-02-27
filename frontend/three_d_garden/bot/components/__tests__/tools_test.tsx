@@ -34,6 +34,11 @@ import {
   fakeTool, fakeToolSlot,
 } from "../../../../__test_support__/fake_state/resources";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
+import { WateringAnimations } from "../watering_animations";
+
+jest.mock("../watering_animations", () => ({
+  WateringAnimations: jest.fn(() => <div>WateringAnimations</div>),
+}));
 
 describe("<Tools />", () => {
   const fakeProps = (): ToolsProps => ({
@@ -96,5 +101,39 @@ describe("<Tools />", () => {
     p.mountedToolName = "weeder";
     const { container } = render(<Tools {...p} />);
     expect(container).not.toContainHTML("toolbay3");
+  });
+
+  it("renders watering animations when not in toolbay and water flowing", () => {
+    const p = fakeProps();
+    p.config.waterFlow = true;
+    const tool = fakeTool();
+    tool.body.name = "watering nozzle";
+    p.toolSlots = [];
+    p.mountedToolName = "watering nozzle";
+    render(<Tools {...p} />);
+    expect(WateringAnimations).toHaveBeenCalled();
+  });
+
+  it ("doesn't render watering animations when water not flowing", () => {
+    const p = fakeProps();
+    p.config.waterFlow = false;
+    const tool = fakeTool();
+    tool.body.name = "watering nozzle";
+    p.toolSlots = [];
+    p.mountedToolName = "watering nozzle";
+    render(<Tools {...p} />);
+    expect(WateringAnimations).not.toHaveBeenCalled();
+  });
+
+  it("doesn't render watering animations when in toolbay", () => {
+    const p = fakeProps();
+    p.config.waterFlow = true;
+    const tool = fakeTool();
+    tool.body.name = "watering nozzle";
+    const toolSlot = fakeToolSlot();
+    toolSlot.body.tool_id = tool.body.id;
+    p.toolSlots = [{ toolSlot, tool }];
+    render(<Tools {...p} />);
+    expect(WateringAnimations).not.toHaveBeenCalled();
   });
 });

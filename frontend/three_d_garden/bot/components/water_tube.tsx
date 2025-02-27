@@ -1,12 +1,7 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { Tube } from "@react-three/drei";
-import { MeshPhongMaterial } from "../../components";
-import { TextureLoader, RepeatWrapping, Texture } from "three";
-import { useFrame } from "@react-three/fiber";
-import { ASSETS } from "../../constants";
-
-const waterTexture = new TextureLoader().load(ASSETS.textures.water);
-waterTexture.wrapS = waterTexture.wrapT = RepeatWrapping;
+import { MeshPhongMaterial, Group } from "../../components";
+import { WaterStream } from "./water_stream";
 
 export interface WaterTubeProps {
   name: string;
@@ -14,34 +9,21 @@ export interface WaterTubeProps {
   waterFlow: boolean;
 }
 
-export const useWaterFlowTexture = (waterFlow: boolean): Texture | undefined => {
-  const texture = useMemo(() => waterFlow ? waterTexture : undefined, [waterFlow]);
-
-  useFrame((_, delta) => {
-    if (waterFlow) {
-      waterTexture.offset.x -= delta * 0.25;
-    }
-  });
-
-  return texture;
-};
-
 export const WaterTube = (props: WaterTubeProps) => {
   const { name, args, waterFlow } = props;
-  const waterTexture = useWaterFlowTexture(waterFlow);
+  const [tubePath, tubularSegments, radius = 5, radialSegments] = args || [];
 
-  return <Tube name={name}
-    castShadow={true}
-    receiveShadow={true}
-    args={args}>
-    {waterFlow
-      ? <MeshPhongMaterial key="flowing"
-        map={waterTexture}
-        transparent={true}
-        opacity={0.75} />
-      : <MeshPhongMaterial key="static"
-        map={undefined}
-        transparent={true}
-        opacity={0.5} />}
-  </Tube>;
+  return <Group name={name}>
+    <Tube name={name + "-tube"}
+      castShadow={true}
+      receiveShadow={true}
+      renderOrder={1}
+      args={args}>
+      <MeshPhongMaterial transparent={true}
+        opacity={0.4} />
+    </Tube>
+    <WaterStream name={name + "-water-stream"}
+      args={[tubePath, tubularSegments, radius - 2, radialSegments]}
+      waterFlow={waterFlow} />
+  </Group>;
 };

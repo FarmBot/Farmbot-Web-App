@@ -22,6 +22,7 @@ import {
 } from "../../../farm_designer/map/tool_graphics/all_tools";
 import { Xyz } from "farmbot";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
+import { WateringAnimations } from "./watering_animations";
 
 type Toolbay3 = GLTF & {
   nodes: {
@@ -108,6 +109,8 @@ export const Tools = (props: ToolsProps) => {
     : reduceToolName(props.mountedToolName);
   const zZero = zZeroFunc(props.config);
   const zDir = zDirFunc(props.config);
+  const waterFlow = props.config.waterFlow;
+  const soilHeight = props.config.soilHeight;
 
   const toolbay3 = useGLTF(ASSETS.models.toolbay3, LIB_DIR) as Toolbay3;
   const toolbay1 = useGLTF(ASSETS.models.toolbay1, LIB_DIR) as Toolbay1;
@@ -180,11 +183,12 @@ export const Tools = (props: ToolsProps) => {
 
   const Tool = (toolProps: ToolProps) => {
     const { toolPulloutDirection } = toolProps;
-    const mounted = toolProps.inToolbay && toolProps.toolName == mountedToolName;
+    const inToolbay = toolProps.inToolbay;
+    const mounted = inToolbay && toolProps.toolName == mountedToolName;
     const position = {
       x: threeSpace(toolProps.x, bedLengthOuter) + bedXOffset,
       y: threeSpace(toolProps.y, bedWidthOuter) + bedYOffset,
-      z: zZero - zDir * toolProps.z + (toolProps.inToolbay ? 0 : (utmHeight / 2 - 15)),
+      z: zZero - zDir * toolProps.z + (inToolbay ? 0 : (utmHeight / 2 - 15)),
     };
     const common = { mounted, position, toolPulloutDirection };
     switch (toolProps.toolName) {
@@ -203,14 +207,19 @@ export const Tools = (props: ToolsProps) => {
         return <ToolbaySlot {...common}>
           <Mesh name={"wateringNozzle"}
             position={[
-              5,
-              10,
-              16,
+              7.5,
+              10.5,
+              15,
             ]}
             rotation={[0, 0, 2.094 + Math.PI / 2]}
             scale={1000}
             geometry={wateringNozzle.nodes[PartName.wateringNozzle].geometry}
             material={wateringNozzle.materials.PaletteMaterial001} />
+          {!inToolbay && waterFlow &&
+            <WateringAnimations
+              waterFlow={waterFlow}
+              botPositionZ={botPosition.z}
+              soilHeight={soilHeight} />}
         </ToolbaySlot>;
       case ToolName.seedBin:
         return <ToolbaySlot {...common}>
