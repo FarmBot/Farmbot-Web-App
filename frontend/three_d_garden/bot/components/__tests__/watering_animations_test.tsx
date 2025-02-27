@@ -57,7 +57,7 @@ describe("<WateringAnimations />", () => {
   it("renders water streams with correct names", () => {
     const { container } = render(<WateringAnimations {...fakeProps} />);
     const waterStreams = container.querySelectorAll(
-      '[data-testid="mock-water-stream"]'
+      '[data-testid="mock-water-stream"]',
     );
 
     expect(waterStreams[0]).toHaveAttribute("data-name", "water-stream-0");

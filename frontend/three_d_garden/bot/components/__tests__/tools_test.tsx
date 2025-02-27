@@ -114,7 +114,7 @@ describe("<Tools />", () => {
     expect(WateringAnimations).toHaveBeenCalled();
   });
 
-  it ("doesn't render watering animations when water not flowing", () => {
+  it("doesn't render watering animations when water not flowing", () => {
     const p = fakeProps();
     p.config.waterFlow = false;
     const tool = fakeTool();
