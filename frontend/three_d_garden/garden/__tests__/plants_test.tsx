@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { clone } from "lodash";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
 import { INITIAL } from "../../config";
@@ -10,6 +10,7 @@ import {
   ThreeDPlantProps,
 } from "../plants";
 import { CROPS } from "../../../crops/constants";
+import { Path } from "../../../internal_urls";
 
 describe("calculatePlantPositions()", () => {
   it("calculates plant positions", () => {
@@ -59,6 +60,7 @@ describe("convertPlants()", () => {
 
     expect(convertedPlants).toEqual([{
       icon: CROPS.spinach.icon,
+      id: 1,
       label: "Spinach",
       size: 50,
       spread: 0,
@@ -67,6 +69,7 @@ describe("convertPlants()", () => {
     },
     {
       icon: CROPS["generic-plant"].icon,
+      id: 2,
       label: "Unknown",
       size: 50,
       spread: 0,
@@ -117,5 +120,14 @@ describe("<ThreeDPlant />", () => {
     render(<ThreeDPlant {...p} />);
     const { container } = render(<ThreeDPlant {...p} />);
     expect(container).toContainHTML("image");
+  });
+
+  it("navigates to plant info", () => {
+    const p = fakeProps();
+    p.plant.id = 1;
+    const { container } = render(<ThreeDPlant {...p} />);
+    const plant = container.querySelector("[name='0'");
+    plant && fireEvent.click(plant);
+    expect(mockNavigate).toHaveBeenCalledWith(Path.plants("1"));
   });
 });

@@ -23,6 +23,8 @@ import {
 import { Xyz } from "farmbot";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
 import { WateringAnimations } from "./watering_animations";
+import { useNavigate } from "react-router";
+import { Path } from "../../../internal_urls";
 
 type Toolbay3 = GLTF & {
   nodes: {
@@ -70,6 +72,7 @@ export interface ToolsProps {
 }
 
 interface ConvertedTools {
+  id?: number | undefined;
   x: number;
   y: number;
   z: number;
@@ -85,6 +88,7 @@ export const convertSlotsWithTools =
       const toolName = reduceToolName(swt.tool?.body.name);
       if (toolName == ToolName.seedTrough) { troughIndex++; }
       return {
+        id: swt.toolSlot.body.id,
         x: swt.toolSlot.body.x,
         y: swt.toolSlot.body.y,
         z: swt.toolSlot.body.z,
@@ -144,17 +148,23 @@ export const Tools = (props: ToolsProps) => {
     children?: React.ReactNode;
     toolPulloutDirection: ToolPulloutDirection;
     mounted: boolean;
+    id: number | undefined;
+    inToolbay: boolean;
   }
 
   const ToolbaySlot = (slotProps: ToolbaySlotProps) => {
     const { position, children, toolPulloutDirection, mounted } = slotProps;
     const rotationMultiplier = rotationFactor(toolPulloutDirection);
-    return <Group name={"slot"}
+    const navigate = useNavigate();
+    return <Group name={slotProps.inToolbay ? "slot" : "utm-tool"}
       position={[
         position.x,
         position.y,
         position.z,
-      ]}>
+      ]}
+      onClick={() => {
+        slotProps.id && navigate(Path.toolSlots(slotProps.id));
+      }}>
       {rotationMultiplier &&
         <Group name={"bay"}
           rotation={[0, 0, rotationMultiplier * Math.PI / 2]}>
@@ -180,14 +190,16 @@ export const Tools = (props: ToolsProps) => {
   }
 
   const Tool = (toolProps: ToolProps) => {
-    const { toolPulloutDirection, inToolbay } = toolProps;
+    const { toolPulloutDirection, inToolbay, id } = toolProps;
     const mounted = inToolbay && toolProps.toolName == mountedToolName;
     const position = {
       x: threeSpace(toolProps.x, bedLengthOuter) + bedXOffset,
       y: threeSpace(toolProps.y, bedWidthOuter) + bedYOffset,
       z: zZero - zDir * toolProps.z + (inToolbay ? 0 : (utmHeight / 2 - 15)),
     };
-    const common = { mounted, position, toolPulloutDirection };
+    const common: ToolbaySlotProps = {
+      mounted, position, toolPulloutDirection, id, inToolbay,
+    };
     switch (toolProps.toolName) {
       case ToolName.rotaryTool:
         return <ToolbaySlot {...common}>

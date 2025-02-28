@@ -10,7 +10,7 @@ import * as THREE from "three";
 import React, { ReactNode } from "react";
 import { TransitionFn, UseSpringProps } from "@react-spring/three";
 import { ThreeElements } from "@react-three/fiber";
-import { Cloud, Clouds, Tube } from "@react-three/drei";
+import { Cloud, Clouds, Image, Tube } from "@react-three/drei";
 
 const GroupForTests = (props: ThreeElements["group"]) =>
   // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
@@ -644,8 +644,9 @@ jest.mock("@react-three/drei", () => {
       <div className={"stats"}>{name}</div>,
     Billboard: ({ name, children }: { name: string, children: ReactNode }) =>
       <div className={"billboard" + name}>{children}</div>,
-    Image: ({ name, url }: { name: string, url: string }) =>
-      <div className={"image"}>{name} {url}</div>,
+    Image: (props: React.ComponentProps<typeof Image>) =>
+      // @ts-expect-error geometry props not assignable to div
+      <div className={"image"} {...props}>{props.name} {props.url}</div>,
     Clouds: (props: React.ComponentProps<typeof Clouds>) =>
       // @ts-expect-error geometry props not assignable to div
       <div className={"clouds"} {...props}>{props.children}</div>,

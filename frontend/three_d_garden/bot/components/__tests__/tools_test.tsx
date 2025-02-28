@@ -26,7 +26,7 @@ jest.mock("react", () => {
 });
 
 import React from "react";
-import { render } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import { INITIAL } from "../../../config";
 import { clone } from "lodash";
 import { Tools, ToolsProps } from "../tools";
@@ -35,6 +35,7 @@ import {
 } from "../../../../__test_support__/fake_state/resources";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
 import { WateringAnimations } from "../watering_animations";
+import { Path } from "../../../../internal_urls";
 
 jest.mock("../watering_animations", () => ({
   WateringAnimations: jest.fn(),
@@ -135,5 +136,20 @@ describe("<Tools />", () => {
     p.toolSlots = [{ toolSlot, tool }];
     render(<Tools {...p} />);
     expect(WateringAnimations).not.toHaveBeenCalled();
+  });
+
+  it("navigates to tool info", () => {
+    const p = fakeProps();
+    const tool = fakeTool();
+    tool.body.name = "soil sensor";
+    tool.body.id = 2;
+    const toolSlot = fakeToolSlot();
+    toolSlot.body.id = 1;
+    toolSlot.body.tool_id = tool.body.id;
+    p.toolSlots = [{ toolSlot, tool }];
+    const { container } = render(<Tools {...p} />);
+    const slot = container.querySelector("[name='slot'");
+    slot && fireEvent.click(slot);
+    expect(mockNavigate).toHaveBeenCalledWith(Path.toolSlots("1"));
   });
 });

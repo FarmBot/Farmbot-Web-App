@@ -6,6 +6,8 @@ import { Group, MeshPhongMaterial } from "../components";
 import { Image, Billboard, Sphere } from "@react-three/drei";
 import { DoubleSide } from "three";
 import { zero as zeroFunc, threeSpace } from "../helpers";
+import { useNavigate } from "react-router";
+import { Path } from "../../internal_urls";
 
 export interface WeedProps {
   weed: TaggedWeedPointer;
@@ -14,10 +16,14 @@ export interface WeedProps {
 
 export const Weed = (props: WeedProps) => {
   const { weed, config } = props;
+  const navigate = useNavigate();
   return <Group name={"weed"}
+    onClick={() => {
+      weed.body.id && navigate(Path.weeds(weed.body.id));
+    }}
     position={[
-      threeSpace(weed.body.x, config.bedLengthOuter),
-      threeSpace(weed.body.y, config.bedWidthOuter),
+      threeSpace(weed.body.x, config.bedLengthOuter) + config.bedXOffset,
+      threeSpace(weed.body.y, config.bedWidthOuter) + config.bedYOffset,
       zeroFunc(config).z - config.soilHeight,
     ]}>
     <Billboard follow={true}

@@ -8,8 +8,11 @@ import { threeSpace, zZero as zZeroFunc } from "../helpers";
 import { Text } from "../elements";
 import { findIcon } from "../../crops/find";
 import { kebabCase } from "lodash";
+import { Path } from "../../internal_urls";
+import { useNavigate } from "react-router";
 
 interface Plant {
+  id?: number | undefined;
   label: string;
   icon: string;
   size: number;
@@ -23,6 +26,7 @@ export interface ThreeDGardenPlant extends Plant { }
 export const convertPlants = (config: Config, plants: TaggedPlant[]): Plant[] => {
   return plants.map(plant => {
     return {
+      id: plant.body.id,
       label: plant.body.name,
       icon: findIcon(plant.body.openfarm_slug),
       size: plant.body.radius * 2,
@@ -90,6 +94,7 @@ export interface ThreeDPlantProps {
 export const ThreeDPlant = (props: ThreeDPlantProps) => {
   const { i, plant, labelOnly, config, hoveredPlant } = props;
   const alwaysShowLabels = config.labels && !config.labelsOnHover;
+  const navigate = useNavigate();
   return <Billboard follow={true}
     position={new Vector3(
       threeSpace(plant.x, config.bedLengthOuter),
@@ -106,6 +111,9 @@ export const ThreeDPlant = (props: ThreeDPlantProps) => {
         {plant.label}
       </Text>
       : <Image url={plant.icon} scale={plant.size} name={"" + i}
+        onClick={() => {
+          plant.id && navigate(Path.plants(plant.id));
+        }}
         transparent={true}
         renderOrder={1} />}
   </Billboard>;
