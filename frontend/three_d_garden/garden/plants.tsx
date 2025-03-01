@@ -7,9 +7,10 @@ import { Vector3 } from "three";
 import { threeSpace, zZero as zZeroFunc } from "../helpers";
 import { Text } from "../elements";
 import { findIcon } from "../../crops/find";
-import { kebabCase } from "lodash";
+import { isUndefined, kebabCase } from "lodash";
 import { Path } from "../../internal_urls";
 import { useNavigate } from "react-router";
+import { setPanelOpen } from "../../farm_designer/panel_header";
 
 interface Plant {
   id?: number | undefined;
@@ -89,6 +90,7 @@ export interface ThreeDPlantProps {
   labelOnly?: boolean;
   config: Config;
   hoveredPlant: number | undefined;
+  dispatch?: Function;
 }
 
 export const ThreeDPlant = (props: ThreeDPlantProps) => {
@@ -112,7 +114,10 @@ export const ThreeDPlant = (props: ThreeDPlantProps) => {
       </Text>
       : <Image url={plant.icon} scale={plant.size} name={"" + i}
         onClick={() => {
-          plant.id && navigate(Path.plants(plant.id));
+          if (plant.id && !isUndefined(props.dispatch)) {
+            props.dispatch(setPanelOpen(true));
+            navigate(Path.plants(plant.id));
+          }
         }}
         transparent={true}
         renderOrder={1} />}

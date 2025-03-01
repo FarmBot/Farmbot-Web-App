@@ -2,8 +2,9 @@ import React from "react";
 import { getLinks } from "./nav/nav_links";
 import { sync } from "./devices/actions";
 import { HotkeyConfig, useHotkeys, HotkeysDialog2 } from "@blueprintjs/core";
-import { unselectPlant } from "./farm_designer/map/actions";
-import { getPanelPath, PANEL_BY_SLUG } from "./farm_designer/panel_header";
+import {
+  getPanelPath, PANEL_BY_SLUG, setPanelOpen,
+} from "./farm_designer/panel_header";
 import { t } from "./i18next_wrapper";
 import { store } from "./redux/store";
 import { save } from "./api/crud";
@@ -25,7 +26,7 @@ export enum HotKey {
   navigateLeft = "navigateLeft",
   addPlant = "addPlant",
   addEvent = "addEvent",
-  backToPlantOverview = "backToPlantOverview",
+  closePanel = "closePanel",
   openGuide = "openGuide",
 }
 
@@ -54,9 +55,9 @@ const HOTKEY_BASE_MAP = (): HotkeyConfigs => ({
     combo: "ctrl + shift + e",
     label: t("Add Event"),
   },
-  [HotKey.backToPlantOverview]: {
+  [HotKey.closePanel]: {
     combo: "escape",
-    label: t("Back to plant overview"),
+    label: t("Close panel"),
   },
   [HotKey.openGuide]: {
     combo: "shift + ?",
@@ -106,14 +107,9 @@ export const hotkeysWithActions = (
       ...hotkeysBase[HotKey.addEvent],
       onKeyDown: () => { navigate(Path.farmEvents("add")); },
     },
-    [HotKey.backToPlantOverview]: {
-      ...hotkeysBase[HotKey.backToPlantOverview],
-      onKeyDown: () => {
-        if (slug != "photos") {
-          navigate(Path.plants());
-          dispatch(unselectPlant(dispatch));
-        }
-      },
+    [HotKey.closePanel]: {
+      ...hotkeysBase[HotKey.closePanel],
+      onKeyDown: () => { dispatch(setPanelOpen(false)); },
     },
     [HotKey.openGuide]: hotkeysBase[HotKey.openGuide],
   };

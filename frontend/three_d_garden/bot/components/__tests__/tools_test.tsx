@@ -25,6 +25,10 @@ jest.mock("react", () => {
   };
 });
 
+jest.mock("../watering_animations", () => ({
+  WateringAnimations: jest.fn(),
+}));
+
 import React from "react";
 import { fireEvent, render } from "@testing-library/react";
 import { INITIAL } from "../../../config";
@@ -36,10 +40,8 @@ import {
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
 import { WateringAnimations } from "../watering_animations";
 import { Path } from "../../../../internal_urls";
-
-jest.mock("../watering_animations", () => ({
-  WateringAnimations: jest.fn(),
-}));
+import { Actions } from "../../../../constants";
+import { mockDispatch } from "../../../../__test_support__/fake_dispatch";
 
 describe("<Tools />", () => {
   const fakeProps = (): ToolsProps => ({
@@ -140,6 +142,8 @@ describe("<Tools />", () => {
 
   it("navigates to tool info", () => {
     const p = fakeProps();
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
     const tool = fakeTool();
     tool.body.name = "soil sensor";
     tool.body.id = 2;
@@ -150,6 +154,25 @@ describe("<Tools />", () => {
     const { container } = render(<Tools {...p} />);
     const slot = container.querySelector("[name='slot'");
     slot && fireEvent.click(slot);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_PANEL_OPEN, payload: true,
+    });
     expect(mockNavigate).toHaveBeenCalledWith(Path.toolSlots("1"));
+  });
+
+  it("doesn't navigate to tool info", () => {
+    const p = fakeProps();
+    p.dispatch = undefined;
+    const tool = fakeTool();
+    tool.body.name = "soil sensor";
+    tool.body.id = 2;
+    const toolSlot = fakeToolSlot();
+    toolSlot.body.id = 1;
+    toolSlot.body.tool_id = tool.body.id;
+    p.toolSlots = [{ toolSlot, tool }];
+    const { container } = render(<Tools {...p} />);
+    const slot = container.querySelector("[name='slot'");
+    slot && fireEvent.click(slot);
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 });

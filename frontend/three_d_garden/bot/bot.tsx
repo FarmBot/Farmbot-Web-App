@@ -118,6 +118,7 @@ export interface FarmbotModelProps {
   activeFocus: string;
   toolSlots?: SlotWithTool[];
   mountedToolName?: string | undefined;
+  dispatch?: Function;
 }
 
 export const Bot = (props: FarmbotModelProps) => {
@@ -803,6 +804,7 @@ export const Bot = (props: FarmbotModelProps) => {
     <Solenoid config={config} />
     <ElectronicsBox config={config} />
     <Tools
+      dispatch={props.dispatch}
       config={config}
       toolSlots={props.toolSlots}
       mountedToolName={props.mountedToolName} />

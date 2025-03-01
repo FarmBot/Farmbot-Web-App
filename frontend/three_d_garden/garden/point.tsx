@@ -7,10 +7,13 @@ import { DoubleSide } from "three";
 import { zero as zeroFunc, threeSpace } from "../helpers";
 import { useNavigate } from "react-router";
 import { Path } from "../../internal_urls";
+import { isUndefined } from "lodash";
+import { setPanelOpen } from "../../farm_designer/panel_header";
 
 export interface PointProps {
   point: TaggedGenericPointer;
   config: Config;
+  dispatch?: Function;
 }
 
 export const Point = (props: PointProps) => {
@@ -28,7 +31,10 @@ export const Point = (props: PointProps) => {
     ]}>
     <Group name={"marker"}
       onClick={() => {
-        point.body.id && navigate(Path.points(point.body.id));
+        if (point.body.id && !isUndefined(props.dispatch)) {
+          props.dispatch(setPanelOpen(true));
+          navigate(Path.points(point.body.id));
+        }
       }}>
       <Cylinder
         args={[RADIUS, 0, HEIGHT, 32, 32, true]}

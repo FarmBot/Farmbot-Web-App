@@ -43,6 +43,7 @@ export interface GardenModelProps {
 
 export const GardenModel = (props: GardenModelProps) => {
   const { config } = props;
+  const dispatch = props.addPlantProps?.dispatch;
   const Camera = config.perspective ? PerspectiveCamera : OrthographicCamera;
 
   const plants = isUndefined(props.addPlantProps)
@@ -120,6 +121,7 @@ export const GardenModel = (props: GardenModelProps) => {
     {(!props.addPlantProps
       || !!props.addPlantProps.getConfigValue(BooleanSetting.show_farmbot)) &&
       <Bot
+        dispatch={dispatch}
         config={config}
         activeFocus={props.activeFocus}
         mountedToolName={props.mountedToolName}
@@ -147,17 +149,24 @@ export const GardenModel = (props: GardenModelProps) => {
         <ThreeDPlant key={i} i={i}
           plant={plant}
           config={config}
-          hoveredPlant={hoveredPlant} />)}
+          hoveredPlant={hoveredPlant}
+          dispatch={dispatch} />)}
     </Group>
     <Group name={"points"}
       visible={!!props.addPlantProps?.getConfigValue(BooleanSetting.show_points)}>
       {props.mapPoints?.map(point =>
-        <Point key={point.uuid} point={point} config={config} />)}
+        <Point key={point.uuid}
+          point={point}
+          config={config}
+          dispatch={dispatch} />)}
     </Group>
     <Group name={"weeds"}
       visible={!!props.addPlantProps?.getConfigValue(BooleanSetting.show_weeds)}>
       {props.weeds?.map(weed =>
-        <Weed key={weed.uuid} weed={weed} config={config} />)}
+        <Weed key={weed.uuid}
+          weed={weed}
+          config={config}
+          dispatch={dispatch} />)}
     </Group>
     <Solar config={config} activeFocus={props.activeFocus} />
     <Lab config={config} activeFocus={props.activeFocus} />

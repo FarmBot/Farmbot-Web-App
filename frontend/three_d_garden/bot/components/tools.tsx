@@ -25,6 +25,7 @@ import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
 import { WateringAnimations } from "./watering_animations";
 import { useNavigate } from "react-router";
 import { Path } from "../../../internal_urls";
+import { setPanelOpen } from "../../../farm_designer/panel_header";
 
 type Toolbay3 = GLTF & {
   nodes: {
@@ -69,6 +70,7 @@ export interface ToolsProps {
   config: Config;
   toolSlots?: SlotWithTool[];
   mountedToolName?: string | undefined;
+  dispatch?: Function;
 }
 
 interface ConvertedTools {
@@ -163,7 +165,10 @@ export const Tools = (props: ToolsProps) => {
         position.z,
       ]}
       onClick={() => {
-        slotProps.id && navigate(Path.toolSlots(slotProps.id));
+        if (slotProps.id && !isUndefined(props.dispatch)) {
+          props.dispatch(setPanelOpen(true));
+          navigate(Path.toolSlots(slotProps.id));
+        }
       }}>
       {rotationMultiplier &&
         <Group name={"bay"}
