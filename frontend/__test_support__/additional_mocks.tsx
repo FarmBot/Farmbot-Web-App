@@ -43,6 +43,7 @@ global.mockNavigate = jest.fn(() => jest.fn());
 
 jest.mock("react-router", () => ({
   BrowserRouter: jest.fn(({ children }) => <div>{children}</div>),
+  MemoryRouter: jest.fn(({ children }) => <div>{children}</div>),
   Route: jest.fn(({ children }) => <div>{children}</div>),
   Routes: jest.fn(({ children }) => <div>{children}</div>),
   useNavigate: () => mockNavigate,
