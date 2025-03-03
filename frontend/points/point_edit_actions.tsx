@@ -31,20 +31,12 @@ export const updatePoint =
       }
     };
 
-interface EditPointPropertiesProps {
-  point: TaggedGenericPointer | TaggedWeedPointer;
-  updatePoint(update: PointUpdate): void;
-  botOnline: boolean;
-  defaultAxes: string;
-  arduinoBusy: boolean;
-  dispatch: Function;
-  currentBotLocation: BotPosition;
-  movementState: MovementState;
+interface EditPointPropertiesProps extends EditPointLocationBaseProps {
+  point: TaggedGenericPointer;
 }
 
-export interface AdditionalWeedPropertiesProps {
-  point: TaggedWeedPointer;
-  updatePoint(update: PointUpdate): void;
+export interface EditWeedPropertiesProps extends EditPointLocationBaseProps {
+  weed: TaggedWeedPointer;
 }
 
 export const EditPointProperties = (props: EditPointPropertiesProps) =>
@@ -64,35 +56,72 @@ export const EditPointProperties = (props: EditPointPropertiesProps) =>
         defaultAxes={props.defaultAxes}
         updatePoint={props.updatePoint} />
     </ListItem>
-    {props.point.body.pointer_type == "GenericPointer" &&
-      <ListItem>
-        <EditPointSoilHeightTag
-          point={props.point}
-          updatePoint={props.updatePoint} />
-      </ListItem>}
-  </ul>;
-
-export const AdditionalWeedProperties = (props: AdditionalWeedPropertiesProps) =>
-  <ul className="additional-weed-properties grid">
-    <div className="row grid-exp-1 info-box">
-      <div className="grid half-gap">
-        <label>{t("Status")}</label>
-        <EditWeedStatus weed={props.point} updateWeed={props.updatePoint} />
-      </div>
+    <ListItem>
       <EditPointRadius
         radius={props.point.body.radius}
         updatePoint={props.updatePoint} />
-      <div className="grid half-gap">
-        <label>{t("Age")}</label>
-        {daysOldText(plantAgeAndStage(props.point))}
-      </div>
-    </div>
+    </ListItem>
+    <ListItem>
+      <EditPointSoilHeightTag
+        point={props.point}
+        updatePoint={props.updatePoint} />
+    </ListItem>
     {Object.entries(props.point.body.meta).map(([key, value]) => {
       switch (key) {
         case "color":
-        case "type": return <div key={key}
-          className={`meta-${key}-not-displayed`}
-          style={{ display: "none" }} />;
+        case "at_soil_level":
+        case "removal_method":
+        case "type":
+        case "gridId":
+          return <div key={key} style={{ display: "none" }}
+            className={`meta-${key}-not-displayed`} />;
+        case "created_by":
+          return <ListItem name={t("Source")} key={key}>
+            {lookupPointSource(value)}
+          </ListItem>;
+        default:
+          return <ListItem key={key} name={key}>
+            {value || ""}
+          </ListItem>;
+      }
+    })}
+  </ul>;
+
+export const EditWeedProperties = (props: EditWeedPropertiesProps) =>
+  <ul className="grid">
+    <ListItem>
+      <EditPointLocation
+        pointLocation={{
+          x: props.weed.body.x,
+          y: props.weed.body.y,
+          z: props.weed.body.z,
+        }}
+        botOnline={props.botOnline}
+        dispatch={props.dispatch}
+        arduinoBusy={props.arduinoBusy}
+        currentBotLocation={props.currentBotLocation}
+        movementState={props.movementState}
+        defaultAxes={props.defaultAxes}
+        updatePoint={props.updatePoint} />
+    </ListItem>
+    <div className="row grid-exp-1 info-box">
+      <div className="grid half-gap">
+        <label>{t("Status")}</label>
+        <EditWeedStatus weed={props.weed} updateWeed={props.updatePoint} />
+      </div>
+      <EditPointRadius
+        radius={props.weed.body.radius}
+        updatePoint={props.updatePoint} />
+      <div className="grid half-gap">
+        <label>{t("Age")}</label>
+        {daysOldText(plantAgeAndStage(props.weed))}
+      </div>
+    </div>
+    {Object.entries(props.weed.body.meta).map(([key, value]) => {
+      switch (key) {
+        case "color":
+        case "type": return <div key={key} style={{ display: "none" }}
+          className={`meta-${key}-not-displayed`} />;
         case "created_by":
           return <ListItem name={t("Source")} key={key}>
             {lookupPointSource(value)}
@@ -105,7 +134,7 @@ export const AdditionalWeedProperties = (props: AdditionalWeedPropertiesProps) =
                   <input type="radio" name="weed-removal-method"
                     checked={value == method}
                     onChange={() => {
-                      const newMeta = cloneDeep(props.point.body.meta);
+                      const newMeta = cloneDeep(props.weed.body.meta);
                       newMeta.removal_method = method;
                       props.updatePoint({ meta: newMeta });
                     }} />
@@ -147,15 +176,18 @@ export const EditPointName = (props: EditPointNameProps) =>
       onCommit={e => props.updatePoint({ name: e.currentTarget.value })} />
   </div>;
 
-export interface EditPointLocationProps {
+interface EditPointLocationBaseProps {
   updatePoint(update: PointUpdate): void;
-  pointLocation: Record<Xyz, number>;
   botOnline: boolean;
   defaultAxes: string;
   arduinoBusy: boolean;
   dispatch: Function;
   currentBotLocation: BotPosition;
   movementState: MovementState;
+}
+
+export interface EditPointLocationProps extends EditPointLocationBaseProps {
+  pointLocation: Record<Xyz, number>;
 }
 
 export const EditPointLocation = (props: EditPointLocationProps) =>
