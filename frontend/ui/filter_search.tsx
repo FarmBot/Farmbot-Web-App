@@ -45,7 +45,7 @@ export class FilterSearch
       }}>
       <i className="fa fa-caret-down fa-md" />
       <Button
-        alignText={Alignment.LEFT}
+        alignText={Alignment.START}
         text={item ? item.label : t("(No selection)")} />
     </SelectComponent>;
   }

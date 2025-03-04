@@ -160,7 +160,7 @@ export const Bed = (props: BedProps) => {
   const Soil = ({ children, addPlantProps }: SoilProps) => {
     const soilDepth = bedHeight + zZero(props.config) - soilHeight;
     return <Extrude name={"soil"}
-      onClick={e => {
+      onClick={(e: ThreeEvent<MouseEvent>) => {
         e.stopPropagation();
         if (addPlantProps && getMode() == Mode.clickToAdd) {
           dropPlant({
@@ -174,7 +174,7 @@ export const Bed = (props: BedProps) => {
           });
         }
       }}
-      onPointerMove={e => {
+      onPointerMove={(e: ThreeEvent<MouseEvent>) => {
         if (addPlantProps
           && getMode() == Mode.clickToAdd
           && !isMobile()

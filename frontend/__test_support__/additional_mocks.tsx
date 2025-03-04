@@ -13,7 +13,7 @@ window.location = {
   ancestorOrigins,
   pathname: "", href: "", hash: "", search: "",
   hostname: "", origin: "", port: "", protocol: "", host: "",
-};
+} as unknown as Location & string;
 
 console.error = jest.fn(); // enzyme
 
