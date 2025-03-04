@@ -21,11 +21,10 @@ import {
   VacuumPumpCover, VacuumPumpCoverFull,
 } from "./parts";
 import { PowerSupply } from "./power_supply";
-import { XAxisWaterTube } from "./x_axis_water_tube";
 import { Group, Mesh, MeshPhongMaterial } from "../components";
-import { Tools } from "./components/tools";
-import { ElectronicsBox } from "./components/electronics_box";
-import { Bounds } from "./components/bounds";
+import {
+  ElectronicsBox, Bounds, Tools, Solenoid, XAxisWaterTube,
+} from "./components";
 import { SlotWithTool } from "../../resources/interfaces";
 
 const extrusionWidth = 20;
@@ -78,11 +77,6 @@ type CameraMountHalf = GLTF & {
   nodes: { [PartName.cameraMountHalf]: THREE.Mesh };
   materials: never;
 }
-
-type Solenoid = GLTF & {
-  nodes: { [PartName.solenoid]: THREE.Mesh };
-  materials: { PaletteMaterial001: THREE.MeshStandardMaterial };
-}
 type XAxisCCMount = GLTF & {
   nodes: { [PartName.xAxisCCMount]: THREE.Mesh };
   materials: never;
@@ -124,6 +118,7 @@ export interface FarmbotModelProps {
   activeFocus: string;
   toolSlots?: SlotWithTool[];
   mountedToolName?: string | undefined;
+  dispatch?: Function;
 }
 
 export const Bot = (props: FarmbotModelProps) => {
@@ -159,7 +154,6 @@ export const Bot = (props: FarmbotModelProps) => {
   const VacuumPumpCoverComponent = VacuumPumpCover(vacuumPumpCover);
   const cameraMountHalf = useGLTF(
     ASSETS.models.cameraMountHalf, LIB_DIR) as CameraMountHalf;
-  const solenoid = useGLTF(ASSETS.models.solenoid, LIB_DIR) as Solenoid;
   const xAxisCCMount = useGLTF(ASSETS.models.xAxisCCMount, LIB_DIR) as XAxisCCMount;
   const [trackShape, setTrackShape] = useState<Shape>();
   const [beamShape, setBeamShape] = useState<Shape>();
@@ -807,18 +801,10 @@ export const Bot = (props: FarmbotModelProps) => {
       geometry={beltClip.nodes[PartName.beltClip].geometry}>
       <MeshPhongMaterial color={"silver"} />
     </Mesh>
-    <Mesh name={"solenoid"}
-      position={[
-        threeSpace(x - 104, bedLengthOuter) + bedXOffset,
-        threeSpace(20, bedWidthOuter),
-        columnLength - 200,
-      ]}
-      rotation={[0, 0, -Math.PI / 2]}
-      scale={1000}
-      geometry={solenoid.nodes[PartName.solenoid].geometry}
-      material={solenoid.materials.PaletteMaterial001} />
+    <Solenoid config={config} />
     <ElectronicsBox config={config} />
     <Tools
+      dispatch={props.dispatch}
       config={config}
       toolSlots={props.toolSlots}
       mountedToolName={props.mountedToolName} />

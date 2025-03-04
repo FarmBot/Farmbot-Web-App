@@ -32,6 +32,11 @@ EXCLUDE = [
     reason: "not compatible with enzyme",
     version: "3",
   },
+  {
+    packages: ["@react-three/drei", "@react-three/fiber"],
+    reason: "v9 fiber and v10 drei require react",
+    version: "19",
+  },
 ]
 
 # Load package.json as JSON.

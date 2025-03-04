@@ -39,6 +39,7 @@ import {
 import { app } from "../../__test_support__/fake_state/app";
 import { Actions } from "../../constants";
 import { cloneDeep } from "lodash";
+import { mountWithContext } from "../../__test_support__/mount_with_context";
 
 describe("<NavBar />", () => {
   const fakeProps = (): NavBarProps => ({
@@ -166,7 +167,7 @@ describe("<NavBar />", () => {
   });
 
   it("displays setup button", () => {
-    const wrapper = mount(<NavBar {...fakeProps()} />);
+    const wrapper = mountWithContext(<NavBar {...fakeProps()} />);
     wrapper.find(".setup-button").simulate("click");
     expect(mockNavigate).toHaveBeenCalledWith(Path.setup());
     expect(wrapper.text().toLowerCase()).toContain("complete");

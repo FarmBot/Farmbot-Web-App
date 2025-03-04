@@ -25,8 +25,12 @@ jest.mock("react", () => {
   };
 });
 
+jest.mock("../watering_animations", () => ({
+  WateringAnimations: jest.fn(),
+}));
+
 import React from "react";
-import { render } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import { INITIAL } from "../../../config";
 import { clone } from "lodash";
 import { Tools, ToolsProps } from "../tools";
@@ -34,6 +38,10 @@ import {
   fakeTool, fakeToolSlot,
 } from "../../../../__test_support__/fake_state/resources";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
+import { WateringAnimations } from "../watering_animations";
+import { Path } from "../../../../internal_urls";
+import { Actions } from "../../../../constants";
+import { mockDispatch } from "../../../../__test_support__/fake_dispatch";
 
 describe("<Tools />", () => {
   const fakeProps = (): ToolsProps => ({
@@ -96,5 +104,75 @@ describe("<Tools />", () => {
     p.mountedToolName = "weeder";
     const { container } = render(<Tools {...p} />);
     expect(container).not.toContainHTML("toolbay3");
+  });
+
+  it("renders watering animations when not in toolbay and water flowing", () => {
+    const p = fakeProps();
+    p.config.waterFlow = true;
+    const tool = fakeTool();
+    tool.body.name = "watering nozzle";
+    p.toolSlots = [];
+    p.mountedToolName = "watering nozzle";
+    render(<Tools {...p} />);
+    expect(WateringAnimations).toHaveBeenCalled();
+  });
+
+  it("doesn't render watering animations when water not flowing", () => {
+    const p = fakeProps();
+    p.config.waterFlow = false;
+    const tool = fakeTool();
+    tool.body.name = "watering nozzle";
+    p.toolSlots = [];
+    p.mountedToolName = "watering nozzle";
+    render(<Tools {...p} />);
+    expect(WateringAnimations).not.toHaveBeenCalled();
+  });
+
+  it("doesn't render watering animations when in toolbay", () => {
+    const p = fakeProps();
+    p.config.waterFlow = true;
+    const tool = fakeTool();
+    tool.body.name = "watering nozzle";
+    const toolSlot = fakeToolSlot();
+    toolSlot.body.tool_id = tool.body.id;
+    p.toolSlots = [{ toolSlot, tool }];
+    render(<Tools {...p} />);
+    expect(WateringAnimations).not.toHaveBeenCalled();
+  });
+
+  it("navigates to tool info", () => {
+    const p = fakeProps();
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
+    const tool = fakeTool();
+    tool.body.name = "soil sensor";
+    tool.body.id = 2;
+    const toolSlot = fakeToolSlot();
+    toolSlot.body.id = 1;
+    toolSlot.body.tool_id = tool.body.id;
+    p.toolSlots = [{ toolSlot, tool }];
+    const { container } = render(<Tools {...p} />);
+    const slot = container.querySelector("[name='slot'");
+    slot && fireEvent.click(slot);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_PANEL_OPEN, payload: true,
+    });
+    expect(mockNavigate).toHaveBeenCalledWith(Path.toolSlots("1"));
+  });
+
+  it("doesn't navigate to tool info", () => {
+    const p = fakeProps();
+    p.dispatch = undefined;
+    const tool = fakeTool();
+    tool.body.name = "soil sensor";
+    tool.body.id = 2;
+    const toolSlot = fakeToolSlot();
+    toolSlot.body.id = 1;
+    toolSlot.body.tool_id = tool.body.id;
+    p.toolSlots = [{ toolSlot, tool }];
+    const { container } = render(<Tools {...p} />);
+    const slot = container.querySelector("[name='slot'");
+    slot && fireEvent.click(slot);
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 });

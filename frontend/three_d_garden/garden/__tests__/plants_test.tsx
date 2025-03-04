@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { clone } from "lodash";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
 import { INITIAL } from "../../config";
@@ -10,6 +10,9 @@ import {
   ThreeDPlantProps,
 } from "../plants";
 import { CROPS } from "../../../crops/constants";
+import { Path } from "../../../internal_urls";
+import { Actions } from "../../../constants";
+import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 
 describe("calculatePlantPositions()", () => {
   it("calculates plant positions", () => {
@@ -59,6 +62,7 @@ describe("convertPlants()", () => {
 
     expect(convertedPlants).toEqual([{
       icon: CROPS.spinach.icon,
+      id: 1,
       label: "Spinach",
       size: 50,
       spread: 0,
@@ -67,6 +71,7 @@ describe("convertPlants()", () => {
     },
     {
       icon: CROPS["generic-plant"].icon,
+      id: 2,
       label: "Unknown",
       size: 50,
       spread: 0,
@@ -117,5 +122,29 @@ describe("<ThreeDPlant />", () => {
     render(<ThreeDPlant {...p} />);
     const { container } = render(<ThreeDPlant {...p} />);
     expect(container).toContainHTML("image");
+  });
+
+  it("navigates to plant info", () => {
+    const p = fakeProps();
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
+    p.plant.id = 1;
+    const { container } = render(<ThreeDPlant {...p} />);
+    const plant = container.querySelector("[name='0'");
+    plant && fireEvent.click(plant);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_PANEL_OPEN, payload: true,
+    });
+    expect(mockNavigate).toHaveBeenCalledWith(Path.plants("1"));
+  });
+
+  it("doesn't navigate to plant info", () => {
+    const p = fakeProps();
+    p.dispatch = undefined;
+    p.plant.id = 1;
+    const { container } = render(<ThreeDPlant {...p} />);
+    const plant = container.querySelector("[name='0'");
+    plant && fireEvent.click(plant);
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 });

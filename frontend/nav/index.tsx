@@ -2,7 +2,6 @@ import React from "react";
 import { NavBarProps, NavBarState } from "./interfaces";
 import { EStopButton } from "./e_stop_btn";
 import { Popover } from "../ui";
-import { useNavigate } from "react-router";
 import { updatePageInfo } from "../util";
 import { validBotLocationData } from "../util/location";
 import { NavLinks } from "./nav_links";
@@ -34,6 +33,8 @@ import { PopupsState } from "../interfaces";
 import { Panel, TAB_ICON } from "../farm_designer/panel_header";
 import { movementPercentRemaining } from "../farm_designer/move_to";
 import { isMobile } from "../screen_size";
+import { NavigationContext } from "../routes_helpers";
+import { NavigateFunction } from "react-router";
 
 export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
   state: NavBarState = {
@@ -53,6 +54,10 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
       this.setState({ documentTitle: document.title });
     }
   };
+
+  static contextType = NavigationContext;
+  context!: React.ContextType<typeof NavigationContext>;
+  navigate: NavigateFunction = url => { this.context(url as string); };
 
   get isStaff() { return this.props.authAud == "staff"; }
 
@@ -191,10 +196,9 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
   SetupButton = () => {
     const firmwareHardware = this.props.apiFirmwareValue;
     const { wizardStepResults, device } = this.props;
-    const navigate = useNavigate();
     return !device.body.setup_completed_at
       ? <a className={"setup-button"}
-        onClick={() => { navigate(Path.setup()); }}>
+        onClick={() => { this.navigate(Path.setup()); }}>
         {t("Setup")}
         {!isMobile() &&
           `: ${setupProgressString(wizardStepResults, { firmwareHardware })}`}

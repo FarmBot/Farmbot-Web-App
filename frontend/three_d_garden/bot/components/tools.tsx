@@ -22,6 +22,10 @@ import {
 } from "../../../farm_designer/map/tool_graphics/all_tools";
 import { Xyz } from "farmbot";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
+import { WateringAnimations } from "./watering_animations";
+import { useNavigate } from "react-router";
+import { Path } from "../../../internal_urls";
+import { setPanelOpen } from "../../../farm_designer/panel_header";
 
 type Toolbay3 = GLTF & {
   nodes: {
@@ -66,9 +70,11 @@ export interface ToolsProps {
   config: Config;
   toolSlots?: SlotWithTool[];
   mountedToolName?: string | undefined;
+  dispatch?: Function;
 }
 
 interface ConvertedTools {
+  id?: number | undefined;
   x: number;
   y: number;
   z: number;
@@ -84,6 +90,7 @@ export const convertSlotsWithTools =
       const toolName = reduceToolName(swt.tool?.body.name);
       if (toolName == ToolName.seedTrough) { troughIndex++; }
       return {
+        id: swt.toolSlot.body.id,
         x: swt.toolSlot.body.x,
         y: swt.toolSlot.body.y,
         z: swt.toolSlot.body.z,
@@ -143,17 +150,26 @@ export const Tools = (props: ToolsProps) => {
     children?: React.ReactNode;
     toolPulloutDirection: ToolPulloutDirection;
     mounted: boolean;
+    id: number | undefined;
+    inToolbay: boolean;
   }
 
   const ToolbaySlot = (slotProps: ToolbaySlotProps) => {
     const { position, children, toolPulloutDirection, mounted } = slotProps;
     const rotationMultiplier = rotationFactor(toolPulloutDirection);
-    return <Group name={"slot"}
+    const navigate = useNavigate();
+    return <Group name={slotProps.inToolbay ? "slot" : "utm-tool"}
       position={[
         position.x,
         position.y,
         position.z,
-      ]}>
+      ]}
+      onClick={() => {
+        if (slotProps.id && !isUndefined(props.dispatch)) {
+          props.dispatch(setPanelOpen(true));
+          navigate(Path.toolSlots(slotProps.id));
+        }
+      }}>
       {rotationMultiplier &&
         <Group name={"bay"}
           rotation={[0, 0, rotationMultiplier * Math.PI / 2]}>
@@ -179,14 +195,16 @@ export const Tools = (props: ToolsProps) => {
   }
 
   const Tool = (toolProps: ToolProps) => {
-    const { toolPulloutDirection } = toolProps;
-    const mounted = toolProps.inToolbay && toolProps.toolName == mountedToolName;
+    const { toolPulloutDirection, inToolbay, id } = toolProps;
+    const mounted = inToolbay && toolProps.toolName == mountedToolName;
     const position = {
       x: threeSpace(toolProps.x, bedLengthOuter) + bedXOffset,
       y: threeSpace(toolProps.y, bedWidthOuter) + bedYOffset,
-      z: zZero - zDir * toolProps.z + (toolProps.inToolbay ? 0 : (utmHeight / 2 - 15)),
+      z: zZero - zDir * toolProps.z + (inToolbay ? 0 : (utmHeight / 2 - 15)),
     };
-    const common = { mounted, position, toolPulloutDirection };
+    const common: ToolbaySlotProps = {
+      mounted, position, toolPulloutDirection, id, inToolbay,
+    };
     switch (toolProps.toolName) {
       case ToolName.rotaryTool:
         return <ToolbaySlot {...common}>
@@ -203,14 +221,19 @@ export const Tools = (props: ToolsProps) => {
         return <ToolbaySlot {...common}>
           <Mesh name={"wateringNozzle"}
             position={[
-              5,
-              10,
-              16,
+              7.5,
+              10.5,
+              15,
             ]}
             rotation={[0, 0, 2.094 + Math.PI / 2]}
             scale={1000}
             geometry={wateringNozzle.nodes[PartName.wateringNozzle].geometry}
             material={wateringNozzle.materials.PaletteMaterial001} />
+          {!inToolbay && props.config.waterFlow &&
+            <WateringAnimations
+              waterFlow={props.config.waterFlow}
+              botPositionZ={botPosition.z}
+              soilHeight={props.config.soilHeight} />}
         </ToolbaySlot>;
       case ToolName.seedBin:
         return <ToolbaySlot {...common}>

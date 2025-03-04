@@ -1,6 +1,5 @@
 const mockSyncThunk = jest.fn();
 jest.mock("../devices/actions", () => ({ sync: () => mockSyncThunk }));
-jest.mock("../farm_designer/map/actions", () => ({ unselectPlant: jest.fn() }));
 
 import { fakeState } from "../__test_support__/fake_state";
 const mockState = fakeState();
@@ -16,10 +15,10 @@ import {
   HotKey, HotKeys, HotKeysProps, hotkeysWithActions, toggleHotkeyHelpOverlay,
 } from "../hotkeys";
 import { sync } from "../devices/actions";
-import { unselectPlant } from "../farm_designer/map/actions";
 import { save } from "../api/crud";
 import { Actions } from "../constants";
 import { Path } from "../internal_urls";
+import { mockDispatch } from "../__test_support__/fake_dispatch";
 
 describe("hotkeysWithActions()", () => {
   beforeEach(() => {
@@ -59,14 +58,12 @@ describe("hotkeysWithActions()", () => {
     hotkeys[HotKey.addEvent].onKeyDown?.(e);
     expect(navigate).toHaveBeenCalledWith(Path.farmEvents("add"));
 
-    hotkeysSettingsPath[HotKey.backToPlantOverview].onKeyDown?.(e);
-    expect(navigate).toHaveBeenCalledWith(Path.plants());
-    expect(unselectPlant).toHaveBeenCalled();
-    jest.clearAllMocks();
-    const hotkeysPhotosPath = hotkeysWithActions(navigate, dispatch, "photos");
-    hotkeysPhotosPath[HotKey.backToPlantOverview].onKeyDown?.(e);
-    expect(navigate).not.toHaveBeenCalled();
-    expect(unselectPlant).not.toHaveBeenCalled();
+    const hotkeysWithDispatch =
+      hotkeysWithActions(navigate, mockDispatch(dispatch), "");
+    hotkeysWithDispatch[HotKey.closePanel].onKeyDown?.(e);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_PANEL_OPEN, payload: false,
+    });
   });
 });
 

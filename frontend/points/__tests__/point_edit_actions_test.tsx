@@ -15,10 +15,10 @@ import {
   EditPointRadius, EditPointRadiusProps,
   EditPointColor, EditPointColorProps, updatePoint, EditPointName,
   EditPointNameProps,
-  AdditionalWeedProperties,
-  AdditionalWeedPropertiesProps,
   EditPointSoilHeightTag,
   EditPointSoilHeightTagProps,
+  EditWeedProperties,
+  EditWeedPropertiesProps,
 } from "../point_edit_actions";
 import {
   fakePoint, fakeWeed,
@@ -140,26 +140,32 @@ describe("<EditPointSoilHeightTag />", () => {
 });
 
 describe("<AdditionalWeedProperties />", () => {
-  const fakeProps = (): AdditionalWeedPropertiesProps => ({
-    point: fakeWeed(),
+  const fakeProps = (): EditWeedPropertiesProps => ({
+    weed: fakeWeed(),
     updatePoint: jest.fn(),
+    botOnline: true,
+    dispatch: jest.fn(),
+    defaultAxes: "XY",
+    arduinoBusy: false,
+    currentBotLocation: { x: 10, y: 20, z: 30 },
+    movementState: fakeMovementState(),
   });
 
   it("renders unknown source", () => {
     const p = fakeProps();
-    p.point.body.meta = {
+    p.weed.body.meta = {
       meta_key: "meta value", created_by: undefined, key: undefined,
       color: "red", type: "weed",
     };
-    const wrapper = mount(<AdditionalWeedProperties {...p} />);
+    const wrapper = mount(<EditWeedProperties {...p} />);
     expect(wrapper.text()).toContain("unknown");
     expect(wrapper.text()).toContain("meta value");
   });
 
   it("changes method", () => {
     const p = fakeProps();
-    p.point.body.meta = { removal_method: "automatic" };
-    const wrapper = shallow(<AdditionalWeedProperties {...p} />);
+    p.weed.body.meta = { removal_method: "automatic" };
+    const wrapper = shallow(<EditWeedProperties {...p} />);
     wrapper.find("input").last().simulate("change");
     expect(p.updatePoint).toHaveBeenCalledWith({
       meta: { removal_method: "manual" }

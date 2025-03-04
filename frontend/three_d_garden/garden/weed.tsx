@@ -6,18 +6,30 @@ import { Group, MeshPhongMaterial } from "../components";
 import { Image, Billboard, Sphere } from "@react-three/drei";
 import { DoubleSide } from "three";
 import { zero as zeroFunc, threeSpace } from "../helpers";
+import { useNavigate } from "react-router";
+import { Path } from "../../internal_urls";
+import { isUndefined } from "lodash";
+import { setPanelOpen } from "../../farm_designer/panel_header";
 
 export interface WeedProps {
   weed: TaggedWeedPointer;
   config: Config;
+  dispatch?: Function;
 }
 
 export const Weed = (props: WeedProps) => {
   const { weed, config } = props;
+  const navigate = useNavigate();
   return <Group name={"weed"}
+    onClick={() => {
+      if (weed.body.id && !isUndefined(props.dispatch)) {
+        props.dispatch(setPanelOpen(true));
+        navigate(Path.weeds(weed.body.id));
+      }
+    }}
     position={[
-      threeSpace(weed.body.x, config.bedLengthOuter),
-      threeSpace(weed.body.y, config.bedWidthOuter),
+      threeSpace(weed.body.x, config.bedLengthOuter) + config.bedXOffset,
+      threeSpace(weed.body.y, config.bedWidthOuter) + config.bedYOffset,
       zeroFunc(config).z - config.soilHeight,
     ]}>
     <Billboard follow={true}
