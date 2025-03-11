@@ -28,6 +28,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { dropPlant } from "../../../farm_designer/map/layers/plants/plant_actions";
 import { Path } from "../../../internal_urls";
 import { fakeAddPlantProps } from "../../../__test_support__/fake_props";
+import { Actions } from "../../../constants";
 
 describe("<Bed />", () => {
   const fakeProps = (): BedProps => ({
@@ -63,6 +64,42 @@ describe("<Bed />", () => {
     }));
   });
 
+  it("adds a drawn point", () => {
+    location.pathname = Path.mock(Path.points("add"));
+    const p = fakeProps();
+    const addPlantProps = fakeAddPlantProps([]);
+    addPlantProps.designer.drawnPoint = {
+      cx: 1, cy: 2, z: 3, r: 150, color: "green",
+    };
+    p.addPlantProps = addPlantProps;
+    render(<Bed {...p} />);
+    const soil = screen.getAllByText("soil")[0];
+    fireEvent.click(soil);
+    expect(p.addPlantProps.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_DRAWN_POINT_DATA,
+      payload: { cx: 1360, cy: 660, r: 150 },
+    });
+  });
+
+  it("adds a drawn weed", () => {
+    location.pathname = Path.mock(Path.weeds("add"));
+    mockIsMobile = false;
+    mockRef.current = { position: { set: mockSetPosition } };
+    const p = fakeProps();
+    const addPlantProps = fakeAddPlantProps([]);
+    addPlantProps.designer.drawnWeed = {
+      cx: 1, cy: 2, z: 3, r: 25, color: "red",
+    };
+    p.addPlantProps = addPlantProps;
+    render(<Bed {...p} />);
+    const soil = screen.getAllByText("soil")[0];
+    fireEvent.click(soil);
+    expect(p.addPlantProps.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_DRAWN_WEED_DATA,
+      payload: { cx: 1360, cy: 660, r: 25 },
+    });
+  });
+
   it("updates pointer plant position", () => {
     location.pathname = Path.mock(Path.cropSearch("mint"));
     mockIsMobile = false;
@@ -72,7 +109,7 @@ describe("<Bed />", () => {
     render(<Bed {...p} />);
     const soil = screen.getAllByText("soil")[0];
     fireEvent.pointerMove(soil);
-    expect(mockSetPosition).toHaveBeenCalledWith(0, 0, -75);
+    expect(mockSetPosition).toHaveBeenCalledWith(0, 0, 0);
   });
 
   it("handles missing ref", () => {

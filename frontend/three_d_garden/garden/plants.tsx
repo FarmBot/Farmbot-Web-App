@@ -91,6 +91,7 @@ export interface ThreeDPlantProps {
   config: Config;
   hoveredPlant: number | undefined;
   dispatch?: Function;
+  visible?: boolean;
 }
 
 export const ThreeDPlant = (props: ThreeDPlantProps) => {
@@ -114,7 +115,7 @@ export const ThreeDPlant = (props: ThreeDPlantProps) => {
       </Text>
       : <Image url={plant.icon} scale={plant.size} name={"" + i}
         onClick={() => {
-          if (plant.id && !isUndefined(props.dispatch)) {
+          if (plant.id && !isUndefined(props.dispatch) && props.visible) {
             props.dispatch(setPanelOpen(true));
             navigate(Path.plants(plant.id));
           }

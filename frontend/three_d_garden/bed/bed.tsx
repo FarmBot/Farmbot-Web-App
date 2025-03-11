@@ -1,6 +1,7 @@
 import React from "react";
 import {
   Billboard, Box, Detailed, Extrude, useTexture, Image,
+  Line,
 } from "@react-three/drei";
 import {
   DoubleSide, Path as LinePath, Shape, RepeatWrapping, Group as GroupType,
@@ -25,6 +26,11 @@ import { ThreeEvent } from "@react-three/fiber";
 import { Path } from "../../internal_urls";
 import { findIcon } from "../../crops/find";
 import { DEFAULT_PLANT_RADIUS } from "../../farm_designer/plant";
+import { DrawnPoint, getDrawnPointData } from "../garden";
+import { Actions } from "../../constants";
+
+const HOVER_OBJECT_MODES = [Mode.clickToAdd, Mode.createPoint, Mode.createWeed];
+export const DRAW_POINT_MODES = [Mode.createPoint, Mode.createWeed];
 
 const soil = (
   Type: typeof LinePath | typeof Shape,
@@ -162,28 +168,37 @@ export const Bed = (props: BedProps) => {
     return <Extrude name={"soil"}
       onClick={(e: ThreeEvent<MouseEvent>) => {
         e.stopPropagation();
-        if (addPlantProps && getMode() == Mode.clickToAdd) {
-          dropPlant({
-            gardenCoords: getGardenPosition(e),
-            gridSize: addPlantProps.gridSize,
-            dispatch: addPlantProps.dispatch,
-            getConfigValue: addPlantProps.getConfigValue,
-            plants: addPlantProps.plants,
-            curves: addPlantProps.curves,
-            designer: addPlantProps.designer,
-          });
+        if (addPlantProps) {
+          if (getMode() == Mode.clickToAdd) {
+            dropPlant({
+              gardenCoords: getGardenPosition(e),
+              gridSize: addPlantProps.gridSize,
+              dispatch: addPlantProps.dispatch,
+              getConfigValue: addPlantProps.getConfigValue,
+              plants: addPlantProps.plants,
+              curves: addPlantProps.curves,
+              designer: addPlantProps.designer,
+            });
+          }
+          if (DRAW_POINT_MODES.includes(getMode())) {
+            const center = getGardenPosition(e);
+            const point = getDrawnPointData(addPlantProps.designer, props.config);
+            addPlantProps.dispatch({
+              type: getMode() == Mode.createWeed
+                ? Actions.SET_DRAWN_WEED_DATA
+                : Actions.SET_DRAWN_POINT_DATA,
+              payload: { cx: center.x, cy: center.y, r: point.radius },
+            });
+          }
         }
       }}
       onPointerMove={(e: ThreeEvent<MouseEvent>) => {
         if (addPlantProps
-          && getMode() == Mode.clickToAdd
+          && HOVER_OBJECT_MODES.includes(getMode())
           && !isMobile()
           && pointerPlantRef.current) {
           const position = get3DPosition(getGardenPosition(e));
-          pointerPlantRef.current.position.set(
-            position.x,
-            position.y,
-            zZero(props.config) - props.config.soilHeight + iconSize / 2);
+          pointerPlantRef.current.position.set(position.x, position.y, 0);
         }
       }}
       castShadow={true}
@@ -200,6 +215,10 @@ export const Bed = (props: BedProps) => {
       {children}
     </Extrude>;
   };
+
+  const drawnPoint = props.addPlantProps &&
+    getDrawnPointData(props.addPlantProps.designer, props.config);
+  const soilZ = zZero(props.config) - props.config.soilHeight;
 
   return <Group name={"bed-group"}>
     <Detailed distances={detailLevels(props.config)}>
@@ -274,16 +293,41 @@ export const Bed = (props: BedProps) => {
       ]}>
       <MeshPhongMaterial map={legWoodTexture} color={bedColor} side={DoubleSide} />
     </Box>
-    {getMode() == Mode.clickToAdd && !isMobile() &&
-      <Billboard ref={pointerPlantRef}
-        follow={true} position={[0, 0, 0]}>
-        <Image
-          name={"pointerPlant"}
-          url={findIcon(Path.getCropSlug())}
-          scale={iconSize}
-          transparent={true}
-          renderOrder={1} />
-      </Billboard>}
+    {HOVER_OBJECT_MODES.includes(getMode()) &&
+      !isMobile() &&
+      <Group ref={pointerPlantRef} position={[0, 0, 0]}>
+        <Group position={[0, 0, soilZ]}>
+          {DRAW_POINT_MODES.includes(getMode()) && props.addPlantProps &&
+            <DrawnPoint
+              config={props.config}
+              designer={props.addPlantProps.designer}
+              usePosition={false} />}
+          {getMode() == Mode.clickToAdd &&
+            <Billboard follow={true} position={[0, 0, iconSize / 2]}>
+              <Image
+                name={"pointerPlant"}
+                url={findIcon(Path.getCropSlug())}
+                scale={iconSize}
+                transparent={true}
+                renderOrder={1} />
+            </Billboard>}
+        </Group>
+      </Group>}
+    {DRAW_POINT_MODES.includes(getMode()) &&
+      !isMobile() &&
+      pointerPlantRef.current &&
+      drawnPoint &&
+      <Line
+        color={"gray"}
+        lineWidth={10}
+        points={[
+          [
+            pointerPlantRef.current.position.x,
+            pointerPlantRef.current.position.y,
+            soilZ,
+          ],
+          drawnPoint.position,
+        ]} />}
     <Detailed distances={detailLevels(props.config)}>
       <Soil addPlantProps={props.addPlantProps}>
         <MeshPhongMaterial map={soilTexture} color={soilColor}
