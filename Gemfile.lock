@@ -141,12 +141,12 @@ GEM
       google-apis-core (>= 0.15.0, < 2.a)
     google-apis-storage_v1 (0.50.0)
       google-apis-core (>= 0.15.0, < 2.a)
-    google-cloud-core (1.7.1)
+    google-cloud-core (1.8.0)
       google-cloud-env (>= 1.0, < 3.a)
       google-cloud-errors (~> 1.0)
     google-cloud-env (2.2.1)
       faraday (>= 1.0, < 3.a)
-    google-cloud-errors (1.4.0)
+    google-cloud-errors (1.5.0)
     google-cloud-storage (1.55.0)
       addressable (~> 2.8)
       digest-crc (~> 0.4)
@@ -248,7 +248,7 @@ GEM
       hashie (~> 4.1)
       multi_json (~> 1.15)
     racc (1.8.1)
-    rack (2.2.11)
+    rack (2.2.13)
     rack-attack (6.7.0)
       rack (>= 1.0, < 4)
     rack-cors (2.0.2)
@@ -376,7 +376,7 @@ GEM
       rails
     warden (1.2.9)
       rack (>= 2.0.9)
-    webmock (3.25.0)
+    webmock (3.25.1)
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
@@ -439,4 +439,4 @@ RUBY VERSION
    ruby 3.3.7p123
 
 BUNDLED WITH
-   2.6.2
+   2.6.5
