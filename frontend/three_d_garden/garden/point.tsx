@@ -1,9 +1,9 @@
 import React from "react";
-import { TaggedGenericPointer } from "farmbot";
+import { TaggedGenericPointer, Xyz } from "farmbot";
 import { Config } from "../config";
 import { Group, MeshPhongMaterial } from "../components";
 import { Cylinder, Sphere } from "@react-three/drei";
-import { DoubleSide, Vector3 } from "three";
+import { DoubleSide } from "three";
 import { zero as zeroFunc, threeSpace } from "../helpers";
 import { useNavigate } from "react-router";
 import { Path } from "../../internal_urls";
@@ -13,6 +13,7 @@ import { DesignerState } from "../../farm_designer/interfaces";
 import { getMode } from "../../farm_designer/map/util";
 import { Mode } from "../../farm_designer/map/interfaces";
 import { WeedBase } from ".";
+import { HOVER_OBJECT_MODES } from "../constants";
 
 export interface PointProps {
   point: TaggedGenericPointer;
@@ -26,43 +27,22 @@ export const Point = (props: PointProps) => {
   return <PointBase
     pointName={"" + point.body.id}
     alpha={1}
-    position={new Vector3(
-      threeSpace(point.body.x, config.bedLengthOuter) + config.bedXOffset,
-      threeSpace(point.body.y, config.bedWidthOuter) + config.bedYOffset,
-      zeroFunc(config).z - config.soilHeight,
-    )}
+    position={{
+      x: point.body.x,
+      y: point.body.y,
+      z: -config.soilHeight,
+    }}
     onClick={() => {
-      if (point.body.id && !isUndefined(props.dispatch)) {
+      if (point.body.id && !isUndefined(props.dispatch) &&
+        !HOVER_OBJECT_MODES.includes(getMode())) {
         props.dispatch(setPanelOpen(true));
         navigate(Path.points(point.body.id));
       }
     }}
+    config={config}
     color={point.body.meta.color}
     radius={point.body.radius}
   />;
-};
-
-export const getDrawnPointData = (designer: DesignerState, config: Config) => {
-  const { drawnPoint, drawnWeed } = designer;
-  const point = getMode() == Mode.createWeed ? drawnWeed : drawnPoint;
-  const xyz = {
-    x: point?.cx || 0,
-    y: point?.cy || 0,
-    z: point?.z || -config.soilHeight,
-  };
-  const color = point?.color || "green";
-  const radius = point?.r || 15;
-  const position = new Vector3(
-    threeSpace(xyz.x, config.bedLengthOuter) + config.bedXOffset,
-    threeSpace(xyz.y, config.bedWidthOuter) + config.bedYOffset,
-    zeroFunc(config).z + xyz.z,
-  );
-  const data = {
-    position,
-    color,
-    radius,
-  };
-  return data;
 };
 
 export interface DrawnPointProps {
@@ -73,33 +53,46 @@ export interface DrawnPointProps {
 
 export const DrawnPoint = (props: DrawnPointProps) => {
   const { config } = props;
-  const data = getDrawnPointData(props.designer, config);
+  const { drawnPoint } = props.designer;
+  const drawnPointPosition =
+    drawnPoint && !isUndefined(drawnPoint.cx) && !isUndefined(drawnPoint.cy)
+      ? { x: drawnPoint.cx, y: drawnPoint.cy, z: drawnPoint.z }
+      : undefined;
+  if (props.usePosition && isUndefined(drawnPointPosition)) { return <></>; }
   const Base = getMode() == Mode.createWeed ? WeedBase : PointBase;
   return <Base
     pointName={"drawn-point"}
     alpha={0.5}
-    position={props.usePosition ? data.position : undefined}
-    color={data.color}
-    radius={data.radius} />;
+    position={props.usePosition ? drawnPointPosition : undefined}
+    color={drawnPoint?.color}
+    config={config}
+    radius={drawnPoint?.r || 0} />;
 };
 
 interface PointBaseProps {
   pointName: string;
-  position?: Vector3;
+  position?: Record<Xyz, number>;
   onClick?: () => void;
   color: string | undefined;
   radius: number;
   alpha: number;
+  config: Config;
 }
 
 const PointBase = (props: PointBaseProps) => {
   const RADIUS = 25;
   const HEIGHT = 100;
-
+  const { config } = props;
   return <Group
     name={"point-" + props.pointName}
     rotation={[Math.PI / 2, 0, 0]}
-    position={props.position}>
+    position={props.position
+      ? [
+        threeSpace(props.position.x, config.bedLengthOuter) + config.bedXOffset,
+        threeSpace(props.position.y, config.bedWidthOuter) + config.bedYOffset,
+        zeroFunc(config).z + props.position.z,
+      ]
+      : [0, 0, 0]}>
     <Group name={"marker"}
       onClick={props.onClick}>
       <Cylinder

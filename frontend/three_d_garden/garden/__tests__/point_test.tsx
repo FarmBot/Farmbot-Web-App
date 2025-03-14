@@ -1,14 +1,15 @@
 import React from "react";
 import { fireEvent, render } from "@testing-library/react";
-import { DrawnPoint, DrawnPointProps, getDrawnPointData, Point, PointProps } from "../point";
+import { DrawnPoint, DrawnPointProps, Point, PointProps } from "../point";
 import { INITIAL } from "../../config";
 import { clone } from "lodash";
 import { fakePoint } from "../../../__test_support__/fake_state/resources";
 import { Path } from "../../../internal_urls";
 import { Actions } from "../../../constants";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
-import { fakeDesignerState } from "../../../__test_support__/fake_designer_state";
-import { Vector3 } from "three";
+import {
+  fakeDesignerState, fakeDrawnPoint,
+} from "../../../__test_support__/fake_designer_state";
 
 describe("<Point />", () => {
   const fakeProps = (): PointProps => ({
@@ -46,30 +47,10 @@ describe("<Point />", () => {
   });
 });
 
-describe("getDrawnPointData()", () => {
-  it("returns point data", () => {
-    location.pathname = Path.mock(Path.weeds("add"));
-    const designer = fakeDesignerState();
-    designer.drawnWeed = {
-      cx: 1, cy: 2, z: 3, color: "red", r: 25,
-    };
-    const config = clone(INITIAL);
-    const expectedPosition = new Vector3(-1360 + 1, -660 + 2, 400 + 3);
-    expect(getDrawnPointData(designer, config)).toEqual({
-      position: expectedPosition, radius: 25, color: "red",
-    });
-  });
-});
-
 describe("<DrawnPoint />", () => {
   const fakeProps = (): DrawnPointProps => {
     const designer = fakeDesignerState();
-    designer.drawnWeed = {
-      cx: 1, cy: 2, z: 3, color: "red", r: 25,
-    };
-    designer.drawnPoint = {
-      cx: 10, cy: 20, z: 30, color: "green", r: 15,
-    };
+    designer.drawnPoint = fakeDrawnPoint();
     const config = clone(INITIAL);
     return {
       designer,
@@ -78,14 +59,36 @@ describe("<DrawnPoint />", () => {
     };
   };
 
+  it("draws point", () => {
+    location.pathname = Path.mock(Path.points("add"));
+    const p = fakeProps();
+    p.designer.drawnPoint = undefined;
+    const { container } = render(<DrawnPoint {...p} />);
+    expect(container).toContainHTML("position=\"0,0,0\"");
+  });
+
   it("draws weed", () => {
     location.pathname = Path.mock(Path.weeds("add"));
     const p = fakeProps();
     const { container } = render(<DrawnPoint {...p} />);
     expect(container).toContainHTML("generic-weed");
     expect(container).toContainHTML("position=\"0,0,0\"");
-    expect(container).toContainHTML("scale=\"25\"");
-    expect(container).toContainHTML("color=\"red\"");
+    expect(container).toContainHTML("scale=\"30\"");
+    expect(container).toContainHTML("color=\"green\"");
+    expect(container).toContainHTML("opacity=\"0.25\"");
+  });
+
+  it("draws weed: no radius", () => {
+    location.pathname = Path.mock(Path.weeds("add"));
+    const p = fakeProps();
+    const point = fakeDrawnPoint();
+    point.r = 0;
+    p.designer.drawnPoint = point;
+    const { container } = render(<DrawnPoint {...p} />);
+    expect(container).toContainHTML("generic-weed");
+    expect(container).toContainHTML("position=\"0,0,0\"");
+    expect(container).toContainHTML("scale=\"50\"");
+    expect(container).toContainHTML("color=\"green\"");
     expect(container).toContainHTML("opacity=\"0.25\"");
   });
 });

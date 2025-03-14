@@ -18,6 +18,7 @@ export interface PlantGridState {
   cameraView: boolean;
   previous: string;
   autoPreview: boolean;
+  isOpen: boolean;
 }
 
 export interface PlantGridProps {
@@ -32,6 +33,7 @@ export interface PlantGridProps {
   z?: number;
   meta?: Record<string, string | undefined>;
   designer?: DesignerState;
+  collapsible?: boolean;
 }
 
 export interface PlantGridInitOption {

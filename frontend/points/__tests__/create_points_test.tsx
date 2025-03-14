@@ -3,6 +3,8 @@ jest.mock("../../api/crud", () => ({ initSave: jest.fn() }));
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
+  createPoint,
+  CreatePointProps,
   RawCreatePoints as CreatePoints,
   CreatePointsProps,
   mapStateToProps,
@@ -11,30 +13,79 @@ import { initSave } from "../../api/crud";
 import { Actions } from "../../constants";
 import { clickButton } from "../../__test_support__/helpers";
 import { fakeState } from "../../__test_support__/fake_state";
-import { DrawnPointPayl } from "../../farm_designer/interfaces";
 import { inputEvent } from "../../__test_support__/fake_html_events";
-import { cloneDeep } from "lodash";
 import { Path } from "../../internal_urls";
-
-const FAKE_POINT: DrawnPointPayl =
-  ({ name: "My Point", cx: 13, cy: 22, z: 0, r: 345, color: "red" });
+import { fakeDrawnPoint } from "../../__test_support__/fake_designer_state";
+import { success } from "../../toast/toast";
+import { mountWithContext } from "../../__test_support__/mount_with_context";
 
 describe("mapStateToProps", () => {
   it("maps state to props: drawn point", () => {
     const state = fakeState();
-    state.resources.consumers.farm_designer.drawnPoint = FAKE_POINT;
+    state.resources.consumers.farm_designer.drawnPoint = fakeDrawnPoint();
     const props = mapStateToProps(state);
-    expect(props.drawnPoint?.cx).toEqual(13);
-    expect(props.drawnPoint?.cy).toEqual(22);
+    expect(props.drawnPoint?.cx).toEqual(10);
+    expect(props.drawnPoint?.cy).toEqual(20);
+  });
+});
+
+describe("createPoint()", () => {
+  const fakeProps = (): CreatePointProps => ({
+    navigate: jest.fn(),
+    dispatch: jest.fn(),
+    drawnPoint: fakeDrawnPoint(),
   });
 
-  it("maps state to props: drawn weed", () => {
-    const state = fakeState();
-    state.resources.consumers.farm_designer.drawnPoint = undefined;
-    state.resources.consumers.farm_designer.drawnWeed = FAKE_POINT;
-    const props = mapStateToProps(state);
-    expect(props.drawnPoint?.cx).toEqual(13);
-    expect(props.drawnPoint?.cy).toEqual(22);
+  it("creates point", () => {
+    location.pathname = Path.mock(Path.points("add"));
+    const p = fakeProps();
+    const point = fakeDrawnPoint();
+    point.name = "";
+    point.cx = undefined;
+    point.cy = undefined;
+    point.at_soil_level = true;
+    p.drawnPoint = point;
+    createPoint(p);
+    expect(initSave).toHaveBeenCalledWith("Point", {
+      meta: {
+        color: "green", created_by: "farm-designer", type: "point",
+        at_soil_level: "true",
+      },
+      name: "Created Point",
+      pointer_type: "GenericPointer",
+      plant_stage: "active",
+      radius: 30, x: 0, y: 0, z: 0,
+    });
+    expect(success).toHaveBeenCalledWith("Point created.");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_DRAWN_POINT_DATA,
+      payload: undefined,
+    });
+  });
+
+  it("creates weed", () => {
+    location.pathname = Path.mock(Path.weeds("add"));
+    const p = fakeProps();
+    const point = fakeDrawnPoint();
+    point.name = "";
+    point.cx = undefined;
+    point.cy = undefined;
+    p.drawnPoint = point;
+    createPoint(p);
+    expect(initSave).toHaveBeenCalledWith("Point", {
+      meta: {
+        color: "green", created_by: "farm-designer", type: "weed",
+      },
+      name: "Created Weed",
+      pointer_type: "Weed",
+      plant_stage: "active",
+      radius: 30, x: 0, y: 0, z: 0,
+    });
+    expect(success).toHaveBeenCalledWith("Weed created.");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_DRAWN_POINT_DATA,
+      payload: undefined,
+    });
   });
 });
 
@@ -51,44 +102,44 @@ describe("<CreatePoints />", () => {
   });
 
   it("renders for points", () => {
-    location.pathname = Path.mock(Path.designer());
-    const wrapper = mount(<CreatePoints {...fakeProps()} />);
+    location.pathname = Path.mock(Path.points("add"));
+    const p = fakeProps();
+    p.drawnPoint = fakeDrawnPoint();
+    const wrapper = mount(<CreatePoints {...p} />);
     ["add point", "x", "y", "z", "radius"]
       .map(string => expect(wrapper.text().toLowerCase()).toContain(string));
   });
 
   it("renders for weeds", () => {
     location.pathname = Path.mock(Path.weeds("add"));
-    const wrapper = mount(<CreatePoints {...fakeProps()} />);
+    const p = fakeProps();
+    p.drawnPoint = fakeDrawnPoint();
+    const wrapper = mount(<CreatePoints {...p} />);
     ["add weed", "x", "y", "z", "radius"]
       .map(string => expect(wrapper.text().toLowerCase()).toContain(string));
   });
 
   it("updates specific fields", () => {
     const p = fakeProps();
-    p.drawnPoint = FAKE_POINT;
+    p.drawnPoint = fakeDrawnPoint();
     const wrapper = mount<CreatePoints>(<CreatePoints {...p} />);
     wrapper.instance().updateValue("color")(inputEvent("cheerful hue"));
     expect(wrapper.instance().props.drawnPoint).toBeTruthy();
-    const expected = cloneDeep(FAKE_POINT);
-    expected.color = "cheerful hue";
     expect(wrapper.instance().props.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_DRAWN_POINT_DATA,
-      payload: expected,
+      payload: { ...p.drawnPoint, color: "cheerful hue" },
     });
   });
 
   it("updates radius", () => {
     const p = fakeProps();
-    p.drawnPoint = FAKE_POINT;
+    p.drawnPoint = fakeDrawnPoint();
     const wrapper = mount<CreatePoints>(<CreatePoints {...p} />);
     wrapper.instance().updateValue("r")(inputEvent("100"));
     expect(wrapper.instance().props.drawnPoint).toBeTruthy();
-    const expected = cloneDeep(FAKE_POINT);
-    expected.r = 100;
     expect(wrapper.instance().props.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_DRAWN_POINT_DATA,
-      payload: expected,
+      payload: { ...p.drawnPoint, r: 100 },
     });
   });
 
@@ -100,129 +151,100 @@ describe("<CreatePoints />", () => {
     expect(p.dispatch).not.toHaveBeenCalled();
   });
 
-  it("loads default point data", () => {
-    const p = fakeProps();
-    p.drawnPoint = FAKE_POINT;
-    const i = new CreatePoints(p);
-    i.loadDefaultPoint();
-    expect(i.props.dispatch).toHaveBeenCalledWith({
-      type: Actions.SET_DRAWN_POINT_DATA,
-      payload: {
-        name: "Created Point", color: "green",
-        cx: 13, cy: 22, z: 0, r: 15
-      },
-    });
-  });
-
   it("adds soil height flag", () => {
     location.pathname = Path.mock(Path.points("add"));
     const p = fakeProps();
-    p.drawnPoint = { cx: 0, cy: 0, z: 0, r: 100 };
+    p.drawnPoint = fakeDrawnPoint();
     const panel = mount<CreatePoints>(<CreatePoints {...p} />);
-    const wrapper = shallow(panel.instance().PointProperties());
+    const wrapper = shallow(panel.instance()
+      .PointProperties({ drawnPoint: p.drawnPoint }));
     wrapper.find("input").last().simulate("change", {
       currentTarget: { checked: true }
     });
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_DRAWN_POINT_DATA,
-      payload: {
-        cx: 0, cy: 0, z: 0, r: 100, color: "green", at_soil_level: true,
-      }
+      payload: { ...p.drawnPoint, at_soil_level: true }
     });
   });
 
   it("creates point with soil height flag", () => {
     location.pathname = Path.mock(Path.points("add"));
     const p = fakeProps();
-    p.drawnPoint = FAKE_POINT;
+    const point = fakeDrawnPoint();
+    point.at_soil_level = true;
+    p.drawnPoint = point;
     const wrapper = mount<CreatePoints>(<CreatePoints {...p} />);
-    wrapper.setState({ at_soil_level: true });
     wrapper.update();
     clickButton(wrapper, 0, "save");
     expect(initSave).toHaveBeenCalledWith("Point", {
       meta: {
-        color: "red", created_by: "farm-designer", type: "point",
+        color: "green", created_by: "farm-designer", type: "point",
         at_soil_level: "true",
       },
-      name: "My Point",
-      pointer_type: "GenericPointer",
-      plant_stage: "active",
-      radius: 345, x: 13, y: 22, z: 0,
-    });
-  });
-
-  it.each<[string, string]>([
-    ["point", Path.points("add")],
-    ["weed", Path.weeds("add")],
-  ])("uses current location: %s", (type, path) => {
-    location.pathname = Path.mock(path);
-    const p = fakeProps();
-    p.drawnPoint = FAKE_POINT;
-    p.botPosition = { x: 1, y: 2, z: 3 };
-    const wrapper = mount<CreatePoints>(<CreatePoints {...p} />);
-    wrapper.setState({ cx: 10, cy: 20, r: 30 });
-    clickButton(wrapper, 1, "", { icon: "fa-crosshairs" });
-    expect(p.dispatch).toHaveBeenCalledWith({
-      payload: { color: "red", cx: 1, cy: 2, z: 3, r: 30, name: "My Point" },
-      type: type == "point"
-        ? Actions.SET_DRAWN_POINT_DATA
-        : Actions.SET_DRAWN_WEED_DATA,
-    });
-    expect(wrapper.state()).toEqual({ cx: 1, cy: 2, z: 3, r: 30 });
-  });
-
-  it("doesn't use current location", () => {
-    location.pathname = Path.mock(Path.points("add"));
-    const p = fakeProps();
-    p.drawnPoint = FAKE_POINT;
-    p.botPosition = { x: undefined, y: undefined, z: undefined };
-    const wrapper = mount<CreatePoints>(<CreatePoints {...p} />);
-    wrapper.setState({ cx: 10, cy: 20, r: 30 });
-    jest.resetAllMocks();
-    clickButton(wrapper, 1, "", { icon: "fa-crosshairs" });
-    expect(p.dispatch).not.toHaveBeenCalled();
-    expect(wrapper.state()).toEqual({ cx: 10, cy: 20, r: 30 });
-  });
-
-  it("updates weed name", () => {
-    location.pathname = Path.mock(Path.weeds("add"));
-    const p = fakeProps();
-    p.drawnPoint = { cx: 0, cy: 0, z: 0, r: 100 };
-    const panel = mount<CreatePoints>(<CreatePoints {...p} />);
-    const wrapper = shallow(panel.instance().PointProperties());
-    wrapper.find("BlurableInput").first().simulate("commit", {
-      currentTarget: { value: "new name" }
-    });
-    expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.SET_DRAWN_WEED_DATA, payload: {
-        cx: 0, cy: 0, z: 0, r: 100, name: "new name", color: "red",
-      }
-    });
-  });
-
-  it("creates point", () => {
-    location.pathname = Path.mock(Path.points("add"));
-    const wrapper = mount(<CreatePoints {...fakeProps()} />);
-    wrapper.setState({ cx: 10, cy: 20, r: 30 });
-    clickButton(wrapper, 0, "save");
-    expect(initSave).toHaveBeenCalledWith("Point", {
-      meta: { color: "green", created_by: "farm-designer", type: "point" },
-      name: "Created Point",
+      name: "Fake Point",
       pointer_type: "GenericPointer",
       plant_stage: "active",
       radius: 30, x: 10, y: 20, z: 0,
     });
   });
 
-  it("creates weed", () => {
+  it.each<[string, string, string]>([
+    ["Created Point", "green", Path.points("add")],
+    ["Created Weed", "red", Path.weeds("add")],
+  ])("uses current location: %s %s %s", (pointName, color, path) => {
+    location.pathname = Path.mock(path);
+    const p = fakeProps();
+    p.drawnPoint = fakeDrawnPoint();
+    p.botPosition = { x: 1, y: 2, z: 3 };
+    const wrapper = mount<CreatePoints>(<CreatePoints {...p} />);
+    clickButton(wrapper, 1, "", { icon: "fa-crosshairs" });
+    expect(p.dispatch).toHaveBeenCalledWith({
+      payload: {
+        name: pointName,
+        cx: undefined, cy: undefined, z: 0, r: 0, color,
+        at_soil_level: false,
+      },
+      type: Actions.SET_DRAWN_POINT_DATA,
+    });
+  });
+
+  it("doesn't use current location", () => {
+    location.pathname = Path.mock(Path.points("add"));
+    const p = fakeProps();
+    p.drawnPoint = fakeDrawnPoint();
+    p.botPosition = { x: undefined, y: undefined, z: undefined };
+    const wrapper = mount<CreatePoints>(<CreatePoints {...p} />);
+    jest.resetAllMocks();
+    clickButton(wrapper, 1, "", { icon: "fa-crosshairs" });
+    expect(p.dispatch).not.toHaveBeenCalled();
+  });
+
+  it("updates weed name", () => {
     location.pathname = Path.mock(Path.weeds("add"));
-    const wrapper = mount(<CreatePoints {...fakeProps()} />);
-    wrapper.setState({ cx: 10, cy: 20, r: 30 });
+    const p = fakeProps();
+    p.drawnPoint = fakeDrawnPoint();
+    const panel = mount<CreatePoints>(<CreatePoints {...p} />);
+    const wrapper = shallow(panel.instance()
+      .PointProperties({ drawnPoint: p.drawnPoint }));
+    wrapper.find("BlurableInput").first().simulate("commit", {
+      currentTarget: { value: "new name" }
+    });
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_DRAWN_POINT_DATA,
+      payload: { ...p.drawnPoint, name: "new name" },
+    });
+  });
+
+  it("creates point", () => {
+    location.pathname = Path.mock(Path.points("add"));
+    const p = fakeProps();
+    p.drawnPoint = fakeDrawnPoint();
+    const wrapper = mount(<CreatePoints {...p} />);
     clickButton(wrapper, 0, "save");
     expect(initSave).toHaveBeenCalledWith("Point", {
-      meta: { color: "red", created_by: "farm-designer", type: "weed" },
-      name: "Created Weed",
-      pointer_type: "Weed",
+      meta: { color: "green", created_by: "farm-designer", type: "point" },
+      name: p.drawnPoint.name,
+      pointer_type: "GenericPointer",
       plant_stage: "active",
       radius: 30, x: 10, y: 20, z: 0,
     });
@@ -230,60 +252,40 @@ describe("<CreatePoints />", () => {
 
   it("changes point color", () => {
     const p = fakeProps();
-    p.drawnPoint = { cx: 0, cy: 0, z: 0, r: 0 };
+    p.drawnPoint = fakeDrawnPoint();
     const wrapper = mount<CreatePoints>(<CreatePoints {...p} />);
     const PP = wrapper.instance().PointProperties;
-    const component = shallow(<PP />);
-    component.find("ColorPicker").simulate("change", "red");
+    const component = shallow(<PP drawnPoint={p.drawnPoint} />);
+    component.find("ColorPicker").simulate("change", "blue");
     expect(p.dispatch).toHaveBeenCalledWith({
-      payload: { color: "red", cx: 0, cy: 0, z: 0, r: 0 },
+      payload: { ...p.drawnPoint, color: "blue" },
       type: Actions.SET_DRAWN_POINT_DATA
-    });
-  });
-
-  it("changes weed color", () => {
-    location.pathname = Path.mock(Path.weeds("add"));
-    const p = fakeProps();
-    p.drawnPoint = { cx: 0, cy: 0, z: 0, r: 0 };
-    const wrapper = mount<CreatePoints>(<CreatePoints {...p} />);
-    const PP = wrapper.instance().PointProperties;
-    const component = shallow(<PP />);
-    component.find("ColorPicker").simulate("change", "red");
-    expect(p.dispatch).toHaveBeenCalledWith({
-      payload: { color: "red", cx: 0, cy: 0, z: 0, r: 0 },
-      type: Actions.SET_DRAWN_WEED_DATA
     });
   });
 
   it("updates value", () => {
     const p = fakeProps();
-    p.drawnPoint = { cx: 0, cy: 0, z: 0, r: 0 };
+    p.drawnPoint = fakeDrawnPoint();
+    p.drawnPoint.cx = undefined;
+    p.drawnPoint.cy = undefined;
     const wrapper = shallow<CreatePoints>(<CreatePoints {...p} />);
     const PP = wrapper.instance().PointProperties;
-    const component = shallow(<PP />);
+    const component = shallow(<PP drawnPoint={p.drawnPoint} />);
     component.find("BlurableInput[name='cx']").simulate("commit", {
-      currentTarget: { value: "10" }
+      currentTarget: { value: "100" }
     });
     expect(p.dispatch).toHaveBeenCalledWith({
-      payload: { cx: 10, cy: 0, z: 0, r: 0, color: "green" },
+      payload: { ...p.drawnPoint, cx: 100 },
       type: Actions.SET_DRAWN_POINT_DATA
     });
   });
 
-  it("fills the state with point data", () => {
+  it("closes panel", () => {
+    location.pathname = Path.mock(Path.points("add"));
     const p = fakeProps();
-    p.drawnPoint = { cx: 1, cy: 2, z: 0, r: 3, color: "blue" };
-    const wrapper = shallow<CreatePoints>(<CreatePoints {...p} />);
-    const i = wrapper.instance();
-    expect(i.state).toEqual({});
-    expect(i.getPointData()).toEqual({
-      name: undefined,
-      cx: 1,
-      cy: 2,
-      z: 0,
-      r: 3,
-      color: "blue"
-    });
+    const wrapper = mountWithContext(<CreatePoints {...p} />);
+    wrapper.find<CreatePoints>(CreatePoints).instance().closePanel();
+    expect(mockNavigate).toHaveBeenCalledWith(Path.points());
   });
 
   it("unmounts", () => {

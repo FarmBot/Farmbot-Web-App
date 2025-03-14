@@ -2,13 +2,16 @@ import {
   startNewPoint, resizePoint, StartNewPointProps, ResizePointProps,
 } from "../drawn_point_actions";
 import { Actions } from "../../../../constants";
+import {
+  fakeDrawnPoint,
+} from "../../../../__test_support__/fake_designer_state";
 
 describe("startNewPoint", () => {
   const fakeProps = (): StartNewPointProps => ({
     gardenCoords: { x: 100, y: 200 },
     dispatch: jest.fn(),
     setMapState: jest.fn(),
-    type: "point",
+    drawnPoint: fakeDrawnPoint(),
   });
 
   it("starts point", () => {
@@ -17,18 +20,17 @@ describe("startNewPoint", () => {
     expect(p.setMapState).toHaveBeenCalledWith({ isDragging: true });
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_DRAWN_POINT_DATA,
-      payload: { cx: 100, cy: 200, r: 0 }
+      payload: { ...fakeDrawnPoint(), cx: 100, cy: 200, r: 0 }
     });
   });
 
   it("starts weed", () => {
     const p = fakeProps();
-    p.type = "weed";
     startNewPoint(p);
     expect(p.setMapState).toHaveBeenCalledWith({ isDragging: true });
     expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.SET_DRAWN_WEED_DATA,
-      payload: { cx: 100, cy: 200, r: 0 }
+      type: Actions.SET_DRAWN_POINT_DATA,
+      payload: { ...fakeDrawnPoint(), cx: 100, cy: 200, r: 0 }
     });
   });
 
@@ -44,10 +46,9 @@ describe("startNewPoint", () => {
 describe("resizePoint", () => {
   const fakeProps = (): ResizePointProps => ({
     gardenCoords: { x: 100, y: 200 },
-    drawnPoint: { cx: 100, cy: 200, z: 0, r: 0 },
+    drawnPoint: fakeDrawnPoint(),
     dispatch: jest.fn(),
     isDragging: true,
-    type: "point",
   });
 
   it("resizes point", () => {
@@ -55,23 +56,23 @@ describe("resizePoint", () => {
     resizePoint(p);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_DRAWN_POINT_DATA,
-      payload: { cx: 100, cy: 200, r: 0 }
+      payload: { ...fakeDrawnPoint(), r: 201 }
     });
   });
 
-  it("resizes weed", () => {
-    const p = fakeProps();
-    p.type = "weed";
-    resizePoint(p);
-    expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.SET_DRAWN_WEED_DATA,
-      payload: { cx: 100, cy: 200, r: 0 }
-    });
-  });
-
-  it("doesn't resize point", () => {
+  it("doesn't resize point: not dragging", () => {
     const p = fakeProps();
     p.isDragging = false;
+    resizePoint(p);
+    expect(p.dispatch).not.toHaveBeenCalled();
+  });
+
+  it("doesn't resize point: no center", () => {
+    const p = fakeProps();
+    const point = fakeDrawnPoint();
+    point.cx = undefined;
+    point.cy = undefined;
+    p.drawnPoint = point;
     resizePoint(p);
     expect(p.dispatch).not.toHaveBeenCalled();
   });

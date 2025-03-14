@@ -1,4 +1,4 @@
-import { DesignerState } from "../farm_designer/interfaces";
+import { DesignerState, DrawnPointPayl } from "../farm_designer/interfaces";
 import { HelpState } from "../help/reducer";
 import { RunButtonMenuOpen } from "../sequences/interfaces";
 
@@ -20,7 +20,6 @@ export const fakeDesignerState = (): DesignerState => ({
   bulkPlantSlug: undefined,
   chosenLocation: { x: undefined, y: undefined, z: undefined },
   drawnPoint: undefined,
-  drawnWeed: undefined,
   openedSavedGarden: undefined,
   tryGroupSortType: undefined,
   editGroupAreaInMap: false,
@@ -62,4 +61,14 @@ export const fakeHelpState = (): HelpState => ({
 export const fakeMenuOpenState = (): RunButtonMenuOpen => ({
   component: undefined,
   uuid: undefined,
+});
+
+export const fakeDrawnPoint = (): DrawnPointPayl => ({
+  name: "Fake Point",
+  cx: 10,
+  cy: 20,
+  r: 30,
+  color: "green",
+  z: 0,
+  at_soil_level: false,
 });

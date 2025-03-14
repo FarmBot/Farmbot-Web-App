@@ -1,6 +1,6 @@
 import React from "react";
 import { SpreadOverlapHelperProps } from "../../interfaces";
-import { round, transformXY, defaultSpreadCmDia } from "../../util";
+import { round, transformXY, defaultSpreadCmDia, xyDistance } from "../../util";
 import { BotPosition } from "../../../../devices/interfaces";
 import { isUndefined } from "lodash";
 
@@ -82,11 +82,9 @@ export function getOverlap(
     && plantXYZ && !isUndefined(plantXYZ.x) && !isUndefined(plantXYZ.y)) {
     // Plant editing (dragging) is occuring
     const activeXY = { x: round(activeXYZ.x), y: round(activeXYZ.y) };
-    const distance = Math.sqrt(
-      Math.pow((activeXY.x - plantXYZ.x), 2) +
-      Math.pow((activeXY.y - plantXYZ.y), 2));
+    const plantXY = { x: round(plantXYZ.x), y: round(plantXYZ.y) };
     const overlap = round(Math.abs(Math.min(0,
-      distance
+      xyDistance(activeXY, plantXY)
       - getRadius(SpreadOption.InactivePlant, spreadData)
       - getRadius(SpreadOption.ActivePlant, spreadData))));
     return overlap;

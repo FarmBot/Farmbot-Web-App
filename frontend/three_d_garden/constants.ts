@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
 import { sampleSize } from "lodash";
+import { Mode } from "../farm_designer/map/interfaces";
 
 export const LIB_DIR = "/3D/lib/";
 
@@ -75,6 +76,16 @@ export const ASSETS: Record<string, Record<string, string>> = {
     person4Flipped: "/3D/people/person_4_flipped.avif",
   },
 };
+
+export const HOVER_OBJECT_MODES = [
+  Mode.clickToAdd,
+  Mode.createPoint,
+  Mode.createWeed,
+];
+export const DRAW_POINT_MODES = [
+  Mode.createPoint,
+  Mode.createWeed,
+];
 
 interface Plant {
   label: string;

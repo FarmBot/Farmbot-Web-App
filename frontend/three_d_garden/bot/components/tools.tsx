@@ -5,7 +5,7 @@ import { threeSpace, zDir as zDirFunc, zZero as zZeroFunc } from "../../helpers"
 import { Config } from "../../config";
 import { GLTF } from "three-stdlib";
 import {
-  ASSETS, LIB_DIR, PartName, SeedTroughAssemblyMaterial,
+  ASSETS, HOVER_OBJECT_MODES, LIB_DIR, PartName, SeedTroughAssemblyMaterial,
 } from "../../constants";
 import {
   RotaryTool, RotaryToolFull,
@@ -26,6 +26,7 @@ import { WateringAnimations } from "./watering_animations";
 import { useNavigate } from "react-router";
 import { Path } from "../../../internal_urls";
 import { setPanelOpen } from "../../../farm_designer/panel_header";
+import { getMode } from "../../../farm_designer/map/util";
 
 type Toolbay3 = GLTF & {
   nodes: {
@@ -165,7 +166,8 @@ export const Tools = (props: ToolsProps) => {
         position.z,
       ]}
       onClick={() => {
-        if (slotProps.id && !isUndefined(props.dispatch)) {
+        if (slotProps.id && !isUndefined(props.dispatch) &&
+          !HOVER_OBJECT_MODES.includes(getMode())) {
           props.dispatch(setPanelOpen(true));
           navigate(Path.toolSlots(slotProps.id));
         }

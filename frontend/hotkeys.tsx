@@ -11,12 +11,16 @@ import { save } from "./api/crud";
 import { Path } from "./internal_urls";
 import { Actions } from "./constants";
 import { NavigateFunction, useNavigate } from "react-router";
+import { DesignerState } from "./farm_designer/interfaces";
+import { isUndefined } from "lodash";
+import { resetDrawnPointDataAction } from "./points/create_points";
 
 type HotkeyConfigs = Record<HotKey, HotkeyConfig>;
 
 export interface HotKeysProps {
   dispatch: Function;
   hotkeyGuide: boolean;
+  designer: DesignerState;
 }
 
 export enum HotKey {
@@ -65,11 +69,15 @@ const HOTKEY_BASE_MAP = (): HotkeyConfigs => ({
   },
 });
 
-export const hotkeysWithActions = (
-  navigate: NavigateFunction,
-  dispatch: Function,
-  slug: string,
-) => {
+export interface HotkeysWithActionsProps {
+  navigate: NavigateFunction;
+  dispatch: Function;
+  slug: string;
+  designer: DesignerState;
+}
+
+export const hotkeysWithActions = (props: HotkeysWithActionsProps) => {
+  const { navigate, dispatch, slug, designer } = props;
   const links = getLinks();
   const idx = links.indexOf(PANEL_BY_SLUG[slug]);
   const panelPlus = links[idx + 1] || links[0];
@@ -109,7 +117,13 @@ export const hotkeysWithActions = (
     },
     [HotKey.closePanel]: {
       ...hotkeysBase[HotKey.closePanel],
-      onKeyDown: () => { dispatch(setPanelOpen(false)); },
+      onKeyDown: () => {
+        if (!isUndefined(designer.drawnPoint?.cx)) {
+          dispatch(resetDrawnPointDataAction());
+        } else {
+          dispatch(setPanelOpen(false));
+        }
+      },
     },
     [HotKey.openGuide]: hotkeysBase[HotKey.openGuide],
   };
@@ -122,10 +136,13 @@ export const toggleHotkeyHelpOverlay = (dispatch: Function) => () =>
 export const HotKeys = (props: HotKeysProps) => {
   const navigate = useNavigate();
   const slug = Path.getSlug(Path.designer()) || "plants";
+  const { dispatch, designer } = props;
   const hotkeys = React.useMemo(
-    () => Object.values(hotkeysWithActions(navigate, props.dispatch, slug))
+    () => Object.values(hotkeysWithActions({
+      navigate, dispatch, slug, designer,
+    }))
       .map(hotkey => ({ ...hotkey, global: true })),
-    [navigate, props.dispatch, slug]);
+    [navigate, dispatch, slug, designer]);
   const { handleKeyDown, handleKeyUp } = useHotkeys(hotkeys,
     { showDialogKeyCombo: undefined });
   return <div className={"hotkeys"}

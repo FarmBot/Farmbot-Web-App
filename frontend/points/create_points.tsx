@@ -26,19 +26,76 @@ import {
   definedPosition, UseCurrentLocation,
 } from "../tools/tool_slot_edit_components";
 import { BotPosition } from "../devices/interfaces";
-import { round } from "lodash";
+import { isUndefined } from "lodash";
 import { Path } from "../internal_urls";
 import { NavigationContext } from "../routes_helpers";
+import { NavigateFunction } from "react-router";
+import { Mode } from "../farm_designer/map/interfaces";
+import { getMode } from "../farm_designer/map/util";
 
 export function mapStateToProps(props: Everything): CreatePointsProps {
-  const { drawnPoint, drawnWeed } = props.resources.consumers.farm_designer;
+  const { drawnPoint } = props.resources.consumers.farm_designer;
   return {
     dispatch: props.dispatch,
-    drawnPoint: drawnPoint || drawnWeed,
+    drawnPoint: drawnPoint,
     xySwap: !!getWebAppConfigValue(() => props)(BooleanSetting.xy_swap),
     botPosition: validBotLocationData(props.bot.hardware.location_data).position,
   };
 }
+
+export interface CreatePointProps {
+  navigate: NavigateFunction;
+  dispatch: Function;
+  drawnPoint: DrawnPointPayl;
+}
+
+export const createPoint = (props: CreatePointProps) => {
+  const { dispatch, drawnPoint, navigate } = props;
+  const panel = getMode() == Mode.createWeed ? "weeds" : "points";
+  const body: GenericPointer | WeedPointer = {
+    pointer_type: panel == "weeds" ? "Weed" : "GenericPointer",
+    name: drawnPoint.name ||
+      (panel == "weeds"
+        ? t("Created Weed")
+        : t("Created Point")),
+    meta: {
+      color: drawnPoint.color,
+      created_by: "farm-designer",
+      type: panel == "weeds" ? "weed" : "point",
+      ...(drawnPoint.at_soil_level ? { at_soil_level: "true" } : {}),
+    },
+    x: drawnPoint.cx || 0,
+    y: drawnPoint.cy || 0,
+    z: drawnPoint.z,
+    plant_stage: "active",
+    radius: drawnPoint.r,
+  };
+  dispatch(initSave("Point", body));
+  success(panel == "weeds"
+    ? t("Weed created.")
+    : t("Point created."));
+  dispatch({
+    type: Actions.SET_DRAWN_POINT_DATA,
+    payload: undefined,
+  });
+  navigate(Path.designer(panel));
+};
+
+export const resetDrawnPointDataAction = () => {
+  const payload: DrawnPointPayl = {
+    name: getMode() == Mode.createWeed ? t("Created Weed") : t("Created Point"),
+    cx: undefined,
+    cy: undefined,
+    z: 0,
+    r: 0,
+    color: getMode() == Mode.createWeed ? "red" : "green",
+    at_soil_level: false,
+  };
+  return {
+    type: Actions.SET_DRAWN_POINT_DATA,
+    payload,
+  };
+};
 
 export interface CreatePointsProps {
   dispatch: Function;
@@ -47,167 +104,52 @@ export interface CreatePointsProps {
   botPosition: BotPosition;
 }
 
-type CreatePointsState = Partial<DrawnPointPayl>;
-
-const DEFAULTS: DrawnPointPayl = {
-  name: undefined,
-  cx: 1,
-  cy: 1,
-  z: 0,
-  r: 15,
-  color: undefined,
-};
-
-export class RawCreatePoints
-  extends React.Component<CreatePointsProps, Partial<CreatePointsState>> {
+export class RawCreatePoints extends React.Component<CreatePointsProps> {
   constructor(props: CreatePointsProps) {
     super(props);
     this.state = {};
   }
 
-  attr = <T extends (keyof DrawnPointPayl)>(key: T,
-    fallback = DEFAULTS[key]): DrawnPointPayl[T] => {
-    const p = this.props.drawnPoint;
-    const userValue = this.state[key] as DrawnPointPayl[T] | undefined;
-    const propValue = p ? p[key] : fallback;
-    if (typeof userValue === "undefined") {
-      return propValue;
-    } else {
-      return userValue;
-    }
-  };
-
-  get defaultName() {
-    return this.panel == "weeds"
-      ? t("Created Weed")
-      : t("Created Point");
-  }
-
-  get defaultColor() { return this.panel == "weeds" ? "red" : "green"; }
-
-  getPointData = (): DrawnPointPayl => {
-    return {
-      name: this.attr("name"),
-      cx: this.attr("cx"),
-      cy: this.attr("cy"),
-      z: this.attr("z"),
-      r: this.attr("r"),
-      color: this.attr("color") || this.defaultColor,
-      at_soil_level: this.attr("at_soil_level"),
-    };
-  };
-
-  cancel = () => {
-    this.props.dispatch({
-      type: this.panel == "weeds"
-        ? Actions.SET_DRAWN_WEED_DATA
-        : Actions.SET_DRAWN_POINT_DATA,
-      payload: undefined
-    });
-    this.setState({
-      cx: undefined,
-      cy: undefined,
-      z: undefined,
-      r: undefined,
-      color: undefined
-    });
-  };
-
-  loadDefaultPoint = () => {
-    this.props.dispatch({
-      type: this.panel == "weeds"
-        ? Actions.SET_DRAWN_WEED_DATA
-        : Actions.SET_DRAWN_POINT_DATA,
-      payload: {
-        name: this.defaultName,
-        cx: this.attr("cx") || DEFAULTS.cx,
-        cy: this.attr("cy") || DEFAULTS.cy,
-        z: DEFAULTS.z,
-        r: DEFAULTS.r,
-        color: this.defaultColor,
-      } as DrawnPointPayl
-    });
-  };
+  get panel() { return Path.getSlug(Path.designer()); }
 
   componentDidMount() {
-    this.loadDefaultPoint();
+    this.props.dispatch(resetDrawnPointDataAction());
   }
 
   componentWillUnmount() {
-    this.cancel();
+    this.props.dispatch({
+      type: Actions.SET_DRAWN_POINT_DATA,
+      payload: undefined,
+    });
   }
 
-  updateAttr = (key: keyof CreatePointsState, value: string | boolean) => {
-    if (this.props.drawnPoint) {
-      const point = this.getPointData();
+  updateAttr = (key: keyof DrawnPointPayl, value: string | boolean) => {
+    const { drawnPoint } = this.props;
+    if (drawnPoint) {
       switch (key) {
         case "name":
         case "color":
-          this.setState({ [key]: value });
-          point[key] = "" + value;
+          drawnPoint[key] = "" + value;
           break;
         case "at_soil_level":
-          this.setState({ [key]: !!value });
-          point[key] = !!value;
+          drawnPoint[key] = !!value;
           break;
         default:
           const intValue = parseIntInput("" + value);
-          this.setState({ [key]: intValue });
-          point[key] = intValue;
+          drawnPoint[key] = intValue;
       }
       this.props.dispatch({
-        type: this.panel == "weeds"
-          ? Actions.SET_DRAWN_WEED_DATA
-          : Actions.SET_DRAWN_POINT_DATA,
-        payload: point
+        type: Actions.SET_DRAWN_POINT_DATA,
+        payload: drawnPoint,
       });
     }
   };
 
-  /** Update fields. */
-  updateValue = (key: keyof CreatePointsState) => {
+  updateValue = (key: keyof DrawnPointPayl) => {
     return (e: React.SyntheticEvent<HTMLInputElement>) => {
       const { value } = e.currentTarget;
       this.updateAttr(key, value);
     };
-  };
-
-  changeColor = (color: ResourceColor) => {
-    this.setState({ color });
-    const point = this.getPointData();
-    point.color = color;
-    this.props.dispatch({
-      type: this.panel == "weeds"
-        ? Actions.SET_DRAWN_WEED_DATA
-        : Actions.SET_DRAWN_POINT_DATA,
-      payload: point
-    });
-  };
-
-  get panel() { return Path.getSlug(Path.designer()) || "points"; }
-
-  createPoint = () => {
-    const body: GenericPointer | WeedPointer = {
-      pointer_type: this.panel == "weeds" ? "Weed" : "GenericPointer",
-      name: this.attr("name") || this.defaultName,
-      meta: {
-        color: this.attr("color") || this.defaultColor,
-        created_by: "farm-designer",
-        type: this.panel == "weeds" ? "weed" : "point",
-        ...(this.attr("at_soil_level") ? { at_soil_level: "true" } : {}),
-      },
-      x: this.attr("cx"),
-      y: this.attr("cy"),
-      z: this.attr("z"),
-      plant_stage: "active",
-      radius: this.attr("r"),
-    };
-    this.props.dispatch(initSave("Point", body));
-    success(this.panel == "weeds"
-      ? t("Weed created.")
-      : t("Point created."));
-    this.cancel();
-    this.closePanel();
   };
 
   static contextType = NavigationContext;
@@ -216,7 +158,7 @@ export class RawCreatePoints
 
   closePanel = () => { this.navigate(Path.designer(this.panel)); };
 
-  PointProperties = () =>
+  PointProperties = ({ drawnPoint }: { drawnPoint: DrawnPointPayl }) =>
     <ul className="grid">
       <div className="info-box">
         <div className="row grid-exp-1" style={{ alignItems: "end" }}>
@@ -226,11 +168,11 @@ export class RawCreatePoints
               name="pointName"
               type="text"
               onCommit={this.updateValue("name")}
-              value={this.attr("name") || this.defaultName} />
+              value={drawnPoint.name} />
           </div>
           <ColorPicker
-            current={(this.attr("color") || this.defaultColor) as ResourceColor}
-            onChange={this.changeColor} />
+            current={drawnPoint.color as ResourceColor}
+            onChange={color => this.updateAttr("color", color)} />
         </div>
       </div>
       <ListItem>
@@ -241,7 +183,7 @@ export class RawCreatePoints
               name="r"
               type="number"
               onCommit={this.updateValue("r")}
-              value={this.attr("r")}
+              value={drawnPoint.r}
               min={0} />
           </div>
           <div>
@@ -250,7 +192,7 @@ export class RawCreatePoints
               name="cx"
               type="number"
               onCommit={this.updateValue("cx")}
-              value={this.attr("cx", this.props.botPosition.x)} />
+              value={drawnPoint.cx || ""} />
           </div>
           <div>
             <label>{t("Y")}</label>
@@ -258,7 +200,7 @@ export class RawCreatePoints
               name="cy"
               type="number"
               onCommit={this.updateValue("cy")}
-              value={this.attr("cy", this.props.botPosition.y)} />
+              value={drawnPoint.cy || ""} />
           </div>
           <div>
             <label>{t("Z")}</label>
@@ -266,20 +208,23 @@ export class RawCreatePoints
               name="z"
               type="number"
               onCommit={this.updateValue("z")}
-              value={this.attr("z", this.props.botPosition.z)} />
+              value={drawnPoint.z || ""} />
           </div>
           <UseCurrentLocation botPosition={this.props.botPosition}
             onChange={() => {
               const position = definedPosition(this.props.botPosition);
               if (position) {
                 const { x, y, z } = position;
-                this.setState({ cx: round(x), cy: round(y), z: round(z) }, () =>
-                  this.props.dispatch({
-                    type: this.panel == "weeds"
-                      ? Actions.SET_DRAWN_WEED_DATA
-                      : Actions.SET_DRAWN_POINT_DATA,
-                    payload: this.getPointData(),
-                  }));
+                const payload: DrawnPointPayl = {
+                  ...drawnPoint,
+                  cx: x,
+                  cy: y,
+                  z,
+                };
+                this.props.dispatch({
+                  type: Actions.SET_DRAWN_POINT_DATA,
+                  payload,
+                });
               }
             }} />
         </Row>
@@ -293,7 +238,7 @@ export class RawCreatePoints
               type="checkbox"
               onChange={e =>
                 this.updateAttr("at_soil_level", e.currentTarget.checked)}
-              checked={!!this.attr("at_soil_level")} />
+              checked={drawnPoint.at_soil_level} />
           </Row>
         </ListItem>}
     </ul>;
@@ -303,9 +248,8 @@ export class RawCreatePoints
     const panelDescription = this.panel == "weeds"
       ? Content.CREATE_WEEDS_DESCRIPTION
       : Content.CREATE_POINTS_DESCRIPTION;
-    const point = this.getPointData();
-    const meta: Record<string, string | undefined> = { color: point.color };
-    point.at_soil_level && (meta.at_soil_level = "" + point.at_soil_level);
+    const { drawnPoint } = this.props;
+    if (isUndefined(drawnPoint)) { return <></>; }
     return <DesignerPanel panelName={"point-creation"} panel={panelType}>
       <DesignerPanelHeader
         panelName={"point-creation"}
@@ -315,22 +259,30 @@ export class RawCreatePoints
         description={panelDescription}>
         <button className="fb-button green save"
           title={t("save")}
-          onClick={this.createPoint}>
+          onClick={() => createPoint({
+            drawnPoint,
+            navigate: this.navigate as NavigateFunction,
+            dispatch: this.props.dispatch,
+          })}>
           {t("Save")}
         </button>
       </DesignerPanelHeader>
       <DesignerPanelContent panelName={"point-creation"}>
-        <this.PointProperties />
+        <this.PointProperties drawnPoint={drawnPoint} />
         {panelType == Panel.Points && <hr />}
         {panelType == Panel.Points &&
           <PlantGrid
             xy_swap={this.props.xySwap}
-            itemName={point.name || t("Grid point")}
-            radius={point.r}
+            itemName={drawnPoint.name}
+            radius={drawnPoint.r}
             dispatch={this.props.dispatch}
             botPosition={this.props.botPosition}
-            z={this.attr("z", this.props.botPosition.z)}
-            meta={meta}
+            z={drawnPoint.z || this.props.botPosition.z}
+            meta={{
+              color: drawnPoint.color,
+              at_soil_level: "" + drawnPoint.at_soil_level,
+            }}
+            collapsible={true}
             close={this.closePanel} />}
       </DesignerPanelContent>
     </DesignerPanel>;

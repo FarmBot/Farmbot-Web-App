@@ -8,7 +8,7 @@ import {
 } from "@react-three/drei";
 import { BackSide } from "three";
 import { Bot } from "./bot";
-import { AddPlantProps, Bed, DRAW_POINT_MODES } from "./bed";
+import { AddPlantProps, Bed } from "./bed";
 import {
   Sky, Solar, Sun, sunPosition, ZoomBeacons,
   calculatePlantPositions, convertPlants, ThreeDPlant,
@@ -29,6 +29,7 @@ import { BooleanSetting } from "../session_keys";
 import { SlotWithTool } from "../resources/interfaces";
 import { cameraInit } from "./camera";
 import { getMode } from "../farm_designer/map/util";
+import { DRAW_POINT_MODES } from "./constants";
 
 const AnimatedGroup = animated(Group);
 
