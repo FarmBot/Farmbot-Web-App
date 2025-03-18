@@ -82,14 +82,14 @@
     }
     a:hover {
       font-weight: 600;
-      color: $black;
+      color: unset; // sass-lint:disable-line variable-for-property
     }
     a:active {
       color: $black;
     }
     &.open{
       max-height: 16rem;
-      color: $black;
+      color: unset; // sass-lint:disable-line variable-for-property
       transition: all 0.5s ease;
       margin-bottom: 4rem;
     }
