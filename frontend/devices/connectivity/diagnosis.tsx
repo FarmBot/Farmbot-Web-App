@@ -69,11 +69,11 @@ export function Diagnosis(props: DiagnosisProps) {
       <p>
         {diagnosisMessage(getDiagnosisCode(props.statusFlags))}
       </p>
-      <a onClick={docLinkClick("connecting-farmbot-to-the-internet")}>
+      <a onClick={docLinkClick("connecting-farmbot-to-the-internet", navigate)}>
         <i className="fa fa-external-link" />
         {t("Click here to learn more about connectivity codes.")}
       </a>
-      <a onClick={docLinkClick("for-it-security-professionals")}>
+      <a onClick={docLinkClick("for-it-security-professionals", navigate)}>
         <i className="fa fa-external-link" />
         {t("Click here for document to show to your IT department.")}
       </a>

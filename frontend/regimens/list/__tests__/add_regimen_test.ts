@@ -10,14 +10,15 @@ import { Path } from "../../../internal_urls";
 describe("addRegimen()", () => {
   it("dispatches a new regimen onclick", () => {
     const dispatch = jest.fn();
-    addRegimen(0)(dispatch);
+    const navigate = jest.fn();
+    addRegimen(0, navigate)(dispatch);
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.INIT_RESOURCE,
       payload: expect.objectContaining({
         kind: "Regimen"
       })
     });
-    expect(mockNavigate).toHaveBeenCalledWith(Path.regimens("New_Regimen_0"));
+    expect(navigate).toHaveBeenCalledWith(Path.regimens("New_Regimen_0"));
     expect(setActiveRegimenByName).toHaveBeenCalled();
   });
 });

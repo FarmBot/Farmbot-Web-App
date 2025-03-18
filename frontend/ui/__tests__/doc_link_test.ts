@@ -29,16 +29,18 @@ describe("genesisDocLink", () => {
 describe("docLinkClick", () => {
   it("navigates to doc link", () => {
     location.pathname = Path.mock(Path.designer());
-    docLinkClick("farmware")();
-    expect(mockNavigate).toHaveBeenCalledWith(Path.help("farmware"));
+    const navigate = jest.fn();
+    docLinkClick("farmware", navigate)();
+    expect(navigate).toHaveBeenCalledWith(Path.help("farmware"));
     expect(location.assign).not.toHaveBeenCalled();
   });
 
   it("reloads to doc link", () => {
     location.pathname = Path.mock(Path.help());
     location.assign = jest.fn();
-    docLinkClick("farmware")();
-    expect(mockNavigate).not.toHaveBeenCalled();
+    const navigate = jest.fn();
+    docLinkClick("farmware", navigate)();
+    expect(navigate).not.toHaveBeenCalled();
     expect(location.assign).toHaveBeenCalledWith(expect.stringContaining(
       Path.help("farmware")));
   });
@@ -47,8 +49,9 @@ describe("docLinkClick", () => {
 describe("devDocLinkClick", () => {
   it("navigates to doc link", () => {
     location.pathname = Path.mock(Path.designer());
-    devDocLinkClick("lua")();
-    expect(mockNavigate).toHaveBeenCalledWith(Path.developer("lua"));
+    const navigate = jest.fn();
+    devDocLinkClick("lua", navigate)();
+    expect(navigate).toHaveBeenCalledWith(Path.developer("lua"));
     expect(location.assign).not.toHaveBeenCalled();
   });
 });

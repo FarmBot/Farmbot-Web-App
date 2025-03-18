@@ -7,6 +7,7 @@ import { Lua } from "farmbot/dist/corpus";
 import { ToolTips } from "../../constants";
 import { LuaTextArea } from "./tile_lua_support";
 import { isMobile } from "../../screen_size";
+import { useNavigate } from "react-router";
 
 export const TileLua = (props: StepParams<Lua>) => {
   const [monaco, setMonaco] = React.useState(!isMobile());
@@ -17,11 +18,12 @@ export const TileLua = (props: StepParams<Lua>) => {
     [StateToggleKey.luaExpanded]:
       { enabled: expanded, toggle: () => setExpanded(!expanded) },
   };
+  const navigate = useNavigate();
   return <StepWrapper {...props}
     className={"lua-step"}
     helpText={ToolTips.LUA}
     links={[
-      <a key={"lua"} onClick={devDocLinkClick("lua")}>
+      <a key={"lua"} onClick={devDocLinkClick("lua", navigate)}>
         {" " + t("Documentation")}
         <i className="fa fa-external-link" />
       </a>]}
