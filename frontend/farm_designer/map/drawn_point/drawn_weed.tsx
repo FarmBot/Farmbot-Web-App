@@ -1,19 +1,21 @@
 import React from "react";
 import { MapTransformProps } from "../interfaces";
 import { transformXY } from "../util";
-import { DrawnWeedPayl } from "../../interfaces";
+import { DrawnPointPayl } from "../../interfaces";
+import { isUndefined } from "lodash";
 
 export interface DrawnWeedProps {
   mapTransformProps: MapTransformProps;
-  data: DrawnWeedPayl | undefined;
+  data: DrawnPointPayl | undefined;
 }
 
 export function DrawnWeed(props: DrawnWeedProps) {
   const ID = "current-weed";
   const { data, mapTransformProps } = props;
-  if (!data) { return <g id={ID} />; }
-  const { cx, cy, r } = data;
-  const color = data.color || "red";
+  if (!data || isUndefined(data.cx) || isUndefined(data.cy)) {
+    return <g id={ID} />;
+  }
+  const { cx, cy, r, color } = data;
   const { qx, qy } = transformXY(cx, cy, mapTransformProps);
   const stopOpacity = ["gray", "pink", "orange"].includes(color) ? 0.5 : 0.25;
   return <g id={ID}>

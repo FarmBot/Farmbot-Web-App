@@ -35,6 +35,20 @@ export function round(num: number) {
   return (Math.round(num / SNAP) * SNAP);
 }
 
+/**
+ * Calculate the distance between two points.
+ */
+export function xyDistance(
+  a: { x: number, y: number },
+  b: { x: number, y: number },
+): number {
+  const dx = a.x - b.x;
+  const dy = a.y - b.y;
+  const dx2 = Math.pow(dx, 2);
+  const dy2 = Math.pow(dy, 2);
+  return Math.sqrt(dx2 + dy2);
+}
+
 /*
  * Map coordinate calculations
  *

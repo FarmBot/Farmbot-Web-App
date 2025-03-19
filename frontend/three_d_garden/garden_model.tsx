@@ -13,6 +13,7 @@ import {
   Sky, Solar, Sun, sunPosition, ZoomBeacons,
   calculatePlantPositions, convertPlants, ThreeDPlant,
   Point, Grid, Clouds, Ground, Weed,
+  DrawnPoint,
 } from "./garden";
 import { Config } from "./config";
 import { useSpring, animated } from "@react-spring/three";
@@ -27,6 +28,8 @@ import { TaggedGenericPointer, TaggedWeedPointer } from "farmbot";
 import { BooleanSetting } from "../session_keys";
 import { SlotWithTool } from "../resources/interfaces";
 import { cameraInit } from "./camera";
+import { getMode } from "../farm_designer/map/util";
+import { DRAW_POINT_MODES } from "./constants";
 
 const AnimatedGroup = animated(Group);
 
@@ -41,14 +44,15 @@ export interface GardenModelProps {
   mountedToolName?: string | undefined;
 }
 
+// eslint-disable-next-line complexity
 export const GardenModel = (props: GardenModelProps) => {
-  const { config } = props;
-  const dispatch = props.addPlantProps?.dispatch;
+  const { config, addPlantProps } = props;
+  const dispatch = addPlantProps?.dispatch;
   const Camera = config.perspective ? PerspectiveCamera : OrthographicCamera;
 
-  const plants = isUndefined(props.addPlantProps)
+  const plants = isUndefined(addPlantProps)
     ? calculatePlantPositions(config)
-    : convertPlants(config, props.addPlantProps.plants);
+    : convertPlants(config, addPlantProps.plants);
 
   const [hoveredPlant, setHoveredPlant] =
     React.useState<number | undefined>(undefined);
@@ -76,6 +80,14 @@ export const GardenModel = (props: GardenModelProps) => {
 
   const camera = getCamera(config, props.activeFocus, cameraInit());
 
+  const showPlants = !addPlantProps
+    || !!addPlantProps.getConfigValue(BooleanSetting.show_plants);
+  const plantsVisible = props.activeFocus != "Planter bed" && showPlants;
+  const showFarmbot = !addPlantProps
+    || !!addPlantProps.getConfigValue(BooleanSetting.show_farmbot);
+  const showPoints = !!addPlantProps?.getConfigValue(BooleanSetting.show_points);
+  const showWeeds = !!addPlantProps?.getConfigValue(BooleanSetting.show_weeds);
+
   // eslint-disable-next-line no-null/no-null
   return <Group dispose={null}
     onPointerMove={config.eventDebug
@@ -86,12 +98,7 @@ export const GardenModel = (props: GardenModelProps) => {
       config={config}
       activeFocus={props.activeFocus}
       setActiveFocus={props.setActiveFocus} />}
-    <Sky distance={450000}
-      sunPosition={sunPosition(config)}
-      mieCoefficient={0.01}
-      mieDirectionalG={0.9}
-      rayleigh={3}
-      turbidity={5} />
+    <Sky sunPosition={sunPosition(config)} />
     <Sphere args={[30000, 8, 16]}>
       <MeshBasicMaterial color={"#59d8ff"} side={BackSide} />
     </Sphere>
@@ -117,9 +124,8 @@ export const GardenModel = (props: GardenModelProps) => {
     <Bed
       config={config}
       activeFocus={props.activeFocus}
-      addPlantProps={props.addPlantProps} />
-    {(!props.addPlantProps
-      || !!props.addPlantProps.getConfigValue(BooleanSetting.show_farmbot)) &&
+      addPlantProps={addPlantProps} />
+    {showFarmbot &&
       <Bot
         dispatch={dispatch}
         config={config}
@@ -139,29 +145,33 @@ export const GardenModel = (props: GardenModelProps) => {
     </Group>
     <Grid config={config} />
     <Group name={"plants"}
-      visible={props.activeFocus != "Planter bed" &&
-        (!props.addPlantProps
-          || !!props.addPlantProps.getConfigValue(BooleanSetting.show_plants))}
+      visible={plantsVisible}
       onPointerEnter={setHover(true)}
       onPointerMove={setHover(true)}
       onPointerLeave={setHover(false)}>
       {plants.map((plant, i) =>
         <ThreeDPlant key={i} i={i}
           plant={plant}
+          visible={plantsVisible}
           config={config}
           hoveredPlant={hoveredPlant}
           dispatch={dispatch} />)}
     </Group>
     <Group name={"points"}
-      visible={!!props.addPlantProps?.getConfigValue(BooleanSetting.show_points)}>
+      visible={showPoints}>
       {props.mapPoints?.map(point =>
         <Point key={point.uuid}
           point={point}
           config={config}
           dispatch={dispatch} />)}
     </Group>
+    {addPlantProps && DRAW_POINT_MODES.includes(getMode()) &&
+      <DrawnPoint
+        config={config}
+        designer={addPlantProps.designer}
+        usePosition={true} />}
     <Group name={"weeds"}
-      visible={!!props.addPlantProps?.getConfigValue(BooleanSetting.show_weeds)}>
+      visible={showWeeds}>
       {props.weeds?.map(weed =>
         <Weed key={weed.uuid}
           weed={weed}

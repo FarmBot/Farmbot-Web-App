@@ -1,9 +1,11 @@
 import { designer } from "../reducer";
 import { Actions } from "../../constants";
 import { ReduxAction } from "../../redux/interfaces";
-import { HoveredPlantPayl, DrawnPointPayl, DrawnWeedPayl } from "../interfaces";
+import { HoveredPlantPayl, DrawnPointPayl } from "../interfaces";
 import { BotPosition } from "../../devices/interfaces";
-import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
+import {
+  fakeDesignerState, fakeDrawnPoint,
+} from "../../__test_support__/fake_designer_state";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 import { PlantStage, PointType } from "farmbot";
 import { UUID } from "../../resources/interfaces";
@@ -200,71 +202,10 @@ describe("designer reducer", () => {
   it("sets current point data", () => {
     const action: ReduxAction<DrawnPointPayl> = {
       type: Actions.SET_DRAWN_POINT_DATA,
-      payload: { cx: 10, cy: 20, z: 0, r: 30, color: "red" }
+      payload: fakeDrawnPoint(),
     };
     const newState = designer(oldState(), action);
-    expect(newState.drawnPoint).toEqual({
-      cx: 10, cy: 20, z: 0, r: 30, color: "red"
-    });
-  });
-
-  it("uses current point color", () => {
-    const action: ReduxAction<DrawnPointPayl> = {
-      type: Actions.SET_DRAWN_POINT_DATA,
-      payload: { cx: 10, cy: 20, z: 0, r: 30 }
-    };
-    const state = oldState();
-    state.drawnPoint = { cx: 0, cy: 0, z: 0, r: 0, color: "red" };
-    const newState = designer(state, action);
-    expect(newState.drawnPoint).toEqual({
-      cx: 10, cy: 20, z: 0, r: 30, color: "red"
-    });
-  });
-
-  it("uses default point color", () => {
-    const action: ReduxAction<DrawnPointPayl> = {
-      type: Actions.SET_DRAWN_POINT_DATA,
-      payload: { cx: 10, cy: 20, z: 0, r: 30 }
-    };
-    const newState = designer(oldState(), action);
-    expect(newState.drawnPoint).toEqual({
-      cx: 10, cy: 20, z: 0, r: 30, color: "green"
-    });
-  });
-
-  it("sets current weed data", () => {
-    const action: ReduxAction<DrawnWeedPayl> = {
-      type: Actions.SET_DRAWN_WEED_DATA,
-      payload: { cx: 10, cy: 20, z: 0, r: 30, color: "red" }
-    };
-    const newState = designer(oldState(), action);
-    expect(newState.drawnWeed).toEqual({
-      cx: 10, cy: 20, z: 0, r: 30, color: "red"
-    });
-  });
-
-  it("uses current weed color", () => {
-    const action: ReduxAction<DrawnWeedPayl> = {
-      type: Actions.SET_DRAWN_WEED_DATA,
-      payload: { cx: 10, cy: 20, z: 0, r: 30 }
-    };
-    const state = oldState();
-    state.drawnWeed = { cx: 0, cy: 0, z: 0, r: 0, color: "red" };
-    const newState = designer(state, action);
-    expect(newState.drawnWeed).toEqual({
-      cx: 10, cy: 20, z: 0, r: 30, color: "red"
-    });
-  });
-
-  it("uses default weed color", () => {
-    const action: ReduxAction<DrawnWeedPayl> = {
-      type: Actions.SET_DRAWN_WEED_DATA,
-      payload: { cx: 10, cy: 20, z: 0, r: 30 }
-    };
-    const newState = designer(oldState(), action);
-    expect(newState.drawnWeed).toEqual({
-      cx: 10, cy: 20, z: 0, r: 30, color: "red"
-    });
+    expect(newState.drawnPoint).toEqual(fakeDrawnPoint());
   });
 
   it("sets opened saved garden", () => {

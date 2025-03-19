@@ -8,16 +8,24 @@ jest.mock("../../../screen_size", () => ({
 }));
 
 const mockSetPosition = jest.fn();
-interface MockRefCurrent {
+const mockSetScale = jest.fn();
+interface MockPlantRefCurrent {
   position: { set: Function; };
 }
-interface MockRef {
-  current: MockRefCurrent | undefined;
+interface MockRadiusRefCurrent {
+  scale: { set: Function; };
 }
-const mockRef: MockRef = { current: undefined };
+interface MockPlantRef {
+  current: MockPlantRefCurrent | undefined;
+}
+interface MockRadiusRef {
+  current: MockRadiusRefCurrent | undefined;
+}
+const mockPlantRef: MockPlantRef = { current: undefined };
+const mockRadiusRef: MockRadiusRef = { current: undefined };
 jest.mock("react", () => ({
   ...jest.requireActual("react"),
-  useRef: () => mockRef,
+  useRef: jest.fn(),
 }));
 
 import React from "react";
@@ -28,8 +36,17 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { dropPlant } from "../../../farm_designer/map/layers/plants/plant_actions";
 import { Path } from "../../../internal_urls";
 import { fakeAddPlantProps } from "../../../__test_support__/fake_props";
+import { Actions } from "../../../constants";
+import { fakeDrawnPoint } from "../../../__test_support__/fake_designer_state";
+import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 
 describe("<Bed />", () => {
+  beforeEach(() => {
+    React.useRef = jest.fn()
+      .mockImplementationOnce(() => mockPlantRef)
+      .mockImplementationOnce(() => mockRadiusRef);
+  });
+
   const fakeProps = (): BedProps => ({
     config: clone(INITIAL),
     activeFocus: "",
@@ -63,22 +80,83 @@ describe("<Bed />", () => {
     }));
   });
 
+  it("doesn't add a drawn point", () => {
+    location.pathname = Path.mock(Path.points("add"));
+    const p = fakeProps();
+    const addPlantProps = fakeAddPlantProps([]);
+    addPlantProps.designer.drawnPoint = undefined;
+    p.addPlantProps = addPlantProps;
+    render(<Bed {...p} />);
+    const soil = screen.getAllByText("soil")[0];
+    fireEvent.click(soil);
+    expect(p.addPlantProps.dispatch).not.toHaveBeenCalled();
+  });
+
+  it("adds a drawn point: xy", () => {
+    location.pathname = Path.mock(Path.points("add"));
+    const p = fakeProps();
+    const addPlantProps = fakeAddPlantProps([]);
+    const point = fakeDrawnPoint();
+    point.cx = undefined;
+    point.cy = undefined;
+    point.r = 0;
+    addPlantProps.designer.drawnPoint = point;
+    p.addPlantProps = addPlantProps;
+    render(<Bed {...p} />);
+    const soil = screen.getAllByText("soil")[0];
+    fireEvent.click(soil);
+    expect(p.addPlantProps.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_DRAWN_POINT_DATA,
+      payload: { ...point, cx: 1360, cy: 660, z: -500 },
+    });
+    expect(p.addPlantProps.dispatch).toHaveBeenCalledTimes(1);
+  });
+
+  it("adds a drawn point: radius", () => {
+    location.pathname = Path.mock(Path.points("add"));
+    const p = fakeProps();
+    const addPlantProps = fakeAddPlantProps([]);
+    const dispatch = jest.fn();
+    addPlantProps.dispatch = mockDispatch(dispatch);
+    const point = fakeDrawnPoint();
+    point.cx = 10;
+    point.cy = 20;
+    addPlantProps.designer.drawnPoint = point;
+    p.addPlantProps = addPlantProps;
+    render(<Bed {...p} />);
+    const soil = screen.getAllByText("soil")[0];
+    fireEvent.click(soil);
+    expect(p.addPlantProps.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_DRAWN_POINT_DATA,
+      payload: { ...point, r: 1490 },
+    });
+    expect(p.addPlantProps.dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_DRAWN_POINT_DATA,
+      payload: undefined,
+    });
+    expect(p.addPlantProps.dispatch).toHaveBeenCalledTimes(3);
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.INIT_RESOURCE,
+      payload: expect.any(Object),
+    });
+  });
+
   it("updates pointer plant position", () => {
     location.pathname = Path.mock(Path.cropSearch("mint"));
     mockIsMobile = false;
-    mockRef.current = { position: { set: mockSetPosition } };
+    mockPlantRef.current = { position: { set: mockSetPosition } };
     const p = fakeProps();
     p.addPlantProps = fakeAddPlantProps([]);
     render(<Bed {...p} />);
     const soil = screen.getAllByText("soil")[0];
     fireEvent.pointerMove(soil);
-    expect(mockSetPosition).toHaveBeenCalledWith(0, 0, -75);
+    expect(mockSetPosition).toHaveBeenCalledWith(0, 0, 0);
   });
 
   it("handles missing ref", () => {
     location.pathname = Path.mock(Path.cropSearch("mint"));
     mockIsMobile = false;
-    mockRef.current = undefined;
+    mockPlantRef.current = undefined;
     const p = fakeProps();
     p.addPlantProps = fakeAddPlantProps([]);
     render(<Bed {...p} />);
@@ -90,12 +168,99 @@ describe("<Bed />", () => {
   it("doesn't update pointer plant position: mobile", () => {
     location.pathname = Path.mock(Path.cropSearch("mint"));
     mockIsMobile = true;
-    mockRef.current = { position: { set: mockSetPosition } };
+    mockPlantRef.current = { position: { set: mockSetPosition } };
     const p = fakeProps();
     p.addPlantProps = fakeAddPlantProps([]);
     render(<Bed {...p} />);
     const soil = screen.getAllByText("soil")[0];
     fireEvent.pointerMove(soil);
     expect(mockSetPosition).not.toHaveBeenCalled();
+  });
+
+  it("doesn't update pointer point position", () => {
+    location.pathname = Path.mock(Path.points("add"));
+    mockIsMobile = false;
+    mockPlantRef.current = { position: { set: mockSetPosition } };
+    const p = fakeProps();
+    p.addPlantProps = fakeAddPlantProps([]);
+    p.addPlantProps.designer.drawnPoint = undefined;
+    render(<Bed {...p} />);
+    const soil = screen.getAllByText("soil")[0];
+    fireEvent.pointerMove(soil);
+    expect(mockSetPosition).not.toHaveBeenCalled();
+  });
+
+  it("updates pointer point position", () => {
+    location.pathname = Path.mock(Path.points("add"));
+    mockIsMobile = false;
+    mockPlantRef.current = { position: { set: mockSetPosition } };
+    const p = fakeProps();
+    p.addPlantProps = fakeAddPlantProps([]);
+    const point = fakeDrawnPoint();
+    point.cx = undefined;
+    point.cy = undefined;
+    point.r = 0;
+    p.addPlantProps.designer.drawnPoint = point;
+    render(<Bed {...p} />);
+    const soil = screen.getAllByText("soil")[0];
+    fireEvent.pointerMove(soil);
+    expect(mockSetPosition).toHaveBeenCalledWith(0, 0, 0);
+  });
+
+  it("updates pointer point radius", () => {
+    location.pathname = Path.mock(Path.points("add"));
+    mockIsMobile = false;
+    mockPlantRef.current = { position: { set: mockSetPosition } };
+    mockRadiusRef.current = { scale: { set: mockSetScale } };
+    const p = fakeProps();
+    p.addPlantProps = fakeAddPlantProps([]);
+    const point = fakeDrawnPoint();
+    point.cx = 1;
+    point.cy = 1;
+    point.r = 0;
+    p.addPlantProps.designer.drawnPoint = point;
+    render(<Bed {...p} />);
+    const soil = screen.getAllByText("soil")[0];
+    fireEvent.pointerMove(soil);
+    expect(mockSetPosition).not.toHaveBeenCalled();
+    expect(mockSetScale).toHaveBeenCalledWith(1510, 1, 1510);
+  });
+
+  it("updates pointer weed radius", () => {
+    location.pathname = Path.mock(Path.weeds("add"));
+    mockIsMobile = false;
+    mockPlantRef.current = { position: { set: mockSetPosition } };
+    mockRadiusRef.current = { scale: { set: mockSetScale } };
+    const p = fakeProps();
+    p.addPlantProps = fakeAddPlantProps([]);
+    const point = fakeDrawnPoint();
+    point.cx = 1;
+    point.cy = 1;
+    point.r = 0;
+    p.addPlantProps.designer.drawnPoint = point;
+    render(<Bed {...p} />);
+    const soil = screen.getAllByText("soil")[0];
+    fireEvent.pointerMove(soil);
+    expect(mockSetPosition).not.toHaveBeenCalled();
+    expect(mockSetScale).toHaveBeenCalledWith(1510, 1510, 1510);
+  });
+
+  it("doesn't update pointer point radius", () => {
+    location.pathname = Path.mock(Path.points("add"));
+    mockIsMobile = false;
+    mockPlantRef.current = { position: { set: mockSetPosition } };
+    mockRadiusRef.current = undefined;
+    const p = fakeProps();
+    p.addPlantProps = fakeAddPlantProps([]);
+    const point = fakeDrawnPoint();
+    point.cx = 1;
+    point.cy = 1;
+    point.r = 0;
+    p.addPlantProps.designer.drawnPoint = point;
+    render(<Bed {...p} />);
+    const soil = screen.getAllByText("soil")[0];
+    fireEvent.pointerMove(soil);
+    expect(mockSetPosition).not.toHaveBeenCalled();
+    expect(mockSetScale).not.toHaveBeenCalled();
   });
 });

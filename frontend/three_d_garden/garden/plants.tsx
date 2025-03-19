@@ -1,6 +1,6 @@
 import { TaggedPlant } from "../../farm_designer/map/interfaces";
 import { Config } from "../config";
-import { GARDENS, PLANTS } from "../constants";
+import { GARDENS, HOVER_OBJECT_MODES, PLANTS } from "../constants";
 import { Billboard, Image } from "@react-three/drei";
 import React from "react";
 import { Vector3 } from "three";
@@ -11,6 +11,7 @@ import { isUndefined, kebabCase } from "lodash";
 import { Path } from "../../internal_urls";
 import { useNavigate } from "react-router";
 import { setPanelOpen } from "../../farm_designer/panel_header";
+import { getMode } from "../../farm_designer/map/util";
 
 interface Plant {
   id?: number | undefined;
@@ -91,6 +92,7 @@ export interface ThreeDPlantProps {
   config: Config;
   hoveredPlant: number | undefined;
   dispatch?: Function;
+  visible?: boolean;
 }
 
 export const ThreeDPlant = (props: ThreeDPlantProps) => {
@@ -114,7 +116,8 @@ export const ThreeDPlant = (props: ThreeDPlantProps) => {
       </Text>
       : <Image url={plant.icon} scale={plant.size} name={"" + i}
         onClick={() => {
-          if (plant.id && !isUndefined(props.dispatch)) {
+          if (plant.id && !isUndefined(props.dispatch) && props.visible &&
+            !HOVER_OBJECT_MODES.includes(getMode())) {
             props.dispatch(setPanelOpen(true));
             navigate(Path.plants(plant.id));
           }

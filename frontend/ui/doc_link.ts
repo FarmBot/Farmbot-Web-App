@@ -1,5 +1,5 @@
 import { ExternalUrl } from "../external_urls";
-import { useNavigate } from "react-router";
+import { NavigateFunction } from "react-router";
 import { Path } from "../internal_urls";
 
 /** A centralized list of all documentation slugs in the app makes it easier to
@@ -38,18 +38,22 @@ export const devDocLink = (slug?: DevDocSlug) =>
 export const genesisDocLink = (slug?: GenesisDocSlug) =>
   `${ExternalUrl.genesisDocs}/${slug || ""}`;
 
-const genericDocLinkClick = <T>(slug: T, page: "help" | "developer") => () => {
-  const path = page == "help" ? Path.help : Path.developer;
-  if (Path.getSlug(Path.designer()) == page) {
-    location.assign(window.location.origin + Path.withApp(path("" + slug)));
-  } else {
-    const navigate = useNavigate();
-    navigate(path("" + slug));
-  }
-};
+const genericDocLinkClick =
+  <T>(
+    slug: T,
+    page: "help" | "developer",
+    navigate: NavigateFunction,
+  ) => () => {
+    const path = page == "help" ? Path.help : Path.developer;
+    if (Path.getSlug(Path.designer()) == page) {
+      location.assign(window.location.origin + Path.withApp(path("" + slug)));
+    } else {
+      navigate(path("" + slug));
+    }
+  };
 
-export const docLinkClick = (slug: DocSlug) =>
-  genericDocLinkClick<DocSlug>(slug, "help");
+export const docLinkClick = (slug: DocSlug, navigate: NavigateFunction) =>
+  genericDocLinkClick<DocSlug>(slug, "help", navigate);
 
-export const devDocLinkClick = (slug: DevDocSlug) =>
-  genericDocLinkClick<DevDocSlug>(slug, "developer");
+export const devDocLinkClick = (slug: DevDocSlug, navigate: NavigateFunction) =>
+  genericDocLinkClick<DevDocSlug>(slug, "developer", navigate);

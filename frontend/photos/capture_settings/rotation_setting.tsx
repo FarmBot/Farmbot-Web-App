@@ -21,7 +21,7 @@ export const RotationSetting = (props: RotationSettingProps) => {
   return <Highlight settingName={DeviceSetting.rotateDuringCapture}
     pathPrefix={Path.photos}>
     <div className={"capture-rotate-setting row grid-exp-1"}>
-      <div className="row grid-exp-2 half-gap">
+      <div className="row grid-exp-2 half-gap align-baseline">
         <label>{t("Rotate during capture")}</label>
         <Help text={ToolTips.ROTATE_IMAGE_AT_CAPTURE} />
       </div>

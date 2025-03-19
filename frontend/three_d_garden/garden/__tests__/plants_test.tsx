@@ -92,6 +92,7 @@ describe("<ThreeDPlant />", () => {
       i: 0,
       config: config,
       hoveredPlant: undefined,
+      visible: true,
     };
   };
 

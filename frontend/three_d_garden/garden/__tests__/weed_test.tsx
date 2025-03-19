@@ -25,7 +25,7 @@ describe("<Weed />", () => {
     p.dispatch = mockDispatch(dispatch);
     p.weed.body.id = 1;
     const { container } = render(<Weed {...p} />);
-    const weed = container.querySelector("[name='weed'");
+    const weed = container.querySelector("[name='weed-1'");
     weed && fireEvent.click(weed);
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_PANEL_OPEN, payload: true,

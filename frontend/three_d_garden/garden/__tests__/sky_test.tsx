@@ -1,13 +1,15 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { Sky, SkyProps } from "../sky";
+import { Vector3 } from "three";
 
 describe("<Sky />", () => {
   const fakeProps = (): SkyProps => ({
+    sunPosition: new Vector3(),
   });
 
   it("renders", () => {
-    const wrapper = mount(<Sky {...fakeProps()} />);
-    expect(wrapper.html()).toContain("primitive");
+    const { container } = render(<Sky {...fakeProps()} />);
+    expect(container).toContainHTML("primitive");
   });
 });

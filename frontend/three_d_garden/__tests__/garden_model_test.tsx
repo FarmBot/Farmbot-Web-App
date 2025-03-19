@@ -15,6 +15,8 @@ import {
 } from "../../__test_support__/fake_state/resources";
 import { fakeAddPlantProps } from "../../__test_support__/fake_props";
 import { ASSETS } from "../constants";
+import { Path } from "../../internal_urls";
+import { fakeDrawnPoint } from "../../__test_support__/fake_designer_state";
 
 describe("<GardenModel />", () => {
   const fakeProps = (): GardenModelProps => ({
@@ -56,6 +58,16 @@ describe("<GardenModel />", () => {
     const { container } = render(<GardenModel {...p} />);
     expect(container).toContainHTML("cylinder");
     expect(container).toContainHTML(ASSETS.other.weed);
+  });
+
+  it("renders drawn point", () => {
+    location.pathname = Path.mock(Path.points("add"));
+    const p = fakeProps();
+    const addPlantProps = fakeAddPlantProps([]);
+    addPlantProps.designer.drawnPoint = fakeDrawnPoint();
+    p.addPlantProps = addPlantProps;
+    const { container } = render(<GardenModel {...p} />);
+    expect(container).toContainHTML("drawn-point");
   });
 
   it("doesn't render bot", () => {

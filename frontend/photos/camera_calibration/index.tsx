@@ -14,6 +14,8 @@ import { cameraBtnProps } from "../capture_settings/camera_selection";
 import { Content, DeviceSetting, ToolTips } from "../../constants";
 import { getCalibratedImageCenter } from "../photo_filter_settings/util";
 import { ExternalUrl } from "../../external_urls";
+import { NavigateFunction } from "react-router";
+import { NavigationContext } from "../../routes_helpers";
 
 export class CameraCalibration extends
   React.Component<CameraCalibrationProps, {}> {
@@ -29,6 +31,10 @@ export class CameraCalibration extends
       key, JSON.stringify(formatEnvKey(key, value))));
 
   wdEnvGet = (key: WDENVKey) => envGet(key, this.props.wDEnv);
+
+  static contextType = NavigationContext;
+  context!: React.ContextType<typeof NavigationContext>;
+  navigate = this.context;
 
   render() {
     const { wdEnvGet } = this;
@@ -56,6 +62,7 @@ export class CameraCalibration extends
           ? t(Content.CAMERA_CALIBRATION_GRID_PATTERN)
           : t(Content.CAMERA_CALIBRATION_RED_OBJECTS)}</p>
         <CameraCalibrationMethodConfig
+          navigate={this.navigate}
           wdEnvGet={wdEnvGet}
           saveEnvVar={this.saveEnvVar} />
       </div>
@@ -95,6 +102,7 @@ export class CameraCalibration extends
 interface CameraCalibrationMethodConfigProps {
   wdEnvGet(key: WDENVKey): number;
   saveEnvVar(key: WDENVKey, value: number): void;
+  navigate: NavigateFunction;
 }
 
 export const CameraCalibrationMethodConfig =
@@ -106,7 +114,7 @@ export const CameraCalibrationMethodConfig =
       invert={true}
       helpText={ToolTips.RED_DOT_CAMERA_CALIBRATION}
       links={[
-        <a key={0} onClick={docLinkClick("camera-calibration")}>
+        <a key={0} onClick={docLinkClick("camera-calibration", props.navigate)}>
           {t("as described in the software documentation.")}
           <i className={"fa fa-external-link"} />
         </a>,

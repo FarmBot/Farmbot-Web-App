@@ -1,7 +1,6 @@
 import {
   DesignerState,
   DrawnPointPayl,
-  DrawnWeedPayl,
   HoveredPlantPayl,
 } from "./interfaces";
 import { generateReducer } from "../redux/generate_reducer";
@@ -29,7 +28,6 @@ export const initialState: DesignerState = {
   bulkPlantSlug: undefined,
   chosenLocation: { x: undefined, y: undefined, z: undefined },
   drawnPoint: undefined,
-  drawnWeed: undefined,
   openedSavedGarden: undefined,
   tryGroupSortType: undefined,
   editGroupAreaInMap: false,
@@ -139,20 +137,7 @@ export const designer = generateReducer<DesignerState>(initialState)
   })
   .add<DrawnPointPayl | undefined>(
     Actions.SET_DRAWN_POINT_DATA, (s, { payload }) => {
-      const { color } = (!payload || !payload.color)
-        ? (s.drawnPoint || { color: "green" })
-        : payload;
       s.drawnPoint = payload;
-      s.drawnPoint && (s.drawnPoint.color = color);
-      return s;
-    })
-  .add<DrawnWeedPayl | undefined>(
-    Actions.SET_DRAWN_WEED_DATA, (s, { payload }) => {
-      const { color } = (!payload || !payload.color)
-        ? (s.drawnWeed || { color: "red" })
-        : payload;
-      s.drawnWeed = payload;
-      s.drawnWeed && (s.drawnWeed.color = color);
       return s;
     })
   .add<number>(Actions.SET_COMPANION_INDEX, (s, a) => {

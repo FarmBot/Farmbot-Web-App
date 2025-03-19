@@ -12,58 +12,80 @@ jest.mock("../api/crud", () => ({ save: jest.fn() }));
 import React from "react";
 import { shallow } from "enzyme";
 import {
-  HotKey, HotKeys, HotKeysProps, hotkeysWithActions, toggleHotkeyHelpOverlay,
+  HotKey, HotKeys, HotKeysProps, hotkeysWithActions, HotkeysWithActionsProps,
+  toggleHotkeyHelpOverlay,
 } from "../hotkeys";
 import { sync } from "../devices/actions";
 import { save } from "../api/crud";
 import { Actions } from "../constants";
 import { Path } from "../internal_urls";
 import { mockDispatch } from "../__test_support__/fake_dispatch";
+import {
+  fakeDesignerState, fakeDrawnPoint,
+} from "../__test_support__/fake_designer_state";
+import { resetDrawnPointDataAction } from "../points/create_points";
 
 describe("hotkeysWithActions()", () => {
   beforeEach(() => {
     location.pathname = Path.mock(Path.designer());
   });
 
+  const fakeProps = (): HotkeysWithActionsProps => ({
+    navigate: jest.fn(),
+    dispatch: jest.fn(),
+    designer: fakeDesignerState(),
+    slug: "",
+  });
+
   it("has key bindings", () => {
-    const dispatch = jest.fn();
-    const navigate = jest.fn();
-    const hotkeys = hotkeysWithActions(navigate, dispatch, "");
+    const p = fakeProps();
+    const hotkeys = hotkeysWithActions(p);
     expect(Object.values(hotkeys).length).toBe(8);
     const e = {} as KeyboardEvent;
 
     hotkeys[HotKey.save].onKeyDown?.(e);
     expect(save).not.toHaveBeenCalled();
     mockState.resources.consumers.sequences.current = "uuid";
-    const hotkeysSettingsPath = hotkeysWithActions(navigate, dispatch, "settings");
+    p.slug = "settings";
+    const hotkeysSettingsPath = hotkeysWithActions(p);
     hotkeysSettingsPath[HotKey.save].onKeyDown?.(e);
     expect(save).not.toHaveBeenCalled();
-    const hotkeysSequencesPath = hotkeysWithActions(
-      navigate, dispatch, "sequences");
+    p.slug = "sequences";
+    const hotkeysSequencesPath = hotkeysWithActions(p);
     hotkeysSequencesPath[HotKey.save].onKeyDown?.(e);
     expect(save).toHaveBeenCalledWith("uuid");
 
     hotkeys[HotKey.sync].onKeyDown?.(e);
-    expect(dispatch).toHaveBeenCalledWith(sync());
+    expect(p.dispatch).toHaveBeenCalledWith(sync());
 
     hotkeys[HotKey.navigateRight].onKeyDown?.(e);
-    expect(navigate).toHaveBeenCalledWith(Path.plants());
+    expect(p.navigate).toHaveBeenCalledWith(Path.plants());
 
     hotkeys[HotKey.navigateLeft].onKeyDown?.(e);
-    expect(navigate).toHaveBeenCalledWith(Path.settings());
+    expect(p.navigate).toHaveBeenCalledWith(Path.settings());
 
     hotkeys[HotKey.addPlant].onKeyDown?.(e);
-    expect(navigate).toHaveBeenCalledWith(Path.cropSearch());
+    expect(p.navigate).toHaveBeenCalledWith(Path.cropSearch());
 
     hotkeys[HotKey.addEvent].onKeyDown?.(e);
-    expect(navigate).toHaveBeenCalledWith(Path.farmEvents("add"));
+    expect(p.navigate).toHaveBeenCalledWith(Path.farmEvents("add"));
 
-    const hotkeysWithDispatch =
-      hotkeysWithActions(navigate, mockDispatch(dispatch), "");
+    p.slug = "";
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
+    const hotkeysWithDispatch = hotkeysWithActions(p);
     hotkeysWithDispatch[HotKey.closePanel].onKeyDown?.(e);
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_PANEL_OPEN, payload: false,
     });
+
+    p.dispatch = jest.fn();
+    const point = fakeDrawnPoint();
+    point.cx = 1;
+    p.designer.drawnPoint = point;
+    const hotkeysWithDrawnPoint = hotkeysWithActions(p);
+    hotkeysWithDrawnPoint[HotKey.closePanel].onKeyDown?.(e);
+    expect(p.dispatch).toHaveBeenCalledWith(resetDrawnPointDataAction());
   });
 });
 
@@ -81,6 +103,7 @@ describe("<HotKeys />", () => {
   const fakeProps = (): HotKeysProps => ({
     dispatch: jest.fn(),
     hotkeyGuide: false,
+    designer: fakeDesignerState(),
   });
 
   it("renders", () => {

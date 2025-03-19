@@ -56,7 +56,7 @@ export interface WizardOutcomeComponentProps {
 
 export interface WizardStepComponentProps extends WizardOutcomeComponentProps {
   setStepSuccess(success: boolean, outcome?: string): () => void;
-  navigate: NavigateFunction
+  navigate: NavigateFunction;
 }
 
 interface ComponentOptions {

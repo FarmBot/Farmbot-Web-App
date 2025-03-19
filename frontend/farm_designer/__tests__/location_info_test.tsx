@@ -151,7 +151,10 @@ describe("<LocationInfo />", () => {
     wrapper.find(".add-point").simulate("click");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_DRAWN_POINT_DATA,
-      payload: { cx: 1, cy: 1 }
+      payload: {
+        name: "Location Point", cx: 1, cy: 1, color: "gray", r: 0, z: 0,
+        at_soil_level: false,
+      },
     });
     expect(mockNavigate).toHaveBeenCalledWith(Path.points("add"));
   });

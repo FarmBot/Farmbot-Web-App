@@ -102,6 +102,7 @@ import { WaterFlowRateInput } from "../tools/edit_tool";
 import { RPI_OPTIONS } from "../settings/fbos_settings/rpi_model";
 import { BoxTop } from "../settings/pin_bindings/box_top";
 import { OtaTimeSelector } from "../settings/fbos_settings/ota_time_selector";
+import { useNavigate } from "react-router";
 
 export const Language = (props: WizardStepComponentProps) => {
   const user = getUserAccountSettings(props.resources);
@@ -190,7 +191,9 @@ export const CameraCalibrationCard = (props: WizardStepComponentProps) => {
 
 export const SwitchCameraCalibrationMethod =
   (props: WizardOutcomeComponentProps) => {
+    const navigate = useNavigate();
     return <CameraCalibrationMethodConfig
+      navigate={navigate}
       wdEnvGet={key => envGet(key, prepopulateEnv(getEnv(props.resources)))}
       saveEnvVar={(key, value) =>
         props.dispatch(saveOrEditFarmwareEnv(props.resources)(

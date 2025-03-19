@@ -178,19 +178,12 @@ export class GardenMap extends
         });
         break;
       case Mode.createPoint:
-        startNewPoint({
-          gardenCoords: this.getGardenCoordinates(e),
-          dispatch: this.props.dispatch,
-          setMapState: this.setMapState,
-          type: "point",
-        });
-        break;
       case Mode.createWeed:
         startNewPoint({
           gardenCoords: this.getGardenCoordinates(e),
           dispatch: this.props.dispatch,
           setMapState: this.setMapState,
-          type: "weed",
+          drawnPoint: this.props.designer.drawnPoint,
         });
         break;
       case Mode.clickToAdd:
@@ -353,21 +346,12 @@ export class GardenMap extends
         });
         break;
       case Mode.createPoint:
+      case Mode.createWeed:
         resizePoint({
           gardenCoords: this.getGardenCoordinates(e),
           drawnPoint: this.props.designer.drawnPoint,
           dispatch: this.props.dispatch,
           isDragging: this.state.isDragging,
-          type: "point",
-        });
-        break;
-      case Mode.createWeed:
-        resizePoint({
-          gardenCoords: this.getGardenCoordinates(e),
-          drawnPoint: this.props.designer.drawnWeed,
-          dispatch: this.props.dispatch,
-          isDragging: this.state.isDragging,
-          type: "weed",
         });
         break;
       case Mode.editGroup:
@@ -671,12 +655,14 @@ export class GardenMap extends
       point.uuid == this.props.designer.hoveredPoint)[0]}
     zoomLvl={this.props.zoomLvl}
     mapTransformProps={this.mapTransformProps} />;
-  DrawnPoint = () => <DrawnPoint
-    data={this.props.designer.drawnPoint}
-    mapTransformProps={this.mapTransformProps} />;
-  DrawnWeed = () => <DrawnWeed
-    data={this.props.designer.drawnWeed}
-    mapTransformProps={this.mapTransformProps} />;
+  DrawnPoint = () => getMode() == Mode.createPoint &&
+    <DrawnPoint
+      data={this.props.designer.drawnPoint}
+      mapTransformProps={this.mapTransformProps} />;
+  DrawnWeed = () => getMode() == Mode.createWeed &&
+    <DrawnWeed
+      data={this.props.designer.drawnPoint}
+      mapTransformProps={this.mapTransformProps} />;
   GroupOrder = () => <GroupOrder
     group={this.group}
     groupPoints={this.pointsSelectedByGroup}

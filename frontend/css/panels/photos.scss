@@ -100,20 +100,22 @@
     display: grid;
     grid-template-columns: auto 1fr;
     gap: 0.5rem;
+    align-items: baseline;
   }
   .title-help {
     font-size: 1.3rem;
     .fa-question-circle {
       position: absolute;
-      top: -3rem;
+      top: -2.5rem;
       right: 0;
       font-size: 1.4rem;
+      margin-right: 0;
     }
     a {
       text-decoration: none !important;
     }
-    .fa-external-link {
-      margin-left: 1rem;
+    a:hover {
+      text-decoration: underline !important;
     }
     .update {
       display: inline;
@@ -128,7 +130,7 @@
       }
     }
     .title-help-text.open {
-      margin-bottom: 0;
+      margin-bottom: 1rem;
     }
   }
 }
@@ -141,8 +143,5 @@
   p {
     font-size: 1.2rem;
     font-style: italic;
-  }
-  .camera-calibration-setting-grid {
-    grid-template-columns: 65% auto;
   }
 }
