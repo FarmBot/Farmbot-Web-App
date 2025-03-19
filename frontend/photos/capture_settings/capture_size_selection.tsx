@@ -66,7 +66,7 @@ export class CaptureSizeSelection
       pathPrefix={Path.photos}>
       <div className={"image-size-inputs grid"}>
         <Row className="row grid-2-col">
-          <div className="row grid-exp-2 half-gap">
+          <div className="row grid-exp-2 half-gap align-baseline">
             <label>{t("resolution")}</label>
             <Help text={ToolTips.IMAGE_RESOLUTION} />
           </div>

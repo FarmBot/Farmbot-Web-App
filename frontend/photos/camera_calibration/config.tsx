@@ -40,7 +40,7 @@ export class CameraCalibrationConfig
     const { calibrationZ } = this.props;
     return <div className={"grid"}>
       {!simple &&
-        <div className={"camera-calibration-configs"}>
+        <div className={"camera-calibration-configs grid"}>
           <BoolConfig {...commonProps}
             settingName={DeviceSetting.invertHueRangeSelection}
             helpText={t(ToolTips.INVERT_HUE_SELECTION, {
@@ -124,7 +124,7 @@ export const BoolConfig = (props: BoolConfigProps) => {
     className={props.advanced ? "advanced" : undefined}
     pathPrefix={Path.photos}>
     <div className="row grid-exp-1">
-      <div className="row grid-exp-2 half-gap">
+      <div className="row grid-exp-2 half-gap align-baseline">
         <label htmlFor={props.configKey}>
           {t(props.settingName)}
         </label>
@@ -157,8 +157,8 @@ export interface NumberBoxConfigProps {
 
 export const NumberBoxConfig = (props: NumberBoxConfigProps) => {
   return <Highlight settingName={props.settingName} pathPrefix={Path.photos}>
-    <div className={"row camera-calibration-setting-grid"}>
-      <div className="row grid-exp-2 half-gap">
+    <div className={"row grid-exp-1"}>
+      <div className="row grid-exp-2 half-gap align-baseline">
         <label htmlFor={props.configKey}>
           {t(props.settingName)}
         </label>
@@ -189,8 +189,8 @@ export interface DropdownConfigProps {
 
 export const DropdownConfig = (props: DropdownConfigProps) =>
   <Highlight settingName={props.settingName} pathPrefix={Path.photos}>
-    <div className={`camera-calibration-setting-grid row ${props.extraClass}`}>
-      <div className="row grid-exp-2 half-gap">
+    <div className={`grid-exp-1 row ${props.extraClass}`}>
+      <div className="row grid-exp-2 half-gap align-baseline">
         <label htmlFor={props.configKey}>
           {t(props.settingName)}
         </label>

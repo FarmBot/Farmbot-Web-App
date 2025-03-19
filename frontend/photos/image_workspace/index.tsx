@@ -110,12 +110,12 @@ export class ImageWorkspace
     const defaultHLow = this.getDefault(cameraCalibrationEnv ? "H_HI" : "H_LO");
     const defaultHHigh = this.getDefault(cameraCalibrationEnv ? "H_LO" : "H_HI");
     return <div className="image-workspace grid">
-      <Row className="grid-2-col weed-detection-grid">
+      <Row className="grid-2-col weed-detection-grid double-gap">
         <div className="grid">
           <Highlight settingName={this.props.sectionKey == "calibration"
             ? DeviceSetting.calibrationHue
             : DeviceSetting.detectionHue} pathPrefix={Path.photos}>
-            <div className="row grid-exp-2 half-gap">
+            <div className="row grid-exp-2 half-gap align-baseline">
               <label htmlFor="hue">{t("HUE")}</label>
               <Help text={t(ToolTips.COLOR_HUE_RANGE, {
                 defaultLow: defaultHLow,
@@ -139,7 +139,7 @@ export class ImageWorkspace
           <Highlight settingName={this.props.sectionKey == "calibration"
             ? DeviceSetting.calibrationSaturation
             : DeviceSetting.detectionSaturation} pathPrefix={Path.photos}>
-            <div className="row grid-exp-2 half-gap">
+            <div className="row grid-exp-2 half-gap align-baseline">
               <label htmlFor="saturation">{t("SATURATION")}</label>
               <Help text={t(ToolTips.COLOR_SATURATION_RANGE, {
                 defaultLow: this.getDefault("S_LO"),
@@ -162,7 +162,7 @@ export class ImageWorkspace
           <Highlight settingName={this.props.sectionKey == "calibration"
             ? DeviceSetting.calibrationValue
             : DeviceSetting.detectionValue} pathPrefix={Path.photos}>
-            <div className="row grid-exp-2 half-gap">
+            <div className="row grid-exp-2 half-gap align-baseline">
               <label htmlFor="value">{t("VALUE")}</label>
               <Help text={t(ToolTips.COLOR_VALUE_RANGE, {
                 defaultLow: this.getDefault("V_LO"),
@@ -211,7 +211,7 @@ export class ImageWorkspace
               className={"advanced"}
               pathPrefix={Path.photos}>
               <div className="grid no-gap">
-                <div className="row grid-exp-2 half-gap">
+                <div className="row grid-exp-2 half-gap align-baseline">
                   <label>{t("BLUR")}</label>
                   <Help text={t(ToolTips.BLUR, {
                     defaultBlur: this.getDefault("blur")
@@ -231,7 +231,7 @@ export class ImageWorkspace
                 : DeviceSetting.detectionMorph}
               pathPrefix={Path.photos}>
               <div className="grid no-gap">
-                <div className="row grid-exp-2 half-gap">
+                <div className="row grid-exp-2 half-gap align-baseline">
                   <label>{t("MORPH")}</label>
                   <Help text={t(ToolTips.MORPH, {
                     defaultMorph: this.getDefault("morph")
@@ -251,7 +251,7 @@ export class ImageWorkspace
                 : DeviceSetting.detectionIterations}
               pathPrefix={Path.photos}>
               <div className="grid no-gap">
-                <div className="row grid-exp-2 half-gap">
+                <div className="row grid-exp-2 half-gap align-baseline">
                   <label>{t("ITERATIONS")}</label>
                   <Help text={t(ToolTips.ITERATIONS, {
                     defaultIteration: this.getDefault("iteration")
