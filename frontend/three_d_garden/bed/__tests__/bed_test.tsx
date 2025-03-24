@@ -7,12 +7,20 @@ jest.mock("../../../screen_size", () => ({
   isMobile: () => mockIsMobile,
 }));
 
-const mockSetPosition = jest.fn();
-const mockSetScale = jest.fn();
+const mockSetPlantPosition = jest.fn();
+const mockSetRadiusScale = jest.fn();
+const mockSetBillboardPosition = jest.fn();
+const mockSetImageScale = jest.fn();
 interface MockPlantRefCurrent {
   position: { set: Function; };
 }
 interface MockRadiusRefCurrent {
+  scale: { set: Function; };
+}
+interface MockBillboardRefCurrent {
+  position: { set: Function; };
+}
+interface MockImageRefCurrent {
   scale: { set: Function; };
 }
 interface MockPlantRef {
@@ -21,8 +29,16 @@ interface MockPlantRef {
 interface MockRadiusRef {
   current: MockRadiusRefCurrent | undefined;
 }
+interface MockBillboardRef {
+  current: MockBillboardRefCurrent | undefined;
+}
+interface MockImageRef {
+  current: MockImageRefCurrent | undefined;
+}
 const mockPlantRef: MockPlantRef = { current: undefined };
 const mockRadiusRef: MockRadiusRef = { current: undefined };
+const mockBillboardRef: MockBillboardRef = { current: undefined };
+const mockImageRef: MockImageRef = { current: undefined };
 jest.mock("react", () => ({
   ...jest.requireActual("react"),
   useRef: jest.fn(),
@@ -39,17 +55,22 @@ import { fakeAddPlantProps } from "../../../__test_support__/fake_props";
 import { Actions } from "../../../constants";
 import { fakeDrawnPoint } from "../../../__test_support__/fake_designer_state";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
+import { fakePoint } from "../../../__test_support__/fake_state/resources";
+import { SpecialStatus } from "farmbot";
 
 describe("<Bed />", () => {
   beforeEach(() => {
     React.useRef = jest.fn()
       .mockImplementationOnce(() => mockPlantRef)
-      .mockImplementationOnce(() => mockRadiusRef);
+      .mockImplementationOnce(() => mockRadiusRef)
+      .mockImplementationOnce(() => mockBillboardRef)
+      .mockImplementationOnce(() => mockImageRef);
   });
 
   const fakeProps = (): BedProps => ({
     config: clone(INITIAL),
     activeFocus: "",
+    mapPoints: [],
   });
 
   it("renders bed", () => {
@@ -66,6 +87,31 @@ describe("<Bed />", () => {
     p.config.legsFlush = false;
     const { container } = render(<Bed {...p} />);
     expect(container).toContainHTML("bed-group");
+  });
+
+  it.each<[string, SpecialStatus]>([
+    ["doesn't render", SpecialStatus.DIRTY],
+    ["renders", SpecialStatus.SAVED],
+  ])("%s pointer point", (title, gridPointSpecialStatus) => {
+    location.pathname = Path.mock(Path.points("add"));
+    mockIsMobile = false;
+    const p = fakeProps();
+    p.addPlantProps = fakeAddPlantProps([]);
+    const point0 = fakePoint();
+    point0.specialStatus = gridPointSpecialStatus;
+    point0.body.meta = { gridId: "123" };
+    p.mapPoints = [point0];
+    const point = fakeDrawnPoint();
+    point.cx = undefined;
+    point.cy = undefined;
+    point.r = 0;
+    p.addPlantProps.designer.drawnPoint = point;
+    const { container } = render(<Bed {...p} />);
+    if (title == "renders") {
+      expect(container).toContainHTML("drawn-point");
+    } else {
+      expect(container).not.toContainHTML("drawn-point");
+    }
   });
 
   it("adds a plant", () => {
@@ -94,6 +140,7 @@ describe("<Bed />", () => {
 
   it("adds a drawn point: xy", () => {
     location.pathname = Path.mock(Path.points("add"));
+    mockPlantRef.current = { position: { set: mockSetPlantPosition } };
     const p = fakeProps();
     const addPlantProps = fakeAddPlantProps([]);
     const point = fakeDrawnPoint();
@@ -105,6 +152,7 @@ describe("<Bed />", () => {
     render(<Bed {...p} />);
     const soil = screen.getAllByText("soil")[0];
     fireEvent.click(soil);
+    expect(mockSetPlantPosition).toHaveBeenCalledWith(0, 0, 0);
     expect(p.addPlantProps.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_DRAWN_POINT_DATA,
       payload: { ...point, cx: 1360, cy: 660, z: -500 },
@@ -114,6 +162,7 @@ describe("<Bed />", () => {
 
   it("adds a drawn point: radius", () => {
     location.pathname = Path.mock(Path.points("add"));
+    mockPlantRef.current = { position: { set: mockSetPlantPosition } };
     const p = fakeProps();
     const addPlantProps = fakeAddPlantProps([]);
     const dispatch = jest.fn();
@@ -126,6 +175,7 @@ describe("<Bed />", () => {
     render(<Bed {...p} />);
     const soil = screen.getAllByText("soil")[0];
     fireEvent.click(soil);
+    expect(mockSetPlantPosition).toHaveBeenCalledWith(0, 0, 0);
     expect(p.addPlantProps.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_DRAWN_POINT_DATA,
       payload: { ...point, r: 1490 },
@@ -144,13 +194,13 @@ describe("<Bed />", () => {
   it("updates pointer plant position", () => {
     location.pathname = Path.mock(Path.cropSearch("mint"));
     mockIsMobile = false;
-    mockPlantRef.current = { position: { set: mockSetPosition } };
+    mockPlantRef.current = { position: { set: mockSetPlantPosition } };
     const p = fakeProps();
     p.addPlantProps = fakeAddPlantProps([]);
     render(<Bed {...p} />);
     const soil = screen.getAllByText("soil")[0];
     fireEvent.pointerMove(soil);
-    expect(mockSetPosition).toHaveBeenCalledWith(0, 0, 0);
+    expect(mockSetPlantPosition).toHaveBeenCalledWith(0, 0, 0);
   });
 
   it("handles missing ref", () => {
@@ -162,38 +212,38 @@ describe("<Bed />", () => {
     render(<Bed {...p} />);
     const soil = screen.getAllByText("soil")[0];
     fireEvent.pointerMove(soil);
-    expect(mockSetPosition).not.toHaveBeenCalled();
+    expect(mockSetPlantPosition).not.toHaveBeenCalled();
   });
 
   it("doesn't update pointer plant position: mobile", () => {
     location.pathname = Path.mock(Path.cropSearch("mint"));
     mockIsMobile = true;
-    mockPlantRef.current = { position: { set: mockSetPosition } };
+    mockPlantRef.current = { position: { set: mockSetPlantPosition } };
     const p = fakeProps();
     p.addPlantProps = fakeAddPlantProps([]);
     render(<Bed {...p} />);
     const soil = screen.getAllByText("soil")[0];
     fireEvent.pointerMove(soil);
-    expect(mockSetPosition).not.toHaveBeenCalled();
+    expect(mockSetPlantPosition).not.toHaveBeenCalled();
   });
 
   it("doesn't update pointer point position", () => {
     location.pathname = Path.mock(Path.points("add"));
     mockIsMobile = false;
-    mockPlantRef.current = { position: { set: mockSetPosition } };
+    mockPlantRef.current = { position: { set: mockSetPlantPosition } };
     const p = fakeProps();
     p.addPlantProps = fakeAddPlantProps([]);
     p.addPlantProps.designer.drawnPoint = undefined;
     render(<Bed {...p} />);
     const soil = screen.getAllByText("soil")[0];
     fireEvent.pointerMove(soil);
-    expect(mockSetPosition).not.toHaveBeenCalled();
+    expect(mockSetPlantPosition).not.toHaveBeenCalled();
   });
 
   it("updates pointer point position", () => {
     location.pathname = Path.mock(Path.points("add"));
     mockIsMobile = false;
-    mockPlantRef.current = { position: { set: mockSetPosition } };
+    mockPlantRef.current = { position: { set: mockSetPlantPosition } };
     const p = fakeProps();
     p.addPlantProps = fakeAddPlantProps([]);
     const point = fakeDrawnPoint();
@@ -204,14 +254,16 @@ describe("<Bed />", () => {
     render(<Bed {...p} />);
     const soil = screen.getAllByText("soil")[0];
     fireEvent.pointerMove(soil);
-    expect(mockSetPosition).toHaveBeenCalledWith(0, 0, 0);
+    expect(mockSetPlantPosition).toHaveBeenCalledWith(0, 0, 0);
   });
 
   it("updates pointer point radius", () => {
     location.pathname = Path.mock(Path.points("add"));
     mockIsMobile = false;
-    mockPlantRef.current = { position: { set: mockSetPosition } };
-    mockRadiusRef.current = { scale: { set: mockSetScale } };
+    mockPlantRef.current = { position: { set: mockSetPlantPosition } };
+    mockRadiusRef.current = { scale: { set: mockSetRadiusScale } };
+    mockBillboardRef.current = { position: { set: mockSetBillboardPosition } };
+    mockImageRef.current = { scale: { set: mockSetImageScale } };
     const p = fakeProps();
     p.addPlantProps = fakeAddPlantProps([]);
     const point = fakeDrawnPoint();
@@ -222,15 +274,19 @@ describe("<Bed />", () => {
     render(<Bed {...p} />);
     const soil = screen.getAllByText("soil")[0];
     fireEvent.pointerMove(soil);
-    expect(mockSetPosition).not.toHaveBeenCalled();
-    expect(mockSetScale).toHaveBeenCalledWith(1510, 1, 1510);
+    expect(mockSetPlantPosition).not.toHaveBeenCalled();
+    expect(mockSetRadiusScale).toHaveBeenCalledWith(1510, 1, 1510);
+    expect(mockSetBillboardPosition).toHaveBeenCalledWith(0, 0, 755);
+    expect(mockSetImageScale).toHaveBeenCalledWith(1510, 1510, 1510);
   });
 
   it("updates pointer weed radius", () => {
     location.pathname = Path.mock(Path.weeds("add"));
     mockIsMobile = false;
-    mockPlantRef.current = { position: { set: mockSetPosition } };
-    mockRadiusRef.current = { scale: { set: mockSetScale } };
+    mockPlantRef.current = { position: { set: mockSetPlantPosition } };
+    mockRadiusRef.current = { scale: { set: mockSetRadiusScale } };
+    mockBillboardRef.current = { position: { set: mockSetBillboardPosition } };
+    mockImageRef.current = { scale: { set: mockSetImageScale } };
     const p = fakeProps();
     p.addPlantProps = fakeAddPlantProps([]);
     const point = fakeDrawnPoint();
@@ -241,15 +297,19 @@ describe("<Bed />", () => {
     render(<Bed {...p} />);
     const soil = screen.getAllByText("soil")[0];
     fireEvent.pointerMove(soil);
-    expect(mockSetPosition).not.toHaveBeenCalled();
-    expect(mockSetScale).toHaveBeenCalledWith(1510, 1510, 1510);
+    expect(mockSetPlantPosition).not.toHaveBeenCalled();
+    expect(mockSetRadiusScale).toHaveBeenCalledWith(1510, 1510, 1510);
+    expect(mockSetBillboardPosition).toHaveBeenCalledWith(0, 0, 755);
+    expect(mockSetImageScale).toHaveBeenCalledWith(1510, 1510, 1510);
   });
 
-  it("doesn't update pointer point radius", () => {
+  it("doesn't update pointer point radius: no ref", () => {
     location.pathname = Path.mock(Path.points("add"));
     mockIsMobile = false;
-    mockPlantRef.current = { position: { set: mockSetPosition } };
+    mockPlantRef.current = { position: { set: mockSetPlantPosition } };
     mockRadiusRef.current = undefined;
+    mockBillboardRef.current = undefined;
+    mockImageRef.current = undefined;
     const p = fakeProps();
     p.addPlantProps = fakeAddPlantProps([]);
     const point = fakeDrawnPoint();
@@ -260,7 +320,32 @@ describe("<Bed />", () => {
     render(<Bed {...p} />);
     const soil = screen.getAllByText("soil")[0];
     fireEvent.pointerMove(soil);
-    expect(mockSetPosition).not.toHaveBeenCalled();
-    expect(mockSetScale).not.toHaveBeenCalled();
+    expect(mockSetPlantPosition).not.toHaveBeenCalled();
+    expect(mockSetRadiusScale).not.toHaveBeenCalled();
+    expect(mockSetBillboardPosition).not.toHaveBeenCalled();
+    expect(mockSetImageScale).not.toHaveBeenCalled();
+  });
+
+  it("doesn't update pointer point radius: already set", () => {
+    location.pathname = Path.mock(Path.points("add"));
+    mockIsMobile = false;
+    mockPlantRef.current = { position: { set: mockSetPlantPosition } };
+    mockRadiusRef.current = { scale: { set: mockSetRadiusScale } };
+    mockBillboardRef.current = { position: { set: mockSetBillboardPosition } };
+    mockImageRef.current = { scale: { set: mockSetImageScale } };
+    const p = fakeProps();
+    p.addPlantProps = fakeAddPlantProps([]);
+    const point = fakeDrawnPoint();
+    point.cx = 1;
+    point.cy = 1;
+    point.r = 100;
+    p.addPlantProps.designer.drawnPoint = point;
+    render(<Bed {...p} />);
+    const soil = screen.getAllByText("soil")[0];
+    fireEvent.pointerMove(soil);
+    expect(mockSetPlantPosition).not.toHaveBeenCalled();
+    expect(mockSetRadiusScale).not.toHaveBeenCalled();
+    expect(mockSetBillboardPosition).not.toHaveBeenCalled();
+    expect(mockSetImageScale).not.toHaveBeenCalled();
   });
 });

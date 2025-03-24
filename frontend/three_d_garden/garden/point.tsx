@@ -1,9 +1,9 @@
 import React from "react";
-import { TaggedGenericPointer, Xyz } from "farmbot";
+import { SpecialStatus, TaggedGenericPointer, Xyz } from "farmbot";
 import { Config } from "../config";
 import { Group, MeshPhongMaterial } from "../components";
 import { Cylinder, Sphere } from "@react-three/drei";
-import { DoubleSide } from "three";
+import { DoubleSide, Mesh, Group as GroupType } from "three";
 import { zero as zeroFunc, threeSpace } from "../helpers";
 import { useNavigate } from "react-router";
 import { Path } from "../../internal_urls";
@@ -15,6 +15,10 @@ import { Mode } from "../../farm_designer/map/interfaces";
 import { WeedBase } from ".";
 import { HOVER_OBJECT_MODES } from "../constants";
 
+const POINT_CYLINDER_HEIGHT = 50;
+const POINT_PIN_RADIUS = 25;
+const POINT_PIN_HEIGHT = 100;
+
 export interface PointProps {
   point: TaggedGenericPointer;
   config: Config;
@@ -24,9 +28,10 @@ export interface PointProps {
 export const Point = (props: PointProps) => {
   const { point, config } = props;
   const navigate = useNavigate();
+  const unsaved = point.specialStatus !== SpecialStatus.SAVED;
   return <PointBase
     pointName={"" + point.body.id}
-    alpha={1}
+    alpha={unsaved ? 0.5 : 1}
     position={{
       x: point.body.x,
       y: point.body.y,
@@ -49,6 +54,9 @@ export interface DrawnPointProps {
   designer: DesignerState;
   usePosition: boolean;
   config: Config;
+  radiusRef?: React.RefObject<Mesh | null>;
+  billboardRef?: React.RefObject<GroupType | null>;
+  imageRef?: React.RefObject<Mesh | null>;
 }
 
 export const DrawnPoint = (props: DrawnPointProps) => {
@@ -66,7 +74,10 @@ export const DrawnPoint = (props: DrawnPointProps) => {
     position={props.usePosition ? drawnPointPosition : undefined}
     color={drawnPoint?.color}
     config={config}
-    radius={drawnPoint?.r || 0} />;
+    radius={drawnPoint?.r || 0}
+    radiusRef={props.radiusRef}
+    billboardRef={props.billboardRef}
+    imageRef={props.imageRef} />;
 };
 
 interface PointBaseProps {
@@ -77,12 +88,13 @@ interface PointBaseProps {
   radius: number;
   alpha: number;
   config: Config;
+  radiusRef?: React.RefObject<Mesh | null>;
+  billboardRef?: React.RefObject<GroupType | null>;
+  imageRef?: React.RefObject<Mesh | null>;
 }
 
 const PointBase = (props: PointBaseProps) => {
-  const RADIUS = 25;
-  const HEIGHT = 100;
-  const { config } = props;
+  const { config, radius } = props;
   return <Group
     name={"point-" + props.pointName}
     rotation={[Math.PI / 2, 0, 0]}
@@ -96,8 +108,8 @@ const PointBase = (props: PointBaseProps) => {
     <Group name={"marker"}
       onClick={props.onClick}>
       <Cylinder
-        args={[RADIUS, 0, HEIGHT, 32, 32, true]}
-        position={[0, HEIGHT / 2, 0]}>
+        args={[POINT_PIN_RADIUS, 0, POINT_PIN_HEIGHT, 32, 32, true]}
+        position={[0, POINT_PIN_HEIGHT / 2, 0]}>
         <MeshPhongMaterial
           color={props.color}
           side={DoubleSide}
@@ -105,8 +117,8 @@ const PointBase = (props: PointBaseProps) => {
           opacity={1 * props.alpha} />
       </Cylinder>
       <Sphere
-        args={[RADIUS, 32, 32]}
-        position={[0, HEIGHT, 0]}>
+        args={[POINT_PIN_RADIUS, 32, 32]}
+        position={[0, POINT_PIN_HEIGHT, 0]}>
         <MeshPhongMaterial
           color={props.color}
           side={DoubleSide}
@@ -115,7 +127,9 @@ const PointBase = (props: PointBaseProps) => {
       </Sphere>
     </Group>
     <Cylinder
-      args={[props.radius, props.radius, 100, 32, 32, true]}>
+      ref={props.radiusRef}
+      scale={[radius, 1, radius]}
+      args={[1, 1, POINT_CYLINDER_HEIGHT, 32, 32, true]}>
       <MeshPhongMaterial
         color={props.color}
         side={DoubleSide}

@@ -10,6 +10,7 @@ import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import {
   fakeDesignerState, fakeDrawnPoint,
 } from "../../../__test_support__/fake_designer_state";
+import { SpecialStatus } from "farmbot";
 
 describe("<Point />", () => {
   const fakeProps = (): PointProps => ({
@@ -20,6 +21,15 @@ describe("<Point />", () => {
   it("renders", () => {
     const { container } = render(<Point {...fakeProps()} />);
     expect(container).toContainHTML("cylinder");
+    expect(container).toContainHTML("opacity=\"1\"");
+  });
+
+  it("renders: unsaved", () => {
+    const p = fakeProps();
+    p.point.specialStatus = SpecialStatus.DIRTY;
+    const { container } = render(<Point {...p} />);
+    expect(container).toContainHTML("cylinder");
+    expect(container).not.toContainHTML("opacity=\"1\"");
   });
 
   it("navigates to point info", () => {
@@ -65,6 +75,15 @@ describe("<DrawnPoint />", () => {
     p.designer.drawnPoint = undefined;
     const { container } = render(<DrawnPoint {...p} />);
     expect(container).toContainHTML("position=\"0,0,0\"");
+  });
+
+  it("doesn't draw point", () => {
+    location.pathname = Path.mock(Path.points("add"));
+    const p = fakeProps();
+    p.usePosition = true;
+    p.designer.drawnPoint = undefined;
+    const { container } = render(<DrawnPoint {...p} />);
+    expect(container).not.toContainHTML("position=\"0,0,0\"");
   });
 
   it("draws weed", () => {

@@ -13,7 +13,6 @@ import {
   Sky, Solar, Sun, sunPosition, ZoomBeacons,
   calculatePlantPositions, convertPlants, ThreeDPlant,
   Point, Grid, Clouds, Ground, Weed,
-  DrawnPoint,
 } from "./garden";
 import { Config } from "./config";
 import { useSpring, animated } from "@react-spring/three";
@@ -28,8 +27,6 @@ import { TaggedGenericPointer, TaggedWeedPointer } from "farmbot";
 import { BooleanSetting } from "../session_keys";
 import { SlotWithTool } from "../resources/interfaces";
 import { cameraInit } from "./camera";
-import { getMode } from "../farm_designer/map/util";
-import { DRAW_POINT_MODES } from "./constants";
 
 const AnimatedGroup = animated(Group);
 
@@ -124,6 +121,7 @@ export const GardenModel = (props: GardenModelProps) => {
     <Bed
       config={config}
       activeFocus={props.activeFocus}
+      mapPoints={props.mapPoints || []}
       addPlantProps={addPlantProps} />
     {showFarmbot &&
       <Bot
@@ -165,11 +163,6 @@ export const GardenModel = (props: GardenModelProps) => {
           config={config}
           dispatch={dispatch} />)}
     </Group>
-    {addPlantProps && DRAW_POINT_MODES.includes(getMode()) &&
-      <DrawnPoint
-        config={config}
-        designer={addPlantProps.designer}
-        usePosition={true} />}
     <Group name={"weeds"}
       visible={showWeeds}>
       {props.weeds?.map(weed =>

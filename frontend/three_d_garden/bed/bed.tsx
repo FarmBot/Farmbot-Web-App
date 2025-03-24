@@ -1,8 +1,6 @@
 import React from "react";
 import {
   Billboard, Box, Detailed, Extrude, useTexture, Image,
-  Cylinder,
-  Sphere,
 } from "@react-three/drei";
 import {
   DoubleSide, Path as LinePath, Shape, RepeatWrapping, Group as GroupType,
@@ -20,7 +18,7 @@ import {
   AxisNumberProperty, Mode, TaggedPlant,
 } from "../../farm_designer/map/interfaces";
 import { dropPlant } from "../../farm_designer/map/layers/plants/plant_actions";
-import { TaggedCurve } from "farmbot";
+import { SpecialStatus, TaggedCurve, TaggedGenericPointer } from "farmbot";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
 import { DesignerState, DrawnPointPayl } from "../../farm_designer/interfaces";
 import { isMobile } from "../../screen_size";
@@ -79,6 +77,7 @@ export interface AddPlantProps {
 export interface BedProps {
   config: Config;
   activeFocus: string;
+  mapPoints: TaggedGenericPointer[];
   addPlantProps?: AddPlantProps;
 }
 
@@ -147,6 +146,12 @@ export const Bed = (props: BedProps) => {
   // eslint-disable-next-line no-null/no-null
   const radiusRef = React.useRef<Mesh>(null);
 
+  // eslint-disable-next-line no-null/no-null
+  const billboardRef = React.useRef<GroupType>(null);
+
+  // eslint-disable-next-line no-null/no-null
+  const imageRef = React.useRef<Mesh>(null);
+
   type XY = AxisNumberProperty;
 
   const getGardenPosition = (threeDPosition: XY): XY => ({
@@ -187,6 +192,7 @@ export const Bed = (props: BedProps) => {
             });
           }
           if (DRAW_POINT_MODES.includes(getMode())) {
+            pointerPlantRef.current?.position.set(0, 0, 0);
             const cursor = getGardenPosition(e.point);
             const { drawnPoint } = addPlantProps.designer;
             if (isUndefined(drawnPoint)) { return; }
@@ -235,6 +241,7 @@ export const Bed = (props: BedProps) => {
             if (isUndefined(drawnPoint.cx) || isUndefined(drawnPoint.cy)) {
               pointerPlantRef.current.position.set(position.x, position.y, 0);
             } else {
+              if (drawnPoint.r > 0) { return; }
               const radius = round(xyDistance(
                 { x: drawnPoint.cx, y: drawnPoint.cy },
                 getGardenPosition(e.point)));
@@ -242,6 +249,8 @@ export const Bed = (props: BedProps) => {
                 radius,
                 getMode() == Mode.createPoint ? 1 : radius,
                 radius);
+              billboardRef.current?.position.set(0, 0, radius / 2);
+              imageRef.current?.scale.set(radius, radius, radius);
             }
           }
         }
@@ -262,7 +271,11 @@ export const Bed = (props: BedProps) => {
   };
 
   const drawnPoint = props.addPlantProps && props.addPlantProps.designer.drawnPoint;
+  const settingRadius = !(isUndefined(drawnPoint?.cx) || isUndefined(drawnPoint.cy));
   const soilZ = zZero(props.config) - props.config.soilHeight;
+  const gridPreview = props.mapPoints
+    .filter(p => p.specialStatus == SpecialStatus.DIRTY && p.body.meta.gridId)
+    .length > 0;
 
   return <Group name={"bed-group"}>
     <Detailed distances={detailLevels(props.config)}>
@@ -340,39 +353,17 @@ export const Bed = (props: BedProps) => {
     {HOVER_OBJECT_MODES.includes(getMode()) &&
       !isMobile() &&
       <Group ref={pointerPlantRef} position={[0, 0, 0]}>
-        <Group position={[0, 0, soilZ]}>
+        <Group position={[0, 0, settingRadius ? 0 : soilZ]}>
           {DRAW_POINT_MODES.includes(getMode()) && props.addPlantProps &&
+            !gridPreview &&
             drawnPoint &&
-            <Group name={"add-point-hover-object-center"}>
-              {(isUndefined(drawnPoint.cx) || isUndefined(drawnPoint.cy))
-                ? <DrawnPoint
-                  config={props.config}
-                  designer={props.addPlantProps.designer}
-                  usePosition={false} />
-                : <Group name={"add-point-hover-object-radius"}>
-                  {getMode() == Mode.createPoint
-                    ? <Cylinder
-                      ref={radiusRef}
-                      rotation={[Math.PI / 2, 0, 0]}
-                      args={[1, 1, 100, 32, 32, true]}>
-                      <MeshPhongMaterial
-                        color={drawnPoint.color}
-                        side={DoubleSide}
-                        transparent={true}
-                        opacity={0.5} />
-                    </Cylinder>
-                    : <Sphere
-                      ref={radiusRef}
-                      renderOrder={1}
-                      args={[1, 32, 32]}>
-                      <MeshPhongMaterial
-                        color={drawnPoint.color}
-                        side={DoubleSide}
-                        transparent={true}
-                        opacity={0.5} />
-                    </Sphere>}
-                </Group>}
-            </Group>}
+            <DrawnPoint
+              radiusRef={radiusRef}
+              billboardRef={billboardRef}
+              imageRef={imageRef}
+              config={props.config}
+              designer={props.addPlantProps.designer}
+              usePosition={settingRadius} />}
           {getMode() == Mode.clickToAdd &&
             <Billboard follow={true} position={[0, 0, iconSize / 2]}>
               <Image

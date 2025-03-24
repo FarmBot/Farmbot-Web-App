@@ -4,7 +4,7 @@ import { Config } from "../config";
 import { ASSETS, HOVER_OBJECT_MODES } from "../constants";
 import { Group, MeshPhongMaterial } from "../components";
 import { Image, Billboard, Sphere } from "@react-three/drei";
-import { DoubleSide } from "three";
+import { DoubleSide, Mesh, Group as GroupType } from "three";
 import { zero as zeroFunc, threeSpace } from "../helpers";
 import { useNavigate } from "react-router";
 import { Path } from "../../internal_urls";
@@ -49,11 +49,14 @@ interface WeedBaseProps {
   radius: number;
   alpha: number;
   config: Config;
+  radiusRef?: React.RefObject<Mesh | null>;
+  billboardRef?: React.RefObject<GroupType | null>;
+  imageRef?: React.RefObject<Mesh | null>;
 }
 
 export const WeedBase = (props: WeedBaseProps) => {
   const { config } = props;
-  const iconSize = props.radius ? props.radius : 50;
+  const iconSize = props.radius == 0 ? 50 : props.radius;
   return <Group
     name={"weed-" + props.pointName}
     position={props.position
@@ -64,17 +67,23 @@ export const WeedBase = (props: WeedBaseProps) => {
       ]
       : [0, 0, 0]}
     onClick={props.onClick}>
-    <Billboard follow={true}
+    <Billboard
+      ref={props.billboardRef}
+      follow={true}
       position={[0, 0, iconSize / 2]}>
-      <Image url={ASSETS.other.weed}
+      <Image
+        ref={props.imageRef}
+        url={ASSETS.other.weed}
         scale={iconSize}
         transparent={true}
         opacity={1 * props.alpha}
         position={[0, 0, 0]} />
     </Billboard>
     <Sphere
+      ref={props.radiusRef}
       renderOrder={1}
-      args={[props.radius, 8, 16]}
+      scale={iconSize}
+      args={[1, 32, 32]}
       position={[0, 0, 0]}>
       <MeshPhongMaterial
         color={props.color}
