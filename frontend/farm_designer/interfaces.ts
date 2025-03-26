@@ -177,6 +177,7 @@ export interface DesignerState {
   cropRadius: number | undefined;
   distanceIndicator: string;
   panelOpen: boolean;
+  threeDTopDownView: boolean;
 }
 
 export type TaggedExecutable = TaggedSequence | TaggedRegimen;

@@ -49,6 +49,7 @@ export interface Config {
   config: boolean;
   zoom: boolean;
   pan: boolean;
+  rotate: boolean;
   bounds: boolean;
   threeAxes: boolean;
   xyDimensions: boolean;
@@ -124,6 +125,7 @@ export const INITIAL: Config = {
   config: false,
   zoom: false,
   pan: false,
+  rotate: true,
   bounds: false,
   threeAxes: false,
   xyDimensions: false,
@@ -164,7 +166,7 @@ export const NUMBER_KEYS = [
 export const BOOLEAN_KEYS = [
   "legsFlush", "labels", "labelsOnHover", "ground", "grid", "axes", "trail",
   "tracks", "clouds", "perspective", "bot", "laser", "cableCarriers",
-  "viewCube", "stats", "config", "zoom", "pan", "bounds", "threeAxes",
+  "viewCube", "stats", "config", "zoom", "pan", "rotate", "bounds", "threeAxes",
   "xyDimensions", "zDimension", "promoInfo", "settingsBar", "zoomBeacons",
   "solar", "utilitiesPost", "packaging", "lab", "people", "lowDetail",
   "eventDebug", "cableDebug", "zoomBeaconDebug", "animate", "negativeZ",
@@ -268,6 +270,7 @@ export const PRESETS: Record<string, Config> = {
     config: false,
     zoom: true,
     pan: true,
+    rotate: true,
     bounds: false,
     threeAxes: false,
     xyDimensions: false,
@@ -320,6 +323,7 @@ export const PRESETS: Record<string, Config> = {
     config: true,
     zoom: true,
     pan: true,
+    rotate: true,
     bounds: true,
     threeAxes: true,
     xyDimensions: true,
@@ -357,7 +361,8 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "trail", "clouds", "sunInclination", "sunAzimuth", "perspective", "bot", "laser",
   "tool", "cableCarriers", "viewCube", "stats", "config", "zoom", "bounds",
   "threeAxes", "xyDimensions", "zDimension", "labelsOnHover", "promoInfo",
-  "settingsBar", "zoomBeacons", "pan", "solar", "utilitiesPost", "packaging", "lab",
+  "settingsBar", "zoomBeacons", "pan", "rotate",
+  "solar", "utilitiesPost", "packaging", "lab",
   "people", "scene", "lowDetail", "eventDebug", "cableDebug", "zoomBeaconDebug",
   "animate", "distanceIndicator", "kitVersion", "negativeZ", "waterFlow",
 ];

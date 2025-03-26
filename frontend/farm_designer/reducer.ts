@@ -59,6 +59,7 @@ export const initialState: DesignerState = {
   cropRadius: undefined,
   distanceIndicator: "",
   panelOpen: true,
+  threeDTopDownView: false,
 };
 
 export const designer = generateReducer<DesignerState>(initialState)
@@ -237,6 +238,10 @@ export const designer = generateReducer<DesignerState>(initialState)
   })
   .add<string>(Actions.SET_DISTANCE_INDICATOR, (s, { payload }) => {
     s.distanceIndicator = payload;
+    return s;
+  })
+  .add<boolean>(Actions.TOGGLE_3D_TOP_DOWN_VIEW, (s, { payload }) => {
+    s.threeDTopDownView = payload;
     return s;
   })
   .add<boolean>(Actions.SET_PANEL_OPEN, (s, { payload }) => {

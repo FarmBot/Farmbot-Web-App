@@ -1064,6 +1064,17 @@ export namespace Content {
     trim(`Are you sure you want to delete all logs? A page refresh will be
     required.`);
 
+  export const SHOW_3D_VIEW_DESCRIPTION_DESKTOP =
+    (`**3D Controls**
+      - Scroll to zoom
+      - Click and drag to rotate
+      - Right-click and drag to pan`);
+
+  export const SHOW_3D_VIEW_DESCRIPTION_MOBILE =
+    (`**3D Controls**
+        - Pinch to zoom and pan
+        - Touch and drag to rotate`);
+
   // Front Page
   export const TOS_UPDATE =
     trim(`The terms of service have recently changed. You must accept the
@@ -2215,7 +2226,7 @@ export enum DeviceSetting {
   showReadingsMapLayer = `Show Readings Map Layer`,
   showMoisture = `Moisture`,
   showMoistureInterpolationMapLayer = `Show Moisture Interpolation Map Layer`,
-  show3DMap = `3D Map`,
+  show3DMap = `3D Map beta`,
 
   // Controls
   invertJogButtonXAxis = `X Axis`,
@@ -2475,6 +2486,7 @@ export enum Actions {
 
   // 3D
   SET_DISTANCE_INDICATOR = "SET_DISTANCE_INDICATOR",
+  TOGGLE_3D_TOP_DOWN_VIEW = "TOGGLE_3D_TOP_DOWN_VIEW",
 
   // Regimens
   PUSH_WEEK = "PUSH_WEEK",

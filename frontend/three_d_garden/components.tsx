@@ -47,3 +47,7 @@ export const MeshBasicMaterial = (props: ThreeElements["meshBasicMaterial"]) =>
 export const AxesHelper = (props: ThreeElements["axesHelper"]) =>
   // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
   <axesHelper {...props} />;
+
+export const RingGeometry = (props: ThreeElements["ringGeometry"]) =>
+  // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
+  <ringGeometry {...props} />;

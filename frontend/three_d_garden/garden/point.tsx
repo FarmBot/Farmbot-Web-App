@@ -1,9 +1,13 @@
 import React from "react";
 import { SpecialStatus, TaggedGenericPointer, Xyz } from "farmbot";
 import { Config } from "../config";
-import { Group, MeshPhongMaterial } from "../components";
+import { Group, Mesh, MeshPhongMaterial, RingGeometry } from "../components";
 import { Cylinder, Sphere } from "@react-three/drei";
-import { DoubleSide, Mesh, Group as GroupType } from "three";
+import {
+  DoubleSide, FrontSide, BackSide,
+  Mesh as MeshType,
+  Group as GroupType,
+} from "three";
 import { zero as zeroFunc, threeSpace } from "../helpers";
 import { useNavigate } from "react-router";
 import { Path } from "../../internal_urls";
@@ -54,9 +58,9 @@ export interface DrawnPointProps {
   designer: DesignerState;
   usePosition: boolean;
   config: Config;
-  radiusRef?: React.RefObject<Mesh | null>;
+  radiusRef?: React.RefObject<GroupType | null>;
   billboardRef?: React.RefObject<GroupType | null>;
-  imageRef?: React.RefObject<Mesh | null>;
+  imageRef?: React.RefObject<MeshType | null>;
 }
 
 export const DrawnPoint = (props: DrawnPointProps) => {
@@ -88,9 +92,9 @@ interface PointBaseProps {
   radius: number;
   alpha: number;
   config: Config;
-  radiusRef?: React.RefObject<Mesh | null>;
+  radiusRef?: React.RefObject<GroupType | null>;
   billboardRef?: React.RefObject<GroupType | null>;
-  imageRef?: React.RefObject<Mesh | null>;
+  imageRef?: React.RefObject<MeshType | null>;
 }
 
 const PointBase = (props: PointBaseProps) => {
@@ -126,15 +130,56 @@ const PointBase = (props: PointBaseProps) => {
           opacity={1 * props.alpha} />
       </Sphere>
     </Group>
-    <Cylinder
-      ref={props.radiusRef}
-      scale={[radius, 1, radius]}
-      args={[1, 1, POINT_CYLINDER_HEIGHT, 32, 32, true]}>
+    <HollowCylinder
+      radiusRef={props.radiusRef}
+      radius={radius}
+      height={POINT_CYLINDER_HEIGHT}
+      thickness={10}
+      color={props.color}
+      alpha={0.5 * props.alpha} />
+  </Group>;
+};
+
+interface HollowCylinderProps {
+  radius: number;
+  height: number;
+  thickness: number;
+  color?: string;
+  alpha: number;
+  radiusRef?: React.RefObject<GroupType | null>;
+}
+
+const HollowCylinder = (props: HollowCylinderProps) => {
+  const INNER_R_FRACTION = 0.95;
+  const SEGMENTS = 64;
+  return <Group
+    ref={props.radiusRef}
+    name={"hollow-cylinder"}
+    scale={[props.radius, 1, props.radius]}>
+    <Mesh rotation={[-Math.PI / 2, 0, 0]}
+      position={[0, props.height / 2, 0]}>
+      <RingGeometry args={[INNER_R_FRACTION, 1, SEGMENTS]} />
       <MeshPhongMaterial
         color={props.color}
-        side={DoubleSide}
+        side={FrontSide}
         transparent={true}
-        opacity={0.5 * props.alpha} />
+        opacity={props.alpha} />
+    </Mesh>
+    <Cylinder
+      args={[1, 1, props.height, SEGMENTS, 1, true]}>
+      <MeshPhongMaterial
+        color={props.color}
+        side={FrontSide}
+        transparent={true}
+        opacity={props.alpha} />
+    </Cylinder>
+    <Cylinder
+      args={[INNER_R_FRACTION, INNER_R_FRACTION, props.height, SEGMENTS, 1, true]}>
+      <MeshPhongMaterial
+        color={props.color}
+        side={BackSide}
+        transparent={true}
+        opacity={props.alpha} />
     </Cylinder>
   </Group>;
 };

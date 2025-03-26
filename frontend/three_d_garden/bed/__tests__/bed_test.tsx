@@ -11,6 +11,8 @@ const mockSetPlantPosition = jest.fn();
 const mockSetRadiusScale = jest.fn();
 const mockSetBillboardPosition = jest.fn();
 const mockSetImageScale = jest.fn();
+const mockSetXCrosshairPosition = jest.fn();
+const mockSetYCrosshairPosition = jest.fn();
 interface MockPlantRefCurrent {
   position: { set: Function; };
 }
@@ -22,6 +24,12 @@ interface MockBillboardRefCurrent {
 }
 interface MockImageRefCurrent {
   scale: { set: Function; };
+}
+interface MockXCrosshairRefCurrent {
+  position: { set: Function; };
+}
+interface MockYCrosshairRefCurrent {
+  position: { set: Function; };
 }
 interface MockPlantRef {
   current: MockPlantRefCurrent | undefined;
@@ -35,10 +43,18 @@ interface MockBillboardRef {
 interface MockImageRef {
   current: MockImageRefCurrent | undefined;
 }
+interface MockXCrosshairRef {
+  current: MockXCrosshairRefCurrent | undefined;
+}
+interface MockYCrosshairRef {
+  current: MockYCrosshairRefCurrent | undefined;
+}
 const mockPlantRef: MockPlantRef = { current: undefined };
 const mockRadiusRef: MockRadiusRef = { current: undefined };
 const mockBillboardRef: MockBillboardRef = { current: undefined };
 const mockImageRef: MockImageRef = { current: undefined };
+const mockXCrosshairRef: MockXCrosshairRef = { current: undefined };
+const mockYCrosshairRef: MockYCrosshairRef = { current: undefined };
 jest.mock("react", () => ({
   ...jest.requireActual("react"),
   useRef: jest.fn(),
@@ -64,7 +80,9 @@ describe("<Bed />", () => {
       .mockImplementationOnce(() => mockPlantRef)
       .mockImplementationOnce(() => mockRadiusRef)
       .mockImplementationOnce(() => mockBillboardRef)
-      .mockImplementationOnce(() => mockImageRef);
+      .mockImplementationOnce(() => mockImageRef)
+      .mockImplementationOnce(() => mockXCrosshairRef)
+      .mockImplementationOnce(() => mockYCrosshairRef);
   });
 
   const fakeProps = (): BedProps => ({
@@ -195,18 +213,24 @@ describe("<Bed />", () => {
     location.pathname = Path.mock(Path.cropSearch("mint"));
     mockIsMobile = false;
     mockPlantRef.current = { position: { set: mockSetPlantPosition } };
+    mockXCrosshairRef.current = { position: { set: mockSetXCrosshairPosition } };
+    mockYCrosshairRef.current = { position: { set: mockSetYCrosshairPosition } };
     const p = fakeProps();
     p.addPlantProps = fakeAddPlantProps([]);
     render(<Bed {...p} />);
     const soil = screen.getAllByText("soil")[0];
     fireEvent.pointerMove(soil);
     expect(mockSetPlantPosition).toHaveBeenCalledWith(0, 0, 0);
+    expect(mockSetXCrosshairPosition).toHaveBeenCalledWith(0, 0, 0);
+    expect(mockSetYCrosshairPosition).toHaveBeenCalledWith(0, 0, 0);
   });
 
   it("handles missing ref", () => {
     location.pathname = Path.mock(Path.cropSearch("mint"));
     mockIsMobile = false;
     mockPlantRef.current = undefined;
+    mockXCrosshairRef.current = undefined;
+    mockYCrosshairRef.current = undefined;
     const p = fakeProps();
     p.addPlantProps = fakeAddPlantProps([]);
     render(<Bed {...p} />);
@@ -215,10 +239,28 @@ describe("<Bed />", () => {
     expect(mockSetPlantPosition).not.toHaveBeenCalled();
   });
 
+  it("handles missing crosshair refs", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    mockIsMobile = false;
+    mockPlantRef.current = { position: { set: mockSetPlantPosition } };
+    mockXCrosshairRef.current = undefined;
+    mockYCrosshairRef.current = undefined;
+    const p = fakeProps();
+    p.addPlantProps = fakeAddPlantProps([]);
+    render(<Bed {...p} />);
+    const soil = screen.getAllByText("soil")[0];
+    fireEvent.pointerMove(soil);
+    expect(mockSetPlantPosition).toHaveBeenCalledWith(0, 0, 0);
+    expect(mockSetXCrosshairPosition).not.toHaveBeenCalled();
+    expect(mockSetYCrosshairPosition).not.toHaveBeenCalled();
+  });
+
   it("doesn't update pointer plant position: mobile", () => {
     location.pathname = Path.mock(Path.cropSearch("mint"));
     mockIsMobile = true;
     mockPlantRef.current = { position: { set: mockSetPlantPosition } };
+    mockXCrosshairRef.current = { position: { set: mockSetXCrosshairPosition } };
+    mockYCrosshairRef.current = { position: { set: mockSetYCrosshairPosition } };
     const p = fakeProps();
     p.addPlantProps = fakeAddPlantProps([]);
     render(<Bed {...p} />);
@@ -231,6 +273,8 @@ describe("<Bed />", () => {
     location.pathname = Path.mock(Path.points("add"));
     mockIsMobile = false;
     mockPlantRef.current = { position: { set: mockSetPlantPosition } };
+    mockXCrosshairRef.current = { position: { set: mockSetXCrosshairPosition } };
+    mockYCrosshairRef.current = { position: { set: mockSetYCrosshairPosition } };
     const p = fakeProps();
     p.addPlantProps = fakeAddPlantProps([]);
     p.addPlantProps.designer.drawnPoint = undefined;
@@ -244,6 +288,8 @@ describe("<Bed />", () => {
     location.pathname = Path.mock(Path.points("add"));
     mockIsMobile = false;
     mockPlantRef.current = { position: { set: mockSetPlantPosition } };
+    mockXCrosshairRef.current = { position: { set: mockSetXCrosshairPosition } };
+    mockYCrosshairRef.current = { position: { set: mockSetYCrosshairPosition } };
     const p = fakeProps();
     p.addPlantProps = fakeAddPlantProps([]);
     const point = fakeDrawnPoint();

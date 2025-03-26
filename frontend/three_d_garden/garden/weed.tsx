@@ -4,7 +4,7 @@ import { Config } from "../config";
 import { ASSETS, HOVER_OBJECT_MODES } from "../constants";
 import { Group, MeshPhongMaterial } from "../components";
 import { Image, Billboard, Sphere } from "@react-three/drei";
-import { DoubleSide, Mesh, Group as GroupType } from "three";
+import { DoubleSide, Mesh as MeshType, Group as GroupType } from "three";
 import { zero as zeroFunc, threeSpace } from "../helpers";
 import { useNavigate } from "react-router";
 import { Path } from "../../internal_urls";
@@ -49,9 +49,9 @@ interface WeedBaseProps {
   radius: number;
   alpha: number;
   config: Config;
-  radiusRef?: React.RefObject<Mesh | null>;
+  radiusRef?: React.RefObject<GroupType | null>;
   billboardRef?: React.RefObject<GroupType | null>;
-  imageRef?: React.RefObject<Mesh | null>;
+  imageRef?: React.RefObject<MeshType | null>;
 }
 
 export const WeedBase = (props: WeedBaseProps) => {
@@ -79,17 +79,19 @@ export const WeedBase = (props: WeedBaseProps) => {
         opacity={1 * props.alpha}
         position={[0, 0, 0]} />
     </Billboard>
-    <Sphere
+    <Group
       ref={props.radiusRef}
-      renderOrder={1}
-      scale={iconSize}
-      args={[1, 32, 32]}
-      position={[0, 0, 0]}>
-      <MeshPhongMaterial
-        color={props.color}
-        side={DoubleSide}
-        transparent={true}
-        opacity={0.5 * props.alpha} />
-    </Sphere>
+      scale={iconSize}>
+      <Sphere
+        renderOrder={1}
+        args={[1, 32, 32]}
+        position={[0, 0, 0]}>
+        <MeshPhongMaterial
+          color={props.color}
+          side={DoubleSide}
+          transparent={true}
+          opacity={0.5 * props.alpha} />
+      </Sphere>
+    </Group>
   </Group>;
 };

@@ -1,35 +1,31 @@
 import React from "react";
+import { Box, Detailed, Extrude, useTexture } from "@react-three/drei";
 import {
-  Billboard, Box, Detailed, Extrude, useTexture, Image,
-} from "@react-three/drei";
-import {
-  DoubleSide, Path as LinePath, Shape, RepeatWrapping, Group as GroupType,
-  Mesh,
+  DoubleSide,
+  Path as LinePath,
+  Shape,
+  RepeatWrapping,
+  Group as GroupType,
+  Mesh as MeshType,
 } from "three";
-import { isUndefined, range } from "lodash";
+import { range } from "lodash";
 import { threeSpace, zZero, getColorFromBrightness } from "../helpers";
 import { Config, detailLevels } from "../config";
-import { ASSETS, DRAW_POINT_MODES, HOVER_OBJECT_MODES } from "../constants";
+import { ASSETS } from "../constants";
 import { DistanceIndicator } from "../elements";
 import { FarmbotAxes, Caster, UtilitiesPost, Packaging } from "./objects";
 import { Group, MeshPhongMaterial } from "../components";
-import { getMode, round, xyDistance } from "../../farm_designer/map/util";
 import {
-  AxisNumberProperty, Mode, TaggedPlant,
+  AxisNumberProperty, TaggedPlant,
 } from "../../farm_designer/map/interfaces";
-import { dropPlant } from "../../farm_designer/map/layers/plants/plant_actions";
-import { SpecialStatus, TaggedCurve, TaggedGenericPointer } from "farmbot";
+import { TaggedCurve, TaggedGenericPointer } from "farmbot";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
-import { DesignerState, DrawnPointPayl } from "../../farm_designer/interfaces";
-import { isMobile } from "../../screen_size";
-import { ThreeEvent } from "@react-three/fiber";
-import { Path } from "../../internal_urls";
-import { findIcon } from "../../crops/find";
-import { DEFAULT_PLANT_RADIUS } from "../../farm_designer/plant";
-import { DrawnPoint } from "../garden";
-import { Actions } from "../../constants";
-import { createPoint } from "../../points/create_points";
+import { DesignerState } from "../../farm_designer/interfaces";
 import { useNavigate } from "react-router";
+import {
+  PointerObjects, soilClick, soilPointerMove,
+} from "./objects/pointer_objects";
+import { Line2 } from "three/examples/jsm/lines/Line2";
 
 const soil = (
   Type: typeof LinePath | typeof Shape,
@@ -83,8 +79,7 @@ export interface BedProps {
 
 export const Bed = (props: BedProps) => {
   const {
-    bedWidthOuter, bedLengthOuter, botSizeZ, bedHeight,
-    bedXOffset, bedYOffset, bedZOffset,
+    bedWidthOuter, bedLengthOuter, botSizeZ, bedHeight, bedZOffset,
     legSize, legsFlush, extraLegsX, extraLegsY, bedBrightness, soilBrightness,
     soilHeight, ccSupportSize, axes, xyDimensions,
   } = props.config;
@@ -144,28 +139,19 @@ export const Bed = (props: BedProps) => {
   const pointerPlantRef = React.useRef<GroupType>(null);
 
   // eslint-disable-next-line no-null/no-null
-  const radiusRef = React.useRef<Mesh>(null);
+  const radiusRef = React.useRef<GroupType>(null);
 
   // eslint-disable-next-line no-null/no-null
   const billboardRef = React.useRef<GroupType>(null);
 
   // eslint-disable-next-line no-null/no-null
-  const imageRef = React.useRef<Mesh>(null);
+  const imageRef = React.useRef<MeshType>(null);
 
-  type XY = AxisNumberProperty;
+  // eslint-disable-next-line no-null/no-null
+  const xCrosshairRef = React.useRef<Line2>(null);
 
-  const getGardenPosition = (threeDPosition: XY): XY => ({
-    x: round(threeSpace(threeDPosition.x, -bedLengthOuter) - bedXOffset),
-    y: round(threeSpace(threeDPosition.y, -bedWidthOuter) - bedYOffset),
-  });
-
-  const get3DPosition = (gardenPosition: XY): XY => ({
-    x: threeSpace(gardenPosition.x + bedXOffset, bedLengthOuter),
-    y: threeSpace(gardenPosition.y + bedYOffset, bedWidthOuter),
-  });
-
-  const iconSize =
-    (props.addPlantProps?.designer.cropRadius || DEFAULT_PLANT_RADIUS) * 2;
+  // eslint-disable-next-line no-null/no-null
+  const yCrosshairRef = React.useRef<Line2>(null);
 
   interface SoilProps {
     children: React.ReactElement;
@@ -177,84 +163,24 @@ export const Bed = (props: BedProps) => {
   const Soil = ({ children, addPlantProps }: SoilProps) => {
     const soilDepth = bedHeight + zZero(props.config) - soilHeight;
     return <Extrude name={"soil"}
-      onClick={(e: ThreeEvent<MouseEvent>) => {
-        e.stopPropagation();
-        if (addPlantProps) {
-          if (getMode() == Mode.clickToAdd) {
-            dropPlant({
-              gardenCoords: getGardenPosition(e.point),
-              gridSize: addPlantProps.gridSize,
-              dispatch: addPlantProps.dispatch,
-              getConfigValue: addPlantProps.getConfigValue,
-              plants: addPlantProps.plants,
-              curves: addPlantProps.curves,
-              designer: addPlantProps.designer,
-            });
-          }
-          if (DRAW_POINT_MODES.includes(getMode())) {
-            pointerPlantRef.current?.position.set(0, 0, 0);
-            const cursor = getGardenPosition(e.point);
-            const { drawnPoint } = addPlantProps.designer;
-            if (isUndefined(drawnPoint)) { return; }
-            const payload: DrawnPointPayl =
-              (isUndefined(drawnPoint.cx) || isUndefined(drawnPoint.cy))
-                ? {
-                  ...drawnPoint,
-                  cx: cursor.x,
-                  cy: cursor.y,
-                  z: -props.config.soilHeight,
-                }
-                : {
-                  ...drawnPoint,
-                  cx: drawnPoint.cx,
-                  cy: drawnPoint.cy,
-                  r: round(xyDistance(
-                    { x: drawnPoint.cx, y: drawnPoint.cy },
-                    cursor)),
-                };
-            addPlantProps.dispatch({
-              type: Actions.SET_DRAWN_POINT_DATA,
-              payload,
-            });
-            if (payload.r) {
-              createPoint({
-                dispatch: addPlantProps.dispatch,
-                drawnPoint: payload,
-                navigate: navigate,
-              });
-            }
-          }
-        }
-      }}
-      onPointerMove={(e: ThreeEvent<MouseEvent>) => {
-        if (addPlantProps
-          && HOVER_OBJECT_MODES.includes(getMode())
-          && !isMobile()
-          && pointerPlantRef.current) {
-          const position = get3DPosition(getGardenPosition(e.point));
-          if (getMode() == Mode.clickToAdd) {
-            pointerPlantRef.current.position.set(position.x, position.y, 0);
-          }
-          if (DRAW_POINT_MODES.includes(getMode())) {
-            const { drawnPoint } = addPlantProps.designer;
-            if (isUndefined(drawnPoint)) { return; }
-            if (isUndefined(drawnPoint.cx) || isUndefined(drawnPoint.cy)) {
-              pointerPlantRef.current.position.set(position.x, position.y, 0);
-            } else {
-              if (drawnPoint.r > 0) { return; }
-              const radius = round(xyDistance(
-                { x: drawnPoint.cx, y: drawnPoint.cy },
-                getGardenPosition(e.point)));
-              radiusRef.current?.scale.set(
-                radius,
-                getMode() == Mode.createPoint ? 1 : radius,
-                radius);
-              billboardRef.current?.position.set(0, 0, radius / 2);
-              imageRef.current?.scale.set(radius, radius, radius);
-            }
-          }
-        }
-      }}
+      onClick={addPlantProps &&
+        soilClick({
+          config: props.config,
+          addPlantProps,
+          pointerPlantRef,
+          navigate,
+        })}
+      onPointerMove={addPlantProps &&
+        soilPointerMove({
+          addPlantProps,
+          config: props.config,
+          pointerPlantRef,
+          radiusRef,
+          billboardRef,
+          imageRef,
+          xCrosshairRef,
+          yCrosshairRef,
+        })}
       castShadow={true}
       receiveShadow={true}
       args={[
@@ -269,13 +195,6 @@ export const Bed = (props: BedProps) => {
       {children}
     </Extrude>;
   };
-
-  const drawnPoint = props.addPlantProps && props.addPlantProps.designer.drawnPoint;
-  const settingRadius = !(isUndefined(drawnPoint?.cx) || isUndefined(drawnPoint.cy));
-  const soilZ = zZero(props.config) - props.config.soilHeight;
-  const gridPreview = props.mapPoints
-    .filter(p => p.specialStatus == SpecialStatus.DIRTY && p.body.meta.gridId)
-    .length > 0;
 
   return <Group name={"bed-group"}>
     <Detailed distances={detailLevels(props.config)}>
@@ -350,31 +269,17 @@ export const Bed = (props: BedProps) => {
       ]}>
       <MeshPhongMaterial map={legWoodTexture} color={bedColor} side={DoubleSide} />
     </Box>
-    {HOVER_OBJECT_MODES.includes(getMode()) &&
-      !isMobile() &&
-      <Group ref={pointerPlantRef} position={[0, 0, 0]}>
-        <Group position={[0, 0, settingRadius ? 0 : soilZ]}>
-          {DRAW_POINT_MODES.includes(getMode()) && props.addPlantProps &&
-            !gridPreview &&
-            drawnPoint &&
-            <DrawnPoint
-              radiusRef={radiusRef}
-              billboardRef={billboardRef}
-              imageRef={imageRef}
-              config={props.config}
-              designer={props.addPlantProps.designer}
-              usePosition={settingRadius} />}
-          {getMode() == Mode.clickToAdd &&
-            <Billboard follow={true} position={[0, 0, iconSize / 2]}>
-              <Image
-                name={"pointerPlant"}
-                url={findIcon(Path.getCropSlug())}
-                scale={iconSize}
-                transparent={true}
-                renderOrder={1} />
-            </Billboard>}
-        </Group>
-      </Group>}
+    {props.addPlantProps &&
+      <PointerObjects
+        pointerPlantRef={pointerPlantRef}
+        radiusRef={radiusRef}
+        billboardRef={billboardRef}
+        imageRef={imageRef}
+        xCrosshairRef={xCrosshairRef}
+        yCrosshairRef={yCrosshairRef}
+        config={props.config}
+        addPlantProps={props.addPlantProps}
+        mapPoints={props.mapPoints} />}
     <Detailed distances={detailLevels(props.config)}>
       <Soil addPlantProps={props.addPlantProps}>
         <MeshPhongMaterial map={soilTexture} color={soilColor}

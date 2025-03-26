@@ -237,6 +237,14 @@ describe("<DesignerSettings />", () => {
     expect(wrapper.text().toLowerCase()).toContain("unstable fe");
   });
 
+  it("renders surprise", () => {
+    mockHighlightName = "surprise";
+    const p = fakeProps();
+    p.searchTerm = "surprise";
+    const wrapper = mount(<DesignerSettings {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("attack");
+  });
+
   it("cancels setting isolation", () => {
     location.search = "?only=setting";
     location.assign = jest.fn();

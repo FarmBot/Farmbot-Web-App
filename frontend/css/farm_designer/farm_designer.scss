@@ -805,3 +805,41 @@
     transform: translateX(-22.5rem);
   }
 }
+
+.three-d-map-toggle-menu {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  padding: 1rem;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  button {
+    height: 3rem;
+    width: 3rem;
+    i {
+      font-size: 1.5rem;
+    }
+    &.active {
+      background-color: $blue !important;
+    }
+  }
+  .three-d-map-toggle {
+    margin: auto;
+    padding: 0.5rem;
+    grid-template-columns: auto auto auto;
+    background-color: var(--main-bg);
+    border-radius: 5px;
+    height: 3rem;
+    .bp5-popover-wrapper,
+    fieldset,
+    label {
+      font-weight: bold;
+      margin: auto;
+    }
+    fieldset {
+      button {
+        width: 3.5rem;
+        margin: auto;
+      }
+    }
+  }
+}
