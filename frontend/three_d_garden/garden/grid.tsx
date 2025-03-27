@@ -33,7 +33,7 @@ export const Grid = (props: GridProps) => {
         points={[
           [zero.x + xOffset, zero.y, gridZ],
           [zero.x + xOffset, extents.y, gridZ],
-        ]} />
+        ]} />;
     })}
     {gridLineOffsets(config.botSizeY).map(yOffset => {
       const isOuterLine = yOffset === 0 || yOffset === config.botSizeY;
@@ -45,7 +45,7 @@ export const Grid = (props: GridProps) => {
         points={[
           [zero.x, zero.y + yOffset, gridZ],
           [extents.x, zero.y + yOffset, gridZ],
-        ]} />
+        ]} />;
     })}
   </Group>;
 };

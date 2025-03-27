@@ -4,7 +4,7 @@ import { Config } from "../config";
 import { ASSETS, HOVER_OBJECT_MODES } from "../constants";
 import { Group, MeshPhongMaterial } from "../components";
 import { Image, Billboard, Sphere } from "@react-three/drei";
-import { DoubleSide, Mesh as MeshType, Group as GroupType } from "three";
+import { Mesh as MeshType, Group as GroupType } from "three";
 import { zero as zeroFunc, threeSpace } from "../helpers";
 import { useNavigate } from "react-router";
 import { Path } from "../../internal_urls";
@@ -56,7 +56,8 @@ interface WeedBaseProps {
 
 export const WeedBase = (props: WeedBaseProps) => {
   const { config } = props;
-  const iconSize = props.radius == 0 ? 50 : props.radius;
+  const weedSize = props.radius == 0 ? 50 : props.radius;
+  const iconSize = weedSize * 0.89;
   return <Group
     name={"weed-" + props.pointName}
     position={props.position
@@ -81,14 +82,13 @@ export const WeedBase = (props: WeedBaseProps) => {
     </Billboard>
     <Group
       ref={props.radiusRef}
-      scale={iconSize}>
+      scale={weedSize}>
       <Sphere
         renderOrder={1}
         args={[1, 32, 32]}
         position={[0, 0, 0]}>
         <MeshPhongMaterial
           color={props.color}
-          side={DoubleSide}
           transparent={true}
           opacity={0.5 * props.alpha} />
       </Sphere>
