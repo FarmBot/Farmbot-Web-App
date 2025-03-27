@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { Billboard, Circle, Image } from "@react-three/drei";
 import * as THREE from "three";
 import { Group, MeshPhongMaterial, Mesh } from "../../components";
+import { RenderOrder } from "../../constants";
 
 const potHeight = 400;
 const plantHeight = 500;
@@ -38,7 +39,7 @@ export const PottedPlant = () => {
         url={"/crops/icons/lavender.avif"}
         scale={plantHeight}
         transparent={true}
-        renderOrder={1}
+        renderOrder={RenderOrder.one}
         position={[0, plantHeight / 2, 0]}
       />
     </Billboard>

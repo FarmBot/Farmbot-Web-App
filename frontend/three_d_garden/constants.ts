@@ -384,3 +384,16 @@ export enum ElectronicsBoxMaterial {
   button = "0.701961_0.701961_0.701961_0.000000_0.000000",
   led = "0.600000_0.600000_0.600000_0.000000_0.000000",
 }
+
+export enum RenderOrder {
+  default,
+  one,
+  points,
+  weedImages,
+  weedSpheres,
+  plants,
+  plantLabels,
+  pointerPlant,
+  beacons,
+  clouds,
+}

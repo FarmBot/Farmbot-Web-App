@@ -3,6 +3,7 @@ import { Box } from "@react-three/drei";
 import { DoubleSide } from "three";
 import { Group, MeshPhongMaterial } from "../../components";
 import { range } from "lodash";
+import { RenderOrder } from "../../constants";
 
 const wallLength = 10000;
 const wallHeight = 2500;
@@ -33,7 +34,7 @@ export const GreenhouseWall = () => {
         return <Box key={`${row}-${col}`}
           castShadow={true}
           receiveShadow={true}
-          renderOrder={1}
+          renderOrder={RenderOrder.one}
           args={[paneWidth, glassThickness, paneHeight]}
           position={[
             wallGap + paneWidth / 2 + col * (paneWidth + wallGap),

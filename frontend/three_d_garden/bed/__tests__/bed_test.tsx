@@ -9,6 +9,7 @@ jest.mock("../../../screen_size", () => ({
 
 const mockSetPlantPosition = jest.fn();
 const mockSetRadiusScale = jest.fn();
+const mockSetTorusScale = jest.fn();
 const mockSetBillboardPosition = jest.fn();
 const mockSetImageScale = jest.fn();
 const mockSetXCrosshairPosition = jest.fn();
@@ -17,6 +18,9 @@ interface MockPlantRefCurrent {
   position: { set: Function; };
 }
 interface MockRadiusRefCurrent {
+  scale: { set: Function; };
+}
+interface MockTorusRefCurrent {
   scale: { set: Function; };
 }
 interface MockBillboardRefCurrent {
@@ -37,6 +41,9 @@ interface MockPlantRef {
 interface MockRadiusRef {
   current: MockRadiusRefCurrent | undefined;
 }
+interface MockTorusRef {
+  current: MockTorusRefCurrent | undefined;
+}
 interface MockBillboardRef {
   current: MockBillboardRefCurrent | undefined;
 }
@@ -51,6 +58,7 @@ interface MockYCrosshairRef {
 }
 const mockPlantRef: MockPlantRef = { current: undefined };
 const mockRadiusRef: MockRadiusRef = { current: undefined };
+const mockTorusRef: MockTorusRef = { current: undefined };
 const mockBillboardRef: MockBillboardRef = { current: undefined };
 const mockImageRef: MockImageRef = { current: undefined };
 const mockXCrosshairRef: MockXCrosshairRef = { current: undefined };
@@ -79,6 +87,7 @@ describe("<Bed />", () => {
     React.useRef = jest.fn()
       .mockImplementationOnce(() => mockPlantRef)
       .mockImplementationOnce(() => mockRadiusRef)
+      .mockImplementationOnce(() => mockTorusRef)
       .mockImplementationOnce(() => mockBillboardRef)
       .mockImplementationOnce(() => mockImageRef)
       .mockImplementationOnce(() => mockXCrosshairRef)
@@ -308,29 +317,7 @@ describe("<Bed />", () => {
     mockIsMobile = false;
     mockPlantRef.current = { position: { set: mockSetPlantPosition } };
     mockRadiusRef.current = { scale: { set: mockSetRadiusScale } };
-    mockBillboardRef.current = { position: { set: mockSetBillboardPosition } };
-    mockImageRef.current = { scale: { set: mockSetImageScale } };
-    const p = fakeProps();
-    p.addPlantProps = fakeAddPlantProps([]);
-    const point = fakeDrawnPoint();
-    point.cx = 1;
-    point.cy = 1;
-    point.r = 0;
-    p.addPlantProps.designer.drawnPoint = point;
-    render(<Bed {...p} />);
-    const soil = screen.getAllByText("soil")[0];
-    fireEvent.pointerMove(soil);
-    expect(mockSetPlantPosition).not.toHaveBeenCalled();
-    expect(mockSetRadiusScale).toHaveBeenCalledWith(1510, 1, 1510);
-    expect(mockSetBillboardPosition).toHaveBeenCalledWith(0, 0, 755);
-    expect(mockSetImageScale).toHaveBeenCalledWith(1510, 1510, 1510);
-  });
-
-  it("updates pointer weed radius", () => {
-    location.pathname = Path.mock(Path.weeds("add"));
-    mockIsMobile = false;
-    mockPlantRef.current = { position: { set: mockSetPlantPosition } };
-    mockRadiusRef.current = { scale: { set: mockSetRadiusScale } };
+    mockTorusRef.current = { scale: { set: mockSetTorusScale } };
     mockBillboardRef.current = { position: { set: mockSetBillboardPosition } };
     mockImageRef.current = { scale: { set: mockSetImageScale } };
     const p = fakeProps();
@@ -345,8 +332,9 @@ describe("<Bed />", () => {
     fireEvent.pointerMove(soil);
     expect(mockSetPlantPosition).not.toHaveBeenCalled();
     expect(mockSetRadiusScale).toHaveBeenCalledWith(1510, 1510, 1510);
-    expect(mockSetBillboardPosition).toHaveBeenCalledWith(0, 0, 755);
-    expect(mockSetImageScale).toHaveBeenCalledWith(1510, 1510, 1510);
+    expect(mockSetTorusScale).toHaveBeenCalledWith(1510, 1510, 400);
+    expect(mockSetBillboardPosition).toHaveBeenCalledWith(0, 0, 672);
+    expect(mockSetImageScale).toHaveBeenCalledWith(1344, 1344, 1344);
   });
 
   it("doesn't update pointer point radius: no ref", () => {
@@ -354,6 +342,7 @@ describe("<Bed />", () => {
     mockIsMobile = false;
     mockPlantRef.current = { position: { set: mockSetPlantPosition } };
     mockRadiusRef.current = undefined;
+    mockTorusRef.current = undefined;
     mockBillboardRef.current = undefined;
     mockImageRef.current = undefined;
     const p = fakeProps();
@@ -368,6 +357,7 @@ describe("<Bed />", () => {
     fireEvent.pointerMove(soil);
     expect(mockSetPlantPosition).not.toHaveBeenCalled();
     expect(mockSetRadiusScale).not.toHaveBeenCalled();
+    expect(mockSetTorusScale).not.toHaveBeenCalled();
     expect(mockSetBillboardPosition).not.toHaveBeenCalled();
     expect(mockSetImageScale).not.toHaveBeenCalled();
   });
@@ -377,6 +367,7 @@ describe("<Bed />", () => {
     mockIsMobile = false;
     mockPlantRef.current = { position: { set: mockSetPlantPosition } };
     mockRadiusRef.current = { scale: { set: mockSetRadiusScale } };
+    mockTorusRef.current = { scale: { set: mockSetTorusScale } };
     mockBillboardRef.current = { position: { set: mockSetBillboardPosition } };
     mockImageRef.current = { scale: { set: mockSetImageScale } };
     const p = fakeProps();
@@ -391,6 +382,7 @@ describe("<Bed />", () => {
     fireEvent.pointerMove(soil);
     expect(mockSetPlantPosition).not.toHaveBeenCalled();
     expect(mockSetRadiusScale).not.toHaveBeenCalled();
+    expect(mockSetTorusScale).not.toHaveBeenCalled();
     expect(mockSetBillboardPosition).not.toHaveBeenCalled();
     expect(mockSetImageScale).not.toHaveBeenCalled();
   });

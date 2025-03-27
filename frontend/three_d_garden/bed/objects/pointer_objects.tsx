@@ -5,8 +5,10 @@ import { findIcon } from "../../../crops/find";
 import { AxisNumberProperty, Mode } from "../../../farm_designer/map/interfaces";
 import { getMode, round, xyDistance } from "../../../farm_designer/map/util";
 import { isMobile } from "../../../screen_size";
-import { HOVER_OBJECT_MODES, DRAW_POINT_MODES } from "../../constants";
-import { DrawnPoint } from "../../garden";
+import { HOVER_OBJECT_MODES, DRAW_POINT_MODES, RenderOrder } from "../../constants";
+import {
+  DrawnPoint, POINT_CYLINDER_SCALE_FACTOR, WEED_IMG_SIZE_FRACTION,
+} from "../../garden";
 import {
   zero as zeroFunc, extents as extentsFunc, threeSpace,
 } from "../../helpers";
@@ -14,7 +16,7 @@ import { Config } from "../../config";
 import { SpecialStatus, TaggedGenericPointer } from "farmbot";
 import { AddPlantProps } from "../bed";
 import { DEFAULT_PLANT_RADIUS } from "../../../farm_designer/plant";
-import { isUndefined } from "lodash";
+import { isUndefined, round as mathRound } from "lodash";
 import { Mesh as MeshType, Group as GroupType } from "three";
 import { Path } from "../../../internal_urls";
 import { ThreeEvent } from "@react-three/fiber";
@@ -26,6 +28,24 @@ import { DrawnPointPayl } from "../../../farm_designer/interfaces";
 import { Line2 } from "three/examples/jsm/lines/Line2";
 
 type XY = AxisNumberProperty;
+
+export type PointerPlantRef = React.RefObject<GroupType | null>;
+export type RadiusRef = React.RefObject<MeshType | null>;
+export type TorusRef = React.RefObject<MeshType | null>;
+export type BillboardRef = React.RefObject<GroupType | null>;
+export type ImageRef = React.RefObject<MeshType | null>;
+export type XCrosshairRef = React.RefObject<Line2 | null>;
+export type YCrosshairRef = React.RefObject<Line2 | null>;
+
+interface AllRefs {
+  pointerPlantRef: PointerPlantRef;
+  radiusRef: RadiusRef;
+  torusRef: TorusRef;
+  billboardRef: BillboardRef;
+  imageRef: ImageRef;
+  xCrosshairRef: XCrosshairRef;
+  yCrosshairRef: YCrosshairRef;
+}
 
 const getGardenPositionFunc = (config: Config) =>
   (threeDPosition: XY): XY => {
@@ -45,22 +65,16 @@ const get3DPositionFunc = (config: Config) =>
     };
   };
 
-export interface PointerObjectsProps {
+export interface PointerObjectsProps extends AllRefs {
   config: Config;
   mapPoints: TaggedGenericPointer[];
   addPlantProps: AddPlantProps;
-  pointerPlantRef: React.RefObject<GroupType | null>;
-  radiusRef: React.RefObject<GroupType | null>;
-  billboardRef: React.RefObject<GroupType | null>;
-  imageRef: React.RefObject<MeshType | null>;
-  xCrosshairRef: React.RefObject<Line2 | null>;
-  yCrosshairRef: React.RefObject<Line2 | null>;
 }
 
 export const PointerObjects = (props: PointerObjectsProps) => {
   const {
     config, mapPoints, addPlantProps,
-    pointerPlantRef, radiusRef, billboardRef, imageRef,
+    pointerPlantRef, radiusRef, torusRef, billboardRef, imageRef,
     xCrosshairRef, yCrosshairRef,
   } = props;
   const zero = zeroFunc(config);
@@ -112,6 +126,7 @@ export const PointerObjects = (props: PointerObjectsProps) => {
             drawnPoint &&
             <DrawnPoint
               radiusRef={radiusRef}
+              torusRef={torusRef}
               billboardRef={billboardRef}
               imageRef={imageRef}
               config={config}
@@ -124,7 +139,7 @@ export const PointerObjects = (props: PointerObjectsProps) => {
                 url={findIcon(Path.getCropSlug())}
                 scale={iconSize}
                 transparent={true}
-                renderOrder={1} />
+                renderOrder={RenderOrder.pointerPlant} />
             </Billboard>}
         </Group>
       </Group>
@@ -134,7 +149,7 @@ export const PointerObjects = (props: PointerObjectsProps) => {
 export interface SoilClickProps {
   config: Config;
   addPlantProps: AddPlantProps;
-  pointerPlantRef: React.RefObject<GroupType | null>;
+  pointerPlantRef: PointerPlantRef;
   navigate: NavigateFunction;
 }
 
@@ -191,15 +206,9 @@ export const soilClick = (props: SoilClickProps) =>
     }
   };
 
-export interface SoilPointerMoveProps {
+export interface SoilPointerMoveProps extends AllRefs {
   config: Config;
   addPlantProps: AddPlantProps;
-  pointerPlantRef: React.RefObject<GroupType | null>;
-  radiusRef: React.RefObject<GroupType | null>;
-  billboardRef: React.RefObject<GroupType | null>;
-  imageRef: React.RefObject<MeshType | null>;
-  xCrosshairRef: React.RefObject<Line2 | null>;
-  yCrosshairRef: React.RefObject<Line2 | null>;
 }
 
 export const soilPointerMove = (props: SoilPointerMoveProps) =>
@@ -207,7 +216,7 @@ export const soilPointerMove = (props: SoilPointerMoveProps) =>
     const {
       config, addPlantProps,
       pointerPlantRef,
-      radiusRef, billboardRef, imageRef,
+      radiusRef, torusRef, billboardRef, imageRef,
       xCrosshairRef, yCrosshairRef,
     } = props;
     const getGardenPosition = getGardenPositionFunc(config);
@@ -232,12 +241,11 @@ export const soilPointerMove = (props: SoilPointerMoveProps) =>
           const radius = round(xyDistance(
             { x: drawnPoint.cx, y: drawnPoint.cy },
             getGardenPosition(e.point)));
-          radiusRef.current?.scale.set(
-            radius,
-            getMode() == Mode.createPoint ? 1 : radius,
-            radius);
-          billboardRef.current?.position.set(0, 0, radius / 2);
-          imageRef.current?.scale.set(radius, radius, radius);
+          radiusRef.current?.scale.set(radius, radius, radius);
+          torusRef.current?.scale.set(radius, radius, POINT_CYLINDER_SCALE_FACTOR);
+          const imgSize = mathRound(radius * WEED_IMG_SIZE_FRACTION);
+          billboardRef.current?.position.set(0, 0, imgSize / 2);
+          imageRef.current?.scale.set(imgSize, imgSize, imgSize);
         }
       }
     }

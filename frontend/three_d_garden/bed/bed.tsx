@@ -5,8 +5,6 @@ import {
   Path as LinePath,
   Shape,
   RepeatWrapping,
-  Group as GroupType,
-  Mesh as MeshType,
 } from "three";
 import { range } from "lodash";
 import { threeSpace, zZero, getColorFromBrightness } from "../helpers";
@@ -23,9 +21,13 @@ import { GetWebAppConfigValue } from "../../config_storage/actions";
 import { DesignerState } from "../../farm_designer/interfaces";
 import { useNavigate } from "react-router";
 import {
-  PointerObjects, soilClick, soilPointerMove,
+  BillboardRef,
+  ImageRef,
+  PointerObjects, PointerPlantRef, RadiusRef, soilClick, soilPointerMove,
+  TorusRef,
+  XCrosshairRef,
+  YCrosshairRef,
 } from "./objects/pointer_objects";
-import { Line2 } from "three/examples/jsm/lines/Line2";
 
 const soil = (
   Type: typeof LinePath | typeof Shape,
@@ -136,22 +138,25 @@ export const Bed = (props: BedProps) => {
     </Extrude>;
 
   // eslint-disable-next-line no-null/no-null
-  const pointerPlantRef = React.useRef<GroupType>(null);
+  const pointerPlantRef: PointerPlantRef = React.useRef(null);
 
   // eslint-disable-next-line no-null/no-null
-  const radiusRef = React.useRef<GroupType>(null);
+  const radiusRef: RadiusRef = React.useRef(null);
 
   // eslint-disable-next-line no-null/no-null
-  const billboardRef = React.useRef<GroupType>(null);
+  const torusRef: TorusRef = React.useRef(null);
 
   // eslint-disable-next-line no-null/no-null
-  const imageRef = React.useRef<MeshType>(null);
+  const billboardRef: BillboardRef = React.useRef(null);
 
   // eslint-disable-next-line no-null/no-null
-  const xCrosshairRef = React.useRef<Line2>(null);
+  const imageRef: ImageRef = React.useRef(null);
 
   // eslint-disable-next-line no-null/no-null
-  const yCrosshairRef = React.useRef<Line2>(null);
+  const xCrosshairRef: XCrosshairRef = React.useRef(null);
+
+  // eslint-disable-next-line no-null/no-null
+  const yCrosshairRef: YCrosshairRef = React.useRef(null);
 
   interface SoilProps {
     children: React.ReactElement;
@@ -176,6 +181,7 @@ export const Bed = (props: BedProps) => {
           config: props.config,
           pointerPlantRef,
           radiusRef,
+          torusRef,
           billboardRef,
           imageRef,
           xCrosshairRef,
@@ -273,6 +279,7 @@ export const Bed = (props: BedProps) => {
       <PointerObjects
         pointerPlantRef={pointerPlantRef}
         radiusRef={radiusRef}
+        torusRef={torusRef}
         billboardRef={billboardRef}
         imageRef={imageRef}
         xCrosshairRef={xCrosshairRef}

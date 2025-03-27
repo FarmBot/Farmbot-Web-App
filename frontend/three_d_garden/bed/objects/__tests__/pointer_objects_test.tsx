@@ -9,17 +9,23 @@ jest.mock("../../../../screen_size", () => ({
 
 import React from "react";
 import {
+  BillboardRef,
+  ImageRef,
   PointerObjects, PointerObjectsProps,
+  PointerPlantRef,
+  RadiusRef,
   soilClick, SoilClickProps,
   soilPointerMove, SoilPointerMoveProps,
+  TorusRef,
+  XCrosshairRef,
+  YCrosshairRef,
 } from "../pointer_objects";
 import { render } from "@testing-library/react";
 import { INITIAL } from "../../../config";
 import { fakeAddPlantProps } from "../../../../__test_support__/fake_props";
 import { clone } from "lodash";
 import { Path } from "../../../../internal_urls";
-import { Group, Mesh, Vector3 } from "three";
-import { Line2 } from "three/examples/jsm/Addons";
+import { Vector3 } from "three";
 import { ThreeEvent } from "@react-three/fiber";
 import {
   dropPlant,
@@ -30,12 +36,13 @@ describe("<PointerObjects />", () => {
     config: clone(INITIAL),
     mapPoints: [],
     addPlantProps: fakeAddPlantProps([]),
-    pointerPlantRef: { current: { position: new Vector3(0, 0, 0) } as Group },
-    radiusRef: { current: { scale: new Vector3(0, 0, 0) } as Group },
-    billboardRef: { current: { position: new Vector3(0, 0, 0) } as Group },
-    imageRef: { current: { scale: new Vector3(0, 0, 0) } as Mesh },
-    xCrosshairRef: { current: { position: new Vector3(0, 0, 0) } as Line2 },
-    yCrosshairRef: { current: { position: new Vector3(0, 0, 0) } as Line2 },
+    pointerPlantRef: { current: { position: new Vector3(0, 0, 0) } } as PointerPlantRef,
+    radiusRef: { current: { scale: new Vector3(0, 0, 0) } } as RadiusRef,
+    torusRef: { current: { scale: new Vector3(0, 0, 0) } } as TorusRef,
+    billboardRef: { current: { position: new Vector3(0, 0, 0) } } as BillboardRef,
+    imageRef: { current: { scale: new Vector3(0, 0, 0) } } as ImageRef,
+    xCrosshairRef: { current: { position: new Vector3(0, 0, 0) } } as XCrosshairRef,
+    yCrosshairRef: { current: { position: new Vector3(0, 0, 0) } } as YCrosshairRef,
   });
 
   it("renders", () => {
@@ -51,7 +58,7 @@ describe("soilClick()", () => {
     config: clone(INITIAL),
     navigate: jest.fn(),
     addPlantProps: fakeAddPlantProps([]),
-    pointerPlantRef: { current: { position: new Vector3(0, 0, 0) } as Group },
+    pointerPlantRef: { current: { position: new Vector3(0, 0, 0) } } as PointerPlantRef,
   });
 
   it("creates plant", () => {
@@ -74,12 +81,13 @@ describe("soilPointerMove()", () => {
   const fakeProps = (): SoilPointerMoveProps => ({
     config: clone(INITIAL),
     addPlantProps: fakeAddPlantProps([]),
-    pointerPlantRef: { current: { position: { set: jest.fn() } } as unknown as Group },
-    radiusRef: { current: { scale: { set: jest.fn() } } as unknown as Group },
-    billboardRef: { current: { position: { set: jest.fn() } } as unknown as Group },
-    imageRef: { current: { scale: { set: jest.fn() } } as unknown as Mesh },
-    xCrosshairRef: { current: { position: { set: jest.fn() } } as unknown as Line2 },
-    yCrosshairRef: { current: { position: { set: jest.fn() } } as unknown as Line2 },
+    pointerPlantRef: { current: { position: { set: jest.fn() } } } as unknown as PointerPlantRef,
+    radiusRef: { current: { scale: { set: jest.fn() } } } as unknown as RadiusRef,
+    torusRef: { current: { scale: { set: jest.fn() } } } as unknown as TorusRef,
+    billboardRef: { current: { position: { set: jest.fn() } } } as unknown as BillboardRef,
+    imageRef: { current: { scale: { set: jest.fn() } } } as unknown as ImageRef,
+    xCrosshairRef: { current: { position: { set: jest.fn() } } } as unknown as XCrosshairRef,
+    yCrosshairRef: { current: { position: { set: jest.fn() } } } as unknown as YCrosshairRef,
   });
 
   it("updates plant position", () => {

@@ -1,6 +1,6 @@
 import { TaggedPlant } from "../../farm_designer/map/interfaces";
 import { Config } from "../config";
-import { GARDENS, HOVER_OBJECT_MODES, PLANTS } from "../constants";
+import { GARDENS, HOVER_OBJECT_MODES, PLANTS, RenderOrder } from "../constants";
 import { Billboard, Image } from "@react-three/drei";
 import React from "react";
 import { Vector3 } from "three";
@@ -107,7 +107,7 @@ export const ThreeDPlant = (props: ThreeDPlantProps) => {
     )}>
     {labelOnly
       ? <Text visible={alwaysShowLabels || i === hoveredPlant}
-        renderOrder={2}
+        renderOrder={RenderOrder.plantLabels}
         fontSize={50}
         color={"white"}
         position={[0, plant.size / 2 + 40, 0]}
@@ -123,6 +123,6 @@ export const ThreeDPlant = (props: ThreeDPlantProps) => {
           }
         }}
         transparent={true}
-        renderOrder={1} />}
+        renderOrder={RenderOrder.plants} />}
   </Billboard>;
 };

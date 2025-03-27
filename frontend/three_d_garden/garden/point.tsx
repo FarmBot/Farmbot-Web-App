@@ -1,27 +1,31 @@
 import React from "react";
 import { SpecialStatus, TaggedGenericPointer, Xyz } from "farmbot";
 import { Config } from "../config";
-import { Group, Mesh, MeshPhongMaterial, RingGeometry } from "../components";
-import { Cylinder, Sphere } from "@react-three/drei";
-import {
-  DoubleSide, FrontSide, BackSide,
-  Mesh as MeshType,
-  Group as GroupType,
-} from "three";
+import { Group, MeshPhongMaterial } from "../components";
+import { Cylinder, Sphere, Torus } from "@react-three/drei";
+import { DoubleSide } from "three";
 import { zero as zeroFunc, threeSpace } from "../helpers";
 import { useNavigate } from "react-router";
 import { Path } from "../../internal_urls";
-import { isUndefined } from "lodash";
+import { isUndefined, round } from "lodash";
 import { setPanelOpen } from "../../farm_designer/panel_header";
 import { DesignerState } from "../../farm_designer/interfaces";
 import { getMode } from "../../farm_designer/map/util";
 import { Mode } from "../../farm_designer/map/interfaces";
 import { WeedBase } from ".";
-import { HOVER_OBJECT_MODES } from "../constants";
+import { HOVER_OBJECT_MODES, RenderOrder } from "../constants";
+import {
+  BillboardRef, ImageRef, RadiusRef, TorusRef,
+} from "../bed/objects/pointer_objects";
 
-const POINT_CYLINDER_HEIGHT = 25;
 const POINT_PIN_RADIUS = 12.5;
 const POINT_PIN_HEIGHT = 50;
+const POINT_CYLINDER_HEIGHT = 25;
+const POINT_CYLINDER_INNER_R_FRACTION = 0.95;
+const POINT_CYLINDER_TUBE_SIZE = 1 - POINT_CYLINDER_INNER_R_FRACTION;
+export const POINT_CYLINDER_SCALE_FACTOR =
+  round(1 / POINT_CYLINDER_TUBE_SIZE ** 2);
+const SEGMENTS = 64;
 
 export interface PointProps {
   point: TaggedGenericPointer;
@@ -58,9 +62,10 @@ export interface DrawnPointProps {
   designer: DesignerState;
   usePosition: boolean;
   config: Config;
-  radiusRef?: React.RefObject<GroupType | null>;
-  billboardRef?: React.RefObject<GroupType | null>;
-  imageRef?: React.RefObject<MeshType | null>;
+  radiusRef?: RadiusRef;
+  torusRef?: TorusRef;
+  billboardRef?: BillboardRef;
+  imageRef?: ImageRef;
 }
 
 export const DrawnPoint = (props: DrawnPointProps) => {
@@ -80,6 +85,7 @@ export const DrawnPoint = (props: DrawnPointProps) => {
     config={config}
     radius={drawnPoint?.r || 0}
     radiusRef={props.radiusRef}
+    torusRef={props.torusRef}
     billboardRef={props.billboardRef}
     imageRef={props.imageRef} />;
 };
@@ -92,15 +98,16 @@ interface PointBaseProps {
   radius: number;
   alpha: number;
   config: Config;
-  radiusRef?: React.RefObject<GroupType | null>;
-  billboardRef?: React.RefObject<GroupType | null>;
-  imageRef?: React.RefObject<MeshType | null>;
+  torusRef?: TorusRef;
+  billboardRef?: BillboardRef;
+  imageRef?: ImageRef;
 }
 
 const PointBase = (props: PointBaseProps) => {
   const { config, radius } = props;
   return <Group
     name={"point-" + props.pointName}
+    renderOrder={RenderOrder.points}
     rotation={[Math.PI / 2, 0, 0]}
     position={props.position
       ? [
@@ -131,9 +138,8 @@ const PointBase = (props: PointBaseProps) => {
       </Sphere>
     </Group>
     <HollowCylinder
-      radiusRef={props.radiusRef}
+      torusRef={props.torusRef}
       radius={radius}
-      height={POINT_CYLINDER_HEIGHT}
       thickness={10}
       color={props.color}
       alpha={0.5 * props.alpha} />
@@ -142,44 +148,31 @@ const PointBase = (props: PointBaseProps) => {
 
 interface HollowCylinderProps {
   radius: number;
-  height: number;
   thickness: number;
   color?: string;
   alpha: number;
-  radiusRef?: React.RefObject<GroupType | null>;
+  torusRef?: TorusRef;
 }
 
 const HollowCylinder = (props: HollowCylinderProps) => {
-  const INNER_R_FRACTION = 0.95;
-  const SEGMENTS = 64;
-  return <Group
-    ref={props.radiusRef}
-    name={"hollow-cylinder"}
-    scale={[props.radius, 1, props.radius]}>
-    <Mesh rotation={[-Math.PI / 2, 0, 0]}
-      position={[0, props.height / 2, 0]}>
-      <RingGeometry args={[INNER_R_FRACTION, 1, SEGMENTS]} />
+  return props.torusRef
+    ? <Torus
+      ref={props.torusRef}
+      scale={[props.radius, props.radius, POINT_CYLINDER_SCALE_FACTOR]}
+      rotation={[-Math.PI / 2, 0, 0]}
+      args={[1, POINT_CYLINDER_TUBE_SIZE, SEGMENTS, SEGMENTS]}>
       <MeshPhongMaterial
         color={props.color}
-        side={FrontSide}
         transparent={true}
         opacity={props.alpha} />
-    </Mesh>
-    <Cylinder
-      args={[1, 1, props.height, SEGMENTS, 1, true]}>
+    </Torus>
+    : <Torus
+      rotation={[-Math.PI / 2, 0, 0]}
+      scale={[1, 1, POINT_CYLINDER_HEIGHT / 5]}
+      args={[props.radius, 5, SEGMENTS, SEGMENTS]}>
       <MeshPhongMaterial
         color={props.color}
-        side={FrontSide}
         transparent={true}
         opacity={props.alpha} />
-    </Cylinder>
-    <Cylinder
-      args={[INNER_R_FRACTION, INNER_R_FRACTION, props.height, SEGMENTS, 1, true]}>
-      <MeshPhongMaterial
-        color={props.color}
-        side={BackSide}
-        transparent={true}
-        opacity={props.alpha} />
-    </Cylinder>
-  </Group>;
+    </Torus>;
 };

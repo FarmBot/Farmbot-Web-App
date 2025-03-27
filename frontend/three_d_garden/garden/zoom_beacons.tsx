@@ -5,6 +5,7 @@ import { FOCI, getCameraOffset, setUrlParam } from "../zoom_beacons_constants";
 import { useSpring, animated } from "@react-spring/three";
 import { Group, Mesh, MeshPhongMaterial } from "../components";
 import { isDesktop } from "../../screen_size";
+import { RenderOrder } from "../constants";
 
 const beaconColor = "#0266b5";
 
@@ -38,7 +39,7 @@ const BeaconPulse = (props: BeaconPulseProps) => {
 
   return <AnimatedMesh scale={scale}>
     <Sphere args={[beaconSize, 12, 12]}
-      renderOrder={1}>
+      renderOrder={RenderOrder.beacons}>
       <AnimatedMeshPhongMaterial
         color={beaconColor}
         opacity={opacity}

@@ -1,7 +1,7 @@
 import React from "react";
 import { Config, seasonProperties } from "../config";
 import { Cloud, Clouds as DreiClouds } from "@react-three/drei";
-import { ASSETS } from "../constants";
+import { ASSETS, RenderOrder } from "../constants";
 
 export interface CloudsProps {
   config: Config;
@@ -9,7 +9,8 @@ export interface CloudsProps {
 
 export const Clouds = (props: CloudsProps) => {
   const { config } = props;
-  return <DreiClouds name={"clouds"} visible={config.clouds} renderOrder={2}
+  return <DreiClouds name={"clouds"} visible={config.clouds}
+    renderOrder={RenderOrder.clouds}
     texture={ASSETS.textures.cloud}>
     <Cloud position={[0, 0, 5000]}
       seed={0}
