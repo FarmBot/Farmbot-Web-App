@@ -71,7 +71,7 @@ export const PointerObjects = (props: PointerObjectsProps) => {
   const settingRadius =
     !(isUndefined(drawnPoint?.cx) || isUndefined(drawnPoint.cy));
   const soilZ = zero.z - config.soilHeight;
-  const crosshairZ = soilZ + 5;
+  const crosshairZ = soilZ + 1;
   const gridPreview = mapPoints
     .filter(p => p.specialStatus == SpecialStatus.DIRTY && p.body.meta.gridId)
     .length > 0;
@@ -85,7 +85,9 @@ export const PointerObjects = (props: PointerObjectsProps) => {
           <Line
             ref={xCrosshairRef}
             name={"x-crosshair"}
-            color={"gray"}
+            color={"white"}
+            transparent={true}
+            opacity={0.9}
             lineWidth={2}
             points={[
               [zero.x, 0, crosshairZ],
@@ -94,7 +96,9 @@ export const PointerObjects = (props: PointerObjectsProps) => {
           <Line
             ref={yCrosshairRef}
             name={"y-crosshair"}
-            color={"gray"}
+            color={"white"}
+            transparent={true}
+            opacity={0.9}
             lineWidth={2}
             points={[
               [0, zero.y, crosshairZ],
