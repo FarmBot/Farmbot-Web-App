@@ -107,7 +107,7 @@ const PointBase = (props: PointBaseProps) => {
   const { config, radius } = props;
   return <Group
     name={"point-" + props.pointName}
-    renderOrder={RenderOrder.points}
+    renderOrder={RenderOrder.default}
     rotation={[Math.PI / 2, 0, 0]}
     position={props.position
       ? [
