@@ -19,9 +19,9 @@ import { Mode } from "../../farm_designer/map/interfaces";
 import { WeedBase } from ".";
 import { HOVER_OBJECT_MODES } from "../constants";
 
-const POINT_CYLINDER_HEIGHT = 50;
-const POINT_PIN_RADIUS = 25;
-const POINT_PIN_HEIGHT = 100;
+const POINT_CYLINDER_HEIGHT = 25;
+const POINT_PIN_RADIUS = 12.5;
+const POINT_PIN_HEIGHT = 50;
 
 export interface PointProps {
   point: TaggedGenericPointer;
@@ -112,7 +112,7 @@ const PointBase = (props: PointBaseProps) => {
     <Group name={"marker"}
       onClick={props.onClick}>
       <Cylinder
-        args={[POINT_PIN_RADIUS, 0, POINT_PIN_HEIGHT, 32, 32, true]}
+        args={[POINT_PIN_RADIUS, 0, POINT_PIN_HEIGHT, 16, 2, true]}
         position={[0, POINT_PIN_HEIGHT / 2, 0]}>
         <MeshPhongMaterial
           color={props.color}
@@ -121,7 +121,7 @@ const PointBase = (props: PointBaseProps) => {
           opacity={1 * props.alpha} />
       </Cylinder>
       <Sphere
-        args={[POINT_PIN_RADIUS, 32, 32]}
+        args={[POINT_PIN_RADIUS, 16, 16]}
         position={[0, POINT_PIN_HEIGHT, 0]}>
         <MeshPhongMaterial
           color={props.color}
