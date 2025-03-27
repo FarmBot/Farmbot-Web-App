@@ -57,7 +57,7 @@ export const ThreeDGardenToggle = (props: ThreeDGardenToggleProps) => {
   const description = isMobile()
     ? Content.SHOW_3D_VIEW_DESCRIPTION_MOBILE
     : Content.SHOW_3D_VIEW_DESCRIPTION_DESKTOP;
-  return <div className={"three-d-map-toggle-menu grid"}>
+  return <div className={"three-d-map-toggle-menu row"}>
     {threeDGarden
       ? <>
         <button className={"fb-button gray"}
@@ -66,32 +66,22 @@ export const ThreeDGardenToggle = (props: ThreeDGardenToggleProps) => {
           <i className={"fa fa-cog"} />
         </button>
         <button className={"fb-button gray"}
-          title={t("3D View")}
+          title={topDown ? t("3D View") : t("Top down View")}
           onClick={() => dispatch({
             type: Actions.TOGGLE_3D_TOP_DOWN_VIEW,
-            payload: false,
+            payload: !topDown,
           })}>
-          <i className={"fa fa-cube"} />
-        </button>
-        <button className={["fb-button gray", topDown ? "active" : ""].join(" ")}
-          title={t("Top down View")}
-          onClick={() => dispatch({
-            type: Actions.TOGGLE_3D_TOP_DOWN_VIEW,
-            payload: true,
-          })}>
-          <i className={"fa fa-th"} />
+          <i className={`fa ${topDown ? "fa-cube" : "fa-th"}`} />
         </button>
       </>
-      : <>
-        <div />
-        <div />
-        <div />
-      </>}
-    <div className={"three-d-map-toggle grid"}>
-      <label>{t(DeviceSetting.show3DMap)}</label>
-      {threeDGarden
-        ? <Help text={description} enableMarkdown={true} />
-        : <div />}
+      : <></>}
+    <div className={"three-d-map-toggle row"}>
+      <div className={"row half-gap"}>
+        <label>{t(DeviceSetting.show3DMap)}</label>
+        {threeDGarden
+          ? <Help text={description} enableMarkdown={true} />
+          : <div />}
+      </div>
       <LayerToggle
         settingName={BooleanSetting.three_d_garden}
         value={threeDGarden}
