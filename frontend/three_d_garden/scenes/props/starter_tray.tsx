@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Billboard, Image } from "@react-three/drei";
 import { DoubleSide } from "three";
-import { ASSETS } from "../../constants";
+import { ASSETS, RenderOrder } from "../../constants";
 import { Group, MeshPhongMaterial } from "../../components";
 import { range } from "lodash";
 
@@ -31,7 +31,7 @@ export const StarterTray = () => {
           <Image
             url={ASSETS.other.plant}
             scale={seedlingSize}
-            renderOrder={1}
+            renderOrder={RenderOrder.one}
             transparent={true} />
         </Billboard>;
       }),

@@ -13,7 +13,6 @@ import {
   Sky, Solar, Sun, sunPosition, ZoomBeacons,
   calculatePlantPositions, convertPlants, ThreeDPlant,
   Point, Grid, Clouds, Ground, Weed,
-  DrawnPoint,
 } from "./garden";
 import { Config } from "./config";
 import { useSpring, animated } from "@react-spring/three";
@@ -28,8 +27,7 @@ import { TaggedGenericPointer, TaggedWeedPointer } from "farmbot";
 import { BooleanSetting } from "../session_keys";
 import { SlotWithTool } from "../resources/interfaces";
 import { cameraInit } from "./camera";
-import { getMode } from "../farm_designer/map/util";
-import { DRAW_POINT_MODES } from "./constants";
+import { isMobile } from "../screen_size";
 
 const AnimatedGroup = animated(Group);
 
@@ -78,7 +76,9 @@ export const GardenModel = (props: GardenModelProps) => {
     },
   });
 
-  const camera = getCamera(config, props.activeFocus, cameraInit());
+  const topDown = addPlantProps?.designer.threeDTopDownView;
+  const topDownMobile = topDown && isMobile();
+  const camera = getCamera(config, props.activeFocus, cameraInit(!!topDown));
 
   const showPlants = !addPlantProps
     || !!addPlantProps.getConfigValue(BooleanSetting.show_plants);
@@ -102,21 +102,27 @@ export const GardenModel = (props: GardenModelProps) => {
     <Sphere args={[30000, 8, 16]}>
       <MeshBasicMaterial color={"#59d8ff"} side={BackSide} />
     </Sphere>
-    <AnimatedGroup scale={props.activeFocus ? 1 : scale}>
+    <AnimatedGroup
+      scale={props.activeFocus ? 1 : scale}>
       <Camera makeDefault={true} name={"camera"}
         fov={40} near={10} far={75000}
         position={camera.position}
         rotation={[0, 0, 0]}
+        zoom={topDown ? 0.25 : 1}
         up={[0, 0, 1]} />
     </AnimatedGroup>
-    <OrbitControls maxPolarAngle={Math.PI / 2}
-      enableZoom={config.zoom} enablePan={config.pan} dampingFactor={0.2}
+    <OrbitControls
+      maxPolarAngle={Math.PI / 2}
+      minAzimuthAngle={topDownMobile ? Math.PI / 2 : undefined}
+      maxAzimuthAngle={topDownMobile ? Math.PI / 2 : undefined}
+      enableRotate={config.rotate}
+      enableZoom={config.zoom}
+      enablePan={config.pan}
+      dampingFactor={0.2}
       target={camera.target}
       minDistance={500} maxDistance={12000} />
     <AxesHelper args={[5000]} visible={config.threeAxes} />
-    {config.viewCube && <GizmoHelper>
-      <GizmoViewcube />
-    </GizmoHelper>}
+    {config.viewCube && <GizmoHelper><GizmoViewcube /></GizmoHelper>}
     <Sun config={config} />
     <AmbientLight intensity={1} />
     <Ground config={config} />
@@ -124,6 +130,7 @@ export const GardenModel = (props: GardenModelProps) => {
     <Bed
       config={config}
       activeFocus={props.activeFocus}
+      mapPoints={props.mapPoints || []}
       addPlantProps={addPlantProps} />
     {showFarmbot &&
       <Bot
@@ -165,11 +172,6 @@ export const GardenModel = (props: GardenModelProps) => {
           config={config}
           dispatch={dispatch} />)}
     </Group>
-    {addPlantProps && DRAW_POINT_MODES.includes(getMode()) &&
-      <DrawnPoint
-        config={config}
-        designer={addPlantProps.designer}
-        usePosition={true} />}
     <Group name={"weeds"}
       visible={showWeeds}>
       {props.weeds?.map(weed =>

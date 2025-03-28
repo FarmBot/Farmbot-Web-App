@@ -583,6 +583,8 @@ jest.mock("@react-three/drei", () => {
       <div className={"cylinder"}>{name}</div>,
     Cylinder: ({ name }: { name: string }) =>
       <div className={"cylinder"}>{name}</div>,
+    Torus: ({ name }: { name: string }) =>
+      <div className={"torus"}>{name}</div>,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Sphere: (props: any) =>
       <div className={"sphere" + props.name} {...props}>{props.children}</div>,

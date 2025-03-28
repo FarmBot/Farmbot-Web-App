@@ -1,7 +1,8 @@
 let mockIsDesktop = false;
+let mockIsMobile = false;
 jest.mock("../../screen_size", () => ({
   isDesktop: () => mockIsDesktop,
-  isMobile: jest.fn(),
+  isMobile: () => mockIsMobile,
 }));
 
 import React from "react";
@@ -19,6 +20,10 @@ import { Path } from "../../internal_urls";
 import { fakeDrawnPoint } from "../../__test_support__/fake_designer_state";
 
 describe("<GardenModel />", () => {
+  beforeEach(() => {
+    mockIsMobile = false;
+  });
+
   const fakeProps = (): GardenModelProps => ({
     config: clone(INITIAL),
     activeFocus: "",
@@ -30,6 +35,16 @@ describe("<GardenModel />", () => {
     const { container } = render(<GardenModel {...fakeProps()} />);
     expect(container).toContainHTML("zoom-beacons");
     expect(container).not.toContainHTML("stats");
+    expect(container).toContainHTML("darkgreen");
+  });
+
+  it("renders top down view", () => {
+    mockIsMobile = true;
+    const p = fakeProps();
+    const addPlantProps = fakeAddPlantProps([]);
+    addPlantProps.designer.threeDTopDownView = true;
+    p.addPlantProps = addPlantProps;
+    const { container } = render(<GardenModel {...p} />);
     expect(container).toContainHTML("darkgreen");
   });
 

@@ -3,6 +3,7 @@ import { Tube } from "@react-three/drei";
 import { MeshPhongMaterial, Group } from "../../components";
 import { WaterStream } from "./water_stream";
 import { Curve, Vector3 } from "three";
+import { RenderOrder } from "../../constants";
 
 export interface WaterTubeProps {
   tubeName: string;
@@ -22,7 +23,7 @@ export const WaterTube = (props: WaterTubeProps) => {
     <Tube name={tubeName + "-tube"}
       castShadow={true}
       receiveShadow={true}
-      renderOrder={1}
+      renderOrder={RenderOrder.one}
       args={[tubePath, tubularSegments, radius, radialSegments]}>
       <MeshPhongMaterial transparent={true}
         opacity={0.4} />

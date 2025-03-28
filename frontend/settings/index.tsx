@@ -167,10 +167,9 @@ export class RawDesignerSettings
           farmwareEnvs={this.props.farmwareEnvs} />
         <Designer {...commonProps}
           getConfigValue={getConfigValue} />
-        {showByTerm("3d", this.props.searchTerm) &&
-          <ThreeDSettings {...commonProps}
-            distanceIndicator={this.props.distanceIndicator}
-            farmwareEnvs={this.props.farmwareEnvs} />}
+        <ThreeDSettings {...commonProps}
+          distanceIndicator={this.props.distanceIndicator}
+          farmwareEnvs={this.props.farmwareEnvs} />
         <AccountSettings {...commonProps}
           user={this.props.user}
           getConfigValue={getConfigValue} />

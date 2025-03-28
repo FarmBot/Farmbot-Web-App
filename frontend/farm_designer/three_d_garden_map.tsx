@@ -73,6 +73,8 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
 
   config.zoom = true;
   config.pan = true;
+  config.rotate = !props.designer.threeDTopDownView;
+  config.perspective = !props.designer.threeDTopDownView;
 
   return <ThreeDGarden
     config={config}

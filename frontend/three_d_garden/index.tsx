@@ -6,6 +6,16 @@ import { noop } from "lodash";
 import { AddPlantProps } from "./bed";
 import { TaggedGenericPointer, TaggedWeedPointer } from "farmbot";
 import { SlotWithTool } from "../resources/interfaces";
+import { NavigateFunction } from "react-router";
+import { Path } from "../internal_urls";
+import { t } from "../i18next_wrapper";
+import { Actions, Content, DeviceSetting } from "../constants";
+import { isMobile } from "../screen_size";
+import { Help } from "../ui";
+import { BooleanSetting } from "../session_keys";
+import { LayerToggle } from "../farm_designer/map/legend/layer_toggle";
+import { setWebAppConfigValue } from "../config_storage/actions";
+import { DesignerState } from "../farm_designer/interfaces";
 
 export interface ThreeDGardenProps {
   config: Config;
@@ -30,6 +40,50 @@ export const ThreeDGarden = (props: ThreeDGardenProps) => {
           mountedToolName={props.mountedToolName}
           addPlantProps={props.addPlantProps} />
       </Canvas>
+    </div>
+  </div>;
+};
+
+export interface ThreeDGardenToggleProps {
+  navigate: NavigateFunction;
+  dispatch: Function;
+  designer: DesignerState;
+  threeDGarden: boolean;
+}
+
+export const ThreeDGardenToggle = (props: ThreeDGardenToggleProps) => {
+  const { navigate, dispatch, threeDGarden } = props;
+  const topDown = props.designer.threeDTopDownView;
+  const description = isMobile()
+    ? Content.SHOW_3D_VIEW_DESCRIPTION_MOBILE
+    : Content.SHOW_3D_VIEW_DESCRIPTION_DESKTOP;
+  return <div className={"three-d-map-toggle-menu row"}>
+    {threeDGarden &&
+      <button className={"fb-button gray"}
+        title={t("3D Settings")}
+        onClick={() => { navigate(Path.settings("3d_garden")); }}>
+        <i className={"fa fa-cog"} />
+      </button>}
+    {threeDGarden &&
+      <button className={"fb-button gray"}
+        title={topDown ? t("3D View") : t("Top down View")}
+        onClick={() => dispatch({
+          type: Actions.TOGGLE_3D_TOP_DOWN_VIEW,
+          payload: !topDown,
+        })}>
+        <i className={`fa ${topDown ? "fa-cube" : "fa-th"}`} />
+      </button>}
+    <div className={"three-d-map-toggle row"}>
+      <div className={"row half-gap"}>
+        <label>{t(DeviceSetting.show3DMap)}</label>
+        {threeDGarden && <Help text={description} enableMarkdown={true} />}
+      </div>
+      <LayerToggle
+        settingName={BooleanSetting.three_d_garden}
+        value={threeDGarden}
+        label={DeviceSetting.axisHeadingLabels}
+        onClick={() => dispatch(setWebAppConfigValue(
+          BooleanSetting.three_d_garden, !threeDGarden))} />
     </div>
   </div>;
 };

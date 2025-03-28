@@ -23,23 +23,29 @@ import { getModifiedClassName } from "../../../settings/default_values";
 import { Position } from "@blueprintjs/core";
 import { MapSizeInputs } from "../../map_size_setting";
 import { OriginSelector } from "../../../settings/farm_designer_settings";
-import { DevSettings } from "../../../settings/dev/dev_support";
 
-export const ZoomControls = ({ zoom, getConfigValue }: {
-  zoom: (value: number) => () => void,
-  getConfigValue: GetWebAppConfigValue
-}) => {
+export interface ZoomControlsProps {
+  zoom(value: number): () => void;
+  getConfigValue: GetWebAppConfigValue;
+}
+
+export const ZoomControls = (props: ZoomControlsProps) => {
+  const { zoom, getConfigValue } = props;
   const plusBtnClass = atMaxZoom(getConfigValue) ? "disabled" : "";
   const minusBtnClass = atMinZoom(getConfigValue) ? "disabled" : "";
   return <div className="zoom-buttons">
     <button
-      className={"fb-button gray zoom " + plusBtnClass}
+      className={[
+        "fb-button gray zoom", plusBtnClass,
+      ].join(" ")}
       title={t("zoom in")}
       onClick={zoom(1)}>
       <i className="fa fa-2x fa-plus" />
     </button>
     <button
-      className={"fb-button gray zoom zoom-out " + minusBtnClass}
+      className={[
+        "fb-button gray zoom zoom-out", minusBtnClass,
+      ].join(" ")}
       title={t("zoom out")}
       onClick={zoom(-1)}>
       <i className="fa fa-2x fa-minus" />
@@ -62,7 +68,10 @@ const NonLayerToggle = (props: NonLayerToggleProps) => {
   const { setting, getConfigValue } = props;
   const value = !!(setting ? getConfigValue(setting) : undefined);
   return <div
-    className={`row grid-exp-1 align-baseline ${props.disabled ? "disabled" : ""}`}>
+    className={[
+      "row grid-exp-1 align-baseline",
+      props.disabled ? "disabled" : "",
+    ].join(" ")}>
     <label>{t(props.label)}</label>
     {props.helpText && <Help text={props.helpText} />}
     {setting && <ToggleButton
@@ -113,10 +122,13 @@ export const FarmbotSubMenu = (props: SettingsSubMenuProps) =>
       disabled={!props.getConfigValue(BooleanSetting.display_trail)} />
   </div>;
 
-const LayerToggles = (props: GardenMapLegendProps) => {
+interface LayerTogglesProps extends GardenMapLegendProps { }
+
+const LayerToggles = (props: LayerTogglesProps) => {
   const { toggle, getConfigValue, dispatch } = props;
   const subMenuProps = { dispatch, getConfigValue };
-  const threeDGarden = !!props.getConfigValue(BooleanSetting.three_d_garden);
+  const only2DClass =
+    getConfigValue(BooleanSetting.three_d_garden) ? "disabled" : "";
   return <div className="toggle-buttons">
     <LayerToggle
       settingName={BooleanSetting.show_plants}
@@ -131,6 +143,7 @@ const LayerToggles = (props: GardenMapLegendProps) => {
       label={DeviceSetting.showPoints}
       onClick={toggle(BooleanSetting.show_points)} />
     <LayerToggle
+      className={only2DClass}
       settingName={BooleanSetting.show_soil_interpolation_map}
       value={props.showSoilInterpolationMap}
       label={DeviceSetting.showSoil}
@@ -143,6 +156,7 @@ const LayerToggles = (props: GardenMapLegendProps) => {
       submenuTitle={t("extras")}
       popover={<PointsSubMenu {...subMenuProps} />} />
     <LayerToggle
+      className={only2DClass}
       settingName={BooleanSetting.show_spread}
       value={props.showSpread}
       label={DeviceSetting.showSpread}
@@ -155,6 +169,7 @@ const LayerToggles = (props: GardenMapLegendProps) => {
       submenuTitle={t("extras")}
       popover={<FarmbotSubMenu {...subMenuProps} />} />
     <LayerToggle
+      className={only2DClass}
       settingName={BooleanSetting.show_images}
       value={props.showImages}
       label={DeviceSetting.showPhotos}
@@ -182,29 +197,25 @@ const LayerToggles = (props: GardenMapLegendProps) => {
           helpText={Content.SHOW_UNCROPPED_CAMERA_VIEW_AREA} />
       </div>} />
     <LayerToggle
+      className={only2DClass}
       settingName={BooleanSetting.show_zones}
       value={props.showZones}
       label={DeviceSetting.showAreas}
       onClick={toggle(BooleanSetting.show_zones)} />
     {props.hasSensorReadings &&
       <LayerToggle
+        className={only2DClass}
         settingName={BooleanSetting.show_sensor_readings}
         value={props.showSensorReadings}
         label={DeviceSetting.showReadings}
         onClick={toggle(BooleanSetting.show_sensor_readings)} />}
     {props.hasSensorReadings &&
       <LayerToggle
+        className={only2DClass}
         settingName={BooleanSetting.show_moisture_interpolation_map}
         value={props.showMoistureInterpolationMap}
         label={DeviceSetting.showMoisture}
         onClick={toggle(BooleanSetting.show_moisture_interpolation_map)} />}
-    {DevSettings.futureFeaturesEnabled() &&
-      <LayerToggle
-        settingName={BooleanSetting.three_d_garden}
-        value={threeDGarden}
-        label={DeviceSetting.show3DMap}
-        onClick={() => dispatch(setWebAppConfigValue(
-          BooleanSetting.three_d_garden, !threeDGarden))} />}
   </div>;
 };
 

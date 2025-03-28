@@ -1,6 +1,6 @@
 import React from "react";
 import { Center, Text3D } from "@react-three/drei";
-import { ASSETS } from "../constants";
+import { ASSETS, RenderOrder } from "../constants";
 import { MeshPhongMaterial } from "../components";
 
 export interface TextProps {
@@ -11,7 +11,7 @@ export interface TextProps {
   color: string;
   name?: string;
   visible?: boolean;
-  renderOrder?: number;
+  renderOrder?: RenderOrder;
 }
 
 export const Text = (props: TextProps) => {

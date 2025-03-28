@@ -805,3 +805,26 @@
     transform: translateX(-22.5rem);
   }
 }
+
+.three-d-map-toggle-menu {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  padding: 1rem;
+  button {
+    height: 3.5rem;
+    width: 3.5rem;
+    i {
+      font-size: 1.5rem;
+    }
+    &.active {
+      background-color: $blue !important;
+    }
+  }
+  .three-d-map-toggle {
+    padding: 0 1.5rem;
+    background-color: var(--main-bg);
+    border-radius: 5px;
+    height: 3.5rem;
+  }
+}

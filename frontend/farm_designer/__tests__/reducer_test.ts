@@ -126,6 +126,15 @@ describe("designer reducer", () => {
     expect(newState.distanceIndicator).toEqual("setting");
   });
 
+  it("sets top down view", () => {
+    const action: ReduxAction<boolean> = {
+      type: Actions.TOGGLE_3D_TOP_DOWN_VIEW,
+      payload: true,
+    };
+    const newState = designer(oldState(), action);
+    expect(newState.threeDTopDownView).toEqual(true);
+  });
+
   it("sets panel open state", () => {
     const action: ReduxAction<boolean> = {
       type: Actions.SET_PANEL_OPEN,

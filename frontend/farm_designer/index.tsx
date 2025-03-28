@@ -28,6 +28,8 @@ import { Outlet } from "react-router";
 import { ErrorBoundary } from "../error_boundary";
 import { get3DConfigValueFunction } from "../settings/three_d_settings";
 import { isDesktop, isMobile } from "../screen_size";
+import { NavigationContext } from "../routes_helpers";
+import { ThreeDGardenToggle } from "../three_d_garden";
 
 export const getDefaultAxisLength =
   (getConfigValue: GetWebAppConfigValue): Record<Xyz, number> => {
@@ -139,6 +141,10 @@ export class RawFarmDesigner
 
   get mapPanelClassName() { return mapPanelClassName(this.props.designer); }
 
+  static contextType = NavigationContext;
+  context!: React.ContextType<typeof NavigationContext>;
+  navigate = this.context;
+
   render() {
     const {
       legend_menu_open,
@@ -162,6 +168,8 @@ export class RawFarmDesigner
 
     const mapPadding = getMapPadding(getPanelStatus(this.props.designer));
     const padHeightOffset = mapPadding.top - mapPadding.top / zoom_level;
+
+    const threeDGarden = !!this.props.getConfigValue(BooleanSetting.three_d_garden);
 
     return <div className="farm-designer">
 
@@ -206,7 +214,7 @@ export class RawFarmDesigner
         </ErrorBoundary>
       </div>
 
-      {this.props.getConfigValue(BooleanSetting.three_d_garden)
+      {threeDGarden
         ? <ThreeDGardenMap
           designer={this.props.designer}
           plants={this.props.plants}
@@ -278,7 +286,7 @@ export class RawFarmDesigner
         && (isDesktop() || !this.props.designer.panelOpen) &&
         <SavedGardenHUD dispatch={this.props.dispatch} />}
 
-      {!this.props.getConfigValue(BooleanSetting.three_d_garden) &&
+      {!threeDGarden &&
         <ProfileViewer
           getConfigValue={this.props.getConfigValue}
           dispatch={this.props.dispatch}
@@ -293,6 +301,12 @@ export class RawFarmDesigner
           farmwareEnvs={this.props.farmwareEnvs}
           mapTransformProps={this.mapTransformProps}
           allPoints={this.props.allPoints} />}
+
+      <ThreeDGardenToggle
+        navigate={this.navigate}
+        dispatch={this.props.dispatch}
+        designer={this.props.designer}
+        threeDGarden={threeDGarden} />
     </div>;
   }
 }

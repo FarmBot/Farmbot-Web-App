@@ -4,7 +4,7 @@ import { Group } from "../../components";
 import { Config } from "../../config";
 import { threeSpace } from "../../helpers";
 import { Vector3 } from "three";
-import { ASSETS } from "../../constants";
+import { ASSETS, RenderOrder } from "../../constants";
 
 export interface PeopleProps {
   config: Config;
@@ -32,7 +32,7 @@ export const People = (props: PeopleProps) => {
           scale={scalingData.scale}
           transparent={true}
           opacity={0.4}
-          renderOrder={1} />
+          renderOrder={RenderOrder.one} />
       </Billboard>;
     })}
   </Group>;
