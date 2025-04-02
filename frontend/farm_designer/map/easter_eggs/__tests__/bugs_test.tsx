@@ -6,7 +6,7 @@ import React from "react";
 import { shallow, mount } from "enzyme";
 import {
   Bugs, BugsProps, showBugResetButton, showBugs, resetBugs, BugsControls,
-  ExtraSettings,
+  BugsSettings,
 } from "../bugs";
 import { EggKeys, setEggStatus, getEggStatus } from "../status";
 import { range } from "lodash";
@@ -112,10 +112,10 @@ describe("<BugsControls />", () => {
   });
 });
 
-describe("<ExtraSettings />", () => {
+describe("<BugsSettings />", () => {
   it("toggles setting on", () => {
     localStorage.setItem(EggKeys.BRING_ON_THE_BUGS, "");
-    const wrapper = mount(<div>{ExtraSettings("surprise")}</div>);
+    const wrapper = mount(<BugsSettings />);
     expect(wrapper.text().toLowerCase()).toContain("bug");
     wrapper.find("button").last().simulate("click");
     expect(localStorage.getItem(EggKeys.BRING_ON_THE_BUGS)).toEqual("true");
@@ -123,7 +123,7 @@ describe("<ExtraSettings />", () => {
 
   it("toggles setting off", () => {
     localStorage.setItem(EggKeys.BRING_ON_THE_BUGS, "true");
-    const wrapper = mount(<div>{ExtraSettings("surprise")}</div>);
+    const wrapper = mount(<BugsSettings />);
     expect(wrapper.text().toLowerCase()).toContain("bug");
     wrapper.find("button").last().simulate("click");
     expect(localStorage.getItem(EggKeys.BRING_ON_THE_BUGS)).toEqual("");

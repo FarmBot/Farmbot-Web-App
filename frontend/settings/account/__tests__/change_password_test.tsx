@@ -40,6 +40,7 @@ describe("<ChangePassword />", () => {
     el.instance().maybeClearForm();
     el.update();
     expect(el.instance().state.status).toBe(SpecialStatus.SAVED);
+    el.unmount();
   });
 
   it("sets a field", () => {
