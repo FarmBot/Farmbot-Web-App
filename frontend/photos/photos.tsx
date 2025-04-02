@@ -140,6 +140,7 @@ export class RawDesignerPhotos
           onClick={this.toggle("calibration")} />
         <Collapse isOpen={!!photosPanelState.calibration}>
           <ToolTip helpText={ToolTips.CAMERA_CALIBRATION}
+            dispatch={this.props.dispatch}
             docPage={"camera-calibration"} />
           <CameraCalibration {...common}
             photosPanelState={this.props.photosPanelState}
@@ -163,7 +164,9 @@ export class RawDesignerPhotos
           title={t("Weed detection")}
           onClick={this.toggle("detection")} />
         <Collapse isOpen={!!photosPanelState.detection}>
-          <ToolTip helpText={ToolTips.WEED_DETECTOR} docPage={"weed-detection"} />
+          <ToolTip helpText={ToolTips.WEED_DETECTOR}
+            dispatch={this.props.dispatch}
+            docPage={"weed-detection"} />
           <WeedDetector {...common}
             photosPanelState={this.props.photosPanelState}
             wDEnv={this.props.wDEnv}
@@ -177,6 +180,7 @@ export class RawDesignerPhotos
           onClick={this.toggle("measure")} />
         <Collapse isOpen={!!photosPanelState.measure}>
           <ToolTip helpText={ToolTips.SOIL_HEIGHT_DETECTION}
+            dispatch={this.props.dispatch}
             docPage={"measure-soil-height"} />
           {farmwareNames.includes(FarmwareName.MeasureSoilHeight)
             ? <FarmwareForm

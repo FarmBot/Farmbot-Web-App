@@ -64,6 +64,7 @@ export interface PowerAndResetProps {
 
 export interface FactoryResetRowsProps {
   botOnline: boolean;
+  dispatch: Function;
 }
 
 export interface FarmbotOsRowProps {

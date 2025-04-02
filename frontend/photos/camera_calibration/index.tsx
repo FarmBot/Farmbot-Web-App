@@ -63,6 +63,7 @@ export class CameraCalibration extends
           : t(Content.CAMERA_CALIBRATION_RED_OBJECTS)}</p>
         <CameraCalibrationMethodConfig
           navigate={this.navigate}
+          dispatch={this.props.dispatch}
           wdEnvGet={wdEnvGet}
           saveEnvVar={this.saveEnvVar} />
       </div>
@@ -103,6 +104,7 @@ interface CameraCalibrationMethodConfigProps {
   wdEnvGet(key: WDENVKey): number;
   saveEnvVar(key: WDENVKey, value: number): void;
   navigate: NavigateFunction;
+  dispatch: Function;
 }
 
 export const CameraCalibrationMethodConfig =
@@ -114,7 +116,11 @@ export const CameraCalibrationMethodConfig =
       invert={true}
       helpText={ToolTips.RED_DOT_CAMERA_CALIBRATION}
       links={[
-        <a key={0} onClick={docLinkClick("camera-calibration", props.navigate)}>
+        <a key={0} onClick={docLinkClick({
+          slug: "camera-calibration",
+          navigate: props.navigate,
+          dispatch: props.dispatch,
+        })}>
           {t("as described in the software documentation.")}
           <i className={"fa fa-external-link"} />
         </a>,

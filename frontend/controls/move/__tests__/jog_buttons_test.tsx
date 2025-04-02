@@ -95,6 +95,7 @@ describe("<PowerAndResetMenu />", () => {
   const fakeProps = (): PowerAndResetMenuProps => ({
     botOnline: true,
     showAdvanced: true,
+    dispatch: jest.fn(),
   });
 
   it("restarts firmware", () => {

@@ -114,7 +114,7 @@ export class Connectivity
                 : undefined}
               hover={this.hover}
               hoveredConnection={this.state.hoveredConnection} />)}
-        <Diagnosis statusFlags={this.props.flags} />
+        <Diagnosis statusFlags={this.props.flags} dispatch={this.props.dispatch} />
         {this.props.flags.userAPI && this.props.flags.userMQTT
           && this.props.flags.botAPI && this.props.flags.botMQTT
           && this.props.apiFirmwareValue
@@ -162,7 +162,11 @@ export class Connectivity
         <PortRow port={"80 - HTTP"} status={flags["botAPI"]} />
         <PortRow port={"443 - HTTPS"} status={flags["botAPI"]} />
         <PortRow port={"8883 - MQTT"} status={flags["botMQTT"]} />
-        <a onClick={docLinkClick("for-it-security-professionals", this.navigate)}>
+        <a onClick={docLinkClick({
+          slug: "for-it-security-professionals",
+          navigate: this.navigate,
+          dispatch: this.props.dispatch,
+        })}>
           <i className="fa fa-external-link" />
           {t("Learn more about ports")}
         </a>

@@ -40,7 +40,11 @@ export const FactoryResetRows = (props: FactoryResetRowsProps) => {
             ${t(Content.OS_RESET_WARNING, { resetMethod: t("Hard") })}`} />
         </div>
         <a className="link-button fb-button red"
-          onClick={docLinkClick("farmbot-os", navigate)}>
+          onClick={docLinkClick({
+            slug: "farmbot-os",
+            navigate,
+            dispatch: props.dispatch,
+          })}>
           {t("HARD RESET")}
           <i className="fa fa-external-link" />
         </a>

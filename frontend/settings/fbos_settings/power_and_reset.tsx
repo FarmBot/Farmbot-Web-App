@@ -44,7 +44,9 @@ export function PowerAndReset(props: PowerAndResetProps) {
         buttonText={t("SHUTDOWN")}
         color={"red"}
         action={powerOff} />
-      <FactoryResetRows botOnline={botOnline} />
+      <FactoryResetRows
+        dispatch={dispatch}
+        botOnline={botOnline} />
     </Collapse>
   </Highlight>;
 }

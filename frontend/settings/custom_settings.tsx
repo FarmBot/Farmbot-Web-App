@@ -25,7 +25,11 @@ export const CustomSettings = (props: CustomSettingsProps) => {
           {" "}
           {t("Refer to the")}
           {" "}
-          <a onClick={devDocLinkClick("lua", navigate)}>
+          <a onClick={devDocLinkClick({
+            slug: "lua",
+            navigate,
+            dispatch: props.dispatch,
+          })}>
             {t("developer documentation")}
           </a>
           {" "}

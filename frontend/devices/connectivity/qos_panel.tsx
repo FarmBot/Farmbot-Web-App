@@ -88,7 +88,11 @@ export class QosPanel extends React.Component<QosPanelProps, {}> {
         <QosRow k={t("Average time")} v={pct(r.average, MS)} />
       </div>
       <a onClick={
-        docLinkClick("connecting-farmbot-to-the-internet", this.navigate)}>
+        docLinkClick({
+          slug: "connecting-farmbot-to-the-internet",
+          navigate: this.navigate,
+          dispatch: this.props.dispatch,
+        })}>
         <i className="fa fa-external-link" />
         {t("Learn more about connecting")}
       </a>

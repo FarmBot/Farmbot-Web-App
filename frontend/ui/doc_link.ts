@@ -1,6 +1,7 @@
 import { ExternalUrl } from "../external_urls";
 import { NavigateFunction } from "react-router";
 import { Path } from "../internal_urls";
+import { setPanelOpen } from "../farm_designer/panel_header";
 
 /** A centralized list of all documentation slugs in the app makes it easier to
  * rename / move links in the future. */
@@ -43,17 +44,30 @@ const genericDocLinkClick =
     slug: T,
     page: "help" | "developer",
     navigate: NavigateFunction,
+    dispatch: Function,
   ) => () => {
+    dispatch(setPanelOpen(true));
     const path = page == "help" ? Path.help : Path.developer;
-    if (Path.getSlug(Path.designer()) == page) {
-      location.assign(window.location.origin + Path.withApp(path("" + slug)));
-    } else {
-      navigate(path("" + slug));
-    }
+    navigate(path("" + slug));
   };
 
-export const docLinkClick = (slug: DocSlug, navigate: NavigateFunction) =>
-  genericDocLinkClick<DocSlug>(slug, "help", navigate);
+interface DocLinkClickPropsBase {
+  navigate: NavigateFunction;
+  dispatch: Function;
+}
 
-export const devDocLinkClick = (slug: DevDocSlug, navigate: NavigateFunction) =>
-  genericDocLinkClick<DevDocSlug>(slug, "developer", navigate);
+export interface DocLinkClickProps extends DocLinkClickPropsBase {
+  slug: DocSlug;
+}
+
+export interface DevDocLinkClickProps extends DocLinkClickPropsBase {
+  slug: DevDocSlug;
+}
+
+export const docLinkClick =
+  ({ slug, navigate, dispatch }: DocLinkClickProps) =>
+    genericDocLinkClick<DocSlug>(slug, "help", navigate, dispatch);
+
+export const devDocLinkClick =
+  ({ slug, navigate, dispatch }: DevDocLinkClickProps) =>
+    genericDocLinkClick<DevDocSlug>(slug, "developer", navigate, dispatch);

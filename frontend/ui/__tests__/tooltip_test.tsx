@@ -5,8 +5,10 @@ import { ToolTip, ToolTipProps } from "../tooltip";
 describe("<ToolTip />", () => {
   const fakeProps = (): ToolTipProps => ({
     helpText: "such help",
-    docPage: "weed-detection"
+    docPage: "weed-detection",
+    dispatch: jest.fn(),
   });
+
   const p = fakeProps();
   const wrapper = mount(<ToolTip {...p} />);
 

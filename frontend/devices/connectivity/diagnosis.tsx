@@ -8,6 +8,7 @@ import { SyncStatus } from "farmbot";
 import { syncText } from "../../nav/sync_text";
 import { useNavigate } from "react-router";
 import { linkToSetting } from "../../settings/maybe_highlight";
+import { setPanelOpen } from "../../farm_designer/panel_header";
 
 export type ConnectionName =
   | "userAPI"
@@ -20,6 +21,7 @@ export type ConnectionStatusFlags = Record<ConnectionName, boolean>;
 export interface DiagnosisProps {
   statusFlags: ConnectionStatusFlags;
   hideGraphic?: boolean;
+  dispatch: Function;
 }
 export interface DiagnosisSaucerProps extends ConnectionStatusFlags {
   className?: string;
@@ -61,7 +63,10 @@ export function Diagnosis(props: DiagnosisProps) {
       <p className="blinking">
         {t("Always")}&nbsp;
         <a className="blinking"
-          onClick={() => { navigate(linkToSetting(DeviceSetting.farmbotOS)); }}>
+          onClick={() => {
+            props.dispatch(setPanelOpen(true));
+            navigate(linkToSetting(DeviceSetting.farmbotOS));
+          }}>
           <u>{t("upgrade FarmBot OS")}</u>
         </a>
         &nbsp;{t("before troubleshooting.")}
@@ -69,11 +74,19 @@ export function Diagnosis(props: DiagnosisProps) {
       <p>
         {diagnosisMessage(getDiagnosisCode(props.statusFlags))}
       </p>
-      <a onClick={docLinkClick("connecting-farmbot-to-the-internet", navigate)}>
+      <a onClick={docLinkClick({
+        slug: "connecting-farmbot-to-the-internet",
+        navigate,
+        dispatch: props.dispatch,
+      })}>
         <i className="fa fa-external-link" />
         {t("Click here to learn more about connectivity codes.")}
       </a>
-      <a onClick={docLinkClick("for-it-security-professionals", navigate)}>
+      <a onClick={docLinkClick({
+        slug: "for-it-security-professionals",
+        navigate,
+        dispatch: props.dispatch,
+      })}>
         <i className="fa fa-external-link" />
         {t("Click here for document to show to your IT department.")}
       </a>
