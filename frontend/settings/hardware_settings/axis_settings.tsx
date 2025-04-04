@@ -22,7 +22,7 @@ import {
 import { setAxisLength } from "../../controls/move/bot_position_rows";
 import { validBotLocationData } from "../../util/location";
 
-export function AxisSettings(props: AxisSettingsProps) {
+export const AxisSettings = (props: AxisSettingsProps) => {
 
   const {
     dispatch, bot, sourceFwConfig, firmwareConfig, botOnline,
@@ -178,4 +178,4 @@ export function AxisSettings(props: AxisSettingsProps) {
         sourceFbosConfig={props.sourceFbosConfig} />
     </Collapse>
   </Highlight>;
-}
+};

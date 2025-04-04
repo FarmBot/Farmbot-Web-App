@@ -32,7 +32,7 @@ export const calculateScale =
     };
   };
 
-export function Motors(props: MotorsProps) {
+export const Motors = (props: MotorsProps) => {
   const {
     dispatch, settingsPanelState, sourceFwConfig, firmwareHardware, arduinoBusy,
     showAdvanced,
@@ -249,7 +249,7 @@ export function Motors(props: MotorsProps) {
       </SingleSettingRow>
     </Collapse>
   </Highlight>;
-}
+};
 
 const microstepWarning = (sourceFwConfig: SourceFwConfig) => ({
   x: !!sourceFwConfig("movement_axis_stealth_x").value &&

@@ -189,6 +189,7 @@ def print_lib_progress
     "file" => { "enzyme" => 0, "rtl" => 0, "both" => 0 },
     "line" => { "enzyme" => 0, "rtl" => 0, "both" => 0 },
   }
+  component_counts = { "class" => 0, "const" => 0, "function" => 0 }
   Find.find("frontend") do |path|
     next unless File.file?(path)
     includesEnzyme = false
@@ -201,6 +202,15 @@ def print_lib_progress
       if line.include?("render(<")
         counts["line"]["rtl"] += 1
         includesRTL = true
+      end
+      if line.include?("export class ")
+        component_counts["class"] += 1
+      end
+      if line.include?("export const ")
+        component_counts["const"] += 1
+      end
+      if line.include?("export function ")
+        component_counts["function"] += 1
       end
     end
     if includesEnzyme && includesRTL
@@ -227,6 +237,8 @@ def print_lib_progress
     puts "█" * rtl + "▓" * both + "░" * remain
   end
   puts
+  exports = component_counts.map{ |text, count| " #{count} #{text}"}.join(",")
+  puts "component exports:" + exports
 end
 
 namespace :coverage do

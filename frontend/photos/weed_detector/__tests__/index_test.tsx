@@ -21,6 +21,7 @@ import { error } from "../../../toast/toast";
 import { Content, ToolTips } from "../../../constants";
 import { WeedDetectorProps } from "../interfaces";
 import { fakePhotosPanelState } from "../../../__test_support__/fake_camera_data";
+import { fireEvent, render, screen } from "@testing-library/react";
 
 describe("<WeedDetector />", () => {
   API.setBaseUrl("http://localhost:3000");
@@ -73,18 +74,21 @@ describe("<WeedDetector />", () => {
   });
 
   it("executes clear weeds", () => {
-    const wrapper = shallow<WeedDetector>(<WeedDetector {...fakeProps()} />);
-    expect(wrapper.instance().state.deletionProgress).toBeUndefined();
-    clickButton(wrapper, 0, "clear weeds");
+    const { rerender } = render(<WeedDetector {...fakeProps()} />);
+    expect(screen.getByText("CLEAR WEEDS")).toBeInTheDocument();
+    const button = screen.getByText("CLEAR WEEDS");
+    fireEvent.click(button);
     expect(deletePoints).toHaveBeenCalledWith(
       "weeds", { meta: { created_by: "plant-detection" } }, expect.any(Function));
-    expect(wrapper.instance().state.deletionProgress).toEqual("Deleting...");
+    expect(screen.getByText("Deleting...")).toBeInTheDocument();
     const fakeProgress = { completed: 50, total: 100, isDone: false };
     mockDeletePoints.mock.calls[0][2](fakeProgress);
-    expect(wrapper.instance().state.deletionProgress).toEqual("50 %");
+    rerender(<WeedDetector {...fakeProps()} />);
+    expect(screen.getByText("50 %")).toBeInTheDocument();
     fakeProgress.isDone = true;
     mockDeletePoints.mock.calls[0][2](fakeProgress);
-    expect(wrapper.instance().state.deletionProgress).toEqual("");
+    rerender(<WeedDetector {...fakeProps()} />);
+    expect(screen.getByText("CLEAR WEEDS")).toBeInTheDocument();
   });
 
   it("saves ImageWorkspace changes: API", () => {

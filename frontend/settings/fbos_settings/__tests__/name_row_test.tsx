@@ -4,7 +4,7 @@ jest.mock("../../../api/crud", () => ({
 }));
 
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { NameRow } from "../name_row";
 import { NameRowProps } from "../interfaces";
 import { edit, save } from "../../../api/crud";
@@ -19,16 +19,18 @@ describe("<NameRow />", () => {
   it("changes bot name", () => {
     const p = fakeProps();
     const newName = "new bot name";
-    const osSettings = mount<NameRow>(<NameRow {...p} />);
-    shallow(osSettings.instance().NameInput())
-      .simulate("change", { currentTarget: { value: newName } });
+    render(<NameRow {...p} />);
+    const input = screen.getByLabelText("name");
+    fireEvent.change(input, { target: { value: newName } });
     expect(edit).toHaveBeenCalledWith(p.device, { name: newName });
   });
 
   it("saves bot name", () => {
     const p = fakeProps();
-    const osSettings = mount<NameRow>(<NameRow {...p} />);
-    shallow(osSettings.instance().NameInput()).simulate("blur");
+    p.device.body.name = "bot";
+    render(<NameRow {...p} />);
+    const input = screen.getByLabelText("name");
+    fireEvent.blur(input);
     expect(save).toHaveBeenCalledWith(p.device.uuid);
   });
 });

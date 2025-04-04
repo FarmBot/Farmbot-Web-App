@@ -7,8 +7,7 @@ import { Actions, DeviceSetting } from "../constants";
 import { trim, some } from "lodash";
 import { Path } from "../internal_urls";
 import { PhotosPanelState } from "../photos/interfaces";
-import { NavigationContext } from "../routes_helpers";
-import { useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 
 const FARMBOT_PANEL = [
   DeviceSetting.farmbotSettings,
@@ -437,7 +436,7 @@ export const Highlight = (props: HighlightProps) => {
   const [highlightClass, setHighlightClass] = React.useState("");
   const [highlightTimestamp, setHighlightTimestamp] = React.useState(0);
 
-  const navigate = React.useContext(NavigationContext);
+  const navigate = useNavigate();
   const location = useLocation();
 
   const highlightName = new URLSearchParams(location.search).get("highlight");

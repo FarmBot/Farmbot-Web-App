@@ -16,7 +16,7 @@ import {
 } from "./default_values";
 import { calculateScale } from "./motors";
 
-export function ErrorHandling(props: ErrorHandlingProps) {
+export const ErrorHandling = (props: ErrorHandlingProps) => {
 
   const { error_handling } = props.settingsPanelState;
   const {
@@ -104,4 +104,4 @@ export function ErrorHandling(props: ErrorHandlingProps) {
         zScale={scale.z} />
     </Collapse>
   </Highlight>;
-}
+};

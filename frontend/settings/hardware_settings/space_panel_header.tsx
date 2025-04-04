@@ -4,8 +4,8 @@ import { t } from "../../i18next_wrapper";
 import { Highlight } from "../maybe_highlight";
 import { DeviceSetting } from "../../constants";
 
-export function SpacePanelHeader() {
-  return <div className="label-headings">
+export const SpacePanelHeader = () =>
+  <div className="label-headings">
     <Highlight settingName={DeviceSetting.axisHeadingLabels}>
       <div></div>
       <Row className="axes-grid-header">
@@ -22,4 +22,3 @@ export function SpacePanelHeader() {
       </Row>
     </Highlight>
   </div>;
-}

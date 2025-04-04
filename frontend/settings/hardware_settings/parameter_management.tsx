@@ -17,7 +17,7 @@ import { BooleanSetting } from "../../session_keys";
 import { setWebAppConfigValue } from "../../config_storage/actions";
 import { getModifiedClassName } from "../default_values";
 
-export function ParameterManagement(props: ParameterManagementProps) {
+export const ParameterManagement = (props: ParameterManagementProps) => {
   const {
     dispatch, onReset, botOnline, arduinoBusy, firmwareHardware,
     getConfigValue, showAdvanced,
@@ -99,7 +99,7 @@ export function ParameterManagement(props: ParameterManagementProps) {
       </Highlight>
     </Collapse>
   </Highlight>;
-}
+};
 
 export interface ParameterImportProps {
   dispatch: Function;

@@ -85,7 +85,7 @@ export class PasswordReset extends React.Component<{}, State> {
                   {t("New Password")}
                 </label>
                 <input
-                  type="password"
+                  type={"password"}
                   onChange={this.set("password").bind(this)} />
               </div>
               <div>
@@ -93,7 +93,7 @@ export class PasswordReset extends React.Component<{}, State> {
                   {t("Confirm New Password")}
                 </label>
                 <input
-                  type="password"
+                  type={"password"}
                   onChange={this.set("passwordConfirmation").bind(this)} />
               </div>
               <button

@@ -1,5 +1,5 @@
 import React from "react";
-import { Row, DropDownItem, FBSelect } from "../../ui";
+import { Row, FBSelect } from "../../ui";
 import { info, warning } from "../../toast/toast";
 import { updateConfig } from "../../devices/actions";
 import { BoardTypeProps } from "./interfaces";
@@ -8,70 +8,54 @@ import {
   FirmwareHardwareStatus, FlashFirmwareBtn,
 } from "./firmware_hardware_status";
 import {
-  isFwHardwareValue, getFirmwareChoices, FIRMWARE_CHOICES_DDI, isUpgrade,
+  getFirmwareChoices, FIRMWARE_CHOICES_DDI, isUpgrade,
 } from "./firmware_hardware_support";
 import { Highlight } from "../maybe_highlight";
 import { Content, DeviceSetting } from "../../constants";
 import { getModifiedClassName } from "../fbos_settings/default_values";
+import { FirmwareHardware } from "farmbot";
 
-export class BoardType extends React.Component<BoardTypeProps, {}> {
-  get sending() {
-    return !this.props.sourceFbosConfig("firmware_hardware").consistent;
-  }
+export const BoardType = (props: BoardTypeProps) => {
+  const sending = !props.sourceFbosConfig("firmware_hardware").consistent;
+  const { dispatch, firmwareHardware } = props;
 
-  get selectedBoard(): DropDownItem | undefined {
-    return this.props.firmwareHardware
-      ? FIRMWARE_CHOICES_DDI[this.props.firmwareHardware]
-      : undefined;
-  }
-
-  sendOffConfig = (selectedItem: DropDownItem) => {
-    const firmware_hardware = selectedItem.value;
-    if (selectedItem && isFwHardwareValue(firmware_hardware)) {
-      info(t("Sending firmware configuration..."), { title: t("Sending") });
-      isUpgrade(this.props.firmwareHardware, firmware_hardware) &&
-        warning(t(Content.FIRMWARE_UPGRADED),
-          { title: t("Action may be required") });
-      this.props.dispatch(updateConfig({ firmware_hardware }));
-      this.forceUpdate();
-    }
-  };
-
-  FirmwareSelection = () => {
-    const { firmwareHardware } = this.props;
-    return <FBSelect
-      key={firmwareHardware + "" + this.sending}
-      extraClass={[
-        this.sending ? "dim" : "",
-        getModifiedClassName("firmware_hardware",
-          firmwareHardware, firmwareHardware),
-      ].join(" ")}
-      list={getFirmwareChoices()}
-      selectedItem={this.selectedBoard}
-      onChange={this.sendOffConfig} />;
-  };
-
-  render() {
-    return <Highlight settingName={DeviceSetting.firmware}>
-      <Row className="grid-2-col">
-        <div className="row grid-exp-2">
-          <label>
-            {t("FIRMWARE")}
-          </label>
-          <FirmwareHardwareStatus
-            botOnline={this.props.botOnline}
-            apiFirmwareValue={this.props.firmwareHardware}
-            alerts={this.props.alerts}
-            bot={this.props.bot}
-            dispatch={this.props.dispatch}
-            timeSettings={this.props.timeSettings} />
-          <FlashFirmwareBtn
-            short={true}
-            apiFirmwareValue={this.props.firmwareHardware}
-            botOnline={this.props.botOnline} />
-        </div>
-        <this.FirmwareSelection />
-      </Row>
-    </Highlight>;
-  }
-}
+  return <Highlight settingName={DeviceSetting.firmware}>
+    <Row className="grid-2-col">
+      <div className="row grid-exp-2">
+        <label>
+          {t("FIRMWARE")}
+        </label>
+        <FirmwareHardwareStatus
+          botOnline={props.botOnline}
+          apiFirmwareValue={firmwareHardware}
+          alerts={props.alerts}
+          bot={props.bot}
+          dispatch={dispatch}
+          timeSettings={props.timeSettings} />
+        <FlashFirmwareBtn
+          short={true}
+          apiFirmwareValue={firmwareHardware}
+          botOnline={props.botOnline} />
+      </div>
+      <FBSelect
+        key={firmwareHardware + "" + sending}
+        extraClass={[
+          sending ? "dim" : "",
+          getModifiedClassName("firmware_hardware",
+            firmwareHardware, firmwareHardware),
+        ].join(" ")}
+        list={getFirmwareChoices()}
+        selectedItem={firmwareHardware
+          ? FIRMWARE_CHOICES_DDI[firmwareHardware]
+          : undefined}
+        onChange={ddi => {
+          const firmware_hardware = ddi.value as FirmwareHardware;
+          info(t("Sending firmware configuration..."), { title: t("Sending") });
+          isUpgrade(firmwareHardware, firmware_hardware) &&
+            warning(t(Content.FIRMWARE_UPGRADED),
+              { title: t("Action may be required") });
+          dispatch(updateConfig({ firmware_hardware }));
+        }} />;
+    </Row>
+  </Highlight>;
+};

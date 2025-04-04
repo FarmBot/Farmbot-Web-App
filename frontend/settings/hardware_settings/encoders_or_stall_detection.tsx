@@ -12,7 +12,7 @@ import { t } from "../../i18next_wrapper";
 import { DevSettings } from "../dev/dev_support";
 
 // eslint-disable-next-line complexity
-export function EncodersOrStallDetection(props: EncodersOrStallDetectionProps) {
+export const EncodersOrStallDetection = (props: EncodersOrStallDetectionProps) => {
 
   const { encoders_or_stall_detection } = props.settingsPanelState;
   const {
@@ -128,7 +128,7 @@ export function EncodersOrStallDetection(props: EncodersOrStallDetectionProps) {
           gray={encodersDisabled} />}
     </Collapse>
   </Highlight>;
-}
+};
 
 /** Generate a setting requirement warning string for a setting based on
  * the provided prerequisites. */
