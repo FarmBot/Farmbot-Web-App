@@ -30,17 +30,19 @@ export interface ThreeDGardenProps {
 export const ThreeDGarden = (props: ThreeDGardenProps) => {
   return <div className={"three-d-garden"}>
     <div className={"garden-bed-3d-model"}>
-      <Canvas shadows={true}>
-        <GardenModel
-          config={props.config}
-          activeFocus={""}
-          setActiveFocus={noop}
-          mapPoints={props.mapPoints}
-          weeds={props.weeds}
-          toolSlots={props.toolSlots}
-          mountedToolName={props.mountedToolName}
-          addPlantProps={props.addPlantProps} />
-      </Canvas>
+      <React.Suspense>
+        <Canvas shadows={true}>
+          <GardenModel
+            config={props.config}
+            activeFocus={""}
+            setActiveFocus={noop}
+            mapPoints={props.mapPoints}
+            weeds={props.weeds}
+            toolSlots={props.toolSlots}
+            mountedToolName={props.mountedToolName}
+            addPlantProps={props.addPlantProps} />
+        </Canvas>
+      </React.Suspense>
     </div>
   </div>;
 };
