@@ -9,9 +9,7 @@ import { Everything, MovementState, ResourceColor } from "../interfaces";
 import { TaggedWeedPointer } from "farmbot";
 import { maybeFindWeedPointerById } from "../resources/selectors";
 import { Panel } from "../farm_designer/panel_header";
-import {
-  EditPointProperties, updatePoint, AdditionalWeedProperties,
-} from "../points/point_edit_actions";
+import { updatePoint, EditWeedProperties } from "../points/point_edit_actions";
 import { Actions } from "../constants";
 import { selectPoint } from "../farm_designer/map/actions";
 import { isBotOnlineFromState } from "../devices/must_be_online";
@@ -98,18 +96,14 @@ export const RawEditWeed = (props: EditWeedProps) => {
     </DesignerPanelHeader>
     <DesignerPanelContent panelName={panelName}>
       {weed
-        ? <div className={"weed-panel-content-wrapper grid"}>
-          <EditPointProperties point={weed}
-            botOnline={props.botOnline}
-            dispatch={props.dispatch}
-            arduinoBusy={props.arduinoBusy}
-            currentBotLocation={props.currentBotLocation}
-            movementState={props.movementState}
-            defaultAxes={props.defaultAxes}
-            updatePoint={updatePoint(weed, dispatch)} />
-          <AdditionalWeedProperties point={weed}
-            updatePoint={updatePoint(weed, dispatch)} />
-        </div>
+        ? <EditWeedProperties weed={weed}
+          botOnline={props.botOnline}
+          dispatch={props.dispatch}
+          arduinoBusy={props.arduinoBusy}
+          currentBotLocation={props.currentBotLocation}
+          movementState={props.movementState}
+          defaultAxes={props.defaultAxes}
+          updatePoint={updatePoint(weed, dispatch)} />
         : <span>{t("Redirecting")}...</span>}
     </DesignerPanelContent>
   </DesignerPanel>;

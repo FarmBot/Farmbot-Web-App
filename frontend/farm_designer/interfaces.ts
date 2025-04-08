@@ -146,7 +146,6 @@ export interface DesignerState {
   bulkPlantSlug: string | undefined;
   chosenLocation: BotPosition;
   drawnPoint: DrawnPointPayl | undefined;
-  drawnWeed: DrawnWeedPayl | undefined;
   openedSavedGarden: number | undefined;
   tryGroupSortType: ExtendedPointGroupSortType | undefined;
   editGroupAreaInMap: boolean;
@@ -178,6 +177,7 @@ export interface DesignerState {
   cropRadius: number | undefined;
   distanceIndicator: string;
   panelOpen: boolean;
+  threeDTopDownView: boolean;
 }
 
 export type TaggedExecutable = TaggedSequence | TaggedRegimen;
@@ -359,20 +359,11 @@ export interface CameraCalibrationData {
 }
 
 export interface DrawnPointPayl {
-  name?: string;
-  cx: number;
-  cy: number;
+  name: string;
+  cx: number | undefined;
+  cy: number | undefined;
   z: number;
   r: number;
-  color?: string;
-  at_soil_level?: boolean;
-}
-
-export interface DrawnWeedPayl {
-  name?: string;
-  cx: number;
-  cy: number;
-  z: number;
-  r: number;
-  color?: string;
+  color: string;
+  at_soil_level: boolean;
 }

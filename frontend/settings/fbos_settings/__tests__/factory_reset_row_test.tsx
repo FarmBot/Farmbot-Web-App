@@ -6,6 +6,7 @@ import { FactoryResetRowsProps } from "../interfaces";
 describe("<FactoryResetRows />", () => {
   const fakeProps = (): FactoryResetRowsProps => ({
     botOnline: true,
+    dispatch: jest.fn(),
   });
 
   it("renders", () => {

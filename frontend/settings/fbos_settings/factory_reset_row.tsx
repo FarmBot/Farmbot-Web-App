@@ -5,9 +5,11 @@ import { softReset } from "../../devices/actions";
 import { FactoryResetRowsProps } from "./interfaces";
 import { t } from "../../i18next_wrapper";
 import { Highlight } from "../maybe_highlight";
+import { useNavigate } from "react-router";
 
 export const FactoryResetRows = (props: FactoryResetRowsProps) => {
   const { botOnline } = props;
+  const navigate = useNavigate();
   return <div className={"factory-reset-options grid"}>
     <Highlight settingName={DeviceSetting.softReset}>
       <Row className="grid-exp-1">
@@ -38,7 +40,11 @@ export const FactoryResetRows = (props: FactoryResetRowsProps) => {
             ${t(Content.OS_RESET_WARNING, { resetMethod: t("Hard") })}`} />
         </div>
         <a className="link-button fb-button red"
-          onClick={docLinkClick("farmbot-os")}>
+          onClick={docLinkClick({
+            slug: "farmbot-os",
+            navigate,
+            dispatch: props.dispatch,
+          })}>
           {t("HARD RESET")}
           <i className="fa fa-external-link" />
         </a>

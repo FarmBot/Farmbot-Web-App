@@ -4,6 +4,15 @@ module Devices
       ANALOG = CeleryScriptSettingsBag::ANALOG
       DIGITAL = CeleryScriptSettingsBag::DIGITAL
 
+      TOOL_X = 6
+      TOOL_Y = 100
+      TOOL_Z = -340
+      TOOL_SPACING = 100
+
+      TROUGH_Y = 0
+      TROUGH_Z = -200
+      TROUGH_SPACING = 25
+
       module Names
         EXPRESS = "FarmBot Express"
         EXPRESS_XL = "FarmBot Express XL"

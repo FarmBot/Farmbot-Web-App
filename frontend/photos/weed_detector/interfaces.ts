@@ -6,13 +6,6 @@ import { TimeSettings } from "../../interfaces";
 import { SaveFarmwareEnv } from "../../farmware/interfaces";
 import { PhotosPanelState } from "../interfaces";
 
-export interface WeedDetectorState {
-  isEditing: boolean;
-  deletionProgress: string;
-  settingsMenuOpen: boolean;
-  remoteFarmwareSettings: Partial<WD_ENV>;
-}
-
 export interface WeedDetectorProps {
   dispatch: Function;
   wDEnv: Partial<WD_ENV>;

@@ -4,16 +4,12 @@ import {
   fakeMapTransformProps,
 } from "../../../../__test_support__/map_transform_props";
 import { svgMount } from "../../../../__test_support__/svg_mount";
+import { fakeDrawnPoint } from "../../../../__test_support__/fake_designer_state";
 
 describe("<DrawnPoint/>", () => {
   const fakeProps = (): DrawnPointProps => ({
     mapTransformProps: fakeMapTransformProps(),
-    data: {
-      cx: 10,
-      cy: 20,
-      z: 0,
-      r: 30,
-    }
+    data: fakeDrawnPoint(),
   });
 
   it("renders point", () => {
@@ -29,10 +25,10 @@ describe("<DrawnPoint/>", () => {
     });
   });
 
-  it("renders point with chosen color", () => {
+  it("doesn't render point", () => {
     const p = fakeProps();
-    p.data = { cx: 0, cy: 0, z: 0, r: 1, color: "red" };
+    p.data = undefined;
     const wrapper = svgMount(<DrawnPoint {...p} />);
-    expect(wrapper.find("g").props().stroke).toEqual("red");
+    expect(wrapper.html()).toContain("<g id=\"current-point\"></g>");
   });
 });

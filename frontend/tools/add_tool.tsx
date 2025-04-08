@@ -9,7 +9,6 @@ import { SaveBtn } from "../ui";
 import { SpecialStatus } from "farmbot";
 import { initSave, destroy, init, save } from "../api/crud";
 import { Panel } from "../farm_designer/panel_header";
-import { useNavigate } from "react-router";
 import { selectAllTools } from "../resources/selectors";
 import { betterCompact } from "../util";
 import {
@@ -27,6 +26,7 @@ import {
   reduceToolName, ToolName,
 } from "../farm_designer/map/tool_graphics/all_tools";
 import { WaterFlowRateInput } from "./edit_tool";
+import { NavigationContext } from "../routes_helpers";
 
 export const mapStateToProps = (props: Everything): AddToolProps => ({
   dispatch: props.dispatch,
@@ -54,9 +54,12 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
 
   newTool = (name: string) => this.props.dispatch(initSave("Tool", { name }));
 
+  static contextType = NavigationContext;
+  context!: React.ContextType<typeof NavigationContext>;
+  navigate = this.context;
+
   back = () => {
-    const navigate = useNavigate();
-    navigate(Path.tools());
+    this.navigate(Path.tools());
   };
 
   save = () => {
@@ -139,7 +142,6 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
 
   AddStockTools = () => {
     const add = this.state.toAdd.filter(this.filterExisting);
-    const navigate = useNavigate();
     return <div className="add-stock-tools"
       hidden={this.props.firmwareHardware == "none"}>
       <label>{t("stock names")}</label>
@@ -155,7 +157,7 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
         title={add.length > 0 ? t("Add selected") : t("None to add")}
         onClick={() => {
           add.map(n => this.newTool(n));
-          navigate(Path.tools());
+          this.navigate(Path.tools());
         }}>
         <i className="fa fa-plus" />
         {t("selected")}

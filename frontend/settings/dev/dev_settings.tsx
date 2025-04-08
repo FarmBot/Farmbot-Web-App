@@ -32,6 +32,27 @@ export const DevWidgetFBOSRow = () => {
   </Row>;
 };
 
+export const DevWidget3dCameraRow = () => {
+  return <Row className="grid-2-col">
+    <label>
+      {"Change initial 3D camera position"}
+    </label>
+    <div className="row grid-exp-3">
+      <button className="fb-button red fa fa-times"
+        onClick={DevSettings.remove3dCamera} />
+      <button className="fb-button green fa fa-angle-double-up"
+        onClick={() => DevSettings.set3dCamera(
+          JSON.stringify({
+            position: [-500, -500, 400],
+            target: [-1500, -200, 200],
+          }))} />
+      <BlurableInput type="text"
+        value={DevSettings.get3dCamera() || ""}
+        onCommit={e => DevSettings.set3dCamera(e.currentTarget.value)} />
+    </div>
+  </Row>;
+};
+
 export const DevWidgetDelModeRow = () =>
   <Row className="grid-exp-1">
     <label>
@@ -59,6 +80,7 @@ export const DevWidgetShowInternalEnvsRow = () =>
 export const DevSettingsRows = () =>
   <div className={"dev-settings-rows grid"}>
     <DevWidgetFERow />
+    <DevWidget3dCameraRow />
     <DevWidgetDelModeRow />
     <DevWidgetShowInternalEnvsRow />
     <DevWidgetFBOSRow />

@@ -9,7 +9,8 @@ import {
 import { WD_ENV } from "../remote_env/interfaces";
 import { envGet } from "../remote_env/selectors";
 import {
-  SPECIAL_VALUES, CAMERA_CALIBRATION_KEY_PART, WD_KEY_DEFAULTS, namespace,
+  SPECIAL_VALUES, CAMERA_CALIBRATION_KEY_PART, WD_KEY_DEFAULTS,
+  namespace as namespaceFunc,
 } from "../remote_env/constants";
 import { isNumber, isUndefined } from "lodash";
 import { t } from "../../i18next_wrapper";
@@ -18,91 +19,88 @@ import { getModifiedClassName } from "../default_values";
 import { Highlight } from "../../settings/maybe_highlight";
 import { Path } from "../../internal_urls";
 
-export class CameraCalibrationConfig
-  extends React.Component<CameraCalibrationConfigProps, {}> {
+export const CameraCalibrationConfig = (props: CameraCalibrationConfigProps) => {
 
-  wdEnvGet = (key: keyof WD_ENV) => envGet(key, this.props.values);
+  const wdEnvGet = (key: keyof WD_ENV) => envGet(key, props.values);
 
-  namespace = namespace("CAMERA_CALIBRATION_");
+  const namespace = namespaceFunc("CAMERA_CALIBRATION_");
 
-  getDefault = (key: CAMERA_CALIBRATION_KEY_PART) =>
-    WD_KEY_DEFAULTS[this.namespace(key)];
+  const getDefault = (key: CAMERA_CALIBRATION_KEY_PART) =>
+    WD_KEY_DEFAULTS[namespace(key)];
 
-  getLabeledDefault = (key: CAMERA_CALIBRATION_KEY_PART) =>
-    SPECIAL_VALUE_DDI()[this.getDefault(key)].label;
+  const getLabeledDefault = (key: CAMERA_CALIBRATION_KEY_PART) =>
+    SPECIAL_VALUE_DDI()[getDefault(key)].label;
 
-  render() {
-    const simple = !!this.wdEnvGet(this.namespace("easy_calibration"));
-    const commonProps = {
-      wdEnvGet: this.wdEnvGet,
-      onChange: this.props.onChange,
-    };
-    const { calibrationZ } = this.props;
-    return <div className={"grid"}>
-      {!simple &&
-        <div className={"camera-calibration-configs"}>
-          <BoolConfig {...commonProps}
-            settingName={DeviceSetting.invertHueRangeSelection}
-            helpText={t(ToolTips.INVERT_HUE_SELECTION, {
-              defaultInvertState: this.getLabeledDefault("invert_hue_selection")
-            })}
-            configKey={this.namespace("invert_hue_selection")} />
-          <NumberBoxConfig {...commonProps}
-            settingName={DeviceSetting.calibrationObjectSeparation}
-            configKey={this.namespace("calibration_object_separation")}
-            helpText={t(ToolTips.OBJECT_SEPARATION, {
-              defaultSeparation: this.getDefault("calibration_object_separation")
-            })} />
-          <DropdownConfig {...commonProps}
-            settingName={DeviceSetting.calibrationObjectSeparationAlongAxis}
-            extraClass={"narrow"}
-            list={CALIBRATION_DROPDOWNS}
-            configKey={this.namespace("calibration_along_axis")}
-            helpText={t(ToolTips.CALIBRATION_OBJECT_AXIS, {
-              defaultAxis: this.getLabeledDefault("calibration_along_axis")
-            })} />
-        </div>}
-      <NumberBoxConfig {...commonProps}
-        settingName={DeviceSetting.cameraOffsetX}
-        configKey={this.namespace("camera_offset_x")}
-        helpText={t(ToolTips.CAMERA_OFFSET, {
-          defaultX: this.getDefault("camera_offset_x"),
-          defaultY: this.getDefault("camera_offset_y"),
-        })} />
-      <NumberBoxConfig {...commonProps}
-        settingName={DeviceSetting.cameraOffsetY}
-        configKey={this.namespace("camera_offset_y")}
-        helpText={t(ToolTips.CAMERA_OFFSET, {
-          defaultX: this.getDefault("camera_offset_x"),
-          defaultY: this.getDefault("camera_offset_y"),
-        })} />
-      <DropdownConfig {...commonProps}
-        settingName={DeviceSetting.originLocationInImage}
-        list={ORIGIN_DROPDOWNS()}
-        configKey={this.namespace("image_bot_origin_location")}
-        helpText={t(ToolTips.IMAGE_BOT_ORIGIN_LOCATION, {
-          defaultOrigin: this.getLabeledDefault("image_bot_origin_location")
-        })} />
-      <NumberBoxConfig {...commonProps}
-        settingName={DeviceSetting.pixelCoordinateScale}
-        configKey={this.namespace("coord_scale")}
-        helpText={t(ToolTips.COORDINATE_SCALE, {
-          defaultScale: this.getDefault("coord_scale")
-        })} />
-      <NumberBoxConfig {...commonProps}
-        settingName={DeviceSetting.cameraRotation}
-        configKey={this.namespace("total_rotation_angle")}
-        helpText={t(ToolTips.IMAGE_ROTATION_ANGLE, {
-          defaultAngle: this.getDefault("total_rotation_angle")
-        })} />
-      <p title={JSON.stringify(this.props.calibrationImageCenter)}>
-        {!isUndefined(calibrationZ)
-          ? `${t("Camera calibrated at z-axis height")}: ${calibrationZ}`
-          : t("Camera not yet calibrated.")}
-      </p>
-    </div>;
-  }
-}
+  const simple = !!wdEnvGet(namespace("easy_calibration"));
+  const commonProps = {
+    wdEnvGet: wdEnvGet,
+    onChange: props.onChange,
+  };
+  const { calibrationZ } = props;
+  return <div className={"grid"}>
+    {!simple &&
+      <div className={"camera-calibration-configs grid"}>
+        <BoolConfig {...commonProps}
+          settingName={DeviceSetting.invertHueRangeSelection}
+          helpText={t(ToolTips.INVERT_HUE_SELECTION, {
+            defaultInvertState: getLabeledDefault("invert_hue_selection")
+          })}
+          configKey={namespace("invert_hue_selection")} />
+        <NumberBoxConfig {...commonProps}
+          settingName={DeviceSetting.calibrationObjectSeparation}
+          configKey={namespace("calibration_object_separation")}
+          helpText={t(ToolTips.OBJECT_SEPARATION, {
+            defaultSeparation: getDefault("calibration_object_separation")
+          })} />
+        <DropdownConfig {...commonProps}
+          settingName={DeviceSetting.calibrationObjectSeparationAlongAxis}
+          extraClass={"narrow"}
+          list={CALIBRATION_DROPDOWNS}
+          configKey={namespace("calibration_along_axis")}
+          helpText={t(ToolTips.CALIBRATION_OBJECT_AXIS, {
+            defaultAxis: getLabeledDefault("calibration_along_axis")
+          })} />
+      </div>}
+    <NumberBoxConfig {...commonProps}
+      settingName={DeviceSetting.cameraOffsetX}
+      configKey={namespace("camera_offset_x")}
+      helpText={t(ToolTips.CAMERA_OFFSET, {
+        defaultX: getDefault("camera_offset_x"),
+        defaultY: getDefault("camera_offset_y"),
+      })} />
+    <NumberBoxConfig {...commonProps}
+      settingName={DeviceSetting.cameraOffsetY}
+      configKey={namespace("camera_offset_y")}
+      helpText={t(ToolTips.CAMERA_OFFSET, {
+        defaultX: getDefault("camera_offset_x"),
+        defaultY: getDefault("camera_offset_y"),
+      })} />
+    <DropdownConfig {...commonProps}
+      settingName={DeviceSetting.originLocationInImage}
+      list={ORIGIN_DROPDOWNS()}
+      configKey={namespace("image_bot_origin_location")}
+      helpText={t(ToolTips.IMAGE_BOT_ORIGIN_LOCATION, {
+        defaultOrigin: getLabeledDefault("image_bot_origin_location")
+      })} />
+    <NumberBoxConfig {...commonProps}
+      settingName={DeviceSetting.pixelCoordinateScale}
+      configKey={namespace("coord_scale")}
+      helpText={t(ToolTips.COORDINATE_SCALE, {
+        defaultScale: getDefault("coord_scale")
+      })} />
+    <NumberBoxConfig {...commonProps}
+      settingName={DeviceSetting.cameraRotation}
+      configKey={namespace("total_rotation_angle")}
+      helpText={t(ToolTips.IMAGE_ROTATION_ANGLE, {
+        defaultAngle: getDefault("total_rotation_angle")
+      })} />
+    <p title={JSON.stringify(props.calibrationImageCenter)}>
+      {!isUndefined(calibrationZ)
+        ? `${t("Camera calibrated at z-axis height")}: ${calibrationZ}`
+        : t("Camera not yet calibrated.")}
+    </p>
+  </div>;
+};
 
 export interface BoolConfigProps {
   configKey: keyof WD_ENV;
@@ -124,7 +122,7 @@ export const BoolConfig = (props: BoolConfigProps) => {
     className={props.advanced ? "advanced" : undefined}
     pathPrefix={Path.photos}>
     <div className="row grid-exp-1">
-      <div className="row grid-exp-2 half-gap">
+      <div className="row grid-exp-2 half-gap align-baseline">
         <label htmlFor={props.configKey}>
           {t(props.settingName)}
         </label>
@@ -157,8 +155,8 @@ export interface NumberBoxConfigProps {
 
 export const NumberBoxConfig = (props: NumberBoxConfigProps) => {
   return <Highlight settingName={props.settingName} pathPrefix={Path.photos}>
-    <div className={"row camera-calibration-setting-grid"}>
-      <div className="row grid-exp-2 half-gap">
+    <div className={"row grid-exp-1"}>
+      <div className="row grid-exp-2 half-gap align-baseline">
         <label htmlFor={props.configKey}>
           {t(props.settingName)}
         </label>
@@ -189,8 +187,8 @@ export interface DropdownConfigProps {
 
 export const DropdownConfig = (props: DropdownConfigProps) =>
   <Highlight settingName={props.settingName} pathPrefix={Path.photos}>
-    <div className={`camera-calibration-setting-grid row ${props.extraClass}`}>
-      <div className="row grid-exp-2 half-gap">
+    <div className={`grid-exp-1 row ${props.extraClass}`}>
+      <div className="row grid-exp-2 half-gap align-baseline">
         <label htmlFor={props.configKey}>
           {t(props.settingName)}
         </label>

@@ -69,7 +69,7 @@ commands:
       - run:
           name: Run JS tests
           command: |
-            sudo docker compose run web npm run test-slow -- -c .circleci/jest-ci.config.js
+            sudo docker compose run web npm run test-slow -- -c .circleci/jest-ci.config.js -w 6
             echo 'export COVERAGE_AVAILABLE=true' >> $BASH_ENV
   lint-commands:
     steps:

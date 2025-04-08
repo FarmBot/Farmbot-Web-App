@@ -76,12 +76,14 @@ describe("<AddTool />", () => {
     p.dispatch = mockDispatch();
     const wrapper = shallow<AddTool>(<AddTool {...p} />);
     wrapper.setState({ toolName: "Foo" });
+    const navigate = jest.fn();
+    wrapper.instance().navigate = navigate;
     await wrapper.find(SaveBtn).simulate("click");
     expect(init).toHaveBeenCalledWith("Tool", {
       name: "Foo", flow_rate_ml_per_s: 0,
     });
     expect(wrapper.state().uuid).toEqual(undefined);
-    expect(mockNavigate).toHaveBeenCalledWith(Path.tools());
+    expect(navigate).toHaveBeenCalledWith(Path.tools());
   });
 
   it("removes unsaved tool on exit", async () => {
@@ -90,12 +92,14 @@ describe("<AddTool />", () => {
     p.dispatch = mockDispatch();
     const wrapper = shallow<AddTool>(<AddTool {...p} />);
     wrapper.setState({ toolName: "Foo" });
+    const navigate = jest.fn();
+    wrapper.instance().navigate = navigate;
     await wrapper.find(SaveBtn).simulate("click");
     expect(init).toHaveBeenCalledWith("Tool", {
       name: "Foo", flow_rate_ml_per_s: 0,
     });
     expect(wrapper.state().uuid).toEqual("fake uuid");
-    expect(mockNavigate).not.toHaveBeenCalled();
+    expect(navigate).not.toHaveBeenCalled();
     wrapper.unmount();
     expect(destroy).toHaveBeenCalledWith("fake uuid");
   });
@@ -113,20 +117,24 @@ describe("<AddTool />", () => {
   ])("adds peripherals: %s", (firmware, expectedAdds) => {
     const p = fakeProps();
     p.firmwareHardware = firmware;
-    const wrapper = mount(<AddTool {...p} />);
+    const wrapper = mount<AddTool>(<AddTool {...p} />);
+    const navigate = jest.fn();
+    wrapper.instance().navigate = navigate;
     wrapper.find("button").last().simulate("click");
     expect(initSave).toHaveBeenCalledTimes(expectedAdds);
-    expect(mockNavigate).toHaveBeenCalledWith(Path.tools());
+    expect(navigate).toHaveBeenCalledWith(Path.tools());
   });
 
   it("doesn't add stock tools twice", () => {
     const p = fakeProps();
     p.firmwareHardware = "express_k10";
     p.existingToolNames = ["Seed Trough 1"];
-    const wrapper = mount(<AddTool {...p} />);
+    const wrapper = mount<AddTool>(<AddTool {...p} />);
+    const navigate = jest.fn();
+    wrapper.instance().navigate = navigate;
     wrapper.find("button").last().simulate("click");
     expect(initSave).toHaveBeenCalledTimes(2);
-    expect(mockNavigate).toHaveBeenCalledWith(Path.tools());
+    expect(navigate).toHaveBeenCalledWith(Path.tools());
   });
 
   it("copies a tool name", () => {

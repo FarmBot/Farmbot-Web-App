@@ -13,6 +13,7 @@ export interface LayerToggleProps {
   onClick(): void;
   popover?: React.ReactElement;
   submenuTitle?: string;
+  className?: string;
 }
 
 /** A flipper type switch for showing/hiding the layers of the garden map. */
@@ -25,6 +26,7 @@ export function LayerToggle(props: LayerToggleProps) {
     "fb-layer-toggle",
     value ? "green" : "red",
     getModifiedClassName(props.settingName),
+    props.className,
   ].join(" ");
   return <fieldset>
     <label>

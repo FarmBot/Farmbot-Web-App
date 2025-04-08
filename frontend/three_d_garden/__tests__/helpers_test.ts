@@ -3,6 +3,7 @@ import {
   easyCubicBezierCurve3,
   getColorFromBrightness,
   threeSpace,
+  zDir,
   zZero,
 } from "../helpers";
 import { INITIAL } from "../config";
@@ -18,6 +19,14 @@ describe("zZero()", () => {
   it("returns position", () => {
     const config = clone(INITIAL);
     expect(zZero(config)).toEqual(400);
+  });
+});
+
+describe("zDir()", () => {
+  it("returns factor", () => {
+    const config = clone(INITIAL);
+    config.negativeZ = true;
+    expect(zDir(config)).toEqual(-1);
   });
 });
 

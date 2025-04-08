@@ -10,16 +10,12 @@ jest.mock("../../../../config_storage/actions", () => ({
   setWebAppConfigValue: jest.fn(),
 }));
 
-let mockDev = false;
-jest.mock("../../../../settings/dev/dev_support", () => ({
-  DevSettings: { futureFeaturesEnabled: () => mockDev }
-}));
-
 import React from "react";
 import { shallow, mount } from "enzyme";
 import {
   GardenMapLegend, ZoomControls, PointsSubMenu, FarmbotSubMenu,
   PlantsSubMenu, MapSettingsContent, SettingsSubMenuProps,
+  ZoomControlsProps,
 } from "../garden_map_legend";
 import { GardenMapLegendProps } from "../../interfaces";
 import { BooleanSetting } from "../../../../session_keys";
@@ -83,23 +79,16 @@ describe("<GardenMapLegend />", () => {
     wrapper.find(".fb-toggle-button").last().simulate("click");
     expect(wrapper.html()).toContain("-100");
   });
-
-  it("renders 3D map toggle", () => {
-    mockDev = true;
-    const p = fakeProps();
-    const wrapper = mount(<GardenMapLegend {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("3d map");
-    wrapper.find(".fb-layer-toggle").last().simulate("click");
-    expect(setWebAppConfigValue).toHaveBeenCalledWith(
-      BooleanSetting.three_d_garden, true);
-  });
 });
 
 describe("<ZoomControls />", () => {
+  const fakeProps = (): ZoomControlsProps => ({
+    zoom: jest.fn(),
+    getConfigValue: jest.fn(),
+  });
+
   const expectDisabledBtnCountToEqual = (expected: number) => {
-    const wrapper = shallow(<ZoomControls
-      zoom={jest.fn()}
-      getConfigValue={jest.fn()} />);
+    const wrapper = shallow(<ZoomControls {...fakeProps()} />);
     expect(wrapper.find(".disabled").length).toEqual(expected);
   };
 

@@ -107,7 +107,7 @@ export const MoveModeLink = (props: MoveModeLinkProps) => {
   const navigate = useNavigate();
   return <div className="move-to-mode">
     <button
-      className="fb-button gray"
+      className={["fb-button gray"].join(" ")}
       title={t("open move mode panel")}
       onClick={() => {
         props.dispatch(setPanelOpen(true));

@@ -10,6 +10,7 @@ import * as THREE from "three";
 import React, { ReactNode } from "react";
 import { TransitionFn, UseSpringProps } from "@react-spring/three";
 import { ThreeElements } from "@react-three/fiber";
+import { Cloud, Clouds, Image, Tube } from "@react-three/drei";
 
 const GroupForTests = (props: ThreeElements["group"]) =>
   // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
@@ -396,6 +397,12 @@ jest.mock("@react-three/drei", () => {
         PaletteMaterial001: {} as THREE.MeshStandardMaterial,
       },
     },
+    [ASSETS.models.seedTrough]: {
+      nodes: { Seed_Trough: {} as THREE.Mesh },
+      materials: {
+        [SeedTroughAssemblyMaterial.two]: {} as THREE.MeshStandardMaterial,
+      },
+    },
     [ASSETS.models.seedTroughAssembly]: {
       nodes: {
         mesh0_mesh: {} as THREE.Mesh,
@@ -467,8 +474,19 @@ jest.mock("@react-three/drei", () => {
         [PartName.toolbay3Logo]: {} as THREE.Mesh,
       },
     },
+    [ASSETS.models.toolbay1]: {
+      nodes: {
+        [PartName.toolbay1]: {} as THREE.Mesh,
+        [PartName.toolbay1Logo]: {} as THREE.Mesh,
+      },
+    },
     [ASSETS.models.seeder]: {
       nodes: { [PartName.seeder]: {} as THREE.Mesh },
+      materials: { PaletteMaterial001: {} as THREE.MeshStandardMaterial },
+    },
+    [ASSETS.models.weeder]: {
+      nodes: { [PartName.weeder]: {} as THREE.Mesh },
+      materials: { PaletteMaterial001: {} as THREE.MeshStandardMaterial },
     },
     [ASSETS.models.seedTray]: {
       nodes: { [PartName.seedTray]: {} as THREE.Mesh },
@@ -565,6 +583,8 @@ jest.mock("@react-three/drei", () => {
       <div className={"cylinder"}>{name}</div>,
     Cylinder: ({ name }: { name: string }) =>
       <div className={"cylinder"}>{name}</div>,
+    Torus: ({ name }: { name: string }) =>
+      <div className={"torus"}>{name}</div>,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Sphere: (props: any) =>
       <div className={"sphere" + props.name} {...props}>{props.children}</div>,
@@ -595,8 +615,9 @@ jest.mock("@react-three/drei", () => {
       <div className={"line"}>{name}</div>,
     Trail: ({ name }: { name: string }) =>
       <div className={"trail"}>{name}</div>,
-    Tube: ({ name, children }: { name: string, children: ReactNode }) =>
-      <div className={"tube" + name}>{children}</div>,
+    Tube: (props: React.ComponentProps<typeof Tube>) =>
+      // @ts-expect-error geometry props not assignable to div
+      <div className={"tube"} {...props}>{props.children}</div>,
     Center: ({ children }: { children: ReactNode }) =>
       <div className={"center"}>{children}</div>,
     Text3D: ({ children }: { children: ReactNode }) =>
@@ -625,12 +646,15 @@ jest.mock("@react-three/drei", () => {
       <div className={"stats"}>{name}</div>,
     Billboard: ({ name, children }: { name: string, children: ReactNode }) =>
       <div className={"billboard" + name}>{children}</div>,
-    Image: ({ name, url }: { name: string, url: string }) =>
-      <div className={"image"}>{name} {url}</div>,
-    Clouds: ({ name }: { name: string }) =>
-      <div className={"clouds"}>{name}</div>,
-    Cloud: ({ name }: { name: string }) =>
-      <div className={"cloud"}>{name}</div>,
+    Image: (props: React.ComponentProps<typeof Image>) =>
+      // @ts-expect-error geometry props not assignable to div
+      <div className={"image"} {...props}>{props.name} {props.url}</div>,
+    Clouds: (props: React.ComponentProps<typeof Clouds>) =>
+      // @ts-expect-error geometry props not assignable to div
+      <div className={"clouds"} {...props}>{props.children}</div>,
+    Cloud: (props: React.ComponentProps<typeof Cloud>) =>
+      // @ts-expect-error geometry props not assignable to div
+      <div className={"cloud"} {...props} />,
     OrthographicCamera: ({ name }: { name: string }) =>
       <div className={"orthographic-camera"}>{name}</div>,
   };

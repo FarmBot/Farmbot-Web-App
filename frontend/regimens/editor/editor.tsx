@@ -21,6 +21,7 @@ import { Path } from "../../internal_urls";
 import { addRegimen } from "../list/add_regimen";
 import { selectAllRegimens } from "../../resources/selectors_by_kind";
 import { RegimenButtonGroup } from "./regimen_edit_components";
+import { NavigationContext } from "../../routes_helpers";
 
 export class RawDesignerRegimenEditor
   extends React.Component<RegimenEditorProps> {
@@ -28,6 +29,10 @@ export class RawDesignerRegimenEditor
   componentDidMount() {
     if (!this.props.current) { setActiveRegimenByName(); }
   }
+
+  static contextType = NavigationContext;
+  context!: React.ContextType<typeof NavigationContext>;
+  navigate = this.context;
 
   render() {
     const panelName = "designer-regimen-editor";
@@ -49,7 +54,8 @@ export class RawDesignerRegimenEditor
         {!regimen && <button
           className={"fb-button green"}
           title={t("add new regimen")}
-          onClick={() => this.props.dispatch(addRegimen(regimenCount))}>
+          onClick={() =>
+            this.props.dispatch(addRegimen(regimenCount, this.navigate))}>
           <i className="fa fa-plus" />
         </button>}
       </DesignerPanelHeader>

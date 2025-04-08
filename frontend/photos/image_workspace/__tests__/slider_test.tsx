@@ -1,6 +1,8 @@
 import React from "react";
-import { WeedDetectorSlider, SliderProps } from "../slider";
-import { shallow } from "enzyme";
+import {
+  WeedDetectorSlider, SliderProps, onHslChange, OnHslChangeProps,
+} from "../slider";
+import { fireEvent, render, screen } from "@testing-library/react";
 
 jest.useFakeTimers();
 describe("<WeedDetectorSlider />", () => {
@@ -13,27 +15,46 @@ describe("<WeedDetectorSlider />", () => {
   });
 
   it("changes the slider", () => {
-    const wrapper = shallow<WeedDetectorSlider>(
-      <WeedDetectorSlider {...fakeProps()} />);
-    wrapper.simulate("change", [1, 100]);
-    expect(wrapper.state().lowValue).toEqual(1);
-    expect(wrapper.state().highValue).toEqual(100);
-  });
-
-  it("handles incorrect value type", () => {
     const p = fakeProps();
-    p.lowValue = "nope" as unknown as number;
-    expect(() => shallow(<WeedDetectorSlider {...p} />))
-      .toThrow("Something other than number");
-  });
-
-  it("releases the slider", () => {
-    const p = fakeProps();
-    const wrapper = shallow<WeedDetectorSlider>(<WeedDetectorSlider {...p} />);
-    wrapper.simulate("release", [5, 6]);
+    render(<WeedDetectorSlider {...p} />);
+    const [handle] = screen.getAllByRole("slider");
+    handle.getBoundingClientRect = () => ({
+      top: 100,
+      bottom: 100,
+      right: 100,
+      left: 100,
+      width: 100,
+      height: 100,
+      x: 100,
+      y: 100,
+      toJSON: jest.fn(),
+    });
+    fireEvent.mouseDown(handle);
+    fireEvent.mouseMove(handle, { clientX: 10 });
+    fireEvent.mouseUp(handle);
+    expect(p.onRelease).toHaveBeenCalledWith([1, 5]);
     jest.runAllTimers();
-    expect(p.onRelease).toHaveBeenCalledWith([5, 6]);
-    expect(wrapper.state().highValue).toBeUndefined();
-    expect(wrapper.state().lowValue).toBeUndefined();
+  });
+});
+
+describe("onHslChange()", () => {
+  const fakeProps = (): OnHslChangeProps => ({
+    onChange: jest.fn(),
+    iteration: 9,
+    morph: 9,
+    blur: 9,
+    H_LO: 2,
+    S_LO: 4,
+    V_LO: 6,
+    H_HI: 8,
+    S_HI: 10,
+    V_HI: 12,
+  });
+
+  it("triggers callback", () => {
+    const p = fakeProps();
+    onHslChange(p)("H")([1, 2]);
+    expect(p.onChange).toHaveBeenCalledWith("H_LO", 1);
+    expect(p.onChange).toHaveBeenCalledWith("H_HI", 2);
   });
 });

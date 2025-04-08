@@ -45,6 +45,7 @@ import { ImageFlipper } from "../photos/images/image_flipper";
 import { PhotoFooter } from "../photos/images/photos";
 import { Path } from "../internal_urls";
 import { NavigationContext } from "../routes_helpers";
+import { DrawnPointPayl } from "./interfaces";
 
 export const mapStateToProps = (props: Everything): LocationInfoProps => ({
   chosenLocation: props.resources.consumers.farm_designer.chosenLocation,
@@ -482,13 +483,16 @@ const LocationActions = (props: LocationActionsProps) => {
         &nbsp;{props.currentBotLocation.z})</p>}
     <button className={"fb-button gray add-point"}
       onClick={() => {
-        props.dispatch({
-          type: Actions.SET_DRAWN_POINT_DATA,
-          payload: {
-            cx: props.chosenLocation.x,
-            cy: props.chosenLocation.y,
-          }
-        });
+        const payload: DrawnPointPayl = {
+          name: t("Location Point"),
+          cx: props.chosenLocation.x,
+          cy: props.chosenLocation.y,
+          color: "gray",
+          at_soil_level: false,
+          r: 0,
+          z: 0,
+        };
+        props.dispatch({ type: Actions.SET_DRAWN_POINT_DATA, payload });
         navigate(Path.points("add"));
       }}>
       {t("Add point at this location")}

@@ -19,7 +19,7 @@ const DEFAULTS: Record<string, number> = {
   columnLength: 500,
   zAxisLength: 1000,
   bedXOffset: 140,
-  bedYOffset: 60,
+  bedYOffset: 20,
   bedZOffset: 0,
   legSize: 100,
   bounds: 0,

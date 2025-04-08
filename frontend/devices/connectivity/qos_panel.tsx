@@ -7,6 +7,7 @@ import React from "react";
 import { t } from "../../i18next_wrapper";
 import { docLinkClick, Saucer } from "../../ui";
 import { Actions } from "../../constants";
+import { NavigationContext } from "../../routes_helpers";
 
 export interface QosPanelProps {
   pings: PingDictionary;
@@ -63,6 +64,10 @@ export class QosPanel extends React.Component<QosPanelProps, {}> {
     return calculatePingLoss(this.pingState);
   }
 
+  static contextType = NavigationContext;
+  context!: React.ContextType<typeof NavigationContext>;
+  navigate = this.context;
+
   render() {
     const r = { ...this.latencyReport, ...this.qualityReport };
     const errorRateDecimal = r.complete / r.total;
@@ -82,7 +87,12 @@ export class QosPanel extends React.Component<QosPanelProps, {}> {
         <Saucer color={colorFromAverageTime(r.average)} />
         <QosRow k={t("Average time")} v={pct(r.average, MS)} />
       </div>
-      <a onClick={docLinkClick("connecting-farmbot-to-the-internet")}>
+      <a onClick={
+        docLinkClick({
+          slug: "connecting-farmbot-to-the-internet",
+          navigate: this.navigate,
+          dispatch: this.props.dispatch,
+        })}>
         <i className="fa fa-external-link" />
         {t("Learn more about connecting")}
       </a>

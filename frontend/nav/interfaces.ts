@@ -54,10 +54,8 @@ export interface NavBarState {
   documentTitle: string;
 }
 
-type ToggleEventHandler = (e: React.MouseEvent<HTMLElement>) => void;
-
 export interface MobileMenuProps {
-  close: (property: keyof NavBarState) => ToggleEventHandler;
+  close(): void;
   mobileMenuOpen: boolean;
   alertCount: number;
   helpState: HelpState;
@@ -66,7 +64,6 @@ export interface MobileMenuProps {
 }
 
 export interface TickerListProps {
-  toggle: (property: keyof NavBarState) => ToggleEventHandler;
   logs: TaggedLog[]
   timeSettings: TimeSettings;
   getConfigValue: GetWebAppConfigValue;
@@ -76,7 +73,7 @@ export interface TickerListProps {
 }
 
 export interface NavLinksProps {
-  close: (property: keyof NavBarState) => ToggleEventHandler;
+  close(): void;
   alertCount: number;
   helpState: HelpState;
   dispatch: Function;
@@ -85,7 +82,7 @@ export interface NavLinksProps {
 
 export interface AccountMenuProps {
   isStaff: boolean;
-  close: (property: keyof NavBarState) => ToggleEventHandler;
+  close(): void;
   dispatch: Function;
   darkMode: boolean;
 }

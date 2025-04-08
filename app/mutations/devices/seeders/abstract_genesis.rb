@@ -27,49 +27,49 @@ module Devices
 
       def tool_slots_slot_1
         add_tool_slot(name: ToolNames::SEEDER,
-                      x: 50,
-                      y: 100,
-                      z: -200,
+                      x: TOOL_X,
+                      y: TOOL_Y + 1 * TOOL_SPACING,
+                      z: TOOL_Z,
                       tool: tools_seeder)
       end
 
       def tool_slots_slot_2
         add_tool_slot(name: ToolNames::SEED_BIN,
-                      x: 50,
-                      y: 200,
-                      z: -200,
+                      x: TOOL_X,
+                      y: TOOL_Y + 2 * TOOL_SPACING,
+                      z: TOOL_Z,
                       tool: tools_seed_bin)
       end
 
       def tool_slots_slot_3
         add_tool_slot(name: ToolNames::SEED_TRAY,
-                      x: 50,
-                      y: 300,
-                      z: -200,
+                      x: TOOL_X,
+                      y: TOOL_Y + 3 * TOOL_SPACING,
+                      z: TOOL_Z,
                       tool: tools_seed_tray)
       end
 
       def tool_slots_slot_4
         add_tool_slot(name: ToolNames::WATERING_NOZZLE,
-                      x: 50,
-                      y: 500,
-                      z: -200,
+                      x: TOOL_X,
+                      y: TOOL_Y + 5 * TOOL_SPACING,
+                      z: TOOL_Z,
                       tool: tools_watering_nozzle)
       end
 
       def tool_slots_slot_5
         add_tool_slot(name: ToolNames::SOIL_SENSOR,
-                      x: 50,
-                      y: 600,
-                      z: -200,
+                      x: TOOL_X,
+                      y: TOOL_Y + 6 * TOOL_SPACING,
+                      z: TOOL_Z,
                       tool: tools_soil_sensor)
       end
 
       def tool_slots_slot_6
         add_tool_slot(name: ToolNames::WEEDER,
-                      x: 50,
-                      y: 700,
-                      z: -200,
+                      x: TOOL_X,
+                      y: TOOL_Y + 7 * TOOL_SPACING,
+                      z: TOOL_Z,
                       tool: tools_weeder)
       end
 
@@ -174,7 +174,7 @@ module Devices
       end
 
       def settings_default_map_size_y
-        device.web_app_config.update!(map_size_y: 1_400)
+        device.web_app_config.update!(map_size_y: 1_230)
       end
 
       def pin_bindings_button_1

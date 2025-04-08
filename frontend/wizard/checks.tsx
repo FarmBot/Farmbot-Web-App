@@ -102,6 +102,7 @@ import { WaterFlowRateInput } from "../tools/edit_tool";
 import { RPI_OPTIONS } from "../settings/fbos_settings/rpi_model";
 import { BoxTop } from "../settings/pin_bindings/box_top";
 import { OtaTimeSelector } from "../settings/fbos_settings/ota_time_selector";
+import { useNavigate } from "react-router";
 
 export const Language = (props: WizardStepComponentProps) => {
   const user = getUserAccountSettings(props.resources);
@@ -190,7 +191,10 @@ export const CameraCalibrationCard = (props: WizardStepComponentProps) => {
 
 export const SwitchCameraCalibrationMethod =
   (props: WizardOutcomeComponentProps) => {
+    const navigate = useNavigate();
     return <CameraCalibrationMethodConfig
+      navigate={navigate}
+      dispatch={props.dispatch}
       wdEnvGet={key => envGet(key, prepopulateEnv(getEnv(props.resources)))}
       saveEnvVar={(key, value) =>
         props.dispatch(saveOrEditFarmwareEnv(props.resources)(
@@ -228,7 +232,7 @@ const MeasureSoilHeight = (props: CameraCheckBaseProps) => {
       env={env}
       userEnv={userEnv}
       farmwareEnvs={farmwareEnvs}
-      saveFarmwareEnv={saveOrEditFarmwareEnv(props.resources)}
+      saveFarmwareEnv={saveOrEditFarmwareEnv(props.resources, true)}
       botOnline={botOnline}
       hideAdvanced={true}
       hideResets={true}
@@ -460,7 +464,7 @@ export const Connectivity = (props: WizardStepComponentProps) => {
   });
   return <div className={"connectivity"}>
     <ConnectivityDiagram rowData={data.rowData} />
-    <Diagnosis statusFlags={data.flags} />
+    <Diagnosis statusFlags={data.flags} dispatch={props.dispatch} />
   </div>;
 };
 

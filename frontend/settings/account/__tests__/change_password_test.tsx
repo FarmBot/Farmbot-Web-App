@@ -1,152 +1,112 @@
-let mockPatch = Promise.resolve();
+let mockPatch = () => Promise.resolve();
 jest.mock("axios", () => ({
-  patch: jest.fn(() => mockPatch),
+  patch: jest.fn(() => mockPatch()),
+}));
+
+interface MockRef {
+  current: { querySelectorAll(): [{ value: string }] } | undefined;
+}
+let mockRef: MockRef = { current: { querySelectorAll: () => [{ value: "" }] } };
+jest.mock("react", () => ({
+  ...jest.requireActual("react"),
+  useRef: () => mockRef,
 }));
 
 import React from "react";
-import { mount } from "enzyme";
-import { ChangePassword, ChangePWState } from "../change_password";
-import { SpecialStatus } from "farmbot";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { ChangePassword } from "../change_password";
 import { API } from "../../../api/api";
 import { error, success } from "../../../toast/toast";
-import { inputEvent } from "../../../__test_support__/fake_html_events";
 import axios from "axios";
 
+const setFields = (
+  password: string,
+  newPassword: string,
+  newPasswordConfirmation: string,
+) => {
+  fireEvent.blur(screen.getByLabelText("Old Password"),
+    { target: { value: password } });
+  fireEvent.blur(screen.getByLabelText("New Password"),
+    { target: { value: newPassword } });
+  fireEvent.blur(screen.getByLabelText("Confirm New Password"),
+    { target: { value: newPasswordConfirmation } });
+  expect(screen.getAllByDisplayValue(password)[0]).toBeInTheDocument();
+  const button = screen.getByText("Save");
+  fireEvent.click(button);
+};
+
 describe("<ChangePassword />", () => {
-  it("doesn't fire maybeClearForm() if form is filled", () => {
-    const el = mount<ChangePassword>(<ChangePassword />);
-    el.setState({
-      status: SpecialStatus.DIRTY,
-      form: { ...el.instance().state.form, password: "X" }
-    });
-    el.update();
-    expect(el.instance().state.form.password).toEqual("X");
-    expect(el.instance().state.status).toBe(SpecialStatus.DIRTY);
-    el.instance().maybeClearForm();
-    expect(el.instance().state.status).toBe(SpecialStatus.DIRTY);
-    expect(el.instance().state.form.password).toEqual("X");
-  });
-
-  it("does fire maybeClearForm() when form is empty.", () => {
-    const el = mount<ChangePassword>(<ChangePassword />);
-    el.setState({
-      status: SpecialStatus.DIRTY,
-      form: {
-        new_password: "",
-        new_password_confirmation: "",
-        password: ""
-      }
-    });
-    el.instance().maybeClearForm();
-    el.update();
-    expect(el.instance().state.status).toBe(SpecialStatus.SAVED);
-  });
-
-  it("sets a field", () => {
-    const el = mount<ChangePassword>(<ChangePassword />);
-    el.instance().set("password")(inputEvent("foo"));
-    el.update();
-    expect(el.instance().state.form.password).toBe("foo");
-  });
-
   it("rejects new == old password case", () => {
-    const el = mount<ChangePassword>(<ChangePassword />);
-    el.instance().state.form = {
-      password: "password",
-      new_password: "password",
-      new_password_confirmation: "password"
-    };
-    el.instance().save();
+    render(<ChangePassword />);
+    setFields("password", "password", "password");
     const expectation = expect.stringContaining("Password not changed");
     expect(error).toHaveBeenCalledWith(expectation);
-    expect(el.instance().state.status).toBe(SpecialStatus.SAVED);
   });
 
   it("rejects too short new password", () => {
-    const el = mount<ChangePassword>(<ChangePassword />);
-    el.instance().state.form = {
-      password: "a",
-      new_password: "a",
-      new_password_confirmation: "a"
-    };
-    el.instance().save();
+    render(<ChangePassword />);
+    setFields("a", "a", "a");
     const expectation = expect.stringContaining("New password must be at least");
     expect(error).toHaveBeenCalledWith(expectation);
-    expect(el.instance().state.status).toBe(SpecialStatus.SAVED);
   });
 
   it("rejects new != password confirmation case", () => {
-    const el = mount<ChangePassword>(<ChangePassword />);
-    el.instance().state.form = {
-      password: "aaaaaaaa",
-      new_password: "bbbbbbbb",
-      new_password_confirmation: "cccccccc"
-    };
-    el.instance().save();
+    render(<ChangePassword />);
+    setFields("aaaaaaaa", "bbbbbbbb", "cccccccc");
     const expectation = expect.stringContaining("do not match");
     expect(error).toHaveBeenCalledWith(expectation);
-    expect(el.instance().state.status).toBe(SpecialStatus.SAVED);
-  });
-
-  it("throws a form error", () => {
-    const el = mount<ChangePassword>(<ChangePassword />);
-    el.instance().state.form = {
-      password: "password0",
-      new_password: "password1",
-      new_password_confirmation: "password2",
-      extra_password: "password3",
-    } as ChangePWState["form"];
-    expect(el.instance().save).toThrow("form error");
-    expect(el.instance().state.status).toBe(SpecialStatus.SAVED);
   });
 
   it("cancels password change", () => {
-    const el = mount<ChangePassword>(<ChangePassword />);
-    el.instance().state.form = {
-      password: "aaaaaaaa",
-      new_password: "bbbbbbbb",
-      new_password_confirmation: "bbbbbbbb"
-    };
     window.confirm = () => false;
-    el.instance().save();
-    expect(el.instance().state.status).toBe(SpecialStatus.SAVED);
+    render(<ChangePassword />);
+    setFields("aaaaaaaa", "bbbbbbbb", "bbbbbbbb");
+    expect(axios.patch).not.toHaveBeenCalled();
+  });
+
+  it("handles missing ref", () => {
+    mockRef = { current: undefined };
+    window.confirm = () => false;
+    render(<ChangePassword />);
+    setFields("aaaaaaaa", "bbbbbbbb", "bbbbbbbb");
+    expect(axios.patch).not.toHaveBeenCalled();
   });
 
   describe("AJAX", () => {
     API.setBaseUrl("localhost");
 
     it("saves (KO)", async () => {
-      mockPatch = Promise.reject({ response: { data: "error" } });
+      mockPatch = () => Promise.reject({ response: { data: "error" } });
       window.confirm = () => true;
-      const el = mount<ChangePassword>(<ChangePassword />);
-      const form = {
-        password: "xxxxxxxx",
-        new_password: "bbbbbbbb",
-        new_password_confirmation: "bbbbbbbb"
-      };
-      el.instance().state.form = form;
-      await el.instance().save();
-      expect(axios.patch).toHaveBeenCalledWith("http://localhost/api/users/", form);
-      expect(error).toHaveBeenCalledWith("Error: error");
-      expect(success).not.toHaveBeenCalled();
-      expect(el.instance().state.status).toBe(SpecialStatus.SAVED);
+      render(<ChangePassword />);
+      setFields("aaaaaaaa", "bbbbbbbb", "bbbbbbbb");
+      await waitFor(() => {
+        expect(axios.patch).toHaveBeenCalledWith("http://localhost/api/users/",
+          {
+            password: "aaaaaaaa",
+            new_password: "bbbbbbbb",
+            new_password_confirmation: "bbbbbbbb",
+          });
+        expect(error).toHaveBeenCalledWith("Error: error");
+        expect(success).not.toHaveBeenCalled();
+      });
     });
 
     it("saves (OK)", async () => {
-      mockPatch = Promise.resolve();
+      mockPatch = () => Promise.resolve();
       window.confirm = () => true;
-      const el = mount<ChangePassword>(<ChangePassword />);
-      const form = {
-        password: "aaaaaaaa",
-        new_password: "bbbbbbbb",
-        new_password_confirmation: "bbbbbbbb"
-      };
-      el.instance().state.form = form;
-      await el.instance().save();
-      expect(axios.patch).toHaveBeenCalledWith("http://localhost/api/users/", form);
-      expect(success).toHaveBeenCalledWith("Your password is changed.");
-      expect(error).not.toHaveBeenCalled();
-      expect(el.instance().state.status).toBe(SpecialStatus.SAVED);
+      render(<ChangePassword />);
+      setFields("aaaaaaaa", "bbbbbbbb", "bbbbbbbb");
+      await waitFor(() => {
+        expect(axios.patch).toHaveBeenCalledWith("http://localhost/api/users/",
+          {
+            password: "aaaaaaaa",
+            new_password: "bbbbbbbb",
+            new_password_confirmation: "bbbbbbbb",
+          });
+        expect(success).toHaveBeenCalledWith("Your password is changed.");
+        expect(error).not.toHaveBeenCalled();
+      });
     });
   });
 });

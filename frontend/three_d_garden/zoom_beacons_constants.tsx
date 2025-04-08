@@ -177,7 +177,7 @@ export const FOCI = (config: Config): Focus[] => [
     position: [
       threeSpace(config.x, config.bedLengthOuter) + config.bedXOffset,
       threeSpace(config.y + 150, config.bedWidthOuter) + config.bedYOffset,
-      zZero(config) + zDir * config.z,
+      zZero(config) - zDir(config) * config.z,
     ],
     camera: {
       narrow: {

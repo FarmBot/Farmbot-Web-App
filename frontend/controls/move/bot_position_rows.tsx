@@ -27,6 +27,7 @@ import {
 import { NumberConfigKey } from "farmbot/dist/resources/configs/firmware";
 import { isUndefined } from "lodash";
 import { calculateScale } from "../../settings/hardware_settings";
+import { setPanelOpen } from "../../farm_designer/panel_header";
 
 export const BotPositionRows = (props: BotPositionRowsProps) => {
   const { locationData, getConfigValue, arduinoBusy, locked } = props;
@@ -141,7 +142,10 @@ export const AxisActions = (props: AxisActionsProps) => {
         onClick={setAxisLength({ axis, dispatch, botPosition, sourceFwConfig })}>
         {t("SET LENGTH")}
       </LockableButton>
-      <a onClick={() => { navigate(Path.settings("axes")); }}>
+      <a onClick={() => {
+        dispatch(setPanelOpen(true));
+        navigate(Path.settings("axes"));
+      }}>
         <i className="fa fa-external-link" />
         {t("Settings")}
       </a>

@@ -2,13 +2,14 @@ import React from "react";
 import {
   Config, INITIAL, modifyConfigsFromUrlParams,
 } from "../three_d_garden/config";
-import { GardenModel } from "../three_d_garden/garden";
+import { GardenModel } from "../three_d_garden/garden_model";
 import { Canvas } from "@react-three/fiber";
 import {
   PrivateOverlay, PublicOverlay, ToolTip,
 } from "../three_d_garden/config_overlays";
 import { ASSETS } from "../three_d_garden/constants";
 import { getFocusFromUrlParams } from "../three_d_garden/zoom_beacons_constants";
+import { MemoryRouter } from "react-router";
 
 export const Promo = () => {
   const [config, setConfig] = React.useState<Config>(INITIAL);
@@ -28,9 +29,11 @@ export const Promo = () => {
 
   return <div className={"three-d-garden promo"}>
     <div className={"garden-bed-3d-model"}>
-      <Canvas shadows={true}>
-        <GardenModel {...common} />
-      </Canvas>
+      <MemoryRouter>
+        <Canvas shadows={true}>
+          <GardenModel {...common} />
+        </Canvas>
+      </MemoryRouter>
       <PublicOverlay {...common} />
       {!config.config && <img className={"gear"} src={ASSETS.other.gear}
         onClick={() => setConfig({ ...config, config: true })} />}

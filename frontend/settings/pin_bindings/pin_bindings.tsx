@@ -6,7 +6,7 @@ import { PinBindingsContent } from "./pin_bindings_content";
 import { DeviceSetting } from "../../constants";
 import { Highlight } from "../maybe_highlight";
 
-export function PinBindings(props: PinBindingsProps) {
+export const PinBindings = (props: PinBindingsProps) => {
 
   const { pin_bindings } = props.settingsPanelState;
   const { dispatch, resources, firmwareHardware } = props;
@@ -24,4 +24,4 @@ export function PinBindings(props: PinBindingsProps) {
         firmwareHardware={firmwareHardware} />
     </Collapse>
   </Highlight>;
-}
+};

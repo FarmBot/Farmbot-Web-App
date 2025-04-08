@@ -1,8 +1,7 @@
 import React from "react";
 import { FarmbotColorPicker } from "./farmbot_picker";
 import { BlurableInput, Row, Help, ExpandableHeader } from "../../ui";
-import { HSV } from "./interfaces";
-import { WeedDetectorSlider } from "./slider";
+import { onHslChange as onHslChangeFunc, WeedDetectorSlider } from "./slider";
 import { TaggedImage } from "farmbot";
 import { parseIntInput } from "../../util";
 import { t } from "../../i18next_wrapper";
@@ -28,7 +27,7 @@ const RANGES = {
 };
 
 /** Number values that the <ImageWorkspace/> panel deals with. */
-interface NumericValues {
+export interface NumericValues {
   iteration: number;
   morph: number;
   blur: number;
@@ -57,226 +56,204 @@ export interface ImageWorkspaceProps extends NumericValues {
   dispatch: Function;
 }
 
-/** Mapping of HSV values to FBOS Env variables. */
-const CHANGE_MAP: Record<HSV, [NumericKeyName, NumericKeyName]> = {
-  H: ["H_LO", "H_HI"],
-  S: ["S_LO", "S_HI"],
-  V: ["V_LO", "V_HI"]
-};
-
-export class ImageWorkspace
-  extends React.Component<ImageWorkspaceProps> {
+// eslint-disable-next-line complexity
+export const ImageWorkspace = (props: ImageWorkspaceProps) => {
 
   /** Generates a function to handle changes to blur/morph/iteration. */
-  numericChange = (key: NumericKeyName) =>
+  const numericChange = (key: NumericKeyName) =>
     (e: React.SyntheticEvent<HTMLInputElement>) => {
-      this.props.onChange(key, parseIntInput(e.currentTarget.value) || 0);
+      props.onChange(key, parseIntInput(e.currentTarget.value));
     };
 
-  maybeProcessPhoto = () => {
-    const currentImageId = this.props.currentImage?.body.id;
+  const maybeProcessPhoto = () => {
+    const currentImageId = props.currentImage?.body.id;
     if (currentImageId) {
-      this.props.onProcessPhoto(currentImageId);
+      props.onProcessPhoto(currentImageId);
     }
   };
 
-  /** This will trigger onChange callback only when necessary, at most twice.
-   * (H|S|L)_HI and (H|S|L)_LO */
-  onHslChange = (key: keyof typeof CHANGE_MAP) =>
-    (values: [number, number]) => {
-      const keys = CHANGE_MAP[key];
-      [0, 1].map(i => {
-        if (values[i] !== this.props[keys[i]]) {
-          this.props.onChange(keys[i], values[i]);
-        }
-      });
-    };
+  const getDefault = (key: NumericKeyName) =>
+    WD_KEY_DEFAULTS[props.namespace(key)];
 
-  getDefault = (key: NumericKeyName) =>
-    WD_KEY_DEFAULTS[this.props.namespace(key)];
+  const getModifiedClass = (key: NumericKeyName) =>
+    getModifiedClassNameSpecifyModified(getDefault(key) != props[key]);
 
-  getModifiedClass = (key: NumericKeyName) =>
-    getModifiedClassNameSpecifyModified(this.getDefault(key) != this.props[key]);
+  const anyAdvancedModified =
+    some(["blur", "morph", "iteration"]
+      .map((key: NumericKeyName) => getDefault(key) != props[key]));
 
-  get anyAdvancedModified() {
-    return some(["blur", "morph", "iteration"]
-      .map((key: NumericKeyName) => this.getDefault(key) != this.props[key]));
-  }
-
-  // eslint-disable-next-line complexity
-  render() {
-    const { H_LO, H_HI, S_LO, S_HI, V_LO, V_HI } = this.props;
-    const cameraCalibrationEnv = this.props.namespace("H_LO").includes("CAMERA");
-    const defaultHLow = this.getDefault(cameraCalibrationEnv ? "H_HI" : "H_LO");
-    const defaultHHigh = this.getDefault(cameraCalibrationEnv ? "H_LO" : "H_HI");
-    return <div className="image-workspace grid">
-      <Row className="grid-2-col weed-detection-grid">
-        <div className="grid">
-          <Highlight settingName={this.props.sectionKey == "calibration"
-            ? DeviceSetting.calibrationHue
-            : DeviceSetting.detectionHue} pathPrefix={Path.photos}>
-            <div className="row grid-exp-2 half-gap">
-              <label htmlFor="hue">{t("HUE")}</label>
-              <Help text={t(ToolTips.COLOR_HUE_RANGE, {
-                defaultLow: defaultHLow,
-                defaultHigh: defaultHHigh,
-                defaultColor: cameraCalibrationEnv ? t("red") : t("green"),
-              })} />
-            </div>
-            <WeedDetectorSlider
-              className={[
-                getModifiedClassNameDefaultFalse(
-                  Math.min(H_LO, H_HI) != defaultHLow) + "-start",
-                getModifiedClassNameDefaultFalse(
-                  Math.max(H_LO, H_HI) != defaultHHigh) + "-end",
-              ].join(" ")}
-              onRelease={this.onHslChange("H")}
-              lowest={RANGES.H.LOWEST}
-              highest={RANGES.H.HIGHEST}
-              lowValue={Math.min(H_LO, H_HI)}
-              highValue={Math.max(H_LO, H_HI)} />
-          </Highlight>
-          <Highlight settingName={this.props.sectionKey == "calibration"
-            ? DeviceSetting.calibrationSaturation
-            : DeviceSetting.detectionSaturation} pathPrefix={Path.photos}>
-            <div className="row grid-exp-2 half-gap">
-              <label htmlFor="saturation">{t("SATURATION")}</label>
-              <Help text={t(ToolTips.COLOR_SATURATION_RANGE, {
-                defaultLow: this.getDefault("S_LO"),
-                defaultHigh: this.getDefault("S_HI"),
-              })} />
-            </div>
-            <WeedDetectorSlider
-              className={[
-                getModifiedClassNameDefaultFalse(
-                  S_LO != this.getDefault("S_LO")) + "-start",
-                getModifiedClassNameDefaultFalse(
-                  S_HI != this.getDefault("S_HI")) + "-end",
-              ].join(" ")}
-              onRelease={this.onHslChange("S")}
-              lowest={RANGES.S.LOWEST}
-              highest={RANGES.S.HIGHEST}
-              lowValue={S_LO}
-              highValue={S_HI} />
-          </Highlight>
-          <Highlight settingName={this.props.sectionKey == "calibration"
-            ? DeviceSetting.calibrationValue
-            : DeviceSetting.detectionValue} pathPrefix={Path.photos}>
-            <div className="row grid-exp-2 half-gap">
-              <label htmlFor="value">{t("VALUE")}</label>
-              <Help text={t(ToolTips.COLOR_VALUE_RANGE, {
-                defaultLow: this.getDefault("V_LO"),
-                defaultHigh: this.getDefault("V_HI"),
-              })} />
-            </div>
-            <WeedDetectorSlider
-              className={[
-                getModifiedClassNameDefaultFalse(
-                  V_LO != this.getDefault("V_LO")) + "-start",
-                getModifiedClassNameDefaultFalse(
-                  V_HI != this.getDefault("V_HI")) + "-end",
-              ].join(" ")}
-              onRelease={this.onHslChange("V")}
-              lowest={RANGES.V.LOWEST}
-              highest={RANGES.V.HIGHEST}
-              lowValue={V_LO}
-              highValue={V_HI} />
-          </Highlight>
-        </div>
-        <FarmbotColorPicker
-          h={[H_LO, H_HI]}
-          s={[S_LO, S_HI]}
-          v={[V_LO, V_HI]}
-          invertHue={this.props.invertHue} />
-      </Row>
-      {(this.props.showAdvanced || this.anyAdvancedModified) &&
-        <Row>
-          <ExpandableHeader
-            expanded={!!this.props.advancedSectionOpen}
-            title={t("Processing Parameters")}
-            onClick={() => this.props.dispatch({
-              type: Actions.TOGGLE_PHOTOS_PANEL_OPTION,
-              payload: this.props.sectionKey == "calibration"
-                ? "calibrationPP"
-                : "detectionPP",
+  const { H_LO, H_HI, S_LO, S_HI, V_LO, V_HI } = props;
+  const onHslChange = onHslChangeFunc(props);
+  const cameraCalibrationEnv = props.namespace("H_LO").includes("CAMERA");
+  const defaultHLow = getDefault(cameraCalibrationEnv ? "H_HI" : "H_LO");
+  const defaultHHigh = getDefault(cameraCalibrationEnv ? "H_LO" : "H_HI");
+  return <div className="image-workspace grid">
+    <Row className="grid-2-col weed-detection-grid double-gap">
+      <div className="grid">
+        <Highlight settingName={props.sectionKey == "calibration"
+          ? DeviceSetting.calibrationHue
+          : DeviceSetting.detectionHue} pathPrefix={Path.photos}>
+          <div className="row grid-exp-2 half-gap align-baseline">
+            <label htmlFor="hue">{t("HUE")}</label>
+            <Help text={t(ToolTips.COLOR_HUE_RANGE, {
+              defaultLow: defaultHLow,
+              defaultHigh: defaultHHigh,
+              defaultColor: cameraCalibrationEnv ? t("red") : t("green"),
             })} />
-        </Row>}
-      {(this.props.showAdvanced || this.anyAdvancedModified) &&
-        <Collapse isOpen={this.props.advancedSectionOpen}>
-          <Row className="grid-3-col">
-            <Highlight
-              settingName={this.props.sectionKey == "calibration"
-                ? DeviceSetting.calibrationBlur
-                : DeviceSetting.detectionBlur}
-              className={"advanced"}
-              pathPrefix={Path.photos}>
-              <div className="grid no-gap">
-                <div className="row grid-exp-2 half-gap">
-                  <label>{t("BLUR")}</label>
-                  <Help text={t(ToolTips.BLUR, {
-                    defaultBlur: this.getDefault("blur")
-                  })} />
-                </div>
-                <BlurableInput type="number"
-                  wrapperClassName={this.getModifiedClass("blur")}
-                  min={RANGES.BLUR.LOWEST}
-                  max={RANGES.BLUR.HIGHEST}
-                  onCommit={this.numericChange("blur")}
-                  value={"" + this.props.blur} />
+          </div>
+          <WeedDetectorSlider
+            className={[
+              getModifiedClassNameDefaultFalse(
+                Math.min(H_LO, H_HI) != defaultHLow) + "-start",
+              getModifiedClassNameDefaultFalse(
+                Math.max(H_LO, H_HI) != defaultHHigh) + "-end",
+            ].join(" ")}
+            onRelease={onHslChange("H")}
+            lowest={RANGES.H.LOWEST}
+            highest={RANGES.H.HIGHEST}
+            lowValue={Math.min(H_LO, H_HI)}
+            highValue={Math.max(H_LO, H_HI)} />
+        </Highlight>
+        <Highlight settingName={props.sectionKey == "calibration"
+          ? DeviceSetting.calibrationSaturation
+          : DeviceSetting.detectionSaturation} pathPrefix={Path.photos}>
+          <div className="row grid-exp-2 half-gap align-baseline">
+            <label htmlFor="saturation">{t("SATURATION")}</label>
+            <Help text={t(ToolTips.COLOR_SATURATION_RANGE, {
+              defaultLow: getDefault("S_LO"),
+              defaultHigh: getDefault("S_HI"),
+            })} />
+          </div>
+          <WeedDetectorSlider
+            className={[
+              getModifiedClassNameDefaultFalse(
+                S_LO != getDefault("S_LO")) + "-start",
+              getModifiedClassNameDefaultFalse(
+                S_HI != getDefault("S_HI")) + "-end",
+            ].join(" ")}
+            onRelease={onHslChange("S")}
+            lowest={RANGES.S.LOWEST}
+            highest={RANGES.S.HIGHEST}
+            lowValue={S_LO}
+            highValue={S_HI} />
+        </Highlight>
+        <Highlight settingName={props.sectionKey == "calibration"
+          ? DeviceSetting.calibrationValue
+          : DeviceSetting.detectionValue} pathPrefix={Path.photos}>
+          <div className="row grid-exp-2 half-gap align-baseline">
+            <label htmlFor="value">{t("VALUE")}</label>
+            <Help text={t(ToolTips.COLOR_VALUE_RANGE, {
+              defaultLow: getDefault("V_LO"),
+              defaultHigh: getDefault("V_HI"),
+            })} />
+          </div>
+          <WeedDetectorSlider
+            className={[
+              getModifiedClassNameDefaultFalse(
+                V_LO != getDefault("V_LO")) + "-start",
+              getModifiedClassNameDefaultFalse(
+                V_HI != getDefault("V_HI")) + "-end",
+            ].join(" ")}
+            onRelease={onHslChange("V")}
+            lowest={RANGES.V.LOWEST}
+            highest={RANGES.V.HIGHEST}
+            lowValue={V_LO}
+            highValue={V_HI} />
+        </Highlight>
+      </div>
+      <FarmbotColorPicker
+        h={[H_LO, H_HI]}
+        s={[S_LO, S_HI]}
+        v={[V_LO, V_HI]}
+        invertHue={props.invertHue} />
+    </Row>
+    {(props.showAdvanced || anyAdvancedModified) &&
+      <Row>
+        <ExpandableHeader
+          expanded={!!props.advancedSectionOpen}
+          title={t("Processing Parameters")}
+          onClick={() => props.dispatch({
+            type: Actions.TOGGLE_PHOTOS_PANEL_OPTION,
+            payload: props.sectionKey == "calibration"
+              ? "calibrationPP"
+              : "detectionPP",
+          })} />
+      </Row>}
+    {(props.showAdvanced || anyAdvancedModified) &&
+      <Collapse isOpen={props.advancedSectionOpen}>
+        <Row className="grid-3-col">
+          <Highlight
+            settingName={props.sectionKey == "calibration"
+              ? DeviceSetting.calibrationBlur
+              : DeviceSetting.detectionBlur}
+            className={"advanced"}
+            pathPrefix={Path.photos}>
+            <div className="grid no-gap">
+              <div className="row grid-exp-2 half-gap align-baseline">
+                <label>{t("BLUR")}</label>
+                <Help text={t(ToolTips.BLUR, {
+                  defaultBlur: getDefault("blur")
+                })} />
               </div>
-            </Highlight>
-            <Highlight
-              settingName={this.props.sectionKey == "calibration"
-                ? DeviceSetting.calibrationMorph
-                : DeviceSetting.detectionMorph}
-              pathPrefix={Path.photos}>
-              <div className="grid no-gap">
-                <div className="row grid-exp-2 half-gap">
-                  <label>{t("MORPH")}</label>
-                  <Help text={t(ToolTips.MORPH, {
-                    defaultMorph: this.getDefault("morph")
-                  })} />
-                </div>
-                <BlurableInput type="number"
-                  wrapperClassName={this.getModifiedClass("morph")}
-                  min={RANGES.MORPH.LOWEST}
-                  max={RANGES.MORPH.HIGHEST}
-                  onCommit={this.numericChange("morph")}
-                  value={"" + this.props.morph} />
+              <BlurableInput type="number"
+                wrapperClassName={getModifiedClass("blur")}
+                min={RANGES.BLUR.LOWEST}
+                max={RANGES.BLUR.HIGHEST}
+                onCommit={numericChange("blur")}
+                value={"" + props.blur} />
+            </div>
+          </Highlight>
+          <Highlight
+            settingName={props.sectionKey == "calibration"
+              ? DeviceSetting.calibrationMorph
+              : DeviceSetting.detectionMorph}
+            pathPrefix={Path.photos}>
+            <div className="grid no-gap">
+              <div className="row grid-exp-2 half-gap align-baseline">
+                <label>{t("MORPH")}</label>
+                <Help text={t(ToolTips.MORPH, {
+                  defaultMorph: getDefault("morph")
+                })} />
               </div>
-            </Highlight>
-            <Highlight
-              settingName={this.props.sectionKey == "calibration"
-                ? DeviceSetting.calibrationIterations
-                : DeviceSetting.detectionIterations}
-              pathPrefix={Path.photos}>
-              <div className="grid no-gap">
-                <div className="row grid-exp-2 half-gap">
-                  <label>{t("ITERATIONS")}</label>
-                  <Help text={t(ToolTips.ITERATIONS, {
-                    defaultIteration: this.getDefault("iteration")
-                  })} />
-                </div>
-                <BlurableInput type="number"
-                  wrapperClassName={this.getModifiedClass("iteration")}
-                  min={RANGES.ITERATION.LOWEST}
-                  max={RANGES.ITERATION.HIGHEST}
-                  onCommit={this.numericChange("iteration")}
-                  value={"" + this.props.iteration} />
+              <BlurableInput type="number"
+                wrapperClassName={getModifiedClass("morph")}
+                min={RANGES.MORPH.LOWEST}
+                max={RANGES.MORPH.HIGHEST}
+                onCommit={numericChange("morph")}
+                value={"" + props.morph} />
+            </div>
+          </Highlight>
+          <Highlight
+            settingName={props.sectionKey == "calibration"
+              ? DeviceSetting.calibrationIterations
+              : DeviceSetting.detectionIterations}
+            pathPrefix={Path.photos}>
+            <div className="grid no-gap">
+              <div className="row grid-exp-2 half-gap align-baseline">
+                <label>{t("ITERATIONS")}</label>
+                <Help text={t(ToolTips.ITERATIONS, {
+                  defaultIteration: getDefault("iteration")
+                })} />
               </div>
-            </Highlight>
-          </Row>
-        </Collapse>}
-      <Row className="grid-exp-1">
-        <div />
-        <button
-          className="green fb-button"
-          title={t("Scan this image")}
-          onClick={this.maybeProcessPhoto}
-          disabled={!this.props.botOnline || !this.props.images.length}>
-          {t("Scan current image")}
-        </button>
-      </Row>
-    </div>;
-  }
-}
+              <BlurableInput type="number"
+                wrapperClassName={getModifiedClass("iteration")}
+                min={RANGES.ITERATION.LOWEST}
+                max={RANGES.ITERATION.HIGHEST}
+                onCommit={numericChange("iteration")}
+                value={"" + props.iteration} />
+            </div>
+          </Highlight>
+        </Row>
+      </Collapse>}
+    <Row className="grid-exp-1">
+      <div />
+      <button
+        className="green fb-button"
+        title={t("Scan this image")}
+        onClick={maybeProcessPhoto}
+        disabled={!props.botOnline || !props.images.length}>
+        {t("Scan current image")}
+      </button>
+    </Row>
+  </div>;
+};

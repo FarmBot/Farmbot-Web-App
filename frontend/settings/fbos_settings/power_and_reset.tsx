@@ -9,7 +9,7 @@ import { reboot, powerOff, restartFirmware } from "../../devices/actions";
 import { t } from "../../i18next_wrapper";
 import { Highlight } from "../maybe_highlight";
 
-export function PowerAndReset(props: PowerAndResetProps) {
+export const PowerAndReset = (props: PowerAndResetProps) => {
   const { dispatch, botOnline } = props;
   const { power_and_reset } = props.settingsPanelState;
   return <Highlight className={"section advanced"}
@@ -44,7 +44,9 @@ export function PowerAndReset(props: PowerAndResetProps) {
         buttonText={t("SHUTDOWN")}
         color={"red"}
         action={powerOff} />
-      <FactoryResetRows botOnline={botOnline} />
+      <FactoryResetRows
+        dispatch={dispatch}
+        botOnline={botOnline} />
     </Collapse>
   </Highlight>;
-}
+};

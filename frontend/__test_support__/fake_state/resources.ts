@@ -389,7 +389,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     default_plant_depth: 5,
     disable_emergency_unlock_confirmation: false,
     map_size_x: 2900,
-    map_size_y: 1400,
+    map_size_y: 1230,
     user_interface_read_only_mode: false,
     ["three_d_garden" as BooleanConfigKey]: false,
     ["dark_mode" as BooleanConfigKey]: false,

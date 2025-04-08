@@ -6,7 +6,6 @@ import { resendEmail } from "./resend_verification";
 import { success, error } from "../toast/toast";
 import { bail } from "../util";
 import { ResendPanelBody } from "./resend_panel_body";
-import { BlurablePassword } from "../ui/blurable_password";
 import { Content } from "../constants";
 import { t } from "../i18next_wrapper";
 
@@ -33,18 +32,24 @@ type FieldType = BIProps["type"];
 
 export interface FormFieldProps {
   label: string;
-  type: FieldType;
+  type: FieldType | "password";
   value: string;
   onCommit(val: string): void;
 }
 
 export const FormField = (props: FormFieldProps) =>
-  <div>
-    <label> {t(props.label)} </label>
-    <BlurableInput
-      value={props.value}
-      type={props.type}
-      onCommit={(e) => props.onCommit(e.currentTarget.value)} />
+  <div className={"form-field"}>
+    <label htmlFor={props.label}> {t(props.label)} </label>
+    {props.type == "password"
+      ? <input
+        id={props.label}
+        type={props.type}
+        onBlur={e => props.onCommit(e.currentTarget.value)} />
+      : <BlurableInput
+        id={props.label}
+        value={props.value}
+        type={props.type}
+        onCommit={e => props.onCommit(e.currentTarget.value)} />}
   </div>;
 
 interface FieldData {
@@ -60,32 +65,16 @@ const FIELDS: FieldData[] = [
   { label: "Verify Password", type: "password", keyName: "regConfirmation" },
 ];
 
-/** Helper function to make life easier when testing.
- * Renders a list of input boxes on the registration panel form. */
-const renderFormFields = (get: KeyGetter, set: KeySetter) => {
-  return FIELDS.map((f) => {
-    if (f.type == "password") {
-      return <div key={f.label}>
-        <label> {t(f.label)} </label>
-        <BlurablePassword
-          key={f.label}
-          onCommit={(e) => set(f.keyName, e.currentTarget.value)} />
-      </div>;
-    } else {
-      return <FormField
-        key={f.label}
-        label={f.label}
-        type={f.type}
-        value={get(f.keyName) || ""}
-        onCommit={(val) => set(f.keyName, val)} />;
-    }
-  });
-};
-
-export function MustRegister(props: CreateAccountProps) {
+export const MustRegister = (props: CreateAccountProps) => {
   return <WidgetBody>
     <form onSubmit={props.submitRegistration}>
-      {renderFormFields(props.get, props.set)}
+      {FIELDS.map(field =>
+        <FormField
+          key={field.keyName}
+          label={field.label}
+          type={field.type}
+          value={props.get(field.keyName) || ""}
+          onCommit={(val) => props.set(field.keyName, val)} />)}
       {props.children}
       <button
         title={t("Create Account")}
@@ -94,12 +83,12 @@ export function MustRegister(props: CreateAccountProps) {
       </button>
     </form>
   </WidgetBody>;
-}
+};
 
 const MISSING_EMAIL = "User tried to resend to their registration email, " +
   "but none was found.";
 
-export function sendEmail(email: string, callback: () => void) {
+export const sendEmail = (email: string, callback: () => void) => {
   const ok = () => {
     success(t(Content.VERIFICATION_EMAIL_RESENT));
     callback();
@@ -110,16 +99,16 @@ export function sendEmail(email: string, callback: () => void) {
   };
 
   return resendEmail(email).then(ok, no);
-}
+};
 
-export function DidRegister(props: CreateAccountProps) {
+export const DidRegister = (props: CreateAccountProps) => {
   const email = props.get("regEmail");
   return email
     ? <ResendPanelBody onClick={() => { sendEmail(email, props.callback); }} />
     : bail(MISSING_EMAIL);
-}
+};
 
-export function CreateAccount(props: CreateAccountProps) {
+export const CreateAccount = (props: CreateAccountProps) => {
   const RelevantForm = props.sent ? DidRegister : MustRegister;
   return <div>
     <Widget>
@@ -127,4 +116,4 @@ export function CreateAccount(props: CreateAccountProps) {
       <RelevantForm {...props} />
     </Widget>
   </div>;
-}
+};

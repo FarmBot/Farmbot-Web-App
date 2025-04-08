@@ -267,4 +267,15 @@ describe("<PlantGrid />", () => {
       .first().simulate("click");
     expect(wrapper.state().autoPreview).toBeTruthy();
   });
+
+  it("collapses", () => {
+    const p = fakeProps();
+    p.collapsible = true;
+    const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
+    expect(wrapper.state().isOpen).toBeTruthy();
+    const chevron = wrapper.find("i").first();
+    expect(chevron.hasClass("fa-chevron-up")).toBeTruthy();
+    chevron.simulate("click");
+    expect(wrapper.state().isOpen).toBeFalsy();
+  });
 });

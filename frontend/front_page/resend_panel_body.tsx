@@ -4,7 +4,7 @@ import { t } from "../i18next_wrapper";
 
 export function ResendPanelBody(props: { onClick(): void; }) {
   return <WidgetBody>
-    <form>
+    <div className={"grid"}>
       <p>
         {t("Please check your email for the verification link.")}
       </p>
@@ -17,6 +17,6 @@ export function ResendPanelBody(props: { onClick(): void; }) {
         className="fb-button green pull-right front-page-button">
         {t("Resend Verification Email")}
       </button>
-    </form>
+    </div>
   </WidgetBody>;
 }

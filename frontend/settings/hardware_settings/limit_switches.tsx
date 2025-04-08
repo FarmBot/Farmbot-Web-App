@@ -12,7 +12,7 @@ import { getDefaultFwConfigValue } from "./default_values";
 import { McuParamName } from "farmbot";
 import { some } from "lodash";
 
-export function LimitSwitches(props: LimitSwitchesProps) {
+export const LimitSwitches = (props: LimitSwitchesProps) => {
 
   const { limit_switches } = props.settingsPanelState;
   const { dispatch, sourceFwConfig, arduinoBusy, firmwareHardware } = props;
@@ -79,4 +79,4 @@ export function LimitSwitches(props: LimitSwitchesProps) {
         disabledBy={settingRequiredLabel([DeviceSetting.enableLimitSwitches])} />
     </Collapse>
   </Highlight>;
-}
+};

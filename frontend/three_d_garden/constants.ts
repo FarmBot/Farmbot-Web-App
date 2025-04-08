@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
 import { sampleSize } from "lodash";
+import { Mode } from "../farm_designer/map/interfaces";
 
 export const LIB_DIR = "/3D/lib/";
 
@@ -16,6 +17,7 @@ export const ASSETS: Record<string, Record<string, string>> = {
     concrete: "/3D/textures/concrete.avif",
     screen: "/3D/textures/screen.avif",
     bricks: "/3D/textures/bricks.avif",
+    water: "/3D/textures/water.avif",
   },
   shapes: {
     track: "/3D/shapes/track.svg",
@@ -37,10 +39,13 @@ export const ASSETS: Record<string, Record<string, string>> = {
     horizontalMotorHousing: "/3D/models/horizontal_motor_housing.glb",
     zAxisMotorMount: "/3D/models/z_axis_motor_mount.glb",
     toolbay3: "/3D/models/toolbay_3.glb",
+    toolbay1: "/3D/models/toolbay_1.glb",
     rotaryTool: "/3D/models/rotary_tool.glb",
     seeder: "/3D/models/seeder.glb",
+    weeder: "/3D/models/weeder.glb",
     seedTray: "/3D/models/seed_tray.glb",
     seedBin: "/3D/models/seed_bin.glb",
+    seedTrough: "/3D/models/seed_trough.glb",
     seedTroughAssembly: "/3D/models/seed_trough_assembly.glb",
     seedTroughHolder: "/3D/models/seed_trough_holder.glb",
     soilSensor: "/3D/models/soil_sensor.glb",
@@ -71,6 +76,16 @@ export const ASSETS: Record<string, Record<string, string>> = {
     person4Flipped: "/3D/people/person_4_flipped.avif",
   },
 };
+
+export const HOVER_OBJECT_MODES = [
+  Mode.clickToAdd,
+  Mode.createPoint,
+  Mode.createWeed,
+];
+export const DRAW_POINT_MODES = [
+  Mode.createPoint,
+  Mode.createWeed,
+];
 
 interface Plant {
   label: string;
@@ -346,11 +361,15 @@ export enum PartName {
   zAxisMotorMount = "Z-Axis_Motor_Mount",
   toolbay3 = "mesh0_mesh",
   toolbay3Logo = "mesh0_mesh_1",
+  toolbay1 = "mesh0_mesh",
+  toolbay1Logo = "mesh0_mesh_1",
   seeder = "Seeder_Brass_Insert",
+  weeder = "Weeder_Blade_(medium)",
   vacuumPump = "Lower_Vacuum_Tube",
   wateringNozzle = "M5_x_30mm_Screw",
   seedBin = "Seed_Bin",
   seedTray = "Seed_Tray",
+  seedTrough = "Seed_Trough",
   cameraMountHalf = "Camera_Mount_Half",
   pi = "Raspberry_Pi_4B",
   farmduino = "Farmduino",
@@ -364,4 +383,17 @@ export enum ElectronicsBoxMaterial {
   lid = "0.564706_0.811765_0.945098_0.000000_0.623529",
   button = "0.701961_0.701961_0.701961_0.000000_0.000000",
   led = "0.600000_0.600000_0.600000_0.000000_0.000000",
+}
+
+export enum RenderOrder {
+  default,
+  one,
+  points,
+  weedImages,
+  weedSpheres,
+  plants,
+  plantLabels,
+  pointerPlant,
+  beacons,
+  clouds,
 }

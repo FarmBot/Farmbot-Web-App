@@ -1,7 +1,6 @@
 import React from "react";
-import { get, isNumber } from "lodash";
-import { bail } from "../../util";
 import { RangeSlider } from "@blueprintjs/core";
+import { NumericKeyName, NumericValues } from ".";
 
 export interface SliderProps {
   onRelease(value: [number, number]): void;
@@ -12,37 +11,54 @@ export interface SliderProps {
   className?: string;
 }
 
-interface State {
-  lowValue: number | undefined;
-  highValue: number | undefined;
-}
+export const WeedDetectorSlider = (props: SliderProps) => {
+  const [lowValue, setLowValue] = React.useState<number | undefined>(undefined);
+  const [highValue, setHighValue] = React.useState<number | undefined>(undefined);
 
-export class WeedDetectorSlider extends React.Component<SliderProps, State> {
-  valueFor(i: (keyof State) & (keyof SliderProps)): number {
-    const z = get(this.state, i, get(this.props, i, 0));
-    return isNumber(z) ? z : bail("Something other than number");
-  }
-
-  onRelease = (i: [number, number]) => {
-    this.props.onRelease(i);
+  const onRelease = (i: [number, number]) => {
+    props.onRelease(i);
     setTimeout(() => {
-      this.setState({ highValue: undefined, lowValue: undefined });
+      setLowValue(undefined);
+      setHighValue(undefined);
     }, 500);
   };
 
-  render() {
-    const {
-      highest,
-      lowest
-    } = this.props;
+  return <RangeSlider
+    className={props.className}
+    onChange={i => {
+      setHighValue(i[1]);
+      setLowValue(i[0]);
+    }}
+    onRelease={onRelease}
+    labelStepSize={props.highest}
+    min={props.lowest}
+    max={props.highest}
+    value={[lowValue ?? props.lowValue, highValue ?? props.highValue]} />;
+};
 
-    return <RangeSlider
-      className={this.props.className}
-      onChange={(i) => this.setState({ highValue: i[1], lowValue: i[0] })}
-      onRelease={this.onRelease}
-      labelStepSize={highest}
-      min={lowest}
-      max={highest}
-      value={[this.valueFor("lowValue"), this.valueFor("highValue")]} />;
-  }
+/** Hue, Saturation, Value */
+export type HSV = "H" | "S" | "V";
+
+/** Mapping of HSV values to FBOS Env variables. */
+const CHANGE_MAP: Record<HSV, [NumericKeyName, NumericKeyName]> = {
+  H: ["H_LO", "H_HI"],
+  S: ["S_LO", "S_HI"],
+  V: ["V_LO", "V_HI"]
+};
+
+export interface OnHslChangeProps extends NumericValues {
+  onChange(key: NumericKeyName, value: number): void;
 }
+
+/** This will trigger onChange callback only when necessary, at most twice.
+ * (H|S|L)_HI and (H|S|L)_LO */
+export const onHslChange = (props: OnHslChangeProps) =>
+  (key: keyof typeof CHANGE_MAP) =>
+    (values: [number, number]) => {
+      const keys = CHANGE_MAP[key];
+      [0, 1].map(i => {
+        if (values[i] !== props[keys[i]]) {
+          props.onChange(keys[i], values[i]);
+        }
+      });
+    };

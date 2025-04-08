@@ -65,7 +65,7 @@ export class TosUpdate extends React.Component<{}, Partial<State>> {
           </div>
           <div>
             <label>{t("Password")}</label>
-            <input type="password"
+            <input type={"password"}
               onChange={this.set("password").bind(this)}>
             </input>
           </div>

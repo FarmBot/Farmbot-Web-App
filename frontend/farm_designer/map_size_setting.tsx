@@ -3,7 +3,7 @@ import {
   GetWebAppConfigValue, setWebAppConfigValue,
 } from "../config_storage/actions";
 import { t } from "../i18next_wrapper";
-import { Row } from "../ui";
+import { BlurableInput, Row } from "../ui";
 import { NumericSetting } from "../session_keys";
 import {
   NumberConfigKey as WebAppNumberConfigKey,
@@ -20,12 +20,12 @@ interface LengthInputProps {
 const LengthInput = (props: LengthInputProps) =>
   <Row className="grid-2-col map-size-grid">
     <label>{t(props.label)}</label>
-    <input
+    <BlurableInput
       type="number"
       name={props.setting}
       className={getModifiedClassName(props.setting)}
       value={"" + props.value}
-      onChange={e => props.dispatch(setWebAppConfigValue(
+      onCommit={e => props.dispatch(setWebAppConfigValue(
         props.setting, e.currentTarget.value))} />
   </Row>;
 

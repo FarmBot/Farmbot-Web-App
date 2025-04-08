@@ -6,7 +6,6 @@ import { getEggStatus, setEggStatus, EggKeys } from "./status";
 import { t } from "../../../i18next_wrapper";
 import { Row, ToggleButton } from "../../../ui";
 import { BUGS, FilePath, Bug as BugSlug } from "../../../internal_urls";
-import { showByEveryTerm } from "../../../settings";
 
 export interface BugsProps {
   mapTransformProps: MapTransformProps;
@@ -133,19 +132,28 @@ export const BugsControls = () =>
     </div>
     : <div className={"no-bugs"} />;
 
-const Setting = (title: string, key: string, value: string) => {
-  const on = localStorage.getItem(key) == value;
+interface SettingProps {
+  title: string;
+  storageKey: string;
+  value: string;
+}
+
+const Setting = (props: SettingProps) => {
+  const { title, storageKey, value } = props;
+  const on = localStorage.getItem(storageKey) == value;
   return <Row className={"setting grid-exp-1"}>
     <label>{title}</label>
     <ToggleButton
       toggleValue={on}
-      toggleAction={() => localStorage.setItem(key, on ? "" : value)} />
+      toggleAction={() => localStorage.setItem(storageKey, on ? "" : value)} />
   </Row>;
 };
 
-export const ExtraSettings = (searchTerm: string) => {
-  return showByEveryTerm("surprise", searchTerm) &&
-    <div className={"settings"}>
-      {Setting("Bug Attack", EggKeys.BRING_ON_THE_BUGS, "true")}
-    </div>;
+export const BugsSettings = () => {
+  return <div className={"settings"}>
+    <Setting
+      title={"Bug Attack"}
+      storageKey={EggKeys.BRING_ON_THE_BUGS}
+      value={"true"} />
+  </div>;
 };

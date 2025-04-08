@@ -10,10 +10,7 @@ import { Everything, MovementState, ResourceColor } from "../interfaces";
 import { TaggedGenericPointer } from "farmbot";
 import { maybeFindGenericPointerById } from "../resources/selectors";
 import { Actions } from "../constants";
-import {
-  EditPointProperties, updatePoint, lookupPointSource,
-} from "./point_edit_actions";
-import { ListItem } from "../plants/plant_panel";
+import { EditPointProperties, updatePoint } from "./point_edit_actions";
 import { isBotOnlineFromState } from "../devices/must_be_online";
 import { destroy, save } from "../api/crud";
 import { Path } from "../internal_urls";
@@ -97,37 +94,14 @@ export const RawEditPoint = (props: EditPointProps) => {
     </DesignerPanelHeader>
     <DesignerPanelContent panelName={panelName}>
       {point
-        ? <div className={"point-panel-content-wrapper grid"}>
-          <EditPointProperties point={point}
-            botOnline={props.botOnline}
-            dispatch={props.dispatch}
-            arduinoBusy={props.arduinoBusy}
-            currentBotLocation={props.currentBotLocation}
-            movementState={props.movementState}
-            defaultAxes={props.defaultAxes}
-            updatePoint={updatePoint(point, dispatch)} />
-          <ul className="meta">
-            {Object.entries(point.body.meta).map(([key, value]) => {
-              switch (key) {
-                case "color":
-                case "at_soil_level":
-                case "removal_method":
-                case "type":
-                case "gridId":
-                  return <div key={key}
-                    className={`meta-${key}-not-displayed`} />;
-                case "created_by":
-                  return <ListItem name={t("Source")} key={key}>
-                    {lookupPointSource(value)}
-                  </ListItem>;
-                default:
-                  return <ListItem key={key} name={key}>
-                    {value || ""}
-                  </ListItem>;
-              }
-            })}
-          </ul>
-        </div>
+        ? <EditPointProperties point={point}
+          botOnline={props.botOnline}
+          dispatch={props.dispatch}
+          arduinoBusy={props.arduinoBusy}
+          currentBotLocation={props.currentBotLocation}
+          movementState={props.movementState}
+          defaultAxes={props.defaultAxes}
+          updatePoint={updatePoint(point, dispatch)} />
         : <span>{t("Redirecting")}...</span>}
     </DesignerPanelContent>
   </DesignerPanel>;

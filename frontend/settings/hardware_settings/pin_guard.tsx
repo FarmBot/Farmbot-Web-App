@@ -8,7 +8,7 @@ import { Highlight } from "../maybe_highlight";
 import { Help, Row } from "../../ui";
 import { t } from "../../i18next_wrapper";
 
-export function PinGuard(props: PinGuardProps) {
+export const PinGuard = (props: PinGuardProps) => {
   const commonProps = {
     dispatch: props.dispatch,
     resources: props.resources,
@@ -67,4 +67,4 @@ export function PinGuard(props: PinGuardProps) {
         activeStateKey={"pin_guard_5_active_state"} />
     </Collapse>
   </Highlight>;
-}
+};

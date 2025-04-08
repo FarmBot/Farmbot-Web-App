@@ -66,7 +66,7 @@ describe("<DesignerRegimenList />", () => {
     p.regimens = [fakeRegimen(), fakeRegimen()];
     const wrapper = shallow(<DesignerRegimenList {...p} />);
     wrapper.find(DesignerPanelTop).simulate("click");
-    expect(addRegimen).toHaveBeenCalledWith(2);
+    expect(addRegimen).toHaveBeenCalledWith(2, {});
   });
 });
 

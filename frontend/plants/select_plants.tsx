@@ -480,7 +480,7 @@ export const SelectModeLink = (props: SelectModeLinkProps) => {
   const navigate = useNavigate();
   return <div className="select-mode">
     <button
-      className="fb-button gray"
+      className={["fb-button gray"].join(" ")}
       title={t("open point select panel")}
       onClick={() => {
         props.dispatch(setPanelOpen(true));

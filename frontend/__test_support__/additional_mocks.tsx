@@ -13,7 +13,7 @@ window.location = {
   ancestorOrigins,
   pathname: "", href: "", hash: "", search: "",
   hostname: "", origin: "", port: "", protocol: "", host: "",
-};
+} as unknown as Location & string;
 
 console.error = jest.fn(); // enzyme
 
@@ -43,9 +43,11 @@ global.mockNavigate = jest.fn(() => jest.fn());
 
 jest.mock("react-router", () => ({
   BrowserRouter: jest.fn(({ children }) => <div>{children}</div>),
+  MemoryRouter: jest.fn(({ children }) => <div>{children}</div>),
   Route: jest.fn(({ children }) => <div>{children}</div>),
   Routes: jest.fn(({ children }) => <div>{children}</div>),
   useNavigate: () => mockNavigate,
+  useLocation: () => window.location,
   Navigate: ({ to }: { to: string }) => <div>{mockNavigate(to)}</div>,
   Outlet: jest.fn(() => <div />),
 }));

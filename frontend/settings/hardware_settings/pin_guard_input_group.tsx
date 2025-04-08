@@ -9,55 +9,42 @@ import { PinNumberDropdown } from "./pin_number_dropdown";
 import { Highlight } from "../maybe_highlight";
 import { getModifiedClassName } from "./default_values";
 
-export class PinGuardMCUInputGroup
-  extends React.Component<PinGuardMCUInputGroupProps> {
+export const PinGuardMCUInputGroup = (props: PinGuardMCUInputGroupProps) => {
+  const { sourceFwConfig, dispatch, activeStateKey } = props;
+  const activeStateValue = sourceFwConfig(activeStateKey).value;
+  const inactiveState = isUndefined(activeStateValue)
+    ? undefined
+    : !activeStateValue;
 
-  Number = () =>
-    <PinNumberDropdown
-      pinNumKey={this.props.pinNumKey}
-      dispatch={this.props.dispatch}
-      resources={this.props.resources}
-      disabled={this.props.disabled}
-      sourceFwConfig={this.props.sourceFwConfig} />;
-
-  Timeout = () =>
-    <McuInputBox
-      setting={this.props.timeoutKey}
-      sourceFwConfig={this.props.sourceFwConfig}
-      firmwareHardware={this.props.firmwareHardware}
-      dispatch={this.props.dispatch}
-      disabled={this.props.disabled}
-      filter={32000} />;
-
-  State = () => {
-    const { sourceFwConfig, dispatch, activeStateKey } = this.props;
-    const activeStateValue = sourceFwConfig(activeStateKey).value;
-    const inactiveState = isUndefined(activeStateValue)
-      ? undefined
-      : !activeStateValue;
-    return <ToggleButton dispatch={dispatch}
-      customText={{ textFalse: t("off"), textTrue: t("on") }}
-      toggleValue={inactiveState}
-      dim={!sourceFwConfig(activeStateKey).consistent}
-      className={getModifiedClassName(
-        activeStateKey,
-        activeStateValue,
-        this.props.firmwareHardware)}
-      disabled={this.props.disabled}
-      toggleAction={() =>
-        dispatch(settingToggle(activeStateKey, sourceFwConfig))} />;
-  };
-
-  render() {
-    const { label } = this.props;
-    return <Highlight settingName={label}>
-      <div className={"pin-guard-input-row"}>
-        <Row className="pin-guard-grid">
-          <this.Number />
-          <this.Timeout />
-          <this.State />
-        </Row>
-      </div>
-    </Highlight>;
-  }
-}
+  const { label } = props;
+  return <Highlight settingName={label}>
+    <div className={"pin-guard-input-row"}>
+      <Row className="pin-guard-grid">
+        <PinNumberDropdown
+          pinNumKey={props.pinNumKey}
+          dispatch={props.dispatch}
+          resources={props.resources}
+          disabled={props.disabled}
+          sourceFwConfig={props.sourceFwConfig} />
+        <McuInputBox
+          setting={props.timeoutKey}
+          sourceFwConfig={props.sourceFwConfig}
+          firmwareHardware={props.firmwareHardware}
+          dispatch={props.dispatch}
+          disabled={props.disabled}
+          filter={32000} />
+        <ToggleButton dispatch={dispatch}
+          customText={{ textFalse: t("off"), textTrue: t("on") }}
+          toggleValue={inactiveState}
+          dim={!sourceFwConfig(activeStateKey).consistent}
+          className={getModifiedClassName(
+            activeStateKey,
+            activeStateValue,
+            props.firmwareHardware)}
+          disabled={props.disabled}
+          toggleAction={() =>
+            dispatch(settingToggle(activeStateKey, sourceFwConfig))} />
+      </Row>
+    </div>
+  </Highlight>;
+};

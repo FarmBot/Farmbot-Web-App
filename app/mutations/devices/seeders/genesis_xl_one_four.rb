@@ -16,7 +16,7 @@ module Devices
       end
 
       def settings_default_map_size_y
-        device.web_app_config.update!(map_size_y: 2_900)
+        device.web_app_config.update!(map_size_y: 2_730)
       end
     end
   end

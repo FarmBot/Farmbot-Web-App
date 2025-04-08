@@ -35,13 +35,13 @@ describe("submitOwnershipChange()", () => {
   it("pops a toast when things go wrong", async () => {
     mockPost = Promise.reject("NOPE");
     await submitOwnershipChange({
-      email: "email", password: "password", open: true
+      email: "email", password: "password",
     });
     expect(error).toHaveBeenCalledWith("Bad username or password");
   });
 
   it("pops a toast when things go wrong: missing fields", () => {
-    submitOwnershipChange({ email: "", password: "", open: true });
+    submitOwnershipChange({ email: "", password: "" });
     expect(error).toHaveBeenCalledWith("Bad username or password");
   });
 });

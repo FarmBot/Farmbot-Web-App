@@ -94,16 +94,6 @@ describe("<DesignerSettings />", () => {
     expect(maybeOpenPanel).toHaveBeenCalled();
   });
 
-  it("unmounts", () => {
-    const p = fakeProps();
-    const wrapper = mount(<DesignerSettings {...p} />);
-    wrapper.unmount();
-    expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.SET_SETTINGS_SEARCH_TERM,
-      payload: "",
-    });
-  });
-
   it("sets search term", () => {
     location.search = "?search=search";
     const p = fakeProps();
@@ -118,9 +108,7 @@ describe("<DesignerSettings />", () => {
     location.search = "?search=search";
     location.pathname = "path";
     const p = fakeProps();
-    const wrapper = shallow<DesignerSettings>(<DesignerSettings {...p} />);
-    const navigate = jest.fn();
-    wrapper.instance().navigate = navigate;
+    const wrapper = shallow(<DesignerSettings {...p} />);
     wrapper.find(SearchField).simulate("change", "setting");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.BULK_TOGGLE_SETTINGS_PANEL,
@@ -130,7 +118,7 @@ describe("<DesignerSettings />", () => {
       type: Actions.SET_SETTINGS_SEARCH_TERM,
       payload: "setting",
     });
-    expect(navigate).toHaveBeenCalledWith("path");
+    expect(mockNavigate).toHaveBeenCalledWith("path");
   });
 
   it("fetches firmware_hardware", () => {
@@ -237,15 +225,22 @@ describe("<DesignerSettings />", () => {
     expect(wrapper.text().toLowerCase()).toContain("unstable fe");
   });
 
+  it("renders surprise", () => {
+    location.search = "?only=surprise";
+    const p = fakeProps();
+    p.searchTerm = "surprise";
+    const wrapper = mount(<DesignerSettings {...p} />);
+    expect(wrapper.text().toLowerCase()).toContain("attack");
+  });
+
   it("cancels setting isolation", () => {
     location.search = "?only=setting";
-    location.assign = jest.fn();
     location.pathname = "path";
     const p = fakeProps();
     p.searchTerm = "";
     const wrapper = mount(<DesignerSettings {...p} />);
     clickButton(wrapper, 1, "cancel");
-    expect(location.assign).toHaveBeenCalledWith("path");
+    expect(mockNavigate).toHaveBeenCalledWith("path");
   });
 
   it("renders change ownership form", () => {

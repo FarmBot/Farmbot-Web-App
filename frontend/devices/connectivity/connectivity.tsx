@@ -25,6 +25,7 @@ import { FbosMetricHistoryTable } from "./fbos_metric_history_table";
 import { Actions } from "../../constants";
 import { forceOnline } from "../must_be_online";
 import { isMobile } from "../../screen_size";
+import { NavigationContext } from "../../routes_helpers";
 
 export interface ConnectivityProps {
   bot: BotState;
@@ -65,6 +66,10 @@ export class Connectivity
       type: Actions.SET_METRIC_PANEL_OPTION,
       payload: key,
     });
+
+  static contextType = NavigationContext;
+  context!: React.ContextType<typeof NavigationContext>;
+  navigate = this.context;
 
   Realtime = () => {
     const { informational_settings } = this.props.bot.hardware;
@@ -109,7 +114,7 @@ export class Connectivity
                 : undefined}
               hover={this.hover}
               hoveredConnection={this.state.hoveredConnection} />)}
-        <Diagnosis statusFlags={this.props.flags} />
+        <Diagnosis statusFlags={this.props.flags} dispatch={this.props.dispatch} />
         {this.props.flags.userAPI && this.props.flags.userMQTT
           && this.props.flags.botAPI && this.props.flags.botMQTT
           && this.props.apiFirmwareValue
@@ -157,7 +162,11 @@ export class Connectivity
         <PortRow port={"80 - HTTP"} status={flags["botAPI"]} />
         <PortRow port={"443 - HTTPS"} status={flags["botAPI"]} />
         <PortRow port={"8883 - MQTT"} status={flags["botMQTT"]} />
-        <a onClick={docLinkClick("for-it-security-professionals")}>
+        <a onClick={docLinkClick({
+          slug: "for-it-security-professionals",
+          navigate: this.navigate,
+          dispatch: this.props.dispatch,
+        })}>
           <i className="fa fa-external-link" />
           {t("Learn more about ports")}
         </a>

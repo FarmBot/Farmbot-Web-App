@@ -86,7 +86,7 @@ describe("initPlantGrid", () => {
     });
     expect(result.length).toEqual(expectedGrid.length);
     expect(result[0].pointer_type).toEqual("GenericPointer");
-    expect(result[0].radius).toEqual(25);
+    expect(result[0].radius).toEqual(0);
   });
 });
 

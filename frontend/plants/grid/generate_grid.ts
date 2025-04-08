@@ -70,7 +70,7 @@ const createPointGridMapper = (
     const [x, y] = vec;
     return {
       name: pointName,
-      radius: radius || 25,
+      radius: radius || 0,
       z: z || 0,
       x,
       y,

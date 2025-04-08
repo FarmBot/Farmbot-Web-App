@@ -7,7 +7,7 @@ import { Actions, DeviceSetting } from "../constants";
 import { trim, some } from "lodash";
 import { Path } from "../internal_urls";
 import { PhotosPanelState } from "../photos/interfaces";
-import { NavigationContext } from "../routes_helpers";
+import { useLocation, useNavigate } from "react-router";
 
 const FARMBOT_PANEL = [
   DeviceSetting.farmbotSettings,
@@ -396,12 +396,6 @@ const compareValues = (settingName: DeviceSetting) =>
     .concat(stripUnits(settingName))
     .map(s => urlFriendly(s).toLowerCase());
 
-/** Retrieve a highlight search term. */
-export const getHighlightName = () => getUrlQuery("highlight");
-
-/** Only open panel and highlight once per app load. Exported for tests. */
-export const highlight = { opened: false, highlighted: false };
-
 /** Open a panel if a setting in that panel is highlighted. */
 export const maybeOpenPanel = (panelKey: "settings" | "photos" = "settings") =>
   (dispatch: Function) => {
@@ -409,9 +403,9 @@ export const maybeOpenPanel = (panelKey: "settings" | "photos" = "settings") =>
       dispatch(bulkToggleControlPanel(true));
       return;
     }
-    if (highlight.opened) { return; }
-    const urlFriendlySettingName = urlFriendly(getHighlightName() || "")
-      .toLowerCase();
+    const highlightName =
+      new URLSearchParams(window.location.search).get("highlight");
+    const urlFriendlySettingName = urlFriendly(highlightName || "").toLowerCase();
     if (!urlFriendlySettingName) { return; }
     if (panelKey == "settings") {
       const panel = URL_FRIENDLY_LOOKUP[urlFriendlySettingName];
@@ -423,18 +417,7 @@ export const maybeOpenPanel = (panelKey: "settings" | "photos" = "settings") =>
       URL_FRIENDLY_LOOKUP_PHOTOS[urlFriendlySettingName].map(panel =>
         dispatch({ type: Actions.TOGGLE_PHOTOS_PANEL_OPTION, payload: panel }));
     }
-    highlight.opened = true;
   };
-
-/** Highlight a setting if provided as a search term. */
-export const maybeHighlight = (settingName: DeviceSetting) => {
-  const item = getHighlightName();
-  if (highlight.highlighted || !item) { return ""; }
-  const isCurrentSetting = compareValues(settingName).includes(item);
-  if (!isCurrentSetting) { return ""; }
-  highlight.highlighted = true;
-  return "highlight";
-};
 
 export interface HighlightProps {
   settingName: DeviceSetting;
@@ -445,96 +428,98 @@ export interface HighlightProps {
   pathPrefix?(path?: string): string;
 }
 
-interface HighlightState {
-  className: string;
-  hovered: boolean;
-}
-
 /** Wrap highlight-able settings. */
-export class Highlight extends React.Component<HighlightProps, HighlightState> {
-  state: HighlightState = {
-    className: maybeHighlight(this.props.settingName),
-    hovered: false,
-  };
+export const Highlight = (props: HighlightProps) => {
+  const { settingName } = props;
 
-  componentDidMount = () => {
-    if (this.state.className == "highlight") {
-      /** Slowly fades highlight. */
-      this.setState({ className: "unhighlight" });
+  const [hovered, setHovered] = React.useState(false);
+  const [highlightClass, setHighlightClass] = React.useState("");
+  const [highlightTimestamp, setHighlightTimestamp] = React.useState(0);
+
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const highlightName = new URLSearchParams(location.search).get("highlight");
+  const highlightMatch = highlightName &&
+    compareValues(settingName).includes(highlightName.toLowerCase());
+
+  React.useEffect(() => {
+    if (highlightMatch) {
+      setHighlightTimestamp(Date.now());
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location]);
 
-  get searchTerm() {
-    const { app } = store.getState();
-    return app.settingsSearchTerm;
-  }
+  React.useEffect(() => {
+    if (!highlightMatch) {
+      setHighlightClass("");
+      return;
+    }
+    setHighlightClass("highlight");
+    setTimeout(() => setHighlightClass("unhighlight"), 200);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [highlightTimestamp]);
 
-  toggleHover = (hovered: boolean) => () => this.setState({ hovered });
+  const searchTerm = store.getState().app.settingsSearchTerm;
 
-  get isSectionHeader() { return this.props.className?.includes("section"); }
+  const isSectionHeader = props.className?.includes("section");
 
-  inContent = (term: string, urlCompare = false) => {
-    const content = CONTENT_LOOKUP[this.props.settingName] || [];
+  const inContent = (term: string, urlCompare = false) => {
+    const content = CONTENT_LOOKUP[settingName] || [];
     return some(content.map(s => {
       const compareTerm = urlCompare ? compareValues(s)[0] : s;
       return compareTerm.toLowerCase().includes(term.toLowerCase());
     }));
   };
 
-  get searchMatch() {
-    return this.searchTerm &&
+  const searchMatch = () => {
+    return searchTerm &&
       // if searching, look for setting name match
-      (some(ALTERNATE_NAMES[this.props.settingName].map(s => s.toLowerCase()
-        .includes(this.searchTerm.toLowerCase())))
+      (some(ALTERNATE_NAMES[settingName].map(s => s.toLowerCase()
+        .includes(searchTerm.toLowerCase())))
         // if match not found, look for section content match
-        || (this.isSectionHeader && this.inContent(this.searchTerm)));
-  }
+        || (isSectionHeader && inContent(searchTerm)));
+  };
 
-  get hidden() {
+  const hidden = () => {
     const isolateName = getUrlQuery("only");
     if (isolateName) {
-      const inSection = this.isSectionHeader && this.inContent(isolateName, true);
+      const inSection = isSectionHeader && inContent(isolateName, true);
       const settingMatch =
-        compareValues(this.props.settingName).includes(isolateName);
+        compareValues(settingName).includes(isolateName);
       return !(inSection || settingMatch);
     }
-    const highlightName = getHighlightName();
-    if (!highlightName) { return !!this.props.hidden; }
-    const highlightMatch =
-      compareValues(this.props.settingName).includes(highlightName);
-    const highlightInSection = this.isSectionHeader
-      && this.inContent(highlightName, true) || highlightMatch;
+    if (!highlightName) { return !!props.hidden; }
+    const highlightInSection = isSectionHeader
+      && inContent(highlightName, true) || highlightMatch;
     const notHighlighted =
-      SETTING_PANEL_LOOKUP[this.props.settingName] == "other_settings" &&
+      SETTING_PANEL_LOOKUP[settingName] == "other_settings" &&
       !highlightMatch;
-    return this.props.hidden ? !highlightInSection : notHighlighted;
-  }
+    return props.hidden ? !highlightInSection : notHighlighted;
+  };
 
-  static contextType = NavigationContext;
-  context!: React.ContextType<typeof NavigationContext>;
-  navigate = this.context;
-
-  render() {
-    const hoverClass = this.state.hovered ? "hovered" : "";
-    return <div
-      className={[
-        "setting",
-        this.props.className,
-        this.state.className,
-      ].join(" ")}
-      onMouseEnter={this.toggleHover(true)}
-      onMouseLeave={this.toggleHover(false)}
-      hidden={this.searchTerm ? !this.searchMatch : this.hidden}>
-      {this.props.settingName &&
-        <i className={`fa fa-anchor ${this.props.className} ${hoverClass}`}
-          onClick={() => {
-            this.navigate(
-              linkToSetting(this.props.settingName, this.props.pathPrefix));
-          }} />}
-      {this.props.children}
-    </div>;
-  }
-}
+  return <div
+    className={[
+      "setting",
+      props.className,
+      highlightClass,
+    ].join(" ")}
+    onMouseEnter={() => setHovered(true)}
+    onMouseLeave={() => setHovered(false)}
+    hidden={searchTerm ? !searchMatch() : hidden()}>
+    {settingName &&
+      <i
+        className={[
+          "fa fa-anchor",
+          props.className,
+          hovered ? "hovered" : "",
+        ].join(" ")}
+        onClick={() => {
+          navigate(linkToSetting(settingName, props.pathPrefix));
+        }} />}
+    {props.children}
+  </div>;
+};
 
 export const linkToSetting =
   (settingName: DeviceSetting, pathPrefix = Path.settings) =>

@@ -56,34 +56,28 @@ export function mapStateToProps(p: Everything): BootSequenceSelectorProps {
   }
 }
 
-export class RawBootSequenceSelector
-  extends React.Component<BootSequenceSelectorProps, {}> {
-  onChange = (_selected: DropDownItem) => {
+export const RawBootSequenceSelector = (props: BootSequenceSelectorProps) => {
+  const onChange = (_selected: DropDownItem) => {
     const payload = { boot_sequence_id: _selected.value as number | undefined };
-    this.props.dispatch(edit(this.props.config, payload));
-    this.props.dispatch(save(this.props.config.uuid));
+    props.dispatch(edit(props.config, payload));
+    props.dispatch(save(props.config.uuid));
   };
 
-  SelectionInput = () =>
-    <FBSelect
-      extraClass={getModifiedClassName("boot_sequence_id",
-        this.props.selectedItem?.value, this.props.firmwareHardware)}
-      allowEmpty={true}
-      list={this.props.list}
-      selectedItem={this.props.selectedItem}
-      onChange={this.onChange} />;
-
-  render() {
-    return <Highlight settingName={DeviceSetting.bootSequence}>
-      <Row className="grid-2-col">
-        <label>
-          {t("BOOT SEQUENCE")}
-        </label>
-        <this.SelectionInput />
-      </Row>
-    </Highlight>;
-  }
-}
+  return <Highlight settingName={DeviceSetting.bootSequence}>
+    <Row className="grid-2-col">
+      <label>
+        {t("BOOT SEQUENCE")}
+      </label>
+      <FBSelect
+        extraClass={getModifiedClassName("boot_sequence_id",
+          props.selectedItem?.value, props.firmwareHardware)}
+        allowEmpty={true}
+        list={props.list}
+        selectedItem={props.selectedItem}
+        onChange={onChange} />
+    </Row>
+  </Highlight>;
+};
 
 export const BootSequenceSelector =
   connect(mapStateToProps)(RawBootSequenceSelector);

@@ -49,6 +49,7 @@ export interface Config {
   config: boolean;
   zoom: boolean;
   pan: boolean;
+  rotate: boolean;
   bounds: boolean;
   threeAxes: boolean;
   xyDimensions: boolean;
@@ -69,6 +70,8 @@ export interface Config {
   animate: boolean;
   distanceIndicator: string;
   kitVersion: string;
+  negativeZ: boolean;
+  waterFlow: boolean;
 }
 
 export const INITIAL: Config = {
@@ -89,7 +92,7 @@ export const INITIAL: Config = {
   columnLength: 500,
   zAxisLength: 1000,
   bedXOffset: 140,
-  bedYOffset: 60,
+  bedYOffset: 20,
   bedZOffset: 0,
   zGantryOffset: 140,
   bedWidthOuter: 1360,
@@ -122,6 +125,7 @@ export const INITIAL: Config = {
   config: false,
   zoom: false,
   pan: false,
+  rotate: true,
   bounds: false,
   threeAxes: false,
   xyDimensions: false,
@@ -142,6 +146,8 @@ export const INITIAL: Config = {
   animate: true,
   distanceIndicator: "",
   kitVersion: "v1.7",
+  negativeZ: false,
+  waterFlow: false,
 };
 
 export const STRING_KEYS = [
@@ -160,10 +166,11 @@ export const NUMBER_KEYS = [
 export const BOOLEAN_KEYS = [
   "legsFlush", "labels", "labelsOnHover", "ground", "grid", "axes", "trail",
   "tracks", "clouds", "perspective", "bot", "laser", "cableCarriers",
-  "viewCube", "stats", "config", "zoom", "pan", "bounds", "threeAxes",
+  "viewCube", "stats", "config", "zoom", "pan", "rotate", "bounds", "threeAxes",
   "xyDimensions", "zDimension", "promoInfo", "settingsBar", "zoomBeacons",
   "solar", "utilitiesPost", "packaging", "lab", "people", "lowDetail",
-  "eventDebug", "cableDebug", "zoomBeaconDebug", "animate",
+  "eventDebug", "cableDebug", "zoomBeaconDebug", "animate", "negativeZ",
+  "waterFlow",
 ];
 
 export const PRESETS: Record<string, Config> = {
@@ -200,7 +207,7 @@ export const PRESETS: Record<string, Config> = {
     columnLength: 500,
     zAxisLength: 1000,
     bedXOffset: 140,
-    bedYOffset: 60,
+    bedYOffset: 20,
     zGantryOffset: 140,
     bedWidthOuter: 1360,
     bedLengthOuter: 3000,
@@ -221,7 +228,7 @@ export const PRESETS: Record<string, Config> = {
     columnLength: 500,
     zAxisLength: 1000,
     bedXOffset: 140,
-    bedYOffset: 60,
+    bedYOffset: 20,
     zGantryOffset: 140,
     bedWidthOuter: 2860,
     bedLengthOuter: 6000,
@@ -263,6 +270,7 @@ export const PRESETS: Record<string, Config> = {
     config: false,
     zoom: true,
     pan: true,
+    rotate: true,
     bounds: false,
     threeAxes: false,
     xyDimensions: false,
@@ -315,6 +323,7 @@ export const PRESETS: Record<string, Config> = {
     config: true,
     zoom: true,
     pan: true,
+    rotate: true,
     bounds: true,
     threeAxes: true,
     xyDimensions: true,
@@ -334,6 +343,7 @@ export const PRESETS: Record<string, Config> = {
     zoomBeaconDebug: true,
     animate: true,
     distanceIndicator: "",
+    waterFlow: true,
   },
 };
 
@@ -351,9 +361,10 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "trail", "clouds", "sunInclination", "sunAzimuth", "perspective", "bot", "laser",
   "tool", "cableCarriers", "viewCube", "stats", "config", "zoom", "bounds",
   "threeAxes", "xyDimensions", "zDimension", "labelsOnHover", "promoInfo",
-  "settingsBar", "zoomBeacons", "pan", "solar", "utilitiesPost", "packaging", "lab",
+  "settingsBar", "zoomBeacons", "pan", "rotate",
+  "solar", "utilitiesPost", "packaging", "lab",
   "people", "scene", "lowDetail", "eventDebug", "cableDebug", "zoomBeaconDebug",
-  "animate", "distanceIndicator", "kitVersion",
+  "animate", "distanceIndicator", "kitVersion", "negativeZ", "waterFlow",
 ];
 
 export const modifyConfig = (config: Config, update: Partial<Config>) => {

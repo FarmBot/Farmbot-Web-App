@@ -10,6 +10,7 @@ import { ToolTips } from "../../constants";
 import { LuaTextArea } from "./tile_lua_support";
 import { VariablesPart } from "./tile_assertion/variables_part";
 import { isMobile } from "../../screen_size";
+import { useNavigate } from "react-router";
 
 export const TileAssertion = (props: StepParams<Assertion>) => {
   const [monaco, setMonaco] = React.useState(!isMobile());
@@ -20,11 +21,16 @@ export const TileAssertion = (props: StepParams<Assertion>) => {
     [StateToggleKey.luaExpanded]:
       { enabled: expanded, toggle: () => setExpanded(!expanded) },
   };
+  const navigate = useNavigate();
   return <StepWrapper {...props}
     className={"assertion-step"}
     helpText={ToolTips.ASSERTION}
     links={[
-      <a key={"lua"} onClick={devDocLinkClick("lua")}>
+      <a key={"lua"} onClick={devDocLinkClick({
+        slug: "lua",
+        navigate,
+        dispatch: props.dispatch,
+      })}>
         {" " + t("Documentation")}
         <i className="fa fa-external-link" />
       </a>]}

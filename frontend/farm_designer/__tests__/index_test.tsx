@@ -88,7 +88,7 @@ describe("<FarmDesigner />", () => {
     expect(legendProps.imageAgeInfo).toEqual({ newestDate: "", toOldest: 1 });
     const gardenMapProps = wrapper.find(GardenMap).props();
     expect(gardenMapProps.mapTransformProps.gridSize.x).toEqual(2900);
-    expect(gardenMapProps.mapTransformProps.gridSize.y).toEqual(1400);
+    expect(gardenMapProps.mapTransformProps.gridSize.y).toEqual(1230);
   });
 
   it("loads image info", () => {
@@ -199,7 +199,7 @@ describe("<FarmDesigner />", () => {
 describe("getDefaultAxisLength()", () => {
   it("returns axis lengths", () => {
     const axes = getDefaultAxisLength(() => false);
-    expect(axes).toEqual({ x: 2900, y: 1400, z: 400 });
+    expect(axes).toEqual({ x: 2900, y: 1230, z: 400 });
   });
 });
 
@@ -212,7 +212,7 @@ describe("getGridSize()", () => {
         y: { value: 200, isDefault: false },
         z: { value: 400, isDefault: true },
       });
-    expect(grid).toEqual({ x: 2900, y: 1400 });
+    expect(grid).toEqual({ x: 2900, y: 1230 });
   });
 
   it("returns custom grid size", () => {

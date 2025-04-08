@@ -8,7 +8,7 @@ import { Highlight } from "../maybe_highlight";
 import { getModifiedClassName } from "./default_values";
 import { validFirmwareHardware } from "../firmware/firmware_hardware_support";
 
-export function AutoUpdateRow(props: AutoUpdateRowProps) {
+export const AutoUpdateRow = (props: AutoUpdateRowProps) => {
   const osAutoUpdate = props.sourceFbosConfig("os_auto_update");
   const firmwareHardware = validFirmwareHardware(
     props.sourceFbosConfig("firmware_hardware").value);
@@ -30,4 +30,4 @@ export function AutoUpdateRow(props: AutoUpdateRowProps) {
         }))} />
     </Row>
   </Highlight>;
-}
+};
