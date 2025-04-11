@@ -10,21 +10,17 @@ module Api
       response.headers['Cache-Control'] = 'no-cache'
       response.stream.write '['
 
-      sequences = Sequence.where(device: current_device)
-                   .includes(:sequence_publication, :sequence_version)
-
-      sequences.each_with_index do |s, index|
-        # Load the sequence with all needed associations
-        full_sequence = Sequence.with_usage_reports.find(s.id)
-        seq_json = Sequences::Show.run!(sequence: full_sequence).to_json
-
+      Sequence.where(device: current_device)
+              .includes(:sequence_publication, :sequence_version)
+              .each_with_index do |s, index|
+        # Load the sequence with all needed associations and convert to JSON
+        seq_json = Sequences::Show.run!(sequence: Sequence.with_usage_reports.find(s.id)).to_json
         # Append a comma for all but the first element to maintain valid JSON syntax
-        response.stream.write ',' unless index == 0
+        response.stream.write ',' unless index.zero?
         response.stream.write seq_json
       end
 
       response.stream.write ']'
-
     rescue => e
       Rails.logger.error("Error in streaming index: #{e.message}")
       raise e
