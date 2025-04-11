@@ -37,6 +37,11 @@ EXCLUDE = [
     reason: "v9 fiber and v10 drei require react",
     version: "19",
   },
+  {
+    packages: ["three"],
+    reason: "not working:",
+    version: "0.175.0",
+  },
 ]
 
 # Load package.json as JSON.
