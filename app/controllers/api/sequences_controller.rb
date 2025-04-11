@@ -1,12 +1,46 @@
 module Api
   class SequencesController < Api::AbstractController
+    include ActionController::Live  # Enable live streaming for reduced memory footprint
+
     before_action :clean_expired_farm_events, only: [:destroy]
 
     def index
-      render json: sequences
-               .includes(:sequence_publication, :sequence_version)
-               .to_a
-               .map { |s| Sequences::Show.run!(sequence: s) }
+      # Log memory usage at the start of the index action
+      start_memory = current_memory_usage_mb
+      Rails.logger.info("Index action started. Memory usage: #{start_memory} MB")
+
+      response.headers['Content-Type'] = 'application/json'
+      response.headers['Cache-Control'] = 'no-cache'
+      # Begin the JSON array
+      response.stream.write '['
+
+      first = true
+      # Use a smaller batch size to reduce memory usage
+      Sequence.where(device: current_device)
+              .includes(:sequence_publication, :sequence_version)
+              .find_each(batch_size: 15) do |s|
+        # Load the sequence with all needed associations
+        full_sequence = Sequence.with_usage_reports.find(s.id)
+        seq_json = Sequences::Show.run!(sequence: full_sequence).to_json
+
+        # Append a comma for all but the first element to maintain valid JSON syntax
+        response.stream.write ',' unless first
+        first = false
+        response.stream.write seq_json
+      end
+
+      # End the JSON array
+      response.stream.write ']'
+
+      # Log memory usage after streaming
+      end_memory = current_memory_usage_mb
+      Rails.logger.info("Index action completed. Memory usage: #{end_memory} MB. " \
+                        "Change: #{(end_memory - start_memory).round(2)} MB.")
+    rescue => e
+      Rails.logger.error("Error in streaming index: #{e.message}")
+      raise e
+    ensure
+      response.stream.close
     end
 
     def show
@@ -58,6 +92,11 @@ module Api
 
     private
 
+    # Helper method to get current memory usage in MB
+    def current_memory_usage_mb
+      (`ps -o rss= -p #{Process.pid}`.to_i / 1024.0).round(2)
+    end
+
     def sequence_version
       @sequence_version ||= SequenceVersion.find(params[:sequence_version_id])
     end
@@ -66,14 +105,9 @@ module Api
       @sequence_params ||= raw_json[:sequence] || raw_json || {}
     end
 
-    def sequences
-      @sequences ||= Sequence
-        .with_usage_reports
-        .where(device: current_device)
-    end
-
+    # Retrieve a single sequence record directly associated with the current device
     def sequence
-      @sequence ||= sequences.find(params[:id])
+      @sequence ||= Sequence.with_usage_reports.find_by!(id: params[:id], device: current_device)
     end
   end
 end
