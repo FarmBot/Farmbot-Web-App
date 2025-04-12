@@ -21,9 +21,6 @@ module Api
       end
 
       response.stream.write ']'
-    rescue => e
-      Rails.logger.error("Error in streaming index: #{e.message}")
-      raise e
     ensure
       response.stream.close
     end
