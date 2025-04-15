@@ -9,9 +9,10 @@ import { isString } from "lodash";
 import { Actions, Content, DeviceSetting } from "../../constants";
 import { t } from "../../i18next_wrapper";
 import { API } from "../../api";
-import { highlight, linkToSetting } from "../maybe_highlight";
+import { linkToSetting } from "../maybe_highlight";
 import { isJobDone } from "../../devices/jobs";
 import { NavigateFunction, useNavigate } from "react-router";
+import { setPanelOpen } from "../../farm_designer/panel_header";
 
 /**
  * FBOS versions older than this can't connect to the available OTA system
@@ -132,9 +133,9 @@ export const OsUpdateButton = (props: OsUpdateButtonProps) => {
 };
 
 const onTooOld = (dispatch: Function, navigate: NavigateFunction) => () => {
-  highlight.highlighted = false;
   dispatch(bulkToggleControlPanel(false));
   dispatch(toggleControlPanel("power_and_reset"));
+  dispatch(setPanelOpen(true));
   navigate(linkToSetting(DeviceSetting.hardReset));
 };
 

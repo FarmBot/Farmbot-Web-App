@@ -1,11 +1,28 @@
 module Api
   class SequencesController < Api::AbstractController
+    include ActionController::Live
+
     before_action :clean_expired_farm_events, only: [:destroy]
 
     def index
-      render json: sequences
-               .to_a
-               .map { |s| Sequences::Show.run!(sequence: s) }
+      # Stream to reduce memory usage
+      response.headers['Content-Type'] = 'application/json'
+      response.headers['Cache-Control'] = 'no-cache'
+      response.stream.write '['
+
+      Sequence.where(device: current_device)
+              .includes(:sequence_publication, :sequence_version)
+              .each_with_index do |s, index|
+        # Load the sequence with all needed associations and convert to JSON
+        seq_json = Sequences::Show.run!(sequence: Sequence.with_usage_reports.find(s.id)).to_json
+        # Append a comma for all but the first element to maintain valid JSON syntax
+        response.stream.write ',' unless index.zero?
+        response.stream.write seq_json
+      end
+
+      response.stream.write ']'
+    ensure
+      response.stream.close
     end
 
     def show
@@ -65,12 +82,9 @@ module Api
       @sequence_params ||= raw_json[:sequence] || raw_json || {}
     end
 
-    def sequences
-      @sequences ||= Sequence.with_usage_reports.where(device: current_device)
-    end
-
+    # Retrieve a single sequence record directly associated with the current device
     def sequence
-      @sequence ||= sequences.find(params[:id])
+      @sequence ||= Sequence.with_usage_reports.find_by!(id: params[:id], device: current_device)
     end
   end
 end

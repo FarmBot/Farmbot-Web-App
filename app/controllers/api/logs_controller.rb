@@ -14,19 +14,27 @@ module Api
     def search
       conf = current_device.web_app_config
       mt = CeleryScriptSettingsBag::ALLOWED_MESSAGE_TYPES
-      query = mt
-        .map { |x| "(type = '#{x}' AND verbosity <= ?)" }
-        .join(" OR ")
-      conditions = mt.map { |x| "#{x}_log" }.map { |x| conf.send(x) }
-      args_ = conditions.unshift(query)
       limit = current_device.max_log_count || Device::DEFAULT_MAX_LOGS
 
-      render json: current_device
-               .logs
-               .order(created_at: :desc)
-               .where(*args_)
-               .limit(limit)
-               .where(search_params)
+      # Build conditions once
+      type_conditions = mt.map.with_index do |type, i|
+        verbosity = conf.send("#{type}_log")
+        ["(type = ? AND verbosity <= ?)", type, verbosity]
+      end
+
+      # Combine conditions efficiently
+      where_clause = type_conditions.map(&:first).join(" OR ")
+      where_values = type_conditions.flat_map { |c| c[1..-1] }
+
+      # Single query with all conditions
+      logs = current_device
+        .logs
+        .order(created_at: :desc)
+        .limit(limit)
+        .where(where_clause, *where_values)
+        .where(search_params)
+
+      render json: logs
     end
 
     def create

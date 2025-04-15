@@ -37,17 +37,24 @@ describe("AdditionalMenu", () => {
   });
 
   it("closes the account menu upon nav", () => {
-    const close = jest.fn();
     const p = fakeProps();
-    p.close = x => () => close(x);
     const wrapper = shallow(<AdditionalMenu {...p} />);
     wrapper.find("Link").first().simulate("click");
-    expect(close).toHaveBeenCalledWith("accountMenuOpen");
+    expect(p.close).toHaveBeenCalled();
+  });
+
+  it("navigates to setup page", () => {
+    const p = fakeProps();
+    const wrapper = shallow(<AdditionalMenu {...p} />);
+    wrapper.find("Link").at(1).simulate("click");
+    expect(p.close).toHaveBeenCalled();
   });
 
   it("navigates to help page", () => {
-    const wrapper = shallow(<AdditionalMenu {...fakeProps()} />);
+    const p = fakeProps();
+    const wrapper = shallow(<AdditionalMenu {...p} />);
     wrapper.find("Link").at(2).simulate("click");
+    expect(p.close).toHaveBeenCalled();
   });
 
   it("toggles dark mode", () => {

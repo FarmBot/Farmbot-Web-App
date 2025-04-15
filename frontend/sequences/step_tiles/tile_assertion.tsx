@@ -26,7 +26,11 @@ export const TileAssertion = (props: StepParams<Assertion>) => {
     className={"assertion-step"}
     helpText={ToolTips.ASSERTION}
     links={[
-      <a key={"lua"} onClick={devDocLinkClick("lua", navigate)}>
+      <a key={"lua"} onClick={devDocLinkClick({
+        slug: "lua",
+        navigate,
+        dispatch: props.dispatch,
+      })}>
         {" " + t("Documentation")}
         <i className="fa fa-external-link" />
       </a>]}

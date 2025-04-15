@@ -57,160 +57,162 @@ const NewPhotoButtons = (props: NewPhotoButtonsProps) => {
   </div>;
 };
 
-export class RawDesignerPhotos
-  extends React.Component<DesignerPhotosProps> {
+export const RawDesignerPhotos = (props: DesignerPhotosProps) => {
+  React.useEffect(() => {
+    props.dispatch(maybeOpenPanel("photos"));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  componentDidMount = () => this.props.dispatch(maybeOpenPanel("photos"));
+  const toggle = (key: keyof PhotosPanelState) => () =>
+    props.dispatch({ type: Actions.TOGGLE_PHOTOS_PANEL_OPTION, payload: key });
 
-  toggle = (key: keyof PhotosPanelState) => () =>
-    this.props.dispatch({ type: Actions.TOGGLE_PHOTOS_PANEL_OPTION, payload: key });
-
-  get imageShowFlags(): ImageShowFlags {
-    return getImageShownStatusFlags({
-      getConfigValue: this.props.getConfigValue,
-      env: this.props.env,
-      image: this.props.currentImage,
-      designer: this.props.designer,
-      size: this.props.currentImageSize,
+  const imageShowFlags: ImageShowFlags =
+    getImageShownStatusFlags({
+      getConfigValue: props.getConfigValue,
+      env: props.env,
+      image: props.currentImage,
+      designer: props.designer,
+      size: props.currentImageSize,
     });
-  }
 
-  render() {
-    const wDEnvGet = (key: WDENVKey) => envGet(key, this.props.wDEnv);
-    const { syncStatus, botToMqttStatus, photosPanelState } = this.props;
-    const botOnline = isBotOnline(syncStatus, botToMqttStatus);
-    const common = {
-      syncStatus,
-      botToMqttStatus,
-      timeSettings: this.props.timeSettings,
-      dispatch: this.props.dispatch,
-      images: this.props.images,
-      env: this.props.env,
-      currentImage: this.props.currentImage,
-    };
-    const imageCommon = {
-      flags: this.imageShowFlags,
-      designer: this.props.designer,
-      getConfigValue: this.props.getConfigValue,
-    };
-    const farmwareNames = Object.keys(this.props.farmwares);
-    return <DesignerPanel panelName={"photos"} panel={Panel.Photos}>
-      <DesignerPanelContent panelName={"photos"}>
-        <div className="row grid-exp-1">
-          <h2 className="panel-title">{t("Photos")}</h2>
-          <NewPhotoButtons
-            syncStatus={this.props.syncStatus}
-            botToMqttStatus={this.props.botToMqttStatus}
-            takePhoto={takePhoto}
-            env={this.props.env}
-            imageJobs={this.props.imageJobs} />
-        </div>
-        <Photos {...common} {...imageCommon}
-          currentBotLocation={this.props.currentBotLocation}
-          movementState={this.props.movementState}
-          arduinoBusy={this.props.arduinoBusy}
-          currentImageSize={this.props.currentImageSize}
-          imageJobs={this.props.imageJobs} />
-        <ExpandableHeader
-          expanded={photosPanelState.filter}
-          title={t("Filter map photos")}
-          onClick={this.toggle("filter")}>
-          <FiltersEnabledWarning
-            designer={this.props.designer}
-            getConfigValue={this.props.getConfigValue} />
-        </ExpandableHeader>
-        <Collapse isOpen={photosPanelState.filter}>
-          <PhotoFilterSettings {...common} {...imageCommon} />
-        </Collapse>
-        <ExpandableHeader
-          expanded={photosPanelState.camera}
-          title={t("Camera settings")}
-          onClick={this.toggle("camera")} />
-        <Collapse isOpen={photosPanelState.camera}>
-          <CaptureSettings
-            dispatch={this.props.dispatch}
-            env={this.props.env}
+  const wDEnvGet = (key: WDENVKey) => envGet(key, props.wDEnv);
+  const { syncStatus, botToMqttStatus, photosPanelState } = props;
+  const botOnline = isBotOnline(syncStatus, botToMqttStatus);
+  const common = {
+    syncStatus,
+    botToMqttStatus,
+    timeSettings: props.timeSettings,
+    dispatch: props.dispatch,
+    images: props.images,
+    env: props.env,
+    currentImage: props.currentImage,
+  };
+  const imageCommon = {
+    flags: imageShowFlags,
+    designer: props.designer,
+    getConfigValue: props.getConfigValue,
+  };
+  const farmwareNames = Object.keys(props.farmwares);
+  return <DesignerPanel panelName={"photos"} panel={Panel.Photos}>
+    <DesignerPanelContent panelName={"photos"}>
+      <div className="row grid-exp-1">
+        <h2 className="panel-title">{t("Photos")}</h2>
+        <NewPhotoButtons
+          syncStatus={props.syncStatus}
+          botToMqttStatus={props.botToMqttStatus}
+          takePhoto={takePhoto}
+          env={props.env}
+          imageJobs={props.imageJobs} />
+      </div>
+      <Photos {...common} {...imageCommon}
+        currentBotLocation={props.currentBotLocation}
+        movementState={props.movementState}
+        arduinoBusy={props.arduinoBusy}
+        currentImageSize={props.currentImageSize}
+        imageJobs={props.imageJobs} />
+      <ExpandableHeader
+        expanded={photosPanelState.filter}
+        title={t("Filter map photos")}
+        onClick={toggle("filter")}>
+        <FiltersEnabledWarning
+          designer={props.designer}
+          getConfigValue={props.getConfigValue} />
+      </ExpandableHeader>
+      <Collapse isOpen={photosPanelState.filter}>
+        <PhotoFilterSettings {...common} {...imageCommon} />
+      </Collapse>
+      <ExpandableHeader
+        expanded={photosPanelState.camera}
+        title={t("Camera settings")}
+        onClick={toggle("camera")} />
+      <Collapse isOpen={photosPanelState.camera}>
+        <CaptureSettings
+          dispatch={props.dispatch}
+          env={props.env}
+          botOnline={botOnline}
+          version={props.versions["take-photo"] || ""}
+          saveFarmwareEnv={props.saveFarmwareEnv} />
+      </Collapse>
+      <ExpandableHeader
+        expanded={!!photosPanelState.calibration}
+        title={t("Camera calibration")}
+        onClick={toggle("calibration")} />
+      <Collapse isOpen={!!photosPanelState.calibration}>
+        <ToolTip helpText={ToolTips.CAMERA_CALIBRATION}
+          dispatch={props.dispatch}
+          docPage={"camera-calibration"} />
+        <CameraCalibration {...common}
+          photosPanelState={props.photosPanelState}
+          wDEnv={props.wDEnv}
+          showAdvanced={!!props.getConfigValue(
+            BooleanSetting.show_advanced_settings)}
+          saveFarmwareEnv={props.saveFarmwareEnv}
+          iteration={wDEnvGet("CAMERA_CALIBRATION_iteration")}
+          morph={wDEnvGet("CAMERA_CALIBRATION_morph")}
+          blur={wDEnvGet("CAMERA_CALIBRATION_blur")}
+          H_LO={wDEnvGet("CAMERA_CALIBRATION_H_LO")}
+          S_LO={wDEnvGet("CAMERA_CALIBRATION_S_LO")}
+          V_LO={wDEnvGet("CAMERA_CALIBRATION_V_LO")}
+          H_HI={wDEnvGet("CAMERA_CALIBRATION_H_HI")}
+          S_HI={wDEnvGet("CAMERA_CALIBRATION_S_HI")}
+          V_HI={wDEnvGet("CAMERA_CALIBRATION_V_HI")}
+          versions={props.versions} />
+      </Collapse>
+      <ExpandableHeader
+        expanded={!!photosPanelState.detection}
+        title={t("Weed detection")}
+        onClick={toggle("detection")} />
+      <Collapse isOpen={!!photosPanelState.detection}>
+        <ToolTip helpText={ToolTips.WEED_DETECTOR}
+          dispatch={props.dispatch}
+          docPage={"weed-detection"} />
+        <WeedDetector {...common}
+          photosPanelState={props.photosPanelState}
+          wDEnv={props.wDEnv}
+          showAdvanced={!!props.getConfigValue(
+            BooleanSetting.show_advanced_settings)}
+          saveFarmwareEnv={props.saveFarmwareEnv} />
+      </Collapse>
+      <ExpandableHeader
+        expanded={!!photosPanelState.measure}
+        title={t("Measure soil height")}
+        onClick={toggle("measure")} />
+      <Collapse isOpen={!!photosPanelState.measure}>
+        <ToolTip helpText={ToolTips.SOIL_HEIGHT_DETECTION}
+          dispatch={props.dispatch}
+          docPage={"measure-soil-height"} />
+        {farmwareNames.includes(FarmwareName.MeasureSoilHeight)
+          ? <FarmwareForm
+            farmware={props.farmwares[FarmwareName.MeasureSoilHeight]}
+            env={props.env}
+            userEnv={props.userEnv}
+            farmwareEnvs={props.farmwareEnvs}
+            saveFarmwareEnv={props.saveFarmwareEnv}
             botOnline={botOnline}
-            version={this.props.versions["take-photo"] || ""}
-            saveFarmwareEnv={this.props.saveFarmwareEnv} />
-        </Collapse>
-        <ExpandableHeader
-          expanded={!!photosPanelState.calibration}
-          title={t("Camera calibration")}
-          onClick={this.toggle("calibration")} />
-        <Collapse isOpen={!!photosPanelState.calibration}>
-          <ToolTip helpText={ToolTips.CAMERA_CALIBRATION}
-            docPage={"camera-calibration"} />
-          <CameraCalibration {...common}
-            photosPanelState={this.props.photosPanelState}
-            wDEnv={this.props.wDEnv}
-            showAdvanced={!!this.props.getConfigValue(
+            hideAdvanced={!props.getConfigValue(
               BooleanSetting.show_advanced_settings)}
-            saveFarmwareEnv={this.props.saveFarmwareEnv}
-            iteration={wDEnvGet("CAMERA_CALIBRATION_iteration")}
-            morph={wDEnvGet("CAMERA_CALIBRATION_morph")}
-            blur={wDEnvGet("CAMERA_CALIBRATION_blur")}
-            H_LO={wDEnvGet("CAMERA_CALIBRATION_H_LO")}
-            S_LO={wDEnvGet("CAMERA_CALIBRATION_S_LO")}
-            V_LO={wDEnvGet("CAMERA_CALIBRATION_V_LO")}
-            H_HI={wDEnvGet("CAMERA_CALIBRATION_H_HI")}
-            S_HI={wDEnvGet("CAMERA_CALIBRATION_S_HI")}
-            V_HI={wDEnvGet("CAMERA_CALIBRATION_V_HI")}
-            versions={this.props.versions} />
-        </Collapse>
+            dispatch={props.dispatch} />
+          : <div className={"farmware-form"}>
+            <button className={"fb-button green farmware-button pseudo-disabled"}>
+              {t("measure")}
+            </button>
+          </div>}
+      </Collapse>
+      {DevSettings.futureFeaturesEnabled() &&
         <ExpandableHeader
-          expanded={!!photosPanelState.detection}
-          title={t("Weed detection")}
-          onClick={this.toggle("detection")} />
-        <Collapse isOpen={!!photosPanelState.detection}>
-          <ToolTip helpText={ToolTips.WEED_DETECTOR} docPage={"weed-detection"} />
-          <WeedDetector {...common}
-            photosPanelState={this.props.photosPanelState}
-            wDEnv={this.props.wDEnv}
-            showAdvanced={!!this.props.getConfigValue(
-              BooleanSetting.show_advanced_settings)}
-            saveFarmwareEnv={this.props.saveFarmwareEnv} />
-        </Collapse>
-        <ExpandableHeader
-          expanded={!!photosPanelState.measure}
-          title={t("Measure soil height")}
-          onClick={this.toggle("measure")} />
-        <Collapse isOpen={!!photosPanelState.measure}>
-          <ToolTip helpText={ToolTips.SOIL_HEIGHT_DETECTION}
-            docPage={"measure-soil-height"} />
-          {farmwareNames.includes(FarmwareName.MeasureSoilHeight)
-            ? <FarmwareForm
-              farmware={this.props.farmwares[FarmwareName.MeasureSoilHeight]}
-              env={this.props.env}
-              userEnv={this.props.userEnv}
-              farmwareEnvs={this.props.farmwareEnvs}
-              saveFarmwareEnv={this.props.saveFarmwareEnv}
-              botOnline={botOnline}
-              hideAdvanced={!this.props.getConfigValue(
-                BooleanSetting.show_advanced_settings)}
-              dispatch={this.props.dispatch} />
-            : <div className={"farmware-form"}>
-              <button className={"fb-button green farmware-button pseudo-disabled"}>
-                {t("measure")}
-              </button>
-            </div>}
-        </Collapse>
-        {DevSettings.futureFeaturesEnabled() &&
-          <ExpandableHeader
-            expanded={!!photosPanelState.manage}
-            title={t("Manage data")}
-            onClick={this.toggle("manage")} />}
-        {DevSettings.futureFeaturesEnabled() &&
-          <Collapse isOpen={!!photosPanelState.manage}>
-            <ImagingDataManagement
-              dispatch={this.props.dispatch}
-              farmwareEnvs={this.props.farmwareEnvs}
-              getConfigValue={this.props.getConfigValue} />
-          </Collapse>}
-      </DesignerPanelContent>
-    </DesignerPanel>;
-  }
-}
+          expanded={!!photosPanelState.manage}
+          title={t("Manage data")}
+          onClick={toggle("manage")} />}
+      {DevSettings.futureFeaturesEnabled() &&
+        <Collapse isOpen={!!photosPanelState.manage}>
+          <ImagingDataManagement
+            dispatch={props.dispatch}
+            farmwareEnvs={props.farmwareEnvs}
+            getConfigValue={props.getConfigValue} />
+        </Collapse>}
+    </DesignerPanelContent>
+  </DesignerPanel>;
+};
 
 export const DesignerPhotos = connect(mapStateToProps)(RawDesignerPhotos);
 // eslint-disable-next-line import/no-default-export

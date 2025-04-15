@@ -74,7 +74,7 @@ describe("<DesignerPhotos />", () => {
     const p = fakeProps();
     const farmware = fakeFarmware(FarmwareName.MeasureSoilHeight);
     p.farmwares = { [FarmwareName.MeasureSoilHeight]: farmware };
-    const wrapper = shallow<DesignerPhotos>(<DesignerPhotos {...p} />);
+    const wrapper = shallow(<DesignerPhotos {...p} />);
     const headers = wrapper.find(ExpandableHeader);
     Object.keys(p.photosPanelState).filter(k => !k.endsWith("PP"))
       .map((section: keyof PhotosPanelState, index) => {
@@ -89,7 +89,7 @@ describe("<DesignerPhotos />", () => {
     mockDev = true;
     const p = fakeProps();
     p.photosPanelState.manage = true;
-    const wrapper = mount<DesignerPhotos>(<DesignerPhotos {...p} />);
+    const wrapper = mount(<DesignerPhotos {...p} />);
     wrapper.find(ToggleButton).last().simulate("click");
     expect(p.dispatch).toHaveBeenCalled();
   });

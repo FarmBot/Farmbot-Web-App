@@ -7,21 +7,18 @@ import { Highlight } from "../maybe_highlight";
 import { getModifiedClassNameSpecifyDefault } from "../default_values";
 import { setOrderNumber } from "../../wizard/actions";
 
-export class OrderNumberRow extends React.Component<OrderNumberRowProps> {
-  render() {
-    return <Highlight settingName={DeviceSetting.orderNumber}>
-      <Row className="grid-2-col">
-        <label>
-          {t(DeviceSetting.orderNumber)}
-        </label>
-        <BlurableInput value={this.props.device.body.fb_order_number || ""}
-          allowEmpty={true}
-          className={getModifiedClassNameSpecifyDefault(
-            this.props.device.body.fb_order_number, undefined,
-          )}
-          onCommit={e => this.props.dispatch(setOrderNumber(
-            this.props.device, e.currentTarget.value))} />
-      </Row>
-    </Highlight>;
-  }
-}
+export const OrderNumberRow = (props: OrderNumberRowProps) =>
+  <Highlight settingName={DeviceSetting.orderNumber}>
+    <Row className="grid-2-col">
+      <label>
+        {t(DeviceSetting.orderNumber)}
+      </label>
+      <BlurableInput value={props.device.body.fb_order_number || ""}
+        allowEmpty={true}
+        className={getModifiedClassNameSpecifyDefault(
+          props.device.body.fb_order_number, undefined,
+        )}
+        onCommit={e => props.dispatch(setOrderNumber(
+          props.device, e.currentTarget.value))} />
+    </Row>
+  </Highlight>;

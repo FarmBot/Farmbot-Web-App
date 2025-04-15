@@ -12,6 +12,7 @@ import {
 import React from "react";
 import { mount } from "enzyme";
 import { FBSelect } from "../../../ui";
+import { fireEvent, render, screen } from "@testing-library/react";
 
 describe("sequence2ddi()", () => {
   it("converts TaggedSequences", () => {
@@ -90,9 +91,12 @@ describe("<RawBootSequenceSelector />", () => {
 
   it("handles the `onChange` event", () => {
     const p = fakeProps();
-    const el = new RawBootSequenceSelector(p);
-    el.onChange({ label: "X", value: 3 });
-    expect(p.dispatch).toHaveBeenCalled();
+    p.list = [{ label: "X", value: 3 }];
+    render(<RawBootSequenceSelector {...p} />);
+    const select = screen.getByRole("button", { name: "None" });
+    fireEvent.click(select);
+    const item = screen.getByText("X");
+    fireEvent.click(item);
     expect(p.dispatch)
       .toHaveBeenCalledWith(expect.objectContaining({ type: "EDIT_RESOURCE" }));
   });

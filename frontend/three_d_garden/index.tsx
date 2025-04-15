@@ -16,6 +16,7 @@ import { BooleanSetting } from "../session_keys";
 import { LayerToggle } from "../farm_designer/map/legend/layer_toggle";
 import { setWebAppConfigValue } from "../config_storage/actions";
 import { DesignerState } from "../farm_designer/interfaces";
+import { setPanelOpen } from "../farm_designer/panel_header";
 
 export interface ThreeDGardenProps {
   config: Config;
@@ -29,17 +30,19 @@ export interface ThreeDGardenProps {
 export const ThreeDGarden = (props: ThreeDGardenProps) => {
   return <div className={"three-d-garden"}>
     <div className={"garden-bed-3d-model"}>
-      <Canvas shadows={true}>
-        <GardenModel
-          config={props.config}
-          activeFocus={""}
-          setActiveFocus={noop}
-          mapPoints={props.mapPoints}
-          weeds={props.weeds}
-          toolSlots={props.toolSlots}
-          mountedToolName={props.mountedToolName}
-          addPlantProps={props.addPlantProps} />
-      </Canvas>
+      <React.Suspense>
+        <Canvas shadows={true}>
+          <GardenModel
+            config={props.config}
+            activeFocus={""}
+            setActiveFocus={noop}
+            mapPoints={props.mapPoints}
+            weeds={props.weeds}
+            toolSlots={props.toolSlots}
+            mountedToolName={props.mountedToolName}
+            addPlantProps={props.addPlantProps} />
+        </Canvas>
+      </React.Suspense>
     </div>
   </div>;
 };
@@ -61,7 +64,10 @@ export const ThreeDGardenToggle = (props: ThreeDGardenToggleProps) => {
     {threeDGarden &&
       <button className={"fb-button gray"}
         title={t("3D Settings")}
-        onClick={() => { navigate(Path.settings("3d_garden")); }}>
+        onClick={() => {
+          dispatch(setPanelOpen(true));
+          navigate(Path.settings("3d_garden"));
+        }}>
         <i className={"fa fa-cog"} />
       </button>}
     {threeDGarden &&

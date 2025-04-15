@@ -1,8 +1,16 @@
+interface MockRef {
+  current: { value: string } | undefined;
+}
+let mockRef: MockRef = { current: { value: "" } };
+jest.mock("react", () => ({
+  ...jest.requireActual("react"),
+  useRef: () => mockRef,
+}));
+
 import React from "react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { DangerousDeleteWidget } from "../dangerous_delete_widget";
-import { mount, shallow } from "enzyme";
 import { DangerousDeleteProps } from "../interfaces";
-import { BlurablePassword } from "../../../ui/blurable_password";
 
 describe("<DangerousDeleteWidget />", () => {
   const fakeProps = (): DangerousDeleteProps => ({
@@ -15,35 +23,29 @@ describe("<DangerousDeleteWidget />", () => {
 
   it("renders", () => {
     const p = fakeProps();
-    const wrapper = mount(<DangerousDeleteWidget {...p} />);
+    render(<DangerousDeleteWidget {...p} />);
     [p.title, p.warning, p.confirmation].map(string =>
-      expect(wrapper.text()).toContain(string));
+      expect(screen.getAllByText(RegExp(string, "i"))[0]).toBeInTheDocument());
   });
 
   it("executes deletion", () => {
     const p = fakeProps();
-    const wrapper = mount(<DangerousDeleteWidget {...p} />);
-    wrapper.setState({ password: "123" });
-    wrapper.find("button.red").last().simulate("click");
+    render(<DangerousDeleteWidget {...p} />);
+    const input = screen.getByLabelText("Enter Password");
+    fireEvent.blur(input, { target: { value: "password" } });
+    const button = screen.getByRole("button");
+    fireEvent.click(button);
     expect(p.onClick).toHaveBeenCalledTimes(1);
-    expect(p.onClick).toHaveBeenCalledWith({ password: "123" });
+    expect(p.onClick).toHaveBeenCalledWith({ password: "password" });
     expect(p.dispatch).toHaveBeenCalled();
   });
 
-  it("enters password", () => {
-    const wrapper = shallow<DangerousDeleteWidget>(
-      <DangerousDeleteWidget {...fakeProps()} />);
-    wrapper.find(BlurablePassword).simulate("commit", {
-      currentTarget: { value: "password" }
-    });
-    expect(wrapper.state().password).toEqual("password");
-  });
-
-  it("clears password", () => {
-    const wrapper = mount<DangerousDeleteWidget>(
-      <DangerousDeleteWidget {...fakeProps()} />);
-    wrapper.setState({ password: "password" });
-    wrapper.unmount();
-    expect(wrapper).toEqual({});
+  it("handles missing ref", () => {
+    mockRef = { current: undefined };
+    const p = fakeProps();
+    render(<DangerousDeleteWidget {...p} />);
+    const button = screen.getByRole("button");
+    fireEvent.click(button);
+    expect(p.onClick).toHaveBeenCalledWith({ password: "" });
   });
 });

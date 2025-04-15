@@ -17,6 +17,7 @@ describe("<Diagnosis/>", () => {
       botAPI: true,
       botFirmware: true,
     },
+    dispatch: jest.fn(),
   });
 
   it("renders help text", () => {

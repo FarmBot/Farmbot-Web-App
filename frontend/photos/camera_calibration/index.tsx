@@ -7,102 +7,98 @@ import { calibrate, scanImage } from "./actions";
 import { envGet } from "../remote_env/selectors";
 import { MustBeOnline, isBotOnline } from "../../devices/must_be_online";
 import { CameraCalibrationConfig, BoolConfig } from "./config";
-import { namespace, CAMERA_CALIBRATION_KEY_PART } from "../remote_env/constants";
+import {
+  namespace as namespaceFunc, CAMERA_CALIBRATION_KEY_PART,
+} from "../remote_env/constants";
 import { t } from "../../i18next_wrapper";
 import { formatEnvKey } from "../remote_env/translators";
 import { cameraBtnProps } from "../capture_settings/camera_selection";
 import { Content, DeviceSetting, ToolTips } from "../../constants";
 import { getCalibratedImageCenter } from "../photo_filter_settings/util";
 import { ExternalUrl } from "../../external_urls";
-import { NavigateFunction } from "react-router";
-import { NavigationContext } from "../../routes_helpers";
+import { NavigateFunction, useNavigate } from "react-router";
 
-export class CameraCalibration extends
-  React.Component<CameraCalibrationProps, {}> {
-
-  change = (key: NumericKeyName, value: number) => {
-    this.saveEnvVar(this.namespace(key), value);
+export const CameraCalibration = (props: CameraCalibrationProps) => {
+  const navigate = useNavigate();
+  const change = (key: NumericKeyName, value: number) => {
+    saveEnvVar(namespace(key), value);
   };
 
-  namespace = namespace<CAMERA_CALIBRATION_KEY_PART>("CAMERA_CALIBRATION_");
+  const namespace =
+    namespaceFunc<CAMERA_CALIBRATION_KEY_PART>("CAMERA_CALIBRATION_");
 
-  saveEnvVar = (key: WDENVKey, value: number) =>
-    this.props.dispatch(this.props.saveFarmwareEnv(
+  const saveEnvVar = (key: WDENVKey, value: number) =>
+    props.dispatch(props.saveFarmwareEnv(
       key, JSON.stringify(formatEnvKey(key, value))));
 
-  wdEnvGet = (key: WDENVKey) => envGet(key, this.props.wDEnv);
+  const wdEnvGet = (key: WDENVKey) => envGet(key, props.wDEnv);
 
-  static contextType = NavigationContext;
-  context!: React.ContextType<typeof NavigationContext>;
-  navigate = this.context;
-
-  render() {
-    const { wdEnvGet } = this;
-    const { syncStatus, botToMqttStatus } = this.props;
-    const botOnline = isBotOnline(syncStatus, botToMqttStatus);
-    const camDisabled = cameraBtnProps(this.props.env, botOnline);
-    const easyCalibration = !!wdEnvGet(this.namespace("easy_calibration"));
-    return <div className="camera-calibration grid">
-      <div className="grid">
-        <div className={"row grid-exp-1"}>
-          <CalibrationCardSVG grid={easyCalibration} />
-          <MustBeOnline
-            syncStatus={this.props.syncStatus}
-            networkState={this.props.botToMqttStatus}
-            hideBanner={true}>
-            <button
-              className={`fb-button green ${camDisabled.class}`}
-              title={camDisabled.title}
-              onClick={camDisabled.click || calibrate(easyCalibration)}>
-              {t("Calibrate")}
-            </button>
-          </MustBeOnline>
-        </div>
-        <p>{easyCalibration
-          ? t(Content.CAMERA_CALIBRATION_GRID_PATTERN)
-          : t(Content.CAMERA_CALIBRATION_RED_OBJECTS)}</p>
-        <CameraCalibrationMethodConfig
-          navigate={this.navigate}
-          wdEnvGet={wdEnvGet}
-          saveEnvVar={this.saveEnvVar} />
+  const { syncStatus, botToMqttStatus } = props;
+  const botOnline = isBotOnline(syncStatus, botToMqttStatus);
+  const camDisabled = cameraBtnProps(props.env, botOnline);
+  const easyCalibration = !!wdEnvGet(namespace("easy_calibration"));
+  return <div className="camera-calibration grid">
+    <div className="grid">
+      <div className={"row grid-exp-1"}>
+        <CalibrationCardSVG grid={easyCalibration} />
+        <MustBeOnline
+          syncStatus={props.syncStatus}
+          networkState={props.botToMqttStatus}
+          hideBanner={true}>
+          <button
+            className={`fb-button green ${camDisabled.class}`}
+            title={camDisabled.title}
+            onClick={camDisabled.click || calibrate(easyCalibration)}>
+            {t("Calibrate")}
+          </button>
+        </MustBeOnline>
       </div>
-      {!easyCalibration &&
-        <ImageWorkspace
-          sectionKey={"calibration"}
-          dispatch={this.props.dispatch}
-          advancedSectionOpen={this.props.photosPanelState.calibrationPP}
-          botOnline={isBotOnline(
-            this.props.syncStatus, this.props.botToMqttStatus)}
-          onProcessPhoto={scanImage(easyCalibration)}
-          images={this.props.images}
-          currentImage={this.props.currentImage}
-          onChange={this.change}
-          timeSettings={this.props.timeSettings}
-          showAdvanced={this.props.showAdvanced}
-          iteration={this.props.iteration}
-          morph={this.props.morph}
-          blur={this.props.blur}
-          H_LO={this.props.H_LO}
-          S_LO={this.props.S_LO}
-          V_LO={this.props.V_LO}
-          H_HI={this.props.H_HI}
-          S_HI={this.props.S_HI}
-          V_HI={this.props.V_HI}
-          namespace={this.namespace}
-          invertHue={!!wdEnvGet(this.namespace("invert_hue_selection"))} />}
-      <CameraCalibrationConfig
-        values={this.props.wDEnv}
-        calibrationZ={this.props.env["CAMERA_CALIBRATION_camera_z"]}
-        calibrationImageCenter={getCalibratedImageCenter(this.props.env)}
-        onChange={this.saveEnvVar} />
-    </div>;
-  }
-}
+      <p>{easyCalibration
+        ? t(Content.CAMERA_CALIBRATION_GRID_PATTERN)
+        : t(Content.CAMERA_CALIBRATION_RED_OBJECTS)}</p>
+      <CameraCalibrationMethodConfig
+        navigate={navigate}
+        dispatch={props.dispatch}
+        wdEnvGet={wdEnvGet}
+        saveEnvVar={saveEnvVar} />
+    </div>
+    {!easyCalibration &&
+      <ImageWorkspace
+        sectionKey={"calibration"}
+        dispatch={props.dispatch}
+        advancedSectionOpen={props.photosPanelState.calibrationPP}
+        botOnline={isBotOnline(
+          props.syncStatus, props.botToMqttStatus)}
+        onProcessPhoto={scanImage(easyCalibration)}
+        images={props.images}
+        currentImage={props.currentImage}
+        onChange={change}
+        timeSettings={props.timeSettings}
+        showAdvanced={props.showAdvanced}
+        iteration={props.iteration}
+        morph={props.morph}
+        blur={props.blur}
+        H_LO={props.H_LO}
+        S_LO={props.S_LO}
+        V_LO={props.V_LO}
+        H_HI={props.H_HI}
+        S_HI={props.S_HI}
+        V_HI={props.V_HI}
+        namespace={namespace}
+        invertHue={!!wdEnvGet(namespace("invert_hue_selection"))} />}
+    <CameraCalibrationConfig
+      values={props.wDEnv}
+      calibrationZ={props.env["CAMERA_CALIBRATION_camera_z"]}
+      calibrationImageCenter={getCalibratedImageCenter(props.env)}
+      onChange={saveEnvVar} />
+  </div>;
+};
 
 interface CameraCalibrationMethodConfigProps {
   wdEnvGet(key: WDENVKey): number;
   saveEnvVar(key: WDENVKey, value: number): void;
   navigate: NavigateFunction;
+  dispatch: Function;
 }
 
 export const CameraCalibrationMethodConfig =
@@ -114,7 +110,12 @@ export const CameraCalibrationMethodConfig =
       invert={true}
       helpText={ToolTips.RED_DOT_CAMERA_CALIBRATION}
       links={[
-        <a key={0} onClick={docLinkClick("camera-calibration", props.navigate)}>
+        <a key={0}
+          onClick={docLinkClick({
+            slug: "camera-calibration",
+            navigate: props.navigate,
+            dispatch: props.dispatch,
+          })}>
           {t("as described in the software documentation.")}
           <i className={"fa fa-external-link"} />
         </a>,

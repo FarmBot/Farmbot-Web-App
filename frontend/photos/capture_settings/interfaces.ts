@@ -9,10 +9,6 @@ export interface CaptureSettingsProps {
   version: string;
 }
 
-export interface CaptureSettingsState {
-  open: boolean;
-}
-
 export interface RotationSettingProps {
   version: string;
   env: UserEnv;
@@ -26,10 +22,6 @@ export interface CaptureSizeSelectionProps {
   saveFarmwareEnv(key: string, value: string): void;
 }
 
-export interface CaptureSizeSelectionState {
-  custom: boolean;
-}
-
 export interface UpdateRowProps {
   version: string;
   botOnline: boolean;
@@ -40,8 +32,4 @@ export interface CameraSelectionProps {
   botOnline: boolean;
   saveFarmwareEnv: SaveFarmwareEnv;
   dispatch: Function;
-}
-
-export interface CameraSelectionState {
-  cameraStatus: "" | "sending" | "done" | "error";
 }

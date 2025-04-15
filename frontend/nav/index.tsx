@@ -30,7 +30,7 @@ import { round } from "lodash";
 import { ControlsPanel } from "../controls/controls";
 import { Actions } from "../constants";
 import { PopupsState } from "../interfaces";
-import { Panel, TAB_ICON } from "../farm_designer/panel_header";
+import { Panel, setPanelOpen, TAB_ICON } from "../farm_designer/panel_header";
 import { movementPercentRemaining } from "../farm_designer/move_to";
 import { isMobile } from "../screen_size";
 import { NavigationContext } from "../routes_helpers";
@@ -145,7 +145,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
             {firstName}
           </div>}
         content={<AdditionalMenu
-          close={this.close}
+          close={this.close("accountMenuOpen")}
           dispatch={this.props.dispatch}
           darkMode={!!this.props.getConfigValue(BooleanSetting.dark_mode)}
           isStaff={this.isStaff} />} />
@@ -198,7 +198,10 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
     const { wizardStepResults, device } = this.props;
     return !device.body.setup_completed_at
       ? <a className={"setup-button"}
-        onClick={() => { this.navigate(Path.setup()); }}>
+        onClick={() => {
+          this.props.dispatch(setPanelOpen(true));
+          this.navigate(Path.setup());
+        }}>
         {t("Setup")}
         {!isMobile() &&
           `: ${setupProgressString(wizardStepResults, { firmwareHardware })}`}
@@ -256,7 +259,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
         <MobileMenu
           designer={this.props.designer}
           dispatch={this.props.dispatch}
-          close={this.close}
+          close={this.close("mobileMenuOpen")}
           alertCount={this.props.alertCount}
           mobileMenuOpen={this.state.mobileMenuOpen}
           helpState={this.props.helpState} />
@@ -265,7 +268,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
         <NavLinks
           designer={this.props.designer}
           dispatch={this.props.dispatch}
-          close={this.close}
+          close={this.close("mobileMenuOpen")}
           alertCount={this.props.alertCount}
           helpState={this.props.helpState} />
       </span>
@@ -275,7 +278,6 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
     <TickerList
       dispatch={this.props.dispatch}
       logs={this.props.logs}
-      toggle={this.toggle}
       timeSettings={this.props.timeSettings}
       getConfigValue={this.props.getConfigValue}
       lastSeen={lastSeenNumber({ bot: this.props.bot, device: this.props.device })}

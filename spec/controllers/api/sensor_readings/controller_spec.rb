@@ -106,8 +106,8 @@ describe Api::SensorReadingsController do
       expect(response.status).to eq(401)
     end
 
-    it "cleans up excess logs" do
-      const_reassign(Api::SensorReadingsController, :LIMIT, 5)
+    it "cleans up excess sensor readings" do
+      const_reassign(Device, :DEFAULT_MAX_SENSOR_READINGS, 5)
       sign_in user
       10.times do |n|
         FactoryBot.create(:sensor_reading,
@@ -116,9 +116,10 @@ describe Api::SensorReadingsController do
       end
       expect(user.device.sensor_readings.count).to eq(10)
       get :index, params: { format: :json }
+      Delayed::Worker.new.work_off
       expect(json.count).to eq(5)
       expect(user.device.sensor_readings.count).to eq(5)
-      const_reassign(Api::SensorReadingsController, :LIMIT, 5000)
+      const_reassign(Device, :DEFAULT_MAX_SENSOR_READINGS, 2500)
       first = (json.first[:created_at])
       last = (json.last[:created_at])
       expect(first).to be > last

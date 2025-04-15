@@ -15,7 +15,7 @@ export interface StepRadioProps<T extends string> {
 
 export const StepRadio = <T extends string>(props: StepRadioProps<T>) =>
   <Row>
-    <form className="row sequence-step-radio-grid double-gap">
+    <div className="row sequence-step-radio-grid double-gap">
       {props.choices.map((choice, i) =>
         <div className={"row half-gap grid-exp-2"} key={i}>
           <input type={"radio"} name={choice}
@@ -24,7 +24,7 @@ export const StepRadio = <T extends string>(props: StepRadioProps<T>) =>
             checked={props.currentChoice === choice} />
           <label>{t(props.choiceLabelLookup[choice])}</label>
         </div>)}
-    </form>
+    </div>
   </Row>;
 
 type AxisStep = FindHome | Home | Calibrate | Zero;

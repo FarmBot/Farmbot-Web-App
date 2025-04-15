@@ -9,24 +9,36 @@ import { logout } from "../logout";
 import { setWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
 import { ToggleButton } from "../ui";
+import { setPanelOpen } from "../farm_designer/panel_header";
 
 export const AdditionalMenu = (props: AccountMenuProps) => {
   return <div className="nav-additional-menu">
     <div className={"account-link"}>
       <Link to={Path.settings("account")}
-        onClick={props.close("accountMenuOpen")}>
+        onClick={() => {
+          props.dispatch(setPanelOpen(true));
+          props.close();
+        }}>
         <img width={12} height={12} src={FilePath.icon(Icon.settings_small)} />
         {t("Account Settings")}
       </Link>
     </div>
     <div className={"setup-link"}>
-      <Link to={Path.setup()} onClick={props.close("accountMenuOpen")}>
+      <Link to={Path.setup()}
+        onClick={() => {
+          props.dispatch(setPanelOpen(true));
+          props.close();
+        }}>
         <i className="fa fa-magic" />
         {t("Setup")}
       </Link>
     </div>
     <div className={"help-link"}>
-      <Link to={Path.help()} onClick={props.close("accountMenuOpen")}>
+      <Link to={Path.help()}
+        onClick={() => {
+          props.dispatch(setPanelOpen(true));
+          props.close();
+        }}>
         <i className="fa fa-question-circle" />
         {t("Help")}
       </Link>

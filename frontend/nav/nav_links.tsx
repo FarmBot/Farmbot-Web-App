@@ -33,7 +33,7 @@ export const NavLinks = (props: NavLinksProps) =>
         draggable={false}
         onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
           e.preventDefault();
-          props.close("mobileMenuOpen")(e);
+          props.close();
           props.dispatch(setPanelOpen(false));
         }}>
         <NavIconAndText panel={Panel.Map} alertCount={props.alertCount} />
@@ -47,14 +47,14 @@ export const NavLinks = (props: NavLinksProps) =>
           ].join(" ")}
           key={PANEL_SLUG[panel]}
           draggable={false}
-          onClick={e => {
-            props.close("mobileMenuOpen")(e);
+          onClick={() => {
+            props.close();
             props.dispatch(setPanelOpen(true));
           }}>
           <NavIconAndText panel={panel} alertCount={props.alertCount} />
         </Link>)}
       <a className={"shop-link"} key={"shop"}
-        draggable={false} onClick={props.close("mobileMenuOpen")}
+        draggable={false} onClick={props.close}
         href={ExternalUrl.Store.home} target={"_blank"} rel={"noreferrer"}>
         <NavIconAndText panel={Panel.Shop} customMiniIcon={
           <div className={"external-icon"}>

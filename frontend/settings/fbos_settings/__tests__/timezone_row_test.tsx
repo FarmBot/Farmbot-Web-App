@@ -4,7 +4,7 @@ jest.mock("../../../api/crud", () => ({
 }));
 
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { TimezoneRow } from "../timezone_row";
 import { TimezoneRowProps } from "../interfaces";
 import { edit } from "../../../api/crud";
@@ -20,15 +20,18 @@ describe("<TimezoneRow />", () => {
   it("warns about timezone mismatch", () => {
     const p = fakeProps();
     p.device.body.timezone = "different";
-    const osSettings = mount(<TimezoneRow {...p} />);
-    expect(osSettings.text()).toContain(Content.DIFFERENT_TZ_WARNING);
+    render(<TimezoneRow {...p} />);
+    expect(screen.getByText(Content.DIFFERENT_TZ_WARNING)).toBeInTheDocument();
   });
 
   it("select timezone", () => {
     const p = fakeProps();
-    const osSettings = mount<TimezoneRow>(<TimezoneRow {...p} />);
-    const selector = shallow(<div>{osSettings.instance().Selector()}</div>);
-    selector.find("TimezoneSelector").simulate("update", "fake timezone");
-    expect(edit).toHaveBeenCalledWith(p.device, { timezone: "fake timezone" });
+    render(<TimezoneRow {...p} />);
+    const selector = screen.getByRole("combobox");
+    fireEvent.click(selector);
+    const item = screen.getByText("America/Los_Angeles");
+    fireEvent.click(item);
+    expect(edit).toHaveBeenCalledWith(p.device,
+      { timezone: "America/Los_Angeles" });
   });
 });

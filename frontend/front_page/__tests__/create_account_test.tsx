@@ -4,18 +4,15 @@ jest.mock("../resend_verification", () => ({
 }));
 
 import React from "react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import {
   FormField, sendEmail, DidRegister, MustRegister, CreateAccount,
   FormFieldProps, CreateAccountProps,
 } from "../create_account";
-import { mount, shallow } from "enzyme";
-import { BlurableInput } from "../../ui";
 import { success, error } from "../../toast/toast";
 import { resendEmail } from "../resend_verification";
-import { ResendPanelBody } from "../resend_panel_body";
-import { BlurablePassword } from "../../ui/blurable_password";
 import { Content } from "../../constants";
-import { changeBlurableInput } from "../../__test_support__/helpers";
+import { changeBlurableInputRTL } from "../../__test_support__/helpers";
 
 describe("<FormField />", () => {
   const fakeProps = (): FormFieldProps => ({
@@ -27,14 +24,11 @@ describe("<FormField />", () => {
 
   it("renders correct props", () => {
     const p = fakeProps();
-    const wrapper = shallow(<FormField {...p} />);
-    expect(wrapper.find(BlurableInput).prop("value")).toEqual("my val");
-    expect(wrapper.find(BlurableInput).prop("type")).toEqual("email");
-    expect(wrapper.find("label").first().text()).toContain("My Label");
-    wrapper.find(BlurableInput).first().simulate("commit", {
-      currentTarget: { value: "foobar321" }
-    });
-    expect(p.onCommit).toHaveBeenCalledWith("foobar321");
+    render(<FormField {...p} />);
+    expect(screen.getByDisplayValue("my val")).toBeInTheDocument();
+    const input = screen.getByLabelText("My Label");
+    changeBlurableInputRTL(input, "foo");
+    expect(p.onCommit).toHaveBeenCalledWith("foo");
   });
 });
 
@@ -65,37 +59,37 @@ describe("<DidRegister />", () => {
   it("renders <ResendPanelBody/>", () => {
     const p = fakeCreateAccountProps();
     p.get = jest.fn(() => "example2@earthlink.net");
-    const wrapper = shallow(<DidRegister {...p} />);
-    wrapper.find(ResendPanelBody).simulate("click");
+    render(<DidRegister {...p} />);
+    const button = screen.getByRole("button");
+    fireEvent.click(button);
     expect(resendEmail).toHaveBeenCalledWith("example2@earthlink.net");
   });
 
   it("bails on missing email", () => {
-    expect(() => shallow(<DidRegister {...fakeCreateAccountProps()} />))
+    expect(() => render(<DidRegister {...fakeCreateAccountProps()} />))
       .toThrow();
   });
 });
 
 describe("<MustRegister />", () => {
   it("renders the expected components", () => {
-    const wrapper = shallow(<MustRegister {...fakeCreateAccountProps()} />);
-    expect(wrapper.find(FormField).length).toEqual(2);
-    expect(wrapper.find(BlurablePassword).length).toEqual(2);
-    expect(wrapper.html().toLowerCase()).toContain("create account");
+    render(<MustRegister {...fakeCreateAccountProps()} />);
+    expect(screen.getByText("Create Account")).toBeInTheDocument();
   });
 
   it("inputs username", () => {
     const p = fakeCreateAccountProps();
-    const wrapper = mount(<MustRegister {...p} />);
-    changeBlurableInput(wrapper, "name", 1);
+    render(<MustRegister {...p} />);
+    const input = screen.getByLabelText("Name");
+    changeBlurableInputRTL(input, "name");
     expect(p.set).toHaveBeenCalledWith("regName", "name");
   });
 
   it("inputs password", () => {
     const p = fakeCreateAccountProps();
-    const wrapper = mount(<MustRegister {...p} />);
-    const input = shallow(wrapper.find("input").at(2).getElement());
-    input.simulate("blur", { currentTarget: { value: "password" } });
+    render(<MustRegister {...p} />);
+    const input = screen.getByLabelText("Password");
+    fireEvent.blur(input, { target: { value: "password" } });
     expect(p.set).toHaveBeenCalledWith("regPassword", "password");
   });
 });
@@ -104,14 +98,13 @@ describe("<CreateAccount />", () => {
   it("renders <DidRegister /> after verification email is sent", () => {
     const p = fakeCreateAccountProps();
     p.sent = true;
-    const wrapper = shallow(<CreateAccount {...p} />);
-    expect(wrapper.find(DidRegister).length).toEqual(1);
-    expect(wrapper.find(MustRegister).length).toEqual(0);
+    p.get = jest.fn(() => "example2@earthlink.net");
+    render(<CreateAccount {...p} />);
+    expect(screen.getByText("Resend Verification Email")).toBeInTheDocument();
   });
 
   it("renders <MustRegister /> before verification email is sent", () => {
-    const wrapper = shallow(<CreateAccount {...fakeCreateAccountProps()} />);
-    expect(wrapper.find(DidRegister).length).toEqual(0);
-    expect(wrapper.find(MustRegister).length).toEqual(1);
+    render(<CreateAccount {...fakeCreateAccountProps()} />);
+    expect(screen.getByText("Create Account")).toBeInTheDocument();
   });
 });

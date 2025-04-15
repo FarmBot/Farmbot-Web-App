@@ -29,7 +29,6 @@ describe("<TickerList />", () => {
     dispatch: jest.fn(),
     timeSettings: fakeTimeSettings(),
     logs: [fakeTaggedLog(), fakeTaggedLog()],
-    toggle: jest.fn(),
     getConfigValue: x => mockStorj[x],
     botOnline: true,
     lastSeen: 0,

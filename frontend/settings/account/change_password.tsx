@@ -3,10 +3,9 @@ import { SaveBtn } from "../../ui";
 import { SpecialStatus } from "farmbot";
 import axios from "axios";
 import { API } from "../../api/index";
-import { prettyPrintApiErrors, equals, trim, AxiosErrorResponse } from "../../util";
+import { prettyPrintApiErrors, AxiosErrorResponse } from "../../util";
 import { Content, DeviceSetting } from "../../constants";
-import { uniq } from "lodash";
-import { BlurablePassword } from "../../ui/blurable_password";
+import { clone, uniq } from "lodash";
 import { t } from "../../i18next_wrapper";
 import { success, error } from "../../toast/toast";
 
@@ -16,103 +15,115 @@ interface PasswordForm {
   password: string;
 }
 
-export interface ChangePWState { status: SpecialStatus; form: PasswordForm }
+export interface ChangePWState {
+  status: SpecialStatus;
+  form: PasswordForm;
+}
 
-const EMPTY_FORM =
-  ({ new_password: "", new_password_confirmation: "", password: "" });
+export const ChangePassword = () => {
+  const [status, setStatus] = React.useState(SpecialStatus.SAVED);
+  const [password, setPassword] = React.useState("");
+  const [newPassword, setNewPassword] = React.useState("");
+  const [newPasswordConfirmation, setNewPasswordConfirmation] = React.useState("");
 
-export class ChangePassword extends React.Component<{}, ChangePWState> {
-  state: ChangePWState = { status: SpecialStatus.SAVED, form: EMPTY_FORM };
+  const form = {
+    password,
+    new_password: newPassword,
+    new_password_confirmation: newPasswordConfirmation,
+  };
 
-  componentWillUnmount() {
-    this.clearForm();
-  }
+  // eslint-disable-next-line no-null/no-null
+  const formRef = React.useRef<HTMLDivElement>(null);
 
-  /** Set the `status` flag to `undefined`, but only if the form is empty.
-   * Useful when the user manually clears the form. */
-  maybeClearForm =
-    () => equals(EMPTY_FORM, this.state.form) ? this.clearForm() : false;
-
-  clearForm = () => this.setState({ status: SpecialStatus.SAVED, form: EMPTY_FORM });
-
-  set = (key: keyof PasswordForm) =>
-    (e: React.SyntheticEvent<HTMLInputElement>) => {
-      const wow = {
-        status: SpecialStatus.DIRTY,
-        form: { ...this.state.form, [key]: e.currentTarget.value }
-      };
-      this.setState(wow, this.maybeClearForm);
-    };
-
-  sendChange = () =>
-    axios
-      .patch(API.current.usersPath, this.state.form)
-      .then(() => {
-        success(t("Your password is changed."));
-        this.clearForm();
-      }, (e: AxiosErrorResponse) => {
-        error(prettyPrintApiErrors(e));
-        this.clearForm();
+  const clearForm = () => {
+    setStatus(SpecialStatus.SAVED);
+    setPassword("");
+    setNewPassword("");
+    setNewPasswordConfirmation("");
+    if (formRef.current) {
+      formRef.current.querySelectorAll("input").forEach((input) => {
+        input.value = "";
       });
-
-  save = () => {
-    if (this.state.form.new_password.length < 8) {
-      error(t("New password must be at least 8 characters."));
-      this.clearForm();
-      return;
-    }
-    const numUniqueValues = uniq(Object.values(this.state.form)).length;
-    switch (numUniqueValues) {
-      case 1:
-        error(t("Provided new and old passwords match. Password not changed."));
-        this.clearForm();
-        break;
-      case 2:
-        if (confirm(t(Content.ACCOUNT_PASSWORD_CHANGE))) {
-          this.setState({ status: SpecialStatus.SAVING });
-          this.sendChange();
-        }
-        this.clearForm();
-        break;
-      case 3:
-        error(t("New password and confirmation do not match."));
-        this.clearForm();
-        break;
-      default:
-        this.clearForm();
-        throw new Error(trim(`Password change form error:
-          ${numUniqueValues} unique values provided.`));
     }
   };
 
-  render() {
-    return <div className={"change-password grid"}>
-      <div className="row grid-exp-1">
-        <label>
-          {t(DeviceSetting.changePassword)}
-        </label>
-        <SaveBtn onClick={this.save} status={this.state.status} />
-      </div>
-      <form className="grid grid-2-col">
-        <label>
-          {t("Old Password")}
-        </label>
-        <BlurablePassword
-          onCommit={this.set("password")}
-          name="password" />
-        <label>
-          {t("New Password")}
-        </label>
-        <BlurablePassword
-          onCommit={this.set("new_password")}
-          name="new_password" />
-        <label>
-          {t("Confirm New Password")}
-        </label>
-        <BlurablePassword
-          onCommit={this.set("new_password_confirmation")}
-          name={"new_password_confirmation"} />
-      </form>
-    </div>;
-  }
-}
+  const sendChange = () =>
+    axios
+      .patch(API.current.usersPath, clone(form))
+      .then(() => {
+        success(t("Your password is changed."));
+        clearForm();
+      }, (e: AxiosErrorResponse) => {
+        error(prettyPrintApiErrors(e));
+        clearForm();
+      });
+
+  const save = () => {
+    if (newPassword.length < 8) {
+      error(t("New password must be at least 8 characters."));
+      clearForm();
+      return;
+    }
+    const numUniqueValues = uniq(Object.values(form)).length;
+    switch (numUniqueValues) {
+      case 1:
+        error(t("Provided new and old passwords match. Password not changed."));
+        clearForm();
+        break;
+      case 2:
+        if (confirm(t(Content.ACCOUNT_PASSWORD_CHANGE))) {
+          setStatus(SpecialStatus.SAVING);
+          sendChange();
+        }
+        clearForm();
+        break;
+      case 3:
+        error(t("New password and confirmation do not match."));
+        clearForm();
+        break;
+    }
+  };
+
+  return <div className={"change-password grid"}>
+    <div className="row grid-exp-1">
+      <label>
+        {t(DeviceSetting.changePassword)}
+      </label>
+      <SaveBtn onClick={save} status={status} />
+    </div>
+    <div
+      ref={formRef}
+      className={"grid grid-2-col"}>
+      <label htmlFor={"password"}>
+        {t("Old Password")}
+      </label>
+      <input
+        id={"password"}
+        type={"password"}
+        onBlur={e => {
+          setStatus(SpecialStatus.DIRTY);
+          setPassword(e.target.value);
+        }} />
+      <label htmlFor={"new_password"}>
+        {t("New Password")}
+      </label>
+      <input
+        id={"new_password"}
+        type={"password"}
+        onBlur={e => {
+          setStatus(SpecialStatus.DIRTY);
+          setNewPassword(e.target.value);
+        }} />
+      <label htmlFor={"new_password_confirmation"}>
+        {t("Confirm New Password")}
+      </label>
+      <input
+        id={"new_password_confirmation"}
+        type={"password"}
+        onBlur={e => {
+          setStatus(SpecialStatus.DIRTY);
+          setNewPasswordConfirmation(e.target.value);
+        }} />
+    </div>
+  </div>;
+};

@@ -12,7 +12,7 @@ export const ExpandableHeader = (props: ExpandableHeaderProps) => {
   const { onClick, title, expanded } = props;
   const icon_string = expanded ? "fa-minus" : "fa-plus";
   const nbwhitespace = title != "";
-  return <h4 className="expandable-header" onClick={onClick}>
+  return <h4 className="expandable-header" role={"button"} onClick={onClick}>
     {t(title)}
     {nbwhitespace &&
       "\u00A0\u00A0"

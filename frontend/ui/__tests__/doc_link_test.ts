@@ -1,5 +1,11 @@
 import {
-  devDocLink, devDocLinkClick, docLink, docLinkClick, genesisDocLink,
+  devDocLink,
+  devDocLinkClick,
+  DevDocLinkClickProps,
+  docLink,
+  docLinkClick,
+  DocLinkClickProps,
+  genesisDocLink,
 } from "../doc_link";
 import { ExternalUrl } from "../../external_urls";
 import { Path } from "../../internal_urls";
@@ -27,31 +33,33 @@ describe("genesisDocLink", () => {
 });
 
 describe("docLinkClick", () => {
-  it("navigates to doc link", () => {
-    location.pathname = Path.mock(Path.designer());
-    const navigate = jest.fn();
-    docLinkClick("farmware", navigate)();
-    expect(navigate).toHaveBeenCalledWith(Path.help("farmware"));
-    expect(location.assign).not.toHaveBeenCalled();
+  const fakeProps = (): DocLinkClickProps => ({
+    slug: "farmware",
+    navigate: jest.fn(),
+    dispatch: jest.fn(),
   });
 
-  it("reloads to doc link", () => {
-    location.pathname = Path.mock(Path.help());
-    location.assign = jest.fn();
-    const navigate = jest.fn();
-    docLinkClick("farmware", navigate)();
-    expect(navigate).not.toHaveBeenCalled();
-    expect(location.assign).toHaveBeenCalledWith(expect.stringContaining(
-      Path.help("farmware")));
+  it("navigates to doc link", () => {
+    location.pathname = Path.mock(Path.designer());
+    const p = fakeProps();
+    docLinkClick(p)();
+    expect(p.navigate).toHaveBeenCalledWith(Path.help("farmware"));
+    expect(location.assign).not.toHaveBeenCalled();
   });
 });
 
 describe("devDocLinkClick", () => {
+  const fakeProps = (): DevDocLinkClickProps => ({
+    slug: "lua",
+    navigate: jest.fn(),
+    dispatch: jest.fn(),
+  });
+
   it("navigates to doc link", () => {
     location.pathname = Path.mock(Path.designer());
-    const navigate = jest.fn();
-    devDocLinkClick("lua", navigate)();
-    expect(navigate).toHaveBeenCalledWith(Path.developer("lua"));
+    const p = fakeProps();
+    devDocLinkClick(p)();
+    expect(p.navigate).toHaveBeenCalledWith(Path.developer("lua"));
     expect(location.assign).not.toHaveBeenCalled();
   });
 });

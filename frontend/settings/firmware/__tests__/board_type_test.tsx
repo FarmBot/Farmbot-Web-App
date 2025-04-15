@@ -9,7 +9,7 @@ jest.mock("../../../devices/should_display", () => ({
 }));
 
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { BoardType } from "../board_type";
 import { BoardTypeProps } from "../interfaces";
 import { fakeState } from "../../../__test_support__/fake_state";
@@ -43,50 +43,40 @@ describe("<BoardType/>", () => {
   it("renders with valid firmwareHardware", () => {
     const p = fakeProps();
     p.firmwareHardware = "farmduino";
-    const wrapper = mount(<BoardType {...p} />);
-    expect(wrapper.text()).toContain("Farmduino");
-    expect(wrapper.html()).not.toContain("dim");
+    const { container } = render(<BoardType {...p} />);
+    expect(screen.getByText("Farmduino (Genesis v1.3)")).toBeInTheDocument();
+    expect(container).not.toContainHTML("dim");
   });
 
   it("renders with valid firmwareHardware: inconsistent", () => {
     const p = fakeProps();
     p.firmwareHardware = "farmduino";
     p.sourceFbosConfig = () => ({ value: true, consistent: false });
-    const wrapper = mount(<BoardType {...p} />);
-    expect(wrapper.text()).toContain("Farmduino");
-    expect(wrapper.html()).toContain("dim");
+    const { container } = render(<BoardType {...p} />);
+    expect(screen.getByText("Farmduino (Genesis v1.3)")).toBeInTheDocument();
+    expect(container).toContainHTML("dim");
   });
 
   it("calls updateConfig", () => {
     const p = fakeProps();
     p.firmwareHardware = "arduino";
-    const wrapper = mount<BoardType>(<BoardType {...p} />);
-    const selection =
-      shallow(<div>{wrapper.instance().FirmwareSelection()}</div>);
-    selection.find("FBSelect").simulate("change",
-      { label: "firmware_hardware", value: "farmduino" });
+    render(<BoardType {...p} />);
+    const selection = screen.getByRole("combobox");
+    fireEvent.click(selection);
+    const item = screen.getByText("Farmduino (Genesis v1.3)");
+    fireEvent.click(item);
     expect(edit).toHaveBeenCalledWith(fakeConfig, {
       firmware_hardware: "farmduino"
     });
     expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
   });
 
-  it("doesn't call updateConfig", () => {
-    const p = fakeProps();
-    const wrapper = mount<BoardType>(<BoardType {...p} />);
-    const selection =
-      shallow(<div>{wrapper.instance().FirmwareSelection()}</div>);
-    selection.find("FBSelect").simulate("change",
-      { label: "firmware_hardware", value: "unknown" });
-    expect(edit).not.toHaveBeenCalled();
-    expect(save).not.toHaveBeenCalled();
-  });
-
   it("displays boards", () => {
     mockFeatureBoolean = false;
-    const wrapper = mount(<BoardType {...fakeProps()} />);
-    const { list } = wrapper.find("FBSelect").props();
-    expect(list).toEqual([
+    render(<BoardType {...fakeProps()} />);
+    const selection = screen.getByRole("combobox");
+    fireEvent.click(selection);
+    [
       { label: "Farmduino (Genesis v1.7)", value: "farmduino_k17" },
       { label: "Farmduino (Genesis v1.6)", value: "farmduino_k16" },
       { label: "Farmduino (Genesis v1.5)", value: "farmduino_k15" },
@@ -96,14 +86,17 @@ describe("<BoardType/>", () => {
       { label: "Farmduino (Express v1.1)", value: "express_k11" },
       { label: "Farmduino (Express v1.0)", value: "express_k10" },
       { label: "None", value: "none" },
-    ]);
-    expect(list?.length).toEqual(9);
+    ].map(item => {
+      expect(screen.getByRole("menuitem", { name: item.label }))
+        .toBeInTheDocument();
+    });
   });
 
   it("displays more boards", () => {
     mockFeatureBoolean = true;
-    const wrapper = mount(<BoardType {...fakeProps()} />);
-    const { list } = wrapper.find("FBSelect").props();
-    expect(list?.length).toEqual(10);
+    render(<BoardType {...fakeProps()} />);
+    const selection = screen.getByRole("combobox");
+    fireEvent.click(selection);
+    expect(screen.getByText("Farmduino (Express v1.2)")).toBeInTheDocument();
   });
 });

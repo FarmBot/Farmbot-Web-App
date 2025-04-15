@@ -29,12 +29,10 @@ describe("<NavLinks />", () => {
 
   it("toggles the mobile nav menu", () => {
     const p = fakeProps();
-    const close = jest.fn();
-    p.close = x => () => close(x);
     p.alertCount = 0;
     const wrapper = shallow(<NavLinks {...p} />);
     wrapper.find("Link").first().simulate("click");
-    expect(close).toHaveBeenCalledWith("mobileMenuOpen");
+    expect(p.close).toHaveBeenCalled();
     expect(wrapper.text()).not.toContain("0");
   });
 

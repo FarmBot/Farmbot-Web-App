@@ -194,6 +194,7 @@ export const SwitchCameraCalibrationMethod =
     const navigate = useNavigate();
     return <CameraCalibrationMethodConfig
       navigate={navigate}
+      dispatch={props.dispatch}
       wdEnvGet={key => envGet(key, prepopulateEnv(getEnv(props.resources)))}
       saveEnvVar={(key, value) =>
         props.dispatch(saveOrEditFarmwareEnv(props.resources)(
@@ -463,7 +464,7 @@ export const Connectivity = (props: WizardStepComponentProps) => {
   });
   return <div className={"connectivity"}>
     <ConnectivityDiagram rowData={data.rowData} />
-    <Diagnosis statusFlags={data.flags} />
+    <Diagnosis statusFlags={data.flags} dispatch={props.dispatch} />
   </div>;
 };
 
