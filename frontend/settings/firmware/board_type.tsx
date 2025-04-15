@@ -55,7 +55,7 @@ export const BoardType = (props: BoardTypeProps) => {
             warning(t(Content.FIRMWARE_UPGRADED),
               { title: t("Action may be required") });
           dispatch(updateConfig({ firmware_hardware }));
-        }} />;
+        }} />
     </Row>
   </Highlight>;
 };
