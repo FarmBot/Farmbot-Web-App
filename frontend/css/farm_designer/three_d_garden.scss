@@ -14,7 +14,12 @@
   z-index: -9999999;
 }
 
-.three-d-garden-loading-image,
+.three-d-garden-loading-container {
+  z-index: unset;
+  width: 100vw;
+  transform: translateX(22.5rem);
+}
+
 .promo-loading-image {
   height: 100vh;
 }
