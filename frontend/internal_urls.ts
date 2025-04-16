@@ -107,6 +107,7 @@ export namespace FilePath {
   export const emptyState = (bug: string) => `${images("empty_state")}/${bug}.png`;
   export const DEFAULT_ICON = image("generic-plant");
   export const DEFAULT_WEED_ICON = image("generic-weed");
+  export const THREE_D_GARDEN_LOADING = "/promo_loading_image.avif";
 }
 
 export enum Icon {

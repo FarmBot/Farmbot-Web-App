@@ -7,7 +7,7 @@ import { AddPlantProps } from "./bed";
 import { TaggedGenericPointer, TaggedWeedPointer } from "farmbot";
 import { SlotWithTool } from "../resources/interfaces";
 import { NavigateFunction } from "react-router";
-import { Path } from "../internal_urls";
+import { FilePath, Path } from "../internal_urls";
 import { t } from "../i18next_wrapper";
 import { Actions, Content, DeviceSetting } from "../constants";
 import { isMobile } from "../screen_size";
@@ -30,7 +30,16 @@ export interface ThreeDGardenProps {
 export const ThreeDGarden = (props: ThreeDGardenProps) => {
   return <div className={"three-d-garden"}>
     <div className={"garden-bed-3d-model"}>
-      <React.Suspense>
+      <React.Suspense
+        fallback={
+          <div className={"three-d-garden-loading-container"}>
+            <img className={"three-d-garden-loading-image"}
+              src={FilePath.THREE_D_GARDEN_LOADING}
+              alt={"Loading 3D interactive experience..."} />
+            <h1 className={"three-d-garden-loading-text"}>
+              {t("Loading interactive 3D FarmBot...")}
+            </h1>
+          </div>}>
         <Canvas shadows={true}>
           <GardenModel
             config={props.config}

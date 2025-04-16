@@ -1,6 +1,7 @@
 @use "../variables" as *;
 @use "sass:color";
 
+.three-d-garden-loading-container,
 .promo-loading-container {
   display: grid;
   align-content: center;
@@ -13,10 +14,12 @@
   z-index: -9999999;
 }
 
+.three-d-garden-loading-image,
 .promo-loading-image {
   height: 100vh;
 }
 
+.three-d-garden-loading-text,
 .promo-loading-text {
   font-family: 'Inknut Antiqua', sans-serif;
   font-size: 2rem;
