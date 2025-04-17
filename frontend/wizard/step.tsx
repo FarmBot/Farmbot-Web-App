@@ -88,7 +88,6 @@ export const WizardStepContainer = (props: WizardStepContainerProps) => {
             <step.component setStepSuccess={setSuccess}
               bot={props.bot}
               dispatch={props.dispatch}
-              navigate={props.navigate}
               getConfigValue={props.getConfigValue}
               resources={props.resources} />}
           {step.controlsCheckOptions &&

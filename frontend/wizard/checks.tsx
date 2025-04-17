@@ -803,6 +803,7 @@ export const CameraReplacement = () =>
   </div>;
 
 export const Tour = (tourSlug: string) => {
+  const navigate = useNavigate();
   return (props: WizardStepComponentProps) =>
     <button className={"fb-button green tour-start"}
       title={t("Start tour")}
@@ -810,7 +811,7 @@ export const Tour = (tourSlug: string) => {
         const firstStep = TOURS()[tourSlug].steps[0];
         props.dispatch({ type: Actions.SET_TOUR, payload: tourSlug });
         props.dispatch({ type: Actions.SET_TOUR_STEP, payload: firstStep.slug });
-        props.navigate(tourPath(firstStep.url, tourSlug, firstStep.slug));
+        navigate(tourPath(firstStep.url, tourSlug, firstStep.slug));
       }}>
       {t("Start tour")}
     </button>;

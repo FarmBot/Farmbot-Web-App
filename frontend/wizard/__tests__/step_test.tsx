@@ -45,7 +45,6 @@ describe("<WizardStepContainer />", () => {
     resources: buildResourceIndex([]).index,
     bot: bot,
     dispatch: jest.fn(),
-    navigate: jest.fn(),
     getConfigValue: jest.fn(),
   });
 

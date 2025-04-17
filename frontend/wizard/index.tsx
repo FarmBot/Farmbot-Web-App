@@ -14,7 +14,7 @@ import {
   WIZARD_STEPS, WizardSectionSlug, WizardStepSlug, setupProgressString,
 } from "./data";
 import {
-  SetupWizardProps, SetupWizardState, WizardHeaderProps, WizardResults,
+  SetupWizardProps, WizardHeaderProps, WizardResults,
   WizardSectionHeaderProps, WizardSectionsOpen, WizardStepDataProps,
 } from "./interfaces";
 import {
@@ -32,7 +32,6 @@ import {
   completeSetup,
   resetSetup,
 } from "./actions";
-import { NavigationContext } from "../routes_helpers";
 
 export const mapStateToProps = (props: Everything): SetupWizardProps => ({
   resources: props.resources.index,
@@ -45,31 +44,33 @@ export const mapStateToProps = (props: Everything): SetupWizardProps => ({
   device: maybeGetDevice(props.resources.index),
 });
 
-export class RawSetupWizard
-  extends React.Component<SetupWizardProps, SetupWizardState> {
+export const RawSetupWizard = (props: SetupWizardProps) => {
+  const stepDataProps: WizardStepDataProps = {
+    firmwareHardware: props.firmwareHardware,
+    getConfigValue: props.getConfigValue,
+  };
+  const wizardSections = WIZARD_SECTIONS(stepDataProps);
+  const wizardSteps = WIZARD_STEPS(stepDataProps);
+  const wizardStepSlugs = WIZARD_STEP_SLUGS(stepDataProps);
 
-  get stepDataProps(): WizardStepDataProps {
-    return {
-      firmwareHardware: this.props.firmwareHardware,
-      getConfigValue: this.props.getConfigValue,
-    };
-  }
+  const results: WizardResults =
+    props.wizardStepResults
+      .reduce((acc, result) => {
+        acc[result.body.slug as WizardStepSlug] = result.body;
+        return acc;
+      }, {} as WizardResults);
 
-  get results() {
-    const results: WizardResults = {};
-    this.props.wizardStepResults.map(result => {
-      results[result.body.slug as WizardStepSlug] = result.body;
-    });
-    return results;
-  }
+  const [currentlyOpenStep, setCurrentlyOpenStep] =
+    React.useState<WizardStepSlug | undefined>(wizardStepSlugs
+      .filter(slug => !results[slug]?.answer)[0]);
 
-  sectionsOpen = () => {
+  const sectionsOpenInit = () => {
     const open: Partial<WizardSectionsOpen> = {};
     let oneOpen = false;
-    WIZARD_SECTIONS(this.stepDataProps).map(section => {
+    wizardSections.map(section => {
       if (!oneOpen) {
         const sectionOpen = some(section.steps.map(step =>
-          !this.results[step.slug]?.answer));
+          !results[step.slug]?.answer));
         open[section.slug] = sectionOpen;
         oneOpen = sectionOpen || oneOpen;
       }
@@ -77,129 +78,131 @@ export class RawSetupWizard
     return open as WizardSectionsOpen;
   };
 
-  state: SetupWizardState = {
-    ...this.sectionsOpen(),
-    stepOpen: WIZARD_STEP_SLUGS(this.stepDataProps)
-      .filter(slug => !this.results[slug]?.answer)[0],
-  };
+  const allSectionsClosed: WizardSectionsOpen =
+    wizardSections
+      .reduce((acc, section) => {
+        acc[section.slug] = false;
+        return acc;
+      }, {} as WizardSectionsOpen);
 
-  reset = () => {
-    this.props.dispatch(destroyAllWizardStepResults(
-      this.props.wizardStepResults))
+  const [sectionsOpen, setSectionsOpen] =
+    React.useState<WizardSectionsOpen>(sectionsOpenInit());
+
+  const reset = () => {
+    props.dispatch(destroyAllWizardStepResults(
+      props.wizardStepResults))
       .then(() => {
-        this.setState({
-          stepOpen: WIZARD_STEP_SLUGS(this.stepDataProps)[0],
-          ...this.closedSections,
-          ...this.sectionsOpen(),
+        setCurrentlyOpenStep(wizardStepSlugs[0]);
+        setSectionsOpen({
+          ...allSectionsClosed,
+          [stepSection(wizardStepSlugs[0])]: true,
         });
-        this.props.dispatch(resetSetup(this.props.device));
+        props.dispatch(resetSetup(props.device));
       })
       .catch(noop);
   };
 
-  get closedSections() {
-    const sectionStates: Partial<Record<WizardSectionSlug, boolean>> = {};
-    WIZARD_SECTIONS(this.stepDataProps)
-      .map(section => { sectionStates[section.slug] = false; });
-    return sectionStates;
-  }
-
-  updateData = (
+  const updateData = (
     stepResult: WizardStepResult,
     nextStepSlug?: WizardStepSlug,
     last?: boolean,
   ) => () => {
-    this.props.dispatch(addOrUpdateWizardStepResult(
-      this.props.wizardStepResults, stepResult))
+    props.dispatch(addOrUpdateWizardStepResult(
+      props.wizardStepResults, stepResult))
       .then(() => {
-        this.setState({
-          stepOpen: last ? undefined : (nextStepSlug || this.state.stepOpen),
-          ...((last || nextStepSlug) ? this.closedSections : {}),
-          ...(nextStepSlug ? { [this.stepSection(nextStepSlug)]: true } : {}),
-        });
-        this.props.wizardStepResults.filter(result => result.body.answer).length
-          == WIZARD_STEPS(this.stepDataProps).length
-          && this.props.dispatch(completeSetup(this.props.device));
+        if (last) {
+          setCurrentlyOpenStep(undefined);
+          setSectionsOpen(allSectionsClosed);
+        }
+        if (nextStepSlug) {
+          setCurrentlyOpenStep(nextStepSlug);
+          setSectionsOpen({
+            ...allSectionsClosed,
+            [stepSection(nextStepSlug)]: true,
+          });
+        }
+        props.wizardStepResults.filter(result =>
+          result.body.answer).length == wizardSteps.length
+          && props.dispatch(completeSetup(props.device));
       });
   };
 
-  getNextStepSlug = (stepSlug: WizardStepSlug) => {
-    const slugs = WIZARD_STEP_SLUGS(this.stepDataProps)
-      .filter(slug => this.props.device?.body.setup_completed_at
-        || !this.results[slug]?.answer);
+  const getNextStepSlug = (stepSlug: WizardStepSlug) => {
+    const slugs = wizardStepSlugs
+      .filter(slug => props.device?.body.setup_completed_at
+        || !results[slug]?.answer);
     return slugs[slugs.indexOf(stepSlug) + 1];
   };
 
-  setStepSuccess = (stepSlug: WizardStepSlug) =>
+  const setStepSuccess = (stepSlug: WizardStepSlug) =>
     (success: boolean, outcome?: string) => {
-      const nextSlug = success ? this.getNextStepSlug(stepSlug) : undefined;
-      return this.updateData({
+      const nextSlug = success ? getNextStepSlug(stepSlug) : undefined;
+      return updateData({
         slug: stepSlug,
         outcome: success
           ? undefined
-          : (outcome || this.results[stepSlug]?.outcome),
+          : (outcome || results[stepSlug]?.outcome),
         answer: success,
       }, nextSlug, success && isUndefined(nextSlug));
     };
 
-  toggleSection = (slug: WizardSectionSlug) => () =>
-    this.setState({ ...this.state, [slug]: !this.state[slug] });
+  const stepSection = (stepSlug: WizardStepSlug): WizardSectionSlug =>
+    wizardSteps.filter(step => step.slug == stepSlug)[0].section;
 
-  stepSection = (stepSlug: WizardStepSlug): WizardSectionSlug =>
-    WIZARD_STEPS(this.stepDataProps)
-      .filter(step => step.slug == stepSlug)[0].section;
+  const openStep = (stepSlug: WizardStepSlug) => () => {
+    setCurrentlyOpenStep(currentlyOpenStep == stepSlug ? undefined : stepSlug);
+    setSectionsOpen({
+      ...sectionsOpen,
+      [stepSection(stepSlug)]: true,
+    });
+  };
 
-  openStep = (stepSlug: WizardStepSlug) => () => this.setState({
-    stepOpen: this.state.stepOpen == stepSlug ? undefined : stepSlug,
-    [this.stepSection(stepSlug)]: true,
-  });
+  const toggleSection = (sectionSlug: WizardSectionSlug) => () => {
+    setSectionsOpen({
+      ...sectionsOpen,
+      [sectionSlug]: !sectionsOpen[sectionSlug],
+    });
+  };
 
-  static contextType = NavigationContext;
-  context!: React.ContextType<typeof NavigationContext>;
-  navigate = this.context;
-
-  render() {
-    const panelName = "setup";
-    return <DesignerPanel panelName={panelName} panel={Panel.Controls}>
-      <DesignerPanelTop panel={Panel.Controls} />
-      <DesignerPanelContent panelName={panelName}>
-        <WizardHeader reset={this.reset} results={this.props.wizardStepResults}
-          stepDataProps={this.stepDataProps} />
-        {WIZARD_SECTIONS(this.stepDataProps)
-          .map(section =>
-            <div className={"wizard-section"} key={section.slug}>
-              <WizardSectionHeader
-                toggleSection={this.toggleSection}
-                results={this.results}
-                section={section}
-                sectionOpen={this.state[section.slug]} />
-              <Collapse isOpen={this.state[section.slug]}>
-                {section.steps.map(step =>
-                  <WizardStepContainer
-                    key={step.slug}
-                    step={step}
-                    results={this.results}
-                    section={section}
-                    stepOpen={this.state.stepOpen}
-                    openStep={this.openStep}
-                    setStepSuccess={this.setStepSuccess}
-                    timeSettings={this.props.timeSettings}
-                    bot={this.props.bot}
-                    dispatch={this.props.dispatch}
-                    getConfigValue={this.props.getConfigValue}
-                    navigate={this.navigate}
-                    resources={this.props.resources} />)}
-              </Collapse>
-            </div>)}
-        {this.props.device?.body.setup_completed_at &&
-          <div className={"setup-complete row half-gap"}>
-            <Saucer color={"green"}><i className={"fa fa-check"} /></Saucer>
-            <p>{t("Setup Complete!")}</p>
-          </div>}
-      </DesignerPanelContent>
-    </DesignerPanel>;
-  }
-}
+  const panelName = "setup";
+  return <DesignerPanel panelName={panelName} panel={Panel.Controls}>
+    <DesignerPanelTop panel={Panel.Controls} />
+    <DesignerPanelContent panelName={panelName}>
+      <WizardHeader reset={reset} results={props.wizardStepResults}
+        stepDataProps={stepDataProps} />
+      {wizardSections
+        .map(section =>
+          <div className={"wizard-section"} key={section.slug}>
+            <WizardSectionHeader
+              toggleSection={toggleSection}
+              results={results}
+              section={section}
+              sectionOpen={sectionsOpen[section.slug]} />
+            <Collapse isOpen={sectionsOpen[section.slug]}>
+              {section.steps.map(step =>
+                <WizardStepContainer
+                  key={step.slug}
+                  step={step}
+                  results={results}
+                  section={section}
+                  stepOpen={currentlyOpenStep}
+                  openStep={openStep}
+                  setStepSuccess={setStepSuccess}
+                  timeSettings={props.timeSettings}
+                  bot={props.bot}
+                  dispatch={props.dispatch}
+                  getConfigValue={props.getConfigValue}
+                  resources={props.resources} />)}
+            </Collapse>
+          </div>)}
+      {props.device?.body.setup_completed_at &&
+        <div className={"setup-complete row half-gap"}>
+          <Saucer color={"green"}><i className={"fa fa-check"} /></Saucer>
+          <p>{t("Setup Complete!")}</p>
+        </div>}
+    </DesignerPanelContent>
+  </DesignerPanel>;
+};
 
 const WizardHeader = (props: WizardHeaderProps) =>
   <div className={"wizard-header row grid-exp-1"}>

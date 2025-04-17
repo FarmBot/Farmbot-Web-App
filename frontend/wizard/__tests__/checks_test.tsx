@@ -104,7 +104,6 @@ const fakeProps = (): WizardStepComponentProps => ({
   resources: buildResourceIndex([fakeDevice()]).index,
   bot: bot,
   dispatch: mockDispatch(),
-  navigate: jest.fn(),
   getConfigValue: jest.fn(),
 });
 
@@ -792,7 +791,7 @@ describe("<Tour />", () => {
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_TOUR, payload: "gettingStarted",
     });
-    expect(p.navigate).toHaveBeenCalledWith(
+    expect(mockNavigate).toHaveBeenCalledWith(
       tourPath("", "gettingStarted", "intro"));
   });
 });

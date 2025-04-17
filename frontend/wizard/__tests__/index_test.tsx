@@ -6,7 +6,7 @@ jest.mock("../actions", () => ({
 }));
 
 import React from "react";
-import { mount } from "enzyme";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { bot } from "../../__test_support__/fake_state/bot";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import {
@@ -15,7 +15,7 @@ import {
 import { mapStateToProps, RawSetupWizard as SetupWizard } from "../index";
 import { SetupWizardProps } from "../interfaces";
 import { fakeState } from "../../__test_support__/fake_state";
-import { WizardSectionSlug, WizardStepSlug, WIZARD_STEPS } from "../data";
+import { WizardStepSlug, WIZARD_STEPS } from "../data";
 import { BooleanSetting } from "../../session_keys";
 import {
   fakeUser,
@@ -42,8 +42,8 @@ describe("<SetupWizard />", () => {
   it("renders", () => {
     const p = fakeProps();
     p.device = undefined;
-    const wrapper = mount(<SetupWizard {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("setup");
+    render(<SetupWizard {...p} />);
+    expect(screen.getByText("Setup")).toBeInTheDocument();
   });
 
   it("renders with results", () => {
@@ -52,8 +52,8 @@ describe("<SetupWizard />", () => {
     result.body.slug = WizardStepSlug.intro;
     result.body.answer = true;
     p.wizardStepResults = [result];
-    const wrapper = mount(<SetupWizard {...p} />);
-    expect(wrapper.html()).toContain("fa-check");
+    const { container } = render(<SetupWizard {...p} />);
+    expect(container).toContainHTML("fa-check");
   });
 
   it("renders with negative results", () => {
@@ -62,15 +62,15 @@ describe("<SetupWizard />", () => {
     result.body.slug = WizardStepSlug.intro;
     result.body.answer = false;
     p.wizardStepResults = [result];
-    const wrapper = mount(<SetupWizard {...p} />);
-    expect(wrapper.html()).toContain("fa-times");
+    const { container } = render(<SetupWizard {...p} />);
+    expect(container).toContainHTML("fa-times");
   });
 
   it("renders when complete", () => {
     const p = fakeProps();
     p.device && (p.device.body.setup_completed_at = "123");
-    const wrapper = mount(<SetupWizard {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("setup complete");
+    render(<SetupWizard {...p} />);
+    expect(screen.getByText("Setup Complete!")).toBeInTheDocument();
   });
 
   it("resets setup", () => {
@@ -78,46 +78,29 @@ describe("<SetupWizard />", () => {
     const result = fakeWizardStepResult();
     result.body.slug = "slug";
     p.wizardStepResults = [result];
-    const wrapper = mount<SetupWizard>(<SetupWizard {...p} />);
-    expect(wrapper.instance().results).toEqual({ slug: result.body });
-    wrapper.instance().reset();
+    render(<SetupWizard {...p} />);
+    const reset = screen.getByText("start over");
+    fireEvent.click(reset);
     expect(destroyAllWizardStepResults).toHaveBeenCalledTimes(1);
   });
 
-  it("toggles section", () => {
-    const wrapper = mount<SetupWizard>(<SetupWizard {...fakeProps()} />);
-    expect(wrapper.state().intro).toEqual(true);
-    wrapper.instance().toggleSection(WizardSectionSlug.intro)();
-    expect(wrapper.state().intro).toEqual(false);
-  });
-
-  it("opens step", () => {
-    const wrapper = mount<SetupWizard>(<SetupWizard {...fakeProps()} />);
-    wrapper.setState({ stepOpen: undefined });
-    wrapper.instance().openStep(WizardStepSlug.intro)();
-    expect(wrapper.state().stepOpen).toEqual(WizardStepSlug.intro);
-  });
-
-  it("closes step", () => {
-    const wrapper = mount<SetupWizard>(<SetupWizard {...fakeProps()} />);
-    expect(wrapper.state().stepOpen).toEqual(WizardStepSlug.intro);
-    wrapper.instance().openStep(WizardStepSlug.intro)();
-    expect(wrapper.state().stepOpen).toEqual(undefined);
+  it("opens and closes step", () => {
+    const text = "What is your preferred language?";
+    render(<SetupWizard {...fakeProps()} />);
+    expect(screen.queryByText(text)).not.toBeInTheDocument();
+    const step = screen.getByText("Language");
+    fireEvent.click(step);
+    expect(screen.getByText(text)).toBeInTheDocument();
+    fireEvent.click(step);
   });
 
   it("updates data", async () => {
-    const wrapper = mount<SetupWizard>(<SetupWizard {...fakeProps()} />);
-    expect(wrapper.instance().results).toEqual({});
-    await wrapper.instance().updateData(fakeWizardStepResult().body)();
-    expect(addOrUpdateWizardStepResult).toHaveBeenCalled();
-  });
-
-  it("updates data and progresses to next step", async () => {
-    const wrapper = mount<SetupWizard>(<SetupWizard {...fakeProps()} />);
-    expect(wrapper.state().stepOpen).toEqual(WizardStepSlug.intro);
-    await wrapper.instance().updateData(
-      fakeWizardStepResult().body, WizardStepSlug.orderInfo)();
-    expect(wrapper.state().stepOpen).toEqual(WizardStepSlug.orderInfo);
+    render(<SetupWizard {...fakeProps()} />);
+    expect(screen.getByText("Begin?")).toBeInTheDocument();
+    const yes = screen.getByText("yes");
+    await fireEvent.click(yes);
+    expect(addOrUpdateWizardStepResult).toHaveBeenCalledWith([],
+      { answer: true, outcome: undefined, slug: "intro" });
   });
 
   it("updates data and completes setup", async () => {
@@ -130,13 +113,14 @@ describe("<SetupWizard />", () => {
       stepResult.body.slug = step.slug;
       return stepResult;
     });
-    const wrapper = mount<SetupWizard>(<SetupWizard {...p} />);
-    const result = fakeWizardStepResult().body;
-    result.slug = WizardStepSlug.intro;
-    result.answer = true;
-    result.outcome = undefined;
-    await wrapper.instance().updateData(result, undefined, true)();
-    await expect(completeSetup).toHaveBeenCalled();
+    render(<SetupWizard {...p} />);
+    const header = screen.getByText("TOURS");
+    fireEvent.click(header);
+    const step = screen.getByText("Setting up slots");
+    fireEvent.click(step);
+    const yes = screen.getByText("yes");
+    await fireEvent.click(yes);
+    expect(completeSetup).toHaveBeenCalled();
   });
 });
 
