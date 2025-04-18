@@ -18,9 +18,12 @@ describe("refilterLogsMiddleware.fn()", () => {
 
   it("ignores unrelated and incomplete actions", () => {
     fn({ type: "any", payload: {} } as unknown as ReduxAction<{}>);
-    fn({ type: Actions.SAVE_RESOURCE_OK } as any);
-    fn({ type: Actions.SAVE_RESOURCE_OK, payload: {} } as any);
-    fn({ type: Actions.SAVE_RESOURCE_OK, payload: { kind: "WebAppConfig" } } as any);
+    fn({ type: Actions.SAVE_RESOURCE_OK } as ReduxAction<undefined>);
+    fn({ type: Actions.SAVE_RESOURCE_OK, payload: {} } as ReduxAction<{}>);
+    fn({
+      type: Actions.SAVE_RESOURCE_OK,
+      payload: { kind: "WebAppConfig" },
+    } as ReduxAction<{ kind: string }>);
     expect(throttledLogRefresh).not.toHaveBeenCalled();
   });
 

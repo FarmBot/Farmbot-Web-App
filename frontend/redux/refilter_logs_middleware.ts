@@ -25,17 +25,19 @@ export const fn: Middleware = () => (dispatch) => (action: any) => {
     return dispatch(action);
   }
 
-  const body = payload.body || {};
+  const body = payload.body ?? {};
 
-  // Log related keys present in the update
-  const presentLogKeys = Object.keys(body)
-    .filter((key): key is LogField => LOG_RELATED_FIELDS.includes(key as LogField));
-
-  // Check if any have changed
-  const changed = presentLogKeys.some((k) => cache[k] !== body[k]);
-
-  // Update cache
-  presentLogKeys.forEach((k) => { cache[k] = body[k]; });
+  // Check for any log related field that both exists in the update
+  // and whose value differs from the cache
+  const changed = LOG_RELATED_FIELDS.some((key): key is LogField => {
+    if (key in body) {
+      const newValue = (body as Record<string, unknown>)[key];
+      const isChanged = cache[key] !== newValue;
+      cache[key] = newValue;
+      return isChanged;
+    }
+    return false;
+  });
 
   if (changed) {
     throttledLogRefresh(dispatch);
