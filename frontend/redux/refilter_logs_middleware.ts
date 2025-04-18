@@ -6,16 +6,40 @@ import { throttledLogRefresh } from "./refresh_logs";
 
 const WEB_APP_CONFIG: ResourceName = "WebAppConfig";
 
-/**
- * Middleware function that listens for changes on the `WebAppConfig` resource.
- * If the resource does change, it will trigger a throttled refresh of all log
- * resources, downloading the filtered log list as required from the API. */
+const LOG_RELATED_FIELDS = [
+  "success_log", "busy_log", "warn_log", "error_log",
+  "info_log", "fun_log", "debug_log", "assertion_log",
+] as const;
+
+// Cache the last seen values of each log related field
+export type LogField = typeof LOG_RELATED_FIELDS[number];
+const cache: Partial<Record<LogField, unknown>> = {};
+
+// Refresh logs only when a log related WebAppConfig is changed
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const fn: Middleware = () => (dispatch) => (action: any) => {
-  const needsRefresh = action?.payload?.kind === WEB_APP_CONFIG
-    && action.type === Actions.SAVE_RESOURCE_OK;
+  const { type, payload } = action;
 
-  needsRefresh && throttledLogRefresh(dispatch);
+  // Only proceed for WebAppConfig save actions
+  if (type !== Actions.SAVE_RESOURCE_OK || payload?.kind !== WEB_APP_CONFIG) {
+    return dispatch(action);
+  }
+
+  const body = payload.body || {};
+
+  // Log related keys present in the update
+  const presentLogKeys = Object.keys(body)
+    .filter((key): key is LogField => LOG_RELATED_FIELDS.includes(key as LogField));
+
+  // Check if any have changed
+  const changed = presentLogKeys.some((k) => cache[k] !== body[k]);
+
+  // Update cache
+  presentLogKeys.forEach((k) => { cache[k] = body[k]; });
+
+  if (changed) {
+    throttledLogRefresh(dispatch);
+  }
 
   return dispatch(action);
 };
