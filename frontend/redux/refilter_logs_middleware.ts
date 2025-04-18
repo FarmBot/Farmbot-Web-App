@@ -1,7 +1,7 @@
 import { Actions } from "../constants";
 import { Middleware } from "redux";
 import { MiddlewareConfig } from "./middlewares";
-import { ResourceName } from "farmbot";
+import { ResourceName, TaggedResource } from "farmbot";
 import { throttledLogRefresh } from "./refresh_logs";
 
 const WEB_APP_CONFIG: ResourceName = "WebAppConfig";
@@ -13,25 +13,29 @@ const LOG_RELATED_FIELDS = [
 
 // Cache the last seen values of each log related field
 export type LogField = typeof LOG_RELATED_FIELDS[number];
-const cache: Partial<Record<LogField, unknown>> = {};
+const cache: Partial<Record<LogField, number>> = {};
+
+interface ResourceAction {
+  type: Actions;
+  payload: TaggedResource;
+}
 
 // Refresh logs only when a log related WebAppConfig is changed
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export const fn: Middleware = () => (dispatch) => (action: any) => {
+export const fn: Middleware = () => (dispatch) => (action: ResourceAction) => {
   const { type, payload } = action;
 
   // Only proceed for WebAppConfig save actions
-  if (type !== Actions.SAVE_RESOURCE_OK || payload?.kind !== WEB_APP_CONFIG) {
+  if (type !== Actions.SAVE_RESOURCE_OK || payload.kind !== WEB_APP_CONFIG) {
     return dispatch(action);
   }
 
-  const body = payload.body ?? {};
+  const { body } = payload;
 
   // Check for any log related field that both exists in the update
   // and whose value differs from the cache
   const changed = LOG_RELATED_FIELDS.some((key): key is LogField => {
     if (key in body) {
-      const newValue = (body as Record<string, unknown>)[key];
+      const newValue = body[key];
       const isChanged = cache[key] !== newValue;
       cache[key] = newValue;
       return isChanged;
