@@ -260,28 +260,28 @@ export const SEED_DATA_OPTIONS = (displayAll = false): DropDownItem[] => [
   ...((shouldDisplayFeature(Feature.farmduino_k18) || displayAll)
     ? [{ label: "Genesis v1.8", value: "genesis_1.8" }]
     : []),
-  { label: "Genesis v1.7", value: "genesis_1.7" },
-  { label: "Genesis v1.6", value: "genesis_1.6" },
-  { label: "Genesis v1.5", value: "genesis_1.5" },
-  { label: "Genesis v1.4", value: "genesis_1.4" },
-  { label: "Genesis v1.3", value: "genesis_1.3" },
-  { label: "Genesis v1.2", value: "genesis_1.2" },
   ...((shouldDisplayFeature(Feature.farmduino_k18) || displayAll)
     ? [{ label: "Genesis v1.8 XL", value: "genesis_xl_1.8" }]
     : []),
+  { label: "Genesis v1.7", value: "genesis_1.7" },
   { label: "Genesis v1.7 XL", value: "genesis_xl_1.7" },
+  { label: "Genesis v1.6", value: "genesis_1.6" },
   { label: "Genesis v1.6 XL", value: "genesis_xl_1.6" },
+  { label: "Genesis v1.5", value: "genesis_1.5" },
   { label: "Genesis v1.5 XL", value: "genesis_xl_1.5" },
+  { label: "Genesis v1.4", value: "genesis_1.4" },
   { label: "Genesis v1.4 XL", value: "genesis_xl_1.4" },
+  { label: "Genesis v1.3", value: "genesis_1.3" },
+  { label: "Genesis v1.2", value: "genesis_1.2" },
   ...((shouldDisplayFeature(Feature.express_k12) || displayAll)
     ? [{ label: "Express v1.2", value: "express_1.2" }]
     : []),
-  { label: "Express v1.1", value: "express_1.1" },
-  { label: "Express v1.0", value: "express_1.0" },
   ...((shouldDisplayFeature(Feature.express_k12) || displayAll)
     ? [{ label: "Express v1.2 XL", value: "express_xl_1.2" }]
     : []),
+  { label: "Express v1.1", value: "express_1.1" },
   { label: "Express v1.1 XL", value: "express_xl_1.1" },
+  { label: "Express v1.0", value: "express_1.0" },
   { label: "Express v1.0 XL", value: "express_xl_1.0" },
   { label: "Custom Bot", value: "none" },
 ];
