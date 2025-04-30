@@ -68,7 +68,6 @@ GEM
     addressable (2.8.7)
       public_suffix (>= 2.0.2, < 7.0)
     amq-protocol (2.3.3)
-    ast (2.4.3)
     base64 (0.2.0)
     bcrypt (3.1.20)
     bigdecimal (3.1.9)
@@ -119,7 +118,7 @@ GEM
       railties (>= 5.0.0)
     faker (3.5.1)
       i18n (>= 1.8.11, < 2)
-    faraday (2.13.0)
+    faraday (2.13.1)
       faraday-net_http (>= 2.0, < 3.5)
       json
       logger
@@ -137,7 +136,7 @@ GEM
       mutex_m
       representable (~> 3.0)
       retriable (>= 2.0, < 4.a)
-    google-apis-iamcredentials_v1 (0.22.0)
+    google-apis-iamcredentials_v1 (0.23.0)
       google-apis-core (>= 0.15.0, < 2.a)
     google-apis-storage_v1 (0.50.0)
       google-apis-core (>= 0.15.0, < 2.a)
@@ -148,7 +147,7 @@ GEM
       base64 (~> 0.2)
       faraday (>= 1.0, < 3.a)
     google-cloud-errors (1.5.0)
-    google-cloud-storage (1.55.0)
+    google-cloud-storage (1.56.0)
       addressable (~> 2.8)
       digest-crc (~> 0.4)
       google-apis-core (~> 0.13)
@@ -172,7 +171,7 @@ GEM
       mutex_m
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
-    json (2.10.2)
+    json (2.11.3)
     jsonapi-renderer (0.2.2)
     jwt (2.10.1)
       base64
@@ -212,7 +211,7 @@ GEM
     mutex_m (0.3.0)
     net-http (0.6.0)
       uri
-    net-imap (0.5.6)
+    net-imap (0.5.8)
       date
       net-protocol
     net-pop (0.1.2)
@@ -222,15 +221,12 @@ GEM
     net-smtp (0.5.1)
       net-protocol
     nio4r (2.7.4)
-    nokogiri (1.18.7-aarch64-linux-gnu)
+    nokogiri (1.18.8-aarch64-linux-gnu)
       racc (~> 1.4)
-    nokogiri (1.18.7-x86_64-linux-gnu)
+    nokogiri (1.18.8-x86_64-linux-gnu)
       racc (~> 1.4)
     orm_adapter (0.5.0)
     os (1.1.4)
-    parser (3.3.7.4)
-      ast (~> 2.4.1)
-      racc
     passenger (6.0.27)
       rack (>= 1.6.13)
       rackup (>= 1.0.1)
@@ -241,7 +237,7 @@ GEM
       method_source (~> 1.0)
     pry-rails (0.3.11)
       pry (>= 0.13.0)
-    public_suffix (6.0.1)
+    public_suffix (6.0.2)
     rabbitmq_http_api_client (3.0.0)
       addressable (~> 2.7)
       faraday (~> 2.9)
@@ -333,8 +329,6 @@ GEM
     scenic (1.8.0)
       activerecord (>= 4.0.0)
       railties (>= 4.0.0)
-    scout_apm (5.6.2)
-      parser
     secure_headers (7.1.0)
     set (1.1.1)
     signet (0.19.0)
@@ -354,8 +348,9 @@ GEM
     sorted_set (1.0.3)
       rbtree
       set (~> 1.0)
-    sprockets (4.2.1)
+    sprockets (4.2.2)
       concurrent-ruby (~> 1.0)
+      logger
       rack (>= 2.2.4, < 4)
     sprockets-rails (3.5.2)
       actionpack (>= 6.1)
@@ -426,7 +421,6 @@ DEPENDENCIES
   rspec-rails
   rspec_junit_formatter
   scenic
-  scout_apm
   secure_headers
   simplecov
   simplecov-cobertura
@@ -437,7 +431,7 @@ DEPENDENCIES
   webmock
 
 RUBY VERSION
-   ruby 3.3.7p123
+   ruby 3.3.8p144
 
 BUNDLED WITH
-   2.6.5
+   2.6.8

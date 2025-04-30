@@ -1,5 +1,5 @@
 source "https://rubygems.org"
-ruby "~> 3.3.7"
+ruby "~> 3.3.8"
 
 gem "rails", "~> 6"
 gem "active_model_serializers"
@@ -28,7 +28,6 @@ gem "tzinfo-data" # For validation of user selected timezone names
 gem "valid_url"
 gem "thwait"
 gem "lograge" # Used to filter repetitive RabbitMQ logs.
-gem "scout_apm"
 
 group :development, :test do
   gem "climate_control"
