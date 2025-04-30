@@ -31,7 +31,7 @@ export class DemoIframe extends React.Component<{}, State> {
   state: State = {
     error: undefined,
     stage: t("DEMO THE APP"),
-    productLine: "genesis_1.7",
+    productLine: "genesis_1.8",
   };
 
   setError = (error?: Error) => this.setState({ error });

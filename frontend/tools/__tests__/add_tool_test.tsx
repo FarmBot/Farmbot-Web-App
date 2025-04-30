@@ -111,6 +111,7 @@ describe("<AddTool />", () => {
     ["farmduino_k15", 8],
     ["farmduino_k16", 9],
     ["farmduino_k17", 9],
+    ["farmduino_k18", 9],
     ["express_k10", 3],
     ["express_k11", 3],
     ["express_k12", 3],

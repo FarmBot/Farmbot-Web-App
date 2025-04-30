@@ -29,6 +29,7 @@ describe("getModifiedClassName()", () => {
     [BooleanSetting.hide_sensors, "farmduino_k15", ""],
     [BooleanSetting.hide_sensors, "farmduino_k16", ""],
     [BooleanSetting.hide_sensors, "farmduino_k17", ""],
+    [BooleanSetting.hide_sensors, "farmduino_k18", ""],
     [BooleanSetting.hide_sensors, "express_k10", "modified"],
     [BooleanSetting.hide_sensors, "express_k11", "modified"],
     [BooleanSetting.hide_sensors, "express_k12", "modified"],

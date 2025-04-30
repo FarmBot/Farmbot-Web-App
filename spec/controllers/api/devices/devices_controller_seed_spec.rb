@@ -753,6 +753,81 @@ describe Api::DevicesController do
       expect(settings_default_map_size_y?(device)).to eq(1230)
     end
 
+    it "seeds accounts with Genesis 1.8 data" do
+      start_tests "genesis_1.8"
+
+      expect(peripherals_lighting?(device).pin).to eq(7)
+      expect(peripherals_peripheral_4?(device).pin).to eq(10)
+      expect(peripherals_peripheral_5?(device).pin).to eq(12)
+      expect(peripherals_vacuum?(device).pin).to be(9)
+      expect(peripherals_water?(device).pin).to be(8)
+      expect(peripherals_rotary_tool?(device).pin).to eq(2)
+      expect(peripherals_rotary_tool_reverse?(device).pin).to eq(3)
+      expect(pin_bindings_button_1?(device).special_action).to eq("emergency_lock")
+      expect(pin_bindings_button_2?(device).special_action).to eq("emergency_unlock")
+      expect(plant_count?(device)).to eq(0)
+      expect(sensors_soil_sensor?(device).pin).to eq(59)
+      expect(sensors_tool_verification?(device).pin).to eq(63)
+      expect(settings_device_name?(device)).to eq(Names::GENESIS)
+      expect(settings_change_firmware_config_defaults?(device)).to be(true)
+      expect(settings_soil_height?(device)).to eq(-500)
+      expect(settings_gantry_height?(device)).to eq(120)
+      expect(settings_firmware?(device)).to eq("farmduino_k18")
+      expect(settings_hide_sensors?(device)).to be(false)
+      expect(tool_slots_slot_1?(device).name).to eq("Slot")
+      expect(tool_slots_slot_2?(device).name).to eq("Slot")
+      expect(tool_slots_slot_3?(device).name).to eq("Slot")
+      expect(tool_slots_slot_4?(device).name).to eq("Slot")
+      expect(tool_slots_slot_5?(device).name).to eq("Slot")
+      expect(tool_slots_slot_6?(device).name).to eq("Slot")
+      expect(tool_slots_slot_7?(device).name).to eq("Slot")
+      expect(tool_slots_slot_8?(device).name).to eq("Slot")
+      expect(tool_slots_slot_9?(device)).to_not be
+
+      check_slot_pairing(tool_slots_slot_1?(device), "Seeder")
+      check_slot_pairing(tool_slots_slot_2?(device), "Seed Bin")
+      check_slot_pairing(tool_slots_slot_3?(device), "Seed Tray")
+      check_slot_pairing(tool_slots_slot_4?(device), "Watering Nozzle")
+      check_slot_pairing(tool_slots_slot_5?(device), "Soil Sensor")
+      check_slot_pairing(tool_slots_slot_6?(device), "Rotary Tool")
+      check_slot_pairing(tool_slots_slot_7?(device), "Seed Trough 1")
+      check_slot_pairing(tool_slots_slot_8?(device), "Seed Trough 2")
+
+      expect(tools_seed_bin?(device)).to be
+      expect(tools_seed_tray?(device)).to be
+      expect(tools_seed_trough_1?(device)).to be
+      expect(tools_seed_trough_2?(device)).to be
+      expect(tools_seeder?(device)).to be_kind_of(Tool)
+      expect(tools_soil_sensor?(device)).to be_kind_of(Tool)
+      expect(tools_watering_nozzle?(device)).to be_kind_of(Tool)
+      expect(tools_weeder?(device)).to_not be
+      expect(tools_rotary?(device)).to be_kind_of(Tool)
+      expect(sequences_pickup_seed?(device)).to be
+      expect(sequences_plant_seed?(device)).to be_kind_of(Sequence)
+      expect(sequences_take_photo_of_plant?(device)).to be_kind_of(Sequence)
+      expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
+      expect(point_groups_spinach?(device)).to_not be
+      expect(point_groups_broccoli?(device)).to_not be
+      expect(point_groups_beet?(device)).to_not be
+      expect(point_groups_all_plants?(device)).to be_kind_of(PointGroup)
+      expect(point_groups_all_points?(device)).to be_kind_of(PointGroup)
+      expect(point_groups_all_weeds?(device)).to be_kind_of(PointGroup)
+      expect(sequences_find_home?(device)).to be_kind_of(Sequence)
+      expect(sequences_water_all_plants?(device)).to be_kind_of(Sequence)
+      expect(sequences_water_all?(device)).to be_kind_of(Sequence)
+      expect(sequences_photo_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_weed_detection_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_soil_height_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_dispense_water?(device)).to be_kind_of(Sequence)
+      expect(sequences_mount_tool?(device)).to be_kind_of(Sequence)
+      expect(sequences_dismount_tool?(device)).to be_kind_of(Sequence)
+      expect(sequences_mow_all_weeds?(device)).to be_kind_of(Sequence)
+      expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
+      expect(settings_default_map_size_x?(device)).to eq(2900)
+      expect(settings_default_map_size_y?(device)).to eq(1230)
+    end
+
     it "seeds accounts with Genesis XL 1.4 data" do
       start_tests "genesis_xl_1.4"
 
@@ -921,6 +996,81 @@ describe Api::DevicesController do
       expect(settings_soil_height?(device)).to eq(-500)
       expect(settings_gantry_height?(device)).to eq(120)
       expect(settings_firmware?(device)).to eq("farmduino_k17")
+      expect(settings_hide_sensors?(device)).to be(false)
+      expect(tool_slots_slot_1?(device).name).to eq("Slot")
+      expect(tool_slots_slot_2?(device).name).to eq("Slot")
+      expect(tool_slots_slot_3?(device).name).to eq("Slot")
+      expect(tool_slots_slot_4?(device).name).to eq("Slot")
+      expect(tool_slots_slot_5?(device).name).to eq("Slot")
+      expect(tool_slots_slot_6?(device).name).to eq("Slot")
+      expect(tool_slots_slot_7?(device).name).to eq("Slot")
+      expect(tool_slots_slot_8?(device).name).to eq("Slot")
+      expect(tool_slots_slot_9?(device)).to_not be
+
+      check_slot_pairing(tool_slots_slot_1?(device), "Seeder")
+      check_slot_pairing(tool_slots_slot_2?(device), "Seed Bin")
+      check_slot_pairing(tool_slots_slot_3?(device), "Seed Tray")
+      check_slot_pairing(tool_slots_slot_4?(device), "Watering Nozzle")
+      check_slot_pairing(tool_slots_slot_5?(device), "Soil Sensor")
+      check_slot_pairing(tool_slots_slot_6?(device), "Rotary Tool")
+      check_slot_pairing(tool_slots_slot_7?(device), "Seed Trough 1")
+      check_slot_pairing(tool_slots_slot_8?(device), "Seed Trough 2")
+
+      expect(tools_seed_bin?(device)).to be
+      expect(tools_seed_tray?(device)).to be
+      expect(tools_seed_trough_1?(device)).to be
+      expect(tools_seed_trough_2?(device)).to be
+      expect(tools_seeder?(device)).to be_kind_of(Tool)
+      expect(tools_soil_sensor?(device)).to be_kind_of(Tool)
+      expect(tools_watering_nozzle?(device)).to be_kind_of(Tool)
+      expect(tools_weeder?(device)).to_not be
+      expect(tools_rotary?(device)).to be_kind_of(Tool)
+      expect(sequences_pickup_seed?(device)).to be
+      expect(sequences_plant_seed?(device)).to be_kind_of(Sequence)
+      expect(sequences_take_photo_of_plant?(device)).to be_kind_of(Sequence)
+      expect(sequences_water_plant?(device)).to be_kind_of(Sequence)
+      expect(point_groups_spinach?(device)).to_not be
+      expect(point_groups_broccoli?(device)).to_not be
+      expect(point_groups_beet?(device)).to_not be
+      expect(point_groups_all_plants?(device)).to be_kind_of(PointGroup)
+      expect(point_groups_all_points?(device)).to be_kind_of(PointGroup)
+      expect(point_groups_all_weeds?(device)).to be_kind_of(PointGroup)
+      expect(sequences_find_home?(device)).to be_kind_of(Sequence)
+      expect(sequences_water_all_plants?(device)).to be_kind_of(Sequence)
+      expect(sequences_water_all?(device)).to be_kind_of(Sequence)
+      expect(sequences_photo_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_weed_detection_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_soil_height_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_grid?(device)).to be_kind_of(Sequence)
+      expect(sequences_dispense_water?(device)).to be_kind_of(Sequence)
+      expect(sequences_mount_tool?(device)).to be_kind_of(Sequence)
+      expect(sequences_dismount_tool?(device)).to be_kind_of(Sequence)
+      expect(sequences_mow_all_weeds?(device)).to be_kind_of(Sequence)
+      expect(sequences_pick_from_seed_tray?(device)).to be_kind_of(Sequence)
+      expect(settings_default_map_size_x?(device)).to eq(5900)
+      expect(settings_default_map_size_y?(device)).to eq(2730)
+    end
+
+    it "seeds accounts with Genesis XL 1.8 data" do
+      start_tests "genesis_xl_1.8"
+
+      expect(peripherals_lighting?(device).pin).to eq(7)
+      expect(peripherals_peripheral_4?(device).pin).to eq(10)
+      expect(peripherals_peripheral_5?(device).pin).to eq(12)
+      expect(peripherals_vacuum?(device).pin).to be(9)
+      expect(peripherals_water?(device).pin).to be(8)
+      expect(peripherals_rotary_tool?(device).pin).to eq(2)
+      expect(peripherals_rotary_tool_reverse?(device).pin).to eq(3)
+      expect(pin_bindings_button_1?(device).special_action).to eq("emergency_lock")
+      expect(pin_bindings_button_2?(device).special_action).to eq("emergency_unlock")
+      expect(plant_count?(device)).to eq(0)
+      expect(sensors_soil_sensor?(device).pin).to eq(59)
+      expect(sensors_tool_verification?(device).pin).to eq(63)
+      expect(settings_device_name?(device)).to eq(Names::GENESIS_XL)
+      expect(settings_change_firmware_config_defaults?(device)).to be(true)
+      expect(settings_soil_height?(device)).to eq(-500)
+      expect(settings_gantry_height?(device)).to eq(120)
+      expect(settings_firmware?(device)).to eq("farmduino_k18")
       expect(settings_hide_sensors?(device)).to be(false)
       expect(tool_slots_slot_1?(device).name).to eq("Slot")
       expect(tool_slots_slot_2?(device).name).to eq("Slot")

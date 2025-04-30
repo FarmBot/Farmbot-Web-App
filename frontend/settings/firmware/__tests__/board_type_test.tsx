@@ -98,5 +98,6 @@ describe("<BoardType/>", () => {
     const selection = screen.getByRole("combobox");
     fireEvent.click(selection);
     expect(screen.getByText("Farmduino (Express v1.2)")).toBeInTheDocument();
+    expect(screen.getByText("Farmduino (Genesis v1.8)")).toBeInTheDocument();
   });
 });

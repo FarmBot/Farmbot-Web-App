@@ -87,8 +87,8 @@ const DEFAULT_WEB_APP_CONFIG_VALUES: Record<Key, Value> = {
   view_celery_script: false,
   highlight_modified_settings: true,
   show_advanced_settings: false,
-  ["three_d_garden" as Key]: false,
-  ["dark_mode" as Key]: false,
+  three_d_garden: false,
+  dark_mode: false,
 };
 
 const DEFAULT_EXPRESS_WEB_APP_CONFIG_VALUES =
@@ -107,6 +107,7 @@ const getDefaultConfigValue =
         case "farmduino_k15":
         case "farmduino_k16":
         case "farmduino_k17":
+        case "farmduino_k18":
           return DEFAULT_GENESIS_WEB_APP_CONFIG_VALUES[key];
         case "express_k10":
         case "express_k11":

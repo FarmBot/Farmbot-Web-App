@@ -46,6 +46,7 @@ export const getDefaultConfigValue =
         case "farmduino_k15":
         case "farmduino_k16":
         case "farmduino_k17":
+        case "farmduino_k18":
           return DEFAULT_GENESIS_FBOS_CONFIG_VALUES[key];
         case "express_k10":
         case "express_k11":
