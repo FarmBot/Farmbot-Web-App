@@ -12,6 +12,7 @@ import { render } from "@testing-library/react";
 import { ThreeDGarden } from "../../three_d_garden";
 import { clone } from "lodash";
 import { INITIAL } from "../../three_d_garden/config";
+import { FirmwareHardware } from "farmbot";
 
 describe("<ThreeDGardenMap />", () => {
   const fakeProps = (): ThreeDGardenMapProps => ({
@@ -87,6 +88,22 @@ describe("<ThreeDGardenMap />", () => {
     render(<ThreeDGardenMap {...p} />);
     expect(ThreeDGarden).toHaveBeenCalledWith({
       config: expect.objectContaining({ negativeZ: true, x: 0, y: 0, z: -100 }),
+      addPlantProps: expect.any(Object),
+      mapPoints: [],
+      weeds: [],
+    }, {});
+  });
+
+  it.each<[FirmwareHardware, string]>([
+    ["farmduino", "v1.7"],
+    ["farmduino_k17", "v1.7"],
+    ["farmduino_k18", "v1.8"],
+  ])("converts props: kitVersion", (firmwareHardware, kitVersion) => {
+    const p = fakeProps();
+    p.sourceFbosConfig = () => ({ value: firmwareHardware, consistent: true });
+    render(<ThreeDGardenMap {...p} />);
+    expect(ThreeDGarden).toHaveBeenCalledWith({
+      config: expect.objectContaining({ kitVersion }),
       addPlantProps: expect.any(Object),
       mapPoints: [],
       weeds: [],

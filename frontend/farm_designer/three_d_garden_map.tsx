@@ -43,6 +43,11 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   config.zoomBeacons = false;
   config.trail = !!props.getWebAppConfigValue(BooleanSetting.display_trail);
 
+  config.kitVersion =
+    props.sourceFbosConfig("firmware_hardware").value == "farmduino_k18"
+      ? "v1.8"
+      : "v1.7";
+
   config.negativeZ = props.negativeZ;
 
   config.x = props.botPosition.x || 0;
