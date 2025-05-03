@@ -391,7 +391,7 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     map_size_y: 1230,
     user_interface_read_only_mode: false,
     three_d_garden: false,
-    dark_mode: false,
+    dark_mode: true,
     view_celery_script: false,
   });
 }

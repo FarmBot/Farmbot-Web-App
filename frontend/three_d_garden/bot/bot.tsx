@@ -338,7 +338,7 @@ export const Bot = (props: FarmbotModelProps) => {
         </Mesh>
         <Mesh name={"xStopMax"}
           position={[
-            threeSpace(botSizeX + 128, bedLengthOuter) + bedXOffset,
+            threeSpace(botSizeX - 5 + xTrackPadding / 2, bedLengthOuter) + bedXOffset,
             threeSpace(y + 10 + bedColumnYOffset, bedWidthOuter),
             2 + (index == 0 ? 5 : 0),
           ]}

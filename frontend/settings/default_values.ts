@@ -88,7 +88,7 @@ const DEFAULT_WEB_APP_CONFIG_VALUES: Record<Key, Value> = {
   highlight_modified_settings: true,
   show_advanced_settings: false,
   three_d_garden: false,
-  dark_mode: false,
+  dark_mode: true,
 };
 
 const DEFAULT_EXPRESS_WEB_APP_CONFIG_VALUES =

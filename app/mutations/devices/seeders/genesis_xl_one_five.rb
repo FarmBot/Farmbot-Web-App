@@ -52,6 +52,12 @@ module Devices
       end
 
       def tools_rotary; end
+
+      def settings_three_d
+        FarmwareEnvs::Create.run(
+          {key: "3D_beamLength", value: "3000"},
+          device: device)
+      end
     end
   end
 end

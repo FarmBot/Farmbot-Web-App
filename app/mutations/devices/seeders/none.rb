@@ -10,7 +10,6 @@ module Devices
       def peripherals_rotary_tool_reverse; end
       def pin_bindings_button_1; end
       def pin_bindings_button_2; end
-      def plants; end
       def sensors_soil_sensor; end
       def sensors_tool_verification; end
       def sequences_mount_tool; end
@@ -21,9 +20,6 @@ module Devices
       def sequences_water_plant; end
       def sequences_mow_all_weeds; end
       def sequences_pick_from_seed_tray; end
-      def point_groups_spinach; end
-      def point_groups_broccoli; end
-      def point_groups_beet; end
       def point_groups_all_plants; end
       def point_groups_all_points; end
       def point_groups_all_weeds; end

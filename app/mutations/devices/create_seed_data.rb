@@ -43,12 +43,16 @@ module Devices
     end
 
     def run_seeds!
+      if demo
+        Devices::Seeders::DemoAccountSeeder.new(device).before_product_line_seeder
+      end
+
       seeder.class::COMMAND_ORDER.map do |cmd|
         seeder.send(cmd)
       end
 
       if demo
-        Devices::Seeders::DemoAccountSeeder.new(device).misc(product_line)
+        Devices::Seeders::DemoAccountSeeder.new(device).after_product_line_seeder(product_line)
       end
     end
   end

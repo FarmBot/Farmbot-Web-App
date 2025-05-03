@@ -25,9 +25,9 @@ module Devices
                                    device: device })
       end
 
-      def plants(product_line)
+      def add_plants(product_line)
         spinach_row_count = product_line.include?("xl") ? 28 : 13
-        spinach_col_count = product_line.include?("xl") ? 4 : 2
+        spinach_col_count = product_line.include?("genesis_xl") ? 4 : 2
         (0..(spinach_row_count - 1)).map do |i|
           (0..(spinach_col_count - 1)).map do |j|
             Points::Create.run!(device: device,
@@ -41,7 +41,13 @@ module Devices
           end
         end
         broccoli_row_count = product_line.include?("xl") ? 9 : 4
-        broccoli_col_count = product_line.include?("xl") ? 3 : 1
+        broccoli_col_count = if product_line.include?("genesis_xl")
+            3
+          elsif product_line.include?("xl")
+            2
+          else
+            1
+          end
         (0..(broccoli_row_count - 1)).map do |i|
           (0..(broccoli_col_count - 1)).map do |j|
             Points::Create.run!(device: device,
@@ -70,30 +76,26 @@ module Devices
         end
       end
 
-      def point_groups_spinach
+      def add_point_groups
         add_point_group(name: "Spinach plants", openfarm_slug: "spinach")
-      end
-
-      def point_groups_broccoli
         add_point_group(name: "Broccoli plants", openfarm_slug: "broccoli")
-      end
-
-      def point_groups_beet
         add_point_group(name: "Beet plants", openfarm_slug: "beet")
       end
 
-      MARKETING_BULLETIN = GlobalBulletin.find_or_create_by(slug: "buy-a-farmbot") do |gb|
-        gb.href = "https://farm.bot"
-        gb.href_label = "Visit our website"
-        gb.slug = "buy-a-farmbot"
-        gb.title = "Buy a FarmBot"
-        gb.type = "info"
-        gb.content = [
-          "Ready to get a FarmBot of your own? Check out our website to",
-          " learn more about our various products. We offer FarmBots at",
-          " all different price points, sizes, and capabilities so you'",
-          "re sure to find one that suits your needs.",
-        ].join("")
+      def marketing_bulletin
+        GlobalBulletin.find_or_create_by(slug: "buy-a-farmbot") do |gb|
+          gb.href = "https://farm.bot"
+          gb.href_label = "Visit our website"
+          gb.slug = "buy-a-farmbot"
+          gb.title = "Buy a FarmBot"
+          gb.type = "info"
+          gb.content = [
+            "Ready to get a FarmBot of your own? Check out our website to",
+            " learn more about our various products. We offer FarmBots at",
+            " all different price points, sizes, and capabilities so you'",
+            "re sure to find one that suits your needs.",
+          ].join("")
+        end
       end
 
       DEMO_ALERTS = [
@@ -115,13 +117,18 @@ module Devices
       #    tester FBOS version `1000.0.0`.
       READ_COMMENT_ABOVE = "100.0.0"
 
-      def misc(product_line)
-        create_webcam_feed(product_line)
-        plants(product_line)
-        point_groups_spinach
-        point_groups_broccoli
-        point_groups_beet
+      def before_product_line_seeder
+        device
+          .web_app_config
+          .update!(discard_unsaved: true, three_d_garden: true)
+      end
 
+      def after_product_line_seeder(product_line)
+        create_webcam_feed(product_line)
+        add_plants(product_line)
+        add_point_groups
+
+        marketing_bulletin
         device.alerts.where(problem_tag: UNUSED_ALERTS).destroy_all
         DEMO_ALERTS
           .map { |p| p.merge(device: device) }
@@ -131,9 +138,6 @@ module Devices
           .map { |p| Logs::Create.run!(p) }
         device
           .update!(fbos_version: READ_COMMENT_ABOVE)
-        device
-          .web_app_config
-          .update!(discard_unsaved: true)
       end
     end
   end

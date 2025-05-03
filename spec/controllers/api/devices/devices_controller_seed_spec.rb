@@ -251,6 +251,14 @@ describe Api::DevicesController do
       device.web_app_config.map_size_y
     end
 
+    def settings_three_d_garden?(device)
+      device.web_app_config.three_d_garden
+    end
+
+    def settings_3d?(device)
+      device.farmware_envs.find_by(key: "3D_beamLength")&.value
+    end
+
     it "seeds accounts with default data" do
       sign_in user
       device = user.device
@@ -329,6 +337,8 @@ describe Api::DevicesController do
       expect(settings_gantry_height?(device)).to eq(120)
       expect(settings_firmware?(device)).to eq("arduino")
       expect(settings_hide_sensors?(device)).to be(false)
+      expect(settings_three_d_garden?(device)).to be(false)
+      expect(settings_3d?(device)).to_not be
       expect(tool_slots_slot_1?(device).name).to eq("Slot")
       expect(tool_slots_slot_2?(device).name).to eq("Slot")
       expect(tool_slots_slot_3?(device).name).to eq("Slot")
@@ -402,6 +412,7 @@ describe Api::DevicesController do
       expect(settings_gantry_height?(device)).to eq(120)
       expect(settings_firmware?(device)).to eq("farmduino")
       expect(settings_hide_sensors?(device)).to be(false)
+      expect(settings_3d?(device)).to_not be
       expect(tool_slots_slot_1?(device).name).to eq("Slot")
       expect(tool_slots_slot_2?(device).name).to eq("Slot")
       expect(tool_slots_slot_3?(device).name).to eq("Slot")
@@ -475,6 +486,7 @@ describe Api::DevicesController do
       expect(settings_gantry_height?(device)).to eq(120)
       expect(settings_firmware?(device)).to eq("farmduino_k14")
       expect(settings_hide_sensors?(device)).to be(false)
+      expect(settings_3d?(device)).to_not be
       expect(tool_slots_slot_1?(device).name).to eq("Slot")
       expect(tool_slots_slot_2?(device).name).to eq("Slot")
       expect(tool_slots_slot_3?(device).name).to eq("Slot")
@@ -548,6 +560,7 @@ describe Api::DevicesController do
       expect(settings_gantry_height?(device)).to eq(120)
       expect(settings_firmware?(device)).to eq("farmduino_k15")
       expect(settings_hide_sensors?(device)).to be(false)
+      expect(settings_3d?(device)).to_not be
       expect(tool_slots_slot_1?(device).name).to eq("Slot")
       expect(tool_slots_slot_2?(device).name).to eq("Slot")
       expect(tool_slots_slot_3?(device).name).to eq("Slot")
@@ -623,6 +636,7 @@ describe Api::DevicesController do
       expect(settings_gantry_height?(device)).to eq(120)
       expect(settings_firmware?(device)).to eq("farmduino_k16")
       expect(settings_hide_sensors?(device)).to be(false)
+      expect(settings_3d?(device)).to_not be
       expect(tool_slots_slot_1?(device).name).to eq("Slot")
       expect(tool_slots_slot_2?(device).name).to eq("Slot")
       expect(tool_slots_slot_3?(device).name).to eq("Slot")
@@ -699,6 +713,7 @@ describe Api::DevicesController do
       expect(settings_gantry_height?(device)).to eq(120)
       expect(settings_firmware?(device)).to eq("farmduino_k17")
       expect(settings_hide_sensors?(device)).to be(false)
+      expect(settings_3d?(device)).to_not be
       expect(tool_slots_slot_1?(device).name).to eq("Slot")
       expect(tool_slots_slot_2?(device).name).to eq("Slot")
       expect(tool_slots_slot_3?(device).name).to eq("Slot")
@@ -774,6 +789,7 @@ describe Api::DevicesController do
       expect(settings_gantry_height?(device)).to eq(120)
       expect(settings_firmware?(device)).to eq("farmduino_k18")
       expect(settings_hide_sensors?(device)).to be(false)
+      expect(settings_3d?(device)).to_not be
       expect(tool_slots_slot_1?(device).name).to eq("Slot")
       expect(tool_slots_slot_2?(device).name).to eq("Slot")
       expect(tool_slots_slot_3?(device).name).to eq("Slot")
@@ -849,6 +865,7 @@ describe Api::DevicesController do
       expect(settings_gantry_height?(device)).to eq(120)
       expect(settings_firmware?(device)).to eq("farmduino_k14")
       expect(settings_hide_sensors?(device)).to be(false)
+      expect(settings_3d?(device)).to eq("3000")
       expect(tool_slots_slot_1?(device).name).to eq("Slot")
       expect(tool_slots_slot_2?(device).name).to eq("Slot")
       expect(tool_slots_slot_3?(device).name).to eq("Slot")
@@ -922,6 +939,7 @@ describe Api::DevicesController do
       expect(settings_gantry_height?(device)).to eq(120)
       expect(settings_firmware?(device)).to eq("farmduino_k15")
       expect(settings_hide_sensors?(device)).to be(false)
+      expect(settings_3d?(device)).to eq("3000")
       expect(tool_slots_slot_1?(device).name).to eq("Slot")
       expect(tool_slots_slot_2?(device).name).to eq("Slot")
       expect(tool_slots_slot_3?(device).name).to eq("Slot")
@@ -997,6 +1015,7 @@ describe Api::DevicesController do
       expect(settings_gantry_height?(device)).to eq(120)
       expect(settings_firmware?(device)).to eq("farmduino_k17")
       expect(settings_hide_sensors?(device)).to be(false)
+      expect(settings_3d?(device)).to eq("3000")
       expect(tool_slots_slot_1?(device).name).to eq("Slot")
       expect(tool_slots_slot_2?(device).name).to eq("Slot")
       expect(tool_slots_slot_3?(device).name).to eq("Slot")
@@ -1072,6 +1091,7 @@ describe Api::DevicesController do
       expect(settings_gantry_height?(device)).to eq(120)
       expect(settings_firmware?(device)).to eq("farmduino_k18")
       expect(settings_hide_sensors?(device)).to be(false)
+      expect(settings_3d?(device)).to eq("3000")
       expect(tool_slots_slot_1?(device).name).to eq("Slot")
       expect(tool_slots_slot_2?(device).name).to eq("Slot")
       expect(tool_slots_slot_3?(device).name).to eq("Slot")
@@ -1147,6 +1167,7 @@ describe Api::DevicesController do
       expect(settings_gantry_height?(device)).to eq(120)
       expect(settings_firmware?(device)).to eq("farmduino_k16")
       expect(settings_hide_sensors?(device)).to be(false)
+      expect(settings_3d?(device)).to eq("3000")
       expect(tool_slots_slot_1?(device).name).to eq("Slot")
       expect(tool_slots_slot_2?(device).name).to eq("Slot")
       expect(tool_slots_slot_3?(device).name).to eq("Slot")
@@ -1223,6 +1244,7 @@ describe Api::DevicesController do
       expect(settings_gantry_height?(device)).to eq(140)
       expect(settings_firmware?(device)).to eq("express_k10")
       expect(settings_hide_sensors?(device)).to be(true)
+      expect(settings_3d?(device)).to eq("1200")
       expect(tool_slots_slot_1?(device).name).to eq("Slot")
       expect(tool_slots_slot_2?(device).name).to eq("Slot")
       expect(tool_slots_slot_3?(device)).to_not be
@@ -1268,7 +1290,7 @@ describe Api::DevicesController do
       expect(sequences_mow_all_weeds?(device)).to_not be
       expect(sequences_pick_from_seed_tray?(device)).to_not be
       expect(settings_default_map_size_x?(device)).to eq(2900)
-      expect(settings_default_map_size_y?(device)).to eq(1200)
+      expect(settings_default_map_size_y?(device)).to eq(930)
     end
 
     it "seeds accounts with Express 1.1 data" do
@@ -1292,6 +1314,7 @@ describe Api::DevicesController do
       expect(settings_gantry_height?(device)).to eq(140)
       expect(settings_firmware?(device)).to eq("express_k11")
       expect(settings_hide_sensors?(device)).to be(true)
+      expect(settings_3d?(device)).to eq("1200")
       expect(tool_slots_slot_1?(device).name).to eq("Slot")
       expect(tool_slots_slot_2?(device).name).to eq("Slot")
       expect(tool_slots_slot_3?(device)).to_not be
@@ -1337,7 +1360,7 @@ describe Api::DevicesController do
       expect(sequences_mow_all_weeds?(device)).to_not be
       expect(sequences_pick_from_seed_tray?(device)).to_not be
       expect(settings_default_map_size_x?(device)).to eq(2900)
-      expect(settings_default_map_size_y?(device)).to eq(1200)
+      expect(settings_default_map_size_y?(device)).to eq(930)
     end
 
     it "seeds accounts with Express 1.2 data" do
@@ -1361,6 +1384,7 @@ describe Api::DevicesController do
       expect(settings_gantry_height?(device)).to eq(140)
       expect(settings_firmware?(device)).to eq("express_k12")
       expect(settings_hide_sensors?(device)).to be(true)
+      expect(settings_3d?(device)).to eq("1200")
       expect(tool_slots_slot_1?(device).name).to eq("Slot")
       expect(tool_slots_slot_2?(device).name).to eq("Slot")
       expect(tool_slots_slot_3?(device)).to_not be
@@ -1406,7 +1430,7 @@ describe Api::DevicesController do
       expect(sequences_mow_all_weeds?(device)).to_not be
       expect(sequences_pick_from_seed_tray?(device)).to_not be
       expect(settings_default_map_size_x?(device)).to eq(2900)
-      expect(settings_default_map_size_y?(device)).to eq(1200)
+      expect(settings_default_map_size_y?(device)).to eq(930)
     end
 
     it "seeds accounts with Express XL 1.0 data" do
@@ -1430,6 +1454,7 @@ describe Api::DevicesController do
       expect(settings_gantry_height?(device)).to eq(140)
       expect(settings_firmware?(device)).to eq("express_k10")
       expect(settings_hide_sensors?(device)).to be(true)
+      expect(settings_3d?(device)).to eq("2400")
       expect(tool_slots_slot_1?(device).name).to eq("Slot")
       expect(tool_slots_slot_2?(device).name).to eq("Slot")
       expect(tool_slots_slot_3?(device)).to_not be
@@ -1474,8 +1499,8 @@ describe Api::DevicesController do
       expect(sequences_dismount_tool?(device)).to_not be
       expect(sequences_mow_all_weeds?(device)).to_not be
       expect(sequences_pick_from_seed_tray?(device)).to_not be
-      expect(settings_default_map_size_x?(device)).to eq(6000)
-      expect(settings_default_map_size_y?(device)).to eq(2400)
+      expect(settings_default_map_size_x?(device)).to eq(5900)
+      expect(settings_default_map_size_y?(device)).to eq(2130)
     end
 
     it "seeds accounts with Express XL 1.1 data" do
@@ -1499,6 +1524,7 @@ describe Api::DevicesController do
       expect(settings_gantry_height?(device)).to eq(140)
       expect(settings_firmware?(device)).to eq("express_k11")
       expect(settings_hide_sensors?(device)).to be(true)
+      expect(settings_3d?(device)).to eq("2400")
       expect(tool_slots_slot_1?(device).name).to eq("Slot")
       expect(tool_slots_slot_2?(device).name).to eq("Slot")
       expect(tool_slots_slot_3?(device)).to_not be
@@ -1543,8 +1569,8 @@ describe Api::DevicesController do
       expect(sequences_dismount_tool?(device)).to_not be
       expect(sequences_mow_all_weeds?(device)).to_not be
       expect(sequences_pick_from_seed_tray?(device)).to_not be
-      expect(settings_default_map_size_x?(device)).to eq(6000)
-      expect(settings_default_map_size_y?(device)).to eq(2400)
+      expect(settings_default_map_size_x?(device)).to eq(5900)
+      expect(settings_default_map_size_y?(device)).to eq(2130)
     end
 
     it "seeds accounts with Express XL 1.2 data" do
@@ -1568,6 +1594,7 @@ describe Api::DevicesController do
       expect(settings_gantry_height?(device)).to eq(140)
       expect(settings_firmware?(device)).to eq("express_k12")
       expect(settings_hide_sensors?(device)).to be(true)
+      expect(settings_3d?(device)).to eq("2400")
       expect(tool_slots_slot_1?(device).name).to eq("Slot")
       expect(tool_slots_slot_2?(device).name).to eq("Slot")
       expect(tool_slots_slot_3?(device)).to_not be
@@ -1612,8 +1639,8 @@ describe Api::DevicesController do
       expect(sequences_dismount_tool?(device)).to_not be
       expect(sequences_mow_all_weeds?(device)).to_not be
       expect(sequences_pick_from_seed_tray?(device)).to_not be
-      expect(settings_default_map_size_x?(device)).to eq(6000)
-      expect(settings_default_map_size_y?(device)).to eq(2400)
+      expect(settings_default_map_size_x?(device)).to eq(5900)
+      expect(settings_default_map_size_y?(device)).to eq(2130)
     end
 
     it "seeds accounts with demo account data" do
@@ -1623,6 +1650,7 @@ describe Api::DevicesController do
       expect(point_groups_spinach?(device)).to be_kind_of(PointGroup)
       expect(point_groups_broccoli?(device)).to be_kind_of(PointGroup)
       expect(point_groups_beet?(device)).to be_kind_of(PointGroup)
+      expect(settings_three_d_garden?(device)).to be(true)
     end
 
     it "seeds accounts with demo account data: XL" do

@@ -39,7 +39,7 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   config.botSizeX = gridSize.x;
   config.botSizeY = gridSize.y;
   config.bedWidthOuter = gridSize.y + 160;
-  config.bedLengthOuter = gridSize.x + 160;
+  config.bedLengthOuter = gridSize.x + 280;
   config.zoomBeacons = false;
   config.trail = !!props.getWebAppConfigValue(BooleanSetting.display_trail);
 
