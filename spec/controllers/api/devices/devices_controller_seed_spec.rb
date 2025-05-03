@@ -1653,10 +1653,19 @@ describe Api::DevicesController do
       expect(settings_three_d_garden?(device)).to be(true)
     end
 
-    it "seeds accounts with demo account data: XL" do
+    it "seeds accounts with demo account data: genesis XL" do
       start_tests "genesis_xl_1.7", true, true
 
       expect(plant_count?(device)).to eq(253)
+      expect(point_groups_spinach?(device)).to be_kind_of(PointGroup)
+      expect(point_groups_broccoli?(device)).to be_kind_of(PointGroup)
+      expect(point_groups_beet?(device)).to be_kind_of(PointGroup)
+    end
+
+    it "seeds accounts with demo account data: express XL" do
+      start_tests "express_xl_1.2", true, true
+
+      expect(plant_count?(device)).to eq(188)
       expect(point_groups_spinach?(device)).to be_kind_of(PointGroup)
       expect(point_groups_broccoli?(device)).to be_kind_of(PointGroup)
       expect(point_groups_beet?(device)).to be_kind_of(PointGroup)
