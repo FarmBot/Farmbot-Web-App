@@ -47,6 +47,8 @@ const PLATFORM_DATA = (): PlatformContent[] => [
     imageUrl: RPI4().imageUrl,
     releaseTag: RPI4().releaseTag,
     kits: [
+      "Genesis v1.8",
+      "Genesis XL v1.8",
       "Genesis v1.7",
       "Genesis XL v1.7",
       "Genesis v1.6.2 (white cable or 2 HDMI ports)",
@@ -141,6 +143,7 @@ enum Version {
   "v1.5" = "v1.5",
   "v1.6" = "v1.6",
   "v1.7" = "v1.7",
+  "v1.8" = "v1.8",
 }
 
 const VERSIONS = () => ({
@@ -150,6 +153,7 @@ const VERSIONS = () => ({
     Version["v1.0"],
   ],
   [Model.Genesis]: [
+    Version["v1.8"],
     Version["v1.7"],
     Version["v1.6"],
     Version["v1.5"],
@@ -235,6 +239,9 @@ const DOWNLOADS = (): Downloads => ({
       [Run.third]: RPI4(),
     },
     [Version["v1.7"]]: {
+      [Run.first]: RPI4(),
+    },
+    [Version["v1.8"]]: {
       [Run.first]: RPI4(),
     },
   }
