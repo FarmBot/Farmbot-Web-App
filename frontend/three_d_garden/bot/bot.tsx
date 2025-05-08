@@ -24,10 +24,15 @@ import { PowerSupply } from "./power_supply";
 import { Group, Mesh, MeshPhongMaterial } from "../components";
 import {
   ElectronicsBox, Bounds, Tools, Solenoid, XAxisWaterTube,
+  CableCarrierX,
+  CableCarrierVertical,
+  CableCarrierZ,
+  CableCarrierY,
+  CableCarrierHorizontal,
 } from "./components";
 import { SlotWithTool } from "../../resources/interfaces";
 
-const extrusionWidth = 20;
+export const extrusionWidth = 20;
 const utmRadius = 35;
 export const utmHeight = 35;
 const xTrackPadding = 280;
@@ -53,14 +58,6 @@ type UTM = GLTF & {
   nodes: { [PartName.utm]: THREE.Mesh };
   materials: { PaletteMaterial001: THREE.MeshStandardMaterial };
 }
-type CCHorizontal = GLTF & {
-  nodes: { [PartName.ccHorizontal]: THREE.Mesh };
-  materials: never;
-}
-type CCVertical = GLTF & {
-  nodes: { [PartName.ccVertical]: THREE.Mesh };
-  materials: never;
-}
 type HousingVertical = GLTF & {
   nodes: { [PartName.housingVertical]: THREE.Mesh };
   materials: never;
@@ -84,35 +81,6 @@ type XAxisCCMount = GLTF & {
 
 Object.values(ASSETS.models).map(model => useGLTF.preload(model, LIB_DIR));
 
-const ccPath =
-  (axisLength: number, y: number, curveDia: number, isX?: boolean) => {
-    const lowerLength = (y + axisLength + 180) / 2;
-    const upperLength = lowerLength - y;
-    const outerRadius = curveDia / 2;
-    const height = isX ? 15 : 20;
-    const innerRadius = outerRadius - height;
-
-    const path = new Shape();
-    path.moveTo(y + 20, 0);
-    path.lineTo(y + upperLength, 0);
-    path.arc(0, outerRadius, outerRadius, -Math.PI / 2, Math.PI / 2);
-    path.lineTo(0, curveDia);
-    path.lineTo(0, curveDia - 5);
-    path.lineTo(20, curveDia - height);
-    path.lineTo(lowerLength, curveDia - height);
-    path.arc(0, -innerRadius, innerRadius, Math.PI / 2, -Math.PI / 2, true);
-    if (isX) {
-      path.lineTo(y + 20, height - 1);
-      path.lineTo(y, 5);
-      path.lineTo(y, 0);
-    } else {
-      path.lineTo(y, height - 1);
-      path.lineTo(y, height - 5);
-    }
-    path.lineTo(y + 20, 0);
-    return path;
-  };
-
 export interface FarmbotModelProps {
   config: Config;
   activeFocus: string;
@@ -126,8 +94,7 @@ export const Bot = (props: FarmbotModelProps) => {
   const {
     x, y, z, botSizeX, botSizeY, botSizeZ, beamLength, trail, laser, soilHeight,
     bedXOffset, bedYOffset, bedLengthOuter, bedWidthOuter, tracks,
-    columnLength, zAxisLength, zGantryOffset, bedHeight,
-    cableCarriers,
+    columnLength, zAxisLength, zGantryOffset,
   } = props.config;
   const zZero = zZeroFunc(config);
   const zDir = zDirFunc(config);
@@ -141,8 +108,6 @@ export const Bot = (props: FarmbotModelProps) => {
   const beltClip = useGLTF(ASSETS.models.beltClip, LIB_DIR) as BeltClip;
   const zStop = useGLTF(ASSETS.models.zStop, LIB_DIR) as ZStop;
   const utm = useGLTF(ASSETS.models.utm, LIB_DIR) as UTM;
-  const ccHorizontal = useGLTF(ASSETS.models.ccHorizontal, LIB_DIR) as CCHorizontal;
-  const ccVertical = useGLTF(ASSETS.models.ccVertical, LIB_DIR) as CCVertical;
   const housingVertical = useGLTF(
     ASSETS.models.housingVertical, LIB_DIR) as HousingVertical;
   const horizontalMotorHousing = useGLTF(
@@ -225,7 +190,53 @@ export const Bot = (props: FarmbotModelProps) => {
     return path;
   };
   const distanceToSoil = soilHeight - zDir * z;
-  const bedCCSupportHeight = Math.min(150, bedHeight / 2);
+
+  const airTubeEndPosition = (kitVersion: string): [number, number, number] => {
+    switch (kitVersion) {
+      case "v1.7":
+        return [
+          threeSpace(x + 80, bedLengthOuter) + bedXOffset,
+          threeSpace(y + 100, bedWidthOuter) + bedYOffset,
+          zZero - zDir * z + 245,
+        ];
+      case "v1.8":
+      default:
+        return [
+          threeSpace(x + 35, bedLengthOuter) + bedXOffset,
+          threeSpace(y, bedWidthOuter) + bedYOffset,
+          zZero - zDir * z + 245,
+        ];
+    }
+  };
+
+  const vacuumPumpCoverRotation = (kitVersion: string): [number, number, number] => {
+    switch (kitVersion) {
+      case "v1.7":
+        return [0, 0, Math.PI / 2];
+      case "v1.8":
+      default:
+        return [0, 0, -Math.PI / 2];
+    }
+  };
+
+  const vacuumPumpCoverPosition = (kitVersion: string): [number, number, number] => {
+    switch (kitVersion) {
+      case "v1.7":
+        return [
+          threeSpace(x + 12, bedLengthOuter) + bedXOffset,
+          threeSpace(y + 55, bedWidthOuter) + bedYOffset,
+          zZero - zDir * z + 490,
+        ];
+      case "v1.8":
+      default:
+        return [
+          threeSpace(x + 2, bedLengthOuter) + bedXOffset,
+          threeSpace(y + 110, bedWidthOuter) + bedYOffset,
+          zZero + columnLength + 25,
+        ];
+    }
+  };
+
   return <Group name={"bot"}
     visible={props.config.bot && props.activeFocus != "Planter bed"}>
     {[0 - extrusionWidth, bedWidthOuter].map((y, index) => {
@@ -376,20 +387,7 @@ export const Bot = (props: FarmbotModelProps) => {
       geometry={xAxisCCMount.nodes[PartName.xAxisCCMount].geometry}>
       <MeshPhongMaterial color={"silver"} />
     </Mesh>
-    <Extrude name={"xCC"} visible={cableCarriers}
-      castShadow={true}
-      args={[
-        ccPath(botSizeX / 2, botSizeX / 2 - x + 20, bedCCSupportHeight - 40, true),
-        { steps: 1, depth: 22, bevelEnabled: false },
-      ]}
-      position={[
-        threeSpace(botSizeX / 2, bedLengthOuter) + bedXOffset,
-        threeSpace((tracks ? 0 : extrusionWidth) - 15, bedWidthOuter),
-        -40,
-      ]}
-      rotation={[-Math.PI / 2, -Math.PI, 0 * Math.PI]}>
-      <MeshPhongMaterial color={distinguishableBlack} />
-    </Extrude>
+    <CableCarrierX config={config} />
     <CrossSlideComponent name={"crossSlide"}
       position={[
         threeSpace(x - 1.5, bedLengthOuter) + bedXOffset,
@@ -486,72 +484,8 @@ export const Bot = (props: FarmbotModelProps) => {
         zZero - zDir * z + zAxisLength / 2,
       ]}
       rotation={[Math.PI / 2, 0, 0]} />
-    <Group name={"ccVertical"}>
-      {config.kitVersion == "v1.7"
-        ? (
-          range((zAxisLength - 350) / 200).map((i) => (
-            <Mesh key={i}
-              position={[
-                threeSpace(x + 20, bedLengthOuter) + bedXOffset,
-                threeSpace(y + 55, bedWidthOuter) + bedYOffset,
-                zZero - zDir * z + i * 200 + 125,
-              ]}
-              rotation={[0, 0, Math.PI / 2]}
-              scale={1000}
-              geometry={ccVertical.nodes[PartName.ccVertical].geometry}>
-              <MeshPhongMaterial color={"silver"} />
-            </Mesh>
-          ))
-        )
-        : (
-          <Mesh
-            position={[
-              threeSpace(x + 20, bedLengthOuter) + bedXOffset,
-              threeSpace(y + 35, bedWidthOuter) + bedYOffset,
-              zZero - zDir * z + 125,
-            ]}
-            rotation={[0, 0, 0]}
-            geometry={new THREE.ExtrudeGeometry(
-              (() => {
-                const shape = new THREE.Shape();
-                shape.moveTo(0, 0);
-                shape.lineTo(0, 20);
-                shape.lineTo(15, 20);
-                shape.lineTo(20, 1.5);
-                shape.lineTo(28.5, 1.5);
-                shape.lineTo(28.5, -61);
-                shape.lineTo(24, -63);
-                shape.lineTo(24, -61.5);
-                shape.lineTo(27, -60);
-                shape.lineTo(27, 0);
-                shape.lineTo(0, 0);
-                return shape;
-              })(),
-              {
-                depth: zAxisLength - 350,
-                bevelEnabled: false,
-              },
-            )}>
-            <MeshPhongMaterial color={"white"}
-              opacity={0.8}
-              transparent={true} />
-          </Mesh>
-        )}
-    </Group>
-    <Extrude name={"zCC"} visible={cableCarriers}
-      castShadow={true}
-      args={[
-        ccPath(botSizeZ + zGantryOffset - 100, z + zGantryOffset - 15, 87),
-        { steps: 1, depth: 60, bevelEnabled: false },
-      ]}
-      position={[
-        threeSpace(x - 41, bedLengthOuter) + bedXOffset,
-        threeSpace(y - 25, bedWidthOuter) + bedYOffset,
-        zZero - zDir * z + 125,
-      ]}
-      rotation={[Math.PI / 2, Math.PI, Math.PI / 2]}>
-      <MeshPhongMaterial color={distinguishableBlack} />
-    </Extrude>
+    <CableCarrierVertical config={config} />
+    <CableCarrierZ config={config} />
     <Mesh name={"zStopMax"}
       position={[
         threeSpace(x - 5, bedLengthOuter) + bedXOffset,
@@ -595,17 +529,7 @@ export const Bot = (props: FarmbotModelProps) => {
         ],
         [0, 0, 100],
         [0, 0, -200],
-        config.kitVersion == "v1.7"
-          ? [
-            threeSpace(x + 80, bedLengthOuter) + bedXOffset,
-            threeSpace(y + 100, bedWidthOuter) + bedYOffset,
-            zZero - zDir * z + 245,
-          ]
-          : [
-            threeSpace(x + 35, bedLengthOuter) + bedXOffset,
-            threeSpace(y, bedWidthOuter) + bedYOffset,
-            zZero - zDir * z + 245,
-          ],
+        airTubeEndPosition(config.kitVersion),
       ), 20, 5, 8]}>
       <MeshPhongMaterial
         color={"white"}
@@ -614,25 +538,9 @@ export const Bot = (props: FarmbotModelProps) => {
       />
     </Tube>
     <VacuumPumpCoverComponent
-      rotation={
-        config.kitVersion == "v1.7"
-          ? [0, 0, Math.PI / 2]
-          : [0, 0, -Math.PI / 2]
-      }
+      rotation={vacuumPumpCoverRotation(config.kitVersion)}
       scale={1000}
-      position={
-        config.kitVersion == "v1.7"
-          ? [
-            threeSpace(x + 12, bedLengthOuter) + bedXOffset,
-            threeSpace(y + 55, bedWidthOuter) + bedYOffset,
-            zZero - zDir * z + 490,
-          ]
-          : [
-            threeSpace(x + 2, bedLengthOuter) + bedXOffset,
-            threeSpace(y + 110, bedWidthOuter) + bedYOffset,
-            zZero + columnLength + 25,
-          ]
-      } />
+      position={vacuumPumpCoverPosition(config.kitVersion)} />
     <Group name={"camera"}
       rotation={[Math.PI, 0, 0]}
       position={[
@@ -701,71 +609,8 @@ export const Bot = (props: FarmbotModelProps) => {
       rotation={[Math.PI / 2, 0, 0]}>
       <MeshPhongMaterial color={"white"} map={aluminumTexture} side={DoubleSide} />
     </Extrude>
-    <Group name={"ccHorizontal"}>
-      {config.kitVersion == "v1.7"
-        ? (
-          range((botSizeY - 10) / 300).map((i) => (
-            <Mesh key={i}
-              position={[
-                threeSpace(x - 28, bedLengthOuter) + bedXOffset,
-                threeSpace(50 + i * 300, bedWidthOuter) + bedYOffset,
-                columnLength + 60,
-              ]}
-              rotation={[Math.PI / 2, 0, 0]}
-              scale={1000}
-              geometry={ccHorizontal.nodes[PartName.ccHorizontal].geometry}>
-              <MeshPhongMaterial color={"silver"} />
-            </Mesh>
-          ))
-        )
-        : (
-          <Mesh
-            position={[
-              threeSpace(x - 28, bedLengthOuter) + bedXOffset,
-              -(threeSpace(20, bedWidthOuter) + bedYOffset),
-              columnLength + 60,
-            ]}
-            rotation={[Math.PI / 2, 0, 0]}
-            geometry={new THREE.ExtrudeGeometry(
-              (() => {
-                const shape = new THREE.Shape();
-
-                shape.moveTo(0, 0);
-                shape.lineTo(0, 20);
-                shape.lineTo(-40, 20);
-                shape.lineTo(-41, 22.5);
-                shape.lineTo(-42.5, 22.5);
-                shape.lineTo(-41.5, 18.5);
-                shape.lineTo(-30, 18.5);
-                shape.lineTo(-25, 0);
-                shape.lineTo(0, 0);
-                return shape;
-              })(),
-              {
-                depth: botSizeY - 30,
-                bevelEnabled: false,
-              },
-            )}>
-            <MeshPhongMaterial color={"white"}
-              opacity={0.8}
-              transparent={true} />
-          </Mesh>
-        )}
-    </Group>
-    <Extrude name={"yCC"} visible={cableCarriers}
-      castShadow={true}
-      args={[
-        ccPath(botSizeY, y + 40, 70),
-        { steps: 1, depth: config.kitVersion == "v1.7" ? 60 : 40, bevelEnabled: false },
-      ]}
-      position={[
-        threeSpace(x - 28, bedLengthOuter) + bedXOffset,
-        threeSpace(20, bedWidthOuter) + bedYOffset,
-        columnLength + 150,
-      ]}
-      rotation={[-Math.PI / 2, -Math.PI / 2, 0]}>
-      <MeshPhongMaterial color={distinguishableBlack} />
-    </Extrude>
+    <CableCarrierHorizontal config={config} />
+    <CableCarrierY config={config} />
     <Mesh name={"yStopMin"}
       position={[
         threeSpace(x - extrusionWidth + 2, bedLengthOuter) + bedXOffset,

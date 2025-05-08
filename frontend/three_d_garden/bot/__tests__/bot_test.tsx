@@ -22,6 +22,7 @@ describe("<Bot />", () => {
     p.config.sizePreset = "Genesis";
     p.config.tracks = true;
     p.config.trail = true;
+    p.config.kitVersion = "v1.n";
     const wrapper = mount(<Bot {...p} />);
     expect(wrapper.html()).toContain("bot");
     expect(wrapper.html()).toContain("water-tube");
