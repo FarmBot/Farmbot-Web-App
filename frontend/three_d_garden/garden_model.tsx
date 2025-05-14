@@ -169,6 +169,7 @@ export const GardenModel = (props: GardenModelProps) => {
       {props.mapPoints?.map(point =>
         <Point key={point.uuid}
           point={point}
+          visible={showPoints}
           config={config}
           dispatch={dispatch} />)}
     </Group>
@@ -177,6 +178,7 @@ export const GardenModel = (props: GardenModelProps) => {
       {props.weeds?.map(weed =>
         <Weed key={weed.uuid}
           weed={weed}
+          visible={showWeeds}
           config={config}
           dispatch={dispatch} />)}
     </Group>

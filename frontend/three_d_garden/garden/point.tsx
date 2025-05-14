@@ -31,6 +31,7 @@ export interface PointProps {
   point: TaggedGenericPointer;
   config: Config;
   dispatch?: Function;
+  visible: boolean;
 }
 
 export const Point = (props: PointProps) => {
@@ -46,7 +47,7 @@ export const Point = (props: PointProps) => {
       z: -config.soilHeight,
     }}
     onClick={() => {
-      if (point.body.id && !isUndefined(props.dispatch) &&
+      if (point.body.id && !isUndefined(props.dispatch) && props.visible &&
         !HOVER_OBJECT_MODES.includes(getMode())) {
         props.dispatch(setPanelOpen(true));
         navigate(Path.points(point.body.id));
