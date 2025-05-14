@@ -31,16 +31,16 @@ export const fn: Middleware = () => (dispatch) => (action: ResourceAction) => {
 
   const { body } = payload;
 
-  // Check for any log related field that both exists in the update
-  // and whose value differs from the cache
-  const changed = LOG_RELATED_FIELDS.some((key): key is LogField => {
+  // Check if the action contains a changed log related field
+  let changed = false;
+  LOG_RELATED_FIELDS.forEach(key => {
     if (key in body) {
-      const newValue = body[key];
-      const isChanged = cache[key] !== newValue;
+      const newValue = body[key as keyof typeof body] as number;
+      if (cache[key] !== newValue) {
+        changed = true;
+      }
       cache[key] = newValue;
-      return isChanged;
     }
-    return false;
   });
 
   if (changed) {
