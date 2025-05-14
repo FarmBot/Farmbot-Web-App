@@ -12,6 +12,7 @@ describe("<Weed />", () => {
   const fakeProps = (): WeedProps => ({
     config: clone(INITIAL),
     weed: fakeWeed(),
+    visible: true,
   });
 
   it("renders", () => {

@@ -18,6 +18,7 @@ export interface WeedProps {
   weed: TaggedWeedPointer;
   config: Config;
   dispatch?: Function;
+  visible: boolean;
 }
 
 export const Weed = (props: WeedProps) => {
@@ -27,7 +28,7 @@ export const Weed = (props: WeedProps) => {
     pointName={"" + weed.body.id}
     alpha={1}
     onClick={() => {
-      if (weed.body.id && !isUndefined(props.dispatch) &&
+      if (weed.body.id && !isUndefined(props.dispatch) && props.visible &&
         !HOVER_OBJECT_MODES.includes(getMode())) {
         props.dispatch(setPanelOpen(true));
         navigate(Path.weeds(weed.body.id));

@@ -16,6 +16,7 @@ describe("<Point />", () => {
   const fakeProps = (): PointProps => ({
     config: clone(INITIAL),
     point: fakePoint(),
+    visible: true,
   });
 
   it("renders", () => {
