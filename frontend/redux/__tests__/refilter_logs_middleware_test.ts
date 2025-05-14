@@ -35,4 +35,18 @@ describe("refilterLogsMiddleware.fn()", () => {
     });
     expect(throttledLogRefresh).toHaveBeenCalledTimes(1);
   });
+
+  it("does not trigger refresh if log filter value is unchanged", () => {
+    fn({
+      type: Actions.SAVE_RESOURCE_OK,
+      payload: { kind: "WebAppConfig", body: { info_log: 3 } },
+    });
+    expect(throttledLogRefresh).toHaveBeenCalledTimes(1);
+    jest.clearAllMocks();
+    fn({
+      type: Actions.SAVE_RESOURCE_OK,
+      payload: { kind: "WebAppConfig", body: { info_log: 3 } },
+    });
+    expect(throttledLogRefresh).not.toHaveBeenCalled();
+  });
 });
