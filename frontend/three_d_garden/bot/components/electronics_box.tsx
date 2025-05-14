@@ -45,6 +45,35 @@ type Farmduino = GLTF & {
   materials: { PaletteMaterial001: THREE.MeshStandardMaterial };
 }
 
+const buttons = (kitVersion: string) => {
+  switch (kitVersion) {
+    case "v1.7":
+      return [
+        { position: -60, color: IColor.estop.on },
+        { position: -30, color: IColor.unlock.on },
+        { position: 0, color: IColor.blank.on },
+        { position: 30, color: IColor.blank.on },
+        { position: 60, color: IColor.blank.on },
+      ];
+    case "v1.8":
+    default:
+      return [
+        { position: -30, color: IColor.estop.on },
+        { position: 0, color: IColor.unlock.on },
+        { position: 30, color: IColor.blank.on },
+      ];
+  }
+};
+const ledsPresent = (kitVersion: string) => {
+  switch (kitVersion) {
+    case "v1.7":
+      return true;
+    case "v1.8":
+    default:
+      return false;
+  }
+};
+
 export interface ElectronicsBoxProps {
   config: Config;
 }
@@ -82,21 +111,7 @@ export const ElectronicsBox = (props: ElectronicsBoxProps) => {
         scale={1000} />
       <Group name={"buttons"}
         position={[0, 0, 130]}>
-        {(
-          props.config.kitVersion == "v1.7"
-            ? [
-              { position: -60, color: IColor.estop.on },
-              { position: -30, color: IColor.unlock.on },
-              { position: 0, color: IColor.blank.on },
-              { position: 30, color: IColor.blank.on },
-              { position: 60, color: IColor.blank.on },
-            ]
-            : [
-              { position: -30, color: IColor.estop.on },
-              { position: 0, color: IColor.unlock.on },
-              { position: 30, color: IColor.blank.on },
-            ]
-        ).map(button => {
+        {buttons(props.config.kitVersion).map(button => {
           const { position, color } = button;
           const btnPosition = position;
           return <Group key={btnPosition} name={"button-group"}>
@@ -122,7 +137,7 @@ export const ElectronicsBox = (props: ElectronicsBoxProps) => {
       </Group>
       <Group name={"leds"}
         position={[0, 0, 130]}
-        visible={props.config.kitVersion == "v1.7"}>
+        visible={ledsPresent(props.config.kitVersion)}>
         {[
           { position: -45, color: IColor.sync.on },
           { position: -15, color: IColor.connect.on },

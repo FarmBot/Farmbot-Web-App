@@ -14,10 +14,12 @@ module Devices
       "genesis_1.5" => Devices::Seeders::GenesisOneFive,
       "genesis_1.6" => Devices::Seeders::GenesisOneSix,
       "genesis_1.7" => Devices::Seeders::GenesisOneSeven,
+      "genesis_1.8" => Devices::Seeders::GenesisOneEight,
       "genesis_xl_1.4" => Devices::Seeders::GenesisXlOneFour,
       "genesis_xl_1.5" => Devices::Seeders::GenesisXlOneFive,
       "genesis_xl_1.6" => Devices::Seeders::GenesisXlOneSix,
       "genesis_xl_1.7" => Devices::Seeders::GenesisXlOneSeven,
+      "genesis_xl_1.8" => Devices::Seeders::GenesisXlOneEight,
 
       "none" => Devices::Seeders::None,
     }
@@ -41,12 +43,16 @@ module Devices
     end
 
     def run_seeds!
+      if demo
+        Devices::Seeders::DemoAccountSeeder.new(device).before_product_line_seeder
+      end
+
       seeder.class::COMMAND_ORDER.map do |cmd|
         seeder.send(cmd)
       end
 
       if demo
-        Devices::Seeders::DemoAccountSeeder.new(device).misc(product_line)
+        Devices::Seeders::DemoAccountSeeder.new(device).after_product_line_seeder(product_line)
       end
     end
   end

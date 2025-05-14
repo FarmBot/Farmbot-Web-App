@@ -39,9 +39,14 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   config.botSizeX = gridSize.x;
   config.botSizeY = gridSize.y;
   config.bedWidthOuter = gridSize.y + 160;
-  config.bedLengthOuter = gridSize.x + 160;
+  config.bedLengthOuter = gridSize.x + 280;
   config.zoomBeacons = false;
   config.trail = !!props.getWebAppConfigValue(BooleanSetting.display_trail);
+
+  config.kitVersion =
+    props.sourceFbosConfig("firmware_hardware").value == "farmduino_k18"
+      ? "v1.8"
+      : "v1.7";
 
   config.negativeZ = props.negativeZ;
 

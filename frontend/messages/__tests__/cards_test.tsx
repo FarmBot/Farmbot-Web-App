@@ -51,6 +51,10 @@ import moment from "moment";
 API.setBaseUrl("");
 
 describe("<AlertCard />", () => {
+  beforeEach(() => {
+    mockFeatureBoolean = false;
+  });
+
   const fakeProps = (): AlertCardProps => ({
     alert: {
       created_at: 123,
@@ -105,6 +109,7 @@ describe("<AlertCard />", () => {
   });
 
   it("renders firmware card with new boards", () => {
+    mockFeatureBoolean = true;
     const p = fakeProps();
     p.alert.problem_tag = "farmbot_os.firmware.missing";
     p.alert.created_at = 1555555555;
@@ -276,7 +281,7 @@ describe("SEED_DATA_OPTIONS()", () => {
 
   it("returns more options", () => {
     mockFeatureBoolean = true;
-    expect(SEED_DATA_OPTIONS().length).toEqual(17);
+    expect(SEED_DATA_OPTIONS().length).toEqual(19);
   });
 });
 

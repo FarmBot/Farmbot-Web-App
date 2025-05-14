@@ -5,6 +5,26 @@ import { Config } from "../../config";
 import { Group, MeshPhongMaterial } from "../../components";
 import { Text } from "../../elements";
 
+const mainCartonHeightFunc = (kitVersion: string): number => {
+  switch (kitVersion) {
+    case "v1.7":
+      return 220;
+    case "v1.8":
+    default:
+      return 245;
+  }
+};
+
+const extrusionKitVisibility = (kitVersion: string) => {
+  switch (kitVersion) {
+    case "v1.7":
+      return true;
+    case "v1.8":
+    default:
+      return false;
+  }
+};
+
 export interface PackagingProps {
   config: Config;
 }
@@ -14,7 +34,7 @@ export const Packaging = (props: PackagingProps) => {
   const isXL = config.sizePreset == "Genesis XL";
   const mainCartonLength = 1060;
   const mainCartonWidth = 420;
-  const mainCartonHeight = config.kitVersion == "v1.7" ? 220 : 245;
+  const mainCartonHeight = mainCartonHeightFunc(config.kitVersion);
   const extrusionKitLength = 1540;
   const extrusionKitWidth = isXL ? 170 : 100;
   const extrusionKitHeight = 60;
@@ -31,6 +51,7 @@ export const Packaging = (props: PackagingProps) => {
   const boxColor = "#bf8b59";
   const strapColor = "#434343";
   const edgeProtectorColor = "#9d6c40";
+
   return <Group name={"packaging"}
     visible={config.packaging}
     position={[
@@ -71,7 +92,7 @@ export const Packaging = (props: PackagingProps) => {
         </Box>)}
     </Group>
     <Group name={"extrusion-kit"}
-      visible={config.kitVersion == "v1.7"}
+      visible={extrusionKitVisibility(config.kitVersion)}
       position={[0, 0, (220 + 60) / 2]}>
       <Box name={"extrusion-kit-box"}
         castShadow={true}

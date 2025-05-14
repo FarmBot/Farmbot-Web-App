@@ -4,9 +4,11 @@ jest.mock("../../screen_size", () => ({
 }));
 
 import React from "react";
-import { mount } from "enzyme";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { OsDownloadPage } from "../content";
-import { clickButton } from "../../__test_support__/helpers";
+
+const text = (computer: string) =>
+  `Your FarmBot's internal computer is the Raspberry Pi ${computer}`;
 
 describe("<OsDownloadPage />", () => {
   it("renders", () => {
@@ -16,86 +18,96 @@ describe("<OsDownloadPage />", () => {
     globalConfig.rpi_release_url = "fake rpi img url";
     globalConfig.rpi_release_tag = "1.0.0";
 
-    const wrapper = mount(<OsDownloadPage />);
-    clickButton(wrapper, 2, "show all download links");
+    render(<OsDownloadPage />);
+    const btn = screen.getByText("Show all download links");
+    fireEvent.click(btn);
 
-    const rpi3Link = wrapper.find("a").first();
-    expect(rpi3Link.text()).toEqual("DOWNLOAD v1.0.1");
-    expect(rpi3Link.props().href).toEqual("fake rpi4 img url");
+    const rpi3Link = screen.getAllByRole("link")[0];
+    expect(rpi3Link.textContent).toEqual("DOWNLOAD v1.0.1");
+    expect(rpi3Link.getAttribute("href")).toEqual("fake rpi4 img url");
 
-    const rpiLink = wrapper.find("a").last();
-    expect(rpiLink.text()).toEqual("DOWNLOAD v1.0.0");
-    expect(rpiLink.props().href).toEqual("fake rpi img url");
+    const rpiLink = screen.getAllByRole("link")[1];
+    expect(rpiLink.textContent).toEqual("DOWNLOAD v1.0.0");
+    expect(rpiLink.getAttribute("href")).toEqual("fake rpi img url");
   });
 
   it("renders on small screens", () => {
     mockIsMobile = true;
-    const wrapper = mount(<OsDownloadPage />);
-    expect(wrapper.text().toLowerCase()).toContain("download");
+    const { container } = render(<OsDownloadPage />);
+    expect(container).toContainHTML("download");
   });
 
   it("renders on large screens", () => {
     mockIsMobile = false;
-    const wrapper = mount(<OsDownloadPage />);
-    expect(wrapper.text().toLowerCase()).toContain("download");
+    const { container } = render(<OsDownloadPage />);
+    expect(container).toContainHTML("download");
   });
 
   it("toggles the wizard", () => {
-    const wrapper = mount(<OsDownloadPage />);
-    expect(wrapper.text().toLowerCase()).toContain("show");
-    expect(wrapper.text().toLowerCase()).not.toContain("return");
-    clickButton(wrapper, 2, "show all download links");
-    expect(wrapper.text().toLowerCase()).not.toContain("show");
-    expect(wrapper.text().toLowerCase()).toContain("return");
-    clickButton(wrapper, 0, "return to the wizard");
-    expect(wrapper.text().toLowerCase()).toContain("show");
-    expect(wrapper.text().toLowerCase()).not.toContain("return");
+    const ALL = "Show all download links";
+    const RETURN = "Return to the wizard";
+    render(<OsDownloadPage />);
+    expect(screen.getByText(ALL)).toBeInTheDocument();
+    expect(screen.queryByText(RETURN)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByText(ALL));
+    expect(screen.queryByText(ALL)).not.toBeInTheDocument();
+    expect(screen.getByText(RETURN)).toBeInTheDocument();
+    fireEvent.click(screen.getByText(RETURN));
+    expect(screen.getByText(ALL)).toBeInTheDocument();
+    expect(screen.queryByText(RETURN)).not.toBeInTheDocument();
   });
 
   it("runs the wizard: express", () => {
-    const wrapper = mount(<OsDownloadPage />);
-    clickButton(wrapper, 1, "express", { partial_match: true });
-    clickButton(wrapper, 1, "express v1.0");
-    expect(wrapper.text().toLowerCase()).toContain("zero");
+    render(<OsDownloadPage />);
+    fireEvent.click(screen.getByText("Express"));
+    fireEvent.click(screen.getByText("Express v1.0"));
+    expect(screen.getByText(text("Zero W"))).toBeInTheDocument();
   });
 
   it("runs the wizard: genesis", () => {
-    const wrapper = mount(<OsDownloadPage />);
-    clickButton(wrapper, 0, "genesis", { partial_match: true });
-    clickButton(wrapper, 5, "genesis v1.2");
-    expect(wrapper.text().toLowerCase()).toContain("pi 3");
+    render(<OsDownloadPage />);
+    fireEvent.click(screen.getByText("Genesis"));
+    fireEvent.click(screen.getByText("Genesis v1.2"));
+    expect(screen.getByText(text("3"))).toBeInTheDocument();
   });
 
   it("runs the wizard: genesis v1.6.0", () => {
-    const wrapper = mount(<OsDownloadPage />);
-    clickButton(wrapper, 0, "genesis", { partial_match: true });
-    clickButton(wrapper, 1, "genesis v1.6");
-    clickButton(wrapper, 0, "black");
-    clickButton(wrapper, 0, "raspberry pi model 3");
-    expect(wrapper.text().toLowerCase()).toContain("pi 3");
+    render(<OsDownloadPage />);
+    fireEvent.click(screen.getByText("Genesis"));
+    fireEvent.click(screen.getByText("Genesis v1.6"));
+    fireEvent.click(screen.getByText("Black"));
+    fireEvent.click(screen.getByText("Raspberry Pi Model 3"));
+    expect(screen.getByText(text("3"))).toBeInTheDocument();
   });
 
   it("runs the wizard: genesis v1.6.1 & some v1.6.2", () => {
-    const wrapper = mount(<OsDownloadPage />);
-    clickButton(wrapper, 0, "genesis", { partial_match: true });
-    clickButton(wrapper, 1, "genesis v1.6");
-    clickButton(wrapper, 1, "white");
-    expect(wrapper.text().toLowerCase()).toContain("pi 4");
+    render(<OsDownloadPage />);
+    fireEvent.click(screen.getByText("Genesis"));
+    fireEvent.click(screen.getByText("Genesis v1.6"));
+    fireEvent.click(screen.getByText("White"));
+    expect(screen.getByText(text("4"))).toBeInTheDocument();
   });
 
   it("runs the wizard: genesis other v1.6.2", () => {
-    const wrapper = mount(<OsDownloadPage />);
-    clickButton(wrapper, 0, "genesis", { partial_match: true });
-    clickButton(wrapper, 1, "genesis v1.6");
-    clickButton(wrapper, 0, "black");
-    clickButton(wrapper, 1, "raspberry pi model 4");
-    expect(wrapper.text().toLowerCase()).toContain("pi 4");
+    render(<OsDownloadPage />);
+    fireEvent.click(screen.getByText("Genesis"));
+    fireEvent.click(screen.getByText("Genesis v1.6"));
+    fireEvent.click(screen.getByText("Black"));
+    fireEvent.click(screen.getByText("Raspberry Pi Model 4"));
+    expect(screen.getByText(text("4"))).toBeInTheDocument();
   });
 
   it("runs the wizard: genesis v1.7", () => {
-    const wrapper = mount(<OsDownloadPage />);
-    clickButton(wrapper, 0, "genesis", { partial_match: true });
-    clickButton(wrapper, 0, "genesis v1.7");
-    expect(wrapper.text().toLowerCase()).toContain("pi 4");
+    render(<OsDownloadPage />);
+    fireEvent.click(screen.getByText("Genesis"));
+    fireEvent.click(screen.getByText("Genesis v1.7"));
+    expect(screen.getByText(text("4"))).toBeInTheDocument();
+  });
+
+  it("runs the wizard: genesis v1.8", () => {
+    render(<OsDownloadPage />);
+    fireEvent.click(screen.getByText("Genesis"));
+    fireEvent.click(screen.getByText("Genesis v1.8"));
+    expect(screen.getByText(text("4"))).toBeInTheDocument();
   });
 });

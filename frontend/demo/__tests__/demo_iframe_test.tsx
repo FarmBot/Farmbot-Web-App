@@ -45,7 +45,7 @@ describe("<DemoIframe />", () => {
 
   it("changes model", () => {
     const wrapper = shallow<DemoIframe>(<DemoIframe />);
-    expect(wrapper.state().productLine).toEqual("genesis_1.7");
+    expect(wrapper.state().productLine).toEqual("genesis_1.8");
     wrapper.find("FBSelect").simulate("change", { value: "express_1.2" });
     expect(wrapper.state().productLine).toEqual("express_1.2");
   });

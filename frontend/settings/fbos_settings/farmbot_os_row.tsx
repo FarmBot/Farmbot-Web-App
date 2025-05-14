@@ -38,6 +38,10 @@ export const FarmbotOsRow = (props: FarmbotOsRowProps) => {
   const [channel, setChannel] = React.useState(
     "" + props.sourceFbosConfig("update_channel").value);
 
+  const { dispatch, bot, sourceFbosConfig } = props;
+  const { controller_version, target } = bot.hardware.informational_settings;
+  const configChannel = "" + sourceFbosConfig("update_channel").value;
+
   React.useEffect(() => {
     const { dispatch } = props;
     const { target } = props.bot.hardware.informational_settings;
@@ -46,9 +50,6 @@ export const FarmbotOsRow = (props: FarmbotOsRowProps) => {
   }, []);
 
   React.useEffect(() => {
-    const { dispatch, bot, sourceFbosConfig } = props;
-    const { controller_version, target } = bot.hardware.informational_settings;
-    const configChannel = "" + sourceFbosConfig("update_channel").value;
     const versionChange = controller_version && version != controller_version;
     const channelChange = configChannel && channel != configChannel;
     if (versionChange || channelChange) {
@@ -59,38 +60,11 @@ export const FarmbotOsRow = (props: FarmbotOsRowProps) => {
     if (versionChange) {
       removeToast("EOL");
     }
-  }, [props, version, channel]);
+  }, [dispatch, controller_version, target, configChannel, version, channel]);
 
-  const Version = () => {
-    const { controller_version } = props.bot.hardware.informational_settings;
-    const version = controller_version || t("unknown (offline)");
-    return <Popover position={Position.BOTTOM_LEFT}
-      target={<p>
-        {t("Version {{ version }}", { version })}
-      </p>}
-      content={<ErrorBoundary>
-        <FbosDetails
-          dispatch={props.dispatch}
-          sourceFbosConfig={props.sourceFbosConfig}
-          bot={props.bot}
-          timeSettings={props.timeSettings}
-          deviceAccount={props.device} />
-      </ErrorBoundary>} />;
-  };
-
-  const ReleaseNotes = () => {
-    const { osReleaseNotes, hardware } = props.bot;
-    const { controller_version } = hardware.informational_settings;
-    const { fbos_version } = props.device.body;
-    const version = controller_version || fbos_version;
-    const releaseNotes = getOsReleaseNotesForVersion(osReleaseNotes, version);
-    return <div className="release-notes">
-      <h1>{releaseNotes.heading}</h1>
-      <Markdown>
-        {releaseNotes.notes}
-      </Markdown>
-    </div>;
-  };
+  const releaseNotes = getOsReleaseNotesForVersion(
+    props.bot.osReleaseNotes,
+    version || props.device.body.fbos_version);
 
   return <Highlight settingName={DeviceSetting.farmbotOS}
     hidden={!props.showAdvanced}
@@ -106,13 +80,30 @@ export const FarmbotOsRow = (props: FarmbotOsRowProps) => {
           botOnline={props.botOnline} />
       </Row>
       <Row className="grid-2-col">
-        <Version />
+        <Popover position={Position.BOTTOM_LEFT}
+          target={<p>
+            {t("Version {{ version }}",
+              { version: version || t("unknown (offline)") })}
+          </p>}
+          content={<ErrorBoundary>
+            <FbosDetails
+              dispatch={props.dispatch}
+              sourceFbosConfig={props.sourceFbosConfig}
+              bot={props.bot}
+              timeSettings={props.timeSettings}
+              deviceAccount={props.device} />
+          </ErrorBoundary>} />
         <Popover position={Position.BOTTOM} className="release-notes-wrapper"
           target={<p className="release-notes-button">
             {t("Release Notes")}&nbsp;
             <i className="fa fa-caret-down" />
           </p>}
-          content={<ReleaseNotes />} />
+          content={<div className="release-notes">
+            <h1>{releaseNotes.heading}</h1>
+            <Markdown>
+              {releaseNotes.notes}
+            </Markdown>
+          </div>} />
       </Row>
     </div>
   </Highlight>;

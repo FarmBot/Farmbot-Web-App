@@ -279,6 +279,8 @@ export const PrivateOverlay = (props: OverlayProps) => {
       <Toggle {...common} configKey={"settingsBar"} />
       <Toggle {...common} configKey={"zoomBeacons"} />
       <label>{"Presets"}</label>
+      <Radio {...common} configKey={"kitVersion"}
+        options={["v1.8", "v1.7"]} />
       <Radio {...common} configKey={"sizePreset"}
         options={["Jr", "Genesis", "Genesis XL"]} />
       <Radio {...common} configKey={"bedType"}

@@ -109,11 +109,17 @@ module Devices
       end
 
       def settings_default_map_size_y
-        device.web_app_config.update!(map_size_y: 1_200)
+        device.web_app_config.update!(map_size_y: 930)
       end
 
       def settings_hide_sensors
         device.web_app_config.update!(hide_sensors: true)
+      end
+
+      def settings_three_d
+        FarmwareEnvs::Create.run(
+          {key: "3D_beamLength", value: "1200"},
+          device: device)
       end
 
       private

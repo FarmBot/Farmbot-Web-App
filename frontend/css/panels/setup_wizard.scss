@@ -111,13 +111,14 @@
           white-space: pre-wrap;
           line-height: 1.8rem;
           text-align: justify;
+          text-overflow: unset;
         }
       }
     }
     .wizard-step-q-and-a {
       background-color: $dark_gray;
       box-shadow: 0 0 1rem $translucent;
-      border-radius: 1rem;
+      border-radius: 0.5rem;
       display: grid;
       gap: 1rem;
       justify-content: center;
@@ -218,13 +219,13 @@
       }
     }
     .troubleshooting-tip {
-      border: 2px solid $medium_light_gray;
+      border: 2px solid var(--border-color);
       border-radius: 5px;
       padding: 1rem;
       cursor: pointer;
-      background: $panel_light_gray;
+      background: transparent;
       &:hover {
-        background: $white;
+        background: var(--secondary-bg);
         box-shadow: 0 1px 5px 0 $translucent;
       }
       p {
@@ -236,8 +237,7 @@
         text-decoration: underline;
       }
       &.selected {
-        border-color: $dark_gray;
-        background: $white;
+        background: var(--secondary-bg);
         p:first-of-type {
           font-weight: bold;
         }

@@ -104,7 +104,7 @@ body:has(.app.dark) {
 
 .feedback {
   p {
-    color: $dark_gray !important;
+    color: var(--text-color) !important;
     margin-bottom: 1rem !important;
     font-weight: normal !important;
     font-style: italic;

@@ -12,10 +12,10 @@ describe("<Packaging />", () => {
   it("renders", () => {
     const p = fakeProps();
     p.config.packaging = true;
-    p.config.kitVersion = "v1.7";
+    p.config.kitVersion = "v1.n";
     const wrapper = mount(<Packaging {...p} />);
     expect(wrapper.html()).toContain("packaging");
-    expect(wrapper.html()).toContain("100");
+    expect(wrapper.html()).not.toContain("100");
     expect(wrapper.html()).not.toContain("170");
   });
 

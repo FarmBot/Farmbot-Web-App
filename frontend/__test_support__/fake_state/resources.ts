@@ -36,7 +36,6 @@ import {
 } from "farmbot/dist/resources/api_resources";
 import { MessageType } from "../../sequences/interfaces";
 import { TaggedPointGroup } from "../../resources/interfaces";
-import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 
 export const resources: Everything["resources"] = buildResourceIndex();
 let idCounter = 1;
@@ -391,8 +390,8 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
     map_size_x: 2900,
     map_size_y: 1230,
     user_interface_read_only_mode: false,
-    ["three_d_garden" as BooleanConfigKey]: false,
-    ["dark_mode" as BooleanConfigKey]: false,
+    three_d_garden: false,
+    dark_mode: true,
     view_celery_script: false,
   });
 }

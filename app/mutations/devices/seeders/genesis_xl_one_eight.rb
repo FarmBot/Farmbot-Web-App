@@ -1,10 +1,10 @@
 module Devices
   module Seeders
-    class GenesisXlOneSeven < AbstractGenesis
+    class GenesisXlOneEight < AbstractGenesis
       def settings_firmware
         device
           .fbos_config
-          .update!(firmware_hardware: FbosConfig::FARMDUINO_K17)
+          .update!(firmware_hardware: FbosConfig::FARMDUINO_K18)
       end
 
       def settings_device_name

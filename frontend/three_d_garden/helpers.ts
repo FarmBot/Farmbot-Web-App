@@ -36,16 +36,11 @@ export const extents = (config: Config): Record<"x" | "y" | "z", number> => ({
   z: zZero(config) + zDir(config) * config.botSizeZ,
 });
 
-interface Vector3Array extends Array<number> {
-  0: number;
-  1: number;
-  2: number;
-}
 export const easyCubicBezierCurve3 = (
-  startPosition: Vector3Array,
-  startControl: Vector3Array,
-  endControl: Vector3Array,
-  endPosition: Vector3Array,
+  startPosition: [number, number, number],
+  startControl: [number, number, number],
+  endControl: [number, number, number],
+  endPosition: [number, number, number],
 ) => {
   const [x1, y1, z1] = startPosition;
   const [x1c, y1c, z1c] = startControl;
