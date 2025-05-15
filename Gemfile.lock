@@ -109,6 +109,7 @@ GEM
     discard (1.4.0)
       activerecord (>= 4.2, < 9.0)
     docile (1.4.1)
+    drb (2.2.1)
     e2mmap (0.1.0)
     erubi (1.13.1)
     factory_bot (6.5.1)
@@ -396,6 +397,7 @@ DEPENDENCIES
   delayed_job_active_record
   devise
   discard
+  drb
   factory_bot_rails
   faker
   google-cloud-storage (~> 1.11)
@@ -431,7 +433,7 @@ DEPENDENCIES
   webmock
 
 RUBY VERSION
-   ruby 3.3.8p144
+   ruby 3.4.3p32
 
 BUNDLED WITH
    2.6.9
