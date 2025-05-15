@@ -70,6 +70,7 @@ GEM
     amq-protocol (2.3.4)
     base64 (0.2.0)
     bcrypt (3.1.20)
+    benchmark (0.4.0)
     bigdecimal (3.1.9)
     builder (3.3.0)
     bunny (2.24.0)
@@ -228,6 +229,7 @@ GEM
       racc (~> 1.4)
     orm_adapter (0.5.0)
     os (1.1.4)
+    ostruct (0.6.1)
     passenger (6.0.27)
       rack (>= 1.6.13)
       rackup (>= 1.0.1)
@@ -390,6 +392,8 @@ PLATFORMS
 
 DEPENDENCIES
   active_model_serializers
+  benchmark
+  bigdecimal
   bunny
   climate_control
   database_cleaner
@@ -407,6 +411,7 @@ DEPENDENCIES
   logger
   lograge
   mutations
+  ostruct
   passenger
   pg
   pry

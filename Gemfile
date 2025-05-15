@@ -29,6 +29,9 @@ gem "valid_url"
 gem "thwait"
 gem "lograge" # Used to filter repetitive RabbitMQ logs.
 gem "drb"
+gem "benchmark"
+gem "ostruct"
+gem "bigdecimal"
 
 group :development, :test do
   gem "climate_control"
