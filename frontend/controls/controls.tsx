@@ -26,7 +26,10 @@ import { Navigate } from "react-router";
 import { mapStateToProps } from "./state_to_props";
 
 export const RawDesignerControls = (props: DesignerControlsProps) => {
-  props.dispatch({ type: Actions.OPEN_POPUP, payload: "controls" });
+  React.useEffect(() => {
+    props.dispatch({ type: Actions.OPEN_POPUP, payload: "controls" });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   return <DesignerPanel panelName={"controls"} panel={Panel.Controls}>
     <DesignerPanelContent panelName={"controls"}>
       <Navigate to={Path.plants()} />
