@@ -71,6 +71,7 @@ export interface Config {
   distanceIndicator: string;
   kitVersion: string;
   negativeZ: boolean;
+  exaggeratedZ: boolean;
   waterFlow: boolean;
 }
 
@@ -102,7 +103,7 @@ export const INITIAL: Config = {
   extraLegsX: 1,
   extraLegsY: 0,
   bedBrightness: 8,
-  soilBrightness: 6,
+  soilBrightness: 12,
   soilHeight: 500,
   plants: "Spring",
   labels: false,
@@ -147,6 +148,7 @@ export const INITIAL: Config = {
   distanceIndicator: "",
   kitVersion: "v1.7",
   negativeZ: false,
+  exaggeratedZ: false,
   waterFlow: false,
 };
 
@@ -170,7 +172,7 @@ export const BOOLEAN_KEYS = [
   "xyDimensions", "zDimension", "promoInfo", "settingsBar", "zoomBeacons",
   "solar", "utilitiesPost", "packaging", "lab", "people", "lowDetail",
   "eventDebug", "cableDebug", "zoomBeaconDebug", "animate", "negativeZ",
-  "waterFlow",
+  "waterFlow", "exaggeratedZ",
 ];
 
 export const PRESETS: Record<string, Config> = {
@@ -249,7 +251,7 @@ export const PRESETS: Record<string, Config> = {
     legSize: 100,
     legsFlush: false,
     bedBrightness: 8,
-    soilBrightness: 6,
+    soilBrightness: 12,
     plants: "",
     labels: false,
     labelsOnHover: false,
@@ -302,7 +304,7 @@ export const PRESETS: Record<string, Config> = {
     legSize: 100,
     legsFlush: true,
     bedBrightness: 8,
-    soilBrightness: 6,
+    soilBrightness: 12,
     plants: "Spring",
     labels: true,
     labelsOnHover: false,
@@ -365,6 +367,7 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "solar", "utilitiesPost", "packaging", "lab",
   "people", "scene", "lowDetail", "eventDebug", "cableDebug", "zoomBeaconDebug",
   "animate", "distanceIndicator", "kitVersion", "negativeZ", "waterFlow",
+  "exaggeratedZ",
 ];
 
 export const modifyConfig = (config: Config, update: Partial<Config>) => {

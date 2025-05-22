@@ -6,6 +6,7 @@ import React from "react";
 import { mount } from "enzyme";
 import {
   AmbientLight,
+  BoxGeometry,
   DirectionalLight,
   Group,
   Mesh,
@@ -22,6 +23,17 @@ describe("<Group />", () => {
   it("adds props", () => {
     const wrapper = mount(<Group {...fakeProps()} />);
     expect(wrapper.props().visible).toEqual(true);
+  });
+});
+
+describe("<BoxGeometry />", () => {
+  const fakeProps = (): ThreeElements["boxGeometry"] => ({
+    name: "box",
+  });
+
+  it("adds props", () => {
+    const wrapper = mount(<BoxGeometry {...fakeProps()} />);
+    expect(wrapper.props().name).toEqual("box");
   });
 });
 

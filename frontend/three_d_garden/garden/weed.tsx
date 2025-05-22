@@ -19,6 +19,7 @@ export interface WeedProps {
   config: Config;
   dispatch?: Function;
   visible: boolean;
+  getZ(x: number, y: number): number;
 }
 
 export const Weed = (props: WeedProps) => {
@@ -37,7 +38,7 @@ export const Weed = (props: WeedProps) => {
     position={{
       x: weed.body.x,
       y: weed.body.y,
-      z: -config.soilHeight,
+      z: props.getZ(weed.body.x, weed.body.y),
     }}
     config={config}
     color={weed.body.meta.color}

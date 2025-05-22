@@ -98,6 +98,9 @@ describe("<Bed />", () => {
     config: clone(INITIAL),
     activeFocus: "",
     mapPoints: [],
+    vertices: [],
+    uvs: [],
+    getZ: () => 0,
   });
 
   it("renders bed", () => {
@@ -182,7 +185,7 @@ describe("<Bed />", () => {
     expect(mockSetPlantPosition).toHaveBeenCalledWith(0, 0, 0);
     expect(p.addPlantProps.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_DRAWN_POINT_DATA,
-      payload: { ...point, cx: 1360, cy: 660, z: -500 },
+      payload: { ...point, cx: 1360, cy: 660, z: 0 },
     });
     expect(p.addPlantProps.dispatch).toHaveBeenCalledTimes(1);
   });
@@ -225,6 +228,7 @@ describe("<Bed />", () => {
     mockXCrosshairRef.current = { position: { set: mockSetXCrosshairPosition } };
     mockYCrosshairRef.current = { position: { set: mockSetYCrosshairPosition } };
     const p = fakeProps();
+    p.config.columnLength = 100;
     p.addPlantProps = fakeAddPlantProps([]);
     render(<Bed {...p} />);
     const soil = screen.getAllByText("soil")[0];
@@ -255,6 +259,7 @@ describe("<Bed />", () => {
     mockXCrosshairRef.current = undefined;
     mockYCrosshairRef.current = undefined;
     const p = fakeProps();
+    p.config.columnLength = 100;
     p.addPlantProps = fakeAddPlantProps([]);
     render(<Bed {...p} />);
     const soil = screen.getAllByText("soil")[0];
@@ -300,6 +305,7 @@ describe("<Bed />", () => {
     mockXCrosshairRef.current = { position: { set: mockSetXCrosshairPosition } };
     mockYCrosshairRef.current = { position: { set: mockSetYCrosshairPosition } };
     const p = fakeProps();
+    p.config.columnLength = 100;
     p.addPlantProps = fakeAddPlantProps([]);
     const point = fakeDrawnPoint();
     point.cx = undefined;

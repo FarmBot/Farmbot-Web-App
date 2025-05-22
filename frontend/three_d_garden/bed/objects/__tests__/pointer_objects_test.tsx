@@ -59,6 +59,7 @@ describe("soilClick()", () => {
     navigate: jest.fn(),
     addPlantProps: fakeAddPlantProps([]),
     pointerPlantRef: { current: { position: new Vector3(0, 0, 0) } } as PointerPlantRef,
+    getZ: () => 0,
   });
 
   it("creates plant", () => {
@@ -81,6 +82,7 @@ describe("soilPointerMove()", () => {
   const fakeProps = (): SoilPointerMoveProps => ({
     config: clone(INITIAL),
     addPlantProps: fakeAddPlantProps([]),
+    getZ: () => 0,
     pointerPlantRef: { current: { position: { set: jest.fn() } } } as unknown as PointerPlantRef,
     radiusRef: { current: { scale: { set: jest.fn() } } } as unknown as RadiusRef,
     torusRef: { current: { scale: { set: jest.fn() } } } as unknown as TorusRef,
@@ -94,6 +96,7 @@ describe("soilPointerMove()", () => {
     location.pathname = Path.mock(Path.cropSearch("mint"));
     mockIsMobile = false;
     const p = fakeProps();
+    p.config.columnLength = 100;
     const e = {
       stopPropagation: jest.fn(),
       point: { x: 100, y: 200 },

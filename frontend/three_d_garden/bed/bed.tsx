@@ -1,18 +1,20 @@
 import React from "react";
-import { Box, Detailed, Extrude, useTexture } from "@react-three/drei";
+import { Box, Detailed, Extrude, Plane, useTexture } from "@react-three/drei";
 import {
   DoubleSide,
   Path as LinePath,
   Shape,
   RepeatWrapping,
+  BufferGeometry,
+  Float32BufferAttribute,
 } from "three";
 import { range } from "lodash";
-import { threeSpace, zZero, getColorFromBrightness } from "../helpers";
+import { threeSpace, getColorFromBrightness, zZero } from "../helpers";
 import { Config, detailLevels } from "../config";
 import { ASSETS } from "../constants";
 import { DistanceIndicator } from "../elements";
 import { FarmbotAxes, Caster, UtilitiesPost, Packaging } from "./objects";
-import { Group, MeshPhongMaterial } from "../components";
+import { Group, Mesh, MeshPhongMaterial } from "../components";
 import {
   AxisNumberProperty, TaggedPlant,
 } from "../../farm_designer/map/interfaces";
@@ -28,6 +30,7 @@ import {
   XCrosshairRef,
   YCrosshairRef,
 } from "./objects/pointer_objects";
+import { ThreeElements } from "@react-three/fiber";
 
 const soil = (
   Type: typeof LinePath | typeof Shape,
@@ -63,6 +66,28 @@ const bedStructure2D = (
   return shape;
 };
 
+type MeshProps = ThreeElements["mesh"];
+
+interface SurfaceProps extends MeshProps {
+  vertices: number[];
+  uvs: number[];
+}
+
+const Surface = (props: SurfaceProps) => {
+  const { vertices, uvs } = props;
+  const geometry = React.useMemo(() => {
+    const geom = new BufferGeometry();
+    geom.setAttribute("position", new Float32BufferAttribute(vertices, 3));
+    geom.setAttribute("uv", new Float32BufferAttribute(uvs, 2));
+    geom.computeVertexNormals();
+    return geom;
+  }, [vertices, uvs]);
+
+  return <Mesh geometry={geometry} {...props}>
+    {props.children}
+  </Mesh>;
+};
+
 export interface AddPlantProps {
   gridSize: AxisNumberProperty;
   dispatch: Function;
@@ -77,13 +102,16 @@ export interface BedProps {
   activeFocus: string;
   mapPoints: TaggedGenericPointer[];
   addPlantProps?: AddPlantProps;
+  vertices: number[];
+  uvs: number[];
+  getZ(x: number, y: number): number;
 }
 
 export const Bed = (props: BedProps) => {
   const {
     bedWidthOuter, bedLengthOuter, botSizeZ, bedHeight, bedZOffset,
     legSize, legsFlush, extraLegsX, extraLegsY, bedBrightness, soilBrightness,
-    soilHeight, ccSupportSize, axes, xyDimensions,
+    ccSupportSize, axes, xyDimensions, bedXOffset, bedYOffset,
   } = props.config;
   const thickness = props.config.bedWallThickness;
   const botSize = { x: bedLengthOuter, y: bedWidthOuter, z: botSizeZ, thickness };
@@ -117,9 +145,6 @@ export const Bed = (props: BedProps) => {
   legWoodTexture.wrapT = RepeatWrapping;
   legWoodTexture.repeat.set(0.02, 0.05);
   const soilTexture = useTexture(ASSETS.textures.soil + "?=soil");
-  soilTexture.wrapS = RepeatWrapping;
-  soilTexture.wrapT = RepeatWrapping;
-  soilTexture.repeat.set(0.00034, 0.00068);
 
   const Bed = ({ children }: { children: React.ReactElement }) =>
     <Extrude name={"bed"}
@@ -166,14 +191,14 @@ export const Bed = (props: BedProps) => {
   const navigate = useNavigate();
 
   const Soil = ({ children, addPlantProps }: SoilProps) => {
-    const soilDepth = bedHeight + zZero(props.config) - soilHeight;
-    return <Extrude name={"soil"}
+    return <Surface name={"soil"}
       onClick={addPlantProps &&
         soilClick({
           config: props.config,
           addPlantProps,
           pointerPlantRef,
           navigate,
+          getZ: props.getZ,
         })}
       onPointerMove={addPlantProps &&
         soilPointerMove({
@@ -186,20 +211,24 @@ export const Bed = (props: BedProps) => {
           imageRef,
           xCrosshairRef,
           yCrosshairRef,
+          getZ: props.getZ,
         })}
       castShadow={true}
       receiveShadow={true}
-      args={[
-        soil(Shape, botSize) as Shape,
-        { steps: 1, depth: soilDepth, bevelEnabled: false },
-      ]}
+      vertices={props.vertices}
+      uvs={props.uvs}
       position={[
-        threeSpace(0, bedLengthOuter),
-        threeSpace(0, bedWidthOuter),
-        -bedStartZ,
+        threeSpace(0, bedLengthOuter) + bedXOffset,
+        threeSpace(0, bedWidthOuter) + bedYOffset,
+        zZero(props.config),
       ]}>
       {children}
-    </Extrude>;
+    </Surface>;
+  };
+
+  const commonSoil = {
+    side: DoubleSide,
+    shininess: 0,
   };
 
   return <Group name={"bed-group"}>
@@ -212,6 +241,15 @@ export const Bed = (props: BedProps) => {
         <MeshPhongMaterial color={"#ad7039"} side={DoubleSide} />
       </Bed>
     </Detailed>
+    <Plane name={"bed-underside"}
+      args={[bedLengthOuter, bedWidthOuter]}
+      position={[
+        threeSpace(bedLengthOuter / 2, bedLengthOuter),
+        threeSpace(bedWidthOuter / 2, bedWidthOuter),
+        -props.config.bedHeight + 1,
+      ]}>
+      <MeshPhongMaterial side={DoubleSide} shininess={0} color={"black"} />
+    </Plane>
     <Group name={"distance-indicator-group"}
       visible={xyDimensions || props.activeFocus == "Planter bed"}>
       <DistanceIndicator
@@ -289,12 +327,10 @@ export const Bed = (props: BedProps) => {
         mapPoints={props.mapPoints} />}
     <Detailed distances={detailLevels(props.config)}>
       <Soil addPlantProps={props.addPlantProps}>
-        <MeshPhongMaterial map={soilTexture} color={soilColor}
-          shininess={0} />
+        <MeshPhongMaterial {...commonSoil} map={soilTexture} color={soilColor} />
       </Soil>
       <Soil addPlantProps={props.addPlantProps}>
-        <MeshPhongMaterial color={"#29231e"}
-          shininess={0} />
+        <MeshPhongMaterial {...commonSoil} color={"#29231e"} />
       </Soil>
     </Detailed>
     {legXPositions.map((x, index) =>

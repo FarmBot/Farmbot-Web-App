@@ -51,3 +51,12 @@ jest.mock("react-router", () => ({
   Navigate: ({ to }: { to: string }) => <div>{mockNavigate(to)}</div>,
   Outlet: jest.fn(() => <div />),
 }));
+
+jest.mock("delaunator", () => ({
+  __esModule: true,
+  default: {
+    from: jest.fn(() => ({
+      triangles: [0, 1, 2],
+    })),
+  },
+}));

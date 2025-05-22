@@ -13,6 +13,7 @@ describe("<Weed />", () => {
     config: clone(INITIAL),
     weed: fakeWeed(),
     visible: true,
+    getZ: () => 0,
   });
 
   it("renders", () => {

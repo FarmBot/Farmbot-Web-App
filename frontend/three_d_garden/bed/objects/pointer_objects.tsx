@@ -2,7 +2,7 @@ import React from "react";
 import { Group } from "../../components";
 import { Billboard, Line, Image } from "@react-three/drei";
 import { findIcon } from "../../../crops/find";
-import { AxisNumberProperty, Mode } from "../../../farm_designer/map/interfaces";
+import { Mode } from "../../../farm_designer/map/interfaces";
 import { getMode, round, xyDistance } from "../../../farm_designer/map/util";
 import { isMobile } from "../../../screen_size";
 import { HOVER_OBJECT_MODES, DRAW_POINT_MODES, RenderOrder } from "../../constants";
@@ -10,7 +10,11 @@ import {
   DrawnPoint, POINT_CYLINDER_SCALE_FACTOR, WEED_IMG_SIZE_FRACTION,
 } from "../../garden";
 import {
-  zero as zeroFunc, extents as extentsFunc, threeSpace,
+  zero as zeroFunc,
+  extents as extentsFunc,
+  zZero,
+  getGardenPositionFunc,
+  get3DPositionFunc,
 } from "../../helpers";
 import { Config } from "../../config";
 import { SpecialStatus, TaggedGenericPointer } from "farmbot";
@@ -26,8 +30,6 @@ import { Actions } from "../../../constants";
 import { NavigateFunction } from "react-router";
 import { DrawnPointPayl } from "../../../farm_designer/interfaces";
 import { Line2 } from "three/examples/jsm/lines/Line2";
-
-type XY = AxisNumberProperty;
 
 export type PointerPlantRef = React.RefObject<GroupType | null>;
 export type RadiusRef = React.RefObject<MeshType | null>;
@@ -46,24 +48,6 @@ interface AllRefs {
   xCrosshairRef: XCrosshairRef;
   yCrosshairRef: YCrosshairRef;
 }
-
-const getGardenPositionFunc = (config: Config) =>
-  (threeDPosition: XY): XY => {
-    const { bedLengthOuter, bedWidthOuter, bedXOffset, bedYOffset } = config;
-    return {
-      x: round(threeSpace(threeDPosition.x, -bedLengthOuter) - bedXOffset),
-      y: round(threeSpace(threeDPosition.y, -bedWidthOuter) - bedYOffset),
-    };
-  };
-
-const get3DPositionFunc = (config: Config) =>
-  (gardenPosition: XY): XY => {
-    const { bedLengthOuter, bedWidthOuter, bedXOffset, bedYOffset } = config;
-    return {
-      x: threeSpace(gardenPosition.x + bedXOffset, bedLengthOuter),
-      y: threeSpace(gardenPosition.y + bedYOffset, bedWidthOuter),
-    };
-  };
 
 export interface PointerObjectsProps extends AllRefs {
   config: Config;
@@ -84,8 +68,6 @@ export const PointerObjects = (props: PointerObjectsProps) => {
   const { drawnPoint } = addPlantProps.designer;
   const settingRadius =
     !(isUndefined(drawnPoint?.cx) || isUndefined(drawnPoint.cy));
-  const soilZ = zero.z - config.soilHeight;
-  const crosshairZ = soilZ + 1;
   const gridPreview = mapPoints
     .filter(p => p.specialStatus == SpecialStatus.DIRTY && p.body.meta.gridId)
     .length > 0;
@@ -104,8 +86,8 @@ export const PointerObjects = (props: PointerObjectsProps) => {
             opacity={0.9}
             lineWidth={2}
             points={[
-              [zero.x, 0, crosshairZ],
-              [extents.x, 0, crosshairZ],
+              [zero.x, 0, 0],
+              [extents.x, 0, 0],
             ]} />
           <Line
             ref={yCrosshairRef}
@@ -115,12 +97,12 @@ export const PointerObjects = (props: PointerObjectsProps) => {
             opacity={0.9}
             lineWidth={2}
             points={[
-              [0, zero.y, crosshairZ],
-              [0, extents.y, crosshairZ],
+              [0, zero.y, 0],
+              [0, extents.y, 0],
             ]} />
         </Group>}
       <Group ref={pointerPlantRef} position={[0, 0, 0]}>
-        <Group position={[0, 0, settingRadius ? 0 : soilZ]}>
+        <Group position={[0, 0, 0]}>
           {DRAW_POINT_MODES.includes(getMode()) &&
             !gridPreview &&
             drawnPoint &&
@@ -151,6 +133,7 @@ export interface SoilClickProps {
   addPlantProps: AddPlantProps;
   pointerPlantRef: PointerPlantRef;
   navigate: NavigateFunction;
+  getZ(x: number, y: number): number;
 }
 
 export const soilClick = (props: SoilClickProps) =>
@@ -181,7 +164,7 @@ export const soilClick = (props: SoilClickProps) =>
               ...drawnPoint,
               cx: cursor.x,
               cy: cursor.y,
-              z: -config.soilHeight,
+              z: mathRound(props.getZ(cursor.x, cursor.y), 1),
             }
             : {
               ...drawnPoint,
@@ -209,6 +192,7 @@ export const soilClick = (props: SoilClickProps) =>
 export interface SoilPointerMoveProps extends AllRefs {
   config: Config;
   addPlantProps: AddPlantProps;
+  getZ(x: number, y: number): number;
 }
 
 export const soilPointerMove = (props: SoilPointerMoveProps) =>
@@ -225,17 +209,19 @@ export const soilPointerMove = (props: SoilPointerMoveProps) =>
       && HOVER_OBJECT_MODES.includes(getMode())
       && !isMobile()
       && pointerPlantRef.current) {
-      const position = get3DPosition(getGardenPosition(e.point));
-      xCrosshairRef.current?.position.set(0, position.y, 0);
-      yCrosshairRef.current?.position.set(position.x, 0, 0);
+      const gardenPosition = getGardenPosition(e.point);
+      const { x, y } = get3DPosition(gardenPosition);
+      const z = zZero(config) + props.getZ(gardenPosition.x, gardenPosition.y);
+      xCrosshairRef.current?.position.set(0, y, z);
+      yCrosshairRef.current?.position.set(x, 0, z);
       if (getMode() == Mode.clickToAdd) {
-        pointerPlantRef.current.position.set(position.x, position.y, 0);
+        pointerPlantRef.current.position.set(x, y, z);
       }
       if (DRAW_POINT_MODES.includes(getMode())) {
         const { drawnPoint } = addPlantProps.designer;
         if (isUndefined(drawnPoint)) { return; }
         if (isUndefined(drawnPoint.cx) || isUndefined(drawnPoint.cy)) {
-          pointerPlantRef.current.position.set(position.x, position.y, 0);
+          pointerPlantRef.current.position.set(x, y, z);
         } else {
           if (drawnPoint.r > 0) { return; }
           const radius = round(xyDistance(

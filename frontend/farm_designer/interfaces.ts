@@ -178,6 +178,7 @@ export interface DesignerState {
   distanceIndicator: string;
   panelOpen: boolean;
   threeDTopDownView: boolean;
+  threeDExaggeratedZ: boolean;
 }
 
 export type TaggedExecutable = TaggedSequence | TaggedRegimen;

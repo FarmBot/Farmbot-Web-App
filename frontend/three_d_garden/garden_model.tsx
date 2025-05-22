@@ -28,6 +28,7 @@ import { BooleanSetting } from "../session_keys";
 import { SlotWithTool } from "../resources/interfaces";
 import { cameraInit } from "./camera";
 import { isMobile } from "../screen_size";
+import { computeSurface, getZFunc, precomputeTriangles } from "./triangles";
 
 const AnimatedGroup = animated(Group);
 
@@ -88,6 +89,12 @@ export const GardenModel = (props: GardenModelProps) => {
   const showPoints = !!addPlantProps?.getConfigValue(BooleanSetting.show_points);
   const showWeeds = !!addPlantProps?.getConfigValue(BooleanSetting.show_weeds);
 
+  const { vertices, vertexList, uvs, faces } = React.useMemo(() =>
+    computeSurface(props.mapPoints, config), [props.mapPoints, config]);
+  const triangles = React.useMemo(() =>
+    precomputeTriangles(vertexList, faces), [vertexList, faces]);
+  const getZ = getZFunc(triangles, -config.soilHeight);
+
   // eslint-disable-next-line no-null/no-null
   return <Group dispose={null}
     onPointerMove={config.eventDebug
@@ -129,6 +136,9 @@ export const GardenModel = (props: GardenModelProps) => {
     <Clouds config={config} />
     <Bed
       config={config}
+      vertices={vertices}
+      uvs={uvs}
+      getZ={getZ}
       activeFocus={props.activeFocus}
       mapPoints={props.mapPoints || []}
       addPlantProps={addPlantProps} />
@@ -148,9 +158,10 @@ export const GardenModel = (props: GardenModelProps) => {
           plant={plant}
           labelOnly={true}
           config={config}
+          getZ={getZ}
           hoveredPlant={hoveredPlant} />)}
     </Group>
-    <Grid config={config} />
+    <Grid config={config} getZ={getZ} />
     <Group name={"plants"}
       visible={plantsVisible}
       onPointerEnter={setHover(true)}
@@ -162,6 +173,7 @@ export const GardenModel = (props: GardenModelProps) => {
           visible={plantsVisible}
           config={config}
           hoveredPlant={hoveredPlant}
+          getZ={getZ}
           dispatch={dispatch} />)}
     </Group>
     <Group name={"points"}
@@ -171,6 +183,7 @@ export const GardenModel = (props: GardenModelProps) => {
           point={point}
           visible={showPoints}
           config={config}
+          getZ={getZ}
           dispatch={dispatch} />)}
     </Group>
     <Group name={"weeds"}
@@ -180,6 +193,7 @@ export const GardenModel = (props: GardenModelProps) => {
           weed={weed}
           visible={showWeeds}
           config={config}
+          getZ={getZ}
           dispatch={dispatch} />)}
     </Group>
     <Solar config={config} activeFocus={props.activeFocus} />
