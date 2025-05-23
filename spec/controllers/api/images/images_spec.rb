@@ -1,40 +1,52 @@
 require "spec_helper"
-WebMock.allow_net_connect!
 
 describe Api::ImagesController do
   include Devise::Test::ControllerHelpers
   let(:user) { FactoryBot.create(:user) }
 
-  it "" do
-    fake_file = ActionDispatch::Http::UploadedFile.new(filename: "wow.jpg", type: "image/jpg", head: "", tempfile: Tempfile.new)
+  it "uploads file" do
+    fake_file = ActionDispatch::Http::UploadedFile.new(
+      filename: "wow.jpg",
+      type: "image/jpg",
+      head: "",
+      tempfile: Tempfile.new,
+    )
     name = "wow.jpg"
     Image.self_hosted_image_upload(key: "/abc.jpg", file: fake_file)
     expected = "public/direct_upload/temp/abc.jpg"
-    assert File.file?(expected)
-    File.delete(expected)
+    begin
+      assert File.file?(expected)
+    ensure
+      File.delete(expected) if File.exist?(expected)
+    end
   end
 
   it "Creates a policy object" do
-    sign_in user
-    b4 = Api::ImagesController.store_locally
-    Api::ImagesController.store_locally = false
-    get :storage_auth
-    Api::ImagesController.store_locally = b4
+    allow(Google::Cloud::Storage).to receive_message_chain("new.bucket.post_object.fields")
+      .and_return({ signature: "signature" })
 
-    expect(response.status).to eq(200)
-    expect(json).to be_kind_of(Hash)
-    expect(json[:verb]).to eq("POST")
-    expect(json[:url]).to include("googleapis")
-    expect(json[:form_data].keys.sort).to include(:signature)
-    expect(json[:instructions]).to include("POST the resulting URL as an 'attachment_url'")
+    with_modified_env(
+      GOOGLE_CLOUD_KEYFILE_JSON: "key",
+      GCS_BUCKET: "bucket",
+    ) do
+
+      sign_in user
+      get :storage_auth
+
+      expect(response.status).to eq(200)
+      expect(json).to be_kind_of(Hash)
+      expect(json[:verb]).to eq("POST")
+      expect(json[:url]).to include("googleapis")
+      expect(json[:form_data].keys.sort).to include(:signature)
+      expect(json[:form_data][:signature]).to eq("signature")
+      expect(json[:instructions]).to include("POST the resulting URL as an 'attachment_url'")
+    end
   end
 
   it "Creates a (stub) policy object" do
     sign_in user
-    b4 = Api::ImagesController.store_locally
-    Api::ImagesController.store_locally = true
     get :storage_auth
-    Api::ImagesController.store_locally = b4
+
     expect(response.status).to eq(200)
     expect(json).to be_kind_of(Hash)
     expect(json[:verb]).to eq("POST")
@@ -72,7 +84,17 @@ describe Api::ImagesController do
   end
 
   describe "#create" do
+    image_data = File.read(Rails.root.join("public", "plant.jpg"))
+
     it "creates one image", :slow do
+      stub_request(:get, FAKE_ATTACHMENT_URL).to_return(
+        status: 200,
+        body: image_data,
+        headers: {
+          "Content-Type" => "image/jpeg",
+          "Content-Length" => image_data.size.to_s
+        }
+      )
       sign_in user
       before_count = Image.count
       post :create,
@@ -88,18 +110,18 @@ describe Api::ImagesController do
       expect(json.dig :meta, :y).to eq(nil)
       expect(json.dig :meta, :z).to eq(3)
     end
+  end
 
-    describe "#delete" do
-      it "deletes an image" do
-        sign_in user
-        image = FactoryBot.create(:image, device: user.device)
-        before_count = Image.count
-        run_jobs_now do
-          delete :destroy, params: { id: image.id }
-        end
-        expect(response.status).to eq(200)
-        expect(Image.count).to be < before_count
+  describe "#delete" do
+    it "deletes an image" do
+      sign_in user
+      image = FactoryBot.create(:image, device: user.device)
+      before_count = Image.count
+      run_jobs_now do
+        delete :destroy, params: { id: image.id }
       end
+      expect(response.status).to eq(200)
+      expect(Image.count).to be < before_count
     end
   end
 end

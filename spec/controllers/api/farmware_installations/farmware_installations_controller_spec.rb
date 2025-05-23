@@ -7,7 +7,9 @@ describe Api::FarmwareInstallationsController do
   describe "#create" do
     it "creates a new FarmwareInstallation" do
       sign_in user
-      url = Faker::Internet.url host: "example.com", path: "/#{SecureRandom.hex(16)}/manifest.json"
+      hex = SecureRandom.hex(16)
+      url = Faker::Internet.url host: "example.com", path: "/#{hex}/manifest.json"
+      stub_request(:get, url).to_return(status: 200, body: "", headers: {})
       payload = { url: url }
       old_installation_count = FarmwareInstallation.count
       post :create, body: payload.to_json, params: { format: :json }

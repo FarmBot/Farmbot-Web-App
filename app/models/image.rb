@@ -26,21 +26,22 @@ class Image < ApplicationRecord
   CONFIG = { default_url: DEFAULT_URL,
              styles: RMAGICK_STYLES,
              size: { in: 0..MAX_IMAGE_SIZE } }
-  BUCKET = ENV["GCS_BUCKET"]
-
-  ROOT_PATH = BUCKET ?
-    "https://#{BUCKET}.storage.googleapis.com" : "/system"
-  IMAGE_URL_TPL =
-    ROOT_PATH + "/images/attachments/%{chunks}/%{size}/%{filename}?%{timestamp}"
 
   CONTENT_TYPES = ["image/jpg", "image/jpeg", "image/png", "image/gif"]
   GCS_ACCESS_KEY_ID = ENV.fetch("GCS_KEY") { puts "Not using Google Cloud" }
-  GCS_HOST = "http://#{BUCKET}.storage.googleapis.com"
   GCS_SECRET_ACCESS_KEY = ENV.fetch("GCS_ID") { puts "Not using Google Cloud" }
   # Worst case scenario for 1280x1280 BMP.
-  GCS_BUCKET_NAME = ENV["GCS_BUCKET"]
 
   has_one_attached :attachment
+
+  def bucket
+    ENV["GCS_BUCKET"]
+  end
+
+  def image_url_tpl
+    root_path = bucket ? "https://#{bucket}.storage.googleapis.com" : "/system"
+    root_path + "/images/attachments/%{chunks}/%{size}/%{filename}?%{timestamp}"
+  end
 
   def set_attachment_by_url(url)
     io = URI.parse(url).open
@@ -73,9 +74,8 @@ class Image < ApplicationRecord
   end
 
   def regular_url
-    if BUCKET
-      # Not sure why. TODO: Investigate why Rails URL helpers don't work here.
-      "https://storage.googleapis.com/#{BUCKET}/#{attachment.key}"
+    if bucket
+      "https://storage.googleapis.com/#{bucket}/#{attachment.key}"
     else
       Rails
         .application
@@ -86,7 +86,7 @@ class Image < ApplicationRecord
   end
 
   def legacy_url(size)
-    url = IMAGE_URL_TPL % {
+    url = image_url_tpl % {
       chunks: id.to_s.rjust(9, "0").scan(/.{3}/).join("/"),
       filename: attachment_file_name,
       size: size,
@@ -108,7 +108,7 @@ class Image < ApplicationRecord
   end
 
   def self.self_hosted_image_upload(key:, file:)
-    raise "No." unless Api::ImagesController.store_locally
+    raise "No." unless Api::ImagesController.store_locally?
     name = key.split("/").last
     src = file.tempfile.path
     dest = File.join("public", "direct_upload", "temp", name)
