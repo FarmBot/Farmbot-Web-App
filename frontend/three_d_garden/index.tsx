@@ -66,6 +66,7 @@ export interface ThreeDGardenToggleProps {
 export const ThreeDGardenToggle = (props: ThreeDGardenToggleProps) => {
   const { navigate, dispatch, threeDGarden } = props;
   const topDown = props.designer.threeDTopDownView;
+  const exaggeratedZ = props.designer.threeDExaggeratedZ;
   const description = isMobile()
     ? Content.SHOW_3D_VIEW_DESCRIPTION_MOBILE
     : Content.SHOW_3D_VIEW_DESCRIPTION_DESKTOP;
@@ -78,6 +79,20 @@ export const ThreeDGardenToggle = (props: ThreeDGardenToggleProps) => {
           navigate(Path.settings("3d_garden"));
         }}>
         <i className={"fa fa-cog"} />
+      </button>}
+    {threeDGarden &&
+      <button className={"fb-button gray"}
+        title={exaggeratedZ ? t("normal z") : t("exaggerated z")}
+        onClick={() => dispatch({
+          type: Actions.TOGGLE_3D_EXAGGERATED_Z,
+          payload: !exaggeratedZ,
+        })}>
+        <i className={[
+          "fa",
+          exaggeratedZ
+            ? "fa-angle-up"
+            : "fa-angle-double-up",
+        ].join(" ")} />
       </button>}
     {threeDGarden &&
       <button className={"fb-button gray"}

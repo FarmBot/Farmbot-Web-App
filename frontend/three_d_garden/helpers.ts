@@ -1,5 +1,7 @@
 import { Config } from "./config";
 import * as THREE from "three";
+import { AxisNumberProperty } from "../farm_designer/map/interfaces";
+import { round } from "../farm_designer/map/util";
 
 export const threeSpace = (position: number, max: number): number =>
   position - max / 2;
@@ -53,3 +55,26 @@ export const easyCubicBezierCurve3 = (
     new THREE.Vector3(x2, y2, z2),
   );
 };
+
+type XY = AxisNumberProperty;
+
+export const getGardenPositionFunc = (config: Config, snap = true) =>
+  (threeDPosition: XY): XY => {
+    const { bedLengthOuter, bedWidthOuter, bedXOffset, bedYOffset } = config;
+    const position = {
+      x: threeSpace(threeDPosition.x, -bedLengthOuter) - bedXOffset,
+      y: threeSpace(threeDPosition.y, -bedWidthOuter) - bedYOffset,
+    };
+    return snap
+      ? { x: round(position.x), y: round(position.y) }
+      : { x: position.x, y: position.y };
+  };
+
+export const get3DPositionFunc = (config: Config) =>
+  (gardenPosition: XY): XY => {
+    const { bedLengthOuter, bedWidthOuter, bedXOffset, bedYOffset } = config;
+    return {
+      x: threeSpace(gardenPosition.x + bedXOffset, bedLengthOuter),
+      y: threeSpace(gardenPosition.y + bedYOffset, bedWidthOuter),
+    };
+  };

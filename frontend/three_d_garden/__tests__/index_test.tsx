@@ -80,6 +80,29 @@ describe("<ThreeDGardenToggle />", () => {
     });
   });
 
+  it("disables exaggerated z", () => {
+    const p = fakeProps();
+    p.designer.threeDExaggeratedZ = true;
+    render(<ThreeDGardenToggle {...p} />);
+    const isoViewButton = screen.getByTitle("normal z");
+    fireEvent.click(isoViewButton);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_3D_EXAGGERATED_Z,
+      payload: false,
+    });
+  });
+
+  it("enables exaggerated z", () => {
+    const p = fakeProps();
+    render(<ThreeDGardenToggle {...p} />);
+    const topDownViewButton = screen.getByTitle("exaggerated z");
+    fireEvent.click(topDownViewButton);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_3D_EXAGGERATED_Z,
+      payload: true,
+    });
+  });
+
   it("toggles 3D view", () => {
     const p = fakeProps();
     render(<ThreeDGardenToggle {...p} />);

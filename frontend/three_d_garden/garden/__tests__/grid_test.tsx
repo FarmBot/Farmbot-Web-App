@@ -15,6 +15,7 @@ describe("gridLineOffsets()", () => {
 describe("<Grid />", () => {
   const fakeProps = (): GridProps => ({
     config: clone(INITIAL),
+    getZ: () => 0,
   });
 
   it("renders", () => {

@@ -52,6 +52,7 @@ export const fakeDesignerState = (): DesignerState => ({
   distanceIndicator: "",
   panelOpen: true,
   threeDTopDownView: false,
+  threeDExaggeratedZ: false,
 });
 
 export const fakeHelpState = (): HelpState => ({

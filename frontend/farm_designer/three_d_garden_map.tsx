@@ -49,6 +49,7 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
       : "v1.7";
 
   config.negativeZ = props.negativeZ;
+  config.exaggeratedZ = props.designer.threeDExaggeratedZ;
 
   config.x = props.botPosition.x || 0;
   config.y = props.botPosition.y || 0;

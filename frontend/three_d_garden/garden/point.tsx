@@ -32,6 +32,7 @@ export interface PointProps {
   config: Config;
   dispatch?: Function;
   visible: boolean;
+  getZ(x: number, y: number): number;
 }
 
 export const Point = (props: PointProps) => {
@@ -44,7 +45,7 @@ export const Point = (props: PointProps) => {
     position={{
       x: point.body.x,
       y: point.body.y,
-      z: -config.soilHeight,
+      z: props.getZ(point.body.x, point.body.y),
     }}
     onClick={() => {
       if (point.body.id && !isUndefined(props.dispatch) && props.visible &&
@@ -138,12 +139,13 @@ const PointBase = (props: PointBaseProps) => {
           opacity={1 * props.alpha} />
       </Sphere>
     </Group>
-    <HollowCylinder
-      torusRef={props.torusRef}
-      radius={radius}
-      thickness={10}
-      color={props.color}
-      alpha={0.5 * props.alpha} />
+    {radius > 0 &&
+      <HollowCylinder
+        torusRef={props.torusRef}
+        radius={radius}
+        thickness={10}
+        color={props.color}
+        alpha={0.5 * props.alpha} />}
   </Group>;
 };
 

@@ -17,6 +17,7 @@ describe("<Point />", () => {
     config: clone(INITIAL),
     point: fakePoint(),
     visible: true,
+    getZ: () => 0,
   });
 
   it("renders", () => {

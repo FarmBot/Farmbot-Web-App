@@ -9,15 +9,40 @@ import {
 import * as THREE from "three";
 import React, { ReactNode } from "react";
 import { TransitionFn, UseSpringProps } from "@react-spring/three";
-import { ThreeElements } from "@react-three/fiber";
+import { ThreeElements, ThreeEvent } from "@react-three/fiber";
 import { Cloud, Clouds, Image, Tube } from "@react-three/drei";
 
 const GroupForTests = (props: ThreeElements["group"]) =>
   // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
   <group {...props} />;
 
+type Event = ThreeEvent<PointerEvent>;
+
+const MeshForTests = (props: ThreeElements["mesh"]) =>
+  // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
+  <mesh {...props}
+    onPointerMove={(e: Event) =>
+      props.onPointerMove?.({
+        // @ts-expect-error: This spread always overwrites this property.
+        point: { x: 0, y: 0 },
+        ...e,
+      })}
+    onClick={(e: Event) =>
+      props.onClick?.({
+        // @ts-expect-error: This spread always overwrites this property.
+        stopPropagation: jest.fn(),
+        // @ts-expect-error: This spread always overwrites this property.
+        point: { x: 0, y: 0 },
+        ...e,
+      } as unknown as Event)}>
+    {props.name}
+    {props.children}
+    {/* @ts-expect-error Property does not exist on type JSX.IntrinsicElements */}
+  </mesh>;
+
 jest.mock("../three_d_garden/components", () => ({
   ...jest.requireActual("../three_d_garden/components"),
+  Mesh: (props: ThreeElements["mesh"]) => <MeshForTests {...props} />,
   Group: (props: ThreeElements["group"]) =>
     props.visible === false
       ? <></>
@@ -60,8 +85,6 @@ jest.mock("@react-spring/three", () => ({
   animated: () => ({ children }: { children?: ReactNode }) =>
     <div className={"animated"}>{children}</div>,
 }));
-
-type Event = React.MouseEvent<HTMLDivElement, MouseEvent>;
 
 jest.mock("@react-three/drei", () => {
   const useGLTF = jest.fn((key: string) => ({
@@ -581,6 +604,8 @@ jest.mock("@react-three/drei", () => {
     useGLTF,
     RoundedBox: ({ name }: { name: string }) =>
       <div className={"cylinder"}>{name}</div>,
+    Plane: ({ name }: { name: string }) =>
+      <div className={"plane"}>{name}</div>,
     Cylinder: ({ name }: { name: string }) =>
       <div className={"cylinder"}>{name}</div>,
     Torus: ({ name }: { name: string }) =>
@@ -591,26 +616,8 @@ jest.mock("@react-three/drei", () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Box: (props: any) =>
       <div className={"box" + props.name} {...props}>{props.children}</div>,
-    Extrude: ({ name, onClick, onPointerMove }: {
-      name: string,
-      onClick: (event: Event) => void,
-      onPointerMove: (event: Event) => void,
-    }) =>
-      <div className={"extrude"}
-        onPointerMove={e =>
-          onPointerMove({
-            point: { x: 0, y: 0 },
-            ...e,
-          } as unknown as Event)}
-        onClick={e =>
-          onClick({
-            // @ts-expect-error: This spread always overwrites this property.
-            stopPropagation: jest.fn(),
-            point: { x: 0, y: 0 },
-            ...e,
-          } as unknown as Event)}>
-        {name}
-      </div>,
+    Extrude: ({ name }: { name: string }) =>
+      <div className={"extrude"}>{name}</div>,
     Line: ({ name }: { name: string }) =>
       <div className={"line"}>{name}</div>,
     Trail: ({ name }: { name: string }) =>

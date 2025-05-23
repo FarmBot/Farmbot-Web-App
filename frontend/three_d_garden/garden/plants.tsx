@@ -93,6 +93,7 @@ export interface ThreeDPlantProps {
   hoveredPlant: number | undefined;
   dispatch?: Function;
   visible?: boolean;
+  getZ(x: number, y: number): number;
 }
 
 export const ThreeDPlant = (props: ThreeDPlantProps) => {
@@ -103,7 +104,7 @@ export const ThreeDPlant = (props: ThreeDPlantProps) => {
     position={new Vector3(
       threeSpace(plant.x, config.bedLengthOuter),
       threeSpace(plant.y, config.bedWidthOuter),
-      zZeroFunc(config) - config.soilHeight + plant.size / 2,
+      zZeroFunc(config) + props.getZ(plant.x, plant.y) + plant.size / 2,
     )}>
     {labelOnly
       ? <Text visible={alwaysShowLabels || i === hoveredPlant}

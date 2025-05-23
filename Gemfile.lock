@@ -70,6 +70,7 @@ GEM
     amq-protocol (2.3.4)
     base64 (0.2.0)
     bcrypt (3.1.20)
+    benchmark (0.4.0)
     bigdecimal (3.1.9)
     builder (3.3.0)
     bunny (2.24.0)
@@ -109,6 +110,7 @@ GEM
     discard (1.4.0)
       activerecord (>= 4.2, < 9.0)
     docile (1.4.1)
+    drb (2.2.3)
     e2mmap (0.1.0)
     erubi (1.13.1)
     factory_bot (6.5.1)
@@ -128,7 +130,7 @@ GEM
       net-http (>= 0.5.0)
     globalid (1.2.1)
       activesupport (>= 6.1)
-    google-apis-core (0.17.0)
+    google-apis-core (0.18.0)
       addressable (~> 2.5, >= 2.5.1)
       googleauth (~> 1.9)
       httpclient (>= 2.8.3, < 3.a)
@@ -136,7 +138,7 @@ GEM
       mutex_m
       representable (~> 3.0)
       retriable (>= 2.0, < 4.a)
-    google-apis-iamcredentials_v1 (0.23.0)
+    google-apis-iamcredentials_v1 (0.24.0)
       google-apis-core (>= 0.15.0, < 2.a)
     google-apis-storage_v1 (0.51.0)
       google-apis-core (>= 0.15.0, < 2.a)
@@ -165,7 +167,7 @@ GEM
       multi_json (~> 1.11)
       os (>= 0.9, < 2.0)
       signet (>= 0.16, < 2.a)
-    hashdiff (1.1.2)
+    hashdiff (1.2.0)
     hashie (4.1.0)
     httpclient (2.9.0)
       mutex_m
@@ -227,6 +229,7 @@ GEM
       racc (~> 1.4)
     orm_adapter (0.5.0)
     os (1.1.4)
+    ostruct (0.6.1)
     passenger (6.0.27)
       rack (>= 1.6.13)
       rackup (>= 1.0.1)
@@ -245,7 +248,7 @@ GEM
       hashie (~> 4.1)
       multi_json (~> 1.15)
     racc (1.8.1)
-    rack (2.2.14)
+    rack (2.2.16)
     rack-attack (6.7.0)
       rack (>= 1.0, < 4)
     rack-cors (2.0.2)
@@ -270,7 +273,7 @@ GEM
       bundler (>= 1.15.0)
       railties (= 6.1.7.10)
       sprockets-rails (>= 2.0.0)
-    rails-dom-testing (2.2.0)
+    rails-dom-testing (2.3.0)
       activesupport (>= 5.0.0)
       minitest
       nokogiri (>= 1.6)
@@ -381,7 +384,7 @@ GEM
       base64
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.5)
-    zeitwerk (2.7.2)
+    zeitwerk (2.7.3)
 
 PLATFORMS
   aarch64-linux
@@ -389,6 +392,8 @@ PLATFORMS
 
 DEPENDENCIES
   active_model_serializers
+  benchmark
+  bigdecimal
   bunny
   climate_control
   database_cleaner
@@ -396,6 +401,7 @@ DEPENDENCIES
   delayed_job_active_record
   devise
   discard
+  drb
   factory_bot_rails
   faker
   google-cloud-storage (~> 1.11)
@@ -405,6 +411,7 @@ DEPENDENCIES
   logger
   lograge
   mutations
+  ostruct
   passenger
   pg
   pry
@@ -431,7 +438,7 @@ DEPENDENCIES
   webmock
 
 RUBY VERSION
-   ruby 3.3.8p144
+   ruby 3.4.3p32
 
 BUNDLED WITH
    2.6.9
