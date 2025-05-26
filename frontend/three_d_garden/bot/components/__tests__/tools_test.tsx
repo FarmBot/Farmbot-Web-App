@@ -90,8 +90,10 @@ describe("<Tools />", () => {
     toolSlot4.body.pullout_direction = ToolPulloutDirection.NEGATIVE_Y;
     const toolSlot5 = fakeToolSlot();
     toolSlot5.body.tool_id = tool5.body.id;
+    toolSlot5.body.gantry_mounted = true;
     const toolSlot6 = fakeToolSlot();
     toolSlot6.body.tool_id = tool6.body.id;
+    toolSlot6.body.gantry_mounted = true;
     p.toolSlots = [
       { toolSlot: toolSlot0, tool: tool0 },
       { toolSlot: toolSlot1, tool: tool1 },

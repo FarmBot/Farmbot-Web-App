@@ -82,6 +82,7 @@ interface ConvertedTools {
   toolName: string | undefined;
   toolPulloutDirection: ToolPulloutDirection;
   firstTrough?: boolean;
+  gantryMounted?: boolean;
 }
 
 export const convertSlotsWithTools =
@@ -98,6 +99,7 @@ export const convertSlotsWithTools =
         toolName,
         toolPulloutDirection: swt.toolSlot.body.pullout_direction,
         firstTrough: troughIndex < 2,
+        gantryMounted: swt.toolSlot.body.gantry_mounted,
       };
     });
   };
@@ -423,6 +425,7 @@ export const Tools = (props: ToolsProps) => {
     {tools.map((tool, i) =>
       <Tool key={i}
         {...tool}
+        x={tool.gantryMounted ? botPosition.x : tool.x}
         inToolbay={true} />)}
   </Group>;
 };
