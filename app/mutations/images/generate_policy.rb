@@ -3,9 +3,6 @@ require "google/cloud/storage/file"
 
 module Images
   class GeneratePolicy < Mutations::Command
-    BUCKET_NAME = ENV.fetch("GCS_BUCKET") { "YOU_MUST_CONFIG_GOOGLE_CLOUD_STORAGE" }
-    JSON_KEY = ENV["GOOGLE_CLOUD_KEYFILE_JSON"]
-    BUCKET = JSON_KEY && Google::Cloud::Storage.new.bucket(BUCKET_NAME)
     HMM = "GCS NOT SETUP!"
     # # Is there a better way to reach in and grab the ActiveStorage configs?
     # CONFIG = YAML.load(ERB.new(File.read("config/storage.yml")).result(binding)).fetch("google")
@@ -13,7 +10,7 @@ module Images
     def execute
       {
         verb: "POST",
-        url: "//storage.googleapis.com/#{BUCKET_NAME || HMM}/",
+        url: "//storage.googleapis.com/#{bucket_name || HMM}/",
         form_data: {
           "key" => file_path,
           "acl" => "public-read",
@@ -31,16 +28,25 @@ module Images
 
     private
 
+    def bucket_name
+      ENV["GCS_BUCKET"]
+    end
+
+    def bucket
+      json_key = ENV["GOOGLE_CLOUD_KEYFILE_JSON"]
+      json_key && Google::Cloud::Storage.new.bucket(bucket_name)
+    end
+
     def post_object
-      @post_object ||= BUCKET ?
-        BUCKET.post_object(file_path, policy: policy).fields : {}
+      @post_object ||= bucket ?
+        bucket.post_object(file_path, policy: policy).fields : {}
     end
 
     def policy
       @policy ||= {
         expiration: (Time.now + 1.hour).utc.xmlschema,
         conditions: [
-          { bucket: BUCKET_NAME },
+          { bucket: bucket_name },
           { key: file_path },
           { acl: "public-read" },
           [:eq, "$Content-Type", "image/jpeg"],

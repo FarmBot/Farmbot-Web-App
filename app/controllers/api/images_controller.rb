@@ -5,7 +5,6 @@ module Api
   # 3. Image is transferred to the "trusted bucket".
   class ImagesController < Api::AbstractController
     cattr_accessor :store_locally
-    self.store_locally = !ENV["GCS_BUCKET"]
 
     def create
       mutate Images::Create.run(raw_json, device: current_device)
@@ -32,8 +31,12 @@ module Api
 
     private
 
+    def self.store_locally?
+      !ENV["GCS_BUCKET"]
+    end
+
     def policy_class
-      if ImagesController.store_locally
+      if ImagesController.store_locally?
         Images::StubPolicy
       else
         Images::GeneratePolicy

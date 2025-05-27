@@ -1,10 +1,18 @@
 require "spec_helper"
-WebMock.allow_net_connect!
 
 describe Image do
   let(:device) { FactoryBot.create(:device) }
+  image_data = File.read(Rails.root.join("public", "plant.jpg"))
 
   it "adds URL attachments", :slow do
+    stub_request(:get, FAKE_ATTACHMENT_URL).to_return(
+      status: 200,
+      body: image_data,
+      headers: {
+        "Content-Type" => "image/jpeg",
+        "Content-Length" => image_data.size.to_s
+      }
+    )
     image = Image.create(device: device)
     expect(image.attachment_processed_at).to be_nil
     expect(image.attachment.attached?).to be false
@@ -27,7 +35,7 @@ describe Image do
   end
 
   it "generates a URL when BUCKET is set" do
-    const_reassign(Image, :BUCKET, "foo") do
+    with_modified_env(GCS_BUCKET: "foo") do
       i = Image.new
       expect(i).to receive(:attachment).and_return(Struct.new(:key).new("bar"))
       url = i.regular_url
