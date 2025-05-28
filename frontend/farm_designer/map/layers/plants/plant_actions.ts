@@ -106,7 +106,6 @@ export interface DropPlantProps {
   gridSize: AxisNumberProperty;
   dispatch: Function;
   getConfigValue: GetWebAppConfigValue;
-  plants: TaggedPlant[];
   curves: TaggedCurve[];
   designer: DesignerState;
 }

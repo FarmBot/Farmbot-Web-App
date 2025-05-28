@@ -330,6 +330,11 @@ export const PrivateOverlay = (props: OverlayProps) => {
       <Slider {...common} configKey={"bedBrightness"} min={1} max={12} />
       <Slider {...common} configKey={"soilBrightness"} min={1} max={12} />
       <Slider {...common} configKey={"soilHeight"} min={0} max={1000} />
+      <Radio {...common} configKey={"soilSurface"}
+        options={["flat", "random"]} />
+      <Slider {...common} configKey={"soilSurfacePointCount"} min={0} max={200} />
+      <Slider {...common} configKey={"soilSurfaceVariance"} min={0} max={1000} />
+      <Toggle {...common} configKey={"showSoilPoints"} />
       <Toggle {...common} configKey={"exaggeratedZ"} />
       <Radio {...common} configKey={"plants"}
         options={["Winter", "Spring", "Summer", "Fall", "Random", "None"]} />

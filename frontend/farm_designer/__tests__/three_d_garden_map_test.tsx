@@ -3,7 +3,9 @@ jest.mock("../../three_d_garden", () => ({
 }));
 
 import React from "react";
-import { ThreeDGardenMapProps, ThreeDGardenMap } from "../three_d_garden_map";
+import {
+  ThreeDGardenMapProps, ThreeDGardenMap, convertPlants,
+} from "../three_d_garden_map";
 import { fakeMapTransformProps } from "../../__test_support__/map_transform_props";
 import { fakeBotSize } from "../../__test_support__/fake_bot_data";
 import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
@@ -13,6 +15,7 @@ import { ThreeDGarden } from "../../three_d_garden";
 import { clone } from "lodash";
 import { INITIAL } from "../../three_d_garden/config";
 import { FirmwareHardware } from "farmbot";
+import { CROPS } from "../../crops/constants";
 
 describe("<ThreeDGardenMap />", () => {
   const fakeProps = (): ThreeDGardenMapProps => ({
@@ -63,6 +66,15 @@ describe("<ThreeDGardenMap />", () => {
     expectedConfig.zoomBeacons = false;
     expect(ThreeDGarden).toHaveBeenCalledWith({
       config: expectedConfig,
+      threeDPlants: [{
+        id: expect.any(Number),
+        icon: expect.any(String),
+        label: "Strawberry Plant 1",
+        size: 50,
+        spread: 0,
+        x: 101,
+        y: 201,
+      }],
       addPlantProps: expect.any(Object),
       mapPoints: [],
       weeds: [],
@@ -72,9 +84,11 @@ describe("<ThreeDGardenMap />", () => {
   it("converts props: unknown position", () => {
     const p = fakeProps();
     p.botPosition = { x: undefined, y: undefined, z: undefined };
+    p.plants = [];
     render(<ThreeDGardenMap {...p} />);
     expect(ThreeDGarden).toHaveBeenCalledWith({
       config: expect.objectContaining({ x: 0, y: 0, z: 0 }),
+      threeDPlants: [],
       addPlantProps: expect.any(Object),
       mapPoints: [],
       weeds: [],
@@ -85,9 +99,11 @@ describe("<ThreeDGardenMap />", () => {
     const p = fakeProps();
     p.botPosition = { x: undefined, y: undefined, z: -100 };
     p.negativeZ = true;
+    p.plants = [];
     render(<ThreeDGardenMap {...p} />);
     expect(ThreeDGarden).toHaveBeenCalledWith({
       config: expect.objectContaining({ negativeZ: true, x: 0, y: 0, z: -100 }),
+      threeDPlants: [],
       addPlantProps: expect.any(Object),
       mapPoints: [],
       weeds: [],
@@ -100,13 +116,59 @@ describe("<ThreeDGardenMap />", () => {
     ["farmduino_k18", "v1.8"],
   ])("converts props: kitVersion", (firmwareHardware, kitVersion) => {
     const p = fakeProps();
+    p.plants = [];
     p.sourceFbosConfig = () => ({ value: firmwareHardware, consistent: true });
     render(<ThreeDGardenMap {...p} />);
     expect(ThreeDGarden).toHaveBeenCalledWith({
       config: expect.objectContaining({ kitVersion }),
+      threeDPlants: [],
       addPlantProps: expect.any(Object),
       mapPoints: [],
       weeds: [],
     }, {});
+  });
+});
+
+describe("convertPlants()", () => {
+  it("converts plants", () => {
+    const config = clone(INITIAL);
+    config.bedXOffset = 10;
+    config.bedYOffset = 1;
+
+    const plant0 = fakePlant();
+    plant0.body.name = "Spinach";
+    plant0.body.openfarm_slug = "spinach";
+    plant0.body.x = 100;
+    plant0.body.y = 200;
+
+    const plant1 = fakePlant();
+    plant1.body.name = "Unknown";
+    plant1.body.openfarm_slug = "not-set";
+    plant1.body.x = 1000;
+    plant1.body.y = 2000;
+
+    const plants = [plant0, plant1];
+
+    const convertedPlants = convertPlants(config, plants);
+
+    expect(convertedPlants).toEqual([{
+      icon: CROPS.spinach.icon,
+      id: expect.any(Number),
+      label: "Spinach",
+      size: 50,
+      spread: 0,
+      x: 110,
+      y: 201,
+    },
+    {
+      icon: CROPS["generic-plant"].icon,
+      id: expect.any(Number),
+      label: "Unknown",
+      size: 50,
+      spread: 0,
+      x: 1010,
+      y: 2001,
+    },
+    ]);
   });
 });

@@ -15,9 +15,7 @@ import { ASSETS } from "../constants";
 import { DistanceIndicator } from "../elements";
 import { FarmbotAxes, Caster, UtilitiesPost, Packaging } from "./objects";
 import { Group, Mesh, MeshPhongMaterial } from "../components";
-import {
-  AxisNumberProperty, TaggedPlant,
-} from "../../farm_designer/map/interfaces";
+import { AxisNumberProperty } from "../../farm_designer/map/interfaces";
 import { TaggedCurve, TaggedGenericPointer } from "farmbot";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
 import { DesignerState } from "../../farm_designer/interfaces";
@@ -92,7 +90,6 @@ export interface AddPlantProps {
   gridSize: AxisNumberProperty;
   dispatch: Function;
   getConfigValue: GetWebAppConfigValue;
-  plants: TaggedPlant[];
   curves: TaggedCurve[];
   designer: DesignerState;
 }

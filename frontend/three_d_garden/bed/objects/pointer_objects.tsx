@@ -148,7 +148,6 @@ export const soilClick = (props: SoilClickProps) =>
           gridSize: addPlantProps.gridSize,
           dispatch: addPlantProps.dispatch,
           getConfigValue: addPlantProps.getConfigValue,
-          plants: addPlantProps.plants,
           curves: addPlantProps.curves,
           designer: addPlantProps.designer,
         });

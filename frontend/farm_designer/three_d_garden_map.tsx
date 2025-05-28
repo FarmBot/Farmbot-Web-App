@@ -1,6 +1,6 @@
 import React from "react";
 import { ThreeDGarden } from "../three_d_garden";
-import { INITIAL } from "../three_d_garden/config";
+import { Config, INITIAL } from "../three_d_garden/config";
 import {
   BotSize, MapTransformProps, AxisNumberProperty, TaggedPlant,
 } from "./map/interfaces";
@@ -13,6 +13,8 @@ import { DesignerState } from "./interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
 import { SlotWithTool } from "../resources/interfaces";
+import { ThreeDGardenPlant } from "../three_d_garden/garden";
+import { findIcon } from "../crops/find";
 
 export interface ThreeDGardenMapProps {
   botSize: BotSize;
@@ -82,8 +84,11 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   config.rotate = !props.designer.threeDTopDownView;
   config.perspective = !props.designer.threeDTopDownView;
 
+  const threeDPlants = convertPlants(config, props.plants);
+
   return <ThreeDGarden
     config={config}
+    threeDPlants={threeDPlants}
     mapPoints={props.mapPoints}
     weeds={props.weeds}
     toolSlots={props.toolSlots}
@@ -92,8 +97,19 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
       gridSize: props.mapTransformProps.gridSize,
       dispatch: props.dispatch,
       getConfigValue: props.getWebAppConfigValue,
-      plants: props.plants,
       curves: props.curves,
       designer: props.designer,
     }} />;
 };
+
+export const convertPlants =
+  (config: Config, plants: TaggedPlant[]): ThreeDGardenPlant[] =>
+    plants.map(plant => ({
+      id: plant.body.id,
+      label: plant.body.name,
+      icon: findIcon(plant.body.openfarm_slug),
+      size: plant.body.radius * 2,
+      spread: 0,
+      x: plant.body.x + config.bedXOffset,
+      y: plant.body.y + config.bedYOffset,
+    }));

@@ -1,19 +1,17 @@
-import { TaggedPlant } from "../../farm_designer/map/interfaces";
-import { Config } from "../config";
-import { GARDENS, HOVER_OBJECT_MODES, PLANTS, RenderOrder } from "../constants";
-import { Billboard, Image } from "@react-three/drei";
 import React from "react";
+import { Config } from "../config";
+import { HOVER_OBJECT_MODES, RenderOrder } from "../constants";
+import { Billboard, Image } from "@react-three/drei";
 import { Vector3 } from "three";
 import { threeSpace, zZero as zZeroFunc } from "../helpers";
 import { Text } from "../elements";
-import { findIcon } from "../../crops/find";
-import { isUndefined, kebabCase } from "lodash";
+import { isUndefined } from "lodash";
 import { Path } from "../../internal_urls";
 import { useNavigate } from "react-router";
 import { setPanelOpen } from "../../farm_designer/panel_header";
 import { getMode } from "../../farm_designer/map/util";
 
-interface Plant {
+export interface ThreeDGardenPlant {
   id?: number | undefined;
   label: string;
   icon: string;
@@ -23,70 +21,8 @@ interface Plant {
   y: number;
 }
 
-export interface ThreeDGardenPlant extends Plant { }
-
-export const convertPlants = (config: Config, plants: TaggedPlant[]): Plant[] => {
-  return plants.map(plant => {
-    return {
-      id: plant.body.id,
-      label: plant.body.name,
-      icon: findIcon(plant.body.openfarm_slug),
-      size: plant.body.radius * 2,
-      spread: 0,
-      x: plant.body.x + config.bedXOffset,
-      y: plant.body.y + config.bedYOffset,
-    };
-  });
-};
-
-export const calculatePlantPositions = (config: Config): Plant[] => {
-  const gardenPlants = GARDENS[config.plants] || [];
-  const positions: Plant[] = [];
-  const startX = 350;
-  let nextX = startX;
-  let index = 0;
-  while (nextX <= config.bedLengthOuter - 100) {
-    const plantKey = gardenPlants[index];
-    const plant = PLANTS[plantKey];
-    if (!plant) { return []; }
-    const icon = findIcon(kebabCase(plant.label));
-    positions.push({
-      ...plant,
-      icon,
-      x: nextX,
-      y: config.bedWidthOuter / 2,
-    });
-    const plantsPerHalfRow =
-      Math.ceil((config.bedWidthOuter - plant.spread) / 2 / plant.spread);
-    for (let i = 1; i < plantsPerHalfRow; i++) {
-      positions.push({
-        ...plant,
-        icon,
-        x: nextX,
-        y: config.bedWidthOuter / 2 + plant.spread * i,
-      });
-      positions.push({
-        ...plant,
-        icon,
-        x: nextX,
-        y: config.bedWidthOuter / 2 - plant.spread * i,
-      });
-    }
-    if (index + 1 < gardenPlants.length) {
-      const nextPlant = PLANTS[gardenPlants[index + 1]];
-      nextX += (plant.spread / 2) + (nextPlant.spread / 2);
-      index++;
-    } else {
-      index = 0;
-      const nextPlant = PLANTS[gardenPlants[0]];
-      nextX += (plant.spread / 2) + (nextPlant.spread / 2);
-    }
-  }
-  return positions;
-};
-
 export interface ThreeDPlantProps {
-  plant: Plant;
+  plant: ThreeDGardenPlant;
   i: number;
   labelOnly?: boolean;
   config: Config;

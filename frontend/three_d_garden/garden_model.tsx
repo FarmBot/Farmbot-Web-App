@@ -11,8 +11,9 @@ import { Bot } from "./bot";
 import { AddPlantProps, Bed } from "./bed";
 import {
   Sky, Solar, Sun, sunPosition, ZoomBeacons,
-  calculatePlantPositions, convertPlants, ThreeDPlant,
+  ThreeDPlant,
   Point, Grid, Clouds, Ground, Weed,
+  ThreeDGardenPlant,
 } from "./garden";
 import { Config } from "./config";
 import { useSpring, animated } from "@react-spring/three";
@@ -21,7 +22,6 @@ import { getCamera } from "./zoom_beacons_constants";
 import {
   AmbientLight, AxesHelper, Group, MeshBasicMaterial,
 } from "./components";
-import { isUndefined } from "lodash";
 import { ICON_URLS } from "../crops/constants";
 import { TaggedGenericPointer, TaggedWeedPointer } from "farmbot";
 import { BooleanSetting } from "../session_keys";
@@ -36,6 +36,7 @@ export interface GardenModelProps {
   config: Config;
   activeFocus: string;
   setActiveFocus(focus: string): void;
+  threeDPlants: ThreeDGardenPlant[];
   addPlantProps?: AddPlantProps;
   mapPoints?: TaggedGenericPointer[];
   weeds?: TaggedWeedPointer[];
@@ -45,13 +46,9 @@ export interface GardenModelProps {
 
 // eslint-disable-next-line complexity
 export const GardenModel = (props: GardenModelProps) => {
-  const { config, addPlantProps } = props;
+  const { config, addPlantProps, threeDPlants } = props;
   const dispatch = addPlantProps?.dispatch;
   const Camera = config.perspective ? PerspectiveCamera : OrthographicCamera;
-
-  const plants = isUndefined(addPlantProps)
-    ? calculatePlantPositions(config)
-    : convertPlants(config, addPlantProps.plants);
 
   const [hoveredPlant, setHoveredPlant] =
     React.useState<number | undefined>(undefined);
@@ -86,7 +83,8 @@ export const GardenModel = (props: GardenModelProps) => {
   const plantsVisible = props.activeFocus != "Planter bed" && showPlants;
   const showFarmbot = !addPlantProps
     || !!addPlantProps.getConfigValue(BooleanSetting.show_farmbot);
-  const showPoints = !!addPlantProps?.getConfigValue(BooleanSetting.show_points);
+  const showPoints = config.showSoilPoints
+    || !!addPlantProps?.getConfigValue(BooleanSetting.show_points);
   const showWeeds = !!addPlantProps?.getConfigValue(BooleanSetting.show_weeds);
 
   const { vertices, vertexList, uvs, faces } = React.useMemo(() =>
@@ -153,7 +151,7 @@ export const GardenModel = (props: GardenModelProps) => {
       {ICON_URLS.map((url, i) => <Image key={i} url={url} />)}
     </Group>
     <Group name={"plant-labels"} visible={!props.activeFocus}>
-      {plants.map((plant, i) =>
+      {threeDPlants.map((plant, i) =>
         <ThreeDPlant key={i} i={i}
           plant={plant}
           labelOnly={true}
@@ -167,7 +165,7 @@ export const GardenModel = (props: GardenModelProps) => {
       onPointerEnter={setHover(true)}
       onPointerMove={setHover(true)}
       onPointerLeave={setHover(false)}>
-      {plants.map((plant, i) =>
+      {threeDPlants.map((plant, i) =>
         <ThreeDPlant key={i} i={i}
           plant={plant}
           visible={plantsVisible}

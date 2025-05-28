@@ -126,7 +126,7 @@ describe("<Bed />", () => {
     location.pathname = Path.mock(Path.points("add"));
     mockIsMobile = false;
     const p = fakeProps();
-    p.addPlantProps = fakeAddPlantProps([]);
+    p.addPlantProps = fakeAddPlantProps();
     const point0 = fakePoint();
     point0.specialStatus = gridPointSpecialStatus;
     point0.body.meta = { gridId: "123" };
@@ -147,7 +147,7 @@ describe("<Bed />", () => {
   it("adds a plant", () => {
     location.pathname = Path.mock(Path.cropSearch("mint"));
     const p = fakeProps();
-    p.addPlantProps = fakeAddPlantProps([]);
+    p.addPlantProps = fakeAddPlantProps();
     render(<Bed {...p} />);
     const soil = screen.getAllByText("soil")[0];
     fireEvent.click(soil);
@@ -159,7 +159,7 @@ describe("<Bed />", () => {
   it("doesn't add a drawn point", () => {
     location.pathname = Path.mock(Path.points("add"));
     const p = fakeProps();
-    const addPlantProps = fakeAddPlantProps([]);
+    const addPlantProps = fakeAddPlantProps();
     addPlantProps.designer.drawnPoint = undefined;
     p.addPlantProps = addPlantProps;
     render(<Bed {...p} />);
@@ -172,7 +172,7 @@ describe("<Bed />", () => {
     location.pathname = Path.mock(Path.points("add"));
     mockPlantRef.current = { position: { set: mockSetPlantPosition } };
     const p = fakeProps();
-    const addPlantProps = fakeAddPlantProps([]);
+    const addPlantProps = fakeAddPlantProps();
     const point = fakeDrawnPoint();
     point.cx = undefined;
     point.cy = undefined;
@@ -194,7 +194,7 @@ describe("<Bed />", () => {
     location.pathname = Path.mock(Path.points("add"));
     mockPlantRef.current = { position: { set: mockSetPlantPosition } };
     const p = fakeProps();
-    const addPlantProps = fakeAddPlantProps([]);
+    const addPlantProps = fakeAddPlantProps();
     const dispatch = jest.fn();
     addPlantProps.dispatch = mockDispatch(dispatch);
     const point = fakeDrawnPoint();
@@ -229,7 +229,7 @@ describe("<Bed />", () => {
     mockYCrosshairRef.current = { position: { set: mockSetYCrosshairPosition } };
     const p = fakeProps();
     p.config.columnLength = 100;
-    p.addPlantProps = fakeAddPlantProps([]);
+    p.addPlantProps = fakeAddPlantProps();
     render(<Bed {...p} />);
     const soil = screen.getAllByText("soil")[0];
     fireEvent.pointerMove(soil);
@@ -245,7 +245,7 @@ describe("<Bed />", () => {
     mockXCrosshairRef.current = undefined;
     mockYCrosshairRef.current = undefined;
     const p = fakeProps();
-    p.addPlantProps = fakeAddPlantProps([]);
+    p.addPlantProps = fakeAddPlantProps();
     render(<Bed {...p} />);
     const soil = screen.getAllByText("soil")[0];
     fireEvent.pointerMove(soil);
@@ -260,7 +260,7 @@ describe("<Bed />", () => {
     mockYCrosshairRef.current = undefined;
     const p = fakeProps();
     p.config.columnLength = 100;
-    p.addPlantProps = fakeAddPlantProps([]);
+    p.addPlantProps = fakeAddPlantProps();
     render(<Bed {...p} />);
     const soil = screen.getAllByText("soil")[0];
     fireEvent.pointerMove(soil);
@@ -276,7 +276,7 @@ describe("<Bed />", () => {
     mockXCrosshairRef.current = { position: { set: mockSetXCrosshairPosition } };
     mockYCrosshairRef.current = { position: { set: mockSetYCrosshairPosition } };
     const p = fakeProps();
-    p.addPlantProps = fakeAddPlantProps([]);
+    p.addPlantProps = fakeAddPlantProps();
     render(<Bed {...p} />);
     const soil = screen.getAllByText("soil")[0];
     fireEvent.pointerMove(soil);
@@ -290,7 +290,7 @@ describe("<Bed />", () => {
     mockXCrosshairRef.current = { position: { set: mockSetXCrosshairPosition } };
     mockYCrosshairRef.current = { position: { set: mockSetYCrosshairPosition } };
     const p = fakeProps();
-    p.addPlantProps = fakeAddPlantProps([]);
+    p.addPlantProps = fakeAddPlantProps();
     p.addPlantProps.designer.drawnPoint = undefined;
     render(<Bed {...p} />);
     const soil = screen.getAllByText("soil")[0];
@@ -306,7 +306,7 @@ describe("<Bed />", () => {
     mockYCrosshairRef.current = { position: { set: mockSetYCrosshairPosition } };
     const p = fakeProps();
     p.config.columnLength = 100;
-    p.addPlantProps = fakeAddPlantProps([]);
+    p.addPlantProps = fakeAddPlantProps();
     const point = fakeDrawnPoint();
     point.cx = undefined;
     point.cy = undefined;
@@ -327,7 +327,7 @@ describe("<Bed />", () => {
     mockBillboardRef.current = { position: { set: mockSetBillboardPosition } };
     mockImageRef.current = { scale: { set: mockSetImageScale } };
     const p = fakeProps();
-    p.addPlantProps = fakeAddPlantProps([]);
+    p.addPlantProps = fakeAddPlantProps();
     const point = fakeDrawnPoint();
     point.cx = 1;
     point.cy = 1;
@@ -352,7 +352,7 @@ describe("<Bed />", () => {
     mockBillboardRef.current = undefined;
     mockImageRef.current = undefined;
     const p = fakeProps();
-    p.addPlantProps = fakeAddPlantProps([]);
+    p.addPlantProps = fakeAddPlantProps();
     const point = fakeDrawnPoint();
     point.cx = 1;
     point.cy = 1;
@@ -377,7 +377,7 @@ describe("<Bed />", () => {
     mockBillboardRef.current = { position: { set: mockSetBillboardPosition } };
     mockImageRef.current = { scale: { set: mockSetImageScale } };
     const p = fakeProps();
-    p.addPlantProps = fakeAddPlantProps([]);
+    p.addPlantProps = fakeAddPlantProps();
     const point = fakeDrawnPoint();
     point.cx = 1;
     point.cy = 1;

@@ -28,6 +28,10 @@ export interface Config {
   bedBrightness: number;
   soilBrightness: number;
   soilHeight: number;
+  soilSurface: string;
+  soilSurfacePointCount: number;
+  soilSurfaceVariance: number;
+  showSoilPoints: boolean;
   plants: string;
   labels: boolean;
   labelsOnHover: boolean;
@@ -105,6 +109,10 @@ export const INITIAL: Config = {
   bedBrightness: 8,
   soilBrightness: 12,
   soilHeight: 500,
+  soilSurface: "flat",
+  soilSurfacePointCount: 5,
+  soilSurfaceVariance: 20,
+  showSoilPoints: false,
   plants: "Spring",
   labels: false,
   labelsOnHover: false,
@@ -154,7 +162,7 @@ export const INITIAL: Config = {
 
 export const STRING_KEYS = [
   "sizePreset", "bedType", "otherPreset", "label", "plants", "tool", "scene",
-  "distanceIndicator", "kitVersion",
+  "distanceIndicator", "kitVersion", "soilSurface",
 ];
 
 export const NUMBER_KEYS = [
@@ -163,6 +171,7 @@ export const NUMBER_KEYS = [
   "bedXOffset", "bedYOffset", "bedZOffset", "zGantryOffset", "bedWidthOuter",
   "bedLengthOuter", "legSize", "extraLegsX", "extraLegsY", "bedBrightness",
   "soilBrightness", "soilHeight", "sunInclination", "sunAzimuth",
+  "soilSurfacePointCount", "soilSurfaceVariance",
 ];
 
 export const BOOLEAN_KEYS = [
@@ -305,6 +314,10 @@ export const PRESETS: Record<string, Config> = {
     legsFlush: true,
     bedBrightness: 8,
     soilBrightness: 12,
+    soilSurface: "random",
+    soilSurfacePointCount: 50,
+    soilSurfaceVariance: 100,
+    showSoilPoints: true,
     plants: "Spring",
     labels: true,
     labelsOnHover: false,
@@ -346,6 +359,7 @@ export const PRESETS: Record<string, Config> = {
     animate: true,
     distanceIndicator: "",
     waterFlow: true,
+    exaggeratedZ: true,
   },
 };
 
@@ -367,7 +381,8 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "solar", "utilitiesPost", "packaging", "lab",
   "people", "scene", "lowDetail", "eventDebug", "cableDebug", "zoomBeaconDebug",
   "animate", "distanceIndicator", "kitVersion", "negativeZ", "waterFlow",
-  "exaggeratedZ",
+  "exaggeratedZ", "soilSurface", "soilSurfacePointCount", "soilSurfaceVariance",
+  "showSoilPoints",
 ];
 
 export const modifyConfig = (config: Config, update: Partial<Config>) => {

@@ -10,6 +10,10 @@ import {
 import { ASSETS } from "../three_d_garden/constants";
 import { getFocusFromUrlParams } from "../three_d_garden/zoom_beacons_constants";
 import { MemoryRouter } from "react-router";
+import { calculatePlantPositions } from "./plants";
+import { ThreeDGardenPlant } from "../three_d_garden/garden";
+import { TaggedGenericPointer } from "farmbot";
+import { calculatePointPositions } from "./points";
 
 export const Promo = () => {
   const [config, setConfig] = React.useState<Config>(INITIAL);
@@ -27,11 +31,21 @@ export const Promo = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // intentionally empty dependency array
 
+  const [threeDPlants, setThreeDPlants] = React.useState<ThreeDGardenPlant[]>([]);
+  const [mapPoints, setMapPoints] = React.useState<TaggedGenericPointer[]>([]);
+
+  React.useEffect(() => {
+    setThreeDPlants(calculatePlantPositions(config));
+    setMapPoints(calculatePointPositions(config));
+  }, [config]);
+
   return <div className={"three-d-garden promo"}>
     <div className={"garden-bed-3d-model"}>
       <MemoryRouter>
         <Canvas shadows={true}>
-          <GardenModel {...common} />
+          <GardenModel {...common}
+            threeDPlants={threeDPlants}
+            mapPoints={mapPoints} />
         </Canvas>
       </MemoryRouter>
       <PublicOverlay {...common} />

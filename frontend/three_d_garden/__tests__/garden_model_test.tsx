@@ -18,6 +18,7 @@ import { fakeAddPlantProps } from "../../__test_support__/fake_props";
 import { ASSETS } from "../constants";
 import { Path } from "../../internal_urls";
 import { fakeDrawnPoint } from "../../__test_support__/fake_designer_state";
+import { convertPlants } from "../../farm_designer/three_d_garden_map";
 
 describe("<GardenModel />", () => {
   beforeEach(() => {
@@ -28,7 +29,8 @@ describe("<GardenModel />", () => {
     config: clone(INITIAL),
     activeFocus: "",
     setActiveFocus: jest.fn(),
-    addPlantProps: fakeAddPlantProps([]),
+    addPlantProps: fakeAddPlantProps(),
+    threeDPlants: [],
   });
 
   it("renders", () => {
@@ -41,7 +43,7 @@ describe("<GardenModel />", () => {
   it("renders top down view", () => {
     mockIsMobile = true;
     const p = fakeProps();
-    const addPlantProps = fakeAddPlantProps([]);
+    const addPlantProps = fakeAddPlantProps();
     addPlantProps.designer.threeDTopDownView = true;
     p.addPlantProps = addPlantProps;
     const { container } = render(<GardenModel {...p} />);
@@ -50,7 +52,7 @@ describe("<GardenModel />", () => {
 
   it("renders no user plants", () => {
     const p = fakeProps();
-    p.addPlantProps = fakeAddPlantProps([]);
+    p.threeDPlants = convertPlants(p.config, []);
     render(<GardenModel {...p} />);
     const plantLabels = screen.queryAllByText("Beet");
     expect(plantLabels.length).toEqual(0);
@@ -60,7 +62,7 @@ describe("<GardenModel />", () => {
     const p = fakeProps();
     const plant = fakePlant();
     plant.body.name = "Beet";
-    p.addPlantProps = fakeAddPlantProps([plant]);
+    p.threeDPlants = convertPlants(p.config, [plant]);
     render(<GardenModel {...p} />);
     const plantLabels = screen.queryAllByText("Beet");
     expect(plantLabels.length).toEqual(1);
@@ -78,7 +80,7 @@ describe("<GardenModel />", () => {
   it("renders drawn point", () => {
     location.pathname = Path.mock(Path.points("add"));
     const p = fakeProps();
-    const addPlantProps = fakeAddPlantProps([]);
+    const addPlantProps = fakeAddPlantProps();
     addPlantProps.designer.drawnPoint = fakeDrawnPoint();
     p.addPlantProps = addPlantProps;
     const { container } = render(<GardenModel {...p} />);
@@ -87,18 +89,10 @@ describe("<GardenModel />", () => {
 
   it("doesn't render bot", () => {
     const p = fakeProps();
-    p.addPlantProps = fakeAddPlantProps([]);
+    p.addPlantProps = fakeAddPlantProps();
     p.addPlantProps.getConfigValue = () => false;
     const { container } = render(<GardenModel {...p} />);
     expect(container).not.toContainHTML("bot");
-  });
-
-  it("renders promo plants", () => {
-    const p = fakeProps();
-    p.addPlantProps = undefined;
-    render(<GardenModel {...p} />);
-    const plantLabels = screen.queryAllByText("Beet");
-    expect(plantLabels.length).toEqual(7);
   });
 
   it("renders other options", () => {

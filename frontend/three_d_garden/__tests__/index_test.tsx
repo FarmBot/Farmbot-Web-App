@@ -20,9 +20,10 @@ import { BooleanSetting } from "../../session_keys";
 describe("<ThreeDGarden />", () => {
   const fakeProps = (): ThreeDGardenProps => ({
     config: clone(INITIAL),
-    addPlantProps: fakeAddPlantProps([]),
+    addPlantProps: fakeAddPlantProps(),
     mapPoints: [],
     weeds: [],
+    threeDPlants: [],
   });
 
   it("renders", () => {

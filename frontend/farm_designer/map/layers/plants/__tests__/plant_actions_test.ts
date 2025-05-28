@@ -104,7 +104,6 @@ describe("dropPlant()", () => {
       gridSize: { x: 1000, y: 2000 },
       dispatch: jest.fn(),
       getConfigValue: jest.fn(),
-      plants: [],
       curves: [],
     };
   };
@@ -138,7 +137,6 @@ describe("dropPlant()", () => {
     plant.body.water_curve_id = 1;
     plant.body.spread_curve_id = 2;
     plant.body.height_curve_id = 3;
-    p.plants = [plant];
     const wCurve = fakeCurve();
     wCurve.body.id = 1;
     wCurve.body.type = "water";
@@ -165,7 +163,6 @@ describe("dropPlant()", () => {
 
   it("doesn't find curves", () => {
     const p = fakeProps();
-    p.plants = [];
     p.curves = [];
     dropPlant(p);
     expect(initSave).toHaveBeenCalledWith("Point",
