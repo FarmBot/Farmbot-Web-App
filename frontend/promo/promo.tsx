@@ -36,8 +36,16 @@ export const Promo = () => {
 
   React.useEffect(() => {
     setThreeDPlants(calculatePlantPositions(config));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [config.plants, config.bedLengthOuter, config.bedWidthOuter]);
+
+  React.useEffect(() => {
     setMapPoints(calculatePointPositions(config));
-  }, [config]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    config.soilSurface, config.soilHeight, config.soilSurfacePointCount,
+    config.soilSurfaceVariance, config.botSizeX, config.botSizeY,
+  ]);
 
   return <div className={"three-d-garden promo"}>
     <div className={"garden-bed-3d-model"}>
