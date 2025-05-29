@@ -25,4 +25,13 @@ describe("calculatePointPositions()", () => {
       }
     }]);
   });
+
+  it("returns no points", () => {
+    const config = clone(INITIAL);
+    config.soilSurface = "flat";
+    config.soilSurfacePointCount = 100;
+    config.soilSurfaceVariance = 100;
+    config.soilHeight = 100;
+    expect(calculatePointPositions(config)).toEqual([]);
+  });
 });

@@ -110,15 +110,15 @@ export const INITIAL: Config = {
   bedBrightness: 8,
   soilBrightness: 12,
   soilHeight: 500,
-  soilSurface: "flat",
-  soilSurfacePointCount: 5,
-  soilSurfaceVariance: 20,
+  soilSurface: "random",
+  soilSurfacePointCount: 25,
+  soilSurfaceVariance: 75,
   showSoilPoints: false,
   plants: "Spring",
   labels: false,
   labelsOnHover: false,
   ground: true,
-  grid: false,
+  grid: true,
   axes: false,
   trail: false,
   tracks: true,
@@ -207,6 +207,7 @@ export const PRESETS: Record<string, Config> = {
     extraLegsY: 0,
     soilHeight: 280,
     tracks: true,
+    soilSurfacePointCount: 5,
   },
   "Genesis": {
     ...INITIAL,
@@ -228,6 +229,7 @@ export const PRESETS: Record<string, Config> = {
     extraLegsY: 0,
     soilHeight: 500,
     tracks: true,
+    soilSurfacePointCount: 25,
   },
   "Genesis XL": {
     ...INITIAL,
@@ -249,6 +251,7 @@ export const PRESETS: Record<string, Config> = {
     extraLegsY: 1,
     soilHeight: 500,
     tracks: true,
+    soilSurfacePointCount: 100,
   },
   "Initial": INITIAL,
   "Minimal": {
@@ -371,7 +374,7 @@ const SIZE_CONFIG_KEYS: (keyof Config)[] = [
   "sizePreset", "label", "bedType",
   "botSizeX", "botSizeY", "botSizeZ", "beamLength", "columnLength", "zAxisLength",
   "bedXOffset", "bedYOffset", "zGantryOffset", "bedWidthOuter", "bedLengthOuter",
-  "extraLegsX", "extraLegsY", "soilHeight", "tracks",
+  "extraLegsX", "extraLegsY", "soilHeight", "tracks", "soilSurfacePointCount",
 ];
 
 const OTHER_CONFIG_KEYS: (keyof Config)[] = [
@@ -385,7 +388,7 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "solar", "utilitiesPost", "packaging", "lab",
   "people", "scene", "lowDetail", "eventDebug", "cableDebug", "zoomBeaconDebug",
   "animate", "distanceIndicator", "kitVersion", "negativeZ", "waterFlow",
-  "exaggeratedZ", "soilSurface", "soilSurfacePointCount", "soilSurfaceVariance",
+  "exaggeratedZ", "soilSurface", "soilSurfaceVariance",
   "showSoilPoints", "urlParamAutoAdd",
 ];
 
