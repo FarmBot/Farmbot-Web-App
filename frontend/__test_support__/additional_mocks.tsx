@@ -56,7 +56,7 @@ jest.mock("delaunator", () => ({
   __esModule: true,
   default: {
     from: jest.fn(() => ({
-      triangles: [0, 1, 2],
+      triangles: [0, 1, 2, 3, 4, 5],
     })),
   },
 }));

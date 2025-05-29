@@ -4,6 +4,9 @@ import { times } from "lodash";
 
 export const calculatePointPositions = (config: Config): TaggedGenericPointer[] => {
   if (config.soilSurface == "flat") { return []; }
+  const { bedWallThickness } = config;
+  const bedLengthInner = config.bedLengthOuter - bedWallThickness * 2;
+  const bedWidthInner = config.bedWidthOuter - bedWallThickness * 2;
   return times(config.soilSurfacePointCount)
     .map(() => ({
       kind: "Point",
@@ -13,8 +16,9 @@ export const calculatePointPositions = (config: Config): TaggedGenericPointer[] 
         pointer_type: "GenericPointer",
         name: "Random Point",
         meta: { at_soil_level: "true" },
-        x: Math.random() * config.botSizeX,
-        y: Math.random() * config.botSizeY,
+        // generate bot coordinates within the bed area
+        x: Math.random() * bedLengthInner - config.bedXOffset + bedWallThickness,
+        y: Math.random() * bedWidthInner - config.bedYOffset + bedWallThickness,
         z: -config.soilHeight + (Math.random() - 0.5) * config.soilSurfaceVariance,
         radius: 0,
       },

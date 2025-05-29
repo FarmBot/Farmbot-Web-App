@@ -44,7 +44,8 @@ export const Promo = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     config.soilSurface, config.soilHeight, config.soilSurfacePointCount,
-    config.soilSurfaceVariance, config.botSizeX, config.botSizeY,
+    config.soilSurfaceVariance, config.bedXOffset, config.bedYOffset,
+    config.bedWallThickness, config.bedLengthOuter, config.bedWidthOuter,
   ]);
 
   return <div className={"three-d-garden promo"}>

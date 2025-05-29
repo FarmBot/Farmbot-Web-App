@@ -283,7 +283,7 @@ export const PRESETS: Record<string, Config> = {
     cableCarriers: true,
     viewCube: false,
     stats: false,
-    config: false,
+    config: true,
     urlParamAutoAdd: true,
     zoom: true,
     pan: true,
