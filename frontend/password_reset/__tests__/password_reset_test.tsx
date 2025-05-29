@@ -21,8 +21,11 @@ describe("<PasswordReset/>", () => {
     const e = formEvent();
     await wrapper.instance().submit(e);
     expect(e.preventDefault).toHaveBeenCalled();
-    await expect(axios.put).toHaveBeenCalledWith(":///api/password_resets/",
-      { id: "", password: "", password_confirmation: "" });
+    await expect(axios.put).toHaveBeenCalledWith(":///api/password_resets/", {
+      id: "localhost",
+      password: "",
+      password_confirmation: "",
+    });
     await expect(error).toHaveBeenCalledWith("Error: error");
     jest.runAllTimers();
   });
@@ -33,8 +36,11 @@ describe("<PasswordReset/>", () => {
     const e = formEvent();
     await wrapper.instance().submit(e);
     expect(e.preventDefault).toHaveBeenCalled();
-    await expect(axios.put).toHaveBeenCalledWith(":///api/password_resets/",
-      { id: "", password: "", password_confirmation: "" });
+    await expect(axios.put).toHaveBeenCalledWith(":///api/password_resets/", {
+      id: "localhost",
+      password: "",
+      password_confirmation: "",
+    });
     await expect(error).not.toHaveBeenCalled();
     expect(window.location.assign).toHaveBeenCalledWith("/tos_update");
   });
@@ -49,8 +55,11 @@ describe("<PasswordReset/>", () => {
       serverPort: "3000"
     });
     await el.find("form").simulate("submit", formEvent());
-    expect(axios.put).toHaveBeenCalledWith(":///api/password_resets/",
-      { id: "", password: "knocknock", password_confirmation: "knocknock" });
+    expect(axios.put).toHaveBeenCalledWith(":///api/password_resets/", {
+      id: "localhost",
+      password: "knocknock",
+      password_confirmation: "knocknock"
+    });
   });
 
   it("has a form set()ter", () => {

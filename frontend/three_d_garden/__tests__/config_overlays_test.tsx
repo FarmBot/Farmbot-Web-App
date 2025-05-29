@@ -137,17 +137,12 @@ describe("<PrivateOverlay />", () => {
     });
   });
 
-  it("sets paramAdd boolean", () => {
+  it("removes url param", () => {
+    location.search = "?urlParamAutoAdd=true";
     const p = fakeProps();
     const wrapper = mount(<PrivateOverlay {...p} />);
-    wrapper.find({ type: "number" }).first().simulate("change",
-      { target: { value: "123" } });
-    expect(setUrlParam).not.toHaveBeenCalled();
-    wrapper.find({ type: "checkbox" }).first().simulate("change",
-      { target: { checked: "true" } });
-    wrapper.find({ type: "number" }).first().simulate("change",
-      { target: { value: "123" } });
-    expect(setUrlParam).toHaveBeenCalledWith("x", "123");
+    wrapper.find(".x").first().simulate("click");
+    expect(setUrlParam).toHaveBeenCalledWith("urlParamAutoAdd", "");
   });
 });
 

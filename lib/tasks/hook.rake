@@ -55,7 +55,13 @@ def details(environment)
   output += "\n"
   pre = environment == "production" ? "my" : environment
   base = "#{pre}.farm.bot"
-  ["promo", "", "demo", "try_farmbot", "os"].map do |path|
+  [
+    "promo",
+    "promo?config=true&otherPreset=Minimal",
+    "demo",
+    "try_farmbot",
+    "os",
+  ].map do |path|
     url = "#{base}/#{path}"
     output += "\n<https://#{url}|#{url}>"
   end

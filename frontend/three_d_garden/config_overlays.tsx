@@ -162,7 +162,17 @@ interface ConfigRowProps {
 
 const ConfigRow = (props: ConfigRowProps) => {
   const { configKey } = props;
-  return <div className={"config-row"}>
+  const urlHasParam = (key: keyof Config) =>
+    !!(new URLSearchParams(window.location.search)).get(key);
+  const removeParam = () => {
+    setHasParam(false);
+    setUrlParam(configKey, "");
+  };
+  const [hasParam, setHasParam] = React.useState(urlHasParam(configKey));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  React.useEffect(() => setHasParam(urlHasParam(configKey)), [window.location.search]);
+  return <div className={"config-row"} key={configKey + window.location.search}>
+    {hasParam && <p className={"x"} onClick={removeParam}>x</p>}
     <span className={"config-key"}>{configKey}</span>
     {props.children}
   </div>;
@@ -170,13 +180,13 @@ const ConfigRow = (props: ConfigRowProps) => {
 
 export const maybeAddParam =
   (paramAdd: boolean, configKey: string, value: string) =>
-    paramAdd && setUrlParam(configKey, value);
+    (paramAdd || configKey == "urlParamAutoAdd") && value != "Reset all" &&
+    setUrlParam(configKey, value);
 
 interface SliderProps extends OverlayProps {
   configKey: keyof Config;
   min: number;
   max: number;
-  paramAdd: boolean;
 }
 
 const Slider = (props: SliderProps) => {
@@ -186,7 +196,7 @@ const Slider = (props: SliderProps) => {
     if (isNaN(newValue)) { return; }
     const update = { [configKey]: newValue };
     setConfig(modifyConfig(config, update));
-    maybeAddParam(props.paramAdd, configKey, "" + newValue);
+    maybeAddParam(config.urlParamAutoAdd, configKey, "" + newValue);
   };
   const value = config[configKey] as number;
   return <ConfigRow configKey={configKey}>
@@ -203,7 +213,6 @@ const Slider = (props: SliderProps) => {
 
 interface ToggleProps extends OverlayProps {
   configKey: keyof Config;
-  paramAdd: boolean;
 }
 
 const Toggle = (props: ToggleProps) => {
@@ -216,7 +225,7 @@ const Toggle = (props: ToggleProps) => {
         const newValue = e.target.checked;
         const update = { [configKey]: newValue };
         setConfig(modifyConfig(config, update));
-        maybeAddParam(props.paramAdd, configKey, "" + newValue);
+        maybeAddParam(config.urlParamAutoAdd, configKey, "" + newValue);
       }}
     />
   </ConfigRow>;
@@ -225,7 +234,6 @@ const Toggle = (props: ToggleProps) => {
 interface RadioProps extends OverlayProps {
   configKey: keyof Config;
   options: string[];
-  paramAdd: boolean;
 }
 
 const Radio = (props: RadioProps) => {
@@ -234,7 +242,7 @@ const Radio = (props: RadioProps) => {
     const newValue = e.target.value;
     const update = { [configKey]: newValue };
     setConfig(modifyConfig(config, update));
-    maybeAddParam(props.paramAdd, configKey, "" + newValue);
+    maybeAddParam(config.urlParamAutoAdd, configKey, "" + newValue);
   };
   return <ConfigRow configKey={configKey}>
     <div className={"options"}>
@@ -256,8 +264,7 @@ const Radio = (props: RadioProps) => {
 export const PrivateOverlay = (props: OverlayProps) => {
   const bedMin = props.config.bedWallThickness * 2;
   const { config, setConfig } = props;
-  const [paramAdd, setParamAdd] = React.useState(false);
-  const common = { ...props, paramAdd };
+  const common = { ...props };
   return <div className={"all-configs"}>
     <details>
       <summary>
@@ -268,13 +275,7 @@ export const PrivateOverlay = (props: OverlayProps) => {
         </p>
       </summary>
       <div className={"spacer"} />
-      <div className={"config-row"}>
-        <span className={"config-key"}>{"auto-add to URL"}</span>
-        <input
-          type={"checkbox"}
-          checked={paramAdd}
-          onChange={e => setParamAdd(e.target.checked)} />
-      </div>
+      <Toggle {...common} configKey={"urlParamAutoAdd"} />
       <Toggle {...common} configKey={"promoInfo"} />
       <Toggle {...common} configKey={"settingsBar"} />
       <Toggle {...common} configKey={"zoomBeacons"} />

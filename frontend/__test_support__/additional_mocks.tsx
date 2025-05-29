@@ -11,7 +11,7 @@ window.location = {
   reload: jest.fn(),
   replace: jest.fn(),
   ancestorOrigins,
-  pathname: "", href: "", hash: "", search: "",
+  pathname: "", href: "http://localhost", hash: "", search: "",
   hostname: "", origin: "", port: "", protocol: "", host: "",
 } as unknown as Location & string;
 

@@ -51,6 +51,7 @@ export interface Config {
   viewCube: boolean;
   stats: boolean;
   config: boolean;
+  urlParamAutoAdd: boolean;
   zoom: boolean;
   pan: boolean;
   rotate: boolean;
@@ -132,6 +133,7 @@ export const INITIAL: Config = {
   viewCube: false,
   stats: false,
   config: false,
+  urlParamAutoAdd: false,
   zoom: false,
   pan: false,
   rotate: true,
@@ -181,7 +183,7 @@ export const BOOLEAN_KEYS = [
   "xyDimensions", "zDimension", "promoInfo", "settingsBar", "zoomBeacons",
   "solar", "utilitiesPost", "packaging", "lab", "people", "lowDetail",
   "eventDebug", "cableDebug", "zoomBeaconDebug", "animate", "negativeZ",
-  "waterFlow", "exaggeratedZ",
+  "waterFlow", "exaggeratedZ", "showSoilPoints", "urlParamAutoAdd",
 ];
 
 export const PRESETS: Record<string, Config> = {
@@ -279,6 +281,7 @@ export const PRESETS: Record<string, Config> = {
     viewCube: false,
     stats: false,
     config: false,
+    urlParamAutoAdd: true,
     zoom: true,
     pan: true,
     rotate: true,
@@ -336,6 +339,7 @@ export const PRESETS: Record<string, Config> = {
     viewCube: true,
     stats: true,
     config: true,
+    urlParamAutoAdd: true,
     zoom: true,
     pan: true,
     rotate: true,
@@ -382,7 +386,7 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "people", "scene", "lowDetail", "eventDebug", "cableDebug", "zoomBeaconDebug",
   "animate", "distanceIndicator", "kitVersion", "negativeZ", "waterFlow",
   "exaggeratedZ", "soilSurface", "soilSurfacePointCount", "soilSurfaceVariance",
-  "showSoilPoints",
+  "showSoilPoints", "urlParamAutoAdd",
 ];
 
 export const modifyConfig = (config: Config, update: Partial<Config>) => {
@@ -415,6 +419,9 @@ export const modifyConfig = (config: Config, update: Partial<Config>) => {
         const configKey = key as keyof Config;
         newConfig[configKey] = INITIAL[configKey] as never;
       });
+      const url = new URL(window.location.href);
+      url.search = "";
+      history.pushState(undefined, "", url.toString());
     } else {
       const presetConfig = PRESETS[update.otherPreset];
       OTHER_CONFIG_KEYS.map(key => newConfig[key] = presetConfig[key] as never);
