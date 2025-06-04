@@ -298,6 +298,9 @@ export const PrivateOverlay = (props: OverlayProps) => {
       <Toggle {...common} configKey={"trail"} />
       <Toggle {...common} configKey={"laser"} />
       <Toggle {...common} configKey={"waterFlow"} />
+      <Toggle {...common} configKey={"light"} />
+      <Toggle {...common} configKey={"vacuum"} />
+      <Toggle {...common} configKey={"rotary"} />
       <label>{"Bot Dimensions"}</label>
       <Slider {...common} configKey={"botSizeX"} min={0} max={6000} />
       <Slider {...common} configKey={"botSizeY"} min={0} max={4000} />

@@ -12,6 +12,7 @@ import {
   Mesh,
   MeshBasicMaterial,
   PointLight,
+  SpotLight,
 } from "../components";
 import { ThreeElements } from "@react-three/fiber";
 
@@ -89,5 +90,16 @@ describe("<MeshBasicMaterial />", () => {
   it("adds props", () => {
     const wrapper = mount(<MeshBasicMaterial {...fakeProps()} />);
     expect(wrapper.props().name).toEqual("material");
+  });
+});
+
+describe("<SpotLight />", () => {
+  const fakeProps = (): ThreeElements["spotLight"] => ({
+    visible: true,
+  });
+
+  it("adds props", () => {
+    const wrapper = mount(<SpotLight {...fakeProps()} />);
+    expect(wrapper.props().visible).toEqual(true);
   });
 });

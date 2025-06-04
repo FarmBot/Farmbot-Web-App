@@ -46,6 +46,7 @@ import { mockDispatch } from "../../../../__test_support__/fake_dispatch";
 describe("<Tools />", () => {
   const fakeProps = (): ToolsProps => ({
     config: clone(INITIAL),
+    getZ: jest.fn(),
   });
 
   it("renders promo tools", () => {

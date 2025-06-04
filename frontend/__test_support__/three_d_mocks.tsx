@@ -620,8 +620,11 @@ jest.mock("@react-three/drei", () => {
       <div className={"extrude"}>{name}</div>,
     Line: ({ name }: { name: string }) =>
       <div className={"line"}>{name}</div>,
-    Trail: ({ name }: { name: string }) =>
-      <div className={"trail"}>{name}</div>,
+    Trail: ({ name, attenuation }: {
+      name: string,
+      attenuation: (t: number) => number,
+    }) =>
+      <div className={"trail"}>{name} {attenuation(2)}</div>,
     Tube: (props: React.ComponentProps<typeof Tube>) =>
       // @ts-expect-error geometry props not assignable to div
       <div className={"tube"} {...props}>{props.children}</div>,

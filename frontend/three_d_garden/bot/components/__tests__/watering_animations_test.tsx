@@ -7,14 +7,12 @@ import {
 describe("<WateringAnimations />", () => {
   const fakeProps = (): WateringAnimationsProps => ({
     waterFlow: true,
-    botPositionZ: 100,
-    soilHeight: 0,
+    botPosition: { x: 0, y: 0, z: 0 },
+    getZ: () => 0,
   });
 
   it("renders", () => {
     const p = fakeProps();
-    p.botPositionZ = 200;
-    p.soilHeight = 50;
     const { container } = render(<WateringAnimations {...p} />);
     const streams = container.querySelectorAll("[name*='water-stream']");
     expect(streams.length).toEqual(16);

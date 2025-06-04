@@ -47,3 +47,8 @@ export const MeshBasicMaterial = (props: ThreeElements["meshBasicMaterial"]) =>
 export const AxesHelper = (props: ThreeElements["axesHelper"]) =>
   // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
   <axesHelper {...props} />;
+
+export const SpotLight =
+  React.forwardRef((props: ThreeElements["spotLight"], ref) =>
+    // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
+    <spotLight ref={ref} {...props} />);

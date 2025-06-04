@@ -15,6 +15,8 @@ import { BooleanSetting } from "../session_keys";
 import { SlotWithTool } from "../resources/interfaces";
 import { ThreeDGardenPlant } from "../three_d_garden/garden";
 import { findIcon } from "../crops/find";
+import { PeripheralValues } from "./map/layers/farmbot/bot_trail";
+import { isPeripheralActiveFunc } from "./map/layers/farmbot/bot_peripherals";
 
 export interface ThreeDGardenMapProps {
   botSize: BotSize;
@@ -33,6 +35,7 @@ export interface ThreeDGardenMapProps {
   botPosition: BotPosition;
   toolSlots?: SlotWithTool[];
   mountedToolName: string | undefined;
+  peripheralValues: PeripheralValues
 }
 
 export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
@@ -78,6 +81,13 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   config.legSize = getValue("legSize");
   config.bounds = !!getValue("bounds");
   config.grid = !!getValue("grid");
+
+  const isPeripheralActive = isPeripheralActiveFunc(props.peripheralValues);
+
+  config.waterFlow = isPeripheralActive("water");
+  config.light = isPeripheralActive("light");
+  config.vacuum = isPeripheralActive("vacuum");
+  config.rotary = isPeripheralActive("rotary");
 
   config.zoom = true;
   config.pan = true;

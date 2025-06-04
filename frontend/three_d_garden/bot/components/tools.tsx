@@ -72,6 +72,7 @@ export interface ToolsProps {
   toolSlots?: SlotWithTool[];
   mountedToolName?: string | undefined;
   dispatch?: Function;
+  getZ(x: number, y: number): number;
 }
 
 interface ConvertedTools {
@@ -236,8 +237,8 @@ export const Tools = (props: ToolsProps) => {
           {!inToolbay && props.config.waterFlow &&
             <WateringAnimations
               waterFlow={props.config.waterFlow}
-              botPositionZ={botPosition.z}
-              soilHeight={props.config.soilHeight} />}
+              botPosition={botPosition}
+              getZ={props.getZ} />}
         </ToolbaySlot>;
       case ToolName.seedBin:
         return <ToolbaySlot {...common}>

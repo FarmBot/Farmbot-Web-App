@@ -70,11 +70,11 @@ const NonLayerToggle = (props: NonLayerToggleProps) => {
   return <div
     className={[
       "row grid-exp-1 align-baseline",
-      props.disabled ? "disabled" : "",
     ].join(" ")}>
     <label>{t(props.label)}</label>
     {props.helpText && <Help text={props.helpText} />}
     {setting && <ToggleButton
+      disabled={props.disabled}
       className={getModifiedClassName(setting)}
       title={t(props.label)}
       toggleAction={() =>
@@ -227,8 +227,7 @@ export const MapSettingsContent = (props: SettingsSubMenuProps) =>
       helpText={Content.DYNAMIC_MAP_SIZE} />
     <NonLayerToggle {...props}
       label={DeviceSetting.mapSize}
-      helpText={Content.MAP_SIZE}
-      disabled={!!props.getConfigValue(BooleanSetting.dynamic_map)}>
+      helpText={Content.MAP_SIZE}>
       <MapSizeInputs {...props} />
     </NonLayerToggle>
     <NonLayerToggle {...props}

@@ -78,6 +78,9 @@ export interface Config {
   negativeZ: boolean;
   exaggeratedZ: boolean;
   waterFlow: boolean;
+  light: boolean;
+  vacuum: boolean;
+  rotary: boolean;
 }
 
 export const INITIAL: Config = {
@@ -160,6 +163,9 @@ export const INITIAL: Config = {
   negativeZ: false,
   exaggeratedZ: false,
   waterFlow: false,
+  light: false,
+  vacuum: false,
+  rotary: false,
 };
 
 export const STRING_KEYS = [
@@ -184,6 +190,7 @@ export const BOOLEAN_KEYS = [
   "solar", "utilitiesPost", "packaging", "lab", "people", "lowDetail",
   "eventDebug", "cableDebug", "zoomBeaconDebug", "animate", "negativeZ",
   "waterFlow", "exaggeratedZ", "showSoilPoints", "urlParamAutoAdd",
+  "light", "vacuum", "rotary",
 ];
 
 export const PRESETS: Record<string, Config> = {
@@ -366,6 +373,9 @@ export const PRESETS: Record<string, Config> = {
     animate: true,
     distanceIndicator: "",
     waterFlow: true,
+    light: true,
+    vacuum: true,
+    rotary: true,
     exaggeratedZ: true,
   },
 };
@@ -388,6 +398,7 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "solar", "utilitiesPost", "packaging", "lab",
   "people", "scene", "lowDetail", "eventDebug", "cableDebug", "zoomBeaconDebug",
   "animate", "distanceIndicator", "kitVersion", "negativeZ", "waterFlow",
+  "light", "vacuum", "rotary",
   "exaggeratedZ", "soilSurface", "soilSurfaceVariance",
   "showSoilPoints", "urlParamAutoAdd",
 ];

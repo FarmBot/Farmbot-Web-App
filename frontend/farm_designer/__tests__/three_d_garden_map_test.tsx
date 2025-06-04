@@ -34,6 +34,7 @@ describe("<ThreeDGardenMap />", () => {
     botPosition: { x: 1, y: 2, z: 3 },
     negativeZ: false,
     mountedToolName: undefined,
+    peripheralValues: [],
   });
 
   it("converts props", () => {
@@ -64,6 +65,7 @@ describe("<ThreeDGardenMap />", () => {
     expectedConfig.soilHeight = 0;
     expectedConfig.zGantryOffset = 0;
     expectedConfig.zoomBeacons = false;
+    expectedConfig.waterFlow = false;
     expect(ThreeDGarden).toHaveBeenCalledWith({
       config: expectedConfig,
       threeDPlants: [{
@@ -121,6 +123,20 @@ describe("<ThreeDGardenMap />", () => {
     render(<ThreeDGardenMap {...p} />);
     expect(ThreeDGarden).toHaveBeenCalledWith({
       config: expect.objectContaining({ kitVersion }),
+      threeDPlants: [],
+      addPlantProps: expect.any(Object),
+      mapPoints: [],
+      weeds: [],
+    }, {});
+  });
+
+  it("shows active peripherals", () => {
+    const p = fakeProps();
+    p.peripheralValues = [{ label: "watering nozzle", value: true }];
+    p.plants = [];
+    render(<ThreeDGardenMap {...p} />);
+    expect(ThreeDGarden).toHaveBeenCalledWith({
+      config: expect.objectContaining({ waterFlow: true }),
       threeDPlants: [],
       addPlantProps: expect.any(Object),
       mapPoints: [],

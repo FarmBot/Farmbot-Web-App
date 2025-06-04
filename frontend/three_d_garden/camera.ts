@@ -9,7 +9,7 @@ export const cameraInit = (topDown: boolean): Camera => {
   const defaultCameraPosition = isDesktop()
     ? [2000, -4000, 2500]
     : [5400, -2500, 3400];
-  const topDownCameraPosition = topDown ? [0, 0, 0] : undefined;
+  const topDownCameraPosition = topDown ? [0, 0, 5000] : undefined;
   const cameraPositionInit = topDownCameraPosition
     || devCamera?.position
     || defaultCameraPosition;

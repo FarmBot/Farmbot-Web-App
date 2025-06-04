@@ -4,7 +4,7 @@ import {
 } from "../config_storage/actions";
 import { t } from "../i18next_wrapper";
 import { BlurableInput, Row } from "../ui";
-import { NumericSetting } from "../session_keys";
+import { BooleanSetting, NumericSetting } from "../session_keys";
 import {
   NumberConfigKey as WebAppNumberConfigKey,
 } from "farmbot/dist/resources/configs/web_app";
@@ -15,6 +15,7 @@ interface LengthInputProps {
   label: string;
   setting: WebAppNumberConfigKey;
   dispatch: Function;
+  disabled: boolean;
 }
 
 const LengthInput = (props: LengthInputProps) =>
@@ -23,6 +24,7 @@ const LengthInput = (props: LengthInputProps) =>
     <BlurableInput
       type="number"
       name={props.setting}
+      disabled={props.disabled}
       className={getModifiedClassName(props.setting)}
       value={"" + props.value}
       onCommit={e => props.dispatch(setWebAppConfigValue(
@@ -34,16 +36,20 @@ export interface MapSizeInputsProps {
   getConfigValue: GetWebAppConfigValue;
 }
 
-export const MapSizeInputs = (props: MapSizeInputsProps) =>
-  <div className="grid">
+export const MapSizeInputs = (props: MapSizeInputsProps) => {
+  const disabled = !!props.getConfigValue(BooleanSetting.dynamic_map);
+  return <div className="grid">
     <LengthInput
+      disabled={disabled}
       value={parseInt("" + props.getConfigValue(NumericSetting.map_size_x))}
       label={t("x (mm)")}
       setting={NumericSetting.map_size_x}
       dispatch={props.dispatch} />
     <LengthInput
+      disabled={disabled}
       value={parseInt("" + props.getConfigValue(NumericSetting.map_size_y))}
       label={t("y (mm)")}
       setting={NumericSetting.map_size_y}
       dispatch={props.dispatch} />
   </div>;
+};

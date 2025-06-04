@@ -144,6 +144,7 @@ export const GardenModel = (props: GardenModelProps) => {
       <Bot
         dispatch={dispatch}
         config={config}
+        getZ={getZ}
         activeFocus={props.activeFocus}
         mountedToolName={props.mountedToolName}
         toolSlots={props.toolSlots} />}
