@@ -27,6 +27,7 @@ import { useNavigate } from "react-router";
 import { Path } from "../../../internal_urls";
 import { setPanelOpen } from "../../../farm_designer/panel_header";
 import { getMode } from "../../../farm_designer/map/util";
+import { PROMO_TOOLS } from "../../../promo/tools";
 
 type Toolbay3 = GLTF & {
   nodes: {
@@ -75,7 +76,7 @@ export interface ToolsProps {
   getZ(x: number, y: number): number;
 }
 
-interface ConvertedTools {
+export interface ThreeDTool {
   id?: number | undefined;
   x: number;
   y: number;
@@ -87,7 +88,7 @@ interface ConvertedTools {
 }
 
 export const convertSlotsWithTools =
-  (slotsWithTools: SlotWithTool[]): ConvertedTools[] => {
+  (slotsWithTools: SlotWithTool[]): ThreeDTool[] => {
     let troughIndex = 0;
     return sortBy(slotsWithTools, "toolSlot.body.y").map(swt => {
       const toolName = reduceToolName(swt.tool?.body.name);
@@ -195,7 +196,7 @@ export const Tools = (props: ToolsProps) => {
     </Group>;
   };
 
-  interface ToolProps extends ConvertedTools {
+  interface ToolProps extends ThreeDTool {
     inToolbay: boolean;
   }
 
@@ -336,62 +337,8 @@ export const Tools = (props: ToolsProps) => {
     }
   };
 
-  const isJr = props.config.sizePreset == "Jr";
-
-  const promoToolOffset = {
-    x: 110 + bedWallThickness - bedXOffset,
-    y: bedWidthOuter / 2 - bedYOffset,
-    z: zZero - 60,
-  };
-
-  const PROMO_TOOLS: ConvertedTools[] = [
-    {
-      x: promoToolOffset.x,
-      y: (isJr ? 0 : 100) + promoToolOffset.y,
-      z: promoToolOffset.z,
-      toolName: ToolName.rotaryTool,
-      toolPulloutDirection: ToolPulloutDirection.NONE,
-    },
-    {
-      x: promoToolOffset.x,
-      y: (isJr ? 200 : 300) + promoToolOffset.y,
-      z: promoToolOffset.z,
-      toolName: ToolName.seedBin,
-      toolPulloutDirection: ToolPulloutDirection.NONE,
-    },
-    {
-      x: promoToolOffset.x,
-      y: (isJr ? -100 : -200) + promoToolOffset.y,
-      z: promoToolOffset.z,
-      toolName: ToolName.seedTray,
-      toolPulloutDirection: ToolPulloutDirection.NONE,
-    },
-    {
-      x: promoToolOffset.x,
-      y: (isJr ? -200 : -300) + promoToolOffset.y,
-      z: promoToolOffset.z,
-      toolName: ToolName.soilSensor,
-      toolPulloutDirection: ToolPulloutDirection.NONE,
-    },
-    {
-      x: promoToolOffset.x,
-      y: (isJr ? 100 : 200) + promoToolOffset.y,
-      z: promoToolOffset.z,
-      toolName: ToolName.wateringNozzle,
-      toolPulloutDirection: ToolPulloutDirection.NONE,
-    },
-    {
-      x: botPosition.x - bedXOffset + 140,
-      y: -bedYOffset + 15,
-      z: zZero - 100,
-      toolName: ToolName.seedTrough,
-      toolPulloutDirection: ToolPulloutDirection.NONE,
-      firstTrough: true,
-    },
-  ];
-
   const tools = isUndefined(props.toolSlots)
-    ? PROMO_TOOLS
+    ? PROMO_TOOLS(props.config)
     : convertSlotsWithTools(props.toolSlots);
 
   return <Group name={"tools"}>
@@ -403,7 +350,7 @@ export const Tools = (props: ToolsProps) => {
       toolPulloutDirection={ToolPulloutDirection.NONE}
       inToolbay={false} />
     {isUndefined(props.toolSlots) && <Group name={"toolbay3"}>
-      {(isJr ? [0] : [-200, 200]).map(yPosition =>
+      {((props.config.sizePreset == "Jr") ? [0] : [-200, 200]).map(yPosition =>
         <Group key={yPosition}>
           {[
             { node: PartName.toolbay3, color: distinguishableBlack, id: "toolbay3" },
