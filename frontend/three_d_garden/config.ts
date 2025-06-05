@@ -494,4 +494,4 @@ export const seasonProperties: Record<string, SeasonProperties> = {
 };
 
 export const detailLevels = (config: Config) =>
-  config.lowDetail ? [0, 0] : [0, 25000];
+  config.lowDetail ? [0, 0] : [0, 50000];
