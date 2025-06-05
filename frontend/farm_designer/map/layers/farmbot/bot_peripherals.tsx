@@ -5,7 +5,7 @@ import { BotPosition } from "../../../../devices/interfaces";
 import { trim } from "../../../../util";
 import { GetWebAppConfigValue } from "../../../../config_storage/actions";
 import { BooleanSetting } from "../../../../session_keys";
-import { first, range } from "lodash";
+import { range, some } from "lodash";
 import { PeripheralValues } from "./bot_trail";
 
 export interface BotPeripheralsProps {
@@ -195,6 +195,5 @@ export function BotPeripherals(props: BotPeripheralsProps) {
 
 export const isPeripheralActiveFunc = (peripheralValues: PeripheralValues) =>
   (label: string) =>
-    !!first(peripheralValues
-      .filter(p => p.label.toLowerCase().includes(label))
-      .map(p => p.value));
+    some(peripheralValues,
+      p => p.label.toLowerCase().includes(label) && p.value);
