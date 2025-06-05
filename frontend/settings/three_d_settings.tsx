@@ -23,7 +23,7 @@ const DEFAULTS: Record<string, number> = {
   bedZOffset: 0,
   legSize: 100,
   bounds: 0,
-  grid: 0,
+  grid: 1,
 };
 
 export const namespace3D = (key: string): string => "3D_" + key;
