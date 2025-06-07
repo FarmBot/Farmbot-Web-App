@@ -1,4 +1,3 @@
-
 interface MockRef {
   current: {
     getWorldPosition: Function;
@@ -47,6 +46,24 @@ describe("<GantryBeam />", () => {
   it("renders lights", () => {
     const p = fakeProps();
     p.config.light = true;
+    const { container } = render(<GantryBeam {...p} />);
+    expect(container).toContainHTML("beam");
+    expect(container).toContainHTML("light");
+  });
+
+  it("renders alternative lights", () => {
+    const p = fakeProps();
+    p.config.light = true;
+    p.config.kitVersion = "v1.8";
+    const { container } = render(<GantryBeam {...p} />);
+    expect(container).toContainHTML("beam");
+    expect(container).toContainHTML("light");
+  });
+
+  it("renders debug helpers", () => {
+    const p = fakeProps();
+    p.config.light = true;
+    p.config.lightsDebug = true;
     const { container } = render(<GantryBeam {...p} />);
     expect(container).toContainHTML("beam");
     expect(container).toContainHTML("light");

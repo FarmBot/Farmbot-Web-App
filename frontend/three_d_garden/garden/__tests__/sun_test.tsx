@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { Sun, SunProps } from "../sun";
 import { INITIAL } from "../../config";
 import { clone } from "lodash";
@@ -10,7 +10,16 @@ describe("<Sun />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<Sun {...fakeProps()} />);
-    expect(wrapper.html()).toContain("sun");
+    const { container } = render(<Sun {...fakeProps()} />);
+    expect(container).toContainHTML("sun");
+    expect(container).not.toContainHTML("line");
+  });
+
+  it("renders debug helpers", () => {
+    const p = fakeProps();
+    p.config.lightsDebug = true;
+    const { container } = render(<Sun {...p} />);
+    expect(container).toContainHTML("sun");
+    expect(container).toContainHTML("line");
   });
 });

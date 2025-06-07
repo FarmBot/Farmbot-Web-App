@@ -1,8 +1,8 @@
 import React from "react";
 import { Config } from "../config";
 import { HOVER_OBJECT_MODES, RenderOrder } from "../constants";
-import { Billboard, Image } from "@react-three/drei";
-import { Vector3 } from "three";
+import { Billboard, Plane, useTexture } from "@react-three/drei";
+import { Vector3, MeshStandardMaterial } from "three";
 import { threeSpace, zZero as zZeroFunc } from "../helpers";
 import { Text } from "../elements";
 import { isUndefined } from "lodash";
@@ -10,6 +10,7 @@ import { Path } from "../../internal_urls";
 import { useNavigate } from "react-router";
 import { setPanelOpen } from "../../farm_designer/panel_header";
 import { getMode } from "../../farm_designer/map/util";
+import { MeshStandardMaterialProps, ThreeElements } from "@react-three/fiber";
 
 export interface ThreeDGardenPlant {
   id?: number | undefined;
@@ -62,4 +63,45 @@ export const ThreeDPlant = (props: ThreeDPlantProps) => {
         transparent={true}
         renderOrder={RenderOrder.plants} />}
   </Billboard>;
+};
+
+type MeshProps = ThreeElements["mesh"];
+interface CustomImageProps extends MeshProps {
+  url: string;
+  transparent: boolean;
+}
+
+const Image = (props: CustomImageProps) => {
+  const texture = useTexture(props.url);
+  return <Plane {...props} args={[1, 1]}>
+    <CustomMaterial
+      key={Math.random()}
+      map={texture}
+      transparent={true} />
+  </Plane>;
+};
+
+export const CustomMaterial = (props: MeshStandardMaterialProps) => {
+  // eslint-disable-next-line no-null/no-null
+  const materialRef = React.useRef<MeshStandardMaterial>(null);
+
+  const attachRef = React.useCallback((material: MeshStandardMaterial) => {
+    if (!material || materialRef.current) { return; }
+
+    materialRef.current = material;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    material.onBeforeCompile = (shader: any) => {
+      if (material.userData.shaderInjected) { return; }
+      shader.fragmentShader = shader.fragmentShader.replace(
+        "#include <normal_fragment_begin>",
+        `#include <normal_fragment_begin>
+         normal = vec3(0.0, 1.0, 0.0);
+        `,
+      );
+      material.userData.shaderInjected = true;
+    };
+  }, []);
+
+  // @ts-expect-error JSX
+  return <meshStandardMaterial ref={attachRef} {...props} />;
 };

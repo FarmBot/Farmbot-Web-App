@@ -9,6 +9,7 @@ export interface CloudsProps {
 
 export const Clouds = (props: CloudsProps) => {
   const { config } = props;
+  const sunParams = seasonProperties(config.sun / 100);
   return <DreiClouds name={"clouds"} visible={config.clouds}
     renderOrder={RenderOrder.clouds}
     texture={ASSETS.textures.cloud}>
@@ -22,9 +23,7 @@ export const Clouds = (props: CloudsProps) => {
       color="#ccc"
       growth={400}
       speed={.1}
-      opacity={
-        (seasonProperties[config.plants] || seasonProperties.Summer)
-          .cloudOpacity}
+      opacity={(sunParams[config.plants] || sunParams.Summer).cloudOpacity}
       fade={5000} />
   </DreiClouds>;
 };

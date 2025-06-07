@@ -129,7 +129,7 @@ export const GardenModel = (props: GardenModelProps) => {
     <AxesHelper args={[5000]} visible={config.threeAxes} />
     {config.viewCube && <GizmoHelper><GizmoViewcube /></GizmoHelper>}
     <Sun config={config} />
-    <AmbientLight intensity={1} />
+    <AmbientLight intensity={config.ambient / 100} />
     <Ground config={config} />
     <Clouds config={config} />
     <Bed

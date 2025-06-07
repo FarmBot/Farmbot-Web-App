@@ -10,7 +10,7 @@ import * as THREE from "three";
 import React, { ReactNode } from "react";
 import { TransitionFn, UseSpringProps } from "@react-spring/three";
 import { ThreeElements, ThreeEvent } from "@react-three/fiber";
-import { Cloud, Clouds, Image, Tube } from "@react-three/drei";
+import { Cloud, Clouds, Image, Plane, Tube } from "@react-three/drei";
 
 const GroupForTests = (props: ThreeElements["group"]) =>
   // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
@@ -604,8 +604,9 @@ jest.mock("@react-three/drei", () => {
     useGLTF,
     RoundedBox: ({ name }: { name: string }) =>
       <div className={"cylinder"}>{name}</div>,
-    Plane: ({ name }: { name: string }) =>
-      <div className={"plane"}>{name}</div>,
+    Plane: (props: React.ComponentProps<typeof Plane>) =>
+      // @ts-expect-error geometry props not assignable to div
+      <div className={"plane"} {...props}>{props.name} {props.url}</div>,
     Cylinder: ({ name }: { name: string }) =>
       <div className={"cylinder"}>{name}</div>,
     Torus: ({ name }: { name: string }) =>
@@ -667,5 +668,6 @@ jest.mock("@react-three/drei", () => {
       <div className={"cloud"} {...props} />,
     OrthographicCamera: ({ name }: { name: string }) =>
       <div className={"orthographic-camera"}>{name}</div>,
+    useHelper: jest.fn(),
   };
 });

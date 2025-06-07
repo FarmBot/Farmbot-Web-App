@@ -72,6 +72,9 @@ export interface Config {
   eventDebug: boolean;
   cableDebug: boolean;
   zoomBeaconDebug: boolean;
+  lightsDebug: boolean;
+  sun: number;
+  ambient: number;
   animate: boolean;
   distanceIndicator: string;
   kitVersion: string;
@@ -157,6 +160,9 @@ export const INITIAL: Config = {
   eventDebug: false,
   cableDebug: false,
   zoomBeaconDebug: false,
+  lightsDebug: false,
+  sun: 50,
+  ambient: 50,
   animate: true,
   distanceIndicator: "",
   kitVersion: "v1.7",
@@ -179,7 +185,7 @@ export const NUMBER_KEYS = [
   "bedXOffset", "bedYOffset", "bedZOffset", "zGantryOffset", "bedWidthOuter",
   "bedLengthOuter", "legSize", "extraLegsX", "extraLegsY", "bedBrightness",
   "soilBrightness", "soilHeight", "sunInclination", "sunAzimuth",
-  "soilSurfacePointCount", "soilSurfaceVariance",
+  "soilSurfacePointCount", "soilSurfaceVariance", "sun", "ambient",
 ];
 
 export const BOOLEAN_KEYS = [
@@ -188,7 +194,8 @@ export const BOOLEAN_KEYS = [
   "viewCube", "stats", "config", "zoom", "pan", "rotate", "bounds", "threeAxes",
   "xyDimensions", "zDimension", "promoInfo", "settingsBar", "zoomBeacons",
   "solar", "utilitiesPost", "packaging", "lab", "people", "lowDetail",
-  "eventDebug", "cableDebug", "zoomBeaconDebug", "animate", "negativeZ",
+  "eventDebug", "cableDebug", "zoomBeaconDebug", "lightsDebug",
+  "animate", "negativeZ",
   "waterFlow", "exaggeratedZ", "showSoilPoints", "urlParamAutoAdd",
   "light", "vacuum", "rotary",
 ];
@@ -370,6 +377,7 @@ export const PRESETS: Record<string, Config> = {
     eventDebug: false,
     cableDebug: true,
     zoomBeaconDebug: true,
+    lightsDebug: true,
     animate: true,
     distanceIndicator: "",
     waterFlow: true,
@@ -396,7 +404,8 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "threeAxes", "xyDimensions", "zDimension", "labelsOnHover", "promoInfo",
   "settingsBar", "zoomBeacons", "pan", "rotate",
   "solar", "utilitiesPost", "packaging", "lab",
-  "people", "scene", "lowDetail", "eventDebug", "cableDebug", "zoomBeaconDebug",
+  "people", "scene", "lowDetail", "sun", "ambient",
+  "eventDebug", "cableDebug", "zoomBeaconDebug", "lightsDebug",
   "animate", "distanceIndicator", "kitVersion", "negativeZ", "waterFlow",
   "light", "vacuum", "rotary",
   "exaggeratedZ", "soilSurface", "soilSurfaceVariance",
@@ -486,12 +495,12 @@ type SeasonProperties = {
   sunColor: string;
   cloudOpacity: number;
 };
-export const seasonProperties: Record<string, SeasonProperties> = {
-  Winter: { sunIntensity: 4 / 4, sunColor: "#A0C4FF", cloudOpacity: 0.85 },
-  Spring: { sunIntensity: 7 / 4, sunColor: "#BDE0FE", cloudOpacity: 0.2 },
-  Summer: { sunIntensity: 9 / 4, sunColor: "#FFFFFF", cloudOpacity: 0 },
-  Fall: { sunIntensity: 5.5 / 4, sunColor: "#FFD6BC", cloudOpacity: 0.3 },
-};
+export const seasonProperties = (f: number): Record<string, SeasonProperties> => ({
+  Winter: { sunIntensity: 4 / 4 * f, sunColor: "#A0C4FF", cloudOpacity: 0.85 },
+  Spring: { sunIntensity: 7 / 4 * f, sunColor: "#BDE0FE", cloudOpacity: 0.2 },
+  Summer: { sunIntensity: 9 / 4 * f, sunColor: "#FFFFFF", cloudOpacity: 0 },
+  Fall: { sunIntensity: 5.5 / 4 * f, sunColor: "#FFD6BC", cloudOpacity: 0.3 },
+});
 
 export const detailLevels = (config: Config) =>
   config.lowDetail ? [0, 0] : [0, 50000];

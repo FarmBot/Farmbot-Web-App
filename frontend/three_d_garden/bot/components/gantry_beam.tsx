@@ -1,10 +1,10 @@
-import { Cylinder, Extrude } from "@react-three/drei";
+import { Cylinder, Extrude, useHelper } from "@react-three/drei";
 import React from "react";
 import { threeSpace } from "../../helpers";
 import { Group, MeshPhongMaterial, SpotLight } from "../../components";
 import { Config } from "../../config";
 import {
-  DoubleSide, Shape, Texture, SpotLight as ThreeSpotLight, Vector3,
+  DoubleSide, Shape, SpotLightHelper, Texture, SpotLight as ThreeSpotLight, Vector3,
 } from "three";
 import { extrusionWidth } from "../bot";
 import { useFrame } from "@react-three/fiber";
@@ -39,35 +39,54 @@ export const GantryBeam = (props: GantryBeamProps) => {
         side={DoubleSide} />
     </Extrude>
     {props.config.light &&
-      <LightStrip width={beamLength} />}
+      <LightStrip
+        width={beamLength}
+        debug={props.config.lightsDebug}
+        ledsUnderBeam={ledsUnderBeam(props.config.kitVersion)} />}
   </Group>;
+};
+
+const ledsUnderBeam = (kitVersion: string): boolean => {
+  switch (kitVersion) {
+    case "v1.7":
+      return true;
+    case "v1.8":
+    default:
+      return false;
+  }
 };
 
 interface LightStripProps {
   width: number;
+  debug: boolean;
+  ledsUnderBeam: boolean;
 }
 
 const LightStrip = (props: LightStripProps) => {
+  const SPACING = 300;
   return <Group name={"gantry-beam-light-strip"} position={[10, 0, 0]}>
-    {range(0, props.width, 300).map(i =>
-      <Light key={i} i={i} />)}
-    <Cylinder
-      args={[7, 7, props.width]}
-      position={[0, 0, props.width / 2]}
+    {range(0, props.width, SPACING).map(yOffset =>
+      <Light key={yOffset} yOffset={yOffset + SPACING / 2} debug={props.debug} />)}
+    {props.ledsUnderBeam && <Cylinder
+      args={[7, 7, props.width - 2]}
+      position={[0, 0, props.width / 2 - 1]}
       rotation={[-Math.PI / 2, 0, 0]}>
-      <MeshPhongMaterial
-        color={"white"}
-        shininess={200}
-        specular={"white"}
-        emissive={"white"}
-        emissiveIntensity={2} />
-    </Cylinder>
+      <MeshPhongMaterial color={"white"} {...EMISSIVE_PROPS} />
+    </Cylinder>}
   </Group>;
 };
 
-const Light = ({ i }: { i: number }) => {
+export const EMISSIVE_PROPS = {
+  specular: "white",
+  emissive: "white",
+  emissiveIntensity: 2,
+  shininess: 200,
+};
+
+const Light = ({ yOffset, debug }: { yOffset: number, debug: boolean }) => {
   // eslint-disable-next-line no-null/no-null
   const lightRef = React.useRef<ThreeSpotLight>(null!);
+  useHelper(debug ? lightRef : undefined, SpotLightHelper, "white");
   const worldPosRef = React.useRef<Vector3>(new Vector3());
   const targetPosRef = React.useRef<Vector3>(new Vector3());
   const downVector = React.useMemo(() => new Vector3(0, 0, -1), []);
@@ -84,9 +103,9 @@ const Light = ({ i }: { i: number }) => {
   });
   return <SpotLight
     ref={lightRef}
-    position={[0, 0, i]}
+    position={[0, 0, yOffset]}
     intensity={2}
-    distance={0}
+    distance={10000}
     decay={0}
     angle={Math.PI / 6}
     castShadow={true} />;

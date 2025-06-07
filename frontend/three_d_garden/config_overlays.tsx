@@ -169,8 +169,10 @@ const ConfigRow = (props: ConfigRowProps) => {
     setUrlParam(configKey, "");
   };
   const [hasParam, setHasParam] = React.useState(urlHasParam(configKey));
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  React.useEffect(() => setHasParam(urlHasParam(configKey)), [window.location.search]);
+  React.useEffect(() => {
+    setHasParam(urlHasParam(configKey));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [window.location.search]);
   return <div className={"config-row"} key={configKey + window.location.search}>
     {hasParam && <p className={"x"} onClick={removeParam}>x</p>}
     <span className={"config-key"}>{configKey}</span>
@@ -357,6 +359,8 @@ export const PrivateOverlay = (props: OverlayProps) => {
       <Toggle {...common} configKey={"labels"} />
       <Toggle {...common} configKey={"labelsOnHover"} />
       <Toggle {...common} configKey={"clouds"} />
+      <Slider {...common} configKey={"sun"} min={0} max={200} />
+      <Slider {...common} configKey={"ambient"} min={0} max={200} />
       <Toggle {...common} configKey={"solar"} />
       <Toggle {...common} configKey={"lab"} />
       <Toggle {...common} configKey={"people"} />
@@ -369,6 +373,7 @@ export const PrivateOverlay = (props: OverlayProps) => {
       <Toggle {...common} configKey={"eventDebug"} />
       <Toggle {...common} configKey={"cableDebug"} />
       <Toggle {...common} configKey={"zoomBeaconDebug"} />
+      <Toggle {...common} configKey={"lightsDebug"} />
       <Toggle {...common} configKey={"animate"} />
       <Toggle {...common} configKey={"config"} />
     </details>
