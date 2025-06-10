@@ -22,8 +22,26 @@ const DEFAULTS: Record<string, number> = {
   bedYOffset: 20,
   bedZOffset: 0,
   legSize: 100,
+  legsFlush: 1,
+  extraLegsX: 1,
+  extraLegsY: 0,
+  bedBrightness: 8,
+  clouds: 1,
+  laser: 0,
+  stats: 0,
+  threeAxes: 0,
+  solar: 0,
+  lowDetail: 0,
+  eventDebug: 0,
+  cableDebug: 0,
+  lightsDebug: 0,
+  ambient: 50,
+  heading: 0,
+  sunAzimuth: 230,
+  sunInclination: 140,
   bounds: 0,
   grid: 1,
+
 };
 
 export const namespace3D = (key: string): string => "3D_" + key;
@@ -163,6 +181,10 @@ export const ThreeDSettings = (props: ThreeDSettingsProps) => {
         setting={DeviceSetting.grid}
         configKey={"grid"}
         isToggle={true} />
+      <Config {...common}
+        tooltip={ToolTips.THREE_D_HEADING}
+        setting={DeviceSetting.heading}
+        configKey={"heading"} />
     </Collapse>
   </Highlight>;
 };

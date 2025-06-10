@@ -17,6 +17,9 @@ import { ThreeDGardenPlant } from "../three_d_garden/garden";
 import { findIcon } from "../crops/find";
 import { PeripheralValues } from "./map/layers/farmbot/bot_trail";
 import { isPeripheralActiveFunc } from "./map/layers/farmbot/bot_peripherals";
+import SunCalc from "suncalc";
+import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
+import moment from "moment";
 
 export interface ThreeDGardenMapProps {
   botSize: BotSize;
@@ -35,7 +38,8 @@ export interface ThreeDGardenMapProps {
   botPosition: BotPosition;
   toolSlots?: SlotWithTool[];
   mountedToolName: string | undefined;
-  peripheralValues: PeripheralValues
+  peripheralValues: PeripheralValues;
+  device: DeviceAccountSettings;
 }
 
 export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
@@ -47,6 +51,7 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   config.bedLengthOuter = gridSize.x + 280;
   config.zoomBeacons = false;
   config.trail = !!props.getWebAppConfigValue(BooleanSetting.display_trail);
+  config.animate = !props.getWebAppConfigValue(BooleanSetting.disable_animations);
 
   config.kitVersion =
     props.sourceFbosConfig("firmware_hardware").value == "farmduino_k18"
@@ -79,8 +84,43 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   config.bedYOffset = getValue("bedYOffset");
   config.bedZOffset = getValue("bedZOffset");
   config.legSize = getValue("legSize");
+  config.legsFlush = !!getValue("legsFlush");
+  config.extraLegsX = getValue("extraLegsX");
+  config.extraLegsY = getValue("extraLegsY");
+  config.bedBrightness = getValue("bedBrightness");
+  config.clouds = !!getValue("clouds");
+  config.laser = !!getValue("laser");
+  config.stats = !!getValue("stats");
+  config.threeAxes = !!getValue("threeAxes");
+  config.solar = !!getValue("solar");
+  config.lowDetail = !!getValue("lowDetail");
+  config.eventDebug = !!getValue("eventDebug");
+  config.cableDebug = !!getValue("cableDebug");
+  config.lightsDebug = !!getValue("lightsDebug");
+  config.ambient = getValue("ambient");
+  config.heading = getValue("heading");
   config.bounds = !!getValue("bounds");
   config.grid = !!getValue("grid");
+
+  config.lab = props.device.indoor;
+
+  const latitude = props.device.lat;
+  const longitude = props.device.lng;
+  if (props.designer.threeDRealTime &&
+    latitude && latitude != 0 && longitude && longitude != 0) {
+    const timeOffsetSeconds = props.designer.threeDTimeOffset;
+    const date = moment().add(timeOffsetSeconds, "seconds").toDate();
+    const sunPosition = SunCalc.getPosition(date, latitude, longitude);
+    const sunAzimuth = sunPosition.azimuth * (180 / Math.PI);
+    config.sunAzimuth = Math.round((sunAzimuth - config.heading + 360) % 360);
+    config.sunInclination = Math.round(sunPosition.altitude * (180 / Math.PI));
+  } else {
+    config.sunAzimuth = getValue("sunAzimuth");
+    config.sunInclination = getValue("sunInclination");
+  }
+  if (config.sunInclination < 0) {
+    config.sun = 0;
+  }
 
   const isPeripheralActive = isPeripheralActiveFunc(props.peripheralValues);
 

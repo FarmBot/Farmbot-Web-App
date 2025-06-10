@@ -104,6 +104,62 @@ describe("<ThreeDGardenToggle />", () => {
     });
   });
 
+  it("toggles real time: false", () => {
+    const p = fakeProps();
+    render(<ThreeDGardenToggle {...p} />);
+    const topDownViewButton = screen.getByTitle("daytime");
+    fireEvent.click(topDownViewButton);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_3D_REAL_TIME,
+      payload: false,
+    });
+  });
+
+  it("toggles real time: true", () => {
+    const p = fakeProps();
+    p.designer.threeDRealTime = false;
+    render(<ThreeDGardenToggle {...p} />);
+    const topDownViewButton = screen.getByTitle("realtime");
+    fireEvent.click(topDownViewButton);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_3D_REAL_TIME,
+      payload: true,
+    });
+  });
+
+  it("decreases time offset", () => {
+    const p = fakeProps();
+    render(<ThreeDGardenToggle {...p} />);
+    const topDownViewButton = screen.getByTitle("minus hour");
+    fireEvent.click(topDownViewButton);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.CHANGE_3D_TIME,
+      payload: -3600,
+    });
+  });
+
+  it("increases time offset", () => {
+    const p = fakeProps();
+    render(<ThreeDGardenToggle {...p} />);
+    const topDownViewButton = screen.getByTitle("plus hour");
+    fireEvent.click(topDownViewButton);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.CHANGE_3D_TIME,
+      payload: 3600,
+    });
+  });
+
+  it("resets time offset", () => {
+    const p = fakeProps();
+    render(<ThreeDGardenToggle {...p} />);
+    const topDownViewButton = screen.getByTitle("reset hour");
+    fireEvent.click(topDownViewButton);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.RESET_3D_TIME,
+      payload: 0,
+    });
+  });
+
   it("toggles 3D view", () => {
     const p = fakeProps();
     render(<ThreeDGardenToggle {...p} />);

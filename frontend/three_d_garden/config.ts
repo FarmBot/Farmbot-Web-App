@@ -43,6 +43,7 @@ export interface Config {
   clouds: boolean;
   sunInclination: number;
   sunAzimuth: number;
+  heading: number;
   perspective: boolean;
   bot: boolean;
   laser: boolean;
@@ -131,6 +132,7 @@ export const INITIAL: Config = {
   clouds: true,
   sunInclination: 140,
   sunAzimuth: 230,
+  heading: 0,
   perspective: true,
   bot: true,
   laser: false,
@@ -184,7 +186,7 @@ export const NUMBER_KEYS = [
   "ccSupportSize", "x", "y", "z", "beamLength", "columnLength", "zAxisLength",
   "bedXOffset", "bedYOffset", "bedZOffset", "zGantryOffset", "bedWidthOuter",
   "bedLengthOuter", "legSize", "extraLegsX", "extraLegsY", "bedBrightness",
-  "soilBrightness", "soilHeight", "sunInclination", "sunAzimuth",
+  "soilBrightness", "soilHeight", "sunInclination", "sunAzimuth", "heading",
   "soilSurfacePointCount", "soilSurfaceVariance", "sun", "ambient",
 ];
 
@@ -290,6 +292,7 @@ export const PRESETS: Record<string, Config> = {
     clouds: false,
     sunInclination: 90,
     sunAzimuth: 0,
+    heading: 0,
     perspective: true,
     bot: true,
     laser: false,
@@ -399,7 +402,8 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "bedWallThickness", "bedHeight", "x", "y", "z",
   "ccSupportSize", "legSize", "legsFlush",
   "bedBrightness", "soilBrightness", "plants", "labels", "ground", "grid", "axes",
-  "trail", "clouds", "sunInclination", "sunAzimuth", "perspective", "bot", "laser",
+  "trail", "clouds", "sunInclination", "sunAzimuth", "heading",
+  "perspective", "bot", "laser",
   "tool", "cableCarriers", "viewCube", "stats", "config", "zoom", "bounds",
   "threeAxes", "xyDimensions", "zDimension", "labelsOnHover", "promoInfo",
   "settingsBar", "zoomBeacons", "pan", "rotate",

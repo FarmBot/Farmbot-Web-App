@@ -34,6 +34,7 @@ import {
 import { SelectionBoxData } from "./map/background";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import {
+  DeviceAccountSettings,
   ExecutableType, PlantPointer, ToolPulloutDirection,
 } from "farmbot/dist/resources/api_resources";
 import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
@@ -84,6 +85,7 @@ export interface MountedToolInfo {
 
 export interface FarmDesignerProps {
   dispatch: Function;
+  device: DeviceAccountSettings;
   selectedPlant: TaggedPlant | undefined;
   designer: DesignerState;
   hoveredPlant: TaggedPlant | undefined;
@@ -179,6 +181,8 @@ export interface DesignerState {
   panelOpen: boolean;
   threeDTopDownView: boolean;
   threeDExaggeratedZ: boolean;
+  threeDTimeOffset: number;
+  threeDRealTime: boolean;
 }
 
 export type TaggedExecutable = TaggedSequence | TaggedRegimen;

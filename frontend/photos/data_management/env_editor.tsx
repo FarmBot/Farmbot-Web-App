@@ -18,6 +18,7 @@ const HIDDEN_PREFIXES = [
   "CAMERA_CALIBRATION",
   "measure_soil_height",
   "interpolation_",
+  "3D_",
 ];
 
 export const EnvEditor = (props: EnvEditorProps) => {

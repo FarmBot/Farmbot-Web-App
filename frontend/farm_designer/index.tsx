@@ -217,6 +217,7 @@ export class RawFarmDesigner
       {threeDGarden
         ? <ThreeDGardenMap
           designer={this.props.designer}
+          device={this.props.device}
           plants={this.props.plants}
           get3DConfigValue={get3DConfigValueFunction(this.props.farmwareEnvs)}
           sourceFbosConfig={this.props.sourceFbosConfig}

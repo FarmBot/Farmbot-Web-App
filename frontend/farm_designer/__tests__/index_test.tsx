@@ -26,6 +26,7 @@ import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import {
   buildResourceIndex,
+  fakeDevice,
 } from "../../__test_support__/resource_index_builder";
 import { fakeState } from "../../__test_support__/fake_state";
 import { edit } from "../../api/crud";
@@ -45,6 +46,7 @@ import { Path } from "../../internal_urls";
 describe("<FarmDesigner />", () => {
   const fakeProps = (): FarmDesignerProps => ({
     dispatch: jest.fn(),
+    device: fakeDevice().body,
     selectedPlant: undefined,
     designer: fakeDesignerState(),
     hoveredPlant: undefined,

@@ -2,6 +2,13 @@ jest.mock("../../three_d_garden", () => ({
   ThreeDGarden: jest.fn(),
 }));
 
+jest.mock("suncalc", () => ({
+  getPosition: () => ({
+    altitude: 0.5,
+    azimuth: 1.0,
+  }),
+}));
+
 import React from "react";
 import {
   ThreeDGardenMapProps, ThreeDGardenMap, convertPlants,
@@ -16,10 +23,12 @@ import { clone } from "lodash";
 import { INITIAL } from "../../three_d_garden/config";
 import { FirmwareHardware } from "farmbot";
 import { CROPS } from "../../crops/constants";
+import { fakeDevice } from "../../__test_support__/resource_index_builder";
 
 describe("<ThreeDGardenMap />", () => {
   const fakeProps = (): ThreeDGardenMapProps => ({
     mapTransformProps: fakeMapTransformProps(),
+    device: fakeDevice().body,
     botSize: fakeBotSize(),
     gridOffset: { x: 10, y: 10 },
     get3DConfigValue: () => 1,
@@ -58,6 +67,7 @@ describe("<ThreeDGardenMap />", () => {
     expectedConfig.bedYOffset = 1;
     expectedConfig.bedZOffset = 1;
     expectedConfig.legSize = 1;
+    expectedConfig.extraLegsY = 1;
     expectedConfig.bounds = true;
     expectedConfig.grid = true;
     expectedConfig.pan = true;
@@ -66,6 +76,21 @@ describe("<ThreeDGardenMap />", () => {
     expectedConfig.zGantryOffset = 0;
     expectedConfig.zoomBeacons = false;
     expectedConfig.waterFlow = false;
+    expectedConfig.animate = true;
+    expectedConfig.ambient = 1;
+    expectedConfig.bedBrightness = 1;
+    expectedConfig.cableDebug = true;
+    expectedConfig.eventDebug = true;
+    expectedConfig.lightsDebug = true;
+    expectedConfig.lowDetail = true;
+    expectedConfig.solar = true;
+    expectedConfig.stats = true;
+    expectedConfig.heading = 1;
+    expectedConfig.laser = true;
+    expectedConfig.threeAxes = true;
+    expectedConfig.sunAzimuth = 1;
+    expectedConfig.sunInclination = 1;
+
     expect(ThreeDGarden).toHaveBeenCalledWith({
       config: expectedConfig,
       threeDPlants: [{
@@ -105,6 +130,65 @@ describe("<ThreeDGardenMap />", () => {
     render(<ThreeDGardenMap {...p} />);
     expect(ThreeDGarden).toHaveBeenCalledWith({
       config: expect.objectContaining({ negativeZ: true, x: 0, y: 0, z: -100 }),
+      threeDPlants: [],
+      addPlantProps: expect.any(Object),
+      mapPoints: [],
+      weeds: [],
+    }, {});
+  });
+
+  it("converts props: real time", () => {
+    const p = fakeProps();
+    p.designer.threeDRealTime = true;
+    p.device.lat = 1;
+    p.device.lng = 2;
+    p.plants = [];
+    render(<ThreeDGardenMap {...p} />);
+    expect(ThreeDGarden).toHaveBeenCalledWith({
+      config: expect.objectContaining({
+        sunInclination: 29,
+        sunAzimuth: 56,
+        sun: 50,
+      }),
+      threeDPlants: [],
+      addPlantProps: expect.any(Object),
+      mapPoints: [],
+      weeds: [],
+    }, {});
+  });
+
+  it("converts props: daytime", () => {
+    const p = fakeProps();
+    p.designer.threeDRealTime = false;
+    p.device.lat = 1;
+    p.device.lng = 2;
+    p.plants = [];
+    render(<ThreeDGardenMap {...p} />);
+    expect(ThreeDGarden).toHaveBeenCalledWith({
+      config: expect.objectContaining({
+        sunInclination: 1,
+        sunAzimuth: 1,
+        sun: 50,
+      }),
+      threeDPlants: [],
+      addPlantProps: expect.any(Object),
+      mapPoints: [],
+      weeds: [],
+    }, {});
+  });
+
+  it("converts props: night", () => {
+    const p = fakeProps();
+    p.designer.threeDRealTime = false;
+    p.get3DConfigValue = () => -1;
+    p.plants = [];
+    render(<ThreeDGardenMap {...p} />);
+    expect(ThreeDGarden).toHaveBeenCalledWith({
+      config: expect.objectContaining({
+        sunInclination: -1,
+        sunAzimuth: -1,
+        sun: 0,
+      }),
       threeDPlants: [],
       addPlantProps: expect.any(Object),
       mapPoints: [],
