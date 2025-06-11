@@ -164,4 +164,20 @@ describe("botReducer", () => {
     const r = botReducer(state, action);
     expect(r.alreadyToldUserAboutMalformedMsg).toEqual(false);
   });
+
+  it("toggles demo pin: undefined", () => {
+    const state = initialState();
+    state.hardware.pins = {};
+    const action = { type: Actions.DEMO_TOGGLE_PIN, payload: 13 };
+    const r = botReducer(state, action);
+    expect(r.hardware.pins).toEqual({ 13: { value: 1, mode: 0 } });
+  });
+
+  it("toggles demo pin: defined", () => {
+    const state = initialState();
+    state.hardware.pins = { 13: { value: 1, mode: 0 } };
+    const action = { type: Actions.DEMO_TOGGLE_PIN, payload: 13 };
+    const r = botReducer(state, action);
+    expect(r.hardware.pins).toEqual({ 13: { value: 0, mode: 0 } });
+  });
 });

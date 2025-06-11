@@ -394,12 +394,20 @@ export function move(props: MoveProps) {
 }
 
 export function pinToggle(pin_number: number) {
-  const noun = t("Setting toggle");
-  maybeNoop();
-  maybeAlertLocked();
-  return getDevice()
-    .togglePin({ pin_number })
-    .then(maybeNoop, commandErr(noun));
+  return function (dispatch: Function) {
+    const noun = t("Toggle pin");
+    if (forceOnline()) {
+      dispatch({
+        type: Actions.DEMO_TOGGLE_PIN,
+        payload: pin_number,
+      });
+      return;
+    }
+    maybeAlertLocked();
+    return getDevice()
+      .togglePin({ pin_number })
+      .then(maybeNoop, commandErr(noun));
+  };
 }
 
 export function readPin(

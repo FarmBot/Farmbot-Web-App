@@ -489,10 +489,25 @@ describe("move()", () => {
 });
 
 describe("pinToggle()", () => {
+  afterEach(() => {
+    localStorage.removeItem("myBotIs");
+  });
+
   it("calls togglePin", async () => {
-    await actions.pinToggle(5);
+    await actions.pinToggle(5)(jest.fn());
     expect(mockDevice.current.togglePin).toHaveBeenCalledWith({ pin_number: 5 });
     expect(success).not.toHaveBeenCalled();
+  });
+
+  it("toggles demo account pin", () => {
+    localStorage.setItem("myBotIs", "online");
+    const dispatch = jest.fn();
+    actions.pinToggle(5)(dispatch);
+    expect(mockDevice.current.togglePin).not.toHaveBeenCalled();
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.DEMO_TOGGLE_PIN,
+      payload: 5
+    });
   });
 });
 
@@ -558,6 +573,10 @@ describe("commandErr()", () => {
 });
 
 describe("commandOK()", () => {
+  afterEach(() => {
+    localStorage.removeItem("myBotIs");
+  });
+
   it("sends toast", () => {
     actions.commandOK()();
     expect(success).toHaveBeenCalledWith(
