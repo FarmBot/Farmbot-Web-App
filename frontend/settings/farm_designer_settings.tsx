@@ -15,10 +15,11 @@ import {
   DesignerSettingsPropsBase, SettingDescriptionProps, WebAppNumberSettingProps,
 } from "./interfaces";
 import { getModifiedClassName } from "./default_values";
+import { McuParams } from "farmbot";
 
 export const Designer = (props: DesignerSettingsSectionProps) => {
-  const { getConfigValue, dispatch, settingsPanelState } = props;
-  const settingsProps = { getConfigValue, dispatch };
+  const { getConfigValue, dispatch, settingsPanelState, firmwareConfig } = props;
+  const settingsProps = { getConfigValue, dispatch, firmwareConfig };
   return <Highlight className={"section"} hidden={true}
     settingName={DeviceSetting.farmDesigner}>
     <Header
@@ -27,16 +28,18 @@ export const Designer = (props: DesignerSettingsSectionProps) => {
       dispatch={dispatch}
       expanded={settingsPanelState.farm_designer} />
     <Collapse isOpen={!!settingsPanelState.farm_designer}>
-      {PlainDesignerSettings(settingsProps)}
+      {PlainDesignerSettings(settingsProps, firmwareConfig)}
     </Collapse>
   </Highlight>;
 };
 
-export const PlainDesignerSettings =
-  (settingsProps: DesignerSettingsPropsBase) =>
-    DESIGNER_SETTINGS(settingsProps).map(setting =>
-      <Setting key={setting.title} {...setting} {...settingsProps}
-        useToolTip={true} />);
+export const PlainDesignerSettings = (
+  settingsProps: DesignerSettingsPropsBase,
+  firmwareConfig: McuParams | undefined,
+) =>
+  DESIGNER_SETTINGS(settingsProps, firmwareConfig).map(setting =>
+    <Setting key={setting.title} {...setting} {...settingsProps}
+      useToolTip={true} />);
 
 export const Setting = (props: SettingProps) => {
   const { title, setting, numberSetting, callback, defaultOn } = props;
@@ -44,7 +47,10 @@ export const Setting = (props: SettingProps) => {
   const value = (defaultOn && isUndefined(raw_value)) ? true : !!raw_value;
   return <Highlight settingName={title}>
     <div
-      className={`designer-setting row grid-exp-1 ${props.disabled ? "disabled" : ""}`}>
+      className={[
+        "designer-setting row grid-exp-1",
+        props.disabled ? "disabled" : "",
+      ].join(" ")}>
       <div>
         <label>{t(title)}</label>
         <Help text={props.description} />
@@ -78,7 +84,10 @@ export const WebAppNumberSetting = (props: WebAppNumberSettingProps) => {
 };
 
 const DESIGNER_SETTINGS =
-  (settingsProps: DesignerSettingsPropsBase): SettingDescriptionProps[] => ([
+  (
+    settingsProps: DesignerSettingsPropsBase,
+    firmwareConfig: McuParams | undefined,
+  ): SettingDescriptionProps[] => ([
     {
       title: DeviceSetting.animations,
       description: Content.PLANT_ANIMATIONS,
@@ -105,7 +114,8 @@ const DESIGNER_SETTINGS =
     {
       title: DeviceSetting.mapSize,
       description: Content.MAP_SIZE,
-      children: <MapSizeInputs {...settingsProps} />,
+      children: <MapSizeInputs {...settingsProps}
+        firmwareConfig={firmwareConfig} />,
       disabled: !!settingsProps.getConfigValue(BooleanSetting.dynamic_map),
     },
     {

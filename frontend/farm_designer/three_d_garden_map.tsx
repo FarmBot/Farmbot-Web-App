@@ -102,25 +102,24 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   config.bounds = !!getValue("bounds");
   config.grid = !!getValue("grid");
 
-  config.lab = props.device.indoor;
+  config.scene = props.device.indoor ? "Lab" : "Outdoor";
+  config.people = false;
 
-  const latitude = props.device.lat;
-  const longitude = props.device.lng;
-  if (props.designer.threeDRealTime &&
-    latitude && latitude != 0 && longitude && longitude != 0) {
+  const latitude = parseFloat("" + props.device.lat);
+  const longitude = parseFloat("" + props.device.lng);
+  if (props.designer.threeDRealTime && !props.device.indoor &&
+    isFinite(latitude) && isFinite(longitude)) {
     const timeOffsetSeconds = props.designer.threeDTimeOffset;
     const date = moment().add(timeOffsetSeconds, "seconds").toDate();
     const sunPosition = SunCalc.getPosition(date, latitude, longitude);
     const sunAzimuth = sunPosition.azimuth * (180 / Math.PI);
-    config.sunAzimuth = Math.round((sunAzimuth - config.heading + 360) % 360);
+    config.sunAzimuth = Math.round((sunAzimuth - config.heading + 90) % 360);
     config.sunInclination = Math.round(sunPosition.altitude * (180 / Math.PI));
   } else {
     config.sunAzimuth = getValue("sunAzimuth");
     config.sunInclination = getValue("sunInclination");
   }
-  if (config.sunInclination < 0) {
-    config.sun = 0;
-  }
+  config.sun = config.sunInclination < 0 ? 0 : 75;
 
   const isPeripheralActive = isPeripheralActiveFunc(props.peripheralValues);
 

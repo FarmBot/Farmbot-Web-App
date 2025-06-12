@@ -14,6 +14,7 @@ import {
   ThreeDPlant,
   Point, Grid, Clouds, Ground, Weed,
   ThreeDGardenPlant,
+  NorthArrow,
 } from "./garden";
 import { Config } from "./config";
 import { useSpring, animated } from "@react-spring/three";
@@ -105,7 +106,7 @@ export const GardenModel = (props: GardenModelProps) => {
       setActiveFocus={props.setActiveFocus} />}
     <Sky sunPosition={sunPosition(config)} />
     <Sphere args={[30000, 8, 16]}>
-      <MeshBasicMaterial color={"#59d8ff"} side={BackSide} />
+      <MeshBasicMaterial color={config.sun ? "#59d8ff" : "black"} side={BackSide} />
     </Sphere>
     <AnimatedGroup
       scale={props.activeFocus ? 1 : scale}>
@@ -132,6 +133,7 @@ export const GardenModel = (props: GardenModelProps) => {
     <AmbientLight intensity={config.ambient / 100} />
     <Ground config={config} />
     <Clouds config={config} />
+    <NorthArrow config={config} />
     <Bed
       config={config}
       vertices={vertices}

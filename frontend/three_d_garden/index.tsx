@@ -18,6 +18,7 @@ import { setWebAppConfigValue } from "../config_storage/actions";
 import { DesignerState } from "../farm_designer/interfaces";
 import { setPanelOpen } from "../farm_designer/panel_header";
 import { ThreeDGardenPlant } from "./garden";
+import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
 
 export interface ThreeDGardenProps {
   config: Config;
@@ -64,6 +65,7 @@ export interface ThreeDGardenToggleProps {
   dispatch: Function;
   designer: DesignerState;
   threeDGarden: boolean;
+  device: DeviceAccountSettings;
 }
 
 // eslint-disable-next-line complexity
@@ -72,6 +74,8 @@ export const ThreeDGardenToggle = (props: ThreeDGardenToggleProps) => {
   const topDown = props.designer.threeDTopDownView;
   const exaggeratedZ = props.designer.threeDExaggeratedZ;
   const realTime = props.designer.threeDRealTime;
+  const latLng = parseFloat("" + props.device.lat)
+    && parseFloat("" + props.device.lng);
   const description = isMobile()
     ? Content.SHOW_3D_VIEW_DESCRIPTION_MOBILE
     : Content.SHOW_3D_VIEW_DESCRIPTION_DESKTOP;
@@ -99,7 +103,7 @@ export const ThreeDGardenToggle = (props: ThreeDGardenToggleProps) => {
             : "fa-angle-double-up",
         ].join(" ")} />
       </button>}
-    {threeDGarden &&
+    {threeDGarden && latLng &&
       <button className={"fb-button gray"}
         title={realTime ? t("daytime") : t("realtime")}
         onClick={() => dispatch({
@@ -113,7 +117,7 @@ export const ThreeDGardenToggle = (props: ThreeDGardenToggleProps) => {
             : "fa-repeat",
         ].join(" ")} />
       </button>}
-    {threeDGarden &&
+    {threeDGarden && latLng &&
       <button className={"fb-button gray"}
         title={t("minus hour")}
         onClick={() => dispatch({
@@ -122,7 +126,7 @@ export const ThreeDGardenToggle = (props: ThreeDGardenToggleProps) => {
         })}>
         <i className={"fa fa-minus"} />
       </button>}
-    {threeDGarden &&
+    {threeDGarden && latLng &&
       <button className={"fb-button gray"}
         title={t("reset hour")}
         onClick={() => dispatch({
@@ -131,7 +135,7 @@ export const ThreeDGardenToggle = (props: ThreeDGardenToggleProps) => {
         })}>
         <i className={"fa fa-clock-o"} />
       </button>}
-    {threeDGarden &&
+    {threeDGarden && latLng &&
       <button className={"fb-button gray"}
         title={t("plus hour")}
         onClick={() => dispatch({

@@ -184,4 +184,11 @@ describe("<GardenModel />", () => {
       const { container } = render(<GardenModel {...p} />);
       expect(container.innerHTML).toContain(expectedClass);
     });
+
+  it("shows night sky", () => {
+    const p = fakeProps();
+    p.config.sun = 0;
+    const { container } = render(<GardenModel {...p} />);
+    expect(container.innerHTML).toContain("black");
+  });
 });

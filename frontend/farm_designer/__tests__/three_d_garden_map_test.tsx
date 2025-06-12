@@ -137,6 +137,20 @@ describe("<ThreeDGardenMap />", () => {
     }, {});
   });
 
+  it("converts props: indoor", () => {
+    const p = fakeProps();
+    p.device.indoor = true;
+    p.plants = [];
+    render(<ThreeDGardenMap {...p} />);
+    expect(ThreeDGarden).toHaveBeenCalledWith({
+      config: expect.objectContaining({ scene: "Lab" }),
+      threeDPlants: [],
+      addPlantProps: expect.any(Object),
+      mapPoints: [],
+      weeds: [],
+    }, {});
+  });
+
   it("converts props: real time", () => {
     const p = fakeProps();
     p.designer.threeDRealTime = true;
@@ -147,8 +161,8 @@ describe("<ThreeDGardenMap />", () => {
     expect(ThreeDGarden).toHaveBeenCalledWith({
       config: expect.objectContaining({
         sunInclination: 29,
-        sunAzimuth: 56,
-        sun: 50,
+        sunAzimuth: 146,
+        sun: 75,
       }),
       threeDPlants: [],
       addPlantProps: expect.any(Object),
@@ -168,7 +182,7 @@ describe("<ThreeDGardenMap />", () => {
       config: expect.objectContaining({
         sunInclination: 1,
         sunAzimuth: 1,
-        sun: 50,
+        sun: 75,
       }),
       threeDPlants: [],
       addPlantProps: expect.any(Object),

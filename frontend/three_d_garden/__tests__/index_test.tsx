@@ -16,6 +16,7 @@ import { Path } from "../../internal_urls";
 import { Actions } from "../../constants";
 import { setWebAppConfigValue } from "../../config_storage/actions";
 import { BooleanSetting } from "../../session_keys";
+import { fakeDevice } from "../../__test_support__/resource_index_builder";
 
 describe("<ThreeDGarden />", () => {
   const fakeProps = (): ThreeDGardenProps => ({
@@ -36,6 +37,7 @@ describe("<ThreeDGardenToggle />", () => {
   const fakeProps = (): ThreeDGardenToggleProps => ({
     navigate: jest.fn(),
     dispatch: jest.fn(),
+    device: fakeDevice().body,
     designer: fakeDesignerState(),
     threeDGarden: true,
   });
@@ -106,6 +108,8 @@ describe("<ThreeDGardenToggle />", () => {
 
   it("toggles real time: false", () => {
     const p = fakeProps();
+    p.device.lat = 1;
+    p.device.lng = 1;
     render(<ThreeDGardenToggle {...p} />);
     const topDownViewButton = screen.getByTitle("daytime");
     fireEvent.click(topDownViewButton);
@@ -117,6 +121,8 @@ describe("<ThreeDGardenToggle />", () => {
 
   it("toggles real time: true", () => {
     const p = fakeProps();
+    p.device.lat = 1;
+    p.device.lng = 1;
     p.designer.threeDRealTime = false;
     render(<ThreeDGardenToggle {...p} />);
     const topDownViewButton = screen.getByTitle("realtime");
@@ -129,6 +135,8 @@ describe("<ThreeDGardenToggle />", () => {
 
   it("decreases time offset", () => {
     const p = fakeProps();
+    p.device.lat = 1;
+    p.device.lng = 1;
     render(<ThreeDGardenToggle {...p} />);
     const topDownViewButton = screen.getByTitle("minus hour");
     fireEvent.click(topDownViewButton);
@@ -140,6 +148,8 @@ describe("<ThreeDGardenToggle />", () => {
 
   it("increases time offset", () => {
     const p = fakeProps();
+    p.device.lat = 1;
+    p.device.lng = 1;
     render(<ThreeDGardenToggle {...p} />);
     const topDownViewButton = screen.getByTitle("plus hour");
     fireEvent.click(topDownViewButton);
@@ -151,6 +161,8 @@ describe("<ThreeDGardenToggle />", () => {
 
   it("resets time offset", () => {
     const p = fakeProps();
+    p.device.lat = 1;
+    p.device.lng = 1;
     render(<ThreeDGardenToggle {...p} />);
     const topDownViewButton = screen.getByTitle("reset hour");
     fireEvent.click(topDownViewButton);

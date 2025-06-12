@@ -35,13 +35,12 @@ const DEFAULTS: Record<string, number> = {
   eventDebug: 0,
   cableDebug: 0,
   lightsDebug: 0,
-  ambient: 50,
+  ambient: 75,
   heading: 0,
   sunAzimuth: 230,
   sunInclination: 140,
   bounds: 0,
   grid: 1,
-
 };
 
 export const namespace3D = (key: string): string => "3D_" + key;

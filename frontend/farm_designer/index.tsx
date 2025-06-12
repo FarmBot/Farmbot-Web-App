@@ -307,6 +307,7 @@ export class RawFarmDesigner
       <ThreeDGardenToggle
         navigate={this.navigate}
         dispatch={this.props.dispatch}
+        device={this.props.device}
         designer={this.props.designer}
         threeDGarden={threeDGarden} />
     </div>;

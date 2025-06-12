@@ -114,6 +114,7 @@ describe("<ZoomControls />", () => {
 const fakeProps = (): SettingsSubMenuProps => ({
   dispatch: jest.fn(),
   getConfigValue: () => true,
+  firmwareConfig: fakeFirmwareConfig().body,
 });
 
 describe("<PointsSubMenu />", () => {

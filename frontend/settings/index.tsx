@@ -160,7 +160,8 @@ export const RawDesignerSettings = (props: DesignerSettingsProps) => {
         dispatch={dispatch}
         farmwareEnvs={props.farmwareEnvs} />
       <Designer {...commonProps}
-        getConfigValue={getConfigValue} />
+        getConfigValue={getConfigValue}
+        firmwareConfig={props.firmwareConfig} />
       <ThreeDSettings {...commonProps}
         distanceIndicator={props.distanceIndicator}
         farmwareEnvs={props.farmwareEnvs} />

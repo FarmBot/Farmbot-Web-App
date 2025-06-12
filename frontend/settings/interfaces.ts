@@ -6,6 +6,7 @@ import {
 import { ResourceIndex } from "../resources/interfaces";
 import {
   TaggedDevice, Alert, TaggedUser, TaggedFarmwareEnv, TaggedWizardStepResult,
+  McuParams,
 } from "farmbot";
 import { SettingsPanelState, TimeSettings } from "../interfaces";
 import { DeviceSetting } from "../constants";
@@ -42,6 +43,7 @@ export interface DesignerSettingsSectionProps {
   dispatch: Function;
   settingsPanelState: SettingsPanelState;
   getConfigValue: GetWebAppConfigValue;
+  firmwareConfig: McuParams | undefined;
 }
 
 export interface SettingDescriptionProps {

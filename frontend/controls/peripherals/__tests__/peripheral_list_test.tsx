@@ -16,6 +16,7 @@ import {
 } from "farmbot";
 import { PeripheralListProps } from "../interfaces";
 import { Slider } from "@blueprintjs/core";
+import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 
 describe("<PeripheralList />", () => {
   const fakeProps = (): PeripheralListProps => {
@@ -55,7 +56,7 @@ describe("<PeripheralList />", () => {
       }
     };
     return {
-      dispatch: jest.fn(),
+      dispatch: mockDispatch(),
       peripherals,
       pins,
       disabled: false,

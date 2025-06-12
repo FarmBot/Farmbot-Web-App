@@ -17,6 +17,7 @@ import {
 import { BooleanSetting } from "../../session_keys";
 import { DeviceSetting } from "../../constants";
 import { setWebAppConfigValue } from "../../config_storage/actions";
+import { fakeFirmwareConfig } from "../../__test_support__/fake_state/resources";
 
 describe("<PlainDesignerSettings />", () => {
   const fakeProps = (): DesignerSettingsPropsBase => ({
@@ -25,19 +26,28 @@ describe("<PlainDesignerSettings />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<div>{PlainDesignerSettings(fakeProps())}</div>);
+    const firmwareConfig = fakeFirmwareConfig().body;
+    const wrapper = mount(<div>
+      {PlainDesignerSettings(fakeProps(), firmwareConfig)}
+    </div>);
     expect(wrapper.text().toLowerCase()).toContain("plant animations");
   });
 
   it("doesn't call callback", () => {
-    const wrapper = mount(<div>{PlainDesignerSettings(fakeProps())}</div>);
+    const firmwareConfig = fakeFirmwareConfig().body;
+    const wrapper = mount(<div>
+      {PlainDesignerSettings(fakeProps(), firmwareConfig)}
+    </div>);
     expect(wrapper.find("label").at(0).text()).toContain("animations");
     wrapper.find("button").at(0).simulate("click");
     expect(resetVirtualTrail).not.toHaveBeenCalled();
   });
 
   it("calls callback", () => {
-    const wrapper = mount(<div>{PlainDesignerSettings(fakeProps())}</div>);
+    const firmwareConfig = fakeFirmwareConfig().body;
+    const wrapper = mount(<div>
+      {PlainDesignerSettings(fakeProps(), firmwareConfig)}
+    </div>);
     expect(wrapper.find("label").at(1).text()).toContain("Trail");
     wrapper.find("button").at(1).simulate("click");
     expect(resetVirtualTrail).toHaveBeenCalled();
