@@ -20,6 +20,7 @@ import { isPeripheralActiveFunc } from "./map/layers/farmbot/bot_peripherals";
 import SunCalc from "suncalc";
 import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
 import moment from "moment";
+import { SCENES } from "../settings/three_d_settings";
 
 export interface ThreeDGardenMapProps {
   botSize: BotSize;
@@ -102,7 +103,7 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   config.bounds = !!getValue("bounds");
   config.grid = !!getValue("grid");
 
-  config.scene = props.device.indoor ? "Lab" : "Outdoor";
+  config.scene = SCENES[getValue("scene")];
   config.people = false;
 
   config.north = true;

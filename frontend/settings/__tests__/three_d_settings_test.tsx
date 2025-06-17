@@ -101,4 +101,20 @@ describe("<ThreeDSettings />", () => {
     expect(edit).toHaveBeenCalledWith(fakeEnv, { value: "0" });
     expect(save).toHaveBeenCalledWith(fakeEnv.uuid);
   });
+
+  it("changes scene", () => {
+    const p = fakeProps();
+    const fakeEnv = fakeFarmwareEnv();
+    fakeEnv.body.key = namespace3D("scene");
+    fakeEnv.body.value = "1";
+    p.farmwareEnvs = [fakeEnv];
+    render(<ThreeDSettings {...p} />);
+    const toggle = screen.getByText("Lab");
+    fireEvent.click(toggle);
+    const dropdownItems = screen.getAllByRole("menuitem");
+    fireEvent.click(dropdownItems[0]);
+    expect(initSave).not.toHaveBeenCalled();
+    expect(edit).toHaveBeenCalledWith(fakeEnv, { value: "0" });
+    expect(save).toHaveBeenCalledWith(fakeEnv.uuid);
+  });
 });

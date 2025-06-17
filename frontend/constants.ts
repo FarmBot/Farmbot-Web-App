@@ -647,6 +647,9 @@ export namespace ToolTips {
     trim(`Direction your device is facing, as an offset in degrees from
     north. (default: 0)`);
 
+  export const THREE_D_ENVIRONMENT =
+    trim(`3D Scene. (default: "Outdoor")`);
+
   // Tools
   export const WATER_FLOW_RATE =
     trim(`To calculate **WATER FLOW RATE**, hold a measuring cup below the
@@ -2207,6 +2210,7 @@ export enum DeviceSetting {
   bounds = `Bounds`,
   grid = `Grid`,
   heading = `Heading`,
+  environment = `Environment`,
 
   // Map
   showPlants = `Plants`,

@@ -92,6 +92,7 @@ describe("<ThreeDGardenMap />", () => {
     expectedConfig.threeAxes = true;
     expectedConfig.sunAzimuth = 1;
     expectedConfig.sunInclination = 1;
+    expectedConfig.scene = "Lab";
 
     expect(ThreeDGarden).toHaveBeenCalledWith({
       config: expectedConfig,

@@ -4,7 +4,9 @@ import { Highlight } from "./maybe_highlight";
 import { Actions, DeviceSetting, ToolTips } from "../constants";
 import { Header } from "./hardware_settings/header";
 import { Collapse } from "@blueprintjs/core";
-import { BlurableInput, Help, Row, ToggleButton } from "../ui";
+import {
+  BlurableInput, DropDownItem, FBSelect, Help, Row, ToggleButton,
+} from "../ui";
 import { t } from "../i18next_wrapper";
 import { TaggedFarmwareEnv } from "farmbot";
 import { isUndefined } from "lodash";
@@ -41,6 +43,13 @@ const DEFAULTS: Record<string, number> = {
   sunInclination: 140,
   bounds: 0,
   grid: 1,
+  scene: 0,
+};
+
+export const SCENES: Record<number, string> = {
+  0: "Outdoor",
+  1: "Lab",
+  2: "Greenhouse",
 };
 
 export const namespace3D = (key: string): string => "3D_" + key;
@@ -79,6 +88,7 @@ interface ConfigProps {
   getValue(key: string): number;
   findOrCreate(key: string, value: string): void;
   isToggle?: boolean;
+  isScene?: boolean;
 }
 
 const Config = (props: ConfigProps) => {
@@ -102,12 +112,17 @@ const Config = (props: ConfigProps) => {
             payload: distanceIndicator ? "" : configKey,
           })} />
       </div>
-      {props.isToggle
-        ? <ToggleButton
+      {props.isToggle &&
+        <ToggleButton
           className={modifiedClassName}
           toggleValue={value}
-          toggleAction={() => action(value ? "0" : "1")} />
-        :
+          toggleAction={() => action(value ? "0" : "1")} />}
+      {props.isScene &&
+        <FBSelect
+          list={Object.values(SCENE_DDIS)}
+          selectedItem={SCENE_DDIS[value]}
+          onChange={ddi => action("" + ddi.value)} />}
+      {!props.isToggle && !props.isScene &&
         <BlurableInput
           type="number"
           wrapperClassName={modifiedClassName}
@@ -116,6 +131,12 @@ const Config = (props: ConfigProps) => {
     </Row>
   </Highlight>;
 };
+
+const SCENE_DDIS: Record<number, DropDownItem> = Object.entries(SCENES)
+  .reduce((acc, [key, label]) => {
+    acc[Number(key)] = { label, value: Number(key) };
+    return acc;
+  }, {} as Record<number, DropDownItem>);
 
 export const ThreeDSettings = (props: ThreeDSettingsProps) => {
   const { dispatch, distanceIndicator } = props;
@@ -184,6 +205,11 @@ export const ThreeDSettings = (props: ThreeDSettingsProps) => {
         tooltip={ToolTips.THREE_D_HEADING}
         setting={DeviceSetting.heading}
         configKey={"heading"} />
+      <Config {...common}
+        tooltip={ToolTips.THREE_D_ENVIRONMENT}
+        setting={DeviceSetting.environment}
+        isScene={true}
+        configKey={"scene"} />
     </Collapse>
   </Highlight>;
 };
