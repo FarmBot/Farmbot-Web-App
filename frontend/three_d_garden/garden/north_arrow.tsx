@@ -14,6 +14,7 @@ export const NorthArrow = (props: NorthArrowProps) => {
     bedWidthOuter, bedLengthOuter, bedHeight, bedZOffset, heading,
   } = props.config;
   return <Group name={"north-arrow"}
+    visible={props.config.north}
     scale={1.2}
     position={[
       threeSpace(0, bedLengthOuter),
@@ -24,7 +25,7 @@ export const NorthArrow = (props: NorthArrowProps) => {
     <Extrude
       args={[
         northArrowShape,
-        { steps: 1, depth: 25 },
+        { steps: 1, depth: 5 },
       ]}>
       <MeshPhongMaterial color={"silver"} />
     </Extrude>

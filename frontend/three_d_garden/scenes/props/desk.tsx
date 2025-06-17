@@ -29,7 +29,7 @@ export const Desk = (props: DeskProps) => {
   screenTexture.rotation = Math.PI / 2;
   screenTexture.wrapT = RepeatWrapping;
   return <Group name={"desk"}
-    visible={props.activeFocus == ""}
+    visible={props.config.desk && props.activeFocus == ""}
     position={[
       threeSpace(config.bedLengthOuter + deskOffset, config.bedLengthOuter),
       threeSpace(config.bedWidthOuter / 2, config.bedWidthOuter),

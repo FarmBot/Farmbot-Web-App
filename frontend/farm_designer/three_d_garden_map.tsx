@@ -105,6 +105,9 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   config.scene = props.device.indoor ? "Lab" : "Outdoor";
   config.people = false;
 
+  config.north = true;
+  config.desk = false;
+
   const latitude = parseFloat("" + props.device.lat);
   const longitude = parseFloat("" + props.device.lng);
   if (props.designer.threeDRealTime && !props.device.indoor &&

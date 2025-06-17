@@ -85,6 +85,8 @@ export interface Config {
   light: boolean;
   vacuum: boolean;
   rotary: boolean;
+  north: boolean;
+  desk: boolean;
 }
 
 export const INITIAL: Config = {
@@ -174,6 +176,8 @@ export const INITIAL: Config = {
   light: false,
   vacuum: false,
   rotary: false,
+  north: false,
+  desk: true,
 };
 
 export const STRING_KEYS = [
@@ -199,7 +203,7 @@ export const BOOLEAN_KEYS = [
   "eventDebug", "cableDebug", "zoomBeaconDebug", "lightsDebug",
   "animate", "negativeZ",
   "waterFlow", "exaggeratedZ", "showSoilPoints", "urlParamAutoAdd",
-  "light", "vacuum", "rotary",
+  "light", "vacuum", "rotary", "north", "desk",
 ];
 
 export const PRESETS: Record<string, Config> = {
@@ -324,6 +328,8 @@ export const PRESETS: Record<string, Config> = {
     zoomBeaconDebug: false,
     animate: true,
     distanceIndicator: "",
+    north: false,
+    desk: false,
   },
   "Maximal": {
     ...INITIAL,
@@ -388,6 +394,8 @@ export const PRESETS: Record<string, Config> = {
     vacuum: true,
     rotary: true,
     exaggeratedZ: true,
+    north: true,
+    desk: true,
   },
 };
 
@@ -413,7 +421,7 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "animate", "distanceIndicator", "kitVersion", "negativeZ", "waterFlow",
   "light", "vacuum", "rotary",
   "exaggeratedZ", "soilSurface", "soilSurfaceVariance",
-  "showSoilPoints", "urlParamAutoAdd",
+  "showSoilPoints", "urlParamAutoAdd", "north", "desk",
 ];
 
 export const modifyConfig = (config: Config, update: Partial<Config>) => {
