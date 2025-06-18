@@ -27,6 +27,29 @@ nav {
   }
 }
 
+.time-travel-button {
+  font-style: bold;
+  img {
+    height: 1.5rem;
+    width: 1.5rem;
+    filter: invert(1) sepia(1) saturate(100) hue-rotate(-25deg);
+    opacity: 0.8;
+    margin-bottom: 0.1rem;
+  }
+  &.active {
+    p {
+      color: $orange !important;
+    }
+  }
+}
+
+.time-travel {
+  text-align: center;
+  button {
+    float: none;
+  }
+}
+
 .nav-coordinates {
   font-style: italic;
   img {
@@ -147,6 +170,7 @@ nav {
 .nav-right {
   height: 5rem;
   overflow: hidden;
+  .time-travel-button,
   .nav-coordinates,
   .jobs-button,
   .setup-button,
@@ -181,6 +205,7 @@ nav {
       }
     }
   }
+  .time-travel-button,
   .nav-coordinates {
     p {
       display: inline;

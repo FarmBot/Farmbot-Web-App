@@ -73,9 +73,6 @@ export const ThreeDGardenToggle = (props: ThreeDGardenToggleProps) => {
   const { navigate, dispatch, threeDGarden } = props;
   const topDown = props.designer.threeDTopDownView;
   const exaggeratedZ = props.designer.threeDExaggeratedZ;
-  const realTime = props.designer.threeDRealTime;
-  const latLng = parseFloat("" + props.device.lat)
-    && parseFloat("" + props.device.lng);
   const description = isMobile()
     ? Content.SHOW_3D_VIEW_DESCRIPTION_MOBILE
     : Content.SHOW_3D_VIEW_DESCRIPTION_DESKTOP;
@@ -102,47 +99,6 @@ export const ThreeDGardenToggle = (props: ThreeDGardenToggleProps) => {
             ? "fa-angle-up"
             : "fa-angle-double-up",
         ].join(" ")} />
-      </button>}
-    {threeDGarden && latLng &&
-      <button className={"fb-button gray"}
-        title={realTime ? t("daytime") : t("realtime")}
-        onClick={() => dispatch({
-          type: Actions.TOGGLE_3D_REAL_TIME,
-          payload: !realTime,
-        })}>
-        <i className={[
-          "fa",
-          realTime
-            ? "fa-sun-o"
-            : "fa-repeat",
-        ].join(" ")} />
-      </button>}
-    {threeDGarden && latLng &&
-      <button className={"fb-button gray"}
-        title={t("minus hour")}
-        onClick={() => dispatch({
-          type: Actions.CHANGE_3D_TIME,
-          payload: -3600,
-        })}>
-        <i className={"fa fa-minus"} />
-      </button>}
-    {threeDGarden && latLng &&
-      <button className={"fb-button gray"}
-        title={t("reset hour")}
-        onClick={() => dispatch({
-          type: Actions.RESET_3D_TIME,
-          payload: 0,
-        })}>
-        <i className={"fa fa-clock-o"} />
-      </button>}
-    {threeDGarden && latLng &&
-      <button className={"fb-button gray"}
-        title={t("plus hour")}
-        onClick={() => dispatch({
-          type: Actions.CHANGE_3D_TIME,
-          payload: 3600,
-        })}>
-        <i className={"fa fa-plus"} />
       </button>}
     {threeDGarden &&
       <button className={"fb-button gray"}

@@ -35,6 +35,7 @@ import { movementPercentRemaining } from "../farm_designer/move_to";
 import { isMobile } from "../screen_size";
 import { NavigationContext } from "../routes_helpers";
 import { NavigateFunction } from "react-router";
+import { TimeTravelContent, TimeTravelTarget } from "../three_d_garden/time_travel";
 
 export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
   state: NavBarState = {
@@ -73,6 +74,27 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
 
   togglePopup = (payload: keyof PopupsState) => () =>
     this.props.dispatch({ type: Actions.TOGGLE_POPUP, payload });
+
+  TimeTravel = () => {
+    const isOpen = this.props.appState.popups.timeTravel;
+    const threeDGarden = !!this.props.getConfigValue(BooleanSetting.three_d_garden);
+    const common = {
+      device: this.props.device.body,
+      threeDGarden,
+      designer: this.props.designer,
+    };
+    return <div className={"nav-popup-button-wrapper"}>
+      <Popover position={Position.BOTTOM_RIGHT}
+        isOpen={isOpen}
+        enforceFocus={false}
+        target={<TimeTravelTarget {...common}
+          timeSettings={this.props.timeSettings}
+          isOpen={isOpen}
+          click={this.togglePopup("timeTravel")} />}
+        content={<TimeTravelContent {...common}
+          dispatch={this.props.dispatch} />} />
+    </div>;
+  };
 
   Coordinates = () => {
     const { hardware } = this.props.bot;
@@ -308,6 +330,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
                   <this.SetupButton />
                   <this.JobsButton />
                   <this.Coordinates />
+                  <this.TimeTravel />
                 </ErrorBoundary>
               </div>
             </div>

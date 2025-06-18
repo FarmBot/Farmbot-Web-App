@@ -19,8 +19,8 @@ import { PeripheralValues } from "./map/layers/farmbot/bot_trail";
 import { isPeripheralActiveFunc } from "./map/layers/farmbot/bot_peripherals";
 import SunCalc from "suncalc";
 import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
-import moment from "moment";
 import { SCENES } from "../settings/three_d_settings";
+import { get3DTime, latLng } from "../three_d_garden/time_travel";
 
 export interface ThreeDGardenMapProps {
   botSize: BotSize;
@@ -109,12 +109,9 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   config.north = true;
   config.desk = false;
 
-  const latitude = parseFloat("" + props.device.lat);
-  const longitude = parseFloat("" + props.device.lng);
-  if (props.designer.threeDRealTime && !props.device.indoor &&
-    isFinite(latitude) && isFinite(longitude)) {
-    const timeOffsetSeconds = props.designer.threeDTimeOffset;
-    const date = moment().add(timeOffsetSeconds, "seconds").toDate();
+  const { latitude, longitude, valid } = latLng(props.device);
+  if (props.designer.threeDRealTime && !props.device.indoor && valid) {
+    const date = get3DTime(props.designer).toDate();
     const sunPosition = SunCalc.getPosition(date, latitude, longitude);
     const sunAzimuth = sunPosition.azimuth * (180 / Math.PI);
     config.sunAzimuth = Math.round((sunAzimuth - config.heading + 90) % 360);

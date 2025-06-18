@@ -106,6 +106,7 @@ export interface ControlsState {
 }
 
 export interface PopupsState {
+  timeTravel: boolean;
   controls: boolean;
   jobs: boolean;
   connectivity: boolean;

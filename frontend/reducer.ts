@@ -99,6 +99,7 @@ export const emptyState = (): AppState => {
       distance: { x: 0, y: 0, z: 0 },
     },
     popups: {
+      timeTravel: false,
       controls: false,
       jobs: false,
       connectivity: false,
@@ -183,6 +184,7 @@ export const appReducer =
       })
     .add<keyof PopupsState>(Actions.TOGGLE_POPUP, (s, { payload }) => {
       const newState = !s.popups[payload];
+      s.popups.timeTravel = false;
       s.popups.controls = false;
       s.popups.jobs = false;
       s.popups.connectivity = false;
@@ -190,6 +192,7 @@ export const appReducer =
       return s;
     })
     .add<keyof PopupsState>(Actions.OPEN_POPUP, (s, { payload }) => {
+      s.popups.timeTravel = false;
       s.popups.controls = false;
       s.popups.jobs = false;
       s.popups.connectivity = false;
@@ -197,6 +200,7 @@ export const appReducer =
       return s;
     })
     .add<undefined>(Actions.CLOSE_POPUP, (s) => {
+      s.popups.timeTravel = false;
       s.popups.controls = false;
       s.popups.jobs = false;
       s.popups.connectivity = false;
