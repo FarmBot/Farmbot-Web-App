@@ -43,6 +43,7 @@ export interface GardenModelProps {
   weeds?: TaggedWeedPointer[];
   toolSlots?: SlotWithTool[];
   mountedToolName?: string | undefined;
+  startTimeRef?: React.RefObject<number>;
 }
 
 // eslint-disable-next-line complexity
@@ -104,7 +105,7 @@ export const GardenModel = (props: GardenModelProps) => {
       config={config}
       activeFocus={props.activeFocus}
       setActiveFocus={props.setActiveFocus} />}
-    <Sky sunPosition={sunPosition(config)} />
+    <Sky sunPosition={sunPosition(config.sunInclination, config.sunAzimuth)} />
     <Sphere args={[30000, 8, 16]}>
       <MeshBasicMaterial color={config.sun ? "#59d8ff" : "black"} side={BackSide} />
     </Sphere>
@@ -129,7 +130,8 @@ export const GardenModel = (props: GardenModelProps) => {
       minDistance={500} maxDistance={12000} />
     <AxesHelper args={[5000]} visible={config.threeAxes} />
     {config.viewCube && <GizmoHelper><GizmoViewcube /></GizmoHelper>}
-    <Sun config={config} />
+    <Sun config={config}
+      startTimeRef={props.startTimeRef} />
     <AmbientLight intensity={config.ambient / 100} />
     <Ground config={config} />
     <Clouds config={config} />
@@ -175,6 +177,7 @@ export const GardenModel = (props: GardenModelProps) => {
           config={config}
           hoveredPlant={hoveredPlant}
           getZ={getZ}
+          startTimeRef={props.startTimeRef}
           dispatch={dispatch} />)}
     </Group>
     <Group name={"points"}

@@ -36,6 +36,14 @@ describe("<PublicOverlay />", () => {
     });
   });
 
+  it("changes preset with ref", () => {
+    const p = fakeProps();
+    p.startTimeRef = { current: 0 };
+    const wrapper = mount(<PublicOverlay {...p} />);
+    wrapper.find("button").at(1).simulate("click");
+    expect(p.startTimeRef.current).not.toEqual(0);
+  });
+
   it("doesn't allow mobile XL", () => {
     const p = fakeProps();
     p.config.sizePreset = "Genesis XL";
@@ -124,6 +132,16 @@ describe("<PrivateOverlay />", () => {
       y: 100,
       z: 50,
     });
+    expect(p.setConfig).not.toHaveBeenCalledWith(p.config);
+  });
+
+  it("changes value: radio with ref", () => {
+    const p = fakeProps();
+    p.startTimeRef = { current: 0 };
+    const wrapper = mount(<PrivateOverlay {...p} />);
+    wrapper.find({ type: "radio" }).at(2).simulate("change",
+      { target: { value: "Jr" } });
+    expect(p.startTimeRef.current).not.toEqual(0);
     expect(p.setConfig).not.toHaveBeenCalledWith(p.config);
   });
 

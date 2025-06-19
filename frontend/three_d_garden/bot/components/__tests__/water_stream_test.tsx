@@ -6,6 +6,7 @@ import {
 
 let frameCallback: (state: unknown, delta: number) => void;
 jest.mock("@react-three/fiber", () => ({
+  addEffect: jest.fn(),
   useFrame: jest.fn((callback) => {
     frameCallback = callback;
   }),

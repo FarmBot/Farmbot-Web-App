@@ -1,5 +1,5 @@
 import React from "react";
-import { Config, seasonProperties } from "../config";
+import { Config, getSeasonProperties } from "../config";
 import { Cloud, Clouds as DreiClouds } from "@react-three/drei";
 import { ASSETS, RenderOrder } from "../constants";
 
@@ -9,7 +9,7 @@ export interface CloudsProps {
 
 export const Clouds = (props: CloudsProps) => {
   const { config } = props;
-  const sunParams = seasonProperties(config.sun / 100);
+  const sunParams = getSeasonProperties(config, "Summer");
   return <DreiClouds name={"clouds"} visible={config.clouds}
     renderOrder={RenderOrder.clouds}
     texture={ASSETS.textures.cloud}>
@@ -23,7 +23,7 @@ export const Clouds = (props: CloudsProps) => {
       color="#ccc"
       growth={400}
       speed={.1}
-      opacity={(sunParams[config.plants] || sunParams.Summer).cloudOpacity}
+      opacity={sunParams.cloudOpacity}
       fade={5000} />
   </DreiClouds>;
 };

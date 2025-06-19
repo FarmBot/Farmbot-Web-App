@@ -1,6 +1,7 @@
 import { clone } from "lodash";
 import {
-  detailLevels, INITIAL, modifyConfig, modifyConfigsFromUrlParams,
+  detailLevels, getSeasonProperties, INITIAL, modifyConfig,
+  modifyConfigsFromUrlParams,
 } from "../config";
 
 describe("modifyConfig()", () => {
@@ -82,5 +83,13 @@ describe("detailLevels()", () => {
     const config = clone(INITIAL);
     config.lowDetail = true;
     expect(detailLevels(config)).toEqual([0, 0]);
+  });
+});
+
+describe("getSeasonProperties()", () => {
+  it("returns params", () => {
+    const config = clone(INITIAL);
+    config.plants = "Random";
+    expect(getSeasonProperties(config, "Summer").cloudOpacity).toEqual(0);
   });
 });

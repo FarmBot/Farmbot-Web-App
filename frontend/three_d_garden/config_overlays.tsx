@@ -15,12 +15,14 @@ export interface OverlayProps {
   setToolTip(tooltip: ToolTip): void;
   activeFocus: string;
   setActiveFocus(focus: string): void;
+  startTimeRef?: React.RefObject<number>;
 }
 
 interface SectionProps {
   title: string;
   configKey: keyof Config;
   options: Record<string, string>;
+  startTimeRef?: React.RefObject<number>;
 }
 
 export const PublicOverlay = (props: OverlayProps) => {
@@ -43,6 +45,9 @@ export const PublicOverlay = (props: OverlayProps) => {
           const update = { [configKey]: label };
           return <button key={preset} className={className}
             onClick={() => {
+              if (props.startTimeRef) {
+                props.startTimeRef.current = performance.now() / 1000;
+              }
               clearTimeout(toolTip.timeoutId);
               if (disabled) {
                 const text =
@@ -76,6 +81,7 @@ export const PublicOverlay = (props: OverlayProps) => {
         <Section
           title={"Season"}
           configKey={"plants"}
+          startTimeRef={props.startTimeRef}
           options={{
             "winter": "Winter",
             "spring": "Spring",
@@ -223,6 +229,7 @@ const Toggle = (props: ToggleProps) => {
     <input
       type={"checkbox"}
       checked={!!config[configKey]}
+      title={configKey}
       onChange={e => {
         const newValue = e.target.checked;
         const update = { [configKey]: newValue };
@@ -241,6 +248,9 @@ interface RadioProps extends OverlayProps {
 const Radio = (props: RadioProps) => {
   const { config, setConfig, configKey, options } = props;
   const change = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (props.startTimeRef) {
+      props.startTimeRef.current = performance.now() / 1000;
+    }
     const newValue = e.target.value;
     const update = { [configKey]: newValue };
     setConfig(modifyConfig(config, update));
@@ -342,7 +352,7 @@ export const PrivateOverlay = (props: OverlayProps) => {
       <Slider {...common} configKey={"soilSurfaceVariance"} min={0} max={1000} />
       <Toggle {...common} configKey={"showSoilPoints"} />
       <Toggle {...common} configKey={"exaggeratedZ"} />
-      <Radio {...common} configKey={"plants"}
+      <Radio {...common} configKey={"plants"} startTimeRef={props.startTimeRef}
         options={["Winter", "Spring", "Summer", "Fall", "Random", "None"]} />
       <label>{"Camera"}</label>
       <Toggle {...common} configKey={"perspective"} />
@@ -377,6 +387,7 @@ export const PrivateOverlay = (props: OverlayProps) => {
       <Toggle {...common} configKey={"zoomBeaconDebug"} />
       <Toggle {...common} configKey={"lightsDebug"} />
       <Toggle {...common} configKey={"animate"} />
+      <Toggle {...common} configKey={"animateSeasons"} />
       <Toggle {...common} configKey={"config"} />
     </details>
   </div>;

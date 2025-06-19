@@ -1,18 +1,31 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { Promo } from "../promo";
 
 describe("<Promo />", () => {
   it("renders", () => {
     console.error = jest.fn();
-    const wrapper = mount(<Promo />);
-    expect(wrapper.html()).toContain("three-d-garden");
+    const { container } = render(<Promo />);
+    expect(container).toContainHTML("three-d-garden");
+  });
+
+  it("renders: animated seasons", () => {
+    console.error = jest.fn();
+    const { container } = render(<Promo />);
+    expect(container).toContainHTML("three-d-garden");
+    const configBtn = screen.getByTitle("config");
+    fireEvent.click(configBtn);
+    const config = screen.getByTitle("animateSeasons");
+    jest.useFakeTimers();
+    fireEvent.click(config);
+    jest.runAllTimers();
   });
 
   it("opens config menu", () => {
-    const wrapper = mount(<Promo />);
-    expect(wrapper.html()).not.toContain("all-configs");
-    wrapper.find(".gear").simulate("click");
-    expect(wrapper.html()).toContain("all-configs");
+    const { container } = render(<Promo />);
+    expect(container).not.toContainHTML("all-configs");
+    const configBtn = screen.getByTitle("config");
+    fireEvent.click(configBtn);
+    expect(container).toContainHTML("all-configs");
   });
 });

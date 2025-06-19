@@ -20,9 +20,10 @@ export const Mesh = (props: ThreeElements["mesh"]) =>
   // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
   <mesh {...props} />;
 
-export const PointLight = (props: ThreeElements["pointLight"]) =>
-  // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
-  <pointLight {...props} />;
+export const PointLight =
+  React.forwardRef((props: ThreeElements["pointLight"], ref) =>
+    // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
+    <pointLight ref={ref} {...props} />);
 
 export const MeshPhongMaterial = (props: ThreeElements["meshPhongMaterial"]) =>
   // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
@@ -52,3 +53,8 @@ export const SpotLight =
   React.forwardRef((props: ThreeElements["spotLight"], ref) =>
     // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
     <spotLight ref={ref} {...props} />);
+
+export const MeshStandardMaterial =
+  React.forwardRef((props: ThreeElements["meshStandardMaterial"], ref) =>
+    // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
+    <meshStandardMaterial ref={ref} {...props} />);

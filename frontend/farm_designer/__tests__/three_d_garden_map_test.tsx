@@ -99,7 +99,9 @@ describe("<ThreeDGardenMap />", () => {
       threeDPlants: [{
         id: expect.any(Number),
         icon: expect.any(String),
+        key: "",
         label: "Strawberry Plant 1",
+        seed: 0,
         size: 50,
         spread: 0,
         x: 101,
@@ -271,7 +273,9 @@ describe("convertPlants()", () => {
     expect(convertedPlants).toEqual([{
       icon: CROPS.spinach.icon,
       id: expect.any(Number),
+      key: "",
       label: "Spinach",
+      seed: 0,
       size: 50,
       spread: 0,
       x: 110,
@@ -280,7 +284,9 @@ describe("convertPlants()", () => {
     {
       icon: CROPS["generic-plant"].icon,
       id: expect.any(Number),
+      key: "",
       label: "Unknown",
+      seed: 0,
       size: 50,
       spread: 0,
       x: 1010,

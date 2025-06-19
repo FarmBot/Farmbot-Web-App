@@ -601,6 +601,7 @@ jest.mock("@react-three/drei", () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (useGLTF as any).preload = jest.fn();
   return {
+    ...jest.requireActual("@react-three/drei"),
     useGLTF,
     RoundedBox: ({ name }: { name: string }) =>
       <div className={"cylinder"}>{name}</div>,
@@ -611,9 +612,7 @@ jest.mock("@react-three/drei", () => {
       <div className={"cylinder"}>{name}</div>,
     Torus: ({ name }: { name: string }) =>
       <div className={"torus"}>{name}</div>,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    Sphere: (props: any) =>
-      <div className={"sphere" + props.name} {...props}>{props.children}</div>,
+    // Sphere not mocked
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Box: (props: any) =>
       <div className={"box" + props.name} {...props}>{props.children}</div>,

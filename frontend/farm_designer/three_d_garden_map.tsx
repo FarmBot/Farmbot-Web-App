@@ -13,11 +13,10 @@ import { DesignerState } from "./interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
 import { SlotWithTool } from "../resources/interfaces";
-import { ThreeDGardenPlant } from "../three_d_garden/garden";
+import { calcSunCoordinate, ThreeDGardenPlant } from "../three_d_garden/garden";
 import { findIcon } from "../crops/find";
 import { PeripheralValues } from "./map/layers/farmbot/bot_trail";
 import { isPeripheralActiveFunc } from "./map/layers/farmbot/bot_peripherals";
-import SunCalc from "suncalc";
 import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
 import { SCENES } from "../settings/three_d_settings";
 import { get3DTime, latLng } from "../three_d_garden/time_travel";
@@ -112,10 +111,10 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   const { latitude, longitude, valid } = latLng(props.device);
   if (props.designer.threeDRealTime && !props.device.indoor && valid) {
     const date = get3DTime(props.designer).toDate();
-    const sunPosition = SunCalc.getPosition(date, latitude, longitude);
-    const sunAzimuth = sunPosition.azimuth * (180 / Math.PI);
-    config.sunAzimuth = Math.round((sunAzimuth - config.heading + 90) % 360);
-    config.sunInclination = Math.round(sunPosition.altitude * (180 / Math.PI));
+    const { azimuth, inclination } = calcSunCoordinate(
+      date, config.heading, latitude, longitude);
+    config.sunAzimuth = azimuth;
+    config.sunInclination = inclination;
   } else {
     config.sunAzimuth = getValue("sunAzimuth");
     config.sunInclination = getValue("sunInclination");
@@ -162,4 +161,6 @@ export const convertPlants =
       spread: 0,
       x: plant.body.x + config.bedXOffset,
       y: plant.body.y + config.bedYOffset,
+      key: "",
+      seed: 0,
     }));

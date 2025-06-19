@@ -1,20 +1,22 @@
+interface MockRef {
+  current: { scale: { set: Function; }; } | undefined;
+}
+const mockRef: MockRef = { current: { scale: { set: jest.fn() } } };
+jest.mock("react", () => ({
+  ...jest.requireActual("react"),
+  useRef: () => mockRef,
+}));
+
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { clone } from "lodash";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
 import { INITIAL } from "../../config";
-import {
-  CustomMaterial,
-  ThreeDPlant,
-  ThreeDPlantProps,
-} from "../plants";
+import { ThreeDPlant, ThreeDPlantProps } from "../plants";
 import { Path } from "../../../internal_urls";
 import { Actions } from "../../../constants";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import { convertPlants } from "../../../farm_designer/three_d_garden_map";
-import {
-  MeshStandardMaterial, WebGLProgramParametersWithUniforms, WebGLRenderer,
-} from "three";
 
 describe("<ThreeDPlant />", () => {
   const fakeProps = (): ThreeDPlantProps => {
@@ -61,6 +63,32 @@ describe("<ThreeDPlant />", () => {
     expect(container).toContainHTML("avif");
   });
 
+  it("renders plant: not size animated", () => {
+    const p = fakeProps();
+    p.config.labels = false;
+    p.config.labelsOnHover = false;
+    p.labelOnly = false;
+    p.config.light = false;
+    p.config.animateSeasons = true;
+    p.startTimeRef = undefined;
+    render(<ThreeDPlant {...p} />);
+    const { container } = render(<ThreeDPlant {...p} />);
+    expect(container).toContainHTML("avif");
+  });
+
+  it("renders plant: size animated", () => {
+    const p = fakeProps();
+    p.config.labels = false;
+    p.config.labelsOnHover = false;
+    p.labelOnly = false;
+    p.config.light = false;
+    p.config.animateSeasons = true;
+    p.startTimeRef = { current: 0 };
+    render(<ThreeDPlant {...p} />);
+    const { container } = render(<ThreeDPlant {...p} />);
+    expect(container).toContainHTML("avif");
+  });
+
   it("renders plant under light", () => {
     const p = fakeProps();
     p.config.labels = false;
@@ -94,45 +122,5 @@ describe("<ThreeDPlant />", () => {
     const plant = container.querySelector("[name='0'");
     plant && fireEvent.click(plant);
     expect(mockNavigate).not.toHaveBeenCalled();
-  });
-});
-
-describe("<CustomMaterial />", () => {
-  it("modifies shader", () => {
-    const mockMaterial = new MeshStandardMaterial();
-    mockMaterial.userData = {};
-
-    jest.spyOn(React, "useCallback").mockImplementation(cb => {
-      cb(mockMaterial);
-      return cb;
-    });
-
-    render(<CustomMaterial />);
-    const shader = {
-      fragmentShader: "#include <normal_fragment_begin>",
-    } as WebGLProgramParametersWithUniforms;
-    mockMaterial.onBeforeCompile(shader,
-      jest.fn() as unknown as WebGLRenderer);
-    expect(mockMaterial.userData.shaderInjected).toBeTruthy();
-    expect(shader.fragmentShader).toContain("normal = vec3(0.0, 1.0, 0.0);");
-  });
-
-  it("doesn't modify shader", () => {
-    const mockMaterial = new MeshStandardMaterial();
-    mockMaterial.userData = { shaderInjected: true };
-
-    jest.spyOn(React, "useCallback").mockImplementation(cb => {
-      cb(mockMaterial);
-      return cb;
-    });
-
-    render(<CustomMaterial />);
-    const shader = {
-      fragmentShader: "#include <normal_fragment_begin>",
-    } as WebGLProgramParametersWithUniforms;
-    mockMaterial.onBeforeCompile(shader,
-      jest.fn() as unknown as WebGLRenderer);
-    expect(mockMaterial.userData.shaderInjected).toBeTruthy();
-    expect(shader.fragmentShader).not.toContain("normal = vec3(0.0, 1.0, 0.0);");
   });
 });

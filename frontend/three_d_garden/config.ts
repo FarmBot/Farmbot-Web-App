@@ -77,6 +77,7 @@ export interface Config {
   sun: number;
   ambient: number;
   animate: boolean;
+  animateSeasons: boolean;
   distanceIndicator: string;
   kitVersion: string;
   negativeZ: boolean;
@@ -168,6 +169,7 @@ export const INITIAL: Config = {
   sun: 75,
   ambient: 75,
   animate: true,
+  animateSeasons: false,
   distanceIndicator: "",
   kitVersion: "v1.7",
   negativeZ: false,
@@ -201,7 +203,7 @@ export const BOOLEAN_KEYS = [
   "xyDimensions", "zDimension", "promoInfo", "settingsBar", "zoomBeacons",
   "solar", "utilitiesPost", "packaging", "lab", "people", "lowDetail",
   "eventDebug", "cableDebug", "zoomBeaconDebug", "lightsDebug",
-  "animate", "negativeZ",
+  "animate", "animateSeasons", "negativeZ",
   "waterFlow", "exaggeratedZ", "showSoilPoints", "urlParamAutoAdd",
   "light", "vacuum", "rotary", "north", "desk",
 ];
@@ -327,6 +329,7 @@ export const PRESETS: Record<string, Config> = {
     cableDebug: false,
     zoomBeaconDebug: false,
     animate: true,
+    animateSeasons: false,
     distanceIndicator: "",
     north: false,
     desk: false,
@@ -388,6 +391,7 @@ export const PRESETS: Record<string, Config> = {
     zoomBeaconDebug: true,
     lightsDebug: true,
     animate: true,
+    animateSeasons: false,
     distanceIndicator: "",
     waterFlow: true,
     light: true,
@@ -419,7 +423,7 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "people", "scene", "lowDetail", "sun", "ambient",
   "eventDebug", "cableDebug", "zoomBeaconDebug", "lightsDebug",
   "animate", "distanceIndicator", "kitVersion", "negativeZ", "waterFlow",
-  "light", "vacuum", "rotary",
+  "light", "vacuum", "rotary", "animateSeasons",
   "exaggeratedZ", "soilSurface", "soilSurfaceVariance",
   "showSoilPoints", "urlParamAutoAdd", "north", "desk",
 ];
@@ -507,12 +511,23 @@ type SeasonProperties = {
   sunColor: string;
   cloudOpacity: number;
 };
-export const seasonProperties = (f: number): Record<string, SeasonProperties> => ({
-  Winter: { sunIntensity: 4 / 4 * f, sunColor: "#A0C4FF", cloudOpacity: 0.85 },
-  Spring: { sunIntensity: 7 / 4 * f, sunColor: "#BDE0FE", cloudOpacity: 0.2 },
-  Summer: { sunIntensity: 9 / 4 * f, sunColor: "#FFFFFF", cloudOpacity: 0 },
-  Fall: { sunIntensity: 5.5 / 4 * f, sunColor: "#FFD6BC", cloudOpacity: 0.3 },
-});
+const SEASON_PROPERTIES: Record<string, SeasonProperties> = {
+  Winter: { sunIntensity: 4 / 4, sunColor: "#A0C4FF", cloudOpacity: 0.85 },
+  Spring: { sunIntensity: 7 / 4, sunColor: "#BDE0FE", cloudOpacity: 0.2 },
+  Summer: { sunIntensity: 9 / 4, sunColor: "#FFFFFF", cloudOpacity: 0 },
+  Fall: { sunIntensity: 5.5 / 4, sunColor: "#FFD6BC", cloudOpacity: 0.3 },
+};
+export const getSeasonProperties = (
+  config: Config,
+  fallback: string,
+): SeasonProperties => {
+  const params = SEASON_PROPERTIES[config.plants] || SEASON_PROPERTIES[fallback];
+  return {
+    sunIntensity: params.sunIntensity * config.sun / 100,
+    sunColor: params.sunColor,
+    cloudOpacity: params.cloudOpacity,
+  };
+};
 
 export const detailLevels = (config: Config) =>
   config.lowDetail ? [0, 0] : [0, 50000];
