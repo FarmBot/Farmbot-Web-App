@@ -40,12 +40,12 @@ export const useNewsFeed = () => {
   const [posts, setPosts] = React.useState<NewsPost[]>([]);
   React.useEffect(() => {
     axios.get(FEED_URL)
-      .then(resp => parser.parseString(resp.data))
+      .then(resp => parser.parseString(resp.data as string))
       .then(feed => setPosts((feed.items || []).slice(0, 3).map(i => ({
         id: i.id || i.guid || i.link || "",
         title: i.title || "",
         link: i.link || "",
-        content: i['content:encoded'] || i.content || "",
+        content: i["content:encoded"] || i.content || "",
       }))))
       .catch(() => { });
   }, []);
