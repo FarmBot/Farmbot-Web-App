@@ -1,3 +1,4 @@
+/// <reference types="@testing-library/jest-dom" />
 interface Mock0Ref {
   current: number;
 }
@@ -115,6 +116,7 @@ describe("skyColor(calcSunI())", () => {
     [180, DARK_BLUE],
     [150, BLUE],
   ])("calculates sky color at %s degrees", (inclination, expected) => {
-    expect(skyColor(calcSunI(inclination) * 100)).toEqual(expected);
+    const result = skyColor(calcSunI(inclination) * 100);
+    result.map((v, i) => expect(v).toBeCloseTo(expected[i], 12));
   });
 });
