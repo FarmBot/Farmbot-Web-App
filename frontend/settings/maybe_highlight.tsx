@@ -16,6 +16,8 @@ const FARMBOT_PANEL = [
   DeviceSetting.timezone,
   DeviceSetting.farmbotLocation,
   DeviceSetting.indoor,
+  DeviceSetting.environment,
+  DeviceSetting.heading,
   DeviceSetting.time_zone,
   DeviceSetting.camera,
   DeviceSetting.osUpdateTime,

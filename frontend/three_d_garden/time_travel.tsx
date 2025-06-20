@@ -15,14 +15,12 @@ export const latLng = (device: DeviceAccountSettings) => {
   return { latitude, longitude, valid };
 };
 
-const movedTime = (designer: DesignerState) => {
-  const { threeDRealTime, threeDTimeOffset } = designer;
-  return threeDRealTime && threeDTimeOffset != 0;
+export const get3DTime = (threeDTime: string | undefined) => {
+  return threeDTime ? moment(threeDTime, "HH:mm") : moment();
 };
 
-export const get3DTime = (designer: DesignerState) => {
-  return moment().add(designer.threeDTimeOffset, "seconds");
-};
+const calc3DTime = (threeDTime: string | undefined, offset: number) =>
+  get3DTime(threeDTime).add(offset, "hour").format("HH:mm");
 
 export interface TimeTravelTargetProps {
   isOpen: boolean;
@@ -35,18 +33,17 @@ export interface TimeTravelTargetProps {
 
 export const TimeTravelTarget = (props: TimeTravelTargetProps) => {
   if (!props.threeDGarden || !latLng(props.device).valid) { return <div />; }
-  const { designer } = props;
+  const { threeDTime } = props.designer;
   return <div
     className={[
       "time-travel-button",
-      movedTime(designer) ? "active" : "",
+      threeDTime ? "active" : "",
       props.isOpen ? "hover" : "",
     ].join(" ")}
     onClick={props.click}
     title={t("Time Travel")}>
     <img src={TAB_ICON[Panel.Settings]} />
-    {designer.threeDRealTime &&
-      <p>{formatTime(get3DTime(designer), props.timeSettings)}</p>}
+    <p>{formatTime(get3DTime(threeDTime), props.timeSettings)}</p>
   </div>;
 };
 
@@ -58,47 +55,32 @@ export interface TimeTravelContentProps {
 }
 
 export const TimeTravelContent = (props: TimeTravelContentProps) => {
-  const realTime = props.designer.threeDRealTime;
+  const { threeDTime } = props.designer;
   const { dispatch } = props;
   return <div className={"time-travel"}>
     <label>{t("Time Travel")}</label>
-    <div>
-      <button className={"fb-button gray"}
-        title={realTime ? t("daytime") : t("realtime")}
-        onClick={() => dispatch({
-          type: Actions.TOGGLE_3D_REAL_TIME,
-          payload: !realTime,
-        })}>
-        <i className={[
-          "fa",
-          realTime
-            ? "fa-sun-o"
-            : "fa-repeat",
-        ].join(" ")} />
-      </button>
-    </div>
     <div className={"row grid-3-col"}>
       <button className={"fb-button gray"}
         title={t("minus hour")}
         onClick={() => dispatch({
-          type: Actions.CHANGE_3D_TIME,
-          payload: -3600,
+          type: Actions.SET_3D_TIME,
+          payload: calc3DTime(threeDTime, -1),
         })}>
         <i className={"fa fa-caret-left"} />
       </button>
       <button className={"fb-button gray"}
         title={t("reset hour")}
         onClick={() => dispatch({
-          type: Actions.RESET_3D_TIME,
-          payload: 0,
+          type: Actions.SET_3D_TIME,
+          payload: undefined,
         })}>
         <i className={"fa fa-clock-o"} />
       </button>
       <button className={"fb-button gray"}
         title={t("plus hour")}
         onClick={() => dispatch({
-          type: Actions.CHANGE_3D_TIME,
-          payload: 3600,
+          type: Actions.SET_3D_TIME,
+          payload: calc3DTime(threeDTime, 1),
         })}>
         <i className={"fa fa-caret-right"} />
       </button>

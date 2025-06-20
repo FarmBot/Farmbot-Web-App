@@ -41,6 +41,7 @@ describe("getSizeAtTime()", () => {
       icon: "", key: "foo", label: "Foo",
       seed: 0, size: 100, spread: 100, x: 0, y: 0,
     };
+    console.table = jest.fn();
     expect(getSizeAtTime(plant, "Summer", 0, 0, true)).toEqual(0);
   });
 
@@ -49,11 +50,16 @@ describe("getSizeAtTime()", () => {
       icon: "", key: "foo", label: "Foo",
       seed: 1, size: 100, spread: 100, x: 0, y: 0,
     };
+    console.table = jest.fn();
     expect(getSizeAtTime(plant, "Summer", 0, 1, true)).toEqual(0);
   });
 
   it.each<[number, number]>([
     [0, 0],
+    [0.15, 0.02],
+    [1, 0.15],
+    [5, 0.75],
+    [7, 1],
     [10, 1],
     [15, 1],
     [19, 0.25],
@@ -64,7 +70,7 @@ describe("getSizeAtTime()", () => {
       icon: "", key: "foo", label: "Foo",
       seed: 0, size: 100, spread: 100, x: 0, y: 0,
     };
-    expect(getSizeAtTime(plant, "Summer", t)).toEqual(sz);
+    expect(round(getSizeAtTime(plant, "Summer", t), 2)).toEqual(sz);
   });
 
   it.each<[number, number]>([

@@ -1,6 +1,6 @@
 import React from "react";
 import { t } from "../../i18next_wrapper";
-import { DeviceSetting } from "../../constants";
+import { DeviceSetting, ToolTips } from "../../constants";
 import { Row, ToggleButton } from "../../ui";
 import { Highlight } from "../maybe_highlight";
 import { GardenLocationRowProps } from "./interfaces";
@@ -8,6 +8,9 @@ import { edit, save } from "../../api/crud";
 import { getModifiedClassNameSpecifyDefault } from "../default_values";
 import { round } from "lodash";
 import { ExternalUrl } from "../../external_urls";
+import {
+  findOrCreate3DConfigFunction, get3DConfigValueFunction, ThreeDConfig,
+} from "../three_d_settings";
 
 export const GardenLocationRow = (props: GardenLocationRowProps) => {
   const { dispatch, device } = props;
@@ -84,5 +87,20 @@ export const GardenLocationRow = (props: GardenLocationRowProps) => {
           }} />
       </Row>
     </Highlight>
+    <ThreeDConfig
+      dispatch={dispatch}
+      getValue={get3DConfigValueFunction(props.farmwareEnvs)}
+      findOrCreate={findOrCreate3DConfigFunction(dispatch, props.farmwareEnvs)}
+      tooltip={ToolTips.THREE_D_HEADING}
+      setting={DeviceSetting.heading}
+      configKey={"heading"} />
+    <ThreeDConfig
+      dispatch={dispatch}
+      getValue={get3DConfigValueFunction(props.farmwareEnvs)}
+      findOrCreate={findOrCreate3DConfigFunction(dispatch, props.farmwareEnvs)}
+      tooltip={ToolTips.THREE_D_ENVIRONMENT}
+      setting={DeviceSetting.environment}
+      isScene={true}
+      configKey={"scene"} />
   </div>;
 };

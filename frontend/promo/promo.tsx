@@ -46,6 +46,15 @@ const calcPlantsCache = (
   return cache;
 };
 
+export const getSeasonTimings = (currentSeason: string, step = 0) => {
+  const seasons = SEASON_TIMINGS.map(s => s.season);
+  const seasonIndex = seasons.indexOf(currentSeason);
+  const validSeasonIndex = seasonIndex >= 0 ? seasonIndex : 0;
+  const selectedSeasonIndex = (validSeasonIndex + step) % seasons.length;
+  const selectedSeasonTimings = SEASON_TIMINGS[selectedSeasonIndex];
+  return selectedSeasonTimings;
+};
+
 export const Promo = () => {
   const [config, setConfig] = React.useState<Config>(INITIAL);
   const [toolTip, setToolTip] = React.useState<ToolTip>({ timeoutId: 0, text: "" });
@@ -92,18 +101,21 @@ export const Promo = () => {
 
   const startTimeRef = React.useRef<number>(performance.now() / 1000);
 
-  const [seasonIndex, setSeasonIndex] = React.useState(0);
   React.useEffect(() => {
     if (!config.animateSeasons) { return; }
-    const currentSeason = SEASON_TIMINGS[seasonIndex];
+    const currentSeasonTimings = getSeasonTimings(config.plants);
     const timeout = setTimeout(() => {
-      setSeasonIndex(prevIndex => (prevIndex + 1) % SEASON_TIMINGS.length);
       startTimeRef.current = performance.now() / 1000;
-      const newConfig = { ...config, plants: currentSeason.season };
-      setConfig(newConfig);
-    }, (currentSeason.duration + currentSeason.pause) * 1000);
+      setConfig(prevConfig => {
+        const nextSeasonTimings = getSeasonTimings(prevConfig.plants, 1);
+        return {
+          ...prevConfig,
+          plants: nextSeasonTimings.season,
+        };
+      });
+    }, (currentSeasonTimings.duration + currentSeasonTimings.pause) * 1000);
     return () => clearTimeout(timeout);
-  }, [seasonIndex, config]);
+  }, [config.plants, config.animateSeasons]);
 
   React.useEffect(() => {
     startTimeRef.current = performance.now() / 1000;

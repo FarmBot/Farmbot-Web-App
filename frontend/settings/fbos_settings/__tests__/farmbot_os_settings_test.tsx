@@ -38,6 +38,7 @@ describe("<FarmBotSettings />", () => {
     timeSettings: fakeTimeSettings(),
     settingsPanelState: settingsPanelState(),
     showAdvanced: true,
+    farmwareEnvs: [],
   });
 
   it("displays boot sequence selector", () => {
@@ -53,7 +54,7 @@ describe("<FarmBotSettings />", () => {
     p.sourceFbosConfig = () => ({ value: "arduino", consistent: true });
     const wrapper = mount(<FarmBotSettings {...p} />);
     expect(wrapper.text().toLowerCase()).toContain("flash");
-    clickButton(wrapper, 5, "flash");
+    clickButton(wrapper, 6, "flash");
     expect(mockDevice.flashFirmware).toHaveBeenCalledWith("arduino");
   });
 });

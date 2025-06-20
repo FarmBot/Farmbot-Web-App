@@ -1,6 +1,6 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { Promo } from "../promo";
+import { getSeasonTimings, Promo } from "../promo";
 
 describe("<Promo />", () => {
   it("renders", () => {
@@ -27,5 +27,12 @@ describe("<Promo />", () => {
     const configBtn = screen.getByTitle("config");
     fireEvent.click(configBtn);
     expect(container).toContainHTML("all-configs");
+  });
+});
+
+describe("getSeasonTimings()", () => {
+  it("returns timings", () => {
+    expect(getSeasonTimings("Summer").season).toEqual("Summer");
+    expect(getSeasonTimings("Random").season).toEqual("Spring");
   });
 });

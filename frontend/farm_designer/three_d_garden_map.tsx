@@ -109,8 +109,8 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   config.desk = false;
 
   const { latitude, longitude, valid } = latLng(props.device);
-  if (props.designer.threeDRealTime && !props.device.indoor && valid) {
-    const date = get3DTime(props.designer).toDate();
+  if (valid) {
+    const date = get3DTime(props.designer.threeDTime).toDate();
     const { azimuth, inclination } = calcSunCoordinate(
       date, config.heading, latitude, longitude);
     config.sunAzimuth = azimuth;
@@ -119,7 +119,6 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
     config.sunAzimuth = getValue("sunAzimuth");
     config.sunInclination = getValue("sunInclination");
   }
-  config.sun = config.sunInclination < 0 ? 0 : 75;
 
   const isPeripheralActive = isPeripheralActiveFunc(props.peripheralValues);
 

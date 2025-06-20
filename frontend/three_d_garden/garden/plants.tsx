@@ -2,7 +2,7 @@ import React from "react";
 import { Config } from "../config";
 import { HOVER_OBJECT_MODES, RenderOrder } from "../constants";
 import { Billboard, Plane, useTexture } from "@react-three/drei";
-import { Vector3, Mesh } from "three";
+import { Vector3, Mesh, Group as GroupType } from "three";
 import { threeSpace, zZero as zZeroFunc } from "../helpers";
 import { Text } from "../elements";
 import { isUndefined } from "lodash";
@@ -42,11 +42,19 @@ export const ThreeDPlant = (props: ThreeDPlantProps) => {
   const { i, plant, labelOnly, config, hoveredPlant } = props;
   const alwaysShowLabels = config.labels && !config.labelsOnHover;
   const navigate = useNavigate();
-  return <Billboard follow={true}
+  // eslint-disable-next-line no-null/no-null
+  const billboardRef = React.useRef<GroupType>(null);
+  const getPlantZ = (size: number) =>
+    zZeroFunc(config)
+    + props.getZ(plant.x - config.bedXOffset, plant.y - config.bedYOffset)
+    + size / 2;
+  return <Billboard
+    ref={billboardRef}
+    follow={true}
     position={new Vector3(
       threeSpace(plant.x, config.bedLengthOuter),
       threeSpace(plant.y, config.bedWidthOuter),
-      zZeroFunc(config) + props.getZ(plant.x, plant.y) + plant.size / 2,
+      getPlantZ(plant.size),
     )}>
     {labelOnly
       ? <Text visible={alwaysShowLabels || i === hoveredPlant}
@@ -59,6 +67,8 @@ export const ThreeDPlant = (props: ThreeDPlantProps) => {
       </Text>
       : <Image i={i}
         plant={plant}
+        billboardRef={billboardRef}
+        getPlantZ={getPlantZ}
         url={plant.icon}
         startTimeRef={props.startTimeRef}
         animateSeasons={props.config.animateSeasons}
@@ -79,9 +89,11 @@ interface CustomImageProps extends MeshProps {
   plant: ThreeDGardenPlant;
   i: number;
   onClick?: () => void;
+  getPlantZ(size: number): number;
   season: string;
   startTimeRef?: React.RefObject<number>;
   animateSeasons: boolean;
+  billboardRef: React.RefObject<GroupType | null>;
 }
 
 const Image = (props: CustomImageProps) => {
@@ -94,11 +106,12 @@ const Image = (props: CustomImageProps) => {
   useFrame(() => {
     if (!props.animateSeasons || !props.startTimeRef) { return; }
 
-    if (imgRef.current) {
+    if (imgRef.current && props.billboardRef.current) {
       const currentTime = performance.now() / 1000;
       const t = currentTime - props.startTimeRef.current;
       const scale = plant.size * getSizeAtTime(plant, props.season, t);
       imgRef.current.scale.set(scale, scale, scale);
+      props.billboardRef.current.position.z = props.getPlantZ(scale);
     }
   });
 
@@ -112,6 +125,8 @@ const Image = (props: CustomImageProps) => {
     <FixedNormalMaterial
       key={Math.random()}
       map={texture}
+      roughness={0}
+      metalness={0}
       transparent={true} />
   </Plane>;
 };

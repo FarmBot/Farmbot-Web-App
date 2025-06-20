@@ -45,7 +45,7 @@ export const PublicOverlay = (props: OverlayProps) => {
           const update = { [configKey]: label };
           return <button key={preset} className={className}
             onClick={() => {
-              if (props.startTimeRef) {
+              if (props.startTimeRef && configKey == "plants") {
                 props.startTimeRef.current = performance.now() / 1000;
               }
               clearTimeout(toolTip.timeoutId);
@@ -248,7 +248,7 @@ interface RadioProps extends OverlayProps {
 const Radio = (props: RadioProps) => {
   const { config, setConfig, configKey, options } = props;
   const change = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (props.startTimeRef) {
+    if (props.startTimeRef && configKey == "plants") {
       props.startTimeRef.current = performance.now() / 1000;
     }
     const newValue = e.target.value;
@@ -263,6 +263,7 @@ const Radio = (props: RadioProps) => {
           <input key={value}
             type={"radio"}
             name={configKey}
+            title={`${configKey} ${value}`}
             value={value}
             checked={config[configKey] == value}
             onChange={change}

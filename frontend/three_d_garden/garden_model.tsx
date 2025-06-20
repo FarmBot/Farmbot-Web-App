@@ -6,7 +6,7 @@ import {
   Stats, Image, OrthographicCamera,
   Sphere,
 } from "@react-three/drei";
-import { BackSide } from "three";
+import { BackSide, MeshBasicMaterial as ThreeMeshBasicMaterial } from "three";
 import { Bot } from "./bot";
 import { AddPlantProps, Bed } from "./bed";
 import {
@@ -15,6 +15,7 @@ import {
   Point, Grid, Clouds, Ground, Weed,
   ThreeDGardenPlant,
   NorthArrow,
+  skyColor,
 } from "./garden";
 import { Config } from "./config";
 import { useSpring, animated } from "@react-spring/three";
@@ -96,6 +97,9 @@ export const GardenModel = (props: GardenModelProps) => {
   const getZ = getZFunc(triangles, -config.soilHeight);
 
   // eslint-disable-next-line no-null/no-null
+  const skyRef = React.useRef<ThreeMeshBasicMaterial>(null);
+
+  // eslint-disable-next-line no-null/no-null
   return <Group dispose={null}
     onPointerMove={config.eventDebug
       ? e => console.log(e.intersections.map(x => x.object.name))
@@ -107,7 +111,10 @@ export const GardenModel = (props: GardenModelProps) => {
       setActiveFocus={props.setActiveFocus} />}
     <Sky sunPosition={sunPosition(config.sunInclination, config.sunAzimuth)} />
     <Sphere args={[30000, 8, 16]}>
-      <MeshBasicMaterial color={config.sun ? "#59d8ff" : "black"} side={BackSide} />
+      <MeshBasicMaterial
+        ref={skyRef}
+        color={skyColor(config.sun)}
+        side={BackSide} />
     </Sphere>
     <AnimatedGroup
       scale={props.activeFocus ? 1 : scale}>
@@ -127,11 +134,10 @@ export const GardenModel = (props: GardenModelProps) => {
       enablePan={config.pan}
       dampingFactor={0.2}
       target={camera.target}
-      minDistance={500} maxDistance={12000} />
+      minDistance={500} maxDistance={24000} />
     <AxesHelper args={[5000]} visible={config.threeAxes} />
     {config.viewCube && <GizmoHelper><GizmoViewcube /></GizmoHelper>}
-    <Sun config={config}
-      startTimeRef={props.startTimeRef} />
+    <Sun config={config} skyRef={skyRef} startTimeRef={props.startTimeRef} />
     <AmbientLight intensity={config.ambient / 100} />
     <Ground config={config} />
     <Clouds config={config} />
@@ -164,7 +170,10 @@ export const GardenModel = (props: GardenModelProps) => {
           getZ={getZ}
           hoveredPlant={hoveredPlant} />)}
     </Group>
-    <Grid config={config} getZ={getZ} />
+    <Grid
+      config={config}
+      getZ={getZ}
+      activeFocus={props.activeFocus} />
     <Group name={"plants"}
       visible={plantsVisible}
       onPointerEnter={setHover(true)}

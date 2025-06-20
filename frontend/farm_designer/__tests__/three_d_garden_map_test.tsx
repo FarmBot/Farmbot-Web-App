@@ -142,51 +142,17 @@ describe("<ThreeDGardenMap />", () => {
     }, {});
   });
 
-  it("converts props: indoor", () => {
-    const p = fakeProps();
-    p.device.indoor = true;
-    p.plants = [];
-    render(<ThreeDGardenMap {...p} />);
-    expect(ThreeDGarden).toHaveBeenCalledWith({
-      config: expect.objectContaining({ scene: "Lab" }),
-      threeDPlants: [],
-      addPlantProps: expect.any(Object),
-      mapPoints: [],
-      weeds: [],
-    }, {});
-  });
-
   it("converts props: real time", () => {
     const p = fakeProps();
-    p.designer.threeDRealTime = true;
+    p.designer.threeDTime = undefined;
     p.device.lat = 1;
     p.device.lng = 2;
     p.plants = [];
     render(<ThreeDGardenMap {...p} />);
     expect(ThreeDGarden).toHaveBeenCalledWith({
       config: expect.objectContaining({
-        sunInclination: 29,
-        sunAzimuth: 146,
-        sun: 75,
-      }),
-      threeDPlants: [],
-      addPlantProps: expect.any(Object),
-      mapPoints: [],
-      weeds: [],
-    }, {});
-  });
-
-  it("converts props: daytime", () => {
-    const p = fakeProps();
-    p.designer.threeDRealTime = false;
-    p.device.lat = 1;
-    p.device.lng = 2;
-    p.plants = [];
-    render(<ThreeDGardenMap {...p} />);
-    expect(ThreeDGarden).toHaveBeenCalledWith({
-      config: expect.objectContaining({
-        sunInclination: 1,
-        sunAzimuth: 1,
+        sunInclination: 28.64788975654116,
+        sunAzimuth: 146.29577951308232,
         sun: 75,
       }),
       threeDPlants: [],
@@ -198,7 +164,7 @@ describe("<ThreeDGardenMap />", () => {
 
   it("converts props: night", () => {
     const p = fakeProps();
-    p.designer.threeDRealTime = false;
+    p.designer.threeDTime = undefined;
     p.get3DConfigValue = () => -1;
     p.plants = [];
     render(<ThreeDGardenMap {...p} />);
@@ -206,7 +172,7 @@ describe("<ThreeDGardenMap />", () => {
       config: expect.objectContaining({
         sunInclination: -1,
         sunAzimuth: -1,
-        sun: 0,
+        sun: 75,
       }),
       threeDPlants: [],
       addPlantProps: expect.any(Object),

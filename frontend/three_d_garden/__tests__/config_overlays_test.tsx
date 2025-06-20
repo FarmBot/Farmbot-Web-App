@@ -3,6 +3,7 @@ jest.mock("../zoom_beacons_constants", () => ({
 }));
 
 import React from "react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { mount } from "enzyme";
 import {
   PublicOverlay, OverlayProps, PrivateOverlay, maybeAddParam,
@@ -39,8 +40,9 @@ describe("<PublicOverlay />", () => {
   it("changes preset with ref", () => {
     const p = fakeProps();
     p.startTimeRef = { current: 0 };
-    const wrapper = mount(<PublicOverlay {...p} />);
-    wrapper.find("button").at(1).simulate("click");
+    render(<PublicOverlay {...p} />);
+    const radio = screen.getByText("Winter");
+    fireEvent.click(radio);
     expect(p.startTimeRef.current).not.toEqual(0);
   });
 
@@ -138,9 +140,9 @@ describe("<PrivateOverlay />", () => {
   it("changes value: radio with ref", () => {
     const p = fakeProps();
     p.startTimeRef = { current: 0 };
-    const wrapper = mount(<PrivateOverlay {...p} />);
-    wrapper.find({ type: "radio" }).at(2).simulate("change",
-      { target: { value: "Jr" } });
+    render(<PrivateOverlay {...p} />);
+    const radio = screen.getByTitle("plants Winter");
+    fireEvent.click(radio);
     expect(p.startTimeRef.current).not.toEqual(0);
     expect(p.setConfig).not.toHaveBeenCalledWith(p.config);
   });

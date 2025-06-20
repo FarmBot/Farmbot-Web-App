@@ -106,6 +106,7 @@ export const RawDesignerSettings = (props: DesignerSettingsProps) => {
         sourceFbosConfig={sourceFbosConfig}
         botOnline={botOnline}
         timeSettings={props.timeSettings}
+        farmwareEnvs={props.farmwareEnvs}
         showAdvanced={showAdvanced}
         device={props.deviceAccount} />
       <PowerAndReset {...commonProps}
