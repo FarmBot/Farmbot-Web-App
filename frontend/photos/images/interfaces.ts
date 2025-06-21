@@ -4,6 +4,7 @@ import { MovementState, TimeSettings } from "../../interfaces";
 import { BotPosition, UserEnv } from "../../devices/interfaces";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
 import { DesignerState } from "../../farm_designer/interfaces";
+import { UUID } from "../../resources/interfaces";
 
 export interface ImageFlipperProps {
   id: string;
@@ -24,6 +25,8 @@ export interface ImageFlipperProps {
 export interface ImageFlipperState {
   disablePrev: boolean;
   disableNext: boolean;
+  /** Map of preloaded images for instant rendering. */
+  preloaded: Record<UUID, HTMLImageElement>;
 }
 
 export interface FlipperImageProps {
@@ -38,6 +41,8 @@ export interface FlipperImageProps {
   hover?(hovered: string | undefined): void;
   target?: Record<"x" | "y", number> | undefined;
   dark?: boolean;
+  /** Preloaded image for instant render. */
+  preloadedImage?: HTMLImageElement;
 }
 
 export interface FlipperImageState {

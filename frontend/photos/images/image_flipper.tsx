@@ -44,13 +44,46 @@ export const PlaceholderImg = (props: PlaceholderImgProps) =>
 
 export class ImageFlipper extends
   React.Component<ImageFlipperProps, ImageFlipperState> {
-  state: ImageFlipperState = { disableNext: true, disablePrev: false };
+  preloadedImgs: Record<UUID, HTMLImageElement> = {};
+  state: ImageFlipperState = {
+    disableNext: true,
+    disablePrev: false,
+    preloaded: {}
+  };
 
   onImageLoad = (img: HTMLImageElement) => {
     this.props.dispatch({
       type: Actions.SET_IMAGE_SIZE,
       payload: { width: img.naturalWidth, height: img.naturalHeight }
     });
+  };
+
+  componentDidMount() {
+    this.preloadImages();
+  }
+
+  componentDidUpdate(prevProps: ImageFlipperProps) {
+    if (prevProps.currentImage?.uuid !== this.props.currentImage?.uuid) {
+      this.preloadImages();
+    }
+  }
+
+  preloadImages = () => {
+    const { images, currentImage } = this.props;
+    const currentIndex = getIndexOfUuid(images, currentImage?.uuid);
+    const start = Math.max(currentIndex - 3, 0);
+    for (let i = currentIndex; i >= start; i--) {
+      const img = images[i];
+      if (img && !this.preloadedImgs[img.uuid]) {
+        const loader = new Image();
+        loader.src = img.body.attachment_url;
+        loader.onload = () =>
+          this.setState(p => ({
+            preloaded: { ...p.preloaded, [img.uuid]: loader }
+          }));
+        this.preloadedImgs[img.uuid] = loader;
+      }
+    }
   };
 
   get uuids() { return this.props.images.map(x => x.uuid); }
@@ -94,6 +127,7 @@ export class ImageFlipper extends
           target={this.props.target}
           hover={this.props.hover}
           onImageLoad={this.onImageLoad}
+          preloadedImage={this.preloadedImgs[currentImage.uuid]}
           dark={dark}
           image={currentImage} />
         : <PlaceholderImg textOverlay={Content.NO_IMAGES_YET}
