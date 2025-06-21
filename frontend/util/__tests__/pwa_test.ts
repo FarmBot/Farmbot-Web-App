@@ -1,32 +1,61 @@
 import {
   registerServiceWorker, requestNotificationPermission, notify,
   listenForInstallPrompt,
+  initPWA,
 } from "../pwa";
+import { info } from "../../toast/toast";
+
+jest.mock("../../toast/toast", () => ({
+  info: jest.fn(),
+}));
+
+jest.mock("../../i18next_wrapper", () => ({
+  t: (s: string) => s,
+}));
 
 describe("registerServiceWorker()", () => {
   it("registers service worker", () => {
     window.addEventListener = jest.fn();
-    const register = jest.fn();
+    const register = jest.fn(() => Promise.resolve());
     Object.defineProperty(navigator, "serviceWorker", {
       value: { register },
       configurable: true,
     });
     registerServiceWorker();
-    expect(window.addEventListener).toHaveBeenCalledWith(
-      "load", expect.any(Function as () => void));
+    expect(window.addEventListener).toHaveBeenCalledWith("load", expect.any(Function));
+    const loadCallback = (window.addEventListener as jest.Mock).mock.calls[0][1];
+    loadCallback();
+    expect(register).toHaveBeenCalledWith(new URL("/service-worker.js", location.href));
+  });
+
+  it("fails to register", () => {
+    window.addEventListener = jest.fn();
+    const register = jest.fn(() => Promise.reject());
+    Object.defineProperty(navigator, "serviceWorker", {
+      value: { register },
+      configurable: true,
+    });
+    registerServiceWorker();
+    expect(window.addEventListener).toHaveBeenCalledWith("load", expect.any(Function));
+    const loadCallback = (window.addEventListener as jest.Mock).mock.calls[0][1];
+    loadCallback();
+    expect(register).toHaveBeenCalled();
   });
 
   it("serviceWorker undefined", () => {
+    // Reset the mock to clear previous calls
+    (window.addEventListener as jest.Mock).mockClear();
+
     const SW = navigator.serviceWorker;
-    Object.defineProperty(navigator, "serviceWorker", {
-      value: undefined,
-      configurable: true,
-    });
+    // Remove the property entirely to simulate the absence of serviceWorker
+    const nav = navigator as unknown as { serviceWorker?: ServiceWorkerContainer };
+    delete nav.serviceWorker;
     registerServiceWorker();
     Object.defineProperty(navigator, "serviceWorker", {
       value: SW,
       configurable: true,
     });
+    expect(window.addEventListener).not.toHaveBeenCalled();
   });
 });
 
@@ -69,16 +98,12 @@ describe("listenForInstallPrompt", () => {
     window.addEventListener = jest.fn();
     listenForInstallPrompt();
     expect(window.addEventListener).toHaveBeenCalledWith(
-      "beforeinstallprompt", expect.any(Function as () => void));
-    const callback = jest.fn();
-    window.addEventListener = jest.fn((event, cb) => {
-      if (event === "beforeinstallprompt") {
-        callback();
-      }
-      return cb;
-    });
-    listenForInstallPrompt();
-    expect(callback).toHaveBeenCalled();
+      "beforeinstallprompt", expect.any(Function));
+    const installCallback = (window.addEventListener as jest.Mock).mock.calls[0][1];
+    installCallback();
+    expect(info).toHaveBeenCalledWith(
+      "Add FarmBot to your home screen for a better experience.",
+      { idPrefix: "pwa-install", noTimer: true });
   });
 });
 
@@ -142,5 +167,34 @@ describe("notify()", () => {
       configurable: true,
     });
     notify("title", "body");
+  });
+});
+
+describe("initPWA", () => {
+  it("initializes PWA", () => {
+    window.addEventListener = jest.fn();
+    const register = jest.fn(() => Promise.resolve());
+    Object.defineProperty(navigator, "serviceWorker", {
+      value: { register }, configurable: true,
+    });
+    const requestPermission = jest.fn();
+    Object.defineProperty(window, "Notification", {
+      value: { permission: "default", requestPermission }, configurable: true,
+    });
+    initPWA();
+    expect(window.addEventListener).toHaveBeenCalledWith("load", expect.any(Function));
+    const loadCallback = (window.addEventListener as jest.Mock).mock.calls
+      .find(c => c[0] === "load")[1];
+    loadCallback();
+    expect(register).toHaveBeenCalled();
+    expect(requestPermission).toHaveBeenCalled();
+    expect(window.addEventListener)
+      .toHaveBeenCalledWith("beforeinstallprompt", expect.any(Function));
+    const installCallback = (window.addEventListener as jest.Mock).mock.calls
+      .find(c => c[0] === "beforeinstallprompt")[1];
+    installCallback();
+    expect(info).toHaveBeenCalledWith(
+      "Add FarmBot to your home screen for a better experience.",
+      { idPrefix: "pwa-install", noTimer: true });
   });
 });
