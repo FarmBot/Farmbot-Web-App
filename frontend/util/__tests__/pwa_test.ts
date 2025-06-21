@@ -71,13 +71,14 @@ describe("listenForInstallPrompt", () => {
     expect(window.addEventListener).toHaveBeenCalledWith(
       "beforeinstallprompt", expect.any(Function as () => void));
     const callback = jest.fn();
-    // Mock event listener implementation
     window.addEventListener = jest.fn((event, cb) => {
-      event === "beforeinstallprompt" && callback();
+      if (event === "beforeinstallprompt") {
+        callback();
+      }
       return cb;
     });
     listenForInstallPrompt();
-    expect(callback).not.toHaveBeenCalled();
+    expect(callback).toHaveBeenCalled();
   });
 });
 
