@@ -4,7 +4,8 @@ import { t } from "../i18next_wrapper";
 export const registerServiceWorker = () => {
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
-      navigator.serviceWorker.register("/service-worker.js").catch(() => { });
+      const url = new URL("/service-worker.js", window.location.href);
+      navigator.serviceWorker.register(url).catch(() => { });
     });
   }
 };

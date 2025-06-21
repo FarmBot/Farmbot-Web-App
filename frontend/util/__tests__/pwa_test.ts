@@ -21,7 +21,7 @@ describe("pwa utilities", () => {
     registerServiceWorker();
     expect(add).toHaveBeenCalledWith("load", expect.any(Function));
     expect((navigator as any).serviceWorker.register)
-      .toHaveBeenCalledWith("/service-worker.js");
+      .toHaveBeenCalledWith(new URL("/service-worker.js", window.location.href));
   });
 
   it("requests notification permission", () => {
