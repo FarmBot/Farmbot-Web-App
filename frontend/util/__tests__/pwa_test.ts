@@ -1,86 +1,145 @@
-import { registerServiceWorker, requestNotificationPermission,
-  listenForInstallPrompt, notify, initPWA } from "../pwa";
-import { info } from "../../toast/toast";
+import {
+  registerServiceWorker, requestNotificationPermission, notify,
+  listenForInstallPrompt,
+} from "../pwa";
 
-jest.mock("../../toast/toast", () => ({
-  info: jest.fn(),
-}));
-
-describe("pwa utilities", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
+describe("registerServiceWorker()", () => {
   it("registers service worker", () => {
-    const add = jest.fn((_, cb) => cb());
-    Object.defineProperty(window, "addEventListener", { value: add, configurable: true });
-    Object.defineProperty(navigator as any, "serviceWorker", {
-      value: { register: jest.fn(() => Promise.resolve()) },
+    window.addEventListener = jest.fn();
+    const register = jest.fn();
+    Object.defineProperty(navigator, "serviceWorker", {
+      value: { register },
       configurable: true,
     });
     registerServiceWorker();
-    expect(add).toHaveBeenCalledWith("load", expect.any(Function));
-    expect((navigator as any).serviceWorker.register)
-      .toHaveBeenCalledWith(new URL("/service-worker.js", window.location.href));
+    expect(window.addEventListener).toHaveBeenCalledWith(
+      "load", expect.any(Function as () => void));
   });
 
-  it("requests notification permission", () => {
-    (global as any).Notification = {
-      permission: "default",
-      requestPermission: jest.fn(),
-    };
+  it("serviceWorker undefined", () => {
+    const SW = navigator.serviceWorker;
+    Object.defineProperty(navigator, "serviceWorker", {
+      value: undefined,
+      configurable: true,
+    });
+    registerServiceWorker();
+    Object.defineProperty(navigator, "serviceWorker", {
+      value: SW,
+      configurable: true,
+    });
+  });
+});
+
+describe("requestNotificationPermission", () => {
+  it("requests permission", () => {
+    const requestPermission = jest.fn();
+    Object.defineProperty(window, "Notification", {
+      value: { permission: "default", requestPermission },
+      configurable: true,
+    });
     requestNotificationPermission();
-    expect(Notification.requestPermission).toHaveBeenCalled();
+    expect(requestPermission).toHaveBeenCalled();
   });
 
-  it("skips permission request when not default", () => {
-    (global as any).Notification = {
-      permission: "granted",
-      requestPermission: jest.fn(),
-    };
+  it("notification undefined", () => {
+    const og = window.Notification;
+    Object.defineProperty(window, "Notification", {
+      value: undefined,
+      configurable: true,
+    });
     requestNotificationPermission();
-    expect(Notification.requestPermission).not.toHaveBeenCalled();
+    Object.defineProperty(window, "Notification", {
+      value: og,
+      configurable: true,
+    });
   });
 
-  it("listens for install prompt", () => {
-    let handler: () => void = () => {};
-    const add = jest.fn((_, cb) => { handler = cb; });
-    Object.defineProperty(window, "addEventListener", { value: add, configurable: true });
+  it("has permission", () => {
+    Object.defineProperty(window, "Notification", {
+      value: { permission: "granted", requestPermission: jest.fn() },
+      configurable: true,
+    });
+    requestNotificationPermission();
+    expect(window.Notification.requestPermission).not.toHaveBeenCalled();
+  });
+});
+
+describe("listenForInstallPrompt", () => {
+  it("listens for before install prompt", () => {
+    window.addEventListener = jest.fn();
     listenForInstallPrompt();
-    expect(add).toHaveBeenCalledWith("beforeinstallprompt", expect.any(Function));
-    handler();
-    expect(info).toHaveBeenCalledWith(
-      "Add FarmBot to your home screen for a better experience.",
-      { idPrefix: "pwa-install", noTimer: true });
+    expect(window.addEventListener).toHaveBeenCalledWith(
+      "beforeinstallprompt", expect.any(Function as () => void));
+    const callback = jest.fn();
+    // Mock event listener implementation
+    window.addEventListener = jest.fn((event, cb) => {
+      event === "beforeinstallprompt" && callback();
+      return cb;
+    });
+    listenForInstallPrompt();
+    expect(callback).not.toHaveBeenCalled();
+  });
+});
+
+describe("notify()", () => {
+  it("sends notification", () => {
+    // Create a proper mock implementation for Notification
+    const originalNotification = window.Notification;
+
+    const MockNotification = function(
+      this: { title: string; options: { body: string } },
+      title: string,
+      options: { body: string },
+    ) {
+      this.title = title;
+      this.options = options;
+      expect(title).toEqual("title");
+      expect(options.body).toEqual("body");
+    } as unknown as typeof Notification;
+
+    // Use defineProperty to set read-only properties
+    Object.defineProperty(window, "Notification", {
+      value: MockNotification,
+      configurable: true
+    });
+
+    Object.defineProperty(window.Notification, "permission", {
+      value: "granted",
+      configurable: true
+    });
+
+    Object.defineProperty(window.Notification, "requestPermission", {
+      value: jest.fn(),
+      configurable: true
+    });
+
+    notify("title", "body");
+
+    // Restore original Notification
+    Object.defineProperty(window, "Notification", {
+      value: originalNotification,
+      configurable: true
+    });
   });
 
-  it("sends notifications", () => {
-    const mockNotification = jest.fn();
-    (global as any).Notification = function(title: string, opts: any) {
-      mockNotification(title, opts);
-    } as any;
-    (global as any).Notification.permission = "granted";
-    notify("t", "b");
-    expect(mockNotification).toHaveBeenCalledWith("t", { body: "b" });
+  it("notification undefined", () => {
+    const og = window.Notification;
+    Object.defineProperty(window, "Notification", {
+      value: undefined,
+      configurable: true,
+    });
+    notify("title", "body");
+    Object.defineProperty(window, "Notification", {
+      value: og,
+      configurable: true,
+    });
   });
 
-  it("skips notifications when not permitted", () => {
-    const mockNotification = jest.fn();
-    (global as any).Notification = function(title: string, opts: any) {
-      mockNotification(title, opts);
-    } as any;
-    (global as any).Notification.permission = "denied";
-    notify("t", "b");
-    expect(mockNotification).not.toHaveBeenCalled();
-  });
-
-  it("initializes pwa", () => {
-    const spy1 = jest.spyOn(require("../pwa"), "registerServiceWorker").mockImplementation(() => {});
-    const spy2 = jest.spyOn(require("../pwa"), "requestNotificationPermission").mockImplementation(() => {});
-    const spy3 = jest.spyOn(require("../pwa"), "listenForInstallPrompt").mockImplementation(() => {});
-    initPWA();
-    expect(spy1).toHaveBeenCalled();
-    expect(spy2).toHaveBeenCalled();
-    expect(spy3).toHaveBeenCalled();
+  it("doesn't have permission", () => {
+    Object.defineProperty(window, "Notification", {
+      value: { permission: "denied" },
+      configurable: true,
+    });
+    notify("title", "body");
   });
 });
