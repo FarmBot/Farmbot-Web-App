@@ -1,7 +1,15 @@
 interface MockRef {
-  current: { scale: { set: Function; }; } | undefined;
+  current: {
+    scale: { set: Function; };
+    position: { z: number; };
+  } | undefined;
 }
-const mockRef: MockRef = { current: { scale: { set: jest.fn() } } };
+const mockRef: MockRef = {
+  current: {
+    scale: { set: jest.fn() },
+    position: { z: 0 },
+  }
+};
 jest.mock("react", () => ({
   ...jest.requireActual("react"),
   useRef: () => mockRef,

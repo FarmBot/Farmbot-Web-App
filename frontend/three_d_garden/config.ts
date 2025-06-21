@@ -523,7 +523,7 @@ export const getSeasonProperties = (
 ): SeasonProperties => {
   const params = SEASON_PROPERTIES[config.plants] || SEASON_PROPERTIES[fallback];
   return {
-    sunIntensity: params.sunIntensity * config.sun / 100,
+    sunIntensity: params.sunIntensity,
     sunColor: params.sunColor,
     cloudOpacity: params.cloudOpacity,
   };

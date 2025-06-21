@@ -53,8 +53,7 @@ export const fakeDesignerState = (): DesignerState => ({
   panelOpen: true,
   threeDTopDownView: false,
   threeDExaggeratedZ: false,
-  threeDTimeOffset: 0,
-  threeDRealTime: true,
+  threeDTime: undefined,
 });
 
 export const fakeHelpState = (): HelpState => ({

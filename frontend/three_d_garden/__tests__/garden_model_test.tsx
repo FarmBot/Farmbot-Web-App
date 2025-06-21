@@ -102,6 +102,7 @@ describe("<GardenModel />", () => {
     p.config.plants = "";
     p.config.labels = true;
     p.config.labelsOnHover = false;
+    p.config.sunInclination = -1;
     p.config.sizePreset = "Genesis XL";
     p.config.stats = true;
     p.config.viewCube = true;
@@ -189,6 +190,6 @@ describe("<GardenModel />", () => {
     const p = fakeProps();
     p.config.sun = 0;
     const { container } = render(<GardenModel {...p} />);
-    expect(container.innerHTML).toContain("black");
+    expect(container.innerHTML).toContain("color=\"0,0,0\"");
   });
 });

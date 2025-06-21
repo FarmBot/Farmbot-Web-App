@@ -15,10 +15,10 @@ interface SeasonDuration {
 }
 
 export const SEASON_TIMINGS: SeasonDuration[] = [
-  { season: Season.Spring, duration: 17.5, pause: 1.75 },
-  { season: Season.Summer, duration: 20, pause: 1.5 },
-  { season: Season.Fall, duration: 17.5, pause: 1.75 },
-  { season: Season.Winter, duration: 15, pause: 2 },
+  { season: Season.Spring, duration: 17.5, pause: 0 },
+  { season: Season.Summer, duration: 20, pause: 0 },
+  { season: Season.Fall, duration: 17.5, pause: 0 },
+  { season: Season.Winter, duration: 15, pause: 0 },
 ];
 
 export const SEASON_DURATIONS: Record<string, number> = SEASON_TIMINGS

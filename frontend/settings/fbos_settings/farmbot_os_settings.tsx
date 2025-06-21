@@ -35,7 +35,7 @@ export const FarmBotSettings = (props: FarmbotSettingsProps) => {
       <NameRow {...commonProps} />
       <OrderNumberRow {...commonProps} />
       <TimezoneRow {...commonProps} />
-      <GardenLocationRow {...commonProps} />
+      <GardenLocationRow {...commonProps} farmwareEnvs={props.farmwareEnvs} />
       <OtaTimeSelectorRow {...commonProps}
         timeSettings={timeSettings} />
       <AutoUpdateRow {...commonProps} />

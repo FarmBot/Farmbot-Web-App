@@ -79,9 +79,9 @@ export const findOrCreate3DConfigFunction =
       }
     };
 
-interface ConfigProps {
+interface ThreeDConfigProps {
   dispatch: Function;
-  distanceIndicator: string;
+  distanceIndicator?: string;
   setting: DeviceSetting;
   configKey: string;
   tooltip: string;
@@ -91,7 +91,7 @@ interface ConfigProps {
   isScene?: boolean;
 }
 
-const Config = (props: ConfigProps) => {
+export const ThreeDConfig = (props: ThreeDConfigProps) => {
   const { dispatch, configKey, distanceIndicator } = props;
   const value = props.getValue(configKey);
   const modifiedClassName = getModifiedClassNameSpecifyDefault(
@@ -151,65 +151,56 @@ export const ThreeDSettings = (props: ThreeDSettingsProps) => {
       dispatch={props.dispatch}
       expanded={props.settingsPanelState.three_d} />
     <Collapse isOpen={!!props.settingsPanelState.three_d}>
-      <Config {...common}
+      <ThreeDConfig {...common}
         tooltip={ToolTips.THREE_D_BED_WALL_THICKNESS}
         setting={DeviceSetting.bedWallThickness}
         configKey={"bedWallThickness"} />
-      <Config {...common}
+      <ThreeDConfig {...common}
         tooltip={ToolTips.THREE_D_BED_HEIGHT}
         setting={DeviceSetting.bedHeight}
         configKey={"bedHeight"} />
-      <Config {...common}
+      <ThreeDConfig {...common}
         tooltip={ToolTips.THREE_D_CC_SUPPORT_SIZE}
         setting={DeviceSetting.ccSupportSize}
         configKey={"ccSupportSize"} />
-      <Config {...common}
+      <ThreeDConfig {...common}
         tooltip={ToolTips.THREE_D_BEAM_LENGTH}
         setting={DeviceSetting.beamLength}
         configKey={"beamLength"} />
-      <Config {...common}
+      <ThreeDConfig {...common}
         tooltip={ToolTips.THREE_D_COLUMN_LENGTH}
         setting={DeviceSetting.columnLength}
         configKey={"columnLength"} />
-      <Config {...common}
+      <ThreeDConfig {...common}
         tooltip={ToolTips.THREE_D_Z_AXIS_LENGTH}
         setting={DeviceSetting.zAxisLength}
         configKey={"zAxisLength"} />
-      <Config {...common}
+      <ThreeDConfig {...common}
         tooltip={ToolTips.THREE_D_BED_X_OFFSET}
         setting={DeviceSetting.bedXOffset}
         configKey={"bedXOffset"} />
-      <Config {...common}
+      <ThreeDConfig {...common}
         tooltip={ToolTips.THREE_D_BED_Y_OFFSET}
         setting={DeviceSetting.bedYOffset}
         configKey={"bedYOffset"} />
-      <Config {...common}
+      <ThreeDConfig {...common}
         tooltip={ToolTips.THREE_D_BED_Z_OFFSET}
         setting={DeviceSetting.bedZOffset}
         configKey={"bedZOffset"} />
-      <Config {...common}
+      <ThreeDConfig {...common}
         tooltip={ToolTips.THREE_D_LEG_SIZE}
         setting={DeviceSetting.legSize}
         configKey={"legSize"} />
-      <Config {...common}
+      <ThreeDConfig {...common}
         tooltip={ToolTips.THREE_D_BOUNDS}
         setting={DeviceSetting.bounds}
         configKey={"bounds"}
         isToggle={true} />
-      <Config {...common}
+      <ThreeDConfig {...common}
         tooltip={ToolTips.THREE_D_GRID}
         setting={DeviceSetting.grid}
         configKey={"grid"}
         isToggle={true} />
-      <Config {...common}
-        tooltip={ToolTips.THREE_D_HEADING}
-        setting={DeviceSetting.heading}
-        configKey={"heading"} />
-      <Config {...common}
-        tooltip={ToolTips.THREE_D_ENVIRONMENT}
-        setting={DeviceSetting.environment}
-        isScene={true}
-        configKey={"scene"} />
     </Collapse>
   </Highlight>;
 };

@@ -61,8 +61,7 @@ export const initialState: DesignerState = {
   panelOpen: true,
   threeDTopDownView: false,
   threeDExaggeratedZ: false,
-  threeDTimeOffset: 0,
-  threeDRealTime: true,
+  threeDTime: undefined,
 };
 
 export const designer = generateReducer<DesignerState>(initialState)
@@ -251,16 +250,8 @@ export const designer = generateReducer<DesignerState>(initialState)
     s.threeDExaggeratedZ = payload;
     return s;
   })
-  .add<boolean>(Actions.TOGGLE_3D_REAL_TIME, (s, { payload }) => {
-    s.threeDRealTime = payload;
-    return s;
-  })
-  .add<number>(Actions.CHANGE_3D_TIME, (s, { payload }) => {
-    s.threeDTimeOffset += payload;
-    return s;
-  })
-  .add<number>(Actions.RESET_3D_TIME, (s, { payload }) => {
-    s.threeDTimeOffset = payload;
+  .add<string | undefined>(Actions.SET_3D_TIME, (s, { payload }) => {
+    s.threeDTime = payload;
     return s;
   })
   .add<boolean>(Actions.SET_PANEL_OPEN, (s, { payload }) => {

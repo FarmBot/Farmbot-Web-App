@@ -181,8 +181,7 @@ export interface DesignerState {
   panelOpen: boolean;
   threeDTopDownView: boolean;
   threeDExaggeratedZ: boolean;
-  threeDTimeOffset: number;
-  threeDRealTime: boolean;
+  threeDTime: string | undefined;
 }
 
 export type TaggedExecutable = TaggedSequence | TaggedRegimen;

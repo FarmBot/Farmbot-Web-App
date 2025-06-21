@@ -144,37 +144,15 @@ describe("designer reducer", () => {
     expect(newState.threeDExaggeratedZ).toEqual(true);
   });
 
-  it("toggles real time", () => {
+  it("sets 3D time", () => {
     const state = oldState();
-    state.threeDRealTime = false;
-    const action: ReduxAction<boolean> = {
-      type: Actions.TOGGLE_3D_REAL_TIME,
-      payload: true,
+    state.threeDTime = undefined;
+    const action: ReduxAction<string | undefined> = {
+      type: Actions.SET_3D_TIME,
+      payload: "12:00",
     };
     const newState = designer(state, action);
-    expect(newState.threeDRealTime).toEqual(true);
-  });
-
-  it("sets time offset", () => {
-    const state = oldState();
-    state.threeDTimeOffset = 0;
-    const action: ReduxAction<number> = {
-      type: Actions.CHANGE_3D_TIME,
-      payload: 3600,
-    };
-    const newState = designer(state, action);
-    expect(newState.threeDTimeOffset).toEqual(3600);
-  });
-
-  it("resets time offset", () => {
-    const state = oldState();
-    state.threeDTimeOffset = 1;
-    const action: ReduxAction<number> = {
-      type: Actions.RESET_3D_TIME,
-      payload: 0,
-    };
-    const newState = designer(state, action);
-    expect(newState.threeDTimeOffset).toEqual(0);
+    expect(newState.threeDTime).toEqual("12:00");
   });
 
   it("sets panel open state", () => {

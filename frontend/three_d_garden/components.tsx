@@ -41,9 +41,10 @@ export const BoxGeometry = (props: ThreeElements["boxGeometry"]) =>
   // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
   <boxGeometry {...props} />;
 
-export const MeshBasicMaterial = (props: ThreeElements["meshBasicMaterial"]) =>
-  // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
-  <meshBasicMaterial {...props} />;
+export const MeshBasicMaterial =
+  React.forwardRef((props: ThreeElements["meshBasicMaterial"], ref) =>
+    // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
+    <meshBasicMaterial ref={ref} {...props} />);
 
 export const AxesHelper = (props: ThreeElements["axesHelper"]) =>
   // @ts-expect-error Property does not exist on type JSX.IntrinsicElements

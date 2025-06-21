@@ -54,34 +54,30 @@ describe("<TimeTravelTarget />", () => {
 
   it("renders active", () => {
     const p = fakeProps();
-    p.designer.threeDRealTime = true;
-    p.designer.threeDTimeOffset = 1;
+    p.designer.threeDTime = "12:00";
     const { container } = render(<TimeTravelTarget {...p} />);
     expect(container).toContainHTML("active");
   });
 
   it("renders inactive", () => {
     const p = fakeProps();
-    p.designer.threeDRealTime = false;
-    p.designer.threeDTimeOffset = 1;
+    p.designer.threeDTime = undefined;
     const { container } = render(<TimeTravelTarget {...p} />);
     expect(container).not.toContainHTML("active");
   });
 
   it("renders time", () => {
     const p = fakeProps();
-    p.designer.threeDRealTime = true;
-    p.designer.threeDTimeOffset = 0;
+    p.designer.threeDTime = "12:00";
     const { container } = render(<TimeTravelTarget {...p} />);
-    expect(container).toContainHTML(":");
+    expect(container).toContainHTML("12:00");
   });
 
   it("doesn't render time", () => {
     const p = fakeProps();
-    p.designer.threeDRealTime = false;
-    p.designer.threeDTimeOffset = 0;
+    p.designer.threeDTime = undefined;
     const { container } = render(<TimeTravelTarget {...p} />);
-    expect(container).not.toContainHTML(":");
+    expect(container).toContainHTML(":");
   });
 });
 
@@ -93,43 +89,17 @@ describe("<TimeTravelContent />", () => {
     designer: fakeDesignerState(),
   });
 
-  it("toggles real time: false", () => {
-    const p = fakeProps();
-    p.device.lat = 1;
-    p.device.lng = 1;
-    render(<TimeTravelContent {...p} />);
-    const topDownViewButton = screen.getByTitle("daytime");
-    fireEvent.click(topDownViewButton);
-    expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.TOGGLE_3D_REAL_TIME,
-      payload: false,
-    });
-  });
-
-  it("toggles real time: true", () => {
-    const p = fakeProps();
-    p.device.lat = 1;
-    p.device.lng = 1;
-    p.designer.threeDRealTime = false;
-    render(<TimeTravelContent {...p} />);
-    const topDownViewButton = screen.getByTitle("realtime");
-    fireEvent.click(topDownViewButton);
-    expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.TOGGLE_3D_REAL_TIME,
-      payload: true,
-    });
-  });
-
   it("decreases time offset", () => {
     const p = fakeProps();
     p.device.lat = 1;
     p.device.lng = 1;
+    p.designer.threeDTime = "12:00";
     render(<TimeTravelContent {...p} />);
     const topDownViewButton = screen.getByTitle("minus hour");
     fireEvent.click(topDownViewButton);
     expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.CHANGE_3D_TIME,
-      payload: -3600,
+      type: Actions.SET_3D_TIME,
+      payload: "11:00",
     });
   });
 
@@ -137,12 +107,13 @@ describe("<TimeTravelContent />", () => {
     const p = fakeProps();
     p.device.lat = 1;
     p.device.lng = 1;
+    p.designer.threeDTime = "12:00";
     render(<TimeTravelContent {...p} />);
     const topDownViewButton = screen.getByTitle("plus hour");
     fireEvent.click(topDownViewButton);
     expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.CHANGE_3D_TIME,
-      payload: 3600,
+      type: Actions.SET_3D_TIME,
+      payload: "13:00",
     });
   });
 
@@ -154,8 +125,8 @@ describe("<TimeTravelContent />", () => {
     const topDownViewButton = screen.getByTitle("reset hour");
     fireEvent.click(topDownViewButton);
     expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.RESET_3D_TIME,
-      payload: 0,
+      type: Actions.SET_3D_TIME,
+      payload: undefined,
     });
   });
 });
