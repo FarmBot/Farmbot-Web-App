@@ -1,0 +1,20 @@
+{
+  "name": "FarmBot",
+  "short_name": "FarmBot",
+  "icons": [
+    {
+      "src": "/images/farmbot_logo_on_brown_192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/images/farmbot_logo_on_brown_512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#0c170f",
+  "background_color": "#0c170f"
+}
