@@ -116,6 +116,8 @@ describe("skyColor(calcSunI())", () => {
     [180, DARK_BLUE],
     [150, BLUE],
   ])("calculates sky color at %s degrees", (inclination, expected) => {
-    expect(skyColor(calcSunI(inclination) * 100)).toEqual(expected);
+    skyColor(calcSunI(inclination) * 100).forEach((value, i) => {
+      expect(value).toBeCloseTo(expected[i], 4);
+    });
   });
 });

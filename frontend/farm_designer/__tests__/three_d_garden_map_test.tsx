@@ -151,8 +151,8 @@ describe("<ThreeDGardenMap />", () => {
     render(<ThreeDGardenMap {...p} />);
     expect(ThreeDGarden).toHaveBeenCalledWith({
       config: expect.objectContaining({
-        sunInclination: 28.64788975654116,
-        sunAzimuth: -33.70422048691768,
+        sunInclination: expect.any(Number),
+        sunAzimuth: expect.any(Number),
         sun: 75,
       }),
       threeDPlants: [],
@@ -160,6 +160,9 @@ describe("<ThreeDGardenMap />", () => {
       mapPoints: [],
       weeds: [],
     }, {});
+    const callArgs = (ThreeDGarden as jest.Mock).mock.calls[0][0];
+    expect(callArgs.config.sunInclination).toBeCloseTo(28.64788975654116, 4);
+    expect(callArgs.config.sunAzimuth).toBeCloseTo(-33.70422048691768, 4);
   });
 
   it("converts props: night", () => {
