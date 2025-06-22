@@ -1,7 +1,7 @@
 const path = require('path');
 const { spawn } = require('child_process');
 
-const jestPath = path.resolve(__dirname, 'node_modules', '.bin', 'jest');
+const jestPath = path.resolve(process.cwd(), 'node_modules', '.bin', 'jest');
 
 const args = process.argv.slice(2);
 

@@ -28,11 +28,11 @@ Follow existing codebase conventions and style, for example:
    - Make sure the tests pass for the files you change.
       For example, `npm run test frontend/__tests__/file.tsx`.
    - Make sure all tests pass: `npm run test-slow`.
-   - Make sure test coverage for all code you change is at 100%:
-      Find the file in the `coverage_fe/` directory and make sure it's 100%.
-      CLI examples:
-       `cat coverage_fe/frontend/file.tsx.html | grep strong` should output 4x `100%`
-       `cat coverage_fe/frontend/file.tsx.html | grep "not covered"` output should be empty
+   - Ensure the test coverage for all code you change is at 100%:
+      For example, `bundle exec rake check_file_coverage:fe frontend/file.tsx`.
+      Alternatively:
+        `changed=$(git diff --name-only staging...HEAD | tr '\n' ',' | sed 's/,$//')`
+        `CHANGED_FILES=$changed bundle exec rake check_file_coverage:fe`
    - Make sure the test coverage for all code you change is at 100%: `rake coverage:run`
       It has passed if `Pass? yes` is present in the output.
       If `Pass? no` is present, you need to add tests to cover the code you changed.
@@ -42,10 +42,8 @@ Follow existing codebase conventions and style, for example:
       For example, `bundle exec rspec spec spec/file.rb`.
    - Make sure all tests pass: `bundle exec rspec spec`.
    - Ensure the test coverage for all code you change is at 100%:
-      Find the file in `coverage_api/index.html` and make sure it's 100%.
-      CLI example:
-         `cat coverage_api/index.html | grep -A 3 <h3>app/file.rb</h3> | tail -n1`
-         should output `100.0%`
+      For example, `bundle exec rake check_file_coverage:api app/file.rb`.
+   - Ensure test coverage is at 100%: `bundle exec rake check_file_coverage:api`.
 - Fix any test or type errors until the whole suite is green.
 - After moving files or changing imports, be sure linters still pass.
 - Add or update tests for the code you change, even if nobody asked.

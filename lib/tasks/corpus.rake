@@ -3,7 +3,7 @@ namespace :corpus do
        "mostly used by the FarmBot core team when making large updates to" +
        "CeleryScript"
   task generate: :environment do
-    sh "rails r latest_corpus.rb"
+    sh "rails r scripts/latest_corpus.rb"
     puts "Now run 'xclip -sel clip < ./latest_corpus.ts'"
   end
 end
