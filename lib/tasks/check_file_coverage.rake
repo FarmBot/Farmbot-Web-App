@@ -147,7 +147,7 @@ namespace :check_file_coverage do
         messages = incomplete.map { |k, v| "#{k}: #{v}%" }.join(", ")
         report_failure(frontend_path, "Not fully covered (#{messages})")
       else
-        if !paths_args.empty?
+        if !paths_args.empty? || changed_files_exists
           puts "✅ #{frontend_path}: 100% coverage on all metrics"
         end
       end
