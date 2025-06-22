@@ -8,11 +8,13 @@ bundle install
 
 ## Style
 Follow existing codebase conventions and style, for example:
-- use `return <Component />` instead of return `(<Component />)`
+- use `return <Component />` instead of `return (<Component />)`
 - do not write lines longer than 85 characters
 - use lodash `range(` instead of `Array.from({ length: ...`
 
 ## Testing Instructions
+- When changing the code of a function, make sure the change is compatible with
+   existing uses of the function.
 - Jest mocks already exist for many modules in `frontend/__test_support__`.
 - New tests should be written using the `@testing-library/react` library.
 - For frontend work:

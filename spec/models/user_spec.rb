@@ -38,7 +38,7 @@ describe User do
   describe "SKIP_EMAIL_VALIDATION" do
     let (:user) { FactoryBot.create(:user, confirmed_at: nil) }
 
-    it "considers al users verified when set to `true`" do
+    it "considers all users verified when set to `true`" do
       const_reassign(User, :SKIP_EMAIL_VALIDATION, true)
       expect(user.verified?).to be(true)
     end
