@@ -31,6 +31,7 @@ import { SlotWithTool } from "../resources/interfaces";
 import { cameraInit } from "./camera";
 import { isMobile } from "../screen_size";
 import { computeSurface, getZFunc, precomputeTriangles } from "./triangles";
+import { BigDistance } from "./constants";
 
 const AnimatedGroup = animated(Group);
 
@@ -109,8 +110,8 @@ export const GardenModel = (props: GardenModelProps) => {
       config={config}
       activeFocus={props.activeFocus}
       setActiveFocus={props.setActiveFocus} />}
-    <Sky sunPosition={sunPosition(config.sunInclination, config.sunAzimuth)} />
-    <Sphere args={[30000, 8, 16]}>
+    <Sky sunPosition={sunPosition(0, 0, 0)} />
+    <Sphere args={[BigDistance.sky, 8, 16]}>
       <MeshBasicMaterial
         ref={skyRef}
         color={skyColor(config.sun)}
@@ -119,7 +120,7 @@ export const GardenModel = (props: GardenModelProps) => {
     <AnimatedGroup
       scale={props.activeFocus ? 1 : scale}>
       <Camera makeDefault={true} name={"camera"}
-        fov={40} near={10} far={75000}
+        fov={40} near={10} far={BigDistance.far}
         position={camera.position}
         rotation={[0, 0, 0]}
         zoom={topDown ? 0.25 : 1}
@@ -134,7 +135,8 @@ export const GardenModel = (props: GardenModelProps) => {
       enablePan={config.pan}
       dampingFactor={0.2}
       target={camera.target}
-      minDistance={500} maxDistance={24000} />
+      minDistance={500}
+      maxDistance={config.lightsDebug ? BigDistance.devZoom : BigDistance.zoom} />
     <AxesHelper args={[5000]} visible={config.threeAxes} />
     {config.viewCube && <GizmoHelper><GizmoViewcube /></GizmoHelper>}
     <Sun config={config} skyRef={skyRef} startTimeRef={props.startTimeRef} />

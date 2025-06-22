@@ -1,5 +1,16 @@
 import { Mode } from "../farm_designer/map/interfaces";
 
+export enum BigDistance {
+  sunAffect = 20000,
+  sunVisual = 31000,
+  sunActual = 10000,
+  sky = 40000,
+  ground = 30000,
+  far = 75000,
+  zoom = 20000,
+  devZoom = 37000,
+}
+
 export const LIB_DIR = "/3D/lib/";
 
 export const ASSETS: Record<string, Record<string, string>> = {

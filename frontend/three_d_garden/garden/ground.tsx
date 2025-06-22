@@ -2,7 +2,7 @@ import React from "react";
 import { Config, detailLevels } from "../config";
 import { Circle, Detailed, useTexture } from "@react-three/drei";
 import { MeshPhongMaterial } from "../components";
-import { ASSETS } from "../constants";
+import { ASSETS, BigDistance } from "../constants";
 import { RepeatWrapping } from "three";
 
 export interface GroundProps {
@@ -43,7 +43,7 @@ export const Ground = (props: GroundProps) => {
     <Circle name={`ground ${config.scene}`}
       visible={config.ground}
       receiveShadow={true}
-      args={[30000, 16]}
+      args={[BigDistance.ground, 16]}
       position={[0, 0, -groundZ]}>
       {children}
     </Circle>;

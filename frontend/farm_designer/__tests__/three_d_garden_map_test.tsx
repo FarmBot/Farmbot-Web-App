@@ -152,7 +152,7 @@ describe("<ThreeDGardenMap />", () => {
     expect(ThreeDGarden).toHaveBeenCalledWith({
       config: expect.objectContaining({
         sunInclination: 28.64788975654116,
-        sunAzimuth: 146.29577951308232,
+        sunAzimuth: -33.70422048691768,
         sun: 75,
       }),
       threeDPlants: [],

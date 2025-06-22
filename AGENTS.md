@@ -16,7 +16,7 @@ Follow existing codebase conventions and style, for example:
 - Jest mocks already exist for many modules in `frontend/__test_support__`.
 - New tests should be written using the `@testing-library/react` library.
 - For frontend work:
-   - Make sure all checks and linters pass (may take about a minute each):
+   - Make sure all checks and linters pass:
       ```
       npm run typecheck
       npm run eslint
@@ -25,7 +25,7 @@ Follow existing codebase conventions and style, for example:
       ```
    - Make sure the tests pass for the files you change.
       For example, `npm run test frontend/__tests__/file.tsx`.
-   - Make sure all tests pass: `npm run test-slow`. This will take 10 minutes or so.
+   - Make sure all tests pass: `npm run test-slow`.
    - Make sure test coverage for all code you change is at 100%:
       Find the file in the `coverage_fe/` directory and make sure it's 100%.
       CLI examples:

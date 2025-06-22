@@ -13,11 +13,10 @@ import { range } from "lodash";
 import moment from "moment";
 import { SEASON_DURATIONS } from "../../promo/constants";
 import { Line2 } from "three/examples/jsm/lines/Line2";
+import { BigDistance } from "../constants";
 
-const sunDistance = 20000;
 const sunDecay = 0;
 const shadowNormalBias = 100;
-
 const SUN_COLOR = ["#FFD700", "#FFEA00", "#FFF700", "#FFE066"];
 
 export const getCycleLength = (season: string) =>
@@ -52,24 +51,25 @@ export const calcSunCoordinate = (
   const sunPosition = SunCalc.getPosition(date, latitude, longitude);
   const sunAzimuth = sunPosition.azimuth * (180 / Math.PI);
   return {
-    azimuth: (sunAzimuth - heading + 90) % 360,
+    azimuth: (sunAzimuth - heading - 90) % 360,
     inclination: sunPosition.altitude * (180 / Math.PI),
   };
 };
 
-export const sunPosition =
-  (sunInclination: number, sunAzimuth: number): Vector3 => {
-    return new Vector3(
-      10000
-      * Math.cos(sunInclination * Math.PI / 180)
-      * Math.sin(sunAzimuth * Math.PI / 180),
-      10000
-      * Math.cos(sunInclination * Math.PI / 180)
-      * Math.cos(sunAzimuth * Math.PI / 180),
-      10000
-      * Math.sin(sunInclination * Math.PI / 180),
-    );
-  };
+export const sunPosition = (
+  sunInclination: number,
+  sunAzimuth: number,
+  distance: number,
+): Vector3 => {
+  const toRad = (degrees: number) => degrees * Math.PI / 180;
+  const azimuth = toRad(sunAzimuth);
+  const inclination = toRad(sunInclination);
+  return new Vector3(
+    distance * Math.cos(inclination) * Math.sin(azimuth),
+    distance * Math.cos(inclination) * Math.cos(azimuth),
+    distance * Math.sin(inclination),
+  );
+};
 
 const convertColor =
   (r: number, g: number, b: number): [number, number, number] => {
@@ -118,12 +118,17 @@ export const Sun = (props: SunProps) => {
   const sunParams = getSeasonProperties(config, "Spring");
   const { sunIntensity, sunColor } = sunParams;
 
-  const sunPos = sunPosition(config.sunInclination, config.sunAzimuth);
+  const sunPos = sunPosition(
+    config.sunInclination,
+    config.sunAzimuth,
+    BigDistance.sunActual);
 
   const lightRefs = React.useRef<(ThreePointLight | null)[]>([]);
   const sphereRefs = React.useRef<(Mesh | null)[]>([]);
   // eslint-disable-next-line no-null/no-null
-  const lineRef = React.useRef<(Line2)>(null);
+  const sunRef = React.useRef<Mesh>(null);
+  // eslint-disable-next-line no-null/no-null
+  const lineRef = React.useRef<Line2>(null);
   const [points, setPoints] = React.useState<Vector3[]>(
     range(4).map(index => new Vector3(...offsetSunPos(sunPos, index))),
   );
@@ -151,7 +156,7 @@ export const Sun = (props: SunProps) => {
     const date = moment().utc().startOf("day").add(timeOffset, "seconds").toDate();
     const { azimuth, inclination } = calcSunCoordinate(date, 0, 52, 0);
     const position = (index: number) => {
-      const sunPos = sunPosition(inclination, azimuth);
+      const sunPos = sunPosition(inclination, azimuth, BigDistance.sunActual);
       return offsetSunPos(sunPos, index);
     };
 
@@ -160,6 +165,7 @@ export const Sun = (props: SunProps) => {
     lightRefs.current.forEach((light, index) => {
       if (light) {
         light.position?.set(...position(index));
+        light.intensity = sunIntensity * config.sun / 100 * sunFactor.current;
       }
     });
 
@@ -168,6 +174,9 @@ export const Sun = (props: SunProps) => {
         sphere.position.set(...position(index));
       }
     });
+
+    const visualPos = sunPosition(inclination, azimuth, BigDistance.sunVisual);
+    sunRef.current?.position?.set(visualPos.x, visualPos.y, visualPos.z);
 
     if (lineRef.current) {
       // eslint-disable-next-line @react-three/no-new-in-loop
@@ -180,14 +189,15 @@ export const Sun = (props: SunProps) => {
     {range(4).map(index => {
       const position = offsetSunPos(sunPos, index);
       const color = SUN_COLOR[index];
+      const intensity = sunIntensity * config.sun / 100 * sunFactor.current;
       return <Group key={index} name={`sun_${index}`}>
         <PointLight
           ref={(el: ThreePointLight) => {
             if (el) { lightRefs.current[index] = el; }
           }}
-          intensity={sunIntensity * config.sun / 100 * sunFactor.current}
+          intensity={intensity}
           color={sunColor}
-          distance={sunDistance}
+          distance={BigDistance.sunAffect}
           decay={sunDecay}
           castShadow={true}
           shadow-normalBias={shadowNormalBias} // warning: distorts shadows
@@ -206,5 +216,14 @@ export const Sun = (props: SunProps) => {
           </Trail>}
       </Group>;
     })}
+    <Sphere
+      ref={sunRef}
+      args={[1000, 32, 32]}
+      position={sunPosition(
+        config.sunInclination,
+        config.sunAzimuth,
+        BigDistance.sunVisual)}>
+      <MeshBasicMaterial color={SUN_COLOR[0]} />
+    </Sphere>
   </Group>;
 };

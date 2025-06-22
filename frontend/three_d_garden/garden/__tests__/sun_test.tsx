@@ -76,6 +76,7 @@ describe("<Sun />", () => {
       .mockImplementationOnce(() => mock4Ref)
       .mockImplementationOnce(() => mock4Ref)
       .mockImplementationOnce(() => mock1Ref)
+      .mockImplementationOnce(() => mock1Ref)
       .mockImplementationOnce(() => mock0Ref);
     jest.spyOn(React, "useState").mockReturnValue([[], jest.fn()]);
     const p = fakeProps();
