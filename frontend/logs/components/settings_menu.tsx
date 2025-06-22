@@ -63,8 +63,9 @@ const LogSetting = (props: LogSettingProps) => {
       dim={!config.consistent}
       className={getModifiedClassName(setting, config.value, firmwareHardware)}
       toggleAction={() => {
-        props.dispatch(updateConfig({ [setting]: !config.value }));
-        if (!config.value === true) {
+        const newValue = !config.value;
+        props.dispatch(updateConfig({ [setting]: newValue }));
+        if (newValue === true) {
           switch (setting) {
             case "sequence_init_log":
               updateMinFilterLevel(MessageType.busy, 2);

@@ -5,5 +5,4 @@ export function urlFriendly(stringToFormat: string) {
 
 /** Fetch query value for the provided key. */
 export const getUrlQuery = (key: string): string | undefined =>
-  location.search
-    .split(`?${key}=`).filter(x => x).pop()?.split("?")[0].split("#")[0];
+  new URLSearchParams(location.search).get(key)?.split("#")[0] || undefined;

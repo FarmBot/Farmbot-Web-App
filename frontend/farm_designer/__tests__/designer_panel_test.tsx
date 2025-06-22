@@ -15,7 +15,7 @@ describe("<DesignerPanel />", () => {
 
   it("removes beacon", () => {
     jest.useFakeTimers();
-    location.search = "?tour=gettingStarted?tourStep=plants";
+    location.search = "?tour=gettingStarted&tourStep=plants";
     const wrapper = mount(<DesignerPanel panelName={"plants"} />);
     expect(wrapper.find("div").first().hasClass("beacon")).toBeTruthy();
     act(() => { jest.runAllTimers(); });

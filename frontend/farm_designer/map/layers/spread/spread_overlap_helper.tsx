@@ -80,7 +80,7 @@ export function getOverlap(
 ): number {
   if (activeXYZ && !isUndefined(activeXYZ.x) && !isUndefined(activeXYZ.y)
     && plantXYZ && !isUndefined(plantXYZ.x) && !isUndefined(plantXYZ.y)) {
-    // Plant editing (dragging) is occuring
+    // Plant editing (dragging) is occurring
     const activeXY = { x: round(activeXYZ.x), y: round(activeXYZ.y) };
     const plantXY = { x: round(plantXYZ.x), y: round(plantXYZ.y) };
     const overlap = round(Math.abs(Math.min(0,

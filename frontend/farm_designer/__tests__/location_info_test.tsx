@@ -52,7 +52,7 @@ describe("<LocationInfo />", () => {
   });
 
   it("updates query", () => {
-    location.search = "?x=123?y=456";
+    location.search = "?x=123&y=456";
     const p = fakeProps();
     mount(<LocationInfo {...p} />);
     expect(p.dispatch).toHaveBeenCalledWith({
