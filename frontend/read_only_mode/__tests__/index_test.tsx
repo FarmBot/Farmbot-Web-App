@@ -33,13 +33,12 @@ describe("readOnlyInterceptor", () => {
 });
 
 describe("<ReadOnlyIcon />", () => {
-  it("shows nothing when unlocked", () => {
+  it("returns null when unlocked", () => {
     const result = shallow(<ReadOnlyIcon locked={false} />);
-    expect(result.html())
-      .toEqual("<div class=\"read-only-mode-disabled\"></div>");
+    expect(result.html()).toEqual(null);
   });
 
-  it("hows the pencil icon when locked", () => {
+  it("shows the pencil icon when locked", () => {
     const result = shallow(<ReadOnlyIcon locked={true} />);
     expect(result.find(".fa-pencil").length).toBe(1);
     expect(result.find(".fa-ban").length).toBe(1);

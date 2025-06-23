@@ -73,24 +73,11 @@
   }
 }
 
-.designer-regimen-scheduler-panel {
-  .panel-content {
-    display: inline-block;
-    max-height: calc(100vh - 16.5rem);
-    overflow-y: auto;
-    overflow-x: hidden;
-    width: 100%;
-  }
-}
-
 .designer-regimen-editor-panel {
   .panel-header {
     color: $dark_gray;
   }
   .panel-content {
-    max-height: calc(100vh - 14rem);
-    overflow-y: auto;
-    overflow-x: hidden;
     scrollbar-width: none;
     label {
       margin-top: 0;

@@ -3,16 +3,18 @@
 
 .farm-designer-panels {
   position: fixed;
-  top: 9rem;
+  top: 7.5rem;
   width: 45rem;
-  margin: 1.25rem;
+  margin: 1rem;
   margin-top: 0;
   overflow-y: scroll;
   border-radius: 1rem;
   @media screen and (max-width: $mobile_max_width) {
-    top: 15rem;
+    top: 13rem;
     width: 100vw;
     margin: 0;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
   }
   &.short-panel {
     max-height: 19rem;
@@ -21,7 +23,7 @@
 
 .panel-nav {
   position: fixed;
-  top: 10rem;
+  top: 8.5rem;
   width: 100vw;
   display: none;
   overflow-x: scroll;
@@ -171,8 +173,7 @@
     text-align: center;
     text-transform: uppercase;
     font-size: 1.4rem;
-    line-height: 5rem;
-    height: 5rem;
+    height: 4.5rem;
     color: $light_gray;
     padding-left: 0.2rem;
     padding-right: 0.2rem;

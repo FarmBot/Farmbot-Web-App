@@ -66,6 +66,32 @@ describe("<NavLinks />", () => {
     expect(wrapper.find("Link").at(0).hasClass("active")).toBeTruthy();
   });
 
+  it("clicks active link: closes panel", () => {
+    location.pathname = Path.mock(Path.plants());
+    const p = fakeProps();
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
+    const wrapper = mount(<NavLinks {...p} />);
+    wrapper.find("Link").at(0).simulate("click");
+    expect(p.close).toHaveBeenCalled();
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_PANEL_OPEN, payload: false,
+    });
+  });
+
+  it("clicks inactive link: opens panel", () => {
+    location.pathname = Path.mock(Path.weeds());
+    const p = fakeProps();
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
+    const wrapper = mount(<NavLinks {...p} />);
+    wrapper.find("Link").at(0).simulate("click");
+    expect(p.close).toHaveBeenCalled();
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_PANEL_OPEN, payload: true,
+    });
+  });
+
   it("shows sensors link", () => {
     const config = fakeWebAppConfig();
     config.body.hide_sensors = false;

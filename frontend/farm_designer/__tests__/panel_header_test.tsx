@@ -41,7 +41,7 @@ describe("<DesignerNavTabs />", () => {
     ["plants", Path.plants()],
     ["plants", Path.plantTemplates(1)],
     ["tools", Path.toolSlots()],
-  ])("shows active %s icon", (slug, path) => {
+  ])("closes panel when active %s icon is clicked", (slug, path) => {
     location.pathname = Path.mock(path);
     const p = fakeProps();
     const dispatch = jest.fn();
@@ -51,11 +51,25 @@ describe("<DesignerNavTabs />", () => {
     expectActive(wrapper, slug);
     wrapper.find("#" + slug).first().simulate("click");
     expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.SET_PANEL_OPEN, payload: false,
+    });
+  });
+
+  it("opens panel when inactive tab is clicked", () => {
+    location.pathname = Path.mock(Path.weeds());
+    const p = fakeProps();
+    p.designer.panelOpen = true;
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
+    const wrapper = mount(<DesignerNavTabs {...p} />);
+    expectActive(wrapper, "weeds");
+    wrapper.find("#plants").first().simulate("click");
+    expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_PANEL_OPEN, payload: true,
     });
   });
 
-  it("closes panel", () => {
+  it("closes panel when map icon is clicked", () => {
     location.pathname = Path.mock(Path.plants());
     const p = fakeProps();
     const dispatch = jest.fn();

@@ -6,8 +6,8 @@
   left: 0;
   right: 0;
   z-index: 99;
-  height: 8.9rem;
-  background: linear-gradient(0deg, transparent, $translucent2 30%, $black);
+  height: 8rem;
+  background: linear-gradient(0deg, transparent, $translucent3 60%, $translucent5), linear-gradient(0deg, transparent 30%, $translucent3);
 }
 
 nav {
@@ -108,10 +108,10 @@ nav {
     a {
       display: inline-block;
       position: relative;
-      height: 5rem;
+      height: 4.5rem;
       font-size: 1.2rem;
       white-space: nowrap;
-      padding: 1.5rem 0.5rem;
+      padding: 1rem 0.5rem;
       letter-spacing: 1.2px;
       &:focus {
         font-weight: bold;
@@ -168,8 +168,11 @@ nav {
 }
 
 .nav-right {
-  height: 5rem;
   overflow: hidden;
+  display: flex;
+  gap: 0.75rem;
+  flex-direction: row-reverse;
+  align-items: center;
   .time-travel-button,
   .nav-coordinates,
   .jobs-button,
@@ -178,13 +181,11 @@ nav {
   .nav-name {
     display: flex;
     position: relative;
-    gap: 1rem;
+    gap: 0.5rem;
     align-items: center;
     height: 2.9rem;
     overflow: hidden;
     border-radius: 5px;
-    margin-right: 0.75rem;
-    margin-left: 0.5rem;
     padding-left: 0.8rem;
     padding-right: 0.8rem;
     font-weight: bold;
@@ -193,24 +194,16 @@ nav {
     color: $light_gray;
     background: $medium_gray;
     user-select: none;
-    &.hover,
     &:hover {
-      color: $white;
       filter: brightness(1.05);
       box-shadow: inset 0 -1px 0px 0px $translucent2, 0 0 5px $translucent15, inset 0 0 5px rgba(255, 255, 255, 0.3);
-      .jobs-button-progress-text,
-      .title,
-      p {
-        color: $white;
-      }
+    }
+    &.hover {
+      background: var(--main-bg);
     }
   }
   .time-travel-button,
   .nav-coordinates {
-    p {
-      display: inline;
-      color: $light_gray;
-    }
     img,
     p {
       position: relative;
@@ -222,10 +215,6 @@ nav {
       background: $placeholder_gray;
       border-radius: 0;
     }
-  }
-  .setup-button {
-    display: inline-block;
-    margin-top: 1.5rem;
   }
   .jobs-button {
     position: relative;
@@ -241,7 +230,6 @@ nav {
     .jobs-button-progress-text,
     .title {
       display: inline-block;
-      color: $light_gray;
       font-weight: bold;
       white-space: nowrap;
       overflow: hidden;
@@ -261,8 +249,6 @@ nav {
   }
   .connectivity-button {
     p {
-      display: inline;
-      color: $light_gray;
       font-weight: bold;
     }
   }
@@ -280,23 +266,9 @@ nav {
       margin-right: 0.8rem;
     }
   }
-  .nav-name {
-    margin-top: -0.75rem;
-  }
-}
-
-.nav-popup-button-wrapper {
-  display: inline;
-  span:first-of-type {
-    margin-top: 0.75rem;
-  }
 }
 
 .menu-popover {
-  display: inline;
-  .bp5-popover-wrapper {
-    margin-left: 1.25rem;
-  }
   .bp5-popover-content {
     position: relative;
     width: 22rem;
@@ -348,7 +320,6 @@ nav {
     width: 2.75rem;
     height: 2.75rem;
     padding: 0.75rem;
-    margin-top: -0.75rem;
     border-radius: 5px;
     &:hover {
       background: rgba(255, 255, 255, 0.2);
@@ -361,6 +332,28 @@ body:has(.app.dark) {
     .bp5-popover-content {
       img {
         filter: invert(0.75);
+      }
+    }
+  }
+}
+
+body:has(.app.light) {
+  .nav-right {
+    .time-travel-button,
+    .nav-coordinates,
+    .jobs-button,
+    .setup-button,
+    .connectivity-button,
+    .nav-name {
+      &.hover {
+        background: var(--main-bg);
+        color: var(--text-color);
+      }
+    }
+    .nav-coordinates.hover {
+      img {
+        filter: none;
+        opacity: 0.7;
       }
     }
   }
@@ -421,11 +414,11 @@ body:has(.app.dark) {
 }
 
 .read-only-icon {
-  margin: 9px 0px 0px 9px;
-  float: right;
-  box-sizing: inherit;
+  .fa-ban {
+    color: $red;
+  }
   .fa-pencil {
-    color: $white;
+    color: $off_white;
   }
 }
 

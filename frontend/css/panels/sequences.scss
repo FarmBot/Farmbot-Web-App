@@ -13,12 +13,6 @@
 
 .designer-sequence-list-panel {
   .panel-content {
-    max-height: calc(100vh - 16.5rem);
-    overflow-y: scroll;
-    overflow-x: hidden;
-    @media screen and (max-width: $mobile_max_width) {
-      max-height: calc(100vh - 19rem);
-    }
     a {
       text-decoration: none !important;
       p {

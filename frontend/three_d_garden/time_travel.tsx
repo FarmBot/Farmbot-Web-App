@@ -57,7 +57,7 @@ export interface TimeTravelContentProps {
 export const TimeTravelContent = (props: TimeTravelContentProps) => {
   const { threeDTime } = props.designer;
   const { dispatch } = props;
-  return <div className={"time-travel"}>
+  return <div className={"time-travel grid half-gap"}>
     <label>{t("Time Travel")}</label>
     <div className={"row grid-3-col"}>
       <button className={"fb-button gray"}
