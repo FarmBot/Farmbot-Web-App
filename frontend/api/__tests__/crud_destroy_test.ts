@@ -1,11 +1,11 @@
-interface MockRespone {
+interface MockResponse {
   kind: string;
   body: {
     id: number | undefined;
   }
 }
 
-const mockResource: MockRespone = { kind: "Regimen", body: { id: 1 } };
+const mockResource: MockResponse = { kind: "Regimen", body: { id: 1 } };
 
 let mockDelete: Promise<{} | void> = Promise.resolve({});
 

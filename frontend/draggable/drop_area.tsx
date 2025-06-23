@@ -1,6 +1,6 @@
 import React from "react";
 import { DropAreaProps, DropAreaState } from "./interfaces";
-import { STEP_DATATRANSFER_IDENTIFER } from "./actions";
+import { STEP_DATATRANSFER_IDENTIFIER } from "./actions";
 
 export class DropArea extends React.Component<DropAreaProps, DropAreaState> {
 
@@ -12,7 +12,7 @@ export class DropArea extends React.Component<DropAreaProps, DropAreaState> {
 
   drop = (e: React.DragEvent<HTMLElement>) => {
     e.preventDefault();
-    const key = e.dataTransfer.getData(STEP_DATATRANSFER_IDENTIFER);
+    const key = e.dataTransfer.getData(STEP_DATATRANSFER_IDENTIFIER);
     this.props.callback(key);
     this.toggle();
   };

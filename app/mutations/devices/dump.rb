@@ -24,7 +24,7 @@ module Devices
         server_url: $API_URL,
         database_schema: ActiveRecord::Migrator.current_version,
         # Tools show up as "inactive" if you don't do this.
-        tools: Tool.outter_join_slots(device.id).map(&:body_as_json),
+        tools: Tool.outer_join_slots(device.id).map(&:body_as_json),
         device: device.body_as_json,
         fbos_config: device.fbos_config,
         firmware_config: device.firmware_config,

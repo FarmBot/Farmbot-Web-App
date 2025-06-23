@@ -22,7 +22,7 @@ class Tool < ApplicationRecord
   validates :device, presence: true
   validates :name, uniqueness: { scope: :device }
 
-  def self.outter_join_slots(device_id)
+  def self.outer_join_slots(device_id)
     self.find_by_sql(INDEX_QUERY % device_id)
   end
 

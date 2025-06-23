@@ -8,7 +8,7 @@ import { Actions } from "../constants";
 import { t } from "../i18next_wrapper";
 import { urlFriendly } from "../util";
 import { setActiveSequenceByName } from "../sequences/set_active_sequence_by_name";
-import { stepGet, STEP_DATATRANSFER_IDENTIFER } from "../draggable/actions";
+import { stepGet, STEP_DATATRANSFER_IDENTIFIER } from "../draggable/actions";
 import { joinKindAndId } from "../resources/reducer_support";
 import { maybeGetSequence } from "../resources/selectors";
 import { Path } from "../internal_urls";
@@ -113,7 +113,7 @@ export function moveSequence(sequenceUuid: string, folder_id: number) {
 
 export const dropSequence = (folder_id: number) =>
   (e: React.DragEvent<HTMLElement>) => {
-    const key = e.dataTransfer.getData(STEP_DATATRANSFER_IDENTIFER);
+    const key = e.dataTransfer.getData(STEP_DATATRANSFER_IDENTIFIER);
     const dispatch: Function = store.dispatch;
     const dataXferObj = dispatch(stepGet(key));
     const { sequence_id } = dataXferObj.value.args;

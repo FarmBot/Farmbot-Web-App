@@ -125,7 +125,7 @@ class Transport
     end
 
     def self.close_connections_for_username(name)
-      find_connection_by_name(name).map { |connec| client.close_connection(connec) }
+      find_connection_by_name(name).map { |connect| client.close_connection(connect) }
     end
   end # Mqmt
 end # Transport
