@@ -24,18 +24,26 @@ interface TargetProps {
 export class FlipperImage
   extends React.Component<FlipperImageProps, FlipperImageState> {
   state: FlipperImageState = {
-    isLoaded: false,
-    width: undefined,
-    height: undefined,
+    isLoaded: !!this.props.preloadedImage,
+    width: this.props.preloadedImage?.naturalWidth,
+    height: this.props.preloadedImage?.naturalHeight,
   };
 
+  componentDidMount() {
+    if (this.props.preloadedImage) {
+      this.props.onImageLoad(this.props.preloadedImage);
+    }
+  }
+
   onImageLoad = (img: HTMLImageElement) => {
-    this.props.onImageLoad(img);
-    this.setState({
-      isLoaded: true,
-      width: img.naturalWidth,
-      height: img.naturalHeight,
-    });
+    if (!this.state.isLoaded) {
+      this.props.onImageLoad(img);
+      this.setState({
+        isLoaded: true,
+        width: img.naturalWidth,
+        height: img.naturalHeight,
+      });
+    }
   };
 
   Target = (props: TargetProps) => {

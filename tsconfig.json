@@ -24,6 +24,7 @@
     "strictNullChecks": true,
     "target": "es5",
     "resolveJsonModule": true,
+    "types": ["jest", "@testing-library/jest-dom", "node"]
   },
   "include": [
     "frontend"
