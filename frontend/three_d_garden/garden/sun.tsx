@@ -51,7 +51,7 @@ export const calcSunCoordinate = (
   const sunPosition = SunCalc.getPosition(date, latitude, longitude);
   const sunAzimuth = sunPosition.azimuth * (180 / Math.PI);
   return {
-    azimuth: (sunAzimuth - heading - 90) % 360,
+    azimuth: (sunAzimuth - heading - 90 + 360) % 360,
     inclination: sunPosition.altitude * (180 / Math.PI),
   };
 };

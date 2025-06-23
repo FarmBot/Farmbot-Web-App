@@ -6,7 +6,7 @@ For changes to files in the `app/` or `spec/` directories.
 ### For the files you change
 - Run tests via `rspec FILES`
    where `FILES` is a space-separated list of spec files for the app files you changed.
-   For example, `rspec spec/file_0.rb spec/file_1.rb`.
+   For example, `rspec spec/file_0_spec.rb spec/file_1_spec.rb`.
    Check the output to verify all tests pass.
 - Run `rake check_file_coverage:api FILES`
    where `FILES` is a space-separated list of app files you changed.

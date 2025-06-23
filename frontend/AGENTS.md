@@ -21,7 +21,7 @@ Follow existing codebase conventions and style, for example:
    ```
 - Run tests via `npm run test-slow FILES`
    where `FILES` is a space-separated list of test files for the frontend files you changed.
-   For example, `npm run test-slow frontend/__tests__/file_0.tsx frontend/__tests__/file_1.tsx`.
+   For example, `npm run test-slow frontend/__tests__/file_0_test.tsx frontend/__tests__/file_1_test.tsx`.
    Check the output to verify all tests pass.
 - Run `rake check_file_coverage:fe FILES`
    where `FILES` is a space-separated list of frontend files you changed.
