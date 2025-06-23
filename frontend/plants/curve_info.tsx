@@ -37,8 +37,8 @@ export const AllCurveInfo = (props: AllCurveInfoProps) => {
 export const CurveInfo = (props: CurveInfoProps) => {
   const { plant, onChange, curve, curves, plants, curveType } = props;
   const [hovered, setHovered] = React.useState<string | undefined>(undefined);
-  return <div className={"crop-curve-info grid no-gap"}>
-    <div className={"active-curve-name row grid-2-col grid-exp-2"}>
+  return <div className={"info-box grid no-gap"}>
+    <div className={"row grid-2-col grid-exp-2"}>
       <label>{t(CURVE_TYPES()[props.curveType])}</label>
       <div className={"row half-gap"}>
         {curve && <Link to={Path.curves(curve.body.id)} title={t("edit curve")}>

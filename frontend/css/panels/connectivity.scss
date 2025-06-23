@@ -178,6 +178,7 @@
 .network-info,
 .fbos-info {
   background: var(--secondary-bg);
+  box-shadow: var(--box-shadow);
   padding: 1rem;
   border-radius: 5px;
   .ip-address {

@@ -492,6 +492,7 @@
   gap: 1rem;
   .location-form, .custom-coordinate-form {
     background: var(--secondary-bg);
+    box-shadow: var(--box-shadow);
     padding: 1rem;
     border-radius: 0.5rem;
   }
