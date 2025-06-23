@@ -2,6 +2,7 @@
 For changes to files in the `app/` or `spec/` directories.
 
 ## Testing Instructions
+- Do not terminate test commands before they are completed.
 
 ### For the files you change
 - Run tests via `rspec FILES`
