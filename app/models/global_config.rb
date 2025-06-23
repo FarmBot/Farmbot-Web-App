@@ -31,7 +31,7 @@ class GlobalConfig < ApplicationRecord
     self.find_or_create_by(key: key).update(key: key, value: value)
   end
 
-  # Memoized version of every GlobalConfig, with key/values layed out in a hash.
+  # Memoized version of every GlobalConfig, with key/values laid out in a hash.
   # Database values preempt values set in ::DEFAULTS
   def self.dump
     @dump ||= reload_

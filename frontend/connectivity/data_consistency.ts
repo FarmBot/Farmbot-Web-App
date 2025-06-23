@@ -25,7 +25,7 @@ function unstoreUUID(uuid: string) {
 
 set(window, "outstanding_requests", outstandingRequests);
 
-/** Use this when you need to throw the FE into an inconsistent state, but dont
+/** Use this when you need to throw the FE into an inconsistent state, but don't
  * have a real UUID available. It will be removed when a "real" UUID comes
  * along. This is necessary for creating an instantaneous "syncing..." label. */
 const PLACEHOLDER = "placeholder";
@@ -48,7 +48,7 @@ export const MAX_WAIT = 11000;
 *     that has the same `label` as the API request.
 *   - We keep a list of `outstandingRequests` filled with such UUIDs.
 *   - When we get an `rpc_ok` from farmbot, we remove it from the list.
-*   - If the request takes longer than 5 seconds, remove it from the list also
+*   - If the request takes longer than 11 seconds, remove it from the list also
 *     to prevent accidental UX issues. ("forceful removal")
 *   - When `outstandingRequests.size === 0`, you can (probably) assume that the
 *     Bot, API and client are in a consistent state. It is safe to perform data

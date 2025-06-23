@@ -29,7 +29,7 @@ module Api
     end
 
     def tools
-      @tools ||= Tool.outter_join_slots(current_device.id)
+      @tools ||= Tool.outer_join_slots(current_device.id)
     end
 
     def tool

@@ -1,8 +1,8 @@
-# Keep track of all JWTs created incase we need to revoke them later (before the
+# Keep track of all JWTs created in case we need to revoke them later (before the
 # expiration date).
 class TokenIssuance < ApplicationRecord
   belongs_to :device
-  # Number of ms Rails will wait for the API.
+  # Number of seconds Rails will wait for the API.
   API_TIMEOUT = Rails.env.test? ? 0.01 : 2.5
   after_create :reset_inactivity_timer
 

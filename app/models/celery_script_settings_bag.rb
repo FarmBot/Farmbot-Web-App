@@ -589,7 +589,7 @@ module CeleryScriptSettingsBag
     when "Device"
       # When "resource_type" is "Device", resource_id always refers to
       # the current_device.
-      # For convenience, we try to set it here, defaulting to 0
+      # For convenience, we try to set it here, defaulting to owner.id.
       node.args[:resource_id].instance_variable_set("@value", owner.id)
     when "PointGroup"
       no_resource(node, PointGroup, resource_id) unless PointGroup.exists?(resource_id)
