@@ -41,7 +41,7 @@ export class FilterSearch
           Classes.MINIMAL,
           this.props.items.length < 4 ? "few-items" : "",
         ].join(" "),
-        modifiers: { offset: { options: { offset: [0, 5] } } },
+        modifiers: { offset: { options: { offset: [0, 0] } } },
       }}>
       <i className="fa fa-caret-down fa-md" />
       <Button

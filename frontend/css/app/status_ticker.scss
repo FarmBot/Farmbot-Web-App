@@ -7,8 +7,8 @@
   left: 0;
   right: 0;
   z-index: 3;
-  background: $dark_bg;
-  opacity: 0.9;
+  background: var(--main-bg);
+  backdrop-filter: var(--blur);
   min-height: 3rem;
   cursor: pointer;
   label {
@@ -20,7 +20,7 @@
     max-height: 20rem !important;
   }
   * {
-    color: $white;
+    color: var(--text-color);
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
   }

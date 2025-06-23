@@ -99,8 +99,9 @@
     font-size: 1.6rem;
     pointer-events: auto;
     overflow: hidden;
-    box-shadow: 0 0 1rem $translucent;
+    box-shadow: var(--box-shadow);
     background-color: var(--main-bg);
+    backdrop-filter: var(--blur);
     color: var(--text-color);
     div[class*="search-item"] {
       &:hover,

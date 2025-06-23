@@ -200,6 +200,7 @@ nav {
     }
     &.hover {
       background: var(--main-bg);
+      backdrop-filter: var(--blur);
     }
   }
   .time-travel-button,
@@ -272,8 +273,6 @@ nav {
   .bp5-popover-content {
     position: relative;
     width: 22rem;
-    background: var(--main-bg);
-    backdrop-filter: blur(10px);
     padding: 0;
     font-size: 1.2rem;
     letter-spacing: 1.2px;
@@ -348,6 +347,7 @@ body:has(.app.light) {
       &.hover {
         background: var(--main-bg);
         color: var(--text-color);
+        backdrop-filter: var(--blur);
       }
     }
     .nav-coordinates.hover {

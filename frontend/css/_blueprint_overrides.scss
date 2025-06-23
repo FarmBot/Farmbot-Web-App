@@ -6,18 +6,25 @@
   z-index: 999;
   padding: 1rem;
   color: var(--text-color) !important;
-  background: var(--main-bg) !important;
-  box-shadow: var(--box-shadow) !important;
+  background: unset !important;
 }
 
 .bp5-popover {
-  box-shadow: var(--box-shadow);
   font-size: 1.3rem;
   border-radius: 0.5rem;
   overflow: hidden;
+  background: unset !important;
   .bp5-popover-arrow {
     display: none !important;
   }
+}
+
+.bp5-popover-transition-container {
+  backdrop-filter: var(--blur);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background: var(--main-bg) !important;
+  box-shadow: var(--box-shadow) !important;
 }
 
 // Arrow is slightly off by default in the popup menu.

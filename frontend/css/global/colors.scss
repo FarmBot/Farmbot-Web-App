@@ -19,6 +19,7 @@ $translucent8_white: rgba(255, 255, 255, 0.8);
 $translucent9_white: rgba(255, 255, 255, 0.9);
 $white: #fff;
 $off_white: #f4f4f4;
+$light_bg: #f4f4f4bb;
 $lighter_gray: #eee;
 $light_gray: #ddd;
 $gray: #ccc;
@@ -27,7 +28,7 @@ $medium_gray: #666;
 $placeholder_gray: #999;
 $dark_gray: #434343;
 $darker_gray: #182026;
-$dark_bg: hsl(135 30% 7% / 1);
+$dark_bg: #0c170fdd;
 $black: #000;
 $off_black: #222;
 $light_blue: #cdf;
@@ -77,12 +78,16 @@ $panel_light_teal: rgb(241, 252, 249, $alpha90);
 $panel_red: rgb(255, 79, 55, $alpha90);
 $panel_light_red: rgb(255, 247, 246, $alpha90);
 
+body {
+  --blur: blur(25px);
+}
+
 body:has(.app.light) {
-  --main-bg: #{$off_white};
+  --main-bg: #{$light_bg};
   --secondary-bg: #{$translucent1};
   --text-color: #{$dark_gray};
   --border-color: #{$translucent2};
-  --box-shadow: 0 0 5px 2px #{$translucent1};
+  --box-shadow: inset 0 0 5px 1px #{$translucent5_white}, 0 0 5px 2px #{$translucent1};
 }
 
 body:has(.app.dark) {
@@ -90,7 +95,7 @@ body:has(.app.dark) {
   --secondary-bg: #{$translucent1_white};
   --text-color: #{$gray};
   --border-color: #{$translucent3_white};
-  --box-shadow: 0 0 5px 2px #{$translucent1_white};
+  --box-shadow: inset 0 0 5px 1px #{$translucent1_white}, inset 0 0 2px 1px #{$translucent2_white}, 0 0 5px 2px #{$translucent1};
 }
 
 .dark-gray {
