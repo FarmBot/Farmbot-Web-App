@@ -6,6 +6,21 @@ body {
   margin: 0;
 }
 
+.panel-container::before,
+.menu-content::before,
+.bp5-popover-transition-container::before,
+.ticker-list::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background-image: url("/public/grain_texture.png");
+  opacity: 0.5;
+  mix-blend-mode: color;
+  background-size: 75px;
+}
+
 .app,
 .bp5-portal {
   background: var(--main-bg);
