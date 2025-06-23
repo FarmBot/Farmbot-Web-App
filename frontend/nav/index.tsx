@@ -229,7 +229,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
         {!isMobile() &&
           `: ${setupProgressString(wizardStepResults, { firmwareHardware })}`}
       </a>
-      : null;
+      : undefined;
   };
 
   JobsButton = () => {

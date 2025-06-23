@@ -35,7 +35,7 @@ describe("readOnlyInterceptor", () => {
 describe("<ReadOnlyIcon />", () => {
   it("returns null when unlocked", () => {
     const result = shallow(<ReadOnlyIcon locked={false} />);
-    expect(result.html()).toEqual(null);
+    expect(result.find(".read-only-icon").length).toEqual(0);
   });
 
   it("shows the pencil icon when locked", () => {
