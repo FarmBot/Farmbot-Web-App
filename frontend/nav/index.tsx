@@ -162,7 +162,8 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
         onClose={this.close("accountMenuOpen")}
         target={isMobile()
           ? <i className={"fa fa-user"} onClick={this.toggle("accountMenuOpen")} />
-          : <div className="nav-name" data-title={firstName}
+          : <div className={`nav-name ${this.state.accountMenuOpen ? "hover" : ""}`}
+            data-title={firstName}
             onClick={this.toggle("accountMenuOpen")}>
             {firstName}
           </div>}
@@ -228,7 +229,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
         {!isMobile() &&
           `: ${setupProgressString(wizardStepResults, { firmwareHardware })}`}
       </a>
-      : <div style={{ display: "inline" }} />;
+      : undefined;
   };
 
   JobsButton = () => {

@@ -40,6 +40,7 @@ import { app } from "../../__test_support__/fake_state/app";
 import { Actions } from "../../constants";
 import { cloneDeep } from "lodash";
 import { mountWithContext } from "../../__test_support__/mount_with_context";
+import { ControlsPanel, ControlsPanelProps } from "../../controls/controls";
 
 describe("<NavBar />", () => {
   const fakeProps = (): NavBarProps => ({
@@ -209,5 +210,22 @@ describe("<NavBar />", () => {
     const wrapper = mount(<NavBar {...p} />);
     expect(wrapper.text().toLowerCase()).not.toContain("99%");
     expect(wrapper.text().toLowerCase()).not.toContain("job title");
+  });
+
+  it("uses MCU params when firmware config is missing", () => {
+    const p = fakeProps();
+    p.firmwareConfig = undefined;
+    p.appState.popups.controls = true;
+    const wrapper = mount<NavBar>(<NavBar {...p} />);
+    const props = wrapper.find(ControlsPanel).props() as ControlsPanelProps;
+    expect(props.firmwareSettings).toEqual(p.bot.hardware.mcu_params);
+  });
+
+  it("opens account menu", () => {
+    mockIsMobile = false;
+    const wrapper = mount<NavBar>(<NavBar {...fakeProps()} />);
+    wrapper.instance().toggle("accountMenuOpen")();
+    wrapper.update();
+    expect(wrapper.find(".nav-name").first().hasClass("hover")).toBeTruthy();
   });
 });

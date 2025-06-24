@@ -6,6 +6,21 @@ body {
   margin: 0;
 }
 
+.panel-container::before,
+.menu-content::before,
+.bp5-popover-transition-container::before,
+.ticker-list::before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background-image: url("/public/grain_texture.png");
+  opacity: 0.5;
+  mix-blend-mode: color;
+  background-size: 75px;
+}
+
 .app,
 .bp5-portal {
   background: var(--main-bg);
@@ -46,14 +61,6 @@ body {
     overflow: hidden;
     white-space: nowrap;
     text-transform: none;
-  }
-}
-
-.controls-popover,
-.jobs-panel,
-.connectivity-popover {
-  .bp5-popover-content {
-    background: var(--main-bg);
   }
 }
 
@@ -180,10 +187,6 @@ a {
 }
 
 .e-stop-btn {
-  float: right;
-  margin-top: 1.5rem;
-  margin-left: 0.5rem;
-  border-radius: 1rem;
   .e-stop {
     margin: 0;
     box-shadow: none !important;
