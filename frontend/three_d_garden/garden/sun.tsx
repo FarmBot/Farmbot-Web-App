@@ -4,8 +4,12 @@ import {
   Vector3, PointLight as ThreePointLight, Mesh,
   MeshBasicMaterial as ThreeMeshBasicMaterial,
   Color,
+  Material,
 } from "three";
-import { Group, MeshBasicMaterial, PointLight } from "../components";
+import {
+  BufferAttribute, BufferGeometry, Group, MeshBasicMaterial, PointLight,
+  Points, PointsMaterial,
+} from "../components";
 import { Line, Sphere, Trail } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import SunCalc from "suncalc";
@@ -133,11 +137,14 @@ export const Sun = (props: SunProps) => {
     range(4).map(index => new Vector3(...offsetSunPos(sunPos, index))),
   );
   const sunFactor = React.useRef<number>(1);
+  // eslint-disable-next-line no-null/no-null
+  const starsRef = React.useRef<Material>(null);
   const origin = new Vector3(0, 0, 0);
 
   const setSunSky = (inclination: number, sunValue: number) => {
     sunFactor.current = calcSunI(inclination);
     props.skyRef.current?.color?.setRGB(...skyColor(sunFactor.current * sunValue));
+    starsRef.current && (starsRef.current.opacity = (1 - sunFactor.current));
   };
 
   React.useEffect(() => {
@@ -225,5 +232,43 @@ export const Sun = (props: SunProps) => {
         BigDistance.sunVisual)}>
       <MeshBasicMaterial color={SUN_COLOR[0]} />
     </Sphere>
+    <OtherSuns starsRef={starsRef} />
   </Group>;
+};
+
+const generateOtherSuns = () => {
+  const points = [];
+  const maxPhi = Math.PI / 2 - (10 * Math.PI / 180);
+  const r = BigDistance.sunVisual;
+  for (let i = 0; i < 1000; i++) {
+    const theta = Math.random() * 2 * Math.PI;
+    const phi = Math.random() * maxPhi;
+
+    const x = r * Math.sin(phi) * Math.cos(theta);
+    const y = r * Math.sin(phi) * Math.sin(theta);
+    const z = r * Math.cos(phi);
+    points.push(x, y, z);
+  }
+  return new Float32Array(points);
+};
+
+const OtherSuns = ({ starsRef }: { starsRef: React.RefObject<Material | null> }) => {
+  const positions = React.useMemo(() => generateOtherSuns(), []);
+  return <Points>
+    <BufferGeometry>
+      <BufferAttribute
+        attach={"attributes-position"}
+        count={positions.length / 3}
+        array={positions}
+        itemSize={3} />
+    </BufferGeometry>
+    <PointsMaterial
+      ref={starsRef}
+      color={"white"}
+      size={1}
+      sizeAttenuation={false}
+      transparent={true}
+      opacity={1}
+      depthWrite={false} />
+  </Points>;
 };
