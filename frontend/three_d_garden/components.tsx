@@ -59,3 +59,24 @@ export const MeshStandardMaterial =
   React.forwardRef((props: ThreeElements["meshStandardMaterial"], ref) =>
     // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
     <meshStandardMaterial ref={ref} {...props} />);
+
+export const Points = (props: ThreeElements["points"]) => (
+  // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
+  <points {...props} />
+);
+
+export const BufferGeometry = (props: ThreeElements["bufferGeometry"]) => (
+  // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
+  <bufferGeometry {...props} />
+);
+
+export const BufferAttribute = (props: ThreeElements["bufferAttribute"]) => (
+  // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
+  <bufferAttribute {...props} />
+);
+
+export const PointsMaterial =
+  React.forwardRef((props: ThreeElements["pointsMaterial"], ref) => (
+    // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
+    <pointsMaterial ref={ref} {...props} />
+  ));

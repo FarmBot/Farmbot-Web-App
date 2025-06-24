@@ -21,6 +21,12 @@ const mock4Ref: Mock4Ref = {
     { position: { set: jest.fn() } },
   ]
 };
+interface MockMaterialRef {
+  current: { opacity: number; } | undefined;
+}
+const mockMaterialRef: MockMaterialRef = {
+  current: { opacity: 0 }
+};
 
 import React from "react";
 import { render } from "@testing-library/react";
@@ -77,7 +83,8 @@ describe("<Sun />", () => {
       .mockImplementationOnce(() => mock4Ref)
       .mockImplementationOnce(() => mock1Ref)
       .mockImplementationOnce(() => mock1Ref)
-      .mockImplementationOnce(() => mock0Ref);
+      .mockImplementationOnce(() => mock0Ref)
+      .mockImplementationOnce(() => mockMaterialRef);
     jest.spyOn(React, "useState").mockReturnValue([[], jest.fn()]);
     const p = fakeProps();
     p.config.animateSeasons = true;
