@@ -52,11 +52,7 @@ export const NavLinks = (props: NavLinksProps) =>
           key={PANEL_SLUG[panel]}
           draggable={false}
           onClick={() => {
-            if (isActive) {
-              props.dispatch(setPanelOpen(false));
-            } else {
-              props.dispatch(setPanelOpen(true));
-            }
+            props.dispatch(setPanelOpen(!isActive));
             props.close();
           }}>
           <NavIconAndText panel={panel} alertCount={props.alertCount} />

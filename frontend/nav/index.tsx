@@ -219,8 +219,8 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
   SetupButton = () => {
     const firmwareHardware = this.props.apiFirmwareValue;
     const { wizardStepResults, device } = this.props;
-    return !device.body.setup_completed_at
-      ? <a className={"setup-button"}
+    if (!device.body.setup_completed_at) {
+      return <a className={"setup-button"}
         onClick={() => {
           this.props.dispatch(setPanelOpen(true));
           this.navigate(Path.setup());
@@ -228,8 +228,8 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
         {t("Setup")}
         {!isMobile() &&
           `: ${setupProgressString(wizardStepResults, { firmwareHardware })}`}
-      </a>
-      : undefined;
+      </a>;
+    }
   };
 
   JobsButton = () => {
