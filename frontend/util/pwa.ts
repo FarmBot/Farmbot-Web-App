@@ -1,6 +1,3 @@
-import { info } from "../toast/toast";
-import { t } from "../i18next_wrapper";
-
 export const registerServiceWorker = () => {
   if ("serviceWorker" in navigator) {
     window.addEventListener("load", () => {
@@ -11,17 +8,14 @@ export const registerServiceWorker = () => {
 };
 
 export const requestNotificationPermission = () => {
-  if (typeof Notification !== "undefined" && Notification.permission === "default") {
+  const isStandalone = (window.matchMedia &&
+    window.matchMedia("(display-mode: standalone)").matches)
+    || ((window.navigator as unknown as { standalone?: boolean })
+      .standalone === true);
+  if (isStandalone && typeof Notification !== "undefined" &&
+    Notification.permission === "default") {
     Notification.requestPermission();
   }
-};
-
-export const listenForInstallPrompt = () => {
-  window.addEventListener("beforeinstallprompt", () =>
-    info(t("Add FarmBot to your home screen for a better experience."), {
-      idPrefix: "pwa-install",
-      noTimer: true,
-    }));
 };
 
 export const notify = (title: string, body: string) => {
@@ -33,6 +27,5 @@ export const notify = (title: string, body: string) => {
 export const initPWA = () => {
   registerServiceWorker();
   requestNotificationPermission();
-  listenForInstallPrompt();
 };
 

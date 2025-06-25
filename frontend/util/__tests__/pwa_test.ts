@@ -1,9 +1,7 @@
 import {
   registerServiceWorker, requestNotificationPermission, notify,
-  listenForInstallPrompt,
   initPWA,
 } from "../pwa";
-import { info } from "../../toast/toast";
 
 jest.mock("../../toast/toast", () => ({
   info: jest.fn(),
@@ -59,15 +57,63 @@ describe("registerServiceWorker()", () => {
   });
 });
 
+beforeAll(() => {
+  if (!window.matchMedia) {
+    Object.defineProperty(window, "matchMedia", {
+      writable: true,
+      configurable: true,
+      value: jest.fn().mockImplementation((query) => ({
+        matches: false,
+        media: query,
+        onchange: undefined,
+        addListener: jest.fn(),
+        removeListener: jest.fn(),
+        addEventListener: jest.fn(),
+        removeEventListener: jest.fn(),
+        dispatchEvent: jest.fn(),
+      })),
+    });
+  }
+});
+
 describe("requestNotificationPermission", () => {
-  it("requests permission", () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  it("requests permission when in standalone mode (display-mode: standalone)", () => {
     const requestPermission = jest.fn();
     Object.defineProperty(window, "Notification", {
       value: { permission: "default", requestPermission },
       configurable: true,
     });
+    jest.spyOn(window, "matchMedia").mockReturnValue({ matches: true } as MediaQueryList);
     requestNotificationPermission();
     expect(requestPermission).toHaveBeenCalled();
+  });
+
+  it("requests permission when in standalone mode (navigator.standalone)", () => {
+    const requestPermission = jest.fn();
+    Object.defineProperty(window, "Notification", {
+      value: { permission: "default", requestPermission },
+      configurable: true,
+    });
+    (window.navigator as unknown as { standalone?: boolean }).standalone = true;
+    jest.spyOn(window, "matchMedia").mockReturnValue({ matches: false } as MediaQueryList);
+    requestNotificationPermission();
+    expect(requestPermission).toHaveBeenCalled();
+    delete (window.navigator as unknown as { standalone?: boolean }).standalone;
+  });
+
+  it("does not request permission if not standalone", () => {
+    const requestPermission = jest.fn();
+    Object.defineProperty(window, "Notification", {
+      value: { permission: "default", requestPermission },
+      configurable: true,
+    });
+    jest.spyOn(window, "matchMedia").mockReturnValue({ matches: false } as MediaQueryList);
+    requestNotificationPermission();
+    expect(requestPermission).not.toHaveBeenCalled();
   });
 
   it("notification undefined", () => {
@@ -93,23 +139,8 @@ describe("requestNotificationPermission", () => {
   });
 });
 
-describe("listenForInstallPrompt", () => {
-  it("listens for before install prompt", () => {
-    window.addEventListener = jest.fn();
-    listenForInstallPrompt();
-    expect(window.addEventListener).toHaveBeenCalledWith(
-      "beforeinstallprompt", expect.any(Function));
-    const installCallback = (window.addEventListener as jest.Mock).mock.calls[0][1];
-    installCallback();
-    expect(info).toHaveBeenCalledWith(
-      "Add FarmBot to your home screen for a better experience.",
-      { idPrefix: "pwa-install", noTimer: true });
-  });
-});
-
 describe("notify()", () => {
   it("sends notification", () => {
-    // Create a proper mock implementation for Notification
     const originalNotification = window.Notification;
 
     const MockNotification = function(
@@ -123,7 +154,6 @@ describe("notify()", () => {
       expect(options.body).toEqual("body");
     } as unknown as typeof Notification;
 
-    // Use defineProperty to set read-only properties
     Object.defineProperty(window, "Notification", {
       value: MockNotification,
       configurable: true
@@ -141,7 +171,6 @@ describe("notify()", () => {
 
     notify("title", "body");
 
-    // Restore original Notification
     Object.defineProperty(window, "Notification", {
       value: originalNotification,
       configurable: true
@@ -181,6 +210,7 @@ describe("initPWA", () => {
     Object.defineProperty(window, "Notification", {
       value: { permission: "default", requestPermission }, configurable: true,
     });
+    jest.spyOn(window, "matchMedia").mockReturnValue({ matches: true } as MediaQueryList);
     initPWA();
     expect(window.addEventListener).toHaveBeenCalledWith("load", expect.any(Function));
     const loadCallback = (window.addEventListener as jest.Mock).mock.calls
@@ -188,13 +218,5 @@ describe("initPWA", () => {
     loadCallback();
     expect(register).toHaveBeenCalled();
     expect(requestPermission).toHaveBeenCalled();
-    expect(window.addEventListener)
-      .toHaveBeenCalledWith("beforeinstallprompt", expect.any(Function));
-    const installCallback = (window.addEventListener as jest.Mock).mock.calls
-      .find(c => c[0] === "beforeinstallprompt")[1];
-    installCallback();
-    expect(info).toHaveBeenCalledWith(
-      "Add FarmBot to your home screen for a better experience.",
-      { idPrefix: "pwa-install", noTimer: true });
   });
 });
