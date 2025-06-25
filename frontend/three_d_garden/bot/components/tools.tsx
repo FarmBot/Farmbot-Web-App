@@ -29,6 +29,7 @@ import { getMode } from "../../../farm_designer/map/util";
 import { PROMO_TOOLS } from "../../../promo/tools";
 import { useFrame } from "@react-three/fiber";
 import { Model, ModelMesh } from "../../model_mesh";
+import { SuctionAnimation } from "./suction_animation";
 
 type Toolbay3 = GLTF & {
   nodes: {
@@ -203,6 +204,7 @@ export const Tools = (props: ToolsProps) => {
     inToolbay: boolean;
   }
 
+  // eslint-disable-next-line complexity
   const Tool = (toolProps: ToolProps) => {
     const { toolPulloutDirection, inToolbay, id } = toolProps;
     const mounted = inToolbay && toolProps.toolName == mountedToolName;
@@ -316,6 +318,11 @@ export const Tools = (props: ToolsProps) => {
             scale={1000}
             geometry={seeder.nodes[PartName.seeder].geometry}
             material={seeder.materials.PaletteMaterial001} />
+          {!inToolbay && props.config.vacuum &&
+            <Group position={[20, 0, -30]}>
+              {[-50, -80, -95, -100].map(z =>
+                <SuctionAnimation key={z} z={z} />)}
+            </Group>}
         </ToolbaySlot>;
       case ToolName.weeder:
         return <ToolbaySlot {...common}>

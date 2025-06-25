@@ -31,6 +31,10 @@ jest.mock("../watering_animations", () => ({
   WateringAnimations: jest.fn(),
 }));
 
+jest.mock("../suction_animation", () => ({
+  SuctionAnimation: jest.fn(),
+}));
+
 import React from "react";
 import { fireEvent, render } from "@testing-library/react";
 import { INITIAL } from "../../../config";
@@ -44,6 +48,7 @@ import { WateringAnimations } from "../watering_animations";
 import { Path } from "../../../../internal_urls";
 import { Actions } from "../../../../constants";
 import { mockDispatch } from "../../../../__test_support__/fake_dispatch";
+import { SuctionAnimation } from "../suction_animation";
 
 describe("<Tools />", () => {
   const fakeProps = (): ToolsProps => ({
@@ -120,6 +125,17 @@ describe("<Tools />", () => {
     p.mountedToolName = "watering nozzle";
     render(<Tools {...p} />);
     expect(WateringAnimations).toHaveBeenCalled();
+  });
+
+  it("renders vacuum animation when not in toolbay and vacuum", () => {
+    const p = fakeProps();
+    p.config.vacuum = true;
+    const tool = fakeTool();
+    tool.body.name = "seeder";
+    p.toolSlots = [];
+    p.mountedToolName = "seeder";
+    render(<Tools {...p} />);
+    expect(SuctionAnimation).toHaveBeenCalled();
   });
 
   it.each<[number, number]>([
