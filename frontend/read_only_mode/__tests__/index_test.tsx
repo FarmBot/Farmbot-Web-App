@@ -33,7 +33,7 @@ describe("readOnlyInterceptor", () => {
 });
 
 describe("<ReadOnlyIcon />", () => {
-  it("returns null when unlocked", () => {
+  it("shows nothing when unlocked", () => {
     const result = shallow(<ReadOnlyIcon locked={false} />);
     expect(result.find(".read-only-icon").length).toEqual(0);
   });

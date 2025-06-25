@@ -135,7 +135,7 @@ export const GardenModel = (props: GardenModelProps) => {
       enablePan={config.pan}
       dampingFactor={0.2}
       target={camera.target}
-      minDistance={500}
+      minDistance={config.lightsDebug ? 50 : 500}
       maxDistance={config.lightsDebug ? BigDistance.devZoom : BigDistance.zoom} />
     <AxesHelper args={[5000]} visible={config.threeAxes} />
     {config.viewCube && <GizmoHelper><GizmoViewcube /></GizmoHelper>}

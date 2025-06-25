@@ -215,6 +215,28 @@ describe("<ThreeDGardenMap />", () => {
       weeds: [],
     }, {});
   });
+
+  it.each<[boolean, boolean, number]>([
+    [false, false, 0],
+    [true, false, 1],
+    [false, true, -1],
+    [true, true, 0],
+  ])("shows rotary tool state: fwd: %s rev: %s", (fwd, rev, exp) => {
+    const p = fakeProps();
+    p.peripheralValues = [
+      { label: "rotary tool", value: fwd },
+      { label: "rotary tool reverse", value: rev },
+    ];
+    p.plants = [];
+    render(<ThreeDGardenMap {...p} />);
+    expect(ThreeDGarden).toHaveBeenCalledWith({
+      config: expect.objectContaining({ rotary: exp }),
+      threeDPlants: [],
+      addPlantProps: expect.any(Object),
+      mapPoints: [],
+      weeds: [],
+    }, {});
+  });
 });
 
 describe("convertPlants()", () => {

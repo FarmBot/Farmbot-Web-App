@@ -8,7 +8,6 @@ import {
   ASSETS, HOVER_OBJECT_MODES, LIB_DIR, PartName, SeedTroughAssemblyMaterial,
 } from "../../constants";
 import {
-  RotaryTool, RotaryToolFull,
   SoilSensor, SoilSensorFull,
   SeedTroughAssembly, SeedTroughAssemblyFull,
   SeedTroughHolder, SeedTroughHolderFull,
@@ -28,6 +27,9 @@ import { Path } from "../../../internal_urls";
 import { setPanelOpen } from "../../../farm_designer/panel_header";
 import { getMode } from "../../../farm_designer/map/util";
 import { PROMO_TOOLS } from "../../../promo/tools";
+import { useFrame } from "@react-three/fiber";
+import { Model, ModelMesh } from "../../model_mesh";
+import { SuctionAnimation } from "./suction_animation";
 
 type Toolbay3 = GLTF & {
   nodes: {
@@ -123,8 +125,10 @@ export const Tools = (props: ToolsProps) => {
 
   const toolbay3 = useGLTF(ASSETS.models.toolbay3, LIB_DIR) as Toolbay3;
   const toolbay1 = useGLTF(ASSETS.models.toolbay1, LIB_DIR) as Toolbay1;
-  const rotaryTool = useGLTF(ASSETS.models.rotaryTool, LIB_DIR) as RotaryToolFull;
-  const RotaryToolComponent = RotaryTool(rotaryTool);
+  const rotaryToolBase =
+    useGLTF(ASSETS.models.rotaryToolBase, LIB_DIR) as Model;
+  const rotaryToolImplement =
+    useGLTF(ASSETS.models.rotaryToolImplement, LIB_DIR) as Model;
   const seedBin = useGLTF(ASSETS.models.seedBin, LIB_DIR) as SeedBin;
   const seedTray = useGLTF(ASSETS.models.seedTray, LIB_DIR) as SeedTray;
   const seedTrough = useGLTF(ASSETS.models.seedTrough, LIB_DIR) as SeedTrough;
@@ -200,6 +204,7 @@ export const Tools = (props: ToolsProps) => {
     inToolbay: boolean;
   }
 
+  // eslint-disable-next-line complexity
   const Tool = (toolProps: ToolProps) => {
     const { toolPulloutDirection, inToolbay, id } = toolProps;
     const mounted = inToolbay && toolProps.toolName == mountedToolName;
@@ -211,17 +216,38 @@ export const Tools = (props: ToolsProps) => {
     const common: ToolbaySlotProps = {
       mounted, position, toolPulloutDirection, id, inToolbay,
     };
+
+    // eslint-disable-next-line no-null/no-null
+    const rotaryToolImplementRef = React.useRef<THREE.Mesh>(null);
+
+    useFrame(() => {
+      if (rotaryToolImplementRef.current && !inToolbay && props.config.rotary) {
+        const time = Date.now();
+        const speed = props.config.rotary > 0 ? 0.01 : -0.01;
+        rotaryToolImplementRef.current.rotation.z = time * speed;
+      }
+    });
+
     switch (toolProps.toolName) {
       case ToolName.rotaryTool:
         return <ToolbaySlot {...common}>
-          <RotaryToolComponent name={"rotaryTool"}
+          <Group name={"rotaryTool"}
             position={[
               0,
               0,
               10,
             ]}
-            rotation={[0, 0, Math.PI / 2]}
-            scale={1000} />
+            rotation={[0, 0, Math.PI / 2]}>
+            <ModelMesh name={"rotaryToolBase"}
+              model={rotaryToolBase} />
+            <Group
+              position={[0, -3, -52]}
+              rotation={[-10 * Math.PI / 180, 0, 0]}>
+              <ModelMesh name={"rotaryToolImplement"}
+                ref={rotaryToolImplementRef}
+                model={rotaryToolImplement} />
+            </Group>
+          </Group>
         </ToolbaySlot>;
       case ToolName.wateringNozzle:
         return <ToolbaySlot {...common}>
@@ -292,6 +318,11 @@ export const Tools = (props: ToolsProps) => {
             scale={1000}
             geometry={seeder.nodes[PartName.seeder].geometry}
             material={seeder.materials.PaletteMaterial001} />
+          {!inToolbay && props.config.vacuum &&
+            <Group position={[20, 0, -30]}>
+              {[-50, -80, -95, -100].map(z =>
+                <SuctionAnimation key={z} z={z} />)}
+            </Group>}
         </ToolbaySlot>;
       case ToolName.weeder:
         return <ToolbaySlot {...common}>

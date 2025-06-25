@@ -1,5 +1,6 @@
 import * as THREE from "three";
 
+const mockRotation = { z: 0 };
 jest.mock("react", () => {
   const originReact = jest.requireActual("react");
   const mockRef = jest.fn(() => ({
@@ -17,6 +18,7 @@ jest.mock("react", () => {
         Object.setPrototypeOf(mesh, THREE.Mesh.prototype);
         cb(mesh);
       },
+      rotation: mockRotation,
     },
   }));
   return {
@@ -27,6 +29,10 @@ jest.mock("react", () => {
 
 jest.mock("../watering_animations", () => ({
   WateringAnimations: jest.fn(),
+}));
+
+jest.mock("../suction_animation", () => ({
+  SuctionAnimation: jest.fn(),
 }));
 
 import React from "react";
@@ -42,6 +48,7 @@ import { WateringAnimations } from "../watering_animations";
 import { Path } from "../../../../internal_urls";
 import { Actions } from "../../../../constants";
 import { mockDispatch } from "../../../../__test_support__/fake_dispatch";
+import { SuctionAnimation } from "../suction_animation";
 
 describe("<Tools />", () => {
   const fakeProps = (): ToolsProps => ({
@@ -119,6 +126,35 @@ describe("<Tools />", () => {
     render(<Tools {...p} />);
     expect(WateringAnimations).toHaveBeenCalled();
   });
+
+  it("renders vacuum animation when not in toolbay and vacuum", () => {
+    const p = fakeProps();
+    p.config.vacuum = true;
+    const tool = fakeTool();
+    tool.body.name = "seeder";
+    p.toolSlots = [];
+    p.mountedToolName = "seeder";
+    render(<Tools {...p} />);
+    expect(SuctionAnimation).toHaveBeenCalled();
+  });
+
+  it.each<[number, number]>([
+    [0, 0],
+    [1, 10],
+    [-1, -10],
+  ])("renders rotary animations when not in toolbay and rotary active: %s",
+    (input, expected) => {
+      const dateSpy = jest.spyOn(Date, "now").mockImplementation(() => 1000);
+      const p = fakeProps();
+      p.config.rotary = input;
+      const tool = fakeTool();
+      tool.body.name = "rotary tool";
+      p.toolSlots = [];
+      p.mountedToolName = "rotary tool";
+      render(<Tools {...p} />);
+      expect(mockRotation.z).toEqual(expected);
+      dateSpy.mockRestore();
+    });
 
   it("doesn't render watering animations when water not flowing", () => {
     const p = fakeProps();

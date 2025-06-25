@@ -85,7 +85,7 @@ export interface Config {
   waterFlow: boolean;
   light: boolean;
   vacuum: boolean;
-  rotary: boolean;
+  rotary: number;
   north: boolean;
   desk: boolean;
 }
@@ -177,7 +177,7 @@ export const INITIAL: Config = {
   waterFlow: false,
   light: false,
   vacuum: false,
-  rotary: false,
+  rotary: 0,
   north: false,
   desk: true,
 };
@@ -193,7 +193,7 @@ export const NUMBER_KEYS = [
   "bedXOffset", "bedYOffset", "bedZOffset", "zGantryOffset", "bedWidthOuter",
   "bedLengthOuter", "legSize", "extraLegsX", "extraLegsY", "bedBrightness",
   "soilBrightness", "soilHeight", "sunInclination", "sunAzimuth", "heading",
-  "soilSurfacePointCount", "soilSurfaceVariance", "sun", "ambient",
+  "soilSurfacePointCount", "soilSurfaceVariance", "sun", "ambient", "rotary",
 ];
 
 export const BOOLEAN_KEYS = [
@@ -205,7 +205,7 @@ export const BOOLEAN_KEYS = [
   "eventDebug", "cableDebug", "zoomBeaconDebug", "lightsDebug",
   "animate", "animateSeasons", "negativeZ",
   "waterFlow", "exaggeratedZ", "showSoilPoints", "urlParamAutoAdd",
-  "light", "vacuum", "rotary", "north", "desk",
+  "light", "vacuum", "north", "desk",
 ];
 
 export const PRESETS: Record<string, Config> = {
@@ -396,7 +396,7 @@ export const PRESETS: Record<string, Config> = {
     waterFlow: true,
     light: true,
     vacuum: true,
-    rotary: true,
+    rotary: 1,
     exaggeratedZ: true,
     north: true,
     desk: true,

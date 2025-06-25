@@ -194,6 +194,8 @@ export function BotPeripherals(props: BotPeripheralsProps) {
 }
 
 export const isPeripheralActiveFunc = (peripheralValues: PeripheralValues) =>
-  (label: string) =>
+  (label: string, not?: string) =>
     some(peripheralValues,
-      p => p.label.toLowerCase().includes(label) && p.value);
+      p => p.label.toLowerCase().includes(label)
+        && (!not || !p.label.toLowerCase().includes(not))
+        && p.value);
