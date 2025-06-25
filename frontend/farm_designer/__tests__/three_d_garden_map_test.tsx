@@ -220,6 +220,7 @@ describe("<ThreeDGardenMap />", () => {
     [false, false, 0],
     [true, false, 1],
     [false, true, -1],
+    [true, true, 0],
   ])("shows rotary tool state: fwd: %s rev: %s", (fwd, rev, exp) => {
     const p = fakeProps();
     p.peripheralValues = [

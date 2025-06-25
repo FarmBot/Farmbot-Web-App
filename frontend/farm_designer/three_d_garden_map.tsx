@@ -126,8 +126,10 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   config.light = isPeripheralActive("light");
   config.vacuum = isPeripheralActive("vacuum");
   const rotarySpeed = () => {
-    if (isPeripheralActive("reverse")) { return -1; }
-    if (isPeripheralActive("rotary")) { return 1; }
+    const fwd = isPeripheralActive("rotary", "reverse");
+    const rev = isPeripheralActive("reverse");
+    if (rev && !fwd) { return -1; }
+    if (fwd && !rev) { return 1; }
     return 0;
   };
   config.rotary = rotarySpeed();
