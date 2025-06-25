@@ -1,6 +1,5 @@
 export * from "./cross_slide";
 export * from "./gantry_wheel_plate";
-export * from "./rotary_tool";
 export * from "./seed_trough_assembly";
 export * from "./seed_trough_holder";
 export * from "./soil_sensor";

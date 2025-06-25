@@ -16,9 +16,9 @@ export const Group = React.forwardRef((props: ThreeElements["group"], ref) =>
   // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
   <group ref={ref} {...props} />);
 
-export const Mesh = (props: ThreeElements["mesh"]) =>
+export const Mesh = React.forwardRef((props: ThreeElements["mesh"], ref) =>
   // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
-  <mesh {...props} />;
+  <mesh ref={ref} {...props} />);
 
 export const PointLight =
   React.forwardRef((props: ThreeElements["pointLight"], ref) =>

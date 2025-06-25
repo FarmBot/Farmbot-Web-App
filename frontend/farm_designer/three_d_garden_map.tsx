@@ -125,7 +125,12 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   config.waterFlow = isPeripheralActive("water");
   config.light = isPeripheralActive("light");
   config.vacuum = isPeripheralActive("vacuum");
-  config.rotary = isPeripheralActive("rotary");
+  const rotarySpeed = () => {
+    if (isPeripheralActive("reverse")) { return -1; }
+    if (isPeripheralActive("rotary")) { return 1; }
+    return 0;
+  };
+  config.rotary = rotarySpeed();
 
   config.zoom = true;
   config.pan = true;
