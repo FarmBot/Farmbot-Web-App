@@ -1,0 +1,15 @@
+{
+  "name": "FarmBot Local",
+  "short_name": "FarmBot Local",
+  "icons": [
+    {
+      "src": "/images/pwa_icon_local.png",
+      "sizes": "720x720",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#0c4d8a",
+  "background_color": "#0c170f"
+}

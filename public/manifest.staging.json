@@ -1,0 +1,15 @@
+{
+  "name": "FarmBot Staging",
+  "short_name": "FarmBot Staging",
+  "icons": [
+    {
+      "src": "/images/pwa_icon_staging.png",
+      "sizes": "720x720",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#316318",
+  "background_color": "#0c170f"
+}
