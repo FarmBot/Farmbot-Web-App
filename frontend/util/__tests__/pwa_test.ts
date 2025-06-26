@@ -169,6 +169,12 @@ describe("notify()", () => {
       configurable: true
     });
 
+    const getRegistration = jest.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, "serviceWorker", {
+      value: { getRegistration },
+      configurable: true,
+    });
+
     notify("title", "body");
 
     Object.defineProperty(window, "Notification", {
@@ -195,7 +201,27 @@ describe("notify()", () => {
       value: { permission: "denied" },
       configurable: true,
     });
+    Object.defineProperty(navigator, "serviceWorker", {
+      value: { getRegistration: jest.fn().mockResolvedValue(undefined) },
+      configurable: true,
+    });
     notify("title", "body");
+  });
+
+  it("calls showNotification when service worker registration exists", async () => {
+    Object.defineProperty(window, "Notification", {
+      value: { permission: "granted" },
+      configurable: true,
+    });
+    const showNotification = jest.fn();
+    const getRegistration = jest.fn().mockResolvedValue({ showNotification });
+    Object.defineProperty(navigator, "serviceWorker", {
+      value: { getRegistration },
+      configurable: true,
+    });
+    await notify("title", "body");
+    expect(getRegistration).toHaveBeenCalled();
+    expect(showNotification).toHaveBeenCalledWith("title", { body: "body" });
   });
 });
 

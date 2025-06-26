@@ -18,9 +18,12 @@ export const requestNotificationPermission = () => {
   }
 };
 
-export const notify = (title: string, body: string) => {
+export const notify = async (title: string, body: string) => {
   if (typeof Notification !== "undefined" && Notification.permission === "granted") {
-    new Notification(title, { body });
+    const registration = await navigator.serviceWorker.getRegistration();
+    if (registration) {
+      registration.showNotification(title, { body });
+    }
   }
 };
 
