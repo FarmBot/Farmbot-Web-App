@@ -7,28 +7,7 @@ export const registerServiceWorker = () => {
   }
 };
 
-export const requestNotificationPermission = () => {
-  const isStandalone = (window.matchMedia &&
-    window.matchMedia("(display-mode: standalone)").matches)
-    || ((window.navigator as unknown as { standalone?: boolean })
-      .standalone === true);
-  if (isStandalone && typeof Notification !== "undefined" &&
-    Notification.permission === "default") {
-    Notification.requestPermission();
-  }
-};
-
-export const notify = async (title: string, body: string) => {
-  if (typeof Notification !== "undefined" && Notification.permission === "granted") {
-    const registration = await navigator.serviceWorker.getRegistration();
-    if (registration) {
-      registration.showNotification(title, { body });
-    }
-  }
-};
-
 export const initPWA = () => {
   registerServiceWorker();
-  requestNotificationPermission();
 };
 

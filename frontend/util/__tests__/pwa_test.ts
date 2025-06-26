@@ -1,6 +1,5 @@
 import {
-  registerServiceWorker, requestNotificationPermission, notify,
-  initPWA,
+  registerServiceWorker, initPWA,
 } from "../pwa";
 
 jest.mock("../../toast/toast", () => ({
@@ -76,155 +75,6 @@ beforeAll(() => {
   }
 });
 
-describe("requestNotificationPermission", () => {
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
-  it("requests permission when in standalone mode (display-mode: standalone)", () => {
-    const requestPermission = jest.fn();
-    Object.defineProperty(window, "Notification", {
-      value: { permission: "default", requestPermission },
-      configurable: true,
-    });
-    jest.spyOn(window, "matchMedia").mockReturnValue({ matches: true } as MediaQueryList);
-    requestNotificationPermission();
-    expect(requestPermission).toHaveBeenCalled();
-  });
-
-  it("requests permission when in standalone mode (navigator.standalone)", () => {
-    const requestPermission = jest.fn();
-    Object.defineProperty(window, "Notification", {
-      value: { permission: "default", requestPermission },
-      configurable: true,
-    });
-    (window.navigator as unknown as { standalone?: boolean }).standalone = true;
-    jest.spyOn(window, "matchMedia").mockReturnValue({ matches: false } as MediaQueryList);
-    requestNotificationPermission();
-    expect(requestPermission).toHaveBeenCalled();
-    delete (window.navigator as unknown as { standalone?: boolean }).standalone;
-  });
-
-  it("does not request permission if not standalone", () => {
-    const requestPermission = jest.fn();
-    Object.defineProperty(window, "Notification", {
-      value: { permission: "default", requestPermission },
-      configurable: true,
-    });
-    jest.spyOn(window, "matchMedia").mockReturnValue({ matches: false } as MediaQueryList);
-    requestNotificationPermission();
-    expect(requestPermission).not.toHaveBeenCalled();
-  });
-
-  it("notification undefined", () => {
-    const og = window.Notification;
-    Object.defineProperty(window, "Notification", {
-      value: undefined,
-      configurable: true,
-    });
-    requestNotificationPermission();
-    Object.defineProperty(window, "Notification", {
-      value: og,
-      configurable: true,
-    });
-  });
-
-  it("has permission", () => {
-    Object.defineProperty(window, "Notification", {
-      value: { permission: "granted", requestPermission: jest.fn() },
-      configurable: true,
-    });
-    requestNotificationPermission();
-    expect(window.Notification.requestPermission).not.toHaveBeenCalled();
-  });
-});
-
-describe("notify()", () => {
-  it("sends notification", () => {
-    const originalNotification = window.Notification;
-
-    const MockNotification = function(
-      this: { title: string; options: { body: string } },
-      title: string,
-      options: { body: string },
-    ) {
-      this.title = title;
-      this.options = options;
-      expect(title).toEqual("title");
-      expect(options.body).toEqual("body");
-    } as unknown as typeof Notification;
-
-    Object.defineProperty(window, "Notification", {
-      value: MockNotification,
-      configurable: true
-    });
-
-    Object.defineProperty(window.Notification, "permission", {
-      value: "granted",
-      configurable: true
-    });
-
-    Object.defineProperty(window.Notification, "requestPermission", {
-      value: jest.fn(),
-      configurable: true
-    });
-
-    const getRegistration = jest.fn().mockResolvedValue(undefined);
-    Object.defineProperty(navigator, "serviceWorker", {
-      value: { getRegistration },
-      configurable: true,
-    });
-
-    notify("title", "body");
-
-    Object.defineProperty(window, "Notification", {
-      value: originalNotification,
-      configurable: true
-    });
-  });
-
-  it("notification undefined", () => {
-    const og = window.Notification;
-    Object.defineProperty(window, "Notification", {
-      value: undefined,
-      configurable: true,
-    });
-    notify("title", "body");
-    Object.defineProperty(window, "Notification", {
-      value: og,
-      configurable: true,
-    });
-  });
-
-  it("doesn't have permission", () => {
-    Object.defineProperty(window, "Notification", {
-      value: { permission: "denied" },
-      configurable: true,
-    });
-    Object.defineProperty(navigator, "serviceWorker", {
-      value: { getRegistration: jest.fn().mockResolvedValue(undefined) },
-      configurable: true,
-    });
-    notify("title", "body");
-  });
-
-  it("calls showNotification when service worker registration exists", async () => {
-    Object.defineProperty(window, "Notification", {
-      value: { permission: "granted" },
-      configurable: true,
-    });
-    const showNotification = jest.fn();
-    const getRegistration = jest.fn().mockResolvedValue({ showNotification });
-    Object.defineProperty(navigator, "serviceWorker", {
-      value: { getRegistration },
-      configurable: true,
-    });
-    await notify("title", "body");
-    expect(getRegistration).toHaveBeenCalled();
-    expect(showNotification).toHaveBeenCalledWith("title", { body: "body" });
-  });
-});
-
 describe("initPWA", () => {
   it("initializes PWA", () => {
     window.addEventListener = jest.fn();
@@ -232,17 +82,11 @@ describe("initPWA", () => {
     Object.defineProperty(navigator, "serviceWorker", {
       value: { register }, configurable: true,
     });
-    const requestPermission = jest.fn();
-    Object.defineProperty(window, "Notification", {
-      value: { permission: "default", requestPermission }, configurable: true,
-    });
-    jest.spyOn(window, "matchMedia").mockReturnValue({ matches: true } as MediaQueryList);
     initPWA();
     expect(window.addEventListener).toHaveBeenCalledWith("load", expect.any(Function));
     const loadCallback = (window.addEventListener as jest.Mock).mock.calls
       .find(c => c[0] === "load")[1];
     loadCallback();
     expect(register).toHaveBeenCalled();
-    expect(requestPermission).toHaveBeenCalled();
   });
 });

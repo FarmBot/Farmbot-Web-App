@@ -7,16 +7,10 @@ jest.mock("../../redux/store", () => ({
   }
 }));
 
-jest.mock("../../util", () => ({
-  ...jest.requireActual("../../util"),
-  notify: jest.fn(),
-}));
-
 import { Actions } from "../../constants";
 import { store } from "../../redux/store";
 import { CreateToastOnceProps } from "../interfaces";
 import { createToastOnce } from "../toast_internal_support";
-import { notify } from "../../util";
 import { fakeToasts } from "../../__test_support__/fake_toasts";
 
 describe("toast internal support files", () => {
@@ -35,7 +29,6 @@ describe("toast internal support files", () => {
     p.fallbackLogger = jest.fn();
     createToastOnce(p);
     jest.runAllTimers();
-    expect(notify).toHaveBeenCalledWith("bar", "message");
     expect(p.fallbackLogger).not.toHaveBeenCalled();
     expect(store.dispatch).toHaveBeenCalledWith({
       type: Actions.CREATE_TOAST,
