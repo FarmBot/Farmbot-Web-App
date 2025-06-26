@@ -328,7 +328,7 @@
 }
 
 .dark-portal {
-  .bp5-popover-content {
+  .bp6-popover-content {
     background: $dark_gray;
     color: $off_white;
   }
@@ -394,7 +394,7 @@
 
 .grid-and-row-planting {
   position: relative;
-  .bp5-collapse-body {
+  .bp6-collapse-body {
     display: grid;
     gap: 1rem;
   }
@@ -437,7 +437,7 @@
 .move-to-form {
   display: grid;
   gap: 1rem;
-  .bp5-popover-wrapper {
+  .bp6-popover-wrapper {
     display: inline;
     margin-left: 0.5rem;
   }
@@ -526,7 +526,7 @@
           font-weight: bold;
         }
       }
-      .bp5-popover-wrapper {
+      .bp6-popover-wrapper {
         float: right;
       }
       .criteria-checkbox-list {
@@ -612,14 +612,14 @@
         }
       }
       .advanced {
-        .bp5-popover-wrapper {
+        .bp6-popover-wrapper {
           display: inline-block;
           float: none;
           margin-left: 1rem;
           font-size: 1.4rem;
         }
         .filter-search {
-          .bp5-popover-wrapper {
+          .bp6-popover-wrapper {
             margin-left: 0;
           }
         }

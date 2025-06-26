@@ -10,4 +10,3 @@ export const registerServiceWorker = () => {
 export const initPWA = () => {
   registerServiceWorker();
 };
-

@@ -580,13 +580,13 @@
       }
       .sliders {
         height: 98%;
-        .bp5-slider {
+        .bp6-slider {
           height: 100%;
           margin-left: 1rem;
         }
         .input-slider {
           pointer-events: none;
-          .bp5-slider-handle {
+          .bp6-slider-handle {
             left: 3.8px;
             height: 8px;
             width: 9px;
@@ -594,20 +594,20 @@
             box-shadow: none;
             border: 1px solid $dark_gray;
             border-radius: 2px;
-            .bp5-slider-label {
+            .bp6-slider-label {
               margin-left: -6px;
               margin-top: -14px;
             }
           }
         }
         .data-slider {
-          .bp5-start {
+          .bp6-start {
             height: 5px;
             &:first-of-type {
               display: unset;
             }
           }
-          .bp5-slider-label {
+          .bp6-slider-label {
             margin-left: -6rem;
             opacity: 1;
           }

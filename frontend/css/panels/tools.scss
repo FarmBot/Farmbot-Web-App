@@ -10,7 +10,7 @@
     .tool-search-item,
     .tool-slot-search-item {
       .filter-search {
-        .bp5-button {
+        .bp6-button {
           min-height: 2.5rem;
           max-height: 2.5rem;
           span {
@@ -43,7 +43,7 @@
       label {
         margin: 0;
       }
-      .bp5-popover-wrapper {
+      .bp6-popover-wrapper {
         display: inline;
       }
       .help-icon {
@@ -52,7 +52,7 @@
         font-size: 1.4rem;
       }
     }
-    button:not(.bp5-button) {
+    button:not(.bp6-button) {
       display: block;
       margin-left: auto;
       float: none;
@@ -157,7 +157,7 @@
 }
 
 .flow-rate-input {
-  .bp5-popover-wrapper {
+  .bp6-popover-wrapper {
     display: inline;
     margin-left: 0.5rem;
   }

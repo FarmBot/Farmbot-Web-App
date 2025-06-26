@@ -185,9 +185,7 @@ export class RawApp extends React.Component<AppProps, {}> {
       {(Path.equals("") || Path.equals(Path.app())) && isString(landingPage) &&
         <Navigate to={landingPagePath(landingPage)} />}
       {!syncLoaded && <LoadingPlant animate={this.props.animate} />}
-      <HotKeys dispatch={dispatch}
-        hotkeyGuide={this.props.appState.hotkeyGuide}
-        designer={this.props.designer} />
+      <HotKeys dispatch={dispatch} designer={this.props.designer} />
       {syncLoaded && <NavBar
         designer={this.props.designer}
         timeSettings={this.props.timeSettings}

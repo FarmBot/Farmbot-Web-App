@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  Popover as Popover2,
+  Popover as BlueprintPopover,
   PopoverProps as BasePopoverProps,
 } from "@blueprintjs/core";
 
@@ -9,9 +9,9 @@ export interface PopoverProps extends BasePopoverProps {
 }
 
 export const Popover = (props: PopoverProps) => {
-  return <span className={`bp5-popover-wrapper ${props.className}`}>
-    <Popover2 {...props} minimal={true}>
+  return <span className={`bp6-popover-wrapper ${props.className}`}>
+    <BlueprintPopover {...props} minimal={true}>
       {props.target}
-    </Popover2>
+    </BlueprintPopover>
   </span>;
 };

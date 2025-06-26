@@ -13,11 +13,10 @@ import { destroy } from "../../api/crud";
 import { isNumber, isUndefined, round } from "lodash";
 import { isBotOnline } from "../../devices/must_be_online";
 import { t } from "../../i18next_wrapper";
-import { Overlay } from "@blueprintjs/core";
 import { ImageShowMenu, ImageShowMenuTarget } from "./image_show_menu";
 import { setShownMapImages } from "./actions";
 import { TaggedImage } from "farmbot";
-import { MarkedSlider, Popover } from "../../ui";
+import { MarkedSlider, Popover, Overlay } from "../../ui";
 import {
   botPositionLabel,
 } from "../../farm_designer/map/layers/farmbot/bot_position_label";

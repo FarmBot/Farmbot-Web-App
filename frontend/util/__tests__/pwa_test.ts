@@ -19,10 +19,12 @@ describe("registerServiceWorker()", () => {
       configurable: true,
     });
     registerServiceWorker();
-    expect(window.addEventListener).toHaveBeenCalledWith("load", expect.any(Function));
+    expect(window.addEventListener).toHaveBeenCalledWith(
+      "load", expect.any(Function));
     const loadCallback = (window.addEventListener as jest.Mock).mock.calls[0][1];
     loadCallback();
-    expect(register).toHaveBeenCalledWith(new URL("/service-worker.js", location.href));
+    expect(register).toHaveBeenCalledWith(
+      new URL("/service-worker.js", location.href));
   });
 
   it("fails to register", () => {
@@ -33,7 +35,8 @@ describe("registerServiceWorker()", () => {
       configurable: true,
     });
     registerServiceWorker();
-    expect(window.addEventListener).toHaveBeenCalledWith("load", expect.any(Function));
+    expect(window.addEventListener).toHaveBeenCalledWith(
+      "load", expect.any(Function));
     const loadCallback = (window.addEventListener as jest.Mock).mock.calls[0][1];
     loadCallback();
     expect(register).toHaveBeenCalled();
@@ -83,7 +86,8 @@ describe("initPWA", () => {
       value: { register }, configurable: true,
     });
     initPWA();
-    expect(window.addEventListener).toHaveBeenCalledWith("load", expect.any(Function));
+    expect(window.addEventListener).toHaveBeenCalledWith(
+      "load", expect.any(Function));
     const loadCallback = (window.addEventListener as jest.Mock).mock.calls
       .find(c => c[0] === "load")[1];
     loadCallback();

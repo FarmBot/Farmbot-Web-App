@@ -91,18 +91,17 @@ describe("hotkeysWithActions()", () => {
 
 describe("toggleHotkeyHelpOverlay()", () => {
   it("opens overlay", () => {
-    const dispatch = jest.fn();
-    toggleHotkeyHelpOverlay(dispatch)();
-    expect(dispatch).toHaveBeenCalledWith({
-      type: Actions.TOGGLE_HOTKEY_GUIDE, payload: undefined,
-    });
+    document.dispatchEvent = jest.fn();
+    toggleHotkeyHelpOverlay();
+    expect(document.dispatchEvent).toHaveBeenCalledWith(
+      new KeyboardEvent("keydown", { key: "?", shiftKey: true, bubbles: true }),
+    );
   });
 });
 
 describe("<HotKeys />", () => {
   const fakeProps = (): HotKeysProps => ({
     dispatch: jest.fn(),
-    hotkeyGuide: false,
     designer: fakeDesignerState(),
   });
 

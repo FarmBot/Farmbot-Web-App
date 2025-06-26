@@ -2,18 +2,18 @@
 @use "sass:color";
 
 .curve-svg-wrapper {
-  .bp5-popover-target {
+  .bp6-popover-target {
     width: 100%;
   }
 }
 
 .warning-line-text-popover {
   border-radius: 5px;
-  .bp5-popover-content {
+  .bp6-popover-content {
     background: $dark_gray;
     border-radius: 5px;
   }
-  .bp5-popover-arrow {
+  .bp6-popover-arrow {
     display: none;
   }
   p {
@@ -147,7 +147,7 @@
   label {
     margin-top: 0 !important;
   }
-  .bp5-popover-wrapper {
+  .bp6-popover-wrapper {
     display: inline;
     margin-left: 1rem;
   }

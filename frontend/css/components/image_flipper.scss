@@ -7,7 +7,7 @@
   overflow: hidden;
 }
 
-.bp5-overlay {
+.bp6-overlay {
   .image-flipper {
     z-index: 20;
     width: 100%;
@@ -146,7 +146,7 @@ body:has(.app.darl) {
     font-weight: bold;
     font-size: 1.3rem;
   }
-  .bp5-popover-wrapper {
+  .bp6-popover-wrapper {
     display: inline;
   }
 }
@@ -158,7 +158,7 @@ body:has(.app.darl) {
 }
 
 .image-show-menu-popover {
-  .bp5-popover-content {
+  .bp6-popover-content {
     padding: 0;
   }
 }
@@ -313,7 +313,7 @@ body:has(.app.darl) {
       }
     }
   }
-  .bp5-slider {
+  .bp6-slider {
     margin-left: 2rem;
     width: 90%;
   }

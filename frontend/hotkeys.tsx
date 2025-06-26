@@ -1,7 +1,7 @@
 import React from "react";
 import { getLinks } from "./nav/nav_links";
 import { sync } from "./devices/actions";
-import { HotkeyConfig, useHotkeys, HotkeysDialog2 } from "@blueprintjs/core";
+import { HotkeyConfig, useHotkeys } from "@blueprintjs/core";
 import {
   getPanelPath, PANEL_BY_SLUG, setPanelOpen,
 } from "./farm_designer/panel_header";
@@ -9,7 +9,6 @@ import { t } from "./i18next_wrapper";
 import { store } from "./redux/store";
 import { save } from "./api/crud";
 import { Path } from "./internal_urls";
-import { Actions } from "./constants";
 import { NavigateFunction, useNavigate } from "react-router";
 import { DesignerState } from "./farm_designer/interfaces";
 import { isUndefined } from "lodash";
@@ -19,7 +18,6 @@ type HotkeyConfigs = Record<HotKey, HotkeyConfig>;
 
 export interface HotKeysProps {
   dispatch: Function;
-  hotkeyGuide: boolean;
   designer: DesignerState;
 }
 
@@ -130,8 +128,9 @@ export const hotkeysWithActions = (props: HotkeysWithActionsProps) => {
   return list;
 };
 
-export const toggleHotkeyHelpOverlay = (dispatch: Function) => () =>
-  dispatch({ type: Actions.TOGGLE_HOTKEY_GUIDE, payload: undefined });
+export const toggleHotkeyHelpOverlay = () =>
+  document.dispatchEvent(new KeyboardEvent("keydown",
+    { key: "?", shiftKey: true, bubbles: true }));
 
 export const HotKeys = (props: HotKeysProps) => {
   const navigate = useNavigate();
@@ -147,8 +146,5 @@ export const HotKeys = (props: HotKeysProps) => {
     { showDialogKeyCombo: undefined });
   return <div className={"hotkeys"}
     onKeyDown={handleKeyDown} onKeyUp={handleKeyUp}>
-    <HotkeysDialog2 globalGroupName={""}
-      onClose={props.dispatch(toggleHotkeyHelpOverlay)}
-      hotkeys={hotkeys} isOpen={props.hotkeyGuide} />
   </div>;
 };

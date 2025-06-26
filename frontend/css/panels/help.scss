@@ -41,11 +41,11 @@ body:has(.app.dark) {
     padding: 1rem;
     font-size: 1.25rem;
   }
-  .bp5-collapse {
+  .bp6-collapse {
     overflow: visible;
     grid-column: span 2;
   }
-  .bp5-collapse-body {
+  .bp6-collapse-body {
     position: relative;
     z-index: 1;
     margin: -1rem;
@@ -115,7 +115,7 @@ body:has(.app.dark) {
   button {
     float: none;
   }
-  .bp5-popover-wrapper {
+  .bp6-popover-wrapper {
     margin-left: 1rem;
   }
 }

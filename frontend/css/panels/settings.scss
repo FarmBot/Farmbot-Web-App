@@ -17,10 +17,10 @@
     &.setting {
       gap: 0.5rem;
     }
-    .bp5-collapse {
+    .bp6-collapse {
       grid-column: span 2;
     }
-    .bp5-collapse-body {
+    .bp6-collapse-body {
       display: grid;
       gap: 1rem;
     }
@@ -200,7 +200,7 @@
     animation: fade-out 1s 0.4s forwards;
   }
   .save-error {
-    .bp5-popover-content {
+    .bp6-popover-content {
       background: $dark_gray;
       min-width: 200px;
       p {
@@ -208,7 +208,7 @@
         color: $off_white;
       }
     }
-    .bp5-popover-arrow-fill {
+    .bp6-popover-arrow-fill {
       fill: $dark_gray;
     }
   }

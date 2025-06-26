@@ -1,14 +1,15 @@
 import React from "react";
-import { Overlay2, Classes } from "@blueprintjs/core";
+import { Classes } from "@blueprintjs/core";
 import { NavLinks } from "./nav_links";
 import { MobileMenuProps } from "./interfaces";
+import { Overlay } from "../ui";
 
 const classes = [Classes.CARD, Classes.ELEVATION_4, "mobile-menu"];
 
 export const MobileMenu = (props: MobileMenuProps) => {
   const isActive = props.mobileMenuOpen ? "active" : "inactive";
   return <div className={"mobile-menu-wrapper"}>
-    <Overlay2
+    <Overlay
       isOpen={props.mobileMenuOpen}
       onClose={props.close}>
       <div className={`${classes.join(" ")} ${isActive}`}
@@ -21,6 +22,6 @@ export const MobileMenu = (props: MobileMenuProps) => {
           alertCount={props.alertCount}
           helpState={props.helpState} />
       </div>
-    </Overlay2>
+    </Overlay>
   </div>;
 };

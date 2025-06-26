@@ -270,7 +270,7 @@ nav {
 }
 
 .menu-popover {
-  .bp5-popover-content {
+  .bp6-popover-content {
     position: relative;
     width: 22rem;
     padding: 0;
@@ -312,7 +312,7 @@ nav {
       }
     }
   }
-  .bp5-popover-arrow {
+  .bp6-popover-arrow {
     visibility: hidden;
   }
   .fa-user {
@@ -328,7 +328,7 @@ nav {
 
 body:has(.app.dark) {
   .menu-popover {
-    .bp5-popover-content {
+    .bp6-popover-content {
       img {
         filter: invert(0.75);
       }

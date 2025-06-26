@@ -72,7 +72,7 @@
   h3 {
     margin-top: 1rem;
   }
-  .bp5-popover-target .saucer {
+  .bp6-popover-target .saucer {
     float: left;
   }
   @media screen and (max-width: 767px) {
@@ -187,10 +187,10 @@
       label {
         cursor: pointer;
       }
-      .bp5-popover-wrapper {
+      .bp6-popover-wrapper {
         display: inline;
       }
-      .bp5-button-text,
+      .bp6-button-text,
       p {
         display: inline-block;
         width: max-content;
@@ -224,10 +224,10 @@
           line-height: 2.25rem;
           color: $white;
         }
-        .bp5-button {
+        .bp6-button {
           padding-left: 0.5rem;
         }
-        .bp5-button-text {
+        .bp6-button-text {
           margin-left: 0;
           padding-left: 0;
           line-height: 1.5rem;
@@ -419,7 +419,7 @@
       font-size: 2rem;
       margin-right: 0.5rem;
     }
-    .bp5-popover-wrapper {
+    .bp6-popover-wrapper {
       display: contents;
     }
   }
@@ -500,7 +500,7 @@
     margin: 0 3.5rem;
   }
   .location-form-content {
-    .bp5-popover-wrapper {
+    .bp6-popover-wrapper {
       display: inline-block;
       margin-left: 1rem;
     }
@@ -545,7 +545,7 @@
     &.read-only {
       margin-top: 1rem;
       margin-bottom: 1rem;
-      .bp5-control,
+      .bp6-control,
       .filter-search,
       textarea,
       .input,
@@ -626,7 +626,7 @@
     margin-left: -1rem;
     color: $white;
   }
-  .bp5-popover-wrapper {
+  .bp6-popover-wrapper {
     display: inline;
     margin-left: 1rem;
     i {
@@ -906,10 +906,10 @@
   .folder-list-item,
   .sequence-list-item {
     padding-left: 3rem;
-    .bp5-popover-wrapper.color-picker {
+    .bp6-popover-wrapper.color-picker {
       position: absolute;
       line-height: 0;
-      .bp5-popover-target {
+      .bp6-popover-target {
         width: 2rem;
         height: 3.5rem;
       }
@@ -924,7 +924,7 @@
   }
   .folder-list-item {
     padding-left: 0;
-    .bp5-popover-wrapper.color-picker {
+    .bp6-popover-wrapper.color-picker {
       margin-left: 2.5rem;
     }
     .color-picker {
@@ -974,13 +974,13 @@
 
 .folder-settings-icon,
 .sequence-item-action-menu {
-  .bp5-popover-content {
+  .bp6-popover-content {
     padding: 0.5rem;
   }
 }
 
 .sequence-item-description {
-  .bp5-popover-content {
+  .bp6-popover-content {
     max-height: 20rem;
     overflow-y: auto;
     width: 32rem;
@@ -1102,7 +1102,7 @@
     }
   }
   &.last {
-    .bp5-collapse {
+    .bp6-collapse {
       margin-top: 1rem;
       margin-right: 2.5rem;
     }
@@ -1168,7 +1168,7 @@
     display: inline-block;
     padding-left: 1rem;
   }
-  .bp5-popover-wrapper {
+  .bp6-popover-wrapper {
     display: inline-block;
     margin-left: 1rem;
   }
@@ -1295,7 +1295,7 @@ $border_width: 1.4px;
   .versions-table {
     margin-top: 2rem;
     text-align: left;
-    .bp5-popover-wrapper {
+    .bp6-popover-wrapper {
       display: inline-block;
       margin-left: 1rem;
     }

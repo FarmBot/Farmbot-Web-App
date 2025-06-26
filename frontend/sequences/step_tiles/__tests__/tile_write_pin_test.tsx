@@ -30,7 +30,7 @@ describe("<TileWritePin />", () => {
     expect(labels.at(1).text()).toEqual("Mode");
     expect(buttons.at(0).text()).toEqual("Pin 3");
     expect(labels.at(2).text()).toEqual("set to");
-    const sliderLabels = wrapper.find(".bp5-slider-label");
+    const sliderLabels = wrapper.find(".bp6-slider-label");
     [0, 255, 2].map((value, index) =>
       expect(sliderLabels.at(index).text()).toEqual("" + value));
   });

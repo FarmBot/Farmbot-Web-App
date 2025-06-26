@@ -179,16 +179,6 @@ describe("resource reducer", () => {
     expect(newState.popups.connectivity).toBeFalsy();
   });
 
-  it("toggle hotkey guide", () => {
-    const state = app;
-    expect(state.hotkeyGuide).toBeFalsy();
-    const newState = appReducer(state, {
-      type: Actions.TOGGLE_HOTKEY_GUIDE,
-      payload: undefined,
-    });
-    expect(newState.hotkeyGuide).toBeTruthy();
-  });
-
   it("adds toast", () => {
     const newState = appReducer(app, {
       type: Actions.CREATE_TOAST,

@@ -7,17 +7,17 @@
   width: 100%;
   margin-bottom: 3rem;
   margin-top: 1rem;
-  .bp5-slider {
+  .bp6-slider {
     margin-left: 3rem;
     margin-top: 1rem;
     width: 80%;
   }
   &.vertical {
-    .bp5-slider {
+    .bp6-slider {
       margin-top: 0;
     }
   }
-  .bp5-slider-label {
+  .bp6-slider-label {
     white-space: nowrap;
     text-align: center;
     &:empty {
@@ -26,14 +26,14 @@
   }
   .data-slider {
     pointer-events: none;
-    .bp5-slider-axis,
-    .bp5-slider-track {
+    .bp6-slider-axis,
+    .bp6-slider-track {
       display: none;
     }
-    .bp5-slider-label {
+    .bp6-slider-label {
       box-shadow: none;
     }
-    .bp5-start {
+    .bp6-start {
       top: 0.53rem;
       width: 0.5px;
       background: color.adjust($dark_gray, $alpha: -0.75);
@@ -45,7 +45,7 @@
       }
     }
     &.vertical {
-      .bp5-start {
+      .bp6-start {
         top: unset;
         left: 0.53rem;
         height: 0.5px;

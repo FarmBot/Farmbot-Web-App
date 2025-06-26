@@ -88,17 +88,17 @@ input[type="checkbox"] {
 
 .input {
   position: relative;
-  .bp5-popover-wrapper {
+  .bp6-popover-wrapper {
     position: unset;
   }
 }
 
 .input-error-wrapper {
   height: 0;
-  .bp5-popover-content {
+  .bp6-popover-content {
     min-width: 120px;
   }
-  .bp5-overlay {
+  .bp6-overlay {
     display: inline-block;
   }
 }
@@ -139,7 +139,7 @@ select {
     width: 100%;
     color: $dark_gray;
   }
-  .bp5-popover-target {
+  .bp6-popover-target {
     position: relative;
   }
   i {
@@ -174,19 +174,19 @@ select {
 }
 
 .filter-search-popover {
-  .bp5-popover-content {
+  .bp6-popover-content {
     max-width: 40rem;
     padding: 0;
-    .bp5-menu {
+    .bp6-menu {
       padding-left: 0;
       padding-right: 0;
     }
-    .bp5-input {
+    .bp6-input {
       height: auto !important;
     }
   }
   &.few-items {
-    .bp5-input-group {
+    .bp6-input-group {
       display: none;
     }
   }
@@ -195,7 +195,7 @@ select {
 .filter-search-item {
   padding-left: 1rem;
   font-weight: normal !important;
-  .bp5-text-overflow-ellipsis {
+  .bp6-text-overflow-ellipsis {
     white-space: normal;
     padding-left: 1rem;
     text-indent: -1rem;
@@ -310,9 +310,9 @@ fieldset {
 .modified {
   box-shadow: 0 0 0px 3px $yellow !important;
   border-radius: 3px;
-  &.bp5-slider {
+  &.bp6-slider {
     box-shadow: none !important;
-    .bp5-slider-handle {
+    .bp6-slider-handle {
       box-shadow: 0 0 0px 3px $yellow;
     }
   }

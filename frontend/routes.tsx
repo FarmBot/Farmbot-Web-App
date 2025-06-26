@@ -8,7 +8,7 @@ import { ErrorBoundary } from "./error_boundary";
 import { Route, BrowserRouter, Routes } from "react-router";
 import { ROUTE_DATA } from "./route_config";
 import { Provider } from "react-redux";
-import { HotkeysProvider } from "@blueprintjs/core";
+import { BlueprintProvider } from "@blueprintjs/core";
 import { Provider as RollbarProvider } from "@rollbar/react";
 import { NavigationProvider } from "./routes_helpers";
 import { App } from "./app";
@@ -55,7 +55,7 @@ export class RootComponent
     return <OuterWrapper>
       <ErrorBoundary>
         <Provider store={_store}>
-          <HotkeysProvider>
+          <BlueprintProvider>
             <BrowserRouter>
               <NavigationProvider>
                 <React.Suspense>
@@ -78,7 +78,7 @@ export class RootComponent
                 </React.Suspense>
               </NavigationProvider>
             </BrowserRouter>
-          </HotkeysProvider>
+          </BlueprintProvider>
         </Provider>
       </ErrorBoundary>
     </OuterWrapper>;

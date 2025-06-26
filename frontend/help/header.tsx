@@ -4,7 +4,6 @@ import { NavigateFunction, useNavigate } from "react-router";
 import { toggleHotkeyHelpOverlay } from "../hotkeys";
 import { t } from "../i18next_wrapper";
 import { FilePath, Icon, Path } from "../internal_urls";
-import { store } from "../redux/store";
 import { isMobile } from "../screen_size";
 
 interface Page {
@@ -57,7 +56,7 @@ const maybeAddHotkeysMenuItem = (): [string, Page][] =>
     ? [["hotkeys", {
       title: t("Hotkeys"),
       fa_icon: "fa-keyboard-o",
-      onClick: toggleHotkeyHelpOverlay(store.dispatch),
+      onClick: toggleHotkeyHelpOverlay,
     }]]
     : [];
 

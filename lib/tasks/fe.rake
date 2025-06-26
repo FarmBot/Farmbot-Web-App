@@ -38,10 +38,10 @@ EXCLUDE = [
     version: "19",
   },
   {
-    packages: ["three"],
-    reason: "not working:",
-    version: "0.175.0",
-  },
+    packages: ["jest", "jest-cli", "jest-environment-jsdom"],
+    reason: "breaking changes (jsdom window.location) in",
+    version: "30",
+  }
 ]
 
 # Load package.json as JSON.

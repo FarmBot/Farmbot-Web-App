@@ -53,7 +53,7 @@ describe("<TakePhotoButton />", () => {
     const p = fakeProps();
     p.botOnline = false;
     const jogButtons = mount(<TakePhotoButton {...p} />);
-    expect(jogButtons.html()).toContain("bp5-popover-target");
+    expect(jogButtons.html()).toContain("bp6-popover-target");
   });
 
   it("shows as taken", () => {

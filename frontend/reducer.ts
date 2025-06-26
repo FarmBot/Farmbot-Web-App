@@ -29,7 +29,6 @@ export interface AppState {
   jobs: JobsAndLogsState;
   controls: ControlsState;
   popups: PopupsState;
-  hotkeyGuide: boolean;
 }
 
 export const emptyState = (): AppState => {
@@ -104,7 +103,6 @@ export const emptyState = (): AppState => {
       jobs: false,
       connectivity: false,
     },
-    hotkeyGuide: false,
   };
 };
 
@@ -204,10 +202,6 @@ export const appReducer =
       s.popups.controls = false;
       s.popups.jobs = false;
       s.popups.connectivity = false;
-      return s;
-    })
-    .add<undefined>(Actions.TOGGLE_HOTKEY_GUIDE, (s) => {
-      s.hotkeyGuide = !s.hotkeyGuide;
       return s;
     })
     .add<ToastMessageProps>(Actions.CREATE_TOAST, (s, { payload }) => {

@@ -2,24 +2,24 @@
 @use "sass:color";
 
 // Padding for the popups.
-.bp5-popover-content {
+.bp6-popover-content {
   z-index: 999;
   padding: 1rem;
   color: var(--text-color) !important;
   background: unset !important;
 }
 
-.bp5-popover {
+.bp6-popover {
   font-size: 1.3rem;
   border-radius: 0.5rem;
   overflow: hidden;
   background: unset !important;
-  .bp5-popover-arrow {
+  .bp6-popover-arrow {
     display: none !important;
   }
 }
 
-.bp5-popover-transition-container {
+.bp6-popover-transition-container {
   backdrop-filter: var(--blur);
   border-radius: 0.75rem;
   overflow: hidden;
@@ -28,55 +28,55 @@
 }
 
 // Arrow is slightly off by default in the popup menu.
-.bp5-tether-element-attached-left.bp5-tether-target-attached-right>.bp5-popover>.bp5-popover-arrow {
+.bp6-tether-element-attached-left.bp6-tether-target-attached-right>.bp6-popover>.bp6-popover-arrow {
   left: -1rem;
 }
 
-.bp5-overlay-content.bp5-tether-abutted.bp5-tether-abutted-top.bp5-tether-element.bp5-tether-element-attached-left.bp5-tether-element-attached-top.bp5-tether-enabled.bp5-tether-target-attached-bottom.bp5-tether-target-attached-left.bp5-transition-container {
+.bp6-overlay-content.bp6-tether-abutted.bp6-tether-abutted-top.bp6-tether-element.bp6-tether-element-attached-left.bp6-tether-element-attached-top.bp6-tether-enabled.bp6-tether-target-attached-bottom.bp6-tether-target-attached-left.bp6-transition-container {
   top: 2rem !important;
 }
 
-.bp5-portal {
+.bp6-portal {
   z-index: 99;
 }
 
-.bp5-menu {
+.bp6-menu {
   max-height: 20rem !important;
   overflow-y: scroll;
 }
 
-.bp5-input {
+.bp6-input {
   box-shadow: none;
   border-radius: 0;
 }
 
-.bp5-input-group {
+.bp6-input-group {
   border-bottom: 1.5px solid var(--border-color);
-  .bp5-icon {
+  .bp6-icon {
     top: 0.6rem;
   }
 }
 
-.bp5-popover.help {
-  .bp5-popover-content {
+.bp6-popover.help {
+  .bp6-popover-content {
     width: 32rem;
   }
 }
 
-.bp5-slider {
+.bp6-slider {
   margin: 0 2.5rem 0 1.5rem;
   width: initial;
 }
 
-.bp5-slider-progress {
+.bp6-slider-progress {
   background: var(--secondary-bg);
 }
 
-.bp5-control {
+.bp6-control {
   margin: 0;
 }
 
-.bp5-button:not(.bp5-minimal) {
+.bp6-button:not(.bp6-minimal) {
   font-weight: normal;
   text-transform: none;
   border-radius: 3px;
@@ -100,14 +100,14 @@
   }
 }
 
-.bp5-icon-standard.bp5-align-right {
+.bp6-icon-standard.bp6-align-right {
   float: right !important;
   margin-top: 0.6rem !important;
   margin-left: 0 !important;
   font-size: 1.6rem !important;
 }
 
-.nav-right .bp5-popover-wrapper {
+.nav-right .bp6-popover-wrapper {
   transition: all 0.2s ease;
   text-transform: uppercase;
   color: $gray;
@@ -120,18 +120,33 @@
   }
 }
 
-.bp5-collapse {
+.bp6-collapse {
   scrollbar-width: none;
 }
 
-.bp5-collapse::-webkit-scrollbar,
-.bp5-collapse-body::-webkit-scrollbar {
+.bp6-collapse::-webkit-scrollbar,
+.bp6-collapse-body::-webkit-scrollbar {
   display: none !important;
   width: 0px !important;
   background-color: transparent !important;
 }
 
-*[class*=bp5-] {
+.bp6-hotkey-dialog {
+  background: var(--main-bg) !important;
+  .bp6-heading {
+    display: none;
+  }
+  .bp6-hotkey-label {
+    color: var(--text-color) !important;
+    font-size: 1.4rem !important;
+  }
+  .bp6-key {
+    background: var(--secondary-bg) !important;
+    color: var(--text-color) !important;
+  }
+}
+
+*[class*=bp6-] {
   &:focus {
     outline: none;
   }
