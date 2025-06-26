@@ -21,13 +21,21 @@ export const NorthArrow = (props: NorthArrowProps) => {
       threeSpace(-500, bedWidthOuter),
       -bedHeight - bedZOffset,
     ]}
-    rotation={[0, 0, (90 + heading) * Math.PI / 180]}>
+    rotation={[0, 0, (heading - 90) * Math.PI / 180]}>
     <Extrude
       args={[
         northArrowShape,
         { steps: 1, depth: 5 },
       ]}>
       <MeshPhongMaterial color={"silver"} />
+    </Extrude>
+    <Extrude
+      args={[
+        nShape,
+        { steps: 1, depth: 2 },
+      ]}
+      position={[0, 0, 5]}>
+      <MeshPhongMaterial color={"#434343"} />
     </Extrude>
   </Group>;
 };
@@ -41,16 +49,14 @@ northArrowShape.lineTo(70, -200);
 northArrowShape.lineTo(-30, 20);
 
 const nShape = new Shape();
-nShape.moveTo(-60, -80);
-nShape.lineTo(-60, -120);
+nShape.moveTo(-50, -80);
+nShape.lineTo(-50, -120);
 nShape.lineTo(-40, -120);
-nShape.lineTo(-40, -100);
+nShape.lineTo(-40, -95);
 nShape.lineTo(-20, -120);
-nShape.lineTo(0, -120);
-nShape.lineTo(0, -80);
+nShape.lineTo(-10, -120);
+nShape.lineTo(-10, -80);
 nShape.lineTo(-20, -80);
-nShape.lineTo(-20, -100);
+nShape.lineTo(-20, -105);
 nShape.lineTo(-40, -80);
-nShape.lineTo(-60, -80);
-
-northArrowShape.holes.push(nShape);
+nShape.lineTo(-50, -80);
