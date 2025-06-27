@@ -105,6 +105,7 @@ namespace :api do
 
   desc "Don't call this directly. Use `rake assets:precompile`."
   task parcel_compile: :environment do
+    clean_assets
     add_monaco
     parcel "build"
   end
