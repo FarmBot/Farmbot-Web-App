@@ -3,7 +3,7 @@ module Api
   # the user is allowed to perform the action.
   # Returning "allow" will allow them to perform the requested action.
   # Any other response results in denial.
-  # Results are cached for 10 minutes to prevent too many requests to the API.
+  # Results are cached for 5 minutes to prevent too many requests to the API.
   class RmqUtilsController < Api::AbstractController
     class BrokerConnectionLimiter
       attr_reader :cache
@@ -258,7 +258,7 @@ module Api
 
       # Allow Web SSH access, but only to accounts that have
       # an active `STAFF` token associated with the account.
-      # Such tokens exist for 24 hours after requesting staff
+      # Such tokens exist for 1 week after requesting staff
       # support.
       if routing_key_param.include?(".terminal_input") && permission_param == "write"
         query = { aud: "staff", device_id: device_id_in_topic }

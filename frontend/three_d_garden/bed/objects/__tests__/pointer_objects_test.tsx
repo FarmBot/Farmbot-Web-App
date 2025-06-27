@@ -35,7 +35,7 @@ describe("<PointerObjects />", () => {
   const fakeProps = (): PointerObjectsProps => ({
     config: clone(INITIAL),
     mapPoints: [],
-    addPlantProps: fakeAddPlantProps([]),
+    addPlantProps: fakeAddPlantProps(),
     pointerPlantRef: { current: { position: new Vector3(0, 0, 0) } } as PointerPlantRef,
     radiusRef: { current: { scale: new Vector3(0, 0, 0) } } as RadiusRef,
     torusRef: { current: { scale: new Vector3(0, 0, 0) } } as TorusRef,
@@ -57,7 +57,7 @@ describe("soilClick()", () => {
   const fakeProps = (): SoilClickProps => ({
     config: clone(INITIAL),
     navigate: jest.fn(),
-    addPlantProps: fakeAddPlantProps([]),
+    addPlantProps: fakeAddPlantProps(),
     pointerPlantRef: { current: { position: new Vector3(0, 0, 0) } } as PointerPlantRef,
     getZ: () => 0,
   });
@@ -81,7 +81,7 @@ describe("soilClick()", () => {
 describe("soilPointerMove()", () => {
   const fakeProps = (): SoilPointerMoveProps => ({
     config: clone(INITIAL),
-    addPlantProps: fakeAddPlantProps([]),
+    addPlantProps: fakeAddPlantProps(),
     getZ: () => 0,
     pointerPlantRef: { current: { position: { set: jest.fn() } } } as unknown as PointerPlantRef,
     radiusRef: { current: { scale: { set: jest.fn() } } } as unknown as RadiusRef,

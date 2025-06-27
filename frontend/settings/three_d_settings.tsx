@@ -4,7 +4,9 @@ import { Highlight } from "./maybe_highlight";
 import { Actions, DeviceSetting, ToolTips } from "../constants";
 import { Header } from "./hardware_settings/header";
 import { Collapse } from "@blueprintjs/core";
-import { BlurableInput, Help, Row, ToggleButton } from "../ui";
+import {
+  BlurableInput, DropDownItem, FBSelect, Help, Row, ToggleButton,
+} from "../ui";
 import { t } from "../i18next_wrapper";
 import { TaggedFarmwareEnv } from "farmbot";
 import { isUndefined } from "lodash";
@@ -22,8 +24,32 @@ const DEFAULTS: Record<string, number> = {
   bedYOffset: 20,
   bedZOffset: 0,
   legSize: 100,
+  legsFlush: 1,
+  extraLegsX: 1,
+  extraLegsY: 0,
+  bedBrightness: 8,
+  clouds: 1,
+  laser: 0,
+  stats: 0,
+  threeAxes: 0,
+  solar: 0,
+  lowDetail: 0,
+  eventDebug: 0,
+  cableDebug: 0,
+  lightsDebug: 0,
+  ambient: 75,
+  heading: 0,
+  sunAzimuth: 230,
+  sunInclination: 140,
   bounds: 0,
-  grid: 0,
+  grid: 1,
+  scene: 0,
+};
+
+export const SCENES: Record<number, string> = {
+  0: "Outdoor",
+  1: "Lab",
+  2: "Greenhouse",
 };
 
 export const namespace3D = (key: string): string => "3D_" + key;
@@ -53,18 +79,19 @@ export const findOrCreate3DConfigFunction =
       }
     };
 
-interface ConfigProps {
+interface ThreeDConfigProps {
   dispatch: Function;
-  distanceIndicator: string;
+  distanceIndicator?: string;
   setting: DeviceSetting;
   configKey: string;
   tooltip: string;
   getValue(key: string): number;
   findOrCreate(key: string, value: string): void;
   isToggle?: boolean;
+  isScene?: boolean;
 }
 
-const Config = (props: ConfigProps) => {
+export const ThreeDConfig = (props: ThreeDConfigProps) => {
   const { dispatch, configKey, distanceIndicator } = props;
   const value = props.getValue(configKey);
   const modifiedClassName = getModifiedClassNameSpecifyDefault(
@@ -85,12 +112,17 @@ const Config = (props: ConfigProps) => {
             payload: distanceIndicator ? "" : configKey,
           })} />
       </div>
-      {props.isToggle
-        ? <ToggleButton
+      {props.isToggle &&
+        <ToggleButton
           className={modifiedClassName}
           toggleValue={value}
-          toggleAction={() => action(value ? "0" : "1")} />
-        :
+          toggleAction={() => action(value ? "0" : "1")} />}
+      {props.isScene &&
+        <FBSelect
+          list={Object.values(SCENE_DDIS)}
+          selectedItem={SCENE_DDIS[value]}
+          onChange={ddi => action("" + ddi.value)} />}
+      {!props.isToggle && !props.isScene &&
         <BlurableInput
           type="number"
           wrapperClassName={modifiedClassName}
@@ -99,6 +131,12 @@ const Config = (props: ConfigProps) => {
     </Row>
   </Highlight>;
 };
+
+const SCENE_DDIS: Record<number, DropDownItem> = Object.entries(SCENES)
+  .reduce((acc, [key, label]) => {
+    acc[Number(key)] = { label, value: Number(key) };
+    return acc;
+  }, {} as Record<number, DropDownItem>);
 
 export const ThreeDSettings = (props: ThreeDSettingsProps) => {
   const { dispatch, distanceIndicator } = props;
@@ -113,52 +151,52 @@ export const ThreeDSettings = (props: ThreeDSettingsProps) => {
       dispatch={props.dispatch}
       expanded={props.settingsPanelState.three_d} />
     <Collapse isOpen={!!props.settingsPanelState.three_d}>
-      <Config {...common}
+      <ThreeDConfig {...common}
         tooltip={ToolTips.THREE_D_BED_WALL_THICKNESS}
         setting={DeviceSetting.bedWallThickness}
         configKey={"bedWallThickness"} />
-      <Config {...common}
+      <ThreeDConfig {...common}
         tooltip={ToolTips.THREE_D_BED_HEIGHT}
         setting={DeviceSetting.bedHeight}
         configKey={"bedHeight"} />
-      <Config {...common}
+      <ThreeDConfig {...common}
         tooltip={ToolTips.THREE_D_CC_SUPPORT_SIZE}
         setting={DeviceSetting.ccSupportSize}
         configKey={"ccSupportSize"} />
-      <Config {...common}
+      <ThreeDConfig {...common}
         tooltip={ToolTips.THREE_D_BEAM_LENGTH}
         setting={DeviceSetting.beamLength}
         configKey={"beamLength"} />
-      <Config {...common}
+      <ThreeDConfig {...common}
         tooltip={ToolTips.THREE_D_COLUMN_LENGTH}
         setting={DeviceSetting.columnLength}
         configKey={"columnLength"} />
-      <Config {...common}
+      <ThreeDConfig {...common}
         tooltip={ToolTips.THREE_D_Z_AXIS_LENGTH}
         setting={DeviceSetting.zAxisLength}
         configKey={"zAxisLength"} />
-      <Config {...common}
+      <ThreeDConfig {...common}
         tooltip={ToolTips.THREE_D_BED_X_OFFSET}
         setting={DeviceSetting.bedXOffset}
         configKey={"bedXOffset"} />
-      <Config {...common}
+      <ThreeDConfig {...common}
         tooltip={ToolTips.THREE_D_BED_Y_OFFSET}
         setting={DeviceSetting.bedYOffset}
         configKey={"bedYOffset"} />
-      <Config {...common}
+      <ThreeDConfig {...common}
         tooltip={ToolTips.THREE_D_BED_Z_OFFSET}
         setting={DeviceSetting.bedZOffset}
         configKey={"bedZOffset"} />
-      <Config {...common}
+      <ThreeDConfig {...common}
         tooltip={ToolTips.THREE_D_LEG_SIZE}
         setting={DeviceSetting.legSize}
         configKey={"legSize"} />
-      <Config {...common}
+      <ThreeDConfig {...common}
         tooltip={ToolTips.THREE_D_BOUNDS}
         setting={DeviceSetting.bounds}
         configKey={"bounds"}
         isToggle={true} />
-      <Config {...common}
+      <ThreeDConfig {...common}
         tooltip={ToolTips.THREE_D_GRID}
         setting={DeviceSetting.grid}
         configKey={"grid"}

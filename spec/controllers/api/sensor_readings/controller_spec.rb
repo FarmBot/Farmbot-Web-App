@@ -115,8 +115,9 @@ describe Api::SensorReadingsController do
                           created_at: n.minutes.ago)
       end
       expect(user.device.sensor_readings.count).to eq(10)
-      get :index, params: { format: :json }
-      Delayed::Worker.new.work_off
+      run_jobs_now do
+        get :index, params: { format: :json }
+      end
       expect(json.count).to eq(5)
       expect(user.device.sensor_readings.count).to eq(5)
       const_reassign(Device, :DEFAULT_MAX_SENSOR_READINGS, 2500)

@@ -144,6 +144,17 @@ describe("designer reducer", () => {
     expect(newState.threeDExaggeratedZ).toEqual(true);
   });
 
+  it("sets 3D time", () => {
+    const state = oldState();
+    state.threeDTime = undefined;
+    const action: ReduxAction<string | undefined> = {
+      type: Actions.SET_3D_TIME,
+      payload: "12:00",
+    };
+    const newState = designer(state, action);
+    expect(newState.threeDTime).toEqual("12:00");
+  });
+
   it("sets panel open state", () => {
     const action: ReduxAction<boolean> = {
       type: Actions.SET_PANEL_OPEN,

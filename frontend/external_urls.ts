@@ -1,4 +1,4 @@
-import { isNumber } from "lodash";
+import { isFinite } from "lodash";
 
 enum Org {
   FarmBot = "FarmBot",
@@ -42,7 +42,7 @@ export namespace ExternalUrl {
 
   export const openStreetMap =
     (latitude: number | undefined, longitude: number | undefined) =>
-      isNumber(latitude) && isNumber(longitude)
+      isFinite(latitude) && isFinite(longitude)
         ? `${OPEN_STREET_MAP}/?mlat=${latitude}&mlon=${longitude}&zoom=10`
         : OPEN_STREET_MAP;
 

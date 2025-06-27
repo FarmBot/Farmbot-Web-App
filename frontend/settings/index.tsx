@@ -106,6 +106,7 @@ export const RawDesignerSettings = (props: DesignerSettingsProps) => {
         sourceFbosConfig={sourceFbosConfig}
         botOnline={botOnline}
         timeSettings={props.timeSettings}
+        farmwareEnvs={props.farmwareEnvs}
         showAdvanced={showAdvanced}
         device={props.deviceAccount} />
       <PowerAndReset {...commonProps}
@@ -160,7 +161,8 @@ export const RawDesignerSettings = (props: DesignerSettingsProps) => {
         dispatch={dispatch}
         farmwareEnvs={props.farmwareEnvs} />
       <Designer {...commonProps}
-        getConfigValue={getConfigValue} />
+        getConfigValue={getConfigValue}
+        firmwareConfig={props.firmwareConfig} />
       <ThreeDSettings {...commonProps}
         distanceIndicator={props.distanceIndicator}
         farmwareEnvs={props.farmwareEnvs} />

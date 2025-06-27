@@ -31,7 +31,7 @@ describe("occurrence", () => {
         data_value: { kind: "coordinate", args: { x: 1, y: 0, z: 0 } }
       }
     }];
-    const parameterDeclation: ParameterDeclaration = {
+    const parameterDeclaration: ParameterDeclaration = {
       kind: "parameter_declaration",
       args: {
         label: "label",
@@ -39,7 +39,7 @@ describe("occurrence", () => {
       }
     };
     fe.executable_type == "Sequence" &&
-      (fe.executable.args.locals.body = [parameterDeclation]);
+      (fe.executable.args.locals.body = [parameterDeclaration]);
     const t = occurrence(TIME.MONDAY, fe, fakeTimeSettings(),
       buildResourceIndex([]).index);
     expect(t.variables).toEqual(["label - Coordinate (1, 0, 0)"]);
@@ -48,7 +48,7 @@ describe("occurrence", () => {
   it("can't find variable", () => {
     const fe = fakeFarmEventWithExecutable();
     fe.body = undefined;
-    const parameterDeclation: ParameterDeclaration = {
+    const parameterDeclaration: ParameterDeclaration = {
       kind: "parameter_declaration",
       args: {
         label: "label",
@@ -56,7 +56,7 @@ describe("occurrence", () => {
       }
     };
     fe.executable_type == "Sequence" &&
-      (fe.executable.args.locals.body = [parameterDeclation]);
+      (fe.executable.args.locals.body = [parameterDeclaration]);
     const t = occurrence(TIME.MONDAY, fe, fakeTimeSettings(),
       buildResourceIndex([]).index);
     expect(t.variables).toEqual(["label - Coordinate (0, 0, 0)"]);

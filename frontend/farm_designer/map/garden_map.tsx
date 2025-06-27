@@ -300,7 +300,6 @@ export class GardenMap extends
         gridSize: this.mapTransformProps.gridSize,
         dispatch: this.props.dispatch,
         getConfigValue: this.props.getConfigValue,
-        plants: this.props.plants,
         curves: this.props.curves,
         designer: this.props.designer,
       });

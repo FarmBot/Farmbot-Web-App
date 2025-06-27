@@ -13,8 +13,8 @@ module Devices
       string :setup_completed_at, nils: true
       integer :mounted_tool_id, nils: true
       integer :ota_hour, nils: true
-      float :lat
-      float :lng
+      float :lat, nils: true
+      float :lng, nils: true
       boolean :indoor
       string :rpi
     end

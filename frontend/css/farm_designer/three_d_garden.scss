@@ -290,6 +290,29 @@
       grid-template-columns: min-content minmax(30%, 200px) auto;
       margin-bottom: 0.25rem;
 
+      .config-key {
+        line-height: 1.5rem;
+      }
+
+      .x {
+        font-weight: bold;
+        font-size: 10px;
+        position: absolute;
+        left: 0.5rem;
+        line-height: 0.9rem;
+        width: 1rem;
+        height: 1rem;
+        border: 1px solid $gray;
+        border-radius: 3px;
+        text-align: center;
+        margin-top: 0.2rem;
+
+        &:hover {
+          cursor: pointer;
+          background: $medium_gray;
+        }
+      }
+
       span {
         width: 8rem;
         padding-left: 1rem;

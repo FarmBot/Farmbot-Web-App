@@ -2,7 +2,7 @@ import { SequenceBodyItem as Step } from "farmbot";
 import { UUID } from "../resources/interfaces";
 
 /** An entry in the data transfer table. Used to transfer data from a "draggable"
- * to a "dropable". For type safety, this is a "tagged union". See Typescript
+ * to a "droppable". For type safety, this is a "tagged union". See Typescript
  * docs. */
 export type DataXfer = StepSpliceDataXfer | StepMoveDataXfer;
 /** For reference, a list of every possible DataXfer `intent` we support: */

@@ -1,8 +1,10 @@
 // Global
-@use "global/imports";
+@use "global/buttons";
+@use "global/colors";
 @use "global/fonts";
 @use "global/global";
-@use "global/buttons";
+@use "global/grids";
+@use "global/imports";
 @use "global/inputs";
 @use "global/labels";
 @use "global/saucers";
@@ -11,8 +13,8 @@
 @use "global/tooltips";
 // Animations
 @use "animations/animations";
-@use "animations/spinner";
 @use "animations/loading_plant";
+@use "animations/spinner";
 // App
 @use "app/navbar";
 @use "app/static_pages";
@@ -53,6 +55,5 @@
 @use "panels/tools";
 @use "panels/webcams";
 // Other
-@use "mobile";
-@use "not_bootstrap";
 @use "blueprint_overrides";
+@use "mobile";

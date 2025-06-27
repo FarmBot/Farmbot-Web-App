@@ -5,6 +5,7 @@ const mockDevice = {
 jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
 import React from "react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { mount, shallow } from "enzyme";
 import {
   PeripheralList, AnalogSlider, AnalogSliderProps,
@@ -16,8 +17,13 @@ import {
 } from "farmbot";
 import { PeripheralListProps } from "../interfaces";
 import { Slider } from "@blueprintjs/core";
+import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 
 describe("<PeripheralList />", () => {
+  afterEach(() => {
+    localStorage.removeItem("myBotIs");
+  });
+
   const fakeProps = (): PeripheralListProps => {
     const peripherals: TaggedPeripheral[] = [
       {
@@ -55,7 +61,7 @@ describe("<PeripheralList />", () => {
       }
     };
     return {
-      dispatch: jest.fn(),
+      dispatch: mockDispatch(),
       peripherals,
       pins,
       disabled: false,
@@ -63,7 +69,7 @@ describe("<PeripheralList />", () => {
     };
   };
 
-  it("renders a list of peripherals, in sorted order", function () {
+  it("renders a list of peripherals, in sorted order", () => {
     const wrapper = mount(<PeripheralList {...fakeProps()} />);
     const labels = wrapper.find("label");
     const buttons = wrapper.find("button");
@@ -83,16 +89,18 @@ describe("<PeripheralList />", () => {
   it("renders analog peripherals", () => {
     const p = fakeProps();
     p.peripherals[0].body.mode = 1;
-    const wrapper = shallow(<PeripheralList {...p} />);
-    expect(wrapper.find("AnalogSlider").length).toEqual(1);
+    render(<PeripheralList {...p} />);
+    const slider = screen.getByRole("slider");
+    expect(slider).toBeInTheDocument();
   });
 
   it("toggles pins", () => {
-    const wrapper = mount(<PeripheralList {...fakeProps()} />);
-    const toggle = wrapper.find("ToggleButton");
-    toggle.first().simulate("click");
+    render(<PeripheralList {...fakeProps()} />);
+    const toggle2 = screen.getByTitle("Toggle GPIO 2");
+    fireEvent.click(toggle2);
     expect(mockDevice.togglePin).toHaveBeenCalledWith({ pin_number: 2 });
-    toggle.last().simulate("click");
+    const toggle13 = screen.getByTitle("Toggle GPIO 13 - LED");
+    fireEvent.click(toggle13);
     expect(mockDevice.togglePin).toHaveBeenLastCalledWith({ pin_number: 13 });
     expect(mockDevice.togglePin).toHaveBeenCalledTimes(2);
   });
@@ -100,11 +108,29 @@ describe("<PeripheralList />", () => {
   it("pins toggles are disabled", () => {
     const p = fakeProps();
     p.disabled = true;
-    const wrapper = mount(<PeripheralList {...p} />);
-    const toggle = wrapper.find("ToggleButton");
-    toggle.first().simulate("click");
-    toggle.last().simulate("click");
+    render(<PeripheralList {...p} />);
+    const toggle2 = screen.getByTitle("Toggle GPIO 2");
+    fireEvent.click(toggle2);
+    const toggle13 = screen.getByTitle("Toggle GPIO 13 - LED");
+    fireEvent.click(toggle13);
     expect(mockDevice.togglePin).not.toHaveBeenCalled();
+  });
+
+  it("shows status as unknown", () => {
+    const p = fakeProps();
+    p.pins = {};
+    render(<PeripheralList {...p} />);
+    const toggle = screen.getByTitle("Toggle GPIO 2");
+    expect(toggle).not.toHaveTextContent("off");
+  });
+
+  it("shows status as off for demo accounts", () => {
+    localStorage.setItem("myBotIs", "online");
+    const p = fakeProps();
+    p.pins = {};
+    render(<PeripheralList {...p} />);
+    const toggle = screen.getByTitle("Toggle GPIO 2");
+    expect(toggle).toHaveTextContent("off");
   });
 });
 

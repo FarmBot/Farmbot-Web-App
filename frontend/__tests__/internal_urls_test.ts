@@ -58,9 +58,9 @@ describe("Path()", () => {
     expect(Path.location({})).toEqual("/app/designer/location");
     expect(Path.location({ x: 0 })).toEqual("/app/designer/location");
     expect(Path.location({ x: 0, y: 0 }))
-      .toEqual("/app/designer/location?x=0?y=0");
+      .toEqual("/app/designer/location?x=0&y=0");
     expect(Path.location({ x: 0, y: 0, z: 0 }))
-      .toEqual("/app/designer/location?x=0?y=0?z=0");
+      .toEqual("/app/designer/location?x=0&y=0&z=0");
   });
 });
 

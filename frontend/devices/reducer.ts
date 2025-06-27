@@ -131,6 +131,11 @@ export const botReducer = generateReducer<BotState>(initialState())
     unstash(s);
     return s;
   })
+  .add<number>(Actions.DEMO_TOGGLE_PIN, (s, { payload }) => {
+    const pin = s.hardware.pins[payload] ??= { value: 0, mode: 0 };
+    pin.value = Number(!pin.value);
+    return s;
+  })
   .add<PingResultPayload>(Actions.PING_OK, (s) => {
     // Going from "down" to "up"
     const currentState = s.connectivity.uptime["bot.mqtt"];

@@ -22,6 +22,17 @@
     <link href="https://fonts.googleapis.com/css?family=Inknut+Antiqua:300,300i,400,400i,700,700i" rel="stylesheet">
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <link rel="apple-touch-icon" href="/images/favicon.png" type="image/png">
+    <% manifest_file =
+         case ENV["API_HOST"]
+         when "my.farm.bot"
+           "/manifest.production.json"
+         when "staging.farm.bot"
+           "/manifest.staging.json"
+         else
+           "/manifest.local.json"
+         end
+    %>
+    <link rel="manifest" href="<%= manifest_file %>">
     <script>
       /** L@@K!!! THIS IS IMPORT */
       window.globalConfig = <%= raw(@global_config) %>; // <= DONT MOVE

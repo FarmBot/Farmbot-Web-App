@@ -16,13 +16,15 @@ import { Path } from "../../internal_urls";
 import { Actions } from "../../constants";
 import { setWebAppConfigValue } from "../../config_storage/actions";
 import { BooleanSetting } from "../../session_keys";
+import { fakeDevice } from "../../__test_support__/resource_index_builder";
 
 describe("<ThreeDGarden />", () => {
   const fakeProps = (): ThreeDGardenProps => ({
     config: clone(INITIAL),
-    addPlantProps: fakeAddPlantProps([]),
+    addPlantProps: fakeAddPlantProps(),
     mapPoints: [],
     weeds: [],
+    threeDPlants: [],
   });
 
   it("renders", () => {
@@ -35,6 +37,7 @@ describe("<ThreeDGardenToggle />", () => {
   const fakeProps = (): ThreeDGardenToggleProps => ({
     navigate: jest.fn(),
     dispatch: jest.fn(),
+    device: fakeDevice().body,
     designer: fakeDesignerState(),
     threeDGarden: true,
   });

@@ -137,7 +137,7 @@ namespace :fe do
       end
       puts "=" * 40
 
-      File.open("upgrade_deps.sh", "w") { |file|
+      File.open("scripts/upgrade_deps.sh", "w") { |file|
         file.write(bash_file_string)
       }
 
@@ -147,7 +147,7 @@ namespace :fe do
         puts "Saved. Use 'sudo docker compose run web npm install' to upgrade."
       else
         puts "Aborted. No changes made."
-        puts "Run the following script to upgrade incrementally: `bash upgrade_deps.sh`"
+        puts "Run the following script to upgrade incrementally: `bash scripts/upgrade_deps.sh`"
       end
     else
       puts "\n"

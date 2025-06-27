@@ -23,6 +23,7 @@ import { getModifiedClassName } from "../../../settings/default_values";
 import { Position } from "@blueprintjs/core";
 import { MapSizeInputs } from "../../map_size_setting";
 import { OriginSelector } from "../../../settings/farm_designer_settings";
+import { McuParams } from "farmbot";
 
 export interface ZoomControlsProps {
   zoom(value: number): () => void;
@@ -70,11 +71,11 @@ const NonLayerToggle = (props: NonLayerToggleProps) => {
   return <div
     className={[
       "row grid-exp-1 align-baseline",
-      props.disabled ? "disabled" : "",
     ].join(" ")}>
     <label>{t(props.label)}</label>
     {props.helpText && <Help text={props.helpText} />}
     {setting && <ToggleButton
+      disabled={props.disabled}
       className={getModifiedClassName(setting)}
       title={t(props.label)}
       toggleAction={() =>
@@ -87,6 +88,7 @@ const NonLayerToggle = (props: NonLayerToggleProps) => {
 export interface SettingsSubMenuProps {
   dispatch: Function;
   getConfigValue: GetWebAppConfigValue;
+  firmwareConfig: McuParams;
 }
 
 export const PointsSubMenu = (props: SettingsSubMenuProps) =>
@@ -125,8 +127,8 @@ export const FarmbotSubMenu = (props: SettingsSubMenuProps) =>
 interface LayerTogglesProps extends GardenMapLegendProps { }
 
 const LayerToggles = (props: LayerTogglesProps) => {
-  const { toggle, getConfigValue, dispatch } = props;
-  const subMenuProps = { dispatch, getConfigValue };
+  const { toggle, getConfigValue, dispatch, firmwareConfig } = props;
+  const subMenuProps = { dispatch, getConfigValue, firmwareConfig };
   const only2DClass =
     getConfigValue(BooleanSetting.three_d_garden) ? "disabled" : "";
   return <div className="toggle-buttons">
@@ -227,8 +229,7 @@ export const MapSettingsContent = (props: SettingsSubMenuProps) =>
       helpText={Content.DYNAMIC_MAP_SIZE} />
     <NonLayerToggle {...props}
       label={DeviceSetting.mapSize}
-      helpText={Content.MAP_SIZE}
-      disabled={!!props.getConfigValue(BooleanSetting.dynamic_map)}>
+      helpText={Content.MAP_SIZE}>
       <MapSizeInputs {...props} />
     </NonLayerToggle>
     <NonLayerToggle {...props}
@@ -272,7 +273,10 @@ export function GardenMapLegend(props: GardenMapLegendProps) {
         <ZoomControls zoom={props.zoom} getConfigValue={getConfigValue} />
         <LayerToggles {...props} />
         <MoveModeLink dispatch={props.dispatch} />
-        <MapSettings getConfigValue={getConfigValue} dispatch={props.dispatch} />
+        <MapSettings
+          getConfigValue={getConfigValue}
+          dispatch={props.dispatch}
+          firmwareConfig={props.firmwareConfig} />
         <SelectModeLink dispatch={props.dispatch} />
         <BugsControls />
         <ZDisplayToggle open={zDisplayOpen} setOpen={setZDisplayOpen} />

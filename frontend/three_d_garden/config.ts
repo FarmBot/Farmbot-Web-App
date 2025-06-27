@@ -28,6 +28,10 @@ export interface Config {
   bedBrightness: number;
   soilBrightness: number;
   soilHeight: number;
+  soilSurface: string;
+  soilSurfacePointCount: number;
+  soilSurfaceVariance: number;
+  showSoilPoints: boolean;
   plants: string;
   labels: boolean;
   labelsOnHover: boolean;
@@ -39,6 +43,7 @@ export interface Config {
   clouds: boolean;
   sunInclination: number;
   sunAzimuth: number;
+  heading: number;
   perspective: boolean;
   bot: boolean;
   laser: boolean;
@@ -47,6 +52,7 @@ export interface Config {
   viewCube: boolean;
   stats: boolean;
   config: boolean;
+  urlParamAutoAdd: boolean;
   zoom: boolean;
   pan: boolean;
   rotate: boolean;
@@ -67,12 +73,21 @@ export interface Config {
   eventDebug: boolean;
   cableDebug: boolean;
   zoomBeaconDebug: boolean;
+  lightsDebug: boolean;
+  sun: number;
+  ambient: number;
   animate: boolean;
+  animateSeasons: boolean;
   distanceIndicator: string;
   kitVersion: string;
   negativeZ: boolean;
   exaggeratedZ: boolean;
   waterFlow: boolean;
+  light: boolean;
+  vacuum: boolean;
+  rotary: number;
+  north: boolean;
+  desk: boolean;
 }
 
 export const INITIAL: Config = {
@@ -105,17 +120,22 @@ export const INITIAL: Config = {
   bedBrightness: 8,
   soilBrightness: 12,
   soilHeight: 500,
+  soilSurface: "random",
+  soilSurfacePointCount: 25,
+  soilSurfaceVariance: 75,
+  showSoilPoints: false,
   plants: "Spring",
   labels: false,
   labelsOnHover: false,
   ground: true,
-  grid: false,
+  grid: true,
   axes: false,
   trail: false,
   tracks: true,
   clouds: true,
   sunInclination: 140,
   sunAzimuth: 230,
+  heading: 0,
   perspective: true,
   bot: true,
   laser: false,
@@ -124,6 +144,7 @@ export const INITIAL: Config = {
   viewCube: false,
   stats: false,
   config: false,
+  urlParamAutoAdd: false,
   zoom: false,
   pan: false,
   rotate: true,
@@ -144,17 +165,26 @@ export const INITIAL: Config = {
   eventDebug: false,
   cableDebug: false,
   zoomBeaconDebug: false,
+  lightsDebug: false,
+  sun: 75,
+  ambient: 75,
   animate: true,
+  animateSeasons: false,
   distanceIndicator: "",
   kitVersion: "v1.7",
   negativeZ: false,
   exaggeratedZ: false,
   waterFlow: false,
+  light: false,
+  vacuum: false,
+  rotary: 0,
+  north: false,
+  desk: true,
 };
 
 export const STRING_KEYS = [
   "sizePreset", "bedType", "otherPreset", "label", "plants", "tool", "scene",
-  "distanceIndicator", "kitVersion",
+  "distanceIndicator", "kitVersion", "soilSurface",
 ];
 
 export const NUMBER_KEYS = [
@@ -162,7 +192,8 @@ export const NUMBER_KEYS = [
   "ccSupportSize", "x", "y", "z", "beamLength", "columnLength", "zAxisLength",
   "bedXOffset", "bedYOffset", "bedZOffset", "zGantryOffset", "bedWidthOuter",
   "bedLengthOuter", "legSize", "extraLegsX", "extraLegsY", "bedBrightness",
-  "soilBrightness", "soilHeight", "sunInclination", "sunAzimuth",
+  "soilBrightness", "soilHeight", "sunInclination", "sunAzimuth", "heading",
+  "soilSurfacePointCount", "soilSurfaceVariance", "sun", "ambient", "rotary",
 ];
 
 export const BOOLEAN_KEYS = [
@@ -171,8 +202,10 @@ export const BOOLEAN_KEYS = [
   "viewCube", "stats", "config", "zoom", "pan", "rotate", "bounds", "threeAxes",
   "xyDimensions", "zDimension", "promoInfo", "settingsBar", "zoomBeacons",
   "solar", "utilitiesPost", "packaging", "lab", "people", "lowDetail",
-  "eventDebug", "cableDebug", "zoomBeaconDebug", "animate", "negativeZ",
-  "waterFlow", "exaggeratedZ",
+  "eventDebug", "cableDebug", "zoomBeaconDebug", "lightsDebug",
+  "animate", "animateSeasons", "negativeZ",
+  "waterFlow", "exaggeratedZ", "showSoilPoints", "urlParamAutoAdd",
+  "light", "vacuum", "north", "desk",
 ];
 
 export const PRESETS: Record<string, Config> = {
@@ -196,6 +229,7 @@ export const PRESETS: Record<string, Config> = {
     extraLegsY: 0,
     soilHeight: 280,
     tracks: true,
+    soilSurfacePointCount: 5,
   },
   "Genesis": {
     ...INITIAL,
@@ -217,6 +251,7 @@ export const PRESETS: Record<string, Config> = {
     extraLegsY: 0,
     soilHeight: 500,
     tracks: true,
+    soilSurfacePointCount: 25,
   },
   "Genesis XL": {
     ...INITIAL,
@@ -238,6 +273,7 @@ export const PRESETS: Record<string, Config> = {
     extraLegsY: 1,
     soilHeight: 500,
     tracks: true,
+    soilSurfacePointCount: 100,
   },
   "Initial": INITIAL,
   "Minimal": {
@@ -262,6 +298,7 @@ export const PRESETS: Record<string, Config> = {
     clouds: false,
     sunInclination: 90,
     sunAzimuth: 0,
+    heading: 0,
     perspective: true,
     bot: true,
     laser: false,
@@ -269,7 +306,8 @@ export const PRESETS: Record<string, Config> = {
     cableCarriers: true,
     viewCube: false,
     stats: false,
-    config: false,
+    config: true,
+    urlParamAutoAdd: true,
     zoom: true,
     pan: true,
     rotate: true,
@@ -291,7 +329,10 @@ export const PRESETS: Record<string, Config> = {
     cableDebug: false,
     zoomBeaconDebug: false,
     animate: true,
+    animateSeasons: false,
     distanceIndicator: "",
+    north: false,
+    desk: false,
   },
   "Maximal": {
     ...INITIAL,
@@ -305,6 +346,10 @@ export const PRESETS: Record<string, Config> = {
     legsFlush: true,
     bedBrightness: 8,
     soilBrightness: 12,
+    soilSurface: "random",
+    soilSurfacePointCount: 50,
+    soilSurfaceVariance: 100,
+    showSoilPoints: true,
     plants: "Spring",
     labels: true,
     labelsOnHover: false,
@@ -323,6 +368,7 @@ export const PRESETS: Record<string, Config> = {
     viewCube: true,
     stats: true,
     config: true,
+    urlParamAutoAdd: true,
     zoom: true,
     pan: true,
     rotate: true,
@@ -343,9 +389,17 @@ export const PRESETS: Record<string, Config> = {
     eventDebug: false,
     cableDebug: true,
     zoomBeaconDebug: true,
+    lightsDebug: true,
     animate: true,
+    animateSeasons: false,
     distanceIndicator: "",
     waterFlow: true,
+    light: true,
+    vacuum: true,
+    rotary: 1,
+    exaggeratedZ: true,
+    north: true,
+    desk: true,
   },
 };
 
@@ -353,21 +407,25 @@ const SIZE_CONFIG_KEYS: (keyof Config)[] = [
   "sizePreset", "label", "bedType",
   "botSizeX", "botSizeY", "botSizeZ", "beamLength", "columnLength", "zAxisLength",
   "bedXOffset", "bedYOffset", "zGantryOffset", "bedWidthOuter", "bedLengthOuter",
-  "extraLegsX", "extraLegsY", "soilHeight", "tracks",
+  "extraLegsX", "extraLegsY", "soilHeight", "tracks", "soilSurfacePointCount",
 ];
 
 const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "bedWallThickness", "bedHeight", "x", "y", "z",
   "ccSupportSize", "legSize", "legsFlush",
   "bedBrightness", "soilBrightness", "plants", "labels", "ground", "grid", "axes",
-  "trail", "clouds", "sunInclination", "sunAzimuth", "perspective", "bot", "laser",
+  "trail", "clouds", "sunInclination", "sunAzimuth", "heading",
+  "perspective", "bot", "laser",
   "tool", "cableCarriers", "viewCube", "stats", "config", "zoom", "bounds",
   "threeAxes", "xyDimensions", "zDimension", "labelsOnHover", "promoInfo",
   "settingsBar", "zoomBeacons", "pan", "rotate",
   "solar", "utilitiesPost", "packaging", "lab",
-  "people", "scene", "lowDetail", "eventDebug", "cableDebug", "zoomBeaconDebug",
+  "people", "scene", "lowDetail", "sun", "ambient",
+  "eventDebug", "cableDebug", "zoomBeaconDebug", "lightsDebug",
   "animate", "distanceIndicator", "kitVersion", "negativeZ", "waterFlow",
-  "exaggeratedZ",
+  "light", "vacuum", "rotary", "animateSeasons",
+  "exaggeratedZ", "soilSurface", "soilSurfaceVariance",
+  "showSoilPoints", "urlParamAutoAdd", "north", "desk",
 ];
 
 export const modifyConfig = (config: Config, update: Partial<Config>) => {
@@ -400,6 +458,9 @@ export const modifyConfig = (config: Config, update: Partial<Config>) => {
         const configKey = key as keyof Config;
         newConfig[configKey] = INITIAL[configKey] as never;
       });
+      const url = new URL(window.location.href);
+      url.search = "";
+      history.pushState(undefined, "", url.toString());
     } else {
       const presetConfig = PRESETS[update.otherPreset];
       OTHER_CONFIG_KEYS.map(key => newConfig[key] = presetConfig[key] as never);
@@ -450,12 +511,23 @@ type SeasonProperties = {
   sunColor: string;
   cloudOpacity: number;
 };
-export const seasonProperties: Record<string, SeasonProperties> = {
+const SEASON_PROPERTIES: Record<string, SeasonProperties> = {
   Winter: { sunIntensity: 4 / 4, sunColor: "#A0C4FF", cloudOpacity: 0.85 },
   Spring: { sunIntensity: 7 / 4, sunColor: "#BDE0FE", cloudOpacity: 0.2 },
   Summer: { sunIntensity: 9 / 4, sunColor: "#FFFFFF", cloudOpacity: 0 },
   Fall: { sunIntensity: 5.5 / 4, sunColor: "#FFD6BC", cloudOpacity: 0.3 },
 };
+export const getSeasonProperties = (
+  config: Config,
+  fallback: string,
+): SeasonProperties => {
+  const params = SEASON_PROPERTIES[config.plants] || SEASON_PROPERTIES[fallback];
+  return {
+    sunIntensity: params.sunIntensity,
+    sunColor: params.sunColor,
+    cloudOpacity: params.cloudOpacity,
+  };
+};
 
 export const detailLevels = (config: Config) =>
-  config.lowDetail ? [0, 0] : [0, 25000];
+  config.lowDetail ? [0, 0] : [0, 50000];

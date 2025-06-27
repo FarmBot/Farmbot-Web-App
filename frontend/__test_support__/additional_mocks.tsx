@@ -11,7 +11,7 @@ window.location = {
   reload: jest.fn(),
   replace: jest.fn(),
   ancestorOrigins,
-  pathname: "", href: "", hash: "", search: "",
+  pathname: "", href: "http://localhost", hash: "", search: "",
   hostname: "", origin: "", port: "", protocol: "", host: "",
 } as unknown as Location & string;
 
@@ -56,7 +56,7 @@ jest.mock("delaunator", () => ({
   __esModule: true,
   default: {
     from: jest.fn(() => ({
-      triangles: [0, 1, 2],
+      triangles: [0, 1, 2, 3, 4, 5],
     })),
   },
 }));

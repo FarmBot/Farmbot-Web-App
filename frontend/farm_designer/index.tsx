@@ -217,6 +217,7 @@ export class RawFarmDesigner
       {threeDGarden
         ? <ThreeDGardenMap
           designer={this.props.designer}
+          device={this.props.device}
           plants={this.props.plants}
           get3DConfigValue={get3DConfigValueFunction(this.props.farmwareEnvs)}
           sourceFbosConfig={this.props.sourceFbosConfig}
@@ -231,6 +232,7 @@ export class RawFarmDesigner
           toolSlots={this.props.toolSlots}
           mountedToolName={this.props.mountedToolInfo.name}
           botPosition={this.props.botLocationData.position}
+          peripheralValues={this.props.peripheralValues}
           getWebAppConfigValue={this.props.getConfigValue} />
         : <div
           className={`farm-designer-map ${this.mapPanelClassName}`}
@@ -305,6 +307,7 @@ export class RawFarmDesigner
       <ThreeDGardenToggle
         navigate={this.navigate}
         dispatch={this.props.dispatch}
+        device={this.props.device}
         designer={this.props.designer}
         threeDGarden={threeDGarden} />
     </div>;

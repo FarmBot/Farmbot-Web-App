@@ -54,7 +54,12 @@ commands:
           command: |
             sudo docker compose run web rspec spec --format progress --format RspecJunitFormatter --out /tmp/test-results/rspec/rspec.xml
       - run:
-          name: Upload to Codecov
+          name: Check app coverage status
+          command: |
+            sudo docker compose run web rake check_file_coverage:api || [ $CIRCLE_BRANCH == "staging" ]
+          when: always
+      - run:
+          name: Upload app coverage to Codecov
           command: |
             curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --no-default-keyring --keyring trustedkeys.gpg --import
             curl -Os https://uploader.codecov.io/latest/linux/codecov
@@ -81,12 +86,18 @@ commands:
   coverage-commands:
     steps:
       - run:
-          name: Check coverage status
+          name: Check frontend coverage status
           command: |
             sudo docker compose run -e CIRCLE_SHA1="$CIRCLE_SHA1" -e CIRCLE_BRANCH="$CIRCLE_BRANCH" -e CIRCLE_PULL_REQUEST="$CIRCLE_PULL_REQUEST" web rake coverage:run || [ $CIRCLE_BRANCH == "staging" ]
           when: always
       - run:
-          name: Report coverage to Coveralls
+          name: Check frontend file coverage status
+          command: |
+            changed=$(git diff --name-only staging...HEAD | tr '\n' ',' | sed 's/,$//') || true
+            sudo docker compose run -e CHANGED_FILES="$changed" web rake check_file_coverage:fe || true
+          when: always
+      - run:
+          name: Report frontend coverage to Coveralls
           command: |
             if [ "$CIRCLE_BRANCH" == "staging" ]; then set +eo pipefail; fi
             if [ "$COVERAGE_AVAILABLE" ] && [ "$COVERALLS_REPO_TOKEN" ]

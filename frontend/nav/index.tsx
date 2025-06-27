@@ -17,7 +17,6 @@ import { DiagnosisSaucer } from "../devices/connectivity/diagnosis";
 import { maybeSetTimezone } from "../devices/timezones/guess_timezone";
 import { BooleanSetting } from "../session_keys";
 import { ReadOnlyIcon } from "../read_only_mode";
-import { refresh } from "../api/crud";
 import { isBotOnlineFromState } from "../devices/must_be_online";
 import { setupProgressString } from "../wizard/data";
 import { lastSeenNumber } from "../settings/fbos_settings/last_seen_row";
@@ -35,6 +34,7 @@ import { movementPercentRemaining } from "../farm_designer/move_to";
 import { isMobile } from "../screen_size";
 import { NavigationContext } from "../routes_helpers";
 import { NavigateFunction } from "react-router";
+import { TimeTravelContent, TimeTravelTarget } from "../three_d_garden/time_travel";
 
 export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
   state: NavBarState = {
@@ -50,7 +50,6 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
 
   componentDidUpdate = () => {
     if (this.state.documentTitle != document.title) {
-      this.props.dispatch(refresh(this.props.device));
       this.setState({ documentTitle: document.title });
     }
   };
@@ -73,6 +72,27 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
 
   togglePopup = (payload: keyof PopupsState) => () =>
     this.props.dispatch({ type: Actions.TOGGLE_POPUP, payload });
+
+  TimeTravel = () => {
+    const isOpen = this.props.appState.popups.timeTravel;
+    const threeDGarden = !!this.props.getConfigValue(BooleanSetting.three_d_garden);
+    const common = {
+      device: this.props.device.body,
+      threeDGarden,
+      designer: this.props.designer,
+    };
+    return <div className={"nav-popup-button-wrapper"}>
+      <Popover position={Position.BOTTOM_RIGHT}
+        isOpen={isOpen}
+        enforceFocus={false}
+        target={<TimeTravelTarget {...common}
+          timeSettings={this.props.timeSettings}
+          isOpen={isOpen}
+          click={this.togglePopup("timeTravel")} />}
+        content={<TimeTravelContent {...common}
+          dispatch={this.props.dispatch} />} />
+    </div>;
+  };
 
   Coordinates = () => {
     const { hardware } = this.props.bot;
@@ -140,7 +160,8 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
         onClose={this.close("accountMenuOpen")}
         target={isMobile()
           ? <i className={"fa fa-user"} onClick={this.toggle("accountMenuOpen")} />
-          : <div className="nav-name" data-title={firstName}
+          : <div className={`nav-name ${this.state.accountMenuOpen ? "hover" : ""}`}
+            data-title={firstName}
             onClick={this.toggle("accountMenuOpen")}>
             {firstName}
           </div>}
@@ -196,8 +217,8 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
   SetupButton = () => {
     const firmwareHardware = this.props.apiFirmwareValue;
     const { wizardStepResults, device } = this.props;
-    return !device.body.setup_completed_at
-      ? <a className={"setup-button"}
+    if (!device.body.setup_completed_at) {
+      return <a className={"setup-button"}
         onClick={() => {
           this.props.dispatch(setPanelOpen(true));
           this.navigate(Path.setup());
@@ -205,8 +226,8 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
         {t("Setup")}
         {!isMobile() &&
           `: ${setupProgressString(wizardStepResults, { firmwareHardware })}`}
-      </a>
-      : <div style={{ display: "inline" }} />;
+      </a>;
+    }
   };
 
   JobsButton = () => {
@@ -308,6 +329,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
                   <this.SetupButton />
                   <this.JobsButton />
                   <this.Coordinates />
+                  <this.TimeTravel />
                 </ErrorBoundary>
               </div>
             </div>

@@ -5,16 +5,18 @@ import { ASSETS } from "../../constants";
 import { Cloud, Clouds } from "@react-three/drei";
 import { WaterStream } from "./water_stream";
 import { easyCubicBezierCurve3 } from "../../helpers";
+import { BotPosition } from "../../../devices/interfaces";
 
 export interface WateringAnimationsProps {
   waterFlow: boolean;
-  botPositionZ: number;
-  soilHeight: number;
+  botPosition: BotPosition;
+  getZ(x: number, y: number): number;
 }
 
 export const WateringAnimations = (props: WateringAnimationsProps) => {
-  const { waterFlow, botPositionZ, soilHeight } = props;
-  const nozzleToSoil = botPositionZ - soilHeight;
+  const { waterFlow, botPosition, getZ } = props;
+  const nozzleToSoil = (botPosition.z || 0)
+    + getZ(botPosition.x || 0, botPosition.y || 0);
 
   return <Group name={"watering-animations"} visible={waterFlow}>
     {range(16).map(i => {

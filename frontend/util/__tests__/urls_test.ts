@@ -8,12 +8,12 @@ describe("urlFriendly()", () => {
 
 describe("getUrlQuery()", () => {
   it("returns the first query value", () => {
-    location.search = "?one=value1?two=value2";
+    location.search = "?one=value1&two=value2";
     expect(getUrlQuery("one")).toEqual("value1");
   });
 
   it("returns the second query value", () => {
-    location.search = "?one=value1?two=value2";
+    location.search = "?one=value1&two=value2";
     expect(getUrlQuery("two")).toEqual("value2");
   });
 

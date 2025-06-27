@@ -196,18 +196,19 @@ interface NavTabProps {
   designer: DesignerState;
 }
 
-const NavTab = (props: NavTabProps) =>
-  <Link id={PANEL_SLUG[props.panel]}
-    to={getPanelPath(props.panel)}
+const NavTab = (props: NavTabProps) => {
+  const { panel, dispatch, designer } = props;
+  const isActive = getCurrentPanel(designer) === panel;
+  return <Link id={PANEL_SLUG[panel]}
+    to={getPanelPath(panel)}
     style={{ flex: 0.3 }}
-    onClick={() => props.dispatch(setPanelOpen(true))}
-    className={[
-      getCurrentPanel(props.designer) === props.panel ? "active" : "",
-    ].join(" ")}>
+    onClick={() => dispatch(setPanelOpen(!isActive))}
+    className={isActive ? "active" : ""}>
     <img width={35} height={30}
-      src={TAB_ICON[props.panel]}
-      title={PANEL_TITLE()[props.panel]} />
+      src={TAB_ICON[panel]}
+      title={PANEL_TITLE()[panel]} />
   </Link>;
+};
 
 const displayScrollIndicator = () => {
   const element = document.getElementsByClassName("panel-tabs")[1];

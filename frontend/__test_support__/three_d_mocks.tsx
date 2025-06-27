@@ -10,7 +10,7 @@ import * as THREE from "three";
 import React, { ReactNode } from "react";
 import { TransitionFn, UseSpringProps } from "@react-spring/three";
 import { ThreeElements, ThreeEvent } from "@react-three/fiber";
-import { Cloud, Clouds, Image, Tube } from "@react-three/drei";
+import { Cloud, Clouds, Image, Plane, Trail, Tube } from "@react-three/drei";
 
 const GroupForTests = (props: ThreeElements["group"]) =>
   // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
@@ -316,57 +316,13 @@ jest.mock("@react-three/drei", () => {
         PaletteMaterial001: {} as THREE.MeshStandardMaterial,
       },
     },
-    [ASSETS.models.rotaryTool]: {
-      nodes: {
-        M25_x_6mm_Screw: {} as THREE.Mesh,
-        mesh0_mesh: {} as THREE.Mesh,
-        mesh0_mesh_1: {} as THREE.Mesh,
-        mesh0_mesh_2: {} as THREE.Mesh,
-        mesh0_mesh_3: {} as THREE.Mesh,
-        mesh0_mesh_4: {} as THREE.Mesh,
-        mesh0_mesh_5: {} as THREE.Mesh,
-        mesh0_mesh_6: {} as THREE.Mesh,
-        mesh0_mesh_7: {} as THREE.Mesh,
-        mesh0_mesh_8: {} as THREE.Mesh,
-        mesh0_mesh_9: {} as THREE.Mesh,
-        mesh0_mesh_10: {} as THREE.Mesh,
-        mesh0_mesh_11: {} as THREE.Mesh,
-        mesh0_mesh_12: {} as THREE.Mesh,
-        mesh0_mesh_13: {} as THREE.Mesh,
-        mesh0_mesh_14: {} as THREE.Mesh,
-        mesh0_mesh_15: {} as THREE.Mesh,
-        mesh0_mesh_16: {} as THREE.Mesh,
-        mesh0_mesh_17: {} as THREE.Mesh,
-        mesh476_mesh: {} as THREE.Mesh,
-        mesh476_mesh_1: {} as THREE.Mesh,
-        mesh476_mesh_2: {} as THREE.Mesh,
-        mesh476_mesh_3: {} as THREE.Mesh,
-        mesh476_mesh_4: {} as THREE.Mesh,
-        mesh476_mesh_5: {} as THREE.Mesh,
-        mesh476_mesh_6: {} as THREE.Mesh,
-        mesh476_mesh_7: {} as THREE.Mesh,
-        mesh476_mesh_8: {} as THREE.Mesh,
-        mesh476_mesh_9: {} as THREE.Mesh,
-        mesh476_mesh_10: {} as THREE.Mesh,
-        mesh476_mesh_11: {} as THREE.Mesh,
-        mesh476_mesh_12: {} as THREE.Mesh,
-        mesh476_mesh_13: {} as THREE.Mesh,
-        mesh476_mesh_14: {} as THREE.Mesh,
-        mesh476_mesh_15: {} as THREE.Mesh,
-        mesh476_mesh_16: {} as THREE.Mesh,
-        mesh476_mesh_17: {} as THREE.Mesh,
-        mesh476_mesh_18: {} as THREE.Mesh,
-        mesh476_mesh_19: {} as THREE.Mesh,
-        mesh476_mesh_20: {} as THREE.Mesh,
-        mesh476_mesh_21: {} as THREE.Mesh,
-        mesh476_mesh_22: {} as THREE.Mesh,
-        mesh476_mesh_23: {} as THREE.Mesh,
-        mesh476_mesh_24: {} as THREE.Mesh,
-        mesh476_mesh_25: {} as THREE.Mesh,
-      },
-      materials: {
-        PaletteMaterial001: {} as THREE.MeshStandardMaterial,
-      },
+    [ASSETS.models.rotaryToolBase]: {
+      nodes: { mesh: {} as THREE.Mesh },
+      materials: { material: {} as THREE.MeshStandardMaterial },
+    },
+    [ASSETS.models.rotaryToolImplement]: {
+      nodes: { mesh: {} as THREE.Mesh },
+      materials: { material: {} as THREE.MeshStandardMaterial },
     },
     [ASSETS.models.soilSensor]: {
       nodes: {
@@ -601,18 +557,18 @@ jest.mock("@react-three/drei", () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (useGLTF as any).preload = jest.fn();
   return {
+    ...jest.requireActual("@react-three/drei"),
     useGLTF,
     RoundedBox: ({ name }: { name: string }) =>
       <div className={"cylinder"}>{name}</div>,
-    Plane: ({ name }: { name: string }) =>
-      <div className={"plane"}>{name}</div>,
+    Plane: (props: React.ComponentProps<typeof Plane>) =>
+      // @ts-expect-error geometry props not assignable to div
+      <div className={"plane"} {...props}>{props.name} {props.url}</div>,
     Cylinder: ({ name }: { name: string }) =>
       <div className={"cylinder"}>{name}</div>,
     Torus: ({ name }: { name: string }) =>
       <div className={"torus"}>{name}</div>,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    Sphere: (props: any) =>
-      <div className={"sphere" + props.name} {...props}>{props.children}</div>,
+    // Sphere not mocked
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Box: (props: any) =>
       <div className={"box" + props.name} {...props}>{props.children}</div>,
@@ -620,8 +576,8 @@ jest.mock("@react-three/drei", () => {
       <div className={"extrude"}>{name}</div>,
     Line: ({ name }: { name: string }) =>
       <div className={"line"}>{name}</div>,
-    Trail: ({ name }: { name: string }) =>
-      <div className={"trail"}>{name}</div>,
+    Trail: (props: React.ComponentProps<typeof Trail>) =>
+      <div className={"trail"}>{props.children} {props.attenuation?.(2)}</div>,
     Tube: (props: React.ComponentProps<typeof Tube>) =>
       // @ts-expect-error geometry props not assignable to div
       <div className={"tube"} {...props}>{props.children}</div>,
@@ -664,5 +620,6 @@ jest.mock("@react-three/drei", () => {
       <div className={"cloud"} {...props} />,
     OrthographicCamera: ({ name }: { name: string }) =>
       <div className={"orthographic-camera"}>{name}</div>,
+    useHelper: jest.fn(),
   };
 });

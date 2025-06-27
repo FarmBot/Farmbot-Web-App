@@ -13,6 +13,7 @@ import { ASSETS, LIB_DIR, PartName } from "../../constants";
 import { range } from "lodash";
 import { Group, Mesh, MeshPhongMaterial } from "../../components";
 import { distinguishableBlack, extrusionWidth } from "../bot";
+import { EMISSIVE_PROPS } from "./gantry_beam";
 
 type CCHorizontal = GLTF & {
   nodes: { [PartName.ccHorizontal]: THREE.Mesh };
@@ -267,6 +268,7 @@ export const CableCarrierHorizontal = (props: CableCarrierHorizontalProps) => {
           )}>
           <MeshPhongMaterial color={"white"}
             opacity={0.8}
+            {...(props.config.light ? EMISSIVE_PROPS : {})}
             transparent={true} />
         </Mesh>
       </Group>;

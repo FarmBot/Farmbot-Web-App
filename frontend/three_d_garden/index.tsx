@@ -17,9 +17,12 @@ import { LayerToggle } from "../farm_designer/map/legend/layer_toggle";
 import { setWebAppConfigValue } from "../config_storage/actions";
 import { DesignerState } from "../farm_designer/interfaces";
 import { setPanelOpen } from "../farm_designer/panel_header";
+import { ThreeDGardenPlant } from "./garden";
+import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
 
 export interface ThreeDGardenProps {
   config: Config;
+  threeDPlants: ThreeDGardenPlant[];
   addPlantProps: AddPlantProps;
   mapPoints: TaggedGenericPointer[];
   weeds: TaggedWeedPointer[];
@@ -43,6 +46,7 @@ export const ThreeDGarden = (props: ThreeDGardenProps) => {
         <Canvas shadows={true}>
           <GardenModel
             config={props.config}
+            threeDPlants={props.threeDPlants}
             activeFocus={""}
             setActiveFocus={noop}
             mapPoints={props.mapPoints}
@@ -61,8 +65,10 @@ export interface ThreeDGardenToggleProps {
   dispatch: Function;
   designer: DesignerState;
   threeDGarden: boolean;
+  device: DeviceAccountSettings;
 }
 
+// eslint-disable-next-line complexity
 export const ThreeDGardenToggle = (props: ThreeDGardenToggleProps) => {
   const { navigate, dispatch, threeDGarden } = props;
   const topDown = props.designer.threeDTopDownView;

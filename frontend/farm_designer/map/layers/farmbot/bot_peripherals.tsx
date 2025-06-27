@@ -5,7 +5,7 @@ import { BotPosition } from "../../../../devices/interfaces";
 import { trim } from "../../../../util";
 import { GetWebAppConfigValue } from "../../../../config_storage/actions";
 import { BooleanSetting } from "../../../../session_keys";
-import { range } from "lodash";
+import { range, some } from "lodash";
 import { PeripheralValues } from "./bot_trail";
 
 export interface BotPeripheralsProps {
@@ -17,10 +17,10 @@ export interface BotPeripheralsProps {
 }
 
 function lightsFigure(
-  props: { i: number, x: number, y: number, height: number, xySwap: boolean }) {
-  const { i, x, y, height, xySwap } = props;
+  props: { x: number, y: number, height: number, xySwap: boolean }) {
+  const { x, y, height, xySwap } = props;
   const mapHeightMid = height / 2 + y;
-  return <g id="lights" key={`peripheral_${i}`}>
+  return <g id="lights" key={"lights_peripheral"}>
     <defs>
       <linearGradient id="LightingGradient">
         <stop offset="0%" stopColor="white" stopOpacity={0.5} />
@@ -48,13 +48,13 @@ function lightsFigure(
 }
 
 function waterFigure(
-  props: { i: number, cx: number, cy: number, animate: boolean }) {
-  const { i, cx, cy, animate } = props;
+  props: { cx: number, cy: number, animate: boolean }) {
+  const { cx, cy, animate } = props;
   const color = "rgb(11, 83, 148)";
   const copies = animate ? 3 : 1;
   const animateClass = animate ? "animate" : "";
 
-  return <g id="water" key={`peripheral_${i}`}>
+  return <g id="water" key={"water_peripheral"}>
     <defs>
       <g id="water-circle">
         <circle
@@ -88,13 +88,13 @@ function waterFigure(
 }
 
 function vacuumFigure(
-  props: { i: number, cx: number, cy: number, animate: boolean }) {
-  const { i, cx, cy, animate } = props;
+  props: { cx: number, cy: number, animate: boolean }) {
+  const { cx, cy, animate } = props;
   const color = "black";
   const copies = animate ? 3 : 1;
   const animateClass = animate ? "animate" : "";
 
-  return <g id="vacuum" key={`peripheral_${i}`}>
+  return <g id="vacuum" key={"vacuum_peripheral"}>
     <defs>
       <radialGradient id="WaveGradient">
         <stop offset="0%" stopColor={color} stopOpacity={0} />
@@ -121,13 +121,13 @@ function vacuumFigure(
 }
 
 function rotaryFigure(
-  props: { i: number, cx: number, cy: number, animate: boolean }) {
-  const { i, cx, cy, animate } = props;
+  props: { cx: number, cy: number, animate: boolean }) {
+  const { cx, cy, animate } = props;
   const color = "black";
   const copies = animate ? 3 : 1;
   const animateClass = animate ? "animate" : "";
 
-  return <g id="rotary" key={`peripheral_${i}`}>
+  return <g id="rotary" key={"rotary_peripheral"}>
     <defs>
       <radialGradient id="WaveGradient">
         <stop offset="0%" stopColor={color} stopOpacity={0} />
@@ -155,46 +155,47 @@ function rotaryFigure(
 
 export function BotPeripherals(props: BotPeripheralsProps) {
   const {
-    peripheralValues, position, plantAreaOffset, mapTransformProps, getConfigValue,
+    position, plantAreaOffset, mapTransformProps, getConfigValue,
   } = props;
   const { xySwap } = mapTransformProps;
   const mapSize = getMapSize(mapTransformProps, plantAreaOffset);
   const positionQ = transformXY(
     (position.x || 0), (position.y || 0), mapTransformProps);
   const animate = !getConfigValue(BooleanSetting.disable_animations);
+  const isPeripheralActive = isPeripheralActiveFunc(props.peripheralValues);
 
   return <g className={"virtual-peripherals"}>
-    {peripheralValues.map((x, i) => {
-      if (x.label.toLowerCase().includes("light") && x.value) {
-        return lightsFigure({
-          i,
-          x: xySwap ? -plantAreaOffset.y : positionQ.qx,
-          y: xySwap ? positionQ.qy : -plantAreaOffset.y,
-          height: xySwap ? mapSize.w : mapSize.h,
-          xySwap,
-        });
-      } else if (x.label.toLowerCase().includes("water") && x.value) {
-        return waterFigure({
-          i,
-          cx: positionQ.qx,
-          cy: positionQ.qy,
-          animate
-        });
-      } else if (x.label.toLowerCase().includes("vacuum") && x.value) {
-        return vacuumFigure({
-          i,
-          cx: positionQ.qx,
-          cy: positionQ.qy,
-          animate
-        });
-      } else if (x.label.toLowerCase().includes("rotary") && x.value) {
-        return rotaryFigure({
-          i,
-          cx: positionQ.qx,
-          cy: positionQ.qy,
-          animate
-        });
-      }
-    })}
+    {isPeripheralActive("light") &&
+      lightsFigure({
+        x: xySwap ? -plantAreaOffset.y : positionQ.qx,
+        y: xySwap ? positionQ.qy : -plantAreaOffset.y,
+        height: xySwap ? mapSize.w : mapSize.h,
+        xySwap,
+      })}
+    {isPeripheralActive("water") &&
+      waterFigure({
+        cx: positionQ.qx,
+        cy: positionQ.qy,
+        animate,
+      })}
+    {isPeripheralActive("vacuum") &&
+      vacuumFigure({
+        cx: positionQ.qx,
+        cy: positionQ.qy,
+        animate,
+      })}
+    {isPeripheralActive("rotary") &&
+      rotaryFigure({
+        cx: positionQ.qx,
+        cy: positionQ.qy,
+        animate,
+      })}
   </g>;
 }
+
+export const isPeripheralActiveFunc = (peripheralValues: PeripheralValues) =>
+  (label: string, not?: string) =>
+    some(peripheralValues,
+      p => p.label.toLowerCase().includes(label)
+        && (!not || !p.label.toLowerCase().includes(not))
+        && p.value);

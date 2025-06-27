@@ -29,7 +29,6 @@ describe("<CableCarrierVertical />", () => {
   });
 });
 
-
 describe("<CableCarrierHorizontal />", () => {
   const fakeProps = (): CableCarrierHorizontalProps => ({
     config: clone(INITIAL),
@@ -46,6 +45,15 @@ describe("<CableCarrierHorizontal />", () => {
   it("renders v1.8", () => {
     const p = fakeProps();
     p.config.kitVersion = "v1.8";
+    const wrapper = render(<CableCarrierHorizontal {...p} />);
+    expect(wrapper.container).toContainHTML("ccHorizontal");
+    expect(wrapper.container.querySelectorAll("mesh").length).toBe(1);
+  });
+
+  it("renders v1.8: lights on", () => {
+    const p = fakeProps();
+    p.config.kitVersion = "v1.8";
+    p.config.light = true;
     const wrapper = render(<CableCarrierHorizontal {...p} />);
     expect(wrapper.container).toContainHTML("ccHorizontal");
     expect(wrapper.container.querySelectorAll("mesh").length).toBe(1);

@@ -1,19 +1,20 @@
-import { TaggedPlant } from "../../farm_designer/map/interfaces";
-import { Config } from "../config";
-import { GARDENS, HOVER_OBJECT_MODES, PLANTS, RenderOrder } from "../constants";
-import { Billboard, Image } from "@react-three/drei";
 import React from "react";
-import { Vector3 } from "three";
+import { Config } from "../config";
+import { HOVER_OBJECT_MODES, RenderOrder } from "../constants";
+import { Billboard, Plane, useTexture } from "@react-three/drei";
+import { Vector3, Mesh, Group as GroupType } from "three";
 import { threeSpace, zZero as zZeroFunc } from "../helpers";
 import { Text } from "../elements";
-import { findIcon } from "../../crops/find";
-import { isUndefined, kebabCase } from "lodash";
+import { isUndefined } from "lodash";
 import { Path } from "../../internal_urls";
 import { useNavigate } from "react-router";
 import { setPanelOpen } from "../../farm_designer/panel_header";
 import { getMode } from "../../farm_designer/map/util";
+import { ThreeElements, useFrame } from "@react-three/fiber";
+import { getSizeAtTime } from "../../promo/plants";
+import { FixedNormalMaterial } from "./fixed_normal_material";
 
-interface Plant {
+export interface ThreeDGardenPlant {
   id?: number | undefined;
   label: string;
   icon: string;
@@ -21,72 +22,12 @@ interface Plant {
   spread: number;
   x: number;
   y: number;
+  key: string;
+  seed: number;
 }
 
-export interface ThreeDGardenPlant extends Plant { }
-
-export const convertPlants = (config: Config, plants: TaggedPlant[]): Plant[] => {
-  return plants.map(plant => {
-    return {
-      id: plant.body.id,
-      label: plant.body.name,
-      icon: findIcon(plant.body.openfarm_slug),
-      size: plant.body.radius * 2,
-      spread: 0,
-      x: plant.body.x + config.bedXOffset,
-      y: plant.body.y + config.bedYOffset,
-    };
-  });
-};
-
-export const calculatePlantPositions = (config: Config): Plant[] => {
-  const gardenPlants = GARDENS[config.plants] || [];
-  const positions: Plant[] = [];
-  const startX = 350;
-  let nextX = startX;
-  let index = 0;
-  while (nextX <= config.bedLengthOuter - 100) {
-    const plantKey = gardenPlants[index];
-    const plant = PLANTS[plantKey];
-    if (!plant) { return []; }
-    const icon = findIcon(kebabCase(plant.label));
-    positions.push({
-      ...plant,
-      icon,
-      x: nextX,
-      y: config.bedWidthOuter / 2,
-    });
-    const plantsPerHalfRow =
-      Math.ceil((config.bedWidthOuter - plant.spread) / 2 / plant.spread);
-    for (let i = 1; i < plantsPerHalfRow; i++) {
-      positions.push({
-        ...plant,
-        icon,
-        x: nextX,
-        y: config.bedWidthOuter / 2 + plant.spread * i,
-      });
-      positions.push({
-        ...plant,
-        icon,
-        x: nextX,
-        y: config.bedWidthOuter / 2 - plant.spread * i,
-      });
-    }
-    if (index + 1 < gardenPlants.length) {
-      const nextPlant = PLANTS[gardenPlants[index + 1]];
-      nextX += (plant.spread / 2) + (nextPlant.spread / 2);
-      index++;
-    } else {
-      index = 0;
-      const nextPlant = PLANTS[gardenPlants[0]];
-      nextX += (plant.spread / 2) + (nextPlant.spread / 2);
-    }
-  }
-  return positions;
-};
-
 export interface ThreeDPlantProps {
-  plant: Plant;
+  plant: ThreeDGardenPlant;
   i: number;
   labelOnly?: boolean;
   config: Config;
@@ -94,17 +35,26 @@ export interface ThreeDPlantProps {
   dispatch?: Function;
   visible?: boolean;
   getZ(x: number, y: number): number;
+  startTimeRef?: React.RefObject<number>;
 }
 
 export const ThreeDPlant = (props: ThreeDPlantProps) => {
   const { i, plant, labelOnly, config, hoveredPlant } = props;
   const alwaysShowLabels = config.labels && !config.labelsOnHover;
   const navigate = useNavigate();
-  return <Billboard follow={true}
+  // eslint-disable-next-line no-null/no-null
+  const billboardRef = React.useRef<GroupType>(null);
+  const getPlantZ = (size: number) =>
+    zZeroFunc(config)
+    + props.getZ(plant.x - config.bedXOffset, plant.y - config.bedYOffset)
+    + size / 2;
+  return <Billboard
+    ref={billboardRef}
+    follow={true}
     position={new Vector3(
       threeSpace(plant.x, config.bedLengthOuter),
       threeSpace(plant.y, config.bedWidthOuter),
-      zZeroFunc(config) + props.getZ(plant.x, plant.y) + plant.size / 2,
+      getPlantZ(plant.size),
     )}>
     {labelOnly
       ? <Text visible={alwaysShowLabels || i === hoveredPlant}
@@ -115,15 +65,68 @@ export const ThreeDPlant = (props: ThreeDPlantProps) => {
         rotation={[0, 0, 0]}>
         {plant.label}
       </Text>
-      : <Image url={plant.icon} scale={plant.size} name={"" + i}
+      : <Image i={i}
+        plant={plant}
+        billboardRef={billboardRef}
+        getPlantZ={getPlantZ}
+        url={plant.icon}
+        startTimeRef={props.startTimeRef}
+        animateSeasons={props.config.animateSeasons}
+        season={config.plants}
         onClick={() => {
           if (plant.id && !isUndefined(props.dispatch) && props.visible &&
             !HOVER_OBJECT_MODES.includes(getMode())) {
             props.dispatch(setPanelOpen(true));
             navigate(Path.plants(plant.id));
           }
-        }}
-        transparent={true}
-        renderOrder={RenderOrder.plants} />}
+        }} />}
   </Billboard>;
+};
+
+type MeshProps = ThreeElements["mesh"];
+interface CustomImageProps extends MeshProps {
+  url: string;
+  plant: ThreeDGardenPlant;
+  i: number;
+  onClick?: () => void;
+  getPlantZ(size: number): number;
+  season: string;
+  startTimeRef?: React.RefObject<number>;
+  animateSeasons: boolean;
+  billboardRef: React.RefObject<GroupType | null>;
+}
+
+const Image = (props: CustomImageProps) => {
+  const texture = useTexture(props.url);
+
+  const { plant } = props;
+  // eslint-disable-next-line no-null/no-null
+  const imgRef = React.useRef<Mesh>(null);
+
+  useFrame(() => {
+    if (!props.animateSeasons || !props.startTimeRef) { return; }
+
+    if (imgRef.current && props.billboardRef.current) {
+      const currentTime = performance.now() / 1000;
+      const t = currentTime - props.startTimeRef.current;
+      const scale = plant.size * getSizeAtTime(plant, props.season, t);
+      imgRef.current.scale.set(scale, scale, scale);
+      props.billboardRef.current.position.z = props.getPlantZ(scale);
+    }
+  });
+
+  return <Plane {...props}
+    ref={imgRef}
+    scale={(!props.animateSeasons || !props.startTimeRef) ? plant.size : 0}
+    name={"" + props.i}
+    onClick={props.onClick}
+    renderOrder={RenderOrder.plants}
+    args={[1, 1]}>
+    <FixedNormalMaterial
+      key={Math.random()}
+      map={texture}
+      roughness={0}
+      metalness={0}
+      transparent={true} />
+  </Plane>;
 };

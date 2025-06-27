@@ -3,6 +3,7 @@ jest.mock("../zoom_beacons_constants", () => ({
 }));
 
 import React from "react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { mount } from "enzyme";
 import {
   PublicOverlay, OverlayProps, PrivateOverlay, maybeAddParam,
@@ -34,6 +35,15 @@ describe("<PublicOverlay />", () => {
       ...p.config,
       ...PRESETS["Genesis XL"],
     });
+  });
+
+  it("changes preset with ref", () => {
+    const p = fakeProps();
+    p.startTimeRef = { current: 0 };
+    render(<PublicOverlay {...p} />);
+    const radio = screen.getByText("Winter");
+    fireEvent.click(radio);
+    expect(p.startTimeRef.current).not.toEqual(0);
   });
 
   it("doesn't allow mobile XL", () => {
@@ -127,6 +137,16 @@ describe("<PrivateOverlay />", () => {
     expect(p.setConfig).not.toHaveBeenCalledWith(p.config);
   });
 
+  it("changes value: radio with ref", () => {
+    const p = fakeProps();
+    p.startTimeRef = { current: 0 };
+    render(<PrivateOverlay {...p} />);
+    const radio = screen.getByTitle("plants Winter");
+    fireEvent.click(radio);
+    expect(p.startTimeRef.current).not.toEqual(0);
+    expect(p.setConfig).not.toHaveBeenCalledWith(p.config);
+  });
+
   it("closes the config menu", () => {
     const p = fakeProps();
     const wrapper = mount(<PrivateOverlay {...p} />);
@@ -137,17 +157,12 @@ describe("<PrivateOverlay />", () => {
     });
   });
 
-  it("sets paramAdd boolean", () => {
+  it("removes url param", () => {
+    location.search = "?urlParamAutoAdd=true";
     const p = fakeProps();
     const wrapper = mount(<PrivateOverlay {...p} />);
-    wrapper.find({ type: "number" }).first().simulate("change",
-      { target: { value: "123" } });
-    expect(setUrlParam).not.toHaveBeenCalled();
-    wrapper.find({ type: "checkbox" }).first().simulate("change",
-      { target: { checked: "true" } });
-    wrapper.find({ type: "number" }).first().simulate("change",
-      { target: { value: "123" } });
-    expect(setUrlParam).toHaveBeenCalledWith("x", "123");
+    wrapper.find(".x").first().simulate("click");
+    expect(setUrlParam).toHaveBeenCalledWith("urlParamAutoAdd", "");
   });
 });
 

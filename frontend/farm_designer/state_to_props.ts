@@ -86,8 +86,8 @@ export function mapStateToProps(props: Everything): FarmDesignerProps {
   const firmwareSettings = fwConfig || mcu_params;
   const fbosConfig = validFbosConfig(getFbosConfig(props.resources.index));
 
-  const mountedToolId =
-    getDeviceAccountSettings(props.resources.index).body.mounted_tool_id;
+  const device = getDeviceAccountSettings(props.resources.index).body;
+  const mountedToolId = device.mounted_tool_id;
   const mountedToolName =
     maybeFindToolById(props.resources.index, mountedToolId)?.body.name;
   const mountedToolSlotInfo =
@@ -129,6 +129,7 @@ export function mapStateToProps(props: Everything): FarmDesignerProps {
   return {
     crops: selectAllCrops(props.resources.index),
     dispatch: props.dispatch,
+    device,
     selectedPlant,
     designer: props.resources.consumers.farm_designer,
     genericPoints,

@@ -7,6 +7,10 @@ import { detectLanguage } from "./i18n";
 import { stopIE } from "./util/stop_ie";
 import { attachAppToDom } from "./routes";
 import { init } from "i18next";
+import { initPWA } from "./util";
 
 stopIE();
-detectLanguage().then(config => init(config, attachAppToDom));
+detectLanguage().then(config => init(config, () => {
+  attachAppToDom();
+  initPWA();
+}));

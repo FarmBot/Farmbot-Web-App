@@ -78,10 +78,10 @@ describe("<ThreeDSettings />", () => {
 
   it("toggles setting on", () => {
     render(<ThreeDSettings {...fakeProps()} />);
-    const toggle = screen.getAllByText("no")[1];
+    const toggle = screen.getAllByText("no")[0];
     fireEvent.click(toggle);
     expect(initSave).toHaveBeenCalledWith("FarmwareEnv", {
-      key: namespace3D("grid"),
+      key: namespace3D("bounds"),
       value: "1",
     });
     expect(edit).not.toHaveBeenCalled();

@@ -8,7 +8,6 @@ import {
   ASSETS, HOVER_OBJECT_MODES, LIB_DIR, PartName, SeedTroughAssemblyMaterial,
 } from "../../constants";
 import {
-  RotaryTool, RotaryToolFull,
   SoilSensor, SoilSensorFull,
   SeedTroughAssembly, SeedTroughAssemblyFull,
   SeedTroughHolder, SeedTroughHolderFull,
@@ -27,6 +26,10 @@ import { useNavigate } from "react-router";
 import { Path } from "../../../internal_urls";
 import { setPanelOpen } from "../../../farm_designer/panel_header";
 import { getMode } from "../../../farm_designer/map/util";
+import { PROMO_TOOLS } from "../../../promo/tools";
+import { useFrame } from "@react-three/fiber";
+import { Model, ModelMesh } from "../../model_mesh";
+import { SuctionAnimation } from "./suction_animation";
 
 type Toolbay3 = GLTF & {
   nodes: {
@@ -72,9 +75,10 @@ export interface ToolsProps {
   toolSlots?: SlotWithTool[];
   mountedToolName?: string | undefined;
   dispatch?: Function;
+  getZ(x: number, y: number): number;
 }
 
-interface ConvertedTools {
+export interface ThreeDTool {
   id?: number | undefined;
   x: number;
   y: number;
@@ -86,7 +90,7 @@ interface ConvertedTools {
 }
 
 export const convertSlotsWithTools =
-  (slotsWithTools: SlotWithTool[]): ConvertedTools[] => {
+  (slotsWithTools: SlotWithTool[]): ThreeDTool[] => {
     let troughIndex = 0;
     return sortBy(slotsWithTools, "toolSlot.body.y").map(swt => {
       const toolName = reduceToolName(swt.tool?.body.name);
@@ -121,8 +125,10 @@ export const Tools = (props: ToolsProps) => {
 
   const toolbay3 = useGLTF(ASSETS.models.toolbay3, LIB_DIR) as Toolbay3;
   const toolbay1 = useGLTF(ASSETS.models.toolbay1, LIB_DIR) as Toolbay1;
-  const rotaryTool = useGLTF(ASSETS.models.rotaryTool, LIB_DIR) as RotaryToolFull;
-  const RotaryToolComponent = RotaryTool(rotaryTool);
+  const rotaryToolBase =
+    useGLTF(ASSETS.models.rotaryToolBase, LIB_DIR) as Model;
+  const rotaryToolImplement =
+    useGLTF(ASSETS.models.rotaryToolImplement, LIB_DIR) as Model;
   const seedBin = useGLTF(ASSETS.models.seedBin, LIB_DIR) as SeedBin;
   const seedTray = useGLTF(ASSETS.models.seedTray, LIB_DIR) as SeedTray;
   const seedTrough = useGLTF(ASSETS.models.seedTrough, LIB_DIR) as SeedTrough;
@@ -194,10 +200,11 @@ export const Tools = (props: ToolsProps) => {
     </Group>;
   };
 
-  interface ToolProps extends ConvertedTools {
+  interface ToolProps extends ThreeDTool {
     inToolbay: boolean;
   }
 
+  // eslint-disable-next-line complexity
   const Tool = (toolProps: ToolProps) => {
     const { toolPulloutDirection, inToolbay, id } = toolProps;
     const mounted = inToolbay && toolProps.toolName == mountedToolName;
@@ -209,17 +216,38 @@ export const Tools = (props: ToolsProps) => {
     const common: ToolbaySlotProps = {
       mounted, position, toolPulloutDirection, id, inToolbay,
     };
+
+    // eslint-disable-next-line no-null/no-null
+    const rotaryToolImplementRef = React.useRef<THREE.Mesh>(null);
+
+    useFrame(() => {
+      if (rotaryToolImplementRef.current && !inToolbay && props.config.rotary) {
+        const time = Date.now();
+        const speed = props.config.rotary > 0 ? 0.01 : -0.01;
+        rotaryToolImplementRef.current.rotation.z = time * speed;
+      }
+    });
+
     switch (toolProps.toolName) {
       case ToolName.rotaryTool:
         return <ToolbaySlot {...common}>
-          <RotaryToolComponent name={"rotaryTool"}
+          <Group name={"rotaryTool"}
             position={[
               0,
               0,
               10,
             ]}
-            rotation={[0, 0, Math.PI / 2]}
-            scale={1000} />
+            rotation={[0, 0, Math.PI / 2]}>
+            <ModelMesh name={"rotaryToolBase"}
+              model={rotaryToolBase} />
+            <Group
+              position={[0, -3, -52]}
+              rotation={[-10 * Math.PI / 180, 0, 0]}>
+              <ModelMesh name={"rotaryToolImplement"}
+                ref={rotaryToolImplementRef}
+                model={rotaryToolImplement} />
+            </Group>
+          </Group>
         </ToolbaySlot>;
       case ToolName.wateringNozzle:
         return <ToolbaySlot {...common}>
@@ -236,8 +264,8 @@ export const Tools = (props: ToolsProps) => {
           {!inToolbay && props.config.waterFlow &&
             <WateringAnimations
               waterFlow={props.config.waterFlow}
-              botPositionZ={botPosition.z}
-              soilHeight={props.config.soilHeight} />}
+              botPosition={botPosition}
+              getZ={props.getZ} />}
         </ToolbaySlot>;
       case ToolName.seedBin:
         return <ToolbaySlot {...common}>
@@ -290,6 +318,11 @@ export const Tools = (props: ToolsProps) => {
             scale={1000}
             geometry={seeder.nodes[PartName.seeder].geometry}
             material={seeder.materials.PaletteMaterial001} />
+          {!inToolbay && props.config.vacuum &&
+            <Group position={[20, 0, -30]}>
+              {[-50, -80, -95, -100].map(z =>
+                <SuctionAnimation key={z} z={z} />)}
+            </Group>}
         </ToolbaySlot>;
       case ToolName.weeder:
         return <ToolbaySlot {...common}>
@@ -335,62 +368,8 @@ export const Tools = (props: ToolsProps) => {
     }
   };
 
-  const isJr = props.config.sizePreset == "Jr";
-
-  const promoToolOffset = {
-    x: 110 + bedWallThickness - bedXOffset,
-    y: bedWidthOuter / 2 - bedYOffset,
-    z: zZero - 60,
-  };
-
-  const PROMO_TOOLS: ConvertedTools[] = [
-    {
-      x: promoToolOffset.x,
-      y: (isJr ? 0 : 100) + promoToolOffset.y,
-      z: promoToolOffset.z,
-      toolName: ToolName.rotaryTool,
-      toolPulloutDirection: ToolPulloutDirection.NONE,
-    },
-    {
-      x: promoToolOffset.x,
-      y: (isJr ? 200 : 300) + promoToolOffset.y,
-      z: promoToolOffset.z,
-      toolName: ToolName.seedBin,
-      toolPulloutDirection: ToolPulloutDirection.NONE,
-    },
-    {
-      x: promoToolOffset.x,
-      y: (isJr ? -100 : -200) + promoToolOffset.y,
-      z: promoToolOffset.z,
-      toolName: ToolName.seedTray,
-      toolPulloutDirection: ToolPulloutDirection.NONE,
-    },
-    {
-      x: promoToolOffset.x,
-      y: (isJr ? -200 : -300) + promoToolOffset.y,
-      z: promoToolOffset.z,
-      toolName: ToolName.soilSensor,
-      toolPulloutDirection: ToolPulloutDirection.NONE,
-    },
-    {
-      x: promoToolOffset.x,
-      y: (isJr ? 100 : 200) + promoToolOffset.y,
-      z: promoToolOffset.z,
-      toolName: ToolName.wateringNozzle,
-      toolPulloutDirection: ToolPulloutDirection.NONE,
-    },
-    {
-      x: botPosition.x - bedXOffset + 140,
-      y: -bedYOffset + 15,
-      z: zZero - 100,
-      toolName: ToolName.seedTrough,
-      toolPulloutDirection: ToolPulloutDirection.NONE,
-      firstTrough: true,
-    },
-  ];
-
   const tools = isUndefined(props.toolSlots)
-    ? PROMO_TOOLS
+    ? PROMO_TOOLS(props.config)
     : convertSlotsWithTools(props.toolSlots);
 
   return <Group name={"tools"}>
@@ -402,7 +381,7 @@ export const Tools = (props: ToolsProps) => {
       toolPulloutDirection={ToolPulloutDirection.NONE}
       inToolbay={false} />
     {isUndefined(props.toolSlots) && <Group name={"toolbay3"}>
-      {(isJr ? [0] : [-200, 200]).map(yPosition =>
+      {((props.config.sizePreset == "Jr") ? [0] : [-200, 200]).map(yPosition =>
         <Group key={yPosition}>
           {[
             { node: PartName.toolbay3, color: distinguishableBlack, id: "toolbay3" },

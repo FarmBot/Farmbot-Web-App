@@ -7,12 +7,17 @@ import { t } from "../../i18next_wrapper";
 import { Slider } from "@blueprintjs/core";
 import { ANALOG } from "farmbot";
 import { lockedClass } from "../locked_class";
+import { isUndefined } from "lodash";
+import { forceOnline } from "../../devices/must_be_online";
 
 export const PeripheralList = (props: PeripheralListProps) =>
   <div className="peripheral-list grid">
     {sortResourcesById(props.peripherals).map(peripheral => {
-      const toggleValue =
+      const actualToggleValue =
         (props.pins[peripheral.body.pin || -1] || { value: undefined }).value;
+      const toggleValue = (isUndefined(actualToggleValue) && forceOnline())
+        ? 0
+        : actualToggleValue;
       return <Row key={peripheral.uuid} className="grid-exp-1">
         <label>{peripheral.body.label}</label>
         <p>{"" + peripheral.body.pin}</p>
@@ -24,7 +29,7 @@ export const PeripheralList = (props: PeripheralListProps) =>
           : <ToggleButton
             toggleValue={toggleValue}
             toggleAction={() => {
-              peripheral.body.pin && pinToggle(peripheral.body.pin);
+              peripheral.body.pin && props.dispatch(pinToggle(peripheral.body.pin));
             }}
             title={t(`Toggle ${peripheral.body.label}`)}
             customText={{ textFalse: t("off"), textTrue: t("on") }}

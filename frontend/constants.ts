@@ -643,6 +643,13 @@ export namespace ToolTips {
   export const THREE_D_GRID =
     trim(`Display grid. (default: 0)`);
 
+  export const THREE_D_HEADING =
+    trim(`Direction your device is facing, as an offset in degrees from
+    north. (default: 0)`);
+
+  export const THREE_D_ENVIRONMENT =
+    trim(`3D Scene. (default: "Outdoor")`);
+
   // Tools
   export const WATER_FLOW_RATE =
     trim(`To calculate **WATER FLOW RATE**, hold a measuring cup below the
@@ -2202,6 +2209,8 @@ export enum DeviceSetting {
   legSize = `Leg Size`,
   bounds = `Bounds`,
   grid = `Grid`,
+  heading = `Heading`,
+  environment = `Environment`,
 
   // Map
   showPlants = `Plants`,
@@ -2427,6 +2436,7 @@ export enum Actions {
   STASH_STATUS = "STASH_STATUS",
   SET_NEEDS_VERSION_CHECK = "SET_NEEDS_VERSION_CHECK",
   SET_MALFORMED_NOTIFICATION_SENT = "SET_MALFORMED_NOTIFICATION_SENT",
+  DEMO_TOGGLE_PIN = "DEMO_TOGGLE_PIN",
 
   // Draggable
   PUT_DATA_XFER = "PUT_DATA_XFER",
@@ -2488,6 +2498,7 @@ export enum Actions {
   SET_DISTANCE_INDICATOR = "SET_DISTANCE_INDICATOR",
   TOGGLE_3D_TOP_DOWN_VIEW = "TOGGLE_3D_TOP_DOWN_VIEW",
   TOGGLE_3D_EXAGGERATED_Z = "TOGGLE_3D_EXAGGERATED_Z",
+  SET_3D_TIME = "RESET_3D_TIME",
 
   // Regimens
   PUSH_WEEK = "PUSH_WEEK",

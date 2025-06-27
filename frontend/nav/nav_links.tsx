@@ -31,6 +31,9 @@ export const NavLinks = (props: NavLinksProps) =>
     <div className={"nav-links"}>
       <a id={"map"}
         draggable={false}
+        className={getCurrentPanel(props.designer) === Panel.Map
+          ? "active"
+          : ""}
         onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
           e.preventDefault();
           props.close();
@@ -38,21 +41,23 @@ export const NavLinks = (props: NavLinksProps) =>
         }}>
         <NavIconAndText panel={Panel.Map} alertCount={props.alertCount} />
       </a>
-      {getLinks().map(panel =>
-        <Link
+      {getLinks().map(panel => {
+        const isActive = getCurrentPanel(props.designer) === panel;
+        return <Link
           to={getPanelPath(panel)}
           className={[
-            getCurrentPanel(props.designer) === panel ? "active" : "",
+            isActive ? "active" : "",
             maybeBeacon(PANEL_SLUG[panel], "soft", props.helpState),
           ].join(" ")}
           key={PANEL_SLUG[panel]}
           draggable={false}
           onClick={() => {
+            props.dispatch(setPanelOpen(!isActive));
             props.close();
-            props.dispatch(setPanelOpen(true));
           }}>
           <NavIconAndText panel={panel} alertCount={props.alertCount} />
-        </Link>)}
+        </Link>;
+      })}
       <a className={"shop-link"} key={"shop"}
         draggable={false} onClick={props.close}
         href={ExternalUrl.Store.home} target={"_blank"} rel={"noreferrer"}>

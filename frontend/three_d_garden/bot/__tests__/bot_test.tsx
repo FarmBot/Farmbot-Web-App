@@ -14,6 +14,7 @@ describe("<Bot />", () => {
     return {
       config,
       activeFocus: "",
+      getZ: jest.fn(),
     };
   };
 

@@ -1,0 +1,79 @@
+{
+  "name": "FarmBot Local",
+  "short_name": "FarmBot",
+  "icons": [
+    {
+      "src": "/images/pwa_icon_local.png",
+      "sizes": "720x720",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#0c4d8a",
+  "background_color": "#0c170f",
+  "start_url": "/",
+  "display": "standalone",
+  "description": "Setup, customize, and control your garden from anywhere",
+  "categories": ["utilities", "food", "education"],
+  "screenshots": [
+    {
+      "src": "/images/pwa_screenshot_wide.webp",
+      "sizes": "1500x853",
+      "type": "image/webp",
+      "form_factor": "wide",
+      "label": "Home screen showing plants panel and 3D FarmBot view"
+    },
+    {
+      "src": "/images/pwa_screenshot_narrow.webp",
+      "sizes": "600x1073",
+      "type": "image/webp",
+      "form_factor": "narrow",
+      "label": "Home screen showing 3D FarmBot view"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Sequences",
+      "description": "View and add sequences",
+      "url": "/app/designer/sequences",
+      "icons": [
+        {
+          "src": "/app-resources/img/icons/sequence.svg",
+          "sizes": "any"
+        }
+      ]
+    },
+    {
+      "name": "Events",
+      "description": "View and add events",
+      "url": "/app/designer/events",
+      "icons": [
+        {
+          "src": "/app-resources/img/icons/calendar.svg",
+          "sizes": "any"
+        }
+      ]
+    },
+    {
+      "name": "Photos",
+      "description": "View and take photos",
+      "url": "/app/designer/photos",
+      "icons": [
+        {
+          "src": "/app-resources/img/icons/photos.svg",
+          "sizes": "any"
+        }
+      ]
+    },
+    {
+      "name": "Settings",
+      "description": "View and edit settings",
+      "url": "/app/designer/settings",
+      "icons": [
+        {
+          "src": "/app-resources/img/icons/settings.svg",
+          "sizes": "any"
+        }
+      ]
+    }
+  ]
+}

@@ -3,12 +3,13 @@ import { AxisNumberProperty, MapTransformProps } from "../../interfaces";
 import { transformXY } from "../../util";
 import { BotPosition } from "../../../../devices/interfaces";
 import { Color } from "../../../../ui";
-import { get, isNumber, takeRight, isEqual, round, first } from "lodash";
+import { get, isNumber, takeRight, isEqual, round } from "lodash";
 import { Xyz } from "farmbot";
 import { indicatorColor } from "../../../../controls/move/missed_step_indicator";
 import { GetProfileX } from "../../profile/interfaces";
 import { definedPosition } from "../../../../tools/tool_slot_edit_components";
 import { withinProfileRange } from "../../profile/content";
+import { isPeripheralActiveFunc } from "./bot_peripherals";
 
 type MissedSteps = Record<Xyz, number | undefined>;
 
@@ -63,9 +64,7 @@ export function BotTrail(props: BotTrailProps) {
       : transformXY(original.x, original.y, props.mapTransformProps);
 
   const { x, y, z } = props.position;
-  const watering = !!first(props.peripheralValues
-    .filter(p => p.label.toLowerCase().includes("water"))
-    .map(p => p.value));
+  const watering = isPeripheralActiveFunc(props.peripheralValues)("water");
 
   const array = getNewTrailArray({
     coord: { x, y, z },

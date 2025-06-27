@@ -76,6 +76,21 @@ module Devices
         end
       end
 
+      def add_soil_height_points(product_line)
+        (0..3).each do |i|
+          (0..3).each do |j|
+            Points::Create.run!(device: device,
+                      pointer_type: "GenericPointer",
+                      name: "Soil Height",
+                      x: rand(0..(product_line.include?("xl") ? 5700 : 2700)),
+                      y: rand(0..(product_line.include?("xl") ? 2700 : 1200)),
+                      z: rand(-550..-450),
+                      radius: 0,
+                      meta: { color: "gray", at_soil_level: "true" })
+          end
+        end
+      end
+
       def add_point_groups
         add_point_group(name: "Spinach plants", openfarm_slug: "spinach")
         add_point_group(name: "Broccoli plants", openfarm_slug: "broccoli")
@@ -120,12 +135,17 @@ module Devices
       def before_product_line_seeder
         device
           .web_app_config
-          .update!(discard_unsaved: true, three_d_garden: true)
+          .update!(
+            discard_unsaved: true,
+            three_d_garden: true,
+            show_points: false
+          )
       end
 
       def after_product_line_seeder(product_line)
         create_webcam_feed(product_line)
         add_plants(product_line)
+        add_soil_height_points(product_line)
         add_point_groups
 
         marketing_bulletin

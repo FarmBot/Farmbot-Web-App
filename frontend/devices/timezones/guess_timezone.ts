@@ -1,6 +1,9 @@
 import { isString } from "lodash";
 import { TaggedDevice } from "farmbot";
 import { edit, save } from "../../api/crud";
+import { forceOnline } from "../must_be_online";
+import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
+import { Actions } from "../../constants";
 
 /** Use browser's i18n functionality to guess timezone. */
 const maybeResolveTZ = (): string | undefined => Intl &&
@@ -26,7 +29,14 @@ export function timezoneMismatch(botTime: string | undefined,
 
 export function maybeSetTimezone(dispatch: Function, device: TaggedDevice) {
   if (!device.body.timezone) {
-    dispatch(edit(device, { timezone: inferTimezone(undefined) }));
+    const update: Partial<DeviceAccountSettings> =
+      { timezone: inferTimezone(undefined) };
+    if (forceOnline()) {
+      update.lng = -(new Date().getTimezoneOffset()) / 4;
+      update.lat = 0;
+      dispatch({ type: Actions.SET_3D_TIME, payload: "12:00" });
+    }
+    dispatch(edit(device, update));
     dispatch(save(device.uuid));
   }
 }

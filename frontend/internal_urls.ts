@@ -85,8 +85,8 @@ export namespace Path {
       }
       const { x, y, z } = props;
       return isUndefined(z)
-        ? Path.designer(`location?x=${x}?y=${y}`)
-        : Path.designer(`location?x=${x}?y=${y}?z=${z}`);
+        ? Path.designer(`location?x=${x}&y=${y}`)
+        : Path.designer(`location?x=${x}&y=${y}&z=${z}`);
     };
 
   export const idIndex = (path: string) => path.split("/").length + 0;

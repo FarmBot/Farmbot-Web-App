@@ -13,7 +13,7 @@ export const tourPath = (
   tour: string,
   tourStep: string | undefined,
 ) =>
-  `${stepUrl || location.pathname}?tour=${tour}?tourStep=${tourStep}`;
+  `${stepUrl || location.pathname}?tour=${tour}&tourStep=${tourStep}`;
 
 export class TourStepContainer
   extends React.Component<TourStepContainerProps, TourStepContainerState> {

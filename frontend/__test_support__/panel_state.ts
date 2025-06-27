@@ -81,6 +81,7 @@ export const jobsState = (): JobsAndLogsState => ({
 });
 
 export const popUpsState = (): PopupsState => ({
+  timeTravel: false,
   controls: false,
   jobs: false,
   connectivity: false,

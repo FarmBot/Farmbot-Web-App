@@ -6,7 +6,7 @@ import { destroy } from "../api/crud";
 import { error } from "../toast/toast";
 import { isPendingInstallation } from "./state_to_props";
 import { retryFetchPackageName } from "./actions";
-import { useNavigate } from "react-router";
+import { NavigateFunction, useNavigate } from "react-router";
 import { FarmwareManifestInfo } from "./interfaces";
 import { t } from "../i18next_wrapper";
 import { Popover } from "../ui";
@@ -70,17 +70,21 @@ const PendingInstallNameError =
       : <div className={"no-install-error"} />;
   };
 
-type RemoveFarmwareFunction =
-  (farmwareName: string | undefined, url: string | undefined) => () => void;
+type RemoveFarmwareFunction = (
+  farmwareName: string | undefined,
+  url: string | undefined,
+  navigate: NavigateFunction,
+) => () => void;
 
 interface FarmwareManagementSectionProps {
   farmware: FarmwareManifestInfo;
   remove: RemoveFarmwareFunction;
   botOnline: boolean;
+  navigate: NavigateFunction;
 }
 
 const FarmwareManagementSection =
-  ({ farmware, remove, botOnline }: FarmwareManagementSectionProps) =>
+  ({ farmware, remove, botOnline, navigate }: FarmwareManagementSectionProps) =>
     <div className={"farmware-management-section"}>
       <Popover usePortal={false}
         target={<label>{t("Manage")}</label>}
@@ -96,7 +100,7 @@ const FarmwareManagementSection =
         <button
           className="fb-button red no-float"
           title={t("remove Farmware")}
-          onClick={remove(farmware.name, farmware.url)}>
+          onClick={remove(farmware.name, farmware.url, navigate)}>
           {t("Remove")}
         </button>
       </div>
@@ -117,19 +121,19 @@ interface RemoveFarmwareProps {
 }
 
 /** Uninstall a Farmware. */
-const uninstallFarmware = (props: RemoveFarmwareProps) =>
-  (farmwareName: string | undefined, url: string | undefined) => () => {
+const uninstallFarmware = (props: RemoveFarmwareProps): RemoveFarmwareFunction =>
+  (farmwareName, url, navigate) => () => {
     const { installations, dispatch, firstPartyFarmwareNames } = props;
     const isFirstParty = firstPartyFarmwareNames && farmwareName &&
       firstPartyFarmwareNames.includes(farmwareName);
     if (!isFirstParty || confirm(Content.FIRST_PARTY_WARNING)) {
       removeFromAPI({ url, installations, dispatch });
-      const navigate = useNavigate();
       navigate(Path.farmware());
     }
   };
 
 export function FarmwareInfo(props: FarmwareInfoProps) {
+  const navigate = useNavigate();
   const { farmware } = props;
   return farmware
     ? <div className="farmware-info">
@@ -149,6 +153,7 @@ export function FarmwareInfo(props: FarmwareInfoProps) {
       <FarmwareManagementSection
         botOnline={props.botOnline}
         farmware={farmware}
+        navigate={navigate}
         remove={uninstallFarmware(props)} />
       <PendingInstallNameError
         url={farmware.url}

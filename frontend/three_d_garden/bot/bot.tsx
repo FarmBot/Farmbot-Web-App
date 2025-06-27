@@ -29,6 +29,7 @@ import {
   CableCarrierZ,
   CableCarrierY,
   CableCarrierHorizontal,
+  GantryBeam,
 } from "./components";
 import { SlotWithTool } from "../../resources/interfaces";
 
@@ -84,6 +85,7 @@ Object.values(ASSETS.models).map(model => useGLTF.preload(model, LIB_DIR));
 export interface FarmbotModelProps {
   config: Config;
   activeFocus: string;
+  getZ(x: number, y: number): number;
   toolSlots?: SlotWithTool[];
   mountedToolName?: string | undefined;
   dispatch?: Function;
@@ -92,7 +94,7 @@ export interface FarmbotModelProps {
 export const Bot = (props: FarmbotModelProps) => {
   const config = props.config;
   const {
-    x, y, z, botSizeX, botSizeY, botSizeZ, beamLength, trail, laser, soilHeight,
+    x, y, z, botSizeX, botSizeY, botSizeZ, trail, laser,
     bedXOffset, bedYOffset, bedLengthOuter, bedWidthOuter, tracks,
     columnLength, zAxisLength, zGantryOffset,
   } = props.config;
@@ -189,7 +191,9 @@ export const Bot = (props: FarmbotModelProps) => {
     path.lineTo(-2, 0);
     return path;
   };
-  const distanceToSoil = soilHeight - zDir * z;
+  const distanceToSoil = -props.getZ(x, y) - zDir * z;
+
+  const defaultTrailWidth = config.perspective ? 500 : 0.1;
 
   const airTubeEndPosition = (kitVersion: string): [number, number, number] => {
     switch (kitVersion) {
@@ -563,7 +567,8 @@ export const Bot = (props: FarmbotModelProps) => {
       </Mesh>
     </Group>
     <Trail
-      width={trail ? 500 : 0}
+      width={trail ? defaultTrailWidth : 0}
+      attenuation={t => Math.pow(t, 3)}
       color={"red"}
       length={100}
       decay={0.5}
@@ -595,20 +600,10 @@ export const Bot = (props: FarmbotModelProps) => {
         zZero - zDir * z - distanceToSoil / 2,
       ]}
       rotation={[Math.PI / 2, 0, 0]} />
-    <Extrude name={"gantry-beam"}
-      castShadow={true}
-      args={[
-        beamShape,
-        { steps: 1, depth: beamLength, bevelEnabled: false },
-      ]}
-      position={[
-        threeSpace(x - extrusionWidth - 8, bedLengthOuter) + bedXOffset,
-        threeSpace((bedWidthOuter + beamLength) / 2, bedWidthOuter) - 50,
-        columnLength + 40,
-      ]}
-      rotation={[Math.PI / 2, 0, 0]}>
-      <MeshPhongMaterial color={"white"} map={aluminumTexture} side={DoubleSide} />
-    </Extrude>
+    <GantryBeam
+      config={config}
+      aluminumTexture={aluminumTexture}
+      beamShape={beamShape} />
     <CableCarrierHorizontal config={config} />
     <CableCarrierY config={config} />
     <Mesh name={"yStopMin"}
@@ -651,6 +646,7 @@ export const Bot = (props: FarmbotModelProps) => {
     <Tools
       dispatch={props.dispatch}
       config={config}
+      getZ={props.getZ}
       toolSlots={props.toolSlots}
       mountedToolName={props.mountedToolName} />
     <PowerSupply config={config} />

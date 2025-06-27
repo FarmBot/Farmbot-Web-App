@@ -41,6 +41,7 @@ const SurfaceLine = (props: SurfaceLineProps) => {
 export interface GridProps {
   config: Config;
   getZ(x: number, y: number): number;
+  activeFocus: string;
 }
 
 export const Grid = (props: GridProps) => {
@@ -48,7 +49,7 @@ export const Grid = (props: GridProps) => {
   const zero = zeroFunc(config);
   const extents = extentsFunc(config);
   return <Group name={"garden-grid"}
-    visible={config.grid}
+    visible={config.grid && props.activeFocus != "Planter bed"}
     position={[0, 0, zero.z]}>
     {gridLineOffsets(config.botSizeX).map(xOffset => {
       const isOuterLine = xOffset === 0 || xOffset === config.botSizeX;

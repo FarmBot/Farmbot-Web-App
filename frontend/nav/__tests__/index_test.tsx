@@ -7,8 +7,6 @@ jest.mock("../../devices/timezones/guess_timezone", () => ({
   maybeSetTimezone: jest.fn()
 }));
 
-jest.mock("../../api/crud", () => ({ refresh: jest.fn() }));
-
 jest.mock("../../devices/actions", () => ({
   sync: jest.fn(),
   readStatus: jest.fn(),
@@ -26,7 +24,6 @@ import { maybeSetTimezone } from "../../devices/timezones/guess_timezone";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { fakePings } from "../../__test_support__/fake_state/pings";
 import { Link } from "../../link";
-import { refresh } from "../../api/crud";
 import {
   fakeDesignerState,
   fakeHelpState, fakeMenuOpenState,
@@ -40,6 +37,7 @@ import { app } from "../../__test_support__/fake_state/app";
 import { Actions } from "../../constants";
 import { cloneDeep } from "lodash";
 import { mountWithContext } from "../../__test_support__/mount_with_context";
+import { ControlsPanel, ControlsPanelProps } from "../../controls/controls";
 
 describe("<NavBar />", () => {
   const fakeProps = (): NavBarProps => ({
@@ -139,17 +137,12 @@ describe("<NavBar />", () => {
     });
   });
 
-  it("refreshes device", () => {
-    const p = fakeProps();
-    const wrapper = mount<NavBar>(<NavBar {...p} />);
+  it("updates document title", () => {
+    const wrapper = mount<NavBar>(<NavBar {...fakeProps()} />);
     expect(wrapper.state().documentTitle).toEqual("");
     document.title = "new page";
     wrapper.instance().componentDidUpdate();
     expect(wrapper.state().documentTitle).not.toEqual("");
-    expect(refresh).toHaveBeenCalledWith(p.device);
-    jest.resetAllMocks();
-    wrapper.instance().componentDidUpdate();
-    expect(refresh).not.toHaveBeenCalled();
   });
 
   it("displays connectivity saucer", () => {
@@ -209,5 +202,22 @@ describe("<NavBar />", () => {
     const wrapper = mount(<NavBar {...p} />);
     expect(wrapper.text().toLowerCase()).not.toContain("99%");
     expect(wrapper.text().toLowerCase()).not.toContain("job title");
+  });
+
+  it("uses MCU params when firmware config is missing", () => {
+    const p = fakeProps();
+    p.firmwareConfig = undefined;
+    p.appState.popups.controls = true;
+    const wrapper = mount<NavBar>(<NavBar {...p} />);
+    const props = wrapper.find(ControlsPanel).props() as ControlsPanelProps;
+    expect(props.firmwareSettings).toEqual(p.bot.hardware.mcu_params);
+  });
+
+  it("opens account menu", () => {
+    mockIsMobile = false;
+    const wrapper = mount<NavBar>(<NavBar {...fakeProps()} />);
+    wrapper.instance().toggle("accountMenuOpen")();
+    wrapper.update();
+    expect(wrapper.find(".nav-name").first().hasClass("hover")).toBeTruthy();
   });
 });

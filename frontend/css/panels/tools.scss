@@ -84,9 +84,6 @@
 
 .add-tool-panel-content,
 .edit-tool-panel-content {
-  max-height: calc(100vh - 14rem);
-  overflow-y: auto;
-  overflow-x: hidden;
   button {
     display: block;
     margin-left: auto;
@@ -181,9 +178,6 @@
 
 .add-tool-slot-panel-content,
 .edit-tool-slot-panel-content {
-  max-height: calc(100vh - 14rem);
-  overflow-y: auto;
-  overflow-x: hidden;
   svg {
     display: block;
     margin: auto;
