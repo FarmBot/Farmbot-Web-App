@@ -1,5 +1,6 @@
 class DashboardController < ApplicationController
   before_action :set_global_config
+  skip_before_action :verify_authenticity_token, only: [:csp_reports]
   layout "dashboard"
 
   # === THESE CONSTANTS ARE CONFIGURABLE: ===
@@ -102,10 +103,16 @@ class DashboardController < ApplicationController
     payload = request.body.read || ""
     begin
       report = JSON.parse(payload)
-    rescue
-      report = { problem: "Crashed while parsing report" }
+    rescue JSON::ParserError => e
+      report = {
+        error: "CSP report parse error",
+        exception: e.message,
+        raw: payload,
+      }
     end
-    render json: report
+
+    Rollbar.info("CSP Violation Report", report)
+    head :no_content
   end
 
   # (for self hosted users) Direct image upload endpoint.

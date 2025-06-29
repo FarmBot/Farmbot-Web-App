@@ -24,14 +24,38 @@ describe DashboardController do
       expect { get :main_app, params: { path: "nope.jpg" } }.to raise_error(ActionController::RoutingError)
     end
 
-    it "receives CSP violation reports (malformed JSON)" do
-      post :csp_reports, body: "NOT JSON ! ! !"
-      expect(json).to eq(problem: "Crashed while parsing report")
+    it "receives CSP violation reports: success" do
+      json_payload = { "csp-report" => { "blocked-uri" => "http://malicious.com" } }
+      expect(Rollbar).to receive(:info).with("CSP Violation Report", json_payload)
+      post :csp_reports, body: json_payload.to_json, params: { format: :json }
+      expect(response).to have_http_status(:no_content)
     end
 
-    it "receives CSP violation reports (JSON)" do
-      post :csp_reports, body: {}.to_json, params: { format: :json }
-      expect(json).to eq({})
+    it "receives CSP violation reports: JSON parse error" do
+      malformed_json = "{ this is not valid json"
+      expect(Rollbar).to receive(:info).with(
+      "CSP Violation Report",
+      hash_including(
+        error: "CSP report parse error",
+        exception: kind_of(String),
+        raw: malformed_json
+      )
+      )
+      post :csp_reports, body: malformed_json
+      expect(response).to have_http_status(:no_content)
+    end
+
+    it "receives CSP violation reports: empty body" do
+      expect(Rollbar).to receive(:info).with(
+      "CSP Violation Report",
+      hash_including(
+        error: "CSP report parse error",
+        exception: kind_of(String),
+        raw: ""
+      )
+      )
+      post :csp_reports, body: ""
+      expect(response).to have_http_status(:no_content)
     end
 
     it "creates a new user" do
