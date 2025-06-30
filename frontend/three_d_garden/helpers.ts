@@ -35,7 +35,7 @@ export const zero = (config: Config): Record<"x" | "y" | "z", number> => ({
 export const extents = (config: Config): Record<"x" | "y" | "z", number> => ({
   x: threeSpace(config.bedXOffset + config.botSizeX, config.bedLengthOuter),
   y: threeSpace(config.bedYOffset + config.botSizeY, config.bedWidthOuter),
-  z: zZero(config) + zDir(config) * config.botSizeZ,
+  z: zZero(config) - config.botSizeZ,
 });
 
 export const easyCubicBezierCurve3 = (

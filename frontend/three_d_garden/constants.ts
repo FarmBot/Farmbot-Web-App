@@ -132,8 +132,6 @@ export enum PartName {
   toolbay1Logo = "mesh0_mesh_1",
   seeder = "Seeder_Brass_Insert",
   weeder = "Weeder_Blade_(medium)",
-  rotaryToolBase = "rotary_tool",
-  rotaryToolImplement = "rotary_tool001",
   vacuumPump = "Lower_Vacuum_Tube",
   wateringNozzle = "M5_x_30mm_Screw",
   seedBin = "Seed_Bin",

@@ -10,14 +10,14 @@ import {
   BufferAttribute, BufferGeometry, Group, MeshBasicMaterial, PointLight,
   Points, PointsMaterial,
 } from "../components";
-import { Line, Sphere, Trail } from "@react-three/drei";
+import { Billboard, Line, Sphere, Text3D, Trail } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import SunCalc from "suncalc";
 import { range } from "lodash";
 import moment from "moment";
 import { SEASON_DURATIONS } from "../../promo/constants";
 import { Line2 } from "three/examples/jsm/lines/Line2";
-import { BigDistance } from "../constants";
+import { ASSETS, BigDistance } from "../constants";
 
 const sunDecay = 0;
 const shadowNormalBias = 100;
@@ -60,19 +60,29 @@ export const calcSunCoordinate = (
   };
 };
 
+const toRad = (degrees: number) => degrees * Math.PI / 180;
+const polarToCartesian = (
+  radius: number,
+  thetaDegrees: number,
+  phiDegrees: number,
+): [number, number, number] => {
+  const theta = toRad(thetaDegrees);
+  const phi = toRad(phiDegrees);
+  const x = radius * Math.sin(phi) * Math.cos(theta);
+  const y = radius * Math.sin(phi) * Math.sin(theta);
+  const z = radius * Math.cos(phi);
+  return [x, y, z];
+};
+
 export const sunPosition = (
   sunInclination: number,
   sunAzimuth: number,
   distance: number,
 ): Vector3 => {
-  const toRad = (degrees: number) => degrees * Math.PI / 180;
-  const azimuth = toRad(sunAzimuth);
-  const inclination = toRad(sunInclination);
-  return new Vector3(
-    distance * Math.cos(inclination) * Math.sin(azimuth),
-    distance * Math.cos(inclination) * Math.cos(azimuth),
-    distance * Math.sin(inclination),
-  );
+  const theta = 90 - sunAzimuth;
+  const phi = 90 - sunInclination;
+  const position = polarToCartesian(distance, theta, phi);
+  return new Vector3(...position);
 };
 
 const convertColor =
@@ -132,6 +142,8 @@ export const Sun = (props: SunProps) => {
   // eslint-disable-next-line no-null/no-null
   const sunRef = React.useRef<Mesh>(null);
   // eslint-disable-next-line no-null/no-null
+  const sunFlatRef = React.useRef<Mesh>(null);
+  // eslint-disable-next-line no-null/no-null
   const lineRef = React.useRef<Line2>(null);
   const [points, setPoints] = React.useState<Vector3[]>(
     range(4).map(index => new Vector3(...offsetSunPos(sunPos, index))),
@@ -184,6 +196,8 @@ export const Sun = (props: SunProps) => {
 
     const visualPos = sunPosition(inclination, azimuth, BigDistance.sunVisual);
     sunRef.current?.position?.set(visualPos.x, visualPos.y, visualPos.z);
+    const flatPos = sunPosition(0, azimuth, BigDistance.ground);
+    sunFlatRef.current?.position?.set(flatPos.x, flatPos.y, flatPos.z);
 
     if (lineRef.current) {
       // eslint-disable-next-line @react-three/no-new-in-loop
@@ -233,21 +247,25 @@ export const Sun = (props: SunProps) => {
       <MeshBasicMaterial color={SUN_COLOR[0]} />
     </Sphere>
     <OtherSuns starsRef={starsRef} />
+    {config.lightsDebug && <SkyGrid config={config} />}
+    {config.lightsDebug && <Sphere
+      ref={sunFlatRef}
+      args={[500, 8, 8]}
+      position={sunPosition(0, config.sunAzimuth, BigDistance.ground)}>
+      <MeshBasicMaterial color={SUN_COLOR[0]} />
+    </Sphere>}
   </Group>;
 };
 
 const generateOtherSuns = () => {
   const points = [];
-  const maxPhi = Math.PI / 2 - (10 * Math.PI / 180);
+  const maxPhi = 80;
   const r = BigDistance.sunVisual;
   for (let i = 0; i < 1000; i++) {
-    const theta = Math.random() * 2 * Math.PI;
+    const theta = Math.random() * 360;
     const phi = Math.random() * maxPhi;
-
-    const x = r * Math.sin(phi) * Math.cos(theta);
-    const y = r * Math.sin(phi) * Math.sin(theta);
-    const z = r * Math.cos(phi);
-    points.push(x, y, z);
+    const position = polarToCartesian(r, theta, phi);
+    points.push(...position);
   }
   return new Float32Array(points);
 };
@@ -271,4 +289,31 @@ const OtherSuns = ({ starsRef }: { starsRef: React.RefObject<Material | null> })
       opacity={1}
       depthWrite={false} />
   </Points>;
+};
+
+interface SkyGridProps {
+  config: Config;
+}
+
+const SkyGrid = (props: SkyGridProps) => {
+  const radius = BigDistance.ground;
+  return <Group name={"sky-grid"}>
+    {range(0, 360, 15).map((angle, index) => {
+      const newAngle = (angle + props.config.heading) % 360;
+      const [x, y, z] = polarToCartesian(radius, newAngle, 90);
+      return <Group key={index} name={`sky-grid-line-${angle}`}>
+        <Line
+          points={[[x, y, z - 10000], [x, y, z + 10000]]}
+          lineWidth={5}
+          color={"gray"} />
+        <Billboard
+          position={[x, y, z]}>
+          <Text3D font={ASSETS.fonts.cabinBold} size={1000} height={1}>
+            {`${360 - angle}°`}
+            <MeshBasicMaterial color={"white"} />
+          </Text3D>
+        </Billboard>
+      </Group>;
+    })}
+  </Group>;
 };

@@ -2,7 +2,7 @@ import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
 import { ToolName } from "../farm_designer/map/tool_graphics/all_tools";
 import { Config } from "../three_d_garden/config";
 import { ThreeDTool } from "../three_d_garden/bot/components";
-import { zZero } from "../three_d_garden/helpers";
+import { zDir, zZero } from "../three_d_garden/helpers";
 
 export const PROMO_TOOLS = (config: Config): ThreeDTool[] => {
 
@@ -11,7 +11,7 @@ export const PROMO_TOOLS = (config: Config): ThreeDTool[] => {
   const promoToolOffset = {
     x: 110 + config.bedWallThickness - config.bedXOffset,
     y: config.bedWidthOuter / 2 - config.bedYOffset,
-    z: zZero(config) - 60,
+    z: zDir(config) * (zZero(config) - 60),
   };
 
   return [
@@ -53,7 +53,7 @@ export const PROMO_TOOLS = (config: Config): ThreeDTool[] => {
     {
       x: config.x - config.bedXOffset + 140,
       y: -config.bedYOffset + 15,
-      z: zZero(config) - 100,
+      z: zDir(config) * (zZero(config) - 100),
       toolName: ToolName.seedTrough,
       toolPulloutDirection: ToolPulloutDirection.NONE,
       firstTrough: true,

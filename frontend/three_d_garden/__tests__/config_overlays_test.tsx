@@ -125,7 +125,7 @@ describe("<PrivateOverlay />", () => {
   it("changes value: radio", () => {
     const p = fakeProps();
     const wrapper = mount(<PrivateOverlay {...p} />);
-    wrapper.find({ type: "radio" }).at(2).simulate("change",
+    wrapper.find({ type: "radio" }).at(7).simulate("change",
       { target: { value: "Jr" } });
     expect(p.setConfig).toHaveBeenCalledWith({
       ...p.config,

@@ -293,8 +293,10 @@ export const PrivateOverlay = (props: OverlayProps) => {
       <Toggle {...common} configKey={"settingsBar"} />
       <Toggle {...common} configKey={"zoomBeacons"} />
       <label>{"Presets"}</label>
+      <Radio {...common} configKey={"label"}
+        options={["FarmBot Genesis", "FarmBot Genesis XL", "FarmBot Jr", "box"]} />
       <Radio {...common} configKey={"kitVersion"}
-        options={["v1.8", "v1.7"]} />
+        options={["v1.8", "v1.7", "v1000"]} />
       <Radio {...common} configKey={"sizePreset"}
         options={["Jr", "Genesis", "Genesis XL"]} />
       <Radio {...common} configKey={"bedType"}
@@ -319,6 +321,7 @@ export const PrivateOverlay = (props: OverlayProps) => {
       <Slider {...common} configKey={"botSizeY"} min={0} max={4000} />
       <Slider {...common} configKey={"botSizeZ"} min={0} max={1000} />
       <Toggle {...common} configKey={"bounds"} />
+      <Toggle {...common} configKey={"negativeZ"} />
       <Toggle {...common} configKey={"xyDimensions"} />
       <Toggle {...common} configKey={"zDimension"} />
       <Toggle {...common} configKey={"axes"} />
@@ -359,6 +362,7 @@ export const PrivateOverlay = (props: OverlayProps) => {
       <Toggle {...common} configKey={"perspective"} />
       <Toggle {...common} configKey={"zoom"} />
       <Toggle {...common} configKey={"pan"} />
+      <Toggle {...common} configKey={"rotate"} />
       <Toggle {...common} configKey={"lowDetail"} />
       <label>{"Environment"}</label>
       <Radio {...common} configKey={"scene"}
@@ -377,6 +381,7 @@ export const PrivateOverlay = (props: OverlayProps) => {
       <Toggle {...common} configKey={"desk"} />
       <Toggle {...common} configKey={"people"} />
       <Toggle {...common} configKey={"north"} />
+      <Slider {...common} configKey={"heading"} min={0} max={360} />
       <Slider {...common} configKey={"sunInclination"} min={-180} max={180} />
       <Slider {...common} configKey={"sunAzimuth"} min={0} max={360} />
       <label>{"Dev"}</label>

@@ -83,6 +83,7 @@ describe("<Sun />", () => {
       .mockImplementationOnce(() => mock4Ref)
       .mockImplementationOnce(() => mock1Ref)
       .mockImplementationOnce(() => mock1Ref)
+      .mockImplementationOnce(() => mock1Ref)
       .mockImplementationOnce(() => mock0Ref)
       .mockImplementationOnce(() => mockMaterialRef);
     jest.spyOn(React, "useState").mockReturnValue([[], jest.fn()]);
