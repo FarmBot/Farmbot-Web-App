@@ -36,7 +36,7 @@ services:
 
   db:
     env_file: ".env"
-    image: postgres:16
+    image: postgres:17
     restart: always
     volumes: ["./docker_volumes/db:/var/lib/postgresql/data"]
 
