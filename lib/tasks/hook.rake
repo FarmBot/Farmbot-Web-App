@@ -34,10 +34,10 @@ def commits_since_last_deploy
       deploy_commit_found = true
       break
     end
-    commits.push(commit["commit"]["message"].gsub("\n", " "))
+    commits.push([commit["commit"]["message"].gsub("\n", " "), commit["sha"]])
   end
   if !deploy_commit_found
-    commits.push("[LAST DEPLOY COMMIT NOT FOUND]")
+    commits.push(["[LAST DEPLOY COMMIT NOT FOUND]", "0000000"])
   end
   commits
 end
@@ -50,7 +50,7 @@ def details(environment)
   web_compare_url = "#{COMPARE_URL_WEB}#{last_deploy_commit}...#{COMMIT_SHA}"
   output += "<#{web_compare_url}|compare>\n"
   messages = commits_since_last_deploy.reverse.map do |commit|
-    output += "\n + #{commit}"
+    output += "\n + #{commit[0]} | ##{commit[1][0..5]}"
   end
   output += "\n"
   pre = environment == "production" ? "my" : environment
