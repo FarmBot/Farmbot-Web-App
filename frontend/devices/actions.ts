@@ -35,7 +35,7 @@ import { ToastOptions } from "../toast/interfaces";
 import { forceOnline } from "./must_be_online";
 import { store } from "../redux/store";
 import { linkToSetting } from "../settings/maybe_highlight";
-import { runDemoSequence } from "../demo/lua_runner";
+import { runDemoLuaCode, runDemoSequence } from "../demo/lua_runner";
 
 const ON = 1, OFF = 0;
 export type ConfigKey = keyof McuParams;
@@ -341,7 +341,10 @@ export function settingToggle(
 }
 
 export function moveRelative(props: MoveRelProps) {
-  maybeNoop();
+  if (forceOnline()) {
+    runDemoLuaCode(`move_relative(${props.x}, ${props.y}, ${props.z})`);
+    return;
+  }
   maybeAlertLocked();
   return getDevice()
     .moveRelative(props)
@@ -350,7 +353,10 @@ export function moveRelative(props: MoveRelProps) {
 
 export function moveAbsolute(props: MoveRelProps) {
   const noun = t("Absolute movement");
-  maybeNoop();
+  if (forceOnline()) {
+    runDemoLuaCode(`move_absolute(${props.x}, ${props.y}, ${props.z})`);
+    return;
+  }
   maybeAlertLocked();
   return getDevice()
     .moveAbsolute(props)
@@ -399,20 +405,15 @@ export function move(props: MoveProps) {
 }
 
 export function pinToggle(pin_number: number) {
-  return function (dispatch: Function) {
-    const noun = t("Toggle pin");
-    if (forceOnline()) {
-      dispatch({
-        type: Actions.DEMO_TOGGLE_PIN,
-        payload: pin_number,
-      });
-      return;
-    }
-    maybeAlertLocked();
-    return getDevice()
-      .togglePin({ pin_number })
-      .then(maybeNoop, commandErr(noun));
-  };
+  const noun = t("Toggle pin");
+  if (forceOnline()) {
+    runDemoLuaCode(`toggle_pin(${pin_number})`);
+    return;
+  }
+  maybeAlertLocked();
+  return getDevice()
+    .togglePin({ pin_number })
+    .then(maybeNoop, commandErr(noun));
 }
 
 export function readPin(
@@ -437,8 +438,11 @@ export function writePin(
 }
 
 export function moveToHome(axis: Axis) {
+  if (forceOnline()) {
+    runDemoLuaCode(`go_to_home("${axis}")`);
+    return;
+  }
   const noun = t("'Move To Home' command");
-  maybeNoop();
   maybeAlertLocked();
   getDevice()
     .home({ axis, speed: CONFIG_DEFAULTS.speed })
@@ -447,7 +451,10 @@ export function moveToHome(axis: Axis) {
 
 export function findHome(axis: Axis) {
   const noun = t("'Find Home' command");
-  maybeNoop();
+  if (forceOnline()) {
+    runDemoLuaCode(`find_home("${axis}")`);
+    return;
+  }
   maybeAlertLocked();
   getDevice()
     .findHome({ axis, speed: CONFIG_DEFAULTS.speed })

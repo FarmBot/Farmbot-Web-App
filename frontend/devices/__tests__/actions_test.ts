@@ -44,6 +44,7 @@ jest.mock("../../redux/store", () => ({
 
 jest.mock("../../demo/lua_runner", () => ({
   runDemoSequence: jest.fn(),
+  runDemoLuaCode: jest.fn(),
 }));
 
 import * as actions from "../actions";
@@ -58,7 +59,7 @@ import { edit, save } from "../../api/crud";
 import { DeepPartial } from "../../redux/interfaces";
 import { Farmbot } from "farmbot";
 import { Path } from "../../internal_urls";
-import { runDemoSequence } from "../../demo/lua_runner";
+import { runDemoLuaCode, runDemoSequence } from "../../demo/lua_runner";
 
 const replaceDeviceWith = async (d: DeepPartial<Farmbot>, cb: Function) => {
   jest.clearAllMocks();
@@ -353,11 +354,25 @@ describe("updateMCU()", () => {
 });
 
 describe("moveRelative()", () => {
+  afterEach(() => {
+    localStorage.removeItem("myBotIs");
+  });
+
   it("calls moveRelative", async () => {
     await actions.moveRelative({ x: 1, y: 0, z: 0 });
     expect(mockDevice.current.moveRelative)
       .toHaveBeenCalledWith({ x: 1, y: 0, z: 0 });
     expect(success).not.toHaveBeenCalled();
+    expect(error).not.toHaveBeenCalled();
+  });
+
+  it("calls moveRelative on demo accounts", async () => {
+    localStorage.setItem("myBotIs", "online");
+    await actions.moveRelative({ x: 1, y: 0, z: 0 });
+    expect(mockDevice.current.moveRelative).not.toHaveBeenCalled();
+    expect(success).not.toHaveBeenCalled();
+    expect(error).not.toHaveBeenCalled();
+    expect(runDemoLuaCode).toHaveBeenCalledWith("move_relative(1, 0, 0)");
   });
 
   it("shows lock message", () => {
@@ -370,11 +385,23 @@ describe("moveRelative()", () => {
 });
 
 describe("moveAbsolute()", () => {
+  afterEach(() => {
+    localStorage.removeItem("myBotIs");
+  });
+
   it("calls moveAbsolute", async () => {
     await actions.moveAbsolute({ x: 1, y: 0, z: 0 });
     expect(mockDevice.current.moveAbsolute)
       .toHaveBeenCalledWith({ x: 1, y: 0, z: 0 });
     expect(success).not.toHaveBeenCalled();
+  });
+
+  it("calls moveAbsolute on demo accounts", async () => {
+    localStorage.setItem("myBotIs", "online");
+    await actions.moveAbsolute({ x: 1, y: 0, z: 0 });
+    expect(mockDevice.current.moveAbsolute).not.toHaveBeenCalled();
+    expect(success).not.toHaveBeenCalled();
+    expect(runDemoLuaCode).toHaveBeenCalledWith("move_absolute(1, 0, 0)");
   });
 });
 
@@ -514,20 +541,16 @@ describe("pinToggle()", () => {
   });
 
   it("calls togglePin", async () => {
-    await actions.pinToggle(5)(jest.fn());
+    await actions.pinToggle(5);
     expect(mockDevice.current.togglePin).toHaveBeenCalledWith({ pin_number: 5 });
     expect(success).not.toHaveBeenCalled();
   });
 
   it("toggles demo account pin", () => {
     localStorage.setItem("myBotIs", "online");
-    const dispatch = jest.fn();
-    actions.pinToggle(5)(dispatch);
+    actions.pinToggle(5);
     expect(mockDevice.current.togglePin).not.toHaveBeenCalled();
-    expect(dispatch).toHaveBeenCalledWith({
-      type: Actions.DEMO_TOGGLE_PIN,
-      payload: 5
-    });
+    expect(runDemoLuaCode).toHaveBeenCalledWith("toggle_pin(5)");
   });
 });
 
@@ -552,20 +575,42 @@ describe("writePin()", () => {
 });
 
 describe("moveToHome()", () => {
+  afterEach(() => {
+    localStorage.removeItem("myBotIs");
+  });
+
   it("calls home", async () => {
     await actions.moveToHome("x");
     expect(mockDevice.current.home)
       .toHaveBeenCalledWith({ axis: "x", speed: 100 });
     expect(success).not.toHaveBeenCalled();
   });
+
+  it("calls home on demo accounts", async () => {
+    localStorage.setItem("myBotIs", "online");
+    await actions.moveToHome("x");
+    expect(mockDevice.current.home).not.toHaveBeenCalled();
+    expect(runDemoLuaCode).toHaveBeenCalledWith("go_to_home(\"x\")");
+  });
 });
 
 describe("findHome()", () => {
+  afterEach(() => {
+    localStorage.removeItem("myBotIs");
+  });
+
   it("calls find_home", async () => {
     await actions.findHome("all");
     expect(mockDevice.current.findHome)
       .toHaveBeenCalledWith({ axis: "all", speed: 100 });
     expect(success).not.toHaveBeenCalled();
+  });
+
+  it("calls find_home on demo accounts", async () => {
+    localStorage.setItem("myBotIs", "online");
+    await actions.findHome("all");
+    expect(mockDevice.current.findHome).not.toHaveBeenCalled();
+    expect(runDemoLuaCode).toHaveBeenCalledWith("find_home(\"all\")");
   });
 });
 

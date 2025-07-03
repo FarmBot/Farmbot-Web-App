@@ -29,7 +29,7 @@ export const PeripheralList = (props: PeripheralListProps) =>
           : <ToggleButton
             toggleValue={toggleValue}
             toggleAction={() => {
-              peripheral.body.pin && props.dispatch(pinToggle(peripheral.body.pin));
+              peripheral.body.pin && pinToggle(peripheral.body.pin);
             }}
             title={t(`Toggle ${peripheral.body.label}`)}
             customText={{ textFalse: t("off"), textTrue: t("on") }}

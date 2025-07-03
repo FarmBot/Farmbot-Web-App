@@ -36,7 +36,7 @@ export interface AxisProps {
 }
 
 export interface AxisInputBoxGroupProps {
-  onCommit: (v: Vector3) => Promise<false | void>;
+  onCommit: (v: Vector3) => Promise<false | void> | undefined;
   position: BotPosition;
   disabled: boolean | undefined;
   locked: boolean;
