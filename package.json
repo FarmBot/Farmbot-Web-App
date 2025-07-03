@@ -15,7 +15,7 @@
   "scripts": {
     "test-very-slow": "node --expose-gc ./node_modules/.bin/jest -i --colors --coverage",
     "test-slow": "node scripts/run.js ./node_modules/.bin/jest -w 3 --colors",
-    "test": "node scripts/run.js ./node_modules/.bin/jest -w 3 --no-coverage",
+    "test": "node scripts/run.js ./node_modules/.bin/jest -w 3 --colors --no-coverage",
     "graph-modules-dot": "./node_modules/.bin/madge --dot ./frontend > module_graph.dot",
     "graph-modules-svg": "dot -Tsvg module_graph.dot -o module_graph.svg",
     "typecheck": "node scripts/run.js ./node_modules/typescript/bin/tsc --noEmit",
@@ -62,6 +62,8 @@
     "delaunator": "5.0.1",
     "events": "3.3.0",
     "farmbot": "15.8.11",
+    "fengari": "0.1.4",
+    "fengari-web": "0.1.4",
     "i18next": "25.3.0",
     "lodash": "4.17.21",
     "markdown-it": "14.1.0",

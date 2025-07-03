@@ -3,6 +3,7 @@ jest.mock("../../devices/must_be_online", () => ({
   forceOnline: () => mockDemo,
 }));
 
+import { BotLocationData } from "../../devices/interfaces";
 import { validBotLocationData } from "../location";
 import { LocationData } from "farmbot";
 
@@ -44,10 +45,8 @@ describe("validBotLocationData()", () => {
 
   it("returns location for demo accounts", () => {
     mockDemo = true;
-    localStorage.x = "1";
-    localStorage.y = "2";
-    localStorage.z = "3";
-    const result = validBotLocationData(undefined);
+    const result = validBotLocationData(
+      { position: { x: 1, y: 2, z: 3 } } as BotLocationData);
     expect(result).toEqual({
       position: { x: 1, y: 2, z: 3 },
       scaled_encoders: { x: 0, y: 0, z: 0 },

@@ -42,6 +42,10 @@ jest.mock("../../redux/store", () => ({
   },
 }));
 
+jest.mock("../../demo/lua_runner", () => ({
+  runDemoSequence: jest.fn(),
+}));
+
 import * as actions from "../actions";
 import {
   fakeFirmwareConfig, fakeFbosConfig,
@@ -54,6 +58,7 @@ import { edit, save } from "../../api/crud";
 import { DeepPartial } from "../../redux/interfaces";
 import { Farmbot } from "farmbot";
 import { Path } from "../../internal_urls";
+import { runDemoSequence } from "../../demo/lua_runner";
 
 const replaceDeviceWith = async (d: DeepPartial<Farmbot>, cb: Function) => {
   jest.clearAllMocks();
@@ -194,6 +199,10 @@ describe("sync()", () => {
 });
 
 describe("execSequence()", () => {
+  afterEach(() => {
+    localStorage.removeItem("myBotIs");
+  });
+
   it("handles normal errors", () => {
     const errorThrower: DeepPartial<Farmbot> = {
       execSequence: jest.fn(() => Promise.reject(new Error("yolo")))
@@ -228,6 +237,17 @@ describe("execSequence()", () => {
     await actions.execSequence(1, []);
     expect(mockDevice.current.execSequence).toHaveBeenCalledWith(1, []);
     expect(success).toHaveBeenCalled();
+  });
+
+  it("calls execSequence on demo accounts", async () => {
+    localStorage.setItem("myBotIs", "online");
+    await actions.execSequence(1);
+    expect(mockDevice.current.execSequence).not.toHaveBeenCalled();
+    expect(success).not.toHaveBeenCalled();
+    expect(runDemoSequence).toHaveBeenCalledWith(
+      expect.any(Object),
+      1,
+      undefined);
   });
 
   it("implodes when executing unsaved sequences", () => {

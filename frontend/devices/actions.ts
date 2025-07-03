@@ -35,6 +35,7 @@ import { ToastOptions } from "../toast/interfaces";
 import { forceOnline } from "./must_be_online";
 import { store } from "../redux/store";
 import { linkToSetting } from "../settings/maybe_highlight";
+import { runDemoSequence } from "../demo/lua_runner";
 
 const ON = 1, OFF = 0;
 export type ConfigKey = keyof McuParams;
@@ -205,6 +206,10 @@ export function execSequence(
 ) {
   const noun = t("Sequence execution");
   if (sequenceId) {
+    if (forceOnline()) {
+      runDemoSequence(store.getState().resources.index, sequenceId, bodyVariables);
+      return;
+    }
     commandOK(noun)();
     return getDevice()
       .execSequence(sequenceId, bodyVariables)

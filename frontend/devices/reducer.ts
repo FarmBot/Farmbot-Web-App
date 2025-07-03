@@ -13,6 +13,7 @@ import {
 } from "../connectivity/reducer";
 import { versionOK } from "../util";
 import { updateMotorHistoryArray } from "../controls/move/motor_position_plot";
+import { PercentageProgress, Xyz } from "farmbot";
 
 const afterEach = (state: BotState, a: ReduxAction<{}>) => {
   state.connectivity = connectivityReducer(state.connectivity, a);
@@ -136,6 +137,19 @@ export const botReducer = generateReducer<BotState>(initialState())
     pin.value = Number(!pin.value);
     return s;
   })
+  .add<{ pin: number, value: number }>(Actions.DEMO_WRITE_PIN, (s, { payload }) => {
+    s.hardware.pins[payload.pin] = { mode: 0, value: payload.value };
+    return s;
+  })
+  .add<Record<Xyz, number>>(Actions.DEMO_SET_POSITION, (s, { payload }) => {
+    s.hardware.location_data.position = payload;
+    return s;
+  })
+  .add<[string, PercentageProgress]>(Actions.DEMO_SET_JOB_PROGRESS,
+    (s, { payload }) => {
+      s.hardware.jobs[payload[0]] = payload[1];
+      return s;
+    })
   .add<PingResultPayload>(Actions.PING_OK, (s) => {
     // Going from "down" to "up"
     const currentState = s.connectivity.uptime["bot.mqtt"];
