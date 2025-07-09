@@ -150,6 +150,10 @@ export const botReducer = generateReducer<BotState>(initialState())
       s.hardware.jobs[payload[0]] = payload[1];
       return s;
     })
+  .add<boolean>(Actions.DEMO_SET_ESTOP, (s, { payload }) => {
+    s.hardware.informational_settings.locked = payload;
+    return s;
+  })
   .add<PingResultPayload>(Actions.PING_OK, (s) => {
     // Going from "down" to "up"
     const currentState = s.connectivity.uptime["bot.mqtt"];

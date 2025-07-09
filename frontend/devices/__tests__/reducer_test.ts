@@ -216,4 +216,20 @@ describe("botReducer", () => {
       }
     });
   });
+
+  it("sets emergency stop", () => {
+    const state = initialState();
+    const action = { type: Actions.DEMO_SET_ESTOP, payload: true };
+    const r = botReducer(state, action);
+    expect(r.hardware.informational_settings.locked).toEqual(true);
+  });
+
+  it("unsets emergency stop", () => {
+    const state = initialState();
+    state.hardware.informational_settings.locked = true;
+    const action = { type: Actions.DEMO_SET_ESTOP, payload: false };
+    const r = botReducer(state, action);
+    expect(r.hardware.informational_settings.locked).toEqual(false);
+  });
+
 });

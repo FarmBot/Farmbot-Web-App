@@ -161,7 +161,10 @@ export function flashFirmware(firmwareName: FirmwareHardware) {
 
 export function emergencyLock() {
   const noun = t("Emergency stop");
-  maybeNoop();
+  if (forceOnline()) {
+    runDemoLuaCode("emergency_lock()");
+    return;
+  }
   getDevice()
     .emergencyLock()
     .then(commandOK(noun), commandErr(noun));
@@ -170,7 +173,10 @@ export function emergencyLock() {
 export function emergencyUnlock(force = false) {
   const noun = t("Emergency unlock");
   if (force || confirm(t("Are you sure you want to unlock the device?"))) {
-    maybeNoop();
+    if (forceOnline()) {
+      runDemoLuaCode("emergency_unlock()");
+      return;
+    }
     getDevice()
       .emergencyUnlock()
       .then(commandOK(noun), commandErr(noun));

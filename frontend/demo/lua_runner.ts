@@ -12,6 +12,39 @@ import { sortGroupBy } from "../point_groups/point_group_sort";
 import { validBotLocationData } from "../util/location";
 import { calculateAxialLengths } from "../controls/move/direction_axes_props";
 import { getFirmwareConfig } from "../resources/getters";
+import { LUA_HELPERS } from "./lua_helpers";
+import { TOAST_OPTIONS } from "../toast/constants";
+
+const createRecursiveNotImplemented = (
+  L: unknown,
+  actions: Action[],
+  path: string[],
+) => {
+  lua.lua_newtable(L);
+  lua.lua_newtable(L);
+  lua.lua_pushjsfunction(L, () => {
+    const key: string = to_jsstring(lua.lua_tostring(L, 2));
+    return createRecursiveNotImplemented(L, actions, [...path, key]);
+  });
+  lua.lua_setfield(L, -2, to_luastring("__index"));
+
+  lua.lua_pushjsfunction(L, () => {
+    const fullPath = path.join(".");
+    actions.push({
+      type: "toast",
+      args: [
+        `Lua function "${fullPath}" is not implemented.`,
+        "error",
+      ],
+    });
+    lua.lua_pushboolean(L, false);
+    return 1;
+  });
+  lua.lua_setfield(L, -2, to_luastring("__call"));
+
+  lua.lua_setmetatable(L, -2);
+  return 1;
+};
 
 const runLua =
   (luaCode: string, variables: ParameterApplication[]): Action[] => {
@@ -21,6 +54,12 @@ const runLua =
     lua.lua_newtable(L); // stack: [env]
 
     lauxlib.luaL_requiref(L, to_luastring("_G"), lualib.luaopen_base, 1);
+
+    lua.lua_getfield(L, -1, to_luastring("type"));
+    lua.lua_setfield(L, -3, to_luastring("type"));
+
+    lua.lua_getfield(L, -1, to_luastring("tostring"));
+    lua.lua_setfield(L, -3, to_luastring("tostring"));
 
     lua.lua_getfield(L, -1, to_luastring("pairs"));
     lua.lua_setfield(L, -3, to_luastring("pairs"));
@@ -61,6 +100,15 @@ const runLua =
         .map(variable => variable.args.data_value)[0];
       if (n?.kind === "numeric") {
         lua.lua_pushnumber(L, n.args.number);
+      } else {
+        actions.push({
+          type: "toast",
+          args: [
+            "Variables of type other than numeric not implemented.",
+            "error",
+          ],
+        });
+        lua.lua_pushnil(L);
       }
       return 1;
     });
@@ -78,14 +126,26 @@ const runLua =
 
     lua.lua_pushjsfunction(L, () => {
       lua.lua_getfield(L, 1, to_luastring("method"));
-      const method = to_jsstring(lua.lua_tostring(L, -1));
+      const method = lua.lua_isnil(L, -1)
+        ? "GET"
+        : to_jsstring(lua.lua_tostring(L, -1));
       lua.lua_pop(L, 1);
 
       lua.lua_getfield(L, 1, to_luastring("url"));
       const url = to_jsstring(lua.lua_tostring(L, -1));
       lua.lua_pop(L, 1);
 
-      if (!(method == "GET" && url == "/api/points")) { return 0; }
+      if (!(method == "GET" && url == "/api/points")) {
+        actions.push({
+          type: "toast",
+          args: [
+            "API calls other than GET /api/points not implemented.",
+            "error",
+          ],
+        });
+        lua.lua_pushboolean(L, false);
+        return 1;
+      }
 
       const points = selectAllPoints(store.getState().resources.index);
       const results = sortGroupBy("yx_alternating", points).map(p => p.body);
@@ -124,15 +184,21 @@ const runLua =
     lua.lua_setfield(L, -2, to_luastring("send_message"));
 
     lua.lua_pushjsfunction(L, () => {
-      const n = lua.lua_gettop(L);
-      const args = [];
-      for (let i = 1; i <= n; i++) {
-        args.push(to_jsstring(lua.lua_tostring(L, i)));
-      }
-      actions.push({ type: "toast", args: args });
+      const msg = to_jsstring(lua.lua_tostring(L, 1));
+      const type = lua.lua_gettop(L) >= 2
+        ? to_jsstring(lua.lua_tostring(L, 2))
+        : "info";
+      actions.push({ type: "toast", args: [msg, type] });
       return 0;
     });
     lua.lua_setfield(L, -2, to_luastring("toast"));
+
+    lua.lua_pushjsfunction(L, () => {
+      const msg = to_jsstring(lua.lua_tostring(L, 1));
+      actions.push({ type: "toast", args: [msg, "debug"] });
+      return 0;
+    });
+    lua.lua_setfield(L, -2, to_luastring("debug"));
 
     lua.lua_pushjsfunction(L, () => {
       const jobName = to_jsstring(lua.lua_tostring(L, 1));
@@ -195,10 +261,10 @@ const runLua =
 
     lua.lua_pushjsfunction(L, () => {
       const ms = lua.lua_tonumber(L, 1);
-      actions.push({ type: "wait", args: [ms] });
+      actions.push({ type: "wait_ms", args: [ms] });
       return 0;
     });
-    lua.lua_setfield(L, -2, to_luastring("wait"));
+    lua.lua_setfield(L, -2, to_luastring("wait_ms"));
 
     lua.lua_pushjsfunction(L, () => {
       const pin = lua.lua_tonumber(L, 1);
@@ -247,6 +313,31 @@ const runLua =
     });
     lua.lua_setfield(L, -2, to_luastring("garden_size"));
 
+    lauxlib.luaL_loadstring(L, to_luastring(LUA_HELPERS));
+    lua.lua_pushvalue(L, -2);
+    lua.lua_setupvalue(L, -2, 1);
+    lua.lua_pcall(L, 0, 0, 0);
+
+    lua.lua_pushjsfunction(L, () => {
+      actions.push({ type: "emergency_lock", args: [] });
+      return 0;
+    });
+    lua.lua_setfield(L, -2, to_luastring("emergency_lock"));
+
+    lua.lua_pushjsfunction(L, () => {
+      actions.push({ type: "emergency_unlock", args: [] });
+      return 0;
+    });
+    lua.lua_setfield(L, -2, to_luastring("emergency_unlock"));
+
+    lua.lua_newtable(L);
+    lua.lua_pushjsfunction(L, () => {
+      const key: string = to_jsstring(lua.lua_tostring(L, 2));
+      return createRecursiveNotImplemented(L, actions, [key]);
+    });
+    lua.lua_setfield(L, -2, to_luastring("__index"));
+    lua.lua_setmetatable(L, -2);
+
     const statusLoad = lauxlib.luaL_loadstring(L, to_luastring(luaCode));
     if (statusLoad !== lua.LUA_OK) {
       const error = to_jsstring(lua.lua_tostring(L, -1));
@@ -294,12 +385,14 @@ interface Action {
   | "toggle_pin"
   | "on"
   | "off"
+  | "emergency_lock"
+  | "emergency_unlock"
   | "find_home"
   | "go_to_home"
   | "toast"
   | "send_message"
   | "print"
-  | "wait"
+  | "wait_ms"
   | "write_pin"
   | "set_job_progress";
   args: (number | string)[];
@@ -354,7 +447,7 @@ const expandActions = (actions: Action[]): Action[] => {
   };
   const addPosition = (position: Record<Xyz, number>) => {
     expanded.push({
-      type: "wait",
+      type: "wait_ms",
       args: [500],
     });
     expanded.push({
@@ -404,6 +497,14 @@ const expandActions = (actions: Action[]): Action[] => {
         const value = action.type === "on" ? 1 : 0;
         expanded.push({ type: "write_pin", args: [pin, value] });
         break;
+      case "toast":
+        const msg = "" + action.args[0];
+        const type = "" + action.args[1];
+        expanded.push({
+          type: "send_message",
+          args: [type, msg],
+        });
+        break;
       default:
         expanded.push(action);
         break;
@@ -412,28 +513,47 @@ const expandActions = (actions: Action[]): Action[] => {
   return expanded;
 };
 
+const pending = new Set<ReturnType<typeof setTimeout>>();
+
 const runActions = (actions: Action[]) => {
   let delay = 0;
   expandActions(actions).map(action => {
+    // eslint-disable-next-line complexity
     const getFunc = () => {
+      const estopped = store.getState().bot.hardware.informational_settings.locked;
+      if (estopped && action.type !== "emergency_unlock") {
+        return;
+      }
       switch (action.type) {
-        case "wait":
+        case "wait_ms":
           const ms = action.args[0] as number;
           delay += ms;
           return undefined;
-        case "toast":
         case "send_message":
           const type = "" + action.args[0];
           const msg = "" + action.args[1];
-          if (type == "info") {
-            return () => {
-              info(msg);
-            };
-          }
-          return undefined;
+          return () => {
+            info(msg, TOAST_OPTIONS()[type]);
+          };
         case "print":
           return () => {
             console.log(action.args[0]);
+          };
+        case "emergency_lock":
+          return () => {
+            pending.forEach(clearTimeout);
+            pending.clear();
+            store.dispatch({
+              type: Actions.DEMO_SET_ESTOP,
+              payload: true,
+            });
+          };
+        case "emergency_unlock":
+          return () => {
+            store.dispatch({
+              type: Actions.DEMO_SET_ESTOP,
+              payload: false,
+            });
           };
         case "move_absolute":
           const x = action.args[0] as number;
@@ -485,6 +605,6 @@ const runActions = (actions: Action[]) => {
       }
     };
     const func = getFunc();
-    func && setTimeout(func, delay);
+    func && pending.add(setTimeout(func, delay));
   });
 };

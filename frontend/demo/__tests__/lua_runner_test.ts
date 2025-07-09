@@ -3,6 +3,7 @@ import {
   fakeFirmwareConfig,
   fakeSequence, fakeToolSlot,
 } from "../../__test_support__/fake_state/resources";
+let mockLocked = false;
 let mockPosition = { x: 0, y: 0, z: 0 };
 const firmwareConfig = fakeFirmwareConfig();
 firmwareConfig.body.movement_axis_nr_steps_x = 5000;
@@ -19,7 +20,8 @@ jest.mock("../../redux/store", () => ({
       bot: {
         hardware: {
           location_data: { position: mockPosition },
-        }
+          informational_settings: { locked: mockLocked },
+        },
       },
     }),
   },
@@ -30,6 +32,7 @@ import { Actions } from "../../constants";
 import { store } from "../../redux/store";
 import { info } from "../../toast/toast";
 import { runDemoLuaCode, runDemoSequence } from "../lua_runner";
+import { TOAST_OPTIONS } from "../../toast/constants";
 
 const code = `
   n = variable("Number")
@@ -115,7 +118,7 @@ describe("runDemoSequence()", () => {
       type: Actions.DEMO_WRITE_PIN,
       payload: { pin: 8, value: 0 },
     });
-    expect(info).toHaveBeenCalledWith("msg");
+    expect(info).toHaveBeenCalledWith("msg", TOAST_OPTIONS().info);
     expect(store.dispatch).toHaveBeenCalledWith({
       type: Actions.DEMO_SET_JOB_PROGRESS,
       payload: ["job", {
@@ -150,7 +153,9 @@ describe("runDemoSequence()", () => {
     const ri = buildResourceIndex([sequence]).index;
     runDemoSequence(ri, sequence.body.id, undefined);
     jest.runAllTimers();
-    expect(info).toHaveBeenCalledWith("msg");
+    expect(info).toHaveBeenCalledWith(
+      "Variables of type other than numeric not implemented.",
+      TOAST_OPTIONS().error);
     expect(console.log).toHaveBeenCalled();
     expect(console.error).not.toHaveBeenCalled();
   });
@@ -193,8 +198,7 @@ describe("runDemoSequence()", () => {
     expect(console.log).not.toHaveBeenCalled();
     expect(console.error).toHaveBeenCalledWith(
       "Lua call error:",
-      "[string \"return blah + 5\"]:1: attempt to perform arithmetic " +
-      "on a nil value (global 'blah')",
+      expect.stringContaining("attempt to perform arithmetic"),
     );
   });
 });
@@ -205,6 +209,7 @@ describe("runDemoLuaCode()", () => {
     console.log = jest.fn();
     console.error = jest.fn();
     jest.useFakeTimers();
+    mockLocked = false;
   });
 
   it("runs print", () => {
@@ -233,18 +238,40 @@ describe("runDemoLuaCode()", () => {
     expect(console.log).toHaveBeenCalledWith("500.0");
   });
 
-  it("runs toast", () => {
-    runDemoLuaCode("toast(\"info\", \"test\")");
+  it("runs api: default method", () => {
+    runDemoLuaCode(
+      "local data = api{url=\"/api/points\"}\nprint(type(data), #data)");
     jest.runAllTimers();
     expect(console.error).not.toHaveBeenCalled();
-    expect(info).toHaveBeenCalledWith("test");
+    expect(console.log).toHaveBeenCalledWith("table	1");
+  });
+
+  it("runs toast", () => {
+    runDemoLuaCode("toast(\"test\", \"info\")");
+    jest.runAllTimers();
+    expect(console.error).not.toHaveBeenCalled();
+    expect(info).toHaveBeenCalledWith("test", TOAST_OPTIONS().info);
+  });
+
+  it("runs toast: default", () => {
+    runDemoLuaCode("toast(\"test\")");
+    jest.runAllTimers();
+    expect(console.error).not.toHaveBeenCalled();
+    expect(info).toHaveBeenCalledWith("test", TOAST_OPTIONS().info);
+  });
+
+  it("runs debug", () => {
+    runDemoLuaCode("debug(\"test\")");
+    jest.runAllTimers();
+    expect(console.error).not.toHaveBeenCalled();
+    expect(info).toHaveBeenCalledWith("test", TOAST_OPTIONS().debug);
   });
 
   it("runs send_message", () => {
     runDemoLuaCode("send_message(\"info\", \"test\", \"toast\")");
     jest.runAllTimers();
     expect(console.error).not.toHaveBeenCalled();
-    expect(info).toHaveBeenCalledWith("test");
+    expect(info).toHaveBeenCalledWith("test", TOAST_OPTIONS().info);
   });
 
   it("runs find_home: all", () => {
@@ -321,6 +348,14 @@ describe("runDemoLuaCode()", () => {
     });
   });
 
+  it("doesn't run when estopped", () => {
+    mockLocked = true;
+    runDemoLuaCode("on(5)");
+    jest.runAllTimers();
+    expect(console.error).not.toHaveBeenCalled();
+    expect(store.dispatch).not.toHaveBeenCalled();
+  });
+
   it("runs off", () => {
     runDemoLuaCode("off(5)");
     jest.runAllTimers();
@@ -352,6 +387,46 @@ describe("runDemoLuaCode()", () => {
       payload: { x: 1, y: 0, z: 0 },
     });
   });
+
+  it("runs emergency_lock", () => {
+    runDemoLuaCode("emergency_lock()");
+    jest.runAllTimers();
+    expect(console.error).not.toHaveBeenCalled();
+    expect(store.dispatch).toHaveBeenCalledWith({
+      type: Actions.DEMO_SET_ESTOP,
+      payload: true,
+    });
+  });
+
+  it("runs emergency_unlock", () => {
+    runDemoLuaCode("emergency_unlock()");
+    jest.runAllTimers();
+    expect(console.error).not.toHaveBeenCalled();
+    expect(store.dispatch).toHaveBeenCalledWith({
+      type: Actions.DEMO_SET_ESTOP,
+      payload: false,
+    });
+  });
+
+  it("allows emergency_unlock", () => {
+    mockLocked = true;
+    runDemoLuaCode("emergency_unlock()");
+    jest.runAllTimers();
+    expect(console.error).not.toHaveBeenCalled();
+    expect(store.dispatch).toHaveBeenCalledWith({
+      type: Actions.DEMO_SET_ESTOP,
+      payload: false,
+    });
+  });
+
+  it("runs non-implemented function", () => {
+    runDemoLuaCode("foo.bar.baz()");
+    jest.runAllTimers();
+    expect(info).toHaveBeenCalledWith(
+      "Lua function \"foo.bar.baz\" is not implemented.",
+      TOAST_OPTIONS().error,
+    );
+  });
 });
 
 /**
@@ -359,6 +434,8 @@ describe("runDemoLuaCode()", () => {
  *
  * builtins/lib:
  * [ y ] print
+ * [ y ] type
+ * [ y ] tostring
  * [ y ] pairs
  * [ y ] ipairs
  * [ y ] os.time
@@ -367,6 +444,12 @@ describe("runDemoLuaCode()", () => {
  *
  * Other:
  * [ y ] move_relative
+ * [ y ] round
+ * [ y ] angleRound
+ * [ y ] cropAmount
+ * [ y ] fwe
+ * [ y ] axis_overwrite
+ * [ y ] speed_overwrite
  *
  * FBOS:
  * [ y ] variable (numeric only)
@@ -384,9 +467,9 @@ describe("runDemoLuaCode()", () => {
  * [   ] current_month
  * [   ] current_second
  * [   ] detect_weeds
- * [   ] dispense
- * [   ] emergency_lock
- * [   ] emergency_unlock
+ * [ y ] dispense
+ * [ y ] emergency_lock
+ * [ y ] emergency_unlock
  * [   ] env
  * [   ] fbos_version
  * [   ] find_axis_length
@@ -394,34 +477,34 @@ describe("runDemoLuaCode()", () => {
  * [   ] firmware_version
  * [ y ] garden_size
  * [   ] gcode
- * [   ] get_curve
+ * [ y ] get_curve
  * [   ] get_device
  * [   ] get_fbos_config
  * [   ] get_firmware_config
  * [   ] get_job
  * [   ] get_job_progress
  * [   ] get_position
- * [   ] get_seed_tray_cell
+ * [ y ] get_seed_tray_cell
  * [   ] get_xyz
  * [   ] get_tool
  * [ y ] go_to_home
- * [   ] grid
+ * [ y ] grid
  * [   ] group
  * [   ] http
  * [   ] inspect
  * [   ] json.decode
  * [   ] json.encode
  * [   ] measure_soil_height
- * [   ] mount_tool
- * [   ] dismount_tool
+ * [ y ] mount_tool
+ * [ y ] dismount_tool
  * [ y ] move_absolute
- * [   ] move
+ * [ y ] move
  * [   ] new_sensor_reading
- * [   ] photo_grid
+ * [ y ] photo_grid
  * [   ] read_pin
  * [   ] read_status
- * [   ] rpc
- * [   ] sequence
+ * [ y ] rpc
+ * [ y ] sequence
  * [ y ] send_message (info only)
  * [   ] debug
  * [ y ] toast (info only)
@@ -443,10 +526,10 @@ describe("runDemoLuaCode()", () => {
  * [   ] utc
  * [   ] local_time
  * [   ] to_unix
- * [   ] verify_tool
- * [   ] wait_ms
+ * [ y ] verify_tool
+ * [ y ] wait_ms
  * [ y ] wait
- * [   ] water
+ * [ y ] water
  * [   ] watch_pin
  * [ y ] on
  * [ y ] off

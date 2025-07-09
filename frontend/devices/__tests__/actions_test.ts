@@ -148,15 +148,35 @@ describe("flashFirmware()", () => {
 });
 
 describe("emergencyLock() / emergencyUnlock", () => {
+  beforeEach(() => {
+    localStorage.removeItem("myBotIs");
+    window.confirm = () => false;
+  });
+
   it("calls emergencyLock", () => {
     actions.emergencyLock();
     expect(mockDevice.current.emergencyLock).toHaveBeenCalled();
+  });
+
+  it("calls emergencyLock on demo account", () => {
+    localStorage.setItem("myBotIs", "online");
+    actions.emergencyLock();
+    expect(mockDevice.current.emergencyLock).not.toHaveBeenCalled();
+    expect(runDemoLuaCode).toHaveBeenCalledWith("emergency_lock()");
   });
 
   it("calls emergencyUnlock", () => {
     window.confirm = () => true;
     actions.emergencyUnlock();
     expect(mockDevice.current.emergencyUnlock).toHaveBeenCalled();
+  });
+
+  it("calls emergencyUnlock on demo account", () => {
+    window.confirm = () => true;
+    localStorage.setItem("myBotIs", "online");
+    actions.emergencyUnlock();
+    expect(mockDevice.current.emergencyUnlock).not.toHaveBeenCalled();
+    expect(runDemoLuaCode).toHaveBeenCalledWith("emergency_unlock()");
   });
 
   it("doesn't call emergencyUnlock", () => {
