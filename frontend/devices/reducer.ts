@@ -137,10 +137,12 @@ export const botReducer = generateReducer<BotState>(initialState())
     pin.value = Number(!pin.value);
     return s;
   })
-  .add<{ pin: number, value: number }>(Actions.DEMO_WRITE_PIN, (s, { payload }) => {
-    s.hardware.pins[payload.pin] = { mode: 0, value: payload.value };
-    return s;
-  })
+  .add<{ pin: number, mode: string, value: number }>(Actions.DEMO_WRITE_PIN,
+    (s, { payload }) => {
+      const mode = payload.mode.toLowerCase() == "analog" ? 1 : 0;
+      s.hardware.pins[payload.pin] = { mode, value: payload.value };
+      return s;
+    })
   .add<Record<Xyz, number>>(Actions.DEMO_SET_POSITION, (s, { payload }) => {
     s.hardware.location_data.position = payload;
     return s;

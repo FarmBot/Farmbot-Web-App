@@ -45,6 +45,7 @@ jest.mock("../../redux/store", () => ({
 jest.mock("../../demo/lua_runner", () => ({
   runDemoSequence: jest.fn(),
   runDemoLuaCode: jest.fn(),
+  csToLua: jest.fn(),
 }));
 
 import * as actions from "../actions";
@@ -57,9 +58,9 @@ import axios from "axios";
 import { success, error, warning, info } from "../../toast/toast";
 import { edit, save } from "../../api/crud";
 import { DeepPartial } from "../../redux/interfaces";
-import { Farmbot } from "farmbot";
+import { EmergencyLock, Farmbot } from "farmbot";
 import { Path } from "../../internal_urls";
-import { runDemoLuaCode, runDemoSequence } from "../../demo/lua_runner";
+import { csToLua, runDemoLuaCode, runDemoSequence } from "../../demo/lua_runner";
 
 const replaceDeviceWith = async (d: DeepPartial<Farmbot>, cb: Function) => {
   jest.clearAllMocks();
@@ -69,6 +70,10 @@ const replaceDeviceWith = async (d: DeepPartial<Farmbot>, cb: Function) => {
 };
 
 describe("sendRPC()", () => {
+  afterEach(() => {
+    localStorage.removeItem("myBotIs");
+  });
+
   it("calls sendRPC", async () => {
     await actions.sendRPC({ kind: "sync", args: {} });
     expect(mockDevice.current.send).toHaveBeenCalledWith({
@@ -76,6 +81,14 @@ describe("sendRPC()", () => {
       args: { label: expect.any(String), priority: 600 },
       body: [{ kind: "sync", args: {} }],
     });
+  });
+
+  it("calls sendRPC on demo accounts", async () => {
+    localStorage.setItem("myBotIs", "online");
+    const cmd: EmergencyLock = { kind: "emergency_lock", args: {} };
+    await actions.sendRPC(cmd);
+    expect(mockDevice.current.send).not.toHaveBeenCalled();
+    expect(csToLua).toHaveBeenCalledWith(cmd);
   });
 });
 
@@ -148,7 +161,7 @@ describe("flashFirmware()", () => {
 });
 
 describe("emergencyLock() / emergencyUnlock", () => {
-  beforeEach(() => {
+  afterEach(() => {
     localStorage.removeItem("myBotIs");
     window.confirm = () => false;
   });

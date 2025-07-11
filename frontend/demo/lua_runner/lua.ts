@@ -1,5 +1,6 @@
 /* eslint-disable max-len */
-export const LUA_HELPERS = `
+
+const FROM_FBOS = `
 function grid(params)
   local x_point_count = params.grid_points.x
   local y_point_count = params.grid_points.y
@@ -280,7 +281,7 @@ function dismount_tool()
     move{z = slot.z + 50}
 
     -- Check verification pin
-    if read_pin(63) == 0 then
+    if read_pin(63) == 0 and false then
         job(90, "Failed")
         toast("Tool dismounting failed - there is still an electrical connection between UTM pins B and C.", "error")
         return
@@ -567,7 +568,7 @@ function mount_tool(input)
     end
 
     -- Check verification pin
-    if read_pin(63) == 1 then
+    if read_pin(63) == 1 and false then
         job(80, "Failed")
         toast("Tool mounting failed - no electrical connection between UTM pins B and C.", "error")
         return
@@ -598,7 +599,7 @@ function speed_overwrite(axis, num)
     }
 end
 
-function move(input)
+function re_move(input)
     cs_eval({
         kind = "rpc_request",
         args = {label = "move_cmd_lua", priority = 500},
@@ -733,3 +734,83 @@ function water(plant, params)
     complete_job(job_name)
 end
 `;
+
+const ALIASES = `
+function on(pin)
+  write_pin(pin, "digital", 1)
+end
+
+function off(pin)
+  write_pin(pin, "digital", 0)
+end
+
+function toast(message, type)
+  local type = type or "info"
+  send_message(type, message, "toast")
+end
+
+function debug(message)
+  send_message("debug", message)
+end
+
+function iso8601(date)
+  return string.format("%04d-%02d-%02dT%02d:%02d:%02dZ",
+    date.year, date.month, date.day,
+    date.hour, date.min, date.sec)
+end
+
+function utc(part)
+  local now = os.date("*t")
+  local map = {
+    year = now.year,
+    month = now.month,
+    day = now.day,
+    hour = now.hour,
+    minute = now.min,
+    second = now.sec,
+  }
+  return map[part] or iso8601(now)
+end
+
+function current_year()
+  return utc("year")
+end
+
+function current_month()
+  return utc("month")
+end
+
+function current_day()
+  return utc("day")
+end
+
+function current_hour()
+  return utc("hour")
+end
+
+function current_minute()
+  return utc("minute")
+end
+
+function current_second()
+  return utc("second")
+end
+
+function get_tool(params)
+  local tool_id = params.id or 0
+  local tool_name = params.name or ""
+  local tools = api({ url = "/api/tools" })
+  tools = tools or {}
+  for _, tool in ipairs(tools) do
+    if tool.id == tool_id or tool.name == tool_name then
+      return tool
+    end
+  end
+  return nil
+end
+`;
+
+export const LUA_HELPERS = [
+  ALIASES,
+  FROM_FBOS,
+].join("\n");

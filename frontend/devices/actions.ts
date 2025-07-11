@@ -35,7 +35,7 @@ import { ToastOptions } from "../toast/interfaces";
 import { forceOnline } from "./must_be_online";
 import { store } from "../redux/store";
 import { linkToSetting } from "../settings/maybe_highlight";
-import { runDemoLuaCode, runDemoSequence } from "../demo/lua_runner";
+import { runDemoLuaCode, runDemoSequence, csToLua } from "../demo/lua_runner";
 
 const ON = 1, OFF = 0;
 export type ConfigKey = keyof McuParams;
@@ -83,7 +83,10 @@ const maybeAlertLocked = () =>
 
 /** Send RPC. */
 export function sendRPC(command: RpcRequestBodyItem) {
-  maybeNoop();
+  if (forceOnline()) {
+    runDemoLuaCode(csToLua(command));
+    return;
+  }
   getDevice()
     .send(rpcRequest([command]))
     .then(maybeNoop, commandErr());

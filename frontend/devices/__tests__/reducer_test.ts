@@ -181,14 +181,24 @@ describe("botReducer", () => {
     expect(r.hardware.pins).toEqual({ 13: { value: 0, mode: 0 } });
   });
 
-  it("writes demo pin", () => {
+  it("writes demo pin: digital", () => {
     const state = initialState();
     const action = {
       type: Actions.DEMO_WRITE_PIN,
-      payload: { pin: 13, value: 1 },
+      payload: { pin: 13, mode: "digital", value: 1 },
     };
     const r = botReducer(state, action);
     expect(r.hardware.pins).toEqual({ 13: { value: 1, mode: 0 } });
+  });
+
+  it("writes demo pin: analog", () => {
+    const state = initialState();
+    const action = {
+      type: Actions.DEMO_WRITE_PIN,
+      payload: { pin: 13, mode: "analog", value: 1 },
+    };
+    const r = botReducer(state, action);
+    expect(r.hardware.pins).toEqual({ 13: { value: 1, mode: 1 } });
   });
 
   it("sets position", () => {
@@ -231,5 +241,4 @@ describe("botReducer", () => {
     const r = botReducer(state, action);
     expect(r.hardware.informational_settings.locked).toEqual(false);
   });
-
 });
