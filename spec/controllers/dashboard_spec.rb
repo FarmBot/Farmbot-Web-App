@@ -34,12 +34,12 @@ describe DashboardController do
     it "receives CSP violation reports: JSON parse error" do
       malformed_json = "{ this is not valid json"
       expect(Rollbar).to receive(:info).with(
-      "CSP Violation Report",
-      hash_including(
-        error: "CSP report parse error",
-        exception: kind_of(String),
-        raw: malformed_json
-      )
+        "CSP Violation Report",
+        hash_including(
+          error: "CSP report parse error",
+          exception: kind_of(String),
+          raw: malformed_json
+        )
       )
       post :csp_reports, body: malformed_json
       expect(response).to have_http_status(:no_content)
@@ -47,12 +47,12 @@ describe DashboardController do
 
     it "receives CSP violation reports: empty body" do
       expect(Rollbar).to receive(:info).with(
-      "CSP Violation Report",
-      hash_including(
-        error: "CSP report parse error",
-        exception: kind_of(String),
-        raw: ""
-      )
+        "CSP Violation Report",
+        hash_including(
+          error: "CSP report parse error",
+          exception: kind_of(String),
+          raw: ""
+        )
       )
       post :csp_reports, body: ""
       expect(response).to have_http_status(:no_content)
