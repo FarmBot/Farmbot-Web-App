@@ -275,6 +275,7 @@ function dismount_tool()
     -- Put the tool in the slot
     job(80, "Putting tool in slot")
     move_absolute(slot.x, slot.y, slot.z, 50)
+    update_device({mounted_tool_id = 0})
 
     -- Dismount tool
     job(90, "Dismounting tool")
@@ -287,7 +288,6 @@ function dismount_tool()
         return
     else
         job(100, "Complete")
-        update_device({mounted_tool_id = 0})
         toast(tool_name .. " dismounted", "success")
     end
 end
@@ -554,6 +554,7 @@ function mount_tool(input)
     -- Mount the tool
     job(60, "Mounting tool")
     move{z=slot.z}
+    update_device({mounted_tool_id = slot.tool_id})
 
     -- Pull the tool out of the slot at 50% speed
     job(80, "Pulling tool out")
@@ -574,7 +575,6 @@ function mount_tool(input)
         return
     else
         job(100, "Complete")
-        update_device({mounted_tool_id = slot.tool_id})
         toast(tool.name .. " mounted", "success")
     end
 end

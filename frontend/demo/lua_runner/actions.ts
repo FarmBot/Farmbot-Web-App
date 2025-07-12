@@ -1,15 +1,17 @@
-import { PercentageProgress, Xyz } from "farmbot";
+import { PercentageProgress } from "farmbot";
 import { info } from "../../toast/toast";
 import { store } from "../../redux/store";
 import { Actions } from "../../constants";
 import { validBotLocationData } from "../../util/location";
 import { TOAST_OPTIONS } from "../../toast/constants";
-import { Action } from "./interfaces";
+import { Action, XyzNumber } from "./interfaces";
 import { edit, save } from "../../api/crud";
 import { getDeviceAccountSettings } from "../../resources/selectors";
 import { UnknownAction } from "redux";
+import { getFirmwareSettings, getGardenSize } from "./stubs";
+import { clamp } from "lodash";
 
-const almostEqual = (a: Record<Xyz, number>, b: Record<Xyz, number>) => {
+const almostEqual = (a: XyzNumber, b: XyzNumber) => {
   const epsilon = 0.01;
   return Math.abs(a.x - b.x) < epsilon &&
     Math.abs(a.y - b.y) < epsilon &&
@@ -17,9 +19,9 @@ const almostEqual = (a: Record<Xyz, number>, b: Record<Xyz, number>) => {
 };
 
 const movementChunks = (
-  current: Record<Xyz, number>,
-  target: Record<Xyz, number>,
-): Record<Xyz, number>[] => {
+  current: XyzNumber,
+  target: XyzNumber,
+): XyzNumber[] => {
   const dx = target.x - current.x;
   const dy = target.y - current.y;
   const dz = target.z - current.z;
@@ -32,7 +34,7 @@ const movementChunks = (
     z: dz / length,
   };
   const steps = Math.floor(length / 100);
-  const chunks: Record<Xyz, number>[] = [];
+  const chunks: XyzNumber[] = [];
   for (let i = 0; i <= steps; i++) {
     const step = {
       x: current.x + direction.x * 100 * i,
@@ -47,6 +49,19 @@ const movementChunks = (
   return chunks;
 };
 
+const clampTarget = (target: XyzNumber): XyzNumber => {
+  const firmwareConfig = getFirmwareSettings();
+  const bounds = getGardenSize();
+  const clamped = {
+    x: clamp(target.x, 0, bounds.x),
+    y: clamp(target.y, 0, bounds.y),
+    z: firmwareConfig.movement_home_up_z
+      ? clamp(target.z, -bounds.z, 0)
+      : clamp(target.z, 0, bounds.z),
+  };
+  return clamped;
+};
+
 const expandActions = (actions: Action[]): Action[] => {
   const expanded: Action[] = [];
   const { position } = validBotLocationData(
@@ -56,7 +71,7 @@ const expandActions = (actions: Action[]): Action[] => {
     y: position.y as number,
     z: position.z as number,
   };
-  const addPosition = (position: Record<Xyz, number>) => {
+  const addPosition = (position: XyzNumber) => {
     expanded.push({
       type: "wait_ms",
       args: [500],
@@ -66,7 +81,7 @@ const expandActions = (actions: Action[]): Action[] => {
       args: [position.x, position.y, position.z],
     });
   };
-  const setCurrent = (position: Record<Xyz, number>) => {
+  const setCurrent = (position: XyzNumber) => {
     current.x = position.x;
     current.y = position.y;
     current.z = position.z;
@@ -74,29 +89,29 @@ const expandActions = (actions: Action[]): Action[] => {
   actions.map(action => {
     switch (action.type) {
       case "move_absolute":
-        const target = {
+        const moveAbsoluteTarget = clampTarget({
           x: action.args[0] as number,
           y: action.args[1] as number,
           z: action.args[2] as number,
-        };
-        movementChunks(current, target).map(addPosition);
-        setCurrent(target);
+        });
+        movementChunks(current, moveAbsoluteTarget).map(addPosition);
+        setCurrent(moveAbsoluteTarget);
         break;
       case "move_relative":
-        const moveRelativeTarget = {
+        const moveRelativeTarget = clampTarget({
           x: current.x + (action.args[0] as number),
           y: current.y + (action.args[1] as number),
           z: current.z + (action.args[2] as number),
-        };
+        });
         movementChunks(current, moveRelativeTarget).map(addPosition);
         setCurrent(moveRelativeTarget);
         break;
       case "move":
-        const moveTarget = {
+        const moveTarget = clampTarget({
           x: (action.args[0] as number | undefined) ?? current.x,
           y: (action.args[1] as number | undefined) ?? current.y,
           z: (action.args[2] as number | undefined) ?? current.z,
-        };
+        });
         movementChunks(current, moveTarget).map(addPosition);
         setCurrent(moveTarget);
         break;

@@ -132,8 +132,18 @@ export const csToLua = (command: RpcRequestBodyItem): string => {
         .filter(part => part.kind == "axis_overwrite")
         .map(axisOverwrite => {
           const { axis, axis_operand } = axisOverwrite.args;
-          if (axis_operand.kind == "numeric") {
-            return `${axis}=${axis_operand.args.number}`;
+          if (axis == "all") {
+            if (axis_operand.kind == "coordinate") {
+              const { args } = axis_operand;
+              return `x=${args.x}, y=${args.y}, z=${args.z}`;
+            }
+          } else {
+            if (axis_operand.kind == "numeric") {
+              return `${axis}=${axis_operand.args.number}`;
+            }
+            if (axis_operand.kind == "coordinate") {
+              return `${axis}=${axis_operand.args[axis]}`;
+            }
           }
         })
         .join(", ");

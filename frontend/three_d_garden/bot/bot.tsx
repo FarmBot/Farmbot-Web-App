@@ -25,10 +25,10 @@ import { Group, Mesh, MeshPhongMaterial } from "../components";
 import {
   ElectronicsBox, Bounds, Tools, Solenoid, XAxisWaterTube,
   CableCarrierX,
-  CableCarrierVertical,
+  CableCarrierSupportVertical,
   CableCarrierZ,
   CableCarrierY,
-  CableCarrierHorizontal,
+  CableCarrierSupportHorizontal,
   GantryBeam,
 } from "./components";
 import { SlotWithTool } from "../../resources/interfaces";
@@ -488,7 +488,7 @@ export const Bot = (props: FarmbotModelProps) => {
         zZero - zDir * z + zAxisLength / 2,
       ]}
       rotation={[Math.PI / 2, 0, 0]} />
-    <CableCarrierVertical config={config} />
+    <CableCarrierSupportVertical config={config} />
     <CableCarrierZ config={config} />
     <Mesh name={"zStopMax"}
       position={[
@@ -550,7 +550,7 @@ export const Bot = (props: FarmbotModelProps) => {
       position={[
         threeSpace(x + 23, bedLengthOuter) + bedXOffset,
         threeSpace(y + 25 + extrusionWidth / 2, bedWidthOuter) + bedYOffset,
-        zZero - zDir * z - 140 + zGantryOffset,
+        zZero - zDir * z - 140 + zGantryOffset + 20,
       ]}>
       <Mesh name={"cameraMount"}
         rotation={[0, 0, 0]}
@@ -579,7 +579,7 @@ export const Bot = (props: FarmbotModelProps) => {
         position={[
           threeSpace(x + 11, bedLengthOuter) + bedXOffset,
           threeSpace(y, bedWidthOuter) + bedYOffset,
-          zZero - zDir * z + utmHeight / 2 - 18,
+          zZero - zDir * z + utmHeight / 2 - 19,
         ]}
         rotation={[0, 0, Math.PI / 2]}
         scale={1000}>
@@ -604,7 +604,7 @@ export const Bot = (props: FarmbotModelProps) => {
       config={config}
       aluminumTexture={aluminumTexture}
       beamShape={beamShape} />
-    <CableCarrierHorizontal config={config} />
+    <CableCarrierSupportHorizontal config={config} />
     <CableCarrierY config={config} />
     <Mesh name={"yStopMin"}
       position={[

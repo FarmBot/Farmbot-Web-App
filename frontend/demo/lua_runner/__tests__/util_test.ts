@@ -91,6 +91,57 @@ describe("csToLua()", () => {
     expect(csToLua(command)).toEqual("move{y=1}");
   });
 
+  it("converts celery script to lua: move all axes to coordinate", () => {
+    const command: Move = {
+      kind: "move",
+      args: {},
+      body: [
+        {
+          kind: "axis_overwrite",
+          args: {
+            axis: "all",
+            axis_operand: { kind: "coordinate", args: { x: 1, y: 2, z: 3 } },
+          },
+        },
+      ],
+    };
+    expect(csToLua(command)).toEqual("move{x=1, y=2, z=3}");
+  });
+
+  it("converts celery script to lua: move axis to coordinate", () => {
+    const command: Move = {
+      kind: "move",
+      args: {},
+      body: [
+        {
+          kind: "axis_overwrite",
+          args: {
+            axis: "x",
+            axis_operand: { kind: "coordinate", args: { x: 1, y: 2, z: 3 } },
+          },
+        },
+      ],
+    };
+    expect(csToLua(command)).toEqual("move{x=1}");
+  });
+
+  it("converts celery script to lua: move no coordinate", () => {
+    const command: Move = {
+      kind: "move",
+      args: {},
+      body: [
+        {
+          kind: "axis_overwrite",
+          args: {
+            axis: "all",
+            axis_operand: { kind: "numeric", args: { number: 1 } },
+          },
+        },
+      ],
+    };
+    expect(csToLua(command)).toEqual("move{}");
+  });
+
   it("converts celery script to lua: move no body", () => {
     const command: Move = { kind: "move", args: {} };
     expect(csToLua(command)).toEqual("move{}");

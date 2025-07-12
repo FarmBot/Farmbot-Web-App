@@ -10,7 +10,7 @@ module Devices
       TOOL_SPACING = 100
 
       TROUGH_Y = 0
-      TROUGH_Z = -200
+      TROUGH_Z = -350
       TROUGH_SPACING = 25
 
       module Names

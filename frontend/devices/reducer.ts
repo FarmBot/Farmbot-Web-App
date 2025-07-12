@@ -154,6 +154,7 @@ export const botReducer = generateReducer<BotState>(initialState())
     })
   .add<boolean>(Actions.DEMO_SET_ESTOP, (s, { payload }) => {
     s.hardware.informational_settings.locked = payload;
+    s.hardware.pins = {};
     return s;
   })
   .add<PingResultPayload>(Actions.PING_OK, (s) => {

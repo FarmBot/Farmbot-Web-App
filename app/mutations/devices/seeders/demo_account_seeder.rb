@@ -140,6 +140,11 @@ module Devices
             three_d_garden: true,
             show_points: false
           )
+        device
+          .fbos_config
+          .update!(
+            safe_height: -200,
+          )
       end
 
       def after_product_line_seeder(product_line)

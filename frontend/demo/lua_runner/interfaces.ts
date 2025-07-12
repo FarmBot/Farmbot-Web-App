@@ -1,3 +1,5 @@
+import { Xyz } from "farmbot";
+
 export interface Action {
     type:
     | "move_absolute"
@@ -16,3 +18,5 @@ export interface Action {
     | "set_job_progress";
     args: (number | string | undefined)[];
 }
+
+export type XyzNumber = Record<Xyz, number>;

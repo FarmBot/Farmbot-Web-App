@@ -4,17 +4,15 @@ import {
   selectAllPoints, selectAllTools, selectAllToolSlotPointers,
 } from "../../resources/selectors";
 import {
-  ParameterApplication, RpcRequest, TaggedFirmwareConfig,
-  Xyz,
+  ParameterApplication, RpcRequest, Xyz,
 } from "farmbot";
 import { store } from "../../redux/store";
 import { sortGroupBy } from "../../point_groups/point_group_sort";
-import { calculateAxialLengths } from "../../controls/move/direction_axes_props";
-import { getFirmwareConfig } from "../../resources/getters";
 import { LUA_HELPERS } from "./lua";
 import { createRecursiveNotImplemented, csToLua, jsToLua, luaToJs } from "./util";
-import { Action } from "./interfaces";
+import { Action, XyzNumber } from "./interfaces";
 import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
+import { getGardenSize, getSafeZ } from "./stubs";
 
 export const runLua =
   (luaCode: string, variables: ParameterApplication[]): Action[] => {
@@ -207,7 +205,7 @@ export const runLua =
       const args = [];
       const n = lua.lua_gettop(L);
       if (n == 1) {
-        const params = luaToJs(L, 1) as Record<Xyz, number>;
+        const params = luaToJs(L, 1) as XyzNumber;
         ["x", "y", "z"].map((axis: Xyz) => args.push(params[axis]));
       } else {
         for (let i = 1; i <= n; i++) {
@@ -245,6 +243,36 @@ export const runLua =
     lua.lua_setfield(L, envIndex, to_luastring("go_to_home"));
 
     lua.lua_pushjsfunction(L, () => {
+      const axis = luaToJs(L, -1) as string;
+      actions.push({
+        type: "move_relative",
+        args: [
+          axis == "x" ? -9999 : 0,
+          axis == "y" ? -9999 : 0,
+          axis == "z" ? -9999 : 0,
+        ],
+      });
+      actions.push({
+        type: "move_relative",
+        args: [
+          axis == "x" ? 9999 : 0,
+          axis == "y" ? 9999 : 0,
+          axis == "z" ? 9999 : 0,
+        ],
+      });
+      actions.push({
+        type: "move_relative",
+        args: [
+          axis == "x" ? -9999 : 0,
+          axis == "y" ? -9999 : 0,
+          axis == "z" ? -9999 : 0,
+        ],
+      });
+      return 0;
+    });
+    lua.lua_setfield(L, envIndex, to_luastring("find_axis_length"));
+
+    lua.lua_pushjsfunction(L, () => {
       const ms = luaToJs(L, 1) as number;
       actions.push({ type: "wait_ms", args: [ms] });
       return 0;
@@ -269,13 +297,25 @@ export const runLua =
     lua.lua_setfield(L, envIndex, to_luastring("update_device"));
 
     lua.lua_pushjsfunction(L, () => {
-      jsToLua(L, 0);
+      jsToLua(L, getSafeZ());
       return 1;
     });
     lua.lua_setfield(L, envIndex, to_luastring("safe_z"));
 
     lua.lua_pushjsfunction(L, () => {
-      const args = luaToJs(L, 1) as Partial<Record<Xyz, number>>;
+      jsToLua(L, "");
+      return 1;
+    });
+    lua.lua_setfield(L, envIndex, to_luastring("env"));
+
+    lua.lua_pushjsfunction(L, () => {
+      jsToLua(L, -500);
+      return 1;
+    });
+    lua.lua_setfield(L, envIndex, to_luastring("soil_height"));
+
+    lua.lua_pushjsfunction(L, () => {
+      const args = luaToJs(L, 1) as Partial<XyzNumber>;
       actions.push({ type: "move", args: [args.x, args.y, args.z] });
       return 0;
     });
@@ -312,9 +352,7 @@ export const runLua =
     lua.lua_setfield(L, envIndex, to_luastring("toggle_pin"));
 
     lua.lua_pushjsfunction(L, () => {
-      const fwConfig = getFirmwareConfig(store.getState().resources.index);
-      const firmwareSettings = (fwConfig as TaggedFirmwareConfig).body;
-      const lengths = calculateAxialLengths({ firmwareSettings });
+      const lengths = getGardenSize();
       jsToLua(L, lengths);
       return 1;
     });

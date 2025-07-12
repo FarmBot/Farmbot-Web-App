@@ -17,6 +17,7 @@ const mockDeviceDefault: DeepPartial<Farmbot> = {
   writePin: jest.fn(() => Promise.resolve()),
   home: jest.fn(() => Promise.resolve()),
   findHome: jest.fn(() => Promise.resolve()),
+  calibrate: jest.fn(() => Promise.resolve()),
   sync: jest.fn(() => Promise.resolve()),
   send: jest.fn(() => Promise.resolve()),
   readStatus: jest.fn(() => Promise.resolve()),
@@ -439,6 +440,32 @@ describe("moveAbsolute()", () => {
 });
 
 describe("move()", () => {
+  afterEach(() => {
+    localStorage.removeItem("myBotIs");
+  });
+
+  const BODY = [{
+    kind: "axis_overwrite",
+    args: {
+      axis: "x",
+      axis_operand: { kind: "coordinate", args: { x: 1, y: 0, z: 0 } },
+    }
+  },
+  {
+    kind: "axis_overwrite",
+    args: {
+      axis: "y",
+      axis_operand: { kind: "coordinate", args: { x: 1, y: 0, z: 0 } },
+    }
+  },
+  {
+    kind: "axis_overwrite",
+    args: {
+      axis: "z",
+      axis_operand: { kind: "coordinate", args: { x: 1, y: 0, z: 0 } },
+    }
+  }];
+
   it("calls move", async () => {
     await actions.move({ x: 1, y: 0, z: 0 });
     expect(mockDevice.current.send)
@@ -448,27 +475,7 @@ describe("move()", () => {
         body: [{
           kind: "move",
           args: {},
-          body: [{
-            kind: "axis_overwrite",
-            args: {
-              axis: "x",
-              axis_operand: { kind: "coordinate", args: { x: 1, y: 0, z: 0 } },
-            }
-          },
-          {
-            kind: "axis_overwrite",
-            args: {
-              axis: "y",
-              axis_operand: { kind: "coordinate", args: { x: 1, y: 0, z: 0 } },
-            }
-          },
-          {
-            kind: "axis_overwrite",
-            args: {
-              axis: "z",
-              axis_operand: { kind: "coordinate", args: { x: 1, y: 0, z: 0 } },
-            }
-          }],
+          body: BODY,
         }],
       });
     expect(success).not.toHaveBeenCalled();
@@ -483,48 +490,29 @@ describe("move()", () => {
         body: [{
           kind: "move",
           args: {},
-          body: [{
-            kind: "axis_overwrite",
-            args: {
-              axis: "x",
-              axis_operand: { kind: "coordinate", args: { x: 1, y: 0, z: 0 } },
-            }
-          },
-          {
-            kind: "axis_overwrite",
-            args: {
-              axis: "y",
-              axis_operand: { kind: "coordinate", args: { x: 1, y: 0, z: 0 } },
-            }
-          },
-          {
-            kind: "axis_overwrite",
-            args: {
-              axis: "z",
-              axis_operand: { kind: "coordinate", args: { x: 1, y: 0, z: 0 } },
-            }
-          },
-          {
-            kind: "speed_overwrite",
-            args: {
-              axis: "x",
-              speed_setting: { kind: "numeric", args: { number: 50 } },
-            }
-          },
-          {
-            kind: "speed_overwrite",
-            args: {
-              axis: "y",
-              speed_setting: { kind: "numeric", args: { number: 50 } },
-            }
-          },
-          {
-            kind: "speed_overwrite",
-            args: {
-              axis: "z",
-              speed_setting: { kind: "numeric", args: { number: 50 } },
-            }
-          },
+          body: [
+            ...BODY,
+            {
+              kind: "speed_overwrite",
+              args: {
+                axis: "x",
+                speed_setting: { kind: "numeric", args: { number: 50 } },
+              }
+            },
+            {
+              kind: "speed_overwrite",
+              args: {
+                axis: "y",
+                speed_setting: { kind: "numeric", args: { number: 50 } },
+              }
+            },
+            {
+              kind: "speed_overwrite",
+              args: {
+                axis: "z",
+                speed_setting: { kind: "numeric", args: { number: 50 } },
+              }
+            },
           ],
         }],
       });
@@ -540,30 +528,23 @@ describe("move()", () => {
         body: [{
           kind: "move",
           args: {},
-          body: [{
-            kind: "axis_overwrite",
-            args: {
-              axis: "x",
-              axis_operand: { kind: "coordinate", args: { x: 1, y: 0, z: 0 } },
-            }
-          },
-          {
-            kind: "axis_overwrite",
-            args: {
-              axis: "y",
-              axis_operand: { kind: "coordinate", args: { x: 1, y: 0, z: 0 } },
-            }
-          },
-          {
-            kind: "axis_overwrite",
-            args: {
-              axis: "z",
-              axis_operand: { kind: "coordinate", args: { x: 1, y: 0, z: 0 } },
-            }
-          },
-          { kind: "safe_z", args: {} }]
+          body: [
+            ...BODY,
+            { kind: "safe_z", args: {} }]
         }],
       });
+    expect(success).not.toHaveBeenCalled();
+  });
+
+  it("calls move on demo accounts", async () => {
+    localStorage.setItem("myBotIs", "online");
+    await actions.move({ x: 1, y: 0, z: 0 });
+    expect(mockDevice.current.send).not.toHaveBeenCalled();
+    expect(csToLua).toHaveBeenCalledWith({
+      kind: "move",
+      args: {},
+      body: BODY,
+    });
     expect(success).not.toHaveBeenCalled();
   });
 });
@@ -644,6 +625,26 @@ describe("findHome()", () => {
     await actions.findHome("all");
     expect(mockDevice.current.findHome).not.toHaveBeenCalled();
     expect(runDemoLuaCode).toHaveBeenCalledWith("find_home(\"all\")");
+  });
+});
+
+describe("findAxisLength()", () => {
+  afterEach(() => {
+    localStorage.removeItem("myBotIs");
+  });
+
+  it("calls find_axis_length", async () => {
+    await actions.findAxisLength("x");
+    expect(mockDevice.current.calibrate)
+      .toHaveBeenCalledWith({ axis: "x" });
+    expect(success).not.toHaveBeenCalled();
+  });
+
+  it("calls find_home on demo accounts", async () => {
+    localStorage.setItem("myBotIs", "online");
+    await actions.findAxisLength("x");
+    expect(mockDevice.current.calibrate).not.toHaveBeenCalled();
+    expect(runDemoLuaCode).toHaveBeenCalledWith("find_axis_length(\"x\")");
   });
 });
 

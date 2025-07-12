@@ -34,9 +34,11 @@ export function maybeSetTimezone(dispatch: Function, device: TaggedDevice) {
     if (forceOnline()) {
       update.lng = -(new Date().getTimezoneOffset()) / 4;
       update.lat = 0;
-      dispatch({ type: Actions.SET_3D_TIME, payload: "12:00" });
     }
     dispatch(edit(device, update));
     dispatch(save(device.uuid));
+  }
+  if (forceOnline()) {
+    dispatch({ type: Actions.SET_3D_TIME, payload: "12:00" });
   }
 }

@@ -430,11 +430,11 @@ jest.mock("@react-three/drei", () => {
       nodes: { [PartName.utm]: {} as THREE.Mesh },
       materials: { PaletteMaterial001: {} as THREE.MeshStandardMaterial },
     },
-    [ASSETS.models.ccHorizontal]: {
-      nodes: { [PartName.ccHorizontal]: {} as THREE.Mesh },
+    [ASSETS.models.ccSupportHorizontal]: {
+      nodes: { [PartName.ccSupportHorizontal]: {} as THREE.Mesh },
     },
-    [ASSETS.models.ccVertical]: {
-      nodes: { [PartName.ccVertical]: {} as THREE.Mesh },
+    [ASSETS.models.ccSupportVertical]: {
+      nodes: { [PartName.ccSupportVertical]: {} as THREE.Mesh },
     },
     [ASSETS.models.housingVertical]: {
       nodes: { [PartName.housingVertical]: {} as THREE.Mesh },

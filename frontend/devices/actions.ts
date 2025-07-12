@@ -18,6 +18,7 @@ import {
   Xyz,
   AxisOverwrite,
   RpcRequestBodyItem,
+  Move,
 } from "farmbot";
 import { oneOf, versionOK, trim } from "../util";
 import { Actions, Content, DeviceSetting } from "../constants";
@@ -374,7 +375,6 @@ export function moveAbsolute(props: MoveRelProps) {
 
 export function move(props: MoveProps) {
   const noun = t("Movement");
-  maybeNoop();
   maybeAlertLocked();
   const safeZ: SafeZ = { kind: "safe_z", args: {} };
   const speedOverwrite = (axis: Xyz, speed: number): SpeedOverwrite => ({
@@ -408,8 +408,13 @@ export function move(props: MoveProps) {
     ...(props.speed ? [speedOverwrite("z", props.speed)] : []),
     ...(props.safeZ ? [safeZ] : []),
   ];
+  const cmd: Move = { kind: "move", args: {}, body };
+  if (forceOnline()) {
+    runDemoLuaCode(csToLua(cmd));
+    return;
+  }
   return getDevice()
-    .send(rpcRequest([{ kind: "move", args: {}, body }]))
+    .send(rpcRequest([cmd]))
     .then(maybeNoop, commandErr(noun));
 }
 
@@ -480,8 +485,11 @@ export function setHome(axis: Axis) {
 
 export function findAxisLength(axis: Axis) {
   const noun = t("'Find Axis Length' command");
-  maybeNoop();
   maybeAlertLocked();
+  if (forceOnline()) {
+    runDemoLuaCode(`find_axis_length("${axis}")`);
+    return;
+  }
   getDevice()
     .calibrate({ axis })
     .catch(commandErr(noun));

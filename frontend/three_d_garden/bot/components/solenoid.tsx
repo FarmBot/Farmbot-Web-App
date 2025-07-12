@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { Config } from "../../config";
 import { Group, Mesh } from "../../components";
 import { WaterTube } from "./water_tube";
-import { easyCubicBezierCurve3, threeSpace } from "../../helpers";
+import { easyCubicBezierCurve3, threeSpace, zDir as zDirFunc } from "../../helpers";
 import { GLTF } from "three-stdlib";
 import { useGLTF } from "@react-three/drei";
 import { ASSETS, LIB_DIR, PartName } from "../../constants";
@@ -23,6 +23,7 @@ export const Solenoid = (props: SolenoidProps) => {
     x, y, z, bedLengthOuter, bedWidthOuter, bedXOffset, bedYOffset,
     columnLength, zGantryOffset,
   } = config;
+  const zDir = zDirFunc(config);
   const solenoid = useGLTF(ASSETS.models.solenoid, LIB_DIR) as SolenoidPart;
   return <Group>
     <WaterTube tubeName={"lower-solenoid-water-tube"}
@@ -98,14 +99,14 @@ export const Solenoid = (props: SolenoidProps) => {
         [
           threeSpace(x + 32.5, bedLengthOuter) + bedXOffset,
           threeSpace(y - 10, bedWidthOuter) + bedYOffset,
-          columnLength - z - zGantryOffset + 200,
+          columnLength - zDir * z - zGantryOffset + 200,
         ],
         [0, 0, -50],
         [0, 0, 50],
         [
           threeSpace(x + 2, bedLengthOuter) + bedXOffset,
           threeSpace(y + 15, bedWidthOuter) + bedYOffset,
-          columnLength - z - zGantryOffset + 75,
+          columnLength - zDir * z - zGantryOffset + 75,
         ],
       )}
       tubularSegments={20}

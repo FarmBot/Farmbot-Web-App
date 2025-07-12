@@ -4,6 +4,8 @@ import {
 } from "../../../__test_support__/resource_index_builder";
 import {
   fakeFirmwareConfig,
+  fakeWebAppConfig,
+  fakeFbosConfig,
   fakePoint,
   fakeSequence, fakeTool,
   fakeToolSlot,
@@ -325,6 +327,13 @@ describe("runDemoLuaCode()", () => {
     console.error = jest.fn();
     jest.useFakeTimers();
     mockLocked = false;
+    const firmwareConfig = fakeFirmwareConfig();
+    firmwareConfig.body.movement_home_up_z = 0;
+    mockResources = buildResourceIndex([
+      fakeFbosConfig(),
+      firmwareConfig,
+      fakeWebAppConfig(),
+    ]);
   });
 
   it("runs print", () => {
@@ -352,7 +361,7 @@ describe("runDemoLuaCode()", () => {
     firmwareConfig.body.movement_axis_nr_steps_x = 5000;
     firmwareConfig.body.movement_axis_nr_steps_y = 10000;
     firmwareConfig.body.movement_axis_nr_steps_z = 12500;
-    mockResources = buildResourceIndex([firmwareConfig]);
+    mockResources = buildResourceIndex([firmwareConfig, fakeWebAppConfig()]);
     runDemoLuaCode(
       "print(garden_size().x)\n" +
       "print(garden_size().y)\n" +
@@ -582,6 +591,63 @@ describe("runDemoLuaCode()", () => {
     });
   });
 
+  it("runs find_axis_length: x", () => {
+    const firmwareConfig = fakeFirmwareConfig();
+    firmwareConfig.body.movement_axis_nr_steps_x = 500;
+    firmwareConfig.body.movement_home_up_z = 0;
+    mockResources = buildResourceIndex([firmwareConfig, fakeWebAppConfig()]);
+    mockPosition = { x: 1, y: 2, z: 3 };
+    runDemoLuaCode("find_axis_length(\"x\")");
+    jest.runAllTimers();
+    expect(console.error).not.toHaveBeenCalled();
+    expect(store.dispatch).toHaveBeenCalledWith({
+      type: Actions.DEMO_SET_POSITION,
+      payload: { x: 0, y: 2, z: 3 },
+    });
+    expect(store.dispatch).toHaveBeenCalledWith({
+      type: Actions.DEMO_SET_POSITION,
+      payload: { x: 100, y: 2, z: 3 },
+    });
+  });
+
+  it("runs find_axis_length: y", () => {
+    const firmwareConfig = fakeFirmwareConfig();
+    firmwareConfig.body.movement_axis_nr_steps_y = 500;
+    firmwareConfig.body.movement_home_up_z = 0;
+    mockResources = buildResourceIndex([firmwareConfig, fakeWebAppConfig()]);
+    mockPosition = { x: 1, y: 2, z: 3 };
+    runDemoLuaCode("find_axis_length(\"y\")");
+    jest.runAllTimers();
+    expect(console.error).not.toHaveBeenCalled();
+    expect(store.dispatch).toHaveBeenCalledWith({
+      type: Actions.DEMO_SET_POSITION,
+      payload: { x: 1, y: 0, z: 3 },
+    });
+    expect(store.dispatch).toHaveBeenCalledWith({
+      type: Actions.DEMO_SET_POSITION,
+      payload: { x: 1, y: 100, z: 3 },
+    });
+  });
+
+  it("runs find_axis_length: z", () => {
+    const firmwareConfig = fakeFirmwareConfig();
+    firmwareConfig.body.movement_axis_nr_steps_z = 2500;
+    firmwareConfig.body.movement_home_up_z = 0;
+    mockResources = buildResourceIndex([firmwareConfig, fakeWebAppConfig()]);
+    mockPosition = { x: 1, y: 2, z: 3 };
+    runDemoLuaCode("find_axis_length(\"z\")");
+    jest.runAllTimers();
+    expect(console.error).not.toHaveBeenCalled();
+    expect(store.dispatch).toHaveBeenCalledWith({
+      type: Actions.DEMO_SET_POSITION,
+      payload: { x: 1, y: 2, z: 0 },
+    });
+    expect(store.dispatch).toHaveBeenCalledWith({
+      type: Actions.DEMO_SET_POSITION,
+      payload: { x: 1, y: 2, z: 100 },
+    });
+  });
+
   it("runs toggle_pin", () => {
     runDemoLuaCode("toggle_pin(5)");
     jest.runAllTimers();
@@ -635,6 +701,22 @@ describe("runDemoLuaCode()", () => {
     jest.runAllTimers();
     expect(console.error).not.toHaveBeenCalled();
     expect(console.log).toHaveBeenCalledWith("0");
+    expect(info).not.toHaveBeenCalled();
+  });
+
+  it("runs env", () => {
+    runDemoLuaCode("print(env(\"foo\"))");
+    jest.runAllTimers();
+    expect(console.error).not.toHaveBeenCalled();
+    expect(console.log).toHaveBeenCalledWith("");
+    expect(info).not.toHaveBeenCalled();
+  });
+
+  it("runs soil_height", () => {
+    runDemoLuaCode("print(soil_height(0, 0))");
+    jest.runAllTimers();
+    expect(console.error).not.toHaveBeenCalled();
+    expect(console.log).toHaveBeenCalledWith("-500");
     expect(info).not.toHaveBeenCalled();
   });
 
@@ -745,6 +827,36 @@ describe("runDemoLuaCode()", () => {
     expect(store.dispatch).toHaveBeenCalledWith({
       type: Actions.DEMO_SET_POSITION,
       payload: { x: 1, y: 0, z: 0 },
+    });
+  });
+
+  it("runs move_absolute: clamps positive", () => {
+    const firmwareConfig = fakeFirmwareConfig();
+    firmwareConfig.body.movement_axis_nr_steps_z = 2500;
+    firmwareConfig.body.movement_home_up_z = 0;
+    mockResources = buildResourceIndex([firmwareConfig, fakeWebAppConfig()]);
+    mockPosition = { x: 1, y: 2, z: 3 };
+    runDemoLuaCode("move_absolute(0, 0, 1000)");
+    jest.runAllTimers();
+    expect(console.error).not.toHaveBeenCalled();
+    expect(store.dispatch).toHaveBeenCalledWith({
+      type: Actions.DEMO_SET_POSITION,
+      payload: { x: 0, y: 0, z: 100 },
+    });
+  });
+
+  it("runs move_absolute: clamps negative", () => {
+    const firmwareConfig = fakeFirmwareConfig();
+    firmwareConfig.body.movement_axis_nr_steps_z = 2500;
+    firmwareConfig.body.movement_home_up_z = 1;
+    mockResources = buildResourceIndex([firmwareConfig, fakeWebAppConfig()]);
+    mockPosition = { x: 1, y: 2, z: 3 };
+    runDemoLuaCode("move_absolute(0, 0, -1000)");
+    jest.runAllTimers();
+    expect(console.error).not.toHaveBeenCalled();
+    expect(store.dispatch).toHaveBeenCalledWith({
+      type: Actions.DEMO_SET_POSITION,
+      payload: { x: 0, y: 0, z: -100 },
     });
   });
 
@@ -865,9 +977,9 @@ describe("csToLua()", () => {
  * [ y ] dispense
  * [ y ] emergency_lock
  * [ y ] emergency_unlock
- * [   ] env
+ * [ y ] env
  * [   ] fbos_version
- * [   ] find_axis_length
+ * [ y ] find_axis_length
  * [ y ] find_home
  * [   ] firmware_version
  * [ y ] garden_size
@@ -908,7 +1020,7 @@ describe("csToLua()", () => {
  * [ y ] set_job_progress
  * [   ] set_pin_io_mode
  * [   ] soft_stop
- * [   ] soil_height
+ * [ y ] soil_height
  * [   ] sort
  * [   ] take_photo_raw
  * [   ] take_photo
