@@ -1,7 +1,8 @@
 # # config/application.rb or config/environments/production.rb
 # Rails.application.configure do
-#   # Set default if ENV var is missing
+#   # Set default if ENV var is missing 
 #   config.some_setting = ENV.fetch('MM_SOME_SETTING', 'HEYHEYHEY')
+#   config.cloudampq_url = 'amqps://yylopbzh:FKXY10wU_qRdBI1AL-hp2IJCiYnnN8s-@duck.lmq.cloudamqp.com/yylopbzh:5672'
 # end
 
 # Or in an initializer

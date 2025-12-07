@@ -1,5 +1,13 @@
 FarmBot::Application.configure do
 
+  # [MM] THREEDBOT v1.1.1
+  # # config/application.rb or config/environments/production.rb
+  # Rails.application.configure do
+  #   # Set default if ENV var is missing 
+  #   config.some_setting = ENV.fetch('MM_SOME_SETTING', 'HEYHEYHEY')
+  config.cloudampq_url = 'amqps://yylopbzh:FKXY10wU_qRdBI1AL-hp2IJCiYnnN8s-@duck.lmq.cloudamqp.com/yylopbzh:5672'
+  # end
+
   config
     .action_mailer
     .default_url_options = { host: ENV.fetch("API_HOST", "threed.bot") }
