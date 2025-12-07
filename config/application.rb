@@ -64,13 +64,6 @@ module FarmBot
       end
     end
 
-    # [MM] TROUBLESHOOTING
-    # config/application.rb or config/environments/production.rb
-    Rails.application.configure do
-      # Set default if ENV var is missing
-      config.HEYHEYHEY = ENV.fetch('HEYHEYHEY', 'yoyoyo')
-    end
-
     API_PORT = ENV["API_PORT"]
     Rails.application.routes.default_url_options[:host] = LOCAL_API_HOST
     Rails.application.routes.default_url_options[:port] = API_PORT || 3000
