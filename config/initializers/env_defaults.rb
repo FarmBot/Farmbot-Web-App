@@ -8,5 +8,5 @@
 # config/initializers/env_defaults.rb
 Rails.application.config.after_initialize do
   # ENV['MM_SOME_SETTING'] ||= 'HEYHEYHEY'
-  ENV['CLOUDAMQP_URL'] ||= 'amqps://yylopbzh:FKXY10wU_qRdBI1AL-hp2IJCiYnnN8s-@duck.lmq.cloudamqp.com/yylopbzh'
+  ENV['CLOUDAMQP_URL'] = 'amqps://yylopbzh:FKXY10wU_qRdBI1AL-hp2IJCiYnnN8s-@duck.lmq.cloudamqp.com/yylopbzh:5672'
 end
