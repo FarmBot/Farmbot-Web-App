@@ -39,7 +39,7 @@ GEM
       erubi (~> 1.4)
       rails-dom-testing (~> 2.0)
       rails-html-sanitizer (~> 1.1, >= 1.2.0)
-    active_model_serializers (0.10.15)
+    active_model_serializers (0.10.16)
       actionpack (>= 4.1)
       activemodel (>= 4.1)
       case_transform (>= 0.2)
@@ -65,8 +65,8 @@ GEM
       minitest (>= 5.1)
       tzinfo (~> 2.0)
       zeitwerk (~> 2.3)
-    addressable (2.8.7)
-      public_suffix (>= 2.0.2, < 7.0)
+    addressable (2.8.8)
+      public_suffix (>= 2.0.2, < 8.0)
     amq-protocol (2.3.4)
     base64 (0.3.0)
     bcrypt (3.1.20)
@@ -91,7 +91,7 @@ GEM
       activerecord (>= 5.a)
       database_cleaner-core (~> 2.0)
     database_cleaner-core (2.0.1)
-    date (3.5.0)
+    date (3.5.1)
     declarative (0.0.20)
     delayed_job (4.1.13)
       activesupport (>= 3.0, < 9.0)
@@ -118,7 +118,7 @@ GEM
     factory_bot_rails (6.5.1)
       factory_bot (~> 6.5)
       railties (>= 6.1.0)
-    faker (3.5.2)
+    faker (3.5.3)
       i18n (>= 1.8.11, < 2)
     faraday (2.14.0)
       faraday-net_http (>= 2.0, < 3.5)
@@ -140,7 +140,7 @@ GEM
       retriable (~> 3.1)
     google-apis-iamcredentials_v1 (0.26.0)
       google-apis-core (>= 0.15.0, < 2.a)
-    google-apis-storage_v1 (0.57.0)
+    google-apis-storage_v1 (0.58.0)
       google-apis-core (>= 0.15.0, < 2.a)
     google-cloud-core (1.8.0)
       google-cloud-env (>= 1.0, < 3.a)
@@ -171,7 +171,7 @@ GEM
     hashie (5.0.0)
     i18n (1.14.7)
       concurrent-ruby (~> 1.0)
-    json (2.16.0)
+    json (2.17.1)
     jsonapi-renderer (0.2.2)
     jwt (3.1.2)
       base64
@@ -206,7 +206,7 @@ GEM
     method_source (1.1.0)
     mini_mime (1.1.5)
     minitest (5.26.2)
-    multi_json (1.17.0)
+    multi_json (1.18.0)
     mutations (0.9.1)
       activesupport
     mutex_m (0.3.0)
@@ -240,7 +240,7 @@ GEM
       method_source (~> 1.0)
     pry-rails (0.3.11)
       pry (>= 0.13.0)
-    public_suffix (6.0.2)
+    public_suffix (7.0.0)
     rabbitmq_http_api_client (3.2.2)
       addressable (~> 2.7)
       faraday (~> 2.9)
@@ -362,7 +362,7 @@ GEM
     thor (1.4.0)
     thwait (0.2.0)
       e2mmap
-    timeout (0.4.4)
+    timeout (0.5.0)
     trailblazer-option (0.1.2)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
@@ -379,7 +379,7 @@ GEM
       addressable (>= 2.8.0)
       crack (>= 0.3.2)
       hashdiff (>= 0.4.0, < 2.0.0)
-    webrick (1.9.1)
+    webrick (1.9.2)
     websocket-driver (0.8.0)
       base64
       websocket-extensions (>= 0.1.0)
@@ -439,7 +439,7 @@ DEPENDENCIES
   webmock
 
 RUBY VERSION
-   ruby 3.4.7p58
+  ruby 3.4.7p58
 
 BUNDLED WITH
-   2.7.2
+  4.0.1
