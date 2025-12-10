@@ -1,6 +1,6 @@
 .cache
 .parcel-cache
-.env
+.env*
 .idea
 .vscode
 *.log
