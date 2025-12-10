@@ -27,12 +27,13 @@ commands:
           command: |
             mv .circleci/circle_envs .env
             echo -e '\ndocker_volumes/db/pg_wal/*' >> .dockerignore
+            sudo docker compose build web
             sudo docker compose run web gem install bundler
             sudo docker compose run web bundle install
             sudo docker compose run web npm install
             sudo docker compose run web bundle exec rails db:create
             sudo docker compose run web bundle exec rails db:migrate
-            sudo docker compose run web rake keys:generate
+            sudo docker compose run web bundle exec rake keys:generate
       - run:
           name: After cache update
           command: |
@@ -52,11 +53,11 @@ commands:
       - run:
           name: Run Ruby Tests
           command: |
-            sudo docker compose run web rspec spec --format progress --format RspecJunitFormatter --out /tmp/test-results/rspec/rspec.xml
+            sudo docker compose run web bundle exec rspec spec --format progress --format RspecJunitFormatter --out /tmp/test-results/rspec/rspec.xml
       - run:
           name: Check app coverage status
           command: |
-            sudo docker compose run web rake check_file_coverage:api || [ $CIRCLE_BRANCH == "staging" ]
+            sudo docker compose run web bundle exec rake check_file_coverage:api || [ $CIRCLE_BRANCH == "staging" ]
           when: always
       - run:
           name: Upload app coverage to Codecov
@@ -88,13 +89,13 @@ commands:
       - run:
           name: Check frontend coverage status
           command: |
-            sudo docker compose run -e CIRCLE_SHA1="$CIRCLE_SHA1" -e CIRCLE_BRANCH="$CIRCLE_BRANCH" -e CIRCLE_PULL_REQUEST="$CIRCLE_PULL_REQUEST" web rake coverage:run || [ $CIRCLE_BRANCH == "staging" ]
+            sudo docker compose run -e CIRCLE_SHA1="$CIRCLE_SHA1" -e CIRCLE_BRANCH="$CIRCLE_BRANCH" -e CIRCLE_PULL_REQUEST="$CIRCLE_PULL_REQUEST" web bundle exec rake coverage:run || [ $CIRCLE_BRANCH == "staging" ]
           when: always
       - run:
           name: Check frontend file coverage status
           command: |
             changed=$(git diff --name-only staging...HEAD | tr '\n' ',' | sed 's/,$//') || true
-            sudo docker compose run -e CHANGED_FILES="$changed" web rake check_file_coverage:fe || true
+            sudo docker compose run -e CHANGED_FILES="$changed" web bundle exec rake check_file_coverage:fe || true
           when: always
       - run:
           name: Report frontend coverage to Coveralls
