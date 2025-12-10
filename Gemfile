@@ -51,3 +51,5 @@ group :development, :test do
 end
 
 gem "passenger"
+
+gem 'dotenv-rails', '~> 3.2'
