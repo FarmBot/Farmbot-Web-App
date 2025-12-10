@@ -104,6 +104,7 @@ export const GardenModel = (props: GardenModelProps) => {
   const showPoints = config.showSoilPoints
     || !!addPlantProps?.getConfigValue(BooleanSetting.show_points);
   const showWeeds = !!addPlantProps?.getConfigValue(BooleanSetting.show_weeds);
+  const showSpread = !!addPlantProps?.getConfigValue(BooleanSetting.show_spread);
 
   const soilPoints = filterSoilPoints({ points: props.mapPoints, config });
   const soilSurface = React.useMemo(() =>
@@ -218,6 +219,7 @@ export const GardenModel = (props: GardenModelProps) => {
         <ThreeDPlant key={i} i={i}
           plant={plant}
           visible={plantsVisible}
+          spreadVisible={showSpread}
           config={config}
           hoveredPlant={hoveredPlant}
           getZ={getZ}

@@ -16,7 +16,7 @@ import { GetWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
 import { SlotWithTool } from "../resources/interfaces";
 import { calcSunCoordinate, ThreeDGardenPlant } from "../three_d_garden/garden";
-import { findIcon } from "../crops/find";
+import { findCrop, findIcon } from "../crops/find";
 import { PeripheralValues } from "./map/layers/farmbot/bot_trail";
 import { isPeripheralActiveFunc } from "./map/layers/farmbot/bot_peripherals";
 import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
@@ -205,7 +205,7 @@ export const convertPlants =
       label: plant.body.name,
       icon: findIcon(plant.body.openfarm_slug),
       size: plant.body.radius * 2,
-      spread: 0,
+      spread: findCrop(plant.body.openfarm_slug).spread,
       x: plant.body.x + config.bedXOffset,
       y: plant.body.y + config.bedYOffset,
       key: "",

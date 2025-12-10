@@ -1,7 +1,7 @@
 import React from "react";
 import { Config } from "../config";
 import { HOVER_OBJECT_MODES, RenderOrder } from "../constants";
-import { Billboard, Plane, useTexture } from "@react-three/drei";
+import { Billboard, Plane, Sphere, useTexture } from "@react-three/drei";
 import { Vector3, Mesh, Group as GroupType } from "three";
 import { threeSpace, zZero as zZeroFunc } from "../helpers";
 import { Text } from "../elements";
@@ -13,6 +13,7 @@ import { getMode } from "../../farm_designer/map/util";
 import { ThreeElements, useFrame } from "@react-three/fiber";
 import { getSizeAtTime } from "../../promo/plants";
 import { FixedNormalMaterial } from "./fixed_normal_material";
+import { Group, MeshBasicMaterial } from "../components";
 
 export interface ThreeDGardenPlant {
   id?: number | undefined;
@@ -34,6 +35,7 @@ export interface ThreeDPlantProps {
   hoveredPlant: number | undefined;
   dispatch?: Function;
   visible?: boolean;
+  spreadVisible?: boolean;
   getZ(x: number, y: number): number;
   startTimeRef?: React.RefObject<number>;
 }
@@ -57,19 +59,15 @@ export const ThreeDPlant = (props: ThreeDPlantProps) => {
       getPlantZ(plant.size),
     )}>
     {labelOnly
-      ? <Text visible={alwaysShowLabels || i === hoveredPlant}
-        renderOrder={RenderOrder.plantLabels}
-        fontSize={50}
-        color={"white"}
-        position={[0, plant.size / 2 + 40, 0]}
-        rotation={[0, 0, 0]}>
-        {plant.label}
-      </Text>
-      : <Image i={i}
+      ? <LabelPart
+        visible={alwaysShowLabels || i === hoveredPlant}
+        plant={plant} />
+      : <PlantPart i={i}
         plant={plant}
         billboardRef={billboardRef}
         getPlantZ={getPlantZ}
         url={plant.icon}
+        spreadVisible={props.spreadVisible || false}
         startTimeRef={props.startTimeRef}
         animateSeasons={props.config.animateSeasons}
         season={config.plants}
@@ -81,6 +79,38 @@ export const ThreeDPlant = (props: ThreeDPlantProps) => {
           }
         }} />}
   </Billboard>;
+};
+
+interface LabelPartProps {
+  visible: boolean;
+  plant: ThreeDGardenPlant;
+}
+
+const LabelPart = (props: LabelPartProps) =>
+  <Text visible={props.visible}
+    renderOrder={RenderOrder.plantLabels}
+    fontSize={50}
+    color={"white"}
+    position={[0, props.plant.size / 2 + 40, 0]}
+    rotation={[0, 0, 0]}>
+    {props.plant.label}
+  </Text>;
+
+interface PlantPartProps extends CustomImageProps {
+  spreadVisible: boolean;
+}
+
+const PlantPart = (props: PlantPartProps) => {
+  return <Group>
+    <Image {...props} />
+    {props.spreadVisible &&
+      <Sphere args={[props.plant.spread / 2 * 10, 32, 32]}>
+        <MeshBasicMaterial color={"green"}
+          transparent={true}
+          opacity={0.5}
+          depthWrite={false} />
+      </Sphere>}
+  </Group>;
 };
 
 type MeshProps = ThreeElements["mesh"];
