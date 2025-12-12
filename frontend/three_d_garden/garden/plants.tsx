@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Config } from "../config";
 import { HOVER_OBJECT_MODES, RenderOrder } from "../constants";
 import { Billboard, Plane, Sphere, useTexture } from "@react-three/drei";
-import { Vector3, Mesh, Group as GroupType } from "three";
-import { threeSpace, zZero as zZeroFunc } from "../helpers";
+import { Vector3, Mesh, Group as GroupType, Color } from "three";
+import {
+  threeSpace,
+  zZero,
+  zZero as zZeroFunc,
+} from "../helpers";
 import { Text } from "../elements";
 import { isUndefined } from "lodash";
 import { Path } from "../../internal_urls";
@@ -13,7 +17,7 @@ import { getMode } from "../../farm_designer/map/util";
 import { ThreeElements, useFrame } from "@react-three/fiber";
 import { getSizeAtTime } from "../../promo/plants";
 import { FixedNormalMaterial } from "./fixed_normal_material";
-import { Group, MeshBasicMaterial } from "../components";
+import { Group, MeshPhongMaterial } from "../components";
 
 export interface ThreeDGardenPlant {
   id?: number | undefined;
@@ -62,7 +66,9 @@ export const ThreeDPlant = (props: ThreeDPlantProps) => {
       ? <LabelPart
         visible={alwaysShowLabels || i === hoveredPlant}
         plant={plant} />
-      : <PlantPart i={i}
+      : <PlantPart
+        i={i}
+        config={config}
         plant={plant}
         billboardRef={billboardRef}
         getPlantZ={getPlantZ}
@@ -98,16 +104,64 @@ const LabelPart = (props: LabelPartProps) =>
 
 interface PlantPartProps extends CustomImageProps {
   spreadVisible: boolean;
+  config: Config;
 }
 
 const PlantPart = (props: PlantPartProps) => {
+  const { config } = props;
+  const boundsCenter = useMemo(() =>
+    new Vector3(
+      config.bedXOffset - 140,
+      config.bedYOffset - 80,
+      -10000 + zZero(config),
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    ), []);
+  const halfSize = useMemo(() => new Vector3(
+    config.botSizeX / 2,
+    config.botSizeY / 2,
+    10000,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  ), []);
   return <Group>
     <Image {...props} />
     {props.spreadVisible &&
       <Sphere args={[props.plant.spread / 2 * 10, 32, 32]}>
-        <MeshBasicMaterial color={"green"}
+        <MeshPhongMaterial
+          color={"green"}
           transparent={true}
-          opacity={0.5}
+          opacity={0.35}
+          onBeforeCompile={(shader) => {
+            shader.uniforms.uBoundsCenter = { value: boundsCenter };
+            shader.uniforms.uHalfSize = { value: halfSize };
+            shader.uniforms.uInside = { value: new Color("green") };
+            shader.uniforms.uOutside = { value: new Color("red") };
+            shader.vertexShader = shader.vertexShader.replace(
+              "#include <common>",
+              `#include <common>
+               varying vec3 vWorldPosition;`,
+            ).replace(
+              "#include <worldpos_vertex>",
+              `#include <worldpos_vertex>
+               vWorldPosition = worldPosition.xyz;`);
+            shader.fragmentShader = shader.fragmentShader.replace(
+              "#include <common>",
+              `#include <common>
+               varying vec3 vWorldPosition;
+               uniform vec3 uBoundsCenter;
+               uniform vec3 uHalfSize;
+               uniform vec3 uInside;
+               uniform vec3 uOutside;`,
+            ).replace(
+              "#include <dithering_fragment>",
+              `vec3 p = vWorldPosition - uBoundsCenter;
+              bool inside =
+                abs(p.x) <= uHalfSize.x &&
+                abs(p.y) <= uHalfSize.y &&
+                abs(p.z) <= uHalfSize.z;
+               gl_FragColor = vec4(mix(uOutside, uInside, float(inside)), 0.35);
+               #include <dithering_fragment>`,
+            );
+          }}
           depthWrite={false} />
       </Sphere>}
   </Group>;

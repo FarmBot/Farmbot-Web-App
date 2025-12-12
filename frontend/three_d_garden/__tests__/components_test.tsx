@@ -11,6 +11,7 @@ import {
   Group,
   Mesh,
   MeshBasicMaterial,
+  MeshPhongMaterial,
   PointLight,
   SpotLight,
 } from "../components";
@@ -89,6 +90,17 @@ describe("<MeshBasicMaterial />", () => {
 
   it("adds props", () => {
     const wrapper = mount(<MeshBasicMaterial {...fakeProps()} />);
+    expect(wrapper.props().name).toEqual("material");
+  });
+});
+
+describe("<MeshPhongMaterial />", () => {
+  const fakeProps = (): ThreeElements["meshPhongMaterial"] => ({
+    name: "material",
+  });
+
+  it("adds props", () => {
+    const wrapper = mount(<MeshPhongMaterial {...fakeProps()} />);
     expect(wrapper.props().name).toEqual("material");
   });
 });
