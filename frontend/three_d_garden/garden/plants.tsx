@@ -111,14 +111,14 @@ const PlantPart = (props: PlantPartProps) => {
   const { config } = props;
   const boundsCenter = useMemo(() =>
     new Vector3(
-      config.bedXOffset - 140,
-      config.bedYOffset - 80,
+      0,
+      0,
       -10000 + zZero(config),
       // eslint-disable-next-line react-hooks/exhaustive-deps
     ), []);
   const halfSize = useMemo(() => new Vector3(
-    config.botSizeX / 2,
-    config.botSizeY / 2,
+    config.bedLengthOuter / 2 - 300,
+    config.bedWidthOuter / 2 - config.bedWallThickness,
     10000,
     // eslint-disable-next-line react-hooks/exhaustive-deps
   ), []);
@@ -129,7 +129,7 @@ const PlantPart = (props: PlantPartProps) => {
         <MeshPhongMaterial
           color={"green"}
           transparent={true}
-          opacity={0.35}
+          opacity={0.4}
           onBeforeCompile={(shader) => {
             shader.uniforms.uBoundsCenter = { value: boundsCenter };
             shader.uniforms.uHalfSize = { value: halfSize };
@@ -152,14 +152,15 @@ const PlantPart = (props: PlantPartProps) => {
                uniform vec3 uInside;
                uniform vec3 uOutside;`,
             ).replace(
-              "#include <dithering_fragment>",
-              `vec3 p = vWorldPosition - uBoundsCenter;
-              bool inside =
-                abs(p.x) <= uHalfSize.x &&
+              "#include <color_fragment>",
+              `#include <color_fragment>
+               vec3 p = vWorldPosition - uBoundsCenter;
+               bool inside =
+                p.x > -uHalfSize.x &&
                 abs(p.y) <= uHalfSize.y &&
                 abs(p.z) <= uHalfSize.z;
-               gl_FragColor = vec4(mix(uOutside, uInside, float(inside)), 0.35);
-               #include <dithering_fragment>`,
+               diffuseColor.rgb = mix(uOutside, uInside, float(inside));
+               `,
             );
           }}
           depthWrite={false} />
