@@ -122,6 +122,8 @@ export const GardenModel = (props: GardenModelProps) => {
 
   // eslint-disable-next-line no-null/no-null
   const skyRef = React.useRef<ThreeMeshBasicMaterial>(null);
+  // eslint-disable-next-line no-null/no-null
+  const activePositionRef = React.useRef<{ x: number, y: number }>(null);
 
   // eslint-disable-next-line no-null/no-null
   return <Group dispose={null}
@@ -178,6 +180,7 @@ export const GardenModel = (props: GardenModelProps) => {
       showMoistureReadings={showMoistureReadings}
       sensors={props.sensors || []}
       sensorReadings={props.sensorReadings || []}
+      activePositionRef={activePositionRef}
       addPlantProps={addPlantProps} />
     {showMoistureMap && props.config.moistureDebug &&
       <MoistureReadings
@@ -204,6 +207,7 @@ export const GardenModel = (props: GardenModelProps) => {
           labelOnly={true}
           config={config}
           getZ={getZ}
+          activePositionRef={activePositionRef}
           hoveredPlant={hoveredPlant} />)}
     </Group>
     <Grid
@@ -222,6 +226,7 @@ export const GardenModel = (props: GardenModelProps) => {
           spreadVisible={showSpread}
           config={config}
           hoveredPlant={hoveredPlant}
+          activePositionRef={activePositionRef}
           getZ={getZ}
           startTimeRef={props.startTimeRef}
           dispatch={dispatch} />)}

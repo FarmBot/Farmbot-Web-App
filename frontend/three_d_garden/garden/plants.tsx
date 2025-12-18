@@ -4,6 +4,7 @@ import { HOVER_OBJECT_MODES, RenderOrder } from "../constants";
 import { Billboard, Plane, Sphere, useTexture } from "@react-three/drei";
 import { Vector3, Mesh, Group as GroupType, Color } from "three";
 import {
+  getGardenPositionFunc,
   threeSpace,
   zZero,
   zZero as zZeroFunc,
@@ -13,11 +14,17 @@ import { isUndefined } from "lodash";
 import { Path } from "../../internal_urls";
 import { useNavigate } from "react-router";
 import { setPanelOpen } from "../../farm_designer/panel_header";
-import { getMode } from "../../farm_designer/map/util";
+import { getMode, round } from "../../farm_designer/map/util";
 import { ThreeElements, useFrame } from "@react-three/fiber";
 import { getSizeAtTime } from "../../promo/plants";
 import { FixedNormalMaterial } from "./fixed_normal_material";
 import { Group, MeshPhongMaterial } from "../components";
+import {
+  getSpreadOverlap, getSpreadRadii,
+} from "../../farm_designer/map/layers/spread/spread_overlap_helper";
+import { ActivePositionRef } from "../bed/objects/pointer_objects";
+import { Mode } from "../../farm_designer/map/interfaces";
+import { findCrop } from "../../crops/find";
 
 export interface ThreeDGardenPlant {
   id?: number | undefined;
@@ -42,6 +49,7 @@ export interface ThreeDPlantProps {
   spreadVisible?: boolean;
   getZ(x: number, y: number): number;
   startTimeRef?: React.RefObject<number>;
+  activePositionRef: ActivePositionRef;
 }
 
 export const ThreeDPlant = (props: ThreeDPlantProps) => {
@@ -71,6 +79,7 @@ export const ThreeDPlant = (props: ThreeDPlantProps) => {
         config={config}
         plant={plant}
         billboardRef={billboardRef}
+        activePositionRef={props.activePositionRef}
         getPlantZ={getPlantZ}
         url={plant.icon}
         spreadVisible={props.spreadVisible || false}
@@ -105,6 +114,7 @@ const LabelPart = (props: LabelPartProps) =>
 interface PlantPartProps extends CustomImageProps {
   spreadVisible: boolean;
   config: Config;
+  activePositionRef: ActivePositionRef;
 }
 
 const PlantPart = (props: PlantPartProps) => {
@@ -122,10 +132,31 @@ const PlantPart = (props: PlantPartProps) => {
     10000,
     // eslint-disable-next-line react-hooks/exhaustive-deps
   ), []);
+  const spreadRadii = getSpreadRadii({
+    activeDragSpread: findCrop(Path.getCropSlug()).spread,
+    inactiveSpread: props.plant.spread,
+    radius: props.plant.size / 2,
+  });
+  const worldPos = props.activePositionRef.current || { x: -10000, y: -10000 };
+  const active = getGardenPositionFunc(config)(worldPos);
+  const overlap = getSpreadOverlap({
+    spreadRadii,
+    activeDragXY: {
+      x: round(active.x + config.bedXOffset),
+      y: round(active.y + config.bedYOffset),
+      z: 0,
+    },
+    plantXY: { x: round(props.plant.x), y: round(props.plant.y), z: 0 },
+  });
+  const rgb = useMemo(() => ({ value: [0, 1, 0] }), []);
+  const mode = getMode();
+  React.useEffect(() => {
+    rgb.value = mode == Mode.clickToAdd ? overlap.color.rgb : [0, 1, 0];
+  }, [rgb, overlap.color.rgb, mode]);
   return <Group>
     <Image {...props} />
     {props.spreadVisible &&
-      <Sphere args={[props.plant.spread / 2 * 10, 32, 32]}>
+      <Sphere args={[spreadRadii.inactive, 32, 32]}>
         <MeshPhongMaterial
           color={"green"}
           transparent={true}
@@ -133,7 +164,7 @@ const PlantPart = (props: PlantPartProps) => {
           onBeforeCompile={(shader) => {
             shader.uniforms.uBoundsCenter = { value: boundsCenter };
             shader.uniforms.uHalfSize = { value: halfSize };
-            shader.uniforms.uInside = { value: new Color("green") };
+            shader.uniforms.uInside = rgb;
             shader.uniforms.uOutside = { value: new Color("red") };
             shader.vertexShader = shader.vertexShader.replace(
               "#include <common>",

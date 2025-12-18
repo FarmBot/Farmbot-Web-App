@@ -48,13 +48,13 @@ export function getContinuousColor(overlap: number, spreadRadius: number) {
       const r = Math.min(normalized, 255);
       const g = Math.min(100 + normalized, 255); // dark instead of bright green
       const a = Math.min(0.3, Math.round(0.5 * normalized / 510 * 100) / 100);
-      return `rgba(${r}, ${g}, 0, ${a})`;
+      return { string: `rgba(${r}, ${g}, 0, ${a})`, rgb: [r / 255, g / 255, 0] };
     } else { // yellow to red
       const g = Math.min(255 * 2 - normalized, 255);
-      return `rgba(255, ${g}, 0, 0.3)`;
+      return { string: `rgba(255, ${g}, 0, 0.3)`, rgb: [1, g / 255, 0] };
     }
   } else {
-    return "none";
+    return { string: "none", rgb: [0, 1, 0] };
   }
 }
 
@@ -122,28 +122,56 @@ export function overlapText(
   }
 }
 
+export interface GetSpreadRadiiProps {
+  activeDragSpread: number | undefined;
+  inactiveSpread: number;
+  radius: number;
+}
+
+/** Convert spread diameter in cm to radius in mm. */
+export const getSpreadRadii = (props: GetSpreadRadiiProps) => {
+  return {
+    active: (props.activeDragSpread || 0) / 2 * 10,
+    inactive: (props.inactiveSpread || defaultSpreadCmDia(props.radius)) / 2 * 10,
+  };
+};
+
+export interface GetSpreadOverlapColorProps {
+  spreadRadii: { active: number, inactive: number };
+  activeDragXY: BotPosition | undefined;
+  plantXY: BotPosition;
+}
+
+/**
+ * Overlap is evaluated against the inactive plant since evaluating
+ * against the active plant would require keeping a list of all plants
+ * overlapping the active plant. Therefore, the spread overlap helper
+ * should be thought of as a tool checking the inactive plants, not
+ * the plant being edited. Dragging a plant with a small spread into
+ * the area of a plant with large spread will illustrate this point.
+ */
+export const getSpreadOverlap = (props: GetSpreadOverlapColorProps) => {
+  const value = getOverlap(props.activeDragXY, props.plantXY, props.spreadRadii);
+  const color = getContinuousColor(
+    value, getRadius(SpreadOption.InactivePlant, props.spreadRadii));
+  return { color, value };
+};
+
 export const SpreadOverlapHelper = (props: SpreadOverlapHelperProps) => {
   const { dragging, plant, activeDragXY, activeDragSpread, inactiveSpread,
     mapTransformProps } = props;
   const { radius, x, y } = plant.body;
   const { qx, qy } = transformXY(round(x), round(y), mapTransformProps);
-  const gardenCoord: BotPosition = { x: round(x), y: round(y), z: 0 };
-  // Convert spread diameter in cm to radius in mm.
-  const spreadRadii = {
-    active: (activeDragSpread || 0) / 2 * 10,
-    inactive: (inactiveSpread || defaultSpreadCmDia(radius)) / 2 * 10,
-  };
-
-  const overlapValue = getOverlap(activeDragXY, gardenCoord, spreadRadii);
-  // Overlap is evaluated against the inactive plant since evaluating
-  // against the active plant would require keeping a list of all plants
-  // overlapping the active plant. Therefore, the spread overlap helper
-  // should be thought of as a tool checking the inactive plants, not
-  // the plant being edited. Dragging a plant with a small spread into
-  // the area of a plant with large spread will illustrate this point.
-  const color = getContinuousColor(
-    overlapValue, getRadius(SpreadOption.InactivePlant, spreadRadii));
-
+  const spreadRadii = getSpreadRadii({
+    activeDragSpread,
+    inactiveSpread,
+    radius,
+  });
+  const overlap = getSpreadOverlap({
+    spreadRadii,
+    activeDragXY,
+    plantXY: { x: round(x), y: round(y), z: 0 },
+  });
   return <g id="overlap-indicator">
     {!dragging && // Non-active plants
       <circle
@@ -151,8 +179,8 @@ export const SpreadOverlapHelper = (props: SpreadOverlapHelperProps) => {
         cx={qx}
         cy={qy}
         r={spreadRadii.inactive}
-        fill={color} />}
+        fill={overlap.color.string} />}
     {props.showOverlapValues && !dragging &&
-      overlapText(qx, qy, overlapValue, spreadRadii)}
+      overlapText(qx, qy, overlap.value, spreadRadii)}
   </g>;
 };

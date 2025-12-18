@@ -90,6 +90,7 @@ import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import { fakePoint } from "../../../__test_support__/fake_state/resources";
 import { SpecialStatus } from "farmbot";
 import { BufferGeometry } from "three";
+import { ActivePositionRef } from "../objects/pointer_objects";
 
 describe("<Bed />", () => {
   beforeEach(() => {
@@ -114,6 +115,7 @@ describe("<Bed />", () => {
     sensors: [],
     sensorReadings: [],
     showMoistureReadings: true,
+    activePositionRef: { current: { x: 0, y: 0 } } as ActivePositionRef,
   });
 
   it("renders bed", () => {
