@@ -1,8 +1,14 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { Config } from "../config";
 import { HOVER_OBJECT_MODES, RenderOrder } from "../constants";
 import { Billboard, Plane, Sphere, useTexture } from "@react-three/drei";
-import { Vector3, Mesh, Group as GroupType, Color } from "three";
+import {
+  Vector3,
+  Mesh,
+  Group as GroupType,
+  Color,
+  WebGLProgramParametersWithUniforms,
+} from "three";
 import {
   getGardenPositionFunc,
   threeSpace,
@@ -119,40 +125,33 @@ interface PlantPartProps extends CustomImageProps {
 
 const PlantPart = (props: PlantPartProps) => {
   const { config } = props;
-  const boundsCenter = useMemo(() =>
-    new Vector3(
-      0,
-      0,
-      -10000 + zZero(config),
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    ), []);
-  const halfSize = useMemo(() => new Vector3(
-    config.bedLengthOuter / 2 - 300,
-    config.bedWidthOuter / 2 - config.bedWallThickness,
-    10000,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  ), []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const boundsCenter = React.useMemo(getBoundsCenter(config), []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const halfSize = React.useMemo(getHalfSize(config), []);
   const spreadRadii = getSpreadRadii({
     activeDragSpread: findCrop(Path.getCropSlug()).spread,
     inactiveSpread: props.plant.spread,
     radius: props.plant.size / 2,
   });
-  const worldPos = props.activePositionRef.current || { x: -10000, y: -10000 };
-  const active = getGardenPositionFunc(config)(worldPos);
-  const overlap = getSpreadOverlap({
-    spreadRadii,
-    activeDragXY: {
-      x: round(active.x + config.bedXOffset),
-      y: round(active.y + config.bedYOffset),
-      z: 0,
-    },
-    plantXY: { x: round(props.plant.x), y: round(props.plant.y), z: 0 },
+
+  const rgb = React.useMemo(() => ({ value: [0, 1, 0] }), []);
+  useFrame(() => {
+    const worldPos = props.activePositionRef.current || { x: -10000, y: -10000 };
+    const active = getGardenPositionFunc(config)(worldPos);
+    const overlap = getSpreadOverlap({
+      spreadRadii,
+      activeDragXY: {
+        x: round(active.x + config.bedXOffset),
+        y: round(active.y + config.bedYOffset),
+        z: 0,
+      },
+      plantXY: { x: round(props.plant.x), y: round(props.plant.y), z: 0 },
+    });
+    const color = props.plant.id ? overlap.color.rgb : [1, 1, 1];
+    rgb.value = getMode() == Mode.clickToAdd ? color : [0, 1, 0];
   });
-  const rgb = useMemo(() => ({ value: [0, 1, 0] }), []);
-  const mode = getMode();
-  React.useEffect(() => {
-    rgb.value = mode == Mode.clickToAdd ? overlap.color.rgb : [0, 1, 0];
-  }, [rgb, overlap.color.rgb, mode]);
+
   return <Group>
     <Image {...props} />
     {props.spreadVisible &&
@@ -166,38 +165,56 @@ const PlantPart = (props: PlantPartProps) => {
             shader.uniforms.uHalfSize = { value: halfSize };
             shader.uniforms.uInside = rgb;
             shader.uniforms.uOutside = { value: new Color("red") };
-            shader.vertexShader = shader.vertexShader.replace(
-              "#include <common>",
-              `#include <common>
-               varying vec3 vWorldPosition;`,
-            ).replace(
-              "#include <worldpos_vertex>",
-              `#include <worldpos_vertex>
-               vWorldPosition = worldPosition.xyz;`);
-            shader.fragmentShader = shader.fragmentShader.replace(
-              "#include <common>",
-              `#include <common>
-               varying vec3 vWorldPosition;
-               uniform vec3 uBoundsCenter;
-               uniform vec3 uHalfSize;
-               uniform vec3 uInside;
-               uniform vec3 uOutside;`,
-            ).replace(
-              "#include <color_fragment>",
-              `#include <color_fragment>
-               vec3 p = vWorldPosition - uBoundsCenter;
-               bool inside =
-                p.x > -uHalfSize.x &&
-                abs(p.y) <= uHalfSize.y &&
-                abs(p.z) <= uHalfSize.z;
-               diffuseColor.rgb = mix(uOutside, uInside, float(inside));
-               `,
-            );
+            outOfBoundsShaderModification(shader);
           }}
           depthWrite={false} />
       </Sphere>}
   </Group>;
 };
+
+export const getBoundsCenter = (config: Config) => () =>
+  new Vector3(
+    0,
+    0,
+    -10000 + zZero(config),
+  );
+
+export const getHalfSize = (config: Config) => () => new Vector3(
+  config.bedLengthOuter / 2 - 300,
+  config.bedWidthOuter / 2 - config.bedWallThickness,
+  10000,
+);
+
+export const outOfBoundsShaderModification =
+  (shader: WebGLProgramParametersWithUniforms) => {
+    shader.vertexShader = shader.vertexShader.replace(
+      "#include <common>",
+      `#include <common>
+       varying vec3 vWorldPosition;`,
+    ).replace(
+      "#include <worldpos_vertex>",
+      `#include <worldpos_vertex>
+       vWorldPosition = worldPosition.xyz;`);
+    shader.fragmentShader = shader.fragmentShader.replace(
+      "#include <common>",
+      `#include <common>
+       varying vec3 vWorldPosition;
+       uniform vec3 uBoundsCenter;
+       uniform vec3 uHalfSize;
+       uniform vec3 uInside;
+       uniform vec3 uOutside;`,
+    ).replace(
+      "#include <color_fragment>",
+      `#include <color_fragment>
+       vec3 p = vWorldPosition - uBoundsCenter;
+       bool inside =
+       p.x > -uHalfSize.x &&
+       abs(p.y) <= uHalfSize.y &&
+       abs(p.z) <= uHalfSize.z;
+       diffuseColor.rgb = mix(uOutside, uInside, float(inside));
+      `,
+    );
+  };
 
 type MeshProps = ThreeElements["mesh"];
 interface CustomImageProps extends MeshProps {

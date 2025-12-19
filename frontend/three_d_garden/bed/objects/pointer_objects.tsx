@@ -7,7 +7,12 @@ import { getMode, round, xyDistance } from "../../../farm_designer/map/util";
 import { isMobile } from "../../../screen_size";
 import { HOVER_OBJECT_MODES, DRAW_POINT_MODES, RenderOrder } from "../../constants";
 import {
-  DrawnPoint, POINT_CYLINDER_SCALE_FACTOR, WEED_IMG_SIZE_FRACTION,
+  DrawnPoint,
+  getBoundsCenter,
+  getHalfSize,
+  outOfBoundsShaderModification,
+  POINT_CYLINDER_SCALE_FACTOR,
+  WEED_IMG_SIZE_FRACTION,
 } from "../../garden";
 import {
   zero as zeroFunc,
@@ -21,7 +26,7 @@ import { SpecialStatus, TaggedGenericPointer } from "farmbot";
 import { AddPlantProps } from "../bed";
 import { DEFAULT_PLANT_RADIUS } from "../../../farm_designer/plant";
 import { isUndefined, round as mathRound } from "lodash";
-import { Mesh as MeshType, Group as GroupType } from "three";
+import { Mesh as MeshType, Group as GroupType, Color } from "three";
 import { Path } from "../../../internal_urls";
 import { ThreeEvent } from "@react-three/fiber";
 import { dropPlant } from "../../../farm_designer/map/layers/plants/plant_actions";
@@ -73,7 +78,10 @@ export const PointerObjects = (props: PointerObjectsProps) => {
   const gridPreview = mapPoints
     .filter(p => p.specialStatus == SpecialStatus.DIRTY && p.body.meta.gridId)
     .length > 0;
-
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const boundsCenter = React.useMemo(getBoundsCenter(config), []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const halfSize = React.useMemo(getHalfSize(config), []);
   return HOVER_OBJECT_MODES.includes(getMode()) &&
     !isMobile() &&
     <Group name={"hover-elements"}>
@@ -131,6 +139,13 @@ export const PointerObjects = (props: PointerObjectsProps) => {
                   color={"white"}
                   transparent={true}
                   opacity={0.4}
+                  onBeforeCompile={(shader) => {
+                    shader.uniforms.uBoundsCenter = { value: boundsCenter };
+                    shader.uniforms.uHalfSize = { value: halfSize };
+                    shader.uniforms.uInside = { value: new Color("white") };
+                    shader.uniforms.uOutside = { value: new Color("red") };
+                    outOfBoundsShaderModification(shader);
+                  }}
                   depthWrite={false} />
               </Sphere>
             </Group>}
