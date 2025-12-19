@@ -1,7 +1,7 @@
 {
   "name": "threedbot-farmbot-web-frontend",
-  "version": "1.1.1-alpha.1",
-  "description": "Farmbot web frontend (forked from v1.1.0)",
+  "version": "1.1.1-alpha.2",
+  "description": "ThreeD.Bot: Farmbot web frontend (forked from v1.1.0)",
   "engines": {
     "browsers": "defaults",
     "node": "24.x",
@@ -10,7 +10,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/marty-mcgee/farmbot-web-app"
+    "url": "https://github.com/marty-mcgee/farmbot-web-app",
+    "directory": "threedbot"
   },
   "scripts": {
     "test-very-slow": "node --expose-gc ./node_modules/.bin/jest -i --colors --coverage",
