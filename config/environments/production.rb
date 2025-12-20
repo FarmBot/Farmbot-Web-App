@@ -12,7 +12,7 @@ FarmBot::Application.configure do
   config.log_formatter               = ::Logger::Formatter.new
   config.log_level                   = :info
   config.perform_caching             = false
-  config.public_file_server.enabled  = false
+  config.public_file_server.enabled  = true # false
   config.serve_static_assets         = true
   config.assets.compile              = false
   # HACK AHEAD! Here's why:
