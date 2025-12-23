@@ -117,7 +117,8 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
 
   revertPreview = ({ setStatus }: { setStatus: boolean }) => () =>
     this.props.dispatch(stashGrid(this.state.gridId))
-      .then(() => setStatus && this.setState({ status: "clean" }));
+      .then(() => setStatus &&
+        this.setState({ status: "clean" }, this.props.close));
 
   saveGrid = () =>
     this.props.dispatch(saveGrid(this.state.gridId))
@@ -137,6 +138,11 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
     switch (this.state.status) {
       case "clean":
         return <div className={"preview-grid-button"}>
+          <a className={"cancel-button fb-button clear invert"}
+            title={t("Close")}
+            onClick={this.props.close}>
+            {t("Close")}
+          </a>
           <a className={"preview-button fb-button clear invert"}
             title={t("Preview")}
             onClick={this.performPreview(true)}>

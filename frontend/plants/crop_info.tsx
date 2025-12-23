@@ -267,122 +267,127 @@ export function mapStateToProps(props: Everything): CropInfoProps {
   };
 }
 
-export class RawCropInfo extends React.Component<CropInfoProps, {}> {
-  componentDidMount() {
-    this.selectMostUsedCurves(Path.getCropSlug());
-  }
+export const RawCropInfo = (props: CropInfoProps) => {
+  const [gridOpen, setGridOpen] = React.useState(false);
+  const toggleOpen = () => setGridOpen(!gridOpen);
+  React.useEffect(() => {
+    selectMostUsedCurves(Path.getCropSlug());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  selectMostUsedCurves = (slug: string) => {
+  const selectMostUsedCurves = (slug: string) => {
     const findCurve = findMostUsedCurveForCrop({
-      plants: this.props.plants,
-      curves: this.props.curves,
+      plants: props.plants,
+      curves: props.curves,
       slug: slug,
     });
     [CurveType.water, CurveType.spread, CurveType.height].map(curveType => {
       const id = findCurve(curveType)?.body.id;
-      changeCurve(this.props.dispatch)(id, curveType);
+      changeCurve(props.dispatch)(id, curveType);
     });
   };
 
-  render() {
-    const { dispatch, designer } = this.props;
-    const slug = Path.getCropSlug();
-    const crop = findCrop(slug);
-    const image = findImage(slug);
-    const panelName = "crop-info";
-    return <DesignerPanel panelName={panelName} panel={Panel.Plants}>
-      <DesignerPanelHeader
-        panelName={panelName}
-        panel={Panel.Plants}
-        title={crop.name}
-        backTo={Path.cropSearch()}
-        onBack={() => !designer.cropSearchQuery && dispatch({
-          type: Actions.SEARCH_QUERY_CHANGE,
-          payload: startCase(slug).toLowerCase(),
-        })}
-        style={{
-          background: `linear-gradient(
+  const { dispatch, designer } = props;
+  const slug = Path.getCropSlug();
+  const crop = findCrop(slug);
+  const image = findImage(slug);
+  const panelName = "crop-info";
+  return <DesignerPanel panelName={panelName} panel={Panel.Plants}>
+    <DesignerPanelHeader
+      panelName={panelName}
+      panel={Panel.Plants}
+      title={crop.name}
+      backTo={Path.cropSearch()}
+      onBack={() => !designer.cropSearchQuery && dispatch({
+        type: Actions.SEARCH_QUERY_CHANGE,
+        payload: startCase(slug).toLowerCase(),
+      })}
+      style={{
+        background: `linear-gradient(
     rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(${image})`
-        }}
-        description={crop.description}>
-        <CropDragInfoTile slug={slug} />
-        <Popover portalClassName={"dark-portal"}
-          position={Position.BOTTOM_RIGHT}
-          target={<button className={"plus-grid-btn fb-button clear"}>
-            + {t("grid")}
-          </button>}
-          content={<div className={"grid-popup-content"}>
-            <PlantGrid
-              xy_swap={this.props.xySwap}
-              dispatch={dispatch}
-              openfarm_slug={slug}
-              spread={crop.spread}
-              botPosition={this.props.botPosition}
-              designer={designer}
-              itemName={crop.name} />
-          </div>} />
-      </DesignerPanelHeader>
-      <DesignerPanelContent panelName={panelName} className="grid">
-        <AddPlantHereButton
-          botPosition={this.props.botPosition}
-          openedSavedGarden={designer.openedSavedGarden}
-          cropName={crop.name}
-          slug={slug}
-          getConfigValue={this.props.getConfigValue}
-          designer={designer}
-          dispatch={dispatch} />
-        <CropInfoList crop={crop}
-          dispatch={dispatch}
-          selectMostUsedCurves={this.selectMostUsedCurves} />
-        <div className={"row grid-2-col info-box"}>
-          <label className="stage">{t("status")}</label>
-          <FBSelect
-            list={PLANT_STAGE_LIST()}
-            selectedItem={designer.cropStage
-              ? PLANT_STAGE_DDI_LOOKUP()[designer.cropStage]
-              : undefined}
-            onChange={ddi => dispatch({
-              type: Actions.SET_CROP_STAGE,
-              payload: ddi.value,
-            })} />
-        </div>
-        <div className={"row grid-2-col info-box"}>
-          <label className="planted-at">{t("start date")}</label>
-          <BlurableInput
-            type="date"
-            value={designer.cropPlantedAt
-              ? moment(designer.cropPlantedAt).format("YYYY-MM-DD")
-              : ""}
-            onCommit={e => dispatch({
-              type: Actions.SET_CROP_PLANTED_AT,
-              payload: e.currentTarget.value,
-            })
-            } />
-        </div>
-        <div className={"row grid-2-col info-box"}>
-          <label className="radius">{t("radius (mm)")}</label>
-          <BlurableInput
-            type="number"
-            value={designer.cropRadius || DEFAULT_PLANT_RADIUS}
-            onCommit={e => dispatch({
-              type: Actions.SET_CROP_RADIUS,
-              payload: parseInt(e.currentTarget.value),
-            })
-            } />
-        </div>
-        <AllCurveInfo
-          dispatch={dispatch}
-          sourceFbosConfig={this.props.sourceFbosConfig}
-          botSize={this.props.botSize}
-          curves={this.props.curves}
-          findCurve={findCurve(this.props.curves, designer)}
-          plants={this.props.plants}
-          onChange={changeCurve(dispatch)} />
-        <img src={image} />
-      </DesignerPanelContent>
-    </DesignerPanel>;
-  }
-}
+      }}
+      description={crop.description}>
+      <CropDragInfoTile slug={slug} />
+      <Popover portalClassName={"dark-portal"}
+        position={Position.BOTTOM_RIGHT}
+        isOpen={gridOpen}
+        target={<button
+          className={"plus-grid-btn fb-button clear"}
+          onClick={toggleOpen}>
+          + {t("grid")}
+        </button>}
+        content={<div className={"grid-popup-content"}>
+          <PlantGrid
+            xy_swap={props.xySwap}
+            dispatch={dispatch}
+            openfarm_slug={slug}
+            spread={crop.spread}
+            botPosition={props.botPosition}
+            designer={designer}
+            close={toggleOpen}
+            itemName={crop.name} />
+        </div>} />
+    </DesignerPanelHeader>
+    <DesignerPanelContent panelName={panelName} className="grid">
+      <AddPlantHereButton
+        botPosition={props.botPosition}
+        openedSavedGarden={designer.openedSavedGarden}
+        cropName={crop.name}
+        slug={slug}
+        getConfigValue={props.getConfigValue}
+        designer={designer}
+        dispatch={dispatch} />
+      <CropInfoList crop={crop}
+        dispatch={dispatch}
+        selectMostUsedCurves={selectMostUsedCurves} />
+      <div className={"row grid-2-col info-box"}>
+        <label className="stage">{t("status")}</label>
+        <FBSelect
+          list={PLANT_STAGE_LIST()}
+          selectedItem={designer.cropStage
+            ? PLANT_STAGE_DDI_LOOKUP()[designer.cropStage]
+            : undefined}
+          onChange={ddi => dispatch({
+            type: Actions.SET_CROP_STAGE,
+            payload: ddi.value,
+          })} />
+      </div>
+      <div className={"row grid-2-col info-box"}>
+        <label className="planted-at">{t("start date")}</label>
+        <BlurableInput
+          type="date"
+          value={designer.cropPlantedAt
+            ? moment(designer.cropPlantedAt).format("YYYY-MM-DD")
+            : ""}
+          onCommit={e => dispatch({
+            type: Actions.SET_CROP_PLANTED_AT,
+            payload: e.currentTarget.value,
+          })
+          } />
+      </div>
+      <div className={"row grid-2-col info-box"}>
+        <label className="radius">{t("radius (mm)")}</label>
+        <BlurableInput
+          type="number"
+          value={designer.cropRadius || DEFAULT_PLANT_RADIUS}
+          onCommit={e => dispatch({
+            type: Actions.SET_CROP_RADIUS,
+            payload: parseInt(e.currentTarget.value),
+          })
+          } />
+      </div>
+      <AllCurveInfo
+        dispatch={dispatch}
+        sourceFbosConfig={props.sourceFbosConfig}
+        botSize={props.botSize}
+        curves={props.curves}
+        findCurve={findCurve(props.curves, designer)}
+        plants={props.plants}
+        onChange={changeCurve(dispatch)} />
+      <img src={image} />
+    </DesignerPanelContent>
+  </DesignerPanel>;
+};
 
 export const CropInfo = connect(mapStateToProps)(RawCropInfo);
 // eslint-disable-next-line import/no-default-export

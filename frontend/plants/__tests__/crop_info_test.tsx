@@ -130,7 +130,7 @@ describe("<CropInfo />", () => {
   it("updates curves", () => {
     location.pathname = Path.mock(Path.cropSearch("mint"));
     const p = fakeProps();
-    mount<CropInfo>(<CropInfo {...p} />);
+    mount(<CropInfo {...p} />);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_CROP_WATER_CURVE_ID, payload: undefined,
     });
