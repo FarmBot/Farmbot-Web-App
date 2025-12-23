@@ -5,7 +5,7 @@ import {
   PlantGridState,
 } from "./interfaces";
 import { initPlantGrid } from "./generate_grid";
-import { init } from "../../api/crud";
+import { batchInitDirty } from "../../api/crud";
 import { uuid } from "farmbot";
 import { saveGrid, stashGrid } from "./thunks";
 import { error, success } from "../../toast/toast";
@@ -118,7 +118,7 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
     });
     this.consoleLog("Generated", startInitPlantGrid);
     const startDispatch = performance.now();
-    plants.map(p => this.props.dispatch(init("Point", p)));
+    this.props.dispatch(batchInitDirty("Point", plants));
     this.consoleLog("Dispatched", startDispatch);
     this.setState({ status: "dirty", previous: this.getKey() });
   };

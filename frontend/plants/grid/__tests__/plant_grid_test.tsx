@@ -4,7 +4,7 @@ jest.mock("../thunks", () => ({
 }));
 
 jest.mock("../../../api/crud", () => ({
-  init: jest.fn(),
+  batchInitDirty: jest.fn(),
 }));
 
 import React from "react";
@@ -13,7 +13,7 @@ import { MAX_N, PlantGrid } from "../plant_grid";
 import { saveGrid, stashGrid } from "../thunks";
 import { error, success } from "../../../toast/toast";
 import { PlantGridProps } from "../interfaces";
-import { init } from "../../../api/crud";
+import { batchInitDirty } from "../../../api/crud";
 import { Actions } from "../../../constants";
 import { fakeDesignerState } from "../../../__test_support__/fake_designer_state";
 
@@ -39,7 +39,7 @@ describe("<PlantGrid />", () => {
     const previewButton = el.find("a.preview-button");
     expect(previewButton.text()).toContain("Preview");
     previewButton.simulate("click");
-    expect(init).toHaveBeenCalledTimes(6);
+    expect(batchInitDirty).toHaveBeenCalledTimes(1);
 
     // After clicking PREVIEW, there should be two buttons.
     const cancel = el.find("a.cancel-button");
@@ -56,7 +56,7 @@ describe("<PlantGrid />", () => {
     const previewButton = wrapper.find("a.preview-button");
     expect(previewButton.text()).toContain("Preview");
     previewButton.simulate("click");
-    expect(init).toHaveBeenCalledTimes(6);
+    expect(batchInitDirty).toHaveBeenCalledTimes(1);
     wrapper.setState({ offsetPacking: true });
     const cancel = wrapper.find("a.cancel-button");
     const update = wrapper.find("a.update-button");
@@ -139,7 +139,7 @@ describe("<PlantGrid />", () => {
     });
     wrapper.instance().performPreview()();
     expect(error).not.toHaveBeenCalled();
-    expect(init).not.toHaveBeenCalled();
+    expect(batchInitDirty).not.toHaveBeenCalled();
   });
 
   it("performs preview", () => {
@@ -156,14 +156,15 @@ describe("<PlantGrid />", () => {
     const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
     wrapper.instance().performPreview()();
     expect(error).not.toHaveBeenCalled();
-    expect(init).toHaveBeenCalledTimes(6);
-    expect(init).toHaveBeenCalledWith("Point", expect.objectContaining({
-      plant_stage: "planted",
-      planted_at: "2020-01-20T20:00:00.000Z",
-      water_curve_id: 1,
-      spread_curve_id: 2,
-      height_curve_id: 3,
-    }));
+    expect(batchInitDirty).toHaveBeenCalledTimes(1);
+    expect(batchInitDirty).toHaveBeenCalledWith("Point",
+      expect.arrayContaining([expect.objectContaining({
+        plant_stage: "planted",
+        planted_at: "2020-01-20T20:00:00.000Z",
+        water_curve_id: 1,
+        spread_curve_id: 2,
+        height_curve_id: 3,
+      })]));
   });
 
   it("discards unsaved changes", () => {
@@ -211,7 +212,7 @@ describe("<PlantGrid />", () => {
       .first().simulate("click");
     expect(wrapper.state().offsetPacking).toBeTruthy();
     expect(wrapper.state().grid.spacingH).toEqual(217);
-    expect(init).toHaveBeenCalledTimes(6);
+    expect(batchInitDirty).toHaveBeenCalledTimes(1);
   });
 
   it("toggles packing method off", () => {
@@ -223,7 +224,7 @@ describe("<PlantGrid />", () => {
       .first().simulate("click");
     expect(wrapper.state().offsetPacking).toBeFalsy();
     expect(wrapper.state().grid.spacingH).toEqual(250);
-    expect(init).toHaveBeenCalledTimes(6);
+    expect(batchInitDirty).toHaveBeenCalledTimes(1);
   });
 
   it("toggles camera view on", () => {
@@ -238,7 +239,7 @@ describe("<PlantGrid />", () => {
       payload: wrapper.state().gridId,
     });
     expect(wrapper.state().cameraView).toBeTruthy();
-    expect(init).toHaveBeenCalledTimes(6);
+    expect(batchInitDirty).toHaveBeenCalledTimes(1);
   });
 
   it("toggles camera view off", () => {
@@ -253,7 +254,7 @@ describe("<PlantGrid />", () => {
       payload: undefined,
     });
     expect(wrapper.state().cameraView).toBeFalsy();
-    expect(init).toHaveBeenCalledTimes(6);
+    expect(batchInitDirty).toHaveBeenCalledTimes(1);
   });
 
   it("toggles auto-preview off", () => {

@@ -88,6 +88,19 @@ export function init<T extends TaggedResource>(kind: T["kind"],
   return { type: Actions.INIT_RESOURCE, payload: resource };
 }
 
+export const batchInitDirty =
+  <T extends TaggedResource>(kind: T["kind"], bodies: T["body"][]) => {
+    const resources = bodies.map(body => {
+      const resource = arrayUnwrap(newTaggedResource(kind, body));
+      resource.specialStatus = SpecialStatus.DIRTY;
+      return resource;
+    });
+    return {
+      type: Actions.BATCH_INIT,
+      payload: resources,
+    };
+  };
+
 /** Initialize and save a new resource, returning the `id`.
  * If you don't need the `id` returned, use `initSave` instead.
  */
