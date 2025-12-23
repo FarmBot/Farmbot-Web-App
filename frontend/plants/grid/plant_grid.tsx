@@ -28,7 +28,7 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
     cameraView: false,
     previous: "",
     autoPreview: true,
-    isOpen: true,
+    isOpen: false,
   };
 
   get initGridState() {
@@ -82,10 +82,18 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
   get outdated() { return this.getKey() != this.state.previous; }
   get dirty() { return this.state.status === "dirty"; }
 
-  componentWillUnmount() {
+  componentDidMount() {
+    !this.props.collapsible && this.performPreview()();
+  }
+
+  unmount = () => {
     this.dirty &&
       this.props.dispatch(stashGrid(this.state.gridId));
     this.props.dispatch(showCameraViewPoints(undefined));
+  };
+
+  componentWillUnmount() {
+    this.unmount();
   }
 
   consoleLog = (action: string, start: number) =>
@@ -151,11 +159,6 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
             onClick={this.props.close}>
             {t("Close")}
           </a>
-          <a className={"preview-button fb-button clear invert"}
-            title={t("Preview")}
-            onClick={this.performPreview(true)}>
-            {t("Preview")}
-          </a>
         </div>;
       case "dirty":
         return <div className={"save-or-cancel-grid-button"}>
@@ -183,7 +186,10 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
     return <div className={"grid-and-row-planting"}>
       {this.props.collapsible &&
         <i className={`fa fa-chevron-${this.state.isOpen ? "up" : "down"}`}
-          onClick={() => this.setState({ isOpen: !this.state.isOpen })} />}
+          onClick={() => {
+            !this.state.isOpen ? this.performPreview()() : this.unmount();
+            this.setState({ isOpen: !this.state.isOpen });
+          }} />}
       <h3>{t("Add Grid or Row")}</h3>
       <Collapse isOpen={this.props.collapsible ? this.state.isOpen : true}>
         <GridInput
@@ -213,17 +219,6 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
               this.setState({ cameraView: !this.state.cameraView },
                 this.performPreview());
             }} />}
-        <div className={"row grid-exp-1"}>
-          <label>{t("auto-update preview")}</label>
-          <ToggleButton
-            toggleValue={this.state.autoPreview}
-            toggleAction={() => {
-              const enabled = this.state.autoPreview;
-              if (!enabled) { this.performPreview(true)(); }
-              this.setState({ autoPreview: !enabled });
-            }}
-            title={t("automatically update preview")} />
-        </div>
         <this.Buttons />
       </Collapse>
     </div>;

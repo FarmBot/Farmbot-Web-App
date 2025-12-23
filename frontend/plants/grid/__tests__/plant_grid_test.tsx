@@ -35,13 +35,7 @@ describe("<PlantGrid />", () => {
   it("renders", () => {
     const p = fakeProps();
     const el = mount<PlantGrid>(<PlantGrid {...p} />);
-    // Upon load, there should be one button.
-    const previewButton = el.find("a.preview-button");
-    expect(previewButton.text()).toContain("Preview");
-    previewButton.simulate("click");
     expect(batchInitDirty).toHaveBeenCalledTimes(1);
-
-    // After clicking PREVIEW, there should be two buttons.
     const cancel = el.find("a.cancel-button");
     const save = el.find("a.save-button");
     expect(cancel.text()).toContain("Cancel");
@@ -52,10 +46,6 @@ describe("<PlantGrid />", () => {
   it("renders update button", () => {
     const p = fakeProps();
     const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
-    wrapper.setState({ autoPreview: false });
-    const previewButton = wrapper.find("a.preview-button");
-    expect(previewButton.text()).toContain("Preview");
-    previewButton.simulate("click");
     expect(batchInitDirty).toHaveBeenCalledTimes(1);
     wrapper.setState({ offsetPacking: true });
     const cancel = wrapper.find("a.cancel-button");
@@ -129,6 +119,7 @@ describe("<PlantGrid />", () => {
     const p = fakeProps();
     p.openfarm_slug = undefined;
     const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
+    jest.clearAllMocks();
     wrapper.setState({
       autoPreview: false,
       grid: {
@@ -154,6 +145,7 @@ describe("<PlantGrid />", () => {
     designer.cropHeightCurveId = 3;
     p.designer = designer;
     const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
+    jest.clearAllMocks();
     wrapper.instance().performPreview()();
     expect(error).not.toHaveBeenCalled();
     expect(batchInitDirty).toHaveBeenCalledTimes(1);
@@ -207,6 +199,7 @@ describe("<PlantGrid />", () => {
   it("toggles packing method on", () => {
     const p = fakeProps();
     const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
+    jest.clearAllMocks();
     expect(wrapper.state().offsetPacking).toBeFalsy();
     wrapper.find('[title="toggle packing method"]')
       .first().simulate("click");
@@ -218,6 +211,7 @@ describe("<PlantGrid />", () => {
   it("toggles packing method off", () => {
     const p = fakeProps();
     const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
+    jest.clearAllMocks();
     wrapper.setState({ offsetPacking: true });
     expect(wrapper.state().offsetPacking).toBeTruthy();
     wrapper.find('[title="toggle packing method"]')
@@ -231,6 +225,7 @@ describe("<PlantGrid />", () => {
     const p = fakeProps();
     p.openfarm_slug = undefined;
     const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
+    jest.clearAllMocks();
     expect(wrapper.state().cameraView).toBeFalsy();
     wrapper.find('[title="show camera view area"]')
       .first().simulate("click");
@@ -246,6 +241,7 @@ describe("<PlantGrid />", () => {
     const p = fakeProps();
     p.openfarm_slug = undefined;
     const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
+    jest.clearAllMocks();
     wrapper.setState({ cameraView: true });
     wrapper.find('[title="show camera view area"]')
       .first().simulate("click");
@@ -257,32 +253,19 @@ describe("<PlantGrid />", () => {
     expect(batchInitDirty).toHaveBeenCalledTimes(1);
   });
 
-  it("toggles auto-preview off", () => {
-    const p = fakeProps();
-    const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
-    wrapper.setState({ autoPreview: true });
-    wrapper.find('[title="automatically update preview"]')
-      .first().simulate("click");
-    expect(wrapper.state().autoPreview).toBeFalsy();
-  });
-
-  it("toggles auto-preview on", () => {
-    const p = fakeProps();
-    const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
-    wrapper.setState({ autoPreview: false });
-    wrapper.find('[title="automatically update preview"]')
-      .first().simulate("click");
-    expect(wrapper.state().autoPreview).toBeTruthy();
-  });
-
   it("collapses", () => {
     const p = fakeProps();
     p.collapsible = true;
     const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
+    jest.clearAllMocks();
+    expect(wrapper.state().isOpen).toBeFalsy();
+    const chevronDown = wrapper.find("i").first();
+    expect(chevronDown.hasClass("fa-chevron-down")).toBeTruthy();
+    chevronDown.simulate("click");
     expect(wrapper.state().isOpen).toBeTruthy();
-    const chevron = wrapper.find("i").first();
-    expect(chevron.hasClass("fa-chevron-up")).toBeTruthy();
-    chevron.simulate("click");
+    const chevronUp = wrapper.find("i").first();
+    expect(chevronUp.hasClass("fa-chevron-up")).toBeTruthy();
+    chevronUp.simulate("click");
     expect(wrapper.state().isOpen).toBeFalsy();
   });
 });

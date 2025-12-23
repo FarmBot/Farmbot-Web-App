@@ -29,6 +29,6 @@ export function stashGrid(gridId: string) {
       type: Actions.BATCH_DESTROY_RESOURCE_OK,
       payload: plants,
     });
-    return Promise.resolve({});
+    return Promise.all([]);
   };
 }
