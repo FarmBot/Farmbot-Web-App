@@ -17,6 +17,8 @@ import { Actions } from "../../constants";
 import { round } from "lodash";
 import { Collapse } from "@blueprintjs/core";
 
+export const MAX_N = 200;
+
 export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
   state: PlantGridState = {
     grid: this.initGridState,
@@ -48,6 +50,7 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
   }
 
   onChange = (key: PlantGridKey, val: number) => {
+    if (this.state.grid[key] == val) { return; }
     const grid = { ...this.state.grid, [key]: val };
     ["startX", "startY"].includes(key) &&
       this.props.dispatch({
@@ -79,27 +82,29 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
   get outdated() { return this.getKey() != this.state.previous; }
   get dirty() { return this.state.status === "dirty"; }
 
-  componentDidUpdate = () => {
-    if (this.dirty && this.outdated) {
-      this.performPreview()();
-    }
-  };
-
   componentWillUnmount() {
     this.dirty &&
       this.props.dispatch(stashGrid(this.state.gridId));
     this.props.dispatch(showCameraViewPoints(undefined));
   }
 
+  consoleLog = (action: string, start: number) =>
+    console.debug(`${action} plant grid in ${performance.now() - start} ms`);
+
   performPreview = (force = false) => () => {
     if (!this.state.autoPreview && !force) { return; }
+    console.debug("performPreview");
+    const startRevertPreview = performance.now();
     this.revertPreview({ setStatus: false })();
-    if (this.plantCount > 100) {
-      error(t("Please make a grid with less than 100 {{ itemType }}",
-        { itemType: this.props.openfarm_slug ? t("plants") : t("points") }));
+    this.consoleLog("Reverted", startRevertPreview);
+    if (this.plantCount > MAX_N) {
+      error(t("Please make a grid with less than {{ n }} {{ itemType }}", {
+        n: MAX_N,
+        itemType: this.props.openfarm_slug ? t("plants") : t("points"),
+      }));
       return;
     }
-
+    const startInitPlantGrid = performance.now();
     const plants = initPlantGrid({
       grid: this.state.grid,
       openfarm_slug: this.props.openfarm_slug,
@@ -111,7 +116,10 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
       meta: this.props.meta,
       designer: this.props.designer,
     });
+    this.consoleLog("Generated", startInitPlantGrid);
+    const startDispatch = performance.now();
     plants.map(p => this.props.dispatch(init("Point", p)));
+    this.consoleLog("Dispatched", startDispatch);
     this.setState({ status: "dirty", previous: this.getKey() });
   };
 
@@ -186,8 +194,7 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
           grid={this.state.grid}
           botPosition={this.props.botPosition}
           onChange={this.onChange}
-          onUseCurrentPosition={this.onUseCurrentPosition}
-          preview={this.performPreview()} />
+          onUseCurrentPosition={this.onUseCurrentPosition} />
         <HexPackingToggle value={this.state.offsetPacking}
           toggle={() => this.setState({
             offsetPacking: !this.state.offsetPacking,
@@ -212,7 +219,7 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
             toggleValue={this.state.autoPreview}
             toggleAction={() => {
               const enabled = this.state.autoPreview;
-              if (!enabled) { this.performPreview(true); }
+              if (!enabled) { this.performPreview(true)(); }
               this.setState({ autoPreview: !enabled });
             }}
             title={t("automatically update preview")} />

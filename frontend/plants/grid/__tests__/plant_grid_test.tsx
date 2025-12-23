@@ -9,7 +9,7 @@ jest.mock("../../../api/crud", () => ({
 
 import React from "react";
 import { mount } from "enzyme";
-import { PlantGrid } from "../plant_grid";
+import { MAX_N, PlantGrid } from "../plant_grid";
 import { saveGrid, stashGrid } from "../thunks";
 import { error, success } from "../../../toast/toast";
 import { PlantGridProps } from "../interfaces";
@@ -18,6 +18,10 @@ import { Actions } from "../../../constants";
 import { fakeDesignerState } from "../../../__test_support__/fake_designer_state";
 
 describe("<PlantGrid />", () => {
+  beforeEach(() => {
+    console.debug = jest.fn();
+  });
+
   const fakeProps = (): PlantGridProps => ({
     xy_swap: true,
     openfarm_slug: "beets",
@@ -90,35 +94,35 @@ describe("<PlantGrid />", () => {
     expect(stashGrid).toHaveBeenCalledWith(wrapper.state().gridId);
   });
 
-  it("prevents creation of grids with > 100 plants", () => {
+  it(`prevents creation of grids with > ${MAX_N} plants`, () => {
     const props = fakeProps();
     const wrapper = mount<PlantGrid>(<PlantGrid {...props} />);
     wrapper.setState({
       grid: {
         ...wrapper.state().grid,
-        numPlantsH: 10,
+        numPlantsH: MAX_N / 10,
         numPlantsV: 11
       }
     });
     wrapper.instance().performPreview()();
     expect(error).toHaveBeenCalledWith(
-      "Please make a grid with less than 100 plants");
+      `Please make a grid with less than ${MAX_N} plants`);
   });
 
-  it("prevents creation of grids with > 100 points", () => {
+  it(`prevents creation of grids with > ${MAX_N} points`, () => {
     const p = fakeProps();
     p.openfarm_slug = undefined;
     const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
     wrapper.setState({
       grid: {
         ...wrapper.state().grid,
-        numPlantsH: 10,
+        numPlantsH: MAX_N / 10,
         numPlantsV: 11
       }
     });
     wrapper.instance().performPreview()();
     expect(error).toHaveBeenCalledWith(
-      "Please make a grid with less than 100 points");
+      `Please make a grid with less than ${MAX_N} points`);
   });
 
   it("doesn't perform preview", () => {
@@ -173,6 +177,8 @@ describe("<PlantGrid />", () => {
   it("handles data changes", () => {
     const props = fakeProps();
     const wrapper = mount<PlantGrid>(<PlantGrid {...props} />);
+    wrapper.instance().onChange("numPlantsH", 6);
+    expect(wrapper.state().grid.numPlantsH).toEqual(6);
     wrapper.instance().onChange("numPlantsH", 6);
     expect(wrapper.state().grid.numPlantsH).toEqual(6);
   });

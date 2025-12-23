@@ -52,7 +52,6 @@ interface GridInputPropsBase {
   grid: PlantGridData;
   xy_swap: boolean;
   onChange(key: PlantGridKey, value: number): void;
-  preview(): void;
 }
 
 export interface GridInputProps extends GridInputPropsBase {

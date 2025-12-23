@@ -19,7 +19,6 @@ describe("<GridInput/>", () => {
     grid: testGridInputs(),
     xy_swap: true,
     onChange: jest.fn(() => jest.fn()),
-    preview: jest.fn(),
     botPosition: { x: undefined, y: undefined, z: undefined },
     onUseCurrentPosition: jest.fn(),
   });
@@ -59,7 +58,6 @@ describe("<InputCell/>", () => {
     gridKey: "numPlantsH",
     xy_swap: false,
     onChange: jest.fn(),
-    preview: jest.fn(),
     grid: testGridInputs(),
   });
 
@@ -88,7 +86,6 @@ describe("<InputCell/>", () => {
     const wrapper = shallow(<InputCell {...p} />);
     wrapper.find("input").first().simulate("blur");
     expect(p.onChange).toHaveBeenCalledWith(p.gridKey, 2);
-    expect(p.preview).toHaveBeenCalled();
     expect(wrapper.find("input").props().value).toEqual("2");
   });
 
@@ -100,7 +97,6 @@ describe("<InputCell/>", () => {
     });
     expect(wrapper.find("input").props().value).toEqual("");
     wrapper.find("input").first().simulate("blur");
-    expect(p.preview).not.toHaveBeenCalled();
     expect(wrapper.find("input").props().value).toEqual("2");
   });
 });

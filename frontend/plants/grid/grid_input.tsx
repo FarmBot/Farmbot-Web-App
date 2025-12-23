@@ -24,7 +24,7 @@ export const getLabel = (
 };
 
 export function InputCell(props: InputCellProps) {
-  const { gridKey, onChange, grid, preview } = props;
+  const { gridKey, onChange, grid } = props;
   const [value, setValue] = React.useState("" + grid[gridKey]);
   return <div>
     <input name={gridKey} className={gridKey}
@@ -33,9 +33,7 @@ export function InputCell(props: InputCellProps) {
       onBlur={() => {
         const number = parseInt(value, 10);
         !isNaN(number) && onChange(gridKey, number);
-        isNaN(number)
-          ? setValue("" + grid[gridKey])
-          : preview();
+        isNaN(number) && setValue("" + grid[gridKey]);
       }}
       onChange={e => setValue(e.currentTarget.value)} />
   </div>;
@@ -76,14 +74,12 @@ export function GridInput(props: GridInputProps) {
           xy_swap={props.xy_swap}
           gridKey={left}
           onChange={props.onChange}
-          preview={props.preview}
           grid={props.grid} />
         <InputCell
           itemType={props.itemType}
           xy_swap={props.xy_swap}
           gridKey={right}
           onChange={props.onChange}
-          preview={props.preview}
           grid={props.grid} />
       </Row>)}
   </div>;
