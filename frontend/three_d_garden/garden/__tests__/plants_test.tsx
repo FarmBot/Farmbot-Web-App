@@ -35,6 +35,9 @@ describe("<ThreeDPlant />", () => {
     const config = clone(INITIAL);
     const plant = fakePlant();
     plant.body.name = "Beet";
+    plant.body.id = 1;
+    const otherPlant = fakePlant();
+    otherPlant.body.id = 2;
     return {
       plant: convertPlants(config, [plant])[0],
       i: 0,
@@ -43,6 +46,7 @@ describe("<ThreeDPlant />", () => {
       visible: true,
       getZ: () => 0,
       activePositionRef: { current: { x: 0, y: 0 } },
+      plants: convertPlants(config, [plant, otherPlant]),
     };
   };
 
@@ -79,6 +83,22 @@ describe("<ThreeDPlant />", () => {
     location.pathname = Path.mock(Path.cropSearch("mint"));
     const p = fakeProps();
     p.spreadVisible = true;
+    const { container } = render(<ThreeDPlant {...p} />);
+    expect(container).toContainHTML("sphere");
+  });
+
+  it("renders spread: edit plant mode", () => {
+    location.pathname = Path.mock(Path.plants("1"));
+    const p = fakeProps();
+    p.spreadVisible = false;
+    const { container } = render(<ThreeDPlant {...p} />);
+    expect(container).toContainHTML("sphere");
+  });
+
+  it("renders spread: edit plant mode without plant", () => {
+    location.pathname = Path.mock(Path.plants("999999"));
+    const p = fakeProps();
+    p.spreadVisible = false;
     const { container } = render(<ThreeDPlant {...p} />);
     expect(container).toContainHTML("sphere");
   });

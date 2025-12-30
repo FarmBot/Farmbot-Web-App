@@ -56,6 +56,7 @@ export interface ThreeDPlantProps {
   getZ(x: number, y: number): number;
   startTimeRef?: React.RefObject<number>;
   activePositionRef: ActivePositionRef;
+  plants: ThreeDGardenPlant[];
 }
 
 export const ThreeDPlant = (props: ThreeDPlantProps) => {
@@ -83,6 +84,7 @@ export const ThreeDPlant = (props: ThreeDPlantProps) => {
       : <PlantPart
         i={i}
         config={config}
+        plants={props.plants}
         plant={plant}
         billboardRef={billboardRef}
         activePositionRef={props.activePositionRef}
@@ -121,16 +123,24 @@ interface PlantPartProps extends CustomImageProps {
   spreadVisible: boolean;
   config: Config;
   activePositionRef: ActivePositionRef;
+  plants: ThreeDGardenPlant[];
 }
 
 const PlantPart = (props: PlantPartProps) => {
   const { config } = props;
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const boundsCenter = React.useMemo(getBoundsCenter(config), []);
+  const editPlantMode =
+    Path.getSlug(Path.designer()) == "plants" && Path.lastChunkIsNum();
+  const plantId = parseInt(Path.getSlug(Path.plants()));
+  const currentPlant =
+    props.plants.filter(p => p.id == plantId)[0] as ThreeDGardenPlant | undefined;
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const halfSize = React.useMemo(getHalfSize(config), []);
   const spreadRadii = getSpreadRadii({
-    activeDragSpread: findCrop(Path.getCropSlug()).spread,
+    activeDragSpread: editPlantMode
+      ? currentPlant?.spread
+      : findCrop(Path.getCropSlug()).spread,
     inactiveSpread: props.plant.spread,
     radius: props.plant.size / 2,
   });
@@ -138,7 +148,10 @@ const PlantPart = (props: PlantPartProps) => {
   const rgb = React.useMemo(() => ({ value: [0, 1, 0] }), []);
   useFrame(() => {
     const worldPos = props.activePositionRef.current || { x: -10000, y: -10000 };
-    const active = getGardenPositionFunc(config)(worldPos);
+    const activePointer = getGardenPositionFunc(config)(worldPos);
+    const active = editPlantMode
+      ? { x: currentPlant?.x || -10000, y: currentPlant?.y || -10000 }
+      : activePointer;
     const overlap = getSpreadOverlap({
       spreadRadii,
       activeDragXY: {
@@ -148,13 +161,15 @@ const PlantPart = (props: PlantPartProps) => {
       },
       plantXY: { x: round(props.plant.x), y: round(props.plant.y), z: 0 },
     });
-    const color = props.plant.id ? overlap.color.rgb : [1, 1, 1];
-    rgb.value = getMode() == Mode.clickToAdd ? color : [0, 1, 0];
+    const color = (props.plant.id && (plantId != props.plant.id))
+      ? overlap.color.rgb
+      : [1, 1, 1];
+    const clickToAddMode = getMode() == Mode.clickToAdd;
+    rgb.value = (clickToAddMode || editPlantMode) ? color : [0, 1, 0];
   });
-
   return <Group>
     <Image {...props} />
-    {(props.spreadVisible || !props.plant.id) &&
+    {(props.spreadVisible || !props.plant.id || editPlantMode) &&
       <Sphere args={[spreadRadii.inactive, 32, 32]}>
         <MeshPhongMaterial
           color={"green"}

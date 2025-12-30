@@ -204,6 +204,7 @@ export const GardenModel = (props: GardenModelProps) => {
       {threeDPlants.map((plant, i) =>
         <ThreeDPlant key={i} i={i}
           plant={plant}
+          plants={threeDPlants}
           labelOnly={true}
           config={config}
           getZ={getZ}
@@ -222,6 +223,7 @@ export const GardenModel = (props: GardenModelProps) => {
       {threeDPlants.map((plant, i) =>
         <ThreeDPlant key={i} i={i}
           plant={plant}
+          plants={threeDPlants}
           visible={plantsVisible}
           spreadVisible={showSpread}
           config={config}
