@@ -150,13 +150,19 @@ const PlantPart = (props: PlantPartProps) => {
     const worldPos = props.activePositionRef.current || { x: -10000, y: -10000 };
     const activePointer = getGardenPositionFunc(config)(worldPos);
     const active = editPlantMode
-      ? { x: currentPlant?.x || -10000, y: currentPlant?.y || -10000 }
-      : activePointer;
+      ? {
+        x: currentPlant?.x || -10000,
+        y: currentPlant?.y || -10000,
+      }
+      : {
+        x: activePointer.x + config.bedXOffset,
+        y: activePointer.y + config.bedYOffset,
+      };
     const overlap = getSpreadOverlap({
       spreadRadii,
       activeDragXY: {
-        x: round(active.x + config.bedXOffset),
-        y: round(active.y + config.bedYOffset),
+        x: round(active.x),
+        y: round(active.y),
         z: 0,
       },
       plantXY: { x: round(props.plant.x), y: round(props.plant.y), z: 0 },
