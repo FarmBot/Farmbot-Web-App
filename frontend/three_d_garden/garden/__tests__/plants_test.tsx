@@ -4,15 +4,15 @@ interface MockRef {
     position: { z: number; };
   } | undefined;
 }
-const mockRef: MockRef = {
+const mockRef = (): MockRef => ({
   current: {
     scale: { set: jest.fn() },
     position: { z: 0 },
   }
-};
+});
 jest.mock("react", () => ({
   ...jest.requireActual("react"),
-  useRef: () => mockRef,
+  useRef: mockRef,
 }));
 
 import React from "react";
@@ -27,10 +27,17 @@ import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import { convertPlants } from "../../../farm_designer/three_d_garden_map";
 
 describe("<ThreeDPlant />", () => {
+  beforeEach(() => {
+    location.pathname = Path.mock(Path.designer());
+  });
+
   const fakeProps = (): ThreeDPlantProps => {
     const config = clone(INITIAL);
     const plant = fakePlant();
     plant.body.name = "Beet";
+    plant.body.id = 1;
+    const otherPlant = fakePlant();
+    otherPlant.body.id = 2;
     return {
       plant: convertPlants(config, [plant])[0],
       i: 0,
@@ -38,6 +45,8 @@ describe("<ThreeDPlant />", () => {
       hoveredPlant: undefined,
       visible: true,
       getZ: () => 0,
+      activePositionRef: { current: { x: 0, y: 0 } },
+      plants: convertPlants(config, [plant, otherPlant]),
     };
   };
 
@@ -66,9 +75,32 @@ describe("<ThreeDPlant />", () => {
     p.config.labelsOnHover = false;
     p.labelOnly = false;
     p.config.light = false;
-    render(<ThreeDPlant {...p} />);
     const { container } = render(<ThreeDPlant {...p} />);
     expect(container).toContainHTML("avif");
+  });
+
+  it("renders spread", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    const p = fakeProps();
+    p.spreadVisible = true;
+    const { container } = render(<ThreeDPlant {...p} />);
+    expect(container).toContainHTML("sphere");
+  });
+
+  it("renders spread: edit plant mode", () => {
+    location.pathname = Path.mock(Path.plants("1"));
+    const p = fakeProps();
+    p.spreadVisible = false;
+    const { container } = render(<ThreeDPlant {...p} />);
+    expect(container).toContainHTML("sphere");
+  });
+
+  it("renders spread: edit plant mode without plant", () => {
+    location.pathname = Path.mock(Path.plants("999999"));
+    const p = fakeProps();
+    p.spreadVisible = false;
+    const { container } = render(<ThreeDPlant {...p} />);
+    expect(container).toContainHTML("sphere");
   });
 
   it("renders plant: not size animated", () => {
@@ -79,7 +111,6 @@ describe("<ThreeDPlant />", () => {
     p.config.light = false;
     p.config.animateSeasons = true;
     p.startTimeRef = undefined;
-    render(<ThreeDPlant {...p} />);
     const { container } = render(<ThreeDPlant {...p} />);
     expect(container).toContainHTML("avif");
   });
@@ -92,7 +123,6 @@ describe("<ThreeDPlant />", () => {
     p.config.light = false;
     p.config.animateSeasons = true;
     p.startTimeRef = { current: 0 };
-    render(<ThreeDPlant {...p} />);
     const { container } = render(<ThreeDPlant {...p} />);
     expect(container).toContainHTML("avif");
   });
@@ -103,7 +133,6 @@ describe("<ThreeDPlant />", () => {
     p.config.labelsOnHover = false;
     p.labelOnly = false;
     p.config.light = true;
-    render(<ThreeDPlant {...p} />);
     const { container } = render(<ThreeDPlant {...p} />);
     expect(container).toContainHTML("avif");
   });

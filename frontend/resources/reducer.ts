@@ -159,6 +159,13 @@ export const resourceReducer =
       folderIndexer(payload, s.index);
       return s;
     })
+    .add<TaggedResource[]>(Actions.BATCH_DESTROY_RESOURCE_OK, (s, { payload }) => {
+      payload.map(p => {
+        indexRemove(s.index, p);
+        folderIndexer(p, s.index);
+      });
+      return s;
+    })
     .add<GeneralizedError>(Actions._RESOURCE_NO, (s, { payload }) => {
       merge(findByUuid(s.index, payload.uuid), payload);
       mutateSpecialStatus(payload.uuid, s.index, payload.statusBeforeError);

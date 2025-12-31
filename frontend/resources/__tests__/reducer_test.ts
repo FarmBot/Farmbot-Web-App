@@ -196,6 +196,17 @@ describe("resource reducer", () => {
       .map((kind: ResourceName) => testResourceDestroy(kind));
   });
 
+  it("destroys resources", () => {
+    const state = fakeState().resources;
+    const plant = fakePlant();
+    const action = {
+      type: Actions.BATCH_DESTROY_RESOURCE_OK,
+      payload: [plant],
+    };
+    const newState = resourceReducer(state, action);
+    expect(newState.index.references[plant.uuid]).toEqual(undefined);
+  });
+
   it("toggles folder open state", () => {
     const folder = fakeFolder();
     folder.body.id = 1;

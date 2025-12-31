@@ -90,9 +90,10 @@ export const WeedBase = (props: WeedBaseProps) => {
       scale={weedSize}
       renderOrder={RenderOrder.weedSpheres}
       args={[1, 32, 32]}
-      position={[0, 0, 0]}>
+      position={[0, 0, iconSize / 2]}>
       <MeshPhongMaterial
         color={props.color}
+        depthWrite={false}
         transparent={true}
         opacity={0.5 * props.alpha} />
     </Sphere>

@@ -104,6 +104,7 @@ export const GardenModel = (props: GardenModelProps) => {
   const showPoints = config.showSoilPoints
     || !!addPlantProps?.getConfigValue(BooleanSetting.show_points);
   const showWeeds = !!addPlantProps?.getConfigValue(BooleanSetting.show_weeds);
+  const showSpread = !!addPlantProps?.getConfigValue(BooleanSetting.show_spread);
 
   const soilPoints = filterSoilPoints({ points: props.mapPoints, config });
   const soilSurface = React.useMemo(() =>
@@ -121,6 +122,8 @@ export const GardenModel = (props: GardenModelProps) => {
 
   // eslint-disable-next-line no-null/no-null
   const skyRef = React.useRef<ThreeMeshBasicMaterial>(null);
+  // eslint-disable-next-line no-null/no-null
+  const activePositionRef = React.useRef<{ x: number, y: number }>(null);
 
   // eslint-disable-next-line no-null/no-null
   return <Group dispose={null}
@@ -177,6 +180,7 @@ export const GardenModel = (props: GardenModelProps) => {
       showMoistureReadings={showMoistureReadings}
       sensors={props.sensors || []}
       sensorReadings={props.sensorReadings || []}
+      activePositionRef={activePositionRef}
       addPlantProps={addPlantProps} />
     {showMoistureMap && props.config.moistureDebug &&
       <MoistureReadings
@@ -200,9 +204,11 @@ export const GardenModel = (props: GardenModelProps) => {
       {threeDPlants.map((plant, i) =>
         <ThreeDPlant key={i} i={i}
           plant={plant}
+          plants={threeDPlants}
           labelOnly={true}
           config={config}
           getZ={getZ}
+          activePositionRef={activePositionRef}
           hoveredPlant={hoveredPlant} />)}
     </Group>
     <Grid
@@ -217,9 +223,12 @@ export const GardenModel = (props: GardenModelProps) => {
       {threeDPlants.map((plant, i) =>
         <ThreeDPlant key={i} i={i}
           plant={plant}
+          plants={threeDPlants}
           visible={plantsVisible}
+          spreadVisible={showSpread}
           config={config}
           hoveredPlant={hoveredPlant}
+          activePositionRef={activePositionRef}
           getZ={getZ}
           startTimeRef={props.startTimeRef}
           dispatch={dispatch} />)}

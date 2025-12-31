@@ -4,20 +4,24 @@ jest.mock("../thunks", () => ({
 }));
 
 jest.mock("../../../api/crud", () => ({
-  init: jest.fn(),
+  batchInitDirty: jest.fn(),
 }));
 
 import React from "react";
 import { mount } from "enzyme";
-import { PlantGrid } from "../plant_grid";
+import { MAX_N, PlantGrid } from "../plant_grid";
 import { saveGrid, stashGrid } from "../thunks";
 import { error, success } from "../../../toast/toast";
 import { PlantGridProps } from "../interfaces";
-import { init } from "../../../api/crud";
+import { batchInitDirty } from "../../../api/crud";
 import { Actions } from "../../../constants";
 import { fakeDesignerState } from "../../../__test_support__/fake_designer_state";
 
 describe("<PlantGrid />", () => {
+  beforeEach(() => {
+    console.debug = jest.fn();
+  });
+
   const fakeProps = (): PlantGridProps => ({
     xy_swap: true,
     openfarm_slug: "beets",
@@ -31,13 +35,7 @@ describe("<PlantGrid />", () => {
   it("renders", () => {
     const p = fakeProps();
     const el = mount<PlantGrid>(<PlantGrid {...p} />);
-    // Upon load, there should be one button.
-    const previewButton = el.find("a.preview-button");
-    expect(previewButton.text()).toContain("Preview");
-    previewButton.simulate("click");
-    expect(init).toHaveBeenCalledTimes(6);
-
-    // After clicking PREVIEW, there should be two buttons.
+    expect(batchInitDirty).toHaveBeenCalledTimes(1);
     const cancel = el.find("a.cancel-button");
     const save = el.find("a.save-button");
     expect(cancel.text()).toContain("Cancel");
@@ -48,11 +46,7 @@ describe("<PlantGrid />", () => {
   it("renders update button", () => {
     const p = fakeProps();
     const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
-    wrapper.setState({ autoPreview: false });
-    const previewButton = wrapper.find("a.preview-button");
-    expect(previewButton.text()).toContain("Preview");
-    previewButton.simulate("click");
-    expect(init).toHaveBeenCalledTimes(6);
+    expect(batchInitDirty).toHaveBeenCalledTimes(1);
     wrapper.setState({ offsetPacking: true });
     const cancel = wrapper.find("a.cancel-button");
     const update = wrapper.find("a.update-button");
@@ -90,41 +84,42 @@ describe("<PlantGrid />", () => {
     expect(stashGrid).toHaveBeenCalledWith(wrapper.state().gridId);
   });
 
-  it("prevents creation of grids with > 100 plants", () => {
+  it(`prevents creation of grids with > ${MAX_N} plants`, () => {
     const props = fakeProps();
     const wrapper = mount<PlantGrid>(<PlantGrid {...props} />);
     wrapper.setState({
       grid: {
         ...wrapper.state().grid,
-        numPlantsH: 10,
+        numPlantsH: MAX_N / 10,
         numPlantsV: 11
       }
     });
     wrapper.instance().performPreview()();
     expect(error).toHaveBeenCalledWith(
-      "Please make a grid with less than 100 plants");
+      `Please make a grid with less than ${MAX_N} plants`);
   });
 
-  it("prevents creation of grids with > 100 points", () => {
+  it(`prevents creation of grids with > ${MAX_N} points`, () => {
     const p = fakeProps();
     p.openfarm_slug = undefined;
     const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
     wrapper.setState({
       grid: {
         ...wrapper.state().grid,
-        numPlantsH: 10,
+        numPlantsH: MAX_N / 10,
         numPlantsV: 11
       }
     });
     wrapper.instance().performPreview()();
     expect(error).toHaveBeenCalledWith(
-      "Please make a grid with less than 100 points");
+      `Please make a grid with less than ${MAX_N} points`);
   });
 
   it("doesn't perform preview", () => {
     const p = fakeProps();
     p.openfarm_slug = undefined;
     const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
+    jest.clearAllMocks();
     wrapper.setState({
       autoPreview: false,
       grid: {
@@ -135,7 +130,7 @@ describe("<PlantGrid />", () => {
     });
     wrapper.instance().performPreview()();
     expect(error).not.toHaveBeenCalled();
-    expect(init).not.toHaveBeenCalled();
+    expect(batchInitDirty).not.toHaveBeenCalled();
   });
 
   it("performs preview", () => {
@@ -150,16 +145,18 @@ describe("<PlantGrid />", () => {
     designer.cropHeightCurveId = 3;
     p.designer = designer;
     const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
+    jest.clearAllMocks();
     wrapper.instance().performPreview()();
     expect(error).not.toHaveBeenCalled();
-    expect(init).toHaveBeenCalledTimes(6);
-    expect(init).toHaveBeenCalledWith("Point", expect.objectContaining({
-      plant_stage: "planted",
-      planted_at: "2020-01-20T20:00:00.000Z",
-      water_curve_id: 1,
-      spread_curve_id: 2,
-      height_curve_id: 3,
-    }));
+    expect(batchInitDirty).toHaveBeenCalledTimes(1);
+    expect(batchInitDirty).toHaveBeenCalledWith("Point",
+      expect.arrayContaining([expect.objectContaining({
+        plant_stage: "planted",
+        planted_at: "2020-01-20T20:00:00.000Z",
+        water_curve_id: 1,
+        spread_curve_id: 2,
+        height_curve_id: 3,
+      })]));
   });
 
   it("discards unsaved changes", () => {
@@ -173,6 +170,8 @@ describe("<PlantGrid />", () => {
   it("handles data changes", () => {
     const props = fakeProps();
     const wrapper = mount<PlantGrid>(<PlantGrid {...props} />);
+    wrapper.instance().onChange("numPlantsH", 6);
+    expect(wrapper.state().grid.numPlantsH).toEqual(6);
     wrapper.instance().onChange("numPlantsH", 6);
     expect(wrapper.state().grid.numPlantsH).toEqual(6);
   });
@@ -200,30 +199,33 @@ describe("<PlantGrid />", () => {
   it("toggles packing method on", () => {
     const p = fakeProps();
     const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
+    jest.clearAllMocks();
     expect(wrapper.state().offsetPacking).toBeFalsy();
     wrapper.find('[title="toggle packing method"]')
       .first().simulate("click");
     expect(wrapper.state().offsetPacking).toBeTruthy();
     expect(wrapper.state().grid.spacingH).toEqual(217);
-    expect(init).toHaveBeenCalledTimes(6);
+    expect(batchInitDirty).toHaveBeenCalledTimes(1);
   });
 
   it("toggles packing method off", () => {
     const p = fakeProps();
     const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
+    jest.clearAllMocks();
     wrapper.setState({ offsetPacking: true });
     expect(wrapper.state().offsetPacking).toBeTruthy();
     wrapper.find('[title="toggle packing method"]')
       .first().simulate("click");
     expect(wrapper.state().offsetPacking).toBeFalsy();
     expect(wrapper.state().grid.spacingH).toEqual(250);
-    expect(init).toHaveBeenCalledTimes(6);
+    expect(batchInitDirty).toHaveBeenCalledTimes(1);
   });
 
   it("toggles camera view on", () => {
     const p = fakeProps();
     p.openfarm_slug = undefined;
     const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
+    jest.clearAllMocks();
     expect(wrapper.state().cameraView).toBeFalsy();
     wrapper.find('[title="show camera view area"]')
       .first().simulate("click");
@@ -232,13 +234,14 @@ describe("<PlantGrid />", () => {
       payload: wrapper.state().gridId,
     });
     expect(wrapper.state().cameraView).toBeTruthy();
-    expect(init).toHaveBeenCalledTimes(6);
+    expect(batchInitDirty).toHaveBeenCalledTimes(1);
   });
 
   it("toggles camera view off", () => {
     const p = fakeProps();
     p.openfarm_slug = undefined;
     const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
+    jest.clearAllMocks();
     wrapper.setState({ cameraView: true });
     wrapper.find('[title="show camera view area"]')
       .first().simulate("click");
@@ -247,35 +250,22 @@ describe("<PlantGrid />", () => {
       payload: undefined,
     });
     expect(wrapper.state().cameraView).toBeFalsy();
-    expect(init).toHaveBeenCalledTimes(6);
-  });
-
-  it("toggles auto-preview off", () => {
-    const p = fakeProps();
-    const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
-    wrapper.setState({ autoPreview: true });
-    wrapper.find('[title="automatically update preview"]')
-      .first().simulate("click");
-    expect(wrapper.state().autoPreview).toBeFalsy();
-  });
-
-  it("toggles auto-preview on", () => {
-    const p = fakeProps();
-    const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
-    wrapper.setState({ autoPreview: false });
-    wrapper.find('[title="automatically update preview"]')
-      .first().simulate("click");
-    expect(wrapper.state().autoPreview).toBeTruthy();
+    expect(batchInitDirty).toHaveBeenCalledTimes(1);
   });
 
   it("collapses", () => {
     const p = fakeProps();
     p.collapsible = true;
     const wrapper = mount<PlantGrid>(<PlantGrid {...p} />);
+    jest.clearAllMocks();
+    expect(wrapper.state().isOpen).toBeFalsy();
+    const chevronDown = wrapper.find("i").first();
+    expect(chevronDown.hasClass("fa-chevron-down")).toBeTruthy();
+    chevronDown.simulate("click");
     expect(wrapper.state().isOpen).toBeTruthy();
-    const chevron = wrapper.find("i").first();
-    expect(chevron.hasClass("fa-chevron-up")).toBeTruthy();
-    chevron.simulate("click");
+    const chevronUp = wrapper.find("i").first();
+    expect(chevronUp.hasClass("fa-chevron-up")).toBeTruthy();
+    chevronUp.simulate("click");
     expect(wrapper.state().isOpen).toBeFalsy();
   });
 });

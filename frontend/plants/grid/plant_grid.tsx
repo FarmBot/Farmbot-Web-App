@@ -5,7 +5,7 @@ import {
   PlantGridState,
 } from "./interfaces";
 import { initPlantGrid } from "./generate_grid";
-import { init } from "../../api/crud";
+import { batchInitDirty } from "../../api/crud";
 import { uuid } from "farmbot";
 import { saveGrid, stashGrid } from "./thunks";
 import { error, success } from "../../toast/toast";
@@ -17,6 +17,8 @@ import { Actions } from "../../constants";
 import { round } from "lodash";
 import { Collapse } from "@blueprintjs/core";
 
+export const MAX_N = 200;
+
 export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
   state: PlantGridState = {
     grid: this.initGridState,
@@ -26,7 +28,7 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
     cameraView: false,
     previous: "",
     autoPreview: true,
-    isOpen: true,
+    isOpen: false,
   };
 
   get initGridState() {
@@ -48,6 +50,7 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
   }
 
   onChange = (key: PlantGridKey, val: number) => {
+    if (this.state.grid[key] == val) { return; }
     const grid = { ...this.state.grid, [key]: val };
     ["startX", "startY"].includes(key) &&
       this.props.dispatch({
@@ -79,27 +82,37 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
   get outdated() { return this.getKey() != this.state.previous; }
   get dirty() { return this.state.status === "dirty"; }
 
-  componentDidUpdate = () => {
-    if (this.dirty && this.outdated) {
-      this.performPreview()();
-    }
-  };
+  componentDidMount() {
+    !this.props.collapsible && this.performPreview()();
+  }
 
-  componentWillUnmount() {
+  unmount = () => {
     this.dirty &&
       this.props.dispatch(stashGrid(this.state.gridId));
     this.props.dispatch(showCameraViewPoints(undefined));
+  };
+
+  componentWillUnmount() {
+    this.unmount();
   }
+
+  consoleLog = (action: string, start: number) =>
+    console.debug(`${action} plant grid in ${performance.now() - start} ms`);
 
   performPreview = (force = false) => () => {
     if (!this.state.autoPreview && !force) { return; }
+    console.debug("performPreview");
+    const startRevertPreview = performance.now();
     this.revertPreview({ setStatus: false })();
-    if (this.plantCount > 100) {
-      error(t("Please make a grid with less than 100 {{ itemType }}",
-        { itemType: this.props.openfarm_slug ? t("plants") : t("points") }));
+    this.consoleLog("Reverted", startRevertPreview);
+    if (this.plantCount > MAX_N) {
+      error(t("Please make a grid with less than {{ n }} {{ itemType }}", {
+        n: MAX_N,
+        itemType: this.props.openfarm_slug ? t("plants") : t("points"),
+      }));
       return;
     }
-
+    const startInitPlantGrid = performance.now();
     const plants = initPlantGrid({
       grid: this.state.grid,
       openfarm_slug: this.props.openfarm_slug,
@@ -111,13 +124,17 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
       meta: this.props.meta,
       designer: this.props.designer,
     });
-    plants.map(p => this.props.dispatch(init("Point", p)));
+    this.consoleLog("Generated", startInitPlantGrid);
+    const startDispatch = performance.now();
+    this.props.dispatch(batchInitDirty("Point", plants));
+    this.consoleLog("Dispatched", startDispatch);
     this.setState({ status: "dirty", previous: this.getKey() });
   };
 
   revertPreview = ({ setStatus }: { setStatus: boolean }) => () =>
     this.props.dispatch(stashGrid(this.state.gridId))
-      .then(() => setStatus && this.setState({ status: "clean" }));
+      .then(() => setStatus &&
+        this.setState({ status: "clean" }, this.props.close));
 
   saveGrid = () =>
     this.props.dispatch(saveGrid(this.state.gridId))
@@ -137,10 +154,10 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
     switch (this.state.status) {
       case "clean":
         return <div className={"preview-grid-button"}>
-          <a className={"preview-button fb-button clear invert"}
-            title={t("Preview")}
-            onClick={this.performPreview(true)}>
-            {t("Preview")}
+          <a className={"cancel-button fb-button clear invert"}
+            title={t("Close")}
+            onClick={this.props.close}>
+            {t("Close")}
           </a>
         </div>;
       case "dirty":
@@ -169,7 +186,10 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
     return <div className={"grid-and-row-planting"}>
       {this.props.collapsible &&
         <i className={`fa fa-chevron-${this.state.isOpen ? "up" : "down"}`}
-          onClick={() => this.setState({ isOpen: !this.state.isOpen })} />}
+          onClick={() => {
+            !this.state.isOpen ? this.performPreview()() : this.unmount();
+            this.setState({ isOpen: !this.state.isOpen });
+          }} />}
       <h3>{t("Add Grid or Row")}</h3>
       <Collapse isOpen={this.props.collapsible ? this.state.isOpen : true}>
         <GridInput
@@ -180,8 +200,7 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
           grid={this.state.grid}
           botPosition={this.props.botPosition}
           onChange={this.onChange}
-          onUseCurrentPosition={this.onUseCurrentPosition}
-          preview={this.performPreview()} />
+          onUseCurrentPosition={this.onUseCurrentPosition} />
         <HexPackingToggle value={this.state.offsetPacking}
           toggle={() => this.setState({
             offsetPacking: !this.state.offsetPacking,
@@ -200,17 +219,6 @@ export class PlantGrid extends React.Component<PlantGridProps, PlantGridState> {
               this.setState({ cameraView: !this.state.cameraView },
                 this.performPreview());
             }} />}
-        <div className={"row grid-exp-1"}>
-          <label>{t("auto-update preview")}</label>
-          <ToggleButton
-            toggleValue={this.state.autoPreview}
-            toggleAction={() => {
-              const enabled = this.state.autoPreview;
-              if (!enabled) { this.performPreview(true); }
-              this.setState({ autoPreview: !enabled });
-            }}
-            title={t("automatically update preview")} />
-        </div>
         <this.Buttons />
       </Collapse>
     </div>;

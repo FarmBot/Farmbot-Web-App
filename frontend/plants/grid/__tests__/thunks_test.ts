@@ -1,7 +1,6 @@
 const mockSaveAllReturnValue = { mock: "yep" };
 jest.mock("../../../api/crud", () => ({
   saveAll: jest.fn(() => mockSaveAllReturnValue),
-  destroy: jest.fn()
 }));
 
 import { saveGrid, stashGrid } from "../thunks";
@@ -10,7 +9,8 @@ import {
 } from "../../../__test_support__/resource_index_builder";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
 import { fakeState } from "../../../__test_support__/fake_state";
-import { saveAll, destroy } from "../../../api/crud";
+import { saveAll } from "../../../api/crud";
+import { Actions } from "../../../constants";
 
 const GRID_ID = "1234567";
 const PLANT = fakePlant();
@@ -33,7 +33,11 @@ describe("stashGrid", () => {
     const thunk = stashGrid(GRID_ID);
     const state = fakeState();
     state.resources = buildResourceIndex([PLANT]);
-    thunk(jest.fn, jest.fn(() => state));
-    expect(destroy).toHaveBeenLastCalledWith(PLANT.uuid, true);
+    const dispatch = jest.fn();
+    thunk(dispatch, jest.fn(() => state));
+    expect(dispatch).toHaveBeenLastCalledWith({
+      type: Actions.BATCH_DESTROY_RESOURCE_OK,
+      payload: [PLANT],
+    });
   });
 });

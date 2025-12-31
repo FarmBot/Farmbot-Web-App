@@ -61,7 +61,8 @@ describe("<BoardType/>", () => {
     const p = fakeProps();
     p.firmwareHardware = "arduino";
     render(<BoardType {...p} />);
-    const selection = screen.getByRole("combobox");
+    const selection =
+      screen.getByRole("button", { name: "Arduino/RAMPS (Genesis v1.2)" });
     fireEvent.click(selection);
     const item = screen.getByText("Farmduino (Genesis v1.3)");
     fireEvent.click(item);
@@ -74,7 +75,7 @@ describe("<BoardType/>", () => {
   it("displays boards", () => {
     mockFeatureBoolean = false;
     render(<BoardType {...fakeProps()} />);
-    const selection = screen.getByRole("combobox");
+    const selection = screen.getByRole("button", { name: "None" });
     fireEvent.click(selection);
     [
       { label: "Farmduino (Genesis v1.7)", value: "farmduino_k17" },
@@ -95,7 +96,7 @@ describe("<BoardType/>", () => {
   it("displays more boards", () => {
     mockFeatureBoolean = true;
     render(<BoardType {...fakeProps()} />);
-    const selection = screen.getByRole("combobox");
+    const selection = screen.getByRole("button", { name: "None" });
     fireEvent.click(selection);
     expect(screen.getByText("Farmduino (Express v1.2)")).toBeInTheDocument();
     expect(screen.getByText("Farmduino (Genesis v1.8)")).toBeInTheDocument();

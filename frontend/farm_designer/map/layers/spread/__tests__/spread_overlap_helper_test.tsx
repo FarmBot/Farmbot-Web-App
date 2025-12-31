@@ -142,8 +142,8 @@ describe("SpreadOverlapHelper functions", () => {
   });
 
   it("getContinuousColor()", () => {
-    expect(getContinuousColor(10, 100)).toEqual("rgba(51, 151, 0, 0.05)");
-    expect(getContinuousColor(20, 100)).toEqual("rgba(102, 202, 0, 0.1)");
+    expect(getContinuousColor(10, 100).string).toEqual("rgba(51, 151, 0, 0.05)");
+    expect(getContinuousColor(20, 100).string).toEqual("rgba(102, 202, 0, 0.1)");
   });
 
   it("getRadius()", () => {

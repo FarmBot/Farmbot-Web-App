@@ -158,7 +158,6 @@ const LayerToggles = (props: LayerTogglesProps) => {
       submenuTitle={t("extras")}
       popover={<PointsSubMenu {...subMenuProps} />} />
     <LayerToggle
-      className={only2DClass}
       settingName={BooleanSetting.show_spread}
       value={props.showSpread}
       label={DeviceSetting.showSpread}

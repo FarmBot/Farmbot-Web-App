@@ -55,6 +55,7 @@ nano .env
 
 # Install project dependencies
 # ============================
+sudo docker compose build web
 # Install the correct version of bundler for the project
 sudo docker compose run web gem install bundler
 # Install application specific Ruby dependencies
@@ -65,7 +66,7 @@ sudo docker compose run web npm install
 sudo docker compose run web bundle exec rails db:create db:migrate
 # Generate a set of *.pem files for data encryption
 # ⚠ SKIP THIS STEP IF UPGRADING!
-sudo docker compose run web rake keys:generate
+sudo docker compose run web bundle exec rake keys:generate
 
 # Run the server! 🌱
 # ==================
@@ -91,7 +92,7 @@ sudo docker compose up
 # Create the database for the app to use
 sudo docker compose run -e RAILS_ENV=test web bundle exec rails db:setup
 # Run the tests in the "test" RAILS_ENV
-sudo docker compose run -e RAILS_ENV=test web rspec spec
+sudo docker compose run -e RAILS_ENV=test web bundle exec rspec spec
 # Run user-interface unit tests (requires a large amount of RAM)
 sudo docker compose run web npm run test
 
@@ -138,6 +139,7 @@ sudo docker compose run web npm run test
   sudo rm -rf node_modules/
   # Download the latest version of the web app
   git pull https://github.com/FarmBot/Farmbot-Web-App.git main
+  sudo docker compose build web
   # Install Ruby gems
   sudo docker compose run web gem install bundler
   sudo docker compose run web bundle install
@@ -157,9 +159,9 @@ sudo docker compose run web npm run test
   exit
   # --- end db container shell commands ---
   # Migrate the database
-  sudo docker compose run web rails db:migrate
+  sudo docker compose run web bundle exec rails db:migrate
   # Verify that parcel builds successfully
-  sudo docker compose run web rake assets:precompile
+  sudo docker compose run web bundle exec rake assets:precompile
   # Run the server
   sudo docker compose up
 # === END OPTIONAL UPGRADES ===

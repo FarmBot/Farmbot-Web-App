@@ -27,7 +27,7 @@ describe("<TimezoneRow />", () => {
   it("select timezone", () => {
     const p = fakeProps();
     render(<TimezoneRow {...p} />);
-    const selector = screen.getByRole("combobox");
+    const selector = screen.getByRole("button", { name: "UTC" });
     fireEvent.click(selector);
     const item = screen.getByText("America/Los_Angeles");
     fireEvent.click(item);
