@@ -10,6 +10,7 @@ export const calculatePlantPositions = (config: Config): ThreeDGardenPlant[] => 
   const startX = 350;
   let nextX = startX;
   let index = 0;
+  let nextId = 1;
   while (nextX <= config.bedLengthOuter - 100) {
     const plantKey = gardenPlants[index];
     const plant = PLANTS[plantKey];
@@ -22,6 +23,7 @@ export const calculatePlantPositions = (config: Config): ThreeDGardenPlant[] => 
       y: config.bedWidthOuter / 2,
       key: plantKey,
       seed: Math.random(),
+      id: nextId++,
     });
     const plantsPerHalfRow =
       Math.ceil((config.bedWidthOuter - plant.spread) / 2 / plant.spread);
@@ -33,6 +35,7 @@ export const calculatePlantPositions = (config: Config): ThreeDGardenPlant[] => 
         y: config.bedWidthOuter / 2 + plant.spread * i,
         key: plantKey,
         seed: Math.random(),
+        id: nextId++,
       });
       positions.push({
         ...plant,
@@ -41,6 +44,7 @@ export const calculatePlantPositions = (config: Config): ThreeDGardenPlant[] => 
         y: config.bedWidthOuter / 2 - plant.spread * i,
         key: plantKey,
         seed: Math.random(),
+        id: nextId++,
       });
     }
     if (index + 1 < gardenPlants.length) {
