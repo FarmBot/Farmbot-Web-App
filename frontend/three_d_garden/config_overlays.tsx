@@ -373,6 +373,7 @@ export const PrivateOverlay = (props: OverlayProps) => {
       <Toggle {...common} configKey={"packaging"} />
       <Toggle {...common} configKey={"labels"} />
       <Toggle {...common} configKey={"labelsOnHover"} />
+      <Toggle {...common} configKey={"promoSpread"} />
       <Toggle {...common} configKey={"clouds"} />
       <Slider {...common} configKey={"sun"} min={0} max={200} />
       <Slider {...common} configKey={"ambient"} min={0} max={200} />

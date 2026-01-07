@@ -28,6 +28,12 @@ describe("<Promo />", () => {
     fireEvent.click(configBtn);
     expect(container).toContainHTML("all-configs");
   });
+
+  it("renders spread", () => {
+    window.location.search = "?promoSpread=true";
+    const { container } = render(<Promo />);
+    expect(container).toContainHTML("spread");
+  });
 });
 
 describe("getSeasonTimings()", () => {

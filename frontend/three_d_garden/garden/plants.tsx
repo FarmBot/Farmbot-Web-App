@@ -176,7 +176,7 @@ const PlantPart = (props: PlantPartProps) => {
   return <Group>
     <Image {...props} />
     {(props.spreadVisible || !props.plant.id || editPlantMode) &&
-      <Sphere args={[spreadRadii.inactive, 32, 32]}>
+      <Sphere args={[spreadRadii.inactive, 32, 32]} name={"spread"}>
         <MeshPhongMaterial
           color={"green"}
           transparent={true}

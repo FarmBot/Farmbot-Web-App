@@ -121,13 +121,21 @@ export const Promo = () => {
     startTimeRef.current = performance.now() / 1000;
   }, []);
 
+  const getPlants = () => {
+    const plants = plantsCache[calcCacheKey(config)] || [];
+    if (config.promoSpread) {
+      return plants.map(plant => ({ ...plant, id: 0 }));
+    }
+    return plants;
+  };
+
   return <div className={"three-d-garden promo"}>
     <div className={"garden-bed-3d-model"}>
       <MemoryRouter>
         <Canvas shadows={true}>
           <GardenModel {...common}
             startTimeRef={startTimeRef}
-            threeDPlants={plantsCache[calcCacheKey(config)] || []}
+            threeDPlants={getPlants()}
             mapPoints={mapPoints} />
         </Canvas>
       </MemoryRouter>

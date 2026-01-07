@@ -101,6 +101,7 @@ export interface Config {
   interpolationStepSize: number;
   interpolationUseNearest: boolean;
   interpolationPower: number;
+  promoSpread: boolean;
 }
 
 export enum SurfaceDebugOption {
@@ -212,6 +213,7 @@ export const INITIAL: Config = {
   interpolationStepSize: 50,
   interpolationUseNearest: false,
   interpolationPower: 4,
+  promoSpread: false,
 };
 
 export const STRING_KEYS = [
@@ -240,7 +242,7 @@ export const BOOLEAN_KEYS = [
   "eventDebug", "cableDebug", "zoomBeaconDebug", "lightsDebug", "moistureDebug",
   "animate", "animateSeasons", "negativeZ",
   "waterFlow", "exaggeratedZ", "showSoilPoints", "urlParamAutoAdd",
-  "light", "vacuum", "north", "desk", "interpolationUseNearest",
+  "light", "vacuum", "north", "desk", "interpolationUseNearest", "promoSpread",
 ];
 
 export const PRESETS: Record<string, Config> = {
@@ -437,6 +439,7 @@ export const PRESETS: Record<string, Config> = {
     exaggeratedZ: true,
     north: true,
     desk: true,
+    promoSpread: true,
   },
 };
 
@@ -465,7 +468,7 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "showSoilPoints", "urlParamAutoAdd", "north", "desk",
   "imgScale", "imgRotation", "imgOffsetX", "imgOffsetY", "imgOrigin", "imgCalZ",
   "imgCenterX", "imgCenterY", "interpolationStepSize", "interpolationUseNearest",
-  "interpolationPower",
+  "interpolationPower", "promoSpread",
 ];
 
 export const modifyConfig = (config: Config, update: Partial<Config>) => {
