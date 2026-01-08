@@ -4,7 +4,12 @@ import { Camera } from "./zoom_beacons_constants";
 
 export const cameraInit = (topDown: boolean): Camera => {
   const devCameraString = DevSettings.get3dCamera();
-  const devCamera = devCameraString ? JSON.parse(devCameraString) : undefined;
+  let devCamera = undefined;
+  try {
+    devCamera = JSON.parse(devCameraString);
+  } catch {
+    devCamera = undefined;
+  }
 
   const defaultCameraPosition = isDesktop()
     ? [2000, -4000, 2500]

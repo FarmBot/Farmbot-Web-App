@@ -26,6 +26,15 @@ describe("cameraInit()", () => {
     expect(cameraInit(false)).toEqual({ position: [0, 0, 0], target: [0, 0, 0] });
   });
 
+  it("handles invalid dev camera setting", () => {
+    mockDev = "{";
+    mockIsDesktop = true;
+    expect(cameraInit(false)).toEqual({
+      position: [2000, -4000, 2500],
+      target: [0, 0, 0],
+    });
+  });
+
   it("initializes camera: mobile", () => {
     mockDev = undefined;
     mockIsDesktop = false;

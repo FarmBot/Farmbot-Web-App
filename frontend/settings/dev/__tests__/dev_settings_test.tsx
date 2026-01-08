@@ -91,6 +91,12 @@ describe("<DevWidget3dCameraRow />", () => {
     delete mockDevSettings[DevSettings.CAMERA3D];
   });
 
+  it("handles invalid dev camera value", () => {
+    mockDevSettings[DevSettings.CAMERA3D] = "{";
+    mount(<DevWidget3dCameraRow />);
+    delete mockDevSettings[DevSettings.CAMERA3D];
+  });
+
   it("enables dev camera position", () => {
     const wrapper = mount(<DevWidget3dCameraRow />);
     wrapper.find(".fa-angle-double-up").simulate("click");

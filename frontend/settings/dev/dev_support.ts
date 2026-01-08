@@ -85,7 +85,7 @@ export namespace DevSettings {
     devStorage.removeItem(SHOW_INTERNAL_ENVS);
 
   export const CAMERA3D = devStorage.Key.CAMERA3D;
-  export const get3dCamera = () => devStorage.getItem(CAMERA3D);
+  export const get3dCamera = () => devStorage.getItem(CAMERA3D) || "{}";
   export const set3dCamera = (details: string) =>
     devStorage.setItem(CAMERA3D, details);
   export const remove3dCamera = () => devStorage.removeItem(CAMERA3D);
