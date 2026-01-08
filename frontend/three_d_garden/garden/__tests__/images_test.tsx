@@ -28,6 +28,8 @@ describe("<ImageTexture />", () => {
 
   it("renders", () => {
     const p = fakeProps();
+    p.config.imgCenterX = 0;
+    p.config.imgCenterY = 0;
     const img0 = fakeImage();
     img0.body.meta.x = 1;
     img0.body.meta.y = 1;
@@ -62,6 +64,8 @@ describe("<ImageTexture />", () => {
 
   it("doesn't render placeholder images", () => {
     const p = fakeProps();
+    p.config.imgCenterX = 0;
+    p.config.imgCenterY = 0;
     const img0 = fakeImage();
     img0.body.meta.x = 1;
     img0.body.meta.y = 1;
@@ -107,6 +111,8 @@ describe("<ImageTexture />", () => {
   it("renders demo images", () => {
     mockDemo = true;
     const p = fakeProps();
+    p.config.imgCenterX = 0;
+    p.config.imgCenterY = 0;
     const img0 = fakeImage();
     img0.body.meta.x = 1;
     img0.body.meta.y = 1;

@@ -121,6 +121,8 @@ describe("<ThreeDGardenMap />", () => {
     expectedConfig.xyDimensions = true;
     expectedConfig.zDimension = true;
     expectedConfig.imgScale = 0.6;
+    expectedConfig.imgCenterX = 0;
+    expectedConfig.imgCenterY = 0;
 
     expect(ThreeDGarden).toHaveBeenCalledWith({
       config: expectedConfig,

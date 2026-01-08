@@ -63,6 +63,8 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   config.zoomBeacons = false;
   config.trail = !!props.getWebAppConfigValue(BooleanSetting.display_trail);
   config.animate = !props.getWebAppConfigValue(BooleanSetting.disable_animations);
+  config.cameraView =
+    !!props.getWebAppConfigValue(BooleanSetting.show_camera_view_area);
 
   config.kitVersion =
     props.sourceFbosConfig("firmware_hardware").value == "farmduino_k18"

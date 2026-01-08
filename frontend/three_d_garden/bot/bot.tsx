@@ -30,6 +30,7 @@ import {
   CableCarrierY,
   CableCarrierSupportHorizontal,
   GantryBeam,
+  CameraView,
 } from "./components";
 import { SlotWithTool } from "../../resources/interfaces";
 import { WateringAnimations } from "./components/watering_animations";
@@ -241,6 +242,18 @@ export const Bot = (props: FarmbotModelProps) => {
         ];
     }
   };
+
+  const cameraMountPosition: [number, number, number] = [
+    threeSpace(x + 23, bedLengthOuter) + bedXOffset,
+    threeSpace(y + 25 + extrusionWidth / 2, bedWidthOuter) + bedYOffset,
+    zZero - zDir * z - 140 + zGantryOffset + 20,
+  ];
+
+  const cameraLensPosition: [number, number, number] = [
+    threeSpace(x + extrusionWidth + 3, bedLengthOuter) + bedXOffset,
+    threeSpace(y + 35 + extrusionWidth + 9, bedWidthOuter) + bedYOffset,
+    zZero - zDir * z - 140 + zGantryOffset + 20,
+  ];
 
   return <Group name={"bot"}
     visible={props.config.bot && props.activeFocus != "Planter bed"}>
@@ -548,11 +561,7 @@ export const Bot = (props: FarmbotModelProps) => {
       position={vacuumPumpCoverPosition(config.kitVersion)} />
     <Group name={"camera"}
       rotation={[Math.PI, 0, 0]}
-      position={[
-        threeSpace(x + 23, bedLengthOuter) + bedXOffset,
-        threeSpace(y + 25 + extrusionWidth / 2, bedWidthOuter) + bedYOffset,
-        zZero - zDir * z - 140 + zGantryOffset + 20,
-      ]}>
+      position={cameraMountPosition}>
       <Mesh name={"cameraMount"}
         rotation={[0, 0, 0]}
         position={[0, 0, -40]}
@@ -567,6 +576,10 @@ export const Bot = (props: FarmbotModelProps) => {
         <MeshPhongMaterial color={"silver"} />
       </Mesh>
     </Group>
+    <CameraView
+      config={config}
+      cameraLensPosition={cameraLensPosition}
+      distanceToSoil={distanceToSoil} />
     <Trail
       width={trail ? defaultTrailWidth : 0}
       attenuation={t => Math.pow(t, 3)}

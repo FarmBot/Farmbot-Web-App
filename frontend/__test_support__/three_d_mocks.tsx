@@ -77,7 +77,13 @@ jest.mock("three/examples/jsm/Addons.js", () => ({
 }));
 
 jest.mock("@react-three/fiber", () => ({
-  Canvas: ({ children }: { children: ReactNode }) => <div>{children}</div>,
+  Canvas: (props: {
+    children: ReactNode,
+    onCreated: Function,
+  }) => {
+    props.onCreated?.({ gl: { localClippingEnabled: false } });
+    return <div>{props.children}</div>;
+  },
   addEffect: jest.fn(),
   useFrame: jest.fn(x => x({ clock: { getElapsedTime: jest.fn(() => 0) } })),
   useThree: jest.fn(() => ({

@@ -53,7 +53,9 @@ export const ThreeDGarden = (props: ThreeDGardenProps) => {
               {t("Loading interactive 3D FarmBot...")}
             </h1>
           </div>}>
-        <Canvas shadows={true}>
+        <Canvas shadows={true} onCreated={({ gl }) => {
+          gl.localClippingEnabled = true;
+        }}>
           <GardenModel
             config={props.config}
             threeDPlants={props.threeDPlants}

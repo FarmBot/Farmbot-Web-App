@@ -132,7 +132,9 @@ export const Promo = () => {
   return <div className={"three-d-garden promo"}>
     <div className={"garden-bed-3d-model"}>
       <MemoryRouter>
-        <Canvas shadows={true}>
+        <Canvas shadows={true} onCreated={({ gl }) => {
+          gl.localClippingEnabled = true;
+        }}>
           <GardenModel {...common}
             startTimeRef={startTimeRef}
             threeDPlants={getPlants()}

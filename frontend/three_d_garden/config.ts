@@ -102,6 +102,7 @@ export interface Config {
   interpolationUseNearest: boolean;
   interpolationPower: number;
   promoSpread: boolean;
+  cameraView: boolean;
 }
 
 export enum SurfaceDebugOption {
@@ -208,12 +209,13 @@ export const INITIAL: Config = {
   imgOffsetY: 0,
   imgOrigin: "TOP_LEFT",
   imgCalZ: 0,
-  imgCenterX: 0,
-  imgCenterY: 0,
+  imgCenterX: 320,
+  imgCenterY: 240,
   interpolationStepSize: 50,
   interpolationUseNearest: false,
   interpolationPower: 4,
   promoSpread: false,
+  cameraView: false,
 };
 
 export const STRING_KEYS = [
@@ -243,6 +245,7 @@ export const BOOLEAN_KEYS = [
   "animate", "animateSeasons", "negativeZ",
   "waterFlow", "exaggeratedZ", "showSoilPoints", "urlParamAutoAdd",
   "light", "vacuum", "north", "desk", "interpolationUseNearest", "promoSpread",
+  "cameraView",
 ];
 
 export const PRESETS: Record<string, Config> = {
@@ -440,6 +443,7 @@ export const PRESETS: Record<string, Config> = {
     north: true,
     desk: true,
     promoSpread: true,
+    cameraView: true,
   },
 };
 
@@ -468,7 +472,7 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "showSoilPoints", "urlParamAutoAdd", "north", "desk",
   "imgScale", "imgRotation", "imgOffsetX", "imgOffsetY", "imgOrigin", "imgCalZ",
   "imgCenterX", "imgCenterY", "interpolationStepSize", "interpolationUseNearest",
-  "interpolationPower", "promoSpread",
+  "interpolationPower", "promoSpread", "cameraView",
 ];
 
 export const modifyConfig = (config: Config, update: Partial<Config>) => {

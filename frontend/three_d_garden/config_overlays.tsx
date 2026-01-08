@@ -321,6 +321,7 @@ export const PrivateOverlay = (props: OverlayProps) => {
       <Slider {...common} configKey={"botSizeY"} min={0} max={4000} />
       <Slider {...common} configKey={"botSizeZ"} min={0} max={1000} />
       <Toggle {...common} configKey={"bounds"} />
+      <Toggle {...common} configKey={"cameraView"} />
       <Toggle {...common} configKey={"negativeZ"} />
       <Toggle {...common} configKey={"xyDimensions"} />
       <Toggle {...common} configKey={"zDimension"} />
