@@ -1,79 +1,84 @@
 import React from "react";
 import * as THREE from "three";
 import { Config } from "../../config";
-import { Group, MeshStandardMaterial } from "../../components";
-import { Cylinder, Line } from "@react-three/drei";
-import { zDir, zZero as zZeroFunc } from "../../helpers";
+import { Mesh, MeshStandardMaterial } from "../../components";
+import { Edges } from "@react-three/drei";
+import { zDir } from "../../helpers";
+import { ConvexGeometry } from "three-stdlib";
+import { cameraMountOffset, cameraMountToLensOffset } from "../bot";
+
+type V3 = [number, number, number];
+
+const lensSize = 2.5;
 
 export interface CameraViewProps {
   config: Config;
   distanceToSoil: number;
-  cameraLensPosition: [number, number, number];
+  cameraMountPosition: [number, number, number];
 }
 
-const lensSize = 5;
-const viewHeight = 2000;
-
 export const CameraView = (props: CameraViewProps) => {
-  const { config, distanceToSoil, cameraLensPosition } = props;
+  const { config, distanceToSoil, cameraMountPosition } = props;
+  const cameraLensPosition: [number, number, number] = [
+    cameraMountPosition[0] + cameraMountToLensOffset.x,
+    cameraMountPosition[1] + cameraMountToLensOffset.y,
+    cameraMountPosition[2],
+  ];
   const soilZ = distanceToSoil + zDir(config) * config.z;
 
-  const aspect = config.imgCenterX / config.imgCenterY;
   const widthAtSoilFromZero = config.imgCenterX * 2 * config.imgScale;
   const heightAtSoilFromZero = config.imgCenterY * 2 * config.imgScale;
   const heightAngle = Math.atan2(heightAtSoilFromZero / 2, soilZ);
   const widthAngle = Math.atan2(widthAtSoilFromZero / 2, soilZ);
-  const heightAtViewHeight = 2 * 0.94 * viewHeight * Math.tan(heightAngle);
-  const halfHeightAtSoil = distanceToSoil * Math.tan(heightAngle);
-  const halfWidthAtSoil = distanceToSoil * Math.tan(widthAngle);
+  const yEdgeAtSoil = distanceToSoil * Math.tan(heightAngle);
+  const xEdgeAtSoil = distanceToSoil * Math.tan(widthAngle);
+  const xOffset =
+    config.imgOffsetX - cameraMountOffset.x - cameraMountToLensOffset.x;
+  const yOffset =
+    config.imgOffsetY - cameraMountOffset.y - cameraMountToLensOffset.y;
 
-  const zZero = zZeroFunc(config);
-  const cameraViewClippingPlane =
-    new THREE.Plane(new THREE.Vector3(0, 0, 1), soilZ - zZero);
-
-  type V3 = [number, number, number];
   const TUL: V3 = [-lensSize, -lensSize, 0];
   const TUR: V3 = [-lensSize, lensSize, 0];
   const TLL: V3 = [lensSize, -lensSize, 0];
   const TLR: V3 = [lensSize, lensSize, 0];
-  const BUL: V3 = [-halfWidthAtSoil, -halfHeightAtSoil, -distanceToSoil];
-  const BUR: V3 = [-halfWidthAtSoil, halfHeightAtSoil, -distanceToSoil];
-  const BLL: V3 = [halfWidthAtSoil, -halfHeightAtSoil, -distanceToSoil];
-  const BLR: V3 = [halfWidthAtSoil, halfHeightAtSoil, -distanceToSoil];
+  const BUL: V3 = [-xEdgeAtSoil + xOffset, -yEdgeAtSoil + yOffset, -distanceToSoil];
+  const BUR: V3 = [-xEdgeAtSoil + xOffset, yEdgeAtSoil + yOffset, -distanceToSoil];
+  const BLL: V3 = [xEdgeAtSoil + xOffset, -yEdgeAtSoil + yOffset, -distanceToSoil];
+  const BLR: V3 = [xEdgeAtSoil + xOffset, yEdgeAtSoil + yOffset, -distanceToSoil];
 
-  const POINTS: V3[] = [
-    TUL, TUR, TLR, TLL, TUL,
-    BUL,
-    BLL, TLL, BLL,
-    BLR, TLR, BLR,
-    BUR, TUR, BUR,
-    BUL,
+  const VERTICES: V3[] = [
+    TUL, TUR, TLL, TLR,
+    BUL, BUR, BLL, BLR,
   ];
 
   return config.cameraView
-    ? <Group name={"camera-view"}
-      position={[
-        cameraLensPosition[0],
-        cameraLensPosition[1],
-        cameraLensPosition[2] - viewHeight / 2,
-      ]}>
-      <Group scale={[1, 1 / aspect, 1]}>
-        <Cylinder
-          args={[heightAtViewHeight, lensSize, viewHeight, 4]}
-          rotation={[-Math.PI / 2, -Math.PI / 4, 0]}>
-          <MeshStandardMaterial
-            opacity={0.3}
-            transparent={true}
-            depthWrite={false}
-            clippingPlanes={[cameraViewClippingPlane]}
-            color={"white"} />
-        </Cylinder>
-      </Group>
-      <Line
-        position={[0, 0, viewHeight / 2]}
-        points={POINTS}
-        linewidth={1}
-        color={"white"} />
-    </Group>
+    ? <Frustum points={VERTICES} position={cameraLensPosition} />
     : <></>;
+};
+
+interface FrustumProps {
+  points: V3[];
+  position: V3;
+}
+
+const Frustum = (props: FrustumProps) => {
+  const geometry = React.useMemo(() => {
+    const pts = props.points.map(([x, y, z]) => new THREE.Vector3(x, y, z));
+    const g = new ConvexGeometry(pts);
+    g.computeVertexNormals();
+    g.computeBoundingSphere();
+    return g;
+  }, [props.points]);
+
+  return <Mesh name={"camera-view"}
+    position={props.position}
+    geometry={geometry}>
+    <MeshStandardMaterial
+      side={THREE.DoubleSide}
+      opacity={0.3}
+      transparent={true}
+      depthWrite={false}
+      color={"white"} />
+    <Edges lineWidth={1} color={"white"} opacity={1} />
+  </Mesh>;
 };

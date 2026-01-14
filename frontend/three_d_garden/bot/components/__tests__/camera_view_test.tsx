@@ -8,7 +8,7 @@ describe("<CameraView />", () => {
   const fakeProps = (): CameraViewProps => ({
     config: clone(INITIAL),
     distanceToSoil: 500,
-    cameraLensPosition: [100, 200, 300],
+    cameraMountPosition: [100, 200, 300],
   });
 
   it("renders", () => {

@@ -38,6 +38,14 @@ import { WateringAnimations } from "./components/watering_animations";
 export const extrusionWidth = 20;
 const utmRadius = 35;
 export const utmHeight = 35;
+export const cameraMountOffset = {
+  x: extrusionWidth + 3,
+  y: utmRadius,
+};
+export const cameraMountToLensOffset = {
+  x: 0,
+  y: extrusionWidth + 9,
+};
 const xTrackPadding = 280;
 export const distinguishableBlack = "#333";
 
@@ -244,14 +252,8 @@ export const Bot = (props: FarmbotModelProps) => {
   };
 
   const cameraMountPosition: [number, number, number] = [
-    threeSpace(x + 23, bedLengthOuter) + bedXOffset,
-    threeSpace(y + 25 + extrusionWidth / 2, bedWidthOuter) + bedYOffset,
-    zZero - zDir * z - 140 + zGantryOffset + 20,
-  ];
-
-  const cameraLensPosition: [number, number, number] = [
-    threeSpace(x + extrusionWidth + 3, bedLengthOuter) + bedXOffset,
-    threeSpace(y + 35 + extrusionWidth + 9, bedWidthOuter) + bedYOffset,
+    threeSpace(x + cameraMountOffset.x, bedLengthOuter) + bedXOffset,
+    threeSpace(y + cameraMountOffset.y, bedWidthOuter) + bedYOffset,
     zZero - zDir * z - 140 + zGantryOffset + 20,
   ];
 
@@ -578,7 +580,7 @@ export const Bot = (props: FarmbotModelProps) => {
     </Group>
     <CameraView
       config={config}
-      cameraLensPosition={cameraLensPosition}
+      cameraMountPosition={cameraMountPosition}
       distanceToSoil={distanceToSoil} />
     <Trail
       width={trail ? defaultTrailWidth : 0}
