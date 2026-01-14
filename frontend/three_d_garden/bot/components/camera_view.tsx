@@ -74,8 +74,8 @@ const Frustum = (props: FrustumProps) => {
     position={props.position}
     geometry={geometry}>
     <MeshStandardMaterial
-      side={THREE.DoubleSide}
-      opacity={0.3}
+      side={THREE.FrontSide}
+      opacity={0.5}
       transparent={true}
       depthWrite={false}
       color={"white"} />
