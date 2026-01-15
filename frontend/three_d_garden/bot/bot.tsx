@@ -42,10 +42,11 @@ export const cameraMountOffset = {
   x: extrusionWidth + 3,
   y: utmRadius,
 };
-export const cameraMountToLensOffset = {
-  x: 0,
-  y: extrusionWidth + 9,
-};
+export const cameraMountToLensOffset = new THREE.Vector3(
+  0,
+  extrusionWidth + 9,
+  0,
+);
 const xTrackPadding = 280;
 export const distinguishableBlack = "#333";
 
@@ -251,11 +252,11 @@ export const Bot = (props: FarmbotModelProps) => {
     }
   };
 
-  const cameraMountPosition: [number, number, number] = [
+  const cameraMountPosition = new THREE.Vector3(
     threeSpace(x + cameraMountOffset.x, bedLengthOuter) + bedXOffset,
     threeSpace(y + cameraMountOffset.y, bedWidthOuter) + bedYOffset,
     zZero - zDir * z - 140 + zGantryOffset + 20,
-  ];
+  );
 
   return <Group name={"bot"}
     visible={props.config.bot && props.activeFocus != "Planter bed"}>

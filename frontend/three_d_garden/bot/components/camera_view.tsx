@@ -11,19 +11,30 @@ type V3 = [number, number, number];
 
 const lensSize = 2.5;
 
+const toV = (point: V3) => {
+  const [x, y, z] = point;
+  return new THREE.Vector3(x, y, z);
+};
+
+const rotatePoint = (
+  point: V3,
+  angleDegrees: number,
+  center: THREE.Vector3,
+) => toV(point)
+  .sub(center)
+  .applyAxisAngle(toV([0, 0, 1]), angleDegrees * Math.PI / 180)
+  .add(center);
+
 export interface CameraViewProps {
   config: Config;
   distanceToSoil: number;
-  cameraMountPosition: [number, number, number];
+  cameraMountPosition: THREE.Vector3;
 }
 
 export const CameraView = (props: CameraViewProps) => {
   const { config, distanceToSoil, cameraMountPosition } = props;
-  const cameraLensPosition: [number, number, number] = [
-    cameraMountPosition[0] + cameraMountToLensOffset.x,
-    cameraMountPosition[1] + cameraMountToLensOffset.y,
-    cameraMountPosition[2],
-  ];
+  const cameraLensPosition = cameraMountPosition.clone()
+    .add(cameraMountToLensOffset);
   const soilZ = distanceToSoil + zDir(config) * config.z;
 
   const widthAtSoilFromZero = config.imgCenterX * 2 * config.imgScale;
@@ -32,23 +43,35 @@ export const CameraView = (props: CameraViewProps) => {
   const widthAngle = Math.atan2(widthAtSoilFromZero / 2, soilZ);
   const yEdgeAtSoil = distanceToSoil * Math.tan(heightAngle);
   const xEdgeAtSoil = distanceToSoil * Math.tan(widthAngle);
-  const xOffset =
-    config.imgOffsetX - cameraMountOffset.x - cameraMountToLensOffset.x;
-  const yOffset =
-    config.imgOffsetY - cameraMountOffset.y - cameraMountToLensOffset.y;
 
-  const TUL: V3 = [-lensSize, -lensSize, 0];
-  const TUR: V3 = [-lensSize, lensSize, 0];
-  const TLL: V3 = [lensSize, -lensSize, 0];
-  const TLR: V3 = [lensSize, lensSize, 0];
-  const BUL: V3 = [-xEdgeAtSoil + xOffset, -yEdgeAtSoil + yOffset, -distanceToSoil];
-  const BUR: V3 = [-xEdgeAtSoil + xOffset, yEdgeAtSoil + yOffset, -distanceToSoil];
-  const BLL: V3 = [xEdgeAtSoil + xOffset, -yEdgeAtSoil + yOffset, -distanceToSoil];
-  const BLR: V3 = [xEdgeAtSoil + xOffset, yEdgeAtSoil + yOffset, -distanceToSoil];
+  const topCenter = toV([0, 0, 0]);
 
-  const VERTICES: V3[] = [
-    TUL, TUR, TLL, TLR,
-    BUL, BUR, BLL, BLR,
+  const xCenter = -cameraMountOffset.x - cameraMountToLensOffset.x;
+  const yCenter = -cameraMountOffset.y - cameraMountToLensOffset.y;
+  const bottomCenter = toV([xCenter, yCenter, 0]);
+
+  const offset = toV([config.imgOffsetX, config.imgOffsetY, 0]);
+
+  const rotation = config.imgRotation;
+  const rotateTop = (point: V3) => rotatePoint(point, rotation, topCenter);
+  const rotateBottom = (point: V3) => rotatePoint(point, rotation, bottomCenter)
+    .add(offset);
+
+  const TUL = [-lensSize, -lensSize, 0];
+  const TUR = [-lensSize, lensSize, 0];
+  const TLL = [lensSize, -lensSize, 0];
+  const TLR = [lensSize, lensSize, 0];
+  const TOP = [TUL, TUR, TLL, TLR].map(rotateTop);
+
+  const BUL = [xCenter - xEdgeAtSoil, yCenter - yEdgeAtSoil, -distanceToSoil];
+  const BUR = [xCenter - xEdgeAtSoil, yCenter + yEdgeAtSoil, -distanceToSoil];
+  const BLL = [xCenter + xEdgeAtSoil, yCenter - yEdgeAtSoil, -distanceToSoil];
+  const BLR = [xCenter + xEdgeAtSoil, yCenter + yEdgeAtSoil, -distanceToSoil];
+  const BOTTOM = [BUL, BUR, BLL, BLR].map(rotateBottom);
+
+  const VERTICES = [
+    ...TOP,
+    ...BOTTOM,
   ];
 
   return config.cameraView
@@ -57,14 +80,13 @@ export const CameraView = (props: CameraViewProps) => {
 };
 
 interface FrustumProps {
-  points: V3[];
-  position: V3;
+  points: THREE.Vector3[];
+  position: THREE.Vector3;
 }
 
 const Frustum = (props: FrustumProps) => {
   const geometry = React.useMemo(() => {
-    const pts = props.points.map(([x, y, z]) => new THREE.Vector3(x, y, z));
-    const g = new ConvexGeometry(pts);
+    const g = new ConvexGeometry(props.points);
     g.computeVertexNormals();
     g.computeBoundingSphere();
     return g;
@@ -79,6 +101,6 @@ const Frustum = (props: FrustumProps) => {
       transparent={true}
       depthWrite={false}
       color={"white"} />
-    <Edges lineWidth={1} color={"white"} opacity={1} />
+    <Edges lineWidth={1.1} color={"white"} opacity={1} threshold={1} />
   </Mesh>;
 };

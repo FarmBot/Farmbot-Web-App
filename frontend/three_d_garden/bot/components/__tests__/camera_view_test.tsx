@@ -1,4 +1,5 @@
 import React from "react";
+import * as THREE from "three";
 import { render } from "@testing-library/react";
 import { clone } from "lodash";
 import { INITIAL } from "../../../config";
@@ -8,7 +9,7 @@ describe("<CameraView />", () => {
   const fakeProps = (): CameraViewProps => ({
     config: clone(INITIAL),
     distanceToSoil: 500,
-    cameraMountPosition: [100, 200, 300],
+    cameraMountPosition: new THREE.Vector3(100, 200, 300),
   });
 
   it("renders", () => {
