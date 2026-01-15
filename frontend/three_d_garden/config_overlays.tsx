@@ -321,7 +321,6 @@ export const PrivateOverlay = (props: OverlayProps) => {
       <Slider {...common} configKey={"botSizeY"} min={0} max={4000} />
       <Slider {...common} configKey={"botSizeZ"} min={0} max={1000} />
       <Toggle {...common} configKey={"bounds"} />
-      <Toggle {...common} configKey={"cameraView"} />
       <Toggle {...common} configKey={"negativeZ"} />
       <Toggle {...common} configKey={"xyDimensions"} />
       <Toggle {...common} configKey={"zDimension"} />
@@ -337,6 +336,16 @@ export const PrivateOverlay = (props: OverlayProps) => {
       <Toggle {...common} configKey={"bot"} />
       <Radio {...common} configKey={"distanceIndicator"}
         options={["", "bedHeight", "beamLength", "columnLength", "zAxisLength"]} />
+      <label>{"Bot Camera View"}</label>
+      <Toggle {...common} configKey={"cameraView"} />
+      <Slider {...common} configKey={"imgScale"} min={0} max={10} />
+      <Slider {...common} configKey={"imgRotation"} min={0} max={360} />
+      <Slider {...common} configKey={"imgOffsetX"} min={0} max={1000} />
+      <Slider {...common} configKey={"imgOffsetY"} min={0} max={1000} />
+      <Slider {...common} configKey={"imgCenterX"} min={0} max={1000} />
+      <Slider {...common} configKey={"imgCenterY"} min={0} max={1000} />
+      <Radio {...common} configKey={"imgOrigin"}
+        options={["TOP_LEFT", "TOP_RIGHT", "BOTTOM_LEFT", "BOTTOM_RIGHT"]} />
       <label>{"Bed Properties"}</label>
       <Slider {...common} configKey={"bedWallThickness"} min={0} max={200} />
       <Slider {...common} configKey={"bedHeight"} min={0} max={1000} />
