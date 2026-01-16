@@ -1,11 +1,11 @@
 source "https://rubygems.org"
-ruby "~> 3.4.7"
+ruby "~> 4.0.1"
 
 gem "rails", "~> 6"
 gem "active_model_serializers"
 gem "bunny"
 gem "delayed_job_active_record"
-gem "delayed_job"
+gem "delayed_job", "4.1.13"
 gem "devise"
 gem "discard"
 gem "google-cloud-storage", "~> 1.11"
