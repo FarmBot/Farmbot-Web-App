@@ -5,7 +5,7 @@ jest.mock("../../../devices/must_be_online", () => ({
 
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import { ImageTexture, ImageTextureProps } from "../images";
+import { extraRotation, ImageTexture, ImageTextureProps } from "../images";
 import { INITIAL } from "../../config";
 import { clone } from "lodash";
 import {
@@ -108,6 +108,27 @@ describe("<ImageTexture />", () => {
     expect(screen.queryAllByText("image").length).toEqual(0);
   });
 
+  it("doesn't rotate images that are already rotated", () => {
+    const p = fakeProps();
+    p.config.imgCenterX = 0;
+    p.config.imgCenterY = 0;
+    const img0 = fakeImage();
+    img0.body.meta.x = 1;
+    img0.body.meta.y = 1;
+    img0.body.meta.name = "already_rotated";
+    img0.body.id = 1;
+    p.images = [img0];
+    const apProps = fakeAddPlantProps();
+    const config = fakeWebAppConfig();
+    config.body.show_images = true;
+    config.body.photo_filter_begin = "";
+    config.body.photo_filter_end = "";
+    apProps.getConfigValue = x => config.body[x];
+    p.addPlantProps = apProps;
+    render(<ImageTexture {...p} />);
+    expect(screen.queryAllByText("image").length).toEqual(1);
+  });
+
   it("renders demo images", () => {
     mockDemo = true;
     const p = fakeProps();
@@ -127,5 +148,18 @@ describe("<ImageTexture />", () => {
     p.addPlantProps = apProps;
     render(<ImageTexture {...p} />);
     expect(screen.queryAllByText("image").length).toEqual(1);
+  });
+});
+
+describe("extraRotation()", () => {
+  it.each<[string, number]>([
+    ["TOP_LEFT", 0],
+    ["TOP_RIGHT", -90],
+    ["BOTTOM_LEFT", 90],
+    ["BOTTOM_RIGHT", 180],
+  ])("returns extra rotation amount for %s", (value, result) => {
+    const config = clone(INITIAL);
+    config.imgOrigin = value;
+    expect(extraRotation(config)).toEqual(result);
   });
 });

@@ -15,7 +15,9 @@ import {
 } from "../../farm_designer/map/layers/images/image_layer";
 import { AddPlantProps } from "../bed";
 import { BooleanSetting } from "../../session_keys";
-import { imageSizeCheck } from "../../farm_designer/map/layers/images/map_image";
+import {
+  imageSizeCheck, isRotated,
+} from "../../farm_designer/map/layers/images/map_image";
 import { forceOnline } from "../../devices/must_be_online";
 import { MoistureSurface } from "./moisture_texture";
 
@@ -159,6 +161,11 @@ const ImageWrapper = (props: ImageWrapperProps) => {
     !imageSizeCheck({ width: i.width, height: i.height },
       { x: "" + config.imgCenterX, y: "" + config.imgCenterY })) { return; }
   const scale: [number, number, number] = [width, height, 1000];
+
+  const alreadyRotated = isRotated(props.image.body.meta.name);
+  const initialRotation = alreadyRotated ? 0 : config.imgRotation * Math.PI / 180;
+  const rotation = initialRotation + extraRotation(config);
+
   return <Decal
     name={"image"}
     map={texture}
@@ -170,6 +177,20 @@ const ImageWrapper = (props: ImageWrapperProps) => {
     debug={config.lightsDebug}
     material-side={DoubleSide}
     depthTest={true}
-    rotation={[0, 0, config.imgRotation * Math.PI / 180]}
+    rotation={[0, 0, rotation]}
     scale={scale} />;
+};
+
+export const extraRotation = (config: Config) => {
+  switch (config.imgOrigin) {
+    case "BOTTOM_LEFT":
+      return 90;
+    case "TOP_RIGHT":
+      return -90;
+    case "BOTTOM_RIGHT":
+      return 180;
+    case "TOP_LEFT":
+    default:
+      return 0;
+  }
 };
