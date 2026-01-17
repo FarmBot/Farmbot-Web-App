@@ -6,6 +6,7 @@ import { Edges } from "@react-three/drei";
 import { zDir } from "../../helpers";
 import { ConvexGeometry } from "three-stdlib";
 import { cameraMountOffset, cameraMountToLensOffset } from "../bot";
+import { extraRotation } from "../../garden/images";
 
 type V3 = [number, number, number];
 
@@ -52,7 +53,7 @@ export const CameraView = (props: CameraViewProps) => {
 
   const offset = toV([config.imgOffsetX, config.imgOffsetY, 0]);
 
-  const rotation = config.imgRotation;
+  const rotation = config.imgRotation + extraRotation(config);
   const rotateTop = (point: V3) => rotatePoint(point, rotation, topCenter);
   const rotateBottom = (point: V3) => rotatePoint(point, rotation, bottomCenter)
     .add(offset);
@@ -97,10 +98,10 @@ const Frustum = (props: FrustumProps) => {
     geometry={geometry}>
     <MeshStandardMaterial
       side={THREE.FrontSide}
-      opacity={0.5}
+      opacity={0.25}
       transparent={true}
       depthWrite={false}
       color={"white"} />
-    <Edges lineWidth={1.1} color={"white"} opacity={1} threshold={1} />
+    <Edges lineWidth={1.1} color={"white"} opacity={0.75} transparent={true} threshold={1} />
   </Mesh>;
 };
