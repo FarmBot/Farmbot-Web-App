@@ -163,8 +163,8 @@ const ImageWrapper = (props: ImageWrapperProps) => {
   const scale: [number, number, number] = [width, height, 1000];
 
   const alreadyRotated = isRotated(props.image.body.meta.name);
-  const initialRotation = alreadyRotated ? 0 : config.imgRotation * Math.PI / 180;
-  const rotation = initialRotation + extraRotation(config);
+  const initialRotation = alreadyRotated ? 0 : config.imgRotation;
+  const rotation = (initialRotation + extraRotation(config)) * Math.PI / 180;
 
   return <Decal
     name={"image"}
