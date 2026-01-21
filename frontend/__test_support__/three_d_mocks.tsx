@@ -95,10 +95,15 @@ jest.mock("@react-three/fiber", () => ({
 
 jest.mock("@react-spring/three", () => ({
   useSpring: (props: UseSpringProps) => {
+    if (typeof props == "function") { (props as Function)(); }
     const next = jest.fn();
     (props.to as TransitionFn)?.(next);
-    return { ...props, ...props.from };
+    const api = {
+      start: jest.fn(p => p.to(jest.fn())),
+    };
+    return [{ ...props, ...props.from }, api];
   },
+
   // mocks for `<animated.mesh...` and similar:
   //   animated: {
   //     mesh: ({ children }: { children: ReactNode }) =>
@@ -108,9 +113,10 @@ jest.mock("@react-spring/three", () => ({
   //       <div className={"group"}>{children}</div>,
   //     pointLight: () => <div />,
   //   },
+
   // mocks for `const AnimatedMesh = animated(Mesh); ... <AnimatedMesh...`:
-  animated: () => ({ children }: { children?: ReactNode }) =>
-    <div className={"animated"}>{children}</div>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  animated: (P: any) => P,
 }));
 
 jest.mock("@react-three/drei", () => {

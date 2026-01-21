@@ -7,6 +7,10 @@ import { zDir } from "../../helpers";
 import { ConvexGeometry } from "three-stdlib";
 import { cameraMountOffset, cameraMountToLensOffset } from "../bot";
 import { extraRotation } from "../../garden/images";
+import { useSpring, animated } from "@react-spring/three";
+
+const AnimatedMesh = animated(Mesh);
+const AnimatedMeshStandardMaterial = animated(MeshStandardMaterial);
 
 type V3 = [number, number, number];
 
@@ -76,13 +80,14 @@ export const CameraView = (props: CameraViewProps) => {
   ];
 
   return config.cameraView
-    ? <Frustum points={VERTICES} position={cameraLensPosition} />
+    ? <Frustum points={VERTICES} position={cameraLensPosition} config={config} />
     : <></>;
 };
 
 interface FrustumProps {
   points: THREE.Vector3[];
   position: THREE.Vector3;
+  config: Config;
 }
 
 const Frustum = (props: FrustumProps) => {
@@ -93,15 +98,43 @@ const Frustum = (props: FrustumProps) => {
     return g;
   }, [props.points]);
 
-  return <Mesh name={"camera-view"}
+  const baseOpacity = 0.25;
+  const [spring, api] = useSpring(() => ({ opacity: baseOpacity }));
+  const { lastImageCapture } = props.config;
+  React.useEffect(() => {
+    if (!lastImageCapture) { return; }
+    api.start({
+      to: async (next) => {
+        await next({ opacity: 0.9, immediate: true });
+        await next({
+          opacity: baseOpacity,
+          delay: 0,
+          config: {
+            duration: 1000,
+            tension: 20,
+            friction: 30,
+          },
+        });
+      },
+      reset: true,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastImageCapture]);
+
+  return <AnimatedMesh name={"camera-view"}
     position={props.position}
     geometry={geometry}>
-    <MeshStandardMaterial
+    <AnimatedMeshStandardMaterial
       side={THREE.FrontSide}
-      opacity={0.25}
+      opacity={spring.opacity}
       transparent={true}
       depthWrite={false}
       color={"white"} />
-    <Edges lineWidth={1.1} color={"white"} opacity={0.75} transparent={true} threshold={1} />
-  </Mesh>;
+    <Edges
+      lineWidth={1.1}
+      color={"white"}
+      transparent={true}
+      opacity={0.75}
+      threshold={1} />
+  </AnimatedMesh>;
 };

@@ -346,6 +346,7 @@ export const PrivateOverlay = (props: OverlayProps) => {
       <Slider {...common} configKey={"imgCenterY"} min={0} max={1000} />
       <Radio {...common} configKey={"imgOrigin"}
         options={["TOP_LEFT", "TOP_RIGHT", "BOTTOM_LEFT", "BOTTOM_RIGHT"]} />
+      <Slider {...common} configKey={"lastImageCapture"} min={0} max={100000} />
       <label>{"Bed Properties"}</label>
       <Slider {...common} configKey={"bedWallThickness"} min={0} max={200} />
       <Slider {...common} configKey={"bedHeight"} min={0} max={1000} />

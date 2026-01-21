@@ -103,6 +103,7 @@ export interface Config {
   interpolationPower: number;
   promoSpread: boolean;
   cameraView: boolean;
+  lastImageCapture: number;
 }
 
 export enum SurfaceDebugOption {
@@ -216,6 +217,7 @@ export const INITIAL: Config = {
   interpolationPower: 4,
   promoSpread: false,
   cameraView: false,
+  lastImageCapture: 0,
 };
 
 export const STRING_KEYS = [
@@ -232,7 +234,7 @@ export const NUMBER_KEYS = [
   "soilSurfacePointCount", "soilSurfaceVariance", "sun", "ambient", "rotary",
   "imgScale", "imgRotation", "imgOffsetX", "imgOffsetY", "imgCalZ",
   "imgCenterX", "imgCenterY", "surfaceDebug", "interpolationStepSize",
-  "interpolationPower",
+  "interpolationPower", "lastImageCapture",
 ];
 
 export const BOOLEAN_KEYS = [
@@ -472,7 +474,7 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "showSoilPoints", "urlParamAutoAdd", "north", "desk",
   "imgScale", "imgRotation", "imgOffsetX", "imgOffsetY", "imgOrigin", "imgCalZ",
   "imgCenterX", "imgCenterY", "interpolationStepSize", "interpolationUseNearest",
-  "interpolationPower", "promoSpread", "cameraView",
+  "interpolationPower", "promoSpread", "cameraView", "lastImageCapture",
 ];
 
 export const modifyConfig = (config: Config, update: Partial<Config>) => {

@@ -16,7 +16,7 @@ import {
 import { fakeMapTransformProps } from "../../__test_support__/map_transform_props";
 import { fakeBotSize } from "../../__test_support__/fake_bot_data";
 import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
-import { fakePlant } from "../../__test_support__/fake_state/resources";
+import { fakeLog, fakePlant } from "../../__test_support__/fake_state/resources";
 import { render } from "@testing-library/react";
 import { ThreeDGarden } from "../../three_d_garden";
 import { clone } from "lodash";
@@ -62,6 +62,7 @@ describe("<ThreeDGardenMap />", () => {
     sensorReadings: [],
     cameraCalibrationData: fakeCameraCalibrationData(),
     farmwareEnvs: [],
+    logs: [],
   });
 
   it("converts props", () => {
@@ -202,6 +203,25 @@ describe("<ThreeDGardenMap />", () => {
         sunInclination: -1,
         sunAzimuth: -1,
         sun: -1,
+      }),
+      threeDPlants: [],
+      addPlantProps: expect.any(Object),
+      ...EMPTY_PROPS,
+    }, {});
+  });
+
+  it("converts props: logs", () => {
+    const p = fakeProps();
+    const log = fakeLog();
+    log.uuid = "Log.0.123";
+    log.body.id = 0;
+    log.body.message = "Taking photo";
+    p.logs = [log];
+    p.plants = [];
+    render(<ThreeDGardenMap {...p} />);
+    expect(ThreeDGarden).toHaveBeenCalledWith({
+      config: expect.objectContaining({
+        lastImageCapture: 123,
       }),
       threeDPlants: [],
       addPlantProps: expect.any(Object),

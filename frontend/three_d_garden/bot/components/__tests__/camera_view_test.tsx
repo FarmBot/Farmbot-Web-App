@@ -25,4 +25,12 @@ describe("<CameraView />", () => {
     const { container } = render(<CameraView {...p} />);
     expect(container).not.toContainHTML("camera-view");
   });
+
+  it("renders capture animation", () => {
+    const p = fakeProps();
+    p.config.cameraView = true;
+    p.config.lastImageCapture = 123;
+    const { container } = render(<CameraView {...p} />);
+    expect(container).toContainHTML("camera-view");
+  });
 });
