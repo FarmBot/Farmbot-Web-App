@@ -37,50 +37,204 @@ export interface ImageTextureProps extends BaseProps {
   showMoistureMap: boolean;
 }
 
-export const ImageTexture = (props: ImageTextureProps) => {
-  const extents = soilSurfaceExtents(props.config);
-  const width = extents.x.max - extents.x.min;
-  const height = extents.y.max - extents.y.min;
-  const { bedXOffset, bedYOffset, bedWallThickness } = props.config;
+const splitHighlightedImages = (images: TaggedImagePlus[]) => {
+  const imageArray: TaggedImagePlus[] = [];
+  const lastImageArray: TaggedImagePlus[] = [];
+  for (const image of images) {
+    if (image.highlighted) {
+      lastImageArray.push(image);
+    } else {
+      imageArray.push(image);
+    }
+  }
+  return {
+    imageArray,
+    lastImageArray,
+    highlightActive: lastImageArray.length > 0,
+  };
+};
+
+export const ImageTexture = React.memo((props: ImageTextureProps) => {
+  const {
+    bedWallThickness,
+    bedXOffset,
+    bedYOffset,
+    bedWidthOuter,
+    bedLengthOuter,
+    soilBrightness,
+    imgCalZ,
+  } = props.config;
+  const extentsConfig = React.useMemo(() => ({
+    bedWallThickness,
+    bedXOffset,
+    bedYOffset,
+    bedWidthOuter,
+    bedLengthOuter,
+  } as Config), [
+    bedWallThickness,
+    bedXOffset,
+    bedYOffset,
+    bedWidthOuter,
+    bedLengthOuter,
+  ]);
+  const extents = React.useMemo(
+    () => soilSurfaceExtents(extentsConfig),
+    [extentsConfig],
+  );
+  const { width, height } = React.useMemo(() => ({
+    width: extents.x.max - extents.x.min,
+    height: extents.y.max - extents.y.min,
+  }), [
+    extents.x.max,
+    extents.x.min,
+    extents.y.max,
+    extents.y.min,
+  ]);
+  const planePosition = React.useMemo(() => ([
+    bedWallThickness + width / 2,
+    bedWallThickness + height / 2,
+  ] as [number, number]), [
+    bedWallThickness,
+    width,
+    height,
+  ]);
   const soilTexture = useTexture(ASSETS.textures.soil + "?=soilT");
-  const color = getColorFromBrightness(props.config.soilBrightness);
+  const color = React.useMemo(
+    () => getColorFromBrightness(soilBrightness),
+    [soilBrightness],
+  );
   const { addPlantProps, images } = props;
   const designer = addPlantProps?.designer;
   const getConfigValue = addPlantProps?.getConfigValue;
-  const visible = !!addPlantProps?.getConfigValue(BooleanSetting.show_images);
-  const filteredImages = filterImages({
+  const visible = React.useMemo(
+    () => !!addPlantProps?.getConfigValue(BooleanSetting.show_images),
+    [addPlantProps],
+  );
+  const filteredImages = React.useMemo(() => filterImages({
     visible,
     designer,
     images,
     getConfigValue,
-    calibrationZ: "" + props.config.imgCalZ,
-  });
-  const imageArray = filteredImages.filter(img => !img.highlighted);
-  const lastImageArray = filteredImages.filter(img => img.highlighted);
-  const highlightActive = lastImageArray[0]?.highlighted;
-  const PlaneWrapper =
+    calibrationZ: "" + imgCalZ,
+  }), [
+    designer,
+    getConfigValue,
+    images,
+    imgCalZ,
+    visible,
+  ]);
+  const imagesKey = React.useMemo(() => filteredImages
+    .map(image =>
+      `${image.uuid}:${image.body.updated_at || ""}:${image.body.attachment_url}`)
+    .join("|"), [filteredImages]);
+  const { imageArray, lastImageArray, highlightActive } = React.useMemo(
+    () => splitHighlightedImages(filteredImages),
+    [filteredImages],
+  );
+  const sensorsKey = React.useMemo(() => props.sensors
+    .map(sensor =>
+      `${sensor.uuid}:${sensor.body.pin}:${sensor.body.label || ""}`)
+    .join("|"), [props.sensors]);
+  const readingsKey = React.useMemo(() => props.sensorReadings
+    .map(reading =>
+      `${reading.uuid}:${reading.body.x}:${reading.body.y}:` +
+      `${reading.body.z}:${reading.body.value}`)
+    .join("|"), [props.sensorReadings]);
+  const imageTransformKey = React.useMemo(() => [
+    props.config.imgScale,
+    props.config.imgRotation,
+    props.config.imgOffsetX,
+    props.config.imgOffsetY,
+    props.config.imgOrigin,
+    props.config.imgCenterX,
+    props.config.imgCenterY,
+    props.config.lightsDebug ? 1 : 0,
+  ].join(":"), [
+    props.config.imgScale,
+    props.config.imgRotation,
+    props.config.imgOffsetX,
+    props.config.imgOffsetY,
+    props.config.imgOrigin,
+    props.config.imgCenterX,
+    props.config.imgCenterY,
+    props.config.lightsDebug,
+  ]);
+  const renderKey = React.useMemo(() => [
+    imagesKey,
+    sensorsKey,
+    readingsKey,
+    imageTransformKey,
+    props.showMoistureReadings ? 1 : 0,
+    props.showMoistureMap ? 1 : 0,
+    props.z,
+    props.xOffset,
+    props.yOffset,
+    props.config.bedWallThickness,
+    props.config.bedXOffset,
+    props.config.bedYOffset,
+    props.config.bedWidthOuter,
+    props.config.bedLengthOuter,
+    props.config.soilBrightness,
+    props.config.imgCalZ,
+  ].join("|"), [
+    imagesKey,
+    sensorsKey,
+    readingsKey,
+    imageTransformKey,
+    props.showMoistureReadings,
+    props.showMoistureMap,
+    props.z,
+    props.xOffset,
+    props.yOffset,
+    props.config.bedWallThickness,
+    props.config.bedXOffset,
+    props.config.bedYOffset,
+    props.config.bedWidthOuter,
+    props.config.bedLengthOuter,
+    props.config.soilBrightness,
+    props.config.imgCalZ,
+  ]);
+  const cameraPosition = React.useMemo<[number, number, number]>(
+    () => [bedXOffset, bedYOffset, 4000],
+    [bedXOffset, bedYOffset],
+  );
+  const cameraUp = React.useMemo<[number, number, number]>(() => [0, 0, 1], []);
+  const moisturePosition = React.useMemo<[number, number, number]>(() => ([
+    props.config.bedXOffset,
+    props.config.bedYOffset,
+    zZero(props.config),
+  ]), [
+    props.config.bedXOffset,
+    props.config.bedYOffset,
+    props.config.columnLength,
+    props.config.zGantryOffset,
+  ]);
+  const PlaneWrapper = React.useCallback(
     ({ children, z }: { z: number, children: React.ReactNode }) =>
       <Plane
         args={[width, height]}
-        position={[
-          bedWallThickness + width / 2,
-          bedWallThickness + height / 2,
-          z,
-        ]}
+        position={[planePosition[0], planePosition[1], z]}
         scale={[1, 1, 1]}>
         {children}
-      </Plane>;
-  return <RenderTexture attach={"map"} width={width} height={height}>
+      </Plane>,
+    [height, planePosition, width],
+  );
+  return <RenderTexture
+    key={renderKey}
+    frames={1}
+    attach={"map"}
+    width={width}
+    height={height}>
     <OrthographicCamera makeDefault near={10} far={10000}
       left={extents.x.min}
       right={extents.x.max}
       top={extents.y.min}
       bottom={extents.y.max}
-      position={[bedXOffset, bedYOffset, 4000]}
+      position={cameraPosition}
       rotation={[0, 0, 0]}
       zoom={1}
       scale={[1, 1, 1]}
-      up={[0, 0, 1]} />
+      up={cameraUp} />
     <PlaneWrapper z={0}>
       <MeshBasicMaterial side={DoubleSide} color={color} map={soilTexture} />
       <Images {...props} images={imageArray} />
@@ -102,25 +256,50 @@ export const ImageTexture = (props: ImageTextureProps) => {
       sensorReadings={props.sensorReadings}
       showMoistureReadings={props.showMoistureReadings}
       showMoistureMap={props.showMoistureMap}
-      position={[
-        props.config.bedXOffset,
-        props.config.bedYOffset,
-        zZero(props.config),
-      ]}
+      position={moisturePosition}
       readingZOverride={2000} />
   </RenderTexture>;
-};
+});
 
 interface ImagesProps extends BaseProps {
   images: TaggedImagePlus[];
 }
 
-const Images = (props: ImagesProps) => {
-  return <>
-    {props.images.map(image => {
+const Images = React.memo((props: ImagesProps) => {
+  const {
+    imgScale,
+    imgRotation,
+    imgOffsetX,
+    imgOffsetY,
+    imgOrigin,
+    imgCenterX,
+    imgCenterY,
+    lightsDebug,
+  } = props.config;
+  const imageConfig = React.useMemo(() => ({
+    imgScale,
+    imgRotation,
+    imgOffsetX,
+    imgOffsetY,
+    imgOrigin,
+    imgCenterX,
+    imgCenterY,
+    lightsDebug,
+  } as Config), [
+    imgScale,
+    imgRotation,
+    imgOffsetX,
+    imgOffsetY,
+    imgOrigin,
+    imgCenterX,
+    imgCenterY,
+    lightsDebug,
+  ]);
+  const imageElements = React.useMemo(() =>
+    props.images.map(image => {
       const { x, y } = image.body.meta;
       if (isNumber(x) && isNumber(y)) {
-        return <React.Suspense>
+        return <React.Suspense key={image.uuid}>
           <ImageWrapper
             image={image}
             x={x}
@@ -128,12 +307,19 @@ const Images = (props: ImagesProps) => {
             z={props.z}
             xOffset={props.xOffset}
             yOffset={props.yOffset}
-            config={props.config} />
+            config={imageConfig} />
         </React.Suspense>;
       }
-    })}
-  </>;
-};
+    }),
+  [
+    imageConfig,
+    props.images,
+    props.xOffset,
+    props.yOffset,
+    props.z,
+  ]);
+  return <>{imageElements}</>;
+});
 
 interface ImageWrapperProps {
   image: TaggedImagePlus;
@@ -145,12 +331,15 @@ interface ImageWrapperProps {
   yOffset: number;
 }
 
-const ImageWrapper = (props: ImageWrapperProps) => {
+const ImageWrapper = React.memo((props: ImageWrapperProps) => {
   const { config } = props;
   const rawUrl = props.image.body.attachment_url;
-  const url = (forceOnline() && rawUrl.endsWith("/soil.png"))
-    ? "/soil.png"
-    : rawUrl;
+  const online = forceOnline();
+  const url = React.useMemo(() =>
+    (online && rawUrl.endsWith("/soil.png"))
+      ? "/soil.png"
+      : rawUrl,
+  [online, rawUrl]);
   const texture = useTexture(url);
   const i = (texture.source?.data ?? texture.image) as HTMLImageElement | undefined;
   if (!i) { return; }
@@ -160,26 +349,38 @@ const ImageWrapper = (props: ImageWrapperProps) => {
   if (!props.image.highlighted &&
     !imageSizeCheck({ width: i.width, height: i.height },
       { x: "" + config.imgCenterX, y: "" + config.imgCenterY })) { return; }
-  const scale: [number, number, number] = [width, height, 1000];
+  const scale = React.useMemo<[number, number, number]>(
+    () => [width, height, 1000], [height, width]);
 
   const alreadyRotated = isRotated(props.image.body.meta.name);
-  const initialRotation = alreadyRotated ? 0 : config.imgRotation;
-  const rotation = (initialRotation + extraRotation(config)) * Math.PI / 180;
+  const rotation = React.useMemo(() => {
+    const initialRotation = alreadyRotated ? 0 : config.imgRotation;
+    return (initialRotation + extraRotation(config)) * Math.PI / 180;
+  }, [alreadyRotated, config]);
+  const position = React.useMemo<[number, number, number]>(() => ([
+    props.x + config.imgOffsetX + props.xOffset,
+    props.y + config.imgOffsetY + props.yOffset,
+    props.z,
+  ]), [
+    config.imgOffsetX,
+    config.imgOffsetY,
+    props.x,
+    props.xOffset,
+    props.y,
+    props.yOffset,
+    props.z,
+  ]);
 
   return <Decal
     name={"image"}
     map={texture}
-    position={[
-      props.x + config.imgOffsetX + props.xOffset,
-      props.y + config.imgOffsetY + props.yOffset,
-      props.z,
-    ]}
+    position={position}
     debug={config.lightsDebug}
     material-side={DoubleSide}
     depthTest={true}
     rotation={[0, 0, rotation]}
     scale={scale} />;
-};
+});
 
 export const extraRotation = (config: Config) => {
   switch (config.imgOrigin) {

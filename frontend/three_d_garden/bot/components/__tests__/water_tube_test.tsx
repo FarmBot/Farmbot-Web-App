@@ -19,4 +19,12 @@ describe("<WaterTube />", () => {
     expect(wrapper.container).toContainHTML("mock-tube-tube");
     expect(wrapper.container).toContainHTML("mock-tube-water-stream");
   });
+
+  it("passes flow to stream", () => {
+    const p = fakeProps();
+    p.waterFlow = true;
+    const { container } = render(<WaterTube {...p} />);
+    const stream = container.querySelector("[name='mock-tube-water-stream']");
+    expect(stream?.getAttribute("visible")).not.toEqual("false");
+  });
 });

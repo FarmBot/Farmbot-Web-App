@@ -12,5 +12,6 @@ describe("<FarmbotAxes />", () => {
   it("renders", () => {
     const wrapper = mount(<FarmbotAxes {...fakeProps()} />);
     expect(wrapper.html()).toContain("extrude");
+    expect(wrapper.html()).toContain("arrow");
   });
 });

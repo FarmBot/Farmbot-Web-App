@@ -7,23 +7,34 @@ export interface CloudsProps {
   config: Config;
 }
 
-export const Clouds = (props: CloudsProps) => {
+export const Clouds = React.memo((props: CloudsProps) => {
   const { config } = props;
-  const sunParams = getSeasonProperties(config, "Summer");
+  const sunParams = React.useMemo(
+    () => getSeasonProperties(config, "Summer"),
+    [config],
+  );
+  const cloudPosition = React.useMemo<[number, number, number]>(
+    () => [0, 0, 5000], []);
+  const cloudBounds = React.useMemo<[number, number, number]>(
+    () => [5000, 5000, 1000], []);
+  const cloudSpeed = React.useMemo(
+    () => config.animate ? 0.1 : 0,
+    [config.animate],
+  );
   return <DreiClouds name={"clouds"} visible={config.clouds}
     renderOrder={RenderOrder.clouds}
     texture={ASSETS.textures.cloud}>
-    <Cloud position={[0, 0, 5000]}
+    <Cloud position={cloudPosition}
       seed={0}
-      bounds={[5000, 5000, 1000]}
+      bounds={cloudBounds}
       segments={80}
       volume={2500}
       smallestVolume={.4}
       concentrate="random"
       color="#ccc"
       growth={400}
-      speed={.1}
+      speed={cloudSpeed}
       opacity={sunParams.cloudOpacity}
       fade={5000} />
   </DreiClouds>;
-};
+});

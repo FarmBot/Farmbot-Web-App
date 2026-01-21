@@ -7,8 +7,14 @@ export type SkyProps = {
   sunPosition: Vector3;
 }
 
-export const Sky = (props: SkyProps) => {
+export const Sky = React.memo((props: SkyProps) => {
   const [sky] = React.useState(() => new SkyImpl());
+  const scale = React.useMemo(
+    () => new Vector3().setScalar(450000),
+    [],
+  );
+  const up = React.useMemo<[number, number, number]>(
+    () => [0, 0, 1], []);
 
   return <Primitive
     object={sky}
@@ -17,7 +23,7 @@ export const Sky = (props: SkyProps) => {
     material-uniforms-rayleigh-value={3}
     material-uniforms-sunPosition-value={props.sunPosition}
     material-uniforms-turbidity-value={5}
-    material-uniforms-up-value={[0, 0, 1]}
-    scale={new Vector3().setScalar(450000)}
+    material-uniforms-up-value={up}
+    scale={scale}
     {...props} />;
-};
+});

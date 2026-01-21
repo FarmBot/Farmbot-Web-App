@@ -76,16 +76,53 @@ export interface FilterSoilPointsProps {
   points: TaggedGenericPointer[] | undefined;
 }
 
-export const filterSoilPoints = (props: FilterSoilPointsProps) => {
+export interface SoilPointsResult {
+  points: [number, number, number][];
+  key: string;
+}
+
+const soilConfigKey = (config: Config) => [
+  config.bedWallThickness,
+  config.bedXOffset,
+  config.bedYOffset,
+  config.bedLengthOuter,
+  config.bedWidthOuter,
+  config.bedHeight,
+  config.soilHeight,
+  config.columnLength,
+  config.zGantryOffset,
+  config.exaggeratedZ ? 1 : 0,
+  config.perspective ? 1 : 0,
+].join(":");
+
+const soilPointKey = (point: TaggedGenericPointer) =>
+  [
+    point.uuid,
+    point.body.x,
+    point.body.y,
+    point.body.z,
+  ].join(":");
+
+export const filterSoilPointsWithMeta = (
+  props: FilterSoilPointsProps,
+): SoilPointsResult => {
   const { config } = props;
   const boundaryParams = boundaryPoints(config);
 
+  const soilPointKeys: string[] = [];
   const soilHeightPoints: [number, number, number][] = (props.points || [])
-    .filter(p => soilHeightPoint(p) &&
-      p.body.x > boundaryParams.outer.x.min &&
-      p.body.x < boundaryParams.outer.x.max &&
-      p.body.y > boundaryParams.outer.y.min &&
-      p.body.y < boundaryParams.outer.y.max)
+    .filter(p => {
+      const inBounds =
+        p.body.x > boundaryParams.outer.x.min &&
+        p.body.x < boundaryParams.outer.x.max &&
+        p.body.y > boundaryParams.outer.y.min &&
+        p.body.y < boundaryParams.outer.y.max;
+      if (soilHeightPoint(p) && inBounds) {
+        soilPointKeys.push(soilPointKey(p));
+        return true;
+      }
+      return false;
+    })
     .map(p => ([
       p.body.x,
       p.body.y,
@@ -126,8 +163,15 @@ export const filterSoilPoints = (props: FilterSoilPointsProps) => {
     });
   });
 
-  return soilHeightPoints;
+  const key = [
+    soilConfigKey(config),
+    soilPointKeys.sort().join("|"),
+  ].join("|");
+  return { points: soilHeightPoints, key };
 };
+
+export const filterSoilPoints = (props: FilterSoilPointsProps) =>
+  filterSoilPointsWithMeta(props).points;
 
 export const computeSurface = (
   points: [number, number, number][],

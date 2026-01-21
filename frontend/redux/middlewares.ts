@@ -6,6 +6,7 @@ import { revertToEnglishMiddleware } from "./revert_to_english_middleware";
 import { versionChangeMiddleware } from "./version_tracker_middleware";
 import { Everything } from "../interfaces";
 import { refilterLogsMiddleware } from "./refilter_logs_middleware";
+import { performanceProfilerMiddleware } from "./performance_profiler_middleware";
 
 export interface MW extends Middleware {
   (store: Store<Everything>):
@@ -24,6 +25,7 @@ const mwConfig: MiddlewareConfig[] = [
   revertToEnglishMiddleware,
   versionChangeMiddleware,
   refilterLogsMiddleware,
+  { env: "*", fn: performanceProfilerMiddleware },
 ];
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

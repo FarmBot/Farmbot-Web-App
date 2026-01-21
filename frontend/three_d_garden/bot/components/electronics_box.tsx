@@ -78,8 +78,10 @@ export interface ElectronicsBoxProps {
   config: Config;
 }
 
-export const ElectronicsBox = (props: ElectronicsBoxProps) => {
-  const { x, bedXOffset, bedLengthOuter, bedWidthOuter, columnLength } = props.config;
+export const ElectronicsBox = React.memo((props: ElectronicsBoxProps) => {
+  const {
+    x, bedXOffset, bedLengthOuter, bedWidthOuter, columnLength, kitVersion,
+  } = props.config;
 
   const box = useGLTF(ASSETS.models.box, LIB_DIR) as Box;
   const btn = useGLTF(ASSETS.models.btn, LIB_DIR) as Btn;
@@ -87,12 +89,68 @@ export const ElectronicsBox = (props: ElectronicsBoxProps) => {
   const pi = useGLTF(ASSETS.models.pi, LIB_DIR) as Pi;
   const farmduino = useGLTF(ASSETS.models.farmduino, LIB_DIR) as Farmduino;
 
+  const boxPosition = React.useMemo<[number, number, number]>(() => ([
+    threeSpace(x - 62, bedLengthOuter) + bedXOffset,
+    threeSpace(-20, bedWidthOuter),
+    columnLength - 190,
+  ]), [x, bedLengthOuter, bedWidthOuter, bedXOffset, columnLength]);
+  const buttonGroupPosition = React.useMemo<[number, number, number]>(
+    () => [0, 0, 130], []);
+  const ledGroupPosition = React.useMemo<[number, number, number]>(
+    () => [0, 0, 130], []);
+  const buttonConfigs = React.useMemo(() => buttons(kitVersion), [kitVersion]);
+  const ledConfigs = React.useMemo(() => ([
+    { position: -45, color: IColor.sync.on },
+    { position: -15, color: IColor.connect.on },
+    { position: 15, color: IColor.blank.on },
+    { position: 45, color: IColor.blank.on },
+  ]), []);
+  const showLeds = React.useMemo(() => ledsPresent(kitVersion), [kitVersion]);
+  const buttonGroups = React.useMemo(() => buttonConfigs.map(button => {
+    const { position, color } = button;
+    return <Group key={position} name={"button-group"}>
+      <Mesh name={"button-housing"}
+        geometry={btn.nodes["Push_Button_-_Red"].geometry}
+        material={btn.materials[ElectronicsBoxMaterial.button]}
+        position={[-30, position, 0]}
+        scale={1000}
+        material-color={0xcccccc} />
+      <Cylinder
+        name={"button-color"}
+        material-color={color}
+        args={[9, 0, 3.5]}
+        position={[-30, position, 0]}
+        rotation={[Math.PI / 2, 0, 0]} />
+      <Cylinder name={"button-center"}
+        material-color={0xcccccc}
+        args={[6.75, 0, 4]}
+        position={[-30, position, 0]}
+        rotation={[Math.PI / 2, 0, 0]} />
+    </Group>;
+  }), [buttonConfigs, btn]);
+  const ledGroups = React.useMemo(() => ledConfigs.map(ledIndicator => {
+    const { position, color } = ledIndicator;
+    return <Group key={position}>
+      <Mesh name={"led-housing"}
+        geometry={led.nodes.LED.geometry}
+        material={led.materials[ElectronicsBoxMaterial.led]}
+        position={[-50, position, 0]}
+        material-color={0xcccccc}
+        scale={1000} />
+      <Cylinder name={"led-color"}
+        material-color={color}
+        args={[6.75, 6.75, 3]}
+        position={[-50, position, 0]}
+        rotation={[Math.PI / 2, 0, 0]} />
+    </Group>;
+  }), [ledConfigs, led]);
+  const farmduinoPosition = React.useMemo<[number, number, number]>(
+    () => [-60, -10, -110], []);
+  const piPosition = React.useMemo<[number, number, number]>(
+    () => [-15, -10, 40], []);
+
   return <Group name={"electronics-box"}
-    position={new THREE.Vector3(
-      threeSpace(x - 62, bedLengthOuter) + bedXOffset,
-      threeSpace(-20, bedWidthOuter),
-      columnLength - 190,
-    )}>
+    position={boxPosition}>
     <Group name={"box"}
       rotation={[0, 0, Math.PI / 2]}>
       <Mesh name={"electronicsBox"}
@@ -100,7 +158,8 @@ export const ElectronicsBox = (props: ElectronicsBoxProps) => {
         material={box.materials[ElectronicsBoxMaterial.box]}
         scale={1000}
         material-color={0xffffff}
-        material-emissive={0x999999} />
+        material-emissive={0x999999}
+        castShadow={true} />
       <Mesh name={"electronicsBoxGasket"}
         geometry={box.nodes.Electronics_Box_Gasket.geometry}
         material={box.materials[ElectronicsBoxMaterial.gasket]}
@@ -110,68 +169,26 @@ export const ElectronicsBox = (props: ElectronicsBoxProps) => {
         material={box.materials[ElectronicsBoxMaterial.lid]}
         scale={1000} />
       <Group name={"buttons"}
-        position={[0, 0, 130]}>
-        {buttons(props.config.kitVersion).map(button => {
-          const { position, color } = button;
-          const btnPosition = position;
-          return <Group key={btnPosition} name={"button-group"}>
-            <Mesh name={"button-housing"}
-              geometry={btn.nodes["Push_Button_-_Red"].geometry}
-              material={btn.materials[ElectronicsBoxMaterial.button]}
-              position={[-30, btnPosition, 0]}
-              scale={1000}
-              material-color={0xcccccc} />
-            <Cylinder
-              name={"button-color"}
-              material-color={color}
-              args={[9, 0, 3.5]}
-              position={[-30, btnPosition, 0]}
-              rotation={[Math.PI / 2, 0, 0]} />
-            <Cylinder name={"button-center"}
-              material-color={0xcccccc}
-              args={[6.75, 0, 4]}
-              position={[-30, btnPosition, 0]}
-              rotation={[Math.PI / 2, 0, 0]} />
-          </Group>;
-        })}
+        position={buttonGroupPosition}>
+        {buttonGroups}
       </Group>
       <Group name={"leds"}
-        position={[0, 0, 130]}
-        visible={ledsPresent(props.config.kitVersion)}>
-        {[
-          { position: -45, color: IColor.sync.on },
-          { position: -15, color: IColor.connect.on },
-          { position: 15, color: IColor.blank.on },
-          { position: 45, color: IColor.blank.on },
-        ].map(ledIndicator => {
-          const { position, color } = ledIndicator;
-          return <Group key={position}>
-            <Mesh name={"led-housing"}
-              geometry={led.nodes.LED.geometry}
-              material={led.materials[ElectronicsBoxMaterial.led]}
-              position={[-50, position, 0]}
-              material-color={0xcccccc}
-              scale={1000} />
-            <Cylinder name={"led-color"}
-              material-color={color}
-              args={[6.75, 6.75, 3]}
-              position={[-50, position, 0]}
-              rotation={[Math.PI / 2, 0, 0]} />
-          </Group>;
-        })}
+        position={ledGroupPosition}
+        visible={showLeds}>
+        {ledGroups}
       </Group>
     </Group>
     <Mesh name={"farmduino"}
-      position={[-60, -10, -110]}
+      position={farmduinoPosition}
       rotation={[Math.PI / 2, 0, 0]}
       scale={1000}
       geometry={farmduino.nodes[PartName.farmduino].geometry}
       material={farmduino.materials.PaletteMaterial001} />
     <Mesh name={"pi"}
-      position={[-15, -10, 40]}
+      position={piPosition}
       rotation={[Math.PI / 2, 0, Math.PI]}
       scale={1000}
       geometry={pi.nodes[PartName.pi].geometry}
       material={pi.materials.PaletteMaterial001} />
   </Group>;
-};
+});

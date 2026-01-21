@@ -13,5 +13,7 @@ describe("<XAxisWaterTube />", () => {
     const p = fakeProps();
     const { container } = render(<XAxisWaterTube {...p} />);
     expect(container).toContainHTML("x-axis-water-tube");
+    expect(container).toContainHTML("adapter-barb");
+    expect(container).toContainHTML("adapter-base");
   });
 });

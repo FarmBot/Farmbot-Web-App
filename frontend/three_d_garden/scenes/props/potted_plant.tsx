@@ -7,7 +7,7 @@ import { RenderOrder } from "../../constants";
 const potHeight = 400;
 const plantHeight = 500;
 
-export const PottedPlant = () => {
+export const PottedPlant = React.memo(() => {
   const points = useMemo(() => [
     new THREE.Vector2(0, 0),
     new THREE.Vector2(0.3, 0),
@@ -44,4 +44,4 @@ export const PottedPlant = () => {
       />
     </Billboard>
   </Group>;
-};
+});

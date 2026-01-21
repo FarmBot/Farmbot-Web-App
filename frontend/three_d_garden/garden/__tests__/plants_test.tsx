@@ -25,11 +25,23 @@ import { Path } from "../../../internal_urls";
 import { Actions } from "../../../constants";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import { convertPlants } from "../../../farm_designer/three_d_garden_map";
+import * as spreadHelper from
+  "../../../farm_designer/map/layers/spread/spread_overlap_helper";
 
 describe("<ThreeDPlant />", () => {
   beforeEach(() => {
     location.pathname = Path.mock(Path.designer());
   });
+  afterEach(() => {
+    document.querySelector(".garden-bed-3d-model")?.remove();
+  });
+
+  const setupGardenBed = () => {
+    const bed = document.createElement("div");
+    bed.className = "garden-bed-3d-model";
+    document.body.appendChild(bed);
+    return bed;
+  };
 
   const fakeProps = (): ThreeDPlantProps => {
     const config = clone(INITIAL);
@@ -77,6 +89,32 @@ describe("<ThreeDPlant />", () => {
     p.config.light = false;
     const { container } = render(<ThreeDPlant {...p} />);
     expect(container).toContainHTML("avif");
+    expect(container.querySelector("meshbasicmaterial")).toBeTruthy();
+  });
+
+  it("changes cursor on hover when clickable", () => {
+    const bed = setupGardenBed();
+    const p = fakeProps();
+    p.config.labels = false;
+    p.config.labelsOnHover = false;
+    p.labelOnly = false;
+    p.dispatch = mockDispatch(jest.fn());
+    const { container } = render(<ThreeDPlant {...p} />);
+    const plant = container.querySelector("[name='0']");
+    expect(plant).not.toBeNull();
+    fireEvent.pointerEnter(plant as Element);
+    expect(bed.style.cursor).toEqual("pointer");
+    fireEvent.pointerLeave(plant as Element);
+    expect(bed.style.cursor).toEqual("move");
+  });
+
+  it("renders spread without image", () => {
+    const p = fakeProps();
+    p.renderImage = false;
+    p.spreadVisible = true;
+    const { container } = render(<ThreeDPlant {...p} />);
+    expect(container).toContainHTML("sphere");
+    expect(container).not.toContainHTML("avif");
   });
 
   it("renders spread", () => {
@@ -87,20 +125,68 @@ describe("<ThreeDPlant />", () => {
     expect(container).toContainHTML("sphere");
   });
 
+  it("skips overlap work when not in click-to-add or edit mode", () => {
+    location.pathname = Path.mock(Path.designer());
+    const overlapSpy = jest.spyOn(spreadHelper, "getSpreadOverlap");
+    const p = fakeProps();
+    p.spreadVisible = true;
+    render(<ThreeDPlant {...p} />);
+    expect(overlapSpy).not.toHaveBeenCalled();
+    overlapSpy.mockRestore();
+  });
+
+  it("computes overlap when in click-to-add mode", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    const overlapSpy = jest.spyOn(spreadHelper, "getSpreadOverlap");
+    const p = fakeProps();
+    p.spreadVisible = true;
+    render(<ThreeDPlant {...p} />);
+    expect(overlapSpy).toHaveBeenCalled();
+    overlapSpy.mockRestore();
+  });
+
+  it("skips overlap when spread is hidden", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    const overlapSpy = jest.spyOn(spreadHelper, "getSpreadOverlap");
+    const p = fakeProps();
+    p.spreadVisible = false;
+    render(<ThreeDPlant {...p} />);
+    expect(overlapSpy).not.toHaveBeenCalled();
+    overlapSpy.mockRestore();
+  });
+
   it("renders spread: edit plant mode", () => {
     location.pathname = Path.mock(Path.plants("1"));
     const p = fakeProps();
-    p.spreadVisible = false;
+    p.spreadVisible = true;
     const { container } = render(<ThreeDPlant {...p} />);
     expect(container).toContainHTML("sphere");
+  });
+
+  it("uses current plant spread in edit mode", () => {
+    location.pathname = Path.mock(Path.plants("1"));
+    const radiiSpy = jest.spyOn(spreadHelper, "getSpreadRadii");
+    const p = fakeProps();
+    render(<ThreeDPlant {...p} />);
+    expect(radiiSpy.mock.calls[0][0].activeDragSpread)
+      .toEqual(p.plants[0].spread);
+    radiiSpy.mockRestore();
   });
 
   it("renders spread: edit plant mode without plant", () => {
     location.pathname = Path.mock(Path.plants("999999"));
     const p = fakeProps();
-    p.spreadVisible = false;
+    p.spreadVisible = true;
     const { container } = render(<ThreeDPlant {...p} />);
     expect(container).toContainHTML("sphere");
+  });
+
+  it("hides spread in edit mode when layer is off", () => {
+    location.pathname = Path.mock(Path.plants("1"));
+    const p = fakeProps();
+    p.spreadVisible = false;
+    const { container } = render(<ThreeDPlant {...p} />);
+    expect(container).not.toContainHTML("sphere");
   });
 
   it("renders plant: not size animated", () => {

@@ -23,6 +23,14 @@ describe("<WaterStream />", () => {
     const wrapper = render(<WaterStream {...fakeProps()} />);
     expect(wrapper.container).toContainHTML("mock-water-stream");
   });
+
+  it("hides when static", () => {
+    const p = fakeProps();
+    p.waterFlow = false;
+    const { container } = render(<WaterStream {...p} />);
+    const stream = container.querySelector("[name='mock-water-stream']");
+    expect(stream?.getAttribute("visible")).not.toEqual("true");
+  });
 });
 
 describe("useWaterFlowTexture", () => {

@@ -13,4 +13,12 @@ describe("<Bounds />", () => {
     const { container } = render(<Bounds {...fakeProps()} />);
     expect(container).toContainHTML("bounds");
   });
+
+  it("toggles bounds visibility", () => {
+    const p = fakeProps();
+    p.config.bounds = false;
+    const { container } = render(<Bounds {...p} />);
+    const line = container.querySelector("[name='bounds']");
+    expect(line?.getAttribute("visible")).not.toEqual("true");
+  });
 });

@@ -23,14 +23,18 @@ const arrow2D =
     return path;
   };
 
-export const Arrow = (props: ArrowProps) => {
+export const Arrow = React.memo((props: ArrowProps) => {
+  const arrowShape = React.useMemo(
+    () => arrow2D(props.length, props.width),
+    [props.length, props.width],
+  );
   return <Extrude name={"arrow"}
     args={[
-      arrow2D(props.length, props.width),
+      arrowShape,
       { steps: 1, depth: 10, bevelEnabled: false },
     ]}
     receiveShadow={true}
     rotation={props.rotation}>
     <MeshPhongMaterial color={"#ccc"} />
   </Extrude>;
-};
+});

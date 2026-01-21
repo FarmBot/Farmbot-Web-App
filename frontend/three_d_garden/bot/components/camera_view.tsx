@@ -32,53 +32,87 @@ export interface CameraViewProps {
   cameraMountPosition: THREE.Vector3;
 }
 
-export const CameraView = (props: CameraViewProps) => {
+export const CameraView = React.memo((props: CameraViewProps) => {
   const { config, distanceToSoil, cameraMountPosition } = props;
-  const cameraLensPosition = cameraMountPosition.clone()
-    .add(cameraMountToLensOffset);
-  const soilZ = distanceToSoil + zDir(config) * config.z;
+  if (!config.cameraView) { return <></>; }
+  const zDirection = React.useMemo(
+    () => zDir(config),
+    [config.negativeZ],
+  );
+  const cameraLensPosition = React.useMemo(() =>
+    cameraMountPosition.clone().add(cameraMountToLensOffset), [
+    cameraMountPosition,
+  ]);
+  const soilZ = React.useMemo(
+    () => distanceToSoil + zDirection * config.z,
+    [distanceToSoil, zDirection, config.z],
+  );
+  const widthAtSoilFromZero = React.useMemo(
+    () => config.imgCenterX * 2 * config.imgScale,
+    [config.imgCenterX, config.imgScale],
+  );
+  const heightAtSoilFromZero = React.useMemo(
+    () => config.imgCenterY * 2 * config.imgScale,
+    [config.imgCenterY, config.imgScale],
+  );
+  const yEdgeAtSoil = React.useMemo(() => {
+    const heightAngle = Math.atan2(heightAtSoilFromZero / 2, soilZ);
+    return distanceToSoil * Math.tan(heightAngle);
+  }, [heightAtSoilFromZero, soilZ, distanceToSoil]);
+  const xEdgeAtSoil = React.useMemo(() => {
+    const widthAngle = Math.atan2(widthAtSoilFromZero / 2, soilZ);
+    return distanceToSoil * Math.tan(widthAngle);
+  }, [widthAtSoilFromZero, soilZ, distanceToSoil]);
+  const xCenter = React.useMemo(
+    () => -cameraMountOffset.x - cameraMountToLensOffset.x,
+    [],
+  );
+  const yCenter = React.useMemo(
+    () => -cameraMountOffset.y - cameraMountToLensOffset.y,
+    [],
+  );
+  const rotation = React.useMemo(
+    () => config.imgRotation + extraRotation(config),
+    [config.imgRotation, config.imgOrigin],
+  );
+  const offset = React.useMemo(() =>
+    toV([config.imgOffsetX, config.imgOffsetY, 0]), [
+    config.imgOffsetX,
+    config.imgOffsetY,
+  ]);
+  const vertices = React.useMemo(() => {
+    const topCenter = toV([0, 0, 0]);
+    const bottomCenter = toV([xCenter, yCenter, 0]);
+    const rotateTop = (point: V3) => rotatePoint(point, rotation, topCenter);
+    const rotateBottom = (point: V3) =>
+      rotatePoint(point, rotation, bottomCenter).add(offset);
+    const topPoints: V3[] = [
+      [-lensSize, -lensSize, 0],
+      [-lensSize, lensSize, 0],
+      [lensSize, -lensSize, 0],
+      [lensSize, lensSize, 0],
+    ];
+    const bottomPoints: V3[] = [
+      [xCenter - xEdgeAtSoil, yCenter - yEdgeAtSoil, -distanceToSoil],
+      [xCenter - xEdgeAtSoil, yCenter + yEdgeAtSoil, -distanceToSoil],
+      [xCenter + xEdgeAtSoil, yCenter - yEdgeAtSoil, -distanceToSoil],
+      [xCenter + xEdgeAtSoil, yCenter + yEdgeAtSoil, -distanceToSoil],
+    ];
+    const top = topPoints.map(rotateTop);
+    const bottom = bottomPoints.map(rotateBottom);
+    return [...top, ...bottom];
+  }, [
+    xCenter,
+    yCenter,
+    xEdgeAtSoil,
+    yEdgeAtSoil,
+    distanceToSoil,
+    rotation,
+    offset,
+  ]);
 
-  const widthAtSoilFromZero = config.imgCenterX * 2 * config.imgScale;
-  const heightAtSoilFromZero = config.imgCenterY * 2 * config.imgScale;
-  const heightAngle = Math.atan2(heightAtSoilFromZero / 2, soilZ);
-  const widthAngle = Math.atan2(widthAtSoilFromZero / 2, soilZ);
-  const yEdgeAtSoil = distanceToSoil * Math.tan(heightAngle);
-  const xEdgeAtSoil = distanceToSoil * Math.tan(widthAngle);
-
-  const topCenter = toV([0, 0, 0]);
-
-  const xCenter = -cameraMountOffset.x - cameraMountToLensOffset.x;
-  const yCenter = -cameraMountOffset.y - cameraMountToLensOffset.y;
-  const bottomCenter = toV([xCenter, yCenter, 0]);
-
-  const offset = toV([config.imgOffsetX, config.imgOffsetY, 0]);
-
-  const rotation = config.imgRotation + extraRotation(config);
-  const rotateTop = (point: V3) => rotatePoint(point, rotation, topCenter);
-  const rotateBottom = (point: V3) => rotatePoint(point, rotation, bottomCenter)
-    .add(offset);
-
-  const TUL = [-lensSize, -lensSize, 0];
-  const TUR = [-lensSize, lensSize, 0];
-  const TLL = [lensSize, -lensSize, 0];
-  const TLR = [lensSize, lensSize, 0];
-  const TOP = [TUL, TUR, TLL, TLR].map(rotateTop);
-
-  const BUL = [xCenter - xEdgeAtSoil, yCenter - yEdgeAtSoil, -distanceToSoil];
-  const BUR = [xCenter - xEdgeAtSoil, yCenter + yEdgeAtSoil, -distanceToSoil];
-  const BLL = [xCenter + xEdgeAtSoil, yCenter - yEdgeAtSoil, -distanceToSoil];
-  const BLR = [xCenter + xEdgeAtSoil, yCenter + yEdgeAtSoil, -distanceToSoil];
-  const BOTTOM = [BUL, BUR, BLL, BLR].map(rotateBottom);
-
-  const VERTICES = [
-    ...TOP,
-    ...BOTTOM,
-  ];
-
-  return config.cameraView
-    ? <Frustum points={VERTICES} position={cameraLensPosition} />
-    : <></>;
-};
+  return <Frustum points={vertices} position={cameraLensPosition} />;
+});
 
 interface FrustumProps {
   points: THREE.Vector3[];
@@ -102,6 +136,10 @@ const Frustum = (props: FrustumProps) => {
       transparent={true}
       depthWrite={false}
       color={"white"} />
-    <Edges lineWidth={1.1} color={"white"} opacity={0.75} transparent={true} threshold={1} />
+    <Edges lineWidth={1.1}
+      color={"white"}
+      opacity={0.75}
+      transparent={true}
+      threshold={1} />
   </Mesh>;
 };

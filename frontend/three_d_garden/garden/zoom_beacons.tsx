@@ -3,6 +3,7 @@ import React from "react";
 import { Config } from "../config";
 import { FOCI, getCameraOffset, setUrlParam } from "../zoom_beacons_constants";
 import { useSpring, animated } from "@react-spring/three";
+import { useThree } from "@react-three/fiber";
 import { Group, Mesh, MeshPhongMaterial } from "../components";
 import { isDesktop } from "../../screen_size";
 import { RenderOrder } from "../constants";
@@ -25,6 +26,10 @@ interface BeaconPulseProps {
 
 const BeaconPulse = (props: BeaconPulseProps) => {
   const { beaconSize, animate } = props;
+  const { invalidate } = useThree();
+  const handleSpringChange = React.useCallback(() => {
+    invalidate();
+  }, [invalidate]);
   const { scale, opacity } = useSpring({
     from: { scale: 1, opacity: 0.75 },
     to: async (next) => {
@@ -34,7 +39,8 @@ const BeaconPulse = (props: BeaconPulseProps) => {
         await next({ scale: 1, opacity: 0.75, immediate: true });
       }
     },
-    config: { duration: 1500 }
+    config: { duration: 1500 },
+    onChange: handleSpringChange,
   });
 
   return <AnimatedMesh scale={scale}>
@@ -48,17 +54,27 @@ const BeaconPulse = (props: BeaconPulseProps) => {
   </AnimatedMesh>;
 };
 
-export const ZoomBeacons = (props: ZoomBeaconsProps) => {
+export const ZoomBeacons = React.memo((props: ZoomBeaconsProps) => {
   const [hoveredFocus, setHoveredFocus] = React.useState("");
   const { activeFocus, setActiveFocus } = props;
-  const gardenBedDiv =
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    document.querySelector(".garden-bed-3d-model") as HTMLElement | null;
+  const gardenBedDiv = React.useMemo(() => {
+    if (typeof document === "undefined") { return null; }
+    return document.querySelector(".garden-bed-3d-model") as HTMLElement | null;
+  }, []);
 
-  const beaconSize = isDesktop() ? 60 : 80;
+  const isDesktopDevice = isDesktop();
+  const beaconSize = React.useMemo(
+    () => isDesktopDevice ? 60 : 80,
+    [isDesktopDevice],
+  );
+  const focusList = React.useMemo(() => FOCI(props.config), [props.config]);
+  const focusCameras = React.useMemo(
+    () => focusList.map(focus => getCameraOffset(focus)),
+    [focusList],
+  );
   return <Group name={"zoom-beacons"}>
-    {FOCI(props.config).map(focus => {
-      const camera = getCameraOffset(focus);
+    {focusList.map((focus, index) => {
+      const camera = focusCameras[index];
       return <Group name={"zoom-beacon"} key={focus.label}
         position={focus.position}>
         {props.config.zoomBeaconDebug &&
@@ -130,4 +146,4 @@ export const ZoomBeacons = (props: ZoomBeaconsProps) => {
       </Group>;
     })}
   </Group>;
-};
+});

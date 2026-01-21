@@ -15,44 +15,118 @@ export interface UtilitiesPostProps {
   activeFocus: string;
 }
 
-export const UtilitiesPost = (props: UtilitiesPostProps) => {
+export const UtilitiesPost = React.memo((props: UtilitiesPostProps) => {
   const {
     utilitiesPost, legSize, bedLengthOuter, bedWidthOuter,
     bedBrightness, bedHeight, bedZOffset,
   } = props.config;
-  const groundZ = -bedHeight - bedZOffset;
-  const postColor = getColorFromBrightness(bedBrightness);
+  const groundZ = React.useMemo(
+    () => -bedHeight - bedZOffset,
+    [bedHeight, bedZOffset],
+  );
+  const postColor = React.useMemo(
+    () => getColorFromBrightness(bedBrightness),
+    [bedBrightness],
+  );
   const faucetX = 0;
   const faucetY = -115;
   const faucetZ = 70;
-  const barbX = -bedLengthOuter / 2 - 200;
+  const barbX = React.useMemo(
+    () => -bedLengthOuter / 2 - 200,
+    [bedLengthOuter],
+  );
   const barbY = -100;
   const barbZ = -130;
 
-  const hosePathCurved = easyCubicBezierCurve3(
+  const hosePathCurved = React.useMemo(() => easyCubicBezierCurve3(
     [faucetX, faucetY, faucetZ],
     [0, -60, -65],
     [200, 0, 0],
     [faucetX - 205, barbY, barbZ],
-  );
+  ), [barbY, barbZ]);
 
-  const hosePathStraight = new THREE.LineCurve3(
+  const hosePathStraight = React.useMemo(() => new THREE.LineCurve3(
     new THREE.Vector3(faucetX - 200, barbY, barbZ),
     new THREE.Vector3(barbX, barbY, barbZ),
-  );
+  ), [barbX, barbY, barbZ]);
 
   const postWoodTexture = useTexture(ASSETS.textures.wood + "?=post");
-  postWoodTexture.wrapS = RepeatWrapping;
-  postWoodTexture.wrapT = RepeatWrapping;
-  postWoodTexture.repeat.set(0.02, 0.05);
+  React.useEffect(() => {
+    postWoodTexture.wrapS = RepeatWrapping;
+    postWoodTexture.wrapT = RepeatWrapping;
+    postWoodTexture.repeat.set(0.02, 0.05);
+  }, [postWoodTexture]);
+  const postPosition = React.useMemo<[number, number, number]>(() => ([
+    threeSpace(bedLengthOuter + 600, bedLengthOuter),
+    threeSpace(legSize / 2, bedWidthOuter),
+    groundZ + 150,
+  ]), [bedLengthOuter, bedWidthOuter, groundZ, legSize]);
+  const pipePosition = React.useMemo<[number, number, number]>(
+    () => [-legSize / 2 - outletDepth / 2, 0, -50],
+    [legSize],
+  );
+  const pipeRotation = React.useMemo<[number, number, number]>(
+    () => [Math.PI / 2, 0, 0], []);
+  const outletPosition = React.useMemo<[number, number, number]>(
+    () => [-legSize / 2 - outletDepth / 2, 0, 85],
+    [legSize],
+  );
+  const routerPosition = React.useMemo<[number, number, number]>(
+    () => [0, 0, 165], []);
+  const routerArgs = React.useMemo<[number, number, number]>(
+    () => [legSize, 60, 30],
+    [legSize],
+  );
+  const antennaArgs = React.useMemo<[number, number, number]>(
+    () => [3.5, 3.5, 60],
+    [],
+  );
+  const antennaRotationLeft = React.useMemo<[number, number, number]>(
+    () => [Math.PI / 2, 0, Math.PI / 8], []);
+  const antennaRotationRight = React.useMemo<[number, number, number]>(
+    () => [Math.PI / 2, 0, -Math.PI / 8], []);
+  const ledArgs = React.useMemo<[number, number, number]>(
+    () => [2, 2, 61],
+    [],
+  );
+  const waterPipePosition = React.useMemo<[number, number, number]>(
+    () => [0, -legSize / 2 - 20, -50],
+    [legSize],
+  );
+  const faucetBasePosition = React.useMemo<[number, number, number]>(
+    () => [0, -legSize / 2 - 20, 90],
+    [legSize],
+  );
+  const faucetOutletPosition = React.useMemo<[number, number, number]>(
+    () => [0, -legSize / 2 - 45, 90],
+    [legSize],
+  );
+  const faucetOutletRotation = React.useMemo<[number, number, number]>(
+    () => [Math.PI / 4, 0, 0], []);
+  const faucetHandlePosition = React.useMemo<[number, number, number]>(
+    () => [0, -legSize / 2 - 65, 105],
+    [legSize],
+  );
+  const faucetHandleRotation = React.useMemo<[number, number, number]>(
+    () => [-Math.PI / 4, 0, 0], []);
+  const faucetHandleArgs = React.useMemo<[number, number, number]>(
+    () => [25, 25, 10],
+    [],
+  );
+  const faucetPinArgs = React.useMemo<[number, number, number]>(
+    () => [4, 4, 15],
+    [],
+  );
+  const hoseCurvedArgs = React.useMemo<
+    [THREE.Curve<THREE.Vector3>, number, number, number]
+  >(() => [hosePathCurved, 10, 15, 8], [hosePathCurved]);
+  const hoseStraightArgs = React.useMemo<
+    [THREE.Curve<THREE.Vector3>, number, number, number]
+  >(() => [hosePathStraight, 1, 15, 8], [hosePathStraight]);
 
   return <Group name={"utilities"}
     visible={utilitiesPost && props.activeFocus != "Planter bed"}
-    position={[
-      threeSpace(bedLengthOuter + 600, bedLengthOuter),
-      threeSpace(legSize / 2, bedWidthOuter),
-      groundZ + 150,
-    ]}>
+    position={postPosition}>
     <Box name={"utilities-post"}
       castShadow={true}
       args={[legSize, legSize, 300]}>
@@ -62,52 +136,52 @@ export const UtilitiesPost = (props: UtilitiesPostProps) => {
       castShadow={true}
       receiveShadow={true}
       args={[outletDepth / 2, outletDepth / 2, 200]}
-      position={[-legSize / 2 - outletDepth / 2, 0, -50]}
-      rotation={[Math.PI / 2, 0, 0]}>
+      position={pipePosition}
+      rotation={pipeRotation}>
       <MeshPhongMaterial color={"gray"} />
     </Cylinder>
     <Box name={"electrical-outlet"}
       castShadow={true}
       args={[outletDepth, 75, 110]}
-      position={[-legSize / 2 - outletDepth / 2, 0, 85]}>
+      position={outletPosition}>
       <MeshPhongMaterial color={"gray"} />
     </Box>
     <Group name={"wifi-router"}
-      position={[0, 0, 165]}>
+      position={routerPosition}>
       <RoundedBox name={"router-base"}
         castShadow={true}
         receiveShadow={true}
         radius={8}
-        args={[legSize, 60, 30]}>
+        args={routerArgs}>
         <MeshPhongMaterial color={"lightgray"} />
       </RoundedBox>
       <Cylinder name={"antenna-1"}
         castShadow={true}
         receiveShadow={true}
-        args={[3.5, 3.5, 60]}
+        args={antennaArgs}
         position={[-30, 0, 35]}
-        rotation={[Math.PI / 2, 0, Math.PI / 8]}>
+        rotation={antennaRotationLeft}>
         <MeshPhongMaterial color={"gray"} />
       </Cylinder>
       <Cylinder name={"antenna-2"}
         castShadow={true}
         receiveShadow={true}
-        args={[3.5, 3.5, 60]}
+        args={antennaArgs}
         position={[30, 0, 35]}
-        rotation={[Math.PI / 2, 0, -Math.PI / 8]}>
+        rotation={antennaRotationRight}>
         <MeshPhongMaterial color={"gray"} />
       </Cylinder>
       <Cylinder name={"led-light-1"}
         castShadow={true}
         receiveShadow={true}
-        args={[2, 2, 61]}
+        args={ledArgs}
         position={[-40, 0, 5]}>
         <MeshPhongMaterial color={"green"} />
       </Cylinder>
       <Cylinder name={"led-light-2"}
         castShadow={true}
         receiveShadow={true}
-        args={[2, 2, 61]}
+        args={ledArgs}
         position={[-30, 0, 5]}>
         <MeshPhongMaterial color={"blue"} />
       </Cylinder>
@@ -117,54 +191,54 @@ export const UtilitiesPost = (props: UtilitiesPostProps) => {
         castShadow={true}
         receiveShadow={true}
         args={[18, 18, 200]}
-        position={[0, -legSize / 2 - 20, -50]}
-        rotation={[Math.PI / 2, 0, 0]}>
+        position={waterPipePosition}
+        rotation={pipeRotation}>
         <MeshPhongMaterial color={"#f4f4f4"} />
       </Cylinder>
       <Cylinder name={"faucet-base"}
         castShadow={true}
         receiveShadow={true}
         args={[20, 20, 80]}
-        position={[0, -legSize / 2 - 20, 90]}
-        rotation={[Math.PI / 2, 0, 0]}>
+        position={faucetBasePosition}
+        rotation={pipeRotation}>
         <MeshPhongMaterial color={"gold"} />
       </Cylinder>
       <Cylinder name={"faucet-outlet"}
         castShadow={true}
         receiveShadow={true}
         args={[18, 18, 70]}
-        position={[0, -legSize / 2 - 45, 90]}
-        rotation={[Math.PI / 4, 0, 0]}>
+        position={faucetOutletPosition}
+        rotation={faucetOutletRotation}>
         <MeshPhongMaterial color={"gold"} />
       </Cylinder>
       <Group name={"faucet-handle"}
-        position={[0, -legSize / 2 - 65, 105]}
-        rotation={[-Math.PI / 4, 0, 0]}>
+        position={faucetHandlePosition}
+        rotation={faucetHandleRotation}>
         <Cylinder name={"handle"}
           castShadow={true}
           receiveShadow={true}
-          args={[25, 25, 10]}>
+          args={faucetHandleArgs}>
           <MeshPhongMaterial color={"#0266b5"} />
         </Cylinder>
         <Cylinder name={"pin"}
           castShadow={true}
           receiveShadow={true}
-          args={[4, 4, 15]}>
+          args={faucetPinArgs}>
           <MeshPhongMaterial color={"#434343"} />
         </Cylinder>
       </Group>
       <Tube name={"garden-hose-curved"}
         castShadow={true}
         receiveShadow={true}
-        args={[hosePathCurved, 10, 15, 8]}>
+        args={hoseCurvedArgs}>
         <MeshPhongMaterial color="darkgreen" />
       </Tube>
       <Tube name={"garden-hose-straight"}
         castShadow={true}
         receiveShadow={true}
-        args={[hosePathStraight, 1, 15, 8]}>
+        args={hoseStraightArgs}>
         <MeshPhongMaterial color="darkgreen" />
       </Tube>
     </Group>
   </Group>;
-};
+});

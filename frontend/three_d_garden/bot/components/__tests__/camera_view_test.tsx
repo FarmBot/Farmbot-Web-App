@@ -25,4 +25,13 @@ describe("<CameraView />", () => {
     const { container } = render(<CameraView {...p} />);
     expect(container).not.toContainHTML("camera-view");
   });
+
+  it("does not mutate camera mount position", () => {
+    const p = fakeProps();
+    p.config.cameraView = true;
+    const mount = new THREE.Vector3(1, 2, 3);
+    p.cameraMountPosition = mount;
+    render(<CameraView {...p} />);
+    expect(mount.toArray()).toEqual([1, 2, 3]);
+  });
 });

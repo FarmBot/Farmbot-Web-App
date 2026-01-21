@@ -13,4 +13,12 @@ describe("<Solenoid />", () => {
     const { container } = render(<Solenoid {...fakeProps()} />);
     expect(container).toContainHTML("solenoid");
   });
+
+  it("renders tubes", () => {
+    const { container } = render(<Solenoid {...fakeProps()} />);
+    expect(container).toContainHTML("lower-solenoid-water-tube");
+    expect(container).toContainHTML("upper-solenoid-water-tube");
+    expect(container).toContainHTML("y-z-water-tube");
+    expect(container).toContainHTML("utm-water-tube");
+  });
 });

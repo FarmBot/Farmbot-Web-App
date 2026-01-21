@@ -14,7 +14,7 @@ export interface PresetButtonProps {
   index: number;
 }
 
-export const PresetButton = (props: PresetButtonProps) => {
+export const PresetButton = React.memo((props: PresetButtonProps) => {
   const { preset, choosePreset, hovered, setHovered, startPosition, index } = props;
   const btnHeight = 50;
   const btnZ = 0;
@@ -67,7 +67,7 @@ export const PresetButton = (props: PresetButtonProps) => {
       </Text>
     </Group>
   </Group>;
-};
+});
 
 const changeItemsInGroup = (
   meshObject: MeshObject,

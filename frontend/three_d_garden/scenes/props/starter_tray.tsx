@@ -11,7 +11,7 @@ const height = 50;
 const cellSize = 50;
 const seedlingSize = 40;
 
-export const StarterTray = () => {
+export const StarterTray = React.memo(() => {
 
   return <Group name={"starter-tray"}>
     <Box
@@ -37,4 +37,4 @@ export const StarterTray = () => {
       }),
     )}
   </Group>;
-};
+});

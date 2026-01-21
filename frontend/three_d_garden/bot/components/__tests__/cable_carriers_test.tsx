@@ -1,6 +1,7 @@
 import React from "react";
 import { render } from "@testing-library/react";
 import {
+  CableCarrierX,
   CableCarrierSupportVertical, CableCarrierSupportVerticalProps,
   CableCarrierSupportHorizontal, CableCarrierSupportHorizontalProps,
 } from "../cable_carriers";
@@ -26,6 +27,19 @@ describe("<CableCarrierVertical />", () => {
     const wrapper = render(<CableCarrierSupportVertical {...p} />);
     expect(wrapper.container).toContainHTML("ccSupportVertical");
     expect(wrapper.container.querySelectorAll("mesh").length).toBe(1);
+  });
+});
+
+describe("<CableCarrierX />", () => {
+  const fakeProps = () => ({
+    config: clone(INITIAL),
+  });
+
+  it("renders", () => {
+    const p = fakeProps();
+    p.config.cableCarriers = true;
+    const wrapper = render(<CableCarrierX {...p} />);
+    expect(wrapper.container).toContainHTML("xCC");
   });
 });
 

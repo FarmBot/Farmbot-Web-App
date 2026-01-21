@@ -14,11 +14,66 @@ export interface WateringAnimationsProps {
   getZ(x: number, y: number): number;
 }
 
-export const WateringAnimations = (props: WateringAnimationsProps) => {
+export const WateringAnimations = React.memo((props: WateringAnimationsProps) => {
   const { waterFlow, getZ, config } = props;
   const { x, y, z, bedLengthOuter, bedWidthOuter, bedXOffset, bedYOffset } = config;
-  const utmZ = -zDir(config) * z + utmHeight / 2 - 15;
-  const nozzleToSoil = getZ(x, y) - utmZ;
+  const zDirection = React.useMemo(() => zDir(config), [config]);
+  const zZeroPosition = React.useMemo(() => zZero(config), [config]);
+  const utmZ = React.useMemo(
+    () => -zDirection * z + utmHeight / 2 - 15,
+    [z, zDirection],
+  );
+  const soilZ = React.useMemo(() => getZ(x, y), [getZ, x, y]);
+  const nozzleToSoil = React.useMemo(
+    () => soilZ - utmZ,
+    [soilZ, utmZ],
+  );
+  const groupPosition = React.useMemo<[number, number, number]>(() => ([
+    threeSpace(x, bedLengthOuter) + bedXOffset,
+    threeSpace(y, bedWidthOuter) + bedYOffset,
+    zZeroPosition,
+  ]), [
+    bedLengthOuter,
+    bedWidthOuter,
+    bedXOffset,
+    bedYOffset,
+    x,
+    y,
+    zZeroPosition,
+  ]);
+  const streamPosition = React.useMemo<[number, number, number]>(
+    () => [0, 0, utmZ], [utmZ]);
+  const streamConfigs = React.useMemo(() => range(16).map(i => {
+    const angle = (i * Math.PI * 2) / 16;
+    const sin = Math.sin(angle);
+    const cos = Math.cos(angle);
+    return {
+      key: i,
+      args: [
+        easyCubicBezierCurve3(
+          [12.5 * sin, 12.5 * cos, 0],
+          [10 * sin, 0, -10],
+          [0, 0, 10],
+          [25 * sin, 25 * cos, nozzleToSoil],
+        ),
+        8,
+        1.5,
+        6,
+      ] as [ReturnType<typeof easyCubicBezierCurve3>, number, number, number],
+    };
+  }), [nozzleToSoil]);
+  const mistCloudPosition = React.useMemo<[number, number, number]>(
+    () => [0, 0, utmZ + nozzleToSoil / 2 - 40],
+    [nozzleToSoil, utmZ],
+  );
+  const mistCloudBounds = React.useMemo<[number, number, number]>(
+    () => [15, 15, nozzleToSoil / 2],
+    [nozzleToSoil],
+  );
+  const spotMistPosition = React.useMemo<[number, number, number]>(
+    () => [0, 0, soilZ],
+    [soilZ],
+  );
   const [visible, setVisible] = React.useState(false);
   React.useEffect(() => {
     const timer = setTimeout(() => {
@@ -28,30 +83,18 @@ export const WateringAnimations = (props: WateringAnimationsProps) => {
   }, []);
   return <Group name={"watering-animations"}
     visible={visible}
-    position={[
-      threeSpace(x, bedLengthOuter) + bedXOffset,
-      threeSpace(y, bedWidthOuter) + bedYOffset,
-      zZero(config),
-    ]}>
-    {range(16).map(i => {
-      const angle = (i * Math.PI * 2) / 16;
-      return <WaterStream key={i}
-        name={`water-stream-${i}`}
-        waterFlow={waterFlow}
-        position={[0, 0, utmZ]}
-        args={[easyCubicBezierCurve3(
-          [12.5 * Math.sin(angle), 12.5 * Math.cos(angle), 0],
-          [10 * Math.sin(angle), 0, -10],
-          [0, 0, 10],
-          [25 * Math.sin(angle), 25 * Math.cos(angle), nozzleToSoil],
-        ), 8, 1.5, 6]} />;
-    })}
+    position={groupPosition}>
+    {streamConfigs.map(stream => <WaterStream key={stream.key}
+      name={`water-stream-${stream.key}`}
+      waterFlow={waterFlow}
+      position={streamPosition}
+      args={stream.args} />)}
     <Clouds name={"waterfall-mist"}
       texture={ASSETS.textures.cloud}>
       <Cloud name={"waterfall-mist-cloud"}
-        position={[0, 0, utmZ + nozzleToSoil / 2 - 40]}
+        position={mistCloudPosition}
         seed={0}
-        bounds={[15, 15, nozzleToSoil / 2]}
+        bounds={mistCloudBounds}
         segments={30}
         volume={15}
         smallestVolume={0.1}
@@ -65,7 +108,7 @@ export const WateringAnimations = (props: WateringAnimationsProps) => {
     <Clouds name={"water-spot-mist"}
       texture={ASSETS.textures.cloud}>
       <Cloud name={"waterfall-mist-cloud"}
-        position={[0, 0, getZ(x, y)]}
+        position={spotMistPosition}
         seed={0}
         bounds={[30, 30, 30]}
         segments={25}
@@ -79,4 +122,4 @@ export const WateringAnimations = (props: WateringAnimationsProps) => {
         fade={5} />
     </Clouds>
   </Group>;
-};
+});

@@ -8,9 +8,10 @@ export const AmbientLight = (props: ThreeElements["ambientLight"]) =>
   // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
   <ambientLight {...props} />;
 
-export const DirectionalLight = (props: ThreeElements["directionalLight"]) =>
-  // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
-  <directionalLight {...props} />;
+export const DirectionalLight =
+  React.forwardRef((props: ThreeElements["directionalLight"], ref) =>
+    // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
+    <directionalLight ref={ref} {...props} />);
 
 export const Group = React.forwardRef((props: ThreeElements["group"], ref) =>
   // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
@@ -33,9 +34,10 @@ export const MeshNormalMaterial = (props: ThreeElements["meshNormalMaterial"]) =
   // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
   <meshNormalMaterial {...props} />;
 
-export const InstancedMesh = (props: ThreeElements["instancedMesh"]) =>
-  // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
-  <instancedMesh {...props} />;
+export const InstancedMesh =
+  React.forwardRef((props: ThreeElements["instancedMesh"], ref) =>
+    // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
+    <instancedMesh ref={ref} {...props} />);
 
 export const Primitive = (props: ThreeElements["primitive"]) =>
   // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
@@ -44,6 +46,10 @@ export const Primitive = (props: ThreeElements["primitive"]) =>
 export const BoxGeometry = (props: ThreeElements["boxGeometry"]) =>
   // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
   <boxGeometry {...props} />;
+
+export const SphereGeometry = (props: ThreeElements["sphereGeometry"]) =>
+  // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
+  <sphereGeometry {...props} />;
 
 export const MeshBasicMaterial =
   React.forwardRef((props: ThreeElements["meshBasicMaterial"], ref) =>

@@ -91,6 +91,7 @@ import { fakePoint } from "../../../__test_support__/fake_state/resources";
 import { SpecialStatus } from "farmbot";
 import { BufferGeometry } from "three";
 import { ActivePositionRef } from "../objects/pointer_objects";
+import { clearSoilCursor } from "../../cursor";
 
 describe("<Bed />", () => {
   beforeEach(() => {
@@ -104,6 +105,18 @@ describe("<Bed />", () => {
       .mockImplementationOnce(() => mockYCrosshairRef)
       .mockImplementation(() => mockInstancesRef);
   });
+  afterEach(() => {
+    clearSoilCursor();
+    document.body.style.cursor = "";
+    document.querySelector(".garden-bed-3d-model")?.remove();
+  });
+
+  const setupGardenBed = () => {
+    const bed = document.createElement("div");
+    bed.className = "garden-bed-3d-model";
+    document.body.appendChild(bed);
+    return bed;
+  };
 
   const fakeProps = (): BedProps => ({
     config: clone(INITIAL),
@@ -132,6 +145,13 @@ describe("<Bed />", () => {
     p.config.legsFlush = false;
     const { container } = render(<Bed {...p} />);
     expect(container).toContainHTML("bed-group");
+  });
+
+  it("renders moisture surface when debug on", () => {
+    const p = fakeProps();
+    p.config.moistureDebug = true;
+    const { container } = render(<Bed {...p} />);
+    expect(container).toContainHTML("moisture-layer");
   });
 
   it.each<[string, SpecialStatus]>([
@@ -251,6 +271,17 @@ describe("<Bed />", () => {
     expect(mockSetPlantPosition).toHaveBeenCalledWith(0, 0, 0);
     expect(mockSetXCrosshairPosition).toHaveBeenCalledWith(0, 0, 0);
     expect(mockSetYCrosshairPosition).toHaveBeenCalledWith(0, 0, 0);
+  });
+
+  it("sets soil cursor on hover", () => {
+    const bed = setupGardenBed();
+    const p = fakeProps();
+    render(<Bed {...p} />);
+    const soil = screen.getAllByText("soil")[0];
+    fireEvent.pointerMove(soil);
+    expect(bed.style.cursor).toEqual("crosshair");
+    fireEvent.pointerLeave(soil);
+    expect(bed.style.cursor).toEqual("move");
   });
 
   it("handles missing ref", () => {

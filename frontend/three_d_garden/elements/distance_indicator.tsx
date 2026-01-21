@@ -31,17 +31,34 @@ export interface DistanceIndicatorProps {
   visible?: boolean;
 }
 
-export const DistanceIndicator = (props: DistanceIndicatorProps) => {
+export const DistanceIndicator = React.memo((props: DistanceIndicatorProps) => {
   const { start, end } = props;
-  const dx = end.x - start.x;
-  const dy = end.y - start.y;
-  const dz = end.z - start.z;
-  const distance = Math.sqrt(dx ** 2 + dy ** 2 + dz ** 2);
-  const midX = (start.x + end.x) / 2;
-  const midY = (start.y + end.y) / 2;
-  const midZ = (start.z + end.z) / 2;
-  const angleY = Math.atan2(dz, dx);
-  const angleZ = Math.atan2(dy, dx);
+  const {
+    distance,
+    midX,
+    midY,
+    midZ,
+    angleY,
+    angleZ,
+  } = React.useMemo(() => {
+    const dx = end.x - start.x;
+    const dy = end.y - start.y;
+    const dz = end.z - start.z;
+    const distance = Math.sqrt(dx ** 2 + dy ** 2 + dz ** 2);
+    const midX = (start.x + end.x) / 2;
+    const midY = (start.y + end.y) / 2;
+    const midZ = (start.z + end.z) / 2;
+    const angleY = Math.atan2(dz, dx);
+    const angleZ = Math.atan2(dy, dx);
+    return { distance, midX, midY, midZ, angleY, angleZ };
+  }, [
+    end.x,
+    end.y,
+    end.z,
+    start.x,
+    start.y,
+    start.z,
+  ]);
   return <Group visible={props.visible}
     position={[midX, midY, midZ]}
     rotation={[0, -angleY, angleZ]}>
@@ -63,4 +80,4 @@ export const DistanceIndicator = (props: DistanceIndicatorProps) => {
         </Text>)}
     </Group>
   </Group>;
-};
+});

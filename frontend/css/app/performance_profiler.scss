@@ -1,0 +1,76 @@
+.performance-profiler {
+  position: fixed;
+  left: 1.2rem;
+  bottom: 1.2rem;
+  z-index: 1000;
+  min-width: 18rem;
+  padding: 0.8rem 1rem;
+  border-radius: 0.6rem;
+  background: var(--main-bg);
+  border: 1px solid var(--border-color);
+  box-shadow: var(--box-shadow);
+  backdrop-filter: var(--blur);
+  color: var(--text-color);
+  font-family: "Courier New", monospace;
+  font-size: 1.1rem;
+  line-height: 1.4rem;
+  pointer-events: none;
+  max-height: 80vh;
+  overflow: auto;
+}
+
+.performance-profiler__title {
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05rem;
+}
+
+.performance-profiler__section {
+  border-top: 1px solid var(--border-color);
+  padding-top: 0.4rem;
+  margin-top: 0.4rem;
+}
+
+.performance-profiler__section:first-of-type {
+  border-top: none;
+  padding-top: 0;
+  margin-top: 0;
+}
+
+.performance-profiler__section-title {
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+}
+
+.performance-profiler__subhead {
+  margin-top: 0.4rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04rem;
+  font-size: 0.9rem;
+}
+
+.performance-profiler__metric {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.2rem;
+  white-space: nowrap;
+}
+
+.performance-profiler__list {
+  margin-top: 0.4rem;
+  display: grid;
+  gap: 0.2rem;
+}
+
+.performance-profiler__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.2rem;
+}
+
+.performance-profiler__empty {
+  opacity: 0.7;
+  font-style: italic;
+}

@@ -24,10 +24,13 @@ import { DesignerState } from "../farm_designer/interfaces";
 import { setPanelOpen } from "../farm_designer/panel_header";
 import { ThreeDGardenPlant } from "./garden";
 import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
+import { shouldEnableProfiler } from "../util/performance_profiler_settings";
+import { recordReactCommit } from "../util/performance_profiler_metrics";
 
 export interface ThreeDGardenProps {
   config: Config;
   threeDPlants: ThreeDGardenPlant[];
+  showSpread?: boolean;
   addPlantProps: AddPlantProps;
   mapPoints: TaggedGenericPointer[];
   weeds: TaggedWeedPointer[];
@@ -40,7 +43,32 @@ export interface ThreeDGardenProps {
   sensors?: TaggedSensor[];
 }
 
-export const ThreeDGarden = (props: ThreeDGardenProps) => {
+export const shouldAnimateThreeDGarden = (
+  config: Config,
+  profilerEnabled: boolean,
+) =>
+  profilerEnabled
+  || config.animateSeasons
+  || (config.animate && config.clouds)
+  || config.lightsDebug
+  || config.rotary !== 0
+  || config.trail
+  || config.vacuum
+  || config.waterFlow;
+
+export const ThreeDGarden = React.memo((props: ThreeDGardenProps) => {
+  const profilerEnabled = shouldEnableProfiler();
+  const shouldAnimate = shouldAnimateThreeDGarden(
+    props.config,
+    profilerEnabled,
+  );
+  const onRender = React.useCallback<React.ProfilerOnRenderCallback>((
+    id,
+    _phase,
+    actualDuration,
+  ) => {
+    recordReactCommit(id, actualDuration);
+  }, []);
   return <div className={"three-d-garden"}>
     <div className={"garden-bed-3d-model"}>
       <React.Suspense
@@ -53,29 +81,54 @@ export const ThreeDGarden = (props: ThreeDGardenProps) => {
               {t("Loading interactive 3D FarmBot...")}
             </h1>
           </div>}>
-        <Canvas shadows={true} onCreated={({ gl }) => {
-          gl.localClippingEnabled = true;
-        }}>
-          <GardenModel
-            config={props.config}
-            threeDPlants={props.threeDPlants}
-            activeFocus={""}
-            setActiveFocus={noop}
-            mapPoints={props.mapPoints}
-            weeds={props.weeds}
-            toolSlots={props.toolSlots}
-            mountedToolName={props.mountedToolName}
-            allPoints={props.allPoints}
-            groups={props.groups}
-            images={props.images}
-            sensorReadings={props.sensorReadings}
-            sensors={props.sensors}
-            addPlantProps={props.addPlantProps} />
+        <Canvas
+          frameloop={"demand"}
+          shadows={"variance"}
+          onCreated={({ gl }) => {
+            gl.localClippingEnabled = true;
+          }}>
+          {profilerEnabled
+            ? <React.Profiler id={"ThreeDGarden"} onRender={onRender}>
+              <GardenModel
+                config={props.config}
+                showSpread={props.showSpread}
+                shouldAnimate={shouldAnimate}
+                threeDPlants={props.threeDPlants}
+                activeFocus={""}
+                setActiveFocus={noop}
+                mapPoints={props.mapPoints}
+                weeds={props.weeds}
+                toolSlots={props.toolSlots}
+                mountedToolName={props.mountedToolName}
+                allPoints={props.allPoints}
+                groups={props.groups}
+                images={props.images}
+                sensorReadings={props.sensorReadings}
+                sensors={props.sensors}
+                addPlantProps={props.addPlantProps} />
+            </React.Profiler>
+            : <GardenModel
+              config={props.config}
+              showSpread={props.showSpread}
+              shouldAnimate={shouldAnimate}
+              threeDPlants={props.threeDPlants}
+              activeFocus={""}
+              setActiveFocus={noop}
+              mapPoints={props.mapPoints}
+              weeds={props.weeds}
+              toolSlots={props.toolSlots}
+              mountedToolName={props.mountedToolName}
+              allPoints={props.allPoints}
+              groups={props.groups}
+              images={props.images}
+              sensorReadings={props.sensorReadings}
+              sensors={props.sensors}
+              addPlantProps={props.addPlantProps} />}
         </Canvas>
       </React.Suspense>
     </div>
   </div>;
-};
+});
 
 export interface ThreeDGardenToggleProps {
   navigate: NavigateFunction;

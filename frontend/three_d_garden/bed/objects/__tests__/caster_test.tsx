@@ -13,5 +13,6 @@ describe("<Caster />", () => {
     const wrapper = mount(<Caster {...fakeProps()} />);
     expect(wrapper.html()).toContain("cylinder");
     expect(wrapper.html()).toContain("extrude");
+    expect(wrapper.html()).toContain("wheel");
   });
 });

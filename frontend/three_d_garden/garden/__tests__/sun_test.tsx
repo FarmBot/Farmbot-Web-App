@@ -1,33 +1,3 @@
-interface Mock0Ref {
-  current: number;
-}
-const mock0Ref: Mock0Ref = {
-  current: 0,
-};
-interface Mock1Ref {
-  current: { position: { set: Function; }; } | undefined;
-}
-const mock1Ref: Mock1Ref = {
-  current: { position: { set: jest.fn() } }
-};
-interface Mock4Ref {
-  current: { position: { set: Function; }; }[] | undefined;
-}
-const mock4Ref: Mock4Ref = {
-  current: [
-    { position: { set: jest.fn() } },
-    { position: { set: jest.fn() } },
-    { position: { set: jest.fn() } },
-    { position: { set: jest.fn() } },
-  ]
-};
-interface MockMaterialRef {
-  current: { opacity: number; } | undefined;
-}
-const mockMaterialRef: MockMaterialRef = {
-  current: { opacity: 0 }
-};
-
 import React from "react";
 import { render } from "@testing-library/react";
 import { calcSunI, getCycleLength, skyColor, Sun, SunProps } from "../sun";
@@ -66,6 +36,27 @@ describe("<Sun />", () => {
     expect(container).toContainHTML("line");
   });
 
+  it("expands shadow bounds around the bed", () => {
+    const p = fakeProps();
+    const { container } = render(<Sun {...p} />);
+    const light = container.querySelector("directionallight");
+    expect(light).not.toBeNull();
+    const right = Number(light?.getAttribute("shadow-camera-right"));
+    const left = Number(light?.getAttribute("shadow-camera-left"));
+    const bedBuffer = 1000;
+    const bedXBounds = Math.max(
+      Math.abs(p.config.bedXOffset),
+      Math.abs(p.config.bedLengthOuter - p.config.bedXOffset),
+    );
+    const bedYBounds = Math.max(
+      Math.abs(p.config.bedYOffset),
+      Math.abs(p.config.bedWidthOuter - p.config.bedYOffset),
+    );
+    const minBound = Math.max(bedXBounds, bedYBounds) + bedBuffer;
+    expect(right).toBeGreaterThanOrEqual(minBound);
+    expect(left).toBeLessThanOrEqual(-minBound);
+  });
+
   it("renders animated without ref", () => {
     const p = fakeProps();
     p.config.animateSeasons = true;
@@ -78,14 +69,6 @@ describe("<Sun />", () => {
   });
 
   it("renders animated", () => {
-    jest.spyOn(React, "useRef")
-      .mockImplementationOnce(() => mock4Ref)
-      .mockImplementationOnce(() => mock4Ref)
-      .mockImplementationOnce(() => mock1Ref)
-      .mockImplementationOnce(() => mock1Ref)
-      .mockImplementationOnce(() => mock1Ref)
-      .mockImplementationOnce(() => mock0Ref)
-      .mockImplementationOnce(() => mockMaterialRef);
     jest.spyOn(React, "useState").mockReturnValue([[], jest.fn()]);
     const p = fakeProps();
     p.config.animateSeasons = true;

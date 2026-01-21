@@ -45,7 +45,7 @@ export interface HeightMaterialProps {
   highColor: Color;
 }
 
-export const HeightMaterial = (props: HeightMaterialProps) =>
+export const HeightMaterial = React.memo((props: HeightMaterialProps) =>
   // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
   <heightShaderMaterial {...props}
     // eslint-disable-next-line react/no-unknown-property
@@ -53,4 +53,4 @@ export const HeightMaterial = (props: HeightMaterialProps) =>
     // eslint-disable-next-line react/no-unknown-property
     uZMin={props.min} uZMax={props.max}
     // eslint-disable-next-line react/no-unknown-property
-    uLowColor={props.lowColor} uHighColor={props.highColor} />;
+    uLowColor={props.lowColor} uHighColor={props.highColor} />);

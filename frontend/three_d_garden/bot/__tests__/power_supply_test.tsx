@@ -23,4 +23,14 @@ describe("<PowerSupply />", () => {
     expect(wrapper.html()).toContain("hsl(");
     expect(wrapper.html()).not.toContain("#222");
   });
+
+  it("keeps cable colors stable on rerender", () => {
+    const p = fakeProps();
+    p.config.cableDebug = true;
+    const wrapper = mount(<PowerSupply {...p} />);
+    const initial = wrapper.html();
+    wrapper.setProps({ ...p, config: { ...p.config } });
+    wrapper.update();
+    expect(wrapper.html()).toEqual(initial);
+  });
 });

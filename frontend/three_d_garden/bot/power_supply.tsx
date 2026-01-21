@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import React from "react";
 import { RepeatWrapping } from "three";
 import * as THREE from "three";
@@ -23,145 +22,172 @@ const cableColor = (enabled: boolean) => {
   return `hsl(${hue}, 100%, 50%)`;
 };
 
-export const PowerSupply = (props: PowerSupplyProps) => {
+export const PowerSupply = React.memo((props: PowerSupplyProps) => {
   const {
     bedWidthOuter, bedLengthOuter, bedHeight, botSizeX,
-    legSize, ccSupportSize, bedZOffset
+    legSize, ccSupportSize, bedZOffset, cableDebug,
   } = props.config;
-  const zGround = -bedHeight - bedZOffset;
+  const zGround = React.useMemo(
+    () => -bedHeight - bedZOffset,
+    [bedHeight, bedZOffset],
+  );
+  const cableHeight = React.useMemo(
+    () => 10 - Math.min(150, bedHeight / 2),
+    [bedHeight],
+  );
+  const toX = React.useCallback(
+    (value: number) => threeSpace(value, bedLengthOuter),
+    [bedLengthOuter],
+  );
+  const toY = React.useCallback(
+    (value: number) => threeSpace(value, bedWidthOuter),
+    [bedWidthOuter],
+  );
 
   const powerSupplyTexture = useTexture(ASSETS.textures.aluminum + "?=powerSupply");
-  powerSupplyTexture.wrapS = RepeatWrapping;
-  powerSupplyTexture.wrapT = RepeatWrapping;
-  powerSupplyTexture.repeat.set(0.01, 0.003);
-
-  const combinedCablePath = new THREE.CurvePath<THREE.Vector3>();
-
-  const powerCableInCC = new THREE.LineCurve3(
-    new THREE.Vector3(
-      threeSpace(botSizeX / 2, bedLengthOuter),
-      threeSpace(-20, bedWidthOuter),
-      10 - Math.min(150, bedHeight / 2),
-    ),
-    new THREE.Vector3(
-      threeSpace(bedLengthOuter / 2, bedLengthOuter),
-      threeSpace(-20, bedWidthOuter),
-      10 - Math.min(150, bedHeight / 2),
-    ),
-  );
-  combinedCablePath.add(powerCableInCC);
-
-  const powerCableFromSupplyToCC = easyCubicBezierCurve3(
-    [
-      threeSpace(bedLengthOuter / 2 + 0, bedLengthOuter),
-      threeSpace(-20, bedWidthOuter),
-      10 - Math.min(150, bedHeight / 2),
-    ],
-    [100, 0, 0],
-    [-100, 0, 0],
-    [
-      threeSpace(bedLengthOuter / 2 + 300 - (163 / 2), bedLengthOuter),
-      threeSpace(-20, bedWidthOuter),
-      -90 - ccSupportSize,
-    ],
-  );
-  combinedCablePath.add(powerCableFromSupplyToCC);
-
-  const powerCableFromGroundToSupply = easyCubicBezierCurve3(
-    [
-      threeSpace(bedLengthOuter / 2 + 300 + (163 / 2), bedLengthOuter),
-      threeSpace(-20, bedWidthOuter),
-      -90 - ccSupportSize,
-    ],
-    [100, 0, 0],
-    [-100, 0, 0],
-    [
-      threeSpace(bedLengthOuter / 2 + 500, bedLengthOuter),
-      threeSpace(-20, bedWidthOuter),
-      -bedHeight + 10,
-    ],
-  );
-  combinedCablePath.add(powerCableFromGroundToSupply);
-
-  const powerCableFromBedEndToSupply = new THREE.LineCurve3(
-    new THREE.Vector3(threeSpace(bedLengthOuter / 2 + 500, bedLengthOuter),
-      threeSpace(-20, bedWidthOuter),
-      -bedHeight + 10),
-    new THREE.Vector3(threeSpace(bedLengthOuter - 150, bedLengthOuter),
-      threeSpace(-20, bedWidthOuter),
-      -bedHeight + 10),
-  );
-  combinedCablePath.add(powerCableFromBedEndToSupply);
-
-  const powerCableFromGroundToBedEnd = easyCubicBezierCurve3(
-    [
-      threeSpace(bedLengthOuter - 150, bedLengthOuter),
-      threeSpace(-20, bedWidthOuter),
-      -bedHeight + 10,
-    ],
-    [100, 0, 0],
-    [-100, 0, 0],
-    [
-      threeSpace(bedLengthOuter - 50, bedLengthOuter),
-      threeSpace(-20, bedWidthOuter),
-      zGround + 10,
-    ],
-  );
-
-  combinedCablePath.add(powerCableFromGroundToBedEnd);
-  const powerCableFromPostToBedEnd = new THREE.LineCurve3(
-    new THREE.Vector3(threeSpace(bedLengthOuter - 50, bedLengthOuter),
-      threeSpace(-20, bedWidthOuter),
-      zGround + 10),
-    new THREE.Vector3(threeSpace(bedLengthOuter + 400, bedLengthOuter),
-      threeSpace(-20, bedWidthOuter),
-      zGround + 10),
-  );
-  combinedCablePath.add(powerCableFromPostToBedEnd);
-
-  const powerCableFromOutletToGround = easyCubicBezierCurve3(
-    [
-      threeSpace(bedLengthOuter + 400, bedLengthOuter),
-      threeSpace(-20, bedWidthOuter),
-      zGround + 10,
-    ],
-    [100, 0, 0],
-    [-100, 0, 0],
-    [
-      threeSpace(bedLengthOuter + 550 - legSize / 2, bedLengthOuter),
-      threeSpace(legSize / 2, bedWidthOuter),
-      zGround + 250,
-    ],
-  );
-  combinedCablePath.add(powerCableFromOutletToGround);
+  React.useEffect(() => {
+    if (!powerSupplyTexture) { return; }
+    powerSupplyTexture.wrapS = RepeatWrapping;
+    powerSupplyTexture.wrapT = RepeatWrapping;
+    powerSupplyTexture.repeat.set(0.01, 0.003);
+  }, [powerSupplyTexture]);
+  const powerSupplyPosition = React.useMemo(() => ([
+    toX(bedLengthOuter / 2 + 300),
+    toY(-21),
+    -90 - ccSupportSize,
+  ] as [number, number, number]), [
+    toX,
+    toY,
+    bedLengthOuter,
+    ccSupportSize,
+  ]);
+  const plugPosition = React.useMemo(() => ([
+    toX(bedLengthOuter + 600 - plugDepth / 2 - outletDepth - legSize / 2),
+    toY(legSize / 2),
+    zGround + 250,
+  ] as [number, number, number]), [
+    toX,
+    toY,
+    bedLengthOuter,
+    legSize,
+    zGround,
+  ]);
+  const powerSupplyArgs = React.useMemo(() =>
+    [163, 42, 68] as [number, number, number], []);
+  const plugArgs = React.useMemo(() =>
+    [plugDepth, 30, 30] as [number, number, number], []);
+  const cableColorSet = React.useMemo(() => ({
+    cable: cableColor(cableDebug),
+    plug: cableColor(cableDebug),
+  }), [cableDebug]);
+  const combinedCablePath = React.useMemo(() => {
+    const path = new THREE.CurvePath<THREE.Vector3>();
+    const bedHalf = bedLengthOuter / 2;
+    const supplyXStart = bedHalf + 300 - (163 / 2);
+    const supplyXEnd = bedHalf + 300 + (163 / 2);
+    path.add(new THREE.LineCurve3(
+      new THREE.Vector3(
+        toX(botSizeX / 2),
+        toY(-20),
+        cableHeight,
+      ),
+      new THREE.Vector3(
+        toX(bedHalf),
+        toY(-20),
+        cableHeight,
+      ),
+    ));
+    path.add(easyCubicBezierCurve3(
+      [toX(bedHalf), toY(-20), cableHeight],
+      [100, 0, 0],
+      [-100, 0, 0],
+      [toX(supplyXStart), toY(-20), -90 - ccSupportSize],
+    ));
+    path.add(easyCubicBezierCurve3(
+      [toX(supplyXEnd), toY(-20), -90 - ccSupportSize],
+      [100, 0, 0],
+      [-100, 0, 0],
+      [toX(bedHalf + 500), toY(-20), -bedHeight + 10],
+    ));
+    path.add(new THREE.LineCurve3(
+      new THREE.Vector3(
+        toX(bedHalf + 500),
+        toY(-20),
+        -bedHeight + 10,
+      ),
+      new THREE.Vector3(
+        toX(bedLengthOuter - 150),
+        toY(-20),
+        -bedHeight + 10,
+      ),
+    ));
+    path.add(easyCubicBezierCurve3(
+      [toX(bedLengthOuter - 150), toY(-20), -bedHeight + 10],
+      [100, 0, 0],
+      [-100, 0, 0],
+      [toX(bedLengthOuter - 50), toY(-20), zGround + 10],
+    ));
+    path.add(new THREE.LineCurve3(
+      new THREE.Vector3(
+        toX(bedLengthOuter - 50),
+        toY(-20),
+        zGround + 10,
+      ),
+      new THREE.Vector3(
+        toX(bedLengthOuter + 400),
+        toY(-20),
+        zGround + 10,
+      ),
+    ));
+    path.add(easyCubicBezierCurve3(
+      [toX(bedLengthOuter + 400), toY(-20), zGround + 10],
+      [100, 0, 0],
+      [-100, 0, 0],
+      [
+        toX(bedLengthOuter + 550 - legSize / 2),
+        toY(legSize / 2),
+        zGround + 250,
+      ],
+    ));
+    return path;
+  }, [
+    bedLengthOuter,
+    bedHeight,
+    botSizeX,
+    cableHeight,
+    ccSupportSize,
+    legSize,
+    toX,
+    toY,
+    zGround,
+  ]);
+  const powerCableArgs = React.useMemo(() => ([
+    combinedCablePath,
+    150,
+    4,
+    8,
+  ] as [THREE.Curve<THREE.Vector3>, number, number, number]), [
+    combinedCablePath,
+  ]);
 
   return <Group name={"powerSupplyGroup"}>
     <Box name={"powerSupply"}
       castShadow={true}
       receiveShadow={true}
-      args={[163, 42, 68]}
-      position={[
-        threeSpace(bedLengthOuter / 2 + 300, bedLengthOuter),
-        threeSpace(-21, bedWidthOuter),
-        -90 - ccSupportSize,
-      ]}>
+      args={powerSupplyArgs}
+      position={powerSupplyPosition}>
       <MeshPhongMaterial map={powerSupplyTexture} color={"white"} />
     </Box>
     <Tube name={"powerCable"}
       castShadow={true}
       receiveShadow={true}
-      args={[combinedCablePath, 150, 4, 8]}>
-      <MeshPhongMaterial color={cableColor(props.config.cableDebug)} />
+      args={powerCableArgs}>
+      <MeshPhongMaterial color={cableColorSet.cable} />
     </Tube>
     <Box name={"powerPlug"}
-      args={[plugDepth, 30, 30]}
-      position={[
-        threeSpace(bedLengthOuter + 600 - plugDepth / 2 - outletDepth - legSize / 2,
-          bedLengthOuter),
-        threeSpace(legSize / 2, bedWidthOuter),
-        zGround + 250,
-      ]}>
-      <MeshPhongMaterial color={cableColor(props.config.cableDebug)} />
+      args={plugArgs}
+      position={plugPosition}>
+      <MeshPhongMaterial color={cableColorSet.plug} />
     </Box>
   </Group>;
-};
+});

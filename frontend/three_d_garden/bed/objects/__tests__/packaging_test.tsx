@@ -17,6 +17,7 @@ describe("<Packaging />", () => {
     expect(wrapper.html()).toContain("packaging");
     expect(wrapper.html()).not.toContain("100");
     expect(wrapper.html()).not.toContain("170");
+    expect(wrapper.html()).toContain(p.config.label);
   });
 
   it("renders: v1.7 XL", () => {

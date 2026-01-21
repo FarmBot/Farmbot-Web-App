@@ -1,12 +1,11 @@
 import React from "react";
 import { Config } from "../config";
 import { Group } from "../components";
-import { Line, LineProps } from "@react-three/drei";
+import { Line } from "@react-three/drei";
 import {
   zero as zeroFunc, extents as extentsFunc, getGardenPositionFunc,
 } from "../helpers";
 import { chain, floor, range } from "lodash";
-import { Vector3 } from "three";
 
 export const gridLineOffsets = (botDimension: number): number[] => {
   const lastRegularOffset = floor(botDimension, -2);
@@ -16,27 +15,10 @@ export const gridLineOffsets = (botDimension: number): number[] => {
     .value();
 };
 
-interface SurfaceLineProps extends Omit<LineProps, "points"> {
-  getZ(x: number, y: number): number;
-  start: { x: number, y: number };
-  end: { x: number, y: number };
-  config: Config;
-}
+type LinePoint = [number, number, number];
+type LineColor = [number, number, number, number];
 
-const SurfaceLine = (props: SurfaceLineProps) => {
-  const { getZ, start, end, config } = props;
-  const points = React.useMemo(() =>
-    range(101).map(i => {
-      const t = i / 100;
-      const x = start.x + (end.x - start.x) * t;
-      const y = start.y + (end.y - start.y) * t;
-      const gardenPosition = getGardenPositionFunc(config, false)({ x, y });
-      const z = getZ(gardenPosition.x, gardenPosition.y);
-      return new Vector3(x, y, z);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }), [getZ]);
-  return <Line {...props} points={points} />;
-};
+const lineColor = (alpha: number): LineColor => [1, 1, 1, alpha];
 
 export interface GridProps {
   config: Config;
@@ -44,48 +26,134 @@ export interface GridProps {
   activeFocus: string;
 }
 
-export const Grid = (props: GridProps) => {
+export const Grid = React.memo((props: GridProps) => {
   const { config } = props;
-  const zero = zeroFunc(config);
-  const extents = extentsFunc(config);
-  return <Group name={"garden-grid"}
-    visible={config.grid && props.activeFocus != "Planter bed"}
-    position={[0, 0, zero.z]}>
-    {gridLineOffsets(config.botSizeX).map(xOffset => {
+  const zero = React.useMemo(() => zeroFunc(config), [config]);
+  const extents = React.useMemo(() => extentsFunc(config), [config]);
+  const xOffsets = React.useMemo(
+    () => gridLineOffsets(config.botSizeX),
+    [config.botSizeX],
+  );
+  const yOffsets = React.useMemo(
+    () => gridLineOffsets(config.botSizeY),
+    [config.botSizeY],
+  );
+  const getGardenPosition = React.useMemo(
+    () => getGardenPositionFunc(config, false),
+    [config],
+  );
+  const buildLineSegments = React.useCallback((
+    start: { x: number, y: number },
+    end: { x: number, y: number },
+  ) => {
+    const segments: LinePoint[] = [];
+    let prev: LinePoint | undefined;
+    for (let i = 0; i <= 100; i++) {
+      const t = i / 100;
+      const x = start.x + (end.x - start.x) * t;
+      const y = start.y + (end.y - start.y) * t;
+      const gardenPosition = getGardenPosition({ x, y });
+      const z = props.getZ(gardenPosition.x, gardenPosition.y);
+      const point: LinePoint = [x, y, z];
+      if (prev) {
+        segments.push(prev, point);
+      }
+      prev = point;
+    }
+    return segments;
+  }, [getGardenPosition, props.getZ]);
+  const xSegmentData = React.useMemo(() => {
+    const outer = { points: [] as LinePoint[], colors: [] as LineColor[] };
+    const inner = { points: [] as LinePoint[], colors: [] as LineColor[] };
+    const outerColor = lineColor(0.75);
+    const innerColor = lineColor(0.5);
+    xOffsets.forEach(xOffset => {
       const isOuterLine = xOffset === 0 || xOffset === config.botSizeX;
-      return <SurfaceLine key={xOffset}
-        color={"white"}
-        transparent={true}
-        opacity={isOuterLine ? 0.75 : 0.5}
-        lineWidth={2 * (isOuterLine ? 1.5 : 1)}
-        config={config}
-        getZ={props.getZ}
-        start={{
-          x: zero.x + xOffset,
-          y: zero.y,
-        }}
-        end={{
-          x: zero.x + xOffset,
-          y: extents.y,
-        }} />;
-    })}
-    {gridLineOffsets(config.botSizeY).map(yOffset => {
+      const segments = buildLineSegments({
+        x: zero.x + xOffset,
+        y: zero.y,
+      }, {
+        x: zero.x + xOffset,
+        y: extents.y,
+      });
+      const target = isOuterLine ? outer : inner;
+      const color = isOuterLine ? outerColor : innerColor;
+      segments.forEach(segment => {
+        target.points.push(segment);
+        target.colors.push(color);
+      });
+    });
+    return { outer, inner };
+  }, [
+    buildLineSegments,
+    config.botSizeX,
+    extents.y,
+    xOffsets,
+    zero.x,
+    zero.y,
+  ]);
+  const ySegmentData = React.useMemo(() => {
+    const outer = { points: [] as LinePoint[], colors: [] as LineColor[] };
+    const inner = { points: [] as LinePoint[], colors: [] as LineColor[] };
+    const outerColor = lineColor(0.75);
+    const innerColor = lineColor(0.5);
+    yOffsets.forEach(yOffset => {
       const isOuterLine = yOffset === 0 || yOffset === config.botSizeY;
-      return <SurfaceLine key={yOffset}
-        color={"white"}
-        transparent={true}
-        opacity={isOuterLine ? 0.75 : 0.5}
-        lineWidth={isOuterLine ? 1.5 : 1}
-        config={config}
-        getZ={props.getZ}
-        start={{
-          x: zero.x,
-          y: zero.y + yOffset,
-        }}
-        end={{
-          x: extents.x,
-          y: zero.y + yOffset,
-        }} />;
-    })}
+      const segments = buildLineSegments({
+        x: zero.x,
+        y: zero.y + yOffset,
+      }, {
+        x: extents.x,
+        y: zero.y + yOffset,
+      });
+      const target = isOuterLine ? outer : inner;
+      const color = isOuterLine ? outerColor : innerColor;
+      segments.forEach(segment => {
+        target.points.push(segment);
+        target.colors.push(color);
+      });
+    });
+    return { outer, inner };
+  }, [
+    buildLineSegments,
+    config.botSizeY,
+    extents.x,
+    yOffsets,
+    zero.x,
+    zero.y,
+  ]);
+  const basePosition = React.useMemo<[number, number, number]>(
+    () => [0, 0, zero.z], [zero.z]);
+  const visible = React.useMemo(
+    () => config.grid && props.activeFocus != "Planter bed",
+    [config.grid, props.activeFocus],
+  );
+  return <Group name={"garden-grid"}
+    visible={visible}
+    position={basePosition}>
+    {xSegmentData.outer.points.length > 0 &&
+      <Line
+        segments={true}
+        points={xSegmentData.outer.points}
+        vertexColors={xSegmentData.outer.colors}
+        lineWidth={3} />}
+    {xSegmentData.inner.points.length > 0 &&
+      <Line
+        segments={true}
+        points={xSegmentData.inner.points}
+        vertexColors={xSegmentData.inner.colors}
+        lineWidth={2} />}
+    {ySegmentData.outer.points.length > 0 &&
+      <Line
+        segments={true}
+        points={ySegmentData.outer.points}
+        vertexColors={ySegmentData.outer.colors}
+        lineWidth={1.5} />}
+    {ySegmentData.inner.points.length > 0 &&
+      <Line
+        segments={true}
+        points={ySegmentData.inner.points}
+        vertexColors={ySegmentData.inner.colors}
+        lineWidth={1} />}
   </Group>;
-};
+});

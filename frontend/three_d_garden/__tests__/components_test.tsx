@@ -13,6 +13,7 @@ import {
   MeshBasicMaterial,
   MeshPhongMaterial,
   PointLight,
+  SphereGeometry,
   SpotLight,
 } from "../components";
 import { ThreeElements } from "@react-three/fiber";
@@ -36,6 +37,17 @@ describe("<BoxGeometry />", () => {
   it("adds props", () => {
     const wrapper = mount(<BoxGeometry {...fakeProps()} />);
     expect(wrapper.props().name).toEqual("box");
+  });
+});
+
+describe("<SphereGeometry />", () => {
+  const fakeProps = (): ThreeElements["sphereGeometry"] => ({
+    args: [1, 8, 8],
+  });
+
+  it("adds props", () => {
+    const wrapper = mount(<SphereGeometry {...fakeProps()} />);
+    expect(wrapper.props().args).toEqual([1, 8, 8]);
   });
 });
 

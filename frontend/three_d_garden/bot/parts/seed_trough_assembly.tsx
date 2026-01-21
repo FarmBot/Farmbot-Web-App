@@ -20,11 +20,15 @@ export type SeedTroughAssemblyFull = GLTF & {
 }
 
 export const SeedTroughAssembly = (model: SeedTroughAssemblyFull) =>
-  (props: ThreeElements["group"]) => {
+  React.memo((props: ThreeElements["group"]) => {
     const { nodes, materials } = model;
+    const basePosition = React.useMemo<[number, number, number]>(
+      () => [-0.003, -0.02, 0.027], []);
+    const troughPosition = React.useMemo<[number, number, number]>(
+      () => [0.011, 0, 0], []);
     // eslint-disable-next-line no-null/no-null
     return <Group {...props} dispose={null}>
-      <Group position={[-0.003, -0.02, 0.027]}>
+      <Group position={basePosition}>
         <MeshComponent
           geometry={nodes.mesh0_mesh.geometry}
           material={materials[SeedTroughAssemblyMaterial.one]} />
@@ -35,6 +39,6 @@ export const SeedTroughAssembly = (model: SeedTroughAssemblyFull) =>
       <MeshComponent
         geometry={nodes.Seed_Trough.geometry}
         material={materials[SeedTroughAssemblyMaterial.two]}
-        position={[0.011, 0, 0]} />
+        position={troughPosition} />
     </Group>;
-  };
+  });

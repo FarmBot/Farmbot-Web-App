@@ -17,17 +17,25 @@ export type VacuumPumpCoverFull = GLTF & {
 }
 
 export const VacuumPumpCover = (model: VacuumPumpCoverFull) =>
-  (props: ThreeElements["group"]) => {
+  React.memo((props: ThreeElements["group"]) => {
     const { nodes, materials } = model;
+    const screwPosition = React.useMemo<[number, number, number]>(
+      () => [-0.01, -0.013, -0.145], []);
+    const screwRotation = React.useMemo<[number, number, number]>(
+      () => [Math.PI / 2, 0, 0], []);
+    const coverPosition = React.useMemo<[number, number, number]>(
+      () => [0.057, -0.008, -0.255], []);
+    const coverRotation = React.useMemo<[number, number, number]>(
+      () => [0, 0, Math.PI], []);
     // eslint-disable-next-line no-null/no-null
     return <Group {...props} dispose={null}>
       <MeshComponent geometry={nodes.M5_x_10mm_Screw.geometry}
         material={materials[VacuumPumpCoverMaterial.zero]}
-        position={[-0.01, -0.013, -0.145]}
-        rotation={[Math.PI / 2, 0, 0]} />
+        position={screwPosition}
+        rotation={screwRotation} />
       <MeshComponent geometry={nodes.Vacuum_Pump_Cover.geometry}
         material={materials[VacuumPumpCoverMaterial.one]}
-        position={[0.057, -0.008, -0.255]}
-        rotation={[0, 0, Math.PI]} />
+        position={coverPosition}
+        rotation={coverRotation} />
     </Group>;
-  };
+  });

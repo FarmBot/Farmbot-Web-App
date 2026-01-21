@@ -4,7 +4,12 @@ import * as THREE from "three";
 import {
   Cylinder, Extrude, Trail, Tube, useGLTF, useTexture,
 } from "@react-three/drei";
-import { DoubleSide, Shape, RepeatWrapping } from "three";
+import {
+  DoubleSide,
+  ExtrudeGeometryOptions,
+  Shape,
+  RepeatWrapping,
+} from "three";
 import {
   easyCubicBezierCurve3, threeSpace,
   zDir as zDirFunc,
@@ -102,22 +107,88 @@ export interface FarmbotModelProps {
   dispatch?: Function;
 }
 
-export const Bot = (props: FarmbotModelProps) => {
+export const Bot = React.memo((props: FarmbotModelProps) => {
   const config = props.config;
   const {
-    x, y, z, botSizeX, botSizeY, botSizeZ, trail, laser,
-    bedXOffset, bedYOffset, bedLengthOuter, bedWidthOuter, tracks,
-    columnLength, zAxisLength, zGantryOffset,
+    beamLength,
+    bedHeight,
+    bedLengthOuter,
+    bedWallThickness,
+    bedWidthOuter,
+    bedXOffset,
+    bedYOffset,
+    bedZOffset,
+    bot,
+    botSizeX,
+    botSizeY,
+    botSizeZ,
+    bounds,
+    cableCarriers,
+    cableDebug,
+    cameraView,
+    ccSupportSize,
+    columnLength,
+    distanceIndicator,
+    imgCenterX,
+    imgCenterY,
+    imgOffsetX,
+    imgOffsetY,
+    imgOrigin,
+    imgRotation,
+    imgScale,
+    kitVersion,
+    laser,
+    labels,
+    labelsOnHover,
+    legSize,
+    light,
+    lightsDebug,
+    negativeZ,
+    perspective,
+    rotary,
+    sizePreset,
+    tool,
+    tracks,
+    trail,
+    vacuum,
+    waterFlow,
+    x,
+    y,
+    z,
+    zAxisLength,
+    zDimension,
+    zGantryOffset,
   } = props.config;
-  const zZero = zZeroFunc(config);
-  const zDir = zDirFunc(config);
+  const zZero = React.useMemo(
+    () => zZeroFunc(config),
+    [columnLength, zGantryOffset],
+  );
+  const zDir = React.useMemo(
+    () => zDirFunc(config),
+    [negativeZ],
+  );
+  const zAxisBase = React.useMemo(() => zZero - zDir * z, [zZero, zDir, z]);
+  const toX = React.useCallback(
+    (value: number) => threeSpace(value, bedLengthOuter) + bedXOffset,
+    [bedLengthOuter, bedXOffset],
+  );
+  const toY = React.useCallback(
+    (value: number) => threeSpace(value, bedWidthOuter) + bedYOffset,
+    [bedWidthOuter, bedYOffset],
+  );
+  const toYNoOffset = React.useCallback(
+    (value: number) => threeSpace(value, bedWidthOuter),
+    [bedWidthOuter],
+  );
   const gantryWheelPlate =
     useGLTF(ASSETS.models.gantryWheelPlate, LIB_DIR) as GantryWheelPlateFull;
-  const GantryWheelPlateComponent = GantryWheelPlate(gantryWheelPlate);
+  const GantryWheelPlateComponent = React.useMemo(() =>
+    GantryWheelPlate(gantryWheelPlate), [gantryWheelPlate]);
   const leftBracket = useGLTF(ASSETS.models.leftBracket, LIB_DIR) as LeftBracket;
   const rightBracket = useGLTF(ASSETS.models.rightBracket, LIB_DIR) as RightBracket;
   const crossSlide = useGLTF(ASSETS.models.crossSlide, LIB_DIR) as CrossSlideFull;
-  const CrossSlideComponent = CrossSlide(crossSlide);
+  const CrossSlideComponent = React.useMemo(() =>
+    CrossSlide(crossSlide), [crossSlide]);
   const beltClip = useGLTF(ASSETS.models.beltClip, LIB_DIR) as BeltClip;
   const zStop = useGLTF(ASSETS.models.zStop, LIB_DIR) as ZStop;
   const utm = useGLTF(ASSETS.models.utm, LIB_DIR) as UTM;
@@ -129,7 +200,8 @@ export const Bot = (props: FarmbotModelProps) => {
     ASSETS.models.zAxisMotorMount, LIB_DIR) as ZAxisMotorMount;
   const vacuumPumpCover = useGLTF(
     ASSETS.models.vacuumPumpCover, LIB_DIR) as VacuumPumpCoverFull;
-  const VacuumPumpCoverComponent = VacuumPumpCover(vacuumPumpCover);
+  const VacuumPumpCoverComponent = React.useMemo(() =>
+    VacuumPumpCover(vacuumPumpCover), [vacuumPumpCover]);
   const cameraMountHalf = useGLTF(
     ASSETS.models.cameraMountHalf, LIB_DIR) as CameraMountHalf;
   const xAxisCCMount = useGLTF(ASSETS.models.xAxisCCMount, LIB_DIR) as XAxisCCMount;
@@ -138,8 +210,9 @@ export const Bot = (props: FarmbotModelProps) => {
   const [columnShape, setColumnShape] = useState<Shape>();
   const [zAxisShape, setZAxisShape] = useState<Shape>();
   useEffect(() => {
-    if (!(trackShape && beamShape && columnShape && zAxisShape)) {
-      const loader = new SVGLoader();
+    if (trackShape && beamShape && columnShape && zAxisShape) { return; }
+    const loader = new SVGLoader();
+    if (!trackShape) {
       loader.load(ASSETS.shapes.track,
         svg => {
           const smallCutout = SVGLoader.createShapes(svg.paths[0])[0];
@@ -149,6 +222,8 @@ export const Bot = (props: FarmbotModelProps) => {
           outline.holes.push(largeCutout);
           setTrackShape(outline);
         });
+    }
+    if (!beamShape) {
       loader.load(ASSETS.shapes.beam,
         svg => {
           const outline = SVGLoader.createShapes(svg.paths[0])[0];
@@ -158,6 +233,8 @@ export const Bot = (props: FarmbotModelProps) => {
           });
           setBeamShape(outline);
         });
+    }
+    if (!columnShape) {
       loader.load(ASSETS.shapes.column,
         svg => {
           const outline = SVGLoader.createShapes(svg.paths[3])[0];
@@ -167,6 +244,8 @@ export const Bot = (props: FarmbotModelProps) => {
           });
           setColumnShape(outline);
         });
+    }
+    if (!zAxisShape) {
       loader.load(ASSETS.shapes.zAxis,
         svg => {
           const hole = SVGLoader.createShapes(svg.paths[1])[0];
@@ -175,13 +254,24 @@ export const Bot = (props: FarmbotModelProps) => {
           setZAxisShape(outline);
         });
     }
-  });
+  }, [trackShape, beamShape, columnShape, zAxisShape]);
   const aluminumTexture = useTexture(ASSETS.textures.aluminum + "?=bot");
-  aluminumTexture.wrapS = RepeatWrapping;
-  aluminumTexture.wrapT = RepeatWrapping;
-  aluminumTexture.repeat.set(0.01, 0.0003);
+  useEffect(() => {
+    if (!aluminumTexture) { return; }
+    aluminumTexture.wrapS = RepeatWrapping;
+    aluminumTexture.wrapT = RepeatWrapping;
+    aluminumTexture.repeat.set(0.01, 0.0003);
+  }, [aluminumTexture]);
 
-  const yBeltPath = () => {
+  const xTrackDepth = React.useMemo(
+    () => botSizeX + xTrackPadding,
+    [botSizeX],
+  );
+  const columnYs = React.useMemo(
+    () => [0 - extrusionWidth, bedWidthOuter],
+    [bedWidthOuter],
+  );
+  const yBeltPath = React.useMemo(() => {
     const radius = 12;
     const path = new Shape();
     path.moveTo(0, 0);
@@ -201,78 +291,436 @@ export const Bot = (props: FarmbotModelProps) => {
     path.arc(-2, -radius, radius, Math.PI / 2, Math.PI);
     path.lineTo(-2, 0);
     return path;
-  };
-  const distanceToSoil = -props.getZ(x, y) - zDir * z;
-
-  const defaultTrailWidth = config.perspective ? 500 : 0.1;
-
-  const airTubeEndPosition = (kitVersion: string): [number, number, number] => {
-    switch (kitVersion) {
-      case "v1.7":
-        return [
-          threeSpace(x + 80, bedLengthOuter) + bedXOffset,
-          threeSpace(y + 100, bedWidthOuter) + bedYOffset,
-          zZero - zDir * z + 245,
-        ];
-      case "v1.8":
-      default:
-        return [
-          threeSpace(x + 35, bedLengthOuter) + bedXOffset,
-          threeSpace(y, bedWidthOuter) + bedYOffset,
-          zZero - zDir * z + 245,
-        ];
-    }
-  };
-
-  const vacuumPumpCoverRotation = (kitVersion: string): [number, number, number] => {
-    switch (kitVersion) {
-      case "v1.7":
-        return [0, 0, Math.PI / 2];
-      case "v1.8":
-      default:
-        return [0, 0, -Math.PI / 2];
-    }
-  };
-
-  const vacuumPumpCoverPosition = (kitVersion: string): [number, number, number] => {
-    switch (kitVersion) {
-      case "v1.7":
-        return [
-          threeSpace(x + 12, bedLengthOuter) + bedXOffset,
-          threeSpace(y + 55, bedWidthOuter) + bedYOffset,
-          zZero - zDir * z + 490,
-        ];
-      case "v1.8":
-      default:
-        return [
-          threeSpace(x + 2, bedLengthOuter) + bedXOffset,
-          threeSpace(y + 110, bedWidthOuter) + bedYOffset,
-          zZero + columnLength + 25,
-        ];
-    }
-  };
-
-  const cameraMountPosition = new THREE.Vector3(
-    threeSpace(x + cameraMountOffset.x, bedLengthOuter) + bedXOffset,
-    threeSpace(y + cameraMountOffset.y, bedWidthOuter) + bedYOffset,
-    zZero - zDir * z - 140 + zGantryOffset + 20,
+  }, [y, botSizeY]);
+  const columnExtrudeArgs = React.useMemo<
+    [Shape | undefined, ExtrudeGeometryOptions]
+  >(() => [
+    columnShape,
+    { steps: 1, depth: columnLength, bevelEnabled: false },
+  ], [
+    columnShape,
+    columnLength,
+  ]);
+  const trackExtrudeArgs = React.useMemo<
+    [Shape | undefined, ExtrudeGeometryOptions]
+  >(() => [
+    trackShape,
+    { steps: 1, depth: xTrackDepth, bevelEnabled: false },
+  ], [
+    trackShape,
+    xTrackDepth,
+  ]);
+  const zAxisExtrudeArgs = React.useMemo<
+    [Shape | undefined, ExtrudeGeometryOptions]
+  >(() => [
+    zAxisShape,
+    { steps: 1, depth: zAxisLength, bevelEnabled: false },
+  ], [
+    zAxisShape,
+    zAxisLength,
+  ]);
+  const yBeltExtrudeArgs = React.useMemo<
+    [Shape | undefined, ExtrudeGeometryOptions]
+  >(() => [
+    yBeltPath,
+    { steps: 1, depth: 6, bevelEnabled: false },
+  ], [yBeltPath]);
+  const distanceToSoil = React.useMemo(
+    () => -props.getZ(x, y) - zDir * z,
+    [props.getZ, x, y, zDir, z],
   );
+  const defaultTrailWidth = React.useMemo(
+    () => (perspective ? 500 : 0.1),
+    [perspective],
+  );
+  const airTubeEndPosition = React.useMemo(() => {
+    switch (kitVersion) {
+      case "v1.7":
+        return [
+          toX(x + 80),
+          toY(y + 100),
+          zAxisBase + 245,
+        ] as [number, number, number];
+      case "v1.8":
+      default:
+        return [
+          toX(x + 35),
+          toY(y),
+          zAxisBase + 245,
+        ] as [number, number, number];
+    }
+  }, [
+    kitVersion,
+    toX,
+    toY,
+    x,
+    y,
+    zAxisBase,
+  ]);
+  const vacuumPumpCoverRotation = React.useMemo(() => {
+    switch (kitVersion) {
+      case "v1.7":
+        return [0, 0, Math.PI / 2] as [number, number, number];
+      case "v1.8":
+      default:
+        return [0, 0, -Math.PI / 2] as [number, number, number];
+    }
+  }, [kitVersion]);
+  const vacuumPumpCoverPosition = React.useMemo(() => {
+    switch (kitVersion) {
+      case "v1.7":
+        return [
+          toX(x + 12),
+          toY(y + 55),
+          zAxisBase + 490,
+        ] as [number, number, number];
+      case "v1.8":
+      default:
+        return [
+          toX(x + 2),
+          toY(y + 110),
+          zZero + columnLength + 25,
+        ] as [number, number, number];
+    }
+  }, [
+    kitVersion,
+    toX,
+    toY,
+    x,
+    y,
+    zAxisBase,
+    zZero,
+    columnLength,
+  ]);
+  const cameraMountPosition = React.useMemo(() => new THREE.Vector3(
+    toX(x + cameraMountOffset.x),
+    toY(y + cameraMountOffset.y),
+    zAxisBase - 140 + zGantryOffset + 20,
+  ), [
+    toX,
+    toY,
+    x,
+    y,
+    zAxisBase,
+    zGantryOffset,
+  ]);
+  const airTubeCurve = React.useMemo(() => easyCubicBezierCurve3(
+    [
+      toX(x + 28),
+      toY(y),
+      zAxisBase + 35,
+    ],
+    [0, 0, 100],
+    [0, 0, -200],
+    airTubeEndPosition,
+  ), [
+    toX,
+    toY,
+    x,
+    y,
+    zAxisBase,
+    airTubeEndPosition,
+  ]);
+  const utmPosition = React.useMemo(() => ([
+    toX(x + 11),
+    toY(y),
+    zAxisBase + utmHeight / 2 - 19,
+  ] as [number, number, number]), [
+    toX,
+    toY,
+    x,
+    y,
+    zAxisBase,
+  ]);
+  const laserPosition = React.useMemo(() => ([
+    toX(x),
+    toY(y),
+    zAxisBase - distanceToSoil / 2,
+  ] as [number, number, number]), [
+    toX,
+    toY,
+    x,
+    y,
+    zAxisBase,
+    distanceToSoil,
+  ]);
+  const trailAttenuation = React.useCallback(
+    (t: number) => Math.pow(t, 3),
+    [],
+  );
+  const trailWidth = React.useMemo(
+    () => (trail ? defaultTrailWidth : 0),
+    [trail, defaultTrailWidth],
+  );
+  const cableCarrierConfig = React.useMemo(() => ({
+    x,
+    y,
+    z,
+    bedHeight,
+    bedLengthOuter,
+    bedWidthOuter,
+    bedXOffset,
+    bedYOffset,
+    botSizeX,
+    botSizeY,
+    botSizeZ,
+    tracks,
+    cableCarriers,
+    columnLength,
+    zAxisLength,
+    zGantryOffset,
+    kitVersion,
+    negativeZ,
+    light,
+  }) as Config, [
+    x,
+    y,
+    z,
+    bedHeight,
+    bedLengthOuter,
+    bedWidthOuter,
+    bedXOffset,
+    bedYOffset,
+    botSizeX,
+    botSizeY,
+    botSizeZ,
+    tracks,
+    cableCarriers,
+    columnLength,
+    zAxisLength,
+    zGantryOffset,
+    kitVersion,
+    negativeZ,
+    light,
+  ]);
+  const cameraConfig = React.useMemo(() => ({
+    cameraView,
+    negativeZ,
+    z,
+    imgCenterX,
+    imgCenterY,
+    imgScale,
+    imgRotation,
+    imgOrigin,
+    imgOffsetX,
+    imgOffsetY,
+  }) as Config, [
+    cameraView,
+    negativeZ,
+    z,
+    imgCenterX,
+    imgCenterY,
+    imgScale,
+    imgRotation,
+    imgOrigin,
+    imgOffsetX,
+    imgOffsetY,
+  ]);
+  const gantryConfig = React.useMemo(() => ({
+    beamLength,
+    columnLength,
+    bedXOffset,
+    bedLengthOuter,
+    bedWidthOuter,
+    x,
+    light,
+    lightsDebug,
+    kitVersion,
+  }) as Config, [
+    beamLength,
+    columnLength,
+    bedXOffset,
+    bedLengthOuter,
+    bedWidthOuter,
+    x,
+    light,
+    lightsDebug,
+    kitVersion,
+  ]);
+  const toolsConfig = React.useMemo(() => ({
+    bedXOffset,
+    bedYOffset,
+    bedLengthOuter,
+    bedWidthOuter,
+    bedWallThickness,
+    labels,
+    labelsOnHover,
+    x,
+    y,
+    z,
+    tool,
+    sizePreset,
+    rotary,
+    vacuum,
+    columnLength,
+    zGantryOffset,
+    negativeZ,
+  }) as Config, [
+    bedXOffset,
+    bedYOffset,
+    bedLengthOuter,
+    bedWidthOuter,
+    bedWallThickness,
+    labels,
+    labelsOnHover,
+    x,
+    y,
+    z,
+    tool,
+    sizePreset,
+    rotary,
+    vacuum,
+    columnLength,
+    zGantryOffset,
+    negativeZ,
+  ]);
+  const solenoidConfig = React.useMemo(() => ({
+    x,
+    y,
+    z,
+    bedLengthOuter,
+    bedWidthOuter,
+    bedXOffset,
+    bedYOffset,
+    columnLength,
+    zGantryOffset,
+    negativeZ,
+    waterFlow,
+  }) as Config, [
+    x,
+    y,
+    z,
+    bedLengthOuter,
+    bedWidthOuter,
+    bedXOffset,
+    bedYOffset,
+    columnLength,
+    zGantryOffset,
+    negativeZ,
+    waterFlow,
+  ]);
+  const electronicsConfig = React.useMemo(() => ({
+    x,
+    bedXOffset,
+    bedLengthOuter,
+    bedWidthOuter,
+    columnLength,
+    kitVersion,
+  }) as Config, [
+    x,
+    bedXOffset,
+    bedLengthOuter,
+    bedWidthOuter,
+    columnLength,
+    kitVersion,
+  ]);
+  const powerSupplyConfig = React.useMemo(() => ({
+    bedWidthOuter,
+    bedLengthOuter,
+    bedHeight,
+    botSizeX,
+    legSize,
+    ccSupportSize,
+    bedZOffset,
+    cableDebug,
+  }) as Config, [
+    bedWidthOuter,
+    bedLengthOuter,
+    bedHeight,
+    botSizeX,
+    legSize,
+    ccSupportSize,
+    bedZOffset,
+    cableDebug,
+  ]);
+  const waterTubeConfig = React.useMemo(() => ({
+    bedHeight,
+    bedZOffset,
+    bedLengthOuter,
+    bedWidthOuter,
+    waterFlow,
+  }) as Config, [
+    bedHeight,
+    bedZOffset,
+    bedLengthOuter,
+    bedWidthOuter,
+    waterFlow,
+  ]);
+  const boundsConfig = React.useMemo(() => ({
+    bedLengthOuter,
+    bedWidthOuter,
+    bedXOffset,
+    bedYOffset,
+    x,
+    y,
+    z,
+    zAxisLength,
+    columnLength,
+    beamLength,
+    bounds,
+    botSizeX,
+    botSizeY,
+    botSizeZ,
+    zGantryOffset,
+    negativeZ,
+    zDimension,
+    distanceIndicator,
+  }) as Config, [
+    bedLengthOuter,
+    bedWidthOuter,
+    bedXOffset,
+    bedYOffset,
+    x,
+    y,
+    z,
+    zAxisLength,
+    columnLength,
+    beamLength,
+    bounds,
+    botSizeX,
+    botSizeY,
+    botSizeZ,
+    zGantryOffset,
+    negativeZ,
+    zDimension,
+    distanceIndicator,
+  ]);
+  const wateringConfig = React.useMemo(() => ({
+    x,
+    y,
+    z,
+    bedLengthOuter,
+    bedWidthOuter,
+    bedXOffset,
+    bedYOffset,
+    columnLength,
+    zGantryOffset,
+    negativeZ,
+  }) as Config, [
+    x,
+    y,
+    z,
+    bedLengthOuter,
+    bedWidthOuter,
+    bedXOffset,
+    bedYOffset,
+    columnLength,
+    zGantryOffset,
+    negativeZ,
+  ]);
 
   return <Group name={"bot"}
-    visible={props.config.bot && props.activeFocus != "Planter bed"}>
-    {[0 - extrusionWidth, bedWidthOuter].map((y, index) => {
+    visible={bot && props.activeFocus != "Planter bed"}>
+    {columnYs.map((y, index) => {
       const bedColumnYOffset =
         (tracks ? 0 : extrusionWidth) * (index == 0 ? 1 : -1);
       return <Group key={y}>
         <Extrude name={"columns"}
           castShadow={true}
-          args={[
-            columnShape,
-            { steps: 1, depth: columnLength, bevelEnabled: false },
-          ]}
+          args={columnExtrudeArgs}
           position={[
-            threeSpace(x - extrusionWidth - 12, bedLengthOuter) + bedXOffset,
-            threeSpace(y + bedColumnYOffset, bedWidthOuter),
+            toX(x - extrusionWidth - 12),
+            toYNoOffset(y + bedColumnYOffset),
             30,
           ]}
           rotation={[0, 0, Math.PI / 2]}>
@@ -283,9 +731,8 @@ export const Bot = (props: FarmbotModelProps) => {
         </Extrude>
         <Mesh name={index == 0 ? "leftBracket" : "rightBracket"}
           position={[
-            threeSpace(x - extrusionWidth - 12, bedLengthOuter) + bedXOffset,
-            threeSpace(y - (index == 0 ? 0 : 170) + bedColumnYOffset,
-              bedWidthOuter),
+            toX(x - extrusionWidth - 12),
+            toYNoOffset(y - (index == 0 ? 0 : 170) + bedColumnYOffset),
             columnLength - 30,
           ]}
           rotation={[Math.PI / 2, Math.PI / 2, 0]}
@@ -297,9 +744,8 @@ export const Bot = (props: FarmbotModelProps) => {
         </Mesh>
         <Mesh name={index == 0 ? "leftMotor" : "rightMotor"}
           position={[
-            threeSpace(x - (index == 0 ? 47 : 77), bedLengthOuter) + bedXOffset,
-            threeSpace(y - (index == 0 ? 0 : -20) + bedColumnYOffset,
-              bedWidthOuter),
+            toX(x - (index == 0 ? 47 : 77)),
+            toYNoOffset(y - (index == 0 ? 0 : -20) + bedColumnYOffset),
             columnLength + 70,
           ]}
           rotation={[Math.PI / 2, (index == 0 ? Math.PI : 0), Math.PI / 2]}
@@ -308,9 +754,8 @@ export const Bot = (props: FarmbotModelProps) => {
           material={undefined} />
         <Mesh name={index == 0 ? "leftMotor" : "rightMotor"}
           position={[
-            threeSpace(x - 68, bedLengthOuter) + bedXOffset,
-            threeSpace(y - (index == 0 ? 5 : -25) + bedColumnYOffset,
-              bedWidthOuter),
+            toX(x - 68),
+            toYNoOffset(y - (index == 0 ? 5 : -25) + bedColumnYOffset),
             columnLength + 80,
           ]}
           rotation={[0, Math.PI, (index == 0 ? 0 : Math.PI)]}
@@ -322,9 +767,8 @@ export const Bot = (props: FarmbotModelProps) => {
         <Cylinder name={"motorPulley"}
           args={[8, 8, 40]}
           position={[
-            threeSpace(x - 63, bedLengthOuter) + bedXOffset,
-            threeSpace(y - (index == 0 ? 5 : -25) + bedColumnYOffset,
-              bedWidthOuter),
+            toX(x - 63),
+            toYNoOffset(y - (index == 0 ? 5 : -25) + bedColumnYOffset),
             columnLength + 55,
           ]}
           rotation={[0, 0, 0]}>
@@ -332,15 +776,12 @@ export const Bot = (props: FarmbotModelProps) => {
         </Cylinder>
         <Extrude name={"tracks"} visible={tracks}
           castShadow={true}
-          args={[
-            trackShape,
-            { steps: 1, depth: botSizeX + xTrackPadding, bevelEnabled: false },
-          ]}
+          args={trackExtrudeArgs}
           position={[
-            threeSpace(index == 0
+            toX(index == 0
               ? botSizeX + xTrackPadding / 2
-              : -xTrackPadding / 2, bedLengthOuter) + bedXOffset,
-            threeSpace(y + (index == 0 ? 2.5 : 17.5), bedWidthOuter),
+              : -xTrackPadding / 2),
+            toYNoOffset(y + (index == 0 ? 2.5 : 17.5)),
             2,
           ]}
           rotation={[
@@ -355,8 +796,8 @@ export const Bot = (props: FarmbotModelProps) => {
         </Extrude>
         <Mesh name={"xStopMin"}
           position={[
-            threeSpace(-132, bedLengthOuter) + bedXOffset,
-            threeSpace(y + 10 + bedColumnYOffset, bedWidthOuter),
+            toX(-132),
+            toYNoOffset(y + 10 + bedColumnYOffset),
             2 + (index == 0 ? 0 : 5),
           ]}
           rotation={[
@@ -370,8 +811,8 @@ export const Bot = (props: FarmbotModelProps) => {
         </Mesh>
         <Mesh name={"xStopMax"}
           position={[
-            threeSpace(botSizeX - 5 + xTrackPadding / 2, bedLengthOuter) + bedXOffset,
-            threeSpace(y + 10 + bedColumnYOffset, bedWidthOuter),
+            toX(botSizeX - 5 + xTrackPadding / 2),
+            toYNoOffset(y + 10 + bedColumnYOffset),
             2 + (index == 0 ? 5 : 0),
           ]}
           rotation={[
@@ -385,12 +826,11 @@ export const Bot = (props: FarmbotModelProps) => {
         </Mesh>
         <GantryWheelPlateComponent name={"gantryWheelPlate"}
           position={[
-            threeSpace(x - 42, bedLengthOuter) + bedXOffset,
-            threeSpace(
+            toX(x - 42),
+            toYNoOffset(
               y + (index == 0 ? 0 : extrusionWidth + 5)
               - 2 - (index == 0 ? 1 : 0)
-              + bedColumnYOffset,
-              bedWidthOuter),
+              + bedColumnYOffset),
             -30,
           ]}
           rotation={[0, 0, Math.PI / 2 + (index == 0 ? Math.PI : 0)]}
@@ -399,8 +839,8 @@ export const Bot = (props: FarmbotModelProps) => {
     })}
     <Mesh name={"xCCMount"}
       position={[
-        threeSpace(x - 32, bedLengthOuter) + bedXOffset,
-        threeSpace(-12, bedWidthOuter),
+        toX(x - 32),
+        toYNoOffset(-12),
         -40,
       ]}
       rotation={[0, 0, Math.PI / 2]}
@@ -408,25 +848,22 @@ export const Bot = (props: FarmbotModelProps) => {
       geometry={xAxisCCMount.nodes[PartName.xAxisCCMount].geometry}>
       <MeshPhongMaterial color={"silver"} />
     </Mesh>
-    <CableCarrierX config={config} />
+    <CableCarrierX config={cableCarrierConfig} />
     <CrossSlideComponent name={"crossSlide"}
       position={[
-        threeSpace(x - 1.5, bedLengthOuter) + bedXOffset,
-        threeSpace(y + 5, bedWidthOuter) + bedYOffset,
+        toX(x - 1.5),
+        toY(y + 5),
         columnLength + 105,
       ]}
       rotation={[0, 0, Math.PI / 2]}
       scale={1000} />
     <Extrude name={"z-axis"}
       castShadow={true}
-      args={[
-        zAxisShape,
-        { steps: 1, depth: zAxisLength, bevelEnabled: false },
-      ]}
+      args={zAxisExtrudeArgs}
       position={[
-        threeSpace(x, bedLengthOuter) + bedXOffset,
-        threeSpace(y + utmRadius, bedWidthOuter) + bedYOffset,
-        zZero - zDir * z,
+        toX(x),
+        toY(y + utmRadius),
+        zAxisBase,
       ]}
       rotation={[0, 0, 0]}>
       <MeshPhongMaterial color={"white"} map={aluminumTexture} side={DoubleSide} />
@@ -434,9 +871,9 @@ export const Bot = (props: FarmbotModelProps) => {
     <Group name={"zMotor"}>
       <Mesh name={"zMotorHousing"}
         position={[
-          threeSpace(x + 4, bedLengthOuter) + bedXOffset,
-          threeSpace(y + utmRadius - 47, bedWidthOuter) + bedYOffset,
-          zZero - zDir * z + zAxisLength - 80,
+          toX(x + 4),
+          toY(y + utmRadius - 47),
+          zAxisBase + zAxisLength - 80,
         ]}
         rotation={[0, 0, Math.PI]}
         scale={1000}
@@ -445,9 +882,9 @@ export const Bot = (props: FarmbotModelProps) => {
       </Mesh>
       <Mesh name={"zMotor"}
         position={[
-          threeSpace(x + 10, bedLengthOuter) + bedXOffset,
-          threeSpace(y + utmRadius - 5, bedWidthOuter) + bedYOffset,
-          zZero - zDir * z + zAxisLength - 140,
+          toX(x + 10),
+          toY(y + utmRadius - 5),
+          zAxisBase + zAxisLength - 140,
         ]}
         rotation={[Math.PI / 2, 0, 0]}
         scale={1000}
@@ -455,9 +892,9 @@ export const Bot = (props: FarmbotModelProps) => {
         material={undefined} />
       <Mesh name={"zMotorMount"}
         position={[
-          threeSpace(x + 5, bedLengthOuter) + bedXOffset,
-          threeSpace(y + utmRadius - 65, bedWidthOuter) + bedYOffset,
-          zZero - zDir * z + zAxisLength - 80,
+          toX(x + 5),
+          toY(y + utmRadius - 65),
+          zAxisBase + zAxisLength - 80,
         ]}
         rotation={[0, 0, Math.PI]}
         scale={1000}
@@ -467,9 +904,9 @@ export const Bot = (props: FarmbotModelProps) => {
       <Cylinder name={"motorShaft"}
         args={[2.5, 2.5, 40]}
         position={[
-          threeSpace(x + 5, bedLengthOuter) + bedXOffset,
-          threeSpace(y + utmRadius - 65, bedWidthOuter) + bedYOffset,
-          zZero - zDir * z + zAxisLength - 80,
+          toX(x + 5),
+          toY(y + utmRadius - 65),
+          zAxisBase + zAxisLength - 80,
         ]}
         rotation={[Math.PI / 2, 0, 0]}>
         <MeshPhongMaterial color={"#999"} />
@@ -477,9 +914,9 @@ export const Bot = (props: FarmbotModelProps) => {
     </Group>
     <Mesh name={"shaftCoupler"}
       position={[
-        threeSpace(x + 5, bedLengthOuter) + bedXOffset,
-        threeSpace(y - 30, bedWidthOuter) + bedYOffset,
-        zZero - zDir * z + zAxisLength - 120,
+        toX(x + 5),
+        toY(y - 30),
+        zAxisBase + zAxisLength - 120,
       ]}
       rotation={[0, 0, 0]}
       scale={1000}
@@ -489,9 +926,9 @@ export const Bot = (props: FarmbotModelProps) => {
     <Cylinder name={"shaftCoupler"}
       args={[10, 10, 25]}
       position={[
-        threeSpace(x + 5, bedLengthOuter) + bedXOffset,
-        threeSpace(y - 30, bedWidthOuter) + bedYOffset,
-        zZero - zDir * z + zAxisLength - 120 + 25 / 2,
+        toX(x + 5),
+        toY(y - 30),
+        zAxisBase + zAxisLength - 120 + 25 / 2,
       ]}
       rotation={[Math.PI / 2, 0, 0]}>
       <MeshPhongMaterial color={"silver"} />
@@ -500,18 +937,18 @@ export const Bot = (props: FarmbotModelProps) => {
       material-color={"#555"}
       args={[4, 4, zAxisLength - 200]}
       position={[
-        threeSpace(x + 6, bedLengthOuter) + bedXOffset,
-        threeSpace(y - 30, bedWidthOuter) + bedYOffset,
-        zZero - zDir * z + zAxisLength / 2,
+        toX(x + 6),
+        toY(y - 30),
+        zAxisBase + zAxisLength / 2,
       ]}
       rotation={[Math.PI / 2, 0, 0]} />
-    <CableCarrierSupportVertical config={config} />
-    <CableCarrierZ config={config} />
+    <CableCarrierSupportVertical config={cableCarrierConfig} />
+    <CableCarrierZ config={cableCarrierConfig} />
     <Mesh name={"zStopMax"}
       position={[
-        threeSpace(x - 5, bedLengthOuter) + bedXOffset,
-        threeSpace(y + utmRadius + extrusionWidth / 2, bedWidthOuter) + bedYOffset,
-        zZero - zDir * z - 30 + zGantryOffset,
+        toX(x - 5),
+        toY(y + utmRadius + extrusionWidth / 2),
+        zAxisBase - 30 + zGantryOffset,
       ]}
       rotation={[0, Math.PI / 2, 0]}
       scale={1000}
@@ -520,9 +957,9 @@ export const Bot = (props: FarmbotModelProps) => {
     </Mesh>
     <Mesh name={"zStopMin"}
       position={[
-        threeSpace(x - 5, bedLengthOuter) + bedXOffset,
-        threeSpace(y + utmRadius + extrusionWidth / 2, bedWidthOuter) + bedYOffset,
-        zZero - zDir * z + botSizeZ + 140 + zGantryOffset,
+        toX(x - 5),
+        toY(y + utmRadius + extrusionWidth / 2),
+        zAxisBase + botSizeZ + 140 + zGantryOffset,
       ]}
       rotation={[0, Math.PI / 2, 0]}
       scale={1000}
@@ -531,9 +968,9 @@ export const Bot = (props: FarmbotModelProps) => {
     </Mesh>
     <Mesh name={"vacuumPump"}
       position={[
-        threeSpace(x + 28, bedLengthOuter) + bedXOffset,
-        threeSpace(y, bedWidthOuter) + bedYOffset,
-        zZero - zDir * z + 40,
+        toX(x + 28),
+        toY(y),
+        zAxisBase + 40,
       ]}
       rotation={[0, 0, Math.PI / 2]}
       scale={1000}
@@ -542,16 +979,7 @@ export const Bot = (props: FarmbotModelProps) => {
     <Tube name={"air-tube"}
       castShadow={true}
       receiveShadow={true}
-      args={[easyCubicBezierCurve3(
-        [
-          threeSpace(x + 28, bedLengthOuter) + bedXOffset,
-          threeSpace(y, bedWidthOuter) + bedYOffset,
-          zZero - zDir * z + 35,
-        ],
-        [0, 0, 100],
-        [0, 0, -200],
-        airTubeEndPosition(config.kitVersion),
-      ), 20, 5, 8]}>
+      args={[airTubeCurve, 20, 5, 8]}>
       <MeshPhongMaterial
         color={"white"}
         transparent={true}
@@ -559,9 +987,9 @@ export const Bot = (props: FarmbotModelProps) => {
       />
     </Tube>
     <VacuumPumpCoverComponent
-      rotation={vacuumPumpCoverRotation(config.kitVersion)}
+      rotation={vacuumPumpCoverRotation}
       scale={1000}
-      position={vacuumPumpCoverPosition(config.kitVersion)} />
+      position={vacuumPumpCoverPosition} />
     <Group name={"camera"}
       rotation={[Math.PI, 0, 0]}
       position={cameraMountPosition}>
@@ -580,12 +1008,12 @@ export const Bot = (props: FarmbotModelProps) => {
       </Mesh>
     </Group>
     <CameraView
-      config={config}
+      config={cameraConfig}
       cameraMountPosition={cameraMountPosition}
       distanceToSoil={distanceToSoil} />
     <Trail
-      width={trail ? defaultTrailWidth : 0}
-      attenuation={t => Math.pow(t, 3)}
+      width={trailWidth}
+      attenuation={trailAttenuation}
       color={"red"}
       length={100}
       decay={0.5}
@@ -593,11 +1021,7 @@ export const Bot = (props: FarmbotModelProps) => {
       stride={0}
       interval={1}>
       <Group name={"UTM"}
-        position={[
-          threeSpace(x + 11, bedLengthOuter) + bedXOffset,
-          threeSpace(y, bedWidthOuter) + bedYOffset,
-          zZero - zDir * z + utmHeight / 2 - 19,
-        ]}
+        position={utmPosition}
         rotation={[0, 0, Math.PI / 2]}
         scale={1000}>
         <Mesh
@@ -611,22 +1035,18 @@ export const Bot = (props: FarmbotModelProps) => {
       visible={laser}
       material-color={"red"}
       args={[5, 5, distanceToSoil]}
-      position={[
-        threeSpace(x, bedLengthOuter) + bedXOffset,
-        threeSpace(y, bedWidthOuter) + bedYOffset,
-        zZero - zDir * z - distanceToSoil / 2,
-      ]}
+      position={laserPosition}
       rotation={[Math.PI / 2, 0, 0]} />
     <GantryBeam
-      config={config}
+      config={gantryConfig}
       aluminumTexture={aluminumTexture}
       beamShape={beamShape} />
-    <CableCarrierSupportHorizontal config={config} />
-    <CableCarrierY config={config} />
+    <CableCarrierSupportHorizontal config={cableCarrierConfig} />
+    <CableCarrierY config={cableCarrierConfig} />
     <Mesh name={"yStopMin"}
       position={[
-        threeSpace(x - extrusionWidth + 2, bedLengthOuter) + bedXOffset,
-        threeSpace(bedYOffset - 125, bedWidthOuter),
+        toX(x - extrusionWidth + 2),
+        toYNoOffset(bedYOffset - 125),
         columnLength + 40 + extrusionWidth * 3,
       ]}
       rotation={[0, 0, Math.PI]}
@@ -635,13 +1055,10 @@ export const Bot = (props: FarmbotModelProps) => {
       <MeshPhongMaterial color={"silver"} />
     </Mesh>
     <Extrude name={"yBelt"}
-      args={[
-        yBeltPath(),
-        { steps: 1, depth: 6, bevelEnabled: false },
-      ]}
+      args={yBeltExtrudeArgs}
       position={[
-        threeSpace(x - 14.5, bedLengthOuter) + bedXOffset,
-        threeSpace(-100, bedWidthOuter) + bedYOffset,
+        toX(x - 14.5),
+        toY(-100),
         columnLength + 100,
       ]}
       rotation={[0, -Math.PI / 2, 0]}>
@@ -649,8 +1066,8 @@ export const Bot = (props: FarmbotModelProps) => {
     </Extrude>
     <Mesh name={"yStopMax"}
       position={[
-        threeSpace(x - extrusionWidth + 2, bedLengthOuter) + bedXOffset,
-        threeSpace(botSizeY + bedYOffset + 135, bedWidthOuter),
+        toX(x - extrusionWidth + 2),
+        toYNoOffset(botSizeY + bedYOffset + 135),
         columnLength + 40 + extrusionWidth * 3 + 5,
       ]}
       rotation={[0, Math.PI, 0]}
@@ -658,21 +1075,21 @@ export const Bot = (props: FarmbotModelProps) => {
       geometry={beltClip.nodes[PartName.beltClip].geometry}>
       <MeshPhongMaterial color={"silver"} />
     </Mesh>
-    <Solenoid config={config} />
-    <ElectronicsBox config={config} />
+    <Solenoid config={solenoidConfig} />
+    <ElectronicsBox config={electronicsConfig} />
     <Tools
       dispatch={props.dispatch}
-      config={config}
+      config={toolsConfig}
       getZ={props.getZ}
       toolSlots={props.toolSlots}
       mountedToolName={props.mountedToolName} />
-    {config.waterFlow &&
+    {waterFlow &&
       <WateringAnimations
-        waterFlow={config.waterFlow}
-        config={config}
+        waterFlow={waterFlow}
+        config={wateringConfig}
         getZ={props.getZ} />}
-    <PowerSupply config={config} />
-    <XAxisWaterTube config={config} />
-    <Bounds config={config} />
+    <PowerSupply config={powerSupplyConfig} />
+    <XAxisWaterTube config={waterTubeConfig} />
+    <Bounds config={boundsConfig} />
   </Group>;
-};
+});

@@ -11,5 +11,8 @@ describe("<CrossSlide />", () => {
     const wrapper = mount(<Component name={"name"} />);
     expect(wrapper.html()).toContain("name");
     expect(wrapper.html()).toContain("instancedmesh");
+    const instancedCount =
+      (wrapper.html().match(/instancedmesh/g) || []).length;
+    expect(instancedCount).toBeGreaterThan(1);
   });
 });

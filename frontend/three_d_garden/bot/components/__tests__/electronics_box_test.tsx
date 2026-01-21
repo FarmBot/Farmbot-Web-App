@@ -13,4 +13,15 @@ describe("<ElectronicsBox />", () => {
     const { container } = render(<ElectronicsBox {...fakeProps()} />);
     expect(container).toContainHTML("electronics-box");
   });
+
+  it("renders kit-specific buttons", () => {
+    const p = fakeProps();
+    p.config.kitVersion = "v1.7";
+    const { container, rerender } = render(<ElectronicsBox {...p} />);
+    expect(container.querySelectorAll("[name='button-group']").length).toBe(5);
+    const v18 = fakeProps();
+    v18.config.kitVersion = "v1.8";
+    rerender(<ElectronicsBox {...v18} />);
+    expect(container.querySelectorAll("[name='button-group']").length).toBe(3);
+  });
 });

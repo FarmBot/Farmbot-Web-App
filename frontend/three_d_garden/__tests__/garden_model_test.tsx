@@ -5,24 +5,36 @@ jest.mock("../../screen_size", () => ({
   isMobile: () => mockIsMobile,
 }));
 
+jest.mock("../performance_monitor", () => {
+  const React = require("react");
+  return {
+    ThreeDPerformanceMonitor: () =>
+      React.createElement("div", { id: "three-profiler" }),
+  };
+});
+
 import React from "react";
 import { mount } from "enzyme";
 import { GardenModelProps, GardenModel } from "../garden_model";
 import { clone } from "lodash";
-import { INITIAL, SurfaceDebugOption } from "../config";
-import { render, screen } from "@testing-library/react";
+import { Config, INITIAL, SurfaceDebugOption } from "../config";
+import { render } from "@testing-library/react";
 import {
   fakePlant, fakePoint, fakeSensor, fakeSensorReading, fakeWeed,
 } from "../../__test_support__/fake_state/resources";
+import { PointMarkerInstances, WeedSphereInstances } from "../garden";
 import { fakeAddPlantProps } from "../../__test_support__/fake_props";
 import { ASSETS } from "../constants";
 import { Path } from "../../internal_urls";
 import { fakeDrawnPoint } from "../../__test_support__/fake_designer_state";
 import { convertPlants } from "../../farm_designer/three_d_garden_map";
+import { PERFORMANCE_PROFILER_KEY } from "../../util/performance_profiler_settings";
+import { BooleanSetting } from "../../session_keys";
 
 describe("<GardenModel />", () => {
   beforeEach(() => {
     mockIsMobile = false;
+    localStorage.clear();
   });
 
   const fakeProps = (): GardenModelProps => ({
@@ -40,6 +52,12 @@ describe("<GardenModel />", () => {
     expect(container).toContainHTML("darkgreen");
   });
 
+  it("renders profiler monitor when enabled", () => {
+    localStorage.setItem(PERFORMANCE_PROFILER_KEY, "true");
+    const { container } = render(<GardenModel {...fakeProps()} />);
+    expect(container.querySelector("#three-profiler")).not.toBeNull();
+  });
+
   it("renders top down view", () => {
     mockIsMobile = true;
     const p = fakeProps();
@@ -52,10 +70,12 @@ describe("<GardenModel />", () => {
 
   it("renders no user plants", () => {
     const p = fakeProps();
+    p.config.labels = true;
+    p.config.labelsOnHover = false;
     p.threeDPlants = convertPlants(p.config, []);
-    render(<GardenModel {...p} />);
-    const plantLabels = screen.queryAllByText("Beet");
-    expect(plantLabels.length).toEqual(0);
+    const { container } = render(<GardenModel {...p} />);
+    expect(container.querySelector("[name='label-Beet']"))
+      .toBeNull();
   });
 
   it("renders user plant", () => {
@@ -63,9 +83,41 @@ describe("<GardenModel />", () => {
     const plant = fakePlant();
     plant.body.name = "Beet";
     p.threeDPlants = convertPlants(p.config, [plant]);
-    render(<GardenModel {...p} />);
-    const plantLabels = screen.queryAllByText("Beet");
-    expect(plantLabels.length).toEqual(1);
+    p.config.labels = true;
+    p.config.labelsOnHover = false;
+    const { container } = render(<GardenModel {...p} />);
+    expect(container.querySelector("[name='label-Beet']"))
+      .not.toBeNull();
+  });
+
+  it("skips plant hover handlers in click-to-add mode", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    const p = fakeProps();
+    p.config.labelsOnHover = true;
+    const wrapper = mount(<GardenModel {...p} />);
+    const plantGroup = wrapper.find("group[name='plants']");
+    expect(plantGroup.props().onPointerMove).toBeUndefined();
+  });
+
+  it("adds plant hover handlers outside hover modes", () => {
+    location.pathname = Path.mock(Path.designer());
+    const p = fakeProps();
+    p.config.labelsOnHover = true;
+    const wrapper = mount(<GardenModel {...p} />);
+    const plantGroup = wrapper.find("group[name='plants']");
+    expect(plantGroup.props().onPointerMove).toBeDefined();
+  });
+
+  it("skips plant hover handlers when plants layer is off", () => {
+    location.pathname = Path.mock(Path.designer());
+    const p = fakeProps();
+    p.config.labelsOnHover = true;
+    p.addPlantProps = fakeAddPlantProps();
+    p.addPlantProps.getConfigValue = jest.fn(key =>
+      key === BooleanSetting.show_plants ? false : true);
+    const wrapper = mount(<GardenModel {...p} />);
+    const plantGroup = wrapper.find("group[name='plants']");
+    expect(plantGroup.props().onPointerMove).toBeUndefined();
   });
 
   it("renders points and weeds", () => {
@@ -73,8 +125,45 @@ describe("<GardenModel />", () => {
     p.mapPoints = [fakePoint()];
     p.weeds = [fakeWeed()];
     const { container } = render(<GardenModel {...p} />);
-    expect(container).toContainHTML("cylinder");
+    expect(container).toContainHTML("instancedmesh");
     expect(container).toContainHTML(ASSETS.other.weed);
+  });
+
+  it("passes label config to point and weed instances", () => {
+    const p = fakeProps();
+    p.config.labels = true;
+    p.config.labelsOnHover = true;
+    p.mapPoints = [fakePoint()];
+    p.weeds = [fakeWeed()];
+    const wrapper = mount(<GardenModel {...p} />);
+    const pointInstances = wrapper.find(PointMarkerInstances).first();
+    expect(pointInstances.props().config.labels).toEqual(true);
+    expect(pointInstances.props().config.labelsOnHover).toEqual(true);
+    const weedInstances = wrapper.find(WeedSphereInstances).first();
+    expect(weedInstances.props().config.labels).toEqual(true);
+    expect(weedInstances.props().config.labelsOnHover).toEqual(true);
+  });
+
+  it("passes sun config dimensions", () => {
+    const p = fakeProps();
+    p.config.bedLengthOuter = 1111;
+    p.config.bedWidthOuter = 2222;
+    p.config.bedXOffset = 33;
+    p.config.bedYOffset = 44;
+    p.config.botSizeX = 55;
+    p.config.botSizeY = 66;
+    p.config.columnLength = 77;
+    p.config.zGantryOffset = 88;
+    const wrapper = mount(<GardenModel {...p} />);
+    const sunConfig = wrapper.find("Sun").prop("config") as Config;
+    expect(sunConfig.bedLengthOuter).toEqual(1111);
+    expect(sunConfig.bedWidthOuter).toEqual(2222);
+    expect(sunConfig.bedXOffset).toEqual(33);
+    expect(sunConfig.bedYOffset).toEqual(44);
+    expect(sunConfig.botSizeX).toEqual(55);
+    expect(sunConfig.botSizeY).toEqual(66);
+    expect(sunConfig.columnLength).toEqual(77);
+    expect(sunConfig.zGantryOffset).toEqual(88);
   });
 
   it("renders drawn point", () => {

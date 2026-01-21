@@ -2,6 +2,7 @@ import React from "react";
 import { Center, Text3D } from "@react-three/drei";
 import { ASSETS, RenderOrder } from "../constants";
 import { MeshPhongMaterial } from "../components";
+import { Mesh } from "three";
 
 export interface TextProps {
   children: React.ReactNode;
@@ -13,9 +14,12 @@ export interface TextProps {
   visible?: boolean;
   renderOrder?: RenderOrder;
   thickness?: number;
+  disableRaycast?: boolean;
 }
 
-export const Text = (props: TextProps) => {
+export const Text = React.memo((props: TextProps) => {
+  const raycast =
+    props.disableRaycast ? () => null : Mesh.prototype.raycast;
   return <Center
     name={props.name}
     visible={props.visible}
@@ -25,9 +29,10 @@ export const Text = (props: TextProps) => {
       font={ASSETS.fonts.cabinBold}
       size={props.fontSize}
       height={props.thickness || 0.01}
-      rotation={props.rotation}>
+      rotation={props.rotation}
+      raycast={raycast}>
       {props.children}
       <MeshPhongMaterial color={props.color} />
     </Text3D>
   </Center>;
-};
+});

@@ -12,6 +12,10 @@ import { BlueprintProvider } from "@blueprintjs/core";
 import { Provider as RollbarProvider } from "@rollbar/react";
 import { NavigationProvider } from "./routes_helpers";
 import { App } from "./app";
+import { PerformanceProfiler } from "./util/performance_profiler";
+import {
+  shouldEnableProfiler,
+} from "./util/performance_profiler_settings";
 
 interface RootComponentProps { store: Store; }
 
@@ -52,33 +56,41 @@ export class RootComponent
         }}>{children}</RollbarProvider>
         : <>{children}</>;
 
+    const appTree = <BlueprintProvider>
+      <BrowserRouter>
+        <NavigationProvider>
+          <React.Suspense>
+            <Routes>
+              <Route
+                path={"/app"}
+                element={<App />}>
+                {ROUTE_DATA.map(appRoute =>
+                  <Route key={appRoute.path}
+                    path={appRoute.path}
+                    element={appRoute.element}>
+                    {appRoute.children &&
+                      appRoute.children.map(designerRoute =>
+                        <Route key={designerRoute.path}
+                          path={designerRoute.path}
+                          element={designerRoute.element} />)}
+                  </Route>)}
+              </Route>
+            </Routes>
+          </React.Suspense>
+        </NavigationProvider>
+      </BrowserRouter>
+    </BlueprintProvider>;
+
+    const content = shouldEnableProfiler()
+      ? <PerformanceProfiler store={_store}>
+        {appTree}
+      </PerformanceProfiler>
+      : appTree;
+
     return <OuterWrapper>
       <ErrorBoundary>
         <Provider store={_store}>
-          <BlueprintProvider>
-            <BrowserRouter>
-              <NavigationProvider>
-                <React.Suspense>
-                  <Routes>
-                    <Route
-                      path={"/app"}
-                      element={<App />}>
-                      {ROUTE_DATA.map(appRoute =>
-                        <Route key={appRoute.path}
-                          path={appRoute.path}
-                          element={appRoute.element}>
-                          {appRoute.children &&
-                            appRoute.children.map(designerRoute =>
-                              <Route key={designerRoute.path}
-                                path={designerRoute.path}
-                                element={designerRoute.element} />)}
-                        </Route>)}
-                    </Route>
-                  </Routes>
-                </React.Suspense>
-              </NavigationProvider>
-            </BrowserRouter>
-          </BlueprintProvider>
+          {content}
         </Provider>
       </ErrorBoundary>
     </OuterWrapper>;

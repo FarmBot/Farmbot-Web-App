@@ -8,8 +8,6 @@ import { isMobile } from "../../../screen_size";
 import { HOVER_OBJECT_MODES, DRAW_POINT_MODES, RenderOrder } from "../../constants";
 import {
   DrawnPoint,
-  getBoundsCenter,
-  getHalfSize,
   outOfBoundsShaderModification,
   POINT_CYLINDER_SCALE_FACTOR,
   WEED_IMG_SIZE_FRACTION,
@@ -26,13 +24,19 @@ import { SpecialStatus, TaggedGenericPointer } from "farmbot";
 import { AddPlantProps } from "../bed";
 import { DEFAULT_PLANT_RADIUS } from "../../../farm_designer/plant";
 import { isUndefined, round as mathRound } from "lodash";
-import { Mesh as MeshType, Group as GroupType, Color } from "three";
+import {
+  Mesh as MeshType,
+  Group as GroupType,
+  Color,
+  Vector3,
+  WebGLProgramParametersWithUniforms,
+} from "three";
 import { Path } from "../../../internal_urls";
 import { ThreeEvent } from "@react-three/fiber";
 import { dropPlant } from "../../../farm_designer/map/layers/plants/plant_actions";
 import { createPoint } from "../../../points/create_points";
 import { Actions } from "../../../constants";
-import { NavigateFunction } from "react-router";
+import { NavigateFunction, useLocation } from "react-router";
 import { DrawnPointPayl } from "../../../farm_designer/interfaces";
 import { Line2 } from "three/examples/jsm/lines/Line2";
 
@@ -63,26 +67,76 @@ export interface PointerObjectsProps extends AllRefs {
 }
 
 export const PointerObjects = (props: PointerObjectsProps) => {
+  const location = useLocation();
   const {
     config, mapPoints, addPlantProps,
     pointerPlantRef, radiusRef, torusRef, billboardRef, imageRef,
     xCrosshairRef, yCrosshairRef,
   } = props;
-  const zero = zeroFunc(config);
-  const extents = extentsFunc(config);
-  const iconSize = (addPlantProps.designer.cropRadius || DEFAULT_PLANT_RADIUS) * 2;
+  const zero = React.useMemo(() => zeroFunc(config), [config]);
+  const extents = React.useMemo(() => extentsFunc(config), [config]);
+  const iconSize = React.useMemo(
+    () => (addPlantProps.designer.cropRadius || DEFAULT_PLANT_RADIUS) * 2,
+    [addPlantProps.designer.cropRadius],
+  );
 
   const { drawnPoint } = addPlantProps.designer;
-  const settingRadius =
-    !(isUndefined(drawnPoint?.cx) || isUndefined(drawnPoint.cy));
-  const gridPreview = mapPoints
-    .filter(p => p.specialStatus == SpecialStatus.DIRTY && p.body.meta.gridId)
-    .length > 0;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const boundsCenter = React.useMemo(getBoundsCenter(config), []);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const halfSize = React.useMemo(getHalfSize(config), []);
-  return HOVER_OBJECT_MODES.includes(getMode()) &&
+  const settingRadius = React.useMemo(
+    () => !(isUndefined(drawnPoint?.cx) || isUndefined(drawnPoint.cy)),
+    [drawnPoint?.cx, drawnPoint?.cy],
+  );
+  const gridPreview = React.useMemo(() => mapPoints.some(p =>
+    p.specialStatus == SpecialStatus.DIRTY && p.body.meta.gridId,
+  ), [mapPoints]);
+  const boundsCenter = React.useMemo(() => new Vector3(
+    0,
+    0,
+    -10000 + config.columnLength + 40 - config.zGantryOffset,
+  ), [
+    config.columnLength,
+    config.zGantryOffset,
+  ]);
+  const halfSize = React.useMemo(() => new Vector3(
+    config.bedLengthOuter / 2 - 300,
+    config.bedWidthOuter / 2 - config.bedWallThickness,
+    10000,
+  ), [
+    config.bedLengthOuter,
+    config.bedWidthOuter,
+    config.bedWallThickness,
+  ]);
+  const xCrosshairPoints = React.useMemo<[number, number, number][]>(
+    () => ([
+      [zero.x, 0, 0],
+      [extents.x, 0, 0],
+    ]), [extents.x, zero.x]);
+  const yCrosshairPoints = React.useMemo<[number, number, number][]>(
+    () => ([
+      [0, zero.y, 0],
+      [0, extents.y, 0],
+    ]), [extents.y, zero.y]);
+  const insideColor = React.useMemo(() => new Color("white"), []);
+  const outsideColor = React.useMemo(() => new Color("red"), []);
+  const mode = React.useMemo(() => getMode(), [
+    location.hash,
+    location.pathname,
+    location.search,
+  ]);
+  const hoverMode = HOVER_OBJECT_MODES.includes(mode);
+  const isClickToAdd = mode == Mode.clickToAdd;
+  const drawPointMode = DRAW_POINT_MODES.includes(mode);
+  const slug = Path.getCropSlug();
+  const iconUrl = React.useMemo(() => findIcon(slug), [slug]);
+  const cropSpread = React.useMemo(() => findCrop(slug).spread, [slug]);
+  const onBeforeCompile = React.useCallback(
+    (shader: WebGLProgramParametersWithUniforms) => {
+      shader.uniforms.uBoundsCenter = { value: boundsCenter };
+      shader.uniforms.uHalfSize = { value: halfSize };
+      shader.uniforms.uInside = { value: insideColor };
+      shader.uniforms.uOutside = { value: outsideColor };
+      outOfBoundsShaderModification(shader);
+    }, [boundsCenter, halfSize, insideColor, outsideColor]);
+  return hoverMode &&
     !isMobile() &&
     <Group name={"hover-elements"}>
       {!settingRadius &&
@@ -95,10 +149,7 @@ export const PointerObjects = (props: PointerObjectsProps) => {
             transparent={true}
             opacity={0.9}
             lineWidth={2}
-            points={[
-              [zero.x, 0, 0],
-              [extents.x, 0, 0],
-            ]} />
+            points={xCrosshairPoints} />
           <Line
             ref={yCrosshairRef}
             name={"y-crosshair"}
@@ -106,14 +157,11 @@ export const PointerObjects = (props: PointerObjectsProps) => {
             transparent={true}
             opacity={0.9}
             lineWidth={2}
-            points={[
-              [0, zero.y, 0],
-              [0, extents.y, 0],
-            ]} />
+            points={yCrosshairPoints} />
         </Group>}
       <Group ref={pointerPlantRef} position={[0, 0, 0]}>
         <Group position={[0, 0, 0]}>
-          {DRAW_POINT_MODES.includes(getMode()) &&
+          {drawPointMode &&
             !gridPreview &&
             drawnPoint &&
             <DrawnPoint
@@ -124,28 +172,22 @@ export const PointerObjects = (props: PointerObjectsProps) => {
               config={config}
               designer={addPlantProps.designer}
               usePosition={settingRadius} />}
-          {getMode() == Mode.clickToAdd &&
+          {isClickToAdd &&
             <Group>
               <Billboard follow={true} position={[0, 0, iconSize / 2]}>
                 <Image
                   name={"pointerPlant"}
-                  url={findIcon(Path.getCropSlug())}
+                  url={iconUrl}
                   scale={iconSize}
                   transparent={true}
                   renderOrder={RenderOrder.pointerPlant} />
               </Billboard>
-              <Sphere args={[findCrop(Path.getCropSlug()).spread / 2 * 10, 32, 32]}>
+              <Sphere args={[cropSpread / 2 * 10, 32, 32]}>
                 <MeshPhongMaterial
                   color={"white"}
                   transparent={true}
                   opacity={0.4}
-                  onBeforeCompile={(shader) => {
-                    shader.uniforms.uBoundsCenter = { value: boundsCenter };
-                    shader.uniforms.uHalfSize = { value: halfSize };
-                    shader.uniforms.uInside = { value: new Color("white") };
-                    shader.uniforms.uOutside = { value: new Color("red") };
-                    outOfBoundsShaderModification(shader);
-                  }}
+                  onBeforeCompile={onBeforeCompile}
                   depthWrite={false} />
               </Sphere>
             </Group>}
@@ -162,13 +204,14 @@ export interface SoilClickProps {
   getZ(x: number, y: number): number;
 }
 
-export const soilClick = (props: SoilClickProps) =>
-  (e: ThreeEvent<MouseEvent>) => {
-    const { config, navigate, addPlantProps, pointerPlantRef } = props;
-    const getGardenPosition = getGardenPositionFunc(config);
+export const soilClick = (props: SoilClickProps) => {
+  const { config, navigate, addPlantProps, pointerPlantRef } = props;
+  const getGardenPosition = getGardenPositionFunc(config);
+  return (e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation();
     if (addPlantProps) {
-      if (getMode() == Mode.clickToAdd) {
+      const mode = getMode();
+      if (mode == Mode.clickToAdd) {
         dropPlant({
           gardenCoords: getGardenPosition(e.point),
           gridSize: addPlantProps.gridSize,
@@ -178,7 +221,7 @@ export const soilClick = (props: SoilClickProps) =>
           designer: addPlantProps.designer,
         });
       }
-      if (DRAW_POINT_MODES.includes(getMode())) {
+      if (DRAW_POINT_MODES.includes(mode)) {
         pointerPlantRef.current?.position.set(0, 0, 0);
         const cursor = getGardenPosition(e.point);
         const { drawnPoint } = addPlantProps.designer;
@@ -213,38 +256,43 @@ export const soilClick = (props: SoilClickProps) =>
       }
     }
   };
+};
 
 export interface SoilPointerMoveProps extends AllRefs {
   config: Config;
   addPlantProps: AddPlantProps;
   getZ(x: number, y: number): number;
   activePositionRef: ActivePositionRef;
+  invalidate?: () => void;
 }
 
-export const soilPointerMove = (props: SoilPointerMoveProps) =>
-  (e: ThreeEvent<MouseEvent>) => {
-    const {
-      config, addPlantProps,
-      pointerPlantRef,
-      radiusRef, torusRef, billboardRef, imageRef,
-      xCrosshairRef, yCrosshairRef, activePositionRef,
-    } = props;
-    const getGardenPosition = getGardenPositionFunc(config);
-    const get3DPosition = get3DPositionFunc(config);
+export const soilPointerMove = (props: SoilPointerMoveProps) => {
+  const {
+    config, addPlantProps,
+    pointerPlantRef,
+    radiusRef, torusRef, billboardRef, imageRef,
+    xCrosshairRef, yCrosshairRef, activePositionRef, invalidate,
+  } = props;
+  const getGardenPosition = getGardenPositionFunc(config);
+  const get3DPosition = get3DPositionFunc(config);
+  const zZeroPosition = zZero(config);
+  return (e: ThreeEvent<MouseEvent>) => {
+    const mode = getMode();
     if (addPlantProps
-      && HOVER_OBJECT_MODES.includes(getMode())
+      && HOVER_OBJECT_MODES.includes(mode)
       && !isMobile()
       && pointerPlantRef.current) {
       const gardenPosition = getGardenPosition(e.point);
       const { x, y } = get3DPosition(gardenPosition);
-      const z = zZero(config) + props.getZ(gardenPosition.x, gardenPosition.y);
+      const z = zZeroPosition + props.getZ(gardenPosition.x, gardenPosition.y);
       xCrosshairRef.current?.position.set(0, y, z);
       yCrosshairRef.current?.position.set(x, 0, z);
       activePositionRef.current = { x, y };
-      if (getMode() == Mode.clickToAdd) {
+      invalidate?.();
+      if (mode == Mode.clickToAdd) {
         pointerPlantRef.current.position.set(x, y, z);
       }
-      if (DRAW_POINT_MODES.includes(getMode())) {
+      if (DRAW_POINT_MODES.includes(mode)) {
         const { drawnPoint } = addPlantProps.designer;
         if (isUndefined(drawnPoint)) { return; }
         if (isUndefined(drawnPoint.cx) || isUndefined(drawnPoint.cy)) {
@@ -263,3 +311,4 @@ export const soilPointerMove = (props: SoilPointerMoveProps) =>
       }
     }
   };
+};

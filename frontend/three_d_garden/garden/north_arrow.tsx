@@ -3,42 +3,47 @@ import { Config } from "../config";
 import { Extrude } from "@react-three/drei";
 import { threeSpace } from "../helpers";
 import { Group, MeshPhongMaterial } from "../components";
-import { Shape } from "three";
+import { ExtrudeGeometryOptions, Shape } from "three";
 
 export interface NorthArrowProps {
   config: Config;
 }
 
-export const NorthArrow = (props: NorthArrowProps) => {
+export const NorthArrow = React.memo((props: NorthArrowProps) => {
   const {
     bedWidthOuter, bedLengthOuter, bedHeight, bedZOffset, heading,
   } = props.config;
+  const position = React.useMemo<[number, number, number]>(() => ([
+    threeSpace(0, bedLengthOuter),
+    threeSpace(-500, bedWidthOuter),
+    -bedHeight - bedZOffset,
+  ]), [bedHeight, bedLengthOuter, bedWidthOuter, bedZOffset]);
+  const rotation = React.useMemo<[number, number, number]>(
+    () => [0, 0, (heading - 90) * Math.PI / 180],
+    [heading],
+  );
+  const arrowArgs = React.useMemo<
+    [Shape, ExtrudeGeometryOptions]
+  >(() => [northArrowShape, { steps: 1, depth: 5 }], []);
+  const nArgs = React.useMemo<
+    [Shape, ExtrudeGeometryOptions]
+  >(() => [nShape, { steps: 1, depth: 2 }], []);
   return <Group name={"north-arrow"}
     visible={props.config.north}
     scale={1.2}
-    position={[
-      threeSpace(0, bedLengthOuter),
-      threeSpace(-500, bedWidthOuter),
-      -bedHeight - bedZOffset,
-    ]}
-    rotation={[0, 0, (heading - 90) * Math.PI / 180]}>
+    position={position}
+    rotation={rotation}>
     <Extrude
-      args={[
-        northArrowShape,
-        { steps: 1, depth: 5 },
-      ]}>
+      args={arrowArgs}>
       <MeshPhongMaterial color={"silver"} />
     </Extrude>
     <Extrude
-      args={[
-        nShape,
-        { steps: 1, depth: 2 },
-      ]}
+      args={nArgs}
       position={[0, 0, 5]}>
       <MeshPhongMaterial color={"#434343"} />
     </Extrude>
   </Group>;
-};
+});
 
 const northArrowShape = new Shape();
 

@@ -37,13 +37,19 @@ describe("<PointerObjects />", () => {
     config: clone(INITIAL),
     mapPoints: [],
     addPlantProps: fakeAddPlantProps(),
-    pointerPlantRef: { current: { position: new Vector3(0, 0, 0) } } as PointerPlantRef,
+    pointerPlantRef: {
+      current: { position: new Vector3(0, 0, 0) },
+    } as PointerPlantRef,
     radiusRef: { current: { scale: new Vector3(0, 0, 0) } } as RadiusRef,
     torusRef: { current: { scale: new Vector3(0, 0, 0) } } as TorusRef,
     billboardRef: { current: { position: new Vector3(0, 0, 0) } } as BillboardRef,
     imageRef: { current: { scale: new Vector3(0, 0, 0) } } as ImageRef,
-    xCrosshairRef: { current: { position: new Vector3(0, 0, 0) } } as XCrosshairRef,
-    yCrosshairRef: { current: { position: new Vector3(0, 0, 0) } } as YCrosshairRef,
+    xCrosshairRef: {
+      current: { position: new Vector3(0, 0, 0) },
+    } as XCrosshairRef,
+    yCrosshairRef: {
+      current: { position: new Vector3(0, 0, 0) },
+    } as YCrosshairRef,
     activePositionRef: { current: { x: 0, y: 0 } } as ActivePositionRef,
   });
 
@@ -53,6 +59,23 @@ describe("<PointerObjects />", () => {
     const { container } = render(<PointerObjects {...fakeProps()} />);
     expect(container).toContainHTML("mint");
   });
+
+  it("doesn't render on mobile", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    mockIsMobile = true;
+    const { container } = render(<PointerObjects {...fakeProps()} />);
+    expect(container).not.toContainHTML("hover-elements");
+  });
+
+  it("updates when mode changes", () => {
+    mockIsMobile = false;
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    const { container, rerender } = render(<PointerObjects {...fakeProps()} />);
+    expect(container).toContainHTML("hover-elements");
+    location.pathname = Path.mock(Path.designer());
+    rerender(<PointerObjects {...fakeProps()} />);
+    expect(container).not.toContainHTML("hover-elements");
+  });
 });
 
 describe("soilClick()", () => {
@@ -60,7 +83,9 @@ describe("soilClick()", () => {
     config: clone(INITIAL),
     navigate: jest.fn(),
     addPlantProps: fakeAddPlantProps(),
-    pointerPlantRef: { current: { position: new Vector3(0, 0, 0) } } as PointerPlantRef,
+    pointerPlantRef: {
+      current: { position: new Vector3(0, 0, 0) },
+    } as PointerPlantRef,
     getZ: () => 0,
   });
 
@@ -85,13 +110,21 @@ describe("soilPointerMove()", () => {
     config: clone(INITIAL),
     addPlantProps: fakeAddPlantProps(),
     getZ: () => 0,
-    pointerPlantRef: { current: { position: { set: jest.fn() } } } as unknown as PointerPlantRef,
+    pointerPlantRef: {
+      current: { position: { set: jest.fn() } },
+    } as unknown as PointerPlantRef,
     radiusRef: { current: { scale: { set: jest.fn() } } } as unknown as RadiusRef,
     torusRef: { current: { scale: { set: jest.fn() } } } as unknown as TorusRef,
-    billboardRef: { current: { position: { set: jest.fn() } } } as unknown as BillboardRef,
+    billboardRef: {
+      current: { position: { set: jest.fn() } },
+    } as unknown as BillboardRef,
     imageRef: { current: { scale: { set: jest.fn() } } } as unknown as ImageRef,
-    xCrosshairRef: { current: { position: { set: jest.fn() } } } as unknown as XCrosshairRef,
-    yCrosshairRef: { current: { position: { set: jest.fn() } } } as unknown as YCrosshairRef,
+    xCrosshairRef: {
+      current: { position: { set: jest.fn() } },
+    } as unknown as XCrosshairRef,
+    yCrosshairRef: {
+      current: { position: { set: jest.fn() } },
+    } as unknown as YCrosshairRef,
     activePositionRef: { current: { x: 0, y: 0 } } as ActivePositionRef,
   });
 
@@ -107,5 +140,19 @@ describe("soilPointerMove()", () => {
     soilPointerMove(p)(e);
     expect(p.pointerPlantRef.current?.position.set)
       .toHaveBeenCalledWith(100, 200, 0);
+  });
+
+  it("invalidates on pointer move", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    mockIsMobile = false;
+    const p = fakeProps();
+    const invalidate = jest.fn();
+    p.invalidate = invalidate;
+    const e = {
+      stopPropagation: jest.fn(),
+      point: { x: 100, y: 200 },
+    } as unknown as ThreeEvent<MouseEvent>;
+    soilPointerMove(p)(e);
+    expect(invalidate).toHaveBeenCalled();
   });
 });

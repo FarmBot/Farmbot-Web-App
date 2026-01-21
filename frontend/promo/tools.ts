@@ -3,6 +3,9 @@ import { ToolName } from "../farm_designer/map/tool_graphics/all_tools";
 import { Config } from "../three_d_garden/config";
 import { ThreeDTool } from "../three_d_garden/bot/components";
 import { zDir, zZero } from "../three_d_garden/helpers";
+import { startCase } from "lodash";
+
+const formatPromoLabel = (toolName: ToolName) => startCase(toolName);
 
 export const PROMO_TOOLS = (config: Config): ThreeDTool[] => {
 
@@ -20,6 +23,7 @@ export const PROMO_TOOLS = (config: Config): ThreeDTool[] => {
       y: (isJr ? 0 : 100) + promoToolOffset.y,
       z: promoToolOffset.z,
       toolName: ToolName.rotaryTool,
+      label: formatPromoLabel(ToolName.rotaryTool),
       toolPulloutDirection: ToolPulloutDirection.NONE,
     },
     {
@@ -27,6 +31,7 @@ export const PROMO_TOOLS = (config: Config): ThreeDTool[] => {
       y: (isJr ? 200 : 300) + promoToolOffset.y,
       z: promoToolOffset.z,
       toolName: ToolName.seedBin,
+      label: formatPromoLabel(ToolName.seedBin),
       toolPulloutDirection: ToolPulloutDirection.NONE,
     },
     {
@@ -34,6 +39,7 @@ export const PROMO_TOOLS = (config: Config): ThreeDTool[] => {
       y: (isJr ? -100 : -200) + promoToolOffset.y,
       z: promoToolOffset.z,
       toolName: ToolName.seedTray,
+      label: formatPromoLabel(ToolName.seedTray),
       toolPulloutDirection: ToolPulloutDirection.NONE,
     },
     {
@@ -41,6 +47,7 @@ export const PROMO_TOOLS = (config: Config): ThreeDTool[] => {
       y: (isJr ? -200 : -300) + promoToolOffset.y,
       z: promoToolOffset.z,
       toolName: ToolName.soilSensor,
+      label: formatPromoLabel(ToolName.soilSensor),
       toolPulloutDirection: ToolPulloutDirection.NONE,
     },
     {
@@ -48,6 +55,7 @@ export const PROMO_TOOLS = (config: Config): ThreeDTool[] => {
       y: (isJr ? 100 : 200) + promoToolOffset.y,
       z: promoToolOffset.z,
       toolName: ToolName.wateringNozzle,
+      label: formatPromoLabel(ToolName.wateringNozzle),
       toolPulloutDirection: ToolPulloutDirection.NONE,
     },
     {
@@ -55,6 +63,7 @@ export const PROMO_TOOLS = (config: Config): ThreeDTool[] => {
       y: -config.bedYOffset + 15,
       z: zDir(config) * (zZero(config) - 100),
       toolName: ToolName.seedTrough,
+      label: formatPromoLabel(ToolName.seedTrough),
       toolPulloutDirection: ToolPulloutDirection.NONE,
       firstTrough: true,
     },

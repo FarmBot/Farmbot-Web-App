@@ -5,8 +5,22 @@ import { InstancedBufferAttribute } from "three";
 import { GLTF } from "three-stdlib";
 import { Group, Mesh as MeshComponent, InstancedMesh } from "../../components";
 import { ThreeElements } from "@react-three/fiber";
+import { range } from "lodash";
 
-type Mesh = THREE.Mesh & { instanceMatrix: InstancedBufferAttribute | undefined };
+type Mesh = THREE.Mesh & {
+  instanceMatrix?: InstancedBufferAttribute | undefined;
+};
+
+const mesh141Keys = range(0, 18).map(i =>
+  i === 0 ? "mesh141_mesh" : `mesh141_mesh_${i}`);
+const mesh159Keys = range(0, 17).map(i =>
+  i === 0 ? "mesh159_mesh" : `mesh159_mesh_${i}`);
+const mesh176Keys = range(0, 16).map(i =>
+  i === 0 ? "mesh176_mesh" : `mesh176_mesh_${i}`);
+const mesh192Keys = range(0, 14).map(i =>
+  i === 0 ? "mesh192_mesh" : `mesh192_mesh_${i}`);
+const mesh206Keys = range(0, 18).map(i =>
+  i === 0 ? "mesh206_mesh" : `mesh206_mesh_${i}`);
 
 export type GantryWheelPlateFull = GLTF & {
   nodes: {
@@ -101,262 +115,36 @@ export type GantryWheelPlateFull = GLTF & {
 }
 
 export const GantryWheelPlate = (model: GantryWheelPlateFull) =>
-  (props: ThreeElements["group"]) => {
+  React.memo((props: ThreeElements["group"]) => {
     const { nodes, materials } = model;
+    const nodeMap = nodes as Record<string, Mesh>;
+    const platePosition = React.useMemo<[number, number, number]>(
+      () => [0.002, 0.05, 0], []);
+    const plateRotation = React.useMemo<[number, number, number]>(
+      () => [Math.PI / 2, -Math.PI / 2, 0], []);
+    const material = materials.PaletteMaterial001;
+    const instancedMeshes = React.useMemo(() => {
+      const renderGroup = (keys: string[], count: number) =>
+        keys.map(key => {
+          const node = nodeMap[key];
+          return <InstancedMesh key={key}
+            args={[node.geometry, material, count]}
+            instanceMatrix={node.instanceMatrix} />;
+        });
+      return [
+        ...renderGroup(mesh141Keys, 5),
+        ...renderGroup(mesh159Keys, 5),
+        ...renderGroup(mesh176Keys, 5),
+        ...renderGroup(mesh192Keys, 5),
+        ...renderGroup(mesh206Keys, 10),
+      ];
+    }, [material, nodeMap]);
     return <Group {...props}>
       <MeshComponent
         geometry={nodes.Gantry_Wheel_Plate.geometry}
-        material={materials.PaletteMaterial001}
-        position={[0.002, 0.05, 0]}
-        rotation={[Math.PI / 2, -Math.PI / 2, 0]} />
-      <InstancedMesh
-        args={[nodes.mesh141_mesh.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh141_mesh.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh141_mesh_1.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh141_mesh_1.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh141_mesh_2.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh141_mesh_2.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh141_mesh_3.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh141_mesh_3.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh141_mesh_4.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh141_mesh_4.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh141_mesh_5.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh141_mesh_5.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh141_mesh_6.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh141_mesh_6.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh141_mesh_7.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh141_mesh_7.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh141_mesh_8.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh141_mesh_8.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh141_mesh_9.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh141_mesh_9.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh141_mesh_10.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh141_mesh_10.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh141_mesh_11.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh141_mesh_11.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh141_mesh_12.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh141_mesh_12.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh141_mesh_13.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh141_mesh_13.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh141_mesh_14.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh141_mesh_14.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh141_mesh_15.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh141_mesh_15.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh141_mesh_16.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh141_mesh_16.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh141_mesh_17.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh141_mesh_17.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh159_mesh.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh159_mesh.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh159_mesh_1.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh159_mesh_1.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh159_mesh_2.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh159_mesh_2.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh159_mesh_3.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh159_mesh_3.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh159_mesh_4.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh159_mesh_4.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh159_mesh_5.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh159_mesh_5.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh159_mesh_6.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh159_mesh_6.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh159_mesh_7.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh159_mesh_7.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh159_mesh_8.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh159_mesh_8.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh159_mesh_9.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh159_mesh_9.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh159_mesh_10.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh159_mesh_10.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh159_mesh_11.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh159_mesh_11.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh159_mesh_12.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh159_mesh_12.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh159_mesh_13.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh159_mesh_13.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh159_mesh_14.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh159_mesh_14.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh159_mesh_15.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh159_mesh_15.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh159_mesh_16.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh159_mesh_16.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh176_mesh.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh176_mesh.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh176_mesh_1.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh176_mesh_1.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh176_mesh_2.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh176_mesh_2.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh176_mesh_3.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh176_mesh_3.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh176_mesh_4.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh176_mesh_4.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh176_mesh_5.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh176_mesh_5.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh176_mesh_6.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh176_mesh_6.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh176_mesh_7.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh176_mesh_7.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh176_mesh_8.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh176_mesh_8.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh176_mesh_9.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh176_mesh_9.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh176_mesh_10.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh176_mesh_10.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh176_mesh_11.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh176_mesh_11.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh176_mesh_12.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh176_mesh_12.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh176_mesh_13.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh176_mesh_13.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh176_mesh_14.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh176_mesh_14.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh176_mesh_15.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh176_mesh_15.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh192_mesh.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh192_mesh.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh192_mesh_1.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh192_mesh_1.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh192_mesh_2.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh192_mesh_2.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh192_mesh_3.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh192_mesh_3.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh192_mesh_4.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh192_mesh_4.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh192_mesh_5.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh192_mesh_5.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh192_mesh_6.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh192_mesh_6.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh192_mesh_7.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh192_mesh_7.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh192_mesh_8.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh192_mesh_8.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh192_mesh_9.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh192_mesh_9.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh192_mesh_10.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh192_mesh_10.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh192_mesh_11.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh192_mesh_11.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh192_mesh_12.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh192_mesh_12.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh192_mesh_13.geometry, materials.PaletteMaterial001, 5]}
-        instanceMatrix={nodes.mesh192_mesh_13.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh206_mesh.geometry, materials.PaletteMaterial001, 10]}
-        instanceMatrix={nodes.mesh206_mesh.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh206_mesh_1.geometry, materials.PaletteMaterial001, 10]}
-        instanceMatrix={nodes.mesh206_mesh_1.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh206_mesh_2.geometry, materials.PaletteMaterial001, 10]}
-        instanceMatrix={nodes.mesh206_mesh_2.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh206_mesh_3.geometry, materials.PaletteMaterial001, 10]}
-        instanceMatrix={nodes.mesh206_mesh_3.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh206_mesh_4.geometry, materials.PaletteMaterial001, 10]}
-        instanceMatrix={nodes.mesh206_mesh_4.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh206_mesh_5.geometry, materials.PaletteMaterial001, 10]}
-        instanceMatrix={nodes.mesh206_mesh_5.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh206_mesh_6.geometry, materials.PaletteMaterial001, 10]}
-        instanceMatrix={nodes.mesh206_mesh_6.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh206_mesh_7.geometry, materials.PaletteMaterial001, 10]}
-        instanceMatrix={nodes.mesh206_mesh_7.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh206_mesh_8.geometry, materials.PaletteMaterial001, 10]}
-        instanceMatrix={nodes.mesh206_mesh_8.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh206_mesh_9.geometry, materials.PaletteMaterial001, 10]}
-        instanceMatrix={nodes.mesh206_mesh_9.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh206_mesh_10.geometry, materials.PaletteMaterial001, 10]}
-        instanceMatrix={nodes.mesh206_mesh_10.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh206_mesh_11.geometry, materials.PaletteMaterial001, 10]}
-        instanceMatrix={nodes.mesh206_mesh_11.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh206_mesh_12.geometry, materials.PaletteMaterial001, 10]}
-        instanceMatrix={nodes.mesh206_mesh_12.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh206_mesh_13.geometry, materials.PaletteMaterial001, 10]}
-        instanceMatrix={nodes.mesh206_mesh_13.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh206_mesh_14.geometry, materials.PaletteMaterial001, 10]}
-        instanceMatrix={nodes.mesh206_mesh_14.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh206_mesh_15.geometry, materials.PaletteMaterial001, 10]}
-        instanceMatrix={nodes.mesh206_mesh_15.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh206_mesh_16.geometry, materials.PaletteMaterial001, 10]}
-        instanceMatrix={nodes.mesh206_mesh_16.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh206_mesh_17.geometry, materials.PaletteMaterial001, 10]}
-        instanceMatrix={nodes.mesh206_mesh_17.instanceMatrix} />
+        material={material}
+        position={platePosition}
+        rotation={plateRotation} />
+      {instancedMeshes}
     </Group>;
-  };
+  });

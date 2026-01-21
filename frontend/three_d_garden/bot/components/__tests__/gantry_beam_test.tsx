@@ -46,9 +46,11 @@ describe("<GantryBeam />", () => {
   it("renders lights", () => {
     const p = fakeProps();
     p.config.light = true;
+    p.config.kitVersion = "v1.7";
     const { container } = render(<GantryBeam {...p} />);
     expect(container).toContainHTML("beam");
     expect(container).toContainHTML("light");
+    expect(container).toContainHTML("gantry-beam-leds");
   });
 
   it("renders alternative lights", () => {
@@ -58,6 +60,7 @@ describe("<GantryBeam />", () => {
     const { container } = render(<GantryBeam {...p} />);
     expect(container).toContainHTML("beam");
     expect(container).toContainHTML("light");
+    expect(container).not.toContainHTML("gantry-beam-leds");
   });
 
   it("renders debug helpers", () => {
@@ -76,5 +79,13 @@ describe("<GantryBeam />", () => {
     const { container } = render(<GantryBeam {...p} />);
     expect(container).toContainHTML("beam");
     expect(container).toContainHTML("light");
+  });
+
+  it("limits light count", () => {
+    const p = fakeProps();
+    p.config.light = true;
+    p.config.beamLength = 6000;
+    const { container } = render(<GantryBeam {...p} />);
+    expect(container.querySelectorAll("spotlight")).toHaveLength(3);
   });
 });

@@ -9,13 +9,22 @@ export interface XAxisWaterTubeProps {
   config: Config;
 }
 
-export const XAxisWaterTube = (props: XAxisWaterTubeProps) => {
+export const XAxisWaterTube = React.memo((props: XAxisWaterTubeProps) => {
   const { config } = props;
-  const groundZ = -config.bedHeight - config.bedZOffset;
-  const barbX = threeSpace(config.bedLengthOuter / 2 + 400, config.bedLengthOuter);
-  const barbY = threeSpace(-50, config.bedWidthOuter);
-  const barbZ = groundZ + 20;
-  const tubePath = easyCubicBezierCurve3(
+  const groundZ = React.useMemo(
+    () => -config.bedHeight - config.bedZOffset,
+    [config.bedHeight, config.bedZOffset],
+  );
+  const barbX = React.useMemo(
+    () => threeSpace(config.bedLengthOuter / 2 + 400, config.bedLengthOuter),
+    [config.bedLengthOuter],
+  );
+  const barbY = React.useMemo(
+    () => threeSpace(-50, config.bedWidthOuter),
+    [config.bedWidthOuter],
+  );
+  const barbZ = React.useMemo(() => groundZ + 20, [groundZ]);
+  const tubePath = React.useMemo(() => easyCubicBezierCurve3(
     [barbX, barbY, barbZ],
     [-300, 0, 0],
     [300, 0, 0],
@@ -24,7 +33,17 @@ export const XAxisWaterTube = (props: XAxisWaterTubeProps) => {
       threeSpace(-30, config.bedWidthOuter),
       -140,
     ],
+  ), [barbX, barbY, barbZ, config.bedLengthOuter, config.bedWidthOuter]);
+  const barbPositionLeft = React.useMemo<[number, number, number]>(
+    () => [barbX - 10, barbY, barbZ],
+    [barbX, barbY, barbZ],
   );
+  const barbPositionRight = React.useMemo<[number, number, number]>(
+    () => [barbX + 10, barbY, barbZ],
+    [barbX, barbY, barbZ],
+  );
+  const adapterRotation = React.useMemo<[number, number, number]>(
+    () => [0, 0, Math.PI / 2], []);
 
   return <Group>
     <WaterTube tubeName={"x-axis-water-tube"}
@@ -36,16 +55,16 @@ export const XAxisWaterTube = (props: XAxisWaterTubeProps) => {
     <Cylinder name={"adapter-barb"}
       receiveShadow={true}
       args={[3.5, 3.5, 20]}
-      position={[barbX - 10, barbY, barbZ]}
-      rotation={[0, 0, Math.PI / 2]}>
+      position={barbPositionLeft}
+      rotation={adapterRotation}>
       <MeshPhongMaterial color={"gold"} />
     </Cylinder>
     <Cylinder name={"adapter-base"}
       receiveShadow={true}
       args={[18, 18, 20]}
-      position={[barbX + 10, barbY, barbZ]}
-      rotation={[0, 0, Math.PI / 2]}>
+      position={barbPositionRight}
+      rotation={adapterRotation}>
       <MeshPhongMaterial color={"gold"} />
     </Cylinder>
   </Group>;
-};
+});

@@ -23,6 +23,11 @@ describe("<SuctionAnimation />", () => {
     render(<SuctionAnimation {...fakeProps()} />);
     expect(mockPosition.add).toHaveBeenCalled();
     expect(mockScaleSet).toHaveBeenCalled();
+    expect(mockScaleSet).toHaveBeenCalledWith(
+      expect.any(Number),
+      expect.any(Number),
+      expect.any(Number),
+    );
   });
 
   it("resets", () => {

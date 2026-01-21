@@ -7,6 +7,10 @@ jest.mock("../hotkeys", () => ({
   HotKeys: () => <div />,
 }));
 
+jest.mock("../util/performance_profiler_metrics", () => ({
+  recordReactCommit: jest.fn(),
+}));
+
 import React from "react";
 import { RawApp as App, AppProps, mapStateToProps } from "../app";
 import { mount } from "enzyme";
@@ -29,6 +33,8 @@ import {
 } from "../__test_support__/fake_designer_state";
 import { Path } from "../internal_urls";
 import { app } from "../__test_support__/fake_state/app";
+import { PERFORMANCE_PROFILER_KEY } from "../util/performance_profiler_settings";
+import { recordReactCommit } from "../util/performance_profiler_metrics";
 
 const FULLY_LOADED: ResourceName[] = [
   "Sequence", "Regimen", "FarmEvent", "Point", "Tool", "Device"];
@@ -152,6 +158,17 @@ describe("<App />: Loading", () => {
     p.getConfigValue = () => false;
     const wrapper = mount(<App {...p} />);
     expect(wrapper.find(".app").hasClass("light")).toBeTruthy();
+  });
+
+  it("records profiler commits when enabled", () => {
+    localStorage.setItem(PERFORMANCE_PROFILER_KEY, "true");
+    (recordReactCommit as jest.Mock).mockClear();
+    const p = fakeProps();
+    p.loaded = FULLY_LOADED;
+    const wrapper = mount(<App {...p} />);
+    expect(recordReactCommit).toHaveBeenCalled();
+    localStorage.clear();
+    wrapper.unmount();
   });
 });
 

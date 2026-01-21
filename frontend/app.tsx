@@ -58,6 +58,8 @@ import { RunButtonMenuOpen } from "./sequences/interfaces";
 import { Navigate, Outlet } from "react-router";
 import { ErrorBoundary } from "./error_boundary";
 import { DesignerState } from "./farm_designer/interfaces";
+import { shouldEnableProfiler } from "./util/performance_profiler_settings";
+import { recordReactCommit } from "./util/performance_profiler_metrics";
 
 export interface AppProps {
   dispatch: Function;
@@ -181,12 +183,24 @@ export class RawApp extends React.Component<AppProps, {}> {
     const { bot, dispatch, getConfigValue } = this.props;
     const landingPage = getConfigValue(StringSetting.landing_page);
     const themeClass = getConfigValue(BooleanSetting.dark_mode) ? "dark" : "light";
+    const profilerEnabled = shouldEnableProfiler();
+    const onRender: React.ProfilerOnRenderCallback = (
+      id,
+      _phase,
+      actualDuration,
+    ) => recordReactCommit(id, actualDuration);
+    const wrapWithProfiler = (id: string, node: React.ReactNode) =>
+      profilerEnabled
+        ? <React.Profiler id={id} onRender={onRender}>
+          {node}
+        </React.Profiler>
+        : node;
     return <div className={["app", themeClass].join(" ")}>
       {(Path.equals("") || Path.equals(Path.app())) && isString(landingPage) &&
         <Navigate to={landingPagePath(landingPage)} />}
       {!syncLoaded && <LoadingPlant animate={this.props.animate} />}
       <HotKeys dispatch={dispatch} designer={this.props.designer} />
-      {syncLoaded && <NavBar
+      {syncLoaded && wrapWithProfiler("NavBar", <NavBar
         designer={this.props.designer}
         timeSettings={this.props.timeSettings}
         user={this.props.user}
@@ -212,24 +226,24 @@ export class RawApp extends React.Component<AppProps, {}> {
         telemetry={this.props.telemetry}
         appState={this.props.appState}
         menuOpen={this.props.menuOpen}
-        pings={this.props.pings} />}
+        pings={this.props.pings} />)}
       <main id="main-content" tabIndex={-1}>
         {syncLoaded && this.props.children}
         <ErrorBoundary>
           <React.Suspense>
-            {syncLoaded && <Outlet />}
+            {syncLoaded && wrapWithProfiler("AppOutlet", <Outlet />)}
           </React.Suspense>
         </ErrorBoundary>
       </main>
       <div className={"toast-container"}>
-        <TourStepContainer
+        {wrapWithProfiler("TourSteps", <TourStepContainer
           key={JSON.stringify(this.props.helpState)}
           dispatch={dispatch}
           firmwareHardware={this.props.apiFirmwareValue}
-          helpState={this.props.helpState} />
-        <Toasts
+          helpState={this.props.helpState} />)}
+        {wrapWithProfiler("Toasts", <Toasts
           toastMessages={this.props.appState.toasts}
-          dispatch={dispatch} />
+          dispatch={dispatch} />)}
       </div>
     </div>;
   }

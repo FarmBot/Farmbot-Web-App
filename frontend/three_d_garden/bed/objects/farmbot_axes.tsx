@@ -8,18 +8,31 @@ export interface FarmbotAxesProps {
   config: Config;
 }
 
-export const FarmbotAxes = (props: FarmbotAxesProps) => {
+export const FarmbotAxes = React.memo((props: FarmbotAxesProps) => {
   const {
     bedLengthOuter, bedXOffset, bedWidthOuter, bedYOffset,
   } = props.config;
   const length = 150;
   const width = 15;
-  const x = threeSpace(0, bedLengthOuter) + bedXOffset;
-  const y = threeSpace(0, bedWidthOuter) + bedYOffset;
-  const z = zZero(props.config);
-  return <Group position={[x, y, z]}>
+  const position = React.useMemo<[number, number, number]>(() => ([
+    threeSpace(0, bedLengthOuter) + bedXOffset,
+    threeSpace(0, bedWidthOuter) + bedYOffset,
+    zZero(props.config),
+  ]), [
+    bedLengthOuter,
+    bedWidthOuter,
+    bedXOffset,
+    bedYOffset,
+    props.config.columnLength,
+    props.config.zGantryOffset,
+  ]);
+  const yRotation = React.useMemo<[number, number, number]>(
+    () => [0, 0, Math.PI / 2], []);
+  const zRotation = React.useMemo<[number, number, number]>(
+    () => [0, -Math.PI / 2, 0], []);
+  return <Group position={position}>
     <Arrow length={length} width={width} />
-    <Arrow length={length} width={width} rotation={[0, 0, Math.PI / 2]} />
-    <Arrow length={length} width={width} rotation={[0, -Math.PI / 2, 0]} />
+    <Arrow length={length} width={width} rotation={yRotation} />
+    <Arrow length={length} width={width} rotation={zRotation} />
   </Group>;
-};
+});

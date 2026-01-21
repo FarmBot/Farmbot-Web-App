@@ -18,6 +18,21 @@ const GroupForTests = (props: ThreeElements["group"]) =>
   // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
   <group {...props} />;
 
+const toolbay3Material = () => {
+  const material = new THREE.MeshStandardMaterial();
+  material.clone = jest.fn(
+    () => new THREE.MeshStandardMaterial(),
+  ) as unknown as () => THREE.MeshStandardMaterial;
+  material.dispose = jest.fn() as unknown as () => void;
+  return material;
+};
+
+const toolbay3Mesh = () => {
+  const mesh = new THREE.Mesh();
+  mesh.material = toolbay3Material();
+  return mesh;
+};
+
 type Event = ThreeEvent<PointerEvent>;
 
 const MeshForTests = (props: ThreeElements["mesh"]) =>
@@ -86,9 +101,20 @@ jest.mock("@react-three/fiber", () => ({
   },
   addEffect: jest.fn(),
   useFrame: jest.fn(x => x({ clock: { getElapsedTime: jest.fn(() => 0) } })),
+  useLoader: jest.fn(() => ({
+    generateShapes: jest.fn(() => []),
+  })),
   useThree: jest.fn(() => ({
     pointer: { x: 0, y: 0 },
     camera: new THREE.PerspectiveCamera(),
+    gl: {
+      info: {
+        render: { calls: 0, triangles: 0, lines: 0, points: 0 },
+        memory: { geometries: 0, textures: 0 },
+        programs: [],
+      },
+    },
+    invalidate: jest.fn(),
   })),
   extend: jest.fn(),
 }));
@@ -476,8 +502,8 @@ jest.mock("@react-three/drei", () => {
     },
     [ASSETS.models.toolbay3]: {
       nodes: {
-        [PartName.toolbay3]: {} as THREE.Mesh,
-        [PartName.toolbay3Logo]: {} as THREE.Mesh,
+        [PartName.toolbay3]: toolbay3Mesh(),
+        [PartName.toolbay3Logo]: toolbay3Mesh(),
       },
     },
     [ASSETS.models.toolbay1]: {
@@ -631,17 +657,22 @@ jest.mock("@react-three/drei", () => {
     PerspectiveCamera: ({ name }: { name: string }) =>
       <div className={"perspective-camera"}>{name}</div>,
     useCursor: jest.fn(),
-    useTexture: jest.fn(url => ({
-      wrapS: "",
-      wrapT: "",
-      repeat: { set: jest.fn() },
-      image: url == "mock_load_error"
-        ? undefined
-        : { height: 2, width: 2 },
-      source: url == "mock_load_error"
-        ? undefined
-        : { data: { height: 2, width: 2 } },
-    })),
+    useTexture: jest.fn(url => {
+      const createTexture = (key: string | string[]) => ({
+        wrapS: "",
+        wrapT: "",
+        repeat: { set: jest.fn() },
+        image: key == "mock_load_error"
+          ? undefined
+          : { height: 2, width: 2 },
+        source: key == "mock_load_error"
+          ? undefined
+          : { data: { height: 2, width: 2 } },
+      });
+      return Array.isArray(url)
+        ? url.map(key => createTexture(key))
+        : createTexture(url);
+    }),
     RenderTexture: ({ children }: { children: ReactNode }) =>
       <div className={"render-texture"}>{children}</div>,
     GizmoHelper: ({ name }: { name: string }) =>

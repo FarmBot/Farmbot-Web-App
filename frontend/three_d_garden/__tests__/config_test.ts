@@ -1,7 +1,7 @@
 import { clone } from "lodash";
 import {
   detailLevels, getSeasonProperties, INITIAL, modifyConfig,
-  modifyConfigsFromUrlParams,
+  modifyConfigsFromUrlParams, selectConfigSegment,
 } from "../config";
 
 describe("modifyConfig()", () => {
@@ -91,5 +91,19 @@ describe("getSeasonProperties()", () => {
     const config = clone(INITIAL);
     config.plants = "Random";
     expect(getSeasonProperties(config, "Summer").cloudOpacity).toEqual(0);
+  });
+});
+
+describe("selectConfigSegment()", () => {
+  it("returns selected keys", () => {
+    const config = clone(INITIAL);
+    const segment = selectConfigSegment(config, [
+      "bedHeight",
+      "bedWidthOuter",
+    ] as const);
+    expect(segment).toEqual({
+      bedHeight: 300,
+      bedWidthOuter: 1360,
+    });
   });
 });

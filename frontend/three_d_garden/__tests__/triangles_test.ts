@@ -4,6 +4,7 @@ import {
   FilterMoisturePointsProps,
   filterSoilPoints,
   FilterSoilPointsProps,
+  filterSoilPointsWithMeta,
 } from "../triangles";
 import { INITIAL } from "../config";
 import { clone } from "lodash";
@@ -100,6 +101,40 @@ describe("filterSoilPoints()", () => {
     tagAsSoilHeight(point1);
     p.points = [point0, point1];
     expect(filterSoilPoints(p).length).toEqual(5);
+  });
+});
+
+describe("filterSoilPointsWithMeta()", () => {
+  const fakeProps = (): FilterSoilPointsProps => ({
+    config: clone(INITIAL),
+    points: [],
+  });
+
+  it("builds a stable key for identical points", () => {
+    const p = fakeProps();
+    const point = fakePoint();
+    tagAsSoilHeight(point);
+    point.body.x = 100;
+    point.body.y = 200;
+    point.body.z = -300;
+    p.points = [point];
+    const first = filterSoilPointsWithMeta(p).key;
+    const second = filterSoilPointsWithMeta(p).key;
+    expect(first).toEqual(second);
+  });
+
+  it("updates the key when soil points change", () => {
+    const p = fakeProps();
+    const point = fakePoint();
+    tagAsSoilHeight(point);
+    point.body.x = 100;
+    point.body.y = 200;
+    point.body.z = -300;
+    p.points = [point];
+    const initial = filterSoilPointsWithMeta(p).key;
+    point.body.z = -123;
+    const next = filterSoilPointsWithMeta(p).key;
+    expect(initial).not.toEqual(next);
   });
 });
 

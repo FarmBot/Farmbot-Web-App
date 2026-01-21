@@ -12,7 +12,7 @@ export interface VisualizationProps {
   config: Config;
 }
 
-export const Visualization = (props: VisualizationProps) => {
+export const Visualization = React.memo((props: VisualizationProps) => {
   const { visualizedSequenceUUID, config } = props;
   const { bedLengthOuter, bedWidthOuter, bedXOffset, bedYOffset, x, y, z } = config;
   const zZero = zZeroFunc(config);
@@ -43,4 +43,4 @@ export const Visualization = (props: VisualizationProps) => {
       color={"orange"}
       linewidth={2}
       points={visualizationPoints} />;
-};
+});

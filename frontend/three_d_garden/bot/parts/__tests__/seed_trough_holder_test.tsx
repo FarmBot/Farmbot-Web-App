@@ -11,5 +11,6 @@ describe("<SeedTroughHolder />", () => {
     const wrapper = mount(<Component name={"name"} />);
     expect(wrapper.html()).toContain("name");
     expect(wrapper.html()).toContain("mesh");
+    expect(wrapper.find("mesh").length).toBeGreaterThan(0);
   });
 });

@@ -21,7 +21,7 @@ import {
 } from "../config_storage/actions";
 import { SavedGardenHUD } from "../saved_gardens/saved_gardens";
 import { calculateImageAgeInfo } from "../photos/photo_filter_settings/util";
-import { Xyz } from "farmbot";
+import { TaggedFarmwareEnv, Xyz } from "farmbot";
 import { ProfileViewer } from "./map/profile";
 import { ThreeDGardenMap } from "./three_d_garden_map";
 import { Outlet } from "react-router";
@@ -144,6 +144,21 @@ export class RawFarmDesigner
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
   navigate = this.context;
+  private cached3DConfigValue: {
+    envs?: TaggedFarmwareEnv[];
+    fn?: ReturnType<typeof get3DConfigValueFunction>;
+  } = {};
+  private get3DConfigValue =
+    (envs: TaggedFarmwareEnv[]) => {
+      if (this.cached3DConfigValue.envs !== envs) {
+        this.cached3DConfigValue = {
+          envs,
+          fn: get3DConfigValueFunction(envs),
+        };
+      }
+      return this.cached3DConfigValue.fn as
+        ReturnType<typeof get3DConfigValueFunction>;
+    };
 
   render() {
     const {
@@ -169,7 +184,10 @@ export class RawFarmDesigner
     const mapPadding = getMapPadding(getPanelStatus(this.props.designer));
     const padHeightOffset = mapPadding.top - mapPadding.top / zoom_level;
 
-    const threeDGarden = !!this.props.getConfigValue(BooleanSetting.three_d_garden);
+    const threeDGarden =
+      !!this.props.getConfigValue(BooleanSetting.three_d_garden);
+    const get3DConfigValue =
+      this.get3DConfigValue(this.props.farmwareEnvs);
 
     return <div className="farm-designer">
 
@@ -218,7 +236,7 @@ export class RawFarmDesigner
           designer={this.props.designer}
           device={this.props.device}
           plants={this.props.plants}
-          get3DConfigValue={get3DConfigValueFunction(this.props.farmwareEnvs)}
+          get3DConfigValue={get3DConfigValue}
           sourceFbosConfig={this.props.sourceFbosConfig}
           negativeZ={!!this.props.botMcuParams.movement_home_up_z}
           gridOffset={gridOffset}
@@ -232,6 +250,7 @@ export class RawFarmDesigner
           mountedToolName={this.props.mountedToolInfo.name}
           botPosition={this.props.botLocationData.position}
           peripheralValues={this.props.peripheralValues}
+          showSpread={show_spread}
           allPoints={this.props.allPoints}
           groups={this.props.groups}
           images={this.props.latestImages}

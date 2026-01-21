@@ -3,10 +3,18 @@ jest.mock("../../config_storage/actions", () => ({
   setWebAppConfigValue: jest.fn(),
 }));
 
+jest.mock("../../util/performance_profiler_metrics", () => ({
+  recordReactCommit: jest.fn(),
+}));
+
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import {
-  ThreeDGardenProps, ThreeDGarden, ThreeDGardenToggle, ThreeDGardenToggleProps,
+  ThreeDGarden,
+  ThreeDGardenProps,
+  ThreeDGardenToggle,
+  ThreeDGardenToggleProps,
+  shouldAnimateThreeDGarden,
 } from "../index";
 import { INITIAL } from "../config";
 import { clone } from "lodash";
@@ -17,8 +25,15 @@ import { Actions } from "../../constants";
 import { setWebAppConfigValue } from "../../config_storage/actions";
 import { BooleanSetting } from "../../session_keys";
 import { fakeDevice } from "../../__test_support__/resource_index_builder";
+import { PERFORMANCE_PROFILER_KEY } from "../../util/performance_profiler_settings";
+import { recordReactCommit } from "../../util/performance_profiler_metrics";
 
 describe("<ThreeDGarden />", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    (recordReactCommit as jest.Mock).mockClear();
+  });
+
   const fakeProps = (): ThreeDGardenProps => ({
     config: clone(INITIAL),
     addPlantProps: fakeAddPlantProps(),
@@ -30,6 +45,30 @@ describe("<ThreeDGarden />", () => {
   it("renders", () => {
     const { container } = render(<ThreeDGarden {...fakeProps()} />);
     expect(container).toContainHTML("three-d-garden");
+  });
+
+  it("records commits when profiler is enabled", () => {
+    localStorage.setItem(PERFORMANCE_PROFILER_KEY, "true");
+    render(<ThreeDGarden {...fakeProps()} />);
+    expect(recordReactCommit).toHaveBeenCalled();
+  });
+
+  it("avoids continuous animation by default", () => {
+    const config = clone(INITIAL);
+    expect(shouldAnimateThreeDGarden(config, false)).toEqual(false);
+  });
+
+  it("animates when water flow is active", () => {
+    const config = clone(INITIAL);
+    config.waterFlow = true;
+    expect(shouldAnimateThreeDGarden(config, false)).toEqual(true);
+  });
+
+  it("animates clouds when enabled", () => {
+    const config = clone(INITIAL);
+    config.animate = true;
+    config.clouds = true;
+    expect(shouldAnimateThreeDGarden(config, false)).toEqual(true);
   });
 });
 

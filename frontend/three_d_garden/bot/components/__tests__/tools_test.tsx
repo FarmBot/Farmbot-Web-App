@@ -36,8 +36,10 @@ jest.mock("../suction_animation", () => ({
 }));
 
 import React from "react";
-import { fireEvent, render } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { useGLTF } from "@react-three/drei";
 import { INITIAL } from "../../../config";
+import { ASSETS, PartName } from "../../../constants";
 import { clone } from "lodash";
 import { Tools, ToolsProps } from "../tools";
 import {
@@ -55,10 +57,42 @@ describe("<Tools />", () => {
     config: clone(INITIAL),
     getZ: jest.fn(),
   });
+  afterEach(() => {
+    document.querySelector(".garden-bed-3d-model")?.remove();
+  });
+
+  const setupGardenBed = () => {
+    const bed = document.createElement("div");
+    bed.className = "garden-bed-3d-model";
+    document.body.appendChild(bed);
+    return bed;
+  };
 
   it("renders promo tools", () => {
     const { container } = render(<Tools {...fakeProps()} />);
     expect(container).toContainHTML("toolbay3");
+    expect(container).toContainHTML("toolbay3Logo");
+  });
+
+  it("uses toolbay3 materials for instanced parts", () => {
+    const gltfMock = useGLTF as unknown as jest.Mock;
+    gltfMock.mockClear();
+    render(<Tools {...fakeProps()} />);
+    const callIndex = gltfMock.mock.calls.findIndex(
+      ([asset]) => asset === ASSETS.models.toolbay3,
+    );
+    expect(callIndex).toBeGreaterThan(-1);
+    const toolbay3Model = gltfMock.mock.results[callIndex].value as {
+      nodes: Record<string, THREE.Mesh>;
+    };
+    const baseMaterial =
+      toolbay3Model.nodes[PartName.toolbay3].material as THREE.Material;
+    const logoMaterial =
+      toolbay3Model.nodes[PartName.toolbay3Logo].material as THREE.Material;
+    const baseClone = baseMaterial.clone as jest.Mock;
+    const logoClone = logoMaterial.clone as jest.Mock;
+    expect(baseClone).toHaveBeenCalled();
+    expect(logoClone).toHaveBeenCalled();
   });
 
   it("renders user tools", () => {
@@ -186,6 +220,30 @@ describe("<Tools />", () => {
       type: Actions.SET_PANEL_OPEN, payload: true,
     });
     expect(mockNavigate).toHaveBeenCalledWith(Path.toolSlots("1"));
+  });
+
+  it("changes cursor on hover for tool slots", () => {
+    const bed = setupGardenBed();
+    const p = fakeProps();
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
+    const tool = fakeTool();
+    tool.body.name = "soil sensor";
+    tool.body.id = 2;
+    const toolSlot = fakeToolSlot();
+    toolSlot.body.id = 1;
+    toolSlot.body.tool_id = tool.body.id;
+    p.toolSlots = [{ toolSlot, tool }];
+    const { container } = render(<Tools {...p} />);
+    const slot = container.querySelector("[name='slot']");
+    expect(slot).not.toBeNull();
+    expect(screen.queryByText("soil sensor")).not.toBeInTheDocument();
+    fireEvent.pointerEnter(slot as Element);
+    expect(bed.style.cursor).toEqual("pointer");
+    expect(screen.getByText("soil sensor")).toBeInTheDocument();
+    fireEvent.pointerLeave(slot as Element);
+    expect(bed.style.cursor).toEqual("move");
+    expect(screen.queryByText("soil sensor")).not.toBeInTheDocument();
   });
 
   it("doesn't navigate to tool info", () => {

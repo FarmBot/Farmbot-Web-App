@@ -12,7 +12,7 @@ export interface PeopleProps {
   people: { url: string, offset: number[] }[];
 }
 
-export const People = (props: PeopleProps) => {
+export const People = React.memo((props: PeopleProps) => {
   const { people, config } = props;
   const groundZ = -config.bedZOffset - config.bedHeight;
   return <Group name={"people"}
@@ -36,7 +36,7 @@ export const People = (props: PeopleProps) => {
       </Billboard>;
     })}
   </Group>;
-};
+});
 
 interface DataRecord {
   scale: [number, number];

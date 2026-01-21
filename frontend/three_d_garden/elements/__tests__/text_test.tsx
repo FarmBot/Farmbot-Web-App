@@ -15,4 +15,11 @@ describe("<Text />", () => {
     const { container } = render(<Text {...fakeProps()} />);
     expect(container).toContainHTML("text");
   });
+
+  it("renders with raycast disabled", () => {
+    const { container } = render(
+      <Text {...fakeProps()} disableRaycast={true} />,
+    );
+    expect(container).toContainHTML("text");
+  });
 });

@@ -105,6 +105,19 @@ export interface Config {
   cameraView: boolean;
 }
 
+export type ConfigSlice<K extends keyof Config> = Pick<Config, K>;
+
+export const selectConfigSegment = <K extends keyof Config>(
+  config: Config,
+  keys: readonly K[],
+): ConfigSlice<K> => {
+  const segment = {} as ConfigSlice<K>;
+  keys.forEach(key => {
+    segment[key] = config[key];
+  });
+  return segment;
+};
+
 export enum SurfaceDebugOption {
   none,
   normals,
@@ -146,8 +159,8 @@ export const INITIAL: Config = {
   soilSurfaceVariance: 75,
   showSoilPoints: false,
   plants: "Spring",
-  labels: false,
-  labelsOnHover: false,
+  labels: true,
+  labelsOnHover: true,
   ground: true,
   grid: true,
   axes: false,
@@ -191,7 +204,7 @@ export const INITIAL: Config = {
   surfaceDebug: SurfaceDebugOption.none,
   sun: 75,
   ambient: 75,
-  animate: true,
+  animate: false,
   animateSeasons: false,
   distanceIndicator: "",
   kitVersion: "v1.7",
@@ -559,10 +572,10 @@ type SeasonProperties = {
   cloudOpacity: number;
 };
 const SEASON_PROPERTIES: Record<string, SeasonProperties> = {
-  Winter: { sunIntensity: 4 / 4, sunColor: "#A0C4FF", cloudOpacity: 0.85 },
-  Spring: { sunIntensity: 7 / 4, sunColor: "#BDE0FE", cloudOpacity: 0.2 },
-  Summer: { sunIntensity: 9 / 4, sunColor: "#FFFFFF", cloudOpacity: 0 },
-  Fall: { sunIntensity: 5.5 / 4, sunColor: "#FFD6BC", cloudOpacity: 0.3 },
+  Winter: { sunIntensity: 4, sunColor: "#A0C4FF", cloudOpacity: 0.85 },
+  Spring: { sunIntensity: 7, sunColor: "#BDE0FE", cloudOpacity: 0.2 },
+  Summer: { sunIntensity: 9, sunColor: "#FFFFFF", cloudOpacity: 0 },
+  Fall: { sunIntensity: 5.5, sunColor: "#FFD6BC", cloudOpacity: 0.3 },
 };
 export const getSeasonProperties = (
   config: Config,

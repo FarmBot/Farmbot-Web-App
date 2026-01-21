@@ -18,7 +18,7 @@ const deskOffset = 800;
 const deskLegWidth = 50;
 const deskWoodDarkness = "#666";
 
-export const Desk = (props: DeskProps) => {
+export const Desk = React.memo((props: DeskProps) => {
   const { config } = props;
   const zGround = -config.bedZOffset - config.bedHeight;
   const deskWoodTexture = useTexture(ASSETS.textures.wood + "?=desk");
@@ -106,4 +106,4 @@ export const Desk = (props: DeskProps) => {
       </Group>
     </Group>
   </Group>;
-};
+});
