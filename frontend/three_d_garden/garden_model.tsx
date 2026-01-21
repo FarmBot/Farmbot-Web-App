@@ -18,6 +18,7 @@ import {
   ThreeDGardenPlant,
   NorthArrow,
   skyColor,
+  PlantPopupActions,
 } from "./garden";
 import { Config } from "./config";
 import { useSpring, animated } from "@react-spring/three";
@@ -561,9 +562,25 @@ export const GardenModel = (props: GardenModelProps) => {
   const [hoveredPlant, setHoveredPlant] =
     React.useState<number | undefined>(undefined);
   const hoveredPlantRef = React.useRef<number | undefined>(undefined);
+  const [selectedPlantUuid, setSelectedPlantUuid] =
+    React.useState<string | undefined>(undefined);
   const showPlants = !addPlantProps
     || !!addPlantProps.getConfigValue(BooleanSetting.show_plants);
   const plantsVisible = props.activeFocus != "Planter bed" && showPlants;
+  const selectedPlant = React.useMemo(() =>
+    selectedPlantUuid
+      ? stableThreeDPlants.find(plant => plant.uuid == selectedPlantUuid)
+      : undefined,
+  [
+    selectedPlantUuid,
+    stableThreeDPlants,
+  ]);
+  React.useEffect(() => {
+    if (!plantsVisible) { setSelectedPlantUuid(undefined); }
+    if (selectedPlantUuid && !selectedPlant) {
+      setSelectedPlantUuid(undefined);
+    }
+  }, [plantsVisible, selectedPlant, selectedPlantUuid]);
 
   const getIntersectionId = React.useCallback(
     (e: ThreeEvent<PointerEvent>) => {
@@ -625,6 +642,13 @@ export const GardenModel = (props: GardenModelProps) => {
     hoverMode,
     plantsVisible,
   ]);
+  const handleSelectPlant = React.useCallback(
+    (plant: ThreeDGardenPlant) => {
+      setSelectedPlantUuid(prev =>
+        prev == plant.uuid ? undefined : plant.uuid);
+    },
+    [],
+  );
   React.useEffect(() => {
     if (plantsVisible) { return; }
     hoveredPlantRef.current = undefined;
@@ -712,6 +736,39 @@ export const GardenModel = (props: GardenModelProps) => {
     () => getZFunc(soilSurface.triangles, -config.soilHeight),
     [soilSurface.triangles, config.soilHeight],
   );
+  const popupActions = React.useMemo<PlantPopupActions | undefined>(() => {
+    if (!addPlantProps?.updatePlant
+      || !addPlantProps?.destroyPlant
+      || !addPlantProps?.currentBotLocation
+      || !addPlantProps?.movementState
+      || !addPlantProps?.dispatch
+      || typeof addPlantProps.botOnline !== "boolean"
+      || typeof addPlantProps.arduinoBusy !== "boolean") {
+      return undefined;
+    }
+    return {
+      updatePlant: addPlantProps.updatePlant,
+      onDelete: addPlantProps.destroyPlant,
+      dispatch: addPlantProps.dispatch,
+      botOnline: addPlantProps.botOnline,
+      arduinoBusy: addPlantProps.arduinoBusy,
+      currentBotLocation: addPlantProps.currentBotLocation,
+      movementState: addPlantProps.movementState,
+      defaultAxes: addPlantProps.defaultAxes || "XY",
+    };
+  }, [addPlantProps]);
+  const canSelectPlant = !!popupActions;
+  const showPlantPopup = !!(selectedPlant && popupActions);
+  React.useEffect(() => {
+    if (!showPlantPopup) { return; }
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setSelectedPlantUuid(undefined);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [showPlantPopup]);
 
   const showMoistureMap = !!props.addPlantProps?.getConfigValue(
     BooleanSetting.show_moisture_interpolation_map);
@@ -734,57 +791,13 @@ export const GardenModel = (props: GardenModelProps) => {
   const iconPreloads = React.useMemo(() =>
     ICON_URLS.map((url, i) => <Image key={i} url={url} />),
   []);
-  const showAllLabels = plantsVisible
+  const labelsVisible = plantsVisible && !props.activeFocus;
+  const showAllLabels = labelsVisible
     && plantConfig.labels
     && !plantConfig.labelsOnHover;
-  const showHoverLabel = plantsVisible
+  const showHoverLabel = labelsVisible
     && plantConfig.labels
     && plantConfig.labelsOnHover;
-  const labelsVisible = plantsVisible && !props.activeFocus;
-  const plantLabelNodes = React.useMemo(() =>
-    showAllLabels
-      ? stableThreeDPlants.map((plant, i) =>
-        <ThreeDPlant key={i} i={i}
-          plant={plant}
-          plants={stableThreeDPlants}
-          labelOnly={true}
-          disableRaycast={disableRaycast}
-          config={plantConfig}
-          getZ={getZ}
-          activePositionRef={activePositionRef}
-          hoveredPlant={hoveredPlant} />)
-      : undefined,
-  [
-    activePositionRef,
-    disableRaycast,
-    getZ,
-    hoveredPlant,
-    plantConfig,
-    showAllLabels,
-    stableThreeDPlants,
-  ]);
-  const hoveredLabelNode = React.useMemo(() => {
-    if (!showHoverLabel || hoveredPlant === undefined) { return undefined; }
-    const plant = stableThreeDPlants[hoveredPlant];
-    if (!plant) { return undefined; }
-    return <ThreeDPlant key={hoveredPlant} i={hoveredPlant}
-      plant={plant}
-      plants={stableThreeDPlants}
-      labelOnly={true}
-      disableRaycast={disableRaycast}
-      config={plantConfig}
-      getZ={getZ}
-      activePositionRef={activePositionRef}
-      hoveredPlant={hoveredPlant} />;
-  }, [
-    activePositionRef,
-    disableRaycast,
-    getZ,
-    hoveredPlant,
-    plantConfig,
-    showHoverLabel,
-    stableThreeDPlants,
-  ]);
   const plantNodes = React.useMemo(() =>
     stableThreeDPlants.map((plant, i) =>
       <ThreeDPlant key={i} i={i}
@@ -799,18 +812,29 @@ export const GardenModel = (props: GardenModelProps) => {
         activePositionRef={activePositionRef}
         getZ={getZ}
         startTimeRef={props.startTimeRef}
-        dispatch={dispatch} />),
+        dispatch={dispatch}
+        onSelectPlant={canSelectPlant ? handleSelectPlant : undefined}
+        selectedPlantUuid={selectedPlantUuid}
+        popupActions={popupActions}
+        showAllLabels={showAllLabels}
+        showHoverLabel={showHoverLabel} />),
   [
     activePositionRef,
+    canSelectPlant,
     disableRaycast,
     dispatch,
     getZ,
+    handleSelectPlant,
     hoveredPlant,
     plantConfig,
     plantsVisible,
+    popupActions,
     props.startTimeRef,
     showSpread,
     stableThreeDPlants,
+    selectedPlantUuid,
+    showAllLabels,
+    showHoverLabel,
   ]);
   const pointRadiusNodes = React.useMemo(() =>
     stableMapPoints
@@ -912,7 +936,8 @@ export const GardenModel = (props: GardenModelProps) => {
       sensorReadings={stableSensorReadings}
       activePositionRef={activePositionRef}
       invalidate={invalidate}
-      addPlantProps={addPlantProps} />
+      addPlantProps={addPlantProps}
+      selectedPlant={selectedPlant} />
     {showMoistureMap && props.config.moistureDebug &&
       <MoistureReadings
         color={"green"}
@@ -931,10 +956,6 @@ export const GardenModel = (props: GardenModelProps) => {
     <Group name={"plant-icon-preload"} visible={false}>
       {iconPreloads}
     </Group>
-    <Group name={"plant-labels"} visible={labelsVisible}>
-      {plantLabelNodes}
-      {hoveredLabelNode}
-    </Group>
     <Grid
       config={gridConfig}
       getZ={getZ}
@@ -952,7 +973,8 @@ export const GardenModel = (props: GardenModelProps) => {
         animateSeasons={plantConfig.animateSeasons}
         season={plantConfig.plants}
         disableRaycast={disableRaycast}
-        sunFactorRef={sunFactorRef} />
+        sunFactorRef={sunFactorRef}
+        onSelectPlant={canSelectPlant ? handleSelectPlant : undefined} />
       {plantNodes}
     </Group>
     <Group name={"points"}

@@ -10,3 +10,4 @@ export * from "./weed";
 export * from "./zoom_beacons";
 export * from "./north_arrow";
 export * from "./images";
+export * from "./plant_popup";

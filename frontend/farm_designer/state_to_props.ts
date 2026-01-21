@@ -41,6 +41,7 @@ import {
 import { isToolFlipped } from "../tools/tool_slot_edit_components";
 import { UserEnv } from "../devices/interfaces";
 import { sourceFbosConfigValue } from "../settings/source_config_value";
+import { isBotOnlineFromState } from "../devices/must_be_online";
 
 const plantFinder = (plants: TaggedPlant[]) =>
   (uuid: string | undefined): TaggedPlant =>
@@ -143,6 +144,9 @@ export function mapStateToProps(props: Everything): FarmDesignerProps {
     hoveredPlant,
     plants,
     botLocationData: validBotLocationData(hardware.location_data),
+    botOnline: isBotOnlineFromState(props.bot),
+    arduinoBusy: hardware.informational_settings.busy,
+    movementState: props.app.movement,
     botMcuParams: firmwareSettings,
     botSize: botSize(props),
     peripheralValues,

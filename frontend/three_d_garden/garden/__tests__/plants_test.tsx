@@ -2,12 +2,14 @@ interface MockRef {
   current: {
     scale: { set: Function; };
     position: { z: number; };
+    rotation?: { z: number; };
   } | undefined;
 }
 const mockRef = (): MockRef => ({
   current: {
     scale: { set: jest.fn() },
     position: { z: 0 },
+    rotation: { z: 0 },
   }
 });
 jest.mock("react", () => ({
@@ -25,6 +27,7 @@ import { Path } from "../../../internal_urls";
 import { Actions } from "../../../constants";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import { convertPlants } from "../../../farm_designer/three_d_garden_map";
+import { fakeMovementState } from "../../../__test_support__/fake_bot_data";
 import * as spreadHelper from
   "../../../farm_designer/map/layers/spread/spread_overlap_helper";
 
@@ -62,30 +65,59 @@ describe("<ThreeDPlant />", () => {
     };
   };
 
-  it("renders label", () => {
-    const p = fakeProps();
-    p.config.labels = true;
-    p.config.labelsOnHover = false;
-    p.labelOnly = true;
-    render(<ThreeDPlant {...p} />);
-    expect(screen.getByText("Beet")).toBeInTheDocument();
-  });
-
-  it("renders hovered label", () => {
+  it("renders name popup on hover", () => {
     const p = fakeProps();
     p.config.labels = true;
     p.config.labelsOnHover = true;
     p.hoveredPlant = 0;
-    p.labelOnly = true;
+    p.popupActions = {
+      updatePlant: jest.fn(),
+      onDelete: jest.fn(),
+      dispatch: jest.fn(),
+      botOnline: true,
+      arduinoBusy: false,
+      currentBotLocation: { x: 0, y: 0, z: 0 },
+      movementState: fakeMovementState(),
+      defaultAxes: "XY",
+    };
+    p.showHoverLabel = true;
     render(<ThreeDPlant {...p} />);
     expect(screen.getByText("Beet")).toBeInTheDocument();
+  });
+
+  it("renders expanded popup on selection", () => {
+    const p = fakeProps();
+    p.popupActions = {
+      updatePlant: jest.fn(),
+      onDelete: jest.fn(),
+      dispatch: jest.fn(),
+      botOnline: true,
+      arduinoBusy: false,
+      currentBotLocation: { x: 0, y: 0, z: 0 },
+      movementState: fakeMovementState(),
+      defaultAxes: "XY",
+    };
+    p.selectedPlantUuid = p.plant.uuid;
+    const { container } = render(<ThreeDPlant {...p} />);
+    expect(container.querySelector(".plant-popup.expanded")).toBeTruthy();
+    expect(container.querySelector(".fa-external-link")).toBeTruthy();
+    expect(container.querySelector(".fa-trash")).toBeTruthy();
+    const popupBody = container.querySelector(".plant-popup-body");
+    expect(popupBody?.getAttribute("aria-hidden")).toEqual("false");
+  });
+
+  it("renders selection ring when selected", () => {
+    const p = fakeProps();
+    p.selectedPlantUuid = p.plant.uuid;
+    const { container } = render(<ThreeDPlant {...p} />);
+    expect(container.querySelector("[name='plant-selection-ring']"))
+      .toBeTruthy();
   });
 
   it("renders plant", () => {
     const p = fakeProps();
     p.config.labels = false;
     p.config.labelsOnHover = false;
-    p.labelOnly = false;
     p.config.light = false;
     const { container } = render(<ThreeDPlant {...p} />);
     expect(container).toContainHTML("avif");
@@ -97,7 +129,6 @@ describe("<ThreeDPlant />", () => {
     const p = fakeProps();
     p.config.labels = false;
     p.config.labelsOnHover = false;
-    p.labelOnly = false;
     p.dispatch = mockDispatch(jest.fn());
     const { container } = render(<ThreeDPlant {...p} />);
     const plant = container.querySelector("[name='0']");
@@ -142,6 +173,17 @@ describe("<ThreeDPlant />", () => {
     p.spreadVisible = true;
     render(<ThreeDPlant {...p} />);
     expect(overlapSpy).toHaveBeenCalled();
+    overlapSpy.mockRestore();
+  });
+
+  it("skips overlap when selected", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    const overlapSpy = jest.spyOn(spreadHelper, "getSpreadOverlap");
+    const p = fakeProps();
+    p.spreadVisible = true;
+    p.selectedPlantUuid = p.plant.uuid;
+    render(<ThreeDPlant {...p} />);
+    expect(overlapSpy).not.toHaveBeenCalled();
     overlapSpy.mockRestore();
   });
 
@@ -193,7 +235,6 @@ describe("<ThreeDPlant />", () => {
     const p = fakeProps();
     p.config.labels = false;
     p.config.labelsOnHover = false;
-    p.labelOnly = false;
     p.config.light = false;
     p.config.animateSeasons = true;
     p.startTimeRef = undefined;
@@ -205,7 +246,6 @@ describe("<ThreeDPlant />", () => {
     const p = fakeProps();
     p.config.labels = false;
     p.config.labelsOnHover = false;
-    p.labelOnly = false;
     p.config.light = false;
     p.config.animateSeasons = true;
     p.startTimeRef = { current: 0 };
@@ -217,7 +257,6 @@ describe("<ThreeDPlant />", () => {
     const p = fakeProps();
     p.config.labels = false;
     p.config.labelsOnHover = false;
-    p.labelOnly = false;
     p.config.light = true;
     const { container } = render(<ThreeDPlant {...p} />);
     expect(container).toContainHTML("avif");

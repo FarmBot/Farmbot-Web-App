@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  Box, Detailed, Extrude, Plane, useHelper, useTexture,
+  Box, Detailed, Extrude, Line, Plane, useHelper, useTexture,
 } from "@react-three/drei";
 import {
   DoubleSide,
@@ -14,15 +14,22 @@ import {
   Texture,
 } from "three";
 import { range } from "lodash";
-import { threeSpace, getColorFromBrightness, zZero } from "../helpers";
+import {
+  threeSpace,
+  getColorFromBrightness,
+  zZero,
+  zero as zeroFunc,
+  extents as extentsFunc,
+} from "../helpers";
 import { Config, detailLevels, SurfaceDebugOption } from "../config";
-import { ASSETS } from "../constants";
+import { ASSETS, RenderOrder } from "../constants";
 import { DistanceIndicator } from "../elements";
 import { FarmbotAxes, Caster, UtilitiesPost, Packaging } from "./objects";
 import {
   Group, Mesh, MeshNormalMaterial, MeshPhongMaterial,
 } from "../components";
-import { AxisNumberProperty } from "../../farm_designer/map/interfaces";
+import { AxisNumberProperty, TaggedPlant } from
+  "../../farm_designer/map/interfaces";
 import {
   TaggedCurve, TaggedGenericPointer, TaggedImage,
   TaggedSensor,
@@ -30,6 +37,9 @@ import {
 } from "farmbot";
 import { GetWebAppConfigValue } from "../../config_storage/actions";
 import { DesignerState } from "../../farm_designer/interfaces";
+import type { BotPosition } from "../../devices/interfaces";
+import type { MovementState } from "../../interfaces";
+import type { UpdatePlant } from "../../plants/plant_info";
 import { useNavigate } from "react-router";
 import {
   ActivePositionRef,
@@ -102,6 +112,14 @@ export interface AddPlantProps {
   getConfigValue: GetWebAppConfigValue;
   curves: TaggedCurve[];
   designer: DesignerState;
+  plants?: TaggedPlant[];
+  updatePlant?: UpdatePlant;
+  destroyPlant?: (uuid: string) => void;
+  botOnline?: boolean;
+  arduinoBusy?: boolean;
+  currentBotLocation?: BotPosition;
+  movementState?: MovementState;
+  defaultAxes?: string;
 }
 
 export interface BedProps {
@@ -118,6 +136,7 @@ export interface BedProps {
   sensorReadings: TaggedSensorReading[];
   activePositionRef: ActivePositionRef;
   invalidate?: () => void;
+  selectedPlant?: { x: number; y: number };
 }
 
 export const Bed = React.memo((props: BedProps) => {
@@ -219,6 +238,55 @@ export const Bed = React.memo((props: BedProps) => {
     args: bedExtrudeArgs,
     position: bedPosition,
   }), [bedExtrudeArgs, bedPosition]);
+  const crosshairZero = React.useMemo(() => zeroFunc(props.config), [
+    props.config.bedLengthOuter,
+    props.config.bedWidthOuter,
+    props.config.bedXOffset,
+    props.config.bedYOffset,
+    props.config.columnLength,
+    props.config.zGantryOffset,
+  ]);
+  const crosshairExtents = React.useMemo(() => extentsFunc(props.config), [
+    props.config.bedLengthOuter,
+    props.config.bedWidthOuter,
+    props.config.bedXOffset,
+    props.config.bedYOffset,
+    props.config.columnLength,
+    props.config.zGantryOffset,
+    props.config.botSizeX,
+    props.config.botSizeY,
+    props.config.botSizeZ,
+  ]);
+  const xCrosshairPoints = React.useMemo<[number, number, number][]>(
+    () => ([
+      [crosshairZero.x, 0, 0],
+      [crosshairExtents.x, 0, 0],
+    ]), [crosshairExtents.x, crosshairZero.x]);
+  const yCrosshairPoints = React.useMemo<[number, number, number][]>(
+    () => ([
+      [0, crosshairZero.y, 0],
+      [0, crosshairExtents.y, 0],
+    ]), [crosshairExtents.y, crosshairZero.y]);
+  const selectedCrosshairPosition = React.useMemo(() => {
+    const selectedPlant = props.selectedPlant;
+    if (!selectedPlant) { return undefined; }
+    const bedX = selectedPlant.x - bedXOffset;
+    const bedY = selectedPlant.y - bedYOffset;
+    const z = zZero(props.config) + props.getZ(bedX, bedY);
+    return {
+      x: threeSpace(selectedPlant.x, bedLengthOuter),
+      y: threeSpace(selectedPlant.y, bedWidthOuter),
+      z,
+    };
+  }, [
+    bedLengthOuter,
+    bedWidthOuter,
+    bedXOffset,
+    bedYOffset,
+    props.config,
+    props.getZ,
+    props.selectedPlant,
+  ]);
 
   // eslint-disable-next-line no-null/no-null
   const pointerPlantRef: PointerPlantRef = React.useRef(null);
@@ -599,6 +667,35 @@ export const Bed = React.memo((props: BedProps) => {
         config={props.config}
         addPlantProps={props.addPlantProps}
         mapPoints={props.mapPoints} />}
+    {selectedCrosshairPosition &&
+      <Group name={"selected-plant-crosshair"}>
+        <Line
+          name={"selected-plant-crosshair-x"}
+          points={xCrosshairPoints}
+          position={[
+            0,
+            selectedCrosshairPosition.y,
+            selectedCrosshairPosition.z,
+          ]}
+          color={"white"}
+          transparent={true}
+          opacity={0.9}
+          lineWidth={2}
+          renderOrder={RenderOrder.plantLabels} />
+        <Line
+          name={"selected-plant-crosshair-y"}
+          points={yCrosshairPoints}
+          position={[
+            selectedCrosshairPosition.x,
+            0,
+            selectedCrosshairPosition.z,
+          ]}
+          color={"white"}
+          transparent={true}
+          opacity={0.9}
+          lineWidth={2}
+          renderOrder={RenderOrder.plantLabels} />
+      </Group>}
     <React.Suspense>
       <Detailed distances={detailDistances}>
         <Surface {...soilProps}>

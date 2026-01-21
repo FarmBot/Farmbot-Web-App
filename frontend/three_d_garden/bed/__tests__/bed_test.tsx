@@ -147,6 +147,16 @@ describe("<Bed />", () => {
     expect(container).toContainHTML("bed-group");
   });
 
+  it("renders selected plant crosshairs", () => {
+    const p = fakeProps();
+    p.selectedPlant = { x: 100, y: 200 };
+    const { container } = render(<Bed {...p} />);
+    expect(container.querySelector("[name='selected-plant-crosshair-x']"))
+      .not.toBeNull();
+    expect(container.querySelector("[name='selected-plant-crosshair-y']"))
+      .not.toBeNull();
+  });
+
   it("renders moisture surface when debug on", () => {
     const p = fakeProps();
     p.config.moistureDebug = true;

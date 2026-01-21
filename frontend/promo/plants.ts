@@ -17,36 +17,29 @@ export const calculatePlantPositions = (config: Config): ThreeDGardenPlant[] => 
     if (!plant) { return []; }
     const icon = findIcon(kebabCase(plant.label));
     const spreadMm = plant.spread * 10;
-    positions.push({
-      ...plant,
-      icon,
-      x: nextX,
-      y: config.bedWidthOuter / 2,
-      key: plantKey,
-      seed: Math.random(),
-      id: nextId++,
-    });
+    const addPlant = (x: number, y: number) => {
+      const plantId = nextId++;
+      positions.push({
+        ...plant,
+        icon,
+        x,
+        y,
+        gardenX: x,
+        gardenY: y,
+        gardenZ: 0,
+        key: plantKey,
+        seed: Math.random(),
+        id: plantId,
+        plantStatus: "planned",
+        uuid: `promo-${plantId}`,
+      });
+    };
+    addPlant(nextX, config.bedWidthOuter / 2);
     const plantsPerHalfRow =
       Math.ceil((config.bedWidthOuter - spreadMm) / 2 / spreadMm);
     for (let i = 1; i < plantsPerHalfRow; i++) {
-      positions.push({
-        ...plant,
-        icon,
-        x: nextX,
-        y: config.bedWidthOuter / 2 + spreadMm * i,
-        key: plantKey,
-        seed: Math.random(),
-        id: nextId++,
-      });
-      positions.push({
-        ...plant,
-        icon,
-        x: nextX,
-        y: config.bedWidthOuter / 2 - spreadMm * i,
-        key: plantKey,
-        seed: Math.random(),
-        id: nextId++,
-      });
+      addPlant(nextX, config.bedWidthOuter / 2 + spreadMm * i);
+      addPlant(nextX, config.bedWidthOuter / 2 - spreadMm * i);
     }
     if (index + 1 < gardenPlants.length) {
       const nextPlant = PLANTS[gardenPlants[index + 1]];

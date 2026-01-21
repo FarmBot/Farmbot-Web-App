@@ -1,7 +1,7 @@
 import React from "react";
 import { Config } from "../config";
 import { HOVER_OBJECT_MODES, RenderOrder } from "../constants";
-import { Billboard, Detailed, Plane, Sphere, useTexture } from
+import { Billboard, Detailed, Line, Plane, Sphere, useTexture } from
   "@react-three/drei";
 import {
   Vector3,
@@ -21,8 +21,7 @@ import {
   zZero,
   zZero as zZeroFunc,
 } from "../helpers";
-import { Text } from "../elements";
-import { isUndefined } from "lodash";
+import { isUndefined, range } from "lodash";
 import { Path } from "../../internal_urls";
 import { useNavigate } from "react-router";
 import { setPanelOpen } from "../../farm_designer/panel_header";
@@ -39,6 +38,8 @@ import { ActivePositionRef } from "../bed/objects/pointer_objects";
 import { Mode } from "../../farm_designer/map/interfaces";
 import { findCrop } from "../../crops/find";
 import { clearGardenCursor, setGardenCursor } from "../cursor";
+import { PlantPopup, PlantPopupActions } from "./plant_popup";
+import type { PlantStage } from "farmbot";
 
 export interface ThreeDGardenPlant {
   id?: number | undefined;
@@ -48,8 +49,13 @@ export interface ThreeDGardenPlant {
   spread: number;
   x: number;
   y: number;
+  gardenX: number;
+  gardenY: number;
+  gardenZ: number;
   key: string;
   seed: number;
+  plantStatus: PlantStage;
+  uuid: string;
 }
 
 const noopRaycast = () => null;
@@ -62,10 +68,14 @@ const getIconBrightness = (sunFactor?: number) => {
   return ICON_BRIGHTNESS_FLOOR + (1 - ICON_BRIGHTNESS_FLOOR) * factor;
 };
 
+const SELECTION_RING_SEGMENTS = 128;
+const SELECTION_RING_SPEED = 2;
+const SELECTION_RING_DASH = 12;
+const SELECTION_RING_DASH_GAP = 10;
+
 export interface ThreeDPlantProps {
   plant: ThreeDGardenPlant;
   i: number;
-  labelOnly?: boolean;
   renderImage?: boolean;
   config: Config;
   hoveredPlant: number | undefined;
@@ -78,14 +88,23 @@ export interface ThreeDPlantProps {
   activePositionRef: ActivePositionRef;
   plants: ThreeDGardenPlant[];
   sunFactorRef?: React.RefObject<number>;
+  onSelectPlant?: (plant: ThreeDGardenPlant, index: number) => void;
+  selectedPlantUuid?: string;
+  popupActions?: PlantPopupActions;
+  showAllLabels?: boolean;
+  showHoverLabel?: boolean;
 }
 
 export const ThreeDPlant = (props: ThreeDPlantProps) => {
-  const { i, plant, labelOnly, config, hoveredPlant } = props;
+  const { i, plant, config, hoveredPlant } = props;
   const renderImage = props.renderImage ?? true;
   const disableRaycast = props.disableRaycast ??
     HOVER_OBJECT_MODES.includes(getMode());
-  const alwaysShowLabels = config.labels && !config.labelsOnHover;
+  const showLabel = !!(props.showAllLabels
+    || (props.showHoverLabel && i === hoveredPlant));
+  const isSelected = props.selectedPlantUuid === plant.uuid;
+  const showPopup = !!props.popupActions && (isSelected || showLabel);
+  const showSelectionRing = isSelected;
   const canClick = !disableRaycast
     && !!plant.id
     && !isUndefined(props.dispatch)
@@ -118,66 +137,111 @@ export const ThreeDPlant = (props: ThreeDPlantProps) => {
     plant.x,
     plant.y,
   ]);
+  const ringPosition = React.useMemo<[number, number, number]>(() =>
+    ([
+      position.x,
+      position.y,
+      position.z - plant.size / 2 + 5,
+    ]), [plant.size, position]);
   const handleClick = React.useCallback(() => {
     if (!canClick || !plant.id || isUndefined(props.dispatch)) { return; }
+    if (props.onSelectPlant) {
+      props.onSelectPlant(plant, i);
+      return;
+    }
     props.dispatch(setPanelOpen(true));
     navigate(Path.plants(plant.id));
   }, [
     canClick,
+    i,
     navigate,
     plant.id,
+    plant,
     props.dispatch,
+    props.onSelectPlant,
   ]);
-  return <Billboard
-    ref={billboardRef}
-    follow={true}
-    position={position}>
-    {labelOnly
-      ? <LabelPart
-        visible={alwaysShowLabels || i === hoveredPlant}
-        plant={plant}
-        disableRaycast={disableRaycast} />
-      : <PlantPart
-        i={i}
-        config={config}
-        plants={props.plants}
-        plant={plant}
-        renderImage={renderImage}
-        billboardRef={billboardRef}
-        activePositionRef={props.activePositionRef}
-        getPlantZ={getPlantZ}
-        url={plant.icon}
-        disableRaycast={disableRaycast}
-        clickable={canClick}
-        spreadVisible={props.spreadVisible || false}
-        startTimeRef={props.startTimeRef}
-        animateSeasons={props.config.animateSeasons}
-        season={config.plants}
-        sunFactorRef={props.sunFactorRef}
-        onClick={canClick ? handleClick : undefined} />}
-  </Billboard>;
+  return <>
+    {showSelectionRing &&
+      <PlantSelectionRing
+        position={ringPosition}
+        radius={plant.size / 1.25} />}
+    <Billboard
+      ref={billboardRef}
+      follow={true}
+      position={position}>
+      <>
+        <PlantPart
+          i={i}
+          config={config}
+          plants={props.plants}
+          plant={plant}
+          renderImage={renderImage}
+          billboardRef={billboardRef}
+          activePositionRef={props.activePositionRef}
+          isSelected={isSelected}
+          getPlantZ={getPlantZ}
+          url={plant.icon}
+          disableRaycast={disableRaycast}
+          clickable={canClick}
+          spreadVisible={props.spreadVisible || false}
+          startTimeRef={props.startTimeRef}
+          animateSeasons={props.config.animateSeasons}
+          season={config.plants}
+          sunFactorRef={props.sunFactorRef}
+          onClick={canClick ? handleClick : undefined} />
+        {showPopup && props.popupActions &&
+          <PlantPopup
+            {...props.popupActions}
+            expanded={isSelected}
+            plantName={plant.label}
+            plantStatus={plant.plantStatus}
+            plantUuid={plant.uuid}
+            plantId={plant.id}
+            locationCoordinate={{
+              x: plant.gardenX,
+              y: plant.gardenY,
+              z: plant.gardenZ,
+            }}
+            position={[0, plant.size / 2 + 5, 0]} />}
+      </>
+    </Billboard>
+  </>;
 };
 
-interface LabelPartProps {
-  visible: boolean;
-  plant: ThreeDGardenPlant;
-  disableRaycast?: boolean;
+interface PlantSelectionRingProps {
+  position: [number, number, number];
+  radius: number;
 }
 
-const LabelPart = (props: LabelPartProps) => {
-  const position = React.useMemo<[number, number, number]>(
-    () => [0, props.plant.size / 2 + 40, 0],
-    [props.plant.size],
-  );
-  return <Text visible={props.visible}
-    renderOrder={RenderOrder.plantLabels}
-    fontSize={50}
-    color={"white"}
-    disableRaycast={props.disableRaycast}
-    position={position}
-    rotation={[0, 0, 0]}>
-    {props.plant.label}
-  </Text>;
+const PlantSelectionRing = (props: PlantSelectionRingProps) => {
+  // eslint-disable-next-line no-null/no-null
+  const ringRef = React.useRef<GroupType>(null);
+  const points = React.useMemo(() =>
+    range(0, SELECTION_RING_SEGMENTS + 1).map(i => {
+      const angle = i / SELECTION_RING_SEGMENTS * Math.PI * 2;
+      return [
+        Math.cos(angle) * props.radius,
+        Math.sin(angle) * props.radius,
+        0,
+      ] as [number, number, number];
+    }), [props.radius]);
+  useFrame((_, delta) => {
+    const ring = ringRef.current;
+    if (!ring || !ring.rotation) { return; }
+    ring.rotation.z += delta * SELECTION_RING_SPEED;
+  });
+  return <Group ref={ringRef} position={props.position}>
+    <Line
+      name={"plant-selection-ring"}
+      points={points}
+      color={"white"}
+      dashed={true}
+      dashSize={SELECTION_RING_DASH}
+      gapSize={SELECTION_RING_DASH_GAP}
+      linewidth={4.5}
+      worldUnits={true}
+      renderOrder={RenderOrder.plantLabels} />
+  </Group>;
 };
 
 interface PlantPartProps extends CustomImageProps {
@@ -186,6 +250,7 @@ interface PlantPartProps extends CustomImageProps {
   activePositionRef: ActivePositionRef;
   plants: ThreeDGardenPlant[];
   renderImage?: boolean;
+  isSelected?: boolean;
 }
 
 const PlantPart = (props: PlantPartProps) => {
@@ -265,12 +330,16 @@ const PlantPart = (props: PlantPartProps) => {
   useFrame(() => {
     const clickToAddMode = getMode() == Mode.clickToAdd;
     const showSpread = props.spreadVisible;
-    const shouldUpdate = showSpread && (clickToAddMode || editPlantMode);
+    if (!showSpread) { return; }
+    if (props.isSelected) {
+      rgb.value = [1, 1, 1];
+      lastDynamicSpread.current = false;
+      return;
+    }
+    const shouldUpdate = clickToAddMode || editPlantMode;
     if (!shouldUpdate) {
-      if (lastDynamicSpread.current) {
-        rgb.value = defaultRgb;
-        lastDynamicSpread.current = false;
-      }
+      rgb.value = defaultRgb;
+      lastDynamicSpread.current = false;
       return;
     }
     lastDynamicSpread.current = true;
@@ -474,6 +543,7 @@ export interface PlantImageInstancesProps {
   startTimeRef?: React.RefObject<number>;
   animateSeasons: boolean;
   sunFactorRef?: React.RefObject<number>;
+  onSelectPlant?: (plant: ThreeDGardenPlant, index: number) => void;
 }
 
 const buildPlantImageGroups = (
@@ -603,6 +673,13 @@ const PlantImageGroup = (props: PlantImageGroupProps) => {
     const data = group.instances[e.instanceId];
     const plant = data?.plant;
     if (!plant) { return; }
+    if (!plant.id) { return; }
+    const plantIndex = group.indices[e.instanceId];
+    if (props.onSelectPlant && !isUndefined(plantIndex)) {
+      e.stopPropagation();
+      props.onSelectPlant(plant, plantIndex);
+      return;
+    }
     if (plant.id
       && !isUndefined(props.dispatch)
       && props.visible
@@ -611,9 +688,11 @@ const PlantImageGroup = (props: PlantImageGroupProps) => {
       navigate(Path.plants(plant.id));
     }
   }, [
+    group.indices,
     group.instances,
     navigate,
     props.dispatch,
+    props.onSelectPlant,
     props.visible,
   ]);
   const handlePointerEnter = React.useCallback(

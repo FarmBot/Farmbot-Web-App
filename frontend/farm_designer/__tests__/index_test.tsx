@@ -38,7 +38,9 @@ import {
   fakeCameraCalibrationData,
 } from "../../__test_support__/fake_camera_data";
 import {
-  fakeBotLocationData, fakeBotSize,
+  fakeBotLocationData,
+  fakeBotSize,
+  fakeMovementState,
 } from "../../__test_support__/fake_bot_data";
 import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
 import { Path } from "../../internal_urls";
@@ -58,6 +60,9 @@ describe("<FarmDesigner />", () => {
     toolSlots: [],
     crops: [],
     botLocationData: fakeBotLocationData(),
+    botOnline: true,
+    arduinoBusy: false,
+    movementState: fakeMovementState(),
     botMcuParams: bot.hardware.mcu_params,
     botSize: fakeBotSize(),
     peripheralValues: [],

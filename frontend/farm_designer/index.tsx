@@ -249,6 +249,9 @@ export class RawFarmDesigner
           toolSlots={this.props.toolSlots}
           mountedToolName={this.props.mountedToolInfo.name}
           botPosition={this.props.botLocationData.position}
+          botOnline={this.props.botOnline}
+          arduinoBusy={this.props.arduinoBusy}
+          movementState={this.props.movementState}
           peripheralValues={this.props.peripheralValues}
           showSpread={show_spread}
           allPoints={this.props.allPoints}

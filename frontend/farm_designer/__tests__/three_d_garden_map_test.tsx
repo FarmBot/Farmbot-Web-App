@@ -14,7 +14,8 @@ import {
   ThreeDGardenMapProps, ThreeDGardenMap, convertPlants,
 } from "../three_d_garden_map";
 import { fakeMapTransformProps } from "../../__test_support__/map_transform_props";
-import { fakeBotSize } from "../../__test_support__/fake_bot_data";
+import { fakeBotSize, fakeMovementState } from
+  "../../__test_support__/fake_bot_data";
 import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
 import { fakePlant } from "../../__test_support__/fake_state/resources";
 import { render } from "@testing-library/react";
@@ -52,6 +53,9 @@ describe("<ThreeDGardenMap />", () => {
     mapPoints: [],
     weeds: [],
     botPosition: { x: 1, y: 2, z: 3 },
+    botOnline: true,
+    arduinoBusy: false,
+    movementState: fakeMovementState(),
     negativeZ: false,
     mountedToolName: undefined,
     peripheralValues: [],
@@ -285,24 +289,34 @@ describe("convertPlants()", () => {
     const convertedPlants = convertPlants(config, plants);
 
     expect(convertedPlants).toEqual([{
+      gardenX: 100,
+      gardenY: 200,
+      gardenZ: 0,
       icon: CROPS.spinach.icon,
       id: expect.any(Number),
       key: "",
       label: "Spinach",
+      plantStatus: "planned",
       seed: 0,
       size: 50,
       spread: 20,
+      uuid: expect.any(String),
       x: 110,
       y: 201,
     },
     {
+      gardenX: 1000,
+      gardenY: 2000,
+      gardenZ: 0,
       icon: CROPS["generic-plant"].icon,
       id: expect.any(Number),
       key: "",
       label: "Unknown",
+      plantStatus: "planned",
       seed: 0,
       size: 50,
       spread: 0,
+      uuid: expect.any(String),
       x: 1010,
       y: 2001,
     },

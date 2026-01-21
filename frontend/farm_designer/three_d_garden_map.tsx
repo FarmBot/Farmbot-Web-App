@@ -10,7 +10,10 @@ import {
   TaggedPoint, TaggedPointGroup, TaggedSensor, TaggedSensorReading,
   TaggedWeedPointer,
 } from "farmbot";
+import type { PlantStage } from "farmbot";
+import { get } from "lodash";
 import { CameraCalibrationData, DesignerState } from "./interfaces";
+import type { MovementState } from "../interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting } from "../session_keys";
 import { SlotWithTool } from "../resources/interfaces";
@@ -27,6 +30,9 @@ import {
   sameArrayByRef,
   useStableArray,
 } from "../three_d_garden/use_stable_array";
+import { edit, save, destroy } from "../api/crud";
+import { PlantOptions } from "./interfaces";
+import { validGoButtonAxes } from "./move_to";
 
 export interface ThreeDGardenMapProps {
   botSize: BotSize;
@@ -44,6 +50,9 @@ export interface ThreeDGardenMapProps {
   mapPoints: TaggedGenericPointer[];
   weeds: TaggedWeedPointer[];
   botPosition: BotPosition;
+  botOnline: boolean;
+  arduinoBusy: boolean;
+  movementState: MovementState;
   toolSlots?: SlotWithTool[];
   mountedToolName: string | undefined;
   peripheralValues: PeripheralValues;
@@ -124,6 +133,25 @@ const ThreeDGardenMapBase = (props: ThreeDGardenMapProps) => {
     isPeripheralActive,
     rotary,
   ]);
+  const defaultAxes = React.useMemo(
+    () => validGoButtonAxes(props.getWebAppConfigValue),
+    [props.getWebAppConfigValue],
+  );
+  const updatePlant = React.useCallback(
+    (uuid: string, update: PlantOptions) => {
+      const plant = stablePlants.find(p => p.uuid === uuid);
+      if (!plant) { return; }
+      props.dispatch(edit(plant, update));
+      props.dispatch(save(uuid));
+    },
+    [props.dispatch, stablePlants],
+  );
+  const destroyPlant = React.useCallback((uuid: string) => {
+    const confirmSetting = props.getWebAppConfigValue(
+      BooleanSetting.confirm_plant_deletion);
+    const confirmDelete = confirmSetting ?? true;
+    props.dispatch(destroy(uuid, !confirmDelete));
+  }, [props.dispatch, props.getWebAppConfigValue]);
   const sizeConfig = React.useMemo(() => ({
     botSizeX: gridSize.x,
     botSizeY: gridSize.y,
@@ -278,12 +306,28 @@ const ThreeDGardenMapBase = (props: ThreeDGardenMapProps) => {
     getConfigValue: props.getWebAppConfigValue,
     curves: stableCurves,
     designer: props.designer,
+    plants: stablePlants,
+    updatePlant,
+    destroyPlant,
+    botOnline: props.botOnline,
+    arduinoBusy: props.arduinoBusy,
+    currentBotLocation: props.botPosition,
+    movementState: props.movementState,
+    defaultAxes,
   }), [
     props.designer,
     props.dispatch,
     props.getWebAppConfigValue,
     props.mapTransformProps.gridSize,
+    props.botOnline,
+    props.arduinoBusy,
+    props.botPosition,
+    props.movementState,
+    defaultAxes,
+    destroyPlant,
     stableCurves,
+    stablePlants,
+    updatePlant,
   ]);
 
   return <ThreeDGarden
@@ -317,6 +361,9 @@ const propsAreEqual = (
   if (prev.dispatch !== next.dispatch) { return false; }
   if (prev.getWebAppConfigValue !== next.getWebAppConfigValue) { return false; }
   if (prev.botPosition !== next.botPosition) { return false; }
+  if (prev.botOnline !== next.botOnline) { return false; }
+  if (prev.arduinoBusy !== next.arduinoBusy) { return false; }
+  if (prev.movementState !== next.movementState) { return false; }
   if (prev.peripheralValues !== next.peripheralValues) { return false; }
   if (prev.device !== next.device) { return false; }
   if (prev.mountedToolName !== next.mountedToolName) { return false; }
@@ -360,6 +407,8 @@ export const convertPlants = (
       spread = findCrop(slug).spread;
       spreadCache.set(slug, spread);
     }
+    const plantStatus =
+      get(body, "plant_stage", "planned") as PlantStage;
     results[i] = {
       id: body.id,
       label: body.name,
@@ -368,8 +417,13 @@ export const convertPlants = (
       spread,
       x: body.x + bedXOffset,
       y: body.y + bedYOffset,
+      gardenX: body.x,
+      gardenY: body.y,
+      gardenZ: body.z,
       key: "",
       seed: 0,
+      plantStatus,
+      uuid: plants[i].uuid,
     };
   }
   return results;

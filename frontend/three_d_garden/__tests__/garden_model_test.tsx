@@ -18,12 +18,13 @@ import { mount } from "enzyme";
 import { GardenModelProps, GardenModel } from "../garden_model";
 import { clone } from "lodash";
 import { Config, INITIAL, SurfaceDebugOption } from "../config";
-import { render } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import {
   fakePlant, fakePoint, fakeSensor, fakeSensorReading, fakeWeed,
 } from "../../__test_support__/fake_state/resources";
 import { PointMarkerInstances, WeedSphereInstances } from "../garden";
 import { fakeAddPlantProps } from "../../__test_support__/fake_props";
+import { fakeMovementState } from "../../__test_support__/fake_bot_data";
 import { ASSETS } from "../constants";
 import { Path } from "../../internal_urls";
 import { fakeDrawnPoint } from "../../__test_support__/fake_designer_state";
@@ -86,8 +87,29 @@ describe("<GardenModel />", () => {
     p.config.labels = true;
     p.config.labelsOnHover = false;
     const { container } = render(<GardenModel {...p} />);
-    expect(container.querySelector("[name='label-Beet']"))
-      .not.toBeNull();
+    expect(container.querySelector("instancedmesh")).not.toBeNull();
+  });
+
+  it("opens plant popup on click", () => {
+    location.pathname = Path.mock(Path.designer());
+    const p = fakeProps();
+    const plant = fakePlant();
+    plant.body.name = "Beet";
+    p.threeDPlants = convertPlants(p.config, [plant]);
+    const addPlantProps = fakeAddPlantProps();
+    addPlantProps.updatePlant = jest.fn();
+    addPlantProps.destroyPlant = jest.fn();
+    addPlantProps.botOnline = true;
+    addPlantProps.arduinoBusy = false;
+    addPlantProps.currentBotLocation = { x: 0, y: 0, z: 0 };
+    addPlantProps.movementState = fakeMovementState();
+    addPlantProps.defaultAxes = "XY";
+    p.addPlantProps = addPlantProps;
+    const { container } = render(<GardenModel {...p} />);
+    const plantMesh = container.querySelector("instancedmesh");
+    expect(plantMesh).not.toBeNull();
+    plantMesh && fireEvent.click(plantMesh, { instanceId: 0 });
+    expect(document.querySelector(".plant-popup")).not.toBeNull();
   });
 
   it("skips plant hover handlers in click-to-add mode", () => {

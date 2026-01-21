@@ -97,6 +97,9 @@ export interface FarmDesignerProps {
   toolSlots: SlotWithTool[];
   crops: TaggedCrop[];
   botLocationData: BotLocationData;
+  botOnline: boolean;
+  arduinoBusy: boolean;
+  movementState: MovementState;
   botMcuParams: McuParams;
   botSize: BotSize;
   peripheralValues: PeripheralValues;
