@@ -253,8 +253,8 @@ export const Sun = React.memo((props: SunProps) => {
       shadow-normalBias={shadowNormalBias} // warning: distorts shadows
       shadow-radius={shadowRadius}
       shadow-blurSamples={shadowBlurSamples}
-      shadow-mapSize-width={1024}
-      shadow-mapSize-height={1024}
+      shadow-mapSize-width={512}
+      shadow-mapSize-height={512}
       shadow-camera-near={1}
       shadow-camera-far={BigDistance.sunAffect}
       shadow-camera-left={-shadowBounds}
