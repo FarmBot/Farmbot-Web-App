@@ -48,6 +48,7 @@ import { ThreeDPerformanceMonitor } from "./performance_monitor";
 import { useStableArray } from "./use_stable_array";
 import { getMode } from "../farm_designer/map/util";
 import { useLocation } from "react-router";
+import { FPSProbe } from "./fps_probe";
 
 const AnimatedGroup = animated(Group);
 
@@ -733,7 +734,7 @@ export const GardenModel = (props: GardenModelProps) => {
   );
   const iconPreloads = React.useMemo(() =>
     ICON_URLS.map((url, i) => <Image key={i} url={url} />),
-  []);
+    []);
   const showAllLabels = plantsVisible
     && plantConfig.labels
     && !plantConfig.labelsOnHover;
@@ -754,15 +755,15 @@ export const GardenModel = (props: GardenModelProps) => {
           activePositionRef={activePositionRef}
           hoveredPlant={hoveredPlant} />)
       : undefined,
-  [
-    activePositionRef,
-    disableRaycast,
-    getZ,
-    hoveredPlant,
-    plantConfig,
-    showAllLabels,
-    stableThreeDPlants,
-  ]);
+    [
+      activePositionRef,
+      disableRaycast,
+      getZ,
+      hoveredPlant,
+      plantConfig,
+      showAllLabels,
+      stableThreeDPlants,
+    ]);
   const hoveredLabelNode = React.useMemo(() => {
     if (!showHoverLabel || hoveredPlant === undefined) { return undefined; }
     const plant = stableThreeDPlants[hoveredPlant];
@@ -800,18 +801,18 @@ export const GardenModel = (props: GardenModelProps) => {
         getZ={getZ}
         startTimeRef={props.startTimeRef}
         dispatch={dispatch} />),
-  [
-    activePositionRef,
-    disableRaycast,
-    dispatch,
-    getZ,
-    hoveredPlant,
-    plantConfig,
-    plantsVisible,
-    props.startTimeRef,
-    showSpread,
-    stableThreeDPlants,
-  ]);
+    [
+      activePositionRef,
+      disableRaycast,
+      dispatch,
+      getZ,
+      hoveredPlant,
+      plantConfig,
+      plantsVisible,
+      props.startTimeRef,
+      showSpread,
+      stableThreeDPlants,
+    ]);
   const pointRadiusNodes = React.useMemo(() =>
     stableMapPoints
       .filter(point => point.body.radius > 0)
@@ -824,13 +825,13 @@ export const GardenModel = (props: GardenModelProps) => {
           dispatch={dispatch}
           enableClick={false}
           renderMarker={false} />),
-  [
-    dispatch,
-    getZ,
-    pointConfig,
-    showPoints,
-    stableMapPoints,
-  ]);
+    [
+      dispatch,
+      getZ,
+      pointConfig,
+      showPoints,
+      stableMapPoints,
+    ]);
   const weedNodes = React.useMemo(() =>
     stableWeeds.map(weed =>
       <Weed key={weed.uuid}
@@ -842,13 +843,13 @@ export const GardenModel = (props: GardenModelProps) => {
         enableClick={false}
         renderSphere={false}
         imageRaycast={false} />),
-  [
-    dispatch,
-    getZ,
-    showWeeds,
-    stableWeeds,
-    weedConfig,
-  ]);
+    [
+      dispatch,
+      getZ,
+      showWeeds,
+      stableWeeds,
+      weedConfig,
+    ]);
 
   // eslint-disable-next-line no-null/no-null
   return <Group dispose={null}
@@ -856,6 +857,7 @@ export const GardenModel = (props: GardenModelProps) => {
       ? handleDebugPointerMove
       : undefined}>
     {profilerEnabled && <ThreeDPerformanceMonitor />}
+    <FPSProbe />
     {config.stats && <Stats />}
     {config.zoomBeacons && <ZoomBeacons
       config={zoomConfig}

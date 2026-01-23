@@ -371,6 +371,7 @@ GEM
       e2mmap
     timeout (0.6.0)
     trailblazer-option (0.1.2)
+    tsort (0.2.0)
     tzinfo (2.0.6)
       concurrent-ruby (~> 1.0)
     tzinfo-data (1.2025.3)
@@ -440,6 +441,7 @@ DEPENDENCIES
   simplecov
   simplecov-cobertura
   thwait
+  tsort
   tzinfo
   tzinfo-data
   valid_url

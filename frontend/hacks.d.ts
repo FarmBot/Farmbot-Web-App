@@ -19,7 +19,8 @@ interface AppSig {
 
 interface Window {
   Rollbar: Rollbar | undefined;
-  logStore: LogStore
+  logStore: LogStore;
+  __fps?: number;
 }
 
 declare namespace jest {
