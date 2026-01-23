@@ -124,6 +124,7 @@
     "jshint": "2.13.6",
     "madge": "8.0.0",
     "path-browserify": "1.0.1",
+    "playwright": "1.57.0",
     "raf": "3.4.1",
     "react-addons-test-utils": "15.6.2",
     "react-test-renderer": "18.3.1",

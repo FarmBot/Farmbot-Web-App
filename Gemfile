@@ -33,6 +33,7 @@ gem "benchmark"
 gem "ostruct"
 gem "bigdecimal"
 gem "mutex_m"
+gem "tsort"
 
 group :development, :test do
   gem "climate_control"

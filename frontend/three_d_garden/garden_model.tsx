@@ -41,6 +41,7 @@ import { getZFunc } from "./triangle_functions";
 import { Visualization } from "./visualization";
 import { GroupOrderVisual } from "./group_order_visual";
 import { MoistureReadings } from "./garden/moisture_texture";
+import { FPSProbe } from "./fps_probe";
 
 const AnimatedGroup = animated(Group);
 
@@ -130,6 +131,7 @@ export const GardenModel = (props: GardenModelProps) => {
     onPointerMove={config.eventDebug
       ? e => console.log(e.intersections.map(x => x.object.name))
       : undefined}>
+    <FPSProbe />
     {config.stats && <Stats />}
     {config.zoomBeacons && <ZoomBeacons
       config={config}

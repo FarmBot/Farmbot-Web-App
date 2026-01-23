@@ -1,3 +1,4 @@
 hacks.d.ts
 .eslintrc.js
 frontend/wizard/step.tsx
+scripts/fps.js
