@@ -19,7 +19,10 @@ import { SEASON_DURATIONS } from "../../promo/constants";
 import { Line2 } from "three/examples/jsm/lines/Line2";
 import { ASSETS, BigDistance } from "../constants";
 
-const shadowNormalBias = 100;
+const shadowBias = -0.0005;
+const shadowNormalBias = 0;
+const shadowRadius = 8;
+const shadowBlurSamples = 8;
 const shadowBuffer = 1000;
 const SUN_COLOR = ["#FFD700", "#FFEA00", "#FFF700", "#FFE066"];
 
@@ -240,7 +243,12 @@ export const Sun = (props: SunProps) => {
           intensity={intensity * 4 / SUN_COUNT}
           color={sunColor}
           castShadow={true}
+          shadow-bias={shadowBias}
           shadow-normalBias={shadowNormalBias} // warning: distorts shadows
+          shadow-radius={shadowRadius}
+          shadow-blurSamples={shadowBlurSamples}
+          shadow-mapSize-width={1024}
+          shadow-mapSize-height={1024}
           shadow-camera-near={1}
           shadow-camera-far={BigDistance.sunAffect}
           shadow-camera-left={-shadowBounds}

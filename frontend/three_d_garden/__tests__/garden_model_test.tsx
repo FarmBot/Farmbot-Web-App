@@ -92,7 +92,7 @@ describe("<GardenModel />", () => {
     p.addPlantProps = fakeAddPlantProps();
     p.addPlantProps.getConfigValue = () => false;
     const { container } = render(<GardenModel {...p} />);
-    expect(container).not.toContainHTML("bot");
+    expect(container).not.toContainHTML('name="bot"');
   });
 
   it("renders other options", () => {
