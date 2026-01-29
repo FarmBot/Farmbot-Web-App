@@ -66,6 +66,32 @@ describe("<Sun />", () => {
     expect(container).toContainHTML("line");
   });
 
+  it("expands shadow bounds around the bed", () => {
+    const p = fakeProps();
+    const { container } = render(<Sun {...p} />);
+    const light = container.querySelector("directionallight");
+    expect(light).not.toBeNull();
+    const right = Number(light?.getAttribute("shadow-camera-right"));
+    const left = Number(light?.getAttribute("shadow-camera-left"));
+    const bedBuffer = 1000;
+    const bedXBounds = Math.max(
+      Math.abs(p.config.bedXOffset),
+      Math.abs(p.config.bedLengthOuter - p.config.bedXOffset),
+    );
+    const bedYBounds = Math.max(
+      Math.abs(p.config.bedYOffset),
+      Math.abs(p.config.bedWidthOuter - p.config.bedYOffset),
+    );
+    const bedBounds = Math.max(bedXBounds, bedYBounds) + bedBuffer;
+    const minBound = Math.max(
+      bedBounds,
+      p.config.botSizeX,
+      p.config.botSizeY,
+    );
+    expect(right).toBeGreaterThanOrEqual(minBound);
+    expect(left).toBeLessThanOrEqual(-minBound);
+  });
+
   it("renders animated without ref", () => {
     const p = fakeProps();
     p.config.animateSeasons = true;

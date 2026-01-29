@@ -1,13 +1,13 @@
 import React from "react";
 import { Config, getSeasonProperties, INITIAL } from "../config";
 import {
-  Vector3, PointLight as ThreePointLight, Mesh,
+  Vector3, DirectionalLight as ThreeDirectionalLight, Mesh,
   MeshBasicMaterial as ThreeMeshBasicMaterial,
   Color,
   Material,
 } from "three";
 import {
-  BufferAttribute, BufferGeometry, Group, MeshBasicMaterial, PointLight,
+  BufferAttribute, BufferGeometry, DirectionalLight, Group, MeshBasicMaterial,
   Points, PointsMaterial,
 } from "../components";
 import { Billboard, Line, Sphere, Text3D, Trail } from "@react-three/drei";
@@ -19,8 +19,8 @@ import { SEASON_DURATIONS } from "../../promo/constants";
 import { Line2 } from "three/examples/jsm/lines/Line2";
 import { ASSETS, BigDistance } from "../constants";
 
-const sunDecay = 0;
 const shadowNormalBias = 100;
+const shadowBuffer = 1000;
 const SUN_COLOR = ["#FFD700", "#FFEA00", "#FFF700", "#FFE066"];
 
 export const getCycleLength = (season: string) =>
@@ -138,7 +138,7 @@ export const Sun = (props: SunProps) => {
     config.sunAzimuth,
     BigDistance.sunActual);
 
-  const lightRefs = React.useRef<(ThreePointLight | null)[]>([]);
+  const lightRefs = React.useRef<(ThreeDirectionalLight | null)[]>([]);
   const sphereRefs = React.useRef<(Mesh | null)[]>([]);
   // eslint-disable-next-line no-null/no-null
   const sunRef = React.useRef<Mesh>(null);
@@ -153,6 +153,25 @@ export const Sun = (props: SunProps) => {
   // eslint-disable-next-line no-null/no-null
   const starsRef = React.useRef<Material>(null);
   const origin = new Vector3(0, 0, 0);
+  const shadowBounds = React.useMemo(() => {
+    const bedXBounds = Math.max(
+      Math.abs(config.bedXOffset),
+      Math.abs(config.bedLengthOuter - config.bedXOffset),
+    );
+    const bedYBounds = Math.max(
+      Math.abs(config.bedYOffset),
+      Math.abs(config.bedWidthOuter - config.bedYOffset),
+    );
+    const bedBounds = Math.max(bedXBounds, bedYBounds) + shadowBuffer;
+    return Math.max(bedBounds, config.botSizeX, config.botSizeY);
+  }, [
+    config.bedXOffset,
+    config.bedLengthOuter,
+    config.bedYOffset,
+    config.bedWidthOuter,
+    config.botSizeX,
+    config.botSizeY,
+  ]);
 
   const setSunSky = (inclination: number, sunValue: number) => {
     sunFactor.current = calcSunI(inclination);
@@ -214,16 +233,20 @@ export const Sun = (props: SunProps) => {
       const color = SUN_COLOR[index];
       const intensity = sunIntensity * config.sun / 100 * sunFactor.current;
       return <Group key={index} name={`sun_${index}`}>
-        <PointLight
-          ref={(el: ThreePointLight) => {
+        <DirectionalLight
+          ref={(el: ThreeDirectionalLight) => {
             if (el) { lightRefs.current[index] = el; }
           }}
           intensity={intensity * 4 / SUN_COUNT}
           color={sunColor}
-          distance={BigDistance.sunAffect}
-          decay={sunDecay}
           castShadow={true}
           shadow-normalBias={shadowNormalBias} // warning: distorts shadows
+          shadow-camera-near={1}
+          shadow-camera-far={BigDistance.sunAffect}
+          shadow-camera-left={-shadowBounds}
+          shadow-camera-right={shadowBounds}
+          shadow-camera-top={shadowBounds}
+          shadow-camera-bottom={-shadowBounds}
           position={position}
         />
         {config.lightsDebug &&
