@@ -20,7 +20,6 @@ import { Line2 } from "three/examples/jsm/lines/Line2";
 import { ASSETS, BigDistance } from "../constants";
 
 const shadowBias = -0.0005;
-const shadowNormalBias = 0;
 const shadowRadius = 8;
 const shadowBlurSamples = 8;
 const shadowBuffer = 1000;
@@ -244,7 +243,6 @@ export const Sun = (props: SunProps) => {
           color={sunColor}
           castShadow={true}
           shadow-bias={shadowBias}
-          shadow-normalBias={shadowNormalBias} // warning: distorts shadows
           shadow-radius={shadowRadius}
           shadow-blurSamples={shadowBlurSamples}
           shadow-mapSize-width={1024}
