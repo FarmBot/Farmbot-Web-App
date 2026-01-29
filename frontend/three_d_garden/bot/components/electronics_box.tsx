@@ -99,6 +99,7 @@ export const ElectronicsBox = (props: ElectronicsBoxProps) => {
         geometry={box.nodes.Electronics_Box.geometry}
         material={box.materials[ElectronicsBoxMaterial.box]}
         scale={1000}
+        castShadow={true}
         material-color={0xffffff}
         material-emissive={0x999999} />
       <Mesh name={"electronicsBoxGasket"}
