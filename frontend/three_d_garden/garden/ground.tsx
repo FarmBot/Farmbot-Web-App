@@ -1,13 +1,29 @@
 import React from "react";
 import { Config, detailLevels } from "../config";
-import { Circle, Detailed, useTexture } from "@react-three/drei";
-import { MeshPhongMaterial } from "../components";
+import { Detailed, useTexture } from "@react-three/drei";
+import { Mesh, MeshPhongMaterial } from "../components";
 import { ASSETS, BigDistance } from "../constants";
-import { RepeatWrapping } from "three";
+import { CircleGeometry, Float32BufferAttribute, RepeatWrapping } from "three";
 
 export interface GroundProps {
   config: Config;
 }
+
+const groundFade = 1;
+const buildGroundGeometry = (radius: number, segments: number) => {
+  const geometry = new CircleGeometry(radius, segments);
+  const positions = geometry.attributes.position;
+  const colors: number[] = [];
+  for (let i = 0; i < positions.count; i++) {
+    const x = positions.getX(i);
+    const y = positions.getY(i);
+    const t = Math.min(Math.sqrt(x * x + y * y) / radius, 1);
+    const shade = 1 - t * groundFade;
+    colors.push(shade, shade, shade);
+  }
+  geometry.setAttribute("color", new Float32BufferAttribute(colors, 3));
+  return geometry;
+};
 
 export const Ground = (props: GroundProps) => {
   const { config } = props;
@@ -39,26 +55,43 @@ export const Ground = (props: GroundProps) => {
 
   const groundProperties = getGroundProperties(config.scene);
 
-  const GroundWrapper = ({ children }: { children: React.ReactElement }) =>
-    <Circle name={`ground ${config.scene}`}
+  const highDetailGeometry = React.useMemo(
+    () => buildGroundGeometry(BigDistance.ground, 64),
+    [],
+  );
+  const lowDetailGeometry = React.useMemo(
+    () => buildGroundGeometry(BigDistance.ground, 16),
+    [],
+  );
+
+  const GroundWrapper = ({
+    geometry,
+    children,
+  }: {
+    geometry: CircleGeometry;
+    children: React.ReactElement;
+  }) =>
+    <Mesh name={`ground ${config.scene}`}
       visible={config.ground}
       receiveShadow={true}
-      args={[BigDistance.ground, 16]}
+      geometry={geometry}
       position={[0, 0, -groundZ]}>
       {children}
-    </Circle>;
+    </Mesh>;
 
   return <Detailed distances={detailLevels(config)}>
-    <GroundWrapper>
+    <GroundWrapper geometry={highDetailGeometry}>
       <MeshPhongMaterial
         map={groundProperties.texture}
         color={groundProperties.color}
-        shininess={0} />
+        shininess={0}
+        vertexColors={true} />
     </GroundWrapper>
-    <GroundWrapper>
+    <GroundWrapper geometry={lowDetailGeometry}>
       <MeshPhongMaterial
         color={groundProperties.lowDetailColor}
-        shininess={0} />
+        shininess={0}
+        vertexColors={true} />
     </GroundWrapper>
   </Detailed>;
 };
