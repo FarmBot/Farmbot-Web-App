@@ -14,6 +14,18 @@ commands:
           message: "CI run started"
       - send-notification:
           message: "<${CIRCLE_BUILD_URL}|logs>"
+      - run:
+          name: Create compare link
+          command: |
+            DEPLOYS_URL_API="https://api.github.com/repos/Farmbot/Farmbot-Web-App/deployments"
+            COMPARE_URL_WEB="https://github.com/Farmbot/Farmbot-Web-App/compare/"
+            data=$(curl -fsS "$DEPLOYS_URL_API") || data="[]"
+            last_sha=$(printf "%s" "$data" | python -c 'import json,sys; data=json.loads(sys.stdin.read() or "[]"); deploy_index=0; sha=(data[deploy_index] or {}).get("sha"); print(sha or "")')
+            compare_url="$COMPARE_URL_WEB$last_sha...${CIRCLE_SHA1}"
+            echo "$compare_url"
+            echo "export COMPARE_URL='$compare_url'" >> "$BASH_ENV"
+      - send-notification:
+          message: "<$COMPARE_URL|diff>"
   send-notification:
     parameters:
       message:
