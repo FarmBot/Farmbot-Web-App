@@ -32,6 +32,7 @@ export interface SunProps {
   skyRef: React.RefObject<ThreeMeshBasicMaterial | null>;
 }
 
+const SUN_COUNT = 1;
 const offset = 50;
 const SUN_OFFSETS: [number, number][] = [
   [0, 0],
@@ -146,7 +147,7 @@ export const Sun = (props: SunProps) => {
   // eslint-disable-next-line no-null/no-null
   const lineRef = React.useRef<Line2>(null);
   const [points, setPoints] = React.useState<Vector3[]>(
-    range(4).map(index => new Vector3(...offsetSunPos(sunPos, index))),
+    range(SUN_COUNT).map(index => new Vector3(...offsetSunPos(sunPos, index))),
   );
   const sunFactor = React.useRef<number>(1);
   // eslint-disable-next-line no-null/no-null
@@ -200,14 +201,15 @@ export const Sun = (props: SunProps) => {
     sunFlatRef.current?.position?.set(flatPos.x, flatPos.y, flatPos.z);
 
     if (lineRef.current) {
-      // eslint-disable-next-line @react-three/no-new-in-loop
-      const newPoints = range(4).map(index => new Vector3(...position(index)));
+      const newPoints = range(SUN_COUNT)
+        // eslint-disable-next-line @react-three/no-new-in-loop
+        .map(index => new Vector3(...position(index)));
       setPoints(newPoints);
     }
   });
 
   return <Group name={"sun"}>
-    {range(4).map(index => {
+    {range(SUN_COUNT).map(index => {
       const position = offsetSunPos(sunPos, index);
       const color = SUN_COLOR[index];
       const intensity = sunIntensity * config.sun / 100 * sunFactor.current;
@@ -216,7 +218,7 @@ export const Sun = (props: SunProps) => {
           ref={(el: ThreePointLight) => {
             if (el) { lightRefs.current[index] = el; }
           }}
-          intensity={intensity}
+          intensity={intensity * 4 / SUN_COUNT}
           color={sunColor}
           distance={BigDistance.sunAffect}
           decay={sunDecay}
