@@ -189,8 +189,44 @@ commands:
 
             echo "FPS check failed for all URLs"
             exit 1
+      - restore_cache:
+          keys:
+            - fps_value
+      - run:
+          name: Load previous value
+          command: |
+            if [ -f fps_value.txt ]; then
+              PREV=$(cat fps_value.txt)
+            else
+              PREV=0
+            fi
+            echo "Previous value: $PREV fps"
+            echo "export PREV_VALUE=$PREV" >> $BASH_ENV
+      - run:
+          name: Compare
+          command: |
+            source $BASH_ENV
+            if [ "${PREV_VALUE:-0}" = "0" ]; then
+              percent_change="n/a"
+            else
+              percent_change=$(python -c 'import os; fps=float(os.environ.get("FPS_VALUE","0") or 0); prev=float(os.environ.get("PREV_VALUE","0") or 0); print("n/a" if prev==0 else f"{((fps-prev)/prev)*100:.2f}")')
+            fi
+            echo "$FPS_VALUE fps ($percent_change% change)"
+            echo "export PERCENT_CHANGE=$percent_change" >> "$BASH_ENV"
+      - run:
+          name: Save new value
+          command: |
+            echo "$FPS_VALUE"
+            echo "$FPS_VALUE" > fps_value.txt
+            if [ "$CIRCLE_BRANCH" != "staging" ]; then
+              rm -f fps_value.txt
+            fi
+      - save_cache:
+          key: fps_value
+          paths:
+            - fps_value.txt
       - send-notification:
-          message: "$FPS_VALUE fps"
+          message: "$FPS_VALUE fps (${PERCENT_CHANGE}% change)"
       - run:
           name: On failure
           when: on_fail
