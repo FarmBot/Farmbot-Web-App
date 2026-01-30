@@ -77,23 +77,28 @@ export const FPSProbe = () => {
       const { geometries, textures } = gl.info.memory;
       const sceneCounts = countSceneObjects(scene as Scene);
       window.__fps = fps;
-      const linesToLog = [
-        `FPS: ${fps.toFixed(2)}`,
-        `Calls: ${calls}`,
-        `Triangles: ${triangles}`,
-        `Points: ${points}`,
-        `Lines: ${lines}`,
-        `Geometries: ${geometries}`,
-        `Textures: ${textures}`,
-        `Objects: ${sceneCounts.total}`,
-        `Meshes: ${sceneCounts.meshes}`,
-        `Instanced meshes: ${sceneCounts.instancedMeshes}`,
-      ];
+      const linesToLogObj: Record<string, number | string> = {
+        epoch: Date.now(),
+        FPS: fps.toFixed(2),
+        Calls: calls,
+        Triangles: triangles,
+        Points: points,
+        Lines: lines,
+        Geometries: geometries,
+        Textures: textures,
+        Objects: sceneCounts.total,
+        Meshes: sceneCounts.meshes,
+        "Instanced meshes": sceneCounts.instancedMeshes,
+      };
+      window.__scene_metrics = Object.values(linesToLogObj).join(", ");
       const topTypes = formatTopCounts(sceneCounts.typeCounts, 8);
       const topNames = formatTopCounts(sceneCounts.nameCounts, 8);
-      if (topTypes) { linesToLog.push(`Scene types: ${topTypes}`); }
-      if (topNames) { linesToLog.push(`Scene names: ${topNames}`); }
-      console.log(linesToLog.join("\n"));
+      linesToLogObj["Scene types"] = topTypes;
+      linesToLogObj["Scene names"] = topNames;
+      const linesToLog = Object.entries(linesToLogObj)
+        .map(([key, value]) => `${key}: ${value}`)
+        .join("\n");
+      console.log(linesToLog);
       frameCount.current = 0;
       lastTime.current = now;
     }
