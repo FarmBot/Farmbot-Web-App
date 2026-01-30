@@ -153,10 +153,10 @@ describe("<ImageTexture />", () => {
 
 describe("extraRotation()", () => {
   it.each<[string, number]>([
-    ["TOP_LEFT", 0],
-    ["TOP_RIGHT", -90],
-    ["BOTTOM_LEFT", 90],
-    ["BOTTOM_RIGHT", 180],
+    ["TOP_LEFT", 90],
+    ["TOP_RIGHT", -180],
+    ["BOTTOM_LEFT", 0],
+    ["BOTTOM_RIGHT", -90],
   ])("returns extra rotation amount for %s", (value, result) => {
     const config = clone(INITIAL);
     config.imgOrigin = value;

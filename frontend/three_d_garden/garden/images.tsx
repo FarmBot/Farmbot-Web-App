@@ -184,13 +184,13 @@ const ImageWrapper = (props: ImageWrapperProps) => {
 export const extraRotation = (config: Config) => {
   switch (config.imgOrigin) {
     case "BOTTOM_LEFT":
-      return 90;
+      return 0;
     case "TOP_RIGHT":
-      return -90;
+      return -180;
     case "BOTTOM_RIGHT":
-      return 180;
+      return -90;
     case "TOP_LEFT":
     default:
-      return 0;
+      return 90;
   }
 };
