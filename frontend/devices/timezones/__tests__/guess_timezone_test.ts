@@ -46,7 +46,7 @@ describe("maybeSetTimezone()", () => {
     maybeSetTimezone(dispatch, device);
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_3D_TIME,
-      payload: "12:00",
+      payload: "16:00",
     });
     expect(edit).not.toHaveBeenCalled();
     expect(save).not.toHaveBeenCalled();
@@ -75,7 +75,7 @@ describe("maybeSetTimezone()", () => {
     expect(save).toHaveBeenCalledWith(device.uuid);
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_3D_TIME,
-      payload: "12:00",
+      payload: "16:00",
     });
     spy.mockRestore();
   });
