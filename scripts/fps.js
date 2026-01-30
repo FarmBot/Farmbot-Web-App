@@ -39,6 +39,8 @@ async function main() {
             await page.waitForTimeout(1000);
         }
         console.log(`FPS_VALUE=${lastSample.toFixed(2)}`);
+        const data = await page.evaluate(() => window.__scene_metrics);
+        console.log(`SCENE_METRICS=${data}`);
         fs.mkdirSync(path.dirname(screenshotPath), { recursive: true });
         await page.screenshot({
             path: screenshotPath,

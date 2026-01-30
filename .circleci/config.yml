@@ -214,14 +214,16 @@ commands:
                 continue
               fi
 
-              if ! fps_output=$(sudo docker compose exec -e PLAYWRIGHT_BROWSERS_PATH=0 web node scripts/fps.js "${url}" "tmp/fps.png"); then
+              if ! fps_output=$(sudo docker compose exec -e PLAYWRIGHT_BROWSERS_PATH=0 web node scripts/fps.js "${url}" "tmp/promo.png"); then
                 echo "${fps_output}"
                 continue
               fi
               echo "${fps_output}"
 
               fps_value=$(echo "${fps_output}" | awk -F= '/^FPS_VALUE=/{print $2; exit}')
+              scene_metrics=$(echo "${fps_output}" | awk -F= '/^SCENE_METRICS=/{print $2; exit}')
               echo "export FPS_VALUE=${fps_value}" >> "$BASH_ENV"
+              echo "export SCENE_METRICS=\"${scene_metrics}\"" >> "$BASH_ENV"
 
               exit 0
             done
@@ -254,10 +256,16 @@ commands:
           command: |
             echo "$FPS_VALUE"
             echo "$FPS_VALUE" > fps_value.txt
+            if [ ! -f scene_metrics.csv ]; then
+              printf '%s\n' "epoch, FPS, Calls, Triangles, Points, Lines, Geometries, Textures, Objects, Meshes, Instanced meshes" > scene_metrics.csv
+            fi
+            printf '%s\n' "$SCENE_METRICS" >> scene_metrics.csv
+            cat scene_metrics.csv
       - save_cache:
           key: fps_value-{{ .Branch }}-{{ epoch }}
           paths:
             - fps_value.txt
+            - scene_metrics.csv
       - send-notification:
           message: "$FPS_VALUE fps (${PERCENT_CHANGE}% change)"
       - run:
@@ -267,8 +275,11 @@ commands:
             sudo docker compose ps
             sudo docker compose logs --no-color --tail=500
       - store_artifacts:
-          path: tmp/fps.png
-          destination: fps.png
+          path: tmp/promo.png
+          destination: promo.png
+      - store_artifacts:
+          path: scene_metrics.csv
+          destination: scene_metrics.csv
   end-commands:
     steps:
       - run:
