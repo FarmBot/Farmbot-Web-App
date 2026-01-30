@@ -43,6 +43,14 @@ describe("FPSProbe", () => {
       t += 2000;
       return t;
     });
+    const objects = [
+      { type: "Mesh", name: "soil" },
+      { type: "Group", name: "bed" },
+      { type: "Mesh", name: "soil" },
+      { type: "Group", name: "bed" },
+      { type: "Mesh", name: "tool" },
+      { name: "mystery" },
+    ];
     mockUseThree.mockReturnValue({
       gl: {
         info: {
@@ -50,31 +58,31 @@ describe("FPSProbe", () => {
           memory: { geometries: 3, textures: 7 },
         },
       },
-      scene: { traverse: jest.fn() },
+      scene: {
+        traverse: (callback: (object: typeof objects[number]) => void) => {
+          objects.forEach(callback);
+        },
+      },
     });
     const logSpy = jest.spyOn(console, "log")
       .mockImplementation(() => undefined);
     render(<FPSProbe />);
     const frameHandler = mockUseFrame.mock.calls[0][0] as () => void;
     frameHandler();
-    expect(logSpy).toHaveBeenCalledWith(
-      expect.stringContaining("Calls: 5"),
-    );
-    expect(logSpy).toHaveBeenCalledWith(
-      expect.stringContaining("Triangles: 8"),
-    );
-    expect(logSpy).toHaveBeenCalledWith(
-      expect.stringContaining("Points: 13"),
-    );
-    expect(logSpy).toHaveBeenCalledWith(
-      expect.stringContaining("Lines: 21"),
-    );
-    expect(logSpy).toHaveBeenCalledWith(
-      expect.stringContaining("Geometries: 3"),
-    );
-    expect(logSpy).toHaveBeenCalledWith(
-      expect.stringContaining("Textures: 7"),
-    );
+    [
+      "Calls: 5",
+      "Triangles: 8",
+      "Points: 13",
+      "Lines: 21",
+      "Geometries: 3",
+      "Textures: 7",
+      "Scene types: Mesh: 3, Group: 2, Unknown: 1",
+      "Scene names: soil: 2, bed: 2, tool: 1, mystery: 1",
+    ].forEach(line => {
+      expect(logSpy).toHaveBeenCalledWith(
+        expect.stringContaining(line),
+      );
+    });
     logSpy.mockRestore();
     nowSpy.mockRestore();
   });

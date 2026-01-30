@@ -21,6 +21,7 @@ interface Window {
   Rollbar: Rollbar | undefined;
   logStore: LogStore;
   __fps?: number;
+  __scene_metrics?: string;
 }
 
 declare namespace jest {

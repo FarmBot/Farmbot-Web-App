@@ -5,6 +5,7 @@ import {
   OrbitControls, PerspectiveCamera,
   Stats, Image, OrthographicCamera,
   Sphere,
+  StatsGl,
 } from "@react-three/drei";
 import { BackSide, MeshBasicMaterial as ThreeMeshBasicMaterial } from "three";
 import { Bot } from "./bot";
@@ -132,6 +133,7 @@ export const GardenModel = (props: GardenModelProps) => {
       ? e => console.log(e.intersections.map(x => x.object.name))
       : undefined}>
     <FPSProbe />
+    {config.stats && <StatsGl className={"stats-gl"} />}
     {config.stats && <Stats />}
     {config.zoomBeacons && <ZoomBeacons
       config={config}
