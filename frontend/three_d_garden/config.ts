@@ -66,7 +66,6 @@ export interface Config {
   solar: boolean;
   utilitiesPost: boolean;
   packaging: boolean;
-  lab: boolean;
   people: boolean;
   scene: string;
   lowDetail: boolean;
@@ -180,7 +179,6 @@ export const INITIAL: Config = {
   solar: false,
   utilitiesPost: true,
   packaging: false,
-  lab: false,
   people: false,
   scene: "Outdoor",
   lowDetail: false,
@@ -242,7 +240,7 @@ export const BOOLEAN_KEYS = [
   "tracks", "clouds", "perspective", "bot", "laser", "cableCarriers",
   "viewCube", "stats", "config", "zoom", "pan", "rotate", "bounds", "threeAxes",
   "xyDimensions", "zDimension", "promoInfo", "settingsBar", "zoomBeacons",
-  "solar", "utilitiesPost", "packaging", "lab", "people", "lowDetail",
+  "solar", "utilitiesPost", "packaging", "people", "lowDetail",
   "eventDebug", "cableDebug", "zoomBeaconDebug", "lightsDebug", "moistureDebug",
   "animate", "animateSeasons", "negativeZ",
   "waterFlow", "exaggeratedZ", "showSoilPoints", "urlParamAutoAdd",
@@ -363,7 +361,6 @@ export const PRESETS: Record<string, Config> = {
     solar: false,
     utilitiesPost: false,
     packaging: false,
-    lab: false,
     people: false,
     scene: "Outdoor",
     lowDetail: false,
@@ -424,7 +421,6 @@ export const PRESETS: Record<string, Config> = {
     solar: true,
     utilitiesPost: true,
     packaging: true,
-    lab: true,
     people: true,
     scene: "outdoor",
     lowDetail: false,
@@ -465,7 +461,7 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "tool", "cableCarriers", "viewCube", "stats", "config", "zoom", "bounds",
   "threeAxes", "xyDimensions", "zDimension", "labelsOnHover", "promoInfo",
   "settingsBar", "zoomBeacons", "pan", "rotate",
-  "solar", "utilitiesPost", "packaging", "lab",
+  "solar", "utilitiesPost", "packaging",
   "people", "scene", "lowDetail", "sun", "ambient", "moistureDebug",
   "eventDebug", "cableDebug", "zoomBeaconDebug", "lightsDebug", "surfaceDebug",
   "animate", "distanceIndicator", "kitVersion", "negativeZ", "waterFlow",
@@ -489,7 +485,6 @@ export const modifyConfig = (config: Config, update: Partial<Config>) => {
     }
   }
   if (update.scene) {
-    newConfig.lab = update.scene == "Lab";
     newConfig.clouds = update.scene == "Outdoor";
     newConfig.people = update.scene != "Outdoor";
     newConfig.bedType =
