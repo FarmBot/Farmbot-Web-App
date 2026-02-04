@@ -32,6 +32,7 @@ export interface SunProps {
   config: Config;
   startTimeRef?: React.RefObject<number>;
   skyRef: React.RefObject<ThreeMeshBasicMaterial | null>;
+  sunFactorRef?: React.MutableRefObject<number>;
 }
 
 const SUN_COUNT = 1;
@@ -151,7 +152,8 @@ export const Sun = (props: SunProps) => {
   const [points, setPoints] = React.useState<Vector3[]>(
     range(SUN_COUNT).map(index => new Vector3(...offsetSunPos(sunPos, index))),
   );
-  const sunFactor = React.useRef<number>(1);
+  const localSunFactorRef = React.useRef<number>(1);
+  const sunFactorRef = props.sunFactorRef || localSunFactorRef;
   // eslint-disable-next-line no-null/no-null
   const starsRef = React.useRef<Material>(null);
   const origin = new Vector3(0, 0, 0);
@@ -176,9 +178,12 @@ export const Sun = (props: SunProps) => {
   ]);
 
   const setSunSky = (inclination: number, sunValue: number) => {
-    sunFactor.current = calcSunI(inclination);
-    props.skyRef.current?.color?.setRGB(...skyColor(sunFactor.current * sunValue));
-    starsRef.current && (starsRef.current.opacity = (1 - sunFactor.current));
+    sunFactorRef.current = calcSunI(inclination);
+    props.skyRef.current?.color?.setRGB(
+      ...skyColor(sunFactorRef.current * sunValue),
+    );
+    starsRef.current &&
+      (starsRef.current.opacity = (1 - sunFactorRef.current));
   };
 
   React.useEffect(() => {
@@ -206,7 +211,8 @@ export const Sun = (props: SunProps) => {
     lightRefs.current.forEach((light, index) => {
       if (light) {
         light.position?.set(...position(index));
-        light.intensity = sunIntensity * config.sun / 100 * sunFactor.current;
+        light.intensity =
+          sunIntensity * config.sun / 100 * sunFactorRef.current;
       }
     });
 
@@ -233,7 +239,7 @@ export const Sun = (props: SunProps) => {
     {range(SUN_COUNT).map(index => {
       const position = offsetSunPos(sunPos, index);
       const color = SUN_COLOR[index];
-      const intensity = sunIntensity * config.sun / 100 * sunFactor.current;
+      const intensity = sunIntensity * config.sun / 100 * sunFactorRef.current;
       return <Group key={index} name={`sun_${index}`}>
         <DirectionalLight
           ref={(el: ThreeDirectionalLight) => {

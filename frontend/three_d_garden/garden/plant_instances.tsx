@@ -4,6 +4,7 @@ import {
   Matrix4,
   Quaternion,
   Vector3,
+  MeshBasicMaterial as ThreeMeshBasicMaterial,
 } from "three";
 import { ThreeEvent, useFrame } from "@react-three/fiber";
 import { useNavigate } from "react-router";
@@ -15,10 +16,9 @@ import { Path } from "../../internal_urls";
 import { setPanelOpen } from "../../farm_designer/panel_header";
 import { getMode } from "../../farm_designer/map/util";
 import { getSizeAtTime } from "../../promo/plants";
-import { FixedNormalMaterial } from "./fixed_normal_material";
 import { threeSpace, zZero as zZeroFunc } from "../helpers";
 import { ThreeDGardenPlant } from "./plants";
-import { PlaneGeometry, InstancedMesh } from "../components";
+import { PlaneGeometry, InstancedMesh, MeshBasicMaterial } from "../components";
 
 export interface PlantInstancesProps {
   plants: ThreeDGardenPlant[];
@@ -27,6 +27,7 @@ export interface PlantInstancesProps {
   visible?: boolean;
   startTimeRef?: React.RefObject<number>;
   dispatch?: Function;
+  sunFactorRef?: React.MutableRefObject<number>;
 }
 
 interface PlantIconInstancesProps extends PlantInstancesProps {
@@ -34,6 +35,9 @@ interface PlantIconInstancesProps extends PlantInstancesProps {
   plants: ThreeDGardenPlant[];
   plantIndexes: number[];
 }
+
+export const plantIconBrightness = (sunFactor?: number) =>
+  Math.max(0.25, sunFactor ?? 1);
 
 const PlantIconInstances = (props: PlantIconInstancesProps) => {
   const {
@@ -43,6 +47,9 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
   const texture = useTexture(icon);
   // eslint-disable-next-line no-null/no-null
   const instancedRef = React.useRef<InstancedMeshType>(null);
+  // eslint-disable-next-line no-null/no-null
+  const materialRef = React.useRef<ThreeMeshBasicMaterial>(null);
+  const lastBrightness = React.useRef<number | undefined>(undefined);
   const tempMatrix = React.useMemo(() => new Matrix4(), []);
   const tempPosition = React.useMemo(() => new Vector3(), []);
   const tempScale = React.useMemo(() => new Vector3(), []);
@@ -55,6 +62,13 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
   useFrame(state => {
     const mesh = instancedRef.current;
     if (!mesh) { return; }
+    const brightness = plantIconBrightness(props.sunFactorRef?.current);
+    if (materialRef.current &&
+      materialRef.current.color &&
+      brightness != lastBrightness.current) {
+      materialRef.current.color.setScalar(brightness);
+      lastBrightness.current = brightness;
+    }
     tempQuaternion.copy(state.camera.quaternion);
     const currentTime = performance.now() / 1000;
     const t = startTimeRef ? currentTime - (startTimeRef.current || 0) : 0;
@@ -93,10 +107,10 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
     onClick={onClick}
     renderOrder={RenderOrder.plants}>
     <PlaneGeometry args={[1, 1]} />
-    <FixedNormalMaterial
+    <MeshBasicMaterial
+      ref={materialRef}
       map={texture}
-      roughness={0}
-      metalness={0}
+      alphaTest={0.1}
       transparent={true} />
   </InstancedMesh>;
 };

@@ -138,6 +138,7 @@ export const GardenModel = (props: GardenModelProps) => {
 
   // eslint-disable-next-line no-null/no-null
   const skyRef = React.useRef<ThreeMeshBasicMaterial>(null);
+  const sunFactorRef = React.useRef<number>(1);
   // eslint-disable-next-line no-null/no-null
   const activePositionRef = React.useRef<{ x: number, y: number }>(null);
 
@@ -182,7 +183,11 @@ export const GardenModel = (props: GardenModelProps) => {
       maxDistance={config.lightsDebug ? BigDistance.devZoom : BigDistance.zoom} />
     <AxesHelper args={[5000]} visible={config.threeAxes} />
     {config.viewCube && <GizmoHelper><GizmoViewcube /></GizmoHelper>}
-    <Sun config={config} skyRef={skyRef} startTimeRef={props.startTimeRef} />
+    <Sun
+      config={config}
+      skyRef={skyRef}
+      startTimeRef={props.startTimeRef}
+      sunFactorRef={sunFactorRef} />
     <AmbientLight intensity={config.ambient / 100} />
     <Ground config={config} />
     <Clouds config={config} />
@@ -241,7 +246,8 @@ export const GardenModel = (props: GardenModelProps) => {
         getZ={getZ}
         visible={plantsVisible}
         startTimeRef={props.startTimeRef}
-        dispatch={dispatch} />
+        dispatch={dispatch}
+        sunFactorRef={sunFactorRef} />
       {threeDPlants.map((plant, i) =>
         <ThreeDPlantSpread key={i}
           plant={plant}

@@ -24,7 +24,11 @@ import { fireEvent, render } from "@testing-library/react";
 import { clone } from "lodash";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
 import { INITIAL } from "../../config";
-import { PlantInstances, PlantInstancesProps } from "../plant_instances";
+import {
+  PlantInstances,
+  PlantInstancesProps,
+  plantIconBrightness,
+} from "../plant_instances";
 import { Path } from "../../../internal_urls";
 import { Actions } from "../../../constants";
 import { convertPlants } from "../../../farm_designer/three_d_garden_map";
@@ -58,6 +62,14 @@ describe("<PlantInstances />", () => {
     const { container } = render(<PlantInstances {...fakeProps()} />);
     const meshes = container.querySelectorAll("instancedmesh");
     expect(meshes.length).toBe(2);
+  });
+
+  it("clamps plant icon brightness", () => {
+    expect(plantIconBrightness(undefined)).toEqual(1);
+    expect(plantIconBrightness(0)).toEqual(0.25);
+    expect(plantIconBrightness(0.1)).toEqual(0.25);
+    expect(plantIconBrightness(0.25)).toEqual(0.25);
+    expect(plantIconBrightness(1.4)).toEqual(1.4);
   });
 
   it("navigates to plant info", () => {
