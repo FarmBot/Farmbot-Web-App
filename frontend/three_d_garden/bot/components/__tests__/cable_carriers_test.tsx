@@ -17,7 +17,7 @@ describe("<CableCarrierVertical />", () => {
     p.config.kitVersion = "v1.7";
     const wrapper = render(<CableCarrierSupportVertical {...p} />);
     expect(wrapper.container).toContainHTML("ccSupportVertical");
-    expect(wrapper.container.querySelectorAll("mesh").length).toBe(4);
+    expect(wrapper.container.querySelectorAll("instancedmesh").length).toBe(1);
   });
 
   it("renders v1.8", () => {
@@ -39,7 +39,7 @@ describe("<CableCarrierHorizontal />", () => {
     p.config.kitVersion = "v1.7";
     const wrapper = render(<CableCarrierSupportHorizontal {...p} />);
     expect(wrapper.container).toContainHTML("ccSupportHorizontal");
-    expect(wrapper.container.querySelectorAll("mesh").length).toBe(5);
+    expect(wrapper.container.querySelectorAll("instancedmesh").length).toBe(1);
   });
 
   it("renders v1.8", () => {

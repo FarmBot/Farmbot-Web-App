@@ -11,7 +11,9 @@ import { Config } from "../../config";
 import { GLTF } from "three-stdlib";
 import { ASSETS, LIB_DIR, PartName } from "../../constants";
 import { range } from "lodash";
-import { Group, Mesh, MeshPhongMaterial } from "../../components";
+import {
+  Group, Mesh, MeshPhongMaterial, InstancedMesh,
+} from "../../components";
 import { distinguishableBlack, extrusionWidth } from "../bot";
 import { EMISSIVE_PROPS } from "./gantry_beam";
 
@@ -157,23 +159,50 @@ export const CableCarrierSupportVertical =
     const zDir = zDirFunc(props.config);
     const ccSupportVertical =
       useGLTF(ASSETS.models.ccSupportVertical, LIB_DIR) as CCSupportVertical;
+    const verticalInstances = React.useMemo(() =>
+      range((zAxisLength - 350) / 200),
+    [zAxisLength]);
+    const verticalRef = React.useRef<THREE.InstancedMesh>(null);
+    React.useEffect(() => {
+      if (!verticalRef.current || verticalInstances.length === 0) { return; }
+      const temp = new THREE.Object3D();
+      verticalInstances.forEach((i, index) => {
+        temp.position.set(
+          threeSpace(x + 20, bedLengthOuter) + bedXOffset,
+          threeSpace(y + 55, bedWidthOuter) + bedYOffset,
+          zZero - zDir * z + i * 200 + 125,
+        );
+        temp.rotation.set(0, 0, Math.PI / 2);
+        temp.scale.set(1000, 1000, 1000);
+        temp.updateMatrix();
+        verticalRef.current?.setMatrixAt(index, temp.matrix);
+      });
+      verticalRef.current.instanceMatrix.needsUpdate = true;
+    }, [
+      bedLengthOuter,
+      bedXOffset,
+      bedYOffset,
+      bedWidthOuter,
+      verticalInstances,
+      x,
+      y,
+      z,
+      zDir,
+      zZero,
+    ]);
     switch (kitVersion) {
       case "v1.7":
         return <Group name={"ccSupportVertical"}>
-          {range((zAxisLength - 350) / 200).map((i) => (
-            <Mesh key={i}
-              position={[
-                threeSpace(x + 20, bedLengthOuter) + bedXOffset,
-                threeSpace(y + 55, bedWidthOuter) + bedYOffset,
-                zZero - zDir * z + i * 200 + 125,
-              ]}
-              rotation={[0, 0, Math.PI / 2]}
-              scale={1000}
-              geometry={
-                ccSupportVertical.nodes[PartName.ccSupportVertical].geometry}>
+          {verticalInstances.length > 0 &&
+            <InstancedMesh
+              ref={verticalRef}
+              args={[
+                ccSupportVertical.nodes[PartName.ccSupportVertical].geometry,
+                undefined,
+                verticalInstances.length,
+              ]}>
               <MeshPhongMaterial color={"silver"} />
-            </Mesh>
-          ))}
+            </InstancedMesh>}
         </Group>;
       case "v1.8":
         return <Group name={"ccSupportVertical"}>
@@ -225,23 +254,47 @@ export const CableCarrierSupportHorizontal =
     } = props.config;
     const ccSupportHorizontal =
       useGLTF(ASSETS.models.ccSupportHorizontal, LIB_DIR) as CCSupportHorizontal;
+    const horizontalInstances = React.useMemo(() =>
+      range((botSizeY - 10) / 300),
+    [botSizeY]);
+    const horizontalRef = React.useRef<THREE.InstancedMesh>(null);
+    React.useEffect(() => {
+      if (!horizontalRef.current || horizontalInstances.length === 0) { return; }
+      const temp = new THREE.Object3D();
+      horizontalInstances.forEach((i, index) => {
+        temp.position.set(
+          threeSpace(x - 28, bedLengthOuter) + bedXOffset,
+          threeSpace(50 + i * 300, bedWidthOuter) + bedYOffset,
+          columnLength + 60,
+        );
+        temp.rotation.set(Math.PI / 2, 0, 0);
+        temp.scale.set(1000, 1000, 1000);
+        temp.updateMatrix();
+        horizontalRef.current?.setMatrixAt(index, temp.matrix);
+      });
+      horizontalRef.current.instanceMatrix.needsUpdate = true;
+    }, [
+      bedLengthOuter,
+      bedXOffset,
+      bedYOffset,
+      bedWidthOuter,
+      columnLength,
+      horizontalInstances,
+      x,
+    ]);
     switch (kitVersion) {
       case "v1.7":
         return <Group name={"ccSupportHorizontal"}>
-          {range((botSizeY - 10) / 300).map((i) => (
-            <Mesh key={i}
-              position={[
-                threeSpace(x - 28, bedLengthOuter) + bedXOffset,
-                threeSpace(50 + i * 300, bedWidthOuter) + bedYOffset,
-                columnLength + 60,
-              ]}
-              rotation={[Math.PI / 2, 0, 0]}
-              scale={1000}
-              geometry={
-                ccSupportHorizontal.nodes[PartName.ccSupportHorizontal].geometry}>
+          {horizontalInstances.length > 0 &&
+            <InstancedMesh
+              ref={horizontalRef}
+              args={[
+                ccSupportHorizontal.nodes[PartName.ccSupportHorizontal].geometry,
+                undefined,
+                horizontalInstances.length,
+              ]}>
               <MeshPhongMaterial color={"silver"} />
-            </Mesh>
-          ))};
+            </InstancedMesh>}
         </Group>;
       case "v1.8":
         return <Group name={"ccSupportHorizontal"}>
