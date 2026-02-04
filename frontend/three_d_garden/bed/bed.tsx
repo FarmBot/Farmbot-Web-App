@@ -41,7 +41,7 @@ import {
 } from "./objects/pointer_objects";
 import { ThreeElements } from "@react-three/fiber";
 import { ImageTexture } from "../garden";
-import { VertexNormalsHelper } from "three/examples/jsm/Addons";
+import { VertexNormalsHelper } from "three/examples/jsm/Addons.js";
 import { MoistureSurface } from "../garden/moisture_texture";
 import { HeightMaterial } from "../garden/height_material";
 

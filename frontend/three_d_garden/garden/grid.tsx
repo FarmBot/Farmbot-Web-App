@@ -8,11 +8,11 @@ import { chain, floor, range } from "lodash";
 import { useThree } from "@react-three/fiber";
 import {
   LineSegments2,
-} from "three/examples/jsm/lines/LineSegments2";
+} from "three/examples/jsm/lines/LineSegments2.js";
 import {
   LineSegmentsGeometry,
-} from "three/examples/jsm/lines/LineSegmentsGeometry";
-import { LineMaterial } from "three/examples/jsm/lines/LineMaterial";
+} from "three/examples/jsm/lines/LineSegmentsGeometry.js";
+import { LineMaterial } from "three/examples/jsm/lines/LineMaterial.js";
 
 export const gridLineOffsets = (botDimension: number): number[] => {
   const lastRegularOffset = floor(botDimension, -2);

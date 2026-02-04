@@ -16,7 +16,7 @@ import SunCalc from "suncalc";
 import { range } from "lodash";
 import moment from "moment";
 import { SEASON_DURATIONS } from "../../promo/constants";
-import { Line2 } from "three/examples/jsm/lines/Line2";
+import { Line2 } from "three/examples/jsm/lines/Line2.js";
 import { ASSETS, BigDistance } from "../constants";
 
 const shadowBias = -0.0005;

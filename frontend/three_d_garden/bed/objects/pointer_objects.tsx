@@ -34,7 +34,7 @@ import { createPoint } from "../../../points/create_points";
 import { Actions } from "../../../constants";
 import { NavigateFunction } from "react-router";
 import { DrawnPointPayl } from "../../../farm_designer/interfaces";
-import { Line2 } from "three/examples/jsm/lines/Line2";
+import { Line2 } from "three/examples/jsm/lines/Line2.js";
 
 export type PointerPlantRef = React.RefObject<GroupType | null>;
 export type RadiusRef = React.RefObject<MeshType | null>;

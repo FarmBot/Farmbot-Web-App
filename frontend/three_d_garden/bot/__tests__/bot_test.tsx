@@ -4,7 +4,7 @@ import { render } from "@testing-library/react";
 import { Bot, FarmbotModelProps } from "../bot";
 import { INITIAL } from "../../config";
 import { clone } from "lodash";
-import { SVGLoader } from "three/examples/jsm/Addons";
+import { SVGLoader } from "three/examples/jsm/Addons.js";
 
 describe("<Bot />", () => {
   const fakeProps = (): FarmbotModelProps => {
