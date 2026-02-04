@@ -10,6 +10,8 @@ import {
   DirectionalLight,
   Group,
   InstancedMesh,
+  LineBasicMaterial,
+  LineSegments,
   Mesh,
   MeshBasicMaterial,
   MeshPhongMaterial,
@@ -84,6 +86,17 @@ describe("<Mesh />", () => {
   });
 });
 
+describe("<LineSegments />", () => {
+  const fakeProps = (): ThreeElements["lineSegments"] => ({
+    name: "lineSegments",
+  });
+
+  it("adds props", () => {
+    const wrapper = mount(<LineSegments {...fakeProps()} />);
+    expect(wrapper.props().name).toEqual("lineSegments");
+  });
+});
+
 describe("<InstancedMesh />", () => {
   const fakeProps = (): ThreeElements["instancedMesh"] => ({
     name: "instancedMesh",
@@ -103,6 +116,17 @@ describe("<MeshBasicMaterial />", () => {
   it("adds props", () => {
     const wrapper = mount(<MeshBasicMaterial {...fakeProps()} />);
     expect(wrapper.props().name).toEqual("material");
+  });
+});
+
+describe("<LineBasicMaterial />", () => {
+  const fakeProps = (): ThreeElements["lineBasicMaterial"] => ({
+    name: "lineMaterial",
+  });
+
+  it("adds props", () => {
+    const wrapper = mount(<LineBasicMaterial {...fakeProps()} />);
+    expect(wrapper.props().name).toEqual("lineMaterial");
   });
 });
 

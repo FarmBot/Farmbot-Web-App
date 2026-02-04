@@ -93,3 +93,15 @@ export const PlaneGeometry =
     // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
     <planeGeometry ref={ref} {...props} />
   ));
+
+export const LineSegments =
+  React.forwardRef((props: ThreeElements["lineSegments"], ref) => (
+    // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
+    <lineSegments ref={ref} {...props} />
+  ));
+
+export const LineBasicMaterial =
+  React.forwardRef((props: ThreeElements["lineBasicMaterial"], ref) => (
+    // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
+    <lineBasicMaterial ref={ref} {...props} />
+  ));
