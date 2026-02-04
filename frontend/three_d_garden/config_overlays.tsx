@@ -164,6 +164,7 @@ const PromoInfo = (props: PromoInfoProps) => {
 interface ConfigRowProps {
   configKey: keyof Config;
   children: React.ReactNode;
+  addLabel?: string;
 }
 
 const ConfigRow = (props: ConfigRowProps) => {
@@ -179,9 +180,13 @@ const ConfigRow = (props: ConfigRowProps) => {
     setHasParam(urlHasParam(configKey));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [window.location.search]);
+  let label = configKey;
+  if (props.addLabel) {
+    label += ` (${props.addLabel})`;
+  }
   return <div className={"config-row"} key={configKey + window.location.search}>
     {hasParam && <p className={"x"} onClick={removeParam}>x</p>}
-    <span className={"config-key"}>{configKey}</span>
+    <span className={"config-key"}>{label}</span>
     {props.children}
   </div>;
 };
@@ -195,6 +200,7 @@ interface SliderProps extends OverlayProps {
   configKey: keyof Config;
   min: number;
   max: number;
+  addLabel?: string;
 }
 
 const Slider = (props: SliderProps) => {
@@ -207,7 +213,7 @@ const Slider = (props: SliderProps) => {
     maybeAddParam(config.urlParamAutoAdd, configKey, "" + newValue);
   };
   const value = config[configKey] as number;
-  return <ConfigRow configKey={configKey}>
+  return <ConfigRow configKey={configKey} addLabel={props.addLabel}>
     <input type={"number"} value={value} onChange={change} />
     <input
       type={"range"}
@@ -221,11 +227,12 @@ const Slider = (props: SliderProps) => {
 
 interface ToggleProps extends OverlayProps {
   configKey: keyof Config;
+  addLabel?: string;
 }
 
 const Toggle = (props: ToggleProps) => {
   const { config, setConfig, configKey } = props;
-  return <ConfigRow configKey={configKey}>
+  return <ConfigRow configKey={configKey} addLabel={props.addLabel}>
     <input
       type={"checkbox"}
       checked={!!config[configKey]}
@@ -243,6 +250,7 @@ const Toggle = (props: ToggleProps) => {
 interface RadioProps extends OverlayProps {
   configKey: keyof Config;
   options: string[];
+  addLabel?: string;
 }
 
 const Radio = (props: RadioProps) => {
@@ -256,7 +264,7 @@ const Radio = (props: RadioProps) => {
     setConfig(modifyConfig(config, update));
     maybeAddParam(config.urlParamAutoAdd, configKey, "" + newValue);
   };
-  return <ConfigRow configKey={configKey}>
+  return <ConfigRow configKey={configKey} addLabel={props.addLabel}>
     <div className={"options"}>
       {options.map(value =>
         <div key={value}>
@@ -293,7 +301,7 @@ export const PrivateOverlay = (props: OverlayProps) => {
       <Toggle {...common} configKey={"settingsBar"} />
       <Toggle {...common} configKey={"zoomBeacons"} />
       <label>{"Presets"}</label>
-      <Radio {...common} configKey={"label"}
+      <Radio {...common} configKey={"label"} addLabel={"packaging"}
         options={["FarmBot Genesis", "FarmBot Genesis XL", "FarmBot Jr", "box"]} />
       <Radio {...common} configKey={"kitVersion"}
         options={["v1.8", "v1.7", "v1000"]} />
@@ -321,6 +329,7 @@ export const PrivateOverlay = (props: OverlayProps) => {
       <Slider {...common} configKey={"botSizeY"} min={0} max={4000} />
       <Slider {...common} configKey={"botSizeZ"} min={0} max={1000} />
       <Toggle {...common} configKey={"bounds"} />
+      <Toggle {...common} configKey={"grid"} />
       <Toggle {...common} configKey={"negativeZ"} />
       <Toggle {...common} configKey={"xyDimensions"} />
       <Toggle {...common} configKey={"zDimension"} />
@@ -359,6 +368,7 @@ export const PrivateOverlay = (props: OverlayProps) => {
       <Slider {...common} configKey={"extraLegsX"} min={0} max={10} />
       <Slider {...common} configKey={"extraLegsY"} min={0} max={10} />
       <Slider {...common} configKey={"bedBrightness"} min={1} max={12} />
+      <label>{"Soil"}</label>
       <Slider {...common} configKey={"soilBrightness"} min={1} max={12} />
       <Slider {...common} configKey={"soilHeight"} min={0} max={1000} />
       <Radio {...common} configKey={"soilSurface"}
@@ -367,8 +377,16 @@ export const PrivateOverlay = (props: OverlayProps) => {
       <Slider {...common} configKey={"soilSurfaceVariance"} min={0} max={1000} />
       <Toggle {...common} configKey={"showSoilPoints"} />
       <Toggle {...common} configKey={"exaggeratedZ"} />
+      <Toggle {...common} configKey={"moistureDebug"} />
+      <Slider {...common} configKey={"surfaceDebug"} min={0} max={2} />
+      <label>{"Plants"}</label>
       <Radio {...common} configKey={"plants"} startTimeRef={props.startTimeRef}
         options={["Winter", "Spring", "Summer", "Fall", "Random", "None"]} />
+      <Toggle {...common} configKey={"labels"} />
+      <Toggle {...common} configKey={"labelsOnHover"} />
+      <Toggle {...common} configKey={"promoSpread"} />
+      <Toggle {...common} configKey={"animate"} />
+      <Toggle {...common} configKey={"animateSeasons"} />
       <label>{"Camera"}</label>
       <Toggle {...common} configKey={"perspective"} />
       <Toggle {...common} configKey={"zoom"} />
@@ -379,23 +397,21 @@ export const PrivateOverlay = (props: OverlayProps) => {
       <Radio {...common} configKey={"scene"}
         options={["Outdoor", "Lab", "Greenhouse"]} />
       <Toggle {...common} configKey={"ground"} />
-      <Toggle {...common} configKey={"grid"} />
       <Toggle {...common} configKey={"utilitiesPost"} />
       <Toggle {...common} configKey={"packaging"} />
-      <Toggle {...common} configKey={"labels"} />
-      <Toggle {...common} configKey={"labelsOnHover"} />
-      <Toggle {...common} configKey={"promoSpread"} />
       <Toggle {...common} configKey={"clouds"} />
-      <Slider {...common} configKey={"sun"} min={0} max={200} />
-      <Slider {...common} configKey={"ambient"} min={0} max={200} />
       <Toggle {...common} configKey={"solar"} />
-      <Toggle {...common} configKey={"lab"} />
       <Toggle {...common} configKey={"desk"} />
       <Toggle {...common} configKey={"people"} />
       <Toggle {...common} configKey={"north"} />
       <Slider {...common} configKey={"heading"} min={0} max={360} />
+      <label>{"Lighting"}</label>
       <Slider {...common} configKey={"sunInclination"} min={-180} max={180} />
       <Slider {...common} configKey={"sunAzimuth"} min={0} max={360} />
+      <Slider {...common} configKey={"sun"} min={0} max={200} />
+      <Slider {...common} configKey={"ambient"} min={0} max={200} />
+      <Toggle {...common} configKey={"light"} addLabel={"bot LEDs"} />
+      <Toggle {...common} configKey={"lightsDebug"} />
       <label>{"Dev"}</label>
       <Toggle {...common} configKey={"threeAxes"} />
       <Toggle {...common} configKey={"stats"} />
@@ -403,11 +419,6 @@ export const PrivateOverlay = (props: OverlayProps) => {
       <Toggle {...common} configKey={"eventDebug"} />
       <Toggle {...common} configKey={"cableDebug"} />
       <Toggle {...common} configKey={"zoomBeaconDebug"} />
-      <Toggle {...common} configKey={"lightsDebug"} />
-      <Toggle {...common} configKey={"moistureDebug"} />
-      <Slider {...common} configKey={"surfaceDebug"} min={0} max={2} />
-      <Toggle {...common} configKey={"animate"} />
-      <Toggle {...common} configKey={"animateSeasons"} />
       <Toggle {...common} configKey={"config"} />
     </details>
   </div>;

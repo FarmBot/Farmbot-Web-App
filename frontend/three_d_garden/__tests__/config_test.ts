@@ -8,8 +8,8 @@ describe("modifyConfig()", () => {
   it("modifies config: lab", () => {
     const initial = clone(INITIAL);
     const result = modifyConfig(initial, { scene: "Lab" });
-    expect(initial.lab).toEqual(false);
-    expect(result.lab).toEqual(true);
+    expect(initial.people).toEqual(false);
+    expect(result.people).toEqual(true);
     expect(initial.clouds).toEqual(true);
     expect(result.clouds).toEqual(false);
     expect(initial.bedType).toEqual("Standard");
@@ -60,9 +60,9 @@ describe("modifyConfigsFromUrlParams()", () => {
   it("sets config scene", () => {
     window.location.search = "?scene=Lab";
     const initial = clone(INITIAL);
-    initial.lab = false;
+    initial.people = false;
     const result = modifyConfigsFromUrlParams(initial);
-    expect(result.lab).toEqual(true);
+    expect(result.people).toEqual(true);
   });
 
   it("sets other config", () => {
