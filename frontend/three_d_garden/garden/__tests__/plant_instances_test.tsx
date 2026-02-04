@@ -1,9 +1,10 @@
 interface MockRef {
   current: {
-    scale: { set: Function; };
-    position: { z: number; };
+    scale?: { set: Function; };
+    position?: { z: number; };
     setMatrixAt?: Function;
     instanceMatrix?: { needsUpdate: boolean };
+    color?: { setScalar: Function };
   } | undefined;
 }
 let mockRefImpl = (): MockRef => ({
@@ -132,5 +133,31 @@ describe("<PlantInstances />", () => {
     const p = fakeProps();
     const { container } = render(<PlantInstances {...p} />);
     expect(container).toBeTruthy();
+  });
+
+  it("updates material brightness when changed", () => {
+    const setScalar = jest.fn();
+    let refCall = 0;
+    mockRefImpl = () => {
+      refCall += 1;
+      if (refCall == 1) {
+        return {
+          current: {
+            scale: { set: jest.fn() },
+            position: { z: 0 },
+            setMatrixAt: jest.fn(),
+            instanceMatrix: { needsUpdate: false },
+          },
+        };
+      }
+      if (refCall == 2) {
+        return { current: { color: { setScalar } } };
+      }
+      return { current: undefined };
+    };
+    const p = fakeProps();
+    p.sunFactorRef = { current: 0.5 };
+    render(<PlantInstances {...p} />);
+    expect(setScalar).toHaveBeenCalledWith(0.5);
   });
 });
