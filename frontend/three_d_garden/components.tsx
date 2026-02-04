@@ -34,9 +34,11 @@ export const MeshNormalMaterial = (props: ThreeElements["meshNormalMaterial"]) =
   // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
   <meshNormalMaterial {...props} />;
 
-export const InstancedMesh = (props: ThreeElements["instancedMesh"]) =>
-  // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
-  <instancedMesh {...props} />;
+export const InstancedMesh =
+  React.forwardRef((props: ThreeElements["instancedMesh"], ref) => (
+    // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
+    <instancedMesh ref={ref} {...props} />
+  ));
 
 export const Primitive = (props: ThreeElements["primitive"]) =>
   // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
@@ -84,4 +86,10 @@ export const PointsMaterial =
   React.forwardRef((props: ThreeElements["pointsMaterial"], ref) => (
     // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
     <pointsMaterial ref={ref} {...props} />
+  ));
+
+export const PlaneGeometry =
+  React.forwardRef((props: ThreeElements["planeGeometry"], ref) => (
+    // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
+    <planeGeometry ref={ref} {...props} />
   ));

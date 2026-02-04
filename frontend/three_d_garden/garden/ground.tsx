@@ -72,14 +72,14 @@ export const Ground = (props: GroundProps) => {
     children: React.ReactElement;
   }) =>
     <Mesh name={`ground ${config.scene}`}
-      visible={config.ground}
       receiveShadow={true}
       geometry={geometry}
       position={[0, 0, -groundZ]}>
       {children}
     </Mesh>;
 
-  return <Detailed distances={detailLevels(config)}>
+  return <Detailed distances={detailLevels(config)}
+    visible={config.ground}>
     <GroundWrapper geometry={highDetailGeometry}>
       <MeshPhongMaterial
         map={groundProperties.texture}

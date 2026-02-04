@@ -106,7 +106,6 @@ describe("<GardenModel />", () => {
     p.config.sizePreset = "Genesis XL";
     p.config.stats = true;
     p.config.viewCube = true;
-    p.config.lab = true;
     p.config.lightsDebug = true;
     p.config.surfaceDebug = SurfaceDebugOption.normals;
     p.config.moistureDebug = true;
@@ -159,6 +158,21 @@ describe("<GardenModel />", () => {
     const e = {
       stopPropagation: jest.fn(),
       intersections: [{ object: { name: "obj" } }],
+    };
+    wrapper.find({ name: "plants" }).first().simulate("pointerEnter", e);
+    expect(e.stopPropagation).toHaveBeenCalled();
+  });
+
+  it("sets hover with instance id", () => {
+    const p = fakeProps();
+    p.config.labelsOnHover = true;
+    const wrapper = mount(<GardenModel {...p} />);
+    const e = {
+      stopPropagation: jest.fn(),
+      intersections: [{
+        instanceId: 0,
+        object: { userData: { plantIndexes: [0] }, name: "0" },
+      }],
     };
     wrapper.find({ name: "plants" }).first().simulate("pointerEnter", e);
     expect(e.stopPropagation).toHaveBeenCalled();

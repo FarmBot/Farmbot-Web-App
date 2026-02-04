@@ -12,11 +12,13 @@ import { Bot } from "./bot";
 import { AddPlantProps, Bed } from "./bed";
 import {
   Sky, Solar, Sun, sunPosition, ZoomBeacons,
-  ThreeDPlant,
+  PlantInstances,
   Point, Grid, Clouds, Ground, Weed,
   ThreeDGardenPlant,
   NorthArrow,
   skyColor,
+  ThreeDPlantLabel,
+  ThreeDPlantSpread,
 } from "./garden";
 import { Config } from "./config";
 import { useSpring, animated } from "@react-spring/three";
@@ -26,6 +28,7 @@ import {
   AmbientLight, AxesHelper, Group, MeshBasicMaterial,
 } from "./components";
 import { ICON_URLS } from "../crops/constants";
+import { isUndefined } from "lodash";
 import {
   TaggedGenericPointer, TaggedImage, TaggedPoint, TaggedPointGroup,
   TaggedSensor,
@@ -73,8 +76,19 @@ export const GardenModel = (props: GardenModelProps) => {
   const [hoveredPlant, setHoveredPlant] =
     React.useState<number | undefined>(undefined);
 
-  const getI = (e: ThreeEvent<PointerEvent>) =>
-    e.buttons ? -1 : parseInt(e.intersections[0].object.name);
+  const getI = (e: ThreeEvent<PointerEvent>) => {
+    if (e.buttons) { return -1; }
+    const intersection = e.intersections[0];
+    const instanceId = intersection.instanceId;
+    if (!isUndefined(instanceId)) {
+      const plantIndexes =
+        intersection.object.userData.plantIndexes as number[] | undefined;
+      if (plantIndexes) {
+        return plantIndexes[instanceId];
+      }
+    }
+    return parseInt(intersection.object.name);
+  };
 
   const setHover = (active: boolean) => {
     return config.labelsOnHover
@@ -206,13 +220,10 @@ export const GardenModel = (props: GardenModelProps) => {
     </Group>
     <Group name={"plant-labels"} visible={!props.activeFocus}>
       {threeDPlants.map((plant, i) =>
-        <ThreeDPlant key={i} i={i}
+        <ThreeDPlantLabel key={i} i={i}
           plant={plant}
-          plants={threeDPlants}
-          labelOnly={true}
           config={config}
           getZ={getZ}
-          activePositionRef={activePositionRef}
           hoveredPlant={hoveredPlant} />)}
     </Group>
     <Grid
@@ -224,17 +235,22 @@ export const GardenModel = (props: GardenModelProps) => {
       onPointerEnter={setHover(true)}
       onPointerMove={setHover(true)}
       onPointerLeave={setHover(false)}>
+      <PlantInstances
+        plants={threeDPlants}
+        config={config}
+        getZ={getZ}
+        visible={plantsVisible}
+        startTimeRef={props.startTimeRef}
+        dispatch={dispatch} />
       {threeDPlants.map((plant, i) =>
-        <ThreeDPlant key={i} i={i}
+        <ThreeDPlantSpread key={i}
           plant={plant}
           plants={threeDPlants}
           visible={plantsVisible}
           spreadVisible={showSpread}
           config={config}
-          hoveredPlant={hoveredPlant}
           activePositionRef={activePositionRef}
           getZ={getZ}
-          startTimeRef={props.startTimeRef}
           dispatch={dispatch} />)}
     </Group>
     <Group name={"points"}

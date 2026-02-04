@@ -18,33 +18,54 @@ const GroupForTests = (props: ThreeElements["group"]) =>
   // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
   <group {...props} />;
 
+let mockInstanceId: number | undefined = undefined;
+export const setMockInstanceId = (id?: number) => { mockInstanceId = id; };
+
 type Event = ThreeEvent<PointerEvent>;
+
+const injectEvent = (event: Event) => ({
+  // @ts-expect-error: This spread always overwrites this property.
+  stopPropagation: jest.fn(),
+  instanceId: mockInstanceId,
+  // @ts-expect-error: This spread always overwrites this property.
+  point: { x: 0, y: 0 },
+  ...event,
+});
 
 const MeshForTests = (props: ThreeElements["mesh"]) =>
   // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
   <mesh {...props}
-    onPointerMove={(e: Event) =>
-      props.onPointerMove?.({
-        // @ts-expect-error: This spread always overwrites this property.
-        point: { x: 0, y: 0 },
-        ...e,
-      })}
-    onClick={(e: Event) =>
-      props.onClick?.({
-        // @ts-expect-error: This spread always overwrites this property.
-        stopPropagation: jest.fn(),
-        // @ts-expect-error: This spread always overwrites this property.
-        point: { x: 0, y: 0 },
-        ...e,
-      } as unknown as Event)}>
+    onPointerMove={(e: Event) => props.onPointerMove?.(injectEvent(e))}
+    onClick={(e: Event) => props.onClick?.(injectEvent(e))}>
     {props.name}
     {props.children}
     {/* @ts-expect-error Property does not exist on type JSX.IntrinsicElements */}
   </mesh>;
 
+const InstancedMeshForTests =
+  React.forwardRef<unknown, ThreeElements["instancedMesh"]>((props, ref) =>
+    // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
+    <instancedMesh ref={ref} {...props}
+      onPointerMove={(e: Event) => props.onPointerMove?.(injectEvent(e))}
+      onClick={(e: Event) => props.onClick?.(injectEvent(e))}>
+      {props.name}
+      {props.children}
+      {/* @ts-expect-error Property does not exist on type JSX.IntrinsicElements */}
+    </instancedMesh>,
+  );
+
 jest.mock("../three_d_garden/components", () => ({
   ...jest.requireActual("../three_d_garden/components"),
   Mesh: (props: ThreeElements["mesh"]) => <MeshForTests {...props} />,
+  InstancedMesh: React.forwardRef(
+    (props: ThreeElements["instancedMesh"], ref) => {
+      React.useImperativeHandle(ref, () => ({
+        setMatrixAt: jest.fn(),
+        instanceMatrix: { needsUpdate: false },
+      }));
+      return <InstancedMeshForTests {...props} />;
+    },
+  ),
   Group: (props: ThreeElements["group"]) =>
     props.visible === false
       ? <></>
@@ -85,7 +106,10 @@ jest.mock("@react-three/fiber", () => ({
     return <div>{props.children}</div>;
   },
   addEffect: jest.fn(),
-  useFrame: jest.fn(x => x({ clock: { getElapsedTime: jest.fn(() => 0) } })),
+  useFrame: jest.fn(x => x({
+    clock: { getElapsedTime: jest.fn(() => 0) },
+    camera: { quaternion: {} },
+  })),
   useThree: jest.fn(() => ({
     pointer: { x: 0, y: 0 },
     camera: new THREE.PerspectiveCamera(),

@@ -1,10 +1,9 @@
 import React from "react";
 import { Config } from "../config";
 import { HOVER_OBJECT_MODES, RenderOrder } from "../constants";
-import { Billboard, Plane, Sphere, useTexture } from "@react-three/drei";
+import { Billboard, Sphere } from "@react-three/drei";
 import {
   Vector3,
-  Mesh,
   Group as GroupType,
   Color,
   WebGLProgramParametersWithUniforms,
@@ -22,8 +21,6 @@ import { useNavigate } from "react-router";
 import { setPanelOpen } from "../../farm_designer/panel_header";
 import { getMode, round } from "../../farm_designer/map/util";
 import { ThreeElements, useFrame } from "@react-three/fiber";
-import { getSizeAtTime } from "../../promo/plants";
-import { FixedNormalMaterial } from "./fixed_normal_material";
 import { Group, MeshPhongMaterial } from "../components";
 import {
   getSpreadOverlap, getSpreadRadii,
@@ -44,25 +41,17 @@ export interface ThreeDGardenPlant {
   seed: number;
 }
 
-export interface ThreeDPlantProps {
+export interface ThreeDPlantLabelProps {
   plant: ThreeDGardenPlant;
   i: number;
-  labelOnly?: boolean;
   config: Config;
   hoveredPlant: number | undefined;
-  dispatch?: Function;
-  visible?: boolean;
-  spreadVisible?: boolean;
   getZ(x: number, y: number): number;
-  startTimeRef?: React.RefObject<number>;
-  activePositionRef: ActivePositionRef;
-  plants: ThreeDGardenPlant[];
 }
 
-export const ThreeDPlant = (props: ThreeDPlantProps) => {
-  const { i, plant, labelOnly, config, hoveredPlant } = props;
+export const ThreeDPlantLabel = (props: ThreeDPlantLabelProps) => {
+  const { i, plant, config, hoveredPlant } = props;
   const alwaysShowLabels = config.labels && !config.labelsOnHover;
-  const navigate = useNavigate();
   // eslint-disable-next-line no-null/no-null
   const billboardRef = React.useRef<GroupType>(null);
   const getPlantZ = (size: number) =>
@@ -77,31 +66,50 @@ export const ThreeDPlant = (props: ThreeDPlantProps) => {
       threeSpace(plant.y, config.bedWidthOuter),
       getPlantZ(plant.size),
     )}>
-    {labelOnly
-      ? <LabelPart
-        visible={alwaysShowLabels || i === hoveredPlant}
-        plant={plant} />
-      : <PlantPart
-        i={i}
-        config={config}
-        plants={props.plants}
-        plant={plant}
-        billboardRef={billboardRef}
-        activePositionRef={props.activePositionRef}
-        getPlantZ={getPlantZ}
-        url={plant.icon}
-        spreadVisible={props.spreadVisible || false}
-        startTimeRef={props.startTimeRef}
-        animateSeasons={props.config.animateSeasons}
-        season={config.plants}
-        onClick={() => {
-          if (plant.id && !isUndefined(props.dispatch) && props.visible &&
-            !HOVER_OBJECT_MODES.includes(getMode())) {
-            props.dispatch(setPanelOpen(true));
-            navigate(Path.plants(plant.id));
-          }
-        }} />}
+    <LabelPart
+      visible={alwaysShowLabels || i === hoveredPlant}
+      plant={plant} />
   </Billboard>;
+};
+
+export interface ThreeDPlantSpreadProps {
+  plant: ThreeDGardenPlant;
+  config: Config;
+  dispatch?: Function;
+  visible?: boolean;
+  getZ(x: number, y: number): number;
+  activePositionRef: ActivePositionRef;
+  plants: ThreeDGardenPlant[];
+  spreadVisible: boolean;
+}
+
+export const ThreeDPlantSpread = (props: ThreeDPlantSpreadProps) => {
+  const { plant, config } = props;
+  const navigate = useNavigate();
+  const getPlantZ = (size: number) =>
+    zZeroFunc(config)
+    + props.getZ(plant.x - config.bedXOffset, plant.y - config.bedYOffset)
+    + size / 2;
+  return <Group
+    position={new Vector3(
+      threeSpace(plant.x, config.bedLengthOuter),
+      threeSpace(plant.y, config.bedWidthOuter),
+      getPlantZ(plant.size),
+    )}
+    onClick={() => {
+      if (plant.id && !isUndefined(props.dispatch) && props.visible &&
+        !HOVER_OBJECT_MODES.includes(getMode())) {
+        props.dispatch(setPanelOpen(true));
+        navigate(Path.plants(plant.id));
+      }
+    }}>
+    <SpreadPart
+      config={config}
+      plants={props.plants}
+      plant={plant}
+      activePositionRef={props.activePositionRef}
+      spreadVisible={props.spreadVisible} />
+  </Group>;
 };
 
 interface LabelPartProps {
@@ -118,15 +126,16 @@ const LabelPart = (props: LabelPartProps) =>
     rotation={[0, 0, 0]}>
     {props.plant.label}
   </Text>;
-
-interface PlantPartProps extends CustomImageProps {
-  spreadVisible: boolean;
+type MeshProps = ThreeElements["mesh"];
+interface SpreadPartProps extends MeshProps {
   config: Config;
   activePositionRef: ActivePositionRef;
   plants: ThreeDGardenPlant[];
+  plant: ThreeDGardenPlant;
+  spreadVisible: boolean;
 }
 
-const PlantPart = (props: PlantPartProps) => {
+const SpreadPart = (props: SpreadPartProps) => {
   const { config } = props;
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const boundsCenter = React.useMemo(getBoundsCenter(config), []);
@@ -174,7 +183,6 @@ const PlantPart = (props: PlantPartProps) => {
     rgb.value = (clickToAddMode || editPlantMode) ? color : [0, 1, 0];
   });
   return <Group>
-    <Image {...props} />
     {(props.spreadVisible || !props.plant.id || editPlantMode) &&
       <Sphere args={[spreadRadii.inactive, 32, 32]} name={"spread"}>
         <MeshPhongMaterial
@@ -236,51 +244,3 @@ export const outOfBoundsShaderModification =
       `,
     );
   };
-
-type MeshProps = ThreeElements["mesh"];
-interface CustomImageProps extends MeshProps {
-  url: string;
-  plant: ThreeDGardenPlant;
-  i: number;
-  onClick?: () => void;
-  getPlantZ(size: number): number;
-  season: string;
-  startTimeRef?: React.RefObject<number>;
-  animateSeasons: boolean;
-  billboardRef: React.RefObject<GroupType | null>;
-}
-
-const Image = (props: CustomImageProps) => {
-  const texture = useTexture(props.url);
-
-  const { plant } = props;
-  // eslint-disable-next-line no-null/no-null
-  const imgRef = React.useRef<Mesh>(null);
-
-  useFrame(() => {
-    if (!props.animateSeasons || !props.startTimeRef) { return; }
-
-    if (imgRef.current && props.billboardRef.current) {
-      const currentTime = performance.now() / 1000;
-      const t = currentTime - props.startTimeRef.current;
-      const scale = plant.size * getSizeAtTime(plant, props.season, t);
-      imgRef.current.scale.set(scale, scale, scale);
-      props.billboardRef.current.position.z = props.getPlantZ(scale);
-    }
-  });
-
-  return <Plane {...props}
-    ref={imgRef}
-    scale={(!props.animateSeasons || !props.startTimeRef) ? plant.size : 0}
-    name={"" + props.i}
-    onClick={props.onClick}
-    renderOrder={RenderOrder.plants}
-    args={[1, 1]}>
-    <FixedNormalMaterial
-      key={Math.random()}
-      map={texture}
-      roughness={0}
-      metalness={0}
-      transparent={true} />
-  </Plane>;
-};

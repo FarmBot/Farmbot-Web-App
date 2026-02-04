@@ -2,6 +2,7 @@ export * from "./clouds";
 export * from "./grid";
 export * from "./ground";
 export * from "./plants";
+export * from "./plant_instances";
 export * from "./point";
 export * from "./sky";
 export * from "./solar";

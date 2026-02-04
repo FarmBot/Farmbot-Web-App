@@ -9,6 +9,7 @@ import {
   BoxGeometry,
   DirectionalLight,
   Group,
+  InstancedMesh,
   Mesh,
   MeshBasicMaterial,
   MeshPhongMaterial,
@@ -80,6 +81,17 @@ describe("<Mesh />", () => {
   it("adds props", () => {
     const wrapper = mount(<Mesh {...fakeProps()} />);
     expect(wrapper.props().name).toEqual("mesh");
+  });
+});
+
+describe("<InstancedMesh />", () => {
+  const fakeProps = (): ThreeElements["instancedMesh"] => ({
+    name: "instancedMesh",
+  });
+
+  it("adds props", () => {
+    const wrapper = mount(<InstancedMesh {...fakeProps()} />);
+    expect(wrapper.props().name).toEqual("instancedMesh");
   });
 });
 

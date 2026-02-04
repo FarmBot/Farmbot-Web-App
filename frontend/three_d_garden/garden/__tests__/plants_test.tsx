@@ -1,37 +1,25 @@
-interface MockRef {
-  current: {
-    scale: { set: Function; };
-    position: { z: number; };
-  } | undefined;
-}
-const mockRef = (): MockRef => ({
-  current: {
-    scale: { set: jest.fn() },
-    position: { z: 0 },
-  }
-});
-jest.mock("react", () => ({
-  ...jest.requireActual("react"),
-  useRef: mockRef,
-}));
-
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { clone } from "lodash";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
+import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import { INITIAL } from "../../config";
-import { ThreeDPlant, ThreeDPlantProps } from "../plants";
+import {
+  ThreeDPlantLabel,
+  ThreeDPlantLabelProps,
+  ThreeDPlantSpread,
+  ThreeDPlantSpreadProps,
+} from "../plants";
 import { Path } from "../../../internal_urls";
 import { Actions } from "../../../constants";
-import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import { convertPlants } from "../../../farm_designer/three_d_garden_map";
 
-describe("<ThreeDPlant />", () => {
+describe("<ThreeDPlantLabel />", () => {
   beforeEach(() => {
     location.pathname = Path.mock(Path.designer());
   });
 
-  const fakeProps = (): ThreeDPlantProps => {
+  const fakeProps = (): ThreeDPlantLabelProps => {
     const config = clone(INITIAL);
     const plant = fakePlant();
     plant.body.name = "Beet";
@@ -43,10 +31,7 @@ describe("<ThreeDPlant />", () => {
       i: 0,
       config: config,
       hoveredPlant: undefined,
-      visible: true,
       getZ: () => 0,
-      activePositionRef: { current: { x: 0, y: 0 } },
-      plants: convertPlants(config, [plant, otherPlant]),
     };
   };
 
@@ -54,8 +39,7 @@ describe("<ThreeDPlant />", () => {
     const p = fakeProps();
     p.config.labels = true;
     p.config.labelsOnHover = false;
-    p.labelOnly = true;
-    render(<ThreeDPlant {...p} />);
+    render(<ThreeDPlantLabel {...p} />);
     expect(screen.getByText("Beet")).toBeInTheDocument();
   });
 
@@ -64,26 +48,40 @@ describe("<ThreeDPlant />", () => {
     p.config.labels = true;
     p.config.labelsOnHover = true;
     p.hoveredPlant = 0;
-    p.labelOnly = true;
-    render(<ThreeDPlant {...p} />);
+    render(<ThreeDPlantLabel {...p} />);
     expect(screen.getByText("Beet")).toBeInTheDocument();
   });
+});
 
-  it("renders plant", () => {
-    const p = fakeProps();
-    p.config.labels = false;
-    p.config.labelsOnHover = false;
-    p.labelOnly = false;
-    p.config.light = false;
-    const { container } = render(<ThreeDPlant {...p} />);
-    expect(container).toContainHTML("avif");
+describe("<ThreeDPlantSpread />", () => {
+  beforeEach(() => {
+    location.pathname = Path.mock(Path.designer());
   });
+
+  const fakeProps = (): ThreeDPlantSpreadProps => {
+    const config = clone(INITIAL);
+    const plant = fakePlant();
+    plant.body.name = "Beet";
+    plant.body.id = 1;
+    const otherPlant = fakePlant();
+    otherPlant.body.id = 2;
+    return {
+      plant: convertPlants(config, [plant])[0],
+      config: config,
+      visible: true,
+      getZ: () => 0,
+      activePositionRef: { current: { x: 0, y: 0 } },
+      plants: convertPlants(config, [plant, otherPlant]),
+      spreadVisible: false,
+    };
+  };
+
 
   it("renders spread", () => {
     location.pathname = Path.mock(Path.cropSearch("mint"));
     const p = fakeProps();
     p.spreadVisible = true;
-    const { container } = render(<ThreeDPlant {...p} />);
+    const { container } = render(<ThreeDPlantSpread {...p} />);
     expect(container).toContainHTML("sphere");
   });
 
@@ -91,7 +89,7 @@ describe("<ThreeDPlant />", () => {
     location.pathname = Path.mock(Path.plants("1"));
     const p = fakeProps();
     p.spreadVisible = false;
-    const { container } = render(<ThreeDPlant {...p} />);
+    const { container } = render(<ThreeDPlantSpread {...p} />);
     expect(container).toContainHTML("sphere");
   });
 
@@ -99,65 +97,20 @@ describe("<ThreeDPlant />", () => {
     location.pathname = Path.mock(Path.plants("999999"));
     const p = fakeProps();
     p.spreadVisible = false;
-    const { container } = render(<ThreeDPlant {...p} />);
+    const { container } = render(<ThreeDPlantSpread {...p} />);
     expect(container).toContainHTML("sphere");
   });
 
-  it("renders plant: not size animated", () => {
-    const p = fakeProps();
-    p.config.labels = false;
-    p.config.labelsOnHover = false;
-    p.labelOnly = false;
-    p.config.light = false;
-    p.config.animateSeasons = true;
-    p.startTimeRef = undefined;
-    const { container } = render(<ThreeDPlant {...p} />);
-    expect(container).toContainHTML("avif");
-  });
-
-  it("renders plant: size animated", () => {
-    const p = fakeProps();
-    p.config.labels = false;
-    p.config.labelsOnHover = false;
-    p.labelOnly = false;
-    p.config.light = false;
-    p.config.animateSeasons = true;
-    p.startTimeRef = { current: 0 };
-    const { container } = render(<ThreeDPlant {...p} />);
-    expect(container).toContainHTML("avif");
-  });
-
-  it("renders plant under light", () => {
-    const p = fakeProps();
-    p.config.labels = false;
-    p.config.labelsOnHover = false;
-    p.labelOnly = false;
-    p.config.light = true;
-    const { container } = render(<ThreeDPlant {...p} />);
-    expect(container).toContainHTML("avif");
-  });
-
-  it("navigates to plant info", () => {
+  it("handles click on spread part", () => {
     const p = fakeProps();
     const dispatch = jest.fn();
     p.dispatch = mockDispatch(dispatch);
-    p.plant.id = 1;
-    const { container } = render(<ThreeDPlant {...p} />);
-    const plant = container.querySelector("[name='0'");
-    plant && fireEvent.click(plant);
+    const { container } = render(<ThreeDPlantSpread {...p} />);
+    const group = container.querySelector("group");
+    group && fireEvent.click(group);
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_PANEL_OPEN, payload: true,
     });
     expect(mockNavigate).toHaveBeenCalledWith(Path.plants("1"));
-  });
-
-  it("doesn't navigate to plant info", () => {
-    const p = fakeProps();
-    p.dispatch = undefined;
-    p.plant.id = 1;
-    const { container } = render(<ThreeDPlant {...p} />);
-    const plant = container.querySelector("[name='0'");
-    plant && fireEvent.click(plant);
-    expect(mockNavigate).not.toHaveBeenCalled();
   });
 });
