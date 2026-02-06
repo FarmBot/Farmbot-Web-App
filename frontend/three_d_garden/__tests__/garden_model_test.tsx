@@ -106,7 +106,6 @@ describe("<GardenModel />", () => {
     p.config.sizePreset = "Genesis XL";
     p.config.stats = true;
     p.config.viewCube = true;
-    p.config.lab = true;
     p.config.lightsDebug = true;
     p.config.surfaceDebug = SurfaceDebugOption.normals;
     p.config.moistureDebug = true;
