@@ -13,12 +13,12 @@ import { AddPlantProps, Bed } from "./bed";
 import {
   Sky, Solar, Sun, sunPosition, ZoomBeacons,
   PlantInstances,
+  PlantSpreadInstances,
   Point, Grid, Clouds, Ground, Weed,
   ThreeDGardenPlant,
   NorthArrow,
   skyColor,
   ThreeDPlantLabel,
-  ThreeDPlantSpread,
 } from "./garden";
 import { Config } from "./config";
 import { useSpring, animated } from "@react-spring/three";
@@ -248,16 +248,14 @@ export const GardenModel = (props: GardenModelProps) => {
         startTimeRef={props.startTimeRef}
         dispatch={dispatch}
         sunFactorRef={sunFactorRef} />
-      {threeDPlants.map((plant, i) =>
-        <ThreeDPlantSpread key={i}
-          plant={plant}
-          plants={threeDPlants}
-          visible={plantsVisible}
-          spreadVisible={showSpread}
-          config={config}
-          activePositionRef={activePositionRef}
-          getZ={getZ}
-          dispatch={dispatch} />)}
+      <PlantSpreadInstances
+        plants={threeDPlants}
+        visible={plantsVisible}
+        spreadVisible={showSpread}
+        config={config}
+        activePositionRef={activePositionRef}
+        getZ={getZ}
+        dispatch={dispatch} />
     </Group>
     <Group name={"points"}
       visible={showPoints}>

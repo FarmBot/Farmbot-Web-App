@@ -93,3 +93,9 @@ export const PlaneGeometry =
     // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
     <planeGeometry ref={ref} {...props} />
   ));
+
+export const SphereGeometry =
+  React.forwardRef((props: ThreeElements["sphereGeometry"], ref) => (
+    // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
+    <sphereGeometry ref={ref} {...props} />
+  ));

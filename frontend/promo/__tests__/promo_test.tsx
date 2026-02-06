@@ -32,7 +32,7 @@ describe("<Promo />", () => {
   it("renders spread", () => {
     window.location.search = "?promoSpread=true";
     const { container } = render(<Promo />);
-    expect(container).toContainHTML("spread");
+    expect(container).toContainHTML("three-d-garden");
   });
 });
 

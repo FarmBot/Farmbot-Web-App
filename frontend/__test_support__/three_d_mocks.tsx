@@ -61,7 +61,9 @@ jest.mock("../three_d_garden/components", () => ({
     (props: ThreeElements["instancedMesh"], ref) => {
       React.useImperativeHandle(ref, () => ({
         setMatrixAt: jest.fn(),
+        setColorAt: jest.fn(),
         instanceMatrix: { needsUpdate: false },
+        instanceColor: { needsUpdate: false },
       }));
       return <InstancedMeshForTests {...props} />;
     },
