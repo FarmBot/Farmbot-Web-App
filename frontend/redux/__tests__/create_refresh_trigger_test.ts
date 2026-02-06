@@ -10,6 +10,12 @@ import { createRefreshTrigger } from "../create_refresh_trigger";
 import { changeLastClientConnected } from "../../connectivity/connect_device";
 import { maybeGetDevice } from "../../device";
 
+afterAll(() => {
+  jest.unmock("../../device");
+});
+afterAll(() => {
+  jest.unmock("../../connectivity/connect_device");
+});
 describe("createRefreshTrigger", () => {
   it("never calls the bot if status is undefined", () => {
     const go = createRefreshTrigger();

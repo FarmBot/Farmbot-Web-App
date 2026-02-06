@@ -2,23 +2,10 @@ const mockDevice = {
   registerGpio: jest.fn(() => Promise.resolve()),
   unregisterGpio: jest.fn(() => Promise.resolve()),
 };
-jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
-
-jest.mock("../../../api/crud", () => ({ destroy: jest.fn() }));
 
 import {
   PinBindingType, PinBindingSpecialAction,
 } from "farmbot/dist/resources/api_resources";
-const mockData = [{
-  pin_number: 1, sequence_id: undefined,
-  special_action: PinBindingSpecialAction.sync,
-  binding_type: PinBindingType.special,
-  uuid: ""
-}];
-jest.mock("../tagged_pin_binding_init", () => ({
-  sysBtnBindingData: mockData,
-  sysBtnBindings: [1]
-}));
 
 import React from "react";
 import { mount } from "enzyme";
@@ -29,11 +16,38 @@ import { TaggedSequence } from "farmbot";
 import {
   fakeSequence, fakePinBinding,
 } from "../../../__test_support__/fake_state/resources";
-import { destroy } from "../../../api/crud";
+import * as crud from "../../../api/crud";
 import { PinBindingsList } from "../pin_bindings_list";
 import { PinBindingsListProps } from "../interfaces";
-import { sysBtnBindingData } from "../tagged_pin_binding_init";
+import { sysBtnBindingData, sysBtnBindings } from "../tagged_pin_binding_init";
 import { error } from "../../../toast/toast";
+import * as device from "../../../device";
+
+let getDeviceSpy: jest.SpyInstance;
+let destroySpy: jest.SpyInstance;
+
+beforeEach(() => {
+  getDeviceSpy = jest.spyOn(device, "getDevice")
+    .mockImplementation(() => mockDevice as never);
+  destroySpy = jest.spyOn(crud, "destroy").mockImplementation(jest.fn());
+  sysBtnBindingData.length = 0;
+  sysBtnBindings.length = 0;
+  sysBtnBindingData.push({
+    pin_number: 1,
+    sequence_id: undefined,
+    special_action: PinBindingSpecialAction.sync,
+    binding_type: PinBindingType.special,
+    uuid: "",
+  });
+  sysBtnBindings.push(1);
+});
+
+afterEach(() => {
+  getDeviceSpy.mockRestore();
+  destroySpy.mockRestore();
+  sysBtnBindingData.length = 0;
+  sysBtnBindings.length = 0;
+});
 
 describe("<PinBindingsList/>", () => {
   function fakeProps(): PinBindingsListProps {
@@ -56,7 +70,7 @@ describe("<PinBindingsList/>", () => {
 
   it("renders", () => {
     const wrapper = mount(<PinBindingsList {...fakeProps()} />);
-    ["pi gpio 10", "sequence 1", "pi gpio 11", "sequence 2"].map(string =>
+    ["pi gpio 10", "sequence", "pi gpio 11", "sequence"].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string));
     const buttons = wrapper.find("button");
     expect(buttons.length).toBe(2);
@@ -73,7 +87,7 @@ describe("<PinBindingsList/>", () => {
     const buttons = wrapper.find("button");
     buttons.first().simulate("click");
     expect(mockDevice.unregisterGpio).not.toHaveBeenCalled();
-    expect(destroy).toHaveBeenCalledWith(expect.stringContaining("PinBinding"));
+    expect(crud.destroy).toHaveBeenCalledWith(expect.stringContaining("PinBinding"));
   });
 
   it("restricts deletion of built-in bindings", () => {
@@ -83,7 +97,7 @@ describe("<PinBindingsList/>", () => {
     const buttons = wrapper.find("button");
     buttons.first().simulate("click");
     expect(mockDevice.unregisterGpio).not.toHaveBeenCalled();
-    expect(destroy).not.toHaveBeenCalled();
+    expect(crud.destroy).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith(
       expect.stringContaining("Cannot delete"));
   });

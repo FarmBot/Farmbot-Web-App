@@ -8,7 +8,7 @@ import {
   zZero as zZeroFunc,
 } from "../../helpers";
 import { Config } from "../../config";
-import { GLTF } from "three-stdlib";
+import type { GLTF } from "three-stdlib";
 import { ASSETS, LIB_DIR, PartName } from "../../constants";
 import { range } from "lodash";
 import {
@@ -162,7 +162,7 @@ export const CableCarrierSupportVertical =
     const verticalInstances = React.useMemo(() =>
       range((zAxisLength - 350) / 200),
     [zAxisLength]);
-    const verticalRef = React.useRef<THREE.InstancedMesh>(null);
+    const verticalRef = React.useRef<THREE.InstancedMesh | undefined>(undefined);
     React.useEffect(() => {
       if (!verticalRef.current || verticalInstances.length === 0) { return; }
       const temp = new THREE.Object3D();
@@ -257,7 +257,8 @@ export const CableCarrierSupportHorizontal =
     const horizontalInstances = React.useMemo(() =>
       range((botSizeY - 10) / 300),
     [botSizeY]);
-    const horizontalRef = React.useRef<THREE.InstancedMesh>(null);
+    const horizontalRef =
+      React.useRef<THREE.InstancedMesh | undefined>(undefined);
     React.useEffect(() => {
       if (!horizontalRef.current || horizontalInstances.length === 0) { return; }
       const temp = new THREE.Object3D();

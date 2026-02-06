@@ -5,6 +5,8 @@ import { error } from "../../toast/toast";
 import { focusEvent, keyboardEvent } from "../../__test_support__/fake_html_events";
 
 describe("<BlurableInput />", () => {
+  beforeEach(() => jest.clearAllMocks());
+
   const fakeProps = (): BIProps => {
     return {
       onCommit: jest.fn(),

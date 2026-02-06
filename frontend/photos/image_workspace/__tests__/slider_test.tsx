@@ -2,10 +2,19 @@ import React from "react";
 import {
   WeedDetectorSlider, SliderProps, onHslChange, OnHslChangeProps,
 } from "../slider";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { shallow } from "enzyme";
+import { RangeSlider } from "@blueprintjs/core";
 
-jest.useFakeTimers();
 describe("<WeedDetectorSlider />", () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.runOnlyPendingTimers();
+    jest.useRealTimers();
+  });
+
   const fakeProps = (): SliderProps => ({
     onRelease: jest.fn(),
     highest: 99,
@@ -16,24 +25,9 @@ describe("<WeedDetectorSlider />", () => {
 
   it("changes the slider", () => {
     const p = fakeProps();
-    render(<WeedDetectorSlider {...p} />);
-    const [handle] = screen.getAllByRole("slider");
-    handle.getBoundingClientRect = () => ({
-      top: 100,
-      bottom: 100,
-      right: 100,
-      left: 100,
-      width: 100,
-      height: 100,
-      x: 100,
-      y: 100,
-      toJSON: jest.fn(),
-    });
-    fireEvent.mouseDown(handle);
-    fireEvent.mouseMove(handle, { clientX: 10 });
-    fireEvent.mouseUp(handle);
+    const wrapper = shallow(<WeedDetectorSlider {...p} />);
+    wrapper.find(RangeSlider).props().onRelease?.([1, 5]);
     expect(p.onRelease).toHaveBeenCalledWith([1, 5]);
-    jest.runAllTimers();
   });
 });
 

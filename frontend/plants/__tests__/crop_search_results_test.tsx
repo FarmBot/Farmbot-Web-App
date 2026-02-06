@@ -1,15 +1,23 @@
-jest.mock("../../api/crud", () => ({
-  edit: jest.fn(),
-  save: jest.fn(),
-}));
-
 import React from "react";
 import { mount } from "enzyme";
 import { CropSearchResults, SearchResultProps } from "../crop_search_results";
 import { fakePlant } from "../../__test_support__/fake_state/resources";
 import { Path } from "../../internal_urls";
 import { Actions } from "../../constants";
-import { edit, save } from "../../api/crud";
+import * as crud from "../../api/crud";
+
+let editSpy: jest.SpyInstance;
+let saveSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  editSpy.mockRestore();
+  saveSpy.mockRestore();
+});
 
 describe("<CropSearchResults />", () => {
   const fakeProps = (): SearchResultProps => ({
@@ -59,11 +67,11 @@ describe("<CropSearchResults />", () => {
       type: Actions.SET_PLANT_TYPE_CHANGE_ID,
       payload: undefined,
     });
-    expect(edit).toHaveBeenCalledWith(p.plant, {
+    expect(editSpy).toHaveBeenCalledWith(p.plant, {
       name: "Mint",
       openfarm_slug: "mint",
     });
-    expect(save).toHaveBeenCalledWith(p.plant.uuid);
+    expect(saveSpy).toHaveBeenCalledWith(p.plant.uuid);
   });
 
   it("changes plant type and hover", () => {
@@ -90,6 +98,6 @@ describe("<CropSearchResults />", () => {
       type: Actions.SET_SLUG_BULK,
       payload: "mint",
     });
-    expect(edit).not.toHaveBeenCalled();
+    expect(editSpy).not.toHaveBeenCalled();
   });
 });

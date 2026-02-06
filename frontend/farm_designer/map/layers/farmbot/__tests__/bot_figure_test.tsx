@@ -1,3 +1,5 @@
+jest.unmock("../bot_figure");
+
 import React from "react";
 import { shallow } from "enzyme";
 import { BotOriginQuadrant } from "../../../../interfaces";

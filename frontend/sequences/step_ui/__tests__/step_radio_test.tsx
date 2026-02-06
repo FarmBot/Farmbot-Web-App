@@ -9,6 +9,9 @@ import { AxisStepRadio, AxisStepRadioProps } from "../step_radio";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { FindHome, Calibrate, Zero } from "farmbot";
 
+afterAll(() => {
+  jest.unmock("../../../api/crud");
+});
 describe("<StepRadio />", () => {
   const findHomeStep: FindHome = {
     kind: "find_home",

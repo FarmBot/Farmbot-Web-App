@@ -1,7 +1,3 @@
-jest.mock("../edit_curve", () => ({
-  editCurve: jest.fn(),
-}));
-
 import { mount } from "enzyme";
 import React from "react";
 import { Actions } from "../../constants";
@@ -9,11 +5,21 @@ import { tagAsSoilHeight } from "../../points/soil_height";
 import { fakeBotSize } from "../../__test_support__/fake_bot_data";
 import { fakeCurve, fakePoint } from "../../__test_support__/fake_state/resources";
 import { CurveIcon, CurveSvg, getWarningLinesContent } from "../chart";
-import { editCurve } from "../edit_curve";
+import * as editCurveModule from "../edit_curve";
 import { CurveIconProps, CurveSvgProps } from "../interfaces";
 import { Path } from "../../internal_urls";
 
 const TEST_DATA = { 1: 0, 10: 10, 50: 500, 100: 1000 };
+let editCurveSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  editCurveSpy = jest.spyOn(editCurveModule, "editCurve")
+    .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  editCurveSpy.mockRestore();
+});
 
 describe("<CurveSvg />", () => {
   const fakeProps = (): CurveSvgProps => ({
@@ -114,7 +120,7 @@ describe("<CurveSvg />", () => {
     const wrapper = mount(<CurveSvg {...p} />);
     wrapper.find("circle").first().simulate("mouseDown");
     wrapper.find("svg").first().simulate("mouseMove", { movementY: -1 });
-    expect(editCurve).toHaveBeenCalledWith(p.curve,
+    expect(editCurveModule.editCurve).toHaveBeenCalledWith(p.curve,
       { data: { 1: 5, 10: 10, 50: 500, 100: 1000 } });
     wrapper.find("svg").first().simulate("mouseUp");
     wrapper.find("svg").first().simulate("mouseLeave");
@@ -126,7 +132,7 @@ describe("<CurveSvg />", () => {
     const wrapper = mount(<CurveSvg {...p} />);
     wrapper.find("circle").first().simulate("mouseDown");
     wrapper.find("svg").first().simulate("mouseMove", { movementY: 100 });
-    expect(editCurve).toHaveBeenCalledWith(p.curve,
+    expect(editCurveModule.editCurve).toHaveBeenCalledWith(p.curve,
       { data: { 1: 0, 10: 10, 50: 500, 100: 1000 } });
   });
 
@@ -135,7 +141,7 @@ describe("<CurveSvg />", () => {
     p.curve.body.data = TEST_DATA;
     const wrapper = mount(<CurveSvg {...p} />);
     wrapper.find("svg").first().simulate("mouseMove", { movementY: -1 });
-    expect(editCurve).not.toHaveBeenCalled();
+    expect(editCurveModule.editCurve).not.toHaveBeenCalled();
   });
 
   it("adds data", () => {
@@ -144,10 +150,10 @@ describe("<CurveSvg />", () => {
     const wrapper = mount(<CurveSvg {...p} />);
     wrapper.find("circle").last().simulate("mouseEnter");
     wrapper.find("circle").last().simulate("mouseLeave");
-    expect(editCurve).toHaveBeenCalledTimes(0);
+    expect(editCurveModule.editCurve).toHaveBeenCalledTimes(0);
     wrapper.find("circle").last().simulate("click");
-    expect(editCurve).toHaveBeenCalledTimes(1);
-    expect(editCurve).toHaveBeenCalledWith(p.curve,
+    expect(editCurveModule.editCurve).toHaveBeenCalledTimes(1);
+    expect(editCurveModule.editCurve).toHaveBeenCalledWith(p.curve,
       { data: { 1: 0, 10: 10, 50: 500, 99: 990, 100: 1000 } });
   });
 

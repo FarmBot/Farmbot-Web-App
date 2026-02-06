@@ -143,7 +143,6 @@ export class RawFarmDesigner
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = this.context;
 
   render() {
     const {
@@ -312,7 +311,7 @@ export class RawFarmDesigner
           allPoints={this.props.allPoints} />}
 
       <ThreeDGardenToggle
-        navigate={this.navigate}
+        navigate={this.context}
         dispatch={this.props.dispatch}
         device={this.props.device}
         designer={this.props.designer}

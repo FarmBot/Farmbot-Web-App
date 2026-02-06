@@ -1,17 +1,27 @@
-jest.mock("../../step_tiles", () => ({
-  splice: jest.fn(),
-  remove: jest.fn(),
-  move: jest.fn(),
-}));
-
 import React from "react";
 import { mount, shallow } from "enzyme";
 import { StepIconGroup, StepIconBarProps } from "../step_icon_group";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
-import { splice, remove, move } from "../../step_tiles";
+import * as stepTiles from "../../step_tiles";
 import { Path } from "../../../internal_urls";
 import { emptyState } from "../../../resources/reducer";
 import { StateToggleKey } from "../step_wrapper";
+
+let spliceSpy: jest.SpyInstance;
+let removeSpy: jest.SpyInstance;
+let moveSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  spliceSpy = jest.spyOn(stepTiles, "splice").mockImplementation(jest.fn());
+  removeSpy = jest.spyOn(stepTiles, "remove").mockImplementation(jest.fn());
+  moveSpy = jest.spyOn(stepTiles, "move").mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  spliceSpy.mockRestore();
+  removeSpy.mockRestore();
+  moveSpy.mockRestore();
+});
 
 describe("<StepIconGroup />", () => {
   const fakeProps = (): StepIconBarProps => ({
@@ -33,7 +43,10 @@ describe("<StepIconGroup />", () => {
 
   it("renders", () => {
     const wrapper = mount(<StepIconGroup {...fakeProps()} />);
-    expect(wrapper.find("i").length).toEqual(4);
+    expect(wrapper.find(".step-control-icons").length).toEqual(1);
+    expect(wrapper.find(".fa-trash").length).toEqual(1);
+    expect(wrapper.find(".fa-clone").length).toEqual(1);
+    expect(wrapper.find(".fa-arrows-v").length).toEqual(1);
   });
 
   it("renders monaco editor enabled", () => {
@@ -101,14 +114,15 @@ describe("<StepIconGroup />", () => {
 
   it("deletes step", () => {
     const wrapper = mount(<StepIconGroup {...fakeProps()} />);
-    wrapper.find("i").at(1).simulate("click");
-    expect(remove).toHaveBeenCalledWith(expect.objectContaining({ index: 0 }));
+    wrapper.find(".fa-trash").first().simulate("click");
+    expect(stepTiles.remove)
+      .toHaveBeenCalledWith(expect.objectContaining({ index: 0 }));
   });
 
   it("duplicates step", () => {
     const wrapper = mount(<StepIconGroup {...fakeProps()} />);
-    wrapper.find("i").at(2).simulate("click");
-    expect(splice).toHaveBeenCalledWith(expect.objectContaining({
+    wrapper.find(".fa-clone").first().simulate("click");
+    expect(stepTiles.splice).toHaveBeenCalledWith(expect.objectContaining({
       index: 0,
       step: fakeProps().step
     }));
@@ -118,7 +132,7 @@ describe("<StepIconGroup />", () => {
     const wrapper = shallow(<StepIconGroup {...fakeProps()} />);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (wrapper.find("StepUpDownButtonPopover").props() as any).onMove(-1)();
-    expect(move).toHaveBeenCalledWith(expect.objectContaining({
+    expect(stepTiles.move).toHaveBeenCalledWith(expect.objectContaining({
       from: 0,
       to: 0,
       step: fakeProps().step

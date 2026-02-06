@@ -6,6 +6,9 @@ import { Actions } from "../../constants";
 import { Store } from "redux";
 import { Everything } from "../../interfaces";
 
+afterAll(() => {
+  jest.unmock("../refresh_logs");
+});
 describe("refilterLogsMiddleware.fn()", () => {
   const dispatch = jest.fn();
   const fn = refilterLogsMiddleware.fn({} as Store<Everything>)(dispatch);

@@ -17,6 +17,9 @@ import { UUID } from "../../../resources/interfaces";
 import { selectImage, setShownMapImages } from "../actions";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 
+afterAll(() => {
+  jest.unmock("../actions");
+});
 describe("<ImageFlipper/>", () => {
   function prepareImages(data: TaggedImage[]): TaggedImage[] {
     const images: TaggedImage[] = [];

@@ -1,15 +1,22 @@
-jest.mock("../edit", () => ({
-  toggleAndEditEqCriteria: jest.fn(),
-}));
-
 import React from "react";
 import { mount } from "enzyme";
-import { toggleAndEditEqCriteria } from "..";
 import { CheckboxListProps, SubCriteriaSectionProps } from "../interfaces";
 import {
   fakePointGroup,
 } from "../../../__test_support__/fake_state/resources";
 import { CheckboxList, SubCriteriaSection } from "../subcriteria";
+import * as criteriaEdit from "../edit";
+
+let toggleAndEditEqCriteriaSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  toggleAndEditEqCriteriaSpy = jest.spyOn(criteriaEdit, "toggleAndEditEqCriteria")
+    .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
 
 describe("<SubCriteriaSection />", () => {
   const fakeProps = (): SubCriteriaSectionProps => ({
@@ -80,7 +87,7 @@ describe("<CheckboxList />", () => {
     const wrapper = mount(<CheckboxList {...p} />);
     expect(wrapper.text()).toContain("label");
     wrapper.find("input").first().simulate("change");
-    expect(toggleAndEditEqCriteria).toHaveBeenCalledWith(
+    expect(toggleAndEditEqCriteriaSpy).toHaveBeenCalledWith(
       p.group, "openfarm_slug", "value");
   });
 });

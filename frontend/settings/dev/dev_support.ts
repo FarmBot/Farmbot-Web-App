@@ -1,4 +1,4 @@
-import { store } from "../../redux/store";
+import * as StoreModule from "../../redux/store";
 import {
   getWebAppConfigValue, setWebAppConfigValue,
 } from "../../config_storage/actions";
@@ -6,7 +6,6 @@ import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
 
 namespace devStorage {
   const webAppConfigKey = "internal_use" as BooleanConfigKey;
-  const { dispatch, getState } = store;
   export enum Key {
     FUTURE_FE_FEATURES = "FUTURE_FE_FEATURES",
     FBOS_VERSION_OVERRIDE = "FBOS_VERSION_OVERRIDE",
@@ -17,10 +16,15 @@ namespace devStorage {
   }
   type Storage = { [K in Key]: string };
 
-  const loadStorage = (): Storage =>
-    JSON.parse("" + (getWebAppConfigValue(getState)(webAppConfigKey) || "{}"));
+  const loadStorage = (): Storage => {
+    const { getState } = StoreModule.store;
+    return JSON.parse(
+      "" + (getWebAppConfigValue(getState)(webAppConfigKey) || "{}"),
+    );
+  };
 
   const saveStorage = (storage: Storage): void => {
+    const { dispatch, getState } = StoreModule.store;
     const storageString = JSON.stringify(storage);
     setWebAppConfigValue(webAppConfigKey, storageString)(dispatch, getState);
   };

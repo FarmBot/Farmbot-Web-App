@@ -1,11 +1,16 @@
 let mockDev = false;
-jest.mock("../../settings/dev/dev_support", () => ({
-  DevSettings: {
-    futureFeaturesEnabled: () => mockDev,
-    overriddenFbosVersion: jest.fn(),
-    showInternalEnvsEnabled: jest.fn(),
-  }
-}));
+jest.mock("../../settings/dev/dev_support", () => {
+  const actual = jest.requireActual("../../settings/dev/dev_support");
+  return {
+    ...actual,
+    DevSettings: {
+      ...actual.DevSettings,
+      futureFeaturesEnabled: () => mockDev,
+      overriddenFbosVersion: jest.fn(),
+      showInternalEnvsEnabled: jest.fn(),
+    },
+  };
+});
 
 jest.mock("../../farmware/farmware_info", () => ({
   requestFarmwareUpdate: jest.fn(),
@@ -37,6 +42,12 @@ import { Actions, Content, ToolTips } from "../../constants";
 import { clickButton } from "../../__test_support__/helpers";
 import { takePhoto } from "../../devices/actions";
 import { error } from "../../toast/toast";
+
+afterAll(() => {
+  jest.unmock("../../settings/dev/dev_support");
+  jest.unmock("../../farmware/farmware_info");
+  jest.unmock("../../devices/actions");
+});
 
 describe("<DesignerPhotos />", () => {
   const fakeProps = (): DesignerPhotosProps => ({

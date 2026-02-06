@@ -2,7 +2,7 @@ import React from "react";
 import { t } from "../../i18next_wrapper";
 import { cloneDeep, uniq } from "lodash";
 import { Row } from "../../ui";
-import { editCriteria } from ".";
+import * as criteriaEdit from "./edit";
 import {
   AddEqCriteriaProps,
   AddEqCriteriaState,
@@ -23,7 +23,7 @@ export class AddEqCriteria<T extends string | number>
       : this.state.value;
     this.state.value && tempValues.push(value as T);
     tempEqCriteria[this.state.key] = uniq(tempValues);
-    dispatch(editCriteria(group, { [criteriaKey]: tempEqCriteria }));
+    dispatch(criteriaEdit.editCriteria(group, { [criteriaKey]: tempEqCriteria }));
     this.setState({ key: "", value: "" });
   };
 
@@ -58,7 +58,7 @@ export class AddNumberCriteria
     const { dispatch, group, criteriaKey } = this.props;
     const tempNumberCriteria = cloneDeep(group.body.criteria[criteriaKey]);
     tempNumberCriteria[this.state.key] = this.state.value;
-    dispatch(editCriteria(group, { [criteriaKey]: tempNumberCriteria }));
+    dispatch(criteriaEdit.editCriteria(group, { [criteriaKey]: tempNumberCriteria }));
     this.setState({ key: "", value: 0 });
   };
 

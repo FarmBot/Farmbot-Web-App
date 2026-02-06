@@ -1,6 +1,7 @@
 jest.mock("../../../config_storage/actions", () => ({
+  ...jest.requireActual("../../../config_storage/actions"),
   setWebAppConfigValue: jest.fn(),
-  getWebAppConfigValue: jest.fn(() => jest.fn()),
+  getWebAppConfigValue: () => () => false,
 }));
 
 import React from "react";
@@ -10,6 +11,9 @@ import { ToggleHighlightModifiedProps } from "../interfaces";
 import { setWebAppConfigValue } from "../../../config_storage/actions";
 import { BooleanSetting } from "../../../session_keys";
 
+afterAll(() => {
+  jest.unmock("../../../config_storage/actions");
+});
 describe("<ToggleHighlightModified />", () => {
   const fakeProps = (): ToggleHighlightModifiedProps => ({
     dispatch: jest.fn(),

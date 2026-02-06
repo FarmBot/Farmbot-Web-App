@@ -11,6 +11,9 @@ import { editStep } from "../../../api/crud";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 
+afterAll(() => {
+  jest.unmock("../../../api/crud");
+});
 describe("<TileSetServoAngle/>", () => {
   const fakeProps = (): StepParams<SetServoAngle> => ({
     ...fakeStepParams({

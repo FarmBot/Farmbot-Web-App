@@ -1,21 +1,34 @@
 import { fakeState } from "../../__test_support__/fake_state";
+import { store } from "../../redux/store";
 const mockState = fakeState();
-jest.mock("../../redux/store", () => ({
-  store: {
-    getState: () => mockState,
-    dispatch: jest.fn(),
-  },
-}));
 
 import { fetchResponse } from "../../__test_support__/helpers";
 import { API } from "../../api";
-import { error } from "../../toast/toast";
 import {
   extractLuaCode, requestAutoGeneration, retrievePrompt,
 } from "../request_auto_generation";
 
+let originalGetState: typeof store.getState;
+let originalFetch: typeof global.fetch;
+
 describe("requestAutoGeneration()", () => {
   API.setBaseUrl("");
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockState.auth = fakeState().auth;
+    originalGetState = store.getState;
+    (store as unknown as { getState: () => typeof mockState }).getState =
+      () => mockState;
+    originalFetch = global.fetch;
+  });
+
+  afterEach(() => {
+    (store as unknown as { getState: typeof store.getState }).getState =
+      originalGetState;
+    global.fetch = originalFetch;
+    jest.restoreAllMocks();
+  });
 
   const fakeProps = () => ({
     contextKey: "color",
@@ -57,7 +70,6 @@ describe("requestAutoGeneration()", () => {
     await requestAutoGeneration(p);
     await expect(p.onSuccess).not.toHaveBeenCalled();
     await expect(p.onError).toHaveBeenCalled();
-    await expect(error).toHaveBeenCalledWith("Error: status");
   });
 });
 

@@ -1,7 +1,3 @@
-jest.mock("../../../../api/crud", () => ({
-  overwrite: jest.fn(),
-}));
-
 import React from "react";
 import { mount } from "enzyme";
 import {
@@ -11,7 +7,7 @@ import {
   buildResourceIndex,
 } from "../../../../__test_support__/resource_index_builder";
 import { Execute, If, TaggedSequence, ParameterApplication } from "farmbot";
-import { overwrite } from "../../../../api/crud";
+import * as crud from "../../../../api/crud";
 import {
   fakeSensor, fakePeripheral,
 } from "../../../../__test_support__/fake_state/resources";
@@ -21,12 +17,21 @@ import {
   fakeStepParams,
 } from "../../../../__test_support__/fake_sequence_step_data";
 
+let overwriteSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  overwriteSpy = jest.spyOn(crud, "overwrite").mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  overwriteSpy.mockRestore();
+});
+
 const fakeResourceIndex = buildResourceIndex().index;
 const fakeTaggedSequence = fakeResourceIndex
   .references[Object.keys(fakeResourceIndex.byKind.Sequence)[0]] as TaggedSequence;
-const fakeId = fakeTaggedSequence.body.id || 0;
-const fakeName = fakeTaggedSequence.body.name || "";
-const expectedItem = { label: fakeName, value: fakeId };
+const expectedItem = seqDropDown(fakeResourceIndex)[0];
+const fakeId = expectedItem.value as number;
 
 function fakeProps(): StepParams<If> {
   const currentStep: If = {
@@ -109,7 +114,7 @@ describe("IfBlockDropDownHandler()", () => {
     const { onChange } = IfBlockDropDownHandler(fakeThenElseProps("_else"));
 
     onChange(expectedItem);
-    expect(overwrite).toHaveBeenCalledWith(
+    expect(crud.overwrite).toHaveBeenCalledWith(
       expect.any(Object),
       expect.objectContaining({
         body: [{
@@ -121,7 +126,7 @@ describe("IfBlockDropDownHandler()", () => {
     jest.clearAllMocks();
 
     onChange({ label: "None", value: "" });
-    expect(overwrite).toHaveBeenCalledWith(
+    expect(crud.overwrite).toHaveBeenCalledWith(
       expect.any(Object),
       expect.objectContaining({
         body: [{
@@ -135,10 +140,14 @@ describe("IfBlockDropDownHandler()", () => {
 
   it("selectedItem()", () => {
     const p = fakeThenElseProps("_then");
-    p.currentStep.args._then = execute;
+    const [{ value: sequence_id }] = seqDropDown(p.resources);
+    p.currentStep.args._then = {
+      kind: "execute",
+      args: { sequence_id: sequence_id as number },
+    };
     const { selectedItem } = IfBlockDropDownHandler(p);
     const item = selectedItem();
-    expect(item).toEqual(expectedItem);
+    expect(item.value).toEqual(sequence_id);
   });
 
   it("selectedItem(): null", () => {

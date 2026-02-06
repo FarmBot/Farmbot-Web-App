@@ -1,9 +1,4 @@
 let mockIsDesktop = false;
-jest.mock("../../../screen_size", () => ({
-  isDesktop: () => mockIsDesktop,
-}));
-
-jest.mock("../../../api/crud", () => ({ overwrite: jest.fn() }));
 
 import React from "react";
 import { TileMoveAbsolute } from "../tile_move_absolute";
@@ -22,8 +17,24 @@ import { StepParams } from "../../interfaces";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
-import { overwrite } from "../../../api/crud";
+import * as crud from "../../../api/crud";
 import { cloneDeep } from "lodash";
+import * as screenSize from "../../../screen_size";
+
+let isDesktopSpy: jest.SpyInstance;
+let overwriteSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  mockIsDesktop = false;
+  isDesktopSpy = jest.spyOn(screenSize, "isDesktop")
+    .mockImplementation(() => mockIsDesktop);
+  overwriteSpy = jest.spyOn(crud, "overwrite").mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  isDesktopSpy.mockRestore();
+  overwriteSpy.mockRestore();
+});
 
 describe("<TileMoveAbsolute />", () => {
   const fakeProps = (): StepParams<MoveAbsolute> => {
@@ -194,7 +205,7 @@ describe("<TileMoveAbsolute />", () => {
       const expected = cloneDeep(p.currentSequence.body);
       p.currentStep.args.location = location;
       expected.body = [p.currentStep];
-      expect(overwrite).toHaveBeenCalledWith(p.currentSequence, expected);
+      expect(crud.overwrite).toHaveBeenCalledWith(p.currentSequence, expected);
     });
 
     it("handles missing body", () => {
@@ -202,7 +213,7 @@ describe("<TileMoveAbsolute />", () => {
       p.currentSequence.body.body = undefined;
       const block = new TileMoveAbsolute(p);
       block.updateArgs({});
-      expect(overwrite).not.toHaveBeenCalled();
+      expect(crud.overwrite).not.toHaveBeenCalled();
     });
   });
 
@@ -246,7 +257,7 @@ describe("<TileMoveAbsolute />", () => {
         args: { label: "label" },
       };
       expected.body = [p.currentStep];
-      expect(overwrite).toHaveBeenCalledWith(p.currentSequence, expected);
+      expect(crud.overwrite).toHaveBeenCalledWith(p.currentSequence, expected);
     });
   });
 });

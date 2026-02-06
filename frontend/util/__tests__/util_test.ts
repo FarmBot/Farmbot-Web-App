@@ -1,6 +1,8 @@
 import * as Util from "../util";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 
+afterEach(() => jest.useRealTimers());
+
 describe("util", () => {
   describe("scrollToBottom", () => {
     it("returns early if element is not found", () => {
@@ -11,21 +13,28 @@ describe("util", () => {
       jest.useFakeTimers();
       Util.scrollToBottom("wow");
       jest.runAllTimers();
+      jest.useRealTimers();
     });
 
     it("scrolls to bottom when an element is found", () => {
-      document.body.innerHTML =
-        "<div>" +
-        "  <span id=\"wow\" />" +
-        "  <button id=\"button\" />" +
-        "</div>";
-      const el = document.getElementById("wow");
-      Object.defineProperty(el, "scrollHeight", { value: 10, configurable: true });
-      expect(el?.scrollTop).toEqual(0);
-      jest.useFakeTimers();
-      Util.scrollToBottom("wow");
-      jest.runAllTimers();
-      expect(el?.scrollTop).toEqual(10);
+      const el = { scrollTop: 0, scrollHeight: 10 } as
+        unknown as HTMLElement & { scrollTop: number; scrollHeight: number; };
+      const getElementByIdSpy = jest.spyOn(document, "getElementById")
+        .mockReturnValue(el);
+      expect(el.scrollTop).toEqual(0);
+      const { scrollToBottom } =
+        jest.requireActual<typeof import("../util")>("../util");
+      const originalSetTimeout = global.setTimeout;
+      const setTimeoutMock = jest.fn((callback: TimerHandler) => {
+        if (typeof callback == "function") { callback(); }
+        return 0 as unknown as ReturnType<typeof setTimeout>;
+      });
+      global.setTimeout = setTimeoutMock as unknown as typeof setTimeout;
+      scrollToBottom("wow");
+      global.setTimeout = originalSetTimeout;
+      getElementByIdSpy.mockRestore();
+      expect(setTimeoutMock).toHaveBeenCalled();
+      expect(el.scrollTop).toEqual(10);
     });
   });
 

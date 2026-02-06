@@ -1,7 +1,7 @@
 import React from "react";
 import * as THREE from "three";
 import { Mesh } from "./components";
-import { GLTF } from "three-stdlib";
+import type { GLTF } from "three-stdlib";
 
 export type Model = GLTF & {
   nodes: { mesh: THREE.Mesh };

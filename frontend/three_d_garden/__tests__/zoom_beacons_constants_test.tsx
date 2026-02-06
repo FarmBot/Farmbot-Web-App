@@ -15,6 +15,9 @@ import {
 import { clone } from "lodash";
 import { INITIAL } from "../config";
 
+afterAll(() => {
+  jest.unmock("../../screen_size");
+});
 describe("FOCI()", () => {
   it("returns foci", () => {
     const config = clone(INITIAL);
@@ -67,20 +70,28 @@ describe("getCamera()", () => {
 });
 
 describe("setUrlParam()", () => {
-  history.pushState = jest.fn();
+  let pushStateSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    pushStateSpy = jest.spyOn(history, "pushState").mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    pushStateSpy.mockRestore();
+  });
 
   it("sets URL param", () => {
-    window.location.href = "http://localhost:3000/app/designer";
+    history.replaceState(undefined, "", "http://localhost/app/designer");
     setUrlParam("focus", "What you can grow");
-    expect(history.pushState).toHaveBeenCalledWith(undefined, "",
-      "http://localhost:3000/app/designer?focus=What+you+can+grow");
+    expect(pushStateSpy).toHaveBeenCalledWith(
+      undefined, "", "http://localhost/?focus=What+you+can+grow");
   });
 
   it("removes URL param", () => {
-    window.location.href = "http://localhost:3000/app/designer?focus=What+you+can+grow";
+    history.replaceState(
+      undefined, "", "http://localhost/app/designer?focus=What+you+can+grow");
     setUrlParam("focus", "");
-    expect(history.pushState).toHaveBeenCalledWith(undefined, "",
-      "http://localhost:3000/app/designer");
+    expect(pushStateSpy).toHaveBeenCalledWith(undefined, "", "http://localhost/");
   });
 });
 

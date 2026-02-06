@@ -5,6 +5,8 @@ import { registerSubscribers } from "./subscribers";
 import { getMiddleware } from "./middlewares";
 import { set } from "lodash";
 
+let storeInstance: Store | undefined;
+
 function getStore(envName: EnvName): Store {
   return createStore(rootReducer,
     {},
@@ -19,7 +21,14 @@ export function configureStore() {
   // Make store global in case I need to probe it.
   set(window, "store", store2);
   registerSubscribers(store2);
+  storeInstance = store2;
   return store2;
 }
 
-export const store = configureStore();
+const getStoreInstance = () => storeInstance ?? configureStore();
+
+export const store: Store = new Proxy({} as Store, {
+  get: (_target, prop: keyof Store) => getStoreInstance()[prop],
+  set: (_target, prop: string | symbol, value: unknown) =>
+    Reflect.set(getStoreInstance() as object, prop, value),
+});

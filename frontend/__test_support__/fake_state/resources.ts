@@ -38,7 +38,18 @@ import { MessageType } from "../../sequences/interfaces";
 import { TaggedPointGroup } from "../../resources/interfaces";
 
 export const resources: Everything["resources"] = buildResourceIndex();
-let idCounter = 1;
+const globalAny = globalThis as typeof globalThis & {
+  __fakeResourceIdCounter?: number;
+};
+const nextFakeId = () => {
+  const current = globalAny.__fakeResourceIdCounter ?? 1;
+  globalAny.__fakeResourceIdCounter = current + 1;
+  return current;
+};
+
+export const resetFakeResourceIdCounter = () => {
+  globalAny.__fakeResourceIdCounter = 1;
+};
 
 export const fakeSequence =
   (body: Partial<TaggedSequence["body"]> = {}): TaggedSequence => {
@@ -47,7 +58,7 @@ export const fakeSequence =
         version: 4,
         locals: { kind: "scope_declaration", args: {} },
       },
-      id: idCounter++,
+      id: nextFakeId(),
       color: "red",
       folder_id: undefined,
       name: "fake",
@@ -62,7 +73,7 @@ export const fakeSequence =
 
 export function fakeFolder(input: Partial<Folder> = {}): TaggedFolder {
   return fakeResource("Folder", {
-    id: idCounter++,
+    id: nextFakeId(),
     color: "red",
     parent_id: undefined,
     name: "fake",
@@ -94,7 +105,7 @@ export function fakeFarmEvent(exe_type: ExecutableType,
 
 export function fakeLog(): TaggedLog {
   return fakeResource("Log", {
-    id: idCounter++,
+    id: nextFakeId(),
     message: "Farmbot is up and Running!",
     type: MessageType.info,
     x: 1,
@@ -111,8 +122,8 @@ export function fakeLog(): TaggedLog {
 
 export function fakeImage(): TaggedImage {
   return fakeResource("Image", {
-    id: idCounter++,
-    device_id: idCounter++,
+    id: nextFakeId(),
+    device_id: nextFakeId(),
     attachment_processed_at: undefined,
     updated_at: new Date().toISOString(),
     created_at: new Date().toISOString(),
@@ -131,7 +142,7 @@ export function fakeTool(): TaggedTool {
 
 export function fakeUser(): TaggedUser {
   return fakeResource("User", {
-    id: idCounter++,
+    id: nextFakeId(),
     name: "Fake User 123",
     email: "fake@fake.com",
     language: "English",
@@ -156,7 +167,7 @@ export function fakeToolSlot(): TaggedToolSlotPointer {
 
 export function fakePlant(): TaggedPlantPointer {
   return fakeResource("Point", {
-    id: idCounter++,
+    id: nextFakeId(),
     name: "Strawberry Plant 1",
     pointer_type: "Plant",
     plant_stage: "planned",
@@ -172,7 +183,7 @@ export function fakePlant(): TaggedPlantPointer {
 
 export function fakePoint(): TaggedGenericPointer {
   return fakeResource("Point", {
-    id: idCounter++,
+    id: nextFakeId(),
     name: "Point 1",
     pointer_type: "GenericPointer",
     x: 200,
@@ -185,7 +196,7 @@ export function fakePoint(): TaggedGenericPointer {
 
 export function fakeWeed(): TaggedWeedPointer {
   return fakeResource("Point", {
-    id: idCounter++,
+    id: nextFakeId(),
     name: "Weed 1",
     pointer_type: "Weed",
     x: 200,
@@ -199,15 +210,15 @@ export function fakeWeed(): TaggedWeedPointer {
 
 export function fakeSavedGarden(): TaggedSavedGarden {
   return fakeResource("SavedGarden", {
-    id: idCounter++,
+    id: nextFakeId(),
     name: "Saved Garden 1",
   });
 }
 
 export function fakePlantTemplate(): TaggedPlantTemplate {
   return fakeResource("PlantTemplate", {
-    id: idCounter++,
-    saved_garden_id: idCounter++,
+    id: nextFakeId(),
+    saved_garden_id: nextFakeId(),
     radius: 50,
     x: 100,
     y: 200,
@@ -218,7 +229,7 @@ export function fakePlantTemplate(): TaggedPlantTemplate {
 }
 
 export function fakeWebcamFeed(): TaggedWebcamFeed {
-  const id = idCounter++;
+  const id = nextFakeId();
   return fakeResource("WebcamFeed", {
     id,
     created_at: "---",
@@ -229,7 +240,7 @@ export function fakeWebcamFeed(): TaggedWebcamFeed {
 }
 
 export function fakeWizardStepResult(): TaggedWizardStepResult {
-  const id = idCounter++;
+  const id = nextFakeId();
   return fakeResource("WizardStepResult", {
     id,
     created_at: "2018-01-11T20:20:38.362Z",
@@ -241,7 +252,7 @@ export function fakeWizardStepResult(): TaggedWizardStepResult {
 }
 
 export function fakeTelemetry(): TaggedTelemetry {
-  const id = idCounter++;
+  const id = nextFakeId();
   return fakeResource("Telemetry", {
     id,
     created_at: 1501703421,
@@ -261,16 +272,16 @@ export function fakeTelemetry(): TaggedTelemetry {
 
 export function fakePinBinding(): TaggedPinBinding {
   return fakeResource("PinBinding", {
-    id: idCounter++,
+    id: nextFakeId(),
     pin_num: 10,
-    sequence_id: idCounter++,
+    sequence_id: nextFakeId(),
     binding_type: PinBindingType.standard,
   });
 }
 
 export function fakeSensor(): TaggedSensor {
   return fakeResource("Sensor", {
-    id: idCounter++,
+    id: nextFakeId(),
     label: "Fake Pin",
     mode: 0,
     pin: 1
@@ -279,7 +290,7 @@ export function fakeSensor(): TaggedSensor {
 
 export function fakeSensorReading(): TaggedSensorReading {
   return fakeResource("SensorReading", {
-    id: idCounter++,
+    id: nextFakeId(),
     created_at: "2018-01-11T20:20:38.362Z",
     read_at: "2018-01-11T20:20:38.362Z",
     pin: 1,
@@ -293,7 +304,7 @@ export function fakeSensorReading(): TaggedSensorReading {
 
 export function fakePeripheral(): TaggedPeripheral {
   return fakeResource("Peripheral", {
-    id: ++idCounter,
+    id: nextFakeId(),
     label: "Fake Pin",
     pin: 1,
     mode: 0,
@@ -302,8 +313,8 @@ export function fakePeripheral(): TaggedPeripheral {
 
 export function fakeFbosConfig(): TaggedFbosConfig {
   return fakeResource("FbosConfig", {
-    id: idCounter++,
-    device_id: idCounter++,
+    id: nextFakeId(),
+    device_id: nextFakeId(),
     created_at: "",
     updated_at: "",
     firmware_input_log: false,
@@ -320,8 +331,8 @@ export function fakeFbosConfig(): TaggedFbosConfig {
 
 export function fakeWebAppConfig(): TaggedWebAppConfig {
   return fakeResource("WebAppConfig", {
-    id: idCounter++,
-    device_id: idCounter++,
+    id: nextFakeId(),
+    device_id: nextFakeId(),
     created_at: "2018-01-11T20:20:38.362Z",
     updated_at: "2018-01-22T15:32:41.970Z",
     assertion_log: 1,
@@ -400,8 +411,8 @@ export function fakeWebAppConfig(): TaggedWebAppConfig {
 
 export function fakeFirmwareConfig(): TaggedFirmwareConfig {
   return fakeResource("FirmwareConfig", {
-    id: idCounter++,
-    device_id: idCounter++,
+    id: nextFakeId(),
+    device_id: nextFakeId(),
     created_at: "",
     updated_at: "",
     encoder_enabled_x: 1,

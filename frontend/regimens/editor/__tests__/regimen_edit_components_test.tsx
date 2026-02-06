@@ -23,6 +23,9 @@ const fakeProps = (): RegimenProps => ({
   dispatch: jest.fn(),
 });
 
+afterAll(() => {
+  jest.unmock("../../../api/crud");
+});
 describe("<RegimenButtonGroup />", () => {
   it("deletes regimen", () => {
     const p = fakeProps();

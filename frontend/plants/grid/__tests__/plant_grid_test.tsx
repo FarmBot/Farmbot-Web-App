@@ -1,8 +1,3 @@
-jest.mock("../thunks", () => ({
-  saveGrid: jest.fn(() => "SAVE_GRID_MOCK"),
-  stashGrid: jest.fn(() => "STASH_GRID_MOCK")
-}));
-
 jest.mock("../../../api/crud", () => ({
   batchInitDirty: jest.fn(),
 }));
@@ -10,16 +5,31 @@ jest.mock("../../../api/crud", () => ({
 import React from "react";
 import { mount } from "enzyme";
 import { MAX_N, PlantGrid } from "../plant_grid";
-import { saveGrid, stashGrid } from "../thunks";
+import * as thunks from "../thunks";
 import { error, success } from "../../../toast/toast";
 import { PlantGridProps } from "../interfaces";
 import { batchInitDirty } from "../../../api/crud";
 import { Actions } from "../../../constants";
 import { fakeDesignerState } from "../../../__test_support__/fake_designer_state";
 
+afterAll(() => {
+  jest.unmock("../../../api/crud");
+});
 describe("<PlantGrid />", () => {
+  let saveGridSpy: jest.SpyInstance;
+  let stashGridSpy: jest.SpyInstance;
+
   beforeEach(() => {
     console.debug = jest.fn();
+    saveGridSpy = jest.spyOn(thunks, "saveGrid")
+      .mockImplementation(() => "SAVE_GRID_MOCK" as never);
+    stashGridSpy = jest.spyOn(thunks, "stashGrid")
+      .mockImplementation(() => "STASH_GRID_MOCK" as never);
+  });
+
+  afterEach(() => {
+    saveGridSpy.mockRestore();
+    stashGridSpy.mockRestore();
   });
 
   const fakeProps = (): PlantGridProps => ({
@@ -63,7 +73,7 @@ describe("<PlantGrid />", () => {
     const wrapper = mount<PlantGrid>(<PlantGrid {...p} />).instance();
     const oldId = wrapper.state.gridId;
     await wrapper.saveGrid();
-    expect(saveGrid).toHaveBeenCalledWith(oldId);
+    expect(thunks.saveGrid).toHaveBeenCalledWith(oldId);
     expect(success).toHaveBeenCalledWith("6 plants added.");
     expect(wrapper.state.gridId).not.toEqual(oldId);
     expect(p.close).toHaveBeenCalled();
@@ -81,7 +91,7 @@ describe("<PlantGrid />", () => {
     const props = fakeProps();
     const wrapper = mount<PlantGrid>(<PlantGrid {...props} />);
     await wrapper.instance().revertPreview({ setStatus: true })();
-    expect(stashGrid).toHaveBeenCalledWith(wrapper.state().gridId);
+    expect(thunks.stashGrid).toHaveBeenCalledWith(wrapper.state().gridId);
   });
 
   it(`prevents creation of grids with > ${MAX_N} plants`, () => {

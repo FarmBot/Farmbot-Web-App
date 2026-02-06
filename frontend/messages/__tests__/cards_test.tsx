@@ -1,11 +1,4 @@
-jest.mock("../../devices/actions", () => ({ updateConfig: jest.fn() }));
-
-jest.mock("../../api/crud", () => ({ destroy: jest.fn() }));
-
 let mockFeatureBoolean = false;
-jest.mock("../../devices/should_display", () => ({
-  shouldDisplayFeature: () => mockFeatureBoolean,
-}));
 
 const fakeBulletin: Bulletin = {
   content: "Alert content.",
@@ -18,29 +11,24 @@ const fakeBulletin: Bulletin = {
 
 let mockData: Bulletin | undefined = fakeBulletin;
 const mockSeedAccount = jest.fn();
-jest.mock("../actions", () => ({
-  fetchBulletinContent: jest.fn(() => Promise.resolve(mockData)),
-  seedAccount: () => mockSeedAccount,
-}));
-
-jest.mock("../../session", () => ({ Session: { clear: jest.fn() } }));
 
 import { fakeState } from "../../__test_support__/fake_state";
+import { store } from "../../redux/store";
 const mockState = fakeState();
-jest.mock("../../redux/store", () => ({
-  store: { getState: () => mockState, dispatch: jest.fn() },
-}));
 
 import React from "react";
 import { mount, shallow } from "enzyme";
+import axios from "axios";
 import {
   AlertCard, changeFirmwareHardware, ReSeedAccount, SEED_DATA_OPTIONS,
 } from "../cards";
 import { AlertCardProps, Bulletin } from "../interfaces";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { FBSelect } from "../../ui";
-import { destroy } from "../../api/crud";
-import { updateConfig } from "../../devices/actions";
+import * as crud from "../../api/crud";
+import * as deviceActions from "../../devices/actions";
+import * as shouldDisplay from "../../devices/should_display";
+import * as messageActions from "../actions";
 import { Session } from "../../session";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { fakeWizardStepResult } from "../../__test_support__/fake_state/resources";
@@ -50,11 +38,54 @@ import moment from "moment";
 
 API.setBaseUrl("");
 
-describe("<AlertCard />", () => {
-  beforeEach(() => {
-    mockFeatureBoolean = false;
-  });
+let originalGetState: typeof store.getState;
+let originalDispatch: typeof store.dispatch;
+let destroySpy: jest.SpyInstance;
+let updateConfigSpy: jest.SpyInstance;
+let shouldDisplayFeatureSpy: jest.SpyInstance;
+let fetchBulletinContentSpy: jest.SpyInstance;
+let seedAccountSpy: jest.SpyInstance;
+let axiosDeleteSpy: jest.SpyInstance;
+let sessionClearSpy: jest.SpyInstance;
 
+beforeEach(() => {
+  mockFeatureBoolean = false;
+  mockData = fakeBulletin;
+  mockSeedAccount.mockClear();
+  mockState.resources = fakeState().resources;
+  originalGetState = store.getState;
+  originalDispatch = store.dispatch;
+  (store as unknown as { getState: () => typeof mockState }).getState =
+    () => mockState;
+  (store as unknown as { dispatch: jest.Mock }).dispatch = jest.fn();
+  destroySpy = jest.spyOn(crud, "destroy").mockImplementation(jest.fn());
+  updateConfigSpy = jest.spyOn(deviceActions, "updateConfig")
+    .mockImplementation(jest.fn());
+  shouldDisplayFeatureSpy = jest.spyOn(shouldDisplay, "shouldDisplayFeature")
+    .mockImplementation(() => mockFeatureBoolean);
+  fetchBulletinContentSpy = jest.spyOn(messageActions, "fetchBulletinContent")
+    .mockImplementation(() => Promise.resolve(mockData) as never);
+  seedAccountSpy = jest.spyOn(messageActions, "seedAccount")
+    .mockImplementation(() => mockSeedAccount as never);
+  axiosDeleteSpy = jest.spyOn(axios, "delete").mockResolvedValue({} as never);
+  sessionClearSpy = jest.spyOn(Session, "clear").mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  (store as unknown as { getState: typeof store.getState }).getState =
+    originalGetState;
+  (store as unknown as { dispatch: typeof store.dispatch }).dispatch =
+    originalDispatch;
+  destroySpy.mockRestore();
+  updateConfigSpy.mockRestore();
+  shouldDisplayFeatureSpy.mockRestore();
+  fetchBulletinContentSpy.mockRestore();
+  seedAccountSpy.mockRestore();
+  axiosDeleteSpy.mockRestore();
+  sessionClearSpy.mockRestore();
+});
+
+describe("<AlertCard />", () => {
   const fakeProps = (): AlertCardProps => ({
     alert: {
       created_at: 123,
@@ -74,7 +105,7 @@ describe("<AlertCard />", () => {
     const wrapper = mount(<AlertCard {...p} />);
     expect(wrapper.text()).toContain("noun: verb (author)");
     wrapper.find(".fa-times").simulate("click");
-    expect(destroy).toHaveBeenCalledWith("uuid");
+    expect(crud.destroy).toHaveBeenCalledWith("uuid");
   });
 
   it("renders firmware card", () => {
@@ -259,17 +290,18 @@ describe("<AlertCard />", () => {
 describe("changeFirmwareHardware()", () => {
   it("changes firmware hardware value", () => {
     changeFirmwareHardware(jest.fn())({ label: "Arduino", value: "arduino" });
-    expect(updateConfig).toHaveBeenCalledWith({ firmware_hardware: "arduino" });
+    expect(deviceActions.updateConfig)
+      .toHaveBeenCalledWith({ firmware_hardware: "arduino" });
   });
 
   it("doesn't change firmware hardware value", () => {
     changeFirmwareHardware(jest.fn())({ label: "Arduino", value: "" });
-    expect(updateConfig).not.toHaveBeenCalled();
+    expect(deviceActions.updateConfig).not.toHaveBeenCalled();
   });
 
   it("doesn't change firmware hardware value: no dispatch", () => {
     changeFirmwareHardware(undefined)({ label: "Arduino", value: "arduino" });
-    expect(updateConfig).not.toHaveBeenCalled();
+    expect(deviceActions.updateConfig).not.toHaveBeenCalled();
   });
 });
 

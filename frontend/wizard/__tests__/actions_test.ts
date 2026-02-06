@@ -16,6 +16,9 @@ import {
   setOrderNumber,
 } from "../actions";
 
+afterAll(() => {
+  jest.unmock("../../api/crud");
+});
 describe("addOrUpdateWizardStepResult()", () => {
   it("adds result", () => {
     const result = fakeWizardStepResult();

@@ -1,12 +1,27 @@
 import { stopIE } from "../stop_ie";
 
 describe("stopIE()", () => {
+  const originalWindowHasOwnProperty = window.hasOwnProperty;
+  const originalArrayHasOwnProperty = Array.prototype.hasOwnProperty;
+  const originalObjectEntriesDescriptor =
+    Object.getOwnPropertyDescriptor(Object, "entries");
+
   beforeEach(() => {
     window.hasOwnProperty = () => true;
     Array.prototype.hasOwnProperty = () => true;
     Object.defineProperty(Object, "entries", {
       value: true, configurable: true
     });
+  });
+
+  afterEach(() => {
+    window.hasOwnProperty = originalWindowHasOwnProperty;
+    Array.prototype.hasOwnProperty = originalArrayHasOwnProperty;
+    if (originalObjectEntriesDescriptor) {
+      Object.defineProperty(Object, "entries", originalObjectEntriesDescriptor);
+    } else {
+      delete (Object as Record<string, unknown>).entries;
+    }
   });
 
   const expectToHaveBeenStopped = () => {

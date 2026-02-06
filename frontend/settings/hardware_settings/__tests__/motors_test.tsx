@@ -1,13 +1,4 @@
-jest.mock("../../../api/crud", () => ({
-  edit: jest.fn(),
-  save: jest.fn(),
-}));
-
 let mockDefaultValue = 1;
-jest.mock("../default_values", () => ({
-  getDefaultFwConfigValue: jest.fn(() => () => mockDefaultValue),
-  getModifiedClassName: jest.fn(),
-}));
 
 import React from "react";
 import { MotorsProps } from "../interfaces";
@@ -15,31 +6,40 @@ import {
   Motors, motorCurrentMaToPercent, motorCurrentPercentToMa,
 } from "../motors";
 import { render, mount, shallow } from "enzyme";
-import { McuParamName } from "farmbot";
 import {
   settingsPanelState as fakeSettingsPanelState,
 } from "../../../__test_support__/panel_state";
-import { fakeState } from "../../../__test_support__/fake_state";
-import {
-  fakeFirmwareConfig,
-} from "../../../__test_support__/fake_state/resources";
-import {
-  buildResourceIndex,
-} from "../../../__test_support__/resource_index_builder";
-import { edit, save } from "../../../api/crud";
 import { SingleSettingRow } from "../single_setting_row";
 import { range } from "lodash";
+import * as defaultValues from "../default_values";
+import * as deviceActions from "../../../devices/actions";
+
+let getDefaultFwConfigValueSpy: jest.SpyInstance;
+let getModifiedClassNameSpy: jest.SpyInstance;
+let settingToggleSpy: jest.SpyInstance;
+const TOGGLE_ACTION = { type: "TOGGLE_MCU" };
+
+beforeEach(() => {
+  getDefaultFwConfigValueSpy = jest.spyOn(defaultValues, "getDefaultFwConfigValue")
+    .mockImplementation(jest.fn(() => () => mockDefaultValue) as never);
+  getModifiedClassNameSpy = jest.spyOn(defaultValues, "getModifiedClassName")
+    .mockImplementation(jest.fn() as never);
+  settingToggleSpy = jest.spyOn(deviceActions, "settingToggle")
+    .mockImplementation(() => TOGGLE_ACTION as never);
+});
+
+afterEach(() => {
+  getDefaultFwConfigValueSpy.mockRestore();
+  getModifiedClassNameSpy.mockRestore();
+  settingToggleSpy.mockRestore();
+});
 
 describe("<Motors />", () => {
-  const fakeConfig = fakeFirmwareConfig();
-  const state = fakeState();
-  state.resources = buildResourceIndex([fakeConfig]);
-
   const fakeProps = (): MotorsProps => {
     const settingsPanelState = fakeSettingsPanelState();
     settingsPanelState.motors = true;
     return {
-      dispatch: jest.fn(x => x(jest.fn(), () => state)),
+      dispatch: jest.fn(),
       settingsPanelState,
       sourceFwConfig: () => ({ value: 0, consistent: true }),
       firmwareHardware: undefined,
@@ -92,15 +92,19 @@ describe("<Motors />", () => {
   });
 
   const testParamToggle = (
-    description: string, parameter: McuParamName, position: number) => {
+    description: string,
+    parameter: "movement_secondary_motor_x" | "movement_secondary_motor_invert_x",
+    position: number,
+  ) => {
     it(`${description}`, () => {
       const p = fakeProps();
       p.settingsPanelState.motors = true;
       p.sourceFwConfig = () => ({ value: 1, consistent: true });
       const wrapper = mount(<Motors {...p} />);
       wrapper.find("button").at(position).simulate("click");
-      expect(edit).toHaveBeenCalledWith(fakeConfig, { [parameter]: 0 });
-      expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
+      expect(deviceActions.settingToggle)
+        .toHaveBeenCalledWith(parameter, p.sourceFwConfig);
+      expect(p.dispatch).toHaveBeenCalledWith(TOGGLE_ACTION);
     });
   };
   testParamToggle("toggles enable X2", "movement_secondary_motor_x", 9);

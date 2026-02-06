@@ -1,10 +1,3 @@
-jest.mock("../../api/crud", () => ({
-  overwrite: jest.fn(),
-  init: jest.fn(() => ({ payload: { uuid: "uuid" } })),
-  save: jest.fn(),
-  destroy: jest.fn(),
-}));
-
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
@@ -23,7 +16,7 @@ import { fakeCurve, fakePlant } from "../../__test_support__/fake_state/resource
 import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
-import { destroy, overwrite, init, save } from "../../api/crud";
+import * as crud from "../../api/crud";
 import { mockDispatch } from "../../__test_support__/fake_dispatch";
 import { fakeBotSize } from "../../__test_support__/fake_bot_data";
 import { changeBlurableInput } from "../../__test_support__/helpers";
@@ -31,11 +24,29 @@ import { error } from "../../toast/toast";
 import { SpecialStatus } from "farmbot";
 import { Path } from "../../internal_urls";
 
-describe("<EditCurve />", () => {
-  beforeEach(() => {
-    location.pathname = Path.mock(Path.curves(1));
-  });
+let overwriteSpy: jest.SpyInstance;
+let initSpy: jest.SpyInstance;
+let saveSpy: jest.SpyInstance;
+let destroySpy: jest.SpyInstance;
 
+beforeEach(() => {
+  jest.clearAllMocks();
+  overwriteSpy = jest.spyOn(crud, "overwrite").mockImplementation(jest.fn());
+  initSpy = jest.spyOn(crud, "init")
+    .mockImplementation(() => ({ payload: { uuid: "uuid" } } as never));
+  saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+  destroySpy = jest.spyOn(crud, "destroy").mockImplementation(jest.fn());
+  location.pathname = Path.mock(Path.curves(1));
+});
+
+afterEach(() => {
+  overwriteSpy.mockRestore();
+  initSpy.mockRestore();
+  saveSpy.mockRestore();
+  destroySpy.mockRestore();
+});
+
+describe("<EditCurve />", () => {
   const fakeProps = (): EditCurveProps => ({
     dispatch: mockDispatch(),
     findCurve: () => undefined,
@@ -87,7 +98,7 @@ describe("<EditCurve />", () => {
     p.findCurve = () => curve;
     const wrapper = mount(<EditCurve {...p} />);
     wrapper.find("circle").last().simulate("click");
-    expect(overwrite).toHaveBeenCalledWith(curve, {
+    expect(overwriteSpy).toHaveBeenCalledWith(curve, {
       name: "Fake",
       type: "water",
       data: { 1: 0, 10: 10, 99: 989, 100: 1000 },
@@ -104,7 +115,7 @@ describe("<EditCurve />", () => {
     const wrapper = mount(<EditCurve {...p} />);
     wrapper.setState({ uuid: curve.uuid });
     wrapper.unmount();
-    expect(save).toHaveBeenCalledWith(curve.uuid);
+    expect(saveSpy).toHaveBeenCalledWith(curve.uuid);
   });
 
   it("doesn't save data: no uuid", () => {
@@ -117,7 +128,7 @@ describe("<EditCurve />", () => {
     const wrapper = mount(<EditCurve {...p} />);
     wrapper.setState({ uuid: undefined });
     wrapper.unmount();
-    expect(save).not.toHaveBeenCalledWith();
+    expect(saveSpy).not.toHaveBeenCalledWith();
   });
 
   it("doesn't save data: no id", () => {
@@ -130,7 +141,7 @@ describe("<EditCurve />", () => {
     const wrapper = mount(<EditCurve {...p} />);
     wrapper.setState({ uuid: curve.uuid });
     wrapper.unmount();
-    expect(save).not.toHaveBeenCalledWith();
+    expect(saveSpy).not.toHaveBeenCalledWith();
   });
 
   it("doesn't save data: no curve", () => {
@@ -143,7 +154,7 @@ describe("<EditCurve />", () => {
     const wrapper = mount(<EditCurve {...p} />);
     wrapper.setState({ uuid: curve.uuid });
     wrapper.unmount();
-    expect(save).not.toHaveBeenCalledWith();
+    expect(saveSpy).not.toHaveBeenCalledWith();
   });
 
   it("toggles state", () => {
@@ -239,7 +250,7 @@ describe("<EditCurve />", () => {
     p.findCurve = () => curve;
     const wrapper = mount(<EditCurve {...p} />);
     wrapper.find(".fa-trash").first().simulate("click");
-    expect(destroy).toHaveBeenCalledWith(curve.uuid);
+    expect(destroySpy).toHaveBeenCalledWith(curve.uuid);
   });
 
   it("handles curve in use", () => {
@@ -249,7 +260,7 @@ describe("<EditCurve />", () => {
     p.resourceUsage = { [curve.uuid]: true };
     const wrapper = mount(<EditCurve {...p} />);
     wrapper.find(".fa-trash").first().simulate("click");
-    expect(destroy).not.toHaveBeenCalled();
+    expect(destroySpy).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith("Curve in use.");
   });
 
@@ -285,12 +296,12 @@ describe("copyCurve()", () => {
       jest.fn(() => Promise.resolve()),
       jest.fn(),
     )();
-    expect(init).toHaveBeenCalledWith("Curve", {
+    expect(initSpy).toHaveBeenCalledWith("Curve", {
       ...curve.body,
       name: "Fake copy 2",
       id: undefined,
     });
-    expect(save).toHaveBeenCalled();
+    expect(saveSpy).toHaveBeenCalled();
     expect(navigate).not.toHaveBeenCalled();
   });
 
@@ -300,7 +311,7 @@ describe("copyCurve()", () => {
       .mockImplementationOnce(() => Promise.reject());
     const navigate = jest.fn();
     await copyCurve([], fakeCurve(), navigate)(dispatch, jest.fn())();
-    expect(save).toHaveBeenCalled();
+    expect(saveSpy).toHaveBeenCalled();
     expect(navigate).not.toHaveBeenCalled();
   });
 
@@ -318,12 +329,12 @@ describe("copyCurve()", () => {
       jest.fn(() => Promise.resolve()),
       () => state,
     )();
-    expect(init).toHaveBeenCalledWith("Curve", {
+    expect(initSpy).toHaveBeenCalledWith("Curve", {
       ...curve.body,
       name: "Fake copy 2",
       id: undefined,
     });
-    expect(save).toHaveBeenCalled();
+    expect(saveSpy).toHaveBeenCalled();
     expect(navigate).toHaveBeenCalledWith(Path.curves(1));
   });
 
@@ -341,12 +352,12 @@ describe("copyCurve()", () => {
       jest.fn(() => Promise.resolve()),
       () => state,
     )();
-    expect(init).toHaveBeenCalledWith("Curve", {
+    expect(initSpy).toHaveBeenCalledWith("Curve", {
       ...curve.body,
       name: "Fake copy 2",
       id: undefined,
     });
-    expect(save).toHaveBeenCalled();
+    expect(saveSpy).toHaveBeenCalled();
     expect(navigate).not.toHaveBeenCalled();
   });
 });
@@ -377,7 +388,7 @@ describe("curveDataTableRow()", () => {
       {curveDataTableRow(p)(["3", 3], 0)}
     </tbody></table>);
     wrapper.find("button").first().simulate("click");
-    expect(overwrite).toHaveBeenCalledWith(p.curve, {
+    expect(overwriteSpy).toHaveBeenCalledWith(p.curve, {
       name: "Fake",
       type: "water",
       data: { 1: 0, 3: 3, 5: 5 },
@@ -392,7 +403,7 @@ describe("curveDataTableRow()", () => {
       {curveDataTableRow(p)(["5", 5], 0)}
     </tbody></table>);
     changeBlurableInput(wrapper, "6", 0);
-    expect(overwrite).toHaveBeenCalledWith(p.curve, {
+    expect(overwriteSpy).toHaveBeenCalledWith(p.curve, {
       name: "Fake",
       type: "height",
       data: { 1: 0, 5: 6, 10: 1 },

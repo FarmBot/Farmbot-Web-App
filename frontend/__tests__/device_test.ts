@@ -5,6 +5,9 @@ import { fetchNewDevice, getDevice } from "../device";
 import { auth } from "../__test_support__/fake_state/token";
 import { get } from "lodash";
 
+afterAll(() => {
+  jest.unmock("farmbot");
+});
 describe("getDevice()", () => {
   it("crashes if you call getDevice() too soon in the app lifecycle", () => {
     expect(() => getDevice()).toThrow("NO DEVICE SET");

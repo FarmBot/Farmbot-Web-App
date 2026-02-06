@@ -1,5 +1,5 @@
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
-const mockSequence = fakeSequence();
+let mockSequence = fakeSequence();
 jest.mock("../../../resources/selectors_by_id", () => ({
   findSequenceById: () => mockSequence,
 }));
@@ -24,6 +24,17 @@ const coordinate = (x = 0, y = 0, z = 0): Coordinate =>
 
 const fakeProps = (): StepParams<Execute> => ({
   ...fakeStepParams({ kind: "execute", args: { sequence_id: 0 } }),
+});
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  mockEditStep.mockClear();
+  mockSequence = fakeSequence();
+});
+
+afterAll(() => {
+  jest.unmock("../../../resources/selectors_by_id");
+  jest.unmock("../../../api/crud");
 });
 
 describe("<TileExecute />", () => {

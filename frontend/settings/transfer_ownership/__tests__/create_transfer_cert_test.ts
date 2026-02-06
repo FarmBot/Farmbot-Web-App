@@ -14,6 +14,12 @@ import { TransferProps } from "../transfer_ownership";
 
 API.setBaseUrl("http://foo.bar");
 
+afterAll(() => {
+  jest.unmock("../../../device");
+});
+afterAll(() => {
+  jest.unmock("axios");
+});
 describe("createTransferCert()", () => {
   const fakeProps = (): TransferProps => ({
     email: "admin@admin.com",

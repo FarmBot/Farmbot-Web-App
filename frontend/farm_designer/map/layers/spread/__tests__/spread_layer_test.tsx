@@ -8,6 +8,8 @@ import {
   fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 import { SpreadOverlapHelper } from "../spread_overlap_helper";
+import { findCrop } from "../../../../../crops/find";
+import { defaultSpreadCmDia } from "../../../util";
 
 describe("<SpreadLayer/>", () => {
   const fakeProps = (): SpreadLayerProps => ({
@@ -26,9 +28,12 @@ describe("<SpreadLayer/>", () => {
 
   it("shows spread", () => {
     const p = fakeProps();
+    const spreadDiaCm = findCrop(p.plants[0].body.openfarm_slug).spread
+      || defaultSpreadCmDia(p.plants[0].body.radius);
     const wrapper = shallow(<SpreadLayer {...p} />);
     const layer = wrapper.find("#spread-layer");
-    expect(layer.find("SpreadCircle").html()).toContain("r=\"150\"");
+    expect(layer.find("SpreadCircle").html())
+      .toContain(`r="${spreadDiaCm / 2 * 10}"`);
   });
 
   it("toggles visibility off", () => {
@@ -60,8 +65,11 @@ describe("<SpreadCircle />", () => {
   });
 
   it("uses spread value", () => {
-    const wrapper = shallow(<SpreadCircle {...fakeProps()} />);
-    expect(wrapper.find("circle").first().props().r).toEqual(150);
+    const p = fakeProps();
+    const spreadDiaCm = findCrop(p.plant.body.openfarm_slug).spread
+      || defaultSpreadCmDia(p.plant.body.radius);
+    const wrapper = shallow(<SpreadCircle {...p} />);
+    expect(wrapper.find("circle").first().props().r).toEqual(spreadDiaCm / 2 * 10);
     expect(wrapper.find("circle").first().hasClass("animate")).toBeTruthy();
     expect(wrapper.find("circle").first().props().fill).toEqual("none");
   });

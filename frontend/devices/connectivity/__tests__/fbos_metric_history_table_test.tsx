@@ -15,6 +15,10 @@ import {
   FbosMetricHistoryTable, FbosMetricHistoryTableProps,
 } from "../fbos_metric_history_table";
 
+afterAll(() => {
+  jest.unmock("../../must_be_online");
+  jest.unmock("../fbos_metric_history_plot");
+});
 describe("<FbosMetricHistoryTable />", () => {
   const fakeProps = (): FbosMetricHistoryTableProps => {
     const telemetry0 = fakeTelemetry();

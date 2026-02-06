@@ -1,31 +1,51 @@
-jest.mock("../actions", () => ({
-  snapshotGarden: jest.fn(),
-  applyGarden: jest.fn(),
-  destroySavedGarden: jest.fn(),
-  openOrCloseGarden: jest.fn(),
-  closeSavedGarden: jest.fn(),
-}));
-
-jest.mock("../../api/crud", () => ({ edit: jest.fn() }));
-
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
   RawSavedGardens as SavedGardens, mapStateToProps, SavedGardenHUD,
 } from "../saved_gardens";
-import { clickButton } from "../../__test_support__/helpers";
 import {
-  fakePlantTemplate, fakeSavedGarden,
+  fakePlant, fakePlantTemplate, fakeSavedGarden,
 } from "../../__test_support__/fake_state/resources";
 import { fakeState } from "../../__test_support__/fake_state";
 import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
 import { SavedGardensProps } from "../interfaces";
-import { closeSavedGarden } from "../actions";
+import * as savedGardenActions from "../actions";
 import { Actions } from "../../constants";
 import { SearchField } from "../../ui/search_field";
 import { Path } from "../../internal_urls";
+import * as crud from "../../api/crud";
+
+let editSpy: jest.SpyInstance;
+let snapshotGardenSpy: jest.SpyInstance;
+let applyGardenSpy: jest.SpyInstance;
+let destroySavedGardenSpy: jest.SpyInstance;
+let openOrCloseGardenSpy: jest.SpyInstance;
+let closeSavedGardenSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  snapshotGardenSpy = jest.spyOn(savedGardenActions, "snapshotGarden")
+    .mockImplementation(jest.fn());
+  applyGardenSpy = jest.spyOn(savedGardenActions, "applyGarden")
+    .mockImplementation(jest.fn());
+  destroySavedGardenSpy = jest.spyOn(savedGardenActions, "destroySavedGarden")
+    .mockImplementation(jest.fn());
+  openOrCloseGardenSpy = jest.spyOn(savedGardenActions, "openOrCloseGarden")
+    .mockImplementation(jest.fn());
+  closeSavedGardenSpy = jest.spyOn(savedGardenActions, "closeSavedGarden")
+    .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  editSpy.mockRestore();
+  snapshotGardenSpy.mockRestore();
+  applyGardenSpy.mockRestore();
+  destroySavedGardenSpy.mockRestore();
+  openOrCloseGardenSpy.mockRestore();
+  closeSavedGardenSpy.mockRestore();
+});
 
 describe("<SavedGardens />", () => {
   const fakeProps = (): SavedGardensProps => ({
@@ -88,7 +108,9 @@ describe("mapStateToProps()", () => {
   });
 
   it("has plants in garden", () => {
-    const result = mapStateToProps(fakeState());
+    const state = fakeState();
+    state.resources = buildResourceIndex([fakePlant()]);
+    const result = mapStateToProps(state);
     expect(result.plantPointerCount).toBeGreaterThan(0);
   });
 });
@@ -103,7 +125,10 @@ describe("<SavedGardenHUD />", () => {
   it("navigates to plants", () => {
     const dispatch = jest.fn();
     const wrapper = mount(<SavedGardenHUD dispatch={dispatch} />);
-    clickButton(wrapper, 0, "edit");
+    wrapper.find("button")
+      .filterWhere(node => node.text().toLowerCase() == "edit")
+      .first()
+      .simulate("click");
     expect(mockNavigate).toHaveBeenCalledWith(Path.plants());
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SELECT_POINT,
@@ -113,7 +138,10 @@ describe("<SavedGardenHUD />", () => {
 
   it("exits garden", () => {
     const wrapper = mount(<SavedGardenHUD dispatch={jest.fn()} />);
-    clickButton(wrapper, 1, "exit");
-    expect(closeSavedGarden).toHaveBeenCalled();
+    wrapper.find("button")
+      .filterWhere(node => node.text().toLowerCase() == "exit")
+      .first()
+      .simulate("click");
+    expect(savedGardenActions.closeSavedGarden).toHaveBeenCalled();
   });
 });

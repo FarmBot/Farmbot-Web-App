@@ -1,6 +1,6 @@
-import { Everything } from "../interfaces";
-import { Store as ReduxStore, Reducer, AnyAction } from "redux";
-import { Actions } from "../constants";
+import type { Everything } from "../interfaces";
+import type { Store as ReduxStore, Reducer, AnyAction } from "redux";
+import type { Actions } from "../constants";
 
 export type Store = ReduxStore<Everything>;
 

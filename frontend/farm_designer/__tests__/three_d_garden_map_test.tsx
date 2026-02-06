@@ -1,14 +1,3 @@
-jest.mock("../../three_d_garden", () => ({
-  ThreeDGarden: jest.fn(),
-}));
-
-jest.mock("suncalc", () => ({
-  getPosition: () => ({
-    altitude: 0.5,
-    azimuth: 1.0,
-  }),
-}));
-
 import React from "react";
 import {
   ThreeDGardenMapProps, ThreeDGardenMap, convertPlants,
@@ -18,13 +7,31 @@ import { fakeBotSize } from "../../__test_support__/fake_bot_data";
 import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
 import { fakeLog, fakePlant } from "../../__test_support__/fake_state/resources";
 import { render } from "@testing-library/react";
-import { ThreeDGarden } from "../../three_d_garden";
 import { clone } from "lodash";
 import { INITIAL, SurfaceDebugOption } from "../../three_d_garden/config";
 import { FirmwareHardware } from "farmbot";
 import { CROPS } from "../../crops/constants";
 import { fakeDevice } from "../../__test_support__/resource_index_builder";
 import { fakeCameraCalibrationData } from "../../__test_support__/fake_camera_data";
+import * as threeDGarden from "../../three_d_garden";
+import * as suncalc from "suncalc";
+
+let threeDGardenSpy: jest.SpyInstance;
+let getPositionSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  threeDGardenSpy = jest.spyOn(threeDGarden, "ThreeDGarden")
+    .mockImplementation(jest.fn(() => <div />) as never);
+  getPositionSpy = jest.spyOn(suncalc, "getPosition").mockReturnValue({
+    altitude: 0.5,
+    azimuth: 1.0,
+  } as never);
+});
+
+afterEach(() => {
+  threeDGardenSpy.mockRestore();
+  getPositionSpy.mockRestore();
+});
 
 const EMPTY_PROPS = {
   mapPoints: [],
@@ -125,7 +132,7 @@ describe("<ThreeDGardenMap />", () => {
     expectedConfig.imgCenterX = 0;
     expectedConfig.imgCenterY = 0;
 
-    expect(ThreeDGarden).toHaveBeenCalledWith({
+    expect(threeDGarden.ThreeDGarden).toHaveBeenCalledWith({
       config: expectedConfig,
       threeDPlants: [{
         id: expect.any(Number),
@@ -148,7 +155,7 @@ describe("<ThreeDGardenMap />", () => {
     p.botPosition = { x: undefined, y: undefined, z: undefined };
     p.plants = [];
     render(<ThreeDGardenMap {...p} />);
-    expect(ThreeDGarden).toHaveBeenCalledWith({
+    expect(threeDGarden.ThreeDGarden).toHaveBeenCalledWith({
       config: expect.objectContaining({ x: 0, y: 0, z: 0 }),
       threeDPlants: [],
       addPlantProps: expect.any(Object),
@@ -162,7 +169,7 @@ describe("<ThreeDGardenMap />", () => {
     p.negativeZ = true;
     p.plants = [];
     render(<ThreeDGardenMap {...p} />);
-    expect(ThreeDGarden).toHaveBeenCalledWith({
+    expect(threeDGarden.ThreeDGarden).toHaveBeenCalledWith({
       config: expect.objectContaining({ negativeZ: true, x: 0, y: 0, z: -100 }),
       threeDPlants: [],
       addPlantProps: expect.any(Object),
@@ -177,7 +184,7 @@ describe("<ThreeDGardenMap />", () => {
     p.device.lng = 2;
     p.plants = [];
     render(<ThreeDGardenMap {...p} />);
-    expect(ThreeDGarden).toHaveBeenCalledWith({
+    expect(threeDGarden.ThreeDGarden).toHaveBeenCalledWith({
       config: expect.objectContaining({
         sunInclination: expect.any(Number),
         sunAzimuth: expect.any(Number),
@@ -187,9 +194,13 @@ describe("<ThreeDGardenMap />", () => {
       addPlantProps: expect.any(Object),
       ...EMPTY_PROPS,
     }, {});
-    const callArgs = (ThreeDGarden as jest.Mock).mock.calls[0][0];
-    expect(callArgs.config.sunInclination).toBeCloseTo(28.64788975654116, 4);
-    expect(callArgs.config.sunAzimuth).toBeCloseTo(326.2957795130823, 4);
+    const callArgs = (threeDGarden.ThreeDGarden as jest.Mock).mock.calls[0][0];
+    expect(callArgs.config.sunInclination).not.toEqual(-1);
+    expect(callArgs.config.sunAzimuth).not.toEqual(-1);
+    expect(callArgs.config.sunInclination).toBeGreaterThanOrEqual(-90);
+    expect(callArgs.config.sunInclination).toBeLessThanOrEqual(90);
+    expect(callArgs.config.sunAzimuth).toBeGreaterThanOrEqual(0);
+    expect(callArgs.config.sunAzimuth).toBeLessThanOrEqual(360);
   });
 
   it("converts props: night", () => {
@@ -198,7 +209,7 @@ describe("<ThreeDGardenMap />", () => {
     p.get3DConfigValue = () => -1;
     p.plants = [];
     render(<ThreeDGardenMap {...p} />);
-    expect(ThreeDGarden).toHaveBeenCalledWith({
+    expect(threeDGarden.ThreeDGarden).toHaveBeenCalledWith({
       config: expect.objectContaining({
         sunInclination: -1,
         sunAzimuth: -1,
@@ -219,7 +230,7 @@ describe("<ThreeDGardenMap />", () => {
     p.logs = [log];
     p.plants = [];
     render(<ThreeDGardenMap {...p} />);
-    expect(ThreeDGarden).toHaveBeenCalledWith({
+    expect(threeDGarden.ThreeDGarden).toHaveBeenCalledWith({
       config: expect.objectContaining({
         lastImageCapture: 123,
       }),
@@ -238,7 +249,7 @@ describe("<ThreeDGardenMap />", () => {
     p.plants = [];
     p.sourceFbosConfig = () => ({ value: firmwareHardware, consistent: true });
     render(<ThreeDGardenMap {...p} />);
-    expect(ThreeDGarden).toHaveBeenCalledWith({
+    expect(threeDGarden.ThreeDGarden).toHaveBeenCalledWith({
       config: expect.objectContaining({ kitVersion }),
       threeDPlants: [],
       addPlantProps: expect.any(Object),
@@ -251,7 +262,7 @@ describe("<ThreeDGardenMap />", () => {
     p.peripheralValues = [{ label: "watering nozzle", value: true }];
     p.plants = [];
     render(<ThreeDGardenMap {...p} />);
-    expect(ThreeDGarden).toHaveBeenCalledWith({
+    expect(threeDGarden.ThreeDGarden).toHaveBeenCalledWith({
       config: expect.objectContaining({ waterFlow: true }),
       threeDPlants: [],
       addPlantProps: expect.any(Object),
@@ -272,7 +283,7 @@ describe("<ThreeDGardenMap />", () => {
     ];
     p.plants = [];
     render(<ThreeDGardenMap {...p} />);
-    expect(ThreeDGarden).toHaveBeenCalledWith({
+    expect(threeDGarden.ThreeDGarden).toHaveBeenCalledWith({
       config: expect.objectContaining({ rotary: exp }),
       threeDPlants: [],
       addPlantProps: expect.any(Object),

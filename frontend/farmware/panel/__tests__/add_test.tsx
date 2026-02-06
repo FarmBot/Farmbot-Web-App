@@ -12,6 +12,9 @@ import { fakeState } from "../../../__test_support__/fake_state";
 import { error } from "../../../toast/toast";
 import { Path } from "../../../internal_urls";
 
+afterAll(() => {
+  jest.unmock("../../../api/crud");
+});
 describe("<DesignerFarmwareAdd />", () => {
   const fakeProps = (): DesignerFarmwareAddProps => ({
     dispatch: jest.fn(() => Promise.resolve()),

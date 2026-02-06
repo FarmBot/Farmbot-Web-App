@@ -1,5 +1,4 @@
 const mockEditStep = jest.fn();
-jest.mock("../../../../api/crud", () => ({ editStep: mockEditStep }));
 
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
@@ -9,7 +8,7 @@ import { Move, SpecialValue } from "farmbot";
 import {
   fakeHardwareFlags, fakeStepParams,
 } from "../../../../__test_support__/fake_sequence_step_data";
-import { editStep } from "../../../../api/crud";
+import * as crud from "../../../../api/crud";
 import { LocSelection, AxisSelection } from "../interfaces";
 import {
   fakeNumericMoveStepCeleryScript, fakeNumericMoveStepState,
@@ -21,6 +20,18 @@ import {
   buildResourceIndex,
 } from "../../../../__test_support__/resource_index_builder";
 import { fakeFbosConfig } from "../../../../__test_support__/fake_state/resources";
+
+let editStepSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  mockEditStep.mockClear();
+  editStepSpy = jest.spyOn(crud, "editStep")
+    .mockImplementation(mockEditStep as never);
+});
+
+afterEach(() => {
+  editStepSpy.mockRestore();
+});
 
 describe("<ComputedMove />", () => {
   const fakeProps = (): StepParams<Move> => {
@@ -57,7 +68,7 @@ describe("<ComputedMove />", () => {
     const wrapper = shallow<ComputedMove>(<ComputedMove {...p} />);
     wrapper.setState(fakeNumericMoveStepState);
     wrapper.instance().update();
-    expect(editStep).toHaveBeenCalled();
+    expect(crud.editStep).toHaveBeenCalled();
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual(fakeNumericMoveStepCeleryScript);
   });
@@ -67,7 +78,7 @@ describe("<ComputedMove />", () => {
     const wrapper = shallow<ComputedMove>(<ComputedMove {...p} />);
     wrapper.setState(fakeLuaMoveStepState);
     wrapper.instance().update();
-    expect(editStep).toHaveBeenCalled();
+    expect(crud.editStep).toHaveBeenCalled();
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual(fakeLuaMoveStepCeleryScript);
   });
@@ -76,7 +87,7 @@ describe("<ComputedMove />", () => {
     const p = fakeProps();
     const wrapper = shallow<ComputedMove>(<ComputedMove {...p} />);
     wrapper.instance().update();
-    expect(editStep).toHaveBeenCalled();
+    expect(crud.editStep).toHaveBeenCalled();
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual({ kind: "move", args: {}, body: [] });
   });
@@ -93,7 +104,7 @@ describe("<ComputedMove />", () => {
       }
     });
     wrapper.instance().update();
-    expect(editStep).toHaveBeenCalled();
+    expect(crud.editStep).toHaveBeenCalled();
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     const currentLocationNode: SpecialValue = {
       kind: "special_value",
@@ -186,7 +197,7 @@ describe("<ComputedMove />", () => {
     expect(wrapper.state().offset.x).toEqual(undefined);
     wrapper.instance().commit("offset", "x")(inputEvent("1"));
     expect(wrapper.state().offset.x).toEqual(1);
-    expect(editStep).toHaveBeenCalled();
+    expect(crud.editStep).toHaveBeenCalled();
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual({
       kind: "move", args: {}, body: [{
@@ -204,7 +215,7 @@ describe("<ComputedMove />", () => {
     wrapper.setState({ offset: { x: "0", y: undefined, z: undefined } });
     wrapper.instance().commit("offset", "x")(inputEvent("1"));
     expect(wrapper.state().offset.x).toEqual("1");
-    expect(editStep).toHaveBeenCalled();
+    expect(crud.editStep).toHaveBeenCalled();
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual({
       kind: "move", args: {}, body: [{
@@ -229,7 +240,7 @@ describe("<ComputedMove />", () => {
     expect(wrapper.state().locationSelection).toEqual(LocSelection.identifier);
     expect(wrapper.state().selection)
       .toEqual({ x: undefined, y: undefined, z: undefined });
-    expect(editStep).toHaveBeenCalled();
+    expect(crud.editStep).toHaveBeenCalled();
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     const identifier = { kind: "identifier", args: { label: "variable" } };
     expect(p.currentStep).toEqual({
@@ -249,7 +260,7 @@ describe("<ComputedMove />", () => {
       .toEqual({ x: AxisSelection.custom, y: undefined, z: undefined });
     expect(wrapper.state().overwrite)
       .toEqual({ x: 0, y: undefined, z: undefined });
-    expect(editStep).toHaveBeenCalled();
+    expect(crud.editStep).toHaveBeenCalled();
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual({
       kind: "move", args: {}, body: [{
@@ -267,7 +278,7 @@ describe("<ComputedMove />", () => {
     wrapper.instance().setAxisState("variance", "x", 0)(1);
     expect(wrapper.state().variance)
       .toEqual({ x: 1, y: undefined, z: undefined });
-    expect(editStep).toHaveBeenCalled();
+    expect(crud.editStep).toHaveBeenCalled();
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual({
       kind: "move", args: {}, body: [{
@@ -285,7 +296,7 @@ describe("<ComputedMove />", () => {
     wrapper.instance().setAxisState("variance", "x", 1000)(undefined);
     expect(wrapper.state().variance)
       .toEqual({ x: 1000, y: undefined, z: undefined });
-    expect(editStep).toHaveBeenCalled();
+    expect(crud.editStep).toHaveBeenCalled();
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual({
       kind: "move", args: {}, body: [{

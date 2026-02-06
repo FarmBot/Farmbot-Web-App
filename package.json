@@ -5,43 +5,44 @@
   "engines": {
     "browsers": "defaults",
     "node": "24.x",
-    "npm": "11.x",
-    "parcel": "2.x"
+    "bun": "1.x"
   },
+  "packageManager": "bun@1.x",
   "repository": {
     "type": "git",
     "url": "https://github.com/farmbot/farmbot-web-app"
   },
   "scripts": {
-    "test-very-slow": "node --expose-gc ./node_modules/.bin/jest -i --colors --coverage",
-    "test-slow": "node scripts/run.js ./node_modules/.bin/jest -w 3 --colors",
-    "test": "node scripts/run.js ./node_modules/.bin/jest -w 3 --colors --no-coverage",
-    "graph-modules-dot": "./node_modules/.bin/madge --dot ./frontend > module_graph.dot",
+    "test-very-slow": "bun scripts/bun/run_tests.ts --coverage",
+    "test-slow": "bun scripts/bun/run_tests.ts",
+    "test": "bun scripts/bun/run_tests.ts",
+    "graph-modules-dot": "bunx madge --dot ./frontend > module_graph.dot",
     "graph-modules-svg": "dot -Tsvg module_graph.dot -o module_graph.svg",
-    "typecheck": "node scripts/run.js ./node_modules/typescript/bin/tsc --noEmit",
-    "dev-typecheck": "node scripts/run.js ./node_modules/typescript/bin/tsc --project tsconfig.dev.json --noEmit",
-    "eslint": "node scripts/run.js ./node_modules/.bin/eslint frontend public/app-resources/languages --ext .ts,.tsx",
-    "sass-lint": "node scripts/run.js ./node_modules/sass-lint/bin/sass-lint.js -c .sass-lint.yml -v -q",
-    "sass-check": "node scripts/run.js ./node_modules/sass/sass.js --no-source-map frontend/css/_index.scss:sass_index.log",
-    "translation-check": "node scripts/run.js ./node_modules/jshint/bin/jshint --config public/app-resources/languages/.config public/app-resources/languages/*.json",
-    "linters": "npm run typecheck --cache=/tmp;X=$(($X+$?));npm run dev-typecheck --cache=/tmp;X=$(($X+$?));npm run eslint --cache=/tmp;X=$(($X+$?));npm run sass-lint --cache=/tmp;X=$(($X+$?));npm run sass-check --cache=/tmp;X=$(($X+$?));npm run translation-check --cache=/tmp;X=$(($X+$?));[ $X = 0 ]"
+    "typecheck": "bun scripts/run.js bunx tsc --noEmit",
+    "dev-typecheck": "bun scripts/run.js bunx tsc --project tsconfig.dev.json --noEmit",
+    "eslint": "TSESTREE_SINGLE_RUN=true bun scripts/run.js bunx eslint --cache --cache-location .cache/eslint-v2/ --cache-strategy content --ext .ts,.tsx frontend public/app-resources/languages",
+    "sass-lint": "bun scripts/run.js bunx sass-lint -c .sass-lint.yml -v -q",
+    "sass-check": "bun scripts/run.js bunx sass --no-source-map --load-path=node_modules frontend/css/_index.scss:sass_index.log",
+    "translation-check": "bun scripts/run.js bunx jshint --config public/app-resources/languages/.config public/app-resources/languages/*.json",
+    "linters": "X=0;bun run typecheck;X=$(($X+$?));bun run dev-typecheck;X=$(($X+$?));bun run eslint;X=$(($X+$?));bun run sass-lint;X=$(($X+$?));bun run sass-check;X=$(($X+$?));bun run translation-check;X=$(($X+$?));[ $X = 0 ]"
   },
   "keywords": [
     "farmbot"
   ],
   "author": "farmbot.io",
   "license": "MIT",
+  "browser": {
+    "mqtt": "mqtt/dist/mqtt.esm.js"
+  },
   "overrides": {
     "cheerio": "1.0.0-rc.12",
     "get-intrinsic": "1.2.4",
-    "@parcel/watcher": "2.1.0"
+    "happy-dom": "20.4.0"
   },
   "dependencies": {
     "@blueprintjs/core": "6.6.0",
     "@blueprintjs/select": "6.0.12",
     "@monaco-editor/react": "4.7.0",
-    "@parcel/transformer-sass": "2.16.3",
-    "@parcel/transformer-typescript-tsc": "2.16.3",
     "@react-spring/three": "10.0.3",
     "@react-three/drei": "9.122.0",
     "@react-three/fiber": "8.18.0",
@@ -71,8 +72,6 @@
     "moment": "2.30.1",
     "monaco-editor": "0.55.1",
     "mqtt": "5.14.1",
-    "npm": "11.7.0",
-    "parcel": "2.16.3",
     "process": "0.11.10",
     "promise-timeout": "1.3.0",
     "punycode": "1.4.1",
@@ -93,6 +92,7 @@
     "url": "0.11.4"
   },
   "devDependencies": {
+    "@happy-dom/global-registrator": "20.4.0",
     "@react-three/eslint-plugin": "0.1.2",
     "@testing-library/dom": "10.4.1",
     "@testing-library/jest-dom": "6.9.1",
@@ -106,6 +106,7 @@
     "@typescript-eslint/eslint-plugin": "7.15.0",
     "@typescript-eslint/parser": "7.15.0",
     "@wojtekmaj/enzyme-adapter-react-17": "0.8.0",
+    "happy-dom": "20.4.0",
     "enzyme": "3.11.0",
     "eslint": "8.57.0",
     "eslint-plugin-eslint-comments": "3.2.0",

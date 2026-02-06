@@ -31,6 +31,14 @@ import { Actions } from "../../constants";
 import { Path } from "../../internal_urls";
 import { CurveType } from "../../curves/templates";
 
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+
+afterAll(() => {
+  jest.unmock("../../api/crud");
+});
+
 describe("<EditPlantStatus />", () => {
   const fakeProps = (): EditPlantStatusProps => ({
     uuid: "Plant.0.0",

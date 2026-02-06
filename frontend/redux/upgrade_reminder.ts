@@ -7,12 +7,11 @@ import { Dictionary } from "lodash";
 import { t } from "../i18next_wrapper";
 import { badVersion } from "../devices/actions";
 
-const IDEAL_VERSION =
-  globalConfig.FBOS_END_OF_LIFE_VERSION || FbosVersionFallback.NULL;
-
 /** Returns a function that, when given a version string, (possibly) warns the
  * user to upgrade FBOS versions before it hits end of life. */
 export function createReminderFn() {
+  const idealVersion =
+    globalConfig.FBOS_END_OF_LIFE_VERSION || FbosVersionFallback.NULL;
   /** FBOS Version can change during the app lifecycle. We only want one
    * reminder per FBOS version change. */
   const alreadyChecked: Dictionary<boolean | undefined> = {
@@ -30,7 +29,7 @@ export function createReminderFn() {
     // Did we check this particular version yet?
     !alreadyChecked[version]
       // Is it up to date?
-      && semverCompare(version, IDEAL_VERSION) === SemverResult.RIGHT_IS_GREATER
+      && semverCompare(version, idealVersion) === SemverResult.RIGHT_IS_GREATER
       && info(t(Content.OLD_FBOS_REC_UPGRADE), {
         title: t("Please upgrade"),
         color: "orange",

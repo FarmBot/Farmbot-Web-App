@@ -1,31 +1,41 @@
-jest.mock("../connect_device", () => ({
-  bothUp: jest.fn(),
-  batchInitResources: jest.fn(() => ({ type: "NOOP", payload: undefined }))
-}));
-
-const mockThrottleStatus = { value: false };
-jest.mock("../device_is_throttled", () => ({
-  deviceIsThrottled: jest.fn(() => mockThrottleStatus.value),
-}));
-
 import { fakeState } from "../../__test_support__/fake_state";
 const mockState = fakeState();
-jest.mock("../../redux/store", () => ({
-  store: {
-    getState: () => mockState,
-    dispatch: jest.fn(),
-  },
-}));
 
 import { BatchQueue } from "../batch_queue";
 import { fakeLog } from "../../__test_support__/fake_state/resources";
-import { bothUp, batchInitResources } from "../connect_device";
-import { deviceIsThrottled } from "../device_is_throttled";
+import * as connectDevice from "../connect_device";
+import * as throttling from "../device_is_throttled";
+import { store } from "../../redux/store";
 import {
   buildResourceIndex, fakeDevice,
 } from "../../__test_support__/resource_index_builder";
 
 describe("BatchQueue", () => {
+  const mockThrottleStatus = { value: false };
+  let bothUpSpy: jest.SpyInstance;
+  let batchInitResourcesSpy: jest.SpyInstance;
+  let deviceIsThrottledSpy: jest.SpyInstance;
+  let getStateSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    getStateSpy = jest.spyOn(store, "getState").mockImplementation(() => mockState);
+    bothUpSpy = jest.spyOn(connectDevice, "bothUp").mockImplementation(jest.fn());
+    batchInitResourcesSpy =
+      jest.spyOn(connectDevice, "batchInitResources")
+        .mockImplementation(jest.fn(() => ({ type: "NOOP", payload: undefined })));
+    deviceIsThrottledSpy =
+      jest.spyOn(throttling, "deviceIsThrottled")
+        .mockImplementation(jest.fn(() => mockThrottleStatus.value));
+  });
+
+  afterEach(() => {
+    getStateSpy.mockRestore();
+    bothUpSpy.mockRestore();
+    batchInitResourcesSpy.mockRestore();
+    deviceIsThrottledSpy.mockRestore();
+  });
+
   it("calls bothUp() to track network connectivity", () => {
     mockThrottleStatus.value = false;
     const device = fakeDevice();
@@ -34,9 +44,9 @@ describe("BatchQueue", () => {
     const log = fakeLog();
     q.push(log);
     q.maybeWork();
-    expect(deviceIsThrottled).toHaveBeenCalledWith(device.body);
-    expect(bothUp).toHaveBeenCalled();
-    expect(batchInitResources).toHaveBeenCalledWith([log]);
+    expect(deviceIsThrottledSpy).toHaveBeenCalled();
+    expect(bothUpSpy).toHaveBeenCalled();
+    expect(batchInitResourcesSpy).toHaveBeenCalledWith([log]);
   });
 
   it("handles missing device", () => {
@@ -46,9 +56,9 @@ describe("BatchQueue", () => {
     const log = fakeLog();
     q.push(log);
     q.maybeWork();
-    expect(deviceIsThrottled).toHaveBeenCalledWith(undefined);
-    expect(bothUp).toHaveBeenCalled();
-    expect(batchInitResources).toHaveBeenCalledWith([log]);
+    expect(deviceIsThrottledSpy).toHaveBeenCalledWith(undefined);
+    expect(bothUpSpy).toHaveBeenCalled();
+    expect(batchInitResourcesSpy).toHaveBeenCalledWith([log]);
   });
 
   it("does nothing when throttled", () => {
@@ -56,7 +66,7 @@ describe("BatchQueue", () => {
     const q = new BatchQueue(1);
     q.push(fakeLog());
     q.maybeWork();
-    expect(bothUp).toHaveBeenCalled();
-    expect(batchInitResources).not.toHaveBeenCalled();
+    expect(bothUpSpy).toHaveBeenCalled();
+    expect(batchInitResourcesSpy).not.toHaveBeenCalled();
   });
 });

@@ -1,17 +1,7 @@
 let mockPost = Promise.resolve({ data: { id: 1 } });
-jest.mock("axios", () => ({
-  get: () => Promise.resolve({
-    data: {
-      "id": 6,
-      "name": "New Device From Server",
-      "timezone": "America/Chicago",
-      "last_saw_api": "2017-08-30T20:42:35.854Z"
-    }
-  }),
-  post: () => mockPost,
-}));
 
 import { refresh, initSaveGetId } from "../crud";
+import axios from "axios";
 import { API } from "../index";
 import { Actions } from "../../constants";
 import { get } from "lodash";
@@ -19,6 +9,21 @@ import { fakeDevice } from "../../__test_support__/resource_index_builder";
 
 describe("successful refresh()", () => {
   API.setBaseUrl("http://localhost:3000");
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (axios as any).get = jest.fn(() => Promise.resolve({
+      data: {
+        "id": 6,
+        "name": "New Device From Server",
+        "timezone": "America/Chicago",
+        "last_saw_api": "2017-08-30T20:42:35.854Z"
+      }
+    }));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (axios as any).post = jest.fn(() => mockPost);
+  });
 
   // 1. Correct URL
   // 2. call to refreshOK
@@ -50,6 +55,13 @@ describe("successful refresh()", () => {
 });
 
 describe("initSaveGetId()", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockPost = Promise.resolve({ data: { id: 1 } });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (axios as any).post = jest.fn(() => mockPost);
+  });
+
   it("returns id", async () => {
     const dispatch = jest.fn();
     const result = await initSaveGetId("SavedGarden", {})(dispatch);
@@ -72,7 +84,7 @@ describe("initSaveGetId()", () => {
     mockPost = Promise.reject("error");
     const dispatch = jest.fn();
     await initSaveGetId("SavedGarden", {})(dispatch).catch(() => { });
-    await expect(dispatch).toHaveBeenLastCalledWith({
+    expect(dispatch).toHaveBeenCalledWith({
       type: Actions._RESOURCE_NO,
       payload: expect.objectContaining({ err: "error" })
     });

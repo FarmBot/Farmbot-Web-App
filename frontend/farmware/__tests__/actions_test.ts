@@ -15,6 +15,9 @@ import { Actions } from "../../constants";
 import axios from "axios";
 import { API } from "../../api";
 
+afterAll(() => {
+  jest.unmock("axios");
+});
 describe("getFirstPartyFarmwareList()", () => {
   it("sets list", async () => {
     const dispatch = jest.fn();

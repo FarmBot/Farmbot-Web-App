@@ -1,15 +1,24 @@
 let mockDev = false;
-jest.mock("../../../settings/dev/dev_support", () => ({
-  DevSettings: {
-    showInternalEnvsEnabled: () => mockDev,
-    overriddenFbosVersion: jest.fn(),
-  }
-}));
+jest.mock("../../../settings/dev/dev_support", () => {
+  const actual = jest.requireActual("../../../settings/dev/dev_support");
+  return {
+    ...actual,
+    DevSettings: {
+      ...actual.DevSettings,
+      showInternalEnvsEnabled: () => mockDev,
+      overriddenFbosVersion: jest.fn(),
+    },
+  };
+});
 
 import React from "react";
 import { mount } from "enzyme";
 import { ImagingDataManagement } from "../index";
 import { ImagingDataManagementProps } from "../interfaces";
+
+afterAll(() => {
+  jest.unmock("../../../settings/dev/dev_support");
+});
 
 describe("<ImagingDataManagement />", () => {
   const fakeProps = (): ImagingDataManagementProps => ({

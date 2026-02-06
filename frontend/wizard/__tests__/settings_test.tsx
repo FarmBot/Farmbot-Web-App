@@ -14,6 +14,9 @@ import {
 import { fakeDevice } from "../../__test_support__/resource_index_builder";
 import { clickButton } from "../../__test_support__/helpers";
 
+afterAll(() => {
+  jest.unmock("../actions");
+});
 describe("<SetupWizardSettings />", () => {
   const fakeProps = (): SetupWizardSettingsProps => ({
     dispatch: jest.fn(),

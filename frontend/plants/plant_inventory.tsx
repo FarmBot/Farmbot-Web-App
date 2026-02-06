@@ -87,7 +87,7 @@ export class RawPlants
           type: Actions.SEARCH_QUERY_CHANGE,
           payload: this.state.searchTerm,
         });
-        this.navigate(Path.cropSearch());
+        this.context(Path.cropSearch());
         this.props.dispatch({ type: Actions.SET_SLUG_BULK, payload: undefined });
       }}>
         {t("search all crops?")}
@@ -102,10 +102,9 @@ export class RawPlants
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = this.context;
 
   navigateById = (id: number | undefined) => () => {
-    this.navigate(Path.groups(id));
+    this.context(Path.groups(id));
   };
 
   render() {
@@ -153,7 +152,7 @@ export class RawPlants
               ...DEFAULT_CRITERIA,
               string_eq: { pointer_type: ["Plant"] },
             },
-            navigate: this.navigate,
+            navigate: this.context,
           }))}
           addTitle={t("add new group")}
           addClassName={"plus-group"}
@@ -188,7 +187,7 @@ export class RawPlants
           panel={Panel.Plants}
           toggleOpen={this.toggleOpen("savedGardens")}
           itemCount={this.props.savedGardens.length}
-          addNew={() => { this.navigate(Path.savedGardens("add")); }}
+          addNew={() => { this.context(Path.savedGardens("add")); }}
           addTitle={t("add new saved garden")}
           addClassName={"plus-saved-garden"}
           title={t("Gardens")}>
@@ -199,7 +198,7 @@ export class RawPlants
           toggleOpen={this.toggleOpen("plants")}
           itemCount={plants.length}
           addNew={() => {
-            this.navigate(Path.cropSearch());
+            this.context(Path.cropSearch());
             dispatch({ type: Actions.SET_SLUG_BULK, payload: undefined });
           }}
           addTitle={t("add plant")}

@@ -2,7 +2,7 @@ import React from "react";
 import { t } from "../../i18next_wrapper";
 import {
   DaySelection, EqCriteriaSelection, SubCriteriaSection,
-  NumberCriteriaSelection, LocationSelection, togglePointTypeCriteria,
+  NumberCriteriaSelection, LocationSelection,
 } from ".";
 import {
   GroupCriteriaProps, GroupPointCountBreakdownProps, GroupCriteriaState,
@@ -17,12 +17,13 @@ import {
   setSelectionPointType,
 } from "../../plants/select_plants";
 import { ToolTips } from "../../constants";
-import { overwriteGroup } from "../actions";
+import * as groupActions from "../actions";
 import { PointGroupItem } from "../point_group_item";
 import { TaggedPoint } from "farmbot";
 import { equals } from "../../util";
 import { floor, take } from "lodash";
 import { sortGroupBy } from "../point_group_sort";
+import * as criteriaEdit from "./edit";
 
 const CRITERIA_POINT_TYPE_LOOKUP =
   (): Record<PointerType, string> => ({
@@ -114,7 +115,7 @@ const ClearCriteria = (props: ClearCriteriaProps) =>
     title={t("clear all filters")}
     onClick={() => {
       if (confirm(t("Clear all group filters?"))) {
-        props.dispatch(overwriteGroup(props.group, {
+        props.dispatch(groupActions.overwriteGroup(props.group, {
           ...props.group.body, criteria: DEFAULT_CRITERIA
         }));
       }
@@ -128,7 +129,7 @@ const ClearPointIds = (props: ClearPointIdsProps) =>
     title={t("clear manual selections")}
     onClick={() => {
       if (confirm(t("Remove all manual selections?"))) {
-        props.dispatch(overwriteGroup(props.group, {
+        props.dispatch(groupActions.overwriteGroup(props.group, {
           ...props.group.body, point_ids: []
         }));
         props.dispatch(selectPoint(undefined));
@@ -248,7 +249,8 @@ export const PointTypeSelection = (props: PointTypeSelectionProps) =>
         : undefined}
       onChange={ddi => {
         if (isPointType(ddi.value)) {
-          props.dispatch(togglePointTypeCriteria(props.group, ddi.value, true));
+          props.dispatch(criteriaEdit.togglePointTypeCriteria(
+            props.group, ddi.value, true));
           props.dispatch(setSelectionPointType([ddi.value]));
         }
       }} />
@@ -257,7 +259,8 @@ export const PointTypeSelection = (props: PointTypeSelectionProps) =>
         <div className="point-type-section" key={pointerType}>
           <Checkbox
             onChange={() =>
-              props.dispatch(togglePointTypeCriteria(props.group, pointerType))}
+              props.dispatch(criteriaEdit.togglePointTypeCriteria(
+                props.group, pointerType))}
             checked={props.pointTypes.includes(pointerType)}
             title={CRITERIA_POINT_TYPE_LOOKUP()[pointerType]} />
           <p>{CRITERIA_POINT_TYPE_LOOKUP()[pointerType]}</p>

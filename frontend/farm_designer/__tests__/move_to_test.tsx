@@ -1,18 +1,3 @@
-jest.mock("../../devices/actions", () => ({ move: jest.fn() }));
-
-jest.mock("../../config_storage/actions", () => ({
-  setWebAppConfigValue: jest.fn(),
-}));
-
-import { PopoverProps } from "../../ui/popover";
-jest.mock("../../ui/popover", () => ({
-  Popover: ({ target, content }: PopoverProps) => <div>{target}{content}</div>,
-}));
-
-jest.mock("../../settings/dev/dev_support", () => ({
-  DevSettings: { allOrderOptionsEnabled: () => false },
-}));
-
 import React from "react";
 import { mount, shallow } from "enzyme";
 import { render, screen, fireEvent } from "@testing-library/react";
@@ -22,12 +7,38 @@ import {
   MoveModeLinkProps,
 } from "../move_to";
 import { Actions } from "../../constants";
-import { move } from "../../devices/actions";
+import * as deviceActions from "../../devices/actions";
 import { Path } from "../../internal_urls";
-import { setWebAppConfigValue } from "../../config_storage/actions";
+import * as configStorageActions from "../../config_storage/actions";
 import { StringSetting } from "../../session_keys";
 import { fakeMovementState } from "../../__test_support__/fake_bot_data";
 import { mockDispatch } from "../../__test_support__/fake_dispatch";
+import { DevSettings } from "../../settings/dev/dev_support";
+import * as popover from "../../ui/popover";
+
+let moveSpy: jest.SpyInstance;
+let setWebAppConfigValueSpy: jest.SpyInstance;
+let allOrderOptionsEnabledSpy: jest.SpyInstance;
+let popoverSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  popoverSpy = jest.spyOn(popover, "Popover")
+    .mockImplementation(({ target, content }: popover.PopoverProps) =>
+      <div>{target}{content}</div>);
+  moveSpy = jest.spyOn(deviceActions, "move").mockImplementation(jest.fn());
+  setWebAppConfigValueSpy =
+    jest.spyOn(configStorageActions, "setWebAppConfigValue")
+      .mockImplementation(jest.fn());
+  allOrderOptionsEnabledSpy =
+    jest.spyOn(DevSettings, "allOrderOptionsEnabled").mockReturnValue(false);
+});
+
+afterEach(() => {
+  popoverSpy.mockRestore();
+  moveSpy.mockRestore();
+  setWebAppConfigValueSpy.mockRestore();
+  allOrderOptionsEnabledSpy.mockRestore();
+});
 
 describe("<MoveToForm />", () => {
   const fakeProps = (): MoveToFormProps => ({
@@ -43,7 +54,7 @@ describe("<MoveToForm />", () => {
     const wrapper = mount(<MoveToForm {...fakeProps()} />);
     wrapper.setState({ z: 50 });
     wrapper.find("button").at(0).simulate("click");
-    expect(move).toHaveBeenCalledWith({
+    expect(deviceActions.move).toHaveBeenCalledWith({
       x: 1, y: 2, z: 50, speed: 100, safeZ: false,
     });
   });
@@ -79,7 +90,7 @@ describe("<MoveToForm />", () => {
     const wrapper = mount(<MoveToForm {...p} />);
     expect(wrapper.find("input").at(1).props().value).toEqual("---");
     wrapper.find("button").at(0).simulate("click");
-    expect(move).toHaveBeenCalledWith({
+    expect(deviceActions.move).toHaveBeenCalledWith({
       x: 1, y: 20, z: 30, speed: 100, safeZ: false,
     });
   });
@@ -91,7 +102,7 @@ describe("<MoveToForm />", () => {
     const wrapper = mount(<MoveToForm {...p} />);
     expect(wrapper.find("input").at(1).props().value).toEqual("---");
     wrapper.find("button").at(0).simulate("click");
-    expect(move).toHaveBeenCalledWith({
+    expect(deviceActions.move).toHaveBeenCalledWith({
       x: 0, y: 0, z: 0, speed: 100, safeZ: false,
     });
   });
@@ -209,7 +220,7 @@ describe("<GoToThisLocationButton />", () => {
     wrapper.setState({ open: true });
     expect(wrapper.text().toLowerCase()).toContain("farmbot is offline");
     wrapper.find("button").first().simulate("click");
-    expect(move).not.toHaveBeenCalled();
+    expect(deviceActions.move).not.toHaveBeenCalled();
   });
 
   it("renders as unavailable: busy", () => {
@@ -230,7 +241,7 @@ describe("<GoToThisLocationButton />", () => {
     expect(p.dispatch).toHaveBeenCalledTimes(2);
     wrapper.find("button").first().simulate("click");
     expect(p.dispatch).toHaveBeenCalledTimes(3);
-    expect(move).toHaveBeenCalledWith({ x: 0, y: 0, z: 0 });
+    expect(deviceActions.move).toHaveBeenCalledWith({ x: 0, y: 0, z: 0 });
   });
 
   it("moves", () => {
@@ -245,8 +256,8 @@ describe("<GoToThisLocationButton />", () => {
     expect(p.dispatch).toHaveBeenCalledTimes(2);
     wrapper.find("button").last().simulate("click");
     expect(p.dispatch).toHaveBeenCalledTimes(3);
-    expect(move).toHaveBeenCalledWith({ x: 1, y: 2, z: 3 });
-    expect(setWebAppConfigValue).not.toHaveBeenCalled();
+    expect(deviceActions.move).toHaveBeenCalledWith({ x: 1, y: 2, z: 3 });
+    expect(configStorageActions.setWebAppConfigValue).not.toHaveBeenCalled();
   });
 
   it("sets new default", () => {
@@ -257,8 +268,8 @@ describe("<GoToThisLocationButton />", () => {
     wrapper.update();
     wrapper.find("button").last().simulate("click");
     expect(p.dispatch).toHaveBeenCalledTimes(2);
-    expect(move).toHaveBeenCalledWith({ x: 1, y: 2, z: 3 });
-    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+    expect(deviceActions.move).toHaveBeenCalledWith({ x: 1, y: 2, z: 3 });
+    expect(configStorageActions.setWebAppConfigValue).toHaveBeenCalledWith(
       StringSetting.go_button_axes, "XYZ");
   });
 });

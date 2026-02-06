@@ -1,14 +1,21 @@
-jest.mock("../actions", () => ({
-  setWebAppConfigValues: jest.fn(),
-}));
-
 import React from "react";
 import { shallow, mount } from "enzyme";
 import { FilterNearTime } from "../filter_near_time";
 import { ImageFilterProps } from "../../images/interfaces";
 import { fakeImage } from "../../../__test_support__/fake_state/resources";
 import { fakeImageShowFlags } from "../../../__test_support__/fake_camera_data";
-import { setWebAppConfigValues } from "../actions";
+import * as photoFilterActions from "../actions";
+
+let setWebAppConfigValuesSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  setWebAppConfigValuesSpy = jest.spyOn(photoFilterActions, "setWebAppConfigValues")
+    .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
 
 describe("<FilterNearTime />", () => {
   const fakeProps = (): ImageFilterProps => ({
@@ -33,7 +40,7 @@ describe("<FilterNearTime />", () => {
       <FilterNearTime {...p} />);
     wrapper.setState({ seconds: 120 });
     wrapper.find(".this-image-section").find("button").simulate("click");
-    expect(setWebAppConfigValues).toHaveBeenCalledWith({
+    expect(setWebAppConfigValuesSpy).toHaveBeenCalledWith({
       photo_filter_begin: "2001-01-03T04:58:01.000Z",
       photo_filter_end: "2001-01-03T05:02:01.000Z",
     });

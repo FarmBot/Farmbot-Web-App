@@ -35,6 +35,9 @@ import { convertPlants } from "../../../farm_designer/three_d_garden_map";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import { setMockInstanceId } from "../../../__test_support__/three_d_mocks";
 
+afterAll(() => {
+  jest.unmock("react");
+});
 describe("<PlantInstances />", () => {
   beforeEach(() => {
     location.pathname = Path.mock(Path.designer());

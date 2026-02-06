@@ -64,10 +64,19 @@ end
 
 # Fetch latest versions for outdated dependencies.
 def fetch_available_upgrades()
-  begin
-    latest_json = JSON.parse(`npm outdated --json`)
-  rescue JSON::ParserError => exception
-    latest_json = {}
+  latest_json = {}
+  [
+    "bun pm outdated --json",
+    "npm outdated --json",
+  ].each do |command|
+    begin
+      output = `#{command}`
+      next if output.nil? || output.strip.empty?
+      latest_json = JSON.parse(output)
+      break unless latest_json.empty?
+    rescue JSON::ParserError
+      latest_json = {}
+    end
   end
   latest_versions = {}
   latest_json.each do |dep, data|
@@ -92,7 +101,7 @@ end
 
 # Install dependency updates.
 def install_updates
-  sh "sudo docker compose run web npm install"
+  sh "sudo docker compose run web bun install"
 end
 
 namespace :fe do
@@ -111,10 +120,10 @@ namespace :fe do
       bash_file_string += "check_dep() {\n"
       bash_file_string += "    okay=0\n"
       bash_file_string += "    title \"Installing $1\"\n"
-      bash_file_string += "    sudo docker compose run web npm install $1\n"
+      bash_file_string += "    sudo docker compose run web bun add $1\n"
       bash_file_string += "    if [ $? -ne 0 ]; then okay=1; fi\n"
       bash_file_string += "    title \"Typechecking with $1\"\n"
-      bash_file_string += "    sudo docker compose run web npm run typecheck\n"
+      bash_file_string += "    sudo docker compose run web bun run typecheck\n"
       bash_file_string += "    if [ $? -ne 0 ]; then okay=1; fi\n"
       bash_file_string += "    title \"Building with $1\"\n"
       bash_file_string += "    sudo docker compose run web rake assets:precompile\n"
@@ -149,7 +158,7 @@ namespace :fe do
       puts "Type 'save' to update #{PACKAGE_JSON_FILE}, enter to abort."
       if user_typed?("save")
         save_package_json(package_json)
-        puts "Saved. Use 'sudo docker compose run web npm install' to upgrade."
+        puts "Saved. Use 'sudo docker compose run web bun install' to upgrade."
       else
         puts "Aborted. No changes made."
         puts "Run the following script to upgrade incrementally: `bash scripts/upgrade_deps.sh`"

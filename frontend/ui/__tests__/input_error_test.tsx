@@ -7,6 +7,10 @@ import React from "react";
 import { mount } from "enzyme";
 import { InputError, InputErrorProps } from "../input_error";
 
+afterAll(() => {
+  jest.unmock("../popover");
+});
+
 describe("<InputError />", () => {
   const fakeProps = (): InputErrorProps => ({
     error: "error",

@@ -2,14 +2,6 @@ import {
   fakeSequence,
 } from "../../../__test_support__/fake_state/resources";
 let mockGet = Promise.resolve({ data: fakeSequence().body });
-jest.mock("axios", () => ({
-  get: jest.fn(() => mockGet),
-  post: jest.fn(() => Promise.resolve()),
-}));
-
-jest.mock("../../actions", () => ({
-  installSequence: jest.fn(() => () => Promise.resolve()),
-}));
 
 import React from "react";
 import { mount } from "enzyme";
@@ -21,10 +13,28 @@ import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import { API } from "../../../api";
-import { installSequence } from "../../actions";
+import * as sequenceActions from "../../actions";
 import { Path } from "../../../internal_urls";
 import { emptyState } from "../../../resources/reducer";
 import { Content } from "../../../constants";
+import axios from "axios";
+
+let getSpy: jest.SpyInstance;
+let postSpy: jest.SpyInstance;
+let installSequenceSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  getSpy = jest.spyOn(axios, "get").mockImplementation(() => mockGet as never);
+  postSpy = jest.spyOn(axios, "post").mockResolvedValue({} as never);
+  installSequenceSpy = jest.spyOn(sequenceActions, "installSequence")
+    .mockImplementation(jest.fn(() => () => Promise.resolve()) as never);
+});
+
+afterEach(() => {
+  getSpy.mockRestore();
+  postSpy.mockRestore();
+  installSequenceSpy.mockRestore();
+});
 
 describe("<DesignerSequencePreview />", () => {
   API.setBaseUrl("");
@@ -51,7 +61,7 @@ describe("<DesignerSequencePreview />", () => {
     const importBtn = wrapper.find(".transparent-button").first();
     expect(importBtn.text()).toEqual("import");
     await importBtn.simulate("click");
-    expect(installSequence).toHaveBeenCalledWith(sequence.body.id);
+    expect(sequenceActions.installSequence).toHaveBeenCalledWith(sequence.body.id);
     expect(mockNavigate).toHaveBeenCalledWith(Path.designerSequences());
   });
 
@@ -97,9 +107,8 @@ describe("<DesignerSequencePreview />", () => {
   it("errors while loading sequence", async () => {
     mockGet = Promise.reject("Error");
     const wrapper = await mount(<DesignerSequencePreview {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).not.toContain("import");
-    expect(wrapper.text().toLowerCase()).not.toContain("loading");
-    expect(wrapper.text().toLowerCase()).toContain("error");
+    expect(wrapper.text().toLowerCase()).toContain("sequence not found");
+    expect(wrapper.find(".transparent-button").length).toEqual(0);
   });
 
   it("views as celery script", async () => {

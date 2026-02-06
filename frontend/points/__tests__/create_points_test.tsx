@@ -19,6 +19,9 @@ import { fakeDrawnPoint } from "../../__test_support__/fake_designer_state";
 import { success } from "../../toast/toast";
 import { mountWithContext } from "../../__test_support__/mount_with_context";
 
+afterAll(() => {
+  jest.unmock("../../api/crud");
+});
 describe("mapStateToProps", () => {
   it("maps state to props: drawn point", () => {
     const state = fakeState();
@@ -214,7 +217,7 @@ describe("<CreatePoints />", () => {
     p.drawnPoint = fakeDrawnPoint();
     p.botPosition = { x: undefined, y: undefined, z: undefined };
     const wrapper = mount<CreatePoints>(<CreatePoints {...p} />);
-    jest.resetAllMocks();
+    jest.clearAllMocks();
     clickButton(wrapper, 1, "", { icon: "fa-crosshairs" });
     expect(p.dispatch).not.toHaveBeenCalled();
   });

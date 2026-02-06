@@ -1,18 +1,28 @@
-let mockResponse = Promise.resolve("");
-jest.mock("../resend_verification", () => ({
-  resendEmail: jest.fn(() => mockResponse),
-}));
-
 import React from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { mount } from "enzyme";
 import {
   FormField, sendEmail, DidRegister, MustRegister, CreateAccount,
   FormFieldProps, CreateAccountProps,
 } from "../create_account";
 import { success, error } from "../../toast/toast";
-import { resendEmail } from "../resend_verification";
+import * as resendVerification from "../resend_verification";
 import { Content } from "../../constants";
 import { changeBlurableInputRTL } from "../../__test_support__/helpers";
+
+let resendEmailSpy: jest.SpyInstance;
+let mockResponse: Promise<unknown>;
+
+beforeEach(() => {
+  mockResponse = Promise.resolve("");
+  resendEmailSpy = jest.spyOn(resendVerification, "resendEmail")
+    .mockImplementation(() => mockResponse);
+});
+
+afterEach(() => {
+  cleanup();
+  jest.restoreAllMocks();
+});
 
 describe("<FormField />", () => {
   const fakeProps = (): FormFieldProps => ({
@@ -33,17 +43,22 @@ describe("<FormField />", () => {
 });
 
 describe("sendEmail()", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockResponse = Promise.resolve("");
+  });
+
   it("calls success() when things are OK", async () => {
     await sendEmail("send@email.com", jest.fn());
     expect(success).toHaveBeenCalledWith(Content.VERIFICATION_EMAIL_RESENT);
-    expect(resendEmail).toHaveBeenCalledWith("send@email.com");
+    expect(resendEmailSpy).toHaveBeenCalledWith("send@email.com");
   });
 
   it("calls error() when things are not OK", async () => {
     mockResponse = Promise.reject("");
     await sendEmail("send@email.com", jest.fn());
     expect(error).toHaveBeenCalledWith(Content.VERIFICATION_EMAIL_RESEND_ERROR);
-    expect(resendEmail).toHaveBeenCalledWith("send@email.com");
+    expect(resendEmailSpy).toHaveBeenCalledWith("send@email.com");
   });
 });
 
@@ -60,9 +75,11 @@ describe("<DidRegister />", () => {
     const p = fakeCreateAccountProps();
     p.get = jest.fn(() => "example2@earthlink.net");
     render(<DidRegister {...p} />);
-    const button = screen.getByRole("button");
+    const button = screen.getByRole("button", {
+      name: /resend verification email/i,
+    });
     fireEvent.click(button);
-    expect(resendEmail).toHaveBeenCalledWith("example2@earthlink.net");
+    expect(resendEmailSpy).toHaveBeenCalledWith("example2@earthlink.net");
   });
 
   it("bails on missing email", () => {
@@ -79,9 +96,8 @@ describe("<MustRegister />", () => {
 
   it("inputs username", () => {
     const p = fakeCreateAccountProps();
-    render(<MustRegister {...p} />);
-    const input = screen.getByLabelText("Name");
-    changeBlurableInputRTL(input, "name");
+    const wrapper = mount(<MustRegister {...p} />);
+    wrapper.find(FormField).at(1).props().onCommit("name");
     expect(p.set).toHaveBeenCalledWith("regName", "name");
   });
 

@@ -14,6 +14,12 @@ import { selectRegimen } from "../../actions";
 import { edit } from "../../../api/crud";
 import { Path } from "../../../internal_urls";
 
+afterAll(() => {
+  jest.unmock("../../../api/crud");
+});
+afterAll(() => {
+  jest.unmock("../../actions");
+});
 describe("<RegimenListItem/>", () => {
   const fakeProps = (): RegimenListItemProps => ({
     regimen: fakeRegimen(),
@@ -72,7 +78,7 @@ describe("<RegimenListItem/>", () => {
     location.pathname = Path.mock(Path.regimens());
     const wrapper = mount(<RegimenListItem {...p} />);
     expect(wrapper.text()).toEqual(" *");
-    expect(wrapper.find(".saucer").hasClass("gray")).toBeTruthy();
+    expect(wrapper.find(".saucer.gray").length).toBeGreaterThan(0);
   });
 
   it("doesn't open regimen", () => {

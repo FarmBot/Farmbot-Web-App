@@ -1,4 +1,6 @@
-import { entryPoint } from "../util";
+import * as util from "../util";
 import { PasswordReset } from "./password_reset";
 
-entryPoint(PasswordReset);
+export const initPasswordReset = () => util.entryPoint(PasswordReset);
+
+initPasswordReset();

@@ -12,13 +12,15 @@ import {
   SettingsPanelState,
   WeedsPanelState,
 } from "../interfaces";
-import { app } from "../__test_support__/fake_state/app";
+import { fakeApp } from "../__test_support__/fake_state/app";
 import { fakeToast, fakeToasts } from "../__test_support__/fake_toasts";
 import { ReduxAction } from "../redux/interfaces";
 
 describe("resource reducer", () => {
+  const buildState = () => fakeApp();
+
   it("sets settings search term", () => {
-    const state = app;
+    const state = buildState();
     state.settingsSearchTerm = "";
     const action: ReduxAction<string> = {
       type: Actions.SET_SETTINGS_SEARCH_TERM, payload: "random"
@@ -29,7 +31,7 @@ describe("resource reducer", () => {
 
   it("toggles settings panel options", () => {
     const payload: keyof SettingsPanelState = "parameter_management";
-    const state = app;
+    const state = buildState();
     const newState = appReducer(state, {
       type: Actions.TOGGLE_SETTINGS_PANEL_OPTION,
       payload,
@@ -39,7 +41,7 @@ describe("resource reducer", () => {
   });
 
   it("bulk toggles all settings panel options", () => {
-    const newState = appReducer(app, {
+    const newState = appReducer(buildState(), {
       type: Actions.BULK_TOGGLE_SETTINGS_PANEL,
       payload: true,
     });
@@ -50,7 +52,7 @@ describe("resource reducer", () => {
 
   it("toggles plants panel options", () => {
     const payload: keyof PlantsPanelState = "groups";
-    const state = app;
+    const state = buildState();
     const newState = appReducer(state, {
       type: Actions.TOGGLE_PLANTS_PANEL_OPTION,
       payload,
@@ -61,7 +63,7 @@ describe("resource reducer", () => {
 
   it("toggles weeds panel options", () => {
     const payload: keyof WeedsPanelState = "groups";
-    const state = app;
+    const state = buildState();
     const newState = appReducer(state, {
       type: Actions.TOGGLE_WEEDS_PANEL_OPTION,
       payload,
@@ -72,7 +74,7 @@ describe("resource reducer", () => {
 
   it("toggles points panel options", () => {
     const payload: keyof PointsPanelState = "groups";
-    const state = app;
+    const state = buildState();
     const newState = appReducer(state, {
       type: Actions.TOGGLE_POINTS_PANEL_OPTION,
       payload,
@@ -83,7 +85,7 @@ describe("resource reducer", () => {
 
   it("toggles curves panel options", () => {
     const payload: keyof CurvesPanelState = "water";
-    const state = app;
+    const state = buildState();
     const newState = appReducer(state, {
       type: Actions.TOGGLE_CURVES_PANEL_OPTION,
       payload,
@@ -94,7 +96,7 @@ describe("resource reducer", () => {
 
   it("toggles sequences panel options", () => {
     const payload: keyof SequencesPanelState = "featured";
-    const state = app;
+    const state = buildState();
     const newState = appReducer(state, {
       type: Actions.TOGGLE_SEQUENCES_PANEL_OPTION,
       payload,
@@ -105,7 +107,7 @@ describe("resource reducer", () => {
 
   it("sets metric panel options", () => {
     const payload: keyof MetricPanelState = "history";
-    const state = app;
+    const state = buildState();
     const newState = appReducer(state, {
       type: Actions.SET_METRIC_PANEL_OPTION,
       payload,
@@ -117,7 +119,7 @@ describe("resource reducer", () => {
 
   it("sets controls panel options", () => {
     const payload: keyof ControlsState = "webcams";
-    const state = app;
+    const state = buildState();
     const newState = appReducer(state, {
       type: Actions.SET_CONTROLS_PANEL_OPTION,
       payload,
@@ -129,7 +131,7 @@ describe("resource reducer", () => {
 
   it("toggles popup", () => {
     const payload: keyof PopupsState = "controls";
-    const state = app;
+    const state = buildState();
     const newState = appReducer(state, {
       type: Actions.TOGGLE_POPUP,
       payload,
@@ -142,7 +144,7 @@ describe("resource reducer", () => {
 
   it("opens popup", () => {
     const payload: keyof PopupsState = "jobs";
-    const state = app;
+    const state = buildState();
     state.popups.controls = true;
     const newState = appReducer(state, {
       type: Actions.OPEN_POPUP,
@@ -156,7 +158,7 @@ describe("resource reducer", () => {
 
   it("closes popup", () => {
     const payload: keyof PopupsState = "connectivity";
-    const state = app;
+    const state = buildState();
     const newState = appReducer(state, {
       type: Actions.CLOSE_POPUP,
       payload,
@@ -168,7 +170,7 @@ describe("resource reducer", () => {
   });
 
   it("adds toast", () => {
-    const newState = appReducer(app, {
+    const newState = appReducer(buildState(), {
       type: Actions.CREATE_TOAST,
       payload: fakeToast(),
     });
@@ -176,13 +178,13 @@ describe("resource reducer", () => {
   });
 
   it("removes toast", () => {
-    const state = app;
+    const state = buildState();
     state.toasts = fakeToasts();
     const toastToRemove = fakeToast();
     const toastToKeep = fakeToast();
     toastToKeep.id = "toast_2";
     state.toasts[toastToKeep.id] = toastToKeep;
-    const newState = appReducer(app, {
+    const newState = appReducer(state, {
       type: Actions.REMOVE_TOAST,
       payload: toastToRemove.id,
     });
@@ -194,7 +196,7 @@ describe("resource reducer", () => {
       start: { x: 0, y: 0, z: 0 },
       distance: { x: 0, y: 1, z: 0 },
     };
-    const newState = appReducer(app, {
+    const newState = appReducer(buildState(), {
       type: Actions.START_MOVEMENT,
       payload,
     });

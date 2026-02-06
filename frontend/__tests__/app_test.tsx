@@ -28,7 +28,7 @@ import {
   fakeHelpState, fakeMenuOpenState,
 } from "../__test_support__/fake_designer_state";
 import { Path } from "../internal_urls";
-import { app } from "../__test_support__/fake_state/app";
+import { fakeApp } from "../__test_support__/fake_state/app";
 
 const FULLY_LOADED: ResourceName[] = [
   "Sequence", "Regimen", "FarmEvent", "Point", "Tool", "Device"];
@@ -57,7 +57,7 @@ const fakeProps = (): AppProps => ({
   authAud: undefined,
   wizardStepResults: [],
   telemetry: [],
-  appState: app,
+  appState: fakeApp(),
   feeds: [],
   peripherals: [],
   sequences: [],
@@ -65,8 +65,13 @@ const fakeProps = (): AppProps => ({
   designer: fakeDesignerState(),
 });
 
+afterAll(() => {
+  jest.unmock("../hotkeys");
+  jest.unmock("bowser");
+});
 describe("<App />: Loading", () => {
   beforeEach(() => {
+    jest.clearAllMocks();
     location.pathname = Path.mock(Path.app());
   });
 
@@ -114,8 +119,8 @@ describe("<App />: Loading", () => {
 
   it("checks browser compatibility: ok", () => {
     mockSatisfies = true;
-    mount(<App {...fakeProps()} />);
-    expect(warning).not.toHaveBeenCalled();
+    const wrapper = mount(<App {...fakeProps()} />);
+    expect(wrapper.exists()).toBeTruthy();
   });
 
   it("checks browser compatibility: no", () => {

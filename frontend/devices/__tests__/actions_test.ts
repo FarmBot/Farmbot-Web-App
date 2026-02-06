@@ -24,36 +24,13 @@ const mockDeviceDefault: DeepPartial<Farmbot> = {
 };
 
 const mockDevice = { current: mockDeviceDefault };
-jest.mock("../../device", () => ({ getDevice: () => mockDevice.current }));
-
-jest.mock("../../api/crud", () => ({
-  edit: jest.fn(),
-  save: jest.fn(),
-}));
-
 let mockGet: Promise<{}> = Promise.resolve({});
-jest.mock("axios", () => ({ get: jest.fn(() => mockGet) }));
 
 import { fakeState } from "../../__test_support__/fake_state";
-const mockState = fakeState();
-jest.mock("../../redux/store", () => ({
-  store: {
-    getState: () => mockState,
-    dispatch: jest.fn(),
-  },
-}));
+let mockState = fakeState();
+import { store } from "../../redux/store";
+import * as deviceModule from "../../device";
 
-jest.mock("../../demo/lua_runner", () => ({
-  runDemoSequence: jest.fn(),
-  runDemoLuaCode: jest.fn(),
-  csToLua: jest.fn(),
-}));
-
-jest.mock("../../demo/lua_runner/actions", () => ({
-  eStop: jest.fn(),
-}));
-
-import * as actions from "../actions";
 import {
   fakeFirmwareConfig, fakeFbosConfig,
 } from "../../__test_support__/fake_state/resources";
@@ -61,12 +38,21 @@ import { Actions, Content } from "../../constants";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import axios from "axios";
 import { success, error, warning, info } from "../../toast/toast";
-import { edit, save } from "../../api/crud";
+import * as crud from "../../api/crud";
 import { DeepPartial } from "../../redux/interfaces";
 import { EmergencyLock, Execute, Farmbot, Wait } from "farmbot";
 import { Path } from "../../internal_urls";
-import { csToLua, runDemoLuaCode, runDemoSequence } from "../../demo/lua_runner";
-import { eStop } from "../../demo/lua_runner/actions";
+import * as demoLuaRunner from "../../demo/lua_runner";
+import * as demoLuaRunnerActions from "../../demo/lua_runner/actions";
+
+let editSpy: jest.SpyInstance;
+let saveSpy: jest.SpyInstance;
+let getDeviceSpy: jest.SpyInstance;
+let axiosGetSpy: jest.SpyInstance;
+let originalGetState: typeof store.getState;
+let originalDispatch: typeof store.dispatch;
+const deviceActions = () =>
+  jest.requireActual("../actions");
 
 const replaceDeviceWith = async (d: DeepPartial<Farmbot>, cb: Function) => {
   jest.clearAllMocks();
@@ -75,13 +61,47 @@ const replaceDeviceWith = async (d: DeepPartial<Farmbot>, cb: Function) => {
   mockDevice.current = mockDeviceDefault;
 };
 
+beforeEach(() => {
+  jest.clearAllMocks();
+  mockState = fakeState();
+  mockGet = Promise.resolve({});
+  localStorage.removeItem("myBotIs");
+  originalGetState = store.getState;
+  originalDispatch = store.dispatch;
+  (store as unknown as { getState: () => typeof mockState }).getState =
+    () => mockState;
+  (store as unknown as { dispatch: jest.Mock }).dispatch = jest.fn();
+  getDeviceSpy = jest.spyOn(deviceModule, "getDevice")
+    .mockImplementation(() => mockDevice.current as Farmbot);
+  axiosGetSpy = jest.spyOn(axios, "get")
+    .mockImplementation(() => mockGet as never);
+  editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+  jest.spyOn(demoLuaRunner, "runDemoSequence").mockImplementation(jest.fn());
+  jest.spyOn(demoLuaRunner, "runDemoLuaCode").mockImplementation(jest.fn());
+  jest.spyOn(demoLuaRunner, "csToLua").mockImplementation(jest.fn());
+  jest.spyOn(demoLuaRunnerActions, "eStop").mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  (store as unknown as { getState: typeof store.getState }).getState =
+    originalGetState;
+  (store as unknown as { dispatch: typeof store.dispatch }).dispatch =
+    originalDispatch;
+  getDeviceSpy.mockRestore();
+  axiosGetSpy.mockRestore();
+  editSpy.mockRestore();
+  saveSpy.mockRestore();
+  jest.restoreAllMocks();
+});
+
 describe("sendRPC()", () => {
   afterEach(() => {
     localStorage.removeItem("myBotIs");
   });
 
   it("calls sendRPC", async () => {
-    await actions.sendRPC({ kind: "sync", args: {} });
+    await deviceActions().sendRPC({ kind: "sync", args: {} });
     expect(mockDevice.current.send).toHaveBeenCalledWith({
       kind: "rpc_request",
       args: { label: expect.any(String), priority: 600 },
@@ -92,28 +112,28 @@ describe("sendRPC()", () => {
   it("calls sendRPC on demo accounts", async () => {
     localStorage.setItem("myBotIs", "online");
     const cmd: Wait = { kind: "wait", args: { milliseconds: 1000 } };
-    await actions.sendRPC(cmd);
+    await deviceActions().sendRPC(cmd);
     expect(mockDevice.current.send).not.toHaveBeenCalled();
-    expect(csToLua).toHaveBeenCalledWith(cmd);
+    expect(demoLuaRunner.csToLua).toHaveBeenCalledWith(cmd);
   });
 
   it("calls sendRPC on demo accounts: estop", async () => {
     localStorage.setItem("myBotIs", "online");
     const cmd: EmergencyLock = { kind: "emergency_lock", args: {} };
-    await actions.sendRPC(cmd);
+    await deviceActions().sendRPC(cmd);
     expect(mockDevice.current.send).not.toHaveBeenCalled();
-    expect(csToLua).not.toHaveBeenCalled();
-    expect(eStop).toHaveBeenCalled();
+    expect(demoLuaRunner.csToLua).not.toHaveBeenCalled();
+    expect(demoLuaRunnerActions.eStop).toHaveBeenCalled();
   });
 
   it("calls sendRPC on demo accounts: execute", async () => {
     localStorage.setItem("myBotIs", "online");
     const cmd: Execute = { kind: "execute", args: { sequence_id: 1 }, body: [] };
-    await actions.sendRPC(cmd);
+    await deviceActions().sendRPC(cmd);
     expect(mockDevice.current.send).not.toHaveBeenCalled();
-    expect(csToLua).not.toHaveBeenCalled();
-    expect(runDemoLuaCode).not.toHaveBeenCalled();
-    expect(runDemoSequence).toHaveBeenCalledWith(
+    expect(demoLuaRunner.csToLua).not.toHaveBeenCalled();
+    expect(demoLuaRunner.runDemoLuaCode).not.toHaveBeenCalled();
+    expect(demoLuaRunner.runDemoSequence).toHaveBeenCalledWith(
       expect.any(Object),
       1,
       [],
@@ -123,21 +143,21 @@ describe("sendRPC()", () => {
 
 describe("readStatus()", () => {
   it("calls readStatus", async () => {
-    await actions.readStatus();
+    await deviceActions().readStatus();
     expect(mockDevice.current.readStatus).toHaveBeenCalled();
   });
 });
 
 describe("readStatusReturnPromise()", () => {
   it("calls readStatusReturnPromise", async () => {
-    await actions.readStatusReturnPromise();
+    await deviceActions().readStatusReturnPromise();
     expect(mockDevice.current.readStatus).toHaveBeenCalled();
   });
 });
 
 describe("checkControllerUpdates()", () => {
   it("calls checkUpdates", async () => {
-    await actions.checkControllerUpdates();
+    await deviceActions().checkControllerUpdates();
     expect(mockDevice.current.checkUpdates).toHaveBeenCalled();
     expect(success).toHaveBeenCalled();
   });
@@ -145,7 +165,7 @@ describe("checkControllerUpdates()", () => {
 
 describe("powerOff()", () => {
   it("calls powerOff", async () => {
-    await actions.powerOff();
+    await deviceActions().powerOff();
     expect(mockDevice.current.powerOff).toHaveBeenCalled();
     expect(success).toHaveBeenCalled();
   });
@@ -154,20 +174,20 @@ describe("powerOff()", () => {
 describe("softReset()", () => {
   it("doesn't call softReset", async () => {
     window.confirm = () => false;
-    await actions.softReset();
+    await deviceActions().softReset();
     expect(mockDevice.current.resetOS).not.toHaveBeenCalled();
   });
 
   it("calls softReset", async () => {
     window.confirm = () => true;
-    await actions.softReset();
+    await deviceActions().softReset();
     expect(mockDevice.current.resetOS).toHaveBeenCalled();
   });
 });
 
 describe("reboot()", () => {
   it("calls reboot", async () => {
-    await actions.reboot();
+    await deviceActions().reboot();
     expect(mockDevice.current.reboot).toHaveBeenCalled();
     expect(success).toHaveBeenCalled();
   });
@@ -175,7 +195,7 @@ describe("reboot()", () => {
 
 describe("restartFirmware()", () => {
   it("calls restartFirmware", async () => {
-    await actions.restartFirmware();
+    await deviceActions().restartFirmware();
     expect(mockDevice.current.rebootFirmware).toHaveBeenCalled();
     expect(success).toHaveBeenCalled();
   });
@@ -183,7 +203,7 @@ describe("restartFirmware()", () => {
 
 describe("flashFirmware()", () => {
   it("calls flashFirmware", async () => {
-    await actions.flashFirmware("arduino");
+    await deviceActions().flashFirmware("arduino");
     expect(mockDevice.current.flashFirmware).toHaveBeenCalled();
     expect(success).toHaveBeenCalled();
   });
@@ -196,41 +216,41 @@ describe("emergencyLock() / emergencyUnlock", () => {
   });
 
   it("calls emergencyLock", () => {
-    actions.emergencyLock();
+    deviceActions().emergencyLock();
     expect(mockDevice.current.emergencyLock).toHaveBeenCalled();
   });
 
   it("calls emergencyLock on demo account", () => {
     localStorage.setItem("myBotIs", "online");
-    actions.emergencyLock();
+    deviceActions().emergencyLock();
     expect(mockDevice.current.emergencyLock).not.toHaveBeenCalled();
-    expect(runDemoLuaCode).not.toHaveBeenCalled();
-    expect(eStop).toHaveBeenCalled();
+    expect(demoLuaRunner.runDemoLuaCode).not.toHaveBeenCalled();
+    expect(demoLuaRunnerActions.eStop).toHaveBeenCalled();
   });
 
   it("calls emergencyUnlock", () => {
     window.confirm = () => true;
-    actions.emergencyUnlock();
+    deviceActions().emergencyUnlock();
     expect(mockDevice.current.emergencyUnlock).toHaveBeenCalled();
   });
 
   it("calls emergencyUnlock on demo account", () => {
     window.confirm = () => true;
     localStorage.setItem("myBotIs", "online");
-    actions.emergencyUnlock();
+    deviceActions().emergencyUnlock();
     expect(mockDevice.current.emergencyUnlock).not.toHaveBeenCalled();
-    expect(runDemoLuaCode).toHaveBeenCalledWith("emergency_unlock()");
+    expect(demoLuaRunner.runDemoLuaCode).toHaveBeenCalledWith("emergency_unlock()");
   });
 
   it("doesn't call emergencyUnlock", () => {
     window.confirm = () => false;
-    actions.emergencyUnlock();
+    deviceActions().emergencyUnlock();
     expect(mockDevice.current.emergencyUnlock).not.toHaveBeenCalled();
   });
 
   it("forces emergencyUnlock", () => {
     window.confirm = () => false;
-    actions.emergencyUnlock(true);
+    deviceActions().emergencyUnlock(true);
     expect(mockDevice.current.emergencyUnlock).toHaveBeenCalled();
   });
 });
@@ -239,14 +259,14 @@ describe("sync()", () => {
   it("calls sync", () => {
     const state = fakeState();
     state.bot.hardware.informational_settings.controller_version = "999.0.0";
-    actions.sync()(jest.fn(), () => state);
+    deviceActions().sync()(jest.fn(), () => state);
     expect(mockDevice.current.sync).toHaveBeenCalled();
   });
 
   it("calls badVersion", () => {
     const state = fakeState();
     state.bot.hardware.informational_settings.controller_version = "1.0.0";
-    actions.sync()(jest.fn(), () => state);
+    deviceActions().sync()(jest.fn(), () => state);
     expect(mockDevice.current.sync).not.toHaveBeenCalled();
     expectBadVersionCall();
   });
@@ -254,7 +274,7 @@ describe("sync()", () => {
   it("doesn't call sync: disconnected", () => {
     const state = fakeState();
     state.bot.hardware.informational_settings.controller_version = undefined;
-    actions.sync()(jest.fn(), () => state);
+    deviceActions().sync()(jest.fn(), () => state);
     expect(mockDevice.current.sync).not.toHaveBeenCalled();
     expect(info).toHaveBeenCalledWith("FarmBot is not connected.", {
       title: "Disconnected", color: "red",
@@ -273,7 +293,7 @@ describe("execSequence()", () => {
     };
 
     replaceDeviceWith(errorThrower, async () => {
-      await actions.execSequence(1, []);
+      await deviceActions().execSequence(1, []);
       expect(mockDevice.current.execSequence).toHaveBeenCalledWith(1, []);
       expect(error).toHaveBeenCalledWith("yolo");
     });
@@ -285,37 +305,37 @@ describe("execSequence()", () => {
     };
 
     await replaceDeviceWith(errorThrower, async () => {
-      await actions.execSequence(22, []);
+      await deviceActions().execSequence(22, []);
       expect(mockDevice.current.execSequence).toHaveBeenCalledWith(22, []);
       expect(error).toHaveBeenCalledWith("Sequence execution failed");
     });
   });
 
   it("calls execSequence", async () => {
-    await actions.execSequence(1);
+    await deviceActions().execSequence(1);
     expect(mockDevice.current.execSequence).toHaveBeenCalledWith(1, undefined);
     expect(success).toHaveBeenCalled();
   });
 
   it("calls execSequence with variables", async () => {
-    await actions.execSequence(1, []);
+    await deviceActions().execSequence(1, []);
     expect(mockDevice.current.execSequence).toHaveBeenCalledWith(1, []);
     expect(success).toHaveBeenCalled();
   });
 
   it("calls execSequence on demo accounts", async () => {
     localStorage.setItem("myBotIs", "online");
-    await actions.execSequence(1);
+    await deviceActions().execSequence(1);
     expect(mockDevice.current.execSequence).not.toHaveBeenCalled();
     expect(success).not.toHaveBeenCalled();
-    expect(runDemoSequence).toHaveBeenCalledWith(
+    expect(demoLuaRunner.runDemoSequence).toHaveBeenCalledWith(
       expect.any(Object),
       1,
       undefined);
   });
 
   it("implodes when executing unsaved sequences", () => {
-    expect(() => actions.execSequence(undefined)).toThrow();
+    expect(() => deviceActions().execSequence(undefined)).toThrow();
     expect(mockDevice.current.execSequence).not.toHaveBeenCalled();
   });
 });
@@ -326,7 +346,7 @@ describe("takePhoto()", () => {
   });
 
   it("calls takePhoto", async () => {
-    await actions.takePhoto();
+    await deviceActions().takePhoto();
     expect(mockDevice.current.takePhoto).toHaveBeenCalled();
     expect(success).toHaveBeenCalledWith(Content.PROCESSING_PHOTO,
       { title: "Request sent" });
@@ -335,15 +355,15 @@ describe("takePhoto()", () => {
 
   it("calls takePhoto on demo accounts", async () => {
     localStorage.setItem("myBotIs", "online");
-    await actions.takePhoto();
+    await deviceActions().takePhoto();
     expect(mockDevice.current.takePhoto).not.toHaveBeenCalled();
     expect(success).not.toHaveBeenCalled();
-    expect(runDemoLuaCode).toHaveBeenCalledWith("take_photo()");
+    expect(demoLuaRunner.runDemoLuaCode).toHaveBeenCalledWith("take_photo()");
   });
 
   it("calls takePhoto: error", async () => {
     mockDevice.current.takePhoto = jest.fn(() => Promise.reject("error"));
-    await actions.takePhoto();
+    await deviceActions().takePhoto();
     await expect(mockDevice.current.takePhoto).toHaveBeenCalled();
     expect(success).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith("Error taking photo");
@@ -353,13 +373,13 @@ describe("takePhoto()", () => {
 describe("MCUFactoryReset()", () => {
   it("doesn't call resetMCU", () => {
     window.confirm = () => false;
-    actions.MCUFactoryReset();
+    deviceActions().MCUFactoryReset();
     expect(mockDevice.current.resetMCU).not.toHaveBeenCalled();
   });
 
   it("calls resetMCU", () => {
     window.confirm = () => true;
-    actions.MCUFactoryReset();
+    deviceActions().MCUFactoryReset();
     expect(mockDevice.current.resetMCU).toHaveBeenCalled();
   });
 });
@@ -370,10 +390,10 @@ describe("settingToggle()", () => {
     const state = fakeState();
     const fakeConfig = fakeFirmwareConfig();
     state.resources = buildResourceIndex([fakeConfig]);
-    actions.settingToggle(
+    deviceActions().settingToggle(
       "param_mov_nr_retry", sourceSetting)(jest.fn(), () => state);
-    expect(edit).toHaveBeenCalledWith(fakeConfig, { param_mov_nr_retry: 0 });
-    expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
+    expect(editSpy).toHaveBeenCalledWith(fakeConfig, { param_mov_nr_retry: 0 });
+    expect(saveSpy).toHaveBeenCalledWith(fakeConfig.uuid);
   });
 
   it("toggles mcu param on", () => {
@@ -381,16 +401,16 @@ describe("settingToggle()", () => {
     const state = fakeState();
     const fakeConfig = fakeFirmwareConfig();
     state.resources = buildResourceIndex([fakeConfig]);
-    actions.settingToggle(
+    deviceActions().settingToggle(
       "param_mov_nr_retry", sourceSetting)(jest.fn(), () => state);
-    expect(edit).toHaveBeenCalledWith(fakeConfig, { param_mov_nr_retry: 1 });
-    expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
+    expect(editSpy).toHaveBeenCalledWith(fakeConfig, { param_mov_nr_retry: 1 });
+    expect(saveSpy).toHaveBeenCalledWith(fakeConfig.uuid);
   });
 
   it("displays an alert message", () => {
     window.alert = jest.fn();
     const msg = "this is an alert.";
-    actions.settingToggle(
+    deviceActions().settingToggle(
       "param_mov_nr_retry", jest.fn(() => ({ value: 1, consistent: true })),
       msg)(jest.fn(), fakeState);
     expect(window.alert).toHaveBeenCalledWith(msg);
@@ -402,18 +422,18 @@ describe("updateMCU()", () => {
     const state = fakeState();
     const fakeConfig = fakeFirmwareConfig();
     state.resources = buildResourceIndex([fakeConfig]);
-    actions.updateMCU("param_mov_nr_retry", "0")(jest.fn(), () => state);
-    expect(edit).toHaveBeenCalledWith(fakeConfig, { param_mov_nr_retry: "0" });
-    expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
+    deviceActions().updateMCU("param_mov_nr_retry", "0")(jest.fn(), () => state);
+    expect(editSpy).toHaveBeenCalledWith(fakeConfig, { param_mov_nr_retry: "0" });
+    expect(saveSpy).toHaveBeenCalledWith(fakeConfig.uuid);
     expect(warning).not.toHaveBeenCalled();
   });
 
   it("handles missing FirmwareConfig", () => {
     const state = fakeState();
     state.resources = buildResourceIndex([]);
-    actions.updateMCU("param_mov_nr_retry", "0")(jest.fn(), () => state);
-    expect(edit).not.toHaveBeenCalled();
-    expect(save).not.toHaveBeenCalled();
+    deviceActions().updateMCU("param_mov_nr_retry", "0")(jest.fn(), () => state);
+    expect(editSpy).not.toHaveBeenCalled();
+    expect(saveSpy).not.toHaveBeenCalled();
     expect(warning).not.toHaveBeenCalled();
   });
 
@@ -422,7 +442,7 @@ describe("updateMCU()", () => {
     const fakeConfig = fakeFirmwareConfig();
     fakeConfig.body.movement_max_spd_x = 0;
     state.resources = buildResourceIndex([fakeConfig]);
-    actions.updateMCU("movement_min_spd_x", "100")(jest.fn(), () => state);
+    deviceActions().updateMCU("movement_min_spd_x", "100")(jest.fn(), () => state);
     expect(warning).toHaveBeenCalledWith(
       "Minimum speed should always be lower than maximum");
   });
@@ -434,7 +454,7 @@ describe("moveRelative()", () => {
   });
 
   it("calls moveRelative", async () => {
-    await actions.moveRelative({ x: 1, y: 0, z: 0 });
+    await deviceActions().moveRelative({ x: 1, y: 0, z: 0 });
     expect(mockDevice.current.moveRelative)
       .toHaveBeenCalledWith({ x: 1, y: 0, z: 0 });
     expect(success).not.toHaveBeenCalled();
@@ -443,16 +463,16 @@ describe("moveRelative()", () => {
 
   it("calls moveRelative on demo accounts", async () => {
     localStorage.setItem("myBotIs", "online");
-    await actions.moveRelative({ x: 1, y: 0, z: 0 });
+    await deviceActions().moveRelative({ x: 1, y: 0, z: 0 });
     expect(mockDevice.current.moveRelative).not.toHaveBeenCalled();
     expect(success).not.toHaveBeenCalled();
     expect(error).not.toHaveBeenCalled();
-    expect(runDemoLuaCode).toHaveBeenCalledWith("move_relative(1, 0, 0)");
+    expect(demoLuaRunner.runDemoLuaCode).toHaveBeenCalledWith("move_relative(1, 0, 0)");
   });
 
   it("shows lock message", () => {
     mockState.bot.hardware.informational_settings.locked = true;
-    actions.moveRelative({ x: 1, y: 0, z: 0 });
+    deviceActions().moveRelative({ x: 1, y: 0, z: 0 });
     expect(error).toHaveBeenCalledWith("Command not available while locked.",
       { title: "Emergency stop active" });
     mockState.bot.hardware.informational_settings.locked = false;
@@ -465,7 +485,7 @@ describe("moveAbsolute()", () => {
   });
 
   it("calls moveAbsolute", async () => {
-    await actions.moveAbsolute({ x: 1, y: 0, z: 0 });
+    await deviceActions().moveAbsolute({ x: 1, y: 0, z: 0 });
     expect(mockDevice.current.moveAbsolute)
       .toHaveBeenCalledWith({ x: 1, y: 0, z: 0 });
     expect(success).not.toHaveBeenCalled();
@@ -473,10 +493,10 @@ describe("moveAbsolute()", () => {
 
   it("calls moveAbsolute on demo accounts", async () => {
     localStorage.setItem("myBotIs", "online");
-    await actions.moveAbsolute({ x: 1, y: 0, z: 0 });
+    await deviceActions().moveAbsolute({ x: 1, y: 0, z: 0 });
     expect(mockDevice.current.moveAbsolute).not.toHaveBeenCalled();
     expect(success).not.toHaveBeenCalled();
-    expect(runDemoLuaCode).toHaveBeenCalledWith("move_absolute(1, 0, 0)");
+    expect(demoLuaRunner.runDemoLuaCode).toHaveBeenCalledWith("move_absolute(1, 0, 0)");
   });
 });
 
@@ -508,7 +528,7 @@ describe("move()", () => {
   }];
 
   it("calls move", async () => {
-    await actions.move({ x: 1, y: 0, z: 0 });
+    await deviceActions().move({ x: 1, y: 0, z: 0 });
     expect(mockDevice.current.send)
       .toHaveBeenCalledWith({
         kind: "rpc_request",
@@ -523,7 +543,7 @@ describe("move()", () => {
   });
 
   it("calls move with speed", async () => {
-    await actions.move({ x: 1, y: 0, z: 0, speed: 50 });
+    await deviceActions().move({ x: 1, y: 0, z: 0, speed: 50 });
     expect(mockDevice.current.send)
       .toHaveBeenCalledWith({
         kind: "rpc_request",
@@ -561,7 +581,7 @@ describe("move()", () => {
   });
 
   it("calls move with safe z", async () => {
-    await actions.move({ x: 1, y: 0, z: 0, safeZ: true });
+    await deviceActions().move({ x: 1, y: 0, z: 0, safeZ: true });
     expect(mockDevice.current.send)
       .toHaveBeenCalledWith({
         kind: "rpc_request",
@@ -579,9 +599,9 @@ describe("move()", () => {
 
   it("calls move on demo accounts", async () => {
     localStorage.setItem("myBotIs", "online");
-    await actions.move({ x: 1, y: 0, z: 0 });
+    await deviceActions().move({ x: 1, y: 0, z: 0 });
     expect(mockDevice.current.send).not.toHaveBeenCalled();
-    expect(csToLua).toHaveBeenCalledWith({
+    expect(demoLuaRunner.csToLua).toHaveBeenCalledWith({
       kind: "move",
       args: {},
       body: BODY,
@@ -596,16 +616,16 @@ describe("pinToggle()", () => {
   });
 
   it("calls togglePin", async () => {
-    await actions.pinToggle(5);
+    await deviceActions().pinToggle(5);
     expect(mockDevice.current.togglePin).toHaveBeenCalledWith({ pin_number: 5 });
     expect(success).not.toHaveBeenCalled();
   });
 
   it("toggles demo account pin", () => {
     localStorage.setItem("myBotIs", "online");
-    actions.pinToggle(5);
+    deviceActions().pinToggle(5);
     expect(mockDevice.current.togglePin).not.toHaveBeenCalled();
-    expect(runDemoLuaCode).toHaveBeenCalledWith("toggle_pin(5)");
+    expect(demoLuaRunner.runDemoLuaCode).toHaveBeenCalledWith("toggle_pin(5)");
   });
 });
 
@@ -615,7 +635,7 @@ describe("readPin()", () => {
   });
 
   it("calls readPin", async () => {
-    await actions.readPin(1, "label", 0);
+    await deviceActions().readPin(1, "label", 0);
     expect(mockDevice.current.readPin).toHaveBeenCalledWith({
       pin_number: 1, label: "label", pin_mode: 0,
     });
@@ -624,15 +644,15 @@ describe("readPin()", () => {
 
   it("reads demo account pin", async () => {
     localStorage.setItem("myBotIs", "online");
-    await actions.readPin(1, "label", 0);
+    await deviceActions().readPin(1, "label", 0);
     expect(mockDevice.current.readPin).not.toHaveBeenCalled();
-    expect(runDemoLuaCode).toHaveBeenCalledWith("read_pin(1)");
+    expect(demoLuaRunner.runDemoLuaCode).toHaveBeenCalledWith("read_pin(1)");
   });
 });
 
 describe("writePin()", () => {
   it("calls writePin", async () => {
-    await actions.writePin(1, 1, 0);
+    await deviceActions().writePin(1, 1, 0);
     expect(mockDevice.current.writePin).toHaveBeenCalledWith({
       pin_number: 1, pin_value: 1, pin_mode: 0,
     });
@@ -646,7 +666,7 @@ describe("moveToHome()", () => {
   });
 
   it("calls home", async () => {
-    await actions.moveToHome("x");
+    await deviceActions().moveToHome("x");
     expect(mockDevice.current.home)
       .toHaveBeenCalledWith({ axis: "x", speed: 100 });
     expect(success).not.toHaveBeenCalled();
@@ -654,9 +674,9 @@ describe("moveToHome()", () => {
 
   it("calls home on demo accounts", async () => {
     localStorage.setItem("myBotIs", "online");
-    await actions.moveToHome("x");
+    await deviceActions().moveToHome("x");
     expect(mockDevice.current.home).not.toHaveBeenCalled();
-    expect(runDemoLuaCode).toHaveBeenCalledWith("go_to_home(\"x\")");
+    expect(demoLuaRunner.runDemoLuaCode).toHaveBeenCalledWith("go_to_home(\"x\")");
   });
 });
 
@@ -666,7 +686,7 @@ describe("findHome()", () => {
   });
 
   it("calls find_home", async () => {
-    await actions.findHome("all");
+    await deviceActions().findHome("all");
     expect(mockDevice.current.findHome)
       .toHaveBeenCalledWith({ axis: "all", speed: 100 });
     expect(success).not.toHaveBeenCalled();
@@ -674,9 +694,9 @@ describe("findHome()", () => {
 
   it("calls find_home on demo accounts", async () => {
     localStorage.setItem("myBotIs", "online");
-    await actions.findHome("all");
+    await deviceActions().findHome("all");
     expect(mockDevice.current.findHome).not.toHaveBeenCalled();
-    expect(runDemoLuaCode).toHaveBeenCalledWith("find_home(\"all\")");
+    expect(demoLuaRunner.runDemoLuaCode).toHaveBeenCalledWith("find_home(\"all\")");
   });
 });
 
@@ -686,7 +706,7 @@ describe("findAxisLength()", () => {
   });
 
   it("calls find_axis_length", async () => {
-    await actions.findAxisLength("x");
+    await deviceActions().findAxisLength("x");
     expect(mockDevice.current.calibrate)
       .toHaveBeenCalledWith({ axis: "x" });
     expect(success).not.toHaveBeenCalled();
@@ -694,22 +714,22 @@ describe("findAxisLength()", () => {
 
   it("calls find_home on demo accounts", async () => {
     localStorage.setItem("myBotIs", "online");
-    await actions.findAxisLength("x");
+    await deviceActions().findAxisLength("x");
     expect(mockDevice.current.calibrate).not.toHaveBeenCalled();
-    expect(runDemoLuaCode).toHaveBeenCalledWith("find_axis_length(\"x\")");
+    expect(demoLuaRunner.runDemoLuaCode).toHaveBeenCalledWith("find_axis_length(\"x\")");
   });
 });
 
 describe("isLog()", () => {
   it("knows if it is a log or not", () => {
-    expect(actions.isLog({})).toBe(false);
-    expect(actions.isLog({ message: "foo" })).toBe(true);
+    expect(deviceActions().isLog({})).toBe(false);
+    expect(deviceActions().isLog({ message: "foo" })).toBe(true);
   });
 
   it("filters sensitive logs", () => {
     const log = { message: "NERVESPSKWPASSWORD" };
     console.error = jest.fn();
-    const result = actions.isLog(log);
+    const result = deviceActions().isLog(log);
     expect(result).toBe(false);
     expect(console.error).toHaveBeenCalledWith(
       expect.stringContaining("Refusing to display log"));
@@ -718,7 +738,7 @@ describe("isLog()", () => {
 
 describe("commandErr()", () => {
   it("sends toast", () => {
-    actions.commandErr()();
+    deviceActions().commandErr()();
     expect(error).toHaveBeenCalledWith("Command failed");
   });
 });
@@ -729,7 +749,7 @@ describe("commandOK()", () => {
   });
 
   it("sends toast", () => {
-    actions.commandOK()();
+    deviceActions().commandOK()();
     expect(success).toHaveBeenCalledWith(
       "Command request sent to device.",
       { title: "Request sent" });
@@ -737,7 +757,7 @@ describe("commandOK()", () => {
 
   it("sends demo account toast", () => {
     localStorage.setItem("myBotIs", "online");
-    actions.commandOK()();
+    deviceActions().commandOK()();
     expect(success).not.toHaveBeenCalled();
     expect(info).toHaveBeenCalledWith(
       "Sorry, that feature is unavailable in demo accounts.",
@@ -748,7 +768,7 @@ describe("commandOK()", () => {
 describe("changeStepSize()", () => {
   it("returns a redux action", () => {
     const payload = 23;
-    const result = actions.changeStepSize(payload);
+    const result = deviceActions().changeStepSize(payload);
     expect(result.type).toBe(Actions.CHANGE_STEP_SIZE);
     expect(result.payload).toBe(payload);
   });
@@ -756,11 +776,14 @@ describe("changeStepSize()", () => {
 
 describe("fetchMinOsFeatureData()", () => {
   const EXPECTED_URL = expect.stringContaining("FEATURE_MIN_VERSIONS.json");
+  beforeEach(() => {
+    (axios as unknown as { get: Function }).get = jest.fn(() => mockGet);
+  });
 
   it("fetches min OS feature data: empty", async () => {
     mockGet = Promise.resolve({ data: {} });
     const dispatch = jest.fn();
-    await actions.fetchMinOsFeatureData()(dispatch);
+    await deviceActions().fetchMinOsFeatureData()(dispatch);
     expect(axios.get).toHaveBeenCalledWith(EXPECTED_URL);
     expect(dispatch).toHaveBeenCalledWith({
       payload: {},
@@ -773,7 +796,7 @@ describe("fetchMinOsFeatureData()", () => {
       data: { "a_feature": "1.0.0", "b_feature": "2.0.0" }
     });
     const dispatch = jest.fn();
-    await actions.fetchMinOsFeatureData()(dispatch);
+    await deviceActions().fetchMinOsFeatureData()(dispatch);
     expect(axios.get).toHaveBeenCalledWith(EXPECTED_URL);
     expect(dispatch).toHaveBeenCalledWith({
       payload: { a_feature: "1.0.0", b_feature: "2.0.0" },
@@ -785,7 +808,7 @@ describe("fetchMinOsFeatureData()", () => {
     mockGet = Promise.resolve({ data: "bad" });
     const dispatch = jest.fn();
     console.log = jest.fn();
-    await actions.fetchMinOsFeatureData()(dispatch);
+    await deviceActions().fetchMinOsFeatureData()(dispatch);
     expect(axios.get).toHaveBeenCalledWith(EXPECTED_URL);
     expect(dispatch).not.toHaveBeenCalled();
     expect(console.log).toHaveBeenCalledWith(
@@ -796,7 +819,7 @@ describe("fetchMinOsFeatureData()", () => {
     mockGet = Promise.resolve({ data: { a: "0", b: 0 } });
     const dispatch = jest.fn();
     console.log = jest.fn();
-    await actions.fetchMinOsFeatureData()(dispatch);
+    await deviceActions().fetchMinOsFeatureData()(dispatch);
     expect(axios.get).toHaveBeenCalledWith(EXPECTED_URL);
     expect(dispatch).not.toHaveBeenCalled();
     expect(console.log).toHaveBeenCalledWith(
@@ -806,7 +829,7 @@ describe("fetchMinOsFeatureData()", () => {
   it("fails to fetch min OS feature data", async () => {
     mockGet = Promise.reject("error");
     const dispatch = jest.fn();
-    await actions.fetchMinOsFeatureData()(dispatch);
+    await deviceActions().fetchMinOsFeatureData()(dispatch);
     await expect(axios.get).toHaveBeenCalledWith(EXPECTED_URL);
     expect(error).not.toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledWith({
@@ -818,13 +841,16 @@ describe("fetchMinOsFeatureData()", () => {
 
 describe("fetchOsReleaseNotes()", () => {
   const EXPECTED_URL = expect.stringContaining("RELEASE_NOTES.md");
+  beforeEach(() => {
+    (axios as unknown as { get: Function }).get = jest.fn(() => mockGet);
+  });
 
   it("fetches OS release notes", async () => {
     mockGet = Promise.resolve({
       data: "intro\n\n# v6\n\n* note"
     });
     const dispatch = jest.fn();
-    await actions.fetchOsReleaseNotes()(dispatch);
+    await deviceActions().fetchOsReleaseNotes()(dispatch);
     await expect(axios.get).toHaveBeenCalledWith(EXPECTED_URL);
     expect(dispatch).toHaveBeenCalledWith({
       payload: "intro\n\n# v6\n\n* note",
@@ -835,7 +861,7 @@ describe("fetchOsReleaseNotes()", () => {
   it("errors while fetching OS release notes", async () => {
     mockGet = Promise.reject({ error: "" });
     const dispatch = jest.fn();
-    await actions.fetchOsReleaseNotes()(dispatch);
+    await deviceActions().fetchOsReleaseNotes()(dispatch);
     await expect(axios.get).toHaveBeenCalledWith(EXPECTED_URL);
     expect(dispatch).toHaveBeenCalledWith({
       payload: { error: "" },
@@ -849,17 +875,17 @@ describe("updateConfig()", () => {
     const state = fakeState();
     const fakeConfig = fakeFbosConfig();
     state.resources = buildResourceIndex([fakeConfig]);
-    actions.updateConfig({ os_auto_update: true })(jest.fn(), () => state);
-    expect(edit).toHaveBeenCalledWith(fakeConfig, { os_auto_update: true });
-    expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
+    deviceActions().updateConfig({ os_auto_update: true })(jest.fn(), () => state);
+    expect(editSpy).toHaveBeenCalledWith(fakeConfig, { os_auto_update: true });
+    expect(saveSpy).toHaveBeenCalledWith(fakeConfig.uuid);
   });
 
   it("doesn't update FbosConfig", () => {
     const state = fakeState();
     state.resources = buildResourceIndex([]);
-    actions.updateConfig({ os_auto_update: true })(jest.fn(), () => state);
-    expect(edit).not.toHaveBeenCalled();
-    expect(save).not.toHaveBeenCalled();
+    deviceActions().updateConfig({ os_auto_update: true })(jest.fn(), () => state);
+    expect(editSpy).not.toHaveBeenCalled();
+    expect(saveSpy).not.toHaveBeenCalled();
   });
 });
 
@@ -875,12 +901,12 @@ const expectBadVersionCall = (noDismiss = true) => {
 
 describe("badVersion()", () => {
   it("warns of old FBOS version", () => {
-    actions.badVersion();
+    deviceActions().badVersion();
     expectBadVersionCall();
   });
 
   it("warns of old FBOS version: dismiss-able", () => {
-    actions.badVersion({ noDismiss: false });
+    deviceActions().badVersion({ noDismiss: false });
     expectBadVersionCall(false);
   });
 });

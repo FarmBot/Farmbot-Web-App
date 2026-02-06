@@ -5,7 +5,7 @@ import {
   Cylinder, Html, PerspectiveCamera, useGLTF,
 } from "@react-three/drei";
 import { Canvas, ThreeEvent, useFrame } from "@react-three/fiber";
-import { GLTF } from "three-stdlib";
+import type { GLTF } from "three-stdlib";
 import { BindingTargetDropdown, pinBindingLabel } from "./pin_binding_input_group";
 import { BoxTopBaseProps, PinBindingListItems } from "./interfaces";
 import { setPinBinding, findBinding, triggerBinding } from "./actions";

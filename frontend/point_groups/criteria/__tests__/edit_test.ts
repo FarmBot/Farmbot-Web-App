@@ -1,5 +1,3 @@
-jest.mock("../../actions", () => ({ overwriteGroup: jest.fn() }));
-
 import {
   editCriteria, toggleEqCriteria,
   editGtLtCriteria,
@@ -16,7 +14,19 @@ import { cloneDeep } from "lodash";
 import { DEFAULT_CRITERIA, PointGroupCriteria } from "../interfaces";
 import { inputEvent } from "../../../__test_support__/fake_html_events";
 import { error } from "../../../toast/toast";
-import { overwriteGroup } from "../../actions";
+import * as groupActions from "../../actions";
+
+let overwriteGroupSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  overwriteGroupSpy = jest.spyOn(groupActions, "overwriteGroup")
+    .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  overwriteGroupSpy.mockRestore();
+});
 
 describe("editCriteria()", () => {
   it("edits criteria: all empty", () => {
@@ -25,13 +35,13 @@ describe("editCriteria()", () => {
     editCriteria(group, {})(jest.fn());
     const expectedBody = cloneDeep(group.body);
     expectedBody.criteria = DEFAULT_CRITERIA;
-    expect(overwriteGroup).toHaveBeenCalledWith(group, expectedBody);
+    expect(overwriteGroupSpy).toHaveBeenCalledWith(group, expectedBody);
   });
 
   it("edits criteria: empty update", () => {
     const group = fakePointGroup();
     editCriteria(group, {})(jest.fn());
-    expect(overwriteGroup).toHaveBeenCalledWith(group, group.body);
+    expect(overwriteGroupSpy).toHaveBeenCalledWith(group, group.body);
   });
 
   it("edits criteria: full update", () => {
@@ -46,7 +56,7 @@ describe("editCriteria()", () => {
     editCriteria(group, criteria)(jest.fn());
     const expectedBody = cloneDeep(group.body);
     expectedBody.criteria = criteria;
-    expect(overwriteGroup).toHaveBeenCalledWith(group, expectedBody);
+    expect(overwriteGroupSpy).toHaveBeenCalledWith(group, expectedBody);
   });
 });
 
@@ -86,7 +96,7 @@ describe("toggleAndEditEqCriteria()", () => {
     const expectedBody = cloneDeep(group.body);
     expectedBody.criteria.string_eq = { openfarm_slug: ["mint"] };
     toggleAndEditEqCriteria(group, "openfarm_slug", "mint")(dispatch);
-    expect(overwriteGroup).toHaveBeenCalledWith(group, expectedBody);
+    expect(overwriteGroupSpy).toHaveBeenCalledWith(group, expectedBody);
   });
 
   it("toggles criteria on for point type", () => {
@@ -106,7 +116,7 @@ describe("toggleAndEditEqCriteria()", () => {
     };
     expectedBody.criteria.number_eq = {};
     toggleAndEditEqCriteria(group, "openfarm_slug", "mint", "Plant")(dispatch);
-    expect(overwriteGroup).toHaveBeenCalledWith(group, expectedBody);
+    expect(overwriteGroupSpy).toHaveBeenCalledWith(group, expectedBody);
   });
 
   it("toggles off", () => {
@@ -122,7 +132,7 @@ describe("toggleAndEditEqCriteria()", () => {
     const expectedBody = cloneDeep(group.body);
     delete expectedBody.criteria.string_eq.openfarm_slug;
     toggleAndEditEqCriteria(group, "openfarm_slug", "mint", "Plant")(dispatch);
-    expect(overwriteGroup).toHaveBeenCalledWith(group, expectedBody);
+    expect(overwriteGroupSpy).toHaveBeenCalledWith(group, expectedBody);
   });
 
   it("toggles on: empty criteria", () => {
@@ -142,7 +152,7 @@ describe("toggleAndEditEqCriteria()", () => {
     expectedBody.criteria.number_gt = {};
     expectedBody.criteria.number_eq = { pullout_direction: [0] };
     toggleAndEditEqCriteria(group, "pullout_direction", 0, "ToolSlot")(dispatch);
-    expect(overwriteGroup).toHaveBeenCalledWith(group, expectedBody);
+    expect(overwriteGroupSpy).toHaveBeenCalledWith(group, expectedBody);
   });
 });
 
@@ -160,7 +170,7 @@ describe("togglePointTypeCriteria()", () => {
       openfarm_slug: ["mint"],
     };
     togglePointTypeCriteria(group, "Plant")(dispatch);
-    expect(overwriteGroup).toHaveBeenCalledWith(group, expectedBody);
+    expect(overwriteGroupSpy).toHaveBeenCalledWith(group, expectedBody);
   });
 
   it("toggles off", () => {
@@ -176,7 +186,7 @@ describe("togglePointTypeCriteria()", () => {
       openfarm_slug: ["mint"],
     };
     togglePointTypeCriteria(group, "Plant")(dispatch);
-    expect(overwriteGroup).toHaveBeenCalledWith(group, expectedBody);
+    expect(overwriteGroupSpy).toHaveBeenCalledWith(group, expectedBody);
   });
 
   it("toggles on: empty criteria", () => {
@@ -185,7 +195,7 @@ describe("togglePointTypeCriteria()", () => {
     const expectedBody = cloneDeep(group.body);
     expectedBody.criteria.string_eq = { pointer_type: ["Plant"] };
     togglePointTypeCriteria(group, "Plant")(dispatch);
-    expect(overwriteGroup).toHaveBeenCalledWith(group, expectedBody);
+    expect(overwriteGroupSpy).toHaveBeenCalledWith(group, expectedBody);
   });
 
   it("toggles off: empty criteria", () => {
@@ -197,7 +207,7 @@ describe("togglePointTypeCriteria()", () => {
     const expectedBody = cloneDeep(group.body);
     expectedBody.criteria.string_eq = {};
     togglePointTypeCriteria(group, "ToolSlot")(dispatch);
-    expect(overwriteGroup).toHaveBeenCalledWith(group, expectedBody);
+    expect(overwriteGroupSpy).toHaveBeenCalledWith(group, expectedBody);
   });
 
   it("clears other pointer types", () => {
@@ -209,7 +219,7 @@ describe("togglePointTypeCriteria()", () => {
     const expectedBody = cloneDeep(group.body);
     expectedBody.criteria.string_eq = { pointer_type: ["Weed"] };
     togglePointTypeCriteria(group, "Weed", true)(dispatch);
-    expect(overwriteGroup).toHaveBeenCalledWith(group, expectedBody);
+    expect(overwriteGroupSpy).toHaveBeenCalledWith(group, expectedBody);
   });
 });
 
@@ -220,7 +230,7 @@ describe("clearCriteriaField()", () => {
     group.body.criteria.string_eq = { plant_stage: ["planted"] };
     expectedBody.criteria.string_eq = {};
     clearCriteriaField(group, ["string_eq"], ["plant_stage"])(dispatch);
-    expect(overwriteGroup).toHaveBeenCalledWith(group, expectedBody);
+    expect(overwriteGroupSpy).toHaveBeenCalledWith(group, expectedBody);
   });
 });
 
@@ -232,14 +242,14 @@ describe("editGtLtCriteria()", () => {
     const expectedBody = cloneDeep(group.body);
     expectedBody.criteria.number_gt = { x: 0, y: 2 };
     expectedBody.criteria.number_lt = { x: 3, y: 4 };
-    expect(overwriteGroup).toHaveBeenCalledWith(group, expectedBody);
+    expect(overwriteGroupSpy).toHaveBeenCalledWith(group, expectedBody);
   });
 
   it("doesn't edit criteria", () => {
     const group = fakePointGroup();
     const box = { x0: undefined, y0: 2, x1: 3, y1: 4 };
     editGtLtCriteria(group, box)(dispatch);
-    expect(overwriteGroup).not.toHaveBeenCalled();
+    expect(overwriteGroupSpy).not.toHaveBeenCalled();
   });
 });
 
@@ -251,7 +261,7 @@ describe("removeEqCriteriaValue()", () => {
       "string_eq", "plant_stage", "planned")(dispatch);
     const expectedBody = cloneDeep(group.body);
     expectedBody.criteria.string_eq = { plant_stage: ["planted"] };
-    expect(overwriteGroup).toHaveBeenCalledWith(group, expectedBody);
+    expect(overwriteGroupSpy).toHaveBeenCalledWith(group, expectedBody);
   });
 });
 
@@ -263,7 +273,7 @@ describe("editGtLtCriteriaField()", () => {
     const expectedBody = cloneDeep(group.body);
     expectedBody.criteria.number_lt = { radius: 1 };
     expect(error).not.toHaveBeenCalled();
-    expect(overwriteGroup).toHaveBeenCalledWith(group, expectedBody);
+    expect(overwriteGroupSpy).toHaveBeenCalledWith(group, expectedBody);
   });
 
   it("errors when changing value: lt", () => {
@@ -272,7 +282,7 @@ describe("editGtLtCriteriaField()", () => {
     const e = inputEvent("0");
     editGtLtCriteriaField(group, "number_lt", "radius")(e)(dispatch);
     expect(error).toHaveBeenCalledWith("Value must be greater than 1.");
-    expect(overwriteGroup).not.toHaveBeenCalled();
+    expect(overwriteGroupSpy).not.toHaveBeenCalled();
   });
 
   it("errors when changing value: gt", () => {
@@ -281,7 +291,7 @@ describe("editGtLtCriteriaField()", () => {
     const e = inputEvent("1");
     editGtLtCriteriaField(group, "number_gt", "radius")(e)(dispatch);
     expect(error).toHaveBeenCalledWith("Value must be less than 0.");
-    expect(overwriteGroup).not.toHaveBeenCalled();
+    expect(overwriteGroupSpy).not.toHaveBeenCalled();
   });
 
   it("doesn't error when removing value", () => {
@@ -292,7 +302,7 @@ describe("editGtLtCriteriaField()", () => {
     const expectedBody = cloneDeep(group.body);
     expectedBody.criteria.number_gt = { radius: undefined };
     expect(error).not.toHaveBeenCalled();
-    expect(overwriteGroup).toHaveBeenCalledWith(group, expectedBody);
+    expect(overwriteGroupSpy).toHaveBeenCalledWith(group, expectedBody);
   });
 
   it("clears incompatible criteria", () => {
@@ -305,6 +315,6 @@ describe("editGtLtCriteriaField()", () => {
     )(e)(dispatch);
     expectedBody.criteria.number_lt = { radius: 1 };
     expect(error).not.toHaveBeenCalled();
-    expect(overwriteGroup).toHaveBeenCalledWith(group, expectedBody);
+    expect(overwriteGroupSpy).toHaveBeenCalledWith(group, expectedBody);
   });
 });

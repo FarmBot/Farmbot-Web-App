@@ -1,42 +1,38 @@
 import * as THREE from "three";
+import React from "react";
+import * as threeFiber from "@react-three/fiber";
 
 const mockRotation = { z: 0 };
-jest.mock("react", () => {
-  const originReact = jest.requireActual("react");
-  const mockRef = jest.fn(() => ({
-    current: {
-      traverse: (cb: (m: {}) => void) => {
-        const mesh = {
-          material: {
-            clone: () => ({
-              transparent: false,
-              opacity: 1,
-              needsUpdate: false,
-            }),
-          }
-        };
-        Object.setPrototypeOf(mesh, THREE.Mesh.prototype);
-        cb(mesh);
-      },
-      rotation: mockRotation,
-    },
-  }));
-  return {
-    ...originReact,
-    useRef: mockRef,
-  };
-});
 
-jest.mock("../watering_animations", () => ({
-  WateringAnimations: jest.fn(),
-}));
+const mockRotaryRef = () => {
+  const originalUseRef = jest.requireActual("react")
+    .useRef as typeof React.useRef;
+  let applied = false;
+  return jest.spyOn(React, "useRef").mockImplementation(initialValue => {
+    if (!applied && initialValue == undefined) {
+      applied = true;
+      const mesh = {
+        material: {
+          clone: () => ({
+            transparent: false,
+            opacity: 1,
+            needsUpdate: false,
+          }),
+        },
+      };
+      Object.setPrototypeOf(mesh, THREE.Mesh.prototype);
+      return {
+        current: {
+          traverse: (cb: (m: {}) => void) => cb(mesh),
+          rotation: mockRotation,
+        },
+      } as never;
+    }
+    return originalUseRef(initialValue);
+  });
+};
 
-jest.mock("../suction_animation", () => ({
-  SuctionAnimation: jest.fn(),
-}));
-
-import React from "react";
-import { fireEvent, render } from "@testing-library/react";
+import { fireEvent, render, cleanup } from "@testing-library/react";
 import { INITIAL } from "../../../config";
 import { clone } from "lodash";
 import { Tools, ToolsProps } from "../tools";
@@ -44,13 +40,38 @@ import {
   fakeTool, fakeToolSlot,
 } from "../../../../__test_support__/fake_state/resources";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
-import { WateringAnimations } from "../watering_animations";
 import { Path } from "../../../../internal_urls";
 import { Actions } from "../../../../constants";
 import { mockDispatch } from "../../../../__test_support__/fake_dispatch";
-import { SuctionAnimation } from "../suction_animation";
+import * as suctionAnimationModule from "../suction_animation";
+import * as wateringAnimationsModule from "../watering_animations";
+import * as mapUtil from "../../../../farm_designer/map/util";
+import { Mode } from "../../../../farm_designer/map/interfaces";
 
 describe("<Tools />", () => {
+  let getModeSpy: jest.SpyInstance;
+  let suctionAnimationSpy: jest.SpyInstance;
+  let wateringAnimationsSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    getModeSpy = jest.spyOn(mapUtil, "getMode").mockReturnValue(Mode.none);
+    jest.spyOn(threeFiber, "useFrame").mockImplementation(callback => {
+      callback({} as never, 0);
+    });
+    suctionAnimationSpy = jest.spyOn(suctionAnimationModule, "SuctionAnimation")
+      .mockImplementation(() => undefined);
+    wateringAnimationsSpy = jest.spyOn(
+      wateringAnimationsModule, "WateringAnimations")
+      .mockImplementation(() => undefined);
+  });
+
+  afterEach(() => {
+    cleanup();
+    getModeSpy.mockRestore();
+    jest.restoreAllMocks();
+    mockRotation.z = 0;
+  });
+
   const fakeProps = (): ToolsProps => ({
     config: clone(INITIAL),
     getZ: jest.fn(),
@@ -124,7 +145,7 @@ describe("<Tools />", () => {
     p.toolSlots = [];
     p.mountedToolName = "seeder";
     render(<Tools {...p} />);
-    expect(SuctionAnimation).toHaveBeenCalled();
+    expect(suctionAnimationSpy).toHaveBeenCalled();
   });
 
   it.each<[number, number]>([
@@ -133,6 +154,7 @@ describe("<Tools />", () => {
     [-1, -10],
   ])("renders rotary animations when not in toolbay and rotary active: %s",
     (input, expected) => {
+      const useRefSpy = mockRotaryRef();
       const dateSpy = jest.spyOn(Date, "now").mockImplementation(() => 1000);
       const p = fakeProps();
       p.config.rotary = input;
@@ -143,6 +165,7 @@ describe("<Tools />", () => {
       render(<Tools {...p} />);
       expect(mockRotation.z).toEqual(expected);
       dateSpy.mockRestore();
+      useRefSpy.mockRestore();
     });
 
   it("doesn't render watering animations when water not flowing", () => {
@@ -153,7 +176,7 @@ describe("<Tools />", () => {
     p.toolSlots = [];
     p.mountedToolName = "watering nozzle";
     render(<Tools {...p} />);
-    expect(WateringAnimations).not.toHaveBeenCalled();
+    expect(wateringAnimationsSpy).not.toHaveBeenCalled();
   });
 
   it("doesn't render watering animations when in toolbay", () => {
@@ -165,7 +188,7 @@ describe("<Tools />", () => {
     toolSlot.body.tool_id = tool.body.id;
     p.toolSlots = [{ toolSlot, tool }];
     render(<Tools {...p} />);
-    expect(WateringAnimations).not.toHaveBeenCalled();
+    expect(wateringAnimationsSpy).not.toHaveBeenCalled();
   });
 
   it("navigates to tool info", () => {
@@ -180,7 +203,7 @@ describe("<Tools />", () => {
     toolSlot.body.tool_id = tool.body.id;
     p.toolSlots = [{ toolSlot, tool }];
     const { container } = render(<Tools {...p} />);
-    const slot = container.querySelector("[name='slot'");
+    const slot = container.querySelector("[name='slot']");
     slot && fireEvent.click(slot);
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_PANEL_OPEN, payload: true,
@@ -199,7 +222,7 @@ describe("<Tools />", () => {
     toolSlot.body.tool_id = tool.body.id;
     p.toolSlots = [{ toolSlot, tool }];
     const { container } = render(<Tools {...p} />);
-    const slot = container.querySelector("[name='slot'");
+    const slot = container.querySelector("[name='slot']");
     slot && fireEvent.click(slot);
     expect(mockNavigate).not.toHaveBeenCalled();
   });

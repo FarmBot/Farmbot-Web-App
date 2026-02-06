@@ -1,4 +1,5 @@
 jest.mock("../../config_storage/actions", () => ({
+  ...jest.requireActual("../../config_storage/actions"),
   setWebAppConfigValue: jest.fn(),
 }));
 
@@ -16,6 +17,10 @@ import { DeviceSetting } from "../../constants";
 import { setWebAppConfigValue } from "../../config_storage/actions";
 import { updateConfig } from "../../devices/actions";
 
+afterAll(() => {
+  jest.unmock("../../devices/actions");
+  jest.unmock("../../config_storage/actions");
+});
 describe("<LogLevelSetting />", () => {
   const fakeProps = (): LogLevelSettingProps => ({
     dispatch: jest.fn(),

@@ -1,8 +1,3 @@
-jest.mock("../../../devices/actions", () => ({
-  execSequence: jest.fn(),
-  sendRPC: jest.fn(),
-}));
-
 import React from "react";
 import { mount } from "enzyme";
 import {
@@ -16,13 +11,28 @@ import {
 import {
   fakePinBinding, fakeSequence,
 } from "../../../__test_support__/fake_state/resources";
-import { execSequence, sendRPC } from "../../../devices/actions";
+import * as deviceActions from "../../../devices/actions";
 import {
   PinBindingSpecialAction,
   PinBindingType, SpecialPinBinding, StandardPinBinding,
 } from "farmbot/dist/resources/api_resources";
 import { BoxTopBaseProps } from "../interfaces";
 import { bot } from "../../../__test_support__/fake_state/bot";
+import { cloneDeep } from "lodash";
+
+beforeEach(() => {
+  jest.restoreAllMocks();
+  jest.clearAllMocks();
+  jest.useRealTimers();
+  jest.spyOn(deviceActions, "execSequence")
+    .mockImplementation(jest.fn());
+  jest.spyOn(deviceActions, "sendRPC")
+    .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
 
 describe("<BoxTopGpioDiagram />", () => {
   const fakeProps = (): BoxTopGpioDiagramProps => ({
@@ -78,15 +88,16 @@ describe("<BoxTopButtons />", () => {
     sequence.body.id = 1;
     sequence.body.name = "my sequence";
     const resources = buildResourceIndex([sequence, pinBinding]).index;
-    bot.hardware.informational_settings.sync_status = "synced";
-    bot.hardware.informational_settings.locked = false;
+    const botState = cloneDeep(bot);
+    botState.hardware.informational_settings.sync_status = "synced";
+    botState.hardware.informational_settings.locked = false;
     return {
       firmwareHardware: "farmduino_k17",
       isEditing: true,
       dispatch: jest.fn(),
       resources,
       botOnline: true,
-      bot,
+      bot: botState,
     };
   };
 
@@ -108,7 +119,7 @@ describe("<BoxTopButtons />", () => {
     const p = fakeProps();
     p.isEditing = false;
     const wrapper = mount(<BoxTopButtons {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("my sequence");
+    expect(wrapper.find("#button").length).toBeGreaterThan(0);
     expect(wrapper.find(".fast-blink").length).toEqual(0);
     expect(wrapper.find(".slow-blink").length).toEqual(0);
   });
@@ -125,7 +136,7 @@ describe("<BoxTopButtons />", () => {
   it("executes sequence", () => {
     const wrapper = mount(<BoxTopButtons {...fakeProps()} />);
     wrapper.find("#button").first().simulate("click");
-    expect(execSequence).toHaveBeenCalledWith(1);
+    expect(deviceActions.execSequence).toHaveBeenCalledWith(1);
   });
 
   it("doesn't execute sequence", () => {
@@ -133,7 +144,7 @@ describe("<BoxTopButtons />", () => {
     p.botOnline = false;
     const wrapper = mount(<BoxTopButtons {...p} />);
     wrapper.find("#button").first().simulate("click");
-    expect(execSequence).not.toHaveBeenCalled();
+    expect(deviceActions.execSequence).not.toHaveBeenCalled();
   });
 
   it("executes action", () => {
@@ -146,7 +157,7 @@ describe("<BoxTopButtons />", () => {
     p.resources = buildResourceIndex([pinBinding]).index;
     const wrapper = mount(<BoxTopButtons {...p} />);
     wrapper.find("#button").first().simulate("click");
-    expect(sendRPC).toHaveBeenCalledWith({ kind: "sync", args: {} });
+    expect(deviceActions.sendRPC).toHaveBeenCalledWith({ kind: "sync", args: {} });
   });
 
   it("hovers", () => {

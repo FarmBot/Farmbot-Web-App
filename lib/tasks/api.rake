@@ -1,3 +1,5 @@
+require "shellwords"
+
 def check_for_digests
   Log
     .where(sent_at: nil, created_at: 1.day.ago...Time.now)
@@ -26,15 +28,22 @@ end
 
 def rebuild_deps
   sh "sudo docker compose run web bundle install"
-  sh "sudo docker compose run web npm install"
+  sh "sudo docker compose run web bun install"
   sh "sudo docker compose run web bundle exec rails db:setup"
   sh "sudo docker compose run web rake keys:generate"
-  sh "sudo docker compose run web npm run build"
+  sh "sudo docker compose run web bundle exec rake assets:precompile"
 end
 
 def user_typed?(word)
   STDOUT.flush
   STDIN.gets.chomp.downcase.include?(word.downcase)
+end
+
+def truthy_env?(key)
+  value = ENV[key]
+  return false if value.nil?
+
+  value.match?(/\A(true|1|yes|y)\z/i)
 end
 
 namespace :api do
@@ -45,24 +54,42 @@ namespace :api do
     ENV["FOREVER"] ? loop { check_for_digests } : check_for_digests
   end
 
-  desc "Run Rails _ONLY_. No parcel."
+  desc "Run Rails _ONLY_. No asset server."
   task only: :environment do
-    sh "sudo docker compose up --scale parcel=0"
+    sh "sudo docker compose up --scale assets=0"
   end
 
-  def parcel(cmd, opts = " ")
-    intro = [
-      "NODE_ENV=#{Rails.env}",
-      "node_modules/.bin/parcel",
-      cmd,
-      DashboardController::PARCEL_ASSET_LIST,
-      "--dist-dir",
-      DashboardController::PUBLIC_OUTPUT_DIR,
-      "--public-url",
-      DashboardController::OUTPUT_URL,
-      cmd == "build" ? "--no-scope-hoist" : "",
-    ].join(" ")
-    sh [intro, opts].join(" ")
+  def asset_js_entries
+    DashboardController::JS_INPUTS.values.map do |path|
+      File.join("frontend", path)
+    end
+  end
+
+  def asset_css_entries
+    DashboardController::CSS_INPUTS.values.map do |path|
+      input = File.join("frontend", path)
+      output = File.join(
+        DashboardController::PUBLIC_OUTPUT_DIR,
+        path.gsub(/\.scss$/, ".css")
+      )
+      [input, output]
+    end
+  end
+
+  def asset_env
+    {
+      "ASSET_JS_ENTRIES" => asset_js_entries.to_json,
+      "ASSET_CSS_ENTRIES" => asset_css_entries.to_json,
+      "ASSET_OUTDIR" => DashboardController::PUBLIC_OUTPUT_DIR,
+      "ASSET_PUBLIC_PATH" => "#{DashboardController::OUTPUT_URL}/",
+      "ASSET_PORT" => ENV.fetch("ASSET_PORT", "3808"),
+    }
+  end
+
+  def run_bun_assets(script_path)
+    env = asset_env
+    env_string = env.map { |k, v| "#{k}=#{Shellwords.escape(v)}" }.join(" ")
+    sh "#{env_string} bun #{script_path}"
   end
 
   def clean_assets
@@ -72,15 +99,41 @@ namespace :api do
       DashboardController::CACHE_DIR,
       DashboardController::PUBLIC_OUTPUT_DIR,
       "public/assets/monaco",
-      ".parcel-cache",
-    ].join(" ") unless ENV["NO_CLEAN"]
+    ].join(" ") unless truthy_env?("NO_CLEAN")
+  end
+
+  # three-stdlib still references LuminanceFormat, which was removed in three.
+  # Replace it with RedFormat before bundling to keep bun happy.
+  def patch_three_stdlib
+    [
+      "node_modules/three-stdlib/postprocessing/GlitchPass.js",
+      "node_modules/three-stdlib/postprocessing/SSAOPass.js",
+    ].each do |path|
+      next unless File.exist?(path)
+
+      content = File.read(path)
+      updated = content.gsub(/,\s*LuminanceFormat\b/, "")
+      updated = updated.gsub(/\bLuminanceFormat\b/, "RedFormat")
+      updated = updated.gsub(/RedFormat\s*,\s*RedFormat/, "RedFormat")
+      File.write(path, updated) if updated != content
+    end
+
+    [
+      "node_modules/three-stdlib/postprocessing/GlitchPass.cjs",
+      "node_modules/three-stdlib/postprocessing/SSAOPass.cjs",
+    ].each do |path|
+      next unless File.exist?(path)
+
+      content = File.read(path)
+      updated = content.gsub("LuminanceFormat", "RedFormat")
+      File.write(path, updated) if updated != content
+    end
   end
 
   def clean_build_files
     # clear out build files, keeping public assets
     sh [
       "rm -rf",
-      ".parcel-cache",
       "node_modules",
     ].join(" ")
   end
@@ -97,22 +150,24 @@ namespace :api do
     sh "cp -r #{lua_src}/#{lua} #{dst}/#{lua}"
   end
 
-  desc "Serve javascript assets (via Parcel bundler)."
+  desc "Serve javascript assets (via Bun bundler)."
   task serve_assets: :environment do
     clean_assets
     add_monaco
-    parcel "watch", DashboardController::PARCEL_HMR_OPTS
+    patch_three_stdlib
+    run_bun_assets "scripts/bun/dev_server.ts"
   end
 
   desc "Don't call this directly. Use `rake assets:precompile`."
-  task parcel_compile: :environment do
+  task assets_compile: :environment do
     clean_assets
     add_monaco
-    parcel "build"
+    patch_three_stdlib
+    run_bun_assets "scripts/bun/build.ts"
   end
 
   desc "Don't call this directly. Use `rake assets:clean`."
-  task parcel_clean: :environment do
+  task assets_clean: :environment do
     clean_build_files
   end
 
@@ -191,5 +246,5 @@ namespace :api do
     trim_logs
   end
 end
-Rake::Task["assets:precompile"].enhance ["api:parcel_compile"]
-Rake::Task["assets:clean"].enhance ["api:parcel_clean"]
+Rake::Task["assets:precompile"].enhance ["api:assets_compile"]
+Rake::Task["assets:clean"].enhance ["api:assets_clean"]

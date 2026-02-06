@@ -3,14 +3,14 @@ import { TaggedPlant, AxisNumberProperty, Mode } from "../interfaces";
 import { SelectionBoxData } from "./selection_box";
 import { GardenMapState } from "../../interfaces";
 import { selectPoint } from "../actions";
-import { getMode } from "../util";
-import { editGtLtCriteria } from "../../../point_groups/criteria";
+import * as mapUtil from "../util";
+import * as pointGroupCriteria from "../../../point_groups/criteria";
 import { TaggedPointGroup, TaggedPoint, PointType } from "farmbot";
 import { unpackUUID } from "../../../util";
 import { UUID } from "../../../resources/interfaces";
 import { getFilteredPoints } from "../../../plants/select_plants";
 import { GetWebAppConfigValue } from "../../../config_storage/actions";
-import { overwriteGroup } from "../../../point_groups/actions";
+import * as pointGroupActions from "../../../point_groups/actions";
 import { Path } from "../../../internal_urls";
 import { NavigateFunction } from "react-router";
 
@@ -66,7 +66,7 @@ export const resizeBox = (props: ResizeSelectionBoxProps) => {
             plants, allPoints, selectionPointType, getConfigValue
           });
         const payload = getSelected(points, newSelectionBox);
-        if (payload && getMode() === Mode.none) {
+        if (payload && mapUtil.getMode() === Mode.none) {
           props.navigate(Path.plants("select"));
         }
         props.dispatch(selectPoint(payload));
@@ -112,7 +112,7 @@ export const maybeUpdateGroup =
     const { group } = props;
     if (props.selectionBox && group) {
       if (props.editGroupAreaInMap) {
-        props.dispatch(editGtLtCriteria(group, props.selectionBox));
+        props.dispatch(pointGroupCriteria.editGtLtCriteria(group, props.selectionBox));
       } else {
         const nextGroupBody = cloneDeep(group.body);
         props.boxSelected?.map(uuid => {
@@ -121,7 +121,7 @@ export const maybeUpdateGroup =
         });
         nextGroupBody.point_ids = uniq(nextGroupBody.point_ids);
         if (!isEqual(group.body.point_ids, nextGroupBody.point_ids)) {
-          props.dispatch(overwriteGroup(group, nextGroupBody));
+          props.dispatch(pointGroupActions.overwriteGroup(group, nextGroupBody));
           props.dispatch(selectPoint(undefined));
         }
       }

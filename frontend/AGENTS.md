@@ -15,22 +15,22 @@ Follow existing codebase conventions and style, for example:
 ### For the files you change
 - Make sure all checks and linters pass:
    ```
-   npm run typecheck
-   npm run eslint
-   npm run sass-lint
-   npm run sass-check
+   bun run typecheck
+   bun run eslint
+   bun run sass-lint
+   bun run sass-check
    ```
-- Run tests via `npm run test-slow FILES`
+- Run tests via `bun test FILES`
    where `FILES` is a space-separated list of test files for the frontend files you changed.
-   For example, `npm run test-slow frontend/__tests__/file_0_test.tsx frontend/__tests__/file_1_test.tsx`.
+   For example, `bun test ./frontend/__tests__/file_0_test.tsx ./frontend/__tests__/file_1_test.tsx`.
    Check the output to verify all tests pass.
-- Run `rake check_file_coverage:fe FILES`
-   where `FILES` is a space-separated list of frontend files you changed.
+- Run `bun test --coverage` before `rake check_file_coverage:fe FILES`.
+   `FILES` is a space-separated list of frontend files you changed.
    For example, `rake check_file_coverage:fe frontend/file_0.tsx frontend/file_1.tsx`.
    Check the output to verify test coverage for all files is at 100%.
 
 ### Before committing
-- Run tests via `npm run test-slow`.
+- Run tests via `bun test --coverage`.
    Check the output to verify all tests pass.
 - Run `rake coverage:run`.
    Check the output:

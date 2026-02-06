@@ -4,12 +4,20 @@ jest.mock("../../../api/crud", () => ({
 }));
 
 import React from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, cleanup } from "@testing-library/react";
 import { NameRow } from "../name_row";
 import { NameRowProps } from "../interfaces";
 import { edit, save } from "../../../api/crud";
 import { fakeDevice } from "../../../__test_support__/resource_index_builder";
 
+afterEach(() => {
+  cleanup();
+  jest.clearAllMocks();
+});
+
+afterAll(() => {
+  jest.unmock("../../../api/crud");
+});
 describe("<NameRow />", () => {
   const fakeProps = (): NameRowProps => ({
     device: fakeDevice(),

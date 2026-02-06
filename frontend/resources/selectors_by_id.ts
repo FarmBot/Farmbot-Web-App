@@ -21,7 +21,7 @@ import {
 } from "farmbot";
 import { ResourceIndex } from "./interfaces";
 import { isNumber, find } from "lodash";
-import { joinKindAndId } from "./reducer_support";
+import { joinKindAndId } from "./join_kind_and_id";
 import { findAll } from "./find_all";
 
 const byId =

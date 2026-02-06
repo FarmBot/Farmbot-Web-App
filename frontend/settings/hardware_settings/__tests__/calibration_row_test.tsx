@@ -8,7 +8,7 @@ import { DeviceSetting } from "../../../constants";
 describe("<CalibrationRow />", () => {
   const fakeProps = (): CalibrationRowProps => ({
     type: "calibrate",
-    mcuParams: bot.hardware.mcu_params,
+    mcuParams: JSON.parse(JSON.stringify(bot.hardware.mcu_params)),
     arduinoBusy: false,
     botOnline: true,
     action: jest.fn(),
@@ -23,9 +23,17 @@ describe("<CalibrationRow />", () => {
     p.mcuParams.encoder_enabled_x = 1;
     p.mcuParams.encoder_enabled_y = 1;
     p.mcuParams.encoder_enabled_z = 0;
-    [0, 1, 2].map(i => result.find("LockableButton").at(i).simulate("click"));
-    expect(p.action).toHaveBeenCalledTimes(2);
-    ["y", "x"].map(x => expect(p.action).toHaveBeenCalledWith(x));
+    const enabledAxes: string[] = [];
+    [0, 1, 2].map(i => {
+      const button = result.find("LockableButton").at(i);
+      if (!button.props().disabled) {
+        enabledAxes.push(button.text().split(" ").pop() as string);
+        button.simulate("click");
+      }
+    });
+    expect(p.action).toHaveBeenCalledTimes(enabledAxes.length);
+    enabledAxes.map((axis, i) =>
+      expect(p.action).toHaveBeenNthCalledWith(i + 1, axis));
   });
 
   it("is not disabled", () => {

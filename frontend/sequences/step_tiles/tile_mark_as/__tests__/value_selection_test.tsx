@@ -1,7 +1,14 @@
 let mockDev = false;
-jest.mock("../../../../settings/dev/dev_support", () => ({
-  DevSettings: { futureFeaturesEnabled: () => mockDev }
-}));
+jest.mock("../../../../settings/dev/dev_support", () => {
+  const actual = jest.requireActual("../../../../settings/dev/dev_support");
+  return {
+    ...actual,
+    DevSettings: {
+      ...actual.DevSettings,
+      futureFeaturesEnabled: () => mockDev,
+    },
+  };
+});
 
 import React from "react";
 import { mount, shallow } from "enzyme";
@@ -17,6 +24,10 @@ import { fakeTool } from "../../../../__test_support__/fake_state/resources";
 import { resource_type, Resource } from "farmbot";
 import { UPDATE_RESOURCE_DDIS } from "../field_selection";
 import { changeBlurableInput } from "../../../../__test_support__/helpers";
+
+afterAll(() => {
+  jest.unmock("../../../../settings/dev/dev_support");
+});
 
 const DDI = UPDATE_RESOURCE_DDIS();
 

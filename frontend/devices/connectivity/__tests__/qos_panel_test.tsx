@@ -5,6 +5,10 @@ import { mount } from "enzyme";
 import { Actions } from "../../../constants";
 
 describe("<QosPanel />", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   const fakeProps = (): QosPanelProps => ({
     pings: fakePings(),
     dispatch: jest.fn(),

@@ -7,6 +7,9 @@ import { fakeSavedGarden } from "../../__test_support__/fake_state/resources";
 import { SavedGardenInfoProps, SavedGardenListProps } from "../interfaces";
 import { openSavedGarden } from "../actions";
 
+afterAll(() => {
+  jest.unmock("../actions");
+});
 describe("<GardenInfo />", () => {
   const fakeProps = (): SavedGardenInfoProps => ({
     savedGarden: fakeSavedGarden(),

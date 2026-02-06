@@ -7,6 +7,9 @@ import { ResendVerification } from "../resend_verification";
 import { get } from "lodash";
 import { API } from "../../api/index";
 
+afterAll(() => {
+  jest.unmock("axios");
+});
 describe("<ResendVerification />", () => {
   API.setBaseUrl("http://localhost:3000");
   const props = () => ({

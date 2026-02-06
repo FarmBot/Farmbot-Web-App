@@ -7,14 +7,9 @@ import {
   fakePoint,
 } from "../../../__test_support__/fake_state/resources";
 let mockResources = buildResourceIndex([]);
-jest.mock("../../../redux/store", () => ({
-  store: {
-    dispatch: jest.fn(),
-    getState: () => ({ resources: mockResources }),
-  },
-}));
 
 import { csToLua, filterPoint } from "../util";
+import { store } from "../../../redux/store";
 import {
   EmergencyLock,
   EmergencyUnlock,
@@ -33,6 +28,17 @@ import {
   Wait,
   WritePin,
 } from "farmbot";
+
+const originalGetState = store.getState;
+const mockGetState = () => ({ resources: mockResources });
+
+beforeEach(() => {
+  (store as unknown as { getState: Function }).getState = mockGetState;
+});
+
+afterAll(() => {
+  (store as unknown as { getState: Function }).getState = originalGetState;
+});
 
 describe("csToLua()", () => {
   it("converts celery script to lua: lock", () => {

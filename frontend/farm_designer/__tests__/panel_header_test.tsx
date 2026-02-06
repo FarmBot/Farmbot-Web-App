@@ -1,13 +1,7 @@
 let mockDev = false;
-jest.mock("../../settings/dev/dev_support", () => ({
-  DevSettings: {
-    futureFeaturesEnabled: () => mockDev,
-  }
-}));
 
 import { fakeState } from "../../__test_support__/fake_state";
-const mockState = fakeState();
-jest.mock("../../redux/store", () => ({ store: { getState: () => mockState } }));
+let mockState = fakeState();
 
 import React from "react";
 import { shallow, mount, ReactWrapper } from "enzyme";
@@ -20,6 +14,11 @@ import { Path } from "../../internal_urls";
 import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
 import { Actions } from "../../constants";
 import { mockDispatch } from "../../__test_support__/fake_dispatch";
+import { store } from "../../redux/store";
+import { DevSettings } from "../../settings/dev/dev_support";
+
+let futureFeaturesEnabledSpy: jest.SpyInstance;
+let originalGetState: typeof store.getState;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const expectOnlyOneActiveIcon = (wrapper: ReactWrapper<any>) =>
@@ -30,6 +29,24 @@ const expectActive = (wrapper: ReactWrapper<any>, slug: string) =>
   expect(wrapper.find(`#${slug}`).first().hasClass("active")).toBeTruthy();
 
 describe("<DesignerNavTabs />", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockDev = false;
+    mockState = fakeState();
+    futureFeaturesEnabledSpy =
+      jest.spyOn(DevSettings, "futureFeaturesEnabled")
+        .mockImplementation(() => mockDev);
+    originalGetState = store.getState;
+    (store as unknown as { getState: () => typeof mockState }).getState =
+      () => mockState;
+  });
+
+  afterEach(() => {
+    futureFeaturesEnabledSpy.mockRestore();
+    (store as unknown as { getState: typeof store.getState }).getState =
+      originalGetState;
+  });
+
   const fakeProps = (): DesignerNavTabsProps => ({
     dispatch: jest.fn(),
     designer: fakeDesignerState(),

@@ -1,9 +1,16 @@
-jest.mock("axios", () => ({
-  post: jest.fn(() => Promise.resolve()),
-  patch: jest.fn(() => Promise.resolve({
-    headers: { "x-farmbot-rpc-id": "123" }
-  })),
-}));
+jest.mock("axios", () => {
+  const mockedAxios = {
+    post: jest.fn(() => Promise.resolve()),
+    patch: jest.fn(() => Promise.resolve({
+      headers: { "x-farmbot-rpc-id": "123" }
+    })),
+  };
+  return {
+    __esModule: true,
+    ...mockedAxios,
+    default: mockedAxios,
+  };
+});
 
 jest.mock("../../api/crud", () => ({
   destroy: jest.fn(),
@@ -25,6 +32,12 @@ import {
 } from "../../__test_support__/fake_state/resources";
 import { Path } from "../../internal_urls";
 
+afterAll(() => {
+  jest.unmock("../../api/crud");
+});
+afterAll(() => {
+  jest.unmock("axios");
+});
 describe("snapshotGarden", () => {
   it("calls the API and lets auto-sync do the rest", () => {
     API.setBaseUrl("example.io");

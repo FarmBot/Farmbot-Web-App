@@ -3,11 +3,16 @@ jest.mock("../../farm_designer/map/actions", () => ({
 }));
 
 let mockDelMode = false;
-jest.mock("../../settings/dev/dev_support", () => ({
-  DevSettings: {
-    quickDeleteEnabled: () => mockDelMode,
-  }
-}));
+jest.mock("../../settings/dev/dev_support", () => {
+  const actual = jest.requireActual("../../settings/dev/dev_support");
+  return {
+    ...actual,
+    DevSettings: {
+      ...actual.DevSettings,
+      quickDeleteEnabled: () => mockDelMode,
+    },
+  };
+});
 
 jest.mock("../../api/crud", () => ({ destroy: jest.fn() }));
 
@@ -21,6 +26,12 @@ import { Actions } from "../../constants";
 import { mapPointClickAction } from "../../farm_designer/map/actions";
 import { destroy } from "../../api/crud";
 import { Path } from "../../internal_urls";
+
+afterAll(() => {
+  jest.unmock("../../farm_designer/map/actions");
+  jest.unmock("../../settings/dev/dev_support");
+  jest.unmock("../../api/crud");
+});
 
 describe("<PointInventoryItem> />", () => {
   const fakeProps = (): PointInventoryItemProps => ({

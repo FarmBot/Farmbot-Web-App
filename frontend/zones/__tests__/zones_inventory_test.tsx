@@ -12,6 +12,14 @@ import { DesignerPanelTop } from "../../farm_designer/designer_panel";
 import { SearchField } from "../../ui/search_field";
 import { Path } from "../../internal_urls";
 
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+
+afterAll(() => {
+  jest.unmock("../../api/crud");
+});
+
 describe("<Zones> />", () => {
   const fakeProps = (): ZonesProps => ({
     dispatch: jest.fn(),

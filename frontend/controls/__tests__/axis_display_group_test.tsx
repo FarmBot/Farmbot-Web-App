@@ -1,12 +1,23 @@
 let mockDev = false;
-jest.mock("../../settings/dev/dev_support", () => ({
-  DevSettings: { futureFeaturesEnabled: () => mockDev }
-}));
+jest.mock("../../settings/dev/dev_support", () => {
+  const actual = jest.requireActual("../../settings/dev/dev_support");
+  return {
+    ...actual,
+    DevSettings: {
+      ...actual.DevSettings,
+      futureFeaturesEnabled: () => mockDev,
+    },
+  };
+});
 
 import { mount } from "enzyme";
 import { AxisDisplayGroup } from "../axis_display_group";
 import { AxisDisplayGroupProps } from "../interfaces";
 import { MissedStepIndicator } from "../move/missed_step_indicator";
+
+afterAll(() => {
+  jest.unmock("../../settings/dev/dev_support");
+});
 
 describe("<AxisDisplayGroup />", () => {
   const fakeProps = (): AxisDisplayGroupProps => ({

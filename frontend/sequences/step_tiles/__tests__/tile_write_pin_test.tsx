@@ -16,6 +16,9 @@ const fakeProps = (): StepParams<WritePin> => ({
   showPins: false,
 });
 
+afterAll(() => {
+  jest.unmock("../../../api/crud");
+});
 describe("<TileWritePin />", () => {
   it("renders inputs: Analog", () => {
     const wrapper = mount(<TileWritePin {...fakeProps()} />);

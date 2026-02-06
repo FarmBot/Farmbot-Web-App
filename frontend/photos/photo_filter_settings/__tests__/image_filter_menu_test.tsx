@@ -1,19 +1,8 @@
-jest.mock("../../../api/crud", () => ({
-  edit: jest.fn(),
-  save: jest.fn(),
-}));
-
 import {
   fakeImage,
   fakeWebAppConfig,
 } from "../../../__test_support__/fake_state/resources";
 const mockConfig = fakeWebAppConfig();
-jest.mock("../../../resources/selectors", () => ({
-  getWebAppConfig: () => mockConfig,
-  assertUuid: jest.fn(),
-  findUuid: jest.fn(),
-  selectAllPlantPointers: jest.fn(() => []),
-}));
 
 import React from "react";
 import { ImageFilterMenu } from "../image_filter_menu";
@@ -22,7 +11,7 @@ import { StringConfigKey } from "farmbot/dist/resources/configs/web_app";
 import {
   fakeTimeSettings,
 } from "../../../__test_support__/fake_time_settings";
-import { edit, save } from "../../../api/crud";
+import * as crud from "../../../api/crud";
 import { fakeState } from "../../../__test_support__/fake_state";
 import {
   buildResourceIndex,
@@ -30,6 +19,18 @@ import {
 import { ImageFilterMenuProps } from "../interfaces";
 import { StringSetting } from "../../../session_keys";
 import { MarkedSlider } from "../../../ui";
+
+let editSpy: jest.SpyInstance;
+let saveSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
 
 describe("<ImageFilterMenu />", () => {
   mockConfig.body.photo_filter_begin = "";
@@ -65,10 +66,10 @@ describe("<ImageFilterMenu />", () => {
       currentTarget: { value: "2001-01-03" }
     });
     expect(wrapper.instance().state[filter]).toEqual("2001-01-03");
-    expect(edit).toHaveBeenCalledWith(config, {
+    expect(editSpy).toHaveBeenCalledWith(config, {
       [key]: "2001-01-03T00:00:00.000Z"
     });
-    expect(save).toHaveBeenCalledWith(config.uuid);
+    expect(saveSpy).toHaveBeenCalledWith(config.uuid);
   });
 
   it.each<[
@@ -88,10 +89,10 @@ describe("<ImageFilterMenu />", () => {
       currentTarget: { value: "05:00" }
     });
     expect(wrapper.instance().state[filter]).toEqual("05:00");
-    expect(edit).toHaveBeenCalledWith(config, {
+    expect(editSpy).toHaveBeenCalledWith(config, {
       [key]: "2001-01-03T05:00:00.000Z"
     });
-    expect(save).toHaveBeenCalledWith(config.uuid);
+    expect(saveSpy).toHaveBeenCalledWith(config.uuid);
   });
 
   it.each<[
@@ -113,8 +114,8 @@ describe("<ImageFilterMenu />", () => {
       currentTarget: { value: "" }
     });
     expect(wrapper.instance().state[filter]).toEqual(undefined);
-    expect(edit).toHaveBeenCalledWith(config, { [key]: undefined });
-    expect(save).toHaveBeenCalledWith(config.uuid);
+    expect(editSpy).toHaveBeenCalledWith(config, { [key]: undefined });
+    expect(saveSpy).toHaveBeenCalledWith(config.uuid);
   });
 
   it.each<[
@@ -133,8 +134,8 @@ describe("<ImageFilterMenu />", () => {
       currentTarget: { value: "05:00" }
     });
     expect(wrapper.instance().state[filter]).toEqual("05:00");
-    expect(edit).not.toHaveBeenCalled();
-    expect(save).not.toHaveBeenCalled();
+    expect(editSpy).not.toHaveBeenCalled();
+    expect(saveSpy).not.toHaveBeenCalled();
   });
 
   it("loads values from config", () => {
@@ -158,11 +159,11 @@ describe("<ImageFilterMenu />", () => {
     const wrapper = shallow<ImageFilterMenu>(<ImageFilterMenu {...p} />);
     wrapper.instance().sliderChange(1);
     expect(wrapper.instance().state.slider).toEqual(undefined);
-    expect(edit).toHaveBeenCalledWith(config, {
+    expect(editSpy).toHaveBeenCalledWith(config, {
       photo_filter_begin: "2001-01-03T00:00:00.000Z",
       photo_filter_end: "2001-01-04T00:00:00.000Z",
     });
-    expect(save).toHaveBeenCalledWith(config.uuid);
+    expect(saveSpy).toHaveBeenCalledWith(config.uuid);
   });
 
   it("doesn't update config", () => {
@@ -175,8 +176,8 @@ describe("<ImageFilterMenu />", () => {
     const wrapper = shallow<ImageFilterMenu>(<ImageFilterMenu {...p} />);
     wrapper.instance().sliderChange(1);
     expect(wrapper.instance().state.slider).toEqual(undefined);
-    expect(edit).not.toHaveBeenCalled();
-    expect(save).not.toHaveBeenCalled();
+    expect(editSpy).not.toHaveBeenCalled();
+    expect(saveSpy).not.toHaveBeenCalled();
   });
 
   it("expands date range into past", () => {
@@ -210,11 +211,11 @@ describe("<ImageFilterMenu />", () => {
     p.dispatch = jest.fn(x => x(jest.fn(), () => state));
     const wrapper = shallow<ImageFilterMenu>(<ImageFilterMenu {...p} />);
     wrapper.instance().dateStep(1)();
-    expect(edit).toHaveBeenCalledWith(config, {
+    expect(editSpy).toHaveBeenCalledWith(config, {
       photo_filter_begin: "2001-01-04T00:00:00.000Z",
       photo_filter_end: "2001-01-05T00:00:00.000Z",
     });
-    expect(save).toHaveBeenCalledWith(config.uuid);
+    expect(saveSpy).toHaveBeenCalledWith(config.uuid);
   });
 
   it("choses newest date", () => {
@@ -227,11 +228,11 @@ describe("<ImageFilterMenu />", () => {
     p.dispatch = jest.fn(x => x(jest.fn(), () => state));
     const wrapper = shallow<ImageFilterMenu>(<ImageFilterMenu {...p} />);
     wrapper.instance().newest();
-    expect(edit).toHaveBeenCalledWith(config, {
+    expect(editSpy).toHaveBeenCalledWith(config, {
       photo_filter_begin: "2001-01-10T00:00:00.000Z",
       photo_filter_end: "2001-01-11T00:00:00.000Z",
     });
-    expect(save).toHaveBeenCalledWith(config.uuid);
+    expect(saveSpy).toHaveBeenCalledWith(config.uuid);
   });
 
   it("choses oldest date", () => {
@@ -244,11 +245,11 @@ describe("<ImageFilterMenu />", () => {
     p.dispatch = jest.fn(x => x(jest.fn(), () => state));
     const wrapper = shallow<ImageFilterMenu>(<ImageFilterMenu {...p} />);
     wrapper.instance().oldest();
-    expect(edit).toHaveBeenCalledWith(config, {
+    expect(editSpy).toHaveBeenCalledWith(config, {
       photo_filter_begin: "2001-01-06T00:00:00.000Z",
       photo_filter_end: "2001-01-07T00:00:00.000Z",
     });
-    expect(save).toHaveBeenCalledWith(config.uuid);
+    expect(saveSpy).toHaveBeenCalledWith(config.uuid);
   });
 
   it("gets image index", () => {

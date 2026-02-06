@@ -11,7 +11,22 @@ import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { API } from "../../../api";
 import { requestAutoGeneration } from "../../request_auto_generation";
 import { emptyState } from "../../../resources/reducer";
+import axios from "axios";
 
+let postSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  postSpy = jest.spyOn(axios, "post")
+    .mockImplementation(() => Promise.resolve({}) as never);
+});
+
+afterEach(() => {
+  postSpy.mockRestore();
+});
+
+afterAll(() => {
+  jest.unmock("../../request_auto_generation");
+});
 describe("<StepHeader />", () => {
   API.setBaseUrl("");
 

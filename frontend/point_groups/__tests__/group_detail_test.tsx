@@ -1,12 +1,3 @@
-jest.mock("../group_detail_active", () => ({
-  GroupDetailActive: () => <div />,
-  GroupSortSelection: () => <div />,
-}));
-
-jest.mock("../../api/crud", () => ({
-  destroy: jest.fn(),
-}));
-
 import React from "react";
 import { mount } from "enzyme";
 import { GroupDetailActive } from "../group_detail_active";
@@ -25,8 +16,18 @@ import {
   fakePointGroup, fakeWebAppConfig,
 } from "../../__test_support__/fake_state/resources";
 import { PointType } from "farmbot";
-import { destroy } from "../../api/crud";
+import * as crud from "../../api/crud";
 import { Path } from "../../internal_urls";
+
+let destroySpy: jest.SpyInstance;
+
+beforeEach(() => {
+  destroySpy = jest.spyOn(crud, "destroy").mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  destroySpy.mockRestore();
+});
 
 describe("<GroupDetail />", () => {
   const fakeProps = (): GroupDetailProps => {
@@ -93,7 +94,7 @@ describe("<GroupDetail />", () => {
     location.pathname = Path.mock(Path.groups(1));
     const wrapper = mount(<GroupDetail {...fakeProps()} />);
     wrapper.find(".fa-trash").first().simulate("click");
-    expect(destroy).toHaveBeenCalled();
+    expect(crud.destroy).toHaveBeenCalled();
   });
 });
 

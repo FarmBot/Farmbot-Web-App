@@ -1,19 +1,6 @@
-jest.mock("../../api/crud", () => ({
-  init: jest.fn(() => ({ payload: { uuid: "???" } })),
-  overwrite: jest.fn(),
-  save: jest.fn()
-}));
-
-let mockPointGroup = { body: { id: 323232332 } };
-jest.mock("../../resources/selectors", () => ({
-  findPointGroup: jest.fn(() => mockPointGroup),
-  selectAllRegimens: jest.fn(),
-  selectAllPlantPointers: jest.fn(() => []),
-  findUuid: jest.fn(),
-}));
-
-import { createGroup, CreateGroupProps, overwriteGroup } from "../actions";
-import { init, save, overwrite } from "../../api/crud";
+import { createGroup, overwriteGroup, type CreateGroupProps } from "../actions";
+import * as crud from "../../api/crud";
+import * as selectors from "../../resources/selectors";
 import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
@@ -26,30 +13,64 @@ import { DEFAULT_CRITERIA } from "../criteria/interfaces";
 import { cloneDeep } from "lodash";
 import { fakeState } from "../../__test_support__/fake_state";
 import { Path } from "../../internal_urls";
+import { betterCompact } from "../../util";
+
+let mockPointGroup = { body: { id: 323232332 } };
+let initSpy: jest.SpyInstance;
+let saveSpy: jest.SpyInstance;
+let overwriteSpy: jest.SpyInstance;
+let findPointGroupSpy: jest.SpyInstance;
+let selectAllRegimensSpy: jest.SpyInstance;
+let selectAllPlantPointersSpy: jest.SpyInstance;
+let findUuidSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  initSpy = jest.spyOn(crud, "init")
+    .mockImplementation(jest.fn(() => ({ payload: { uuid: "???" } })));
+  saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+  overwriteSpy = jest.spyOn(crud, "overwrite").mockImplementation(jest.fn());
+  findPointGroupSpy = jest.spyOn(selectors, "findPointGroup")
+    .mockImplementation(jest.fn(() => mockPointGroup));
+  selectAllRegimensSpy = jest.spyOn(selectors, "selectAllRegimens")
+    .mockImplementation(jest.fn());
+  selectAllPlantPointersSpy = jest.spyOn(selectors, "selectAllPlantPointers")
+    .mockImplementation(jest.fn(() => []));
+  findUuidSpy = jest.spyOn(selectors, "findUuid").mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  initSpy.mockRestore();
+  saveSpy.mockRestore();
+  overwriteSpy.mockRestore();
+  findPointGroupSpy.mockRestore();
+  selectAllRegimensSpy.mockRestore();
+  selectAllPlantPointersSpy.mockRestore();
+  findUuidSpy.mockRestore();
+});
 
 describe("createGroup()", () => {
-  const fakeProps = (): CreateGroupProps => ({
-    navigate: jest.fn(),
-  });
+  const fakeProps = (): CreateGroupProps => ({ navigate: jest.fn() });
 
   it("creates group", async () => {
+    mockPointGroup = { body: { id: 323232332 } };
     const p = fakeProps();
     const fakePoints = [fakePoint(), fakePlant(), fakeToolSlot()];
     const resources = buildResourceIndex(fakePoints);
     p.pointUuids = fakePoints.map(x => x.uuid);
     p.groupName = "Name123";
+    const expectedPointIds = betterCompact(fakePoints.map(x => x.body.id));
     const fakeS: DeepPartial<Everything> = { resources };
     const dispatch = jest.fn(() => Promise.resolve());
 
     const thunk = createGroup(p);
     await thunk(dispatch, () => fakeS as Everything);
-    expect(init).toHaveBeenCalledWith("PointGroup", expect.objectContaining({
+    expect(crud.init).toHaveBeenCalledWith("PointGroup", expect.objectContaining({
       name: "Name123",
-      point_ids: [1, 2],
+      point_ids: expectedPointIds,
       sort_type: "nn",
       criteria: DEFAULT_CRITERIA,
     }));
-    expect(save).toHaveBeenCalledWith("???");
+    expect(crud.save).toHaveBeenCalledWith("???");
     expect(p.navigate)
       .toHaveBeenCalledWith(Path.groups(323232332));
   });
@@ -64,15 +85,16 @@ describe("createGroup()", () => {
     state.resources = buildResourceIndex(fakePoints);
     p.pointUuids = fakePoints.map(x => x.uuid);
     p.pointUuids.push("missingFakeUuid");
+    const expectedPointIds = betterCompact(fakePoints.map(x => x.body.id));
     const thunk = createGroup(p);
     await thunk(jest.fn(() => Promise.resolve()), () => state);
-    expect(init).toHaveBeenCalledWith("PointGroup", expect.objectContaining({
+    expect(crud.init).toHaveBeenCalledWith("PointGroup", expect.objectContaining({
       name: "Untitled Group",
-      point_ids: [4],
+      point_ids: expectedPointIds,
       sort_type: "nn",
       criteria: DEFAULT_CRITERIA,
     }));
-    expect(save).toHaveBeenCalledWith("???");
+    expect(crud.save).toHaveBeenCalledWith("???");
     expect(p.navigate).toHaveBeenCalledWith(Path.groups());
   });
 });
@@ -83,7 +105,7 @@ describe("overwriteGroup()", () => {
     const newGroupBody = cloneDeep(group.body);
     newGroupBody.point_ids = [1, 2, 3];
     overwriteGroup(group, newGroupBody)(jest.fn());
-    expect(overwrite).toHaveBeenCalledWith(group, newGroupBody);
-    expect(save).toHaveBeenCalledWith(group.uuid);
+    expect(crud.overwrite).toHaveBeenCalledWith(group, newGroupBody);
+    expect(crud.save).toHaveBeenCalledWith(group.uuid);
   });
 });

@@ -1,10 +1,11 @@
 jest.mock("../../config_storage/actions", () => ({
-  getWebAppConfigValue: jest.fn(() => jest.fn()),
+  ...jest.requireActual("../../config_storage/actions"),
+  getWebAppConfigValue: () => () => false,
   setWebAppConfigValue: jest.fn(),
 }));
 
 import React from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import {
   ThreeDGardenProps, ThreeDGarden, ThreeDGardenToggle, ThreeDGardenToggleProps,
 } from "../index";
@@ -18,7 +19,12 @@ import { setWebAppConfigValue } from "../../config_storage/actions";
 import { BooleanSetting } from "../../session_keys";
 import { fakeDevice } from "../../__test_support__/resource_index_builder";
 
+afterAll(() => {
+  jest.unmock("../../config_storage/actions");
+});
 describe("<ThreeDGarden />", () => {
+  afterEach(cleanup);
+
   const fakeProps = (): ThreeDGardenProps => ({
     config: clone(INITIAL),
     addPlantProps: fakeAddPlantProps(),
@@ -34,6 +40,8 @@ describe("<ThreeDGarden />", () => {
 });
 
 describe("<ThreeDGardenToggle />", () => {
+  afterEach(cleanup);
+
   const fakeProps = (): ThreeDGardenToggleProps => ({
     navigate: jest.fn(),
     dispatch: jest.fn(),

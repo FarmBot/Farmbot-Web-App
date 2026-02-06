@@ -35,6 +35,14 @@ import { INITIAL } from "../../config";
 import { clone } from "lodash";
 import { MeshBasicMaterial } from "three";
 
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
+
 describe("<Sun />", () => {
   const fakeProps = (): SunProps => ({
     config: clone(INITIAL),

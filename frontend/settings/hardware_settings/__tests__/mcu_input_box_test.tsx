@@ -10,6 +10,9 @@ import { warning } from "../../../toast/toast";
 import { SettingStatusIndicator } from "../setting_status_indicator";
 import { BlurableInput } from "../../../ui";
 
+afterAll(() => {
+  jest.unmock("../../../devices/actions");
+});
 describe("McuInputBox", () => {
   const fakeProps = (): McuInputBoxProps => ({
     sourceFwConfig: x =>

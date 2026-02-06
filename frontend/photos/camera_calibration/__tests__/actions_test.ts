@@ -3,6 +3,9 @@ jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
 import { calibrate, scanImage } from "../actions";
 
+afterAll(() => {
+  jest.unmock("../../../device");
+});
 describe("scanImage()", () => {
   it.each<[boolean, string]>([
     [true, "\"TRUE\""],

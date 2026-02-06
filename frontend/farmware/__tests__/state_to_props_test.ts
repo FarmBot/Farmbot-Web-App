@@ -23,6 +23,10 @@ import { fakeFarmware } from "../../__test_support__/fake_farmwares";
 import { fakeState } from "../../__test_support__/fake_state";
 import { updateConfig } from "../../devices/actions";
 
+afterAll(() => {
+  jest.unmock("../../api/crud");
+  jest.unmock("../../devices/actions");
+});
 describe("getEnv()", () => {
   it("returns API farmware env", () => {
     const state = fakeState();

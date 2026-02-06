@@ -1,7 +1,14 @@
 let mockDev: string | undefined = undefined;
-jest.mock("../../settings/dev/dev_support", () => ({
-  DevSettings: { get3dCamera: () => mockDev }
-}));
+jest.mock("../../settings/dev/dev_support", () => {
+  const actual = jest.requireActual("../../settings/dev/dev_support");
+  return {
+    ...actual,
+    DevSettings: {
+      ...actual.DevSettings,
+      get3dCamera: () => mockDev,
+    },
+  };
+});
 
 let mockIsDesktop = true;
 jest.mock("../../screen_size", () => ({
@@ -9,6 +16,11 @@ jest.mock("../../screen_size", () => ({
 }));
 
 import { cameraInit } from "../camera";
+
+afterAll(() => {
+  jest.unmock("../../settings/dev/dev_support");
+  jest.unmock("../../screen_size");
+});
 
 describe("cameraInit()", () => {
   it("initializes camera", () => {

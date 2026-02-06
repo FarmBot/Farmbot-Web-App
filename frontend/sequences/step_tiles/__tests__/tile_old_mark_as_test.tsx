@@ -12,6 +12,9 @@ import { SequenceBodyItem } from "farmbot";
 import { cloneDeep } from "lodash";
 import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 
+afterAll(() => {
+  jest.unmock("../../../api/crud");
+});
 describe("<TileOldMarkAs />", () => {
   const currentStep = {
     kind: "resource_update",

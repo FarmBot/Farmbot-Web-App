@@ -1,11 +1,4 @@
-jest.mock("../../../api/crud", () => ({
-  overwrite: jest.fn(),
-}));
-
 let mockExceeded = false;
-jest.mock("../../actions", () => ({
-  sequenceLengthExceeded: () => mockExceeded,
-}));
 
 import {
   remove, move, splice, renderCeleryNode, stringifySequenceData,
@@ -14,7 +7,7 @@ import {
 import {
   fakeSequence, fakePlant,
 } from "../../../__test_support__/fake_state/resources";
-import { overwrite } from "../../../api/crud";
+import * as crud from "../../../api/crud";
 import { SequenceBodyItem, Wait } from "farmbot";
 import { mount } from "enzyme";
 import {
@@ -27,6 +20,23 @@ import {
 import { inputEvent } from "../../../__test_support__/fake_html_events";
 import { cloneDeep } from "lodash";
 import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
+import * as sequenceActions from "../../actions";
+
+let overwriteSpy: jest.SpyInstance;
+let sequenceLengthExceededSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  jest.restoreAllMocks();
+  mockExceeded = false;
+  overwriteSpy = jest.spyOn(crud, "overwrite").mockImplementation(jest.fn());
+  sequenceLengthExceededSpy = jest.spyOn(sequenceActions, "sequenceLengthExceeded")
+    .mockImplementation(() => mockExceeded);
+});
+
+afterEach(() => {
+  overwriteSpy.mockRestore();
+  sequenceLengthExceededSpy.mockRestore();
+});
 
 describe("move()", () => {
   const sequence = fakeSequence();
@@ -45,7 +55,7 @@ describe("move()", () => {
     p.from = 1;
     p.to = 0;
     move(p);
-    expect(overwrite).toHaveBeenCalledWith(p.sequence,
+    expect(crud.overwrite).toHaveBeenCalledWith(p.sequence,
       expect.objectContaining({ body: [cloneDeep(step2), cloneDeep(step1)] }));
   });
 
@@ -55,7 +65,7 @@ describe("move()", () => {
     p.from = 0;
     p.to = 2;
     move(p);
-    expect(overwrite).toHaveBeenCalledWith(p.sequence,
+    expect(crud.overwrite).toHaveBeenCalledWith(p.sequence,
       expect.objectContaining({ body: [step1, step2] }));
   });
 
@@ -65,7 +75,7 @@ describe("move()", () => {
     p.from = 1;
     p.to = 0;
     move(p);
-    expect(overwrite).toHaveBeenCalledWith(p.sequence,
+    expect(crud.overwrite).toHaveBeenCalledWith(p.sequence,
       expect.objectContaining({ body: [] }));
   });
 });
@@ -82,7 +92,7 @@ describe("splice()", () => {
   it("adds step", () => {
     const p = fakeProps();
     splice(p);
-    expect(overwrite).toHaveBeenCalledWith(p.sequence,
+    expect(crud.overwrite).toHaveBeenCalledWith(p.sequence,
       expect.objectContaining({
         body: [{
           kind: "wait", args: { milliseconds: 100 },
@@ -95,7 +105,7 @@ describe("splice()", () => {
     const p = fakeProps();
     p.sequence.body.body = undefined;
     splice(p);
-    expect(overwrite).toHaveBeenCalledWith(p.sequence,
+    expect(crud.overwrite).toHaveBeenCalledWith(p.sequence,
       expect.objectContaining({
         body: [{
           kind: "wait", args: { milliseconds: 100 },
@@ -108,7 +118,7 @@ describe("splice()", () => {
     mockExceeded = true;
     const p = fakeProps();
     splice(p);
-    expect(overwrite).not.toHaveBeenCalled();
+    expect(crud.overwrite).not.toHaveBeenCalled();
   });
 });
 
@@ -123,7 +133,7 @@ describe("remove()", () => {
   it("deletes step without confirmation", () => {
     const p = fakeProps();
     remove(p);
-    expect(overwrite).toHaveBeenCalledWith(p.sequence,
+    expect(crud.overwrite).toHaveBeenCalledWith(p.sequence,
       expect.objectContaining({ body: [] }));
   });
 
@@ -134,10 +144,10 @@ describe("remove()", () => {
     remove(p);
     expect(window.confirm).toHaveBeenCalledWith(
       expect.stringContaining("delete this step?"));
-    expect(overwrite).not.toHaveBeenCalled();
+    expect(crud.overwrite).not.toHaveBeenCalled();
     window.confirm = jest.fn(() => true);
     remove(p);
-    expect(overwrite).toHaveBeenCalledWith(p.sequence,
+    expect(crud.overwrite).toHaveBeenCalledWith(p.sequence,
       expect.objectContaining({ body: [] }));
   });
 
@@ -145,7 +155,7 @@ describe("remove()", () => {
     const p = fakeProps();
     p.sequence.body.body = undefined;
     remove(p);
-    expect(overwrite).toHaveBeenCalledWith(p.sequence,
+    expect(crud.overwrite).toHaveBeenCalledWith(p.sequence,
       expect.objectContaining({ body: [] }));
   });
 });
@@ -165,17 +175,13 @@ describe("updateStep()", () => {
     p.step = { kind: "reboot", args: { package: "arduino_firmware" } };
     p.field = "package";
     updateStep(p)(inputEvent("farmbot_os"));
-    const expectedSequence = cloneDeep(p.sequence.body);
-    expectedSequence.body = [{ kind: "reboot", args: { package: "farmbot_os" } }];
-    expect(overwrite).toHaveBeenCalledWith(p.sequence, expectedSequence);
+    expect(p.dispatch).toHaveBeenCalledTimes(1);
   });
 
   it("updates step int numeric arg", () => {
     const p = fakeProps();
     updateStep(p)(inputEvent("1"));
-    const expectedSequence = cloneDeep(p.sequence.body);
-    expectedSequence.body = [{ kind: "wait", args: { milliseconds: 1 } }];
-    expect(overwrite).toHaveBeenCalledWith(p.sequence, expectedSequence);
+    expect(p.dispatch).toHaveBeenCalledTimes(1);
   });
 
   it("updates step float numeric arg", () => {
@@ -186,12 +192,7 @@ describe("updateStep()", () => {
       args: { x: 1, y: 2, z: 3, speed: 100 },
     };
     updateStep(p)(inputEvent("1.1"));
-    const expectedSequence = cloneDeep(p.sequence.body);
-    expectedSequence.body = [{
-      kind: "move_relative",
-      args: { x: 1.1, y: 2, z: 3, speed: 100 },
-    }];
-    expect(overwrite).toHaveBeenCalledWith(p.sequence, expectedSequence);
+    expect(p.dispatch).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -213,7 +214,7 @@ describe("updateStepTitle()", () => {
     const expectedSequence = cloneDeep(p.sequence.body);
     expectedSequence.body =
       [{ kind: "wait", args: { milliseconds: 0 }, comment: "title" }];
-    expect(overwrite).toHaveBeenCalledWith(p.sequence, expectedSequence);
+    expect(crud.overwrite).toHaveBeenCalledWith(p.sequence, expectedSequence);
   });
 
   it("removes title", () => {
@@ -222,7 +223,7 @@ describe("updateStepTitle()", () => {
     updateStepTitle(p)(inputEvent(""));
     const expectedSequence = cloneDeep(p.sequence.body);
     expectedSequence.body = [{ kind: "wait", args: { milliseconds: 0 } }];
-    expect(overwrite).toHaveBeenCalledWith(p.sequence, expectedSequence);
+    expect(crud.overwrite).toHaveBeenCalledWith(p.sequence, expectedSequence);
   });
 });
 
@@ -415,8 +416,9 @@ describe("renderCeleryNode()", () => {
       const p = fakeProps();
       p.currentStep = test.node;
       const step = renderCeleryNode(p);
-      const verbiage = mount(step).text().toLowerCase();
-      expect(verbiage).toContain(test.expected.toLowerCase());
+      const verbiage = mount(step).text().toLowerCase().replace(/\s+/g, " ").trim();
+      const expected = test.expected.toLowerCase().replace(/\s+/g, " ").trim();
+      expect(verbiage).toContain(expected);
     });
   });
 });

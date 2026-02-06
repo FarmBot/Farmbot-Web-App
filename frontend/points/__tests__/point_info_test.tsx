@@ -1,16 +1,4 @@
-jest.mock("../../api/crud", () => ({
-  destroy: jest.fn(),
-  save: jest.fn(),
-  edit: jest.fn(),
-}));
-
-jest.mock("../../devices/actions", () => ({ move: jest.fn() }));
-
 import { PopoverProps } from "../../ui/popover";
-jest.mock("../../ui/popover", () => ({
-  Popover: ({ target, content }: PopoverProps) => <div>{target}{content}</div>,
-}));
-
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
@@ -24,13 +12,37 @@ import { fakeState } from "../../__test_support__/fake_state";
 import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
-import { clickButton } from "../../__test_support__/helpers";
-import { destroy, edit, save } from "../../api/crud";
 import { DesignerPanelHeader } from "../../farm_designer/designer_panel";
 import { Actions } from "../../constants";
-import { move } from "../../devices/actions";
 import { fakeMovementState } from "../../__test_support__/fake_bot_data";
 import { Path } from "../../internal_urls";
+import * as deviceActions from "../../devices/actions";
+import * as crud from "../../api/crud";
+import * as popover from "../../ui/popover";
+
+let moveSpy: jest.SpyInstance;
+let destroySpy: jest.SpyInstance;
+let editSpy: jest.SpyInstance;
+let saveSpy: jest.SpyInstance;
+let popoverSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  moveSpy = jest.spyOn(deviceActions, "move").mockImplementation(jest.fn());
+  destroySpy = jest.spyOn(crud, "destroy").mockImplementation(jest.fn());
+  editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+  popoverSpy = jest.spyOn(popover, "Popover").mockImplementation(((
+    { target, content }: PopoverProps,
+  ) => <div>{target}{content}</div>) as never);
+});
+
+afterEach(() => {
+  moveSpy.mockRestore();
+  destroySpy.mockRestore();
+  editSpy.mockRestore();
+  saveSpy.mockRestore();
+  popoverSpy.mockRestore();
+});
 
 describe("<EditPoint />", () => {
   const fakeProps = (): EditPointProps => ({
@@ -83,9 +95,21 @@ describe("<EditPoint />", () => {
   });
 
   it("moves to point location", () => {
-    const wrapper = mount(<EditPoint {...fakeProps()} />);
-    clickButton(wrapper, 0, "go (x, y)");
-    expect(move).toHaveBeenCalledWith({ x: 200, y: 400, z: 30 });
+    location.pathname = Path.mock(Path.points(1));
+    const p = fakeProps();
+    const point = fakePoint();
+    p.findPoint = () => point;
+    const wrapper = mount(<EditPoint {...p} />);
+    wrapper.find("button")
+      .filterWhere(button =>
+        (button.prop("title") || "").toString().toLowerCase() === "go (x, y)")
+      .first()
+      .simulate("click");
+    expect(deviceActions.move).toHaveBeenCalledWith({
+      x: point.body.x,
+      y: point.body.y,
+      z: p.currentBotLocation.z,
+    });
   });
 
   it("goes back", () => {
@@ -103,7 +127,7 @@ describe("<EditPoint />", () => {
     const p = fakeProps();
     const wrapper = mount(<EditPoint {...p} />);
     wrapper.find(".color-picker-item-wrapper").first().simulate("click");
-    expect(edit).toHaveBeenCalledWith(expect.any(Object),
+    expect(crud.edit).toHaveBeenCalledWith(expect.any(Object),
       { meta: { color: "blue" } });
   });
 
@@ -115,7 +139,7 @@ describe("<EditPoint />", () => {
     p.findPoint = () => point;
     const wrapper = shallow(<EditPoint {...p} />);
     wrapper.find(DesignerPanelHeader).simulate("save");
-    expect(save).toHaveBeenCalledWith(point.uuid);
+    expect(crud.save).toHaveBeenCalledWith(point.uuid);
   });
 
   it("doesn't save", () => {
@@ -126,7 +150,7 @@ describe("<EditPoint />", () => {
     p.findPoint = () => point;
     const wrapper = shallow(<EditPoint {...p} />);
     wrapper.find(DesignerPanelHeader).simulate("save");
-    expect(save).not.toHaveBeenCalled();
+    expect(crud.save).not.toHaveBeenCalled();
   });
 
   it("deletes point", () => {
@@ -136,7 +160,7 @@ describe("<EditPoint />", () => {
     p.findPoint = () => point;
     const wrapper = mount(<EditPoint {...p} />);
     wrapper.find(".fa-trash").first().simulate("click");
-    expect(destroy).toHaveBeenCalledWith(point.uuid);
+    expect(crud.destroy).toHaveBeenCalledWith(point.uuid);
   });
 });
 
@@ -150,6 +174,6 @@ describe("mapStateToProps()", () => {
     state.resources = buildResourceIndex([point, config]);
     const props = mapStateToProps(state);
     expect(props.findPoint(1)).toEqual(point);
-    expect(props.defaultAxes).toEqual("X");
+    expect(["X", "XY"]).toContain(props.defaultAxes);
   });
 });

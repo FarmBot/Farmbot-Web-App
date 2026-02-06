@@ -1,3 +1,10 @@
+jest.mock("../../api/crud", () => ({
+  edit: jest.fn((_: unknown, update: unknown) => ({
+    type: "EDIT_RESOURCE",
+    payload: { update },
+  })),
+}));
+
 import React from "react";
 import { shallow } from "enzyme";
 import { NameInputBox, PinDropdown, ModeDropdown } from "../pin_form_fields";
@@ -13,6 +20,9 @@ const expectedPayload = (update: Object) =>
     type: Actions.EDIT_RESOURCE
   });
 
+afterAll(() => {
+  jest.unmock("../../api/crud");
+});
 describe("<NameInputBox />", () => {
   const fakeProps = () => ({
     dispatch: jest.fn(),

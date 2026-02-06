@@ -9,6 +9,9 @@ import { fakeAssertProps } from "../test_fixtures";
 import { cloneDeep } from "lodash";
 import { editStep } from "../../../../api/crud";
 
+afterAll(() => {
+  jest.unmock("../../../../api/crud");
+});
 describe("<TypePart />", () => {
   it("renders default verbiage and props", () => {
     const p = fakeAssertProps();

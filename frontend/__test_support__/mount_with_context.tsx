@@ -1,6 +1,13 @@
 import React from "react";
 import { mount } from "enzyme";
-import { NavigationProvider } from "../routes_helpers";
 
-export const mountWithContext = (element: React.ReactElement) =>
-  mount<React.ReactElement>(<NavigationProvider>{element}</NavigationProvider>);
+export const mountWithContext = (element: React.ReactElement) => {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const { NavigationContext } =
+    require("../routes_helpers") as typeof import("../routes_helpers");
+  return mount<React.ReactElement>(
+    <NavigationContext.Provider value={mockNavigate}>
+      {element}
+    </NavigationContext.Provider>,
+  );
+};

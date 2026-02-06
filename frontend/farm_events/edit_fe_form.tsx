@@ -231,7 +231,7 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = this.context;
+  navigate = (url: string) => this.context?.(url);
 
   executableSet = (ddi: DropDownItem) => {
     if (ddi.value) {

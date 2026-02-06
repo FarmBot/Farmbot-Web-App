@@ -21,7 +21,7 @@
 # +-------------+ +-------------+ +-------------+
 #
 #             +--------+ +------------+
-#             | parcel | | typescript |
+#             | assets | | typescript |
 #             +--------+ +------------+
 # ================================================
 
@@ -63,10 +63,11 @@ services:
     environment: ["RABBITMQ_CONFIG_FILE=/farmbot/farmbot_rmq_config"]
     volumes: ["./docker_volumes/rabbit:/farmbot"]
 
-  parcel:
+  assets:
     env_file: ".env"
     image: farmbot_web
     volumes: [".:/farmbot", "./docker_volumes/bundle_cache:/bundle"]
+    depends_on: ["db"]
     command: bundle exec rake api:serve_assets
     ports: ["3808:3808"]
 

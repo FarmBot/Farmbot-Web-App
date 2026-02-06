@@ -1,20 +1,30 @@
-jest.mock("../../api/crud", () => ({
-  init: jest.fn(() => ({ payload: { uuid: "uuid" } })),
-  save: jest.fn(),
-}));
-
 import React from "react";
 import { mount } from "enzyme";
 import { RawCurves as Curves, mapStateToProps } from "../curves_inventory";
 import { fakeState } from "../../__test_support__/fake_state";
 import { fakeCurve } from "../../__test_support__/fake_state/resources";
-import { init, save } from "../../api/crud";
+import * as crud from "../../api/crud";
 import { SearchField } from "../../ui/search_field";
 import { Path } from "../../internal_urls";
 import { curvesPanelState } from "../../__test_support__/panel_state";
 import { CurvesProps } from "../interfaces";
 import { Actions } from "../../constants";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
+
+let initSpy: jest.SpyInstance;
+let saveSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  initSpy = jest.spyOn(crud, "init")
+    .mockImplementation(() => ({ payload: { uuid: "uuid" } } as never));
+  saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  initSpy.mockRestore();
+  saveSpy.mockRestore();
+});
 
 describe("<Curves> />", () => {
   const fakeProps = (): CurvesProps => ({
@@ -103,11 +113,11 @@ describe("<Curves> />", () => {
     const navigate = jest.fn();
     wrapper.instance().navigate = navigate;
     await wrapper.instance().addNew("water")();
-    expect(init).toHaveBeenCalledWith("Curve", {
+    expect(initSpy).toHaveBeenCalledWith("Curve", {
       name: "Water curve 2", type: "water",
       data: { 1: 1, 30: 500, 45: 500, 60: 250 },
     });
-    expect(save).toHaveBeenCalled();
+    expect(saveSpy).toHaveBeenCalled();
     expect(navigate).toHaveBeenCalledWith(Path.curves(1));
   });
 
@@ -123,11 +133,11 @@ describe("<Curves> />", () => {
     const navigate = jest.fn();
     wrapper.instance().navigate = navigate;
     await wrapper.instance().addNew("water")();
-    expect(init).toHaveBeenCalledWith("Curve", {
+    expect(initSpy).toHaveBeenCalledWith("Curve", {
       name: "Water curve 2", type: "water",
       data: { 1: 1, 30: 500, 45: 500, 60: 250 },
     });
-    expect(save).toHaveBeenCalled();
+    expect(saveSpy).toHaveBeenCalled();
     expect(navigate).not.toHaveBeenCalled();
   });
 
@@ -142,11 +152,11 @@ describe("<Curves> />", () => {
     const navigate = jest.fn();
     wrapper.instance().navigate = navigate;
     await wrapper.instance().addNew("spread")();
-    expect(init).toHaveBeenCalledWith("Curve", {
+    expect(initSpy).toHaveBeenCalledWith("Curve", {
       name: "Spread curve 1", type: "spread",
       data: { 1: 1, 30: 300, 45: 300, 60: 150 },
     });
-    expect(save).toHaveBeenCalled();
+    expect(saveSpy).toHaveBeenCalled();
     expect(navigate).toHaveBeenCalledWith(Path.curves(1));
   });
 
@@ -159,11 +169,11 @@ describe("<Curves> />", () => {
     const navigate = jest.fn();
     wrapper.instance().navigate = navigate;
     await wrapper.instance().addNew("water")();
-    expect(init).toHaveBeenCalledWith("Curve", {
+    expect(initSpy).toHaveBeenCalledWith("Curve", {
       name: "Water curve 1", type: "water",
       data: { 1: 1, 30: 500, 45: 500, 60: 250 },
     });
-    expect(save).toHaveBeenCalled();
+    expect(saveSpy).toHaveBeenCalled();
     expect(navigate).not.toHaveBeenCalled();
   });
 });

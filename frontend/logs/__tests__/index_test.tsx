@@ -1,9 +1,5 @@
 const mockStorj: Dictionary<number | boolean> = {};
 
-jest.mock("../../api/crud", () => ({
-  destroy: jest.fn(),
-}));
-
 import React from "react";
 import { ReactWrapper, mount, shallow } from "enzyme";
 import { LogsPanel as Logs, RawLogs } from "../index";
@@ -15,13 +11,23 @@ import { MessageType } from "../../sequences/interfaces";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { SearchField } from "../../ui/search_field";
 import { bot } from "../../__test_support__/fake_state/bot";
-import { destroy } from "../../api/crud";
+import * as crud from "../../api/crud";
 import { mapStateToProps } from "../state_to_props";
 import { fakeState } from "../../__test_support__/fake_state";
 import { Actions } from "../../constants";
 import { fakeDevice } from "../../__test_support__/resource_index_builder";
 
 describe("<Logs />", () => {
+  let destroySpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    destroySpy = jest.spyOn(crud, "destroy").mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    destroySpy.mockRestore();
+  });
+
   function fakeLogs(): TaggedLog[] {
     const log1 = fakeLog();
     log1.body.message = "Fake log message 1";
@@ -35,7 +41,7 @@ describe("<Logs />", () => {
     logs: fakeLogs(),
     timeSettings: fakeTimeSettings(),
     dispatch: jest.fn(),
-    sourceFbosConfig: jest.fn(),
+    sourceFbosConfig: () => ({ value: "farmduino_k14" }),
     getConfigValue: x => mockStorj[x],
     bot: bot,
     fbosVersion: undefined,
@@ -241,7 +247,7 @@ describe("<Logs />", () => {
     const p = fakeProps();
     const wrapper = mount(<Logs {...p} />);
     wrapper.find(".fa-trash").first().simulate("click");
-    expect(destroy).toHaveBeenCalledWith(p.logs[0].uuid);
+    expect(crud.destroy).toHaveBeenCalledWith(p.logs[0].uuid);
   });
 });
 

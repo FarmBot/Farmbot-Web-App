@@ -1,15 +1,14 @@
 import React from "react";
 import { t } from "../../i18next_wrapper";
 import { ImageFilterMenu } from "./image_filter_menu";
-import { setWebAppConfigValue } from "../../config_storage/actions";
+import * as configStorageActions from "../../config_storage/actions";
 import { BooleanSetting, StringSetting } from "../../session_keys";
 import {
-  toggleAlwaysHighlightImage, toggleSingleImageMode, setWebAppConfigValues,
-  toggleShowPhotoImages,
-  toggleShowCalibrationImages,
-  toggleShowDetectionImages,
+  toggleAlwaysHighlightImage, toggleSingleImageMode,
+  toggleShowPhotoImages, toggleShowCalibrationImages, toggleShowDetectionImages,
   toggleShowHeightImages,
 } from "./actions";
+import * as photoFilterActions from "./actions";
 import {
   IMAGE_LAYER_CONFIG_KEYS, calculateImageAgeInfo, parseFilterSetting,
 } from "./util";
@@ -41,7 +40,7 @@ export const PhotoFilterSettings = (props: PhotoFilterSettingsProps) => {
     hideUnShownImages ? "single-image-mode" : "",
     layerOff ? "image-layer-disabled" : "",
   ].join(" ");
-  const clearFilters = () => dispatch(setWebAppConfigValues({
+  const clearFilters = () => dispatch(photoFilterActions.setWebAppConfigValues({
     photo_filter_begin: "", photo_filter_end: "",
   }));
   const commonToggleProps = { dispatch, layerOff };
@@ -72,7 +71,8 @@ export const PhotoFilterSettings = (props: PhotoFilterSettingsProps) => {
         <ToggleButton toggleValue={!layerOff}
           className={getModifiedClassName(BooleanSetting.show_images)}
           toggleAction={() =>
-            dispatch(setWebAppConfigValue(BooleanSetting.show_images, layerOff))} />
+            dispatch(configStorageActions.setWebAppConfigValue(
+              BooleanSetting.show_images, layerOff))} />
       </div>
     </Highlight>
     <PhotoSettingToggle {...commonToggleProps}

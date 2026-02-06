@@ -1,10 +1,15 @@
 import { EnvName } from "./interfaces";
 import { determineInstalledOsVersion, FbosVersionFallback } from "../util/index";
 import { maybeGetDevice } from "../resources/selectors";
-import { MW } from "./middlewares";
 import { Everything } from "../interfaces";
 import { Store, Action, Dispatch } from "redux";
 import { createReminderFn } from "./upgrade_reminder";
+
+type MW =
+  (store: Store<Everything>) =>
+    (dispatch: Dispatch<Action<string>>) =>
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (action: any) => unknown;
 
 const maybeRemindUserToUpdate = createReminderFn();
 

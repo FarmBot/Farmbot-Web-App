@@ -59,6 +59,11 @@ import { mountWithContext } from "../../../__test_support__/mount_with_context";
 
 API.setBaseUrl("");
 
+afterAll(() => {
+  jest.unmock("axios");
+  jest.unmock("../../actions");
+  jest.unmock("../../../folders/actions");
+});
 describe("<DesignerSequenceList />", () => {
   const fakeProps = (): SequencesProps => ({
     dispatch: jest.fn(),

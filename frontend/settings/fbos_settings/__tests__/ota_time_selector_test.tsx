@@ -20,6 +20,10 @@ import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { edit } from "../../../api/crud";
 import { updateConfig } from "../../../devices/actions";
 
+afterAll(() => {
+  jest.unmock("../../../api/crud");
+  jest.unmock("../../../devices/actions");
+});
 describe("localHourToUtcHour()", () => {
   it("converts hour", () => {
     expect(localHourToUtcHour(10, -2)).toEqual(12);

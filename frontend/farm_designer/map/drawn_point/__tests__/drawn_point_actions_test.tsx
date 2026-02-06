@@ -1,5 +1,7 @@
+jest.unmock("../drawn_point_actions");
+
 import {
-  startNewPoint, resizePoint, StartNewPointProps, ResizePointProps,
+  startNewPoint, resizePoint, type StartNewPointProps, type ResizePointProps,
 } from "../drawn_point_actions";
 import { Actions } from "../../../../constants";
 import {

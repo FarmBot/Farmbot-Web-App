@@ -1,21 +1,40 @@
-const mockDevice = {
-  moveRelative: jest.fn((_) => Promise.resolve()),
-  rebootFirmware: jest.fn(() => Promise.resolve()),
-};
-jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
+jest.unmock("../../../redux/store");
+jest.mock("../../../settings/fbos_settings/factory_reset_row", () => ({
+  FactoryResetRows: () => <div />,
+}));
 
 import React from "react";
-import { mount } from "enzyme";
+import { mount, shallow } from "enzyme";
 import {
   JogButtons, PowerAndResetMenu, PowerAndResetMenuProps,
 } from "../jog_buttons";
+import * as deviceActions from "../../../devices/actions";
 import { JogMovementControlsProps } from "../interfaces";
+import { FbosButtonRow } from "../../../settings/fbos_settings/fbos_button_row";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { fakeWebAppConfig } from "../../../__test_support__/fake_state/resources";
 import { fakeMovementState } from "../../../__test_support__/fake_bot_data";
+import { DeviceSetting } from "../../../constants";
 
+let moveRelativeSpy: jest.SpyInstance;
+let restartFirmwareSpy: jest.SpyInstance;
+
+afterAll(() => {
+  jest.unmock("../../../settings/fbos_settings/factory_reset_row");
+});
 describe("<JogButtons />", () => {
   const mockConfig = fakeWebAppConfig();
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockConfig.body.xy_swap = false;
+    moveRelativeSpy =
+      jest.spyOn(deviceActions, "moveRelative").mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    moveRelativeSpy.mockRestore();
+  });
 
   const jogButtonProps = (): JogMovementControlsProps => ({
     stepSize: 100,
@@ -37,7 +56,7 @@ describe("<JogButtons />", () => {
     p.arduinoBusy = true;
     const jogButtons = mount(<JogButtons {...p} />);
     jogButtons.find("button").at(7).simulate("click");
-    expect(mockDevice.moveRelative).not.toHaveBeenCalled();
+    expect(deviceActions.moveRelative).not.toHaveBeenCalled();
   });
 
   it("has unswapped xy jog buttons", () => {
@@ -45,7 +64,7 @@ describe("<JogButtons />", () => {
     const button = jogButtons.find("button").at(8);
     expect(button.props().title).toBe("move x axis (100)");
     button.simulate("click");
-    expect(mockDevice.moveRelative)
+    expect(deviceActions.moveRelative)
       .toHaveBeenCalledWith({ x: 100, y: 0, z: 0 });
   });
 
@@ -57,7 +76,7 @@ describe("<JogButtons />", () => {
     const button = jogButtons.find("button").at(8);
     expect(button.props().title).toBe("move y axis (100)");
     button.simulate("click");
-    expect(mockDevice.moveRelative)
+    expect(deviceActions.moveRelative)
       .toHaveBeenCalledWith({ x: 0, y: 100, z: 0 });
   });
 
@@ -92,6 +111,16 @@ describe("<JogButtons />", () => {
 });
 
 describe("<PowerAndResetMenu />", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    restartFirmwareSpy =
+      jest.spyOn(deviceActions, "restartFirmware").mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    restartFirmwareSpy.mockRestore();
+  });
+
   const fakeProps = (): PowerAndResetMenuProps => ({
     botOnline: true,
     showAdvanced: true,
@@ -99,8 +128,10 @@ describe("<PowerAndResetMenu />", () => {
   });
 
   it("restarts firmware", () => {
-    const wrapper = mount(<PowerAndResetMenu {...fakeProps()} />);
-    wrapper.find("button").first().simulate("click");
-    expect(mockDevice.rebootFirmware).toHaveBeenCalled();
+    const wrapper = shallow(<PowerAndResetMenu {...fakeProps()} />);
+    const row = wrapper.find(FbosButtonRow).first();
+    expect(row.props().label).toEqual(DeviceSetting.restartFirmware);
+    row.props().action?.();
+    expect(deviceActions.restartFirmware).toHaveBeenCalled();
   });
 });

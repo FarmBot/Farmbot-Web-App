@@ -31,6 +31,12 @@ import { SpecialStatus } from "farmbot";
 import { fakeMovementState } from "../../__test_support__/fake_bot_data";
 import { Path } from "../../internal_urls";
 
+afterAll(() => {
+  jest.unmock("../../api/crud");
+});
+afterAll(() => {
+  jest.unmock("../../farm_designer/map/layers/tool_slots/tool_graphics");
+});
 describe("<EditToolSlot />", () => {
   const fakeProps = (): EditToolSlotProps => ({
     findToolSlot: jest.fn(),

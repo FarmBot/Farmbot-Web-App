@@ -1,14 +1,5 @@
 import { Mode } from "../../interfaces";
 let mockMode = Mode.none;
-jest.mock("../../util", () => ({ getMode: () => mockMode }));
-
-jest.mock("../../../../point_groups/criteria", () => ({
-  editGtLtCriteria: jest.fn(),
-}));
-
-jest.mock("../../../../point_groups/actions", () => ({
-  overwriteGroup: jest.fn(),
-}));
 
 import {
   fakePlant, fakePointGroup,
@@ -20,10 +11,26 @@ import {
   MaybeUpdateGroupProps,
 } from "../selection_box_actions";
 import { Actions } from "../../../../constants";
-import { editGtLtCriteria } from "../../../../point_groups/criteria";
+import * as pointGroupCriteria from "../../../../point_groups/criteria";
 import { cloneDeep } from "lodash";
-import { overwriteGroup } from "../../../../point_groups/actions";
+import * as pointGroupActions from "../../../../point_groups/actions";
 import { Path } from "../../../../internal_urls";
+import * as mapUtil from "../../util";
+
+let editGtLtCriteriaSpy: jest.SpyInstance;
+let overwriteGroupSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  jest.spyOn(mapUtil, "getMode").mockImplementation(() => mockMode);
+  editGtLtCriteriaSpy = jest.spyOn(pointGroupCriteria, "editGtLtCriteria")
+    .mockImplementation(jest.fn());
+  overwriteGroupSpy = jest.spyOn(pointGroupActions, "overwriteGroup")
+    .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
 
 describe("getSelected", () => {
   it("returns some", () => {
@@ -181,12 +188,12 @@ describe("maybeUpdateGroup()", () => {
     p.boxSelected = [plant1.uuid, plant2.uuid];
     p.group && (p.group.body.point_ids = [plant1.body.id || 0]);
     maybeUpdateGroup(p);
-    expect(editGtLtCriteria).not.toHaveBeenCalled();
+    expect(editGtLtCriteriaSpy).not.toHaveBeenCalled();
     const expectedBody = cloneDeep(p.group?.body);
     expectedBody && (expectedBody.point_ids = [
       plant1.body.id || 0, plant2.body.id || 0,
     ]);
-    expect(overwriteGroup).toHaveBeenCalledWith(p.group, expectedBody);
+    expect(overwriteGroupSpy).toHaveBeenCalledWith(p.group, expectedBody);
   });
 
   it("doesn't update group", () => {
@@ -194,15 +201,15 @@ describe("maybeUpdateGroup()", () => {
     p.editGroupAreaInMap = false;
     p.boxSelected = undefined;
     maybeUpdateGroup(p);
-    expect(editGtLtCriteria).not.toHaveBeenCalled();
-    expect(overwriteGroup).not.toHaveBeenCalled();
+    expect(editGtLtCriteriaSpy).not.toHaveBeenCalled();
+    expect(overwriteGroupSpy).not.toHaveBeenCalled();
   });
 
   it("updates criteria", () => {
     const p = fakeProps();
     p.editGroupAreaInMap = true;
     maybeUpdateGroup(p);
-    expect(editGtLtCriteria).toHaveBeenCalledWith(p.group, p.selectionBox);
+    expect(editGtLtCriteriaSpy).toHaveBeenCalledWith(p.group, p.selectionBox);
   });
 
   it("handles missing group or box", () => {
@@ -211,7 +218,7 @@ describe("maybeUpdateGroup()", () => {
     p.selectionBox = undefined;
     maybeUpdateGroup(p);
     expect(p.dispatch).not.toHaveBeenCalled();
-    expect(editGtLtCriteria).not.toHaveBeenCalled();
-    expect(overwriteGroup).not.toHaveBeenCalled();
+    expect(editGtLtCriteriaSpy).not.toHaveBeenCalled();
+    expect(overwriteGroupSpy).not.toHaveBeenCalled();
   });
 });

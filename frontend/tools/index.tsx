@@ -160,9 +160,8 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = this.context;
   navigateById = (id: number | undefined) => () => {
-    this.navigate(Path.groups(id));
+    this.context(Path.groups(id));
   };
 
   render() {
@@ -202,7 +201,7 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
                     ...DEFAULT_CRITERIA,
                     string_eq: { pointer_type: ["ToolSlot"] },
                   },
-                  navigate: this.navigate,
+                  navigate: this.context,
                 }))}
                 addTitle={t("add new group")}
                 addClassName={"plus-group"}

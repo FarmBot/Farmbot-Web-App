@@ -1,6 +1,4 @@
-const step_buttons = require("../step_buttons");
 const mockStepClick = jest.fn();
-step_buttons.stepClick = jest.fn(() => mockStepClick);
 
 import React, { act } from "react";
 import { mount } from "enzyme";
@@ -11,9 +9,20 @@ import { fakeFarmwareData } from "../../__test_support__/fake_sequence_step_data
 import { FarmwareName } from "../step_tiles/tile_execute_script";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { Path } from "../../internal_urls";
-import { stepClick } from "../step_buttons";
+import * as stepButtons from "../step_buttons";
 
 describe("<StepButtonCluster />", () => {
+  let stepClickSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    stepClickSpy = jest.spyOn(stepButtons, "stepClick")
+      .mockImplementation(() => mockStepClick as never);
+  });
+
+  afterEach(() => {
+    stepClickSpy.mockRestore();
+  });
+
   const COMMANDS = ["move", "control peripheral", "read sensor",
     "control servo", "wait", "send message", "reboot", "shutdown", "e-stop",
     "find home", "set home", "find axis length", "if statement",
@@ -99,7 +108,7 @@ describe("<StepButtonCluster />", () => {
     jest.clearAllMocks();
     wrapper.find("input").simulate("keypress",
       { key: "Enter", currentTarget: { value: "pinned" } });
-    expect(stepClick).toHaveBeenCalledWith(
+    expect(stepButtons.stepClick).toHaveBeenCalledWith(
       p.dispatch,
       { kind: "execute", args: { sequence_id: 1 }, body: undefined },
       p.current,
@@ -123,7 +132,7 @@ describe("<StepButtonCluster />", () => {
     jest.clearAllMocks();
     wrapper.find("input").simulate("keypress",
       { key: "Enter", currentTarget: { value: "none" } });
-    expect(stepClick).not.toHaveBeenCalled();
+    expect(stepButtons.stepClick).not.toHaveBeenCalled();
     expect(mockStepClick).not.toHaveBeenCalled();
   });
 });

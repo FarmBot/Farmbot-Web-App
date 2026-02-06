@@ -71,7 +71,7 @@ export class PointGroupItem
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = this.context;
+  navigate = (url: string) => this.context?.(url);
 
   click = () => {
     if (this.props.navigate) {

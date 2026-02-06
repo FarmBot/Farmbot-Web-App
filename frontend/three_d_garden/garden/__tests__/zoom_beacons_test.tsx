@@ -1,18 +1,30 @@
 let mockIsDesktop = true;
-jest.mock("../../../screen_size", () => ({
-  isDesktop: () => mockIsDesktop,
-}));
 
 import React from "react";
 import { mount } from "enzyme";
 import { ZoomBeacons, ZoomBeaconsProps } from "../zoom_beacons";
 import { clone } from "lodash";
 import { INITIAL } from "../../config";
+import * as screenSize from "../../../screen_size";
+
+const originalDocumentQuerySelector = document.querySelector.bind(document);
+let isDesktopSpy: jest.SpyInstance;
 
 describe("<ZoomBeacons />", () => {
   beforeEach(() => {
+    mockIsDesktop = true;
     window.location.href = "http://localhost:3000/app/designer";
     history.pushState = jest.fn();
+    isDesktopSpy = jest.spyOn(screenSize, "isDesktop")
+      .mockImplementation(() => mockIsDesktop);
+  });
+
+  afterEach(() => {
+    Object.defineProperty(document, "querySelector", {
+      value: originalDocumentQuerySelector,
+      configurable: true,
+    });
+    isDesktopSpy.mockRestore();
   });
 
   const fakeProps = (): ZoomBeaconsProps => ({

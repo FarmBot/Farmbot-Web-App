@@ -11,6 +11,9 @@ import { edit, save } from "../../../api/crud";
 import { fakeDevice } from "../../../__test_support__/resource_index_builder";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 
+afterAll(() => {
+  jest.unmock("../../../api/crud");
+});
 describe("<OrderNumberRow />", () => {
   const fakeProps = (): OrderNumberRowProps => ({
     device: fakeDevice(),

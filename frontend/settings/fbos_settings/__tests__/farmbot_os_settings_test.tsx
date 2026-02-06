@@ -1,11 +1,6 @@
-jest.mock("../boot_sequence_selector", () => ({
-  BootSequenceSelector: () => <div />
-}));
-
 const mockDevice = {
   flashFirmware: jest.fn((_) => Promise.resolve()),
 };
-jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
 import React from "react";
 import { FarmBotSettings } from "../farmbot_os_settings";
@@ -21,6 +16,24 @@ import { clickButton } from "../../../__test_support__/helpers";
 import { fakeFbosConfig } from "../../../__test_support__/fake_state/resources";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { isFunction } from "lodash";
+import * as device from "../../../device";
+import * as bootSequenceSelector from "../boot_sequence_selector";
+
+let getDeviceSpy: jest.SpyInstance;
+let bootSequenceSelectorSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  getDeviceSpy = jest.spyOn(device, "getDevice")
+    .mockImplementation(() => mockDevice as never);
+  bootSequenceSelectorSpy = jest.spyOn(bootSequenceSelector, "BootSequenceSelector")
+    .mockImplementation(jest.fn(() => <div />) as never);
+});
+
+afterEach(() => {
+  getDeviceSpy.mockRestore();
+  bootSequenceSelectorSpy.mockRestore();
+});
 
 describe("<FarmBotSettings />", () => {
   const fakeConfig = fakeFbosConfig();
@@ -45,7 +58,8 @@ describe("<FarmBotSettings />", () => {
     const p = fakeProps();
     p.settingsPanelState.farmbot_settings = true;
     const osSettings = shallow(<FarmBotSettings {...p} />);
-    expect(osSettings.find("BootSequenceSelector").length).toEqual(1);
+    expect(osSettings.find(bootSequenceSelector.BootSequenceSelector).length)
+      .toEqual(1);
   });
 
   it("flashes firmware", () => {

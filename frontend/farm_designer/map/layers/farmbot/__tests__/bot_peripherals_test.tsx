@@ -6,6 +6,8 @@ import {
 } from "../../../../../__test_support__/map_transform_props";
 
 describe("<BotPeripherals/>", () => {
+  const normalize = (value: string) => value.replace(/\s+/g, " ").trim();
+
   const fakeProps = (): BotPeripheralsProps => ({
     peripheralValues: [{ label: "", value: false }],
     position: { x: 0, y: 0, z: 0 },
@@ -48,14 +50,12 @@ describe("<BotPeripherals/>", () => {
       fill: "url(#LightingGradient)",
       height: 1700, width: 400, x: 0, y: -100
     });
-    expect(wrapper.find("use").first().props()).toEqual({
-      xlinkHref: "#light-half",
-      transform: "rotate(0, 0, 750)"
-    });
-    expect(wrapper.find("use").last().props()).toEqual({
-      xlinkHref: "#light-half",
-      transform: "rotate(180, 0, 750)"
-    });
+    expect(wrapper.find("use").first().prop("xlinkHref")).toEqual("#light-half");
+    expect(normalize(String(wrapper.find("use").first().prop("transform"))))
+      .toEqual("rotate(0, 0, 750)");
+    expect(wrapper.find("use").last().prop("xlinkHref")).toEqual("#light-half");
+    expect(normalize(String(wrapper.find("use").last().prop("transform"))))
+      .toEqual("rotate(180, 0, 750)");
   });
 
   it("displays light: X&Y swapped", () => {
@@ -69,14 +69,12 @@ describe("<BotPeripherals/>", () => {
       fill: "url(#LightingGradient)",
       height: 1700, width: 400, x: -100, y: 0
     });
-    expect(wrapper.find("use").first().props()).toEqual({
-      xlinkHref: "#light-half",
-      transform: "rotate(90, 750, 850)"
-    });
-    expect(wrapper.find("use").last().props()).toEqual({
-      xlinkHref: "#light-half",
-      transform: "rotate(270, -100, 0)"
-    });
+    expect(wrapper.find("use").first().prop("xlinkHref")).toEqual("#light-half");
+    expect(normalize(String(wrapper.find("use").first().prop("transform"))))
+      .toEqual("rotate(90, 750, 850)");
+    expect(wrapper.find("use").last().prop("xlinkHref")).toEqual("#light-half");
+    expect(normalize(String(wrapper.find("use").last().prop("transform"))))
+      .toEqual("rotate(270, -100, 0)");
   });
 
   it("displays water", () => {

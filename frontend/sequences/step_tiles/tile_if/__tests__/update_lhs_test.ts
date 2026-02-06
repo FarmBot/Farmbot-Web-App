@@ -11,6 +11,9 @@ import {
 } from "../../../../__test_support__/fake_state/resources";
 import { overwrite } from "../../../../api/crud";
 
+afterAll(() => {
+  jest.unmock("../../../../api/crud");
+});
 describe("updateLhs()", () => {
   const fakeProps = (): LhsUpdateProps => ({
     currentStep: {

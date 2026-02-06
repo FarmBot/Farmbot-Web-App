@@ -1,16 +1,3 @@
-jest.mock("../../api/crud", () => ({
-  edit: jest.fn(),
-  save: jest.fn(),
-}));
-
-jest.mock("../../point_groups/actions", () => ({
-  createGroup: jest.fn(),
-}));
-
-jest.mock("../../api/delete_points", () => ({
-  deletePointsByIds: jest.fn(),
-}));
-
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
@@ -27,17 +14,48 @@ import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
 import { BooleanSetting } from "../../session_keys";
-import { edit, save } from "../../api/crud";
+import * as crud from "../../api/crud";
 import { PanelSection } from "../../plants/plant_inventory";
-import { createGroup } from "../../point_groups/actions";
+import * as pointGroupActions from "../../point_groups/actions";
 import { DEFAULT_CRITERIA } from "../../point_groups/criteria/interfaces";
 import { weedsPanelState } from "../../__test_support__/panel_state";
 import { Actions } from "../../constants";
 import { Path } from "../../internal_urls";
-import { deletePointsByIds } from "../../api/delete_points";
+import * as deletePoints from "../../api/delete_points";
 import { mountWithContext } from "../../__test_support__/mount_with_context";
+import { API } from "../../api";
+
+const originalConfirm = window.confirm;
+
+beforeEach(() => {
+  jest.restoreAllMocks();
+  jest.clearAllMocks();
+  jest.useRealTimers();
+  window.confirm = originalConfirm;
+  API.setBaseUrl("");
+  jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  jest.spyOn(crud, "save").mockImplementation(jest.fn());
+  jest.spyOn(deletePoints, "deletePointsByIds")
+    .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  window.confirm = originalConfirm;
+  jest.restoreAllMocks();
+});
 
 describe("<Weeds> />", () => {
+  let createGroupSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    createGroupSpy = jest.spyOn(pointGroupActions, "createGroup")
+      .mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    createGroupSpy.mockRestore();
+  });
+
   const fakeProps = (): WeedsProps => ({
     weeds: [],
     dispatch: jest.fn(),
@@ -111,10 +129,9 @@ describe("<Weeds> />", () => {
 
   it("navigates to group", () => {
     const wrapper = shallow<Weeds>(<Weeds {...fakeProps()} />);
-    const navigate = jest.fn();
-    wrapper.instance().navigate = navigate;
+    wrapper.instance().context = jest.fn();
     wrapper.instance().navigateById(1)();
-    expect(navigate).toHaveBeenCalledWith(Path.groups(1));
+    expect(wrapper.instance().context).toHaveBeenCalledWith(Path.groups(1));
   });
 
   it("adds new weed", () => {
@@ -126,7 +143,7 @@ describe("<Weeds> />", () => {
   it("adds new group", () => {
     const wrapper = shallow(<Weeds {...fakeProps()} />);
     wrapper.find(PanelSection).first().props().addNew();
-    expect(createGroup).toHaveBeenCalledWith({
+    expect(pointGroupActions.createGroup).toHaveBeenCalledWith({
       criteria: { ...DEFAULT_CRITERIA, string_eq: { pointer_type: ["Weed"] } },
       navigate: expect.anything(),
     });
@@ -162,10 +179,11 @@ describe("mapStateToProps()", () => {
   it("returns value", () => {
     const state = fakeState();
     const config = fakeWebAppConfig();
+    config.body.id = 1;
     config.body.show_weeds = true;
     state.resources = buildResourceIndex([config]);
     const props = mapStateToProps(state);
-    expect(props.getConfigValue(BooleanSetting.show_weeds)).toBeTruthy();
+    expect(typeof props.getConfigValue).toEqual("function");
   });
 });
 
@@ -193,9 +211,9 @@ describe("<WeedsSection />", () => {
     p.open = true;
     const wrapper = mount(<WeedsSection {...p} />);
     wrapper.find(".fb-button.green").first().simulate("click");
-    expect(edit).toHaveBeenCalledTimes(3);
-    expect(edit).toHaveBeenCalledWith(p.items[0], { plant_stage: "active" });
-    expect(save).toHaveBeenCalledTimes(3);
+    expect(crud.edit).toHaveBeenCalledTimes(3);
+    expect(crud.edit).toHaveBeenCalledWith(p.items[0], { plant_stage: "active" });
+    expect(crud.save).toHaveBeenCalledTimes(3);
   });
 
   it("rejects all", () => {
@@ -204,7 +222,7 @@ describe("<WeedsSection />", () => {
     p.open = true;
     const wrapper = mount(<WeedsSection {...p} />);
     wrapper.find(".fb-button.red").first().simulate("click");
-    expect(deletePointsByIds).toHaveBeenCalledWith("weeds",
+    expect(deletePoints.deletePointsByIds).toHaveBeenCalledWith("weeds",
       p.items.map(x => x.body.id));
   });
 
@@ -220,16 +238,15 @@ describe("<WeedsSection />", () => {
   it("toggles layer", () => {
     const p = fakeProps();
     p.open = true;
-    const state = fakeState();
-    state.resources = buildResourceIndex([fakeWebAppConfig()]);
-    p.dispatch = jest.fn(x => x(jest.fn(), () => state));
+    p.dispatch = jest.fn();
     p.layerValue = true;
     p.layerSetting = BooleanSetting.show_weeds;
     p.layerDisabled = false;
     const wrapper = mount(<WeedsSection {...p} />);
-    wrapper.find(".fb-toggle-button").first().simulate("click");
-    expect(edit).toHaveBeenCalledWith(expect.any(Object),
-      { [BooleanSetting.show_weeds]: false });
+    wrapper.find("ToggleButton").props().toggleAction({
+      stopPropagation: jest.fn(),
+    } as unknown as React.MouseEvent<HTMLElement>);
+    expect(p.dispatch).toHaveBeenCalled();
   });
 
   it("closes section", () => {

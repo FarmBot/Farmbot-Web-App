@@ -19,6 +19,14 @@ import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+
+afterAll(() => {
+  jest.unmock("../../../api/crud");
+});
+
 describe("<FwParamExportMenu />", () => {
   it("lists all params", () => {
     const config = fakeFirmwareConfig().body;

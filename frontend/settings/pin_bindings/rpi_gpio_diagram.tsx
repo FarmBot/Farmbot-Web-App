@@ -1,6 +1,7 @@
 import React from "react";
 import { Color } from "../../ui/colors";
 import { reservedPiGPIO } from "./list_and_label_support";
+import { gpio } from "./rpi_gpio_data";
 import { range, isNumber, includes, noop } from "lodash";
 
 export interface RpiGpioDiagramProps {
@@ -12,29 +13,6 @@ export interface RpiGpioDiagramProps {
 interface RpiGpioDiagramState {
   hoveredPin: string | number | undefined;
 }
-
-export const gpio = [
-  ["3.3v", "5v"],
-  [2, "5v"],
-  [3, "GND"],
-  [4, 14],
-  ["GND", 15],
-  [17, 18],
-  [27, "GND"],
-  [22, 23],
-  ["3.3v", 24],
-  [10, "GND"],
-  [9, 25],
-  [11, 8],
-  ["GND", 7],
-  [0, 1],
-  [5, "GND"],
-  [6, 12],
-  [13, "GND"],
-  [19, 16],
-  [26, 20],
-  ["GND", 21],
-];
 
 export class RpiGpioDiagram
   extends React.Component<RpiGpioDiagramProps, RpiGpioDiagramState> {

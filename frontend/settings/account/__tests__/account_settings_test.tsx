@@ -4,18 +4,22 @@ jest.mock("../../../api/crud", () => ({
 }));
 
 jest.mock("../../../config_storage/actions", () => ({
+  ...jest.requireActual("../../../config_storage/actions"),
   setWebAppConfigValue: jest.fn(),
   getWebAppConfigValue: () => () => true,
 }));
 
-jest.mock("../request_account_export", () => ({
-  requestAccountExport: jest.fn(),
-}));
-
 let mockDev = false;
-jest.mock("../../../settings/dev/dev_support", () => ({
-  DevSettings: { futureFeaturesEnabled: () => mockDev }
-}));
+jest.mock("../../../settings/dev/dev_support", () => {
+  const actual = jest.requireActual("../../../settings/dev/dev_support");
+  return {
+    ...actual,
+    DevSettings: {
+      ...actual.DevSettings,
+      futureFeaturesEnabled: () => mockDev,
+    },
+  };
+});
 
 import React from "react";
 import { shallow } from "enzyme";
@@ -34,10 +38,28 @@ import { NumericSetting, StringSetting } from "../../../session_keys";
 import { Slider } from "@blueprintjs/core";
 import { FBSelect, ToggleButton } from "../../../ui";
 import { clickButton } from "../../../__test_support__/helpers";
-import { requestAccountExport } from "../request_account_export";
+import * as requestAccountExportModule from "../request_account_export";
 import { changeEvent } from "../../../__test_support__/fake_html_events";
 
+afterAll(() => {
+  jest.unmock("../../../api/crud");
+  jest.unmock("../../../config_storage/actions");
+  jest.unmock("../../../settings/dev/dev_support");
+});
+
 describe("<AccountSettings />", () => {
+  let requestAccountExportSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    requestAccountExportSpy = jest.spyOn(
+      requestAccountExportModule, "requestAccountExport")
+      .mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    requestAccountExportSpy.mockRestore();
+  });
+
   const fakeProps = (): AccountSettingsProps => ({
     dispatch: jest.fn(),
     settingsPanelState: settingsPanelState(),
@@ -82,7 +104,7 @@ describe("<AccountSettings />", () => {
   it("requests export", () => {
     const wrapper = shallow(<AccountSettings {...fakeProps()} />);
     clickButton(wrapper, 0, "export");
-    expect(requestAccountExport).toHaveBeenCalled();
+    expect(requestAccountExportModule.requestAccountExport).toHaveBeenCalled();
   });
 });
 

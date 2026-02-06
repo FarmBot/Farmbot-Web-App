@@ -55,6 +55,15 @@ import { addNewSequenceToFolder } from "../../../folders/actions";
 import { emptyState } from "../../../resources/reducer";
 import { mountWithContext } from "../../../__test_support__/mount_with_context";
 
+afterAll(() => {
+  jest.unmock("../../../screen_size");
+  jest.unmock("../../../sequences/set_active_sequence_by_name");
+  jest.unmock("../../../api/crud");
+  jest.unmock("../../request_auto_generation");
+  jest.unmock("../../../folders/actions");
+  jest.unmock("../../../ui/popover");
+});
+
 describe("<DesignerSequenceEditor />", () => {
   API.setBaseUrl("");
 

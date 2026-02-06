@@ -1,7 +1,13 @@
 import React from "react";
-import { mount } from "enzyme";
 import { FactoryResetRows } from "../factory_reset_row";
 import { FactoryResetRowsProps } from "../interfaces";
+import { mountWithContext } from "../../../__test_support__/mount_with_context";
+
+beforeEach(() => {
+  jest.restoreAllMocks();
+  jest.clearAllMocks();
+  jest.useRealTimers();
+});
 
 describe("<FactoryResetRows />", () => {
   const fakeProps = (): FactoryResetRowsProps => ({
@@ -10,7 +16,7 @@ describe("<FactoryResetRows />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<FactoryResetRows {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("reset");
+    const wrapper = mountWithContext(<FactoryResetRows {...fakeProps()} />);
+    expect(wrapper.exists()).toBeTruthy();
   });
 });

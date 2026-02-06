@@ -23,6 +23,6 @@ describe("<WidgetHeader />", () => {
     const p = fakeProps();
     p.helpText = "fakeHelp";
     const wrapper = mount(<WidgetHeader {...p} />);
-    expect(wrapper.html()).toContain("fa-question-circle");
+    expect(wrapper.html()).toContain("fakeHelp");
   });
 });

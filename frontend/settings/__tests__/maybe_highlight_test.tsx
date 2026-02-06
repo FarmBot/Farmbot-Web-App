@@ -1,13 +1,7 @@
-jest.mock("../toggle_section", () => ({
-  toggleControlPanel: jest.fn(),
-  bulkToggleControlPanel: jest.fn(),
-}));
+jest.unmock("../maybe_highlight");
 
 import { fakeState } from "../../__test_support__/fake_state";
-const mockState = fakeState();
-jest.mock("../../redux/store", () => ({
-  store: { getState: () => mockState },
-}));
+let mockState = fakeState();
 
 import React from "react";
 import { mount, shallow } from "enzyme";
@@ -15,11 +9,42 @@ import {
   Highlight, HighlightProps, maybeOpenPanel,
 } from "../maybe_highlight";
 import { Actions, DeviceSetting } from "../../constants";
-import { toggleControlPanel, bulkToggleControlPanel } from "../toggle_section";
+import * as toggleSection from "../toggle_section";
 import { Path } from "../../internal_urls";
 import { mountWithContext } from "../../__test_support__/mount_with_context";
+import { store } from "../../redux/store";
+
+const settingNode = (wrapper: ReturnType<typeof mount>) =>
+  wrapper.find(".setting").first();
+
+let toggleControlPanelSpy: jest.SpyInstance;
+let bulkToggleControlPanelSpy: jest.SpyInstance;
+let originalGetState: typeof store.getState;
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  mockState = fakeState();
+  originalGetState = store.getState;
+  (store as unknown as { getState: () => typeof mockState }).getState = () => mockState;
+  toggleControlPanelSpy = jest.spyOn(toggleSection, "toggleControlPanel")
+    .mockImplementation(jest.fn());
+  bulkToggleControlPanelSpy = jest.spyOn(toggleSection, "bulkToggleControlPanel")
+    .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  (store as unknown as { getState: typeof store.getState }).getState = originalGetState;
+  toggleControlPanelSpy.mockRestore();
+  bulkToggleControlPanelSpy.mockRestore();
+});
 
 describe("<Highlight />", () => {
+  beforeEach(() => {
+    jest.useRealTimers();
+    location.search = "";
+    mockState.app.settingsSearchTerm = "";
+  });
+
   const fakeProps = (): HighlightProps => ({
     settingName: DeviceSetting.motors,
     children: <div />,
@@ -33,32 +58,33 @@ describe("<Highlight />", () => {
     const wrapper = mount(<Highlight {...p} />);
     jest.runAllTimers();
     wrapper.update();
-    expect(wrapper.find("div").first().hasClass("unhighlight")).toBeTruthy();
+    expect(settingNode(wrapper).hasClass("unhighlight")).toBeTruthy();
+    jest.useRealTimers();
   });
 
   it("doesn't hide: no search term", () => {
     mockState.app.settingsSearchTerm = "";
     const wrapper = mount(<Highlight {...fakeProps()} />);
-    expect(wrapper.find("div").first().props().hidden).toEqual(false);
+    expect(settingNode(wrapper).props().hidden).toEqual(false);
   });
 
   it("doesn't hide: no search term, highlight doesn't match", () => {
     location.search = "?highlight=encoders";
     mockState.app.settingsSearchTerm = "";
     const wrapper = mount(<Highlight {...fakeProps()} />);
-    expect(wrapper.find("div").first().props().hidden).toEqual(false);
+    expect(settingNode(wrapper).props().hidden).toEqual(false);
   });
 
   it("doesn't hide: matches search term", () => {
     mockState.app.settingsSearchTerm = "motor";
     const wrapper = mount(<Highlight {...fakeProps()} />);
-    expect(wrapper.find("div").first().props().hidden).toEqual(false);
+    expect(settingNode(wrapper).props().hidden).toEqual(false);
   });
 
   it("doesn't hide: content matches search term", () => {
     mockState.app.settingsSearchTerm = "speed";
     const wrapper = mount(<Highlight {...fakeProps()} />);
-    expect(wrapper.find("div").first().props().hidden).toEqual(false);
+    expect(settingNode(wrapper).props().hidden).toEqual(false);
   });
 
   it("doesn't hide: content matches highlight", () => {
@@ -68,7 +94,7 @@ describe("<Highlight />", () => {
     p.hidden = true;
     p.settingName = DeviceSetting.otherSettings;
     const wrapper = mount(<Highlight {...p} />);
-    expect(wrapper.find("div").first().props().hidden).toEqual(false);
+    expect(settingNode(wrapper).props().hidden).toEqual(false);
   });
 
   it("doesn't hide: matches highlight", () => {
@@ -78,7 +104,7 @@ describe("<Highlight />", () => {
     p.className = undefined;
     p.settingName = DeviceSetting.showPins;
     const wrapper = mount(<Highlight {...p} />);
-    expect(wrapper.find("div").first().props().hidden).toEqual(false);
+    expect(settingNode(wrapper).props().hidden).toEqual(false);
   });
 
   it("hides: not section header", () => {
@@ -86,13 +112,13 @@ describe("<Highlight />", () => {
     const p = fakeProps();
     p.className = undefined;
     const wrapper = mount(<Highlight {...p} />);
-    expect(wrapper.find("div").first().props().hidden).toEqual(true);
+    expect(settingNode(wrapper).props().hidden).toEqual(true);
   });
 
   it("hides: doesn't match search term", () => {
     mockState.app.settingsSearchTerm = "encoder";
     const wrapper = mount(<Highlight {...fakeProps()} />);
-    expect(wrapper.find("div").first().props().hidden).toEqual(true);
+    expect(settingNode(wrapper).props().hidden).toEqual(true);
   });
 
   it("hides: no match", () => {
@@ -101,7 +127,7 @@ describe("<Highlight />", () => {
     const p = fakeProps();
     p.settingName = DeviceSetting.showPins;
     const wrapper = mount(<Highlight {...p} />);
-    expect(wrapper.find("div").first().props().hidden).toEqual(true);
+    expect(settingNode(wrapper).props().hidden).toEqual(true);
   });
 
   it("shows anchor link icon on hover", () => {
@@ -132,29 +158,33 @@ describe("<Highlight />", () => {
     const p = fakeProps();
     p.settingName = DeviceSetting.showPins;
     const wrapper = mount(<Highlight {...p} />);
-    expect(wrapper.find("div").first().props().hidden).toEqual(false);
+    expect(settingNode(wrapper).props().hidden).toEqual(false);
   });
 });
 
 describe("maybeOpenPanel()", () => {
+  beforeEach(() => {
+    location.search = "";
+  });
+
   it("doesn't open panel: no search term", () => {
     location.search = "";
     maybeOpenPanel()(jest.fn());
-    expect(toggleControlPanel).not.toHaveBeenCalled();
+    expect(toggleControlPanelSpy).not.toHaveBeenCalled();
   });
 
   it("closes other panels", () => {
     location.search = "?highlight=motors";
     maybeOpenPanel()(jest.fn());
-    expect(toggleControlPanel).toHaveBeenCalledWith("motors");
-    expect(bulkToggleControlPanel).toHaveBeenCalledWith(false);
+    expect(toggleControlPanelSpy).toHaveBeenCalledWith("motors");
+    expect(bulkToggleControlPanelSpy).toHaveBeenCalledWith(false);
   });
 
   it("opens all panels", () => {
     location.search = "?search=motors";
     maybeOpenPanel()(jest.fn());
-    expect(toggleControlPanel).not.toHaveBeenCalled();
-    expect(bulkToggleControlPanel).toHaveBeenCalledWith(true);
+    expect(toggleControlPanelSpy).not.toHaveBeenCalled();
+    expect(bulkToggleControlPanelSpy).toHaveBeenCalledWith(true);
   });
 
   it("opens photos panels", () => {

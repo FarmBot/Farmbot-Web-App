@@ -32,7 +32,6 @@ export class RawDesignerRegimenEditor
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = this.context;
 
   render() {
     const panelName = "designer-regimen-editor";
@@ -55,7 +54,7 @@ export class RawDesignerRegimenEditor
           className={"fb-button green"}
           title={t("add new regimen")}
           onClick={() =>
-            this.props.dispatch(addRegimen(regimenCount, this.navigate))}>
+            this.props.dispatch(addRegimen(regimenCount, this.context))}>
           <i className="fa fa-plus" />
         </button>}
       </DesignerPanelHeader>

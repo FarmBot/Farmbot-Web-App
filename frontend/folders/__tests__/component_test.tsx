@@ -34,10 +34,6 @@ jest.mock("@blueprintjs/select", () => ({
   ItemRenderer: jest.fn(),
 }));
 
-jest.mock("../../sequences/actions", () => ({
-  copySequence: jest.fn(),
-}));
-
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
@@ -66,9 +62,27 @@ import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { SpecialStatus, Color, SequenceBodyItem } from "farmbot";
 import { SearchField } from "../../ui/search_field";
 import { Path } from "../../internal_urls";
-import { copySequence } from "../../sequences/actions";
+import * as sequenceActions from "../../sequences/actions";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { fakeMenuOpenState } from "../../__test_support__/fake_designer_state";
+
+let copySequenceSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  copySequenceSpy = jest.spyOn(sequenceActions, "copySequence")
+    .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  copySequenceSpy.mockRestore();
+});
+
+afterAll(() => {
+  jest.unmock("../actions");
+  jest.unmock("@blueprintjs/core");
+  jest.unmock("../../ui/popover");
+  jest.unmock("@blueprintjs/select");
+});
 
 const fakeRootFolder = (): FolderNodeInitial => ({
   kind: "initial",
@@ -424,7 +438,8 @@ describe("<FolderListItem />", () => {
     const wrapper = mount(<FolderListItem {...p} />);
     wrapper.find(".fa-ellipsis-v").simulate("click");
     wrapper.find(".fa-copy").simulate("click");
-    expect(copySequence).toHaveBeenCalledWith(expect.any(Function), p.sequence);
+    expect(sequenceActions.copySequence)
+      .toHaveBeenCalledWith(expect.any(Function), p.sequence);
   });
 });
 

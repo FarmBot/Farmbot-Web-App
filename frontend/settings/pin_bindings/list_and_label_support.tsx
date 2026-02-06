@@ -3,7 +3,7 @@ import {
   PinBindingSpecialAction,
 } from "farmbot/dist/resources/api_resources";
 import { DropDownItem } from "../../ui";
-import { gpio } from "./rpi_gpio_diagram";
+import { gpio } from "./rpi_gpio_data";
 import { flattenDeep, isNumber } from "lodash";
 import { sysBtnBindings } from "./tagged_pin_binding_init";
 import { t } from "../../i18next_wrapper";

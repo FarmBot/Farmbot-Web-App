@@ -11,7 +11,7 @@ import {
   zZero as zZeroFunc,
 } from "../helpers";
 import { Config } from "../config";
-import { GLTF } from "three-stdlib";
+import type { GLTF } from "three-stdlib";
 import { ASSETS, LIB_DIR, PartName } from "../constants";
 import { SVGLoader } from "three/examples/jsm/Addons.js";
 import { range } from "lodash";

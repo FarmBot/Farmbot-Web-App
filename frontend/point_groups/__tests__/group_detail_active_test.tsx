@@ -1,13 +1,3 @@
-jest.mock("../../farm_designer/map/actions", () => ({
-  setHoveredPlant: jest.fn(),
-}));
-
-jest.mock("../../plants/select_plants", () => ({
-  setSelectionPointType: jest.fn(),
-  validPointTypes: jest.fn(),
-  POINTER_TYPE_LIST: () => [],
-}));
-
 jest.mock("../../ui/help", () => ({
   Help: jest.fn(props => <p>{props.text}{props.customIcon}</p>),
 }));
@@ -23,10 +13,37 @@ import {
 } from "../../__test_support__/fake_state/resources";
 import { SpecialStatus } from "farmbot";
 import { DEFAULT_CRITERIA } from "../criteria/interfaces";
-import { setSelectionPointType } from "../../plants/select_plants";
+import * as selectPlants from "../../plants/select_plants";
 import { fakeToolTransformProps } from "../../__test_support__/fake_tool_info";
 import { cloneDeep } from "lodash";
+import * as mapActions from "../../farm_designer/map/actions";
 
+let setSelectionPointTypeSpy: jest.SpyInstance;
+let validPointTypesSpy: jest.SpyInstance;
+let pointerTypeListSpy: jest.SpyInstance;
+let setHoveredPlantSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  setSelectionPointTypeSpy = jest.spyOn(selectPlants, "setSelectionPointType")
+    .mockImplementation(jest.fn());
+  validPointTypesSpy = jest.spyOn(selectPlants, "validPointTypes")
+    .mockImplementation(jest.fn());
+  pointerTypeListSpy = jest.spyOn(selectPlants, "POINTER_TYPE_LIST")
+    .mockImplementation(() => []);
+  setHoveredPlantSpy = jest.spyOn(mapActions, "setHoveredPlant")
+    .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  setSelectionPointTypeSpy.mockRestore();
+  validPointTypesSpy.mockRestore();
+  pointerTypeListSpy.mockRestore();
+  setHoveredPlantSpy.mockRestore();
+});
+
+afterAll(() => {
+  jest.unmock("../../ui/help");
+});
 describe("<GroupDetailActive />", () => {
   const fakeProps = (): GroupDetailActiveProps => {
     const plant = fakePlant();
@@ -75,7 +92,7 @@ describe("<GroupDetailActive />", () => {
     p.group.body.criteria.string_eq.pointer_type = ["Weed"];
     const wrapper = mount(<GroupDetailActive {...p} />);
     wrapper.unmount();
-    expect(setSelectionPointType).toHaveBeenCalledWith(undefined);
+    expect(selectPlants.setSelectionPointType).toHaveBeenCalledWith(undefined);
   });
 
   it("doesn't show icons", () => {

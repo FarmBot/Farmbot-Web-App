@@ -6,6 +6,9 @@ import { mount } from "enzyme";
 import { BasicFarmwarePage, BasicFarmwarePageProps } from "../basic_farmware_page";
 import { fakeFarmware } from "../../__test_support__/fake_farmwares";
 
+afterAll(() => {
+  jest.unmock("../../device");
+});
 describe("<BasicFarmwarePage />", () => {
   const fakeProps = (): BasicFarmwarePageProps => ({
     farmwareName: "My Farmware",

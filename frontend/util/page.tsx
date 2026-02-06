@@ -40,5 +40,6 @@ export function attachToRoot<P extends {}>(
 
 export function entryPoint(page: ComponentClass | React.FunctionComponent) {
   stopIE();
-  detectLanguage().then(conf => init(conf, () => attachToRoot(page)));
+  return detectLanguage()
+    .then(conf => init(conf, () => attachToRoot(page)));
 }

@@ -3,25 +3,29 @@ import { buildResourceIndex } from "../../__test_support__/resource_index_builde
 import {
   fakeFbosConfig, fakeWebAppConfig,
 } from "../../__test_support__/fake_state/resources";
-const mockState = fakeState();
-const config = fakeWebAppConfig();
-config.body.highlight_modified_settings = true;
-mockState.resources = buildResourceIndex([config]);
-jest.mock("../../redux/store", () => ({
-  store: {
-    getState: () => mockState,
-    dispatch: jest.fn(),
-  },
-}));
-
 import { getModifiedClassName } from "../default_values";
 import { FirmwareHardware } from "farmbot";
 import {
   BooleanConfigKey as BooleanWebAppConfigKey,
 } from "farmbot/dist/resources/configs/web_app";
 import { BooleanSetting } from "../../session_keys";
+import { store } from "../../redux/store";
 
 describe("getModifiedClassName()", () => {
+  let mockState = fakeState();
+  let originalGetState: typeof store.getState;
+
+  beforeEach(() => {
+    mockState = fakeState();
+    mockState.auth.token.unencoded.aud = "staff";
+    originalGetState = store.getState;
+    (store as unknown as { getState: () => typeof mockState }).getState = () => mockState;
+  });
+
+  afterEach(() => {
+    (store as unknown as { getState: typeof store.getState }).getState = originalGetState;
+  });
+
   it.each<[BooleanWebAppConfigKey, FirmwareHardware, string]>([
     [BooleanSetting.hide_sensors, "arduino", ""],
     [BooleanSetting.hide_sensors, "farmduino", ""],

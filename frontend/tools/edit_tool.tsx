@@ -103,7 +103,7 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = this.context;
+  navigate = (url: string) => this.context?.(url);
 
   fallback = () => {
     const toolsPath = Path.tools();

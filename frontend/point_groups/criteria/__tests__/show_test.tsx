@@ -1,11 +1,3 @@
-jest.mock("../edit", () => ({
-  editCriteria: jest.fn(),
-  editGtLtCriteriaField: jest.fn(() => jest.fn()),
-  removeEqCriteriaValue: jest.fn(),
-  clearCriteriaField: jest.fn(),
-  clearLocationCriteria: jest.fn(),
-}));
-
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
@@ -14,10 +6,6 @@ import {
   DaySelection,
   LocationSelection,
   NumberLtGtInput,
-  removeEqCriteriaValue,
-  clearCriteriaField,
-  editCriteria,
-  editGtLtCriteriaField,
 } from "..";
 import {
   EqCriteriaSelectionProps,
@@ -32,6 +20,27 @@ import {
 } from "../../../__test_support__/fake_state/resources";
 import { FBSelect, Checkbox } from "../../../ui";
 import { Actions } from "../../../constants";
+import * as criteriaEdit from "../edit";
+
+let removeEqCriteriaValueSpy: jest.SpyInstance;
+let clearCriteriaFieldSpy: jest.SpyInstance;
+let editCriteriaSpy: jest.SpyInstance;
+let editGtLtCriteriaFieldSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  removeEqCriteriaValueSpy = jest.spyOn(criteriaEdit, "removeEqCriteriaValue")
+    .mockImplementation(jest.fn());
+  clearCriteriaFieldSpy = jest.spyOn(criteriaEdit, "clearCriteriaField")
+    .mockImplementation(jest.fn());
+  editCriteriaSpy = jest.spyOn(criteriaEdit, "editCriteria")
+    .mockImplementation(jest.fn());
+  editGtLtCriteriaFieldSpy = jest.spyOn(criteriaEdit, "editGtLtCriteriaField")
+    .mockImplementation(() => jest.fn());
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
 
 describe("<EqCriteriaSelection<string> />", () => {
   const fakeProps = (): EqCriteriaSelectionProps<string> => ({
@@ -54,7 +63,7 @@ describe("<EqCriteriaSelection<string> />", () => {
     p.eqCriteria = { openfarm_slug: ["slug"] };
     const wrapper = mount(<EqCriteriaSelection<string> {...p} />);
     wrapper.find("button").last().simulate("click");
-    expect(removeEqCriteriaValue).toHaveBeenCalledWith(
+    expect(removeEqCriteriaValueSpy).toHaveBeenCalledWith(
       p.group,
       { openfarm_slug: ["slug"] },
       "string_eq",
@@ -86,7 +95,7 @@ describe("<NumberCriteriaSelection />", () => {
     const wrapper = mount(<NumberCriteriaSelection {...p} />);
     expect(wrapper.text()).toContain(">");
     wrapper.find("button").last().simulate("click");
-    expect(clearCriteriaField).toHaveBeenCalledWith(
+    expect(clearCriteriaFieldSpy).toHaveBeenCalledWith(
       p.group,
       ["number_gt"],
       ["x"],
@@ -115,7 +124,7 @@ describe("<DaySelection />", () => {
     const p = fakeProps();
     const wrapper = shallow(<DaySelection {...p} />);
     wrapper.find(FBSelect).simulate("change", { label: "", value: "<" });
-    expect(editCriteria).toHaveBeenCalledWith(
+    expect(editCriteriaSpy).toHaveBeenCalledWith(
       p.group,
       { day: { days_ago: 0, op: "<" } },
     );
@@ -127,7 +136,7 @@ describe("<DaySelection />", () => {
     wrapper.find("input").last().simulate("change", {
       currentTarget: { value: "1" }
     });
-    expect(editCriteria).toHaveBeenCalledWith(
+    expect(editCriteriaSpy).toHaveBeenCalledWith(
       p.group,
       { day: { days_ago: 1, op: "<" } },
     );
@@ -138,7 +147,7 @@ describe("<DaySelection />", () => {
     p.group.body.criteria.day = { op: ">", days_ago: 1 };
     const wrapper = shallow(<DaySelection {...p} />);
     wrapper.find(Checkbox).simulate("change");
-    expect(editCriteria).toHaveBeenCalledWith(p.group, {
+    expect(editCriteriaSpy).toHaveBeenCalledWith(p.group, {
       day: { op: "<", days_ago: 0 }
     });
   });
@@ -157,7 +166,7 @@ describe("<NumberLtGtInput />", () => {
     wrapper.find("input").first().simulate("blur", {
       currentTarget: { value: "1" }
     });
-    expect(editGtLtCriteriaField).toHaveBeenCalledWith(
+    expect(editGtLtCriteriaFieldSpy).toHaveBeenCalledWith(
       p.group,
       "number_gt",
       "x",
@@ -170,7 +179,7 @@ describe("<NumberLtGtInput />", () => {
     wrapper.find("input").last().simulate("blur", {
       currentTarget: { value: "1" }
     });
-    expect(editGtLtCriteriaField).toHaveBeenCalledWith(
+    expect(editGtLtCriteriaFieldSpy).toHaveBeenCalledWith(
       p.group,
       "number_lt",
       "x",
@@ -195,7 +204,7 @@ describe("<LocationSelection />", () => {
     const p = fakeProps();
     const wrapper = mount(<LocationSelection {...p} />);
     wrapper.find("input").first().simulate("change");
-    expect(clearCriteriaField).toHaveBeenCalledWith(
+    expect(clearCriteriaFieldSpy).toHaveBeenCalledWith(
       p.group,
       ["number_lt", "number_gt"],
       ["x", "y"],

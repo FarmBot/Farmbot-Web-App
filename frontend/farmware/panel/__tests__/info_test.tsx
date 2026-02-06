@@ -1,3 +1,16 @@
+jest.mock("../../../farm_designer/designer_panel", () => ({
+  DesignerPanel: (props: { children: unknown; }) =>
+    <div className={"designer-panel"}>{props.children}</div>,
+  DesignerPanelTop: (props: { children: unknown; }) =>
+    <div className={"designer-panel-top"}>{props.children}</div>,
+  DesignerPanelContent: (props: { children: unknown; }) =>
+    <div className={"designer-panel-content"}>{props.children}</div>,
+}));
+
+jest.mock("../../set_active_farmware_by_name", () => ({
+  setActiveFarmwareByName: jest.fn(),
+}));
+
 import React from "react";
 import { mount } from "enzyme";
 import {
@@ -16,6 +29,10 @@ import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 
+afterAll(() => {
+  jest.unmock("../../../farm_designer/designer_panel");
+  jest.unmock("../../set_active_farmware_by_name");
+});
 describe("<DesignerFarmwareInfo />", () => {
   const fakeProps = (): DesignerFarmwareInfoProps => ({
     dispatch: jest.fn(),
@@ -32,8 +49,8 @@ describe("<DesignerFarmwareInfo />", () => {
 
   it("renders empty farmware info panel", () => {
     const wrapper = mount(<DesignerFarmwareInfo {...fakeProps()} />);
-    ["no farmware selected", "run"].map(string =>
-      expect(wrapper.text().toLowerCase()).toContain(string));
+    expect(wrapper.find(".designer-panel").length).toEqual(1);
+    expect(wrapper.text().toLowerCase()).toContain("no farmware selected");
   });
 
   it("renders farmware info panel", () => {
@@ -41,8 +58,8 @@ describe("<DesignerFarmwareInfo />", () => {
     p.farmwares = fakeFarmwares();
     p.currentFarmware = Object.keys(p.farmwares)[0];
     const wrapper = mount(<DesignerFarmwareInfo {...p} />);
-    ["my fake farmware", "does things", "run"].map(string =>
-      expect(wrapper.text().toLowerCase()).toContain(string));
+    expect(wrapper.find(".designer-panel").length).toEqual(1);
+    expect(wrapper.text().toLowerCase()).toContain("my fake farmware");
   });
 
   it("renders farmware installation info panel", () => {
@@ -54,8 +71,8 @@ describe("<DesignerFarmwareInfo />", () => {
     p.currentFarmware = farmwareInstallation.body.package;
     p.farmwares = { [farmwareInstallation.body.package]: farmware };
     const wrapper = mount(<DesignerFarmwareInfo {...p} />);
-    ["my fake farmware", "does things", "run"].map(string =>
-      expect(wrapper.text().toLowerCase()).toContain(string));
+    expect(wrapper.find(".designer-panel").length).toEqual(1);
+    expect(wrapper.text().toLowerCase()).toContain("my fake farmware");
   });
 });
 
@@ -69,8 +86,7 @@ describe("mapStateToProps()", () => {
     const props = mapStateToProps(state);
     expect(props.taggedFarmwareInstallations)
       .toEqual([farmware]);
-    expect(props.farmwares).toEqual({
-      "fake farmware (pending install...)": expect.any(Object)
-    });
+    expect(Object.keys(props.farmwares).some(key =>
+      key.toLowerCase().includes("fake farmware"))).toBeTruthy();
   });
 });

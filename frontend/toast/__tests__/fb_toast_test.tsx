@@ -1,11 +1,6 @@
 import { fakeState } from "../../__test_support__/fake_state";
+import { store } from "../../redux/store";
 const mockState = fakeState();
-jest.mock("../../redux/store", () => ({
-  store: {
-    dispatch: jest.fn(),
-    getState: () => mockState,
-  }
-}));
 
 import React from "react";
 import { mount } from "enzyme";
@@ -13,6 +8,24 @@ import { Toast, ToastContainer, Toasts } from "../fb_toast";
 import { ToastProps, ToastsProps } from "../interfaces";
 import { fakeToasts } from "../../__test_support__/fake_toasts";
 import { Path } from "../../internal_urls";
+
+let originalGetState: typeof store.getState;
+let originalDispatch: typeof store.dispatch;
+
+beforeEach(() => {
+  originalGetState = store.getState;
+  originalDispatch = store.dispatch;
+  (store as unknown as { getState: () => typeof mockState }).getState =
+    () => mockState;
+  (store as unknown as { dispatch: jest.Mock }).dispatch = jest.fn();
+});
+
+afterEach(() => {
+  (store as unknown as { getState: typeof store.getState }).getState =
+    originalGetState;
+  (store as unknown as { dispatch: typeof store.dispatch }).dispatch =
+    originalDispatch;
+});
 
 describe("<Toast />", () => {
   const fakeProps = (): ToastProps => ({

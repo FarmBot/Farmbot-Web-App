@@ -1,21 +1,24 @@
-let mockIsMobile = false;
-jest.mock("../../screen_size", () => ({
-  isMobile: () => mockIsMobile,
-}));
-
-jest.mock("../../hotkeys", () => ({
-  toggleHotkeyHelpOverlay: jest.fn(() => jest.fn()),
-}));
-
 import React from "react";
 import { mount } from "enzyme";
 import { HelpHeader } from "../header";
-import { toggleHotkeyHelpOverlay } from "../../hotkeys";
+import * as hotkeys from "../../hotkeys";
 import { Path } from "../../internal_urls";
 
+const setWindowWidth = (width: number) => {
+  Object.defineProperty(window, "innerWidth", { configurable: true, value: width });
+};
+
 describe("<HelpHeader />", () => {
+  let toggleHotkeyHelpOverlaySpy: jest.SpyInstance;
+
   beforeEach(() => {
-    mockIsMobile = false;
+    setWindowWidth(1000);
+    toggleHotkeyHelpOverlaySpy = jest.spyOn(hotkeys, "toggleHotkeyHelpOverlay")
+      .mockImplementation(jest.fn(() => jest.fn()));
+  });
+
+  afterEach(() => {
+    toggleHotkeyHelpOverlaySpy.mockRestore();
   });
 
   it.each<[string, string]>([
@@ -35,7 +38,7 @@ describe("<HelpHeader />", () => {
   });
 
   it("hides hotkeys menu item", () => {
-    mockIsMobile = true;
+    setWindowWidth(400);
     const wrapper = mount(<HelpHeader />);
     wrapper.find(".help-panel-header").simulate("click");
     expect(wrapper.text().toLowerCase()).not.toContain("hotkeys");
@@ -52,7 +55,12 @@ describe("<HelpHeader />", () => {
   it("selects panel", () => {
     const wrapper = mount(<HelpHeader />);
     wrapper.find(".help-panel-header").simulate("click");
-    wrapper.find("a").first().simulate("click");
+    const supportLink = wrapper.find("a")
+      .filterWhere(node =>
+        String(node.prop("title")).toLowerCase().includes("get help"))
+      .first();
+    expect(supportLink.exists()).toBeTruthy();
+    supportLink.simulate("click");
     expect(mockNavigate).toHaveBeenCalledWith(Path.support());
   });
 
@@ -61,6 +69,6 @@ describe("<HelpHeader />", () => {
     wrapper.find(".help-panel-header").simulate("click");
     wrapper.find("a").last().simulate("click");
     expect(mockNavigate).not.toHaveBeenCalled();
-    expect(toggleHotkeyHelpOverlay).toHaveBeenCalled();
+    expect(toggleHotkeyHelpOverlaySpy).toHaveBeenCalled();
   });
 });

@@ -13,7 +13,10 @@ import {
 
 describe("mapStateToProps()", () => {
   it("returns props: no regimen selected", () => {
-    const props = mapStateToProps(fakeState());
+    const state = fakeState();
+    state.resources = buildResourceIndex([]);
+    state.resources.consumers.regimens.currentRegimen = undefined;
+    const props = mapStateToProps(state);
     expect(props.current).toEqual(undefined);
     expect(props.calendar).toEqual([]);
   });

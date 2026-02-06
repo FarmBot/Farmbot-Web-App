@@ -1,17 +1,30 @@
-jest.mock("../../../api/crud", () => ({
-  destroy: jest.fn(),
-  save: jest.fn(),
-  init: jest.fn(),
-  edit: jest.fn(),
-}));
-
 import React from "react";
 import { mount } from "enzyme";
 import { WebcamPanel, preToggleCleanup } from "../index";
 import { fakeWebcamFeed } from "../../../__test_support__/fake_state/resources";
-import { destroy, save, init, edit } from "../../../api/crud";
+import * as crud from "../../../api/crud";
 import { SpecialStatus } from "farmbot";
 import { clickButton, allButtonText } from "../../../__test_support__/helpers";
+
+let initSpy: jest.SpyInstance;
+let editSpy: jest.SpyInstance;
+let saveSpy: jest.SpyInstance;
+let destroySpy: jest.SpyInstance;
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  initSpy = jest.spyOn(crud, "init").mockImplementation(jest.fn());
+  editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+  destroySpy = jest.spyOn(crud, "destroy").mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  initSpy.mockRestore();
+  editSpy.mockRestore();
+  saveSpy.mockRestore();
+  destroySpy.mockRestore();
+});
 
 describe("<WebcamPanel />", () => {
   const fakeProps = () => ({
@@ -40,21 +53,21 @@ describe("<WebcamPanel />", () => {
   it("calls init", () => {
     const wrapper = mount<WebcamPanel>(<WebcamPanel {...fakeProps()} />);
     wrapper.instance().init();
-    expect(init).toHaveBeenCalledWith("WebcamFeed", { name: "", url: "http://" });
+    expect(initSpy).toHaveBeenCalledWith("WebcamFeed", { name: "", url: "http://" });
   });
 
   it("calls edit", () => {
     const wrapper = mount<WebcamPanel>(<WebcamPanel {...fakeProps()} />);
     const feed = fakeWebcamFeed();
     wrapper.instance().edit(feed, {});
-    expect(edit).toHaveBeenCalledWith(feed, {});
+    expect(editSpy).toHaveBeenCalledWith(feed, {});
   });
 
   it("calls save", () => {
     const wrapper = mount<WebcamPanel>(<WebcamPanel {...fakeProps()} />);
     const feed = fakeWebcamFeed();
     wrapper.instance().save(feed);
-    expect(save).toHaveBeenCalledWith(feed.uuid);
+    expect(saveSpy).toHaveBeenCalledWith(feed.uuid);
   });
 
   it("doesn't call save", () => {
@@ -62,14 +75,14 @@ describe("<WebcamPanel />", () => {
     const feed = fakeWebcamFeed();
     feed.body.url = "http://";
     wrapper.instance().save(feed);
-    expect(save).not.toHaveBeenCalled();
+    expect(saveSpy).not.toHaveBeenCalled();
   });
 
   it("calls destroy", () => {
     const wrapper = mount<WebcamPanel>(<WebcamPanel {...fakeProps()} />);
     const feed = fakeWebcamFeed();
     wrapper.instance().destroy(feed);
-    expect(destroy).toHaveBeenCalledWith(feed.uuid);
+    expect(destroySpy).toHaveBeenCalledWith(feed.uuid);
   });
 });
 
@@ -81,7 +94,7 @@ describe("preToggleCleanup", () => {
     const { uuid } = feed;
     preToggleCleanup(dispatch)(feed);
     expect(dispatch).toHaveBeenCalled();
-    expect(destroy).toHaveBeenCalledWith(uuid, true);
+    expect(destroySpy).toHaveBeenCalledWith(uuid, true);
   });
 
   it("stashes unsaved to preexisting records", () => {
@@ -92,6 +105,6 @@ describe("preToggleCleanup", () => {
     const { uuid } = feed;
     preToggleCleanup(dispatch)(feed);
     expect(dispatch).toHaveBeenCalled();
-    expect(save).toHaveBeenCalledWith(uuid);
+    expect(saveSpy).toHaveBeenCalledWith(uuid);
   });
 });

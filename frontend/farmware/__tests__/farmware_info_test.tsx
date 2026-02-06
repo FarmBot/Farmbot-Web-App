@@ -18,6 +18,17 @@ import { error } from "../../toast/toast";
 import { retryFetchPackageName } from "../actions";
 import { Path } from "../../internal_urls";
 
+beforeEach(() => {
+  jest.clearAllMocks();
+  mockDevice.updateFarmware = jest.fn((_) => Promise.resolve({}));
+});
+
+afterAll(() => {
+  jest.unmock("../../device");
+  jest.unmock("../../api/crud");
+  jest.unmock("../actions");
+});
+
 describe("<FarmwareInfo />", () => {
   const fakeProps = (): FarmwareInfoProps => ({
     farmware: fakeFarmware(),

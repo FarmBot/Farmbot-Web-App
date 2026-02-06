@@ -6,7 +6,7 @@ jest.mock("../actions", () => ({
 }));
 
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { cleanup, render, screen, fireEvent } from "@testing-library/react";
 import { bot } from "../../__test_support__/fake_state/bot";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import {
@@ -26,6 +26,16 @@ import {
   completeSetup,
   destroyAllWizardStepResults,
 } from "../actions";
+
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+
+afterEach(() => cleanup());
+
+afterAll(() => {
+  jest.unmock("../actions");
+});
 
 describe("<SetupWizard />", () => {
   const fakeProps = (): SetupWizardProps => ({

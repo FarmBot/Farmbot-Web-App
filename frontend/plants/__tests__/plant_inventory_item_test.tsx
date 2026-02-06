@@ -1,9 +1,3 @@
-jest.mock("../../farm_designer/map/actions", () => ({
-  mapPointClickAction: jest.fn(() => jest.fn()),
-  setHoveredPlant: jest.fn(),
-  selectPoint: jest.fn(),
-}));
-
 import React from "react";
 import {
   daysOldText,
@@ -16,10 +10,30 @@ import {
 import {
   mapPointClickAction, setHoveredPlant, selectPoint,
 } from "../../farm_designer/map/actions";
+import * as mapActions from "../../farm_designer/map/actions";
 import moment from "moment";
 import { Path } from "../../internal_urls";
 
 describe("<PlantInventoryItem />", () => {
+  let mapPointClickActionSpy: jest.SpyInstance;
+  let setHoveredPlantSpy: jest.SpyInstance;
+  let selectPointSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    mapPointClickActionSpy = jest.spyOn(mapActions, "mapPointClickAction")
+      .mockImplementation(jest.fn(() => jest.fn()));
+    setHoveredPlantSpy = jest.spyOn(mapActions, "setHoveredPlant")
+      .mockImplementation(jest.fn());
+    selectPointSpy = jest.spyOn(mapActions, "selectPoint")
+      .mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    mapPointClickActionSpy.mockRestore();
+    setHoveredPlantSpy.mockRestore();
+    selectPointSpy.mockRestore();
+  });
+
   const fakeProps = (): PlantInventoryItemProps => ({
     plant: fakePlant(),
     dispatch: jest.fn(),

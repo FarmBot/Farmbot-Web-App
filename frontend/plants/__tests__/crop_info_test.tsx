@@ -1,15 +1,3 @@
-jest.mock("../../api/crud", () => ({ initSave: jest.fn(), init: jest.fn() }));
-
-jest.mock("../../farm_designer/map/actions", () => ({
-  unselectPlant: jest.fn(() => jest.fn()),
-  setDragIcon: jest.fn(),
-}));
-
-import { FAKE_CROPS } from "../../__test_support__/fake_crops";
-jest.mock("../../crops/constants", () => ({
-  CROPS: FAKE_CROPS,
-}));
-
 import React from "react";
 import {
   RawCropInfo as CropInfo, mapStateToProps,
@@ -17,9 +5,10 @@ import {
 import { mount, shallow } from "enzyme";
 import { CropInfoProps } from "../../farm_designer/interfaces";
 import { initSave } from "../../api/crud";
+import * as crud from "../../api/crud";
+import * as mapActions from "../../farm_designer/map/actions";
 import { fakeState } from "../../__test_support__/fake_state";
 import { Actions } from "../../constants";
-import { clickButton } from "../../__test_support__/helpers";
 import { Path } from "../../internal_urls";
 import {
   fakeCurve, fakePlant, fakeWebAppConfig,
@@ -30,12 +19,34 @@ import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
 import { CurveType } from "../../curves/templates";
 import { changeCurve, findCurve } from "../curve_info";
 import { BlurableInput, FBSelect } from "../../ui";
+import { mockDispatch } from "../../__test_support__/fake_dispatch";
+
+let initSaveSpy: jest.SpyInstance;
+let initSpy: jest.SpyInstance;
+let unselectPlantSpy: jest.SpyInstance;
+let setDragIconSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  initSaveSpy = jest.spyOn(crud, "initSave").mockImplementation(jest.fn());
+  initSpy = jest.spyOn(crud, "init").mockImplementation(jest.fn());
+  unselectPlantSpy = jest.spyOn(mapActions, "unselectPlant")
+    .mockImplementation(jest.fn(() => jest.fn()));
+  setDragIconSpy = jest.spyOn(mapActions, "setDragIcon")
+    .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  initSaveSpy.mockRestore();
+  initSpy.mockRestore();
+  unselectPlantSpy.mockRestore();
+  setDragIconSpy.mockRestore();
+});
 
 describe("<CropInfo />", () => {
   const fakeProps = (): CropInfoProps => {
     const designer = fakeDesignerState();
     return {
-      dispatch: jest.fn(),
+      dispatch: jest.fn(() => Promise.resolve()),
       designer,
       botPosition: { x: undefined, y: undefined, z: undefined },
       xySwap: false,
@@ -158,7 +169,11 @@ describe("<CropInfo />", () => {
     const p = fakeProps();
     p.botPosition = { x: 100, y: 200, z: undefined };
     const wrapper = mount(<CropInfo {...p} />);
-    clickButton(wrapper, 1, "location (100, 200)", { partial_match: true });
+    wrapper.find("button")
+      .filterWhere(button =>
+        button.text().toLowerCase().includes("location (100, 200)"))
+      .first()
+      .simulate("click");
     expect(initSave).toHaveBeenCalledWith("Point",
       expect.objectContaining({
         name: "Mint",
@@ -172,7 +187,11 @@ describe("<CropInfo />", () => {
     const p = fakeProps();
     p.botPosition = { x: 100, y: undefined, z: undefined };
     const wrapper = mount(<CropInfo {...p} />);
-    clickButton(wrapper, 1, "location (unknown)", { partial_match: true });
+    wrapper.find("button")
+      .filterWhere(button =>
+        button.text().toLowerCase().includes("location (unknown)"))
+      .first()
+      .simulate("click");
     expect(initSave).not.toHaveBeenCalled();
   });
 
@@ -180,7 +199,7 @@ describe("<CropInfo />", () => {
     location.pathname = Path.mock(Path.cropSearch("mint"));
     const p = fakeProps();
     const wrapper = mount(<CropInfo {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("1000mm");
+    expect(wrapper.text().toLowerCase()).toContain("750mm");
   });
 
   it("renders missing values", () => {
@@ -201,17 +220,17 @@ describe("<CropInfo />", () => {
   it("navigates to companion plant", () => {
     location.pathname = Path.mock(Path.cropSearch("mint"));
     const p = fakeProps();
-    p.dispatch = jest.fn(x => {
-      typeof x === "function" && x();
-      return Promise.resolve();
-    });
+    p.dispatch = mockDispatch(jest.fn(), () => fakeState());
     const wrapper = mount(<CropInfo {...p} />);
     jest.clearAllMocks();
-    expect(wrapper.text().toLowerCase()).toContain("strawberry");
-    const companion = wrapper.find("a").at(0);
-    expect(companion.text()).toEqual("Strawberry");
+    expect(wrapper.text().toLowerCase()).toContain("green zebra tomato");
+    const companion = wrapper.find("a")
+      .filterWhere(link => link.text() === "Green Zebra Tomato")
+      .first();
+    expect(companion.text()).toEqual("Green Zebra Tomato");
     companion.simulate("click");
-    expect(mockNavigate).toHaveBeenCalledWith(Path.cropSearch("strawberry"));
+    expect(mockNavigate).toHaveBeenCalledWith(
+      Path.cropSearch("green-zebra-tomato"));
   });
 
   it("drags companion plant", () => {
@@ -220,9 +239,11 @@ describe("<CropInfo />", () => {
     const p = fakeProps();
     const wrapper = mount(<CropInfo {...p} />);
     jest.clearAllMocks();
-    expect(wrapper.text().toLowerCase()).toContain("strawberry");
-    const companion = wrapper.find("a").at(0);
-    expect(companion.text()).toEqual("Strawberry");
+    expect(wrapper.text().toLowerCase()).toContain("green zebra tomato");
+    const companion = wrapper.find("a")
+      .filterWhere(link => link.text() === "Green Zebra Tomato")
+      .first();
+    expect(companion.text()).toEqual("Green Zebra Tomato");
     companion.simulate("dragStart");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_COMPANION_INDEX,

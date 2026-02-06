@@ -4,9 +4,12 @@ jest.mock("../i18n", () => {
 
 import { detectLanguage } from "../i18n";
 import { revertToEnglish } from "../revert_to_english";
+afterAll(() => {
+  jest.unmock("../i18n");
+});
 describe("revertToEnglish", () => {
   it("calls the appropriate handler with the appropriate config", () => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
     revertToEnglish();
     expect(detectLanguage).toHaveBeenCalledWith("en");
     // expect(init).toHaveBeenCalled(); // WHY DOES THIS NOT WORK?

@@ -1,19 +1,27 @@
-jest.mock("../../../config_storage/actions", () => ({
-  setWebAppConfigValue: jest.fn()
-}));
-
 import * as ZoomUtils from "../zoom";
-import { setWebAppConfigValue } from "../../../config_storage/actions";
+import * as configStorageActions from "../../../config_storage/actions";
 import { NumericSetting } from "../../../session_keys";
 
 describe("zoom utilities", () => {
+  let setWebAppConfigValueSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    setWebAppConfigValueSpy =
+      jest.spyOn(configStorageActions, "setWebAppConfigValue")
+        .mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    setWebAppConfigValueSpy.mockRestore();
+  });
+
   it("getZoomLevelIndex()", () => {
     expect(ZoomUtils.getZoomLevelIndex(() => undefined)).toEqual(9);
   });
 
   it("saveZoomLevelIndex()", () => {
     ZoomUtils.saveZoomLevelIndex(jest.fn(), 9);
-    expect(setWebAppConfigValue)
+    expect(setWebAppConfigValueSpy)
       .toHaveBeenCalledWith(NumericSetting.zoom_level, 1);
   });
 

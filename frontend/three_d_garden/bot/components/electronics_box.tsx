@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { Cylinder, useGLTF } from "@react-three/drei";
 import { threeSpace } from "../../helpers";
 import { Config } from "../../config";
-import { GLTF } from "three-stdlib";
+import type { GLTF } from "three-stdlib";
 import { ASSETS, ElectronicsBoxMaterial, LIB_DIR, PartName } from "../../constants";
 import { Group, Mesh } from "../../components";
 import { IColor } from "../../../settings/pin_bindings/model";

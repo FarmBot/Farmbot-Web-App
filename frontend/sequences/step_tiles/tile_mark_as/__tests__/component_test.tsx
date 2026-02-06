@@ -25,7 +25,16 @@ import {
 } from "../../../../__test_support__/fake_sequence_step_data";
 
 describe("<MarkAs/>", () => {
-  beforeEach(() => { mockShouldDisplay = false; });
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockEditStep.mockClear();
+    mockShouldDisplay = false;
+  });
+
+  afterAll(() => {
+    jest.unmock("../../../../api/crud");
+    jest.unmock("../../../../devices/should_display");
+  });
 
   const plant = fakePlant();
   plant.body.id = 1;

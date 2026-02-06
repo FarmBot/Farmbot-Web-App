@@ -5,7 +5,6 @@ import {
   PinBinding,
 } from "farmbot/dist/resources/api_resources";
 import { PinBindingListItems } from "./interfaces";
-import { stockPinBindings } from "./list_and_label_support";
 import { initSave } from "../../api/crud";
 import { t } from "../../i18next_wrapper";
 import { FirmwareHardware } from "farmbot";
@@ -41,13 +40,26 @@ export interface StockPinBindingsButtonProps {
   firmwareHardware: FirmwareHardware | undefined;
 }
 
+const stockPinBindingDefaults = [
+  {
+    pin_num: 16,
+    special_action: PinBindingSpecialAction.emergency_lock,
+    binding_type: PinBindingType.special,
+  },
+  {
+    pin_num: 22,
+    special_action: PinBindingSpecialAction.emergency_unlock,
+    binding_type: PinBindingType.special,
+  },
+];
+
 /** Add default pin bindings. */
 export const StockPinBindingsButton = (props: StockPinBindingsButtonProps) =>
   <button
     className="fb-button green stock-pin-bindings-button"
     hidden={!hasButtons(props.firmwareHardware)}
     title={t("add stock pin bindings")}
-    onClick={() => stockPinBindings.map(binding =>
+    onClick={() => stockPinBindingDefaults.map(binding =>
       props.dispatch(initSave("PinBinding", pinBindingBody(binding))))}>
     <i className="fa fa-plus" />
     {t("Stock Bindings")}

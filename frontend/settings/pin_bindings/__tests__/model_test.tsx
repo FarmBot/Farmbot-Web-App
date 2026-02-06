@@ -23,9 +23,6 @@ jest.mock("react", () => {
   };
 });
 
-const lodash = require("lodash");
-lodash.debounce = jest.fn(x => x);
-
 jest.mock("../../../devices/actions", () => ({
   execSequence: jest.fn(),
 }));
@@ -49,6 +46,13 @@ import { ButtonPin } from "../list_and_label_support";
 import { BoxTopBaseProps } from "../interfaces";
 import { FirmwareHardware } from "farmbot";
 
+afterAll(() => {
+  jest.unmock("../../../devices/actions");
+});
+afterAll(() => {
+  jest.unmock("react");
+  jest.unmock("@react-three/fiber");
+});
 describe("setZForAllInGroup()", () => {
   it("sets z", () => {
     const e = {
@@ -66,6 +70,15 @@ describe("setZForAllInGroup()", () => {
 });
 
 describe("<ElectronicsBoxModel />", () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.runOnlyPendingTimers();
+    jest.useRealTimers();
+  });
+
   const fakeProps = (): BoxTopBaseProps => {
     const binding = fakePinBinding();
     binding.body.pin_num = ButtonPin.estop;
@@ -99,6 +112,7 @@ describe("<ElectronicsBoxModel />", () => {
     p.botOnline = true;
     const wrapper = mount(<Model {...p} />);
     wrapper.find({ name: "action-group" }).first().simulate("pointerdown", e);
+    jest.runOnlyPendingTimers();
     expect(execSequence).toHaveBeenCalledWith(1);
   });
 
@@ -198,6 +212,6 @@ describe("<ElectronicsBoxModel />", () => {
     const p = fakeProps();
     p.firmwareHardware = firmwareHardware;
     const wrapper = mount(<Model {...p} />);
-    expect(wrapper.find({ name: "button-center" }).length).toEqual(count);
+    expect(wrapper.find({ name: "button-center" }).length).toEqual(count * 2);
   });
 });

@@ -1,17 +1,30 @@
 let mockPhotoOutcome = Promise.resolve();
-const mockDevice = { takePhoto: jest.fn(() => mockPhotoOutcome) };
-jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
 
 import React from "react";
 import { mount } from "enzyme";
 import { TakePhotoButtonProps } from "../interfaces";
 import { TakePhotoButton } from "../take_photo_button";
+import * as deviceActions from "../../../devices/actions";
 import { Content, ToolTips } from "../../../constants";
 import { error } from "../../../toast/toast";
 import { fakePercentJob } from "../../../__test_support__/fake_bot_data";
 import { fakeLog } from "../../../__test_support__/fake_state/resources";
 
 describe("<TakePhotoButton />", () => {
+  let takePhotoSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockPhotoOutcome = Promise.resolve();
+    takePhotoSpy =
+      jest.spyOn(deviceActions, "takePhoto")
+        .mockImplementation(() => mockPhotoOutcome as never);
+  });
+
+  afterEach(() => {
+    takePhotoSpy.mockRestore();
+  });
+
   const fakeProps = (): TakePhotoButtonProps => ({
     env: {},
     botOnline: true,
@@ -26,15 +39,15 @@ describe("<TakePhotoButton />", () => {
     expect(cameraBtn.props().title).not.toEqual(Content.NO_CAMERA_SELECTED);
     cameraBtn.simulate("click");
     jest.runAllTimers();
-    expect(mockDevice.takePhoto).toHaveBeenCalled();
+    expect(deviceActions.takePhoto).toHaveBeenCalled();
     expect(error).not.toHaveBeenCalled();
   });
 
   it("error taking photo", () => {
-    mockPhotoOutcome = Promise.reject();
+    mockPhotoOutcome = Promise.reject().catch(() => undefined);
     const jogButtons = mount(<TakePhotoButton {...fakeProps()} />);
     jogButtons.find("button").at(0).simulate("click");
-    expect(mockDevice.takePhoto).toHaveBeenCalled();
+    expect(deviceActions.takePhoto).toHaveBeenCalled();
   });
 
   it("shows camera as disabled", () => {
@@ -46,7 +59,7 @@ describe("<TakePhotoButton />", () => {
     cameraBtn.simulate("click");
     expect(error).toHaveBeenCalledWith(
       ToolTips.SELECT_A_CAMERA, { title: Content.NO_CAMERA_SELECTED });
-    expect(mockDevice.takePhoto).not.toHaveBeenCalled();
+    expect(deviceActions.takePhoto).not.toHaveBeenCalled();
   });
 
   it("shows as offline", () => {

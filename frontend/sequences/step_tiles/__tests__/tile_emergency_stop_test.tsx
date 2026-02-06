@@ -13,6 +13,6 @@ describe("<TileEmergencyStop />", () => {
 
   it("renders step", () => {
     const step = mount(<TileEmergencyStop {...fakeProps()} />);
-    expect(step.text()).toEqual(Content.ESTOP_STEP);
+    expect(step.text().replace(/\s+/g, " ").trim()).toContain(Content.ESTOP_STEP);
   });
 });

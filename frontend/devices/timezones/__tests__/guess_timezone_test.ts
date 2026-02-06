@@ -2,13 +2,23 @@ jest.mock("../../../api/crud", () => ({
   edit: jest.fn(),
   save: jest.fn(),
 }));
+jest.mock("../../must_be_online", () => ({
+  forceOnline: jest.fn(() => false),
+}));
 
 import { inferTimezone, maybeSetTimezone } from "../guess_timezone";
 import { get, set } from "lodash";
 import { fakeDevice } from "../../../__test_support__/resource_index_builder";
 import { edit, save } from "../../../api/crud";
 import { Actions } from "../../../constants";
+import { forceOnline } from "../../must_be_online";
 
+afterAll(() => {
+  jest.unmock("../../../api/crud");
+});
+afterAll(() => {
+  jest.unmock("../../must_be_online");
+});
 describe("inferTimezone", () => {
   it("returns the timezone provided, if possible", () => {
     const tz = "America/Chicago";
@@ -24,6 +34,12 @@ describe("inferTimezone", () => {
 });
 
 describe("maybeSetTimezone()", () => {
+  beforeEach(() => {
+    localStorage.removeItem("myBotIs");
+    jest.clearAllMocks();
+    (forceOnline as jest.Mock).mockReturnValue(false);
+  });
+
   afterEach(() => {
     localStorage.removeItem("myBotIs");
   });
@@ -40,6 +56,7 @@ describe("maybeSetTimezone()", () => {
 
   it("doesn't set timezone, but sets 3D time", () => {
     localStorage.setItem("myBotIs", "online");
+    (forceOnline as jest.Mock).mockReturnValueOnce(true);
     const device = fakeDevice();
     device.body.timezone = "fake timezone";
     const dispatch = jest.fn();
@@ -63,6 +80,7 @@ describe("maybeSetTimezone()", () => {
 
   it("sets timezone and lng", () => {
     localStorage.setItem("myBotIs", "online");
+    (forceOnline as jest.Mock).mockReturnValueOnce(true).mockReturnValueOnce(true);
     const spy = jest.spyOn(Date.prototype, "getTimezoneOffset")
       .mockReturnValue(360);
     const device = fakeDevice();

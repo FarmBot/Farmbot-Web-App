@@ -28,6 +28,12 @@ import {
 import { Path } from "../../internal_urls";
 import { times } from "lodash";
 
+afterAll(() => {
+  jest.unmock("../../api/crud");
+});
+afterAll(() => {
+  jest.unmock("../actions");
+});
 describe("<EditGarden />", () => {
   const fakeProps = (): EditGardenProps => ({
     savedGarden: undefined,

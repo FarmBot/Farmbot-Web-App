@@ -9,6 +9,9 @@ import { bot } from "../../../__test_support__/fake_state/bot";
 import { BooleanMCUInputGroupProps } from "../interfaces";
 import { DeviceSetting } from "../../../constants";
 
+afterAll(() => {
+  jest.unmock("../../../devices/actions");
+});
 describe("BooleanMCUInputGroup", () => {
   const fakeProps = (): BooleanMCUInputGroupProps => ({
     sourceFwConfig: x => ({ value: bot.hardware.mcu_params[x], consistent: true }),

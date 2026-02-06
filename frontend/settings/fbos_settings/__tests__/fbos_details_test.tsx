@@ -1,5 +1,3 @@
-jest.mock("../../../devices/actions", () => ({ updateConfig: jest.fn() }));
-
 import React from "react";
 import {
   FbosDetails, colorFromTemp, colorFromThrottle, ThrottleType,
@@ -18,8 +16,19 @@ import {
   buildResourceIndex, fakeDevice,
 } from "../../../__test_support__/resource_index_builder";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
-import { updateConfig } from "../../../devices/actions";
+import * as deviceActions from "../../../devices/actions";
 import { FirmwareHardware } from "farmbot";
+
+let updateConfigSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  updateConfigSpy = jest.spyOn(deviceActions, "updateConfig")
+    .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  updateConfigSpy.mockRestore();
+});
 
 describe("<FbosDetails />", () => {
   const fakeConfig = fakeFbosConfig();
@@ -123,7 +132,8 @@ describe("<FbosDetails />", () => {
     p.bot.hardware.informational_settings.commit = "abcdefgh";
     p.bot.hardware.informational_settings.firmware_commit = "abcdefgh";
     const wrapper = mount(<FbosDetails {...p} />);
-    expect(wrapper.find("a").length).toEqual(2);
+    expect(wrapper.find("a").length).toEqual(1);
+    expect(wrapper.find("a").first().text()).toEqual("abcdefgh");
   });
 
   it("doesn't display link without commit", () => {
@@ -199,7 +209,7 @@ describe("<FbosDetails />", () => {
     const p = fakeProps();
     p.bot.hardware.informational_settings.throttled = "0x0";
     const wrapper = mount(<FbosDetails {...p} />);
-    expect(wrapper.html()).toContain("voltage-saucer");
+    expect(wrapper.find(".voltage-display .saucer").length).toBeGreaterThan(0);
   });
 
   it("displays cpu usage", () => {
@@ -246,10 +256,12 @@ describe("<OSReleaseChannelSelection />", () => {
     wrapper.find("FBSelect").simulate("change", { label: "", value: "" });
     expect(window.confirm).toHaveBeenCalledWith(
       expect.stringContaining("you sure?"));
-    expect(updateConfig).not.toHaveBeenCalled();
+    expect(deviceActions.updateConfig).not.toHaveBeenCalled();
     window.confirm = () => true;
     wrapper.find("FBSelect").simulate("change", { label: "", value: "beta" });
-    expect(updateConfig).toHaveBeenCalledWith({ update_channel: "beta" });
+    expect(deviceActions.updateConfig).toHaveBeenCalledWith({
+      update_channel: "beta"
+    });
   });
 
   it("changes to stable channel", () => {
@@ -258,7 +270,9 @@ describe("<OSReleaseChannelSelection />", () => {
     const wrapper = shallow(<OSReleaseChannelSelection {...p} />);
     window.confirm = () => false;
     wrapper.find("FBSelect").simulate("change", { label: "", value: "stable" });
-    expect(updateConfig).toHaveBeenCalledWith({ update_channel: "stable" });
+    expect(deviceActions.updateConfig).toHaveBeenCalledWith({
+      update_channel: "stable"
+    });
   });
 
   it("shows options", () => {

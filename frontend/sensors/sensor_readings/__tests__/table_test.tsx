@@ -12,6 +12,9 @@ import {
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { destroy } from "../../../api/crud";
 
+afterAll(() => {
+  jest.unmock("../../../api/crud");
+});
 describe("<SensorReadingsTable />", () => {
   const fakeProps = (sr = fakeSensorReading()): SensorReadingsTableProps => ({
     readingsForPeriod: () => [sr],

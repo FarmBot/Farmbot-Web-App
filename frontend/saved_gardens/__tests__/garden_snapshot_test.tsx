@@ -15,6 +15,10 @@ import { clickButton } from "../../__test_support__/helpers";
 import { snapshotGarden, newSavedGarden, copySavedGarden } from "../actions";
 import { fakeSavedGarden } from "../../__test_support__/fake_state/resources";
 
+afterAll(() => {
+  jest.unmock("axios");
+  jest.unmock("../actions");
+});
 describe("<GardenSnapshot />", () => {
   const fakeProps = (): GardenSnapshotProps => ({
     currentSavedGarden: undefined,

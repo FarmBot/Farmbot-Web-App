@@ -1,13 +1,14 @@
-let mockIsMobile = false;
-jest.mock("../../../screen_size", () => ({
-  isMobile: () => mockIsMobile,
-}));
-
 import React from "react";
 import { render } from "enzyme";
 import { ConnectivityRow, StatusRowProps } from "../connectivity_row";
 
+const setWindowWidth = (width: number) => {
+  Object.defineProperty(window, "innerWidth", { configurable: true, value: width });
+};
+
 describe("<ConnectivityRow />", () => {
+  beforeEach(() => setWindowWidth(1000));
+
   const fakeProps = (): StatusRowProps => ({
     from: "from",
     to: "to",
@@ -41,7 +42,7 @@ describe("<ConnectivityRow />", () => {
   });
 
   it("renders small row", () => {
-    mockIsMobile = true;
+    setWindowWidth(400);
     const p = fakeProps();
     p.from = "browser";
     const wrapper = render(<ConnectivityRow {...p} />);

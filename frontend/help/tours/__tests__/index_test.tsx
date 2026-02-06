@@ -8,6 +8,15 @@ import { Actions } from "../../../constants";
 import { TourStepContainerProps } from "../interfaces";
 import { mountWithContext } from "../../../__test_support__/mount_with_context";
 
+const originalQuerySelector = document.querySelector.bind(document);
+
+afterEach(() => {
+  Object.defineProperty(document, "querySelector", {
+    value: originalQuerySelector,
+    configurable: true,
+  });
+});
+
 describe("<TourStepContainer />", () => {
   const fakeProps = (): TourStepContainerProps => ({
     dispatch: jest.fn(),
@@ -127,7 +136,7 @@ describe("<TourStepContainer />", () => {
     p.helpState.currentTourStep = "intro";
     mountWithContext(<TourStepContainer {...p} />);
     expect(mockNavigate).toHaveBeenCalledWith(
-      "?tour=gettingStarted&tourStep=intro");
+      expect.stringContaining("?tour=gettingStarted&tourStep=intro"));
   });
 
   it("dispatches", () => {

@@ -20,6 +20,9 @@ import {
 } from "../components";
 import { ThreeElements } from "@react-three/fiber";
 
+afterAll(() => {
+  jest.unmock("../components");
+});
 describe("<Group />", () => {
   const fakeProps = (): ThreeElements["group"] => ({
     visible: true,

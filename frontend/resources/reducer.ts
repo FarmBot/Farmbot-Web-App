@@ -14,10 +14,10 @@ import {
 import { TaggedResource, SpecialStatus } from "farmbot";
 import { Actions } from "../constants";
 import { EditResourceParams } from "../api/interfaces";
-import { defensiveClone, equals } from "../util";
+import { defensiveClone, equals } from "../util/util";
 import { isUndefined, merge } from "lodash";
 import { SyncBodyContents } from "../sync/actions";
-import { GeneralizedError } from "./actions";
+import type { GeneralizedError } from "./actions";
 import { initialState as helpState } from "../help/reducer";
 import { initialState as designerState } from "../farm_designer/reducer";
 import { farmwareState } from "../farmware/reducer";

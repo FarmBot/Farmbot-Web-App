@@ -37,7 +37,7 @@ describe("varTypeFromLabel()", () => {
 describe("newVariableDataValue()", () => {
   it("returns location data value", () => {
     expect(newVariableDataValue(VariableType.Location))
-      .toEqual({ kind: "nothing", args: {} });
+      .toMatchObject({ kind: "nothing", args: {} });
   });
 
   it("returns number data value", () => {

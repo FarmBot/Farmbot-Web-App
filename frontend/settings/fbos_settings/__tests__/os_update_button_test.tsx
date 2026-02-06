@@ -1,14 +1,4 @@
-jest.mock("../../../devices/actions", () => ({
-  checkControllerUpdates: jest.fn(),
-}));
-
-jest.mock("../../toggle_section", () => ({
-  bulkToggleControlPanel: jest.fn(),
-  toggleControlPanel: jest.fn(),
-}));
-
 let mockResponse = Promise.resolve({ data: { version: "1.1.1" } });
-jest.mock("axios", () => ({ get: jest.fn(() => mockResponse) }));
 
 import React from "react";
 import axios from "axios";
@@ -20,12 +10,33 @@ import { Actions, Content } from "../../../constants";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import { API } from "../../../api";
 import { cloneDeep } from "lodash";
-import { checkControllerUpdates } from "../../../devices/actions";
-import { toggleControlPanel } from "../../toggle_section";
 import {
   fakeBytesJob, fakePercentJob,
 } from "../../../__test_support__/fake_bot_data";
 import { Path } from "../../../internal_urls";
+import * as deviceActions from "../../../devices/actions";
+import * as toggleSection from "../../toggle_section";
+
+let checkControllerUpdatesSpy: jest.SpyInstance;
+let toggleControlPanelSpy: jest.SpyInstance;
+const originalConsoleError = console.error;
+const originalAxiosGet = axios.get;
+
+beforeEach(() => {
+  mockResponse = Promise.resolve({ data: { version: "1.1.1" } });
+  axios.get = jest.fn(() => mockResponse as never) as typeof axios.get;
+  checkControllerUpdatesSpy = jest.spyOn(deviceActions, "checkControllerUpdates")
+    .mockImplementation(jest.fn());
+  toggleControlPanelSpy = jest.spyOn(toggleSection, "toggleControlPanel")
+    .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  axios.get = originalAxiosGet;
+  checkControllerUpdatesSpy.mockRestore();
+  toggleControlPanelSpy.mockRestore();
+  console.error = originalConsoleError;
+});
 
 describe("<OsUpdateButton />", () => {
   const fakeProps = (): OsUpdateButtonProps => ({
@@ -84,13 +95,6 @@ describe("<OsUpdateButton />", () => {
     title: Content.TOO_OLD_TO_UPDATE,
     color: "yellow",
     disabled: false,
-  });
-
-  const updating = (progress: string): Results => ({
-    text: progress,
-    title: undefined,
-    color: "green",
-    disabled: true,
   });
 
   const testButtonState = (testProps: TestProps, expected: Results) => {
@@ -184,7 +188,7 @@ describe("<OsUpdateButton />", () => {
     const buttons = mount(<OsUpdateButton {...fakeProps()} />);
     const osUpdateButton = buttons.find("button").first();
     osUpdateButton.simulate("click");
-    expect(checkControllerUpdates).toHaveBeenCalledTimes(1);
+    expect(deviceActions.checkControllerUpdates).toHaveBeenCalledTimes(1);
   });
 
   it("calls onTooOld", () => {
@@ -193,8 +197,8 @@ describe("<OsUpdateButton />", () => {
     const buttons = mount(<OsUpdateButton {...p} />);
     const osUpdateButton = buttons.find("button").first();
     osUpdateButton.simulate("click");
-    expect(checkControllerUpdates).not.toHaveBeenCalled();
-    expect(toggleControlPanel).toHaveBeenCalledWith("power_and_reset");
+    expect(deviceActions.checkControllerUpdates).not.toHaveBeenCalled();
+    expect(toggleSection.toggleControlPanel).toHaveBeenCalledWith("power_and_reset");
     expect(mockNavigate).toHaveBeenCalledWith(Path.settings("hard_reset"));
   });
 
@@ -214,51 +218,82 @@ describe("<OsUpdateButton />", () => {
     ["29kB", 30000],
     ["3MB", 3e6],
   ])("shows bytes update progress: %s", (expected, progress) => {
-    bot.hardware.jobs = {
+    const p = fakeProps();
+    p.bot.hardware.jobs = {
       "FBOS_OTA": fakeBytesJob({ bytes: progress }),
     };
-    const buttons = mount(<OsUpdateButton {...fakeProps()} />);
+    const buttons = mount(<OsUpdateButton {...p} />);
     const osUpdateButton = buttons.find("button").first();
     expect(osUpdateButton.text()).toBe(expected);
   });
 
   it("shows percent update progress: 10%", () => {
-    bot.hardware.jobs = {
+    const p = fakeProps();
+    p.bot.hardware.jobs = {
       "FBOS_OTA": fakePercentJob({ percent: 10 }),
     };
-    const testProps = defaultTestProps();
-    testProps.installedVersion = "12.0.0";
-    testProps.availableVersion = "13.0.0";
-    const expectedResults = updating("10%");
-    expectedResults.title = "UPDATE TO 13.0.0";
-    testButtonState(testProps, expectedResults);
+    p.bot.hardware.informational_settings.controller_version = "12.0.0";
+    p.bot.osUpdateVersion = "13.0.0";
+    const buttons = mount(<OsUpdateButton {...p} />);
+    const osUpdateButton = buttons.find("button").first();
+    const expectedButton = updateNeeded("13.0.0");
+    expect(osUpdateButton.text()).toBe("10%");
+    expect(osUpdateButton.props().title).toBe(expectedButton.title);
+    expect(osUpdateButton.hasClass(expectedButton.color)).toBe(true);
+    expect(osUpdateButton.props().disabled).toBe(true);
   });
 
   it("update success", () => {
-    bot.hardware.jobs = {
+    const p = fakeProps();
+    p.bot.hardware.jobs = {
       "FBOS_OTA": fakePercentJob({ status: "complete", percent: 100 }),
     };
-    testButtonState(defaultTestProps(), upToDate(undefined));
+    const testProps = defaultTestProps();
+    const expected = upToDate(undefined);
+    const localFakeProps = fakeProps();
+    localFakeProps.bot.hardware.jobs = p.bot.hardware.jobs;
+    localFakeProps.bot.hardware.informational_settings.controller_version =
+      testProps.installedVersion;
+    localFakeProps.bot.osUpdateVersion = testProps.availableVersion;
+    const buttons = mount(<OsUpdateButton {...localFakeProps} />);
+    const osUpdateButton = buttons.find("button").first();
+    expect(osUpdateButton.props().title).toBe(expected.title);
+    expect(osUpdateButton.hasClass(expected.color)).toBe(true);
+    expect(osUpdateButton.props().disabled).toBe(expected.disabled);
+    expect(osUpdateButton.text()).toBe(expected.text);
   });
 
   it("update failed", () => {
-    bot.hardware.jobs = {
+    const p = fakeProps();
+    p.bot.hardware.jobs = {
       "FBOS_OTA": fakePercentJob({ status: "error", percent: 10 }),
     };
     const testProps = defaultTestProps();
     testProps.installedVersion = "12.0.0";
     testProps.availableVersion = "13.0.0";
-    testButtonState(testProps, updateNeeded("13.0.0"));
+    const expected = updateNeeded("13.0.0");
+    const localFakeProps = fakeProps();
+    localFakeProps.bot.hardware.jobs = p.bot.hardware.jobs;
+    localFakeProps.bot.hardware.informational_settings.controller_version =
+      testProps.installedVersion;
+    localFakeProps.bot.osUpdateVersion = testProps.availableVersion;
+    const buttons = mount(<OsUpdateButton {...localFakeProps} />);
+    const osUpdateButton = buttons.find("button").first();
+    expect(osUpdateButton.props().title).toBe(expected.title);
+    expect(osUpdateButton.hasClass(expected.color)).toBe(true);
+    expect(osUpdateButton.props().disabled).toBe(expected.disabled);
+    expect(osUpdateButton.text()).toBe(expected.text);
   });
 
   it("is disabled", () => {
-    bot.hardware.jobs = {
+    const p = fakeProps();
+    p.bot.hardware.jobs = {
       "FBOS_OTA": fakePercentJob({ percent: 10 }),
     };
-    const buttons = mount(<OsUpdateButton {...fakeProps()} />);
+    const buttons = mount(<OsUpdateButton {...p} />);
     const osUpdateButton = buttons.find("button").first();
     osUpdateButton.simulate("click");
-    expect(checkControllerUpdates).not.toHaveBeenCalled();
+    expect(deviceActions.checkControllerUpdates).not.toHaveBeenCalled();
   });
 });
 

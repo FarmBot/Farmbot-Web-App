@@ -23,7 +23,7 @@ import { defensiveClone, unpackUUID } from "../util";
 import { EditResourceParams } from "./interfaces";
 import { ResourceIndex } from "../resources/interfaces";
 import { Actions } from "../constants";
-import { maybeStartTracking } from "./maybe_start_tracking";
+import * as maybeStartTrackingModule from "./maybe_start_tracking";
 import { newTaggedResource } from "../sync/actions";
 import { arrayUnwrap } from "../resources/util";
 import { findByUuid } from "../resources/reducer_support";
@@ -111,7 +111,7 @@ export const initSaveGetId =
       resource.specialStatus = SpecialStatus.DIRTY;
       dispatch({ type: Actions.INIT_RESOURCE, payload: resource });
       dispatch({ type: Actions.SAVE_RESOURCE_START, payload: resource });
-      maybeStartTracking(resource.uuid);
+      maybeStartTrackingModule.maybeStartTracking(resource.uuid);
       return axios.post<typeof resource.body>(
         urlFor(resource.kind), resource.body)
         .then(resp => {
@@ -232,7 +232,7 @@ export function destroy(uuid: string, force = false) {
     return maybeProceed(() => {
       const statusBeforeError = resource.specialStatus;
       if (resource.body.id) {
-        maybeStartTracking(uuid);
+        maybeStartTrackingModule.maybeStartTracking(uuid);
         return axios
           .delete(urlFor(resource.kind) + resource.body.id)
           .then(function () {
@@ -265,7 +265,7 @@ export function saveAll(input: TaggedResource[],
       .filter(x => x.specialStatus === SpecialStatus.DIRTY)
       .map(tts => tts.uuid)
       .map(uuid => {
-        maybeStartTracking(uuid);
+        maybeStartTrackingModule.maybeStartTracking(uuid);
         return dispatch(save(uuid));
       });
     return Promise.all(p).then(callback, errBack);
@@ -329,7 +329,7 @@ export function updateViaAjax(payl: AjaxUpdatePayload) {
   } else {
     verb = "post";
   }
-  maybeStartTracking(uuid);
+  maybeStartTrackingModule.maybeStartTracking(uuid);
   return axios[verb]<typeof resource.body>(url, body)
     .then(function (resp) {
       const r1 = defensiveClone(resource);

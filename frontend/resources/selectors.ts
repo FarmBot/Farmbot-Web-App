@@ -22,7 +22,7 @@ import {
 import { betterCompact, bail } from "../util";
 import { selectAllPoints, selectAllActivePoints } from "./selectors_by_kind";
 import { assertUuid } from "./util";
-import { joinKindAndId } from "./reducer_support";
+import { joinKindAndId } from "./join_kind_and_id";
 import { getWebAppConfig } from "./getters";
 import { TimeSettings } from "../interfaces";
 import { BooleanSetting } from "../session_keys";

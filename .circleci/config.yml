@@ -71,7 +71,7 @@ commands:
             if sudo docker compose run web bash -lc '\
               gem install bundler && \
               bundle install && \
-              npm install && \
+              bun install && \
               bundle exec rails db:create && \
               bundle exec rails db:migrate && \
               bundle exec rake keys:generate \
@@ -122,14 +122,15 @@ commands:
       - run:
           name: Run JS tests
           command: |
-            sudo docker compose run web npm run test-slow -- -c .circleci/jest-ci.config.js -w 6
+            mkdir -p /tmp/test-results/jest
+            sudo docker compose run web bun test --coverage --reporter=junit --reporter-outfile=/tmp/test-results/jest/junit.xml
             echo 'export COVERAGE_AVAILABLE=true' >> $BASH_ENV
   lint-commands:
     steps:
       - run:
           name: Run JS Linters
           command: |
-            sudo docker compose run web npm run linters
+            sudo docker compose run web bun run linters
           when: always
   coverage-commands:
     steps:
@@ -178,7 +179,7 @@ commands:
               echo "skipping"
               exit 0
             fi
-            sudo docker compose exec -e PLAYWRIGHT_BROWSERS_PATH=0 web npx playwright install chromium --with-deps
+            sudo docker compose exec -e PLAYWRIGHT_BROWSERS_PATH=0 web bunx playwright install chromium --with-deps
       - run:
           name: Wait for load
           when: always
@@ -214,7 +215,7 @@ commands:
                 continue
               fi
 
-              if ! fps_output=$(sudo docker compose exec -e PLAYWRIGHT_BROWSERS_PATH=0 web node scripts/fps.js "${url}" "tmp/promo.png"); then
+              if ! fps_output=$(sudo docker compose exec -e PLAYWRIGHT_BROWSERS_PATH=0 web bun scripts/fps.js "${url}" "tmp/promo.png"); then
                 echo "${fps_output}"
                 continue
               fi
@@ -359,6 +360,7 @@ jobs:
           name: Run JS Tests
           command: |
             circleci tests glob **/__tests__/**/*.ts* | circleci tests split > /tmp/tests-to-run
-            sudo docker compose run web npm run test-very-slow -- -c .circleci/jest-ci.config.js $(cat /tmp/tests-to-run)
+            mkdir -p /tmp/test-results/jest
+            sudo docker compose run web bun test --coverage --reporter=junit --reporter-outfile=/tmp/test-results/jest/junit.xml $(cat /tmp/tests-to-run)
       - store_test_results:
           path: /tmp/test-results

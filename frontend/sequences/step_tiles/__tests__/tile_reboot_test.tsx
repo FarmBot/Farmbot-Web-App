@@ -1,9 +1,16 @@
 jest.mock("../../../api/crud", () => ({ editStep: jest.fn() }));
 
 let mockDev = false;
-jest.mock("../../../settings/dev/dev_support", () => ({
-  DevSettings: { futureFeaturesEnabled: () => mockDev },
-}));
+jest.mock("../../../settings/dev/dev_support", () => {
+  const actual = jest.requireActual("../../../settings/dev/dev_support");
+  return {
+    ...actual,
+    DevSettings: {
+      ...actual.DevSettings,
+      futureFeaturesEnabled: () => mockDev,
+    },
+  };
+});
 
 import React from "react";
 import { render } from "enzyme";
@@ -12,6 +19,11 @@ import { StepParams } from "../../interfaces";
 import { editStep } from "../../../api/crud";
 import { Reboot } from "farmbot";
 import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
+
+afterAll(() => {
+  jest.unmock("../../../api/crud");
+  jest.unmock("../../../settings/dev/dev_support");
+});
 
 describe("<TileReboot />", () => {
   const fakeProps = (): StepParams<Reboot> => ({

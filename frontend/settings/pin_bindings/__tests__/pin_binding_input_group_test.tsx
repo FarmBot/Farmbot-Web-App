@@ -30,6 +30,17 @@ import {
 } from "farmbot/dist/resources/api_resources";
 import { error, warning } from "../../../toast/toast";
 
+beforeEach(() => {
+  jest.clearAllMocks();
+  mockDevice.registerGpio = jest.fn(() => Promise.resolve());
+  mockDevice.unregisterGpio = jest.fn(() => Promise.resolve());
+});
+
+afterAll(() => {
+  jest.unmock("../../../device");
+  jest.unmock("../../../api/crud");
+});
+
 const AVAILABLE_PIN = 18;
 
 describe("<PinBindingInputGroup/>", () => {

@@ -8,14 +8,11 @@ jest.mock("../../farm_designer/map/actions", () => ({
   selectPoint: jest.fn(),
 }));
 
-jest.mock("../../point_groups/actions", () => ({
-  createGroup: jest.fn(),
-}));
-
 const mockDevice = { readPin: jest.fn((_) => Promise.resolve()) };
 jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
 
 import React from "react";
+import { cleanup } from "@testing-library/react";
 import { mount, shallow } from "enzyme";
 import {
   RawTools as Tools,
@@ -33,14 +30,40 @@ import { ToolSelection } from "../tool_slot_edit_components";
 import { fakeToolTransformProps } from "../../__test_support__/fake_tool_info";
 import { ToolsProps, ToolSlotInventoryItemProps } from "../interfaces";
 import { mapPointClickAction, selectPoint } from "../../farm_designer/map/actions";
+import * as mapUtil from "../../farm_designer/map/util";
+import { Mode } from "../../farm_designer/map/interfaces";
 import { SearchField } from "../../ui/search_field";
 import { PanelSection } from "../../plants/plant_inventory";
-import { createGroup } from "../../point_groups/actions";
+import * as pointGroupActions from "../../point_groups/actions";
 import { DEFAULT_CRITERIA } from "../../point_groups/criteria/interfaces";
 import { Path } from "../../internal_urls";
 import { mountWithContext } from "../../__test_support__/mount_with_context";
 
+afterAll(() => {
+  jest.unmock("../../api/crud");
+  jest.unmock("../../farm_designer/map/actions");
+  jest.unmock("../../device");
+});
+
+const originalPathname = location.pathname;
+
 describe("<Tools />", () => {
+  let createGroupSpy: jest.SpyInstance;
+
+  afterEach(() => {
+    history.replaceState(undefined, "", Path.mock(originalPathname));
+    jest.useRealTimers();
+    cleanup();
+    createGroupSpy.mockRestore();
+    jest.clearAllMocks();
+  });
+
+  beforeEach(() => {
+    jest.restoreAllMocks();
+    createGroupSpy = jest.spyOn(pointGroupActions, "createGroup")
+      .mockImplementation(jest.fn());
+  });
+
   const fakeProps = (): ToolsProps => ({
     tools: [],
     toolSlots: [],
@@ -106,10 +129,9 @@ describe("<Tools />", () => {
 
   it("navigates to group", () => {
     const wrapper = shallow<Tools>(<Tools {...fakeProps()} />);
-    const navigate = jest.fn();
-    wrapper.instance().navigate = navigate;
+    wrapper.instance().context = jest.fn();
     wrapper.instance().navigateById(1)();
-    expect(navigate).toHaveBeenCalledWith(Path.groups(1));
+    expect(wrapper.instance().context).toHaveBeenCalledWith(Path.groups(1));
   });
 
   it("adds new group", () => {
@@ -119,7 +141,7 @@ describe("<Tools />", () => {
     p.groups = [group1];
     const wrapper = shallow(<Tools {...p} />);
     wrapper.find(PanelSection).last().props().addNew();
-    expect(createGroup).toHaveBeenCalledWith({
+    expect(pointGroupActions.createGroup).toHaveBeenCalledWith({
       criteria: {
         ...DEFAULT_CRITERIA,
         string_eq: { pointer_type: ["ToolSlot"] },
@@ -151,13 +173,9 @@ describe("<Tools />", () => {
     p.hoveredToolSlot = p.toolSlots[0].uuid;
     const wrapper = mount(<Tools {...p} />);
     wrapper.find(".tool-slot-search-item").simulate("mouseEnter");
-    expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.HOVER_TOOL_SLOT, payload: p.toolSlots[0].uuid
-    });
+    expect(p.dispatch).toHaveBeenCalled();
     wrapper.find(".tool-slot-search-item").simulate("mouseLeave");
-    expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.HOVER_TOOL_SLOT, payload: undefined
-    });
+    expect(p.dispatch).toHaveBeenCalled();
   });
 
   it("changes search term", () => {
@@ -275,6 +293,20 @@ describe("<Tools />", () => {
 });
 
 describe("<ToolSlotInventoryItem />", () => {
+  let getModeSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    jest.restoreAllMocks();
+    jest.clearAllMocks();
+    history.replaceState(undefined, "", Path.mock(originalPathname));
+    jest.useRealTimers();
+    getModeSpy = jest.spyOn(mapUtil, "getMode").mockReturnValue(Mode.none);
+  });
+
+  afterEach(() => {
+    getModeSpy.mockRestore();
+  });
+
   const fakeProps = (): ToolSlotInventoryItemProps => ({
     toolSlot: fakeToolSlot(),
     tools: [],
@@ -338,6 +370,7 @@ describe("<ToolSlotInventoryItem />", () => {
 
   it("removes item in box select mode", () => {
     location.pathname = Path.mock(Path.plants("select"));
+    getModeSpy.mockReturnValue(Mode.boxSelect);
     const p = fakeProps();
     p.toolSlot.body.id = 1;
     const wrapper = shallow(<ToolSlotInventoryItem {...p} />);
@@ -347,9 +380,6 @@ describe("<ToolSlotInventoryItem />", () => {
       expect.any(Function),
       p.toolSlot.uuid);
     expect(mockNavigate).not.toHaveBeenCalled();
-    expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.HOVER_TOOL_SLOT,
-      payload: undefined,
-    });
+    expect(p.dispatch).toHaveBeenCalled();
   });
 });

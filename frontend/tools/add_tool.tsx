@@ -62,7 +62,7 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = this.context;
+  navigate = (url: string) => this.context?.(url);
 
   back = () => {
     this.navigate(Path.tools());

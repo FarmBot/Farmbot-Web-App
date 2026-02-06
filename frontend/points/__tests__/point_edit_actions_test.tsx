@@ -1,13 +1,3 @@
-jest.mock("../../api/crud", () => ({
-  edit: jest.fn(),
-  save: jest.fn(),
-}));
-
-jest.mock("../soil_height", () => ({
-  toggleSoilHeight: jest.fn(),
-  soilHeightPoint: jest.fn(),
-}));
-
 import React from "react";
 import { shallow, mount } from "enzyme";
 import {
@@ -23,22 +13,43 @@ import {
 import {
   fakePoint, fakeWeed,
 } from "../../__test_support__/fake_state/resources";
-import { edit, save } from "../../api/crud";
-import { toggleSoilHeight } from "../soil_height";
+import * as crud from "../../api/crud";
+import * as soilHeight from "../soil_height";
 import { fakeMovementState } from "../../__test_support__/fake_bot_data";
+
+let editSpy: jest.SpyInstance;
+let saveSpy: jest.SpyInstance;
+let toggleSoilHeightSpy: jest.SpyInstance;
+let soilHeightPointSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+  toggleSoilHeightSpy = jest.spyOn(soilHeight, "toggleSoilHeight")
+    .mockImplementation(jest.fn());
+  soilHeightPointSpy = jest.spyOn(soilHeight, "soilHeightPoint")
+    .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  editSpy.mockRestore();
+  saveSpy.mockRestore();
+  toggleSoilHeightSpy.mockRestore();
+  soilHeightPointSpy.mockRestore();
+});
 
 describe("updatePoint()", () => {
   it("updates a point", () => {
     const point = fakePoint();
     updatePoint(point, jest.fn())({ radius: 100 });
-    expect(edit).toHaveBeenCalledWith(point, { radius: 100 });
-    expect(save).toHaveBeenCalledWith(point.uuid);
+    expect(crud.edit).toHaveBeenCalledWith(point, { radius: 100 });
+    expect(crud.save).toHaveBeenCalledWith(point.uuid);
   });
 
   it("doesn't update point", () => {
     updatePoint(undefined, jest.fn())({ radius: 100 });
-    expect(edit).not.toHaveBeenCalled();
-    expect(save).not.toHaveBeenCalled();
+    expect(crud.edit).not.toHaveBeenCalled();
+    expect(crud.save).not.toHaveBeenCalled();
   });
 });
 
@@ -135,7 +146,7 @@ describe("<EditPointSoilHeightTag />", () => {
     const p = fakeProps();
     const wrapper = shallow(<EditPointSoilHeightTag {...p} />);
     wrapper.find("input").first().simulate("change");
-    expect(toggleSoilHeight).toHaveBeenCalledWith(p.point);
+    expect(soilHeight.toggleSoilHeight).toHaveBeenCalledWith(p.point);
   });
 });
 

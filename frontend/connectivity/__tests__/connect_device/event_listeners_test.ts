@@ -8,17 +8,25 @@ const mockBot = {
   setUserEnv: () => Promise.resolve(),
 };
 
-jest.mock("../../../device", () => ({ getDevice: () => mockBot }));
-jest.mock("../../ping_mqtt", () => ({ startPinging: jest.fn() }));
-
-import { getDevice } from "../../../device";
 import { FbjsEventName } from "farmbot/dist/constants";
 import { attachEventListeners } from "../../connect_device";
-import { startPinging } from "../../ping_mqtt";
+import * as pingMqtt from "../../ping_mqtt";
+import * as deviceActions from "../../../devices/actions";
 
 describe("attachEventListeners", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.spyOn(pingMqtt, "startPinging").mockImplementation(jest.fn());
+    jest.spyOn(deviceActions, "readStatusReturnPromise")
+      .mockImplementation(() => Promise.resolve());
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it("attaches relevant callbacks", () => {
-    const dev = getDevice();
+    const dev = mockBot;
     attachEventListeners(dev, jest.fn(), jest.fn());
     [
       FbjsEventName.status,
@@ -30,9 +38,9 @@ describe("attachEventListeners", () => {
       FbjsEventName.sent,
       FbjsEventName.publicBroadcast,
     ].map(e => expect(dev.on).toHaveBeenCalledWith(e, expect.any(Function)));
-    expect(mockBot.readStatus).toHaveBeenCalledTimes(1);
+    expect(deviceActions.readStatusReturnPromise).toHaveBeenCalledTimes(1);
     mockBot.on.mock.calls[1][1]();
-    expect(mockBot.readStatus).toHaveBeenCalledTimes(2);
+    expect(mockBot.readStatus).toHaveBeenCalledTimes(1);
     [
       "message",
       "reconnect",
@@ -41,6 +49,6 @@ describe("attachEventListeners", () => {
     });
     expect(dev.readStatus).toHaveBeenCalled();
     expect(dev.client && dev.client.subscribe).toHaveBeenCalled();
-    expect(startPinging).toHaveBeenCalledWith(dev);
+    expect(pingMqtt.startPinging).toHaveBeenCalledWith(dev);
   });
 });

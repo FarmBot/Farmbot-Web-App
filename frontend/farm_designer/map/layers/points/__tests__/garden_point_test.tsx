@@ -15,7 +15,6 @@ import { CameraViewArea } from "../../farmbot/bot_figure";
 import { Color } from "../../../../../ui";
 import { tagAsSoilHeight } from "../../../../../points/soil_height";
 import { SpecialStatus } from "farmbot";
-import { Path } from "../../../../../internal_urls";
 
 describe("<GardenPoint/>", () => {
   const fakeProps = (): GardenPointProps => ({
@@ -94,7 +93,9 @@ describe("<GardenPoint/>", () => {
     const p = fakeProps();
     const wrapper = svgMount(<GardenPoint {...p} />);
     wrapper.find("g").simulate("click");
-    expect(mockNavigate).toHaveBeenCalledWith(Path.points(p.point.body.id));
+    expect(p.dispatch).toHaveBeenCalledWith(expect.objectContaining({
+      type: Actions.SELECT_POINT,
+    }));
   });
 
   it("shows camera view area", () => {

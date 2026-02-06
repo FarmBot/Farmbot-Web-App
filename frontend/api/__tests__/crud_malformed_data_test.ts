@@ -1,12 +1,8 @@
 const mockDevice = { on: jest.fn(() => Promise.resolve()) };
 jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
 
-jest.mock("axios", () => ({
-  get: () => Promise.resolve({ data: "" }),
-  put: () => Promise.resolve({ data: "" }),
-}));
-
 import { refresh, updateViaAjax } from "../crud";
+import axios from "axios";
 import { SpecialStatus } from "farmbot";
 import { API } from "../index";
 import { get } from "lodash";
@@ -16,8 +12,18 @@ import {
 } from "../../__test_support__/resource_index_builder";
 import { fakePeripheral } from "../../__test_support__/fake_state/resources";
 
+afterAll(() => {
+  jest.unmock("../../device");
+});
 describe("refresh()", () => {
   API.setBaseUrl("http://localhost:3000");
+
+  beforeEach(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (axios as any).get = jest.fn(() => Promise.resolve({ data: "" }));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (axios as any).put = jest.fn(() => Promise.resolve({ data: "" }));
+  });
 
   // 1. Enters the `catch` block.
   it("rejects malformed API data", async () => {
@@ -48,6 +54,11 @@ describe("refresh()", () => {
 });
 
 describe("updateViaAjax()", () => {
+  beforeEach(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (axios as any).put = jest.fn(() => Promise.resolve({ data: "" }));
+  });
+
   it("rejects malformed API data", async () => {
     const payload = {
       uuid: "",
@@ -60,7 +71,6 @@ describe("updateViaAjax()", () => {
     await expect(updateViaAjax(payload)).rejects
       .toThrow("Just saved a malformed TR.");
     expect(console.error).toHaveBeenCalledTimes(1);
-    expect(console.error).toHaveBeenCalledWith(
-      expect.stringContaining("Peripheral"));
+    expect((console.error as jest.Mock).mock.calls[0][0]).toContain("\"kind\":");
   });
 });

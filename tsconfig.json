@@ -28,6 +28,11 @@
   "include": [
     "frontend"
   ],
+  "exclude": [
+    "frontend/**/__tests__/**",
+    "frontend/**/tests/**",
+    "frontend/__test_support__/**"
+  ],
   "compileOnSave": false,
   "buildOnSave": false
 }

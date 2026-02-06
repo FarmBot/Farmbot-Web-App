@@ -1,38 +1,67 @@
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, cleanup } from "@testing-library/react";
 import { getSeasonTimings, Promo } from "../promo";
+import * as reactThreeFiber from "@react-three/fiber";
+import * as gardenModelModule from "../../three_d_garden/garden_model";
 
 describe("<Promo />", () => {
+  const originalSearch = window.location.search;
+  const originalConsoleError = console.error;
+  let canvasSpy: jest.SpyInstance;
+  let gardenModelSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    canvasSpy = jest.spyOn(reactThreeFiber, "Canvas")
+      .mockImplementation(({ children }: { children: React.ReactNode }) =>
+        <div>{children}</div>);
+    gardenModelSpy = jest.spyOn(gardenModelModule, "GardenModel")
+      .mockImplementation(({ config }: { config: { promoSpread?: boolean } }) =>
+        <div>{config.promoSpread ? "spread" : "garden-model"}</div>);
+  });
+
+  afterEach(() => {
+    window.location.search = originalSearch;
+    jest.useRealTimers();
+    console.error = originalConsoleError;
+    canvasSpy.mockRestore();
+    gardenModelSpy.mockRestore();
+    cleanup();
+  });
+
   it("renders", () => {
     console.error = jest.fn();
-    const { container } = render(<Promo />);
+    const { container, unmount } = render(<Promo />);
     expect(container).toContainHTML("three-d-garden");
+    unmount();
   });
 
   it("renders: animated seasons", () => {
+    jest.useFakeTimers();
     console.error = jest.fn();
-    const { container } = render(<Promo />);
+    const { container, unmount } = render(<Promo />);
     expect(container).toContainHTML("three-d-garden");
     const configBtn = screen.getByTitle("config");
     fireEvent.click(configBtn);
     const config = screen.getByTitle("animateSeasons");
-    jest.useFakeTimers();
     fireEvent.click(config);
     jest.runAllTimers();
+    unmount();
   });
 
   it("opens config menu", () => {
-    const { container } = render(<Promo />);
+    const { container, unmount } = render(<Promo />);
     expect(container).not.toContainHTML("all-configs");
     const configBtn = screen.getByTitle("config");
     fireEvent.click(configBtn);
     expect(container).toContainHTML("all-configs");
+    unmount();
   });
 
   it("renders spread", () => {
     window.location.search = "?promoSpread=true";
-    const { container } = render(<Promo />);
+    const { container, unmount } = render(<Promo />);
     expect(container).toContainHTML("spread");
+    unmount();
   });
 });
 

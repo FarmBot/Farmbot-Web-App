@@ -4,7 +4,7 @@ jest.mock("../../../devices/must_be_online", () => ({
 }));
 
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import { extraRotation, ImageTexture, ImageTextureProps } from "../images";
 import { INITIAL } from "../../config";
 import { clone } from "lodash";
@@ -13,7 +13,15 @@ import {
 } from "../../../__test_support__/fake_state/resources";
 import { fakeAddPlantProps } from "../../../__test_support__/fake_props";
 
+afterAll(() => {
+  jest.unmock("../../../devices/must_be_online");
+});
 describe("<ImageTexture />", () => {
+  afterEach(() => {
+    cleanup();
+    mockDemo = false;
+  });
+
   const fakeProps = (): ImageTextureProps => ({
     config: clone(INITIAL),
     images: [],

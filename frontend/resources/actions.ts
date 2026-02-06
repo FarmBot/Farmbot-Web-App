@@ -2,7 +2,6 @@ import { TaggedResource, SpecialStatus } from "farmbot";
 import { UnsafeError } from "../interfaces";
 import { Actions } from "../constants";
 import { toastErrors } from "../toast_errors";
-import { stopTracking } from "../connectivity/data_consistency";
 
 export function saveOK(payload: TaggedResource) {
   return { type: Actions.SAVE_RESOURCE_OK, payload };
@@ -29,6 +28,9 @@ export const generalizedError = (payload: GeneralizedError) => {
     payload.statusBeforeError = SpecialStatus.DIRTY;
   }
   toastErrors(payload);
+  // Lazy-load to avoid circular dependencies during test runs.
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  const { stopTracking } = require("../connectivity/data_consistency");
   stopTracking(payload.uuid);
   return { type: Actions._RESOURCE_NO, payload };
 };

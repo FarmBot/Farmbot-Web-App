@@ -1,16 +1,22 @@
 import React from "react";
 import { render, renderHook } from "@testing-library/react";
+import * as threeFiber from "@react-three/fiber";
 import {
   WaterStream, WaterStreamProps, useWaterFlowTexture,
 } from "../water_stream";
 
 let frameCallback: (state: unknown, delta: number) => void;
-jest.mock("@react-three/fiber", () => ({
-  addEffect: jest.fn(),
-  useFrame: jest.fn((callback) => {
-    frameCallback = callback;
-  }),
-}));
+
+beforeEach(() => {
+  jest.spyOn(threeFiber, "useFrame")
+    .mockImplementation(callback => {
+      frameCallback = callback as (state: unknown, delta: number) => void;
+    });
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
 
 describe("<WaterStream />", () => {
   const fakeProps = (): WaterStreamProps => ({

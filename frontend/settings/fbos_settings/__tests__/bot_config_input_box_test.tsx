@@ -1,26 +1,23 @@
-jest.mock("../../../api/crud", () => ({
-  edit: jest.fn(),
-  save: jest.fn(),
-}));
-
 import React from "react";
 import { shallow } from "enzyme";
 import { BotConfigInputBox, BotConfigInputBoxProps } from "../bot_config_input_box";
-import { fakeState } from "../../../__test_support__/fake_state";
-import { fakeFbosConfig } from "../../../__test_support__/fake_state/resources";
-import {
-  buildResourceIndex,
-} from "../../../__test_support__/resource_index_builder";
-import { edit, save } from "../../../api/crud";
+import * as deviceActions from "../../../devices/actions";
+
+let updateConfigSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  updateConfigSpy = jest.spyOn(deviceActions, "updateConfig")
+    .mockImplementation(jest.fn() as never);
+});
+
+afterEach(() => {
+  updateConfigSpy.mockRestore();
+});
 
 describe("<BotConfigInputBox />", () => {
-  const fakeConfig = fakeFbosConfig();
-  const state = fakeState();
-  state.resources = buildResourceIndex([fakeConfig]);
-
   const fakeProps = (): BotConfigInputBoxProps => ({
     setting: "safe_height",
-    dispatch: jest.fn(x => x(jest.fn(), () => state)),
+    dispatch: jest.fn(),
     sourceFbosConfig: () => ({ value: 1, consistent: true })
   });
 
@@ -46,8 +43,8 @@ describe("<BotConfigInputBox />", () => {
     const wrapper = shallow(<BotConfigInputBox {...p} />);
     wrapper.find("BlurableInput")
       .simulate("commit", { currentTarget: { value: "10" } });
-    expect(edit).toHaveBeenCalledWith(fakeConfig, { safe_height: 10 });
-    expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
+    expect(updateConfigSpy).toHaveBeenCalledWith({ safe_height: 10 });
+    expect(p.dispatch).toHaveBeenCalledWith(updateConfigSpy.mock.results[0].value);
   });
 
   it("doesn't update value: same value", () => {
@@ -56,8 +53,8 @@ describe("<BotConfigInputBox />", () => {
     const wrapper = shallow(<BotConfigInputBox {...p} />);
     wrapper.find("BlurableInput")
       .simulate("commit", { currentTarget: { value: "10" } });
-    expect(edit).not.toHaveBeenCalled();
-    expect(save).not.toHaveBeenCalled();
+    expect(updateConfigSpy).not.toHaveBeenCalled();
+    expect(p.dispatch).not.toHaveBeenCalled();
   });
 
   it("doesn't update value: NaN", () => {
@@ -66,8 +63,8 @@ describe("<BotConfigInputBox />", () => {
     const wrapper = shallow(<BotConfigInputBox {...p} />);
     wrapper.find("BlurableInput")
       .simulate("commit", { currentTarget: { value: "x" } });
-    expect(edit).not.toHaveBeenCalled();
-    expect(save).not.toHaveBeenCalled();
+    expect(updateConfigSpy).not.toHaveBeenCalled();
+    expect(p.dispatch).not.toHaveBeenCalled();
   });
 
   it("not consistent", () => {

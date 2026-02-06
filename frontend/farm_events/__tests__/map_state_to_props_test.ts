@@ -29,6 +29,8 @@ describe("mapStateToProps()", () => {
     sequenceFarmEvent.body.id = 1;
     sequenceFarmEvent.body.start_time = "2222-02-22T02:00:00.000Z";
     sequenceFarmEvent.body.end_time = "2222-02-22T02:03:00.000Z";
+    sequenceFarmEvent.body.repeat = 0;
+    sequenceFarmEvent.body.time_unit = "never";
 
     const regimenFarmEvent = fakeFarmEvent("Regimen", sequence.body.id);
     regimenFarmEvent.body.id = 2;
@@ -128,7 +130,7 @@ describe("mapResourcesToCalendar(): sequence farm events", () => {
     sequenceFarmEvent.body.id = 1;
     sequenceFarmEvent.body.start_time = props.start_time;
     sequenceFarmEvent.body.end_time = props.end_time;
-    sequenceFarmEvent.body.repeat = props.repeat || 1;
+    sequenceFarmEvent.body.repeat = props.repeat ?? 0;
     sequenceFarmEvent.body.time_unit = props.time_unit || "never";
 
     return buildResourceIndex([sequence, sequenceFarmEvent]);

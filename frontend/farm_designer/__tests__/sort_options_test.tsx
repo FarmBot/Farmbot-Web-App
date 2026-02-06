@@ -1,14 +1,22 @@
-import { PopoverProps } from "../../ui/popover";
-jest.mock("../../ui/popover", () => ({
-  Popover: ({ target, content }: PopoverProps) => <div>{target}{content}</div>,
-}));
-
 import React from "react";
 import { mount } from "enzyme";
 import { fakePoint } from "../../__test_support__/fake_state/resources";
+import * as popover from "../../ui/popover";
 import {
   PointSortMenu, orderedPoints, PointSortMenuProps,
 } from "../sort_options";
+
+let popoverSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  popoverSpy = jest.spyOn(popover, "Popover")
+    .mockImplementation(({ target, content }: popover.PopoverProps) =>
+      <div>{target}{content}</div>);
+});
+
+afterEach(() => {
+  popoverSpy.mockRestore();
+});
 
 describe("orderedPoints()", () => {
   it("orders points", () => {

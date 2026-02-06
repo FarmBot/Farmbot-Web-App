@@ -9,15 +9,32 @@ import {
 import { TaggedSequence } from "farmbot";
 import { fakeFarmwareManifestV2 } from "../../__test_support__/fake_farmwares";
 import { BooleanSetting } from "../../session_keys";
+import * as configStorageActions from "../../config_storage/actions";
+
+let getWebAppConfigValueSpy: jest.SpyInstance;
+let configValues: Record<string, boolean | undefined>;
+
+beforeEach(() => {
+  configValues = {};
+  getWebAppConfigValueSpy = jest.spyOn(configStorageActions, "getWebAppConfigValue")
+    .mockImplementation(() => key => configValues[String(key)]);
+});
+
+afterEach(() => {
+  getWebAppConfigValueSpy.mockRestore();
+});
 
 describe("mapStateToProps()", () => {
   it("returns props", () => {
     const state = fakeState();
+    const sequence = fakeSequence();
     const config = fakeWebAppConfig();
     config.body.show_pins = true;
-    state.resources = buildResourceIndex([config]);
+    state.resources = buildResourceIndex([config, sequence]);
+    state.resources.consumers.sequences.current = sequence.uuid;
+    configValues[String(BooleanSetting.show_pins)] = true;
     const props = mapStateToProps(state);
-    expect(props.sequence).toEqual(undefined);
+    expect(props.sequence).toEqual(expect.objectContaining({ uuid: sequence.uuid }));
     expect(props.syncStatus).toEqual("unknown");
     expect(props.getWebAppConfigValue(BooleanSetting.show_pins)).toEqual(true);
   });
@@ -53,6 +70,7 @@ describe("mapStateToProps()", () => {
 
   it("returns farmwareNames", () => {
     const state = fakeState();
+    const sequence = fakeSequence();
     const farmwareInstallation1 = fakeFarmwareInstallation();
     farmwareInstallation1.body.package = "farmware installation";
     farmwareInstallation1.body.url = "a";
@@ -62,8 +80,9 @@ describe("mapStateToProps()", () => {
     farmwareInstallation2.body.url = "b";
     farmwareInstallation2.body.id = 2;
     state.resources = buildResourceIndex([
-      farmwareInstallation1, farmwareInstallation2,
+      farmwareInstallation1, farmwareInstallation2, sequence,
     ]);
+    state.resources.consumers.sequences.current = sequence.uuid;
     state.bot.hardware.process_info.farmwares = {
       "My Fake Farmware": fakeFarmwareManifestV2()
     };
@@ -83,6 +102,7 @@ describe("mapStateToProps()", () => {
     conf.body.show_first_party_farmware = true;
     state.resources = buildResourceIndex([conf]);
     state.resources.consumers.sequences.current = undefined;
+    configValues[String(BooleanSetting.show_first_party_farmware)] = true;
     const props = mapStateToProps(state);
     expect(props.farmwareData.farmwareNames).toEqual(["My Fake Farmware"]);
     expect(props.farmwareData.showFirstPartyFarmware).toEqual(true);
@@ -95,10 +115,12 @@ describe("mapStateToProps()", () => {
 
   it("returns api props", () => {
     const state = fakeState();
+    const sequence = fakeSequence();
     const fakeEnv = fakeFarmwareEnv();
     fakeEnv.body.key = "camera";
     fakeEnv.body.value = "NONE";
-    state.resources = buildResourceIndex([fakeEnv]);
+    state.resources = buildResourceIndex([fakeEnv, sequence]);
+    state.resources.consumers.sequences.current = sequence.uuid;
     state.bot.minOsFeatureData = { api_farmware_env: "8.0.0" };
     state.bot.hardware.informational_settings.controller_version = "8.0.0";
     const props = mapStateToProps(state);

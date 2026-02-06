@@ -17,6 +17,15 @@ import { AddToolProps } from "../interfaces";
 import { mockDispatch } from "../../__test_support__/fake_dispatch";
 import { Path } from "../../internal_urls";
 
+beforeEach(() => {
+  jest.clearAllMocks();
+  mockSave = () => Promise.resolve();
+});
+
+afterAll(() => {
+  jest.unmock("../../api/crud");
+});
+
 describe("<AddTool />", () => {
   const fakeProps = (): AddToolProps => ({
     dispatch: jest.fn(),

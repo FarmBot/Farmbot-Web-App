@@ -1,7 +1,3 @@
-jest.mock("../actions", () => ({
-  createGroup: jest.fn(),
-}));
-
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
@@ -14,9 +10,10 @@ import { fakeState } from "../../__test_support__/fake_state";
 import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
-import { createGroup } from "../actions";
+import * as GroupActions from "../actions";
 import { DesignerPanelTop } from "../../farm_designer/designer_panel";
 import { SearchField } from "../../ui/search_field";
+import { mountWithContext } from "../../__test_support__/mount_with_context";
 import { Path } from "../../internal_urls";
 
 describe("<GroupListPanel />", () => {
@@ -43,6 +40,8 @@ describe("<GroupListPanel />", () => {
   };
 
   it("creates new group", () => {
+    const createGroup = jest.spyOn(GroupActions, "createGroup")
+      .mockImplementation((() => jest.fn()) as typeof GroupActions.createGroup);
     const p = fakeProps();
     const wrapper = shallow(<GroupListPanel {...p} />);
     wrapper.find(DesignerPanelTop).simulate("click");
@@ -50,6 +49,7 @@ describe("<GroupListPanel />", () => {
       pointUuids: [],
       navigate: expect.any(Function),
     });
+    createGroup.mockRestore();
   });
 
   it("changes search term", () => {
@@ -71,16 +71,16 @@ describe("<GroupListPanel />", () => {
   });
 
   it("navigates to group", () => {
-    const wrapper = mount(<GroupListPanel {...fakeProps()} />);
-    wrapper.find(".group-search-item").first().simulate("click");
+    const wrapper = mountWithContext(<GroupListPanel {...fakeProps()} />);
+    wrapper.find("GroupInventoryItem").first().props().onClick?.();
     expect(mockNavigate).toHaveBeenCalledWith(Path.groups(9));
   });
 
   it("navigates to group: handles missing id", () => {
     const p = fakeProps();
     p.groups[0].body.id = undefined;
-    const wrapper = mount(<GroupListPanel {...p} />);
-    wrapper.find(".group-search-item").first().simulate("click");
+    const wrapper = mountWithContext(<GroupListPanel {...p} />);
+    wrapper.find("GroupInventoryItem").first().props().onClick?.();
     expect(mockNavigate).toHaveBeenCalledWith(Path.groups());
   });
 

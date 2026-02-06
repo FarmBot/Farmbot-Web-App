@@ -20,7 +20,7 @@ describe("<TileTakePhoto/>", () => {
   it("renders step", () => {
     const wrapper = mount(<TileTakePhoto {...fakeProps()} />);
     expect(wrapper.text().toLowerCase())
-      .toEqual("photos are viewable from the photos panel.");
+      .toContain("photos are viewable from the photos panel.");
   });
 
   it("renders inputs", () => {

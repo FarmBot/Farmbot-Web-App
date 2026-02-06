@@ -1,17 +1,3 @@
-jest.mock("../../api/crud", () => ({
-  edit: jest.fn(),
-  save: jest.fn(),
-}));
-
-jest.mock("../../plants/plant_inventory", () => ({ Plants: () => <div /> }));
-
-let mockIsMobile = false;
-let mockIsDesktop = false;
-jest.mock("../../screen_size", () => ({
-  isMobile: () => mockIsMobile,
-  isDesktop: () => mockIsDesktop,
-}));
-
 import React from "react";
 import {
   getDefaultAxisLength, getGridSize, RawFarmDesigner as FarmDesigner,
@@ -29,7 +15,7 @@ import {
   fakeDevice,
 } from "../../__test_support__/resource_index_builder";
 import { fakeState } from "../../__test_support__/fake_state";
-import { edit } from "../../api/crud";
+import * as crud from "../../api/crud";
 import { BooleanSetting } from "../../session_keys";
 import { GardenMapLegend } from "../map/legend/garden_map_legend";
 import { GardenMap } from "../map/garden_map";
@@ -43,7 +29,22 @@ import {
 import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
 import { Path } from "../../internal_urls";
 
+const setWindowWidth = (width: number) => {
+  Object.defineProperty(window, "innerWidth", { configurable: true, value: width });
+};
+
 describe("<FarmDesigner />", () => {
+  let editSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    setWindowWidth(1000);
+    editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    editSpy.mockRestore();
+  });
+
   const fakeProps = (): FarmDesignerProps => ({
     dispatch: jest.fn(),
     device: fakeDevice().body,
@@ -131,8 +132,7 @@ describe("<FarmDesigner />", () => {
   });
 
   it("renders saved garden indicator", () => {
-    mockIsMobile = false;
-    mockIsDesktop = true;
+    setWindowWidth(1000);
     const p = fakeProps();
     p.designer.openedSavedGarden = 1;
     p.designer.panelOpen = false;
@@ -142,8 +142,7 @@ describe("<FarmDesigner />", () => {
   });
 
   it("renders saved garden indicator on medium screens", () => {
-    mockIsMobile = false;
-    mockIsDesktop = false;
+    setWindowWidth(700);
     const p = fakeProps();
     p.designer.openedSavedGarden = 1;
     p.designer.panelOpen = false;
@@ -153,8 +152,7 @@ describe("<FarmDesigner />", () => {
   });
 
   it("doesn't render saved garden indicator", () => {
-    mockIsMobile = true;
-    mockIsDesktop = false;
+    setWindowWidth(400);
     const p = fakeProps();
     p.designer.openedSavedGarden = 1;
     p.designer.panelOpen = false;
@@ -171,7 +169,7 @@ describe("<FarmDesigner />", () => {
     p.dispatch = jest.fn(x => x(dispatch, () => state));
     const wrapper = mount<FarmDesigner>(<FarmDesigner {...p} />);
     wrapper.instance().toggle(BooleanSetting.show_plants)();
-    expect(edit).toHaveBeenCalledWith(expect.any(Object), {
+    expect(editSpy).toHaveBeenCalledWith(expect.any(Object), {
       bot_origin_quadrant: 2
     });
   });

@@ -6,10 +6,9 @@ jest.mock("../../toast/toast", () => ({
   info: jest.fn(),
 }));
 
-jest.mock("../../i18next_wrapper", () => ({
-  t: (s: string) => s,
-}));
-
+afterAll(() => {
+  jest.unmock("../../toast/toast");
+});
 describe("registerServiceWorker()", () => {
   it("registers service worker", () => {
     window.addEventListener = jest.fn();

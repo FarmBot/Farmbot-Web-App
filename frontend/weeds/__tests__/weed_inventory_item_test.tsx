@@ -20,6 +20,12 @@ import { mapPointClickAction } from "../../farm_designer/map/actions";
 import { edit, save, destroy } from "../../api/crud";
 import { Path } from "../../internal_urls";
 
+afterAll(() => {
+  jest.unmock("../../api/crud");
+});
+afterAll(() => {
+  jest.unmock("../../farm_designer/map/actions");
+});
 describe("<WeedInventoryItem /> />", () => {
   const fakeProps = (): WeedInventoryItemProps => ({
     tpp: fakeWeed(),

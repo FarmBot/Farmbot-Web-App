@@ -1,7 +1,7 @@
 import { ResourceName } from "farmbot";
 import { isArray } from "lodash";
 import { ResourceIndex } from "./interfaces";
-import { joinKindAndId } from "./reducer_support";
+import { joinKindAndId } from "./join_kind_and_id";
 
 let count = 0;
 export function generateUuid(id: number | undefined, kind: ResourceName) {

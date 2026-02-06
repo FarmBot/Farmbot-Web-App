@@ -13,11 +13,11 @@ Where `en` is your language code.
 Translation file format can be checked using:
 
 ```bash
-npm run translation-check
+bun run translation-check
 ```
 
 _Note: If using Docker, add `sudo docker compose run web` before the commands.
-For example, `sudo docker compose run web npm run translation-check`._
+For example, `sudo docker compose run web bun run translation-check`._
 
 See the [README](https://github.com/FarmBot/Farmbot-Web-App#translating-the-web-app) for contribution instructions.
 

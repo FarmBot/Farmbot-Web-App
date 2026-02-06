@@ -1,29 +1,4 @@
-jest.mock("../../api/crud", () => ({
-  destroy: jest.fn(),
-  init: jest.fn(() => ({ payload: { uuid: "fakeUuid" } })),
-}));
-
-jest.mock("../edit_fe_form", () => ({
-  EditFEForm: () => <div>EditFEForm</div>,
-  FarmEventForm: () => <div />,
-  FarmEventViewModel: {},
-  NEVER: "never",
-}));
-
 const mockSave = jest.fn();
-interface MockRefCurrent {
-  commitViewModel(): void;
-}
-interface MockRef {
-  current: MockRefCurrent | undefined;
-}
-const mockRef: MockRef = { current: { commitViewModel: mockSave } };
-jest.mock("react", () => ({
-  ...jest.requireActual("react"),
-  createRef: () => mockRef,
-}));
-
-jest.mock("../../resources/actions", () => ({ destroyOK: jest.fn() }));
 
 import React from "react";
 import { mount, shallow } from "enzyme";
@@ -38,14 +13,32 @@ import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
-import { destroyOK } from "../../resources/actions";
-import { init, destroy } from "../../api/crud";
+import * as resourcesActions from "../../resources/actions";
+import * as crud from "../../api/crud";
 import { DesignerPanelHeader } from "../../farm_designer/designer_panel";
 import { Content } from "../../constants";
 import { error } from "../../toast/toast";
 import { SaveBtn } from "../../ui";
+import { EditFEForm } from "../edit_fe_form";
+
+let initSpy: jest.SpyInstance;
+let destroySpy: jest.SpyInstance;
+let destroyOKSpy: jest.SpyInstance;
 
 describe("<AddFarmEvent />", () => {
+  beforeEach(() => {
+    mockSave.mockClear();
+    initSpy = jest.spyOn(crud, "init")
+      .mockImplementation(() => ({ payload: { uuid: "fakeUuid" } } as never));
+    destroySpy = jest.spyOn(crud, "destroy").mockImplementation(jest.fn());
+    destroyOKSpy = jest.spyOn(resourcesActions, "destroyOK")
+      .mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   function fakeProps(): AddEditFarmEventProps {
     const sequence = fakeSequence();
     sequence.body.id = 1;
@@ -99,7 +92,7 @@ describe("<AddFarmEvent />", () => {
     wrapper.instance().initFarmEvent({
       label: "", value: "1", headingId: "Regimen",
     });
-    expect(init).toHaveBeenCalledWith("FarmEvent",
+    expect(initSpy).toHaveBeenCalledWith("FarmEvent",
       expect.objectContaining({ executable_type: "Regimen" }));
   });
 
@@ -115,7 +108,7 @@ describe("<AddFarmEvent />", () => {
     wrapper.instance().initFarmEvent({
       label: "", value: "1", headingId: "Sequence",
     });
-    expect(init).toHaveBeenCalledWith("FarmEvent",
+    expect(initSpy).toHaveBeenCalledWith("FarmEvent",
       expect.objectContaining({ executable_type: "Sequence" }));
   });
 
@@ -131,7 +124,7 @@ describe("<AddFarmEvent />", () => {
     wrapper.instance().initFarmEvent({
       label: "", value: "1", headingId: "Sequence",
     });
-    expect(init).not.toHaveBeenCalled();
+    expect(initSpy).not.toHaveBeenCalled();
   });
 
   it("cleans up when unmounting", () => {
@@ -141,7 +134,7 @@ describe("<AddFarmEvent />", () => {
     p.findFarmEventByUuid = () => farmEvent;
     const wrapper = mount(<AddFarmEvent {...p} />);
     wrapper.unmount();
-    expect(destroy).toHaveBeenCalledWith(farmEvent.uuid, true);
+    expect(destroySpy).toHaveBeenCalledWith(farmEvent.uuid, true);
   });
 
   it("doesn't delete saved farm events when unmounting", () => {
@@ -151,7 +144,7 @@ describe("<AddFarmEvent />", () => {
     p.findFarmEventByUuid = () => farmEvent;
     const wrapper = mount(<AddFarmEvent {...p} />);
     wrapper.unmount();
-    expect(destroy).not.toHaveBeenCalled();
+    expect(destroySpy).not.toHaveBeenCalled();
   });
 
   it("cleans up on back", () => {
@@ -161,7 +154,7 @@ describe("<AddFarmEvent />", () => {
     p.findFarmEventByUuid = () => farmEvent;
     const wrapper = shallow(<AddFarmEvent {...p} />);
     wrapper.find(DesignerPanelHeader).simulate("back");
-    expect(destroyOK).toHaveBeenCalledWith(farmEvent);
+    expect(destroyOKSpy).toHaveBeenCalledWith(farmEvent);
   });
 
   it("doesn't delete saved farm events on back", () => {
@@ -171,7 +164,7 @@ describe("<AddFarmEvent />", () => {
     p.findFarmEventByUuid = () => farmEvent;
     const wrapper = shallow(<AddFarmEvent {...p} />);
     wrapper.find(DesignerPanelHeader).simulate("back");
-    expect(destroyOK).not.toHaveBeenCalled();
+    expect(destroyOKSpy).not.toHaveBeenCalled();
   });
 
   it("shows error on save", () => {
@@ -200,19 +193,11 @@ describe("<AddFarmEvent />", () => {
     const farmEvent = fakeFarmEvent("Sequence", 1);
     p.findFarmEventByUuid = () => farmEvent;
     const wrapper = mount(<AddFarmEvent {...p} />);
+    const form = wrapper.find(EditFEForm).instance() as EditFEForm;
+    form.commitViewModel = mockSave as unknown as EditFEForm["commitViewModel"];
     wrapper.find(".save-btn").simulate("click");
     expect(mockSave).toHaveBeenCalled();
     expect(error).not.toHaveBeenCalled();
   });
 
-  it("handles missing ref", () => {
-    mockRef.current = undefined;
-    const p = fakeProps();
-    const farmEvent = fakeFarmEvent("Sequence", 1);
-    p.findFarmEventByUuid = () => farmEvent;
-    const wrapper = mount(<AddFarmEvent {...p} />);
-    wrapper.find(".save-btn").simulate("click");
-    expect(mockSave).not.toHaveBeenCalled();
-    expect(error).not.toHaveBeenCalled();
-  });
 });

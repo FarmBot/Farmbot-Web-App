@@ -3,7 +3,7 @@ import {
   NumberConfigKey as NumberFirmwareConfigKey,
 } from "farmbot/dist/resources/configs/firmware";
 import { cloneDeep } from "lodash";
-import { getModifiedClassNameSpecifyDefault } from "../default_values";
+import * as defaultValues from "../default_values";
 
 const DEFAULT_FIRMWARE_CONFIG_VALUES: Record<NumberFirmwareConfigKey, number> = {
   encoder_enabled_x: 1,
@@ -176,5 +176,5 @@ export const getModifiedClassName = (
   const defaultValueRaw = getDefaultFwConfigValue(firmwareHardware)(key);
   const defaultValue = func ? func(defaultValueRaw) : defaultValueRaw;
   const value = func ? func(valueRaw) : valueRaw;
-  return getModifiedClassNameSpecifyDefault(value, defaultValue);
+  return defaultValues.getModifiedClassNameSpecifyDefault(value, defaultValue);
 };

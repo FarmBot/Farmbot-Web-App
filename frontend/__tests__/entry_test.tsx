@@ -1,29 +1,39 @@
-jest.mock("../util/util", () => ({
-  trim: jest.fn((s: unknown) => s),
-  defensiveClone: jest.fn((s: unknown) => s)
-}));
+import * as stopIe from "../util/stop_ie";
+import * as i18n from "../i18n";
+import * as routes from "../routes";
+import * as i18next from "i18next";
 
-jest.mock("../i18n", () => ({
-  detectLanguage: jest.fn(() => Promise.resolve())
-}));
+let stopIESpy: jest.SpyInstance;
+let detectLanguageSpy: jest.SpyInstance;
+let attachAppToDomSpy: jest.SpyInstance;
+let initSpy: jest.SpyInstance;
 
-jest.mock("../util/stop_ie", () => ({
-  stopIE: jest.fn(),
-  temporarilyStopFrames: jest.fn()
-}));
+beforeEach(() => {
+  stopIESpy = jest.spyOn(stopIe, "stopIE").mockImplementation(jest.fn());
+  detectLanguageSpy = jest.spyOn(i18n, "detectLanguage")
+    .mockImplementation(() => Promise.resolve({}));
+  attachAppToDomSpy = jest.spyOn(routes, "attachAppToDom")
+    .mockImplementation(jest.fn());
+  initSpy = jest.spyOn(i18next, "init")
+    .mockImplementation(((_, cb) => {
+      cb?.();
+      return undefined as never;
+    }) as typeof i18next.init);
+});
 
-jest.mock("../routes", () => ({ attachAppToDom: jest.fn() }));
+afterEach(() => {
+  stopIESpy.mockRestore();
+  detectLanguageSpy.mockRestore();
+  attachAppToDomSpy.mockRestore();
+  initSpy.mockRestore();
+});
 
-import { stopIE } from "../util/stop_ie";
-import { detectLanguage } from "../i18n";
-import { init } from "i18next";
-
-describe("entry file", () => {
+describe("main app entry file", () => {
   it("Calls the expected callbacks", async () => {
-    await import("../entry");
+    await import("../main_app");
 
-    expect(stopIE).toHaveBeenCalled();
-    expect(detectLanguage).toHaveBeenCalled();
-    expect(init).toHaveBeenCalled();
+    expect(stopIe.stopIE).toHaveBeenCalled();
+    expect(i18n.detectLanguage).toHaveBeenCalled();
+    expect(i18next.init).toHaveBeenCalled();
   });
 });

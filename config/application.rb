@@ -33,8 +33,10 @@ module FarmBot
     config.active_job.queue_adapter = :delayed_job
     config.action_dispatch.perform_deep_munge = false
     I18n.enforce_available_locales = false
-    LOCAL_API_HOST = ENV.fetch("API_HOST", "parcel")
-    PARCELJS_URL = "http://#{LOCAL_API_HOST}:3808"
+    LOCAL_API_HOST = ENV.fetch("API_HOST", "localhost")
+    ASSET_DEV_HOST = ENV.fetch("ASSET_HOST", ENV.fetch("API_HOST", "localhost"))
+    ASSET_DEV_PORT = ENV.fetch("ASSET_PORT", "3808")
+    ASSET_DEV_URL = "http://#{ASSET_DEV_HOST}:#{ASSET_DEV_PORT}"
     config.generators do |g|
       g.template_engine :erb
       g.test_framework :rspec, :fixture_replacement => :factory_bot, :views => false, :helper => false
@@ -84,13 +86,13 @@ module FarmBot
         "api.github.com",
         "raw.githubusercontent.com",
         "api.rollbar.com",
-        PARCELJS_URL,
+        ASSET_DEV_URL,
         ENV["FORCE_SSL"] ? "wss:" : "ws:",
         "localhost:#{API_PORT}",
-        "localhost:3808",
+        "localhost:#{ASSET_DEV_PORT}",
         "browser-http-intake.logs.datadoghq.com",
         "#{ENV.fetch("API_HOST")}:#{API_PORT}",
-        "#{ENV.fetch("API_HOST")}:3808",
+        "#{ENV.fetch("API_HOST")}:#{ASSET_DEV_PORT}",
         "blob:", # 3D
       ]
       config.csp = {
@@ -122,10 +124,10 @@ module FarmBot
         ),
         plugin_types: %w(),
         script_src: [
-          PARCELJS_URL,
+          ASSET_DEV_URL,
           "www.datadoghq-browser-agent.com",
           "cdn.rollbar.com",
-          "localhost:3808",
+          "localhost:#{ASSET_DEV_PORT}",
           "chrome-extension:",
           "cdnjs.cloudflare.com",
           "'unsafe-inline'",

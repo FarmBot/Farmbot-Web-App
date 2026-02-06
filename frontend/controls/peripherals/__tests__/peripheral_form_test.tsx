@@ -33,6 +33,10 @@ describe("<PeripheralForm/>", () => {
   ];
   const fakeProps = (): PeripheralFormProps => ({ dispatch, peripherals });
 
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it("renders a list of editable peripherals, in sorted order", () => {
     const form = mount(<PeripheralForm {...fakeProps()} />);
     const sensorNames = form.find(NameInputBox);

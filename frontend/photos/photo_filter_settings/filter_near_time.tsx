@@ -4,7 +4,7 @@ import { t } from "../../i18next_wrapper";
 import { ImageFilterProps } from "../images/interfaces";
 import { filterTime } from "./util";
 import { FilterNearTimeState } from "./interfaces";
-import { setWebAppConfigValues } from "./actions";
+import * as photoFilterActions from "./actions";
 
 export class FilterNearTime
   extends React.Component<ImageFilterProps, FilterNearTimeState> {
@@ -23,7 +23,7 @@ export class FilterNearTime
           className={"fb-button yellow"}
           disabled={!(flags.zMatch && flags.notHidden)}
           title={t("this photo")}
-          onClick={() => image && dispatch(setWebAppConfigValues({
+          onClick={() => image && dispatch(photoFilterActions.setWebAppConfigValues({
             photo_filter_begin: filterTime("before", this.state.seconds)(image),
             photo_filter_end: filterTime("after", this.state.seconds)(image),
           }))}>

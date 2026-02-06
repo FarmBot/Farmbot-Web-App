@@ -31,6 +31,11 @@ import { clone } from "lodash";
 import { TaggedPointGroup } from "farmbot";
 import { sortGroupBy } from "../../point_groups/point_group_sort";
 
+afterAll(() => {
+  jest.unmock("../../point_groups/group_detail");
+  jest.unmock("../../point_groups/criteria/apply");
+  jest.unmock("../../point_groups/point_group_sort");
+});
 describe("<GroupOrderVisual />", () => {
   const fakeProps = (): GroupOrderVisualProps => ({
     allPoints: [],

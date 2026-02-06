@@ -32,6 +32,14 @@ import {
 import { move } from "../../devices/actions";
 import { fakeMovementState } from "../../__test_support__/fake_bot_data";
 
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+
+afterAll(() => {
+  jest.unmock("../../devices/actions");
+});
+
 describe("<GantryMountedInput />", () => {
   const fakeProps = (): GantryMountedInputProps => ({
     gantryMounted: false,

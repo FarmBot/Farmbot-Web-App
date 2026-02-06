@@ -1,7 +1,3 @@
-jest.mock("../../../../settings/index", () => ({
-  showByEveryTerm: () => true,
-}));
-
 import React from "react";
 import { shallow, mount } from "enzyme";
 import {
@@ -18,6 +14,11 @@ import { FilePath } from "../../../../internal_urls";
 
 const expectAlive = (value: string) =>
   expect(getEggStatus(EggKeys.BUGS_ARE_STILL_ALIVE)).toEqual(value);
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  localStorage.clear();
+});
 
 describe("<Bugs />", () => {
   const fakeProps = (): BugsProps => ({
@@ -67,10 +68,12 @@ describe("<Bugs />", () => {
 describe("showBugResetButton()", () => {
   it("is truthy", () => {
     setEggStatus(EggKeys.BRING_ON_THE_BUGS, "true");
+    setEggStatus(EggKeys.BUGS_ARE_STILL_ALIVE, "false");
     expect(showBugResetButton()).toBeTruthy();
   });
   it("is falsy", () => {
     setEggStatus(EggKeys.BRING_ON_THE_BUGS, "");
+    setEggStatus(EggKeys.BUGS_ARE_STILL_ALIVE, "true");
     expect(showBugResetButton()).toBeFalsy();
   });
 });

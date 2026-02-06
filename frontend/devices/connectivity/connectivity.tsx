@@ -70,7 +70,6 @@ export class Connectivity
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = this.context;
 
   Realtime = () => {
     const { informational_settings } = this.props.bot.hardware;
@@ -167,7 +166,7 @@ export class Connectivity
         <PortRow port={"8883 - MQTT"} status={flags["botMQTT"]} />
         <a onClick={docLinkClick({
           slug: "for-it-security-professionals",
-          navigate: this.navigate,
+          navigate: this.context,
           dispatch: this.props.dispatch,
         })}>
           <i className="fa fa-external-link" />

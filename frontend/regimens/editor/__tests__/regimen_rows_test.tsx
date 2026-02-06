@@ -20,6 +20,9 @@ const testVariable: VariableDeclaration = {
   }
 };
 
+afterAll(() => {
+  jest.unmock("../../../api/crud");
+});
 describe("<RegimenRows />", () => {
   const fakeProps = (): RegimenRowsProps => {
     const regimen = fakeRegimen();

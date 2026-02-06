@@ -11,7 +11,7 @@
  *
  *
  * IMPORTANT DEVELOPER NOTE:
- *   Edit `_helper.ts` and generate `_helper.js` via `npx tsc _helper.ts`.
+ *   Edit `_helper.ts` and generate `_helper.js` via `bunx tsc _helper.ts`.
  *   Do not edit `_helper.js` directly; any changes will be overwritten.
  *
  *
@@ -127,10 +127,10 @@ function generateMetrics() {
     markdown += "```bash\nnode public/app-resources/languages/_helper.js en\n```\n\n";
     markdown += "Where `en` is your language code.\n\n";
     markdown += "Translation file format can be checked using:\n\n";
-    markdown += "```bash\nnpm run translation-check\n```\n\n";
+    markdown += "```bash\nbun run translation-check\n```\n\n";
     markdown += "_Note: If using Docker, add `sudo docker compose run web`";
     markdown += " before the commands.\nFor example, `sudo docker compose";
-    markdown += " run web npm run translation-check`._\n\n";
+    markdown += " run web bun run translation-check`._\n\n";
     markdown += "See the [README](https://github.com/FarmBot/Farmbot-Web-App";
     markdown += "#translating-the-web-app) for contribution instructions.\n\n";
     markdown += "Total number of phrases identified by the language helper";

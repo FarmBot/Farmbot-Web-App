@@ -8,6 +8,9 @@ import {
 import { initSave } from "../../../api/crud";
 import { stockPinBindings } from "../list_and_label_support";
 
+afterAll(() => {
+  jest.unmock("../../../api/crud");
+});
 describe("<StockPinBindingsButton />", () => {
   const fakeProps = (): StockPinBindingsButtonProps => ({
     dispatch: jest.fn(),

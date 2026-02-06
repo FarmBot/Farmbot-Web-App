@@ -16,6 +16,9 @@ import {
 import { save, edit } from "../../api/crud";
 import { Path } from "../../internal_urls";
 
+afterAll(() => {
+  jest.unmock("../../api/crud");
+});
 describe("<EditZone />", () => {
   const fakeProps = (): EditZoneProps => ({
     dispatch: jest.fn(),

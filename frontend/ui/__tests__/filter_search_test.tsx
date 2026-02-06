@@ -48,11 +48,9 @@ describe("<FilterSearch />", () => {
     const p = fakeProps();
     const wrapper = shallow(<FilterSearch {...p} />);
     const el = (wrapper.props()).itemRenderer({ label: "label" }, {});
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    expect(mount(el).text()).toEqual("label");
+    expect(el?.props.text).toEqual("label");
     const emptyEl = (wrapper.props()).itemRenderer(undefined, {});
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    expect(mount(emptyEl).text()).toEqual("");
+    expect(emptyEl?.props.text).toEqual("");
   });
 });
 

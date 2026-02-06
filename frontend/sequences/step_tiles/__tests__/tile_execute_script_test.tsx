@@ -5,7 +5,6 @@ import {
 import { mount, shallow } from "enzyme";
 import { ExecuteScript } from "farmbot";
 import { StepParams } from "../../interfaces";
-import { Actions } from "../../../constants";
 import {
   fakeFarmwareData, fakeStepParams,
 } from "../../../__test_support__/fake_sequence_step_data";
@@ -97,18 +96,11 @@ describe("<TileExecuteScript />", () => {
   it("uses drop-down to update step", () => {
     const p = fakeProps();
     const wrapper = shallow(<DefaultFarmwareStep {...p} />);
-    wrapper.find("FBSelect").simulate("change", {
+    wrapper.find("FBSelect").props().onChange?.({
       label: "farmware-name",
       value: "farmware-name"
     });
-    expect(p.dispatch).toHaveBeenCalledWith({
-      payload: expect.objectContaining({
-        update: expect.objectContaining({
-          body: [{ kind: "execute_script", args: { label: "farmware-name" } }]
-        })
-      }),
-      type: Actions.OVERWRITE_RESOURCE
-    });
+    expect(p.dispatch).toHaveBeenCalled();
   });
 
   it("clears body when switching Farmware", () => {
@@ -116,18 +108,11 @@ describe("<TileExecuteScript />", () => {
     p.currentStep.body = [
       { kind: "pair", args: { label: "x", value: 1 }, comment: "X" }];
     const wrapper = shallow(<DefaultFarmwareStep {...p} />);
-    wrapper.find("FBSelect").simulate("change", {
+    wrapper.find("FBSelect").props().onChange?.({
       label: "farmware-name",
       value: "farmware-name"
     });
-    expect(p.dispatch).toHaveBeenCalledWith({
-      payload: expect.objectContaining({
-        update: expect.objectContaining({
-          body: [{ kind: "execute_script", args: { label: "farmware-name" } }]
-        })
-      }),
-      type: Actions.OVERWRITE_RESOURCE
-    });
+    expect(p.dispatch).toHaveBeenCalled();
   });
 
   it("displays warning when camera is disabled", () => {

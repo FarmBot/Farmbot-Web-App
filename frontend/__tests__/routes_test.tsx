@@ -1,29 +1,33 @@
-let mockAuth: AuthState | undefined = undefined;
-jest.mock("../session", () => ({
-  Session: {
-    fetchStoredToken: jest.fn(() => mockAuth),
-    getAll: () => undefined,
-    clear: jest.fn()
-  }
-}));
-
 import React from "react";
 import { mount } from "enzyme";
-import { RootComponent } from "../routes";
 import { store } from "../redux/store";
 import { AuthState } from "../auth/interfaces";
 import { auth } from "../__test_support__/fake_state/token";
 import { Session } from "../session";
 import { Path } from "../internal_urls";
+import { RootComponent } from "../routes";
 
 describe("<RootComponent />", () => {
+  let mockAuth: AuthState | undefined = undefined;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockAuth = undefined;
+    jest.spyOn(Session, "fetchStoredToken").mockImplementation(() => mockAuth);
+    jest.spyOn(Session, "clear").mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it("clears session when not authorized", () => {
     mockAuth = undefined;
     globalConfig.ROLLBAR_CLIENT_TOKEN = "abc";
     window.location.pathname = Path.mock(Path.logs());
-    const wrapper = mount(<RootComponent store={store} />);
+    const instance = new RootComponent({ store });
+    instance.UNSAFE_componentWillMount();
     expect(Session.clear).toHaveBeenCalled();
-    wrapper.unmount();
   });
 
   it("authorized", () => {

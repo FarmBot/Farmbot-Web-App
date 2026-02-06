@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { useGLTF } from "@react-three/drei";
 import { threeSpace, zDir as zDirFunc, zZero as zZeroFunc } from "../../helpers";
 import { Config } from "../../config";
-import { GLTF } from "three-stdlib";
+import type { GLTF } from "three-stdlib";
 import {
   ASSETS, HOVER_OBJECT_MODES, LIB_DIR, PartName, SeedTroughAssemblyMaterial,
 } from "../../constants";
@@ -412,8 +412,9 @@ const OpacityFilter = (props: OpacityFilterProps) => {
   // eslint-disable-next-line no-null/no-null
   const groupRef = React.useRef<THREE.Group>(null);
   React.useLayoutEffect(() => {
-    if (groupRef.current) {
-      groupRef.current.traverse(child => {
+    const current = groupRef.current as THREE.Group | { traverse?: Function } | null;
+    if (current && typeof current.traverse == "function") {
+      current.traverse((child: THREE.Object3D) => {
         if (child instanceof THREE.Mesh) {
           child.material = child.material.clone();
           child.material.transparent = true;

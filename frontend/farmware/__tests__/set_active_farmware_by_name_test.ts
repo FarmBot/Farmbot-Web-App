@@ -1,11 +1,21 @@
-jest.mock("../../redux/store", () => ({ store: { dispatch: jest.fn() } }));
-
 import { setActiveFarmwareByName } from "../set_active_farmware_by_name";
 import { store } from "../../redux/store";
 import { Actions } from "../../constants";
 import { Path } from "../../internal_urls";
 
+let originalDispatch: typeof store.dispatch;
+
 describe("setActiveFarmwareByName()", () => {
+  beforeEach(() => {
+    originalDispatch = store.dispatch;
+    (store as unknown as { dispatch: jest.Mock }).dispatch = jest.fn();
+  });
+
+  afterEach(() => {
+    (store as unknown as { dispatch: typeof store.dispatch }).dispatch =
+      originalDispatch;
+  });
+
   it("returns early if there is nothing to compare", () => {
     location.pathname = Path.mock(Path.farmware());
     setActiveFarmwareByName([]);

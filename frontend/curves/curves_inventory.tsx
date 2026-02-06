@@ -11,7 +11,7 @@ import {
 } from "../farm_designer/designer_panel";
 import { t } from "../i18next_wrapper";
 import { selectAllCurves } from "../resources/selectors";
-import { init, save } from "../api/crud";
+import * as crud from "../api/crud";
 import { SearchField } from "../ui/search_field";
 import { Path } from "../internal_urls";
 import { PanelSection } from "../plants/plant_inventory";
@@ -48,7 +48,7 @@ export class RawCurves extends React.Component<CurvesProps, CurvesState> {
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = this.context;
+  navigate = (url: string) => this.context?.(url);
 
   navigateById = (id: number) => {
     this.navigate(Path.curves(id));
@@ -60,7 +60,7 @@ export class RawCurves extends React.Component<CurvesProps, CurvesState> {
       `${t(CURVE_TYPES()[type])} ${t("curve")} ${count}`;
     while (this.props.curves.filter(curve => curve.body.type == type)
       .map(curve => curve.body.name).includes(newName(num))) { num++; }
-    const action = init("Curve", {
+    const action = crud.init("Curve", {
       name: newName(num),
       type,
       data: scaleData(
@@ -70,7 +70,7 @@ export class RawCurves extends React.Component<CurvesProps, CurvesState> {
         getTemplateShape(type) != CurveShape.constant),
     });
     this.props.dispatch(action);
-    this.props.dispatch(save(action.payload.uuid))
+    this.props.dispatch(crud.save(action.payload.uuid))
       .then(() => {
         const id = this.props.curves.filter(curve =>
           curve.uuid == action.payload.uuid)[0]?.body.id;

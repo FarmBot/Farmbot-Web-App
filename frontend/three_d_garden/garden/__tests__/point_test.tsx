@@ -40,7 +40,7 @@ describe("<Point />", () => {
     p.dispatch = mockDispatch(dispatch);
     p.point.body.id = 1;
     const { container } = render(<Point {...p} />);
-    const point = container.querySelector("[name='marker'");
+    const point = container.querySelector("[name='marker']");
     point && fireEvent.click(point);
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_PANEL_OPEN, payload: true,
@@ -53,7 +53,7 @@ describe("<Point />", () => {
     p.dispatch = undefined;
     p.point.body.id = 1;
     const { container } = render(<Point {...p} />);
-    const point = container.querySelector("[name='marker'");
+    const point = container.querySelector("[name='marker']");
     point && fireEvent.click(point);
     expect(mockNavigate).not.toHaveBeenCalled();
   });

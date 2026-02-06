@@ -1,10 +1,9 @@
-import { AuthState } from "./auth/interfaces";
-import { ConfigState } from "./config/interfaces";
-import { BotPosition, BotState } from "./devices/interfaces";
-import { Color as FarmBotJsColor, Xyz } from "farmbot";
-import { DraggableState } from "./draggable/interfaces";
-import { RestResources } from "./resources/interfaces";
-import { AppState } from "./reducer";
+import type { AuthState } from "./auth/interfaces";
+import type { ConfigState } from "./config/interfaces";
+import type { BotPosition, BotState } from "./devices/interfaces";
+import type { Color as FarmBotJsColor, Xyz } from "farmbot";
+import type { DraggableState } from "./draggable/interfaces";
+import type { RestResources } from "./resources/interfaces";
 
 /** Regimens and sequences may have a "color" which determines how it looks
     in the UI. Only certain colors are valid. */
@@ -17,7 +16,7 @@ export interface Everything {
   bot: BotState;
   draggable: DraggableState;
   resources: RestResources;
-  app: AppState;
+  app: import("./reducer").AppState;
 }
 
 /** There were a few cases where we handle errors that are legitimately unknown.

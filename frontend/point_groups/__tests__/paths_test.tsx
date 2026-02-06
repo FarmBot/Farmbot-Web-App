@@ -61,6 +61,9 @@ const pathTestCases = () => {
   };
 };
 
+afterAll(() => {
+  jest.unmock("../../api/crud");
+});
 describe("<PathInfoBar />", () => {
   const fakeProps = (): PathInfoBarProps => ({
     sortTypeKey: "random",

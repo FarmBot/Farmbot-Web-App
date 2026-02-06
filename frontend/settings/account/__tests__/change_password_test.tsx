@@ -13,11 +13,18 @@ jest.mock("react", () => ({
 }));
 
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import {
+  cleanup, render, screen, fireEvent, waitFor,
+} from "@testing-library/react";
 import { ChangePassword } from "../change_password";
 import { API } from "../../../api/api";
 import { error, success } from "../../../toast/toast";
 import axios from "axios";
+
+afterEach(() => {
+  mockRef = { current: { querySelectorAll: () => [{ value: "" }] } };
+  cleanup();
+});
 
 const setFields = (
   password: string,
@@ -35,6 +42,10 @@ const setFields = (
   fireEvent.click(button);
 };
 
+afterAll(() => {
+  jest.unmock("axios");
+  jest.unmock("react");
+});
 describe("<ChangePassword />", () => {
   it("rejects new == old password case", () => {
     render(<ChangePassword />);

@@ -1,35 +1,63 @@
 let mockResponse: string | Error = "12345";
-jest.mock("axios", () => ({
-  post: jest.fn(() =>
-    typeof mockResponse === "string"
-      ? Promise.resolve(mockResponse)
-      : Promise.reject(mockResponse)),
-}));
+let mockPost = jest.fn();
 
 const mockMqttClient = {
   on: jest.fn((ev: string, cb: Function) => ev == "connect" && cb()),
   subscribe: jest.fn(),
 };
-
-jest.mock("mqtt", () => ({ connect: () => mockMqttClient }));
+const mockConnect = jest.fn(() => mockMqttClient);
 
 import React from "react";
 import axios from "axios";
+import mqtt from "mqtt";
 import { shallow } from "enzyme";
 import { DemoIframe, WAITING_ON_API, EASTER_EGG, MQTT_CHAN } from "../demo_iframe";
-import { IConnackPacket } from "mqtt";
 import { tourPath } from "../../help/tours";
 import { Path } from "../../internal_urls";
+import * as messageCards from "../../messages/cards";
 
 describe("<DemoIframe />", () => {
+  const originalConsoleError = console.error;
+  let seedDataOptionsSpy: jest.SpyInstance;
+  let seedDataOptionsDdiSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    seedDataOptionsSpy = jest.spyOn(messageCards, "SEED_DATA_OPTIONS")
+      .mockReturnValue([
+        { label: "Genesis", value: "genesis_1.8" },
+        { label: "Express", value: "express_1.2" },
+        { label: "None", value: "none" },
+      ]);
+    seedDataOptionsDdiSpy = jest.spyOn(messageCards, "SEED_DATA_OPTIONS_DDI")
+      .mockReturnValue({
+        "genesis_1.8": { label: "Genesis", value: "genesis_1.8" },
+        "express_1.2": { label: "Express", value: "express_1.2" },
+      });
+    mockPost = jest.fn(() =>
+      typeof mockResponse === "string"
+        ? Promise.resolve(mockResponse)
+        : Promise.reject(mockResponse));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (axios as any).post = mockPost;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (mqtt as any).connect = mockConnect;
+    mockConnect.mockClear();
+    mockMqttClient.on.mockClear();
+    mockMqttClient.subscribe.mockClear();
+  });
+
+  afterEach(() => {
+    seedDataOptionsSpy.mockRestore();
+    seedDataOptionsDdiSpy.mockRestore();
+    console.error = originalConsoleError;
+  });
+
   it("renders OK", async () => {
     mockResponse = "yep.";
     const el = shallow<DemoIframe>(<DemoIframe />);
     expect(el.text()).toContain("DEMO THE APP");
-    el.instance().connectMqtt = () =>
-      Promise.resolve() as unknown as Promise<IConnackPacket>;
-    await el.instance().requestAccount();
-    await expect(axios.post).toHaveBeenCalled();
+    await el.instance().connectApi();
+    expect(mockPost).toHaveBeenCalled();
     expect(el.state().stage).toContain(WAITING_ON_API);
   });
 
@@ -38,7 +66,7 @@ describe("<DemoIframe />", () => {
     mockResponse = new Error("Nope.");
     const el = shallow<DemoIframe>(<DemoIframe />);
     await el.instance().connectApi();
-    expect(axios.post).toHaveBeenCalled();
+    expect(mockPost).toHaveBeenCalled();
     expect(el.state().error).toBe(mockResponse);
     expect(console.error).toHaveBeenCalledWith(mockResponse);
   });
@@ -60,16 +88,19 @@ describe("<DemoIframe />", () => {
   it("does something 🤫", async () => {
     mockResponse = "OK!";
     const el = shallow<DemoIframe>(<DemoIframe />);
-    Math.round = jest.fn(() => 51);
-    el.instance().connectApi();
+    const roundSpy = jest.spyOn(Math, "round").mockImplementation(() => 51);
+    const request = el.instance().connectApi();
     expect(el.text()).toContain(EASTER_EGG);
-    await expect(axios.post).toHaveBeenCalled();
+    await request;
+    roundSpy.mockRestore();
+    expect(mockPost).toHaveBeenCalled();
     expect(el.text()).toContain(WAITING_ON_API);
   });
 
   it("connects to MQTT", async () => {
     const i = new DemoIframe({});
     await i.connectMqtt();
+    expect(mockConnect).toHaveBeenCalled();
     const { on, subscribe } = mockMqttClient;
     expect(subscribe).toHaveBeenCalledWith(MQTT_CHAN, i.setError);
     expect(on).toHaveBeenCalledWith("message", i.handleMessage);

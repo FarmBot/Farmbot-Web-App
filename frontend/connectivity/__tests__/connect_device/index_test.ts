@@ -1,21 +1,4 @@
-jest.mock("../../index", () => ({
-  dispatchNetworkUp: jest.fn(),
-  dispatchNetworkDown: jest.fn()
-}));
-
 let mockConfigValue: boolean | number = false;
-jest.mock("../../../config_storage/actions", () => ({
-  getWebAppConfigValue: () => () => mockConfigValue,
-}));
-
-jest.mock("../../../util/beep", () => ({
-  beep: jest.fn(),
-}));
-
-let mockOnline = false;
-jest.mock("../../../devices/must_be_online", () => ({
-  forceOnline: () => mockOnline,
-}));
 
 import { HardwareState } from "../../../devices/interfaces";
 import {
@@ -38,8 +21,8 @@ import {
 import { Actions, Content } from "../../../constants";
 import { Log } from "farmbot/dist/resources/api_resources";
 import { ALLOWED_CHANNEL_NAMES, ALLOWED_MESSAGE_TYPES, Farmbot } from "farmbot";
-import { dispatchNetworkUp, dispatchNetworkDown } from "../../index";
-import { talk } from "browser-speech";
+import * as connectivity from "../../index";
+import * as browserSpeech from "browser-speech";
 import { MessageType } from "../../../sequences/interfaces";
 import { FbjsEventName } from "farmbot/dist/constants";
 import {
@@ -48,9 +31,43 @@ import {
 import { onLogs } from "../../log_handlers";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { globalQueue } from "../../batch_queue";
-import { beep } from "../../../util/beep";
+import * as beepSupport from "../../../util/beep";
+import { store } from "../../../redux/store";
+import * as mustBeOnline from "../../../devices/must_be_online";
+import * as configStorageActions from "../../../config_storage/actions";
 
 const ANY_NUMBER = expect.any(Number);
+let dispatchNetworkUpSpy: jest.SpyInstance;
+let dispatchNetworkDownSpy: jest.SpyInstance;
+let forceOnlineSpy: jest.SpyInstance;
+let getWebAppConfigValueSpy: jest.SpyInstance;
+let talkSpy: jest.SpyInstance;
+let beepSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  mockConfigValue = false;
+  talkSpy = jest.spyOn(browserSpeech, "talk").mockImplementation(jest.fn());
+  beepSpy = jest.spyOn(beepSupport, "beep").mockImplementation(jest.fn());
+  dispatchNetworkUpSpy =
+    jest.spyOn(connectivity, "dispatchNetworkUp").mockImplementation(jest.fn());
+  dispatchNetworkDownSpy =
+    jest.spyOn(connectivity, "dispatchNetworkDown").mockImplementation(jest.fn());
+  forceOnlineSpy = jest.spyOn(mustBeOnline, "forceOnline").mockReturnValue(false);
+  getWebAppConfigValueSpy =
+    jest.spyOn(configStorageActions, "getWebAppConfigValue")
+      .mockImplementation(() => () => mockConfigValue);
+});
+
+afterEach(() => {
+  mockConfigValue = false;
+  talkSpy.mockRestore();
+  beepSpy.mockRestore();
+  dispatchNetworkUpSpy.mockRestore();
+  dispatchNetworkDownSpy.mockRestore();
+  forceOnlineSpy.mockRestore();
+  getWebAppConfigValueSpy.mockRestore();
+});
 
 describe("incomingStatus", () => {
   it("creates an action", () => {
@@ -89,7 +106,7 @@ describe("actOnChannelName()", () => {
 describe("showLogOnScreen", () => {
 
   function assertToastr(types: ALLOWED_MESSAGE_TYPES[], toastr: Function) {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
     types.map((x) => {
       const log = fakeLog(x, ["toast"]);
       showLogOnScreen(log);
@@ -140,17 +157,16 @@ describe("speakLogAloud", () => {
     mockConfigValue = false;
     const speak = speakLogAloud(jest.fn());
     speak(fakeSpeakLog);
-    expect(talk).not.toHaveBeenCalled();
+    expect(talkSpy).not.toHaveBeenCalled();
   });
 
   it("calls browser-speech", () => {
     mockConfigValue = true;
     const speak = speakLogAloud(jest.fn());
-    Object.defineProperty(navigator, "language", {
-      value: "en_us", configurable: true
-    });
     speak(fakeSpeakLog);
-    expect(talk).toHaveBeenCalledWith("hello", "en");
+    expect(talkSpy).toHaveBeenCalledWith("hello", expect.any(String));
+    const lang = talkSpy.mock.calls[0]?.[1];
+    expect(lang?.length).toEqual(2);
   });
 });
 
@@ -161,26 +177,26 @@ describe("logBeep()", () => {
   it("doesn't beep: off", () => {
     mockConfigValue = 0;
     logBeep(jest.fn())(log);
-    expect(beep).not.toHaveBeenCalled();
+    expect(beepSpy).not.toHaveBeenCalled();
   });
 
   it("doesn't beep: lower verbosity", () => {
     mockConfigValue = 1;
     logBeep(jest.fn())(log);
-    expect(beep).not.toHaveBeenCalled();
+    expect(beepSpy).not.toHaveBeenCalled();
   });
 
   it("beeps", () => {
     mockConfigValue = 2;
     logBeep(jest.fn())(log);
-    expect(beep).toHaveBeenCalledWith(MessageType.info);
+    expect(beepSpy).toHaveBeenCalledWith(MessageType.info);
   });
 
   it("handles unknown verbosity", () => {
     mockConfigValue = 2;
     log.verbosity = undefined;
     logBeep(jest.fn())(log);
-    expect(beep).toHaveBeenCalledWith(MessageType.info);
+    expect(beepSpy).toHaveBeenCalledWith(MessageType.info);
   });
 });
 
@@ -189,33 +205,30 @@ describe("initLog", () => {
     const log = fakeLog(MessageType.error);
     const action = initLog(log);
     expect(action.payload.kind).toBe("Log");
-    // expect(action.payload.specialStatus).toBe(undefined);
-    if (action.payload.kind === "Log") {
-      expect(action.payload.body.message).toBe(log.message);
-    }
+    expect(action.payload.body.message).toBe(log.message);
   });
 });
 
 describe("bothUp()", () => {
   it("marks MQTT and API as up", () => {
     bothUp();
-    expect(dispatchNetworkUp).toHaveBeenCalledWith("user.mqtt", ANY_NUMBER);
+    expect(dispatchNetworkUpSpy).toHaveBeenCalledWith("user.mqtt", ANY_NUMBER);
   });
 });
 
 describe("onOffline", () => {
   it("tells the app MQTT is down", () => {
-    mockOnline = false;
-    jest.resetAllMocks();
+    forceOnlineSpy.mockReturnValue(false);
+    jest.clearAllMocks();
     onOffline();
-    expect(dispatchNetworkDown).toHaveBeenCalledWith("user.mqtt", ANY_NUMBER);
+    expect(dispatchNetworkDownSpy).toHaveBeenCalledWith("user.mqtt", ANY_NUMBER);
     expect(error).toHaveBeenCalledWith(
       Content.MQTT_DISCONNECTED, { idPrefix: "offline" });
   });
 
   it("doesn't show toast", () => {
-    mockOnline = true;
-    jest.resetAllMocks();
+    forceOnlineSpy.mockReturnValue(true);
+    jest.clearAllMocks();
     onOffline();
     expect(error).not.toHaveBeenCalled();
   });
@@ -223,17 +236,17 @@ describe("onOffline", () => {
 
 describe("onOnline", () => {
   it("tells the app MQTT is up", () => {
-    mockOnline = false;
-    jest.resetAllMocks();
+    forceOnlineSpy.mockReturnValue(false);
+    jest.clearAllMocks();
     onOnline();
-    expect(dispatchNetworkUp).toHaveBeenCalledWith("user.mqtt", ANY_NUMBER);
+    expect(dispatchNetworkUpSpy).toHaveBeenCalledWith("user.mqtt", ANY_NUMBER);
     expect(removeToast).toHaveBeenCalledWith("offline");
     expect(success).toHaveBeenCalled();
   });
 
   it("doesn't show toast", () => {
-    mockOnline = true;
-    jest.resetAllMocks();
+    forceOnlineSpy.mockReturnValue(true);
+    jest.clearAllMocks();
     onOnline();
     expect(success).not.toHaveBeenCalled();
   });
@@ -241,7 +254,7 @@ describe("onOnline", () => {
 
 describe("onReconnect()", () => {
   it("sends reconnect toast", () => {
-    mockOnline = false;
+    forceOnlineSpy.mockReturnValue(false);
     onReconnect();
     expect(warning).toHaveBeenCalledWith(
       "Attempting to reconnect to the message broker",
@@ -249,7 +262,7 @@ describe("onReconnect()", () => {
   });
 
   it("doesn't show toast", () => {
-    mockOnline = true;
+    forceOnlineSpy.mockReturnValue(true);
     onReconnect();
     expect(warning).not.toHaveBeenCalled();
   });
@@ -269,15 +282,15 @@ describe("changeLastClientConnected", () => {
 
 describe("onSent", () => {
   it("marks MQTT as up", () => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
     onSent({ connected: true })();
-    expect(dispatchNetworkUp).toHaveBeenCalledWith("user.mqtt", ANY_NUMBER);
+    expect(dispatchNetworkUpSpy).toHaveBeenCalledWith("user.mqtt", ANY_NUMBER);
   });
 
   it("marks MQTT as down", () => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
     onSent({ connected: false })();
-    expect(dispatchNetworkDown)
+    expect(dispatchNetworkDownSpy)
       .toHaveBeenCalledWith("user.mqtt", ANY_NUMBER);
   });
 });
@@ -293,7 +306,7 @@ describe("onMalformed()", () => {
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_MALFORMED_NOTIFICATION_SENT, payload: true,
     });
-    jest.resetAllMocks();
+    jest.clearAllMocks();
     state.bot.alreadyToldUserAboutMalformedMsg = true;
     onMalformed(dispatch, () => state)();
     expect(warning) // Only fire once.
@@ -315,8 +328,11 @@ describe("onPublicBroadcast", () => {
       const log = fakeLog(MessageType.error, []);
       log.message = "bot xyz is offline";
       const taggedLog = fn(log);
+      const getStateSpy =
+        jest.spyOn(store, "getState").mockReturnValue(fakeState() as never);
       globalQueue.maybeWork();
-      expect(taggedLog && taggedLog.kind).toEqual("Log");
+      getStateSpy.mockRestore();
+      expect(taggedLog?.kind).toEqual("Log");
     });
   });
 

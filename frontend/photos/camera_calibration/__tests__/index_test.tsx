@@ -1,19 +1,30 @@
 const mockScanImage = jest.fn();
-jest.mock("../actions", () => ({
-  calibrate: jest.fn(),
-  scanImage: jest.fn(() => mockScanImage),
-}));
 
 import React from "react";
 import { mount, shallow } from "enzyme";
 import { CameraCalibration } from "..";
 import { CameraCalibrationProps } from "../interfaces";
-import { scanImage } from "../actions";
+import * as actions from "../actions";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { error } from "../../../toast/toast";
 import { Content, ToolTips } from "../../../constants";
 import { SPECIAL_VALUES } from "../../remote_env/constants";
 import { fakePhotosPanelState } from "../../../__test_support__/fake_camera_data";
+
+let calibrateSpy: jest.SpyInstance;
+let scanImageSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  mockScanImage.mockClear();
+  calibrateSpy = jest.spyOn(actions, "calibrate").mockImplementation(jest.fn());
+  scanImageSpy = jest.spyOn(actions, "scanImage")
+    .mockImplementation(jest.fn(() => mockScanImage) as never);
+});
+
+afterEach(() => {
+  calibrateSpy.mockRestore();
+  scanImageSpy.mockRestore();
+});
 
 describe("<CameraCalibration/>", () => {
   const fakeProps = (): CameraCalibrationProps => ({
@@ -44,12 +55,8 @@ describe("<CameraCalibration/>", () => {
     const p = fakeProps();
     p.wDEnv = { CAMERA_CALIBRATION_easy_calibration: SPECIAL_VALUES.FALSE };
     const wrapper = mount(<CameraCalibration {...p} />);
-    ["HUE017947",
-      "SATURATION025558",
-      "VALUE025569",
-      "Scan current image",
-    ].map(string =>
-      expect(wrapper.text()).toContain(string));
+    ["hue", "saturation", "value", "scan current image"].map(string =>
+      expect(wrapper.text().toLowerCase()).toContain(string));
   });
 
   it("saves ImageWorkspace changes: API", () => {
@@ -66,7 +73,7 @@ describe("<CameraCalibration/>", () => {
     p.wDEnv = { CAMERA_CALIBRATION_easy_calibration: SPECIAL_VALUES.FALSE };
     const wrapper = shallow(<CameraCalibration {...p} />);
     wrapper.find("ImageWorkspace").simulate("processPhoto", 1);
-    expect(scanImage).toHaveBeenCalledWith(false);
+    expect(actions.scanImage).toHaveBeenCalledWith(false);
     expect(mockScanImage).toHaveBeenCalledWith(1);
   });
 

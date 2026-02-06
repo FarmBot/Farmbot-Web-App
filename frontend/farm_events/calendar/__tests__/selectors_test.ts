@@ -1,46 +1,58 @@
 import {
   fakeFarmEvent, fakeSequence, fakeRegimen,
 } from "../../../__test_support__/fake_state/resources";
-const mockSequence = fakeSequence();
-mockSequence.body.id = 1;
-const mockSeqFarmEvent = fakeFarmEvent(mockSequence.kind, mockSequence.body.id);
-mockSeqFarmEvent.body.id = 10;
-const mockRegimen = fakeRegimen();
-mockRegimen.body.id = 2;
-const mockRegFarmEvent = fakeFarmEvent(mockRegimen.kind, mockRegimen.body.id);
-mockRegFarmEvent.body.id = 20;
-jest.mock("../../../resources/selectors", () => ({
-  selectAllFarmEvents: () => [mockSeqFarmEvent, mockRegFarmEvent],
-  indexSequenceById: () => ({ 1: mockSequence }),
-  indexRegimenById: () => ({ 2: mockRegimen }),
-  selectAllPlantPointers: () => [],
-  findUuid: jest.fn(),
-}));
+import {
+  buildResourceIndex,
+} from "../../../__test_support__/resource_index_builder";
 
 import { joinFarmEventsToExecutable } from "../selectors";
-import { ResourceIndex } from "../../../resources/interfaces";
 
 describe("joinFarmEventsToExecutable()", () => {
+  const buildIndex = (sequenceId = 1, regimenId = 2) => {
+    const sequence = fakeSequence();
+    sequence.body.id = 1;
+    const seqFarmEvent = fakeFarmEvent(sequence.kind, sequenceId);
+    seqFarmEvent.body.id = 10;
+    const regimen = fakeRegimen();
+    regimen.body.id = 2;
+    const regFarmEvent = fakeFarmEvent(regimen.kind, regimenId);
+    regFarmEvent.body.id = 20;
+    const resourceIndex = buildResourceIndex([
+      sequence,
+      regimen,
+    ]).index;
+    resourceIndex.references[seqFarmEvent.uuid] = seqFarmEvent;
+    resourceIndex.references[regFarmEvent.uuid] = regFarmEvent;
+    resourceIndex.byKind.FarmEvent[seqFarmEvent.uuid] = seqFarmEvent.uuid;
+    resourceIndex.byKind.FarmEvent[regFarmEvent.uuid] = regFarmEvent.uuid;
+    return {
+      sequence,
+      regimen,
+      seqFarmEvent,
+      regFarmEvent,
+      index: resourceIndex,
+    };
+  };
+
   it("joins farm events with executable", () => {
-    const result = joinFarmEventsToExecutable({} as ResourceIndex);
+    const { sequence, regimen, seqFarmEvent, regFarmEvent, index } = buildIndex();
+    const result = joinFarmEventsToExecutable(index);
     expect(result.length).toEqual(2);
     const joinedSeqFarmEvent = result.find(x => x.executable_type == "Sequence");
-    expect(joinedSeqFarmEvent?.executable.id).toEqual(mockSequence.body.id);
-    expect(joinedSeqFarmEvent?.id).toEqual(mockSeqFarmEvent.body.id);
+    expect(joinedSeqFarmEvent?.executable.id).toEqual(sequence.body.id);
+    expect(joinedSeqFarmEvent?.id).toEqual(seqFarmEvent.body.id);
     const joinedRegFarmEvent = result.find(x => x.executable_type == "Regimen");
-    expect(joinedRegFarmEvent?.executable.id).toEqual(mockRegimen.body.id);
-    expect(joinedRegFarmEvent?.id).toEqual(mockRegFarmEvent.body.id);
+    expect(joinedRegFarmEvent?.executable.id).toEqual(regimen.body.id);
+    expect(joinedRegFarmEvent?.id).toEqual(regFarmEvent.body.id);
   });
 
   it("throws error for missing executable", () => {
-    mockSeqFarmEvent.body.executable_id = 123;
-    mockRegFarmEvent.body.executable_id = 456;
-    expect(() => joinFarmEventsToExecutable({} as ResourceIndex)).toThrow();
+    const { index } = buildIndex(123, 456);
+    expect(() => joinFarmEventsToExecutable(index)).toThrow();
   });
 
   it("throws error for missing executable id", () => {
-    mockSeqFarmEvent.body.executable_id = 0;
-    mockRegFarmEvent.body.executable_id = 0;
-    expect(() => joinFarmEventsToExecutable({} as ResourceIndex)).toThrow();
+    const { index } = buildIndex(0, 0);
+    expect(() => joinFarmEventsToExecutable(index)).toThrow();
   });
 });

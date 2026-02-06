@@ -12,6 +12,9 @@ import { Actions } from "../../constants";
 
 const mockLog = fakeLog();
 
+afterAll(() => {
+  jest.unmock("axios");
+});
 describe("refreshLogs", () => {
   it("dispatches the appropriate action", async () => {
     const dispatch = jest.fn();

@@ -11,6 +11,9 @@ import { destroyAll } from "../../../api/crud";
 import { success, error } from "../../../toast/toast";
 import { ClearFarmwareDataProps } from "../interfaces";
 
+afterAll(() => {
+  jest.unmock("../../../api/crud");
+});
 describe("<ClearFarmwareData />", () => {
   const fakeProps = (): ClearFarmwareDataProps => ({
     farmwareEnvs: [],

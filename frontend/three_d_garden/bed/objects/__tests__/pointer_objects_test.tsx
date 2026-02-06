@@ -32,6 +32,10 @@ import {
   dropPlant,
 } from "../../../../farm_designer/map/layers/plants/plant_actions";
 
+afterAll(() => {
+  jest.unmock("../../../../farm_designer/map/layers/plants/plant_actions");
+  jest.unmock("../../../../screen_size");
+});
 describe("<PointerObjects />", () => {
   const fakeProps = (): PointerObjectsProps => ({
     config: clone(INITIAL),

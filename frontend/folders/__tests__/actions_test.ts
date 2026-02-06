@@ -2,14 +2,8 @@ const mockStepGetResult = {
   value: { kind: "execute", args: { sequence_id: 1 } },
   resourceUuid: "",
 };
-jest.mock("../../draggable/actions", () => ({
-  stepGet: jest.fn(() => () => mockStepGetResult),
-}));
 
 let mockExceeded = false;
-jest.mock("../../sequences/actions", () => ({
-  sequenceLimitExceeded: () => mockExceeded,
-}));
 
 import {
   setFolderColor,
@@ -40,34 +34,67 @@ import { SpecialStatus } from "farmbot";
 import { dragEvent } from "../../__test_support__/fake_html_events";
 import { mockFolders } from "../test_fixtures";
 import { Path } from "../../internal_urls";
+import * as sequenceActions from "../../sequences/actions";
+import * as crudModule from "../../api/crud";
+import * as setActiveSequenceModule from "../../sequences/set_active_sequence_by_name";
+import * as draggableActions from "../../draggable/actions";
 
 const mockSequence = fakeSequence();
 const i = buildResourceIndex(newTaggedResource("Folder", mockFolders));
 
-const mockState: DeepPartial<Everything> =
-  ({ resources: buildResourceIndex([mockSequence], i) });
-
-jest.mock("../../redux/store", () => {
-  return {
-    store: {
-      dispatch: jest.fn(x => typeof x === "function" && x()),
-      getState: jest.fn(() => mockState)
-    }
-  };
+const mockState: DeepPartial<Everything> = ({
+  resources: buildResourceIndex([mockSequence], i),
 });
 
-jest.mock("../../api/crud", () => {
-  return {
-    destroy: jest.fn(),
-    edit: jest.fn(),
-    init: jest.fn(),
-    initSave: jest.fn(),
-    save: jest.fn()
-  };
+let sequenceLimitExceededSpy: jest.SpyInstance;
+let stepGetSpy: jest.SpyInstance;
+let destroySpy: jest.SpyInstance;
+let editSpy: jest.SpyInstance;
+let initSpy: jest.SpyInstance;
+let initSaveSpy: jest.SpyInstance;
+let saveSpy: jest.SpyInstance;
+let setActiveSequenceByNameSpy: jest.SpyInstance;
+let originalGetState: typeof store.getState;
+let originalDispatch: typeof store.dispatch;
+
+beforeEach(() => {
+  mockExceeded = false;
+  originalGetState = store.getState;
+  originalDispatch = store.dispatch;
+  (store as unknown as { getState: () => DeepPartial<Everything> }).getState =
+    () => mockState;
+  (store as unknown as { dispatch: jest.Mock }).dispatch =
+    jest.fn(value => typeof value === "function"
+      ? value(store.dispatch, store.getState)
+      : value);
+  stepGetSpy = jest.spyOn(draggableActions, "stepGet")
+    .mockImplementation(() => () => mockStepGetResult);
+  destroySpy = jest.spyOn(crudModule, "destroy").mockImplementation(jest.fn());
+  editSpy = jest.spyOn(crudModule, "edit").mockImplementation(jest.fn());
+  initSpy = jest.spyOn(crudModule, "init").mockImplementation(jest.fn());
+  initSaveSpy = jest.spyOn(crudModule, "initSave")
+    .mockImplementation(jest.fn());
+  saveSpy = jest.spyOn(crudModule, "save").mockImplementation(jest.fn());
+  setActiveSequenceByNameSpy =
+    jest.spyOn(setActiveSequenceModule, "setActiveSequenceByName")
+      .mockImplementation(jest.fn());
+  sequenceLimitExceededSpy = jest.spyOn(sequenceActions, "sequenceLimitExceeded")
+    .mockImplementation(() => mockExceeded);
 });
 
-jest.mock("../../sequences/set_active_sequence_by_name", () => {
-  return { setActiveSequenceByName: jest.fn() };
+afterEach(() => {
+  (store as unknown as { getState: typeof store.getState }).getState =
+    originalGetState;
+  (store as unknown as { dispatch: typeof store.dispatch }).dispatch =
+    originalDispatch;
+  stepGetSpy.mockRestore();
+  destroySpy.mockRestore();
+  editSpy.mockRestore();
+  initSpy.mockRestore();
+  initSaveSpy.mockRestore();
+  saveSpy.mockRestore();
+  setActiveSequenceByNameSpy.mockRestore();
+  sequenceLimitExceededSpy.mockRestore();
 });
 
 describe("setFolderColor", () => {
@@ -247,6 +274,11 @@ describe("moveSequence", () => {
 });
 
 describe("dropSequence()", () => {
+  beforeEach(() => {
+    mockStepGetResult.value.args.sequence_id = mockSequence.body.id;
+    mockStepGetResult.resourceUuid = "";
+  });
+
   it("updates folder_id", () => {
     dropSequence(1)(dragEvent("fakeKey"));
     expect(stepGet).toHaveBeenCalledWith("fakeKey");

@@ -8,12 +8,24 @@ export function clickButton(
   position: number,
   text: string,
   options?: { partial_match?: boolean, icon?: string }) {
+  const textMatches = (actualText: string) =>
+    options?.partial_match
+      ? actualText.includes(text.toLowerCase())
+      : actualText === text.toLowerCase();
   if (position < 0) {
     position = wrapper.find("button").length + position;
   }
-  const button = wrapper.find("button").at(position);
+  let button = wrapper.find("button").at(position);
   const expectedText = text.toLowerCase();
-  const actualText = button.text().toLowerCase();
+  let actualText = button.text().toLowerCase();
+  if (!textMatches(actualText)) {
+    const matches = wrapper.find("button")
+      .filterWhere(b => textMatches(b.text().toLowerCase()));
+    if (matches.length > 0) {
+      button = matches.at(0);
+      actualText = button.text().toLowerCase();
+    }
+  }
   options?.partial_match
     ? expect(actualText).toContain(expectedText)
     : expect(actualText).toEqual(expectedText);

@@ -1,16 +1,11 @@
 import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
+import { store } from "../../redux/store";
 let mockResources = buildResourceIndex([]);
-jest.mock("../../redux/store", () => ({
-  store: {
-    dispatch: jest.fn(),
-    getState: () => ({ resources: mockResources }),
-  },
-}));
 
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { cleanup, render, screen } from "@testing-library/react";
 import { Visualization, VisualizationProps } from "../visualization";
 import { INITIAL } from "../config";
 import { clone } from "lodash";
@@ -20,7 +15,21 @@ import {
 } from "../../__test_support__/fake_state/resources";
 import { findSequence } from "../../resources/selectors_by_kind";
 
+let originalGetState: typeof store.getState;
+
 describe("<Visualization />", () => {
+  beforeEach(() => {
+    originalGetState = store.getState;
+    (store as unknown as { getState: () => { resources: typeof mockResources } })
+      .getState = () => ({ resources: mockResources });
+  });
+
+  afterEach(() => {
+    cleanup();
+    (store as unknown as { getState: typeof store.getState }).getState =
+      originalGetState;
+  });
+
   const fakeProps = (): VisualizationProps => ({
     config: clone(INITIAL),
     visualizedSequenceUUID: undefined,

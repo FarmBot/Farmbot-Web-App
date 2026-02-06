@@ -30,6 +30,12 @@ import { emptyState } from "../../resources/reducer";
 import { Path } from "../../internal_urls";
 import { API } from "../../api";
 
+afterAll(() => {
+  jest.unmock("../../screen_size");
+});
+afterAll(() => {
+  jest.unmock("axios");
+});
 describe("<Sequences />", () => {
   API.setBaseUrl("");
 

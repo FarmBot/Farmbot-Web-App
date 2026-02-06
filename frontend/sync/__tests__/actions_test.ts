@@ -7,6 +7,9 @@ jest.mock("../../session", () => ({
 import { syncFail } from "../actions";
 import { Session } from "../../session";
 
+afterAll(() => {
+  jest.unmock("../../session");
+});
 describe("syncFail", () => {
   it("tells you why you've been logged out", () => {
     const e = new Error("Whatever");

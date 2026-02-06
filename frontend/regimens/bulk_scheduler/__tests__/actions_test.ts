@@ -23,6 +23,15 @@ import {
 
 const sequence_id = 23;
 const regimen_id = 32;
+
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+
+afterAll(() => {
+  jest.unmock("../../../api/crud");
+});
+
 describe("commitBulkEditor()", () => {
   function newFakeState() {
     const state = fakeState();

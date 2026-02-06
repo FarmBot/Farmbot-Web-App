@@ -1,28 +1,50 @@
-const mockDevice = {
-  moveAbsolute: jest.fn((_) => Promise.resolve()),
-  home: jest.fn((_) => Promise.resolve()),
-  findHome: jest.fn((_) => Promise.resolve()),
-  setZero: jest.fn((_) => Promise.resolve()),
-  calibrate: jest.fn((_) => Promise.resolve()),
-};
-jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
-
-jest.mock("../../../config_storage/actions", () => ({
-  toggleWebAppBool: jest.fn()
-}));
-
 import React from "react";
 import { shallow, mount } from "enzyme";
 import { BotPositionRows } from "../bot_position_rows";
 import { BotPositionRowsProps } from "../interfaces";
+import * as deviceActions from "../../../devices/actions";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { Dictionary } from "farmbot";
 import { BooleanSetting } from "../../../session_keys";
 import { clickButton } from "../../../__test_support__/helpers";
 import { Path } from "../../../internal_urls";
+import * as configStorageActions from "../../../config_storage/actions";
 
 describe("<BotPositionRows />", () => {
   const mockConfig: Dictionary<boolean> = {};
+  let moveAbsoluteSpy: jest.SpyInstance;
+  let moveToHomeSpy: jest.SpyInstance;
+  let findHomeSpy: jest.SpyInstance;
+  let setHomeSpy: jest.SpyInstance;
+  let findAxisLengthSpy: jest.SpyInstance;
+  let toggleWebAppBoolSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    Object.keys(mockConfig).forEach(key => delete mockConfig[key]);
+    moveAbsoluteSpy =
+      jest.spyOn(deviceActions, "moveAbsolute").mockImplementation(jest.fn());
+    moveToHomeSpy =
+      jest.spyOn(deviceActions, "moveToHome").mockImplementation(jest.fn());
+    findHomeSpy =
+      jest.spyOn(deviceActions, "findHome").mockImplementation(jest.fn());
+    setHomeSpy =
+      jest.spyOn(deviceActions, "setHome").mockImplementation(jest.fn());
+    findAxisLengthSpy =
+      jest.spyOn(deviceActions, "findAxisLength").mockImplementation(jest.fn());
+    toggleWebAppBoolSpy =
+      jest.spyOn(configStorageActions, "toggleWebAppBool")
+        .mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    moveAbsoluteSpy.mockRestore();
+    moveToHomeSpy.mockRestore();
+    findHomeSpy.mockRestore();
+    setHomeSpy.mockRestore();
+    findAxisLengthSpy.mockRestore();
+    toggleWebAppBoolSpy.mockRestore();
+  });
 
   const fakeProps = (): BotPositionRowsProps => ({
     getConfigValue: jest.fn(key => mockConfig[key]),
@@ -40,7 +62,7 @@ describe("<BotPositionRows />", () => {
     const wrapper = shallow(<BotPositionRows {...fakeProps()} />);
     const axisInput = wrapper.find("AxisInputBoxGroup");
     axisInput.simulate("commit", "123");
-    expect(mockDevice.moveAbsolute).toHaveBeenCalledWith("123");
+    expect(deviceActions.moveAbsolute).toHaveBeenCalledWith("123");
   });
 
   it("shows encoder position", () => {
@@ -65,7 +87,7 @@ describe("<BotPositionRows />", () => {
     const wrapper = mount(<BotPositionRows {...fakeProps()} />);
     wrapper.find(".fa-ellipsis-v").first().simulate("click");
     clickButton(wrapper, 0, "move to home");
-    expect(mockDevice.home).toHaveBeenCalledWith({ axis: "x", speed: 100 });
+    expect(deviceActions.moveToHome).toHaveBeenCalledWith("x");
   });
 
   it("finds home", () => {
@@ -74,7 +96,7 @@ describe("<BotPositionRows />", () => {
     const wrapper = mount(<BotPositionRows {...p} />);
     wrapper.find(".fa-ellipsis-v").first().simulate("click");
     clickButton(wrapper, 1, "find home");
-    expect(mockDevice.findHome).toHaveBeenCalledWith({ axis: "x", speed: 100 });
+    expect(deviceActions.findHome).toHaveBeenCalledWith("x");
   });
 
   it("sets zero", () => {
@@ -83,7 +105,7 @@ describe("<BotPositionRows />", () => {
     const wrapper = mount(<BotPositionRows {...p} />);
     wrapper.find(".fa-ellipsis-v").first().simulate("click");
     clickButton(wrapper, 2, "set home");
-    expect(mockDevice.setZero).toHaveBeenCalledWith("x");
+    expect(deviceActions.setHome).toHaveBeenCalledWith("x");
   });
 
   it("calibrates", () => {
@@ -92,7 +114,7 @@ describe("<BotPositionRows />", () => {
     const wrapper = mount(<BotPositionRows {...p} />);
     wrapper.find(".fa-ellipsis-v").first().simulate("click");
     clickButton(wrapper, 3, "find length");
-    expect(mockDevice.calibrate).toHaveBeenCalledWith({ axis: "x" });
+    expect(deviceActions.findAxisLength).toHaveBeenCalledWith("x");
   });
 
   it("navigates to axis settings", () => {

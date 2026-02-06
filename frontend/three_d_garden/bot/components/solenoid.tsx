@@ -4,7 +4,7 @@ import { Config } from "../../config";
 import { Group, Mesh } from "../../components";
 import { WaterTube } from "./water_tube";
 import { easyCubicBezierCurve3, threeSpace, zDir as zDirFunc } from "../../helpers";
-import { GLTF } from "three-stdlib";
+import type { GLTF } from "three-stdlib";
 import { useGLTF } from "@react-three/drei";
 import { ASSETS, LIB_DIR, PartName } from "../../constants";
 

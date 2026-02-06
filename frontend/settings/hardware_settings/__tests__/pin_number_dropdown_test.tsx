@@ -15,6 +15,9 @@ import { FBSelect } from "../../../ui";
 import { updateMCU } from "../../../devices/actions";
 import { DeviceSetting } from "../../../constants";
 
+afterAll(() => {
+  jest.unmock("../../../devices/actions");
+});
 describe("<PinNumberDropdown />", () => {
   const fakeProps =
     (firmwareConfig?: TaggedFirmwareConfig): PinGuardMCUInputGroupProps => ({

@@ -3,6 +3,10 @@ import { shallow } from "enzyme";
 import { Link } from "../link";
 
 describe("<Link/>", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it("renders child elements", () => {
     function Child(_: unknown) { return <p>Hey!</p>; }
     const el = shallow(<Link to="/wherever"><Child /></Link>);

@@ -1,20 +1,10 @@
 import {
   fakeToolSlot, fakePoint,
 } from "../../../__test_support__/fake_state/resources";
-let mockToolSlot: TaggedToolSlotPointer | undefined = fakeToolSlot();
-jest.mock("../../../resources/selectors", () => ({
-  findPointerByTypeAndId: () => fakePoint(),
-  findSlotByToolId: () => mockToolSlot,
-  selectAllPlantPointers: jest.fn(() => []),
-  findUuid: jest.fn(),
-}));
 
 import { fakeVariableNameSet } from "../../../__test_support__/fake_variables";
-let mockVariable = fakeVariableNameSet("var").var;
-jest.mock("../../../resources/sequence_meta", () => ({
-  findVariableByName: () => mockVariable,
-  createSequenceMeta: jest.fn(),
-}));
+import * as selectors from "../../../resources/selectors";
+import * as sequenceMeta from "../../../resources/sequence_meta";
 
 import React from "react";
 import {
@@ -29,6 +19,37 @@ import { Actions } from "../../../constants";
 import { maybeTagStep, getStepTag } from "../../../resources/sequence_tagging";
 import { SequenceMeta } from "../../../resources/sequence_meta";
 import { Path } from "../../../internal_urls";
+
+let mockToolSlot: TaggedToolSlotPointer | undefined = fakeToolSlot();
+let mockVariable = fakeVariableNameSet("var").var;
+let findPointerByTypeAndIdSpy: jest.SpyInstance;
+let findSlotByToolIdSpy: jest.SpyInstance;
+let selectAllPlantPointersSpy: jest.SpyInstance;
+let findUuidSpy: jest.SpyInstance;
+let findVariableByNameSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  mockToolSlot = fakeToolSlot();
+  mockVariable = fakeVariableNameSet("var").var;
+  findPointerByTypeAndIdSpy = jest.spyOn(selectors, "findPointerByTypeAndId")
+    .mockImplementation(() => fakePoint());
+  findSlotByToolIdSpy = jest.spyOn(selectors, "findSlotByToolId")
+    .mockImplementation(() => mockToolSlot);
+  selectAllPlantPointersSpy = jest.spyOn(selectors, "selectAllPlantPointers")
+    .mockImplementation(() => []);
+  findUuidSpy = jest.spyOn(selectors, "findUuid")
+    .mockImplementation(jest.fn());
+  findVariableByNameSpy = jest.spyOn(sequenceMeta, "findVariableByName")
+    .mockImplementation(() => mockVariable);
+});
+
+afterEach(() => {
+  findPointerByTypeAndIdSpy.mockRestore();
+  findSlotByToolIdSpy.mockRestore();
+  selectAllPlantPointersSpy.mockRestore();
+  findUuidSpy.mockRestore();
+  findVariableByNameSpy.mockRestore();
+});
 
 const moveAbsolute =
   (location: MoveAbsolute["args"]["location"]): MoveAbsolute => ({

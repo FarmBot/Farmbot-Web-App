@@ -1,20 +1,13 @@
 let mockDev = false;
-jest.mock("../../settings/dev/dev_support", () => ({
-  DevSettings: { futureFeaturesEnabled: () => mockDev }
-}));
-
-jest.mock("axios", () => ({ post: jest.fn(() => Promise.resolve({})) }));
-
 import { fakeState } from "../../__test_support__/fake_state";
+import { store } from "../../redux/store";
 const mockState = fakeState();
-jest.mock("../../redux/store", () => ({
-  store: { getState: () => mockState, dispatch: jest.fn() },
-}));
 
 import React from "react";
 import { mount, shallow } from "enzyme";
 import { Feedback, SupportPanel } from "../support";
 import axios from "axios";
+import { DevSettings } from "../../settings/dev/dev_support";
 import { success } from "../../toast/toast";
 import { API } from "../../api";
 import { Help } from "../../ui";
@@ -22,6 +15,32 @@ import {
   buildResourceIndex, fakeDevice,
 } from "../../__test_support__/resource_index_builder";
 import { Path } from "../../internal_urls";
+
+let originalGetState: typeof store.getState;
+let originalDispatch: typeof store.dispatch;
+let futureFeaturesEnabledSpy: jest.SpyInstance;
+let axiosPostSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  originalGetState = store.getState;
+  originalDispatch = store.dispatch;
+  futureFeaturesEnabledSpy = jest.spyOn(DevSettings, "futureFeaturesEnabled")
+    .mockImplementation(() => mockDev);
+  axiosPostSpy = jest.spyOn(axios, "post").mockImplementation(() => Promise.resolve({}));
+  (store as unknown as { getState: () => typeof mockState }).getState =
+    () => mockState;
+  (store as unknown as { dispatch: jest.Mock }).dispatch = jest.fn();
+});
+
+afterEach(() => {
+  mockDev = false;
+  futureFeaturesEnabledSpy.mockRestore();
+  axiosPostSpy.mockRestore();
+  (store as unknown as { getState: typeof store.getState }).getState =
+    originalGetState;
+  (store as unknown as { dispatch: typeof store.dispatch }).dispatch =
+    originalDispatch;
+});
 
 describe("<SupportPanel />", () => {
   it("renders", () => {
@@ -48,8 +67,10 @@ describe("<Feedback />", () => {
       currentTarget: { value: "abc" }
     });
     await wrapper.find("button").simulate("click");
-    expect(axios.post).toHaveBeenCalledWith("http://localhost/api/feedback",
-      { message: "abc" });
+    expect(axiosPostSpy).toHaveBeenCalledWith(
+      expect.stringContaining("/api/feedback"),
+      { message: "abc", slug: undefined },
+    );
     expect(success).toHaveBeenCalledWith("Feedback sent.");
     expect(wrapper.find("button").hasClass("green")).toEqual(true);
     expect(wrapper.find("textarea").props().value).toEqual("");
@@ -62,8 +83,10 @@ describe("<Feedback />", () => {
       currentTarget: { value: "abc" }
     });
     await wrapper.find("button").simulate("click");
-    expect(axios.post).toHaveBeenCalledWith("http://localhost/api/feedback",
-      { message: "abc" });
+    expect(axiosPostSpy).toHaveBeenCalledWith(
+      expect.stringContaining("/api/feedback"),
+      { message: "abc", slug: undefined },
+    );
     expect(success).toHaveBeenCalledWith("Feedback sent.");
     expect(wrapper.find("button").hasClass("gray")).toEqual(true);
     expect(wrapper.find("textarea").props().value).toEqual("abc");

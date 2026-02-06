@@ -26,6 +26,14 @@ import { overwrite } from "../../../api/crud";
 import { fakeVariableNameSet } from "../../../__test_support__/fake_variables";
 import { cloneDeep } from "lodash";
 
+beforeEach(() => {
+  jest.clearAllMocks();
+});
+
+afterAll(() => {
+  jest.unmock("../../../api/crud");
+});
+
 describe("<LocalsList/>", () => {
   const coordinate: Coordinate = {
     kind: "coordinate",

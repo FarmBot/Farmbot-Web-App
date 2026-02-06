@@ -1,12 +1,4 @@
-jest.mock("../../api/crud", () => ({
-  save: jest.fn(),
-  overwrite: jest.fn(),
-}));
-
 let mockTzMismatch = false;
-jest.mock("../../devices/timezones/guess_timezone", () => ({
-  timezoneMismatch: () => mockTzMismatch,
-}));
 
 import React from "react";
 import {
@@ -32,15 +24,31 @@ import {
   buildResourceIndex, fakeDevice,
 } from "../../__test_support__/resource_index_builder";
 import { fakeVariableNameSet } from "../../__test_support__/fake_variables";
-import { save } from "../../api/crud";
+import * as crud from "../../api/crud";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { error, success, warning } from "../../toast/toast";
 import { BlurableInput } from "../../ui";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
 import { Path } from "../../internal_urls";
 import { Content } from "../../constants";
+import * as guessTimezone from "../../devices/timezones/guess_timezone";
 
 const mockSequence = fakeSequence();
+let saveSpy: jest.SpyInstance;
+let _overwriteSpy: jest.SpyInstance;
+let _timezoneMismatchSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  mockTzMismatch = false;
+  saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+  _overwriteSpy = jest.spyOn(crud, "overwrite").mockImplementation(jest.fn());
+  _timezoneMismatchSpy = jest.spyOn(guessTimezone, "timezoneMismatch")
+    .mockImplementation(() => mockTzMismatch);
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
 
 describe("<EditFEForm />", () => {
   const fakeProps = (): EditFEProps => ({
@@ -57,7 +65,7 @@ describe("<EditFEForm />", () => {
   });
 
   function instance(p: EditFEProps) {
-    return mount(<EditFEForm {...p} />).instance() as EditFEForm;
+    return mount(<EditFEForm {...p} />).find(EditFEForm).instance() as EditFEForm;
   }
   const context = { form: new EditFEForm(fakeProps()) };
 
@@ -100,8 +108,10 @@ describe("<EditFEForm />", () => {
   it("errors upon bad executable", () => {
     const p = fakeProps();
     p.farmEvent.body.executable_type = "nope" as ExecutableType;
-    console.error = jest.fn();
+    const consoleErrorSpy = jest.spyOn(console, "error")
+      .mockImplementation(jest.fn());
     expect(() => instance(p)).toThrow("nope is not a valid executable_type");
+    consoleErrorSpy.mockRestore();
   });
 
   it("sets the executable", () => {
@@ -222,11 +232,12 @@ describe("<EditFEForm />", () => {
     p.farmEvent.body.start_time = "2017-05-22T05:00:00.000Z";
     p.farmEvent.body.end_time = "2017-05-22T06:00:00.000Z";
     const i = instance(p);
-    window.alert = jest.fn();
+    const alertSpy = jest.spyOn(window, "alert").mockImplementation(jest.fn());
     await i.commitViewModel(moment(offsetTime(
       "2017-05-22", "06:00", fakeTimeSettings())));
-    expect(window.alert).toHaveBeenCalledWith(
+    expect(alertSpy).toHaveBeenCalledWith(
       expect.stringContaining("skipped regimen tasks"));
+    alertSpy.mockRestore();
   });
 
   it("sends toast with regimen start time", async () => {
@@ -304,7 +315,7 @@ describe("<EditFEForm />", () => {
     p.farmEvent.body.end_time = "2017-07-22T06:00:00.000Z";
     const i = instance(p);
     await i.commitViewModel(moment("2017-06-22T05:00:00.000Z"));
-    await expect(save).toHaveBeenCalled();
+    await expect(saveSpy).toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith("Unable to save event.");
   });
 
@@ -317,7 +328,7 @@ describe("<EditFEForm />", () => {
     p.farmEvent.body.end_time = "2017-06-22T06:00:00.000Z";
     const i = instance(p);
     await i.commitViewModel(moment("2017-05-21T03:00:00.000Z"));
-    await expect(save).toHaveBeenCalled();
+    await expect(saveSpy).toHaveBeenCalled();
     expect(success).toHaveBeenCalledWith(
       "The next item in this event will run in a day.");
     expect(warning).toHaveBeenCalledWith(Content.WITHIN_HOUR_OF_OS_UPDATE);
@@ -608,14 +619,10 @@ describe("destructureFarmEvent", () => {
 });
 
 describe("<StartTimeForm />", () => {
-  const mockVM = {
-    startDate: "2017-07-25",
-    startTime: "08:57",
-  } as FarmEventViewModel;
-
   const fakeProps = (): StartTimeFormProps => ({
     isRegimen: false,
-    fieldGet: jest.fn(key => "" + mockVM[key]),
+    fieldGet: jest.fn(key =>
+      "" + ({ startDate: "2017-07-25", startTime: "08:57" } as FarmEventViewModel)[key]),
     fieldSet: jest.fn(),
     timeSettings: fakeTimeSettings(),
   });
@@ -647,8 +654,13 @@ describe("<StartTimeForm />", () => {
   });
 
   it("doesn't display error: old event", () => {
-    mockVM.id = 1;
     const p = fakeProps();
+    p.fieldGet = jest.fn(key =>
+      "" + ({
+        id: 1,
+        startDate: "2017-07-25",
+        startTime: "08:57",
+      } as FarmEventViewModel)[key]);
     p.now = moment();
     const wrapper = shallow(<StartTimeForm {...p} />);
     expect(wrapper.find(BlurableInput).first().props().error).toEqual(undefined);

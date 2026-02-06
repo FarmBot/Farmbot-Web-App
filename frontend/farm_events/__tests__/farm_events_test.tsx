@@ -8,6 +8,15 @@ import { defensiveClone } from "../../util";
 import { FarmEventProps } from "../../farm_designer/interfaces";
 import { Path } from "../../internal_urls";
 
+const originalDocumentQuerySelector = document.querySelector.bind(document);
+
+afterEach(() => {
+  Object.defineProperty(document, "querySelector", {
+    value: originalDocumentQuerySelector,
+    configurable: true,
+  });
+});
+
 describe("<FarmEvents />", () => {
   const fakeProps = (): FarmEventProps => ({
     timezoneIsSet: true,

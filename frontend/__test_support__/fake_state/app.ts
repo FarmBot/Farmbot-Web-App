@@ -12,7 +12,7 @@ import {
   weedsPanelState,
 } from "../panel_state";
 
-export const app: AppState = {
+export const fakeApp = (): AppState => ({
   settingsSearchTerm: "",
   settingsPanelState: settingsPanelState(),
   plantsPanelState: plantsPanelState(),
@@ -25,4 +25,6 @@ export const app: AppState = {
   movement: fakeMovementState(),
   controls: controlsState(),
   popups: popUpsState(),
-};
+});
+
+export const app: AppState = fakeApp();

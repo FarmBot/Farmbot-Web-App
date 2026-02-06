@@ -1,19 +1,27 @@
 let mockDev = false;
-jest.mock("../../../../settings/dev/dev_support", () => ({
-  DevSettings: { allOrderOptionsEnabled: () => mockDev },
-}));
 
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { cleanup } from "@testing-library/react";
+import { shallow } from "enzyme";
 import {
   axisOrder, AxisOrderInputRow, getAxisGroupingState, getAxisRouteState,
 } from "../axis_order";
 import { AxisGrouping, AxisOrderInputRowProps, AxisRoute } from "../interfaces";
 import { Move } from "farmbot";
+import { DevSettings } from "../../../../settings/dev/dev_support";
+
+let allOrderOptionsEnabledSpy: jest.SpyInstance;
 
 describe("<AxisOrderInputRow />", () => {
   beforeEach(() => {
     mockDev = false;
+    allOrderOptionsEnabledSpy = jest.spyOn(DevSettings, "allOrderOptionsEnabled")
+      .mockImplementation(() => mockDev);
+  });
+
+  afterEach(() => {
+    allOrderOptionsEnabledSpy.mockRestore();
+    cleanup();
   });
 
   const fakeProps = (): AxisOrderInputRowProps => ({
@@ -23,11 +31,11 @@ describe("<AxisOrderInputRow />", () => {
     onChange: jest.fn(),
   });
 
-  it.each<[boolean, AxisGrouping, AxisRoute, string]>([
+  it.each<[boolean, AxisGrouping, AxisRoute, string | undefined]>([
     [false, "x,y,z", "high", "One at a time"],
     [false, "xy,z", "high", "X and Y together"],
     [false, "xyz", "high", "All at once"],
-    [false, undefined, undefined, "Use default"],
+    [false, undefined, undefined, undefined],
     [false, "x", "low", "x;low"],
     [true, "x", "low", "Safe Z"],
   ])("renders order: safe_z=%s %s %s", (safeZ, grouping, route, label) => {
@@ -35,17 +43,16 @@ describe("<AxisOrderInputRow />", () => {
     p.grouping = grouping;
     p.route = route;
     p.safeZ = safeZ;
-    render(<AxisOrderInputRow {...p} />);
-    expect(screen.getByText(label)).toBeInTheDocument();
+    const wrapper = shallow(<AxisOrderInputRow {...p} />);
+    expect(wrapper.find("FBSelect").props().selectedItem?.label)
+      .toEqual(label);
   });
 
   it("changes item", () => {
     const p = fakeProps();
-    render(<AxisOrderInputRow {...p} />);
-    const dropdown = screen.getByRole("button");
-    fireEvent.click(dropdown);
-    const item = screen.getByRole("menuitem", { name: "X and Y together" });
-    fireEvent.click(item);
+    const wrapper = shallow(<AxisOrderInputRow {...p} />);
+    wrapper.find("FBSelect")
+      .simulate("change", { label: "X and Y together", value: "xy,z;high" });
     expect(p.onChange).toHaveBeenCalledWith({
       label: "X and Y together",
       value: "xy,z;high",
@@ -55,22 +62,20 @@ describe("<AxisOrderInputRow />", () => {
   it("shows default", () => {
     const p = fakeProps();
     p.defaultValue = "safe_z";
-    render(<AxisOrderInputRow {...p} />);
-    const dropdown = screen.getByRole("button");
-    fireEvent.click(dropdown);
-    expect(screen.getByRole("menuitem", { name: "Use default (Safe Z)" }))
-      .toBeInTheDocument();
+    const wrapper = shallow(<AxisOrderInputRow {...p} />);
+    expect(wrapper.find("FBSelect").props().customNullLabel)
+      .toEqual("Use default (Safe Z)");
   });
 
   it("shows all order options", () => {
     mockDev = true;
     const p = fakeProps();
-    render(<AxisOrderInputRow {...p} />);
-    const dropdown = screen.getByRole("button");
-    fireEvent.click(dropdown);
-    expect(screen.getByRole("menuitem", { name: "x,yz;high" })).toBeInTheDocument();
-    expect(screen.getByRole("menuitem", { name: "Use default" }))
-      .toBeInTheDocument();
+    const wrapper = shallow(<AxisOrderInputRow {...p} />);
+    const labels = (wrapper.find("FBSelect").props().list || [])
+      .map(item => item.label);
+    expect(labels).toContain("x,yz;high");
+    expect(wrapper.find("FBSelect").props().customNullLabel)
+      .toEqual("Use default");
   });
 });
 

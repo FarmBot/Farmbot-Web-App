@@ -1,7 +1,3 @@
-jest.mock("../add_regimen", () => ({
-  addRegimen: jest.fn(),
-}));
-
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
@@ -11,7 +7,7 @@ import {
 import { RegimensListProps } from "../interfaces";
 import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
 import { SearchField } from "../../../ui/search_field";
-import { addRegimen } from "../add_regimen";
+import * as addRegimenModule from "../add_regimen";
 import { DesignerPanelTop } from "../../../farm_designer/designer_panel";
 import { fakeState } from "../../../__test_support__/fake_state";
 import {
@@ -19,6 +15,17 @@ import {
 } from "../../../__test_support__/resource_index_builder";
 
 describe("<DesignerRegimenList />", () => {
+  let addRegimenSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    addRegimenSpy = jest.spyOn(addRegimenModule, "addRegimen")
+      .mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    addRegimenSpy.mockRestore();
+  });
+
   const fakeProps = (): RegimensListProps => ({
     dispatch: jest.fn(),
     regimens: [],
@@ -64,9 +71,11 @@ describe("<DesignerRegimenList />", () => {
   it("adds new regimen", () => {
     const p = fakeProps();
     p.regimens = [fakeRegimen(), fakeRegimen()];
-    const wrapper = shallow(<DesignerRegimenList {...p} />);
+    const wrapper = shallow<DesignerRegimenList>(<DesignerRegimenList {...p} />);
+    wrapper.instance().context = jest.fn();
     wrapper.find(DesignerPanelTop).simulate("click");
-    expect(addRegimen).toHaveBeenCalledWith(2, {});
+    expect(addRegimenModule.addRegimen).toHaveBeenCalledWith(
+      2, wrapper.instance().context);
   });
 });
 

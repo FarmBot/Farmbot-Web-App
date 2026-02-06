@@ -2,7 +2,7 @@ import React from "react";
 import { t } from "../i18next_wrapper";
 import { Content, SetupWizardContent } from "../constants";
 import { FilePath } from "../internal_urls";
-import { isMobile } from "../screen_size";
+import * as screenSize from "../screen_size";
 
 interface ReleaseItem {
   computer: string;
@@ -429,7 +429,7 @@ class OsDownloadWizard
 
 export const OsDownloadPage = () => {
   const [wizard, setWizard] = React.useState(true);
-  if (!isMobile()) {
+  if (!screenSize.isMobile()) {
     (document.querySelector("html") as HTMLElement).style.fontSize = "15px";
   }
   return <div className={"static-page os-download-page"}>

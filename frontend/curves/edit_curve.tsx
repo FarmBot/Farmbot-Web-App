@@ -9,7 +9,7 @@ import {
 import { Everything } from "../interfaces";
 import { Panel, PanelColor } from "../farm_designer/panel_header";
 import { selectAllCurves, selectAllPlantPointers } from "../resources/selectors";
-import { destroy, init, overwrite, save } from "../api/crud";
+import * as crud from "../api/crud";
 import { Path } from "../internal_urls";
 import { ResourceTitle } from "../sequences/panel/editor";
 import { Curve } from "farmbot/dist/resources/api_resources";
@@ -86,7 +86,7 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
     if (!id) { return; }
     const curve = this.props.findCurve(id);
     if (!(curve?.specialStatus == SpecialStatus.DIRTY)) { return; }
-    this.props.dispatch(save(this.state.uuid));
+    this.props.dispatch(crud.save(this.state.uuid));
   }
 
   get stringyID() { return Path.getSlug(Path.curves()); }
@@ -131,7 +131,6 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = this.context;
 
   render() {
     const { curve, setHovered } = this;
@@ -157,13 +156,13 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
               onClick={dispatch(copyCurve(
                 this.props.curves,
                 curve,
-                this.navigate))} />}
+                this.context))} />}
           {curve &&
             <i className={"fa fa-trash fb-icon-button invert"}
               title={t("Delete curve")}
               onClick={() => this.props.resourceUsage[curve.uuid]
                 ? error(t("Curve in use."))
-                : dispatch(destroy(curve.uuid))} />}
+                : dispatch(crud.destroy(curve.uuid))} />}
         </div>
       </DesignerPanelHeader>
       <DesignerPanelContent panelName={"curve-info"}>
@@ -338,13 +337,13 @@ export const copyCurve =
         while (existingNames.includes(newName(i))) {
           i++;
         }
-        const action = init("Curve", {
+        const action = crud.init("Curve", {
           ...curve.body,
           name: newName(i),
           id: undefined,
         });
         dispatch(action);
-        dispatch(save(action.payload.uuid))
+        dispatch(crud.save(action.payload.uuid))
           .then(() => {
             const id = selectAllCurves(getState().resources.index).filter(curve =>
               curve.uuid == action.payload.uuid)[0]?.body.id;
@@ -420,5 +419,5 @@ const ValueInput = (props: ValueInputProps) =>
 
 export const editCurve = (curve: TaggedCurve, update: Partial<Curve>) =>
   (dispatch: Function) => {
-    dispatch(overwrite(curve, { ...curve.body, ...update }));
+    dispatch(crud.overwrite(curve, { ...curve.body, ...update }));
   };

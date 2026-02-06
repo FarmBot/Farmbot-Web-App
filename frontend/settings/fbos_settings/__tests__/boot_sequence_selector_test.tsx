@@ -12,7 +12,20 @@ import {
 import React from "react";
 import { mount } from "enzyme";
 import { FBSelect } from "../../../ui";
-import { fireEvent, render, screen } from "@testing-library/react";
+import * as crud from "../../../api/crud";
+
+let editSpy: jest.SpyInstance;
+let saveSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  editSpy.mockRestore();
+  saveSpy.mockRestore();
+});
 
 describe("sequence2ddi()", () => {
   it("converts TaggedSequences", () => {
@@ -92,13 +105,11 @@ describe("<RawBootSequenceSelector />", () => {
   it("handles the `onChange` event", () => {
     const p = fakeProps();
     p.list = [{ label: "X", value: 3 }];
-    render(<RawBootSequenceSelector {...p} />);
-    const select = screen.getByRole("button", { name: "None" });
-    fireEvent.click(select);
-    const item = screen.getByText("X");
-    fireEvent.click(item);
-    expect(p.dispatch)
-      .toHaveBeenCalledWith(expect.objectContaining({ type: "EDIT_RESOURCE" }));
+    const wrapper = mount(<RawBootSequenceSelector {...p} />);
+    const onChange = wrapper.find(FBSelect).props().onChange;
+    onChange({ label: "X", value: 3 });
+    expect(crud.edit).toHaveBeenCalledWith(p.config, { boot_sequence_id: 3 });
+    expect(crud.save).toHaveBeenCalledWith(p.config.uuid);
   });
 
   it("renders: no selection", () => {

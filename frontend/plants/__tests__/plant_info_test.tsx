@@ -17,6 +17,9 @@ import {
 } from "../../__test_support__/fake_bot_data";
 import { Path } from "../../internal_urls";
 
+afterAll(() => {
+  jest.unmock("../../api/crud");
+});
 describe("<PlantInfo />", () => {
   const fakeProps = (): EditPlantInfoProps => ({
     findPlant: fakePlant,

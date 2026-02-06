@@ -3,7 +3,7 @@ import { Show } from "./show";
 import { Edit } from "./edit";
 import { WebcamPanelProps } from "./interfaces";
 import { TaggedWebcamFeed, SpecialStatus } from "farmbot";
-import { edit, save, destroy, init } from "../../api/crud";
+import * as crud from "../../api/crud";
 import { error } from "../../toast/toast";
 import { WebcamFeed } from "farmbot/dist/resources/api_resources";
 import { t } from "../../i18next_wrapper";
@@ -20,13 +20,13 @@ export const preToggleCleanup = (dispatch: Function) => (f: TaggedWebcamFeed) =>
 
   if (!name || !url || !id) {
     // Delete empty or unsaved records
-    dispatch(destroy(uuid, true));
+    dispatch(crud.destroy(uuid, true));
     return;
   }
 
   if (f.specialStatus !== SpecialStatus.SAVED) {
     // Stash unsaved to preexisting records
-    dispatch(save(uuid));
+    dispatch(crud.save(uuid));
     return;
   }
 };
@@ -35,18 +35,18 @@ export class WebcamPanel extends React.Component<P, S> {
   state: S = { activeMenu: "show" };
 
   init = () =>
-    this.props.dispatch(init("WebcamFeed", { url: HTTP, name: "" }));
+    this.props.dispatch(crud.init("WebcamFeed", { url: HTTP, name: "" }));
 
   edit = (tr: TaggedWebcamFeed, update: Partial<WebcamFeed>) =>
-    this.props.dispatch(edit(tr, update));
+    this.props.dispatch(crud.edit(tr, update));
 
   save = (tr: TaggedWebcamFeed) =>
     tr.body.url != HTTP
-      ? this.props.dispatch(save(tr.uuid))
+      ? this.props.dispatch(crud.save(tr.uuid))
       : error(t("Please enter a URL."));
 
   destroy = (tr: TaggedWebcamFeed) =>
-    this.props.dispatch(destroy(tr.uuid));
+    this.props.dispatch(crud.destroy(tr.uuid));
 
   childProps = (activeMenu: "edit" | "show"): WebcamPanelProps => {
 

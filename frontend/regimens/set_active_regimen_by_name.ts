@@ -1,12 +1,12 @@
-import { selectAllRegimens } from "../resources/selectors";
-import { store } from "../redux/store";
+import * as selectors from "../resources/selectors";
+import * as reduxStore from "../redux/store";
 import { urlFriendly } from "../util";
 import { selectRegimen } from "./actions";
 import { Path } from "../internal_urls";
 import { UnknownAction } from "redux";
 
 const setRegimen = (uuid: string) =>
-  store.dispatch(selectRegimen(uuid) as unknown as UnknownAction);
+  reduxStore.store.dispatch(selectRegimen(uuid) as unknown as UnknownAction);
 
 export function setActiveRegimenByName() {
   const chunk = Path.getLastChunk();
@@ -14,7 +14,7 @@ export function setActiveRegimenByName() {
     return;
   }
 
-  selectAllRegimens(store.getState().resources.index).map(reg => {
+  selectors.selectAllRegimens(reduxStore.store.getState().resources.index).map(reg => {
     const regimenName = urlFriendly(reg.body.name);
     (chunk === regimenName) && setRegimen(reg.uuid);
   });

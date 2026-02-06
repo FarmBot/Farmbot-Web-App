@@ -1,3 +1,6 @@
+jest.unmock("..");
+jest.unmock("../actions");
+
 import {
   buildResourceIndex,
   fakeDevice,
@@ -17,32 +20,6 @@ import {
 let mockResources = buildResourceIndex([]);
 let mockLocked = false;
 let mockJobs: Record<string, unknown> = {};
-jest.mock("../../../redux/store", () => ({
-  store: {
-    dispatch: jest.fn(),
-    getState: () => ({
-      resources: mockResources,
-      bot: {
-        hardware: {
-          informational_settings: { locked: mockLocked },
-          jobs: mockJobs,
-        },
-      },
-    }),
-  },
-}));
-
-jest.mock("../../../api/crud", () => ({
-  edit: jest.fn(),
-  save: jest.fn(),
-  initSave: jest.fn(),
-  init: jest.fn(() => ({ payload: { uuid: "" } })),
-}));
-
-jest.mock("lodash", () => ({
-  ...jest.requireActual("lodash"),
-  random: () => 0,
-}));
 
 import {
   Execute, FindHome, Move, ParameterApplication, TaggedSequence,
@@ -56,12 +33,60 @@ import {
   runDemoLuaCode,
   runDemoSequence,
 } from "..";
+import * as lodash from "lodash";
 import { TOAST_OPTIONS } from "../../../toast/constants";
-import { edit, init, initSave, save } from "../../../api/crud";
+import * as crud from "../../../api/crud";
 import { setCurrent } from "../actions";
 import { API } from "../../../api";
 
 API.setBaseUrl("");
+
+let edit: jest.SpyInstance;
+let init: jest.SpyInstance;
+let initSave: jest.SpyInstance;
+let save: jest.SpyInstance;
+let randomSpy: jest.SpyInstance;
+const originalDispatch = store.dispatch;
+const originalGetState = store.getState;
+const mockDispatch = jest.fn();
+const mockGetState = () => ({
+  resources: mockResources,
+  bot: {
+    hardware: {
+      informational_settings: { locked: mockLocked },
+      jobs: mockJobs,
+    },
+  },
+});
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  randomSpy = jest.spyOn(lodash, "random").mockReturnValue(0);
+  mockResources = buildResourceIndex([]);
+  mockLocked = false;
+  mockJobs = {};
+  (store as unknown as { dispatch: Function }).dispatch = mockDispatch;
+  (store as unknown as { getState: Function }).getState = mockGetState;
+  edit = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  save = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+  initSave = jest.spyOn(crud, "initSave").mockImplementation(jest.fn());
+  init = jest.spyOn(crud, "init")
+    .mockImplementation(() => ({ payload: { uuid: "" } } as never));
+});
+
+afterEach(() => {
+  randomSpy.mockRestore();
+  edit.mockRestore();
+  init.mockRestore();
+  initSave.mockRestore();
+  save.mockRestore();
+  jest.useRealTimers();
+});
+
+afterAll(() => {
+  (store as unknown as { dispatch: Function }).dispatch = originalDispatch;
+  (store as unknown as { getState: Function }).getState = originalGetState;
+});
 
 describe("runDemoSequence()", () => {
   beforeEach(() => {

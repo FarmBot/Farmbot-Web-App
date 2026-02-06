@@ -10,6 +10,9 @@ RUN curl https://www.postgresql.org/media/keys/ACCC4CF8.asc | gpg --dearmor | te
   apt-get install -y nodejs && \
   mkdir /farmbot;
 WORKDIR /farmbot
+ENV     BUN_INSTALL=/root/.bun
+RUN     curl -fsSL https://bun.sh/install | bash
 ENV     BUNDLE_PATH=/bundle BUNDLE_BIN=/bundle/bin GEM_HOME=/bundle
 ENV     PATH="${BUNDLE_BIN}:${PATH}"
+ENV     PATH="${BUN_INSTALL}/bin:${BUNDLE_BIN}:${PATH}"
 COPY    ./Gemfile /farmbot

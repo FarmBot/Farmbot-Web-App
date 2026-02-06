@@ -1,11 +1,24 @@
 import { SyncStatus } from "farmbot";
 import { syncText } from "../sync_text";
+import * as mustBeOnline from "../../devices/must_be_online";
+
+let forceOnlineSpy: jest.SpyInstance;
 
 describe("syncText()", () => {
+  beforeEach(() => {
+    forceOnlineSpy = jest.spyOn(mustBeOnline, "forceOnline")
+      .mockImplementation(() => false);
+    localStorage.removeItem("myBotIs");
+  });
+
+  afterEach(() => {
+    forceOnlineSpy.mockRestore();
+    localStorage.removeItem("myBotIs");
+  });
+
   it("shows synced for demo accounts", () => {
-    localStorage.setItem("myBotIs", "online");
+    forceOnlineSpy.mockImplementation(() => true);
     expect(syncText("syncing")).toEqual("Synced");
-    localStorage.setItem("myBotIs", "");
   });
 
   it.each<[SyncStatus, string]>([

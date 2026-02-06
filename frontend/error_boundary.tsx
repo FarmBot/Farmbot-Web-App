@@ -15,6 +15,13 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, State> {
   }
 
   componentDidCatch(error: Error) {
+    if (process.env.BUN_TEST_DEBUG_ERROR_BOUNDARY) {
+      try {
+        process.stderr.write(`${error.stack || error.message}\n`);
+      } catch {
+        // ignore logging failures
+      }
+    }
     // eslint-disable-next-line no-empty
     try { catchErrors(error); } catch (e) { }
     this.setState({ hasError: true });

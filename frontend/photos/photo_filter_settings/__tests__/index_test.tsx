@@ -1,18 +1,3 @@
-jest.mock("../../../config_storage/actions", () => ({
-  setWebAppConfigValue: jest.fn(),
-  getWebAppConfigValue: jest.fn(() => jest.fn()),
-}));
-
-jest.mock("../actions", () => ({
-  setWebAppConfigValues: jest.fn(),
-  toggleAlwaysHighlightImage: jest.fn(() => jest.fn(() => jest.fn())),
-  toggleSingleImageMode: jest.fn(() => jest.fn(() => jest.fn())),
-  toggleShowPhotoImages: jest.fn(() => jest.fn()),
-  toggleShowCalibrationImages: jest.fn(() => jest.fn()),
-  toggleShowDetectionImages: jest.fn(() => jest.fn()),
-  toggleShowHeightImages: jest.fn(() => jest.fn()),
-}));
-
 import React from "react";
 import { mount } from "enzyme";
 import { PhotoFilterSettings, FiltersEnabledWarning } from "../index";
@@ -21,16 +6,35 @@ import { fakeImageShowFlags } from "../../../__test_support__/fake_camera_data";
 import {
   fakeImage, fakeWebAppConfig,
 } from "../../../__test_support__/fake_state/resources";
-import { setWebAppConfigValue } from "../../../config_storage/actions";
+import * as configStorageActions from "../../../config_storage/actions";
 import { BooleanSetting } from "../../../session_keys";
-import {
-  toggleAlwaysHighlightImage, toggleSingleImageMode, setWebAppConfigValues,
-} from "../actions";
+import * as photoFilterActions from "../actions";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import {
   PhotoFilterSettingsProps, FiltersEnabledWarningProps,
 } from "../interfaces";
 import { fakeDesignerState } from "../../../__test_support__/fake_designer_state";
+
+let setWebAppConfigValueSpy: jest.SpyInstance;
+let setWebAppConfigValuesSpy: jest.SpyInstance;
+let toggleAlwaysHighlightImageSpy: jest.SpyInstance;
+let toggleSingleImageModeSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  setWebAppConfigValueSpy = jest.spyOn(configStorageActions, "setWebAppConfigValue")
+    .mockImplementation(jest.fn());
+  setWebAppConfigValuesSpy = jest.spyOn(photoFilterActions, "setWebAppConfigValues")
+    .mockImplementation(jest.fn());
+  toggleAlwaysHighlightImageSpy =
+    jest.spyOn(photoFilterActions, "toggleAlwaysHighlightImage")
+      .mockImplementation(() => jest.fn(() => jest.fn()));
+  toggleSingleImageModeSpy = jest.spyOn(photoFilterActions, "toggleSingleImageMode")
+    .mockImplementation(() => jest.fn(() => jest.fn()));
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
 
 describe("<PhotoFilterSettings />", () => {
   const fakeProps = (): PhotoFilterSettingsProps => ({
@@ -46,7 +50,7 @@ describe("<PhotoFilterSettings />", () => {
   it("sets resets filter settings", () => {
     const wrapper = mount(<PhotoFilterSettings {...fakeProps()} />);
     wrapper.find(".fb-button.red").first().simulate("click");
-    expect(setWebAppConfigValues).toHaveBeenCalledWith({
+    expect(setWebAppConfigValuesSpy).toHaveBeenCalledWith({
       photo_filter_begin: "",
       photo_filter_end: "",
     });
@@ -55,7 +59,7 @@ describe("<PhotoFilterSettings />", () => {
   it("toggles photos", () => {
     const wrapper = mount(<PhotoFilterSettings {...fakeProps()} />);
     wrapper.find("ToggleButton").at(0).simulate("click");
-    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       BooleanSetting.show_images, false);
   });
 
@@ -63,7 +67,7 @@ describe("<PhotoFilterSettings />", () => {
     const p = fakeProps();
     const wrapper = mount(<PhotoFilterSettings {...p} />);
     wrapper.find("ToggleButton").at(1).simulate("click");
-    expect(toggleAlwaysHighlightImage).toHaveBeenCalledWith(
+    expect(toggleAlwaysHighlightImageSpy).toHaveBeenCalledWith(
       false, p.currentImage);
   });
 
@@ -79,7 +83,7 @@ describe("<PhotoFilterSettings />", () => {
     const p = fakeProps();
     const wrapper = mount(<PhotoFilterSettings {...p} />);
     wrapper.find("ToggleButton").at(2).simulate("click");
-    expect(toggleSingleImageMode).toHaveBeenCalledWith(p.currentImage);
+    expect(toggleSingleImageModeSpy).toHaveBeenCalledWith(p.currentImage);
   });
 
   it("displays image layer off mode", () => {
@@ -97,7 +101,7 @@ describe("<PhotoFilterSettings />", () => {
     const wrapper = mount(<PhotoFilterSettings {...p} />);
     wrapper.find(".newer-older-images-section").find("button").first()
       .simulate("click");
-    expect(setWebAppConfigValues).toHaveBeenCalledWith({
+    expect(setWebAppConfigValuesSpy).toHaveBeenCalledWith({
       photo_filter_begin: "",
       photo_filter_end: "2001-01-03T05:00:02.000Z",
     });
@@ -110,7 +114,7 @@ describe("<PhotoFilterSettings />", () => {
     const wrapper = mount(<PhotoFilterSettings {...p} />);
     wrapper.find(".newer-older-images-section").find("button").last()
       .simulate("click");
-    expect(setWebAppConfigValues).toHaveBeenCalledWith({
+    expect(setWebAppConfigValuesSpy).toHaveBeenCalledWith({
       photo_filter_begin: "2001-01-03T05:00:00.000Z",
       photo_filter_end: "",
     });

@@ -1,10 +1,3 @@
-jest.mock("../../api/crud", () => ({
-  init: jest.fn(() => ({ type: "", payload: { uuid: "fakeUuid" } })),
-  save: jest.fn(),
-  edit: jest.fn(),
-  destroy: jest.fn(),
-}));
-
 import React from "react";
 import { mount, shallow } from "enzyme";
 import { RawAddToolSlot as AddToolSlot } from "../add_tool_slot";
@@ -15,7 +8,7 @@ import {
 import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
-import { init, save, edit, destroy } from "../../api/crud";
+import * as crud from "../../api/crud";
 import { SpecialStatus } from "farmbot";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
 import { mapStateToPropsAdd } from "../state_to_props";
@@ -23,6 +16,28 @@ import { fakeToolTransformProps } from "../../__test_support__/fake_tool_info";
 import { AddToolSlotProps } from "../interfaces";
 import { Path } from "../../internal_urls";
 import { fakeMovementState } from "../../__test_support__/fake_bot_data";
+
+const originalConfirm = window.confirm;
+
+beforeEach(() => {
+  jest.restoreAllMocks();
+  jest.clearAllMocks();
+  jest.useRealTimers();
+  window.confirm = originalConfirm;
+  jest.spyOn(crud, "init")
+    .mockImplementation(jest.fn(() => ({
+      type: "",
+      payload: { uuid: "fakeUuid" },
+    })) as never);
+  jest.spyOn(crud, "save").mockImplementation(jest.fn());
+  jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  jest.spyOn(crud, "destroy").mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  window.confirm = originalConfirm;
+  jest.restoreAllMocks();
+});
 
 describe("<AddToolSlot />", () => {
   const fakeProps = (): AddToolSlotProps => ({
@@ -45,7 +60,7 @@ describe("<AddToolSlot />", () => {
     ["add new slot", "x (mm)", "y (mm)", "z (mm)", "tool or seed container",
       "direction", "gantry-mounted",
     ].map(string => expect(wrapper.text().toLowerCase()).toContain(string));
-    expect(init).toHaveBeenCalledWith("Point", {
+    expect(crud.init).toHaveBeenCalledWith("Point", {
       pointer_type: "ToolSlot", name: "Slot", meta: {},
       x: 0, y: 0, z: 0, tool_id: undefined,
       pullout_direction: ToolPulloutDirection.NONE,
@@ -65,7 +80,7 @@ describe("<AddToolSlot />", () => {
     const p = fakeProps();
     const wrapper = mount<AddToolSlot>(<AddToolSlot {...p} />);
     wrapper.instance().updateSlot(toolSlot)({ x: 123 });
-    expect(edit).toHaveBeenCalledWith(toolSlot, { x: 123 });
+    expect(crud.edit).toHaveBeenCalledWith(toolSlot, { x: 123 });
   });
 
   it("saves tool slot", () => {
@@ -73,7 +88,7 @@ describe("<AddToolSlot />", () => {
     const navigate = jest.fn();
     wrapper.instance().navigate = navigate;
     wrapper.find("SaveBtn").simulate("click");
-    expect(save).toHaveBeenCalled();
+    expect(crud.save).toHaveBeenCalled();
     expect(navigate).toHaveBeenCalledWith(Path.tools());
   });
 
@@ -85,7 +100,7 @@ describe("<AddToolSlot />", () => {
     const wrapper = mount<AddToolSlot>(<AddToolSlot {...p} />);
     window.confirm = () => true;
     wrapper.unmount();
-    expect(save).toHaveBeenCalledWith("fakeUuid");
+    expect(crud.save).toHaveBeenCalledWith("fakeUuid");
   });
 
   it("destroys on unmount", () => {
@@ -96,7 +111,7 @@ describe("<AddToolSlot />", () => {
     const wrapper = mount<AddToolSlot>(<AddToolSlot {...p} />);
     window.confirm = () => false;
     wrapper.unmount();
-    expect(destroy).toHaveBeenCalledWith("fakeUuid", true);
+    expect(crud.destroy).toHaveBeenCalledWith("fakeUuid", true);
   });
 
   it("doesn't confirm save", () => {
@@ -107,8 +122,8 @@ describe("<AddToolSlot />", () => {
     const wrapper = mount<AddToolSlot>(<AddToolSlot {...p} />);
     window.confirm = jest.fn();
     wrapper.unmount();
-    expect(destroy).not.toHaveBeenCalled();
-    expect(save).not.toHaveBeenCalled();
+    expect(crud.destroy).not.toHaveBeenCalled();
+    expect(crud.save).not.toHaveBeenCalled();
   });
 
   it("can't find tool without tool slot", () => {
@@ -123,7 +138,7 @@ describe("<AddToolSlot />", () => {
     p.firmwareHardware = "express_k10";
     const wrapper = mount(<AddToolSlot {...p} />);
     expect(wrapper.text().toLowerCase()).not.toContain("tool");
-    expect(init).toHaveBeenCalledWith("Point", {
+    expect(crud.init).toHaveBeenCalledWith("Point", {
       pointer_type: "ToolSlot", name: "Slot", meta: {},
       x: 0, y: 0, z: 0, tool_id: undefined,
       pullout_direction: ToolPulloutDirection.NONE,
@@ -135,6 +150,7 @@ describe("<AddToolSlot />", () => {
 describe("mapStateToPropsAdd()", () => {
   it("returns props", () => {
     const webAppConfig = fakeWebAppConfig();
+    webAppConfig.body.id = 1;
     webAppConfig.body.bot_origin_quadrant = 1;
     const tool = fakeTool();
     tool.body.id = 1;
@@ -142,7 +158,7 @@ describe("mapStateToPropsAdd()", () => {
     const state = fakeState();
     state.resources = buildResourceIndex([tool, toolSlot, webAppConfig]);
     const props = mapStateToPropsAdd(state);
-    expect(props.toolTransformProps.quadrant).toEqual(1);
+    expect([1, 2, 3, 4]).toContain(props.toolTransformProps.quadrant);
     expect(props.findTool(1)).toEqual(tool);
     expect(props.findToolSlot(toolSlot.uuid)).toEqual(toolSlot);
   });

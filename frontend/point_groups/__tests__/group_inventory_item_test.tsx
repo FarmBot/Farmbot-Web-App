@@ -3,11 +3,16 @@ jest.mock("../../api/crud", () => ({
 }));
 
 let mockDelMode = false;
-jest.mock("../../settings/dev/dev_support", () => ({
-  DevSettings: {
-    quickDeleteEnabled: () => mockDelMode,
-  }
-}));
+jest.mock("../../settings/dev/dev_support", () => {
+  const actual = jest.requireActual("../../settings/dev/dev_support");
+  return {
+    ...actual,
+    DevSettings: {
+      ...actual.DevSettings,
+      quickDeleteEnabled: () => mockDelMode,
+    },
+  };
+});
 
 import React from "react";
 import {
@@ -18,6 +23,11 @@ import {
 } from "../../__test_support__/fake_state/resources";
 import { mount } from "enzyme";
 import { destroy } from "../../api/crud";
+
+afterAll(() => {
+  jest.unmock("../../api/crud");
+  jest.unmock("../../settings/dev/dev_support");
+});
 
 describe("<GroupInventoryItem />", () => {
   const fakeProps = (): GroupInventoryItemProps => ({

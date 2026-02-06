@@ -1,15 +1,3 @@
-jest.mock("../../../regimens/set_active_regimen_by_name", () => ({
-  setActiveRegimenByName: jest.fn()
-}));
-
-jest.mock("../../../api/crud", () => ({
-  edit: jest.fn(),
-}));
-
-jest.mock("../../list/add_regimen", () => ({
-  addRegimen: jest.fn(),
-}));
-
 import { PopoverProps } from "../../../ui/popover";
 jest.mock("../../../ui/popover", () => ({
   Popover: ({ target, content }: PopoverProps) => <div>{target}{content}</div>,
@@ -25,12 +13,32 @@ import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
-import {
-  setActiveRegimenByName,
-} from "../../set_active_regimen_by_name";
+import * as activeRegimen from "../../set_active_regimen_by_name";
 import { Color } from "farmbot";
-import { edit } from "../../../api/crud";
-import { addRegimen } from "../../list/add_regimen";
+import * as crud from "../../../api/crud";
+import * as addRegimenModule from "../../list/add_regimen";
+
+let setActiveRegimenByNameSpy: jest.SpyInstance;
+let editSpy: jest.SpyInstance;
+let addRegimenSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  setActiveRegimenByNameSpy = jest.spyOn(activeRegimen, "setActiveRegimenByName")
+    .mockImplementation(jest.fn());
+  editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  addRegimenSpy = jest.spyOn(addRegimenModule, "addRegimen")
+    .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  setActiveRegimenByNameSpy.mockRestore();
+  editSpy.mockRestore();
+  addRegimenSpy.mockRestore();
+});
+
+afterAll(() => {
+  jest.unmock("../../../ui/popover");
+});
 
 describe("<DesignerRegimenEditor />", () => {
   const fakeProps = (): RegimenEditorProps => ({
@@ -50,11 +58,11 @@ describe("<DesignerRegimenEditor />", () => {
     const p = fakeProps();
     p.current = undefined;
     const wrapper = mount(<DesignerRegimenEditor {...p} />);
-    expect(setActiveRegimenByName).toHaveBeenCalled();
+    expect(activeRegimen.setActiveRegimenByName).toHaveBeenCalled();
     expect(wrapper.text().toLowerCase()).toContain("no regimen selected");
     expect(wrapper.html()).not.toContain("select color");
     wrapper.find("button").first().simulate("click");
-    expect(addRegimen).toHaveBeenCalled();
+    expect(addRegimenModule.addRegimen).toHaveBeenCalled();
   });
 
   it("changes color", () => {
@@ -64,7 +72,7 @@ describe("<DesignerRegimenEditor />", () => {
     p.current = regimen;
     const wrapper = mount(<DesignerRegimenEditor {...p} />);
     wrapper.find(".color-picker-item-wrapper").first().simulate("click");
-    expect(edit).toHaveBeenCalledWith(p.current, { color: "blue" });
+    expect(crud.edit).toHaveBeenCalledWith(p.current, { color: "blue" });
   });
 
   it("active editor", () => {

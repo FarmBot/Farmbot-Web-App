@@ -1,14 +1,23 @@
 const mockUpdateArg = jest.fn();
-jest.mock("../../step_tiles", () => ({ updateStep: jest.fn(() => mockUpdateArg) }));
 
 import React from "react";
 import { mount, shallow } from "enzyme";
 import { InputDefault } from "../input_default";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { StepInputProps } from "../../interfaces";
-import { updateStep } from "../../step_tiles";
+import * as stepTiles from "../../step_tiles";
 import { Wait } from "farmbot";
+let updateStepSpy: jest.SpyInstance;
 
+beforeEach(() => {
+  updateStepSpy = jest.spyOn(stepTiles, "updateStep")
+    .mockImplementation(() => mockUpdateArg);
+});
+
+afterEach(() => {
+  updateStepSpy.mockRestore();
+  mockUpdateArg.mockClear();
+});
 describe("<InputDefault />", () => {
   const fakeProps = (): StepInputProps => ({
     index: 0,
@@ -36,8 +45,8 @@ describe("<InputDefault />", () => {
     const wrapper = shallow(<InputDefault {...p} />);
     const e = { currentTarget: { value: "100" } };
     wrapper.find("BlurableInput").simulate("commit", e);
-    expect(updateStep).toHaveBeenCalledTimes(1);
-    expect(updateStep).toHaveBeenCalledWith(p);
+    expect(stepTiles.updateStep).toHaveBeenCalledTimes(1);
+    expect(stepTiles.updateStep).toHaveBeenCalledWith(p);
     expect(mockUpdateArg).toHaveBeenCalledWith(e);
   });
 });

@@ -1,7 +1,3 @@
-jest.mock("../../actions", () => ({ overwriteGroup: jest.fn() }));
-
-jest.mock("../edit", () => ({ togglePointTypeCriteria: jest.fn() }));
-
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
@@ -9,7 +5,6 @@ import {
   GroupCriteria, GroupPointCountBreakdown,
   MoreIndicatorIcon, MoreIndicatorIconProps,
   PointTypeSelection,
-  togglePointTypeCriteria,
 } from "..";
 import {
   GroupCriteriaProps, GroupPointCountBreakdownProps, DEFAULT_CRITERIA,
@@ -21,11 +16,26 @@ import {
 import { cloneDeep, times } from "lodash";
 import { Checkbox } from "../../../ui";
 import { Actions } from "../../../constants";
-import { overwriteGroup } from "../../actions";
+import * as groupActions from "../../actions";
+import * as criteriaEdit from "../edit";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import {
   fakeToolTransformProps,
 } from "../../../__test_support__/fake_tool_info";
+
+let overwriteGroupSpy: jest.SpyInstance;
+let togglePointTypeCriteriaSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  overwriteGroupSpy = jest.spyOn(groupActions, "overwriteGroup")
+    .mockImplementation(jest.fn());
+  togglePointTypeCriteriaSpy = jest.spyOn(criteriaEdit, "togglePointTypeCriteria")
+    .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
 
 describe("<GroupCriteria />", () => {
   const fakeProps = (): GroupCriteriaProps => ({
@@ -129,7 +139,7 @@ describe("<GroupPointCountBreakdown />", () => {
     wrapper.find("button").first().simulate("click");
     const expectedBody = cloneDeep(p.group.body);
     expectedBody.point_ids = [];
-    expect(overwriteGroup).toHaveBeenCalledWith(p.group, expectedBody);
+    expect(overwriteGroupSpy).toHaveBeenCalledWith(p.group, expectedBody);
   });
 
   it("doesn't clear point ids", () => {
@@ -138,7 +148,7 @@ describe("<GroupPointCountBreakdown />", () => {
     const wrapper = mount(<GroupPointCountBreakdown {...p} />);
     window.confirm = () => false;
     wrapper.find("button").first().simulate("click");
-    expect(overwriteGroup).not.toHaveBeenCalled();
+    expect(overwriteGroupSpy).not.toHaveBeenCalled();
   });
 
   it("clears criteria", () => {
@@ -148,7 +158,7 @@ describe("<GroupPointCountBreakdown />", () => {
     wrapper.find("button").last().simulate("click");
     const expectedBody = cloneDeep(p.group.body);
     expectedBody.criteria = DEFAULT_CRITERIA;
-    expect(overwriteGroup).toHaveBeenCalledWith(p.group, expectedBody);
+    expect(overwriteGroupSpy).toHaveBeenCalledWith(p.group, expectedBody);
   });
 
   it("doesn't clear criteria", () => {
@@ -156,7 +166,7 @@ describe("<GroupPointCountBreakdown />", () => {
     const wrapper = mount(<GroupPointCountBreakdown {...p} />);
     window.confirm = () => false;
     wrapper.find("button").last().simulate("click");
-    expect(overwriteGroup).not.toHaveBeenCalled();
+    expect(overwriteGroupSpy).not.toHaveBeenCalled();
   });
 
   it("updates", () => {
@@ -190,17 +200,17 @@ describe("<GroupPointCountBreakdown />", () => {
 
 describe("calcMaxCount()", () => {
   it("calculates max count", () => {
-    Object.defineProperty(document, "querySelector", {
-      value: () => ({ clientWidth: 400 }), configurable: true
-    });
+    const querySelectorSpy = jest.spyOn(document, "querySelector")
+      .mockImplementation(() => ({ clientWidth: 400 } as unknown as Element));
     expect(calcMaxCount()).toEqual(39);
+    querySelectorSpy.mockRestore();
   });
 
   it("handles null", () => {
-    Object.defineProperty(document, "querySelector", {
-      value: () => undefined, configurable: true
-    });
+    const querySelectorSpy = jest.spyOn(document, "querySelector")
+      .mockImplementation(() => undefined);
     expect(calcMaxCount()).toEqual(41);
+    querySelectorSpy.mockRestore();
   });
 });
 
@@ -230,7 +240,8 @@ describe("<PointTypeSelection />", () => {
     p.dispatch = mockDispatch(dispatch);
     const wrapper = shallow(<PointTypeSelection {...p} />);
     wrapper.find("FBSelect").simulate("change", { label: "", value: "Plant" });
-    expect(togglePointTypeCriteria).toHaveBeenCalledWith(p.group, "Plant", true);
+    expect(togglePointTypeCriteriaSpy).toHaveBeenCalledWith(
+      p.group, "Plant", true);
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_SELECTION_POINT_TYPE,
       payload: ["Plant"],
@@ -241,7 +252,7 @@ describe("<PointTypeSelection />", () => {
     const p = fakeProps();
     const wrapper = shallow(<PointTypeSelection {...p} />);
     wrapper.find("FBSelect").simulate("change", { label: "", value: "nope" });
-    expect(togglePointTypeCriteria).not.toHaveBeenCalled();
+    expect(togglePointTypeCriteriaSpy).not.toHaveBeenCalled();
   });
 
   it("changes pointer_type", () => {
@@ -249,6 +260,6 @@ describe("<PointTypeSelection />", () => {
     p.pointTypes = ["Plant", "Weed"];
     const wrapper = shallow(<PointTypeSelection {...p} />);
     wrapper.find(Checkbox).first().simulate("change");
-    expect(togglePointTypeCriteria).toHaveBeenCalledWith(p.group, "Plant");
+    expect(togglePointTypeCriteriaSpy).toHaveBeenCalledWith(p.group, "Plant");
   });
 });

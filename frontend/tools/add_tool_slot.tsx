@@ -56,7 +56,7 @@ export class RawAddToolSlot
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = this.context;
+  navigate = (url: string) => this.context?.(url);
 
   save = () => {
     this.state.uuid && this.props.dispatch(save(this.state.uuid));

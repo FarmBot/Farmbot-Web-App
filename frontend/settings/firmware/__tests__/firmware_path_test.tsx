@@ -10,6 +10,9 @@ import {
 } from "../firmware_path";
 import { updateConfig } from "../../../devices/actions";
 
+afterAll(() => {
+  jest.unmock("../../../devices/actions");
+});
 describe("<FirmwarePathRow />", () => {
   const fakeProps = (): FirmwarePathRowProps => ({
     dispatch: jest.fn(),

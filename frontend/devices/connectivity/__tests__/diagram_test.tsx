@@ -1,8 +1,3 @@
-let mockIsMobile = false;
-jest.mock("../../../screen_size", () => ({
-  isMobile: () => mockIsMobile,
-}));
-
 import React from "react";
 import {
   ConnectivityDiagram,
@@ -18,7 +13,13 @@ import {
 import { Color } from "../../../ui";
 import { svgMount } from "../../../__test_support__/svg_mount";
 
+const setWindowWidth = (width: number) => {
+  Object.defineProperty(window, "innerWidth", { configurable: true, value: width });
+};
+
 describe("<ConnectivityDiagram/>", () => {
+  beforeEach(() => setWindowWidth(1000));
+
   function fakeProps(): ConnectivityDiagramProps {
     const hover = jest.fn();
     return {
@@ -69,7 +70,7 @@ describe("<ConnectivityDiagram/>", () => {
   });
 
   it("renders small diagram", () => {
-    mockIsMobile = true;
+    setWindowWidth(400);
     const wrapper = svgMount(<ConnectivityDiagram {...fakeProps()} />);
     expect(wrapper.text())
       .toContain("This phoneWeb AppMessage BrokerFarmBotRaspberry PiF");

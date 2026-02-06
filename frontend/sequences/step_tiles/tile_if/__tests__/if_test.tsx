@@ -11,6 +11,9 @@ import {
   fakeStepParams,
 } from "../../../../__test_support__/fake_sequence_step_data";
 
+afterAll(() => {
+  jest.unmock("../../../../api/crud");
+});
 describe("<If_/>", () => {
   function fakeProps(): StepParams<If> {
     const currentStep: If = {

@@ -19,6 +19,10 @@ import { fakeFarmwareEnv } from "../../__test_support__/fake_state/resources";
 import { destroy } from "../../api/crud";
 import { FarmwareName } from "../../sequences/step_tiles/tile_execute_script";
 
+afterAll(() => {
+  jest.unmock("../../api/crud");
+  jest.unmock("../../device");
+});
 describe("getConfigEnvName()", () => {
   it("generates correct name", () => {
     expect(getConfigEnvName("My Farmware", "config_1"))

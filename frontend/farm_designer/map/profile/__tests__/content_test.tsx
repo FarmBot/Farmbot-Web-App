@@ -29,6 +29,9 @@ import {
 } from "../../../../__test_support__/fake_designer_state";
 import { Path } from "../../../../internal_urls";
 
+afterAll(() => {
+  jest.unmock("../../layers/points/interpolation_map");
+});
 describe("<ProfileSvg />", () => {
   const fakeProps = (): ProfileSvgProps => ({
     allPoints: [],

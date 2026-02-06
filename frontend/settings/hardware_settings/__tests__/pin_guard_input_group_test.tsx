@@ -11,6 +11,9 @@ import {
 } from "../../../__test_support__/resource_index_builder";
 import { DeviceSetting } from "../../../constants";
 
+afterAll(() => {
+  jest.unmock("../../../devices/actions");
+});
 describe("<PinGuardMCUInputGroup />", () => {
   const fakeProps = (): PinGuardMCUInputGroupProps => ({
     label: DeviceSetting.pinGuard1,

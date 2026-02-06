@@ -1,20 +1,5 @@
 let mockIsMobile = false;
-jest.mock("../../../screen_size", () => ({
-  isMobile: () => mockIsMobile,
-}));
-
-jest.mock("../../../api/crud", () => ({ refresh: jest.fn() }));
-
-jest.mock("../../actions", () => ({
-  restartFirmware: jest.fn(),
-  sync: jest.fn(),
-  readStatus: jest.fn(),
-}));
-
 let mockDemo = false;
-jest.mock("../../must_be_online", () => ({
-  forceOnline: () => mockDemo,
-}));
 
 import React from "react";
 import { mount } from "enzyme";
@@ -23,15 +8,46 @@ import { bot } from "../../../__test_support__/fake_state/bot";
 import { StatusRowProps } from "../connectivity_row";
 import { clone } from "lodash";
 import { fakePings } from "../../../__test_support__/fake_state/pings";
-import { refresh } from "../../../api/crud";
 import { fakeDevice } from "../../../__test_support__/resource_index_builder";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { ConnectionName } from "../diagnosis";
 import { fakeAlert } from "../../../__test_support__/fake_state/resources";
-import { sync, readStatus } from "../../actions";
 import { clickButton } from "../../../__test_support__/helpers";
 import { metricPanelState } from "../../../__test_support__/panel_state";
 import { Actions } from "../../../constants";
+import * as screenSize from "../../../screen_size";
+import * as crud from "../../../api/crud";
+import * as deviceActions from "../../actions";
+import * as mustBeOnline from "../../must_be_online";
+
+let isMobileSpy: jest.SpyInstance;
+let refreshSpy: jest.SpyInstance;
+let syncSpy: jest.SpyInstance;
+let readStatusSpy: jest.SpyInstance;
+let restartFirmwareSpy: jest.SpyInstance;
+let forceOnlineSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  mockIsMobile = false;
+  mockDemo = false;
+  isMobileSpy = jest.spyOn(screenSize, "isMobile").mockImplementation(() => mockIsMobile);
+  refreshSpy = jest.spyOn(crud, "refresh").mockImplementation(jest.fn());
+  restartFirmwareSpy = jest.spyOn(deviceActions, "restartFirmware")
+    .mockImplementation(jest.fn());
+  syncSpy = jest.spyOn(deviceActions, "sync").mockImplementation(jest.fn());
+  readStatusSpy = jest.spyOn(deviceActions, "readStatus").mockImplementation(jest.fn());
+  forceOnlineSpy = jest.spyOn(mustBeOnline, "forceOnline")
+    .mockImplementation(() => mockDemo);
+});
+
+afterEach(() => {
+  isMobileSpy.mockRestore();
+  refreshSpy.mockRestore();
+  restartFirmwareSpy.mockRestore();
+  syncSpy.mockRestore();
+  readStatusSpy.mockRestore();
+  forceOnlineSpy.mockRestore();
+});
 
 describe("<Connectivity />", () => {
   const statusRow = {
@@ -102,17 +118,17 @@ describe("<Connectivity />", () => {
   it("refreshes device", () => {
     const p = fakeProps();
     mount(<Connectivity {...p} />);
-    expect(refresh).toHaveBeenCalledWith(p.device);
-    expect(sync).toHaveBeenCalled();
-    expect(readStatus).toHaveBeenCalled();
+    expect(crud.refresh).toHaveBeenCalledWith(p.device);
+    expect(deviceActions.sync).toHaveBeenCalled();
+    expect(deviceActions.readStatus).toHaveBeenCalled();
   });
 
   it("doesn't refresh device", () => {
     mockDemo = true;
     mount(<Connectivity {...fakeProps()} />);
-    expect(refresh).not.toHaveBeenCalled();
-    expect(sync).not.toHaveBeenCalled();
-    expect(readStatus).not.toHaveBeenCalled();
+    expect(crud.refresh).not.toHaveBeenCalled();
+    expect(deviceActions.sync).not.toHaveBeenCalled();
+    expect(deviceActions.readStatus).not.toHaveBeenCalled();
   });
 
   it("displays fbos_version", () => {

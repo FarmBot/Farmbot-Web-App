@@ -2,6 +2,7 @@ require "find"
 
 COVERAGE_FILE_PATH = "./coverage_fe/index.html"
 JSON_COVERAGE_FILE_PATH = "./coverage_fe/coverage-final.json"
+LCOV_FILE_PATH = "./coverage_fe/lcov.info"
 THRESHOLD = 0.001
 REPO_URL = "https://api.github.com/repos/Farmbot/Farmbot-Web-App"
 LATEST_COV_URL = "https://coveralls.io/github/FarmBot/Farmbot-Web-App.json"
@@ -163,6 +164,54 @@ def get_json_coverage_results()
   results
 end
 
+def get_lcov_coverage_results()
+  results = {
+    lines: { covered: 0, total: 0 },
+    branches: { covered: 0, total: 0 },
+    functions: { covered: 0, total: 0 },
+  }
+  return results unless File.exist?(LCOV_FILE_PATH)
+
+  current = {
+    lines: { covered: 0, total: 0 },
+    branches: { covered: 0, total: 0 },
+    functions: { covered: 0, total: 0 },
+  }
+
+  File.foreach(LCOV_FILE_PATH) do |raw_line|
+    line = raw_line.strip
+    case line
+    when /^SF:/
+      current = {
+        lines: { covered: 0, total: 0 },
+        branches: { covered: 0, total: 0 },
+        functions: { covered: 0, total: 0 },
+      }
+    when /^LH:(\d+)/
+      current[:lines][:covered] = Regexp.last_match(1).to_i
+    when /^LF:(\d+)/
+      current[:lines][:total] = Regexp.last_match(1).to_i
+    when /^BRH:(\d+)/
+      current[:branches][:covered] = Regexp.last_match(1).to_i
+    when /^BRF:(\d+)/
+      current[:branches][:total] = Regexp.last_match(1).to_i
+    when /^FNH:(\d+)/
+      current[:functions][:covered] = Regexp.last_match(1).to_i
+    when /^FNF:(\d+)/
+      current[:functions][:total] = Regexp.last_match(1).to_i
+    when "end_of_record"
+      results[:lines][:covered] += current[:lines][:covered]
+      results[:lines][:total] += current[:lines][:total]
+      results[:branches][:covered] += current[:branches][:covered]
+      results[:branches][:total] += current[:branches][:total]
+      results[:functions][:covered] += current[:functions][:covered]
+      results[:functions][:total] += current[:functions][:total]
+    end
+  end
+
+  results
+end
+
 # <commit hash> on <username>:<branch>
 def branch_info_string?(target, pull_data)
   unless pull_data.dig(target, "sha").nil?
@@ -247,7 +296,7 @@ namespace :coverage do
        "values from the base branch of a PR (or the build branch if not a PR)." \
        "This task is used during ci to fail PR builds if test coverage" \
        "decreases significantly and can also be run locally after running" \
-       "`jest --coverage` or `npm test-slow`." \
+       "`bun test --coverage`." \
        "The Coveralls stats reporter used to perform this check, but didn't" \
        "compare against a PR's base branch and would always return 0% change."
   task run: :environment do
@@ -264,25 +313,44 @@ namespace :coverage do
 
     puts "\nUnable to determine coverage from HTML report." if lines.nil?
     puts "Checking JSON report..." if lines.nil?
-    results = get_json_coverage_results()
+    json_results = get_json_coverage_results()
     lines_json_report = Pair.new(
-      results[:lines][:covered].to_f, results[:lines][:total].to_f
+      json_results[:lines][:covered].to_f, json_results[:lines][:total].to_f
     )
     branches_json_report = Pair.new(
-      results[:branches][:covered].to_f, results[:branches][:total].to_f
+      json_results[:branches][:covered].to_f, json_results[:branches][:total].to_f
     )
-    if results[:lines][:total] > 0
+    if json_results[:lines][:total] > 0
       lines = lines || lines_json_report
       branches = branches || branches_json_report
     end
-    covered = lines_json_report.head + branches_json_report.head
-    total = lines_json_report.tail + branches_json_report.tail
-    puts "JSON report aggregate:  #{covered / total * 100}%"
-    puts
+
+    puts "Checking LCOV report..." if lines.nil?
+    lcov_results = get_lcov_coverage_results()
+    lines_lcov_report = Pair.new(
+      lcov_results[:lines][:covered].to_f, lcov_results[:lines][:total].to_f
+    )
+    branches_lcov_report = Pair.new(
+      lcov_results[:branches][:covered].to_f, lcov_results[:branches][:total].to_f
+    )
+    functions_lcov_report = Pair.new(
+      lcov_results[:functions][:covered].to_f, lcov_results[:functions][:total].to_f
+    )
+    if lcov_results[:lines][:total] > 0
+      lines = lines || lines_lcov_report
+      branches = branches || branches_lcov_report
+      functions = functions || functions_lcov_report
+    end
+    covered = lines_lcov_report.head + branches_lcov_report.head
+    total = lines_lcov_report.tail + branches_lcov_report.tail
+    if total > 0
+      puts "LCOV report aggregate:  #{covered / total * 100}%"
+      puts
+    end
 
     fallback_fraction = Pair.new(0.0, 1.0)
     puts "\nUnable to determine coverage from build." if lines.nil?
-    statements = statements || fallback_fraction
+    statements = statements || lines || fallback_fraction
     branches = branches || fallback_fraction
     functions = functions || fallback_fraction
     lines = lines || fallback_fraction

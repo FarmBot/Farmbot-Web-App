@@ -8,6 +8,9 @@ import { Pins } from "farmbot";
 import { fakeSensor } from "../../__test_support__/fake_state/resources";
 import { SensorListProps } from "../interfaces";
 
+afterAll(() => {
+  jest.unmock("../../device");
+});
 describe("<SensorList/>", function () {
   const fakeProps = (): SensorListProps => {
     const pins: Pins = {

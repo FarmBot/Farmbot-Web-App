@@ -1,7 +1,7 @@
 import { generateReducer } from "./redux/generate_reducer";
 import { Actions } from "./constants";
 import { ToastMessageProps, ToastMessages } from "./toast/interfaces";
-import {
+import type {
   ControlsState,
   CurvesPanelState,
   MetricPanelState,

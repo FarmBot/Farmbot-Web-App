@@ -1,14 +1,4 @@
-jest.mock("../../config_storage/actions", () => ({
-  getWebAppConfigValue: jest.fn(x => { x(); return jest.fn(() => true); }),
-  setWebAppConfigValue: jest.fn(),
-}));
-
 let mockHighlightName = "";
-jest.mock("../../settings/maybe_highlight", () => ({
-  maybeOpenPanel: jest.fn(),
-  Highlight: (p: { children: React.ReactNode }) => <div>{p.children}</div>,
-  getHighlightName: jest.fn(() => mockHighlightName),
-}));
 
 jest.mock("../fbos_settings/boot_sequence_selector", () => ({
   BootSequenceSelector: () => <div />,
@@ -19,7 +9,7 @@ import { mount, ReactWrapper, shallow } from "enzyme";
 import { RawDesignerSettings as DesignerSettings } from "../index";
 import { DesignerSettingsProps } from "../interfaces";
 import { BooleanSetting, NumericSetting } from "../../session_keys";
-import { setWebAppConfigValue } from "../../config_storage/actions";
+import * as configStorageActions from "../../config_storage/actions";
 import {
   buildResourceIndex, fakeDevice,
 } from "../../__test_support__/resource_index_builder";
@@ -29,7 +19,7 @@ import { clickButton } from "../../__test_support__/helpers";
 import { Actions } from "../../constants";
 import { Motors } from "../hardware_settings";
 import { SearchField } from "../../ui/search_field";
-import { maybeOpenPanel } from "../maybe_highlight";
+import * as maybeHighlight from "../maybe_highlight";
 import { SettingsPanelState } from "../../interfaces";
 import { settingsPanelState } from "../../__test_support__/panel_state";
 import {
@@ -40,6 +30,8 @@ import { API } from "../../api";
 import { FbosConfig } from "farmbot/dist/resources/configs/fbos";
 import { Path } from "../../internal_urls";
 
+const EMPTY_RESOURCE_INDEX = buildResourceIndex([]).index;
+
 const getSetting =
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (wrapper: ReactWrapper<any>, position: number, containsString: string) => {
@@ -49,7 +41,29 @@ const getSetting =
     return setting;
   };
 
+afterAll(() => {
+  jest.unmock("../fbos_settings/boot_sequence_selector");
+});
 describe("<DesignerSettings />", () => {
+  let maybeOpenPanelSpy: jest.SpyInstance;
+  let _getHighlightNameSpy: jest.SpyInstance;
+  let setWebAppConfigValueSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    maybeOpenPanelSpy = jest.spyOn(maybeHighlight, "maybeOpenPanel")
+      .mockImplementation(() => jest.fn());
+    _getHighlightNameSpy = jest.spyOn(maybeHighlight, "getHighlightName")
+      .mockImplementation(() => mockHighlightName);
+    setWebAppConfigValueSpy = jest.spyOn(configStorageActions, "setWebAppConfigValue")
+      .mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+    mockHighlightName = "";
+  });
+
   const fakePanelState = settingsPanelState();
   Object.keys(fakePanelState).map((key: keyof SettingsPanelState) =>
     fakePanelState[key] = true);
@@ -62,7 +76,7 @@ describe("<DesignerSettings />", () => {
     sourceFbosConfig: x => ({
       value: fakeFbosConfig().body[x as keyof FbosConfig], consistent: true,
     }),
-    resources: buildResourceIndex([]).index,
+    resources: EMPTY_RESOURCE_INDEX,
     deviceAccount: fakeDevice(),
     alerts: [],
     saveFarmwareEnv: jest.fn(),
@@ -97,7 +111,7 @@ describe("<DesignerSettings />", () => {
 
   it("mounts", () => {
     mount(<DesignerSettings {...fakeProps()} />);
-    expect(maybeOpenPanel).toHaveBeenCalled();
+    expect(maybeOpenPanelSpy).toHaveBeenCalled();
   });
 
   it("sets search term", () => {
@@ -130,7 +144,7 @@ describe("<DesignerSettings />", () => {
   it("fetches firmware_hardware", () => {
     const p = fakeProps();
     p.sourceFbosConfig = () => ({ value: "arduino", consistent: true });
-    const wrapper = mount(<DesignerSettings {...p} />);
+    const wrapper = shallow(<DesignerSettings {...p} />);
     expect(wrapper.find(Motors).props().firmwareHardware).toEqual("arduino");
   });
 
@@ -174,7 +188,7 @@ describe("<DesignerSettings />", () => {
     const wrapper = mount(<DesignerSettings {...p} />);
     const trailSetting = getSetting(wrapper, 1, "trail");
     trailSetting.find("button").simulate("click");
-    expect(setWebAppConfigValue)
+    expect(setWebAppConfigValueSpy)
       .toHaveBeenCalledWith(BooleanSetting.display_trail, true);
   });
 
@@ -185,7 +199,7 @@ describe("<DesignerSettings />", () => {
     const wrapper = mount(<DesignerSettings {...p} />);
     const originSetting = getSetting(wrapper, 6, "origin");
     originSetting.find("div").last().simulate("click");
-    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       NumericSetting.bot_origin_quadrant, 4);
   });
 
@@ -205,7 +219,7 @@ describe("<DesignerSettings />", () => {
 
   it("navigates to setup wizard", () => {
     const p = fakeProps();
-    const wrapper = mount(<DesignerSettings {...p} />);
+    const wrapper = shallow(<DesignerSettings {...p} />);
     const popover = wrapper.find("Popover").first();
     const content = shallow(<div>{popover.prop("content")}</div>);
     const button = content.find("button")
@@ -219,7 +233,7 @@ describe("<DesignerSettings />", () => {
     const p = fakeProps();
     const wrapper = mount(<DesignerSettings {...p} />);
     wrapper.find(".dark-mode-toggle button").simulate("click");
-    expect(setWebAppConfigValue)
+    expect(setWebAppConfigValueSpy)
       .toHaveBeenCalledWith(BooleanSetting.dark_mode, true);
   });
 

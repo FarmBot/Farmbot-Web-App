@@ -1,14 +1,7 @@
-jest.mock("../../../devices/actions", () => ({
-  move: jest.fn(),
-}));
-
-jest.mock("../../../api/crud", () => ({ destroy: jest.fn() }));
-
 import React from "react";
 import { mount, shallow } from "enzyme";
 import { Photos, MoveToLocation, PhotoButtons } from "../photos";
 import { fakeImages } from "../../../__test_support__/fake_state/images";
-import { destroy } from "../../../api/crud";
 import { clickButton } from "../../../__test_support__/helpers";
 import {
   PhotosProps, MoveToLocationProps, PhotoButtonsProps,
@@ -25,7 +18,43 @@ import { fakeDesignerState } from "../../../__test_support__/fake_designer_state
 import {
   fakeMovementState, fakePercentJob,
 } from "../../../__test_support__/fake_bot_data";
-import { move } from "../../../devices/actions";
+import * as crud from "../../../api/crud";
+import * as deviceActions from "../../../devices/actions";
+import * as imageActions from "../actions";
+import * as imageFlipper from "../image_flipper";
+
+let destroySpy: jest.SpyInstance;
+let moveSpy: jest.SpyInstance;
+let setShownMapImagesSpy: jest.SpyInstance;
+let selectNextImageSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  destroySpy = jest.spyOn(crud, "destroy").mockImplementation(jest.fn());
+  moveSpy = jest.spyOn(deviceActions, "move").mockImplementation(jest.fn());
+  setShownMapImagesSpy = jest.spyOn(imageActions, "setShownMapImages")
+    .mockImplementation(() => ({
+      type: Actions.SET_SHOWN_MAP_IMAGES,
+      payload: [],
+    }));
+  selectNextImageSpy = jest.spyOn(imageFlipper, "selectNextImage")
+    .mockImplementation((images, index) => dispatch => {
+      dispatch({
+        type: Actions.SELECT_IMAGE,
+        payload: images[index]?.uuid,
+      });
+      dispatch({
+        type: Actions.SET_SHOWN_MAP_IMAGES,
+        payload: [],
+      });
+    });
+});
+
+afterEach(() => {
+  destroySpy.mockRestore();
+  moveSpy.mockRestore();
+  setShownMapImagesSpy.mockRestore();
+  selectNextImageSpy.mockRestore();
+});
 
 describe("<Photos />", () => {
   const fakeProps = (): PhotosProps => ({
@@ -85,10 +114,10 @@ describe("<Photos />", () => {
     const images = fakeImages;
     p.currentImage = images[1];
     const wrapper = mount(<Photos {...p} />);
-    const button = wrapper.find("i").at(1);
-    expect(button.hasClass("fa-trash")).toBeTruthy();
+    const button = wrapper.find(".fa-trash").first();
+    expect(button.exists()).toBeTruthy();
     await button.simulate("click");
-    expect(destroy).toHaveBeenCalledWith(p.currentImage.uuid);
+    expect(crud.destroy).toHaveBeenCalledWith(p.currentImage.uuid);
     await expect(success).toHaveBeenCalled();
   });
 
@@ -98,10 +127,10 @@ describe("<Photos />", () => {
     const images = fakeImages;
     p.currentImage = images[1];
     const wrapper = mount(<Photos {...p} />);
-    const button = wrapper.find("i").at(1);
-    expect(button.hasClass("fa-trash")).toBeTruthy();
+    const button = wrapper.find(".fa-trash").first();
+    expect(button.exists()).toBeTruthy();
     await button.simulate("click");
-    await expect(destroy).toHaveBeenCalledWith(p.currentImage.uuid);
+    await expect(crud.destroy).toHaveBeenCalledWith(p.currentImage.uuid);
     await expect(error).toHaveBeenCalled();
   });
 
@@ -109,7 +138,7 @@ describe("<Photos />", () => {
     const wrapper = mount<Photos>(<Photos {...fakeProps()} />);
     expect(wrapper.html()).not.toContain("fa-trash");
     wrapper.instance().deletePhoto();
-    expect(destroy).not.toHaveBeenCalled();
+    expect(crud.destroy).not.toHaveBeenCalled();
   });
 
   it("doesn't show image download progress", () => {
@@ -145,6 +174,7 @@ describe("<Photos />", () => {
     const p = fakeProps();
     const wrapper = mount(<Photos {...p} />);
     wrapper.unmount();
+    expect(setShownMapImagesSpy).toHaveBeenCalledWith(undefined);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_SHOWN_MAP_IMAGES, payload: [],
     });
@@ -182,7 +212,7 @@ describe("<Photos />", () => {
       type: Actions.SELECT_IMAGE, payload: image.uuid,
     });
     expect(dispatch).toHaveBeenCalledWith({
-      type: Actions.SET_SHOWN_MAP_IMAGES, payload: [undefined],
+      type: Actions.SET_SHOWN_MAP_IMAGES, payload: [],
     });
   });
 });
@@ -240,7 +270,7 @@ describe("<MoveToLocation />", () => {
   it("moves to location", () => {
     const wrapper = mount(<MoveToLocation {...fakeProps()} />);
     clickButton(wrapper, 0, "go (x, y)");
-    expect(move).toHaveBeenCalledWith({ x: 0, y: 0, z: 0 });
+    expect(deviceActions.move).toHaveBeenCalledWith({ x: 0, y: 0, z: 0 });
   });
 
   it("handles missing location", () => {

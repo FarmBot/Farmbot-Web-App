@@ -1,18 +1,8 @@
-jest.mock("../auto_sync", () => ({
-  handleCreateOrUpdate: jest.fn()
-}));
-
-jest.mock("../../resources/actions", () => ({
-  destroyOK: jest.fn()
-}));
-
 import { fakeState } from "../../__test_support__/fake_state";
 import { GetState } from "../../redux/interfaces";
 import { handleInbound } from "../auto_sync_handle_inbound";
-import {
-  handleCreateOrUpdate,
-} from "../auto_sync";
-import { destroyOK } from "../../resources/actions";
+import * as autoSync from "../auto_sync";
+import * as resourceActions from "../../resources/actions";
 import {
   SkipMqttData, BadMqttData, UpdateMqttData, DeleteMqttData,
 } from "../interfaces";
@@ -22,6 +12,16 @@ import { TaggedSequence } from "farmbot";
 describe("handleInbound()", () => {
   const dispatch = jest.fn();
   const getState: GetState = jest.fn(fakeState);
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.spyOn(autoSync, "handleCreateOrUpdate").mockImplementation(jest.fn());
+    jest.spyOn(resourceActions, "destroyOK").mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
 
   it("handles SKIP", () => {
     const fixtr: SkipMqttData = { status: "SKIP" };
@@ -48,7 +48,7 @@ describe("handleInbound()", () => {
       sessionId: "456"
     };
     handleInbound(dispatch, getState, fixtr);
-    expect(handleCreateOrUpdate).toHaveBeenCalled();
+    expect(autoSync.handleCreateOrUpdate).toHaveBeenCalled();
   });
 
   it("handles DELETE when the record is in system", () => {
@@ -60,7 +60,7 @@ describe("handleInbound()", () => {
     };
     handleInbound(dispatch, getState, fixtr);
     expect(dispatch).toHaveBeenCalled();
-    expect(destroyOK).toHaveBeenCalled();
+    expect(resourceActions.destroyOK).toHaveBeenCalled();
   });
 
   it("handles DELETE when the record is *not* in system", () => {
@@ -71,6 +71,6 @@ describe("handleInbound()", () => {
     };
     handleInbound(dispatch, getState, fixtr);
     expect(dispatch).not.toHaveBeenCalled();
-    expect(destroyOK).not.toHaveBeenCalled();
+    expect(resourceActions.destroyOK).not.toHaveBeenCalled();
   });
 });

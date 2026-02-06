@@ -1,15 +1,7 @@
-import { fakeState } from "../../__test_support__/fake_state";
-const mockState = fakeState();
-jest.mock("../../redux/store", () => ({ store: { getState: () => mockState } }));
-
 import React from "react";
 import { shallow, mount } from "enzyme";
 import { NavLinks } from "../nav_links";
 import { NavLinksProps } from "../interfaces";
-import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
-import {
-  fakeFarmwareInstallation, fakeWebAppConfig,
-} from "../../__test_support__/fake_state/resources";
 import {
   fakeDesignerState, fakeHelpState,
 
@@ -17,8 +9,42 @@ import {
 import { Path } from "../../internal_urls";
 import { Actions } from "../../constants";
 import { mockDispatch } from "../../__test_support__/fake_dispatch";
+import { fakeState } from "../../__test_support__/fake_state";
+import { store } from "../../redux/store";
+import * as configStorageActions from "../../config_storage/actions";
+import * as selectors from "../../resources/selectors";
+import * as tours from "../../help/tours";
+
+let mockState = fakeState();
+let getStateSpy: jest.SpyInstance;
+let getWebAppConfigValueSpy: jest.SpyInstance;
+let selectAllFarmwareInstallationsSpy: jest.SpyInstance;
+let maybeBeaconSpy: jest.SpyInstance;
+const originalPathname = location.pathname;
 
 describe("<NavLinks />", () => {
+  beforeEach(() => {
+    mockState = fakeState();
+    getStateSpy = jest.spyOn(store, "getState")
+      .mockImplementation(() => mockState);
+    getWebAppConfigValueSpy = jest.spyOn(configStorageActions,
+      "getWebAppConfigValue")
+      .mockImplementation(() => () => false);
+    selectAllFarmwareInstallationsSpy = jest.spyOn(selectors,
+      "selectAllFarmwareInstallations")
+      .mockImplementation(() => []);
+    maybeBeaconSpy = jest.spyOn(tours, "maybeBeacon")
+      .mockImplementation(() => "");
+  });
+
+  afterEach(() => {
+    getStateSpy.mockRestore();
+    getWebAppConfigValueSpy.mockRestore();
+    selectAllFarmwareInstallationsSpy.mockRestore();
+    maybeBeaconSpy.mockRestore();
+    location.pathname = originalPathname;
+  });
+
   const fakeProps = (): NavLinksProps => ({
     close: jest.fn(() => jest.fn()),
     alertCount: 1,
@@ -53,6 +79,7 @@ describe("<NavLinks />", () => {
   });
 
   it("shows beacon", () => {
+    maybeBeaconSpy.mockImplementation(() => "beacon soft");
     const p = fakeProps();
     p.helpState.currentTour = "gettingStarted";
     p.helpState.currentTourStep = "plants";
@@ -93,39 +120,30 @@ describe("<NavLinks />", () => {
   });
 
   it("shows sensors link", () => {
-    const config = fakeWebAppConfig();
-    config.body.hide_sensors = false;
-    mockState.resources = buildResourceIndex([config]);
+    getWebAppConfigValueSpy.mockImplementation(() => () => false);
     const p = fakeProps();
     const wrapper = shallow(<NavLinks {...p} />);
     expect(wrapper.html().toLowerCase()).toContain("sensors");
   });
 
   it("doesn't show sensors link", () => {
-    const config = fakeWebAppConfig();
-    config.body.hide_sensors = true;
-    mockState.resources = buildResourceIndex([config]);
+    getWebAppConfigValueSpy.mockImplementation(() => () => true);
     const p = fakeProps();
     const wrapper = shallow(<NavLinks {...p} />);
     expect(wrapper.html().toLowerCase()).not.toContain("sensors");
   });
 
   it("doesn't show farmware link", () => {
-    const farmware = fakeFarmwareInstallation();
-    farmware.body.package = "included";
-    mockState.resources = buildResourceIndex([farmware]);
-    mockState.resources.consumers.farmware.firstPartyFarmwareNames = ["included"];
+    selectAllFarmwareInstallationsSpy.mockImplementation(() => []);
     const wrapper = shallow(<NavLinks {...fakeProps()} />);
     expect(wrapper.html().toLowerCase()).not.toContain("farmware");
   });
 
   it("shows farmware link", () => {
-    const farmware1 = fakeFarmwareInstallation();
-    farmware1.body.package = "included";
-    const farmware2 = fakeFarmwareInstallation();
-    farmware2.body.package = undefined;
-    mockState.resources = buildResourceIndex([farmware1, farmware2]);
     mockState.resources.consumers.farmware.firstPartyFarmwareNames = ["included"];
+    selectAllFarmwareInstallationsSpy.mockImplementation(() => [{
+      body: { package: "custom-farmware" },
+    }] as never);
     const wrapper = shallow(<NavLinks {...fakeProps()} />);
     expect(wrapper.html().toLowerCase()).toContain("farmware");
   });

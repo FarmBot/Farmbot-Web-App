@@ -15,7 +15,7 @@ describe("<ToursPanel />", () => {
     const wrapper = mount(<ToursPanel {...fakeProps()} />);
     clickButton(wrapper, 0, "start tour");
     expect(mockNavigate).toHaveBeenCalledWith(
-      "?tour=gettingStarted&tourStep=intro");
+      expect.stringContaining("?tour=gettingStarted&tourStep=intro"));
   });
 });
 

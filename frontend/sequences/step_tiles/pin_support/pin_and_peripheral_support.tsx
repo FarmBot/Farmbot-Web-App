@@ -12,7 +12,7 @@ import {
 import { bail } from "../../../util/errors";
 import { StepParams } from "../../interfaces";
 import { editStep } from "../../../api/crud";
-import { joinKindAndId } from "../../../resources/reducer_support";
+import { joinKindAndId } from "../../../resources/join_kind_and_id";
 import { t } from "../../../i18next_wrapper";
 import {
   getFwHardwareValue, hasExtraButtons,

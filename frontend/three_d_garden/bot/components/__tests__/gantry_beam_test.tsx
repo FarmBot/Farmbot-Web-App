@@ -30,6 +30,9 @@ import { clone } from "lodash";
 import { GantryBeam, GantryBeamProps } from "../gantry_beam";
 import { Shape, Texture } from "three";
 
+afterAll(() => {
+  jest.unmock("react");
+});
 describe("<GantryBeam />", () => {
   const fakeProps = (): GantryBeamProps => ({
     config: clone(INITIAL),

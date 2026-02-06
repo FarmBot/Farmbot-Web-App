@@ -10,6 +10,9 @@ import { arrayUnwrap } from "../../resources/util";
 import { Store } from "redux";
 import { Everything } from "../../interfaces";
 
+afterAll(() => {
+  jest.unmock("../../revert_to_english");
+});
 describe("revertToEnglishMiddleware", () => {
   it("calls `revertToEnglish` when appropriate", () => {
     const dispatch = jest.fn(() => ({}));

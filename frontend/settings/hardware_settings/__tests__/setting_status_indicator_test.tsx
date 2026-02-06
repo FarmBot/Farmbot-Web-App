@@ -8,6 +8,9 @@ import {
 } from "../setting_status_indicator";
 import { resendParameters } from "../export_menu";
 
+afterAll(() => {
+  jest.unmock("../export_menu");
+});
 describe("<SettingStatusIndicator />", () => {
   const fakeProps = (): SettingStatusIndicatorProps => ({
     dispatch: jest.fn(),

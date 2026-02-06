@@ -5,6 +5,15 @@ import { scanImage, detectPlants } from "../actions";
 import { error } from "../../../toast/toast";
 import { FarmwareName } from "../../../sequences/step_tiles/tile_execute_script";
 
+beforeEach(() => {
+  jest.clearAllMocks();
+  mockDevice.execScript = jest.fn((..._) => Promise.resolve({}));
+});
+
+afterAll(() => {
+  jest.unmock("../../../device");
+});
+
 describe("scanImage()", () => {
   it("executes with selected image id", () => {
     scanImage(1)(5);

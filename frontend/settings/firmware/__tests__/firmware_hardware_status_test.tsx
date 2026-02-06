@@ -12,6 +12,9 @@ import {
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 
+afterAll(() => {
+  jest.unmock("../../../devices/actions");
+});
 describe("<FirmwareHardwareStatusDetails />", () => {
   const fakeProps = (): FirmwareHardwareStatusDetailsProps => ({
     alerts: [],

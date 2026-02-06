@@ -17,6 +17,15 @@ import {
 } from "../../../../__test_support__/fake_sequence_step_data";
 import { Slider } from "@blueprintjs/core";
 
+beforeEach(() => {
+  jest.clearAllMocks();
+  mockEditStep.mockClear();
+});
+
+afterAll(() => {
+  jest.unmock("../../../../api/crud");
+});
+
 describe("<PinValueField />", () => {
   const fakeProps = (): PinValueFieldProps => {
     const step: WritePin = {

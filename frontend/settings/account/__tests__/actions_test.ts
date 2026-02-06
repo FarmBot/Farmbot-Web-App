@@ -16,6 +16,10 @@ API.setBaseUrl("http://localhost:3000");
 const data = { password: "Foo!" };
 const errorResponse = { response: { data: "error" } };
 
+afterAll(() => {
+  jest.unmock("axios");
+  jest.unmock("../../../toast_errors");
+});
 describe("deleteUser()", () => {
   it("deletes user", async () => {
     mockDelete = Promise.resolve();

@@ -11,6 +11,9 @@ jest.mock("@react-three/fiber", () => ({
 const mockUseFrame = useFrame as jest.Mock;
 const mockUseThree = useThree as jest.Mock;
 
+afterAll(() => {
+  jest.unmock("@react-three/fiber");
+});
 describe("FPSProbe", () => {
   beforeEach(() => {
     mockUseFrame.mockReset();
@@ -22,6 +25,9 @@ describe("FPSProbe", () => {
           memory: { geometries: 0, textures: 0 },
         },
       },
+      pointer: { x: 0, y: 0 },
+      camera: {},
+      size: { width: 800, height: 600 },
       scene: { traverse: jest.fn() },
     });
   });
@@ -58,6 +64,9 @@ describe("FPSProbe", () => {
           memory: { geometries: 3, textures: 7 },
         },
       },
+      pointer: { x: 0, y: 0 },
+      camera: {},
+      size: { width: 800, height: 600 },
       scene: {
         traverse: (callback: (object: typeof objects[number]) => void) => {
           objects.forEach(callback);

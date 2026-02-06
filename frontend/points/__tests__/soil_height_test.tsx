@@ -19,6 +19,9 @@ import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
 
+afterAll(() => {
+  jest.unmock("../../api/crud");
+});
 describe("toggleSoilHeight()", () => {
   it("returns update", () => {
     const point = fakePoint();

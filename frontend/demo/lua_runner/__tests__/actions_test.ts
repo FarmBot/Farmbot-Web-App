@@ -1,3 +1,5 @@
+jest.unmock("../actions");
+
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
@@ -8,34 +10,40 @@ import {
 } from "../../../__test_support__/fake_state/resources";
 let mockResources = buildResourceIndex([]);
 let mockLocked = false;
-jest.mock("../../../redux/store", () => ({
-  store: {
-    dispatch: jest.fn(),
-    getState: () => ({
-      resources: mockResources,
-      bot: {
-        hardware: {
-          location_data: { position: { x: 0, y: 0, z: 0 } },
-          informational_settings: { locked: mockLocked },
-        },
-      },
-    }),
-  },
-}));
-
-jest.mock("lodash", () => ({
-  ...jest.requireActual("lodash"),
-  random: () => 0,
-}));
 
 import { TOAST_OPTIONS } from "../../../toast/constants";
 import { info } from "../../../toast/toast";
+import { store } from "../../../redux/store";
 import { eStop, expandActions, runActions, setCurrent } from "../actions";
+import * as lodash from "lodash";
+
+const originalDispatch = store.dispatch;
+const originalGetState = store.getState;
+const mockDispatch = jest.fn();
+let randomSpy: jest.SpyInstance;
+const mockGetState = () => ({
+  resources: mockResources,
+  bot: {
+    hardware: {
+      location_data: { position: { x: 0, y: 0, z: 0 } },
+      informational_settings: { locked: mockLocked },
+    },
+  },
+});
 
 describe("runActions()", () => {
   beforeEach(() => {
+    jest.clearAllMocks();
+    jest.useRealTimers();
+    randomSpy = jest.spyOn(lodash, "random").mockReturnValue(0);
     console.log = jest.fn();
     mockLocked = false;
+    (store as unknown as { dispatch: Function }).dispatch = mockDispatch;
+    (store as unknown as { getState: Function }).getState = mockGetState;
+  });
+
+  afterEach(() => {
+    randomSpy.mockRestore();
   });
 
   it("runs actions", () => {
@@ -79,6 +87,9 @@ describe("runActions()", () => {
 
 describe("expandActions()", () => {
   beforeEach(() => {
+    jest.clearAllMocks();
+    jest.useRealTimers();
+    randomSpy = jest.spyOn(lodash, "random").mockReturnValue(0);
     setCurrent({ x: 0, y: 0, z: 0 });
     localStorage.removeItem("timeStepMs");
     localStorage.removeItem("mmPerSecond");
@@ -89,6 +100,12 @@ describe("expandActions()", () => {
       fakeWebAppConfig(),
     ]);
     mockLocked = false;
+    (store as unknown as { dispatch: Function }).dispatch = mockDispatch;
+    (store as unknown as { getState: Function }).getState = mockGetState;
+  });
+
+  afterEach(() => {
+    randomSpy.mockRestore();
   });
 
   it("chunks movements: default", () => {
@@ -292,4 +309,9 @@ describe("expandActions()", () => {
       },
     ]);
   });
+});
+
+afterAll(() => {
+  (store as unknown as { dispatch: Function }).dispatch = originalDispatch;
+  (store as unknown as { getState: Function }).getState = originalGetState;
 });

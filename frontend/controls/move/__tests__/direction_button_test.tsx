@@ -1,15 +1,15 @@
-const mockDevice = { moveRelative: jest.fn((_) => Promise.resolve()) };
-jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
-
 import React from "react";
 import { mount } from "enzyme";
 import {
   DirectionButton, directionDisabled, calculateDistance, calcBtnStyle,
 } from "../direction_button";
 import { ButtonDirection, DirectionButtonProps } from "../interfaces";
+import * as deviceActions from "../../../devices/actions";
 import {
   fakeBotLocationData, fakeMovementState,
 } from "../../../__test_support__/fake_bot_data";
+
+let moveRelativeSpy: jest.SpyInstance;
 
 const fakeProps = (): DirectionButtonProps => ({
   axis: "y",
@@ -34,11 +34,21 @@ const fakeProps = (): DirectionButtonProps => ({
 });
 
 describe("<DirectionButton />", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    moveRelativeSpy =
+      jest.spyOn(deviceActions, "moveRelative").mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    moveRelativeSpy.mockRestore();
+  });
+
   it("calls move command", () => {
     const p = fakeProps();
     const wrapper = mount(<DirectionButton {...p} />);
     wrapper.simulate("click");
-    expect(mockDevice.moveRelative).toHaveBeenCalledTimes(1);
+    expect(deviceActions.moveRelative).toHaveBeenCalledTimes(1);
   });
 
   it("has class for z button", () => {
@@ -47,7 +57,7 @@ describe("<DirectionButton />", () => {
     const wrapper = mount(<DirectionButton {...p} />);
     expect(wrapper.find("button").hasClass("z")).toBeTruthy();
     wrapper.simulate("click");
-    expect(mockDevice.moveRelative).toHaveBeenCalledTimes(1);
+    expect(deviceActions.moveRelative).toHaveBeenCalledTimes(1);
   });
 
   it("shows progress: positive", () => {
@@ -60,7 +70,7 @@ describe("<DirectionButton />", () => {
     p.movementState.distance = { x: 0, y: 1, z: 0 };
     const wrapper = mount(<DirectionButton {...p} />);
     wrapper.simulate("click");
-    expect(mockDevice.moveRelative).not.toHaveBeenCalled();
+    expect(deviceActions.moveRelative).not.toHaveBeenCalled();
     expect(wrapper.html()).toContain("movement-progress");
   });
 
@@ -74,7 +84,7 @@ describe("<DirectionButton />", () => {
     p.movementState.distance = { x: 0, y: -2, z: 0 };
     const wrapper = mount(<DirectionButton {...p} />);
     wrapper.simulate("click");
-    expect(mockDevice.moveRelative).not.toHaveBeenCalled();
+    expect(deviceActions.moveRelative).not.toHaveBeenCalled();
     expect(wrapper.html()).toContain("movement-progress");
   });
 
@@ -88,7 +98,7 @@ describe("<DirectionButton />", () => {
     p.movementState.distance = { x: 1, y: 0, z: 0 };
     const wrapper = mount(<DirectionButton {...p} />);
     wrapper.simulate("click");
-    expect(mockDevice.moveRelative).not.toHaveBeenCalled();
+    expect(deviceActions.moveRelative).not.toHaveBeenCalled();
     expect(wrapper.html()).not.toContain("movement-progress");
   });
 
@@ -97,7 +107,7 @@ describe("<DirectionButton />", () => {
     p.locked = true;
     const wrapper = mount(<DirectionButton {...p} />);
     wrapper.simulate("click");
-    expect(mockDevice.moveRelative).not.toHaveBeenCalled();
+    expect(deviceActions.moveRelative).not.toHaveBeenCalled();
   });
 
   it("is busy", () => {
@@ -105,7 +115,7 @@ describe("<DirectionButton />", () => {
     p.arduinoBusy = true;
     const wrapper = mount(<DirectionButton {...p} />);
     wrapper.simulate("click");
-    expect(mockDevice.moveRelative).not.toHaveBeenCalled();
+    expect(deviceActions.moveRelative).not.toHaveBeenCalled();
   });
 
   it("is offline", () => {
@@ -113,7 +123,7 @@ describe("<DirectionButton />", () => {
     p.botOnline = false;
     const wrapper = mount(<DirectionButton {...p} />);
     wrapper.simulate("click");
-    expect(mockDevice.moveRelative).not.toHaveBeenCalled();
+    expect(deviceActions.moveRelative).not.toHaveBeenCalled();
   });
 
   it("is at min", () => {
@@ -126,7 +136,7 @@ describe("<DirectionButton />", () => {
     p.directionAxisProps.stopAtHome = true;
     const wrapper = mount(<DirectionButton {...p} />);
     wrapper.simulate("click");
-    expect(mockDevice.moveRelative).not.toHaveBeenCalled();
+    expect(deviceActions.moveRelative).not.toHaveBeenCalled();
   });
 
   it("is at max", () => {
@@ -140,14 +150,14 @@ describe("<DirectionButton />", () => {
     p.directionAxisProps.axisLength = 1000;
     const wrapper = mount(<DirectionButton {...p} />);
     wrapper.simulate("click");
-    expect(mockDevice.moveRelative).not.toHaveBeenCalled();
+    expect(deviceActions.moveRelative).not.toHaveBeenCalled();
   });
 
   it("call has correct args", () => {
     const p = fakeProps();
     const wrapper = mount(<DirectionButton {...p} />);
     wrapper.simulate("click");
-    expect(mockDevice.moveRelative)
+    expect(deviceActions.moveRelative)
       .toHaveBeenCalledWith({ x: 0, y: 1000, z: 0 });
   });
 });

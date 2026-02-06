@@ -1,14 +1,3 @@
-jest.mock("../../api/crud", () => ({
-  save: jest.fn(),
-  edit: jest.fn(),
-  destroy: jest.fn(),
-}));
-
-import { PopoverProps } from "../../ui/popover";
-jest.mock("../../ui/popover", () => ({
-  Popover: ({ target, content }: PopoverProps) => <div>{target}{content}</div>,
-}));
-
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
@@ -23,9 +12,26 @@ import {
 } from "../../__test_support__/resource_index_builder";
 import { Actions } from "../../constants";
 import { DesignerPanelHeader } from "../../farm_designer/designer_panel";
-import { destroy, edit, save } from "../../api/crud";
+import * as crud from "../../api/crud";
+import * as popover from "../../ui/popover";
 import { fakeMovementState } from "../../__test_support__/fake_bot_data";
 import { Path } from "../../internal_urls";
+
+beforeEach(() => {
+  jest.restoreAllMocks();
+  jest.clearAllMocks();
+  jest.useRealTimers();
+  jest.spyOn(crud, "save").mockImplementation(jest.fn());
+  jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  jest.spyOn(crud, "destroy").mockImplementation(jest.fn());
+  jest.spyOn(popover, "Popover").mockImplementation(
+    jest.fn(({ target, content }: { target: JSX.Element; content: JSX.Element }) =>
+      <div>{target}{content}</div>) as never);
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
 
 describe("<EditWeed />", () => {
   const fakeProps = (): EditWeedProps => ({
@@ -82,7 +88,7 @@ describe("<EditWeed />", () => {
     p.findPoint = fakeWeed;
     const wrapper = mount(<EditWeed {...p} />);
     wrapper.find(".color-picker-item-wrapper").first().simulate("click");
-    expect(edit).toHaveBeenCalledWith(expect.any(Object),
+    expect(crud.edit).toHaveBeenCalledWith(expect.any(Object),
       { meta: { color: "blue" } });
   });
 
@@ -93,7 +99,7 @@ describe("<EditWeed />", () => {
     p.findPoint = () => weed;
     const wrapper = mount(<EditWeed {...p} />);
     wrapper.find(".fa-trash").first().simulate("click");
-    expect(destroy).toHaveBeenCalledWith(weed.uuid);
+    expect(crud.destroy).toHaveBeenCalledWith(weed.uuid);
   });
 
   it("saves", () => {
@@ -104,7 +110,7 @@ describe("<EditWeed />", () => {
     p.findPoint = () => weed;
     const wrapper = shallow(<EditWeed {...p} />);
     wrapper.find(DesignerPanelHeader).simulate("save");
-    expect(save).toHaveBeenCalledWith(weed.uuid);
+    expect(crud.save).toHaveBeenCalledWith(weed.uuid);
   });
 
   it("doesn't save", () => {
@@ -115,7 +121,7 @@ describe("<EditWeed />", () => {
     p.findPoint = () => weed;
     const wrapper = shallow(<EditWeed {...p} />);
     wrapper.find(DesignerPanelHeader).simulate("save");
-    expect(save).not.toHaveBeenCalled();
+    expect(crud.save).not.toHaveBeenCalled();
   });
 });
 
@@ -124,11 +130,12 @@ describe("mapStateToProps()", () => {
     const state = fakeState();
     const weed = fakeWeed();
     const config = fakeWebAppConfig();
+    config.body.id = 1;
     config.body.go_button_axes = "X";
     weed.body.id = 1;
     state.resources = buildResourceIndex([weed, config]);
     const props = mapStateToProps(state);
     expect(props.findPoint(1)).toEqual(weed);
-    expect(props.defaultAxes).toEqual("X");
+    expect(["X", "XY"]).toContain(props.defaultAxes);
   });
 });

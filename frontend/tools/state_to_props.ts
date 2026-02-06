@@ -16,12 +16,15 @@ import { getFbosConfig } from "../resources/getters";
 import { getWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting, NumericSetting } from "../session_keys";
 import { isBotOriginQuadrant } from "../farm_designer/interfaces";
-import { isActive } from "./edit_tool";
 import {
   AddEditToolSlotPropsBase, AddToolSlotProps, EditToolSlotProps, ToolsProps,
 } from "./interfaces";
 import { isBotOnlineFromState } from "../devices/must_be_online";
 import { validGoButtonAxes } from "../farm_designer/move_to";
+
+const isActive = (toolSlots: ReturnType<typeof selectAllToolSlotPointers>) =>
+  (toolId: number | undefined) =>
+    !!(toolId && toolSlots.map(x => x.body.tool_id).includes(toolId));
 
 export const mapStateToProps = (props: Everything): ToolsProps => {
   const getWebAppConfig = getWebAppConfigValue(() => props);

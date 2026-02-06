@@ -15,6 +15,15 @@ import {
   fakeStepParams,
 } from "../../../../__test_support__/fake_sequence_step_data";
 
+beforeEach(() => {
+  jest.clearAllMocks();
+  mockEditStep.mockClear();
+});
+
+afterAll(() => {
+  jest.unmock("../../../../api/crud");
+});
+
 describe("setPinMode()", () => {
   it("sets pin mode", () => {
     const step: WritePin = {

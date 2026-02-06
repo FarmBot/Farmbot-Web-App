@@ -13,10 +13,23 @@ import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_dat
 import { StateToggleKey } from "../../step_ui";
 import { Path } from "../../../internal_urls";
 
+afterAll(() => {
+  jest.unmock("../../../api/crud");
+});
 describe("<LuaTextArea />", () => {
   const fakeProps = (): LuaTextAreaProps<Lua> => ({
     ...fakeStepParams({ kind: "lua", args: { lua: "lua" } }),
     stateToggles: {},
+  });
+
+  beforeEach(() => {
+    jest.useFakeTimers();
+    mockEditStep.mockClear();
+  });
+
+  afterEach(() => {
+    jest.runOnlyPendingTimers();
+    jest.useRealTimers();
   });
 
   it("changes lua", () => {
@@ -26,6 +39,7 @@ describe("<LuaTextArea />", () => {
     const wrapper = shallow<LuaTextArea<Lua>>(<LuaTextArea {...p} />);
     expect(wrapper.state().lua).toEqual("lua");
     wrapper.find(Editor).simulate("change", "123");
+    jest.runOnlyPendingTimers();
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual({ kind: "lua", args: { lua: "123" } });
     expect(wrapper.state().lua).toEqual("123");
@@ -37,6 +51,7 @@ describe("<LuaTextArea />", () => {
       { enabled: true, toggle: jest.fn() };
     const wrapper = shallow(<LuaTextArea {...p} />);
     wrapper.find(Editor).simulate("change", undefined);
+    jest.runOnlyPendingTimers();
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual({ kind: "lua", args: { lua: "" } });
   });
@@ -49,6 +64,7 @@ describe("<LuaTextArea />", () => {
       currentTarget: { value: "123" }
     });
     fallback.find("textarea").simulate("blur");
+    jest.runOnlyPendingTimers();
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual({ kind: "lua", args: { lua: "123" } });
   });

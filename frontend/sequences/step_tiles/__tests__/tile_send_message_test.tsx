@@ -11,6 +11,9 @@ import { channel } from "../tile_send_message_support";
 import { MessageType, StepParams } from "../../interfaces";
 import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 
+afterAll(() => {
+  jest.unmock("../../../api/crud");
+});
 describe("<TileSendMessage/>", () => {
   const fakeProps = (): StepParams<SendMessage> => {
     const currentStep: SendMessage = {

@@ -1,11 +1,5 @@
-const mockDevice = {
-  togglePin: jest.fn((_) => Promise.resolve()),
-  writePin: jest.fn((_) => Promise.resolve()),
-};
-jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
-
 import React from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { mount, shallow } from "enzyme";
 import {
   PeripheralList, AnalogSlider, AnalogSliderProps,
@@ -18,9 +12,29 @@ import {
 import { PeripheralListProps } from "../interfaces";
 import { Slider } from "@blueprintjs/core";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
+import * as deviceActions from "../../../devices/actions";
+import * as mustBeOnline from "../../../devices/must_be_online";
+
+let pinToggleSpy: jest.SpyInstance;
+let writePinSpy: jest.SpyInstance;
+let forceOnlineSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  pinToggleSpy = jest.spyOn(deviceActions, "pinToggle").mockImplementation(jest.fn());
+  writePinSpy = jest.spyOn(deviceActions, "writePin").mockImplementation(jest.fn());
+  forceOnlineSpy = jest.spyOn(mustBeOnline, "forceOnline").mockReturnValue(false);
+});
+
+afterEach(() => {
+  pinToggleSpy.mockRestore();
+  writePinSpy.mockRestore();
+  forceOnlineSpy.mockRestore();
+});
 
 describe("<PeripheralList />", () => {
   afterEach(() => {
+    cleanup();
+    jest.clearAllMocks();
     localStorage.removeItem("myBotIs");
   });
 
@@ -84,6 +98,7 @@ describe("<PeripheralList />", () => {
     expect(last.text()).toEqual("GPIO 13 - LED");
     expect(pinNumbers.last().text()).toEqual("13");
     expect(buttons.last().text()).toEqual("on");
+    wrapper.unmount();
   });
 
   it("renders analog peripherals", () => {
@@ -98,11 +113,11 @@ describe("<PeripheralList />", () => {
     render(<PeripheralList {...fakeProps()} />);
     const toggle2 = screen.getByTitle("Toggle GPIO 2");
     fireEvent.click(toggle2);
-    expect(mockDevice.togglePin).toHaveBeenCalledWith({ pin_number: 2 });
+    expect(deviceActions.pinToggle).toHaveBeenCalledWith(2);
     const toggle13 = screen.getByTitle("Toggle GPIO 13 - LED");
     fireEvent.click(toggle13);
-    expect(mockDevice.togglePin).toHaveBeenLastCalledWith({ pin_number: 13 });
-    expect(mockDevice.togglePin).toHaveBeenCalledTimes(2);
+    expect(deviceActions.pinToggle).toHaveBeenLastCalledWith(13);
+    expect(deviceActions.pinToggle).toHaveBeenCalledTimes(2);
   });
 
   it("pins toggles are disabled", () => {
@@ -113,12 +128,13 @@ describe("<PeripheralList />", () => {
     fireEvent.click(toggle2);
     const toggle13 = screen.getByTitle("Toggle GPIO 13 - LED");
     fireEvent.click(toggle13);
-    expect(mockDevice.togglePin).not.toHaveBeenCalled();
+    expect(deviceActions.pinToggle).not.toHaveBeenCalled();
   });
 
   it("shows status as unknown", () => {
     const p = fakeProps();
     p.pins = {};
+    forceOnlineSpy.mockReturnValue(false);
     render(<PeripheralList {...p} />);
     const toggle = screen.getByTitle("Toggle GPIO 2");
     expect(toggle).not.toHaveTextContent("off");
@@ -128,6 +144,7 @@ describe("<PeripheralList />", () => {
     localStorage.setItem("myBotIs", "online");
     const p = fakeProps();
     p.pins = {};
+    forceOnlineSpy.mockReturnValue(true);
     render(<PeripheralList {...p} />);
     const toggle = screen.getByTitle("Toggle GPIO 2");
     expect(toggle).toHaveTextContent("off");
@@ -153,15 +170,13 @@ describe("<AnalogSlider />", () => {
     p.pin = 13;
     const wrapper = shallow<AnalogSlider>(<AnalogSlider {...p} />);
     wrapper.find(Slider).simulate("release", 128);
-    expect(mockDevice.writePin).toHaveBeenCalledWith({
-      pin_number: 13, pin_value: 128, pin_mode: 1
-    });
+    expect(deviceActions.writePin).toHaveBeenCalledWith(13, 128, 1);
   });
 
   it("doesn't send value", () => {
     const wrapper = shallow<AnalogSlider>(<AnalogSlider {...fakeProps()} />);
     wrapper.find(Slider).simulate("release", 128);
-    expect(mockDevice.writePin).not.toHaveBeenCalled();
+    expect(deviceActions.writePin).not.toHaveBeenCalled();
   });
 
   it("renders read value", () => {

@@ -3,7 +3,8 @@ jest.mock("../../farm_designer/map/layers/farmbot/bot_trail", () => ({
 }));
 
 jest.mock("../../config_storage/actions", () => ({
-  getWebAppConfigValue: jest.fn(() => jest.fn()),
+  ...jest.requireActual("../../config_storage/actions"),
+  getWebAppConfigValue: () => () => false,
   setWebAppConfigValue: jest.fn(),
 }));
 
@@ -19,6 +20,12 @@ import { DeviceSetting } from "../../constants";
 import { setWebAppConfigValue } from "../../config_storage/actions";
 import { fakeFirmwareConfig } from "../../__test_support__/fake_state/resources";
 
+afterAll(() => {
+  jest.unmock("../../config_storage/actions");
+});
+afterAll(() => {
+  jest.unmock("../../farm_designer/map/layers/farmbot/bot_trail");
+});
 describe("<PlainDesignerSettings />", () => {
   const fakeProps = (): DesignerSettingsPropsBase => ({
     dispatch: jest.fn(),

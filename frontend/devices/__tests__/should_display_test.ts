@@ -1,11 +1,22 @@
 import { fakeState } from "../../__test_support__/fake_state";
 const mockState = fakeState();
-jest.mock("../../redux/store", () => ({
-  store: { getState: () => mockState, dispatch: jest.fn() },
-}));
 
 import { Feature } from "../interfaces";
 import { getShouldDisplayFn, shouldDisplayFeature } from "../should_display";
+import { store } from "../../redux/store";
+
+let originalGetState: typeof store.getState;
+
+beforeEach(() => {
+  originalGetState = store.getState;
+  (store as unknown as { getState: () => typeof mockState }).getState =
+    () => mockState;
+});
+
+afterEach(() => {
+  (store as unknown as { getState: typeof store.getState }).getState =
+    originalGetState;
+});
 
 describe("getShouldDisplayFn()", () => {
   it("returns shouldDisplay()", () => {

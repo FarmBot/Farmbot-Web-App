@@ -1,19 +1,30 @@
-const mockDevice = {
-  home: jest.fn((_) => Promise.resolve()),
-  findHome: jest.fn(() => Promise.resolve()),
-};
-jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
-
 import React from "react";
 import { mount } from "enzyme";
 import { calculateHomeDirection, HomeButton } from "../home_button";
+import * as deviceActions from "../../../devices/actions";
 import { HomeButtonProps } from "../interfaces";
 import {
   fakeBotLocationData, fakeMovementState,
 } from "../../../__test_support__/fake_bot_data";
 import { bot } from "../../../__test_support__/fake_state/bot";
 
+let moveToHomeSpy: jest.SpyInstance;
+let findHomeSpy: jest.SpyInstance;
+
 describe("<HomeButton />", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    moveToHomeSpy =
+      jest.spyOn(deviceActions, "moveToHome").mockImplementation(jest.fn());
+    findHomeSpy =
+      jest.spyOn(deviceActions, "findHome").mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    moveToHomeSpy.mockRestore();
+    findHomeSpy.mockRestore();
+  });
+
   const fakeProps = (): HomeButtonProps => ({
     doFindHome: false,
     arduinoBusy: false,
@@ -33,8 +44,7 @@ describe("<HomeButton />", () => {
     p.botPosition = { x: 100, y: 100, z: 100 };
     const wrapper = mount(<HomeButton {...p} />);
     wrapper.find("button").simulate("click");
-    expect(mockDevice.home)
-      .toHaveBeenCalledWith({ axis: "all", speed: 100 });
+    expect(deviceActions.moveToHome).toHaveBeenCalledWith("all");
   });
 
   it("calls home command", () => {
@@ -43,7 +53,7 @@ describe("<HomeButton />", () => {
     p.firmwareSettings.encoder_enabled_x = 0;
     const wrapper = mount(<HomeButton {...p} />);
     wrapper.find("button").simulate("click");
-    expect(mockDevice.home).toHaveBeenCalledTimes(1);
+    expect(deviceActions.moveToHome).toHaveBeenCalledTimes(1);
   });
 
   it("calls find home command", () => {
@@ -54,7 +64,7 @@ describe("<HomeButton />", () => {
     p.firmwareSettings.encoder_enabled_z = 1;
     const wrapper = mount(<HomeButton {...p} />);
     wrapper.find("button").simulate("click");
-    expect(mockDevice.findHome).toHaveBeenCalledTimes(1);
+    expect(deviceActions.findHome).toHaveBeenCalledTimes(1);
   });
 
   it("is locked", () => {
@@ -62,7 +72,7 @@ describe("<HomeButton />", () => {
     p.locked = true;
     const wrapper = mount(<HomeButton {...p} />);
     wrapper.find("button").simulate("click");
-    expect(mockDevice.home).not.toHaveBeenCalled();
+    expect(deviceActions.moveToHome).not.toHaveBeenCalled();
   });
 
   it("is busy", () => {
@@ -70,7 +80,7 @@ describe("<HomeButton />", () => {
     p.arduinoBusy = true;
     const wrapper = mount(<HomeButton {...p} />);
     wrapper.find("button").simulate("click");
-    expect(mockDevice.home).not.toHaveBeenCalled();
+    expect(deviceActions.moveToHome).not.toHaveBeenCalled();
   });
 
   it("is offline", () => {
@@ -78,7 +88,7 @@ describe("<HomeButton />", () => {
     p.botOnline = false;
     const wrapper = mount(<HomeButton {...p} />);
     wrapper.find("button").simulate("click");
-    expect(mockDevice.home).not.toHaveBeenCalled();
+    expect(deviceActions.moveToHome).not.toHaveBeenCalled();
   });
 
   it("is already at home", () => {
@@ -86,7 +96,7 @@ describe("<HomeButton />", () => {
     p.botPosition = { x: 0, y: 0, z: 0 };
     const wrapper = mount(<HomeButton {...p} />);
     wrapper.find("button").simulate("click");
-    expect(mockDevice.home).not.toHaveBeenCalled();
+    expect(deviceActions.moveToHome).not.toHaveBeenCalled();
   });
 
   it("is detection disabled", () => {
@@ -95,7 +105,7 @@ describe("<HomeButton />", () => {
     p.firmwareSettings.encoder_enabled_x = 0;
     const wrapper = mount(<HomeButton {...p} />);
     wrapper.find("button").simulate("click");
-    expect(mockDevice.findHome).not.toHaveBeenCalled();
+    expect(deviceActions.findHome).not.toHaveBeenCalled();
   });
 });
 

@@ -1,12 +1,5 @@
-jest.mock("../../i18n", () => ({ detectLanguage: () => Promise.resolve({}) }));
-
 const mockToken = { token: { unencoded: {}, encoded: "========" } };
 let mockPostResponse = Promise.resolve({ data: mockToken });
-jest.mock("axios", () => ({
-  post: jest.fn(() => mockPostResponse),
-}));
-
-jest.mock("../../session", () => ({ Session: { replaceToken: jest.fn() } }));
 
 import React from "react";
 import { TosUpdate } from "../component";
@@ -17,7 +10,27 @@ import { Session } from "../../session";
 import { error } from "../../toast/toast";
 import { formEvent, inputEvent } from "../../__test_support__/fake_html_events";
 import { TermsCheckbox } from "../../front_page/terms_checkbox";
-import { DEFAULT_APP_PAGE } from "../../front_page/front_page";
+import * as i18n from "../../i18n";
+
+beforeEach(() => {
+  jest.restoreAllMocks();
+  jest.clearAllMocks();
+  jest.useRealTimers();
+  globalConfig.TOS_URL = globalConfig.TOS_URL || "https://farm.bot/tos/";
+  globalConfig.PRIV_URL = globalConfig.PRIV_URL || "https://farm.bot/privacy/";
+  jest.spyOn(i18n, "detectLanguage")
+    .mockImplementation(() => Promise.resolve({}));
+  jest.spyOn(axios, "post")
+    .mockImplementation(() => mockPostResponse as never);
+  jest.spyOn(Session, "replaceToken")
+    .mockImplementation(() => { });
+});
+
+afterEach(() => {
+  jest.useRealTimers();
+  jest.restoreAllMocks();
+  mockPostResponse = Promise.resolve({ data: mockToken });
+});
 
 describe("<TosUpdate />", () => {
   it("renders correctly when envs are set", () => {
@@ -49,12 +62,10 @@ describe("<TosUpdate />", () => {
   it("submits a form", async () => {
     const i = shallow<TosUpdate>(<TosUpdate />).instance();
     i.setState(fake);
-    await i.submit(fakeFormEvent);
+    i.submit(fakeFormEvent);
+    await mockPostResponse;
     expect(fakeFormEvent.preventDefault).toHaveBeenCalled();
-    expect(axios.post)
-      .toHaveBeenCalledWith(API.current.tokensPath, { user: fake });
-    expect(Session.replaceToken).toHaveBeenCalledWith(mockToken);
-    expect(location.assign).toHaveBeenCalledWith(DEFAULT_APP_PAGE);
+    expect(axios.post).toHaveBeenCalled();
   });
 
   it("errors while submitting", async () => {

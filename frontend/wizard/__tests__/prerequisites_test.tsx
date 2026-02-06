@@ -16,6 +16,10 @@ import { mockDispatch } from "../../__test_support__/fake_dispatch";
 import { bot } from "../../__test_support__/fake_state/bot";
 import { setOrderNumber } from "../actions";
 
+afterAll(() => {
+  jest.unmock("../actions");
+  jest.unmock("../../devices/must_be_online");
+});
 describe("<ProductRegistration />", () => {
   const fakeProps = (): WizardStepComponentProps => ({
     setStepSuccess: jest.fn(() => jest.fn()),

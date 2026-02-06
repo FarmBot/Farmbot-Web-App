@@ -1,56 +1,4 @@
-jest.mock("../../api/crud", () => ({
-  destroy: jest.fn(),
-  save: jest.fn(),
-  edit: jest.fn()
-}));
-
-jest.mock("../actions", () => ({
-  copySequence: jest.fn(),
-  editCurrentSequence: jest.fn(),
-  pinSequenceToggle: jest.fn(),
-  publishSequence: jest.fn(() => jest.fn()),
-  unpublishSequence: jest.fn(() => jest.fn()),
-  upgradeSequence: jest.fn(() => jest.fn()),
-}));
-
-jest.mock("../step_tiles/index", () => ({
-  splice: jest.fn(),
-  move: jest.fn(),
-  renderCeleryNode: () => <div />,
-  stringifySequenceData: jest.fn(),
-}));
-
-jest.mock("../../devices/actions", () => ({
-  execSequence: jest.fn()
-}));
-
 const mockCB = jest.fn();
-jest.mock("../locals_list/locals_list", () => ({
-  LocalsList: () => <div />,
-  localListCallback: jest.fn(() => jest.fn(() => mockCB)),
-  removeVariable: jest.fn(),
-  generateNewVariableLabel: jest.fn(),
-}));
-
-jest.mock("../../config_storage/actions", () => ({
-  setWebAppConfigValue: jest.fn(),
-  getWebAppConfigValue: jest.fn(() => jest.fn()),
-}));
-
-jest.mock("../panel/preview_support", () => ({
-  License: () => <div />,
-  loadSequenceVersion: jest.fn(),
-  SequencePreviewContent: () => <div />,
-}));
-
-jest.mock("../request_auto_generation", () => ({
-  requestAutoGeneration: jest.fn(),
-}));
-
-import { PopoverProps } from "../../ui/popover";
-jest.mock("../../ui/popover", () => ({
-  Popover: ({ target, content }: PopoverProps) => <div>{target}{content}</div>,
-}));
 
 import React, { act } from "react";
 import {
@@ -74,35 +22,139 @@ import {
 } from "../interfaces";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
-import { destroy, save, edit } from "../../api/crud";
+import * as crud from "../../api/crud";
 import {
   fakeHardwareFlags, fakeFarmwareData,
 } from "../../__test_support__/fake_sequence_step_data";
 import { SpecialStatus, ParameterDeclaration } from "farmbot";
-import { move, splice, stringifySequenceData } from "../step_tiles";
+import * as stepTiles from "../step_tiles";
 import {
   copySequence, editCurrentSequence, pinSequenceToggle, publishSequence,
   unpublishSequence,
   upgradeSequence,
 } from "../actions";
-import { execSequence } from "../../devices/actions";
+import * as devicesActions from "../../devices/actions";
 import { clickButton } from "../../__test_support__/helpers";
 import { fakeVariableNameSet } from "../../__test_support__/fake_variables";
 import { DropAreaProps } from "../../draggable/interfaces";
 import { Actions, Content, DeviceSetting } from "../../constants";
-import { setWebAppConfigValue } from "../../config_storage/actions";
+import * as configStorageActions from "../../config_storage/actions";
 import { BooleanSetting } from "../../session_keys";
 import { maybeTagStep } from "../../resources/sequence_tagging";
 import { error } from "../../toast/toast";
 import { API } from "../../api";
-import { loadSequenceVersion } from "../panel/preview_support";
+import * as previewSupport from "../panel/preview_support";
 import { VariableType } from "../locals_list/locals_list_support";
-import { generateNewVariableLabel } from "../locals_list/locals_list";
+import * as localsList from "../locals_list/locals_list";
 import { StepButtonCluster } from "../step_button_cluster";
 import { changeEvent } from "../../__test_support__/fake_html_events";
-import { requestAutoGeneration } from "../request_auto_generation";
+import * as requestAutoGenerationModule from "../request_auto_generation";
 import { emptyState } from "../../resources/reducer";
 import { Path } from "../../internal_urls";
+import * as sequenceActions from "../actions";
+
+let spliceSpy: jest.SpyInstance;
+let moveSpy: jest.SpyInstance;
+let renderCeleryNodeSpy: jest.SpyInstance;
+let stringifySequenceDataSpy: jest.SpyInstance;
+let execSequenceSpy: jest.SpyInstance;
+let setWebAppConfigValueSpy: jest.SpyInstance;
+let getWebAppConfigValueSpy: jest.SpyInstance;
+let loadSequenceVersionSpy: jest.SpyInstance;
+let licenseSpy: jest.SpyInstance;
+let sequencePreviewContentSpy: jest.SpyInstance;
+let requestAutoGenerationSpy: jest.SpyInstance;
+let localsListSpy: jest.SpyInstance;
+let localListCallbackSpy: jest.SpyInstance;
+let removeVariableSpy: jest.SpyInstance;
+let generateNewVariableLabelSpy: jest.SpyInstance;
+let editSpy: jest.SpyInstance;
+let saveSpy: jest.SpyInstance;
+let destroySpy: jest.SpyInstance;
+let copySequenceSpy: jest.SpyInstance;
+let editCurrentSequenceSpy: jest.SpyInstance;
+let pinSequenceToggleSpy: jest.SpyInstance;
+let publishSequenceSpy: jest.SpyInstance;
+let unpublishSequenceSpy: jest.SpyInstance;
+let upgradeSequenceSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  spliceSpy = jest.spyOn(stepTiles, "splice").mockImplementation(jest.fn());
+  moveSpy = jest.spyOn(stepTiles, "move").mockImplementation(jest.fn());
+  renderCeleryNodeSpy = jest.spyOn(stepTiles, "renderCeleryNode")
+    .mockImplementation(() => <div />);
+  stringifySequenceDataSpy = jest.spyOn(stepTiles, "stringifySequenceData")
+    .mockImplementation(jest.fn());
+  execSequenceSpy = jest.spyOn(devicesActions, "execSequence")
+    .mockImplementation(jest.fn());
+  setWebAppConfigValueSpy =
+    jest.spyOn(configStorageActions, "setWebAppConfigValue")
+      .mockImplementation(jest.fn());
+  getWebAppConfigValueSpy =
+    jest.spyOn(configStorageActions, "getWebAppConfigValue")
+      .mockImplementation(() => jest.fn());
+  loadSequenceVersionSpy = jest.spyOn(previewSupport, "loadSequenceVersion")
+    .mockImplementation(jest.fn());
+  licenseSpy = jest.spyOn(previewSupport, "License")
+    .mockImplementation(() => <div />);
+  sequencePreviewContentSpy =
+    jest.spyOn(previewSupport, "SequencePreviewContent")
+      .mockImplementation(() => <div />);
+  requestAutoGenerationSpy =
+    jest.spyOn(requestAutoGenerationModule, "requestAutoGeneration")
+      .mockImplementation(jest.fn());
+  localsListSpy = jest.spyOn(localsList, "LocalsList")
+    .mockImplementation(() => <div />);
+  localListCallbackSpy = jest.spyOn(localsList, "localListCallback")
+    .mockImplementation(() => jest.fn(() => mockCB));
+  removeVariableSpy = jest.spyOn(localsList, "removeVariable")
+    .mockImplementation(jest.fn());
+  generateNewVariableLabelSpy =
+    jest.spyOn(localsList, "generateNewVariableLabel")
+      .mockImplementation(jest.fn(() => undefined as never));
+  editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+  destroySpy = jest.spyOn(crud, "destroy").mockImplementation(jest.fn());
+  copySequenceSpy = jest.spyOn(sequenceActions, "copySequence")
+    .mockImplementation(jest.fn());
+  editCurrentSequenceSpy = jest.spyOn(sequenceActions, "editCurrentSequence")
+    .mockImplementation(jest.fn());
+  pinSequenceToggleSpy = jest.spyOn(sequenceActions, "pinSequenceToggle")
+    .mockImplementation(jest.fn());
+  publishSequenceSpy = jest.spyOn(sequenceActions, "publishSequence")
+    .mockImplementation(jest.fn(() => jest.fn()) as never);
+  unpublishSequenceSpy = jest.spyOn(sequenceActions, "unpublishSequence")
+    .mockImplementation(jest.fn(() => jest.fn()) as never);
+  upgradeSequenceSpy = jest.spyOn(sequenceActions, "upgradeSequence")
+    .mockImplementation(jest.fn(() => jest.fn()) as never);
+});
+
+afterEach(() => {
+  spliceSpy.mockRestore();
+  moveSpy.mockRestore();
+  renderCeleryNodeSpy.mockRestore();
+  stringifySequenceDataSpy.mockRestore();
+  execSequenceSpy.mockRestore();
+  setWebAppConfigValueSpy.mockRestore();
+  getWebAppConfigValueSpy.mockRestore();
+  loadSequenceVersionSpy.mockRestore();
+  licenseSpy.mockRestore();
+  sequencePreviewContentSpy.mockRestore();
+  requestAutoGenerationSpy.mockRestore();
+  localsListSpy.mockRestore();
+  localListCallbackSpy.mockRestore();
+  removeVariableSpy.mockRestore();
+  generateNewVariableLabelSpy.mockRestore();
+  editSpy.mockRestore();
+  saveSpy.mockRestore();
+  destroySpy.mockRestore();
+  copySequenceSpy.mockRestore();
+  editCurrentSequenceSpy.mockRestore();
+  pinSequenceToggleSpy.mockRestore();
+  publishSequenceSpy.mockRestore();
+  unpublishSequenceSpy.mockRestore();
+  upgradeSequenceSpy.mockRestore();
+});
 
 describe("<SequenceEditorMiddleActive />", () => {
   API.setBaseUrl("");
@@ -193,11 +245,11 @@ describe("<SequenceEditorMiddleActive />", () => {
     const wrapper = mount<SequenceEditorMiddleActive>(
       <SequenceEditorMiddleActive {...p} />);
     expect(wrapper.state().viewSequenceCeleryScript).toEqual(false);
-    expect(stringifySequenceData).not.toHaveBeenCalled();
+    expect(stepTiles.stringifySequenceData).not.toHaveBeenCalled();
     expect(wrapper.text().toLowerCase()).toContain("steps (1)");
     wrapper.find(SequenceHeader).props().toggleViewSequenceCeleryScript();
     expect(wrapper.state().viewSequenceCeleryScript).toEqual(true);
-    expect(stringifySequenceData).toHaveBeenCalled();
+    expect(stepTiles.stringifySequenceData).toHaveBeenCalled();
   });
 
   it("saves", async () => {
@@ -206,7 +258,7 @@ describe("<SequenceEditorMiddleActive />", () => {
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
     const button = wrapper.find(".save-btn");
     await clickButton(button, 0, "save");
-    expect(save).toHaveBeenCalledWith(expect.stringContaining("Sequence"));
+    expect(crud.save).toHaveBeenCalledWith(expect.stringContaining("Sequence"));
     expect(mockNavigate).toHaveBeenCalledWith(Path.sequences("fake"));
   });
 
@@ -217,7 +269,7 @@ describe("<SequenceEditorMiddleActive />", () => {
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
     const button = wrapper.find(".run-btn");
     clickButton(button, 0, "Run");
-    expect(execSequence).toHaveBeenCalledWith(p.sequence.body.id);
+    expect(devicesActions.execSequence).toHaveBeenCalledWith(p.sequence.body.id);
   });
 
   it("deletes with confirmation", () => {
@@ -226,7 +278,7 @@ describe("<SequenceEditorMiddleActive />", () => {
     p.dispatch = jest.fn(() => Promise.resolve());
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
     wrapper.find(".fa-trash").simulate("click");
-    expect(destroy).toHaveBeenCalledWith(
+    expect(crud.destroy).toHaveBeenCalledWith(
       expect.stringContaining("Sequence"), false);
   });
 
@@ -236,7 +288,7 @@ describe("<SequenceEditorMiddleActive />", () => {
     p.dispatch = jest.fn(() => Promise.resolve());
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
     wrapper.find(".fa-trash").simulate("click");
-    expect(destroy).toHaveBeenCalledWith(
+    expect(crud.destroy).toHaveBeenCalledWith(
       expect.stringContaining("Sequence"), true);
   });
 
@@ -263,7 +315,7 @@ describe("<SequenceEditorMiddleActive />", () => {
     props.callback?.("key");
     dispatch.mock.calls[0][0](() =>
       ({ value: 1, intent: "step_splice", draggerId: 2 }));
-    expect(splice).toHaveBeenCalledWith(expect.objectContaining({
+    expect(stepTiles.splice).toHaveBeenCalledWith(expect.objectContaining({
       step: 1,
       index: Infinity
     }));
@@ -357,7 +409,7 @@ describe("<SequenceEditorMiddleActive />", () => {
     const p = fakeProps();
     p.sequence.body.sequence_versions = [1, 2, 3];
     mount(<SequenceEditorMiddleActive {...p} />);
-    expect(loadSequenceVersion).toHaveBeenCalledWith(
+    expect(previewSupport.loadSequenceVersion).toHaveBeenCalledWith(
       expect.objectContaining({ id: "3" }));
   });
 
@@ -484,7 +536,8 @@ describe("<SequenceEditorMiddleActive />", () => {
     act(() => wrapper.find("textarea").props().onChange?.(e));
     wrapper.update();
     wrapper.find("textarea").props().onBlur?.({} as React.FocusEvent);
-    expect(edit).toHaveBeenCalledWith(expect.any(Object), { description: "edit" });
+    expect(crud.edit).toHaveBeenCalledWith(
+      expect.any(Object), { description: "edit" });
   });
 
   it("handles empty description", () => {
@@ -504,12 +557,14 @@ describe("<SequenceEditorMiddleActive />", () => {
     p.sequence.body.description = "";
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
     wrapper.setState({ descriptionCollapsed: false });
-    wrapper.find(".fa-magic").first().simulate("click");
-    expect(requestAutoGeneration).toHaveBeenCalled();
-    const { mock } = requestAutoGeneration as jest.Mock;
+    wrapper.find(".sequence-description-wrapper")
+      .find(".fa-magic").first().simulate("click");
+    expect(requestAutoGenerationModule.requestAutoGeneration).toHaveBeenCalled();
+    const { mock } = requestAutoGenerationModule.requestAutoGeneration as jest.Mock;
     act(() => mock.calls[0][0].onUpdate("description"));
     act(() => mock.calls[0][0].onSuccess("description"));
-    expect(edit).toHaveBeenCalledWith(p.sequence, { description: "description" });
+    expect(crud.edit).toHaveBeenCalledWith(
+      p.sequence, { description: "description" });
     act(() => mock.calls[0][0].onError());
   });
 
@@ -519,8 +574,10 @@ describe("<SequenceEditorMiddleActive />", () => {
     sequence.body.id = 0;
     p.sequence = sequence;
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
-    wrapper.find(".fa-magic").first().simulate("click");
-    expect(requestAutoGeneration).not.toHaveBeenCalled();
+    wrapper.find(".sequence-description-wrapper")
+      .find(".fa-magic").first().simulate("click");
+    expect(requestAutoGenerationModule.requestAutoGeneration)
+      .not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith("Save sequence first.");
   });
 
@@ -528,7 +585,9 @@ describe("<SequenceEditorMiddleActive />", () => {
     location.pathname = Path.mock(Path.sequences("1"));
     const p = fakeProps();
     const wrapper = mount(<SequenceEditorMiddleActive {...p} />);
-    expect(wrapper.find("Popover").length).toEqual(10);
+    expect(wrapper.find("button")
+      .filterWhere(node => node.prop("title") == "Add variable")
+      .length).toEqual(1);
   });
 
   it("opens add variable menu", () => {
@@ -556,11 +615,20 @@ describe("<SequenceEditorMiddleActive />", () => {
       [], VariableType.Location)(e);
     expect(e.stopPropagation).toHaveBeenCalled();
     expect(wrapper.state().addVariableMenuOpen).toEqual(false);
-    expect(mockCB).toHaveBeenCalledWith({
-      kind: "variable_declaration",
-      args: { label: undefined, data_value: { kind: "nothing", args: {} } }
-    }, undefined);
-    expect(generateNewVariableLabel).toHaveBeenCalled();
+    expect(mockCB).toHaveBeenCalledWith(
+      expect.objectContaining({
+        kind: "variable_declaration",
+        args: expect.objectContaining({
+          label: undefined,
+          data_value: expect.objectContaining({
+            kind: "nothing",
+            args: {},
+          }),
+        }),
+      }),
+      undefined,
+    );
+    expect(localsList.generateNewVariableLabel).toHaveBeenCalled();
   });
 
   it("adds new resource variable", () => {
@@ -585,7 +653,7 @@ describe("<SequenceEditorMiddleActive />", () => {
         }
       }
     }, undefined);
-    expect(generateNewVariableLabel).toHaveBeenCalled();
+    expect(localsList.generateNewVariableLabel).toHaveBeenCalled();
   });
 });
 
@@ -605,8 +673,12 @@ describe("<SequenceBtnGroup />", () => {
   it("edits color", () => {
     location.pathname = Path.mock(Path.sequencePage("1"));
     const p = fakeProps();
-    const wrapper = mount(<SequenceBtnGroup {...p} />);
-    wrapper.find(".color-picker-item-wrapper").first().simulate("click");
+    const wrapper = shallow(<SequenceBtnGroup {...p} />);
+    const popover = wrapper.find("Popover")
+      .filterWhere(node => node.props().className == "color-picker")
+      .first();
+    const content = shallow(<div>{popover.props().content}</div>);
+    content.find("ColorPickerCluster").props().onChange("blue");
     expect(editCurrentSequence).toHaveBeenCalledWith(
       expect.any(Function),
       expect.objectContaining({ uuid: p.sequence.uuid }),
@@ -640,7 +712,7 @@ describe("onDrop()", () => {
     onDrop(dispatch, fakeSequence())(0, "fakeUuid");
     dispatch.mock.calls[0][0](() =>
       ({ value: 1, intent: "step_splice", draggerId: 2 }));
-    expect(splice).toHaveBeenCalledWith(expect.objectContaining({
+    expect(stepTiles.splice).toHaveBeenCalledWith(expect.objectContaining({
       step: 1,
       index: 0
     }));
@@ -651,7 +723,7 @@ describe("onDrop()", () => {
     onDrop(dispatch, fakeSequence())(3, "fakeUuid");
     dispatch.mock.calls[0][0](() =>
       ({ value: 4, intent: "step_move", draggerId: 5 }));
-    expect(move).toHaveBeenCalledWith(expect.objectContaining({
+    expect(stepTiles.move).toHaveBeenCalledWith(expect.objectContaining({
       step: 4,
       to: 3,
       from: 5
@@ -685,7 +757,7 @@ describe("<SequenceName />", () => {
     wrapper.find("BlurableInput").simulate("commit", {
       currentTarget: { value: "new name" }
     });
-    expect(edit).toHaveBeenCalledWith(
+    expect(crud.edit).toHaveBeenCalledWith(
       expect.objectContaining({ uuid: p.sequence.uuid }),
       { name: "new name" });
   });
@@ -731,10 +803,10 @@ describe("<SequenceSettingsMenu />", () => {
   it("renders settings", () => {
     const wrapper = mount(<SequenceSettingsMenu {...fakeProps()} />);
     wrapper.find("button").at(0).simulate("click");
-    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+    expect(configStorageActions.setWebAppConfigValue).toHaveBeenCalledWith(
       BooleanSetting.confirm_step_deletion, true);
     wrapper.find("button").at(2).simulate("click");
-    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+    expect(configStorageActions.setWebAppConfigValue).toHaveBeenCalledWith(
       BooleanSetting.show_pins, true);
   });
 });
@@ -848,7 +920,7 @@ describe("<SequenceSetting />", () => {
     window.confirm = jest.fn(() => true);
     wrapper.find("button").simulate("click");
     expect(window.confirm).toHaveBeenCalledWith("setting confirmation");
-    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+    expect(configStorageActions.setWebAppConfigValue).toHaveBeenCalledWith(
       BooleanSetting.discard_unsaved_sequences, true);
   });
 
@@ -859,7 +931,7 @@ describe("<SequenceSetting />", () => {
     window.confirm = jest.fn(() => false);
     wrapper.find("button").simulate("click");
     expect(window.confirm).toHaveBeenCalledWith("setting confirmation");
-    expect(setWebAppConfigValue).not.toHaveBeenCalled();
+    expect(configStorageActions.setWebAppConfigValue).not.toHaveBeenCalled();
   });
 
   it("doesn't confirm setting disable", () => {
@@ -869,7 +941,7 @@ describe("<SequenceSetting />", () => {
     window.confirm = jest.fn();
     wrapper.find("button").simulate("click");
     expect(window.confirm).not.toHaveBeenCalled();
-    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+    expect(configStorageActions.setWebAppConfigValue).toHaveBeenCalledWith(
       BooleanSetting.discard_unsaved_sequences, false);
   });
 
@@ -880,7 +952,32 @@ describe("<SequenceSetting />", () => {
     p.getWebAppConfigValue = () => undefined;
     const wrapper = mount(<SequenceSetting {...p} />);
     wrapper.find("button").simulate("click");
-    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+    expect(configStorageActions.setWebAppConfigValue).toHaveBeenCalledWith(
       expect.any(String), false);
   });
+});
+
+const restoreModule = (modulePath: string) => {
+  const mockedModule = require(modulePath) as Record<string, unknown>;
+  const actualModule = jest.requireActual<Record<string, unknown>>(modulePath);
+  Object.keys(actualModule).map(key => {
+    try {
+      mockedModule[key] = actualModule[key];
+    } catch {
+      // Some exports may be readonly in this runtime.
+    }
+  });
+  jest.unmock(modulePath);
+};
+
+afterAll(() => {
+  restoreModule("../actions");
+  restoreModule("../../api/crud");
+  restoreModule("../step_tiles/index");
+  restoreModule("../../devices/actions");
+  restoreModule("../locals_list/locals_list");
+  restoreModule("../../config_storage/actions");
+  restoreModule("../panel/preview_support");
+  restoreModule("../request_auto_generation");
+  restoreModule("../../ui/popover");
 });

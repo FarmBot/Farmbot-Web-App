@@ -2,7 +2,7 @@
 import React from "react";
 import * as THREE from "three";
 import { InstancedBufferAttribute } from "three";
-import { GLTF } from "three-stdlib";
+import type { GLTF } from "three-stdlib";
 import { Group, Mesh as MeshComponent, InstancedMesh } from "../../components";
 import { ThreeElements } from "@react-three/fiber";
 

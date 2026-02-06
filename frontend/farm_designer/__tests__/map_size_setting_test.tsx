@@ -1,12 +1,7 @@
-jest.mock("../../config_storage/actions", () => ({
-  getWebAppConfigValue: jest.fn(() => jest.fn()),
-  setWebAppConfigValue: jest.fn(),
-}));
-
 import React from "react";
 import { MapSizeInputs, MapSizeInputsProps } from "../map_size_setting";
-import { render, screen } from "@testing-library/react";
-import { setWebAppConfigValue } from "../../config_storage/actions";
+import { cleanup, render, screen } from "@testing-library/react";
+import * as configStorageActions from "../../config_storage/actions";
 import { NumericSetting } from "../../session_keys";
 import {
   fakeFirmwareConfig, fakeWebAppConfig,
@@ -15,6 +10,19 @@ import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
 import { changeBlurableInputRTL } from "../../__test_support__/helpers";
 
 describe("<MapSizeInputs />", () => {
+  let setWebAppConfigValueSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    setWebAppConfigValueSpy = jest.spyOn(configStorageActions, "setWebAppConfigValue")
+      .mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    cleanup();
+    jest.restoreAllMocks();
+  });
+
   const fakeProps = (config: WebAppConfig): MapSizeInputsProps => ({
     getConfigValue: key => config[key],
     dispatch: jest.fn(),
@@ -28,7 +36,7 @@ describe("<MapSizeInputs />", () => {
     render(<MapSizeInputs {...p} />);
     const input = screen.getByDisplayValue("" + config.body.map_size_y);
     changeBlurableInputRTL(input, "100");
-    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       NumericSetting.map_size_y, "100");
   });
 
@@ -40,7 +48,7 @@ describe("<MapSizeInputs />", () => {
     render(<MapSizeInputs {...p} />);
     const input = screen.getByDisplayValue("" + config.body.map_size_y);
     changeBlurableInputRTL(input, "100");
-    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       NumericSetting.map_size_y, "100");
   });
 
@@ -57,7 +65,7 @@ describe("<MapSizeInputs />", () => {
     render(<MapSizeInputs {...p} />);
     const input = screen.getByDisplayValue("" + config.body.map_size_y);
     changeBlurableInputRTL(input, "100");
-    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       NumericSetting.map_size_y, "100");
   });
 });

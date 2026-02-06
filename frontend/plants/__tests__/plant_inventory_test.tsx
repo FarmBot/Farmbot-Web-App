@@ -1,10 +1,10 @@
-jest.mock("../../point_groups/actions", () => ({
-  createGroup: jest.fn(),
-}));
-
-jest.mock("../../api/delete_points", () => ({
-  deletePoints: jest.fn(),
-}));
+jest.mock("../../api/delete_points", () => {
+  const actual = jest.requireActual("../../api/delete_points");
+  return {
+    ...actual,
+    deletePoints: jest.fn(),
+  };
+});
 
 import { PopoverProps } from "../../ui/popover";
 jest.mock("../../ui/popover", () => ({
@@ -13,8 +13,9 @@ jest.mock("../../ui/popover", () => ({
 
 let mockValue: number | boolean = 0;
 jest.mock("../../config_storage/actions", () => ({
+  ...jest.requireActual("../../config_storage/actions"),
   setWebAppConfigValue: jest.fn(),
-  getWebAppConfigValue: jest.fn(x => { x(); return () => mockValue; }),
+  getWebAppConfigValue: (x: Function) => { x(); return () => mockValue; },
 }));
 
 import React from "react";
@@ -29,7 +30,7 @@ import {
 import { fakeState } from "../../__test_support__/fake_state";
 import { SearchField } from "../../ui/search_field";
 import { Actions } from "../../constants";
-import { createGroup } from "../../point_groups/actions";
+import * as pointGroupActions from "../../point_groups/actions";
 import { DEFAULT_CRITERIA } from "../../point_groups/criteria/interfaces";
 import { deletePoints } from "../../api/delete_points";
 import { Panel } from "../../farm_designer/panel_header";
@@ -40,7 +41,24 @@ import { changeBlurableInput } from "../../__test_support__/helpers";
 import { setWebAppConfigValue } from "../../config_storage/actions";
 import { NumericSetting } from "../../session_keys";
 
+afterAll(() => {
+  jest.unmock("../../api/delete_points");
+  jest.unmock("../../ui/popover");
+  jest.unmock("../../config_storage/actions");
+});
+
 describe("<PlantInventory />", () => {
+  let createGroupSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    createGroupSpy = jest.spyOn(pointGroupActions, "createGroup")
+      .mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    createGroupSpy.mockRestore();
+  });
+
   const fakeProps = (): PlantInventoryProps => ({
     plants: [fakePlant()],
     dispatch: jest.fn(),
@@ -109,15 +127,15 @@ describe("<PlantInventory />", () => {
 
   it("navigates to group", () => {
     const wrapper = shallow<Plants>(<Plants {...fakeProps()} />);
-    wrapper.instance().navigate = jest.fn();
+    wrapper.instance().context = jest.fn();
     wrapper.instance().navigateById(1)();
-    expect(wrapper.instance().navigate).toHaveBeenCalledWith(Path.groups(1));
+    expect(wrapper.instance().context).toHaveBeenCalledWith(Path.groups(1));
   });
 
   it("adds new group", () => {
     const wrapper = shallow(<Plants {...fakeProps()} />);
     wrapper.find(PanelSection).first().props().addNew();
-    expect(createGroup).toHaveBeenCalledWith({
+    expect(pointGroupActions.createGroup).toHaveBeenCalledWith({
       criteria: { ...DEFAULT_CRITERIA, string_eq: { pointer_type: ["Plant"] } },
       navigate: expect.anything(),
     });
@@ -125,17 +143,17 @@ describe("<PlantInventory />", () => {
 
   it("adds new saved garden", () => {
     const wrapper = shallow<Plants>(<Plants {...fakeProps()} />);
-    wrapper.instance().navigate = jest.fn();
+    wrapper.instance().context = jest.fn();
     wrapper.find(PanelSection).at(1).props().addNew();
-    expect(wrapper.instance().navigate).toHaveBeenCalledWith(
+    expect(wrapper.instance().context).toHaveBeenCalledWith(
       Path.savedGardens("add"));
   });
 
   it("adds new plant", () => {
     const wrapper = shallow<Plants>(<Plants {...fakeProps()} />);
-    wrapper.instance().navigate = jest.fn();
+    wrapper.instance().context = jest.fn();
     wrapper.find(PanelSection).last().props().addNew();
-    expect(wrapper.instance().navigate).toHaveBeenCalledWith(Path.cropSearch());
+    expect(wrapper.instance().context).toHaveBeenCalledWith(Path.cropSearch());
   });
 
   it("deletes all plants", () => {
@@ -184,14 +202,14 @@ describe("<PlantInventory />", () => {
   it("navigates to crop search", () => {
     const p = fakeProps();
     const wrapper = mount<Plants>(<Plants {...p} />);
-    wrapper.instance().navigate = jest.fn();
     wrapper.setState({ searchTerm: "mint" });
+    wrapper.instance().context = jest.fn();
     const noResult = mount(wrapper.instance().noResult);
     noResult.find("a").first().simulate("click");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SEARCH_QUERY_CHANGE, payload: "mint",
     });
-    expect(wrapper.instance().navigate).toHaveBeenCalledWith(Path.cropSearch());
+    expect(wrapper.instance().context).toHaveBeenCalledWith(Path.cropSearch());
   });
 });
 

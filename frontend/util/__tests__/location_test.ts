@@ -7,6 +7,9 @@ import { BotLocationData } from "../../devices/interfaces";
 import { validBotLocationData } from "../location";
 import { LocationData } from "farmbot";
 
+afterAll(() => {
+  jest.unmock("../../devices/must_be_online");
+});
 describe("validBotLocationData()", () => {
   it("returns valid location_data object", () => {
     const result = validBotLocationData(undefined);

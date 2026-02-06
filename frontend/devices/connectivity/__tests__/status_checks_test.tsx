@@ -6,6 +6,11 @@ import { ConnectionStatus } from "../../../connectivity/interfaces";
 import { betterMerge } from "../../../util";
 
 describe("botToAPI()", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.useRealTimers();
+  });
+
   it("handles connectivity", () => {
     const result = botToAPI(moment().subtract(4, "minutes").toJSON());
     expect(result.connectionStatus).toBeTruthy();

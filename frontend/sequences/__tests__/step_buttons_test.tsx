@@ -1,16 +1,26 @@
-jest.mock("../actions", () => ({
-  pushStep: jest.fn(),
-  closeCommandMenu: jest.fn(),
-}));
-
 import React from "react";
 import { mount } from "enzyme";
 import { StepButtonParams } from "../interfaces";
-import { StepButton } from "../step_buttons";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { error } from "../../toast/toast";
-import { closeCommandMenu, pushStep } from "../actions";
+import * as sequenceActions from "../actions";
 import { Path } from "../../internal_urls";
+import { StepButton } from "../step_buttons";
+
+let pushStepSpy: jest.SpyInstance;
+let closeCommandMenuSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  pushStepSpy = jest.spyOn(sequenceActions, "pushStep")
+    .mockImplementation(jest.fn());
+  closeCommandMenuSpy = jest.spyOn(sequenceActions, "closeCommandMenu")
+    .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  pushStepSpy.mockRestore();
+  closeCommandMenuSpy.mockRestore();
+});
 
 describe("<StepButton />", () => {
   const fakeProps = (): StepButtonParams => ({
@@ -26,8 +36,9 @@ describe("<StepButton />", () => {
     const p = fakeProps();
     const wrapper = mount(<StepButton {...p} />);
     wrapper.find("button").simulate("click");
-    expect(pushStep).toHaveBeenCalledWith(p.step, p.dispatch, p.current, p.index);
-    expect(closeCommandMenu).toHaveBeenCalled();
+    expect(sequenceActions.pushStep).toHaveBeenCalledWith(
+      p.step, p.dispatch, p.current, p.index);
+    expect(sequenceActions.closeCommandMenu).toHaveBeenCalled();
     expect(error).not.toHaveBeenCalled();
   });
 
@@ -37,8 +48,8 @@ describe("<StepButton />", () => {
     const wrapper = mount(<StepButton {...p} />);
     wrapper.find("button").simulate("click");
     expect(error).toHaveBeenCalledWith("Select a sequence first");
-    expect(pushStep).not.toHaveBeenCalled();
-    expect(closeCommandMenu).toHaveBeenCalled();
+    expect(sequenceActions.pushStep).not.toHaveBeenCalled();
+    expect(sequenceActions.closeCommandMenu).toHaveBeenCalled();
   });
 
   it("renders in designer", () => {

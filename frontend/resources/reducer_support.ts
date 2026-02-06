@@ -1,7 +1,5 @@
-import {
-  ResourceName, SpecialStatus, TaggedResource, TaggedSequence,
-} from "farmbot";
-import { combineReducers, ReducersMapObject, UnknownAction } from "redux";
+import { SpecialStatus, TaggedResource, TaggedSequence } from "farmbot";
+import { combineReducers } from "redux";
 import { helpReducer as help } from "../help/reducer";
 import { designer as farm_designer } from "../farm_designer/reducer";
 import { photosReducer as photos } from "../photos/reducer";
@@ -28,10 +26,9 @@ import { findUuid, selectAllPlantPointers } from "./selectors";
 import {
   ExecutableType, PinBindingType,
 } from "farmbot/dist/resources/api_resources";
-import { betterCompact, unpackUUID } from "../util";
+import { betterCompact, unpackUUID } from "../util/util";
 import { createSequenceMeta } from "./sequence_meta";
 import { alertsReducer as alerts } from "../messages/reducer";
-import { warning } from "../toast/toast";
 import { ReduxAction } from "../redux/interfaces";
 import { ActionHandler } from "../redux/generate_reducer";
 import { get } from "lodash";
@@ -40,7 +37,7 @@ import { getFbosConfig } from "./getters";
 import { ingest, PARENTLESS as NO_PARENT } from "../folders/data_transfer";
 import { FolderNode, FolderMeta } from "../folders/interfaces";
 import { pointsSelectedByGroup } from "../point_groups/criteria/apply";
-import { Everything } from "../interfaces";
+import { joinKindAndId } from "./join_kind_and_id";
 
 export function findByUuid(index: ResourceIndex, uuid: string): TaggedResource {
   const x = index.references[uuid];
@@ -260,31 +257,36 @@ const INDEXERS: Indexer[] = [
 type IndexerHook = Partial<Record<TaggedResource["kind"], Reindexer>>;
 type Reindexer = (i: ResourceIndex, strategy: "ongoing" | "initial") => void;
 
-export function joinKindAndId(kind: ResourceName, id: number | undefined) {
-  return `${kind}.${id || 0}`;
-}
+export { joinKindAndId };
 
 /** Any reducer that uses TaggedResources (or UUIDs) must live within the
  * resource reducer. Failure to do so can result in stale UUIDs, referential
- * integrity issues and other bad stuff. The variable below contains all
- * resource consuming reducers. */
-const consumerReducer = combineReducers<RestResources["consumers"]>({
-  regimens,
-  sequences,
-  farm_designer,
-  photos,
-  farmware,
-  help,
-  alerts
-} as ReducersMapObject<RestResources["consumers"], UnknownAction, Everything>,
-) as Function;
+ * integrity issues and other bad stuff. */
+function buildConsumerReducers() {
+  return {
+    regimens,
+    sequences,
+    farm_designer,
+    photos,
+    farmware,
+    help,
+    alerts,
+  };
+}
+type ConsumerReducers = ReturnType<typeof buildConsumerReducers>;
+let consumerReducer:
+  | ReturnType<typeof combineReducers<ConsumerReducers>>
+  | undefined;
 
 /** The resource reducer must have the first say when a resource-related action
  * fires off. Afterwards, sub-reducers are allowed to make sense of data
  * changes. A common use case for sub-reducers is to listen for
  * `DESTROY_RESOURCE_OK` and clean up stale UUIDs. */
-export const afterEach = (state: RestResources, a: ReduxAction<unknown>) => {
-  state.consumers = consumerReducer({
+export function afterEach(state: RestResources, a: ReduxAction<unknown>) {
+  const reducer = consumerReducer || (
+    consumerReducer = combineReducers(buildConsumerReducers())
+  );
+  state.consumers = reducer({
     sequences: state.consumers.sequences,
     regimens: state.consumers.regimens,
     farm_designer: state.consumers.farm_designer,
@@ -294,7 +296,7 @@ export const afterEach = (state: RestResources, a: ReduxAction<unknown>) => {
     alerts: state.consumers.alerts
   }, a);
   return state;
-};
+}
 
 /** Helper method to change the `specialStatus` of a resource in the index */
 export const mutateSpecialStatus =
@@ -404,9 +406,9 @@ export function indexRemove(db: ResourceIndex, resource: TaggedResource) {
   after?.(db, "ongoing");
 }
 
-export const beforeEach = (state: RestResources,
+export function beforeEach(state: RestResources,
   action: ReduxAction<unknown>,
-  handler: ActionHandler<RestResources, unknown>) => {
+  handler: ActionHandler<RestResources, unknown>) {
   const { byKind, references } = state.index;
   const w = references[Object.keys(byKind.WebAppConfig)[0]];
   const readOnly = w &&
@@ -416,6 +418,9 @@ export const beforeEach = (state: RestResources,
     return handler(state, action);
   }
   const fail = (place: string) => {
+    // Lazy load to avoid circular dependency on module initialization.
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { warning } = require("../toast/toast");
     warning(`(${place}) Can't modify account data when in read-only mode.`);
   };
   const { kind } = unpackUUID(get(action, "payload.uuid", "x.y.z") as string);
@@ -445,4 +450,4 @@ export const beforeEach = (state: RestResources,
     default:
       return handler(state, action);
   }
-};
+}

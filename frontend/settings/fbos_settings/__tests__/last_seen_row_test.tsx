@@ -12,6 +12,9 @@ import { bot } from "../../../__test_support__/fake_state/bot";
 import { fakeDevice } from "../../../__test_support__/resource_index_builder";
 import { cloneDeep } from "lodash";
 
+afterAll(() => {
+  jest.unmock("../../../api/crud");
+});
 describe("<LastSeen />", () => {
   const fakeProps = (): LastSeenProps => ({
     device: fakeDevice(),

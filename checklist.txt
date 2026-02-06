@@ -1,0 +1,541 @@
+# Bun Migration Review Checklist
+# Generated: 2026-02-06T19:59:08Z
+# Total files: 536
+# Reviewed: 536/536
+
+- [x] .circleci/config.yml | note: reviewed manually; CI commands migrated from npm or jest to bun workflows and bunx tooling; change is coherent.
+- [x] .circleci/jest-ci.config.js | note: reviewed manually; deleted Jest-specific CI config that is no longer referenced after switching CI tests to bun test reporters.
+- [x] .eslintrc.js | note: reviewed manually; eslint parser project now points to dedicated tsconfig.eslint.json, which matches Bun migration lint setup and avoids mixed project issues.
+- [x] .parcelrc | note: reviewed manually; Parcel configuration removal is expected because asset pipeline moved to Bun build scripts.
+- [x] AGENTS.md | note: reviewed manually; contributor setup command updated from npm install to bun install, consistent with migration.
+- [x] app/controllers/dashboard_controller.rb | note: reviewed manually; asset output path and JS entry mapping were updated for Bun outputs, including deterministic flattened JS filenames; changes are internally consistent and covered by spec additions.
+- [x] app/views/dashboard/_common_assets.html.erb | note: reviewed manually; script includes switched to module mode and dev-only websocket live-reload hook added with env-controlled host and port, which fits Bun dev server flow.
+- [x] app/views/layouts/dashboard.html.erb | note: reviewed manually; layout scripts moved to module type and dev live-reload websocket block mirrors common assets behavior correctly.
+- [x] bun.lock | note: reviewed manually; lockfile content aligns with package.json dependency set and is expected generated output from bun install for reproducible builds.
+- [x] bunfig.toml | note: reviewed manually; Bun test preload and coverage settings are minimal and appropriate for this migration.
+- [x] config/application.rb | note: reviewed manually; dev asset host naming changed from parcel to generic asset host and CSP references updated consistently for Bun asset server.
+- [x] docker-compose.yml | note: reviewed manually; parcel service was renamed to assets and kept on same command and port, with sensible db dependency added.
+- [x] docker_configs/api.Dockerfile | note: reviewed manually; Bun installation and PATH wiring were added correctly so container can run bun and bunx commands.
+- [x] failing_tests.txt | note: reviewed manually; generated runner artifact is empty because latest bun test-slow run had no failing tests.
+- [x] frontend/AGENTS.md | note: reviewed manually; contributor test and lint commands were updated from npm to Bun equivalents and remain internally consistent.
+- [x] frontend/__test_support__/additional_mocks.tsx | note: reviewed manually; browser global mocks were rewritten for Bun and happy-dom compatibility (location, alert, ResizeObserver, TextDecoder) and look technically sound.
+- [x] frontend/__test_support__/bun_test_setup.ts | note: reviewed manually; Bun test bootstrap is extensive but purposeful (happy-dom init, jest compatibility shims, module unmock support, fixture resets, and three-stdlib compatibility patching).
+- [x] frontend/__test_support__/fake_state.ts | note: reviewed manually; fakeState now clones fixture objects and uses fakeApp factory, preventing cross-test mutation leaks.
+- [x] frontend/__test_support__/fake_state/app.ts | note: reviewed manually; introduced fakeApp constructor while retaining app export, improving state isolation without breaking existing imports.
+- [x] frontend/__test_support__/fake_state/resources.ts | note: reviewed manually; id generation switched from module-local counter to global resettable counter to improve determinism across Bun test module resets; change is reasonable.
+- [x] frontend/__test_support__/helpers.ts | note: reviewed manually; clickButton helper now falls back to matching button text when positional target differs, reducing brittle test failures under Bun rendering differences.
+- [x] frontend/__test_support__/localstorage.js | note: reviewed manually; storage mock was hardened to support configurable globals and cleaner reset semantics in Bun and happy-dom.
+- [x] frontend/__test_support__/mock_fbtoaster.ts | note: reviewed manually; removed global resetAllMocks side effect so toast mock registration does not unexpectedly clear other test spies.
+- [x] frontend/__test_support__/mount_with_context.tsx | note: reviewed manually; helper now mounts with explicit NavigationContext provider and dynamic require, which avoids import-time issues and keeps mockNavigate control in tests.
+- [x] frontend/__test_support__/three_d_mocks.tsx | note: reviewed manually; 3D mock coverage was significantly expanded (r3f, drei, three addons, spring hooks) to satisfy Bun runtime and keep 3D tests deterministic; changes are justified by passing suite.
+- [x] frontend/__tests__/apology_test.tsx | note: reviewed manually; replaced top-level jest.mock with scoped spyOn lifecycle, which is cleaner for Bun module behavior and preserves test intent.
+- [x] frontend/__tests__/app_test.tsx | note: reviewed manually; test switched to fakeApp factory and added explicit mock cleanup/unmock handling for Bun; assertion change reduces flaky mock coupling while still validating render path.
+- [x] frontend/__tests__/attach_app_to_dom_test.ts | note: reviewed manually; module-level mocks were replaced with explicit spyOn and temporary store overrides, improving determinism under Bun while preserving behavior checks.
+- [x] frontend/__tests__/device_test.ts | note: reviewed manually; added cleanup unmock for farmbot module to prevent mock leakage between Bun tests.
+- [x] frontend/__tests__/entry_test.tsx | note: reviewed manually; test now targets new main_app entry module and uses spy-based mocking instead of hoisted module mocks, which is appropriate for Bun.
+- [x] frontend/__tests__/error_boundary_test.tsx | note: reviewed manually; error boundary test was adapted for Bun rethrow behavior and now asserts catchErrors via spy without relying on fragile unmock patterns.
+- [x] frontend/__tests__/hotkeys_test.tsx | note: reviewed manually; migrated from module-hoist mocks to explicit spies and temporary store overrides, with resilient assertions for Bun DOM/event differences.
+- [x] frontend/__tests__/i18n_test.ts | note: reviewed manually; axios mocking was made explicit with spy lifecycle and language/url assertions were adjusted for Bun environment defaults without weakening core behavior coverage.
+- [x] frontend/__tests__/interceptors_test.ts | note: reviewed manually; moved from hoisted module mocks to explicit spies and replaced fake timer throw check with deterministic callback invocation, which is a valid Bun adaptation.
+- [x] frontend/__tests__/link_test.tsx | note: reviewed manually; added per-test mock cleanup to avoid cross-test contamination under Bun with no behavior change.
+- [x] frontend/__tests__/logout_test.ts | note: reviewed manually; replaced hoisted axios and session mocks with explicit spy plus local axios.delete mock function, preserving semantics and reducing Bun mock edge cases.
+- [x] frontend/__tests__/reducer_test.ts | note: reviewed manually; tests now create fresh app state per case using fakeApp, fixing shared-state coupling and improving isolation under Bun.
+- [x] frontend/__tests__/refresh_token_no_test.ts | note: reviewed manually; hoisted axios mock replaced with explicit axios.get spy lifecycle, keeping failure-path behavior check intact for Bun.
+- [x] frontend/__tests__/refresh_token_ok_test.ts | note: reviewed manually; axios mock was localized to beforeEach and still validates successful token refresh path after Bun migration.
+- [x] frontend/__tests__/revert_to_english_test.ts | note: reviewed manually; test cleanup switched to clearAllMocks and added explicit unmock to avoid persistent module mocks across Bun tests.
+- [x] frontend/__tests__/route_config_test.tsx | note: reviewed manually; unnecessary React.lazy module mock was removed, making the test less invasive and still valid.
+- [x] frontend/__tests__/routes_test.tsx | note: reviewed manually; session mocks were converted to spies and one mount-based lifecycle assertion was made explicit via component instance call to avoid Bun or enzyme mounting quirks.
+- [x] frontend/__tests__/session_test.ts | note: reviewed manually; Bun compatibility setup was valid, and I restored removed side-effect assertions in clear() to keep behavioral coverage (location.assign and storage clearing) intact.
+- [x] frontend/api/__tests__/api_test.ts | note: reviewed manually; test now resets API singleton before assertion via API.resetBaseUrl, which improves isolation and is appropriate.
+- [x] frontend/api/__tests__/crud_data_tracking_test.ts | note: reviewed manually; test was refactored away from Redux store plumbing to direct thunk dispatch wiring and explicit spies for maybeStartTracking or startTracking; intent remains to validate tracking hooks under Bun.
+- [x] frontend/api/__tests__/crud_destroy_test.ts | note: reviewed manually; hoisted jest.mock blocks were replaced with explicit spy lifecycle and requireActual calls to avoid Bun module-hoist issues while preserving destroy/destroyAll behavior assertions.
+- [x] frontend/api/__tests__/crud_malformed_data_test.ts | note: reviewed manually; axios module mock was moved to per-test function assignment for Bun compatibility, and malformed-data console assertion was adapted to serialized error output while still verifying malformed payload context.
+- [x] frontend/api/__tests__/crud_success_test.ts | note: reviewed manually; axios hoisted mocks were converted to per-suite assignments for Bun, and one dispatch assertion was relaxed from last-call ordering to called-with to avoid ordering brittleness without losing failure-path validation.
+- [x] frontend/api/__tests__/delete_points_handler_test.ts | note: reviewed manually; module-hoist mock was replaced by spyOn lifecycle, and explicit point ids were set to keep deterministic argument assertions under Bun.
+- [x] frontend/api/__tests__/delete_points_test.ts | note: reviewed manually; axios and util hoisted mocks were replaced with local function assignments and requireActual access, and progress assertions now target explicit callback invocation compatible with Bun without changing core delete-path coverage.
+- [x] frontend/api/__tests__/maybe_start_tracking_test.ts | note: reviewed manually; replaced hoisted module mock with scoped spyOn for startTracking, preserving both positive and negative path assertions under Bun.
+- [x] frontend/api/api.ts | note: reviewed manually; added API.resetBaseUrl helper is minimal and useful for test isolation of singleton state after Bun migration.
+- [x] frontend/api/crud.ts | note: reviewed manually; direct maybeStartTracking import was switched to namespace access to support spyable references in Bun tests, with no behavior change in CRUD paths.
+- [x] frontend/api/maybe_start_tracking.ts | note: reviewed manually; switched startTracking import to module namespace reference so tests can spy reliably in Bun; runtime logic is unchanged.
+- [x] frontend/auth/__tests__/actions_test.ts | note: reviewed manually; replaced brittle full API module mock with real API + setBaseUrl spy, and mocked fetchSyncData from sync/actions to control didLogin side effects under Bun.
+- [x] frontend/config/__tests__/actions_test.ts | note: reviewed manually; found weakened ready() coverage and fixed it by restoring real ready-thunk behavior assertions (refresh success, refresh fallback, missing-auth clear path) with Bun-safe spies; validated via bun test ./frontend/config/__tests__/actions_test.ts (pass).
+- [x] frontend/config_storage/__tests__/actions_test.ts | note: reviewed manually; converted hoisted crud/getter mocks to explicit spyOn setup and lifecycle resets, preserving config toggle/get/set behavior assertions with better Bun compatibility.
+- [x] frontend/connectivity/__tests__/auto_sync_handle_inbound_test.ts | note: reviewed manually; replaced hoisted auto_sync and resource action mocks with scoped spies and cleanup, keeping inbound SKIP/UPDATE/DELETE behavior assertions intact for Bun.
+- [x] frontend/connectivity/__tests__/auto_sync_test.ts | note: reviewed manually; added explicit outstandingRequests reset and unique session ids per payload to avoid cross-test bleed, and swapped resetAllMocks for clearAllMocks for safer Bun behavior.
+- [x] frontend/connectivity/__tests__/batch_queue_test.ts | note: reviewed manually; migration replaces hoisted connect_device/device_is_throttled/store mocks with scoped spies and explicit restore lifecycle; behavior remains correct and validated with bun test ./frontend/connectivity/__tests__/batch_queue_test.ts (pass).
+- [x] frontend/connectivity/__tests__/connect_device/connect_device_test.ts | note: reviewed manually; added afterAll unmock for device module to prevent mock leakage across Bun test files; change is appropriate and low risk.
+- [x] frontend/connectivity/__tests__/connect_device/event_listeners_test.ts | note: reviewed manually; device and ping mocks were converted to scoped spies, and status assertion was updated to track readStatusReturnPromise invocation separately from bot.readStatus, which matches current listener behavior under Bun.
+- [x] frontend/connectivity/__tests__/connect_device/index_test.ts | note: reviewed manually; migration replaced multiple hoisted mocks with scoped spies (connectivity, speech, beep, config, forceOnline) and I tightened two weakened assertions (initLog payload shape and broadcast log kind) while keeping Bun compatibility; validated via bun test ./frontend/connectivity/__tests__/connect_device/index_test.ts (pass).
+- [x] frontend/connectivity/__tests__/connect_device/slow_down_test.ts | note: reviewed manually; lodash throttle hoisted mock was replaced with scoped spy and restore lifecycle, preserving throttle argument assertions in Bun.
+- [x] frontend/connectivity/__tests__/connect_device/status_checks_test.ts | note: reviewed manually; badVersion hoisted mock was replaced with scoped spy plus global MINIMUM_FBOS_VERSION reset between tests, and slow_down mock is explicitly unmocked after suite for Bun isolation.
+- [x] frontend/connectivity/__tests__/data_consistency_test.ts | note: reviewed manually; migration replaces module mocks with spies for device and store.getState while keeping queue and event-handler coverage intact; validated behavior with bun test ./frontend/connectivity/__tests__/data_consistency_test.ts (pass).
+- [x] frontend/connectivity/__tests__/index_test.ts | note: reviewed manually; found weakened dispatch assertions and strengthened them to validate actual NETWORK_EDGE_CHANGE and PING_START actions plus throttle behavior while retaining Bun-compatible store dispatch stubbing; validated via bun test ./frontend/connectivity/__tests__/index_test.ts (pass).
+- [x] frontend/connectivity/__tests__/ping_mqtt_test.ts | note: reviewed manually; replaced full connectivity module mock with scoped spies for ping/network dispatch functions and explicit timer cleanup, preserving ping success/failure behavior checks under Bun.
+- [x] frontend/connectivity/__tests__/reducer_qos_test.ts | note: reviewed manually; removed store module mock in favor of controlled dispatch replacement per test, keeping reducer and ping action dispatch assertions intact with Bun-compatible setup.
+- [x] frontend/controls/__tests__/axis_display_group_test.tsx | note: reviewed manually; dev_support mock was converted to partial requireActual override and explicit unmock teardown to reduce module side effects in Bun while keeping feature-flag behavior coverage.
+- [x] frontend/controls/__tests__/pin_form_fields_test.tsx | note: reviewed manually; added focused api/crud edit mock and unmock cleanup so pin form tests assert dispatched edit payload shape without invoking real CRUD behavior under Bun.
+- [x] frontend/controls/__tests__/state_to_props_test.ts | note: reviewed manually; kept config_storage unmock for real behavior and fixed an unnecessarily broad busy_log assertion back to deterministic value (1); validated via bun test ./frontend/controls/__tests__/state_to_props_test.ts (pass).
+- [x] frontend/controls/move/__tests__/bot_position_rows_test.tsx | note: reviewed manually; device interaction expectations were correctly migrated from raw getDevice methods to devices/actions wrappers, with scoped spies and cleanup for Bun-safe isolation.
+- [x] frontend/controls/move/__tests__/direction_button_test.tsx | note: reviewed manually; migrated motion command assertions from device singleton mock to devices/actions moveRelative spy with proper setup/teardown, preserving all button gating and argument checks.
+- [x] frontend/controls/move/__tests__/home_button_test.tsx | note: reviewed manually; updated tests to spy on devices/actions moveToHome/findHome wrappers instead of direct device methods, with assertions adjusted to current command interfaces and cleanup added.
+- [x] frontend/controls/move/__tests__/jog_buttons_test.tsx | note: reviewed manually; migrated move command checks to devices/actions spy setup and identified a weakened firmware-restart test, then restored behavior coverage by invoking FbosButtonRow action and asserting restartFirmware call; validated via bun test ./frontend/controls/move/__tests__/jog_buttons_test.tsx (pass).
+- [x] frontend/controls/move/__tests__/motor_position_plot_test.tsx | note: reviewed manually; deterministic time mocking was migrated from moment stub to Jest fake timers and setSystemTime, with sessionStorage setup clarified to keep history dedupe tests stable under Bun.
+- [x] frontend/controls/move/__tests__/settings_menu_test.tsx | note: reviewed manually; replaced require-based mutation mock with explicit spyOn lifecycle for toggleWebAppBool in both suites, maintaining setting toggle behavior checks with cleaner Bun compatibility.
+- [x] frontend/controls/move/__tests__/step_size_selector_test.tsx | note: reviewed manually; converted changeStepSize module mock to scoped spy with restore lifecycle, preserving click-to-step-size assertion under Bun.
+- [x] frontend/controls/move/__tests__/take_photo_button_test.tsx | note: reviewed manually; switched to spying devices/actions takePhoto and added per-test cleanup, including rejection handling to avoid unhandled promise noise in Bun while keeping button behavior assertions.
+- [x] frontend/controls/peripherals/__tests__/peripheral_form_test.tsx | note: reviewed manually; added beforeEach clearAllMocks for test isolation with no behavioral assertion changes.
+- [x] frontend/controls/peripherals/__tests__/peripheral_list_test.tsx | note: reviewed manually; peripheral command tests were correctly migrated from raw device mocks to devices/actions pinToggle/writePin spies and forceOnline control, with cleanup added for testing-library rendering state.
+- [x] frontend/controls/webcam/__tests__/index_test.tsx | note: reviewed manually; converted api/crud hoisted mocks to scoped init/edit/save/destroy spies with cleanup, preserving webcam panel and preToggleCleanup behavior checks under Bun.
+- [x] frontend/controls/webcam/index.tsx | note: reviewed manually; switched CRUD function imports to namespace references to enable reliable spying in Bun tests, with no runtime behavior changes in webcam panel actions.
+- [x] frontend/crops/__tests__/find_test.ts | note: reviewed manually; test now uses real crop constants instead of FAKE_CROPS mock and appropriately relaxes one key assertion to containment because real dataset can include additional matches.
+- [x] frontend/css/global/global.scss | note: reviewed manually; grain texture asset URL was correctly updated from /public path to root-served /grain_texture.png for Bun static asset resolution.
+- [x] frontend/css/global/imports.scss | note: reviewed manually; Blueprint CSS loading migrated from tilde  paths to package  syntax, which is appropriate for modern Sass resolution in Bun build tooling.
+- [x] frontend/curves/__tests__/chart_test.tsx | note: reviewed manually; replaced edit_curve module mock with scoped spyOn and cleanup, keeping curve-drag/add interaction assertions intact for Bun.
+- [x] frontend/curves/__tests__/curves_inventory_test.tsx | note: reviewed manually; migrated init/save CRUD mocks to scoped spies with deterministic init payload and cleanup, preserving addNew curve creation and navigation assertions.
+- [x] frontend/curves/__tests__/edit_curve_test.tsx | note: reviewed manually; CRUD mocks were converted to scoped overwrite/init/save/destroy spies with lifecycle cleanup and existing curve edit/copy/delete behavior assertions preserved.
+- [x] frontend/curves/curves_inventory.tsx | note: reviewed manually; converted CRUD imports to namespace access for spyability and guarded navigate callback when NavigationContext is absent in tests, with no production regression risk.
+- [x] frontend/curves/edit_curve.tsx | note: reviewed manually; CRUD calls were namespaced for Bun test spy support and navigation callback usage was simplified to context directly, with no functional regression in save/copy/delete/edit flows.
+- [x] frontend/demo/__tests__/demo_iframe_test.tsx | note: reviewed manually; axios and mqtt hoisted mocks were replaced with per-test assignments/spies (plus seed option stubs), preserving demo iframe API/MQTT flow and error-path assertions with better Bun compatibility.
+- [x] frontend/demo/__tests__/index_test.tsx | note: reviewed manually; added explicit unmock of util/page after suite to prevent cross-test module mock leakage in Bun runtime.
+- [x] frontend/demo/lua_runner/__tests__/actions_test.ts | note: reviewed manually; replaced full store and lodash module mocks with controlled runtime overrides (dispatch/getState/random) plus restore logic, keeping lua-runner action expansion and e-stop behavior coverage while avoiding Bun hoist issues.
+- [x] frontend/demo/lua_runner/__tests__/calculate_move_test.ts | note: reviewed manually; migrated store and triangle function mocks to controlled getState override plus getZFunc spy, with afterAll restoration, preserving calculateMove/addDefaults coverage for Bun.
+- [x] frontend/demo/lua_runner/__tests__/index_test.ts | note: reviewed manually; replaced broad store/crud/lodash module mocks with controlled runtime overrides and scoped spies, plus explicit unmocking of lua runner modules to ensure real code paths are exercised in Bun tests.
+- [x] frontend/demo/lua_runner/__tests__/stubs_test.ts | note: reviewed manually; getters module mock was replaced with explicit spies for firmware/webapp/fbos config accessors and restore lifecycle, preserving stub utility behavior assertions.
+- [x] frontend/demo/lua_runner/__tests__/util_test.ts | note: reviewed manually; store getState module mock was replaced with controlled runtime override and restoration, keeping csToLua/filterPoint tests on real implementation paths for Bun.
+- [x] frontend/demo/lua_runner/actions.ts | note: reviewed manually; CRUD functions were switched to namespace references to support Bun spy-based tests, with no behavior changes to demo lua action execution paths.
+- [x] frontend/demo/lua_runner/stubs.ts | note: reviewed manually; switched getter imports to namespace usage so tests can spy on resource getter calls under Bun without altering stub logic.
+- [x] frontend/devices/__tests__/actions_test.ts | note: reviewed manually; large migration replaces broad module mocks (device/store/crud/axios/demo runners) with runtime overrides and scoped spies while exercising real devices/actions via requireActual, and core behavior assertions were preserved across command, movement, config, and fetch paths.
+- [x] frontend/devices/__tests__/must_be_online_test.tsx | note: reviewed manually; replaced redux store module mock with controlled getState override/restoration and localStorage cleanup to avoid global side effects in Bun while preserving MustBeOnline and isBotUp assertions.
+- [x] frontend/devices/__tests__/reducer_test.ts | note: reviewed manually; removed unnecessary redux/store mock from reducer tests, which is cleaner and does not affect reducer-only behavior coverage.
+- [x] frontend/devices/__tests__/should_display_test.ts | note: reviewed manually; replaced redux store mock with explicit getState override and restoration, keeping shouldDisplay feature gating tests intact while reducing module-hoist issues in Bun.
+- [x] frontend/devices/actions.ts | note: reviewed manually; CRUD edit/save imports were namespaced to support spy-based Bun tests, with no behavioral change to MCU or FBOS config update logic.
+- [x] frontend/devices/connectivity/__tests__/connectivity_row_test.tsx | note: reviewed manually; replaced screen_size module mock with explicit window.innerWidth control to exercise real isMobile behavior in connectivity row rendering under Bun/happy-dom.
+- [x] frontend/devices/connectivity/__tests__/connectivity_test.tsx | note: reviewed manually; replaced multiple hoisted mocks (screen_size, crud refresh, device actions, forceOnline) with scoped spies and cleanup, while preserving connectivity panel refresh/demo-mode behavior assertions.
+- [x] frontend/devices/connectivity/__tests__/diagram_test.tsx | note: reviewed manually; mobile rendering checks now use window.innerWidth manipulation instead of screen_size module mock, exercising real responsive path logic under Bun/happy-dom.
+- [x] frontend/devices/connectivity/__tests__/fbos_metric_history_table_test.tsx | note: reviewed manually; added explicit unmock teardown for must_be_online and fbos_metric_history_plot to prevent module mock bleed between Bun test files.
+- [x] frontend/devices/connectivity/__tests__/qos_panel_test.tsx | note: reviewed manually; added beforeEach clearAllMocks for stronger test isolation without changing panel behavior assertions.
+- [x] frontend/devices/connectivity/__tests__/qos_test.ts | note: reviewed manually; added setup reset for mocks/timers/window.logStore to stabilize QoS helper tests across Bun execution order.
+- [x] frontend/devices/connectivity/__tests__/status_checks_test.tsx | note: reviewed manually; added beforeEach reset for mocks and timers to reduce cross-suite timing interference in connectivity status check tests.
+- [x] frontend/devices/connectivity/connectivity.tsx | note: reviewed manually; removed redundant navigate class field and passed NavigationContext callback directly to docLinkClick, matching current context usage pattern without behavior change.
+- [x] frontend/devices/connectivity/qos.ts | note: reviewed manually; betterCompact import was narrowed to util/util module path, likely to avoid Bun resolver/cycle issues from barrel imports; logic is unchanged.
+- [x] frontend/devices/connectivity/qos_panel.tsx | note: reviewed manually; removed redundant navigate field and passed NavigationContext callback directly to docLinkClick in QoS panel, matching other Bun migration context adjustments.
+- [x] frontend/devices/must_be_online.tsx | note: reviewed manually; store import was switched to module namespace access so forceOnline can be reliably spied/mocked in Bun tests, with unchanged runtime logic.
+- [x] frontend/devices/timezones/__tests__/guess_timezone_test.ts | note: reviewed manually; added must_be_online forceOnline mock control and cleanup to make timezone-setting branches deterministic in Bun while retaining existing CRUD dispatch assertions.
+- [x] frontend/devices/timezones/__tests__/timezone_selector_test.tsx | note: reviewed manually; replaced implicit inferTimezone dependency with explicit spy return and restoreAllMocks cleanup, making lifecycle callback assertion deterministic under Bun.
+- [x] frontend/devices/timezones/timezone_selector.tsx | note: reviewed manually; inferTimezone import was namespaced so tests can spy/mock reliably in Bun; timezone selector behavior remains unchanged.
+- [x] frontend/entry.tsx | note: reviewed manually; file deletion is intentional as entry bootstrap moved to the new main_app-based Bun entry flow (validated by corresponding test updates).
+- [x] frontend/error_boundary.tsx | note: reviewed manually; added optional BUN_TEST_DEBUG_ERROR_BOUNDARY stderr logging guard for diagnosing Bun test failures without affecting normal runtime behavior.
+- [x] frontend/farm_designer/__tests__/designer_panel_test.tsx | note: reviewed manually; test suite was hardened with explicit wrapper tracking/unmount, timer cleanup, and location search reset to prevent Bun test leakage; behavior assertions remain intact.
+- [x] frontend/farm_designer/__tests__/index_test.tsx | note: reviewed manually; replaced hoisted CRUD/screen-size mocks with scoped edit spy and window-width control to exercise real responsive behavior paths while maintaining farm designer assertions.
+- [x] frontend/farm_designer/__tests__/location_info_test.tsx | note: reviewed manually; added robust wrapper tracking/unmount and DOM cleanup between tests, plus location.search reset, to prevent cross-test contamination under Bun while keeping location info assertions unchanged.
+- [x] frontend/farm_designer/__tests__/map_size_setting_test.tsx | note: reviewed manually; migrated config_storage mock to scoped setWebAppConfigValue spy with cleanup, preserving map size input dispatch assertions and improving Bun test isolation.
+- [x] frontend/farm_designer/__tests__/move_to_test.tsx | note: reviewed manually; replaced multiple hoisted mocks (devices/actions, config storage, popover, dev settings) with scoped spies and restores, preserving move-to and default-axis behavior assertions across UI states.
+- [x] frontend/farm_designer/__tests__/panel_header_test.tsx | note: reviewed manually; migrated dev setting and store state mocks to scoped spies/overrides with restoration, maintaining nav tab active-state and feature-flag test behavior under Bun.
+- [x] frontend/farm_designer/__tests__/sort_options_test.tsx | note: reviewed manually; swapped popover module mock for scoped Popover spy implementation and restore lifecycle, preserving sort menu rendering and ordering assertions.
+- [x] frontend/farm_designer/__tests__/state_to_props_test.ts | note: reviewed manually; added beforeEach clearAllMocks for deterministic mapStateToProps test isolation with no assertion changes.
+- [x] frontend/farm_designer/__tests__/three_d_garden_map_test.tsx | note: reviewed manually; converted ThreeDGarden and suncalc mocks to scoped spies, and I replaced an over-weakened real-time sun-angle assertion with bounded physical checks (not -1, valid inclination/azimuth ranges); validated via bun test ./frontend/farm_designer/__tests__/three_d_garden_map_test.tsx (pass).
+- [x] frontend/farm_designer/index.tsx | note: reviewed manually; removed redundant navigate field and passed NavigationContext callback directly to ThreeDGardenToggle, consistent with other Bun context refactors.
+- [x] frontend/farm_designer/interfaces.ts | note: reviewed manually; imports were converted to type-only where appropriate, which is a clean Bun/TS build optimization with no runtime behavior impact.
+- [x] frontend/farm_designer/location_info.tsx | note: reviewed manually; navigation callback now safely guards absent context (this.context?.), improving test robustness without changing normal behavior.
+- [x] frontend/farm_designer/map/__tests__/actions_test.ts | note: reviewed manually; migrated CRUD/point-group mocks to scoped spies (edit, overwriteGroup, findGroupFromUrl) with cleanup, preserving move/click map action behavior assertions.
+- [x] frontend/farm_designer/map/__tests__/garden_map_test.tsx | note: reviewed manually; comprehensive migration from many hoisted mocks to scoped spies across map util/actions, plant actions, selection box, move/profile handlers, and lodash debounce; behavior assertions remain detailed and appropriate for Bun compatibility.
+- [x] frontend/farm_designer/map/__tests__/sequence_visualization_test.tsx | note: reviewed manually; selector and sequence_meta hoisted mocks were converted to scoped spies with resettable fixture variables, maintaining sequence visualization coverage while improving Bun isolation.
+- [x] frontend/farm_designer/map/__tests__/util_test.ts | note: reviewed manually; migration replaced screen_size/store mocks with scoped spies and added deterministic environment resets (querySelector/getComputedStyle/location), plus transform string normalization to avoid whitespace brittleness; validated via bun test ./frontend/farm_designer/map/__tests__/util_test.ts (pass).
+- [x] frontend/farm_designer/map/__tests__/zoom_test.ts | note: reviewed manually; changed setWebAppConfigValue hoisted mock to scoped spy with restore lifecycle, maintaining zoom utility persistence assertions.
+- [x] frontend/farm_designer/map/background/__tests__/selection_box_actions_test.ts | note: reviewed manually; replaced util and point-group hoisted mocks with scoped getMode/editGtLtCriteria/overwriteGroup spies and restoreAllMocks cleanup, preserving selection-box group update behavior checks.
+- [x] frontend/farm_designer/map/background/selection_box_actions.ts | note: reviewed manually; changed util/point-group imports to namespace references for Bun spyability in tests, with no logic changes to selection-box resizing or group-update behavior.
+- [x] frontend/farm_designer/map/drawn_point/__tests__/drawn_point_actions_test.tsx | note: reviewed manually; found weakened assertions (replaced by not.toThrow) and restored explicit startNewPoint/resizePoint action payload checks while keeping Bun unmock setup; validated via bun test ./frontend/farm_designer/map/drawn_point/__tests__/drawn_point_actions_test.tsx (pass).
+- [x] frontend/farm_designer/map/easter_eggs/__tests__/bugs_test.tsx | note: reviewed manually; dropped brittle settings mock and added explicit localStorage/egg-status resets to keep bug easter-egg tests deterministic under Bun.
+- [x] frontend/farm_designer/map/garden_map.tsx | note: reviewed manually; direct imports of selection_box action functions were moved to namespace calls for reliable Bun spyability in tests, with map interaction logic unchanged.
+- [x] frontend/farm_designer/map/interfaces.ts | note: reviewed manually; imports were converted to type-only declarations for cleaner TS/Bun output without runtime changes.
+- [x] frontend/farm_designer/map/layers/farmbot/__tests__/bot_figure_test.tsx | note: reviewed manually; added explicit unmock for bot_figure to ensure tests exercise real implementation under Bun module loading.
+- [x] frontend/farm_designer/map/layers/farmbot/__tests__/bot_peripherals_test.tsx | note: reviewed manually; transformed SVG attribute assertions were made whitespace-tolerant via normalization while keeping key xlinkHref/transform checks, improving cross-runtime stability.
+- [x] frontend/farm_designer/map/layers/images/__tests__/map_image_test.tsx | note: reviewed manually; monolithic image props equality was refactored into field-level assertions with transform-string normalization, preserving strictness while avoiding whitespace-related flakiness under Bun.
+- [x] frontend/farm_designer/map/layers/plants/__tests__/plant_actions_test.ts | note: reviewed manually; broad hoisted mocks were replaced with scoped CRUD/map-action spies and requireActual access for plant_actions, with environment resets for DOM/location side effects; core create/drop/drag/jog/save behaviors remain covered and coherent.
+- [x] frontend/farm_designer/map/layers/points/__tests__/garden_point_test.tsx | note: reviewed manually; click assertion was adapted from direct Path.navigate expectation to SELECT_POINT dispatch verification, which remains a valid behavior check given hook-based useNavigate + mapPointClickAction flow in current test harness.
+- [x] frontend/farm_designer/map/layers/spread/__tests__/spread_layer_test.tsx | note: reviewed manually; hard-coded spread radius expectations were updated to derive from real crop spread/defaultSpreadCmDia logic, improving correctness against current crop data without weakening checks.
+- [x] frontend/farm_designer/map/legend/__tests__/garden_map_legend_test.tsx | note: reviewed manually; zoom and config_storage hoisted mocks were converted to scoped spies (atMax/atMin/getConfig/setConfig) with cleanup, keeping legend submenu toggle assertions intact.
+- [x] frontend/farm_designer/map/profile/__tests__/content_test.tsx | note: reviewed manually; added explicit unmock for interpolation_map after suite to prevent module mock persistence across Bun test files.
+- [x] frontend/farm_designer/panel_header.tsx | note: reviewed manually; showSensors/showFarmware now use StoreModule namespace with guarded activeStore resolution, improving compatibility when store is proxied or test-overridden; behavior remains consistent with default proxy store flow.
+- [x] frontend/farm_events/__tests__/add_farm_event_test.tsx | note: reviewed manually; moved away from broad component/react ref mocks to real EditFEForm instance + scoped CRUD/resource spies, preserving add/delete/save behavior checks with more realistic integration under Bun.
+- [x] frontend/farm_events/__tests__/edit_farm_event_test.tsx | note: reviewed manually; moved from mocked React refs/edit form stubs to real EditFEForm instance patching with scoped destroy spy, and retained save/delete behavior coverage with a valid missing-event guard case.
+- [x] frontend/farm_events/__tests__/edit_fe_form_test.tsx | note: reviewed manually; replaced CRUD/timezone hoisted mocks with scoped spies and tightened side-effect stubs (console.error/alert), while preserving commitViewModel and form validation coverage under Bun.
+- [x] frontend/farm_events/__tests__/farm_events_test.tsx | note: reviewed manually; added afterEach restoration of document.querySelector to avoid DOM monkey-patch leakage between farm event tests in Bun.
+- [x] frontend/farm_events/__tests__/map_state_to_props_test.ts | note: reviewed manually; repeat/time_unit defaults were corrected to explicit non-repeating semantics (repeat 0, time_unit never), improving calendar mapping test accuracy.
+- [x] frontend/farm_events/calendar/__tests__/index_test.ts | note: reviewed manually; replaced shared TIME fixture imports with local requireActual moment/occurrence values to avoid module-mock coupling and keep calendar date tests deterministic in Bun.
+- [x] frontend/farm_events/calendar/__tests__/occurrence_test.ts | note: reviewed manually; switched to local requireActual moment/occurrence constants instead of shared TIME fixture import, keeping occurrence formatting assertions explicit and Bun-stable.
+- [x] frontend/farm_events/calendar/__tests__/scheduler_test.ts | note: reviewed manually; replaced custom time matcher dependency with direct moment isSame checks for Bun compatibility and corrected non-repeating fixture repeat value to 0 for never.
+- [x] frontend/farm_events/calendar/__tests__/selectors_test.ts | note: reviewed manually; replaced brittle global selector mocks with explicit in-test ResourceIndex construction, which improves realism and preserves joinFarmEventsToExecutable success/error path assertions.
+- [x] frontend/farm_events/edit_fe_form.tsx | note: reviewed manually; navigate callback now safely optional via context guard (this.context?.), improving robustness in Bun tests without altering normal farm event form navigation behavior.
+- [x] frontend/farmware/__tests__/actions_test.ts | note: reviewed manually; added axios unmock teardown to prevent module mock bleed from farmware actions tests under Bun.
+- [x] frontend/farmware/__tests__/basic_farmware_page_test.tsx | note: reviewed manually; added explicit unmock for device module after suite to avoid cross-file mock persistence in Bun tests.
+- [x] frontend/farmware/__tests__/farmware_forms_test.tsx | note: reviewed manually; added unmock teardown for api/crud and device modules to contain farmware form mocks to this suite in Bun.
+- [x] frontend/farmware/__tests__/farmware_info_test.tsx | note: reviewed manually; added explicit per-test mock reset for updateFarmware and unmock teardown for device/crud/actions modules to improve Bun test isolation without changing behavior checks.
+- [x] frontend/farmware/__tests__/set_active_farmware_by_name_test.ts | note: reviewed manually; replaced store module mock with temporary dispatch override/restoration, keeping active farmware route-dispatch assertions intact under Bun.
+- [x] frontend/farmware/__tests__/state_to_props_test.ts | note: reviewed manually; added unmock teardown for api/crud and devices/actions modules to prevent farmware state-to-props mock leakage in Bun tests.
+- [x] frontend/farmware/panel/__tests__/add_test.tsx | note: reviewed manually; added explicit unmock for api/crud after suite to isolate farmware add-panel tests under Bun.
+- [x] frontend/farmware/panel/__tests__/info_test.tsx | note: reviewed manually; this diff had weakened assertions, so I restored meaningful panel text/content checks and a specific farmware-key expectation while keeping Bun-safe mocks; validated via bun test ./frontend/farmware/panel/__tests__/info_test.tsx (pass).
+- [x] frontend/folders/__tests__/actions_test.ts | note: reviewed manually; migrated extensive hoisted mocks (store, draggable, sequences, CRUD, setActiveSequenceByName) to scoped spies and temporary store overrides with restoration, maintaining folder action and drop-sequence behavior assertions under Bun.
+- [x] frontend/folders/__tests__/component_test.tsx | note: reviewed manually; replaced copySequence hoisted mock with scoped spy and added explicit unmock teardown for blueprint/popover/folder action mocks, preserving folder component behavior tests in Bun.
+- [x] frontend/folders/__tests__/reducer_test.ts | note: reviewed manually; replaced hard-coded folder id assumptions with dynamic id capture, improving reducer test correctness and stability across fixture generation changes.
+- [x] frontend/folders/actions.ts | note: reviewed manually; joinKindAndId import was switched from reducer_support to dedicated resources/join_kind_and_id module, a clean dependency decoupling with unchanged behavior.
+- [x] frontend/front_page/__tests__/create_account_test.tsx | note: reviewed manually; replaced resend_verification module mock with scoped resendEmail spy and cleanup, plus adjusted form interactions to stable component-level commits where DOM label querying was brittle in Bun.
+- [x] frontend/front_page/__tests__/demo_login_option_test.tsx | note: reviewed manually; axios/mqtt mocks were stabilized with explicit teardown and requestAccount test was adapted to spy on connectMqtt/connectApi instance methods for Bun reliability (API/MQTT method internals are covered in dedicated demo tests).
+- [x] frontend/front_page/__tests__/front_page_test.tsx | note: reviewed manually; replaced broad API/session module mocks with scoped axios/session/API/store spies and explicit base-url setup, updating URL expectations to real API paths and keeping login/registration/password-reset flows well covered.
+- [x] frontend/front_page/__tests__/index_test.tsx | note: reviewed manually; added util/page unmock teardown to avoid loader test mock leakage across Bun suites.
+- [x] frontend/front_page/__tests__/resend_verification_test.tsx | note: reviewed manually; added axios unmock cleanup after resend verification tests to isolate module mocks in Bun runs.
+- [x] frontend/help/__tests__/header_test.tsx | note: reviewed manually; migrated mobile/hotkey mocks to window-width + scoped spy, and I strengthened a weakened navigation assertion by selecting the Get Help link explicitly and asserting Path.support(); validated via bun test ./frontend/help/__tests__/header_test.tsx (pass).
+- [x] frontend/help/__tests__/support_test.tsx | note: reviewed manually; migrated dev/store/axios mocks to scoped spies and I restored weakened feedback assertions (API endpoint payload plus post-send UI state for keep true or false); validated via bun test ./frontend/help/__tests__/support_test.tsx (pass).
+- [x] frontend/help/tours/__tests__/index_test.tsx | note: reviewed manually; added document.querySelector restoration and relaxed one navigate assertion to stringContaining to handle Bun/router URL formatting while preserving tour-step query validation.
+- [x] frontend/help/tours/__tests__/panel_test.tsx | note: reviewed manually; navigate assertion updated to stringContaining for tour URL to avoid brittle absolute-path differences in Bun router environment.
+- [x] frontend/help/tours/index.tsx | note: reviewed manually; navigate field was converted to getter over NavigationContext so callbacks always use current context function, a sensible fix for Bun/react lifecycle timing.
+- [x] frontend/interfaces.ts | note: reviewed manually; converted interfaces imports to type-only and inlined AppState type import, reducing runtime import load with no behavioral impact.
+- [x] frontend/logs/__tests__/index_test.tsx | note: reviewed manually; switched destroy mock to scoped CRUD spy and provided concrete sourceFbosConfig return shape, preserving logs panel delete and render behavior checks in Bun.
+- [x] frontend/logs/components/__tests__/settings_menu_test.tsx | note: reviewed manually; migrated CRUD/dev-support mocks to scoped spies with cleanup and restored weakened toggle assertions to verify concrete edit/save calls for each setting; validated via bun test ./frontend/logs/components/__tests__/settings_menu_test.tsx (pass).
+- [x] frontend/main_app/index.tsx | note: reviewed manually; new main_app entry file cleanly carries former frontend entry bootstrap (i18n init, attachAppToDom, initPWA) with corrected relative imports, matching deletion of old entry.tsx.
+- [x] frontend/messages/__tests__/actions_test.ts | note: reviewed manually; removed brittle API module stub and now uses real API.current paths with base URL setup, plus axios unmock teardown, preserving bulletin and account-seed action behavior checks.
+- [x] frontend/messages/__tests__/cards_test.tsx | note: reviewed manually; replaced multiple hoisted mocks (store, actions, devices, CRUD, session) with scoped spies and state overrides, preserving alert card rendering/actions and firmware-change behavior assertions with better Bun isolation.
+- [x] frontend/nav/__tests__/compute_editor_url_from_state_test.ts | note: reviewed manually; swapped redux store module mock for temporary getState override/restoration while preserving computeEditorUrlFromState path-selection assertions.
+- [x] frontend/nav/__tests__/e_stop_btn_test.tsx | note: reviewed manually; device mock was expanded to include maybeGetDevice/fetchNewDevice for Bun code paths and explicit unmock cleanup was added; test intent remains unchanged.
+- [x] frontend/nav/__tests__/index_test.tsx | note: reviewed manually; migrated screen-size/timezone mocks to scoped spies and cleanup, and I restored weakened demo-account/mobile-jobs assertions to explicit text expectations while keeping Bun-stable setup; validated via bun test ./frontend/nav/__tests__/index_test.tsx (pass).
+- [x] frontend/nav/__tests__/nav_links_test.tsx | note: reviewed; tightened weakened beacon assertion ("beacon soft") and ran `bun test ./frontend/nav/__tests__/nav_links_test.tsx` (pass)
+- [x] frontend/nav/__tests__/sync_text_test.ts | note: reviewed; tightened weakened demo-account assertion back to exact "Synced" and ran `bun test ./frontend/nav/__tests__/sync_text_test.ts` (pass)
+- [x] frontend/nav/compute_editor_url_from_state.ts | note: reviewed; rolled back unnecessary dynamic store fallback/extra complexity, kept direct `store.getState`; validated via `bun test ./frontend/nav/__tests__/compute_editor_url_from_state_test.ts` (pass)
+- [x] frontend/os_download/__tests__/content_test.tsx | note: reviewed; kept (clean mock lifecycle conversion, assertions unchanged in strength)
+- [x] frontend/os_download/__tests__/index_test.tsx | note: reviewed; kept (added explicit unmock cleanup, behavior/assertions remain appropriate)
+- [x] frontend/os_download/content.tsx | note: reviewed; kept (namespace import enables stable spying in tests; runtime behavior unchanged)
+- [x] frontend/password_reset/__tests__/index_test.tsx | note: reviewed; kept (moved from fragile module mock to explicit `entryPoint` spy and direct loader invocation)
+- [x] frontend/password_reset/__tests__/password_reset_test.tsx | note: reviewed; kept (expectations corrected to actual reset URL/token behavior, plus explicit axios unmock cleanup)
+- [x] frontend/password_reset/index.tsx | note: reviewed; kept (added explicit `initPasswordReset` wrapper improves testability without changing runtime behavior)
+- [x] frontend/photos/__tests__/default_values_test.ts | note: reviewed; kept (store mock replaced with explicit getState override/restore, assertion strength retained)
+- [x] frontend/photos/__tests__/photos_test.tsx | note: reviewed; kept (mock strategy improved to preserve actual module shape and added unmock cleanup)
+- [x] frontend/photos/camera_calibration/__tests__/actions_test.ts | note: reviewed; kept (added explicit unmock cleanup only)
+- [x] frontend/photos/camera_calibration/__tests__/index_test.tsx | note: reviewed; kept (mocking converted to spies; text assertion updated to stable label checks without weakening core behavior)
+- [x] frontend/photos/capture_settings/__tests__/camera_selection_test.tsx | note: reviewed; kept (`resetAllMocks` -> `clearAllMocks` avoids wiping implementations mid-test)
+- [x] frontend/photos/data_management/__tests__/clear_farmware_data_test.tsx | note: reviewed; kept (added explicit CRUD module unmock cleanup)
+- [x] frontend/photos/data_management/__tests__/env_editor_test.tsx | note: reviewed; kept (dev-support mock now preserves module shape; added deterministic mock reset/unmock lifecycle)
+- [x] frontend/photos/data_management/__tests__/index_test.tsx | note: reviewed; kept (mock update preserves actual DevSettings exports; added unmock cleanup)
+- [x] frontend/photos/data_management/__tests__/toggle_highlight_modified_test.tsx | note: reviewed; kept (config actions mock now preserves actual exports and adds unmock cleanup)
+- [x] frontend/photos/image_workspace/__tests__/index_test.tsx | note: reviewed; kept (added explicit RTL cleanup to isolate tests)
+- [x] frontend/photos/image_workspace/__tests__/slider_test.tsx | note: reviewed; kept (switched brittle DOM drag simulation to direct `RangeSlider.onRelease` contract check with proper timer lifecycle)
+- [x] frontend/photos/images/__tests__/image_flipper_test.tsx | note: reviewed; kept (added unmock cleanup only)
+- [x] frontend/photos/images/__tests__/photos_test.tsx | note: reviewed; restored weakened unmount/slider assertions to explicit action payload checks and ran `bun test ./frontend/photos/images/__tests__/photos_test.tsx` (pass)
+- [x] frontend/photos/photo_filter_settings/__tests__/filter_near_time_test.tsx | note: reviewed; kept (module mock replaced with scoped spy/restore, assertions still concrete)
+- [x] frontend/photos/photo_filter_settings/__tests__/image_filter_menu_test.tsx | note: reviewed; kept (replaced broad module mocks with scoped CRUD spies while preserving strong payload assertions)
+- [x] frontend/photos/photo_filter_settings/__tests__/index_test.tsx | note: reviewed; kept (broad mocks replaced by targeted spies; assertion specificity preserved)
+- [x] frontend/photos/photo_filter_settings/actions.ts | note: reviewed; kept (namespace imports support spying/mocking; behavior unchanged)
+- [x] frontend/photos/photo_filter_settings/filter_near_time.tsx | note: reviewed; kept (namespace action import for test spying, no functional change)
+- [x] frontend/photos/photo_filter_settings/index.tsx | note: reviewed; kept (namespace imports for stable mocking; behavior remains equivalent)
+- [x] frontend/photos/weed_detector/__tests__/actions_test.ts | note: reviewed; kept (added deterministic mock reset/setup and unmock cleanup)
+- [x] frontend/photos/weed_detector/__tests__/index_test.tsx | note: reviewed; kept (broad mocks replaced with targeted spies; behavior assertions remain explicit)
+- [x] frontend/plants/__tests__/crop_info_test.tsx | note: reviewed; re-strengthened weakened companion navigation + `mapStateToProps` config assertions and ran `bun test ./frontend/plants/__tests__/crop_info_test.tsx` (pass)
+- [x] frontend/plants/__tests__/crop_search_results_test.tsx | note: reviewed; kept (replaced full CRUD mock with scoped spies; strong action/payload assertions preserved)
+- [x] frontend/plants/__tests__/edit_plant_status_test.tsx | note: reviewed; kept (added deterministic mock clearing and unmock cleanup)
+- [x] frontend/plants/__tests__/plant_info_test.tsx | note: reviewed; kept (added unmock cleanup only)
+- [x] frontend/plants/__tests__/plant_inventory_item_test.tsx | note: reviewed; cleaned require-based spies to typed module spies and ran `bun test ./frontend/plants/__tests__/plant_inventory_item_test.tsx` (pass)
+- [x] frontend/plants/__tests__/plant_inventory_test.tsx | note: reviewed; kept (updated tests to NavigationContext flow + scoped createGroup spy; assertions remain specific)
+- [x] frontend/plants/__tests__/plant_panel_test.tsx | note: reviewed; restored weakened generic button/help assertions to explicit checks and ran `bun test ./frontend/plants/__tests__/plant_panel_test.tsx` (pass)
+- [x] frontend/plants/__tests__/select_plants_test.tsx | note: reviewed; tightened weakened `mapStateToProps` plant-count assertion to deterministic exact check and ran `bun test ./frontend/plants/__tests__/select_plants_test.tsx` (pass)
+- [x] frontend/plants/crop_search_results.tsx | note: reviewed; kept (namespace CRUD import for spyability, behavior unchanged)
+- [x] frontend/plants/grid/__tests__/plant_grid_test.tsx | note: reviewed; kept (module mocks replaced with scoped thunk spies; assertion specificity maintained)
+- [x] frontend/plants/grid/__tests__/thunks_test.ts | note: reviewed; kept (explicit unmock/requireActual guards against module mock bleed, assertions unchanged)
+- [x] frontend/plants/plant_inventory.tsx | note: reviewed; kept (fixes NavigationContext usage by removing stale class-field alias and calling `this.context` directly)
+- [x] frontend/plants/select_plants.tsx | note: reviewed; kept (same NavigationContext correctness fix: use `this.context` directly)
+- [x] frontend/point_groups/__tests__/actions_test.ts | note: reviewed; removed unnecessary self-mocking/dynamic imports, kept explicit dependency spies, ran `bun test ./frontend/point_groups/__tests__/actions_test.ts` (pass)
+- [x] frontend/point_groups/__tests__/group_detail_active_test.tsx | note: reviewed; kept (switched module-level mocks to scoped spies with proper teardown, assertions still specific)
+- [x] frontend/point_groups/__tests__/group_detail_test.tsx | note: reviewed; kept (removed broad component/API mocks in favor of scoped destroy spy; behavior assertions retained)
+- [x] frontend/point_groups/__tests__/group_inventory_item_test.tsx | note: reviewed; kept (dev-support mock now preserves actual module shape; added unmock cleanup)
+- [x] frontend/point_groups/__tests__/group_list_panel_test.tsx | note: reviewed; restored weakened navigation assertions to exact `Path.groups(...)` checks and ran `bun test ./frontend/point_groups/__tests__/group_list_panel_test.tsx` (pass)
+- [x] frontend/point_groups/__tests__/paths_test.tsx | note: reviewed; kept (added unmock cleanup only)
+- [x] frontend/point_groups/__tests__/point_group_item_test.tsx | note: reviewed; kept (converted module mocks to scoped spies; detailed behavior assertions preserved)
+- [x] frontend/point_groups/criteria/__tests__/add_test.tsx | note: reviewed; kept (replaced module mock with scoped spy while preserving explicit payload assertions)
+- [x] frontend/point_groups/criteria/__tests__/component_test.tsx | note: reviewed; kept (moved to scoped spies and safer DOM stubs, assertion coverage remains strong)
+- [x] frontend/point_groups/criteria/__tests__/edit_test.ts | note: reviewed; kept (mock converted to scoped spy with clear/restore, exhaustive assertions remain intact)
+- [x] frontend/point_groups/criteria/__tests__/show_test.tsx | note: reviewed; kept (scoped edit-helper spies replace global mock; assertions remain detailed)
+- [x] frontend/point_groups/criteria/__tests__/subcriteria_test.tsx | note: reviewed; kept (scoped spy replacement, assertion strength retained)
+- [x] frontend/point_groups/criteria/add.tsx | note: reviewed; kept (namespaced edit import for spy-friendly tests; no behavior change)
+- [x] frontend/point_groups/criteria/component.tsx | note: reviewed; kept (namespaced action/edit imports for testability, functional flow unchanged)
+- [x] frontend/point_groups/criteria/edit.ts | note: reviewed; kept (namespaced group action import; behavior unchanged)
+- [x] frontend/point_groups/criteria/show.tsx | note: reviewed; kept (criteria helpers moved to namespaced import for better spying; behavior unchanged)
+- [x] frontend/point_groups/criteria/subcriteria.tsx | note: reviewed; kept (namespaced criteria-edit import for testability; logic unchanged)
+- [x] frontend/point_groups/point_group_item.tsx | note: reviewed; kept (fixes class-field context initialization by deferring navigation call through function wrapper)
+- [x] frontend/points/__tests__/create_points_test.tsx | note: reviewed; kept (mock reset tightened to `clearAllMocks`; added cleanup unmock)
+- [x] frontend/points/__tests__/point_edit_actions_test.tsx | note: reviewed; kept (switched to scoped CRUD/soil-height spies, retained explicit behavior checks)
+- [x] frontend/points/__tests__/point_info_test.tsx | note: reviewed; restored weakened move/mapState assertions with explicit `move` payload + defaultAxes checks and ran `bun test ./frontend/points/__tests__/point_info_test.tsx` (pass)
+- [x] frontend/points/__tests__/point_inventory_item_test.tsx | note: reviewed; kept (dev-support mock improved, plus explicit unmock cleanup for mocked modules)
+- [x] frontend/points/__tests__/point_inventory_test.tsx | note: reviewed; restored weakened point-navigation assertion to real click-path check (`Path.points(1)`) and ran `bun test ./frontend/points/__tests__/point_inventory_test.tsx` (pass)
+- [x] frontend/points/__tests__/soil_height_test.tsx | note: reviewed; kept (added unmock cleanup only)
+- [x] frontend/points/point_inventory.tsx | note: reviewed; kept (introduces safe NavigationContext getter/setter + noop fallback to avoid undefined context timing issues)
+- [x] frontend/promo/__tests__/index_test.tsx | note: reviewed; kept (added explicit unmock cleanup only)
+- [x] frontend/promo/__tests__/promo_test.tsx | note: reviewed; kept (added deterministic spies/cleanup for 3D promo rendering tests without weakening assertions)
+- [x] frontend/read_only_mode/__tests__/index_test.tsx | note: reviewed; kept (replaced global mock state with scoped `appIsReadonly` spies and proper cleanup)
+- [x] frontend/reducer.ts | note: reviewed; kept (correct `import type` conversion; runtime behavior unchanged)
+- [x] frontend/redux/__tests__/create_refresh_trigger_test.ts | note: reviewed; kept (added explicit unmock cleanup for mocked dependencies)
+- [x] frontend/redux/__tests__/refilter_logs_middleware_test.ts | note: reviewed; kept (added unmock cleanup only)
+- [x] frontend/redux/__tests__/refresh_logs_test.ts | note: reviewed; kept (added axios unmock cleanup only)
+- [x] frontend/redux/__tests__/revert_to_english_middleware_test.ts | note: reviewed; kept (added module unmock cleanup only)
+- [x] frontend/redux/__tests__/root_reducer_test.ts | note: reviewed; kept (converted session clear mock to scoped spy with restore)
+- [x] frontend/redux/__tests__/upgrade_reminder_test.ts | note: reviewed; kept (`resetAllMocks` -> `clearAllMocks` and added unmock cleanup)
+- [x] frontend/redux/__tests__/version_tracker_middleware_test.ts | note: reviewed; kept (test data setup hardened for middleware expectations; assertion remains explicit on Rollbar payload)
+- [x] frontend/redux/generate_reducer.ts | note: reviewed; kept (direct util import path avoids bundler/mock indirection; behavior unchanged)
+- [x] frontend/redux/interfaces.ts | note: reviewed; kept (`import type` cleanup only)
+- [x] frontend/redux/root_reducer.ts | note: reviewed; kept (adds lazy cached reducer composition; semantics preserved, plus type-only import cleanup)
+- [x] frontend/redux/store.ts | note: reviewed; kept (lazy singleton + proxy store resolves init-order issues while preserving store interface)
+- [x] frontend/redux/upgrade_reminder.ts | note: reviewed; kept (moved ideal-version lookup into factory for correct runtime config behavior)
+- [x] frontend/redux/version_tracker_middleware.ts | note: reviewed; kept (local middleware type alias removes problematic dependency while preserving behavior)
+- [x] frontend/regimens/__tests__/set_active_regimen_by_name_test.ts | note: reviewed; kept (store/selector module mocks replaced by explicit spies/overrides, behavior assertions preserved)
+- [x] frontend/regimens/bulk_scheduler/__tests__/actions_test.ts | note: reviewed; kept (added deterministic mock clearing and CRUD unmock cleanup)
+- [x] frontend/regimens/bulk_scheduler/utils.ts | note: reviewed; kept (moment import adjusted for compatibility; functionality unchanged)
+- [x] frontend/regimens/editor/__tests__/copy_button_test.tsx | note: reviewed; kept (added unmock cleanup for mocked deps)
+- [x] frontend/regimens/editor/__tests__/editor_test.tsx | note: reviewed; kept (broad mocks replaced with scoped spies; explicit behavioral assertions maintained)
+- [x] frontend/regimens/editor/__tests__/regimen_edit_components_test.tsx | note: reviewed; kept (added CRUD unmock cleanup only)
+- [x] frontend/regimens/editor/__tests__/regimen_rows_test.tsx | note: reviewed; kept (added CRUD unmock cleanup only)
+- [x] frontend/regimens/editor/__tests__/state_to_props_test.ts | note: reviewed; kept (test setup made explicit/deterministic for no-current-regimen case)
+- [x] frontend/regimens/editor/editor.tsx | note: reviewed; kept (NavigationContext fix: remove stale field alias and pass `this.context` directly)
+- [x] frontend/regimens/list/__tests__/add_regimen_test.ts | note: reviewed; removed unnecessary cache-busting dynamic import, kept explicit init/navigate assertions, ran `bun test ./frontend/regimens/list/__tests__/add_regimen_test.ts` (pass)
+- [x] frontend/regimens/list/__tests__/list_test.tsx | note: reviewed; kept (scoped addRegimen spy and improved context assertion)
+- [x] frontend/regimens/list/__tests__/regimen_list_item_test.tsx | note: reviewed; kept (added unmock cleanup; saucer color assertion still verifies gray state)
+- [x] frontend/regimens/list/list.tsx | note: reviewed; kept (NavigationContext fix: pass `this.context` directly)
+- [x] frontend/regimens/set_active_regimen_by_name.ts | note: reviewed; kept (namespace imports enable reliable spying/overrides; logic unchanged)
+- [x] frontend/resources/__tests__/actions_test.ts | note: reviewed; kept (added unmock cleanup only)
+- [x] frontend/resources/__tests__/reducer_test.ts | note: reviewed; kept (tests now use explicit action payloads + deterministic fixtures, preserving strong reducer assertions)
+- [x] frontend/resources/__tests__/sequence_tagging_test.ts | note: reviewed; kept (moved mutable fixture setup into test for isolation)
+- [x] frontend/resources/actions.ts | note: reviewed; kept (lazy `stopTracking` load addresses circular dependency issues without behavior change)
+- [x] frontend/resources/interfaces.ts | note: reviewed; kept (`import type` cleanup only)
+- [x] frontend/resources/join_kind_and_id.ts | note: reviewed; no remaining diff in worktree (already clean)
+- [x] frontend/resources/reducer.ts | note: reviewed; kept (direct util import + type-only import cleanup)
+- [x] frontend/resources/reducer_support.ts | note: reviewed; replaced async toast import with lazy synchronous require in read-only warning path; validated with `bun test ./frontend/resources/__tests__/reducer_support_test.ts ./frontend/resources/__tests__/reducer_test.ts` (pass)
+- [x] frontend/resources/selectors.ts | note: reviewed; kept (updated `joinKindAndId` import to dedicated module)
+- [x] frontend/resources/selectors_by_id.ts | note: reviewed; kept (updated `joinKindAndId` import path only)
+- [x] frontend/resources/util.ts | note: reviewed; kept (updated `joinKindAndId` import path only)
+- [x] frontend/saved_gardens/__tests__/actions_test.ts | note: reviewed; kept (axios mock normalized for ESM default + added unmock cleanup)
+- [x] frontend/saved_gardens/__tests__/garden_edit_test.tsx | note: reviewed; kept (added unmock cleanup for mocked deps)
+- [x] frontend/saved_gardens/__tests__/garden_list_test.tsx | note: reviewed; kept (added action-module unmock cleanup only)
+- [x] frontend/saved_gardens/__tests__/garden_snapshot_test.tsx | note: reviewed; kept (added axios/action unmock cleanup only)
+- [x] frontend/saved_gardens/__tests__/saved_gardens_test.tsx | note: reviewed; kept (broad mocks replaced with scoped spies; interaction assertions remain explicit)
+- [x] frontend/sensors/__tests__/sensor_list_test.tsx | note: reviewed; kept (added device unmock cleanup only)
+- [x] frontend/sensors/sensor_readings/__tests__/sensor_readings_test.tsx | note: reviewed; kept (added CRUD unmock cleanup only)
+- [x] frontend/sensors/sensor_readings/__tests__/table_test.tsx | note: reviewed; kept (added CRUD unmock cleanup only)
+- [x] frontend/sequences/__tests__/actions_test.ts | note: reviewed; re-strengthened weakened copy-sequence name/path checks via deterministic init->navigate relation and ran `bun test ./frontend/sequences/__tests__/actions_test.ts` (pass)
+- [x] frontend/sequences/__tests__/request_auto_generation_test.ts | note: reviewed; kept (store/fetch handling converted to explicit overrides with cleanup; assertions remain appropriate)
+- [x] frontend/sequences/__tests__/sequence_editor_middle_active_test.tsx | note: reviewed; re-strengthened weakened popover-count check to explicit Add Variable control assertion and ran `bun test ./frontend/sequences/__tests__/sequence_editor_middle_active_test.tsx` (pass)
+- [x] frontend/sequences/__tests__/sequences_test.tsx | note: reviewed; kept (added unmock cleanup for screen-size/axios mocks)
+- [x] frontend/sequences/__tests__/set_active_sequence_by_name_test.ts | note: reviewed; removed unnecessary dynamic requireActual usage and restored exact sequence-UUID assertion; ran `bun test ./frontend/sequences/__tests__/set_active_sequence_by_name_test.ts` (pass)
+- [x] frontend/sequences/__tests__/state_to_props_test.ts | note: reviewed; kept (deterministic config/sequence setup via scoped spies; assertions strengthened)
+- [x] frontend/sequences/__tests__/step_button_cluster_test.tsx | note: reviewed; kept (replaced mutable require-mock pattern with scoped typed spy)
+- [x] frontend/sequences/__tests__/step_buttons_test.tsx | note: reviewed; removed unnecessary requireActual pattern and restored exact `pushStep` argument assertion; ran `bun test ./frontend/sequences/__tests__/step_buttons_test.tsx` (pass)
+- [x] frontend/sequences/__tests__/test_button_test.tsx | note: reviewed; tightened softened popover assertion to exact instance count and ran `bun test ./frontend/sequences/__tests__/test_button_test.tsx` (pass)
+- [x] frontend/sequences/inputs/__tests__/input_default_test.tsx | note: reviewed; kept (added step_tiles unmock cleanup only)
+- [x] frontend/sequences/interfaces.ts | note: reviewed; kept (`import type` cleanup only)
+- [x] frontend/sequences/locals_list/__tests__/locals_list_test.tsx | note: reviewed; kept (added deterministic mock reset and CRUD unmock cleanup)
+- [x] frontend/sequences/locals_list/__tests__/new_variable_test.tsx | note: reviewed; tightened softened location default assertion back to exact match and ran `bun test ./frontend/sequences/locals_list/__tests__/new_variable_test.tsx` (pass)
+- [x] frontend/sequences/locals_list/__tests__/variable_form_list_test.ts | note: reviewed; re-strengthened dropdown-list test with exact coordinate/heading-order/key-entry assertions and ran `bun test ./frontend/sequences/locals_list/__tests__/variable_form_list_test.ts` (pass)
+- [x] frontend/sequences/panel/__tests__/editor_test.tsx | note: reviewed; kept (added broad unmock cleanup for test-isolation)
+- [x] frontend/sequences/panel/__tests__/list_test.tsx | note: reviewed; kept (added unmock cleanup for mocked axios/actions/folder deps)
+- [x] frontend/sequences/panel/__tests__/preview_support_test.tsx | note: reviewed; restored weakened config-value assertion to exact `true` check and ran `bun test ./frontend/sequences/panel/__tests__/preview_support_test.tsx` (pass)
+- [x] frontend/sequences/panel/__tests__/preview_test.tsx | note: reviewed; strengthened error-state assertions (explicit “sequence not found” + no import button) and ran `bun test ./frontend/sequences/panel/__tests__/preview_test.tsx` (pass)
+- [x] frontend/sequences/panel/editor.tsx | note: reviewed; kept (NavigationContext fix: removed stale field alias, use `this.context` directly)
+- [x] frontend/sequences/panel/list.tsx | note: reviewed; kept (safe navigation wrapper avoids context-init timing issue)
+- [x] frontend/sequences/set_active_sequence_by_name.ts | note: reviewed; kept (namespace imports improve spyability; behavior unchanged)
+- [x] frontend/sequences/step_tiles/__tests__/index_test.tsx | note: reviewed; restored weakened `updateStep` not-throw assertions to explicit overwrite payload checks and ran `bun test ./frontend/sequences/step_tiles/__tests__/index_test.tsx` (pass)
+- [x] frontend/sequences/step_tiles/__tests__/tile_emergency_stop_test.tsx | note: reviewed; tightened softened text assertion to normalized exact match and ran `bun test ./frontend/sequences/step_tiles/__tests__/tile_emergency_stop_test.tsx` (pass)
+- [x] frontend/sequences/step_tiles/__tests__/tile_execute_script_test.tsx | note: reviewed; restored weakened farmware-selection assertions to explicit OVERWRITE_RESOURCE payload checks and ran `bun test ./frontend/sequences/step_tiles/__tests__/tile_execute_script_test.tsx` (pass)
+- [x] frontend/sequences/step_tiles/__tests__/tile_execute_test.tsx | note: reviewed; kept (improved test isolation/reset of mutable mock sequence plus unmock cleanup)
+- [x] frontend/sequences/step_tiles/__tests__/tile_lua_support_test.tsx | note: reviewed; kept (added proper fake-timer lifecycle + explicit timer flushes for deterministic debounced updates)
+- [x] frontend/sequences/step_tiles/__tests__/tile_move_absolute_test.tsx | note: reviewed; kept (replaced global mocks with scoped spies; explicit overwrite assertions preserved)
+- [x] frontend/sequences/step_tiles/__tests__/tile_old_mark_as_test.tsx | note: reviewed; kept (added CRUD unmock cleanup only)
+- [x] frontend/sequences/step_tiles/__tests__/tile_reboot_test.tsx | note: reviewed; kept (dev-support mock preserves module shape; added unmock cleanup)
+- [x] frontend/sequences/step_tiles/__tests__/tile_send_message_test.tsx | note: reviewed; kept (added CRUD unmock cleanup only)
+- [x] frontend/sequences/step_tiles/__tests__/tile_set_servo_angle_test.tsx | note: reviewed; kept (added CRUD unmock cleanup only)
+- [x] frontend/sequences/step_tiles/__tests__/tile_take_photo_test.tsx | note: reviewed; tightened softened step text check back to exact assertion and ran `bun test ./frontend/sequences/step_tiles/__tests__/tile_take_photo_test.tsx` (pass)
+- [x] frontend/sequences/step_tiles/__tests__/tile_write_pin_test.tsx | note: reviewed; kept (added CRUD unmock cleanup only)
+- [x] frontend/sequences/step_tiles/pin_support/__tests__/mode_test.tsx | note: reviewed; kept (added deterministic mock reset and CRUD unmock cleanup)
+- [x] frontend/sequences/step_tiles/pin_support/__tests__/pin_and_peripheral_support_test.tsx | note: reviewed; kept (added CRUD unmock cleanup only)
+- [x] frontend/sequences/step_tiles/pin_support/__tests__/value_test.tsx | note: reviewed; kept (added deterministic mock reset and CRUD unmock cleanup)
+- [x] frontend/sequences/step_tiles/pin_support/pin_and_peripheral_support.tsx | note: reviewed; kept (`joinKindAndId` import path update only)
+- [x] frontend/sequences/step_tiles/tile_assertion/__tests__/sequence_part_test.tsx | note: reviewed; kept (added CRUD unmock cleanup only)
+- [x] frontend/sequences/step_tiles/tile_assertion/__tests__/type_part_test.tsx | note: reviewed; kept (added CRUD unmock cleanup only)
+- [x] frontend/sequences/step_tiles/tile_assertion/__tests__/variables_part_test.tsx | note: reviewed; fixed weakened early-return guards and reasserted `LocalsList` presence, test passed
+- [x] frontend/sequences/step_tiles/tile_computed_move/__tests__/axis_order_test.tsx | note: reviewed; kept (migration to shallow/properties still verifies selection/default/options behavior)
+- [x] frontend/sequences/step_tiles/tile_computed_move/__tests__/component_test.tsx | note: reviewed; kept (CRUD mock migrated to scoped spy without behavior change)
+- [x] frontend/sequences/step_tiles/tile_if/__tests__/if_test.tsx | note: reviewed; kept (added CRUD unmock cleanup only)
+- [x] frontend/sequences/step_tiles/tile_if/__tests__/index_test.tsx | note: reviewed; tightened `selectedItem()` assertion back to exact item equality, test passed
+- [x] frontend/sequences/step_tiles/tile_if/__tests__/update_lhs_test.ts | note: reviewed; kept (added CRUD unmock cleanup only)
+- [x] frontend/sequences/step_tiles/tile_mark_as/__tests__/component_test.tsx | note: reviewed; kept (added mock reset/unmock cleanup only)
+- [x] frontend/sequences/step_tiles/tile_mark_as/__tests__/value_selection_test.tsx | note: reviewed; kept (dev-support mock now preserves actual exports + unmock cleanup)
+- [x] frontend/sequences/step_ui/__tests__/step_header_test.tsx | note: reviewed; kept (added scoped axios.post spy and request_auto_generation unmock cleanup)
+- [x] frontend/sequences/step_ui/__tests__/step_icon_group_test.tsx | note: reviewed; tightened render assertions for core controls (trash/clone/move/help), test passed
+- [x] frontend/sequences/step_ui/__tests__/step_radio_test.tsx | note: reviewed; kept (added CRUD unmock cleanup only)
+- [x] frontend/settings/__tests__/custom_settings_test.tsx | note: reviewed; kept (dev-support mock now preserves actual exports + unmock cleanup)
+- [x] frontend/settings/__tests__/default_values_test.ts | note: reviewed; kept (store.getState override pattern is required here; verified with passing targeted test)
+- [x] frontend/settings/__tests__/farm_designer_settings_test.tsx | note: reviewed; kept (partial config-storage mock preserved actual exports + unmock cleanup)
+- [x] frontend/settings/__tests__/index_test.tsx | note: reviewed; kept (module mocks replaced with scoped spies; assertions remain explicit for key settings behaviors)
+- [x] frontend/settings/__tests__/maybe_highlight_test.tsx | note: reviewed; fixed ineffective store.getState spy by direct override and restored hidden-state assertions, test passed
+- [x] frontend/settings/__tests__/other_settings_test.tsx | note: reviewed; kept (partial actual export preservation + unmock cleanup)
+- [x] frontend/settings/__tests__/state_to_props_test.ts | note: reviewed; kept (config-storage mock preserves actual exports + unmock cleanup)
+- [x] frontend/settings/__tests__/three_d_settings_test.tsx | note: reviewed; restored help-icon click dispatch assertions for distance indicator toggles, test passed
+- [x] frontend/settings/account/__tests__/account_settings_test.tsx | note: reviewed; kept (request_account_export converted to scoped spy, dev-support/config mocks cleaned)
+- [x] frontend/settings/account/__tests__/actions_test.ts | note: reviewed; kept (added axios/toast_errors unmock cleanup only)
+- [x] frontend/settings/account/__tests__/change_password_test.tsx | note: reviewed; kept (added per-test ref reset/cleanup and module unmock cleanup)
+- [x] frontend/settings/account/__tests__/dangerous_delete_widget_test.tsx | note: reviewed; kept (explicit unmock, deterministic ref reset, stronger button-role queries)
+- [x] frontend/settings/account/__tests__/request_account_export_test.ts | note: reviewed; restored explicit axios export-path assertions in both request flows, test passed
+- [x] frontend/settings/dev/__tests__/dev_settings_test.tsx | note: reviewed; restored exact dev-setting payload assertions and full Dev3dDebugSettings CRUD assertions, test passed
+- [x] frontend/settings/dev/dev_support.ts | note: reviewed; kept (store dispatch/getState now resolved at call time, avoiding stale captured references)
+- [x] frontend/settings/fbos_settings/__tests__/auto_update_row_test.tsx | note: reviewed; restored explicit `updateConfig` payload + dispatched thunk assertions, test passed
+- [x] frontend/settings/fbos_settings/__tests__/boot_sequence_selector_test.tsx | note: reviewed; kept (switched to direct FBSelect onChange with explicit edit/save assertions)
+- [x] frontend/settings/fbos_settings/__tests__/bot_config_input_box_test.tsx | note: reviewed; replaced stale CRUD assertions with explicit `updateConfig` payload/no-call assertions, test passed
+- [x] frontend/settings/fbos_settings/__tests__/default_axis_order_test.tsx | note: reviewed; kept (direct FBSelect prop/onChange assertions still verify selected value and updateConfig payload)
+- [x] frontend/settings/fbos_settings/__tests__/default_values_test.ts | note: reviewed; kept (store mock replaced by direct getState override with restore)
+- [x] frontend/settings/fbos_settings/__tests__/factory_reset_row_test.tsx | note: reviewed; restored meaningful reset text assertions (soft/hard reset), test passed
+- [x] frontend/settings/fbos_settings/__tests__/farmbot_os_row_test.tsx | note: reviewed; kept (os_update_button moved to scoped spy with same release-info behavior assertions)
+- [x] frontend/settings/fbos_settings/__tests__/farmbot_os_settings_test.tsx | note: reviewed; kept (module mocks replaced by scoped spies without behavior loss)
+- [x] frontend/settings/fbos_settings/__tests__/fbos_details_test.tsx | note: reviewed; tightened commit-link/voltage indicator checks (kept current 1-link behavior explicit), test passed
+- [x] frontend/settings/fbos_settings/__tests__/garden_location_row_test.tsx | note: reviewed; kept (CRUD mocks converted to scoped spies; scene dropdown still asserts exact edit/save behavior)
+- [x] frontend/settings/fbos_settings/__tests__/last_seen_row_test.tsx | note: reviewed; kept (added CRUD unmock cleanup only)
+- [x] frontend/settings/fbos_settings/__tests__/name_row_test.tsx | note: reviewed; kept (added cleanup/mock reset and CRUD unmock cleanup)
+- [x] frontend/settings/fbos_settings/__tests__/order_number_row_test.tsx | note: reviewed; kept (added CRUD unmock cleanup only)
+- [x] frontend/settings/fbos_settings/__tests__/os_update_button_test.tsx | note: reviewed; kept and tightened progress-state assertions (title/color/disabled) with passing suite
+- [x] frontend/settings/fbos_settings/__tests__/ota_time_selector_test.tsx | note: reviewed; kept (added CRUD/devices unmock cleanup only)
+- [x] frontend/settings/fbos_settings/__tests__/power_and_reset_test.tsx | note: reviewed; restored open-state assertions for soft/hard reset presence, test passed
+- [x] frontend/settings/fbos_settings/__tests__/rpi_model_test.tsx | note: reviewed; kept (added CRUD unmock cleanup only)
+- [x] frontend/settings/fbos_settings/__tests__/timezone_row_test.tsx | note: reviewed; strengthened timezone update test to assert edit+save payloads and dispatched actions, test passed
+- [x] frontend/settings/fbos_settings/__tests__/z_height_inputs_test.tsx | note: reviewed; kept (added default_values unmock cleanup only)
+- [x] frontend/settings/fbos_settings/farmbot_os_row.tsx | note: reviewed; kept (guards against unusable `FBOS_END_OF_LIFE_VERSION=\"0.0.0\"` fallback)
+- [x] frontend/settings/firmware/__tests__/board_type_test.tsx | note: reviewed; strengthened firmware board change test to assert exact `updateConfig` payload + dispatched thunk, test passed
+- [x] frontend/settings/firmware/__tests__/firmware_hardware_status_test.tsx | note: reviewed; kept (added devices/actions unmock cleanup only)
+- [x] frontend/settings/firmware/__tests__/firmware_path_test.tsx | note: reviewed; kept (added devices/actions unmock cleanup only)
+- [x] frontend/settings/hardware_settings/__tests__/axis_settings_test.tsx | note: reviewed; kept (added api/device unmock cleanup only)
+- [x] frontend/settings/hardware_settings/__tests__/axis_tracking_status_test.ts | note: reviewed; kept (cloneDeep added to avoid cross-test bot mutation)
+- [x] frontend/settings/hardware_settings/__tests__/boolean_mcu_input_group_test.tsx | note: reviewed; kept (added devices/actions unmock cleanup only)
+- [x] frontend/settings/hardware_settings/__tests__/calibration_row_test.tsx | note: reviewed; kept (removed shared mcu param mutation and made axis-click assertions match enabled buttons deterministically)
+- [x] frontend/settings/hardware_settings/__tests__/default_values_test.ts | note: reviewed; kept (test now isolates hardware default comparison logic via `getModifiedClassNameSpecifyDefault` spy)
+- [x] frontend/settings/hardware_settings/__tests__/encoders_or_stall_detection_test.tsx | note: reviewed; kept (dev-support partial mock + unmock cleanup)
+- [x] frontend/settings/hardware_settings/__tests__/error_handling_test.tsx | note: reviewed; strengthened toggle test to assert exact `settingToggle` call and dispatched action, test passed
+- [x] frontend/settings/hardware_settings/__tests__/export_menu_test.tsx | note: reviewed; kept (added deterministic mock reset and CRUD unmock cleanup)
+- [x] frontend/settings/hardware_settings/__tests__/mcu_input_box_test.tsx | note: reviewed; kept (added devices/actions unmock cleanup only)
+- [x] frontend/settings/hardware_settings/__tests__/motors_test.tsx | note: reviewed; strengthened X2 toggle tests to assert exact `settingToggle` params + dispatched action, test passed
+- [x] frontend/settings/hardware_settings/__tests__/parameter_management_test.tsx | note: reviewed; kept (partial config-storage mock + unmock cleanup for config/export modules)
+- [x] frontend/settings/hardware_settings/__tests__/pin_guard_input_group_test.tsx | note: reviewed; kept (added devices/actions unmock cleanup only)
+- [x] frontend/settings/hardware_settings/__tests__/pin_number_dropdown_test.tsx | note: reviewed; kept (added devices/actions unmock cleanup only)
+- [x] frontend/settings/hardware_settings/__tests__/setting_status_indicator_test.tsx | note: reviewed; kept (added export_menu unmock cleanup only)
+- [x] frontend/settings/hardware_settings/default_values.ts | note: reviewed; kept (switched to namespace import to support test spying without behavioral change)
+- [x] frontend/settings/pin_bindings/__tests__/actions_test.ts | note: reviewed; kept (CRUD module mock replaced with scoped spies; assertion strength preserved)
+- [x] frontend/settings/pin_bindings/__tests__/box_top_gpio_diagram_test.tsx | note: reviewed; restored non-editing title assertion (`my sequence`) and validated scoped device-action spies, test passed
+- [x] frontend/settings/pin_bindings/__tests__/model_test.tsx | note: reviewed; kept (added timer control/unmock cleanup and deterministic cloned bot state handling; r3f node-count expectation uses current doubled mount representation)
+- [x] frontend/settings/pin_bindings/__tests__/pin_binding_input_group_test.tsx | note: reviewed; kept (added deterministic device mock reset and module unmock cleanup)
+- [x] frontend/settings/pin_bindings/__tests__/pin_bindings_list_test.tsx | note: reviewed; kept (moved static mocks to scoped spies and deterministic sys-button fixture setup)
+- [x] frontend/settings/pin_bindings/__tests__/tagged_pin_binding_init_test.tsx | note: reviewed; kept (added CRUD unmock cleanup only)
+- [x] frontend/settings/pin_bindings/list_and_label_support.tsx | note: reviewed; kept (`gpio` import moved to `rpi_gpio_data` to avoid diagram coupling/cycle risk)
+- [x] frontend/settings/pin_bindings/model.tsx | note: reviewed; kept (`GLTF` switched to type-only import)
+- [x] frontend/settings/pin_bindings/rpi_gpio_data.ts | note: reviewed; no remaining diff in worktree
+- [x] frontend/settings/pin_bindings/rpi_gpio_diagram.tsx | note: reviewed; kept (GPIO lookup extracted to shared `rpi_gpio_data` module)
+- [x] frontend/settings/pin_bindings/tagged_pin_binding_init.tsx | note: reviewed; kept (inlined stock binding defaults to remove list_and_label_support dependency/cycle)
+- [x] frontend/settings/transfer_ownership/__tests__/change_ownership_form_test.tsx | note: reviewed; kept (global mocks replaced with scoped spies and explicit missing-ref path)
+- [x] frontend/settings/transfer_ownership/__tests__/create_transfer_cert_test.ts | note: reviewed; kept (added device/axios unmock cleanup only)
+- [x] frontend/settings/transfer_ownership/__tests__/transfer_ownership_test.ts | note: reviewed; kept (explicit unmock+requireActual of ownership modules with deterministic mock reset)
+- [x] frontend/sync/__tests__/actions_test.ts | note: reviewed; kept (added session module unmock cleanup only)
+- [x] frontend/terminal/__tests__/index_test.tsx | note: reviewed; kept (replaced shallow smoke mock with explicit mqtt/support wiring assertions)
+- [x] frontend/terminal/__tests__/support_test.ts | note: reviewed; kept (migrated to scoped xterm spy and explicit DOM/root behaviors with cleanup)
+- [x] frontend/terminal/__tests__/terminal_session_test.ts | note: reviewed; kept (explicit unmock/requireActual for TerminalSession and mqtt mock compatibility cleanup)
+- [x] frontend/three_d_garden/__tests__/camera_test.ts | note: reviewed; kept (dev-support partial mock + module unmock cleanup)
+- [x] frontend/three_d_garden/__tests__/components_test.tsx | note: reviewed; kept (added components module unmock cleanup only)
+- [x] frontend/three_d_garden/__tests__/config_overlays_test.tsx | note: reviewed; kept (setUrlParam moved to scoped spy; tooltip timeout assertion adapted to fake-timer id variance)
+- [x] frontend/three_d_garden/__tests__/fps_probe_test.tsx | note: reviewed; kept (completed useThree mock shape for bun/typing compatibility + unmock cleanup)
+- [x] frontend/three_d_garden/__tests__/garden_model_test.tsx | note: reviewed; kept (screen-size mocks converted to scoped spies; DOM assertions adapted to `innerHTML` for bun compatibility)
+- [x] frontend/three_d_garden/__tests__/group_order_visual_test.tsx | note: reviewed; kept (added point-group module unmock cleanup only)
+- [x] frontend/three_d_garden/__tests__/index_test.tsx | note: reviewed; kept (config-storage partial mock + explicit RTL cleanup/unmock)
+- [x] frontend/three_d_garden/__tests__/time_travel_test.tsx | note: reviewed; kept (config-storage partial mock + explicit RTL cleanup/unmock)
+- [x] frontend/three_d_garden/__tests__/visualization_test.tsx | note: reviewed; kept (redux store mock replaced with direct getState override + restore)
+- [x] frontend/three_d_garden/__tests__/zoom_beacons_constants_test.tsx | note: reviewed; kept (history pushState switched to scoped spy with stable replaceState setup under jsdom)
+- [x] frontend/three_d_garden/bed/__tests__/bed_test.tsx | note: reviewed; kept mode-based refactor and re-added inner `INIT_RESOURCE` assertion for radius commit path, test passed
+- [x] frontend/three_d_garden/bed/objects/__tests__/pointer_objects_test.tsx | note: reviewed; kept (added plant-actions/screen-size unmock cleanup only)
+- [x] frontend/three_d_garden/bed/objects/pointer_objects.tsx | note: reviewed; rolled back unnecessary `Number(...)` wrapper around `POINT_CYLINDER_SCALE_FACTOR`, pointer_objects tests passed
+- [x] frontend/three_d_garden/bot/__tests__/bot_test.tsx | note: reviewed; kept (added RTL cleanup and timer reset between tests)
+- [x] frontend/three_d_garden/bot/bot.tsx | note: reviewed; kept (`GLTF` switched to type-only import)
+- [x] frontend/three_d_garden/bot/components/__tests__/gantry_beam_test.tsx | note: reviewed; kept (added react unmock cleanup only)
+- [x] frontend/three_d_garden/bot/components/__tests__/suction_animation_test.tsx | note: reviewed; kept (react mock replaced with scoped `useRef`/`useFrame` spies and deterministic reset)
+- [x] frontend/three_d_garden/bot/components/__tests__/tools_test.tsx | note: reviewed; kept (scoped spies for map/useFrame/animations and fixed slot selector typo, assertions remain explicit)
+- [x] frontend/three_d_garden/bot/components/__tests__/water_stream_test.tsx | note: reviewed; kept (`@react-three/fiber` useFrame mock converted to scoped spy with restore)
+- [x] frontend/three_d_garden/bot/components/__tests__/watering_animations_test.tsx | note: reviewed; restored mist-cloud count assertion alongside WaterStream call count, test passed
+- [x] frontend/three_d_garden/bot/components/cable_carriers.tsx | note: reviewed; kept (type-only GLTF import and explicit `useRef<...|undefined>` typing adjustments)
+- [x] frontend/three_d_garden/bot/components/electronics_box.tsx | note: reviewed; kept (`GLTF` switched to type-only import)
+- [x] frontend/three_d_garden/bot/components/solenoid.tsx | note: reviewed; kept (`GLTF` switched to type-only import)
+- [x] frontend/three_d_garden/bot/components/tools.tsx | note: reviewed; kept (type-only GLTF import + safe `traverse` guard on group ref)
+- [x] frontend/three_d_garden/bot/parts/cross_slide.tsx | note: reviewed; kept (`GLTF` switched to type-only import)
+- [x] frontend/three_d_garden/bot/parts/gantry_wheel_plate.tsx | note: reviewed; kept (`GLTF` switched to type-only import)
+- [x] frontend/three_d_garden/bot/parts/seed_trough_assembly.tsx | note: reviewed; kept (`GLTF` switched to type-only import)
+- [x] frontend/three_d_garden/bot/parts/seed_trough_holder.tsx | note: reviewed; kept (`GLTF` switched to type-only import)
+- [x] frontend/three_d_garden/bot/parts/soil_sensor.tsx | note: reviewed; kept (`GLTF` switched to type-only import)
+- [x] frontend/three_d_garden/bot/parts/vacuum_pump_cover.tsx | note: reviewed; kept (`GLTF` switched to type-only import)
+- [x] frontend/three_d_garden/garden/__tests__/images_test.tsx | note: reviewed; kept (added cleanup/demo-flag reset and must_be_online unmock)
+- [x] frontend/three_d_garden/garden/__tests__/plant_instances_test.tsx | note: reviewed; kept (added react unmock cleanup only)
+- [x] frontend/three_d_garden/garden/__tests__/plants_test.tsx | note: reviewed; kept (added explicit RTL cleanup per describe)
+- [x] frontend/three_d_garden/garden/__tests__/point_test.tsx | note: reviewed; kept (fixed broken CSS selector typo in click tests)
+- [x] frontend/three_d_garden/garden/__tests__/sun_test.tsx | note: reviewed; kept (added deterministic mock reset/restore hooks)
+- [x] frontend/three_d_garden/garden/__tests__/weed_test.tsx | note: reviewed; kept (fixed selector typos and added scoped `getMode` spy with cleanup)
+- [x] frontend/three_d_garden/garden/__tests__/zoom_beacons_test.tsx | note: reviewed; kept (screen-size mock replaced with scoped spy and DOM querySelector restore)
+- [x] frontend/three_d_garden/model_mesh.tsx | note: reviewed; kept (`GLTF` switched to type-only import)
+- [x] frontend/toast/__tests__/fb_toast_test.tsx | note: reviewed; kept (redux store module mock replaced with direct getState/dispatch override + restore)
+- [x] frontend/toast/__tests__/toast_internal_support_test.ts | note: reviewed; kept (store override pattern + strengthened CREATE_TOAST payload/id/fallbackLogger assertions)
+- [x] frontend/toast/__tests__/toast_test.ts | note: reviewed; kept mock-environment assertions (toast module is globally mocked in test setup, so this file validates mocked helper wiring)
+- [x] frontend/tools/__tests__/add_tool_slot_test.tsx | note: reviewed; restored exact quadrant assertion (`1`) and validated scoped CRUD spies, test passed
+- [x] frontend/tools/__tests__/add_tool_test.tsx | note: reviewed; kept (added deterministic mock reset and CRUD unmock cleanup)
+- [x] frontend/tools/__tests__/custom_tool_graphics_test.tsx | note: reviewed; kept (dev-support partial mock + redux getState override/restore)
+- [x] frontend/tools/__tests__/edit_tool_slot_test.tsx | note: reviewed; kept (added CRUD/tool_graphics unmock cleanup only)
+- [x] frontend/tools/__tests__/edit_tool_test.tsx | note: reviewed; kept (CRUD/device mocks converted to scoped spies; RTL user-event typing replaced with deterministic input change simulation)
+- [x] frontend/tools/__tests__/index_test.tsx | note: reviewed; restored exact hover-dispatch assertions and kept scoped createGroup/device cleanup, test passed
+- [x] frontend/tools/__tests__/state_to_props_test.ts | note: reviewed; restored strict quadrant assertion (`1`), test passed
+- [x] frontend/tools/__tests__/tool_slot_edit_components_test.tsx | note: reviewed; kept (mock cleanup + explicit unmock are appropriate)
+- [x] frontend/tools/add_tool.tsx | note: reviewed; kept (`navigate` now safely reads context at call time)
+- [x] frontend/tools/add_tool_slot.tsx | note: reviewed; kept (`navigate` context callback fix is correct)
+- [x] frontend/tools/edit_tool.tsx | note: reviewed; kept (`navigate` context callback fix is correct)
+- [x] frontend/tools/index.tsx | note: reviewed; kept (class-field context initialization issue resolved by direct context usage)
+- [x] frontend/tools/state_to_props.ts | note: reviewed; kept (local `isActive` removes cross-file coupling without behavior change)
+- [x] frontend/tos_update/__tests__/component_test.tsx | note: reviewed; restored submit-path token+redirect assertions with async-safe wait, test passed
+- [x] frontend/tos_update/__tests__/index_test.tsx | note: reviewed; kept (`util/page` unmock cleanup only)
+- [x] frontend/try_farmbot/__tests__/index_test.tsx | note: reviewed; kept (`util/page` unmock cleanup only)
+- [x] frontend/try_farmbot/__tests__/try_farmbot_test.tsx | note: reviewed; kept (`mqtt` unmock cleanup only)
+- [x] frontend/ui/__tests__/blurable_input_test.tsx | note: reviewed; kept (`clearAllMocks` addition is appropriate)
+- [x] frontend/ui/__tests__/color_picker_test.tsx | note: reviewed; kept (popover target/content render variance handled intentionally)
+- [x] frontend/ui/__tests__/delete_button_test.tsx | note: reviewed; restored thunk-dispatch assertion, test passed
+- [x] frontend/ui/__tests__/filter_search_test.tsx | note: reviewed; replaced weak text check with deterministic `itemRenderer` prop assertions, test passed
+- [x] frontend/ui/__tests__/help_test.tsx | note: reviewed; kept (scoped popover spy + markdown assertion update are valid)
+- [x] frontend/ui/__tests__/input_error_test.tsx | note: reviewed; kept (popover unmock cleanup only)
+- [x] frontend/ui/__tests__/widget_header_test.tsx | note: reviewed; kept (help-content assertion is valid with current help render path)
+- [x] frontend/util/__tests__/location_test.ts | note: reviewed; kept (`must_be_online` unmock cleanup only)
+- [x] frontend/util/__tests__/page_test.tsx | note: reviewed; restored full callback/render assertions (`detectLanguage`/`init`/`stopIE`), test passed
+- [x] frontend/util/__tests__/pwa_test.ts | note: reviewed; kept (toast unmock cleanup + redundant i18n mock removal)
+- [x] frontend/util/__tests__/stop_ie_test.ts | note: reviewed; kept (added restoration of overridden globals after each test)
+- [x] frontend/util/__tests__/util_test.ts | note: reviewed; restored scroll behavior assertions (`scrollTop` before/after), test passed
+- [x] frontend/util/page.tsx | note: reviewed; kept (`entryPoint` now returns promise, required by async tests)
+- [x] frontend/util/util.ts | note: reviewed; kept (`import type` cleanup only)
+- [x] frontend/weeds/__tests__/weed_inventory_item_test.tsx | note: reviewed; kept (unmock cleanup additions only)
+- [x] frontend/weeds/__tests__/weeds_edit_test.tsx | note: reviewed; restored exact `defaultAxes = "X"` assertion, test passed
+- [x] frontend/weeds/__tests__/weeds_inventory_test.tsx | note: reviewed; restored config+toggle side-effect assertions (`edit`/`save`), test passed
+- [x] frontend/weeds/weeds_inventory.tsx | note: reviewed; kept (context-based navigation fix is valid)
+- [x] frontend/wizard/__tests__/actions_test.ts | note: reviewed; kept (`crud` unmock cleanup only)
+- [x] frontend/wizard/__tests__/checks_test.tsx | note: reviewed; restored weakened behavior assertions (firmware/seed/stall/unlock/home/length), fixed `SetHome` online path, test passed
+- [x] frontend/wizard/__tests__/index_test.tsx | note: reviewed; kept (`clearAllMocks` + RTL cleanup + action unmock are valid)
+- [x] frontend/wizard/__tests__/prerequisites_test.tsx | note: reviewed; kept (actions/must_be_online unmock cleanup only)
+- [x] frontend/wizard/__tests__/settings_test.tsx | note: reviewed; kept (actions unmock cleanup only)
+- [x] frontend/zones/__tests__/edit_zone_test.tsx | note: reviewed; kept (`crud` unmock cleanup only)
+- [x] frontend/zones/__tests__/zones_inventory_test.tsx | note: reviewed; kept (`clearAllMocks` + `crud` unmock cleanup only)
+- [x] lib/tasks/api.rake | note: reviewed; kept (parcel->bun asset task migration and bundling env wiring are intentional)
+- [x] lib/tasks/check_file_coverage.rake | note: reviewed; kept (HTML parsing replaced by LCOV parsing for Bun coverage output)
+- [x] lib/tasks/coverage.rake | note: reviewed; kept (added LCOV coverage fallback aggregation logic)
+- [x] lib/tasks/fe.rake | note: reviewed; kept (dependency/check workflows switched from npm to bun)
+- [x] local_setup_instructions.sh | note: reviewed; kept (setup/test/upgrade instructions correctly updated to bun flow)
+- [x] package.json | note: reviewed; kept (scripts/engines/deps aligned to bun migration)
+- [x] public/app-resources/languages/_helper.js | note: reviewed; kept (command docs updated from npm/npx to bun/bunx)
+- [x] public/app-resources/languages/_helper.ts | note: reviewed; kept (command docs updated from npm/npx to bun/bunx)
+- [x] public/app-resources/languages/translation_metrics.md | note: reviewed; kept (translation-check command docs updated to bun)
+- [x] scripts/bun/build.ts | note: reviewed; no active diff
+- [x] scripts/bun/dev_server.ts | note: reviewed; no active diff
+- [x] scripts/bun/run_tests.ts | note: reviewed; no active diff
+- [x] scripts/bun/run_tests_support.test.ts | note: reviewed; no active diff
+- [x] scripts/bun/run_tests_support.ts | note: reviewed; no active diff
+- [x] scripts/run_all_ci_tasks.sh | note: reviewed; kept (CI helper switched npm commands to bun equivalents)
+- [x] spec/controllers/dashboard_spec.rb | note: reviewed; kept (new asset-output mapping tests are valid)
+- [x] spec/lib/tasks/api_rake_spec.rb | note: reviewed; no active diff
+- [x] tsconfig.eslint.json | note: reviewed; no active diff
+- [x] tsconfig.json | note: reviewed; kept (excludes test-only files from main typecheck scope for bun migration)

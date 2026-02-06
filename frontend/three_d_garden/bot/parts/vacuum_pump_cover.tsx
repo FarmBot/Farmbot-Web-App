@@ -1,6 +1,6 @@
 import React from "react";
 import * as THREE from "three";
-import { GLTF } from "three-stdlib";
+import type { GLTF } from "three-stdlib";
 import { Group, Mesh as MeshComponent } from "../../components";
 import { VacuumPumpCoverMaterial } from "../../constants";
 import { ThreeElements } from "@react-three/fiber";

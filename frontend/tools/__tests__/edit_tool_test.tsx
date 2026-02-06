@@ -1,14 +1,5 @@
-jest.mock("../../api/crud", () => ({
-  edit: jest.fn(),
-  save: jest.fn(),
-  destroy: jest.fn(),
-}));
-
-jest.mock("../../devices/actions", () => ({ sendRPC: jest.fn() }));
-
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { cleanup, render, screen, fireEvent } from "@testing-library/react";
 import { mount, shallow } from "enzyme";
 import {
   RawEditTool as EditTool, mapStateToProps, isActive, WaterFlowRateInput,
@@ -23,15 +14,34 @@ import { fakeState } from "../../__test_support__/fake_state";
 import {
   buildResourceIndex, fakeDevice,
 } from "../../__test_support__/resource_index_builder";
-import { edit, destroy, save } from "../../api/crud";
+import * as crud from "../../api/crud";
 import { EditToolProps } from "../interfaces";
-import { sendRPC } from "../../devices/actions";
+import * as deviceActions from "../../devices/actions";
 import { Path } from "../../internal_urls";
 import { mountWithContext } from "../../__test_support__/mount_with_context";
 
+let editSpy: jest.SpyInstance;
+let destroySpy: jest.SpyInstance;
+let saveSpy: jest.SpyInstance;
+let sendRPCSpy: jest.SpyInstance;
+
 describe("<EditTool />", () => {
+  afterEach(cleanup);
+
   beforeEach(() => {
     location.pathname = Path.mock(Path.tools(1));
+    editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+    destroySpy = jest.spyOn(crud, "destroy").mockImplementation(jest.fn());
+    saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+    sendRPCSpy = jest.spyOn(deviceActions, "sendRPC")
+      .mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    editSpy.mockRestore();
+    destroySpy.mockRestore();
+    saveSpy.mockRestore();
+    sendRPCSpy.mockRestore();
   });
 
   const fakeProps = (): EditToolProps => ({
@@ -134,12 +144,12 @@ describe("<EditTool />", () => {
     p.findTool = () => tool;
     const wrapper = mountWithContext(<EditTool {...p} />);
     wrapper.find(".save-btn").simulate("click");
-    expect(edit).toHaveBeenCalledWith(expect.any(Object), {
+    expect(crud.edit).toHaveBeenCalledWith(expect.any(Object), {
       name: "Foo",
       flow_rate_ml_per_s: 0,
       seeder_tip_z_offset: 80,
     });
-    expect(save).toHaveBeenCalledWith(tool.uuid);
+    expect(crud.save).toHaveBeenCalledWith(tool.uuid);
     expect(mockNavigate).toHaveBeenCalledWith(Path.tools());
   });
 
@@ -152,7 +162,7 @@ describe("<EditTool />", () => {
     p.mountedToolId = undefined;
     const wrapper = mount(<EditTool {...p} />);
     wrapper.find(".fa-trash").first().simulate("click");
-    expect(destroy).toHaveBeenCalledWith(tool.uuid);
+    expect(crud.destroy).toHaveBeenCalledWith(tool.uuid);
   });
 
   it("doesn't remove tool: active", () => {
@@ -164,7 +174,7 @@ describe("<EditTool />", () => {
     p.mountedToolId = undefined;
     const wrapper = mount(<EditTool {...p} />);
     wrapper.find(".fa-trash").first().simulate("click");
-    expect(destroy).not.toHaveBeenCalledWith(tool.uuid);
+    expect(crud.destroy).not.toHaveBeenCalledWith(tool.uuid);
   });
 
   it("doesn't remove tool: mounted", () => {
@@ -176,7 +186,7 @@ describe("<EditTool />", () => {
     p.mountedToolId = tool.body.id;
     const wrapper = mount(<EditTool {...p} />);
     wrapper.find(".fa-trash").first().simulate("click");
-    expect(destroy).not.toHaveBeenCalledWith(tool.uuid);
+    expect(crud.destroy).not.toHaveBeenCalledWith(tool.uuid);
   });
 });
 
@@ -203,6 +213,18 @@ describe("isActive()", () => {
 });
 
 describe("<WaterFlowRateInput />", () => {
+  afterEach(cleanup);
+  let waterFlowSendRPCSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    waterFlowSendRPCSpy = jest.spyOn(deviceActions, "sendRPC")
+      .mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    waterFlowSendRPCSpy.mockRestore();
+  });
+
   const fakeProps = (): WaterFlowRateInputProps => ({
     value: 1,
     onChange: jest.fn(),
@@ -212,31 +234,33 @@ describe("<WaterFlowRateInput />", () => {
     render(<WaterFlowRateInput {...fakeProps()} />);
     const button = screen.getByRole("button");
     fireEvent.click(button);
-    expect(sendRPC).toHaveBeenCalledWith({
+    expect(deviceActions.sendRPC).toHaveBeenCalledWith({
       kind: "lua", args: { lua: LUA_WATER_FLOW_RATE }
     });
   });
 
-  it("changes value", async () => {
+  it("changes value", () => {
     const p = fakeProps();
-    render(<WaterFlowRateInput {...p} />);
-    const input = screen.getByRole("spinbutton");
-    await userEvent.type(input, "2");
+    const wrapper = shallow(<WaterFlowRateInput {...p} />);
+    wrapper.find("input")
+      .simulate("change", { currentTarget: { value: "12" } });
     expect(p.onChange).toHaveBeenCalledWith(12);
   });
 });
 
 describe("<TipZOffsetInput />", () => {
+  afterEach(cleanup);
+
   const fakeProps = (): TipZOffsetInputProps => ({
     value: 1,
     onChange: jest.fn(),
   });
 
-  it("changes value", async () => {
+  it("changes value", () => {
     const p = fakeProps();
-    render(<TipZOffsetInput {...p} />);
-    const input = screen.getByRole("spinbutton");
-    await userEvent.type(input, "2");
+    const wrapper = shallow(<TipZOffsetInput {...p} />);
+    wrapper.find("input")
+      .simulate("change", { currentTarget: { value: "12" } });
     expect(p.onChange).toHaveBeenCalledWith(12);
   });
 });

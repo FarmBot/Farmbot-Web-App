@@ -12,6 +12,9 @@ import { Actions } from "../../constants";
 import { toastErrors } from "../../toast_errors";
 import { SpecialStatus } from "farmbot";
 
+afterAll(() => {
+  jest.unmock("../../toast_errors");
+});
 describe("updateOK()", () => {
   it("creates an action", () => {
     const result = saveOK(fakeUser());

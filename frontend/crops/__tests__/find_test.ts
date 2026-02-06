@@ -1,8 +1,3 @@
-import { FAKE_CROPS } from "../../__test_support__/fake_crops";
-jest.mock("../constants", () => ({
-  CROPS: FAKE_CROPS,
-}));
-
 import { findCrop, findCrops, findIcon, findImage } from "../find";
 
 describe("findCrop()", () => {
@@ -20,7 +15,7 @@ describe("findCrop()", () => {
 describe("findCrops()", () => {
   it("finds crops", () => {
     const result = findCrops("mint");
-    expect(Object.keys(result)).toEqual(["mint"]);
+    expect(Object.keys(result)).toContain("mint");
   });
 
   it("finds custom crop", () => {

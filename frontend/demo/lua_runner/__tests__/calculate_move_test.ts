@@ -10,32 +10,31 @@ import {
   fakeWebAppConfig,
 } from "../../../__test_support__/fake_state/resources";
 let mockResources = buildResourceIndex([]);
-jest.mock("../../../redux/store", () => ({
-  store: {
-    dispatch: jest.fn(),
-    getState: () => ({
-      resources: mockResources,
-      bot: {
-        hardware: {
-          location_data: { position: { x: 0, y: 0, z: 0 } },
-          informational_settings: { locked: false },
-        },
-      },
-    }),
-  },
-}));
-
-jest.mock("../../../three_d_garden/triangle_functions", () => ({
-  getZFunc: jest.fn(() => () => 3),
-}));
 
 import {
   AxisAddition, AxisOverwrite, Move, MoveBodyItem, ParameterApplication,
 } from "farmbot";
 import { addDefaults, calculateMove } from "../calculate_move";
 import { setCurrent } from "../actions";
+import { store } from "../../../redux/store";
+import * as triangleFunctions from "../../../three_d_garden/triangle_functions";
+
+const originalGetState = store.getState;
+const mockGetState = () => ({
+  resources: mockResources,
+  bot: {
+    hardware: {
+      location_data: { position: { x: 0, y: 0, z: 0 } },
+      informational_settings: { locked: false },
+    },
+  },
+});
 
 describe("addDefaults()", () => {
+  beforeEach(() => {
+    (store as unknown as { getState: Function }).getState = mockGetState;
+  });
+
   it("adds defaults", () => {
     const config = fakeFbosConfig();
     config.body.default_axis_order = "safe_z";
@@ -54,6 +53,9 @@ describe("addDefaults()", () => {
 
 describe("calculateMove()", () => {
   beforeEach(() => {
+    (store as unknown as { getState: Function }).getState = mockGetState;
+    jest.spyOn(triangleFunctions, "getZFunc")
+      .mockImplementation(() => () => 3);
     setCurrent({ x: 0, y: 0, z: 0 });
     localStorage.removeItem("timeStepMs");
     localStorage.removeItem("mmPerSecond");
@@ -834,4 +836,9 @@ describe("calculateMove()", () => {
     expect(calculateMove(command.body, { x: 0, y: 0, z: 0 }, []))
       .toEqual({ moves: [{ x: 0, y: 0, z: 0 }], warnings: [] });
   });
+});
+
+afterAll(() => {
+  (store as unknown as { getState: Function }).getState = originalGetState;
+  jest.restoreAllMocks();
 });

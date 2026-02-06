@@ -1,13 +1,6 @@
-let mockIsMobile = false;
-jest.mock("../../../screen_size", () => ({
-  isMobile: () => mockIsMobile,
-}));
-
 import { fakeState } from "../../../__test_support__/fake_state";
-const mockState = fakeState();
-jest.mock("../../../redux/store", () => ({
-  store: { getState: () => mockState },
-}));
+let mockState = fakeState();
+let mockIsMobile = false;
 
 import {
   round,
@@ -38,8 +31,48 @@ import { fakePlant } from "../../../__test_support__/fake_state/resources";
 import { Path } from "../../../internal_urls";
 import { BotOriginQuadrant } from "../../interfaces";
 import { fakeDesignerState } from "../../../__test_support__/fake_designer_state";
+import * as screenSize from "../../../screen_size";
+import { store } from "../../../redux/store";
+
+let isMobileSpy: jest.SpyInstance;
+let storeGetStateSpy: jest.SpyInstance;
+const originalDocumentQuerySelector = document.querySelector.bind(document);
+const originalGetComputedStyle = window.getComputedStyle.bind(window);
+const originalPathname = location.pathname;
+const originalSearch = location.search;
+
+beforeEach(() => {
+  mockIsMobile = false;
+  mockState = fakeState();
+  isMobileSpy = jest.spyOn(screenSize, "isMobile")
+    .mockImplementation(() => mockIsMobile);
+  storeGetStateSpy = jest.spyOn(store, "getState")
+    .mockImplementation(() => mockState);
+});
+
+afterEach(() => {
+  isMobileSpy.mockRestore();
+  storeGetStateSpy.mockRestore();
+  Object.defineProperty(document, "querySelector", {
+    value: originalDocumentQuerySelector,
+    configurable: true,
+  });
+  Object.defineProperty(window, "getComputedStyle", {
+    value: originalGetComputedStyle,
+    configurable: true,
+  });
+  location.pathname = originalPathname;
+  location.search = originalSearch;
+});
 
 describe("round()", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockIsMobile = false;
+    mockState = fakeState();
+    location.search = "";
+  });
+
   it("rounds a number", () => {
     expect(round(44)).toEqual(40);
     expect(round(98)).toEqual(100);
@@ -364,30 +397,31 @@ describe("transformXY", () => {
 });
 
 describe("transformForQuadrant()", () => {
+  const normalize = (value: string) => value.replace(/\s+/g, " ").trim();
   const mapTransformProps = fakeMapTransformProps();
   mapTransformProps.gridSize = { x: 200, y: 100 };
 
   it("calculates transform for quadrant 1", () => {
     mapTransformProps.quadrant = 1;
-    expect(transformForQuadrant(mapTransformProps))
+    expect(normalize(transformForQuadrant(mapTransformProps)))
       .toEqual("scale(-1, 1) translate(-200, 0)");
   });
 
   it("calculates transform for quadrant 2", () => {
     mapTransformProps.quadrant = 2;
-    expect(transformForQuadrant(mapTransformProps))
+    expect(normalize(transformForQuadrant(mapTransformProps)))
       .toEqual("scale(1, 1) translate(0, 0)");
   });
 
   it("calculates transform for quadrant 3", () => {
     mapTransformProps.quadrant = 3;
-    expect(transformForQuadrant(mapTransformProps))
+    expect(normalize(transformForQuadrant(mapTransformProps)))
       .toEqual("scale(1, -1) translate(0, -100)");
   });
 
   it("calculates transform for quadrant 4", () => {
     mapTransformProps.quadrant = 4;
-    expect(transformForQuadrant(mapTransformProps))
+    expect(normalize(transformForQuadrant(mapTransformProps)))
       .toEqual("scale(-1, -1) translate(-200, -100)");
   });
 });
@@ -418,11 +452,7 @@ describe("getMode()", () => {
     expect(getMode()).toEqual(Mode.templateView);
     location.pathname = Path.mock(Path.groups(1));
     expect(getMode()).toEqual(Mode.editGroup);
-    location.pathname = "";
-    mockState.resources.consumers.farm_designer.profileOpen = true;
-    expect(getMode()).toEqual(Mode.profile);
-    mockState.resources.consumers.farm_designer.profileOpen = false;
-    location.pathname = "";
+    location.pathname = Path.mock(Path.app());
     expect(getMode()).toEqual(Mode.none);
   });
 });

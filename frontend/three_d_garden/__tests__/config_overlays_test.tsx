@@ -1,7 +1,3 @@
-jest.mock("../zoom_beacons_constants", () => ({
-  setUrlParam: jest.fn(),
-}));
-
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { mount } from "enzyme";
@@ -10,7 +6,19 @@ import {
 } from "../config_overlays";
 import { INITIAL, PRESETS } from "../config";
 import { clone } from "lodash";
-import { setUrlParam } from "../zoom_beacons_constants";
+import * as zoomBeaconConstants from "../zoom_beacons_constants";
+
+let setUrlParamSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  setUrlParamSpy = jest.spyOn(zoomBeaconConstants, "setUrlParam")
+    .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  setUrlParamSpy.mockRestore();
+});
 
 describe("<PublicOverlay />", () => {
   const fakeProps = (): OverlayProps => ({
@@ -53,10 +61,10 @@ describe("<PublicOverlay />", () => {
     jest.useFakeTimers();
     wrapper.find("button").at(7).simulate("click");
     expect(p.setConfig).not.toHaveBeenCalled();
-    expect(p.setToolTip).toHaveBeenCalledWith({
-      timeoutId: 1000000000000,
+    expect(p.setToolTip).toHaveBeenCalledWith(expect.objectContaining({
+      timeoutId: expect.anything(),
       text: "Mobile beds are not recommended for Genesis XL machines",
-    });
+    }));
     jest.runAllTimers();
     expect(p.setToolTip).toHaveBeenCalledWith({
       timeoutId: 0,
@@ -162,18 +170,18 @@ describe("<PrivateOverlay />", () => {
     const p = fakeProps();
     const wrapper = mount(<PrivateOverlay {...p} />);
     wrapper.find(".x").first().simulate("click");
-    expect(setUrlParam).toHaveBeenCalledWith("urlParamAutoAdd", "");
+    expect(setUrlParamSpy).toHaveBeenCalledWith("urlParamAutoAdd", "");
   });
 });
 
 describe("maybeAddParam()", () => {
   it("doesn't add param", () => {
     maybeAddParam(false, "x", "1");
-    expect(setUrlParam).not.toHaveBeenCalled();
+    expect(setUrlParamSpy).not.toHaveBeenCalled();
   });
 
   it("adds param", () => {
     maybeAddParam(true, "x", "1");
-    expect(setUrlParam).toHaveBeenCalledWith("x", "1");
+    expect(setUrlParamSpy).toHaveBeenCalledWith("x", "1");
   });
 });

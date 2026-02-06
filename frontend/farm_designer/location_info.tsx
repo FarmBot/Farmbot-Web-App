@@ -103,7 +103,7 @@ export class RawLocationInfo extends React.Component<LocationInfoProps, {}> {
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = this.context;
+  navigate = (url: string) => this.context?.(url);
 
   componentDidMount() {
     unselectPlant(this.props.dispatch)();

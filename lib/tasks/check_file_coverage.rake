@@ -69,29 +69,64 @@ namespace :check_file_coverage do
     end
   end
 
-  desc "Check frontend file coverage after running `npm run test-slow`. " +
+  desc "Check frontend file coverage after running `bun test --coverage`. " +
        "Usage: rake check_file_coverage:frontend frontend/app.tsx"
   task fe: :environment do
     FRONTEND_ROOT = 'frontend'
     COVERAGE_ROOT = 'coverage_fe'
+    LCOV_FILE_PATH = File.join(COVERAGE_ROOT, 'lcov.info')
 
     task_name = Rake.application.top_level_tasks.first
     task_index = ARGV.index(task_name)
     paths_args = ARGV.drop(task_index + 1)
 
-    if paths_args.empty?
-      paths = []
-      Find.find('coverage_fe/frontend') do |file|
-        paths << file if file.end_with?('.html') && File.file?(file)
-      end
-    else
-      paths = paths_args.map do |p|
-        path = if p.start_with?(COVERAGE_ROOT + "/")
-          p
-        else
-          File.join(COVERAGE_ROOT, p)
+    def normalize_frontend_path(path)
+      return path if path.start_with?(FRONTEND_ROOT + "/")
+      return path.sub(%r{^.*?/frontend/}, FRONTEND_ROOT + "/") if path.include?("/frontend/")
+      path
+    end
+
+    def load_lcov_coverage(path)
+      return {} unless File.exist?(path)
+      files = {}
+      current = nil
+      File.foreach(path) do |raw_line|
+        line = raw_line.strip
+        case line
+        when /^SF:(.+)/
+          file_path = normalize_frontend_path(Regexp.last_match(1))
+          current = files[file_path] = {
+            lines: { covered: 0, total: 0 },
+            branches: { covered: 0, total: 0 },
+            functions: { covered: 0, total: 0 },
+          }
+        when /^LH:(\d+)/
+          current[:lines][:covered] = Regexp.last_match(1).to_i if current
+        when /^LF:(\d+)/
+          current[:lines][:total] = Regexp.last_match(1).to_i if current
+        when /^BRH:(\d+)/
+          current[:branches][:covered] = Regexp.last_match(1).to_i if current
+        when /^BRF:(\d+)/
+          current[:branches][:total] = Regexp.last_match(1).to_i if current
+        when /^FNH:(\d+)/
+          current[:functions][:covered] = Regexp.last_match(1).to_i if current
+        when /^FNF:(\d+)/
+          current[:functions][:total] = Regexp.last_match(1).to_i if current
+        when "end_of_record"
+          current = nil
         end
-        path.end_with?('.html') ? path : "#{path}.html"
+      end
+      files
+    end
+
+    lcov_coverage = load_lcov_coverage(LCOV_FILE_PATH)
+    abort("Run `bun test --coverage` first.") if lcov_coverage.empty?
+
+    if paths_args.empty?
+      paths = lcov_coverage.keys
+    else
+      paths = paths_args.map do |path|
+        normalize_frontend_path(path.sub(%r{^#{Regexp.escape(COVERAGE_ROOT)}/}, ''))
       end
     end
 
@@ -105,10 +140,7 @@ namespace :check_file_coverage do
       failed = true
     end
 
-    paths.each do |html_path|
-      frontend_path = html_path
-        .sub(/^#{Regexp.escape(COVERAGE_ROOT)}\//, '')
-        .sub(/\.html$/, '')
+    paths.each do |frontend_path|
       if changed_files_exists
         normalized_frontend_path = frontend_path.sub(/^frontend\//, '')
         unless changed_files.any? { |f| f.end_with?(normalized_frontend_path) }
@@ -120,26 +152,27 @@ namespace :check_file_coverage do
         next
       end
 
-      unless File.exist?(html_path)
-        report_failure(frontend_path, "Coverage file not found: #{html_path}")
+      coverage = lcov_coverage[frontend_path]
+      unless coverage
+        report_failure(frontend_path, "Coverage file not found in LCOV report.")
         next
       end
 
-      doc = Nokogiri::HTML(File.read(html_path))
-      coverage_blocks = doc.css('.pad1y.space-right2')
-      metrics = {}
+      line_total = coverage[:lines][:total].to_f
+      line_hit = coverage[:lines][:covered].to_f
+      branch_total = coverage[:branches][:total].to_f
+      branch_hit = coverage[:branches][:covered].to_f
+      function_total = coverage[:functions][:total].to_f
+      function_hit = coverage[:functions][:covered].to_f
 
-      coverage_blocks.each do |block|
-        strong = block.at_css('.strong')&.text&.strip
-        label = block.at_css('.quiet')&.text&.strip
-        metrics[label] = strong&.delete('%')&.to_f if strong && label
-      end
+      percent = ->(hit, total) { total == 0 ? 100.0 : (hit / total * 100.0) }
 
-      missing_metrics = %w[Statements Branches Functions Lines] - metrics.keys
-      if missing_metrics.any?
-        report_failure(frontend_path, "Missing metrics: #{missing_metrics.join(', ')}")
-        next
-      end
+      metrics = {
+        "Statements" => percent.call(line_hit, line_total),
+        "Branches" => percent.call(branch_hit, branch_total),
+        "Functions" => percent.call(function_hit, function_total),
+        "Lines" => percent.call(line_hit, line_total),
+      }
 
       incomplete = metrics.select { |_k, v| v < 100.0 }
 

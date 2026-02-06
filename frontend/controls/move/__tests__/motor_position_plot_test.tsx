@@ -1,5 +1,3 @@
-jest.mock("moment", () => () => ({ valueOf: () => 1020000 }));
-
 import React from "react";
 import { mount } from "enzyme";
 import {
@@ -20,6 +18,16 @@ const fakeLocationData = (): ValidLocationData => ({
 });
 
 describe("<MotorPositionPlot />", () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (jest as any).setSystemTime?.(1020000);
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   const fakeProps = (): MotorPositionPlotProps => ({
     locationData: fakeLocationData(),
   });
@@ -81,8 +89,18 @@ describe("<MotorPositionPlot />", () => {
 });
 
 describe("updateMotorHistoryArray()", () => {
-  it("initializes array", () => {
+  beforeEach(() => {
     sessionStorage.clear();
+    jest.useFakeTimers();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (jest as any).setSystemTime?.(1020000);
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it("initializes array", () => {
     expect(sessionStorage.getItem(MotorPositionHistory.array)).toBeFalsy();
     const locationData = fakeLocationData();
     const result = updateMotorHistoryArray(locationData);
@@ -93,8 +111,8 @@ describe("updateMotorHistoryArray()", () => {
   });
 
   it("doesn't add duplicate data to array", () => {
-    expect(sessionStorage.getItem(MotorPositionHistory.array)).toBeTruthy();
     const locationData = fakeLocationData();
+    updateMotorHistoryArray(locationData);
     const result = updateMotorHistoryArray(locationData);
     expect(result.length).toEqual(1);
   });

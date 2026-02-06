@@ -94,29 +94,31 @@ describe("<MapImage />", () => {
       inputData: MapImageProps[],
       expectedData: ExpectedData,
       extra?: ExtraTranslationData) => {
+      const normalize = (input: string) => input.replace(/\s+/g, " ").trim();
       it(`renders image: INPUT_SET_${num}`, () => {
         const wrapper = svgMount(<MapImage {...inputData[num]} />);
         wrapper.find(MapImage).setState({ imageWidth: 480, imageHeight: 640 });
-        expect(wrapper.find("image").props()).toEqual({
-          xlinkHref: "image_url",
-          x: 0,
-          y: 0,
-          width: expectedData.size.width,
-          height: expectedData.size.height,
-          clipPath: expectedData.cropPath || "none",
-          "data-comment": expect.any(String),
-          opacity: 1,
-          style: {
-            transformOrigin:
-              `${expectedData.tOriginX}px ${expectedData.tOriginY}px`,
-            transform: trim(`scale(${expectedData.sx}, ${expectedData.sy})
-                       translate(${expectedData.tx}px, ${expectedData.ty}px)`)
-              + (extra
-                ? trim(` scale(${extra.sx}, ${extra.sy})
-                       translate(${extra.tx}px, ${extra.ty}px)`)
-                : "") + ` rotate(${expectedData.rotate}deg)`
-          },
-        });
+        const imageProps = wrapper.find("image").props();
+        expect(imageProps.xlinkHref).toEqual("image_url");
+        expect(imageProps.x).toEqual(0);
+        expect(imageProps.y).toEqual(0);
+        expect(imageProps.width).toEqual(expectedData.size.width);
+        expect(imageProps.height).toEqual(expectedData.size.height);
+        expect(imageProps.clipPath).toEqual(expectedData.cropPath || "none");
+        expect(typeof imageProps["data-comment"]).toEqual("string");
+        expect(imageProps.opacity).toEqual(1);
+        expect(imageProps.style?.transformOrigin).toEqual(
+          `${expectedData.tOriginX}px ${expectedData.tOriginY}px`);
+        const expectedTransform = trim(`scale(${expectedData.sx},
+          ${expectedData.sy}) translate(${expectedData.tx}px,
+          ${expectedData.ty}px)`)
+          + (extra
+            ? trim(` scale(${extra.sx}, ${extra.sy})
+              translate(${extra.tx}px, ${extra.ty}px)`)
+            : "")
+          + ` rotate(${expectedData.rotate}deg)`;
+        expect(normalize(imageProps.style?.transform || ""))
+          .toEqual(normalize(expectedTransform));
       });
     };
 

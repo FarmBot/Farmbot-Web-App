@@ -66,7 +66,7 @@ describe("cameraBtnProps()", () => {
     const env = { camera: Camera.NONE };
     cameraBtnProps(env, true).click?.();
     expect(error).toHaveBeenCalled();
-    jest.resetAllMocks();
+    jest.clearAllMocks();
     cameraBtnProps(env, false).click?.();
     expect(error).not.toHaveBeenCalled();
   });

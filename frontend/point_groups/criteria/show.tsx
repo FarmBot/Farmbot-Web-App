@@ -1,10 +1,7 @@
 import React from "react";
 import { Row, FBSelect, DropDownItem, Checkbox, ToggleButton } from "../../ui";
 import {
-  AddEqCriteria, editCriteria, AddNumberCriteria,
-  editGtLtCriteriaField,
-  removeEqCriteriaValue,
-  clearCriteriaField,
+  AddEqCriteria, AddNumberCriteria,
   dayCriteriaEmpty,
   ClearCategory,
 } from ".";
@@ -19,6 +16,7 @@ import {
 import { t } from "../../i18next_wrapper";
 import { Actions } from "../../constants";
 import { spaceSelected } from "../../farm_designer/map/layers/zones/zones";
+import * as criteriaEdit from "./edit";
 
 /** Add and view string or number equal criteria. */
 export class EqCriteriaSelection<T extends string | number>
@@ -43,7 +41,7 @@ export class EqCriteriaSelection<T extends string | number>
                     value={value} />
                   <button className="fb-button red"
                     title={t("remove filter")}
-                    onClick={() => dispatch(removeEqCriteriaValue(
+                    onClick={() => dispatch(criteriaEdit.removeEqCriteriaValue(
                       group, eqCriteria, criteriaKey, key, value))}>
                     <i className="fa fa-minus" />
                   </button>
@@ -68,7 +66,7 @@ export const NumberCriteriaSelection = (props: NumberCriteriaProps) => {
             <p>{value}</p>
             <button className="fb-button red"
               title={t("remove number criteria")}
-              onClick={() => props.dispatch(clearCriteriaField(
+              onClick={() => props.dispatch(criteriaEdit.clearCriteriaField(
                 props.group, [props.criteriaKey], [key]))}>
               <i className="fa fa-minus" />
             </button>
@@ -97,7 +95,8 @@ export const DaySelection = (props: DaySelectionProps) => {
         <div className="all-criteria-checkbox row">
           <Checkbox
             onChange={() => {
-              dispatch(editCriteria(group, { day: { op: "<", days_ago: 0 } }));
+              dispatch(criteriaEdit.editCriteria(
+                group, { day: { op: "<", days_ago: 0 } }));
               props.changeDay(false);
             }}
             checked={noDayCriteria}
@@ -117,7 +116,7 @@ export const DaySelection = (props: DaySelectionProps) => {
           ? { label: t("Select one"), value: "" }
           : DAY_OPERATOR_DDI_LOOKUP()[dayCriteria.op]}
         onChange={ddi => {
-          dispatch(editCriteria(group, {
+          dispatch(criteriaEdit.editCriteria(group, {
             day: {
               days_ago: dayCriteria.days_ago,
               op: ddi.value as PointGroupCriteria["day"]["op"]
@@ -131,7 +130,7 @@ export const DaySelection = (props: DaySelectionProps) => {
         onChange={e => {
           const { op } = dayCriteria;
           const days_ago = parseInt(e.currentTarget.value);
-          dispatch(editCriteria(group, { day: { days_ago, op } }));
+          dispatch(criteriaEdit.editCriteria(group, { day: { days_ago, op } }));
           props.changeDay(true);
         }} />
       <p className={"days-old-text"}>{t("days old")}</p>
@@ -150,7 +149,7 @@ export const NumberLtGtInput = (props: NumberLtGtInputProps) => {
       name={`${criteriaKey}-number-gt`}
       defaultValue={gtCriteria[criteriaKey]}
       disabled={props.disabled}
-      onBlur={e => dispatch(editGtLtCriteriaField(
+      onBlur={e => dispatch(criteriaEdit.editGtLtCriteriaField(
         group, "number_gt", criteriaKey)(e))} />
     <div className="row criteria-operators-grid">
       <p>{"<"}</p>
@@ -162,7 +161,7 @@ export const NumberLtGtInput = (props: NumberLtGtInputProps) => {
       name={`${criteriaKey}-number-lt`}
       defaultValue={ltCriteria[criteriaKey]}
       disabled={props.disabled}
-      onBlur={e => dispatch(editGtLtCriteriaField(
+      onBlur={e => dispatch(criteriaEdit.editGtLtCriteriaField(
         group, "number_lt", criteriaKey)(e))} />
   </Row>;
 };

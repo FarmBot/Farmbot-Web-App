@@ -32,6 +32,10 @@ import {
 import { edit, save } from "../../../api/crud";
 import { FbosConfig } from "farmbot/dist/resources/configs/fbos";
 
+afterAll(() => {
+  jest.unmock("../../../api/crud");
+  jest.unmock("../../../device");
+});
 describe("<AxisSettings />", () => {
   const state = fakeState();
   const fakeConfig = fakeFirmwareConfig();

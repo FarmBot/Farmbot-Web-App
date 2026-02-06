@@ -9,6 +9,9 @@ import { ZHeightInputProps } from "../interfaces";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { FirmwareHardware } from "farmbot";
 
+afterAll(() => {
+  jest.unmock("../../default_values");
+});
 describe("<GantryHeight />", () => {
   const fakeProps = (): ZHeightInputProps => ({
     sourceFbosConfig: x =>

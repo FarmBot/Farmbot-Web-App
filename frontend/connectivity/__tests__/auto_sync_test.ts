@@ -11,7 +11,7 @@ import { Actions } from "../../constants";
 import { fakeState } from "../../__test_support__/fake_state";
 import { GetState } from "../../redux/interfaces";
 import { SyncPayload, UpdateMqttData, Reason } from "../interfaces";
-import { storeUUID } from "../data_consistency";
+import { outstandingRequests, storeUUID } from "../data_consistency";
 import { unpackUUID } from "../../util";
 
 function toBinary(input: object): Buffer {
@@ -28,10 +28,16 @@ const payload = (): UpdateMqttData<TaggedSequence> => ({
   kind: "Sequence",
   id: 5,
   body: {} as TaggedSequence["body"],
-  sessionId: "wow"
+  sessionId: `wow-${Math.random()}`
 });
 
 describe("handleCreateOrUpdate", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    outstandingRequests.all.clear();
+    outstandingRequests.last = "never-used";
+  });
+
   it("creates new records if it doesn't have one locally", () => {
     const myPayload = payload();
     const dispatch = jest.fn();
@@ -45,7 +51,7 @@ describe("handleCreateOrUpdate", () => {
   });
 
   it("ignores local echo", () => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
     const myPayload = payload();
     const dispatch = jest.fn();
     const getState = jest.fn(fakeState) as GetState;

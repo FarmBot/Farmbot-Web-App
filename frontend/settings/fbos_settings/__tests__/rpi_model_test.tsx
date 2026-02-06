@@ -26,6 +26,9 @@ const TEST_CASES: TestCase[] = [
   ["02", "rpi3", "express_k12", "zero 2 w"],
 ];
 
+afterAll(() => {
+  jest.unmock("../../../api/crud");
+});
 describe("<RpiModel />", () => {
   const fakeProps = (): RpiModelProps => ({
     device: fakeDevice(),

@@ -1,8 +1,3 @@
-jest.mock("react", () => ({
-  ...jest.requireActual("react"),
-  lazy: jest.fn(x => x()),
-}));
-
 import { last } from "lodash";
 import { ROUTE_DATA } from "../route_config";
 

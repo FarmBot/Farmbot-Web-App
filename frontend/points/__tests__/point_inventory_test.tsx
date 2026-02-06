@@ -1,12 +1,3 @@
-jest.mock("../../point_groups/actions", () => ({
-  createGroup: jest.fn(),
-}));
-
-jest.mock("../../api/delete_points", () => ({
-  deletePoints: jest.fn(),
-  deletePointsByIds: jest.fn(),
-}));
-
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
@@ -24,12 +15,33 @@ import { PointSortMenu } from "../../farm_designer/sort_options";
 import { Actions } from "../../constants";
 import { tagAsSoilHeight } from "../soil_height";
 import { PanelSection } from "../../plants/plant_inventory";
-import { createGroup } from "../../point_groups/actions";
 import { DEFAULT_CRITERIA } from "../../point_groups/criteria/interfaces";
 import { pointsPanelState } from "../../__test_support__/panel_state";
 import { Path } from "../../internal_urls";
-import { deletePoints, deletePointsByIds } from "../../api/delete_points";
+import * as pointGroupActions from "../../point_groups/actions";
+import * as deletePointsModule from "../../api/delete_points";
 import { mountWithContext } from "../../__test_support__/mount_with_context";
+
+let createGroupSpy: jest.SpyInstance;
+let deletePointsSpy: jest.SpyInstance;
+let deletePointsByIdsSpy: jest.SpyInstance;
+const originalConfirm = window.confirm;
+
+beforeEach(() => {
+  createGroupSpy = jest.spyOn(pointGroupActions, "createGroup")
+    .mockImplementation(jest.fn());
+  deletePointsSpy = jest.spyOn(deletePointsModule, "deletePoints")
+    .mockImplementation(jest.fn());
+  deletePointsByIdsSpy = jest.spyOn(deletePointsModule, "deletePointsByIds")
+    .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  createGroupSpy.mockRestore();
+  deletePointsSpy.mockRestore();
+  deletePointsByIdsSpy.mockRestore();
+  window.confirm = originalConfirm;
+});
 
 describe("<Points />", () => {
   const fakeProps = (): PointsProps => ({
@@ -90,7 +102,7 @@ describe("<Points />", () => {
   it("adds new group", () => {
     const wrapper = shallow(<Points {...fakeProps()} />);
     wrapper.find(PanelSection).first().props().addNew();
-    expect(createGroup).toHaveBeenCalledWith({
+    expect(pointGroupActions.createGroup).toHaveBeenCalledWith({
       criteria: {
         ...DEFAULT_CRITERIA,
         string_eq: { pointer_type: ["GenericPointer"] },
@@ -108,6 +120,7 @@ describe("<Points />", () => {
   });
 
   it("navigates to point info", () => {
+    location.pathname = Path.mock(Path.points());
     const p = fakeProps();
     p.genericPoints = [fakePoint()];
     p.genericPoints[0].body.id = 1;
@@ -118,9 +131,12 @@ describe("<Points />", () => {
 
   it("changes search term", () => {
     const p = fakeProps();
-    p.genericPoints = [fakePoint(), fakePoint()];
-    p.genericPoints[0].body.name = "point 0";
-    p.genericPoints[1].body.name = "point 1";
+    const point0 = fakePoint();
+    const point1 = fakePoint();
+    p.genericPoints = [
+      { ...point0, body: { ...point0.body, name: "point 0" } },
+      { ...point1, body: { ...point1.body, name: "point 1" } },
+    ];
     const wrapper = shallow<Points>(<Points {...p} />);
     wrapper.find(SearchField).simulate("change", "0");
     expect(wrapper.state().searchTerm).toEqual("0");
@@ -128,9 +144,12 @@ describe("<Points />", () => {
 
   it("filters points", () => {
     const p = fakeProps();
-    p.genericPoints = [fakePoint(), fakePoint()];
-    p.genericPoints[0].body.name = "point 0";
-    p.genericPoints[1].body.name = "point 1";
+    const point0 = fakePoint();
+    const point1 = fakePoint();
+    p.genericPoints = [
+      { ...point0, body: { ...point0.body, name: "point 0" } },
+      { ...point1, body: { ...point1.body, name: "point 1" } },
+    ];
     const wrapper = mount(<Points {...p} />);
     wrapper.setState({ searchTerm: "0" });
     expect(wrapper.text()).not.toContain("point 1");
@@ -224,8 +243,8 @@ describe("<Points />", () => {
     const wrapper = mount<Points>(<Points {...p} />);
     wrapper.setState({ gridIds: ["123"] });
     wrapper.find(".delete").first().simulate("click");
-    expect(deletePoints).not.toHaveBeenCalled();
-    expect(deletePointsByIds).not.toHaveBeenCalled();
+    expect(deletePointsModule.deletePoints).not.toHaveBeenCalled();
+    expect(deletePointsModule.deletePointsByIds).not.toHaveBeenCalled();
   });
 
   it("deletes all standard points", () => {
@@ -237,9 +256,9 @@ describe("<Points />", () => {
     const wrapper = mount<Points>(<Points {...p} />);
     wrapper.setState({ gridIds: ["123"] });
     wrapper.find(".delete").first().simulate("click");
-    expect(deletePointsByIds).toHaveBeenCalledWith("points",
+    expect(deletePointsModule.deletePointsByIds).toHaveBeenCalledWith("points",
       [p.genericPoints[0].body.id]);
-    expect(deletePoints).not.toHaveBeenCalled();
+    expect(deletePointsModule.deletePoints).not.toHaveBeenCalled();
   });
 
   it("deletes all grid points", () => {
@@ -251,9 +270,9 @@ describe("<Points />", () => {
     const wrapper = mount<Points>(<Points {...p} />);
     wrapper.setState({ gridIds: ["123"] });
     wrapper.find(".delete").at(1).simulate("click");
-    expect(deletePoints).toHaveBeenCalledWith("points",
+    expect(deletePointsModule.deletePoints).toHaveBeenCalledWith("points",
       { meta: { gridId: "123" } });
-    expect(deletePointsByIds).not.toHaveBeenCalled();
+    expect(deletePointsModule.deletePointsByIds).not.toHaveBeenCalled();
   });
 
   it("toggles grid point visibility", () => {

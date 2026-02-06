@@ -6,11 +6,16 @@ jest.mock("../../../api/crud", () => ({
 }));
 
 let mockDev = false;
-jest.mock("../../../settings/dev/dev_support", () => ({
-  DevSettings: {
-    showInternalEnvsEnabled: () => mockDev,
-  }
-}));
+jest.mock("../../../settings/dev/dev_support", () => {
+  const actual = jest.requireActual("../../../settings/dev/dev_support");
+  return {
+    ...actual,
+    DevSettings: {
+      ...actual.DevSettings,
+      showInternalEnvsEnabled: () => mockDev,
+    },
+  };
+});
 
 import React, { act } from "react";
 import { mount, ReactWrapper } from "enzyme";
@@ -20,6 +25,16 @@ import { destroy, edit, initSave, save } from "../../../api/crud";
 import { fakeFarmwareEnv } from "../../../__test_support__/fake_state/resources";
 import { error } from "../../../toast/toast";
 import { clickButton } from "../../../__test_support__/helpers";
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  mockDev = false;
+});
+
+afterAll(() => {
+  jest.unmock("../../../api/crud");
+  jest.unmock("../../../settings/dev/dev_support");
+});
 
 describe("<EnvEditor />", () => {
   const fakeProps = (): EnvEditorProps => ({

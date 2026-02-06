@@ -13,6 +13,12 @@ import { init } from "../../../api/crud";
 import { CopyButtonProps } from "../interfaces";
 import { Path } from "../../../internal_urls";
 
+afterAll(() => {
+  jest.unmock("../../../api/crud");
+});
+afterAll(() => {
+  jest.unmock("../../set_active_regimen_by_name");
+});
 describe("<CopyButton />", () => {
   const fakeProps = (): CopyButtonProps => ({
     dispatch: jest.fn(x => x(jest.fn())),

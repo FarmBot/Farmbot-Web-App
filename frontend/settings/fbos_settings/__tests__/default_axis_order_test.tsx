@@ -1,12 +1,19 @@
-jest.mock("../../../devices/actions", () => ({
-  updateConfig: jest.fn(),
-}));
-
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { shallow } from "enzyme";
 import { DefaultAxisOrder } from "../default_axis_order";
 import { DefaultAxisOrderProps } from "../interfaces";
-import { updateConfig } from "../../../devices/actions";
+import * as deviceActions from "../../../devices/actions";
+
+let updateConfigSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  updateConfigSpy = jest.spyOn(deviceActions, "updateConfig")
+    .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  updateConfigSpy.mockRestore();
+});
 
 describe("<DefaultAxisOrder />", () => {
   const fakeProps = (): DefaultAxisOrderProps => ({
@@ -15,12 +22,13 @@ describe("<DefaultAxisOrder />", () => {
   });
 
   it("renders", () => {
-    render(<DefaultAxisOrder {...fakeProps()} />);
-    expect(screen.getByText("Safe Z")).toBeInTheDocument();
-    const dropdown = screen.getByRole("button");
-    fireEvent.click(dropdown);
-    const item = screen.getByRole("menuitem", { name: "X and Y together" });
-    fireEvent.click(item);
-    expect(updateConfig).toHaveBeenCalledWith({ default_axis_order: "xy,z;high" });
+    const p = fakeProps();
+    const wrapper = shallow(<DefaultAxisOrder {...p} />);
+    const selected = wrapper.find("FBSelect").props().selectedItem;
+    expect(selected?.label).toEqual("Safe Z");
+    const onChange = wrapper.find("FBSelect").props().onChange;
+    onChange?.({ label: "X and Y together", value: "xy,z;high" });
+    expect(deviceActions.updateConfig)
+      .toHaveBeenCalledWith({ default_axis_order: "xy,z;high" });
   });
 });

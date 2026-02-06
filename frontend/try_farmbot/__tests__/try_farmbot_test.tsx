@@ -9,6 +9,9 @@ import React from "react";
 import { shallow } from "enzyme";
 import { DEMO_LOADING, TryFarmbot } from "../try_farmbot";
 
+afterAll(() => {
+  jest.unmock("mqtt");
+});
 describe("<TryFarmbot />", () => {
   it("renders OK", () => {
     const tfb = new TryFarmbot({});

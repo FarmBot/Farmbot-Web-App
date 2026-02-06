@@ -8,9 +8,7 @@ import {
   TaggedFbosConfig, TaggedFirmwareConfig, TaggedWebAppConfig,
 } from "farmbot";
 import { calculateAxialLengths } from "../../controls/move/direction_axes_props";
-import {
-  getFbosConfig, getFirmwareConfig, getWebAppConfig,
-} from "../../resources/getters";
+import * as getters from "../../resources/getters";
 import { XyzNumber } from "./interfaces";
 import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
@@ -24,19 +22,19 @@ import { ResourceIndex } from "../../resources/interfaces";
 import { getZFunc, TriangleData } from "../../three_d_garden/triangle_functions";
 
 export const getFirmwareSettings = (): FirmwareConfig => {
-  const fwConfig = getFirmwareConfig(store.getState().resources.index);
+  const fwConfig = getters.getFirmwareConfig(store.getState().resources.index);
   const firmwareSettings = (fwConfig as TaggedFirmwareConfig).body;
   return firmwareSettings;
 };
 
 export const getWebAppSettings = (): WebAppConfig => {
-  const webAppConfig = getWebAppConfig(store.getState().resources.index);
+  const webAppConfig = getters.getWebAppConfig(store.getState().resources.index);
   const webAppSettings = (webAppConfig as TaggedWebAppConfig).body;
   return webAppSettings;
 };
 
 export const getFbosSettings = (): FbosConfig => {
-  const fbosConfig = getFbosConfig(store.getState().resources.index);
+  const fbosConfig = getters.getFbosConfig(store.getState().resources.index);
   const fbosSettings = (fbosConfig as TaggedFbosConfig).body;
   return fbosSettings;
 };
@@ -73,7 +71,7 @@ export const getGroupPoints = (resources: ResourceIndex, groupId: number) => {
 };
 
 export const getDefaultAxisOrder = (): (SafeZ | AxisOrder)[] => {
-  const fbosConfig = getFbosConfig(store.getState().resources.index);
+  const fbosConfig = getters.getFbosConfig(store.getState().resources.index);
   const defaultAxisOrder = fbosConfig?.body.default_axis_order;
   switch (defaultAxisOrder) {
     case "safe_z":

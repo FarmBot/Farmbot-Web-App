@@ -1,20 +1,28 @@
-jest.mock("../../connectivity/data_consistency", () => ({
-  startTracking: jest.fn(),
-}));
-
+import * as dataConsistency from "../../connectivity/data_consistency";
 import { maybeStartTracking } from "../maybe_start_tracking";
-import { startTracking } from "../../connectivity/data_consistency";
 
 describe("maybeStartTracking()", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it("starts tracking", () => {
+    const startTrackingSpy = jest.spyOn(dataConsistency, "startTracking")
+      .mockImplementation(jest.fn());
     const uuid = "Device.0.0";
     maybeStartTracking(uuid);
-    expect(startTracking).toHaveBeenCalledWith(uuid);
+    expect(startTrackingSpy).toHaveBeenCalledWith(uuid);
   });
 
   it("doesn't start tracking", () => {
+    const startTrackingSpy = jest.spyOn(dataConsistency, "startTracking")
+      .mockImplementation(jest.fn());
     const uuid = "User.0.0";
     maybeStartTracking(uuid);
-    expect(startTracking).not.toHaveBeenCalled();
+    expect(startTrackingSpy).not.toHaveBeenCalled();
   });
 });

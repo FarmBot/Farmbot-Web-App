@@ -20,6 +20,9 @@ import {
   fakeStepParams,
 } from "../../../../__test_support__/fake_sequence_step_data";
 
+afterAll(() => {
+  jest.unmock("../../../../api/crud");
+});
 describe("pinDropdowns()", () => {
   it("has a list of unnamed pins", () => {
     expect(PinSupport.pinDropdowns(n => n).length)

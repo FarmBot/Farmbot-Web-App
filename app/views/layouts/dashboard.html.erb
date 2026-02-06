@@ -42,6 +42,25 @@
   </head>
   <body>
     <%= yield %>
-    <%= javascript_include_tag *@js_assets %>
+    <%= javascript_include_tag *@js_assets, type: "module" %>
+    <% if Rails.env.development? &&
+         ENV.fetch("ASSET_LIVERELOAD", "true") == "true" %>
+      <% asset_host = ENV.fetch("ASSET_HOST",
+                                ENV.fetch("API_HOST", "localhost")) %>
+      <% asset_port = ENV.fetch("ASSET_PORT", "3808") %>
+      <script>
+        (() => {
+          const protocol = location.protocol === "https:" ? "wss" : "ws";
+          const host = "<%= asset_host %>";
+          const port = "<%= asset_port %>";
+          const socket = new WebSocket(`${protocol}://${host}:${port}`);
+          socket.addEventListener("message", (event) => {
+            if (event.data === "reload") {
+              location.reload();
+            }
+          });
+        })();
+      </script>
+    <% end %>
   </body>
 </html>

@@ -1,17 +1,24 @@
-jest.mock("../edit", () => ({
-  editCriteria: jest.fn(),
-  toggleStringCriteria: jest.fn(),
-}));
-
 import React from "react";
 import { mount, shallow } from "enzyme";
-import { AddEqCriteria, AddNumberCriteria, editCriteria } from "..";
+import { AddEqCriteria, AddNumberCriteria } from "..";
 import {
   AddEqCriteriaProps, NumberCriteriaProps, DEFAULT_CRITERIA,
 } from "../interfaces";
 import {
   fakePointGroup,
 } from "../../../__test_support__/fake_state/resources";
+import * as criteriaEdit from "../edit";
+
+let editCriteriaSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  editCriteriaSpy = jest.spyOn(criteriaEdit, "editCriteria")
+    .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
 
 describe("<AddEqCriteria<string> />", () => {
   const fakeProps = (): AddEqCriteriaProps<string> => ({
@@ -50,7 +57,7 @@ describe("<AddEqCriteria<string> />", () => {
     const wrapper = mount(<AddEqCriteria<string> {...p} />);
     wrapper.setState({ key: "openfarm_slug", value: "slug" });
     wrapper.find("button").last().simulate("click");
-    expect(editCriteria).toHaveBeenCalledWith(p.group, {
+    expect(editCriteriaSpy).toHaveBeenCalledWith(p.group, {
       string_eq: { openfarm_slug: ["slug"] }
     });
   });
@@ -93,7 +100,7 @@ describe("<AddEqCriteria<number> />", () => {
     const wrapper = mount(<AddEqCriteria<number> {...p} />);
     wrapper.setState({ key: "x", value: 1 });
     wrapper.find("button").last().simulate("click");
-    expect(editCriteria).toHaveBeenCalledWith(p.group, {
+    expect(editCriteriaSpy).toHaveBeenCalledWith(p.group, {
       number_eq: { x: [1] }
     });
   });
@@ -135,6 +142,6 @@ describe("<AddNumberCriteria />", () => {
     const wrapper = mount(<AddNumberCriteria {...p} />);
     wrapper.setState({ key: "x", value: 1 });
     wrapper.find("button").last().simulate("click");
-    expect(editCriteria).toHaveBeenCalledWith(p.group, { number_lt: { x: 1 } });
+    expect(editCriteriaSpy).toHaveBeenCalledWith(p.group, { number_lt: { x: 1 } });
   });
 });

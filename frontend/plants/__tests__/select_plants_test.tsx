@@ -1,12 +1,3 @@
-let mockDestroy = jest.fn(() => Promise.resolve());
-jest.mock("../../api/crud", () => ({ destroy: mockDestroy }));
-
-jest.mock("../../point_groups/actions", () => ({ createGroup: jest.fn() }));
-
-jest.mock("../../farm_designer/map/layers/plants/plant_actions", () => ({
-  savePoints: jest.fn(),
-}));
-
 import React from "react";
 import { mount, shallow } from "enzyme";
 import { render, screen, fireEvent } from "@testing-library/react";
@@ -25,8 +16,8 @@ import {
 } from "../../__test_support__/fake_state/resources";
 import { Actions, Content } from "../../constants";
 import { clickButton } from "../../__test_support__/helpers";
-import { destroy } from "../../api/crud";
-import { createGroup } from "../../point_groups/actions";
+import * as crud from "../../api/crud";
+import * as pointGroupActions from "../../point_groups/actions";
 import { fakeState } from "../../__test_support__/fake_state";
 import { error } from "../../toast/toast";
 import { mockDispatch } from "../../__test_support__/fake_dispatch";
@@ -36,11 +27,35 @@ import {
 import { POINTER_TYPES } from "../../point_groups/criteria/interfaces";
 import { fakeToolTransformProps } from "../../__test_support__/fake_tool_info";
 import { SpecialStatus } from "farmbot";
-import { savePoints } from "../../farm_designer/map/layers/plants/plant_actions";
+import * as plantActions from "../../farm_designer/map/layers/plants/plant_actions";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { Path } from "../../internal_urls";
+import * as mapActions from "../../farm_designer/map/actions";
 
 describe("<SelectPlants />", () => {
+  let createGroupSpy: jest.SpyInstance;
+  let destroySpy: jest.SpyInstance;
+  let savePointsSpy: jest.SpyInstance;
+  let unselectPlantSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    createGroupSpy = jest.spyOn(pointGroupActions, "createGroup")
+      .mockImplementation(jest.fn());
+    destroySpy = jest.spyOn(crud, "destroy")
+      .mockImplementation(() => Promise.resolve() as never);
+    savePointsSpy = jest.spyOn(plantActions, "savePoints")
+      .mockImplementation(jest.fn());
+    unselectPlantSpy = jest.spyOn(mapActions, "unselectPlant")
+      .mockImplementation(() => jest.fn());
+  });
+
+  afterEach(() => {
+    createGroupSpy.mockRestore();
+    destroySpy.mockRestore();
+    savePointsSpy.mockRestore();
+    unselectPlantSpy.mockRestore();
+  });
+
   beforeEach(() => {
     location.pathname = Path.mock(Path.plants("select"));
   });
@@ -311,33 +326,33 @@ describe("<SelectPlants />", () => {
 
   it("deletes selected plants", () => {
     const p = fakeProps();
-    mockDestroy = jest.fn(() => Promise.resolve());
+    destroySpy.mockImplementation(() => Promise.resolve() as never);
     p.selected = ["plant.1", "plant.2"];
     const wrapper = mount(<SelectPlants {...p} />);
     window.confirm = () => true;
     clickButton(wrapper, DELETE_BTN_INDEX, "Delete");
-    expect(destroy).toHaveBeenCalledWith("plant.1", true);
-    expect(destroy).toHaveBeenCalledWith("plant.2", true);
+    expect(crud.destroy).toHaveBeenCalledWith("plant.1", true);
+    expect(crud.destroy).toHaveBeenCalledWith("plant.2", true);
   });
 
   it("does not delete if selection is empty", () => {
     const p = fakeProps();
-    mockDestroy = jest.fn(() => Promise.resolve());
+    destroySpy.mockImplementation(() => Promise.resolve() as never);
     p.selected = undefined;
     const wrapper = mount(<SelectPlants {...p} />);
     clickButton(wrapper, DELETE_BTN_INDEX, "Delete");
-    expect(destroy).not.toHaveBeenCalled();
+    expect(crud.destroy).not.toHaveBeenCalled();
   });
 
   it("errors when deleting selected plants", async () => {
     const p = fakeProps();
-    mockDestroy = jest.fn(() => Promise.reject());
+    destroySpy.mockImplementation(() => Promise.reject() as never);
     p.selected = ["plant.1", "plant.2"];
     const wrapper = mount(<SelectPlants {...p} />);
     window.confirm = () => true;
     await clickButton(wrapper, DELETE_BTN_INDEX, "Delete");
-    await expect(destroy).toHaveBeenCalledWith("plant.1", true);
-    await expect(destroy).toHaveBeenCalledWith("plant.2", true);
+    await expect(crud.destroy).toHaveBeenCalledWith("plant.1", true);
+    await expect(crud.destroy).toHaveBeenCalledWith("plant.2", true);
   });
 
   it("shows other buttons", () => {
@@ -348,7 +363,7 @@ describe("<SelectPlants />", () => {
   it("creates group", () => {
     const wrapper = mount(<SelectPlants {...fakeProps()} />);
     wrapper.find(".dark-blue").simulate("click");
-    expect(createGroup).toHaveBeenCalled();
+    expect(pointGroupActions.createGroup).toHaveBeenCalled();
   });
 
   it("doesn't create group", () => {
@@ -356,7 +371,7 @@ describe("<SelectPlants />", () => {
     p.gardenOpenId = 1;
     const wrapper = mount(<SelectPlants {...p} />);
     wrapper.find(".dark-blue").simulate("click");
-    expect(createGroup).not.toHaveBeenCalled();
+    expect(pointGroupActions.createGroup).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith(Content.ERROR_PLANT_TEMPLATE_GROUP);
   });
 
@@ -372,7 +387,7 @@ describe("<SelectPlants />", () => {
     const saveBtn = wrapper.find(".fb-button.green").first();
     saveBtn.simulate("click");
     expect(saveBtn.text().toLowerCase()).toEqual("save");
-    expect(savePoints).toHaveBeenCalledWith({
+    expect(plantActions.savePoints).toHaveBeenCalledWith({
       dispatch: p.dispatch,
       points: p.allPoints,
     });
@@ -382,6 +397,9 @@ describe("<SelectPlants />", () => {
 describe("mapStateToProps", () => {
   it("selects correct props", () => {
     const state = fakeState();
+    const plant1 = fakePlant();
+    const plant2 = fakePlant();
+    state.resources = buildResourceIndex([plant1, plant2]);
     const result = mapStateToProps(state);
     expect(result).toBeTruthy();
     expect(result.selected).toBeUndefined();
