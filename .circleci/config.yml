@@ -208,7 +208,7 @@ commands:
             fi
             attempts=2
             for _ in $(seq 1 "$attempts"); do
-              url="http://localhost:3000/promo"
+              url="http://localhost:3000/promo?sizePreset=Genesis+XL&promoSpread=true"
               echo "Attempting FPS check via ${url}"
               if ! sudo docker compose exec web curl -I "${url}" >/dev/null; then
                 continue
