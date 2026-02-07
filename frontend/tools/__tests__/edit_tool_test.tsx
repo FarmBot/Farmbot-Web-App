@@ -23,7 +23,6 @@ import { mountWithContext } from "../../__test_support__/mount_with_context";
 let editSpy: jest.SpyInstance;
 let destroySpy: jest.SpyInstance;
 let saveSpy: jest.SpyInstance;
-let sendRPCSpy: jest.SpyInstance;
 
 describe("<EditTool />", () => {
   afterEach(cleanup);
@@ -33,15 +32,12 @@ describe("<EditTool />", () => {
     editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
     destroySpy = jest.spyOn(crud, "destroy").mockImplementation(jest.fn());
     saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
-    sendRPCSpy = jest.spyOn(deviceActions, "sendRPC")
-      .mockImplementation(jest.fn());
   });
 
   afterEach(() => {
     editSpy.mockRestore();
     destroySpy.mockRestore();
     saveSpy.mockRestore();
-    sendRPCSpy.mockRestore();
   });
 
   const fakeProps = (): EditToolProps => ({
@@ -214,16 +210,14 @@ describe("isActive()", () => {
 
 describe("<WaterFlowRateInput />", () => {
   afterEach(cleanup);
-  let waterFlowSendRPCSpy: jest.SpyInstance;
+  let sendRPCSpy: jest.SpyInstance;
 
   beforeEach(() => {
-    waterFlowSendRPCSpy = jest.spyOn(deviceActions, "sendRPC")
+    sendRPCSpy = jest.spyOn(deviceActions, "sendRPC")
       .mockImplementation(jest.fn());
   });
 
-  afterEach(() => {
-    waterFlowSendRPCSpy.mockRestore();
-  });
+  afterEach(() => sendRPCSpy.mockRestore());
 
   const fakeProps = (): WaterFlowRateInputProps => ({
     value: 1,

@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { Tube } from "@react-three/drei";
 import { MeshPhongMaterial } from "../../components";
 import { TextureLoader, RepeatWrapping, Texture } from "three";
-import { useFrame } from "@react-three/fiber";
+import * as threeFiber from "@react-three/fiber";
 import { ASSETS } from "../../constants";
 
 export interface WaterStreamProps extends React.ComponentProps<typeof Tube> {
@@ -17,7 +17,7 @@ export const useWaterFlowTexture = (waterFlow: boolean): Texture | undefined => 
     return waterTexture;
   }, [waterFlow]);
 
-  useFrame((_, delta) => {
+  threeFiber.useFrame((_, delta) => {
     if (texture) {
       texture.offset.x -= delta * 0.05;
     }

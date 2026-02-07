@@ -2,7 +2,7 @@ import axios from "axios";
 import { API } from "../api";
 import { success, info } from "../toast/toast";
 import { Actions } from "../constants";
-import { destroy, initSave, initSaveGetId } from "../api/crud";
+import * as crud from "../api/crud";
 import { TaggedSavedGarden, TaggedPlantTemplate } from "farmbot";
 import { t } from "../i18next_wrapper";
 import { stopTracking } from "../connectivity/data_consistency";
@@ -48,7 +48,7 @@ export const destroySavedGarden = (
 ) => (dispatch: Function) => {
   dispatch(unselectSavedGarden);
   navigate(Path.plants());
-  dispatch(destroy(uuid));
+  dispatch(crud.destroy(uuid));
 };
 
 export const closeSavedGarden = (navigate: NavigateFunction) => {
@@ -85,7 +85,7 @@ export const newSavedGarden = (
   gardenNotes: string,
 ) =>
   (dispatch: Function) => {
-    dispatch(initSave("SavedGarden", {
+    dispatch(crud.initSave("SavedGarden", {
       name: gardenName || "Untitled Garden",
       notes: gardenNotes,
     }))
@@ -118,11 +118,11 @@ export const copySavedGarden = (props: {
     const { newSGName, savedGarden, plantTemplates, navigate } = props;
     const sourceSavedGardenId = savedGarden.body.id;
     const gardenName = newSGName || `${savedGarden.body.name} (${t("copy")})`;
-    dispatch(initSaveGetId(savedGarden.kind, { name: gardenName }))
+    dispatch(crud.initSaveGetId(savedGarden.kind, { name: gardenName }))
       .then((newSGId: number) => {
         plantTemplates
           .filter(x => x.body.saved_garden_id === sourceSavedGardenId)
-          .map(x => dispatch(initSave(x.kind, newPTBody(x, newSGId))));
+          .map(x => dispatch(crud.initSave(x.kind, newPTBody(x, newSGId))));
         success(t("Garden Saved."));
         navigate(Path.plants());
       });

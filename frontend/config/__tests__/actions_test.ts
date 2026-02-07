@@ -13,6 +13,9 @@ let setTokenSpy: jest.SpyInstance;
 let didLoginSpy: jest.SpyInstance;
 let maybeRefreshTokenSpy: jest.SpyInstance;
 let timeoutSpy: jest.SpyInstance;
+let fetchStoredTokenSpy: jest.SpyInstance;
+let clearSpy: jest.SpyInstance;
+let consoleWarnSpy: jest.SpyInstance;
 describe("ready()", () => {
   const flushPromises = async () => {
     await Promise.resolve();
@@ -22,17 +25,24 @@ describe("ready()", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockTimeout = Promise.resolve({ token: "fake token data" });
-    setTokenSpy = jest.spyOn(authActions, "setToken").mockImplementation(jest.fn());
-    didLoginSpy = jest.spyOn(authActions, "didLogin").mockImplementation(jest.fn());
+    setTokenSpy = jest.spyOn(authActions, "setToken")
+      .mockImplementation(jest.fn());
+    didLoginSpy = jest.spyOn(authActions, "didLogin")
+      .mockImplementation(jest.fn());
     maybeRefreshTokenSpy = jest.spyOn(refreshToken, "maybeRefreshToken")
       .mockImplementation(() => Promise.resolve(undefined) as never);
     timeoutSpy = jest.spyOn(promiseTimeoutModule, "timeout")
       .mockImplementation(() => mockTimeout as never);
-    jest.spyOn(Session, "fetchStoredToken").mockReturnValue(undefined);
-    jest.spyOn(Session, "clear").mockImplementation(jest.fn());
+    fetchStoredTokenSpy = jest.spyOn(Session, "fetchStoredToken")
+      .mockReturnValue(undefined);
+    clearSpy = jest.spyOn(Session, "clear").mockImplementation(jest.fn());
+    consoleWarnSpy = jest.spyOn(console, "warn").mockImplementation(jest.fn());
   });
 
   afterEach(() => {
+    fetchStoredTokenSpy.mockRestore();
+    clearSpy.mockRestore();
+    consoleWarnSpy.mockRestore();
     jest.restoreAllMocks();
   });
 
@@ -41,14 +51,13 @@ describe("ready()", () => {
     mockTimeout = Promise.resolve(fakeAuth);
     const dispatch = jest.fn();
     const state = fakeState();
-    console.warn = jest.fn();
     ready()(dispatch, () => state);
     await flushPromises();
     expect(maybeRefreshTokenSpy).toHaveBeenCalledWith(state.auth);
     expect(setTokenSpy).toHaveBeenCalledWith(fakeAuth);
     expect(didLoginSpy).toHaveBeenCalledWith(fakeAuth, dispatch);
     expect(timeoutSpy).toHaveBeenCalled();
-    expect(console.warn).not.toHaveBeenCalled();
+    expect(consoleWarnSpy).not.toHaveBeenCalled();
     expect(Session.clear).not.toHaveBeenCalled();
   });
 
@@ -56,14 +65,13 @@ describe("ready()", () => {
     mockTimeout = Promise.reject({ token: "not used" });
     const dispatch = jest.fn();
     const state = fakeState();
-    console.warn = jest.fn();
     ready()(dispatch, () => state);
     await flushPromises();
     expect(maybeRefreshTokenSpy).toHaveBeenCalledWith(state.auth);
     expect(setTokenSpy).toHaveBeenLastCalledWith(state.auth);
     expect(didLoginSpy).toHaveBeenCalledWith(state.auth, dispatch);
     expect(timeoutSpy).toHaveBeenCalled();
-    expect(console.warn)
+    expect(consoleWarnSpy)
       .toHaveBeenCalledWith(expect.stringContaining("Can't refresh token."));
     expect(Session.clear).not.toHaveBeenCalled();
   });
@@ -76,18 +84,22 @@ describe("ready()", () => {
     ready()(dispatch, getState);
     expect(setTokenSpy).not.toHaveBeenCalled();
     expect(didLoginSpy).not.toHaveBeenCalled();
-    expect(console.warn).not.toHaveBeenCalled();
+    expect(consoleWarnSpy).not.toHaveBeenCalled();
     expect(Session.clear).toHaveBeenCalled();
   });
 });
 
 describe("storeToken()", () => {
   beforeEach(() => {
-    setTokenSpy = jest.spyOn(authActions, "setToken").mockImplementation(jest.fn());
-    didLoginSpy = jest.spyOn(authActions, "didLogin").mockImplementation(jest.fn());
+    setTokenSpy = jest.spyOn(authActions, "setToken")
+      .mockImplementation(jest.fn());
+    didLoginSpy = jest.spyOn(authActions, "didLogin")
+      .mockImplementation(jest.fn());
+    consoleWarnSpy = jest.spyOn(console, "warn").mockImplementation(jest.fn());
   });
 
   afterEach(() => {
+    consoleWarnSpy.mockRestore();
     jest.restoreAllMocks();
   });
 
@@ -95,11 +107,10 @@ describe("storeToken()", () => {
     const old = auth;
     old.token.unencoded.jti = "old";
     const dispatch = jest.fn();
-    console.warn = jest.fn();
     storeToken(old, dispatch)(undefined);
     expect(setTokenSpy).toHaveBeenCalledWith(old);
     expect(didLoginSpy).toHaveBeenCalledWith(old, dispatch);
-    expect(console.warn)
+    expect(consoleWarnSpy)
       .toHaveBeenCalledWith(expect.stringContaining("Can't refresh token."));
   });
 });

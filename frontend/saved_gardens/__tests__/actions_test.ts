@@ -26,8 +26,10 @@ beforeEach(() => {
     .mockImplementation(jest.fn(() => Promise.resolve({
       headers: { "x-farmbot-rpc-id": "123" },
     })));
-  destroySpy = jest.spyOn(crud, "destroy").mockImplementation(jest.fn());
-  initSaveSpy = jest.spyOn(crud, "initSave").mockImplementation(jest.fn());
+  destroySpy = jest.spyOn(crud, "destroy")
+    .mockImplementation(jest.fn());
+  initSaveSpy = jest.spyOn(crud, "initSave")
+    .mockImplementation(jest.fn());
   initSaveGetIdSpy = jest.spyOn(crud, "initSaveGetId")
     .mockImplementation(jest.fn());
 });
@@ -41,16 +43,16 @@ afterEach(() => {
   initSaveGetIdSpy.mockRestore();
 });
 describe("snapshotGarden", () => {
-  it("calls the API and lets auto-sync do the rest", () => {
+  it("calls the API and lets auto-sync do the rest", async () => {
     API.setBaseUrl("example.io");
     const navigate = jest.fn();
-    snapshotGarden(navigate);
+    await snapshotGarden(navigate);
     expect(axios.post).toHaveBeenCalledWith(API.current.snapshotPath, {});
   });
 
-  it("calls with garden name", () => {
+  it("calls with garden name", async () => {
     const navigate = jest.fn();
-    snapshotGarden(navigate, "new saved garden", "notes");
+    await snapshotGarden(navigate, "new saved garden", "notes");
     expect(axios.post).toHaveBeenCalledWith(
       API.current.snapshotPath, { name: "new saved garden", notes: "notes" });
   });
@@ -128,17 +130,17 @@ describe("openOrCloseGarden", () => {
 });
 
 describe("newSavedGarden", () => {
-  it("creates a new saved garden", () => {
+  it("creates a new saved garden", async () => {
     const navigate = jest.fn();
-    newSavedGarden(navigate, "my saved garden", "notes")(
+    await newSavedGarden(navigate, "my saved garden", "notes")(
       jest.fn(() => Promise.resolve()));
     expect(crud.initSave).toHaveBeenCalledWith(
       "SavedGarden", { name: "my saved garden", notes: "notes" });
   });
 
-  it("creates a new saved garden with default name", () => {
+  it("creates a new saved garden with default name", async () => {
     const navigate = jest.fn();
-    newSavedGarden(navigate, "", "")(jest.fn(() => Promise.resolve()));
+    await newSavedGarden(navigate, "", "")(jest.fn(() => Promise.resolve()));
     expect(crud.initSave).toHaveBeenCalledWith(
       "SavedGarden", { name: "Untitled Garden", notes: "" });
   });
@@ -166,10 +168,10 @@ describe("copySavedGarden", () => {
       expect.objectContaining({ saved_garden_id: 5 }));
   });
 
-  it("creates copy with provided name", () => {
+  it("creates copy with provided name", async () => {
     const p = fakeProps();
     p.newSGName = "New copy";
-    copySavedGarden(p)(jest.fn(() => Promise.resolve()));
+    await copySavedGarden(p)(jest.fn(() => Promise.resolve()));
     expect(crud.initSaveGetId).toHaveBeenCalledWith("SavedGarden",
       { name: p.newSGName });
   });

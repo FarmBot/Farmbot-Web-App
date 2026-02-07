@@ -1,16 +1,16 @@
-import { didLogin, setToken } from "../auth/actions";
+import * as authActions from "../auth/actions";
 import { Thunk } from "../redux/interfaces";
 import { Session } from "../session";
-import { maybeRefreshToken } from "../refresh_token";
+import * as refreshToken from "../refresh_token";
 import { AuthState } from "../auth/interfaces";
-import { timeout } from "promise-timeout";
+import * as promiseTimeout from "promise-timeout";
 
 export const storeToken =
   (old: AuthState, dispatch: Function) => (_new: AuthState | undefined) => {
     const t = _new || old;
     (!_new) && console.warn("Can't refresh token. Is API_HOST set correctly?");
-    dispatch(setToken(t));
-    didLogin(t, dispatch);
+    dispatch(authActions.setToken(t));
+    authActions.didLogin(t, dispatch);
   };
 
 /** Amount of time we're willing to wait before concluding that the token is bad
@@ -27,8 +27,8 @@ export function ready(): Thunk {
     if (auth) {
       const ok = storeToken(auth, dispatch);
       const no = () => ok(undefined);
-      const p = maybeRefreshToken(auth);
-      timeout(p, MAX_TOKEN_WAIT_TIME).then(ok, no);
+      const p = refreshToken.maybeRefreshToken(auth);
+      promiseTimeout.timeout(p, MAX_TOKEN_WAIT_TIME).then(ok, no);
     } else {
       Session.clear();
     }

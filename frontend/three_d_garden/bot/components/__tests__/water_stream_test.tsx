@@ -8,18 +8,20 @@ import {
 
 let frameCallback: (state: unknown, delta: number) => void;
 let loadTextureSpy: jest.SpyInstance;
+let useFrameSpy: jest.SpyInstance;
 
 beforeEach(() => {
   loadTextureSpy = jest.spyOn(TextureLoader.prototype, "load")
     .mockImplementation(() => new Texture());
-  jest.spyOn(threeFiber, "useFrame")
-    .mockImplementation(callback => {
+  useFrameSpy = jest.spyOn(threeFiber, "useFrame").mockImplementation(
+    callback => {
       frameCallback = callback as (state: unknown, delta: number) => void;
     });
 });
 
 afterEach(() => {
-  jest.restoreAllMocks();
+  loadTextureSpy.mockRestore();
+  useFrameSpy.mockRestore();
 });
 
 describe("<WaterStream />", () => {

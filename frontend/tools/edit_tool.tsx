@@ -26,7 +26,7 @@ import {
   reduceToolName, ToolName,
 } from "../farm_designer/map/tool_graphics/all_tools";
 import { ToolTips } from "../constants";
-import { sendRPC } from "../devices/actions";
+import * as deviceActions from "../devices/actions";
 import { NavigationContext } from "../routes_helpers";
 import { Navigate } from "react-router";
 
@@ -52,7 +52,9 @@ export const WaterFlowRateInput = (props: WaterFlowRateInputProps) => {
     {!props.hideTooltip && <Help text={ToolTips.WATER_FLOW_RATE}
       enableMarkdown={true} />}
     <button className={"fb-button orange"}
-      onClick={() => sendRPC({ kind: "lua", args: { lua: LUA_WATER_FLOW_RATE } })}>
+      onClick={() => deviceActions.sendRPC({
+        kind: "lua", args: { lua: LUA_WATER_FLOW_RATE }
+      })}>
       {t("run water for 5 seconds")}
     </button>
     <input
