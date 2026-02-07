@@ -67,6 +67,7 @@ describe("<ElectronicsBoxModel />", () => {
 
   beforeEach(() => {
     jest.useFakeTimers();
+    document.body.style.cursor = "default";
     execSequenceSpy = jest.spyOn(deviceActions, "execSequence")
       .mockImplementation(jest.fn());
   });
@@ -74,6 +75,7 @@ describe("<ElectronicsBoxModel />", () => {
   afterEach(() => {
     jest.runOnlyPendingTimers();
     jest.useRealTimers();
+    document.body.style.cursor = "default";
     jest.restoreAllMocks();
   });
 
@@ -94,7 +96,7 @@ describe("<ElectronicsBoxModel />", () => {
     };
   };
 
-  const e = {
+  const fakeEvent = () => ({
     object: {
       parent: {
         children: [
@@ -102,9 +104,10 @@ describe("<ElectronicsBoxModel />", () => {
         ]
       }
     }
-  };
+  });
 
   it("triggers binding", () => {
+    const e = fakeEvent();
     const p = fakeProps();
     p.isEditing = false;
     p.botOnline = true;
@@ -115,22 +118,25 @@ describe("<ElectronicsBoxModel />", () => {
   });
 
   it("hovers button", () => {
+    const e = fakeEvent();
     const wrapper = mount(<Model {...fakeProps()} />);
     const btnBefore = wrapper.find({ name: "button-center" }).first();
     expect(btnBefore.props()["material-color"]).toEqual(13421772);
     wrapper.find({ name: "action-group" }).first().simulate("pointerover", e);
     const btnAfter = wrapper.find({ name: "button-center" }).first();
     expect(btnAfter.props()["material-color"]).toEqual(14540253);
-    expect(e.object.parent?.children[0].position.z).toEqual(128);
+    expect(e.object.parent?.children[0].position.z).toEqual(0);
   });
 
   it("un-hovers button", () => {
+    const e = fakeEvent();
     const wrapper = mount(<Model {...fakeProps()} />);
     wrapper.find({ name: "action-group" }).first().simulate("pointerout", e);
     expect(e.object.parent?.children[0].position.z).toEqual(131);
   });
 
   it("resets z", () => {
+    const e = fakeEvent();
     const wrapper = mount(<Model {...fakeProps()} />);
     wrapper.find({ name: "button-group" }).first().simulate("pointerup", e);
     expect(e.object.parent?.children[0].position.z).toEqual(131);

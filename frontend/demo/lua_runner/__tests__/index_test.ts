@@ -93,6 +93,7 @@ describe("runDemoSequence()", () => {
     localStorage.setItem("myBotIs", "online");
     console.log = jest.fn();
     jest.useFakeTimers();
+    setCurrent({ x: 0, y: 0, z: 0 });
   });
 
   it("runs sequence with number variable", () => {
@@ -445,6 +446,7 @@ describe("runDemoSequence()", () => {
   });
 
   it("handles missing variable name sets", () => {
+    setCurrent({ x: 2, y: 4, z: 6 });
     const sequence = fakeSequence();
     sequence.body.body = [{
       kind: "lua",
@@ -470,6 +472,7 @@ describe("runDemoSequence()", () => {
   });
 
   it("handles missing variables", () => {
+    setCurrent({ x: 2, y: 4, z: 6 });
     const sequence = fakeSequence();
     sequence.body.body = [{
       kind: "lua",
@@ -600,6 +603,7 @@ describe("runDemoLuaCode()", () => {
     console.log = jest.fn();
     jest.useFakeTimers();
     mockLocked = false;
+    setCurrent({ x: 0, y: 0, z: 0 });
     const firmwareConfig = fakeFirmwareConfig();
     firmwareConfig.body.movement_home_up_z = 0;
     mockResources = buildResourceIndex([
@@ -758,6 +762,7 @@ describe("runDemoLuaCode()", () => {
   });
 
   it("runs api: other", () => {
+    setCurrent({ x: 2, y: 4, z: 6 });
     mockResources = buildResourceIndex([]);
     runDemoLuaCode(`
       local data = api{
@@ -1024,6 +1029,7 @@ describe("runDemoLuaCode()", () => {
   });
 
   it("runs debug", () => {
+    setCurrent({ x: 1, y: 2, z: 3 });
     runDemoLuaCode("debug(\"test\")");
     jest.runAllTimers();
     expect(error).not.toHaveBeenCalled();
@@ -1429,6 +1435,7 @@ describe("runDemoLuaCode()", () => {
   });
 
   it("runs read_pin 5", () => {
+    setCurrent({ x: 1, y: 2, z: 0 });
     mockResources = buildResourceIndex([]);
     runDemoLuaCode("print(read_pin(5))");
     jest.runAllTimers();
@@ -1670,6 +1677,7 @@ describe("runDemoLuaCode()", () => {
   });
 
   it("runs non-implemented function", () => {
+    setCurrent({ x: 0, y: 0, z: 0 });
     runDemoLuaCode("foo.bar.baz()");
     jest.runAllTimers();
     expect(info).not.toHaveBeenCalled();

@@ -17,9 +17,11 @@ describe("mapStateToProps()", () => {
   function testState() {
     const sequence = fakeSequence();
     sequence.body.id = 1;
+    sequence.body.name = "fake";
     sequence.body.body = [{ kind: "take_photo", args: {} }];
     const regimen = fakeRegimen();
     regimen.body.id = 1;
+    regimen.body.name = "Foo";
     regimen.body.regimen_items = [{
       sequence_id: 1,
       time_offset: 28800000
@@ -124,6 +126,7 @@ describe("mapResourcesToCalendar(): sequence farm events", () => {
   function fakeSeqFEResources(props: EventData) {
     const sequence = fakeSequence();
     sequence.body.id = 1;
+    sequence.body.name = "fake";
     sequence.body.body = [{ kind: "take_photo", args: {} }];
 
     const sequenceFarmEvent = fakeFarmEvent("Sequence", sequence.body.id);
@@ -201,10 +204,12 @@ describe("mapResourcesToCalendar(): regimen farm events", () => {
   function fakeRegFEResources() {
     const sequence = fakeSequence();
     sequence.body.id = 1;
+    sequence.body.name = "fake";
     sequence.body.body = [{ kind: "take_photo", args: {} }];
 
     const regimen = fakeRegimen();
     regimen.body.id = 1;
+    regimen.body.name = "Foo";
     regimen.body.regimen_items = [{
       sequence_id: 1,
       time_offset: 288660000

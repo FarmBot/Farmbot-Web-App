@@ -26,6 +26,8 @@ afterAll(() => {
 });
 
 describe("<TileReboot />", () => {
+  beforeEach(() => { mockDev = false; });
+
   const fakeProps = (): StepParams<Reboot> => ({
     ...fakeStepParams({
       kind: "reboot",

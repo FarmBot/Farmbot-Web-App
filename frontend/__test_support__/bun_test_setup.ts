@@ -186,6 +186,7 @@ const botBaseline = cloneForReset(bot);
 const configBaseline = cloneForReset(config);
 const draggableBaseline = cloneForReset(draggable);
 const appBaseline = cloneForReset(app);
+const globalConfigBaseline = cloneForReset(globalAny.globalConfig ?? {});
 
 beforeEach(() => {
   bunJest.clearAllMocks();
@@ -194,6 +195,12 @@ beforeEach(() => {
   resetMutableFixture(config, configBaseline);
   resetMutableFixture(draggable, draggableBaseline);
   resetMutableFixture(app, appBaseline);
+  if (globalAny.globalConfig) {
+    resetMutableFixture(globalAny.globalConfig, globalConfigBaseline);
+  } else {
+    globalAny.globalConfig =
+      cloneForReset(globalConfigBaseline) as Record<string, string>;
+  }
   globalThis.localStorage?.clear();
   globalThis.sessionStorage?.clear();
   globalAny.window?.localStorage?.clear();

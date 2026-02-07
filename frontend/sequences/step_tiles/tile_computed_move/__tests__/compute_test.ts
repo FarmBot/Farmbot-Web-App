@@ -13,7 +13,7 @@ import { cloneDeep } from "lodash";
 
 describe("computeCoordinate()", () => {
   it("computes coordinate", () => {
-    const moveStep = fakeNumericMoveStepCeleryScript;
+    const moveStep = cloneDeep(fakeNumericMoveStepCeleryScript);
     const botPosition = { x: 0, y: 0, z: 0 };
     const resourceIndex = buildResourceIndex([]).index;
     const coordinate = computeCoordinate({
@@ -26,7 +26,7 @@ describe("computeCoordinate()", () => {
   });
 
   it("computes coordinate with variable", () => {
-    const moveStep = fakeNumericMoveStepCeleryScript;
+    const moveStep = cloneDeep(fakeNumericMoveStepCeleryScript);
     const botPosition = { x: 0, y: 0, z: 0 };
     const variables = fakeVariableNameSet("variable", { x: 10, y: 20, z: 30 });
     const resourceIndex = buildResourceIndex([]).index;
@@ -85,7 +85,7 @@ describe("computeCoordinate()", () => {
   });
 
   it("computes coordinate with special value overwrites", () => {
-    const moveStep = fakeNumericMoveStepCeleryScript;
+    const moveStep = cloneDeep(fakeNumericMoveStepCeleryScript);
     const currentLocationNode: SpecialValue = {
       kind: "special_value",
       args: { label: "current_location" }
@@ -134,7 +134,7 @@ describe("computeCoordinate()", () => {
   });
 
   it("computes coordinate with missing special value overwrites", () => {
-    const moveStep = fakeNumericMoveStepCeleryScript;
+    const moveStep = cloneDeep(fakeNumericMoveStepCeleryScript);
     const currentLocationNode: SpecialValue = {
       kind: "special_value",
       args: { label: "current_location" }

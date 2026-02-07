@@ -15,9 +15,14 @@ import {
 } from "../../../../../__test_support__/fake_designer_state";
 
 describe("<ImageLayer/>", () => {
-  const mockConfig = fakeWebAppConfig();
-  mockConfig.body.photo_filter_begin = "";
-  mockConfig.body.photo_filter_end = "";
+  let mockConfig = fakeWebAppConfig();
+
+  beforeEach(() => {
+    mockConfig = fakeWebAppConfig();
+    mockConfig.body.photo_filter_begin = "";
+    mockConfig.body.photo_filter_end = "";
+    mockConfig.body.clip_image_layer = false;
+  });
 
   function fakeProps(): ImageLayerProps {
     const image = fakeImage();

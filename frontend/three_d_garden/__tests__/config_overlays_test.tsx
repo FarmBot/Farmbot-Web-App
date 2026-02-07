@@ -48,8 +48,8 @@ describe("<PublicOverlay />", () => {
   it("changes preset with ref", () => {
     const p = fakeProps();
     p.startTimeRef = { current: 0 };
-    render(<PublicOverlay {...p} />);
-    const radio = screen.getByText("Winter");
+    const { getByRole } = render(<PublicOverlay {...p} />);
+    const radio = getByRole("button", { name: "Winter" });
     fireEvent.click(radio);
     expect(p.startTimeRef.current).not.toEqual(0);
   });

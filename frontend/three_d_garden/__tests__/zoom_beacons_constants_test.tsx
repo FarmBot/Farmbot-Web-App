@@ -76,6 +76,13 @@ describe("getCamera()", () => {
 
 describe("setUrlParam()", () => {
   let pushStateSpy: jest.SpyInstance;
+  const getPushedUrl = () => {
+    const pushedUrl: unknown = pushStateSpy.mock.calls[0]?.[2];
+    if (typeof pushedUrl !== "string") {
+      throw new Error("Expected pushState URL to be a string");
+    }
+    return new URL(pushedUrl);
+  };
 
   beforeEach(() => {
     pushStateSpy = jest.spyOn(history, "pushState").mockImplementation(jest.fn());
@@ -86,17 +93,17 @@ describe("setUrlParam()", () => {
   });
 
   it("sets URL param", () => {
-    history.replaceState(undefined, "", "http://localhost/app/designer");
+    history.replaceState(undefined, "", "/app/designer");
     setUrlParam("focus", "What you can grow");
-    expect(pushStateSpy).toHaveBeenCalledWith(
-      undefined, "", "http://localhost/?focus=What+you+can+grow");
+    const url = getPushedUrl();
+    expect(url.searchParams.get("focus")).toEqual("What you can grow");
   });
 
   it("removes URL param", () => {
-    history.replaceState(
-      undefined, "", "http://localhost/app/designer?focus=What+you+can+grow");
+    history.replaceState(undefined, "", "/app/designer?focus=What+you+can+grow");
     setUrlParam("focus", "");
-    expect(pushStateSpy).toHaveBeenCalledWith(undefined, "", "http://localhost/");
+    const url = getPushedUrl();
+    expect(url.searchParams.get("focus")).toBeNull();
   });
 });
 

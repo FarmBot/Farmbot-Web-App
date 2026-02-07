@@ -248,9 +248,9 @@ export function execSequence(
 export function takePhoto() {
   if (forceOnline()) {
     runDemoLuaCode("take_photo()");
-    return;
+    return Promise.resolve();
   }
-  getDevice().takePhoto()
+  return getDevice().takePhoto()
     .then(commandOK("", Content.PROCESSING_PHOTO))
     .catch(() => error(t("Error taking photo")));
 }

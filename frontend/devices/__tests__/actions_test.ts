@@ -63,6 +63,7 @@ const replaceDeviceWith = async (d: DeepPartial<Farmbot>, cb: Function) => {
 
 beforeEach(() => {
   jest.clearAllMocks();
+  mockDevice.current = mockDeviceDefault;
   mockState = fakeState();
   mockGet = Promise.resolve({});
   localStorage.removeItem("myBotIs");
@@ -84,6 +85,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  mockDevice.current = mockDeviceDefault;
   (store as unknown as { getState: typeof store.getState }).getState =
     originalGetState;
   (store as unknown as { dispatch: typeof store.dispatch }).dispatch =
@@ -346,25 +348,39 @@ describe("takePhoto()", () => {
   });
 
   it("calls takePhoto", async () => {
+    const takePhoto = jest.fn(() => Promise.resolve());
+    getDeviceSpy.mockImplementation(() => ({
+      ...mockDeviceDefault,
+      takePhoto,
+    }) as Farmbot);
     await deviceActions().takePhoto();
-    expect(mockDevice.current.takePhoto).toHaveBeenCalled();
+    expect(takePhoto).toHaveBeenCalled();
     expect(success).toHaveBeenCalledWith(Content.PROCESSING_PHOTO,
       { title: "Request sent" });
     expect(error).not.toHaveBeenCalled();
   });
 
   it("calls takePhoto on demo accounts", async () => {
+    const takePhoto = jest.fn(() => Promise.resolve());
+    getDeviceSpy.mockImplementation(() => ({
+      ...mockDeviceDefault,
+      takePhoto,
+    }) as Farmbot);
     localStorage.setItem("myBotIs", "online");
     await deviceActions().takePhoto();
-    expect(mockDevice.current.takePhoto).not.toHaveBeenCalled();
+    expect(takePhoto).not.toHaveBeenCalled();
     expect(success).not.toHaveBeenCalled();
     expect(demoLuaRunner.runDemoLuaCode).toHaveBeenCalledWith("take_photo()");
   });
 
   it("calls takePhoto: error", async () => {
-    mockDevice.current.takePhoto = jest.fn(() => Promise.reject("error"));
+    const takePhoto = jest.fn(() => Promise.reject("error"));
+    getDeviceSpy.mockImplementation(() => ({
+      ...mockDeviceDefault,
+      takePhoto,
+    }) as Farmbot);
     await deviceActions().takePhoto();
-    await expect(mockDevice.current.takePhoto).toHaveBeenCalled();
+    await expect(takePhoto).toHaveBeenCalled();
     expect(success).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith("Error taking photo");
   });
