@@ -32,8 +32,6 @@ import * as deviceModule from "../../device";
 const originalPathname = location.pathname;
 
 describe("<Tools />", () => {
-  let createGroupSpy: jest.SpyInstance;
-
   afterEach(() => {
     history.replaceState(undefined, "", Path.mock(originalPathname));
     jest.useRealTimers();
@@ -43,7 +41,7 @@ describe("<Tools />", () => {
 
   beforeEach(() => {
     jest.restoreAllMocks();
-    createGroupSpy = jest.spyOn(pointGroupActions, "createGroup")
+    jest.spyOn(pointGroupActions, "createGroup")
       .mockImplementation(jest.fn());
     jest.spyOn(crud, "edit").mockImplementation(jest.fn());
     jest.spyOn(crud, "save").mockImplementation(jest.fn());

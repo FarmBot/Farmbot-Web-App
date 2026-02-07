@@ -13,8 +13,7 @@
     "url": "https://github.com/farmbot/farmbot-web-app"
   },
   "scripts": {
-    "test-very-slow": "bun scripts/bun/run_tests.ts --coverage",
-    "test-slow": "bun scripts/bun/run_tests.ts",
+    "test-slow": "bun scripts/bun/run_tests.ts --coverage",
     "test": "bun scripts/bun/run_tests.ts",
     "graph-modules-dot": "bunx madge --dot ./frontend > module_graph.dot",
     "graph-modules-svg": "dot -Tsvg module_graph.dot -o module_graph.svg",
