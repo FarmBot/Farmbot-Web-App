@@ -178,7 +178,7 @@ describe("<VariableForm />", () => {
     p.locationDropdownKey = "default_value";
     p.variable.isDefault = true;
     const wrapper = shallow(<VariableForm {...p} />);
-    expect(wrapper.html()).toContain("fa-exclamation-triangle");
+    expect(wrapper.find("Help").length).toEqual(2);
   });
 
   it("renders number variable input", () => {

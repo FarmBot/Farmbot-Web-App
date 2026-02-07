@@ -1,18 +1,29 @@
 const mockDevice = { emergencyUnlock: jest.fn(() => Promise.resolve()) };
-jest.mock("../../device", () => ({
-  getDevice: () => mockDevice,
-  maybeGetDevice: () => mockDevice,
-  fetchNewDevice: jest.fn(() => Promise.resolve(mockDevice)),
-}));
 
 import React from "react";
 import { mount } from "enzyme";
+import * as deviceModule from "../../device";
 import { EStopButton } from "../e_stop_btn";
 import { bot } from "../../__test_support__/fake_state/bot";
 import { EStopButtonProps } from "../interfaces";
 
-afterAll(() => {
-  jest.unmock("../../device");
+let getDeviceSpy: jest.SpyInstance;
+let maybeGetDeviceSpy: jest.SpyInstance;
+let fetchNewDeviceSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  getDeviceSpy = jest.spyOn(deviceModule, "getDevice")
+    .mockImplementation(() => mockDevice);
+  maybeGetDeviceSpy = jest.spyOn(deviceModule, "maybeGetDevice")
+    .mockImplementation(() => mockDevice);
+  fetchNewDeviceSpy = jest.spyOn(deviceModule, "fetchNewDevice")
+    .mockImplementation(jest.fn(() => Promise.resolve(mockDevice)));
+});
+
+afterEach(() => {
+  getDeviceSpy.mockRestore();
+  maybeGetDeviceSpy.mockRestore();
+  fetchNewDeviceSpy.mockRestore();
 });
 describe("<EStopButton />", () => {
   const fakeProps = (): EStopButtonProps => ({ bot, forceUnlock: false });

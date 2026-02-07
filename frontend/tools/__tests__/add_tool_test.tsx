@@ -1,17 +1,11 @@
 let mockSave = () => Promise.resolve();
-jest.mock("../../api/crud", () => ({
-  initSave: jest.fn(),
-  init: jest.fn(() => ({ payload: { uuid: "fake uuid" } })),
-  save: jest.fn(() => mockSave),
-  destroy: jest.fn(),
-}));
 
 import React from "react";
 import { mount, shallow } from "enzyme";
 import { RawAddTool as AddTool, mapStateToProps } from "../add_tool";
 import { fakeState } from "../../__test_support__/fake_state";
 import { SaveBtn } from "../../ui";
-import { initSave, init, destroy } from "../../api/crud";
+import * as crud from "../../api/crud";
 import { FirmwareHardware } from "farmbot";
 import { AddToolProps } from "../interfaces";
 import { mockDispatch } from "../../__test_support__/fake_dispatch";
@@ -20,10 +14,15 @@ import { Path } from "../../internal_urls";
 beforeEach(() => {
   jest.clearAllMocks();
   mockSave = () => Promise.resolve();
+  jest.spyOn(crud, "initSave").mockImplementation(jest.fn());
+  jest.spyOn(crud, "init")
+    .mockImplementation(jest.fn(() => ({ payload: { uuid: "fake uuid" } } as never)));
+  jest.spyOn(crud, "save").mockImplementation(jest.fn(() => mockSave as never));
+  jest.spyOn(crud, "destroy").mockImplementation(jest.fn());
 });
 
-afterAll(() => {
-  jest.unmock("../../api/crud");
+afterEach(() => {
+  jest.restoreAllMocks();
 });
 
 describe("<AddTool />", () => {
@@ -101,7 +100,7 @@ describe("<AddTool />", () => {
     const navigate = jest.fn();
     wrapper.instance().navigate = navigate;
     await wrapper.find(SaveBtn).simulate("click");
-    expect(init).toHaveBeenCalledWith("Tool", {
+    expect(crud.init).toHaveBeenCalledWith("Tool", {
       name: "Foo",
       flow_rate_ml_per_s: 0,
       seeder_tip_z_offset: 80,
@@ -119,7 +118,7 @@ describe("<AddTool />", () => {
     const navigate = jest.fn();
     wrapper.instance().navigate = navigate;
     await wrapper.find(SaveBtn).simulate("click");
-    expect(init).toHaveBeenCalledWith("Tool", {
+    expect(crud.init).toHaveBeenCalledWith("Tool", {
       name: "Foo",
       flow_rate_ml_per_s: 0,
       seeder_tip_z_offset: 80,
@@ -127,7 +126,7 @@ describe("<AddTool />", () => {
     expect(wrapper.state().uuid).toEqual("fake uuid");
     expect(navigate).not.toHaveBeenCalled();
     wrapper.unmount();
-    expect(destroy).toHaveBeenCalledWith("fake uuid");
+    expect(crud.destroy).toHaveBeenCalledWith("fake uuid");
   });
 
   it.each<[FirmwareHardware, number]>([
@@ -148,7 +147,7 @@ describe("<AddTool />", () => {
     const navigate = jest.fn();
     wrapper.instance().navigate = navigate;
     wrapper.find("button").last().simulate("click");
-    expect(initSave).toHaveBeenCalledTimes(expectedAdds);
+    expect(crud.initSave).toHaveBeenCalledTimes(expectedAdds);
     expect(navigate).toHaveBeenCalledWith(Path.tools());
   });
 
@@ -160,7 +159,7 @@ describe("<AddTool />", () => {
     const navigate = jest.fn();
     wrapper.instance().navigate = navigate;
     wrapper.find("button").last().simulate("click");
-    expect(initSave).toHaveBeenCalledTimes(2);
+    expect(crud.initSave).toHaveBeenCalledTimes(2);
     expect(navigate).toHaveBeenCalledWith(Path.tools());
   });
 

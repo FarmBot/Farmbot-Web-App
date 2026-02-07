@@ -1,25 +1,27 @@
-jest.mock("../../actions", () => ({ selectRegimen: jest.fn() }));
-
-jest.mock("../../../api/crud", () => ({
-  edit: jest.fn(),
-}));
-
 import React from "react";
 import { RegimenListItemProps } from "../../interfaces";
 import { RegimenListItem } from "../regimen_list_item";
 import { render, shallow, mount } from "enzyme";
 import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
 import { SpecialStatus, Color } from "farmbot";
-import { selectRegimen } from "../../actions";
-import { edit } from "../../../api/crud";
+import * as regimenActions from "../../actions";
+import * as crud from "../../../api/crud";
 import { Path } from "../../../internal_urls";
 
-afterAll(() => {
-  jest.unmock("../../../api/crud");
+let selectRegimenSpy: jest.SpyInstance;
+let editSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  selectRegimenSpy = jest.spyOn(regimenActions, "selectRegimen")
+    .mockImplementation(jest.fn());
+  editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
 });
-afterAll(() => {
-  jest.unmock("../../actions");
+
+afterEach(() => {
+  selectRegimenSpy.mockRestore();
+  editSpy.mockRestore();
 });
+
 describe("<RegimenListItem/>", () => {
   const fakeProps = (): RegimenListItemProps => ({
     regimen: fakeRegimen(),
@@ -31,7 +33,7 @@ describe("<RegimenListItem/>", () => {
     const p = fakeProps();
     const wrapper = render(<RegimenListItem {...p} />);
     expect(wrapper.html()).toContain(p.regimen.body.name);
-    expect(wrapper.html()).toContain(p.regimen.body.color);
+    expect(wrapper.find(".regimen-color").length).toEqual(1);
   });
 
   it("shows unsaved data indicator", () => {
@@ -59,7 +61,7 @@ describe("<RegimenListItem/>", () => {
     p.regimen.body.name = "foo";
     const wrapper = shallow(<RegimenListItem {...p} />);
     wrapper.simulate("click");
-    expect(selectRegimen).toHaveBeenCalledWith(p.regimen.uuid);
+    expect(selectRegimenSpy).toHaveBeenCalledWith(p.regimen.uuid);
     expect(mockNavigate).toHaveBeenCalledWith(Path.regimens("foo"));
   });
 
@@ -67,7 +69,7 @@ describe("<RegimenListItem/>", () => {
     const p = fakeProps();
     const wrapper = shallow(<RegimenListItem {...p} />);
     wrapper.find("ColorPicker").simulate("change", "red");
-    expect(edit).toHaveBeenCalledWith(p.regimen, { color: "red" });
+    expect(editSpy).toHaveBeenCalledWith(p.regimen, { color: "red" });
   });
 
   it("handles missing data", () => {
@@ -78,7 +80,7 @@ describe("<RegimenListItem/>", () => {
     location.pathname = Path.mock(Path.regimens());
     const wrapper = mount(<RegimenListItem {...p} />);
     expect(wrapper.text()).toEqual(" *");
-    expect(wrapper.find(".saucer.gray").length).toBeGreaterThan(0);
+    expect(wrapper.find(".regimen-color").length).toBeGreaterThan(0);
   });
 
   it("doesn't open regimen", () => {

@@ -1,5 +1,4 @@
 const mockDevice = { readPin: jest.fn((_) => Promise.resolve()) };
-jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
 
 import React from "react";
 import { mount } from "enzyme";
@@ -7,9 +6,15 @@ import { SensorList } from "../sensor_list";
 import { Pins } from "farmbot";
 import { fakeSensor } from "../../__test_support__/fake_state/resources";
 import { SensorListProps } from "../interfaces";
+import * as deviceModule from "../../device";
 
-afterAll(() => {
-  jest.unmock("../../device");
+beforeEach(() => {
+  jest.spyOn(deviceModule, "getDevice")
+    .mockImplementation(() => mockDevice as never);
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
 });
 describe("<SensorList/>", function () {
   const fakeProps = (): SensorListProps => {

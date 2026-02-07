@@ -1,5 +1,3 @@
-jest.mock("../../devices/actions", () => ({ move: jest.fn() }));
-
 import React from "react";
 import { shallow, mount } from "enzyme";
 import {
@@ -29,15 +27,16 @@ import {
   SlotEditRowsProps,
   EditToolSlotMetaProps,
 } from "../interfaces";
-import { move } from "../../devices/actions";
+import * as deviceActions from "../../devices/actions";
 import { fakeMovementState } from "../../__test_support__/fake_bot_data";
 
 beforeEach(() => {
   jest.clearAllMocks();
+  jest.spyOn(deviceActions, "move").mockImplementation(jest.fn());
 });
 
-afterAll(() => {
-  jest.unmock("../../devices/actions");
+afterEach(() => {
+  jest.restoreAllMocks();
 });
 
 describe("<GantryMountedInput />", () => {
@@ -298,7 +297,7 @@ describe("<SlotLocationInputRow />", () => {
     p.gantryMounted = false;
     const wrapper = mount(<SlotLocationInputRow {...p} />);
     wrapper.find("button").at(1).simulate("click");
-    expect(move).toHaveBeenCalledWith({ x: 1, y: 2, z: 3 });
+    expect(deviceActions.move).toHaveBeenCalledWith({ x: 1, y: 2, z: 3 });
   });
 
   it("moves to gantry-mounted tool slot", () => {
@@ -310,7 +309,7 @@ describe("<SlotLocationInputRow />", () => {
     p.gantryMounted = true;
     const wrapper = mount(<SlotLocationInputRow {...p} />);
     wrapper.find("button").at(1).simulate("click");
-    expect(move).toHaveBeenCalledWith({ x: 10, y: 2, z: 3 });
+    expect(deviceActions.move).toHaveBeenCalledWith({ x: 10, y: 2, z: 3 });
   });
 
   it("falls back to tool slot when moving to gantry-mounted tool slot", () => {
@@ -322,7 +321,7 @@ describe("<SlotLocationInputRow />", () => {
     p.gantryMounted = true;
     const wrapper = mount(<SlotLocationInputRow {...p} />);
     wrapper.find("button").at(1).simulate("click");
-    expect(move).toHaveBeenCalledWith({ x: 1, y: 2, z: 3 });
+    expect(deviceActions.move).toHaveBeenCalledWith({ x: 1, y: 2, z: 3 });
   });
 });
 

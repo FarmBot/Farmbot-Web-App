@@ -1,9 +1,5 @@
 let mockHighlightName = "";
 
-jest.mock("../fbos_settings/boot_sequence_selector", () => ({
-  BootSequenceSelector: () => <div />,
-}));
-
 import React from "react";
 import { mount, ReactWrapper, shallow } from "enzyme";
 import { RawDesignerSettings as DesignerSettings } from "../index";
@@ -29,6 +25,7 @@ import {
 import { API } from "../../api";
 import { FbosConfig } from "farmbot/dist/resources/configs/fbos";
 import { Path } from "../../internal_urls";
+import * as bootSequenceSelector from "../fbos_settings/boot_sequence_selector";
 
 const EMPTY_RESOURCE_INDEX = buildResourceIndex([]).index;
 
@@ -41,9 +38,6 @@ const getSetting =
     return setting;
   };
 
-afterAll(() => {
-  jest.unmock("../fbos_settings/boot_sequence_selector");
-});
 describe("<DesignerSettings />", () => {
   let maybeOpenPanelSpy: jest.SpyInstance;
   let _getHighlightNameSpy: jest.SpyInstance;
@@ -51,6 +45,8 @@ describe("<DesignerSettings />", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    jest.spyOn(bootSequenceSelector, "BootSequenceSelector")
+      .mockImplementation(() => <div />);
     maybeOpenPanelSpy = jest.spyOn(maybeHighlight, "maybeOpenPanel")
       .mockImplementation(() => jest.fn());
     _getHighlightNameSpy = jest.spyOn(maybeHighlight, "getHighlightName")

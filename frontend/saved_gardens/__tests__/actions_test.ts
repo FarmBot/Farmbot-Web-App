@@ -1,42 +1,42 @@
-jest.mock("axios", () => {
-  const mockedAxios = {
-    post: jest.fn(() => Promise.resolve()),
-    patch: jest.fn(() => Promise.resolve({
-      headers: { "x-farmbot-rpc-id": "123" }
-    })),
-  };
-  return {
-    __esModule: true,
-    ...mockedAxios,
-    default: mockedAxios,
-  };
-});
-
-jest.mock("../../api/crud", () => ({
-  destroy: jest.fn(),
-  initSave: jest.fn(),
-  initSaveGetId: jest.fn(),
-}));
-
 import { API } from "../../api";
 import axios from "axios";
+import * as crud from "../../api/crud";
 import {
   snapshotGarden, applyGarden, destroySavedGarden, closeSavedGarden,
   openSavedGarden, openOrCloseGarden, newSavedGarden, unselectSavedGarden,
   copySavedGarden,
 } from "../actions";
 import { Actions } from "../../constants";
-import { destroy, initSave, initSaveGetId } from "../../api/crud";
 import {
   fakeSavedGarden, fakePlantTemplate,
 } from "../../__test_support__/fake_state/resources";
 import { Path } from "../../internal_urls";
 
-afterAll(() => {
-  jest.unmock("../../api/crud");
+let postSpy: jest.SpyInstance;
+let patchSpy: jest.SpyInstance;
+let destroySpy: jest.SpyInstance;
+let initSaveSpy: jest.SpyInstance;
+let initSaveGetIdSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  postSpy = jest.spyOn(axios, "post")
+    .mockImplementation(jest.fn(() => Promise.resolve()));
+  patchSpy = jest.spyOn(axios, "patch")
+    .mockImplementation(jest.fn(() => Promise.resolve({
+      headers: { "x-farmbot-rpc-id": "123" },
+    })));
+  destroySpy = jest.spyOn(crud, "destroy").mockImplementation(jest.fn());
+  initSaveSpy = jest.spyOn(crud, "initSave").mockImplementation(jest.fn());
+  initSaveGetIdSpy = jest.spyOn(crud, "initSaveGetId")
+    .mockImplementation(jest.fn());
 });
-afterAll(() => {
-  jest.unmock("axios");
+
+afterEach(() => {
+  postSpy.mockRestore();
+  patchSpy.mockRestore();
+  destroySpy.mockRestore();
+  initSaveSpy.mockRestore();
+  initSaveGetIdSpy.mockRestore();
 });
 describe("snapshotGarden", () => {
   it("calls the API and lets auto-sync do the rest", () => {
@@ -73,7 +73,7 @@ describe("destroySavedGarden", () => {
     destroySavedGarden(navigate, "SavedGardenUuid")(dispatch);
     expect(dispatch).toHaveBeenCalledWith(unselectSavedGarden);
     expect(navigate).toHaveBeenCalledWith(Path.plants());
-    expect(destroy).toHaveBeenCalledWith("SavedGardenUuid");
+    expect(crud.destroy).toHaveBeenCalledWith("SavedGardenUuid");
   });
 });
 
@@ -130,14 +130,14 @@ describe("newSavedGarden", () => {
     const navigate = jest.fn();
     newSavedGarden(navigate, "my saved garden", "notes")(
       jest.fn(() => Promise.resolve()));
-    expect(initSave).toHaveBeenCalledWith(
+    expect(crud.initSave).toHaveBeenCalledWith(
       "SavedGarden", { name: "my saved garden", notes: "notes" });
   });
 
   it("creates a new saved garden with default name", () => {
     const navigate = jest.fn();
     newSavedGarden(navigate, "", "")(jest.fn(() => Promise.resolve()));
-    expect(initSave).toHaveBeenCalledWith(
+    expect(crud.initSave).toHaveBeenCalledWith(
       "SavedGarden", { name: "Untitled Garden", notes: "" });
   });
 });
@@ -158,9 +158,9 @@ describe("copySavedGarden", () => {
 
   it("creates copy", async () => {
     await copySavedGarden(fakeProps())(jest.fn(() => Promise.resolve(5)));
-    expect(initSaveGetId).toHaveBeenCalledWith("SavedGarden",
+    expect(crud.initSaveGetId).toHaveBeenCalledWith("SavedGarden",
       { name: "Saved Garden 1 (copy)" });
-    await expect(initSave).toHaveBeenCalledWith("PlantTemplate",
+    await expect(crud.initSave).toHaveBeenCalledWith("PlantTemplate",
       expect.objectContaining({ saved_garden_id: 5 }));
   });
 
@@ -168,7 +168,7 @@ describe("copySavedGarden", () => {
     const p = fakeProps();
     p.newSGName = "New copy";
     copySavedGarden(p)(jest.fn(() => Promise.resolve()));
-    expect(initSaveGetId).toHaveBeenCalledWith("SavedGarden",
+    expect(crud.initSaveGetId).toHaveBeenCalledWith("SavedGarden",
       { name: p.newSGName });
   });
 });

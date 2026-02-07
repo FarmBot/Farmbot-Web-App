@@ -1,8 +1,3 @@
-jest.mock("../../api/crud", () => ({
-  edit: jest.fn(),
-  save: jest.fn(),
-}));
-
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
@@ -12,15 +7,20 @@ import {
   EditSoilHeight, EditSoilHeightProps, getSoilHeightColor,
   tagAsSoilHeight, toggleSoilHeight,
 } from "../soil_height";
-import { edit } from "../../api/crud";
+import * as crud from "../../api/crud";
 import { mockDispatch } from "../../__test_support__/fake_dispatch";
 import { fakeState } from "../../__test_support__/fake_state";
 import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
 
-afterAll(() => {
-  jest.unmock("../../api/crud");
+beforeEach(() => {
+  jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  jest.spyOn(crud, "save").mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
 });
 describe("toggleSoilHeight()", () => {
   it("returns update", () => {
@@ -64,7 +64,7 @@ describe("<EditSoilHeight />", () => {
     const wrapper = mount(<EditSoilHeight {...fakeProps()} />);
     expect(wrapper.find("input").props().value).toEqual(100);
     wrapper.find("button").simulate("click");
-    expect(edit).toHaveBeenCalledWith(expect.any(Object), { soil_height: 150 });
+    expect(crud.edit).toHaveBeenCalledWith(expect.any(Object), { soil_height: 150 });
   });
 
   it("changes soil height", () => {
@@ -72,7 +72,7 @@ describe("<EditSoilHeight />", () => {
     wrapper.find("BlurableInput").simulate("commit", {
       currentTarget: { value: "123" }
     });
-    expect(edit).toHaveBeenCalledWith(expect.any(Object), { soil_height: 123 });
+    expect(crud.edit).toHaveBeenCalledWith(expect.any(Object), { soil_height: 123 });
   });
 
   it("doesn't change soil height", () => {
@@ -84,6 +84,6 @@ describe("<EditSoilHeight />", () => {
     wrapper.find("BlurableInput").simulate("commit", {
       currentTarget: { value: "123" }
     });
-    expect(edit).not.toHaveBeenCalled();
+    expect(crud.edit).not.toHaveBeenCalled();
   });
 });

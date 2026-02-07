@@ -103,7 +103,7 @@ describe("<ZonesLayer />", () => {
     const wrapper = svgMount(<ZonesLayer {...p} />);
     expect(wrapper.html()).toEqual(
       `<svg>
-        <g class="zones-layer" style="cursor: pointer;">
+        <g class="zones-layer" style="pointer-events: none;">
           <g id="zones-2D-1" class="current">
           </g>
         </g>
@@ -115,6 +115,6 @@ describe("<ZonesLayer />", () => {
     p.visible = false;
     const wrapper = svgMount(<ZonesLayer {...p} />);
     expect(wrapper.html()).toEqual(
-      "<svg><g class=\"zones-layer\" style=\"cursor: pointer;\"></g></svg>");
+      "<svg><g class=\"zones-layer\" style=\"pointer-events: none;\"></g></svg>");
   });
 });

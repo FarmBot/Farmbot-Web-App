@@ -1,24 +1,28 @@
-jest.mock("../../../api/crud", () => ({ init: jest.fn() }));
-
-jest.mock("../../set_active_regimen_by_name", () => ({
-  setActiveRegimenByName: jest.fn()
-}));
-
 import React from "react";
 import { mount } from "enzyme";
 import { CopyButton } from "../copy_button";
 import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
-import { setActiveRegimenByName } from "../../set_active_regimen_by_name";
-import { init } from "../../../api/crud";
+import * as setActiveRegimenByNameModule from "../../set_active_regimen_by_name";
+import * as crud from "../../../api/crud";
 import { CopyButtonProps } from "../interfaces";
 import { Path } from "../../../internal_urls";
 
-afterAll(() => {
-  jest.unmock("../../../api/crud");
+let initSpy: jest.SpyInstance;
+let setActiveRegimenByNameSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  initSpy = jest.spyOn(crud, "init").mockImplementation(jest.fn());
+  setActiveRegimenByNameSpy = jest.spyOn(
+    setActiveRegimenByNameModule,
+    "setActiveRegimenByName",
+  ).mockImplementation(jest.fn());
 });
-afterAll(() => {
-  jest.unmock("../../set_active_regimen_by_name");
+
+afterEach(() => {
+  initSpy.mockRestore();
+  setActiveRegimenByNameSpy.mockRestore();
 });
+
 describe("<CopyButton />", () => {
   const fakeProps = (): CopyButtonProps => ({
     dispatch: jest.fn(x => x(jest.fn())),
@@ -34,10 +38,10 @@ describe("<CopyButton />", () => {
     const wrapper = mount(<CopyButton {...p} />);
     wrapper.simulate("click");
     expect(p.dispatch).toHaveBeenCalled();
-    expect(init).toHaveBeenCalledWith("Regimen", {
+    expect(initSpy).toHaveBeenCalledWith("Regimen", {
       color: "red", name: "Foo copy 1", regimen_items, body: []
     });
     expect(mockNavigate).toHaveBeenCalledWith(Path.regimens("Foo_copy_1"));
-    expect(setActiveRegimenByName).toHaveBeenCalled();
+    expect(setActiveRegimenByNameSpy).toHaveBeenCalled();
   });
 });

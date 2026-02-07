@@ -1,16 +1,10 @@
-jest.mock("../../api/crud", () => ({
-  edit: jest.fn((_: unknown, update: unknown) => ({
-    type: "EDIT_RESOURCE",
-    payload: { update },
-  })),
-}));
-
 import React from "react";
 import { shallow } from "enzyme";
 import { NameInputBox, PinDropdown, ModeDropdown } from "../pin_form_fields";
 import { fakeSensor } from "../../__test_support__/fake_state/resources";
 import { Actions } from "../../constants";
 import { FBSelect } from "../../ui";
+import * as crud from "../../api/crud";
 
 const expectedPayload = (update: Object) =>
   expect.objectContaining({
@@ -20,8 +14,15 @@ const expectedPayload = (update: Object) =>
     type: Actions.EDIT_RESOURCE
   });
 
-afterAll(() => {
-  jest.unmock("../../api/crud");
+beforeEach(() => {
+  jest.spyOn(crud, "edit").mockImplementation((_: unknown, update: unknown) => ({
+    type: "EDIT_RESOURCE",
+    payload: { update },
+  }) as never);
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
 });
 describe("<NameInputBox />", () => {
   const fakeProps = () => ({

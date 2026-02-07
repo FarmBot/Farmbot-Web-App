@@ -1,5 +1,3 @@
-jest.mock("../../../api/crud", () => ({ overwrite: jest.fn() }));
-
 import React from "react";
 import { mount } from "enzyme";
 import { RegimenRows } from "../regimen_rows";
@@ -8,7 +6,7 @@ import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
-import { overwrite } from "../../../api/crud";
+import * as crud from "../../../api/crud";
 import { VariableDeclaration } from "farmbot";
 
 const testVariable: VariableDeclaration = {
@@ -20,9 +18,16 @@ const testVariable: VariableDeclaration = {
   }
 };
 
-afterAll(() => {
-  jest.unmock("../../../api/crud");
+let overwriteSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  overwriteSpy = jest.spyOn(crud, "overwrite").mockImplementation(jest.fn());
 });
+
+afterEach(() => {
+  overwriteSpy.mockRestore();
+});
+
 describe("<RegimenRows />", () => {
   const fakeProps = (): RegimenRowsProps => {
     const regimen = fakeRegimen();
@@ -62,7 +67,7 @@ describe("<RegimenRows />", () => {
       [p.calendar[0].items[0].item, keptItem];
     const wrapper = mount(<RegimenRows {...p} />);
     wrapper.find("i").last().simulate("click");
-    expect(overwrite).toHaveBeenCalledWith(expect.any(Object),
+    expect(overwriteSpy).toHaveBeenCalledWith(expect.any(Object),
       expect.objectContaining({ regimen_items: [keptItem] }));
   });
 

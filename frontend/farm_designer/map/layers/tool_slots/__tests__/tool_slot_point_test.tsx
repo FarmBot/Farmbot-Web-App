@@ -39,6 +39,7 @@ describe("<ToolSlotPoint/>", () => {
   it("opens tool info", () => {
     const p = fakeProps();
     p.slot.toolSlot.body.id = 1;
+    location.pathname = Path.mock(Path.tools());
     const wrapper = svgMount(<ToolSlotPoint {...p} />);
     wrapper.find("g").first().simulate("click");
     expect(mockNavigate).toHaveBeenCalledWith(Path.toolSlots(1));

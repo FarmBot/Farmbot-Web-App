@@ -1,8 +1,3 @@
-jest.mock("../../api/crud", () => ({
-  edit: jest.fn(),
-  save: jest.fn(),
-}));
-
 import React from "react";
 import { shallow, mount } from "enzyme";
 import {
@@ -12,7 +7,7 @@ import {
   fakePointGroup, fakePoint,
 } from "../../__test_support__/fake_state/resources";
 import { Actions } from "../../constants";
-import { edit } from "../../api/crud";
+import * as crud from "../../api/crud";
 import { SORT_OPTIONS } from "../point_group_sort";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 import { nn } from "../other_sort_methods";
@@ -61,8 +56,17 @@ const pathTestCases = () => {
   };
 };
 
-afterAll(() => {
-  jest.unmock("../../api/crud");
+let editSpy: jest.SpyInstance;
+let saveSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  editSpy.mockRestore();
+  saveSpy.mockRestore();
 });
 describe("<PathInfoBar />", () => {
   const fakeProps = (): PathInfoBarProps => ({
@@ -94,7 +98,7 @@ describe("<PathInfoBar />", () => {
     const p = fakeProps();
     const wrapper = shallow(<PathInfoBar {...p} />);
     wrapper.simulate("click");
-    expect(edit).toHaveBeenCalledWith(p.group, { sort_type: "random" });
+    expect(crud.edit).toHaveBeenCalledWith(p.group, { sort_type: "random" });
   });
 });
 

@@ -1,7 +1,4 @@
 jest.unmock("../../../redux/store");
-jest.mock("../../../settings/fbos_settings/factory_reset_row", () => ({
-  FactoryResetRows: () => <div />,
-}));
 
 import React from "react";
 import { mount, shallow } from "enzyme";
@@ -11,19 +8,30 @@ import {
 import * as deviceActions from "../../../devices/actions";
 import { JogMovementControlsProps } from "../interfaces";
 import { FbosButtonRow } from "../../../settings/fbos_settings/fbos_button_row";
+import * as factoryResetRowModule from
+  "../../../settings/fbos_settings/factory_reset_row";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { fakeWebAppConfig } from "../../../__test_support__/fake_state/resources";
 import { fakeMovementState } from "../../../__test_support__/fake_bot_data";
 import { DeviceSetting } from "../../../constants";
+import { cloneDeep } from "lodash";
 
 let moveRelativeSpy: jest.SpyInstance;
 let restartFirmwareSpy: jest.SpyInstance;
+let factoryResetRowsSpy: jest.SpyInstance;
 
-afterAll(() => {
-  jest.unmock("../../../settings/fbos_settings/factory_reset_row");
+beforeEach(() => {
+  factoryResetRowsSpy = jest.spyOn(factoryResetRowModule, "FactoryResetRows")
+    .mockImplementation(() => <div />);
+});
+
+afterEach(() => {
+  factoryResetRowsSpy.mockRestore();
 });
 describe("<JogButtons />", () => {
   const mockConfig = fakeWebAppConfig();
+  const buttonByTitle = (wrapper: ReturnType<typeof mount>, title: string) =>
+    wrapper.find("button").filterWhere(node => node.props().title == title).first();
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -42,7 +50,7 @@ describe("<JogButtons />", () => {
     getConfigValue: key => mockConfig.body[key],
     arduinoBusy: false,
     botOnline: true,
-    firmwareSettings: bot.hardware.mcu_params,
+    firmwareSettings: cloneDeep(bot.hardware.mcu_params),
     env: {},
     locked: false,
     dispatch: jest.fn(),
@@ -55,13 +63,13 @@ describe("<JogButtons />", () => {
     const p = jogButtonProps();
     p.arduinoBusy = true;
     const jogButtons = mount(<JogButtons {...p} />);
-    jogButtons.find("button").at(7).simulate("click");
+    buttonByTitle(jogButtons, "move x axis (100)").simulate("click");
     expect(deviceActions.moveRelative).not.toHaveBeenCalled();
   });
 
   it("has unswapped xy jog buttons", () => {
     const jogButtons = mount(<JogButtons {...jogButtonProps()} />);
-    const button = jogButtons.find("button").at(8);
+    const button = buttonByTitle(jogButtons, "move x axis (100)");
     expect(button.props().title).toBe("move x axis (100)");
     button.simulate("click");
     expect(deviceActions.moveRelative)
@@ -73,7 +81,7 @@ describe("<JogButtons />", () => {
     const p = jogButtonProps();
     (p.stepSize as number | undefined) = undefined;
     const jogButtons = mount(<JogButtons {...p} />);
-    const button = jogButtons.find("button").at(8);
+    const button = buttonByTitle(jogButtons, "move y axis (100)");
     expect(button.props().title).toBe("move y axis (100)");
     button.simulate("click");
     expect(deviceActions.moveRelative)

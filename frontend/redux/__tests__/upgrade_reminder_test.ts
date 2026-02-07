@@ -1,12 +1,18 @@
-jest.mock("../../devices/actions", () => ({ badVersion: jest.fn() }));
-
-import { badVersion } from "../../devices/actions";
+import * as deviceActions from "../../devices/actions";
 import { info } from "../../toast/toast";
 
-afterAll(() => {
-  jest.unmock("../../devices/actions");
-});
 describe("createReminderFn", () => {
+  let badVersionSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    badVersionSpy = jest.spyOn(deviceActions, "badVersion")
+      .mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    badVersionSpy.mockRestore();
+  });
+
   it("reminds the user as-needed, but never more than once", async () => {
     jest.clearAllMocks();
     expect(globalConfig).toBeDefined();
@@ -20,7 +26,7 @@ describe("createReminderFn", () => {
     expect(info).toHaveBeenCalledTimes(0);
 
     ding("1.0.0");
-    expect(badVersion).toHaveBeenCalledWith({ noDismiss: false });
+    expect(badVersionSpy).toHaveBeenCalledWith({ noDismiss: false });
     expect(info).toHaveBeenCalledTimes(0);
 
     ding("6.3.2");

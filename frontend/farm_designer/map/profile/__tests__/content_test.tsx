@@ -1,12 +1,8 @@
-jest.mock("../../layers/points/interpolation_map", () => ({
-  getInterpolationData: () => [{ x: 111, y: 112, z: 113 }],
-  fetchInterpolationOptions: () => ({ stepSize: 100 }),
-}));
-
 import React from "react";
 import { mount } from "enzyme";
 import { getProfileX, ProfileSvg } from "../content";
 import { ProfileSvgProps } from "../interfaces";
+import * as interpolationMap from "../../layers/points/interpolation_map";
 import {
   fakeBotLocationData, fakeBotSize,
 } from "../../../../__test_support__/fake_bot_data";
@@ -29,8 +25,15 @@ import {
 } from "../../../../__test_support__/fake_designer_state";
 import { Path } from "../../../../internal_urls";
 
-afterAll(() => {
-  jest.unmock("../../layers/points/interpolation_map");
+beforeEach(() => {
+  jest.spyOn(interpolationMap, "getInterpolationData")
+    .mockImplementation(() => [{ x: 111, y: 112, z: 113 }]);
+  jest.spyOn(interpolationMap, "fetchInterpolationOptions")
+    .mockImplementation(() => ({ stepSize: 100 }));
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
 });
 describe("<ProfileSvg />", () => {
   const fakeProps = (): ProfileSvgProps => ({

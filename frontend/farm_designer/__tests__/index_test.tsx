@@ -38,6 +38,7 @@ describe("<FarmDesigner />", () => {
 
   beforeEach(() => {
     setWindowWidth(1000);
+    location.search = "";
     editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
   });
 
@@ -191,6 +192,7 @@ describe("<FarmDesigner />", () => {
   it("renders 3D garden", () => {
     const p = fakeProps();
     p.getConfigValue = () => true;
+    p.designer.threeDTime = "12:00";
     const wrapper = mount(<FarmDesigner {...p} />);
     expect(wrapper.html()).toContain("three-d-garden");
   });

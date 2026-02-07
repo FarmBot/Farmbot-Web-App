@@ -22,6 +22,10 @@ describe("<TakePhotoButton />", () => {
   });
 
   afterEach(() => {
+    try {
+      jest.runOnlyPendingTimers();
+    } catch { /* noop */ }
+    jest.useRealTimers();
     takePhotoSpy.mockRestore();
   });
 
@@ -66,7 +70,9 @@ describe("<TakePhotoButton />", () => {
     const p = fakeProps();
     p.botOnline = false;
     const jogButtons = mount(<TakePhotoButton {...p} />);
-    expect(jogButtons.html()).toContain("bp6-popover-target");
+    const cameraBtn = jogButtons.find("button").at(0);
+    expect(cameraBtn.hasClass("pseudo-disabled")).toBeTruthy();
+    expect(cameraBtn.props().title).toEqual("FarmBot is offline");
   });
 
   it("shows as taken", () => {

@@ -6,6 +6,10 @@ import {
 import { range } from "lodash";
 
 describe("<MissedStepIndicator />", () => {
+  beforeEach(() => {
+    sessionStorage.clear();
+  });
+
   const fakeProps = (): MissedStepIndicatorProps => ({
     missedSteps: undefined,
     axis: "x",
@@ -78,7 +82,7 @@ describe("<MissedStepIndicator />", () => {
     p.missedSteps = missedSteps;
     const wrapper = mount(<MissedStepIndicator {...p} />);
     wrapper.setState({ history });
-    wrapper.find(".bp6-popover-target").simulate("click");
+    wrapper.find(".missed-step-indicator-wrapper").simulate("click");
     ["motor load", latest, max, average].map(string =>
       expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));
   });

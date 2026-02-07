@@ -1,5 +1,3 @@
-jest.mock("../../../devices/actions", () => ({ updateMCU: jest.fn() }));
-
 import React from "react";
 import { mount, shallow } from "enzyme";
 import { PinNumberDropdown } from "../pin_number_dropdown";
@@ -12,12 +10,20 @@ import {
 } from "../../../__test_support__/fake_state/resources";
 import { TaggedFirmwareConfig } from "farmbot";
 import { FBSelect } from "../../../ui";
-import { updateMCU } from "../../../devices/actions";
+import * as deviceActions from "../../../devices/actions";
 import { DeviceSetting } from "../../../constants";
 
-afterAll(() => {
-  jest.unmock("../../../devices/actions");
+let updateMCUSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  updateMCUSpy = jest.spyOn(deviceActions, "updateMCU")
+    .mockImplementation(jest.fn());
 });
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
+
 describe("<PinNumberDropdown />", () => {
   const fakeProps =
     (firmwareConfig?: TaggedFirmwareConfig): PinGuardMCUInputGroupProps => ({
@@ -85,6 +91,6 @@ describe("<PinNumberDropdown />", () => {
     p.resources = buildResourceIndex([firmwareConfig]).index;
     const wrapper = shallow(<PinNumberDropdown {...p} />);
     wrapper.find(FBSelect).simulate("change", { label: "", value: 2 });
-    expect(updateMCU).toHaveBeenCalledWith("pin_guard_1_pin_nr", "2");
+    expect(updateMCUSpy).toHaveBeenCalledWith("pin_guard_1_pin_nr", "2");
   });
 });

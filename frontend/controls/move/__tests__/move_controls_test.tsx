@@ -4,11 +4,12 @@ import { MoveControlsProps } from "../interfaces";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { MoveControls } from "../move_controls";
 import { fakeMovementState } from "../../../__test_support__/fake_bot_data";
+import { cloneDeep } from "lodash";
 
 describe("<MoveControls />", () => {
   const fakeProps = (): MoveControlsProps => ({
     dispatch: jest.fn(),
-    bot: bot,
+    bot: cloneDeep(bot),
     getConfigValue: () => false,
     firmwareSettings: bot.hardware.mcu_params,
     sourceFwConfig: () => ({ value: 0, consistent: true }),
@@ -21,7 +22,7 @@ describe("<MoveControls />", () => {
   it("renders", () => {
     const wrapper = mount(<MoveControls {...fakeProps()} />);
     expect(wrapper.text().toLowerCase()).toContain("go");
-    expect(wrapper.html()).not.toContain("motor-position-plot");
+    expect(wrapper.find(".motor-position-plot").length).toEqual(0);
   });
 
   it("renders with plot", () => {

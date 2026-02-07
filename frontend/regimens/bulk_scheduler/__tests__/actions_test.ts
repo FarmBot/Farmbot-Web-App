@@ -1,5 +1,3 @@
-jest.mock("../../../api/crud", () => ({ overwrite: jest.fn() }));
-
 import {
   commitBulkEditor, setTimeOffset, toggleDay, setSequence,
 } from "../actions";
@@ -13,7 +11,7 @@ import { Everything } from "../../../interfaces";
 import { ToggleDayParams } from "../interfaces";
 import { newTaggedResource } from "../../../sync/actions";
 import { arrayUnwrap } from "../../../resources/util";
-import { overwrite } from "../../../api/crud";
+import * as crud from "../../../api/crud";
 import { fakeVariableNameSet } from "../../../__test_support__/fake_variables";
 import { error, warning } from "../../../toast/toast";
 import { newWeek } from "../../reducer";
@@ -23,13 +21,15 @@ import {
 
 const sequence_id = 23;
 const regimen_id = 32;
+let overwriteSpy: jest.SpyInstance;
 
 beforeEach(() => {
   jest.clearAllMocks();
+  overwriteSpy = jest.spyOn(crud, "overwrite").mockImplementation(jest.fn());
 });
 
-afterAll(() => {
-  jest.unmock("../../../api/crud");
+afterEach(() => {
+  overwriteSpy.mockRestore();
 });
 
 describe("commitBulkEditor()", () => {
@@ -108,7 +108,7 @@ describe("commitBulkEditor()", () => {
       { regimen_id, sequence_id, time_offset: 1000 },
       { sequence_id, time_offset: 2000 },
     ];
-    expect(overwrite).toHaveBeenCalledWith(expect.any(Object),
+    expect(overwriteSpy).toHaveBeenCalledWith(expect.any(Object),
       expect.objectContaining({
         regimen_items: expect.arrayContaining(expected)
       }));
@@ -126,7 +126,7 @@ describe("commitBulkEditor()", () => {
       { regimen_id, sequence_id, time_offset: 1000 },
       { sequence_id, time_offset: 10800000 },
     ];
-    expect(overwrite).toHaveBeenCalledWith(expect.any(Object),
+    expect(overwriteSpy).toHaveBeenCalledWith(expect.any(Object),
       expect.objectContaining({
         regimen_items: expect.arrayContaining(expected)
       }));
@@ -150,7 +150,7 @@ describe("commitBulkEditor()", () => {
     state.resources.index.sequenceMetas[seqUUID || ""] = varData;
     const dispatch = jest.fn();
     commitBulkEditor()(dispatch, () => state);
-    expect(overwrite).toHaveBeenCalledWith(expect.any(Object),
+    expect(overwriteSpy).toHaveBeenCalledWith(expect.any(Object),
       expect.objectContaining({
         body: [{
           kind: "variable_declaration",

@@ -1,9 +1,6 @@
 const mockDevice = {
   execScript: jest.fn((..._) => Promise.resolve({})),
 };
-jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
-
-jest.mock("../../api/crud", () => ({ destroy: jest.fn() }));
 
 import React from "react";
 import { mount, shallow } from "enzyme";
@@ -16,12 +13,23 @@ import { changeBlurableInput, clickButton } from "../../__test_support__/helpers
 import { FarmwareConfig } from "farmbot";
 import { ExpandableHeader, FBSelect } from "../../ui";
 import { fakeFarmwareEnv } from "../../__test_support__/fake_state/resources";
-import { destroy } from "../../api/crud";
 import { FarmwareName } from "../../sequences/step_tiles/tile_execute_script";
+import * as crud from "../../api/crud";
+import * as deviceModule from "../../device";
 
-afterAll(() => {
-  jest.unmock("../../api/crud");
-  jest.unmock("../../device");
+let destroySpy: jest.SpyInstance;
+let getDeviceSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  getDeviceSpy = jest.spyOn(deviceModule, "getDevice")
+    .mockImplementation(() => mockDevice as never);
+  destroySpy = jest.spyOn(crud, "destroy")
+    .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  getDeviceSpy.mockRestore();
+  destroySpy.mockRestore();
 });
 describe("getConfigEnvName()", () => {
   it("generates correct name", () => {
@@ -244,8 +252,8 @@ describe("<FarmwareForm />", () => {
     const wrapper = mount(<FarmwareForm {...p} />);
     clickButton(wrapper, 1, "reset calibration values");
     expect(confirm).toHaveBeenCalledWith("Reset 1 values?");
-    expect(destroy).toHaveBeenCalledWith(farmwareEnv2.uuid);
-    expect(destroy).toHaveBeenCalledTimes(1);
+    expect(destroySpy).toHaveBeenCalledWith(farmwareEnv2.uuid);
+    expect(destroySpy).toHaveBeenCalledTimes(1);
   });
 
   it("resets all configs", () => {
@@ -265,9 +273,9 @@ describe("<FarmwareForm />", () => {
     const wrapper = mount(<FarmwareForm {...p} />);
     clickButton(wrapper, 2, "reset all values");
     expect(confirm).toHaveBeenCalledWith("Reset 2 values?");
-    expect(destroy).toHaveBeenCalledWith(farmwareEnv1.uuid);
-    expect(destroy).toHaveBeenCalledWith(farmwareEnv2.uuid);
-    expect(destroy).toHaveBeenCalledTimes(2);
+    expect(destroySpy).toHaveBeenCalledWith(farmwareEnv1.uuid);
+    expect(destroySpy).toHaveBeenCalledWith(farmwareEnv2.uuid);
+    expect(destroySpy).toHaveBeenCalledTimes(2);
   });
 
   it("doesn't reset configs", () => {
@@ -287,6 +295,6 @@ describe("<FarmwareForm />", () => {
     const wrapper = mount(<FarmwareForm {...p} />);
     clickButton(wrapper, 2, "reset all values");
     expect(confirm).toHaveBeenCalledWith("Reset 2 values?");
-    expect(destroy).not.toHaveBeenCalled();
+    expect(destroySpy).not.toHaveBeenCalled();
   });
 });

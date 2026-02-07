@@ -1,7 +1,3 @@
-jest.mock("../../ui/help", () => ({
-  Help: jest.fn(props => <p>{props.text}{props.customIcon}</p>),
-}));
-
 import React from "react";
 import {
   GroupDetailActive, GroupDetailActiveProps, GroupSortSelection,
@@ -17,13 +13,17 @@ import * as selectPlants from "../../plants/select_plants";
 import { fakeToolTransformProps } from "../../__test_support__/fake_tool_info";
 import { cloneDeep } from "lodash";
 import * as mapActions from "../../farm_designer/map/actions";
+import * as uiHelp from "../../ui/help";
 
 let setSelectionPointTypeSpy: jest.SpyInstance;
 let validPointTypesSpy: jest.SpyInstance;
 let pointerTypeListSpy: jest.SpyInstance;
 let setHoveredPlantSpy: jest.SpyInstance;
+let helpSpy: jest.SpyInstance;
 
 beforeEach(() => {
+  helpSpy = jest.spyOn(uiHelp, "Help")
+    .mockImplementation(props => <p>{props.text}{props.customIcon}</p>);
   setSelectionPointTypeSpy = jest.spyOn(selectPlants, "setSelectionPointType")
     .mockImplementation(jest.fn());
   validPointTypesSpy = jest.spyOn(selectPlants, "validPointTypes")
@@ -35,14 +35,11 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  helpSpy.mockRestore();
   setSelectionPointTypeSpy.mockRestore();
   validPointTypesSpy.mockRestore();
   pointerTypeListSpy.mockRestore();
   setHoveredPlantSpy.mockRestore();
-});
-
-afterAll(() => {
-  jest.unmock("../../ui/help");
 });
 describe("<GroupDetailActive />", () => {
   const fakeProps = (): GroupDetailActiveProps => {

@@ -1,15 +1,4 @@
-jest.mock("../../api/crud", () => ({
-  edit: jest.fn(),
-  save: jest.fn(),
-}));
-
-jest.mock("../../farm_designer/map/actions", () => ({
-  mapPointClickAction: jest.fn(() => jest.fn()),
-  selectPoint: jest.fn(),
-}));
-
 const mockDevice = { readPin: jest.fn((_) => Promise.resolve()) };
-jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
 
 import React from "react";
 import { cleanup } from "@testing-library/react";
@@ -25,11 +14,11 @@ import { fakeDevice } from "../../__test_support__/resource_index_builder";
 import { bot } from "../../__test_support__/fake_state/bot";
 import { error } from "../../toast/toast";
 import { Content, Actions } from "../../constants";
-import { edit, save } from "../../api/crud";
+import * as crud from "../../api/crud";
 import { ToolSelection } from "../tool_slot_edit_components";
 import { fakeToolTransformProps } from "../../__test_support__/fake_tool_info";
 import { ToolsProps, ToolSlotInventoryItemProps } from "../interfaces";
-import { mapPointClickAction, selectPoint } from "../../farm_designer/map/actions";
+import * as mapActions from "../../farm_designer/map/actions";
 import * as mapUtil from "../../farm_designer/map/util";
 import { Mode } from "../../farm_designer/map/interfaces";
 import { SearchField } from "../../ui/search_field";
@@ -38,12 +27,7 @@ import * as pointGroupActions from "../../point_groups/actions";
 import { DEFAULT_CRITERIA } from "../../point_groups/criteria/interfaces";
 import { Path } from "../../internal_urls";
 import { mountWithContext } from "../../__test_support__/mount_with_context";
-
-afterAll(() => {
-  jest.unmock("../../api/crud");
-  jest.unmock("../../farm_designer/map/actions");
-  jest.unmock("../../device");
-});
+import * as deviceModule from "../../device";
 
 const originalPathname = location.pathname;
 
@@ -54,14 +38,21 @@ describe("<Tools />", () => {
     history.replaceState(undefined, "", Path.mock(originalPathname));
     jest.useRealTimers();
     cleanup();
-    createGroupSpy.mockRestore();
-    jest.clearAllMocks();
+    jest.restoreAllMocks();
   });
 
   beforeEach(() => {
     jest.restoreAllMocks();
     createGroupSpy = jest.spyOn(pointGroupActions, "createGroup")
       .mockImplementation(jest.fn());
+    jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+    jest.spyOn(crud, "save").mockImplementation(jest.fn());
+    jest.spyOn(mapActions, "mapPointClickAction")
+      .mockImplementation(jest.fn(() => jest.fn()));
+    jest.spyOn(mapActions, "selectPoint")
+      .mockImplementation(jest.fn());
+    jest.spyOn(deviceModule, "getDevice")
+      .mockImplementation(() => mockDevice as never);
   });
 
   const fakeProps = (): ToolsProps => ({
@@ -204,8 +195,8 @@ describe("<Tools />", () => {
     const wrapper = mount<Tools>(<Tools {...p} />);
     shallow(wrapper.instance().MountedToolInfo()).find(ToolSelection)
       .simulate("change", { tool_id: 123 });
-    expect(edit).toHaveBeenCalledWith(p.device, { mounted_tool_id: 123 });
-    expect(save).toHaveBeenCalledWith(p.device.uuid);
+    expect(crud.edit).toHaveBeenCalledWith(p.device, { mounted_tool_id: 123 });
+    expect(crud.save).toHaveBeenCalledWith(p.device.uuid);
   });
 
   it("displays tool verification result: disconnected", () => {
@@ -300,6 +291,12 @@ describe("<ToolSlotInventoryItem />", () => {
     jest.clearAllMocks();
     history.replaceState(undefined, "", Path.mock(originalPathname));
     jest.useRealTimers();
+    jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+    jest.spyOn(crud, "save").mockImplementation(jest.fn());
+    jest.spyOn(mapActions, "mapPointClickAction")
+      .mockImplementation(jest.fn(() => jest.fn()));
+    jest.spyOn(mapActions, "selectPoint")
+      .mockImplementation(jest.fn());
     getModeSpy = jest.spyOn(mapUtil, "getMode").mockReturnValue(Mode.none);
   });
 
@@ -321,8 +318,8 @@ describe("<ToolSlotInventoryItem />", () => {
     const p = fakeProps();
     const wrapper = shallow(<ToolSlotInventoryItem {...p} />);
     wrapper.find(ToolSelection).simulate("change", { tool_id: 1 });
-    expect(edit).toHaveBeenCalledWith(p.toolSlot, { tool_id: 1 });
-    expect(save).toHaveBeenCalledWith(p.toolSlot.uuid);
+    expect(crud.edit).toHaveBeenCalledWith(p.toolSlot, { tool_id: 1 });
+    expect(crud.save).toHaveBeenCalledWith(p.toolSlot.uuid);
   });
 
   it("doesn't open tool slot", () => {
@@ -345,9 +342,9 @@ describe("<ToolSlotInventoryItem />", () => {
     p.toolSlot.body.id = 1;
     const wrapper = shallow(<ToolSlotInventoryItem {...p} />);
     wrapper.find("div").first().simulate("click");
-    expect(mapPointClickAction).not.toHaveBeenCalled();
+    expect(mapActions.mapPointClickAction).not.toHaveBeenCalled();
     expect(mockNavigate).toHaveBeenCalledWith(Path.toolSlots(1));
-    expect(selectPoint).toHaveBeenCalled();
+    expect(mapActions.selectPoint).toHaveBeenCalled();
     expect(p.dispatch).not.toHaveBeenCalledWith({
       type: Actions.HOVER_TOOL_SLOT, payload: undefined,
     });
@@ -360,9 +357,9 @@ describe("<ToolSlotInventoryItem />", () => {
     p.toolSlot.body.id = 1;
     const wrapper = shallow(<ToolSlotInventoryItem {...p} />);
     wrapper.find("div").first().simulate("click");
-    expect(mapPointClickAction).not.toHaveBeenCalled();
+    expect(mapActions.mapPointClickAction).not.toHaveBeenCalled();
     expect(mockNavigate).not.toHaveBeenCalled();
-    expect(selectPoint).not.toHaveBeenCalled();
+    expect(mapActions.selectPoint).not.toHaveBeenCalled();
     expect(p.dispatch).not.toHaveBeenCalledWith({
       type: Actions.HOVER_TOOL_SLOT, payload: undefined,
     });
@@ -375,7 +372,7 @@ describe("<ToolSlotInventoryItem />", () => {
     p.toolSlot.body.id = 1;
     const wrapper = shallow(<ToolSlotInventoryItem {...p} />);
     wrapper.find("div").first().simulate("click");
-    expect(mapPointClickAction).toHaveBeenCalledWith(
+    expect(mapActions.mapPointClickAction).toHaveBeenCalledWith(
       expect.any(Function),
       expect.any(Function),
       p.toolSlot.uuid);

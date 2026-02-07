@@ -1,25 +1,23 @@
 let mockDev: string | undefined = undefined;
-jest.mock("../../settings/dev/dev_support", () => {
-  const actual = jest.requireActual("../../settings/dev/dev_support");
-  return {
-    ...actual,
-    DevSettings: {
-      ...actual.DevSettings,
-      get3dCamera: () => mockDev,
-    },
-  };
-});
-
 let mockIsDesktop = true;
-jest.mock("../../screen_size", () => ({
-  isDesktop: () => mockIsDesktop,
-}));
 
 import { cameraInit } from "../camera";
+import * as devSupport from "../../settings/dev/dev_support";
+import * as screenSize from "../../screen_size";
 
-afterAll(() => {
-  jest.unmock("../../settings/dev/dev_support");
-  jest.unmock("../../screen_size");
+let get3dCameraSpy: jest.SpyInstance;
+let isDesktopSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  get3dCameraSpy = jest.spyOn(devSupport.DevSettings, "get3dCamera")
+    .mockImplementation(() => mockDev);
+  isDesktopSpy = jest.spyOn(screenSize, "isDesktop")
+    .mockImplementation(() => mockIsDesktop);
+});
+
+afterEach(() => {
+  get3dCameraSpy.mockRestore();
+  isDesktopSpy.mockRestore();
 });
 
 describe("cameraInit()", () => {

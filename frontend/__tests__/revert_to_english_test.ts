@@ -1,17 +1,22 @@
-jest.mock("../i18n", () => {
-  return { detectLanguage: jest.fn(() => Promise.resolve({ lng: "de" })) };
+import * as i18n from "../i18n";
+import { revertToEnglish } from "../revert_to_english";
+
+let detectLanguageSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  detectLanguageSpy = jest.spyOn(i18n, "detectLanguage")
+    .mockImplementation(() => Promise.resolve({ lng: "de" }) as never);
 });
 
-import { detectLanguage } from "../i18n";
-import { revertToEnglish } from "../revert_to_english";
-afterAll(() => {
-  jest.unmock("../i18n");
+afterEach(() => {
+  detectLanguageSpy.mockRestore();
 });
+
 describe("revertToEnglish", () => {
   it("calls the appropriate handler with the appropriate config", () => {
     jest.clearAllMocks();
     revertToEnglish();
-    expect(detectLanguage).toHaveBeenCalledWith("en");
+    expect(i18n.detectLanguage).toHaveBeenCalledWith("en");
     // expect(init).toHaveBeenCalled(); // WHY DOES THIS NOT WORK?
   });
 });

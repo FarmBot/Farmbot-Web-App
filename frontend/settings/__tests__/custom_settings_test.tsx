@@ -1,23 +1,21 @@
 let mockDev = false;
-jest.mock("../../settings/dev/dev_support", () => {
-  const actual = jest.requireActual("../../settings/dev/dev_support");
-  return {
-    ...actual,
-    DevSettings: {
-      ...actual.DevSettings,
-      showInternalEnvsEnabled: () => mockDev,
-    },
-  };
-});
-
 import React from "react";
 import { mount } from "enzyme";
 import { CustomSettings } from "../custom_settings";
 import { CustomSettingsProps } from "../interfaces";
 import { settingsPanelState } from "../../__test_support__/panel_state";
+import * as devSupport from "../../settings/dev/dev_support";
 
-afterAll(() => {
-  jest.unmock("../../settings/dev/dev_support");
+let showInternalEnvsEnabledSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  mockDev = false;
+  showInternalEnvsEnabledSpy = jest.spyOn(devSupport.DevSettings, "showInternalEnvsEnabled")
+    .mockImplementation(() => mockDev);
+});
+
+afterEach(() => {
+  showInternalEnvsEnabledSpy.mockRestore();
 });
 
 describe("<CustomSettings />", () => {

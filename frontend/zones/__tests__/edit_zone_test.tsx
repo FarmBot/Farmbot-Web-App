@@ -1,8 +1,3 @@
-jest.mock("../../api/crud", () => ({
-  edit: jest.fn(),
-  save: jest.fn(),
-}));
-
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
@@ -13,11 +8,16 @@ import { fakePointGroup } from "../../__test_support__/fake_state/resources";
 import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
-import { save, edit } from "../../api/crud";
+import * as crud from "../../api/crud";
 import { Path } from "../../internal_urls";
 
-afterAll(() => {
-  jest.unmock("../../api/crud");
+beforeEach(() => {
+  jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  jest.spyOn(crud, "save").mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
 });
 describe("<EditZone />", () => {
   const fakeProps = (): EditZoneProps => ({
@@ -61,8 +61,8 @@ describe("<EditZone />", () => {
     wrapper.find("input").first().simulate("blur", {
       currentTarget: { value: "new name" }
     });
-    expect(edit).toHaveBeenCalledWith(group, { name: "new name" });
-    expect(save).toHaveBeenCalledWith(group.uuid);
+    expect(crud.edit).toHaveBeenCalledWith(group, { name: "new name" });
+    expect(crud.save).toHaveBeenCalledWith(group.uuid);
   });
 });
 

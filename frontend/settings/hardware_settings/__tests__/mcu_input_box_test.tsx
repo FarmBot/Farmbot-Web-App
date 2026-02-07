@@ -1,18 +1,24 @@
-jest.mock("../../../devices/actions", () => ({ updateMCU: jest.fn() }));
-
 import React from "react";
 import { McuInputBox } from "../mcu_input_box";
 import { shallow, mount } from "enzyme";
 import { McuInputBoxProps } from "../interfaces";
 import { bot } from "../../../__test_support__/fake_state/bot";
-import { updateMCU } from "../../../devices/actions";
+import * as deviceActions from "../../../devices/actions";
 import { warning } from "../../../toast/toast";
 import { SettingStatusIndicator } from "../setting_status_indicator";
 import { BlurableInput } from "../../../ui";
 
-afterAll(() => {
-  jest.unmock("../../../devices/actions");
+let updateMCUSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  updateMCUSpy = jest.spyOn(deviceActions, "updateMCU")
+    .mockImplementation(jest.fn());
 });
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
+
 describe("McuInputBox", () => {
   const fakeProps = (): McuInputBoxProps => ({
     sourceFwConfig: x =>
@@ -60,7 +66,7 @@ describe("McuInputBox", () => {
     const wrapper = shallow(<McuInputBox {...p} />);
     wrapper.find("BlurableInput").simulate("commit",
       { currentTarget: { value: "5.5" } });
-    expect(updateMCU).toHaveBeenCalledWith("encoder_enabled_x", "5.5");
+    expect(updateMCUSpy).toHaveBeenCalledWith("encoder_enabled_x", "5.5");
   });
 
   it("handles int", () => {
@@ -69,7 +75,7 @@ describe("McuInputBox", () => {
     const wrapper = shallow(<McuInputBox {...p} />);
     wrapper.find("BlurableInput").simulate("commit",
       { currentTarget: { value: "5.5" } });
-    expect(updateMCU).toHaveBeenCalledWith("encoder_enabled_x", "5");
+    expect(updateMCUSpy).toHaveBeenCalledWith("encoder_enabled_x", "5");
   });
 
   it("scales values", () => {
@@ -80,7 +86,7 @@ describe("McuInputBox", () => {
     expect(wrapper.find(BlurableInput).props().value).toEqual("0.7");
     wrapper.find("BlurableInput").simulate("commit",
       { currentTarget: { value: "5.5" } });
-    expect(updateMCU).toHaveBeenCalledWith("encoder_enabled_x", "55");
+    expect(updateMCUSpy).toHaveBeenCalledWith("encoder_enabled_x", "55");
   });
 
   it("doesn't update when values match", () => {
@@ -89,7 +95,7 @@ describe("McuInputBox", () => {
     const wrapper = shallow(<McuInputBox {...p} />);
     wrapper.find("BlurableInput").simulate("commit",
       { currentTarget: { value: "1" } });
-    expect(updateMCU).not.toHaveBeenCalled();
+    expect(updateMCUSpy).not.toHaveBeenCalled();
   });
 
   it("doesn't update when values match after scaling function", () => {
@@ -99,7 +105,7 @@ describe("McuInputBox", () => {
     const wrapper = shallow(<McuInputBox {...p} />);
     wrapper.find("BlurableInput").simulate("commit",
       { currentTarget: { value: "0" } });
-    expect(updateMCU).not.toHaveBeenCalled();
+    expect(updateMCUSpy).not.toHaveBeenCalled();
   });
 
   it("restricts values to min and max", () => {

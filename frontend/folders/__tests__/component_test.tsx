@@ -21,13 +21,9 @@ jest.mock("@blueprintjs/core", () => ({
   MenuItem: jest.fn(),
   Alignment: jest.fn(),
 }));
-
-import { PopoverProps } from "../../ui/popover";
-let mockPopover = ({ target, content }: PopoverProps) =>
+import * as popover from "../../ui/popover";
+let mockPopover = ({ target, content }: popover.PopoverProps) =>
   <div>{target}{content}</div>;
-jest.mock("../../ui/popover", () => ({
-  Popover: jest.fn((p: PopoverProps) => mockPopover(p)),
-}));
 
 jest.mock("@blueprintjs/select", () => ({
   Select: { ofType: jest.fn() },
@@ -67,20 +63,23 @@ import { buildResourceIndex } from "../../__test_support__/resource_index_builde
 import { fakeMenuOpenState } from "../../__test_support__/fake_designer_state";
 
 let copySequenceSpy: jest.SpyInstance;
+let popoverSpy: jest.SpyInstance;
 
 beforeEach(() => {
+  popoverSpy = jest.spyOn(popover, "Popover")
+    .mockImplementation((p: popover.PopoverProps) => mockPopover(p));
   copySequenceSpy = jest.spyOn(sequenceActions, "copySequence")
     .mockImplementation(jest.fn());
 });
 
 afterEach(() => {
+  popoverSpy.mockRestore();
   copySequenceSpy.mockRestore();
 });
 
 afterAll(() => {
   jest.unmock("../actions");
   jest.unmock("@blueprintjs/core");
-  jest.unmock("../../ui/popover");
   jest.unmock("@blueprintjs/select");
 });
 
@@ -274,7 +273,7 @@ describe("<FolderListItem />", () => {
   });
 
   beforeEach(() => {
-    mockPopover = ({ target, content }: PopoverProps) =>
+    mockPopover = ({ target, content }: popover.PopoverProps) =>
       <div>{target}{content}</div>;
   });
 

@@ -1,20 +1,25 @@
 let mockPostResponse = Promise.resolve({ data: { foo: "bar" } });
-jest.mock("axios", () => ({
-  get: jest.fn(() => Promise.resolve({ data: { foo: "bar" } })),
-  post: jest.fn(() => mockPostResponse),
-}));
 
 import axios from "axios";
 import { fetchBulletinContent, seedAccount } from "../actions";
 import { info, error } from "../../toast/toast";
 import { API } from "../../api/api";
 
+let axiosGetSpy: jest.SpyInstance;
+let axiosPostSpy: jest.SpyInstance;
+
 beforeEach(() => {
+  mockPostResponse = Promise.resolve({ data: { foo: "bar" } });
   API.setBaseUrl("http://localhost:3000");
+  axiosGetSpy = jest.spyOn(axios, "get")
+    .mockImplementation(() => Promise.resolve({ data: { foo: "bar" } }) as never);
+  axiosPostSpy = jest.spyOn(axios, "post")
+    .mockImplementation(() => mockPostResponse as never);
 });
 
-afterAll(() => {
-  jest.unmock("axios");
+afterEach(() => {
+  axiosGetSpy.mockRestore();
+  axiosPostSpy.mockRestore();
 });
 describe("fetchBulletinContent()", () => {
   it("fetches data", async () => {

@@ -39,7 +39,7 @@ describe("<JobsAndLogs />", () => {
     dispatch: jest.fn(),
     logs: [],
     timeSettings: fakeTimeSettings(),
-    sourceFbosConfig: jest.fn(),
+    sourceFbosConfig: jest.fn(() => ({ value: undefined, consistent: true })),
     getConfigValue: jest.fn(),
     bot,
     fbosVersion: undefined,

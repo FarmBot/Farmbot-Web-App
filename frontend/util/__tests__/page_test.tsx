@@ -2,6 +2,7 @@ import { updatePageInfo, attachToRoot } from "../page";
 import React from "react";
 import * as i18n from "../../i18n";
 import * as i18next from "i18next";
+import * as reactDomClient from "react-dom/client";
 
 beforeEach(() => {
   jest.useRealTimers();
@@ -9,6 +10,7 @@ beforeEach(() => {
 
 afterEach(() => {
   jest.useRealTimers();
+  jest.restoreAllMocks();
 });
 
 describe("updatePageInfo()", () => {
@@ -46,7 +48,14 @@ const clear = () => {
 describe("attachToRoot()", () => {
   it("attaches page", () => {
     clear();
-    expect(() => attachToRoot(Foo, { text: "Bar" })).toThrow();
+    const render = jest.fn();
+    jest.spyOn(reactDomClient, "createRoot").mockImplementation(() =>
+      ({ render, unmount: jest.fn() }) as unknown as ReturnType<typeof reactDomClient.createRoot>);
+    expect(() => attachToRoot(Foo, { text: "Bar" })).not.toThrow();
+    expect(reactDomClient.createRoot).toHaveBeenCalledWith(
+      document.getElementById("root"));
+    expect(render).toHaveBeenCalled();
+    clear();
   });
 });
 
@@ -54,6 +63,9 @@ describe("entryPoint()", () => {
   it("calls entry callbacks", async () => {
     clear();
     const { entryPoint } = jest.requireActual<typeof import("../page")>("../page");
+    const render = jest.fn();
+    jest.spyOn(reactDomClient, "createRoot").mockImplementation(() =>
+      ({ render, unmount: jest.fn() }) as unknown as ReturnType<typeof reactDomClient.createRoot>);
     jest.spyOn(i18n, "detectLanguage").mockResolvedValue({
       lng: "en",
       fallbackLng: "en",
@@ -71,6 +83,8 @@ describe("entryPoint()", () => {
     if (result && typeof result.then == "function") {
       await result;
       expect(initSpy).toHaveBeenCalled();
+      expect(render).toHaveBeenCalled();
     }
+    clear();
   });
 });

@@ -1,16 +1,21 @@
-jest.mock("../../devices/actions", () => ({ badVersion: jest.fn() }));
-
 import {
   buildResourceIndex, fakeDevice,
 } from "../../__test_support__/resource_index_builder";
 import { AnyAction, Dispatch, MiddlewareAPI } from "redux";
 import { bot as fakeBot } from "../../__test_support__/fake_state/bot";
 import { cloneDeep } from "lodash";
+import * as deviceActions from "../../devices/actions";
 
-afterAll(() => {
-  jest.unmock("../../devices/actions");
-});
 describe("version tracker middleware", () => {
+  beforeEach(() => {
+    jest.spyOn(deviceActions, "badVersion")
+      .mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it("Calls Rollbar.configure", async () => {
     const { versionChangeMiddleware } = await import("../version_tracker_middleware");
     const before = window.Rollbar;

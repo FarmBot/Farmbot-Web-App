@@ -1,5 +1,3 @@
-jest.mock("../../api/crud", () => ({ initSaveGetId: jest.fn() }));
-
 import React, { act } from "react";
 import { mount, shallow } from "enzyme";
 import {
@@ -7,17 +5,18 @@ import {
 } from "../zones_inventory";
 import { fakeState } from "../../__test_support__/fake_state";
 import { fakePointGroup } from "../../__test_support__/fake_state/resources";
-import { initSaveGetId } from "../../api/crud";
+import * as crud from "../../api/crud";
 import { DesignerPanelTop } from "../../farm_designer/designer_panel";
 import { SearchField } from "../../ui/search_field";
 import { Path } from "../../internal_urls";
 
 beforeEach(() => {
   jest.clearAllMocks();
+  jest.spyOn(crud, "initSaveGetId").mockImplementation(jest.fn());
 });
 
-afterAll(() => {
-  jest.unmock("../../api/crud");
+afterEach(() => {
+  jest.restoreAllMocks();
 });
 
 describe("<Zones> />", () => {
@@ -65,7 +64,7 @@ describe("<Zones> />", () => {
     p.dispatch = jest.fn(() => Promise.resolve(1));
     const wrapper = shallow(<Zones {...p} />);
     await wrapper.find(DesignerPanelTop).simulate("click");
-    expect(initSaveGetId).toHaveBeenCalledWith("PointGroup", {
+    expect(crud.initSaveGetId).toHaveBeenCalledWith("PointGroup", {
       name: "Untitled Zone", point_ids: []
     });
     expect(mockNavigate).toHaveBeenCalledWith(Path.zones(1));
@@ -76,7 +75,7 @@ describe("<Zones> />", () => {
     p.dispatch = jest.fn(() => Promise.reject());
     const wrapper = shallow(<Zones {...p} />);
     await wrapper.find(DesignerPanelTop).simulate("click");
-    expect(initSaveGetId).toHaveBeenCalledWith("PointGroup", {
+    expect(crud.initSaveGetId).toHaveBeenCalledWith("PointGroup", {
       name: "Untitled Zone", point_ids: []
     });
     expect(mockNavigate).not.toHaveBeenCalled();

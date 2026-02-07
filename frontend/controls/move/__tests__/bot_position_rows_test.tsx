@@ -9,6 +9,7 @@ import { BooleanSetting } from "../../../session_keys";
 import { clickButton } from "../../../__test_support__/helpers";
 import { Path } from "../../../internal_urls";
 import * as configStorageActions from "../../../config_storage/actions";
+import { cloneDeep } from "lodash";
 
 describe("<BotPositionRows />", () => {
   const mockConfig: Dictionary<boolean> = {};
@@ -49,7 +50,7 @@ describe("<BotPositionRows />", () => {
   const fakeProps = (): BotPositionRowsProps => ({
     getConfigValue: jest.fn(key => mockConfig[key]),
     sourceFwConfig: () => ({ value: 0, consistent: true }),
-    locationData: bot.hardware.location_data,
+    locationData: cloneDeep(bot.hardware.location_data),
     arduinoBusy: false,
     firmwareSettings: {},
     firmwareHardware: undefined,
@@ -120,7 +121,7 @@ describe("<BotPositionRows />", () => {
   it("navigates to axis settings", () => {
     const wrapper = mount(<BotPositionRows {...fakeProps()} />);
     wrapper.find(".fa-ellipsis-v").first().simulate("click");
-    wrapper.find("a").simulate("click");
+    wrapper.find(".axis-actions a").first().simulate("click");
     expect(mockNavigate).toHaveBeenCalledWith(Path.settings("axes"));
   });
 });

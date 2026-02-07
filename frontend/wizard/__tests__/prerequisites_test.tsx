@@ -1,10 +1,4 @@
-jest.mock("../actions", () => ({ setOrderNumber: jest.fn() }));
-
 let mockOnlineValue = true;
-jest.mock("../../devices/must_be_online", () => ({
-  isBotOnlineFromState: () => mockOnlineValue,
-}));
-
 import React from "react";
 import { mount, shallow } from "enzyme";
 import { botOnlineReq, ProductRegistration } from "../prerequisites";
@@ -14,11 +8,21 @@ import {
 } from "../../__test_support__/resource_index_builder";
 import { mockDispatch } from "../../__test_support__/fake_dispatch";
 import { bot } from "../../__test_support__/fake_state/bot";
-import { setOrderNumber } from "../actions";
+import * as wizardActions from "../actions";
+import * as mustBeOnline from "../../devices/must_be_online";
 
-afterAll(() => {
-  jest.unmock("../actions");
-  jest.unmock("../../devices/must_be_online");
+let setOrderNumberSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  setOrderNumberSpy = jest.spyOn(wizardActions, "setOrderNumber")
+    .mockImplementation(jest.fn());
+  jest.spyOn(mustBeOnline, "isBotOnlineFromState")
+    .mockImplementation(() => mockOnlineValue);
+});
+
+afterEach(() => {
+  mockOnlineValue = true;
+  jest.restoreAllMocks();
 });
 describe("<ProductRegistration />", () => {
   const fakeProps = (): WizardStepComponentProps => ({
@@ -34,7 +38,7 @@ describe("<ProductRegistration />", () => {
     wrapper.find("BlurableInput").simulate("commit", {
       currentTarget: { value: "123" }
     });
-    expect(setOrderNumber).toHaveBeenCalledWith(expect.any(Object), "123");
+    expect(setOrderNumberSpy).toHaveBeenCalledWith(expect.any(Object), "123");
   });
 });
 

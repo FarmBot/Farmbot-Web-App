@@ -1,18 +1,22 @@
-jest.mock("../../../devices/actions", () => ({
-  updateConfig: jest.fn(),
-}));
-
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
   ChangeFirmwarePath, ChangeFirmwarePathProps,
   FirmwarePathRow, FirmwarePathRowProps,
 } from "../firmware_path";
-import { updateConfig } from "../../../devices/actions";
+import * as deviceActions from "../../../devices/actions";
 
-afterAll(() => {
-  jest.unmock("../../../devices/actions");
+let updateConfigSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  updateConfigSpy = jest.spyOn(deviceActions, "updateConfig")
+    .mockImplementation(jest.fn());
 });
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
+
 describe("<FirmwarePathRow />", () => {
   const fakeProps = (): FirmwarePathRowProps => ({
     dispatch: jest.fn(),
@@ -42,15 +46,15 @@ describe("<ChangeFirmwarePath />", () => {
   it("changes path", () => {
     const wrapper = shallow(<ChangeFirmwarePath {...fakeProps()} />);
     wrapper.find("FBSelect").simulate("change", { label: "", value: "path" });
-    expect(updateConfig).toHaveBeenCalledWith({ firmware_path: "path" });
+    expect(updateConfigSpy).toHaveBeenCalledWith({ firmware_path: "path" });
   });
 
   it("selects manual input", () => {
     const wrapper = shallow(<ChangeFirmwarePath {...fakeProps()} />);
     wrapper.find("FBSelect").simulate("change", { label: "", value: "manual" });
-    expect(updateConfig).not.toHaveBeenCalled();
+    expect(updateConfigSpy).not.toHaveBeenCalled();
     wrapper.find("input").simulate("change", { currentTarget: { value: "path" } });
     wrapper.find("button").last().simulate("click");
-    expect(updateConfig).toHaveBeenCalledWith({ firmware_path: "path" });
+    expect(updateConfigSpy).toHaveBeenCalledWith({ firmware_path: "path" });
   });
 });

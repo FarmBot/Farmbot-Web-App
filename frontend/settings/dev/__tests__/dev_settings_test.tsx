@@ -28,6 +28,8 @@ let editSpy: jest.SpyInstance;
 let saveSpy: jest.SpyInstance;
 let originalDispatch: typeof store.dispatch;
 let originalGetState: typeof store.getState;
+const toggleButton = (container: HTMLElement) =>
+  container.querySelector("button") as HTMLButtonElement;
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -187,8 +189,8 @@ describe("<DevWidgetShowInternalEnvsRow />", () => {
 
 describe("<DevWidgetAllOrderOptionsRow />", () => {
   it("enables all order options", () => {
-    render(<DevWidgetAllOrderOptionsRow />);
-    fireEvent.click(screen.getByRole("button"));
+    const { container } = render(<DevWidgetAllOrderOptionsRow />);
+    fireEvent.click(toggleButton(container));
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith("internal_use",
       JSON.stringify({ [DevSettings.ALL_ORDER_OPTIONS]: "true" }));
     delete mockDevSettings[DevSettings.ALL_ORDER_OPTIONS];
@@ -196,8 +198,8 @@ describe("<DevWidgetAllOrderOptionsRow />", () => {
 
   it("disables all order options", () => {
     mockDevSettings[DevSettings.ALL_ORDER_OPTIONS] = "true";
-    render(<DevWidgetAllOrderOptionsRow />);
-    fireEvent.click(screen.getByRole("button"));
+    const { container } = render(<DevWidgetAllOrderOptionsRow />);
+    fireEvent.click(toggleButton(container));
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith("internal_use", "{}");
     delete mockDevSettings[DevSettings.ALL_ORDER_OPTIONS];
   });
@@ -205,16 +207,16 @@ describe("<DevWidgetAllOrderOptionsRow />", () => {
 
 describe("<DevWidgetChunkingDisabledRow />", () => {
   it("enables chunking disabled", () => {
-    render(<DevWidgetChunkingDisabledRow />);
-    fireEvent.click(screen.getByRole("button"));
+    const { container } = render(<DevWidgetChunkingDisabledRow />);
+    fireEvent.click(toggleButton(container));
     expect(localStorage.getItem("DISABLE_CHUNKING")).toEqual("true");
     localStorage.removeItem("DISABLE_CHUNKING");
   });
 
   it("disables chunking disabled", () => {
     localStorage.setItem("DISABLE_CHUNKING", "true");
-    render(<DevWidgetChunkingDisabledRow />);
-    fireEvent.click(screen.getByRole("button"));
+    const { container } = render(<DevWidgetChunkingDisabledRow />);
+    fireEvent.click(toggleButton(container));
     expect(localStorage.getItem("DISABLE_CHUNKING")).toBeFalsy();
     localStorage.removeItem("DISABLE_CHUNKING");
   });

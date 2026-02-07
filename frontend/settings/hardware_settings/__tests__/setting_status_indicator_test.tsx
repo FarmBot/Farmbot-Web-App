@@ -1,15 +1,20 @@
-jest.mock("../export_menu", () => ({ resendParameters: jest.fn() }));
-
 import React from "react";
 import { mount } from "enzyme";
 import {
   SettingStatusIndicator,
   SettingStatusIndicatorProps,
 } from "../setting_status_indicator";
-import { resendParameters } from "../export_menu";
+import * as exportMenu from "../export_menu";
 
-afterAll(() => {
-  jest.unmock("../export_menu");
+let resendParametersSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  resendParametersSpy = jest.spyOn(exportMenu, "resendParameters")
+    .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  resendParametersSpy.mockRestore();
 });
 describe("<SettingStatusIndicator />", () => {
   const fakeProps = (): SettingStatusIndicatorProps => ({
@@ -24,7 +29,7 @@ describe("<SettingStatusIndicator />", () => {
     p.isSyncing = true;
     const wrapper = mount(<SettingStatusIndicator {...p} />);
     wrapper.find(".fa-exclamation-triangle").simulate("click");
-    expect(resendParameters).toHaveBeenCalled();
+    expect(exportMenu.resendParameters).toHaveBeenCalled();
   });
 
   it("displays spinner", () => {

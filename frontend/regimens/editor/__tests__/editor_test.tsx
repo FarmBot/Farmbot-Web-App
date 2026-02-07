@@ -1,8 +1,3 @@
-import { PopoverProps } from "../../../ui/popover";
-jest.mock("../../../ui/popover", () => ({
-  Popover: ({ target, content }: PopoverProps) => <div>{target}{content}</div>,
-}));
-
 import React from "react";
 import { mount } from "enzyme";
 import {
@@ -17,12 +12,17 @@ import * as activeRegimen from "../../set_active_regimen_by_name";
 import { Color } from "farmbot";
 import * as crud from "../../../api/crud";
 import * as addRegimenModule from "../../list/add_regimen";
+import * as popover from "../../../ui/popover";
 
 let setActiveRegimenByNameSpy: jest.SpyInstance;
 let editSpy: jest.SpyInstance;
 let addRegimenSpy: jest.SpyInstance;
+let popoverSpy: jest.SpyInstance;
 
 beforeEach(() => {
+  popoverSpy = jest.spyOn(popover, "Popover")
+    .mockImplementation(({ target, content }: popover.PopoverProps) =>
+      <div>{target}{content}</div>);
   setActiveRegimenByNameSpy = jest.spyOn(activeRegimen, "setActiveRegimenByName")
     .mockImplementation(jest.fn());
   editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
@@ -31,13 +31,10 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  popoverSpy.mockRestore();
   setActiveRegimenByNameSpy.mockRestore();
   editSpy.mockRestore();
   addRegimenSpy.mockRestore();
-});
-
-afterAll(() => {
-  jest.unmock("../../../ui/popover");
 });
 
 describe("<DesignerRegimenEditor />", () => {

@@ -1,12 +1,3 @@
-jest.mock("../../config_storage/actions", () => ({
-  ...jest.requireActual("../../config_storage/actions"),
-  setWebAppConfigValue: jest.fn(),
-}));
-
-jest.mock("../../devices/actions", () => ({
-  updateConfig: jest.fn(),
-}));
-
 import React from "react";
 import { mount } from "enzyme";
 import {
@@ -14,14 +5,21 @@ import {
   LogEnableSetting,
 } from "../other_settings";
 import { DeviceSetting } from "../../constants";
-import { setWebAppConfigValue } from "../../config_storage/actions";
-import { updateConfig } from "../../devices/actions";
+import * as configStorageActions from "../../config_storage/actions";
+import * as deviceActions from "../../devices/actions";
 
-afterAll(() => {
-  jest.unmock("../../devices/actions");
-  jest.unmock("../../config_storage/actions");
-});
 describe("<LogLevelSetting />", () => {
+  let setWebAppConfigValueSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    setWebAppConfigValueSpy = jest.spyOn(configStorageActions, "setWebAppConfigValue")
+      .mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    setWebAppConfigValueSpy.mockRestore();
+  });
+
   const fakeProps = (): LogLevelSettingProps => ({
     dispatch: jest.fn(),
     title: DeviceSetting.logFilterLevelSuccess,
@@ -33,11 +31,22 @@ describe("<LogLevelSetting />", () => {
   it("toggles setting", () => {
     const wrapper = mount(<LogLevelSetting {...fakeProps()} />);
     wrapper.find("ToggleButton").simulate("click");
-    expect(setWebAppConfigValue).toHaveBeenCalledWith("success_log", false);
+    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith("success_log", false);
   });
 });
 
 describe("<LogEnableSetting />", () => {
+  let updateConfigSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    updateConfigSpy = jest.spyOn(deviceActions, "updateConfig")
+      .mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    updateConfigSpy.mockRestore();
+  });
+
   const fakeProps = (): LogEnableSettingProps => ({
     dispatch: jest.fn(),
     title: DeviceSetting.sequenceBeginLogs,
@@ -49,6 +58,6 @@ describe("<LogEnableSetting />", () => {
   it("toggles setting", () => {
     const wrapper = mount(<LogEnableSetting {...fakeProps()} />);
     wrapper.find("ToggleButton").simulate("click");
-    expect(updateConfig).toHaveBeenCalledWith({ sequence_init_log: false });
+    expect(updateConfigSpy).toHaveBeenCalledWith({ sequence_init_log: false });
   });
 });

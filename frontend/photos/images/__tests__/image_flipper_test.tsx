@@ -1,8 +1,3 @@
-jest.mock("../actions", () => ({
-  selectImage: jest.fn(),
-  setShownMapImages: jest.fn(),
-}));
-
 import React from "react";
 import { shallow, mount } from "enzyme";
 import {
@@ -14,12 +9,26 @@ import { defensiveClone } from "../../../util";
 import { ImageFlipperProps } from "../interfaces";
 import { Actions } from "../../../constants";
 import { UUID } from "../../../resources/interfaces";
-import { selectImage, setShownMapImages } from "../actions";
+import * as imageActions from "../actions";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 
-afterAll(() => {
-  jest.unmock("../actions");
+let selectImageSpy: jest.SpyInstance;
+let setShownMapImagesSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  selectImageSpy = jest.spyOn(imageActions, "selectImage")
+    .mockImplementation((uuid: UUID | undefined) =>
+      ({ type: "SELECT_IMAGE", payload: uuid }) as never);
+  setShownMapImagesSpy = jest.spyOn(imageActions, "setShownMapImages")
+    .mockImplementation((uuid: UUID | undefined) =>
+      ({ type: "SET_SHOWN_MAP_IMAGES", payload: uuid ? [1] : [] }) as never);
 });
+
+afterEach(() => {
+  selectImageSpy.mockRestore();
+  setShownMapImagesSpy.mockRestore();
+});
+
 describe("<ImageFlipper/>", () => {
   function prepareImages(data: TaggedImage[]): TaggedImage[] {
     const images: TaggedImage[] = [];
@@ -44,13 +53,13 @@ describe("<ImageFlipper/>", () => {
   });
 
   const expectFlip = (uuid: UUID) => {
-    expect(selectImage).toHaveBeenCalledWith(uuid);
-    expect(setShownMapImages).toHaveBeenCalledWith(uuid);
+    expect(imageActions.selectImage).toHaveBeenCalledWith(uuid);
+    expect(imageActions.setShownMapImages).toHaveBeenCalledWith(uuid);
   };
 
   const expectNoFlip = () => {
-    expect(selectImage).not.toHaveBeenCalled();
-    expect(setShownMapImages).not.toHaveBeenCalled();
+    expect(imageActions.selectImage).not.toHaveBeenCalled();
+    expect(imageActions.setShownMapImages).not.toHaveBeenCalled();
   };
 
   it("defaults to index 0 and flips up", () => {

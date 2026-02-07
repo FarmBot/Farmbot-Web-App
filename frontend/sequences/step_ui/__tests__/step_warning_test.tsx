@@ -5,7 +5,9 @@ import { StepWarning, conflictsString } from "../step_warning";
 describe("<StepWarning />", () => {
   it("renders", () => {
     const wrapper = mount(<StepWarning warning={"warning"} />);
-    expect(wrapper.find("i").hasClass("fa-exclamation-triangle")).toBeTruthy();
+    expect(wrapper.find(".step-warning").length).toEqual(1);
+    expect(wrapper.find(".step-warning").prop("title"))
+      .toEqual("Hardware setting conflict");
     expect(wrapper.html()).toContain("Hardware setting conflict");
   });
 
@@ -13,7 +15,9 @@ describe("<StepWarning />", () => {
     const wrapper = mount(<StepWarning
       warning={"warning"}
       conflicts={{ x: true, y: true, z: false }} />);
-    expect(wrapper.find("i").hasClass("fa-exclamation-triangle")).toBeTruthy();
+    expect(wrapper.find(".step-warning").length).toEqual(1);
+    expect(wrapper.find(".step-warning").prop("title"))
+      .toEqual("Hardware setting conflict: x, y");
     expect(wrapper.html()).toContain("Hardware setting conflict: x, y");
   });
 

@@ -1,24 +1,4 @@
 let mockDev = false;
-jest.mock("../../settings/dev/dev_support", () => {
-  const actual = jest.requireActual("../../settings/dev/dev_support");
-  return {
-    ...actual,
-    DevSettings: {
-      ...actual.DevSettings,
-      futureFeaturesEnabled: () => mockDev,
-      overriddenFbosVersion: jest.fn(),
-      showInternalEnvsEnabled: jest.fn(),
-    },
-  };
-});
-
-jest.mock("../../farmware/farmware_info", () => ({
-  requestFarmwareUpdate: jest.fn(),
-}));
-
-jest.mock("../../devices/actions", () => ({
-  takePhoto: jest.fn(),
-}));
 
 import React from "react";
 import { mount, shallow } from "enzyme";
@@ -27,10 +7,11 @@ import {
   UpdateImagingPackage,
   UpdateImagingPackageProps,
 } from "../../photos/photos";
+import * as devSupport from "../../settings/dev/dev_support";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { ExpandableHeader, ToggleButton } from "../../ui";
 import { DesignerPhotosProps, PhotosPanelState } from "../interfaces";
-import { requestFarmwareUpdate } from "../../farmware/farmware_info";
+import * as farmwareInfo from "../../farmware/farmware_info";
 import { fakeFarmware } from "../../__test_support__/fake_farmwares";
 import { FarmwareName } from "../../sequences/step_tiles/tile_execute_script";
 import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
@@ -40,13 +21,25 @@ import {
 import { fakePhotosPanelState } from "../../__test_support__/fake_camera_data";
 import { Actions, Content, ToolTips } from "../../constants";
 import { clickButton } from "../../__test_support__/helpers";
-import { takePhoto } from "../../devices/actions";
+import * as deviceActions from "../../devices/actions";
 import { error } from "../../toast/toast";
 
-afterAll(() => {
-  jest.unmock("../../settings/dev/dev_support");
-  jest.unmock("../../farmware/farmware_info");
-  jest.unmock("../../devices/actions");
+beforeEach(() => {
+  jest.spyOn(devSupport.DevSettings, "futureFeaturesEnabled")
+    .mockImplementation(() => mockDev);
+  jest.spyOn(devSupport.DevSettings, "overriddenFbosVersion")
+    .mockImplementation(jest.fn());
+  jest.spyOn(devSupport.DevSettings, "showInternalEnvsEnabled")
+    .mockImplementation(jest.fn());
+  jest.spyOn(farmwareInfo, "requestFarmwareUpdate")
+    .mockImplementation(jest.fn());
+  jest.spyOn(deviceActions, "takePhoto")
+    .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  mockDev = false;
+  jest.restoreAllMocks();
 });
 
 describe("<DesignerPhotos />", () => {
@@ -110,7 +103,7 @@ describe("<DesignerPhotos />", () => {
     const btn = wrapper.find("button").first();
     expect(btn.props().title).not.toEqual(Content.NO_CAMERA_SELECTED);
     clickButton(wrapper, 0, "take photo");
-    expect(takePhoto).toHaveBeenCalled();
+    expect(deviceActions.takePhoto).toHaveBeenCalled();
   });
 
   it("shows disabled take photo button", () => {
@@ -123,7 +116,7 @@ describe("<DesignerPhotos />", () => {
     btn.simulate("click");
     expect(error).toHaveBeenCalledWith(
       ToolTips.SELECT_A_CAMERA, { title: Content.NO_CAMERA_SELECTED });
-    expect(takePhoto).not.toHaveBeenCalled();
+    expect(deviceActions.takePhoto).not.toHaveBeenCalled();
   });
 
   it("shows image download progress", () => {
@@ -146,7 +139,8 @@ describe("<UpdateImagingPackage />", () => {
     p.version = "1.0.0";
     const wrapper = mount(<UpdateImagingPackage {...p} />);
     wrapper.find("i").simulate("click");
-    expect(requestFarmwareUpdate).toHaveBeenCalledWith("take-photo", true);
+    expect(farmwareInfo.requestFarmwareUpdate)
+      .toHaveBeenCalledWith("take-photo", true);
   });
 
   it("doesn't render update button", () => {

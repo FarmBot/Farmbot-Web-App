@@ -1,8 +1,3 @@
-jest.mock("../../../api/crud", () => ({
-  edit: jest.fn(),
-  save: jest.fn(),
-}));
-
 import React from "react";
 import { mount } from "enzyme";
 import {
@@ -14,17 +9,22 @@ import {
 } from "../../../__test_support__/fake_state/resources";
 import { error } from "../../../toast/toast";
 import { fakeState } from "../../../__test_support__/fake_state";
-import { edit, save } from "../../../api/crud";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
+import * as crud from "../../../api/crud";
+let editSpy: jest.SpyInstance;
+let saveSpy: jest.SpyInstance;
 
 beforeEach(() => {
   jest.clearAllMocks();
+  editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
 });
 
-afterAll(() => {
-  jest.unmock("../../../api/crud");
+afterEach(() => {
+  editSpy.mockRestore();
+  saveSpy.mockRestore();
 });
 
 describe("<FwParamExportMenu />", () => {
@@ -66,8 +66,8 @@ describe("importParameters()", () => {
   it("errors", () => {
     importParameters("")(jest.fn(), fakeState);
     expect(error).toHaveBeenCalledWith("Hardware parameter import error.");
-    expect(edit).not.toHaveBeenCalled();
-    expect(save).not.toHaveBeenCalled();
+    expect(crud.edit).not.toHaveBeenCalled();
+    expect(crud.save).not.toHaveBeenCalled();
   });
 
   it("doesn't import settings", () => {
@@ -75,8 +75,8 @@ describe("importParameters()", () => {
     state.resources = buildResourceIndex([]);
     importParameters("{}")(jest.fn(), () => state);
     expect(error).not.toHaveBeenCalled();
-    expect(edit).not.toHaveBeenCalled();
-    expect(save).not.toHaveBeenCalled();
+    expect(crud.edit).not.toHaveBeenCalled();
+    expect(crud.save).not.toHaveBeenCalled();
   });
 
   it("imports settings", () => {
@@ -86,8 +86,8 @@ describe("importParameters()", () => {
     state.resources = buildResourceIndex([config]);
     importParameters("{\"encoder_enabled\":{\"x\":1}}")(jest.fn(), () => state);
     expect(error).not.toHaveBeenCalled();
-    expect(edit).toHaveBeenCalledWith(config, { encoder_enabled_x: 1 });
-    expect(save).toHaveBeenCalledWith(config.uuid);
+    expect(crud.edit).toHaveBeenCalledWith(config, { encoder_enabled_x: 1 });
+    expect(crud.save).toHaveBeenCalledWith(config.uuid);
   });
 });
 
@@ -99,8 +99,8 @@ describe("resendParameters()", () => {
     state.resources = buildResourceIndex([config]);
     resendParameters()(jest.fn(), () => state);
     config.body.param_version = 2;
-    expect(edit).toHaveBeenCalledWith(config, config.body);
-    expect(save).toHaveBeenCalledWith(config.uuid);
+    expect(crud.edit).toHaveBeenCalledWith(config, config.body);
+    expect(crud.save).toHaveBeenCalledWith(config.uuid);
   });
 
   it("rolls", () => {
@@ -110,15 +110,15 @@ describe("resendParameters()", () => {
     state.resources = buildResourceIndex([config]);
     resendParameters()(jest.fn(), () => state);
     config.body.param_version = 1;
-    expect(edit).toHaveBeenCalledWith(config, config.body);
-    expect(save).toHaveBeenCalledWith(config.uuid);
+    expect(crud.edit).toHaveBeenCalledWith(config, config.body);
+    expect(crud.save).toHaveBeenCalledWith(config.uuid);
   });
 
   it("handles missing firmware config", () => {
     const state = fakeState();
     state.resources = buildResourceIndex([]);
     resendParameters()(jest.fn(), () => state);
-    expect(edit).not.toHaveBeenCalled();
-    expect(save).not.toHaveBeenCalled();
+    expect(crud.edit).not.toHaveBeenCalled();
+    expect(crud.save).not.toHaveBeenCalled();
   });
 });

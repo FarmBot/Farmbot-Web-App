@@ -1,32 +1,25 @@
-jest.mock("../../farm_designer/map/layers/farmbot/bot_trail", () => ({
-  resetVirtualTrail: jest.fn(),
-}));
-
-jest.mock("../../config_storage/actions", () => ({
-  ...jest.requireActual("../../config_storage/actions"),
-  getWebAppConfigValue: () => () => false,
-  setWebAppConfigValue: jest.fn(),
-}));
-
 import React from "react";
 import { mount } from "enzyme";
 import { PlainDesignerSettings, Setting } from "../farm_designer_settings";
 import { DesignerSettingsPropsBase, SettingProps } from "../interfaces";
-import {
-  resetVirtualTrail,
-} from "../../farm_designer/map/layers/farmbot/bot_trail";
 import { BooleanSetting } from "../../session_keys";
 import { DeviceSetting } from "../../constants";
-import { setWebAppConfigValue } from "../../config_storage/actions";
+import * as botTrail from "../../farm_designer/map/layers/farmbot/bot_trail";
+import * as configStorageActions from "../../config_storage/actions";
 import { fakeFirmwareConfig } from "../../__test_support__/fake_state/resources";
 
-afterAll(() => {
-  jest.unmock("../../config_storage/actions");
-});
-afterAll(() => {
-  jest.unmock("../../farm_designer/map/layers/farmbot/bot_trail");
-});
 describe("<PlainDesignerSettings />", () => {
+  let resetVirtualTrailSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    resetVirtualTrailSpy = jest.spyOn(botTrail, "resetVirtualTrail")
+      .mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    resetVirtualTrailSpy.mockRestore();
+  });
+
   const fakeProps = (): DesignerSettingsPropsBase => ({
     dispatch: jest.fn(),
     getConfigValue: () => 0,
@@ -47,7 +40,7 @@ describe("<PlainDesignerSettings />", () => {
     </div>);
     expect(wrapper.find("label").at(0).text()).toContain("animations");
     wrapper.find("button").at(0).simulate("click");
-    expect(resetVirtualTrail).not.toHaveBeenCalled();
+    expect(resetVirtualTrailSpy).not.toHaveBeenCalled();
   });
 
   it("calls callback", () => {
@@ -57,11 +50,22 @@ describe("<PlainDesignerSettings />", () => {
     </div>);
     expect(wrapper.find("label").at(1).text()).toContain("Trail");
     wrapper.find("button").at(1).simulate("click");
-    expect(resetVirtualTrail).toHaveBeenCalled();
+    expect(resetVirtualTrailSpy).toHaveBeenCalled();
   });
 });
 
 describe("<Setting />", () => {
+  let setWebAppConfigValueSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    setWebAppConfigValueSpy = jest.spyOn(configStorageActions, "setWebAppConfigValue")
+      .mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    setWebAppConfigValueSpy.mockRestore();
+  });
+
   const fakeProps = (): SettingProps => ({
     dispatch: jest.fn(),
     getConfigValue: () => 0,
@@ -76,7 +80,7 @@ describe("<Setting />", () => {
     const wrapper = mount(<Setting {...fakeProps()} />);
     wrapper.find("ToggleButton").simulate("click");
     expect(window.confirm).toHaveBeenCalledWith("confirmation message");
-    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       BooleanSetting.show_farmbot, true);
   });
 
@@ -85,6 +89,6 @@ describe("<Setting />", () => {
     const wrapper = mount(<Setting {...fakeProps()} />);
     wrapper.find("ToggleButton").simulate("click");
     expect(window.confirm).toHaveBeenCalledWith("confirmation message");
-    expect(setWebAppConfigValue).not.toHaveBeenCalled();
+    expect(setWebAppConfigValueSpy).not.toHaveBeenCalled();
   });
 });

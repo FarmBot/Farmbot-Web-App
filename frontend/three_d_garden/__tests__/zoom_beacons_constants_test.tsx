@@ -1,7 +1,4 @@
 let mockIsDesktop = false;
-jest.mock("../../screen_size", () => ({
-  isDesktop: () => mockIsDesktop,
-}));
 
 import {
   Camera,
@@ -14,9 +11,17 @@ import {
 } from "../zoom_beacons_constants";
 import { clone } from "lodash";
 import { INITIAL } from "../config";
+import * as screenSize from "../../screen_size";
 
-afterAll(() => {
-  jest.unmock("../../screen_size");
+let isDesktopSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  isDesktopSpy = jest.spyOn(screenSize, "isDesktop")
+    .mockImplementation(() => mockIsDesktop);
+});
+
+afterEach(() => {
+  isDesktopSpy.mockRestore();
 });
 describe("FOCI()", () => {
   it("returns foci", () => {

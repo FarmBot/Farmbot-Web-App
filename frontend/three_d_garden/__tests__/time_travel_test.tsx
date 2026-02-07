@@ -1,9 +1,3 @@
-jest.mock("../../config_storage/actions", () => ({
-  ...jest.requireActual("../../config_storage/actions"),
-  getWebAppConfigValue: () => () => false,
-  setWebAppConfigValue: jest.fn(),
-}));
-
 import React from "react";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import {
@@ -14,13 +8,20 @@ import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
 import { Actions } from "../../constants";
 import { fakeDevice } from "../../__test_support__/resource_index_builder";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
+import * as configStorageActions from "../../config_storage/actions";
 
-afterAll(() => {
-  jest.unmock("../../config_storage/actions");
+beforeEach(() => {
+  jest.spyOn(configStorageActions, "getWebAppConfigValue")
+    .mockImplementation(() => () => false);
+  jest.spyOn(configStorageActions, "setWebAppConfigValue")
+    .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  cleanup();
+  jest.restoreAllMocks();
 });
 describe("<TimeTravelTarget />", () => {
-  afterEach(cleanup);
-
   const fakeProps = (): TimeTravelTargetProps => {
     const device = fakeDevice().body;
     device.lat = 1;
@@ -79,8 +80,6 @@ describe("<TimeTravelTarget />", () => {
 });
 
 describe("<TimeTravelContent />", () => {
-  afterEach(cleanup);
-
   const fakeProps = (): TimeTravelContentProps => ({
     dispatch: jest.fn(),
     device: fakeDevice().body,

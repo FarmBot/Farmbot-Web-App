@@ -1,17 +1,23 @@
-jest.mock("../../../devices/actions", () => ({ settingToggle: jest.fn() }));
-
 import React from "react";
 import { mount, shallow } from "enzyme";
 import { BooleanMCUInputGroup } from "../boolean_mcu_input_group";
 import { ToggleButton } from "../../../ui";
-import { settingToggle } from "../../../devices/actions";
+import * as deviceActions from "../../../devices/actions";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { BooleanMCUInputGroupProps } from "../interfaces";
 import { DeviceSetting } from "../../../constants";
 
-afterAll(() => {
-  jest.unmock("../../../devices/actions");
+let settingToggleSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  settingToggleSpy = jest.spyOn(deviceActions, "settingToggle")
+    .mockImplementation(jest.fn());
 });
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
+
 describe("BooleanMCUInputGroup", () => {
   const fakeProps = (): BooleanMCUInputGroupProps => ({
     sourceFwConfig: x => ({ value: bot.hardware.mcu_params[x], consistent: true }),
@@ -32,13 +38,13 @@ describe("BooleanMCUInputGroup", () => {
     const yAxisButton = wrapper.find(ToggleButton).at(Buttons.yAxis);
     const zAxisButton = wrapper.find(ToggleButton).at(Buttons.zAxis);
     xAxisButton.simulate("click");
-    expect(settingToggle).toHaveBeenLastCalledWith("encoder_invert_x",
+    expect(settingToggleSpy).toHaveBeenLastCalledWith("encoder_invert_x",
       expect.any(Function), undefined);
     yAxisButton.simulate("click");
-    expect(settingToggle).toHaveBeenLastCalledWith("encoder_invert_y",
+    expect(settingToggleSpy).toHaveBeenLastCalledWith("encoder_invert_y",
       expect.any(Function), undefined);
     zAxisButton.simulate("click");
-    expect(settingToggle).toHaveBeenLastCalledWith("encoder_invert_z",
+    expect(settingToggleSpy).toHaveBeenLastCalledWith("encoder_invert_z",
       expect.any(Function), undefined);
   });
 

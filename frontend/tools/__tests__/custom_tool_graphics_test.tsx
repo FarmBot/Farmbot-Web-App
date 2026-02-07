@@ -1,14 +1,4 @@
 let mockDev = false;
-jest.mock("../../settings/dev/dev_support", () => {
-  const actual = jest.requireActual("../../settings/dev/dev_support");
-  return {
-    ...actual,
-    DevSettings: {
-      ...actual.DevSettings,
-      futureFeaturesEnabled: () => mockDev,
-    },
-  };
-});
 
 import { fakeState } from "../../__test_support__/fake_state";
 import { store } from "../../redux/store";
@@ -28,20 +18,21 @@ import {
 import { fakeFarmwareEnv } from "../../__test_support__/fake_state/resources";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { svgMount } from "../../__test_support__/svg_mount";
-
-afterAll(() => {
-  jest.unmock("../../settings/dev/dev_support");
-});
+import { DevSettings } from "../../settings/dev/dev_support";
 
 let originalGetState: typeof store.getState;
+let futureFeaturesEnabledSpy: jest.SpyInstance;
 
 beforeEach(() => {
+  futureFeaturesEnabledSpy = jest.spyOn(DevSettings, "futureFeaturesEnabled")
+    .mockImplementation(() => mockDev);
   originalGetState = store.getState;
   (store as unknown as { getState: () => typeof mockState }).getState =
     () => mockState;
 });
 
 afterEach(() => {
+  futureFeaturesEnabledSpy.mockRestore();
   (store as unknown as { getState: typeof store.getState }).getState =
     originalGetState;
 });

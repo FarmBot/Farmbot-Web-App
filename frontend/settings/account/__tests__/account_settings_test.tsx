@@ -1,26 +1,4 @@
-jest.mock("../../../api/crud", () => ({
-  edit: jest.fn(),
-  save: jest.fn(),
-}));
-
-jest.mock("../../../config_storage/actions", () => ({
-  ...jest.requireActual("../../../config_storage/actions"),
-  setWebAppConfigValue: jest.fn(),
-  getWebAppConfigValue: () => () => true,
-}));
-
 let mockDev = false;
-jest.mock("../../../settings/dev/dev_support", () => {
-  const actual = jest.requireActual("../../../settings/dev/dev_support");
-  return {
-    ...actual,
-    DevSettings: {
-      ...actual.DevSettings,
-      futureFeaturesEnabled: () => mockDev,
-    },
-  };
-});
-
 import React from "react";
 import { shallow } from "enzyme";
 import {
@@ -30,26 +8,46 @@ import {
 import { AccountSettingsProps } from "../interfaces";
 import { settingsPanelState } from "../../../__test_support__/panel_state";
 import { fakeUser } from "../../../__test_support__/fake_state/resources";
-import { edit, save } from "../../../api/crud";
+import * as crud from "../../../api/crud";
 import { success } from "../../../toast/toast";
 import { Content } from "../../../constants";
-import { setWebAppConfigValue } from "../../../config_storage/actions";
+import * as configStorageActions from "../../../config_storage/actions";
 import { NumericSetting, StringSetting } from "../../../session_keys";
 import { Slider } from "@blueprintjs/core";
 import { FBSelect, ToggleButton } from "../../../ui";
 import { clickButton } from "../../../__test_support__/helpers";
 import * as requestAccountExportModule from "../request_account_export";
 import { changeEvent } from "../../../__test_support__/fake_html_events";
+import * as devSupport from "../../../settings/dev/dev_support";
 
-afterAll(() => {
-  jest.unmock("../../../api/crud");
-  jest.unmock("../../../config_storage/actions");
-  jest.unmock("../../../settings/dev/dev_support");
+let editSpy: jest.SpyInstance;
+let saveSpy: jest.SpyInstance;
+let setWebAppConfigValueSpy: jest.SpyInstance;
+let getWebAppConfigValueSpy: jest.SpyInstance;
+let futureFeaturesEnabledSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  mockDev = false;
+  editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+  setWebAppConfigValueSpy = jest.spyOn(configStorageActions, "setWebAppConfigValue")
+    .mockImplementation(jest.fn());
+  getWebAppConfigValueSpy = jest.spyOn(configStorageActions, "getWebAppConfigValue")
+    .mockImplementation(() => () => true);
+  futureFeaturesEnabledSpy = jest.spyOn(devSupport.DevSettings, "futureFeaturesEnabled")
+    .mockImplementation(() => mockDev);
+});
+
+afterEach(() => {
+  editSpy.mockRestore();
+  saveSpy.mockRestore();
+  setWebAppConfigValueSpy.mockRestore();
+  getWebAppConfigValueSpy.mockRestore();
+  futureFeaturesEnabledSpy.mockRestore();
 });
 
 describe("<AccountSettings />", () => {
   let requestAccountExportSpy: jest.SpyInstance;
-
   beforeEach(() => {
     requestAccountExportSpy = jest.spyOn(
       requestAccountExportModule, "requestAccountExport")
@@ -74,8 +72,8 @@ describe("<AccountSettings />", () => {
     wrapper.find("BlurableInput").first().simulate("commit", {
       currentTarget: { value: "new name" }
     });
-    expect(edit).toHaveBeenCalledWith(p.user, { name: "new name" });
-    expect(save).toHaveBeenCalledWith(p.user.uuid);
+    expect(editSpy).toHaveBeenCalledWith(p.user, { name: "new name" });
+    expect(saveSpy).toHaveBeenCalledWith(p.user.uuid);
   });
 
   it("changes email", () => {
@@ -85,8 +83,8 @@ describe("<AccountSettings />", () => {
     wrapper.find("BlurableInput").at(1).simulate("commit", {
       currentTarget: { value: "new email" }
     });
-    expect(edit).toHaveBeenCalledWith(p.user, { email: "new email" });
-    expect(save).toHaveBeenCalledWith(p.user.uuid);
+    expect(editSpy).toHaveBeenCalledWith(p.user, { email: "new email" });
+    expect(saveSpy).toHaveBeenCalledWith(p.user.uuid);
     expect(success).toHaveBeenCalledWith(Content.CHECK_EMAIL_TO_CONFIRM);
   });
 
@@ -97,8 +95,8 @@ describe("<AccountSettings />", () => {
     wrapper.find("BlurableInput").at(2).simulate("commit", {
       currentTarget: { value: "new language" }
     });
-    expect(edit).toHaveBeenCalledWith(p.user, { language: "new language" });
-    expect(save).toHaveBeenCalledWith(p.user.uuid);
+    expect(editSpy).toHaveBeenCalledWith(p.user, { language: "new language" });
+    expect(saveSpy).toHaveBeenCalledWith(p.user.uuid);
   });
 
   it("requests export", () => {
@@ -117,7 +115,7 @@ describe("<ActivityBeepSetting />", () => {
   it("sets setting: toggles off", () => {
     const wrapper = shallow(<ActivityBeepSetting {...fakeProps()} />);
     wrapper.find(ToggleButton).props().toggleAction({} as React.MouseEvent);
-    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       NumericSetting.beep_verbosity, 0);
   });
 
@@ -126,14 +124,14 @@ describe("<ActivityBeepSetting />", () => {
     p.getConfigValue = () => 0;
     const wrapper = shallow(<ActivityBeepSetting {...p} />);
     wrapper.find(ToggleButton).props().toggleAction({} as React.MouseEvent);
-    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       NumericSetting.beep_verbosity, 1);
   });
 
   it("sets setting: slider", () => {
     const wrapper = shallow(<ActivityBeepSetting {...fakeProps()} />);
     wrapper.find(Slider).simulate("change", 2);
-    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       NumericSetting.beep_verbosity, 2);
   });
 });
@@ -148,7 +146,7 @@ describe("<LandingPageSetting />", () => {
     const p = fakeProps();
     const wrapper = shallow(<LandingPageSetting {...p} />);
     wrapper.find(FBSelect).props().onChange({ label: "", value: "map" });
-    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       StringSetting.landing_page, "map");
   });
 
@@ -159,7 +157,7 @@ describe("<LandingPageSetting />", () => {
     const e = changeEvent("x");
     wrapper.find("input").props().onChange?.(e);
     wrapper.find("input").props().onBlur?.({} as React.FocusEvent);
-    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       StringSetting.landing_page, "x");
   });
 });

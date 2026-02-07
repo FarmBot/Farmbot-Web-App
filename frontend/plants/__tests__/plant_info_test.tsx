@@ -1,24 +1,24 @@
-jest.mock("../../api/crud", () => ({
-  destroy: jest.fn(),
-  save: jest.fn(),
-  edit: jest.fn(),
-}));
-
 import React from "react";
 import { RawPlantInfo as PlantInfo } from "../plant_info";
 import { mount, shallow } from "enzyme";
 import { fakePlant } from "../../__test_support__/fake_state/resources";
 import { EditPlantInfoProps } from "../../farm_designer/interfaces";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
-import { edit, save, destroy } from "../../api/crud";
+import * as crud from "../../api/crud";
 import { DesignerPanelHeader } from "../../farm_designer/designer_panel";
 import {
   fakeBotSize, fakeMovementState,
 } from "../../__test_support__/fake_bot_data";
 import { Path } from "../../internal_urls";
 
-afterAll(() => {
-  jest.unmock("../../api/crud");
+beforeEach(() => {
+  jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  jest.spyOn(crud, "save").mockImplementation(jest.fn());
+  jest.spyOn(crud, "destroy").mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
 });
 describe("<PlantInfo />", () => {
   const fakeProps = (): EditPlantInfoProps => ({
@@ -110,8 +110,8 @@ describe("<PlantInfo />", () => {
   it("updates plant", () => {
     const wrapper = mount<PlantInfo>(<PlantInfo {...fakeProps()} />);
     wrapper.instance().updatePlant("uuid", {});
-    expect(edit).toHaveBeenCalled();
-    expect(save).toHaveBeenCalledWith("uuid");
+    expect(crud.edit).toHaveBeenCalled();
+    expect(crud.save).toHaveBeenCalledWith("uuid");
   });
 
   it("handles missing plant", () => {
@@ -119,7 +119,7 @@ describe("<PlantInfo />", () => {
     p.findPlant = jest.fn();
     const wrapper = mount<PlantInfo>(<PlantInfo {...p} />);
     wrapper.instance().updatePlant("uuid", {});
-    expect(edit).not.toHaveBeenCalled();
+    expect(crud.edit).not.toHaveBeenCalled();
   });
 
   it("saves", () => {
@@ -130,7 +130,7 @@ describe("<PlantInfo />", () => {
     p.findPlant = () => plant;
     const wrapper = shallow(<PlantInfo {...p} />);
     wrapper.find(DesignerPanelHeader).simulate("save");
-    expect(save).toHaveBeenCalledWith(plant.uuid);
+    expect(crud.save).toHaveBeenCalledWith(plant.uuid);
   });
 
   it("doesn't save", () => {
@@ -141,13 +141,13 @@ describe("<PlantInfo />", () => {
     p.findPlant = () => undefined;
     const wrapper = shallow(<PlantInfo {...p} />);
     wrapper.find(DesignerPanelHeader).simulate("save");
-    expect(save).not.toHaveBeenCalled();
+    expect(crud.save).not.toHaveBeenCalled();
   });
 
   it("destroys plant", () => {
     const wrapper = mount<PlantInfo>(<PlantInfo {...fakeProps()} />);
     wrapper.instance().destroy("uuid")();
-    expect(destroy).toHaveBeenCalledWith("uuid", false);
+    expect(crud.destroy).toHaveBeenCalledWith("uuid", false);
   });
 
   it("force destroys plant", () => {
@@ -155,6 +155,6 @@ describe("<PlantInfo />", () => {
     p.getConfigValue = jest.fn(() => false);
     const wrapper = mount<PlantInfo>(<PlantInfo {...p} />);
     wrapper.instance().destroy("uuid")();
-    expect(destroy).toHaveBeenCalledWith("uuid", true);
+    expect(crud.destroy).toHaveBeenCalledWith("uuid", true);
   });
 });

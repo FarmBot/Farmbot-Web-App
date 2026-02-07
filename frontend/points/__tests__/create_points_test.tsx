@@ -1,5 +1,3 @@
-jest.mock("../../api/crud", () => ({ initSave: jest.fn() }));
-
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
@@ -9,7 +7,7 @@ import {
   CreatePointsProps,
   mapStateToProps,
 } from "../create_points";
-import { initSave } from "../../api/crud";
+import * as crud from "../../api/crud";
 import { Actions } from "../../constants";
 import { clickButton } from "../../__test_support__/helpers";
 import { fakeState } from "../../__test_support__/fake_state";
@@ -19,8 +17,12 @@ import { fakeDrawnPoint } from "../../__test_support__/fake_designer_state";
 import { success } from "../../toast/toast";
 import { mountWithContext } from "../../__test_support__/mount_with_context";
 
-afterAll(() => {
-  jest.unmock("../../api/crud");
+beforeEach(() => {
+  jest.spyOn(crud, "initSave").mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
 });
 describe("mapStateToProps", () => {
   it("maps state to props: drawn point", () => {
@@ -49,7 +51,7 @@ describe("createPoint()", () => {
     point.at_soil_level = true;
     p.drawnPoint = point;
     createPoint(p);
-    expect(initSave).toHaveBeenCalledWith("Point", {
+    expect(crud.initSave).toHaveBeenCalledWith("Point", {
       meta: {
         color: "green", created_by: "farm-designer", type: "point",
         at_soil_level: "true",
@@ -75,7 +77,7 @@ describe("createPoint()", () => {
     point.cy = undefined;
     p.drawnPoint = point;
     createPoint(p);
-    expect(initSave).toHaveBeenCalledWith("Point", {
+    expect(crud.initSave).toHaveBeenCalledWith("Point", {
       meta: {
         color: "green", created_by: "farm-designer", type: "weed",
       },
@@ -179,7 +181,7 @@ describe("<CreatePoints />", () => {
     const wrapper = mount<CreatePoints>(<CreatePoints {...p} />);
     wrapper.update();
     clickButton(wrapper, 0, "save");
-    expect(initSave).toHaveBeenCalledWith("Point", {
+    expect(crud.initSave).toHaveBeenCalledWith("Point", {
       meta: {
         color: "green", created_by: "farm-designer", type: "point",
         at_soil_level: "true",
@@ -244,7 +246,7 @@ describe("<CreatePoints />", () => {
     p.drawnPoint = fakeDrawnPoint();
     const wrapper = mount(<CreatePoints {...p} />);
     clickButton(wrapper, 0, "save");
-    expect(initSave).toHaveBeenCalledWith("Point", {
+    expect(crud.initSave).toHaveBeenCalledWith("Point", {
       meta: { color: "green", created_by: "farm-designer", type: "point" },
       name: p.drawnPoint.name,
       pointer_type: "GenericPointer",

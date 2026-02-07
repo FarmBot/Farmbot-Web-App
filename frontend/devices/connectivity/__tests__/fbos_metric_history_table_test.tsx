@@ -1,23 +1,22 @@
-jest.mock("../fbos_metric_history_plot", () => ({
-  FbosMetricHistoryPlot: () => <div />,
-}));
-
 let mockDemo = false;
-jest.mock("../../must_be_online", () => ({
-  forceOnline: () => mockDemo,
-}));
-
 import React from "react";
 import { mount } from "enzyme";
 import { fakeTelemetry } from "../../../__test_support__/fake_state/resources";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
+import * as historyPlot from "../fbos_metric_history_plot";
+import * as mustBeOnline from "../../must_be_online";
 import {
   FbosMetricHistoryTable, FbosMetricHistoryTableProps,
 } from "../fbos_metric_history_table";
 
-afterAll(() => {
-  jest.unmock("../../must_be_online");
-  jest.unmock("../fbos_metric_history_plot");
+beforeEach(() => {
+  jest.spyOn(historyPlot, "FbosMetricHistoryPlot").mockImplementation(() => <div />);
+  jest.spyOn(mustBeOnline, "forceOnline").mockImplementation(() => mockDemo);
+});
+
+afterEach(() => {
+  mockDemo = false;
+  jest.restoreAllMocks();
 });
 describe("<FbosMetricHistoryTable />", () => {
   const fakeProps = (): FbosMetricHistoryTableProps => {
@@ -49,7 +48,6 @@ describe("<FbosMetricHistoryTable />", () => {
       <FbosMetricHistoryTable {...p} />);
     expect(wrapper.instance().telemetry.length).toEqual(100);
     expect(wrapper.text().toLowerCase()).toContain("wifi");
-    mockDemo = false;
   });
 
   it("sets metric hover state", () => {

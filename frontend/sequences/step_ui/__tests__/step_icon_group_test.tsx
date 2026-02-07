@@ -1,6 +1,8 @@
 import React from "react";
 import { mount, shallow } from "enzyme";
-import { StepIconGroup, StepIconBarProps } from "../step_icon_group";
+import {
+  StepIconGroup, StepIconBarProps, StepUpDownButtonPopover,
+} from "../step_icon_group";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import * as stepTiles from "../../step_tiles";
 import { Path } from "../../../internal_urls";
@@ -46,7 +48,7 @@ describe("<StepIconGroup />", () => {
     expect(wrapper.find(".step-control-icons").length).toEqual(1);
     expect(wrapper.find(".fa-trash").length).toEqual(1);
     expect(wrapper.find(".fa-clone").length).toEqual(1);
-    expect(wrapper.find(".fa-arrows-v").length).toEqual(1);
+    expect(wrapper.find(StepUpDownButtonPopover).length).toEqual(1);
   });
 
   it("renders monaco editor enabled", () => {

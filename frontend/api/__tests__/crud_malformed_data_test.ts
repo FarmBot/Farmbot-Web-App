@@ -1,5 +1,4 @@
 const mockDevice = { on: jest.fn(() => Promise.resolve()) };
-jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
 
 import { refresh, updateViaAjax } from "../crud";
 import axios from "axios";
@@ -11,9 +10,15 @@ import {
   buildResourceIndex, fakeDevice,
 } from "../../__test_support__/resource_index_builder";
 import { fakePeripheral } from "../../__test_support__/fake_state/resources";
+import * as deviceModule from "../../device";
 
-afterAll(() => {
-  jest.unmock("../../device");
+beforeEach(() => {
+  jest.spyOn(deviceModule, "getDevice")
+    .mockImplementation(() => mockDevice as never);
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
 });
 describe("refresh()", () => {
   API.setBaseUrl("http://localhost:3000");

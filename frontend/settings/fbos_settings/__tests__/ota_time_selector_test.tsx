@@ -1,12 +1,3 @@
-jest.mock("../../../api/crud", () => ({
-  edit: jest.fn(),
-  save: jest.fn(),
-}));
-
-jest.mock("../../../devices/actions", () => ({
-  updateConfig: jest.fn(),
-}));
-
 import React from "react";
 import { shallow, mount } from "enzyme";
 import {
@@ -17,13 +8,23 @@ import { FBSelect } from "../../../ui";
 import { fakeDevice } from "../../../__test_support__/resource_index_builder";
 import { OtaTimeSelectorProps, OtaTimeSelectorRowProps } from "../interfaces";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
-import { edit } from "../../../api/crud";
-import { updateConfig } from "../../../devices/actions";
+import * as crud from "../../../api/crud";
+import * as deviceActions from "../../../devices/actions";
 
-afterAll(() => {
-  jest.unmock("../../../api/crud");
-  jest.unmock("../../../devices/actions");
+let editSpy: jest.SpyInstance;
+let updateConfigSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  jest.spyOn(crud, "save").mockImplementation(jest.fn());
+  updateConfigSpy = jest.spyOn(deviceActions, "updateConfig")
+    .mockImplementation(jest.fn());
 });
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
+
 describe("localHourToUtcHour()", () => {
   it("converts hour", () => {
     expect(localHourToUtcHour(10, -2)).toEqual(12);
@@ -74,7 +75,7 @@ describe("<OtaTimeSelector />", () => {
     const p = fakeProps();
     const wrapper = shallow(<OtaTimeSelector {...p} />);
     wrapper.find(FBSelect).simulate("change", { label: "at 5 PM", value: 17 });
-    expect(edit).toHaveBeenCalledWith(p.device,
+    expect(editSpy).toHaveBeenCalledWith(p.device,
       { ota_hour: 17, ota_hour_utc: 17 });
   });
 
@@ -82,17 +83,17 @@ describe("<OtaTimeSelector />", () => {
     const p = fakeProps();
     const wrapper = shallow(<OtaTimeSelector {...p} />);
     wrapper.find(FBSelect).simulate("change", undefined);
-    expect(edit).toHaveBeenCalledWith(p.device,
+    expect(editSpy).toHaveBeenCalledWith(p.device,
       { otc_hour: undefined, otc_hour_utc: undefined });
-    expect(updateConfig).not.toHaveBeenCalled();
+    expect(updateConfigSpy).not.toHaveBeenCalled();
   });
 
   it("selects never", () => {
     const p = fakeProps();
     const wrapper = shallow(<OtaTimeSelector {...p} />);
     wrapper.find(FBSelect).simulate("change", { label: "", value: "never" });
-    expect(edit).not.toHaveBeenCalled();
-    expect(updateConfig).toHaveBeenCalledWith({ os_auto_update: false });
+    expect(editSpy).not.toHaveBeenCalled();
+    expect(updateConfigSpy).toHaveBeenCalledWith({ os_auto_update: false });
   });
 
   it("enables auto update", () => {
@@ -100,9 +101,9 @@ describe("<OtaTimeSelector />", () => {
     p.sourceFbosConfig = () => ({ value: false, consistent: false });
     const wrapper = shallow(<OtaTimeSelector {...p} />);
     wrapper.find(FBSelect).simulate("change", { label: "", value: 17 });
-    expect(edit).toHaveBeenCalledWith(p.device,
+    expect(editSpy).toHaveBeenCalledWith(p.device,
       { ota_hour: 17, ota_hour_utc: 17 });
-    expect(updateConfig).toHaveBeenCalledWith({ os_auto_update: true });
+    expect(updateConfigSpy).toHaveBeenCalledWith({ os_auto_update: true });
   });
 });
 

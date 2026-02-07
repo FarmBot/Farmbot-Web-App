@@ -4,16 +4,11 @@ const mockDevice = {
   findHome: jest.fn(() => Promise.resolve()),
   setZero: jest.fn(() => Promise.resolve()),
 };
-jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
-
-jest.mock("../../../api/crud", () => ({
-  edit: jest.fn(),
-  save: jest.fn(),
-}));
 
 import React from "react";
 import { mount, shallow } from "enzyme";
 import { AxisSettings } from "../axis_settings";
+import * as deviceModule from "../../../device";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import {
   fakeFbosConfig,
@@ -29,14 +24,27 @@ import { fakeState } from "../../../__test_support__/fake_state";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
-import { edit, save } from "../../../api/crud";
+import * as crud from "../../../api/crud";
 import { FbosConfig } from "farmbot/dist/resources/configs/fbos";
 
-afterAll(() => {
-  jest.unmock("../../../api/crud");
-  jest.unmock("../../../device");
-});
 describe("<AxisSettings />", () => {
+  let getDeviceSpy: jest.SpyInstance;
+  let editSpy: jest.SpyInstance;
+  let saveSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    getDeviceSpy = jest.spyOn(deviceModule, "getDevice")
+      .mockImplementation(() => mockDevice);
+    editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+    saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    getDeviceSpy.mockRestore();
+    editSpy.mockRestore();
+    saveSpy.mockRestore();
+  });
+
   const state = fakeState();
   const fakeConfig = fakeFirmwareConfig();
   state.resources = buildResourceIndex([fakeConfig]);
@@ -67,11 +75,11 @@ describe("<AxisSettings />", () => {
     input.onChange && input.onChange(e);
     input.onSubmit && input.onSubmit(e);
     expected
-      ? expect(edit)
+      ? expect(crud.edit)
         .toHaveBeenCalledWith(expect.any(Object), {
           movement_axis_nr_steps_x: expected,
         })
-      : expect(edit).not.toHaveBeenCalled();
+      : expect(crud.edit).not.toHaveBeenCalled();
   }
 
   it("long int: too long", () => {
@@ -128,9 +136,9 @@ describe("<AxisSettings />", () => {
     p.bot.hardware.mcu_params.movement_step_per_mm_x = 5;
     const wrapper = shallow(<AxisSettings {...p} />);
     wrapper.find(CalibrationRow).at(3).props().action("x");
-    expect(edit).toHaveBeenCalledWith(fakeConfig,
+    expect(crud.edit).toHaveBeenCalledWith(fakeConfig,
       { movement_axis_nr_steps_x: "500" });
-    expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
+    expect(crud.save).toHaveBeenCalledWith(fakeConfig.uuid);
   });
 
   it("doesn't set axis length", () => {
@@ -139,8 +147,8 @@ describe("<AxisSettings />", () => {
     p.bot.hardware.mcu_params.movement_step_per_mm_x = 5;
     const wrapper = shallow(<AxisSettings {...p} />);
     wrapper.find(CalibrationRow).at(3).props().action("x");
-    expect(edit).not.toHaveBeenCalled();
-    expect(save).not.toHaveBeenCalled();
+    expect(crud.edit).not.toHaveBeenCalled();
+    expect(crud.save).not.toHaveBeenCalled();
   });
 
   it("shows express board related labels", () => {

@@ -1,22 +1,4 @@
-jest.mock("../../api/delete_points", () => {
-  const actual = jest.requireActual("../../api/delete_points");
-  return {
-    ...actual,
-    deletePoints: jest.fn(),
-  };
-});
-
-import { PopoverProps } from "../../ui/popover";
-jest.mock("../../ui/popover", () => ({
-  Popover: ({ target, content }: PopoverProps) => <div>{target}{content}</div>,
-}));
-
 let mockValue: number | boolean = 0;
-jest.mock("../../config_storage/actions", () => ({
-  ...jest.requireActual("../../config_storage/actions"),
-  setWebAppConfigValue: jest.fn(),
-  getWebAppConfigValue: (x: Function) => { x(); return () => mockValue; },
-}));
 
 import React from "react";
 import {
@@ -32,31 +14,46 @@ import { SearchField } from "../../ui/search_field";
 import { Actions } from "../../constants";
 import * as pointGroupActions from "../../point_groups/actions";
 import { DEFAULT_CRITERIA } from "../../point_groups/criteria/interfaces";
-import { deletePoints } from "../../api/delete_points";
+import * as deletePointsApi from "../../api/delete_points";
 import { Panel } from "../../farm_designer/panel_header";
 import { plantsPanelState } from "../../__test_support__/panel_state";
 import { Path } from "../../internal_urls";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { changeBlurableInput } from "../../__test_support__/helpers";
-import { setWebAppConfigValue } from "../../config_storage/actions";
+import * as configStorageActions from "../../config_storage/actions";
 import { NumericSetting } from "../../session_keys";
-
-afterAll(() => {
-  jest.unmock("../../api/delete_points");
-  jest.unmock("../../ui/popover");
-  jest.unmock("../../config_storage/actions");
-});
+import * as popover from "../../ui/popover";
 
 describe("<PlantInventory />", () => {
   let createGroupSpy: jest.SpyInstance;
+  let deletePointsSpy: jest.SpyInstance;
+  let setWebAppConfigValueSpy: jest.SpyInstance;
+  let getWebAppConfigValueSpy: jest.SpyInstance;
+  let popoverSpy: jest.SpyInstance;
 
   beforeEach(() => {
+    popoverSpy = jest.spyOn(popover, "Popover")
+      .mockImplementation(({ target, content }: popover.PopoverProps) =>
+        <div>{target}{content}</div>);
     createGroupSpy = jest.spyOn(pointGroupActions, "createGroup")
       .mockImplementation(jest.fn());
+    deletePointsSpy = jest.spyOn(deletePointsApi, "deletePoints")
+      .mockImplementation(jest.fn());
+    setWebAppConfigValueSpy = jest.spyOn(configStorageActions, "setWebAppConfigValue")
+      .mockImplementation(jest.fn());
+    getWebAppConfigValueSpy = jest.spyOn(configStorageActions, "getWebAppConfigValue")
+      .mockImplementation((getState: Function) => {
+        getState();
+        return () => mockValue;
+      });
   });
 
   afterEach(() => {
+    popoverSpy.mockRestore();
     createGroupSpy.mockRestore();
+    deletePointsSpy.mockRestore();
+    setWebAppConfigValueSpy.mockRestore();
+    getWebAppConfigValueSpy.mockRestore();
   });
 
   const fakeProps = (): PlantInventoryProps => ({
@@ -86,7 +83,7 @@ describe("<PlantInventory />", () => {
     const p = fakeProps();
     const wrapper = mount(<Plants {...p} />);
     changeBlurableInput(wrapper, "100", 1);
-    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       NumericSetting.default_plant_depth, 100);
   });
 
@@ -164,7 +161,8 @@ describe("<PlantInventory />", () => {
     const plantsSection = wrapper.find(PanelSection).at(2);
     expect(plantsSection.text().toLowerCase()).toContain("delete all");
     plantsSection.find("button").simulate("click");
-    expect(deletePoints).toHaveBeenCalledWith("plants", { pointer_type: "Plant" });
+    expect(deletePointsSpy)
+      .toHaveBeenCalledWith("plants", { pointer_type: "Plant" });
   });
 
   it("doesn't show delete all button", () => {

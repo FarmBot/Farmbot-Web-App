@@ -23,10 +23,6 @@ jest.mock("react", () => {
   };
 });
 
-jest.mock("../../../devices/actions", () => ({
-  execSequence: jest.fn(),
-}));
-
 import React from "react";
 import { mount } from "enzyme";
 import { ThreeEvent } from "@react-three/fiber";
@@ -41,14 +37,11 @@ import {
   fakePinBinding, fakeSequence,
 } from "../../../__test_support__/fake_state/resources";
 import { bot } from "../../../__test_support__/fake_state/bot";
-import { execSequence } from "../../../devices/actions";
+import * as deviceActions from "../../../devices/actions";
 import { ButtonPin } from "../list_and_label_support";
 import { BoxTopBaseProps } from "../interfaces";
 import { FirmwareHardware } from "farmbot";
 
-afterAll(() => {
-  jest.unmock("../../../devices/actions");
-});
 afterAll(() => {
   jest.unmock("react");
   jest.unmock("@react-three/fiber");
@@ -70,13 +63,18 @@ describe("setZForAllInGroup()", () => {
 });
 
 describe("<ElectronicsBoxModel />", () => {
+  let execSequenceSpy: jest.SpyInstance;
+
   beforeEach(() => {
     jest.useFakeTimers();
+    execSequenceSpy = jest.spyOn(deviceActions, "execSequence")
+      .mockImplementation(jest.fn());
   });
 
   afterEach(() => {
     jest.runOnlyPendingTimers();
     jest.useRealTimers();
+    jest.restoreAllMocks();
   });
 
   const fakeProps = (): BoxTopBaseProps => {
@@ -113,7 +111,7 @@ describe("<ElectronicsBoxModel />", () => {
     const wrapper = mount(<Model {...p} />);
     wrapper.find({ name: "action-group" }).first().simulate("pointerdown", e);
     jest.runOnlyPendingTimers();
-    expect(execSequence).toHaveBeenCalledWith(1);
+    expect(execSequenceSpy).toHaveBeenCalledWith(1);
   });
 
   it("hovers button", () => {

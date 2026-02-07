@@ -6,7 +6,7 @@ import { mount } from "enzyme";
 import { Connectivity, ConnectivityProps } from "../connectivity";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { StatusRowProps } from "../connectivity_row";
-import { clone } from "lodash";
+import { clone, cloneDeep } from "lodash";
 import { fakePings } from "../../../__test_support__/fake_state/pings";
 import { fakeDevice } from "../../../__test_support__/resource_index_builder";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
@@ -73,7 +73,7 @@ describe("<Connectivity />", () => {
   };
 
   const fakeProps = (): ConnectivityProps => ({
-    bot,
+    bot: cloneDeep(bot),
     rowData,
     flags,
     pings: fakePings(),
@@ -111,7 +111,8 @@ describe("<Connectivity />", () => {
     const p = fakeProps();
     p.metricPanelState.realtime = true;
     const wrapper = mount<Connectivity>(<Connectivity {...p} />);
-    wrapper.find(".saucer").at(6).simulate("mouseEnter");
+    wrapper.instance().hover("AB")();
+    wrapper.update();
     expect(wrapper.instance().state.hoveredConnection).toEqual("AB");
   });
 

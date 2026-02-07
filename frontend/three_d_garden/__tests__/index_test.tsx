@@ -1,9 +1,3 @@
-jest.mock("../../config_storage/actions", () => ({
-  ...jest.requireActual("../../config_storage/actions"),
-  getWebAppConfigValue: () => () => false,
-  setWebAppConfigValue: jest.fn(),
-}));
-
 import React from "react";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import {
@@ -15,16 +9,22 @@ import { fakeAddPlantProps } from "../../__test_support__/fake_props";
 import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
 import { Path } from "../../internal_urls";
 import { Actions } from "../../constants";
-import { setWebAppConfigValue } from "../../config_storage/actions";
+import * as configStorageActions from "../../config_storage/actions";
 import { BooleanSetting } from "../../session_keys";
 import { fakeDevice } from "../../__test_support__/resource_index_builder";
 
-afterAll(() => {
-  jest.unmock("../../config_storage/actions");
+beforeEach(() => {
+  jest.spyOn(configStorageActions, "getWebAppConfigValue")
+    .mockImplementation(() => () => false);
+  jest.spyOn(configStorageActions, "setWebAppConfigValue")
+    .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  cleanup();
+  jest.restoreAllMocks();
 });
 describe("<ThreeDGarden />", () => {
-  afterEach(cleanup);
-
   const fakeProps = (): ThreeDGardenProps => ({
     config: clone(INITIAL),
     addPlantProps: fakeAddPlantProps(),
@@ -40,8 +40,6 @@ describe("<ThreeDGarden />", () => {
 });
 
 describe("<ThreeDGardenToggle />", () => {
-  afterEach(cleanup);
-
   const fakeProps = (): ThreeDGardenToggleProps => ({
     navigate: jest.fn(),
     dispatch: jest.fn(),
@@ -119,7 +117,7 @@ describe("<ThreeDGardenToggle />", () => {
     render(<ThreeDGardenToggle {...p} />);
     const toggle = screen.getByTitle("hide");
     fireEvent.click(toggle);
-    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+    expect(configStorageActions.setWebAppConfigValue).toHaveBeenCalledWith(
       BooleanSetting.three_d_garden,
       false);
   });

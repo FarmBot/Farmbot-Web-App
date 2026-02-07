@@ -23,6 +23,7 @@ import { fakeTimeSettings } from "../__test_support__/fake_time_settings";
 import { error, warning } from "../toast/toast";
 import { fakePings } from "../__test_support__/fake_state/pings";
 import { auth } from "../__test_support__/fake_state/token";
+import { cloneDeep } from "lodash";
 import {
   fakeDesignerState,
   fakeHelpState, fakeMenuOpenState,
@@ -39,7 +40,7 @@ const fakeProps = (): AppProps => ({
   loaded: [],
   logs: [],
   user: fakeUser(),
-  bot: bot,
+  bot: cloneDeep(bot),
   axisInversion: { x: false, y: false, z: false },
   firmwareConfig: undefined,
   xySwap: false,
@@ -63,6 +64,13 @@ const fakeProps = (): AppProps => ({
   sequences: [],
   menuOpen: fakeMenuOpenState(),
   designer: fakeDesignerState(),
+});
+
+afterEach(() => {
+  try {
+    jest.runOnlyPendingTimers();
+  } catch { /* noop */ }
+  jest.useRealTimers();
 });
 
 afterAll(() => {

@@ -5,7 +5,7 @@ import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import { newTaggedResource } from "../../../sync/actions";
-import { selectAllRegimens } from "../../../resources/selectors";
+import * as selectors from "../../../resources/selectors";
 import { fakeVariableNameSet } from "../../../__test_support__/fake_variables";
 import {
   fakeRegimen, fakeSequence,
@@ -43,7 +43,7 @@ describe("mapStateToProps()", () => {
     ];
     const { index } = buildResourceIndex(fakeResources);
     state.resources.index = index;
-    const { uuid } = selectAllRegimens(index)[0];
+    const { uuid } = selectors.selectAllRegimens(index)[0];
     state.resources.consumers.regimens.currentRegimen = uuid;
     const props = mapStateToProps(state);
     props.current ? expect(props.current.uuid).toEqual(uuid) : fail;
@@ -53,23 +53,31 @@ describe("mapStateToProps()", () => {
   it("returns variableData", () => {
     const reg = fakeRegimen();
     const seq = fakeSequence();
+    seq.body.id = 123;
     reg.body.regimen_items = [{
-      sequence_id: seq.body.id || 0, time_offset: 1000
+      sequence_id: 123, time_offset: 1000
     }];
     const state = fakeState();
     state.resources = buildResourceIndex([reg, seq]);
     state.resources.consumers.regimens.currentRegimen = reg.uuid;
     const varData = fakeVariableNameSet();
     state.resources.index.sequenceMetas[seq.uuid] = varData;
-    const props = mapStateToProps(state);
-    expect(props.variableData).toEqual(varData);
+    const findSequenceByIdSpy = jest.spyOn(selectors, "findSequenceById")
+      .mockReturnValue(seq as never);
+    try {
+      const props = mapStateToProps(state);
+      expect(props.variableData).toEqual(expect.objectContaining(varData));
+    } finally {
+      findSequenceByIdSpy.mockRestore();
+    }
   });
 
   it("doesn't return variableData", () => {
     const reg = fakeRegimen();
     const seq = fakeSequence();
+    seq.body.id = 123;
     reg.body.regimen_items = [{
-      sequence_id: seq.body.id || 0, time_offset: 1000
+      sequence_id: 123, time_offset: 1000
     }];
     const state = fakeState();
     state.resources = buildResourceIndex([reg, seq]);

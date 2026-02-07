@@ -112,7 +112,7 @@ describe("<BulkScheduler />", () => {
       payload: 10800000,
       type: Actions.SET_TIME_OFFSET
     });
-    expect(wrapper.html()).toContain(" input-error");
+    expect(wrapper.html()).toContain("class=\" error\"");
   });
 
   it("doesn't show warning", () => {
@@ -128,7 +128,7 @@ describe("<BulkScheduler />", () => {
       payload: 10800000,
       type: Actions.SET_TIME_OFFSET
     });
-    expect(wrapper.html()).not.toContain(" input-error");
+    expect(wrapper.html()).not.toContain("class=\" error\"");
   });
 });
 

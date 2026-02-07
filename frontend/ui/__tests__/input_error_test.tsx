@@ -1,14 +1,18 @@
-import { PopoverProps } from "../popover";
-jest.mock("../popover", () => ({
-  Popover: ({ target, content }: PopoverProps) => <div>{target}{content}</div>,
-}));
-
 import React from "react";
 import { mount } from "enzyme";
 import { InputError, InputErrorProps } from "../input_error";
+import * as popover from "../popover";
 
-afterAll(() => {
-  jest.unmock("../popover");
+let popoverSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  popoverSpy = jest.spyOn(popover, "Popover")
+    .mockImplementation(({ target, content }: popover.PopoverProps) =>
+      <div>{target}{content}</div>);
+});
+
+afterEach(() => {
+  popoverSpy.mockRestore();
 });
 
 describe("<InputError />", () => {

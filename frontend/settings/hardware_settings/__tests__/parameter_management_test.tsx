@@ -1,15 +1,3 @@
-jest.mock("../export_menu", () => ({
-  importParameters: jest.fn(),
-  resendParameters: jest.fn(),
-  FwParamExportMenu: () => <div />,
-}));
-
-jest.mock("../../../config_storage/actions", () => ({
-  ...jest.requireActual("../../../config_storage/actions"),
-  getWebAppConfigValue: () => () => false,
-  setWebAppConfigValue: jest.fn(),
-}));
-
 import React from "react";
 import { mount, shallow } from "enzyme";
 import {
@@ -18,15 +6,25 @@ import {
 import { ParameterManagementProps } from "../interfaces";
 import { settingsPanelState } from "../../../__test_support__/panel_state";
 import { Content } from "../../../constants";
-import { importParameters, resendParameters } from "../export_menu";
-import { setWebAppConfigValue } from "../../../config_storage/actions";
+import * as exportMenu from "../export_menu";
+import * as configStorageActions from "../../../config_storage/actions";
 import { BooleanSetting } from "../../../session_keys";
 
-afterAll(() => {
-  jest.unmock("../../../config_storage/actions");
+beforeEach(() => {
+  jest.spyOn(exportMenu, "importParameters")
+    .mockImplementation(jest.fn());
+  jest.spyOn(exportMenu, "resendParameters")
+    .mockImplementation(jest.fn());
+  jest.spyOn(exportMenu, "FwParamExportMenu")
+    .mockImplementation(() => <div />);
+  jest.spyOn(configStorageActions, "getWebAppConfigValue")
+    .mockImplementation(() => () => false);
+  jest.spyOn(configStorageActions, "setWebAppConfigValue")
+    .mockImplementation(jest.fn());
 });
-afterAll(() => {
-  jest.unmock("../export_menu");
+
+afterEach(() => {
+  jest.restoreAllMocks();
 });
 describe("<ParameterManagement />", () => {
   const fakeProps = (): ParameterManagementProps => ({
@@ -54,7 +52,7 @@ describe("<ParameterManagement />", () => {
     p.settingsPanelState.parameter_management = true;
     const wrapper = mount(<ParameterManagement {...p} />);
     wrapper.find("button.yellow").first().simulate("click");
-    expect(resendParameters).toHaveBeenCalled();
+    expect(exportMenu.resendParameters).toHaveBeenCalled();
   });
 
   it("imports", () => {
@@ -65,7 +63,7 @@ describe("<ParameterManagement />", () => {
     wrapper.find("input").simulate("submit", { currentTarget: { value: "" } });
     wrapper.find("button.yellow").last().simulate("click");
     expect(confirm).toHaveBeenCalledWith(Content.PARAMETER_IMPORT_CONFIRM);
-    expect(importParameters).toHaveBeenCalledWith("");
+    expect(exportMenu.importParameters).toHaveBeenCalledWith("");
   });
 
   it("toggles advanced settings", () => {
@@ -73,7 +71,7 @@ describe("<ParameterManagement />", () => {
     p.settingsPanelState.parameter_management = true;
     const wrapper = mount(<ParameterManagement {...p} />);
     wrapper.find(".fb-toggle-button").at(1).simulate("click");
-    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+    expect(configStorageActions.setWebAppConfigValue).toHaveBeenCalledWith(
       BooleanSetting.show_advanced_settings, true);
   });
 });

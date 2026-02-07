@@ -1,8 +1,4 @@
 let mockDemo = false;
-jest.mock("../../../devices/must_be_online", () => ({
-  forceOnline: () => mockDemo,
-}));
-
 import React from "react";
 import { cleanup, render, screen } from "@testing-library/react";
 import { extraRotation, ImageTexture, ImageTextureProps } from "../images";
@@ -12,14 +8,20 @@ import {
   fakeImage, fakeWebAppConfig,
 } from "../../../__test_support__/fake_state/resources";
 import { fakeAddPlantProps } from "../../../__test_support__/fake_props";
+import * as mustBeOnline from "../../../devices/must_be_online";
 
-afterAll(() => {
-  jest.unmock("../../../devices/must_be_online");
+beforeEach(() => {
+  jest.spyOn(mustBeOnline, "forceOnline").mockImplementation(() => mockDemo);
 });
+
+afterEach(() => {
+  mockDemo = false;
+  jest.restoreAllMocks();
+});
+
 describe("<ImageTexture />", () => {
   afterEach(() => {
     cleanup();
-    mockDemo = false;
   });
 
   const fakeProps = (): ImageTextureProps => ({

@@ -1,29 +1,5 @@
 let mockIsMobile = false;
-jest.mock("../../../screen_size", () => ({
-  isMobile: () => mockIsMobile,
-}));
-
-jest.mock("../../../sequences/set_active_sequence_by_name", () => ({
-  setActiveSequenceByName: jest.fn()
-}));
-
-jest.mock("../../../api/crud", () => ({
-  edit: jest.fn(),
-  save: jest.fn(),
-}));
-
-jest.mock("../../request_auto_generation", () => ({
-  requestAutoGeneration: jest.fn(),
-}));
-
-jest.mock("../../../folders/actions", () => ({
-  addNewSequenceToFolder: jest.fn(),
-}));
-
 import { PopoverProps } from "../../../ui/popover";
-jest.mock("../../../ui/popover", () => ({
-  Popover: ({ target, content }: PopoverProps) => <div>{target}{content}</div>,
-}));
 
 import React from "react";
 import { mount } from "enzyme";
@@ -41,27 +17,58 @@ import {
 } from "../../../__test_support__/fake_sequence_step_data";
 import { mapStateToFolderProps } from "../../../folders/map_state_to_props";
 import { fakeState } from "../../../__test_support__/fake_state";
-import {
-  setActiveSequenceByName,
-} from "../../set_active_sequence_by_name";
+import * as setActiveSequenceByNameModule from "../../set_active_sequence_by_name";
 import { Path } from "../../../internal_urls";
 import { sequencesPanelState } from "../../../__test_support__/panel_state";
 import { Color } from "farmbot";
-import { edit, save } from "../../../api/crud";
-import { requestAutoGeneration } from "../../request_auto_generation";
+import * as crud from "../../../api/crud";
+import * as requestAutoGenerationModule from "../../request_auto_generation";
 import { API } from "../../../api";
 import { error } from "../../../toast/toast";
-import { addNewSequenceToFolder } from "../../../folders/actions";
+import * as foldersActions from "../../../folders/actions";
 import { emptyState } from "../../../resources/reducer";
 import { mountWithContext } from "../../../__test_support__/mount_with_context";
+import * as screenSize from "../../../screen_size";
+import * as popoverModule from "../../../ui/popover";
 
-afterAll(() => {
-  jest.unmock("../../../screen_size");
-  jest.unmock("../../../sequences/set_active_sequence_by_name");
-  jest.unmock("../../../api/crud");
-  jest.unmock("../../request_auto_generation");
-  jest.unmock("../../../folders/actions");
-  jest.unmock("../../../ui/popover");
+let isMobileSpy: jest.SpyInstance;
+let setActiveSequenceByNameSpy: jest.SpyInstance;
+let editSpy: jest.SpyInstance;
+let saveSpy: jest.SpyInstance;
+let requestAutoGenerationSpy: jest.SpyInstance;
+let addNewSequenceToFolderSpy: jest.SpyInstance;
+let popoverSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  mockIsMobile = false;
+  isMobileSpy = jest.spyOn(screenSize, "isMobile")
+    .mockImplementation(() => mockIsMobile);
+  setActiveSequenceByNameSpy = jest.spyOn(
+    setActiveSequenceByNameModule,
+    "setActiveSequenceByName",
+  ).mockImplementation(jest.fn());
+  editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+  requestAutoGenerationSpy = jest.spyOn(
+    requestAutoGenerationModule,
+    "requestAutoGeneration",
+  ).mockImplementation(jest.fn());
+  addNewSequenceToFolderSpy = jest.spyOn(
+    foldersActions,
+    "addNewSequenceToFolder",
+  ).mockImplementation(jest.fn());
+  popoverSpy = jest.spyOn(popoverModule, "Popover").mockImplementation(
+    ({ target, content }: PopoverProps) => <div>{target}{content}</div>);
+});
+
+afterEach(() => {
+  isMobileSpy.mockRestore();
+  setActiveSequenceByNameSpy.mockRestore();
+  editSpy.mockRestore();
+  saveSpy.mockRestore();
+  requestAutoGenerationSpy.mockRestore();
+  addNewSequenceToFolderSpy.mockRestore();
+  popoverSpy.mockRestore();
 });
 
 describe("<DesignerSequenceEditor />", () => {
@@ -91,11 +98,11 @@ describe("<DesignerSequenceEditor />", () => {
     const p = fakeProps();
     p.sequence = undefined;
     const wrapper = mount(<DesignerSequenceEditor {...p} />);
-    expect(setActiveSequenceByName).toHaveBeenCalled();
+    expect(setActiveSequenceByNameSpy).toHaveBeenCalled();
     expect(wrapper.text().toLowerCase()).toContain("no sequence selected");
     expect(wrapper.html()).not.toContain("select color");
     wrapper.find("button").first().simulate("click");
-    expect(addNewSequenceToFolder).toHaveBeenCalled();
+    expect(addNewSequenceToFolderSpy).toHaveBeenCalled();
   });
 
   it("changes color", () => {
@@ -105,7 +112,7 @@ describe("<DesignerSequenceEditor />", () => {
     p.sequence = sequence;
     const wrapper = mount(<DesignerSequenceEditor {...p} />);
     wrapper.find(".color-picker-item-wrapper").first().simulate("click");
-    expect(edit).toHaveBeenCalledWith(p.sequence, { color: "blue" });
+    expect(editSpy).toHaveBeenCalledWith(p.sequence, { color: "blue" });
   });
 
   it("generates name and color", () => {
@@ -117,16 +124,16 @@ describe("<DesignerSequenceEditor />", () => {
     wrapper.find(".fa-magic").first().simulate("click");
     expect(wrapper.state().processingTitle).toEqual(true);
     expect(wrapper.state().processingColor).toEqual(true);
-    expect(requestAutoGeneration).toHaveBeenCalled();
-    const { mock } = requestAutoGeneration as jest.Mock;
+    expect(requestAutoGenerationSpy).toHaveBeenCalled();
+    const { mock } = requestAutoGenerationSpy;
     mock.calls[0][0].onUpdate("title");
     mock.calls[0][0].onSuccess("title");
-    expect(edit).toHaveBeenCalledWith(p.sequence, { name: "title" });
+    expect(editSpy).toHaveBeenCalledWith(p.sequence, { name: "title" });
     mock.calls[0][0].onError();
     mock.calls[1][0].onSuccess("red");
-    expect(edit).toHaveBeenCalledWith(p.sequence, { color: "red" });
+    expect(editSpy).toHaveBeenCalledWith(p.sequence, { color: "red" });
     mock.calls[1][0].onSuccess("nope");
-    expect(edit).toHaveBeenCalledWith(p.sequence, { color: "gray" });
+    expect(editSpy).toHaveBeenCalledWith(p.sequence, { color: "gray" });
     mock.calls[1][0].onError();
     expect(wrapper.state().processingTitle).toEqual(false);
     expect(wrapper.state().processingColor).toEqual(false);
@@ -139,7 +146,7 @@ describe("<DesignerSequenceEditor />", () => {
     p.sequence = sequence;
     const wrapper = mount(<DesignerSequenceEditor {...p} />);
     wrapper.find(".fa-magic").first().simulate("click");
-    expect(requestAutoGeneration).not.toHaveBeenCalled();
+    expect(requestAutoGenerationSpy).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith("Save sequence first.");
   });
 
@@ -166,8 +173,8 @@ describe("<ResourceTitle />", () => {
     wrapper.find("input").first().simulate("change",
       { currentTarget: { value: "abc" } });
     wrapper.find("input").first().simulate("blur");
-    expect(edit).toHaveBeenCalled();
-    expect(save).not.toHaveBeenCalled();
+    expect(editSpy).toHaveBeenCalled();
+    expect(saveSpy).not.toHaveBeenCalled();
   });
 
   it("saves change", () => {
@@ -178,8 +185,8 @@ describe("<ResourceTitle />", () => {
     wrapper.find("input").first().simulate("change",
       { currentTarget: { value: "abc" } });
     wrapper.find("input").first().simulate("blur");
-    expect(edit).toHaveBeenCalled();
-    expect(save).toHaveBeenCalled();
+    expect(editSpy).toHaveBeenCalled();
+    expect(saveSpy).toHaveBeenCalled();
   });
 
   it("is read-only", () => {
