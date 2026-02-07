@@ -34,7 +34,7 @@ beforeEach(() => {
   jest.spyOn(farmwareInfo, "requestFarmwareUpdate")
     .mockImplementation(jest.fn());
   jest.spyOn(deviceActions, "takePhoto")
-    .mockImplementation(jest.fn());
+    .mockResolvedValue(undefined);
 });
 
 afterEach(() => {

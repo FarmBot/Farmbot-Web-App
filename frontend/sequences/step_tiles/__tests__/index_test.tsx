@@ -39,13 +39,17 @@ afterEach(() => {
 });
 
 describe("move()", () => {
-  const sequence = fakeSequence();
   const step1: Wait = { kind: "wait", args: { milliseconds: 100 } };
   const step2: Wait = { kind: "wait", args: { milliseconds: 200 } };
-  sequence.body.body = [step1, step2];
+  const makeSequence = () => {
+    const sequence = fakeSequence();
+    sequence.body.body = [cloneDeep(step1), cloneDeep(step2)];
+    return sequence;
+  };
+
   const fakeProps = (): MoveParams => ({
     step: step2,
-    sequence,
+    sequence: makeSequence(),
     to: 0,
     from: 1,
   });

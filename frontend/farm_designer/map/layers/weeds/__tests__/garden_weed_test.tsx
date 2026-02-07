@@ -10,6 +10,10 @@ import { svgMount } from "../../../../../__test_support__/svg_mount";
 import { Path } from "../../../../../internal_urls";
 
 describe("<GardenWeed />", () => {
+  beforeEach(() => {
+    location.pathname = Path.mock(Path.weeds());
+  });
+
   const fakeProps = (): GardenWeedProps => ({
     mapTransformProps: fakeMapTransformProps(),
     weed: fakeWeed(),

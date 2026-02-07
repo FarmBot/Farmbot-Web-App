@@ -95,11 +95,15 @@ describe("<DevWidgetFERow />", () => {
   });
 
   it("disables unstable FE features", () => {
-    mockDevSettings[DevSettings.FUTURE_FE_FEATURES] = "true";
+    const enabledSpy = jest.spyOn(DevSettings, "futureFeaturesEnabled")
+      .mockReturnValue(true);
+    const disableSpy = jest.spyOn(DevSettings, "disableFutureFeatures")
+      .mockImplementation(jest.fn());
     const wrapper = mount(<DevWidgetFERow />);
     wrapper.find("button").simulate("click");
-    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith("internal_use", "{}");
-    delete mockDevSettings[DevSettings.FUTURE_FE_FEATURES];
+    expect(disableSpy).toHaveBeenCalled();
+    disableSpy.mockRestore();
+    enabledSpy.mockRestore();
   });
 });
 

@@ -1,6 +1,5 @@
 import { fakeState } from "../../__test_support__/fake_state";
 import { store } from "../../redux/store";
-const mockState = fakeState();
 
 import { Actions } from "../../constants";
 import { CreateToastOnceProps } from "../interfaces";
@@ -10,9 +9,12 @@ import { fakeToasts } from "../../__test_support__/fake_toasts";
 let originalGetState: typeof store.getState;
 let originalDispatch: typeof store.dispatch;
 let originalConsoleLog: typeof console.log;
+let mockState = fakeState();
 
 describe("toast internal support files", () => {
   beforeEach(() => {
+    mockState = fakeState();
+    mockState.app.toasts = {};
     originalGetState = store.getState;
     originalDispatch = store.dispatch;
     originalConsoleLog = console.log;

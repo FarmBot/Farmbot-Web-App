@@ -13,6 +13,10 @@ import {
 import { SpecialStatus } from "farmbot";
 
 describe("<Point />", () => {
+  beforeEach(() => {
+    location.pathname = Path.mock(Path.points());
+  });
+
   const fakeProps = (): PointProps => ({
     config: clone(INITIAL),
     point: fakePoint(),

@@ -13,6 +13,7 @@ const TEST_DATA = { 1: 0, 10: 10, 50: 500, 100: 1000 };
 let editCurveSpy: jest.SpyInstance;
 
 beforeEach(() => {
+  location.pathname = Path.mock(Path.designer());
   editCurveSpy = jest.spyOn(editCurveModule, "editCurve")
     .mockImplementation(jest.fn());
 });

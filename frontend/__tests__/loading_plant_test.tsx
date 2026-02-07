@@ -2,6 +2,10 @@ import React from "react";
 import { LoadingPlant } from "../loading_plant";
 import { shallow } from "enzyme";
 
+afterEach(() => {
+  jest.restoreAllMocks();
+});
+
 describe("<LoadingPlant/>", () => {
   it("renders loading text", () => {
     const wrapper = shallow(<LoadingPlant animate={false} />);
@@ -26,9 +30,11 @@ describe("<LoadingPlant/>", () => {
   });
 
   it("clears initial loading text", () => {
-    const el = { outerHTML: "hidden" };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    document.getElementsByClassName = jest.fn(() => ([el] as any));
+    const el = { outerHTML: "hidden" } as Pick<Element, "outerHTML">;
+    const collection =
+      [el as unknown as Element] as unknown as HTMLCollectionOf<Element>;
+    jest.spyOn(document, "getElementsByClassName")
+      .mockReturnValue(collection);
     const wrapper = shallow(<LoadingPlant animate={false} />);
     expect(wrapper.find(".loading-plant").length).toEqual(0);
     expect(wrapper.text()).toEqual("Loading...");

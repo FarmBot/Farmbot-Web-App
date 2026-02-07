@@ -6,7 +6,7 @@ import { mount } from "enzyme";
 import { GardenModelProps, GardenModel } from "../garden_model";
 import { clone } from "lodash";
 import { INITIAL, SurfaceDebugOption } from "../config";
-import { render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import {
   fakePlant, fakePoint, fakeSensor, fakeSensorReading, fakeWeed,
 } from "../../__test_support__/fake_state/resources";
@@ -65,8 +65,8 @@ describe("<GardenModel />", () => {
   it("renders no user plants", () => {
     const p = fakeProps();
     p.threeDPlants = convertPlants(p.config, []);
-    render(<GardenModel {...p} />);
-    const plantLabels = screen.queryAllByText("Beet");
+    const { queryAllByText } = render(<GardenModel {...p} />);
+    const plantLabels = queryAllByText("Beet");
     expect(plantLabels.length).toEqual(0);
   });
 
@@ -75,8 +75,8 @@ describe("<GardenModel />", () => {
     const plant = fakePlant();
     plant.body.name = "Beet";
     p.threeDPlants = convertPlants(p.config, [plant]);
-    render(<GardenModel {...p} />);
-    const plantLabels = screen.queryAllByText("Beet");
+    const { queryAllByText } = render(<GardenModel {...p} />);
+    const plantLabels = queryAllByText("Beet");
     expect(plantLabels.length).toEqual(1);
   });
 

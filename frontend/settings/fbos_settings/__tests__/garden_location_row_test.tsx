@@ -10,14 +10,24 @@ import { namespace3D } from "../../three_d_settings";
 let initSaveSpy: jest.SpyInstance;
 let editSpy: jest.SpyInstance;
 let saveSpy: jest.SpyInstance;
+let originalGeolocation: Geolocation | undefined;
 
 beforeEach(() => {
+  originalGeolocation = navigator.geolocation;
+  Object.defineProperty(navigator, "geolocation", {
+    value: undefined,
+    configurable: true,
+  });
   initSaveSpy = jest.spyOn(crud, "initSave").mockImplementation(jest.fn());
   editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
   saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
 });
 
 afterEach(() => {
+  Object.defineProperty(navigator, "geolocation", {
+    value: originalGeolocation,
+    configurable: true,
+  });
   initSaveSpy.mockRestore();
   editSpy.mockRestore();
   saveSpy.mockRestore();
@@ -37,16 +47,25 @@ describe("<GardenLocationRow />", () => {
 
   it("changes location", () => {
     Object.defineProperty(navigator, "geolocation", {
-      value: () => ({}), configurable: true
+      value: {
+        getCurrentPosition: (cb: PositionCallback) =>
+          cb({
+            timestamp: 1,
+            coords: {
+              accuracy: 1,
+              altitude: 1,
+              altitudeAccuracy: 1,
+              heading: 1,
+              speed: 1,
+              latitude: 100,
+              longitude: 50,
+              toJSON: jest.fn(),
+            },
+            toJSON: jest.fn(),
+          }),
+      },
+      configurable: true,
     });
-    navigator.geolocation.getCurrentPosition = cb =>
-      cb({
-        timestamp: 1,
-        coords: {
-          accuracy: 1, altitude: 1, altitudeAccuracy: 1, heading: 1, speed: 1,
-          latitude: 100, longitude: 50, toJSON: jest.fn(),
-        }, toJSON: jest.fn(),
-      });
     const p = fakeProps();
     const wrapper = mount(<GardenLocationRow {...p} />);
     wrapper.find("button").first().simulate("click");
@@ -77,7 +96,7 @@ describe("<GardenLocationRow />", () => {
   it("changes indoor setting", () => {
     const p = fakeProps();
     const wrapper = mount(<GardenLocationRow {...p} />);
-    wrapper.find("button").at(1).simulate("click");
+    wrapper.find("button.fb-toggle-button").first().simulate("click");
     expect(crud.edit).toHaveBeenCalledWith(p.device, { indoor: true });
     expect(crud.save).toHaveBeenCalledWith(p.device.uuid);
   });

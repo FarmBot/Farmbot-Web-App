@@ -4,6 +4,10 @@ import { SoftwareDocsPanel } from "../software";
 import { ExternalUrl } from "../../../external_urls";
 
 describe("<SoftwareDocsPanel />", () => {
+  beforeEach(() => {
+    location.search = "";
+  });
+
   it("renders software docs", () => {
     const wrapper = mount(<SoftwareDocsPanel />);
     expect(wrapper.find("iframe").props().src).toEqual(ExternalUrl.softwareDocs);

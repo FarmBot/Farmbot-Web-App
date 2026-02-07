@@ -10,6 +10,10 @@ import {
 } from "../../../../__test_support__/fake_designer_state";
 
 describe("<AddPlantIcon />", () => {
+  beforeEach(() => {
+    location.pathname = Path.mock(Path.plants());
+  });
+
   const fakeProps = (): AddPlantIconProps => ({
     designer: fakeDesignerState(),
     cursorPosition: { x: 1, y: 2 },

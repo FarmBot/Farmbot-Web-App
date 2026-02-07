@@ -171,29 +171,36 @@ describe("speakLogAloud", () => {
 });
 
 describe("logBeep()", () => {
-  const log = fakeLog(MessageType.info);
-  log.verbosity = 2;
+  const makeLog = () => {
+    const log = fakeLog(MessageType.info);
+    log.verbosity = 2;
+    return log;
+  };
 
   it("doesn't beep: off", () => {
     mockConfigValue = 0;
+    const log = makeLog();
     logBeep(jest.fn())(log);
     expect(beepSpy).not.toHaveBeenCalled();
   });
 
   it("doesn't beep: lower verbosity", () => {
     mockConfigValue = 1;
+    const log = makeLog();
     logBeep(jest.fn())(log);
     expect(beepSpy).not.toHaveBeenCalled();
   });
 
   it("beeps", () => {
     mockConfigValue = 2;
+    const log = makeLog();
     logBeep(jest.fn())(log);
     expect(beepSpy).toHaveBeenCalledWith(MessageType.info);
   });
 
   it("handles unknown verbosity", () => {
     mockConfigValue = 2;
+    const log = makeLog();
     log.verbosity = undefined;
     logBeep(jest.fn())(log);
     expect(beepSpy).toHaveBeenCalledWith(MessageType.info);

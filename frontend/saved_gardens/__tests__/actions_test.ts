@@ -19,6 +19,7 @@ let initSaveSpy: jest.SpyInstance;
 let initSaveGetIdSpy: jest.SpyInstance;
 
 beforeEach(() => {
+  API.setBaseUrl("example.io");
   postSpy = jest.spyOn(axios, "post")
     .mockImplementation(jest.fn(() => Promise.resolve()));
   patchSpy = jest.spyOn(axios, "patch")
@@ -32,6 +33,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  API.resetBaseUrl();
   postSpy.mockRestore();
   patchSpy.mockRestore();
   destroySpy.mockRestore();

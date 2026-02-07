@@ -10,6 +10,8 @@ import * as crud from "../../api/crud";
 import { Path } from "../../internal_urls";
 
 beforeEach(() => {
+  jest.clearAllMocks();
+  location.pathname = Path.mock(Path.weeds());
   jest.spyOn(mapActions, "mapPointClickAction")
     .mockImplementation(jest.fn(() => jest.fn()));
   jest.spyOn(mapActions, "selectPoint")

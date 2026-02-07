@@ -24,6 +24,8 @@ let editSpy: jest.SpyInstance;
 let saveSpy: jest.SpyInstance;
 
 beforeEach(() => {
+  mockConfig.body.photo_filter_begin = "";
+  mockConfig.body.photo_filter_end = "";
   editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
   saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
 });
