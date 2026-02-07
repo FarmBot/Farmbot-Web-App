@@ -123,7 +123,7 @@ commands:
           name: Run JS tests
           command: |
             mkdir -p /tmp/test-results/jest
-            sudo docker compose run web bun test-slow --coverage --reporter=junit --reporter-outfile=/tmp/test-results/jest/junit.xml
+            sudo docker compose run web bun test --coverage --reporter=junit --reporter-outfile=/tmp/test-results/jest/junit.xml
             echo 'export COVERAGE_AVAILABLE=true' >> $BASH_ENV
   lint-commands:
     steps:
@@ -361,6 +361,6 @@ jobs:
           command: |
             circleci tests glob **/__tests__/**/*.ts* | circleci tests split > /tmp/tests-to-run
             mkdir -p /tmp/test-results/jest
-            sudo docker compose run web bun test-slow --coverage --reporter=junit --reporter-outfile=/tmp/test-results/jest/junit.xml $(cat /tmp/tests-to-run)
+            sudo docker compose run web bun test --coverage --reporter=junit --reporter-outfile=/tmp/test-results/jest/junit.xml $(cat /tmp/tests-to-run)
       - store_test_results:
           path: /tmp/test-results
