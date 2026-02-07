@@ -19,7 +19,7 @@
     "graph-modules-svg": "dot -Tsvg module_graph.dot -o module_graph.svg",
     "typecheck": "bun scripts/run.js bunx tsc --noEmit",
     "dev-typecheck": "bun scripts/run.js bunx tsc --project tsconfig.dev.json --noEmit",
-    "eslint": "TSESTREE_SINGLE_RUN=true bun scripts/run.js bunx eslint --cache --cache-location .cache/eslint-v2/ --cache-strategy content --ext .ts,.tsx frontend public/app-resources/languages",
+    "eslint": "TSESTREE_SINGLE_RUN=true bun scripts/run.js bunx eslint --no-cache --ext .ts,.tsx frontend public/app-resources/languages",
     "sass-lint": "bun scripts/run.js bunx sass-lint -c .sass-lint.yml -v -q",
     "sass-check": "bun scripts/run.js bunx sass --no-source-map --load-path=node_modules frontend/css/_index.scss:sass_index.log",
     "translation-check": "bun scripts/run.js bunx jshint --config public/app-resources/languages/.config public/app-resources/languages/*.json",
