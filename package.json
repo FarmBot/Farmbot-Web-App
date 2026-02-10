@@ -13,8 +13,8 @@
     "url": "https://github.com/farmbot/farmbot-web-app"
   },
   "scripts": {
-    "test-slow": "bun test --coverage",
-    "test": "bun test",
+    "test-slow": "bun test --coverage --max-concurrency=1",
+    "test": "bun test --max-concurrency=1",
     "graph-modules-dot": "bunx madge --dot ./frontend > module_graph.dot",
     "graph-modules-svg": "dot -Tsvg module_graph.dot -o module_graph.svg",
     "typecheck": "bun scripts/run.js bunx tsc --noEmit",
