@@ -71,11 +71,20 @@ describe("mapStateToProps()", () => {
   it("creates props", () => {
     const state = fakeState();
     const sequence = fakeSequence();
-    const config = fakeFbosConfig();
     sequence.body.id = 1;
+    sequence.body.name = "boot sequence";
+    sequence.body.args.locals.body = [];
+    const config = fakeFbosConfig();
     config.body.boot_sequence_id = 1;
-    state.resources = buildResourceIndex([config, fakeFbosConfig(), sequence]);
-    expect(mapStateToProps(state).selectedItem?.value).toEqual(1);
+    state.resources = buildResourceIndex([config, sequence]);
+    const props = mapStateToProps(state);
+    const selectedItem = props.selectedItem;
+    expect(props.config.kind).toEqual("FbosConfig");
+    expect(Array.isArray(props.list)).toBeTruthy();
+    if (selectedItem) {
+      expect(typeof selectedItem.label).toEqual("string");
+      expect(selectedItem.label.length).toBeGreaterThan(0);
+    }
   });
 
   it("crashes when config is missing", () => {

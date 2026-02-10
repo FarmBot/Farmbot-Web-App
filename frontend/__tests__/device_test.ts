@@ -1,5 +1,8 @@
 class mockFarmbot { connect = () => Promise.resolve(this); }
-jest.mock("farmbot", () => ({ Farmbot: mockFarmbot }));
+jest.mock("farmbot", () => ({
+  ...(jest.requireActual("farmbot") as object),
+  Farmbot: mockFarmbot,
+}));
 
 import { auth } from "../__test_support__/fake_state/token";
 import { get } from "lodash";

@@ -163,6 +163,10 @@ describe("<DesignerNavTabs />", () => {
   });
 
   it("calls onScroll", () => {
+    Object.defineProperty(document, "getElementsByClassName", {
+      value: () => [{}, { scrollWidth: 100, scrollLeft: 25, clientWidth: 75 }],
+      configurable: true
+    });
     const wrapper = shallow<DesignerNavTabs>(<DesignerNavTabs {...fakeProps()} />);
     wrapper.setState({ atEnd: false });
     wrapper.find(".panel-tabs").simulate("scroll");

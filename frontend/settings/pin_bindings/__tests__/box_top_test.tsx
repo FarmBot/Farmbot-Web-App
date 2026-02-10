@@ -7,6 +7,14 @@ import {
 } from "../../../__test_support__/resource_index_builder";
 import { bot } from "../../../__test_support__/fake_state/bot";
 
+jest.mock("../model", () => ({
+  ElectronicsBoxModel: () => <div className={"electronics-box-3d-model"} />,
+}));
+
+jest.mock("../box_top_gpio_diagram", () => ({
+  BoxTopButtons: () => <div className={"box-top-2d-wrapper"} />,
+}));
+
 describe("<BoxTop />", () => {
   const fakeProps = (): BoxTopProps => ({
     threeDimensions: false,

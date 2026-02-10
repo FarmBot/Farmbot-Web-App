@@ -16,18 +16,29 @@ afterAll(() => {
 });
 describe("<PasswordReset/>", () => {
   API.setBaseUrl("");
+  let originalPathname: string;
+
+  beforeEach(() => {
+    originalPathname = location.pathname;
+    location.pathname = "/password_resets/";
+  });
+
+  afterEach(() => {
+    location.pathname = originalPathname;
+  });
 
   it("handles form submission errors", async () => {
     jest.useFakeTimers();
     mockPut = Promise.reject({ response: { data: "error" } });
     const wrapper = mount<PasswordReset>(<PasswordReset />);
     const e = formEvent();
+    const id = window.location.href.split("/").pop();
     await wrapper.instance().submit(e);
     expect(e.preventDefault).toHaveBeenCalled();
     await expect(axios.put).toHaveBeenCalledWith(
       "http://localhost/api/password_resets/",
       {
-        id: "",
+        id,
         password: "",
         password_confirmation: "",
       },
@@ -40,12 +51,13 @@ describe("<PasswordReset/>", () => {
     mockPut = Promise.reject({ response: { data: "error", status: 451 } });
     const wrapper = mount<PasswordReset>(<PasswordReset />);
     const e = formEvent();
+    const id = window.location.href.split("/").pop();
     await wrapper.instance().submit(e);
     expect(e.preventDefault).toHaveBeenCalled();
     await expect(axios.put).toHaveBeenCalledWith(
       "http://localhost/api/password_resets/",
       {
-        id: "",
+        id,
         password: "",
         password_confirmation: "",
       },
@@ -63,11 +75,12 @@ describe("<PasswordReset/>", () => {
       serverURL: "localhost",
       serverPort: "3000",
     });
+    const id = window.location.href.split("/").pop();
     await el.find("form").simulate("submit", formEvent());
     expect(axios.put).toHaveBeenCalledWith(
       "http://localhost/api/password_resets/",
       {
-        id: "",
+        id,
         password: "knocknock",
         password_confirmation: "knocknock",
       },

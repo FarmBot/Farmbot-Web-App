@@ -2,7 +2,16 @@ import { fakeFbosConfig } from "../../__test_support__/fake_state/resources";
 import { AlertReducerState } from "../interfaces";
 import { batchInitResources } from "../../connectivity/connect_device";
 import { alertsReducer } from "../reducer";
-import { overwrite } from "../../api/crud";
+import { Actions } from "../../constants";
+
+beforeEach(() => {
+  jest.restoreAllMocks();
+  jest.clearAllMocks();
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
 
 describe("Contextual `Alert` creation", () => {
   it("toggles on", () => {
@@ -27,8 +36,13 @@ describe("Contextual `Alert` creation", () => {
     const s: AlertReducerState = {
       alerts: {}
     };
-    const action =
-      overwrite(c, { ...c.body, firmware_hardware: "none" });
+    const action = {
+      type: Actions.OVERWRITE_RESOURCE,
+      payload: {
+        uuid: c.uuid,
+        update: { ...c.body, firmware_hardware: "none" },
+      },
+    };
     const { alerts } = alertsReducer(s, action);
     const results = Object.values(alerts);
     expect(results[0]).toEqual(undefined);

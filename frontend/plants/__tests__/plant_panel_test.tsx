@@ -57,7 +57,11 @@ describe("<PlantPanel />", () => {
   };
 
   const fakeProps = (): PlantPanelProps => ({
-    info,
+    info: {
+      ...info,
+      plantedAt: info.plantedAt.clone(),
+      meta: info.meta ? { ...info.meta } : undefined,
+    },
     updatePlant: jest.fn(),
     dispatch: jest.fn(),
     inSavedGarden: false,
@@ -169,7 +173,7 @@ describe("<PlantPanel />", () => {
     p.info.uuid = "Point.0.0";
     const wrapper = shallow(<PlantPanel {...p} />);
     wrapper.find("AllCurveInfo").simulate("change", 1, CurveType.water);
-    expect(p.updatePlant).toHaveBeenCalledWith(info.uuid,
+    expect(p.updatePlant).toHaveBeenCalledWith(p.info.uuid,
       { water_curve_id: 1 });
   });
 });

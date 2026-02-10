@@ -1,3 +1,6 @@
+jest.unmock("../../api/crud");
+jest.unmock("../../api/crud.ts");
+
 import {
   decodeBinary,
   routeMqttData,
@@ -6,9 +9,12 @@ import {
   handleUpdate,
   handleCreateOrUpdate,
 } from "../auto_sync";
+import * as crud from "../../api/crud";
 import { SpecialStatus, TaggedSequence } from "farmbot";
 import { Actions } from "../../constants";
 import { fakeState } from "../../__test_support__/fake_state";
+import { fakeSequence } from "../../__test_support__/fake_state/resources";
+import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { GetState } from "../../redux/interfaces";
 import { SyncPayload, UpdateMqttData, Reason } from "../interfaces";
 import { outstandingRequests, storeUUID } from "../data_consistency";
@@ -31,9 +37,17 @@ const payload = (): UpdateMqttData<TaggedSequence> => ({
   sessionId: `wow-${Math.random()}`
 });
 
+beforeEach(() => {
+  jest.restoreAllMocks();
+  jest.clearAllMocks();
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
+
 describe("handleCreateOrUpdate", () => {
   beforeEach(() => {
-    jest.clearAllMocks();
     outstandingRequests.all.clear();
     outstandingRequests.last = "never-used";
   });
@@ -66,35 +80,38 @@ describe("handleCreateOrUpdate", () => {
 
   it("updates existing records when found locally", () => {
     const myPayload = payload();
-    const dispatch = jest.fn();
-    const getState = jest.fn(fakeState) as GetState;
-    const { index } = getState().resources;
-
-    const fakeId =
-      unpackUUID(Object.keys(index.byKind.Sequence)[0]).remoteId || -1;
+    const dispatch = jest.fn(() => "dispatched");
+    const sequence = fakeSequence({ id: 1234 });
+    const state = fakeState();
+    state.resources = buildResourceIndex([sequence]);
+    const getState = jest.fn(() => state) as GetState;
+    const fakeId = unpackUUID(sequence.uuid).remoteId || -1;
     myPayload.id = fakeId;
     myPayload.kind = "Sequence";
-    handleCreateOrUpdate(dispatch, getState, myPayload);
+    const result = handleCreateOrUpdate(dispatch, getState, myPayload);
+    expect(result).toEqual("dispatched");
     expect(dispatch).toHaveBeenCalled();
-    expect(dispatch).toHaveBeenCalledWith(expect.objectContaining({
-      type: Actions.OVERWRITE_RESOURCE
-    }));
+    expect(dispatch).toHaveBeenCalledTimes(1);
   });
 });
 
 describe("handleUpdate", () => {
   it("creates Redux actions when data updates", () => {
     const uuid = "THIS IS IT";
-    const wow = handleUpdate(payload(), uuid);
-    expect(wow.type).toEqual(Actions.OVERWRITE_RESOURCE);
-    expect(wow.payload.uuid).toBe(uuid);
+    const overwriteSpy = jest.spyOn(crud, "overwrite");
+    handleUpdate(payload(), uuid);
+    expect(overwriteSpy).toHaveBeenCalled();
+    const resource = overwriteSpy.mock.calls[0]?.[0];
+    expect(resource?.uuid).toBe(uuid);
   });
 });
 
 describe("handleCreate", () => {
   it("creates appropriate Redux actions", () => {
-    const wow = handleCreate(payload());
-    expect(wow.type).toEqual(Actions.INIT_RESOURCE);
+    const initSpy = jest.spyOn(crud, "init");
+    const p = payload();
+    handleCreate(p);
+    expect(initSpy).toHaveBeenCalledWith(p.kind, p.body, true);
   });
 });
 

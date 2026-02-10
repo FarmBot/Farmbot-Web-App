@@ -15,6 +15,10 @@ import { Actions } from "../../../../../constants";
 import { mockDispatch } from "../../../../../__test_support__/fake_dispatch";
 
 describe("<PlantLayer />", () => {
+  beforeEach(() => {
+    location.pathname = Path.mock(Path.plants());
+  });
+
   const fakeProps = (): PlantLayerProps => ({
     visible: true,
     plants: [fakePlant()],
@@ -131,6 +135,7 @@ describe("<PlantLayer />", () => {
   });
 
   it("doesn't allow clicking of unsaved plants", () => {
+    location.pathname = Path.mock(Path.plants());
     const p = fakeProps();
     p.interactions = false;
     p.plants[0].body.id = 0;

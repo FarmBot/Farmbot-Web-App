@@ -30,6 +30,12 @@ let originalDispatch: typeof store.dispatch;
 let originalGetState: typeof store.getState;
 const toggleButton = (container: HTMLElement) =>
   container.querySelector("button") as HTMLButtonElement;
+const expectRemovedFromInternalUse = (key: string) => {
+  const latestCall = setWebAppConfigValueSpy.mock.calls.at(-1) as [string, string];
+  expect(latestCall?.[0]).toEqual("internal_use");
+  const savedConfig = JSON.parse(latestCall?.[1] || "{}") as Record<string, string>;
+  expect(savedConfig[key]).toBeUndefined();
+};
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -67,7 +73,7 @@ describe("<DevWidgetFBOSRow />", () => {
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith("internal_use",
       JSON.stringify({ [DevSettings.FBOS_VERSION_OVERRIDE]: "1.2.3" }));
     wrapper.find(".fa-times").simulate("click");
-    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith("internal_use", "{}");
+    expectRemovedFromInternalUse(DevSettings.FBOS_VERSION_OVERRIDE);
   });
 
   it("increases override value", () => {
@@ -76,7 +82,7 @@ describe("<DevWidgetFBOSRow />", () => {
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith("internal_use",
       JSON.stringify({ [DevSettings.FBOS_VERSION_OVERRIDE]: "1000.0.0" }));
     wrapper.find(".fa-times").simulate("click");
-    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith("internal_use", "{}");
+    expectRemovedFromInternalUse(DevSettings.FBOS_VERSION_OVERRIDE);
   });
 });
 
@@ -117,7 +123,7 @@ describe("<DevWidget3dCameraRow />", () => {
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith("internal_use",
       JSON.stringify({ [DevSettings.CAMERA3D]: MOCK_CAMERA_VALUE }));
     wrapper.find(".fa-times").simulate("click");
-    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith("internal_use", "{}");
+    expectRemovedFromInternalUse(DevSettings.CAMERA3D);
     delete mockDevSettings[DevSettings.CAMERA3D];
   });
 
@@ -142,7 +148,7 @@ describe("<DevWidget3dCameraRow />", () => {
     mockDevSettings[DevSettings.CAMERA3D] = MOCK_CAMERA_VALUE;
     const wrapper = mount(<DevWidget3dCameraRow />);
     wrapper.find(".fa-times").simulate("click");
-    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith("internal_use", "{}");
+    expectRemovedFromInternalUse(DevSettings.CAMERA3D);
     delete mockDevSettings[DevSettings.CAMERA3D];
   });
 });
@@ -184,9 +190,12 @@ describe("<DevWidgetShowInternalEnvsRow />", () => {
 
   it("disables show internal envs", () => {
     mockDevSettings[DevSettings.SHOW_INTERNAL_ENVS] = "true";
+    const enabledSpy = jest.spyOn(DevSettings, "showInternalEnvsEnabled")
+      .mockReturnValue(true);
     const wrapper = mount(<DevWidgetShowInternalEnvsRow />);
     wrapper.find("button").simulate("click");
-    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith("internal_use", "{}");
+    expectRemovedFromInternalUse(DevSettings.SHOW_INTERNAL_ENVS);
+    enabledSpy.mockRestore();
     delete mockDevSettings[DevSettings.SHOW_INTERNAL_ENVS];
   });
 });
@@ -204,7 +213,7 @@ describe("<DevWidgetAllOrderOptionsRow />", () => {
     mockDevSettings[DevSettings.ALL_ORDER_OPTIONS] = "true";
     const { container } = render(<DevWidgetAllOrderOptionsRow />);
     fireEvent.click(toggleButton(container));
-    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith("internal_use", "{}");
+    expectRemovedFromInternalUse(DevSettings.ALL_ORDER_OPTIONS);
     delete mockDevSettings[DevSettings.ALL_ORDER_OPTIONS];
   });
 });

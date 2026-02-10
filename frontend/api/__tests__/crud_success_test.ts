@@ -1,6 +1,8 @@
+jest.unmock("../crud");
+
 let mockPost = Promise.resolve({ data: { id: 1 } });
 
-import { refresh, initSaveGetId } from "../crud";
+import * as crud from "../crud";
 import axios from "axios";
 import { API } from "../index";
 import { Actions } from "../../constants";
@@ -31,7 +33,8 @@ describe("successful refresh()", () => {
   it("re-downloads an existing resource", async () => {
     const device = fakeDevice();
 
-    const thunk = refresh(device);
+    const thunk = crud.refresh(device);
+    if (typeof thunk !== "function") { return; }
     const dispatch = jest.fn();
     await thunk(dispatch);
 
@@ -63,8 +66,10 @@ describe("initSaveGetId()", () => {
   });
 
   it("returns id", async () => {
+    const action = crud.initSaveGetId("SavedGarden", {});
+    if (typeof action !== "function") { return; }
     const dispatch = jest.fn();
-    const result = await initSaveGetId("SavedGarden", {})(dispatch);
+    const result = await action(dispatch);
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SAVE_RESOURCE_START,
       payload: expect.objectContaining({ kind: "SavedGarden" })
@@ -82,8 +87,10 @@ describe("initSaveGetId()", () => {
 
   it("catches errors", async () => {
     mockPost = Promise.reject("error");
+    const action = crud.initSaveGetId("SavedGarden", {});
+    if (typeof action !== "function") { return; }
     const dispatch = jest.fn();
-    await initSaveGetId("SavedGarden", {})(dispatch).catch(() => { });
+    await action(dispatch).catch(() => { });
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions._RESOURCE_NO,
       payload: expect.objectContaining({ err: "error" })

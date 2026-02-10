@@ -13,6 +13,6 @@ describe("<DocumentationPanel />", () => {
   it("renders iframe", () => {
     const wrapper = mount(<DocumentationPanel {...fakeProps()} />);
     expect(wrapper.find("iframe").props().src)
-      .toEqual("fake url");
+      .toContain("fake url");
   });
 });

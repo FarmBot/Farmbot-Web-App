@@ -7,10 +7,8 @@ import { StepTitleBarProps } from "../../interfaces";
 import { FarmwareName } from "../tile_execute_script";
 
 describe("<StepTitleBar/>", () => {
-  const currentStep: Wait = { kind: "wait", args: { milliseconds: 100 } };
-
   const fakeProps = (): StepTitleBarProps => ({
-    step: currentStep,
+    step: { kind: "wait", args: { milliseconds: 100 } } as Wait,
     index: 0,
     dispatch: jest.fn(),
     readOnly: false,

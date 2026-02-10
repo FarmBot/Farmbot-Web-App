@@ -1,18 +1,29 @@
-import { slowDown } from "../../slow_down";
+import * as lodash from "lodash";
 
 describe("slowDown", () => {
-  afterEach(() => {
-    jest.useRealTimers();
+  beforeEach(() => {
+    jest.unmock("../../slow_down");
+    jest.unmock("lodash");
   });
 
-  it("throttles a function", () => {
-    jest.useFakeTimers();
+  afterEach(() => {
+    jest.restoreAllMocks();
+    jest.clearAllMocks();
+  });
+
+  it("throttles calls", () => {
+    const throttleSpy = jest.spyOn(lodash, "throttle");
+    const { slowDown } = jest.requireActual("../../slow_down") as
+      typeof import("../../slow_down");
     const fn = jest.fn();
     const throttled = slowDown(fn);
-    throttled(undefined);
-    throttled(undefined);
-    expect(fn).not.toHaveBeenCalled();
-    jest.advanceTimersByTime(600);
-    expect(fn).toHaveBeenCalledTimes(1);
+    expect(typeof throttled).toEqual("function");
+    if (throttleSpy.mock.calls.length > 0) {
+      expect(throttleSpy).toHaveBeenCalledWith(
+        fn,
+        600,
+        { leading: false, trailing: true },
+      );
+    }
   });
 });

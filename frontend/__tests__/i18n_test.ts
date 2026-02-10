@@ -15,18 +15,21 @@ let mockGet = defaultMockGet();
 
 import axios from "axios";
 import { FilePath } from "../internal_urls";
-const i18nModule = jest.requireActual("../i18n");
-const {
-  generateUrl, getUserLang, generateI18nConfig, detectLanguage,
-} = i18nModule;
+let generateUrl: typeof import("../i18n")["generateUrl"];
+let getUserLang: typeof import("../i18n")["getUserLang"];
+let generateI18nConfig: typeof import("../i18n")["generateI18nConfig"];
+let detectLanguage: typeof import("../i18n")["detectLanguage"];
 
 const LANG_CODE = "en_US";
 const HOST = "local.dev";
 const PORT = "2323";
 
 beforeEach(() => {
+  jest.restoreAllMocks();
   jest.clearAllMocks();
   mockGet = defaultMockGet();
+  ({ generateUrl, getUserLang, generateI18nConfig, detectLanguage } =
+    jest.requireActual("../i18n") as typeof import("../i18n"));
   jest.spyOn(axios, "get").mockImplementation((_url: string) => mockGet);
 });
 

@@ -127,7 +127,7 @@ describe("<Bed />", () => {
   });
 
   afterEach(() => {
-    history.replaceState(undefined, "", Path.mock(originalPathname));
+    history.replaceState(undefined, "", originalPathname);
     jest.restoreAllMocks();
   });
 
@@ -165,7 +165,7 @@ describe("<Bed />", () => {
     ["renders", SpecialStatus.SAVED],
   ])("%s pointer point", (title, gridPointSpecialStatus) => {
     getModeSpy.mockReturnValue(Mode.createPoint);
-    history.replaceState(undefined, "", Path.mock(Path.points("add")));
+    history.replaceState(undefined, "", Path.points("add"));
     mockIsMobile = false;
     const p = fakeProps();
     p.addPlantProps = fakeAddPlantProps();
@@ -190,7 +190,7 @@ describe("<Bed />", () => {
 
   it("adds a plant", () => {
     getModeSpy.mockReturnValue(Mode.clickToAdd);
-    history.replaceState(undefined, "", Path.mock(Path.cropSearch("mint")));
+    history.replaceState(undefined, "", Path.cropSearch("mint"));
     const p = fakeProps();
     p.addPlantProps = fakeAddPlantProps();
     const { container } = render(<Bed {...p} />);
@@ -203,7 +203,7 @@ describe("<Bed />", () => {
 
   it("doesn't add a drawn point", () => {
     getModeSpy.mockReturnValue(Mode.createPoint);
-    history.replaceState(undefined, "", Path.mock(Path.points("add")));
+    history.replaceState(undefined, "", Path.points("add"));
     const p = fakeProps();
     const addPlantProps = fakeAddPlantProps();
     addPlantProps.designer.drawnPoint = undefined;
@@ -216,7 +216,7 @@ describe("<Bed />", () => {
 
   it("adds a drawn point: xy", () => {
     getModeSpy.mockReturnValue(Mode.createPoint);
-    history.replaceState(undefined, "", Path.mock(Path.points("add")));
+    history.replaceState(undefined, "", Path.points("add"));
     mockPlantRef.current = { position: { set: mockSetPlantPosition } };
     const p = fakeProps();
     const addPlantProps = fakeAddPlantProps();
@@ -239,7 +239,7 @@ describe("<Bed />", () => {
 
   it("adds a drawn point: radius", () => {
     getModeSpy.mockReturnValue(Mode.createPoint);
-    history.replaceState(undefined, "", Path.mock(Path.points("add")));
+    history.replaceState(undefined, "", Path.points("add"));
     mockPlantRef.current = { position: { set: mockSetPlantPosition } };
     const p = fakeProps();
     const addPlantProps = fakeAddPlantProps();

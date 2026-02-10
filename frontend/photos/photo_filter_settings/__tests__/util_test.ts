@@ -93,6 +93,12 @@ describe("getImageShownStatusFlags()", () => {
   mockConfig.body.photo_filter_begin = "";
   mockConfig.body.photo_filter_end = "";
 
+  beforeEach(() => {
+    mockConfig.body.show_images = true;
+    mockConfig.body.photo_filter_begin = "";
+    mockConfig.body.photo_filter_end = "";
+  });
+
   const fakeProps = (): GetImageShownStatusFlagsProps => ({
     image: undefined,
     designer: fakeDesignerState(),
@@ -102,7 +108,6 @@ describe("getImageShownStatusFlags()", () => {
   });
 
   it("returns true flags", () => {
-    mockConfig.body.show_images = true;
     const p = fakeProps();
     p.image = fakeImage();
     const flags = getImageShownStatusFlags(p);
@@ -114,7 +119,6 @@ describe("getImageShownStatusFlags()", () => {
   });
 
   it("handles missing image", () => {
-    mockConfig.body.show_images = true;
     const p = fakeProps();
     p.image = undefined;
     const flags = getImageShownStatusFlags(p);

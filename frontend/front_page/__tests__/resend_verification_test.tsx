@@ -12,6 +12,10 @@ afterAll(() => {
 });
 describe("<ResendVerification />", () => {
   API.setBaseUrl("http://localhost:3000");
+  beforeEach(() => {
+    mockPost = Promise.resolve({ data: "whatever" });
+  });
+
   const props = () => ({
     ok: jest.fn(),
     no: jest.fn(),
@@ -22,7 +26,8 @@ describe("<ResendVerification />", () => {
   it("fires the `onGoBack()` callback", () => {
     const p = props();
     const el = mount(<ResendVerification {...p} />);
-    el.find("button").first().simulate("click");
+    el.find("button").filterWhere(button =>
+      button.prop("title") === "go back").simulate("click");
     expect(p.no).not.toHaveBeenCalled();
     expect(p.ok).not.toHaveBeenCalled();
     expect(p.onGoBack).toHaveBeenCalledTimes(1);
@@ -31,7 +36,8 @@ describe("<ResendVerification />", () => {
   it("fires the `ok()` callback", async () => {
     const p = props();
     const el = mount(<ResendVerification {...p} />);
-    await el.find("button").last().simulate("click");
+    await el.find("button").filterWhere(button =>
+      button.prop("title") === "Resend Verification Email").simulate("click");
     const { calls } = p.ok.mock;
     expect(p.no).not.toHaveBeenCalled();
     expect(calls.length).toEqual(1);
@@ -42,7 +48,8 @@ describe("<ResendVerification />", () => {
     mockPost = Promise.reject({ err: "hi" });
     const p = props();
     const el = mount(<ResendVerification {...p} />);
-    await el.find("button").last().simulate("click");
+    await el.find("button").filterWhere(button =>
+      button.prop("title") === "Resend Verification Email").simulate("click");
     const { calls } = p.no.mock;
     expect(p.ok).not.toHaveBeenCalled();
     expect(calls.length).toEqual(1);

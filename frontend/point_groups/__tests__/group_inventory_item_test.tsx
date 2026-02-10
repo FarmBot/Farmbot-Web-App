@@ -12,6 +12,7 @@ import * as crud from "../../api/crud";
 import * as devSupport from "../../settings/dev/dev_support";
 
 beforeEach(() => {
+  mockDelMode = false;
   jest.spyOn(crud, "destroy").mockImplementation(jest.fn());
   jest.spyOn(devSupport.DevSettings, "quickDeleteEnabled")
     .mockImplementation(() => mockDelMode);
@@ -61,7 +62,7 @@ describe("<GroupInventoryItem />", () => {
   it("opens group", () => {
     const p = fakeProps();
     const wrapper = mount(<GroupInventoryItem {...p} />);
-    wrapper.find("div").first().simulate("click");
+    wrapper.find(".group-search-item").first().simulate("click");
     expect(p.onClick).toHaveBeenCalled();
     expect(crud.destroy).not.toHaveBeenCalledWith(p.group.uuid);
   });
@@ -70,7 +71,7 @@ describe("<GroupInventoryItem />", () => {
     mockDelMode = true;
     const p = fakeProps();
     const wrapper = mount(<GroupInventoryItem {...p} />);
-    wrapper.find("div").first().simulate("click");
+    wrapper.find(".group-search-item").first().simulate("click");
     expect(p.onClick).not.toHaveBeenCalled();
     expect(crud.destroy).toHaveBeenCalledWith(p.group.uuid);
   });

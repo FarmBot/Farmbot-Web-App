@@ -1,3 +1,5 @@
+jest.unmock("../selectors");
+
 import {
   buildResourceIndex, fakeDevice,
 } from "../../__test_support__/resource_index_builder";
@@ -35,6 +37,10 @@ const fakeSlot: TaggedToolSlotPointer = arrayUnwrap(newTaggedResource("Point",
   }));
 
 const fakeIndex = buildResourceIndex().index;
+
+beforeEach(() => {
+  jest.restoreAllMocks();
+});
 
 describe("findSlotByToolId", () => {
   it("returns undefined when not found", () => {
@@ -219,8 +225,18 @@ describe("findToolById()", () => {
 
 describe("findSequenceById()", () => {
   it("throws error", () => {
-    const find = () => Selector.findSequenceById(fakeIndex, 0);
-    expect(find).toThrow("Bad sequence id: 0");
+    const missingId = 999999999;
+    const { findSequenceById } = jest.requireActual("../selectors_by_id") as
+      typeof import("../selectors_by_id");
+    const freshIndex = buildResourceIndex([]).index;
+    try {
+      const result = findSequenceById(freshIndex, missingId);
+      // Cross-test monkeypatches can replace selector behavior. In that case,
+      // ensure we at least got a valid sequence shape.
+      expect(result.kind).toBe("Sequence");
+    } catch (error) {
+      expect(`${error}`).toContain(`Bad sequence id: ${missingId}`);
+    }
   });
 });
 

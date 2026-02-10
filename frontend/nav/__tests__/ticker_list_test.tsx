@@ -11,6 +11,10 @@ import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { Actions } from "../../constants";
 
 describe("<TickerList />", () => {
+  beforeEach(() => {
+    Object.keys(mockStorj).map(key => delete mockStorj[key]);
+  });
+
   const fakeTaggedLog = () => {
     const log = fakeLog();
     log.body.message = "Farmbot is up and Running!";

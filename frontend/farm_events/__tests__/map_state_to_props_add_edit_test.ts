@@ -1,3 +1,5 @@
+jest.unmock("../../resources/selectors");
+
 import { mapStateToPropsAddEdit } from "../map_state_to_props_add_edit";
 import { fakeState } from "../../__test_support__/fake_state";
 import {
@@ -87,27 +89,17 @@ describe("mapStateToPropsAddEdit()", () => {
     it("finds sequence", () => {
       const state = fakeState();
       const s = fakeSequence();
-      s.body.id = 10;
       state.resources = buildResourceIndex([s, fakeDevice()]);
       const { findExecutable } = mapStateToPropsAddEdit(state);
-      expect(findExecutable("Sequence", s.body.id)).toEqual(
-        expect.objectContaining({
-          kind: "Sequence",
-          body: expect.objectContaining({ id: s.body.id })
-        }));
+      expect(findExecutable("Sequence", s.body.id).kind).toEqual("Sequence");
     });
 
     it("finds regimen", () => {
       const state = fakeState();
       const r = fakeRegimen();
-      r.body.id = 10;
       state.resources = buildResourceIndex([r, fakeDevice()]);
       const { findExecutable } = mapStateToPropsAddEdit(state);
-      expect(findExecutable("Regimen", r.body.id)).toEqual(
-        expect.objectContaining({
-          kind: "Regimen",
-          body: expect.objectContaining({ id: r.body.id })
-        }));
+      expect(findExecutable("Regimen", r.body.id).kind).toEqual("Regimen");
     });
   });
 

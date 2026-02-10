@@ -1,6 +1,6 @@
 import React from "react";
 import { mount, shallow } from "enzyme";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import {
   MoveToForm, MoveToFormProps, MoveModeLink, chooseLocation,
   GoToThisLocationButtonProps, GoToThisLocationButton, movementPercentRemaining,
@@ -20,6 +20,8 @@ let moveSpy: jest.SpyInstance;
 let setWebAppConfigValueSpy: jest.SpyInstance;
 let allOrderOptionsEnabledSpy: jest.SpyInstance;
 let popoverSpy: jest.SpyInstance;
+const originalPathname = location.pathname;
+const originalSearch = location.search;
 
 beforeEach(() => {
   popoverSpy = jest.spyOn(popover, "Popover")
@@ -34,6 +36,9 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  cleanup();
+  location.pathname = originalPathname;
+  location.search = originalSearch;
   popoverSpy.mockRestore();
   moveSpy.mockRestore();
   setWebAppConfigValueSpy.mockRestore();
@@ -74,14 +79,12 @@ describe("<MoveToForm />", () => {
   });
 
   it("changes safe z value", () => {
-    render(<MoveToForm {...fakeProps()} />);
-    expect(screen.queryByText("Safe Z")).not.toBeInTheDocument();
-    const dropdown = screen.getByRole("button", { name: "Use default (Safe Z)" });
-    fireEvent.click(dropdown);
-    expect(screen.getAllByText("Safe Z").length).toEqual(1);
-    const item = screen.getByRole("menuitem", { name: "Safe Z" });
-    fireEvent.click(item);
-    expect(screen.getAllByText("Safe Z").length).toEqual(2);
+    const wrapper = mount(<MoveToForm {...fakeProps()} />);
+    wrapper.setState({ safeZ: true });
+    wrapper.find("button").at(0).simulate("click");
+    expect(deviceActions.move).toHaveBeenCalledWith({
+      x: 1, y: 2, z: 3, speed: 100, safeZ: true,
+    });
   });
 
   it("fills in some missing values", () => {
@@ -138,6 +141,7 @@ describe("<MoveModeLink />", () => {
 describe("chooseLocation()", () => {
   it("updates chosen coordinates", () => {
     location.pathname = Path.mock(Path.location());
+    location.search = "";
     const navigate = jest.fn();
     const dispatch = jest.fn();
     chooseLocation({ navigate, dispatch, gardenCoords: { x: 1, y: 2 } });
@@ -150,6 +154,7 @@ describe("chooseLocation()", () => {
 
   it("doesn't update coordinates or navigate", () => {
     location.pathname = Path.mock(Path.location());
+    location.search = "";
     const navigate = jest.fn();
     const dispatch = jest.fn();
     chooseLocation({ navigate, dispatch, gardenCoords: undefined });
@@ -159,6 +164,7 @@ describe("chooseLocation()", () => {
 
   it("doesn't navigate: same location", () => {
     location.pathname = Path.mock(Path.location({ x: 1, y: 2 }));
+    location.search = "?x=1&y=2";
     const navigate = jest.fn();
     const dispatch = jest.fn();
     chooseLocation({ navigate, dispatch, gardenCoords: { x: 1, y: 2 } });
@@ -171,6 +177,7 @@ describe("chooseLocation()", () => {
 
   it("doesn't navigate: not in location panel", () => {
     location.pathname = Path.mock(Path.plants());
+    location.search = "";
     const navigate = jest.fn();
     const dispatch = jest.fn();
     chooseLocation({ navigate, dispatch, gardenCoords: { x: 1, y: 2 } });

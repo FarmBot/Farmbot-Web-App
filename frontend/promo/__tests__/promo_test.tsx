@@ -40,9 +40,9 @@ describe("<Promo />", () => {
     console.error = jest.fn();
     const { container, unmount } = render(<Promo />);
     expect(container).toContainHTML("three-d-garden");
-    const configBtn = screen.getByTitle("config");
+    const configBtn = container.querySelector(".gear") as HTMLElement;
     fireEvent.click(configBtn);
-    const config = screen.getByTitle("animateSeasons");
+    const config = screen.getAllByTitle("animateSeasons").at(-1) as HTMLElement;
     fireEvent.click(config);
     jest.runAllTimers();
     unmount();
@@ -51,7 +51,7 @@ describe("<Promo />", () => {
   it("opens config menu", () => {
     const { container, unmount } = render(<Promo />);
     expect(container).not.toContainHTML("all-configs");
-    const configBtn = screen.getByTitle("config");
+    const configBtn = container.querySelector(".gear") as HTMLElement;
     fireEvent.click(configBtn);
     expect(container).toContainHTML("all-configs");
     unmount();

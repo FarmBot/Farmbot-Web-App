@@ -14,7 +14,6 @@ import {
 import { mapStateToFolderProps } from "../../../folders/map_state_to_props";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { API } from "../../../api";
-import { clickButton } from "../../../__test_support__/helpers";
 import * as foldersActions from "../../../folders/actions";
 import * as sequenceActions from "../../actions";
 import { sequencesPanelState } from "../../../__test_support__/panel_state";
@@ -23,6 +22,7 @@ import { emptyState } from "../../../resources/reducer";
 import { Path } from "../../../internal_urls";
 import { mountWithContext } from "../../../__test_support__/mount_with_context";
 import axios from "axios";
+import * as screenSize from "../../../screen_size";
 
 API.setBaseUrl("");
 
@@ -32,6 +32,7 @@ let addNewSequenceToFolderSpy: jest.SpyInstance;
 let createFolderSpy: jest.SpyInstance;
 let toggleAllSpy: jest.SpyInstance;
 let updateSearchTermSpy: jest.SpyInstance;
+let isMobileSpy: jest.SpyInstance;
 
 beforeEach(() => {
   axiosGetSpy = jest.spyOn(axios, "get").mockImplementation(() => Promise.resolve({
@@ -62,6 +63,7 @@ beforeEach(() => {
     .mockImplementation(jest.fn());
   updateSearchTermSpy = jest.spyOn(foldersActions, "updateSearchTerm")
     .mockImplementation(jest.fn());
+  isMobileSpy = jest.spyOn(screenSize, "isMobile").mockReturnValue(false);
 });
 
 afterEach(() => {
@@ -71,6 +73,7 @@ afterEach(() => {
   createFolderSpy.mockRestore();
   toggleAllSpy.mockRestore();
   updateSearchTermSpy.mockRestore();
+  isMobileSpy.mockRestore();
 });
 describe("<DesignerSequenceList />", () => {
   const fakeProps = (): SequencesProps => ({
@@ -106,19 +109,25 @@ describe("<DesignerSequenceList />", () => {
 
   it("adds new sequence", () => {
     const wrapper = mount(<DesignerSequenceList {...fakeProps()} />);
-    clickButton(wrapper, 1, "", { icon: "fa-plus" });
+    wrapper.find("button[title='add new sequence']").first().simulate("click", {
+      stopPropagation: jest.fn(),
+    });
     expect(addNewSequenceToFolderSpy).toHaveBeenCalled();
   });
 
   it("adds new folder", () => {
     const wrapper = mount(<DesignerSequenceList {...fakeProps()} />);
-    clickButton(wrapper, 2, "", { icon: "fa-folder" });
+    wrapper.find("button[title='Create subfolder']").first().simulate("click", {
+      stopPropagation: jest.fn(),
+    });
     expect(createFolderSpy).toHaveBeenCalled();
   });
 
   it("opens folders", () => {
     const wrapper = mount(<DesignerSequenceList {...fakeProps()} />);
-    clickButton(wrapper, 3, "", { icon: "fa-chevron-right" });
+    wrapper.find("button[title='toggle folder open']").first().simulate("click", {
+      stopPropagation: jest.fn(),
+    });
     expect(toggleAllSpy).toHaveBeenCalled();
   });
 
@@ -161,14 +170,14 @@ describe("<DesignerSequenceList />", () => {
   it("navigates to sequence page", () => {
     location.pathname = Path.mock(Path.designerSequences());
     const wrapper = mountWithContext(<DesignerSequenceList {...fakeProps()} />);
-    clickButton(wrapper, 0, "fullscreen");
+    wrapper.find("button.fb-button.clear.row.half-gap").first().simulate("click");
     expect(mockNavigate).toHaveBeenCalledWith(Path.sequencePage());
   });
 
   it("navigates to designer sequence page", () => {
     location.pathname = Path.mock(Path.sequencePage());
     const wrapper = mountWithContext(<DesignerSequenceList {...fakeProps()} />);
-    clickButton(wrapper, 0, "collapse");
+    wrapper.find("button.fb-button.clear.row.half-gap").first().simulate("click");
     expect(mockNavigate).toHaveBeenCalledWith(Path.designerSequences());
   });
 });

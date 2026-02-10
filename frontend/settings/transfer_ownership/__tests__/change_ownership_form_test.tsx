@@ -13,6 +13,7 @@ describe("<ChangeOwnershipForm />", () => {
 
   beforeEach(() => {
     API.setBaseUrl("https://my.farm.bot");
+    window.history.pushState({}, "", "/app/designer/settings");
     transferOwnershipSpy = jest.spyOn(transferOwnershipModule, "transferOwnership")
       .mockImplementation(jest.fn(() => Promise.resolve()));
     getDeviceSpy = jest.spyOn(device, "getDevice").mockImplementation(() => mockDevice as never);
@@ -26,7 +27,7 @@ describe("<ChangeOwnershipForm />", () => {
 
   it("renders", () => {
     const { getByRole, getByLabelText } = render(<ChangeOwnershipForm />);
-    const header = getByRole("button", { name: /Change Ownership/ });
+    const header = getByRole("button", { name: /Change Ownership/, hidden: true });
     fireEvent.click(header);
     ["Email", "Password", "Server"]
       .map(string => expect(getByLabelText(string)).toBeInTheDocument());
@@ -34,7 +35,7 @@ describe("<ChangeOwnershipForm />", () => {
 
   it("submits", () => {
     const { getByRole, getByLabelText, getByText } = render(<ChangeOwnershipForm />);
-    const header = getByRole("button", { name: /Change Ownership/ });
+    const header = getByRole("button", { name: /Change Ownership/, hidden: true });
     fireEvent.click(header);
     const email = getByLabelText("Email");
     changeBlurableInputRTL(email, "email");
@@ -52,7 +53,7 @@ describe("<ChangeOwnershipForm />", () => {
     const useRefSpy = jest.spyOn(React, "useRef").mockReturnValue({ current: undefined });
     try {
       const { getByRole, getByLabelText, getByText } = render(<ChangeOwnershipForm />);
-      const header = getByRole("button", { name: /Change Ownership/ });
+      const header = getByRole("button", { name: /Change Ownership/, hidden: true });
       fireEvent.click(header);
       const email = getByLabelText("Email");
       changeBlurableInputRTL(email, "email");

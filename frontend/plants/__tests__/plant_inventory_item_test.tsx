@@ -88,6 +88,7 @@ describe("<PlantInventoryItem />", () => {
   });
 
   it("handles missing plant id", () => {
+    location.pathname = Path.mock(Path.plants());
     const p = fakeProps();
     p.plant.body.id = 0;
     const wrapper = shallow(<PlantInventoryItem {...p} />);

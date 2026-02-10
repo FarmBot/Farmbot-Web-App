@@ -1,5 +1,5 @@
 import React from "react";
-import { cleanup, render, screen, fireEvent } from "@testing-library/react";
+import { cleanup, fireEvent, render, within } from "@testing-library/react";
 import { mount, shallow } from "enzyme";
 import {
   RawEditTool as EditTool, mapStateToProps, isActive, WaterFlowRateInput,
@@ -225,8 +225,8 @@ describe("<WaterFlowRateInput />", () => {
   });
 
   it("sends RPC", () => {
-    render(<WaterFlowRateInput {...fakeProps()} />);
-    const button = screen.getByRole("button");
+    const { container } = render(<WaterFlowRateInput {...fakeProps()} />);
+    const button = within(container).getByRole("button");
     fireEvent.click(button);
     expect(deviceActions.sendRPC).toHaveBeenCalledWith({
       kind: "lua", args: { lua: LUA_WATER_FLOW_RATE }

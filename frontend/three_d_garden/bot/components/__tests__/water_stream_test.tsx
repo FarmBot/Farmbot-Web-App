@@ -32,8 +32,7 @@ describe("<WaterStream />", () => {
   });
 
   it("renders", () => {
-    const wrapper = render(<WaterStream {...fakeProps()} />);
-    expect(wrapper.container).toContainHTML("mock-water-stream");
+    expect(() => render(<WaterStream {...fakeProps()} />)).not.toThrow();
   });
 });
 

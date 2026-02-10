@@ -49,6 +49,7 @@ describe("<Tools />", () => {
       .mockImplementation(jest.fn(() => jest.fn()));
     jest.spyOn(mapActions, "selectPoint")
       .mockImplementation(jest.fn());
+    jest.spyOn(mapUtil, "getMode").mockImplementation(() => Mode.none);
     jest.spyOn(deviceModule, "getDevice")
       .mockImplementation(() => mockDevice as never);
   });

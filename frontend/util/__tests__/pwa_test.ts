@@ -3,7 +3,13 @@ import {
 } from "../pwa";
 
 jest.mock("../../toast/toast", () => ({
+  warning: jest.fn(),
+  error: jest.fn(),
+  success: jest.fn(),
   info: jest.fn(),
+  busy: jest.fn(),
+  fun: jest.fn(),
+  removeToast: jest.fn(),
 }));
 
 afterAll(() => {
@@ -42,8 +48,7 @@ describe("registerServiceWorker()", () => {
   });
 
   it("serviceWorker undefined", () => {
-    // Reset the mock to clear previous calls
-    (window.addEventListener as jest.Mock).mockClear();
+    window.addEventListener = jest.fn();
 
     const SW = navigator.serviceWorker;
     // Remove the property entirely to simulate the absence of serviceWorker

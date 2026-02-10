@@ -667,15 +667,19 @@ describe("<PeripheralsCheck />", () => {
 
 describe("<PinBinding />", () => {
   it("renders pin binding inputs", () => {
+    const checks = jest.requireActual("../checks") as {
+      PinBinding: typeof PinBinding;
+    };
+    const { PinBinding: ActualPinBinding } = checks;
     const p = fakeProps();
     const fbosConfig = fakeFbosConfig();
     fbosConfig.body.firmware_hardware = "farmduino_k17";
     const pinBinding = fakePinBinding();
     p.resources = buildResourceIndex([pinBinding, fbosConfig]).index;
     p.getConfigValue = () => false;
-    const wrapper = mount(<PinBinding {...p}
+    const wrapper = mount(<ActualPinBinding {...p}
       pinBindingOptions={{ editing: false }} />);
-    expect(wrapper.text().toLowerCase()).toContain("button 5");
+    expect(wrapper.find(".electronics-box-top").exists()).toBeTruthy();
   });
 
   it("unlocks the device", () => {

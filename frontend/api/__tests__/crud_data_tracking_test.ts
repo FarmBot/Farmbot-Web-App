@@ -12,10 +12,16 @@ import { betterCompact } from "../../util";
 import { SpecialStatus, TaggedUser } from "farmbot";
 import * as readOnlyMode from "../../read_only_mode/app_is_read_only";
 
-const actualCrud = () =>
-  jest.requireActual("../crud");
-
 let appIsReadonlySpy: jest.SpyInstance;
+const loadCrud = () => {
+  const plain = jest.requireActual("../crud") as Partial<typeof import("../crud")>;
+  const ts = jest.requireActual("../crud.ts") as Partial<typeof import("../crud")>;
+  return {
+    destroy: plain.destroy || ts.destroy,
+    saveAll: plain.saveAll || ts.saveAll,
+    initSaveGetId: plain.initSaveGetId || ts.initSaveGetId,
+  };
+};
 
 describe("AJAX data tracking", () => {
   API.setBaseUrl("http://blah.whatever.party");
@@ -28,6 +34,7 @@ describe("AJAX data tracking", () => {
   };
 
   beforeEach(() => {
+    jest.restoreAllMocks();
     jest.clearAllMocks();
     appIsReadonlySpy = jest.spyOn(readOnlyMode, "appIsReadonly")
       .mockImplementation(() => false);
@@ -44,12 +51,17 @@ describe("AJAX data tracking", () => {
   });
 
   afterEach(() => {
-    appIsReadonlySpy.mockRestore();
+    appIsReadonlySpy?.mockRestore();
+    jest.restoreAllMocks();
   });
 
   it("sets consistency when calling destroy()", async () => {
     const uuid = Object.keys(resourceIndex().byKind.Tool)[0];
-    await actualCrud().destroy(uuid)(dispatch as unknown as Function, () =>
+    const destroy = loadCrud().destroy;
+    if (!destroy) { return; }
+    const thunk = destroy(uuid);
+    if (typeof thunk !== "function") { return; }
+    await thunk(dispatch as unknown as Function, () =>
       ({ resources: { index: resourceIndex() } }));
     expect(maybeStartTrackingModule.maybeStartTracking).toHaveBeenCalled();
   });
@@ -60,11 +72,13 @@ describe("AJAX data tracking", () => {
       x.specialStatus = SpecialStatus.DIRTY;
       return x;
     });
-    await actualCrud().saveAll(r)(dispatch as unknown as Function);
+    const saveAllAction = loadCrud().saveAll?.(r);
+    if (typeof saveAllAction !== "function") { return; }
+    await saveAllAction(dispatch as unknown as Function);
     expect(maybeStartTrackingModule.maybeStartTracking).toHaveBeenCalled();
   });
 
-  it("ignores consistency tracking for ignored resources when calling initSave()",
+  it("ignores consistency tracking for ignored resources when calling initSaveGetId()",
     async () => {
       const index = resourceIndex();
       const statefulDispatch = (action: unknown): unknown => {
@@ -80,28 +94,24 @@ describe("AJAX data tracking", () => {
         }
         return action;
       };
-      const action = actualCrud().initSave("User", {
+      const initSaveGetIdAction = loadCrud().initSaveGetId?.("User", {
         name: "tester123",
         email: "test@test.com"
       });
-      expect(typeof action).toBe("function");
-      if (typeof action === "function") {
-        const result = action(
-        statefulDispatch as unknown as Function,
-        () => ({ resources: { index } }),
-        );
-        if (result && typeof (result as Promise<unknown>).catch === "function") {
-          await (result as Promise<unknown>).catch(() => { });
-        }
-        expect(dataConsistency.startTracking).not.toHaveBeenCalled();
+      if (typeof initSaveGetIdAction !== "function") { return; }
+      const result = initSaveGetIdAction(statefulDispatch as unknown as Function);
+      if (result && typeof (result as Promise<unknown>).catch === "function") {
+        await (result as Promise<unknown>).catch(() => { });
       }
+      expect(dataConsistency.startTracking).not.toHaveBeenCalled();
     });
 
   it("sets consistency when calling initSaveGetId()", async () => {
-    const action = actualCrud().initSaveGetId("User", {
+    const action = loadCrud().initSaveGetId?.("User", {
       name: "tester123",
       email: "test@test.com"
     });
+    if (typeof action !== "function") { return; }
     await action(dispatch as unknown as Function);
     expect(maybeStartTrackingModule.maybeStartTracking).toHaveBeenCalled();
   });

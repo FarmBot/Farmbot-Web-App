@@ -25,8 +25,10 @@ import { Path } from "../../../internal_urls";
 let editSpy: jest.SpyInstance;
 let overwriteGroupSpy: jest.SpyInstance;
 let findGroupFromUrlSpy: jest.SpyInstance;
+const originalPathname = location.pathname;
 
 beforeEach(() => {
+  location.pathname = Path.mock(Path.plants());
   editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
   overwriteGroupSpy = jest.spyOn(pointGroupActions, "overwriteGroup")
     .mockImplementation(jest.fn());
@@ -38,6 +40,7 @@ afterEach(() => {
   editSpy.mockRestore();
   overwriteGroupSpy.mockRestore();
   findGroupFromUrlSpy.mockRestore();
+  location.pathname = originalPathname;
 });
 
 describe("movePoints", () => {

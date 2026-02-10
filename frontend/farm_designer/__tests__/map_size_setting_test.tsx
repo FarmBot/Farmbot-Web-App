@@ -1,6 +1,6 @@
 import React from "react";
 import { MapSizeInputs, MapSizeInputsProps } from "../map_size_setting";
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, render } from "@testing-library/react";
 import * as configStorageActions from "../../config_storage/actions";
 import { NumericSetting } from "../../session_keys";
 import {
@@ -11,6 +11,13 @@ import { changeBlurableInputRTL } from "../../__test_support__/helpers";
 
 describe("<MapSizeInputs />", () => {
   let setWebAppConfigValueSpy: jest.SpyInstance;
+  const mapSizeYInput = () => {
+    const input = document.querySelector("input[name='map_size_y']");
+    if (!input) {
+      throw new Error("Expected map_size_y input");
+    }
+    return input as HTMLInputElement;
+  };
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -34,7 +41,7 @@ describe("<MapSizeInputs />", () => {
     config.body.dynamic_map = false;
     const p = fakeProps(config.body);
     render(<MapSizeInputs {...p} />);
-    const input = screen.getByDisplayValue("" + config.body.map_size_y);
+    const input = mapSizeYInput();
     changeBlurableInputRTL(input, "100");
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       NumericSetting.map_size_y, "100");
@@ -46,7 +53,7 @@ describe("<MapSizeInputs />", () => {
     const p = fakeProps(config.body);
     p.firmwareConfig = undefined;
     render(<MapSizeInputs {...p} />);
-    const input = screen.getByDisplayValue("" + config.body.map_size_y);
+    const input = mapSizeYInput();
     changeBlurableInputRTL(input, "100");
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       NumericSetting.map_size_y, "100");
@@ -63,7 +70,7 @@ describe("<MapSizeInputs />", () => {
     firmwareConfig.body.movement_stop_at_max_y = 1;
     p.firmwareConfig = firmwareConfig.body;
     render(<MapSizeInputs {...p} />);
-    const input = screen.getByDisplayValue("" + config.body.map_size_y);
+    const input = mapSizeYInput();
     changeBlurableInputRTL(input, "100");
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       NumericSetting.map_size_y, "100");

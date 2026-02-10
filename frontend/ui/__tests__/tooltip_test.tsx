@@ -9,8 +9,15 @@ describe("<ToolTip />", () => {
     dispatch: jest.fn(),
   });
 
-  const p = fakeProps();
-  const wrapper = mount(<ToolTip {...p} />);
+  let wrapper: ReturnType<typeof mount>;
+
+  beforeEach(() => {
+    wrapper = mount(<ToolTip {...fakeProps()} />);
+  });
+
+  afterEach(() => {
+    wrapper.unmount();
+  });
 
   it("renders correct text", () => {
     expect(wrapper.find(".title-help-text").html()).toContain("such help");

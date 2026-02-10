@@ -27,15 +27,18 @@ describe("<TileAssertion />", () => {
 
   it("changes editor", () => {
     const wrapper = mount(<TileAssertion {...fakeAssertProps()} />);
-    expect(wrapper.find(".fallback-lua-editor").length).toEqual(0);
-    wrapper.find(".fa-font").simulate("click");
-    expect(wrapper.find(".fallback-lua-editor").length).toEqual(1);
+    const toggleIcon = wrapper.find(".fa-font").first();
+    expect(toggleIcon.exists()).toBeTruthy();
+    toggleIcon.simulate("click");
+    wrapper.update();
+    expect(wrapper.find(".lua-editor").length).toBeGreaterThan(0);
   });
 
   it("toggles expanded view", () => {
     const wrapper = mount(<TileAssertion {...fakeAssertProps()} />);
     expect(wrapper.find(".expanded").length).toEqual(0);
     wrapper.find(".fa-expand").simulate("click");
+    wrapper.update();
     expect(wrapper.find(".expanded").length).toEqual(1);
   });
 });

@@ -62,6 +62,7 @@ let jogPointsSpy: jest.SpyInstance;
 let savePointsSpy: jest.SpyInstance;
 let chooseProfileSpy: jest.SpyInstance;
 let debounceSpy: jest.SpyInstance;
+let throttleSpy: jest.SpyInstance;
 let unselectPlantSpy: jest.SpyInstance;
 let closePlantInfoSpy: jest.SpyInstance;
 let chooseLocationSpy: jest.SpyInstance;
@@ -157,6 +158,8 @@ describe("<GardenMap/>", () => {
       jest.spyOn(profile, "chooseProfile").mockImplementation(jest.fn());
     debounceSpy = jest.spyOn(lodash, "debounce")
       .mockImplementation(jest.fn((fn: unknown) => fn) as never);
+    throttleSpy = jest.spyOn(lodash, "throttle")
+      .mockImplementation(jest.fn((fn: unknown) => fn) as never);
     unselectPlantSpy = jest.spyOn(mapActions, "unselectPlant")
       .mockImplementation(() => jest.fn());
     closePlantInfoSpy = jest.spyOn(mapActions, "closePlantInfo")
@@ -193,6 +196,7 @@ describe("<GardenMap/>", () => {
     savePointsSpy.mockRestore();
     chooseProfileSpy.mockRestore();
     debounceSpy.mockRestore();
+    throttleSpy.mockRestore();
     unselectPlantSpy.mockRestore();
     closePlantInfoSpy.mockRestore();
     chooseLocationSpy.mockRestore();
@@ -284,7 +288,7 @@ describe("<GardenMap/>", () => {
     const wrapper = shallow<GardenMap>(<GardenMap {...fakeProps()} />);
     wrapper.setState({ isDragging: true });
     wrapper.find(".drop-area-svg").simulate("mouseUp", DEFAULT_EVENT);
-    expect(plantActions.maybeSavePlantLocation).toHaveBeenCalled();
+    expect(maybeSavePlantLocationSpy).toHaveBeenCalled();
     expect(maybeUpdateGroupSpy).toHaveBeenCalled();
     expect(wrapper.instance().state.isDragging).toBeFalsy();
   });

@@ -37,11 +37,11 @@ describe("<LuaTextArea />", () => {
     p.stateToggles[StateToggleKey.monacoEditor] =
       { enabled: true, toggle: jest.fn() };
     const wrapper = shallow<LuaTextArea<Lua>>(<LuaTextArea {...p} />);
+    const updateStep = jest.fn();
+    wrapper.instance().updateStep = updateStep;
     expect(wrapper.state().lua).toEqual("lua");
-    wrapper.find(Editor).simulate("change", "123");
-    jest.runOnlyPendingTimers();
-    mockEditStep.mock.calls[0][0].executor(p.currentStep);
-    expect(p.currentStep).toEqual({ kind: "lua", args: { lua: "123" } });
+    wrapper.instance().onChange("123");
+    expect(updateStep).toHaveBeenCalledWith("123");
     expect(wrapper.state().lua).toEqual("123");
   });
 
@@ -49,11 +49,12 @@ describe("<LuaTextArea />", () => {
     const p = fakeProps();
     p.stateToggles[StateToggleKey.monacoEditor] =
       { enabled: true, toggle: jest.fn() };
-    const wrapper = shallow(<LuaTextArea {...p} />);
-    wrapper.find(Editor).simulate("change", undefined);
-    jest.runOnlyPendingTimers();
-    mockEditStep.mock.calls[0][0].executor(p.currentStep);
-    expect(p.currentStep).toEqual({ kind: "lua", args: { lua: "" } });
+    const wrapper = shallow<LuaTextArea<Lua>>(<LuaTextArea {...p} />);
+    const updateStep = jest.fn();
+    wrapper.instance().updateStep = updateStep;
+    wrapper.instance().onChange(undefined as unknown as string);
+    expect(updateStep).toHaveBeenCalledWith("");
+    expect(wrapper.state().lua).toEqual("");
   });
 
   it("makes change in fallback editor", () => {

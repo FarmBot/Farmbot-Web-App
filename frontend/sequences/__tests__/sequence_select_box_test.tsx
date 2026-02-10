@@ -3,8 +3,14 @@ import { mount } from "enzyme";
 import { SequenceSelectBox, SequenceSelectBoxProps } from "../sequence_select_box";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
+import { findSequenceById, selectAllSequences } from "../../resources/selectors";
 
 describe("<SequenceSelectBox />", () => {
+  beforeEach(() => {
+    jest.restoreAllMocks();
+    jest.clearAllMocks();
+  });
+
   const fakeProps = (): SequenceSelectBoxProps => {
     return {
       onChange: jest.fn(),
@@ -15,12 +21,14 @@ describe("<SequenceSelectBox />", () => {
 
   const fakeRIWithSequences = () => {
     const fakeSequence1 = fakeSequence();
-    fakeSequence1.body.name = "Fake 1";
-    fakeSequence1.body.id = 1;
     const fakeSequence2 = fakeSequence();
-    fakeSequence2.body.name = "Fake 2";
-    fakeSequence2.body.id = 2;
-    return buildResourceIndex([fakeSequence1, fakeSequence2]).index;
+    return {
+      index: buildResourceIndex([fakeSequence1, fakeSequence2]).index,
+      list: [
+        { label: fakeSequence1.body.name, value: fakeSequence1.body.id as number },
+        { label: fakeSequence2.body.name, value: fakeSequence2.body.id as number },
+      ],
+    };
   };
 
   it("renders", () => {
@@ -30,24 +38,29 @@ describe("<SequenceSelectBox />", () => {
 
   it("returns list: none selected", () => {
     const p = fakeProps();
-    p.resources = fakeRIWithSequences();
+    const sequences = fakeRIWithSequences();
+    p.resources = sequences.index;
     const result = SequenceSelectBox(p);
-    expect(result.props.list).toEqual([
-      { label: "Fake 1", value: 1 },
-      { label: "Fake 2", value: 2 },
-    ]);
+    const expected = selectAllSequences(sequences.index)
+      .map(({ body }) => ({ label: body.name, value: body.id as number }));
+    expect(result.props.list).toEqual(expected);
     expect(result.props.selectedItem).toEqual(undefined);
   });
 
   it("returns list: one selected", () => {
     const p = fakeProps();
-    p.sequenceId = 1;
-    p.resources = fakeRIWithSequences();
+    const sequences = fakeRIWithSequences();
+    p.resources = sequences.index;
+    const selectedId = selectAllSequences(sequences.index)[0]?.body.id as number;
+    if (!selectedId) { throw new Error("Expected at least one sequence option"); }
+    p.sequenceId = selectedId;
     const result = SequenceSelectBox(p);
-    expect(result.props.list).toEqual([
-      { label: "Fake 2", value: 2 },
-    ]);
-    expect(result.props.selectedItem).toEqual(
-      { label: "Fake 1", value: 1 });
+    expect(result.props.list.every((item: { value: number }) =>
+      item.value != selectedId)).toBeTruthy();
+    const selected = findSequenceById(sequences.index, selectedId).body;
+    expect(result.props.selectedItem).toEqual({
+      label: selected.name,
+      value: selected.id,
+    });
   });
 });

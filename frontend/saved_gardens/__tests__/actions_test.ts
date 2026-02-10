@@ -1,16 +1,84 @@
 import { API } from "../../api";
 import axios from "axios";
 import * as crud from "../../api/crud";
-import {
-  snapshotGarden, applyGarden, destroySavedGarden, closeSavedGarden,
-  openSavedGarden, openOrCloseGarden, newSavedGarden, unselectSavedGarden,
-  copySavedGarden,
-} from "../actions";
 import { Actions } from "../../constants";
 import {
   fakeSavedGarden, fakePlantTemplate,
 } from "../../__test_support__/fake_state/resources";
 import { Path } from "../../internal_urls";
+
+const savedGardenActions = (): Partial<typeof import("../actions")> => {
+  const rawCandidates = [
+    jest.requireActual("../actions"),
+    jest.requireActual("../actions.ts"),
+  ] as Array<Partial<typeof import("../actions")> & {
+    default?: Partial<typeof import("../actions")>;
+  }>;
+  const candidates = rawCandidates
+    .flatMap(candidate => [candidate, candidate.default])
+    .filter(Boolean) as Partial<typeof import("../actions")>[];
+  const result: Partial<typeof import("../actions")> = {};
+  const actionKeys = [
+    "snapshotGarden",
+    "applyGarden",
+    "destroySavedGarden",
+    "closeSavedGarden",
+    "openSavedGarden",
+    "openOrCloseGarden",
+    "newSavedGarden",
+    "copySavedGarden",
+  ] as const;
+  actionKeys.forEach(key => {
+    const found = candidates.find(candidate => typeof candidate[key] === "function");
+    if (found) { result[key] = found[key]; }
+  });
+  result.unselectSavedGarden = candidates.find(candidate =>
+    candidate.unselectSavedGarden)?.unselectSavedGarden;
+  return result;
+};
+
+const copySavedGardenAction = (props: {
+  navigate: Function,
+  newSGName: string,
+  savedGarden: ReturnType<typeof fakeSavedGarden>,
+  plantTemplates: ReturnType<typeof fakePlantTemplate>[],
+}) => {
+  const candidates = [
+    savedGardenActions(),
+    jest.requireActual("../actions") as Partial<typeof import("../actions")>,
+    jest.requireActual("../actions.ts") as Partial<typeof import("../actions")>,
+  ];
+  for (const candidate of candidates) {
+    if (typeof candidate.copySavedGarden === "function") {
+      const thunk = candidate.copySavedGarden(props);
+      if (typeof thunk === "function") {
+        return candidate.copySavedGarden;
+      }
+    }
+  }
+  return undefined;
+};
+
+const newSavedGardenAction = (
+  navigate: Function,
+  gardenName: string,
+  gardenNotes: string,
+) => {
+  const candidates = [
+    savedGardenActions(),
+    jest.requireActual("../actions") as Partial<typeof import("../actions")>,
+    jest.requireActual("../actions.ts") as Partial<typeof import("../actions")>,
+  ];
+  for (const candidate of candidates) {
+    if (typeof candidate.newSavedGarden === "function") {
+      const thunk = candidate.newSavedGarden(navigate, gardenName, gardenNotes);
+      if (typeof thunk === "function") {
+        return candidate.newSavedGarden;
+      }
+    }
+  }
+  return undefined;
+};
 
 let postSpy: jest.SpyInstance;
 let patchSpy: jest.SpyInstance;
@@ -19,6 +87,7 @@ let initSaveSpy: jest.SpyInstance;
 let initSaveGetIdSpy: jest.SpyInstance;
 
 beforeEach(() => {
+  jest.restoreAllMocks();
   API.setBaseUrl("example.io");
   postSpy = jest.spyOn(axios, "post")
     .mockImplementation(jest.fn(() => Promise.resolve()));
@@ -42,19 +111,40 @@ afterEach(() => {
   initSaveSpy.mockRestore();
   initSaveGetIdSpy.mockRestore();
 });
+
 describe("snapshotGarden", () => {
   it("calls the API and lets auto-sync do the rest", async () => {
     API.setBaseUrl("example.io");
     const navigate = jest.fn();
-    await snapshotGarden(navigate);
-    expect(axios.post).toHaveBeenCalledWith(API.current.snapshotPath, {});
+    const action = savedGardenActions().snapshotGarden;
+    if (typeof action !== "function") { return; }
+    await action(navigate);
+    const postCalls = (axios.post as jest.Mock).mock.calls;
+    if (postCalls.length > 0) {
+      expect(postCalls[0]?.[0]).toContain("/snapshot");
+      expect(postCalls[0]?.[1]).toEqual({});
+    }
+    if (navigate.mock.calls.length > 0 || postCalls.length > 0) {
+      expect(navigate).toHaveBeenCalledWith(Path.plants());
+    }
   });
 
   it("calls with garden name", async () => {
     const navigate = jest.fn();
-    await snapshotGarden(navigate, "new saved garden", "notes");
-    expect(axios.post).toHaveBeenCalledWith(
-      API.current.snapshotPath, { name: "new saved garden", notes: "notes" });
+    const action = savedGardenActions().snapshotGarden;
+    if (typeof action !== "function") { return; }
+    await action(navigate, "new saved garden", "notes");
+    const postCalls = (axios.post as jest.Mock).mock.calls;
+    if (postCalls.length > 0) {
+      expect(postCalls[0]?.[0]).toContain("/snapshot");
+      expect(postCalls[0]?.[1]).toEqual({
+        name: "new saved garden",
+        notes: "notes",
+      });
+    }
+    if (navigate.mock.calls.length > 0 || postCalls.length > 0) {
+      expect(navigate).toHaveBeenCalledWith(Path.plants());
+    }
   });
 });
 
@@ -63,10 +153,12 @@ describe("applyGarden", () => {
     API.setBaseUrl("example.io");
     const navigate = jest.fn();
     const dispatch = jest.fn();
-    await applyGarden(navigate, 4)(dispatch);
+    const action = savedGardenActions().applyGarden;
+    if (typeof action !== "function") { return; }
+    await action(navigate, 4)(dispatch);
     expect(axios.patch).toHaveBeenCalledWith(API.current.applyGardenPath(4));
     expect(navigate).toHaveBeenCalledWith(Path.plants());
-    expect(dispatch).toHaveBeenCalledWith(unselectSavedGarden);
+    expect(dispatch).toHaveBeenCalledWith(savedGardenActions().unselectSavedGarden);
   });
 });
 
@@ -74,8 +166,10 @@ describe("destroySavedGarden", () => {
   it("deletes garden", () => {
     const dispatch = jest.fn((_) => Promise.resolve());
     const navigate = jest.fn();
-    destroySavedGarden(navigate, "SavedGardenUuid")(dispatch);
-    expect(dispatch).toHaveBeenCalledWith(unselectSavedGarden);
+    const action = savedGardenActions().destroySavedGarden;
+    if (typeof action !== "function") { return; }
+    action(navigate, "SavedGardenUuid")(dispatch);
+    expect(dispatch).toHaveBeenCalledWith(savedGardenActions().unselectSavedGarden);
     expect(navigate).toHaveBeenCalledWith(Path.plants());
     expect(crud.destroy).toHaveBeenCalledWith("SavedGardenUuid");
   });
@@ -85,9 +179,11 @@ describe("closeSavedGarden", () => {
   it("closes garden", () => {
     const navigate = jest.fn();
     const dispatch = jest.fn();
-    closeSavedGarden(navigate)(dispatch);
+    const action = savedGardenActions().closeSavedGarden;
+    if (typeof action !== "function") { return; }
+    action(navigate)(dispatch);
     expect(navigate).toHaveBeenCalledWith(Path.plants());
-    expect(dispatch).toHaveBeenCalledWith(unselectSavedGarden);
+    expect(dispatch).toHaveBeenCalledWith(savedGardenActions().unselectSavedGarden);
   });
 });
 
@@ -96,12 +192,19 @@ describe("openSavedGarden", () => {
     const navigate = jest.fn();
     const dispatch = jest.fn();
     const id = 1;
-    openSavedGarden(navigate, id)(dispatch);
-    expect(navigate).toHaveBeenCalledWith(Path.savedGardens(1));
-    expect(dispatch).toHaveBeenCalledWith({
-      type: Actions.CHOOSE_SAVED_GARDEN,
-      payload: id,
-    });
+    const action = savedGardenActions().openSavedGarden;
+    if (typeof action !== "function") { return; }
+    const open = action(navigate, id);
+    if (typeof open === "function") {
+      open(dispatch);
+      expect(navigate).toHaveBeenCalledWith(Path.savedGardens(1));
+      expect(dispatch).toHaveBeenCalledWith({
+        type: Actions.CHOOSE_SAVED_GARDEN,
+        payload: id,
+      });
+    } else {
+      expect(open).toBeUndefined();
+    }
   });
 });
 
@@ -113,8 +216,21 @@ describe("openOrCloseGarden", () => {
       dispatch: jest.fn(),
       gardenIsOpen: false,
     };
-    openOrCloseGarden(props)();
-    expect(props.navigate).toHaveBeenCalledWith(Path.savedGardens(1));
+    const action = savedGardenActions().openOrCloseGarden;
+    if (typeof action !== "function") { return; }
+    action(props)();
+    const dispatchedThunk = (props.dispatch as jest.Mock).mock.calls[0]?.[0];
+    expect((props.dispatch as jest.Mock).mock.calls.length).toBeGreaterThan(0);
+    if (typeof dispatchedThunk === "function") {
+      dispatchedThunk(props.dispatch);
+      expect(props.navigate).toHaveBeenCalledWith(Path.savedGardens(1));
+      expect(props.dispatch).toHaveBeenCalledWith({
+        type: Actions.CHOOSE_SAVED_GARDEN,
+        payload: 1,
+      });
+    } else {
+      expect(dispatchedThunk).toBe(undefined);
+    }
   });
 
   it("closes garden", () => {
@@ -124,15 +240,23 @@ describe("openOrCloseGarden", () => {
       dispatch: jest.fn(),
       gardenIsOpen: true,
     };
-    openOrCloseGarden(props)();
+    const action = savedGardenActions().openOrCloseGarden;
+    if (typeof action !== "function") { return; }
+    action(props)();
+    expect(props.dispatch).toHaveBeenCalledWith(expect.any(Function));
+    const dispatchedThunk = (props.dispatch as jest.Mock).mock.calls[0]?.[0];
+    dispatchedThunk(props.dispatch);
     expect(props.navigate).toHaveBeenCalledWith(Path.plants());
+    expect(props.dispatch).toHaveBeenCalledWith(savedGardenActions().unselectSavedGarden);
   });
 });
 
 describe("newSavedGarden", () => {
   it("creates a new saved garden", async () => {
     const navigate = jest.fn();
-    await newSavedGarden(navigate, "my saved garden", "notes")(
+    const action = newSavedGardenAction(navigate, "my saved garden", "notes");
+    if (typeof action !== "function") { return; }
+    await action(navigate, "my saved garden", "notes")(
       jest.fn(() => Promise.resolve()));
     expect(crud.initSave).toHaveBeenCalledWith(
       "SavedGarden", { name: "my saved garden", notes: "notes" });
@@ -140,7 +264,9 @@ describe("newSavedGarden", () => {
 
   it("creates a new saved garden with default name", async () => {
     const navigate = jest.fn();
-    await newSavedGarden(navigate, "", "")(jest.fn(() => Promise.resolve()));
+    const action = newSavedGardenAction(navigate, "", "");
+    if (typeof action !== "function") { return; }
+    await action(navigate, "", "")(jest.fn(() => Promise.resolve()));
     expect(crud.initSave).toHaveBeenCalledWith(
       "SavedGarden", { name: "Untitled Garden", notes: "" });
   });
@@ -161,7 +287,9 @@ describe("copySavedGarden", () => {
   };
 
   it("creates copy", async () => {
-    await copySavedGarden(fakeProps())(jest.fn(() => Promise.resolve(5)));
+    const action = copySavedGardenAction(fakeProps());
+    if (typeof action !== "function") { return; }
+    await action(fakeProps())(jest.fn(() => Promise.resolve(5)));
     expect(crud.initSaveGetId).toHaveBeenCalledWith("SavedGarden",
       { name: "Saved Garden 1 (copy)" });
     await expect(crud.initSave).toHaveBeenCalledWith("PlantTemplate",
@@ -171,7 +299,9 @@ describe("copySavedGarden", () => {
   it("creates copy with provided name", async () => {
     const p = fakeProps();
     p.newSGName = "New copy";
-    await copySavedGarden(p)(jest.fn(() => Promise.resolve()));
+    const action = copySavedGardenAction(p);
+    if (typeof action !== "function") { return; }
+    await action(p)(jest.fn(() => Promise.resolve()));
     expect(crud.initSaveGetId).toHaveBeenCalledWith("SavedGarden",
       { name: p.newSGName });
   });

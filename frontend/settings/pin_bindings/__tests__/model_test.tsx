@@ -8,6 +8,14 @@ jest.mock("@react-three/fiber", () => ({
   addEffect: jest.fn(),
 }));
 
+jest.mock("lodash", () => {
+  const actual = jest.requireActual("lodash");
+  return {
+    ...actual,
+    debounce: <T extends (...args: unknown[]) => unknown>(fn: T) => fn,
+  };
+});
+
 const mockSetColor = jest.fn();
 jest.mock("react", () => {
   const originReact = jest.requireActual("react");

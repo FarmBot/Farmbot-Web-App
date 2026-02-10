@@ -1,19 +1,15 @@
-jest.mock("../../session", () => ({
-  Session: {
-    clear: jest.fn()
-  }
-}));
-
 import { syncFail } from "../actions";
 import { Session } from "../../session";
 
-afterAll(() => {
-  jest.unmock("../../session");
+afterEach(() => {
+  jest.restoreAllMocks();
 });
+
 describe("syncFail", () => {
   it("tells you why you've been logged out", () => {
     const e = new Error("Whatever");
     console.error = jest.fn();
+    jest.spyOn(Session, "clear").mockImplementation(jest.fn());
     expect(() => syncFail(e)).toThrow(e);
     expect(console.error).toHaveBeenCalledWith("DATA SYNC ERROR!");
     expect(Session.clear).toHaveBeenCalled();

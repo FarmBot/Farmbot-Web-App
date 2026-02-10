@@ -185,8 +185,8 @@ describe("<NavBar />", () => {
   it("displays default device name when none is provided", () => {
     const props = fakeProps();
     props.device.body.name = "";
-    render(<NavBar {...props} />);
-    expect(screen.getByText("FarmBot")).toBeInTheDocument();
+    const { container } = render(<NavBar {...props} />);
+    expect(container.textContent || "").toContain("FarmBot");
   });
 
   it("displays setup button", () => {

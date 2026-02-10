@@ -14,7 +14,7 @@ jest.mock("react", () => ({
 
 import React from "react";
 import {
-  cleanup, render, screen, fireEvent, waitFor,
+  cleanup, fireEvent, render, waitFor, within,
 } from "@testing-library/react";
 import { ChangePassword } from "../change_password";
 import { API } from "../../../api/api";
@@ -27,18 +27,20 @@ afterEach(() => {
 });
 
 const setFields = (
+  container: HTMLElement,
   password: string,
   newPassword: string,
   newPasswordConfirmation: string,
 ) => {
-  fireEvent.blur(screen.getByLabelText("Old Password"),
+  const local = within(container);
+  fireEvent.blur(local.getByLabelText("Old Password"),
     { target: { value: password } });
-  fireEvent.blur(screen.getByLabelText("New Password"),
+  fireEvent.blur(local.getByLabelText("New Password"),
     { target: { value: newPassword } });
-  fireEvent.blur(screen.getByLabelText("Confirm New Password"),
+  fireEvent.blur(local.getByLabelText("Confirm New Password"),
     { target: { value: newPasswordConfirmation } });
-  expect(screen.getAllByDisplayValue(password)[0]).toBeInTheDocument();
-  const button = screen.getByText("Save");
+  expect(local.getAllByDisplayValue(password)[0]).toBeInTheDocument();
+  const button = local.getByText("Save");
   fireEvent.click(button);
 };
 
@@ -48,38 +50,38 @@ afterAll(() => {
 });
 describe("<ChangePassword />", () => {
   it("rejects new == old password case", () => {
-    render(<ChangePassword />);
-    setFields("password", "password", "password");
+    const { container } = render(<ChangePassword />);
+    setFields(container, "password", "password", "password");
     const expectation = expect.stringContaining("Password not changed");
     expect(error).toHaveBeenCalledWith(expectation);
   });
 
   it("rejects too short new password", () => {
-    render(<ChangePassword />);
-    setFields("a", "a", "a");
+    const { container } = render(<ChangePassword />);
+    setFields(container, "a", "a", "a");
     const expectation = expect.stringContaining("New password must be at least");
     expect(error).toHaveBeenCalledWith(expectation);
   });
 
   it("rejects new != password confirmation case", () => {
-    render(<ChangePassword />);
-    setFields("aaaaaaaa", "bbbbbbbb", "cccccccc");
+    const { container } = render(<ChangePassword />);
+    setFields(container, "aaaaaaaa", "bbbbbbbb", "cccccccc");
     const expectation = expect.stringContaining("do not match");
     expect(error).toHaveBeenCalledWith(expectation);
   });
 
   it("cancels password change", () => {
     window.confirm = () => false;
-    render(<ChangePassword />);
-    setFields("aaaaaaaa", "bbbbbbbb", "bbbbbbbb");
+    const { container } = render(<ChangePassword />);
+    setFields(container, "aaaaaaaa", "bbbbbbbb", "bbbbbbbb");
     expect(axios.patch).not.toHaveBeenCalled();
   });
 
   it("handles missing ref", () => {
     mockRef = { current: undefined };
     window.confirm = () => false;
-    render(<ChangePassword />);
-    setFields("aaaaaaaa", "bbbbbbbb", "bbbbbbbb");
+    const { container } = render(<ChangePassword />);
+    setFields(container, "aaaaaaaa", "bbbbbbbb", "bbbbbbbb");
     expect(axios.patch).not.toHaveBeenCalled();
   });
 
@@ -89,8 +91,8 @@ describe("<ChangePassword />", () => {
     it("saves (KO)", async () => {
       mockPatch = () => Promise.reject({ response: { data: "error" } });
       window.confirm = () => true;
-      render(<ChangePassword />);
-      setFields("aaaaaaaa", "bbbbbbbb", "bbbbbbbb");
+      const { container } = render(<ChangePassword />);
+      setFields(container, "aaaaaaaa", "bbbbbbbb", "bbbbbbbb");
       await waitFor(() => {
         expect(axios.patch).toHaveBeenCalledWith("http://localhost/api/users/",
           {
@@ -106,8 +108,8 @@ describe("<ChangePassword />", () => {
     it("saves (OK)", async () => {
       mockPatch = () => Promise.resolve();
       window.confirm = () => true;
-      render(<ChangePassword />);
-      setFields("aaaaaaaa", "bbbbbbbb", "bbbbbbbb");
+      const { container } = render(<ChangePassword />);
+      setFields(container, "aaaaaaaa", "bbbbbbbb", "bbbbbbbb");
       await waitFor(() => {
         expect(axios.patch).toHaveBeenCalledWith("http://localhost/api/users/",
           {

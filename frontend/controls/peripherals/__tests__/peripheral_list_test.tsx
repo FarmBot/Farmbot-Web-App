@@ -1,5 +1,5 @@
 import React from "react";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { mount, shallow } from "enzyme";
 import {
   PeripheralList, AnalogSlider, AnalogSliderProps,
@@ -104,8 +104,8 @@ describe("<PeripheralList />", () => {
   it("renders analog peripherals", () => {
     const p = fakeProps();
     p.peripherals[0].body.mode = 1;
-    render(<PeripheralList {...p} />);
-    const slider = screen.getByRole("slider");
+    const { container } = render(<PeripheralList {...p} />);
+    const slider = within(container).getByRole("slider");
     expect(slider).toBeInTheDocument();
   });
 

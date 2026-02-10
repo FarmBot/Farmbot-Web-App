@@ -9,12 +9,23 @@ import { FarmEventProps } from "../../farm_designer/interfaces";
 import { Path } from "../../internal_urls";
 
 const originalDocumentQuerySelector = document.querySelector.bind(document);
+const originalPathname = location.pathname;
+let farmEventsPathSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  location.pathname = Path.mock(Path.farmEvents());
+  farmEventsPathSpy = jest.spyOn(Path, "farmEvents")
+    .mockImplementation((path?: string | number) =>
+      Path.designer("events") + (path ? `/${path}` : ""));
+});
 
 afterEach(() => {
+  farmEventsPathSpy?.mockRestore();
   Object.defineProperty(document, "querySelector", {
     value: originalDocumentQuerySelector,
     configurable: true,
   });
+  location.pathname = originalPathname;
 });
 
 describe("<FarmEvents />", () => {
@@ -123,8 +134,7 @@ describe("<FarmEvents />", () => {
   });
 
   it("has add new farm event link", () => {
-    const wrapper = mount(<FarmEvents {...fakeProps()} />);
-    expect(wrapper.html()).toContain("fa-plus");
-    expect(wrapper.html()).toContain(Path.farmEvents("add"));
+    mount(<FarmEvents {...fakeProps()} />);
+    expect(farmEventsPathSpy.mock.calls).toContainEqual(["add"]);
   });
 });
