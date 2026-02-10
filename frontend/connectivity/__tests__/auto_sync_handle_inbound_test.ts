@@ -10,8 +10,7 @@ import {
 import { TaggedSequence } from "farmbot";
 
 const handleInbound = (): typeof import("../auto_sync_handle_inbound")["handleInbound"] =>
-  (jest.requireActual("../auto_sync_handle_inbound.ts") as
-    typeof import("../auto_sync_handle_inbound")).handleInbound;
+  jest.requireActual("../auto_sync_handle_inbound.ts").handleInbound;
 
 describe("handleInbound()", () => {
   const dispatch = jest.fn();
@@ -65,7 +64,7 @@ describe("handleInbound()", () => {
       status: "DELETE", kind: "Sequence", id
     };
     handleInbound()(dispatch, getStateLocal, fixtr);
-    if ((dispatch as jest.Mock).mock.calls.length > 0) {
+    if (jest.isMockFunction(dispatch) && dispatch.mock.calls.length > 0) {
       expect(resourceActions.destroyOK).toHaveBeenCalled();
     } else {
       expect(resourceActions.destroyOK).not.toHaveBeenCalled();

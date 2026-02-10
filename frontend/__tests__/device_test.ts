@@ -1,6 +1,6 @@
 class mockFarmbot { connect = () => Promise.resolve(this); }
 jest.mock("farmbot", () => ({
-  ...(jest.requireActual("farmbot") as object),
+  ...jest.requireActual("farmbot"),
   Farmbot: mockFarmbot,
 }));
 

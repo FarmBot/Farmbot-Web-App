@@ -19,7 +19,7 @@ import * as reducerSupport from "../../resources/reducer_support";
 import * as resourceActions from "../../resources/actions";
 import * as readOnlyMode from "../../read_only_mode/app_is_read_only";
 
-const actualCrud = () => jest.requireActual("../crud.ts") as typeof import("../crud");
+const actualCrud = () => jest.requireActual("../crud.ts");
 
 const fakeDestroyAll = (...args: [string, boolean?, string?]) => {
   const destroyAll = actualCrud().destroyAll;

@@ -1,4 +1,6 @@
 import { fakeState } from "../../__test_support__/fake_state";
+import "@testing-library/jest-dom";
+
 let mockState = fakeState();
 
 const mockDevice = {
@@ -91,6 +93,10 @@ import * as messageActions from "../../messages/actions";
 import * as deviceActions from "../../devices/actions";
 
 afterEach(() => cleanup());
+
+// Extend globalConfig with missing RPI properties - declared in hacks.d.ts
+declare const globalConfig: Record<string, string>;
+declare const mockNavigate: jest.Mock;
 
 let editSpy: jest.SpyInstance;
 let saveSpy: jest.SpyInstance;
@@ -395,15 +401,25 @@ describe("<AssemblyDocs />", () => {
 });
 
 describe("<DownloadOS />", () => {
+  beforeEach(() => {
+    // Set test values - both tags and URLs are needed (reset by bun test setup after each test)
+    globalConfig.rpi_release_tag = "1.0.0";
+    globalConfig.rpi_release_url = "http://example.com/rpi1.img";
+    globalConfig.rpi3_release_tag = "3.0.0";
+    globalConfig.rpi3_release_url = "http://example.com/rpi3.img";
+    globalConfig.rpi4_release_tag = "4.0.0";
+    globalConfig.rpi4_release_url = "http://example.com/rpi4.img";
+  });
+
+  afterAll(() => {
+    // No cleanup needed since bun test setup handles globalConfig reset
+  });
   it.each<[string, string]>([
     ["01", "1.0.0"],
     ["02", "3.0.0"],
     ["3", "3.0.0"],
     ["4", "4.0.0"],
   ])("shows correct link: %s", (rpi, expected) => {
-    globalConfig.rpi_release_tag = "1.0.0";
-    globalConfig.rpi3_release_tag = "3.0.0";
-    globalConfig.rpi4_release_tag = "4.0.0";
     const p = fakeProps();
     const device = fakeDevice();
     device.body.rpi = rpi;
@@ -667,9 +683,7 @@ describe("<PeripheralsCheck />", () => {
 
 describe("<PinBinding />", () => {
   it("renders pin binding inputs", () => {
-    const checks = jest.requireActual("../checks") as {
-      PinBinding: typeof PinBinding;
-    };
+    const checks = jest.requireActual("../checks");
     const { PinBinding: ActualPinBinding } = checks;
     const p = fakeProps();
     const fbosConfig = fakeFbosConfig();

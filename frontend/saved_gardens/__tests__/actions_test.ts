@@ -17,8 +17,8 @@ const savedGardenActions = (): Partial<typeof import("../actions")> => {
   const candidates = rawCandidates
     .flatMap(candidate => [candidate, candidate.default])
     .filter(Boolean) as Partial<typeof import("../actions")>[];
-  const result: Partial<typeof import("../actions")> = {};
-  const actionKeys = [
+  const result = {} as Partial<typeof import("../actions")>;
+  const actionKeys: (keyof typeof import("../actions"))[] = [
     "snapshotGarden",
     "applyGarden",
     "destroySavedGarden",
@@ -27,13 +27,21 @@ const savedGardenActions = (): Partial<typeof import("../actions")> => {
     "openOrCloseGarden",
     "newSavedGarden",
     "copySavedGarden",
-  ] as const;
+  ];
   actionKeys.forEach(key => {
-    const found = candidates.find(candidate => typeof candidate[key] === "function");
-    if (found) { result[key] = found[key]; }
+    const found = candidates.find(candidate => typeof candidate?.[key] === "function");
+    if (found && found[key]) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (result as any)[key] = found[key];
+    }
   });
-  result.unselectSavedGarden = candidates.find(candidate =>
-    candidate.unselectSavedGarden)?.unselectSavedGarden;
+  const foundUnselectSavedGarden = candidates.find(candidate =>
+    candidate?.unselectSavedGarden);
+  if (foundUnselectSavedGarden?.unselectSavedGarden) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (result as any).unselectSavedGarden =
+      foundUnselectSavedGarden.unselectSavedGarden;
+  }
   return result;
 };
 
@@ -45,8 +53,8 @@ const copySavedGardenAction = (props: {
 }) => {
   const candidates = [
     savedGardenActions(),
-    jest.requireActual("../actions") as Partial<typeof import("../actions")>,
-    jest.requireActual("../actions.ts") as Partial<typeof import("../actions")>,
+    jest.requireActual("../actions"),
+    jest.requireActual("../actions.ts"),
   ];
   for (const candidate of candidates) {
     if (typeof candidate.copySavedGarden === "function") {
@@ -66,8 +74,8 @@ const newSavedGardenAction = (
 ) => {
   const candidates = [
     savedGardenActions(),
-    jest.requireActual("../actions") as Partial<typeof import("../actions")>,
-    jest.requireActual("../actions.ts") as Partial<typeof import("../actions")>,
+    jest.requireActual("../actions"),
+    jest.requireActual("../actions.ts"),
   ];
   for (const candidate of candidates) {
     if (typeof candidate.newSavedGarden === "function") {
@@ -219,8 +227,12 @@ describe("openOrCloseGarden", () => {
     const action = savedGardenActions().openOrCloseGarden;
     if (typeof action !== "function") { return; }
     action(props)();
-    const dispatchedThunk = (props.dispatch as jest.Mock).mock.calls[0]?.[0];
-    expect((props.dispatch as jest.Mock).mock.calls.length).toBeGreaterThan(0);
+    const dispatchedThunk = jest.isMockFunction(props.dispatch)
+      ? props.dispatch.mock.calls[0]?.[0]
+      : undefined;
+    expect(jest.isMockFunction(props.dispatch)
+      ? props.dispatch.mock.calls.length
+      : 0).toBeGreaterThan(0);
     if (typeof dispatchedThunk === "function") {
       dispatchedThunk(props.dispatch);
       expect(props.navigate).toHaveBeenCalledWith(Path.savedGardens(1));
@@ -244,7 +256,9 @@ describe("openOrCloseGarden", () => {
     if (typeof action !== "function") { return; }
     action(props)();
     expect(props.dispatch).toHaveBeenCalledWith(expect.any(Function));
-    const dispatchedThunk = (props.dispatch as jest.Mock).mock.calls[0]?.[0];
+    const dispatchedThunk = jest.isMockFunction(props.dispatch)
+      ? props.dispatch.mock.calls[0]?.[0]
+      : undefined;
     dispatchedThunk(props.dispatch);
     expect(props.navigate).toHaveBeenCalledWith(Path.plants());
     expect(props.dispatch).toHaveBeenCalledWith(savedGardenActions().unselectSavedGarden);

@@ -129,7 +129,7 @@ describe("<DesignerPanelContent />", () => {
     document.querySelectorAll(".panel-content")
       .forEach(node => node.parentElement?.removeChild(node));
 
-  const addExistingPanelContent = (scrollTop: number) => {
+  const _addExistingPanelContent = (scrollTop: number) => {
     const existing = document.createElement("div");
     existing.className = "panel-content";
     Object.defineProperty(existing, "scrollTop", {

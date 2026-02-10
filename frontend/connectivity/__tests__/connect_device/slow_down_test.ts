@@ -13,8 +13,7 @@ describe("slowDown", () => {
 
   it("throttles calls", () => {
     const throttleSpy = jest.spyOn(lodash, "throttle");
-    const { slowDown } = jest.requireActual("../../slow_down") as
-      typeof import("../../slow_down");
+    const { slowDown } = jest.requireActual("../../slow_down");
     const fn = jest.fn();
     const throttled = slowDown(fn);
     expect(typeof throttled).toEqual("function");

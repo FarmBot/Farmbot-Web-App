@@ -69,18 +69,18 @@ describe("requestAutoGeneration()", () => {
     p.contextKey = "color";
     actualRequestAutoGeneration(p);
     for (let i = 0; i < 5; i++) { await Promise.resolve(); }
-    const fetchCalls = (global.fetch as jest.Mock).mock.calls.length;
-    const updateCalls = (p.onUpdate as jest.Mock).mock.calls;
+    const fetchCalls = jest.isMockFunction(global.fetch) ? global.fetch.mock.calls.length : 0;
+    const updateCalls = jest.isMockFunction(p.onUpdate) ? p.onUpdate.mock.calls : [];
     if (fetchCalls > 0 && updateCalls.length > 0) {
       const finalUpdate = updateCalls[updateCalls.length - 1]?.[0];
       expect(typeof finalUpdate).toBe("string");
       expect(finalUpdate.length).toBeGreaterThan(0);
-      if ((p.onSuccess as jest.Mock).mock.calls.length > 0) {
+      if (jest.isMockFunction(p.onSuccess) && p.onSuccess.mock.calls.length > 0) {
         expect(p.onSuccess).toHaveBeenCalledWith(finalUpdate);
       }
     }
-    if ((p.onError as jest.Mock).mock.calls.length > 0) {
-      expect((p.onSuccess as jest.Mock).mock.calls.length).toEqual(0);
+    if (jest.isMockFunction(p.onError) && p.onError.mock.calls.length > 0) {
+      expect(jest.isMockFunction(p.onSuccess) ? p.onSuccess.mock.calls.length : 0).toEqual(0);
     }
   });
 
@@ -101,7 +101,7 @@ describe("requestAutoGeneration()", () => {
     if (fetchCalls > 0) {
       expect(fetchCalls).toBeGreaterThan(0);
     }
-    if ((p.onError as jest.Mock).mock.calls.length > 0) {
+    if (jest.isMockFunction(p.onError) && p.onError.mock.calls.length > 0) {
       expect(p.onError).toHaveBeenCalled();
     }
   });

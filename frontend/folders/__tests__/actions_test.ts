@@ -20,7 +20,7 @@ import * as sequenceActions from "../../sequences/actions";
 import * as crudModule from "../../api/crud";
 import * as draggableActions from "../../draggable/actions";
 const getFolderActions = () =>
-  jest.requireActual("../actions") as typeof import("../actions");
+  jest.requireActual("../actions");
 
 const mockSequence = fakeSequence();
 const i = buildResourceIndex(newTaggedResource("Folder", mockFolders));
@@ -224,8 +224,7 @@ describe("createFolder", () => {
 
 describe("deleteFolder", () => {
   it("deletes a folder", () => {
-    const actions = jest.requireActual("../actions") as
-      typeof import("../actions");
+    const actions = jest.requireActual("../actions");
     const folder = firstFolder();
     if (!folder?.body.id) { return; }
     (store.dispatch as jest.Mock).mockClear();

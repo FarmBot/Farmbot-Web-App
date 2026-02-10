@@ -8,7 +8,7 @@ import React from "react";
 import { shallow } from "enzyme";
 import { LuaTextArea, LuaTextAreaProps } from "../tile_lua_support";
 import { Lua } from "farmbot";
-import { Editor } from "@monaco-editor/react";
+import { Editor as _Editor } from "@monaco-editor/react";
 import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 import { StateToggleKey } from "../../step_ui";
 import { Path } from "../../../internal_urls";
@@ -37,7 +37,7 @@ describe("<LuaTextArea />", () => {
     p.stateToggles[StateToggleKey.monacoEditor] =
       { enabled: true, toggle: jest.fn() };
     const wrapper = shallow<LuaTextArea<Lua>>(<LuaTextArea {...p} />);
-    const updateStep = jest.fn();
+    const updateStep = Object.assign(jest.fn(), { cancel: jest.fn(), flush: jest.fn() });
     wrapper.instance().updateStep = updateStep;
     expect(wrapper.state().lua).toEqual("lua");
     wrapper.instance().onChange("123");
@@ -50,7 +50,7 @@ describe("<LuaTextArea />", () => {
     p.stateToggles[StateToggleKey.monacoEditor] =
       { enabled: true, toggle: jest.fn() };
     const wrapper = shallow<LuaTextArea<Lua>>(<LuaTextArea {...p} />);
-    const updateStep = jest.fn();
+    const updateStep = Object.assign(jest.fn(), { cancel: jest.fn(), flush: jest.fn() });
     wrapper.instance().updateStep = updateStep;
     wrapper.instance().onChange(undefined as unknown as string);
     expect(updateStep).toHaveBeenCalledWith("");

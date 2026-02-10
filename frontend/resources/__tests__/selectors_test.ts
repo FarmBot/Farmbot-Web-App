@@ -226,8 +226,7 @@ describe("findToolById()", () => {
 describe("findSequenceById()", () => {
   it("throws error", () => {
     const missingId = 999999999;
-    const { findSequenceById } = jest.requireActual("../selectors_by_id") as
-      typeof import("../selectors_by_id");
+    const { findSequenceById } = jest.requireActual("../selectors_by_id");
     const freshIndex = buildResourceIndex([]).index;
     try {
       const result = findSequenceById(freshIndex, missingId);

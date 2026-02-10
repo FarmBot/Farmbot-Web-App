@@ -14,8 +14,8 @@ import * as readOnlyMode from "../../read_only_mode/app_is_read_only";
 
 let appIsReadonlySpy: jest.SpyInstance;
 const loadCrud = () => {
-  const plain = jest.requireActual("../crud") as Partial<typeof import("../crud")>;
-  const ts = jest.requireActual("../crud.ts") as Partial<typeof import("../crud")>;
+  const plain = jest.requireActual("../crud");
+  const ts = jest.requireActual("../crud.ts");
   return {
     destroy: plain.destroy || ts.destroy,
     saveAll: plain.saveAll || ts.saveAll,
@@ -100,7 +100,7 @@ describe("AJAX data tracking", () => {
       });
       if (typeof initSaveGetIdAction !== "function") { return; }
       const result = initSaveGetIdAction(statefulDispatch as unknown as Function);
-      if (result && typeof (result as Promise<unknown>).catch === "function") {
+      if (result && typeof result === "object" && result && "catch" in result) {
         await (result as Promise<unknown>).catch(() => { });
       }
       expect(dataConsistency.startTracking).not.toHaveBeenCalled();

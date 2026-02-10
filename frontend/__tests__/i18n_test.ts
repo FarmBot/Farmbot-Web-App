@@ -29,7 +29,7 @@ beforeEach(() => {
   jest.clearAllMocks();
   mockGet = defaultMockGet();
   ({ generateUrl, getUserLang, generateI18nConfig, detectLanguage } =
-    jest.requireActual("../i18n") as typeof import("../i18n"));
+    jest.requireActual("../i18n"));
   jest.spyOn(axios, "get").mockImplementation((_url: string) => mockGet);
 });
 
