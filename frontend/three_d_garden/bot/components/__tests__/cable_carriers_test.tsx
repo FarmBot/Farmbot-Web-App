@@ -15,17 +15,17 @@ describe("<CableCarrierVertical />", () => {
   it("renders v1.7", () => {
     const p = fakeProps();
     p.config.kitVersion = "v1.7";
-    const wrapper = render(<CableCarrierSupportVertical {...p} />);
-    expect(wrapper.container).toContainHTML("ccSupportVertical");
-    expect(wrapper.container.querySelectorAll("instancedmesh").length).toBe(1);
+    const { container } = render(<CableCarrierSupportVertical {...p} />);
+    expect(container.innerHTML).toContain("ccSupportVertical");
+    expect(container.querySelectorAll("instancedmesh").length).toBe(1);
   });
 
   it("renders v1.8", () => {
     const p = fakeProps();
     p.config.kitVersion = "v1.8";
-    const wrapper = render(<CableCarrierSupportVertical {...p} />);
-    expect(wrapper.container).toContainHTML("ccSupportVertical");
-    expect(wrapper.container.querySelectorAll("mesh").length).toBe(1);
+    const { container } = render(<CableCarrierSupportVertical {...p} />);
+    expect(container.innerHTML).toContain("ccSupportVertical");
+    expect(container.querySelectorAll("mesh").length).toBe(1);
   });
 });
 
@@ -37,25 +37,25 @@ describe("<CableCarrierHorizontal />", () => {
   it("renders v1.7", () => {
     const p = fakeProps();
     p.config.kitVersion = "v1.7";
-    const wrapper = render(<CableCarrierSupportHorizontal {...p} />);
-    expect(wrapper.container).toContainHTML("ccSupportHorizontal");
-    expect(wrapper.container.querySelectorAll("instancedmesh").length).toBe(1);
+    const { container } = render(<CableCarrierSupportHorizontal {...p} />);
+    expect(container.innerHTML).toContain("ccSupportHorizontal");
+    expect(container.querySelectorAll("instancedmesh").length).toBe(1);
   });
 
   it("renders v1.8", () => {
     const p = fakeProps();
     p.config.kitVersion = "v1.8";
-    const wrapper = render(<CableCarrierSupportHorizontal {...p} />);
-    expect(wrapper.container).toContainHTML("ccSupportHorizontal");
-    expect(wrapper.container.querySelectorAll("mesh").length).toBe(1);
+    const { container } = render(<CableCarrierSupportHorizontal {...p} />);
+    expect(container.innerHTML).toContain("ccSupportHorizontal");
+    expect(container.querySelectorAll("mesh").length).toBe(1);
   });
 
   it("renders v1.8: lights on", () => {
     const p = fakeProps();
     p.config.kitVersion = "v1.8";
     p.config.light = true;
-    const wrapper = render(<CableCarrierSupportHorizontal {...p} />);
-    expect(wrapper.container).toContainHTML("ccSupportHorizontal");
-    expect(wrapper.container.querySelectorAll("mesh").length).toBe(1);
+    const { container } = render(<CableCarrierSupportHorizontal {...p} />);
+    expect(container.innerHTML).toContain("ccSupportHorizontal");
+    expect(container.querySelectorAll("mesh").length).toBe(1);
   });
 });

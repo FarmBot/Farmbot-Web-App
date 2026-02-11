@@ -15,7 +15,7 @@ describe("<WaterTube />", () => {
 
   it("renders", () => {
     const p = fakeProps();
-    const wrapper = render(<WaterTube {...p} />);
-    expect(wrapper.container).toContainHTML("mock-tube-tube");
+    const { container } = render(<WaterTube {...p} />);
+    expect(container.innerHTML).toContain("mock-tube-tube");
   });
 });

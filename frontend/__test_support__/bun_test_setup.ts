@@ -9,14 +9,7 @@ import { bot } from "./fake_state/bot";
 import { config } from "./fake_state/config";
 import { draggable } from "./fake_state/draggable";
 import { app } from "./fake_state/app";
-
-GlobalRegistrator.register({
-  url: "http://localhost/",
-  settings: {
-    disableJavaScriptFileLoading: true,
-    handleDisabledFileLoadingAsSuccess: true,
-  },
-});
+import { cleanup } from "@testing-library/react";
 
 const globalAny = globalThis as typeof globalThis & {
   globalConfig?: Record<string, string>;
@@ -219,7 +212,7 @@ afterEach(() => {
   bunJest.restoreAllMocks?.();
   bunMock.restore?.();
   bunJest.useRealTimers?.();
-  bunJest.resetModules?.();
+  cleanup();
 });
 
 afterAll(async () => {

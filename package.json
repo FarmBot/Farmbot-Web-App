@@ -13,8 +13,9 @@
     "url": "https://github.com/farmbot/farmbot-web-app"
   },
   "scripts": {
-    "test-slow": "bun test --coverage",
+    "test-slow": "bun test && bun run coverage-html",
     "test": "bun test",
+    "coverage-html": "genhtml -q coverage_fe/lcov.info --output-directory coverage_fe",
     "graph-modules-dot": "bunx madge --dot ./frontend > module_graph.dot",
     "graph-modules-svg": "dot -Tsvg module_graph.dot -o module_graph.svg",
     "typecheck": "bun scripts/run.js bunx tsc --noEmit",

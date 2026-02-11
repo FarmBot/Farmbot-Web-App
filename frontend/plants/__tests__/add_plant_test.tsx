@@ -26,6 +26,7 @@ describe("<AddPlant />", () => {
   };
 
   it("renders", () => {
+    console.debug = jest.fn();
     location.pathname = Path.mock(Path.cropSearch("mint/add"));
     const p = fakeProps();
     p.dispatch = mockDispatch(jest.fn(), fakeState);
