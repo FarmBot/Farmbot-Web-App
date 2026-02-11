@@ -160,8 +160,9 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
+  navigate = (url: string) => this.context?.(url);
   navigateById = (id: number | undefined) => () => {
-    this.context(Path.groups(id));
+    this.navigate(Path.groups(id));
   };
 
   render() {

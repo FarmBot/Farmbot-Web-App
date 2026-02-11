@@ -1,6 +1,6 @@
-import * as stopIe from "../util/stop_ie";
-import * as i18n from "../i18n";
-import * as routes from "../routes";
+import * as stopIe from "../../util/stop_ie";
+import * as i18n from "../../i18n";
+import * as routes from "../../routes";
 import * as i18next from "i18next";
 
 let stopIESpy: jest.SpyInstance;
@@ -30,7 +30,7 @@ afterEach(() => {
 
 describe("main app entry file", () => {
   it("Calls the expected callbacks", async () => {
-    await import("../main_app");
+    await import("..");
 
     expect(stopIe.stopIE).toHaveBeenCalled();
     expect(i18n.detectLanguage).toHaveBeenCalled();

@@ -24,13 +24,13 @@ Follow existing codebase conventions and style, for example:
    where `FILES` is a space-separated list of test files for the frontend files you changed.
    For example, `bun test ./frontend/__tests__/file_0_test.tsx ./frontend/__tests__/file_1_test.tsx`.
    Check the output to verify all tests pass.
-- Run `bun test --coverage` before `rake check_file_coverage:fe FILES`.
+- Run `bun test` before `rake check_file_coverage:fe FILES`.
    `FILES` is a space-separated list of frontend files you changed.
    For example, `rake check_file_coverage:fe frontend/file_0.tsx frontend/file_1.tsx`.
    Check the output to verify test coverage for all files is at 100%.
 
 ### Before committing
-- Run tests via `bun test --coverage`.
+- Run tests via `bun test`.
    Check the output to verify all tests pass.
 - Run `rake coverage:run`.
    Check the output:

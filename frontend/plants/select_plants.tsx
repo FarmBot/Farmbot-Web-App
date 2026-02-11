@@ -173,6 +173,7 @@ export class RawSelectPlants
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
+  navigate = (url: string) => this.context?.(url);
 
   destroySelected = (plantUUIDs: string[] | undefined) => {
     if (plantUUIDs && plantUUIDs.length > 0 &&
@@ -182,7 +183,7 @@ export class RawSelectPlants
         this.props.dispatch(destroy(uuid, true))
           .then(noop, noop);
       });
-      this.context(Path.plants());
+      this.navigate(Path.plants());
     }
   };
 
@@ -284,7 +285,7 @@ export class RawSelectPlants
             onClick={() => !this.props.gardenOpenId
               ? this.props.dispatch(createGroup({
                 pointUuids: this.selected,
-                navigate: this.context,
+                navigate: this.navigate,
               }))
               : error(t(Content.ERROR_PLANT_TEMPLATE_GROUP))}>
             {t("Create group")}

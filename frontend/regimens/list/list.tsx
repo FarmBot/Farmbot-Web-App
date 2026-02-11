@@ -29,6 +29,7 @@ export class RawDesignerRegimenList
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
+  navigate = (url: string) => this.context?.(url);
 
   render() {
     const panelName = "designer-regimen-list";
@@ -36,7 +37,7 @@ export class RawDesignerRegimenList
       <DesignerPanelTop
         panel={Panel.Regimens}
         onClick={() => this.props.dispatch(
-          addRegimen(this.props.regimens.length, this.context))}
+          addRegimen(this.props.regimens.length, this.navigate))}
         title={t("add new regimen")}>
         <SearchField nameKey={"regimens"}
           searchTerm={this.state.searchTerm}

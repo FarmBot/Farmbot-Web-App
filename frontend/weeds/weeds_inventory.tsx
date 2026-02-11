@@ -188,7 +188,7 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
           className={"fb-button green plus-weed"}
           onClick={e => {
             e.stopPropagation();
-            this.context(Path.weeds("add"));
+            this.navigate(Path.weeds("add"));
           }}>
           <i className={"fa fa-plus"} title={t("add weed")} />
         </div>
@@ -223,8 +223,9 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
+  navigate = (url: string) => this.context?.(url);
   navigateById = (id: number | undefined) => () => {
-    this.context(Path.groups(id));
+    this.navigate(Path.groups(id));
   };
 
   render() {
@@ -251,7 +252,7 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
               ...DEFAULT_CRITERIA,
               string_eq: { pointer_type: ["Weed"] },
             },
-            navigate: this.context,
+            navigate: this.navigate,
           }))}
           addTitle={t("add new group")}
           addClassName={"plus-group"}

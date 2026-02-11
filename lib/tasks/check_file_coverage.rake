@@ -69,7 +69,7 @@ namespace :check_file_coverage do
     end
   end
 
-  desc "Check frontend file coverage after running `bun test --coverage`. " +
+  desc "Check frontend file coverage after running `bun test`. " +
        "Usage: rake check_file_coverage:frontend frontend/app.tsx"
   task fe: :environment do
     FRONTEND_ROOT = 'frontend'
@@ -120,7 +120,7 @@ namespace :check_file_coverage do
     end
 
     lcov_coverage = load_lcov_coverage(LCOV_FILE_PATH)
-    abort("Run `bun test --coverage` first.") if lcov_coverage.empty?
+    abort("Run `bun test` first.") if lcov_coverage.empty?
 
     if paths_args.empty?
       paths = lcov_coverage.keys

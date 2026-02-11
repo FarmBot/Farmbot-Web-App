@@ -20,7 +20,7 @@ import {
   SortOptions, PointSortMenu, orderedPoints,
 } from "../farm_designer/sort_options";
 import {
-  compact, isUndefined, mean, noop, round, sortBy, uniq,
+  compact, isUndefined, mean, round, sortBy, uniq,
 } from "lodash";
 import { Collapse } from "@blueprintjs/core";
 import { UUID } from "../resources/interfaces";
@@ -162,13 +162,7 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  private navigateOverride?: React.ContextType<typeof NavigationContext>;
-  get navigate() {
-    return this.navigateOverride || this.context || noop;
-  }
-  set navigate(value: React.ContextType<typeof NavigationContext>) {
-    this.navigateOverride = value;
-  }
+  navigate = (url: string) => this.context?.(url);
 
   navigateById = (id: number | undefined) => () => {
     this.navigate(Path.groups(id));

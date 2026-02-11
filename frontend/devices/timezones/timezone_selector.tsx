@@ -1,7 +1,7 @@
 import React from "react";
 import { FBSelect, DropDownItem } from "../../ui";
 import { list } from "./tz_list";
-import * as guessTimezone from "./guess_timezone";
+import { inferTimezone } from "./guess_timezone";
 import { isString } from "lodash";
 import { getModifiedClassNameDefaultFalse } from "../../settings/default_values";
 
@@ -14,7 +14,7 @@ interface TZSelectorProps {
 
 export class TimezoneSelector extends React.Component<TZSelectorProps, {}> {
   componentDidMount() {
-    const tz = guessTimezone.inferTimezone(this.props.currentTimezone);
+    const tz = inferTimezone(this.props.currentTimezone);
     if (!this.props.currentTimezone) {
       // Nasty hack to prepopulate data of users who have yet to set a TZ.
       this.props.onUpdate(tz);
@@ -22,7 +22,7 @@ export class TimezoneSelector extends React.Component<TZSelectorProps, {}> {
   }
 
   selectedItem = (): DropDownItem => {
-    const tz = guessTimezone.inferTimezone(this.props.currentTimezone);
+    const tz = inferTimezone(this.props.currentTimezone);
     return { label: tz, value: tz };
   };
 

@@ -3,7 +3,7 @@ import { Link } from "../link";
 import { t } from "../i18next_wrapper";
 import { DevSettings } from "../settings/dev/dev_support";
 import { getWebAppConfigValue } from "../config_storage/actions";
-import * as StoreModule from "../redux/store";
+import { store } from "../redux/store";
 import { BooleanSetting } from "../session_keys";
 import { computeEditorUrlFromState } from "../nav/compute_editor_url_from_state";
 import { compact } from "lodash";
@@ -218,26 +218,12 @@ const displayScrollIndicator = () => {
 };
 
 export const showSensors = () => {
-  const store = typeof StoreModule.store?.getState === "function"
-    ? StoreModule.store
-    : undefined;
-  const activeStore = store || (typeof StoreModule.configureStore === "function"
-    ? StoreModule.configureStore()
-    : undefined);
-  if (!activeStore) { return true; }
-  const getWebAppConfigVal = getWebAppConfigValue(activeStore.getState);
+  const getWebAppConfigVal = getWebAppConfigValue(store.getState);
   return !getWebAppConfigVal(BooleanSetting.hide_sensors);
 };
 
 export const showFarmware = () => {
-  const store = typeof StoreModule.store?.getState === "function"
-    ? StoreModule.store
-    : undefined;
-  const activeStore = store || (typeof StoreModule.configureStore === "function"
-    ? StoreModule.configureStore()
-    : undefined);
-  if (!activeStore) { return false; }
-  const { resources } = activeStore.getState();
+  const { resources } = store.getState();
   const all = selectAllFarmwareInstallations(resources.index);
   const { firstPartyFarmwareNames } = resources.consumers.farmware;
   const installs = all

@@ -26,10 +26,7 @@ export class TourStepContainer
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-
-  get navigate() {
-    return this.context;
-  }
+  navigate = (url: string) => this.context?.(url);
 
   updateTourState = (
     tour: string | undefined,

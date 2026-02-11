@@ -56,6 +56,7 @@ export class RawDesignerSequenceEditor
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
+  navigate = (url: string) => this.context?.(url);
 
   render() {
     const panelName = "designer-sequence-editor";
@@ -94,12 +95,12 @@ export class RawDesignerSequenceEditor
             <i className={"fa fa-expand fb-icon-button"}
               title={t("open full-page editor")}
               onClick={() => {
-                this.context(Path.sequencePage(urlFriendly(sequence.body.name)));
+                this.navigate(Path.sequencePage(urlFriendly(sequence.body.name)));
               }} />}
           {!sequence && <button
             className={"fb-button green"}
             title={t("add new sequence")}
-            onClick={() => addNewSequenceToFolder(this.context)}>
+            onClick={() => addNewSequenceToFolder(this.navigate)}>
             <i className="fa fa-plus" />
           </button>}
         </div>

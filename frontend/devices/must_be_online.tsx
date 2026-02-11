@@ -6,7 +6,7 @@ import { t } from "../i18next_wrapper";
 import { BotState } from "./interfaces";
 import { getStatus } from "../connectivity/reducer_support";
 import { maybeFetchUser } from "../resources/selectors";
-import * as StoreModule from "../redux/store";
+import { store } from "../redux/store";
 
 /** Properties for the <MustBeOnline/> element. */
 export interface MBOProps {
@@ -18,9 +18,7 @@ export interface MBOProps {
 
 /** Demo account (and dev) bot online override. */
 export const forceOnline = () => {
-  const user = maybeFetchUser(
-    StoreModule.store.getState().resources.index,
-  );
+  const user = maybeFetchUser(store.getState().resources.index);
   return user?.body.email.endsWith("@farmbot.guest")
     || localStorage.getItem("myBotIs") == "online";
 };

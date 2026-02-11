@@ -296,7 +296,7 @@ namespace :coverage do
        "values from the base branch of a PR (or the build branch if not a PR)." \
        "This task is used during ci to fail PR builds if test coverage" \
        "decreases significantly and can also be run locally after running" \
-       "`bun test --coverage`." \
+       "`bun test`." \
        "The Coveralls stats reporter used to perform this check, but didn't" \
        "compare against a PR's base branch and would always return 0% change."
   task run: :environment do

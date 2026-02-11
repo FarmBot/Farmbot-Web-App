@@ -66,6 +66,7 @@ export class QosPanel extends React.Component<QosPanelProps, {}> {
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
+  navigate = (url: string) => this.context?.(url);
 
   render() {
     const r = { ...this.latencyReport, ...this.qualityReport };
@@ -89,7 +90,7 @@ export class QosPanel extends React.Component<QosPanelProps, {}> {
       <a onClick={
         docLinkClick({
           slug: "connecting-farmbot-to-the-internet",
-          navigate: this.context,
+          navigate: this.navigate,
           dispatch: this.props.dispatch,
         })}>
         <i className="fa fa-external-link" />

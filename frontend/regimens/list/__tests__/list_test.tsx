@@ -75,7 +75,7 @@ describe("<DesignerRegimenList />", () => {
     wrapper.instance().context = jest.fn();
     wrapper.find(DesignerPanelTop).simulate("click");
     expect(addRegimenModule.addRegimen).toHaveBeenCalledWith(
-      2, wrapper.instance().context);
+      2, wrapper.instance().navigate);
   });
 });
 

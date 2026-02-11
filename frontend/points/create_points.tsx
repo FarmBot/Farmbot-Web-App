@@ -154,7 +154,7 @@ export class RawCreatePoints extends React.Component<CreatePointsProps> {
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = (url: string) => this.context(url);
+  navigate = (url: string) => this.context?.(url);
 
   closePanel = () => { this.navigate(Path.designer(this.panel)); };
 
@@ -261,7 +261,7 @@ export class RawCreatePoints extends React.Component<CreatePointsProps> {
           title={t("save")}
           onClick={() => createPoint({
             drawnPoint,
-            navigate: this.navigate as NavigateFunction,
+            navigate: this.navigate,
             dispatch: this.props.dispatch,
           })}>
           {t("Save")}

@@ -131,6 +131,7 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
+  navigate = (url: string) => this.context?.(url);
 
   render() {
     const { curve, setHovered } = this;
@@ -156,7 +157,7 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
               onClick={dispatch(copyCurve(
                 this.props.curves,
                 curve,
-                this.context))} />}
+                this.navigate))} />}
           {curve &&
             <i className={"fa fa-trash fb-icon-button invert"}
               title={t("Delete curve")}
