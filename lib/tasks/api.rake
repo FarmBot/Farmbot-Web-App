@@ -135,7 +135,17 @@ namespace :api do
     sh [
       "rm -rf",
       "node_modules",
+      "bin/node",
     ].join(" ")
+  end
+
+  def print_dir_sizes(label)
+    puts label
+    cmd = "du -sh -- %<paths>s 2>/dev/null | sort -hr | head -n 5 || true"
+    sh format(cmd, paths: "* .[^.]*")
+    %w[vendor public public/assets bin].each do |dir|
+      sh format(cmd, paths: "#{dir}/* #{dir}/.[^.]*")
+    end
   end
 
   def add_monaco
@@ -168,7 +178,9 @@ namespace :api do
 
   desc "Don't call this directly. Use `rake assets:clean`."
   task assets_clean: :environment do
+    print_dir_sizes("Before clean_build_files:")
     clean_build_files
+    print_dir_sizes("After clean_build_files:")
   end
 
   desc "Clean out old demo accounts"
