@@ -1,9 +1,3 @@
-const lodash = require("lodash");
-lodash.debounce = jest.fn(x => x);
-
-const mockEditStep = jest.fn();
-jest.mock("../../../api/crud", () => ({ editStep: mockEditStep }));
-
 import React from "react";
 import { shallow } from "enzyme";
 import { LuaTextArea, LuaTextAreaProps } from "../tile_lua_support";
@@ -13,23 +7,10 @@ import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_dat
 import { StateToggleKey } from "../../step_ui";
 import { Path } from "../../../internal_urls";
 
-afterAll(() => {
-  jest.unmock("../../../api/crud");
-});
 describe("<LuaTextArea />", () => {
   const fakeProps = (): LuaTextAreaProps<Lua> => ({
     ...fakeStepParams({ kind: "lua", args: { lua: "lua" } }),
     stateToggles: {},
-  });
-
-  beforeEach(() => {
-    jest.useFakeTimers();
-    mockEditStep.mockClear();
-  });
-
-  afterEach(() => {
-    jest.runOnlyPendingTimers();
-    jest.useRealTimers();
   });
 
   it("changes lua", () => {
@@ -60,26 +41,34 @@ describe("<LuaTextArea />", () => {
   it("makes change in fallback editor", () => {
     const p = fakeProps();
     const wrapper = shallow<LuaTextArea<Lua>>(<LuaTextArea {...p} />);
+    const updateStep = Object.assign(
+      jest.fn(),
+      { cancel: jest.fn(), flush: jest.fn() });
+    wrapper.instance().updateStep = updateStep;
     const fallback = shallow(wrapper.instance().FallbackEditor({}));
     fallback.find("textarea").simulate("change", {
       currentTarget: { value: "123" }
     });
+    expect(wrapper.state().lua).toEqual("123");
     fallback.find("textarea").simulate("blur");
-    jest.runOnlyPendingTimers();
-    mockEditStep.mock.calls[0][0].executor(p.currentStep);
-    expect(p.currentStep).toEqual({ kind: "lua", args: { lua: "123" } });
+    expect(updateStep).toHaveBeenCalledWith("123");
   });
 
   it("doesn't make changes when read-only", () => {
     const p = fakeProps();
     p.readOnly = true;
     const wrapper = shallow<LuaTextArea<Lua>>(<LuaTextArea {...p} />);
+    const updateStep = Object.assign(
+      jest.fn(),
+      { cancel: jest.fn(), flush: jest.fn() });
+    wrapper.instance().updateStep = updateStep;
     const fallback = shallow(wrapper.instance().FallbackEditor({}));
     fallback.find("textarea").simulate("change", {
       currentTarget: { value: "123" }
     });
+    expect(wrapper.state().lua).toEqual("lua");
     fallback.find("textarea").simulate("blur");
-    expect(mockEditStep).not.toHaveBeenCalled();
+    expect(updateStep).toHaveBeenCalledWith("lua");
   });
 
   it("renders for designer", () => {
