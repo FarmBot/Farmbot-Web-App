@@ -51,6 +51,7 @@ import { Path } from "../../internal_urls";
 import { AddPlantIcon } from "./active_plant/add_plant_icon";
 import { NavigationContext } from "../../routes_helpers";
 import { setPanelOpen } from "../panel_header";
+import { NavigateFunction } from "react-router";
 
 const BOUND_KEYS = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
 
@@ -64,7 +65,7 @@ export class GardenMap extends
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = (url: string) => this.context?.(url);
+  navigate: NavigateFunction = url => { this.context?.(url as string); };
 
   componentDidMount = () => {
     document.onkeydown = this.onKeyDown as never;

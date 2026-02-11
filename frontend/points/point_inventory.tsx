@@ -43,6 +43,7 @@ import { Path } from "../internal_urls";
 import { deleteAllIds } from "../api/delete_points_handler";
 import { NavigationContext } from "../routes_helpers";
 import { GetColor } from "../farm_designer/map/layers/points/interpolation_map";
+import { NavigateFunction } from "react-router";
 
 interface PointsSectionProps {
   title: string;
@@ -162,7 +163,7 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = (url: string) => this.context?.(url);
+  navigate: NavigateFunction = url => { this.context?.(url as string); };
 
   navigateById = (id: number | undefined) => () => {
     this.navigate(Path.groups(id));

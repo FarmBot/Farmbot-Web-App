@@ -24,7 +24,7 @@ import { calculateImageAgeInfo } from "../photos/photo_filter_settings/util";
 import { Xyz } from "farmbot";
 import { ProfileViewer } from "./map/profile";
 import { ThreeDGardenMap } from "./three_d_garden_map";
-import { Outlet } from "react-router";
+import { NavigateFunction, Outlet } from "react-router";
 import { ErrorBoundary } from "../error_boundary";
 import { get3DConfigValueFunction } from "../settings/three_d_settings";
 import { isDesktop, isMobile } from "../screen_size";
@@ -143,7 +143,7 @@ export class RawFarmDesigner
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = (url: string) => this.context?.(url);
+  navigate: NavigateFunction = url => { this.context?.(url as string); };
 
   render() {
     const {

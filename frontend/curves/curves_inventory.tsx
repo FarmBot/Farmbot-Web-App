@@ -25,6 +25,7 @@ import {
 import { Curve } from "farmbot/dist/resources/api_resources";
 import { CurveIcon } from "./chart";
 import { NavigationContext } from "../routes_helpers";
+import { NavigateFunction } from "react-router";
 
 export const mapStateToProps = (props: Everything): CurvesProps => ({
   dispatch: props.dispatch,
@@ -48,7 +49,7 @@ export class RawCurves extends React.Component<CurvesProps, CurvesState> {
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = (url: string) => this.context?.(url);
+  navigate: NavigateFunction = url => { this.context?.(url as string); };
 
   navigateById = (id: number) => {
     this.navigate(Path.curves(id));

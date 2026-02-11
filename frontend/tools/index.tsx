@@ -9,7 +9,7 @@ import {
 } from "../ui/empty_state_wrapper";
 import { t } from "../i18next_wrapper";
 import { Content } from "../constants";
-import { useNavigate } from "react-router";
+import { NavigateFunction, useNavigate } from "react-router";
 import { Row, Help } from "../ui";
 import {
   botPositionLabel,
@@ -160,7 +160,7 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = (url: string) => this.context?.(url);
+  navigate: NavigateFunction = url => { this.context?.(url as string); };
   navigateById = (id: number | undefined) => () => {
     this.navigate(Path.groups(id));
   };

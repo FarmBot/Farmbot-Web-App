@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from "react-router";
+import { NavigateFunction, useNavigate } from "react-router";
 import { connect } from "react-redux";
 import { Everything, TimeSettings } from "../interfaces";
 import { PlantInventoryItem } from "./plant_inventory_item";
@@ -173,7 +173,7 @@ export class RawSelectPlants
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = (url: string) => this.context?.(url);
+  navigate: NavigateFunction = url => { this.context?.(url as string); };
 
   destroySelected = (plantUUIDs: string[] | undefined) => {
     if (plantUUIDs && plantUUIDs.length > 0 &&

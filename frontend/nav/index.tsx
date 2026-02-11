@@ -35,6 +35,7 @@ import { NavigationContext } from "../routes_helpers";
 import {
   showTimeTravelButton, TimeTravelContent, TimeTravelTarget,
 } from "../three_d_garden/time_travel";
+import { NavigateFunction } from "react-router";
 
 export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
   state: NavBarState = {
@@ -55,7 +56,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = (url: string) => this.context?.(url);
+  navigate: NavigateFunction = url => { this.context?.(url as string); };
 
   get isStaff() { return this.props.authAud == "staff"; }
 

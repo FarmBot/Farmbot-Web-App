@@ -16,6 +16,7 @@ import { Everything } from "../../interfaces";
 import { selectAllRegimens } from "../../resources/selectors";
 import { resourceUsageList } from "../../resources/in_use";
 import { NavigationContext } from "../../routes_helpers";
+import { NavigateFunction } from "react-router";
 
 export const mapStateToProps = (props: Everything): RegimensListProps => ({
   dispatch: props.dispatch,
@@ -29,7 +30,7 @@ export class RawDesignerRegimenList
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = (url: string) => this.context?.(url);
+  navigate: NavigateFunction = url => { this.context?.(url as string); };
 
   render() {
     const panelName = "designer-regimen-list";

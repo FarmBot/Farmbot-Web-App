@@ -7,6 +7,7 @@ import { HelpState } from "../reducer";
 import { TourStepContainerProps, TourStepContainerState } from "./interfaces";
 import { TOURS } from "./data";
 import { NavigationContext } from "../../routes_helpers";
+import { NavigateFunction } from "react-router";
 
 export const tourPath = (
   stepUrl: string | undefined,
@@ -26,7 +27,7 @@ export class TourStepContainer
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = (url: string) => this.context?.(url);
+  navigate: NavigateFunction = url => { this.context?.(url as string); };
 
   updateTourState = (
     tour: string | undefined,

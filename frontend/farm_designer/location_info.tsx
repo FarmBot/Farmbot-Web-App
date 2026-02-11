@@ -25,7 +25,7 @@ import {
   chooseLocationAction, MoveToForm, unChooseLocationAction, validGoButtonAxes,
 } from "./move_to";
 import { Actions } from "../constants";
-import { useNavigate } from "react-router";
+import { NavigateFunction, useNavigate } from "react-router";
 import { distance } from "../point_groups/other_sort_methods";
 import { isUndefined, round, sortBy, sum } from "lodash";
 import { PlantInventoryItem } from "../plants/plant_inventory_item";
@@ -103,7 +103,7 @@ export class RawLocationInfo extends React.Component<LocationInfoProps, {}> {
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = (url: string) => this.context?.(url);
+  navigate: NavigateFunction = url => { this.context?.(url as string); };
 
   componentDidMount() {
     unselectPlant(this.props.dispatch)();

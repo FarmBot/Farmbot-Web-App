@@ -38,6 +38,7 @@ import {
   GetWebAppConfigValue, getWebAppConfigValue,
 } from "../config_storage/actions";
 import { NavigationContext } from "../routes_helpers";
+import { NavigateFunction } from "react-router";
 
 export interface PlantInventoryProps {
   plants: TaggedPlant[];
@@ -102,7 +103,7 @@ export class RawPlants
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = (url: string) => this.context?.(url);
+  navigate: NavigateFunction = url => { this.context?.(url as string); };
 
   navigateById = (id: number | undefined) => () => {
     this.navigate(Path.groups(id));

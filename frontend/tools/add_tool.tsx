@@ -27,6 +27,7 @@ import {
 } from "../farm_designer/map/tool_graphics/all_tools";
 import { TipZOffsetInput, WaterFlowRateInput } from "./edit_tool";
 import { NavigationContext } from "../routes_helpers";
+import { NavigateFunction } from "react-router";
 
 export const mapStateToProps = (props: Everything): AddToolProps => ({
   dispatch: props.dispatch,
@@ -62,7 +63,7 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = (url: string) => this.context?.(url);
+  navigate: NavigateFunction = url => { this.context?.(url as string); };
 
   back = () => {
     this.navigate(Path.tools());

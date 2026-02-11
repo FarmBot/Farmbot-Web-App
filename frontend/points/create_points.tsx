@@ -154,7 +154,7 @@ export class RawCreatePoints extends React.Component<CreatePointsProps> {
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = (url: string) => this.context?.(url);
+  navigate: NavigateFunction = url => { this.context?.(url as string); };
 
   closePanel = () => { this.navigate(Path.designer(this.panel)); };
 

@@ -46,6 +46,7 @@ import { nearOsUpdateTime } from "../regimens/bulk_scheduler/bulk_scheduler";
 import { timeToMs } from "../regimens/bulk_scheduler/utils";
 import { getDeviceAccountSettings } from "../resources/selectors";
 import { NavigationContext } from "../routes_helpers";
+import { NavigateFunction } from "react-router";
 
 export const NEVER: TimeUnit = "never";
 /** Separate each of the form fields into their own interface. Recombined later
@@ -231,7 +232,7 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = (url: string) => this.context?.(url);
+  navigate: NavigateFunction = url => { this.context?.(url as string); };
 
   executableSet = (ddi: DropDownItem) => {
     if (ddi.value) {

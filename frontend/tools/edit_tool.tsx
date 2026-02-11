@@ -28,7 +28,7 @@ import {
 import { ToolTips } from "../constants";
 import * as deviceActions from "../devices/actions";
 import { NavigationContext } from "../routes_helpers";
-import { Navigate } from "react-router";
+import { Navigate, NavigateFunction } from "react-router";
 
 export const isActive = (toolSlots: TaggedToolSlotPointer[]) =>
   (toolId: number | undefined) =>
@@ -105,7 +105,7 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = (url: string) => this.context?.(url);
+  navigate: NavigateFunction = url => { this.context?.(url as string); };
 
   fallback = () => {
     const toolsPath = Path.tools();
