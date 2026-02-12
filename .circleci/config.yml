@@ -276,7 +276,7 @@ commands:
             sudo docker compose logs --no-color --tail=500
       - store_artifacts:
           path: tmp/promo.png
-          destination: promo.png
+          destination: promo_xl.png
       - store_artifacts:
           path: scene_metrics.csv
           destination: scene_metrics.csv
