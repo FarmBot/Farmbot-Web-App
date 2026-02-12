@@ -1,5 +1,5 @@
 import React from "react";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import {
   TimeTravelContent, TimeTravelContentProps,
   TimeTravelTarget, TimeTravelTargetProps,
@@ -18,7 +18,6 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  cleanup();
   jest.restoreAllMocks();
 });
 describe("<TimeTravelTarget />", () => {

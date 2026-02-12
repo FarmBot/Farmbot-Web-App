@@ -1,5 +1,5 @@
 import React from "react";
-import { cleanup, render, renderHook } from "@testing-library/react";
+import { render, renderHook } from "@testing-library/react";
 import * as threeFiber from "@react-three/fiber";
 import { RepeatWrapping, Texture, TextureLoader } from "three";
 import {
@@ -18,7 +18,6 @@ describe("<WaterStream />", () => {
   });
 
   beforeEach(() => {
-    cleanup();
     useFrameSpy = jest.spyOn(threeFiber, "useFrame")
       .mockImplementation(() => undefined as never);
     loadTextureSpy = jest.spyOn(TextureLoader.prototype, "load")
@@ -26,7 +25,6 @@ describe("<WaterStream />", () => {
   });
 
   afterEach(() => {
-    cleanup();
     loadTextureSpy.mockRestore();
     useFrameSpy.mockRestore();
   });
@@ -47,7 +45,6 @@ describe("<WaterStream />", () => {
 
 describe("useWaterFlowTexture", () => {
   beforeEach(() => {
-    cleanup();
     frameCallback = jest.fn() as unknown as
       (state: unknown, delta: number) => void;
     loadTextureSpy = jest.spyOn(TextureLoader.prototype, "load")
@@ -61,7 +58,6 @@ describe("useWaterFlowTexture", () => {
   });
 
   afterEach(() => {
-    cleanup();
     loadTextureSpy.mockRestore();
     useFrameSpy.mockRestore();
   });

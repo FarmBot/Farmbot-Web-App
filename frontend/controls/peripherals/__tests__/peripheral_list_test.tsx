@@ -1,5 +1,5 @@
 import React from "react";
-import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { mount, shallow } from "enzyme";
 import {
   PeripheralList, AnalogSlider, AnalogSliderProps,
@@ -33,7 +33,6 @@ afterEach(() => {
 
 describe("<PeripheralList />", () => {
   afterEach(() => {
-    cleanup();
     jest.clearAllMocks();
     localStorage.removeItem("myBotIs");
   });

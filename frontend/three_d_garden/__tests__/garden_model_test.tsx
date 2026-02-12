@@ -6,7 +6,7 @@ import { mount } from "enzyme";
 import { GardenModelProps, GardenModel } from "../garden_model";
 import { clone } from "lodash";
 import { INITIAL, SurfaceDebugOption } from "../config";
-import { cleanup, render } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import {
   fakePlant, fakePoint, fakeSensor, fakeSensorReading, fakeWeed,
 } from "../../__test_support__/fake_state/resources";
@@ -35,7 +35,6 @@ describe("<GardenModel />", () => {
     isDesktopSpy.mockRestore();
     isMobileSpy.mockRestore();
     location.pathname = originalPathname;
-    cleanup();
   });
 
   const fakeProps = (): GardenModelProps => ({

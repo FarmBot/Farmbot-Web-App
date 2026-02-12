@@ -1,6 +1,6 @@
 import React from "react";
 import { mount, shallow } from "enzyme";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import {
   MoveToForm, MoveToFormProps, MoveModeLink, chooseLocation,
   GoToThisLocationButtonProps, GoToThisLocationButton, movementPercentRemaining,
@@ -36,7 +36,6 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  cleanup();
   location.pathname = originalPathname;
   location.search = originalSearch;
   popoverSpy.mockRestore();

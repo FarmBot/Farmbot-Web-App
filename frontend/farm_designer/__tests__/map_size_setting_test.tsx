@@ -1,6 +1,6 @@
 import React from "react";
 import { MapSizeInputs, MapSizeInputsProps } from "../map_size_setting";
-import { cleanup, render } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import * as configStorageActions from "../../config_storage/actions";
 import { NumericSetting } from "../../session_keys";
 import {
@@ -26,7 +26,6 @@ describe("<MapSizeInputs />", () => {
   });
 
   afterEach(() => {
-    cleanup();
     jest.restoreAllMocks();
   });
 

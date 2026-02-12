@@ -1,7 +1,6 @@
 const mockDevice = { readPin: jest.fn((_) => Promise.resolve()) };
 
 import React from "react";
-import { cleanup } from "@testing-library/react";
 import { mount, shallow } from "enzyme";
 import {
   RawTools as Tools,
@@ -35,7 +34,6 @@ describe("<Tools />", () => {
   afterEach(() => {
     history.replaceState(undefined, "", Path.mock(originalPathname));
     jest.useRealTimers();
-    cleanup();
     jest.restoreAllMocks();
   });
 

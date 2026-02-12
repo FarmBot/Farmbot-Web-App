@@ -1,5 +1,5 @@
 import React from "react";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { clone } from "lodash";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
@@ -74,8 +74,6 @@ const queueMeshRef = (override?: Partial<MockRef["current"]>) => {
 };
 
 describe("<ThreeDPlantLabel />", () => {
-  afterEach(cleanup);
-
   beforeEach(() => {
     location.pathname = Path.mock(Path.designer());
     refQueue = [{ current: undefined }];
@@ -118,8 +116,6 @@ describe("<ThreeDPlantLabel />", () => {
 });
 
 describe("<ThreeDPlantSpread />", () => {
-  afterEach(cleanup);
-
   beforeEach(() => {
     location.pathname = Path.mock(Path.designer());
     (useFrame as jest.Mock).mockClear();

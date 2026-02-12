@@ -12,7 +12,7 @@ const mockDevice = {
 };
 
 import React from "react";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { mount, shallow } from "enzyme";
 import { bot } from "../../__test_support__/fake_state/bot";
 import {
@@ -91,8 +91,6 @@ import { FBSelect } from "../../ui";
 import * as bootSequenceSelector from "../../settings/fbos_settings/boot_sequence_selector";
 import * as messageActions from "../../messages/actions";
 import * as deviceActions from "../../devices/actions";
-
-afterEach(() => cleanup());
 
 // Extend globalConfig with missing RPI properties - declared in hacks.d.ts
 declare const globalConfig: Record<string, string>;
@@ -411,9 +409,6 @@ describe("<DownloadOS />", () => {
     globalConfig.rpi4_release_url = "http://example.com/rpi4.img";
   });
 
-  afterAll(() => {
-    // No cleanup needed since bun test setup handles globalConfig reset
-  });
   it.each<[string, string]>([
     ["01", "1.0.0"],
     ["02", "3.0.0"],

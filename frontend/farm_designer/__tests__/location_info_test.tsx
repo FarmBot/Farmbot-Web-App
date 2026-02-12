@@ -1,6 +1,5 @@
 import React from "react";
 import { mount, shallow } from "enzyme";
-import { cleanup } from "@testing-library/react";
 import {
   RawLocationInfo as LocationInfo, LocationInfoProps, mapStateToProps,
   ImageListItem, ImageListItemProps,
@@ -38,7 +37,6 @@ describe("<LocationInfo />", () => {
         wrapper.unmount();
       } catch { /* noop */ }
     });
-    cleanup();
     location.search = originalSearch;
   });
 

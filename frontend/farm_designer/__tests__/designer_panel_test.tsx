@@ -3,7 +3,6 @@ jest.unmock("../designer_panel.tsx");
 
 import React, { act } from "react";
 import { mount } from "enzyme";
-import { cleanup } from "@testing-library/react";
 import {
   DesignerPanel,
   DesignerPanelHeader,
@@ -33,7 +32,6 @@ describe("<DesignerPanel />", () => {
         wrapper.unmount();
       } catch { /* noop */ }
     });
-    cleanup();
     history.pushState({}, "", originalUrl);
   });
 
@@ -146,7 +144,6 @@ describe("<DesignerPanelContent />", () => {
 
   afterEach(() => {
     jest.restoreAllMocks();
-    cleanup();
     clearPanelContentNodes();
   });
 

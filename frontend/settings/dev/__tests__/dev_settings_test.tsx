@@ -1,6 +1,6 @@
 const mockDevSettings: { [key: string]: string } = {};
 import React from "react";
-import { cleanup, render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { mount, shallow } from "enzyme";
 import {
   DevWidgetFERow, DevWidgetFBOSRow, DevWidgetDelModeRow,
@@ -55,7 +55,6 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  cleanup();
   setWebAppConfigValueSpy.mockRestore();
   getWebAppConfigValueSpy.mockRestore();
   initSaveSpy.mockRestore();

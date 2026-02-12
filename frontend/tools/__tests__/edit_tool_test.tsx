@@ -1,5 +1,5 @@
 import React from "react";
-import { cleanup, fireEvent, render, within } from "@testing-library/react";
+import { fireEvent, render, within } from "@testing-library/react";
 import { mount, shallow } from "enzyme";
 import {
   RawEditTool as EditTool, mapStateToProps, isActive, WaterFlowRateInput,
@@ -25,8 +25,6 @@ let destroySpy: jest.SpyInstance;
 let saveSpy: jest.SpyInstance;
 
 describe("<EditTool />", () => {
-  afterEach(cleanup);
-
   beforeEach(() => {
     location.pathname = Path.mock(Path.tools(1));
     editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
@@ -209,7 +207,6 @@ describe("isActive()", () => {
 });
 
 describe("<WaterFlowRateInput />", () => {
-  afterEach(cleanup);
   let sendRPCSpy: jest.SpyInstance;
 
   beforeEach(() => {
@@ -243,8 +240,6 @@ describe("<WaterFlowRateInput />", () => {
 });
 
 describe("<TipZOffsetInput />", () => {
-  afterEach(cleanup);
-
   const fakeProps = (): TipZOffsetInputProps => ({
     value: 1,
     onChange: jest.fn(),

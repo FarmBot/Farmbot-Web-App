@@ -10,7 +10,7 @@ jest.mock("react", () => ({
 }));
 
 import React from "react";
-import { cleanup, render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { DangerousDeleteWidget } from "../dangerous_delete_widget";
 import { DangerousDeleteProps } from "../interfaces";
 
@@ -18,8 +18,6 @@ beforeEach(() => {
   jest.clearAllMocks();
   mockRef = { current: { value: "" } };
 });
-
-afterEach(() => cleanup());
 
 afterAll(() => {
   jest.unmock("react");

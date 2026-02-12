@@ -1,5 +1,5 @@
 import React from "react";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { mount } from "enzyme";
 import {
   FormField, sendEmail, DidRegister, MustRegister, CreateAccount,
@@ -20,7 +20,6 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  cleanup();
   jest.restoreAllMocks();
 });
 

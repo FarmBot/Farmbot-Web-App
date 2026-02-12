@@ -1,7 +1,6 @@
 let mockDev = false;
 
 import React from "react";
-import { cleanup } from "@testing-library/react";
 import { shallow } from "enzyme";
 import {
   axisOrder, AxisOrderInputRow, getAxisGroupingState, getAxisRouteState,
@@ -21,7 +20,6 @@ describe("<AxisOrderInputRow />", () => {
 
   afterEach(() => {
     allOrderOptionsEnabledSpy.mockRestore();
-    cleanup();
   });
 
   const fakeProps = (): AxisOrderInputRowProps => ({

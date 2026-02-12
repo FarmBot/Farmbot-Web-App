@@ -5,9 +5,7 @@ import { TaggedImage } from "farmbot";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { changeBlurableInputRTL } from "../../../__test_support__/helpers";
 import { Actions } from "../../../constants";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-
-afterEach(() => cleanup());
+import { fireEvent, render, screen } from "@testing-library/react";
 
 describe("<ImageWorkspace />", () => {
   const fakeProps = (): ImageWorkspaceProps => ({

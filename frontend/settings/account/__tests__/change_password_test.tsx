@@ -14,7 +14,7 @@ jest.mock("react", () => ({
 
 import React from "react";
 import {
-  cleanup, fireEvent, render, waitFor, within,
+   fireEvent, render, waitFor, within,
 } from "@testing-library/react";
 import { ChangePassword } from "../change_password";
 import { API } from "../../../api/api";
@@ -23,7 +23,6 @@ import axios from "axios";
 
 afterEach(() => {
   mockRef = { current: { querySelectorAll: () => [{ value: "" }] } };
-  cleanup();
 });
 
 const setFields = (

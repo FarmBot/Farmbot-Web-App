@@ -1,7 +1,7 @@
 let mockIsMobile = false;
 
 import React from "react";
-import { cleanup, render } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import { shallow, mount } from "enzyme";
 import { NavBar } from "../index";
 import { bot } from "../../__test_support__/fake_state/bot";
@@ -56,7 +56,6 @@ describe("<NavBar />", () => {
     maybeSetTimezoneSpy.mockRestore();
     forceOnlineSpy.mockRestore();
     localStorage.removeItem("myBotIs");
-    cleanup();
     document.body.innerHTML = "";
   });
 
