@@ -18,7 +18,7 @@ import { inputEvent } from "../../__test_support__/fake_html_events";
 import { Path } from "../../internal_urls";
 import { fakeDrawnPoint } from "../../__test_support__/fake_designer_state";
 import { success } from "../../toast/toast";
-import { mountWithContext } from "../../__test_support__/mount_with_context";
+import { renderWithContext } from "../../__test_support__/mount_with_context";
 
 beforeEach(() => {
   jest.spyOn(crud, "initSave").mockImplementation(jest.fn());
@@ -301,7 +301,7 @@ describe("<CreatePoints />", () => {
     location.pathname = Path.mock(Path.points("add"));
     const p = fakeProps();
     const ref = React.createRef<CreatePoints>();
-    mountWithContext(<CreatePoints ref={ref} {...p} />);
+    renderWithContext(<CreatePoints ref={ref} {...p} />);
     act(() => ref.current?.closePanel());
     expect(mockNavigate).toHaveBeenCalledWith(Path.points());
   });

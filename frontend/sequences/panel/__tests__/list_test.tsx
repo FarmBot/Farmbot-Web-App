@@ -20,7 +20,7 @@ import { sequencesPanelState } from "../../../__test_support__/panel_state";
 import { Actions } from "../../../constants";
 import { emptyState } from "../../../resources/reducer";
 import { Path } from "../../../internal_urls";
-import { mountWithContext } from "../../../__test_support__/mount_with_context";
+import { renderWithContext } from "../../../__test_support__/mount_with_context";
 import axios from "axios";
 import * as screenSize from "../../../screen_size";
 
@@ -172,7 +172,7 @@ describe("<DesignerSequenceList />", () => {
 
   it("navigates to sequence page", () => {
     location.pathname = Path.mock(Path.designerSequences());
-    const wrapper = mountWithContext(<DesignerSequenceList {...fakeProps()} />);
+    const wrapper = renderWithContext(<DesignerSequenceList {...fakeProps()} />);
     fireEvent.click((wrapper.container
       .querySelector("button.fb-button.clear.row.half-gap") as Element));
     expect(mockNavigate).toHaveBeenCalledWith(Path.sequencePage());
@@ -180,7 +180,7 @@ describe("<DesignerSequenceList />", () => {
 
   it("navigates to designer sequence page", () => {
     location.pathname = Path.mock(Path.sequencePage());
-    const wrapper = mountWithContext(<DesignerSequenceList {...fakeProps()} />);
+    const wrapper = renderWithContext(<DesignerSequenceList {...fakeProps()} />);
     fireEvent.click((wrapper.container
       .querySelector("button.fb-button.clear.row.half-gap") as Element));
     expect(mockNavigate).toHaveBeenCalledWith(Path.designerSequences());

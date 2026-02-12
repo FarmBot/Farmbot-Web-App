@@ -17,7 +17,7 @@ import { pointsPanelState } from "../../__test_support__/panel_state";
 import { Path } from "../../internal_urls";
 import * as pointGroupActions from "../../point_groups/actions";
 import * as deletePointsModule from "../../api/delete_points";
-import { mountWithContext } from "../../__test_support__/mount_with_context";
+import { renderWithContext } from "../../__test_support__/mount_with_context";
 
 let createGroupSpy: jest.SpyInstance;
 let deletePointsSpy: jest.SpyInstance;
@@ -142,7 +142,7 @@ describe("<Points />", () => {
     const p = fakeProps();
     p.genericPoints = [fakePoint()];
     p.genericPoints[0].body.id = 1;
-    const { container } = mountWithContext(<Points {...p} />);
+    const { container } = renderWithContext(<Points {...p} />);
     fireEvent.click(container.querySelector(".point-search-item") as Element);
     expect(mockNavigate).toHaveBeenCalledWith(Path.points(1));
   });

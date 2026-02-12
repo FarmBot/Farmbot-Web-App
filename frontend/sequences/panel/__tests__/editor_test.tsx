@@ -31,7 +31,7 @@ import * as requestAutoGenerationModule from "../../request_auto_generation";
 import { API } from "../../../api";
 import { error } from "../../../toast/toast";
 import { emptyState } from "../../../resources/reducer";
-import { mountWithContext } from "../../../__test_support__/mount_with_context";
+import { renderWithContext } from "../../../__test_support__/mount_with_context";
 import * as screenSize from "../../../screen_size";
 import * as popoverModule from "../../../ui/popover";
 
@@ -162,7 +162,7 @@ describe("<DesignerSequenceEditor />", () => {
   it("navigates to full page editor", () => {
     mockIsMobile = false;
     const p = fakeProps();
-    const wrapper = mountWithContext(<DesignerSequenceEditor {...p} />);
+    const wrapper = renderWithContext(<DesignerSequenceEditor {...p} />);
     fireEvent.click(wrapper.container.querySelector(".fa-expand") as Element);
     expect(mockNavigate).toHaveBeenCalledWith(Path.sequencePage("fake"));
   });

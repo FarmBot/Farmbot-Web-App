@@ -22,7 +22,7 @@ import {
 import { app } from "../../__test_support__/fake_state/app";
 import { Actions } from "../../constants";
 import { cloneDeep } from "lodash";
-import { mountWithContext } from "../../__test_support__/mount_with_context";
+import { renderWithContext } from "../../__test_support__/mount_with_context";
 import { ControlsPanelProps } from "../../controls/controls";
 import * as screenSize from "../../screen_size";
 import * as guessTimezone from "../../devices/timezones/guess_timezone";
@@ -199,7 +199,7 @@ describe("<NavBar />", () => {
   });
 
   it("displays setup button", () => {
-    const wrapper = mountWithContext(<NavBar {...fakeProps()} />);
+    const wrapper = renderWithContext(<NavBar {...fakeProps()} />);
     fireEvent.click(wrapper.container.querySelector(".setup-button") as Element);
     expect(mockNavigate).toHaveBeenCalledWith(Path.setup());
     expect(wrapper.container.textContent?.toLowerCase()).toContain("complete");

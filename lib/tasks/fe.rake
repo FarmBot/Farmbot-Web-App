@@ -3,11 +3,6 @@ DEPS_KEY          = "dependencies"
 DEV_DEPS_KEY      = "devDependencies"
 EXCLUDE = [
   {
-    packages: ["@types/enzyme"],
-    reason: "@types/react",
-    version: "3.10.12 (latest working)",
-  },
-  {
     packages: ["punycode"],
     reason: "dependency needs",
     version: "1.4.1",

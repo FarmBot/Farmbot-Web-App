@@ -2,6 +2,7 @@ import { GlobalRegistrator } from "@happy-dom/global-registrator";
 // eslint-disable-next-line import/no-unresolved
 import { afterAll, afterEach, beforeEach, jest as bunJest, mock as bunMock } from "bun:test";
 import { createRequire } from "module";
+import { TextEncoder } from "util";
 import fs from "fs";
 import path from "path";
 import { auth } from "./fake_state/token";
@@ -37,6 +38,7 @@ if (!globalAny.globalConfig) {
 if (!globalAny.jest) {
   globalAny.jest = bunJest;
 }
+globalThis.TextEncoder = TextEncoder;
 
 const withAxiosDefaultExport = (factory: () => unknown) => () => {
   const mockedModule = factory();
@@ -154,7 +156,6 @@ if (globalAny.jest) {
   }
 }
 
-await import("./setup_enzyme");
 await import("./localstorage");
 await import("./mock_fbtoaster");
 await import("./mock_i18next");

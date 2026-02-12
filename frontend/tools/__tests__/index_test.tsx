@@ -23,7 +23,7 @@ import { PanelSection } from "../../plants/plant_inventory";
 import * as pointGroupActions from "../../point_groups/actions";
 import { DEFAULT_CRITERIA } from "../../point_groups/criteria/interfaces";
 import { Path } from "../../internal_urls";
-import { mountWithContext } from "../../__test_support__/mount_with_context";
+import { renderWithContext } from "../../__test_support__/mount_with_context";
 import * as deviceModule from "../../device";
 
 const originalPathname = location.pathname;
@@ -161,7 +161,7 @@ describe("<Tools />", () => {
     p.toolSlots = [fakeToolSlot()];
     p.toolSlots[0].body.id = 2;
     p.toolSlots[0].body.tool_id = 3;
-    const { container } = mountWithContext(<Tools {...p} />);
+    const { container } = renderWithContext(<Tools {...p} />);
     fireEvent.click(container.querySelector(".tool-slot-search-item") as Element);
     expect(mockNavigate).toHaveBeenCalledWith(Path.toolSlots(2));
     fireEvent.click(container.querySelector(".tool-search-item") as Element);

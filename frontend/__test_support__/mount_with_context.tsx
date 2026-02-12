@@ -1,7 +1,7 @@
 import React from "react";
 import { render } from "@testing-library/react";
 
-export const mountWithContext = (element: React.ReactElement) => {
+export const renderWithContext = (element: React.ReactElement) => {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
   const { NavigationContext } =
     require("../routes_helpers") as typeof import("../routes_helpers");

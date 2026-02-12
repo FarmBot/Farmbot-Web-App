@@ -48,7 +48,7 @@ if (globalThis !== window) {
   applyLocation(globalThis as Window, mockedLocation);
 }
 
-console.error = jest.fn(); // enzyme
+console.error = jest.fn();
 
 window.alert = jest.fn();
 // Ensure unqualified `alert()` calls hit the mock.

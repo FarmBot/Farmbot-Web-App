@@ -11,7 +11,7 @@ import {
 } from "../../../__test_support__/resource_index_builder";
 import { clickButton } from "../../../__test_support__/helpers";
 import * as device from "../../../device";
-import { mountWithContext } from "../../../__test_support__/mount_with_context";
+import { renderWithContext } from "../../../__test_support__/mount_with_context";
 
 beforeEach(() => {
   jest.restoreAllMocks();
@@ -41,7 +41,7 @@ describe("<PowerAndReset/>", () => {
   it("renders in open state", () => {
     const p = fakeProps();
     p.settingsPanelState.power_and_reset = true;
-    const wrapper = mountWithContext(<PowerAndReset {...p} />);
+    const wrapper = renderWithContext(<PowerAndReset {...p} />);
     const text = (wrapper.container.textContent || "").toLowerCase();
     ["Power and Reset", "Restart", "Shutdown"]
       .map(string => expect(text)
@@ -51,7 +51,7 @@ describe("<PowerAndReset/>", () => {
   it("renders as closed", () => {
     const p = fakeProps();
     p.settingsPanelState.power_and_reset = false;
-    const wrapper = mountWithContext(<PowerAndReset {...p} />);
+    const wrapper = renderWithContext(<PowerAndReset {...p} />);
     const text = (wrapper.container.textContent || "").toLowerCase();
     expect(text)
       .toContain("Power and Reset".toLowerCase());
@@ -62,7 +62,7 @@ describe("<PowerAndReset/>", () => {
   it("restarts firmware", () => {
     const p = fakeProps();
     p.settingsPanelState.power_and_reset = true;
-    const wrapper = mountWithContext(<PowerAndReset {...p} />);
+    const wrapper = renderWithContext(<PowerAndReset {...p} />);
     expect((wrapper.container.textContent || "").toLowerCase())
       .toContain("Restart Firmware".toLowerCase());
     clickButton(wrapper, 0, "restart");

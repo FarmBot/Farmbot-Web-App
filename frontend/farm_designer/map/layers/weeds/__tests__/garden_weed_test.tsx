@@ -1,4 +1,5 @@
 import React from "react";
+import { fireEvent } from "@testing-library/react";
 import { GardenWeed } from "../garden_weed";
 import { GardenWeedProps } from "../../../interfaces";
 import { fakeWeed } from "../../../../../__test_support__/fake_state/resources";
@@ -66,7 +67,7 @@ describe("<GardenWeed />", () => {
   it("hovers weed", () => {
     const p = fakeProps();
     const wrapper = svgMount(<GardenWeed {...p} />);
-    wrapper.find("g").first().simulate("mouseEnter");
+    fireEvent.mouseEnter(wrapper.container.querySelector("g") as Element);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_HOVERED_POINT,
       payload: p.weed.uuid
@@ -83,7 +84,7 @@ describe("<GardenWeed />", () => {
   it("un-hovers weed", () => {
     const p = fakeProps();
     const wrapper = svgMount(<GardenWeed {...p} />);
-    wrapper.find("g").first().simulate("mouseLeave");
+    fireEvent.mouseLeave(wrapper.container.querySelector("g") as Element);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_HOVERED_POINT,
       payload: undefined
@@ -93,7 +94,7 @@ describe("<GardenWeed />", () => {
   it("opens weed info", () => {
     const p = fakeProps();
     const wrapper = svgMount(<GardenWeed {...p} />);
-    wrapper.find("g").first().simulate("click");
+    fireEvent.click(wrapper.container.querySelector("g") as Element);
     expect(mockNavigate).toHaveBeenCalledWith(Path.weeds(p.weed.body.id));
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SELECT_POINT,
@@ -123,7 +124,7 @@ describe("<GardenWeed />", () => {
     p.selected = false;
     p.current = false;
     const wrapper = svgMount(<GardenWeed {...p} />);
-    wrapper.find("g").first().simulate("mouseEnter");
+    fireEvent.mouseEnter(wrapper.container.querySelector("g") as Element);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_HOVERED_POINT,
       payload: p.weed.uuid,

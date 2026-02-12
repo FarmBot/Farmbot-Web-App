@@ -28,7 +28,7 @@ import { weedsPanelState } from "../../__test_support__/panel_state";
 import { Actions } from "../../constants";
 import { Path } from "../../internal_urls";
 import * as deletePoints from "../../api/delete_points";
-import { mountWithContext } from "../../__test_support__/mount_with_context";
+import { renderWithContext } from "../../__test_support__/mount_with_context";
 import { API } from "../../api";
 import { ToggleButton } from "../../ui";
 
@@ -154,7 +154,7 @@ describe("<Weeds> />", () => {
   });
 
   it("adds new weed", () => {
-    const wrapper = mountWithContext(<Weeds {...fakeProps()} />);
+    const wrapper = renderWithContext(<Weeds {...fakeProps()} />);
     fireEvent.click(wrapper.container.querySelector(".plus-weed") as Element);
     expect(mockNavigate).toHaveBeenCalledWith(Path.weeds("add"));
   });

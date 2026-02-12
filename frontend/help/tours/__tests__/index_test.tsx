@@ -6,7 +6,7 @@ import {
 import { fakeHelpState } from "../../../__test_support__/fake_designer_state";
 import { Actions } from "../../../constants";
 import { TourStepContainerProps } from "../interfaces";
-import { mountWithContext } from "../../../__test_support__/mount_with_context";
+import { renderWithContext } from "../../../__test_support__/mount_with_context";
 
 const originalQuerySelector = document.querySelector.bind(document);
 
@@ -134,7 +134,7 @@ describe("<TourStepContainer />", () => {
     const p = fakeProps();
     p.helpState.currentTour = "gettingStarted";
     p.helpState.currentTourStep = "intro";
-    mountWithContext(<TourStepContainer {...p} />);
+    renderWithContext(<TourStepContainer {...p} />);
     expect(mockNavigate).toHaveBeenCalledWith(
       expect.stringContaining("?tour=gettingStarted&tourStep=intro"));
   });

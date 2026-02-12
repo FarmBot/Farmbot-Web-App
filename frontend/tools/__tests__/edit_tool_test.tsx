@@ -19,7 +19,7 @@ import * as crud from "../../api/crud";
 import { EditToolProps } from "../interfaces";
 import * as deviceActions from "../../devices/actions";
 import { Path } from "../../internal_urls";
-import { mountWithContext } from "../../__test_support__/mount_with_context";
+import { renderWithContext } from "../../__test_support__/mount_with_context";
 
 let editSpy: jest.SpyInstance;
 let destroySpy: jest.SpyInstance;
@@ -118,7 +118,7 @@ describe("<EditTool />", () => {
     location.pathname = Path.mock(Path.logs());
     const p = fakeProps();
     p.findTool = jest.fn(() => undefined);
-    const { container } = mountWithContext(<EditTool {...p} />);
+    const { container } = renderWithContext(<EditTool {...p} />);
     expect(container.textContent).toContain("Redirecting...");
     expect(mockNavigate).not.toHaveBeenCalled();
   });
@@ -159,7 +159,7 @@ describe("<EditTool />", () => {
     const p = fakeProps();
     const tool = fakeTool();
     p.findTool = () => tool;
-    const { container } = mountWithContext(<EditTool {...p} />);
+    const { container } = renderWithContext(<EditTool {...p} />);
     fireEvent.click(container.querySelector(".save-btn") as Element);
     expect(crud.edit).toHaveBeenCalledWith(expect.any(Object), {
       name: "Foo",

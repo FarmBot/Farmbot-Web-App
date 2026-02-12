@@ -48,31 +48,6 @@ const propsOf = (node?: NodeLike) => {
   return props;
 };
 
-const dispatchDomEvent = (
-  node: NodeLike | undefined,
-  eventName: string,
-  init?: EventInit,
-) => {
-  if (!node) { return; }
-  const rawType = eventName.replace(/^on/, "");
-  const eventType = rawType[0]
-    ? `${rawType[0].toLowerCase()}${rawType.slice(1)}`
-    : eventName;
-  const type = ({
-    mouseEnter: "mouseover",
-    mouseLeave: "mouseout",
-  } as Record<string, string>)[eventType] || eventType.toLowerCase();
-  const mouseEvent = type.startsWith("mouse")
-    || ["click", "dblclick", "contextmenu"].includes(type);
-  const shared = { bubbles: true, cancelable: true, ...(init || {}) };
-  const event = mouseEvent
-    ? new MouseEvent(type, shared)
-    : new Event(type, shared);
-  act(() => {
-    node.dispatchEvent(event);
-  });
-};
-
 const makeWrapper = (nodes: NodeLike[], root: HTMLElement) => ({
   length: nodes.length,
   first: () => makeWrapper(nodes.length ? [nodes[0]] : [], root),
@@ -107,9 +82,6 @@ const makeWrapper = (nodes: NodeLike[], root: HTMLElement) => ({
   },
   hasClass: (className: string) => !!nodes[0]?.classList.contains(className),
   text: () => nodes[0]?.textContent || "",
-  simulate: (eventName: string, init?: EventInit) => {
-    dispatchDomEvent(nodes[0], eventName, init);
-  },
   html: () => root.innerHTML,
   container: root,
 });
@@ -144,10 +116,6 @@ export function svgMount(element: React.ReactNode) {
       instance: () => instance,
       props: () => (instance?.props) || {},
       html: () => root.innerHTML,
-      simulate: (eventName: string, init?: EventInit) => {
-        const first = root.querySelector("svg > *");
-        dispatchDomEvent(first || undefined, eventName, init);
-      },
       first: () => findComponent(selector),
       last: () => findComponent(selector),
       at: () => findComponent(selector),
@@ -159,7 +127,6 @@ export function svgMount(element: React.ReactNode) {
   };
   return {
     ...view,
-    // Compatibility for older Enzyme-style tests.
     html: () => root.innerHTML,
     find: (selector: string | unknown) => {
       if (typeof selector == "string") {

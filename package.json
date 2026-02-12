@@ -122,7 +122,6 @@
     "path-browserify": "1.0.1",
     "playwright": "1.57.0",
     "raf": "3.4.1",
-    "react-addons-test-utils": "15.6.2",
     "react-test-renderer": "18.3.1",
     "sass": "1.97.2",
     "sass-lint": "1.13.1",

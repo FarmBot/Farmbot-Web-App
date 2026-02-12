@@ -1,10 +1,9 @@
-# Enzyme to React Testing Library Migration Checklist
+# React Testing Library Migration Checklist
 
-## Frontend files with Enzyme-related usage
+## Frontend files migrated to RTL
 - [x] frontend/__test_support__/bun_test_setup.ts
 - [x] frontend/__test_support__/helpers.ts
 - [x] frontend/__test_support__/mount_with_context.tsx
-- [x] frontend/__test_support__/setup_enzyme.ts
 - [x] frontend/__test_support__/svg_mount.tsx
 - [x] frontend/__tests__/404_test.tsx
 - [x] frontend/__tests__/apology_test.tsx
