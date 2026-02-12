@@ -135,6 +135,7 @@ namespace :api do
     sh [
       "rm -rf",
       "node_modules",
+      "bin/node",
     ].join(" ")
   end
 
