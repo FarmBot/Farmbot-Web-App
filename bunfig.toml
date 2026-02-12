@@ -17,3 +17,6 @@ dots = true
 
 [env]
 file = false
+
+[install]
+optional = false
