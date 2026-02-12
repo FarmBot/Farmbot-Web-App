@@ -243,8 +243,9 @@ def print_lib_progress
     next unless File.file?(path)
     includesEnzyme = false
     includesRTL = false
+    enz_markers = /\b(?:^|\W)(?:mount|shallow)\s*\(/
     File.foreach(path) do |line|
-      if line.include?("mount(") || line.include?("shallow(") || line.include?("svgMount(")
+      if line.match?(enz_markers)
         counts["line"]["enzyme"] += 1
         includesEnzyme = true
       end
