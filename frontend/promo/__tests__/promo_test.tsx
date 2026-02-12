@@ -1,5 +1,5 @@
 import React from "react";
-import { render, screen, fireEvent, cleanup } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { getSeasonTimings, Promo } from "../promo";
 import * as reactThreeFiber from "@react-three/fiber";
 import * as gardenModelModule from "../../three_d_garden/garden_model";
@@ -25,7 +25,6 @@ describe("<Promo />", () => {
     console.error = originalConsoleError;
     canvasSpy.mockRestore();
     gardenModelSpy.mockRestore();
-    cleanup();
   });
 
   it("renders", () => {

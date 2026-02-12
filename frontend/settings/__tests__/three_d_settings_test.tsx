@@ -5,7 +5,7 @@ import { settingsPanelState } from "../../__test_support__/panel_state";
 import { changeBlurableInputRTL } from "../../__test_support__/helpers";
 import * as crud from "../../api/crud";
 import { fakeFarmwareEnv } from "../../__test_support__/fake_state/resources";
-import { cleanup, fireEvent, render, within } from "@testing-library/react";
+import { fireEvent, render, within } from "@testing-library/react";
 
 beforeEach(() => {
   jest.restoreAllMocks();
@@ -18,7 +18,6 @@ beforeEach(() => {
 
 afterEach(() => {
   jest.restoreAllMocks();
-  cleanup();
 });
 
 describe("<ThreeDSettings />", () => {

@@ -1,9 +1,10 @@
 interface MockRef {
   current: {
-    scale: { set: Function; };
-    position: { z: number; };
+    scale?: { set: Function; };
+    position?: { z: number; };
     setMatrixAt?: Function;
     instanceMatrix?: { needsUpdate: boolean };
+    color?: { setScalar: Function };
   } | undefined;
 }
 let mockRefImpl = (): MockRef => ({
@@ -22,6 +23,8 @@ jest.mock("react", () => ({
 import React from "react";
 import { fireEvent, render } from "@testing-library/react";
 import { clone } from "lodash";
+import { useFrame } from "@react-three/fiber";
+import { Quaternion } from "three";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
 import { INITIAL } from "../../config";
 import {
@@ -41,6 +44,11 @@ afterAll(() => {
 describe("<PlantInstances />", () => {
   beforeEach(() => {
     location.pathname = Path.mock(Path.designer());
+    (useFrame as jest.Mock).mockClear();
+    (useFrame as jest.Mock).mockImplementation((frameFn: Function) => frameFn({
+      clock: { getElapsedTime: jest.fn(() => 0) },
+      camera: { quaternion: new Quaternion() },
+    }));
   });
 
   const fakeProps = (): PlantInstancesProps => {
@@ -135,5 +143,38 @@ describe("<PlantInstances />", () => {
     const p = fakeProps();
     const { container } = render(<PlantInstances {...p} />);
     expect(container).toBeTruthy();
+  });
+
+  it("updates material brightness when changed", () => {
+    const setScalar = jest.fn();
+    const instancedRef = {
+      current: {
+        setMatrixAt: jest.fn(),
+        instanceMatrix: { needsUpdate: false },
+      },
+    };
+    const materialRef = {
+      current: { color: { setScalar } },
+    };
+    const lastBrightnessRef = { current: undefined as number | undefined };
+    const actualUseRef = jest.requireActual("react")
+      .useRef as typeof React.useRef;
+    const useRefSpy = jest.spyOn(React, "useRef")
+      .mockImplementationOnce(() =>
+        instancedRef as unknown as ReturnType<typeof React.useRef>)
+      .mockImplementationOnce(() =>
+        materialRef as unknown as ReturnType<typeof React.useRef>)
+      .mockImplementationOnce(() =>
+        lastBrightnessRef as unknown as ReturnType<typeof React.useRef>)
+      .mockImplementation(actualUseRef);
+    const p = fakeProps();
+    p.plants = [p.plants[0]];
+    p.sunFactorRef = { current: 0.5 };
+    render(<PlantInstances {...p} />);
+    materialRef.current = { color: { setScalar } };
+    (useFrame as jest.Mock).mock.calls.forEach(([frameFn]) =>
+      frameFn({ camera: { quaternion: new Quaternion() } }));
+    useRefSpy.mockRestore();
+    expect(setScalar).toHaveBeenCalledWith(0.5);
   });
 });

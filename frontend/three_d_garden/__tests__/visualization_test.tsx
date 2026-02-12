@@ -5,7 +5,7 @@ import { store } from "../../redux/store";
 let mockResources = buildResourceIndex([]);
 
 import React from "react";
-import { cleanup, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { Visualization, VisualizationProps } from "../visualization";
 import { INITIAL } from "../config";
 import { clone } from "lodash";
@@ -25,7 +25,6 @@ describe("<Visualization />", () => {
   });
 
   afterEach(() => {
-    cleanup();
     (store as unknown as { getState: typeof store.getState }).getState =
       originalGetState;
   });

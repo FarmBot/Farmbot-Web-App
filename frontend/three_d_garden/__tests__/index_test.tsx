@@ -1,5 +1,5 @@
 import React from "react";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import {
   ThreeDGardenProps, ThreeDGarden, ThreeDGardenToggle, ThreeDGardenToggleProps,
 } from "../index";
@@ -21,7 +21,6 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  cleanup();
   jest.restoreAllMocks();
 });
 describe("<ThreeDGarden />", () => {

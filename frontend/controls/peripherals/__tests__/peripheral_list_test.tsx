@@ -1,28 +1,6 @@
-jest.mock("../../../ui", () => {
-  const actual = jest.requireActual("../../../ui");
-  const React = require("react");
-  return {
-    ...actual,
-    ToggleButton: (props: {
-      toggleValue: boolean | number | string | undefined;
-      toggleAction: () => void;
-      title?: string;
-      disabled?: boolean;
-    }) =>
-      React.createElement(
-        "button",
-        {
-          className: "mock-toggle-button",
-          title: props.title,
-          disabled: props.disabled,
-          onClick: props.toggleAction,
-        },
-        String(props.toggleValue)),
-  };
-});
-
 import React from "react";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
+import { mount, shallow } from "enzyme";
 import {
   PeripheralList, AnalogSlider, AnalogSliderProps,
 } from "../peripheral_list";
@@ -32,34 +10,10 @@ import {
   Pins,
 } from "farmbot";
 import { PeripheralListProps } from "../interfaces";
+import { Slider } from "@blueprintjs/core";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import * as deviceActions from "../../../devices/actions";
 import * as mustBeOnline from "../../../devices/must_be_online";
-
-jest.mock("@blueprintjs/core", () => {
-  const actual = jest.requireActual("@blueprintjs/core");
-  return {
-    ...actual,
-    Slider: (props: {
-      value?: number;
-      disabled?: boolean;
-      onChange?: (value: number) => void;
-      onRelease?: (value: number) => void;
-    }) =>
-      <div>
-        <input
-          data-testid="mock-slider"
-          role="slider"
-          value={props.value ?? 0}
-          disabled={props.disabled}
-          onChange={e =>
-            props.onChange?.(Number((e.target as HTMLInputElement).value))}
-          onMouseUp={e =>
-            props.onRelease?.(Number((e.target as HTMLInputElement).value))} />
-        <span data-testid="slider-value">{props.value}</span>
-      </div>
-  };
-});
 
 let pinToggleSpy: jest.SpyInstance;
 let writePinSpy: jest.SpyInstance;
@@ -77,27 +31,11 @@ afterEach(() => {
   forceOnlineSpy.mockRestore();
 });
 
-afterAll(() => {
-  jest.unmock("../../../ui");
-});
-
 describe("<PeripheralList />", () => {
   afterEach(() => {
-    cleanup();
     jest.clearAllMocks();
     localStorage.removeItem("myBotIs");
   });
-
-  const getToggle = (label: string): HTMLButtonElement => {
-    const titled = screen.queryByTitle(`Toggle ${label}`);
-    if (titled) { return titled as HTMLButtonElement; }
-    const row = screen.getByText(label).closest(".grid-exp-1")
-      || screen.getByText(label).closest(".row")
-      || screen.getByText(label).parentElement;
-    const button = row?.querySelector("button");
-    if (!button) { throw new Error(`Expected toggle for ${label}`); }
-    return button;
-  };
 
   const fakeProps = (): PeripheralListProps => {
     const peripherals: TaggedPeripheral[] = [
@@ -145,36 +83,37 @@ describe("<PeripheralList />", () => {
   };
 
   it("renders a list of peripherals, in sorted order", () => {
-    const { container } = render(<PeripheralList {...fakeProps()} />);
-    const labels = Array.from(container.querySelectorAll("label"));
-    const toggles = Array.from(container.querySelectorAll("button"));
-    const pinNumbers = Array.from(container.querySelectorAll("p"));
-
-    expect(labels[0]?.textContent).toBeTruthy();
-    expect(labels[0]?.textContent).toEqual("GPIO 2");
-    expect(pinNumbers[0]?.textContent).toEqual("2");
-    expect((toggles[0]?.textContent || "").toLowerCase()).toMatch(/off|0|false/);
-
-    expect(labels[1]?.textContent).toBeTruthy();
-    expect(labels[1]?.textContent).toEqual("GPIO 13 - LED");
-    expect(pinNumbers[1]?.textContent).toEqual("13");
-    expect((toggles[1]?.textContent || "").toLowerCase()).toMatch(/on|1|true/);
+    const wrapper = mount(<PeripheralList {...fakeProps()} />);
+    const labels = wrapper.find("label");
+    const buttons = wrapper.find("button");
+    const pinNumbers = wrapper.find("p");
+    const first = labels.first();
+    expect(first.text()).toBeTruthy();
+    expect(first.text()).toEqual("GPIO 2");
+    expect(pinNumbers.first().text()).toEqual("2");
+    expect(buttons.first().text()).toEqual("off");
+    const last = labels.last();
+    expect(last.text()).toBeTruthy();
+    expect(last.text()).toEqual("GPIO 13 - LED");
+    expect(pinNumbers.last().text()).toEqual("13");
+    expect(buttons.last().text()).toEqual("on");
+    wrapper.unmount();
   });
 
   it("renders analog peripherals", () => {
     const p = fakeProps();
     p.peripherals[0].body.mode = 1;
-    render(<PeripheralList {...p} />);
-    const slider = screen.getByRole("slider");
+    const { container } = render(<PeripheralList {...p} />);
+    const slider = within(container).getByRole("slider");
     expect(slider).toBeInTheDocument();
   });
 
   it("toggles pins", () => {
     render(<PeripheralList {...fakeProps()} />);
-    const toggle2 = getToggle("GPIO 2");
+    const toggle2 = screen.getByTitle("Toggle GPIO 2");
     fireEvent.click(toggle2);
     expect(deviceActions.pinToggle).toHaveBeenCalledWith(2);
-    const toggle13 = getToggle("GPIO 13 - LED");
+    const toggle13 = screen.getByTitle("Toggle GPIO 13 - LED");
     fireEvent.click(toggle13);
     expect(deviceActions.pinToggle).toHaveBeenLastCalledWith(13);
     expect(deviceActions.pinToggle).toHaveBeenCalledTimes(2);
@@ -184,15 +123,9 @@ describe("<PeripheralList />", () => {
     const p = fakeProps();
     p.disabled = true;
     render(<PeripheralList {...p} />);
-    const toggle2 = getToggle("GPIO 2");
-    const toggle13 = getToggle("GPIO 13 - LED");
-    const leakedMockToggle = [toggle2, toggle13]
-      .some(toggle => toggle.classList.contains("mock-toggle-button"));
-    if (leakedMockToggle) {
-      expect([toggle2, toggle13].every(toggle => !!toggle.textContent)).toBeTruthy();
-      return;
-    }
+    const toggle2 = screen.getByTitle("Toggle GPIO 2");
     fireEvent.click(toggle2);
+    const toggle13 = screen.getByTitle("Toggle GPIO 13 - LED");
     fireEvent.click(toggle13);
     expect(deviceActions.pinToggle).not.toHaveBeenCalled();
   });
@@ -202,8 +135,8 @@ describe("<PeripheralList />", () => {
     p.pins = {};
     forceOnlineSpy.mockReturnValue(false);
     render(<PeripheralList {...p} />);
-    const toggle = getToggle("GPIO 2");
-    expect((toggle.textContent || "").toLowerCase()).not.toMatch(/off|0|false/);
+    const toggle = screen.getByTitle("Toggle GPIO 2");
+    expect(toggle).not.toHaveTextContent("off");
   });
 
   it("shows status as off for demo accounts", () => {
@@ -212,8 +145,8 @@ describe("<PeripheralList />", () => {
     p.pins = {};
     forceOnlineSpy.mockReturnValue(true);
     render(<PeripheralList {...p} />);
-    const toggle = getToggle("GPIO 2");
-    expect((toggle.textContent || "").toLowerCase()).toMatch(/off|0|false/);
+    const toggle = screen.getByTitle("Toggle GPIO 2");
+    expect(toggle).toHaveTextContent("off");
   });
 });
 
@@ -225,36 +158,32 @@ describe("<AnalogSlider />", () => {
   });
 
   it("changes value", () => {
-    render(<AnalogSlider {...fakeProps()} />);
-    const slider = screen.getByTestId("mock-slider");
-    fireEvent.change(slider, { target: { value: "128" } });
-    expect(screen.getByTestId("slider-value").textContent).toEqual("128");
+    const wrapper = shallow<AnalogSlider>(<AnalogSlider {...fakeProps()} />);
+    expect(wrapper.state().value).toEqual(0);
+    wrapper.find(Slider).simulate("change", 128);
+    expect(wrapper.state().value).toEqual(128);
   });
 
   it("sends value", () => {
     const p = fakeProps();
     p.pin = 13;
-    render(<AnalogSlider {...p} />);
-    const slider = screen.getByTestId("mock-slider");
-    fireEvent.change(slider, { target: { value: "128" } });
-    fireEvent.mouseUp(slider, { target: { value: "128" } });
+    const wrapper = shallow<AnalogSlider>(<AnalogSlider {...p} />);
+    wrapper.find(Slider).simulate("release", 128);
     expect(deviceActions.writePin).toHaveBeenCalledWith(13, 128, 1);
   });
 
   it("doesn't send value", () => {
-    render(<AnalogSlider {...fakeProps()} />);
-    const slider = screen.getByTestId("mock-slider");
-    fireEvent.mouseUp(slider, { target: { value: "128" } });
+    const wrapper = shallow<AnalogSlider>(<AnalogSlider {...fakeProps()} />);
+    wrapper.find(Slider).simulate("release", 128);
     expect(deviceActions.writePin).not.toHaveBeenCalled();
   });
 
   it("renders read value", () => {
     const p = fakeProps();
     p.initialValue = 255;
-    render(<AnalogSlider {...p} />);
-    expect(screen.getByTestId("slider-value").textContent).toEqual("255");
-    const slider = screen.getByTestId("mock-slider");
-    fireEvent.change(slider, { target: { value: "128" } });
-    expect(screen.getByTestId("slider-value").textContent).toEqual("128");
+    const wrapper = shallow(<AnalogSlider {...p} />);
+    expect(wrapper.find(Slider).props().value).toEqual(255);
+    wrapper.find(Slider).simulate("change", 128);
+    expect(wrapper.find(Slider).props().value).toEqual(128);
   });
 });

@@ -1,6 +1,6 @@
 let mockDemo = false;
 import React from "react";
-import { cleanup, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { extraRotation, ImageTexture, ImageTextureProps } from "../images";
 import { INITIAL } from "../../config";
 import { clone } from "lodash";
@@ -20,10 +20,6 @@ afterEach(() => {
 });
 
 describe("<ImageTexture />", () => {
-  afterEach(() => {
-    cleanup();
-  });
-
   const fakeProps = (): ImageTextureProps => ({
     config: clone(INITIAL),
     images: [],

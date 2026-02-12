@@ -1,5 +1,5 @@
 import React from "react";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { FarmbotOsRow, getOsReleaseNotesForVersion } from "../farmbot_os_row";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { FarmbotOsRowProps } from "../interfaces";
@@ -18,7 +18,6 @@ describe("<FarmbotOsRow />", () => {
   });
 
   afterEach(() => {
-    cleanup();
     fetchOsUpdateVersionSpy.mockRestore();
   });
 

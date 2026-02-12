@@ -1,17 +1,15 @@
 let mockIsMobile = false;
 import React from "react";
-import { cleanup, render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { OsDownloadPage } from "../content";
 import * as screenSize from "../../screen_size";
 
 beforeEach(() => {
-  cleanup();
   mockIsMobile = false;
   jest.spyOn(screenSize, "isMobile").mockImplementation(() => mockIsMobile);
 });
 
 afterEach(() => {
-  cleanup();
   jest.restoreAllMocks();
 });
 

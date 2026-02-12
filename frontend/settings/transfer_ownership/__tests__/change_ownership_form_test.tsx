@@ -1,5 +1,5 @@
 import React from "react";
-import { cleanup, fireEvent, render } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import { ChangeOwnershipForm } from "../change_ownership_form";
 import * as transferOwnershipModule from "../transfer_ownership";
 import * as device from "../../../device";
@@ -22,7 +22,6 @@ describe("<ChangeOwnershipForm />", () => {
   afterEach(() => {
     transferOwnershipSpy.mockRestore();
     getDeviceSpy.mockRestore();
-    cleanup();
   });
 
   it("renders", () => {

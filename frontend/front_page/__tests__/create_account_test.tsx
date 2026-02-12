@@ -1,5 +1,6 @@
 import React from "react";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { mount } from "enzyme";
 import {
   FormField, sendEmail, DidRegister, MustRegister, CreateAccount,
   FormFieldProps, CreateAccountProps,
@@ -19,38 +20,8 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  cleanup();
   jest.restoreAllMocks();
 });
-
-const findElement = (
-  node: React.ReactNode,
-  predicate: (element: React.ReactElement<{
-    label?: string;
-    onCommit?: (value: string) => void;
-    children?: React.ReactNode;
-  }>) => boolean,
-): React.ReactElement<{
-  label?: string;
-  onCommit?: (value: string) => void;
-  children?: React.ReactNode;
-}> | undefined => {
-  if (Array.isArray(node)) {
-    for (const item of React.Children.toArray(node)) {
-      const found = findElement(item, predicate);
-      if (found) { return found; }
-    }
-    return undefined;
-  }
-  const element = node as React.ReactElement<{
-    label?: string;
-    onCommit?: (value: string) => void;
-    children?: React.ReactNode;
-  }>;
-  if (!React.isValidElement(element)) { return undefined; }
-  if (predicate(element)) { return element; }
-  return findElement(element.props.children, predicate);
-};
 
 describe("<FormField />", () => {
   const fakeProps = (): FormFieldProps => ({
@@ -63,7 +34,8 @@ describe("<FormField />", () => {
   it("renders correct props", () => {
     const p = fakeProps();
     render(<FormField {...p} />);
-    const input = screen.getByDisplayValue("my val");
+    expect(screen.getByDisplayValue("my val")).toBeInTheDocument();
+    const input = screen.getByLabelText("My Label");
     changeBlurableInputRTL(input, "foo");
     expect(p.onCommit).toHaveBeenCalledWith("foo");
   });
@@ -123,25 +95,16 @@ describe("<MustRegister />", () => {
 
   it("inputs username", () => {
     const p = fakeCreateAccountProps();
-    const form = MustRegister(p);
-    const field = findElement(form,
-      element => element.type === FormField && element.props.label === "Name");
-    if (!field || typeof field.props.onCommit !== "function") {
-      throw new Error("Expected username field");
-    }
-    field.props.onCommit("name");
+    const wrapper = mount(<MustRegister {...p} />);
+    wrapper.find(FormField).at(1).props().onCommit("name");
     expect(p.set).toHaveBeenCalledWith("regName", "name");
   });
 
   it("inputs password", () => {
     const p = fakeCreateAccountProps();
-    const form = MustRegister(p);
-    const field = findElement(form,
-      element => element.type === FormField && element.props.label === "Password");
-    if (!field || typeof field.props.onCommit !== "function") {
-      throw new Error("Expected password field");
-    }
-    field.props.onCommit("password");
+    render(<MustRegister {...p} />);
+    const input = screen.getByLabelText("Password");
+    fireEvent.blur(input, { target: { value: "password" } });
     expect(p.set).toHaveBeenCalledWith("regPassword", "password");
   });
 });

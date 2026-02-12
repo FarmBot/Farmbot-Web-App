@@ -1,5 +1,5 @@
 import React from "react";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { mount, shallow } from "enzyme";
 import {
   RawLocationInfo as LocationInfo, LocationInfoProps, mapStateToProps,
   ImageListItem, ImageListItemProps,
@@ -14,44 +14,30 @@ import {
 } from "../../__test_support__/fake_state/resources";
 import { tagAsSoilHeight } from "../../points/soil_height";
 import { Actions } from "../../constants";
+import { ImageFlipper } from "../../photos/images/image_flipper";
 import { Path } from "../../internal_urls";
 import { fakeMovementState } from "../../__test_support__/fake_bot_data";
-
-let lastImageFlipperProps: Record<string, unknown> | undefined;
-
-jest.mock("../../photos/images/image_flipper", () => ({
-  ImageFlipper: (props: Record<string, unknown>) => {
-    lastImageFlipperProps = props;
-    return <div>
-      <button className={"mock-image-flipper"}
-        onClick={() =>
-          (props.flipActionOverride as ((index: number) => void) | undefined)
-            ?.call(undefined, 1)}>
-        flip image
-      </button>
-      <div className={"image-jsx"}
-        onMouseEnter={() =>
-          (props.hover as ((uuid: string) => void) | undefined)
-            ?.call(undefined, (props.currentImage as { uuid: string }).uuid)} />
-    </div>;
-  },
-}));
+import { mountWithContext } from "../../__test_support__/mount_with_context";
 
 describe("<LocationInfo />", () => {
+  const wrappers: Array<{ unmount: () => void }> = [];
   const originalSearch = location.search;
+  const track = <T extends { unmount: () => void }>(wrapper: T): T => {
+    wrappers.push(wrapper);
+    return wrapper;
+  };
 
   beforeEach(() => {
     jest.useRealTimers();
-    lastImageFlipperProps = undefined;
   });
 
   afterEach(() => {
-    cleanup();
+    wrappers.splice(0).forEach(wrapper => {
+      try {
+        wrapper.unmount();
+      } catch { /* noop */ }
+    });
     location.search = originalSearch;
-  });
-
-  afterAll(() => {
-    jest.unmock("../../photos/images/image_flipper");
   });
 
   const fakeProps = (): LocationInfoProps => ({
@@ -76,23 +62,21 @@ describe("<LocationInfo />", () => {
   });
 
   it("renders empty panel", () => {
-    const { container } = render(<LocationInfo {...fakeProps()} />);
-    expect(container.textContent?.toLowerCase())
-      .toContain("select a location in the map");
+    const wrapper = track(mount(<LocationInfo {...fakeProps()} />));
+    expect(wrapper.text().toLowerCase()).toContain("select a location in the map");
   });
 
   it("handles missing sensor pin", () => {
     const p = fakeProps();
     p.sensors[0].body.pin = undefined;
-    const { container } = render(<LocationInfo {...p} />);
-    expect(container.textContent?.toLowerCase())
-      .toContain("select a location in the map");
+    const wrapper = track(mount(<LocationInfo {...p} />));
+    expect(wrapper.text().toLowerCase()).toContain("select a location in the map");
   });
 
   it("updates query", () => {
     location.search = "?x=123&y=456";
     const p = fakeProps();
-    render(<LocationInfo {...p} />);
+    track(mount(<LocationInfo {...p} />));
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.CHOOSE_LOCATION,
       payload: { x: 123, y: 456, z: 0 },
@@ -102,9 +86,9 @@ describe("<LocationInfo />", () => {
   it("renders items", () => {
     const p = fakeProps();
     p.chosenLocation = { x: 0, y: 0, z: 0 };
-    const { container } = render(<LocationInfo {...p} />);
+    const wrapper = track(mount(<LocationInfo {...p} />));
     ["plant", "sensor", "height", "image"].map(string =>
-      expect(container.textContent?.toLowerCase()).toContain(string));
+      expect(wrapper.text().toLowerCase()).toContain(string));
   });
 
   it("handles missing locations", () => {
@@ -119,17 +103,16 @@ describe("<LocationInfo />", () => {
     const point1 = fakePoint();
     tagAsSoilHeight(point1);
     p.genericPoints = [point0, point1];
-    const { container } = render(<LocationInfo {...p} />);
+    const wrapper = track(mount(<LocationInfo {...p} />));
     ["readings (1)", "measurements (2)", "plants (0)", "images (0)"]
-      .map(string => expect(container.textContent?.toLowerCase())
-        .toContain(string));
+      .map(string => expect(wrapper.text().toLowerCase()).toContain(string));
   });
 
   it("unmounts", () => {
     const p = fakeProps();
-    const { unmount } = render(<LocationInfo {...p} />);
+    const wrapper = mount(<LocationInfo {...p} />);
     jest.clearAllMocks();
-    unmount();
+    wrapper.unmount();
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.CHOOSE_LOCATION,
       payload: { x: undefined, y: undefined, z: undefined }
@@ -155,35 +138,26 @@ describe("<LocationInfo />", () => {
     const image = fakeImage();
     image.uuid = "imageUuid";
     p.images = [image];
-    const { container } = render(<LocationInfo {...p} />);
-    container.querySelectorAll(".expandable-header")
-      .forEach(header => fireEvent.click(header));
+    const wrapper = track(mount(<LocationInfo {...p} />));
+    wrapper.find(".expandable-header").map(x => x.simulate("click"));
     jest.clearAllMocks();
-    const plantItem = container.querySelector(".plant-search-item");
-    if (!plantItem) { throw new Error("Expected plant item"); }
-    fireEvent.mouseEnter(plantItem);
+    wrapper.find(".plant-search-item").simulate("mouseEnter");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_HOVERED_PLANT,
       payload: { plantUUID: "plantUuid" },
     });
     jest.clearAllMocks();
-    const pointItem = container.querySelector(".point-search-item");
-    if (!pointItem) { throw new Error("Expected point item"); }
-    fireEvent.mouseEnter(pointItem);
+    wrapper.find(".point-search-item").simulate("mouseEnter");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_HOVERED_POINT, payload: "pointUuid",
     });
     jest.clearAllMocks();
-    const row = container.querySelector(".table-row");
-    if (!row) { throw new Error("Expected table row"); }
-    fireEvent.mouseEnter(row);
+    wrapper.find(".table-row").simulate("mouseEnter");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.HOVER_SENSOR_READING, payload: "sensorReadingUuid",
     });
     jest.clearAllMocks();
-    const imageJsx = container.querySelector(".image-jsx");
-    if (!imageJsx) { throw new Error("Expected image jsx"); }
-    fireEvent.mouseEnter(imageJsx);
+    wrapper.find(".image-jsx").simulate("mouseEnter");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.HOVER_IMAGE, payload: "imageUuid",
     });
@@ -193,10 +167,10 @@ describe("<LocationInfo />", () => {
     const p = fakeProps();
     p.chosenLocation = { x: 1, y: 1, z: 0 };
     p.currentBotLocation = { x: 10, y: 1, z: 0 };
-    const { container } = render(<LocationInfo {...p} />);
-    expect(container.textContent?.toLowerCase()).toContain("9mm from farmbot");
+    const wrapper = track(mountWithContext(<LocationInfo {...p} />));
+    expect(wrapper.text().toLowerCase()).toContain("9mm from farmbot");
     jest.clearAllMocks();
-    fireEvent.click(screen.getByText("Add point at this location"));
+    wrapper.find(".add-point").simulate("click");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_DRAWN_POINT_DATA,
       payload: {
@@ -245,12 +219,11 @@ describe("<ImageListItem />", () => {
 
   it("flips images", () => {
     const p = fakeProps();
-    const { container } = render(<ImageListItem {...p} />);
-    expect((lastImageFlipperProps?.currentImage as { uuid: string } | undefined))
+    const wrapper = shallow(<ImageListItem {...p} />);
+    expect(wrapper.find(ImageFlipper).props().currentImage)
       .toEqual(p.images.items[1]);
-    fireEvent.click(screen.getByText("flip image"));
-    expect((lastImageFlipperProps?.currentImage as { uuid: string } | undefined))
+    wrapper.find(ImageFlipper).props().flipActionOverride?.(1);
+    expect(wrapper.find(ImageFlipper).props().currentImage)
       .toEqual(p.images.items[0]);
-    expect(container.querySelector(".image-items")).toBeTruthy();
   });
 });

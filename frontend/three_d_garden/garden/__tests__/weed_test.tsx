@@ -1,5 +1,5 @@
 import React from "react";
-import { cleanup, fireEvent, render } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import { Weed, WeedProps } from "../weed";
 import { INITIAL } from "../../config";
 import { clone } from "lodash";
@@ -18,7 +18,6 @@ describe("<Weed />", () => {
   });
 
   afterEach(() => {
-    cleanup();
     getModeSpy.mockRestore();
   });
 

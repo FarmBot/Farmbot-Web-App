@@ -32,7 +32,7 @@ const mockRotaryRef = () => {
   });
 };
 
-import { fireEvent, render, cleanup } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import { INITIAL } from "../../../config";
 import { clone } from "lodash";
 import { Tools, ToolsProps } from "../tools";
@@ -66,7 +66,6 @@ describe("<Tools />", () => {
   });
 
   afterEach(() => {
-    cleanup();
     getModeSpy.mockRestore();
     jest.restoreAllMocks();
     mockRotation.z = 0;
