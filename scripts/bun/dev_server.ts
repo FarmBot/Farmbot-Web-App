@@ -1,4 +1,4 @@
-import { mkdirSync } from "fs";
+import { existsSync, mkdirSync, rmSync } from "fs";
 import { dirname, join, parse, relative, resolve } from "path";
 
 declare const Bun: any;
@@ -69,6 +69,15 @@ const ensureDir = (path: string) => {
   mkdirSync(path, { recursive: true });
 };
 
+const disableNativeSassWatcher = () => {
+  const nativeWatcher = resolve(projectRoot, "node_modules/@parcel/watcher");
+  if (!existsSync(nativeWatcher)) {
+    return;
+  }
+  // Native watcher bindings are noisy/unstable under Bun in some environments.
+  rmSync(nativeWatcher, { recursive: true, force: true });
+};
+
 const entryDir = (entry: string) => {
   const dir = dirname(outputKey(entry));
   return dir === "." ? resolvedOutdir : join(resolvedOutdir, dir);
@@ -106,9 +115,12 @@ const bunProc = Bun.spawn(["bun", ...bunArgs], {
 
 let sassExit: Promise<number> | undefined;
 if (cssEntries.length > 0) {
+  disableNativeSassWatcher();
+  // Polling avoids native watcher bindings that are unstable under Bun.
   const sassArgs = [
     "sass",
     "--watch",
+    "--poll",
     "--source-map",
     "--load-path=node_modules",
   ];

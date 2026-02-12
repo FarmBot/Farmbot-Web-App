@@ -6,7 +6,7 @@
  *   files and generates the `translation_metrics.md` file.
  *
  *
- * Run via: `node _helper.js en`, where "en" is the desired language code.
+ * Run via: `bun _helper.js en`, where "en" is the desired language code.
  *
  *
  * IMPORTANT DEVELOPER NOTE:
@@ -129,7 +129,7 @@ function repl(string: string, character: string): string {
 
 /**
  * For debugging. Replace all translations with a debug string.
- * Example usage: `node _helper.js xx _ n`
+ * Example usage: `bun _helper.js xx _ n`
  */
 function replaceWithDebugString(
   key: string,
@@ -298,7 +298,7 @@ namespace Helper {
           console.log(`Current file '${lang}.json' content: `);
           console.log(fileContent);
           console.log("Try entering a language code.");
-          console.log("For example: node _helper.js en");
+          console.log("For example: bun _helper.js en");
           return;
         }
       } catch (e) {

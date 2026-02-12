@@ -75,7 +75,7 @@ services:
     env_file: ".env"
     image: farmbot_web
     volumes: [".:/farmbot", "./docker_volumes/bundle_cache:/bundle"]
-    command: node_modules/typescript/bin/tsc -w --noEmit
+    command: bunx tsc -w --noEmit
 
   delayed_job:
     env_file: ".env"

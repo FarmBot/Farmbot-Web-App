@@ -65,18 +65,12 @@ end
 # Fetch latest versions for outdated dependencies.
 def fetch_available_upgrades()
   latest_json = {}
-  [
-    "bun pm outdated --json",
-    "npm outdated --json",
-  ].each do |command|
-    begin
-      output = `#{command}`
-      next if output.nil? || output.strip.empty?
-      latest_json = JSON.parse(output)
-      break unless latest_json.empty?
-    rescue JSON::ParserError
-      latest_json = {}
-    end
+  begin
+    output = `bun pm outdated --json`
+    return {} if output.nil? || output.strip.empty?
+    latest_json = JSON.parse(output)
+  rescue JSON::ParserError
+    latest_json = {}
   end
   latest_versions = {}
   latest_json.each do |dep, data|
