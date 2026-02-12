@@ -14,7 +14,7 @@ jest.mock("react", () => ({
 
 import React from "react";
 import {
-   fireEvent, render, waitFor, within,
+  fireEvent, render, waitFor, within,
 } from "@testing-library/react";
 import { ChangePassword } from "../change_password";
 import { API } from "../../../api/api";
