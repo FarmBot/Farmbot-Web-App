@@ -134,6 +134,7 @@ jest.mock("../three_d_garden/components", () => ({
   PlaneGeometry: StubWithRef,
   LineSegments: StubWithRef,
   LineBasicMaterial: StubWithRef,
+  SphereGeometry: Stub,
 }));
 
 jest.mock("three/examples/jsm/Addons.js", () => ({

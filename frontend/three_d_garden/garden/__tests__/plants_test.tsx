@@ -18,6 +18,7 @@ import { setMockInstanceId } from "../../../__test_support__/three_d_mocks";
 import { useFrame } from "@react-three/fiber";
 import { Quaternion, WebGLProgramParametersWithUniforms } from "three";
 import { Mode } from "../../../farm_designer/map/interfaces";
+import * as mapUtil from "../../../farm_designer/map/util";
 
 interface MockRef {
   current: {
@@ -46,12 +47,7 @@ jest.mock("react", () => ({
       : undefined,
 }));
 
-jest.mock("../../../farm_designer/map/util", () => ({
-  ...jest.requireActual("../../../farm_designer/map/util"),
-  getMode: jest.fn(() => Mode.clickToAdd),
-}));
-const { getMode: getModeMock } =
-  jest.requireMock("../../../farm_designer/map/util");
+let getModeSpy: jest.SpyInstance;
 
 const buildMeshRef = (): MockRef["current"] => ({
   setMatrixAt: jest.fn(),
@@ -69,12 +65,12 @@ const getMeshRef = () =>
   allRefs.find(ref => !!ref.current?.setMatrixAt);
 
 const queueMeshRef = (override?: Partial<MockRef["current"]>) => {
-  refQueue = [{
+  refQueue = Array.from({ length: 10 }, () => ({
     current: {
       ...buildMeshRef(),
       ...override,
     },
-  }];
+  }));
 };
 
 describe("<ThreeDPlantLabel />", () => {
@@ -129,8 +125,12 @@ describe("<ThreeDPlantSpread />", () => {
     (useFrame as jest.Mock).mockClear();
     refQueue = [];
     allRefs = [];
-    getModeMock.mockReturnValue(Mode.none);
+    getModeSpy = jest.spyOn(mapUtil, "getMode").mockReturnValue(Mode.none);
     mockRefImpl = () => ({ current: undefined });
+  });
+
+  afterEach(() => {
+    getModeSpy?.mockRestore();
   });
 
   const fakeProps = (): PlantSpreadInstancesProps => {
@@ -196,24 +196,32 @@ describe("<ThreeDPlantSpread />", () => {
   });
 
   it("updates instance colors on frame", () => {
-    queueMeshRef({ instanceColor: { needsUpdate: false, count: 0 } });
+    let mesh:
+      (MockRef["current"] & { geometry: { setAttribute: Function } }) | undefined;
+    const imperativeHandleSpy = jest
+      .spyOn(React, "useImperativeHandle")
+      .mockImplementation((ref: { current?: unknown }, init: Function) => {
+        const value = init() as MockRef["current"];
+        if (value) {
+          value.instanceColor = { needsUpdate: false, count: 0 };
+          value.geometry = {
+            setAttribute: jest.fn(),
+            getAttribute: jest.fn(),
+          };
+        }
+        ref.current = value;
+        mesh = value as typeof mesh;
+      });
     const p = fakeProps();
     p.visible = true;
-    getModeMock.mockReturnValue(Mode.none);
+    getModeSpy.mockReturnValue(Mode.none);
     render(<PlantSpreadInstances {...p} />);
-    const meshRef = getMeshRef();
-    expect(meshRef?.current).toBeDefined();
-    if (meshRef?.current) {
-      meshRef.current.geometry = {
-        setAttribute: jest.fn(),
-        getAttribute: jest.fn(),
-      };
-      meshRef.current.instanceColor = { needsUpdate: false, count: 0 };
-    }
     const frameFn = (useFrame as jest.Mock).mock.calls[0][0];
     frameFn({ camera: { quaternion: new Quaternion() } });
-    expect(meshRef?.current?.setMatrixAt).toHaveBeenCalled();
-    expect(meshRef?.current?.geometry?.setAttribute).toHaveBeenCalled();
+    imperativeHandleSpy.mockRestore();
+    expect(mesh).toBeDefined();
+    expect(mesh?.setMatrixAt).toHaveBeenCalled();
+    expect(mesh?.geometry?.setAttribute).toHaveBeenCalled();
   });
 
   it("skips frame updates when invisible", () => {
@@ -246,25 +254,28 @@ describe("<ThreeDPlantSpread />", () => {
   });
 
   it("uses material object branch", () => {
-    queueMeshRef({ material: { needsUpdate: false } });
+    let mesh:
+      (MockRef["current"] & { material: { needsUpdate: boolean } }) | undefined;
+    const imperativeHandleSpy = jest
+      .spyOn(React, "useImperativeHandle")
+      .mockImplementation((ref: { current?: unknown }, init: Function) => {
+        const value = init() as MockRef["current"];
+        if (value) {
+          value.material = { needsUpdate: false };
+        }
+        ref.current = value;
+        mesh = value as typeof mesh;
+      });
     const p = fakeProps();
     p.activePositionRef =
       { current: undefined as unknown as { x: number; y: number } };
     location.pathname = Path.mock(Path.plants("1"));
     render(<PlantSpreadInstances {...p} />);
-    const meshRef = getMeshRef();
-    expect(meshRef?.current).toBeDefined();
-    if (meshRef?.current) {
-      meshRef.current.geometry = {
-        setAttribute: jest.fn(),
-        getAttribute: jest.fn(),
-      };
-      meshRef.current.instanceColor = { needsUpdate: false, count: 0 };
-      meshRef.current.material = { needsUpdate: false };
-    }
     const frameFn = (useFrame as jest.Mock).mock.calls[0][0];
     frameFn({ camera: { quaternion: new Quaternion() } });
-    const material = meshRef?.current?.material as { needsUpdate: boolean };
+    imperativeHandleSpy.mockRestore();
+    expect(mesh).toBeDefined();
+    const material = mesh?.material as { needsUpdate: boolean };
     expect(material.needsUpdate).toBe(true);
   });
 

@@ -12,7 +12,7 @@
     "url": "https://github.com/farmbot/farmbot-web-app"
   },
   "scripts": {
-    "test-slow": "bun test && bun run coverage-html",
+    "test-slow": "bun test --bail && bun run coverage-html",
     "test": "bun test",
     "coverage-html": "genhtml -q coverage_fe/lcov.info --output-directory coverage_fe",
     "graph-modules-dot": "bunx madge --dot ./frontend > module_graph.dot",
