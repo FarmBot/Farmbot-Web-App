@@ -1,5 +1,10 @@
 let mockIsMobile = false;
 import { PopoverProps } from "../../../ui/popover";
+const mockAddNewSequenceToFolder = jest.fn();
+jest.mock("../../../folders/actions", () => ({
+  addNewSequenceToFolder: (...args: unknown[]) =>
+    mockAddNewSequenceToFolder(...args),
+}));
 
 import React from "react";
 import { render, fireEvent, waitFor } from "@testing-library/react";
@@ -25,7 +30,6 @@ import * as crud from "../../../api/crud";
 import * as requestAutoGenerationModule from "../../request_auto_generation";
 import { API } from "../../../api";
 import { error } from "../../../toast/toast";
-import * as foldersActions from "../../../folders/actions";
 import { emptyState } from "../../../resources/reducer";
 import { mountWithContext } from "../../../__test_support__/mount_with_context";
 import * as screenSize from "../../../screen_size";
@@ -36,7 +40,6 @@ let setActiveSequenceByNameSpy: jest.SpyInstance;
 let editSpy: jest.SpyInstance;
 let saveSpy: jest.SpyInstance;
 let requestAutoGenerationSpy: jest.SpyInstance;
-let addNewSequenceToFolderSpy: jest.SpyInstance;
 let popoverSpy: jest.SpyInstance;
 
 beforeEach(() => {
@@ -53,10 +56,7 @@ beforeEach(() => {
     requestAutoGenerationModule,
     "requestAutoGeneration",
   ).mockImplementation(jest.fn());
-  addNewSequenceToFolderSpy = jest.spyOn(
-    foldersActions,
-    "addNewSequenceToFolder",
-  ).mockImplementation(jest.fn());
+  mockAddNewSequenceToFolder.mockClear();
   popoverSpy = jest.spyOn(popoverModule, "Popover").mockImplementation(
     ({ target, content }: PopoverProps) => <div>{target}{content}</div>);
 });
@@ -67,7 +67,6 @@ afterEach(() => {
   editSpy.mockRestore();
   saveSpy.mockRestore();
   requestAutoGenerationSpy.mockRestore();
-  addNewSequenceToFolderSpy.mockRestore();
   popoverSpy.mockRestore();
 });
 
@@ -101,8 +100,10 @@ describe("<DesignerSequenceEditor />", () => {
     expect(setActiveSequenceByNameSpy).toHaveBeenCalled();
     expect(container.textContent?.toLowerCase()).toContain("no sequence selected");
     expect(container.innerHTML).not.toContain("select color");
-    fireEvent.click(container.querySelector("button") as Element);
-    expect(addNewSequenceToFolderSpy).toHaveBeenCalled();
+    const addButton = container.querySelector("button.fb-button.green");
+    expect(addButton).toBeTruthy();
+    addButton && fireEvent.click(addButton);
+    expect(mockAddNewSequenceToFolder).toHaveBeenCalled();
   });
 
   it("changes color", () => {
@@ -110,9 +111,14 @@ describe("<DesignerSequenceEditor />", () => {
     const sequence = fakeSequence();
     sequence.body.color = "" as Color;
     p.sequence = sequence;
-    const { container } = render(<DesignerSequenceEditor {...p} />);
-    fireEvent.click(
-      container.querySelector(".color-picker-item-wrapper") as Element);
+    render(<DesignerSequenceEditor {...p} />);
+    const colorPickerPopover = popoverSpy.mock.calls.find(
+      ([popoverProps]) => !!(popoverProps.content as React.ReactElement)
+        ?.props?.onChange);
+    const colorPickerCluster = colorPickerPopover?.[0]
+      .content as React.ReactElement<{ onChange: (color: Color) => void }>;
+    expect(colorPickerCluster).toBeTruthy();
+    colorPickerCluster.props.onChange("blue");
     expect(editSpy).toHaveBeenCalledWith(p.sequence, { color: "blue" });
   });
 

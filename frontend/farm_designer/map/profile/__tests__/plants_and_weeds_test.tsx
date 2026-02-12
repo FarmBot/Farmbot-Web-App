@@ -28,25 +28,27 @@ describe("<PlantPoint />", () => {
     const p = fakeProps();
     p.point.body.z = 0;
     p.soilHeight = 200;
-    const wrapper = svgMount(<PlantPoint {...p} />);
-    expect(wrapper.find("#plant-profile-point").length).toEqual(1);
-    expect(wrapper.find("#spread-profile").length).toEqual(1);
-    expect(wrapper.find("#point-coordinate-indicator").props().cy).toEqual(200);
+    const { container } = svgMount(<PlantPoint {...p} />);
+    expect(container.querySelector("#plant-profile-point")).toBeTruthy();
+    expect(container.querySelector("#spread-profile")).toBeTruthy();
+    expect(container.querySelector("#point-coordinate-indicator")?.getAttribute("cy"))
+      .toEqual("200");
   });
 
   it("renders plant point at z", () => {
     const p = fakeProps();
     p.point.body.z = 100;
     p.soilHeight = 200;
-    const wrapper = svgMount(<PlantPoint {...p} />);
-    expect(wrapper.find("#point-coordinate-indicator").props().cy).toEqual(100);
+    const { container } = svgMount(<PlantPoint {...p} />);
+    expect(container.querySelector("#point-coordinate-indicator")?.getAttribute("cy"))
+      .toEqual("100");
   });
 
   it("renders plant template", () => {
     const p = fakeProps();
     p.point = fakePlantTemplate();
-    const wrapper = svgMount(<PlantPoint {...p} />);
-    expect(wrapper.find("#plant-profile-point").length).toEqual(1);
+    const { container } = svgMount(<PlantPoint {...p} />);
+    expect(container.querySelector("#plant-profile-point")).toBeTruthy();
   });
 
   it("renders default spread", () => {
@@ -55,10 +57,10 @@ describe("<PlantPoint />", () => {
     plant.body.openfarm_slug = "foo-bar";
     plant.body.radius = 25;
     p.point = plant;
-    const wrapper = svgMount(<PlantPoint {...p} />);
-    expect(wrapper.find("#plant-profile-point").length).toEqual(1);
-    expect(wrapper.find("#spread-profile").length).toEqual(1);
-    expect(wrapper.find(".plant-radius").props().r).toEqual(25);
+    const { container } = svgMount(<PlantPoint {...p} />);
+    expect(container.querySelector("#plant-profile-point")).toBeTruthy();
+    expect(container.querySelector("#spread-profile")).toBeTruthy();
+    expect(container.querySelector(".plant-radius")?.getAttribute("r")).toEqual("25");
   });
 
   it("renders hovered spread", () => {
@@ -68,8 +70,8 @@ describe("<PlantPoint />", () => {
     p.point = plant;
     p.designer.selectedPoints = [plant.uuid];
     p.designer.hoveredSpread = 1000;
-    const wrapper = svgMount(<PlantPoint {...p} />);
-    expect(wrapper.find(".plant-radius").props().r).toEqual(500);
+    const { container } = svgMount(<PlantPoint {...p} />);
+    expect(container.querySelector(".plant-radius")?.getAttribute("r")).toEqual("500");
   });
 });
 
@@ -88,16 +90,18 @@ describe("<WeedPoint />", () => {
   it("renders weed point", () => {
     const p = fakeProps();
     p.point.body.meta.color = "yellow";
-    const wrapper = svgMount(<WeedPoint {...p} />);
-    expect(wrapper.find("#weed-profile-point").length).toEqual(1);
-    expect(wrapper.find("circle").last().props().fill).toEqual("yellow");
+    const { container } = svgMount(<WeedPoint {...p} />);
+    expect(container.querySelector("#weed-profile-point")).toBeTruthy();
+    const circles = container.querySelectorAll("circle");
+    expect(circles[circles.length - 1]?.getAttribute("fill")).toEqual("yellow");
   });
 
   it("uses default color", () => {
     const p = fakeProps();
     p.point.body.meta.color = undefined;
-    const wrapper = svgMount(<WeedPoint {...p} />);
-    expect(wrapper.find("#weed-profile-point").length).toEqual(1);
-    expect(wrapper.find("circle").last().props().fill).toEqual(Color.red);
+    const { container } = svgMount(<WeedPoint {...p} />);
+    expect(container.querySelector("#weed-profile-point")).toBeTruthy();
+    const circles = container.querySelectorAll("circle");
+    expect(circles[circles.length - 1]?.getAttribute("fill")).toEqual(Color.red);
   });
 });

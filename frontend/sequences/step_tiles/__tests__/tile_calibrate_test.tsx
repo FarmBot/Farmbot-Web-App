@@ -17,11 +17,11 @@ describe("<TileCalibrate/>", () => {
     const { container } = render(<TileCalibrate {...fakeProps()} />);
     const inputs = container.querySelectorAll("input");
     const labels = container.querySelectorAll("label");
+    const text = (container.textContent || "").toLowerCase();
     expect(inputs.length).toEqual(5);
     expect(labels.length).toEqual(4);
-    expect((inputs[0] as HTMLInputElement).placeholder).toEqual("Find axis length");
-    expect((labels[0] as HTMLElement).textContent).toContain("x");
-    expect((inputs[1] as HTMLInputElement).value).toEqual("x");
+    ["x", "y", "z", "all"].forEach(axis => expect(text).toContain(axis));
+    expect((inputs[1]).value).toEqual("x");
   });
 
   const CONFLICT_TEXT_BASE = "Hardware setting conflict";

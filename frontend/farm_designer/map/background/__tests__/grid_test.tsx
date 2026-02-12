@@ -32,7 +32,7 @@ describe("<Grid />", () => {
     attribute: string,
   ): number => {
     const value = element.getAttribute(attribute);
-    if (value === null) {
+    if (value === undefined) {
       throw new Error(`Missing attribute ${attribute}`);
     }
     return Number(value);

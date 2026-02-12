@@ -1,6 +1,5 @@
 let mockDev = false;
 
-import React from "react";
 import { FBSelect } from "../../../../ui";
 import {
   axisOrder, AxisOrderInputRow, getAxisGroupingState, getAxisRouteState,

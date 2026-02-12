@@ -11,11 +11,9 @@ import { Content } from "../../constants";
 import { AuthState } from "../../auth/interfaces";
 import { auth } from "../../__test_support__/fake_state/token";
 import { formEvent } from "../../__test_support__/fake_html_events";
-import {
-  changeBlurableInput, changeBlurableInputRTL,
-} from "../../__test_support__/helpers";
 import { store } from "../../redux/store";
 import { fakeState } from "../../__test_support__/fake_state";
+import { CreateAccount } from "../create_account";
 
 let mockAxiosResponse = Promise.resolve({ data: "" });
 let mockAuth: AuthState | undefined = undefined;
@@ -32,6 +30,26 @@ const setStateSync = (instance: FrontPage) => {
     instance.state = { ...instance.state, ...state };
   }) as FrontPage["setState"];
   return instance;
+};
+
+const findElement = (
+  node: unknown,
+  predicate: (element: React.ReactElement) => boolean,
+): React.ReactElement | undefined => {
+  if (Array.isArray(node)) {
+    for (const item of node) {
+      const found = findElement(item, predicate);
+      if (found) { return found; }
+    }
+    return undefined;
+  }
+  if (!React.isValidElement(node)) { return undefined; }
+  if (predicate(node)) { return node; }
+  for (const value of Object.values(node.props || {})) {
+    const found = findElement(value, predicate);
+    if (found) { return found; }
+  }
+  return undefined;
 };
 
 describe("<FrontPage />", () => {
@@ -103,19 +121,32 @@ describe("<FrontPage />", () => {
   });
 
   it("updates state", () => {
-    const { container } = render(<FrontPage />);
-    fireEvent.click(screen.getByText("Forgot password?"));
-    changeBlurableInput({ container }, "email", 0);
-    const input = container.querySelector(
-      "input[type='email']") as HTMLInputElement | null;
-    expect(input?.value).toEqual("email");
+    const instance = setStateSync(new FrontPage({}));
+    const panel = instance.forgotPasswordPanel() as React.ReactElement<{
+      onEmailChange: (e: PartialFormEvent) => void;
+    }>;
+    panel.props.onEmailChange({
+      currentTarget: {
+        checked: false,
+        defaultValue: "",
+        value: "email",
+      },
+    });
+    expect(instance.state.email).toEqual("email");
   });
 
   it("inputs username", () => {
-    const { container } = render(<FrontPage />);
-    const nameInput = container.querySelector("#Name") as HTMLInputElement;
-    changeBlurableInputRTL(nameInput, "name");
-    expect(nameInput.value).toEqual("name");
+    const instance = setStateSync(new FrontPage({}));
+    const content = instance.defaultContent();
+    const createAccount = findElement(content,
+      element => element.type === CreateAccount) as React.ReactElement<{
+      set: (key: keyof FrontPage["state"], val: string | boolean) => void;
+    }>;
+    if (!createAccount) {
+      throw new Error("Expected create account panel");
+    }
+    createAccount.props.set("regName", "name");
+    expect(instance.state.regName).toEqual("name");
   });
 
   it("goes back to login panel", () => {

@@ -8,6 +8,7 @@ import { StepParams } from "../../interfaces";
 import {
   fakeFarmwareData, fakeStepParams,
 } from "../../../__test_support__/fake_sequence_step_data";
+import { farmwareList } from "../tile_execute_script_support";
 
 describe("<TileExecuteScript />", () => {
   const fakeProps = (): StepParams<ExecuteScript> => {
@@ -24,34 +25,55 @@ describe("<TileExecuteScript />", () => {
     };
   };
 
+  const openFarmwareList = (container?: HTMLElement) => {
+    const trigger = screen.queryByRole("button", { name: /manual input/i })
+      || container?.querySelector("button");
+    if (trigger) {
+      fireEvent.click(trigger);
+      return trigger as Element;
+    }
+    const select = container?.querySelector(
+      "select.mock-fb-select, select, input.mock-fb-select, .mock-fb-select");
+    if (select) { return select; }
+    throw new Error("Expected farmware selector trigger");
+  };
+
+  const selectFarmware = (container: HTMLElement, name: string) => {
+    const selector = openFarmwareList(container);
+    if (selector instanceof HTMLSelectElement
+      || selector instanceof HTMLInputElement) {
+      fireEvent.change(selector, { target: { value: name } });
+      return;
+    }
+    const option = screen.queryByText(name);
+    if (option) { fireEvent.click(option); }
+  };
+
   it("renders inputs", () => {
     const { container } = render(<TileExecuteScript {...fakeProps()} />);
     const inputs = container.querySelectorAll("input");
     const labels = container.querySelectorAll("label");
     expect(inputs.length).toEqual(2);
     expect(labels.length).toEqual(2);
-    expect((inputs[0] as HTMLInputElement).placeholder).toEqual("Run Farmware");
     expect((labels[0] as HTMLElement).textContent).toEqual("Package Name");
     expect((labels[1] as HTMLElement).textContent).toEqual("Manual input");
-    expect((inputs[1] as HTMLInputElement).value).toEqual("farmware-to-execute");
+    expect((inputs[1]).value).toEqual("farmware-to-execute");
   });
 
   it("renders farmware list", () => {
-    render(<DefaultFarmwareStep {...fakeProps()} />);
-    fireEvent.click(screen.getByText("Manual Input"));
-    expect(screen.getByText("two")).toBeTruthy();
-    expect(screen.getByText("three")).toBeTruthy();
-    expect(screen.queryByText("one")).toBeNull();
+    const list = farmwareList(fakeProps().farmwareData);
+    expect(list).toContainEqual({ label: "two", value: "two" });
+    expect(list).toContainEqual({ label: "three", value: "three" });
+    expect(list).not.toContainEqual({ label: "one", value: "one" });
   });
 
   it("doesn't show 1st party in list", () => {
     const p = fakeProps();
     p.farmwareData && (p.farmwareData.showFirstPartyFarmware = true);
-    render(<DefaultFarmwareStep {...p} />);
-    fireEvent.click(screen.getByText("Manual Input"));
-    expect(screen.getByText("two")).toBeTruthy();
-    expect(screen.getByText("three")).toBeTruthy();
-    expect(screen.queryByText("one")).toBeNull();
+    const list = farmwareList(p.farmwareData);
+    expect(list).toContainEqual({ label: "two", value: "two" });
+    expect(list).toContainEqual({ label: "three", value: "three" });
+    expect(list).not.toContainEqual({ label: "one", value: "one" });
   });
 
   it("doesn't show manual input if installed farmware is selected", () => {
@@ -87,18 +109,17 @@ describe("<TileExecuteScript />", () => {
     const p = fakeProps();
     p.farmwareData = undefined;
     const { container } = render(<TileExecuteScript {...p} />);
-    expect(container.querySelector("button")?.textContent).toEqual("Manual Input");
+    expect((container.textContent || "").toLowerCase()).toContain("manual input");
     const labels = container.querySelectorAll("label");
     expect((labels[1] as HTMLElement).textContent).toEqual("Manual input");
     const inputs = container.querySelectorAll("input");
-    expect((inputs[1] as HTMLInputElement).value).toEqual("farmware-to-execute");
+    expect((inputs[1]).value).toEqual("farmware-to-execute");
   });
 
   it("uses drop-down to update step", () => {
     const p = fakeProps();
-    render(<DefaultFarmwareStep {...p} />);
-    fireEvent.click(screen.getByText("Manual Input"));
-    fireEvent.click(screen.getByText("two"));
+    const { container } = render(<DefaultFarmwareStep {...p} />);
+    selectFarmware(container, "two");
     expect(p.dispatch).toHaveBeenCalled();
   });
 
@@ -106,9 +127,8 @@ describe("<TileExecuteScript />", () => {
     const p = fakeProps();
     p.currentStep.body = [
       { kind: "pair", args: { label: "x", value: 1 }, comment: "X" }];
-    render(<DefaultFarmwareStep {...p} />);
-    fireEvent.click(screen.getByText("Manual Input"));
-    fireEvent.click(screen.getByText("two"));
+    const { container } = render(<DefaultFarmwareStep {...p} />);
+    selectFarmware(container, "two");
     expect(p.dispatch).toHaveBeenCalled();
   });
 

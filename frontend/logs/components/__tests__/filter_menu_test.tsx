@@ -62,7 +62,7 @@ describe("<LogsFilterMenu />", () => {
     const p = fakeProps();
     p.setFilterLevel = (x) => (v) => setFilterLevel(x, v);
     const { container } = render(<LogsFilterMenu {...p} />);
-    fireEvent.click(container.querySelectorAll(".mock-slider")[0] as Element);
+    fireEvent.click(container.querySelectorAll(".mock-slider")[0]);
     logTypes.map(logType =>
       expect(setFilterLevel).toHaveBeenCalledWith(logType, 2));
   });

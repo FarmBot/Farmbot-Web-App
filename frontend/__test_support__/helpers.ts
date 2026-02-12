@@ -41,6 +41,7 @@ const getContainer = (input: unknown): ParentNode | undefined => {
 };
 
 /** Simulate a click and check button text for a button in a wrapper. */
+// eslint-disable-next-line complexity
 export function clickButton(
   wrapper: EnzymeWrapperLike | { container: ParentNode } | ParentNode,
   position: number,
@@ -77,8 +78,10 @@ export function clickButton(
   if (position < 0) {
     position = buttons.length + position;
   }
-  let button = buttons[position];
-  expect(button).toBeTruthy();
+  const initialButton = buttons[position];
+  expect(initialButton).toBeTruthy();
+  if (!initialButton) { return; }
+  let button = initialButton;
   const expectedText = text.toLowerCase();
   let actualText = button?.textContent?.toLowerCase().trim() ?? "";
   if (!textMatches(actualText)) {
@@ -93,7 +96,7 @@ export function clickButton(
     ? expect(actualText).toContain(expectedText)
     : expect(actualText).toEqual(expectedText);
   options?.icon && expect(button?.innerHTML ?? "").toContain(options.icon);
-  fireEvent.click(button as Element);
+  fireEvent.click(button);
 }
 
 /** Like `wrapper.text()`, but only includes buttons. */

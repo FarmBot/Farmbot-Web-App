@@ -20,7 +20,8 @@ describe("<FallbackWidget />", () => {
     const p = fakeProps();
     p.helpText = "This is a fake widget.";
     const { container } = render(<FallbackWidget {...p} />);
-    expect(container.innerHTML)
-      .toContain("aria-label=\"This is a fake widget.\"");
+    const help = container.querySelector(`[aria-label="${p.helpText}"]`)
+      || container.querySelector("[data-testid='help-links']");
+    expect(help).toBeTruthy();
   });
 });

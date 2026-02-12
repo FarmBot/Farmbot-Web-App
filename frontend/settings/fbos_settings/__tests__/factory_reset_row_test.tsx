@@ -1,7 +1,7 @@
 import React from "react";
+import { render, screen } from "@testing-library/react";
 import { FactoryResetRows } from "../factory_reset_row";
 import { FactoryResetRowsProps } from "../interfaces";
-import { mountWithContext } from "../../../__test_support__/mount_with_context";
 
 beforeEach(() => {
   jest.restoreAllMocks();
@@ -16,7 +16,11 @@ describe("<FactoryResetRows />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mountWithContext(<FactoryResetRows {...fakeProps()} />);
-    expect(wrapper.exists()).toBeTruthy();
+    const { container } = render(<FactoryResetRows {...fakeProps()} />);
+    expect(screen.getByRole("button", { name: /soft reset/i }))
+      .toBeInTheDocument();
+    const hardResetLinks = Array.from(container.querySelectorAll("a"))
+      .filter(link => /hard reset/i.test(link.textContent || ""));
+    expect(hardResetLinks.length).toBeGreaterThan(0);
   });
 });

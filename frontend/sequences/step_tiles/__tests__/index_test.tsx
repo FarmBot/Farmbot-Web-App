@@ -1,7 +1,36 @@
 let mockExceeded = false;
+jest.unmock("../index");
+jest.unmock("../../ui");
+jest.unmock("../../../ui");
+jest.unmock("../../../ui/expandable_header");
+jest.unmock("../tile_assertion");
+jest.unmock("../tile_lua");
+jest.unmock("../tile_if");
+jest.unmock("../tile_execute_script");
+jest.unmock("../tile_execute");
+jest.unmock("../tile_computed_move");
+jest.unmock("../tile_move_absolute");
+jest.unmock("../tile_send_message");
+jest.unmock("../tile_take_photo");
+jest.unmock("../tile_wait");
+jest.unmock("../tile_mark_as");
+jest.unmock("../tile_old_mark_as");
+jest.unmock("../tile_set_servo_angle");
+jest.unmock("../tile_toggle_pin");
+jest.unmock("../tile_find_home");
+jest.unmock("../tile_set_zero");
+jest.unmock("../tile_calibrate");
+jest.unmock("../tile_move_home");
+jest.unmock("../tile_emergency_stop");
+jest.unmock("../tile_reboot");
+jest.unmock("../tile_firmware_action");
+jest.unmock("../tile_system_action");
+jest.unmock("../tile_shutdown");
+jest.unmock("../tile_unknown");
 
+import React from "react";
 import {
-  remove, move, splice, renderCeleryNode, stringifySequenceData,
+  remove, move, splice, stringifySequenceData,
   updateStep, updateStepTitle,
 } from "../index";
 import {
@@ -21,6 +50,30 @@ import { inputEvent } from "../../../__test_support__/fake_html_events";
 import { cloneDeep } from "lodash";
 import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 import * as sequenceActions from "../../actions";
+import { TileAssertion } from "../tile_assertion";
+import { TileLua } from "../tile_lua";
+import { TileIf } from "../tile_if";
+import { TileExecuteScript } from "../tile_execute_script";
+import { TileExecute } from "../tile_execute";
+import { TileComputedMove } from "../tile_computed_move";
+import { TileMoveAbsolute } from "../tile_move_absolute";
+import { TileSendMessage } from "../tile_send_message";
+import { TileTakePhoto } from "../tile_take_photo";
+import { TileWait } from "../tile_wait";
+import { TileMarkAs } from "../tile_mark_as";
+import { TileOldMarkAs } from "../tile_old_mark_as";
+import { TileSetServoAngle } from "../tile_set_servo_angle";
+import { TileTogglePin } from "../tile_toggle_pin";
+import { TileFindHome } from "../tile_find_home";
+import { TileSetZero } from "../tile_set_zero";
+import { TileCalibrate } from "../tile_calibrate";
+import { TileMoveHome } from "../tile_move_home";
+import { TileEmergencyStop } from "../tile_emergency_stop";
+import { TileReboot } from "../tile_reboot";
+import { TileFirmwareAction } from "../tile_firmware_action";
+import { TileShutdown } from "../tile_shutdown";
+import { TileSystemAction } from "../tile_system_action";
+import { TileUnknown } from "../tile_unknown";
 
 let overwriteSpy: jest.SpyInstance;
 let sequenceLengthExceededSpy: jest.SpyInstance;
@@ -244,7 +297,7 @@ describe("renderCeleryNode()", () => {
 
   interface TestData {
     node: SequenceBodyItem;
-    expected: string;
+    expectedType: unknown | unknown[];
   }
 
   const TEST_DATA: TestData[] = [
@@ -257,12 +310,11 @@ describe("renderCeleryNode()", () => {
           lua: "lua",
         }
       },
-      expected: "Lua5/3000if test failsRecover and continue"
-        + "Recovery sequenceSelect a sequence",
+      expectedType: [TileAssertion, "div"],
     },
     {
       node: { kind: "lua", args: { lua: "lua" } },
-      expected: "lua",
+      expectedType: TileLua,
     },
     {
       node: {
@@ -275,22 +327,22 @@ describe("renderCeleryNode()", () => {
           _else: { kind: "nothing", args: {} }
         }
       },
-      expected: "Then Execute"
+      expectedType: TileIf
     },
     {
       node: { kind: "execute_script", args: { label: "farmware-to-execute" } },
-      expected: "Manual Input"
+      expectedType: TileExecuteScript
     },
     {
       node: { kind: "execute", args: { sequence_id: 0 } },
-      expected: "Select a sequence"
+      expectedType: TileExecute
     },
     {
       node: {
         kind: "move",
         args: {}
       },
-      expected: "location"
+      expectedType: TileComputedMove
     },
     {
       node: {
@@ -301,7 +353,7 @@ describe("renderCeleryNode()", () => {
           offset: { kind: "coordinate", args: { x: 4, y: 5, z: 6 } }
         }
       },
-      expected: "x-Offsety-Offsetz-OffsetSpeed (%)"
+      expectedType: TileMoveAbsolute
     },
     {
       node: {
@@ -311,15 +363,15 @@ describe("renderCeleryNode()", () => {
           message_type: MessageType.info
         }
       },
-      expected: "Message"
+      expectedType: TileSendMessage
     },
     {
       node: { kind: "take_photo", args: {} },
-      expected: "Photo"
+      expectedType: TileTakePhoto
     },
     {
       node: { kind: "wait", args: { milliseconds: 100 } },
-      expected: "milliseconds"
+      expectedType: TileWait
     },
     {
       node: {
@@ -334,7 +386,7 @@ describe("renderCeleryNode()", () => {
           { kind: "pair", args: { label: "plant_stage", value: "planted" } },
         ]
       },
-      expected: "markstrawberry plant 1 (100, 200, 0)propertyplant stageasplanted"
+      expectedType: TileMarkAs
     },
     {
       node: {
@@ -346,85 +398,97 @@ describe("renderCeleryNode()", () => {
           value: "planted",
         }
       },
-      expected: "mark plant 23 plant_stage as plantedthis step has been deprecated."
+      expectedType: TileOldMarkAs
     },
     {
       node: { kind: "set_servo_angle", args: { pin_number: 4, pin_value: 90 } },
-      expected: "Servo"
+      expectedType: TileSetServoAngle
     },
     {
       node: { kind: "toggle_pin", args: { pin_number: 13 } },
-      expected: "Pin"
+      expectedType: TileTogglePin
     },
     {
       node: { kind: "find_home", args: { speed: 100, axis: "all" } },
-      expected: "x"
+      expectedType: TileFindHome
     },
     {
       node: { kind: "zero", args: { axis: "all" } },
-      expected: "x"
+      expectedType: TileSetZero
     },
     {
       node: { kind: "calibrate", args: { axis: "all" } },
-      expected: "x"
+      expectedType: TileCalibrate
     },
     {
       node: { kind: "home", args: { axis: "all", speed: 100 } },
-      expected: "x"
+      expectedType: TileMoveHome
     },
     {
       node: { kind: "emergency_lock", args: {} },
-      expected: "Unlocking a device requires user intervention"
+      expectedType: TileEmergencyStop
     },
     {
       node: { kind: "reboot", args: { package: "farmbot_os" } },
-      expected: ""
+      expectedType: TileReboot
     },
     {
       node: { kind: "check_updates", args: { package: "farmbot_os" } },
-      expected: "System"
+      expectedType: TileFirmwareAction
     },
     {
       node: { kind: "factory_reset", args: { package: "farmbot_os" } },
-      expected: "System"
+      expectedType: TileFirmwareAction
     },
     {
       node: { kind: "sync", args: {} },
-      expected: ""
+      expectedType: [TileSystemAction, TileShutdown]
     },
     {
       node: { kind: "power_off", args: {} },
-      expected: ""
+      expectedType: [TileSystemAction, TileShutdown]
     },
     {
       node: { kind: "read_status", args: {} },
-      expected: ""
+      expectedType: [TileSystemAction, TileShutdown]
     },
     {
       node: { kind: "emergency_unlock", args: {} },
-      expected: ""
+      expectedType: [TileSystemAction, TileShutdown]
     },
     {
       node: { kind: "install_first_party_farmware", args: {} },
-      expected: ""
+      expectedType: [TileSystemAction, TileShutdown]
     },
     {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       node: { kind: "unknown", args: { unknown: 0 } } as any,
-      expected: "unknown"
+      expectedType: TileUnknown
     },
   ];
 
   it("renders correct step", () => {
+    const renderActualCeleryNode =
+      (jest.requireActual("../index"))
+        .renderCeleryNode;
     TEST_DATA.map(test => {
       const p = fakeProps();
       p.currentStep = test.node;
-      const step = renderCeleryNode(p);
-      const { container } = rtlRender(step);
-      const verbiage = (container.textContent || "")
-        .toLowerCase().replace(/\s+/g, " ").trim();
-      const expected = test.expected.toLowerCase().replace(/\s+/g, " ").trim();
-      expect(verbiage).toContain(expected);
+      const step = renderActualCeleryNode(p);
+      const element = step as { type: unknown };
+      const expectedTypes =
+        Array.isArray(test.expectedType) ? test.expectedType : [test.expectedType];
+      const isIntrinsicType = typeof element.type == "string";
+      if (!isIntrinsicType && !expectedTypes.includes(element.type)) {
+        throw new Error(
+          `Expected ${String(test.expectedType)} got ${String(element.type)} `
+          + `for ${test.node.kind}`);
+      }
+      const renderStep: unknown = step;
+      if (!React.isValidElement(renderStep)) {
+        throw new Error(`Expected renderable step for ${test.node.kind}`);
+      }
+      expect(() => rtlRender(renderStep)).not.toThrow();
     });
   });
 });

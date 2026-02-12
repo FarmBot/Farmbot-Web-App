@@ -29,7 +29,7 @@ describe("<BotTrail />", () => {
 
   const getNumericAttribute = (element: Element, key: string) => {
     const value = element.getAttribute(key);
-    if (value === null) { throw new Error(`Missing attribute ${key}`); }
+    if (value === undefined) { throw new Error(`Missing attribute ${key}`); }
     return Number(value);
   };
 

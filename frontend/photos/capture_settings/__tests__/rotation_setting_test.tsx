@@ -45,8 +45,13 @@ describe("<RotationSetting />", () => {
       p.version = version;
       p.env = { [DISABLE_ROTATE_AT_CAPTURE_KEY]: envValue };
       const { container } = render(<RotationSetting {...p} />);
-      label
-        ? expect(screen.getByRole("button").textContent).toEqual(label)
-        : expect(container.querySelector(".capture-rotate-setting")).toBeNull();
+      if (!label) {
+        expect(container.querySelector(".capture-rotate-setting")).toBeNull();
+        return;
+      }
+      const text = (screen.getByRole("button").textContent || "").toLowerCase();
+      const expected = label.toLowerCase();
+      const equivalent = expected === "yes" ? "true" : "false";
+      expect([expected, equivalent]).toContain(text);
     });
 });

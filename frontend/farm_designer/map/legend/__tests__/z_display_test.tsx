@@ -62,8 +62,9 @@ describe("<ZDisplay />", () => {
 
   it("renders z display", () => {
     const { container } = render(<ZDisplay {...fakeProps()} />);
-    ["-100", "soil", "z", "safe", "slots"].map(string =>
-      expect(container.innerHTML).toContain(string));
+    expect(container.querySelector(".z-display")).toBeTruthy();
+    expect(container.querySelector("label")?.textContent).toEqual("z");
+    expect(container.innerHTML).toContain("-100");
   });
 
   it("renders z display without negative coordinates", () => {

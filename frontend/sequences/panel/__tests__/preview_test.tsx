@@ -58,7 +58,7 @@ describe("<DesignerSequencePreview />", () => {
     const sequence = fakeSequence();
     const ref = React.createRef<DesignerSequencePreview>();
     const { container } = render(<DesignerSequencePreview ref={ref} {...fakeProps()} />);
-    await act(async () => ref.current?.setState({ sequence }));
+    act(() => ref.current?.setState({ sequence }));
     const importBtn = container.querySelector(".transparent-button") as Element;
     expect(importBtn.textContent).toEqual("import");
     fireEvent.click(importBtn);
@@ -77,8 +77,11 @@ describe("<DesignerSequencePreview />", () => {
     ];
     mockGet = Promise.resolve({ data: sequence.body });
     const { container } = render(<DesignerSequencePreview {...fakeProps()} />);
-    await waitFor(() =>
-      expect(container.textContent?.toLowerCase()).toContain("speed"));
+    await waitFor(() => {
+      expect(container.querySelector(".move-relative-step")).toBeTruthy();
+      expect(container.querySelector(".read-pin-step")).toBeTruthy();
+      expect(container.querySelector(".write-pin-step")).toBeTruthy();
+    });
   });
 
   it("loads sequence without body", async () => {

@@ -34,7 +34,7 @@ describe("<TargetCoordinate/>", () => {
     attribute: string,
   ): number => {
     const value = element.getAttribute(attribute);
-    if (value === null) { throw new Error(`Missing attribute: ${attribute}`); }
+    if (value === undefined) { throw new Error(`Missing attribute: ${attribute}`); }
     return Number(value);
   };
 

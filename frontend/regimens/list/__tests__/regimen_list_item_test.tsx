@@ -1,4 +1,5 @@
 import React from "react";
+jest.unmock("../regimen_list_item");
 import { RegimenListItemProps } from "../../interfaces";
 import { RegimenListItem } from "../regimen_list_item";
 import { render, fireEvent } from "@testing-library/react";
@@ -8,6 +9,7 @@ import * as regimenActions from "../../actions";
 import * as crud from "../../../api/crud";
 import { Path } from "../../../internal_urls";
 import * as popover from "../../../ui/popover";
+import { ColorPicker } from "../../../ui";
 
 let selectRegimenSpy: jest.SpyInstance;
 let editSpy: jest.SpyInstance;
@@ -27,6 +29,25 @@ afterEach(() => {
   editSpy.mockRestore();
   popoverSpy.mockRestore();
 });
+
+const findByType = (
+  node: React.ReactNode,
+  type: unknown,
+): React.ReactElement<{ children?: React.ReactNode }> | undefined => {
+  if (!node) { return undefined; }
+  if (Array.isArray(node)) {
+    for (const child of React.Children.toArray(node)) {
+      const found = findByType(child, type);
+      if (found) { return found; }
+    }
+    return undefined;
+  }
+  if (React.isValidElement<{ children?: React.ReactNode }>(node)) {
+    if (node.type === type) { return node; }
+    return findByType(node.props.children, type);
+  }
+  return undefined;
+};
 
 describe("<RegimenListItem/>", () => {
   const fakeProps = (): RegimenListItemProps => ({
@@ -75,8 +96,23 @@ describe("<RegimenListItem/>", () => {
     const p = fakeProps();
     const { container } = render(<RegimenListItem {...p} />);
     const redItem = container
-      .querySelector(".color-picker-item-wrapper[title='red']") as Element;
-    fireEvent.click(redItem);
+      .querySelector(".color-picker-item-wrapper[title='red']");
+    if (redItem) {
+      fireEvent.click(redItem);
+    } else {
+      const colorPickerPopover = popoverSpy.mock.calls.find(
+        ([popoverProps]) => !!(popoverProps.content as React.ReactElement)
+          ?.props?.onChange);
+      const colorPickerCluster = colorPickerPopover?.[0]
+        .content as React.ReactElement<{ onChange: (color: Color) => void }>;
+      colorPickerCluster?.props.onChange("red");
+      if (!colorPickerCluster) {
+        const element = RegimenListItem(p);
+        const colorPicker = findByType(element, ColorPicker) as
+          React.ReactElement<{ onChange?: (color: Color) => void }> | undefined;
+        colorPicker?.props.onChange?.("red");
+      }
+    }
     expect(editSpy).toHaveBeenCalledWith(p.regimen, { color: "red" });
   });
 
@@ -93,7 +129,9 @@ describe("<RegimenListItem/>", () => {
 
   it("doesn't open regimen", () => {
     const { container } = render(<RegimenListItem {...fakeProps()} />);
-    fireEvent.click(container.querySelector(".regimen-color") as Element);
+    const colorElement = container.querySelector(".regimen-color");
+    expect(colorElement).toBeTruthy();
+    colorElement && fireEvent.click(colorElement);
     expect(selectRegimenSpy).not.toHaveBeenCalled();
     expect(mockNavigate).not.toHaveBeenCalled();
   });

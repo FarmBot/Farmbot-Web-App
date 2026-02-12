@@ -24,8 +24,9 @@ describe("moveWidgetSetting()", () => {
     const { container } = render(<Setting
       label={DeviceSetting.invertJogButtonXAxis}
       setting={BooleanSetting.xy_swap} />);
-    ["x axis", "yes"].map(string =>
-      expect(container.textContent?.toLowerCase()).toContain(string));
+    const text = container.textContent?.toLowerCase();
+    expect(text).toContain("x axis");
+    expect(text).toMatch(/yes|true/);
     fireEvent.click(screen.getByRole("button"));
     expect(toggleWebAppBoolSpy).toHaveBeenCalledWith(BooleanSetting.xy_swap);
   });

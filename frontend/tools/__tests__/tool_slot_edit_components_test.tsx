@@ -30,6 +30,7 @@ import {
 } from "../interfaces";
 import * as deviceActions from "../../devices/actions";
 import { fakeMovementState } from "../../__test_support__/fake_bot_data";
+import { ToolSlotSVG } from "../../farm_designer/map/layers/tool_slots/tool_graphics";
 
 const wrappers: TestRenderer.ReactTestRenderer[] = [];
 const createWrapper = (element: React.ReactElement) => {
@@ -170,8 +171,11 @@ describe("<ToolSelection />", () => {
   });
 
   it("renders", () => {
-    const { container } = render(<ToolSelection {...fakeProps()} />);
-    expect(container.textContent?.toLowerCase()).toContain("none");
+    const wrapper = createWrapper(<ToolSelection {...fakeProps()} />);
+    expect(wrapper.root.findByType(FBSelect).props.selectedItem)
+      .toEqual(NULL_CHOICE);
+    expect(wrapper.root.findByType(FBSelect).props.list)
+      .toEqual([NULL_CHOICE]);
   });
 
   it("handles missing tool data", () => {
@@ -219,8 +223,11 @@ describe("<ToolSelection />", () => {
   it("shows selected tool", () => {
     const p = fakeProps();
     p.selectedTool = fakeTool();
-    const { container } = render(<ToolSelection {...p} />);
-    expect(container.textContent?.toLowerCase()).toContain("foo");
+    const wrapper = createWrapper(<ToolSelection {...p} />);
+    expect(wrapper.root.findByType(FBSelect).props.selectedItem)
+      .toEqual(expect.objectContaining({
+        label: p.selectedTool.body.name || "untitled",
+      }));
   });
 
   it("changes value", () => {
@@ -248,8 +255,9 @@ describe("<ToolInputRow />", () => {
   it("shows selected tool", () => {
     const p = fakeProps();
     p.selectedTool = fakeTool();
-    const { container } = render(<ToolInputRow {...p} />);
-    expect(container.textContent?.toLowerCase()).toContain("foo");
+    const wrapper = createWrapper(<ToolInputRow {...p} />);
+    expect(wrapper.root.findByType(ToolSelection).props.selectedTool)
+      .toEqual(p.selectedTool);
   });
 
   it("renders for express bots", () => {
@@ -275,7 +283,9 @@ describe("<SlotLocationInputRow />", () => {
 
   it("renders", () => {
     const { container } = render(<SlotLocationInputRow {...fakeProps()} />);
-    expect(container.textContent?.toLowerCase()).toContain("x (mm)y (mm)z (mm)");
+    expect(container.querySelectorAll("label"))
+      .toHaveLength(3);
+    expect(container.textContent?.toLowerCase()).toContain("(mm)");
     expect((container.querySelector("input") as HTMLInputElement).value)
       .toEqual("0");
   });
@@ -378,7 +388,7 @@ describe("<SlotEditRows />", () => {
   it("handles missing tool", () => {
     const p = fakeProps();
     p.tool = undefined;
-    const { container } = render(<SlotEditRows {...p} />);
-    expect(container.textContent).toContain("None");
+    const wrapper = createWrapper(<SlotEditRows {...p} />);
+    expect(wrapper.root.findByType(ToolSlotSVG).props.toolName).toEqual("Empty");
   });
 });

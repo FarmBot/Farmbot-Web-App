@@ -55,14 +55,14 @@ describe("<FbosMetricHistoryTable />", () => {
     const ref = React.createRef<FbosMetricHistoryTable>();
     const { container } = render(<FbosMetricHistoryTable {...p} ref={ref} />);
     const headers = container.querySelectorAll("th");
-    const backgroundBefore = (headers[headers.length - 1] as HTMLTableCellElement)
+    const backgroundBefore = (headers[headers.length - 1])
       .style.background;
     expect(backgroundBefore).toEqual("");
     expect(ref.current?.state.hoveredMetric).toEqual(undefined);
     act(() => ref.current?.hoverMetric("wifi_level_percent")());
     expect(ref.current?.state.hoveredMetric).toEqual("wifi_level_percent");
     const headersAfter = container.querySelectorAll("th");
-    const backgroundAfter = (headersAfter[headersAfter.length - 1] as HTMLTableCellElement)
+    const backgroundAfter = (headersAfter[headersAfter.length - 1])
       .style.background;
     expect(backgroundAfter).toEqual("rgba(255, 255, 255, 0.2)");
   });

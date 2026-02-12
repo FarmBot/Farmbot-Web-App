@@ -3,7 +3,6 @@ jest.mock("../../../../api/crud", () => ({
   editStep: mockEditStep
 }));
 
-import React from "react";
 import { NamedPin, WritePin, ALLOWED_PIN_MODES, ReadPin } from "farmbot";
 import {
   setPinMode, getPinModes, currentModeSelection, PinModeDropdown,

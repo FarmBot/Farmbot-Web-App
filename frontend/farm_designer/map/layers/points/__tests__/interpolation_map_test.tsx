@@ -13,6 +13,7 @@ import {
   InterpolationSettingProps,
   getZAtLocation,
 } from "../interpolation_map";
+import { changeBlurableInput } from "../../../../../__test_support__/helpers";
 
 describe("getInterpolationData()", () => {
   it("handles missing data", () => {
@@ -149,12 +150,8 @@ describe("<InterpolationSetting />", () => {
 
   it("saves env: input", () => {
     const p = fakeProps();
-    const { container } = render(<InterpolationSetting {...p} />);
-    const input = container.querySelector("input");
-    if (!input) { throw new Error("Missing input"); }
-    fireEvent.focus(input);
-    fireEvent.change(input, { target: { value: "123" } });
-    fireEvent.blur(input);
+    const wrapper = render(<InterpolationSetting {...p} />);
+    changeBlurableInput(wrapper, "123");
     expect(p.saveFarmwareEnv).toHaveBeenCalledWith("key", "123");
   });
 });

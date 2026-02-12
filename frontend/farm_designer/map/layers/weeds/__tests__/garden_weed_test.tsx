@@ -123,7 +123,12 @@ describe("<GardenWeed />", () => {
     p.selected = false;
     p.current = false;
     const wrapper = svgMount(<GardenWeed {...p} />);
-    wrapper.find(GardenWeed).simulate("mouseEnter");
-    expect(wrapper.html()).not.toContain("weed-indicator");
+    wrapper.find("g").first().simulate("mouseEnter");
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_HOVERED_POINT,
+      payload: p.weed.uuid,
+    });
+    expect(p.dispatch).not.toHaveBeenCalledWith(
+      expect.objectContaining({ type: Actions.SELECT_POINT }));
   });
 });

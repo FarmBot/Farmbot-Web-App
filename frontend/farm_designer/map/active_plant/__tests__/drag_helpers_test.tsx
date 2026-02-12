@@ -88,7 +88,7 @@ describe("<DragHelpers/>", () => {
       .toEqual({ height: 2, width: 8, x: 90, y: 199 });
     const segments = container.querySelectorAll("#short-crosshair use");
     expect(segments.length).toEqual(4);
-    expect(getHref(segments[0] as Element)).toEqual("#crosshair-segment-5");
+    expect(getHref(segments[0])).toEqual("#crosshair-segment-5");
     expect(segments[0]?.getAttribute("transform")).toEqual("rotate(0, 100, 200)");
     expect(segments[1]?.getAttribute("transform")).toEqual("rotate(90, 100, 200)");
     expect(segments[2]?.getAttribute("transform")).toEqual("rotate(180, 100, 200)");
@@ -139,7 +139,7 @@ describe("<DragHelpers/>", () => {
       .toEqual({ height: 2, width: 8, x: 65, y: 99 });
     const segments = container.querySelectorAll("#alignment-indicator use");
     expect(segments.length).toEqual(2);
-    expect(getHref(segments[0] as Element))
+    expect(getHref(segments[0]))
       .toEqual("#alignment-indicator-segment-5");
     expect(segments[0]?.getAttribute("transform")).toEqual("rotate(90, 100, 100)");
     expect(segments[1]?.getAttribute("transform")).toEqual("rotate(270, 100, 100)");

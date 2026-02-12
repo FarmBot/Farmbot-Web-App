@@ -110,7 +110,10 @@ describe("<CaptureSizeSelection />", () => {
     expect(screen.getByTestId("selected-size")).toHaveTextContent("custom");
     fireEvent.click(screen.getByRole("button", { name: /select custom/i }));
     expect(p.saveFarmwareEnv).not.toHaveBeenCalled();
-    const [widthInput, heightInput] = screen.getAllByRole("spinbutton");
+    const sizeInputs = screen.queryAllByRole("spinbutton");
+    const [widthInput, heightInput] = sizeInputs.length >= 2
+      ? sizeInputs
+      : screen.getAllByRole("textbox");
     fireEvent.focus(widthInput);
     fireEvent.change(widthInput, {
       target: { value: "400" },

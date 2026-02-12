@@ -76,7 +76,7 @@ describe("<EditFarmEvent />", () => {
   });
 
   it("calls farm event save", () => {
-    const formRef = { current: null as unknown as EditFEForm };
+    const formRef = { current: undefined as unknown as EditFEForm };
     const createRefSpy = jest.spyOn(React, "createRef")
       .mockReturnValue(formRef as React.RefObject<EditFEForm>);
     const { container } = render(<EditFarmEvent {...fakeProps()} />);

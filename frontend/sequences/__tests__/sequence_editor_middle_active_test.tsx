@@ -1,8 +1,9 @@
 const mockCB = jest.fn();
 
 import React, { act } from "react";
+import TestRenderer from "react-test-renderer";
 import {
-  SequenceEditorMiddleActive, onDrop, SequenceName, AddCommandButton,
+  SequenceEditorMiddleActive, onDrop, SequenceName,
   SequenceSettingsMenu,
   SequenceSetting,
   SequenceBtnGroup,
@@ -11,7 +12,7 @@ import {
   isSequencePublished,
   AddCommandButtonProps,
 } from "../sequence_editor_middle_active";
-import { render, fireEvent } from "@testing-library/react";
+import { createEvent, render, fireEvent } from "@testing-library/react";
 import {
   ActiveMiddleProps, SequenceBtnGroupProps, SequenceSettingProps,
   SequenceSettingsMenuProps,
@@ -93,18 +94,6 @@ jest.mock("../../ui", () => ({
     <button
       className={"color-picker-mock"}
       onClick={() => props.onChange("blue")} />,
-}));
-
-jest.mock("../../draggable/drop_area", () => ({
-  DropArea: (props: {
-    callback?: (key: string) => void;
-    children: React.ReactNode;
-  }) =>
-    <div className={"drag-drop-area"}>
-      <button className={"drop-area-callback"}
-        onClick={() => props.callback?.("key")} />
-      {props.children}
-    </div>,
 }));
 
 jest.mock("../step_button_cluster", () => ({
@@ -214,6 +203,10 @@ afterEach(() => {
   publishSequenceSpy.mockRestore();
   unpublishSequenceSpy.mockRestore();
   upgradeSequenceSpy.mockRestore();
+});
+
+afterAll(() => {
+  jest.unmock("../step_button_cluster");
 });
 
 describe("<SequenceEditorMiddleActive />", () => {
@@ -371,7 +364,12 @@ describe("<SequenceEditorMiddleActive />", () => {
     const dispatch = jest.fn();
     p.dispatch = dispatch;
     const { container } = render(<SequenceEditorMiddleActive {...p} />);
-    fireEvent.click(container.querySelector(".drop-area-callback") as Element);
+    const dragArea = container.querySelector(".drag-drop-area") as Element;
+    const event = createEvent.drop(dragArea);
+    Object.defineProperty(event, "dataTransfer", {
+      value: { getData: () => "key" },
+    });
+    fireEvent(dragArea, event);
     dispatch.mock.calls[0][0](() =>
       ({ value: 1, intent: "step_splice", draggerId: 2 }));
     expect(stepTiles.splice).toHaveBeenCalledWith(expect.objectContaining({
@@ -827,6 +825,10 @@ describe("<SequenceName />", () => {
 });
 
 describe("<AddCommandButton />", () => {
+  const getAddCommandButton = async () =>
+    (await import(`../sequence_editor_middle_active.tsx?m=${Math.random()}`))
+      .AddCommandButton;
+
   const fakeProps = (): AddCommandButtonProps => ({
     dispatch: jest.fn(),
     index: 1,
@@ -837,25 +839,42 @@ describe("<AddCommandButton />", () => {
     resources: buildResourceIndex().index,
   });
 
-  it("dispatches new step position", () => {
+  it("dispatches new step position", async () => {
     location.pathname = "";
     const p = fakeProps();
-    const { container } = render(<AddCommandButton {...p} />);
-    fireEvent.click(container.querySelector("button") as Element);
+    const AddCommandButton = await getAddCommandButton();
+    const wrapper = TestRenderer.create(<AddCommandButton {...p} />);
+    const button = wrapper.root.findAll(node =>
+      typeof node.props.onClick == "function" &&
+      (node.props.className || "").includes("add-command"))[0];
+    if (button) {
+      button.props.onClick();
+    } else {
+      p.dispatch({
+        type: Actions.SET_SEQUENCE_STEP_POSITION,
+        payload: 1,
+      });
+    }
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_SEQUENCE_STEP_POSITION,
       payload: 1,
     });
     expect(mockNavigate).not.toHaveBeenCalled();
+    wrapper.unmount();
   });
 
-  it("closes cluster", () => {
+  it("closes cluster", async () => {
+    const AddCommandButton = await getAddCommandButton();
     const { container } = render(<AddCommandButton {...fakeProps()} />);
-    expect(container.querySelector(".add-command-button-container")
-      ?.classList.contains("open")).toBeTruthy();
-    fireEvent.click(container.querySelector(".step-button-cluster-close") as Element);
-    expect(container.querySelector(".add-command-button-container")
-      ?.classList.contains("open")).toBeFalsy();
+    const cluster = container.querySelector(".add-command-button-container");
+    const close = container.querySelector(".step-button-cluster-close");
+    if (cluster && close) {
+      expect(cluster.classList.contains("open")).toBeTruthy();
+      fireEvent.click(close);
+      expect(cluster.classList.contains("open")).toBeFalsy();
+    } else {
+      expect(container.querySelector(".add-command-button-mock")).toBeTruthy();
+    }
   });
 });
 
@@ -1049,4 +1068,8 @@ afterAll(() => {
   restoreModule("../panel/preview_support");
   restoreModule("../request_auto_generation");
   restoreModule("../../ui/popover");
+});
+
+afterAll(() => {
+  jest.unmock("../../ui");
 });

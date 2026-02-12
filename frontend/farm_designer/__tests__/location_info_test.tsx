@@ -50,6 +50,10 @@ describe("<LocationInfo />", () => {
     location.search = originalSearch;
   });
 
+  afterAll(() => {
+    jest.unmock("../../photos/images/image_flipper");
+  });
+
   const fakeProps = (): LocationInfoProps => ({
     chosenLocation: { x: undefined, y: undefined, z: undefined },
     currentBotLocation: { x: undefined, y: undefined, z: undefined },

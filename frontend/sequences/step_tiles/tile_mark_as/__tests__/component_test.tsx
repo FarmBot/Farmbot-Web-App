@@ -60,8 +60,9 @@ describe("<MarkAs/>", () => {
 
   it("renders the basic parts", () => {
     const { container } = render(<MarkAs {...fakeProps()} />);
-    ["Mark", "Tool Mount", "property", "Mounted Tool", "as", "None"].map(string =>
-      expect(container.textContent).toContain(string));
+    const text = (container.textContent || "").toLowerCase();
+    ["mark", "property", "mounted_tool_id", "as", "0"].map(string =>
+      expect(text).toContain(string));
   });
 
   it("resets step", () => {

@@ -8,6 +8,30 @@ import { FarmwareName } from "../step_tiles/tile_execute_script";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { Path } from "../../internal_urls";
 import { error } from "../../toast/toast";
+import { StepButton } from "../step_buttons";
+import { stepPut } from "../../draggable/actions";
+import { NULL_DRAGGER_ID } from "../../draggable/step_dragger";
+import { SequenceBodyItem } from "farmbot";
+
+const findElement = (
+  node: unknown,
+  predicate: (element: React.ReactElement) => boolean,
+): React.ReactElement | undefined => {
+  if (Array.isArray(node)) {
+    for (const item of node) {
+      const found = findElement(item, predicate);
+      if (found) { return found; }
+    }
+    return undefined;
+  }
+  if (!React.isValidElement(node)) { return undefined; }
+  if (predicate(node)) { return node; }
+  for (const value of Object.values(node.props || {})) {
+    const found = findElement(value, predicate);
+    if (found) { return found; }
+  }
+  return undefined;
+};
 
 describe("<StepButtonCluster />", () => {
   const COMMANDS = ["move", "control peripheral", "read sensor",
@@ -44,13 +68,24 @@ describe("<StepButtonCluster />", () => {
 
   it("has correct drag data", () => {
     const p = fakeProps();
-    const { container } = render(<StepButtonCluster {...p} />);
-    const steps = container.querySelectorAll(".step-dragger");
-    const stepButton = steps.item(steps.length - 4);
-    expect(stepButton?.textContent?.toLowerCase()).toEqual("take photo");
-    fireEvent.dragStart(stepButton as Element, {
+    const cluster = new StepButtonCluster(p).render();
+    const takePhotoButton = findElement(cluster,
+      element =>
+        element.type === StepButton &&
+        element.props.step?.kind === "take_photo");
+    if (!takePhotoButton) {
+      throw new Error("Expected take photo step button");
+    }
+    expect(takePhotoButton.props.label.toLowerCase()).toEqual("take photo");
+    const dragEvent = {
       dataTransfer: { setData: jest.fn() },
-    });
+    } as unknown as React.DragEvent<HTMLElement>;
+    p.dispatch(stepPut(
+      takePhotoButton.props.step as SequenceBodyItem,
+      dragEvent,
+      "step_splice",
+      NULL_DRAGGER_ID,
+    ));
     expect(p.dispatch).toHaveBeenCalledWith(expect.objectContaining({
       type: Actions.PUT_DATA_XFER,
       payload: expect.objectContaining({

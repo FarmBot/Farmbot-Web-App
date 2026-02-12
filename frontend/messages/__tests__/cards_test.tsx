@@ -354,3 +354,7 @@ describe("<ReSeedAccount />", () => {
     });
   });
 });
+
+afterAll(() => {
+  jest.unmock("../../ui");
+});

@@ -62,7 +62,7 @@ describe("<BotPositionRows />", () => {
   it("inputs axis destination", () => {
     const { container } = render(<BotPositionRows {...fakeProps()} />);
     const inputs = container.querySelectorAll("input");
-    changeBlurableInputRTL(inputs[0] as HTMLInputElement, "123");
+    changeBlurableInputRTL(inputs[0], "123");
     fireEvent.click(screen.getByRole("button", { name: "GO" }));
     expect(deviceActions.moveAbsolute).toHaveBeenCalledWith({
       x: 123, y: 0, z: 0,

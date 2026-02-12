@@ -3,7 +3,6 @@ jest.mock("axios", () => ({
   put: jest.fn(() => mockPut),
 }));
 
-import React from "react";
 import { API } from "../../api";
 import { error } from "../../toast/toast";
 import { formEvent, inputEvent } from "../../__test_support__/fake_html_events";

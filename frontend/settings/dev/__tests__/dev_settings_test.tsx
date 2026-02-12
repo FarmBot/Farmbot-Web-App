@@ -1,6 +1,7 @@
 const mockDevSettings: { [key: string]: string } = {};
 import React from "react";
-import { cleanup, render, screen, fireEvent } from "@testing-library/react";
+import { cleanup, render, fireEvent } from "@testing-library/react";
+import TestRenderer from "react-test-renderer";
 import {
   DevWidgetFERow, DevWidgetFBOSRow, DevWidgetDelModeRow,
   DevWidgetShowInternalEnvsRow,
@@ -18,6 +19,28 @@ import {
 } from "../../../__test_support__/resource_index_builder";
 import { fakeFarmwareEnv } from "../../../__test_support__/fake_state/resources";
 import { store } from "../../../redux/store";
+
+const blurableInputMock = jest.fn((props: {
+  value?: string | number,
+  type?: string,
+  error?: string,
+  onCommit?: (event: React.FormEvent<HTMLInputElement>) => void,
+}) =>
+  <input
+    type={props.type}
+    defaultValue={props.value as string | undefined}
+    className={props.error ? "error" : ""}
+    onBlur={event => props.onCommit?.(event)}
+    onChange={() => { }} />,
+);
+
+jest.mock("../../../ui", () => {
+  const actual = jest.requireActual("../../../ui");
+  return {
+    ...actual,
+    BlurableInput: (props: unknown) => blurableInputMock(props as never),
+  };
+});
 
 const mockState = fakeState();
 let setWebAppConfigValueSpy: jest.SpyInstance;
@@ -44,6 +67,7 @@ const expectRemovedFromInternalUse = (key: string) => {
 
 beforeEach(() => {
   jest.clearAllMocks();
+  blurableInputMock.mockClear();
   Object.keys(mockDevSettings).forEach(key => delete mockDevSettings[key]);
   localStorage.removeItem("DISABLE_CHUNKING");
   setWebAppConfigValueSpy = jest.spyOn(configStorageActions, "setWebAppConfigValue")
@@ -68,6 +92,10 @@ afterEach(() => {
   saveSpy.mockRestore();
   (store as unknown as { dispatch: typeof store.dispatch }).dispatch = originalDispatch;
   (store as unknown as { getState: typeof store.getState }).getState = originalGetState;
+});
+
+afterAll(() => {
+  jest.unmock("../../../ui");
 });
 
 describe("<DevWidgetFBOSRow />", () => {
@@ -246,22 +274,36 @@ describe("<DevWidgetChunkingDisabledRow />", () => {
 });
 
 describe("<Dev3dDebugSettings />", () => {
-  const toggleFor = (key: string) => {
-    const label = screen.getByText(key);
-    return label.closest(".row")?.querySelector("button") as HTMLButtonElement;
+  const toggleFor = (
+    wrapper: TestRenderer.ReactTestRenderer, key: string,
+  ): (() => void) => {
+    const label = wrapper.root.find(node =>
+      Array.isArray(node.children)
+      && node.children.includes(key));
+    let current: TestRenderer.ReactTestInstance | null = label;
+    while (current) {
+      const toggles = current.findAll(node =>
+        typeof node.props.toggleAction == "function");
+      if (toggles.length) {
+        return toggles[0].props.toggleAction as () => void;
+      }
+      current = current.parent;
+    }
+    throw new Error(`Toggle for ${key} not found.`);
   };
 
   it("adds env", () => {
     mockState.resources = buildResourceIndex([]);
-    render(<Dev3dDebugSettings />);
-    const toggle = toggleFor("3D_eventDebug");
-    fireEvent.click(toggle);
+    const wrapper = TestRenderer.create(<Dev3dDebugSettings />);
+    const toggle = toggleFor(wrapper, "3D_eventDebug");
+    toggle();
     expect(initSaveSpy).toHaveBeenCalledWith("FarmwareEnv", {
       key: "3D_eventDebug",
       value: 1,
     });
     expect(editSpy).not.toHaveBeenCalled();
     expect(saveSpy).not.toHaveBeenCalled();
+    wrapper.unmount();
   });
 
   it("edits env", () => {
@@ -269,12 +311,13 @@ describe("<Dev3dDebugSettings />", () => {
     env.body.key = "3D_eventDebug";
     env.body.value = 0;
     mockState.resources = buildResourceIndex([env]);
-    render(<Dev3dDebugSettings />);
-    const toggle = toggleFor("3D_eventDebug");
-    fireEvent.click(toggle);
+    const wrapper = TestRenderer.create(<Dev3dDebugSettings />);
+    const toggle = toggleFor(wrapper, "3D_eventDebug");
+    toggle();
     expect(initSaveSpy).not.toHaveBeenCalled();
     expect(editSpy).toHaveBeenCalledWith(env, { value: 1 });
     expect(saveSpy).toHaveBeenCalledWith(env.uuid);
+    wrapper.unmount();
   });
 
   it("turns off setting", () => {
@@ -282,11 +325,12 @@ describe("<Dev3dDebugSettings />", () => {
     env.body.key = "3D_eventDebug";
     env.body.value = 1;
     mockState.resources = buildResourceIndex([env]);
-    render(<Dev3dDebugSettings />);
-    const toggle = toggleFor("3D_eventDebug");
-    fireEvent.click(toggle);
+    const wrapper = TestRenderer.create(<Dev3dDebugSettings />);
+    const toggle = toggleFor(wrapper, "3D_eventDebug");
+    toggle();
     expect(initSaveSpy).not.toHaveBeenCalled();
     expect(editSpy).toHaveBeenCalledWith(env, { value: 0 });
     expect(saveSpy).toHaveBeenCalledWith(env.uuid);
+    wrapper.unmount();
   });
 });

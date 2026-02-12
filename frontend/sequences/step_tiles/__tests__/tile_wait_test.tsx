@@ -21,8 +21,9 @@ describe("<TileWait />", () => {
     const labels = container.querySelectorAll("label");
     expect(inputs.length).toEqual(2);
     expect(labels.length).toEqual(1);
-    expect(inputs[0]?.getAttribute("placeholder")).toEqual("Wait");
     expect(labels[0]?.textContent).toEqual("Time in milliseconds");
-    expect((inputs[1] as HTMLInputElement | undefined)?.value).toEqual("100");
+    const millisInput = Array.from(inputs)
+      .find(input => (input).value == "100");
+    expect(millisInput).toBeTruthy();
   });
 });

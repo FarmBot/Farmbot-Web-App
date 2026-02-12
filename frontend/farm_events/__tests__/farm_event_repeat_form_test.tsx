@@ -164,3 +164,7 @@ describe("<FarmEventRepeatForm/>", () => {
     testBlurable(Selectors.END_TIME, "endTime", "08:57");
   });
 });
+
+afterAll(() => {
+  jest.unmock("../../ui");
+});

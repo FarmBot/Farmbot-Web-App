@@ -46,10 +46,11 @@ describe("<ZonesLayer />", () => {
   const expectSolid = (container: HTMLElement, selector: string) => {
     const zone = container.querySelector(`${selector} rect`);
     if (!zone) { throw new Error("Missing zone rect"); }
-    expect(zone.getAttribute("fill")).toEqual(null);
-    expect(zone.getAttribute("stroke")).toEqual(null);
-    expect(zone.getAttribute("stroke-dasharray")).toEqual(null);
-    expect(zone.getAttribute("stroke-width")).toEqual(null);
+    expect((zone.getAttribute("fill") ?? undefined)).toBeUndefined();
+    expect((zone.getAttribute("stroke") ?? undefined)).toBeUndefined();
+    expect((zone.getAttribute("stroke-dasharray") ?? undefined))
+      .toBeUndefined();
+    expect((zone.getAttribute("stroke-width") ?? undefined)).toBeUndefined();
   };
 
   const expectOutline = (container: HTMLElement, selector: string) => {

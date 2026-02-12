@@ -110,7 +110,7 @@ describe("<LogsSettingsMenu />", () => {
       const { container } = render(<LogsSettingsMenu {...p} />);
       const buttons = container
         .querySelectorAll("fieldset.row.half-gap.grid-exp-2 button");
-      fireEvent.click(buttons[position - 1] as Element);
+      fireEvent.click(buttons[position - 1]);
       expect(p.dispatch).toHaveBeenCalled();
     });
   }
@@ -126,11 +126,11 @@ describe("<LogsSettingsMenu />", () => {
     mockStorj[NumericSetting.busy_log] = 0;
     const buttons = container
       .querySelectorAll("fieldset.row.half-gap.grid-exp-2 button");
-    fireEvent.click(buttons[0] as Element);
+    fireEvent.click(buttons[0]);
     expect(setFilterLevel).toHaveBeenCalledWith(2);
     jest.clearAllMocks();
     mockStorj[NumericSetting.busy_log] = 3;
-    fireEvent.click(buttons[0] as Element);
+    fireEvent.click(buttons[0]);
     expect(setFilterLevel).not.toHaveBeenCalled();
   });
 
@@ -143,7 +143,7 @@ describe("<LogsSettingsMenu />", () => {
     mockStorj[NumericSetting.busy_log] = 0;
     const buttons = container
       .querySelectorAll("fieldset.row.half-gap.grid-exp-2 button");
-    fireEvent.click(buttons[0] as Element);
+    fireEvent.click(buttons[0]);
     expect(setFilterLevel).not.toHaveBeenCalled();
   });
 
@@ -153,7 +153,7 @@ describe("<LogsSettingsMenu />", () => {
     p.bot.hardware.informational_settings.private_ip = "10.0.0.1";
     const { container } = render(<LogsSettingsMenu {...p} />);
     const links = container.querySelectorAll("a");
-    expect((links[links.length - 1] as HTMLAnchorElement).href)
+    expect((links[links.length - 1]).href)
       .toEqual("http://10.0.0.1/logger");
   });
 });

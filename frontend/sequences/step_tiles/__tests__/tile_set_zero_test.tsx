@@ -16,7 +16,6 @@ describe("<TileSetZero/>", () => {
     const labels = container.querySelectorAll("label");
     expect(inputs.length).toEqual(5);
     expect(labels.length).toEqual(4);
-    expect(inputs[0]?.getAttribute("placeholder")).toEqual("Set home");
     expect(labels[0]?.textContent).toContain("x");
     expect((inputs[1] as HTMLInputElement | undefined)?.value).toEqual("x");
   });

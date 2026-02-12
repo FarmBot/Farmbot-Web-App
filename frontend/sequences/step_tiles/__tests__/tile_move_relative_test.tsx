@@ -21,9 +21,10 @@ describe("<TileMoveRelative/>", () => {
     const { container } = render(<TileMoveRelative {...fakeProps()} />);
     const inputs = container.querySelectorAll("input");
     const labels = container.querySelectorAll("label");
+    const wrapper = container.querySelector(".move-relative-step");
     expect(inputs.length).toEqual(5);
     expect(labels.length).toEqual(4);
-    expect(inputs[0]?.placeholder).toEqual("Move Relative");
+    expect(wrapper).toBeTruthy();
     expect(labels[0]?.textContent?.toLowerCase()).toEqual("x (mm)");
     expect(inputs[1]?.value).toEqual("1.1");
     expect(labels[1]?.textContent?.toLowerCase()).toEqual("y (mm)");

@@ -39,7 +39,7 @@ describe("<ErrorBoundary/>", () => {
     }
     if (rendered) {
       expect(
-        screen.getByText(/can't render this part of the page/i)
+        screen.getByText(/can't render this part of the page/i),
       ).toBeInTheDocument();
     }
     expect(catchErrorsSpy).toHaveBeenCalled();

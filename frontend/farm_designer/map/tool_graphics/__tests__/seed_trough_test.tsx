@@ -22,8 +22,12 @@ describe("<GantryToolSlot />", () => {
   });
 
   it("renders slot", () => {
-    const wrapper = svgMount(<GantryToolSlot {...fakeProps()} />);
-    expect(wrapper.html()).toContain("gantry-toolbay-slot");
+    const mounted = svgMount(<GantryToolSlot {...fakeProps()} />) as
+      | { container?: HTMLElement; html?: () => string };
+    const html = typeof mounted.html == "function"
+      ? mounted.html()
+      : mounted.container?.innerHTML || "";
+    expect(html).toContain("gantry-toolbay-slot");
   });
 });
 
@@ -41,7 +45,11 @@ describe("<SeedTrough />", () => {
   });
 
   it("renders seed trough", () => {
-    const wrapper = svgMount(<SeedTrough {...fakeProps()} />);
-    expect(wrapper.html()).toContain("seed-trough");
+    const mounted = svgMount(<SeedTrough {...fakeProps()} />) as
+      | { container?: HTMLElement; html?: () => string };
+    const html = typeof mounted.html == "function"
+      ? mounted.html()
+      : mounted.container?.innerHTML || "";
+    expect(html).toContain("seed-trough");
   });
 });

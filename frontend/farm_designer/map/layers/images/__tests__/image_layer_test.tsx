@@ -13,16 +13,18 @@ import {
 import {
   fakeDesignerState,
 } from "../../../../../__test_support__/fake_designer_state";
-
-jest.mock("../map_image", () => ({
-  ...jest.requireActual("../map_image"),
-  MapImage: () => <g className={"map-image"} />,
-}));
+import { MapImage } from "../map_image";
 
 describe("<ImageLayer/>", () => {
   let mockConfig = fakeWebAppConfig();
 
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   beforeEach(() => {
+    jest.spyOn(MapImage.prototype, "render")
+      .mockImplementation(() => <g className={"map-image"} />);
     mockConfig = fakeWebAppConfig();
     mockConfig.body.photo_filter_begin = "";
     mockConfig.body.photo_filter_end = "";
@@ -49,7 +51,7 @@ describe("<ImageLayer/>", () => {
     const layer = container.querySelector("#image-layer");
     if (!layer) { throw new Error("Missing image layer"); }
     expect(layer.querySelectorAll(".map-image").length).toEqual(1);
-    expect(layer.getAttribute("clip-path")).toEqual(null);
+    expect((layer.getAttribute("clip-path") ?? undefined)).toBeUndefined();
   });
 
   it("handles missing id", () => {

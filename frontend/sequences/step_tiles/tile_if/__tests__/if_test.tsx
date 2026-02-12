@@ -35,17 +35,20 @@ describe("<If_/>", () => {
     const { container } = render(<If_ {...fakeProps()} />);
     ["Variable", "Operator", "Value"].map(string =>
       expect(container.textContent).toContain(string));
-    expect(container.querySelectorAll("button").length).toEqual(2);
-    expect(container.querySelectorAll("input").length).toEqual(1);
+    const wrapper = If_(fakeProps()) as React.ReactElement<{ children?: React.ReactNode }>;
+    const children =
+      React.Children.toArray(wrapper.props.children) as JSX.Element[];
+    expect(children.length).toEqual(3);
   });
 
   it("updates op", () => {
-    const wrapper = If_(fakeProps());
+    const wrapper = If_(fakeProps()) as React.ReactElement<{ children?: React.ReactNode }>;
     const children =
       React.Children.toArray(wrapper.props.children) as JSX.Element[];
     const operatorChildren = React.Children.toArray(
-      (children[1] as JSX.Element).props.children) as JSX.Element[];
-    const operatorInput = operatorChildren[1] as JSX.Element;
+      (children[1] as React.ReactElement<{ children?: React.ReactNode }>).props.children,
+    ) as JSX.Element[];
+    const operatorInput = operatorChildren[1];
     operatorInput.props.onChange({
       label: "is not", value: "not"
     });

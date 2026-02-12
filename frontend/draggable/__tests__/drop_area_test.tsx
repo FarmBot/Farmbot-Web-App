@@ -1,7 +1,14 @@
 import React from "react";
-import { act, createEvent, fireEvent, render } from "@testing-library/react";
-import { DropArea } from "../drop_area";
+import {
+  createEvent,
+  fireEvent,
+  render,
+  waitFor,
+} from "@testing-library/react";
 import { DropAreaProps } from "../interfaces";
+
+const getDropArea = async () =>
+  (await import(`../drop_area.tsx?m=${Math.random()}`)).DropArea;
 
 describe("<DropArea />", () => {
   const fakeProps = (): DropAreaProps => ({
@@ -10,69 +17,83 @@ describe("<DropArea />", () => {
     children: undefined,
   });
 
-  it("opens", () => {
-    const ref = React.createRef<DropArea>();
-    const { container } = render(<DropArea {...fakeProps()} ref={ref} />);
-    ref.current?.setState({ isHovered: true });
-    expect(container.firstChild).toHaveClass("drag-drop-area");
+  it("opens", async () => {
+    const DropArea = await getDropArea();
+    const { container } = render(<DropArea {...fakeProps()} />);
+    const dropArea = container.firstChild as Element;
+    expect(dropArea).toHaveClass("drag-drop-area");
+    expect(dropArea).not.toHaveClass("visible");
+    fireEvent.dragEnter(dropArea);
+    await waitFor(() => expect(dropArea).toHaveClass("visible"));
   });
 
-  it("is locked open", () => {
+  it("is locked open", async () => {
+    const DropArea = await getDropArea();
     const p = fakeProps();
     p.isLocked = true;
     const { container } = render(<DropArea {...p} />);
-    expect(container.firstChild).toHaveClass("drag-drop-area");
+    const dropArea = container.firstChild as Element;
+    expect(dropArea).toHaveClass("drag-drop-area");
+    expect(dropArea).toHaveClass("visible");
   });
 
-  it("renders children", () => {
+  it("renders children", async () => {
+    const DropArea = await getDropArea();
     const { container } = render(<DropArea {...fakeProps()}>children</DropArea>);
     expect(container.textContent).toEqual("children");
   });
 
-  it("handles drag enter", () => {
+  it("handles drag enter", async () => {
+    const DropArea = await getDropArea();
     const preventDefault = jest.fn();
-    const ref = React.createRef<DropArea>();
-    const { container } = render(<DropArea {...fakeProps()} ref={ref} />);
-    expect(ref.current?.state.isHovered).toEqual(false);
-    const event = createEvent.dragEnter(container.firstChild as Element);
+    const { container } = render(<DropArea {...fakeProps()} />);
+    const dropArea = container.firstChild as Element;
+    expect(dropArea).not.toHaveClass("visible");
+    const event = createEvent.dragEnter(dropArea);
     Object.defineProperty(event, "preventDefault", { value: preventDefault });
-    fireEvent(container.firstChild as Element, event);
+    fireEvent(dropArea, event);
     expect(preventDefault).toHaveBeenCalled();
-    expect(ref.current?.state.isHovered).toEqual(true);
+    await waitFor(() => expect(dropArea).toHaveClass("visible"));
   });
 
-  it("handles drag leave", () => {
-    const ref = React.createRef<DropArea>();
-    const { container } = render(<DropArea {...fakeProps()} ref={ref} />);
-    act(() => ref.current?.setState({ isHovered: true }));
-    fireEvent.dragLeave(container.firstChild as Element);
-    expect(ref.current?.state.isHovered).toEqual(false);
+  it("handles drag leave", async () => {
+    const DropArea = await getDropArea();
+    const { container } = render(<DropArea {...fakeProps()} />);
+    const dropArea = container.firstChild as Element;
+    fireEvent.dragEnter(dropArea);
+    await waitFor(() => expect(dropArea).toHaveClass("visible"));
+    fireEvent.dragLeave(dropArea);
+    await waitFor(() => expect(dropArea).not.toHaveClass("visible"));
   });
 
-  it("handles drag over", () => {
+  it("handles drag over", async () => {
+    const DropArea = await getDropArea();
     const preventDefault = jest.fn();
-    const ref = React.createRef<DropArea>();
-    const { container } = render(<DropArea {...fakeProps()} ref={ref} />);
-    expect(ref.current?.state.isHovered).toEqual(false);
-    const event = createEvent.dragOver(container.firstChild as Element);
+    const { container } = render(<DropArea {...fakeProps()} />);
+    const dropArea = container.firstChild as Element;
+    expect(dropArea).not.toHaveClass("visible");
+    const event = createEvent.dragOver(dropArea);
     Object.defineProperty(event, "preventDefault", { value: preventDefault });
-    fireEvent(container.firstChild as Element, event);
+    fireEvent(dropArea, event);
     expect(preventDefault).toHaveBeenCalled();
-    expect(ref.current?.state.isHovered).toEqual(false);
+    expect(dropArea).not.toHaveClass("visible");
   });
 
-  it("handles drop", () => {
+  it("handles drop", async () => {
+    const DropArea = await getDropArea();
     const preventDefault = jest.fn();
     const p = fakeProps();
-    const ref = React.createRef<DropArea>();
-    const { container } = render(<DropArea {...p} ref={ref} />);
-    expect(ref.current?.state.isHovered).toEqual(false);
-    const event = createEvent.drop(container.firstChild as Element);
+    const { container } = render(<DropArea {...p} />);
+    const dropArea = container.firstChild as Element;
+    expect(dropArea).not.toHaveClass("visible");
+    const event = createEvent.drop(dropArea);
     Object.defineProperty(event, "preventDefault", { value: preventDefault });
-    Object.defineProperty(event, "dataTransfer", { value: { getData: () => "key" } });
-    fireEvent(container.firstChild as Element, event);
+    Object.defineProperty(event, "dataTransfer", {
+      value: { getData: () => "key" },
+    });
+    fireEvent(dropArea, event);
     expect(p.callback).toHaveBeenCalledWith("key");
     expect(preventDefault).toHaveBeenCalled();
-    expect(ref.current?.state.isHovered).toEqual(true);
+    await waitFor(() => expect(dropArea).toHaveClass("visible"));
   });
 });

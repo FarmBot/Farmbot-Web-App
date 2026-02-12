@@ -51,6 +51,13 @@ describe("<PlantGrid />", () => {
     return { ...view, ref };
   };
 
+  const getToggleButtonByLabel = (label: string): Element => {
+    const row = screen.getByText(label).closest(".row");
+    const button = row?.querySelector("button");
+    if (!button) { throw new Error(`Expected toggle button for ${label}`); }
+    return button;
+  };
+
   it("renders", async () => {
     const p = fakeProps();
     const { ref } = renderGrid(p);
@@ -234,7 +241,7 @@ describe("<PlantGrid />", () => {
     const { ref } = renderGrid(p);
     jest.clearAllMocks();
     expect(ref.current?.state.offsetPacking).toBeFalsy();
-    fireEvent.click(screen.getByTitle("toggle packing method"));
+    fireEvent.click(getToggleButtonByLabel("hexagonal packing"));
     expect(ref.current?.state.offsetPacking).toBeTruthy();
     expect(ref.current?.state.grid.spacingH).toEqual(217);
     expect(batchInitDirty).toHaveBeenCalledTimes(1);
@@ -248,7 +255,7 @@ describe("<PlantGrid />", () => {
       ref.current?.setState({ offsetPacking: true });
     });
     expect(ref.current?.state.offsetPacking).toBeTruthy();
-    fireEvent.click(screen.getByTitle("toggle packing method"));
+    fireEvent.click(getToggleButtonByLabel("hexagonal packing"));
     expect(ref.current?.state.offsetPacking).toBeFalsy();
     expect(ref.current?.state.grid.spacingH).toEqual(250);
     expect(batchInitDirty).toHaveBeenCalledTimes(1);
@@ -260,7 +267,7 @@ describe("<PlantGrid />", () => {
     const { ref } = renderGrid(p);
     jest.clearAllMocks();
     expect(ref.current?.state.cameraView).toBeFalsy();
-    fireEvent.click(screen.getByTitle("show camera view area"));
+    fireEvent.click(getToggleButtonByLabel("camera view area"));
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SHOW_CAMERA_VIEW_POINTS,
       payload: ref.current?.state.gridId,
@@ -277,7 +284,7 @@ describe("<PlantGrid />", () => {
     act(() => {
       ref.current?.setState({ cameraView: true });
     });
-    fireEvent.click(screen.getByTitle("show camera view area"));
+    fireEvent.click(getToggleButtonByLabel("camera view area"));
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SHOW_CAMERA_VIEW_POINTS,
       payload: undefined,

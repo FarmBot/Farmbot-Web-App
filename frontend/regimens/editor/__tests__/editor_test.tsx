@@ -1,5 +1,5 @@
 import React from "react";
-import { render, fireEvent } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import {
   RawDesignerRegimenEditor as DesignerRegimenEditor,
 } from "../../editor/editor";
@@ -13,6 +13,25 @@ import { Color } from "farmbot";
 import * as crud from "../../../api/crud";
 import * as addRegimenModule from "../../list/add_regimen";
 import * as popover from "../../../ui/popover";
+
+const findByPredicate = (
+  node: React.ReactNode,
+  predicate: (element: React.ReactElement<{ children?: React.ReactNode }>) => boolean,
+): React.ReactElement<{ children?: React.ReactNode }> | undefined => {
+  if (!node) { return undefined; }
+  if (Array.isArray(node)) {
+    for (const child of React.Children.toArray(node)) {
+      const found = findByPredicate(child, predicate);
+      if (found) { return found; }
+    }
+    return undefined;
+  }
+  if (!React.isValidElement<{ children?: React.ReactNode }>(node)) {
+    return undefined;
+  }
+  if (predicate(node)) { return node; }
+  return findByPredicate(node.props.children, predicate);
+};
 
 let setActiveRegimenByNameSpy: jest.SpyInstance;
 let editSpy: jest.SpyInstance;
@@ -58,7 +77,12 @@ describe("<DesignerRegimenEditor />", () => {
     expect(activeRegimen.setActiveRegimenByName).toHaveBeenCalled();
     expect(container.textContent?.toLowerCase()).toContain("no regimen selected");
     expect(container.innerHTML).not.toContain("select color");
-    fireEvent.click(container.querySelector("button") as Element);
+    const element = new DesignerRegimenEditor(p).render();
+    const addButton = findByPredicate(element, found =>
+      found.type === "button"
+      && (found.props as { title?: string }).title === "add new regimen");
+    expect(addButton?.props.onClick).toEqual(expect.any(Function));
+    addButton?.props.onClick();
     expect(addRegimenModule.addRegimen).toHaveBeenCalled();
   });
 
@@ -67,8 +91,14 @@ describe("<DesignerRegimenEditor />", () => {
     const regimen = fakeRegimen();
     regimen.body.color = "" as Color;
     p.current = regimen;
-    const { container } = render(<DesignerRegimenEditor {...p} />);
-    fireEvent.click(container.querySelector(".color-picker-item-wrapper") as Element);
+    render(<DesignerRegimenEditor {...p} />);
+    const colorPickerPopover = popoverSpy.mock.calls.find(
+      ([popoverProps]) =>
+        !!(popoverProps.content as React.ReactElement)?.props?.onChange);
+    const colorPickerCluster = colorPickerPopover?.[0]
+      .content as React.ReactElement<{ onChange: (color: Color) => void }>;
+    expect(colorPickerCluster).toBeTruthy();
+    colorPickerCluster.props.onChange("blue");
     expect(crud.edit).toHaveBeenCalledWith(p.current, { color: "blue" });
   });
 

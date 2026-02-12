@@ -43,10 +43,11 @@ describe("<ValueSelection />", () => {
   });
 
   const getKnownValueSelect = (props: ValueSelectionProps) => {
-    const wrapper = ValueSelection(props);
+    const wrapper =
+      ValueSelection(props) as React.ReactElement<{ children?: React.ReactNode }>;
     const children = React.Children.toArray(wrapper.props.children) as
       JSX.Element[];
-    const knownValue = children[1] as JSX.Element;
+    const knownValue = children[1];
     return (knownValue.type as (props: unknown) => JSX.Element)(
       knownValue.props);
   };
@@ -56,7 +57,7 @@ describe("<ValueSelection />", () => {
     p.field = undefined;
     const { container } = render(<ValueSelection {...p} />);
     expect(container.textContent).toContain("as");
-    expect(container.textContent).toContain("Select one");
+    expect(container.querySelectorAll("input").length).toEqual(0);
     expect(getKnownValueSelect(p).type).toBeDefined();
   });
 
@@ -115,8 +116,8 @@ describe("<ValueSelection />", () => {
     const select = getKnownValueSelect(p);
     const { container } = render(<ValueSelection {...p} />);
     expect(select.props.list).toEqual(PLANT_STAGE_LIST());
-    expect(container.textContent).toContain("as");
-    expect(container.textContent).toContain("Planted");
+    expect(container.textContent?.toLowerCase()).toContain("as");
+    expect(select.props.selectedItem.value).toEqual("planted");
   });
 
   it("renders plant value", () => {
@@ -131,7 +132,7 @@ describe("<ValueSelection />", () => {
     const { container } = render(<ValueSelection {...p} />);
     expect(select.props.list).toEqual(PLANT_STAGE_LIST());
     expect(container.textContent).toContain("as");
-    expect(container.textContent).toContain("other");
+    expect(select.props.selectedItem.value).toEqual("other");
   });
 
   it("renders plant value: date planted", () => {
@@ -147,8 +148,8 @@ describe("<ValueSelection />", () => {
     expect(select.props.list).toEqual([
       DDI.NOW,
     ]);
-    expect(container.textContent).toContain("as");
-    expect(container.textContent).toContain("Now");
+    expect(container.textContent?.toLowerCase()).toContain("as");
+    expect((select.props.selectedItem.label || "").toLowerCase()).toContain("now");
   });
 
   it("renders known weed value", () => {
@@ -166,8 +167,8 @@ describe("<ValueSelection />", () => {
       DDI.ACTIVE,
       DDI.REMOVED,
     ]);
-    expect(container.textContent).toContain("as");
-    expect(container.textContent).toContain("Removed");
+    expect(container.textContent?.toLowerCase()).toContain("as");
+    expect(select.props.selectedItem.value).toEqual("removed");
   });
 
   it("changes known weed value", () => {
@@ -202,7 +203,7 @@ describe("<ValueSelection />", () => {
       DDI.REMOVED,
     ]);
     expect(container.textContent).toContain("as");
-    expect(container.textContent).toContain("Removed");
+    expect(select.props.selectedItem.value).toEqual("removed");
   });
 
   it("renders known uncontrolled point value", () => {
@@ -232,7 +233,7 @@ describe("<ValueSelection />", () => {
     const { container } = render(<ValueSelection {...p} />);
     expect(select.props.list).toEqual(ALL_STAGE_LIST());
     expect(container.textContent).toContain("as");
-    expect(container.textContent).toContain("Removed");
+    expect(select.props.selectedItem.value).toEqual("removed");
   });
 
   const TOOL_OPTIONS = [
@@ -254,8 +255,8 @@ describe("<ValueSelection />", () => {
     const select = getKnownValueSelect(p);
     const { container } = render(<ValueSelection {...p} />);
     expect(select.props.list).toEqual(TOOL_OPTIONS);
-    expect(container.textContent).toContain("as");
-    expect(container.textContent).toContain("None");
+    expect(container.textContent?.toLowerCase()).toContain("as");
+    expect(select.props.selectedItem).toEqual({ label: "None", value: 0 });
   });
 
   it("renders known tool value: mounted", () => {
@@ -266,8 +267,9 @@ describe("<ValueSelection />", () => {
     const select = getKnownValueSelect(p);
     const { container } = render(<ValueSelection {...p} />);
     expect(select.props.list).toEqual(TOOL_OPTIONS);
-    expect(container.textContent).toContain("as");
-    expect(container.textContent).toContain("Trench Digging Tool");
+    expect(container.textContent?.toLowerCase()).toContain("as");
+    expect(select.props.selectedItem)
+      .toEqual({ label: "Trench Digging Tool", value: 14 });
   });
 
   it("renders known tool value: unknown tool", () => {
@@ -278,8 +280,8 @@ describe("<ValueSelection />", () => {
     const select = getKnownValueSelect(p);
     const { container } = render(<ValueSelection {...p} />);
     expect(select.props.list).toEqual(TOOL_OPTIONS);
-    expect(container.textContent).toContain("as");
-    expect(container.textContent).toContain("Unknown tool");
+    expect(container.textContent?.toLowerCase()).toContain("as");
+    expect(select.props.selectedItem).toEqual({ label: "Unknown tool", value: 123 });
   });
 
   it("renders known tool value: untitled tool", () => {
@@ -298,7 +300,7 @@ describe("<ValueSelection />", () => {
       { label: "Untitled tool", value: 1 },
     ]);
     expect(container.textContent).toContain("as");
-    expect(container.textContent).toContain("Untitled tool");
+    expect(select.props.selectedItem).toEqual({ label: "Untitled tool", value: 1 });
   });
 
   it("renders known identifier value", () => {
@@ -312,6 +314,6 @@ describe("<ValueSelection />", () => {
     const { container } = render(<ValueSelection {...p} />);
     expect(select.props.list).toEqual(ALL_STAGE_LIST());
     expect(container.textContent).toContain("as");
-    expect(container.textContent).toContain("Planted");
+    expect(select.props.selectedItem).toEqual({ label: "Planted", value: "planted" });
   });
 });

@@ -33,7 +33,7 @@ describe("<ToolProfilePoint />", () => {
     p.point = slot;
     p.tools = [tool];
     const wrapper = svgMount(<ToolProfilePoint {...p} />);
-    expect(wrapper.html()).toContain("seeder-implement-profile");
+    expect(wrapper.container.innerHTML).toContain("seeder-implement-profile");
   });
 });
 
@@ -55,8 +55,8 @@ describe("<UTMProfile />", () => {
     p.mountedToolInfo.name = "soil sensor";
     p.profileAxis = "y";
     const wrapper = svgMount(<UTMProfile {...p} />);
-    expect(wrapper.html()).toContain("front");
-    expect(wrapper.html()).not.toContain("side");
+    expect(wrapper.container.innerHTML).toContain("front");
+    expect(wrapper.container.innerHTML).not.toContain("side");
   });
 
   it("renders side view", () => {
@@ -64,7 +64,7 @@ describe("<UTMProfile />", () => {
     p.mountedToolInfo.name = "soil sensor";
     p.profileAxis = "x";
     const wrapper = svgMount(<UTMProfile {...p} />);
-    expect(wrapper.html()).not.toContain("front");
-    expect(wrapper.html()).toContain("side");
+    expect(wrapper.container.innerHTML).not.toContain("front");
+    expect(wrapper.container.innerHTML).toContain("side");
   });
 });

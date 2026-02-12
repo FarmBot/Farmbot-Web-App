@@ -24,7 +24,7 @@ const renderSvg = (node: React.ReactNode) => render(<svg>{node}</svg>);
 const getUse = (container: HTMLElement) => {
   const element = container.querySelector("use");
   if (!element) { throw new Error("Missing use element"); }
-  return element as SVGUseElement;
+  return element;
 };
 
 const getLastCircle = (container: HTMLElement) => {

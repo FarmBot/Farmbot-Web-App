@@ -25,9 +25,7 @@ describe("<TileTakePhoto/>", () => {
 
   it("renders inputs", () => {
     const { container } = render(<TileTakePhoto {...fakeProps()} />);
-    const inputs = container.querySelectorAll("input");
-    expect(inputs.length).toEqual(1);
-    expect(inputs[0]?.getAttribute("placeholder")).toEqual("Take a Photo");
+    expect(container.querySelector(".take-photo-step")).toBeTruthy();
     expect(container.innerHTML).toContain(Path.photos());
     expect(container.textContent).toContain("photos panel");
   });

@@ -13,13 +13,16 @@ describe("<DrawnWeed />", () => {
   });
 
   it("renders weed", () => {
-    const wrapper = svgMount(<DrawnWeed {...fakeProps()} />);
-    const stop = wrapper.find("stop").first().props();
-    expect(stop.stopColor).toEqual("green");
-    expect(stop.stopOpacity).toEqual(0.25);
-    expect(wrapper.find("circle").first().props()).toEqual({
-      id: "weed-radius", cx: 10, cy: 20, r: 30, fill: "url(#DrawnWeedGradient)",
-    });
+    const { container } = svgMount(<DrawnWeed {...fakeProps()} />);
+    const stop = container.querySelector("stop");
+    const circle = container.querySelector("circle");
+    expect(stop?.getAttribute("stop-color")).toEqual("green");
+    expect(Number(stop?.getAttribute("stop-opacity"))).toEqual(0.25);
+    expect(circle?.getAttribute("id")).toEqual("weed-radius");
+    expect(Number(circle?.getAttribute("cx"))).toEqual(10);
+    expect(Number(circle?.getAttribute("cy"))).toEqual(20);
+    expect(Number(circle?.getAttribute("r"))).toEqual(30);
+    expect(circle?.getAttribute("fill")).toEqual("url(#DrawnWeedGradient)");
   });
 
   it("renders pink weed", () => {
@@ -27,16 +30,16 @@ describe("<DrawnWeed />", () => {
     const weed = fakeDrawnPoint();
     weed.color = "pink";
     p.data = weed;
-    const wrapper = svgMount(<DrawnWeed {...p} />);
-    const stop = wrapper.find("stop").first().props();
-    expect(stop.stopColor).toEqual("pink");
-    expect(stop.stopOpacity).toEqual(0.5);
+    const { container } = svgMount(<DrawnWeed {...p} />);
+    const stop = container.querySelector("stop");
+    expect(stop?.getAttribute("stop-color")).toEqual("pink");
+    expect(Number(stop?.getAttribute("stop-opacity"))).toEqual(0.5);
   });
 
   it("doesn't render weed", () => {
     const p = fakeProps();
     p.data = undefined;
-    const wrapper = svgMount(<DrawnWeed {...p} />);
-    expect(wrapper.html()).toContain("<g id=\"current-weed\"></g>");
+    const { container } = svgMount(<DrawnWeed {...p} />);
+    expect(container.innerHTML).toContain("<g id=\"current-weed\"></g>");
   });
 });

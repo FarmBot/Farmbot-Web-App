@@ -105,7 +105,7 @@ describe("<OsUpdateButton />", () => {
     render(<OsUpdateButton {...p} />);
     const osUpdateButton = screen.getByRole("button");
     expect(osUpdateButton.textContent).toBe(expected.text);
-    expect(osUpdateButton.getAttribute("title")).toBe(expected.title || null);
+    expect(osUpdateButton.getAttribute("title") ?? undefined).toBe(expected.title);
     expect(osUpdateButton.className.includes(expected.color)).toBe(true);
     expect(osUpdateButton).toBeTruthy();
     expect((osUpdateButton as HTMLButtonElement).disabled).toBe(expected.disabled);
@@ -234,8 +234,8 @@ describe("<OsUpdateButton />", () => {
     const osUpdateButton = screen.getByRole("button");
     const expectedButton = updateNeeded("13.0.0");
     expect(osUpdateButton.textContent).toBe("10%");
-    expect(osUpdateButton.getAttribute("title"))
-      .toBe(expectedButton.title || null);
+    expect(osUpdateButton.getAttribute("title") ?? undefined)
+      .toBe(expectedButton.title);
     expect(osUpdateButton.className.includes(expectedButton.color)).toBe(true);
     expect((osUpdateButton as HTMLButtonElement).disabled).toBe(true);
   });
@@ -254,7 +254,7 @@ describe("<OsUpdateButton />", () => {
     localFakeProps.bot.osUpdateVersion = testProps.availableVersion;
     render(<OsUpdateButton {...localFakeProps} />);
     const osUpdateButton = screen.getByRole("button");
-    expect(osUpdateButton.getAttribute("title")).toBe(expected.title || null);
+    expect(osUpdateButton.getAttribute("title") ?? undefined).toBe(expected.title);
     expect(osUpdateButton.className.includes(expected.color)).toBe(true);
     expect((osUpdateButton as HTMLButtonElement).disabled).toBe(expected.disabled);
     expect(osUpdateButton.textContent).toBe(expected.text);
@@ -276,7 +276,7 @@ describe("<OsUpdateButton />", () => {
     localFakeProps.bot.osUpdateVersion = testProps.availableVersion;
     render(<OsUpdateButton {...localFakeProps} />);
     const osUpdateButton = screen.getByRole("button");
-    expect(osUpdateButton.getAttribute("title")).toBe(expected.title || null);
+    expect(osUpdateButton.getAttribute("title") ?? undefined).toBe(expected.title);
     expect(osUpdateButton.className.includes(expected.color)).toBe(true);
     expect((osUpdateButton as HTMLButtonElement).disabled).toBe(expected.disabled);
     expect(osUpdateButton.textContent).toBe(expected.text);

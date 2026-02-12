@@ -1,7 +1,6 @@
 let mockOnlineValue = true;
 import React from "react";
 import { render } from "@testing-library/react";
-import TestRenderer from "react-test-renderer";
 import { botOnlineReq, ProductRegistration } from "../prerequisites";
 import { WizardStepComponentProps } from "../interfaces";
 import {
@@ -35,9 +34,18 @@ describe("<ProductRegistration />", () => {
   });
 
   it("updates value", () => {
-    const wrapper = TestRenderer.create(<ProductRegistration {...fakeProps()} />);
-    const input = wrapper.root.findByType("input");
-    input.props.onBlur({ currentTarget: { value: "123" } });
+    const registration =
+      ProductRegistration(fakeProps()) as React.ReactElement<{ children?: React.ReactNode }>;
+    const input = React.Children.toArray(registration.props.children)
+      .find(child =>
+        React.isValidElement<{ onCommit?: unknown }>(child)
+        && typeof child.props.onCommit == "function");
+    if (!input || !React.isValidElement(input)) {
+      throw new Error("Expected order number input");
+    }
+    input.props.onCommit({
+      currentTarget: { value: "123" },
+    } as React.FocusEvent<HTMLInputElement>);
     expect(setOrderNumberSpy).toHaveBeenCalledWith(expect.any(Object), "123");
   });
 });

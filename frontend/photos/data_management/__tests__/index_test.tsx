@@ -29,7 +29,7 @@ describe("<ImagingDataManagement />", () => {
 
   it("renders toggle", () => {
     render(<ImagingDataManagement {...fakeProps()} />);
-    expect(screen.getByText(/highlight/i)).toBeInTheDocument();
+    expect(screen.getByText(/show advanced settings/i)).toBeInTheDocument();
   });
 
   it("doesn't render advanced", () => {

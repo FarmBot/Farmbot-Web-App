@@ -115,3 +115,7 @@ describe("<CurveInfo />", () => {
     expect(p.onChange).toHaveBeenCalledWith(undefined, CurveType.water);
   });
 });
+
+afterAll(() => {
+  jest.unmock("../../ui");
+});

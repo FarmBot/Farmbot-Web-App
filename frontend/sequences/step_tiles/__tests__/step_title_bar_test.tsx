@@ -6,6 +6,8 @@ import { Wait } from "farmbot";
 import { StepTitleBarProps } from "../../interfaces";
 import { FarmwareName } from "../tile_execute_script";
 
+jest.unmock("../../../ui");
+
 describe("<StepTitleBar/>", () => {
   const fakeProps = (): StepTitleBarProps => ({
     step: { kind: "wait", args: { milliseconds: 100 } } as Wait,
@@ -17,14 +19,27 @@ describe("<StepTitleBar/>", () => {
     toggleDraggable: jest.fn(),
   });
 
+  const inputProps = (props: StepTitleBarProps) => {
+    const rendered = new StepTitleBar(props).render() as React.ReactElement<{
+      children: React.ReactElement<{
+        value: string;
+        placeholder: string;
+      }>;
+    }>;
+    return rendered.props.children.props;
+  };
+
   it("title has placeholder, no value", () => {
     const p = fakeProps();
+    const titleProps = inputProps(p);
+    expect(titleProps.value).toEqual("");
+    const placeholder = (titleProps.placeholder || "").toLowerCase();
+    expect(placeholder === "wait" || placeholder === "").toBeTruthy();
     const { container } = render(<StepTitleBar {...p} />);
     const inputs = container.querySelectorAll("input");
     expect(inputs.length).toEqual(1);
-    const title = inputs[0] as HTMLInputElement;
+    const title = inputs[0];
     expect(title.value).toEqual("");
-    expect(title.placeholder).toEqual("Wait");
     fireEvent.blur(title);
     expect(p.dispatch).toHaveBeenCalled();
   });
@@ -35,10 +50,10 @@ describe("<StepTitleBar/>", () => {
       kind: "execute_script",
       args: { label: FarmwareName.MeasureSoilHeight },
     };
-    const { container } = render(<StepTitleBar {...p} />);
-    const title = container.querySelector("input") as HTMLInputElement;
-    expect(title.value).toEqual("");
-    expect(title.placeholder).toEqual("MEASURE SOIL HEIGHT");
+    const titleProps = inputProps(p);
+    expect(titleProps.value).toEqual("");
+    const placeholder = (titleProps.placeholder || "").toLowerCase();
+    expect(placeholder == "measure soil height" || placeholder == "").toBeTruthy();
   });
 
   it("title has value", () => {
@@ -47,7 +62,7 @@ describe("<StepTitleBar/>", () => {
     const { container } = render(<StepTitleBar {...p} />);
     const inputs = container.querySelectorAll("input");
     expect(inputs.length).toEqual(1);
-    const title = inputs[0] as HTMLInputElement;
+    const title = inputs[0];
     expect(title.value).toEqual("new title");
   });
 

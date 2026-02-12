@@ -634,31 +634,60 @@ describe("<StartTimeForm />", () => {
     timeSettings: fakeTimeSettings(),
   });
 
+  const findElementByName = (
+    node: unknown,
+    name: string,
+  ): React.ReactElement | undefined => {
+    if (Array.isArray(node)) {
+      for (const child of node) {
+        const found = findElementByName(child, name);
+        if (found) { return found; }
+      }
+      return undefined;
+    }
+    if (!React.isValidElement(node)) { return undefined; }
+    if (node.props?.name === name) { return node; }
+    for (const value of Object.values(node.props || {})) {
+      const found = findElementByName(value, name);
+      if (found) { return found; }
+    }
+    return undefined;
+  };
+
   it("changes start date", () => {
     const p = fakeProps();
-    const { container } = render(<StartTimeForm {...p} />);
-    const input = container.querySelector("input[name='start_date']") as Element;
-    fireEvent.focus(input);
-    fireEvent.change(input, { target: { value: "2017-07-26" } });
-    fireEvent.blur(input, { currentTarget: { value: "2017-07-26" } });
+    const form = StartTimeForm(p);
+    const input = findElementByName(form, "start_date");
+    if (!input || typeof input.props.onCommit !== "function") {
+      throw new Error("Expected start date input");
+    }
+    input.props.onCommit({
+      currentTarget: { value: "2017-07-26" },
+    } as React.FocusEvent<HTMLInputElement>);
     expect(p.fieldSet).toHaveBeenCalledWith("startDate", "2017-07-26");
   });
 
   it("changes start time", () => {
     const p = fakeProps();
-    const { container } = render(<StartTimeForm {...p} />);
-    const input = container.querySelector("input[name='start_time']") as Element;
-    fireEvent.focus(input);
-    fireEvent.change(input, { target: { value: "08:57" } });
-    fireEvent.blur(input, { currentTarget: { value: "08:57" } });
+    const form = StartTimeForm(p);
+    const input = findElementByName(form, "start_time");
+    if (!input || typeof input.props.onCommit !== "function") {
+      throw new Error("Expected start time input");
+    }
+    input.props.onCommit({
+      currentTarget: { value: "08:57" },
+    } as React.FocusEvent<HTMLInputElement>);
     expect(p.fieldSet).toHaveBeenCalledWith("startTime", "08:57");
   });
 
   it("displays error", () => {
     const p = fakeProps();
     p.now = moment();
-    const { container } = render(<StartTimeForm {...p} />);
-    expect(container.querySelector(".input-error")).toBeTruthy();
+    const form = StartTimeForm(p);
+    const startDateInput = findElementByName(form, "start_date");
+    const startTimeInput = findElementByName(form, "start_time");
+    expect(startDateInput?.props.error).toBeTruthy();
+    expect(startTimeInput?.props.error).toBeTruthy();
   });
 
   it("doesn't display error: old event", () => {
@@ -670,23 +699,32 @@ describe("<StartTimeForm />", () => {
         startTime: "08:57",
       } as FarmEventViewModel)[key]);
     p.now = moment();
-    const { container } = render(<StartTimeForm {...p} />);
-    expect(container.querySelector(".input-error")).toEqual(null);
+    const form = StartTimeForm(p);
+    const startDateInput = findElementByName(form, "start_date");
+    const startTimeInput = findElementByName(form, "start_time");
+    expect(startDateInput?.props.error).toBeUndefined();
+    expect(startTimeInput?.props.error).toBeUndefined();
   });
 
   it("doesn't display error: regimen", () => {
     const p = fakeProps();
     p.now = moment();
     p.isRegimen = true;
-    const { container } = render(<StartTimeForm {...p} />);
-    expect(container.querySelector(".input-error")).toEqual(null);
+    const form = StartTimeForm(p);
+    const startDateInput = findElementByName(form, "start_date");
+    const startTimeInput = findElementByName(form, "start_time");
+    expect(startDateInput?.props.error).toBeUndefined();
+    expect(startTimeInput?.props.error).toBeUndefined();
   });
 
   it("doesn't display error: in future", () => {
     const p = fakeProps();
     p.now = moment("2015-12-28T22:32:00.000Z");
-    const { container } = render(<StartTimeForm {...p} />);
-    expect(container.querySelector(".input-error")).toEqual(null);
+    const form = StartTimeForm(p);
+    const startDateInput = findElementByName(form, "start_date");
+    const startTimeInput = findElementByName(form, "start_time");
+    expect(startDateInput?.props.error).toBeUndefined();
+    expect(startTimeInput?.props.error).toBeUndefined();
   });
 });
 

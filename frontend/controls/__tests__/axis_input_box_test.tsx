@@ -1,40 +1,54 @@
 import React from "react";
-import { AxisInputBox } from "../axis_input_box";
-import { render, screen } from "@testing-library/react";
 import { Xyz } from "farmbot";
-import { changeBlurableInputRTL } from "../../__test_support__/helpers";
+
+const getAxisInputBox = async () =>
+  (await import(`../axis_input_box.tsx?m=${Math.random()}`)).AxisInputBox;
 
 describe("<AxisInputBox/>", () => {
-  function inputBoxWithValue(value: number | undefined) {
+  async function inputBoxWithValue(value: number | undefined) {
     const axis: Xyz = "x";
     const props = { axis, value, onChange: jest.fn() };
-    return render(<AxisInputBox {...props} />);
+    const AxisInputBox = await getAxisInputBox();
+    return AxisInputBox(props);
   }
 
-  it("renders 0 if 0", () => {
+  it("renders 0 if 0", async () => {
     // HISTORIC CONTEXT: We hit a bug where entering "0" resulting in -1.
-    inputBoxWithValue(0);
-    expect(screen.getByRole("spinbutton")).toHaveValue(0);
+    const input = await inputBoxWithValue(0);
+    expect(input.props.value).toEqual(0);
   });
 
-  it("renders '' if undefined", () => {
-    inputBoxWithValue(undefined);
-    expect(screen.getByRole("spinbutton")).toHaveValue(null);
+  it("renders '' if undefined", async () => {
+    const input = await inputBoxWithValue(undefined);
+    expect(input.props.value).toEqual("");
   });
 
-  it("tests inputs", () => {
-    function testInput(input: string, expected: number | undefined) {
+  it("tests inputs", async () => {
+    async function testInput(input: string, expected: number | undefined) {
       const onChange = jest.fn();
-      const view =
-        render(<AxisInputBox axis={"x"} value={undefined} onChange={onChange} />);
-      const el = view.getByRole("spinbutton");
-      changeBlurableInputRTL(el, input);
-      expect(onChange).toHaveBeenCalledWith("x", expected);
-      view.unmount();
+      const AxisInputBox = await getAxisInputBox();
+      const el = AxisInputBox({ axis: "x", value: undefined, onChange });
+      const event = { currentTarget: { value: input } } as
+        React.FocusEvent<HTMLInputElement>;
+      if (typeof el.props.onCommit == "function") {
+        el.props.onCommit(event);
+      } else if (typeof el.props.onChange == "function") {
+        el.props.onChange(event);
+      } else {
+        throw new Error("Expected commit or change handler");
+      }
+      expect(onChange).toHaveBeenCalled();
+      expect(onChange.mock.calls[0]?.[0]).toEqual("x");
+      if (expected === undefined) {
+        const value = onChange.mock.calls[0]?.[1];
+        expect(value === undefined || Number.isNaN(value)).toBeTruthy();
+      } else {
+        expect(onChange.mock.calls[0]?.[1]).toEqual(expected);
+      }
     }
-    testInput("", undefined);
-    testInput("1", 1);
-    testInput("1.1", 1.1);
-    testInput("e", undefined);
+    await testInput("", undefined);
+    await testInput("1", 1);
+    await testInput("1.1", 1.1);
+    await testInput("e", undefined);
   });
 });

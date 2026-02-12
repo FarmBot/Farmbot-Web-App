@@ -1,21 +1,10 @@
 import React from "react";
 import { AllSteps, AllStepsProps } from "../all_steps";
-import { render, fireEvent } from "@testing-library/react";
+import { createEvent, render, fireEvent } from "@testing-library/react";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { maybeTagStep, getStepTag } from "../../resources/sequence_tagging";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { emptyState } from "../../resources/reducer";
-
-jest.mock("../../draggable/drop_area", () => ({
-  DropArea: (props: { callback?: (key: string) => void }) =>
-    <button className="drop-area-mock"
-      onClick={() => props.callback?.("fake key")} />,
-}));
-
-jest.mock("../../draggable/step_dragger", () => ({
-  StepDragger: (props: { children: React.ReactNode }) =>
-    <div className="step-dragger-mock">{props.children}</div>,
-}));
 
 jest.mock("../sequence_editor_middle_active", () => ({
   AddCommandButton: () => <div className="add-command-button-mock" />,
@@ -25,6 +14,11 @@ jest.mock("../step_tiles/index", () => ({
   renderCeleryNode: (props: { currentStep: { kind: string } }) =>
     <div className={`${props.currentStep.kind.replace(/_/g, "-")}-step`} />,
 }));
+
+afterAll(() => {
+  jest.unmock("../sequence_editor_middle_active");
+  jest.unmock("../step_tiles/index");
+});
 
 describe("<AllSteps />", () => {
   const fakeProps = (): AllStepsProps => ({
@@ -76,7 +70,12 @@ describe("<AllSteps />", () => {
     p.sequence.body.body = [{ kind: "wait", args: { milliseconds: 0 } }];
     p.sequence.body.body.map(step => maybeTagStep(step));
     const { container } = render(<AllSteps {...p} />);
-    fireEvent.click(container.querySelector(".drop-area-mock") as Element);
+    const dropArea = container.querySelector(".drag-drop-area") as Element;
+    const event = createEvent.drop(dropArea);
+    Object.defineProperty(event, "dataTransfer", {
+      value: { getData: () => "fake key" },
+    });
+    fireEvent(dropArea, event);
     expect(p.onDrop).toHaveBeenCalledWith(0, "fake key");
   });
 

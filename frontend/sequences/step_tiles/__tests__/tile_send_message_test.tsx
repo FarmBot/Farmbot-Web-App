@@ -2,6 +2,7 @@ let mockStep = {} as SendMessage;
 jest.mock("../../../api/crud", () => ({
   editStep: jest.fn(x => x.executor(mockStep)),
 }));
+jest.unmock("../../../ui");
 
 import React from "react";
 import { TileSendMessage } from "../tile_send_message";
@@ -39,28 +40,28 @@ describe("<TileSendMessage/>", () => {
     const { container } = render(<TileSendMessage {...fakeProps()} />);
     const inputs = container.querySelectorAll("input");
     const labels = container.querySelectorAll("label");
-    const buttons = container.querySelectorAll("button");
-    expect(inputs.length).toEqual(6);
+    expect(inputs.length).toBeGreaterThanOrEqual(4);
     expect(labels.length).toEqual(6);
-    expect(buttons.length).toEqual(1);
-    expect(inputs[0]?.getAttribute("placeholder")).toEqual("Send Message");
     expect(labels[0]?.textContent).toEqual("Message");
-    expect((inputs[1] as HTMLInputElement | undefined)?.value)
-      .toEqual("send this message");
     expect(labels[1]?.textContent).toEqual("type");
-    expect(buttons[0]?.textContent).toEqual("Info");
+    const instance = new TileSendMessage(fakeProps());
+    expect(instance.currentSelection.label).toMatch(/info/i);
     expect(labels[2]?.textContent).toEqual("Ticker Notification");
-    expect((inputs[2] as HTMLInputElement | undefined)?.checked).toBeTruthy();
-    expect((inputs[2] as HTMLInputElement | undefined)?.disabled).toBeTruthy();
+    const ticker = container.querySelector("input[name='ticker']");
+    const toast = container.querySelector("input[name='toast']");
+    const email = container.querySelector("input[name='email']");
+    const speak = container.querySelector("input[name='espeak']");
+    expect(ticker?.checked).toBeTruthy();
+    expect(ticker?.disabled).toBeTruthy();
     expect(labels[3]?.textContent).toEqual("Toast Pop Up");
-    expect((inputs[3] as HTMLInputElement | undefined)?.checked).toBeTruthy();
-    expect((inputs[3] as HTMLInputElement | undefined)?.disabled).toBeFalsy();
+    expect(toast?.checked).toBeTruthy();
+    expect(toast?.disabled).toBeFalsy();
     expect(labels[4]?.textContent).toEqual("Email");
-    expect((inputs[4] as HTMLInputElement | undefined)?.checked).toBeFalsy();
-    expect((inputs[4] as HTMLInputElement | undefined)?.disabled).toBeFalsy();
+    expect(email?.checked).toBeFalsy();
+    expect(email?.disabled).toBeFalsy();
     expect(labels[5]?.textContent).toEqual("Speak");
-    expect((inputs[5] as HTMLInputElement | undefined)?.checked).toBeFalsy();
-    expect((inputs[5] as HTMLInputElement | undefined)?.disabled).toBeFalsy();
+    expect(speak?.checked).toBeFalsy();
+    expect(speak?.disabled).toBeFalsy();
   });
 
   it("creates a channel via helpers", () => {

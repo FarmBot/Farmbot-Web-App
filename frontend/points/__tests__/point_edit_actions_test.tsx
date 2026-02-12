@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 jest.mock("../../ui", () => {
   const React = require("react");
   const actual = jest.requireActual("../../ui");
@@ -110,7 +111,7 @@ describe("<EditPointLocation />", () => {
     expect((container.querySelector("input[name='x']") as HTMLInputElement).min)
       .toEqual("0");
     expect((container.querySelector("input[name='z']") as HTMLInputElement)
-      .getAttribute("min")).toEqual(null);
+      .getAttribute("min") ?? undefined).toBeUndefined();
   });
 });
 
@@ -196,4 +197,8 @@ describe("<AdditionalWeedProperties />", () => {
       meta: { removal_method: "manual" }
     });
   });
+});
+
+afterAll(() => {
+  jest.unmock("../../ui");
 });

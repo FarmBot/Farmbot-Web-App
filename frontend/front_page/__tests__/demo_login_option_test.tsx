@@ -68,7 +68,7 @@ describe("<DemoLoginOption />", () => {
       callback?.();
     }) as DemoLoginOption["setState"];
     expect(instance.state.productLine).toEqual("genesis_1.8");
-    const select = instance["seedDataSelect"]() as React.ReactElement;
+    const select = instance["seedDataSelect"]();
     select.props.onChange({ value: "express_1.2" });
     expect(instance.state.productLine).toEqual("express_1.2");
   });

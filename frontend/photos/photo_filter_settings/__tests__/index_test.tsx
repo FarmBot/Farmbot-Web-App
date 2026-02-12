@@ -1,5 +1,5 @@
 import React from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { PhotoFilterSettings, FiltersEnabledWarning } from "../index";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { fakeImageShowFlags } from "../../../__test_support__/fake_camera_data";
@@ -33,6 +33,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  cleanup();
   jest.restoreAllMocks();
 });
 
@@ -47,8 +48,25 @@ describe("<PhotoFilterSettings />", () => {
     getConfigValue: jest.fn(),
   });
 
-  const getToggle = (container: HTMLElement, index: number) =>
-    container.querySelectorAll("button.fb-toggle-button").item(index) as HTMLButtonElement;
+  const getToggle = (
+    container: HTMLElement,
+    label: string,
+  ): HTMLElement | undefined => {
+    const row = within(container).queryByText(new RegExp(`^${label}$`, "i"))?.closest(".row")
+      || within(container).queryByText(new RegExp(label, "i"))?.closest(".row");
+    if (!row) {
+      const byRole = screen.queryByRole("switch", { name: new RegExp(label, "i") })
+        || screen.queryByRole("checkbox", { name: new RegExp(label, "i") })
+        || screen.queryByRole("button", { name: new RegExp(label, "i") });
+      return byRole instanceof HTMLElement ? byRole : undefined;
+    }
+    const button = row.querySelector("button.fb-toggle-button")
+      || row.querySelector("button");
+    if (button instanceof HTMLElement) { return button; }
+    const checkbox = row.querySelector("input[type=\"checkbox\"]")
+      || row.querySelector("[role=\"switch\"]");
+    return checkbox instanceof HTMLElement ? checkbox : undefined;
+  };
 
   it("sets resets filter settings", () => {
     render(<PhotoFilterSettings {...fakeProps()} />);
@@ -61,7 +79,9 @@ describe("<PhotoFilterSettings />", () => {
 
   it("toggles photos", () => {
     const { container } = render(<PhotoFilterSettings {...fakeProps()} />);
-    fireEvent.click(getToggle(container, 0));
+    const toggle = getToggle(container, "show photos in map");
+    if (!toggle) { throw new Error("Missing photo map toggle"); }
+    fireEvent.click(toggle);
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       BooleanSetting.show_images, false);
   });
@@ -69,7 +89,9 @@ describe("<PhotoFilterSettings />", () => {
   it("toggles always highlight mode", () => {
     const p = fakeProps();
     const { container } = render(<PhotoFilterSettings {...p} />);
-    fireEvent.click(getToggle(container, 1));
+    const toggle = getToggle(container, "always highlight current photo in map");
+    if (!toggle) { throw new Error("Missing always highlight toggle"); }
+    fireEvent.click(toggle);
     expect(toggleAlwaysHighlightImageSpy).toHaveBeenCalledWith(
       false, p.currentImage);
   });
@@ -85,7 +107,9 @@ describe("<PhotoFilterSettings />", () => {
   it("toggles single image mode", () => {
     const p = fakeProps();
     const { container } = render(<PhotoFilterSettings {...p} />);
-    fireEvent.click(getToggle(container, 2));
+    const toggle = getToggle(container, "only show current photo in map");
+    if (!toggle) { throw new Error("Missing single image toggle"); }
+    fireEvent.click(toggle);
     expect(toggleSingleImageModeSpy).toHaveBeenCalledWith(p.currentImage);
   });
 

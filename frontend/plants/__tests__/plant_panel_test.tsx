@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 jest.mock("../../ui", () => {
   const React = require("react");
   const actual = jest.requireActual("../../ui");
@@ -123,8 +124,8 @@ describe("<PlantPanel />", () => {
     expect(txt).toContain("meta value");
     expect(txt).not.toContain("gridid");
     const inputs = container.querySelectorAll("input");
-    const x = (inputs[1] as HTMLInputElement).value;
-    const y = (inputs[2] as HTMLInputElement).value;
+    const x = (inputs[1]).value;
+    const y = (inputs[2]).value;
     expect(x).toEqual("12");
     expect(y).toEqual("34");
   });
@@ -294,4 +295,8 @@ describe("<EditPlantDepth />", () => {
       depth: 100,
     });
   });
+});
+
+afterAll(() => {
+  jest.unmock("../../ui");
 });

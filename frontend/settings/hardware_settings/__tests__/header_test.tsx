@@ -1,6 +1,7 @@
 import React from "react";
 import { Header, HeaderProps } from "../header";
-import { fireEvent, render, screen } from "@testing-library/react";
+import TestRenderer from "react-test-renderer";
+import { ExpandableHeader } from "../../../ui/expandable_header";
 import { DeviceSetting, Actions } from "../../../constants";
 
 describe("<Header />", () => {
@@ -12,18 +13,22 @@ describe("<Header />", () => {
   });
 
   it("renders", () => {
-    const { container } = render(<Header {...fakeProps()} />);
-    expect((container.textContent || "").toLowerCase()).toContain("motors");
-    expect(container.querySelectorAll(".fa-minus").length).toBe(1);
+    const wrapper = TestRenderer.create(<Header {...fakeProps()} />);
+    const header = wrapper.root.findByType(ExpandableHeader);
+    expect((header.props.title || "").toLowerCase()).toContain("motors");
+    expect(header.props.expanded).toBe(true);
+    wrapper.unmount();
   });
 
   it("handles click", () => {
     const p = fakeProps();
-    render(<Header {...p} />);
-    fireEvent.click(screen.getByText(/motors/i));
+    const wrapper = TestRenderer.create(<Header {...p} />);
+    const header = wrapper.root.findByType(ExpandableHeader);
+    header.props.onClick();
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_SETTINGS_PANEL_OPTION,
       payload: "motors",
     });
+    wrapper.unmount();
   });
 });

@@ -88,6 +88,8 @@ import {
 import { Actions, SetupWizardContent } from "../../constants";
 import { tourPath } from "../../help/tours";
 import { FBSelect } from "../../ui";
+import { OtaTimeSelector } from "../../settings/fbos_settings/ota_time_selector";
+import type { OtaTimeSelectorProps } from "../../settings/fbos_settings/interfaces";
 import * as bootSequenceSelector from "../../settings/fbos_settings/boot_sequence_selector";
 import * as messageActions from "../../messages/actions";
 import * as deviceActions from "../../devices/actions";
@@ -176,19 +178,17 @@ describe("<Language />", () => {
     const p = fakeProps();
     const user = fakeUser();
     p.resources = buildResourceIndex([user]).index;
-    const { container, rerender } = render(<Language {...p} />);
-    const input =
-      container.querySelector<HTMLInputElement>("input[name=\"language\"]");
-    expect(input?.value).toEqual("English");
-    input && changeBlurableInputRTL(input, "New Language");
+    const field = Language(p);
+    expect(field.props.value).toEqual("English");
+    field.props.onCommit({
+      currentTarget: { value: "New Language" },
+    } as React.FocusEvent<HTMLInputElement>);
     expect(edit).toHaveBeenCalledWith(expect.any(Object),
       { language: "New Language" });
     user.body.language = undefined as unknown as string;
     p.resources = buildResourceIndex([user]).index;
-    rerender(<Language {...p} />);
-    const updatedInput = container
-      .querySelector<HTMLInputElement>("input[name=\"language\"]");
-    expect(updatedInput?.value).toEqual("");
+    const updatedField = Language(p);
+    expect(updatedField.props.value).toEqual("");
   });
 });
 
@@ -575,8 +575,11 @@ describe("<AutoUpdate />", () => {
     const device = fakeDevice();
     device.body.ota_hour = 1;
     p.resources = buildResourceIndex([config, device]).index;
-    const { container } = render(<AutoUpdate {...p} />);
-    expect(container.textContent).toEqual("1:00 AM");
+    const selector = AutoUpdate(p);
+    expect(selector.type).toEqual(OtaTimeSelector);
+    const dropdown = OtaTimeSelector(
+      (selector as React.ReactElement<OtaTimeSelectorProps>).props);
+    expect(dropdown.props.selectedItem).toEqual({ label: "1:00 AM", value: 1 });
   });
 });
 

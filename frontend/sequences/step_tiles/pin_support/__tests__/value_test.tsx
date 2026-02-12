@@ -3,7 +3,6 @@ jest.mock("../../../../api/crud", () => ({
   editStep: mockEditStep
 }));
 
-import React from "react";
 import { WritePin } from "farmbot";
 import {
   PinValueField, PinValueFieldProps, PIN_VALUES, currentValueSelection,
@@ -55,7 +54,7 @@ describe("<PinValueField />", () => {
     const rendered = PinValueField(p) as JSX.Element;
     const children = rendered.props.children as JSX.Element[];
     const sliderContainer = children.find(child => child.type === "div");
-    const slider = sliderContainer?.props.children as JSX.Element | undefined;
+    const slider = sliderContainer?.props.children;
     (slider?.type === Slider) && slider.props.onChange(2);
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep.args.pin_value).toEqual(2);

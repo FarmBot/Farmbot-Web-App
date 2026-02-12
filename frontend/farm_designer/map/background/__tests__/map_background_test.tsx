@@ -26,7 +26,7 @@ describe("<MapBackground/>", () => {
     const element = container.querySelector(selector);
     if (!element) { throw new Error(`Missing element: ${selector}`); }
     const value = element.getAttribute(attribute);
-    if (value === null) {
+    if (value === undefined) {
       throw new Error(`Missing attribute ${attribute} on ${selector}`);
     }
     return Number(value);

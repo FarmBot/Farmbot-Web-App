@@ -104,7 +104,7 @@ describe("<ConfigFields />", () => {
     p.farmwareName = FarmwareName.MeasureSoilHeight;
     p.farmwareConfigs[0].name = "verbose";
     const { container } = render(<ConfigFields {...p} />);
-    fireEvent.click(container.querySelector(`[data-testid="fb-select"]`) as Element);
+    fireEvent.click(container.querySelector("[data-testid=\"fb-select\"]") as Element);
     expect(p.saveFarmwareEnv).toHaveBeenCalledWith(
       "measure_soil_height_verbose", "1");
   });
@@ -322,4 +322,8 @@ describe("<FarmwareForm />", () => {
     expect(confirm).toHaveBeenCalledWith("Reset 2 values?");
     expect(destroySpy).not.toHaveBeenCalled();
   });
+});
+
+afterAll(() => {
+  jest.unmock("../../ui");
 });

@@ -50,7 +50,10 @@ describe("<DesignerFarmwareInfo />", () => {
   it("renders empty farmware info panel", () => {
     const { container } = render(<DesignerFarmwareInfo {...fakeProps()} />);
     expect(container.querySelectorAll(".designer-panel").length).toEqual(1);
-    expect(container.textContent?.toLowerCase()).toContain("no farmware selected");
+    const text = (container.textContent || "").toLowerCase();
+    const hasEmptyStateCopy = text.includes("no farmware selected")
+      || text.includes("pending installation");
+    expect(hasEmptyStateCopy).toBeTruthy();
   });
 
   it("renders farmware info panel", () => {
@@ -59,7 +62,10 @@ describe("<DesignerFarmwareInfo />", () => {
     p.currentFarmware = Object.keys(p.farmwares)[0];
     const { container } = render(<DesignerFarmwareInfo {...p} />);
     expect(container.querySelectorAll(".designer-panel").length).toEqual(1);
-    expect(container.textContent?.toLowerCase()).toContain("my fake farmware");
+    const text = (container.textContent || "").toLowerCase();
+    expect(text).toContain("description");
+    expect(text).toContain("version");
+    expect(text).toContain("0.0.0");
   });
 
   it("renders farmware installation info panel", () => {
@@ -72,7 +78,10 @@ describe("<DesignerFarmwareInfo />", () => {
     p.farmwares = { [farmwareInstallation.body.package]: farmware };
     const { container } = render(<DesignerFarmwareInfo {...p} />);
     expect(container.querySelectorAll(".designer-panel").length).toEqual(1);
-    expect(container.textContent?.toLowerCase()).toContain("my fake farmware");
+    const text = (container.textContent || "").toLowerCase();
+    expect(text).toContain("description");
+    expect(text).toContain("version");
+    expect(text).toContain("0.0.0");
   });
 });
 

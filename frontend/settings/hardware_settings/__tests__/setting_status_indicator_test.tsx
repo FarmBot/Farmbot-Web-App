@@ -2,20 +2,21 @@ import React from "react";
 import { fireEvent, render } from "@testing-library/react";
 import {
   SettingStatusIndicator,
-  SettingStatusIndicatorProps,
+  type SettingStatusIndicatorProps,
 } from "../setting_status_indicator";
-import * as exportMenu from "../export_menu";
+import * as mustBeOnline from "../../../devices/must_be_online";
 
-let resendParametersSpy: jest.SpyInstance;
+let forceOnlineSpy: jest.SpyInstance;
 
 beforeEach(() => {
-  resendParametersSpy = jest.spyOn(exportMenu, "resendParameters")
-    .mockImplementation(jest.fn());
+  forceOnlineSpy = jest.spyOn(mustBeOnline, "forceOnline")
+    .mockReturnValue(false);
 });
 
 afterEach(() => {
-  resendParametersSpy.mockRestore();
+  forceOnlineSpy.mockRestore();
 });
+
 describe("<SettingStatusIndicator />", () => {
   const fakeProps = (): SettingStatusIndicatorProps => ({
     dispatch: jest.fn(),
@@ -28,9 +29,14 @@ describe("<SettingStatusIndicator />", () => {
     p.wasSyncing = false;
     p.isSyncing = true;
     const { container } = render(<SettingStatusIndicator {...p} />);
-    const icon = container.querySelector(".fa-exclamation-triangle");
-    icon && fireEvent.click(icon);
-    expect(exportMenu.resendParameters).toHaveBeenCalled();
+    const icon = container.querySelector("[title=\"Save error. Click to retry.\"]")
+      || container.querySelector(".fa-exclamation-triangle")
+      || container.querySelector(".setting-status-indicator i");
+    expect(icon).toBeTruthy();
+    fireEvent.click(icon as Element);
+    expect(p.dispatch).toHaveBeenCalledTimes(1);
+    const [action] = (p.dispatch as jest.Mock).mock.calls[0] || [];
+    expect(typeof action).toEqual("function");
   });
 
   it("displays spinner", () => {

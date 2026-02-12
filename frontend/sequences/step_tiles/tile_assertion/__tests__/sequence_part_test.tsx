@@ -1,7 +1,6 @@
 const mockEditStep = jest.fn();
 jest.mock("../../../../api/crud", () => ({ editStep: mockEditStep }));
 
-import React from "react";
 import { SequencePart } from "../sequence_part";
 import { SequenceSelectBox } from "../../../sequence_select_box";
 import { fakeAssertProps } from "../test_fixtures";

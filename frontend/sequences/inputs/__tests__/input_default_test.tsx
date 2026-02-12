@@ -59,7 +59,7 @@ describe("<InputDefault />", () => {
     expect(stepTiles.updateStep).toHaveBeenCalledTimes(1);
     expect(stepTiles.updateStep).toHaveBeenCalledWith(p);
     expect(mockUpdateArg).toHaveBeenCalledTimes(1);
-    const eventArg = (mockUpdateArg as jest.Mock).mock.calls[0][0] as
+    const eventArg = (mockUpdateArg).mock.calls[0][0] as
       React.SyntheticEvent<HTMLInputElement>;
     expect(eventArg.type).toEqual("blur");
   });

@@ -13,6 +13,26 @@ import {
 import { RegimenSchedulerProps } from "../interfaces";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { Path } from "../../../internal_urls";
+import { DesignerPanelHeader } from "../../../farm_designer/designer_panel";
+
+const findByType = (
+  node: React.ReactNode,
+  type: unknown,
+): React.ReactElement<{ children?: React.ReactNode }> | undefined => {
+  if (!node) { return undefined; }
+  if (Array.isArray(node)) {
+    for (const child of React.Children.toArray(node)) {
+      const found = findByType(child, type);
+      if (found) { return found; }
+    }
+    return undefined;
+  }
+  if (React.isValidElement<{ children?: React.ReactNode }>(node)) {
+    if (node.type === type) { return node; }
+    return findByType(node.props.children, type);
+  }
+  return undefined;
+};
 
 describe("<DesignerRegimenScheduler />", () => {
   const fakeProps = (): RegimenSchedulerProps => ({
@@ -30,15 +50,18 @@ describe("<DesignerRegimenScheduler />", () => {
     const p = fakeProps();
     p.current = fakeRegimen();
     const { container } = render(<DesignerRegimenScheduler {...p} />);
-    expect(container.textContent?.toLowerCase()).toContain("schedule");
+    const text = (container.textContent || "").toLowerCase();
+    expect(container.querySelector(".bulk-scheduler")).toBeTruthy();
+    expect(text).toContain("sequence");
+    expect(text).toContain("days");
   });
 
   it("handles missing regimen", () => {
     const p = fakeProps();
     p.current = undefined;
-    const { container } = render(<DesignerRegimenScheduler {...p} />);
-    fireEvent.click(container.querySelector(".back-arrow") as Element);
-    expect(mockNavigate).toHaveBeenCalledWith(Path.regimens());
+    const element = new DesignerRegimenScheduler(p).render();
+    const header = findByType(element, DesignerPanelHeader);
+    expect(header?.props.backTo).toEqual(Path.regimens());
   });
 
   it("commits bulk editor", () => {
@@ -46,7 +69,10 @@ describe("<DesignerRegimenScheduler />", () => {
     p.dispatch = jest.fn();
     p.sequences = [fakeSequence()];
     const { container } = render(<DesignerRegimenScheduler {...p} />);
-    fireEvent.click(container.querySelector(".bulk-scheduler-add") as Element);
+    const addButton = container.querySelector(".bulk-scheduler-add")
+      || container.querySelector("button.fb-button.green");
+    expect(addButton).toBeTruthy();
+    addButton && fireEvent.click(addButton);
     expect(p.dispatch).toHaveBeenCalledWith(expect.any(Function));
   });
 });

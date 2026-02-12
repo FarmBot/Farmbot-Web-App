@@ -140,7 +140,7 @@ describe("<ToolSlotPoint/>", () => {
     expect(container.querySelector("#seed-trough rect")?.getAttribute("width"))
       .toEqual("13.5");
     expect(
-      container.querySelector("#gantry-toolbay-slot rect")?.getAttribute("width")
+      container.querySelector("#gantry-toolbay-slot rect")?.getAttribute("width"),
     ).toEqual("47.5");
   });
 
@@ -153,7 +153,7 @@ describe("<ToolSlotPoint/>", () => {
     expect(container.querySelector("#seed-trough rect")?.getAttribute("width"))
       .toEqual("13.5");
     expect(
-      container.querySelector("#gantry-toolbay-slot rect")?.getAttribute("width")
+      container.querySelector("#gantry-toolbay-slot rect")?.getAttribute("width"),
     ).toEqual("22.5");
   });
 

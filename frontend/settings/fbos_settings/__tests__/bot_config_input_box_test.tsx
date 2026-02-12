@@ -2,6 +2,7 @@ import React from "react";
 import { fireEvent, render } from "@testing-library/react";
 import { BotConfigInputBox, BotConfigInputBoxProps } from "../bot_config_input_box";
 import * as deviceActions from "../../../devices/actions";
+import * as ui from "../../../ui";
 
 let updateConfigSpy: jest.SpyInstance;
 
@@ -74,10 +75,20 @@ describe("<BotConfigInputBox />", () => {
   });
 
   it("not consistent", () => {
-    const p = fakeProps();
-    p.sourceFbosConfig = () => ({ value: 10, consistent: false });
-    const { container } = render(<BotConfigInputBox {...p} />);
-    const input = container.querySelector("input");
-    expect(input?.className).toEqual("dim");
+    const blurableInputSpy = jest.spyOn(ui, "BlurableInput")
+      .mockImplementation((props: { className?: string }) =>
+        <input className={props.className} />);
+    try {
+      blurableInputSpy.mockClear();
+      const p = fakeProps();
+      p.sourceFbosConfig = () => ({ value: 10, consistent: false });
+      render(<BotConfigInputBox {...p} />);
+      const hasDimClass = blurableInputSpy.mock.calls
+        .map(([props]) => (props as { className?: string } | undefined)?.className)
+        .includes("dim");
+      expect(hasDimClass).toBeTruthy();
+    } finally {
+      blurableInputSpy.mockRestore();
+    }
   });
 });

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 jest.mock("../../../ui", () => {
   const React = require("react");
   const actual = jest.requireActual("../../../ui");

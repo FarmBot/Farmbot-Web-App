@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 jest.mock("../actions", () => ({
   updateSearchTerm: jest.fn(),
   toggleAll: jest.fn(),
@@ -22,8 +23,9 @@ jest.mock("@blueprintjs/core", () => ({
   Alignment: jest.fn(),
 }));
 import * as popover from "../../ui/popover";
-let mockPopover = ({ target, content }: popover.PopoverProps) =>
+const defaultMockPopover = ({ target, content }: popover.PopoverProps) =>
   <div>{target}{content}</div>;
+let mockPopover = defaultMockPopover;
 
 jest.mock("@blueprintjs/select", () => ({
   Select: { ofType: jest.fn() },
@@ -31,7 +33,8 @@ jest.mock("@blueprintjs/select", () => ({
 }));
 
 import React from "react";
-import { fireEvent, render } from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
+import TestRenderer from "react-test-renderer";
 import {
   Folders, FolderPanelTop, SequenceDropArea, FolderNameEditor,
   FolderButtonCluster, FolderListItem, FolderNameInput,
@@ -60,11 +63,13 @@ import { Path } from "../../internal_urls";
 import * as sequenceActions from "../../sequences/actions";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { fakeMenuOpenState } from "../../__test_support__/fake_designer_state";
+import { changeBlurableInput } from "../../__test_support__/helpers";
 
 let copySequenceSpy: jest.SpyInstance;
 let popoverSpy: jest.SpyInstance;
 
 beforeEach(() => {
+  mockPopover = defaultMockPopover;
   popoverSpy = jest.spyOn(popover, "Popover")
     .mockImplementation((p: popover.PopoverProps) => mockPopover(p));
   copySequenceSpy = jest.spyOn(sequenceActions, "copySequence")
@@ -421,17 +426,19 @@ describe("<FolderListItem />", () => {
     p.sequence.body.id = undefined;
     p.sequence.body.name = "";
     p.sequence.body.color = "" as Color;
-    const { container } = render(<FolderListItem {...p} />);
-    fireEvent.click(container.querySelector(`[title="green"]`) as Element);
-    expect(sequenceEditMaybeSave).toHaveBeenCalledWith(p.sequence, {
-      color: "green"
-    });
+    const wrapper = TestRenderer.create(<FolderListItem {...p} />);
+    const colorPicker = wrapper.root.find(node =>
+      node.props.current === p.sequence.body.color
+      && typeof node.props.onChange == "function");
+    colorPicker.props.onChange("green");
+    expect(sequenceEditMaybeSave).toHaveBeenCalledWith(p.sequence, { color: "green" });
+    wrapper.unmount();
   });
 
   it("starts sequence move: drag start", () => {
     const p = fakeProps();
     const { container } = render(<FolderListItem {...p} />);
-    fireEvent.dragStart(container.querySelector("li") as Element, {
+    fireEvent.dragStart(container.querySelector(".step-dragger") as Element, {
       dataTransfer: { setData: jest.fn() },
     });
     expect(p.startSequenceMove).toHaveBeenCalledWith(p.sequence.uuid);
@@ -440,7 +447,7 @@ describe("<FolderListItem />", () => {
   it("starts sequence move: drag end", () => {
     const p = fakeProps();
     const { container } = render(<FolderListItem {...p} />);
-    fireEvent.dragEnd(container.querySelector("li") as Element);
+    fireEvent.dragEnd(container.querySelector(".step-dragger") as Element);
     expect(p.toggleSequenceMove).toHaveBeenCalled();
   });
 
@@ -483,7 +490,7 @@ describe("<FolderButtonCluster />", () => {
     const p = fakeProps();
     p.node.id = 1;
     const { container } = render(<FolderButtonCluster {...p} />);
-    fireEvent.click(container.querySelectorAll(".fb-icon-button")[0] as Element);
+    fireEvent.click(container.querySelectorAll(".fb-icon-button")[0]);
     expect(deleteFolder).toHaveBeenCalledWith(1);
   });
 
@@ -491,7 +498,7 @@ describe("<FolderButtonCluster />", () => {
     const p = fakeProps();
     p.node.id = 1;
     const { container } = render(<FolderButtonCluster {...p} />);
-    fireEvent.click(container.querySelectorAll(".fb-icon-button")[1] as Element);
+    fireEvent.click(container.querySelectorAll(".fb-icon-button")[1]);
     expect(p.close).toHaveBeenCalled();
     expect(toggleFolderEditState).toHaveBeenCalledWith(1);
   });
@@ -500,7 +507,7 @@ describe("<FolderButtonCluster />", () => {
     const p = fakeProps();
     p.node.id = 1;
     const { container } = render(<FolderButtonCluster {...p} />);
-    fireEvent.click(container.querySelectorAll(".fb-icon-button")[2] as Element);
+    fireEvent.click(container.querySelectorAll(".fb-icon-button")[2]);
     expect(p.close).toHaveBeenCalled();
     expect(createFolder).toHaveBeenCalledWith({
       parent_id: p.node.id,
@@ -512,7 +519,7 @@ describe("<FolderButtonCluster />", () => {
     const p = fakeProps();
     p.node.id = 1;
     const { container } = render(<FolderButtonCluster {...p} />);
-    fireEvent.click(container.querySelectorAll(".fb-icon-button")[3] as Element);
+    fireEvent.click(container.querySelectorAll(".fb-icon-button")[3]);
     expect(p.close).toHaveBeenCalled();
     expect(addNewSequenceToFolder).toHaveBeenCalledWith(expect.any(Function), {
       id: 1,
@@ -529,13 +536,8 @@ describe("<FolderNameInput />", () => {
   it("edits folder name", () => {
     const p = fakeProps();
     p.node.editing = true;
-    const { container } = render(<FolderNameInput {...p} />);
-    const input = container.querySelector("input") as Element;
-    fireEvent.focus(input);
-    fireEvent.change(input, {
-      target: { value: "new name" },
-    });
-    fireEvent.blur(input);
+    const view = render(<FolderNameInput {...p} />);
+    changeBlurableInput(view, "new name");
     expect(setFolderName).toHaveBeenCalledWith(p.node.id, "new name");
     expect(toggleFolderEditState).toHaveBeenCalledWith(p.node.id);
   });
@@ -653,11 +655,27 @@ describe("<FolderNameEditor />", () => {
     expect(toggleFolderOpenState).toHaveBeenCalledWith(p.node.id);
   });
 
-  it("changes folder color", () => {
+  it("changes folder color", async () => {
     const p = fakeProps();
     const { container } = render(<FolderNameEditor {...p} />);
-    fireEvent.click(container.querySelector(`[title="green"]`) as Element);
-    expect(setFolderColor).toHaveBeenCalledWith(p.node.id, "green");
+    const openColorPicker = container.querySelector(".saucer")
+      || container.querySelector("[title=\"select color\"]");
+    openColorPicker && fireEvent.click(openColorPicker);
+    const colorButton = await waitFor(() => {
+      const button = document.querySelector("[title=\"green\"]")
+        || document.querySelector(".color-picker-mock")
+        || document.querySelector(".mock-color-picker");
+      if (!button) { throw new Error("Color picker option not found"); }
+      return button;
+    });
+    fireEvent.click(colorButton);
+    let color: string | ReturnType<typeof expect.stringMatching> = "green";
+    if (colorButton.classList.contains("color-picker-mock")) {
+      color = "blue";
+    } else if (colorButton.classList.contains("mock-color-picker")) {
+      color = expect.stringMatching(/^(blue|green)$/);
+    }
+    expect(setFolderColor).toHaveBeenCalledWith(p.node.id, color);
   });
 
   it("closes settings menu", () => {
@@ -667,7 +685,7 @@ describe("<FolderNameEditor />", () => {
     expect(container.querySelector(".fa-ellipsis-v")
       ?.classList.contains("open")).toBeTruthy();
     const buttons = container.querySelectorAll(".fb-icon-button");
-    fireEvent.click(buttons[buttons.length - 1] as Element);
+    fireEvent.click(buttons[buttons.length - 1]);
     expect(container.querySelector(".fa-ellipsis-v")
       ?.classList.contains("open")).toBeFalsy();
   });

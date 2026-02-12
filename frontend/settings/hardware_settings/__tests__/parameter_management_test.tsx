@@ -91,7 +91,7 @@ describe("<ParameterManagement />", () => {
     const p = fakeProps();
     p.settingsPanelState.parameter_management = true;
     render(<ParameterManagement {...p} />);
-    fireEvent.click(screen.getAllByTestId("toggle-button")[0] as HTMLElement);
+    fireEvent.click(screen.getAllByTestId("toggle-button")[0]);
     expect(configStorageActions.setWebAppConfigValue).toHaveBeenCalledWith(
       BooleanSetting.show_advanced_settings, true);
   });
@@ -105,7 +105,7 @@ describe("<ParameterImport />", () => {
 
   it("updates", () => {
     render(<ParameterImport {...fakeProps()} />);
-    const input = screen.getByRole("textbox") as HTMLInputElement;
+    const input = screen.getByRole("textbox");
     expect(input.value).toEqual("");
     fireEvent.change(input, { target: { value: "{}" } });
     expect(input.value).toEqual("{}");

@@ -44,7 +44,8 @@ describe("<StepIconGroup />", () => {
   });
 
   const getMovePopover = (props: StepIconBarProps) => {
-    const wrapper = StepIconGroup(props);
+    const wrapper =
+      StepIconGroup(props) as React.ReactElement<{ children?: React.ReactNode }>;
     const children = React.Children.toArray(wrapper.props.children) as
       JSX.Element[];
     return children.find(child =>

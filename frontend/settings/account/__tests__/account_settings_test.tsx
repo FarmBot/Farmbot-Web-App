@@ -1,6 +1,7 @@
 let mockDev = false;
 import React from "react";
 import { fireEvent, render } from "@testing-library/react";
+import TestRenderer from "react-test-renderer";
 import {
   AccountSettings, ActivityBeepSetting, ActivityBeepSettingProps,
   LandingPageSetting, LandingPageSettingProps,
@@ -20,6 +21,18 @@ jest.mock("../../../ui", () => {
   const actual = jest.requireActual("../../../ui");
   return {
     ...actual,
+    BlurableInput: (props: {
+      name?: string,
+      value?: string | number,
+      type?: string,
+      onCommit: (event: React.FormEvent<HTMLInputElement>) => void,
+    }) =>
+      <input
+        name={props.name}
+        defaultValue={props.value as string | undefined}
+        type={props.type}
+        onBlur={e => props.onCommit(e)}
+        onChange={() => { }} />,
     FBSelect: ({ onChange, selectedItem }: {
       onChange: (item: { label: string, value: string }) => void,
       selectedItem: { label: string } | undefined,
@@ -57,6 +70,10 @@ afterEach(() => {
   futureFeaturesEnabledSpy.mockRestore();
 });
 
+afterAll(() => {
+  jest.unmock("../../../ui");
+});
+
 describe("<AccountSettings />", () => {
   let requestAccountExportSpy: jest.SpyInstance;
   beforeEach(() => {
@@ -76,16 +93,25 @@ describe("<AccountSettings />", () => {
     getConfigValue: jest.fn(),
   });
 
+  const commitField = (
+    props: AccountSettingsProps, name: string, value: string,
+  ) => {
+    const wrapper = TestRenderer.create(<AccountSettings {...props} />);
+    const input = wrapper.root.find(node =>
+      node.props.name == name
+      && typeof node.props.onCommit == "function");
+    input.props.onCommit({
+      currentTarget: { value },
+      target: { value },
+    });
+    wrapper.unmount();
+  };
+
   it("changes name", () => {
     const p = fakeProps();
     p.user.body.name = "";
     p.settingsPanelState.account = true;
-    const { container } = render(<AccountSettings {...p} />);
-    const input = container.querySelector("input[name='userName']");
-    if (!input) { throw new Error("Expected name input"); }
-    fireEvent.focus(input);
-    fireEvent.change(input, { target: { value: "new name" } });
-    fireEvent.blur(input);
+    commitField(p, "userName", "new name");
     expect(editSpy).toHaveBeenCalledWith(p.user, { name: "new name" });
     expect(saveSpy).toHaveBeenCalledWith(p.user.uuid);
   });
@@ -94,12 +120,7 @@ describe("<AccountSettings />", () => {
     const p = fakeProps();
     p.user.body.email = "";
     p.settingsPanelState.account = true;
-    const { container } = render(<AccountSettings {...p} />);
-    const input = container.querySelector("input[name='email']");
-    if (!input) { throw new Error("Expected email input"); }
-    fireEvent.focus(input);
-    fireEvent.change(input, { target: { value: "new email" } });
-    fireEvent.blur(input);
+    commitField(p, "email", "new email");
     expect(editSpy).toHaveBeenCalledWith(p.user, { email: "new email" });
     expect(saveSpy).toHaveBeenCalledWith(p.user.uuid);
     expect(success).toHaveBeenCalledWith(Content.CHECK_EMAIL_TO_CONFIRM);
@@ -109,12 +130,7 @@ describe("<AccountSettings />", () => {
     const p = fakeProps();
     p.user.body.language = "";
     p.settingsPanelState.account = true;
-    const { container } = render(<AccountSettings {...p} />);
-    const input = container.querySelector("input[name='language']");
-    if (!input) { throw new Error("Expected language input"); }
-    fireEvent.focus(input);
-    fireEvent.change(input, { target: { value: "new language" } });
-    fireEvent.blur(input);
+    commitField(p, "language", "new language");
     expect(editSpy).toHaveBeenCalledWith(p.user, { language: "new language" });
     expect(saveSpy).toHaveBeenCalledWith(p.user.uuid);
   });
@@ -138,8 +154,9 @@ describe("<ActivityBeepSetting />", () => {
   });
 
   const getActivityBeepChildren = (props: ActivityBeepSettingProps) => {
-    const wrapper = ActivityBeepSetting(props);
-    const row = wrapper.props.children as JSX.Element;
+    const wrapper =
+      ActivityBeepSetting(props) as React.ReactElement<{ children?: React.ReactNode }>;
+    const row = wrapper.props.children as React.ReactElement<{ children?: React.ReactNode }>;
     return React.Children.toArray(row.props.children) as JSX.Element[];
   };
 

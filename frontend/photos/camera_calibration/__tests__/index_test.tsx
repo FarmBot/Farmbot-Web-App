@@ -64,6 +64,11 @@ afterEach(() => {
   scanImageSpy.mockRestore();
 });
 
+afterAll(() => {
+  jest.unmock("../config");
+  jest.unmock("../../image_workspace");
+});
+
 describe("<CameraCalibration/>", () => {
   const fakeProps = (): CameraCalibrationProps => ({
     dispatch: jest.fn(),

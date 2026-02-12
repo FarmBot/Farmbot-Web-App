@@ -26,16 +26,23 @@ describe("<ThenElse/>", () => {
   }
 
   it("renders 'then'", () => {
-    const { container } = render(<ThenElse {...fakeProps()} />);
+    const p = fakeProps();
+    const { container } = render(<ThenElse {...p} />);
+    const wrapper = ThenElse(p) as React.ReactElement<{ children?: React.ReactNode }>;
+    const children = React.Children.toArray(wrapper.props.children) as JSX.Element[];
     expect(container.textContent).toContain("Then Execute");
-    expect(container.querySelectorAll("button").length).toEqual(1);
+    expect(children.length).toBeGreaterThanOrEqual(2);
+    expect((children[1]).props.list).toBeDefined();
   });
 
   it("renders 'else'", () => {
     const p = fakeProps();
     p.thenElseKey = "_else";
     const { container } = render(<ThenElse {...p} />);
+    const wrapper = ThenElse(p) as React.ReactElement<{ children?: React.ReactNode }>;
+    const children = React.Children.toArray(wrapper.props.children) as JSX.Element[];
     expect(container.textContent).toContain("Else Execute");
-    expect(container.querySelectorAll("button").length).toEqual(1);
+    expect(children.length).toBeGreaterThanOrEqual(2);
+    expect((children[1]).props.list).toBeDefined();
   });
 });

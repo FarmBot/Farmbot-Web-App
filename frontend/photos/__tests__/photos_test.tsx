@@ -106,10 +106,13 @@ describe("<DesignerPhotos />", () => {
     p.photosPanelState.manage = true;
     const { container } = render(<DesignerPhotos {...p} />);
     (p.dispatch as jest.Mock).mockClear();
-    const buttons = container.querySelectorAll("button.fb-toggle-button");
-    const button = buttons.item(buttons.length - 1);
+    const label = screen.getByText(/highlight modified settings/i);
+    const row = label.closest(".row") || container;
+    const button = row.querySelector("button")
+      || row.querySelector(".toggle-button-mock")
+      || row.querySelector(".fb-toggle-button-mock");
     expect(button).toBeTruthy();
-    fireEvent.click(button);
+    fireEvent.click(button as Element);
     expect(p.dispatch).toHaveBeenCalled();
   });
 

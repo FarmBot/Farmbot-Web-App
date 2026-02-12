@@ -1,7 +1,7 @@
 jest.mock("../../../api/crud", () => ({ initSave: jest.fn() }));
 
 import React from "react";
-import { fireEvent, render } from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import {
   RawDesignerFarmwareAdd as DesignerFarmwareAdd,
   DesignerFarmwareAddProps,
@@ -22,32 +22,41 @@ describe("<DesignerFarmwareAdd />", () => {
 
   it("renders add farmware panel", () => {
     const { container } = render(<DesignerFarmwareAdd {...fakeProps()} />);
-    ["install new farmware", "manifest url"].map(string =>
-      expect(container.textContent?.toLowerCase()).toContain(string));
+    const text = (container.textContent || "").toLowerCase();
+    expect(text).toContain("manifest url");
+    expect(text).toContain("install");
   });
 
   it("updates url", () => {
     const { container } = render(<DesignerFarmwareAdd {...fakeProps()} />);
-    fireEvent.change(container.querySelector("input") as Element, {
+    const urlInput = container.querySelector("input[name=\"url\"]");
+    if (!urlInput) { throw new Error("Expected URL input"); }
+    fireEvent.change(urlInput, {
       target: { value: "fake url" },
       currentTarget: { value: "fake url" },
     });
-    expect((container.querySelector("input") as HTMLInputElement).value)
+    expect((urlInput as HTMLInputElement).value)
       .toEqual("fake url");
   });
 
   it("adds a new farmware", async () => {
     const { container } = render(<DesignerFarmwareAdd {...fakeProps()} />);
-    fireEvent.change(container.querySelector("input") as Element, {
+    const urlInput = container.querySelector("input[name=\"url\"]");
+    const installButton = container.querySelector(".fb-button.green");
+    if (!urlInput || !installButton) {
+      throw new Error("Expected install form controls");
+    }
+    fireEvent.change(urlInput, {
       target: { value: "fake url" },
       currentTarget: { value: "fake url" },
     });
-    fireEvent.click(container.querySelector("button") as Element);
-    await Promise.resolve();
-    expect(initSave).toHaveBeenCalledWith("FarmwareInstallation", {
-      url: "fake url",
-      package: undefined,
-      package_error: undefined,
+    fireEvent.click(installButton);
+    await waitFor(() => {
+      expect(initSave).toHaveBeenCalledWith("FarmwareInstallation", {
+        url: "fake url",
+        package: undefined,
+        package_error: undefined,
+      });
     });
     expect(mockNavigate).toHaveBeenCalledWith(Path.farmware());
     expect(error).not.toHaveBeenCalled();
@@ -55,11 +64,16 @@ describe("<DesignerFarmwareAdd />", () => {
 
   it("doesn't add a new farmware", () => {
     const { container } = render(<DesignerFarmwareAdd {...fakeProps()} />);
-    fireEvent.change(container.querySelector("input") as Element, {
+    const urlInput = container.querySelector("input[name=\"url\"]");
+    const installButton = container.querySelector(".fb-button.green");
+    if (!urlInput || !installButton) {
+      throw new Error("Expected install form controls");
+    }
+    fireEvent.change(urlInput, {
       target: { value: "" },
       currentTarget: { value: "" },
     });
-    fireEvent.click(container.querySelector("button") as Element);
+    fireEvent.click(installButton);
     expect(initSave).not.toHaveBeenCalled();
     expect(mockNavigate).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith("Please enter a URL");

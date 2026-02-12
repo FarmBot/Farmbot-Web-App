@@ -1,8 +1,8 @@
 import React from "react";
-import { render, fireEvent } from "@testing-library/react";
+import { render } from "@testing-library/react";
+import TestRenderer from "react-test-renderer";
 import { LocationSelection, LocationDisplay } from "../location_selection";
 import { LocationSelectionProps } from "../interfaces";
-import { changeBlurableInputRTL } from "../../../__test_support__/helpers";
 
 describe("<LocationSelection />", () => {
   function fakeProps(): LocationSelectionProps {
@@ -24,25 +24,40 @@ describe("<LocationSelection />", () => {
   it("changes location", () => {
     const p = fakeProps();
     p.xyzLocation = { x: 10, y: 20, z: 30 };
-    const { container } = render(<LocationSelection {...p} />);
-    fireEvent.blur(container.querySelectorAll("input")[0] as Element);
+    const wrapper = TestRenderer.create(<LocationSelection {...p} />);
+    const axisInput = wrapper.root.find(node =>
+      node.props.axis == "x"
+      && typeof node.props.onChange == "function");
+    axisInput.props.onChange("x", 10);
     expect(p.setLocation).toHaveBeenCalledWith({ x: 10, y: 20, z: 30 });
+    wrapper.unmount();
   });
 
   it("changes location: undefined", () => {
     const p = fakeProps();
     p.xyzLocation = undefined;
-    const { container } = render(<LocationSelection {...p} />);
-    fireEvent.blur(container.querySelectorAll("input")[0] as Element);
+    const wrapper = TestRenderer.create(<LocationSelection {...p} />);
+    const axisInput = wrapper.root.find(node =>
+      node.props.axis == "x"
+      && typeof node.props.onChange == "function");
+    axisInput.props.onChange("x", undefined);
     expect(p.setLocation).toHaveBeenCalledWith({ x: undefined });
+    wrapper.unmount();
   });
 
   it("changes deviation", () => {
     const p = fakeProps();
-    const { container } = render(<LocationSelection {...p} />);
-    const input = container.querySelectorAll("input")[3] as HTMLElement;
-    changeBlurableInputRTL(input, "100");
+    const wrapper = TestRenderer.create(<LocationSelection {...p} />);
+    const input = wrapper.root.find(node =>
+      node.props.type == "number"
+      && typeof node.props.onCommit == "function"
+      && node.props.value === 0);
+    input.props.onCommit({
+      currentTarget: { value: "100" },
+      target: { value: "100" },
+    });
     expect(p.setDeviation).toHaveBeenCalledWith(100);
+    wrapper.unmount();
   });
 });
 

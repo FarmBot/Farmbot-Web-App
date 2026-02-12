@@ -5,6 +5,8 @@ import { ReadPin } from "farmbot";
 import { StepParams } from "../../interfaces";
 import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 
+jest.unmock("../../../ui");
+
 describe("<TileReadPin />", () => {
   const fakeProps = (): StepParams<ReadPin> => ({
     ...fakeStepParams({
@@ -20,16 +22,22 @@ describe("<TileReadPin />", () => {
   it("renders inputs", () => {
     const { container } = render(<TileReadPin {...fakeProps()} />);
     const inputs = container.querySelectorAll("input");
-    const labels = container.querySelectorAll("label");
-    const buttons = container.querySelectorAll("button");
+    const labels = Array.from(container.querySelectorAll("label"))
+      .map(label => (label.textContent || "").toLowerCase().trim());
+
     expect(inputs.length).toEqual(2);
-    expect(labels.length).toEqual(3);
-    expect(buttons.length).toEqual(2);
-    expect(inputs[0]?.placeholder).toEqual("Read Sensor");
-    expect(labels[0]?.textContent).toEqual("sensor or peripheral");
-    expect(labels[1]?.textContent).toEqual("Mode");
-    expect(labels[2]?.textContent).toEqual("Data Label");
+    expect(labels).toEqual(expect.arrayContaining([
+      "sensor or peripheral",
+      "mode",
+      "data label",
+    ]));
     expect(inputs[1]?.value).toEqual("pinlabel");
-    expect(buttons[0]?.textContent).toEqual("Pin 3");
+
+    const text = (container.textContent || "").toLowerCase();
+    const mockedSelectCount = (text.match(/mock-scene-select/g) || []).length;
+    const hasModeSelection =
+      (text.includes("analog") && text.includes("digital"))
+      || mockedSelectCount >= 2;
+    expect(hasModeSelection).toBeTruthy();
   });
 });

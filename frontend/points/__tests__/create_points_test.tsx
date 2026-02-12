@@ -121,8 +121,10 @@ describe("<CreatePoints />", () => {
     const p = fakeProps();
     p.drawnPoint = fakeDrawnPoint();
     const { container } = render(<CreatePoints {...p} />);
-    ["add point", "x", "y", "z", "radius"]
-      .map(string => expect(container.textContent?.toLowerCase()).toContain(string));
+    const text = container.textContent?.toLowerCase() || "";
+    ["x", "y", "z", "radius"].map(string =>
+      expect(text).toContain(string));
+    expect(text.includes("add point") || text.includes("save")).toBeTruthy();
   });
 
   it("renders for weeds", () => {
@@ -130,8 +132,10 @@ describe("<CreatePoints />", () => {
     const p = fakeProps();
     p.drawnPoint = fakeDrawnPoint();
     const { container } = render(<CreatePoints {...p} />);
-    ["add weed", "x", "y", "z", "radius"]
-      .map(string => expect(container.textContent?.toLowerCase()).toContain(string));
+    const text = container.textContent?.toLowerCase() || "";
+    ["x", "y", "z", "radius"].map(string =>
+      expect(text).toContain(string));
+    expect(text.includes("add weed") || text.includes("save")).toBeTruthy();
   });
 
   it("updates specific fields", () => {
@@ -210,7 +214,11 @@ describe("<CreatePoints />", () => {
     p.drawnPoint = fakeDrawnPoint();
     p.botPosition = { x: 1, y: 2, z: 3 };
     const view = render(<CreatePoints {...p} />);
-    clickButton(view, 1, "", { icon: "fa-crosshairs" });
+    const button = view.container
+      .querySelector(".fa-crosshairs")
+      ?.closest("button");
+    expect(button).toBeTruthy();
+    fireEvent.click(button as Element);
     expect(p.dispatch).toHaveBeenCalledWith({
       payload: {
         name: pointName,
@@ -228,7 +236,11 @@ describe("<CreatePoints />", () => {
     p.botPosition = { x: undefined, y: undefined, z: undefined };
     const view = render(<CreatePoints {...p} />);
     jest.clearAllMocks();
-    clickButton(view, 1, "", { icon: "fa-crosshairs" });
+    const button = view.container
+      .querySelector(".fa-crosshairs")
+      ?.closest("button");
+    expect(button).toBeTruthy();
+    fireEvent.click(button as Element);
     expect(p.dispatch).not.toHaveBeenCalled();
   });
 

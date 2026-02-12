@@ -26,23 +26,11 @@ import {
 } from "../../__test_support__/fake_bot_data";
 import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
 import { Path } from "../../internal_urls";
+import * as mapLegend from "../map/legend/garden_map_legend";
+import * as gardenMap from "../map/garden_map";
 
 let lastLegendProps: Record<string, unknown> | undefined;
 let lastGardenMapProps: Record<string, unknown> | undefined;
-
-jest.mock("../map/legend/garden_map_legend", () => ({
-  GardenMapLegend: (props: Record<string, unknown>) => {
-    lastLegendProps = props;
-    return <div className="mock-garden-map-legend" />;
-  },
-}));
-
-jest.mock("../map/garden_map", () => ({
-  GardenMap: (props: Record<string, unknown>) => {
-    lastGardenMapProps = props;
-    return <div className="mock-garden-map" />;
-  },
-}));
 
 const setWindowWidth = (width: number) => {
   Object.defineProperty(window, "innerWidth", { configurable: true, value: width });
@@ -50,6 +38,8 @@ const setWindowWidth = (width: number) => {
 
 describe("<FarmDesigner />", () => {
   let editSpy: jest.SpyInstance;
+  let legendSpy: jest.SpyInstance;
+  let gardenMapSpy: jest.SpyInstance;
 
   beforeEach(() => {
     setWindowWidth(1000);
@@ -57,10 +47,22 @@ describe("<FarmDesigner />", () => {
     lastLegendProps = undefined;
     lastGardenMapProps = undefined;
     editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+    legendSpy = jest.spyOn(mapLegend, "GardenMapLegend")
+      .mockImplementation((props: Record<string, unknown>) => {
+        lastLegendProps = props;
+        return <div className="mock-garden-map-legend" />;
+      });
+    gardenMapSpy = jest.spyOn(gardenMap, "GardenMap")
+      .mockImplementation((props: Record<string, unknown>) => {
+        lastGardenMapProps = props;
+        return <div className="mock-garden-map" />;
+      });
   });
 
   afterEach(() => {
     editSpy.mockRestore();
+    legendSpy.mockRestore();
+    gardenMapSpy.mockRestore();
   });
 
   const fakeProps = (): FarmDesignerProps => ({

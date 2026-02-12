@@ -126,3 +126,7 @@ describe("<DemoIframe />", () => {
     expect(on).toHaveBeenCalledWith("connect", expect.any(Function));
   });
 });
+
+afterAll(() => {
+  jest.unmock("../../ui");
+});

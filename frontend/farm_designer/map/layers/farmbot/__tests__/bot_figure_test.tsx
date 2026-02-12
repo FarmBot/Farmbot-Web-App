@@ -28,7 +28,7 @@ describe("<BotFigure/>", () => {
 
   const renderFigure = (
     props: BotFigureProps,
-    ref?: React.RefObject<BotFigure | null>,
+    ref?: React.RefObject<BotFigure | undefined>,
   ) => render(<svg><BotFigure {...props} ref={ref} /></svg>);
 
   const requiredElement = (
@@ -46,7 +46,7 @@ describe("<BotFigure/>", () => {
 
   const getNumericAttribute = (element: Element, key: string) => {
     const value = getAttribute(element, key);
-    if (value === null || value === undefined) {
+    if (value === undefined || value === undefined) {
       throw new Error(`Missing attribute ${key}`);
     }
     return Number(value);

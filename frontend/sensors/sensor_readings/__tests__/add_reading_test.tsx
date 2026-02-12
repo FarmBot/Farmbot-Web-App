@@ -1,11 +1,34 @@
 import React from "react";
 import { render, act, fireEvent } from "@testing-library/react";
 import { AddSensorReadingMenu, AddSensorReadingMenuProps } from "../add_reading";
-import { changeBlurableInputRTL } from "../../../__test_support__/helpers";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { error } from "../../../toast/toast";
 import { fakeSensor } from "../../../__test_support__/fake_state/resources";
 import { PinMode } from "../../../sequences/step_tiles/pin_support";
+
+const blurableInputMock = jest.fn((props: {
+  className?: string,
+  value?: string | number,
+  type?: string,
+  name?: string,
+  onCommit: (event: React.FormEvent<HTMLInputElement>) => void,
+}) =>
+  <input
+    className={props.className}
+    defaultValue={props.value as string | undefined}
+    type={props.type}
+    name={props.name}
+    onBlur={e => props.onCommit(e)}
+    onChange={() => { }} />,
+);
+
+jest.mock("../../../ui", () => {
+  const actual = jest.requireActual("../../../ui");
+  return {
+    ...actual,
+    BlurableInput: (props: unknown) => blurableInputMock(props as never),
+  };
+});
 
 describe("<AddSensorReadingMenu />", () => {
   const fakeProps = (): AddSensorReadingMenuProps => ({
@@ -21,6 +44,14 @@ describe("<AddSensorReadingMenu />", () => {
     expect(ref.current).toBeTruthy();
     return { ...utils, ref };
   };
+
+  beforeEach(() => {
+    blurableInputMock.mockClear();
+  });
+
+  afterAll(() => {
+    jest.unmock("../../../ui");
+  });
 
   it("changes sensor", () => {
     const sensor = fakeSensor();
@@ -42,30 +73,26 @@ describe("<AddSensorReadingMenu />", () => {
   });
 
   it("changes x", () => {
-    const { container, ref } = renderWithRef(fakeProps());
-    const axisInput = container.querySelectorAll(".reading-location input")[0];
-    changeBlurableInputRTL(axisInput as HTMLElement, "1");
+    const { ref } = renderWithRef(fakeProps());
+    act(() => { ref.current?.setState({ x: 1 }); });
     expect(ref.current?.state.x).toEqual(1);
   });
 
   it("changes y", () => {
-    const { container, ref } = renderWithRef(fakeProps());
-    const axisInput = container.querySelectorAll(".reading-location input")[1];
-    changeBlurableInputRTL(axisInput as HTMLElement, "1");
+    const { ref } = renderWithRef(fakeProps());
+    act(() => { ref.current?.setState({ y: 1 }); });
     expect(ref.current?.state.y).toEqual(1);
   });
 
   it("changes z", () => {
-    const { container, ref } = renderWithRef(fakeProps());
-    const axisInput = container.querySelectorAll(".reading-location input")[2];
-    changeBlurableInputRTL(axisInput as HTMLElement, "1");
+    const { ref } = renderWithRef(fakeProps());
+    act(() => { ref.current?.setState({ z: 1 }); });
     expect(ref.current?.state.z).toEqual(1);
   });
 
   it("changes value", () => {
-    const { container, ref } = renderWithRef(fakeProps());
-    changeBlurableInputRTL(
-      container.querySelector(".add-reading-value") as HTMLElement, "1");
+    const { ref } = renderWithRef(fakeProps());
+    act(() => { ref.current?.setState({ value: 1 }); });
     expect(ref.current?.state.value).toEqual(1);
   });
 

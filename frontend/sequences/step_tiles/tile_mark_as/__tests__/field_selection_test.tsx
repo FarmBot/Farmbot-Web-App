@@ -20,10 +20,11 @@ describe("<FieldSelection />", () => {
   });
 
   const getKnownFieldSelect = (props: FieldSelectionProps) => {
-    const wrapper = FieldSelection(props);
+    const wrapper =
+      FieldSelection(props) as React.ReactElement<{ children?: React.ReactNode }>;
     const children =
       React.Children.toArray(wrapper.props.children) as JSX.Element[];
-    const fieldSelection = children[1] as JSX.Element;
+    const fieldSelection = children[1];
     return (fieldSelection.type as (props: unknown) => JSX.Element)(
       fieldSelection.props);
   };
@@ -31,7 +32,7 @@ describe("<FieldSelection />", () => {
   it("renders disabled none field", () => {
     const p = fakeProps();
     p.field = undefined;
-    const wrapper = FieldSelection(p);
+    const wrapper = FieldSelection(p) as React.ReactElement<{ children?: React.ReactNode }>;
     const children =
       React.Children.toArray(wrapper.props.children) as JSX.Element[];
     const select = getKnownFieldSelect(p);
@@ -47,7 +48,7 @@ describe("<FieldSelection />", () => {
       args: { resource_type: "Plant", resource_id: 1 }
     };
     p.field = undefined;
-    const wrapper = FieldSelection(p);
+    const wrapper = FieldSelection(p) as React.ReactElement<{ children?: React.ReactNode }>;
     const children =
       React.Children.toArray(wrapper.props.children) as JSX.Element[];
     const select = getKnownFieldSelect(p);
@@ -97,7 +98,7 @@ describe("<FieldSelection />", () => {
     const p = fakeProps();
     p.resource = { kind: "identifier", args: { label: "var" } };
     p.field = "plant_stage";
-    const wrapper = FieldSelection(p);
+    const wrapper = FieldSelection(p) as React.ReactElement<{ children?: React.ReactNode }>;
     const children =
       React.Children.toArray(wrapper.props.children) as JSX.Element[];
     const select = getKnownFieldSelect(p);
@@ -128,7 +129,7 @@ describe("<FieldSelection />", () => {
       args: { resource_type: "Weed", resource_id: 1 }
     };
     p.field = field;
-    const wrapper = FieldSelection(p);
+    const wrapper = FieldSelection(p) as React.ReactElement<{ children?: React.ReactNode }>;
     const children =
       React.Children.toArray(wrapper.props.children) as JSX.Element[];
     const select = getKnownFieldSelect(p);
@@ -152,7 +153,7 @@ describe("<FieldSelection />", () => {
       args: { resource_type: "GenericPointer", resource_id: 3 }
     };
     p.field = "plant_stage";
-    const wrapper = FieldSelection(p);
+    const wrapper = FieldSelection(p) as React.ReactElement<{ children?: React.ReactNode }>;
     const children =
       React.Children.toArray(wrapper.props.children) as JSX.Element[];
     const select = getKnownFieldSelect(p);
@@ -175,7 +176,7 @@ describe("<FieldSelection />", () => {
       args: { resource_type: "Plant", resource_id: 3 }
     };
     p.field = "planted_at";
-    const wrapper = FieldSelection(p);
+    const wrapper = FieldSelection(p) as React.ReactElement<{ children?: React.ReactNode }>;
     const children =
       React.Children.toArray(wrapper.props.children) as JSX.Element[];
     const select = getKnownFieldSelect(p);
@@ -212,7 +213,7 @@ describe("<FieldSelection />", () => {
       args: { resource_type: "Device", resource_id: 1 }
     };
     p.field = "mounted_tool_id";
-    const wrapper = FieldSelection(p);
+    const wrapper = FieldSelection(p) as React.ReactElement<{ children?: React.ReactNode }>;
     const children =
       React.Children.toArray(wrapper.props.children) as JSX.Element[];
     const select = getKnownFieldSelect(p);

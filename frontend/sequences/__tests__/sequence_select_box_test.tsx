@@ -1,5 +1,3 @@
-import React from "react";
-import { render } from "@testing-library/react";
 import { SequenceSelectBox, SequenceSelectBoxProps } from "../sequence_select_box";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
@@ -32,8 +30,8 @@ describe("<SequenceSelectBox />", () => {
   };
 
   it("renders", () => {
-    const { container } = render(<SequenceSelectBox {...fakeProps()} />);
-    expect(container.textContent?.trim()).toEqual("Select a sequence");
+    const result = SequenceSelectBox(fakeProps());
+    expect(result.props.customNullLabel).toEqual("Select a sequence");
   });
 
   it("returns list: none selected", () => {

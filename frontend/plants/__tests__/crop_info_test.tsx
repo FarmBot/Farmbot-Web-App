@@ -344,3 +344,7 @@ describe("changeCurve()", () => {
     });
   });
 });
+
+afterAll(() => {
+  jest.unmock("../../ui");
+});

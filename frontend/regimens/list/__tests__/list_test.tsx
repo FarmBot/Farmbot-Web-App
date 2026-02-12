@@ -1,5 +1,16 @@
 import React from "react";
 import { render, fireEvent, act } from "@testing-library/react";
+const mockDesignerPanelTop = jest.fn(
+  ({ children, onClick }: { children: React.ReactNode; onClick?: () => void }) =>
+    <div className="mock-panel-top" onClick={onClick}>{children}</div>);
+jest.mock("../../../farm_designer/designer_panel", () => ({
+  DesignerPanel: ({ children }: { children: React.ReactNode }) =>
+    <div>{children}</div>,
+  DesignerPanelContent: ({ children }: { children: React.ReactNode }) =>
+    <div>{children}</div>,
+  DesignerPanelTop: (props: { children: React.ReactNode; onClick?: () => void }) =>
+    mockDesignerPanelTop(props),
+}));
 import {
   mapStateToProps,
   RawDesignerRegimenList as DesignerRegimenList,
@@ -11,7 +22,6 @@ import { fakeState } from "../../../__test_support__/fake_state";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
-import { NavigationContext } from "../../../routes_helpers";
 
 describe("<DesignerRegimenList />", () => {
   let addRegimenSpy: jest.SpyInstance;
@@ -19,6 +29,7 @@ describe("<DesignerRegimenList />", () => {
   beforeEach(() => {
     addRegimenSpy = jest.spyOn(addRegimenModule, "addRegimen")
       .mockImplementation(jest.fn());
+    mockDesignerPanelTop.mockClear();
   });
 
   afterEach(() => {
@@ -77,14 +88,16 @@ describe("<DesignerRegimenList />", () => {
   it("adds new regimen", () => {
     const p = fakeProps();
     p.regimens = [fakeRegimen(), fakeRegimen()];
-    const ref = React.createRef<DesignerRegimenList>();
-    const { container } = render(
-      <NavigationContext.Provider value={jest.fn()}>
-        <DesignerRegimenList ref={ref} {...p} />
-      </NavigationContext.Provider>);
-    fireEvent.click(container.querySelector(".panel-top .fb-button") as Element);
+    const regimenList = new DesignerRegimenList(p);
+    regimenList.context = jest.fn();
+    const element = regimenList.render() as React.ReactElement<{
+      children: React.ReactNode;
+    }>;
+    const panelTop = React.Children.toArray(element.props.children)[0] as
+      React.ReactElement<{ onClick: () => void }>;
+    panelTop.props.onClick();
     expect(addRegimenModule.addRegimen).toHaveBeenCalledWith(
-      2, ref.current?.navigate);
+      2, regimenList.navigate);
   });
 });
 

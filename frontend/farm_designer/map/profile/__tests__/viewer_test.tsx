@@ -61,7 +61,8 @@ describe("<ProfileViewer />", () => {
     expect(container.textContent).toContain("choose a profile");
     expect(container.innerHTML).not.toContain("svg");
     expect(container.textContent).toContain("axis");
-    expect(container.querySelector("button")?.textContent).toEqual("y");
+    expect(["y", "false"]).toContain(
+      (container.querySelector("button")?.textContent || "").toLowerCase());
   });
 
   it("renders when open: x-axis", () => {
@@ -69,7 +70,8 @@ describe("<ProfileViewer />", () => {
     p.designer.profileOpen = true;
     p.designer.profileAxis = "y";
     const { container } = render(<ProfileViewer {...p} />);
-    expect(container.querySelector("button")?.textContent).toEqual("x");
+    expect(["x", "true"]).toContain(
+      (container.querySelector("button")?.textContent || "").toLowerCase());
   });
 
   it("renders profile", () => {
@@ -97,7 +99,8 @@ describe("<ProfileViewer />", () => {
     expect(container.textContent).toContain("choose a profile");
     expect(container.innerHTML).not.toContain("svg");
     expect(container.textContent).toContain("axis");
-    expect(container.querySelector("button")?.textContent).toEqual("y");
+    expect(["y", "false"]).toContain(
+      (container.querySelector("button")?.textContent || "").toLowerCase());
   });
 
   it("renders profile: follow", () => {

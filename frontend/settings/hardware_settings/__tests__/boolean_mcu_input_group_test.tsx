@@ -51,13 +51,13 @@ describe("BooleanMCUInputGroup", () => {
   it("triggers callbacks", () => {
     render(<BooleanMCUInputGroup {...fakeProps()} />);
     const buttons = screen.getAllByTestId("toggle-button");
-    fireEvent.click(buttons[Buttons.xAxis] as HTMLElement);
+    fireEvent.click(buttons[Buttons.xAxis]);
     expect(settingToggleSpy).toHaveBeenLastCalledWith("encoder_invert_x",
       expect.any(Function), undefined);
-    fireEvent.click(buttons[Buttons.yAxis] as HTMLElement);
+    fireEvent.click(buttons[Buttons.yAxis]);
     expect(settingToggleSpy).toHaveBeenLastCalledWith("encoder_invert_y",
       expect.any(Function), undefined);
-    fireEvent.click(buttons[Buttons.zAxis] as HTMLElement);
+    fireEvent.click(buttons[Buttons.zAxis]);
     expect(settingToggleSpy).toHaveBeenLastCalledWith("encoder_invert_z",
       expect.any(Function), undefined);
   });

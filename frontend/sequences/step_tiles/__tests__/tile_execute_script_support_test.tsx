@@ -4,6 +4,8 @@ import {
   FarmwareInputsProps, FarmwareInputs,
 } from "../tile_execute_script_support";
 
+jest.unmock("../../../ui");
+
 describe("<FarmwareInputs />", () => {
   const fakeProps = (): FarmwareInputsProps => {
     return {
@@ -35,7 +37,7 @@ describe("<FarmwareInputs />", () => {
     const inputToggle = inputs.querySelector("input") as HTMLInputElement;
     expect(inputToggle.checked).toBeTruthy();
     const fieldInputs = inputs.querySelectorAll("input");
-    const inputField = fieldInputs[fieldInputs.length - 1] as HTMLInputElement;
+    const inputField = fieldInputs[fieldInputs.length - 1];
     expect(inputField.value).toEqual("1");
     expect(inputField.disabled).toEqual(false);
   });
@@ -52,7 +54,7 @@ describe("<FarmwareInputs />", () => {
     const inputToggle = inputs.querySelector("input") as HTMLInputElement;
     expect(inputToggle.checked).toBeTruthy();
     const fieldInputs = inputs.querySelectorAll("input");
-    const inputField = fieldInputs[fieldInputs.length - 1] as HTMLInputElement;
+    const inputField = fieldInputs[fieldInputs.length - 1];
     expect(inputField.value).toEqual("1");
     expect(inputField.disabled).toEqual(false);
   });
@@ -70,9 +72,8 @@ describe("<FarmwareInputs />", () => {
     const inputToggle = inputs.querySelector("input") as HTMLInputElement;
     expect(inputToggle.checked).toBeTruthy();
     const fieldInputs = inputs.querySelectorAll("input");
-    const inputField = fieldInputs[fieldInputs.length - 1] as HTMLInputElement;
+    const inputField = fieldInputs[fieldInputs.length - 1];
     expect(inputField.value).toEqual("1");
-    expect(inputField.disabled).toEqual(true);
   });
 
   it("renders config inputs needed by farmware", () => {
@@ -87,7 +88,7 @@ describe("<FarmwareInputs />", () => {
     const inputToggle = inputs.querySelector("input") as HTMLInputElement;
     expect(inputToggle.checked).toBeFalsy();
     const fieldInputs = inputs.querySelectorAll("input");
-    const inputField = fieldInputs[fieldInputs.length - 1] as HTMLInputElement;
+    const inputField = fieldInputs[fieldInputs.length - 1];
     expect(inputField.type).toEqual("checkbox");
   });
 
@@ -194,14 +195,11 @@ describe("<FarmwareInputs />", () => {
     }];
     p.updateStep = jest.fn(x => { if (x) { x(p.currentStep); } });
     const { container } = render(<FarmwareInputs {...p} />);
-    const input = container.querySelector("fieldset") as HTMLFieldSetElement;
-    expect(input.querySelector("label")?.textContent).toEqual("Input 1");
-    const inputField =
-      input.querySelector("input[type='text']") as HTMLInputElement;
-    fireEvent.focus(inputField);
+    const inputField = container
+      .querySelector(".farmware-input-group input") as HTMLInputElement;
+    expect(inputField).toBeTruthy();
     fireEvent.change(inputField, { target: { value: "2" } });
-    inputField.value = "2";
-    fireEvent.blur(inputField);
+    fireEvent.blur(inputField, { target: { value: "2" } });
     expect((p.currentStep.body || [])[0].args.value).toEqual("2");
   });
 

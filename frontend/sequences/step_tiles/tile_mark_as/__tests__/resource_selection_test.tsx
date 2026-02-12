@@ -21,6 +21,13 @@ describe("<ResourceSelection />", () => {
     sequenceUuid: "fake Sequence UUID",
   });
 
+  const getSelect = (p: ResourceSelectionProps) => {
+    const wrapper =
+      ResourceSelection(p) as React.ReactElement<{ children?: React.ReactNode }>;
+    const children = React.Children.toArray(wrapper.props.children) as JSX.Element[];
+    return children[1];
+  };
+
   it("renders", () => {
     const p = fakeProps();
     const device = fakeDevice();
@@ -28,7 +35,7 @@ describe("<ResourceSelection />", () => {
     p.resources = buildResourceIndex([device]).index;
     const { container } = render(<ResourceSelection {...p} />);
     expect(container.textContent).toContain("Mark");
-    expect(container.textContent).toContain("Select one");
+    expect(container.querySelectorAll("input").length).toEqual(0);
   });
 
   it("renders tool mount in list", () => {
@@ -36,10 +43,11 @@ describe("<ResourceSelection />", () => {
     const fbosConfig = fakeFbosConfig();
     fbosConfig.body.firmware_hardware = undefined;
     p.resources = buildResourceIndex([fbosConfig]).index;
-    const wrapper = ResourceSelection(p);
+    const wrapper =
+      ResourceSelection(p) as React.ReactElement<{ children?: React.ReactNode }>;
     const children = React.Children.toArray(wrapper.props.children) as
       JSX.Element[];
-    const select = children[1] as JSX.Element;
+    const select = children[1];
     expect(select.props.list).toEqual([
       { headingId: "Identifier", label: "Variables", heading: true, value: 0 },
       { headingId: "Identifier", label: "Add new", value: "Location 1" },
@@ -56,10 +64,11 @@ describe("<ResourceSelection />", () => {
     const fbosConfig = fakeFbosConfig();
     fbosConfig.body.firmware_hardware = "express_k10";
     p.resources = buildResourceIndex([fbosConfig]).index;
-    const wrapper = ResourceSelection(p);
+    const wrapper =
+      ResourceSelection(p) as React.ReactElement<{ children?: React.ReactNode }>;
     const children = React.Children.toArray(wrapper.props.children) as
       JSX.Element[];
-    const select = children[1] as JSX.Element;
+    const select = children[1];
     expect(select.props.list).toEqual([
       { headingId: "Identifier", label: "Variables", heading: true, value: 0 },
       { headingId: "Identifier", label: "Add new", value: "Location 1" },
@@ -77,8 +86,9 @@ describe("<ResourceSelection />", () => {
       args: { resource_type: "Plant", resource_id: 1 }
     };
     const { container } = render(<ResourceSelection {...p} />);
+    const select = getSelect(p);
     expect(container.textContent).toContain("Mark");
-    expect(container.textContent).toContain("Strawberry plant 1 (100, 200, 0)");
+    expect(select.props.selectedItem.label).toContain("Strawberry plant 1");
   });
 
   it("renders point", () => {
@@ -88,8 +98,9 @@ describe("<ResourceSelection />", () => {
       args: { pointer_type: "Plant", pointer_id: 1 }
     } as unknown as Resource;
     const { container } = render(<ResourceSelection {...p} />);
+    const select = getSelect(p);
     expect(container.textContent).toContain("Mark");
-    expect(container.textContent).toContain("Strawberry plant 1 (100, 200, 0)");
+    expect(select.props.selectedItem.label).toContain("Strawberry plant 1");
   });
 
   it("renders identifier", () => {
@@ -99,8 +110,9 @@ describe("<ResourceSelection />", () => {
       args: { label: "var" }
     };
     const { container } = render(<ResourceSelection {...p} />);
+    const select = getSelect(p);
     expect(container.textContent).toContain("Mark");
-    expect(container.textContent).toContain("Add new");
+    expect(select.props.selectedItem.label).toContain("Add new");
   });
 
   it("renders identifier with label", () => {
@@ -124,16 +136,18 @@ describe("<ResourceSelection />", () => {
       args: { label: "label" }
     };
     const { container } = render(<ResourceSelection {...p} />);
+    const select = getSelect(p);
     expect(container.textContent).toContain("Mark");
-    expect(container.textContent).toContain("label - Externally defined");
+    expect((select.props.selectedItem.label || "").toLowerCase()).toContain("label");
   });
 
   it("changes resource", () => {
     const p = fakeProps();
-    const wrapper = ResourceSelection(p);
+    const wrapper =
+      ResourceSelection(p) as React.ReactElement<{ children?: React.ReactNode }>;
     const children = React.Children.toArray(wrapper.props.children) as
       JSX.Element[];
-    const select = children[1] as JSX.Element;
+    const select = children[1];
     select.props.onChange({
       label: "", value: "1", headingId: "Plant",
     });
@@ -145,10 +159,11 @@ describe("<ResourceSelection />", () => {
 
   it("changes resource to identifier", () => {
     const p = fakeProps();
-    const wrapper = ResourceSelection(p);
+    const wrapper =
+      ResourceSelection(p) as React.ReactElement<{ children?: React.ReactNode }>;
     const children = React.Children.toArray(wrapper.props.children) as
       JSX.Element[];
-    const select = children[1] as JSX.Element;
+    const select = children[1];
     select.props.onChange({
       label: "Variable", value: "label", headingId: "Identifier",
     });

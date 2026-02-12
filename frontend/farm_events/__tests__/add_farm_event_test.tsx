@@ -200,7 +200,7 @@ describe("<AddFarmEvent />", () => {
     const p = fakeProps();
     const farmEvent = fakeFarmEvent("Sequence", 1);
     p.findFarmEventByUuid = () => farmEvent;
-    const formRef = { current: null as unknown as EditFEForm };
+    const formRef = { current: undefined as unknown as EditFEForm };
     const createRefSpy = jest.spyOn(React, "createRef")
       .mockReturnValue(formRef as React.RefObject<EditFEForm>);
     const { container } = render(<AddFarmEvent {...p} />);

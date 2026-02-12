@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { PopoverProps } from "../../ui/popover";
 import React from "react";
-import { render, fireEvent } from "@testing-library/react";
+import { render, fireEvent, waitFor } from "@testing-library/react";
 import {
   RawEditPoint as EditPoint, EditPointProps,
   mapStateToProps,
@@ -136,11 +137,21 @@ describe("<EditPoint />", () => {
     });
   });
 
-  it("changes color", () => {
+  it("changes color", async () => {
     location.pathname = Path.mock(Path.points(1));
     const p = fakeProps();
     const { container } = render(<EditPoint {...p} />);
-    fireEvent.click(container.querySelector(".color-picker-item-wrapper") as Element);
+    fireEvent.click(container.querySelector(".fa-paint-brush") as Element);
+    const colorPickerItem = await waitFor(() => {
+      const element =
+        document.querySelector(".color-picker-item-wrapper")
+        || document.querySelector(".color-picker-mock");
+      if (!element) {
+        throw new Error("Color picker item not found");
+      }
+      return element;
+    });
+    fireEvent.click(colorPickerItem);
     expect(crud.edit).toHaveBeenCalledWith(expect.any(Object),
       { meta: { color: "blue" } });
   });

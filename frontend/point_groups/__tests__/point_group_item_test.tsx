@@ -81,8 +81,8 @@ describe("<PointGroupItem/>", () => {
     p.point.body.meta.color = undefined;
     const { container } = render(<PointGroupItem {...p} />);
     const images = container.querySelectorAll("img");
-    expect((images[0] as HTMLImageElement).src).toContain(FilePath.DEFAULT_WEED_ICON);
-    expect((images[1] as HTMLImageElement).src).toEqual(
+    expect((images[0]).src).toContain(FilePath.DEFAULT_WEED_ICON);
+    expect((images[1]).src).toEqual(
       svgToUrl(genericWeedIcon(undefined)));
     expect(container.querySelectorAll(".slot-icon").length).toEqual(0);
   });

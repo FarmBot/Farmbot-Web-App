@@ -5,6 +5,8 @@ import { McuInputBoxProps } from "../interfaces";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import * as deviceActions from "../../../devices/actions";
 import { warning } from "../../../toast/toast";
+import * as ui from "../../../ui";
+import * as statusIndicator from "../setting_status_indicator";
 
 const settingStatusIndicatorMock = jest.fn((_: unknown) => <div />);
 const blurableInputMock = jest.fn((props: {
@@ -25,30 +27,25 @@ const blurableInputMock = jest.fn((props: {
   </div>,
 );
 
-jest.mock("../../../ui", () => {
-  const actual = jest.requireActual("../../../ui");
-  return {
-    ...actual,
-    BlurableInput: (props: unknown) => blurableInputMock(props as never),
-  };
-});
-
-jest.mock("../setting_status_indicator", () => {
-  const actual = jest.requireActual("../setting_status_indicator");
-  return {
-    ...actual,
-    SettingStatusIndicator: (props: unknown) => settingStatusIndicatorMock(props),
-  };
-});
-
 let updateMCUSpy: jest.SpyInstance;
+let blurableInputSpy: jest.SpyInstance;
+let settingStatusIndicatorSpy: jest.SpyInstance;
 
 beforeEach(() => {
+  blurableInputMock.mockClear();
+  settingStatusIndicatorMock.mockClear();
   updateMCUSpy = jest.spyOn(deviceActions, "updateMCU")
     .mockImplementation(jest.fn());
+  blurableInputSpy = jest.spyOn(ui, "BlurableInput")
+    .mockImplementation((props: unknown) => blurableInputMock(props as never));
+  settingStatusIndicatorSpy = jest.spyOn(statusIndicator, "SettingStatusIndicator")
+    .mockImplementation((props: unknown) => settingStatusIndicatorMock(props));
 });
 
 afterEach(() => {
+  updateMCUSpy.mockRestore();
+  blurableInputSpy.mockRestore();
+  settingStatusIndicatorSpy.mockRestore();
   jest.restoreAllMocks();
 });
 
@@ -165,7 +162,7 @@ describe("McuInputBox", () => {
     p.min = -10;
     p.max = 10;
     const { container } = render(<McuInputBox {...p} />);
-    const input = screen.getByTestId("mcu-input") as HTMLInputElement;
+    const input = screen.getByTestId("mcu-input");
     expect(input.min).toEqual("-10");
     expect(input.max).toEqual("10");
     expect(container.querySelectorAll(".error").length).toEqual(0);

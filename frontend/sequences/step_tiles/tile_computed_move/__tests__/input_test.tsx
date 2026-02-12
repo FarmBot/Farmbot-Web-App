@@ -48,7 +48,7 @@ describe("<MoveStepInput />", () => {
     const { container } = render(<MoveStepInput {...p} />);
     const input = container.querySelector("input");
     if (!input) { throw new Error("Expected input"); }
-    expect((input as HTMLInputElement).value).toEqual("");
+    expect((input).value).toEqual("");
   });
 
   it("calls back", () => {

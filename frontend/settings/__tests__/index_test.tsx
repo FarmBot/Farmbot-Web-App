@@ -29,8 +29,7 @@ const EMPTY_RESOURCE_INDEX = buildResourceIndex([]).index;
 
 const getSetting =
   (container: HTMLElement, position: number, containsString: string) => {
-    const setting = container.querySelectorAll(".designer-setting")
-      [position] as HTMLElement;
+    const setting = container.querySelectorAll(".designer-setting")[position] as HTMLElement;
     expect(setting.textContent?.toLowerCase())
       .toContain(containsString.toLowerCase());
     return setting;
@@ -203,7 +202,7 @@ describe("<DesignerSettings />", () => {
     const { container } = render(<DesignerSettings {...p} />);
     const originSetting = getSetting(container, 6, "origin");
     const quadrants = originSetting.querySelectorAll(".quadrant");
-    fireEvent.click(quadrants[quadrants.length - 1] as Element);
+    fireEvent.click(quadrants[quadrants.length - 1]);
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       NumericSetting.bot_origin_quadrant, 4);
   });

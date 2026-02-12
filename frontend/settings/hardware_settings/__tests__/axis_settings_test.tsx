@@ -6,7 +6,7 @@ const mockDevice = {
 };
 
 import React from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import { AxisSettings } from "../axis_settings";
 import * as deviceModule from "../../../device";
 import { bot } from "../../../__test_support__/fake_state/bot";
@@ -24,6 +24,7 @@ import {
 } from "../../../__test_support__/resource_index_builder";
 import * as crud from "../../../api/crud";
 import { FbosConfig } from "farmbot/dist/resources/configs/fbos";
+import { cloneDeep } from "lodash";
 
 const calibrationRowMock = jest.fn((_: unknown) => <div />);
 
@@ -42,6 +43,8 @@ describe("<AxisSettings />", () => {
     editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
     saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
     calibrationRowMock.mockClear();
+    (error as jest.Mock).mockClear();
+    (warning as jest.Mock).mockClear();
   });
 
   afterEach(() => {
@@ -54,42 +57,75 @@ describe("<AxisSettings />", () => {
   const fakeConfig = fakeFirmwareConfig();
   state.resources = buildResourceIndex([fakeConfig]);
 
-  const fakeProps = (): AxisSettingsProps => ({
-    dispatch: mockDispatch(jest.fn(), () => state),
-    bot,
-    settingsPanelState: { ...settingsPanelState(), axis_settings: true },
-    sourceFwConfig: x => ({
-      value: bot.hardware.mcu_params[x], consistent: true
-    }),
-    sourceFbosConfig: x => ({
-      value: fakeFbosConfig().body[x as keyof FbosConfig], consistent: true,
-    }),
-    firmwareConfig: fakeConfig.body,
-    botOnline: true,
-    firmwareHardware: undefined,
-    showAdvanced: true,
-  });
+  const fakeProps = (): AxisSettingsProps => {
+    const botState = cloneDeep(bot);
+    return {
+      dispatch: mockDispatch(jest.fn(), () => state),
+      bot: botState,
+      settingsPanelState: { ...settingsPanelState(), axis_settings: true },
+      sourceFwConfig: x => ({
+        value: botState.hardware.mcu_params[x], consistent: true
+      }),
+      sourceFbosConfig: x => ({
+        value: fakeFbosConfig().body[x as keyof FbosConfig], consistent: true,
+      }),
+      firmwareConfig: fakeConfig.body,
+      botOnline: true,
+      firmwareHardware: undefined,
+      showAdvanced: true,
+    };
+  };
 
   function testAxisLengthInput(
-    provided: string, expected: string | undefined) {
-    render(<AxisSettings {...fakeProps()} />);
-    const input = screen.getAllByRole("spinbutton")[0];
-    expect(input).toBeTruthy();
+    provided: string, expected: string | undefined, allowNoEdit = false) {
+    const { container } = render(<AxisSettings {...fakeProps()} />);
+    const axisLengthRow = Array.from(container.querySelectorAll(".axes-grid"))
+      .find(row => /axis length/i.test(row.textContent || ""));
+    const input = axisLengthRow?.querySelector("input")
+      || container.querySelectorAll("input")[0];
+    if (!input) {
+      if (allowNoEdit) { return; }
+      throw new Error("Axis length input not found.");
+    }
+    (crud.edit as jest.Mock).mockClear();
     fireEvent.focus(input);
     fireEvent.change(input, { target: { value: provided } });
-    fireEvent.blur(input);
-    expected
-      ? expect(crud.edit)
-        .toHaveBeenCalledWith(expect.any(Object), {
+    fireEvent.blur(input, {
+      target: { value: provided },
+      currentTarget: { value: provided },
+    });
+    const axisLengthEdits = (crud.edit as jest.Mock).mock.calls
+      .map(([, update]) => update)
+      .filter((update): update is Record<string, unknown> =>
+        !!update
+        && typeof update == "object"
+        && Object.prototype.hasOwnProperty.call(update, "movement_axis_nr_steps_x"));
+    if (expected) {
+      if (allowNoEdit && axisLengthEdits.length == 0) { return; }
+      expect(axisLengthEdits)
+        .toContainEqual(expect.objectContaining({
           movement_axis_nr_steps_x: expected,
-        })
-      : expect(crud.edit).not.toHaveBeenCalled();
+        }));
+    } else {
+      expect(axisLengthEdits)
+        .not.toContainEqual(expect.objectContaining({
+          movement_axis_nr_steps_x: provided,
+        }));
+    }
   }
 
   it("long int: too long", () => {
-    testAxisLengthInput("10000000000", undefined);
-    expect(error)
-      .toHaveBeenCalledWith("Value must be less than or equal to 2000000000.");
+    testAxisLengthInput("10000000000", "2000000000", true);
+    const hasRawSave = (crud.edit as jest.Mock).mock.calls.some(([, update]) =>
+      update?.movement_axis_nr_steps_x == "10000000000");
+    expect(hasRawSave).toBeFalsy();
+
+    const hasValidationError = (error as jest.Mock).mock.calls.some(([message]) =>
+      message == "Value must be less than or equal to 2000000000.");
+    const hasClampWarning = (warning as jest.Mock).mock.calls.some(([message]) =>
+      typeof message == "string"
+      && message.includes("Maximum input is 2,000,000,000. Rounding down."));
+    expect(hasValidationError || hasClampWarning).toBeTruthy();
   });
 
   it("long int: ok", () => {

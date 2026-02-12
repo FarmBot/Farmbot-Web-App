@@ -224,3 +224,7 @@ describe("<TestButton />", () => {
     expect(props.dispatch).toHaveBeenCalledWith(setMenuOpen(fakeMenuOpenState()));
   });
 });
+
+afterAll(() => {
+  jest.unmock("../../ui");
+});

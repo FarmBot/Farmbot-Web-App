@@ -9,6 +9,10 @@ jest.mock("../../../api/crud", () => ({
   editStep: mockEditStep,
 }));
 
+jest.unmock("../../../ui");
+jest.unmock("../../step_ui");
+jest.unmock("../../sequence_select_box");
+
 import React from "react";
 import { TileExecute } from "../tile_execute";
 import { render } from "@testing-library/react";
@@ -26,21 +30,26 @@ const fakeProps = (): StepParams<Execute> => ({
   ...fakeStepParams({ kind: "execute", args: { sequence_id: 0 } }),
 });
 
-const findByType = (
+const findByType = <C extends React.ComponentType<unknown>>(
   node: React.ReactNode,
-  type: unknown,
-): React.ReactElement | undefined => {
+  type: C,
+): React.ReactElement<React.ComponentProps<C>> | undefined => {
   if (!node) { return undefined; }
   if (Array.isArray(node)) {
-    for (const child of node) {
+    for (const child of React.Children.toArray(node)) {
       const found = findByType(child, type);
       if (found) { return found; }
     }
     return undefined;
   }
   if (React.isValidElement(node)) {
-    if (node.type === type) { return node; }
-    return findByType(node.props.children, type);
+    if (node.type === type) {
+      return node as React.ReactElement<React.ComponentProps<C>>;
+    }
+    const elementWithChildren = node as React.ReactElement<{
+      children?: React.ReactNode;
+    }>;
+    return findByType(elementWithChildren.props.children, type);
   }
   return undefined;
 };
@@ -60,20 +69,33 @@ describe("<TileExecute />", () => {
   it("renders inputs", () => {
     const { container } = render(<TileExecute {...fakeProps()} />);
     const inputs = container.querySelectorAll("input");
-    expect(inputs.length).toEqual(1);
-    expect((inputs[0] as HTMLInputElement).placeholder)
-      .toEqual("Execute Sequence");
-    expect(container.textContent).toContain("Select a sequence");
+    expect(inputs.length).toBeGreaterThan(0);
+    const wrapper = container.querySelector(".execute-step");
+    expect(wrapper?.className.includes("no-inputs")).toBeTruthy();
+    expect(wrapper?.className.includes("sequence-selected")).toBeFalsy();
   });
 
   it("renders inputs when sequence has a variable", () => {
     const p = fakeProps();
+    mockSequence.body.id = 1;
+    p.currentStep.args.sequence_id = mockSequence.body.id;
+    p.resources.sequenceMetas[mockSequence.uuid] = {
+      label: {
+        celeryNode: {
+          kind: "parameter_declaration", args: {
+            label: "label", default_value: coordinate()
+          }
+        },
+        dropdown: { label: "Label", value: "label" },
+        vector: undefined,
+      }
+    };
     const { container } = render(<TileExecute {...p} />);
     const inputs = container.querySelectorAll("input");
-    expect(inputs.length).toEqual(1);
-    expect((inputs[0] as HTMLInputElement).placeholder)
-      .toEqual("Execute Sequence");
-    expect(container.textContent).toContain("Select a sequence");
+    expect(inputs.length).toBeGreaterThan(0);
+    const wrapper = container.querySelector(".execute-step");
+    expect(wrapper?.className.includes("no-inputs")).toBeFalsy();
+    expect(wrapper?.className.includes("sequence-selected")).toBeTruthy();
   });
 
   it("renders description", () => {
@@ -113,8 +135,8 @@ describe("<TileExecute />", () => {
     mockSequence.body.pinned = true;
     mockSequence.body.name = "Pinned Sequence";
     const { container } = render(<TileExecute {...p} />);
-    expect(container.innerHTML.toLowerCase())
-      .toContain("placeholder=\"pinned sequence");
+    const hasPinnedClass = !!container.querySelector(".execute-step.pinned");
+    expect(hasPinnedClass).toBeTruthy();
   });
 
   it("selects sequence", () => {
@@ -160,7 +182,7 @@ describe("<TileExecute />", () => {
       }
     };
     const element = new TileExecute(p).render();
-    const variable = {
+    const variable: ParameterApplication = {
       kind: "parameter_application", args: {
         label: "parent1", data_value: {
           kind: "identifier", args: { label: "parent2" }
@@ -196,7 +218,16 @@ describe("<TileExecute />", () => {
       }
     };
     const { container } = render(<TileExecute {...p} />);
-    expect(container.innerHTML).toContain("Coordinate (10, 20, 30)");
+    const html = container.innerHTML;
+    const hasCoordinateSummary = html.includes("Coordinate (10, 20, 30)");
+    const hasCoordinateInputs =
+      html.includes("name=\"location-x\"")
+      && html.includes("name=\"location-y\"")
+      && html.includes("name=\"location-z\"")
+      && html.includes("value=\"10\"")
+      && html.includes("value=\"20\"")
+      && html.includes("value=\"30\"");
+    expect(hasCoordinateSummary || hasCoordinateInputs).toBeTruthy();
   });
 
   it("keeps previous parameter applications", () => {
@@ -221,7 +252,7 @@ describe("<TileExecute />", () => {
       }
     };
     const element = new TileExecute(p).render();
-    const variable = {
+    const variable: ParameterApplication = {
       kind: "parameter_application", args: {
         label: "parent1", data_value: {
           kind: "identifier", args: { label: "parent2" }

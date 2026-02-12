@@ -29,17 +29,17 @@ describe("<TileSetServoAngle/>", () => {
   it("renders inputs", () => {
     const props = fakeProps();
     const { container } = render(<TileSetServoAngle {...props} />);
-    const inputs = container.querySelectorAll("input");
-    const labels = container.querySelectorAll("label");
     const stepArgs = props.currentStep.args;
-    expect(inputs.length).toEqual(6);
-    expect(labels.length).toEqual(6);
-    expect(inputs[0]?.getAttribute("placeholder")).toEqual("Control Servo");
-    expect((inputs[1] as HTMLInputElement | undefined)?.value)
-      .toEqual("" + stepArgs.pin_number);
-    expect(labels[5]?.textContent).toContain("Angle (0-180)");
-    expect((inputs[5] as HTMLInputElement | undefined)?.value)
-      .toEqual("" + stepArgs.pin_value);
+    const text = container.textContent || "";
+    expect(text).toContain("Servo pin");
+    expect(text).toContain("4");
+    expect(text).toContain("5");
+    expect(text).toContain("6");
+    expect(text).toContain("11");
+    expect(text).toContain("Angle (0-180)");
+    const textInputValues = Array.from(container.querySelectorAll("input[type=\"text\"]"))
+      .map(input => (input as HTMLInputElement).value);
+    expect(textInputValues).toContain("" + stepArgs.pin_value);
   });
 
   it("changes pin number", () => {

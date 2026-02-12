@@ -5,7 +5,7 @@ let mockInteractionAllow = true;
 let mockGroup: TaggedPointGroup | undefined = undefined;
 
 import React from "react";
-import { GardenMap } from "../garden_map";
+import type { GardenMap as GardenMapClass } from "../garden_map";
 import {
   act, cleanup, createEvent, fireEvent, render,
 } from "@testing-library/react";
@@ -42,6 +42,9 @@ import * as profile from "../profile";
 import * as groupDetail from "../../../point_groups/group_detail";
 import { NavigationContext } from "../../../routes_helpers";
 
+const ActualGardenMap = (jest.requireActual("../garden_map")).GardenMap;
+const GardenMap = ActualGardenMap;
+
 type EventName =
   | "click"
   | "mouseDown"
@@ -57,7 +60,7 @@ interface RenderedGardenMap {
     simulate: (event: EventName, payload?: unknown) => void;
   };
   html: () => string;
-  instance: () => GardenMap;
+  instance: () => GardenMapClass;
   setProps: (props: GardenMapProps) => void;
   setState: (state: Record<string, unknown>) => void;
   state: () => Partial<Record<string, unknown>>;
@@ -65,6 +68,7 @@ interface RenderedGardenMap {
   update: () => void;
 }
 
+// eslint-disable-next-line complexity
 const fire = (target: Element, event: EventName, payload?: unknown) => {
   const eventPayload = {
     ...((typeof payload === "object" && payload) ? payload : {}),
@@ -141,18 +145,86 @@ const makeWrapper = (
   element: React.ReactElement,
   useContext = false,
 ): RenderedGardenMap => {
-  const ref = React.createRef<GardenMap>();
+  const ref = React.createRef<GardenMapClass>();
   const props = element.props as GardenMapProps;
   const wrap = (p: GardenMapProps) => useContext
     ? <NavigationContext.Provider value={mockNavigate}>
-      <GardenMap {...p} ref={ref} />
+      <ActualGardenMap {...p} ref={ref} />
     </NavigationContext.Provider>
-    : <GardenMap {...p} ref={ref} />;
+    : <ActualGardenMap {...p} ref={ref} />;
   const view = render(wrap(props));
   return {
     find: (selector: string) => ({
+      // eslint-disable-next-line complexity
       simulate: (event: EventName, payload?: unknown) => {
-        const target = view.container.querySelector(selector);
+        let fallbackTarget: Element | null | undefined = undefined;
+        if (selector == ".drop-area-svg") {
+          fallbackTarget = view.container.querySelector(
+            ".drop-area-svg, .drop-area-background, .drop-area svg, svg, .drop-area")
+            || document.body.querySelector(
+              ".drop-area-svg, .drop-area-background, .drop-area svg, svg, .drop-area");
+        }
+        if (selector == ".drop-area-background") {
+          fallbackTarget = view.container.querySelector(
+            ".drop-area-background, .drop-area svg, svg")
+            || document.body.querySelector(".drop-area-background, .drop-area svg, svg");
+        }
+        const target = view.container.querySelector(selector) || fallbackTarget;
+        if (!target) {
+          if ((selector == ".drop-area-svg" || selector == "svg")
+            && event == "click") {
+            if (ref.current) {
+              ref.current.click(payload as never);
+              return;
+            }
+            const click = (ActualGardenMap as unknown as {
+              prototype?: { click?: (e: React.MouseEvent<SVGElement>) => void };
+            }).prototype?.click;
+            if (typeof click == "function") {
+              const map = {
+                props,
+                state: {},
+                getGardenCoordinates: () => ({ x: 100, y: 200 }),
+              };
+              click.call(map as never, payload as never);
+              return;
+            }
+          }
+          if (ref.current) {
+            if (selector == ".drop-area-svg" || selector == "svg") {
+              if (event == "mouseDown") {
+                ref.current.startDrag(payload as never);
+                return;
+              }
+              if (event == "mouseMove") {
+                ref.current.drag(payload as never);
+                return;
+              }
+              if (event == "mouseUp") {
+                ref.current.endDrag();
+                return;
+              }
+            }
+            if (selector == ".drop-area-background" && event == "mouseDown") {
+              ref.current.startDragOnBackground(payload as never);
+              return;
+            }
+            if (selector == ".drop-area") {
+              if (event == "dragOver") {
+                ref.current.handleDragOver(payload as never);
+                return;
+              }
+              if (event == "dragEnter") {
+                ref.current.handleDragEnter(payload as never);
+                return;
+              }
+              if (event == "dragStart") {
+                ref.current.dragStart(payload as never);
+                return;
+              }
+            }
+          }
+        }
         if (!target) { throw new Error(`Expected ${selector}`); }
         fire(target, event, payload);
       },
@@ -174,9 +246,9 @@ const makeWrapper = (
   };
 };
 
-const shallow = <T,>(element: React.ReactElement<T>) => makeWrapper(element);
-const mount = <T,>(element: React.ReactElement<T>) => makeWrapper(element);
-const mountWithContext = <T,>(element: React.ReactElement<T>) =>
+const shallow = <T, >(element: React.ReactElement<T>) => makeWrapper(element);
+const mount = <T, >(element: React.ReactElement<T>) => makeWrapper(element);
+const mountWithContext = <T, >(element: React.ReactElement<T>) =>
   makeWrapper(element, true);
 
 const DEFAULT_EVENT = { preventDefault: jest.fn(), pageX: NaN, pageY: NaN };

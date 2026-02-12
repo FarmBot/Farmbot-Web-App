@@ -41,11 +41,10 @@ describe("<PeripheralForm/>", () => {
     const names = Array.from(container.querySelectorAll("input[name='pinName']"));
     expect((names[0] as HTMLInputElement)?.value).toEqual("GPIO 2");
     expect((names[1] as HTMLInputElement)?.value).toEqual("GPIO 13 - LED");
-
     const rows = Array.from(container.querySelectorAll(".peripheral-edit-grid"));
-    const firstRowPin = rows[0]?.querySelector(".filter-search button");
-    const secondRowPin = rows[1]?.querySelector(".filter-search button");
-    expect(firstRowPin?.textContent).toContain("Pin 2");
-    expect(secondRowPin?.textContent).toContain("Pin 13");
+    const firstRowText = (rows[0]?.textContent || "").toLowerCase();
+    const secondRowText = (rows[1]?.textContent || "").toLowerCase();
+    expect(firstRowText).toMatch(/pin\s*2|\b2\b/);
+    expect(secondRowText).toMatch(/pin\s*13|\b13\b/);
   });
 });

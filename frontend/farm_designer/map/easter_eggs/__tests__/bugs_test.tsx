@@ -55,7 +55,7 @@ describe("<Bugs />", () => {
     const ref = React.createRef<Bugs>();
     const { container } = renderBugs(fakeProps(), ref);
     await waitFor(() => expect(queryImages(container).length).toEqual(10));
-    await act(async () => {
+    act(() => {
       ref.current?.setState(state => ({
         ...state,
         bugs: state.bugs.map((bug, index) =>

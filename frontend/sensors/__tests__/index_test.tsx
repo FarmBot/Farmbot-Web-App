@@ -27,7 +27,7 @@ describe("<Sensors />", () => {
     const { container } = render(<Sensors {...fakeProps()} />);
     ["Sensors", "Edit", "Save", "Fake Pin", "1"].map(string =>
       expect(container.textContent).toContain(string));
-    const saveButton = container.querySelectorAll("button")[1] as HTMLButtonElement;
+    const saveButton = container.querySelectorAll("button")[1];
     expect(saveButton.textContent).toContain("Save");
     expect(saveButton.hidden).toBeTruthy();
   });
@@ -75,7 +75,7 @@ describe("<Sensors />", () => {
     expect(container.textContent?.toLowerCase()).toContain("stock sensors");
     act(() => { ref.current?.setState({ isEditing: true }); });
     clickButton(container, 3, "stock sensors");
-    const stockButton = container.querySelectorAll("button")[3] as HTMLButtonElement;
+    const stockButton = container.querySelectorAll("button")[3];
     expect(stockButton.hidden).toBeFalsy();
     expect(p.dispatch).toHaveBeenCalledTimes(2);
   });
@@ -84,7 +84,7 @@ describe("<Sensors />", () => {
     const p = fakeProps();
     p.firmwareHardware = "express_k10";
     const { container } = render(<Sensors {...p} />);
-    const btn = container.querySelectorAll("button")[3] as HTMLButtonElement;
+    const btn = container.querySelectorAll("button")[3];
     expect(btn.textContent?.toLowerCase()).toContain("stock");
     expect(btn.hidden).toBeTruthy();
   });
@@ -95,7 +95,7 @@ describe("<Sensors />", () => {
     const ref = React.createRef<Sensors>();
     const { container } = render(<Sensors ref={ref} {...p} />);
     act(() => { ref.current?.setState({ isEditing: true }); });
-    const btn = container.querySelectorAll("button")[3] as HTMLButtonElement;
+    const btn = container.querySelectorAll("button")[3];
     expect(btn.textContent?.toLowerCase()).toContain("stock");
     expect(btn.hidden).toBeTruthy();
   });

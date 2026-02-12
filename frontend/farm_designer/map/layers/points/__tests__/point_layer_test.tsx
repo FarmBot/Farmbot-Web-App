@@ -55,7 +55,7 @@ describe("<PointLayer/>", () => {
     p.interactions = true;
     const wrapper = svgMount(<PointLayer {...p} />);
     const layer = wrapper.find("#point-layer");
-    expect(layer.props().style).toEqual({});
+    expect(layer.props().style || {}).toEqual({});
   });
 
   it("shows grid points", () => {

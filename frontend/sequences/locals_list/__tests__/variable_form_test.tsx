@@ -105,8 +105,8 @@ describe("<VariableForm />", () => {
     expect(container.querySelectorAll(".fb-select-mock").length).toBe(2);
     const choices = variableFormList(
       p.resources, [], [{ label: "Externally defined", value: "" }], true);
-    const actualLabels = listAt(container).map(x => x.label).sort();
-    const expectedLabels = choices.map(x => x.label).sort();
+    const actualLabels: string[] = listAt(container).map(x => String(x.label)).sort();
+    const expectedLabels: string[] = choices.map(x => String(x.label)).sort();
     const diff = difference(actualLabels, expectedLabels);
     expect(diff).toEqual([]);
     const dropdown = choices[1];

@@ -1,5 +1,5 @@
 jest.mock("../../default_values", () => ({
-  getModifiedClassNameSpecifyModified: (x: boolean) => x ? "modified" : "",
+  getModifiedClassNameSpecifyModified: jest.fn((x: boolean) => x ? "modified" : ""),
 }));
 
 import React from "react";
@@ -8,14 +8,21 @@ import { GantryHeight, SafeHeight, SoilHeight } from "../z_height_inputs";
 import { ZHeightInputProps } from "../interfaces";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { FirmwareHardware } from "farmbot";
+import { cloneDeep } from "lodash";
+import * as defaultValues from "../../default_values";
+
+const modifiedClassNameSpy =
+  defaultValues.getModifiedClassNameSpecifyModified as jest.Mock;
 
 afterAll(() => {
   jest.unmock("../../default_values");
 });
+
 describe("<GantryHeight />", () => {
-  const fakeProps = (): ZHeightInputProps => ({
-    sourceFbosConfig: x =>
-      ({ value: bot.hardware.configuration[x], consistent: true }),
+  const fakeProps = (
+    configuration = cloneDeep(bot.hardware.configuration),
+  ): ZHeightInputProps => ({
+    sourceFbosConfig: x => ({ value: configuration[x], consistent: true }),
     dispatch: jest.fn(),
   });
 
@@ -23,21 +30,23 @@ describe("<GantryHeight />", () => {
     ["arduino", 120],
     ["express_k10", 140],
   ])("renders: %s", (firmwareHardware, value) => {
-    bot.hardware.configuration.firmware_hardware = firmwareHardware;
-    bot.hardware.configuration.gantry_height = value;
-    const { container } = render(<GantryHeight {...fakeProps()} />);
+    modifiedClassNameSpy.mockClear();
+    const configuration = cloneDeep(bot.hardware.configuration);
+    configuration.firmware_hardware = firmwareHardware;
+    configuration.gantry_height = value;
+    const { container } = render(<GantryHeight {...fakeProps(configuration)} />);
     expect((container.textContent || "").toLowerCase()).toContain("gantry height");
-    expect(container.querySelector(".input")?.className.includes("modified"))
-      .toBeFalsy();
+    expect(modifiedClassNameSpy).toHaveBeenCalledWith(false);
   });
 
   it("renders: modified", () => {
-    bot.hardware.configuration.firmware_hardware = "arduino";
-    bot.hardware.configuration.gantry_height = 100;
-    const { container } = render(<GantryHeight {...fakeProps()} />);
+    modifiedClassNameSpy.mockClear();
+    const configuration = cloneDeep(bot.hardware.configuration);
+    configuration.firmware_hardware = "arduino";
+    configuration.gantry_height = 100;
+    const { container } = render(<GantryHeight {...fakeProps(configuration)} />);
     expect((container.textContent || "").toLowerCase()).toContain("gantry height");
-    expect(container.querySelector(".input")?.className.includes("modified"))
-      .toBeTruthy();
+    expect(modifiedClassNameSpy).toHaveBeenCalledWith(true);
   });
 });
 

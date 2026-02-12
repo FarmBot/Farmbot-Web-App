@@ -2,8 +2,15 @@ import React from "react";
 import { render } from "@testing-library/react";
 import { SaveBtn, SaveBtnProps } from "../save_button";
 import { SpecialStatus } from "farmbot";
+import * as I18n from "../../i18next_wrapper";
 
 describe("<SaveBtn />", () => {
+  beforeEach(() => {
+    jest.spyOn(I18n, "t")
+      .mockImplementation((input: string) => input);
+  });
+  afterEach(() => jest.restoreAllMocks());
+
   const fakeProps = (): SaveBtnProps => ({
     status: SpecialStatus.SAVED,
     onClick: jest.fn(),

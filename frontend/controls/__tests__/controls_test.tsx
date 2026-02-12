@@ -36,7 +36,7 @@ describe("<DesignerControls />", () => {
     const p = fakeProps();
     render(<DesignerControls {...p} />);
     expect(
-      screen.getByText("Controls have moved to the navigation bar.")
+      screen.getByText("Controls have moved to the navigation bar."),
     ).toBeInTheDocument();
     expect(p.dispatch).toHaveBeenCalledWith(
       { type: Actions.OPEN_POPUP, payload: "controls" });

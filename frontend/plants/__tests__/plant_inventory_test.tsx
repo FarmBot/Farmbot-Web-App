@@ -28,6 +28,30 @@ import * as configStorageActions from "../../config_storage/actions";
 import { NumericSetting } from "../../session_keys";
 import * as popover from "../../ui/popover";
 import { NavigationContext } from "../../routes_helpers";
+import { WebAppNumberSetting } from "../../settings/farm_designer_settings";
+
+const findElement = (
+  node: unknown,
+  predicate: (element: React.ReactElement) => boolean,
+): React.ReactElement | undefined => {
+  if (Array.isArray(node)) {
+    for (const item of node) {
+      const found = findElement(item, predicate);
+      if (found) { return found; }
+    }
+    return undefined;
+  }
+
+  if (!React.isValidElement(node)) { return undefined; }
+  if (predicate(node)) { return node; }
+
+  for (const value of Object.values(node.props || {})) {
+    const found = findElement(value, predicate);
+    if (found) { return found; }
+  }
+
+  return undefined;
+};
 
 describe("<PlantInventory />", () => {
   let createGroupSpy: jest.SpyInstance;
@@ -86,11 +110,18 @@ describe("<PlantInventory />", () => {
   it("changes number setting", () => {
     mockValue = 0;
     const p = fakeProps();
-    render(<Plants {...p} />);
-    const input = screen.getByRole("spinbutton");
-    fireEvent.focus(input);
-    fireEvent.change(input, { target: { value: "100" } });
-    fireEvent.blur(input);
+    const rendered = new Plants(p).render();
+    const setting = findElement(
+      rendered,
+      element => element.type === WebAppNumberSetting,
+    );
+    if (!setting) {
+      throw new Error("Expected default plant depth setting control");
+    }
+    const blurableInput = WebAppNumberSetting(setting.props);
+    blurableInput.props.onCommit({
+      currentTarget: { value: "100" },
+    });
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       NumericSetting.default_plant_depth,
       100);
@@ -206,7 +237,7 @@ describe("<PlantInventory />", () => {
     render(<Plants {...fakeProps()} />);
     const input = screen.getByPlaceholderText(
       "Search your plants...",
-    ) as HTMLInputElement;
+    );
     expect(input.value).toEqual("");
     fireEvent.change(input, { target: { value: "mint" } });
     expect(input.value).toEqual("mint");

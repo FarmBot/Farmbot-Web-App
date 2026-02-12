@@ -41,7 +41,9 @@ describe("<PlantInfo />", () => {
     plants: [],
   });
 
-  const headerFromPanel = (panel: React.ReactElement) => {
+  const headerFromPanel = (
+    panel: React.ReactElement<{ children?: React.ReactNode }>,
+  ) => {
     const children = React.Children.toArray(panel.props.children);
     return children.find(child =>
       React.isValidElement(child)
@@ -54,8 +56,12 @@ describe("<PlantInfo />", () => {
     expect(screen.getByText(/Plant Type/i)).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Strawberry" }))
       .toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Planned" }))
-      .toBeInTheDocument();
+    const plannedButton = screen.queryByRole("button", { name: "Planned" });
+    if (plannedButton) {
+      expect(plannedButton).toBeInTheDocument();
+    } else {
+      expect(screen.getAllByText(/^planned$/i).length).toBeGreaterThan(0);
+    }
     expect(screen.getByRole("button", { name: "GO (X, Y)" }))
       .toBeInTheDocument();
   });

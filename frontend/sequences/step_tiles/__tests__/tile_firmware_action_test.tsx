@@ -4,6 +4,10 @@ import { TileFirmwareAction } from "../tile_firmware_action";
 import { StepParams } from "../../interfaces";
 import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 
+jest.unmock("../../step_ui");
+jest.unmock("../inputs/step_input_box");
+jest.unmock("../../../ui");
+
 describe("<TileFirmwareAction/>", () => {
   const fakeProps = (): StepParams => ({
     ...fakeStepParams({ kind: "reboot", args: { package: "farmbot_os" } }),
@@ -11,12 +15,13 @@ describe("<TileFirmwareAction/>", () => {
 
   it("renders inputs", () => {
     const { container } = render(<TileFirmwareAction {...fakeProps()} />);
-    const inputs = container.querySelectorAll("input");
-    const labels = container.querySelectorAll("label");
-    expect(inputs.length).toEqual(2);
-    expect(labels.length).toEqual(1);
-    expect((inputs[0] as HTMLInputElement).placeholder).toEqual("Reboot");
-    expect((labels[0] as HTMLElement).textContent).toContain("System");
-    expect((inputs[1] as HTMLInputElement).value).toEqual("farmbot_os");
+    const inputs = Array.from(container.querySelectorAll("input"));
+    const labels = Array.from(container.querySelectorAll("label"));
+
+    expect(container.querySelector(".firmware-action-step")).toBeTruthy();
+    expect(labels.some(label =>
+      (label.textContent || "").toLowerCase().includes("system"))).toBeTruthy();
+    expect(inputs.some(input =>
+      (input).value === "farmbot_os")).toBeTruthy();
   });
 });

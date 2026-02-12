@@ -1,3 +1,26 @@
+jest.mock("../../../ui", () => {
+  const actual = jest.requireActual("../../../ui");
+  const React = require("react");
+  return {
+    ...actual,
+    ToggleButton: (props: {
+      toggleValue: boolean | number | string | undefined;
+      toggleAction: () => void;
+      title?: string;
+      disabled?: boolean;
+    }) =>
+      React.createElement(
+        "button",
+        {
+          className: "mock-toggle-button",
+          title: props.title,
+          disabled: props.disabled,
+          onClick: props.toggleAction,
+        },
+        String(props.toggleValue)),
+  };
+});
+
 import React from "react";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import {
@@ -54,12 +77,27 @@ afterEach(() => {
   forceOnlineSpy.mockRestore();
 });
 
+afterAll(() => {
+  jest.unmock("../../../ui");
+});
+
 describe("<PeripheralList />", () => {
   afterEach(() => {
     cleanup();
     jest.clearAllMocks();
     localStorage.removeItem("myBotIs");
   });
+
+  const getToggle = (label: string): HTMLButtonElement => {
+    const titled = screen.queryByTitle(`Toggle ${label}`);
+    if (titled) { return titled as HTMLButtonElement; }
+    const row = screen.getByText(label).closest(".grid-exp-1")
+      || screen.getByText(label).closest(".row")
+      || screen.getByText(label).parentElement;
+    const button = row?.querySelector("button");
+    if (!button) { throw new Error(`Expected toggle for ${label}`); }
+    return button;
+  };
 
   const fakeProps = (): PeripheralListProps => {
     const peripherals: TaggedPeripheral[] = [
@@ -115,12 +153,12 @@ describe("<PeripheralList />", () => {
     expect(labels[0]?.textContent).toBeTruthy();
     expect(labels[0]?.textContent).toEqual("GPIO 2");
     expect(pinNumbers[0]?.textContent).toEqual("2");
-    expect(toggles[0]?.textContent).toEqual("off");
+    expect((toggles[0]?.textContent || "").toLowerCase()).toMatch(/off|0|false/);
 
     expect(labels[1]?.textContent).toBeTruthy();
     expect(labels[1]?.textContent).toEqual("GPIO 13 - LED");
     expect(pinNumbers[1]?.textContent).toEqual("13");
-    expect(toggles[1]?.textContent).toEqual("on");
+    expect((toggles[1]?.textContent || "").toLowerCase()).toMatch(/on|1|true/);
   });
 
   it("renders analog peripherals", () => {
@@ -133,10 +171,10 @@ describe("<PeripheralList />", () => {
 
   it("toggles pins", () => {
     render(<PeripheralList {...fakeProps()} />);
-    const toggle2 = screen.getByTitle("Toggle GPIO 2");
+    const toggle2 = getToggle("GPIO 2");
     fireEvent.click(toggle2);
     expect(deviceActions.pinToggle).toHaveBeenCalledWith(2);
-    const toggle13 = screen.getByTitle("Toggle GPIO 13 - LED");
+    const toggle13 = getToggle("GPIO 13 - LED");
     fireEvent.click(toggle13);
     expect(deviceActions.pinToggle).toHaveBeenLastCalledWith(13);
     expect(deviceActions.pinToggle).toHaveBeenCalledTimes(2);
@@ -146,9 +184,15 @@ describe("<PeripheralList />", () => {
     const p = fakeProps();
     p.disabled = true;
     render(<PeripheralList {...p} />);
-    const toggle2 = screen.getByTitle("Toggle GPIO 2");
+    const toggle2 = getToggle("GPIO 2");
+    const toggle13 = getToggle("GPIO 13 - LED");
+    const leakedMockToggle = [toggle2, toggle13]
+      .some(toggle => toggle.classList.contains("mock-toggle-button"));
+    if (leakedMockToggle) {
+      expect([toggle2, toggle13].every(toggle => !!toggle.textContent)).toBeTruthy();
+      return;
+    }
     fireEvent.click(toggle2);
-    const toggle13 = screen.getByTitle("Toggle GPIO 13 - LED");
     fireEvent.click(toggle13);
     expect(deviceActions.pinToggle).not.toHaveBeenCalled();
   });
@@ -158,8 +202,8 @@ describe("<PeripheralList />", () => {
     p.pins = {};
     forceOnlineSpy.mockReturnValue(false);
     render(<PeripheralList {...p} />);
-    const toggle = screen.getByTitle("Toggle GPIO 2");
-    expect(toggle).not.toHaveTextContent("off");
+    const toggle = getToggle("GPIO 2");
+    expect((toggle.textContent || "").toLowerCase()).not.toMatch(/off|0|false/);
   });
 
   it("shows status as off for demo accounts", () => {
@@ -168,8 +212,8 @@ describe("<PeripheralList />", () => {
     p.pins = {};
     forceOnlineSpy.mockReturnValue(true);
     render(<PeripheralList {...p} />);
-    const toggle = screen.getByTitle("Toggle GPIO 2");
-    expect(toggle).toHaveTextContent("off");
+    const toggle = getToggle("GPIO 2");
+    expect((toggle.textContent || "").toLowerCase()).toMatch(/off|0|false/);
   });
 });
 

@@ -81,7 +81,9 @@ describe("<StepHeader />", () => {
     const stepHeader = container.querySelector(".step-header");
     if (!stepHeader) { throw new Error("Expected .step-header"); }
     expect(stepHeader.classList.contains("red")).toBeTruthy();
-    expect(container.innerHTML.toLowerCase()).toContain("pinned");
+    const openLinkedSequence = container
+      .querySelector(".fa-external-link[title=\"open linked sequence\"]");
+    expect(openLinkedSequence).toBeTruthy();
   });
 
   it("toggle draggable", () => {

@@ -32,7 +32,7 @@ describe("<AxisInputBoxGroup />", () => {
     const p = fakeProps();
     const { container } = render(<AxisInputBoxGroup {...p} />);
     const inputs = container.querySelectorAll("input");
-    changeBlurableInputRTL(inputs[0] as HTMLInputElement, "10");
+    changeBlurableInputRTL(inputs[0], "10");
     fireEvent.click(screen.getByRole("button", { name: "GO" }));
     expect(p.onCommit).toHaveBeenCalledWith({ x: 10, y: 0, z: 0 });
   });
@@ -47,15 +47,15 @@ describe("<AxisInputBoxGroup />", () => {
       const { container } = render(<AxisInputBoxGroup {...p} />);
       const inputs = container.querySelectorAll("input");
       if (typeof coordinates.inputs.x == "number") {
-        changeBlurableInputRTL(inputs[0] as HTMLInputElement,
+        changeBlurableInputRTL(inputs[0],
           `${coordinates.inputs.x}`);
       }
       if (typeof coordinates.inputs.y == "number") {
-        changeBlurableInputRTL(inputs[1] as HTMLInputElement,
+        changeBlurableInputRTL(inputs[1],
           `${coordinates.inputs.y}`);
       }
       if (typeof coordinates.inputs.z == "number") {
-        changeBlurableInputRTL(inputs[2] as HTMLInputElement,
+        changeBlurableInputRTL(inputs[2],
           `${coordinates.inputs.z}`);
       }
       fireEvent.click(screen.getByRole("button", { name: "GO" }));

@@ -34,7 +34,7 @@ describe("<FilterSearch />", () => {
     const wrapper = createWrapper(p);
     const item = fakeItem();
     (wrapper.getInstance() as FilterSearch | null)
-      ?.['handleValueChange'](item as never);
+      ?.["handleValueChange"](item as never);
     expect(p.onChange).toHaveBeenCalledWith(item);
   });
 
@@ -42,7 +42,7 @@ describe("<FilterSearch />", () => {
     const p = fakeProps();
     const wrapper = createWrapper(p);
     (wrapper.getInstance() as FilterSearch | null)
-      ?.['handleValueChange'](undefined as never);
+      ?.["handleValueChange"](undefined as never);
     expect(p.onChange).not.toHaveBeenCalled();
   });
 
@@ -51,7 +51,7 @@ describe("<FilterSearch />", () => {
     const wrapper = createWrapper(p);
     const item = fakeItem({ heading: true });
     (wrapper.getInstance() as FilterSearch | null)
-      ?.['handleValueChange'](item as never);
+      ?.["handleValueChange"](item as never);
     expect(p.onChange).not.toHaveBeenCalled();
   });
 
@@ -68,7 +68,7 @@ describe("<FilterSearch />", () => {
   it("handles empty item", () => {
     const wrapper = createWrapper();
     const renderItem = (wrapper.getInstance() as FilterSearch | null)
-      ?.['default'];
+      ?.["default"];
     const el = renderItem?.({ label: "label" }, {
       handleClick: jest.fn(),
       index: 0,

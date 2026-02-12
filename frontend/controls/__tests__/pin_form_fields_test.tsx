@@ -1,19 +1,14 @@
 import React from "react";
-import { fireEvent, render } from "@testing-library/react";
-import { NameInputBox, PinDropdown, ModeDropdown } from "../pin_form_fields";
 import { fakeSensor } from "../../__test_support__/fake_state/resources";
 import { Actions } from "../../constants";
 import * as crud from "../../api/crud";
 
-let mockFBSelectProps: { onChange: (d: { value: number }) => void } | undefined;
-jest.mock("../../ui", () => ({
-  FBSelect: (props: { onChange: (d: { value: number }) => void }) => {
-    mockFBSelectProps = props;
-    return <div data-testid="fb-select" />;
-  },
-}));
+jest.unmock("../pin_form_fields");
 
-const expectedPayload = (update: Object) =>
+const getPinFormFields = () =>
+  jest.requireActual("../pin_form_fields");
+
+const expectedPayload = (update: object) =>
   expect.objectContaining({
     payload: expect.objectContaining({
       update
@@ -22,7 +17,6 @@ const expectedPayload = (update: Object) =>
   });
 
 beforeEach(() => {
-  mockFBSelectProps = undefined;
   jest.spyOn(crud, "edit").mockImplementation((_: unknown, update: unknown) => ({
     type: "EDIT_RESOURCE",
     payload: { update },
@@ -32,6 +26,7 @@ beforeEach(() => {
 afterEach(() => {
   jest.restoreAllMocks();
 });
+
 describe("<NameInputBox />", () => {
   const fakeProps = () => ({
     dispatch: jest.fn(),
@@ -40,11 +35,12 @@ describe("<NameInputBox />", () => {
   });
 
   it("updates label", () => {
+    const { NameInputBox } = getPinFormFields();
     const p = fakeProps();
-    const { container } = render(<NameInputBox {...p} />);
-    const input = container.querySelector("input");
-    expect(input).toBeTruthy();
-    input && fireEvent.change(input, { target: { value: "GPIO 3" } });
+    const input = NameInputBox(p);
+    input.props.onChange({
+      currentTarget: { value: "GPIO 3" },
+    } as React.ChangeEvent<HTMLInputElement>);
     expect(p.dispatch).toHaveBeenCalledWith(
       expectedPayload({ label: "GPIO 3" }));
   });
@@ -58,9 +54,10 @@ describe("<PinDropdown />", () => {
   });
 
   it("updates pin", () => {
+    const { PinDropdown } = getPinFormFields();
     const p = fakeProps();
-    render(<PinDropdown {...p} />);
-    mockFBSelectProps?.onChange({ value: 3 });
+    const dropdown = PinDropdown(p);
+    dropdown.props.onChange({ value: 3 });
     expect(p.dispatch).toHaveBeenCalledWith(
       expectedPayload({ pin: 3 }));
   });
@@ -74,9 +71,10 @@ describe("<ModeDropdown />", () => {
   });
 
   it("updates mode", () => {
+    const { ModeDropdown } = getPinFormFields();
     const p = fakeProps();
-    render(<ModeDropdown {...p} />);
-    mockFBSelectProps?.onChange({ value: 0 });
+    const dropdown = ModeDropdown(p);
+    dropdown.props.onChange({ value: 0 });
     expect(p.dispatch).toHaveBeenCalledWith(
       expectedPayload({ mode: 0 }));
   });

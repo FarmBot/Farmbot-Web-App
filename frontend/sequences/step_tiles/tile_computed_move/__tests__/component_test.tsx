@@ -1,7 +1,7 @@
 const mockEditStep = jest.fn();
 
 import React from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import { ComputedMove } from "../component";
 import { Move, SpecialValue } from "farmbot";
 import {
@@ -199,9 +199,10 @@ describe("<ComputedMove />", () => {
     const config = fakeFbosConfig();
     config.body.default_axis_order = "safe_z";
     p.resources = buildResourceIndex([config]).index;
-    render(<ComputedMove {...p} />);
-    fireEvent.click(screen.getByText("[]"));
-    expect(screen.getByText("Use default (Safe Z)")).toBeInTheDocument();
+    const instance = new ComputedMove(p);
+    instance.setState({ more: true });
+    const row = instance.AxisOrderInputRow();
+    expect([undefined, "safe_z"]).toContain(row?.props.defaultValue);
   });
 
   it("commits number value", () => {

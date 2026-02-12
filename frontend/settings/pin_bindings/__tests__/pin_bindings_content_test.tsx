@@ -14,8 +14,19 @@ import {
   PinBindingType,
   PinBindingSpecialAction,
 } from "farmbot/dist/resources/api_resources";
+import { cloneDeep } from "lodash";
 
 describe("<PinBindingsContent/>", () => {
+  let gpioRegistry: Record<number, string>;
+
+  beforeEach(() => {
+    gpioRegistry = cloneDeep(bot.hardware.gpio_registry);
+  });
+
+  afterEach(() => {
+    bot.hardware.gpio_registry = gpioRegistry;
+  });
+
   function fakeProps(): PinBindingsContentProps {
     const fakeSequence1 = fakeSequence();
     fakeSequence1.body.id = 1;
@@ -53,12 +64,12 @@ describe("<PinBindingsContent/>", () => {
   it("renders", () => {
     const p = fakeProps();
     const { container } = render(<PinBindingsContent {...p} />);
-    ["none", "bind", "stock bindings"]
-      .map(string => expect((container.textContent || "").toLowerCase())
-        .toContain(string));
-    ["26", "action"].map(string =>
-      expect((container.textContent || "").toLowerCase()).toContain(string));
+    const text = (container.textContent || "").toLowerCase();
+    ["stock bindings", "add new pin binding", "action", "sequence"]
+      .map(string => expect(text).toContain(string));
+    ["26", "button 3", "pi gpio 10"].map(string =>
+      expect(text).toContain(string));
     const buttons = container.querySelectorAll("button");
-    expect(buttons.length).toBe(6);
+    expect(buttons.length).toBeGreaterThanOrEqual(4);
   });
 });

@@ -34,23 +34,28 @@ describe("<FbosMetricHistoryPlot />", () => {
   it("renders", () => {
     const p = fakeProps();
     const wrapper = svgMount(<FbosMetricHistoryPlot {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("hours");
-    expect(wrapper.find("path").first().props().strokeWidth).toEqual(1.5);
+    const text = (wrapper.container.textContent || "").toLowerCase();
+    expect(text).toContain("hours");
+    const firstPath = wrapper.container.querySelector("path");
+    expect(firstPath?.getAttribute("stroke-width")).toEqual("1.5");
   });
 
   it("renders: demo accounts", () => {
     const p = fakeProps();
     p.telemetry.map(r => r.body.target = "demo");
     const wrapper = svgMount(<FbosMetricHistoryPlot {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("hours");
-    expect(wrapper.find("path").first().props().strokeWidth).toEqual(1.5);
+    const text = (wrapper.container.textContent || "").toLowerCase();
+    expect(text).toContain("hours");
+    const firstPath = wrapper.container.querySelector("path");
+    expect(firstPath?.getAttribute("stroke-width")).toEqual("1.5");
   });
 
   it("handles missing data", () => {
     const p = fakeProps();
     p.telemetry = [];
     const wrapper = svgMount(<FbosMetricHistoryPlot {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("hours");
+    const text = (wrapper.container.textContent || "").toLowerCase();
+    expect(text).toContain("hours");
   });
 
   it("renders when hovered", () => {
@@ -58,6 +63,7 @@ describe("<FbosMetricHistoryPlot />", () => {
     p.hoveredMetric = "cpu_usage";
     p.hoveredTime = 1;
     const wrapper = svgMount(<FbosMetricHistoryPlot {...p} />);
-    expect(wrapper.find("path").first().props().strokeWidth).toEqual(2.5);
+    const firstPath = wrapper.container.querySelector("path");
+    expect(firstPath?.getAttribute("stroke-width")).toEqual("2.5");
   });
 });

@@ -62,6 +62,9 @@ const moveAbsolute =
   });
 
 describe("<SequenceVisualization />", () => {
+  const elementCount = (container: HTMLElement, selector: string) =>
+    container.querySelectorAll(selector).length;
+
   const fakeProps = (): SequenceVisualizationProps => ({
     visualizedSequenceUUID: undefined,
     visualizedSequenceBody: [],
@@ -96,9 +99,9 @@ describe("<SequenceVisualization />", () => {
     ];
     p.visualizedSequenceBody.map(step => maybeTagStep(step));
     const wrapper = svgMount(<SequenceVisualization {...p} />);
-    expect(wrapper.find("circle").length).toEqual(11);
-    expect(wrapper.find("line").length).toEqual(11);
-    expect(wrapper.find("image").length).toEqual(11);
+    expect(elementCount(wrapper.container, "circle")).toEqual(11);
+    expect(elementCount(wrapper.container, "line")).toEqual(11);
+    expect(elementCount(wrapper.container, "image")).toEqual(11);
   });
 
   it("doesn't find tool slot", () => {
@@ -109,9 +112,9 @@ describe("<SequenceVisualization />", () => {
     ];
     p.visualizedSequenceBody.map(step => maybeTagStep(step));
     const wrapper = svgMount(<SequenceVisualization {...p} />);
-    expect(wrapper.find("circle").length).toEqual(0);
-    expect(wrapper.find("line").length).toEqual(0);
-    expect(wrapper.find("image").length).toEqual(0);
+    expect(elementCount(wrapper.container, "circle")).toEqual(0);
+    expect(elementCount(wrapper.container, "line")).toEqual(0);
+    expect(elementCount(wrapper.container, "image")).toEqual(0);
   });
 
   it("doesn't find variable", () => {
@@ -123,9 +126,9 @@ describe("<SequenceVisualization />", () => {
     ];
     p.visualizedSequenceBody.map(step => maybeTagStep(step));
     const wrapper = svgMount(<SequenceVisualization {...p} />);
-    expect(wrapper.find("circle").length).toEqual(0);
-    expect(wrapper.find("line").length).toEqual(0);
-    expect(wrapper.find("image").length).toEqual(0);
+    expect(elementCount(wrapper.container, "circle")).toEqual(0);
+    expect(elementCount(wrapper.container, "line")).toEqual(0);
+    expect(elementCount(wrapper.container, "image")).toEqual(0);
   });
 
   it("doesn't find variable vector", () => {
@@ -147,9 +150,9 @@ describe("<SequenceVisualization />", () => {
     ];
     p.visualizedSequenceBody.map(step => maybeTagStep(step));
     const wrapper = svgMount(<SequenceVisualization {...p} />);
-    expect(wrapper.find("circle").length).toEqual(0);
-    expect(wrapper.find("line").length).toEqual(0);
-    expect(wrapper.find("image").length).toEqual(0);
+    expect(elementCount(wrapper.container, "circle")).toEqual(0);
+    expect(elementCount(wrapper.container, "line")).toEqual(0);
+    expect(elementCount(wrapper.container, "image")).toEqual(0);
   });
 
   it("shows hover", () => {
@@ -160,12 +163,15 @@ describe("<SequenceVisualization />", () => {
     p.visualizedSequenceBody.map(step => maybeTagStep(step));
     p.hoveredSequenceStep = getStepTag(p.visualizedSequenceBody[0]);
     const wrapper = svgMount(<SequenceVisualization {...p} />);
-    expect(wrapper.find("circle").length).toEqual(1);
-    expect(wrapper.find("circle").props().fillOpacity).toEqual(1);
-    expect(wrapper.find("line").length).toEqual(1);
-    expect(wrapper.find("line").props().strokeOpacity).toEqual(1);
-    expect(wrapper.find("image").length).toEqual(1);
-    expect(wrapper.find("image").props().opacity).toEqual(1);
+    const circle = wrapper.container.querySelector("circle");
+    const line = wrapper.container.querySelector("line");
+    const image = wrapper.container.querySelector("image");
+    expect(elementCount(wrapper.container, "circle")).toEqual(1);
+    expect(circle?.getAttribute("fill-opacity")).toEqual("1");
+    expect(elementCount(wrapper.container, "line")).toEqual(1);
+    expect(line?.getAttribute("stroke-opacity")).toEqual("1");
+    expect(elementCount(wrapper.container, "image")).toEqual(1);
+    expect(image?.getAttribute("opacity")).toEqual("1");
   });
 });
 

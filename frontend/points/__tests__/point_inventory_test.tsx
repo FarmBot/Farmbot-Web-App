@@ -60,6 +60,17 @@ describe("<Points />", () => {
     return { ...utils, ref };
   };
 
+  const clickSectionToggle = (container: HTMLElement, sectionName: string) => {
+    const section = Array.from(container.querySelectorAll(".points-section"))
+      .find(element => element.textContent
+        ?.toLowerCase().includes(sectionName.toLowerCase()));
+    expect(section).toBeTruthy();
+    const toggleButton = section?.querySelector("button:not(.delete)")
+      || section?.querySelector("button");
+    expect(toggleButton).toBeTruthy();
+    fireEvent.click(toggleButton as Element);
+  };
+
   it("renders no points", () => {
     const { container } = render(<Points {...fakeProps()} />);
     expect(container.textContent).toContain("No points yet.");
@@ -195,7 +206,7 @@ describe("<Points />", () => {
     const { container, rerender } = renderWithRef(p);
     expect(container.innerHTML).not.toContain("orange");
     expect(container.textContent?.toLowerCase()).toContain("soil height");
-    fireEvent.click(container.querySelectorAll(".fa-caret-down")[1] as Element);
+    fireEvent.click(container.querySelectorAll(".fa-caret-down")[1]);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_POINTS_PANEL_OPTION,
       payload: "soilHeight",
@@ -220,10 +231,10 @@ describe("<Points />", () => {
     expect(container.innerHTML).not.toContain("soil-point-graphic");
     expect(container.textContent?.toLowerCase()).toContain("all soil height");
     expect(ref.current?.state.soilHeightColors).toEqual([]);
-    fireEvent.click(container.querySelectorAll(".fa-caret-down")[2] as Element);
+    fireEvent.click(container.querySelectorAll(".fa-caret-down")[2]);
     expect(ref.current?.state.soilHeightColors).toEqual(["red"]);
     expect(container.innerHTML).toContain("soil-point-graphic");
-    fireEvent.click(container.querySelectorAll(".fa-caret-up")[1] as Element);
+    fireEvent.click(container.querySelectorAll(".fa-caret-up")[1]);
     expect(ref.current?.state.soilHeightColors).toEqual([]);
   });
 
@@ -236,9 +247,9 @@ describe("<Points />", () => {
     const { container, ref } = renderWithRef(p);
     expect(container.textContent?.toLowerCase()).toContain("mesh grid");
     expect(ref.current?.state.gridIds).toEqual([]);
-    fireEvent.click(container.querySelectorAll(".fa-caret-down")[1] as Element);
+    fireEvent.click(container.querySelectorAll(".fa-caret-down")[1]);
     expect(ref.current?.state.gridIds).toEqual(["123"]);
-    fireEvent.click(container.querySelectorAll(".fa-caret-up")[1] as Element);
+    fireEvent.click(container.querySelectorAll(".fa-caret-up")[1]);
     expect(ref.current?.state.gridIds).toEqual([]);
   });
 
@@ -252,7 +263,7 @@ describe("<Points />", () => {
     act(() => {
       ref.current?.setState({ gridIds: ["123"] });
     });
-    fireEvent.click(container.querySelectorAll(".delete")[0] as Element);
+    fireEvent.click(container.querySelectorAll(".delete")[0]);
     expect(deletePointsModule.deletePoints).not.toHaveBeenCalled();
     expect(deletePointsModule.deletePointsByIds).not.toHaveBeenCalled();
   });
@@ -267,7 +278,7 @@ describe("<Points />", () => {
     act(() => {
       ref.current?.setState({ gridIds: ["123"] });
     });
-    fireEvent.click(container.querySelectorAll(".delete")[0] as Element);
+    fireEvent.click(container.querySelectorAll(".delete")[0]);
     expect(deletePointsModule.deletePointsByIds).toHaveBeenCalledWith("points",
       [p.genericPoints[0].body.id]);
     expect(deletePointsModule.deletePoints).not.toHaveBeenCalled();
@@ -283,7 +294,7 @@ describe("<Points />", () => {
     act(() => {
       ref.current?.setState({ gridIds: ["123"] });
     });
-    fireEvent.click(container.querySelectorAll(".delete")[1] as Element);
+    fireEvent.click(container.querySelectorAll(".delete")[1]);
     expect(deletePointsModule.deletePoints).toHaveBeenCalledWith("points",
       { meta: { gridId: "123" } });
     expect(deletePointsModule.deletePointsByIds).not.toHaveBeenCalled();
@@ -294,11 +305,37 @@ describe("<Points />", () => {
     const gridPoint = fakePoint();
     gridPoint.body.meta.gridId = "123";
     p.genericPoints = [fakePoint(), gridPoint];
-    const { container, ref } = renderWithRef(p);
+    const { ref } = renderWithRef(p);
     act(() => {
       ref.current?.setState({ gridIds: ["123"] });
     });
-    fireEvent.click(container.querySelectorAll(".fb-toggle-button")[0] as Element);
+    const findElement = (
+      node: unknown,
+      predicate: (element: React.ReactElement) => boolean,
+    ): React.ReactElement | undefined => {
+      if (Array.isArray(node)) {
+        for (const item of node) {
+          const found = findElement(item, predicate);
+          if (found) { return found; }
+        }
+        return undefined;
+      }
+      if (!React.isValidElement(node)) { return undefined; }
+      if (predicate(node)) { return node; }
+      for (const value of Object.values(node.props || {})) {
+        const found = findElement(value, predicate);
+        if (found) { return found; }
+      }
+      return undefined;
+    };
+    const tree = ref.current?.render();
+    const gridSection = findElement(tree, element =>
+      element.props?.metaQuery?.gridId === "123" &&
+      typeof element.props?.toggleAction === "function");
+    if (!gridSection) {
+      throw new Error("Expected grid section");
+    }
+    gridSection.props.toggleAction();
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_GRID_ID, payload: "123"
     });
@@ -311,7 +348,7 @@ describe("<Points />", () => {
     tagAsSoilHeight(soilHeightPoint);
     p.genericPoints = [fakePoint(), soilHeightPoint];
     const { container } = render(<Points {...p} />);
-    fireEvent.click(container.querySelectorAll(".fb-toggle-button")[0] as Element);
+    clickSectionToggle(container, "soil height");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_SOIL_HEIGHT_LABELS, payload: undefined
     });

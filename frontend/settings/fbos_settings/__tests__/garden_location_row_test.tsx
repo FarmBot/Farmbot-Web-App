@@ -11,6 +11,15 @@ jest.mock("../../../ui", () => {
   const actual = jest.requireActual("../../../ui");
   return {
     ...actual,
+    ToggleButton: (props: {
+      toggleAction: (e: React.MouseEvent) => void,
+      toggleValue: number | string | boolean | undefined,
+    }) =>
+      <button
+        className={"mock-toggle-button"}
+        onClick={e => props.toggleAction(e)}>
+        {String(props.toggleValue)}
+      </button>,
     FBSelect: (props: {
       onChange: (ddi: { label: string, value: number | string }) => void,
     }) =>
@@ -45,6 +54,10 @@ afterEach(() => {
   initSaveSpy.mockRestore();
   editSpy.mockRestore();
   saveSpy.mockRestore();
+});
+
+afterAll(() => {
+  jest.unmock("../../../ui");
 });
 
 describe("<GardenLocationRow />", () => {
@@ -110,7 +123,7 @@ describe("<GardenLocationRow />", () => {
   it("changes indoor setting", () => {
     const p = fakeProps();
     const { container } = render(<GardenLocationRow {...p} />);
-    const button = container.querySelector("button.fb-toggle-button");
+    const button = container.querySelector("button.mock-toggle-button");
     expect(button).toBeTruthy();
     button && fireEvent.click(button);
     expect(crud.edit).toHaveBeenCalledWith(p.device, { indoor: true });

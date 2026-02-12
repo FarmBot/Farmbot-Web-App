@@ -15,19 +15,29 @@ describe("<TileFindHome/>", () => {
 
   it("renders inputs", () => {
     const { container } = render(<TileFindHome {...fakeProps()} />);
-    const inputs = container.querySelectorAll("input");
-    const labels = container.querySelectorAll("label");
-    expect(inputs.length).toEqual(5);
-    expect(labels.length).toEqual(4);
-    expect((inputs[0] as HTMLInputElement).placeholder).toEqual("Find Home");
-    expect((labels[0] as HTMLElement).textContent).toContain("x");
-    expect((inputs[1] as HTMLInputElement).checked).toBeFalsy();
-    expect((labels[1] as HTMLElement).textContent).toContain("y");
-    expect((inputs[2] as HTMLInputElement).checked).toBeFalsy();
-    expect((labels[2] as HTMLElement).textContent).toContain("z");
-    expect((inputs[3] as HTMLInputElement).checked).toBeFalsy();
-    expect((labels[3] as HTMLElement).textContent).toContain("all");
-    expect((inputs[4] as HTMLInputElement).checked).toBeTruthy();
+    const labels = Array.from(container.querySelectorAll("label"))
+      .map(label => (label.textContent || "").toLowerCase().trim());
+    expect(labels).toEqual(expect.arrayContaining(["x", "y", "z", "all"]));
+
+    const xInput =
+      container.querySelector("input[type='radio'][name='x']") as HTMLInputElement;
+    expect(xInput).toBeTruthy();
+    expect(xInput.checked).toBeFalsy();
+
+    const yInput =
+      container.querySelector("input[type='radio'][name='y']") as HTMLInputElement;
+    expect(yInput).toBeTruthy();
+    expect(yInput.checked).toBeFalsy();
+
+    const zInput =
+      container.querySelector("input[type='radio'][name='z']") as HTMLInputElement;
+    expect(zInput).toBeTruthy();
+    expect(zInput.checked).toBeFalsy();
+
+    const allInput =
+      container.querySelector("input[type='radio'][name='all']") as HTMLInputElement;
+    expect(allInput).toBeTruthy();
+    expect(allInput.checked).toBeTruthy();
   });
 
   const CONFLICT_TEXT_BASE = "Hardware setting conflict";

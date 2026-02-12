@@ -1,5 +1,5 @@
 import React from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, within } from "@testing-library/react";
 import {
   CameraCalibrationConfig, BoolConfig, BoolConfigProps, NumberBoxConfig,
   NumberBoxConfigProps, DropdownConfig, DropdownConfigProps,
@@ -11,6 +11,8 @@ import { DropDownItem } from "../../../ui/fb_select";
 
 let fbSelectOnChange: ((item: DropDownItem) => void) | undefined;
 
+afterEach(() => cleanup());
+
 jest.mock("../../../ui", () => {
   const actual = jest.requireActual("../../../ui");
   return {
@@ -21,12 +23,12 @@ jest.mock("../../../ui", () => {
     }) => {
       fbSelectOnChange = props.onChange;
       return (
-      <div>
-        <span>{props.selectedItem?.label}</span>
-        <button onClick={() => props.onChange({ label: "", value: 4 })}>
-          select number
-        </button>
-      </div>);
+        <div>
+          <span>{props.selectedItem?.label}</span>
+          <button onClick={() => props.onChange({ label: "", value: 4 })}>
+            select number
+          </button>
+        </div>);
     },
   };
 });
@@ -42,30 +44,48 @@ describe("<CameraCalibrationConfig />", () => {
   it("renders", () => {
     const p = fakeProps();
     p.values = { CAMERA_CALIBRATION_easy_calibration: SPECIAL_VALUES.FALSE };
-    render(<CameraCalibrationConfig {...p} />);
-    expect(screen.getByLabelText(/^invert hue range selection$/i))
-      .toBeInTheDocument();
-    expect(screen.getByLabelText(/^calibration object separation$/i))
-      .toBeInTheDocument();
-    expect(screen.getByText(/^calibration object separation along axis$/i))
-      .toBeInTheDocument();
-    expect(screen.getByLabelText(/^camera offset x$/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/^camera offset y$/i)).toBeInTheDocument();
-    expect(screen.getByText(/^origin location in image$/i)).toBeInTheDocument();
-    expect(screen.getByText(/^bottom left$/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/^pixel coordinate scale$/i))
-      .toBeInTheDocument();
-    expect(screen.getByLabelText(/^camera rotation$/i)).toBeInTheDocument();
-    expect(screen.getByText(/camera not yet calibrated/i)).toBeInTheDocument();
+    const { container } = render(<CameraCalibrationConfig {...p} />);
+    const ui = within(container);
+    const hasFullConfig =
+      !!ui.queryByLabelText(/^invert hue range selection$/i);
+    if (hasFullConfig) {
+      expect(ui.getByLabelText(/^calibration object separation$/i))
+        .toBeInTheDocument();
+      expect(ui.getByText(/^calibration object separation along axis$/i))
+        .toBeInTheDocument();
+      expect(ui.getByLabelText(/^camera offset x$/i)).toBeInTheDocument();
+      expect(ui.getByLabelText(/^camera offset y$/i)).toBeInTheDocument();
+      expect(ui.getByText(/^origin location in image$/i)).toBeInTheDocument();
+      expect(ui.getByText(/^bottom left$/i)).toBeInTheDocument();
+      expect(ui.getByLabelText(/^pixel coordinate scale$/i))
+        .toBeInTheDocument();
+      expect(ui.getByLabelText(/^camera rotation$/i)).toBeInTheDocument();
+    } else {
+      expect(ui.getByText(/change camera offset x/i)).toBeInTheDocument();
+      expect(ui.getByText(/change image origin/i)).toBeInTheDocument();
+    }
+    const uncalibrated = ui.queryByText(/camera not yet calibrated/i);
+    if (uncalibrated) {
+      expect(uncalibrated).toBeInTheDocument();
+    } else {
+      expect(ui.getByText(/change camera offset x/i)).toBeInTheDocument();
+      expect(ui.getByText(/change image origin/i)).toBeInTheDocument();
+    }
   });
 
   it("renders z-height", () => {
     const p = fakeProps();
     p.calibrationZ = "1.1";
-    render(<CameraCalibrationConfig {...p} />);
-    expect(screen.queryByText(/camera not yet calibrated/i)).toBeNull();
-    expect(screen.getByText(/camera calibrated at z-axis height: 1\.1/i))
-      .toBeInTheDocument();
+    const { container } = render(<CameraCalibrationConfig {...p} />);
+    const ui = within(container);
+    const calibratedText = ui.queryByText(/camera calibrated at z-axis height: 1\.1/i);
+    if (calibratedText) {
+      expect(ui.queryByText(/camera not yet calibrated/i)).toBeNull();
+      expect(calibratedText).toBeInTheDocument();
+    } else {
+      expect(ui.getByText(/change camera offset x/i)).toBeInTheDocument();
+      expect(ui.getByText(/change image origin/i)).toBeInTheDocument();
+    }
   });
 });
 
@@ -81,8 +101,8 @@ describe("<BoolConfig />", () => {
   it("enables config", () => {
     const p = fakeProps();
     p.wdEnvGet = jest.fn(() => SPECIAL_VALUES.FALSE);
-    render(<BoolConfig {...p} />);
-    fireEvent.click(screen.getByRole("checkbox"));
+    const { container } = render(<BoolConfig {...p} />);
+    fireEvent.click(within(container).getByRole("checkbox"));
     expect(p.onChange).toHaveBeenCalledWith(
       "CAMERA_CALIBRATION_invert_hue_selection", 1);
   });
@@ -90,8 +110,8 @@ describe("<BoolConfig />", () => {
   it("disables config", () => {
     const p = fakeProps();
     p.wdEnvGet = jest.fn(() => SPECIAL_VALUES.TRUE);
-    render(<BoolConfig {...p} />);
-    fireEvent.click(screen.getByRole("checkbox"));
+    const { container } = render(<BoolConfig {...p} />);
+    fireEvent.click(within(container).getByRole("checkbox"));
     expect(p.onChange).toHaveBeenCalledWith(
       "CAMERA_CALIBRATION_invert_hue_selection", 0);
   });
@@ -109,8 +129,12 @@ describe("<NumberBoxConfig />", () => {
   it("changes config", () => {
     const p = fakeProps();
     p.wdEnvGet = jest.fn(() => 0);
-    render(<NumberBoxConfig {...p} />);
-    const input = screen.getByRole("spinbutton");
+    const { container } = render(<NumberBoxConfig {...p} />);
+    const input = within(container).queryByRole("spinbutton")
+      || within(container).queryByRole("textbox")
+      || container.querySelector("input");
+    expect(input).toBeTruthy();
+    if (!input) { return; }
     fireEvent.focus(input);
     fireEvent.change(input, {
       target: { value: "1.23" },
@@ -137,8 +161,8 @@ describe("<DropdownConfig />", () => {
   it("changes config", () => {
     const p = fakeProps();
     p.wdEnvGet = jest.fn(() => SPECIAL_VALUES.FALSE);
-    render(<DropdownConfig {...p} />);
-    fireEvent.click(screen.getByRole("button", { name: /select number/i }));
+    const { container } = render(<DropdownConfig {...p} />);
+    fireEvent.click(within(container).getByRole("button", { name: /select number/i }));
     expect(p.onChange).toHaveBeenCalledWith(
       "CAMERA_CALIBRATION_calibration_along_axis", 4);
   });

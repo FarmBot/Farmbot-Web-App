@@ -9,6 +9,7 @@ import { Actions } from "../../../constants";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { newWeek } from "../../reducer";
 import { changeBlurableInput } from "../../../__test_support__/helpers";
+import { NULL_CHOICE } from "../../../ui";
 
 describe("<BulkScheduler />", () => {
   const week = newWeek();
@@ -39,10 +40,13 @@ describe("<BulkScheduler />", () => {
   };
 
   it("renders with sequence selected", () => {
-    const { container } = render(<BulkScheduler {...fakeProps()} />);
-    const buttons = container.querySelectorAll("button");
-    expect(buttons.length).toEqual(5);
-    ["Sequence", "Fake Sequence", "Time",
+    const p = fakeProps();
+    const { container, ref } = renderWithRef(p);
+    expect(ref.current?.selected()).toEqual({
+      label: "Fake Sequence",
+      value: p.selectedSequence?.uuid,
+    });
+    ["Sequence", "Time",
       "Days", "Week 1", "1234567"]
       .map(string =>
         expect(container.textContent).toContain(string));
@@ -51,8 +55,9 @@ describe("<BulkScheduler />", () => {
   it("renders without sequence selected", () => {
     const p = fakeProps();
     p.selectedSequence = undefined;
-    const { container } = render(<BulkScheduler {...p} />);
-    ["Sequence", "None", "Time"].map(string =>
+    const { container, ref } = renderWithRef(p);
+    expect(ref.current?.selected()).toEqual(NULL_CHOICE);
+    ["Sequence", "Time"].map(string =>
       expect(container.textContent).toContain(string));
   });
 
@@ -114,7 +119,7 @@ describe("<BulkScheduler />", () => {
       payload: 10800000,
       type: Actions.SET_TIME_OFFSET
     });
-    expect(container.querySelector("input")?.classList.contains("error")).toBeTruthy();
+    expect(nearOsUpdateTime(p.dailyOffsetMs, p.device.body.ota_hour)).toBeTruthy();
   });
 
   it("doesn't show warning", () => {
@@ -129,7 +134,7 @@ describe("<BulkScheduler />", () => {
       payload: 10800000,
       type: Actions.SET_TIME_OFFSET
     });
-    expect(container.querySelector("input")?.classList.contains("error")).toBeFalsy();
+    expect(nearOsUpdateTime(p.dailyOffsetMs, p.device.body.ota_hour)).toBeFalsy();
   });
 });
 

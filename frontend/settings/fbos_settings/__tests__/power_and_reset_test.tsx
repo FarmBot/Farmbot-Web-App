@@ -42,8 +42,9 @@ describe("<PowerAndReset/>", () => {
     const p = fakeProps();
     p.settingsPanelState.power_and_reset = true;
     const wrapper = mountWithContext(<PowerAndReset {...p} />);
+    const text = (wrapper.container.textContent || "").toLowerCase();
     ["Power and Reset", "Restart", "Shutdown"]
-      .map(string => expect(wrapper.text().toLowerCase())
+      .map(string => expect(text)
         .toContain(string.toLowerCase()));
   });
 
@@ -51,9 +52,10 @@ describe("<PowerAndReset/>", () => {
     const p = fakeProps();
     p.settingsPanelState.power_and_reset = false;
     const wrapper = mountWithContext(<PowerAndReset {...p} />);
-    expect(wrapper.text().toLowerCase())
+    const text = (wrapper.container.textContent || "").toLowerCase();
+    expect(text)
       .toContain("Power and Reset".toLowerCase());
-    expect(wrapper.text().toLowerCase())
+    expect(text)
       .not.toContain("Soft Reset".toLowerCase());
   });
 
@@ -61,7 +63,7 @@ describe("<PowerAndReset/>", () => {
     const p = fakeProps();
     p.settingsPanelState.power_and_reset = true;
     const wrapper = mountWithContext(<PowerAndReset {...p} />);
-    expect(wrapper.text().toLowerCase())
+    expect((wrapper.container.textContent || "").toLowerCase())
       .toContain("Restart Firmware".toLowerCase());
     clickButton(wrapper, 0, "restart");
     expect(mockDevice.rebootFirmware).toHaveBeenCalled();

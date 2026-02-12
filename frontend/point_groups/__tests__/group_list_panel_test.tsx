@@ -52,7 +52,7 @@ describe("<GroupListPanel />", () => {
   it("changes search term", () => {
     render(<GroupListPanel {...fakeProps()} />);
     const input =
-      (screen.getByPlaceholderText("Search your groups...") as HTMLInputElement);
+      (screen.getByPlaceholderText("Search your groups..."));
     fireEvent.change(input, { target: { value: "one" } });
     expect(input.value).toEqual("one");
   });

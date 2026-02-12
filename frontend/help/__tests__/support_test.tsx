@@ -121,3 +121,7 @@ describe("<Feedback />", () => {
       .toHaveBeenCalledWith(Path.settings("order_number"));
   });
 });
+
+afterAll(() => {
+  jest.unmock("../../ui");
+});

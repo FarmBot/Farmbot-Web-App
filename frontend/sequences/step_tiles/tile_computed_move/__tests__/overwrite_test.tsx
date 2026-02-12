@@ -62,9 +62,9 @@ describe("<OverwriteInputRow />", () => {
 
   it("changes overwrite selection", () => {
     const p = fakeProps();
-    const row = OverwriteInputRow(p);
+    const row = OverwriteInputRow(p) as React.ReactElement<{ children?: React.ReactNode }>;
     const children = React.Children.toArray(row.props.children) as JSX.Element[];
-    const xInput = (children[1] as JSX.Element).props.children as JSX.Element;
+    const xInput = (children[1]).props.children as JSX.Element;
     xInput.props.onChange({
       label: "", value: "custom"
     });
@@ -79,9 +79,9 @@ describe("<OverwriteInputRow />", () => {
       y: AxisSelection.custom,
       z: AxisSelection.custom,
     };
-    const row = OverwriteInputRow(p);
+    const row = OverwriteInputRow(p) as React.ReactElement<{ children?: React.ReactNode }>;
     const children = React.Children.toArray(row.props.children) as JSX.Element[];
-    const xInput = (children[1] as JSX.Element).props.children as JSX.Element;
+    const xInput = (children[1]).props.children as JSX.Element;
     xInput.props.onClear();
     expect(p.setAxisOverwriteState)
       .toHaveBeenCalledWith("x", AxisSelection.none);
@@ -96,9 +96,9 @@ describe("<OverwriteInputRow />", () => {
 
   it("renders options", () => {
     const p = fakeProps();
-    const row = OverwriteInputRow(p);
+    const row = OverwriteInputRow(p) as React.ReactElement<{ children?: React.ReactNode }>;
     const children = React.Children.toArray(row.props.children) as JSX.Element[];
-    const zInput = (children[3] as JSX.Element).props.children as JSX.Element;
+    const zInput = (children[3]).props.children as JSX.Element;
     const items = zInput.props.list;
     expect(items)
       .toContainEqual(OVERWRITE_OPTION_LOOKUP()[AxisSelection.safe_height]);

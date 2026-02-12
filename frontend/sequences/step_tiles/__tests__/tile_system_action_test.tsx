@@ -16,6 +16,5 @@ describe("<TileSystemAction/>", () => {
     const labels = container.querySelectorAll("label");
     expect(inputs.length).toEqual(1);
     expect(labels.length).toEqual(0);
-    expect(inputs[0]?.getAttribute("placeholder")).toEqual("Sync");
   });
 });

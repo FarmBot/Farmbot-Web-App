@@ -25,7 +25,7 @@ describe("<BotPeripherals/>", () => {
 
   const getNumericAttribute = (element: Element, key: string) => {
     const value = getAttribute(element, key);
-    if (value === null || value === undefined) {
+    if (value === undefined || value === undefined) {
       throw new Error(`Missing attribute ${key}`);
     }
     return Number(value);
