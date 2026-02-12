@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { getProfileX, ProfileSvg } from "../content";
 import { ProfileSvgProps } from "../interfaces";
 import * as interpolationMap from "../../layers/points/interpolation_map";
@@ -35,6 +35,28 @@ beforeEach(() => {
 afterEach(() => {
   jest.restoreAllMocks();
 });
+
+const queryCount = (container: HTMLElement, selector: string) =>
+  container.querySelectorAll(selector).length;
+
+const propToAttribute = (prop: string) =>
+  prop.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`);
+
+const expectProps = (
+  element: Element | undefined,
+  props: Record<string, string | number | undefined>,
+) => {
+  expect(element).toBeTruthy();
+  Object.entries(props).forEach(([prop, value]) => {
+    const attribute = propToAttribute(prop);
+    if (value === undefined) {
+      expect(element?.getAttribute(attribute)).toBeNull();
+    } else {
+      expect(element?.getAttribute(attribute)).toEqual(`${value}`);
+    }
+  });
+};
+
 describe("<ProfileSvg />", () => {
   const fakeProps = (): ProfileSvgProps => ({
     allPoints: [],
@@ -54,8 +76,8 @@ describe("<ProfileSvg />", () => {
   });
 
   it("renders without points", () => {
-    const wrapper = mount(<ProfileSvg {...fakeProps()} />);
-    expect(wrapper.html()).not.toContain("profile-point");
+    const { container } = render(<ProfileSvg {...fakeProps()} />);
+    expect(container.innerHTML).not.toContain("profile-point");
   });
 
   it("renders with no matching points", () => {
@@ -63,10 +85,10 @@ describe("<ProfileSvg />", () => {
     p.allPoints = [fakePoint(), fakePoint()];
     p.allPoints[0].body.y = 0;
     p.allPoints[1].body.y = 210;
-    const wrapper = mount(<ProfileSvg {...p} />);
-    expect(wrapper.html()).not.toContain("profile-point");
-    expect(wrapper.html()).not.toContain("text");
-    expect(wrapper.find("#UTM").find("rect").length).toEqual(0);
+    const { container } = render(<ProfileSvg {...p} />);
+    expect(container.innerHTML).not.toContain("profile-point");
+    expect(container.innerHTML).not.toContain("text");
+    expect(queryCount(container, "#UTM rect")).toEqual(0);
   });
 
   it("renders expanded", () => {
@@ -82,42 +104,42 @@ describe("<ProfileSvg />", () => {
     p.allPoints[1].body.y = 100;
     p.allPoints[1].body.z = 0;
     p.allPoints[1].body.meta.color = "green";
-    const wrapper = mount(<ProfileSvg {...p} />);
-    expect(wrapper.html()).toContain("text");
-    expect(wrapper.html()).toContain("line");
-    expect(wrapper.html()).toContain("circle");
-    expect(wrapper.text()).toContain("-100");
+    const { container } = render(<ProfileSvg {...p} />);
+    expect(container.innerHTML).toContain("text");
+    expect(container.innerHTML).toContain("line");
+    expect(container.innerHTML).toContain("circle");
+    expect(container.textContent).toContain("-100");
   });
 
   it("renders expanded: positive z", () => {
     const p = fakeProps();
     p.expanded = true;
     p.negativeZ = false;
-    const wrapper = mount(<ProfileSvg {...p} />);
-    expect(wrapper.html()).toContain("text");
-    expect(wrapper.text()).not.toContain("-100");
+    const { container } = render(<ProfileSvg {...p} />);
+    expect(container.innerHTML).toContain("text");
+    expect(container.textContent).not.toContain("-100");
   });
 
   it("doesn't render soil fill", () => {
-    const wrapper = mount(<ProfileSvg {...fakeProps()} />);
-    expect(wrapper.find("#soil-height").find("rect").length).toEqual(0);
+    const { container } = render(<ProfileSvg {...fakeProps()} />);
+    expect(queryCount(container, "#soil-height rect")).toEqual(0);
   });
 
   it("renders soil fill", () => {
     const p = fakeProps();
     p.sourceFbosConfig = () => ({ value: 100, consistent: true });
-    const wrapper = mount(<ProfileSvg {...p} />);
-    expect(wrapper.find("#soil-height").find("rect").length).toEqual(1);
+    const { container } = render(<ProfileSvg {...p} />);
+    expect(queryCount(container, "#soil-height rect")).toEqual(1);
   });
 
   it("renders UTM", () => {
     const p = fakeProps();
     p.designer.profileAxis = "y";
     p.botLocationData.position = { x: 200, y: 100, z: 100 };
-    const wrapper = mount(<ProfileSvg {...p} />);
-    expect(wrapper.find("#UTM-and-axis").find("line").length).toEqual(1);
-    expect(wrapper.find("#UTM-and-axis").find("rect").length).toEqual(1);
-    expect(wrapper.html()).not.toContain("image");
+    const { container } = render(<ProfileSvg {...p} />);
+    expect(queryCount(container, "#UTM-and-axis line")).toEqual(1);
+    expect(queryCount(container, "#UTM-and-axis rect")).toEqual(1);
+    expect(container.innerHTML).not.toContain("image");
   });
 
   it("renders UTM when expanded", () => {
@@ -125,9 +147,9 @@ describe("<ProfileSvg />", () => {
     p.expanded = true;
     p.designer.profileAxis = "y";
     p.botLocationData.position = { x: 200, y: 100, z: 100 };
-    const wrapper = mount(<ProfileSvg {...p} />);
-    expect(wrapper.find("#UTM-and-axis").find("rect").length).toEqual(4);
-    expect(wrapper.html()).toContain("image");
+    const { container } = render(<ProfileSvg {...p} />);
+    expect(queryCount(container, "#UTM-and-axis rect")).toEqual(4);
+    expect(container.innerHTML).toContain("image");
   });
 
   it("renders UTM when expanded: y-axis", () => {
@@ -135,9 +157,9 @@ describe("<ProfileSvg />", () => {
     p.expanded = true;
     p.designer.profileAxis = "y";
     p.botLocationData.position = { x: 200, y: 100, z: 100 };
-    const wrapper = mount(<ProfileSvg {...p} />);
-    expect(wrapper.find("#UTM-and-axis").find("rect").length).toEqual(4);
-    expect(wrapper.html()).toContain("image");
+    const { container } = render(<ProfileSvg {...p} />);
+    expect(queryCount(container, "#UTM-and-axis rect")).toEqual(4);
+    expect(container.innerHTML).toContain("image");
   });
 
   it("renders with matching points", () => {
@@ -167,26 +189,27 @@ describe("<ProfileSvg />", () => {
     p.allPoints[4].body.y = 100;
     p.allPoints[4].body.z = 400;
     p.allPoints[4].body.meta.color = "blue";
-    const wrapper = mount(<ProfileSvg {...p} />);
-    expect(wrapper.find("line").at(0).props()).toEqual({
+    const { container } = render(<ProfileSvg {...p} />);
+    const lines = container.querySelectorAll("line");
+    expectProps(lines[0], {
       stroke: Color.gridSoil, x1: 0, y1: 0, x2: 3000, y2: 0, strokeWidth: 3,
     });
-    expect(wrapper.find("line").at(1).props()).toEqual({
+    expectProps(lines[1], {
       stroke: Color.blue, x1: 0, y1: 0, x2: 3000, y2: 0, strokeWidth: 3,
     });
-    expect(wrapper.find("line").at(2).props()).toEqual({
+    expectProps(lines[2], {
       stroke: Color.gray, x1: 0, y1: 100, x2: 3000, y2: 100, strokeWidth: 3,
       strokeDasharray: 10,
     });
-    expect(wrapper.find("line").at(3).props()).toEqual({
+    expectProps(lines[3], {
       id: "profile-point-connector",
       x1: 200, y1: 200, x2: 100, y2: 100, strokeWidth: 20, opacity: 0.5,
     });
-    expect(wrapper.find("line").at(4).props()).toEqual({
+    expectProps(lines[4], {
       id: "profile-point-connector",
       x1: 100, y1: 100, x2: 0, y2: 0, strokeWidth: 20, opacity: 0.5,
     });
-    expect(wrapper.find("line").at(5).props()).toEqual({
+    expectProps(lines[5], {
       id: "profile-point-connector",
       x1: 400, y1: 400, x2: 300, y2: 300, strokeWidth: 20, opacity: 0.5,
     });
@@ -210,14 +233,15 @@ describe("<ProfileSvg />", () => {
     troughSlot.body.z = 200;
     troughSlot.body.gantry_mounted = true;
     p.allPoints = [toolSlot, troughSlot];
-    const wrapper = mount(<ProfileSvg {...p} />);
-    expect(wrapper.find("#profile-tool").first().find("rect").props()).toEqual({
+    const { container } = render(<ProfileSvg {...p} />);
+    const toolRects = container.querySelectorAll("#profile-tool rect");
+    expectProps(toolRects[0], {
       id: "tool-body", fill: "url(#tool-body-gradient-tool)", opacity: 0.75,
       x: 200 - ToolDimensions.radius, y: 200,
       width: ToolDimensions.diameter,
       height: ToolDimensions.thickness,
     });
-    expect(wrapper.find("#profile-tool").last().find("rect").props()).toEqual({
+    expectProps(toolRects[toolRects.length - 1], {
       id: "tool-body", fill: "url(#tool-body-gradient-tool)", opacity: 0.75,
       x: -ToolDimensions.radius, y: 200,
       width: ToolDimensions.diameter,
@@ -241,8 +265,8 @@ describe("<ProfileSvg />", () => {
     troughSlot.body.z = 200;
     troughSlot.body.gantry_mounted = true;
     p.allPoints = [troughSlot];
-    const wrapper = mount(<ProfileSvg {...p} />);
-    expect(wrapper.find("#profile-tool").first().find("rect").props()).toEqual({
+    const { container } = render(<ProfileSvg {...p} />);
+    expectProps(container.querySelector("#profile-tool rect") ?? undefined, {
       id: "tool-body", fill: "rgba(128, 128, 128)", opacity: 0.75,
       x: 976.25, y: 200, width: 47.5, height: ToolDimensions.thickness,
     });
@@ -304,43 +328,43 @@ describe("<ProfileSvg />", () => {
   it("renders tool implements: side", () => {
     const p = toolGraphicsProps();
     p.designer.profileAxis = "y";
-    const wrapper = mount(<ProfileSvg {...p} />);
-    expect(wrapper.find("#rotary-tool-implement-profile").length).toEqual(1);
-    expect(wrapper.find("#weeder-implement-profile").length).toEqual(1);
-    expect(wrapper.find("#seeder-implement-profile").length).toEqual(1);
-    expect(wrapper.find("#seed-bin-implement-profile").length).toEqual(1);
-    expect(wrapper.find("#soil-sensor-implement-profile").length).toEqual(1);
-    expect(wrapper.find("#no-tool-implement-profile").length).toEqual(0);
-    expect(wrapper.find("#no-slot-direction").length).toEqual(1);
-    expect(wrapper.find("#slot-side-profile").length).toEqual(4);
-    expect(wrapper.find("#slot-front-profile").length).toEqual(0);
-    expect(wrapper.find("#rotary-tool-front-view").length).toEqual(0);
-    expect(wrapper.find("#rotary-tool-side-view").length).toEqual(1);
-    expect(wrapper.find("#weeder-front-view").length).toEqual(0);
-    expect(wrapper.find("#weeder-side-view").length).toEqual(1);
-    expect(wrapper.find("#soil-sensor-front-view").length).toEqual(0);
-    expect(wrapper.find("#soil-sensor-side-view").length).toEqual(1);
+    const { container } = render(<ProfileSvg {...p} />);
+    expect(queryCount(container, "#rotary-tool-implement-profile")).toEqual(1);
+    expect(queryCount(container, "#weeder-implement-profile")).toEqual(1);
+    expect(queryCount(container, "#seeder-implement-profile")).toEqual(1);
+    expect(queryCount(container, "#seed-bin-implement-profile")).toEqual(1);
+    expect(queryCount(container, "#soil-sensor-implement-profile")).toEqual(1);
+    expect(queryCount(container, "#no-tool-implement-profile")).toEqual(0);
+    expect(queryCount(container, "#no-slot-direction")).toEqual(1);
+    expect(queryCount(container, "#slot-side-profile")).toEqual(4);
+    expect(queryCount(container, "#slot-front-profile")).toEqual(0);
+    expect(queryCount(container, "#rotary-tool-front-view")).toEqual(0);
+    expect(queryCount(container, "#rotary-tool-side-view")).toEqual(1);
+    expect(queryCount(container, "#weeder-front-view")).toEqual(0);
+    expect(queryCount(container, "#weeder-side-view")).toEqual(1);
+    expect(queryCount(container, "#soil-sensor-front-view")).toEqual(0);
+    expect(queryCount(container, "#soil-sensor-side-view")).toEqual(1);
   });
 
   it("renders tool implements: front", () => {
     const p = toolGraphicsProps();
     p.designer.profileAxis = "x";
-    const wrapper = mount(<ProfileSvg {...p} />);
-    expect(wrapper.find("#rotary-tool-implement-profile").length).toEqual(1);
-    expect(wrapper.find("#weeder-implement-profile").length).toEqual(1);
-    expect(wrapper.find("#seeder-implement-profile").length).toEqual(1);
-    expect(wrapper.find("#seed-bin-implement-profile").length).toEqual(1);
-    expect(wrapper.find("#soil-sensor-implement-profile").length).toEqual(1);
-    expect(wrapper.find("#no-tool-implement-profile").length).toEqual(0);
-    expect(wrapper.find("#no-slot-direction").length).toEqual(1);
-    expect(wrapper.find("#slot-side-profile").length).toEqual(0);
-    expect(wrapper.find("#slot-front-profile").length).toEqual(4);
-    expect(wrapper.find("#rotary-tool-front-view").length).toEqual(1);
-    expect(wrapper.find("#rotary-tool-side-view").length).toEqual(0);
-    expect(wrapper.find("#weeder-front-view").length).toEqual(1);
-    expect(wrapper.find("#weeder-side-view").length).toEqual(0);
-    expect(wrapper.find("#soil-sensor-front-view").length).toEqual(1);
-    expect(wrapper.find("#soil-sensor-side-view").length).toEqual(0);
+    const { container } = render(<ProfileSvg {...p} />);
+    expect(queryCount(container, "#rotary-tool-implement-profile")).toEqual(1);
+    expect(queryCount(container, "#weeder-implement-profile")).toEqual(1);
+    expect(queryCount(container, "#seeder-implement-profile")).toEqual(1);
+    expect(queryCount(container, "#seed-bin-implement-profile")).toEqual(1);
+    expect(queryCount(container, "#soil-sensor-implement-profile")).toEqual(1);
+    expect(queryCount(container, "#no-tool-implement-profile")).toEqual(0);
+    expect(queryCount(container, "#no-slot-direction")).toEqual(1);
+    expect(queryCount(container, "#slot-side-profile")).toEqual(0);
+    expect(queryCount(container, "#slot-front-profile")).toEqual(4);
+    expect(queryCount(container, "#rotary-tool-front-view")).toEqual(1);
+    expect(queryCount(container, "#rotary-tool-side-view")).toEqual(0);
+    expect(queryCount(container, "#weeder-front-view")).toEqual(1);
+    expect(queryCount(container, "#weeder-side-view")).toEqual(0);
+    expect(queryCount(container, "#soil-sensor-front-view")).toEqual(1);
+    expect(queryCount(container, "#soil-sensor-side-view")).toEqual(0);
   });
 
   it("renders all points", () => {
@@ -348,11 +372,11 @@ describe("<ProfileSvg />", () => {
     p.expanded = true;
     p.designer.profileWidth = 10000;
     p.allPoints = [fakePlant(), fakeWeed(), fakeToolSlot(), fakePoint()];
-    const wrapper = mount(<ProfileSvg {...p} />);
-    expect(wrapper.find("#profile-map-point").length).toEqual(1);
-    expect(wrapper.find("#plant-profile-point").length).toEqual(1);
-    expect(wrapper.find("#weed-profile-point").length).toEqual(1);
-    expect(wrapper.find("#no-tool-implement-profile").length).toEqual(1);
+    const { container } = render(<ProfileSvg {...p} />);
+    expect(queryCount(container, "#profile-map-point")).toEqual(1);
+    expect(queryCount(container, "#plant-profile-point")).toEqual(1);
+    expect(queryCount(container, "#weed-profile-point")).toEqual(1);
+    expect(queryCount(container, "#no-tool-implement-profile")).toEqual(1);
   });
 
   it("doesn't render any points", () => {
@@ -361,11 +385,11 @@ describe("<ProfileSvg />", () => {
     p.designer.profileWidth = 10000;
     p.getConfigValue = () => false;
     p.allPoints = [fakePlant(), fakeWeed(), fakeToolSlot(), fakePoint()];
-    const wrapper = mount(<ProfileSvg {...p} />);
-    expect(wrapper.find("#profile-map-point").length).toEqual(0);
-    expect(wrapper.find("#plant-profile-point").length).toEqual(0);
-    expect(wrapper.find("#weed-profile-point").length).toEqual(0);
-    expect(wrapper.find("#no-tool-implement-profile").length).toEqual(0);
+    const { container } = render(<ProfileSvg {...p} />);
+    expect(queryCount(container, "#profile-map-point")).toEqual(0);
+    expect(queryCount(container, "#plant-profile-point")).toEqual(0);
+    expect(queryCount(container, "#weed-profile-point")).toEqual(0);
+    expect(queryCount(container, "#no-tool-implement-profile")).toEqual(0);
   });
 
   const SLOT_FRONT = "slot-front-";
@@ -411,9 +435,9 @@ describe("<ProfileSvg />", () => {
       soilSensorSlot.body.meta.tool_direction = flipped ? "flipped" : "";
       soilSensorSlot.body.pullout_direction = slotDirection;
       p.allPoints = [soilSensorSlot];
-      const wrapper = mount(<ProfileSvg {...p} />);
+      const { container } = render(<ProfileSvg {...p} />);
       expected.map(string =>
-        expect(wrapper.html().toLowerCase()).toContain(string));
+        expect(container.innerHTML.toLowerCase()).toContain(string));
     });
 
   it("renders interpolated soil", () => {
@@ -422,8 +446,8 @@ describe("<ProfileSvg />", () => {
     p.expanded = true;
     p.designer.profileAxis = "y";
     p.sourceFbosConfig = () => ({ value: 100, consistent: true });
-    const wrapper = mount(<ProfileSvg {...p} />);
-    expect(wrapper.find("#interpolated-soil-height").find("rect").length)
+    const { container } = render(<ProfileSvg {...p} />);
+    expect(queryCount(container, "#interpolated-soil-height rect"))
       .toEqual(1);
   });
 });

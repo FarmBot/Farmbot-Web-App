@@ -1,5 +1,5 @@
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { render, fireEvent, act } from "@testing-library/react";
 import {
   RawSavedGardens as SavedGardens, mapStateToProps, SavedGardenHUD,
 } from "../saved_gardens";
@@ -13,9 +13,9 @@ import {
 import { SavedGardensProps } from "../interfaces";
 import * as savedGardenActions from "../actions";
 import { Actions } from "../../constants";
-import { SearchField } from "../../ui/search_field";
 import { Path } from "../../internal_urls";
 import * as crud from "../../api/crud";
+import { clickButton } from "../../__test_support__/helpers";
 
 let editSpy: jest.SpyInstance;
 let snapshotGardenSpy: jest.SpyInstance;
@@ -60,23 +60,27 @@ describe("<SavedGardens />", () => {
     const p = fakeProps();
     p.plantTemplates[0].body.saved_garden_id = p.savedGardens[0].body.id || 0;
     p.plantTemplates[1].body.saved_garden_id = p.savedGardens[0].body.id || 0;
-    const wrapper = mount(<SavedGardens {...p} />);
+    const { container } = render(<SavedGardens {...p} />);
     ["saved garden 1", "2 plants"].map(string =>
-      expect(wrapper.html().toLowerCase()).toContain(string));
+      expect(container.innerHTML.toLowerCase()).toContain(string));
   });
 
   it("has no saved gardens yet", () => {
     const p = fakeProps();
     p.savedGardens = [];
-    const wrapper = mount(<SavedGardens {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("no saved gardens yet");
+    const { container } = render(<SavedGardens {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("no saved gardens yet");
   });
 
   it("changes search term", () => {
-    const wrapper = shallow<SavedGardens>(<SavedGardens {...fakeProps()} />);
-    expect(wrapper.state().searchTerm).toEqual("");
-    wrapper.find(SearchField).simulate("change", "spring");
-    expect(wrapper.state().searchTerm).toEqual("spring");
+    const ref = React.createRef<SavedGardens>();
+    const { container } = render(<SavedGardens ref={ref} {...fakeProps()} />);
+    expect(ref.current?.state.searchTerm).toEqual("");
+    fireEvent.change(container.querySelector("input") as Element, {
+      target: { value: "spring" },
+      currentTarget: { value: "spring" },
+    });
+    expect(ref.current?.state.searchTerm).toEqual("spring");
   });
 
   it("shows filtered gardens", () => {
@@ -84,18 +88,21 @@ describe("<SavedGardens />", () => {
     p.savedGardens = [fakeSavedGarden(), fakeSavedGarden()];
     p.savedGardens[0].body.name = "winter";
     p.savedGardens[1].body.name = "spring";
-    const wrapper = mount(<SavedGardens {...p} />);
-    wrapper.setState({ searchTerm: "winter" });
-    expect(wrapper.text()).toContain("winter");
-    expect(wrapper.text()).not.toContain("spring");
+    const ref = React.createRef<SavedGardens>();
+    const { container } = render(<SavedGardens ref={ref} {...p} />);
+    act(() => {
+      ref.current?.setState({ searchTerm: "winter" });
+    });
+    expect(container.textContent).toContain("winter");
+    expect(container.textContent).not.toContain("spring");
   });
 
   it("shows when garden is open", () => {
     const p = fakeProps();
     p.savedGardens = [fakeSavedGarden(), fakeSavedGarden()];
     p.openedSavedGarden = p.savedGardens[0].body.id;
-    const wrapper = mount(<SavedGardens {...p} />);
-    expect(wrapper.html()).toContain("selected");
+    const { container } = render(<SavedGardens {...p} />);
+    expect(container.innerHTML).toContain("selected");
   });
 });
 
@@ -117,18 +124,15 @@ describe("mapStateToProps()", () => {
 
 describe("<SavedGardenHUD />", () => {
   it("renders", () => {
-    const wrapper = mount(<SavedGardenHUD dispatch={jest.fn()} />);
+    const { container } = render(<SavedGardenHUD dispatch={jest.fn()} />);
     ["viewing saved garden", "edit", "exit"].map(string =>
-      expect(wrapper.text().toLowerCase()).toContain(string));
+      expect(container.textContent?.toLowerCase()).toContain(string));
   });
 
   it("navigates to plants", () => {
     const dispatch = jest.fn();
-    const wrapper = mount(<SavedGardenHUD dispatch={dispatch} />);
-    wrapper.find("button")
-      .filterWhere(node => node.text().toLowerCase() == "edit")
-      .first()
-      .simulate("click");
+    const { container } = render(<SavedGardenHUD dispatch={dispatch} />);
+    clickButton(container, 0, "edit");
     expect(mockNavigate).toHaveBeenCalledWith(Path.plants());
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SELECT_POINT,
@@ -137,11 +141,8 @@ describe("<SavedGardenHUD />", () => {
   });
 
   it("exits garden", () => {
-    const wrapper = mount(<SavedGardenHUD dispatch={jest.fn()} />);
-    wrapper.find("button")
-      .filterWhere(node => node.text().toLowerCase() == "exit")
-      .first()
-      .simulate("click");
+    const { container } = render(<SavedGardenHUD dispatch={jest.fn()} />);
+    clickButton(container, 1, "exit");
     expect(savedGardenActions.closeSavedGarden).toHaveBeenCalled();
   });
 });

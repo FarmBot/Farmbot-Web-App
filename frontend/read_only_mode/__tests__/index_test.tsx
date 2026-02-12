@@ -1,5 +1,5 @@
 import React from "react";
-import { shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import { InternalAxiosRequestConfig } from "axios";
 import { ReadOnlyIcon, readOnlyInterceptor } from "../index";
 import { warning } from "../../toast/toast";
@@ -42,13 +42,13 @@ describe("readOnlyInterceptor", () => {
 
 describe("<ReadOnlyIcon />", () => {
   it("shows nothing when unlocked", () => {
-    const result = shallow(<ReadOnlyIcon locked={false} />);
-    expect(result.find(".read-only-icon").length).toEqual(0);
+    const { container } = render(<ReadOnlyIcon locked={false} />);
+    expect(container.querySelectorAll(".read-only-icon").length).toEqual(0);
   });
 
   it("shows the pencil icon when locked", () => {
-    const result = shallow(<ReadOnlyIcon locked={true} />);
-    expect(result.find(".fa-pencil").length).toBe(1);
-    expect(result.find(".fa-ban").length).toBe(1);
+    const { container } = render(<ReadOnlyIcon locked={true} />);
+    expect(container.querySelectorAll(".fa-pencil").length).toBe(1);
+    expect(container.querySelectorAll(".fa-ban").length).toBe(1);
   });
 });

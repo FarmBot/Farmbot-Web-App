@@ -4,7 +4,6 @@ jest.mock("axios", () => ({
 }));
 
 import React from "react";
-import { mount } from "enzyme";
 import { API } from "../../api";
 import { error } from "../../toast/toast";
 import { formEvent, inputEvent } from "../../__test_support__/fake_html_events";
@@ -30,10 +29,12 @@ describe("<PasswordReset/>", () => {
   it("handles form submission errors", async () => {
     jest.useFakeTimers();
     mockPut = Promise.reject({ response: { data: "error" } });
-    const wrapper = mount<PasswordReset>(<PasswordReset />);
+    const wrapper = new PasswordReset({});
     const e = formEvent();
     const id = window.location.href.split("/").pop();
-    await wrapper.instance().submit(e);
+    wrapper.submit(e);
+    await Promise.resolve();
+    await Promise.resolve();
     expect(e.preventDefault).toHaveBeenCalled();
     await expect(axios.put).toHaveBeenCalledWith(
       "http://localhost/api/password_resets/",
@@ -49,10 +50,12 @@ describe("<PasswordReset/>", () => {
 
   it("handles missing TOS agreement", async () => {
     mockPut = Promise.reject({ response: { data: "error", status: 451 } });
-    const wrapper = mount<PasswordReset>(<PasswordReset />);
+    const wrapper = new PasswordReset({});
     const e = formEvent();
     const id = window.location.href.split("/").pop();
-    await wrapper.instance().submit(e);
+    wrapper.submit(e);
+    await Promise.resolve();
+    await Promise.resolve();
     expect(e.preventDefault).toHaveBeenCalled();
     await expect(axios.put).toHaveBeenCalledWith(
       "http://localhost/api/password_resets/",
@@ -68,15 +71,17 @@ describe("<PasswordReset/>", () => {
 
   it("resets the users password", async () => {
     mockPut = Promise.resolve();
-    const el = mount(<PasswordReset />);
-    el.setState({
+    const el = new PasswordReset({});
+    el.state = {
+      ...el.state,
       password: "knocknock",
       passwordConfirmation: "knocknock",
       serverURL: "localhost",
       serverPort: "3000",
-    });
+    };
     const id = window.location.href.split("/").pop();
-    await el.find("form").simulate("submit", formEvent());
+    el.submit(formEvent());
+    await Promise.resolve();
     expect(axios.put).toHaveBeenCalledWith(
       "http://localhost/api/password_resets/",
       {
@@ -88,8 +93,7 @@ describe("<PasswordReset/>", () => {
   });
 
   it("has a form set()ter", () => {
-    const el = mount(<PasswordReset />);
-    const i = el.instance() as PasswordReset;
+    const i = new PasswordReset({});
     const field = "password";
     const value = "password123";
     i.setState = jest.fn(i.setState);

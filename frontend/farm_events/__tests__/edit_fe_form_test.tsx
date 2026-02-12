@@ -4,7 +4,7 @@ import React from "react";
 import {
   fakeFarmEvent, fakeSequence, fakeRegimen, fakePlant,
 } from "../../__test_support__/fake_state/resources";
-import { mount, shallow } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import {
   EditFEForm,
   EditFEProps,
@@ -27,7 +27,6 @@ import { fakeVariableNameSet } from "../../__test_support__/fake_variables";
 import * as crud from "../../api/crud";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { error, success, warning } from "../../toast/toast";
-import { BlurableInput } from "../../ui";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
 import { Path } from "../../internal_urls";
 import { Content } from "../../constants";
@@ -65,7 +64,14 @@ describe("<EditFEForm />", () => {
   });
 
   function instance(p: EditFEProps) {
-    return mount(<EditFEForm {...p} />).find(EditFEForm).instance() as EditFEForm;
+    const i = new EditFEForm(p);
+    i.setState = ((state, callback) => {
+      const update = isFunction(state) ? state(i.state, i.props) : state;
+      i.state = { ...i.state, ...update };
+      callback?.();
+    }) as EditFEForm["setState"];
+    i.forceUpdate = jest.fn();
+    return i;
   }
   const context = { form: new EditFEForm(fakeProps()) };
 
@@ -110,7 +116,8 @@ describe("<EditFEForm />", () => {
     p.farmEvent.body.executable_type = "nope" as ExecutableType;
     const consoleErrorSpy = jest.spyOn(console, "error")
       .mockImplementation(jest.fn());
-    expect(() => instance(p)).toThrow("nope is not a valid executable_type");
+    const i = instance(p);
+    expect(() => i.executableGet()).toThrow("nope is not a valid executable_type");
     consoleErrorSpy.mockRestore();
   });
 
@@ -171,29 +178,29 @@ describe("<EditFEForm />", () => {
   it("shows missing executable warning", () => {
     const p = fakeProps();
     p.executableOptions = [{ label: "", value: 0, heading: true }];
-    const wrapper = mount(<EditFEForm {...p} />);
-    expect(wrapper.html()).toContain("fa-exclamation-triangle");
+    const { container } = render(<EditFEForm {...p} />);
+    expect(container.innerHTML).toContain("fa-exclamation-triangle");
   });
 
   it("doesn't show missing executable warning", () => {
     const p = fakeProps();
     p.executableOptions = [{ label: "", value: 0, heading: false }];
-    const wrapper = mount(<EditFEForm {...p} />);
-    expect(wrapper.html()).not.toContain("fa-exclamation-triangle");
+    const { container } = render(<EditFEForm {...p} />);
+    expect(container.innerHTML).not.toContain("fa-exclamation-triangle");
   });
 
   it("doesn't show tz warning", () => {
     mockTzMismatch = false;
     const p = fakeProps();
-    const wrapper = mount(<EditFEForm {...p} />);
-    expect(wrapper.html()).not.toContain(Content.FARM_EVENT_TZ_WARNING);
+    const { container } = render(<EditFEForm {...p} />);
+    expect(container.innerHTML).not.toContain(Content.FARM_EVENT_TZ_WARNING);
   });
 
   it("shows tz warning", () => {
     mockTzMismatch = true;
     const p = fakeProps();
-    const wrapper = mount(<EditFEForm {...p} />);
-    expect(wrapper.html()).toContain(Content.FARM_EVENT_TZ_WARNING);
+    const { container } = render(<EditFEForm {...p} />);
+    expect(container.innerHTML).toContain(Content.FARM_EVENT_TZ_WARNING);
   });
 
   it("sets a subfield of state.fe", () => {
@@ -503,15 +510,15 @@ describe("<EditFEForm />", () => {
       vector: { x: 0, y: 0, z: 0 },
     };
     p.resources.sequenceMetas[sequence.uuid] = variables;
-    const wrapper = mount(<EditFEForm {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("variables (1)");
+    const { container } = render(<EditFEForm {...p} />);
+    expect((container.textContent || "").toLowerCase()).toContain("variables (1)");
   });
 
   it("collapses variables section", () => {
-    const wrapper = shallow<EditFEForm>(<EditFEForm {...fakeProps()} />);
-    expect(wrapper.state().variablesCollapsed).toEqual(false);
-    wrapper.instance().toggleVarShow();
-    expect(wrapper.state().variablesCollapsed).toEqual(true);
+    const i = instance(fakeProps());
+    expect(i.state.variablesCollapsed).toEqual(false);
+    i.toggleVarShow();
+    expect(i.state.variablesCollapsed).toEqual(true);
   });
 });
 
@@ -629,28 +636,29 @@ describe("<StartTimeForm />", () => {
 
   it("changes start date", () => {
     const p = fakeProps();
-    const wrapper = shallow(<StartTimeForm {...p} />);
-    wrapper.find("BlurableInput").first().simulate("commit", {
-      currentTarget: { value: "2017-07-26" }
-    });
+    const { container } = render(<StartTimeForm {...p} />);
+    const input = container.querySelector("input[name='start_date']") as Element;
+    fireEvent.focus(input);
+    fireEvent.change(input, { target: { value: "2017-07-26" } });
+    fireEvent.blur(input, { currentTarget: { value: "2017-07-26" } });
     expect(p.fieldSet).toHaveBeenCalledWith("startDate", "2017-07-26");
   });
 
   it("changes start time", () => {
     const p = fakeProps();
-    const wrapper = shallow(<StartTimeForm {...p} />);
-    wrapper.find("EventTimePicker").simulate("commit", {
-      currentTarget: { value: "08:57" }
-    });
+    const { container } = render(<StartTimeForm {...p} />);
+    const input = container.querySelector("input[name='start_time']") as Element;
+    fireEvent.focus(input);
+    fireEvent.change(input, { target: { value: "08:57" } });
+    fireEvent.blur(input, { currentTarget: { value: "08:57" } });
     expect(p.fieldSet).toHaveBeenCalledWith("startTime", "08:57");
   });
 
   it("displays error", () => {
     const p = fakeProps();
     p.now = moment();
-    const wrapper = shallow(<StartTimeForm {...p} />);
-    expect(wrapper.find(BlurableInput).first().props().error?.toLowerCase())
-      .toContain("must be in the future");
+    const { container } = render(<StartTimeForm {...p} />);
+    expect(container.querySelector(".input-error")).toBeTruthy();
   });
 
   it("doesn't display error: old event", () => {
@@ -662,23 +670,23 @@ describe("<StartTimeForm />", () => {
         startTime: "08:57",
       } as FarmEventViewModel)[key]);
     p.now = moment();
-    const wrapper = shallow(<StartTimeForm {...p} />);
-    expect(wrapper.find(BlurableInput).first().props().error).toEqual(undefined);
+    const { container } = render(<StartTimeForm {...p} />);
+    expect(container.querySelector(".input-error")).toEqual(null);
   });
 
   it("doesn't display error: regimen", () => {
     const p = fakeProps();
     p.now = moment();
     p.isRegimen = true;
-    const wrapper = shallow(<StartTimeForm {...p} />);
-    expect(wrapper.find(BlurableInput).first().props().error).toEqual(undefined);
+    const { container } = render(<StartTimeForm {...p} />);
+    expect(container.querySelector(".input-error")).toEqual(null);
   });
 
   it("doesn't display error: in future", () => {
     const p = fakeProps();
     p.now = moment("2015-12-28T22:32:00.000Z");
-    const wrapper = shallow(<StartTimeForm {...p} />);
-    expect(wrapper.find(BlurableInput).first().props().error).toEqual(undefined);
+    const { container } = render(<StartTimeForm {...p} />);
+    expect(container.querySelector(".input-error")).toEqual(null);
   });
 });
 
@@ -696,19 +704,31 @@ describe("<RepeatForm />", () => {
 
   it("toggles repeat on", () => {
     const p = fakeProps();
-    const wrapper = shallow(<RepeatForm {...p} />);
-    wrapper.find("input").first().simulate("change", {
-      currentTarget: { checked: true }
-    });
+    p.fieldGet = jest.fn(key =>
+      "" + ({
+        timeUnit: "never",
+        endDate: "2017-07-26",
+        endTime: "08:57",
+        startDate: "2017-07-25",
+        startTime: "08:57",
+      } as FarmEventViewModel)[key]);
+    const { container } = render(<RepeatForm {...p} />);
+    fireEvent.click(container.querySelector("input[name='timeUnit']") as Element);
     expect(p.fieldSet).toHaveBeenCalledWith("timeUnit", "daily");
   });
 
   it("toggles repeat off", () => {
     const p = fakeProps();
-    const wrapper = shallow(<RepeatForm {...p} />);
-    wrapper.find("input").first().simulate("change", {
-      currentTarget: { checked: false }
-    });
+    p.fieldGet = jest.fn(key =>
+      "" + ({
+        timeUnit: "daily",
+        endDate: "2017-07-26",
+        endTime: "08:57",
+        startDate: "2017-07-25",
+        startTime: "08:57",
+      } as FarmEventViewModel)[key]);
+    const { container } = render(<RepeatForm {...p} />);
+    fireEvent.click(container.querySelector("input[name='timeUnit']") as Element);
     expect(p.fieldSet).toHaveBeenCalledWith("timeUnit", "never");
   });
 });

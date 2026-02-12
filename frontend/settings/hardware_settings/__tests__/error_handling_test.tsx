@@ -1,11 +1,19 @@
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { ErrorHandling } from "../error_handling";
 import { ErrorHandlingProps } from "../interfaces";
 import { settingsPanelState } from "../../../__test_support__/panel_state";
 import { bot } from "../../../__test_support__/fake_state/bot";
-import { ToggleButton } from "../../../ui";
 import * as deviceActions from "../../../devices/actions";
+
+jest.mock("../../../ui", () => {
+  const actual = jest.requireActual("../../../ui");
+  return {
+    ...actual,
+    ToggleButton: (props: { toggleAction: () => void }) =>
+      <button data-testid="toggle-button" onClick={props.toggleAction} />,
+  };
+});
 
 let settingToggleSpy: jest.SpyInstance;
 const TOGGLE_ACTION = { type: "TOGGLE_MCU" };
@@ -32,17 +40,16 @@ describe("<ErrorHandling />", () => {
 
   it("shows error handling labels", () => {
     const p = fakeProps();
-    const wrapper = mount(<ErrorHandling {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("error handling");
+    const { container } = render(<ErrorHandling {...p} />);
+    expect((container.textContent || "").toLowerCase()).toContain("error handling");
   });
 
   it("toggles retries e-stop parameter", () => {
     const p = fakeProps();
     p.settingsPanelState.error_handling = true;
     p.sourceFwConfig = () => ({ value: 1, consistent: true });
-    const wrapper = mount(<ErrorHandling {...p} />);
-    wrapper.find(ToggleButton).first()
-      .props().toggleAction({} as React.MouseEvent);
+    render(<ErrorHandling {...p} />);
+    fireEvent.click(screen.getByTestId("toggle-button"));
     expect(deviceActions.settingToggle)
       .toHaveBeenCalledWith("param_e_stop_on_mov_err", p.sourceFwConfig);
     expect(p.dispatch).toHaveBeenCalledWith(TOGGLE_ACTION);
@@ -51,7 +58,7 @@ describe("<ErrorHandling />", () => {
   it("shows new parameters", () => {
     const p = fakeProps();
     p.settingsPanelState.error_handling = true;
-    const wrapper = mount(<ErrorHandling {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("total");
+    const { container } = render(<ErrorHandling {...p} />);
+    expect((container.textContent || "").toLowerCase()).toContain("total");
   });
 });

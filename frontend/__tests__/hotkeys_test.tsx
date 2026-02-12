@@ -2,7 +2,7 @@ import { fakeState } from "../__test_support__/fake_state";
 const mockState = fakeState();
 
 import React from "react";
-import { shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import {
   HotKey, HotKeys, HotKeysProps, hotkeysWithActions, HotkeysWithActionsProps,
   toggleHotkeyHelpOverlay,
@@ -131,13 +131,13 @@ describe("<HotKeys />", () => {
 
   it("renders", () => {
     location.pathname = Path.mock(Path.designer("nope"));
-    const wrapper = shallow(<HotKeys {...fakeProps()} />);
-    expect(wrapper.find("div").length).toEqual(1);
+    const { container } = render(<HotKeys {...fakeProps()} />);
+    expect(container.querySelectorAll("div").length).toEqual(1);
   });
 
   it("renders default", () => {
     location.pathname = Path.mock(Path.designer());
-    const wrapper = shallow(<HotKeys {...fakeProps()} />);
-    expect(wrapper.find("div").length).toEqual(1);
+    const { container } = render(<HotKeys {...fakeProps()} />);
+    expect(container.querySelectorAll("div").length).toEqual(1);
   });
 });

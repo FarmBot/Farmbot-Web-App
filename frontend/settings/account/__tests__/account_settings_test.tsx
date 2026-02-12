@@ -1,6 +1,6 @@
 let mockDev = false;
 import React from "react";
-import { shallow } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import {
   AccountSettings, ActivityBeepSetting, ActivityBeepSettingProps,
   LandingPageSetting, LandingPageSettingProps,
@@ -13,12 +13,23 @@ import { success } from "../../../toast/toast";
 import { Content } from "../../../constants";
 import * as configStorageActions from "../../../config_storage/actions";
 import { NumericSetting, StringSetting } from "../../../session_keys";
-import { Slider } from "@blueprintjs/core";
-import { FBSelect, ToggleButton } from "../../../ui";
-import { clickButton } from "../../../__test_support__/helpers";
 import * as requestAccountExportModule from "../request_account_export";
-import { changeEvent } from "../../../__test_support__/fake_html_events";
 import * as devSupport from "../../../settings/dev/dev_support";
+
+jest.mock("../../../ui", () => {
+  const actual = jest.requireActual("../../../ui");
+  return {
+    ...actual,
+    FBSelect: ({ onChange, selectedItem }: {
+      onChange: (item: { label: string, value: string }) => void,
+      selectedItem: { label: string } | undefined,
+    }) =>
+      <button className="mock-fb-select"
+        onClick={() => onChange({ label: "Map", value: "map" })}>
+        {selectedItem?.label}
+      </button>,
+  };
+});
 
 let editSpy: jest.SpyInstance;
 let saveSpy: jest.SpyInstance;
@@ -68,10 +79,13 @@ describe("<AccountSettings />", () => {
   it("changes name", () => {
     const p = fakeProps();
     p.user.body.name = "";
-    const wrapper = shallow(<AccountSettings {...p} />);
-    wrapper.find("BlurableInput").first().simulate("commit", {
-      currentTarget: { value: "new name" }
-    });
+    p.settingsPanelState.account = true;
+    const { container } = render(<AccountSettings {...p} />);
+    const input = container.querySelector("input[name='userName']");
+    if (!input) { throw new Error("Expected name input"); }
+    fireEvent.focus(input);
+    fireEvent.change(input, { target: { value: "new name" } });
+    fireEvent.blur(input);
     expect(editSpy).toHaveBeenCalledWith(p.user, { name: "new name" });
     expect(saveSpy).toHaveBeenCalledWith(p.user.uuid);
   });
@@ -79,10 +93,13 @@ describe("<AccountSettings />", () => {
   it("changes email", () => {
     const p = fakeProps();
     p.user.body.email = "";
-    const wrapper = shallow(<AccountSettings {...p} />);
-    wrapper.find("BlurableInput").at(1).simulate("commit", {
-      currentTarget: { value: "new email" }
-    });
+    p.settingsPanelState.account = true;
+    const { container } = render(<AccountSettings {...p} />);
+    const input = container.querySelector("input[name='email']");
+    if (!input) { throw new Error("Expected email input"); }
+    fireEvent.focus(input);
+    fireEvent.change(input, { target: { value: "new email" } });
+    fireEvent.blur(input);
     expect(editSpy).toHaveBeenCalledWith(p.user, { email: "new email" });
     expect(saveSpy).toHaveBeenCalledWith(p.user.uuid);
     expect(success).toHaveBeenCalledWith(Content.CHECK_EMAIL_TO_CONFIRM);
@@ -91,17 +108,25 @@ describe("<AccountSettings />", () => {
   it("changes language", () => {
     const p = fakeProps();
     p.user.body.language = "";
-    const wrapper = shallow(<AccountSettings {...p} />);
-    wrapper.find("BlurableInput").at(2).simulate("commit", {
-      currentTarget: { value: "new language" }
-    });
+    p.settingsPanelState.account = true;
+    const { container } = render(<AccountSettings {...p} />);
+    const input = container.querySelector("input[name='language']");
+    if (!input) { throw new Error("Expected language input"); }
+    fireEvent.focus(input);
+    fireEvent.change(input, { target: { value: "new language" } });
+    fireEvent.blur(input);
     expect(editSpy).toHaveBeenCalledWith(p.user, { language: "new language" });
     expect(saveSpy).toHaveBeenCalledWith(p.user.uuid);
   });
 
   it("requests export", () => {
-    const wrapper = shallow(<AccountSettings {...fakeProps()} />);
-    clickButton(wrapper, 0, "export");
+    const p = fakeProps();
+    p.settingsPanelState.account = true;
+    const { container } = render(<AccountSettings {...p} />);
+    const button = Array.from(container.querySelectorAll("button"))
+      .find(el => el.textContent?.toLowerCase() == "export");
+    if (!button) { throw new Error("Expected export button"); }
+    fireEvent.click(button);
     expect(requestAccountExportModule.requestAccountExport).toHaveBeenCalled();
   });
 });
@@ -112,9 +137,15 @@ describe("<ActivityBeepSetting />", () => {
     dispatch: jest.fn(),
   });
 
+  const getActivityBeepChildren = (props: ActivityBeepSettingProps) => {
+    const wrapper = ActivityBeepSetting(props);
+    const row = wrapper.props.children as JSX.Element;
+    return React.Children.toArray(row.props.children) as JSX.Element[];
+  };
+
   it("sets setting: toggles off", () => {
-    const wrapper = shallow(<ActivityBeepSetting {...fakeProps()} />);
-    wrapper.find(ToggleButton).props().toggleAction({} as React.MouseEvent);
+    const children = getActivityBeepChildren(fakeProps());
+    children[2]?.props.toggleAction({} as React.MouseEvent);
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       NumericSetting.beep_verbosity, 0);
   });
@@ -122,15 +153,15 @@ describe("<ActivityBeepSetting />", () => {
   it("sets setting: toggles on", () => {
     const p = fakeProps();
     p.getConfigValue = () => 0;
-    const wrapper = shallow(<ActivityBeepSetting {...p} />);
-    wrapper.find(ToggleButton).props().toggleAction({} as React.MouseEvent);
+    const children = getActivityBeepChildren(p);
+    children[2]?.props.toggleAction({} as React.MouseEvent);
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       NumericSetting.beep_verbosity, 1);
   });
 
   it("sets setting: slider", () => {
-    const wrapper = shallow(<ActivityBeepSetting {...fakeProps()} />);
-    wrapper.find(Slider).simulate("change", 2);
+    const children = getActivityBeepChildren(fakeProps());
+    children[3]?.props.onChange(2);
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       NumericSetting.beep_verbosity, 2);
   });
@@ -144,8 +175,10 @@ describe("<LandingPageSetting />", () => {
 
   it("changes value", () => {
     const p = fakeProps();
-    const wrapper = shallow(<LandingPageSetting {...p} />);
-    wrapper.find(FBSelect).props().onChange({ label: "", value: "map" });
+    const { container } = render(<LandingPageSetting {...p} />);
+    const button = container.querySelector(".mock-fb-select");
+    if (!button) { throw new Error("Expected landing page select button"); }
+    fireEvent.click(button);
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       StringSetting.landing_page, "map");
   });
@@ -153,10 +186,11 @@ describe("<LandingPageSetting />", () => {
   it("changes value: developer", () => {
     mockDev = true;
     const p = fakeProps();
-    const wrapper = shallow(<LandingPageSetting {...p} />);
-    const e = changeEvent("x");
-    wrapper.find("input").props().onChange?.(e);
-    wrapper.find("input").props().onBlur?.({} as React.FocusEvent);
+    const { container } = render(<LandingPageSetting {...p} />);
+    const input = container.querySelector("input");
+    if (!input) { throw new Error("Expected developer landing page input"); }
+    fireEvent.change(input, { target: { value: "x" } });
+    fireEvent.blur(input);
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       StringSetting.landing_page, "x");
   });

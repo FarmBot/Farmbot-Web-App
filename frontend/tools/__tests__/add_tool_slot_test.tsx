@@ -1,5 +1,6 @@
 import React from "react";
-import { mount, shallow } from "enzyme";
+import TestRenderer from "react-test-renderer";
+import { render } from "@testing-library/react";
 import { RawAddToolSlot as AddToolSlot } from "../add_tool_slot";
 import { fakeState } from "../../__test_support__/fake_state";
 import {
@@ -56,10 +57,10 @@ describe("<AddToolSlot />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<AddToolSlot {...fakeProps()} />);
+    const { container } = render(<AddToolSlot {...fakeProps()} />);
     ["add new slot", "x (mm)", "y (mm)", "z (mm)", "tool or seed container",
       "direction", "gantry-mounted",
-    ].map(string => expect(wrapper.text().toLowerCase()).toContain(string));
+    ].map(string => expect(container.textContent?.toLowerCase()).toContain(string));
     expect(crud.init).toHaveBeenCalledWith("Point", {
       pointer_type: "ToolSlot", name: "Slot", meta: {},
       x: 0, y: 0, z: 0, tool_id: undefined,
@@ -71,25 +72,29 @@ describe("<AddToolSlot />", () => {
   it("renders while loading", () => {
     const p = fakeProps();
     p.findToolSlot = () => undefined;
-    const wrapper = mount(<AddToolSlot {...p} />);
-    expect(wrapper.text()).toContain("initializing");
+    const { container } = render(<AddToolSlot {...p} />);
+    expect(container.textContent).toContain("initializing");
   });
 
   it("updates tool slot", () => {
     const toolSlot = fakeToolSlot();
     const p = fakeProps();
-    const wrapper = mount<AddToolSlot>(<AddToolSlot {...p} />);
-    wrapper.instance().updateSlot(toolSlot)({ x: 123 });
+    const wrapper = TestRenderer.create(<AddToolSlot {...p} />);
+    const instance = wrapper.getInstance() as AddToolSlot;
+    instance.updateSlot(toolSlot)({ x: 123 });
     expect(crud.edit).toHaveBeenCalledWith(toolSlot, { x: 123 });
+    wrapper.unmount();
   });
 
   it("saves tool slot", () => {
-    const wrapper = shallow<AddToolSlot>(<AddToolSlot {...fakeProps()} />);
+    const wrapper = TestRenderer.create(<AddToolSlot {...fakeProps()} />);
+    const instance = wrapper.getInstance() as AddToolSlot;
     const navigate = jest.fn();
-    wrapper.instance().navigate = navigate;
-    wrapper.find("SaveBtn").simulate("click");
+    instance.navigate = navigate;
+    instance.save();
     expect(crud.save).toHaveBeenCalled();
     expect(navigate).toHaveBeenCalledWith(Path.tools());
+    wrapper.unmount();
   });
 
   it("saves on unmount", () => {
@@ -97,7 +102,7 @@ describe("<AddToolSlot />", () => {
     toolSlot.specialStatus = SpecialStatus.DIRTY;
     const p = fakeProps();
     p.findToolSlot = () => toolSlot;
-    const wrapper = mount<AddToolSlot>(<AddToolSlot {...p} />);
+    const wrapper = TestRenderer.create(<AddToolSlot {...p} />);
     window.confirm = () => true;
     wrapper.unmount();
     expect(crud.save).toHaveBeenCalledWith("fakeUuid");
@@ -108,7 +113,7 @@ describe("<AddToolSlot />", () => {
     toolSlot.specialStatus = SpecialStatus.DIRTY;
     const p = fakeProps();
     p.findToolSlot = () => toolSlot;
-    const wrapper = mount<AddToolSlot>(<AddToolSlot {...p} />);
+    const wrapper = TestRenderer.create(<AddToolSlot {...p} />);
     window.confirm = () => false;
     wrapper.unmount();
     expect(crud.destroy).toHaveBeenCalledWith("fakeUuid", true);
@@ -119,7 +124,7 @@ describe("<AddToolSlot />", () => {
     toolSlot.specialStatus = SpecialStatus.SAVED;
     const p = fakeProps();
     p.findToolSlot = () => toolSlot;
-    const wrapper = mount<AddToolSlot>(<AddToolSlot {...p} />);
+    const wrapper = TestRenderer.create(<AddToolSlot {...p} />);
     window.confirm = jest.fn();
     wrapper.unmount();
     expect(crud.destroy).not.toHaveBeenCalled();
@@ -129,15 +134,17 @@ describe("<AddToolSlot />", () => {
   it("can't find tool without tool slot", () => {
     const p = fakeProps();
     p.findToolSlot = () => undefined;
-    const wrapper = mount<AddToolSlot>(<AddToolSlot {...p} />);
-    expect(wrapper.instance().tool).toEqual(undefined);
+    const wrapper = TestRenderer.create(<AddToolSlot {...p} />);
+    const instance = wrapper.getInstance() as AddToolSlot;
+    expect(instance.tool).toEqual(undefined);
+    wrapper.unmount();
   });
 
   it("renders for express bots", () => {
     const p = fakeProps();
     p.firmwareHardware = "express_k10";
-    const wrapper = mount(<AddToolSlot {...p} />);
-    expect(wrapper.text().toLowerCase()).not.toContain("tool");
+    const { container } = render(<AddToolSlot {...p} />);
+    expect(container.textContent?.toLowerCase()).not.toContain("tool");
     expect(crud.init).toHaveBeenCalledWith("Point", {
       pointer_type: "ToolSlot", name: "Slot", meta: {},
       x: 0, y: 0, z: 0, tool_id: undefined,

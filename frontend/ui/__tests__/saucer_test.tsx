@@ -1,11 +1,12 @@
 import { Saucer } from "../saucer";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 
 describe("<Saucer />", () => {
   const params = { color: "blue", active: true };
   it("renders with correct classes", () => {
-    const result = mount(Saucer(params));
-    expect(result.find("div").hasClass("blue")).toBeTruthy();
-    expect(result.find("div").hasClass("active")).toBeTruthy();
+    const { container } = render(Saucer(params));
+    const div = container.querySelector("div") as HTMLDivElement;
+    expect(div.classList.contains("blue")).toBeTruthy();
+    expect(div.classList.contains("active")).toBeTruthy();
   });
 });

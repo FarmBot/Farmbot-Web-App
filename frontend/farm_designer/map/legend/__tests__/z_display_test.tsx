@@ -1,5 +1,4 @@
 import React from "react";
-import { mount } from "enzyme";
 import {
   ZDisplay, ZDisplayProps, ZDisplayToggle, ZDisplayToggleProps,
 } from "../z_display";
@@ -12,6 +11,7 @@ import {
 } from "../../../../__test_support__/fake_state/resources";
 import { tagAsSoilHeight } from "../../../../points/soil_height";
 import { FbosConfig } from "farmbot/dist/resources/configs/fbos";
+import { fireEvent, render } from "@testing-library/react";
 
 describe("<ZDisplayToggle />", () => {
   const fakeProps = (): ZDisplayToggleProps => ({
@@ -21,16 +21,20 @@ describe("<ZDisplayToggle />", () => {
 
   it("sets open", () => {
     const p = fakeProps();
-    const wrapper = mount(<ZDisplayToggle {...p} />);
-    wrapper.find("button").simulate("click");
+    const { container } = render(<ZDisplayToggle {...p} />);
+    const button = container.querySelector("button");
+    if (!button) { throw new Error("Missing z display toggle button"); }
+    fireEvent.click(button);
     expect(p.setOpen).toHaveBeenCalledWith(true);
   });
 
   it("sets closed", () => {
     const p = fakeProps();
     p.open = true;
-    const wrapper = mount(<ZDisplayToggle {...p} />);
-    wrapper.find("button").simulate("click");
+    const { container } = render(<ZDisplayToggle {...p} />);
+    const button = container.querySelector("button");
+    if (!button) { throw new Error("Missing z display toggle button"); }
+    fireEvent.click(button);
     expect(p.setOpen).toHaveBeenCalledWith(false);
   });
 });
@@ -57,15 +61,15 @@ describe("<ZDisplay />", () => {
   };
 
   it("renders z display", () => {
-    const wrapper = mount(<ZDisplay {...fakeProps()} />);
+    const { container } = render(<ZDisplay {...fakeProps()} />);
     ["-100", "soil", "z", "safe", "slots"].map(string =>
-      expect(wrapper.html()).toContain(string));
+      expect(container.innerHTML).toContain(string));
   });
 
   it("renders z display without negative coordinates", () => {
     const p = fakeProps();
     p.firmwareConfig.movement_home_up_z = 0;
-    const wrapper = mount(<ZDisplay {...p} />);
-    expect(wrapper.html()).not.toContain("-100");
+    const { container } = render(<ZDisplay {...p} />);
+    expect(container.innerHTML).not.toContain("-100");
   });
 });

@@ -1,5 +1,5 @@
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import {
   StepIconGroup, StepIconBarProps, StepUpDownButtonPopover,
 } from "../step_icon_group";
@@ -43,12 +43,20 @@ describe("<StepIconGroup />", () => {
     sequencesState: emptyState().consumers.sequences,
   });
 
+  const getMovePopover = (props: StepIconBarProps) => {
+    const wrapper = StepIconGroup(props);
+    const children = React.Children.toArray(wrapper.props.children) as
+      JSX.Element[];
+    return children.find(child =>
+      child.type === StepUpDownButtonPopover) as JSX.Element;
+  };
+
   it("renders", () => {
-    const wrapper = mount(<StepIconGroup {...fakeProps()} />);
-    expect(wrapper.find(".step-control-icons").length).toEqual(1);
-    expect(wrapper.find(".fa-trash").length).toEqual(1);
-    expect(wrapper.find(".fa-clone").length).toEqual(1);
-    expect(wrapper.find(StepUpDownButtonPopover).length).toEqual(1);
+    const { container } = render(<StepIconGroup {...fakeProps()} />);
+    expect(container.querySelectorAll(".step-control-icons").length).toEqual(1);
+    expect(container.querySelectorAll(".fa-trash").length).toEqual(1);
+    expect(container.querySelectorAll(".fa-clone").length).toEqual(1);
+    expect(container.querySelectorAll(".fa-arrows-v").length).toEqual(1);
   });
 
   it("renders monaco editor enabled", () => {
@@ -56,8 +64,9 @@ describe("<StepIconGroup />", () => {
     p.stateToggles = {
       [StateToggleKey.monacoEditor]: { enabled: true, toggle: () => false }
     };
-    const wrapper = mount(<StepIconGroup {...p} />);
-    expect(wrapper.find(".fa-font").hasClass("active")).toEqual(false);
+    const { container } = render(<StepIconGroup {...p} />);
+    expect(container.querySelector(".fa-font")?.classList.contains("active"))
+      .toEqual(false);
   });
 
   it("renders monaco editor disabled", () => {
@@ -65,8 +74,9 @@ describe("<StepIconGroup />", () => {
     p.stateToggles = {
       [StateToggleKey.monacoEditor]: { enabled: false, toggle: () => true }
     };
-    const wrapper = mount(<StepIconGroup {...p} />);
-    expect(wrapper.find(".fa-font").hasClass("active")).toEqual(true);
+    const { container } = render(<StepIconGroup {...p} />);
+    expect(container.querySelector(".fa-font")?.classList.contains("active"))
+      .toEqual(true);
   });
 
   it("renders expanded editor enabled", () => {
@@ -74,9 +84,9 @@ describe("<StepIconGroup />", () => {
     p.stateToggles = {
       [StateToggleKey.luaExpanded]: { enabled: true, toggle: () => false }
     };
-    const wrapper = mount(<StepIconGroup {...p} />);
-    expect(wrapper.find(".fa-expand").length).toEqual(0);
-    expect(wrapper.find(".fa-compress").length).toEqual(1);
+    const { container } = render(<StepIconGroup {...p} />);
+    expect(container.querySelectorAll(".fa-expand").length).toEqual(0);
+    expect(container.querySelectorAll(".fa-compress").length).toEqual(1);
   });
 
   it("renders expanded editor disabled", () => {
@@ -84,17 +94,18 @@ describe("<StepIconGroup />", () => {
     p.stateToggles = {
       [StateToggleKey.luaExpanded]: { enabled: false, toggle: () => true }
     };
-    const wrapper = mount(<StepIconGroup {...p} />);
-    expect(wrapper.find(".fa-expand").length).toEqual(1);
-    expect(wrapper.find(".fa-compress").length).toEqual(0);
+    const { container } = render(<StepIconGroup {...p} />);
+    expect(container.querySelectorAll(".fa-expand").length).toEqual(1);
+    expect(container.querySelectorAll(".fa-compress").length).toEqual(0);
   });
 
   it("renders celery script view enabled", () => {
     const p = fakeProps();
     p.viewRaw = true;
     p.toggleViewRaw = () => false;
-    const wrapper = mount(<StepIconGroup {...p} />);
-    expect(wrapper.find(".fa-code").hasClass("active")).toEqual(true);
+    const { container } = render(<StepIconGroup {...p} />);
+    expect(container.querySelector(".fa-code")?.classList.contains("active"))
+      .toEqual(true);
   });
 
   it("renders prompt", () => {
@@ -102,28 +113,33 @@ describe("<StepIconGroup />", () => {
     p.step.kind = "lua";
     p.readOnly = false;
     p.isProcessing = false;
-    const wrapper = mount(<StepIconGroup {...p} />);
-    expect(wrapper.find(".fa-magic").length).toEqual(1);
+    const { container } = render(<StepIconGroup {...p} />);
+    expect(container.querySelectorAll(".fa-magic").length).toEqual(1);
   });
 
   it("renders celery script view disabled", () => {
     const p = fakeProps();
     p.viewRaw = false;
     p.toggleViewRaw = () => true;
-    const wrapper = mount(<StepIconGroup {...p} />);
-    expect(wrapper.find(".fa-code").hasClass("active")).toEqual(false);
+    const { container } = render(<StepIconGroup {...p} />);
+    expect(container.querySelector(".fa-code")?.classList.contains("active"))
+      .toEqual(false);
   });
 
   it("deletes step", () => {
-    const wrapper = mount(<StepIconGroup {...fakeProps()} />);
-    wrapper.find(".fa-trash").first().simulate("click");
+    const { container } = render(<StepIconGroup {...fakeProps()} />);
+    const icon = container.querySelector(".fa-trash");
+    if (!icon) { throw new Error("Expected trash icon"); }
+    fireEvent.click(icon);
     expect(stepTiles.remove)
       .toHaveBeenCalledWith(expect.objectContaining({ index: 0 }));
   });
 
   it("duplicates step", () => {
-    const wrapper = mount(<StepIconGroup {...fakeProps()} />);
-    wrapper.find(".fa-clone").first().simulate("click");
+    const { container } = render(<StepIconGroup {...fakeProps()} />);
+    const icon = container.querySelector(".fa-clone");
+    if (!icon) { throw new Error("Expected clone icon"); }
+    fireEvent.click(icon);
     expect(stepTiles.splice).toHaveBeenCalledWith(expect.objectContaining({
       index: 0,
       step: fakeProps().step
@@ -131,9 +147,7 @@ describe("<StepIconGroup />", () => {
   });
 
   it("moves step", () => {
-    const wrapper = shallow(<StepIconGroup {...fakeProps()} />);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (wrapper.find("StepUpDownButtonPopover").props() as any).onMove(-1)();
+    getMovePopover(fakeProps()).props.onMove(-1)();
     expect(stepTiles.move).toHaveBeenCalledWith(expect.objectContaining({
       from: 0,
       to: 0,
@@ -144,8 +158,10 @@ describe("<StepIconGroup />", () => {
   it("navigates to sequence", () => {
     const p = fakeProps();
     p.executeSequenceName = "My Sequence";
-    const wrapper = mount(<StepIconGroup {...p} />);
-    wrapper.find(".fa-external-link").simulate("click");
+    const { container } = render(<StepIconGroup {...p} />);
+    const icon = container.querySelector(".fa-external-link");
+    if (!icon) { throw new Error("Expected sequence-link icon"); }
+    fireEvent.click(icon);
     expect(mockNavigate).toHaveBeenCalledWith(Path.sequences("My_Sequence"));
   });
 });

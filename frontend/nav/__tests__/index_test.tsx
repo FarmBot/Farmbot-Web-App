@@ -1,8 +1,7 @@
 let mockIsMobile = false;
 
 import React from "react";
-import { cleanup, render } from "@testing-library/react";
-import { shallow, mount } from "enzyme";
+import { cleanup, fireEvent, render } from "@testing-library/react";
 import { NavBar } from "../index";
 import { bot } from "../../__test_support__/fake_state/bot";
 import { NavBarProps } from "../interfaces";
@@ -11,7 +10,6 @@ import {
 } from "../../__test_support__/resource_index_builder";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { fakePings } from "../../__test_support__/fake_state/pings";
-import { Link } from "../../link";
 import {
   fakeDesignerState,
   fakeHelpState, fakeMenuOpenState,
@@ -25,7 +23,7 @@ import { app } from "../../__test_support__/fake_state/app";
 import { Actions } from "../../constants";
 import { cloneDeep } from "lodash";
 import { mountWithContext } from "../../__test_support__/mount_with_context";
-import { ControlsPanel, ControlsPanelProps } from "../../controls/controls";
+import { ControlsPanelProps } from "../../controls/controls";
 import * as screenSize from "../../screen_size";
 import * as guessTimezone from "../../devices/timezones/guess_timezone";
 import { showTimeTravelButton } from "../../three_d_garden/time_travel";
@@ -89,11 +87,20 @@ describe("<NavBar />", () => {
     designer: fakeDesignerState(),
   });
 
+  const setStateSync = (instance: NavBar) => {
+    instance.setState = ((state: Partial<NavBar["state"]>) => {
+      instance.state = { ...instance.state, ...state };
+    }) as NavBar["setState"];
+    return instance;
+  };
+
   it("has correct parent className", () => {
-    const wrapper = shallow(<NavBar {...fakeProps()} />);
-    expect(wrapper.find("div").first().hasClass("nav-wrapper")).toBeTruthy();
-    expect(wrapper.find("div").first().hasClass("red")).toBeFalsy();
-    expect(wrapper.find(".connectivity-button.hover").length).toEqual(0);
+    const { container } = render(<NavBar {...fakeProps()} />);
+    const root = container.querySelector("div");
+    expect(root?.className).toContain("nav-wrapper");
+    expect(root?.className).not.toContain("red");
+    expect(container.querySelectorAll(".connectivity-button.hover").length)
+      .toEqual(0);
   });
 
   it("renders demo account", () => {
@@ -108,8 +115,8 @@ describe("<NavBar />", () => {
     p.appState.popups.connectivity = true;
     p.appState.popups.jobs = true;
     p.appState.popups.controls = true;
-    const wrapper = shallow(<NavBar {...p} />);
-    expect(wrapper.html()).toContain("hover");
+    const { container } = render(<NavBar {...p} />);
+    expect(container.innerHTML).toContain("hover");
   });
 
   it("displays movement progress", () => {
@@ -120,66 +127,68 @@ describe("<NavBar />", () => {
     };
     p.bot.hardware.location_data.position = { x: 0, y: 50, z: 0 };
     p.bot.hardware.informational_settings.busy = true;
-    const wrapper = shallow(<NavBar {...p} />);
-    expect(wrapper.html()).toContain("width:50%");
+    const { container } = render(<NavBar {...p} />);
+    expect(container.innerHTML).toContain("width: 50%");
   });
 
   it("closes nav menu", () => {
-    const wrapper = mount<NavBar>(<NavBar {...fakeProps()} />);
-    const link = wrapper.find(Link).first();
-    link.simulate("click");
-    expect(wrapper.instance().state.mobileMenuOpen).toBeFalsy();
-    link.simulate("click");
-    expect(wrapper.instance().state.mobileMenuOpen).toBeFalsy();
+    const instance = setStateSync(new NavBar(fakeProps()));
+    instance.setState({ mobileMenuOpen: true });
+    instance.closeMobileMenu();
+    expect(instance.state.mobileMenuOpen).toBeFalsy();
+    instance.closeMobileMenu();
+    expect(instance.state.mobileMenuOpen).toBeFalsy();
   });
 
   it("silently sets user timezone as needed", () => {
     const p = fakeProps();
     p.device = fakeDevice({ timezone: undefined });
-    mount(<NavBar {...p} />);
+    render(<NavBar {...p} />);
     expect(maybeSetTimezoneSpy).toHaveBeenCalledWith(p.dispatch, p.device);
   });
 
   it("toggles state value", () => {
-    const wrapper = shallow<NavBar>(<NavBar {...fakeProps()} />);
-    expect(wrapper.state().mobileMenuOpen).toEqual(false);
-    wrapper.instance().toggleMobileMenu();
-    expect(wrapper.state().mobileMenuOpen).toEqual(true);
+    const instance = setStateSync(new NavBar(fakeProps()));
+    expect(instance.state.mobileMenuOpen).toEqual(false);
+    instance.toggleMobileMenu();
+    expect(instance.state.mobileMenuOpen).toEqual(true);
   });
 
   it("toggles popup", () => {
     const p = fakeProps();
-    const wrapper = shallow<NavBar>(<NavBar {...p} />);
-    wrapper.instance().togglePopup("controls")();
+    const instance = new NavBar(p);
+    instance.togglePopup("controls")();
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_POPUP, payload: "controls",
     });
   });
 
   it("updates document title", () => {
-    const wrapper = mount<NavBar>(<NavBar {...fakeProps()} />);
-    expect(wrapper.state().documentTitle).toEqual("");
+    const instance = setStateSync(new NavBar(fakeProps()));
+    expect(instance.state.documentTitle).toEqual("");
     document.title = "new page";
-    wrapper.instance().componentDidUpdate();
-    expect(wrapper.state().documentTitle).not.toEqual("");
+    instance.componentDidUpdate();
+    expect(instance.state.documentTitle).not.toEqual("");
   });
 
   it("displays connectivity saucer", () => {
     mockIsMobile = true;
     const p = fakeProps();
     p.device.body.name = "broccolibot";
-    const wrapper = mount(<NavBar {...p} />);
-    expect(wrapper.find(".diagnosis-indicator.nav").length).toEqual(1);
-    expect(wrapper.text().toLowerCase()).not.toContain("broccolibot");
+    const { container } = render(<NavBar {...p} />);
+    expect(container.querySelectorAll(".diagnosis-indicator.nav").length)
+      .toEqual(1);
+    expect(container.textContent?.toLowerCase()).not.toContain("broccolibot");
   });
 
   it("displays connectivity saucer and button", () => {
     mockIsMobile = false;
     const p = fakeProps();
     p.device.body.name = "broccolibot";
-    const wrapper = mount(<NavBar {...p} />);
-    expect(wrapper.find(".diagnosis-indicator.nav").length).toEqual(1);
-    expect(wrapper.text().toLowerCase()).toContain("broccolibot");
+    const { container } = render(<NavBar {...p} />);
+    expect(container.querySelectorAll(".diagnosis-indicator.nav").length)
+      .toEqual(1);
+    expect(container.textContent?.toLowerCase()).toContain("broccolibot");
   });
 
   it("displays default device name when none is provided", () => {
@@ -191,22 +200,23 @@ describe("<NavBar />", () => {
 
   it("displays setup button", () => {
     const wrapper = mountWithContext(<NavBar {...fakeProps()} />);
-    wrapper.find(".setup-button").simulate("click");
+    fireEvent.click(wrapper.container.querySelector(".setup-button") as Element);
     expect(mockNavigate).toHaveBeenCalledWith(Path.setup());
-    expect(wrapper.text().toLowerCase()).toContain("complete");
+    expect(wrapper.container.textContent?.toLowerCase()).toContain("complete");
   });
 
   it("displays setup button: small screens", () => {
     mockIsMobile = true;
-    const wrapper = mount(<NavBar {...fakeProps()} />);
-    expect(wrapper.find(".setup-button").text().toLowerCase()).toEqual("setup");
+    const { container } = render(<NavBar {...fakeProps()} />);
+    expect(container.querySelector(".setup-button")?.textContent
+      ?.toLowerCase()).toEqual("setup");
   });
 
   it("doesn't display setup button when complete", () => {
     const p = fakeProps();
     p.device.body.setup_completed_at = "123";
-    const wrapper = mount(<NavBar {...p} />);
-    expect(wrapper.find(".setup-button").length).toEqual(0);
+    const { container } = render(<NavBar {...p} />);
+    expect(container.querySelectorAll(".setup-button").length).toEqual(0);
   });
 
   it("displays time travel button", () => {
@@ -220,35 +230,39 @@ describe("<NavBar />", () => {
   it("displays navbar visual warning for support tokens", () => {
     const p = fakeProps();
     p.authAud = "staff";
-    const wrapper = shallow(<NavBar {...p} />);
-    expect(wrapper.find("div").first().hasClass("red")).toBeTruthy();
+    const { container } = render(<NavBar {...p} />);
+    expect(container.querySelector("div")?.className).toContain("red");
   });
 
   it("displays active job", () => {
     mockIsMobile = false;
     const p = fakeProps();
     p.bot.hardware.jobs = { "job title": fakePercentJob() };
-    const wrapper = mount(<NavBar {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("99%");
-    expect(wrapper.text().toLowerCase()).toContain("job title");
+    const { container } = render(<NavBar {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("99%");
+    expect(container.textContent?.toLowerCase()).toContain("job title");
   });
 
   it("displays active job on small screens", () => {
     mockIsMobile = true;
     const p = fakeProps();
     p.bot.hardware.jobs = { "job title": fakePercentJob() };
-    const wrapper = mount(<NavBar {...p} />);
-    const progressBar = wrapper.find(".jobs-button-progress-bar");
-    expect(progressBar.length).toEqual(1);
-    expect(progressBar.first().prop("style")).toEqual({ width: "99%" });
+    const { container } = render(<NavBar {...p} />);
+    const progressBar = container.querySelector(".jobs-button-progress-bar");
+    expect(progressBar).toBeTruthy();
+    expect((progressBar as HTMLElement).style.width).toEqual("99%");
   });
 
   it("uses MCU params when firmware config is missing", () => {
     const p = fakeProps();
     p.firmwareConfig = undefined;
     p.appState.popups.controls = true;
-    const wrapper = mount<NavBar>(<NavBar {...p} />);
-    const props = wrapper.find(ControlsPanel).props() as ControlsPanelProps;
+    const instance = new NavBar(p);
+    const coordinates = instance.Coordinates() as React.ReactElement<{
+      children: React.ReactElement<{ content: React.ReactElement }>;
+    }>;
+    const props = coordinates.props.children.props.content.props as
+      ControlsPanelProps;
     expect(props.firmwareSettings).toEqual(p.bot.hardware.mcu_params);
   });
 

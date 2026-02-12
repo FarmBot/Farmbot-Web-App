@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import TestRenderer from "react-test-renderer";
 import { RpiGpioDiagram, RpiGpioDiagramProps } from "../rpi_gpio_diagram";
 import { Color } from "../../../ui";
 
@@ -11,30 +11,32 @@ describe("<RpiGpioDiagram />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<RpiGpioDiagram {...fakeProps()} />);
-    expect(wrapper.find("rect").length).toEqual(42);
+    const wrapper = TestRenderer.create(<RpiGpioDiagram {...fakeProps()} />);
+    expect(wrapper.root.findAllByType("rect").length).toEqual(42);
   });
 
   it("pin hover", () => {
-    const wrapper = mount<RpiGpioDiagram>(<RpiGpioDiagram {...fakeProps()} />);
-    wrapper.find("rect").at(5).simulate("mouseEnter");
-    expect(wrapper.instance().state.hoveredPin).toEqual("GND");
-    const pinToHover = wrapper.find("rect").at(6);
-    pinToHover.simulate("mouseEnter");
-    expect(wrapper.instance().state.hoveredPin).toEqual(17);
-    expect(wrapper.find("rect").at(6).props().fill).toEqual(Color.white);
-    pinToHover.simulate("mouseLeave");
-    expect(pinToHover.props().fill).toEqual(Color.green);
-    expect(wrapper.find("rect").at(7).props().fill).toEqual(Color.darkGray);
+    const wrapper = TestRenderer.create(<RpiGpioDiagram {...fakeProps()} />);
+    const instance = wrapper.getInstance() as RpiGpioDiagram;
+    const rects = wrapper.root.findAllByType("rect");
+    rects[5]?.props.onMouseEnter();
+    expect(instance.state.hoveredPin).toEqual("GND");
+    rects[6]?.props.onMouseEnter();
+    expect(instance.state.hoveredPin).toEqual(17);
+    expect(wrapper.root.findAllByType("rect")[6]?.props.fill).toEqual(Color.white);
+    rects[6]?.props.onMouseLeave();
+    expect(wrapper.root.findAllByType("rect")[6]?.props.fill).toEqual(Color.green);
+    expect(wrapper.root.findAllByType("rect")[7]?.props.fill).toEqual(Color.darkGray);
   });
 
   it("pin click", () => {
     const p = fakeProps();
-    const wrapper = mount(<RpiGpioDiagram {...p} />);
-    wrapper.find("rect").at(6).simulate("click");
+    const wrapper = TestRenderer.create(<RpiGpioDiagram {...p} />);
+    const rects = wrapper.root.findAllByType("rect");
+    rects[6]?.props.onClick();
     expect(p.setSelectedPin).toHaveBeenCalledWith(17);
     jest.clearAllMocks();
-    wrapper.find("rect").at(5).simulate("click");
+    rects[5]?.props.onClick();
     expect(p.setSelectedPin).not.toHaveBeenCalled();
   });
 });

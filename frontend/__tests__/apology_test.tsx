@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { Apology } from "../apology";
 import { Session } from "../session";
 
@@ -15,8 +15,8 @@ describe("<Apology />", () => {
   });
 
   it("clears session", () => {
-    const wrapper = mount(<Apology />);
-    wrapper.find("a").first().simulate("click");
+    render(<Apology />);
+    fireEvent.click(screen.getByText("Restart the app by clicking here."));
     expect(Session.clear).toHaveBeenCalled();
   });
 });

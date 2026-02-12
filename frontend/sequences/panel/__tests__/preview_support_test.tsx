@@ -1,5 +1,5 @@
 import React from "react";
-import { shallow } from "enzyme";
+import { render, fireEvent } from "@testing-library/react";
 import {
   License,
   LicenseProps,
@@ -49,8 +49,11 @@ describe("<License />", () => {
     p.sequence.body.sequence_version_id = undefined;
     p.sequence.body.forked = false;
     p.sequence.body.sequence_versions = [1];
-    const wrapper = shallow(<License {...p} />);
-    wrapper.find("input").simulate("change", { currentTarget: { value: "c" } });
+    const { container } = render(<License {...p} />);
+    fireEvent.change(
+      container.querySelector("input") as Element,
+      { target: { value: "c" } },
+    );
     expect(crud.edit).toHaveBeenCalledWith(p.sequence, { copyright: "c" });
   });
 });

@@ -1,9 +1,9 @@
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { AxisInputBoxGroup } from "../axis_input_box_group";
 import { BotPosition } from "../../devices/interfaces";
 import { AxisInputBoxGroupProps } from "../interfaces";
-import { clickButton } from "../../__test_support__/helpers";
+import { changeBlurableInputRTL } from "../../__test_support__/helpers";
 
 describe("<AxisInputBoxGroup />", () => {
   const fakeProps = (): AxisInputBoxGroupProps => ({
@@ -15,24 +15,26 @@ describe("<AxisInputBoxGroup />", () => {
   });
 
   it("has 3 inputs and a button", () => {
-    const wrapper = mount(<AxisInputBoxGroup {...fakeProps()} />);
-    expect(wrapper.find("input").length).toEqual(3);
-    expect(wrapper.find("button").length).toEqual(1);
+    const { container } = render(<AxisInputBoxGroup {...fakeProps()} />);
+    expect(container.querySelectorAll("input").length).toEqual(3);
+    expect(container.querySelectorAll("button").length).toEqual(1);
   });
 
   it("button is disabled", () => {
     const p = fakeProps();
     p.disabled = true;
-    const wrapper = mount(<AxisInputBoxGroup {...p} />);
-    wrapper.find("button").simulate("click");
+    render(<AxisInputBoxGroup {...p} />);
+    fireEvent.click(screen.getByRole("button", { name: "GO" }));
     expect(p.onCommit).not.toHaveBeenCalled();
   });
 
   it("changes", () => {
-    const wrapper = mount<AxisInputBoxGroup>(
-      <AxisInputBoxGroup {...fakeProps()} />);
-    wrapper.instance().change("x", 10);
-    expect(wrapper.state()).toEqual({ x: 10 });
+    const p = fakeProps();
+    const { container } = render(<AxisInputBoxGroup {...p} />);
+    const inputs = container.querySelectorAll("input");
+    changeBlurableInputRTL(inputs[0] as HTMLInputElement, "10");
+    fireEvent.click(screen.getByRole("button", { name: "GO" }));
+    expect(p.onCommit).toHaveBeenCalledWith({ x: 10, y: 0, z: 0 });
   });
 
   function testGo(
@@ -42,9 +44,21 @@ describe("<AxisInputBoxGroup />", () => {
       const p = fakeProps();
       p.disabled = false;
       p.position = coordinates.position;
-      const wrapper = mount(<AxisInputBoxGroup {...p} />);
-      wrapper.setState(coordinates.inputs);
-      clickButton(wrapper, 0, "go");
+      const { container } = render(<AxisInputBoxGroup {...p} />);
+      const inputs = container.querySelectorAll("input");
+      if (typeof coordinates.inputs.x == "number") {
+        changeBlurableInputRTL(inputs[0] as HTMLInputElement,
+          `${coordinates.inputs.x}`);
+      }
+      if (typeof coordinates.inputs.y == "number") {
+        changeBlurableInputRTL(inputs[1] as HTMLInputElement,
+          `${coordinates.inputs.y}`);
+      }
+      if (typeof coordinates.inputs.z == "number") {
+        changeBlurableInputRTL(inputs[2] as HTMLInputElement,
+          `${coordinates.inputs.z}`);
+      }
+      fireEvent.click(screen.getByRole("button", { name: "GO" }));
       expect(p.onCommit).toHaveBeenCalledWith(coordinates.expected);
     });
   }

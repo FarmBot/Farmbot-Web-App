@@ -1,7 +1,7 @@
 jest.mock("../../../api/crud", () => ({ initSave: jest.fn() }));
 
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import {
   StockPinBindingsButton, StockPinBindingsButtonProps,
 } from "../tagged_pin_binding_init";
@@ -18,8 +18,9 @@ describe("<StockPinBindingsButton />", () => {
   });
 
   it("adds bindings", () => {
-    const wrapper = mount(<StockPinBindingsButton {...fakeProps()} />);
-    wrapper.find("button").simulate("click");
+    const { container } = render(<StockPinBindingsButton {...fakeProps()} />);
+    const button = container.querySelector("button");
+    button && fireEvent.click(button);
     stockPinBindings.map(body =>
       expect(initSave).toHaveBeenCalledWith("PinBinding", body));
   });
@@ -27,14 +28,14 @@ describe("<StockPinBindingsButton />", () => {
   it("is hidden", () => {
     const p = fakeProps();
     p.firmwareHardware = "arduino";
-    const wrapper = mount(<StockPinBindingsButton {...p} />);
-    expect(wrapper.find("button").props().hidden).toBeTruthy();
+    const { container } = render(<StockPinBindingsButton {...p} />);
+    expect(container.querySelector("button")?.hidden).toBeTruthy();
   });
 
   it("is not hidden", () => {
     const p = fakeProps();
     p.firmwareHardware = "farmduino_k14";
-    const wrapper = mount(<StockPinBindingsButton {...p} />);
-    expect(wrapper.find("button").props().hidden).toBeFalsy();
+    const { container } = render(<StockPinBindingsButton {...p} />);
+    expect(container.querySelector("button")?.hidden).toBeFalsy();
   });
 });

@@ -1,6 +1,6 @@
 import React from "react";
 import { Grid } from "../grid";
-import { shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import { GridProps } from "../../interfaces";
 import {
   fakeMapTransformProps,
@@ -15,16 +15,48 @@ describe("<Grid />", () => {
     templateView: false,
   });
 
+  const renderGrid = (props: GridProps) =>
+    render(<svg><Grid {...props} /></svg>);
+
+  const queryRequired = (
+    container: HTMLElement,
+    selector: string,
+  ): HTMLElement => {
+    const element = container.querySelector(selector);
+    if (!element) { throw new Error(`Missing element: ${selector}`); }
+    return element as HTMLElement;
+  };
+
+  const getNumericAttribute = (
+    element: HTMLElement,
+    attribute: string,
+  ): number => {
+    const value = element.getAttribute(attribute);
+    if (value === null) {
+      throw new Error(`Missing attribute ${attribute}`);
+    }
+    return Number(value);
+  };
+
   it("renders grid", () => {
     const expectedGridShape = { width: 3000, height: 1500 };
-    const wrapper = shallow(<Grid {...fakeProps()} />);
-    expect(wrapper.find("#major-grid").props()).toEqual(
-      expect.objectContaining(expectedGridShape));
-    expect(wrapper.find("#minor-grid").props()).toEqual(
-      expect.objectContaining(expectedGridShape));
-    expect(wrapper.find("#axis-arrows").find("line").first().props())
-      .toEqual({ x1: 0, x2: 20, y1: 0, y2: 0 });
-    expect(wrapper.find("#axis-values").find("TextInRoundedSvgBox").length)
+    const { container } = renderGrid(fakeProps());
+    const majorGrid = queryRequired(container, "#major-grid");
+    const minorGrid = queryRequired(container, "#minor-grid");
+    expect(getNumericAttribute(majorGrid, "width")).toEqual(
+      expectedGridShape.width);
+    expect(getNumericAttribute(majorGrid, "height")).toEqual(
+      expectedGridShape.height);
+    expect(getNumericAttribute(minorGrid, "width")).toEqual(
+      expectedGridShape.width);
+    expect(getNumericAttribute(minorGrid, "height")).toEqual(
+      expectedGridShape.height);
+    const axisArrow = queryRequired(container, "#axis-arrows line");
+    expect(getNumericAttribute(axisArrow, "x1")).toEqual(0);
+    expect(getNumericAttribute(axisArrow, "x2")).toEqual(20);
+    expect(getNumericAttribute(axisArrow, "y1")).toEqual(0);
+    expect(getNumericAttribute(axisArrow, "y2")).toEqual(0);
+    expect(container.querySelectorAll("#axis-values #label").length)
       .toEqual(43);
   });
 
@@ -32,11 +64,17 @@ describe("<Grid />", () => {
     const expectedGridShape = { width: 1500, height: 3000 };
     const p = fakeProps();
     p.mapTransformProps.xySwap = true;
-    const wrapper = shallow(<Grid {...p} />);
-    expect(wrapper.find("#major-grid").props()).toEqual(
-      expect.objectContaining(expectedGridShape));
-    expect(wrapper.find("#minor-grid").props()).toEqual(
-      expect.objectContaining(expectedGridShape));
+    const { container } = renderGrid(p);
+    const majorGrid = queryRequired(container, "#major-grid");
+    const minorGrid = queryRequired(container, "#minor-grid");
+    expect(getNumericAttribute(majorGrid, "width")).toEqual(
+      expectedGridShape.width);
+    expect(getNumericAttribute(majorGrid, "height")).toEqual(
+      expectedGridShape.height);
+    expect(getNumericAttribute(minorGrid, "width")).toEqual(
+      expectedGridShape.width);
+    expect(getNumericAttribute(minorGrid, "height")).toEqual(
+      expectedGridShape.height);
   });
 
   it.each<[number, number, number, number]>([
@@ -46,13 +84,14 @@ describe("<Grid />", () => {
     (zoomLvl, minor, major, superior) => {
       const p = fakeProps();
       p.zoomLvl = zoomLvl;
-      const wrapper = shallow(<Grid {...p} />);
-      const minorGrid = wrapper.find("#minor_grid>path");
-      const majorGrid = wrapper.find("#major_grid>path");
-      const superiorGrid = wrapper.find("#superior_grid>path");
-      expect(minorGrid.props()).toHaveProperty("strokeWidth", minor);
-      expect(majorGrid.props()).toHaveProperty("strokeWidth", major);
-      expect(superiorGrid.props()).toHaveProperty("strokeWidth", superior);
+      const { container } = renderGrid(p);
+      const minorGrid = queryRequired(container, "#minor_grid > path");
+      const majorGrid = queryRequired(container, "#major_grid > path");
+      const superiorGrid = queryRequired(container, "#superior_grid > path");
+      expect(getNumericAttribute(minorGrid, "stroke-width")).toEqual(minor);
+      expect(getNumericAttribute(majorGrid, "stroke-width")).toEqual(major);
+      expect(getNumericAttribute(superiorGrid, "stroke-width"))
+        .toEqual(superior);
     });
 
   it.each<[number, number, number]>([
@@ -62,9 +101,9 @@ describe("<Grid />", () => {
   ])("visualizes axis values at zoom level: %s", (zoomLvl, xCount, yCount) => {
     const p = fakeProps();
     p.zoomLvl = zoomLvl;
-    const wrapper = shallow(<Grid {...p} />);
-    expect(wrapper.find("#x-label")).toHaveLength(xCount);
-    expect(wrapper.find("#y-label")).toHaveLength(yCount);
+    const { container } = renderGrid(p);
+    expect(container.querySelectorAll("#x-label")).toHaveLength(xCount);
+    expect(container.querySelectorAll("#y-label")).toHaveLength(yCount);
   });
 
   it.each<[
@@ -88,16 +127,16 @@ describe("<Grid />", () => {
       p.zoomLvl = zoomLvl;
       p.mapTransformProps.quadrant = quadrant;
       p.mapTransformProps.xySwap = xySwap;
-      const wrapper = shallow(<Grid {...p} />);
-      const xLabelNode = wrapper.find("#x-label").first();
-      const yLabelNode = wrapper.find("#y-label").first();
-      expect(xLabelNode.props().style?.transform).toEqual(xTransform);
-      expect(yLabelNode.props().style?.transform).toEqual(yTransform);
-      const xTextNodeProps = xLabelNode.find("TextInRoundedSvgBox").props();
-      const yTextNodeProps = yLabelNode.find("TextInRoundedSvgBox").props();
-      expect(xTextNodeProps.x).toEqual(xx);
-      expect(xTextNodeProps.y).toEqual(xy);
-      expect(yTextNodeProps.x).toEqual(yx);
-      expect(yTextNodeProps.y).toEqual(yy);
+      const { container } = renderGrid(p);
+      const xLabelNode = queryRequired(container, "#x-label");
+      const yLabelNode = queryRequired(container, "#y-label");
+      expect(xLabelNode.style.transform).toEqual(xTransform);
+      expect(yLabelNode.style.transform).toEqual(yTransform);
+      const xTextNode = queryRequired(xLabelNode, "text");
+      const yTextNode = queryRequired(yLabelNode, "text");
+      expect(getNumericAttribute(xTextNode, "x")).toEqual(xx);
+      expect(getNumericAttribute(xTextNode, "y")).toEqual(xy);
+      expect(getNumericAttribute(yTextNode, "x")).toEqual(yx);
+      expect(getNumericAttribute(yTextNode, "y")).toEqual(yy);
     });
 });

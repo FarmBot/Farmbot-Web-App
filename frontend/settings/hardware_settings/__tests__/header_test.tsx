@@ -1,6 +1,6 @@
 import React from "react";
 import { Header, HeaderProps } from "../header";
-import { mount } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { DeviceSetting, Actions } from "../../../constants";
 
 describe("<Header />", () => {
@@ -12,15 +12,15 @@ describe("<Header />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<Header {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("motors");
-    expect(wrapper.find(".fa-minus").length).toBe(1);
+    const { container } = render(<Header {...fakeProps()} />);
+    expect((container.textContent || "").toLowerCase()).toContain("motors");
+    expect(container.querySelectorAll(".fa-minus").length).toBe(1);
   });
 
   it("handles click", () => {
     const p = fakeProps();
-    const wrapper = mount(<Header {...p} />);
-    wrapper.simulate("click");
+    render(<Header {...p} />);
+    fireEvent.click(screen.getByText(/motors/i));
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_SETTINGS_PANEL_OPTION,
       payload: "motors",

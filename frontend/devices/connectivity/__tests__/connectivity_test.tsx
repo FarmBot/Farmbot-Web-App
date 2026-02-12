@@ -2,7 +2,7 @@ let mockIsMobile = false;
 let mockDemo = false;
 
 import React from "react";
-import { mount } from "enzyme";
+import { act, fireEvent, render } from "@testing-library/react";
 import { Connectivity, ConnectivityProps } from "../connectivity";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { StatusRowProps } from "../connectivity_row";
@@ -12,7 +12,6 @@ import { fakeDevice } from "../../../__test_support__/resource_index_builder";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { ConnectionName } from "../diagnosis";
 import { fakeAlert } from "../../../__test_support__/fake_state/resources";
-import { clickButton } from "../../../__test_support__/helpers";
 import { metricPanelState } from "../../../__test_support__/panel_state";
 import { Actions } from "../../../constants";
 import * as screenSize from "../../../screen_size";
@@ -90,8 +89,9 @@ describe("<Connectivity />", () => {
     const p = fakeProps();
     p.metricPanelState.realtime = false;
     p.metricPanelState.history = true;
-    const wrapper = mount<Connectivity>(<Connectivity {...p} />);
-    wrapper.instance().setPanelState("realtime")();
+    const ref = React.createRef<Connectivity>();
+    render(<Connectivity {...p} ref={ref} />);
+    ref.current?.setPanelState("realtime")();
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_METRIC_PANEL_OPTION, payload: "realtime",
     });
@@ -100,8 +100,9 @@ describe("<Connectivity />", () => {
   it("shows history", () => {
     const p = fakeProps();
     p.metricPanelState.history = false;
-    const wrapper = mount<Connectivity>(<Connectivity {...p} />);
-    wrapper.instance().setPanelState("history")();
+    const ref = React.createRef<Connectivity>();
+    render(<Connectivity {...p} ref={ref} />);
+    ref.current?.setPanelState("history")();
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_METRIC_PANEL_OPTION, payload: "history",
     });
@@ -110,15 +111,15 @@ describe("<Connectivity />", () => {
   it("sets hovered connection", () => {
     const p = fakeProps();
     p.metricPanelState.realtime = true;
-    const wrapper = mount<Connectivity>(<Connectivity {...p} />);
-    wrapper.instance().hover("AB")();
-    wrapper.update();
-    expect(wrapper.instance().state.hoveredConnection).toEqual("AB");
+    const ref = React.createRef<Connectivity>();
+    render(<Connectivity {...p} ref={ref} />);
+    act(() => ref.current?.hover("AB")());
+    expect(ref.current?.state.hoveredConnection).toEqual("AB");
   });
 
   it("refreshes device", () => {
     const p = fakeProps();
-    mount(<Connectivity {...p} />);
+    render(<Connectivity {...p} />);
     expect(crud.refresh).toHaveBeenCalledWith(p.device);
     expect(deviceActions.sync).toHaveBeenCalled();
     expect(deviceActions.readStatus).toHaveBeenCalled();
@@ -126,7 +127,7 @@ describe("<Connectivity />", () => {
 
   it("doesn't refresh device", () => {
     mockDemo = true;
-    mount(<Connectivity {...fakeProps()} />);
+    render(<Connectivity {...fakeProps()} />);
     expect(crud.refresh).not.toHaveBeenCalled();
     expect(deviceActions.sync).not.toHaveBeenCalled();
     expect(deviceActions.readStatus).not.toHaveBeenCalled();
@@ -137,32 +138,32 @@ describe("<Connectivity />", () => {
     p.metricPanelState.realtime = true;
     p.bot.hardware.informational_settings.controller_version = undefined;
     p.device.body.fbos_version = "1.0.0";
-    const wrapper = mount(<Connectivity {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("version last seen: v1.0.0");
+    const { container } = render(<Connectivity {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("version last seen: v1.0.0");
   });
 
   it("displays controller version", () => {
     const p = fakeProps();
     p.metricPanelState.realtime = true;
     p.bot.hardware.informational_settings.controller_version = "1.0.0";
-    const wrapper = mount(<Connectivity {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("version: v1.0.0");
+    const { container } = render(<Connectivity {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("version: v1.0.0");
   });
 
   it("displays order number", () => {
     const p = fakeProps();
     p.metricPanelState.realtime = true;
     p.device.body.fb_order_number = "FB1234";
-    const wrapper = mount(<Connectivity {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("order number: fb1234");
+    const { container } = render(<Connectivity {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("order number: fb1234");
   });
 
   it("displays order number as 'Unset' when undefined", () => {
     const p = fakeProps();
     p.metricPanelState.realtime = true;
     p.device.body.fb_order_number = undefined;
-    const wrapper = mount(<Connectivity {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("order number: unset");
+    const { container } = render(<Connectivity {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("order number: unset");
   });
 
   it("renders network tab", () => {
@@ -171,9 +172,9 @@ describe("<Connectivity />", () => {
     p.metricPanelState.realtime = false;
     p.metricPanelState.network = true;
     p.bot.hardware.informational_settings.wifi_level_percent = 50;
-    const wrapper = mount<Connectivity>(<Connectivity {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("this phone");
-    expect(wrapper.text().toLowerCase()).toContain("connection type: wifi");
+    const { container } = render(<Connectivity {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("this phone");
+    expect(container.textContent?.toLowerCase()).toContain("connection type: wifi");
   });
 
   it("displays more network info", () => {
@@ -186,11 +187,11 @@ describe("<Connectivity />", () => {
     p.bot.hardware.informational_settings.node_name = "f-12345678";
     p.bot.hardware.informational_settings.wifi_level = undefined;
     p.bot.hardware.informational_settings.wifi_level_percent = undefined;
-    const wrapper = mount(<Connectivity {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("1.0.0.1");
-    expect(wrapper.text().toLowerCase()).toContain("b8:27:eb:34:56:78");
-    expect(wrapper.text().toLowerCase()).toContain("this computer");
-    expect(wrapper.text().toLowerCase()).toContain("connection type: unknown");
+    const { container } = render(<Connectivity {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("1.0.0.1");
+    expect(container.textContent?.toLowerCase()).toContain("b8:27:eb:34:56:78");
+    expect(container.textContent?.toLowerCase()).toContain("this computer");
+    expect(container.textContent?.toLowerCase()).toContain("connection type: unknown");
   });
 
   it("displays fix firmware buttons", () => {
@@ -199,9 +200,10 @@ describe("<Connectivity />", () => {
     p.apiFirmwareValue = "arduino";
     Object.keys(p.flags).map((key: ConnectionName) => p.flags[key] = true);
     p.flags.botFirmware = false;
-    const wrapper = mount(<Connectivity {...p} />);
-    expect(wrapper.find(".fix-firmware-buttons").length).toBeGreaterThan(0);
-    clickButton(wrapper, 2, "restart firmware");
+    const { container } = render(<Connectivity {...p} />);
+    expect(container.querySelectorAll(".fix-firmware-buttons").length).toBeGreaterThan(0);
+    const restartButton = container.querySelector("button[title='restart firmware']");
+    restartButton && fireEvent.click(restartButton);
   });
 
   it("doesn't display fix firmware buttons", () => {
@@ -210,8 +212,8 @@ describe("<Connectivity />", () => {
     p.apiFirmwareValue = undefined;
     Object.keys(p.flags).map((key: ConnectionName) => p.flags[key] = true);
     p.flags.botFirmware = false;
-    const wrapper = mount(<Connectivity {...p} />);
-    expect(wrapper.find(".fix-firmware-buttons").length).toEqual(0);
+    const { container } = render(<Connectivity {...p} />);
+    expect(container.querySelectorAll(".fix-firmware-buttons").length).toEqual(0);
   });
 
   it("displays firmware alerts", () => {
@@ -220,8 +222,8 @@ describe("<Connectivity />", () => {
     const alert = fakeAlert().body;
     alert.problem_tag = "farmbot_os.firmware.missing";
     p.alerts = [alert];
-    const wrapper = mount(<Connectivity {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("choose firmware");
+    const { container } = render(<Connectivity {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("choose firmware");
   });
 
   it("displays sync status", () => {
@@ -229,31 +231,31 @@ describe("<Connectivity />", () => {
     p.metricPanelState.realtime = true;
     p.bot.hardware.informational_settings.sync_status = "syncing";
     p.rowData[3].connectionName = "botAPI";
-    const wrapper = mount(<Connectivity {...p} />);
-    expect(wrapper.html()).toContain("fa-spinner");
+    const { container } = render(<Connectivity {...p} />);
+    expect(container.innerHTML).toContain("fa-spinner");
   });
 
   it("displays camera status: missing value", () => {
     const p = fakeProps();
     p.metricPanelState.realtime = true;
     p.bot.hardware.informational_settings.video_devices = undefined;
-    const wrapper = mount(<Connectivity {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("camera: unknown");
+    const { container } = render(<Connectivity {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("camera: unknown");
   });
 
   it("displays camera status: no devices", () => {
     const p = fakeProps();
     p.metricPanelState.realtime = true;
     p.bot.hardware.informational_settings.video_devices = "";
-    const wrapper = mount(<Connectivity {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("camera: unknown");
+    const { container } = render(<Connectivity {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("camera: unknown");
   });
 
   it("displays camera status: connected", () => {
     const p = fakeProps();
     p.metricPanelState.realtime = true;
     p.bot.hardware.informational_settings.video_devices = "1,0";
-    const wrapper = mount(<Connectivity {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("camera: connected");
+    const { container } = render(<Connectivity {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("camera: connected");
   });
 });

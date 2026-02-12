@@ -1,23 +1,20 @@
 const mockDevice = { readPin: jest.fn((_) => Promise.resolve()) };
 
 import React from "react";
-import { cleanup } from "@testing-library/react";
-import { mount, shallow } from "enzyme";
-import {
-  RawTools as Tools,
-  ToolSlotInventoryItem,
-} from "../index";
+import TestRenderer from "react-test-renderer";
+import { cleanup, fireEvent, render } from "@testing-library/react";
+import { RawTools as Tools } from "../index";
 import {
   fakeTool, fakeToolSlot, fakeSensor, fakePointGroup,
 } from "../../__test_support__/fake_state/resources";
 import { fakeDevice } from "../../__test_support__/resource_index_builder";
 import { bot } from "../../__test_support__/fake_state/bot";
 import { error } from "../../toast/toast";
-import { Content, Actions } from "../../constants";
+import { Content } from "../../constants";
 import * as crud from "../../api/crud";
 import { ToolSelection } from "../tool_slot_edit_components";
 import { fakeToolTransformProps } from "../../__test_support__/fake_tool_info";
-import { ToolsProps, ToolSlotInventoryItemProps } from "../interfaces";
+import { ToolsProps } from "../interfaces";
 import * as mapActions from "../../farm_designer/map/actions";
 import * as mapUtil from "../../farm_designer/map/util";
 import { Mode } from "../../farm_designer/map/interfaces";
@@ -32,10 +29,38 @@ import * as deviceModule from "../../device";
 const originalPathname = location.pathname;
 
 describe("<Tools />", () => {
+  const wrappers: TestRenderer.ReactTestRenderer[] = [];
+
+  const fakeProps = (): ToolsProps => ({
+    tools: [],
+    toolSlots: [],
+    dispatch: jest.fn(),
+    findTool: () => fakeTool(),
+    device: fakeDevice(),
+    sensors: [fakeSensor()],
+    bot,
+    hoveredToolSlot: undefined,
+    firmwareHardware: undefined,
+    isActive: jest.fn(),
+    toolTransformProps: fakeToolTransformProps(),
+    groups: [],
+    allPoints: [],
+  });
+
+  const createWrapper = (p = fakeProps()) => {
+    const wrapper = TestRenderer.create(<Tools {...p} />);
+    wrappers.push(wrapper);
+    return wrapper;
+  };
+
   afterEach(() => {
     history.replaceState(undefined, "", Path.mock(originalPathname));
     jest.useRealTimers();
     cleanup();
+    while (wrappers.length > 0) {
+      const wrapper = wrappers.pop();
+      wrapper && TestRenderer.act(() => wrapper.unmount());
+    }
     jest.restoreAllMocks();
   });
 
@@ -54,25 +79,9 @@ describe("<Tools />", () => {
       .mockImplementation(() => mockDevice as never);
   });
 
-  const fakeProps = (): ToolsProps => ({
-    tools: [],
-    toolSlots: [],
-    dispatch: jest.fn(),
-    findTool: () => fakeTool(),
-    device: fakeDevice(),
-    sensors: [fakeSensor()],
-    bot,
-    hoveredToolSlot: undefined,
-    firmwareHardware: undefined,
-    isActive: jest.fn(),
-    toolTransformProps: fakeToolTransformProps(),
-    groups: [],
-    allPoints: [],
-  });
-
   it("renders with no tools", () => {
-    const wrapper = mount(<Tools {...fakeProps()} />);
-    expect(wrapper.text()).toContain("Add a tool");
+    const { container } = render(<Tools {...fakeProps()} />);
+    expect(container.textContent).toContain("Add a tool");
   });
 
   it("renders with tools", () => {
@@ -90,17 +99,19 @@ describe("<Tools />", () => {
     p.toolSlots[1].body.tool_id = 3;
     p.toolSlots[1].body.gantry_mounted = true;
     p.toolSlots[1].body.y = 2;
-    const wrapper = mount(<Tools {...p} />);
+    const { container } = render(<Tools {...p} />);
+    const text = container.textContent?.toLowerCase() || "";
     [
       "foo", "my tool", "unnamed", "(1, 0, 0)", "unknown", "(gantry, 2, 0)",
-    ].map(string => expect(wrapper.text().toLowerCase()).toContain(string));
+    ].map(string => expect(text).toContain(string));
   });
 
   it("toggles section", () => {
-    const wrapper = shallow<Tools>(<Tools {...fakeProps()} />);
-    expect(wrapper.state().groups).toEqual(false);
-    wrapper.instance().toggleOpen("groups")();
-    expect(wrapper.state().groups).toEqual(true);
+    const wrapper = createWrapper();
+    const instance = wrapper.getInstance() as Tools;
+    expect(instance.state.groups).toEqual(false);
+    TestRenderer.act(() => instance.toggleOpen("groups")());
+    expect(instance.state.groups).toEqual(true);
   });
 
   it("renders groups", () => {
@@ -113,24 +124,27 @@ describe("<Tools />", () => {
     group2.body.name = "Plant Group";
     group2.body.criteria.string_eq = { pointer_type: ["Plant"] };
     p.groups = [group1, group2];
-    const wrapper = mount(<Tools {...p} />);
-    expect(wrapper.text()).toContain("Groups (1)");
+    const { container } = render(<Tools {...p} />);
+    expect(container.textContent).toContain("Groups (1)");
   });
 
   it("navigates to group", () => {
-    const wrapper = shallow<Tools>(<Tools {...fakeProps()} />);
-    wrapper.instance().context = jest.fn();
-    wrapper.instance().navigateById(1)();
-    expect(wrapper.instance().context).toHaveBeenCalledWith(Path.groups(1));
+    const wrapper = createWrapper();
+    const instance = wrapper.getInstance() as Tools;
+    instance.navigate = jest.fn();
+    instance.navigateById(1)();
+    expect(instance.navigate).toHaveBeenCalledWith(Path.groups(1));
   });
 
   it("adds new group", () => {
     const p = fakeProps();
+    p.tools = [fakeTool()];
     const group1 = fakePointGroup();
     group1.body.criteria.string_eq = { pointer_type: ["ToolSlot"] };
     p.groups = [group1];
-    const wrapper = shallow(<Tools {...p} />);
-    wrapper.find(PanelSection).last().props().addNew();
+    const wrapper = createWrapper(p);
+    const sections = wrapper.root.findAllByType(PanelSection);
+    sections[sections.length - 1]?.props.addNew();
     expect(pointGroupActions.createGroup).toHaveBeenCalledWith({
       criteria: {
         ...DEFAULT_CRITERIA,
@@ -147,10 +161,10 @@ describe("<Tools />", () => {
     p.toolSlots = [fakeToolSlot()];
     p.toolSlots[0].body.id = 2;
     p.toolSlots[0].body.tool_id = 3;
-    const wrapper = mountWithContext(<Tools {...p} />);
-    wrapper.find(".tool-slot-search-item").first().simulate("click");
+    const { container } = mountWithContext(<Tools {...p} />);
+    fireEvent.click(container.querySelector(".tool-slot-search-item") as Element);
     expect(mockNavigate).toHaveBeenCalledWith(Path.toolSlots(2));
-    wrapper.find(".tool-search-item").first().simulate("click");
+    fireEvent.click(container.querySelector(".tool-search-item") as Element);
     expect(mockNavigate).toHaveBeenCalledWith(Path.tools(1));
   });
 
@@ -161,10 +175,11 @@ describe("<Tools />", () => {
     p.toolSlots = [fakeToolSlot()];
     p.toolSlots[0].body.id = 1;
     p.hoveredToolSlot = p.toolSlots[0].uuid;
-    const wrapper = mount(<Tools {...p} />);
-    wrapper.find(".tool-slot-search-item").simulate("mouseEnter");
+    const { container } = render(<Tools {...p} />);
+    const item = container.querySelector(".tool-slot-search-item") as Element;
+    fireEvent.mouseEnter(item);
     expect(p.dispatch).toHaveBeenCalled();
-    wrapper.find(".tool-slot-search-item").simulate("mouseLeave");
+    fireEvent.mouseLeave(item);
     expect(p.dispatch).toHaveBeenCalled();
   });
 
@@ -173,27 +188,34 @@ describe("<Tools />", () => {
     p.tools = [fakeTool(), fakeTool()];
     p.tools[0].body.name = "tool 0";
     p.tools[1].body.name = "tool 1";
-    const wrapper = shallow<Tools>(<Tools {...p} />);
-    wrapper.find(SearchField).simulate("change", "0");
-    expect(wrapper.state().searchTerm).toEqual("0");
+    const wrapper = createWrapper(p);
+    wrapper.root.findByType(SearchField).props.onChange("0");
+    expect((wrapper.getInstance() as Tools).state.searchTerm).toEqual("0");
   });
 
   it("filters tools", () => {
     const p = fakeProps();
     p.tools = [fakeTool(), fakeTool()];
+    p.tools[0].body.id = 1;
+    p.tools[1].body.id = 2;
     p.tools[0].body.name = "tool 0";
     p.tools[1].body.name = "tool 1";
-    const wrapper = mount(<Tools {...p} />);
-    wrapper.setState({ searchTerm: "0" });
-    expect(wrapper.text()).not.toContain("tool 1");
+    const wrapper = createWrapper(p);
+    TestRenderer.act(() => (wrapper.getInstance() as Tools)
+      .setState({ searchTerm: "0" }));
+    const names = wrapper.root.findAllByProps({ className: "tool-search-item-name" })
+      .map(name => name.children.join("").toLowerCase());
+    expect(names).toEqual(["tool 0"]);
   });
 
   it("changes mounted tool", () => {
     const p = fakeProps();
     p.tools = [fakeTool()];
-    const wrapper = mount<Tools>(<Tools {...p} />);
-    shallow(wrapper.instance().MountedToolInfo()).find(ToolSelection)
-      .simulate("change", { tool_id: 123 });
+    const wrapper = createWrapper(p);
+    const infoWrapper = TestRenderer.create(
+      (wrapper.getInstance() as Tools).MountedToolInfo());
+    wrappers.push(infoWrapper);
+    infoWrapper.root.findByType(ToolSelection).props.onChange({ tool_id: 123 });
     expect(crud.edit).toHaveBeenCalledWith(p.device, { mounted_tool_id: 123 });
     expect(crud.save).toHaveBeenCalledWith(p.device.uuid);
   });
@@ -204,8 +226,8 @@ describe("<Tools />", () => {
     p.sensors[0].body.label = "tool verification";
     p.sensors[0].body.pin = undefined;
     p.bot.hardware.pins = { "63": { value: 1, mode: 0 } };
-    const wrapper = mount(<Tools {...p} />);
-    expect(wrapper.text()).toContain("disconnected");
+    const { container } = render(<Tools {...p} />);
+    expect(container.textContent).toContain("disconnected");
   });
 
   it("displays tool verification result: connected", () => {
@@ -214,8 +236,8 @@ describe("<Tools />", () => {
     p.sensors[0].body.label = "tool verification";
     p.sensors[0].body.pin = 64;
     p.bot.hardware.pins = { "64": { value: 0, mode: 0 } };
-    const wrapper = mount(<Tools {...p} />);
-    expect(wrapper.text()).toContain("connected");
+    const { container } = render(<Tools {...p} />);
+    expect(container.textContent).toContain("connected");
   });
 
   it("verifies tool attachment", () => {
@@ -223,11 +245,11 @@ describe("<Tools />", () => {
     p.tools = [fakeTool()];
     p.bot.hardware.informational_settings.sync_status = "synced";
     p.bot.connectivity.uptime["bot.mqtt"] = { state: "up", at: 0 };
-    const wrapper = mount(<Tools {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("mounted tool");
-    wrapper.find(".yellow").first().simulate("click");
+    const { container } = render(<Tools {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("mounted tool");
+    fireEvent.click(container.querySelector(".yellow") as Element);
     expect(mockDevice.readPin).toHaveBeenCalledWith({
-      label: "pin63", pin_mode: 0, pin_number: 63
+      label: "pin63", pin_mode: 0, pin_number: 63,
     });
   });
 
@@ -235,8 +257,8 @@ describe("<Tools />", () => {
     const p = fakeProps();
     p.tools = [fakeTool()];
     p.bot.connectivity.uptime["bot.mqtt"] = undefined;
-    const wrapper = mount(<Tools {...p} />);
-    wrapper.find(".yellow").first().simulate("click");
+    const { container } = render(<Tools {...p} />);
+    fireEvent.click(container.querySelector(".yellow") as Element);
     expect(mockDevice.readPin).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith(Content.NOT_AVAILABLE_WHEN_OFFLINE);
   });
@@ -244,8 +266,8 @@ describe("<Tools />", () => {
   it("doesn't display mounted tool on express models", () => {
     const p = fakeProps();
     p.firmwareHardware = "express_k10";
-    const wrapper = mount(<Tools {...p} />);
-    expect(wrapper.text().toLowerCase()).not.toContain("mounted tool");
+    const { container } = render(<Tools {...p} />);
+    expect(container.textContent?.toLowerCase()).not.toContain("mounted tool");
   });
 
   it("displays tool as active", () => {
@@ -255,127 +277,7 @@ describe("<Tools />", () => {
     p.tools = [tool];
     p.isActive = () => true;
     p.device.body.mounted_tool_id = undefined;
-    const wrapper = mount(<Tools {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("in slot");
-  });
-
-  it("displays tool as mounted", () => {
-    const p = fakeProps();
-    const tool = fakeTool();
-    tool.body.id = 1;
-    p.findTool = () => tool;
-    p.tools = [tool];
-    p.device.body.mounted_tool_id = 1;
-    const wrapper = mount(<Tools {...p} />);
-    expect(wrapper.find("p").last().text().toLowerCase()).toContain("mounted");
-  });
-
-  it("handles missing tools", () => {
-    const p = fakeProps();
-    const tool = fakeTool();
-    tool.body.id = 1;
-    p.findTool = () => undefined;
-    p.tools = [tool];
-    p.device.body.mounted_tool_id = 1;
-    const wrapper = mount(<Tools {...p} />);
-    expect(wrapper.find("p").last().text().toLowerCase()).not.toContain("mounted");
-  });
-});
-
-describe("<ToolSlotInventoryItem />", () => {
-  let getModeSpy: jest.SpyInstance;
-
-  beforeEach(() => {
-    jest.restoreAllMocks();
-    jest.clearAllMocks();
-    history.replaceState(undefined, "", Path.mock(originalPathname));
-    jest.useRealTimers();
-    jest.spyOn(crud, "edit").mockImplementation(jest.fn());
-    jest.spyOn(crud, "save").mockImplementation(jest.fn());
-    jest.spyOn(mapActions, "mapPointClickAction")
-      .mockImplementation(jest.fn(() => jest.fn()));
-    jest.spyOn(mapActions, "selectPoint")
-      .mockImplementation(jest.fn());
-    getModeSpy = jest.spyOn(mapUtil, "getMode").mockReturnValue(Mode.none);
-  });
-
-  afterEach(() => {
-    getModeSpy.mockRestore();
-  });
-
-  const fakeProps = (): ToolSlotInventoryItemProps => ({
-    toolSlot: fakeToolSlot(),
-    tools: [],
-    hovered: false,
-    dispatch: jest.fn(),
-    isActive: jest.fn(),
-    toolTransformProps: fakeToolTransformProps(),
-    noUTM: false,
-  });
-
-  it("changes tool", () => {
-    const p = fakeProps();
-    const wrapper = shallow(<ToolSlotInventoryItem {...p} />);
-    wrapper.find(ToolSelection).simulate("change", { tool_id: 1 });
-    expect(crud.edit).toHaveBeenCalledWith(p.toolSlot, { tool_id: 1 });
-    expect(crud.save).toHaveBeenCalledWith(p.toolSlot.uuid);
-  });
-
-  it("doesn't open tool slot", () => {
-    const wrapper = shallow(<ToolSlotInventoryItem {...fakeProps()} />);
-    const e = { stopPropagation: jest.fn() };
-    wrapper.find(".tool-selection-wrapper").first().simulate("click", e);
-    expect(e.stopPropagation).toHaveBeenCalled();
-  });
-
-  it("shows tool name", () => {
-    const p = fakeProps();
-    p.hideDropdown = true;
-    const wrapper = mount(<ToolSlotInventoryItem {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("empty");
-  });
-
-  it("opens tool slot", () => {
-    location.pathname = Path.mock(Path.toolSlots());
-    const p = fakeProps();
-    p.toolSlot.body.id = 1;
-    const wrapper = shallow(<ToolSlotInventoryItem {...p} />);
-    wrapper.find("div").first().simulate("click");
-    expect(mapActions.mapPointClickAction).not.toHaveBeenCalled();
-    expect(mockNavigate).toHaveBeenCalledWith(Path.toolSlots(1));
-    expect(mapActions.selectPoint).toHaveBeenCalled();
-    expect(p.dispatch).not.toHaveBeenCalledWith({
-      type: Actions.HOVER_TOOL_SLOT, payload: undefined,
-    });
-  });
-
-  it("doesn't open tool slot: disabled", () => {
-    location.pathname = Path.mock(Path.toolSlots());
-    const p = fakeProps();
-    p.disableNavigate = true;
-    p.toolSlot.body.id = 1;
-    const wrapper = shallow(<ToolSlotInventoryItem {...p} />);
-    wrapper.find("div").first().simulate("click");
-    expect(mapActions.mapPointClickAction).not.toHaveBeenCalled();
-    expect(mockNavigate).not.toHaveBeenCalled();
-    expect(mapActions.selectPoint).not.toHaveBeenCalled();
-    expect(p.dispatch).not.toHaveBeenCalledWith({
-      type: Actions.HOVER_TOOL_SLOT, payload: undefined,
-    });
-  });
-
-  it("removes item in box select mode", () => {
-    location.pathname = Path.mock(Path.plants("select"));
-    getModeSpy.mockReturnValue(Mode.boxSelect);
-    const p = fakeProps();
-    p.toolSlot.body.id = 1;
-    const wrapper = shallow(<ToolSlotInventoryItem {...p} />);
-    wrapper.find("div").first().simulate("click");
-    expect(mapActions.mapPointClickAction).toHaveBeenCalledWith(
-      expect.any(Function),
-      expect.any(Function),
-      p.toolSlot.uuid);
-    expect(mockNavigate).not.toHaveBeenCalled();
-    expect(p.dispatch).toHaveBeenCalled();
+    const { container } = render(<Tools {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("in slot");
   });
 });

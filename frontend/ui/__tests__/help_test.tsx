@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { Help, HelpProps } from "../help";
 import * as popover from "../popover";
 
@@ -21,15 +21,15 @@ describe("<Help />", () => {
   });
 
   it("returns help", () => {
-    const wrapper = mount(<Help {...fakeProps()} />);
-    expect(wrapper.text()).toContain("tip");
+    const { container } = render(<Help {...fakeProps()} />);
+    expect(container.textContent).toContain("tip");
   });
 
   it("returns help markdown", () => {
     const p = fakeProps();
     p.enableMarkdown = true;
     p.text = "# title";
-    const wrapper = mount(<Help {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("title");
+    const { container } = render(<Help {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("title");
   });
 });

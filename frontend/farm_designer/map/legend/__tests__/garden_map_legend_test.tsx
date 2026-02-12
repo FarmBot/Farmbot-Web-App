@@ -2,7 +2,7 @@ let mockAtMax = false;
 let mockAtMin = false;
 
 import React from "react";
-import { shallow, mount } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import {
   GardenMapLegend, ZoomControls, PointsSubMenu, FarmbotSubMenu,
   PlantsSubMenu, MapSettingsContent, SettingsSubMenuProps,
@@ -70,25 +70,28 @@ describe("<GardenMapLegend />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<GardenMapLegend {...fakeProps()} />);
+    const { container } = render(<GardenMapLegend {...fakeProps()} />);
     ["plants", "move"].map(string =>
-      expect(wrapper.text().toLowerCase()).toContain(string));
-    expect(wrapper.html()).toContain("filter");
-    expect(wrapper.html()).toContain("extras");
-    expect(wrapper.html()).not.toContain("-100");
-    expect(wrapper.text().toLowerCase()).not.toContain("3d map");
+      expect((container.textContent || "").toLowerCase()).toContain(string));
+    expect(container.innerHTML).toContain("filter");
+    expect(container.innerHTML).toContain("extras");
+    expect(container.innerHTML).not.toContain("-100");
+    expect((container.textContent || "").toLowerCase()).not.toContain("3d map");
   });
 
   it("renders with readings", () => {
     const p = fakeProps();
-    const wrapper = mount(<GardenMapLegend {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("readings");
+    const { container } = render(<GardenMapLegend {...p} />);
+    expect((container.textContent || "").toLowerCase()).toContain("readings");
   });
 
   it("renders z display", () => {
-    const wrapper = mount(<GardenMapLegend {...fakeProps()} />);
-    wrapper.find(".fb-toggle-button").last().simulate("click");
-    expect(wrapper.html()).toContain("-100");
+    const { container } = render(<GardenMapLegend {...fakeProps()} />);
+    const toggles = container.querySelectorAll(".fb-toggle-button");
+    const toggle = toggles.item(toggles.length - 1);
+    if (!toggle) { throw new Error("Missing z display toggle"); }
+    fireEvent.click(toggle);
+    expect(container.innerHTML).toContain("-100");
   });
 });
 
@@ -99,8 +102,8 @@ describe("<ZoomControls />", () => {
   });
 
   const expectDisabledBtnCountToEqual = (expected: number) => {
-    const wrapper = shallow(<ZoomControls {...fakeProps()} />);
-    expect(wrapper.find(".disabled").length).toEqual(expected);
+    const { container } = render(<ZoomControls {...fakeProps()} />);
+    expect(container.querySelectorAll(".disabled").length).toEqual(expected);
   };
 
   it("zoom buttons active", () => {
@@ -130,10 +133,11 @@ const fakeProps = (): SettingsSubMenuProps => ({
 
 describe("<PointsSubMenu />", () => {
   it("shows historic points", () => {
-    const wrapper = mount(<PointsSubMenu {...fakeProps()} />);
-    const toggleBtn = wrapper.find("button").first();
-    expect(toggleBtn.text()).toEqual("yes");
-    toggleBtn.simulate("click");
+    const { container } = render(<PointsSubMenu {...fakeProps()} />);
+    const toggleBtn = container.querySelector("button");
+    if (!toggleBtn) { throw new Error("Missing points submenu toggle"); }
+    expect(toggleBtn.textContent).toEqual("yes");
+    fireEvent.click(toggleBtn);
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       BooleanSetting.show_historic_points, false);
   });
@@ -141,10 +145,11 @@ describe("<PointsSubMenu />", () => {
 
 describe("<PlantsSubMenu />", () => {
   it("shows plants settings", () => {
-    const wrapper = mount(<PlantsSubMenu {...fakeProps()} />);
-    const toggleBtn = wrapper.find("button").first();
-    expect(toggleBtn.text()).toEqual("no");
-    toggleBtn.simulate("click");
+    const { container } = render(<PlantsSubMenu {...fakeProps()} />);
+    const toggleBtn = container.querySelector("button");
+    if (!toggleBtn) { throw new Error("Missing plants submenu toggle"); }
+    expect(toggleBtn.textContent).toEqual("no");
+    fireEvent.click(toggleBtn);
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       BooleanSetting.disable_animations, false);
   });
@@ -152,10 +157,11 @@ describe("<PlantsSubMenu />", () => {
 
 describe("<FarmbotSubMenu />", () => {
   it("shows farmbot settings", () => {
-    const wrapper = mount(<FarmbotSubMenu {...fakeProps()} />);
-    const toggleBtn = wrapper.find("button").first();
-    expect(toggleBtn.text()).toEqual("yes");
-    toggleBtn.simulate("click");
+    const { container } = render(<FarmbotSubMenu {...fakeProps()} />);
+    const toggleBtn = container.querySelector("button");
+    if (!toggleBtn) { throw new Error("Missing farmbot submenu toggle"); }
+    expect(toggleBtn.textContent).toEqual("yes");
+    fireEvent.click(toggleBtn);
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       BooleanSetting.display_trail, false);
   });
@@ -163,10 +169,11 @@ describe("<FarmbotSubMenu />", () => {
 
 describe("<MapSettingsContent />", () => {
   it("shows map settings", () => {
-    const wrapper = mount(<MapSettingsContent {...fakeProps()} />);
-    const toggleBtn = wrapper.find("button").first();
-    expect(toggleBtn.text()).toEqual("yes");
-    toggleBtn.simulate("click");
+    const { container } = render(<MapSettingsContent {...fakeProps()} />);
+    const toggleBtn = container.querySelector("button");
+    if (!toggleBtn) { throw new Error("Missing map settings toggle"); }
+    expect(toggleBtn.textContent).toEqual("yes");
+    fireEvent.click(toggleBtn);
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       BooleanSetting.dynamic_map, false);
   });

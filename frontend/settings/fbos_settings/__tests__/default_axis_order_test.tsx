@@ -1,8 +1,26 @@
 import React from "react";
-import { shallow } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { DefaultAxisOrder } from "../default_axis_order";
 import { DefaultAxisOrderProps } from "../interfaces";
 import * as deviceActions from "../../../devices/actions";
+
+jest.mock("../../../ui", () => {
+  const actual = jest.requireActual("../../../ui");
+  return {
+    ...actual,
+    FBSelect: (props: {
+      selectedItem?: { label?: string },
+      onChange: (ddi: { label: string, value: string }) => void,
+    }) =>
+      <div>
+        <span data-testid="selected-label">{props.selectedItem?.label}</span>
+        <button onClick={() =>
+          props.onChange({ label: "X and Y together", value: "xy,z;high" })}>
+          mock-select
+        </button>
+      </div>,
+  };
+});
 
 let updateConfigSpy: jest.SpyInstance;
 
@@ -23,11 +41,9 @@ describe("<DefaultAxisOrder />", () => {
 
   it("renders", () => {
     const p = fakeProps();
-    const wrapper = shallow(<DefaultAxisOrder {...p} />);
-    const selected = wrapper.find("FBSelect").props().selectedItem;
-    expect(selected?.label).toEqual("Safe Z");
-    const onChange = wrapper.find("FBSelect").props().onChange;
-    onChange?.({ label: "X and Y together", value: "xy,z;high" });
+    render(<DefaultAxisOrder {...p} />);
+    expect(screen.getByTestId("selected-label").textContent).toEqual("Safe Z");
+    fireEvent.click(screen.getByText("mock-select"));
     expect(deviceActions.updateConfig)
       .toHaveBeenCalledWith({ default_axis_order: "xy,z;high" });
   });

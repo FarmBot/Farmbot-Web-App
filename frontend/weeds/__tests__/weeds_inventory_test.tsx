@@ -1,12 +1,18 @@
 import React from "react";
-import { mount, shallow } from "enzyme";
+import TestRenderer from "react-test-renderer";
+import { cleanup, fireEvent, render } from "@testing-library/react";
 import {
-  RawWeeds as Weeds, WeedsProps, mapStateToProps,
-  WeedsSection, WeedsSectionProps,
+  RawWeeds as Weeds,
+  WeedsProps,
+  mapStateToProps,
+  WeedsSection,
+  WeedsSectionProps,
 } from "../weeds_inventory";
 import { fakeState } from "../../__test_support__/fake_state";
 import {
-  fakeWeed, fakeWebAppConfig, fakePointGroup,
+  fakeWeed,
+  fakeWebAppConfig,
+  fakePointGroup,
 } from "../../__test_support__/fake_state/resources";
 import { SearchField } from "../../ui/search_field";
 import { PointSortMenu } from "../../farm_designer/sort_options";
@@ -24,8 +30,15 @@ import { Path } from "../../internal_urls";
 import * as deletePoints from "../../api/delete_points";
 import { mountWithContext } from "../../__test_support__/mount_with_context";
 import { API } from "../../api";
+import { ToggleButton } from "../../ui";
 
 const originalConfirm = window.confirm;
+const wrappers: TestRenderer.ReactTestRenderer[] = [];
+const createWrapper = (element: React.ReactElement) => {
+  const wrapper = TestRenderer.create(element);
+  wrappers.push(wrapper);
+  return wrapper;
+};
 
 beforeEach(() => {
   jest.restoreAllMocks();
@@ -40,6 +53,11 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  cleanup();
+  while (wrappers.length > 0) {
+    const wrapper = wrappers.pop();
+    wrapper && TestRenderer.act(() => wrapper.unmount());
+  }
   window.confirm = originalConfirm;
   jest.restoreAllMocks();
 });
@@ -67,8 +85,8 @@ describe("<Weeds> />", () => {
   });
 
   it("renders no points", () => {
-    const wrapper = mount(<Weeds {...fakeProps()} />);
-    expect(wrapper.text()).toContain("No weeds yet.");
+    const { container } = render(<Weeds {...fakeProps()} />);
+    expect(container.textContent).toContain("No weeds yet.");
   });
 
   it("renders pending weeds", () => {
@@ -76,8 +94,8 @@ describe("<Weeds> />", () => {
     const weed = fakeWeed();
     weed.body.plant_stage = "pending";
     p.weeds = [weed];
-    const wrapper = mount(<Weeds {...p} />);
-    expect(wrapper.text()).not.toContain("No pending weeds.");
+    const { container } = render(<Weeds {...p} />);
+    expect(container.textContent).not.toContain("No pending weeds.");
   });
 
   it("renders no active weeds", () => {
@@ -85,8 +103,8 @@ describe("<Weeds> />", () => {
     const weed = fakeWeed();
     weed.body.plant_stage = "removed";
     p.weeds = [weed];
-    const wrapper = mount(<Weeds {...p} />);
-    expect(wrapper.text()).toContain("No active weeds.");
+    const { container } = render(<Weeds {...p} />);
+    expect(container.textContent).toContain("No active weeds.");
   });
 
   it("renders no removed weeds", () => {
@@ -94,8 +112,8 @@ describe("<Weeds> />", () => {
     const weed = fakeWeed();
     weed.body.plant_stage = "active";
     p.weeds = [weed];
-    const wrapper = mount(<Weeds {...p} />);
-    expect(wrapper.text()).toContain("No removed weeds.");
+    const { container } = render(<Weeds {...p} />);
+    expect(container.textContent).toContain("No removed weeds.");
   });
 
   it("renders groups", () => {
@@ -107,20 +125,20 @@ describe("<Weeds> />", () => {
     group2.body.name = "Plant Group";
     group2.body.criteria.string_eq = { pointer_type: ["Plant"] };
     p.groups = [group1, group2];
-    const wrapper = mount(<Weeds {...p} />);
-    expect(wrapper.text()).toContain("Groups (1)");
+    const { container } = render(<Weeds {...p} />);
+    expect(container.textContent).toContain("Groups (1)");
   });
 
   it("changes search term", () => {
-    const wrapper = shallow<Weeds>(<Weeds {...fakeProps()} />);
-    wrapper.find(SearchField).simulate("change", "0");
-    expect(wrapper.state().searchTerm).toEqual("0");
+    const wrapper = createWrapper(<Weeds {...fakeProps()} />);
+    wrapper.root.findByType(SearchField).props.onChange("0");
+    expect((wrapper.getInstance() as Weeds).state.searchTerm).toEqual("0");
   });
 
   it("closes section", () => {
     const p = fakeProps();
-    const wrapper = shallow<Weeds>(<Weeds {...p} />);
-    wrapper.instance().toggleOpen("pending")();
+    const wrapper = createWrapper(<Weeds {...p} />);
+    (wrapper.getInstance() as Weeds).toggleOpen("pending")();
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_WEEDS_PANEL_OPTION,
       payload: "pending",
@@ -128,21 +146,22 @@ describe("<Weeds> />", () => {
   });
 
   it("navigates to group", () => {
-    const wrapper = shallow<Weeds>(<Weeds {...fakeProps()} />);
-    wrapper.instance().context = jest.fn();
-    wrapper.instance().navigateById(1)();
-    expect(wrapper.instance().context).toHaveBeenCalledWith(Path.groups(1));
+    const wrapper = createWrapper(<Weeds {...fakeProps()} />);
+    const instance = wrapper.getInstance() as Weeds;
+    instance.navigate = jest.fn();
+    instance.navigateById(1)();
+    expect(instance.navigate).toHaveBeenCalledWith(Path.groups(1));
   });
 
   it("adds new weed", () => {
     const wrapper = mountWithContext(<Weeds {...fakeProps()} />);
-    wrapper.find(".plus-weed").simulate("click");
+    fireEvent.click(wrapper.container.querySelector(".plus-weed") as Element);
     expect(mockNavigate).toHaveBeenCalledWith(Path.weeds("add"));
   });
 
   it("adds new group", () => {
-    const wrapper = shallow(<Weeds {...fakeProps()} />);
-    wrapper.find(PanelSection).first().props().addNew();
+    const wrapper = createWrapper(<Weeds {...fakeProps()} />);
+    wrapper.root.findByType(PanelSection).props.addNew();
     expect(pointGroupActions.createGroup).toHaveBeenCalledWith({
       criteria: { ...DEFAULT_CRITERIA, string_eq: { pointer_type: ["Weed"] } },
       navigate: expect.anything(),
@@ -150,16 +169,17 @@ describe("<Weeds> />", () => {
   });
 
   it("changes sort term", () => {
-    const wrapper = shallow<Weeds>(<Weeds {...fakeProps()} />);
-    const menu = wrapper.find(SearchField).props().customLeftIcon;
-    const menuWrapper = shallow(<div>{menu}</div>);
-    expect(wrapper.state().sortBy).toEqual("radius");
-    expect(wrapper.state().reverse).toEqual(true);
-    menuWrapper.find(PointSortMenu).simulate("change", {
-      sortBy: undefined, reverse: false
+    const wrapper = createWrapper(<Weeds {...fakeProps()} />);
+    const menu = wrapper.root.findByType(SearchField).props.customLeftIcon;
+    const menuWrapper = createWrapper(<div>{menu}</div>);
+    expect((wrapper.getInstance() as Weeds).state.sortBy).toEqual("radius");
+    expect((wrapper.getInstance() as Weeds).state.reverse).toEqual(true);
+    menuWrapper.root.findByType(PointSortMenu).props.onChange({
+      sortBy: undefined,
+      reverse: false,
     });
-    expect(wrapper.state().sortBy).toEqual(undefined);
-    expect(wrapper.state().reverse).toEqual(false);
+    expect((wrapper.getInstance() as Weeds).state.sortBy).toEqual(undefined);
+    expect((wrapper.getInstance() as Weeds).state.reverse).toEqual(false);
   });
 
   it("filters points", () => {
@@ -168,10 +188,12 @@ describe("<Weeds> />", () => {
     p.weeds[0].body.name = "weed 0";
     p.weeds[0].body.plant_stage = "removed";
     p.weeds[1].body.name = "weed 1";
-    const wrapper = mount(<Weeds {...p} />);
-    wrapper.setState({ searchTerm: "0" });
-    expect(wrapper.text()).toContain("weed 0");
-    expect(wrapper.text()).not.toContain("weed 1");
+    const wrapper = createWrapper(<Weeds {...p} />);
+    TestRenderer.act(() => (wrapper.getInstance() as Weeds)
+      .setState({ searchTerm: "0" }));
+    const text = JSON.stringify(wrapper.toJSON()).toLowerCase();
+    expect(text).toContain("weed 0");
+    expect(text).not.toContain("weed 1");
   });
 });
 
@@ -202,15 +224,15 @@ describe("<WeedsSection />", () => {
   it("renders as closed", () => {
     const p = fakeProps();
     p.open = false;
-    const wrapper = mount(<WeedsSection {...p} />);
-    expect(wrapper.html()).toContain("fa-caret-down");
+    const { container } = render(<WeedsSection {...p} />);
+    expect(container.innerHTML).toContain("fa-caret-down");
   });
 
   it("approves all", () => {
     const p = fakeProps();
     p.open = true;
-    const wrapper = mount(<WeedsSection {...p} />);
-    wrapper.find(".fb-button.green").first().simulate("click");
+    const { container } = render(<WeedsSection {...p} />);
+    fireEvent.click(container.querySelector(".fb-button.green") as Element);
     expect(crud.edit).toHaveBeenCalledTimes(3);
     expect(crud.edit).toHaveBeenCalledWith(p.items[0], { plant_stage: "active" });
     expect(crud.save).toHaveBeenCalledTimes(3);
@@ -220,19 +242,21 @@ describe("<WeedsSection />", () => {
     window.confirm = () => true;
     const p = fakeProps();
     p.open = true;
-    const wrapper = mount(<WeedsSection {...p} />);
-    wrapper.find(".fb-button.red").first().simulate("click");
-    expect(deletePoints.deletePointsByIds).toHaveBeenCalledWith("weeds",
-      p.items.map(x => x.body.id));
+    const { container } = render(<WeedsSection {...p} />);
+    fireEvent.click(container.querySelector(".fb-button.red") as Element);
+    expect(deletePoints.deletePointsByIds).toHaveBeenCalledWith(
+      "weeds",
+      p.items.map(x => x.body.id),
+    );
   });
 
   it("renders", () => {
     const p = fakeProps();
     p.open = true;
-    const wrapper = mount(<WeedsSection {...p} />);
+    const { container } = render(<WeedsSection {...p} />);
     ["(3)", "title", "all"].map(string =>
-      expect(wrapper.text().toLowerCase()).toContain(string));
-    expect(wrapper.text().toLowerCase()).not.toContain("none");
+      expect(container.textContent?.toLowerCase()).toContain(string));
+    expect(container.textContent?.toLowerCase()).not.toContain("none");
   });
 
   it("toggles layer", () => {
@@ -242,8 +266,8 @@ describe("<WeedsSection />", () => {
     p.layerValue = true;
     p.layerSetting = BooleanSetting.show_weeds;
     p.layerDisabled = false;
-    const wrapper = mount(<WeedsSection {...p} />);
-    wrapper.find("ToggleButton").props().toggleAction({
+    const wrapper = createWrapper(<WeedsSection {...p} />);
+    wrapper.root.findByType(ToggleButton).props.toggleAction({
       stopPropagation: jest.fn(),
     } as unknown as React.MouseEvent<HTMLElement>);
     expect(p.dispatch).toHaveBeenCalled();
@@ -252,8 +276,8 @@ describe("<WeedsSection />", () => {
   it("closes section", () => {
     const p = fakeProps();
     p.open = true;
-    const wrapper = mount(<WeedsSection {...p} />);
-    wrapper.find(".fa-caret-up").simulate("click");
+    const { container } = render(<WeedsSection {...p} />);
+    fireEvent.click(container.querySelector(".fa-caret-up") as Element);
     expect(p.clickOpen).toHaveBeenCalled();
   });
 });

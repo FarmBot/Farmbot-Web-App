@@ -1,10 +1,10 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { WidgetBody } from "../widget_body";
 
 describe("<WidgetBody />", () => {
   it("renders body", () => {
-    const wrapper = mount(<WidgetBody>content</WidgetBody>);
-    expect(wrapper.text()).toContain("content");
+    const { container } = render(<WidgetBody>content</WidgetBody>);
+    expect(container.textContent).toContain("content");
   });
 });

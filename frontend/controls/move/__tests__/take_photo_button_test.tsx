@@ -1,7 +1,7 @@
 let mockPhotoOutcome = Promise.resolve();
 
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import { TakePhotoButtonProps } from "../interfaces";
 import { TakePhotoButton } from "../take_photo_button";
 import * as deviceActions from "../../../devices/actions";
@@ -38,10 +38,10 @@ describe("<TakePhotoButton />", () => {
 
   it("takes photo", () => {
     jest.useFakeTimers();
-    const jogButtons = mount(<TakePhotoButton {...fakeProps()} />);
-    const cameraBtn = jogButtons.find("button").at(0);
-    expect(cameraBtn.props().title).not.toEqual(Content.NO_CAMERA_SELECTED);
-    cameraBtn.simulate("click");
+    const { container } = render(<TakePhotoButton {...fakeProps()} />);
+    const cameraBtn = container.querySelector("button");
+    expect(cameraBtn?.title).not.toEqual(Content.NO_CAMERA_SELECTED);
+    cameraBtn && fireEvent.click(cameraBtn);
     jest.runAllTimers();
     expect(deviceActions.takePhoto).toHaveBeenCalled();
     expect(error).not.toHaveBeenCalled();
@@ -49,18 +49,19 @@ describe("<TakePhotoButton />", () => {
 
   it("error taking photo", () => {
     mockPhotoOutcome = Promise.reject().catch(() => undefined);
-    const jogButtons = mount(<TakePhotoButton {...fakeProps()} />);
-    jogButtons.find("button").at(0).simulate("click");
+    const { container } = render(<TakePhotoButton {...fakeProps()} />);
+    const button = container.querySelector("button");
+    button && fireEvent.click(button);
     expect(deviceActions.takePhoto).toHaveBeenCalled();
   });
 
   it("shows camera as disabled", () => {
     const p = fakeProps();
     p.env = { camera: "NONE" };
-    const jogButtons = mount(<TakePhotoButton {...p} />);
-    const cameraBtn = jogButtons.find("button").at(0);
-    expect(cameraBtn.props().title).toEqual(Content.NO_CAMERA_SELECTED);
-    cameraBtn.simulate("click");
+    const { container } = render(<TakePhotoButton {...p} />);
+    const cameraBtn = container.querySelector("button");
+    expect(cameraBtn?.title).toEqual(Content.NO_CAMERA_SELECTED);
+    cameraBtn && fireEvent.click(cameraBtn);
     expect(error).toHaveBeenCalledWith(
       ToolTips.SELECT_A_CAMERA, { title: Content.NO_CAMERA_SELECTED });
     expect(deviceActions.takePhoto).not.toHaveBeenCalled();
@@ -69,10 +70,10 @@ describe("<TakePhotoButton />", () => {
   it("shows as offline", () => {
     const p = fakeProps();
     p.botOnline = false;
-    const jogButtons = mount(<TakePhotoButton {...p} />);
-    const cameraBtn = jogButtons.find("button").at(0);
-    expect(cameraBtn.hasClass("pseudo-disabled")).toBeTruthy();
-    expect(cameraBtn.props().title).toEqual("FarmBot is offline");
+    const { container } = render(<TakePhotoButton {...p} />);
+    const cameraBtn = container.querySelector("button");
+    expect(cameraBtn?.classList.contains("pseudo-disabled")).toBeTruthy();
+    expect(cameraBtn?.title).toEqual("FarmBot is offline");
   });
 
   it("shows as taken", () => {
@@ -85,9 +86,9 @@ describe("<TakePhotoButton />", () => {
     log.body.created_at = now + 5;
     log.body.message = "Taking photo";
     p.logs = [log];
-    const jogButtons = mount(<TakePhotoButton {...p} />);
-    const cameraBtn = jogButtons.find("button").at(0);
-    cameraBtn.simulate("click");
-    expect(cameraBtn.text()).toEqual("100%");
+    const { container } = render(<TakePhotoButton {...p} />);
+    const cameraBtn = container.querySelector("button");
+    cameraBtn && fireEvent.click(cameraBtn);
+    expect(cameraBtn?.textContent).toEqual("100%");
   });
 });

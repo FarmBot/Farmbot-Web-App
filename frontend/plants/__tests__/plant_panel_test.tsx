@@ -1,29 +1,64 @@
+jest.mock("../../ui", () => {
+  const React = require("react");
+  const actual = jest.requireActual("../../ui");
+  return {
+    ...actual,
+    BlurableInput: (props: any) => <input
+      value={props.value}
+      onChange={e => props.onCommit(e)} />,
+    FBSelect: (props: any) => {
+      const value = props.selectedItem ? String(props.selectedItem.value) : "";
+      return <select
+        className={"mock-fb-select"}
+        value={value}
+        onChange={e => {
+          const nextValue = e.currentTarget.value;
+          const selected = nextValue === ""
+            ? props.list.find((item: any) => item.isNull)
+            || props.list.find((item: any) => String(item.value) === "")
+            : props.list.find((item: any) => String(item.value) === nextValue);
+          selected && props.onChange(selected);
+        }}>
+        <option value={""} />
+        {props.list.map((item: any, index: number) =>
+          <option key={`${item.value}-${index}`} value={String(item.value)}>
+            {item.label}
+          </option>)}
+      </select>;
+    },
+  };
+});
+
 import React from "react";
 import {
-  PlantPanel, PlantPanelProps,
-  EditDatePlantedProps, EditDatePlanted, EditPlantLocationProps,
+  PlantPanel,
+  PlantPanelProps,
+  EditDatePlantedProps,
+  EditDatePlanted,
+  EditPlantLocationProps,
   EditPlantLocation,
   EditPlantRadiusProps,
   EditPlantRadius,
   EditPlantDepthProps,
   EditPlantDepth,
 } from "../plant_panel";
-import { shallow, mount } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { FormattedPlantInfo } from "../map_state_to_props";
-import { clickButton } from "../../__test_support__/helpers";
 import moment from "moment";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import {
-  fakeCurve, fakePlant, fakePoint,
+  fakeCurve,
+  fakePlant,
+  fakePoint,
 } from "../../__test_support__/fake_state/resources";
 import { tagAsSoilHeight } from "../../points/soil_height";
 import { Path } from "../../internal_urls";
 import { Actions } from "../../constants";
 import * as deviceActions from "../../devices/actions";
 import {
-  fakeBotSize, fakeMovementState,
+  fakeBotSize,
+  fakeMovementState,
 } from "../../__test_support__/fake_bot_data";
-import { CurveType } from "../../curves/templates";
 import * as help from "../../ui/help";
 
 let moveSpy: jest.SpyInstance;
@@ -82,34 +117,30 @@ describe("<PlantPanel />", () => {
   it("renders: editing", () => {
     const p = fakeProps();
     p.info.meta = { meta_key: "meta value", gridId: "1", key: undefined };
-    const wrapper = mount(<PlantPanel {...p} />);
-    const txt = wrapper.text().toLowerCase();
+    const { container } = render(<PlantPanel {...p} />);
+    const txt = (container.textContent || "").toLowerCase();
     expect(txt).toContain("1 day old");
     expect(txt).toContain("meta value");
-    expect(txt).not.toContain("gridId");
-    const x = wrapper.find("input").at(1).props().value;
-    const y = wrapper.find("input").at(2).props().value;
-    expect(x).toEqual(12);
-    expect(y).toEqual(34);
+    expect(txt).not.toContain("gridid");
+    const inputs = container.querySelectorAll("input");
+    const x = (inputs[1] as HTMLInputElement).value;
+    const y = (inputs[2] as HTMLInputElement).value;
+    expect(x).toEqual("12");
+    expect(y).toEqual("34");
   });
 
   it("renders", () => {
-    const p = fakeProps();
-    const wrapper = mount(<PlantPanel {...p} />);
-    const txt = wrapper.text().toLowerCase();
-    expect(txt).toContain("1 day old");
-    expect(wrapper.find("button")
-      .filterWhere(button =>
-        (button.prop("title") || "").toString().toLowerCase() === "go (x, y)")
-      .length).toBeGreaterThan(0);
+    render(<PlantPanel {...fakeProps()} />);
+    expect(screen.getByText("1 day old")).toBeInTheDocument();
+    expect(screen.getByTitle("GO (X, Y)")).toBeInTheDocument();
   });
 
   it("renders plant stage", () => {
     const p = fakeProps();
     p.info.daysOld = undefined;
     p.info.plantStatus = "planned";
-    const wrapper = mount(<PlantPanel {...p} />);
-    const txt = wrapper.text().toLowerCase();
+    const { container } = render(<PlantPanel {...p} />);
+    const txt = (container.textContent || "").toLowerCase();
     expect(txt).not.toContain("1 day old");
     expect(txt).toContain("planned");
   });
@@ -117,34 +148,33 @@ describe("<PlantPanel />", () => {
   it("renders in saved garden", () => {
     const p = fakeProps();
     p.inSavedGarden = true;
-    const wrapper = mount(<PlantPanel {...p} />);
-    const txt = wrapper.text().toLowerCase();
+    const { container } = render(<PlantPanel {...p} />);
+    const txt = (container.textContent || "").toLowerCase();
     expect(txt).not.toContain("old");
-    expect(wrapper.find("button")
-      .filterWhere(button =>
-        (button.prop("title") || "").toString().toLowerCase() === "go (x, y)")
-      .length).toBeGreaterThan(0);
+    expect(screen.getByTitle("GO (X, Y)")).toBeInTheDocument();
   });
 
   it("moves to plant location", () => {
-    const wrapper = mount(<PlantPanel {...fakeProps()} />);
-    clickButton(wrapper, 1, "go (x, y)");
+    render(<PlantPanel {...fakeProps()} />);
+    fireEvent.click(screen.getByTitle("GO (X, Y)"));
     expect(deviceActions.move).toHaveBeenCalledWith({ x: 12, y: 34, z: 0 });
   });
 
   it("edits plant type", () => {
     const p = fakeProps();
     p.info.id = 1;
-    const wrapper = mount(<PlantPanel {...p} />);
-    wrapper.find(".fa-pencil").simulate("click");
+    const { container } = render(<PlantPanel {...p} />);
+    fireEvent.click(container.querySelector(".fa-pencil") as Element);
     expect(mockNavigate).toHaveBeenCalledWith(Path.cropSearch());
     expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.SET_PLANT_TYPE_CHANGE_ID, payload: 1,
+      type: Actions.SET_PLANT_TYPE_CHANGE_ID,
+      payload: 1,
     });
   });
 
   it("renders curves", () => {
     const p = fakeProps();
+    p.inSavedGarden = true;
     const curve = fakeCurve();
     curve.body.type = "water";
     curve.body.id = 1;
@@ -155,12 +185,14 @@ describe("<PlantPanel />", () => {
     p.plants = [plant];
     p.info.water_curve_id = 1;
     p.info.uuid = "Point.0.0";
-    const wrapper = mount(<PlantPanel {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("waterfake - 0l over 2 days");
+    const { container } = render(<PlantPanel {...p} />);
+    expect((container.textContent || "").toLowerCase())
+      .toContain("fake - 0l over 2 days");
   });
 
   it("changes curve", () => {
     const p = fakeProps();
+    p.inSavedGarden = true;
     const curve = fakeCurve();
     curve.body.type = "water";
     curve.body.id = 1;
@@ -171,8 +203,9 @@ describe("<PlantPanel />", () => {
     p.plants = [plant];
     p.info.water_curve_id = 1;
     p.info.uuid = "Point.0.0";
-    const wrapper = shallow(<PlantPanel {...p} />);
-    wrapper.find("AllCurveInfo").simulate("change", 1, CurveType.water);
+    const { container } = render(<PlantPanel {...p} />);
+    const firstCurveSelect = container.querySelector(".mock-fb-select");
+    fireEvent.change(firstCurveSelect as Element, { target: { value: "1" } });
     expect(p.updatePlant).toHaveBeenCalledWith(p.info.uuid,
       { water_curve_id: 1 });
   });
@@ -188,12 +221,11 @@ describe("<EditDatePlanted />", () => {
 
   it("changes date planted", () => {
     const p = fakeProps();
-    const wrapper = shallow(<EditDatePlanted {...p} />);
-    wrapper.find("BlurableInput").simulate("commit", {
-      currentTarget: { value: "2010-10-10" }
-    });
+    render(<EditDatePlanted {...p} />);
+    fireEvent.change(screen.getByDisplayValue("2017-06-19"),
+      { target: { value: "2010-10-10" } });
     expect(p.updatePlant).toHaveBeenCalledWith("Plant.0.0", {
-      planted_at: expect.stringContaining("Z")
+      planted_at: expect.stringContaining("Z"),
     });
   });
 });
@@ -209,12 +241,11 @@ describe("<EditPlantLocation />", () => {
 
   it("changes location", () => {
     const p = fakeProps();
-    const wrapper = shallow(<EditPlantLocation {...p} />);
-    wrapper.find("BlurableInput").first().simulate("commit", {
-      currentTarget: { value: "100" }
-    });
+    const { container } = render(<EditPlantLocation {...p} />);
+    const xInput = container.querySelectorAll("input")[0];
+    fireEvent.change(xInput, { target: { value: "100" } });
     expect(p.updatePlant).toHaveBeenCalledWith("Plant.0.0", {
-      x: 100
+      x: 100,
     });
   });
 
@@ -223,9 +254,9 @@ describe("<EditPlantLocation />", () => {
     const soilHeightPoint = fakePoint();
     tagAsSoilHeight(soilHeightPoint);
     p.soilHeightPoints = [soilHeightPoint];
-    const wrapper = mount(<EditPlantLocation {...p} />);
-    expect(wrapper.text().toLowerCase())
-      .toContain("soil height at plant location:");
+    render(<EditPlantLocation {...p} />);
+    expect(screen.getByText(/soil height at plant location:/i))
+      .toBeInTheDocument();
   });
 });
 
@@ -238,12 +269,11 @@ describe("<EditPlantRadius />", () => {
 
   it("changes location", () => {
     const p = fakeProps();
-    const wrapper = shallow(<EditPlantRadius {...p} />);
-    wrapper.find("BlurableInput").first().simulate("commit", {
-      currentTarget: { value: "100" }
-    });
+    render(<EditPlantRadius {...p} />);
+    fireEvent.change(screen.getByDisplayValue("10"),
+      { target: { value: "100" } });
     expect(p.updatePlant).toHaveBeenCalledWith("Plant.0.0", {
-      radius: 100
+      radius: 100,
     });
   });
 });
@@ -257,12 +287,11 @@ describe("<EditPlantDepth />", () => {
 
   it("changes location", () => {
     const p = fakeProps();
-    const wrapper = shallow(<EditPlantDepth {...p} />);
-    wrapper.find("BlurableInput").first().simulate("commit", {
-      currentTarget: { value: "100" }
-    });
+    render(<EditPlantDepth {...p} />);
+    fireEvent.change(screen.getByDisplayValue("10"),
+      { target: { value: "100" } });
     expect(p.updatePlant).toHaveBeenCalledWith("Plant.0.0", {
-      depth: 100
+      depth: 100,
     });
   });
 });

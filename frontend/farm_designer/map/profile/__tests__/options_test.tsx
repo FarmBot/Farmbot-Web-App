@@ -1,5 +1,5 @@
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import { ProfileOptions } from "../options";
 import { ProfileOptionsProps } from "../interfaces";
 import { Actions } from "../../../../constants";
@@ -18,8 +18,8 @@ describe("<ProfileOptions />", () => {
   it("changes axis to y", () => {
     const p = fakeProps();
     p.designer.profileAxis = "x";
-    const wrapper = mount(<ProfileOptions {...p} />);
-    wrapper.find("button").first().simulate("click");
+    const { container } = render(<ProfileOptions {...p} />);
+    fireEvent.click(container.querySelector("button") as Element);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_PROFILE_AXIS,
       payload: "y",
@@ -29,8 +29,8 @@ describe("<ProfileOptions />", () => {
   it("changes axis to x", () => {
     const p = fakeProps();
     p.designer.profileAxis = "y";
-    const wrapper = mount(<ProfileOptions {...p} />);
-    wrapper.find("button").first().simulate("click");
+    const { container } = render(<ProfileOptions {...p} />);
+    fireEvent.click(container.querySelector("button") as Element);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_PROFILE_AXIS,
       payload: "x",
@@ -39,9 +39,10 @@ describe("<ProfileOptions />", () => {
 
   it("changes width", () => {
     const p = fakeProps();
-    const wrapper = shallow(<ProfileOptions {...p} />);
-    wrapper.find("input").first().simulate("change", {
-      currentTarget: { value: "200" }
+    const { container } = render(<ProfileOptions {...p} />);
+    fireEvent.change(container.querySelector("input") as Element, {
+      target: { value: "200" },
+      currentTarget: { value: "200" },
     });
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_PROFILE_WIDTH,
@@ -51,15 +52,16 @@ describe("<ProfileOptions />", () => {
 
   it("expands profile", () => {
     const p = fakeProps();
-    const wrapper = mount(<ProfileOptions {...p} />);
-    wrapper.find("i").last().simulate("click");
+    const { container } = render(<ProfileOptions {...p} />);
+    fireEvent.click(container.querySelector("i") as Element);
     expect(p.setExpanded).toHaveBeenCalledWith(true);
   });
 
   it("changes follow bot setting", () => {
     const p = fakeProps();
-    const wrapper = mount(<ProfileOptions {...p} />);
-    wrapper.find("button").last().simulate("click");
+    const { container } = render(<ProfileOptions {...p} />);
+    const buttons = container.querySelectorAll("button");
+    fireEvent.click(buttons[buttons.length - 1] as Element);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_PROFILE_FOLLOW_BOT,
       payload: true,

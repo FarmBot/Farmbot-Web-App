@@ -2,7 +2,7 @@ let mockPost = Promise.resolve({ data: "whatever" });
 jest.mock("axios", () => ({ post: () => mockPost }));
 
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { ResendVerification } from "../resend_verification";
 import { get } from "lodash";
 import { API } from "../../api/index";
@@ -12,6 +12,11 @@ afterAll(() => {
 });
 describe("<ResendVerification />", () => {
   API.setBaseUrl("http://localhost:3000");
+  const flushPromises = async () => {
+    await Promise.resolve();
+    await Promise.resolve();
+  };
+
   beforeEach(() => {
     mockPost = Promise.resolve({ data: "whatever" });
   });
@@ -25,9 +30,8 @@ describe("<ResendVerification />", () => {
 
   it("fires the `onGoBack()` callback", () => {
     const p = props();
-    const el = mount(<ResendVerification {...p} />);
-    el.find("button").filterWhere(button =>
-      button.prop("title") === "go back").simulate("click");
+    render(<ResendVerification {...p} />);
+    fireEvent.click(screen.getByTitle("go back"));
     expect(p.no).not.toHaveBeenCalled();
     expect(p.ok).not.toHaveBeenCalled();
     expect(p.onGoBack).toHaveBeenCalledTimes(1);
@@ -35,9 +39,9 @@ describe("<ResendVerification />", () => {
 
   it("fires the `ok()` callback", async () => {
     const p = props();
-    const el = mount(<ResendVerification {...p} />);
-    await el.find("button").filterWhere(button =>
-      button.prop("title") === "Resend Verification Email").simulate("click");
+    render(<ResendVerification {...p} />);
+    fireEvent.click(screen.getByTitle("Resend Verification Email"));
+    await flushPromises();
     const { calls } = p.ok.mock;
     expect(p.no).not.toHaveBeenCalled();
     expect(calls.length).toEqual(1);
@@ -47,9 +51,9 @@ describe("<ResendVerification />", () => {
   it("fires the `no()` callback", async () => {
     mockPost = Promise.reject({ err: "hi" });
     const p = props();
-    const el = mount(<ResendVerification {...p} />);
-    await el.find("button").filterWhere(button =>
-      button.prop("title") === "Resend Verification Email").simulate("click");
+    render(<ResendVerification {...p} />);
+    fireEvent.click(screen.getByTitle("Resend Verification Email"));
+    await flushPromises();
     const { calls } = p.no.mock;
     expect(p.ok).not.toHaveBeenCalled();
     expect(calls.length).toEqual(1);

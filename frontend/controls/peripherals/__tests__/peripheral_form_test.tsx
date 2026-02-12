@@ -1,9 +1,8 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { PeripheralForm } from "../peripheral_form";
 import { TaggedPeripheral, SpecialStatus } from "farmbot";
 import { PeripheralFormProps } from "../interfaces";
-import { NameInputBox, PinDropdown } from "../../pin_form_fields";
 
 describe("<PeripheralForm/>", () => {
   const dispatch = jest.fn();
@@ -38,12 +37,15 @@ describe("<PeripheralForm/>", () => {
   });
 
   it("renders a list of editable peripherals, in sorted order", () => {
-    const form = mount(<PeripheralForm {...fakeProps()} />);
-    const sensorNames = form.find(NameInputBox);
-    expect(sensorNames.at(0).props().value).toEqual("GPIO 2");
-    expect(sensorNames.at(1).props().value).toEqual("GPIO 13 - LED");
-    const sensorPins = form.find(PinDropdown);
-    expect(sensorPins.at(0).props().value).toEqual(2);
-    expect(sensorPins.at(1).props().value).toEqual(13);
+    const { container } = render(<PeripheralForm {...fakeProps()} />);
+    const names = Array.from(container.querySelectorAll("input[name='pinName']"));
+    expect((names[0] as HTMLInputElement)?.value).toEqual("GPIO 2");
+    expect((names[1] as HTMLInputElement)?.value).toEqual("GPIO 13 - LED");
+
+    const rows = Array.from(container.querySelectorAll(".peripheral-edit-grid"));
+    const firstRowPin = rows[0]?.querySelector(".filter-search button");
+    const secondRowPin = rows[1]?.querySelector(".filter-search button");
+    expect(firstRowPin?.textContent).toContain("Pin 2");
+    expect(secondRowPin?.textContent).toContain("Pin 13");
   });
 });

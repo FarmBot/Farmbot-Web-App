@@ -1,11 +1,7 @@
-let mockDev = false;
-
-import { fakeState } from "../../__test_support__/fake_state";
-let mockState = fakeState();
-
 import React from "react";
-import { shallow, mount, ReactWrapper } from "enzyme";
+import { act, cleanup, fireEvent, render } from "@testing-library/react";
 import { DesignerNavTabs, DesignerNavTabsProps } from "../panel_header";
+import { fakeState } from "../../__test_support__/fake_state";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import {
   fakeFarmwareInstallation, fakeWebAppConfig,
@@ -17,16 +13,18 @@ import { mockDispatch } from "../../__test_support__/fake_dispatch";
 import { store } from "../../redux/store";
 import { DevSettings } from "../../settings/dev/dev_support";
 
+let mockDev = false;
+let mockState = fakeState();
+
 let futureFeaturesEnabledSpy: jest.SpyInstance;
 let originalGetState: typeof store.getState;
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const expectOnlyOneActiveIcon = (wrapper: ReactWrapper<any>) =>
-  expect(wrapper.html().match(/active/)?.length).toEqual(1);
+const expectOnlyOneActiveIcon = (container: HTMLElement) =>
+  expect(container.querySelectorAll(".active").length).toEqual(1);
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const expectActive = (wrapper: ReactWrapper<any>, slug: string) =>
-  expect(wrapper.find(`#${slug}`).first().hasClass("active")).toBeTruthy();
+const expectActive = (container: HTMLElement, slug: string) =>
+  expect(container.querySelector(`#${slug}`)?.classList.contains("active"))
+    .toBeTruthy();
 
 describe("<DesignerNavTabs />", () => {
   beforeEach(() => {
@@ -42,6 +40,7 @@ describe("<DesignerNavTabs />", () => {
   });
 
   afterEach(() => {
+    cleanup();
     futureFeaturesEnabledSpy.mockRestore();
     (store as unknown as { getState: typeof store.getState }).getState =
       originalGetState;
@@ -63,10 +62,12 @@ describe("<DesignerNavTabs />", () => {
     const p = fakeProps();
     const dispatch = jest.fn();
     p.dispatch = mockDispatch(dispatch);
-    const wrapper = mount(<DesignerNavTabs {...p} />);
-    expectOnlyOneActiveIcon(wrapper);
-    expectActive(wrapper, slug);
-    wrapper.find("#" + slug).first().simulate("click");
+    const { container } = render(<DesignerNavTabs {...p} />);
+    expectOnlyOneActiveIcon(container);
+    expectActive(container, slug);
+    const tab = container.querySelector(`#${slug}`);
+    if (!tab) { throw new Error("Expected tab"); }
+    fireEvent.click(tab);
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_PANEL_OPEN, payload: false,
     });
@@ -78,9 +79,11 @@ describe("<DesignerNavTabs />", () => {
     p.designer.panelOpen = true;
     const dispatch = jest.fn();
     p.dispatch = mockDispatch(dispatch);
-    const wrapper = mount(<DesignerNavTabs {...p} />);
-    expectActive(wrapper, "weeds");
-    wrapper.find("#plants").first().simulate("click");
+    const { container } = render(<DesignerNavTabs {...p} />);
+    expectActive(container, "weeds");
+    const tab = container.querySelector("#plants");
+    if (!tab) { throw new Error("Expected plants tab"); }
+    fireEvent.click(tab);
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_PANEL_OPEN, payload: true,
     });
@@ -92,47 +95,50 @@ describe("<DesignerNavTabs />", () => {
     const dispatch = jest.fn();
     p.dispatch = mockDispatch(dispatch);
     p.designer.panelOpen = true;
-    const wrapper = mount(<DesignerNavTabs {...p} />);
-    expectOnlyOneActiveIcon(wrapper);
-    expectActive(wrapper, "plants");
-    wrapper.find("a").first().simulate("click");
+    const { container, rerender } = render(<DesignerNavTabs {...p} />);
+    expectOnlyOneActiveIcon(container);
+    expectActive(container, "plants");
+    const map = container.querySelector("a#Map");
+    if (!map) { throw new Error("Expected map tab"); }
+    fireEvent.click(map);
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_PANEL_OPEN, payload: false,
     });
     p.designer.panelOpen = false;
-    wrapper.setProps(p);
-    expectOnlyOneActiveIcon(wrapper);
-    expect(wrapper.find("a").first().hasClass("active")).toBeTruthy();
+    rerender(<DesignerNavTabs {...p} />);
+    expectOnlyOneActiveIcon(container);
+    expect(container.querySelector("a#Map")?.classList.contains("active"))
+      .toBeTruthy();
   });
 
   it("shows inactive icons for logs page", () => {
     location.pathname = Path.mock(Path.logs());
-    const wrapper = mount(<DesignerNavTabs {...fakeProps()} />);
-    expect(wrapper.find(".active").length).toEqual(0);
+    const { container } = render(<DesignerNavTabs {...fakeProps()} />);
+    expect(container.querySelectorAll(".active").length).toEqual(0);
   });
 
   it("shows active zones icon", () => {
     location.pathname = Path.mock(Path.zones());
     mockDev = true;
-    const wrapper = mount(<DesignerNavTabs {...fakeProps()} />);
-    expectOnlyOneActiveIcon(wrapper);
-    expectActive(wrapper, "zones");
+    const { container } = render(<DesignerNavTabs {...fakeProps()} />);
+    expectOnlyOneActiveIcon(container);
+    expectActive(container, "zones");
   });
 
   it("shows sensors tab", () => {
     const config = fakeWebAppConfig();
     config.body.hide_sensors = false;
     mockState.resources = buildResourceIndex([config]);
-    const wrapper = mount(<DesignerNavTabs {...fakeProps()} />);
-    expect(wrapper.html()).toContain("sensors");
+    const { container } = render(<DesignerNavTabs {...fakeProps()} />);
+    expect(container.querySelector("#sensors")).toBeTruthy();
   });
 
   it("doesn't show sensors tab", () => {
     const config = fakeWebAppConfig();
     config.body.hide_sensors = true;
     mockState.resources = buildResourceIndex([config]);
-    const wrapper = mount(<DesignerNavTabs {...fakeProps()} />);
-    expect(wrapper.html()).not.toContain("sensors");
+    const { container } = render(<DesignerNavTabs {...fakeProps()} />);
+    expect(container.querySelector("#sensors")).toBeFalsy();
   });
 
   it("renders scroll indicator", () => {
@@ -140,8 +146,8 @@ describe("<DesignerNavTabs />", () => {
       value: () => [{}, { scrollWidth: 100, scrollLeft: 0, clientWidth: 75 }],
       configurable: true
     });
-    const wrapper = shallow(<DesignerNavTabs {...fakeProps()} />);
-    expect(wrapper.html()).toContain("scroll-indicator");
+    const { container } = render(<DesignerNavTabs {...fakeProps()} />);
+    expect(container.querySelector(".scroll-indicator")).toBeTruthy();
   });
 
   it("doesn't render scroll indicator when wide", () => {
@@ -149,8 +155,8 @@ describe("<DesignerNavTabs />", () => {
       value: () => [{}, { scrollWidth: 500, scrollLeft: 0, clientWidth: 750 }],
       configurable: true
     });
-    const wrapper = shallow(<DesignerNavTabs {...fakeProps()} />);
-    expect(wrapper.html()).not.toContain("scroll-indicator");
+    const { container } = render(<DesignerNavTabs {...fakeProps()} />);
+    expect(container.querySelector(".scroll-indicator")).toBeFalsy();
   });
 
   it("doesn't render scroll indicator when at end", () => {
@@ -158,8 +164,8 @@ describe("<DesignerNavTabs />", () => {
       value: () => [{}, { scrollWidth: 100, scrollLeft: 25, clientWidth: 75 }],
       configurable: true
     });
-    const wrapper = shallow(<DesignerNavTabs {...fakeProps()} />);
-    expect(wrapper.html()).not.toContain("scroll-indicator");
+    const { container } = render(<DesignerNavTabs {...fakeProps()} />);
+    expect(container.querySelector(".scroll-indicator")).toBeFalsy();
   });
 
   it("calls onScroll", () => {
@@ -167,15 +173,18 @@ describe("<DesignerNavTabs />", () => {
       value: () => [{}, { scrollWidth: 100, scrollLeft: 25, clientWidth: 75 }],
       configurable: true
     });
-    const wrapper = shallow<DesignerNavTabs>(<DesignerNavTabs {...fakeProps()} />);
-    wrapper.setState({ atEnd: false });
-    wrapper.find(".panel-tabs").simulate("scroll");
-    expect(wrapper.state().atEnd).toEqual(true);
+    const ref = React.createRef<DesignerNavTabs>();
+    const { container } = render(<DesignerNavTabs {...fakeProps()} ref={ref} />);
+    act(() => ref.current?.setState({ atEnd: false }));
+    const tabs = container.querySelector(".panel-tabs");
+    if (!tabs) { throw new Error("Expected panel tabs"); }
+    fireEvent.scroll(tabs);
+    expect(ref.current?.state.atEnd).toEqual(true);
   });
 
   it("shows farmware tab", () => {
     mockState.resources = buildResourceIndex([fakeFarmwareInstallation()]);
-    const wrapper = mount(<DesignerNavTabs {...fakeProps()} />);
-    expect(wrapper.html()).toContain("farmware");
+    const { container } = render(<DesignerNavTabs {...fakeProps()} />);
+    expect(container.querySelector("#farmware")).toBeTruthy();
   });
 });

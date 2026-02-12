@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render, fireEvent } from "@testing-library/react";
 import { CopyButton } from "../copy_button";
 import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
 import * as setActiveRegimenByNameModule from "../../set_active_regimen_by_name";
@@ -35,8 +35,8 @@ describe("<CopyButton />", () => {
       regimen_id: 1, sequence_id: 1, time_offset: 1
     }];
     const { regimen_items } = p.regimen.body;
-    const wrapper = mount(<CopyButton {...p} />);
-    wrapper.simulate("click");
+    const { container } = render(<CopyButton {...p} />);
+    fireEvent.click(container.querySelector(".fa-clone") as Element);
     expect(p.dispatch).toHaveBeenCalled();
     expect(initSpy).toHaveBeenCalledWith("Regimen", {
       color: "red", name: "Foo copy 1", regimen_items, body: []

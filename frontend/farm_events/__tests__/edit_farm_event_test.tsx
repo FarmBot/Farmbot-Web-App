@@ -1,7 +1,7 @@
 const mockSave = jest.fn();
 
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import { RawEditFarmEvent as EditFarmEvent } from "../edit_farm_event";
 import { AddEditFarmEventProps } from "../../farm_designer/interfaces";
 import {
@@ -51,9 +51,9 @@ describe("<EditFarmEvent />", () => {
   }
 
   it("renders", () => {
-    const wrapper = mount(<EditFarmEvent {...fakeProps()} />);
+    const { container } = render(<EditFarmEvent {...fakeProps()} />);
     ["Edit event", "Save"]
-      .map(string => expect(wrapper.text()).toContain(string));
+      .map(string => expect(container.textContent).toContain(string));
   });
 
   it("redirects", () => {
@@ -61,8 +61,8 @@ describe("<EditFarmEvent />", () => {
     const p = fakeProps();
     const navigate = jest.fn();
     p.getFarmEvent = jest.fn(url => navigate(url));
-    const wrapper = mount(<EditFarmEvent {...p} />);
-    expect(wrapper.text()).toContain("Redirecting");
+    const { container } = render(<EditFarmEvent {...p} />);
+    expect(container.textContent).toContain("Redirecting");
     expect(mockNavigate).toHaveBeenCalledWith(Path.farmEvents());
   });
 
@@ -70,25 +70,29 @@ describe("<EditFarmEvent />", () => {
     location.pathname = Path.mock(Path.logs());
     const p = fakeProps();
     p.getFarmEvent = jest.fn();
-    const wrapper = mount(<EditFarmEvent {...p} />);
-    expect(wrapper.text()).toContain("Redirecting");
+    const { container } = render(<EditFarmEvent {...p} />);
+    expect(container.textContent).toContain("Redirecting");
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 
   it("calls farm event save", () => {
-    const wrapper = mount(<EditFarmEvent {...fakeProps()} />);
-    const form = wrapper.find(EditFEForm).instance() as EditFEForm;
-    form.commitViewModel = mockSave as unknown as EditFEForm["commitViewModel"];
-    wrapper.find(".save-btn").simulate("click");
+    const formRef = { current: null as unknown as EditFEForm };
+    const createRefSpy = jest.spyOn(React, "createRef")
+      .mockReturnValue(formRef as React.RefObject<EditFEForm>);
+    const { container } = render(<EditFarmEvent {...fakeProps()} />);
+    formRef.current.commitViewModel =
+      mockSave as unknown as EditFEForm["commitViewModel"];
+    fireEvent.click(container.querySelector(".save-btn") as Element);
     expect(mockSave).toHaveBeenCalled();
+    createRefSpy.mockRestore();
   });
 
   it("doesn't call farm event save if event is missing", () => {
     const p = fakeProps();
     p.getFarmEvent = () => undefined as never;
     location.pathname = Path.mock(Path.farmEvents("nope"));
-    const wrapper = mount(<EditFarmEvent {...p} />);
-    wrapper.find(".save-btn").simulate("click");
+    const { container } = render(<EditFarmEvent {...p} />);
+    fireEvent.click(container.querySelector(".save-btn") as Element);
     expect(mockSave).not.toHaveBeenCalled();
   });
 
@@ -98,8 +102,9 @@ describe("<EditFarmEvent />", () => {
     sequence.body.id = 1;
     const farmEvent = fakeFarmEvent("Sequence", sequence.body.id);
     p.getFarmEvent = () => farmEvent;
-    const wrapper = mount(<EditFarmEvent {...p} />);
-    await wrapper.find(".fa-trash").simulate("click");
+    const { container } = render(<EditFarmEvent {...p} />);
+    fireEvent.click(container.querySelector(".fa-trash") as Element);
+    await waitFor(() => expect(destroySpy).toHaveBeenCalledWith(farmEvent.uuid));
     expect(destroySpy).toHaveBeenCalledWith(farmEvent.uuid);
     expect(mockNavigate).toHaveBeenCalledWith(Path.farmEvents());
     expect(success).toHaveBeenCalledWith("Deleted event.", { title: "Deleted" });

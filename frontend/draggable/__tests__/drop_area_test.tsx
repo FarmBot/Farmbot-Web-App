@@ -1,5 +1,5 @@
 import React from "react";
-import { shallow } from "enzyme";
+import { act, createEvent, fireEvent, render } from "@testing-library/react";
 import { DropArea } from "../drop_area";
 import { DropAreaProps } from "../interfaces";
 
@@ -11,61 +11,68 @@ describe("<DropArea />", () => {
   });
 
   it("opens", () => {
-    const wrapper = shallow<DropArea>(<DropArea {...fakeProps()} />);
-    wrapper.setState({ isHovered: true });
-    expect(wrapper.hasClass("drag-drop-area")).toBeTruthy();
+    const ref = React.createRef<DropArea>();
+    const { container } = render(<DropArea {...fakeProps()} ref={ref} />);
+    ref.current?.setState({ isHovered: true });
+    expect(container.firstChild).toHaveClass("drag-drop-area");
   });
 
   it("is locked open", () => {
     const p = fakeProps();
     p.isLocked = true;
-    const wrapper = shallow<DropArea>(<DropArea {...p} />);
-    expect(wrapper.hasClass("drag-drop-area")).toBeTruthy();
+    const { container } = render(<DropArea {...p} />);
+    expect(container.firstChild).toHaveClass("drag-drop-area");
   });
 
   it("renders children", () => {
-    const wrapper = shallow<DropArea>(
-      <DropArea {...fakeProps()}>children</DropArea>);
-    expect(wrapper.text()).toEqual("children");
+    const { container } = render(<DropArea {...fakeProps()}>children</DropArea>);
+    expect(container.textContent).toEqual("children");
   });
 
   it("handles drag enter", () => {
     const preventDefault = jest.fn();
-    const wrapper = shallow<DropArea>(<DropArea {...fakeProps()} />);
-    expect(wrapper.instance().state.isHovered).toEqual(false);
-    wrapper.simulate("dragEnter", { preventDefault });
+    const ref = React.createRef<DropArea>();
+    const { container } = render(<DropArea {...fakeProps()} ref={ref} />);
+    expect(ref.current?.state.isHovered).toEqual(false);
+    const event = createEvent.dragEnter(container.firstChild as Element);
+    Object.defineProperty(event, "preventDefault", { value: preventDefault });
+    fireEvent(container.firstChild as Element, event);
     expect(preventDefault).toHaveBeenCalled();
-    expect(wrapper.instance().state.isHovered).toEqual(true);
+    expect(ref.current?.state.isHovered).toEqual(true);
   });
 
   it("handles drag leave", () => {
-    const wrapper = shallow<DropArea>(<DropArea {...fakeProps()} />);
-    wrapper.setState({ isHovered: true });
-    wrapper.simulate("dragLeave");
-    expect(wrapper.instance().state.isHovered).toEqual(false);
+    const ref = React.createRef<DropArea>();
+    const { container } = render(<DropArea {...fakeProps()} ref={ref} />);
+    act(() => ref.current?.setState({ isHovered: true }));
+    fireEvent.dragLeave(container.firstChild as Element);
+    expect(ref.current?.state.isHovered).toEqual(false);
   });
 
   it("handles drag over", () => {
     const preventDefault = jest.fn();
-    const wrapper = shallow<DropArea>(<DropArea {...fakeProps()} />);
-    expect(wrapper.instance().state.isHovered).toEqual(false);
-    wrapper.simulate("dragOver", { preventDefault });
+    const ref = React.createRef<DropArea>();
+    const { container } = render(<DropArea {...fakeProps()} ref={ref} />);
+    expect(ref.current?.state.isHovered).toEqual(false);
+    const event = createEvent.dragOver(container.firstChild as Element);
+    Object.defineProperty(event, "preventDefault", { value: preventDefault });
+    fireEvent(container.firstChild as Element, event);
     expect(preventDefault).toHaveBeenCalled();
-    expect(wrapper.instance().state.isHovered).toEqual(false);
+    expect(ref.current?.state.isHovered).toEqual(false);
   });
 
   it("handles drop", () => {
     const preventDefault = jest.fn();
     const p = fakeProps();
-    const wrapper = shallow<DropArea>(<DropArea {...p} />);
-    expect(wrapper.instance().state.isHovered).toEqual(false);
-    wrapper.simulate("drop", {
-      preventDefault, dataTransfer: {
-        getData: () => "key"
-      }
-    });
+    const ref = React.createRef<DropArea>();
+    const { container } = render(<DropArea {...p} ref={ref} />);
+    expect(ref.current?.state.isHovered).toEqual(false);
+    const event = createEvent.drop(container.firstChild as Element);
+    Object.defineProperty(event, "preventDefault", { value: preventDefault });
+    Object.defineProperty(event, "dataTransfer", { value: { getData: () => "key" } });
+    fireEvent(container.firstChild as Element, event);
     expect(p.callback).toHaveBeenCalledWith("key");
     expect(preventDefault).toHaveBeenCalled();
-    expect(wrapper.instance().state.isHovered).toEqual(true);
+    expect(ref.current?.state.isHovered).toEqual(true);
   });
 });

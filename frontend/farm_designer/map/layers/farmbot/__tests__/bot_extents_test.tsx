@@ -1,6 +1,6 @@
 import React from "react";
 import { BotExtents } from "../bot_extents";
-import { shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import { bot } from "../../../../../__test_support__/fake_state/bot";
 import { BotExtentsProps } from "../../../interfaces";
 import {
@@ -23,13 +23,26 @@ describe("<VirtualFarmBot/>", () => {
     };
   }
 
+  const renderExtents = (props: BotExtentsProps) =>
+    render(<svg><BotExtents {...props} /></svg>);
+
+  const lineProps = (line: Element) => ({
+    x1: Number(line.getAttribute("x1")),
+    x2: Number(line.getAttribute("x2")),
+    y1: Number(line.getAttribute("y1")),
+    y2: Number(line.getAttribute("y2")),
+  });
+
+  const lines = (container: HTMLElement, selector: string) =>
+    Array.from(container.querySelectorAll(selector));
+
   it("renders home lines", () => {
     const p = fakeProps();
-    const wrapper = shallow(<BotExtents {...p} />);
-    const home = wrapper.find("#home-lines").find("line");
-    expect(home.at(0).props()).toEqual({ x1: 2, x2: 2, y1: 2, y2: 1500 });
-    expect(home.at(1).props()).toEqual({ x1: 2, x2: 3000, y1: 2, y2: 2 });
-    const max = wrapper.find("#max-lines").find("line");
+    const { container } = renderExtents(p);
+    const home = lines(container, "#home-lines line");
+    expect(lineProps(home[0])).toEqual({ x1: 2, x2: 2, y1: 2, y2: 1500 });
+    expect(lineProps(home[1])).toEqual({ x1: 2, x2: 3000, y1: 2, y2: 2 });
+    const max = lines(container, "#max-lines line");
     expect(max.length).toEqual(0);
   });
 
@@ -40,13 +53,13 @@ describe("<VirtualFarmBot/>", () => {
       y: { value: 100, isDefault: false },
       z: { value: 400, isDefault: true },
     };
-    const wrapper = shallow(<BotExtents {...p} />);
-    const home = wrapper.find("#home-lines").find("line");
-    expect(home.at(0).props()).toEqual({ x1: 2, x2: 2, y1: 2, y2: 100 });
-    expect(home.at(1).props()).toEqual({ x1: 2, x2: 100, y1: 2, y2: 2 });
-    const max = wrapper.find("#max-lines").find("line");
-    expect(max.at(0).props()).toEqual({ x1: 100, x2: 100, y1: 2, y2: 100 });
-    expect(max.at(1).props()).toEqual({ x1: 2, x2: 100, y1: 100, y2: 100 });
+    const { container } = renderExtents(p);
+    const home = lines(container, "#home-lines line");
+    expect(lineProps(home[0])).toEqual({ x1: 2, x2: 2, y1: 2, y2: 100 });
+    expect(lineProps(home[1])).toEqual({ x1: 2, x2: 100, y1: 2, y2: 2 });
+    const max = lines(container, "#max-lines line");
+    expect(lineProps(max[0])).toEqual({ x1: 100, x2: 100, y1: 2, y2: 100 });
+    expect(lineProps(max[1])).toEqual({ x1: 2, x2: 100, y1: 100, y2: 100 });
   });
 
   it("renders home and max lines for one axis only", () => {
@@ -57,12 +70,12 @@ describe("<VirtualFarmBot/>", () => {
       y: { value: 100, isDefault: false },
       z: { value: 400, isDefault: true },
     };
-    const wrapper = shallow(<BotExtents {...p} />);
-    const home = wrapper.find("#home-lines").find("line");
-    expect(home.at(0).props()).toEqual({ x1: 2, x2: 3000, y1: 2, y2: 2 });
+    const { container } = renderExtents(p);
+    const home = lines(container, "#home-lines line");
+    expect(lineProps(home[0])).toEqual({ x1: 2, x2: 3000, y1: 2, y2: 2 });
     expect(home.length).toEqual(1);
-    const max = wrapper.find("#max-lines").find("line");
-    expect(max.at(0).props()).toEqual({ x1: 2, x2: 3000, y1: 100, y2: 100 });
+    const max = lines(container, "#max-lines line");
+    expect(lineProps(max[0])).toEqual({ x1: 2, x2: 3000, y1: 100, y2: 100 });
     expect(max.length).toEqual(1);
   });
 
@@ -75,12 +88,12 @@ describe("<VirtualFarmBot/>", () => {
       y: { value: 100, isDefault: false },
       z: { value: 400, isDefault: true },
     };
-    const wrapper = shallow(<BotExtents {...p} />);
-    const home = wrapper.find("#home-lines").find("line");
+    const { container } = renderExtents(p);
+    const home = lines(container, "#home-lines line");
     expect(home.length).toEqual(0);
-    const max = wrapper.find("#max-lines").find("line");
-    expect(max.at(0).props()).toEqual({ x1: 100, x2: 100, y1: 2, y2: 100 });
-    expect(max.at(1).props()).toEqual({ x1: 2, x2: 100, y1: 100, y2: 100 });
+    const max = lines(container, "#max-lines line");
+    expect(lineProps(max[0])).toEqual({ x1: 100, x2: 100, y1: 2, y2: 100 });
+    expect(lineProps(max[1])).toEqual({ x1: 2, x2: 100, y1: 100, y2: 100 });
   });
 
   it("renders home and max lines in correct location for quadrant 1", () => {
@@ -91,13 +104,21 @@ describe("<VirtualFarmBot/>", () => {
       y: { value: 100, isDefault: false },
       z: { value: 400, isDefault: true },
     };
-    const wrapper = shallow(<BotExtents {...p} />);
-    const home = wrapper.find("#home-lines").find("line");
-    expect(home.at(0).props()).toEqual({ x1: 2998, x2: 2998, y1: 2, y2: 100 });
-    expect(home.at(1).props()).toEqual({ x1: 2998, x2: 2900, y1: 2, y2: 2 });
-    const max = wrapper.find("#max-lines").find("line");
-    expect(max.at(0).props()).toEqual({ x1: 2900, x2: 2900, y1: 2, y2: 100 });
-    expect(max.at(1).props()).toEqual({ x1: 2998, x2: 2900, y1: 100, y2: 100 });
+    const { container } = renderExtents(p);
+    const home = lines(container, "#home-lines line");
+    expect(lineProps(home[0])).toEqual({
+      x1: 2998, x2: 2998, y1: 2, y2: 100,
+    });
+    expect(lineProps(home[1])).toEqual({
+      x1: 2998, x2: 2900, y1: 2, y2: 2,
+    });
+    const max = lines(container, "#max-lines line");
+    expect(lineProps(max[0])).toEqual({
+      x1: 2900, x2: 2900, y1: 2, y2: 100,
+    });
+    expect(lineProps(max[1])).toEqual({
+      x1: 2998, x2: 2900, y1: 100, y2: 100,
+    });
   });
 
   it("renders max line in correct location", () => {
@@ -109,9 +130,9 @@ describe("<VirtualFarmBot/>", () => {
       y: { value: 100, isDefault: true },
       z: { value: 400, isDefault: true },
     };
-    const wrapper = shallow(<BotExtents {...p} />);
-    const max = wrapper.find("#max-lines").find("line");
-    expect(max.at(0).props()).toEqual({ x1: 100, x2: 100, y1: 2, y2: 100 });
+    const { container } = renderExtents(p);
+    const max = lines(container, "#max-lines line");
+    expect(lineProps(max[0])).toEqual({ x1: 100, x2: 100, y1: 2, y2: 100 });
   });
 
   it("renders max line in correct location with swapped axes", () => {
@@ -124,19 +145,19 @@ describe("<VirtualFarmBot/>", () => {
       y: { value: 100, isDefault: true },
       z: { value: 400, isDefault: true },
     };
-    const wrapper = shallow(<BotExtents {...p} />);
-    const max = wrapper.find("#max-lines").find("line");
-    expect(max.at(0).props()).toEqual({ x1: 2, x2: 100, y1: 100, y2: 100 });
+    const { container } = renderExtents(p);
+    const max = lines(container, "#max-lines line");
+    expect(lineProps(max[0])).toEqual({ x1: 2, x2: 100, y1: 100, y2: 100 });
   });
 
   it("renders no lines", () => {
     const p = fakeProps();
     p.stopAtHome.x = false;
     p.stopAtHome.y = false;
-    const wrapper = shallow(<BotExtents {...p} />);
-    const home = wrapper.find("#home-lines").find("line");
+    const { container } = renderExtents(p);
+    const home = lines(container, "#home-lines line");
     expect(home.length).toEqual(0);
-    const max = wrapper.find("#max-lines").find("line");
+    const max = lines(container, "#max-lines line");
     expect(max.length).toEqual(0);
   });
 });

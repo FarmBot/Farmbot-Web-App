@@ -1,11 +1,27 @@
 const mockDeletePoints = jest.fn();
 const mockScanImage = jest.fn();
 
+jest.mock("../../image_workspace", () => ({
+  ImageWorkspace: (props: {
+    onChange: (key: string, value: number) => void;
+    onProcessPhoto: (index: number) => void;
+  }) => <div>
+    <span>hue</span>
+    <span>saturation</span>
+    <span>value</span>
+    <button onClick={() => props.onChange("H_LO", 3)}>
+      workspace change
+    </button>
+    <button onClick={() => props.onProcessPhoto(1)}>
+      scan current image
+    </button>
+  </div>,
+}));
+
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { WeedDetector } from "../index";
 import { API } from "../../../api";
-import { clickButton } from "../../../__test_support__/helpers";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import * as actions from "../actions";
 import * as deletePointsModule from "../../../api/delete_points";
@@ -13,7 +29,6 @@ import { error } from "../../../toast/toast";
 import { Content, ToolTips } from "../../../constants";
 import { WeedDetectorProps } from "../interfaces";
 import { fakePhotosPanelState } from "../../../__test_support__/fake_camera_data";
-import { fireEvent, render, screen } from "@testing-library/react";
 
 let deletePointsSpy: jest.SpyInstance;
 let scanImageSpy: jest.SpyInstance;
@@ -54,18 +69,18 @@ describe("<WeedDetector />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<WeedDetector {...fakeProps()} />);
+    render(<WeedDetector {...fakeProps()} />);
     ["hue", "saturation", "value", "scan current image"].map(string =>
-      expect(wrapper.text().toLowerCase()).toContain(string));
+      expect(screen.getByText(new RegExp(string, "i"))).toBeInTheDocument());
   });
 
   it("executes plant detection", () => {
     const p = fakeProps();
     p.dispatch = jest.fn(x => x());
-    const wrapper = shallow(<WeedDetector {...p} />);
-    const btn = wrapper.find("button").first();
-    expect(btn.props().title).not.toEqual(Content.NO_CAMERA_SELECTED);
-    clickButton(wrapper, 1, "detect weeds");
+    render(<WeedDetector {...p} />);
+    const btn = screen.getByRole("button", { name: "detect weeds" });
+    expect(btn).not.toHaveAttribute("title", Content.NO_CAMERA_SELECTED);
+    fireEvent.click(btn);
     expect(actions.detectPlants).toHaveBeenCalledWith(0);
     expect(error).not.toHaveBeenCalled();
   });
@@ -73,10 +88,10 @@ describe("<WeedDetector />", () => {
   it("shows detection button as disabled when camera is disabled", () => {
     const p = fakeProps();
     p.env = { camera: "NONE" };
-    const wrapper = shallow(<WeedDetector {...p} />);
-    const btn = wrapper.find("button").at(1);
-    expect(btn.props().title).toEqual(Content.NO_CAMERA_SELECTED);
-    btn.simulate("click");
+    render(<WeedDetector {...p} />);
+    const btn = screen.getByRole("button", { name: "detect weeds" });
+    expect(btn).toHaveAttribute("title", Content.NO_CAMERA_SELECTED);
+    fireEvent.click(btn);
     expect(error).toHaveBeenCalledWith(
       ToolTips.SELECT_A_CAMERA, { title: Content.NO_CAMERA_SELECTED });
     expect(actions.detectPlants).not.toHaveBeenCalled();
@@ -85,8 +100,7 @@ describe("<WeedDetector />", () => {
   it("executes clear weeds", () => {
     const { rerender } = render(<WeedDetector {...fakeProps()} />);
     expect(screen.getByText("CLEAR WEEDS")).toBeInTheDocument();
-    const button = screen.getByText("CLEAR WEEDS");
-    fireEvent.click(button);
+    fireEvent.click(screen.getByText("CLEAR WEEDS"));
     expect(deletePointsModule.deletePoints).toHaveBeenCalledWith(
       "weeds", { meta: { created_by: "plant-detection" } }, expect.any(Function));
     expect(screen.getByText("Deleting...")).toBeInTheDocument();
@@ -102,15 +116,15 @@ describe("<WeedDetector />", () => {
 
   it("saves ImageWorkspace changes: API", () => {
     const p = fakeProps();
-    const wrapper = shallow(<WeedDetector {...p} />);
-    wrapper.find("ImageWorkspace").simulate("change", "H_LO", 3);
+    render(<WeedDetector {...p} />);
+    fireEvent.click(screen.getByRole("button", { name: "workspace change" }));
     expect(p.saveFarmwareEnv)
       .toHaveBeenCalledWith("WEED_DETECTOR_H_LO", "3");
   });
 
   it("calls scanImage", () => {
-    const wrapper = shallow(<WeedDetector {...fakeProps()} />);
-    wrapper.find("ImageWorkspace").simulate("processPhoto", 1);
+    render(<WeedDetector {...fakeProps()} />);
+    fireEvent.click(screen.getByRole("button", { name: "scan current image" }));
     expect(actions.scanImage).toHaveBeenCalledWith(0);
     expect(mockScanImage).toHaveBeenCalledWith(1);
   });
@@ -118,8 +132,8 @@ describe("<WeedDetector />", () => {
   it("calls scanImage with calibration", () => {
     const p = fakeProps();
     p.wDEnv.CAMERA_CALIBRATION_coord_scale = 0.5;
-    const wrapper = shallow(<WeedDetector {...p} />);
-    wrapper.find("ImageWorkspace").simulate("processPhoto", 1);
+    render(<WeedDetector {...p} />);
+    fireEvent.click(screen.getByRole("button", { name: "scan current image" }));
     expect(actions.scanImage).toHaveBeenCalledWith(0.5);
     expect(mockScanImage).toHaveBeenCalledWith(1);
   });
@@ -127,7 +141,7 @@ describe("<WeedDetector />", () => {
   it("shows all configs", () => {
     const p = fakeProps();
     p.showAdvanced = true;
-    const wrapper = mount(<WeedDetector {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("save detected plants");
+    render(<WeedDetector {...p} />);
+    expect(screen.getByText(/save detected plants/i)).toBeInTheDocument();
   });
 });

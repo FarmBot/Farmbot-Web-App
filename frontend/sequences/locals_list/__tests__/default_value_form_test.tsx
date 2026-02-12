@@ -1,12 +1,29 @@
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { render, fireEvent } from "@testing-library/react";
 import { DefaultValueFormProps, DefaultValueForm } from "../default_value_form";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import { Coordinate, ParameterApplication } from "farmbot";
-import { VariableForm } from "../variable_form";
-import { changeBlurableInput } from "../../../__test_support__/helpers";
+
+let mockVariableFormOnChangeArg: ParameterApplication;
+
+jest.mock("../variable_form", () => ({
+  VariableForm: (props: {
+    variable: { celeryNode: ParameterApplication };
+    onChange: (value: ParameterApplication) => void;
+  }) => {
+    const value = props.variable.celeryNode.args.data_value;
+    const text = value.kind === "coordinate"
+      ? `Coordinate (${value.args.x}, ${value.args.y}, ${value.args.z})`
+      : "";
+    return <div>
+      <span>{text}</span>
+      <button className={"variable-form-change"}
+        onClick={() => props.onChange(mockVariableFormOnChangeArg)} />
+    </div>;
+  },
+}));
 
 describe("<DefaultValueForm />", () => {
   const COORDINATE: Coordinate =
@@ -22,8 +39,8 @@ describe("<DefaultValueForm />", () => {
   });
 
   it("renders default value", () => {
-    const wrapper = mount(<DefaultValueForm {...fakeProps()} />);
-    expect(wrapper.text()).toContain("Coordinate (1, 2, 3)");
+    const { container } = render(<DefaultValueForm {...fakeProps()} />);
+    expect(container.textContent).toContain("Coordinate (1, 2, 3)");
   });
 
   it("doesn't render default value when not a ParameterDeclaration", () => {
@@ -32,25 +49,33 @@ describe("<DefaultValueForm />", () => {
       kind: "parameter_application",
       args: { label: "label", data_value: COORDINATE }
     };
-    const wrapper = mount(<DefaultValueForm {...p} />);
-    expect(wrapper.text()).not.toContain("Coordinate (1, 2, 3)");
+    const { container } = render(<DefaultValueForm {...p} />);
+    expect(container.textContent).not.toContain("Coordinate (1, 2, 3)");
   });
 
   it("updates default value", () => {
     const p = fakeProps();
-    const wrapper = mount(<DefaultValueForm {...p} />);
-    changeBlurableInput(wrapper, "1", 0);
-    expect(p.onChange).toHaveBeenCalledWith(p.variableNode, "label");
+    mockVariableFormOnChangeArg = {
+      kind: "parameter_application",
+      args: { label: "label", data_value: COORDINATE },
+    };
+    const { container } = render(<DefaultValueForm {...p} />);
+    fireEvent.click(container.querySelector(".variable-form-change") as Element);
+    expect(p.onChange).toHaveBeenCalledWith({
+      kind: "parameter_declaration",
+      args: { label: "label", default_value: COORDINATE }
+    }, "label");
   });
 
   it("updates with coordinate", () => {
     const p = fakeProps();
-    const wrapper = shallow(<DefaultValueForm {...p} />);
     const pa: ParameterApplication = {
       kind: "parameter_application",
       args: { label: "label", data_value: COORDINATE },
     };
-    wrapper.find(VariableForm).simulate("change", pa);
+    mockVariableFormOnChangeArg = pa;
+    const { container } = render(<DefaultValueForm {...p} />);
+    fireEvent.click(container.querySelector(".variable-form-change") as Element);
     expect(p.onChange).toHaveBeenCalledWith({
       kind: "parameter_declaration",
       args: { label: "label", default_value: COORDINATE }
@@ -59,8 +84,7 @@ describe("<DefaultValueForm />", () => {
 
   it("doesn't update with point_groups", () => {
     const p = fakeProps();
-    const wrapper = shallow(<DefaultValueForm {...p} />);
-    const pa: ParameterApplication = {
+    mockVariableFormOnChangeArg = {
       kind: "parameter_application",
       args: {
         label: "label", data_value: {
@@ -68,7 +92,8 @@ describe("<DefaultValueForm />", () => {
         }
       }
     };
-    wrapper.find(VariableForm).simulate("change", pa);
+    const { container } = render(<DefaultValueForm {...p} />);
+    fireEvent.click(container.querySelector(".variable-form-change") as Element);
     expect(p.onChange).not.toHaveBeenCalled();
   });
 });

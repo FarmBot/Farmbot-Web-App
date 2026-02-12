@@ -1,5 +1,5 @@
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { render, fireEvent, waitFor } from "@testing-library/react";
 import {
   RawDesignerSequenceList as DesignerSequenceList,
 } from "../list";
@@ -92,15 +92,15 @@ describe("<DesignerSequenceList />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<DesignerSequenceList {...fakeProps()} />);
-    expect(wrapper.text()).toContain("folder");
+    const { container } = render(<DesignerSequenceList {...fakeProps()} />);
+    expect(container.textContent).toContain("folder");
   });
 
   it("toggle section", () => {
     const p = fakeProps();
-    const wrapper = shallow<DesignerSequenceList>(
-      <DesignerSequenceList {...p} />);
-    wrapper.instance().toggleSection("sequences")();
+    const ref = React.createRef<DesignerSequenceList>();
+    render(<DesignerSequenceList ref={ref} {...p} />);
+    ref.current?.toggleSection("sequences")();
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_SEQUENCES_PANEL_OPTION,
       payload: "sequences",
@@ -108,52 +108,54 @@ describe("<DesignerSequenceList />", () => {
   });
 
   it("adds new sequence", () => {
-    const wrapper = mount(<DesignerSequenceList {...fakeProps()} />);
-    wrapper.find("button[title='add new sequence']").first().simulate("click", {
-      stopPropagation: jest.fn(),
-    });
+    const { container } = render(<DesignerSequenceList {...fakeProps()} />);
+    fireEvent.click(
+      container.querySelector("button[title='add new sequence']") as Element);
     expect(addNewSequenceToFolderSpy).toHaveBeenCalled();
   });
 
   it("adds new folder", () => {
-    const wrapper = mount(<DesignerSequenceList {...fakeProps()} />);
-    wrapper.find("button[title='Create subfolder']").first().simulate("click", {
-      stopPropagation: jest.fn(),
-    });
+    const { container } = render(<DesignerSequenceList {...fakeProps()} />);
+    fireEvent.click(
+      container.querySelector("button[title='Create subfolder']") as Element);
     expect(createFolderSpy).toHaveBeenCalled();
   });
 
   it("opens folders", () => {
-    const wrapper = mount(<DesignerSequenceList {...fakeProps()} />);
-    wrapper.find("button[title='toggle folder open']").first().simulate("click", {
-      stopPropagation: jest.fn(),
-    });
+    const { container } = render(<DesignerSequenceList {...fakeProps()} />);
+    fireEvent.click(
+      container.querySelector("button[title='toggle folder open']") as Element);
     expect(toggleAllSpy).toHaveBeenCalled();
   });
 
   it("imports sequence", async () => {
     const p = fakeProps();
     p.sequencesPanelState.featured = true;
-    const wrapper = await mount(<DesignerSequenceList {...p} />);
-    wrapper.update();
-    wrapper.find(".fa-download").first().simulate("click");
+    const { container } = render(<DesignerSequenceList {...p} />);
+    await waitFor(() =>
+      expect(container.querySelectorAll(".fa-download").length)
+        .toBeGreaterThan(0));
+    fireEvent.click(container.querySelector(".fa-download") as Element);
     expect(installSequenceSpy).toHaveBeenCalledWith(1);
   });
 
   it("opens description", async () => {
     const p = fakeProps();
     p.sequencesPanelState.featured = true;
-    const wrapper = await mount(<DesignerSequenceList {...p} />);
-    wrapper.update();
-    expect(wrapper.find(".sequence-list-item-icons").at(0)
-      .hasClass("show-on-hover")).toBeTruthy();
-    const helpIcon = wrapper.find(".sequence-list-item-icons").at(0)
-      .find(".help-icon").first();
-    expect(helpIcon.exists()).toBeTruthy();
-    helpIcon.props().onClick?.({} as never);
-    wrapper.update();
-    expect(wrapper.find(".sequence-list-item-icons").at(0)
-      .hasClass("show-on-hover")).toBeFalsy();
+    const { container } = render(<DesignerSequenceList {...p} />);
+    await waitFor(() =>
+      expect(container.querySelectorAll(".sequence-list-item-icons").length)
+        .toBeGreaterThan(0));
+    const icons = container.querySelectorAll(".sequence-list-item-icons").item(0);
+    expect(icons.classList.contains("show-on-hover")).toBeTruthy();
+    const helpIcon = icons.querySelector(".help-icon");
+    expect(helpIcon).toBeTruthy();
+    fireEvent.click(helpIcon as Element);
+    await waitFor(() =>
+      expect(
+        container.querySelectorAll(".sequence-list-item-icons").item(0)
+          .classList.contains("show-on-hover"))
+        .toBeFalsy());
   });
 
   it("filters sequences", async () => {
@@ -162,22 +164,25 @@ describe("<DesignerSequenceList />", () => {
     const folderData = mapStateToFolderProps(fakeState());
     folderData.searchTerm = "second";
     p.folderData = folderData;
-    const wrapper = await mount(<DesignerSequenceList {...p} />);
-    expect(wrapper.text().toLowerCase()).not.toContain("first");
-    expect(wrapper.text().toLowerCase()).toContain("second");
+    const { container } = render(<DesignerSequenceList {...p} />);
+    await waitFor(() =>
+      expect(container.textContent?.toLowerCase()).toContain("second"));
+    expect(container.textContent?.toLowerCase()).not.toContain("first");
   });
 
   it("navigates to sequence page", () => {
     location.pathname = Path.mock(Path.designerSequences());
     const wrapper = mountWithContext(<DesignerSequenceList {...fakeProps()} />);
-    wrapper.find("button.fb-button.clear.row.half-gap").first().simulate("click");
+    fireEvent.click((wrapper.container
+      .querySelector("button.fb-button.clear.row.half-gap") as Element));
     expect(mockNavigate).toHaveBeenCalledWith(Path.sequencePage());
   });
 
   it("navigates to designer sequence page", () => {
     location.pathname = Path.mock(Path.sequencePage());
     const wrapper = mountWithContext(<DesignerSequenceList {...fakeProps()} />);
-    wrapper.find("button.fb-button.clear.row.half-gap").first().simulate("click");
+    fireEvent.click((wrapper.container
+      .querySelector("button.fb-button.clear.row.half-gap") as Element));
     expect(mockNavigate).toHaveBeenCalledWith(Path.designerSequences());
   });
 });

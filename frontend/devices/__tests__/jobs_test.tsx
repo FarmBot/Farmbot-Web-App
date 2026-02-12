@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import {
   RawJobsPanel as JobsPanel, JobsPanelProps, mapStateToProps, JobsTable,
   JobsTableProps, jobNameLookup, addTitleToJobProgress,
@@ -23,14 +23,14 @@ describe("<JobsPanel />", () => {
   });
 
   it("displays jobs", () => {
-    const wrapper = mount(<JobsPanel {...fakeProps()} />);
+    const { container } = render(<JobsPanel {...fakeProps()} />);
     [
       "job count: 4",
       "job", "type", "ext", "progress", "status", "time",
       "job1", "100%", "complete", "ota", ".fw", "pm",
       "job2", "50", "working",
       "job3", "99%", "working",
-    ].map(string => expect(wrapper.text().toLowerCase()).toContain(string));
+    ].map(string => expect(container.textContent?.toLowerCase()).toContain(string));
   });
 });
 
@@ -48,9 +48,9 @@ describe("<JobsAndLogs />", () => {
   });
 
   it("renders jobs and logs", () => {
-    const wrapper = mount(<JobsAndLogs {...fakeProps()} />);
-    expect(wrapper.find(".jobs-tab").length).toEqual(1);
-    expect(wrapper.find(".logs-tab").length).toEqual(1);
+    const { container } = render(<JobsAndLogs {...fakeProps()} />);
+    expect(container.querySelectorAll(".jobs-tab").length).toEqual(1);
+    expect(container.querySelectorAll(".logs-tab").length).toEqual(1);
   });
 });
 
@@ -61,8 +61,8 @@ describe("<JobsTable />", () => {
   });
 
   it("displays jobs table", () => {
-    const wrapper = mount(<JobsTable {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("job");
+    const { container } = render(<JobsTable {...fakeProps()} />);
+    expect(container.textContent?.toLowerCase()).toContain("job");
   });
 });
 

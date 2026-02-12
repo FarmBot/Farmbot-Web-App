@@ -11,7 +11,7 @@ jest.mock("../../../api/crud", () => ({
 
 import React from "react";
 import { TileExecute } from "../tile_execute";
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import { Execute, ParameterApplication, Coordinate } from "farmbot";
 import { LocalsList } from "../../locals_list/locals_list";
 import { StepParams } from "../../interfaces";
@@ -26,6 +26,25 @@ const fakeProps = (): StepParams<Execute> => ({
   ...fakeStepParams({ kind: "execute", args: { sequence_id: 0 } }),
 });
 
+const findByType = (
+  node: React.ReactNode,
+  type: unknown,
+): React.ReactElement | undefined => {
+  if (!node) { return undefined; }
+  if (Array.isArray(node)) {
+    for (const child of node) {
+      const found = findByType(child, type);
+      if (found) { return found; }
+    }
+    return undefined;
+  }
+  if (React.isValidElement(node)) {
+    if (node.type === type) { return node; }
+    return findByType(node.props.children, type);
+  }
+  return undefined;
+};
+
 beforeEach(() => {
   jest.clearAllMocks();
   mockEditStep.mockClear();
@@ -39,20 +58,22 @@ afterAll(() => {
 
 describe("<TileExecute />", () => {
   it("renders inputs", () => {
-    const block = mount(<TileExecute {...fakeProps()} />);
-    const inputs = block.find("input");
+    const { container } = render(<TileExecute {...fakeProps()} />);
+    const inputs = container.querySelectorAll("input");
     expect(inputs.length).toEqual(1);
-    expect(inputs.first().props().placeholder).toEqual("Execute Sequence");
-    expect(block.text()).toContain("Select a sequence");
+    expect((inputs[0] as HTMLInputElement).placeholder)
+      .toEqual("Execute Sequence");
+    expect(container.textContent).toContain("Select a sequence");
   });
 
   it("renders inputs when sequence has a variable", () => {
     const p = fakeProps();
-    const block = mount(<TileExecute {...p} />);
-    const inputs = block.find("input");
+    const { container } = render(<TileExecute {...p} />);
+    const inputs = container.querySelectorAll("input");
     expect(inputs.length).toEqual(1);
-    expect(inputs.first().props().placeholder).toEqual("Execute Sequence");
-    expect(block.text()).toContain("Select a sequence");
+    expect((inputs[0] as HTMLInputElement).placeholder)
+      .toEqual("Execute Sequence");
+    expect(container.textContent).toContain("Select a sequence");
   });
 
   it("renders description", () => {
@@ -60,15 +81,17 @@ describe("<TileExecute />", () => {
     mockSequence.body.id = 1;
     p.currentStep.args.sequence_id = mockSequence.body.id;
     mockSequence.body.description = "description";
-    const block = shallow(<TileExecute {...p} />);
-    expect(block.find(StepWrapper).props().helpText).toEqual("description");
+    const element = new TileExecute(p).render();
+    const wrapper = findByType(element, StepWrapper);
+    expect(wrapper?.props.helpText).toEqual("description");
   });
 
   it("renders fallback", () => {
     const p = fakeProps();
     mockSequence.body.description = "";
-    const block = shallow(<TileExecute {...p} />);
-    expect(block.find(StepWrapper).props().helpText)
+    const element = new TileExecute(p).render();
+    const wrapper = findByType(element, StepWrapper);
+    expect(wrapper?.props.helpText)
       .toEqual(ToolTips.EXECUTE_SEQUENCE);
   });
 
@@ -89,14 +112,15 @@ describe("<TileExecute />", () => {
     };
     mockSequence.body.pinned = true;
     mockSequence.body.name = "Pinned Sequence";
-    const block = mount<TileExecute>(<TileExecute {...p} />);
-    expect(block.html().toLowerCase()).toContain("placeholder=\"pinned sequence");
+    const { container } = render(<TileExecute {...p} />);
+    expect(container.innerHTML.toLowerCase())
+      .toContain("placeholder=\"pinned sequence");
   });
 
   it("selects sequence", () => {
     const p = fakeProps();
-    const block = mount<TileExecute>(<TileExecute {...p} />);
-    block.instance().changeSelection({ label: "", value: 10 });
+    const tileExecute = new TileExecute(p);
+    tileExecute.changeSelection({ label: "", value: 10 });
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual({
       kind: "execute", args: { sequence_id: 10 }
@@ -105,8 +129,8 @@ describe("<TileExecute />", () => {
 
   it("handles string value", () => {
     const p = fakeProps();
-    const block = mount<TileExecute>(<TileExecute {...p} />);
-    block.instance().changeSelection({ label: "", value: "10" });
+    const tileExecute = new TileExecute(p);
+    tileExecute.changeSelection({ label: "", value: "10" });
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual({
       kind: "execute", args: { sequence_id: 0 }
@@ -116,8 +140,8 @@ describe("<TileExecute />", () => {
   it("doesn't show location selection dropdowns", () => {
     const p = fakeProps();
     p.currentStep.args.sequence_id = 0;
-    const wrapper = shallow(<TileExecute {...p} />);
-    expect(wrapper.find("LocalsList").length).toEqual(0);
+    const element = new TileExecute(p).render();
+    expect(findByType(element, LocalsList)).toBeUndefined();
   });
 
   it("selects a location", () => {
@@ -135,7 +159,7 @@ describe("<TileExecute />", () => {
         vector: undefined,
       }
     };
-    const wrapper = shallow(<TileExecute {...p} />);
+    const element = new TileExecute(p).render();
     const variable = {
       kind: "parameter_application", args: {
         label: "parent1", data_value: {
@@ -143,7 +167,8 @@ describe("<TileExecute />", () => {
         }
       }
     };
-    wrapper.find(LocalsList).simulate("change", variable);
+    const localsList = findByType(element, LocalsList);
+    localsList?.props.onChange(variable);
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual({
       kind: "execute", args: { sequence_id: 1 }, body: [variable]
@@ -170,8 +195,8 @@ describe("<TileExecute />", () => {
         vector: undefined,
       }
     };
-    const wrapper = mount(<TileExecute {...p} />);
-    expect(wrapper.html()).toContain("Coordinate (10, 20, 30)");
+    const { container } = render(<TileExecute {...p} />);
+    expect(container.innerHTML).toContain("Coordinate (10, 20, 30)");
   });
 
   it("keeps previous parameter applications", () => {
@@ -195,7 +220,7 @@ describe("<TileExecute />", () => {
         vector: undefined,
       }
     };
-    const wrapper = shallow(<TileExecute {...p} />);
+    const element = new TileExecute(p).render();
     const variable = {
       kind: "parameter_application", args: {
         label: "parent1", data_value: {
@@ -203,7 +228,8 @@ describe("<TileExecute />", () => {
         }
       }
     };
-    wrapper.find(LocalsList).simulate("change", variable);
+    const localsList = findByType(element, LocalsList);
+    localsList?.props.onChange(variable);
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual({
       kind: "execute", args: { sequence_id: 1 },

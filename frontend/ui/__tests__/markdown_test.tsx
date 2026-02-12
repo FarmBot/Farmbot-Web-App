@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Token } from "markdown-it";
+import { render } from "@testing-library/react";
 import { Markdown, md_for_tests } from "../markdown";
-import { mount } from "enzyme";
 
 describe("<Markdown />", () => {
   it("renders text", () => {
-    const result = mount(Markdown({ children: "nice" }));
-    expect(result.html()).toContain("nice");
+    const { container } = render(Markdown({ children: "nice" }));
+    expect(container.innerHTML).toContain("nice");
   });
 
   it("renders html", () => {
-    const result = mount(Markdown({ children: "nice", html: true }));
-    expect(result.html()).toContain("nice");
+    const { container } = render(Markdown({ children: "nice", html: true }));
+    expect(container.innerHTML).toContain("nice");
   });
 });
 

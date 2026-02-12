@@ -1,5 +1,5 @@
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { render, fireEvent, act } from "@testing-library/react";
 import { AddEqCriteria, AddNumberCriteria } from "..";
 import {
   AddEqCriteriaProps, NumberCriteriaProps, DEFAULT_CRITERIA,
@@ -30,33 +30,32 @@ describe("<AddEqCriteria<string> />", () => {
   });
 
   it("renders string_eq add", () => {
-    const wrapper = mount(<AddEqCriteria<string> {...fakeProps()} />);
-    expect(wrapper.text()).toContain("=");
+    const { container } = render(<AddEqCriteria<string> {...fakeProps()} />);
+    expect(container.textContent).toContain("=");
   });
 
   it("changes field", () => {
-    const wrapper = shallow<AddEqCriteria<string>>(
-      <AddEqCriteria<string> {...fakeProps()} />);
-    wrapper.find("input").first().simulate("change", {
-      currentTarget: { value: "openfarm_slug" }
-    });
-    expect(wrapper.state().key).toEqual("openfarm_slug");
+    const { container } = render(<AddEqCriteria<string> {...fakeProps()} />);
+    const fieldInput = container.querySelectorAll("input")[0] as HTMLInputElement;
+    fireEvent.change(fieldInput, { target: { value: "openfarm_slug" } });
+    expect(fieldInput.value).toEqual("openfarm_slug");
   });
 
   it("changes value", () => {
-    const wrapper = shallow<AddEqCriteria<string>>(
-      <AddEqCriteria<string> {...fakeProps()} />);
-    wrapper.find("input").last().simulate("change", {
-      currentTarget: { value: "slug" }
-    });
-    expect(wrapper.state().value).toEqual("slug");
+    const { container } = render(<AddEqCriteria<string> {...fakeProps()} />);
+    const valueInput = container.querySelectorAll("input")[1] as HTMLInputElement;
+    fireEvent.change(valueInput, { target: { value: "slug" } });
+    expect(valueInput.value).toEqual("slug");
   });
 
   it("updates criteria", () => {
     const p = fakeProps();
-    const wrapper = mount(<AddEqCriteria<string> {...p} />);
-    wrapper.setState({ key: "openfarm_slug", value: "slug" });
-    wrapper.find("button").last().simulate("click");
+    const addRef = React.createRef<AddEqCriteria<string>>();
+    const { container } = render(<AddEqCriteria<string> ref={addRef} {...p} />);
+    act(() => {
+      addRef.current?.setState({ key: "openfarm_slug", value: "slug" });
+    });
+    fireEvent.click(container.querySelector("button") as Element);
     expect(editCriteriaSpy).toHaveBeenCalledWith(p.group, {
       string_eq: { openfarm_slug: ["slug"] }
     });
@@ -73,33 +72,32 @@ describe("<AddEqCriteria<number> />", () => {
   });
 
   it("renders number_eq add", () => {
-    const wrapper = mount(<AddEqCriteria<number> {...fakeProps()} />);
-    expect(wrapper.text()).toContain("=");
+    const { container } = render(<AddEqCriteria<number> {...fakeProps()} />);
+    expect(container.textContent).toContain("=");
   });
 
   it("changes field", () => {
-    const wrapper = shallow<AddEqCriteria<number>>(
-      <AddEqCriteria<number> {...fakeProps()} />);
-    wrapper.find("input").first().simulate("change", {
-      currentTarget: { value: "x" }
-    });
-    expect(wrapper.state().key).toEqual("x");
+    const { container } = render(<AddEqCriteria<number> {...fakeProps()} />);
+    const fieldInput = container.querySelectorAll("input")[0] as HTMLInputElement;
+    fireEvent.change(fieldInput, { target: { value: "x" } });
+    expect(fieldInput.value).toEqual("x");
   });
 
   it("changes value", () => {
-    const wrapper = shallow<AddEqCriteria<number>>(
-      <AddEqCriteria<number> {...fakeProps()} />);
-    wrapper.find("input").last().simulate("change", {
-      currentTarget: { value: "1" }
-    });
-    expect(wrapper.state().value).toEqual("1");
+    const { container } = render(<AddEqCriteria<number> {...fakeProps()} />);
+    const valueInput = container.querySelectorAll("input")[1] as HTMLInputElement;
+    fireEvent.change(valueInput, { target: { value: "1" } });
+    expect(valueInput.value).toEqual("1");
   });
 
   it("updates criteria", () => {
     const p = fakeProps();
-    const wrapper = mount(<AddEqCriteria<number> {...p} />);
-    wrapper.setState({ key: "x", value: 1 });
-    wrapper.find("button").last().simulate("click");
+    const addRef = React.createRef<AddEqCriteria<number>>();
+    const { container } = render(<AddEqCriteria<number> ref={addRef} {...p} />);
+    act(() => {
+      addRef.current?.setState({ key: "x", value: 1 as unknown as string });
+    });
+    fireEvent.click(container.querySelector("button") as Element);
     expect(editCriteriaSpy).toHaveBeenCalledWith(p.group, {
       number_eq: { x: [1] }
     });
@@ -115,33 +113,32 @@ describe("<AddNumberCriteria />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<AddNumberCriteria {...fakeProps()} />);
-    expect(wrapper.text()).toContain("<");
+    const { container } = render(<AddNumberCriteria {...fakeProps()} />);
+    expect(container.textContent).toContain("<");
   });
 
   it("changes field", () => {
-    const wrapper = shallow<AddNumberCriteria>(
-      <AddNumberCriteria {...fakeProps()} />);
-    wrapper.find("input").first().simulate("change", {
-      currentTarget: { value: "x" }
-    });
-    expect(wrapper.state().key).toEqual("x");
+    const { container } = render(<AddNumberCriteria {...fakeProps()} />);
+    const fieldInput = container.querySelectorAll("input")[0] as HTMLInputElement;
+    fireEvent.change(fieldInput, { target: { value: "x" } });
+    expect(fieldInput.value).toEqual("x");
   });
 
   it("changes value", () => {
-    const wrapper = shallow<AddNumberCriteria>(
-      <AddNumberCriteria {...fakeProps()} />);
-    wrapper.find("input").last().simulate("change", {
-      currentTarget: { value: "1" }
-    });
-    expect(wrapper.state().value).toEqual(1);
+    const { container } = render(<AddNumberCriteria {...fakeProps()} />);
+    const valueInput = container.querySelectorAll("input")[1] as HTMLInputElement;
+    fireEvent.change(valueInput, { target: { value: "1" } });
+    expect(valueInput.value).toEqual("1");
   });
 
   it("updates criteria", () => {
     const p = fakeProps();
-    const wrapper = mount(<AddNumberCriteria {...p} />);
-    wrapper.setState({ key: "x", value: 1 });
-    wrapper.find("button").last().simulate("click");
+    const addRef = React.createRef<AddNumberCriteria>();
+    const { container } = render(<AddNumberCriteria ref={addRef} {...p} />);
+    act(() => {
+      addRef.current?.setState({ key: "x", value: 1 });
+    });
+    fireEvent.click(container.querySelector("button") as Element);
     expect(editCriteriaSpy).toHaveBeenCalledWith(p.group, { number_lt: { x: 1 } });
   });
 });

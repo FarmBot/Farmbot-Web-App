@@ -1,5 +1,4 @@
 import React from "react";
-import { shallow } from "enzyme";
 import { VariablesPart } from "../variables_part";
 import { fakeAssertProps } from "../test_fixtures";
 import * as crud from "../../../../api/crud";
@@ -29,10 +28,10 @@ describe("<VariablesPart />", () => {
         data_value: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } },
       }
     };
-    const wrapper = shallow(<VariablesPart {...p} />);
-    const localsList = wrapper.find("LocalsList");
-    expect(localsList.length).toBeGreaterThanOrEqual(0);
-    localsList.length && localsList.first().props().onChange?.(variable);
+    const rendered = VariablesPart(p) as JSX.Element;
+    const localsList = rendered.props.children as JSX.Element | undefined;
+    expect(localsList).toBeDefined();
+    localsList?.props.onChange?.(variable);
   });
 
   it("handles missing body", () => {
@@ -46,9 +45,9 @@ describe("<VariablesPart />", () => {
         data_value: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } },
       }
     };
-    const wrapper = shallow(<VariablesPart {...p} />);
-    const localsList = wrapper.find("LocalsList");
-    expect(localsList.length).toBeGreaterThanOrEqual(0);
-    localsList.length && localsList.first().props().onChange?.(variable);
+    const rendered = VariablesPart(p) as JSX.Element;
+    const localsList = rendered.props.children as JSX.Element | undefined;
+    expect(localsList).toBeDefined();
+    localsList?.props.onChange?.(variable);
   });
 });

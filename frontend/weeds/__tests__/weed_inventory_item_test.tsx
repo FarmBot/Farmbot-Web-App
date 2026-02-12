@@ -1,7 +1,8 @@
 import React from "react";
-import { shallow, mount } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import {
-  WeedInventoryItem, WeedInventoryItemProps,
+  WeedInventoryItem,
+  WeedInventoryItemProps,
 } from "../weed_inventory_item";
 import { fakeWeed } from "../../__test_support__/fake_state/resources";
 import { Actions } from "../../constants";
@@ -24,6 +25,7 @@ beforeEach(() => {
 afterEach(() => {
   jest.restoreAllMocks();
 });
+
 describe("<WeedInventoryItem /> />", () => {
   const fakeProps = (): WeedInventoryItemProps => ({
     tpp: fakeWeed(),
@@ -35,22 +37,22 @@ describe("<WeedInventoryItem /> />", () => {
   it("renders named weed", () => {
     const p = fakeProps();
     p.tpp.body.name = "named weed";
-    const wrapper = mount(<WeedInventoryItem {...p} />);
-    expect(wrapper.text()).toContain("named weed");
+    const { container } = render(<WeedInventoryItem {...p} />);
+    expect(container.textContent).toContain("named weed");
   });
 
   it("renders unnamed weed", () => {
     const p = fakeProps();
     p.tpp.body.name = "";
-    const wrapper = mount(<WeedInventoryItem {...p} />);
-    expect(wrapper.text()).toContain("Untitled weed");
+    const { container } = render(<WeedInventoryItem {...p} />);
+    expect(container.textContent).toContain("Untitled weed");
   });
 
   it("navigates to weed", () => {
     const p = fakeProps();
     p.tpp.body.id = 1;
-    const wrapper = shallow(<WeedInventoryItem {...p} />);
-    wrapper.simulate("click");
+    const { container } = render(<WeedInventoryItem {...p} />);
+    fireEvent.click(container.querySelector(".weed-search-item") as Element);
     expect(mapActions.mapPointClickAction).not.toHaveBeenCalled();
     expect(mockNavigate).toHaveBeenCalledWith(Path.weeds(1));
     expect(p.dispatch).toHaveBeenCalledWith({
@@ -62,8 +64,8 @@ describe("<WeedInventoryItem /> />", () => {
   it("navigates to weed without id", () => {
     const p = fakeProps();
     p.tpp.body.id = undefined;
-    const wrapper = shallow(<WeedInventoryItem {...p} />);
-    wrapper.simulate("click");
+    const { container } = render(<WeedInventoryItem {...p} />);
+    fireEvent.click(container.querySelector(".weed-search-item") as Element);
     expect(mapActions.mapPointClickAction).not.toHaveBeenCalled();
     expect(mockNavigate).toHaveBeenCalledWith(Path.weeds("ERR_NO_POINT_ID"));
     expect(p.dispatch).toHaveBeenCalledWith({
@@ -75,8 +77,8 @@ describe("<WeedInventoryItem /> />", () => {
   it("removes item in box select mode", () => {
     location.pathname = Path.mock(Path.plants("select"));
     const p = fakeProps();
-    const wrapper = shallow(<WeedInventoryItem {...p} />);
-    wrapper.simulate("click");
+    const { container } = render(<WeedInventoryItem {...p} />);
+    fireEvent.click(container.querySelector(".weed-search-item") as Element);
     expect(mapActions.mapPointClickAction).toHaveBeenCalledWith(
       expect.any(Function),
       expect.any(Function),
@@ -91,35 +93,38 @@ describe("<WeedInventoryItem /> />", () => {
   it("hovers weed", () => {
     const p = fakeProps();
     p.tpp.body.id = 1;
-    const wrapper = shallow(<WeedInventoryItem {...p} />);
-    wrapper.simulate("mouseEnter");
+    const { container } = render(<WeedInventoryItem {...p} />);
+    fireEvent.mouseEnter(container.querySelector(".weed-search-item") as Element);
     expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.TOGGLE_HOVERED_POINT, payload: p.tpp.uuid
+      type: Actions.TOGGLE_HOVERED_POINT,
+      payload: p.tpp.uuid,
     });
   });
 
   it("shows hovered", () => {
     const p = fakeProps();
     p.hovered = true;
-    const wrapper = shallow(<WeedInventoryItem {...p} />);
-    expect(wrapper.hasClass("hovered")).toBeTruthy();
+    const { container } = render(<WeedInventoryItem {...p} />);
+    expect(container.querySelector(".weed-search-item")
+      ?.classList.contains("hovered")).toBeTruthy();
   });
 
   it("un-hovers weed", () => {
     const p = fakeProps();
     p.tpp.body.id = 1;
-    const wrapper = shallow(<WeedInventoryItem {...p} />);
-    wrapper.simulate("mouseLeave");
+    const { container } = render(<WeedInventoryItem {...p} />);
+    fireEvent.mouseLeave(container.querySelector(".weed-search-item") as Element);
     expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.TOGGLE_HOVERED_POINT, payload: undefined
+      type: Actions.TOGGLE_HOVERED_POINT,
+      payload: undefined,
     });
   });
 
   it("approves weed", () => {
     const p = fakeProps();
     p.pending = true;
-    const wrapper = mount(<WeedInventoryItem {...p} />);
-    wrapper.find(".fb-button.green").first().simulate("click");
+    const { container } = render(<WeedInventoryItem {...p} />);
+    fireEvent.click(container.querySelector(".fb-button.green") as Element);
     expect(crud.edit).toHaveBeenCalledWith(p.tpp, { plant_stage: "active" });
     expect(crud.save).toHaveBeenCalledWith(p.tpp.uuid);
   });
@@ -127,8 +132,8 @@ describe("<WeedInventoryItem /> />", () => {
   it("rejects weed", () => {
     const p = fakeProps();
     p.pending = true;
-    const wrapper = mount(<WeedInventoryItem {...p} />);
-    wrapper.find(".fb-button.red").first().simulate("click");
+    const { container } = render(<WeedInventoryItem {...p} />);
+    fireEvent.click(container.querySelector(".fb-button.red") as Element);
     expect(crud.destroy).toHaveBeenCalledWith(p.tpp.uuid, true);
   });
 
@@ -142,8 +147,8 @@ describe("<WeedInventoryItem /> />", () => {
     p.pending = true;
     p.tpp.body.radius = radius;
     p.maxSize = max;
-    const wrapper = mount(<WeedInventoryItem {...p} />);
-    expect(wrapper.find(".weed-item-icon").props().style?.transform)
-      .toEqual(`scale(${scale})`);
+    const { container } = render(<WeedInventoryItem {...p} />);
+    expect((container.querySelector(".weed-item-icon") as HTMLElement)
+      .style.transform).toEqual(`scale(${scale})`);
   });
 });

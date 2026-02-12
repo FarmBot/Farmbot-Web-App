@@ -1,5 +1,5 @@
 import React from "react";
-import { shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import { SaveBtn, SaveBtnProps } from "../save_button";
 import { SpecialStatus } from "farmbot";
 
@@ -16,7 +16,7 @@ describe("<SaveBtn />", () => {
   ])("returns button with status %s %s", (status, text) => {
     const p = fakeProps();
     p.status = status;
-    const wrapper = shallow(<SaveBtn {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain(text);
+    const { container } = render(<SaveBtn {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain(text);
   });
 });

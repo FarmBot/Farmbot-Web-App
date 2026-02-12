@@ -1,6 +1,6 @@
 import React from "react";
 import { ForgotPassword } from "../forgot_password";
-import { shallow } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 
 describe("<ForgotPassword/>", () => {
   it("calls onSubmit()", () => {
@@ -11,8 +11,10 @@ describe("<ForgotPassword/>", () => {
       onEmailChange: jest.fn()
     };
 
-    const el = shallow(<ForgotPassword {...props} />);
-    el.find("form").simulate("submit", {});
+    const { container } = render(<ForgotPassword {...props} />);
+    const form = container.querySelector("form");
+    expect(form).toBeTruthy();
+    fireEvent.submit(form as HTMLFormElement);
 
     expect(props.onSubmit).toHaveBeenCalled();
   });

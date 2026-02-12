@@ -2,8 +2,16 @@ import React from "react";
 import {
   WeedDetectorSlider, SliderProps, onHslChange, OnHslChangeProps,
 } from "../slider";
-import { shallow } from "enzyme";
-import { RangeSlider } from "@blueprintjs/core";
+import { fireEvent, render, screen } from "@testing-library/react";
+
+jest.mock("@blueprintjs/core", () => ({
+  RangeSlider: (props: {
+    onRelease?: (values: [number, number]) => void;
+  }) =>
+    <button onClick={() => props.onRelease?.([1, 5])}>
+      release slider
+    </button>,
+}));
 
 describe("<WeedDetectorSlider />", () => {
   beforeEach(() => {
@@ -25,8 +33,8 @@ describe("<WeedDetectorSlider />", () => {
 
   it("changes the slider", () => {
     const p = fakeProps();
-    const wrapper = shallow(<WeedDetectorSlider {...p} />);
-    wrapper.find(RangeSlider).props().onRelease?.([1, 5]);
+    render(<WeedDetectorSlider {...p} />);
+    fireEvent.click(screen.getByRole("button", { name: /release slider/i }));
     expect(p.onRelease).toHaveBeenCalledWith([1, 5]);
   });
 });

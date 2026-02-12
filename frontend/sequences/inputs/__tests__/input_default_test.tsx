@@ -1,13 +1,21 @@
 const mockUpdateArg = jest.fn();
 
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { render, fireEvent } from "@testing-library/react";
 import { InputDefault } from "../input_default";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { StepInputProps } from "../../interfaces";
 import * as stepTiles from "../../step_tiles";
 import { Wait } from "farmbot";
 let updateStepSpy: jest.SpyInstance;
+
+jest.mock("../../../ui", () => ({
+  ...jest.requireActual("../../../ui"),
+  BlurableInput: (props: {
+    value: string | number;
+    onCommit: (e: React.SyntheticEvent<HTMLInputElement>) => void;
+  }) => <input value={props.value} onBlur={e => props.onCommit(e)} />,
+}));
 
 beforeEach(() => {
   updateStepSpy = jest.spyOn(stepTiles, "updateStep")
@@ -29,24 +37,30 @@ describe("<InputDefault />", () => {
 
   it("renders arg value", () => {
     const p = fakeProps();
-    const wrapper = mount(<InputDefault {...p} />);
-    expect(wrapper.find("input").props().value).toEqual(0);
+    const { container } = render(<InputDefault {...p} />);
+    expect((container.querySelector("input") as HTMLInputElement).value)
+      .toEqual("0");
   });
 
   it("doesn't render bad arg value type", () => {
     const p = fakeProps();
     (p.step as Wait).args.milliseconds = false as unknown as number;
-    const wrapper = mount(<InputDefault {...p} />);
-    expect(wrapper.find("input").props().value).toEqual("");
+    const { container } = render(<InputDefault {...p} />);
+    expect((container.querySelector("input") as HTMLInputElement).value)
+      .toEqual("");
   });
 
   it("updates the step", () => {
     const p = fakeProps();
-    const wrapper = shallow(<InputDefault {...p} />);
+    const { container } = render(<InputDefault {...p} />);
+    const input = container.querySelector("input") as Element;
     const e = { currentTarget: { value: "100" } };
-    wrapper.find("BlurableInput").simulate("commit", e);
+    fireEvent.blur(input, e);
     expect(stepTiles.updateStep).toHaveBeenCalledTimes(1);
     expect(stepTiles.updateStep).toHaveBeenCalledWith(p);
-    expect(mockUpdateArg).toHaveBeenCalledWith(e);
+    expect(mockUpdateArg).toHaveBeenCalledTimes(1);
+    const eventArg = (mockUpdateArg as jest.Mock).mock.calls[0][0] as
+      React.SyntheticEvent<HTMLInputElement>;
+    expect(eventArg.type).toEqual("blur");
   });
 });

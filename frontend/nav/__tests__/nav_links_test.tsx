@@ -1,5 +1,5 @@
 import React from "react";
-import { shallow, mount } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import { NavLinks } from "../nav_links";
 import { NavLinksProps } from "../interfaces";
 import {
@@ -53,26 +53,30 @@ describe("<NavLinks />", () => {
     designer: fakeDesignerState(),
   });
 
+  const plantsLink = (container: ParentNode) =>
+    Array.from(container.querySelectorAll("a"))
+      .find(a => a.getAttribute("href") == Path.plants());
+
   it("toggles the mobile nav menu", () => {
     const p = fakeProps();
     p.alertCount = 0;
-    const wrapper = shallow(<NavLinks {...p} />);
-    wrapper.find("Link").first().simulate("click");
+    const { container } = render(<NavLinks {...p} />);
+    fireEvent.click(container.querySelector("#map") as Element);
     expect(p.close).toHaveBeenCalled();
-    expect(wrapper.text()).not.toContain("0");
+    expect(container.textContent).not.toContain("0");
   });
 
   it("shows indicator", () => {
-    const wrapper = mount(<NavLinks {...fakeProps()} />);
-    expect(wrapper.text()).toContain("1");
+    const { container } = render(<NavLinks {...fakeProps()} />);
+    expect(container.textContent).toContain("1");
   });
 
   it("clicks map icon", () => {
     const p = fakeProps();
     const dispatch = jest.fn();
     p.dispatch = mockDispatch(dispatch);
-    const wrapper = mount(<NavLinks {...p} />);
-    wrapper.find("a").first().simulate("click");
+    const { container } = render(<NavLinks {...p} />);
+    fireEvent.click(container.querySelector("#map") as Element);
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_PANEL_OPEN, payload: false,
     });
@@ -83,14 +87,14 @@ describe("<NavLinks />", () => {
     const p = fakeProps();
     p.helpState.currentTour = "gettingStarted";
     p.helpState.currentTourStep = "plants";
-    const wrapper = mount(<NavLinks {...p} />);
-    expect(wrapper.html()).toContain("beacon soft");
+    const { container } = render(<NavLinks {...p} />);
+    expect(container.innerHTML).toContain("beacon soft");
   });
 
   it("shows active link", () => {
     location.pathname = Path.mock(Path.plants());
-    const wrapper = shallow(<NavLinks {...fakeProps()} />);
-    expect(wrapper.find("Link").at(0).hasClass("active")).toBeTruthy();
+    const { container } = render(<NavLinks {...fakeProps()} />);
+    expect(plantsLink(container)?.className).toContain("active");
   });
 
   it("clicks active link: closes panel", () => {
@@ -98,8 +102,8 @@ describe("<NavLinks />", () => {
     const p = fakeProps();
     const dispatch = jest.fn();
     p.dispatch = mockDispatch(dispatch);
-    const wrapper = mount(<NavLinks {...p} />);
-    wrapper.find("Link").at(0).simulate("click");
+    const { container } = render(<NavLinks {...p} />);
+    fireEvent.click(plantsLink(container) as Element);
     expect(p.close).toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_PANEL_OPEN, payload: false,
@@ -111,8 +115,8 @@ describe("<NavLinks />", () => {
     const p = fakeProps();
     const dispatch = jest.fn();
     p.dispatch = mockDispatch(dispatch);
-    const wrapper = mount(<NavLinks {...p} />);
-    wrapper.find("Link").at(0).simulate("click");
+    const { container } = render(<NavLinks {...p} />);
+    fireEvent.click(plantsLink(container) as Element);
     expect(p.close).toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_PANEL_OPEN, payload: true,
@@ -122,21 +126,21 @@ describe("<NavLinks />", () => {
   it("shows sensors link", () => {
     getWebAppConfigValueSpy.mockImplementation(() => () => false);
     const p = fakeProps();
-    const wrapper = shallow(<NavLinks {...p} />);
-    expect(wrapper.html().toLowerCase()).toContain("sensors");
+    const { container } = render(<NavLinks {...p} />);
+    expect(container.innerHTML.toLowerCase()).toContain("sensors");
   });
 
   it("doesn't show sensors link", () => {
     getWebAppConfigValueSpy.mockImplementation(() => () => true);
     const p = fakeProps();
-    const wrapper = shallow(<NavLinks {...p} />);
-    expect(wrapper.html().toLowerCase()).not.toContain("sensors");
+    const { container } = render(<NavLinks {...p} />);
+    expect(container.innerHTML.toLowerCase()).not.toContain("sensors");
   });
 
   it("doesn't show farmware link", () => {
     selectAllFarmwareInstallationsSpy.mockImplementation(() => []);
-    const wrapper = shallow(<NavLinks {...fakeProps()} />);
-    expect(wrapper.html().toLowerCase()).not.toContain("farmware");
+    const { container } = render(<NavLinks {...fakeProps()} />);
+    expect(container.innerHTML.toLowerCase()).not.toContain("farmware");
   });
 
   it("shows farmware link", () => {
@@ -144,7 +148,7 @@ describe("<NavLinks />", () => {
     selectAllFarmwareInstallationsSpy.mockImplementation(() => [{
       body: { package: "custom-farmware" },
     }] as never);
-    const wrapper = shallow(<NavLinks {...fakeProps()} />);
-    expect(wrapper.html().toLowerCase()).toContain("farmware");
+    const { container } = render(<NavLinks {...fakeProps()} />);
+    expect(container.innerHTML.toLowerCase()).toContain("farmware");
   });
 });

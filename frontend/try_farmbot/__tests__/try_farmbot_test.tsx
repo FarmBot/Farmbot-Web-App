@@ -11,7 +11,7 @@ jest.mock("mqtt", () => ({
 }));
 
 import React from "react";
-import { shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import { DEMO_LOADING, TryFarmbot } from "../try_farmbot";
 
 beforeEach(() => {
@@ -36,7 +36,7 @@ describe("<TryFarmbot />", () => {
 
   it("renders", () => {
     console.error = jest.fn();
-    const wrapper = shallow(<TryFarmbot />);
-    expect(wrapper.text().toLowerCase()).toContain("loading");
+    const { container } = render(<TryFarmbot />);
+    expect(container.textContent?.toLowerCase()).toContain("loading");
   });
 });

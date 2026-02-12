@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { Caster, CasterProps } from "../caster";
 import { INITIAL } from "../../../config";
 import { clone } from "lodash";
@@ -10,8 +10,8 @@ describe("<Caster />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<Caster {...fakeProps()} />);
-    expect(wrapper.html()).toContain("cylinder");
-    expect(wrapper.html()).toContain("extrude");
+    const { container } = render(<Caster {...fakeProps()} />);
+    expect(container.innerHTML).toContain("cylinder");
+    expect(container.innerHTML).toContain("extrude");
   });
 });

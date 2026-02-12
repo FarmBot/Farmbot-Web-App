@@ -6,7 +6,9 @@ let mockGroup: TaggedPointGroup | undefined = undefined;
 
 import React from "react";
 import { GardenMap } from "../garden_map";
-import { shallow, mount } from "enzyme";
+import {
+  act, cleanup, createEvent, fireEvent, render,
+} from "@testing-library/react";
 import { GardenMapProps } from "../../interfaces";
 import { setEggStatus, EggKeys } from "../easter_eggs/status";
 import * as mapActions from "../actions";
@@ -36,9 +38,146 @@ import {
 import { keyboardEvent } from "../../../__test_support__/fake_html_events";
 import * as lodash from "lodash";
 import { Path } from "../../../internal_urls";
-import { mountWithContext } from "../../../__test_support__/mount_with_context";
 import * as profile from "../profile";
 import * as groupDetail from "../../../point_groups/group_detail";
+import { NavigationContext } from "../../../routes_helpers";
+
+type EventName =
+  | "click"
+  | "mouseDown"
+  | "mouseMove"
+  | "mouseUp"
+  | "dragOver"
+  | "dragStart"
+  | "dragEnter"
+  | "scroll";
+
+interface RenderedGardenMap {
+  find: (selector: string) => {
+    simulate: (event: EventName, payload?: unknown) => void;
+  };
+  html: () => string;
+  instance: () => GardenMap;
+  setProps: (props: GardenMapProps) => void;
+  setState: (state: Record<string, unknown>) => void;
+  state: () => Partial<Record<string, unknown>>;
+  unmount: () => void;
+  update: () => void;
+}
+
+const fire = (target: Element, event: EventName, payload?: unknown) => {
+  const eventPayload = {
+    ...((typeof payload === "object" && payload) ? payload : {}),
+  } as Record<string, unknown>;
+  if (!("clientX" in eventPayload) && "pageX" in eventPayload) {
+    eventPayload.clientX = eventPayload.pageX;
+  }
+  if (!("clientY" in eventPayload) && "pageY" in eventPayload) {
+    eventPayload.clientY = eventPayload.pageY;
+  }
+  const patchEvent = (created: Event) => {
+    const originalPreventDefault = created.preventDefault.bind(created);
+    if (typeof eventPayload.preventDefault === "function") {
+      created.preventDefault = () => {
+        (eventPayload.preventDefault as () => void)();
+        originalPreventDefault();
+      };
+    }
+    if ("pageX" in eventPayload) {
+      Object.defineProperty(created, "pageX", {
+        value: eventPayload.pageX,
+        configurable: true,
+      });
+    }
+    if ("pageY" in eventPayload) {
+      Object.defineProperty(created, "pageY", {
+        value: eventPayload.pageY,
+        configurable: true,
+      });
+    }
+    return created;
+  };
+  switch (event) {
+    case "click":
+      return fireEvent(target, patchEvent(createEvent.click(target, eventPayload)));
+    case "mouseDown":
+      return fireEvent(target, patchEvent(createEvent.mouseDown(target, eventPayload)));
+    case "mouseMove":
+      return fireEvent(target, patchEvent(createEvent.mouseMove(target, eventPayload)));
+    case "mouseUp":
+      return fireEvent(target, patchEvent(createEvent.mouseUp(target, eventPayload)));
+    case "dragOver":
+      const dragOver = patchEvent(new Event("dragover", {
+        bubbles: true, cancelable: true,
+      }));
+      if ("dataTransfer" in eventPayload) {
+        Object.defineProperty(dragOver, "dataTransfer", {
+          value: eventPayload.dataTransfer,
+          configurable: true,
+        });
+      }
+      return fireEvent(target, dragOver);
+    case "dragStart":
+      const dragStart = patchEvent(new Event("dragstart", {
+        bubbles: true, cancelable: true,
+      }));
+      if ("dataTransfer" in eventPayload) {
+        Object.defineProperty(dragStart, "dataTransfer", {
+          value: eventPayload.dataTransfer,
+          configurable: true,
+        });
+      }
+      return fireEvent(target, dragStart);
+    case "dragEnter":
+      return fireEvent(target, patchEvent(new Event("dragenter", {
+        bubbles: true, cancelable: true,
+      })));
+    case "scroll":
+      return fireEvent(target, patchEvent(createEvent.scroll(target, eventPayload)));
+  }
+};
+
+const makeWrapper = (
+  element: React.ReactElement,
+  useContext = false,
+): RenderedGardenMap => {
+  const ref = React.createRef<GardenMap>();
+  const props = element.props as GardenMapProps;
+  const wrap = (p: GardenMapProps) => useContext
+    ? <NavigationContext.Provider value={mockNavigate}>
+      <GardenMap {...p} ref={ref} />
+    </NavigationContext.Provider>
+    : <GardenMap {...p} ref={ref} />;
+  const view = render(wrap(props));
+  return {
+    find: (selector: string) => ({
+      simulate: (event: EventName, payload?: unknown) => {
+        const target = view.container.querySelector(selector);
+        if (!target) { throw new Error(`Expected ${selector}`); }
+        fire(target, event, payload);
+      },
+    }),
+    html: () => view.container.innerHTML,
+    instance: () => {
+      if (!ref.current) { throw new Error("Expected GardenMap instance"); }
+      return ref.current;
+    },
+    setProps: (nextProps: GardenMapProps) => {
+      view.rerender(wrap(nextProps));
+    },
+    setState: (state: Record<string, unknown>) => {
+      act(() => ref.current?.setState(state));
+    },
+    state: () => ref.current?.state || {},
+    unmount: () => view.unmount(),
+    update: () => act(() => undefined),
+  };
+};
+
+const shallow = <T,>(element: React.ReactElement<T>) => makeWrapper(element);
+const mount = <T,>(element: React.ReactElement<T>) => makeWrapper(element);
+const mountWithContext = <T,>(element: React.ReactElement<T>) =>
+  makeWrapper(element, true);
 
 const DEFAULT_EVENT = { preventDefault: jest.fn(), pageX: NaN, pageY: NaN };
 let getModeSpy: jest.SpyInstance;
@@ -175,6 +314,7 @@ describe("<GardenMap/>", () => {
   });
 
   afterEach(() => {
+    cleanup();
     getModeSpy.mockRestore();
     getMapSizeSpy.mockRestore();
     getGardenCoordinatesSpy.mockRestore();
@@ -610,7 +750,7 @@ describe("<GardenMap/>", () => {
       toLocation: { x: 100, y: 100, z: 0 }, previousSelectionBoxArea: 0,
     });
     wrapper.instance().navigate = jest.fn();
-    wrapper.instance().closePanel()();
+    act(() => wrapper.instance().closePanel()());
     expect(wrapper.instance().navigate).toHaveBeenCalledWith(
       expect.stringContaining(Path.location()));
     expect(mapActions.closePlantInfo).toHaveBeenCalled();
@@ -625,7 +765,7 @@ describe("<GardenMap/>", () => {
       toLocation: { x: 100, y: 100, z: 0 }, previousSelectionBoxArea: 1000,
     });
     wrapper.instance().navigate = jest.fn();
-    wrapper.instance().closePanel()();
+    act(() => wrapper.instance().closePanel()());
     expect(wrapper.instance().navigate).not.toHaveBeenCalledWith(
       expect.stringContaining(Path.location()));
     expect(mapActions.closePlantInfo).toHaveBeenCalled();
@@ -668,7 +808,7 @@ describe("<GardenMap/>", () => {
   it("sets state", () => {
     const wrapper = shallow<GardenMap>(<GardenMap {...fakeProps()} />);
     expect(wrapper.instance().state.isDragging).toBeFalsy();
-    wrapper.instance().setMapState({ isDragging: true });
+    act(() => wrapper.instance().setMapState({ isDragging: true }));
     expect(wrapper.instance().state.isDragging).toBe(true);
   });
 

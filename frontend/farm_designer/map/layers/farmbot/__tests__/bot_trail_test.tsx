@@ -1,5 +1,5 @@
 import React from "react";
-import { shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import {
   BotTrail, BotTrailProps, VirtualTrail, resetVirtualTrail,
 } from "../bot_trail";
@@ -24,21 +24,41 @@ describe("<BotTrail />", () => {
     };
   };
 
+  const renderTrail = (props: BotTrailProps) =>
+    render(<svg><BotTrail {...props} /></svg>);
+
+  const getNumericAttribute = (element: Element, key: string) => {
+    const value = element.getAttribute(key);
+    if (value === null) { throw new Error(`Missing attribute ${key}`); }
+    return Number(value);
+  };
+
+  const lineProps = (line: Element) => ({
+    id: line.getAttribute("id"),
+    stroke: line.getAttribute("stroke"),
+    strokeOpacity: getNumericAttribute(line, "stroke-opacity"),
+    strokeWidth: getNumericAttribute(line, "stroke-width"),
+    x1: getNumericAttribute(line, "x1"),
+    x2: getNumericAttribute(line, "x2"),
+    y1: getNumericAttribute(line, "y1"),
+    y2: getNumericAttribute(line, "y2"),
+  });
+
   it("shows custom length trail", () => {
     sessionStorage.setItem(VirtualTrail.length, JSON.stringify(5));
     const p = fakeProps();
     p.mapTransformProps.quadrant = 2;
-    const wrapper = shallow(<BotTrail {...p} />);
-    const lines = wrapper.find(".virtual-bot-trail").find("line");
+    const { container } = renderTrail(p);
+    const lines = container.querySelectorAll(".virtual-bot-trail line");
     expect(lines.length).toEqual(4);
-    expect(lines.first().props()).toEqual({
+    expect(lineProps(lines[0])).toEqual({
       id: "trail-line-1",
       stroke: "red",
       strokeOpacity: 0.25,
       strokeWidth: 1.5,
       x1: 2, x2: 1, y1: 20, y2: 10
     });
-    expect(lines.last().props()).toEqual({
+    expect(lineProps(lines[lines.length - 1])).toEqual({
       id: "trail-line-4",
       stroke: "red",
       strokeOpacity: 1,
@@ -53,10 +73,10 @@ describe("<BotTrail />", () => {
     p.profileAxis = "y";
     p.selectionWidth = 50;
     p.profilePosition = { x: 0, y: 0 };
-    const wrapper = shallow(<BotTrail {...p} />);
-    const lines = wrapper.find(".virtual-bot-trail").find("line");
+    const { container } = renderTrail(p);
+    const lines = container.querySelectorAll(".virtual-bot-trail line");
     expect(lines.length).toEqual(2);
-    expect(lines.first().props()).toEqual({
+    expect(lineProps(lines[0])).toEqual({
       id: "trail-line-1",
       stroke: "red",
       strokeOpacity: 0.5,
@@ -67,24 +87,25 @@ describe("<BotTrail />", () => {
 
   it("shows default length trail", () => {
     sessionStorage.removeItem(VirtualTrail.length);
-    const wrapper = shallow(<BotTrail {...fakeProps()} />);
-    const lines = wrapper.find(".virtual-bot-trail").find("line");
+    const { container } = renderTrail(fakeProps());
+    const lines = container.querySelectorAll(".virtual-bot-trail line");
     expect(lines.length).toEqual(5);
-    expect(wrapper.find(".virtual-bot-trail").find("text").length).toEqual(0);
+    expect(container.querySelectorAll(".virtual-bot-trail text").length)
+      .toEqual(0);
   });
 
   it("doesn't store duplicate last trail point", () => {
     sessionStorage.removeItem(VirtualTrail.length);
     const p = fakeProps();
     p.position = { x: 4, y: 40, z: 400 };
-    const wrapper = shallow(<BotTrail {...p} />);
-    const lines = wrapper.find(".virtual-bot-trail").find("line");
+    const { container } = renderTrail(p);
+    const lines = container.querySelectorAll(".virtual-bot-trail line");
     expect(lines.length).toEqual(4);
   });
 
   it("shows water", () => {
-    const wrapper = shallow(<BotTrail {...fakeProps()} />);
-    const circles = wrapper.find(".virtual-bot-trail").find("circle");
+    const { container } = renderTrail(fakeProps());
+    const circles = container.querySelectorAll(".virtual-bot-trail circle");
     expect(circles.length).toEqual(2);
   });
 
@@ -92,17 +113,19 @@ describe("<BotTrail />", () => {
     const p = fakeProps();
     p.position = { x: 4, y: 40, z: 400 };
     p.peripheralValues = [{ label: "water", value: true }];
-    const wrapper = shallow(<BotTrail {...p} />);
-    const water = wrapper.find(".virtual-bot-trail").find("circle").last();
-    expect(water.props().r).toEqual(21);
+    const { container } = renderTrail(p);
+    const circles = container.querySelectorAll(".virtual-bot-trail circle");
+    const water = circles[circles.length - 1];
+    expect(getNumericAttribute(water, "r")).toEqual(21);
   });
 
   it("shows missed step indicators", () => {
     const p = fakeProps();
     p.missedSteps = { x: 60, y: 70, z: 80 };
     p.displayMissedSteps = true;
-    const wrapper = shallow(<BotTrail {...p} />);
-    expect(wrapper.find(".virtual-bot-trail").find("text").length).toEqual(3);
+    const { container } = renderTrail(p);
+    expect(container.querySelectorAll(".virtual-bot-trail text").length)
+      .toEqual(3);
   });
 });
 

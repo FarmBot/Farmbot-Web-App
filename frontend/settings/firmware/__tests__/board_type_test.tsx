@@ -1,7 +1,7 @@
 let mockFeatureBoolean = false;
 
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { BoardType } from "../board_type";
 import { BoardTypeProps } from "../interfaces";
 import { bot } from "../../../__test_support__/fake_state/bot";
@@ -10,6 +10,32 @@ import {
 } from "../../../__test_support__/fake_time_settings";
 import * as shouldDisplay from "../../../devices/should_display";
 import * as deviceActions from "../../../devices/actions";
+
+jest.mock("../../../ui", () => {
+  const actual = jest.requireActual("../../../ui");
+  return {
+    ...actual,
+    FBSelect: (props: {
+      selectedItem?: { label: string, value: string },
+      list: Array<{ label: string, value: string }>,
+      extraClass?: string,
+      onChange: (ddi: { label: string, value: string }) => void,
+    }) =>
+      <div>
+        <span data-testid="selected-item">
+          {props.selectedItem ? JSON.stringify(props.selectedItem) : ""}
+        </span>
+        <span data-testid="select-list">{JSON.stringify(props.list)}</span>
+        <span data-testid="extra-class">{props.extraClass || ""}</span>
+        <button onClick={() => props.onChange({
+          label: "Farmduino (Genesis v1.3)",
+          value: "farmduino",
+        })}>
+          select-farmduino
+        </button>
+      </div>,
+  };
+});
 
 let shouldDisplayFeatureSpy: jest.SpyInstance;
 let updateConfigSpy: jest.SpyInstance;
@@ -28,13 +54,6 @@ afterEach(() => {
 });
 
 describe("<BoardType/>", () => {
-  const selectProps = (wrapper: ReturnType<typeof mount>) =>
-    wrapper.find("FBSelect").props() as {
-      selectedItem?: { label: string };
-      list: Array<{ label: string; value: string }>;
-      onChange: (ddi: { label: string; value: string }) => void;
-    };
-
   const fakeProps = (): BoardTypeProps => ({
     bot,
     alerts: [],
@@ -48,30 +67,31 @@ describe("<BoardType/>", () => {
   it("renders with valid firmwareHardware", () => {
     const p = fakeProps();
     p.firmwareHardware = "farmduino";
-    const wrapper = mount(<BoardType {...p} />);
-    expect(selectProps(wrapper).selectedItem?.label)
-      .toEqual("Farmduino (Genesis v1.3)");
-    expect(wrapper.html()).not.toContain("dim");
+    render(<BoardType {...p} />);
+    expect(screen.getByTestId("selected-item").textContent).toEqual(JSON.stringify({
+      label: "Farmduino (Genesis v1.3)",
+      value: "farmduino",
+    }));
+    expect(screen.getByTestId("extra-class").textContent).not.toContain("dim");
   });
 
   it("renders with valid firmwareHardware: inconsistent", () => {
     const p = fakeProps();
     p.firmwareHardware = "farmduino";
     p.sourceFbosConfig = () => ({ value: true, consistent: false });
-    const wrapper = mount(<BoardType {...p} />);
-    expect(selectProps(wrapper).selectedItem?.label)
-      .toEqual("Farmduino (Genesis v1.3)");
-    expect(wrapper.html()).toContain("dim");
+    render(<BoardType {...p} />);
+    expect(screen.getByTestId("selected-item").textContent).toEqual(JSON.stringify({
+      label: "Farmduino (Genesis v1.3)",
+      value: "farmduino",
+    }));
+    expect(screen.getByTestId("extra-class").textContent).toContain("dim");
   });
 
   it("calls updateConfig", () => {
     const p = fakeProps();
     p.firmwareHardware = "arduino";
-    const wrapper = mount(<BoardType {...p} />);
-    selectProps(wrapper).onChange({
-      label: "Farmduino (Genesis v1.3)",
-      value: "farmduino",
-    });
+    render(<BoardType {...p} />);
+    fireEvent.click(screen.getByText("select-farmduino"));
     expect(updateConfigSpy).toHaveBeenCalledWith({
       firmware_hardware: "farmduino"
     });
@@ -80,8 +100,10 @@ describe("<BoardType/>", () => {
 
   it("displays boards", () => {
     mockFeatureBoolean = false;
-    const wrapper = mount(<BoardType {...fakeProps()} />);
-    const labels = selectProps(wrapper).list.map(item => item.label);
+    render(<BoardType {...fakeProps()} />);
+    const list = JSON.parse(screen.getByTestId("select-list").textContent || "[]") as
+      Array<{ label: string, value: string }>;
+    const labels = list.map(item => item.label);
     [
       "Farmduino (Genesis v1.7)",
       "Farmduino (Genesis v1.6)",
@@ -99,8 +121,10 @@ describe("<BoardType/>", () => {
 
   it("displays more boards", () => {
     mockFeatureBoolean = true;
-    const wrapper = mount(<BoardType {...fakeProps()} />);
-    const labels = selectProps(wrapper).list.map(item => item.label);
+    render(<BoardType {...fakeProps()} />);
+    const list = JSON.parse(screen.getByTestId("select-list").textContent || "[]") as
+      Array<{ label: string, value: string }>;
+    const labels = list.map(item => item.label);
     expect(labels).toContain("Farmduino (Express v1.2)");
     expect(labels).toContain("Farmduino (Genesis v1.8)");
   });

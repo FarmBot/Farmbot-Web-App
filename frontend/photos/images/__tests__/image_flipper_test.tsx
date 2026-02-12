@@ -1,5 +1,5 @@
 import React from "react";
-import { shallow, mount } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import {
   ImageFlipper, PLACEHOLDER_FARMBOT, PLACEHOLDER_FARMBOT_DARK,
 } from "../image_flipper";
@@ -11,6 +11,10 @@ import { Actions } from "../../../constants";
 import { UUID } from "../../../resources/interfaces";
 import * as imageActions from "../actions";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
+
+jest.mock("../flipper_image", () => ({
+  FlipperImage: () => <div className={"flipper-image-mock"} />,
+}));
 
 let selectImageSpy: jest.SpyInstance;
 let setShownMapImagesSpy: jest.SpyInstance;
@@ -64,18 +68,14 @@ describe("<ImageFlipper/>", () => {
 
   it("defaults to index 0 and flips up", () => {
     const p = fakeProps();
-    const flipper = shallow<ImageFlipper>(<ImageFlipper {...p} />);
-    const up = flipper.instance().go(1);
-    up();
+    new ImageFlipper(p).go(1)();
     expectFlip(p.images[1].uuid);
   });
 
   it("flips down", () => {
     const p = fakeProps();
     p.currentImage = p.images[1];
-    const flipper = shallow<ImageFlipper>(<ImageFlipper {...p} />);
-    const down = flipper.instance().go(-1);
-    down();
+    new ImageFlipper(p).go(-1)();
     expectFlip(p.images[0].uuid);
   });
 
@@ -83,17 +83,15 @@ describe("<ImageFlipper/>", () => {
     const p = fakeProps();
     p.flipActionOverride = jest.fn();
     p.currentImage = p.images[1];
-    const flipper = shallow<ImageFlipper>(<ImageFlipper {...p} />);
-    const down = flipper.instance().go(-1);
-    down();
+    new ImageFlipper(p).go(-1)();
     expect(p.flipActionOverride).toHaveBeenCalledWith(0);
   });
 
   it("flips down: arrow key", () => {
     const p = fakeProps();
     p.currentImage = p.images[1];
-    const flipper = shallow<ImageFlipper>(<ImageFlipper {...p} />);
-    flipper.find(".image-flipper").first().simulate("keydown",
+    const { container } = render(<ImageFlipper {...p} />);
+    fireEvent.keyDown(container.querySelector(".image-flipper") as HTMLElement,
       { key: "ArrowRight" });
     expectFlip(p.images[0].uuid);
   });
@@ -101,8 +99,8 @@ describe("<ImageFlipper/>", () => {
   it("flips up: arrow key", () => {
     const p = fakeProps();
     p.currentImage = p.images[1];
-    const flipper = shallow<ImageFlipper>(<ImageFlipper {...p} />);
-    flipper.find(".image-flipper").first().simulate("keydown",
+    const { container } = render(<ImageFlipper {...p} />);
+    fireEvent.keyDown(container.querySelector(".image-flipper") as HTMLElement,
       { key: "ArrowLeft" });
     expectFlip(p.images[2].uuid);
   });
@@ -110,77 +108,72 @@ describe("<ImageFlipper/>", () => {
   it("stops at upper end", () => {
     const p = fakeProps();
     p.currentImage = p.images[2];
-    const flipper = shallow<ImageFlipper>(<ImageFlipper {...p} />);
-    const up = flipper.instance().go(1);
-    up();
+    new ImageFlipper(p).go(1)();
     expectNoFlip();
   });
 
   it("stops at lower end", () => {
     const p = fakeProps();
     p.currentImage = p.images[0];
-    const flipper = shallow<ImageFlipper>(<ImageFlipper {...p} />);
-    const down = flipper.instance().go(-1);
-    down();
+    new ImageFlipper(p).go(-1)();
     expectNoFlip();
   });
 
   it("hides flippers when no images", () => {
     const p = fakeProps();
     p.images = prepareImages([]);
-    const wrapper = shallow(<ImageFlipper {...p} />);
-    expect(wrapper.find("button").length).toEqual(0);
+    const { container } = render(<ImageFlipper {...p} />);
+    expect(container.querySelectorAll("button").length).toEqual(0);
   });
 
   it("hides flippers when only one image", () => {
     const p = fakeProps();
     p.images = prepareImages([fakeImages[0]]);
-    const wrapper = shallow(<ImageFlipper {...p} />);
-    expect(wrapper.find("button").length).toEqual(0);
+    const { container } = render(<ImageFlipper {...p} />);
+    expect(container.querySelectorAll("button").length).toEqual(0);
   });
 
   it("hides next flipper on load", () => {
-    const wrapper = shallow(<ImageFlipper {...fakeProps()} />);
-    wrapper.update();
-    const buttons = wrapper.find("button");
+    const { container } = render(<ImageFlipper {...fakeProps()} />);
+    const buttons = container.querySelectorAll("button");
     expect(buttons.length).toEqual(1);
-    expect(buttons.first().hasClass("image-flipper-left")).toBeTruthy();
+    expect(buttons.item(0)?.className).toContain("image-flipper-left");
   });
 
   it("hides flipper at ends", () => {
     const p = fakeProps();
     p.currentImage = p.images[1];
-    const wrapper = shallow(<ImageFlipper {...p} />);
-    const buttons = wrapper.render().find("button");
-    expect(buttons.html()).toContain("left");
-    expect(buttons.length).toEqual(1);
-    wrapper.find("button").first().simulate("click");
+    const { container } = render(<ImageFlipper {...p} />);
+    const startButtons = container.querySelectorAll("button");
+    expect(startButtons.length).toEqual(1);
+    expect(startButtons.item(0)?.className).toContain("left");
+    fireEvent.click(screen.getByTitle(/previous image/i));
     expectFlip(p.images[2].uuid);
-    wrapper.update();
-    const btns = wrapper.render().find("button");
-    expect(btns.html()).toContain("right");
-    expect(btns.length).toEqual(1);
+    const endButtons = container.querySelectorAll("button");
+    expect(endButtons.length).toEqual(1);
+    expect(endButtons.item(0)?.className).toContain("right");
   });
 
   it("renders placeholder", () => {
     const p = fakeProps();
     p.images = [];
-    const wrapper = mount(<ImageFlipper {...p} />);
-    expect(wrapper.find("img").last().props().src).toEqual(PLACEHOLDER_FARMBOT);
+    const { container } = render(<ImageFlipper {...p} />);
+    expect(container.querySelector("img")?.getAttribute("src"))
+      .toEqual(PLACEHOLDER_FARMBOT);
   });
 
   it("renders dark placeholder", () => {
     const p = fakeProps();
     p.images = [];
     p.id = "fullscreen-flipper";
-    const wrapper = mount(<ImageFlipper {...p} />);
-    expect(wrapper.find("img").last().props().src)
+    const { container } = render(<ImageFlipper {...p} />);
+    expect(container.querySelector("img")?.getAttribute("src"))
       .toEqual(PLACEHOLDER_FARMBOT_DARK);
   });
 
   it("calls back on transformed image load", () => {
     const p = fakeProps();
-    const wrapper = shallow<ImageFlipper>(<ImageFlipper {...p} />);
+    const instance = new ImageFlipper(p);
     const fakeImg = new Image();
     Object.defineProperty(fakeImg, "naturalWidth", {
       value: 10, configurable: true,
@@ -188,7 +181,7 @@ describe("<ImageFlipper/>", () => {
     Object.defineProperty(fakeImg, "naturalHeight", {
       value: 20, configurable: true,
     });
-    wrapper.instance().onImageLoad(fakeImg);
+    instance.onImageLoad(fakeImg);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_IMAGE_SIZE,
       payload: { width: 10, height: 20 },

@@ -1,7 +1,7 @@
 const mockStorj: Dictionary<number | boolean> = {};
 
 import React from "react";
-import { ReactWrapper, mount, shallow } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import { LogsPanel as Logs, RawLogs } from "../index";
 import { TaggedLog, Dictionary } from "farmbot";
 import { NumericSetting } from "../../session_keys";
@@ -9,7 +9,6 @@ import { fakeLog } from "../../__test_support__/fake_state/resources";
 import { LogsPanelProps, LogsProps } from "../interfaces";
 import { MessageType } from "../../sequences/interfaces";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
-import { SearchField } from "../../ui/search_field";
 import { bot } from "../../__test_support__/fake_state/bot";
 import * as crud from "../../api/crud";
 import { mapStateToProps } from "../state_to_props";
@@ -48,45 +47,67 @@ describe("<Logs />", () => {
     device: fakeDevice(),
   });
 
-  const verifyFilterState = (wrapper: ReactWrapper<unknown>, enabled: boolean) => {
-    const filterBtn = wrapper.find(".fa-filter");
-    expect(filterBtn.props().style?.color).toEqual(enabled ? "white" : "#434343");
+  const setStateSync = (instance: Logs) => {
+    instance.setState = ((state: Partial<Logs["state"]>) => {
+      instance.state = { ...instance.state, ...state };
+    }) as Logs["setState"];
+    return instance;
+  };
+
+  const renderInstance = (instance: Logs) => {
+    const rendered = render(instance.render());
+    const rerender = () => rendered.rerender(instance.render());
+    return { ...rendered, rerender };
+  };
+
+  const verifyFilterState = (container: ParentNode, enabled: boolean) => {
+    const filterBtn = container.querySelector(".fa-filter") as HTMLElement;
+    expect(filterBtn).toBeTruthy();
+    if (enabled) {
+      expect(filterBtn.style.color).toEqual("white");
+    } else {
+      expect(filterBtn.style.color).toMatch(/#434343|67,\s*67,\s*67/);
+    }
   };
 
   it("renders", () => {
-    const wrapper = mount(<Logs {...fakeProps()} />);
+    const { container } = render(<Logs {...fakeProps()} />);
     ["Message", "Time", "Fake log message 1", "Fake log message 2"]
       .map(string =>
-        expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));
-    verifyFilterState(wrapper, true);
-    expect(wrapper.find(".logs-retention-row").text().toLowerCase())
-      .toContain("logs older than");
+        expect(container.textContent?.toLowerCase())
+          .toContain(string.toLowerCase()));
+    verifyFilterState(container, true);
+    expect(container.querySelector(".logs-retention-row")?.textContent
+      ?.toLowerCase()).toContain("logs older than");
   });
 
   it("handles unknown log type", () => {
     const p = fakeProps();
     p.logs = fakeLogs();
     p.logs[0].body.type = "unknown" as MessageType;
-    const wrapper = mount(<Logs {...p} />);
+    const { container } = render(<Logs {...p} />);
     ["Message", "Time", "Fake log message 1", "Fake log message 2"]
       .map(string =>
-        expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));
-    verifyFilterState(wrapper, true);
+        expect(container.textContent?.toLowerCase())
+          .toContain(string.toLowerCase()));
+    verifyFilterState(container, true);
   });
 
   it("shows message when logs are loading", () => {
     const p = fakeProps();
     p.logs[0].body.message = "";
-    const wrapper = mount(<Logs {...p} />);
-    wrapper.setState({ markdown: false });
-    expect(wrapper.text().toLowerCase()).toContain("loading");
+    const instance = setStateSync(new Logs(p));
+    instance.setState({ markdown: false });
+    const { container } = renderInstance(instance);
+    expect(container.textContent?.toLowerCase()).toContain("loading");
   });
 
   it("filters logs", () => {
-    const wrapper = mount(<Logs {...fakeProps()} />);
-    wrapper.setState({ info: 0 });
-    expect(wrapper.text()).not.toContain("Fake log message 1");
-    verifyFilterState(wrapper, true);
+    const instance = setStateSync(new Logs(fakeProps()));
+    instance.setState({ info: 0 });
+    const { container } = renderInstance(instance);
+    expect(container.textContent).not.toContain("Fake log message 1");
+    verifyFilterState(container, true);
   });
 
   it("doesn't show logs of any verbosity when type is disabled", () => {
@@ -95,9 +116,10 @@ describe("<Logs />", () => {
     const notShownMessage = "This log should not be shown.";
     p.logs[0].body.message = notShownMessage;
     p.logs[0].body.type = MessageType.info;
-    const wrapper = mount(<Logs {...p} />);
-    wrapper.setState({ info: 0 });
-    expect(wrapper.text()).not.toContain(notShownMessage);
+    const instance = setStateSync(new Logs(p));
+    instance.setState({ info: 0 });
+    const { container } = renderInstance(instance);
+    expect(container.textContent).not.toContain(notShownMessage);
   });
 
   it("shows position", () => {
@@ -108,30 +130,30 @@ describe("<Logs />", () => {
     p.logs[1].body.x = 0;
     p.logs[1].body.y = 1;
     p.logs[1].body.z = 2;
-    const wrapper = mount(<Logs {...p} />);
-    expect(wrapper.text()).toContain("Unknown");
-    expect(wrapper.text()).toContain("0, 1, 2");
+    const { container } = render(<Logs {...p} />);
+    expect(container.textContent).toContain("Unknown");
+    expect(container.textContent).toContain("0, 1, 2");
   });
 
   it("doesn't show negative verbosity", () => {
     const p = fakeProps();
     p.logs[0].body.verbosity = -999;
-    const wrapper = mount(<Logs {...p} />);
-    expect(wrapper.text()).not.toContain("-999");
+    const { container } = render(<Logs {...p} />);
+    expect(container.textContent).not.toContain("-999");
   });
 
   it("doesn't show invalid time", () => {
     const p = fakeProps();
     p.logs[0].body.created_at = undefined;
-    const wrapper = mount(<Logs {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("unknown");
-    expect(wrapper.text().toLowerCase()).not.toContain("invalid");
+    const { container } = render(<Logs {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("unknown");
+    expect(container.textContent?.toLowerCase()).not.toContain("invalid");
   });
 
   it("loads filter setting", () => {
     mockStorj[NumericSetting.warn_log] = 3;
-    const wrapper = mount<Logs>(<Logs {...fakeProps()} />);
-    expect(wrapper.instance().state.warn).toEqual(3);
+    const instance = new Logs(fakeProps());
+    expect(instance.state.warn).toEqual(3);
   });
 
   const fakeLogsState = () => ({
@@ -146,76 +168,81 @@ describe("<Logs />", () => {
   });
 
   it("shows overall filter status", () => {
-    const wrapper = mount(<Logs {...fakeProps()} />);
-    wrapper.setState(fakeLogsState());
-    verifyFilterState(wrapper, false);
+    const instance = setStateSync(new Logs(fakeProps()));
+    instance.setState(fakeLogsState());
+    const { container } = renderInstance(instance);
+    verifyFilterState(container, false);
   });
 
   it("shows filtered overall filter status", () => {
-    const p = fakeProps();
-    const wrapper = mount(<Logs {...p} />);
+    const instance = setStateSync(new Logs(fakeProps()));
     const state = fakeLogsState();
     state.assertion = 2;
-    wrapper.setState(state);
-    verifyFilterState(wrapper, true);
+    instance.setState(state);
+    const { container } = renderInstance(instance);
+    verifyFilterState(container, true);
   });
 
   it("shows unfiltered overall filter status", () => {
-    const p = fakeProps();
-    const wrapper = mount(<Logs {...p} />);
+    const instance = setStateSync(new Logs(fakeProps()));
     const state = fakeLogsState();
     state.assertion = 3;
-    wrapper.setState(state);
-    verifyFilterState(wrapper, false);
+    instance.setState(state);
+    const { container } = renderInstance(instance);
+    verifyFilterState(container, false);
   });
 
   it("toggles filter", () => {
     mockStorj[NumericSetting.warn_log] = 3;
-    const wrapper = mount<Logs>(<Logs {...fakeProps()} />);
-    expect(wrapper.instance().state.warn).toEqual(3);
-    wrapper.instance().toggle(MessageType.warn)();
-    expect(wrapper.instance().state.warn).toEqual(0);
-    wrapper.instance().toggle(MessageType.warn)();
-    expect(wrapper.instance().state.warn).toEqual(1);
+    const instance = setStateSync(new Logs(fakeProps()));
+    expect(instance.state.warn).toEqual(3);
+    instance.toggle(MessageType.warn)();
+    expect(instance.state.warn).toEqual(0);
+    instance.toggle(MessageType.warn)();
+    expect(instance.state.warn).toEqual(1);
   });
 
   it("toggles setting", () => {
-    const wrapper = mount<Logs>(<Logs {...fakeProps()} />);
-    expect(wrapper.state().currentFbosOnly).toEqual(false);
-    wrapper.instance().toggleCurrentFbosOnly();
-    expect(wrapper.state().currentFbosOnly).toEqual(true);
+    const instance = setStateSync(new Logs(fakeProps()));
+    expect(instance.state.currentFbosOnly).toEqual(false);
+    instance.toggleCurrentFbosOnly();
+    expect(instance.state.currentFbosOnly).toEqual(true);
   });
 
   it("sets filter", () => {
     mockStorj[NumericSetting.warn_log] = 3;
-    const wrapper = mount<Logs>(<Logs {...fakeProps()} />);
-    expect(wrapper.instance().state.warn).toEqual(3);
-    wrapper.instance().setFilterLevel(MessageType.warn)(2);
-    expect(wrapper.instance().state.warn).toEqual(2);
+    const instance = setStateSync(new Logs(fakeProps()));
+    expect(instance.state.warn).toEqual(3);
+    instance.setFilterLevel(MessageType.warn)(2);
+    expect(instance.state.warn).toEqual(2);
   });
 
   it("toggles raw text display", () => {
-    const wrapper = mount<Logs>(<Logs {...fakeProps()} />);
-    expect(wrapper.state().markdown).toBeTruthy();
-    wrapper.instance().toggleMarkdown();
-    expect(wrapper.state().markdown).toBeFalsy();
+    const instance = setStateSync(new Logs(fakeProps()));
+    expect(instance.state.markdown).toBeTruthy();
+    instance.toggleMarkdown();
+    expect(instance.state.markdown).toBeFalsy();
   });
 
   it("renders formatted messages", () => {
     const p = fakeProps();
     p.logs[0].body.message = "`message`";
-    const wrapper = mount<Logs>(<Logs {...p} />);
-    expect(wrapper.state().markdown).toBeTruthy();
-    expect(wrapper.html()).toContain("<code>message</code>");
-    wrapper.setState({ markdown: false });
-    expect(wrapper.html()).not.toContain("<code>message</code>");
+    const instance = setStateSync(new Logs(p));
+    const { container, rerender } = renderInstance(instance);
+    expect(instance.state.markdown).toBeTruthy();
+    expect(container.innerHTML).toContain("<code>message</code>");
+    instance.setState({ markdown: false });
+    rerender();
+    expect(container.innerHTML).not.toContain("<code>message</code>");
   });
 
   it("changes search term", () => {
-    const p = fakeProps();
-    const wrapper = shallow<Logs>(<Logs {...p} />);
-    wrapper.find(SearchField).first().simulate("change", "one");
-    expect(wrapper.state().searchTerm).toEqual("one");
+    const instance = setStateSync(new Logs(fakeProps()));
+    const { container } = renderInstance(instance);
+    const input = container
+      .querySelector("input[name='logsSearchTerm']") as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "one" } });
+    expect(instance.state.searchTerm).toEqual("one");
   });
 
   it("shows current logs", () => {
@@ -224,10 +251,10 @@ describe("<Logs />", () => {
     p.logs[0].body.major_version = 1;
     p.logs[0].body.minor_version = 2;
     p.logs[0].body.patch_version = 3;
-    const wrapper = mount(<Logs {...p} />);
-    expect(wrapper.html()).toContain("fa-exclamation-triangle");
-    expect(wrapper.text()).toContain("message 1");
-    expect(wrapper.text()).toContain("message 2");
+    const { container } = render(<Logs {...p} />);
+    expect(container.innerHTML).toContain("fa-exclamation-triangle");
+    expect(container.textContent).toContain("message 1");
+    expect(container.textContent).toContain("message 2");
   });
 
   it("shows only current logs", () => {
@@ -236,17 +263,18 @@ describe("<Logs />", () => {
     p.logs[0].body.major_version = 1;
     p.logs[0].body.minor_version = 2;
     p.logs[0].body.patch_version = 3;
-    const wrapper = mount(<Logs {...p} />);
-    wrapper.setState({ currentFbosOnly: true });
-    expect(wrapper.html()).not.toContain("fa-exclamation-triangle");
-    expect(wrapper.text()).toContain("message 1");
-    expect(wrapper.text()).not.toContain("message 2");
+    const instance = setStateSync(new Logs(p));
+    instance.setState({ currentFbosOnly: true });
+    const { container } = renderInstance(instance);
+    expect(container.innerHTML).not.toContain("fa-exclamation-triangle");
+    expect(container.textContent).toContain("message 1");
+    expect(container.textContent).not.toContain("message 2");
   });
 
   it("deletes log", () => {
     const p = fakeProps();
-    const wrapper = mount(<Logs {...p} />);
-    wrapper.find(".fa-trash").first().simulate("click");
+    const { container } = render(<Logs {...p} />);
+    fireEvent.click(container.querySelector(".fa-trash") as Element);
     expect(crud.destroy).toHaveBeenCalledWith(p.logs[0].uuid);
   });
 });
@@ -258,8 +286,8 @@ describe("<RawLogs />", () => {
 
   it("renders page", () => {
     const p = fakeProps();
-    const wrapper = mount(<RawLogs {...p} />);
-    expect(wrapper.text()).toContain("moved");
+    const { container } = render(<RawLogs {...p} />);
+    expect(container.textContent).toContain("moved");
     expect(p.dispatch).toHaveBeenCalledWith(
       { type: Actions.OPEN_POPUP, payload: "jobs" });
   });

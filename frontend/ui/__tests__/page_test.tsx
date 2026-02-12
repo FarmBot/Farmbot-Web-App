@@ -1,15 +1,15 @@
 import { Page } from "../page";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 
 describe("<Page />", () => {
   it("renders text", () => {
-    const result = mount(Page({ children: "nice" }));
-    expect(result.html()).toContain("nice");
+    const { container } = render(Page({ children: "nice" }));
+    expect(container.innerHTML).toContain("nice");
   });
   it("gets correct className", () => {
-    const result = mount(Page({ className: "some-class" }));
-    const div = result.find("div").first();
-    expect(div.hasClass("some-class")).toBeTruthy();
-    expect(div.hasClass("all-content-wrapper")).toBeTruthy();
+    const { container } = render(Page({ className: "some-class" }));
+    const div = container.querySelector("div") as HTMLDivElement;
+    expect(div.classList.contains("some-class")).toBeTruthy();
+    expect(div.classList.contains("all-content-wrapper")).toBeTruthy();
   });
 });

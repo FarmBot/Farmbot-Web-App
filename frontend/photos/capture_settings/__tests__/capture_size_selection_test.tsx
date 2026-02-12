@@ -1,10 +1,39 @@
 import React from "react";
-import { shallow } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import {
   CaptureSizeSelection, PhotoResolutionSettingChanged,
 } from "../capture_size_selection";
 import { CaptureSizeSelectionProps } from "../interfaces";
-import { FBSelect } from "../../../ui";
+import { DropDownItem } from "../../../ui/fb_select";
+
+jest.mock("../../../ui", () => {
+  const actual = jest.requireActual("../../../ui");
+  return {
+    ...actual,
+    FBSelect: (props: {
+      selectedItem?: DropDownItem;
+      onChange: (ddi: DropDownItem) => void;
+    }) =>
+      <div>
+        <span data-testid={"selected-size"}>
+          {"" + props.selectedItem?.value}
+        </span>
+        <button onClick={() => props.onChange({ label: "", value: "custom" })}>
+          select custom
+        </button>
+        <button onClick={() => props.onChange({ label: "", value: "320x240" })}>
+          select 320x240
+        </button>
+        <button onClick={() =>
+          props.onChange({ label: "", value: "1600x1200" })}>
+          select 1600x1200
+        </button>
+        <button onClick={() => props.onChange({ label: "", value: "maximum" })}>
+          select maximum
+        </button>
+      </div>,
+  };
+});
 
 describe("<PhotoResolutionSettingChanged />", () => {
   const fakeProps = (): CaptureSizeSelectionProps => ({
@@ -19,8 +48,8 @@ describe("<PhotoResolutionSettingChanged />", () => {
       take_photo_width: "200",
       take_photo_height: "100",
     };
-    const wrapper = shallow(<PhotoResolutionSettingChanged {...p} />);
-    expect(wrapper.find("i").length).toEqual(0);
+    const { container } = render(<PhotoResolutionSettingChanged {...p} />);
+    expect(container.querySelector("i")).toBeNull();
   });
 
   it("doesn't display warning: not changed", () => {
@@ -31,9 +60,9 @@ describe("<PhotoResolutionSettingChanged />", () => {
       CAMERA_CALIBRATION_center_pixel_location_x: "100",
       CAMERA_CALIBRATION_center_pixel_location_y: "50",
     };
-    const wrapper = shallow(<PhotoResolutionSettingChanged {...p} />);
-    expect(wrapper.find("i").length).toEqual(0);
-    expect(wrapper.find(".click").length).toEqual(0);
+    const { container } = render(<PhotoResolutionSettingChanged {...p} />);
+    expect(container.querySelector("i")).toBeNull();
+    expect(container.querySelector(".click")).toBeNull();
   });
 
   it("doesn't display revert option", () => {
@@ -44,9 +73,9 @@ describe("<PhotoResolutionSettingChanged />", () => {
       CAMERA_CALIBRATION_center_pixel_location_x: "1",
       CAMERA_CALIBRATION_center_pixel_location_y: "50",
     };
-    const wrapper = shallow(<PhotoResolutionSettingChanged {...p} />);
-    expect(wrapper.find("i").length).toEqual(1);
-    expect(wrapper.find(".click").length).toEqual(0);
+    const { container } = render(<PhotoResolutionSettingChanged {...p} />);
+    expect(container.querySelector("i")).toBeTruthy();
+    expect(container.querySelector(".click")).toBeNull();
   });
 
   it("changes value", () => {
@@ -57,10 +86,11 @@ describe("<PhotoResolutionSettingChanged />", () => {
       CAMERA_CALIBRATION_center_pixel_location_x: "320",
       CAMERA_CALIBRATION_center_pixel_location_y: "50",
     };
-    const wrapper = shallow(<PhotoResolutionSettingChanged {...p} />);
-    expect(wrapper.find("i").length).toEqual(1);
-    expect(wrapper.find(".click").length).toEqual(1);
-    wrapper.find(".click").simulate("click");
+    const { container } = render(<PhotoResolutionSettingChanged {...p} />);
+    expect(container.querySelector("i")).toBeTruthy();
+    const revert = container.querySelector(".click");
+    expect(revert).toBeTruthy();
+    fireEvent.click(revert as HTMLElement);
     expect(p.saveFarmwareEnv).toHaveBeenCalledWith("take_photo_width", "640");
     expect(p.saveFarmwareEnv).toHaveBeenCalledWith("take_photo_height", "480");
   });
@@ -76,15 +106,28 @@ describe("<CaptureSizeSelection />", () => {
   it("changes custom capture size", () => {
     const p = fakeProps();
     p.env = { take_photo_width: "200", take_photo_height: "100" };
-    const wrapper = shallow(<CaptureSizeSelection {...p} />);
-    expect(wrapper.find(FBSelect).props().selectedItem?.value).toEqual("custom");
-    wrapper.find(FBSelect).simulate("change", { label: "", value: "custom" });
+    render(<CaptureSizeSelection {...p} />);
+    expect(screen.getByTestId("selected-size")).toHaveTextContent("custom");
+    fireEvent.click(screen.getByRole("button", { name: /select custom/i }));
     expect(p.saveFarmwareEnv).not.toHaveBeenCalled();
-    wrapper.find("BlurableInput").at(0).simulate("commit", {
+    const [widthInput, heightInput] = screen.getAllByRole("spinbutton");
+    fireEvent.focus(widthInput);
+    fireEvent.change(widthInput, {
+      target: { value: "400" },
       currentTarget: { value: "400" }
     });
-    wrapper.find("BlurableInput").at(1).simulate("commit", {
+    fireEvent.blur(widthInput, {
+      target: { value: "400" },
+      currentTarget: { value: "400" },
+    });
+    fireEvent.focus(heightInput);
+    fireEvent.change(heightInput, {
+      target: { value: "300" },
       currentTarget: { value: "300" }
+    });
+    fireEvent.blur(heightInput, {
+      target: { value: "300" },
+      currentTarget: { value: "300" },
     });
     expect(p.saveFarmwareEnv).toHaveBeenCalledWith("take_photo_width", "400");
     expect(p.saveFarmwareEnv).toHaveBeenCalledWith("take_photo_height", "300");
@@ -93,9 +136,9 @@ describe("<CaptureSizeSelection />", () => {
   it("changes preset capture size", () => {
     const p = fakeProps();
     p.env = {};
-    const wrapper = shallow(<CaptureSizeSelection {...p} />);
-    expect(wrapper.find(FBSelect).props().selectedItem?.value).toEqual("640x480");
-    wrapper.find(FBSelect).simulate("change", { label: "", value: "320x240" });
+    render(<CaptureSizeSelection {...p} />);
+    expect(screen.getByTestId("selected-size")).toHaveTextContent("640x480");
+    fireEvent.click(screen.getByRole("button", { name: /select 320x240/i }));
     expect(p.saveFarmwareEnv).toHaveBeenCalledWith("take_photo_width", "320");
     expect(p.saveFarmwareEnv).toHaveBeenCalledWith("take_photo_height", "240");
   });
@@ -107,10 +150,10 @@ describe("<CaptureSizeSelection />", () => {
     (selection, width, height, expectedWidth, expectedHeight) => {
       const p = fakeProps();
       p.env = { take_photo_width: "" + width, take_photo_height: "" + height };
-      const wrapper = shallow(<CaptureSizeSelection {...p} />);
-      expect(wrapper.find(FBSelect).props().selectedItem?.value)
-        .toEqual(selection);
-      wrapper.find(FBSelect).simulate("change", { label: "", value: selection });
+      render(<CaptureSizeSelection {...p} />);
+      expect(screen.getByTestId("selected-size")).toHaveTextContent(selection);
+      fireEvent.click(screen.getByRole("button",
+        { name: new RegExp(`select ${selection}`) }));
       expect(p.saveFarmwareEnv).toHaveBeenCalledWith(
         "take_photo_width", "" + expectedWidth);
       expect(p.saveFarmwareEnv).toHaveBeenCalledWith(

@@ -1,24 +1,24 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render, fireEvent } from "@testing-library/react";
 import { AddButtonProps } from "../interfaces";
 import { AddButton } from "../add_button";
 
 describe("<AddButton />", () => {
   it("renders an add button when active", () => {
     const props: AddButtonProps = { active: true, onClick: jest.fn() };
-    const wrapper = mount(<AddButton {...props} />);
-    const button = wrapper.find("button");
+    const { container } = render(<AddButton {...props} />);
+    const button = container.querySelector("button");
     ["green", "bulk-scheduler-add"].map(klass => {
-      expect(button.hasClass(klass)).toBeTruthy();
+      expect(button?.classList.contains(klass)).toBeTruthy();
     });
-    expect(wrapper.find("i").hasClass("fa-plus")).toBeTruthy();
-    button.simulate("click");
+    expect(container.querySelector("i")?.classList.contains("fa-plus")).toBeTruthy();
+    fireEvent.click(button as Element);
     expect(props.onClick).toHaveBeenCalled();
   });
 
   it("renders a <div> when inactive", () => {
     const props: AddButtonProps = { active: false, onClick: jest.fn() };
-    const wrapper = mount(<AddButton {...props} />);
-    expect(wrapper.html()).toEqual("<div class=\"no-add-button\"></div>");
+    const { container } = render(<AddButton {...props} />);
+    expect(container.innerHTML).toEqual("<div class=\"no-add-button\"></div>");
   });
 });

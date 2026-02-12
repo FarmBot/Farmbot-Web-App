@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render, fireEvent } from "@testing-library/react";
 import { StepButtonParams } from "../interfaces";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { error } from "../../toast/toast";
@@ -34,8 +34,8 @@ describe("<StepButton />", () => {
 
   it("edits sequence", () => {
     const p = fakeProps();
-    const wrapper = mount(<StepButton {...p} />);
-    wrapper.find("button").simulate("click");
+    const { container } = render(<StepButton {...p} />);
+    fireEvent.click(container.querySelector("button") as Element);
     expect(sequenceActions.pushStep).toHaveBeenCalledWith(
       p.step, p.dispatch, p.current, p.index);
     expect(sequenceActions.closeCommandMenu).toHaveBeenCalled();
@@ -45,8 +45,8 @@ describe("<StepButton />", () => {
   it("doesn't edit sequence", () => {
     const p = fakeProps();
     p.current = undefined;
-    const wrapper = mount(<StepButton {...p} />);
-    wrapper.find("button").simulate("click");
+    const { container } = render(<StepButton {...p} />);
+    fireEvent.click(container.querySelector("button") as Element);
     expect(error).toHaveBeenCalledWith("Select a sequence first");
     expect(sequenceActions.pushStep).not.toHaveBeenCalled();
     expect(sequenceActions.closeCommandMenu).toHaveBeenCalled();
@@ -54,7 +54,7 @@ describe("<StepButton />", () => {
 
   it("renders in designer", () => {
     location.pathname = Path.mock(Path.designerSequences("1"));
-    const wrapper = mount(<StepButton {...fakeProps()} />);
-    expect(wrapper.html()).toContain("clustered");
+    const { container } = render(<StepButton {...fakeProps()} />);
+    expect(container.innerHTML).toContain("clustered");
   });
 });

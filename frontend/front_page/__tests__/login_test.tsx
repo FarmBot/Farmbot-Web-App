@@ -1,5 +1,5 @@
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { Login, LoginProps } from "../login";
 
 describe("<Login />", () => {
@@ -13,28 +13,33 @@ describe("<Login />", () => {
 
   it("shows login options", () => {
     const p = fakeProps();
-    const wrapper = mount(<Login {...p} />);
+    const { container } = render(<Login {...p} />);
     ["Email", "Password", "Forgot password?", "Login"]
-      .map(string => expect(wrapper.text()).toContain(string));
+      .map(string => expect(container.textContent).toContain(string));
   });
 
   it("interacts with login options", () => {
     const p = fakeProps();
-    const wrapper = shallow(<Login {...p} />);
-    const e1 = { currentTarget: { value: "email" } };
-    wrapper.find("input").first().simulate("change", e1);
-    expect(p.onEmailChange).toHaveBeenCalledWith(e1);
-    const e2 = { currentTarget: { value: "password" } };
-    wrapper.find("input").last().simulate("change", e2);
-    expect(p.onLoginPasswordChange).toHaveBeenCalledWith(e2);
-    wrapper.find("a").first().simulate("click");
+    const { container } = render(<Login {...p} />);
+    fireEvent.change(container.querySelectorAll("input")[0] as Element, {
+      target: { value: "email" }
+    });
+    expect(p.onEmailChange).toHaveBeenCalled();
+    expect((p.onEmailChange as jest.Mock).mock.calls.length).toEqual(1);
+    fireEvent.change(container.querySelectorAll("input")[1] as Element, {
+      target: { value: "password" }
+    });
+    expect(p.onLoginPasswordChange).toHaveBeenCalled();
+    expect((p.onLoginPasswordChange as jest.Mock).mock.calls.length)
+      .toEqual(1);
+    fireEvent.click(screen.getByText("Forgot password?"));
     expect(p.onToggleForgotPassword).toHaveBeenCalled();
   });
 
   it("submits", () => {
     const p = fakeProps();
-    const wrapper = shallow(<Login {...p} />);
-    wrapper.find("form").simulate("submit");
+    const { container } = render(<Login {...p} />);
+    fireEvent.submit(container.querySelector("form") as HTMLFormElement);
     expect(p.onSubmit).toHaveBeenCalled();
   });
 });

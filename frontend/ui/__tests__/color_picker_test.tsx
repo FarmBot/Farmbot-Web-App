@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import {
   ColorPicker,
   ColorPickerProps,
@@ -14,17 +14,17 @@ describe("<ColorPicker />", () => {
   });
 
   it("renders saucers", () => {
-    const wrapper = mount(<ColorPicker {...fakeProps()} />);
-    expect([1, 9]).toContain(wrapper.find(".saucer").length);
-    expect(wrapper.find(".green").length).toBeGreaterThan(0);
+    const { container } = render(<ColorPicker {...fakeProps()} />);
+    expect([1, 9]).toContain(container.querySelectorAll(".saucer").length);
+    expect(container.querySelectorAll(".green").length).toBeGreaterThan(0);
   });
 
   it("renders icon saucers", () => {
     const p = fakeProps();
     p.saucerIcon = "fa-check";
-    const wrapper = mount(<ColorPicker {...p} />);
-    expect([1, 9]).toContain(wrapper.find(".icon-saucer").length);
-    expect(wrapper.find(".green").length).toBeGreaterThan(0);
+    const { container } = render(<ColorPicker {...p} />);
+    expect([1, 9]).toContain(container.querySelectorAll(".icon-saucer").length);
+    expect(container.querySelectorAll(".green").length).toBeGreaterThan(0);
   });
 });
 
@@ -35,21 +35,21 @@ describe("<ColorPickerCluster />", () => {
   });
 
   it("renders saucers", () => {
-    const wrapper = mount(<ColorPickerCluster {...fakeProps()} />);
-    expect(wrapper.find(".saucer").length).toEqual(8);
+    const { container } = render(<ColorPickerCluster {...fakeProps()} />);
+    expect(container.querySelectorAll(".saucer").length).toEqual(8);
   });
 
   it("renders icon saucers", () => {
     const p = fakeProps();
     p.saucerIcon = "fa-check";
-    const wrapper = mount(<ColorPickerCluster {...p} />);
-    expect(wrapper.find("i").length).toEqual(8);
+    const { container } = render(<ColorPickerCluster {...p} />);
+    expect(container.querySelectorAll("i").length).toEqual(8);
   });
 
   it("changes color", () => {
     const p = fakeProps();
-    const wrapper = mount(<ColorPickerCluster {...p} />);
-    wrapper.find("div").at(1).simulate("click");
+    const { container } = render(<ColorPickerCluster {...p} />);
+    fireEvent.click(container.querySelectorAll("div")[1] as Element);
     expect(p.onChange).toHaveBeenCalledWith("blue");
   });
 });

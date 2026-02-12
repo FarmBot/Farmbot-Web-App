@@ -1,6 +1,5 @@
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { mount } from "enzyme";
 import {
   PublicOverlay, OverlayProps, PrivateOverlay, maybeAddParam,
 } from "../config_overlays";
@@ -31,14 +30,15 @@ describe("<PublicOverlay />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<PublicOverlay {...fakeProps()} />);
-    expect(wrapper.html()).toContain("settings-bar");
+    const { container } = render(<PublicOverlay {...fakeProps()} />);
+    expect(container.innerHTML).toContain("settings-bar");
   });
 
   it("changes preset", () => {
     const p = fakeProps();
-    const wrapper = mount(<PublicOverlay {...p} />);
-    wrapper.find("button").at(1).simulate("click");
+    const { container } = render(<PublicOverlay {...p} />);
+    const button = container.querySelectorAll("button").item(1);
+    button && fireEvent.click(button);
     expect(p.setConfig).toHaveBeenCalledWith({
       ...p.config,
       ...PRESETS["Genesis XL"],
@@ -57,9 +57,10 @@ describe("<PublicOverlay />", () => {
   it("doesn't allow mobile XL", () => {
     const p = fakeProps();
     p.config.sizePreset = "Genesis XL";
-    const wrapper = mount(<PublicOverlay {...p} />);
+    const { container } = render(<PublicOverlay {...p} />);
     jest.useFakeTimers();
-    wrapper.find("button").at(7).simulate("click");
+    const button = container.querySelectorAll("button").item(7);
+    button && fireEvent.click(button);
     expect(p.setConfig).not.toHaveBeenCalled();
     expect(p.setToolTip).toHaveBeenCalledWith(expect.objectContaining({
       timeoutId: expect.anything(),
@@ -76,10 +77,10 @@ describe("<PublicOverlay />", () => {
     const p = fakeProps();
     p.config.sizePreset = "Genesis XL";
     p.config.kitVersion = "v1.8";
-    const wrapper = mount(<PublicOverlay {...p} />);
-    const buyButton = wrapper.find(".buy-button").first();
-    expect(buyButton.props().href).toContain("genesis-xl-v1-8");
-    expect(buyButton.text()).toContain("GenesisXLv1.8");
+    const { container } = render(<PublicOverlay {...p} />);
+    const buyButton = container.querySelector(".buy-button");
+    expect(buyButton?.getAttribute("href")).toContain("genesis-xl-v1-8");
+    expect(buyButton?.textContent).toContain("GenesisXLv1.8");
   });
 });
 
@@ -94,15 +95,15 @@ describe("<PrivateOverlay />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<PrivateOverlay {...fakeProps()} />);
-    expect(wrapper.html()).toContain("all-configs");
+    const { container } = render(<PrivateOverlay {...fakeProps()} />);
+    expect(container.innerHTML).toContain("all-configs");
   });
 
   it("changes value: number", () => {
     const p = fakeProps();
-    const wrapper = mount(<PrivateOverlay {...p} />);
-    wrapper.find({ type: "number" }).first().simulate("change",
-      { target: { value: "123" } });
+    const { container } = render(<PrivateOverlay {...p} />);
+    const input = container.querySelectorAll("input[type='number']").item(0);
+    input && fireEvent.change(input, { target: { value: "123" } });
     expect(p.setConfig).toHaveBeenCalledWith({
       ...p.config,
       x: 123,
@@ -112,17 +113,17 @@ describe("<PrivateOverlay />", () => {
 
   it("doesn't change value: number", () => {
     const p = fakeProps();
-    const wrapper = mount(<PrivateOverlay {...p} />);
-    wrapper.find({ type: "number" }).first().simulate("change",
-      { target: { value: "nope" } });
+    const { container } = render(<PrivateOverlay {...p} />);
+    const input = container.querySelectorAll("input[type='number']").item(0);
+    input && fireEvent.change(input, { target: { value: "nope" } });
     expect(p.setConfig).not.toHaveBeenCalled();
   });
 
   it("changes value: toggle", () => {
     const p = fakeProps();
-    const wrapper = mount(<PrivateOverlay {...p} />);
-    wrapper.find({ type: "checkbox" }).at(1).simulate("change",
-      { target: { checked: false } });
+    const { container } = render(<PrivateOverlay {...p} />);
+    const input = container.querySelector("input[title='promoInfo']");
+    input && fireEvent.click(input);
     expect(p.setConfig).toHaveBeenCalledWith({
       ...p.config,
       promoInfo: false,
@@ -132,9 +133,9 @@ describe("<PrivateOverlay />", () => {
 
   it("changes value: radio", () => {
     const p = fakeProps();
-    const wrapper = mount(<PrivateOverlay {...p} />);
-    wrapper.find({ type: "radio" }).at(7).simulate("change",
-      { target: { value: "Jr" } });
+    const { container } = render(<PrivateOverlay {...p} />);
+    const input = container.querySelector("input[title='sizePreset Jr']");
+    input && fireEvent.click(input);
     expect(p.setConfig).toHaveBeenCalledWith({
       ...p.config,
       ...PRESETS["Jr"],
@@ -157,8 +158,9 @@ describe("<PrivateOverlay />", () => {
 
   it("closes the config menu", () => {
     const p = fakeProps();
-    const wrapper = mount(<PrivateOverlay {...p} />);
-    wrapper.find(".close").first().simulate("click");
+    const { container } = render(<PrivateOverlay {...p} />);
+    const close = container.querySelector(".close");
+    close && fireEvent.click(close);
     expect(p.setConfig).toHaveBeenCalledWith({
       ...p.config,
       config: false,
@@ -168,8 +170,9 @@ describe("<PrivateOverlay />", () => {
   it("removes url param", () => {
     location.search = "?urlParamAutoAdd=true";
     const p = fakeProps();
-    const wrapper = mount(<PrivateOverlay {...p} />);
-    wrapper.find(".x").first().simulate("click");
+    const { container } = render(<PrivateOverlay {...p} />);
+    const remove = container.querySelector(".x");
+    remove && fireEvent.click(remove);
     expect(setUrlParamSpy).toHaveBeenCalledWith("urlParamAutoAdd", "");
   });
 });

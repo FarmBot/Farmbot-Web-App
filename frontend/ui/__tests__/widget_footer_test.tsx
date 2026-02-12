@@ -1,9 +1,9 @@
 import { WidgetFooter } from "../widget_footer";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 
 describe("<WidgetFooter />", () => {
   it("renders text", () => {
-    const result = mount(WidgetFooter({ children: "nice" }));
-    expect(result.html()).toContain("nice");
+    const { container } = render(WidgetFooter({ children: "nice" }));
+    expect(container.innerHTML).toContain("nice");
   });
 });

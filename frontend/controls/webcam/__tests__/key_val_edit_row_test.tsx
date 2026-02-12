@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { KeyValEditRow, KeyValEditRowProps } from "../key_val_edit_row";
 
 describe("<KeyValEditRow />", () => {
@@ -16,7 +16,8 @@ describe("<KeyValEditRow />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<KeyValEditRow {...fakeProps()} />);
-    expect(wrapper.find("input").first().props().value).toEqual("label");
+    const { container } = render(<KeyValEditRow {...fakeProps()} />);
+    const input = container.querySelector("input[name='label']");
+    expect((input as HTMLInputElement)?.value).toEqual("label");
   });
 });

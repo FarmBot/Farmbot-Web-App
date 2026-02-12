@@ -1,6 +1,5 @@
 import React from "react";
-import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
-import { mount, shallow } from "enzyme";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import {
   PeripheralList, AnalogSlider, AnalogSliderProps,
 } from "../peripheral_list";
@@ -10,10 +9,34 @@ import {
   Pins,
 } from "farmbot";
 import { PeripheralListProps } from "../interfaces";
-import { Slider } from "@blueprintjs/core";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import * as deviceActions from "../../../devices/actions";
 import * as mustBeOnline from "../../../devices/must_be_online";
+
+jest.mock("@blueprintjs/core", () => {
+  const actual = jest.requireActual("@blueprintjs/core");
+  return {
+    ...actual,
+    Slider: (props: {
+      value?: number;
+      disabled?: boolean;
+      onChange?: (value: number) => void;
+      onRelease?: (value: number) => void;
+    }) =>
+      <div>
+        <input
+          data-testid="mock-slider"
+          role="slider"
+          value={props.value ?? 0}
+          disabled={props.disabled}
+          onChange={e =>
+            props.onChange?.(Number((e.target as HTMLInputElement).value))}
+          onMouseUp={e =>
+            props.onRelease?.(Number((e.target as HTMLInputElement).value))} />
+        <span data-testid="slider-value">{props.value}</span>
+      </div>
+  };
+});
 
 let pinToggleSpy: jest.SpyInstance;
 let writePinSpy: jest.SpyInstance;
@@ -84,28 +107,27 @@ describe("<PeripheralList />", () => {
   };
 
   it("renders a list of peripherals, in sorted order", () => {
-    const wrapper = mount(<PeripheralList {...fakeProps()} />);
-    const labels = wrapper.find("label");
-    const buttons = wrapper.find("button");
-    const pinNumbers = wrapper.find("p");
-    const first = labels.first();
-    expect(first.text()).toBeTruthy();
-    expect(first.text()).toEqual("GPIO 2");
-    expect(pinNumbers.first().text()).toEqual("2");
-    expect(buttons.first().text()).toEqual("off");
-    const last = labels.last();
-    expect(last.text()).toBeTruthy();
-    expect(last.text()).toEqual("GPIO 13 - LED");
-    expect(pinNumbers.last().text()).toEqual("13");
-    expect(buttons.last().text()).toEqual("on");
-    wrapper.unmount();
+    const { container } = render(<PeripheralList {...fakeProps()} />);
+    const labels = Array.from(container.querySelectorAll("label"));
+    const toggles = Array.from(container.querySelectorAll("button"));
+    const pinNumbers = Array.from(container.querySelectorAll("p"));
+
+    expect(labels[0]?.textContent).toBeTruthy();
+    expect(labels[0]?.textContent).toEqual("GPIO 2");
+    expect(pinNumbers[0]?.textContent).toEqual("2");
+    expect(toggles[0]?.textContent).toEqual("off");
+
+    expect(labels[1]?.textContent).toBeTruthy();
+    expect(labels[1]?.textContent).toEqual("GPIO 13 - LED");
+    expect(pinNumbers[1]?.textContent).toEqual("13");
+    expect(toggles[1]?.textContent).toEqual("on");
   });
 
   it("renders analog peripherals", () => {
     const p = fakeProps();
     p.peripherals[0].body.mode = 1;
-    const { container } = render(<PeripheralList {...p} />);
-    const slider = within(container).getByRole("slider");
+    render(<PeripheralList {...p} />);
+    const slider = screen.getByRole("slider");
     expect(slider).toBeInTheDocument();
   });
 
@@ -159,32 +181,36 @@ describe("<AnalogSlider />", () => {
   });
 
   it("changes value", () => {
-    const wrapper = shallow<AnalogSlider>(<AnalogSlider {...fakeProps()} />);
-    expect(wrapper.state().value).toEqual(0);
-    wrapper.find(Slider).simulate("change", 128);
-    expect(wrapper.state().value).toEqual(128);
+    render(<AnalogSlider {...fakeProps()} />);
+    const slider = screen.getByTestId("mock-slider");
+    fireEvent.change(slider, { target: { value: "128" } });
+    expect(screen.getByTestId("slider-value").textContent).toEqual("128");
   });
 
   it("sends value", () => {
     const p = fakeProps();
     p.pin = 13;
-    const wrapper = shallow<AnalogSlider>(<AnalogSlider {...p} />);
-    wrapper.find(Slider).simulate("release", 128);
+    render(<AnalogSlider {...p} />);
+    const slider = screen.getByTestId("mock-slider");
+    fireEvent.change(slider, { target: { value: "128" } });
+    fireEvent.mouseUp(slider, { target: { value: "128" } });
     expect(deviceActions.writePin).toHaveBeenCalledWith(13, 128, 1);
   });
 
   it("doesn't send value", () => {
-    const wrapper = shallow<AnalogSlider>(<AnalogSlider {...fakeProps()} />);
-    wrapper.find(Slider).simulate("release", 128);
+    render(<AnalogSlider {...fakeProps()} />);
+    const slider = screen.getByTestId("mock-slider");
+    fireEvent.mouseUp(slider, { target: { value: "128" } });
     expect(deviceActions.writePin).not.toHaveBeenCalled();
   });
 
   it("renders read value", () => {
     const p = fakeProps();
     p.initialValue = 255;
-    const wrapper = shallow(<AnalogSlider {...p} />);
-    expect(wrapper.find(Slider).props().value).toEqual(255);
-    wrapper.find(Slider).simulate("change", 128);
-    expect(wrapper.find(Slider).props().value).toEqual(128);
+    render(<AnalogSlider {...p} />);
+    expect(screen.getByTestId("slider-value").textContent).toEqual("255");
+    const slider = screen.getByTestId("mock-slider");
+    fireEvent.change(slider, { target: { value: "128" } });
+    expect(screen.getByTestId("slider-value").textContent).toEqual("128");
   });
 });

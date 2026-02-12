@@ -1,5 +1,5 @@
 import React from "react";
-import { shallow } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { StepSizeSelector } from "../step_size_selector";
 import * as deviceActions from "../../../devices/actions";
 import { StepSizeSelectorProps } from "../interfaces";
@@ -22,10 +22,9 @@ describe("<StepSizeSelector />", () => {
   });
 
   it("calls changeStepSize", () => {
-    const wrapper = shallow(<StepSizeSelector {...fakeProps()} />);
-    const buttons = wrapper.find("button");
-    expect(buttons.length).toBe(5);
-    buttons.first().simulate("click");
+    const { container } = render(<StepSizeSelector {...fakeProps()} />);
+    expect(container.querySelectorAll("button").length).toBe(5);
+    fireEvent.click(screen.getByText("1"));
     expect(deviceActions.changeStepSize).toHaveBeenCalledWith(1);
   });
 });

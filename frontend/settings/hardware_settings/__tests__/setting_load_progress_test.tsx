@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import {
   SettingLoadProgress, SettingLoadProgressProps,
 } from "../setting_load_progress";
@@ -40,19 +40,19 @@ describe("<SettingLoadProgress />", () => {
   it("shows setting load progress: 50%", () => {
     const p = fakeProps();
     p.firmwareHardware = "arduino";
-    const wrapper = mount(<SettingLoadProgress {...p} />);
-    const barStyle = wrapper.find(".load-progress-bar").props().style;
-    expect(barStyle?.width).toEqual("50%");
-    expect(barStyle?.background).toEqual(Color.white);
+    const { container } = render(<SettingLoadProgress {...p} />);
+    const bar = container.querySelector(".load-progress-bar");
+    expect(bar?.getAttribute("style")).toContain("width: 50%");
+    expect(bar?.getAttribute("style")).toContain(`background: ${Color.white}`);
   });
 
   it("shows setting load progress: 67%", () => {
     const p = fakeProps();
     p.firmwareHardware = "farmduino_k15";
-    const wrapper = mount(<SettingLoadProgress {...p} />);
-    const barStyle = wrapper.find(".load-progress-bar").props().style;
-    expect(barStyle?.width).toEqual("67%");
-    expect(barStyle?.background).toEqual(Color.white);
+    const { container } = render(<SettingLoadProgress {...p} />);
+    const bar = container.querySelector(".load-progress-bar");
+    expect(bar?.getAttribute("style")).toContain("width: 67%");
+    expect(bar?.getAttribute("style")).toContain(`background: ${Color.white}`);
   });
 
   it("shows setting load progress: 0%", () => {
@@ -60,28 +60,32 @@ describe("<SettingLoadProgress />", () => {
     p.botOnline = false;
     p.firmwareConfig = fakeFirmwareConfig().body;
     p.sourceFwConfig = () => ({ value: 0, consistent: false });
-    const wrapper = mount(<SettingLoadProgress {...p} />);
-    const barStyle = wrapper.find(".load-progress-bar").props().style;
-    expect(barStyle?.width).toEqual("0%");
-    expect(barStyle?.background).toEqual(Color.darkGray);
-    expect(wrapper.text()).toEqual("0% (offline)");
+    const { container } = render(<SettingLoadProgress {...p} />);
+    const bar = container.querySelector(".load-progress-bar");
+    expect(bar?.getAttribute("style")).toContain("width: 0%");
+    expect(bar?.getAttribute("style"))
+      .toContain(`background: ${Color.darkGray}`);
+    expect(container.textContent).toEqual("0% (offline)");
   });
 
   it("shows setting load progress: 100%", () => {
     const p = fakeProps();
     p.firmwareConfig = fakeFirmwareConfig().body;
     p.sourceFwConfig = () => ({ value: 0, consistent: true });
-    const wrapper = mount(<SettingLoadProgress {...p} />);
-    const barStyle = wrapper.find(".load-progress-bar").props().style;
-    expect(barStyle?.width).toEqual("100%");
-    expect(barStyle?.background).toEqual(Color.darkGray);
+    const { container } = render(<SettingLoadProgress {...p} />);
+    const bar = container.querySelector(".load-progress-bar");
+    expect(bar?.getAttribute("style")).toContain("width: 100%");
+    expect(bar?.getAttribute("style"))
+      .toContain(`background: ${Color.darkGray}`);
   });
 
   it("logs loading items", () => {
-    console.log = jest.fn();
+    const consoleSpy = jest.spyOn(console, "log").mockImplementation(jest.fn());
     const p = fakeProps();
-    const wrapper = mount(<SettingLoadProgress {...p} />);
-    wrapper.find(".load-progress-bar-wrapper").simulate("click");
+    const { container } = render(<SettingLoadProgress {...p} />);
+    const wrapper = container.querySelector(".load-progress-bar-wrapper");
+    wrapper && fireEvent.click(wrapper);
     expect(console.log).toHaveBeenCalledWith(["encoder_enabled_y"]);
+    consoleSpy.mockRestore();
   });
 });

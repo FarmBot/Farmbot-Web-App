@@ -5,7 +5,7 @@ jest.mock("../../../api/crud", () => ({
 }));
 
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { ClearFarmwareData } from "../clear_farmware_data";
 import { destroyAll } from "../../../api/crud";
 import { success, error } from "../../../toast/toast";
@@ -21,19 +21,20 @@ describe("<ClearFarmwareData />", () => {
 
   it("destroys all FarmwareEnvs", async () => {
     mockDestroyAllPromise = Promise.resolve();
-    const wrapper = mount(<ClearFarmwareData {...fakeProps()} />);
-    wrapper.find("button").last().simulate("click");
-    await expect(destroyAll).toHaveBeenCalledWith("FarmwareEnv", false,
-      "Are you sure you want to delete all 0 values?");
-    expect(success).toHaveBeenCalledWith(expect.stringContaining("deleted"));
+    render(<ClearFarmwareData {...fakeProps()} />);
+    fireEvent.click(screen.getByTitle(/delete all data/i));
+    await waitFor(() => expect(destroyAll).toHaveBeenCalledWith(
+      "FarmwareEnv", false, "Are you sure you want to delete all 0 values?"));
+    await waitFor(() =>
+      expect(success).toHaveBeenCalledWith(expect.stringContaining("deleted")));
   });
 
   it("fails to destroy all FarmwareEnvs", async () => {
     mockDestroyAllPromise = Promise.reject("error");
-    const wrapper = mount(<ClearFarmwareData {...fakeProps()} />);
-    await wrapper.find("button").last().simulate("click");
-    await expect(destroyAll).toHaveBeenCalledWith("FarmwareEnv", false,
-      "Are you sure you want to delete all 0 values?");
-    expect(error).toHaveBeenCalled();
+    render(<ClearFarmwareData {...fakeProps()} />);
+    fireEvent.click(screen.getByTitle(/delete all data/i));
+    await waitFor(() => expect(destroyAll).toHaveBeenCalledWith(
+      "FarmwareEnv", false, "Are you sure you want to delete all 0 values?"));
+    await waitFor(() => expect(error).toHaveBeenCalled());
   });
 });

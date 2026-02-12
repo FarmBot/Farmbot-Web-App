@@ -1,5 +1,5 @@
 import React from "react";
-import { render, mount } from "enzyme";
+import { render, fireEvent } from "@testing-library/react";
 import { WeekRow } from "../week_row";
 import { WeekRowProps } from "../interfaces";
 import { betterMerge } from "../../../util";
@@ -15,19 +15,19 @@ describe("<WeekRow/>", () => {
     }, p || {});
 
   it("renders week 1 day numbers", () => {
-    const wrapper = render(<WeekRow {...fakeProps()} />);
-    expect(wrapper.text()).toEqual("Week 11234567");
+    const { container } = render(<WeekRow {...fakeProps()} />);
+    expect(container.textContent).toEqual("Week 11234567");
   });
 
   it("renders week 2 day numbers", () => {
-    const wrapper = render(<WeekRow {...fakeProps({ index: 1 })} />);
-    expect(wrapper.text()).toEqual("Week 2891011121314");
+    const { container } = render(<WeekRow {...fakeProps({ index: 1 })} />);
+    expect(container.textContent).toEqual("Week 2891011121314");
   });
 
   it("selects day", () => {
     const p = fakeProps();
-    const wrapper = mount(<WeekRow {...p} />);
-    wrapper.find("input").first().simulate("click");
+    const { container } = render(<WeekRow {...p} />);
+    fireEvent.click(container.querySelector("input") as Element);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_DAY,
       payload: { week: 0, day: 1 },

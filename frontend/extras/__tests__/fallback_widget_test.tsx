@@ -1,5 +1,5 @@
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import { FallbackWidget, FallbackWidgetProps } from "../fallback_widget";
 
 describe("<FallbackWidget />", () => {
@@ -8,19 +8,19 @@ describe("<FallbackWidget />", () => {
   });
 
   it("renders widget fallback", () => {
-    const wrapper = mount(<FallbackWidget {...fakeProps()} />);
-    const widget = wrapper.find(".widget-wrapper");
-    const header = widget.find(".widget-header");
-    expect(header.text()).toContain("FakeWidget");
-    const body = widget.find(".widget-body");
-    expect(body.text()).toContain("Widget load failed.");
+    const { container } = render(<FallbackWidget {...fakeProps()} />);
+    const widget = container.querySelector(".widget-wrapper");
+    const header = widget?.querySelector(".widget-header");
+    expect(header?.textContent).toContain("FakeWidget");
+    const body = widget?.querySelector(".widget-body");
+    expect(body?.textContent).toContain("Widget load failed.");
   });
 
   it("renders widget fallback with help text", () => {
     const p = fakeProps();
     p.helpText = "This is a fake widget.";
-    const wrapper = shallow(<FallbackWidget {...p} />);
-    expect(wrapper.html())
+    const { container } = render(<FallbackWidget {...p} />);
+    expect(container.innerHTML)
       .toContain("aria-label=\"This is a fake widget.\"");
   });
 });

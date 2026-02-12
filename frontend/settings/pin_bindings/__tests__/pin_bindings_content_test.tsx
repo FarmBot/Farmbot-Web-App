@@ -1,6 +1,6 @@
 import React from "react";
 import { PinBindingsContent } from "../pin_bindings_content";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import {
   buildResourceIndex,
@@ -52,12 +52,13 @@ describe("<PinBindingsContent/>", () => {
 
   it("renders", () => {
     const p = fakeProps();
-    const wrapper = mount(<PinBindingsContent {...p} />);
+    const { container } = render(<PinBindingsContent {...p} />);
     ["none", "bind", "stock bindings"]
-      .map(string => expect(wrapper.text().toLowerCase()).toContain(string));
+      .map(string => expect((container.textContent || "").toLowerCase())
+        .toContain(string));
     ["26", "action"].map(string =>
-      expect(wrapper.text().toLowerCase()).toContain(string));
-    const buttons = wrapper.find("button");
+      expect((container.textContent || "").toLowerCase()).toContain(string));
+    const buttons = container.querySelectorAll("button");
     expect(buttons.length).toBe(6);
   });
 });

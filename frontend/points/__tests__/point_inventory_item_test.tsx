@@ -1,7 +1,7 @@
 let mockDelMode = false;
 
 import React from "react";
-import { shallow, mount } from "enzyme";
+import { render, fireEvent } from "@testing-library/react";
 import {
   PointInventoryItem, PointInventoryItemProps,
 } from "../point_inventory_item";
@@ -34,17 +34,18 @@ describe("<PointInventoryItem> />", () => {
   it("renders named point", () => {
     const p = fakeProps();
     p.tpp.body.name = "named point";
-    const wrapper = mount(<PointInventoryItem {...p} />);
-    expect(wrapper.text()).toContain("named point");
+    const { container } = render(<PointInventoryItem {...p} />);
+    expect(container.textContent).toContain("named point");
   });
 
   it("renders unnamed point", () => {
     const p = fakeProps();
     p.tpp.body.name = "";
     p.tpp.body.meta.color = "";
-    const wrapper = mount(<PointInventoryItem {...p} />);
-    expect(wrapper.text()).toContain("Untitled point");
-    expect(wrapper.html()).toContain("green");
+    const { container } = render(<PointInventoryItem {...p} />);
+    expect(container.textContent).toContain("Untitled point");
+    expect(container.querySelector("img")?.getAttribute("src"))
+      .toContain("green");
   });
 
   it("deletes point", () => {
@@ -52,8 +53,8 @@ describe("<PointInventoryItem> />", () => {
     location.pathname = Path.mock(Path.points());
     const p = fakeProps();
     p.tpp.body.id = 1;
-    const wrapper = shallow(<PointInventoryItem {...p} />);
-    wrapper.simulate("click");
+    const { container } = render(<PointInventoryItem {...p} />);
+    fireEvent.click(container.querySelector(".point-search-item") as Element);
     expect(mapActions.mapPointClickAction).not.toHaveBeenCalled();
     expect(mockNavigate).not.toHaveBeenCalled();
     expect(crud.destroy).toHaveBeenCalledWith(p.tpp.uuid, true);
@@ -66,11 +67,13 @@ describe("<PointInventoryItem> />", () => {
     const p = fakeProps();
     p.tpp.body.id = 1;
     p.hovered = false;
-    const wrapper = mount<typeof PointInventoryItem>(<PointInventoryItem {...p} />);
-    expect(wrapper.find(".quick-delete").hasClass("hovered")).toBeFalsy();
+    const { container, rerender } = render(<PointInventoryItem {...p} />);
+    expect(container.querySelector(".quick-delete")?.classList.contains("hovered"))
+      .toBeFalsy();
     p.hovered = true;
-    wrapper.setProps(p);
-    expect(wrapper.find(".quick-delete").hasClass("hovered")).toBeTruthy();
+    rerender(<PointInventoryItem {...p} />);
+    expect(container.querySelector(".quick-delete")?.classList.contains("hovered"))
+      .toBeTruthy();
     mockDelMode = false;
   });
 
@@ -78,8 +81,8 @@ describe("<PointInventoryItem> />", () => {
     location.pathname = Path.mock(Path.points());
     const p = fakeProps();
     p.tpp.body.id = 1;
-    const wrapper = mount(<PointInventoryItem {...p} />);
-    wrapper.simulate("click");
+    const { container } = render(<PointInventoryItem {...p} />);
+    fireEvent.click(container.querySelector(".point-search-item") as Element);
     expect(mapActions.mapPointClickAction).not.toHaveBeenCalled();
     expect(mockNavigate).toHaveBeenCalledWith(Path.points(1));
     expect(p.dispatch).toHaveBeenCalledWith({
@@ -92,8 +95,8 @@ describe("<PointInventoryItem> />", () => {
     location.pathname = Path.mock(Path.points());
     const p = fakeProps();
     p.tpp.body.id = undefined;
-    const wrapper = mount(<PointInventoryItem {...p} />);
-    wrapper.simulate("click");
+    const { container } = render(<PointInventoryItem {...p} />);
+    fireEvent.click(container.querySelector(".point-search-item") as Element);
     expect(mapActions.mapPointClickAction).not.toHaveBeenCalled();
     expect(mockNavigate).toHaveBeenCalledWith(Path.points("ERR_NO_POINT_ID"));
     expect(p.dispatch).toHaveBeenCalledWith({
@@ -105,8 +108,8 @@ describe("<PointInventoryItem> />", () => {
   it("removes item in box select mode", () => {
     location.pathname = Path.mock(Path.plants("select"));
     const p = fakeProps();
-    const wrapper = mount(<PointInventoryItem {...p} />);
-    wrapper.simulate("click");
+    const { container } = render(<PointInventoryItem {...p} />);
+    fireEvent.click(container.querySelector(".point-search-item") as Element);
     expect(mapActions.mapPointClickAction).toHaveBeenCalledWith(
       expect.any(Function),
       expect.any(Function),
@@ -121,8 +124,8 @@ describe("<PointInventoryItem> />", () => {
   it("hovers point", () => {
     const p = fakeProps();
     p.tpp.body.id = 1;
-    const wrapper = shallow(<PointInventoryItem {...p} />);
-    wrapper.simulate("mouseEnter");
+    const { container } = render(<PointInventoryItem {...p} />);
+    fireEvent.mouseEnter(container.querySelector(".point-search-item") as Element);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_HOVERED_POINT, payload: p.tpp.uuid
     });
@@ -131,15 +134,16 @@ describe("<PointInventoryItem> />", () => {
   it("shows hovered", () => {
     const p = fakeProps();
     p.hovered = true;
-    const wrapper = shallow(<PointInventoryItem {...p} />);
-    expect(wrapper.hasClass("hovered")).toBeTruthy();
+    const { container } = render(<PointInventoryItem {...p} />);
+    expect(container.querySelector(".point-search-item")?.classList.contains("hovered"))
+      .toBeTruthy();
   });
 
   it("un-hovers point", () => {
     const p = fakeProps();
     p.tpp.body.id = 1;
-    const wrapper = shallow(<PointInventoryItem {...p} />);
-    wrapper.simulate("mouseLeave");
+    const { container } = render(<PointInventoryItem {...p} />);
+    fireEvent.mouseLeave(container.querySelector(".point-search-item") as Element);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_HOVERED_POINT, payload: undefined
     });

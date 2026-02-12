@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import {
   ControlsPanel, ControlsPanelProps, RawDesignerControls as DesignerControls,
 } from "../../controls/controls";
@@ -34,8 +34,10 @@ describe("<DesignerControls />", () => {
 
   it("renders controls", () => {
     const p = fakeProps();
-    const wrapper = mount(<DesignerControls {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("controls have moved");
+    render(<DesignerControls {...p} />);
+    expect(
+      screen.getByText("Controls have moved to the navigation bar.")
+    ).toBeInTheDocument();
     expect(p.dispatch).toHaveBeenCalledWith(
       { type: Actions.OPEN_POPUP, payload: "controls" });
   });
@@ -64,10 +66,10 @@ describe("<ControlsPanel />", () => {
     p.appState.controls.move = true;
     p.appState.controls.peripherals = false;
     p.appState.controls.webcams = false;
-    const wrapper = mount(<ControlsPanel {...p} />);
-    expect(wrapper.html()).toContain("move-tab");
-    expect(wrapper.html()).not.toContain("peripherals-tab");
-    expect(wrapper.html()).not.toContain("webcams-tab");
+    const { container } = render(<ControlsPanel {...p} />);
+    expect(container.innerHTML).toContain("move-tab");
+    expect(container.innerHTML).not.toContain("peripherals-tab");
+    expect(container.innerHTML).not.toContain("webcams-tab");
   });
 
   it("renders peripherals", () => {
@@ -75,10 +77,10 @@ describe("<ControlsPanel />", () => {
     p.appState.controls.move = false;
     p.appState.controls.peripherals = true;
     p.appState.controls.webcams = false;
-    const wrapper = mount(<ControlsPanel {...p} />);
-    expect(wrapper.html()).not.toContain("move-tab");
-    expect(wrapper.html()).toContain("peripherals-tab");
-    expect(wrapper.html()).not.toContain("webcams-tab");
+    const { container } = render(<ControlsPanel {...p} />);
+    expect(container.innerHTML).not.toContain("move-tab");
+    expect(container.innerHTML).toContain("peripherals-tab");
+    expect(container.innerHTML).not.toContain("webcams-tab");
   });
 
   it("renders webcams", () => {
@@ -86,16 +88,16 @@ describe("<ControlsPanel />", () => {
     p.appState.controls.move = false;
     p.appState.controls.peripherals = false;
     p.appState.controls.webcams = true;
-    const wrapper = mount(<ControlsPanel {...p} />);
-    expect(wrapper.html()).not.toContain("move-tab");
-    expect(wrapper.html()).not.toContain("peripherals-tab");
-    expect(wrapper.html()).toContain("webcams-tab");
+    const { container } = render(<ControlsPanel {...p} />);
+    expect(container.innerHTML).not.toContain("move-tab");
+    expect(container.innerHTML).not.toContain("peripherals-tab");
+    expect(container.innerHTML).toContain("webcams-tab");
   });
 
   it("sets state", () => {
     const p = fakeProps();
-    const wrapper = mount<ControlsPanel>(<ControlsPanel {...p} />);
-    wrapper.instance().setPanelState("move")();
+    render(<ControlsPanel {...p} />);
+    fireEvent.click(screen.getByText("move"));
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_CONTROLS_PANEL_OPTION, payload: "move",
     });

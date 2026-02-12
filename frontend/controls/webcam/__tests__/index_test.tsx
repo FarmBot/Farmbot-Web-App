@@ -1,10 +1,9 @@
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import { WebcamPanel, preToggleCleanup } from "../index";
 import { fakeWebcamFeed } from "../../../__test_support__/fake_state/resources";
 import * as crud from "../../../api/crud";
 import { SpecialStatus } from "farmbot";
-import { clickButton, allButtonText } from "../../../__test_support__/helpers";
 
 let initSpy: jest.SpyInstance;
 let editSpy: jest.SpyInstance;
@@ -33,55 +32,60 @@ describe("<WebcamPanel />", () => {
   });
 
   it("toggles form state to edit", () => {
-    const wrapper = mount<WebcamPanel>(<WebcamPanel {...fakeProps()} />);
-    expect(wrapper.instance().state.activeMenu).toEqual("show");
-    const text = allButtonText(wrapper);
-    expect(text.toLowerCase()).not.toContain("view");
-    clickButton(wrapper, 0, "edit");
-    expect(wrapper.instance().state.activeMenu).toEqual("edit");
+    const { container } = render(<WebcamPanel {...fakeProps()} />);
+    expect(container.textContent?.toLowerCase()).not.toContain("view");
+    const editButton = container.querySelector("button[title='Edit']");
+    editButton && fireEvent.click(editButton);
+    expect(container.querySelector("button[title='Back']")).toBeTruthy();
   });
 
   it("toggles form state to view", () => {
-    const wrapper = mount<WebcamPanel>(<WebcamPanel {...fakeProps()} />);
-    wrapper.setState({ activeMenu: "edit" });
-    const text = allButtonText(wrapper);
-    expect(text.toLowerCase()).not.toContain("edit");
-    clickButton(wrapper, 0, "back");
-    expect(wrapper.instance().state.activeMenu).toEqual("show");
+    const { container } = render(<WebcamPanel {...fakeProps()} />);
+    const editButton = container.querySelector("button[title='Edit']");
+    editButton && fireEvent.click(editButton);
+    expect(container.textContent?.toLowerCase()).not.toContain("edit");
+    const backButton = container.querySelector("button[title='Back']");
+    backButton && fireEvent.click(backButton);
+    expect(container.querySelector("button[title='Edit']")).toBeTruthy();
   });
 
   it("calls init", () => {
-    const wrapper = mount<WebcamPanel>(<WebcamPanel {...fakeProps()} />);
-    wrapper.instance().init();
+    const ref = React.createRef<WebcamPanel>();
+    render(<WebcamPanel {...fakeProps()} ref={ref} />);
+    ref.current?.init();
     expect(initSpy).toHaveBeenCalledWith("WebcamFeed", { name: "", url: "http://" });
   });
 
   it("calls edit", () => {
-    const wrapper = mount<WebcamPanel>(<WebcamPanel {...fakeProps()} />);
+    const ref = React.createRef<WebcamPanel>();
+    render(<WebcamPanel {...fakeProps()} ref={ref} />);
     const feed = fakeWebcamFeed();
-    wrapper.instance().edit(feed, {});
+    ref.current?.edit(feed, {});
     expect(editSpy).toHaveBeenCalledWith(feed, {});
   });
 
   it("calls save", () => {
-    const wrapper = mount<WebcamPanel>(<WebcamPanel {...fakeProps()} />);
+    const ref = React.createRef<WebcamPanel>();
+    render(<WebcamPanel {...fakeProps()} ref={ref} />);
     const feed = fakeWebcamFeed();
-    wrapper.instance().save(feed);
+    ref.current?.save(feed);
     expect(saveSpy).toHaveBeenCalledWith(feed.uuid);
   });
 
   it("doesn't call save", () => {
-    const wrapper = mount<WebcamPanel>(<WebcamPanel {...fakeProps()} />);
+    const ref = React.createRef<WebcamPanel>();
+    render(<WebcamPanel {...fakeProps()} ref={ref} />);
     const feed = fakeWebcamFeed();
     feed.body.url = "http://";
-    wrapper.instance().save(feed);
+    ref.current?.save(feed);
     expect(saveSpy).not.toHaveBeenCalled();
   });
 
   it("calls destroy", () => {
-    const wrapper = mount<WebcamPanel>(<WebcamPanel {...fakeProps()} />);
+    const ref = React.createRef<WebcamPanel>();
+    render(<WebcamPanel {...fakeProps()} ref={ref} />);
     const feed = fakeWebcamFeed();
-    wrapper.instance().destroy(feed);
+    ref.current?.destroy(feed);
     expect(destroySpy).toHaveBeenCalledWith(feed.uuid);
   });
 });

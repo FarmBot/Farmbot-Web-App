@@ -1,10 +1,9 @@
 const mockDevice = { updateFarmware: jest.fn((_) => Promise.resolve({})) };
 
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import { FarmwareInfoProps, FarmwareInfo } from "../farmware_info";
 import { fakeFarmware } from "../../__test_support__/fake_farmwares";
-import { clickButton } from "../../__test_support__/helpers";
 import {
   fakeFarmwareInstallation,
 } from "../../__test_support__/fake_state/resources";
@@ -39,45 +38,51 @@ describe("<FarmwareInfo />", () => {
     botOnline: true,
   });
 
+  const clickButton = (container: HTMLElement, label: string) => {
+    const button = Array.from(container.querySelectorAll("button"))
+      .find(el => el.textContent?.toLowerCase().includes(label.toLowerCase()));
+    fireEvent.click(button as Element);
+  };
+
   it("renders no manifest info message", () => {
     const p = fakeProps();
     p.farmware = undefined;
-    const wrapper = mount(<FarmwareInfo {...p} />);
-    expect(wrapper.text()).toEqual("Not available when device is offline.");
+    const { container } = render(<FarmwareInfo {...p} />);
+    expect(container.textContent).toEqual("Not available when device is offline.");
   });
 
   it("renders info", () => {
-    const wrapper = mount(<FarmwareInfo {...fakeProps()} />);
+    const { container } = render(<FarmwareInfo {...fakeProps()} />);
     ["Description", "Version", "Language", "Author", "Manage"].map(string =>
-      expect(wrapper.text()).toContain(string));
-    expect(wrapper.text()).toContain("Does things.");
+      expect(container.textContent).toContain(string));
+    expect(container.textContent).toContain("Does things.");
   });
 
   it("doesn't render farmware tools version", () => {
     const p = fakeProps();
     if (p.farmware) { p.farmware.meta.farmware_tools_version = "latest"; }
-    const wrapper = mount(<FarmwareInfo {...p} />);
-    expect(wrapper.text()).not.toContain("Farmware Tools version");
+    const { container } = render(<FarmwareInfo {...p} />);
+    expect(container.textContent).not.toContain("Farmware Tools version");
   });
 
   it("renders farmware tools version", () => {
     const p = fakeProps();
     if (p.farmware) { p.farmware.meta.farmware_tools_version = "1.0.0"; }
-    const wrapper = mount(<FarmwareInfo {...p} />);
-    expect(wrapper.text()).toContain("Farmware Tools version");
+    const { container } = render(<FarmwareInfo {...p} />);
+    expect(container.textContent).toContain("Farmware Tools version");
   });
 
   it("renders 1st-party author", () => {
     const p = fakeProps();
     p.farmware = fakeFarmware();
     p.farmware.meta.author = "Farmbot.io";
-    const wrapper = mount(<FarmwareInfo {...p} />);
-    expect(wrapper.text()).toContain("FarmBot, Inc.");
+    const { container } = render(<FarmwareInfo {...p} />);
+    expect(container.textContent).toContain("FarmBot, Inc.");
   });
 
   it("updates Farmware", () => {
-    const wrapper = mount(<FarmwareInfo {...fakeProps()} />);
-    clickButton(wrapper, 0, "Update");
+    const { container } = render(<FarmwareInfo {...fakeProps()} />);
+    clickButton(container, "Update");
     expect(mockDevice.updateFarmware).toHaveBeenCalledWith("My Fake Farmware");
   });
 
@@ -85,8 +90,8 @@ describe("<FarmwareInfo />", () => {
     const p = fakeProps();
     p.botOnline = false;
     p.farmware = fakeFarmware();
-    const wrapper = mount(<FarmwareInfo {...p} />);
-    clickButton(wrapper, 0, "Update");
+    const { container } = render(<FarmwareInfo {...p} />);
+    clickButton(container, "Update");
     expect(mockDevice.updateFarmware).not.toHaveBeenCalled();
   });
 
@@ -95,8 +100,8 @@ describe("<FarmwareInfo />", () => {
     p.farmware = fakeFarmware();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     p.farmware.name = undefined as any;
-    const wrapper = mount(<FarmwareInfo {...p} />);
-    clickButton(wrapper, 0, "Update");
+    const { container } = render(<FarmwareInfo {...p} />);
+    clickButton(container, "Update");
     expect(mockDevice.updateFarmware).not.toHaveBeenCalled();
   });
 
@@ -104,21 +109,21 @@ describe("<FarmwareInfo />", () => {
     const p = fakeProps();
     p.dispatch = jest.fn(() => Promise.resolve());
     p.installations = [fakeFarmwareInstallation()];
-    const wrapper = mount(<FarmwareInfo {...p} />);
-    clickButton(wrapper, 1, "Remove");
+    const { container } = render(<FarmwareInfo {...p} />);
+    clickButton(container, "Remove");
     expect(crud.destroy).toHaveBeenCalledWith(p.installations[0].uuid);
     expect(mockNavigate).toHaveBeenCalledWith(Path.farmware());
   });
 
   it("doesn't remove Farmware from API", () => {
-    window.confirm = () => false;
+    window.confirm = jest.fn(() => false);
     const p = fakeProps();
     p.farmware && (p.farmware.name = "fake");
     p.dispatch = jest.fn(() => Promise.resolve());
     p.installations = [fakeFarmwareInstallation()];
     p.firstPartyFarmwareNames = ["fake"];
-    const wrapper = mount(<FarmwareInfo {...p} />);
-    clickButton(wrapper, 1, "Remove");
+    const { container } = render(<FarmwareInfo {...p} />);
+    clickButton(container, "Remove");
     expect(crud.destroy).not.toHaveBeenCalled();
     expect(mockNavigate).not.toHaveBeenCalled();
   });
@@ -127,8 +132,8 @@ describe("<FarmwareInfo />", () => {
     const p = fakeProps();
     p.dispatch = jest.fn(() => Promise.resolve());
     p.installations = [];
-    const wrapper = mount(<FarmwareInfo {...p} />);
-    clickButton(wrapper, 1, "Remove");
+    const { container } = render(<FarmwareInfo {...p} />);
+    clickButton(container, "Remove");
     expect(crud.destroy).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith("Farmware not found.");
   });
@@ -138,20 +143,21 @@ describe("<FarmwareInfo />", () => {
     p.dispatch = jest.fn(() => Promise.resolve());
     p.installations = [fakeFarmwareInstallation()];
     if (p.farmware) { p.farmware.url = ""; }
-    const wrapperNoUrl = mount(<FarmwareInfo {...p} />);
-    clickButton(wrapperNoUrl, 1, "Remove");
+    const { container } = render(<FarmwareInfo {...p} />);
+    clickButton(container, "Remove");
     expect(crud.destroy).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith("Farmware not found.");
   });
 
-  it("errors during removal of Farmware from API: rejected promise", async () => {
+  it("errors removal of Farmware from API: rejected promise", async () => {
     const p = fakeProps();
     p.dispatch = jest.fn(() => Promise.reject("error"));
     p.installations = [fakeFarmwareInstallation()];
-    const wrapper = mount(<FarmwareInfo {...p} />);
-    clickButton(wrapper, 1, "Remove");
-    await expect(crud.destroy).toHaveBeenCalled();
-    expect(error).toHaveBeenCalledWith("Farmware not found.");
+    const { container } = render(<FarmwareInfo {...p} />);
+    clickButton(container, "Remove");
+    expect(crud.destroy).toHaveBeenCalled();
+    await waitFor(() =>
+      expect(error).toHaveBeenCalledWith("Farmware not found."));
   });
 
   it("displays package name fetch error", () => {
@@ -159,9 +165,9 @@ describe("<FarmwareInfo />", () => {
     const farmwareInstallation = fakeFarmwareInstallation();
     farmwareInstallation.body.package_error = "package name fetch error";
     p.installations = [farmwareInstallation];
-    const wrapper = mount(<FarmwareInfo {...p} />);
-    expect(wrapper.text()).toContain(farmwareInstallation.body.package_error);
-    expect(wrapper.html()).toContain("error-with-button");
+    const { container } = render(<FarmwareInfo {...p} />);
+    expect(container.textContent).toContain(farmwareInstallation.body.package_error);
+    expect(container.innerHTML).toContain("error-with-button");
   });
 
   it("retries package name fetch", () => {
@@ -169,8 +175,8 @@ describe("<FarmwareInfo />", () => {
     const farmwareInstallation = fakeFarmwareInstallation();
     farmwareInstallation.body.package_error = "package name fetch error";
     p.installations = [farmwareInstallation];
-    const wrapper = mount(<FarmwareInfo {...p} />);
-    clickButton(wrapper, 2, "retry");
+    const { container } = render(<FarmwareInfo {...p} />);
+    clickButton(container, "retry");
     expect(farmwareActions.retryFetchPackageName)
       .toHaveBeenCalledWith(farmwareInstallation.body.id);
   });
@@ -180,8 +186,8 @@ describe("<FarmwareInfo />", () => {
     const farmwareInstallation = fakeFarmwareInstallation();
     farmwareInstallation.body.package_error = undefined;
     p.installations = [farmwareInstallation];
-    const wrapper = mount(<FarmwareInfo {...p} />);
-    expect(wrapper.html()).not.toContain("error-with-button");
+    const { container } = render(<FarmwareInfo {...p} />);
+    expect(container.innerHTML).not.toContain("error-with-button");
   });
 
   it("doesn't display version string", () => {
@@ -191,8 +197,8 @@ describe("<FarmwareInfo />", () => {
     farmware.meta.farmware_tools_version = "";
     farmware.meta.fbos_version = "";
     p.farmware = farmware;
-    const wrapper = mount(<FarmwareInfo {...p} />);
-    expect(wrapper.text()).not.toContain(".0.0");
+    const { container } = render(<FarmwareInfo {...p} />);
+    expect(container.textContent).not.toContain(".0.0");
   });
 
   it("displays version string", () => {
@@ -201,7 +207,7 @@ describe("<FarmwareInfo />", () => {
     farmware.meta.version = "";
     farmware.meta.fbos_version = ">=1.0.0";
     p.farmware = farmware;
-    const wrapper = mount(<FarmwareInfo {...p} />);
-    expect(wrapper.text()).toContain(">=1.0.0");
+    const { container } = render(<FarmwareInfo {...p} />);
+    expect(container.textContent).toContain(">=1.0.0");
   });
 });

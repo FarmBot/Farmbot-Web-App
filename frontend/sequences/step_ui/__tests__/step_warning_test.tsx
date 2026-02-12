@@ -1,24 +1,26 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { StepWarning, conflictsString } from "../step_warning";
 
 describe("<StepWarning />", () => {
   it("renders", () => {
-    const wrapper = mount(<StepWarning warning={"warning"} />);
-    expect(wrapper.find(".step-warning").length).toEqual(1);
-    expect(wrapper.find(".step-warning").prop("title"))
+    const { container } = render(<StepWarning warning={"warning"} />);
+    const warning = container.querySelector(".step-warning");
+    expect(container.querySelectorAll(".step-warning").length).toEqual(1);
+    expect(warning?.getAttribute("title"))
       .toEqual("Hardware setting conflict");
-    expect(wrapper.html()).toContain("Hardware setting conflict");
+    expect(container.innerHTML).toContain("Hardware setting conflict");
   });
 
   it("lists axes", () => {
-    const wrapper = mount(<StepWarning
+    const { container } = render(<StepWarning
       warning={"warning"}
       conflicts={{ x: true, y: true, z: false }} />);
-    expect(wrapper.find(".step-warning").length).toEqual(1);
-    expect(wrapper.find(".step-warning").prop("title"))
+    const warning = container.querySelector(".step-warning");
+    expect(container.querySelectorAll(".step-warning").length).toEqual(1);
+    expect(warning?.getAttribute("title"))
       .toEqual("Hardware setting conflict: x, y");
-    expect(wrapper.html()).toContain("Hardware setting conflict: x, y");
+    expect(container.innerHTML).toContain("Hardware setting conflict: x, y");
   });
 
   it("conflictsString()", () => {

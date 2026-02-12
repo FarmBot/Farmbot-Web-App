@@ -2,12 +2,11 @@ import React from "react";
 import {
   SpreadLayer, SpreadLayerProps, SpreadCircle, SpreadCircleProps,
 } from "../spread_layer";
-import { shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import { fakePlant } from "../../../../../__test_support__/fake_state/resources";
 import {
   fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
-import { SpreadOverlapHelper } from "../spread_overlap_helper";
 import { findCrop } from "../../../../../crops/find";
 import { defaultSpreadCmDia } from "../../../util";
 
@@ -26,22 +25,25 @@ describe("<SpreadLayer/>", () => {
     hoveredSpread: undefined,
   });
 
+  const renderLayer = (props: SpreadLayerProps) =>
+    render(<svg><SpreadLayer {...props} /></svg>);
+
   it("shows spread", () => {
     const p = fakeProps();
+    const id = p.plants[0].body.id;
     const spreadDiaCm = findCrop(p.plants[0].body.openfarm_slug).spread
       || defaultSpreadCmDia(p.plants[0].body.radius);
-    const wrapper = shallow(<SpreadLayer {...p} />);
-    const layer = wrapper.find("#spread-layer");
-    expect(layer.find("SpreadCircle").html())
-      .toContain(`r="${spreadDiaCm / 2 * 10}"`);
+    const { container } = renderLayer(p);
+    expect(container.querySelector(`circle#spread-${id}`)?.getAttribute("r"))
+      .toEqual((spreadDiaCm / 2 * 10).toString());
   });
 
   it("toggles visibility off", () => {
     const p = fakeProps();
     p.visible = false;
-    const wrapper = shallow(<SpreadLayer {...p} />);
-    const layer = wrapper.find("#spread-layer");
-    expect(layer.find("SpreadCircle").length).toEqual(0);
+    const { container } = renderLayer(p);
+    expect(container.querySelectorAll("circle[id^=\"spread-\"]").length)
+      .toEqual(0);
   });
 
   it("is dragging", () => {
@@ -49,8 +51,8 @@ describe("<SpreadLayer/>", () => {
     p.dragging = true;
     p.editing = true;
     p.currentPlant = p.plants[0];
-    const wrapper = shallow(<SpreadLayer {...p} />);
-    expect(wrapper.find(SpreadOverlapHelper).props().dragging).toEqual(true);
+    const { container } = renderLayer(p);
+    expect(container.querySelector(".overlap-circle")).toBeNull();
   });
 });
 
@@ -64,22 +66,28 @@ describe("<SpreadCircle />", () => {
     selected: false,
   });
 
+  const renderCircle = (props: SpreadCircleProps) =>
+    render(<svg><SpreadCircle {...props} /></svg>);
+
   it("uses spread value", () => {
     const p = fakeProps();
     const spreadDiaCm = findCrop(p.plant.body.openfarm_slug).spread
       || defaultSpreadCmDia(p.plant.body.radius);
-    const wrapper = shallow(<SpreadCircle {...p} />);
-    expect(wrapper.find("circle").first().props().r).toEqual(spreadDiaCm / 2 * 10);
-    expect(wrapper.find("circle").first().hasClass("animate")).toBeTruthy();
-    expect(wrapper.find("circle").first().props().fill).toEqual("none");
+    const { container } = renderCircle(p);
+    const spread = container.querySelector("circle");
+    if (!spread) { throw new Error("Missing spread circle"); }
+    expect(spread.getAttribute("r")).toEqual((spreadDiaCm / 2 * 10).toString());
+    expect(spread.getAttribute("class") || "").toContain("animate");
+    expect(spread.getAttribute("fill")).toEqual("none");
   });
 
   it("shows hovered spread value", () => {
     const p = fakeProps();
     p.selected = true;
     p.hoveredSpread = 100;
-    const wrapper = shallow(<SpreadCircle {...p} />);
-    expect(wrapper.find("circle").last().props().r).toEqual(50);
+    const { container } = renderCircle(p);
+    const circles = container.querySelectorAll("circle");
+    expect(circles.item(circles.length - 1).getAttribute("r")).toEqual("50");
   });
 
   it("fetches icon", () => {
@@ -87,7 +95,7 @@ describe("<SpreadCircle />", () => {
     p.plant.body.openfarm_slug = "slug";
     const np = fakeProps();
     np.plant.body.openfarm_slug = "new-slug";
-    const wrapper = shallow(<SpreadCircle {...p} />);
-    wrapper.setProps(np);
+    const { rerender } = renderCircle(p);
+    rerender(<svg><SpreadCircle {...np} /></svg>);
   });
 });

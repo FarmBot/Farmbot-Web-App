@@ -1,5 +1,5 @@
 import React from "react";
-import { shallow } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { Link } from "../link";
 
 describe("<Link/>", () => {
@@ -9,20 +9,23 @@ describe("<Link/>", () => {
 
   it("renders child elements", () => {
     function Child(_: unknown) { return <p>Hey!</p>; }
-    const el = shallow(<Link to="/wherever"><Child /></Link>);
-    expect(el.html()).toContain("Hey!");
-    el.unmount();
+    render(<Link to="/wherever"><Child /></Link>);
+    expect(screen.getByText("Hey!")).toBeInTheDocument();
   });
 
   it("navigates", () => {
-    const wrapper = shallow(<Link to="/tools" />);
-    wrapper.simulate("click", { preventDefault: jest.fn() });
+    const { container } = render(<Link to="/tools" />);
+    const anchor = container.querySelector("a");
+    expect(anchor).toBeTruthy();
+    anchor && fireEvent.click(anchor);
     expect(mockNavigate).toHaveBeenCalledWith("/tools");
   });
 
   it("doesn't navigate when disabled", () => {
-    const wrapper = shallow(<Link to="/tools" disabled={true} />);
-    wrapper.simulate("click", { preventDefault: jest.fn() });
+    const { container } = render(<Link to="/tools" disabled={true} />);
+    const anchor = container.querySelector("a");
+    expect(anchor).toBeTruthy();
+    anchor && fireEvent.click(anchor);
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 });

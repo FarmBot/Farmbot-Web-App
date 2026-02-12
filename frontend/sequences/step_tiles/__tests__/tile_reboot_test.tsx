@@ -13,7 +13,7 @@ jest.mock("../../../settings/dev/dev_support", () => {
 });
 
 import React from "react";
-import { render } from "enzyme";
+import { render } from "@testing-library/react";
 import { TileReboot, editTheRebootStep, rebootExecutor } from "../tile_reboot";
 import { StepParams } from "../../interfaces";
 import { editStep } from "../../../api/crud";
@@ -38,14 +38,14 @@ describe("<TileReboot />", () => {
   });
 
   it("renders", () => {
-    const block = render(<TileReboot {...fakeProps()} />);
-    expect(block.text().toLowerCase()).not.toContain("arduino");
+    const { container } = render(<TileReboot {...fakeProps()} />);
+    expect((container.textContent || "").toLowerCase()).not.toContain("arduino");
   });
 
   it("renders package selector", () => {
     mockDev = true;
-    const block = render(<TileReboot {...fakeProps()} />);
-    expect(block.text().toLowerCase()).toContain("arduino");
+    const { container } = render(<TileReboot {...fakeProps()} />);
+    expect((container.textContent || "").toLowerCase()).toContain("arduino");
   });
 
   it("edits the reboot step", () => {

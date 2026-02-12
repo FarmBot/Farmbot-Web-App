@@ -10,11 +10,24 @@ const mockConnect = jest.fn(() => mockMqttClient);
 import React from "react";
 import axios from "axios";
 import mqtt from "mqtt";
-import { shallow } from "enzyme";
+import { act, fireEvent, render } from "@testing-library/react";
 import { DemoIframe, WAITING_ON_API, EASTER_EGG, MQTT_CHAN } from "../demo_iframe";
 import { tourPath } from "../../help/tours";
 import { Path } from "../../internal_urls";
 import * as messageCards from "../../messages/cards";
+
+jest.mock("../../ui", () => {
+  const actual = jest.requireActual("../../ui");
+  return {
+    ...actual,
+    FBSelect: (props: { onChange: (ddi: { value: string }) => void }) =>
+      <button
+        data-testid="seed-data-select"
+        onClick={() => props.onChange({ value: "express_1.2" })}>
+        select
+      </button>,
+  };
+});
 
 describe("<DemoIframe />", () => {
   const originalConsoleError = console.error;
@@ -54,47 +67,53 @@ describe("<DemoIframe />", () => {
 
   it("renders OK", async () => {
     mockResponse = "yep.";
-    const el = shallow<DemoIframe>(<DemoIframe />);
-    expect(el.text()).toContain("DEMO THE APP");
-    await el.instance().connectApi();
+    const ref = React.createRef<DemoIframe>();
+    const { container } = render(<DemoIframe ref={ref} />);
+    expect(container.textContent).toContain("DEMO THE APP");
+    await act(async () => { await ref.current?.connectApi(); });
     expect(mockPost).toHaveBeenCalled();
-    expect(el.state().stage).toContain(WAITING_ON_API);
+    expect(ref.current?.state.stage).toContain(WAITING_ON_API);
   });
 
   it("renders errors", async () => {
     console.error = jest.fn();
     mockResponse = new Error("Nope.");
-    const el = shallow<DemoIframe>(<DemoIframe />);
-    await el.instance().connectApi();
+    const ref = React.createRef<DemoIframe>();
+    render(<DemoIframe ref={ref} />);
+    await act(async () => { await ref.current?.connectApi(); });
     expect(mockPost).toHaveBeenCalled();
-    expect(el.state().error).toBe(mockResponse);
+    expect(ref.current?.state.error).toBe(mockResponse);
     expect(console.error).toHaveBeenCalledWith(mockResponse);
   });
 
   it("changes model", () => {
-    const wrapper = shallow<DemoIframe>(<DemoIframe />);
-    expect(wrapper.state().productLine).toEqual("genesis_1.8");
-    wrapper.find("FBSelect").simulate("change", { value: "express_1.2" });
-    expect(wrapper.state().productLine).toEqual("express_1.2");
+    const ref = React.createRef<DemoIframe>();
+    const { getByTestId } = render(<DemoIframe ref={ref} />);
+    expect(ref.current?.state.productLine).toEqual("genesis_1.8");
+    fireEvent.click(getByTestId("seed-data-select"));
+    expect(ref.current?.state.productLine).toEqual("express_1.2");
   });
 
   it("handles MQTT messages", () => {
-    const el = shallow<DemoIframe>(<DemoIframe />);
-    el.instance().handleMessage("foo", Buffer.from("bar"));
+    const ref = React.createRef<DemoIframe>();
+    render(<DemoIframe ref={ref} />);
+    ref.current?.handleMessage("foo", Buffer.from("bar"));
     expect(location.assign).toHaveBeenCalledWith(
       tourPath(Path.withApp(Path.plants()), "gettingStarted", "intro"));
   });
 
   it("does something 🤫", async () => {
     mockResponse = "OK!";
-    const el = shallow<DemoIframe>(<DemoIframe />);
+    const ref = React.createRef<DemoIframe>();
+    const { container } = render(<DemoIframe ref={ref} />);
     const roundSpy = jest.spyOn(Math, "round").mockImplementation(() => 51);
-    const request = el.instance().connectApi();
-    expect(el.text()).toContain(EASTER_EGG);
-    await request;
+    let request: Promise<void> | undefined;
+    act(() => { request = ref.current?.connectApi(); });
+    expect(ref.current?.state.stage).toContain(EASTER_EGG);
+    await act(async () => { await request; });
     roundSpy.mockRestore();
     expect(mockPost).toHaveBeenCalled();
-    expect(el.text()).toContain(WAITING_ON_API);
+    expect(container.textContent).toContain(WAITING_ON_API);
   });
 
   it("connects to MQTT", async () => {

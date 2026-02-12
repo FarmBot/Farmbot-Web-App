@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import {
   RawToursPanel as ToursPanel, mapStateToProps, ToursPanelProps,
 } from "../panel";
@@ -12,8 +12,8 @@ describe("<ToursPanel />", () => {
   });
 
   it("renders tours panel", () => {
-    const wrapper = mount(<ToursPanel {...fakeProps()} />);
-    clickButton(wrapper, 0, "start tour");
+    const { container } = render(<ToursPanel {...fakeProps()} />);
+    clickButton({ container }, 0, "start tour");
     expect(mockNavigate).toHaveBeenCalledWith(
       expect.stringContaining("?tour=gettingStarted&tourStep=intro"));
   });

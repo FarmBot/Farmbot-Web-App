@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { TimezoneSelector } from "../timezone_selector";
 import * as guessTimezone from "../guess_timezone";
 
@@ -24,8 +24,7 @@ describe("<TimezoneSelector/>", () => {
   it("triggers life cycle callbacks", () => {
     jest.spyOn(guessTimezone, "inferTimezone").mockReturnValue("UTC");
     const p = fakeProps();
-    const el = mount(<TimezoneSelector {...p} />);
-    el.mount();
+    render(<TimezoneSelector {...p} />);
     expect(p.onUpdate).toHaveBeenCalledWith("UTC");
   });
 });

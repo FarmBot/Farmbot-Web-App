@@ -1,11 +1,25 @@
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { GardenLocationRow } from "../garden_location_row";
 import { GardenLocationRowProps } from "../interfaces";
 import { fakeDevice } from "../../../__test_support__/resource_index_builder";
 import * as crud from "../../../api/crud";
 import { fakeFarmwareEnv } from "../../../__test_support__/fake_state/resources";
 import { namespace3D } from "../../three_d_settings";
+
+jest.mock("../../../ui", () => {
+  const actual = jest.requireActual("../../../ui");
+  return {
+    ...actual,
+    FBSelect: (props: {
+      onChange: (ddi: { label: string, value: number | string }) => void,
+    }) =>
+      <button
+        onClick={() => props.onChange({ label: "Outdoor", value: 0 })}>
+        mock-scene-select
+      </button>,
+  };
+});
 
 let initSaveSpy: jest.SpyInstance;
 let editSpy: jest.SpyInstance;
@@ -41,8 +55,8 @@ describe("<GardenLocationRow />", () => {
   });
 
   it("doesn't have use location button", () => {
-    const wrapper = mount(<GardenLocationRow {...fakeProps()} />);
-    expect(wrapper.html()).not.toContain("fa-crosshairs");
+    const { container } = render(<GardenLocationRow {...fakeProps()} />);
+    expect(container.innerHTML).not.toContain("fa-crosshairs");
   });
 
   it("changes location", () => {
@@ -67,36 +81,38 @@ describe("<GardenLocationRow />", () => {
       configurable: true,
     });
     const p = fakeProps();
-    const wrapper = mount(<GardenLocationRow {...p} />);
-    wrapper.find("button").first().simulate("click");
+    render(<GardenLocationRow {...p} />);
+    fireEvent.click(screen.getByTitle("use current location"));
     expect(crud.edit).toHaveBeenCalledWith(p.device, { lat: 100, lng: 50 });
     expect(crud.save).toHaveBeenCalledWith(p.device.uuid);
   });
 
   it("changes latitude", () => {
     const p = fakeProps();
-    const wrapper = shallow(<GardenLocationRow {...p} />);
-    const input = wrapper.find("input").first();
-    input.simulate("change", { currentTarget: { value: 100 } });
-    input.simulate("blur");
+    render(<GardenLocationRow {...p} />);
+    const input = screen.getByTitle("latitude");
+    fireEvent.change(input, { target: { value: "100" } });
+    fireEvent.blur(input);
     expect(crud.edit).toHaveBeenCalledWith(p.device, { lat: 100 });
     expect(crud.save).toHaveBeenCalledWith(p.device.uuid);
   });
 
   it("changes longitude", () => {
     const p = fakeProps();
-    const wrapper = shallow(<GardenLocationRow {...p} />);
-    const input = wrapper.find("input").last();
-    input.simulate("change", { currentTarget: { value: 100 } });
-    input.simulate("blur");
+    render(<GardenLocationRow {...p} />);
+    const input = screen.getByTitle("longitude");
+    fireEvent.change(input, { target: { value: "100" } });
+    fireEvent.blur(input);
     expect(crud.edit).toHaveBeenCalledWith(p.device, { lng: 100 });
     expect(crud.save).toHaveBeenCalledWith(p.device.uuid);
   });
 
   it("changes indoor setting", () => {
     const p = fakeProps();
-    const wrapper = mount(<GardenLocationRow {...p} />);
-    wrapper.find("button.fb-toggle-button").first().simulate("click");
+    const { container } = render(<GardenLocationRow {...p} />);
+    const button = container.querySelector("button.fb-toggle-button");
+    expect(button).toBeTruthy();
+    button && fireEvent.click(button);
     expect(crud.edit).toHaveBeenCalledWith(p.device, { indoor: true });
     expect(crud.save).toHaveBeenCalledWith(p.device.uuid);
   });
@@ -105,8 +121,8 @@ describe("<GardenLocationRow />", () => {
     const p = fakeProps();
     p.device.body.lat = 100;
     p.device.body.lng = 50;
-    const wrapper = mount(<GardenLocationRow {...p} />);
-    expect(wrapper.html()).toContain("fa-map");
+    const { container } = render(<GardenLocationRow {...p} />);
+    expect(container.innerHTML).toContain("fa-map");
   });
 
   it("changes scene", () => {
@@ -115,9 +131,8 @@ describe("<GardenLocationRow />", () => {
     fakeEnv.body.key = namespace3D("scene");
     fakeEnv.body.value = "1";
     p.farmwareEnvs = [fakeEnv];
-    const wrapper = mount(<GardenLocationRow {...p} />);
-    const onChange = wrapper.find("FBSelect").props().onChange;
-    onChange?.({ label: "Outdoor", value: 0 });
+    render(<GardenLocationRow {...p} />);
+    fireEvent.click(screen.getByText("mock-scene-select"));
     expect(crud.initSave).not.toHaveBeenCalled();
     expect(crud.edit).toHaveBeenCalledWith(fakeEnv, { value: "0" });
     expect(crud.save).toHaveBeenCalledWith(fakeEnv.uuid);

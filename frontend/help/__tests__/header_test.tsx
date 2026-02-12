@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { HelpHeader } from "../header";
 import * as hotkeys from "../../hotkeys";
 import { Path } from "../../internal_urls";
@@ -33,41 +33,37 @@ describe("<HelpHeader />", () => {
     ["get help", Path.support()],
   ])("renders %s panel", (title, path) => {
     location.pathname = Path.mock(path);
-    const wrapper = mount(<HelpHeader />);
-    expect(wrapper.text().toLowerCase()).toContain(title);
+    const { container } = render(<HelpHeader />);
+    expect(container.textContent?.toLowerCase()).toContain(title);
   });
 
   it("hides hotkeys menu item", () => {
     setWindowWidth(400);
-    const wrapper = mount(<HelpHeader />);
-    wrapper.find(".help-panel-header").simulate("click");
-    expect(wrapper.text().toLowerCase()).not.toContain("hotkeys");
+    const { container } = render(<HelpHeader />);
+    fireEvent.click(container.querySelector(".help-panel-header") as Element);
+    expect(container.textContent?.toLowerCase()).not.toContain("hotkeys");
   });
 
   it("opens menu", () => {
-    const wrapper = mount(<HelpHeader />);
-    expect(wrapper.html()).toContain("fa-chevron-down");
-    wrapper.find(".help-panel-header").simulate("click");
-    expect(wrapper.html()).toContain("fa-chevron-up");
-    expect(wrapper.text().toLowerCase()).toContain("hotkeys");
+    const { container } = render(<HelpHeader />);
+    expect(container.querySelector(".fa-chevron-down")).toBeTruthy();
+    fireEvent.click(container.querySelector(".help-panel-header") as Element);
+    expect(container.querySelector(".fa-chevron-up")).toBeTruthy();
+    expect(container.textContent?.toLowerCase()).toContain("hotkeys");
   });
 
   it("selects panel", () => {
-    const wrapper = mount(<HelpHeader />);
-    wrapper.find(".help-panel-header").simulate("click");
-    const supportLink = wrapper.find("a")
-      .filterWhere(node =>
-        String(node.prop("title")).toLowerCase().includes("get help"))
-      .first();
-    expect(supportLink.exists()).toBeTruthy();
-    supportLink.simulate("click");
+    const { container } = render(<HelpHeader />);
+    fireEvent.click(container.querySelector(".help-panel-header") as Element);
+    const supportLink = screen.getByTitle("Get Help");
+    fireEvent.click(supportLink);
     expect(mockNavigate).toHaveBeenCalledWith(Path.support());
   });
 
   it("opens hotkeys", () => {
-    const wrapper = mount(<HelpHeader />);
-    wrapper.find(".help-panel-header").simulate("click");
-    wrapper.find("a").last().simulate("click");
+    const { container } = render(<HelpHeader />);
+    fireEvent.click(container.querySelector(".help-panel-header") as Element);
+    fireEvent.click(screen.getByTitle("Hotkeys"));
     expect(mockNavigate).not.toHaveBeenCalled();
     expect(toggleHotkeyHelpOverlaySpy).toHaveBeenCalled();
   });

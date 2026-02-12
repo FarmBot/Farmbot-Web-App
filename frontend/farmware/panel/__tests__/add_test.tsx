@@ -1,7 +1,7 @@
 jest.mock("../../../api/crud", () => ({ initSave: jest.fn() }));
 
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import {
   RawDesignerFarmwareAdd as DesignerFarmwareAdd,
   DesignerFarmwareAddProps,
@@ -21,34 +21,45 @@ describe("<DesignerFarmwareAdd />", () => {
   });
 
   it("renders add farmware panel", () => {
-    const wrapper = mount(<DesignerFarmwareAdd {...fakeProps()} />);
+    const { container } = render(<DesignerFarmwareAdd {...fakeProps()} />);
     ["install new farmware", "manifest url"].map(string =>
-      expect(wrapper.text().toLowerCase()).toContain(string));
+      expect(container.textContent?.toLowerCase()).toContain(string));
   });
 
   it("updates url", () => {
-    const wrapper = shallow(<DesignerFarmwareAdd {...fakeProps()} />);
-    wrapper.find("input").simulate("change",
-      { currentTarget: { value: "fake url" } });
-    expect(wrapper.find("input").props().value).toEqual("fake url");
+    const { container } = render(<DesignerFarmwareAdd {...fakeProps()} />);
+    fireEvent.change(container.querySelector("input") as Element, {
+      target: { value: "fake url" },
+      currentTarget: { value: "fake url" },
+    });
+    expect((container.querySelector("input") as HTMLInputElement).value)
+      .toEqual("fake url");
   });
 
   it("adds a new farmware", async () => {
-    const wrapper = shallow(<DesignerFarmwareAdd {...fakeProps()} />);
-    wrapper.find("input").simulate("change",
-      { currentTarget: { value: "fake url" } });
-    await wrapper.find("button").simulate("click");
+    const { container } = render(<DesignerFarmwareAdd {...fakeProps()} />);
+    fireEvent.change(container.querySelector("input") as Element, {
+      target: { value: "fake url" },
+      currentTarget: { value: "fake url" },
+    });
+    fireEvent.click(container.querySelector("button") as Element);
+    await Promise.resolve();
     expect(initSave).toHaveBeenCalledWith("FarmwareInstallation", {
-      url: "fake url"
+      url: "fake url",
+      package: undefined,
+      package_error: undefined,
     });
     expect(mockNavigate).toHaveBeenCalledWith(Path.farmware());
     expect(error).not.toHaveBeenCalled();
   });
 
   it("doesn't add a new farmware", () => {
-    const wrapper = shallow(<DesignerFarmwareAdd {...fakeProps()} />);
-    wrapper.find("input").simulate("change", { currentTarget: { value: "" } });
-    wrapper.find("button").simulate("click");
+    const { container } = render(<DesignerFarmwareAdd {...fakeProps()} />);
+    fireEvent.change(container.querySelector("input") as Element, {
+      target: { value: "" },
+      currentTarget: { value: "" },
+    });
+    fireEvent.click(container.querySelector("button") as Element);
     expect(initSave).not.toHaveBeenCalled();
     expect(mockNavigate).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith("Please enter a URL");

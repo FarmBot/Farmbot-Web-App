@@ -1,5 +1,5 @@
-import { mount } from "enzyme";
 import React from "react";
+import { render } from "@testing-library/react";
 import { AddPlantIcon, AddPlantIconProps } from "../add_plant_icon";
 import {
   fakeMapTransformProps,
@@ -21,25 +21,27 @@ describe("<AddPlantIcon />", () => {
   });
 
   it("returns icon", () => {
-    const wrapper = mount(<AddPlantIcon {...fakeProps()} />);
-    expect(wrapper.find("image").length).toEqual(1);
-    expect(wrapper.find("image").props().xlinkHref)
+    const { container } = render(<svg><AddPlantIcon {...fakeProps()} /></svg>);
+    const images = container.querySelectorAll("image");
+    expect(images.length).toEqual(1);
+    expect(images[0]?.getAttribute("xlink:href"))
       .toEqual("/crops/icons/generic-plant.avif");
   });
 
   it("doesn't return icon", () => {
     const p = fakeProps();
     p.cursorPosition = undefined;
-    const wrapper = mount(<AddPlantIcon {...p} />);
-    expect(wrapper.find("image").length).toEqual(0);
+    const { container } = render(<svg><AddPlantIcon {...p} /></svg>);
+    expect(container.querySelectorAll("image").length).toEqual(0);
   });
 
   it("returns specific icon", () => {
     location.pathname = Path.mock(Path.cropSearch("mint"));
     const p = fakeProps();
-    const wrapper = mount(<AddPlantIcon {...p} />);
-    expect(wrapper.find("image").length).toEqual(1);
-    expect(wrapper.find("image").props().xlinkHref)
+    const { container } = render(<svg><AddPlantIcon {...p} /></svg>);
+    const images = container.querySelectorAll("image");
+    expect(images.length).toEqual(1);
+    expect(images[0]?.getAttribute("xlink:href"))
       .toEqual("/crops/icons/mint.avif");
   });
 });

@@ -1,6 +1,6 @@
 import React from "react";
 import { TileFindHome } from "../tile_find_home";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import {
   fakeHardwareFlags, fakeStepParams,
 } from "../../../__test_support__/fake_sequence_step_data";
@@ -14,20 +14,20 @@ describe("<TileFindHome/>", () => {
   });
 
   it("renders inputs", () => {
-    const wrapper = mount(<TileFindHome {...fakeProps()} />);
-    const inputs = wrapper.find("input");
-    const labels = wrapper.find("label");
+    const { container } = render(<TileFindHome {...fakeProps()} />);
+    const inputs = container.querySelectorAll("input");
+    const labels = container.querySelectorAll("label");
     expect(inputs.length).toEqual(5);
     expect(labels.length).toEqual(4);
-    expect(inputs.first().props().placeholder).toEqual("Find Home");
-    expect(labels.at(0).text()).toContain("x");
-    expect(inputs.at(1).props().checked).toBeFalsy();
-    expect(labels.at(1).text()).toContain("y");
-    expect(inputs.at(2).props().checked).toBeFalsy();
-    expect(labels.at(2).text()).toContain("z");
-    expect(inputs.at(3).props().checked).toBeFalsy();
-    expect(labels.at(3).text()).toContain("all");
-    expect(inputs.at(4).props().checked).toBeTruthy();
+    expect((inputs[0] as HTMLInputElement).placeholder).toEqual("Find Home");
+    expect((labels[0] as HTMLElement).textContent).toContain("x");
+    expect((inputs[1] as HTMLInputElement).checked).toBeFalsy();
+    expect((labels[1] as HTMLElement).textContent).toContain("y");
+    expect((inputs[2] as HTMLInputElement).checked).toBeFalsy();
+    expect((labels[2] as HTMLElement).textContent).toContain("z");
+    expect((inputs[3] as HTMLInputElement).checked).toBeFalsy();
+    expect((labels[3] as HTMLElement).textContent).toContain("all");
+    expect((inputs[4] as HTMLInputElement).checked).toBeTruthy();
   });
 
   const CONFLICT_TEXT_BASE = "Hardware setting conflict";
@@ -36,23 +36,27 @@ describe("<TileFindHome/>", () => {
     const p = fakeProps();
     p.currentStep.args.axis = "x";
     p.hardwareFlags && (p.hardwareFlags.findHomeEnabled.x = true);
-    const wrapper = mount(<TileFindHome {...p} />);
-    expect(wrapper.html()).not.toContain(CONFLICT_TEXT_BASE);
+    const { container } = render(<TileFindHome {...p} />);
+    expect(container.querySelector(".step-warning")).toBeNull();
   });
 
   it("renders warning: all axes", () => {
     const p = fakeProps();
     p.currentStep.args.axis = "all";
     p.hardwareFlags && (p.hardwareFlags.findHomeEnabled.x = false);
-    const wrapper = mount(<TileFindHome {...p} />);
-    expect(wrapper.html()).toContain(CONFLICT_TEXT_BASE + ": x");
+    const { container } = render(<TileFindHome {...p} />);
+    const warning = container.querySelector(".step-warning") as HTMLElement;
+    expect(warning).toBeTruthy();
+    expect(warning.title).toContain(CONFLICT_TEXT_BASE + ": x");
   });
 
   it("renders warning: one axis", () => {
     const p = fakeProps();
     p.currentStep.args.axis = "x";
     p.hardwareFlags && (p.hardwareFlags.findHomeEnabled.x = false);
-    const wrapper = mount(<TileFindHome {...p} />);
-    expect(wrapper.html()).toContain(CONFLICT_TEXT_BASE + ": x");
+    const { container } = render(<TileFindHome {...p} />);
+    const warning = container.querySelector(".step-warning") as HTMLElement;
+    expect(warning).toBeTruthy();
+    expect(warning.title).toContain(CONFLICT_TEXT_BASE + ": x");
   });
 });

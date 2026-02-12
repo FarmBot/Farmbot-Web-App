@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { TileMoveHome } from "../tile_move_home";
 import { Home } from "farmbot";
 import { StepParams } from "../../interfaces";
@@ -11,13 +11,13 @@ describe("<TileMoveHome/>", () => {
   });
 
   it("renders inputs", () => {
-    const block = mount(<TileMoveHome {...fakeProps()} />);
-    const inputs = block.find("input");
-    const labels = block.find("label");
+    const { container } = render(<TileMoveHome {...fakeProps()} />);
+    const inputs = container.querySelectorAll("input");
+    const labels = container.querySelectorAll("label");
     expect(inputs.length).toEqual(6);
     expect(labels.length).toEqual(5);
-    expect(inputs.first().props().placeholder).toEqual("Move to Home");
-    expect(labels.at(0).text()).toContain("x");
-    expect(inputs.at(1).props().value).toEqual("x");
+    expect(inputs[0]?.placeholder).toEqual("Move to Home");
+    expect(labels[0]?.textContent).toContain("x");
+    expect(inputs[1]?.value).toEqual("x");
   });
 });

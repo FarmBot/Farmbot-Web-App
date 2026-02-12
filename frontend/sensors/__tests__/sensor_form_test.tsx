@@ -1,11 +1,17 @@
 import React from "react";
-import { shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import { SensorForm } from "../sensor_form";
 import { SensorFormProps } from "../interfaces";
 import { fakeSensor } from "../../__test_support__/fake_state/resources";
-import {
-  NameInputBox, PinDropdown, ModeDropdown,
-} from "../../controls/pin_form_fields";
+
+jest.mock("../../controls/pin_form_fields", () => ({
+  NameInputBox: ({ value }: { value: string }) =>
+    <div data-testid="name-input-box">{value}</div>,
+  PinDropdown: ({ value }: { value: number }) =>
+    <div data-testid="pin-dropdown">{value}</div>,
+  ModeDropdown: ({ value }: { value: number }) =>
+    <div data-testid="mode-dropdown">{value}</div>,
+}));
 
 describe("<SensorForm/>", function () {
   const fakeProps = (): SensorFormProps => {
@@ -24,15 +30,15 @@ describe("<SensorForm/>", function () {
   };
 
   it("renders a list of editable sensors, in sorted order", () => {
-    const form = shallow(<SensorForm {...fakeProps()} />);
-    const sensorNames = form.find(NameInputBox);
-    expect(sensorNames.at(0).props().value).toEqual("GPIO 51");
-    expect(sensorNames.at(1).props().value).toEqual("GPIO 50 - Moisture");
-    const sensorPins = form.find(PinDropdown);
-    expect(sensorPins.at(0).props().value).toEqual(51);
-    expect(sensorPins.at(1).props().value).toEqual(50);
-    const sensorModes = form.find(ModeDropdown);
-    expect(sensorModes.at(0).props().value).toEqual(0);
-    expect(sensorModes.at(1).props().value).toEqual(0);
+    const { container } = render(<SensorForm {...fakeProps()} />);
+    const sensorNames = container.querySelectorAll("[data-testid='name-input-box']");
+    expect(sensorNames[0]?.textContent).toEqual("GPIO 51");
+    expect(sensorNames[1]?.textContent).toEqual("GPIO 50 - Moisture");
+    const sensorPins = container.querySelectorAll("[data-testid='pin-dropdown']");
+    expect(sensorPins[0]?.textContent).toEqual("51");
+    expect(sensorPins[1]?.textContent).toEqual("50");
+    const sensorModes = container.querySelectorAll("[data-testid='mode-dropdown']");
+    expect(sensorModes[0]?.textContent).toEqual("0");
+    expect(sensorModes[1]?.textContent).toEqual("0");
   });
 });

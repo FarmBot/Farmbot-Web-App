@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { RawAddGarden as AddGarden, mapStateToProps } from "../garden_add";
 import { GardenSnapshotProps } from "../garden_snapshot";
 import { fakeState } from "../../__test_support__/fake_state";
@@ -16,8 +16,8 @@ describe("<AddGarden />", () => {
   });
 
   it("renders add garden panel", () => {
-    const wrapper = mount(<AddGarden {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("add garden");
+    const { container } = render(<AddGarden {...fakeProps()} />);
+    expect(container.textContent?.toLowerCase()).toContain("add garden");
   });
 });
 

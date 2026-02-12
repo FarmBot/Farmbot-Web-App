@@ -1,13 +1,14 @@
 import React from "react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { RawPlantInfo as PlantInfo } from "../plant_info";
-import { mount, shallow } from "enzyme";
 import { fakePlant } from "../../__test_support__/fake_state/resources";
 import { EditPlantInfoProps } from "../../farm_designer/interfaces";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import * as crud from "../../api/crud";
 import { DesignerPanelHeader } from "../../farm_designer/designer_panel";
 import {
-  fakeBotSize, fakeMovementState,
+  fakeBotSize,
+  fakeMovementState,
 } from "../../__test_support__/fake_bot_data";
 import { Path } from "../../internal_urls";
 
@@ -20,6 +21,7 @@ beforeEach(() => {
 afterEach(() => {
   jest.restoreAllMocks();
 });
+
 describe("<PlantInfo />", () => {
   const fakeProps = (): EditPlantInfoProps => ({
     findPlant: fakePlant,
@@ -39,21 +41,31 @@ describe("<PlantInfo />", () => {
     plants: [],
   });
 
+  const headerFromPanel = (panel: React.ReactElement) => {
+    const children = React.Children.toArray(panel.props.children);
+    return children.find(child =>
+      React.isValidElement(child)
+      && child.type === DesignerPanelHeader) as React.ReactElement;
+  };
+
   it("renders", () => {
-    const wrapper = mount(<PlantInfo {...fakeProps()} />);
-    ["Strawberry Plant 1", "Plant Type", "Strawberry"].map(string =>
-      expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));
-    const buttons = wrapper.find("button");
-    expect(buttons.at(0).text()).toEqual("Planned");
-    expect(buttons.at(1).text()).toEqual("GO (X, Y)");
+    render(<PlantInfo {...fakeProps()} />);
+    expect(screen.getByText(/Strawberry Plant 1/i)).toBeInTheDocument();
+    expect(screen.getByText(/Plant Type/i)).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: "Strawberry" }))
+      .toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Planned" }))
+      .toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "GO (X, Y)" }))
+      .toBeInTheDocument();
   });
 
   it("renders: no plant", () => {
     location.pathname = Path.mock(Path.plants("nope"));
     const p = fakeProps();
     p.findPlant = () => undefined;
-    const wrapper = mount(<PlantInfo {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("redirecting...");
+    render(<PlantInfo {...p} />);
+    expect(screen.getByText(/redirecting/i)).toBeInTheDocument();
     expect(mockNavigate).toHaveBeenCalledWith(Path.plants());
   });
 
@@ -61,8 +73,8 @@ describe("<PlantInfo />", () => {
     location.pathname = Path.mock(Path.plantTemplates("nope"));
     const p = fakeProps();
     p.findPlant = () => undefined;
-    const wrapper = mount(<PlantInfo {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("redirecting...");
+    render(<PlantInfo {...p} />);
+    expect(screen.getByText(/redirecting/i)).toBeInTheDocument();
     expect(mockNavigate).toHaveBeenCalledWith(Path.plants());
   });
 
@@ -70,55 +82,57 @@ describe("<PlantInfo />", () => {
     location.pathname = Path.mock(Path.logs());
     const p = fakeProps();
     p.findPlant = () => undefined;
-    const wrapper = mount(<PlantInfo {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("redirecting...");
+    render(<PlantInfo {...p} />);
+    expect(screen.getByText(/redirecting/i)).toBeInTheDocument();
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 
   it("has link to plants", () => {
     const p = fakeProps();
     p.openedSavedGarden = undefined;
-    const wrapper = mount(<PlantInfo {...p} />);
-    expect(wrapper.find("Link").first().props().to)
-      .toContain(Path.plants());
+    const { container } = render(<PlantInfo {...p} />);
+    const backArrow = container.querySelector(".back-arrow");
+    expect(backArrow).toBeTruthy();
+    fireEvent.click(backArrow as Element);
+    expect(mockNavigate).toHaveBeenCalledWith(Path.plants());
   });
 
   it("gets plant id", () => {
     location.pathname = Path.mock(Path.plants(1));
     const p = fakeProps();
     p.openedSavedGarden = undefined;
-    const wrapper = mount<PlantInfo>(<PlantInfo {...p} />);
-    expect(wrapper.instance().stringyID).toEqual("1");
+    const instance = new PlantInfo(p);
+    expect(instance.stringyID).toEqual("1");
   });
 
   it("gets template id", () => {
     location.pathname = Path.mock(Path.plantTemplates(2));
     const p = fakeProps();
     p.openedSavedGarden = 1;
-    const wrapper = mount<PlantInfo>(<PlantInfo {...p} />);
-    expect(wrapper.instance().stringyID).toEqual("2");
+    const instance = new PlantInfo(p);
+    expect(instance.stringyID).toEqual("2");
   });
 
   it("handles missing plant id", () => {
     location.pathname = Path.mock(Path.plants());
     const p = fakeProps();
     p.openedSavedGarden = undefined;
-    const wrapper = mount<PlantInfo>(<PlantInfo {...p} />);
-    expect(wrapper.instance().stringyID).toEqual("");
+    const instance = new PlantInfo(p);
+    expect(instance.stringyID).toEqual("");
   });
 
   it("updates plant", () => {
-    const wrapper = mount<PlantInfo>(<PlantInfo {...fakeProps()} />);
-    wrapper.instance().updatePlant("uuid", {});
+    const instance = new PlantInfo(fakeProps());
+    instance.updatePlant("uuid", {});
     expect(crud.edit).toHaveBeenCalled();
     expect(crud.save).toHaveBeenCalledWith("uuid");
   });
 
   it("handles missing plant", () => {
     const p = fakeProps();
-    p.findPlant = jest.fn();
-    const wrapper = mount<PlantInfo>(<PlantInfo {...p} />);
-    wrapper.instance().updatePlant("uuid", {});
+    p.findPlant = jest.fn(() => undefined);
+    const instance = new PlantInfo(p);
+    instance.updatePlant("uuid", {});
     expect(crud.edit).not.toHaveBeenCalled();
   });
 
@@ -128,33 +142,35 @@ describe("<PlantInfo />", () => {
     const plant = fakePlant();
     plant.body.id = 1;
     p.findPlant = () => plant;
-    const wrapper = shallow(<PlantInfo {...p} />);
-    wrapper.find(DesignerPanelHeader).simulate("save");
+    const instance = new PlantInfo(p);
+    const header = headerFromPanel(instance.default(plant));
+    const onSave = (header.props as { onSave?: () => void }).onSave;
+    onSave?.();
     expect(crud.save).toHaveBeenCalledWith(plant.uuid);
   });
 
   it("doesn't save", () => {
     location.pathname = Path.mock(Path.logs());
     const p = fakeProps();
-    const plant = fakePlant();
-    plant.body.id = 1;
     p.findPlant = () => undefined;
-    const wrapper = shallow(<PlantInfo {...p} />);
-    wrapper.find(DesignerPanelHeader).simulate("save");
+    const instance = new PlantInfo(p);
+    const header = headerFromPanel(instance.fallback());
+    const onSave = (header.props as { onSave?: () => void }).onSave;
+    onSave?.();
     expect(crud.save).not.toHaveBeenCalled();
   });
 
   it("destroys plant", () => {
-    const wrapper = mount<PlantInfo>(<PlantInfo {...fakeProps()} />);
-    wrapper.instance().destroy("uuid")();
+    const instance = new PlantInfo(fakeProps());
+    instance.destroy("uuid")();
     expect(crud.destroy).toHaveBeenCalledWith("uuid", false);
   });
 
   it("force destroys plant", () => {
     const p = fakeProps();
     p.getConfigValue = jest.fn(() => false);
-    const wrapper = mount<PlantInfo>(<PlantInfo {...p} />);
-    wrapper.instance().destroy("uuid")();
+    const instance = new PlantInfo(p);
+    instance.destroy("uuid")();
     expect(crud.destroy).toHaveBeenCalledWith("uuid", true);
   });
 });

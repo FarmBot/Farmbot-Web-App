@@ -1,7 +1,7 @@
 jest.mock("../../../api/crud", () => ({ editStep: jest.fn() }));
 
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import {
   TileSetServoAngle, pinNumberChanger, createServoEditFn, ServoPinSelection,
 } from "../tile_set_servo_angle";
@@ -28,16 +28,18 @@ describe("<TileSetServoAngle/>", () => {
 
   it("renders inputs", () => {
     const props = fakeProps();
-    const block = mount(<TileSetServoAngle {...props} />);
-    const inputs = block.find("input");
-    const labels = block.find("label");
+    const { container } = render(<TileSetServoAngle {...props} />);
+    const inputs = container.querySelectorAll("input");
+    const labels = container.querySelectorAll("label");
     const stepArgs = props.currentStep.args;
     expect(inputs.length).toEqual(6);
     expect(labels.length).toEqual(6);
-    expect(inputs.first().props().placeholder).toEqual("Control Servo");
-    expect(inputs.at(1).props().value).toEqual("" + stepArgs.pin_number);
-    expect(labels.at(5).text()).toContain("Angle (0-180)");
-    expect(inputs.at(5).props().value).toEqual(stepArgs.pin_value);
+    expect(inputs[0]?.getAttribute("placeholder")).toEqual("Control Servo");
+    expect((inputs[1] as HTMLInputElement | undefined)?.value)
+      .toEqual("" + stepArgs.pin_number);
+    expect(labels[5]?.textContent).toContain("Angle (0-180)");
+    expect((inputs[5] as HTMLInputElement | undefined)?.value)
+      .toEqual("" + stepArgs.pin_value);
   });
 
   it("changes pin number", () => {

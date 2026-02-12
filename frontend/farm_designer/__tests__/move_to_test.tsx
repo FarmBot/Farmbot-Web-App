@@ -1,10 +1,16 @@
 import React from "react";
-import { mount, shallow } from "enzyme";
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import {
-  MoveToForm, MoveToFormProps, MoveModeLink, chooseLocation,
-  GoToThisLocationButtonProps, GoToThisLocationButton, movementPercentRemaining,
+  act, cleanup, fireEvent, render, screen,
+} from "@testing-library/react";
+import {
+  GoToThisLocationButton,
+  GoToThisLocationButtonProps,
+  MoveModeLink,
   MoveModeLinkProps,
+  MoveToForm,
+  MoveToFormProps,
+  chooseLocation,
+  movementPercentRemaining,
 } from "../move_to";
 import { Actions } from "../../constants";
 import * as deviceActions from "../../devices/actions";
@@ -15,6 +21,33 @@ import { fakeMovementState } from "../../__test_support__/fake_bot_data";
 import { mockDispatch } from "../../__test_support__/fake_dispatch";
 import { DevSettings } from "../../settings/dev/dev_support";
 import * as popover from "../../ui/popover";
+
+jest.mock("@blueprintjs/core", () => {
+  const actual = jest.requireActual("@blueprintjs/core");
+  return {
+    ...actual,
+    Slider: (props: { onChange: (value: number) => void, value: number }) =>
+      <input data-testid={"speed-slider"}
+        type={"number"}
+        value={props.value}
+        onChange={e => props.onChange(parseFloat(e.currentTarget.value))} />,
+  };
+});
+
+jest.mock("../../controls/axis_input_box", () => ({
+  AxisInputBox: (props: {
+    axis: string;
+    value: number | undefined;
+    onChange: (axis: string, value: number) => void;
+  }) =>
+    <input data-testid={"axis-input-box"}
+      type={"number"}
+      value={props.value ?? ""}
+      onChange={e => props.onChange(
+        props.axis,
+        parseFloat(e.currentTarget.value),
+      )} />,
+}));
 
 let moveSpy: jest.SpyInstance;
 let setWebAppConfigValueSpy: jest.SpyInstance;
@@ -56,32 +89,36 @@ describe("<MoveToForm />", () => {
   });
 
   it("moves to location: custom z value", () => {
-    const wrapper = mount(<MoveToForm {...fakeProps()} />);
-    wrapper.setState({ z: 50 });
-    wrapper.find("button").at(0).simulate("click");
+    const ref = React.createRef<MoveToForm>();
+    render(<MoveToForm {...fakeProps()} ref={ref} />);
+    act(() => ref.current?.setState({ z: 50 }));
+    fireEvent.click(screen.getByRole("button", { name: "GO" }));
     expect(deviceActions.move).toHaveBeenCalledWith({
       x: 1, y: 2, z: 50, speed: 100, safeZ: false,
     });
   });
 
   it("changes z value", () => {
-    const wrapper = shallow<MoveToForm>(<MoveToForm {...fakeProps()} />);
-    wrapper.findWhere(n => "onChange" in n.props()).first()
-      .simulate("change", "", 10);
-    expect(wrapper.state().z).toEqual(10);
+    const ref = React.createRef<MoveToForm>();
+    render(<MoveToForm {...fakeProps()} ref={ref} />);
+    fireEvent.change(screen.getByTestId("axis-input-box"),
+      { target: { value: "10" } });
+    expect(ref.current?.state.z).toEqual(10);
   });
 
   it("changes speed value", () => {
-    const wrapper = shallow<MoveToForm>(<MoveToForm {...fakeProps()} />);
-    wrapper.findWhere(n => "onChange" in n.props()).at(1)
-      .simulate("change", 10);
-    expect(wrapper.state().speed).toEqual(10);
+    const ref = React.createRef<MoveToForm>();
+    render(<MoveToForm {...fakeProps()} ref={ref} />);
+    fireEvent.change(screen.getByTestId("speed-slider"),
+      { target: { value: "10" } });
+    expect(ref.current?.state.speed).toEqual(10);
   });
 
   it("changes safe z value", () => {
-    const wrapper = mount(<MoveToForm {...fakeProps()} />);
-    wrapper.setState({ safeZ: true });
-    wrapper.find("button").at(0).simulate("click");
+    const ref = React.createRef<MoveToForm>();
+    render(<MoveToForm {...fakeProps()} ref={ref} />);
+    act(() => ref.current?.setState({ safeZ: true }));
+    fireEvent.click(screen.getByRole("button", { name: "GO" }));
     expect(deviceActions.move).toHaveBeenCalledWith({
       x: 1, y: 2, z: 3, speed: 100, safeZ: true,
     });
@@ -90,9 +127,10 @@ describe("<MoveToForm />", () => {
   it("fills in some missing values", () => {
     const p = fakeProps();
     p.chosenLocation = { x: 1, y: undefined, z: undefined };
-    const wrapper = mount(<MoveToForm {...p} />);
-    expect(wrapper.find("input").at(1).props().value).toEqual("---");
-    wrapper.find("button").at(0).simulate("click");
+    const { container } = render(<MoveToForm {...p} />);
+    expect((container.querySelector("input[name='y']") as HTMLInputElement)
+      .value).toEqual("---");
+    fireEvent.click(screen.getByRole("button", { name: "GO" }));
     expect(deviceActions.move).toHaveBeenCalledWith({
       x: 1, y: 20, z: 30, speed: 100, safeZ: false,
     });
@@ -102,9 +140,10 @@ describe("<MoveToForm />", () => {
     const p = fakeProps();
     p.chosenLocation = { x: undefined, y: undefined, z: undefined };
     p.currentBotLocation = { x: undefined, y: undefined, z: undefined };
-    const wrapper = mount(<MoveToForm {...p} />);
-    expect(wrapper.find("input").at(1).props().value).toEqual("---");
-    wrapper.find("button").at(0).simulate("click");
+    const { container } = render(<MoveToForm {...p} />);
+    expect((container.querySelector("input[name='y']") as HTMLInputElement)
+      .value).toEqual("---");
+    fireEvent.click(screen.getByRole("button", { name: "GO" }));
     expect(deviceActions.move).toHaveBeenCalledWith({
       x: 0, y: 0, z: 0, speed: 100, safeZ: false,
     });
@@ -113,8 +152,9 @@ describe("<MoveToForm />", () => {
   it("is disabled when bot is offline", () => {
     const p = fakeProps();
     p.botOnline = false;
-    const wrapper = mount(<MoveToForm {...p} />);
-    expect(wrapper.find("button").at(0).hasClass("pseudo-disabled")).toBeTruthy();
+    render(<MoveToForm {...p} />);
+    expect(screen.getByRole("button", { name: "GO" }).className)
+      .toContain("pseudo-disabled");
   });
 });
 
@@ -128,8 +168,7 @@ describe("<MoveModeLink />", () => {
     const dispatch = jest.fn();
     p.dispatch = mockDispatch(dispatch);
     render(<MoveModeLink {...p} />);
-    const button = screen.getByTitle("open move mode panel");
-    fireEvent.click(button);
+    fireEvent.click(screen.getByTitle("open move mode panel"));
     expect(mockNavigate).toHaveBeenCalledWith(Path.location());
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_PANEL_OPEN,
@@ -201,11 +240,11 @@ describe("<GoToThisLocationButton />", () => {
   });
 
   it("toggles state", () => {
-    const wrapper = mount<GoToThisLocationButton>(
-      <GoToThisLocationButton {...fakeProps()} />);
-    expect(wrapper.instance().state.open).toEqual(false);
-    wrapper.instance().toggle("open")();
-    expect(wrapper.instance().state.open).toEqual(true);
+    const ref = React.createRef<GoToThisLocationButton>();
+    render(<GoToThisLocationButton {...fakeProps()} ref={ref} />);
+    expect(ref.current?.state.open).toEqual(false);
+    act(() => ref.current?.toggle("open")());
+    expect(ref.current?.state.open).toEqual(true);
   });
 
   it("renders progress", () => {
@@ -214,39 +253,43 @@ describe("<GoToThisLocationButton />", () => {
     p.currentBotLocation = { x: 50, y: 50, z: 0 };
     p.movementState.start = { x: 0, y: 0, z: 0 };
     p.movementState.distance = { x: 100, y: 100, z: 0 };
-    const wrapper = mount(<GoToThisLocationButton {...p} />);
-    expect(wrapper.find(".movement-progress").props().style).toEqual({
-      top: 0, left: 0, width: "50%",
-    });
+    const { container } = render(<GoToThisLocationButton {...p} />);
+    const progress = container.querySelector(".movement-progress");
+    if (!progress) { throw new Error("Expected movement progress"); }
+    expect((progress as HTMLElement).style.width).toEqual("50%");
+    expect((progress as HTMLElement).style.top).toEqual("0px");
+    expect((progress as HTMLElement).style.left).toEqual("0px");
   });
 
   it("renders as unavailable: offline", () => {
     const p = fakeProps();
     p.botOnline = false;
-    const wrapper = mount(<GoToThisLocationButton {...p} />);
-    wrapper.setState({ open: true });
-    expect(wrapper.text().toLowerCase()).toContain("farmbot is offline");
-    wrapper.find("button").first().simulate("click");
+    const { container } = render(<GoToThisLocationButton {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("farmbot is offline");
+    const mainButton = container.querySelector(".go-button-axes-text");
+    if (!mainButton) { throw new Error("Expected primary go button"); }
+    fireEvent.click(mainButton);
     expect(deviceActions.move).not.toHaveBeenCalled();
   });
 
   it("renders as unavailable: busy", () => {
     const p = fakeProps();
     p.arduinoBusy = true;
-    const wrapper = mount(<GoToThisLocationButton {...p} />);
-    wrapper.setState({ open: true });
-    expect(wrapper.text().toLowerCase()).toContain("farmbot is busy");
+    const { container } = render(<GoToThisLocationButton {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("farmbot is busy");
   });
 
   it("moves: default", () => {
     const p = fakeProps();
     p.defaultAxes = "";
-    const wrapper = mount(<GoToThisLocationButton {...p} />);
-    wrapper.find("button").first().simulate("mouseEnter");
+    const { container } = render(<GoToThisLocationButton {...p} />);
+    const mainButton = container.querySelector(".go-button-axes-text");
+    if (!mainButton) { throw new Error("Expected primary go button"); }
+    fireEvent.mouseEnter(mainButton);
     expect(p.dispatch).toHaveBeenCalledTimes(1);
-    wrapper.find("button").first().simulate("mouseLeave");
+    fireEvent.mouseLeave(mainButton);
     expect(p.dispatch).toHaveBeenCalledTimes(2);
-    wrapper.find("button").first().simulate("click");
+    fireEvent.click(mainButton);
     expect(p.dispatch).toHaveBeenCalledTimes(3);
     expect(deviceActions.move).toHaveBeenCalledWith({ x: 0, y: 0, z: 0 });
   });
@@ -254,14 +297,14 @@ describe("<GoToThisLocationButton />", () => {
   it("moves", () => {
     const p = fakeProps();
     p.defaultAxes = "";
-    const wrapper = mount(<GoToThisLocationButton {...p} />);
-    wrapper.setState({ open: true });
-    wrapper.update();
-    wrapper.find("button").last().simulate("mouseEnter");
+    const { container } = render(<GoToThisLocationButton {...p} />);
+    const xyzButton = container.querySelector("button.xyz");
+    if (!xyzButton) { throw new Error("Expected xyz button"); }
+    fireEvent.mouseEnter(xyzButton);
     expect(p.dispatch).toHaveBeenCalledTimes(1);
-    wrapper.find("button").last().simulate("mouseLeave");
+    fireEvent.mouseLeave(xyzButton);
     expect(p.dispatch).toHaveBeenCalledTimes(2);
-    wrapper.find("button").last().simulate("click");
+    fireEvent.click(xyzButton);
     expect(p.dispatch).toHaveBeenCalledTimes(3);
     expect(deviceActions.move).toHaveBeenCalledWith({ x: 1, y: 2, z: 3 });
     expect(configStorageActions.setWebAppConfigValue).not.toHaveBeenCalled();
@@ -270,10 +313,11 @@ describe("<GoToThisLocationButton />", () => {
   it("sets new default", () => {
     const p = fakeProps();
     p.defaultAxes = "";
-    const wrapper = mount(<GoToThisLocationButton {...p} />);
-    wrapper.setState({ open: true, setAsDefault: true });
-    wrapper.update();
-    wrapper.find("button").last().simulate("click");
+    const { container } = render(<GoToThisLocationButton {...p} />);
+    fireEvent.click(screen.getByTitle("save as default"));
+    const xyzButton = container.querySelector("button.xyz");
+    if (!xyzButton) { throw new Error("Expected xyz button"); }
+    fireEvent.click(xyzButton);
     expect(p.dispatch).toHaveBeenCalledTimes(2);
     expect(deviceActions.move).toHaveBeenCalledWith({ x: 1, y: 2, z: 3 });
     expect(configStorageActions.setWebAppConfigValue).toHaveBeenCalledWith(

@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { StepParams } from "../../interfaces";
 import { TileUnknown } from "../tile_unknown";
 import { SequenceBodyItem } from "farmbot";
@@ -17,8 +17,8 @@ describe("<TileUnknown/>", () => {
   });
 
   it("renders step", () => {
-    const wrapper = mount(<TileUnknown {...fakeProps()} />);
+    const { container } = render(<TileUnknown {...fakeProps()} />);
     [ToolTips.UNKNOWN_STEP, "unknown_step", "weird_arg", "hello"].map(string =>
-      expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));
+      expect(container.textContent?.toLowerCase()).toContain(string.toLowerCase()));
   });
 });

@@ -1,5 +1,5 @@
 import React from "react";
-import { shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import {
   calcAxisLabelStepSize,
   generateTransformStyle, GenerateTransformStyleProps,
@@ -42,7 +42,7 @@ describe("gridLabels()", () => {
   });
 
   it("renders labels", () => {
-    const wrapper = shallow(<g>{gridLabels({ ...fakeProps() })}</g>);
-    expect(wrapper.find("TextInRoundedSvgBox").length).toEqual(1);
+    const { container } = render(<svg>{gridLabels({ ...fakeProps() })}</svg>);
+    expect(container.querySelectorAll("#label").length).toEqual(1);
   });
 });

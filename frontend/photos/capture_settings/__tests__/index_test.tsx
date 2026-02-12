@@ -1,8 +1,19 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render, screen } from "@testing-library/react";
 import { CaptureSettings } from "../index";
 import { CaptureSettingsProps } from "../interfaces";
-import { FBSelect } from "../../../ui";
+import { DropDownItem } from "../../../ui/fb_select";
+
+jest.mock("../../../ui", () => {
+  const actual = jest.requireActual("../../../ui");
+  return {
+    ...actual,
+    FBSelect: (props: { selectedItem?: DropDownItem }) =>
+      <span data-testid={"fb-select-value"}>
+        {"" + props.selectedItem?.value}
+      </span>,
+  };
+});
 
 describe("<CaptureSettings />", () => {
   const fakeProps = (): CaptureSettingsProps => ({
@@ -14,9 +25,9 @@ describe("<CaptureSettings />", () => {
   });
 
   it("displays default size", () => {
-    const wrapper = mount(<CaptureSettings {...fakeProps()} />);
-    expect(wrapper.text()).toContain("resolution");
-    expect(wrapper.find(FBSelect).last().props().selectedItem?.value)
-      .toEqual("640x480");
+    render(<CaptureSettings {...fakeProps()} />);
+    expect(screen.getByText(/resolution/i)).toBeInTheDocument();
+    expect(screen.getAllByTestId("fb-select-value")[1])
+      .toHaveTextContent("640x480");
   });
 });

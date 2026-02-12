@@ -1,10 +1,28 @@
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import {
   ChangeFirmwarePath, ChangeFirmwarePathProps,
   FirmwarePathRow, FirmwarePathRowProps,
 } from "../firmware_path";
 import * as deviceActions from "../../../devices/actions";
+
+jest.mock("../../../ui", () => {
+  const actual = jest.requireActual("../../../ui");
+  return {
+    ...actual,
+    FBSelect: (props: {
+      onChange: (ddi: { label: string, value: string }) => void,
+    }) =>
+      <div>
+        <button onClick={() => props.onChange({ label: "", value: "path" })}>
+          select-path
+        </button>
+        <button onClick={() => props.onChange({ label: "", value: "manual" })}>
+          select-manual
+        </button>
+      </div>,
+  };
+});
 
 let updateConfigSpy: jest.SpyInstance;
 
@@ -25,15 +43,15 @@ describe("<FirmwarePathRow />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<FirmwarePathRow {...fakeProps()} />);
-    expect(wrapper.text()).toContain("tty");
+    const { container } = render(<FirmwarePathRow {...fakeProps()} />);
+    expect(container.textContent).toContain("tty");
   });
 
   it("renders: path not set", () => {
     const p = fakeProps();
     p.firmwarePath = "";
-    const wrapper = mount(<FirmwarePathRow {...p} />);
-    expect(wrapper.text()).toContain("not set");
+    const { container } = render(<FirmwarePathRow {...p} />);
+    expect(container.textContent).toContain("not set");
   });
 });
 
@@ -44,17 +62,17 @@ describe("<ChangeFirmwarePath />", () => {
   });
 
   it("changes path", () => {
-    const wrapper = shallow(<ChangeFirmwarePath {...fakeProps()} />);
-    wrapper.find("FBSelect").simulate("change", { label: "", value: "path" });
+    render(<ChangeFirmwarePath {...fakeProps()} />);
+    fireEvent.click(screen.getByText("select-path"));
     expect(updateConfigSpy).toHaveBeenCalledWith({ firmware_path: "path" });
   });
 
   it("selects manual input", () => {
-    const wrapper = shallow(<ChangeFirmwarePath {...fakeProps()} />);
-    wrapper.find("FBSelect").simulate("change", { label: "", value: "manual" });
+    render(<ChangeFirmwarePath {...fakeProps()} />);
+    fireEvent.click(screen.getByText("select-manual"));
     expect(updateConfigSpy).not.toHaveBeenCalled();
-    wrapper.find("input").simulate("change", { currentTarget: { value: "path" } });
-    wrapper.find("button").last().simulate("click");
+    fireEvent.change(screen.getByRole("textbox"), { target: { value: "path" } });
+    fireEvent.click(screen.getByTitle("submit"));
     expect(updateConfigSpy).toHaveBeenCalledWith({ firmware_path: "path" });
   });
 });

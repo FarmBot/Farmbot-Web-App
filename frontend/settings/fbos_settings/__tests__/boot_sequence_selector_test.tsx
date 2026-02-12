@@ -10,9 +10,29 @@ import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import React from "react";
-import { mount } from "enzyme";
-import { FBSelect } from "../../../ui";
+import { fireEvent, render, screen } from "@testing-library/react";
 import * as crud from "../../../api/crud";
+
+jest.mock("../../../ui", () => {
+  const actual = jest.requireActual("../../../ui");
+  return {
+    ...actual,
+    FBSelect: (props: {
+      list: Array<{ label: string, value: number | string }>,
+      selectedItem: unknown,
+      onChange: (item: { label: string, value: number | string }) => void,
+    }) =>
+      <div>
+        <span data-testid="selected-item">
+          {JSON.stringify(props.selectedItem)}
+        </span>
+        <button onClick={() =>
+          props.onChange(props.list[0] || { label: "", value: "" })}>
+          mock-select
+        </button>
+      </div>,
+  };
+});
 
 let editSpy: jest.SpyInstance;
 let saveSpy: jest.SpyInstance;
@@ -114,22 +134,22 @@ describe("<RawBootSequenceSelector />", () => {
   it("handles the `onChange` event", () => {
     const p = fakeProps();
     p.list = [{ label: "X", value: 3 }];
-    const wrapper = mount(<RawBootSequenceSelector {...p} />);
-    const onChange = wrapper.find(FBSelect).props().onChange;
-    onChange({ label: "X", value: 3 });
+    render(<RawBootSequenceSelector {...p} />);
+    fireEvent.click(screen.getByText("mock-select"));
     expect(crud.edit).toHaveBeenCalledWith(p.config, { boot_sequence_id: 3 });
     expect(crud.save).toHaveBeenCalledWith(p.config.uuid);
   });
 
   it("renders: no selection", () => {
-    const wrapper = mount(<RawBootSequenceSelector {...fakeProps()} />);
-    expect(wrapper.find(FBSelect).props().selectedItem).toEqual(undefined);
+    render(<RawBootSequenceSelector {...fakeProps()} />);
+    expect(screen.getByTestId("selected-item").textContent).toEqual("");
   });
 
   it("renders", () => {
     const p = fakeProps();
     p.selectedItem = { value: 1, label: "" };
-    const wrapper = mount(<RawBootSequenceSelector {...p} />);
-    expect(wrapper.find(FBSelect).props().selectedItem).toEqual(p.selectedItem);
+    render(<RawBootSequenceSelector {...p} />);
+    expect(screen.getByTestId("selected-item").textContent)
+      .toEqual(JSON.stringify(p.selectedItem));
   });
 });

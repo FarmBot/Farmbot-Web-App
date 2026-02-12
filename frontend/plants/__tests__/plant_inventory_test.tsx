@@ -2,15 +2,20 @@ let mockValue: number | boolean = 0;
 
 import React from "react";
 import {
-  RawPlants as Plants, PlantInventoryProps, mapStateToProps, PanelSection,
+  RawPlants as Plants,
+  PlantInventoryProps,
+  mapStateToProps,
+  PanelSection,
   PanelSectionProps,
 } from "../plant_inventory";
-import { mount, shallow } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import {
-  fakePlant, fakePointGroup, fakeSavedGarden, fakeWebAppConfig,
+  fakePlant,
+  fakePointGroup,
+  fakeSavedGarden,
+  fakeWebAppConfig,
 } from "../../__test_support__/fake_state/resources";
 import { fakeState } from "../../__test_support__/fake_state";
-import { SearchField } from "../../ui/search_field";
 import { Actions } from "../../constants";
 import * as pointGroupActions from "../../point_groups/actions";
 import { DEFAULT_CRITERIA } from "../../point_groups/criteria/interfaces";
@@ -19,10 +24,10 @@ import { Panel } from "../../farm_designer/panel_header";
 import { plantsPanelState } from "../../__test_support__/panel_state";
 import { Path } from "../../internal_urls";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
-import { changeBlurableInput } from "../../__test_support__/helpers";
 import * as configStorageActions from "../../config_storage/actions";
 import { NumericSetting } from "../../session_keys";
 import * as popover from "../../ui/popover";
+import { NavigationContext } from "../../routes_helpers";
 
 describe("<PlantInventory />", () => {
   let createGroupSpy: jest.SpyInstance;
@@ -39,13 +44,13 @@ describe("<PlantInventory />", () => {
       .mockImplementation(jest.fn());
     deletePointsSpy = jest.spyOn(deletePointsApi, "deletePoints")
       .mockImplementation(jest.fn());
-    setWebAppConfigValueSpy = jest.spyOn(configStorageActions, "setWebAppConfigValue")
-      .mockImplementation(jest.fn());
-    getWebAppConfigValueSpy = jest.spyOn(configStorageActions, "getWebAppConfigValue")
-      .mockImplementation((getState: Function) => {
-        getState();
-        return () => mockValue;
-      });
+    setWebAppConfigValueSpy = jest.spyOn(configStorageActions,
+      "setWebAppConfigValue").mockImplementation(jest.fn());
+    getWebAppConfigValueSpy = jest.spyOn(configStorageActions,
+      "getWebAppConfigValue").mockImplementation((getState: Function) => {
+      getState();
+      return () => mockValue;
+    });
   });
 
   afterEach(() => {
@@ -71,20 +76,24 @@ describe("<PlantInventory />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<Plants {...fakeProps()} />);
-    ["Strawberry Plant 1",
-      "planned"].map(string => expect(wrapper.text()).toContain(string));
-    expect(wrapper.find("input").first().props().placeholder)
-      .toEqual("Search your plants...");
+    const { container } = render(<Plants {...fakeProps()} />);
+    expect(container.textContent).toContain("Strawberry Plant 1");
+    expect(container.textContent).toContain("planned");
+    expect(screen.getByPlaceholderText("Search your plants..."))
+      .toBeInTheDocument();
   });
 
   it("changes number setting", () => {
     mockValue = 0;
     const p = fakeProps();
-    const wrapper = mount(<Plants {...p} />);
-    changeBlurableInput(wrapper, "100", 1);
+    render(<Plants {...p} />);
+    const input = screen.getByRole("spinbutton");
+    fireEvent.focus(input);
+    fireEvent.change(input, { target: { value: "100" } });
+    fireEvent.blur(input);
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
-      NumericSetting.default_plant_depth, 100);
+      NumericSetting.default_plant_depth,
+      100);
   });
 
   it("renders groups", () => {
@@ -99,8 +108,8 @@ describe("<PlantInventory />", () => {
     group3.body.name = "Weed Group";
     group3.body.criteria.string_eq = {};
     p.groups = [group1, group2, group3];
-    const wrapper = mount(<Plants {...p} />);
-    expect(wrapper.text()).toContain("Groups (1)");
+    render(<Plants {...p} />);
+    expect(screen.getByText("Plant Groups (1)")).toBeInTheDocument();
   });
 
   it("renders saved gardens", () => {
@@ -108,14 +117,14 @@ describe("<PlantInventory />", () => {
     const savedGarden = fakeSavedGarden();
     savedGarden.body.name = "Saved Garden";
     p.savedGardens = [savedGarden];
-    const wrapper = mount(<Plants {...p} />);
-    expect(wrapper.text()).toContain("Gardens (1)");
+    render(<Plants {...p} />);
+    expect(screen.getByText("Gardens (1)")).toBeInTheDocument();
   });
 
   it("toggles section", () => {
     const p = fakeProps();
-    const wrapper = shallow<Plants>(<Plants {...p} />);
-    wrapper.instance().toggleOpen("groups")();
+    render(<Plants {...p} />);
+    fireEvent.click(screen.getByText("Plant Groups (0)"));
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_PLANTS_PANEL_OPTION,
       payload: "groups",
@@ -123,91 +132,110 @@ describe("<PlantInventory />", () => {
   });
 
   it("navigates to group", () => {
-    const wrapper = shallow<Plants>(<Plants {...fakeProps()} />);
-    wrapper.instance().context = jest.fn();
-    wrapper.instance().navigateById(1)();
-    expect(wrapper.instance().context).toHaveBeenCalledWith(Path.groups(1));
+    const instance = new Plants(fakeProps());
+    instance.context = jest.fn();
+    instance.navigateById(1)();
+    expect(instance.context).toHaveBeenCalledWith(Path.groups(1));
   });
 
   it("adds new group", () => {
-    const wrapper = shallow(<Plants {...fakeProps()} />);
-    wrapper.find(PanelSection).first().props().addNew();
+    const p = fakeProps();
+    p.plantsPanelState.groups = true;
+    const { container } = render(<Plants {...p} />);
+    fireEvent.click(container.querySelector(".plus-group") as Element);
     expect(pointGroupActions.createGroup).toHaveBeenCalledWith({
-      criteria: { ...DEFAULT_CRITERIA, string_eq: { pointer_type: ["Plant"] } },
+      criteria: {
+        ...DEFAULT_CRITERIA,
+        string_eq: { pointer_type: ["Plant"] },
+      },
       navigate: expect.anything(),
     });
   });
 
   it("adds new saved garden", () => {
-    const wrapper = shallow<Plants>(<Plants {...fakeProps()} />);
-    wrapper.instance().context = jest.fn();
-    wrapper.find(PanelSection).at(1).props().addNew();
-    expect(wrapper.instance().context).toHaveBeenCalledWith(
-      Path.savedGardens("add"));
+    const p = fakeProps();
+    p.plantsPanelState.savedGardens = true;
+    const navigate = jest.fn();
+    const { container } = render(
+      <NavigationContext.Provider value={navigate}>
+        <Plants {...p} />
+      </NavigationContext.Provider>,
+    );
+    fireEvent.click(container.querySelector(".plus-saved-garden") as Element);
+    expect(navigate).toHaveBeenCalledWith(Path.savedGardens("add"));
   });
 
   it("adds new plant", () => {
-    const wrapper = shallow<Plants>(<Plants {...fakeProps()} />);
-    wrapper.instance().context = jest.fn();
-    wrapper.find(PanelSection).last().props().addNew();
-    expect(wrapper.instance().context).toHaveBeenCalledWith(Path.cropSearch());
+    const navigate = jest.fn();
+    const { container } = render(
+      <NavigationContext.Provider value={navigate}>
+        <Plants {...fakeProps()} />
+      </NavigationContext.Provider>,
+    );
+    fireEvent.click(container.querySelector(".plus-plant") as Element);
+    expect(navigate).toHaveBeenCalledWith(Path.cropSearch());
   });
 
   it("deletes all plants", () => {
-    window.confirm = () => true;
+    window.confirm = jest.fn(() => true);
     const p = fakeProps();
     p.plantsPanelState.plants = true;
-    const wrapper = mount(<Plants {...p} />);
-    const plantsSection = wrapper.find(PanelSection).at(2);
-    expect(plantsSection.text().toLowerCase()).toContain("delete all");
-    plantsSection.find("button").simulate("click");
+    render(<Plants {...p} />);
+    const deleteAll = screen.getByText("delete all");
+    expect(deleteAll).toBeInTheDocument();
+    fireEvent.click(deleteAll);
     expect(deletePointsSpy)
       .toHaveBeenCalledWith("plants", { pointer_type: "Plant" });
   });
 
   it("doesn't show delete all button", () => {
-    window.confirm = () => true;
+    window.confirm = jest.fn(() => true);
     const p = fakeProps();
     p.plantsPanelState.plants = true;
     p.openedSavedGarden = 1;
-    const wrapper = mount(<Plants {...p} />);
-    const plantsSection = wrapper.find(PanelSection).at(2);
-    expect(plantsSection.text().toLowerCase()).not.toContain("delete all");
+    render(<Plants {...p} />);
+    expect(screen.queryByText("delete all")).not.toBeInTheDocument();
   });
 
   it("has link to crops", () => {
-    const wrapper = mount(<Plants {...fakeProps()} />);
-    expect(wrapper.html()).toContain("fa-plus");
-    expect(wrapper.html()).toContain("plus-plant");
+    const { container } = render(<Plants {...fakeProps()} />);
+    expect(container.querySelector(".plus-plant .fa-plus")).toBeTruthy();
   });
 
   it("changes search term", () => {
-    const wrapper = shallow<Plants>(<Plants {...fakeProps()} />);
-    expect(wrapper.state().searchTerm).toEqual("");
-    wrapper.find(SearchField).simulate("change", "mint");
-    expect(wrapper.state().searchTerm).toEqual("mint");
+    render(<Plants {...fakeProps()} />);
+    const input = screen.getByPlaceholderText(
+      "Search your plants...",
+    ) as HTMLInputElement;
+    expect(input.value).toEqual("");
+    fireEvent.change(input, { target: { value: "mint" } });
+    expect(input.value).toEqual("mint");
   });
 
   it("displays no results state", () => {
-    const p = fakeProps();
-    const wrapper = mount<Plants>(<Plants {...p} />);
-    wrapper.setState({ searchTerm: "mint" });
-    expect(wrapper.text().toLowerCase()).toContain("no results in your garden");
-    expect(wrapper.text().toLowerCase())
-      .toContain("do you want to search all crops?");
+    render(<Plants {...fakeProps()} />);
+    fireEvent.change(screen.getByPlaceholderText("Search your plants..."),
+      { target: { value: "mint" } });
+    expect(screen.getByText("No results in your garden")).toBeInTheDocument();
+    expect(screen.getByText("search all crops?")).toBeInTheDocument();
   });
 
   it("navigates to crop search", () => {
     const p = fakeProps();
-    const wrapper = mount<Plants>(<Plants {...p} />);
-    wrapper.setState({ searchTerm: "mint" });
-    wrapper.instance().context = jest.fn();
-    const noResult = mount(wrapper.instance().noResult);
-    noResult.find("a").first().simulate("click");
+    const navigate = jest.fn();
+    render(
+      <NavigationContext.Provider value={navigate}>
+        <Plants {...p} />
+      </NavigationContext.Provider>,
+    );
+    fireEvent.change(screen.getByPlaceholderText("Search your plants..."),
+      { target: { value: "mint" } });
+    fireEvent.click(screen.getByText("search all crops?"));
     expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.SEARCH_QUERY_CHANGE, payload: "mint",
+      type: Actions.SEARCH_QUERY_CHANGE,
+      payload: "mint",
     });
-    expect(wrapper.instance().context).toHaveBeenCalledWith(Path.cropSearch());
+    expect(navigate).toHaveBeenCalledWith(Path.cropSearch());
   });
 });
 
@@ -239,14 +267,14 @@ describe("<PanelSection />", () => {
   });
 
   it("renders open", () => {
-    const wrapper = mount(<PanelSection {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("text");
+    render(<PanelSection {...fakeProps()} />);
+    expect(screen.getByText("text")).toBeInTheDocument();
   });
 
   it("calls add", () => {
     const p = fakeProps();
-    const wrapper = mount(<PanelSection {...p} />);
-    wrapper.find(".fb-button").first().simulate("click");
+    const { container } = render(<PanelSection {...p} />);
+    fireEvent.click(container.querySelector(".fb-button") as Element);
     expect(p.addNew).toHaveBeenCalled();
   });
 });

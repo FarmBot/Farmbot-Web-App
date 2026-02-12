@@ -1,5 +1,7 @@
 import React from "react";
-import { shallow, mount } from "enzyme";
+import {
+  render, fireEvent, screen, waitFor, act,
+} from "@testing-library/react";
 import {
   Bugs, BugsProps, showBugResetButton, showBugs, resetBugs, BugsControls,
   BugsSettings,
@@ -9,7 +11,6 @@ import { range } from "lodash";
 import {
   fakeMapTransformProps,
 } from "../../../../__test_support__/map_transform_props";
-import { svgMount } from "../../../../__test_support__/svg_mount";
 import { FilePath } from "../../../../internal_urls";
 
 const expectAlive = (value: string) =>
@@ -30,37 +31,47 @@ describe("<Bugs />", () => {
     },
   });
 
-  it("renders", () => {
-    const wrapper = svgMount(<Bugs {...fakeProps()} />);
-    expect(wrapper.find("image").length).toEqual(10);
-    const firstBug = wrapper.find("image").first();
-    expect(firstBug.props()).toEqual(expect.objectContaining({
-      className: expect.stringContaining("bug"),
-      filter: "",
-      opacity: 1,
-      xlinkHref: expect.stringContaining(FilePath.bug())
-    }));
+  const renderBugs = (props: BugsProps, ref?: React.RefObject<Bugs | null>) =>
+    render(<svg><Bugs {...props} ref={ref} /></svg>);
+
+  const queryImages = (container: HTMLElement) =>
+    Array.from(container.querySelectorAll("image"));
+
+  it("renders", async () => {
+    const { container } = renderBugs(fakeProps());
+    await waitFor(() => expect(queryImages(container).length).toEqual(10));
+    const firstBug = queryImages(container)[0];
+    expect(firstBug.getAttribute("class")).toContain("bug");
+    expect(firstBug.getAttribute("filter")).toEqual("");
+    expect(Number(firstBug.getAttribute("opacity"))).toEqual(1);
+    expect(firstBug.getAttribute("xlink:href") ||
+      firstBug.getAttribute("href"))
+      .toContain(FilePath.bug());
   });
 
-  it("kills bugs", () => {
+  it("kills bugs", async () => {
     setEggStatus(EggKeys.BUGS_ARE_STILL_ALIVE, "");
     expectAlive("");
-    const wrapper = svgMount(<Bugs {...fakeProps()} />);
-    wrapper.find(Bugs).state().bugs[0].r = 101;
-    range(10).map(b =>
-      wrapper.find("image").at(b).simulate("click"));
-    expectAlive("");
-    range(10).map(b =>
-      wrapper.find("image").at(b).simulate("click"));
-    expectAlive("false");
-    wrapper.mount(); // update elements (state has changed)
-    expect(wrapper.find("image").first().props())
-      .toEqual(expect.objectContaining({
-        className: expect.stringContaining("dead"),
-        filter: expect.stringContaining("grayscale")
+    const ref = React.createRef<Bugs>();
+    const { container } = renderBugs(fakeProps(), ref);
+    await waitFor(() => expect(queryImages(container).length).toEqual(10));
+    await act(async () => {
+      ref.current?.setState(state => ({
+        ...state,
+        bugs: state.bugs.map((bug, index) =>
+          index == 0 ? { ...bug, r: 101 } : bug),
       }));
-    expect(wrapper.find(Bugs).state().bugs[0]).toEqual(expect.objectContaining({
-      alive: false, hp: 50
+    });
+    range(10).map(index => fireEvent.click(queryImages(container)[index]));
+    expectAlive("");
+    range(10).map(index => fireEvent.click(queryImages(container)[index]));
+    expectAlive("false");
+    const firstBug = queryImages(container)[0];
+    expect(firstBug.getAttribute("class")).toContain("dead");
+    expect(firstBug.getAttribute("filter")).toContain("grayscale");
+    expect(ref.current?.state.bugs[0]).toEqual(expect.objectContaining({
+      alive: false,
+      hp: 50,
     }));
   });
 });
@@ -104,31 +115,36 @@ describe("resetBugs()", () => {
 describe("<BugsControls />", () => {
   it("lays eggs", () => {
     setEggStatus(EggKeys.BRING_ON_THE_BUGS, "");
-    const noEggs = shallow(<BugsControls />);
-    expect(noEggs.find(".more-bugs").length).toEqual(0);
+    const noEggs = render(<BugsControls />);
+    expect(noEggs.container.querySelectorAll(".more-bugs").length).toEqual(0);
     setEggStatus(EggKeys.BRING_ON_THE_BUGS, "true");
-    const stillNoEggs = shallow(<BugsControls />);
-    expect(stillNoEggs.find(".more-bugs").length).toEqual(0);
+    const stillNoEggs = render(<BugsControls />);
+    expect(stillNoEggs.container.querySelectorAll(".more-bugs").length)
+      .toEqual(0);
     setEggStatus(EggKeys.BUGS_ARE_STILL_ALIVE, "false");
-    const eggs = shallow(<BugsControls />);
-    expect(eggs.find(".more-bugs").length).toEqual(1);
+    const eggs = render(<BugsControls />);
+    expect(eggs.container.querySelectorAll(".more-bugs").length).toEqual(1);
   });
 });
 
 describe("<BugsSettings />", () => {
   it("toggles setting on", () => {
     localStorage.setItem(EggKeys.BRING_ON_THE_BUGS, "");
-    const wrapper = mount(<BugsSettings />);
-    expect(wrapper.text().toLowerCase()).toContain("bug");
-    wrapper.find("button").last().simulate("click");
+    const { container } = render(<BugsSettings />);
+    expect(screen.getByText(/bug/i)).toBeTruthy();
+    const button = container.querySelector("button");
+    if (!button) { throw new Error("Missing settings button"); }
+    fireEvent.click(button);
     expect(localStorage.getItem(EggKeys.BRING_ON_THE_BUGS)).toEqual("true");
   });
 
   it("toggles setting off", () => {
     localStorage.setItem(EggKeys.BRING_ON_THE_BUGS, "true");
-    const wrapper = mount(<BugsSettings />);
-    expect(wrapper.text().toLowerCase()).toContain("bug");
-    wrapper.find("button").last().simulate("click");
+    const { container } = render(<BugsSettings />);
+    expect(screen.getByText(/bug/i)).toBeTruthy();
+    const button = container.querySelector("button");
+    if (!button) { throw new Error("Missing settings button"); }
+    fireEvent.click(button);
     expect(localStorage.getItem(EggKeys.BRING_ON_THE_BUGS)).toEqual("");
   });
 });

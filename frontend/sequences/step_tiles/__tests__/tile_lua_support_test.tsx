@@ -1,5 +1,5 @@
 import React from "react";
-import { shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import { LuaTextArea, LuaTextAreaProps } from "../tile_lua_support";
 import { Lua } from "farmbot";
 import { Editor as _Editor } from "@monaco-editor/react";
@@ -13,81 +13,94 @@ describe("<LuaTextArea />", () => {
     stateToggles: {},
   });
 
+  const fakeComponent = (p = fakeProps()) => {
+    const component = new LuaTextArea<Lua>(p);
+    component.setState =
+      (state: Partial<typeof component.state>) =>
+        Object.assign(component.state, state) as never;
+    return component;
+  };
+
   it("changes lua", () => {
     const p = fakeProps();
     p.stateToggles[StateToggleKey.monacoEditor] =
       { enabled: true, toggle: jest.fn() };
-    const wrapper = shallow<LuaTextArea<Lua>>(<LuaTextArea {...p} />);
+    const component = fakeComponent(p);
     const updateStep = Object.assign(jest.fn(), { cancel: jest.fn(), flush: jest.fn() });
-    wrapper.instance().updateStep = updateStep;
-    expect(wrapper.state().lua).toEqual("lua");
-    wrapper.instance().onChange("123");
+    component.updateStep = updateStep;
+    expect(component.state.lua).toEqual("lua");
+    component.onChange("123");
     expect(updateStep).toHaveBeenCalledWith("123");
-    expect(wrapper.state().lua).toEqual("123");
+    expect(component.state.lua).toEqual("123");
   });
 
   it("handles undefined value", () => {
     const p = fakeProps();
     p.stateToggles[StateToggleKey.monacoEditor] =
       { enabled: true, toggle: jest.fn() };
-    const wrapper = shallow<LuaTextArea<Lua>>(<LuaTextArea {...p} />);
+    const component = fakeComponent(p);
     const updateStep = Object.assign(jest.fn(), { cancel: jest.fn(), flush: jest.fn() });
-    wrapper.instance().updateStep = updateStep;
-    wrapper.instance().onChange(undefined as unknown as string);
+    component.updateStep = updateStep;
+    component.onChange(undefined as unknown as string);
     expect(updateStep).toHaveBeenCalledWith("");
-    expect(wrapper.state().lua).toEqual("");
+    expect(component.state.lua).toEqual("");
   });
 
   it("makes change in fallback editor", () => {
     const p = fakeProps();
-    const wrapper = shallow<LuaTextArea<Lua>>(<LuaTextArea {...p} />);
+    const component = fakeComponent(p);
     const updateStep = Object.assign(
       jest.fn(),
       { cancel: jest.fn(), flush: jest.fn() });
-    wrapper.instance().updateStep = updateStep;
-    const fallback = shallow(wrapper.instance().FallbackEditor({}));
-    fallback.find("textarea").simulate("change", {
+    component.updateStep = updateStep;
+    const fallback = component.FallbackEditor({}) as React.ReactElement<{
+      onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+      onBlur: () => void;
+    }>;
+    fallback.props.onChange({
       currentTarget: { value: "123" }
-    });
-    expect(wrapper.state().lua).toEqual("123");
-    fallback.find("textarea").simulate("blur");
+    } as React.ChangeEvent<HTMLTextAreaElement>);
+    expect(component.state.lua).toEqual("123");
+    fallback.props.onBlur();
     expect(updateStep).toHaveBeenCalledWith("123");
   });
 
   it("doesn't make changes when read-only", () => {
     const p = fakeProps();
     p.readOnly = true;
-    const wrapper = shallow<LuaTextArea<Lua>>(<LuaTextArea {...p} />);
+    const component = fakeComponent(p);
     const updateStep = Object.assign(
       jest.fn(),
       { cancel: jest.fn(), flush: jest.fn() });
-    wrapper.instance().updateStep = updateStep;
-    const fallback = shallow(wrapper.instance().FallbackEditor({}));
-    fallback.find("textarea").simulate("change", {
+    component.updateStep = updateStep;
+    const fallback = component.FallbackEditor({}) as React.ReactElement<{
+      onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+      onBlur: () => void;
+    }>;
+    fallback.props.onChange({
       currentTarget: { value: "123" }
-    });
-    expect(wrapper.state().lua).toEqual("lua");
-    fallback.find("textarea").simulate("blur");
+    } as React.ChangeEvent<HTMLTextAreaElement>);
+    expect(component.state.lua).toEqual("lua");
+    fallback.props.onBlur();
     expect(updateStep).toHaveBeenCalledWith("lua");
   });
 
   it("renders for designer", () => {
     location.pathname = Path.mock(Path.designer());
-    const wrapper = shallow(<LuaTextArea {...fakeProps()} />);
-    expect(wrapper.find(".lua-editor").hasClass("full")).toBeFalsy();
+    const { container } = render(<LuaTextArea {...fakeProps()} />);
+    expect(container.querySelector(".lua-editor.full")).toBeNull();
   });
 
   it("renders full editor", () => {
     location.pathname = Path.mock(Path.sequencePage());
-    const wrapper = shallow(<LuaTextArea {...fakeProps()} />);
-    expect(wrapper.find(".lua-editor").hasClass("full")).toBeTruthy();
+    const { container } = render(<LuaTextArea {...fakeProps()} />);
+    expect(container.querySelector(".lua-editor.full")).not.toBeNull();
   });
 
   it("renders as loading", () => {
-    const p = fakeProps();
-    const wrapper = shallow<LuaTextArea<Lua>>(<LuaTextArea {...p} />);
-    const fallback = shallow(wrapper.instance().FallbackEditor({ loading: true }));
-    expect(fallback.hasClass("fallback-lua-editor")).toBeFalsy();
+    const fallback = fakeComponent().FallbackEditor({ loading: true }) as
+      React.ReactElement<{ className: string }>;
+    expect(fallback.props.className).toEqual("");
   });
 
   it("renders expanded", () => {
@@ -95,7 +108,7 @@ describe("<LuaTextArea />", () => {
     const p = fakeProps();
     p.stateToggles[StateToggleKey.luaExpanded] =
       { enabled: true, toggle: jest.fn() };
-    const wrapper = shallow(<LuaTextArea {...p} />);
-    expect(wrapper.find(".lua-editor").hasClass("expanded")).toBeTruthy();
+    const { container } = render(<LuaTextArea {...p} />);
+    expect(container.querySelector(".lua-editor.expanded")).not.toBeNull();
   });
 });

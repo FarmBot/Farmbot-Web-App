@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { TileTogglePin } from "../tile_toggle_pin";
 import { StepParams } from "../../interfaces";
 import { TogglePin } from "farmbot";
@@ -11,12 +11,12 @@ describe("<TileTogglePin/>", () => {
   });
 
   it("renders inputs", () => {
-    const block = mount(<TileTogglePin {...fakeProps()} />);
-    const inputs = block.find("input");
-    const labels = block.find("label");
+    const { container } = render(<TileTogglePin {...fakeProps()} />);
+    const inputs = container.querySelectorAll("input");
+    const labels = container.querySelectorAll("label");
     expect(inputs.length).toEqual(1);
     expect(labels.length).toEqual(1);
-    expect(inputs.first().props().placeholder).toEqual("Toggle Peripheral");
-    expect(labels.at(0).text()).toContain("Peripheral");
+    expect(inputs[0]?.getAttribute("placeholder")).toEqual("Toggle Peripheral");
+    expect(labels[0]?.textContent).toContain("Peripheral");
   });
 });

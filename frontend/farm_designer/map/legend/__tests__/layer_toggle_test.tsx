@@ -1,8 +1,8 @@
 import React from "react";
 import { LayerToggle, LayerToggleProps } from "../layer_toggle";
-import { shallow } from "enzyme";
 import { DeviceSetting } from "../../../../constants";
 import { BooleanSetting } from "../../../../session_keys";
+import { fireEvent, render } from "@testing-library/react";
 
 describe("<LayerToggle />", () => {
   const fakeProps = (): LayerToggleProps => ({
@@ -13,15 +13,17 @@ describe("<LayerToggle />", () => {
   });
 
   it("renders", () => {
-    const wrapper = shallow(<LayerToggle {...fakeProps()} />);
-    expect(wrapper.text()).toEqual("FarmBot");
-    expect(wrapper.html()).toContain("green");
+    const { container } = render(<LayerToggle {...fakeProps()} />);
+    expect(container.textContent).toContain("FarmBot");
+    expect(container.innerHTML).toContain("green");
   });
 
   it("toggles", () => {
     const p = fakeProps();
-    const wrapper = shallow(<LayerToggle {...p} />);
-    wrapper.find("button").simulate("click");
+    const { container } = render(<LayerToggle {...p} />);
+    const button = container.querySelector(".fb-layer-toggle");
+    if (!button) { throw new Error("Missing layer toggle button"); }
+    fireEvent.click(button);
     expect(p.onClick).toHaveBeenCalled();
   });
 });

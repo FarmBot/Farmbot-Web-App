@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { PinBindings } from "../../pin_bindings/pin_bindings";
 import { PinBindingsProps } from "../interfaces";
 import { settingsPanelState } from "../../../__test_support__/panel_state";
@@ -17,7 +17,7 @@ describe("<PinBindings />", () => {
 
   it("shows pin binding labels", () => {
     const p = fakeProps();
-    const wrapper = mount(<PinBindings {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("pin bindings");
+    const { container } = render(<PinBindings {...p} />);
+    expect((container.textContent || "").toLowerCase()).toContain("pin bindings");
   });
 });

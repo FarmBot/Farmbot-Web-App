@@ -1,6 +1,5 @@
 import React from "react";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { mount } from "enzyme";
 import {
   FormField, sendEmail, DidRegister, MustRegister, CreateAccount,
   FormFieldProps, CreateAccountProps,
@@ -96,8 +95,9 @@ describe("<MustRegister />", () => {
 
   it("inputs username", () => {
     const p = fakeCreateAccountProps();
-    const wrapper = mount(<MustRegister {...p} />);
-    wrapper.find(FormField).at(1).props().onCommit("name");
+    render(<MustRegister {...p} />);
+    const input = screen.getByLabelText("Name");
+    changeBlurableInputRTL(input, "name");
     expect(p.set).toHaveBeenCalledWith("regName", "name");
   });
 

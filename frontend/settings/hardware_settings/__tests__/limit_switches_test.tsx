@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { LimitSwitches } from "../limit_switches";
 import { LimitSwitchesProps } from "../interfaces";
 import { settingsPanelState } from "../../../__test_support__/panel_state";
@@ -18,7 +18,7 @@ describe("<LimitSwitches />", () => {
 
   it("shows limit switches labels", () => {
     const p = fakeProps();
-    const wrapper = mount(<LimitSwitches {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("limit switches");
+    const { container } = render(<LimitSwitches {...p} />);
+    expect((container.textContent || "").toLowerCase()).toContain("limit switches");
   });
 });

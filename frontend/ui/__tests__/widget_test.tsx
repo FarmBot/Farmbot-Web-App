@@ -1,17 +1,18 @@
 import { Widget } from "../widget";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 
 describe("<Widget />", () => {
   const params = { children: "wow", className: "k" };
-  const result = mount(Widget(params));
 
   it("renders correct children", () => {
-    expect(result.html()).toContain("wow");
+    const { container } = render(Widget(params));
+    expect(container.innerHTML).toContain("wow");
   });
 
   it("renders correct classnames", () => {
-    const element = result.find(".k");
-    expect(element.hasClass("k")).toBeTruthy();
-    expect(element.hasClass("widget-wrapper")).toBeTruthy();
+    const { container } = render(Widget(params));
+    const element = container.querySelector(".k") as HTMLDivElement;
+    expect(element.classList.contains("k")).toBeTruthy();
+    expect(element.classList.contains("widget-wrapper")).toBeTruthy();
   });
 });

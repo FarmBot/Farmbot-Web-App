@@ -9,7 +9,7 @@ import {
 } from "../../../__test_support__/fake_state/resources";
 import * as crud from "../../../api/crud";
 import { SequenceBodyItem, Wait } from "farmbot";
-import { mount } from "enzyme";
+import { render as rtlRender } from "@testing-library/react";
 import {
   StepParams, MessageType, RemoveParams, MoveParams, SpliceParams,
   StepInputProps, StepTitleBarProps,
@@ -420,7 +420,9 @@ describe("renderCeleryNode()", () => {
       const p = fakeProps();
       p.currentStep = test.node;
       const step = renderCeleryNode(p);
-      const verbiage = mount(step).text().toLowerCase().replace(/\s+/g, " ").trim();
+      const { container } = rtlRender(step);
+      const verbiage = (container.textContent || "")
+        .toLowerCase().replace(/\s+/g, " ").trim();
       const expected = test.expected.toLowerCase().replace(/\s+/g, " ").trim();
       expect(verbiage).toContain(expected);
     });

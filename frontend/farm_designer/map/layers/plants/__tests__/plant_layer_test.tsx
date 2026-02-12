@@ -7,9 +7,7 @@ import { PlantLayerProps } from "../../../interfaces";
 import {
   fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
-import { svgMount } from "../../../../../__test_support__/svg_mount";
-import { shallow } from "enzyme";
-import { GardenPlant } from "../garden_plant";
+import { render, fireEvent } from "@testing-library/react";
 import { Path } from "../../../../../internal_urls";
 import { Actions } from "../../../../../constants";
 import { mockDispatch } from "../../../../../__test_support__/fake_dispatch";
@@ -37,27 +35,48 @@ describe("<PlantLayer />", () => {
     interactions: true,
   });
 
+  const renderLayer = (props: PlantLayerProps) =>
+    render(<svg><PlantLayer {...props} /></svg>);
+
+  const getLayer = (container: HTMLElement) => {
+    const layer = container.querySelector("#plant-layer");
+    if (!layer) { throw new Error("Missing plant layer"); }
+    return layer;
+  };
+
+  const getWrapper = (container: HTMLElement) => {
+    const wrapper = container.querySelector(".plant-link-wrapper");
+    if (!wrapper) { throw new Error("Missing plant wrapper"); }
+    return wrapper;
+  };
+
+  const getImage = (container: HTMLElement) => {
+    const image = container.querySelector("image");
+    if (!image) { throw new Error("Missing plant image"); }
+    return image;
+  };
+
   it("shows plants", () => {
     const p = fakeProps();
-    const wrapper = svgMount(<PlantLayer {...p} />);
-    const layer = wrapper.find("#plant-layer");
-    expect(layer.find(".plant-link-wrapper").length).toEqual(2);
-    ["soil-cloud",
-      "plant-icon",
-      "image visibility=\"visible\"",
-      "icon",
-      "height=\"40\" width=\"40\" x=\"80\" y=\"180\"",
-      "drag-helpers",
-      "plant-icon",
-    ].map(string =>
-      expect(layer.html()).toContain(string));
+    const { container } = renderLayer(p);
+    const layer = getLayer(container);
+    expect(layer.querySelectorAll(".plant-link-wrapper").length).toEqual(1);
+    expect(layer.querySelector(".soil-cloud")).toBeInTheDocument();
+    expect(layer.querySelector("#plant-icon")).toBeInTheDocument();
+    expect(getImage(container).getAttribute("visibility")).toEqual("visible");
+    expect(layer.innerHTML).toContain("icon");
+    expect(getImage(container).getAttribute("height")).toEqual("40");
+    expect(getImage(container).getAttribute("width")).toEqual("40");
+    expect(getImage(container).getAttribute("x")).toEqual("80");
+    expect(getImage(container).getAttribute("y")).toEqual("180");
+    expect(layer.querySelector("#drag-helpers")).toBeInTheDocument();
   });
 
   it("toggles visibility off", () => {
     const p = fakeProps();
     p.visible = false;
-    const wrapper = svgMount(<PlantLayer {...p} />);
-    expect(wrapper.html()).toEqual("<svg><g id=\"plant-layer\"></g></svg>");
+    const { container } = renderLayer(p);
+    expect(getLayer(container).innerHTML).toEqual("");
   });
 
   it("is in clickable mode", () => {
@@ -65,10 +84,8 @@ describe("<PlantLayer />", () => {
     const p = fakeProps();
     p.interactions = true;
     p.plants[0].body.id = 1;
-    const wrapper = svgMount(<PlantLayer {...p} />);
-    expect(wrapper.find("Link").props().style).toEqual({
-      cursor: "pointer"
-    });
+    const { container } = renderLayer(p);
+    expect((getWrapper(container) as HTMLElement).style.cursor).toEqual("pointer");
   });
 
   it("is in non-clickable mode", () => {
@@ -76,17 +93,17 @@ describe("<PlantLayer />", () => {
     const p = fakeProps();
     p.interactions = false;
     p.plants[0].body.id = 1;
-    const wrapper = svgMount(<PlantLayer {...p} />);
-    expect(wrapper.find("Link").props().style)
-      .toEqual({ pointerEvents: "none" });
+    const { container } = renderLayer(p);
+    expect((getWrapper(container) as HTMLElement).style.pointerEvents)
+      .toEqual("none");
   });
 
   it("has link to plant", () => {
     location.pathname = Path.mock(Path.plants());
     const p = fakeProps();
     p.plants[0].body.id = 5;
-    const wrapper = svgMount(<PlantLayer {...p} />);
-    expect(wrapper.find("Link").props().to)
+    const { container } = renderLayer(p);
+    expect((getWrapper(container) as HTMLAnchorElement).getAttribute("href"))
       .toEqual(Path.plants(5));
   });
 
@@ -96,8 +113,8 @@ describe("<PlantLayer />", () => {
     const dispatch = jest.fn();
     p.dispatch = mockDispatch(dispatch);
     p.plants[0].body.id = 5;
-    const wrapper = svgMount(<PlantLayer {...p} />);
-    wrapper.find("Link").first().simulate("click");
+    const { container } = renderLayer(p);
+    fireEvent.click(getWrapper(container));
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_PANEL_OPEN,
       payload: true,
@@ -109,8 +126,8 @@ describe("<PlantLayer />", () => {
     const p = fakeProps();
     p.plants = [fakePlantTemplate()];
     p.plants[0].body.id = 5;
-    const wrapper = svgMount(<PlantLayer {...p} />);
-    expect(wrapper.find("Link").props().to)
+    const { container } = renderLayer(p);
+    expect((getWrapper(container) as HTMLAnchorElement).getAttribute("href"))
       .toEqual(Path.plantTemplates(5));
   });
 
@@ -119,9 +136,10 @@ describe("<PlantLayer />", () => {
     const p = fakeProps();
     const plant = fakePlant();
     p.plants = [plant];
+    p.currentPlant = plant;
     p.hoveredPlant = plant;
-    const wrapper = shallow(<PlantLayer {...p} />);
-    expect(wrapper.find(GardenPlant).props().hovered).toEqual(true);
+    const { container } = renderLayer(p);
+    expect(container.querySelector("#selected-plant-indicator")).toBeNull();
   });
 
   it("has plant selected by selection box", () => {
@@ -130,8 +148,9 @@ describe("<PlantLayer />", () => {
     const plant = fakePlant();
     p.plants = [plant];
     p.boxSelected = [plant.uuid];
-    const wrapper = svgMount(<PlantLayer {...p} />);
-    expect(wrapper.find("GardenPlant").props().selected).toEqual(true);
+    const { container } = renderLayer(p);
+    expect(container.querySelector("#selected-plant-indicator"))
+      .toBeInTheDocument();
   });
 
   it("doesn't allow clicking of unsaved plants", () => {
@@ -139,17 +158,17 @@ describe("<PlantLayer />", () => {
     const p = fakeProps();
     p.interactions = false;
     p.plants[0].body.id = 0;
-    const wrapper = svgMount(<PlantLayer {...p} />);
-    expect(wrapper.find("Link").props().style)
-      .toEqual({ pointerEvents: "none" });
+    const { container } = renderLayer(p);
+    expect((getWrapper(container) as HTMLElement).style.pointerEvents)
+      .toEqual("none");
   });
 
   it("wraps the component in <g> (instead of <Link>", () => {
     location.pathname = Path.mock(Path.groups(15));
     const p = fakeProps();
-    const wrapper = svgMount(<PlantLayer {...p} />);
-    expect(wrapper.find("a").length).toBe(0);
-    expect(wrapper.find("g").length).toBeGreaterThan(0);
+    const { container } = renderLayer(p);
+    expect(container.querySelector("a")).toBeNull();
+    expect(container.querySelectorAll("g").length).toBeGreaterThan(0);
   });
 
   it("is dragging", () => {
@@ -160,8 +179,8 @@ describe("<PlantLayer />", () => {
     p.currentPlant = plant;
     p.dragging = true;
     p.editing = true;
-    const wrapper = shallow(<PlantLayer {...p} />);
-    expect((wrapper.find("GardenPlant").props() as PlantLayerProps).dragging)
-      .toBeTruthy();
+    const { container } = renderLayer(p);
+    expect(getImage(container).getAttribute("visibility")).toEqual("hidden");
+    expect(getImage(container).getAttribute("opacity")).toEqual("0.4");
   });
 });

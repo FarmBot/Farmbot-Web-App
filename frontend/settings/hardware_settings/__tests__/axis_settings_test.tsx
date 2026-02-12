@@ -6,7 +6,7 @@ const mockDevice = {
 };
 
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { AxisSettings } from "../axis_settings";
 import * as deviceModule from "../../../device";
 import { bot } from "../../../__test_support__/fake_state/bot";
@@ -15,10 +15,8 @@ import {
   fakeFirmwareConfig,
 } from "../../../__test_support__/fake_state/resources";
 import { error, warning } from "../../../toast/toast";
-import { inputEvent } from "../../../__test_support__/fake_html_events";
 import { settingsPanelState } from "../../../__test_support__/panel_state";
 import { AxisSettingsProps } from "../interfaces";
-import { CalibrationRow } from "../calibration_row";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import { fakeState } from "../../../__test_support__/fake_state";
 import {
@@ -26,6 +24,12 @@ import {
 } from "../../../__test_support__/resource_index_builder";
 import * as crud from "../../../api/crud";
 import { FbosConfig } from "farmbot/dist/resources/configs/fbos";
+
+const calibrationRowMock = jest.fn((_: unknown) => <div />);
+
+jest.mock("../calibration_row", () => ({
+  CalibrationRow: (props: unknown) => calibrationRowMock(props),
+}));
 
 describe("<AxisSettings />", () => {
   let getDeviceSpy: jest.SpyInstance;
@@ -37,6 +41,7 @@ describe("<AxisSettings />", () => {
       .mockImplementation(() => mockDevice);
     editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
     saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+    calibrationRowMock.mockClear();
   });
 
   afterEach(() => {
@@ -52,7 +57,7 @@ describe("<AxisSettings />", () => {
   const fakeProps = (): AxisSettingsProps => ({
     dispatch: mockDispatch(jest.fn(), () => state),
     bot,
-    settingsPanelState: settingsPanelState(),
+    settingsPanelState: { ...settingsPanelState(), axis_settings: true },
     sourceFwConfig: x => ({
       value: bot.hardware.mcu_params[x], consistent: true
     }),
@@ -67,13 +72,12 @@ describe("<AxisSettings />", () => {
 
   function testAxisLengthInput(
     provided: string, expected: string | undefined) {
-    const p = fakeProps();
-    p.settingsPanelState.axis_settings = true;
-    const result = mount(<AxisSettings {...p} />);
-    const e = inputEvent(provided);
-    const input = result.find("input").first().props();
-    input.onChange && input.onChange(e);
-    input.onSubmit && input.onSubmit(e);
+    render(<AxisSettings {...fakeProps()} />);
+    const input = screen.getAllByRole("spinbutton")[0];
+    expect(input).toBeTruthy();
+    fireEvent.focus(input);
+    fireEvent.change(input, { target: { value: provided } });
+    fireEvent.blur(input);
     expected
       ? expect(crud.edit)
         .toHaveBeenCalledWith(expect.any(Object), {
@@ -95,38 +99,46 @@ describe("<AxisSettings />", () => {
   });
 
   it("finds home", () => {
-    const wrapper = shallow(<AxisSettings {...fakeProps()} />);
-    wrapper.find(CalibrationRow).first().props().action("x");
+    render(<AxisSettings {...fakeProps()} />);
+    const row = calibrationRowMock.mock.calls[0]?.[0] as
+      { action: (axis: "x" | "y" | "z" | "all") => void };
+    row.action("x");
     expect(mockDevice.findHome).toHaveBeenCalledWith({
       axis: "x", speed: 100
     });
   });
 
   it("calibrates", () => {
-    const wrapper = shallow(<AxisSettings {...fakeProps()} />);
-    wrapper.find(CalibrationRow).at(2).props().action("all");
+    render(<AxisSettings {...fakeProps()} />);
+    const row = calibrationRowMock.mock.calls[2]?.[0] as
+      { action: (axis: "x" | "y" | "z" | "all") => void };
+    row.action("all");
     expect(mockDevice.calibrate).toHaveBeenCalledWith({ axis: "all" });
   });
 
   it("doesn't disable calibration: different firmware", () => {
     const p = fakeProps();
     p.firmwareHardware = "arduino";
-    const wrapper = shallow(<AxisSettings {...p} />);
-    expect(wrapper.find(CalibrationRow).at(2).props().stallUseDisabled)
-      .toBeFalsy();
+    render(<AxisSettings {...p} />);
+    const row = calibrationRowMock.mock.calls[2]?.[0] as
+      { stallUseDisabled?: boolean };
+    expect(row.stallUseDisabled).toBeFalsy();
   });
 
   it("doesn't disable calibration: not disabled", () => {
     const p = fakeProps();
     p.firmwareHardware = "express_k10";
-    const wrapper = shallow(<AxisSettings {...p} />);
-    expect(wrapper.find(CalibrationRow).at(2).props().stallUseDisabled)
-      .toBeFalsy();
+    render(<AxisSettings {...p} />);
+    const row = calibrationRowMock.mock.calls[2]?.[0] as
+      { stallUseDisabled?: boolean };
+    expect(row.stallUseDisabled).toBeFalsy();
   });
 
   it("sets zero", () => {
-    const wrapper = shallow(<AxisSettings {...fakeProps()} />);
-    wrapper.find(CalibrationRow).at(1).props().action("all");
+    render(<AxisSettings {...fakeProps()} />);
+    const row = calibrationRowMock.mock.calls[1]?.[0] as
+      { action: (axis: "x" | "y" | "z" | "all") => void };
+    row.action("all");
     expect(mockDevice.setZero).toHaveBeenCalledWith("all");
   });
 
@@ -134,8 +146,10 @@ describe("<AxisSettings />", () => {
     const p = fakeProps();
     p.bot.hardware.location_data.position.x = 100;
     p.bot.hardware.mcu_params.movement_step_per_mm_x = 5;
-    const wrapper = shallow(<AxisSettings {...p} />);
-    wrapper.find(CalibrationRow).at(3).props().action("x");
+    render(<AxisSettings {...p} />);
+    const row = calibrationRowMock.mock.calls[3]?.[0] as
+      { action: (axis: "x" | "y" | "z" | "all") => void };
+    row.action("x");
     expect(crud.edit).toHaveBeenCalledWith(fakeConfig,
       { movement_axis_nr_steps_x: "500" });
     expect(crud.save).toHaveBeenCalledWith(fakeConfig.uuid);
@@ -145,8 +159,10 @@ describe("<AxisSettings />", () => {
     const p = fakeProps();
     p.bot.hardware.location_data.position.x = undefined;
     p.bot.hardware.mcu_params.movement_step_per_mm_x = 5;
-    const wrapper = shallow(<AxisSettings {...p} />);
-    wrapper.find(CalibrationRow).at(3).props().action("x");
+    render(<AxisSettings {...p} />);
+    const row = calibrationRowMock.mock.calls[3]?.[0] as
+      { action: (axis: "x" | "y" | "z" | "all") => void };
+    row.action("x");
     expect(crud.edit).not.toHaveBeenCalled();
     expect(crud.save).not.toHaveBeenCalled();
   });
@@ -154,17 +170,16 @@ describe("<AxisSettings />", () => {
   it("shows express board related labels", () => {
     const p = fakeProps();
     p.firmwareHardware = "express_k10";
-    p.settingsPanelState.axis_settings = true;
-    const wrapper = shallow(<AxisSettings {...p} />);
-    expect(wrapper.find(CalibrationRow).first().props().toolTip)
+    render(<AxisSettings {...p} />);
+    const row = calibrationRowMock.mock.calls[0]?.[0] as { toolTip: string };
+    expect(row.toolTip)
       .toContain("stall detection");
   });
 
   it("shows z height inputs", () => {
     const p = fakeProps();
-    p.settingsPanelState.axis_settings = true;
-    const wrapper = mount(<AxisSettings {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("safe height");
-    expect(wrapper.text().toLowerCase()).toContain("soil height");
+    const { container } = render(<AxisSettings {...p} />);
+    expect((container.textContent || "").toLowerCase()).toContain("safe height");
+    expect((container.textContent || "").toLowerCase()).toContain("soil height");
   });
 });

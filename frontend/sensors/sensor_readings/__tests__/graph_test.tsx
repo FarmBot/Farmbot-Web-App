@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render, fireEvent } from "@testing-library/react";
 import { SensorReadingsPlot, calcTimeParams } from "../graph";
 import { SensorReadingPlotProps } from "../interfaces";
 import {
@@ -21,8 +21,8 @@ describe("<SensorReadingPlot />", () => {
   }
 
   it("renders", () => {
-    const wrapper = mount(<SensorReadingsPlot {...fakeProps()} />);
-    const txt = wrapper.text().toLowerCase();
+    const { container } = render(<SensorReadingsPlot {...fakeProps()} />);
+    const txt = container.textContent?.toLowerCase() || "";
     ["analog", "digital", "pm", "500"]
       .map(string => expect(txt).toContain(string));
   });
@@ -30,8 +30,8 @@ describe("<SensorReadingPlot />", () => {
   it("renders years", () => {
     const p = fakeProps();
     p.timePeriod = 3600 * 24 * 365;
-    const wrapper = mount(<SensorReadingsPlot {...p} />);
-    expect(wrapper.text()).toContain("2017");
+    const { container } = render(<SensorReadingsPlot {...p} />);
+    expect(container.textContent).toContain("2017");
   });
 
   it("renders digital reading", () => {
@@ -39,8 +39,8 @@ describe("<SensorReadingPlot />", () => {
     sr.body.mode = 0;
     sr.body.value = 1;
     const p = fakeProps(sr);
-    const wrapper = mount(<SensorReadingsPlot {...p} />);
-    expect(wrapper.find("circle").first().props().cy).toEqual(77);
+    const { container } = render(<SensorReadingsPlot {...p} />);
+    expect(container.querySelector("circle")?.getAttribute("cy")).toEqual("77");
   });
 
   it("renders analog reading", () => {
@@ -48,22 +48,22 @@ describe("<SensorReadingPlot />", () => {
     sr.body.mode = 1;
     sr.body.value = 1023;
     const p = fakeProps(sr);
-    const wrapper = mount(<SensorReadingsPlot {...p} />);
-    expect(wrapper.find("circle").first().props().cy).toEqual(77);
+    const { container } = render(<SensorReadingsPlot {...p} />);
+    expect(container.querySelector("circle")?.getAttribute("cy")).toEqual("77");
   });
 
   it("hovers point", () => {
     const sr = fakeSensorReading();
     const p = fakeProps(sr);
-    const wrapper = mount(<SensorReadingsPlot {...p} />);
-    wrapper.find("circle").first().simulate("mouseEnter");
+    const { container } = render(<SensorReadingsPlot {...p} />);
+    fireEvent.mouseEnter(container.querySelector("circle") as Element);
     expect(p.hover).toHaveBeenCalledWith(sr.uuid);
   });
 
   it("unhovers point", () => {
     const p = fakeProps();
-    const wrapper = mount(<SensorReadingsPlot {...p} />);
-    wrapper.find("circle").first().simulate("mouseLeave");
+    const { container } = render(<SensorReadingsPlot {...p} />);
+    fireEvent.mouseLeave(container.querySelector("circle") as Element);
     expect(p.hover).toHaveBeenCalledWith(undefined);
   });
 
@@ -72,8 +72,8 @@ describe("<SensorReadingPlot />", () => {
     sr.body.value = 555;
     const p = fakeProps(sr);
     p.hovered = sr.uuid;
-    const wrapper = mount(<SensorReadingsPlot {...p} />);
-    expect(wrapper.text()).toContain("555");
+    const { container } = render(<SensorReadingsPlot {...p} />);
+    expect(container.textContent).toContain("555");
   });
 });
 

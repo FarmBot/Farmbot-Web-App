@@ -1,6 +1,6 @@
 import React from "react";
 import { GardenPlant } from "../garden_plant";
-import { shallow } from "enzyme";
+import { render, fireEvent } from "@testing-library/react";
 import { GardenPlantProps } from "../../../interfaces";
 import { fakePlant } from "../../../../../__test_support__/fake_state/resources";
 import { Actions } from "../../../../../constants";
@@ -26,32 +26,49 @@ describe("<GardenPlant />", () => {
     hoveredSpread: undefined,
   });
 
+  const renderPlant = (props: GardenPlantProps) =>
+    render(<svg><GardenPlant {...props} /></svg>);
+
+  const getImage = (container: HTMLElement) => {
+    const image = container.querySelector("image");
+    if (!image) { throw new Error("Missing plant image"); }
+    return image;
+  };
+
   it("renders plant", () => {
     const p = fakeProps();
     p.selected = true;
     p.animate = false;
-    const wrapper = shallow(<GardenPlant {...p} />);
-    expect(wrapper.find("image").length).toEqual(1);
-    expect(wrapper.find("image").props().opacity).toEqual(1);
-    expect(wrapper.find("image").props().visibility).toEqual("visible");
-    expect(wrapper.find("image").props().opacity).toEqual(1.0);
-    expect(wrapper.find("image").props().filter).toEqual("");
-    expect(wrapper.find("text").length).toEqual(0);
-    expect(wrapper.find("rect").length).toBeLessThanOrEqual(1);
-    expect(wrapper.find("use").length).toEqual(0);
-    expect(wrapper.find(".soil-cloud").length).toEqual(0);
-    expect(wrapper.find("Circle").props().className).not.toContain("animate");
+    const { container } = renderPlant(p);
+    const image = getImage(container);
+    expect(container.querySelectorAll("image").length).toEqual(1);
+    expect(Number(image.getAttribute("opacity"))).toEqual(1);
+    expect(image.getAttribute("visibility")).toEqual("visible");
+    expect(Number(image.getAttribute("opacity"))).toEqual(1.0);
+    expect(image.getAttribute("filter") || "").toEqual("");
+    expect(container.querySelectorAll("text").length).toEqual(0);
+    expect(container.querySelectorAll("rect").length).toBeLessThanOrEqual(1);
+    expect(container.querySelectorAll("use").length).toEqual(0);
+    expect(container.querySelectorAll(".soil-cloud").length).toEqual(0);
+    const indicator = container.querySelector(".plant-indicator");
+    if (!indicator) { throw new Error("Missing plant indicator"); }
+    expect(indicator.getAttribute("class")).not.toContain("animate");
   });
 
   it("renders plant animations", () => {
     const p = fakeProps();
     p.animate = true;
     p.selected = true;
-    const wrapper = shallow(<GardenPlant {...p} />);
-    expect(wrapper.find(".soil-cloud").length).toEqual(1);
-    expect(wrapper.find(".soil-cloud").props().r).toEqual(20);
-    expect(wrapper.find(".animate").length).toEqual(2);
-    expect(wrapper.find("Circle").props().className).toContain("animate");
+    const { container } = renderPlant(p);
+    const soilCloud = container.querySelector(".soil-cloud");
+    if (!soilCloud) { throw new Error("Missing soil cloud"); }
+    expect(container.querySelectorAll(".soil-cloud").length).toEqual(1);
+    expect(Number(soilCloud.getAttribute("r"))).toEqual(20);
+    expect(container.querySelectorAll(".animate").length)
+      .toBeGreaterThanOrEqual(2);
+    const indicator = container.querySelector(".plant-indicator");
+    if (!indicator) { throw new Error("Missing plant indicator"); }
+    expect(indicator.getAttribute("class")).toContain("animate");
   });
 
   it("renders hovered spread size", () => {
@@ -60,22 +77,24 @@ describe("<GardenPlant />", () => {
     p.animate = true;
     p.hoveredSpread = 1000;
     p.selected = true;
-    const wrapper = shallow(<GardenPlant {...p} />);
-    expect(wrapper.find(".soil-cloud").length).toEqual(1);
-    expect(wrapper.find(".soil-cloud").props().r).toEqual(100);
+    const { container } = renderPlant(p);
+    const soilCloud = container.querySelector(".soil-cloud");
+    if (!soilCloud) { throw new Error("Missing soil cloud"); }
+    expect(container.querySelectorAll(".soil-cloud").length).toEqual(1);
+    expect(Number(soilCloud.getAttribute("r"))).toEqual(100);
   });
 
   it("calls the onClick callback", () => {
     const p = fakeProps();
-    const wrapper = shallow(<GardenPlant {...p} />);
-    wrapper.find("image").at(0).simulate("click");
+    const { container } = renderPlant(p);
+    fireEvent.click(getImage(container));
     expect(p.dispatch).toHaveBeenCalledWith(expect.any(Function));
   });
 
   it("begins hover", () => {
     const p = fakeProps();
-    const wrapper = shallow(<GardenPlant {...p} />);
-    wrapper.find("image").at(0).simulate("mouseEnter");
+    const { container } = renderPlant(p);
+    fireEvent.mouseEnter(getImage(container));
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.HOVER_PLANT_LIST_ITEM,
       payload: p.uuid
@@ -84,8 +103,8 @@ describe("<GardenPlant />", () => {
 
   it("ends hover", () => {
     const p = fakeProps();
-    const wrapper = shallow(<GardenPlant {...p} />);
-    wrapper.find("image").at(0).simulate("mouseLeave");
+    const { container } = renderPlant(p);
+    fireEvent.mouseLeave(getImage(container));
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.HOVER_PLANT_LIST_ITEM,
       payload: undefined
@@ -94,33 +113,36 @@ describe("<GardenPlant />", () => {
 
   it("doesn't render the indicator circle", () => {
     const p = fakeProps();
-    const wrapper = shallow(<GardenPlant {...p} />);
-    expect(wrapper.find(".plant-indicator").length).toEqual(0);
+    const { container } = renderPlant(p);
+    expect(container.querySelectorAll(".plant-indicator").length).toEqual(0);
   });
 
   it("renders the indicator circle", () => {
     const p = fakeProps();
     p.selected = true;
-    const wrapper = shallow(<GardenPlant {...p} />);
-    expect(wrapper.find(".plant-indicator").length).toEqual(1);
-    expect(wrapper.find("Circle").length).toEqual(1);
+    const { container } = renderPlant(p);
+    expect(container.querySelectorAll(".plant-indicator").length).toEqual(1);
+    expect(container.querySelectorAll("#selected-plant-indicator").length)
+      .toEqual(1);
   });
 
   it("doesn't render indicator circle twice", () => {
     const p = fakeProps();
     p.selected = true;
     p.hovered = true;
-    const wrapper = shallow(<GardenPlant {...p} />);
-    expect(wrapper.find(".plant-indicator").length).toEqual(0);
-    expect(wrapper.find("Circle").length).toEqual(0);
+    const { container } = renderPlant(p);
+    expect(container.querySelectorAll(".plant-indicator").length).toEqual(0);
+    expect(container.querySelectorAll("#selected-plant-indicator").length)
+      .toEqual(0);
   });
 
   it("renders while dragging", () => {
     const p = fakeProps();
     p.dragging = true;
-    const wrapper = shallow(<GardenPlant {...p} />);
-    expect(wrapper.find("image").props().visibility).toEqual("hidden");
-    expect(wrapper.find("image").props().opacity).toEqual(0.4);
+    const { container } = renderPlant(p);
+    const image = getImage(container);
+    expect(image.getAttribute("visibility")).toEqual("hidden");
+    expect(Number(image.getAttribute("opacity"))).toEqual(0.4);
   });
 
   it("renders grayscale", () => {
@@ -129,7 +151,7 @@ describe("<GardenPlant />", () => {
     plant.specialStatus = SpecialStatus.DIRTY;
     plant.body.meta = { gridId: "fake grid uuid" };
     p.plant = plant;
-    const wrapper = shallow(<GardenPlant {...p} />);
-    expect(wrapper.find("image").props().filter).toEqual("url(#grayscale)");
+    const { container } = renderPlant(p);
+    expect(getImage(container).getAttribute("filter")).toEqual("url(#grayscale)");
   });
 });

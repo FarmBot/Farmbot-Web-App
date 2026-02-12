@@ -1,10 +1,9 @@
 jest.mock("../../../../api/crud", () => ({ overwrite: jest.fn() }));
 
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import { If_ } from "../if";
 import { If } from "farmbot";
-import { FBSelect } from "../../../../ui";
 import { overwrite } from "../../../../api/crud";
 import { StepParams } from "../../../interfaces";
 import {
@@ -33,16 +32,21 @@ describe("<If_/>", () => {
   }
 
   it("renders", () => {
-    const wrapper = mount(<If_ {...fakeProps()} />);
+    const { container } = render(<If_ {...fakeProps()} />);
     ["Variable", "Operator", "Value"].map(string =>
-      expect(wrapper.text()).toContain(string));
-    expect(wrapper.find("button").length).toEqual(2);
-    expect(wrapper.find("input").length).toEqual(1);
+      expect(container.textContent).toContain(string));
+    expect(container.querySelectorAll("button").length).toEqual(2);
+    expect(container.querySelectorAll("input").length).toEqual(1);
   });
 
   it("updates op", () => {
-    const wrapper = shallow(<If_ {...fakeProps()} />);
-    wrapper.find(FBSelect).last().simulate("change", {
+    const wrapper = If_(fakeProps());
+    const children =
+      React.Children.toArray(wrapper.props.children) as JSX.Element[];
+    const operatorChildren = React.Children.toArray(
+      (children[1] as JSX.Element).props.children) as JSX.Element[];
+    const operatorInput = operatorChildren[1] as JSX.Element;
+    operatorInput.props.onChange({
       label: "is not", value: "not"
     });
     expect(overwrite).toHaveBeenCalledWith(expect.any(Object),

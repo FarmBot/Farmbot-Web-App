@@ -13,7 +13,7 @@ const mockDevice = {
 
 import React from "react";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { mount, shallow } from "enzyme";
+import TestRenderer from "react-test-renderer";
 import { bot } from "../../__test_support__/fake_state/bot";
 import {
   buildResourceIndex, fakeDevice,
@@ -91,6 +91,8 @@ import { FBSelect } from "../../ui";
 import * as bootSequenceSelector from "../../settings/fbos_settings/boot_sequence_selector";
 import * as messageActions from "../../messages/actions";
 import * as deviceActions from "../../devices/actions";
+import { DropdownConfig } from "../../photos/camera_calibration/config";
+import { WaterFlowRateInput } from "../../tools/edit_tool";
 
 afterEach(() => cleanup());
 
@@ -196,23 +198,25 @@ describe("<CameraCheck />", () => {
     const oldImage = fakeImage();
     oldImage.body.id = 1;
     p.resources = buildResourceIndex([oldImage]).index;
-    const wrapper = mount(<CameraCheck {...p} />);
-    expect(wrapper.find("img").props().src).toEqual(PLACEHOLDER_FARMBOT);
+    const { container, rerender } = render(<CameraCheck {...p} />);
+    const image = () => container.querySelector("img");
+    expect(image()?.getAttribute("src")).toEqual(PLACEHOLDER_FARMBOT);
     const newImage = fakeImage();
     newImage.body.attachment_url = "url";
     newImage.body.id = 10;
     p.resources = buildResourceIndex([newImage]).index;
-    wrapper.setProps(p);
-    expect(wrapper.find("img").props().src).toEqual("url");
-    wrapper.find(".camera-check").simulate("click");
-    expect(wrapper.find("img").props().src).toEqual(PLACEHOLDER_FARMBOT);
+    rerender(<CameraCheck {...p} />);
+    expect(image()?.getAttribute("src")).toEqual("url");
+    fireEvent.click(container.querySelector(".camera-check") as Element);
+    expect(image()?.getAttribute("src")).toEqual(PLACEHOLDER_FARMBOT);
   });
 
   it("handles empty images", () => {
     const p = fakeProps();
     p.resources = buildResourceIndex([]).index;
-    const wrapper = mount(<CameraCheck {...p} />);
-    expect(wrapper.find("img").props().src).toEqual(PLACEHOLDER_FARMBOT);
+    const { container } = render(<CameraCheck {...p} />);
+    expect(container.querySelector("img")?.getAttribute("src"))
+      .toEqual(PLACEHOLDER_FARMBOT);
   });
 
   it("handles undefined fields", () => {
@@ -220,12 +224,13 @@ describe("<CameraCheck />", () => {
     const log = fakeLog();
     log.body.created_at = undefined;
     p.resources = buildResourceIndex([fakeImage(), log, fakeLog()]).index;
-    const wrapper = mount(<CameraCheck {...p} />);
+    const { container, rerender } = render(<CameraCheck {...p} />);
     const image = fakeImage();
     image.body.id = undefined;
     p.resources = buildResourceIndex([image]).index;
-    wrapper.setProps(p);
-    expect(wrapper.find("img").props().src).toEqual(PLACEHOLDER_FARMBOT);
+    rerender(<CameraCheck {...p} />);
+    expect(container.querySelector("img")?.getAttribute("src"))
+      .toEqual(PLACEHOLDER_FARMBOT);
   });
 
   it("searches recent logs", () => {
@@ -234,14 +239,14 @@ describe("<CameraCheck />", () => {
     log0.body.message = "USB Camera not detected.";
     log0.body.created_at = 1;
     p.resources = buildResourceIndex([log0]).index;
-    const wrapper = mount(<CameraCheck {...p} />);
-    wrapper.find(".camera-check").simulate("click");
+    const { container, rerender } = render(<CameraCheck {...p} />);
+    fireEvent.click(container.querySelector(".camera-check") as Element);
     expect(p.setStepSuccess).not.toHaveBeenCalled();
     const log1 = fakeLog();
     log1.body.message = "USB Camera not detected.";
     log1.body.created_at = 2;
     p.resources = buildResourceIndex([log1]).index;
-    wrapper.setProps(p);
+    rerender(<CameraCheck {...p} />);
     expect(p.setStepSuccess).toHaveBeenCalledWith(false, "cameraError");
   });
 });
@@ -260,8 +265,8 @@ describe("lowVoltageProblemStatus()", () => {
 
 describe("<FlashFirmware />", () => {
   it("renders button", () => {
-    const wrapper = mount(<FlashFirmware {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("flash firmware");
+    const { container } = render(<FlashFirmware {...fakeProps()} />);
+    expect(container.textContent?.toLowerCase()).toContain("flash firmware");
   });
 });
 
@@ -272,38 +277,38 @@ describe("<ControlsCheck />", () => {
   });
 
   it("returns controls", () => {
-    const wrapper = mount(<ControlsCheck {...fakeControlsCheckProps()} />);
-    expect(wrapper.find("div").first().hasClass("controls-check")).toBeTruthy();
+    const { container } = render(<ControlsCheck {...fakeControlsCheckProps()} />);
+    expect(container.querySelector(".controls-check")).toBeTruthy();
   });
 
   it("returns highlighted controls", () => {
     const p = fakeControlsCheckProps();
     p.controlsCheckOptions.axis = "x";
-    const wrapper = mount(<ControlsCheck {...p} />);
-    expect(wrapper.html()).toContain("solid #fd6");
+    const { container } = render(<ControlsCheck {...p} />);
+    expect(container.innerHTML).toContain("solid #fd6");
   });
 
   it("returns both controls directions highlighted", () => {
     const p = fakeControlsCheckProps();
     p.controlsCheckOptions.axis = "x";
     p.controlsCheckOptions.both = true;
-    const wrapper = mount(<ControlsCheck {...p} />);
-    expect(wrapper.html()).toContain("solid #fd6");
+    const { container } = render(<ControlsCheck {...p} />);
+    expect(container.innerHTML).toContain("solid #fd6");
   });
 
   it("returns up controls direction highlighted", () => {
     const p = fakeControlsCheckProps();
     p.controlsCheckOptions.axis = "x";
     p.controlsCheckOptions.up = true;
-    const wrapper = mount(<ControlsCheck {...p} />);
-    expect(wrapper.html()).toContain("solid #fd6");
+    const { container } = render(<ControlsCheck {...p} />);
+    expect(container.innerHTML).toContain("solid #fd6");
   });
 
   it("returns controls with home highlighted", () => {
     const p = fakeControlsCheckProps();
     p.controlsCheckOptions.home = true;
-    const wrapper = mount(<ControlsCheck {...p} />);
-    expect(wrapper.html()).toContain("solid #fd6");
+    const { container } = render(<ControlsCheck {...p} />);
+    expect(container.innerHTML).toContain("solid #fd6");
   });
 });
 
@@ -314,9 +319,9 @@ describe("<CameraCalibrationCard />", () => {
     farmwareEnv.body.key = "CAMERA_CALIBRATION_easy_calibration";
     farmwareEnv.body.value = "\"TRUE\"";
     p.resources = buildResourceIndex([farmwareEnv]).index;
-    const wrapper = mount(<CameraCalibrationCard {...p} />);
-    expect(wrapper.html()).toContain("svg");
-    expect(wrapper.html()).toContain("back");
+    const { container } = render(<CameraCalibrationCard {...p} />);
+    expect(container.innerHTML).toContain("svg");
+    expect(container.innerHTML).toContain("back");
   });
 
   it("renders red dots", () => {
@@ -325,19 +330,18 @@ describe("<CameraCalibrationCard />", () => {
     farmwareEnv.body.key = "CAMERA_CALIBRATION_easy_calibration";
     farmwareEnv.body.value = "\"FALSE\"";
     p.resources = buildResourceIndex([farmwareEnv]).index;
-    const wrapper = mount(<CameraCalibrationCard {...p} />);
-    expect(wrapper.html()).toContain("svg");
-    expect(wrapper.html()).toContain("front");
+    const { container } = render(<CameraCalibrationCard {...p} />);
+    expect(container.innerHTML).toContain("svg");
+    expect(container.innerHTML).toContain("front");
   });
 });
 
 describe("<SwitchCameraCalibrationMethod />", () => {
   it("changes method", () => {
     const p = fakeProps();
-    const wrapper = mount(<SwitchCameraCalibrationMethod {...p} />);
-    wrapper.find("input").simulate("change", {
-      currentTarget: { checked: true },
-    });
+    const wrapper = TestRenderer.create(<SwitchCameraCalibrationMethod {...p} />);
+    const input = wrapper.root.findByType("input");
+    input.props.onChange({ currentTarget: { checked: false } });
     expect(initSave).toHaveBeenCalledWith("FarmwareEnv", {
       key: "CAMERA_CALIBRATION_easy_calibration", value: "\"TRUE\""
     });
@@ -348,16 +352,16 @@ describe("<CameraCalibrationCheck />", () => {
   it("calibrates", () => {
     bot.hardware.informational_settings.sync_status = "synced";
     bot.connectivity.uptime["bot.mqtt"] = { state: "up", at: 1 };
-    const wrapper = mount(<CameraCalibrationCheck {...fakeProps()} />);
-    wrapper.find(".camera-check").simulate("click");
+    const { container } = render(<CameraCalibrationCheck {...fakeProps()} />);
+    fireEvent.click(container.querySelector(".camera-check") as Element);
     expect(cameraCalibrationActions.calibrate).toHaveBeenCalledWith(true);
   });
 });
 
 describe("<SoilHeightMeasurementCheck />", () => {
   it("shows message", () => {
-    const wrapper = mount(<SoilHeightMeasurementCheck {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("missing");
+    const { container } = render(<SoilHeightMeasurementCheck {...fakeProps()} />);
+    expect(container.textContent?.toLowerCase()).toContain("missing");
   });
 
   it("runs", () => {
@@ -368,8 +372,8 @@ describe("<SoilHeightMeasurementCheck />", () => {
     farmware.body.id = 1;
     farmware.body.package = FarmwareName.MeasureSoilHeight;
     p.resources = buildResourceIndex([farmware]).index;
-    const wrapper = mount(<SoilHeightMeasurementCheck {...p} />);
-    wrapper.find("button").first().simulate("click");
+    const { container } = render(<SoilHeightMeasurementCheck {...p} />);
+    fireEvent.click(container.querySelector("button") as Element);
     expect(mockDevice.execScript).toHaveBeenCalledWith(
       FarmwareName.MeasureSoilHeight, []);
   });
@@ -381,8 +385,9 @@ describe("<AssemblyDocs />", () => {
     const config = fakeFbosConfig();
     config.body.firmware_hardware = "arduino";
     p.resources = buildResourceIndex([config]).index;
-    const wrapper = mount(<AssemblyDocs {...p} />);
-    expect(wrapper.find("a").props().href).toEqual(ExternalUrl.genesisAssembly);
+    const { container } = render(<AssemblyDocs {...p} />);
+    expect(container.querySelector("a")?.getAttribute("href"))
+      .toEqual(ExternalUrl.genesisAssembly);
   });
 
   it("renders express link", () => {
@@ -390,13 +395,15 @@ describe("<AssemblyDocs />", () => {
     const config = fakeFbosConfig();
     config.body.firmware_hardware = "express_k10";
     p.resources = buildResourceIndex([config]).index;
-    const wrapper = mount(<AssemblyDocs {...p} />);
-    expect(wrapper.find("a").props().href).toEqual(ExternalUrl.expressAssembly);
+    const { container } = render(<AssemblyDocs {...p} />);
+    expect(container.querySelector("a")?.getAttribute("href"))
+      .toEqual(ExternalUrl.expressAssembly);
   });
 
   it("handles missing config", () => {
-    const wrapper = mount(<AssemblyDocs {...fakeProps()} />);
-    expect(wrapper.find("a").props().href).toEqual(ExternalUrl.genesisAssembly);
+    const { container } = render(<AssemblyDocs {...fakeProps()} />);
+    expect(container.querySelector("a")?.getAttribute("href"))
+      .toEqual(ExternalUrl.genesisAssembly);
   });
 });
 
@@ -424,8 +431,9 @@ describe("<DownloadOS />", () => {
     const device = fakeDevice();
     device.body.rpi = rpi;
     p.resources = buildResourceIndex([device]).index;
-    const wrapper = mount(<DownloadOS {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain(`download fbos v${expected}`);
+    const { container } = render(<DownloadOS {...p} />);
+    expect(container.textContent?.toLowerCase())
+      .toContain(`download fbos v${expected}`);
   });
 
   it("handles missing model", () => {
@@ -433,22 +441,23 @@ describe("<DownloadOS />", () => {
     const device = fakeDevice();
     device.body.rpi = undefined;
     p.resources = buildResourceIndex([device]).index;
-    const wrapper = mount(<DownloadOS {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("please select a model");
+    const { container } = render(<DownloadOS {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain(
+      "please select a model");
   });
 });
 
 describe("<DownloadImager />", () => {
   it("renders link", () => {
-    const wrapper = mount(<DownloadImager />);
-    expect(wrapper.text().toLowerCase()).toContain("download");
+    const { container } = render(<DownloadImager />);
+    expect(container.textContent?.toLowerCase()).toContain("download");
   });
 });
 
 describe("<NetworkRequirementsLink />", () => {
   it("renders link", () => {
-    const wrapper = mount(<NetworkRequirementsLink />);
-    expect(wrapper.text().toLowerCase()).toContain("requirements");
+    const { container } = render(<NetworkRequirementsLink />);
+    expect(container.textContent?.toLowerCase()).toContain("requirements");
   });
 });
 
@@ -465,8 +474,12 @@ describe("<FirmwareHardwareSelection />", () => {
     const device = fakeDevice();
     p.resources = buildResourceIndex([config, device]).index;
     p.dispatch = mockDispatch(jest.fn(), () => state);
-    const wrapper = shallow(<FirmwareHardwareSelection {...p} />);
-    wrapper.find(FBSelect).simulate("change", { label: "Genesis v1.2", value: "genesis_1.2" });
+    const wrapper = TestRenderer.create(<FirmwareHardwareSelection {...p} />);
+    const select = wrapper.root.findByType(FBSelect);
+    select.props.onChange({
+      label: "Genesis v1.2",
+      value: "genesis_1.2",
+    });
     expect(edit).toHaveBeenCalledWith(expect.any(Object), { rpi: "3" });
   });
 
@@ -481,12 +494,14 @@ describe("<FirmwareHardwareSelection />", () => {
     p.resources = buildResourceIndex([alert, config, device]).index;
     mockState.resources = buildResourceIndex([alert]);
     p.dispatch = mockDispatch(jest.fn(), () => state);
-    const wrapper = shallow(<FirmwareHardwareSelection {...p} />);
-    wrapper.find(FBSelect).simulate("change", { label: "Genesis v1.2", value: "genesis_1.2" });
+    const wrapper = TestRenderer.create(<FirmwareHardwareSelection {...p} />);
+    let select = wrapper.root.findByType(FBSelect);
+    select.props.onChange({ label: "Genesis v1.2", value: "genesis_1.2" });
     expect(edit).toHaveBeenCalledWith(expect.any(Object), { rpi: "3" });
     expect(destroy).toHaveBeenCalledTimes(1);
     expect(messageActions.seedAccount).toHaveBeenCalledTimes(1);
-    wrapper.find(FBSelect).simulate("change", { label: "Genesis v1.3", value: "genesis_1.3" });
+    select = wrapper.root.findByType(FBSelect);
+    select.props.onChange({ label: "Genesis v1.3", value: "genesis_1.3" });
     expect(edit).toHaveBeenCalledWith(expect.any(Object), { rpi: "3" });
     expect(destroy).toHaveBeenCalledTimes(1);
     expect(messageActions.seedAccount).toHaveBeenCalledTimes(1);
@@ -500,8 +515,9 @@ describe("<FirmwareHardwareSelection />", () => {
     device.body.account_seeded_at = "2023-01-01T11:22:33.000Z";
     p.resources = buildResourceIndex([config, device]).index;
     p.dispatch = mockDispatch(jest.fn(), () => state);
-    const wrapper = shallow(<FirmwareHardwareSelection {...p} />);
-    wrapper.find(FBSelect).simulate("change", { label: "Genesis v1.2", value: "genesis_1.2" });
+    const wrapper = TestRenderer.create(<FirmwareHardwareSelection {...p} />);
+    const select = wrapper.root.findByType(FBSelect);
+    select.props.onChange({ label: "Genesis v1.2", value: "genesis_1.2" });
     expect(edit).toHaveBeenCalledWith(expect.any(Object), { rpi: "3" });
     expect(destroy).not.toHaveBeenCalled();
     expect(messageActions.seedAccount).not.toHaveBeenCalled();
@@ -525,8 +541,9 @@ describe("<FirmwareHardwareSelection />", () => {
 
 describe("<RpiSelection />", () => {
   it("changes rpi model", () => {
-    const wrapper = shallow(<RpiSelection {...fakeProps()} />);
-    wrapper.find(FBSelect).simulate("change", { label: "", value: "3" });
+    const wrapper = TestRenderer.create(<RpiSelection {...fakeProps()} />);
+    const select = wrapper.root.findByType(FBSelect);
+    select.props.onChange({ label: "", value: "3" });
     expect(edit).toHaveBeenCalledWith(expect.any(Object), { rpi: "3" });
     expect(save).toHaveBeenCalledWith(expect.any(String));
   });
@@ -538,15 +555,15 @@ describe("<Connectivity />", () => {
     const config = fakeFbosConfig();
     config.body.firmware_hardware = "arduino";
     p.resources = buildResourceIndex([fakeDevice(), config]).index;
-    const wrapper = mount(<Connectivity {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("web app");
+    const { container } = render(<Connectivity {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("web app");
   });
 
   it("handles missing config", () => {
     const p = fakeProps();
     p.resources = buildResourceIndex([fakeDevice()]).index;
-    const wrapper = mount(<Connectivity {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("web app");
+    const { container } = render(<Connectivity {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("web app");
   });
 });
 
@@ -558,8 +575,8 @@ describe("<AutoUpdate />", () => {
     const device = fakeDevice();
     device.body.ota_hour = 1;
     p.resources = buildResourceIndex([config, device]).index;
-    const wrapper = mount(<AutoUpdate {...p} />);
-    expect(wrapper.text()).toEqual("1:00 AM");
+    const { container } = render(<AutoUpdate {...p} />);
+    expect(container.textContent).toEqual("1:00 AM");
   });
 });
 
@@ -576,8 +593,8 @@ describe("<DisableStallDetection />", () => {
     config.body.encoder_enabled_x = 0;
     p.resources = buildResourceIndex([config]).index;
     p.dispatch = mockDispatch(jest.fn(), () => state);
-    const wrapper = mount(DisableStallDetection("x")(p));
-    wrapper.find("button").first().simulate("click");
+    const { container } = render(DisableStallDetection("x")(p));
+    fireEvent.click(container.querySelector("button") as Element);
     expect(p.dispatch).toHaveBeenCalled();
   });
 });
@@ -591,8 +608,8 @@ describe("<InvertJogButton />", () => {
   it("inverts button", () => {
     const p = fakeProps();
     p.dispatch = mockDispatch(jest.fn(), () => state);
-    const wrapper = mount(InvertJogButton("x")(p));
-    wrapper.find("button").first().simulate("click");
+    const { container } = render(InvertJogButton("x")(p));
+    fireEvent.click(container.querySelector("button") as Element);
     expect(edit).toHaveBeenCalledWith(expect.any(Object), {
       x_axis_inverted: true
     });
@@ -601,8 +618,8 @@ describe("<InvertJogButton />", () => {
 
 describe("<MotorCurrentContent />", () => {
   it("returns content", () => {
-    const wrapper = mount(<MotorCurrentContent />);
-    expect(wrapper.text().toLowerCase()).toContain("motor current");
+    const { container } = render(<MotorCurrentContent />);
+    expect(container.textContent?.toLowerCase()).toContain("motor current");
   });
 });
 
@@ -615,8 +632,8 @@ describe("<SwapJogButton />", () => {
   it("swaps buttons", () => {
     const p = fakeProps();
     p.dispatch = mockDispatch(jest.fn(), () => state);
-    const wrapper = mount(<SwapJogButton {...p} />);
-    wrapper.find("button").first().simulate("click");
+    const { container } = render(<SwapJogButton {...p} />);
+    fireEvent.click(container.querySelector("button") as Element);
     expect(edit).toHaveBeenCalledWith(expect.any(Object), { xy_swap: true });
   });
 });
@@ -630,8 +647,8 @@ describe("<RotateMapToggle />", () => {
   it("rotates map", () => {
     const p = fakeProps();
     p.dispatch = mockDispatch(jest.fn(), () => state);
-    const wrapper = mount(<RotateMapToggle {...p} />);
-    wrapper.find("button").first().simulate("click");
+    const { container } = render(<RotateMapToggle {...p} />);
+    fireEvent.click(container.querySelector("button") as Element);
     expect(edit).toHaveBeenCalledWith(expect.any(Object), { xy_swap: true });
   });
 });
@@ -645,23 +662,23 @@ describe("<DynamicMapToggle />", () => {
   it("toggles dynamic map size", () => {
     const p = fakeProps();
     p.dispatch = mockDispatch(jest.fn(), () => state);
-    const wrapper = mount(<DynamicMapToggle {...p} />);
-    wrapper.find("button").first().simulate("click");
+    const { container } = render(<DynamicMapToggle {...p} />);
+    fireEvent.click(container.querySelector("button") as Element);
     expect(edit).toHaveBeenCalledWith(expect.any(Object), { dynamic_map: true });
   });
 });
 
 describe("<SelectMapOrigin />", () => {
   it("renders origin selector", () => {
-    const wrapper = mount(<SelectMapOrigin {...fakeProps()} />);
-    expect(wrapper.html()).toContain("farmbot-origin");
+    const { container } = render(<SelectMapOrigin {...fakeProps()} />);
+    expect(container.innerHTML).toContain("farmbot-origin");
   });
 });
 
 describe("<MapOrientation />", () => {
   it("renders map settings", () => {
-    const wrapper = mount(<MapOrientation {...fakeProps()} />);
-    expect(wrapper.html()).toContain("map-orientation");
+    const { container } = render(<MapOrientation {...fakeProps()} />);
+    expect(container.innerHTML).toContain("map-orientation");
   });
 });
 
@@ -671,13 +688,13 @@ describe("<PeripheralsCheck />", () => {
     const config = fakeFbosConfig();
     config.body.firmware_hardware = "arduino";
     p.resources = buildResourceIndex([config]).index;
-    const wrapper = mount(<PeripheralsCheck {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("peripherals");
+    const { container } = render(<PeripheralsCheck {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("peripherals");
   });
 
   it("handles missing config", () => {
-    const wrapper = mount(<PeripheralsCheck {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("peripherals");
+    const { container } = render(<PeripheralsCheck {...fakeProps()} />);
+    expect(container.textContent?.toLowerCase()).toContain("peripherals");
   });
 });
 
@@ -691,17 +708,17 @@ describe("<PinBinding />", () => {
     const pinBinding = fakePinBinding();
     p.resources = buildResourceIndex([pinBinding, fbosConfig]).index;
     p.getConfigValue = () => false;
-    const wrapper = mount(<ActualPinBinding {...p}
+    const { container } = render(<ActualPinBinding {...p}
       pinBindingOptions={{ editing: false }} />);
-    expect(wrapper.find(".electronics-box-top").exists()).toBeTruthy();
+    expect(container.querySelector(".electronics-box-top")).toBeTruthy();
   });
 
   it("unlocks the device", () => {
     window.confirm = () => true;
-    const wrapper = mount(<PinBinding {...fakeProps()}
+    const { container } = render(<PinBinding {...fakeProps()}
       pinBindingOptions={{ editing: false, unlockOnly: true }} />);
-    expect(wrapper.text().toLowerCase()).toEqual("unlock");
-    wrapper.find("button").simulate("click");
+    expect(container.textContent?.toLowerCase()).toEqual("unlock");
+    fireEvent.click(container.querySelector("button") as Element);
     expect(deviceActions.emergencyUnlock).toHaveBeenCalled();
   });
 });
@@ -715,8 +732,8 @@ describe("<FindHome />", () => {
     const config = fakeFirmwareConfig();
     config.body.encoder_enabled_x = 1;
     p.resources = buildResourceIndex([config]).index;
-    const wrapper = mount(<Component {...p} />);
-    clickButton(wrapper, 0, "find home x");
+    const { container } = render(<Component {...p} />);
+    clickButton(container, 0, "find home x");
     expect(deviceActions.findHome).toHaveBeenCalledWith("x");
   });
 
@@ -725,8 +742,8 @@ describe("<FindHome />", () => {
     const p = fakeProps();
     p.bot.hardware.informational_settings.sync_status = "synced";
     p.bot.connectivity.uptime["bot.mqtt"] = { state: "up", at: 1 };
-    const wrapper = mount(<Component {...p} />);
-    clickButton(wrapper, 0, "find home x");
+    const { container } = render(<Component {...p} />);
+    clickButton(container, 0, "find home x");
     expect(deviceActions.findHome).toHaveBeenCalledWith("x");
   });
 });
@@ -737,8 +754,8 @@ describe("<SetHome />", () => {
     const p = fakeProps();
     p.bot.hardware.informational_settings.sync_status = "synced";
     p.bot.connectivity.uptime["bot.mqtt"] = { state: "up", at: 1 };
-    const wrapper = mount(<Component {...p} />);
-    clickButton(wrapper, 0, "set home x");
+    const { container } = render(<Component {...p} />);
+    clickButton(container, 0, "set home x");
     expect(mockDevice.setZero).toHaveBeenCalledWith("x");
   });
 });
@@ -748,13 +765,13 @@ describe("<AxisActions />", () => {
     const p = fakeProps();
     const config = fakeFirmwareConfig();
     p.resources = buildResourceIndex([config]).index;
-    const wrapper = mount(<AxisActions {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("position (mm)");
+    const { container } = render(<AxisActions {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("position (mm)");
   });
 
   it("handles missing settings", () => {
-    const wrapper = mount(<AxisActions {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).not.toContain("position (mm)");
+    const { container } = render(<AxisActions {...fakeProps()} />);
+    expect(container.textContent?.toLowerCase()).not.toContain("position (mm)");
   });
 });
 
@@ -765,8 +782,9 @@ describe("<FindAxisLength />", () => {
     config.body.encoder_enabled_x = 0;
     p.resources = buildResourceIndex([config]).index;
     const Component = FindAxisLength("x");
-    const wrapper = mount(<Component {...p} />);
-    expect(wrapper.find("button").first().props().disabled).toBeTruthy();
+    const { container } = render(<Component {...p} />);
+    expect(container.querySelector("button")?.hasAttribute("disabled"))
+      .toBeTruthy();
   });
 
   it("finds length", () => {
@@ -774,28 +792,28 @@ describe("<FindAxisLength />", () => {
     const p = fakeProps();
     p.bot.hardware.informational_settings.sync_status = "synced";
     p.bot.connectivity.uptime["bot.mqtt"] = { state: "up", at: 1 };
-    const wrapper = mount(<Component {...p} />);
-    wrapper.find("button").first().simulate("click");
+    const { container } = render(<Component {...p} />);
+    fireEvent.click(container.querySelector("button") as Element);
     expect(deviceActions.findAxisLength).toHaveBeenCalledWith("x");
   });
 });
 
 describe("<BootSequence />", () => {
   it("renders boot sequence", () => {
-    const wrapper = mount(<BootSequence />);
-    expect(wrapper.text().toLowerCase()).toContain("boot");
+    const { container } = render(<BootSequence />);
+    expect(container.textContent?.toLowerCase()).toContain("boot");
   });
 });
 
 describe("<CameraOffset />", () => {
   it("renders camera offset inputs", () => {
-    const wrapper = mount(<CameraOffset {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("offset");
+    const { container } = render(<CameraOffset {...fakeProps()} />);
+    expect(container.textContent?.toLowerCase()).toContain("offset");
   });
 
   it("changes offset", () => {
-    const wrapper = mount(<CameraOffset {...fakeProps()} />);
-    changeBlurableInput(wrapper, "100", 0);
+    const { container } = render(<CameraOffset {...fakeProps()} />);
+    changeBlurableInput(container, "100", 0);
     expect(initSave).toHaveBeenCalledWith("FarmwareEnv", {
       key: "CAMERA_CALIBRATION_camera_offset_x", value: "100"
     });
@@ -804,13 +822,13 @@ describe("<CameraOffset />", () => {
 
 describe("<CameraImageOrigin />", () => {
   it("renders image origin dropdown", () => {
-    const wrapper = mount(<CameraImageOrigin {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("origin");
+    const { container } = render(<CameraImageOrigin {...fakeProps()} />);
+    expect(container.textContent?.toLowerCase()).toContain("origin");
   });
 
   it("changes origin", () => {
-    const wrapper = shallow(<CameraImageOrigin {...fakeProps()} />);
-    wrapper.find("DropdownConfig").simulate("change",
+    const wrapper = TestRenderer.create(<CameraImageOrigin {...fakeProps()} />);
+    wrapper.root.findByType(DropdownConfig).props.onChange(
       "CAMERA_CALIBRATION_image_bot_origin_location", 2);
     expect(initSave).toHaveBeenCalledWith("FarmwareEnv", {
       key: "CAMERA_CALIBRATION_image_bot_origin_location", value: "\"TOP_LEFT\""
@@ -822,8 +840,8 @@ describe("<FlowRateInput />", () => {
   it("adds new tool", () => {
     const p = fakeProps();
     p.resources = buildResourceIndex([]).index;
-    const wrapper = shallow(<FlowRateInput {...p} />);
-    wrapper.find("button").simulate("click");
+    const { container } = render(<FlowRateInput {...p} />);
+    fireEvent.click(container.querySelector("button") as Element);
     expect(initSave).toHaveBeenCalledWith("Tool", { name: "Watering Nozzle" });
   });
 
@@ -832,8 +850,8 @@ describe("<FlowRateInput />", () => {
     const tool = fakeTool();
     tool.body.name = "watering nozzle";
     p.resources = buildResourceIndex([tool]).index;
-    const wrapper = shallow(<FlowRateInput {...p} />);
-    wrapper.find("WaterFlowRateInput").simulate("change", 100);
+    const wrapper = TestRenderer.create(<FlowRateInput {...p} />);
+    wrapper.root.findByType(WaterFlowRateInput).props.onChange(100);
     expect(edit).toHaveBeenCalledWith(tool, { flow_rate_ml_per_s: 100 });
     expect(save).toHaveBeenCalledWith(tool.uuid);
   });
@@ -841,8 +859,8 @@ describe("<FlowRateInput />", () => {
 
 describe("<ToolCheck />", () => {
   it("renders tool verification button", () => {
-    const wrapper = mount(<ToolCheck {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("verify");
+    const { container } = render(<ToolCheck {...fakeProps()} />);
+    expect(container.textContent?.toLowerCase()).toContain("verify");
   });
 });
 
@@ -852,20 +870,20 @@ describe("<SensorsCheck />", () => {
     const config = fakeFbosConfig();
     config.body.firmware_hardware = "arduino";
     p.resources = buildResourceIndex([config]).index;
-    const wrapper = mount(<SensorsCheck {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("sensors");
+    const { container } = render(<SensorsCheck {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("sensors");
   });
 
   it("handles missing config", () => {
-    const wrapper = mount(<SensorsCheck {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("sensors");
+    const { container } = render(<SensorsCheck {...fakeProps()} />);
+    expect(container.textContent?.toLowerCase()).toContain("sensors");
   });
 });
 
 describe("<CameraReplacement />", () => {
   it("renders camera replacement text and link", () => {
-    const wrapper = mount(<CameraReplacement />);
-    expect(wrapper.text().toLowerCase()).toContain("replacement");
+    const { container } = render(<CameraReplacement />);
+    expect(container.textContent?.toLowerCase()).toContain("replacement");
   });
 });
 
@@ -922,8 +940,8 @@ describe("<Tour />", () => {
   it("starts tour", () => {
     const p = fakeProps();
     const Component = Tour("gettingStarted");
-    const wrapper = mount(<Component {...p} />);
-    wrapper.find("button").first().simulate("click");
+    const { container } = render(<Component {...p} />);
+    fireEvent.click(container.querySelector("button") as Element);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_TOUR, payload: "gettingStarted",
     });

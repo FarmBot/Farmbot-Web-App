@@ -4,7 +4,6 @@ jest.mock("../../../../api/crud", () => ({
 }));
 
 import React from "react";
-import { shallow } from "enzyme";
 import { NamedPin, WritePin, ALLOWED_PIN_MODES, ReadPin } from "farmbot";
 import {
   setPinMode, getPinModes, currentModeSelection, PinModeDropdown,
@@ -140,8 +139,10 @@ describe("<PinModeDropdown />", () => {
       args: { pin_number: 3, pin_value: 0, pin_mode: 0 }
     };
     const p = fakeStepParams(step);
-    const wrapper = shallow(<PinModeDropdown {...p} />);
-    wrapper.find(FBSelect).simulate("change", { label: "", value: 0 });
+    const rendered = PinModeDropdown(p);
+    const children = rendered.props.children as JSX.Element[];
+    const selector = children.find(child => child.type === FBSelect);
+    selector?.props.onChange({ label: "", value: 0 });
     expect(editStep).toHaveBeenCalled();
   });
 });

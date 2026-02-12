@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import {
   LogLevelSetting, LogLevelSettingProps, LogEnableSettingProps,
   LogEnableSetting,
@@ -29,8 +29,8 @@ describe("<LogLevelSetting />", () => {
   });
 
   it("toggles setting", () => {
-    const wrapper = mount(<LogLevelSetting {...fakeProps()} />);
-    wrapper.find("ToggleButton").simulate("click");
+    const { container } = render(<LogLevelSetting {...fakeProps()} />);
+    fireEvent.click(container.querySelector("button") as Element);
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith("success_log", false);
   });
 });
@@ -56,8 +56,8 @@ describe("<LogEnableSetting />", () => {
   });
 
   it("toggles setting", () => {
-    const wrapper = mount(<LogEnableSetting {...fakeProps()} />);
-    wrapper.find("ToggleButton").simulate("click");
+    const { container } = render(<LogEnableSetting {...fakeProps()} />);
+    fireEvent.click(container.querySelector("button") as Element);
     expect(updateConfigSpy).toHaveBeenCalledWith({ sequence_init_log: false });
   });
 });

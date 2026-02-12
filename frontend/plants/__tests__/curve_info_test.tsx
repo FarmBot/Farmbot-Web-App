@@ -1,6 +1,39 @@
+jest.mock("../../ui", () => {
+  const React = require("react");
+  const actual = jest.requireActual("../../ui");
+  return {
+    ...actual,
+    FBSelect: (props: {
+      selectedItem?: { label: string };
+      onChange: (item: {
+        label: string;
+        value: number | string;
+        headingId?: string;
+        isNull?: true;
+      }) => void;
+    }) => <div>
+      <span>{props.selectedItem?.label || "None"}</span>
+      <button
+        className={"change-curve"}
+        onClick={() => props.onChange({
+          label: "",
+          value: 1,
+          headingId: "water",
+        })} />
+      <button
+        className={"remove-curve"}
+        onClick={() => props.onChange({
+          label: "",
+          value: "",
+          isNull: true,
+        })} />
+    </div>,
+  };
+});
+
 import React from "react";
 import { CurveInfo } from "../curve_info";
-import { mount, shallow } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import {
   fakeCurve, fakePlant,
 } from "../../__test_support__/fake_state/resources";
@@ -8,7 +41,6 @@ import { fakeBotSize } from "../../__test_support__/fake_bot_data";
 import { CurveInfoProps } from "../../curves/interfaces";
 import { CurveType } from "../../curves/templates";
 import { formatPlantInfo } from "../map_state_to_props";
-import { FBSelect } from "../../ui";
 import { Path } from "../../internal_urls";
 
 describe("<CurveInfo />", () => {
@@ -31,8 +63,8 @@ describe("<CurveInfo />", () => {
     curve.body.id = 1;
     p.curve = curve;
     p.plant = undefined;
-    const wrapper = mount(<CurveInfo {...p} />);
-    expect(wrapper.text().toLowerCase()).not.toContain("none");
+    render(<CurveInfo {...p} />);
+    expect(screen.queryByText("None")).not.toBeInTheDocument();
   });
 
   it("displays curve with x, y", () => {
@@ -50,15 +82,15 @@ describe("<CurveInfo />", () => {
     p.plant = formatPlantInfo(plant);
     p.plants = [plant];
     p.curves = [curve];
-    const wrapper = mount(<CurveInfo {...p} />);
-    expect(wrapper.text().toLowerCase()).not.toContain("none");
+    render(<CurveInfo {...p} />);
+    expect(screen.queryByText("None")).not.toBeInTheDocument();
   });
 
   it("doesn't display curve", () => {
     const p = fakeProps();
     p.curve = undefined;
-    const wrapper = mount(<CurveInfo {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("none");
+    render(<CurveInfo {...p} />);
+    expect(screen.getByText("None")).toBeInTheDocument();
   });
 
   it("changes curve", () => {
@@ -67,9 +99,8 @@ describe("<CurveInfo />", () => {
     curve.body.type = "water";
     curve.body.id = 1;
     p.curves = [curve];
-    const wrapper = shallow(<CurveInfo {...p} />);
-    wrapper.find(FBSelect).simulate("change",
-      { label: "", value: 1, headingId: "water" });
+    const { container } = render(<CurveInfo {...p} />);
+    fireEvent.click(container.querySelector(".change-curve") as Element);
     expect(p.onChange).toHaveBeenCalledWith(1, CurveType.water);
   });
 
@@ -79,9 +110,8 @@ describe("<CurveInfo />", () => {
     curve.body.type = "water";
     curve.body.id = 1;
     p.curves = [curve];
-    const wrapper = shallow(<CurveInfo {...p} />);
-    wrapper.find(FBSelect).simulate("change",
-      { label: "", value: "", isNull: true });
+    const { container } = render(<CurveInfo {...p} />);
+    fireEvent.click(container.querySelector(".remove-curve") as Element);
     expect(p.onChange).toHaveBeenCalledWith(undefined, CurveType.water);
   });
 });

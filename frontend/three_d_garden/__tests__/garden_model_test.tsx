@@ -2,7 +2,7 @@ let mockIsDesktop = false;
 let mockIsMobile = false;
 
 import React from "react";
-import { mount } from "enzyme";
+import TestRenderer from "react-test-renderer";
 import { GardenModelProps, GardenModel } from "../garden_model";
 import { clone } from "lodash";
 import { INITIAL, SurfaceDebugOption } from "../config";
@@ -20,6 +20,7 @@ import * as screenSize from "../../screen_size";
 let isDesktopSpy: jest.SpyInstance;
 let isMobileSpy: jest.SpyInstance;
 const originalPathname = location.pathname;
+const mountedWrappers: TestRenderer.ReactTestRenderer[] = [];
 
 describe("<GardenModel />", () => {
   beforeEach(() => {
@@ -32,6 +33,8 @@ describe("<GardenModel />", () => {
   });
 
   afterEach(() => {
+    mountedWrappers.splice(0).forEach(wrapper =>
+      TestRenderer.act(() => wrapper.unmount()));
     isDesktopSpy.mockRestore();
     isMobileSpy.mockRestore();
     location.pathname = originalPathname;
@@ -45,6 +48,12 @@ describe("<GardenModel />", () => {
     addPlantProps: fakeAddPlantProps(),
     threeDPlants: [],
   });
+
+  const createWrapper = (p: GardenModelProps) => {
+    const wrapper = TestRenderer.create(<GardenModel {...p} />);
+    mountedWrappers.push(wrapper);
+    return wrapper;
+  };
 
   it("renders", () => {
     const { container } = render(<GardenModel {...fakeProps()} />);
@@ -167,19 +176,20 @@ describe("<GardenModel />", () => {
   it("sets hover", () => {
     const p = fakeProps();
     p.config.labelsOnHover = true;
-    const wrapper = mount(<GardenModel {...p} />);
+    const wrapper = createWrapper(p);
     const e = {
       stopPropagation: jest.fn(),
       intersections: [{ object: { name: "obj" } }],
     };
-    wrapper.find({ name: "plants" }).first().simulate("pointerEnter", e);
+    const plants = wrapper.root.findAll(node => node.props.name == "plants")[0];
+    plants?.props.onPointerEnter(e);
     expect(e.stopPropagation).toHaveBeenCalled();
   });
 
   it("sets hover with instance id", () => {
     const p = fakeProps();
     p.config.labelsOnHover = true;
-    const wrapper = mount(<GardenModel {...p} />);
+    const wrapper = createWrapper(p);
     const e = {
       stopPropagation: jest.fn(),
       intersections: [{
@@ -187,31 +197,34 @@ describe("<GardenModel />", () => {
         object: { userData: { plantIndexes: [0] }, name: "0" },
       }],
     };
-    wrapper.find({ name: "plants" }).first().simulate("pointerEnter", e);
+    const plants = wrapper.root.findAll(node => node.props.name == "plants")[0];
+    plants?.props.onPointerEnter(e);
     expect(e.stopPropagation).toHaveBeenCalled();
   });
 
   it("sets hover: buttons", () => {
     const p = fakeProps();
     p.config.labelsOnHover = true;
-    const wrapper = mount(<GardenModel {...p} />);
+    const wrapper = createWrapper(p);
     const e = {
       stopPropagation: jest.fn(),
       buttons: true,
     };
-    wrapper.find({ name: "plants" }).first().simulate("pointerEnter", e);
+    const plants = wrapper.root.findAll(node => node.props.name == "plants")[0];
+    plants?.props.onPointerEnter(e);
     expect(e.stopPropagation).toHaveBeenCalled();
   });
 
   it("un-sets hover", () => {
     const p = fakeProps();
     p.config.labelsOnHover = true;
-    const wrapper = mount(<GardenModel {...p} />);
+    const wrapper = createWrapper(p);
     const e = {
       stopPropagation: jest.fn(),
       intersections: [{ object: { name: "obj" } }],
     };
-    wrapper.find({ name: "plants" }).first().simulate("pointerLeave", e);
+    const plants = wrapper.root.findAll(node => node.props.name == "plants")[0];
+    plants?.props.onPointerLeave(e);
     expect(e.stopPropagation).toHaveBeenCalled();
   });
 
@@ -219,9 +232,10 @@ describe("<GardenModel />", () => {
     const p = fakeProps();
     p.config.labels = true;
     p.config.labelsOnHover = false;
-    const wrapper = mount(<GardenModel {...p} />);
+    const wrapper = createWrapper(p);
     const e = { stopPropagation: jest.fn() };
-    wrapper.find({ name: "plants" }).first().simulate("pointerEnter", e);
+    const plants = wrapper.root.findAll(node => node.props.name == "plants")[0];
+    plants?.props.onPointerEnter && plants.props.onPointerEnter(e);
     expect(e.stopPropagation).not.toHaveBeenCalled();
   });
 
@@ -230,8 +244,9 @@ describe("<GardenModel />", () => {
       .mockImplementation(jest.fn());
     const p = fakeProps();
     p.config.eventDebug = true;
-    const wrapper = mount(<GardenModel {...p} />);
-    wrapper.simulate("pointerMove", {
+    const wrapper = createWrapper(p);
+    const root = wrapper.root.findAll(node => !!node.props.onPointerMove)[0];
+    root?.props.onPointerMove({
       intersections: [
         { object: { name: "1" } },
         { object: { name: "2" } },

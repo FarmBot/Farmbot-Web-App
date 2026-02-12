@@ -5,14 +5,13 @@ import React from "react";
 import {
   mapStateToProps, RawCropCatalog as CropCatalog,
 } from "../crop_catalog";
-import { mount, shallow } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { CropCatalogProps } from "../../farm_designer/interfaces";
 import { Actions } from "../../constants";
 import { fakeState } from "../../__test_support__/fake_state";
 import { Path } from "../../internal_urls";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { fakePlant } from "../../__test_support__/fake_state/resources";
-import { SearchField } from "../../ui/search_field";
 
 describe("<CropCatalog />", () => {
   const fakeProps = (): CropCatalogProps => ({
@@ -24,16 +23,16 @@ describe("<CropCatalog />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<CropCatalog {...fakeProps()} />);
-    expect(wrapper.text()).toContain("Choose a crop");
-    expect(wrapper.find("input").props().placeholder)
-      .toEqual("Search crops...");
+    render(<CropCatalog {...fakeProps()} />);
+    expect(screen.getByText("Choose a crop")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Search crops...")).toBeInTheDocument();
   });
 
   it("changes search term", () => {
     const p = fakeProps();
-    const wrapper = shallow(<CropCatalog {...p} />);
-    wrapper.find(SearchField).simulate("change", "term");
+    render(<CropCatalog {...p} />);
+    fireEvent.change(screen.getByPlaceholderText("Search crops..."),
+      { target: { value: "term" } });
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SEARCH_QUERY_CHANGE,
       payload: "term",
@@ -41,15 +40,17 @@ describe("<CropCatalog />", () => {
   });
 
   it("goes back", () => {
-    const wrapper = mount(<CropCatalog {...fakeProps()} />);
-    wrapper.find("i").first().simulate("click");
+    const { container } = render(<CropCatalog {...fakeProps()} />);
+    const backArrow = container.querySelector(".fa-arrow-left");
+    expect(backArrow).toBeTruthy();
+    fireEvent.click(backArrow as Element);
     expect(mockNavigate).toHaveBeenCalledWith(Path.plants());
   });
 
   it("dispatches upon unmount", () => {
     const p = fakeProps();
-    const wrapper = mount(<CropCatalog {...p} />);
-    wrapper.unmount();
+    const { unmount } = render(<CropCatalog {...p} />);
+    unmount();
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_PLANT_TYPE_CHANGE_ID, payload: undefined,
     });

@@ -1,5 +1,5 @@
 import React from "react";
-import { shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import { EmptyStateWrapper, EmptyStateWrapperProps } from "../empty_state_wrapper";
 
 describe("<EmptyStateWrapper />", () => {
@@ -10,7 +10,7 @@ describe("<EmptyStateWrapper />", () => {
   });
 
   it("renders", () => {
-    const wrapper = shallow(<EmptyStateWrapper {...fakeProps()} />);
-    expect(wrapper.text()).toContain("text");
+    const { container } = render(<EmptyStateWrapper {...fakeProps()} />);
+    expect(container.textContent).toContain("text");
   });
 });

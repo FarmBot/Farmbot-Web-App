@@ -4,11 +4,10 @@ import {
   fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 import { fakeResource } from "../../../../../__test_support__/fake_resource";
-import { shallow } from "enzyme";
 import { ToolSlotPointer } from "farmbot/dist/resources/api_resources";
 import { TaggedToolSlotPointer } from "farmbot";
-import { ToolSlotPoint } from "../tool_slot_point";
 import { Path } from "../../../../../internal_urls";
+import { fireEvent, render } from "@testing-library/react";
 
 describe("<ToolSlotLayer/>", () => {
   function fakeProps(): ToolSlotLayerProps {
@@ -36,24 +35,33 @@ describe("<ToolSlotLayer/>", () => {
       animate: false,
     };
   }
+
+  const renderLayer = (props: ToolSlotLayerProps) =>
+    render(<svg><ToolSlotLayer {...props} /></svg>);
+
+  const pointCount = (container: HTMLElement) =>
+    Array.from(container.querySelectorAll("[id^=\"toolslot-\"]"))
+      .filter(el => el.id !== "toolslot-layer").length;
+
   it("toggles visibility off", () => {
-    const result = shallow(<ToolSlotLayer {...fakeProps()} />);
-    expect(result.find(ToolSlotPoint).length).toEqual(0);
+    const { container } = renderLayer(fakeProps());
+    expect(pointCount(container)).toEqual(0);
   });
 
   it("toggles visibility on", () => {
     const p = fakeProps();
     p.visible = true;
-    const result = shallow(<ToolSlotLayer {...p} />);
-    expect(result.find(ToolSlotPoint).length).toEqual(1);
+    const { container } = renderLayer(p);
+    expect(pointCount(container)).toEqual(1);
   });
 
   it("doesn't navigate to tools page", async () => {
     location.pathname = Path.mock(Path.plants(1));
     const p = fakeProps();
-    const wrapper = shallow(<ToolSlotLayer {...p} />);
-    const tools = wrapper.find("g").first();
-    await tools.simulate("click");
+    const { container } = renderLayer(p);
+    const tools = container.querySelector("g");
+    if (!tools) { throw new Error("Missing tool slot layer"); }
+    await fireEvent.click(tools);
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 
@@ -61,17 +69,19 @@ describe("<ToolSlotLayer/>", () => {
     location.pathname = Path.mock(Path.cropSearch("mint/add"));
     const p = fakeProps();
     p.interactions = true;
-    const wrapper = shallow(<ToolSlotLayer {...p} />);
-    expect(wrapper.find("g").props().style)
-      .toEqual({ cursor: "pointer" });
+    const { container } = renderLayer(p);
+    const layer = container.querySelector("#toolslot-layer");
+    if (!layer) { throw new Error("Missing tool slot layer"); }
+    expect((layer as HTMLElement).style.cursor).toEqual("pointer");
   });
 
   it("is in non-clickable mode", () => {
     location.pathname = Path.mock(Path.cropSearch("mint/add"));
     const p = fakeProps();
     p.interactions = false;
-    const wrapper = shallow(<ToolSlotLayer {...p} />);
-    expect(wrapper.find("g").props().style)
-      .toEqual({ pointerEvents: "none" });
+    const { container } = renderLayer(p);
+    const layer = container.querySelector("#toolslot-layer");
+    if (!layer) { throw new Error("Missing tool slot layer"); }
+    expect((layer as HTMLElement).style.pointerEvents).toEqual("none");
   });
 });

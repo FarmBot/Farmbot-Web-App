@@ -2,7 +2,7 @@ let mockIsMobile = false;
 import { PopoverProps } from "../../../ui/popover";
 
 import React from "react";
-import { mount } from "enzyme";
+import { render, fireEvent, waitFor } from "@testing-library/react";
 import {
   RawDesignerSequenceEditor as DesignerSequenceEditor, ResourceTitle,
   ResourceTitleProps,
@@ -90,18 +90,18 @@ describe("<DesignerSequenceEditor />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<DesignerSequenceEditor {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("save");
+    const { container } = render(<DesignerSequenceEditor {...fakeProps()} />);
+    expect(container.textContent?.toLowerCase()).toContain("save");
   });
 
   it("handles missing sequence", () => {
     const p = fakeProps();
     p.sequence = undefined;
-    const wrapper = mount(<DesignerSequenceEditor {...p} />);
+    const { container } = render(<DesignerSequenceEditor {...p} />);
     expect(setActiveSequenceByNameSpy).toHaveBeenCalled();
-    expect(wrapper.text().toLowerCase()).toContain("no sequence selected");
-    expect(wrapper.html()).not.toContain("select color");
-    wrapper.find("button").first().simulate("click");
+    expect(container.textContent?.toLowerCase()).toContain("no sequence selected");
+    expect(container.innerHTML).not.toContain("select color");
+    fireEvent.click(container.querySelector("button") as Element);
     expect(addNewSequenceToFolderSpy).toHaveBeenCalled();
   });
 
@@ -110,20 +110,21 @@ describe("<DesignerSequenceEditor />", () => {
     const sequence = fakeSequence();
     sequence.body.color = "" as Color;
     p.sequence = sequence;
-    const wrapper = mount(<DesignerSequenceEditor {...p} />);
-    wrapper.find(".color-picker-item-wrapper").first().simulate("click");
+    const { container } = render(<DesignerSequenceEditor {...p} />);
+    fireEvent.click(
+      container.querySelector(".color-picker-item-wrapper") as Element);
     expect(editSpy).toHaveBeenCalledWith(p.sequence, { color: "blue" });
   });
 
-  it("generates name and color", () => {
+  it("generates name and color", async () => {
     const p = fakeProps();
-    const wrapper = mount<DesignerSequenceEditor>(
-      <DesignerSequenceEditor {...p} />);
-    expect(wrapper.state().processingTitle).toEqual(false);
-    expect(wrapper.state().processingColor).toEqual(false);
-    wrapper.find(".fa-magic").first().simulate("click");
-    expect(wrapper.state().processingTitle).toEqual(true);
-    expect(wrapper.state().processingColor).toEqual(true);
+    const ref = React.createRef<DesignerSequenceEditor>();
+    const { container } = render(<DesignerSequenceEditor ref={ref} {...p} />);
+    expect(ref.current?.state.processingTitle).toEqual(false);
+    expect(ref.current?.state.processingColor).toEqual(false);
+    fireEvent.click(container.querySelector(".fa-magic") as Element);
+    expect(ref.current?.state.processingTitle).toEqual(true);
+    expect(ref.current?.state.processingColor).toEqual(true);
     expect(requestAutoGenerationSpy).toHaveBeenCalled();
     const { mock } = requestAutoGenerationSpy;
     mock.calls[0][0].onUpdate("title");
@@ -135,8 +136,10 @@ describe("<DesignerSequenceEditor />", () => {
     mock.calls[1][0].onSuccess("nope");
     expect(editSpy).toHaveBeenCalledWith(p.sequence, { color: "gray" });
     mock.calls[1][0].onError();
-    expect(wrapper.state().processingTitle).toEqual(false);
-    expect(wrapper.state().processingColor).toEqual(false);
+    await waitFor(() => {
+      expect(ref.current?.state.processingTitle).toEqual(false);
+      expect(ref.current?.state.processingColor).toEqual(false);
+    });
   });
 
   it("doesn't generate name and color", () => {
@@ -144,8 +147,8 @@ describe("<DesignerSequenceEditor />", () => {
     const sequence = fakeSequence();
     sequence.body.id = 0;
     p.sequence = sequence;
-    const wrapper = mount(<DesignerSequenceEditor {...p} />);
-    wrapper.find(".fa-magic").first().simulate("click");
+    const { container } = render(<DesignerSequenceEditor {...p} />);
+    fireEvent.click(container.querySelector(".fa-magic") as Element);
     expect(requestAutoGenerationSpy).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith("Save sequence first.");
   });
@@ -154,7 +157,7 @@ describe("<DesignerSequenceEditor />", () => {
     mockIsMobile = false;
     const p = fakeProps();
     const wrapper = mountWithContext(<DesignerSequenceEditor {...p} />);
-    wrapper.find(".fa-expand").first().simulate("click");
+    fireEvent.click(wrapper.container.querySelector(".fa-expand") as Element);
     expect(mockNavigate).toHaveBeenCalledWith(Path.sequencePage("fake"));
   });
 });
@@ -167,12 +170,13 @@ describe("<ResourceTitle />", () => {
   });
 
   it("changes name", () => {
-    const wrapper = mount(<ResourceTitle {...fakeProps()} />);
-    expect(wrapper.find("span").first().props().style).toEqual({});
-    wrapper.find("span").first().simulate("click");
-    wrapper.find("input").first().simulate("change",
-      { currentTarget: { value: "abc" } });
-    wrapper.find("input").first().simulate("blur");
+    const { container } = render(<ResourceTitle {...fakeProps()} />);
+    const span = container.querySelector("span") as HTMLSpanElement;
+    expect(span.style.pointerEvents).toEqual("");
+    fireEvent.click(span);
+    const input = container.querySelector("input") as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "abc" } });
+    fireEvent.blur(input);
     expect(editSpy).toHaveBeenCalled();
     expect(saveSpy).not.toHaveBeenCalled();
   });
@@ -180,11 +184,11 @@ describe("<ResourceTitle />", () => {
   it("saves change", () => {
     const p = fakeProps();
     p.save = true;
-    const wrapper = mount(<ResourceTitle {...p} />);
-    wrapper.find("span").first().simulate("click");
-    wrapper.find("input").first().simulate("change",
-      { currentTarget: { value: "abc" } });
-    wrapper.find("input").first().simulate("blur");
+    const { container } = render(<ResourceTitle {...p} />);
+    fireEvent.click(container.querySelector("span") as Element);
+    const input = container.querySelector("input") as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "abc" } });
+    fireEvent.blur(input);
     expect(editSpy).toHaveBeenCalled();
     expect(saveSpy).toHaveBeenCalled();
   });
@@ -192,8 +196,8 @@ describe("<ResourceTitle />", () => {
   it("is read-only", () => {
     const p = fakeProps();
     p.readOnly = true;
-    const wrapper = mount(<ResourceTitle {...p} />);
-    expect(wrapper.find("span").first().props().style)
-      .toEqual({ pointerEvents: "none" });
+    const { container } = render(<ResourceTitle {...p} />);
+    expect((container.querySelector("span") as HTMLSpanElement).style.pointerEvents)
+      .toEqual("none");
   });
 });

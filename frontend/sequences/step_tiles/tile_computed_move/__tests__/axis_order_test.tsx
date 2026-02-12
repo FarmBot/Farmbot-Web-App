@@ -1,8 +1,7 @@
 let mockDev = false;
 
 import React from "react";
-import { cleanup } from "@testing-library/react";
-import { shallow } from "enzyme";
+import { FBSelect } from "../../../../ui";
 import {
   axisOrder, AxisOrderInputRow, getAxisGroupingState, getAxisRouteState,
 } from "../axis_order";
@@ -21,7 +20,6 @@ describe("<AxisOrderInputRow />", () => {
 
   afterEach(() => {
     allOrderOptionsEnabledSpy.mockRestore();
-    cleanup();
   });
 
   const fakeProps = (): AxisOrderInputRowProps => ({
@@ -43,16 +41,19 @@ describe("<AxisOrderInputRow />", () => {
     p.grouping = grouping;
     p.route = route;
     p.safeZ = safeZ;
-    const wrapper = shallow(<AxisOrderInputRow {...p} />);
-    expect(wrapper.find("FBSelect").props().selectedItem?.label)
+    const row = AxisOrderInputRow(p);
+    const children = row.props.children as JSX.Element[];
+    const select = children.find(child => child.type === FBSelect);
+    expect(select?.props.selectedItem?.label)
       .toEqual(label);
   });
 
   it("changes item", () => {
     const p = fakeProps();
-    const wrapper = shallow(<AxisOrderInputRow {...p} />);
-    wrapper.find("FBSelect")
-      .simulate("change", { label: "X and Y together", value: "xy,z;high" });
+    const row = AxisOrderInputRow(p);
+    const children = row.props.children as JSX.Element[];
+    const select = children.find(child => child.type === FBSelect);
+    select?.props.onChange({ label: "X and Y together", value: "xy,z;high" });
     expect(p.onChange).toHaveBeenCalledWith({
       label: "X and Y together",
       value: "xy,z;high",
@@ -62,19 +63,23 @@ describe("<AxisOrderInputRow />", () => {
   it("shows default", () => {
     const p = fakeProps();
     p.defaultValue = "safe_z";
-    const wrapper = shallow(<AxisOrderInputRow {...p} />);
-    expect(wrapper.find("FBSelect").props().customNullLabel)
+    const row = AxisOrderInputRow(p);
+    const children = row.props.children as JSX.Element[];
+    const select = children.find(child => child.type === FBSelect);
+    expect(select?.props.customNullLabel)
       .toEqual("Use default (Safe Z)");
   });
 
   it("shows all order options", () => {
     mockDev = true;
     const p = fakeProps();
-    const wrapper = shallow(<AxisOrderInputRow {...p} />);
-    const labels = (wrapper.find("FBSelect").props().list || [])
+    const row = AxisOrderInputRow(p);
+    const children = row.props.children as JSX.Element[];
+    const select = children.find(child => child.type === FBSelect);
+    const labels = (select?.props.list || [])
       .map(item => item.label);
     expect(labels).toContain("x,yz;high");
-    expect(wrapper.find("FBSelect").props().customNullLabel)
+    expect(select?.props.customNullLabel)
       .toEqual("Use default");
   });
 });

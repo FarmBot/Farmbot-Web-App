@@ -1,5 +1,5 @@
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import {
   FieldSelection, isCustomMetaField, UPDATE_RESOURCE_DDIS,
 } from "../field_selection";
@@ -19,15 +19,25 @@ describe("<FieldSelection />", () => {
     update: jest.fn(),
   });
 
+  const getKnownFieldSelect = (props: FieldSelectionProps) => {
+    const wrapper = FieldSelection(props);
+    const children =
+      React.Children.toArray(wrapper.props.children) as JSX.Element[];
+    const fieldSelection = children[1] as JSX.Element;
+    return (fieldSelection.type as (props: unknown) => JSX.Element)(
+      fieldSelection.props);
+  };
+
   it("renders disabled none field", () => {
     const p = fakeProps();
     p.field = undefined;
-    const wrapper = mount(<FieldSelection {...p} />);
-    expect(wrapper.find("FBSelect").length).toEqual(1);
-    expect(wrapper.find("FBSelect").props().list).toEqual([]);
-    expect(wrapper.text()).toContain("property");
-    expect(wrapper.text()).toContain("Select one");
-    expect(wrapper.find(".reset-custom-field").length).toEqual(0);
+    const wrapper = FieldSelection(p);
+    const children =
+      React.Children.toArray(wrapper.props.children) as JSX.Element[];
+    const select = getKnownFieldSelect(p);
+    expect(select.props.list).toEqual([]);
+    expect(children[0]?.props.children).toContain("property");
+    expect(select.props.selectedItem.label).toContain("Select one");
   });
 
   it("renders none field", () => {
@@ -37,9 +47,11 @@ describe("<FieldSelection />", () => {
       args: { resource_type: "Plant", resource_id: 1 }
     };
     p.field = undefined;
-    const wrapper = mount(<FieldSelection {...p} />);
-    expect(wrapper.find("FBSelect").length).toEqual(1);
-    expect(wrapper.find("FBSelect").props().list).toEqual([
+    const wrapper = FieldSelection(p);
+    const children =
+      React.Children.toArray(wrapper.props.children) as JSX.Element[];
+    const select = getKnownFieldSelect(p);
+    expect(select.props.list).toEqual([
       DDI.PLANT_STAGE,
       DDI.X,
       DDI.Y,
@@ -47,25 +59,24 @@ describe("<FieldSelection />", () => {
       DDI.RADIUS,
       DDI.CUSTOM_META_FIELD,
     ]);
-    expect(wrapper.text()).toContain("property");
-    expect(wrapper.text()).toContain("Select one");
-    expect(wrapper.find(".reset-custom-field").length).toEqual(0);
+    expect(children[0]?.props.children).toContain("property");
+    expect(select.props.selectedItem.label).toContain("Select one");
   });
 
   it("renders custom meta field", () => {
     const p = fakeProps();
     p.field = "custom";
-    const wrapper = mount(<FieldSelection {...p} />);
-    expect(wrapper.find("FBSelect").length).toEqual(0);
-    expect(wrapper.text()).toContain("property");
-    expect(wrapper.find("input").props().value).toEqual("custom");
-    expect(wrapper.find(".reset-custom-field").length).toEqual(1);
+    const { container } = render(<FieldSelection {...p} />);
+    expect(container.textContent).toContain("property");
+    expect((container.querySelector("input") as HTMLInputElement).value)
+      .toEqual("custom");
+    expect(container.querySelectorAll(".reset-custom-field").length).toEqual(1);
   });
 
   it("changes custom meta field", () => {
     const p = fakeProps();
     p.field = "custom_field";
-    const wrapper = mount(<FieldSelection {...p} />);
+    const wrapper = render(<FieldSelection {...p} />);
     changeBlurableInput(wrapper, "1");
     expect(p.update).toHaveBeenCalledWith({ field: "1" });
   });
@@ -73,8 +84,10 @@ describe("<FieldSelection />", () => {
   it("clears custom meta field", () => {
     const p = fakeProps();
     p.field = "custom_field";
-    const wrapper = mount(<FieldSelection {...p} />);
-    wrapper.find(".reset-custom-field").simulate("click");
+    const { container } = render(<FieldSelection {...p} />);
+    const reset = container.querySelector(".reset-custom-field");
+    if (!reset) { throw new Error("Expected reset icon"); }
+    fireEvent.click(reset);
     expect(p.update).toHaveBeenCalledWith({
       field: undefined, value: undefined
     });
@@ -84,9 +97,11 @@ describe("<FieldSelection />", () => {
     const p = fakeProps();
     p.resource = { kind: "identifier", args: { label: "var" } };
     p.field = "plant_stage";
-    const wrapper = mount(<FieldSelection {...p} />);
-    expect(wrapper.find("FBSelect").length).toEqual(1);
-    expect(wrapper.find("FBSelect").props().list).toEqual([
+    const wrapper = FieldSelection(p);
+    const children =
+      React.Children.toArray(wrapper.props.children) as JSX.Element[];
+    const select = getKnownFieldSelect(p);
+    expect(select.props.list).toEqual([
       DDI.STATUS,
       DDI.COLOR,
       DDI.X,
@@ -95,9 +110,8 @@ describe("<FieldSelection />", () => {
       DDI.RADIUS,
       DDI.CUSTOM_META_FIELD,
     ]);
-    expect(wrapper.text()).toContain("property");
-    expect(wrapper.text()).toContain("Status");
-    expect(wrapper.find(".reset-custom-field").length).toEqual(0);
+    expect(children[0]?.props.children).toContain("property");
+    expect(select.props.selectedItem.label).toContain("Status");
   });
 
   it.each<[string, string]>([
@@ -114,9 +128,11 @@ describe("<FieldSelection />", () => {
       args: { resource_type: "Weed", resource_id: 1 }
     };
     p.field = field;
-    const wrapper = mount(<FieldSelection {...p} />);
-    expect(wrapper.find("FBSelect").length).toEqual(1);
-    expect(wrapper.find("FBSelect").props().list).toEqual([
+    const wrapper = FieldSelection(p);
+    const children =
+      React.Children.toArray(wrapper.props.children) as JSX.Element[];
+    const select = getKnownFieldSelect(p);
+    expect(select.props.list).toEqual([
       DDI.WEED_STATUS,
       DDI.COLOR,
       DDI.X,
@@ -125,9 +141,8 @@ describe("<FieldSelection />", () => {
       DDI.RADIUS,
       DDI.CUSTOM_META_FIELD,
     ]);
-    expect(wrapper.text()).toContain("property");
-    expect(wrapper.text()).toContain(expected);
-    expect(wrapper.find(".reset-custom-field").length).toEqual(0);
+    expect(children[0]?.props.children).toContain("property");
+    expect(select.props.selectedItem.label).toContain(expected);
   });
 
   it("renders known point field", () => {
@@ -137,9 +152,11 @@ describe("<FieldSelection />", () => {
       args: { resource_type: "GenericPointer", resource_id: 3 }
     };
     p.field = "plant_stage";
-    const wrapper = mount(<FieldSelection {...p} />);
-    expect(wrapper.find("FBSelect").length).toEqual(1);
-    expect(wrapper.find("FBSelect").props().list).toEqual([
+    const wrapper = FieldSelection(p);
+    const children =
+      React.Children.toArray(wrapper.props.children) as JSX.Element[];
+    const select = getKnownFieldSelect(p);
+    expect(select.props.list).toEqual([
       DDI.COLOR,
       DDI.X,
       DDI.Y,
@@ -147,9 +164,8 @@ describe("<FieldSelection />", () => {
       DDI.RADIUS,
       DDI.CUSTOM_META_FIELD,
     ]);
-    expect(wrapper.text()).toContain("property");
-    expect(wrapper.text()).toContain("Point status");
-    expect(wrapper.find(".reset-custom-field").length).toEqual(0);
+    expect(children[0]?.props.children).toContain("property");
+    expect(select.props.selectedItem.label).toContain("Point status");
   });
 
   it("renders known plant field", () => {
@@ -159,9 +175,11 @@ describe("<FieldSelection />", () => {
       args: { resource_type: "Plant", resource_id: 3 }
     };
     p.field = "planted_at";
-    const wrapper = mount(<FieldSelection {...p} />);
-    expect(wrapper.find("FBSelect").length).toEqual(1);
-    expect(wrapper.find("FBSelect").props().list).toEqual([
+    const wrapper = FieldSelection(p);
+    const children =
+      React.Children.toArray(wrapper.props.children) as JSX.Element[];
+    const select = getKnownFieldSelect(p);
+    expect(select.props.list).toEqual([
       DDI.PLANT_STAGE,
       DDI.X,
       DDI.Y,
@@ -169,9 +187,8 @@ describe("<FieldSelection />", () => {
       DDI.RADIUS,
       DDI.CUSTOM_META_FIELD,
     ]);
-    expect(wrapper.text()).toContain("property");
-    expect(wrapper.text()).toContain("Date Planted");
-    expect(wrapper.find(".reset-custom-field").length).toEqual(0);
+    expect(children[0]?.props.children).toContain("property");
+    expect(select.props.selectedItem.label).toContain("Date Planted");
   });
 
   it("changes known weed field", () => {
@@ -181,9 +198,8 @@ describe("<FieldSelection />", () => {
       args: { resource_type: "Weed", resource_id: 1 }
     };
     p.field = undefined;
-    const wrapper = mount(<FieldSelection {...p} />);
-    const select = shallow(<div>{wrapper.find("FBSelect").getElement()}</div>);
-    select.find("FBSelect").simulate("change", {
+    const select = getKnownFieldSelect(p);
+    select.props.onChange({
       label: "", value: "plant_stage"
     });
     expect(p.update).toHaveBeenCalledWith({ field: "plant_stage" });
@@ -196,15 +212,16 @@ describe("<FieldSelection />", () => {
       args: { resource_type: "Device", resource_id: 1 }
     };
     p.field = "mounted_tool_id";
-    const wrapper = mount(<FieldSelection {...p} />);
-    expect(wrapper.find("FBSelect").length).toEqual(1);
-    expect(wrapper.find("FBSelect").props().list).toEqual([
+    const wrapper = FieldSelection(p);
+    const children =
+      React.Children.toArray(wrapper.props.children) as JSX.Element[];
+    const select = getKnownFieldSelect(p);
+    expect(select.props.list).toEqual([
       DDI.MOUNTED_TOOL,
       DDI.CUSTOM_META_FIELD,
     ]);
-    expect(wrapper.text()).toContain("property");
-    expect(wrapper.text()).toContain("Mounted Tool");
-    expect(wrapper.find(".reset-custom-field").length).toEqual(0);
+    expect(children[0]?.props.children).toContain("property");
+    expect(select.props.selectedItem.label).toContain("Mounted Tool");
   });
 });
 

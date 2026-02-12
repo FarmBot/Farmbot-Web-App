@@ -2,7 +2,7 @@ import React from "react";
 import {
   getDefaultAxisLength, getGridSize, RawFarmDesigner as FarmDesigner,
 } from "../index";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { FarmDesignerProps } from "../interfaces";
 import { bot } from "../../__test_support__/fake_state/bot";
 import {
@@ -17,8 +17,6 @@ import {
 import { fakeState } from "../../__test_support__/fake_state";
 import * as crud from "../../api/crud";
 import { BooleanSetting } from "../../session_keys";
-import { GardenMapLegend } from "../map/legend/garden_map_legend";
-import { GardenMap } from "../map/garden_map";
 import { fakeMountedToolInfo } from "../../__test_support__/fake_tool_info";
 import {
   fakeCameraCalibrationData,
@@ -28,6 +26,23 @@ import {
 } from "../../__test_support__/fake_bot_data";
 import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
 import { Path } from "../../internal_urls";
+
+let lastLegendProps: Record<string, unknown> | undefined;
+let lastGardenMapProps: Record<string, unknown> | undefined;
+
+jest.mock("../map/legend/garden_map_legend", () => ({
+  GardenMapLegend: (props: Record<string, unknown>) => {
+    lastLegendProps = props;
+    return <div className="mock-garden-map-legend" />;
+  },
+}));
+
+jest.mock("../map/garden_map", () => ({
+  GardenMap: (props: Record<string, unknown>) => {
+    lastGardenMapProps = props;
+    return <div className="mock-garden-map" />;
+  },
+}));
 
 const setWindowWidth = (width: number) => {
   Object.defineProperty(window, "innerWidth", { configurable: true, value: width });
@@ -39,6 +54,8 @@ describe("<FarmDesigner />", () => {
   beforeEach(() => {
     setWindowWidth(1000);
     location.search = "";
+    lastLegendProps = undefined;
+    lastGardenMapProps = undefined;
     editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
   });
 
@@ -81,18 +98,18 @@ describe("<FarmDesigner />", () => {
   });
 
   it("loads default map settings", () => {
-    const wrapper = mount(<FarmDesigner {...fakeProps()} />);
-    const legendProps = wrapper.find(GardenMapLegend).props();
-    expect(legendProps.legendMenuOpen).toBeFalsy();
-    expect(legendProps.showPlants).toBeTruthy();
-    expect(legendProps.showPoints).toBeTruthy();
-    expect(legendProps.showSpread).toBeFalsy();
-    expect(legendProps.showFarmbot).toBeTruthy();
-    expect(legendProps.showImages).toBeFalsy();
-    expect(legendProps.imageAgeInfo).toEqual({ newestDate: "", toOldest: 1 });
-    const gardenMapProps = wrapper.find(GardenMap).props();
-    expect(gardenMapProps.mapTransformProps.gridSize.x).toEqual(2900);
-    expect(gardenMapProps.mapTransformProps.gridSize.y).toEqual(1230);
+    render(<FarmDesigner {...fakeProps()} />);
+    expect(lastLegendProps?.legendMenuOpen).toBeFalsy();
+    expect(lastLegendProps?.showPlants).toBeTruthy();
+    expect(lastLegendProps?.showPoints).toBeTruthy();
+    expect(lastLegendProps?.showSpread).toBeFalsy();
+    expect(lastLegendProps?.showFarmbot).toBeTruthy();
+    expect(lastLegendProps?.showImages).toBeFalsy();
+    expect(lastLegendProps?.imageAgeInfo).toEqual({ newestDate: "", toOldest: 1 });
+    const mapTransformProps = (lastGardenMapProps?.mapTransformProps as
+      { gridSize: { x: number; y: number } } | undefined);
+    expect(mapTransformProps?.gridSize.x).toEqual(2900);
+    expect(mapTransformProps?.gridSize.y).toEqual(1230);
   });
 
   it("loads image info", () => {
@@ -102,20 +119,19 @@ describe("<FarmDesigner />", () => {
     image1.body.created_at = "2001-01-03T00:00:00.000Z";
     image2.body.created_at = "2001-01-01T00:00:00.000Z";
     p.latestImages = [image1, image2];
-    const wrapper = mount(<FarmDesigner {...p} />);
-    const legendProps = wrapper.find(GardenMapLegend).props();
-    expect(legendProps.imageAgeInfo)
+    render(<FarmDesigner {...p} />);
+    expect(lastLegendProps?.imageAgeInfo)
       .toEqual({ newestDate: "2001-01-03T00:00:00.000Z", toOldest: 2 });
   });
 
   it("renders nav titles", () => {
     location.pathname = Path.mock(Path.plants());
-    const wrapper = mount(<FarmDesigner {...fakeProps()} />);
-    expect(wrapper.find(".panel-nav").first().hasClass("hidden"))
+    const { container } = render(<FarmDesigner {...fakeProps()} />);
+    expect(container.querySelector(".panel-nav")?.classList.contains("hidden"))
       .toBeTruthy();
-    expect(wrapper.find(".farm-designer-panels").hasClass("panel-open"))
+    expect(container.querySelector(".farm-designer-panels")?.classList.contains("panel-open"))
       .toBeTruthy();
-    expect(wrapper.find(".farm-designer-map").hasClass("panel-open"))
+    expect(container.querySelector(".farm-designer-map")?.classList.contains("panel-open"))
       .toBeTruthy();
   });
 
@@ -123,12 +139,12 @@ describe("<FarmDesigner />", () => {
     location.pathname = Path.mock(Path.plants());
     const p = fakeProps();
     p.designer.panelOpen = false;
-    const wrapper = mount(<FarmDesigner {...p} />);
-    expect(wrapper.find(".panel-nav").first().hasClass("hidden"))
+    const { container } = render(<FarmDesigner {...p} />);
+    expect(container.querySelector(".panel-nav")?.classList.contains("hidden"))
       .toBeFalsy();
-    expect(wrapper.find(".farm-designer-panels").hasClass("panel-open"))
+    expect(container.querySelector(".farm-designer-panels")?.classList.contains("panel-open"))
       .toBeFalsy();
-    expect(wrapper.find(".farm-designer-map").hasClass("panel-open"))
+    expect(container.querySelector(".farm-designer-map")?.classList.contains("panel-open"))
       .toBeFalsy();
   });
 
@@ -137,9 +153,9 @@ describe("<FarmDesigner />", () => {
     const p = fakeProps();
     p.designer.openedSavedGarden = 1;
     p.designer.panelOpen = false;
-    const wrapper = mount(<FarmDesigner {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("viewing saved garden");
-    expect(wrapper.html()).not.toContain("three-d-garden");
+    const { container } = render(<FarmDesigner {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("viewing saved garden");
+    expect(container.innerHTML).not.toContain("three-d-garden");
   });
 
   it("renders saved garden indicator on medium screens", () => {
@@ -147,9 +163,9 @@ describe("<FarmDesigner />", () => {
     const p = fakeProps();
     p.designer.openedSavedGarden = 1;
     p.designer.panelOpen = false;
-    const wrapper = mount(<FarmDesigner {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("viewing saved garden");
-    expect(wrapper.html()).not.toContain("three-d-garden");
+    const { container } = render(<FarmDesigner {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("viewing saved garden");
+    expect(container.innerHTML).not.toContain("three-d-garden");
   });
 
   it("doesn't render saved garden indicator", () => {
@@ -157,9 +173,9 @@ describe("<FarmDesigner />", () => {
     const p = fakeProps();
     p.designer.openedSavedGarden = 1;
     p.designer.panelOpen = false;
-    const wrapper = mount(<FarmDesigner {...p} />);
-    expect(wrapper.text().toLowerCase()).not.toContain("viewing saved garden");
-    expect(wrapper.html()).not.toContain("three-d-garden");
+    const { container } = render(<FarmDesigner {...p} />);
+    expect(container.textContent?.toLowerCase()).not.toContain("viewing saved garden");
+    expect(container.innerHTML).not.toContain("three-d-garden");
   });
 
   it("toggles setting", () => {
@@ -168,8 +184,9 @@ describe("<FarmDesigner />", () => {
     const dispatch = jest.fn();
     state.resources = buildResourceIndex([fakeWebAppConfig()]);
     p.dispatch = jest.fn(x => x(dispatch, () => state));
-    const wrapper = mount<FarmDesigner>(<FarmDesigner {...p} />);
-    wrapper.instance().toggle(BooleanSetting.show_plants)();
+    const ref = React.createRef<FarmDesigner>();
+    render(<FarmDesigner {...p} ref={ref} />);
+    ref.current?.toggle(BooleanSetting.show_plants)();
     expect(editSpy).toHaveBeenCalledWith(expect.any(Object), {
       bot_origin_quadrant: 2
     });
@@ -193,8 +210,8 @@ describe("<FarmDesigner />", () => {
     const p = fakeProps();
     p.getConfigValue = () => true;
     p.designer.threeDTime = "12:00";
-    const wrapper = mount(<FarmDesigner {...p} />);
-    expect(wrapper.html()).toContain("three-d-garden");
+    const { container } = render(<FarmDesigner {...p} />);
+    expect(container.innerHTML).toContain("three-d-garden");
   });
 });
 

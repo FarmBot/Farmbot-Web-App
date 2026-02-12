@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { CalibrationRow } from "../calibration_row";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { CalibrationRowProps } from "../interfaces";
@@ -19,16 +19,15 @@ describe("<CalibrationRow />", () => {
 
   it("calls device", () => {
     const p = fakeProps();
-    const result = mount(<CalibrationRow {...p} />);
     p.mcuParams.encoder_enabled_x = 1;
     p.mcuParams.encoder_enabled_y = 1;
     p.mcuParams.encoder_enabled_z = 0;
+    render(<CalibrationRow {...p} />);
     const enabledAxes: string[] = [];
-    [0, 1, 2].map(i => {
-      const button = result.find("LockableButton").at(i);
-      if (!button.props().disabled) {
-        enabledAxes.push(button.text().split(" ").pop() as string);
-        button.simulate("click");
+    screen.getAllByRole("button").map(button => {
+      if (!(button as HTMLButtonElement).disabled) {
+        enabledAxes.push((button.textContent || "").split(" ").pop() as string);
+        fireEvent.click(button);
       }
     });
     expect(p.action).toHaveBeenCalledTimes(enabledAxes.length);
@@ -39,11 +38,11 @@ describe("<CalibrationRow />", () => {
   it("is not disabled", () => {
     const p = fakeProps();
     p.type = "zero";
-    const result = mount(<CalibrationRow {...p} />);
     p.mcuParams.encoder_enabled_x = 0;
     p.mcuParams.encoder_enabled_y = 1;
     p.mcuParams.encoder_enabled_z = 0;
-    [0, 1, 2].map(i => result.find("LockableButton").at(i).simulate("click"));
+    render(<CalibrationRow {...p} />);
+    screen.getAllByRole("button").map(button => fireEvent.click(button));
     expect(p.action).toHaveBeenCalledTimes(3);
     ["x", "y", "z"].map(x => expect(p.action).toHaveBeenCalledWith(x));
   });
@@ -58,9 +57,10 @@ describe("<CalibrationRow />", () => {
     p.mcuParams.movement_enable_endpoints_y = 1;
     p.mcuParams.movement_enable_endpoints_z = 0;
     p.stallUseDisabled = true;
-    const result = mount(<CalibrationRow {...p} />);
+    render(<CalibrationRow {...p} />);
+    const buttons = screen.getAllByRole("button");
     [0, 1].map(i =>
-      expect(result.find("LockableButton").at(i).props().disabled).toEqual(false));
-    expect(result.find("LockableButton").at(2).props().disabled).toEqual(true);
+      expect((buttons[i] as HTMLButtonElement).disabled).toEqual(false));
+    expect((buttons[2] as HTMLButtonElement).disabled).toEqual(true);
   });
 });

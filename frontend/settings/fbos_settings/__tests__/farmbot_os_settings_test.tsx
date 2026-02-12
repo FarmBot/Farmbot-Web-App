@@ -4,7 +4,7 @@ const mockDevice = {
 
 import React from "react";
 import { FarmBotSettings } from "../farmbot_os_settings";
-import { mount, shallow } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { FarmbotSettingsProps } from "../interfaces";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
@@ -12,7 +12,6 @@ import {
   buildResourceIndex, fakeDevice,
 } from "../../../__test_support__/resource_index_builder";
 import { settingsPanelState } from "../../../__test_support__/panel_state";
-import { clickButton } from "../../../__test_support__/helpers";
 import { fakeFbosConfig } from "../../../__test_support__/fake_state/resources";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { isFunction } from "lodash";
@@ -57,18 +56,16 @@ describe("<FarmBotSettings />", () => {
   it("displays boot sequence selector", () => {
     const p = fakeProps();
     p.settingsPanelState.farmbot_settings = true;
-    const osSettings = shallow(<FarmBotSettings {...p} />);
-    expect(osSettings.find(bootSequenceSelector.BootSequenceSelector).length)
-      .toEqual(1);
+    render(<FarmBotSettings {...p} />);
+    expect(bootSequenceSelectorSpy).toHaveBeenCalledTimes(1);
   });
 
   it("flashes firmware", () => {
     const p = fakeProps();
     p.settingsPanelState.farmbot_settings = true;
     p.sourceFbosConfig = () => ({ value: "arduino", consistent: true });
-    const wrapper = mount(<FarmBotSettings {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("flash");
-    clickButton(wrapper, 6, "flash");
+    render(<FarmBotSettings {...p} />);
+    fireEvent.click(screen.getByTitle("flash firmware"));
     expect(mockDevice.flashFirmware).toHaveBeenCalledWith("arduino");
   });
 });

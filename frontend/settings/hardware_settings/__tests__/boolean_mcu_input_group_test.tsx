@@ -1,11 +1,27 @@
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { BooleanMCUInputGroup } from "../boolean_mcu_input_group";
-import { ToggleButton } from "../../../ui";
 import * as deviceActions from "../../../devices/actions";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { BooleanMCUInputGroupProps } from "../interfaces";
 import { DeviceSetting } from "../../../constants";
+
+jest.mock("../../../ui", () => {
+  const actual = jest.requireActual("../../../ui");
+  return {
+    ...actual,
+    ToggleButton: (props: {
+      grayscale?: boolean,
+      disabled?: boolean,
+      toggleAction: () => void,
+    }) =>
+      <button
+        data-testid="toggle-button"
+        data-grayscale={props.grayscale ? "true" : "false"}
+        disabled={props.disabled}
+        onClick={props.toggleAction} />,
+  };
+});
 
 let settingToggleSpy: jest.SpyInstance;
 
@@ -33,17 +49,15 @@ describe("BooleanMCUInputGroup", () => {
   enum Buttons { xAxis, yAxis, zAxis }
 
   it("triggers callbacks", () => {
-    const wrapper = mount(<BooleanMCUInputGroup {...fakeProps()} />);
-    const xAxisButton = wrapper.find(ToggleButton).at(Buttons.xAxis);
-    const yAxisButton = wrapper.find(ToggleButton).at(Buttons.yAxis);
-    const zAxisButton = wrapper.find(ToggleButton).at(Buttons.zAxis);
-    xAxisButton.simulate("click");
+    render(<BooleanMCUInputGroup {...fakeProps()} />);
+    const buttons = screen.getAllByTestId("toggle-button");
+    fireEvent.click(buttons[Buttons.xAxis] as HTMLElement);
     expect(settingToggleSpy).toHaveBeenLastCalledWith("encoder_invert_x",
       expect.any(Function), undefined);
-    yAxisButton.simulate("click");
+    fireEvent.click(buttons[Buttons.yAxis] as HTMLElement);
     expect(settingToggleSpy).toHaveBeenLastCalledWith("encoder_invert_y",
       expect.any(Function), undefined);
-    zAxisButton.simulate("click");
+    fireEvent.click(buttons[Buttons.zAxis] as HTMLElement);
     expect(settingToggleSpy).toHaveBeenLastCalledWith("encoder_invert_z",
       expect.any(Function), undefined);
   });
@@ -51,31 +65,30 @@ describe("BooleanMCUInputGroup", () => {
   it("displays gray toggles", () => {
     const p = fakeProps();
     p.grayscale = { x: true, y: false, z: false };
-    const wrapper = mount(<BooleanMCUInputGroup {...p} />);
-    const xAxisButton = wrapper.find(ToggleButton).at(Buttons.xAxis);
-    expect(xAxisButton.props().grayscale).toBeTruthy();
-    const yAxisButton = wrapper.find(ToggleButton).at(Buttons.yAxis);
-    expect(yAxisButton.props().grayscale).toBeFalsy();
+    render(<BooleanMCUInputGroup {...p} />);
+    const buttons = screen.getAllByTestId("toggle-button");
+    expect(buttons[Buttons.xAxis]?.getAttribute("data-grayscale"))
+      .toEqual("true");
+    expect(buttons[Buttons.yAxis]?.getAttribute("data-grayscale"))
+      .toEqual("false");
   });
 
   it("disables toggles", () => {
     const p = fakeProps();
     p.disable = { x: false, y: false, z: false };
     p.disabled = true;
-    const wrapper = mount(<BooleanMCUInputGroup {...p} />);
-    [0, 1, 2].map(button =>
-      expect(wrapper.find(ToggleButton).at(button).props().disabled)
-        .toEqual(true));
+    render(<BooleanMCUInputGroup {...p} />);
+    screen.getAllByTestId("toggle-button").map(button =>
+      expect((button as HTMLButtonElement).disabled).toEqual(true));
   });
 
   it("disables axis toggles", () => {
     const p = fakeProps();
     p.disable = { x: true, y: true, z: true };
     p.disabled = false;
-    const wrapper = mount(<BooleanMCUInputGroup {...p} />);
-    [0, 1, 2].map(button =>
-      expect(wrapper.find(ToggleButton).at(button).props().disabled)
-        .toEqual(true));
+    render(<BooleanMCUInputGroup {...p} />);
+    screen.getAllByTestId("toggle-button").map(button =>
+      expect((button as HTMLButtonElement).disabled).toEqual(true));
   });
 
   it("overrides advanced hide", () => {
@@ -85,7 +98,8 @@ describe("BooleanMCUInputGroup", () => {
     bot.hardware.mcu_params.encoder_invert_x = 0;
     bot.hardware.mcu_params.encoder_invert_y = 0;
     bot.hardware.mcu_params.encoder_invert_z = 1;
-    const wrapper = shallow(<BooleanMCUInputGroup {...p} />);
-    expect(wrapper.find("Highlight").props().hidden).toEqual(false);
+    const { container } = render(<BooleanMCUInputGroup {...p} />);
+    expect(container.querySelector(".setting")?.hasAttribute("hidden"))
+      .toEqual(false);
   });
 });

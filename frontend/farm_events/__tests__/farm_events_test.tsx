@@ -1,5 +1,5 @@
 import React from "react";
-import { shallow, mount } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import { RawFarmEvents as FarmEvents } from "../farm_events";
 import {
   calendarRows,
@@ -35,8 +35,9 @@ describe("<FarmEvents />", () => {
   });
 
   it("sorts items correctly", () => {
-    const wrapper = mount(<FarmEvents {...fakeProps()} />);
-    const times = wrapper.find(".farm-event-data-time").map(x => x.text());
+    const { container } = render(<FarmEvents {...fakeProps()} />);
+    const times = Array.from(container.querySelectorAll(".farm-event-data-time"))
+      .map(x => x.textContent?.trim() || "");
     expect(times).not.toContain("");
     expect(times.length).toEqual(21);
     expect(times[0]).toEqual("12:05pm");
@@ -59,12 +60,12 @@ describe("<FarmEvents />", () => {
       color: "gray",
     }];
     p.calendarRows = row;
-    const wrapper = mount(<FarmEvents {...p} />);
-    expect(wrapper.text()).toContain("Every 4 hours");
-    const item = wrapper.find(".farm-event-data-block");
-    expect(item.hasClass("gray")).toBeTruthy();
-    expect(item.find(".farm-event-variable").length).toEqual(2);
-    expect(item.find("a").first().props().href)
+    const { container } = render(<FarmEvents {...p} />);
+    expect(container.textContent).toContain("Every 4 hours");
+    const item = container.querySelector(".farm-event-data-block") as Element;
+    expect(item.classList.contains("gray")).toBeTruthy();
+    expect(item.querySelectorAll(".farm-event-variable").length).toEqual(2);
+    expect((item.querySelector("a") as HTMLAnchorElement).getAttribute("href"))
       .toEqual(Path.sequences("Every_4_hours"));
   });
 
@@ -84,27 +85,31 @@ describe("<FarmEvents />", () => {
       color: "gray",
     }];
     p.calendarRows = row;
-    const wrapper = mount(<FarmEvents {...p} />);
-    expect(wrapper.text()).toContain("Every 4 hours");
-    const item = wrapper.find(".farm-event-data-block");
-    expect(item.hasClass("gray")).toBeTruthy();
-    expect(item.find(".farm-event-variable").length).toEqual(2);
-    expect(item.find("a").first().props().href)
+    const { container } = render(<FarmEvents {...p} />);
+    expect(container.textContent).toContain("Every 4 hours");
+    const item = container.querySelector(".farm-event-data-block") as Element;
+    expect(item.classList.contains("gray")).toBeTruthy();
+    expect(item.querySelectorAll(".farm-event-variable").length).toEqual(2);
+    expect((item.querySelector("a") as HTMLAnchorElement).getAttribute("href"))
       .toEqual(Path.regimens("Every_4_hours"));
   });
 
   it("filters farm events: finds none", () => {
-    const wrapper = mount(<FarmEvents {...fakeProps()} />);
-    wrapper.find("input").simulate("change",
-      { currentTarget: { value: "no match" } });
-    expect(wrapper.text()).not.toContain("every 4 hours");
+    const { container } = render(<FarmEvents {...fakeProps()} />);
+    fireEvent.change(container.querySelector("input") as Element, {
+      target: { value: "no match" },
+      currentTarget: { value: "no match" },
+    });
+    expect(container.textContent?.toLowerCase()).not.toContain("every 4 hours");
   });
 
   it("filters farm events: finds some", () => {
-    const wrapper = mount(<FarmEvents {...fakeProps()} />);
-    wrapper.find("input").simulate("change",
-      { currentTarget: { value: "every 4 hours" } });
-    expect(wrapper.text().toLowerCase()).toContain("every 4 hours");
+    const { container } = render(<FarmEvents {...fakeProps()} />);
+    fireEvent.change(container.querySelector("input") as Element, {
+      target: { value: "every 4 hours" },
+      currentTarget: { value: "every 4 hours" },
+    });
+    expect(container.textContent?.toLowerCase()).toContain("every 4 hours");
   });
 
   it("resets calendar", () => {
@@ -112,9 +117,14 @@ describe("<FarmEvents />", () => {
     Object.defineProperty(document, "querySelector", {
       value: () => ({ scrollTo: mockScrollTo }), configurable: true
     });
-    const wrapper = shallow(<FarmEvents {...fakeProps()} />);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const instance = wrapper.instance() as any;
+    const instance = new FarmEvents(fakeProps());
+    instance.setState = ((state, callback) => {
+      const update = typeof state == "function"
+        ? state(instance.state, instance.props)
+        : state;
+      instance.state = { ...instance.state, ...update };
+      callback?.();
+    }) as FarmEvents["setState"];
     instance.setState({ searchTerm: "farm events" });
     instance.resetCalendar();
     expect(mockScrollTo).toHaveBeenCalledWith(0, 0);
@@ -125,16 +135,21 @@ describe("<FarmEvents />", () => {
     Object.defineProperty(document, "querySelector", {
       value: () => { }, configurable: true
     });
-    const wrapper = shallow(<FarmEvents {...fakeProps()} />);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const instance = wrapper.instance() as any;
+    const instance = new FarmEvents(fakeProps());
+    instance.setState = ((state, callback) => {
+      const update = typeof state == "function"
+        ? state(instance.state, instance.props)
+        : state;
+      instance.state = { ...instance.state, ...update };
+      callback?.();
+    }) as FarmEvents["setState"];
     instance.setState({ searchTerm: "farm events" });
     instance.resetCalendar();
     expect(instance.state.searchTerm).toEqual("");
   });
 
   it("has add new farm event link", () => {
-    mount(<FarmEvents {...fakeProps()} />);
+    render(<FarmEvents {...fakeProps()} />);
     expect(farmEventsPathSpy.mock.calls).toContainEqual(["add"]);
   });
 });

@@ -1,11 +1,17 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
-import { shallow } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { TimezoneRow } from "../timezone_row";
 import { TimezoneRowProps } from "../interfaces";
 import * as crud from "../../../api/crud";
 import { Content } from "../../../constants";
 import { fakeDevice } from "../../../__test_support__/resource_index_builder";
+
+jest.mock("../../../devices/timezones/timezone_selector", () => ({
+  TimezoneSelector: (props: { onUpdate: (timezone: string) => void }) =>
+    <button onClick={() => props.onUpdate("America/Los_Angeles")}>
+      select-timezone
+    </button>,
+}));
 
 let editSpy: jest.SpyInstance;
 let saveSpy: jest.SpyInstance;
@@ -37,9 +43,8 @@ describe("<TimezoneRow />", () => {
 
   it("select timezone", () => {
     const p = fakeProps();
-    const wrapper = shallow(<TimezoneRow {...p} />);
-    const onUpdate = wrapper.find("TimezoneSelector").props().onUpdate;
-    onUpdate?.("America/Los_Angeles");
+    render(<TimezoneRow {...p} />);
+    fireEvent.click(screen.getByText("select-timezone"));
     expect(crud.edit).toHaveBeenCalledWith(p.device,
       { timezone: "America/Los_Angeles" });
     expect(crud.save).toHaveBeenCalledWith(p.device.uuid);

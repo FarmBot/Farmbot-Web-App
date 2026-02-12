@@ -1,11 +1,31 @@
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { render, fireEvent } from "@testing-library/react";
 import {
   TimePeriodSelection, getEndDate, DateDisplay,
 } from "../time_period_selection";
 import { fakeSensorReading } from "../../../__test_support__/fake_state/resources";
 import { TimePeriodSelectionProps, DateDisplayProps } from "../interfaces";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
+
+jest.mock("../../../ui", () => ({
+  ...jest.requireActual("../../../ui"),
+  FBSelect: (props: {
+    selectedItem?: { label: string };
+    onChange: (ddi: { label: string; value: number }) => void;
+  }) =>
+    <button className="fb-select-mock"
+      onClick={() => props.onChange({ label: "", value: 100 })}>
+      {props.selectedItem?.label}
+    </button>,
+  BlurableInput: (props: {
+    value: string;
+    onCommit: (e: { currentTarget: { value: string } }) => void;
+  }) =>
+    <input className="blurable-input-mock"
+      defaultValue={props.value}
+      onBlur={e => props.onCommit({ currentTarget: { value: e.currentTarget.value } })}
+      onChange={() => { }} />,
+}));
 
 describe("<TimePeriodSelection />", () => {
   function fakeProps(): TimePeriodSelectionProps {
@@ -20,31 +40,32 @@ describe("<TimePeriodSelection />", () => {
   }
 
   it("renders", () => {
-    const wrapper = mount(<TimePeriodSelection {...fakeProps()} />);
-    const txt = wrapper.text().toLowerCase();
+    const { container } = render(<TimePeriodSelection {...fakeProps()} />);
+    const txt = container.textContent?.toLowerCase() || "";
     ["time period", "day", "period end date", "show previous"]
       .map(string => expect(txt).toContain(string));
   });
 
   it("changes time period", () => {
     const p = fakeProps();
-    const wrapper = shallow(<TimePeriodSelection {...p} />);
-    wrapper.find("FBSelect").simulate("change", { label: "", value: 100 });
+    const { container } = render(<TimePeriodSelection {...p} />);
+    fireEvent.click(container.querySelector(".fb-select-mock") as Element);
     expect(p.setPeriod).toHaveBeenCalledWith(100);
   });
 
   it("changes end date", () => {
     const p = fakeProps();
-    const wrapper = shallow(<TimePeriodSelection {...p} />);
-    wrapper.find("BlurableInput").simulate("commit",
-      { currentTarget: { value: "2002-01-10" } });
+    const { container } = render(<TimePeriodSelection {...p} />);
+    const input = container.querySelector(".blurable-input-mock") as Element;
+    fireEvent.change(input, { target: { value: "2002-01-10" } });
+    fireEvent.blur(input);
     expect(p.setEndDate).toHaveBeenCalledWith(expect.any(Number));
   });
 
   it("updates end date", () => {
     const p = fakeProps();
-    const wrapper = shallow(<TimePeriodSelection {...p} />);
-    wrapper.find("i").simulate("click");
+    const { container } = render(<TimePeriodSelection {...p} />);
+    fireEvent.click(container.querySelector("i") as Element);
     expect(p.setEndDate).toHaveBeenCalled();
   });
 });
@@ -70,8 +91,8 @@ describe("<DateDisplay />", () => {
   }
 
   it("renders", () => {
-    const wrapper = mount(<DateDisplay {...fakeProps()} />);
-    const txt = wrapper.text().toLowerCase();
+    const { container } = render(<DateDisplay {...fakeProps()} />);
+    const txt = container.textContent?.toLowerCase() || "";
     ["date", "january 4–january 11 (december 28–january 4)"]
       .map(string => expect(txt).toContain(string));
   });

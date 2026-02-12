@@ -16,7 +16,6 @@ jest.mock("mqtt", () => ({ connect: () => mockMqttClient }));
 
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import { shallow } from "enzyme";
 import { DemoLoginOption } from "../demo_login_option";
 
 describe("<DemoLoginOption />", () => {
@@ -46,13 +45,13 @@ describe("<DemoLoginOption />", () => {
 
   it("requests a demo account on click", async () => {
     mockResponse = "ok";
-    const wrapper = shallow<DemoLoginOption>(<DemoLoginOption />);
-    const connectMqtt = jest.spyOn(wrapper.instance(), "connectMqtt")
+    const instance = new DemoLoginOption({});
+    const connectMqtt = jest.spyOn(instance, "connectMqtt")
       .mockResolvedValue({} as never);
-    const connectApi = jest.spyOn(wrapper.instance(), "connectApi")
+    const connectApi = jest.spyOn(instance, "connectApi")
       .mockResolvedValue(undefined);
 
-    wrapper.instance().requestAccount();
+    instance.requestAccount();
     await Promise.resolve();
 
     expect(connectMqtt).toHaveBeenCalled();
@@ -60,9 +59,17 @@ describe("<DemoLoginOption />", () => {
   });
 
   it("changes model", () => {
-    const wrapper = shallow<DemoLoginOption>(<DemoLoginOption />);
-    expect(wrapper.state().productLine).toEqual("genesis_1.8");
-    wrapper.find("FBSelect").simulate("change", { value: "express_1.2" });
-    expect(wrapper.state().productLine).toEqual("express_1.2");
+    const instance = new DemoLoginOption({});
+    instance.setState = ((state, callback) => {
+      const update = typeof state == "function"
+        ? state(instance.state, instance.props)
+        : state;
+      instance.state = { ...instance.state, ...update };
+      callback?.();
+    }) as DemoLoginOption["setState"];
+    expect(instance.state.productLine).toEqual("genesis_1.8");
+    const select = instance["seedDataSelect"]() as React.ReactElement;
+    select.props.onChange({ value: "express_1.2" });
+    expect(instance.state.productLine).toEqual("express_1.2");
   });
 });

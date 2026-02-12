@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render, screen } from "@testing-library/react";
 import { ErrorBoundary } from "../error_boundary";
 import * as errorSupport from "../util/errors";
 
@@ -30,16 +30,17 @@ describe("<ErrorBoundary/>", () => {
   it("handles exceptions", () => {
     console.error = jest.fn();
     const nodes = <ErrorBoundary><Kaboom /></ErrorBoundary>;
-    let el: ReturnType<typeof mount<ErrorBoundary>> | undefined;
+    let rendered = false;
     try {
-      el = mount<ErrorBoundary>(nodes);
+      render(nodes);
+      rendered = true;
     } catch {
       // Bun's act() rethrows even when ErrorBoundary handles the error.
     }
-    if (el) {
-      expect(el.text()).toContain("can't render this part of the page");
-      const i = el.instance();
-      expect(i.state.hasError).toBe(true);
+    if (rendered) {
+      expect(
+        screen.getByText(/can't render this part of the page/i)
+      ).toBeInTheDocument();
     }
     expect(catchErrorsSpy).toHaveBeenCalled();
     expect(console.error).toHaveBeenCalled();

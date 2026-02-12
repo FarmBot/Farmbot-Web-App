@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { Arrow, ArrowProps } from "../arrow";
 
 describe("<Arrow />", () => {
@@ -9,7 +9,7 @@ describe("<Arrow />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<Arrow {...fakeProps()} />);
-    expect(wrapper.html()).toContain("extrude");
+    const { container } = render(<Arrow {...fakeProps()} />);
+    expect(container.innerHTML).toContain("extrude");
   });
 });

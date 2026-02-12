@@ -1,65 +1,64 @@
 import React from "react";
-import { mount, shallow } from "enzyme";
-import { FBSelect, FBSelectProps } from "../new_fb_select";
+import { render } from "@testing-library/react";
+import type { FBSelectProps } from "../new_fb_select";
+
+const { FBSelect } = jest.requireActual("../new_fb_select") as
+  typeof import("../new_fb_select");
 
 describe("<FBSelect />", () => {
-  const fakeProps = (): FBSelectProps => {
-    return {
-      selectedItem: undefined,
-      onChange: jest.fn(),
-      list: [{ value: "item", label: "Item" }]
-    };
-  };
+  const fakeProps = (): FBSelectProps => ({
+    selectedItem: undefined,
+    onChange: jest.fn(),
+    list: [{ value: "item", label: "Item" }]
+  });
 
   it("renders", () => {
     const p = fakeProps();
-    const wrapper = mount(<FBSelect {...p} />);
-    expect(wrapper.text()).toEqual("None");
+    const { container } = render(<FBSelect {...p} />);
+    expect(container.textContent).toEqual("None");
   });
 
   it("renders item", () => {
     const p = fakeProps();
     p.selectedItem = { value: "item", label: "Item" };
-    const wrapper = mount(<FBSelect {...p} />);
-    expect(wrapper.text()).toEqual("Item");
+    const { container } = render(<FBSelect {...p} />);
+    expect(container.textContent).toEqual("Item");
   });
 
   it("renders custom null label", () => {
     const p = fakeProps();
     p.customNullLabel = "Other";
-    const wrapper = mount(<FBSelect {...p} />);
-    expect(wrapper.text()).toEqual("Other");
+    const { container } = render(<FBSelect {...p} />);
+    expect(container.textContent).toEqual("Other");
   });
 
   it("allows empty", () => {
     const p = fakeProps();
     p.allowEmpty = true;
-    const wrapper = shallow(<FBSelect {...p} />);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect((wrapper.find("FilterSearch").props() as any).items)
+    const instance = new FBSelect(p);
+    expect(instance.list)
       .toEqual([
         { label: "Item", value: "item" },
         { label: "None", value: "", isNull: true }]);
   });
 
   it("doesn't allow empty", () => {
-    const wrapper = shallow(<FBSelect {...fakeProps()} />);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    expect((wrapper.find("FilterSearch").props() as any).items)
+    const instance = new FBSelect(fakeProps());
+    expect(instance.list)
       .toEqual([{ label: "Item", value: "item" }]);
   });
 
   it("has extra class", () => {
     const p = fakeProps();
     p.extraClass = "extra";
-    const wrapper = mount(<FBSelect {...p} />);
-    expect(wrapper.find("div").first().hasClass("extra")).toBeTruthy();
+    const { container } = render(<FBSelect {...p} />);
+    expect(container.querySelector("div")?.className).toContain("extra");
   });
 
   it("has warning class", () => {
     const p = fakeProps();
     p.selectedItem = { value: "item", label: "Item", warn: true };
-    const wrapper = mount(<FBSelect {...p} />);
-    expect(wrapper.find("div").first().hasClass("warning")).toBeTruthy();
+    const { container } = render(<FBSelect {...p} />);
+    expect(container.querySelector("div")?.className).toContain("warning");
   });
 });

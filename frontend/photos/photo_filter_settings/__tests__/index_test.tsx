@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { PhotoFilterSettings, FiltersEnabledWarning } from "../index";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { fakeImageShowFlags } from "../../../__test_support__/fake_camera_data";
@@ -47,9 +47,12 @@ describe("<PhotoFilterSettings />", () => {
     getConfigValue: jest.fn(),
   });
 
+  const getToggle = (container: HTMLElement, index: number) =>
+    container.querySelectorAll("button.fb-toggle-button").item(index) as HTMLButtonElement;
+
   it("sets resets filter settings", () => {
-    const wrapper = mount(<PhotoFilterSettings {...fakeProps()} />);
-    wrapper.find(".fb-button.red").first().simulate("click");
+    render(<PhotoFilterSettings {...fakeProps()} />);
+    fireEvent.click(screen.getByRole("button", { name: "Reset filters" }));
     expect(setWebAppConfigValuesSpy).toHaveBeenCalledWith({
       photo_filter_begin: "",
       photo_filter_end: "",
@@ -57,16 +60,16 @@ describe("<PhotoFilterSettings />", () => {
   });
 
   it("toggles photos", () => {
-    const wrapper = mount(<PhotoFilterSettings {...fakeProps()} />);
-    wrapper.find("ToggleButton").at(0).simulate("click");
+    const { container } = render(<PhotoFilterSettings {...fakeProps()} />);
+    fireEvent.click(getToggle(container, 0));
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       BooleanSetting.show_images, false);
   });
 
   it("toggles always highlight mode", () => {
     const p = fakeProps();
-    const wrapper = mount(<PhotoFilterSettings {...p} />);
-    wrapper.find("ToggleButton").at(1).simulate("click");
+    const { container } = render(<PhotoFilterSettings {...p} />);
+    fireEvent.click(getToggle(container, 1));
     expect(toggleAlwaysHighlightImageSpy).toHaveBeenCalledWith(
       false, p.currentImage);
   });
@@ -74,33 +77,35 @@ describe("<PhotoFilterSettings />", () => {
   it("displays single image mode", () => {
     const p = fakeProps();
     p.designer.hideUnShownImages = true;
-    const wrapper = mount(<PhotoFilterSettings {...p} />);
-    expect(wrapper.find(".filter-controls").hasClass("single-image-mode"))
-      .toBeTruthy();
+    const { container } = render(<PhotoFilterSettings {...p} />);
+    expect(container.querySelector(".filter-controls")?.classList
+      .contains("single-image-mode")).toBeTruthy();
   });
 
   it("toggles single image mode", () => {
     const p = fakeProps();
-    const wrapper = mount(<PhotoFilterSettings {...p} />);
-    wrapper.find("ToggleButton").at(2).simulate("click");
+    const { container } = render(<PhotoFilterSettings {...p} />);
+    fireEvent.click(getToggle(container, 2));
     expect(toggleSingleImageModeSpy).toHaveBeenCalledWith(p.currentImage);
   });
 
   it("displays image layer off mode", () => {
     const p = fakeProps();
     p.flags.layerOn = false;
-    const wrapper = mount(<PhotoFilterSettings {...p} />);
-    expect(wrapper.find(".filter-controls").hasClass("image-layer-disabled"))
-      .toBeTruthy();
+    const { container } = render(<PhotoFilterSettings {...p} />);
+    expect(container.querySelector(".filter-controls")?.classList
+      .contains("image-layer-disabled")).toBeTruthy();
   });
 
   it("sets filter settings to current image and earlier", () => {
     const p = fakeProps();
     p.currentImage
       && (p.currentImage.body.created_at = "2001-01-03T05:00:01.000Z");
-    const wrapper = mount(<PhotoFilterSettings {...p} />);
-    wrapper.find(".newer-older-images-section").find("button").first()
-      .simulate("click");
+    const { container } = render(<PhotoFilterSettings {...p} />);
+    const olderButton = container
+      .querySelector(".newer-older-images-section button[title='older']");
+    expect(olderButton).toBeTruthy();
+    fireEvent.click(olderButton as HTMLButtonElement);
     expect(setWebAppConfigValuesSpy).toHaveBeenCalledWith({
       photo_filter_begin: "",
       photo_filter_end: "2001-01-03T05:00:02.000Z",
@@ -111,9 +116,11 @@ describe("<PhotoFilterSettings />", () => {
     const p = fakeProps();
     p.currentImage
       && (p.currentImage.body.created_at = "2001-01-03T05:00:01.000Z");
-    const wrapper = mount(<PhotoFilterSettings {...p} />);
-    wrapper.find(".newer-older-images-section").find("button").last()
-      .simulate("click");
+    const { container } = render(<PhotoFilterSettings {...p} />);
+    const newerButton = container
+      .querySelector(".newer-older-images-section button[title='newer']");
+    expect(newerButton).toBeTruthy();
+    fireEvent.click(newerButton as HTMLButtonElement);
     expect(setWebAppConfigValuesSpy).toHaveBeenCalledWith({
       photo_filter_begin: "2001-01-03T05:00:00.000Z",
       photo_filter_end: "",
@@ -133,17 +140,19 @@ describe("<FiltersEnabledWarning />", () => {
   });
 
   it("renders when no filters are enabled", () => {
-    const wrapper = mount(<FiltersEnabledWarning {...fakeProps()} />);
-    expect(wrapper.html()).not.toContain("fa-exclamation-triangle");
+    render(<FiltersEnabledWarning {...fakeProps()} />);
+    expect(screen.queryByTitle("Map filters enabled.")).toBeNull();
   });
 
   it("renders when filters are enabled", () => {
     const p = fakeProps();
     p.designer.hideUnShownImages = true;
-    const wrapper = mount(<FiltersEnabledWarning {...p} />);
-    expect(wrapper.html()).toContain("fa-exclamation-triangle");
-    const e = { stopPropagation: jest.fn() };
-    wrapper.find(".fa-exclamation-triangle").simulate("click", e);
-    expect(e.stopPropagation).toHaveBeenCalled();
+    const onParentClick = jest.fn();
+    render(<div onClick={onParentClick}>
+      <FiltersEnabledWarning {...p} />
+    </div>);
+    const warning = screen.getByTitle("Map filters enabled.");
+    fireEvent.click(warning);
+    expect(onParentClick).not.toHaveBeenCalled();
   });
 });

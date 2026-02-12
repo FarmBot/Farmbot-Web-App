@@ -1,10 +1,48 @@
 import { fireEvent } from "@testing-library/react";
-import { ReactWrapper, shallow, ShallowWrapper } from "enzyme";
-import { range } from "lodash";
+
+type EnzymeWrapperLike = {
+  find: (selector: string) => {
+    length: number;
+    at: (index: number) => {
+      text: () => string;
+      html: () => string;
+      simulate: (event: string, payload?: unknown) => void;
+    };
+    filterWhere?: (predicate: (node: { text: () => string }) => boolean) => {
+      length: number;
+      at: (index: number) => {
+        text: () => string;
+        html: () => string;
+        simulate: (event: string, payload?: unknown) => void;
+      };
+    };
+  };
+};
+
+const isEnzymeWrapper = (input: unknown): input is EnzymeWrapperLike =>
+  !!input
+  && typeof input === "object"
+  && "find" in input
+  && typeof input.find === "function";
+
+const getContainer = (input: unknown): ParentNode | undefined => {
+  if (!input) { return undefined; }
+  if (input instanceof Document || input instanceof DocumentFragment) {
+    return input;
+  }
+  if (input instanceof Element) {
+    return input;
+  }
+  const container = (input as { container?: unknown }).container;
+  if (container instanceof Element || container instanceof DocumentFragment) {
+    return container;
+  }
+  return undefined;
+};
 
 /** Simulate a click and check button text for a button in a wrapper. */
 export function clickButton(
-  wrapper: ReactWrapper | ShallowWrapper,
+  wrapper: EnzymeWrapperLike | { container: ParentNode } | ParentNode,
   position: number,
   text: string,
   options?: { partial_match?: boolean, icon?: string }) {
@@ -12,47 +50,93 @@ export function clickButton(
     options?.partial_match
       ? actualText.includes(text.toLowerCase())
       : actualText === text.toLowerCase();
-  if (position < 0) {
-    position = wrapper.find("button").length + position;
+  if (isEnzymeWrapper(wrapper)) {
+    if (position < 0) {
+      position = wrapper.find("button").length + position;
+    }
+    let button = wrapper.find("button").at(position);
+    const expectedText = text.toLowerCase();
+    let actualText = button.text().toLowerCase();
+    if (!textMatches(actualText)) {
+      const matches = wrapper.find("button")
+        .filterWhere?.(b => textMatches(b.text().toLowerCase()));
+      if (matches && matches.length > 0) {
+        button = matches.at(0);
+        actualText = button.text().toLowerCase();
+      }
+    }
+    options?.partial_match
+      ? expect(actualText).toContain(expectedText)
+      : expect(actualText).toEqual(expectedText);
+    options?.icon && expect(button.html()).toContain(options.icon);
+    button.simulate("click");
+    return;
   }
-  let button = wrapper.find("button").at(position);
+  const container = getContainer(wrapper);
+  const buttons = Array.from(container?.querySelectorAll("button") ?? []);
+  if (position < 0) {
+    position = buttons.length + position;
+  }
+  let button = buttons[position];
+  expect(button).toBeTruthy();
   const expectedText = text.toLowerCase();
-  let actualText = button.text().toLowerCase();
+  let actualText = button?.textContent?.toLowerCase().trim() ?? "";
   if (!textMatches(actualText)) {
-    const matches = wrapper.find("button")
-      .filterWhere(b => textMatches(b.text().toLowerCase()));
-    if (matches.length > 0) {
-      button = matches.at(0);
-      actualText = button.text().toLowerCase();
+    const match = buttons.find(btn =>
+      textMatches((btn.textContent ?? "").toLowerCase().trim()));
+    if (match) {
+      button = match;
+      actualText = (button.textContent ?? "").toLowerCase().trim();
     }
   }
   options?.partial_match
     ? expect(actualText).toContain(expectedText)
     : expect(actualText).toEqual(expectedText);
-  options?.icon && expect(button.html()).toContain(options.icon);
-  button.simulate("click");
+  options?.icon && expect(button?.innerHTML ?? "").toContain(options.icon);
+  fireEvent.click(button as Element);
 }
 
 /** Like `wrapper.text()`, but only includes buttons. */
-export function allButtonText(wrapper: ReactWrapper | ShallowWrapper): string {
-  const buttons = wrapper.find("button");
-  const btnCount = buttons.length;
-  const btnPositions = range(btnCount);
-  const btnTextArray = btnPositions.map(position =>
-    wrapper.find("button").at(position).text());
-  return btnTextArray.join("");
+export function allButtonText(
+  wrapper: EnzymeWrapperLike | { container: ParentNode } | ParentNode,
+): string {
+  if (isEnzymeWrapper(wrapper)) {
+    const buttons = wrapper.find("button");
+    return Array.from({ length: buttons.length })
+      .map(position => wrapper.find("button").at(position).text())
+      .join("");
+  }
+  const container = getContainer(wrapper);
+  return Array.from(container?.querySelectorAll("button") ?? [])
+    .map(button => button.textContent ?? "")
+    .join("");
 }
 
 /** Simulate BlurableInput commit (when not using shallow). */
 export function changeBlurableInput(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  wrapper: ReactWrapper<any>,
+  wrapper: EnzymeWrapperLike | { container: ParentNode } | ParentNode,
   value: string,
   position = 0,
 ) {
-  const input = shallow(wrapper.find("input").at(position).getElement());
-  input.simulate("change", { currentTarget: { value } });
-  input.simulate("blur", { currentTarget: { value } });
+  if (isEnzymeWrapper(wrapper)) {
+    const input = wrapper.find("input").at(position);
+    input.simulate("change", { currentTarget: { value } });
+    input.simulate("blur", { currentTarget: { value } });
+    return;
+  }
+  const container = getContainer(wrapper);
+  const input = container?.querySelectorAll("input").item(position) as
+    HTMLInputElement | null;
+  expect(input).toBeTruthy();
+  fireEvent.focus(input as Element);
+  fireEvent.change(input as Element, {
+    target: { value },
+    currentTarget: { value },
+  });
+  fireEvent.blur(input as Element, {
+    target: { value },
+    currentTarget: { value },
+  });
 }
 
 /** Simulate BlurableInput commit. */

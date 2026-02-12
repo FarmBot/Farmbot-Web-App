@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render, screen } from "@testing-library/react";
 import { UpdateRow } from "../update_row";
 import { UpdateRowProps } from "../interfaces";
 
@@ -10,7 +10,7 @@ describe("<UpdateRow />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<UpdateRow {...fakeProps()} />);
-    expect(wrapper.text()).toContain("1.0.0");
+    render(<UpdateRow {...fakeProps()} />);
+    expect(screen.getByText(/1\.0\.0/)).toBeInTheDocument();
   });
 });

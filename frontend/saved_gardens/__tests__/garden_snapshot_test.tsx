@@ -9,7 +9,7 @@ jest.mock("../actions", () => ({
 }));
 
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { render, fireEvent } from "@testing-library/react";
 import { GardenSnapshotProps, GardenSnapshot } from "../garden_snapshot";
 import { clickButton } from "../../__test_support__/helpers";
 import { snapshotGarden, newSavedGarden, copySavedGarden } from "../actions";
@@ -27,16 +27,16 @@ describe("<GardenSnapshot />", () => {
   });
 
   it("saves garden", () => {
-    const wrapper = mount(<GardenSnapshot {...fakeProps()} />);
-    clickButton(wrapper, 0, "snapshot current garden");
+    const { container } = render(<GardenSnapshot {...fakeProps()} />);
+    clickButton(container, 0, "snapshot current garden");
     expect(snapshotGarden).toHaveBeenCalledWith(expect.any(Function), "", "");
   });
 
   it("copies saved garden", () => {
     const p = fakeProps();
     p.currentSavedGarden = fakeSavedGarden();
-    const wrapper = mount(<GardenSnapshot {...p} />);
-    clickButton(wrapper, 0, "snapshot current garden");
+    const { container } = render(<GardenSnapshot {...p} />);
+    clickButton(container, 0, "snapshot current garden");
     expect(snapshotGarden).not.toHaveBeenCalled();
     expect(copySavedGarden).toHaveBeenCalledWith({
       navigate: expect.any(Function),
@@ -47,26 +47,32 @@ describe("<GardenSnapshot />", () => {
   });
 
   it("changes name", () => {
-    const wrapper = shallow(<GardenSnapshot {...fakeProps()} />);
-    wrapper.find("input").first().simulate("change", {
-      currentTarget: { value: "new name" }
+    const { container } = render(<GardenSnapshot {...fakeProps()} />);
+    fireEvent.change(container.querySelector("input") as Element, {
+      currentTarget: { value: "new name" },
+      target: { value: "new name" },
     });
-    expect(wrapper.find("input").props().value).toEqual("new name");
+    expect((container.querySelector("input") as HTMLInputElement).value)
+      .toEqual("new name");
   });
 
   it("changes notes", () => {
-    const wrapper = shallow(<GardenSnapshot {...fakeProps()} />);
-    wrapper.find("textarea").first().simulate("change", {
-      currentTarget: { value: "new notes" }
+    const { container } = render(<GardenSnapshot {...fakeProps()} />);
+    fireEvent.change(container.querySelector("textarea") as Element, {
+      currentTarget: { value: "new notes" },
+      target: { value: "new notes" },
     });
-    expect(wrapper.find("textarea").props().value).toEqual("new notes");
+    expect((container.querySelector("textarea") as HTMLTextAreaElement).value)
+      .toEqual("new notes");
   });
 
   it("creates new garden", () => {
-    const wrapper = shallow(<GardenSnapshot {...fakeProps()} />);
-    wrapper.find("input").simulate("change",
-      { currentTarget: { value: "new saved garden" } });
-    wrapper.find("button").last().simulate("click");
+    const { container } = render(<GardenSnapshot {...fakeProps()} />);
+    fireEvent.change(container.querySelector("input") as Element, {
+      currentTarget: { value: "new saved garden" },
+      target: { value: "new saved garden" },
+    });
+    fireEvent.click(container.querySelectorAll("button")[1] as Element);
     expect(newSavedGarden).toHaveBeenCalledWith(expect.any(Function),
       "new saved garden", "");
   });

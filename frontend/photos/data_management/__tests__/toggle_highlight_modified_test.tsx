@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { ToggleHighlightModified } from "../toggle_highlight_modified";
 import { ToggleHighlightModifiedProps } from "../interfaces";
 import * as configStorageActions from "../../../config_storage/actions";
@@ -26,8 +26,8 @@ describe("<ToggleHighlightModified />", () => {
   });
 
   it("toggles on", () => {
-    const wrapper = mount(<ToggleHighlightModified {...fakeProps()} />);
-    wrapper.find("button").simulate("click");
+    render(<ToggleHighlightModified {...fakeProps()} />);
+    fireEvent.click(screen.getByRole("button"));
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       BooleanSetting.highlight_modified_settings, true);
   });
@@ -35,8 +35,8 @@ describe("<ToggleHighlightModified />", () => {
   it("toggles off", () => {
     const p = fakeProps();
     p.getConfigValue = () => true;
-    const wrapper = mount(<ToggleHighlightModified {...p} />);
-    wrapper.find("button").simulate("click");
+    render(<ToggleHighlightModified {...p} />);
+    fireEvent.click(screen.getByRole("button"));
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       BooleanSetting.highlight_modified_settings, false);
   });

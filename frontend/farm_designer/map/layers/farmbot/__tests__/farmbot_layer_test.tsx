@@ -1,6 +1,6 @@
 import React from "react";
 import { FarmBotLayer } from "../farmbot_layer";
-import { shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import { FarmBotLayerProps } from "../../../interfaces";
 import {
   fakeMapTransformProps,
@@ -32,16 +32,19 @@ describe("<FarmBotLayer/>", () => {
 
   it("shows layer elements", () => {
     const p = fakeProps();
-    const result = shallow(<FarmBotLayer {...p} />);
-    const layer = result.find("#farmbot-layer");
-    expect(layer.find("#virtual-farmbot")).toBeTruthy();
-    expect(layer.find("#extents")).toBeTruthy();
+    const { container } = render(<svg><FarmBotLayer {...p} /></svg>);
+    const layer = container.querySelector("#farmbot-layer");
+    if (!layer) { throw new Error("Missing farmbot layer"); }
+    expect(layer.querySelector("#virtual-farmbot")).toBeTruthy();
+    expect(layer.querySelector("#extents")).toBeTruthy();
   });
 
   it("toggles visibility off", () => {
     const p = fakeProps();
     p.visible = false;
-    const result = shallow(<FarmBotLayer {...p} />);
-    expect(result.html()).toEqual("<g id=\"farmbot-layer\"></g>");
+    const { container } = render(<svg><FarmBotLayer {...p} /></svg>);
+    const layer = container.querySelector("#farmbot-layer");
+    if (!layer) { throw new Error("Missing farmbot layer"); }
+    expect(layer.children.length).toEqual(0);
   });
 });

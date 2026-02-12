@@ -1,7 +1,7 @@
 const mockScanImage = jest.fn();
 
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { CameraCalibration } from "..";
 import { CameraCalibrationProps } from "../interfaces";
 import * as actions from "../actions";
@@ -10,6 +10,44 @@ import { error } from "../../../toast/toast";
 import { Content, ToolTips } from "../../../constants";
 import { SPECIAL_VALUES } from "../../remote_env/constants";
 import { fakePhotosPanelState } from "../../../__test_support__/fake_camera_data";
+
+jest.mock("../../image_workspace", () => ({
+  ImageWorkspace: (props: {
+    onChange: (key: "H_LO", value: number) => void;
+    onProcessPhoto: (imageId: number) => void;
+  }) =>
+    <div>
+      <span>hue</span>
+      <span>saturation</span>
+      <span>value</span>
+      <button onClick={() => props.onChange("H_LO", 3)}>
+        update workspace
+      </button>
+      <button onClick={() => props.onProcessPhoto(1)}>
+        scan current image
+      </button>
+    </div>,
+}));
+
+jest.mock("../config", () => {
+  const actual = jest.requireActual("../config");
+  return {
+    ...actual,
+    CameraCalibrationConfig: (props: {
+      onChange: (key: string, value: number) => void;
+    }) =>
+      <div>
+        <button onClick={() =>
+          props.onChange("CAMERA_CALIBRATION_camera_offset_x", 10)}>
+          change camera offset x
+        </button>
+        <button onClick={() =>
+          props.onChange("CAMERA_CALIBRATION_image_bot_origin_location", 4)}>
+          change image origin
+        </button>
+      </div>,
+  };
+});
 
 let calibrateSpy: jest.SpyInstance;
 let scanImageSpy: jest.SpyInstance;
@@ -54,16 +92,16 @@ describe("<CameraCalibration/>", () => {
   it("renders", () => {
     const p = fakeProps();
     p.wDEnv = { CAMERA_CALIBRATION_easy_calibration: SPECIAL_VALUES.FALSE };
-    const wrapper = mount(<CameraCalibration {...p} />);
+    render(<CameraCalibration {...p} />);
     ["hue", "saturation", "value", "scan current image"].map(string =>
-      expect(wrapper.text().toLowerCase()).toContain(string));
+      expect(screen.getByText(new RegExp(string, "i"))).toBeInTheDocument());
   });
 
   it("saves ImageWorkspace changes: API", () => {
     const p = fakeProps();
     p.wDEnv = { CAMERA_CALIBRATION_easy_calibration: SPECIAL_VALUES.FALSE };
-    const wrapper = shallow(<CameraCalibration {...p} />);
-    wrapper.find("ImageWorkspace").simulate("change", "H_LO", 3);
+    render(<CameraCalibration {...p} />);
+    fireEvent.click(screen.getByRole("button", { name: /update workspace/i }));
     expect(p.saveFarmwareEnv)
       .toHaveBeenCalledWith("CAMERA_CALIBRATION_H_LO", "3");
   });
@@ -71,45 +109,45 @@ describe("<CameraCalibration/>", () => {
   it("calls scanImage", () => {
     const p = fakeProps();
     p.wDEnv = { CAMERA_CALIBRATION_easy_calibration: SPECIAL_VALUES.FALSE };
-    const wrapper = shallow(<CameraCalibration {...p} />);
-    wrapper.find("ImageWorkspace").simulate("processPhoto", 1);
+    render(<CameraCalibration {...p} />);
+    fireEvent.click(screen.getByRole("button", { name: /scan current image/i }));
     expect(actions.scanImage).toHaveBeenCalledWith(false);
     expect(mockScanImage).toHaveBeenCalledWith(1);
   });
 
   it("saves CameraCalibrationConfig changes: API", () => {
     const p = fakeProps();
-    const wrapper = shallow(<CameraCalibration {...p} />);
-    wrapper.find("CameraCalibrationConfig")
-      .simulate("change", "CAMERA_CALIBRATION_camera_offset_x", 10);
+    render(<CameraCalibration {...p} />);
+    fireEvent.click(screen.getByRole("button",
+      { name: /change camera offset x/i }));
     expect(p.saveFarmwareEnv)
       .toHaveBeenCalledWith("CAMERA_CALIBRATION_camera_offset_x", "10");
   });
 
   it("saves string CameraCalibrationConfig changes: API", () => {
     const p = fakeProps();
-    const wrapper = shallow(<CameraCalibration {...p} />);
-    wrapper.find("CameraCalibrationConfig")
-      .simulate("change", "CAMERA_CALIBRATION_image_bot_origin_location", 4);
+    render(<CameraCalibration {...p} />);
+    fireEvent.click(screen.getByRole("button",
+      { name: /change image origin/i }));
     expect(p.saveFarmwareEnv).toHaveBeenCalledWith(
       "CAMERA_CALIBRATION_image_bot_origin_location", "\"BOTTOM_LEFT\"");
   });
 
   it("shows calibrate as enabled", () => {
-    const wrapper = shallow(<CameraCalibration {...fakeProps()} />);
-    const btn = wrapper.find("button").first();
-    expect(btn.text()).toEqual("Calibrate");
-    expect(btn.props().title).not.toEqual(Content.NO_CAMERA_SELECTED);
+    render(<CameraCalibration {...fakeProps()} />);
+    const button = screen.getByRole("button", { name: /calibrate/i });
+    expect(button).toHaveTextContent("Calibrate");
+    expect(button).not.toHaveAttribute("title", Content.NO_CAMERA_SELECTED);
     expect(error).not.toHaveBeenCalled();
   });
 
   it("shows calibrate as disabled when camera is disabled", () => {
     const p = fakeProps();
     p.env = { camera: "NONE" };
-    const wrapper = shallow(<CameraCalibration {...p} />);
-    const btn = wrapper.find("button").first();
-    expect(btn.props().title).toEqual(Content.NO_CAMERA_SELECTED);
-    btn.simulate("click");
+    render(<CameraCalibration {...p} />);
+    const button = screen.getByRole("button", { name: /calibrate/i });
+    expect(button).toHaveAttribute("title", Content.NO_CAMERA_SELECTED);
+    fireEvent.click(button);
     expect(error).toHaveBeenCalledWith(
       ToolTips.SELECT_A_CAMERA, { title: Content.NO_CAMERA_SELECTED });
   });
@@ -117,29 +155,31 @@ describe("<CameraCalibration/>", () => {
   it("toggles simple version on", () => {
     const p = fakeProps();
     p.wDEnv = { CAMERA_CALIBRATION_easy_calibration: SPECIAL_VALUES.FALSE };
-    const wrapper = mount(<CameraCalibration {...p} />);
-    wrapper.find("input").first().simulate("change");
+    render(<CameraCalibration {...p} />);
+    fireEvent.click(screen.getByRole("checkbox"));
     expect(p.saveFarmwareEnv).toHaveBeenCalledWith(
-      "CAMERA_CALIBRATION_easy_calibration", "\"FALSE\"",
+      "CAMERA_CALIBRATION_easy_calibration", "\"TRUE\"",
     );
   });
 
   it("toggles simple version off", () => {
     const p = fakeProps();
     p.wDEnv = { CAMERA_CALIBRATION_easy_calibration: SPECIAL_VALUES.TRUE };
-    const wrapper = mount(<CameraCalibration {...p} />);
-    wrapper.find("input").first().simulate("change");
+    render(<CameraCalibration {...p} />);
+    fireEvent.click(screen.getByRole("checkbox"));
     expect(p.saveFarmwareEnv).toHaveBeenCalledWith(
-      "CAMERA_CALIBRATION_easy_calibration", "\"TRUE\"",
+      "CAMERA_CALIBRATION_easy_calibration", "\"FALSE\"",
     );
   });
 
   it("renders simple version", () => {
     const p = fakeProps();
     p.wDEnv = { CAMERA_CALIBRATION_easy_calibration: SPECIAL_VALUES.TRUE };
-    const wrapper = mount(<CameraCalibration {...p} />);
-    expect(wrapper.text().toLowerCase()).not.toContain("blur");
-    expect(wrapper.text()).toContain(Content.CAMERA_CALIBRATION_GRID_PATTERN);
-    expect(wrapper.text()).not.toContain(Content.CAMERA_CALIBRATION_RED_OBJECTS);
+    render(<CameraCalibration {...p} />);
+    expect(screen.queryByText(/blur/i)).toBeNull();
+    expect(screen.getByText(Content.CAMERA_CALIBRATION_GRID_PATTERN))
+      .toBeInTheDocument();
+    expect(screen.queryByText(Content.CAMERA_CALIBRATION_RED_OBJECTS))
+      .toBeNull();
   });
 });

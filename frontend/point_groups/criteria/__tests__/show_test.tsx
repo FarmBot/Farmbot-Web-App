@@ -1,5 +1,34 @@
+jest.mock("../../../ui", () => {
+  const React = require("react");
+  const actual = jest.requireActual("../../../ui");
+  return {
+    ...actual,
+    FBSelect: (props: any) => {
+      const value = props.selectedItem ? String(props.selectedItem.value) : "";
+      return <select
+        className={"mock-fb-select"}
+        value={value}
+        onChange={e => {
+          const nextValue = e.currentTarget.value;
+          const selected = nextValue === ""
+            ? props.list.find((item: any) => item.isNull)
+            || props.list.find((item: any) => String(item.value) === "")
+            : props.list.find((item: any) =>
+              String(item.value) === nextValue);
+          props.onChange(selected || { label: "", value: nextValue });
+        }}>
+        <option value={""} />
+        {props.list.map((item: any, index: number) =>
+          <option key={`${item.value}-${index}`} value={String(item.value)}>
+            {item.label}
+          </option>)}
+      </select>;
+    },
+  };
+});
+
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { render, fireEvent } from "@testing-library/react";
 import {
   EqCriteriaSelection,
   NumberCriteriaSelection,
@@ -18,7 +47,6 @@ import {
 import {
   fakePointGroup,
 } from "../../../__test_support__/fake_state/resources";
-import { FBSelect, Checkbox } from "../../../ui";
 import { Actions } from "../../../constants";
 import * as criteriaEdit from "../edit";
 
@@ -54,15 +82,15 @@ describe("<EqCriteriaSelection<string> />", () => {
 
   it("renders", () => {
     const p = fakeProps();
-    const wrapper = mount(<EqCriteriaSelection<string> {...p} />);
-    expect(wrapper.text()).toContain("=");
+    const { container } = render(<EqCriteriaSelection<string> {...p} />);
+    expect(container.textContent).toContain("=");
   });
 
   it("removes criteria", () => {
     const p = fakeProps();
     p.eqCriteria = { openfarm_slug: ["slug"] };
-    const wrapper = mount(<EqCriteriaSelection<string> {...p} />);
-    wrapper.find("button").last().simulate("click");
+    const { container } = render(<EqCriteriaSelection<string> {...p} />);
+    fireEvent.click(container.querySelectorAll("button")[1] as Element);
     expect(removeEqCriteriaValueSpy).toHaveBeenCalledWith(
       p.group,
       { openfarm_slug: ["slug"] },
@@ -84,17 +112,17 @@ describe("<NumberCriteriaSelection />", () => {
   it("renders", () => {
     const p = fakeProps();
     p.criteria.number_lt = { x: 1 };
-    const wrapper = mount(<NumberCriteriaSelection {...p} />);
-    expect(wrapper.text()).toContain("<");
+    const { container } = render(<NumberCriteriaSelection {...p} />);
+    expect(container.textContent).toContain("<");
   });
 
   it("removes criteria", () => {
     const p = fakeProps();
     p.criteriaKey = "number_gt";
     p.criteria.number_gt = { x: 1 };
-    const wrapper = mount(<NumberCriteriaSelection {...p} />);
-    expect(wrapper.text()).toContain(">");
-    wrapper.find("button").last().simulate("click");
+    const { container } = render(<NumberCriteriaSelection {...p} />);
+    expect(container.textContent).toContain(">");
+    fireEvent.click(container.querySelectorAll("button")[1] as Element);
     expect(clearCriteriaFieldSpy).toHaveBeenCalledWith(
       p.group,
       ["number_gt"],
@@ -116,14 +144,16 @@ describe("<DaySelection />", () => {
   it("shows label", () => {
     const p = fakeProps();
     p.advanced = true;
-    const wrapper = shallow(<DaySelection {...p} />);
-    expect(wrapper.html()).toContain("label");
+    const { container } = render(<DaySelection {...p} />);
+    expect(container.querySelector("label")).toBeTruthy();
   });
 
   it("changes operator", () => {
     const p = fakeProps();
-    const wrapper = shallow(<DaySelection {...p} />);
-    wrapper.find(FBSelect).simulate("change", { label: "", value: "<" });
+    const { container } = render(<DaySelection {...p} />);
+    fireEvent.change(container.querySelector(".mock-fb-select") as Element, {
+      target: { value: "<" }
+    });
     expect(editCriteriaSpy).toHaveBeenCalledWith(
       p.group,
       { day: { days_ago: 0, op: "<" } },
@@ -132,9 +162,9 @@ describe("<DaySelection />", () => {
 
   it("changes day value", () => {
     const p = fakeProps();
-    const wrapper = shallow(<DaySelection {...p} />);
-    wrapper.find("input").last().simulate("change", {
-      currentTarget: { value: "1" }
+    const { container } = render(<DaySelection {...p} />);
+    fireEvent.change(container.querySelector("input[name='days_ago']") as Element, {
+      target: { value: "1" }
     });
     expect(editCriteriaSpy).toHaveBeenCalledWith(
       p.group,
@@ -145,8 +175,8 @@ describe("<DaySelection />", () => {
   it("resets day criteria to default", () => {
     const p = fakeProps();
     p.group.body.criteria.day = { op: ">", days_ago: 1 };
-    const wrapper = shallow(<DaySelection {...p} />);
-    wrapper.find(Checkbox).simulate("change");
+    const { container } = render(<DaySelection {...p} />);
+    fireEvent.click(container.querySelector("input[type='checkbox']") as Element);
     expect(editCriteriaSpy).toHaveBeenCalledWith(p.group, {
       day: { op: "<", days_ago: 0 }
     });
@@ -162,9 +192,9 @@ describe("<NumberLtGtInput />", () => {
 
   it("changes number_gt", () => {
     const p = fakeProps();
-    const wrapper = shallow(<NumberLtGtInput {...p} />);
-    wrapper.find("input").first().simulate("blur", {
-      currentTarget: { value: "1" }
+    const { container } = render(<NumberLtGtInput {...p} />);
+    fireEvent.blur(container.querySelectorAll("input")[0] as Element, {
+      target: { value: "1" }
     });
     expect(editGtLtCriteriaFieldSpy).toHaveBeenCalledWith(
       p.group,
@@ -175,9 +205,9 @@ describe("<NumberLtGtInput />", () => {
 
   it("changes number_lt", () => {
     const p = fakeProps();
-    const wrapper = shallow(<NumberLtGtInput {...p} />);
-    wrapper.find("input").last().simulate("blur", {
-      currentTarget: { value: "1" }
+    const { container } = render(<NumberLtGtInput {...p} />);
+    fireEvent.blur(container.querySelectorAll("input")[1] as Element, {
+      target: { value: "1" }
     });
     expect(editGtLtCriteriaFieldSpy).toHaveBeenCalledWith(
       p.group,
@@ -202,8 +232,8 @@ describe("<LocationSelection />", () => {
 
   it("clears location criteria", () => {
     const p = fakeProps();
-    const wrapper = mount(<LocationSelection {...p} />);
-    wrapper.find("input").first().simulate("change");
+    const { container } = render(<LocationSelection {...p} />);
+    fireEvent.click(container.querySelector("input[type='checkbox']") as Element);
     expect(clearCriteriaFieldSpy).toHaveBeenCalledWith(
       p.group,
       ["number_lt", "number_gt"],
@@ -213,8 +243,8 @@ describe("<LocationSelection />", () => {
 
   it("toggles selection box behavior", () => {
     const p = fakeProps();
-    const wrapper = mount(<LocationSelection {...p} />);
-    wrapper.find("button").last().simulate("click");
+    const { container } = render(<LocationSelection {...p} />);
+    fireEvent.click(container.querySelector("button") as Element);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.EDIT_GROUP_AREA_IN_MAP,
       payload: true
@@ -225,15 +255,15 @@ describe("<LocationSelection />", () => {
     const p = fakeProps();
     p.group.body.criteria.number_gt = {};
     p.group.body.criteria.number_gt = {};
-    const wrapper = mount(<LocationSelection {...p} />);
-    expect(wrapper.text().toLowerCase()).not.toContain("invalid selection");
+    const { container } = render(<LocationSelection {...p} />);
+    expect(container.textContent?.toLowerCase()).not.toContain("invalid selection");
   });
 
   it("displays selection warning", () => {
     const p = fakeProps();
     p.group.body.criteria.number_lt = { x: 100 };
     p.group.body.criteria.number_gt = { x: 200 };
-    const wrapper = mount(<LocationSelection {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("invalid selection");
+    const { container } = render(<LocationSelection {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("invalid selection");
   });
 });

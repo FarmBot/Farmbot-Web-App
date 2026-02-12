@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import { fakePoint } from "../../__test_support__/fake_state/resources";
 import * as popover from "../../ui/popover";
 import {
@@ -43,8 +43,10 @@ describe("<PointSortMenu />", () => {
 
   it("changes sort type: default", () => {
     const p = fakeProps();
-    const wrapper = mount(<PointSortMenu {...p} />);
-    wrapper.find("i.fa-sort").simulate("click");
+    const { container } = render(<PointSortMenu {...p} />);
+    const icon = container.querySelector("i.fa-sort");
+    if (!icon) { throw new Error("Expected default sort icon"); }
+    fireEvent.click(icon);
     expect(p.onChange).toHaveBeenCalledWith({
       sortBy: undefined, reverse: false
     });
@@ -52,8 +54,10 @@ describe("<PointSortMenu />", () => {
 
   it("changes sort type: by age", () => {
     const p = fakeProps();
-    const wrapper = mount(<PointSortMenu {...p} />);
-    wrapper.find("i.fa-calendar").simulate("click");
+    const { container } = render(<PointSortMenu {...p} />);
+    const icon = container.querySelector("i.fa-calendar");
+    if (!icon) { throw new Error("Expected age sort icon"); }
+    fireEvent.click(icon);
     expect(p.onChange).toHaveBeenCalledWith({
       sortBy: "created_at", reverse: false
     });
@@ -61,8 +65,10 @@ describe("<PointSortMenu />", () => {
 
   it("changes sort type: by name", () => {
     const p = fakeProps();
-    const wrapper = mount(<PointSortMenu {...p} />);
-    wrapper.find("i.fa-font").simulate("click");
+    const { container } = render(<PointSortMenu {...p} />);
+    const icon = container.querySelector("i.fa-font");
+    if (!icon) { throw new Error("Expected name sort icon"); }
+    fireEvent.click(icon);
     expect(p.onChange).toHaveBeenCalledWith({
       sortBy: "name", reverse: false
     });
@@ -70,8 +76,10 @@ describe("<PointSortMenu />", () => {
 
   it("changes sort type: by size", () => {
     const p = fakeProps();
-    const wrapper = mount(<PointSortMenu {...p} />);
-    wrapper.find("i.fa-sort-amount-desc").simulate("click");
+    const { container } = render(<PointSortMenu {...p} />);
+    const icon = container.querySelector("i.fa-sort-amount-desc");
+    if (!icon) { throw new Error("Expected size sort icon"); }
+    fireEvent.click(icon);
     expect(p.onChange).toHaveBeenCalledWith({
       sortBy: "radius", reverse: true
     });
@@ -79,8 +87,10 @@ describe("<PointSortMenu />", () => {
 
   it("changes sort type: by z", () => {
     const p = fakeProps();
-    const wrapper = mount(<PointSortMenu {...p} />);
-    wrapper.find("i.z").simulate("click");
+    const { container } = render(<PointSortMenu {...p} />);
+    const icon = container.querySelector("i.z");
+    if (!icon) { throw new Error("Expected z sort icon"); }
+    fireEvent.click(icon);
     expect(p.onChange).toHaveBeenCalledWith({
       sortBy: "z", reverse: true
     });
@@ -89,42 +99,50 @@ describe("<PointSortMenu />", () => {
   it("shows selected sort method: default", () => {
     const p = fakeProps();
     p.sortOptions = { sortBy: undefined, reverse: false };
-    const wrapper = mount(<PointSortMenu {...p} />);
-    expect(wrapper.find("i.fa-sort").hasClass("selected")).toBeTruthy();
-    expect(wrapper.find("i.fa-sort-amount-desc").hasClass("selected"))
-      .toBeFalsy();
+    const { container } = render(<PointSortMenu {...p} />);
+    expect(container.querySelector("i.fa-sort")?.classList.contains("selected"))
+      .toBeTruthy();
+    expect(container.querySelector("i.fa-sort-amount-desc")
+      ?.classList.contains("selected")).toBeFalsy();
   });
 
   it("shows selected sort method: age", () => {
     const p = fakeProps();
     p.sortOptions = { sortBy: "created_at", reverse: false };
-    const wrapper = mount(<PointSortMenu {...p} />);
-    expect(wrapper.find("i.fa-sort").hasClass("selected")).toBeFalsy();
-    expect(wrapper.find("i.fa-calendar").hasClass("selected")).toBeTruthy();
+    const { container } = render(<PointSortMenu {...p} />);
+    expect(container.querySelector("i.fa-sort")?.classList.contains("selected"))
+      .toBeFalsy();
+    expect(container.querySelector("i.fa-calendar")
+      ?.classList.contains("selected")).toBeTruthy();
   });
 
   it("shows selected sort method: name", () => {
     const p = fakeProps();
     p.sortOptions = { sortBy: "name", reverse: false };
-    const wrapper = mount(<PointSortMenu {...p} />);
-    expect(wrapper.find("i.fa-sort").hasClass("selected")).toBeFalsy();
-    expect(wrapper.find("i.fa-font").hasClass("selected")).toBeTruthy();
+    const { container } = render(<PointSortMenu {...p} />);
+    expect(container.querySelector("i.fa-sort")?.classList.contains("selected"))
+      .toBeFalsy();
+    expect(container.querySelector("i.fa-font")
+      ?.classList.contains("selected")).toBeTruthy();
   });
 
   it("shows selected sort method: size", () => {
     const p = fakeProps();
     p.sortOptions = { sortBy: "radius", reverse: true };
-    const wrapper = mount(<PointSortMenu {...p} />);
-    expect(wrapper.find("i.fa-sort").hasClass("selected")).toBeFalsy();
-    expect(wrapper.find("i.fa-sort-amount-desc").hasClass("selected"))
-      .toBeTruthy();
+    const { container } = render(<PointSortMenu {...p} />);
+    expect(container.querySelector("i.fa-sort")?.classList.contains("selected"))
+      .toBeFalsy();
+    expect(container.querySelector("i.fa-sort-amount-desc")
+      ?.classList.contains("selected")).toBeTruthy();
   });
 
   it("shows selected sort method: z", () => {
     const p = fakeProps();
     p.sortOptions = { sortBy: "z", reverse: true };
-    const wrapper = mount(<PointSortMenu {...p} />);
-    expect(wrapper.find("i.fa-sort").hasClass("selected")).toBeFalsy();
-    expect(wrapper.find("i.z").hasClass("selected")).toBeTruthy();
+    const { container } = render(<PointSortMenu {...p} />);
+    expect(container.querySelector("i.fa-sort")?.classList.contains("selected"))
+      .toBeFalsy();
+    expect(container.querySelector("i.z")?.classList.contains("selected"))
+      .toBeTruthy();
   });
 });

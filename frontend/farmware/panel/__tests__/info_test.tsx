@@ -12,7 +12,7 @@ jest.mock("../../set_active_farmware_by_name", () => ({
 }));
 
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import {
   RawDesignerFarmwareInfo as DesignerFarmwareInfo,
   DesignerFarmwareInfoProps,
@@ -48,18 +48,18 @@ describe("<DesignerFarmwareInfo />", () => {
   });
 
   it("renders empty farmware info panel", () => {
-    const wrapper = mount(<DesignerFarmwareInfo {...fakeProps()} />);
-    expect(wrapper.find(".designer-panel").length).toEqual(1);
-    expect(wrapper.text().toLowerCase()).toContain("no farmware selected");
+    const { container } = render(<DesignerFarmwareInfo {...fakeProps()} />);
+    expect(container.querySelectorAll(".designer-panel").length).toEqual(1);
+    expect(container.textContent?.toLowerCase()).toContain("no farmware selected");
   });
 
   it("renders farmware info panel", () => {
     const p = fakeProps();
     p.farmwares = fakeFarmwares();
     p.currentFarmware = Object.keys(p.farmwares)[0];
-    const wrapper = mount(<DesignerFarmwareInfo {...p} />);
-    expect(wrapper.find(".designer-panel").length).toEqual(1);
-    expect(wrapper.text().toLowerCase()).toContain("my fake farmware");
+    const { container } = render(<DesignerFarmwareInfo {...p} />);
+    expect(container.querySelectorAll(".designer-panel").length).toEqual(1);
+    expect(container.textContent?.toLowerCase()).toContain("my fake farmware");
   });
 
   it("renders farmware installation info panel", () => {
@@ -70,9 +70,9 @@ describe("<DesignerFarmwareInfo />", () => {
     p.taggedFarmwareInstallations = [farmwareInstallation];
     p.currentFarmware = farmwareInstallation.body.package;
     p.farmwares = { [farmwareInstallation.body.package]: farmware };
-    const wrapper = mount(<DesignerFarmwareInfo {...p} />);
-    expect(wrapper.find(".designer-panel").length).toEqual(1);
-    expect(wrapper.text().toLowerCase()).toContain("my fake farmware");
+    const { container } = render(<DesignerFarmwareInfo {...p} />);
+    expect(container.querySelectorAll(".designer-panel").length).toEqual(1);
+    expect(container.textContent?.toLowerCase()).toContain("my fake farmware");
   });
 });
 

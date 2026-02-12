@@ -1,5 +1,5 @@
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { render, fireEvent } from "@testing-library/react";
 import { BulkScheduler, nearOsUpdateTime } from "../bulk_scheduler";
 import { BulkEditorProps } from "../interfaces";
 import {
@@ -8,6 +8,7 @@ import {
 import { Actions } from "../../../constants";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { newWeek } from "../../reducer";
+import { changeBlurableInput } from "../../../__test_support__/helpers";
 
 describe("<BulkScheduler />", () => {
   const week = newWeek();
@@ -30,32 +31,39 @@ describe("<BulkScheduler />", () => {
     };
   }
 
+  const renderWithRef = (props: BulkEditorProps) => {
+    const ref = React.createRef<BulkScheduler>();
+    const utils = render(<BulkScheduler ref={ref} {...props} />);
+    expect(ref.current).toBeTruthy();
+    return { ...utils, ref };
+  };
+
   it("renders with sequence selected", () => {
-    const wrapper = mount(<BulkScheduler {...fakeProps()} />);
-    const buttons = wrapper.find("button");
+    const { container } = render(<BulkScheduler {...fakeProps()} />);
+    const buttons = container.querySelectorAll("button");
     expect(buttons.length).toEqual(5);
     ["Sequence", "Fake Sequence", "Time",
       "Days", "Week 1", "1234567"]
       .map(string =>
-        expect(wrapper.text()).toContain(string));
+        expect(container.textContent).toContain(string));
   });
 
   it("renders without sequence selected", () => {
     const p = fakeProps();
     p.selectedSequence = undefined;
-    const wrapper = mount(<BulkScheduler {...p} />);
+    const { container } = render(<BulkScheduler {...p} />);
     ["Sequence", "None", "Time"].map(string =>
-      expect(wrapper.text()).toContain(string));
+      expect(container.textContent).toContain(string));
   });
 
   it("changes time", () => {
     const p = fakeProps();
     p.dispatch = jest.fn();
-    const panel = shallow<BulkScheduler>(<BulkScheduler {...p} />);
-    const wrapper = shallow(panel.instance().TimeSelection());
-    const timeInput = wrapper.find("BlurableInput").first();
-    expect(timeInput.props().value).toEqual("01:00");
-    timeInput.simulate("commit", { currentTarget: { value: "02:00" } });
+    const { ref } = renderWithRef(p);
+    const { container } = render(<>{ref.current?.TimeSelection()}</>);
+    expect((container.querySelector("input") as HTMLInputElement).value)
+      .toEqual("01:00");
+    changeBlurableInput(container, "02:00");
     expect(p.dispatch).toHaveBeenCalledWith({
       payload: 7200000,
       type: Actions.SET_TIME_OFFSET
@@ -65,10 +73,9 @@ describe("<BulkScheduler />", () => {
   it("sets current time", () => {
     const p = fakeProps();
     p.dispatch = jest.fn();
-    const panel = shallow<BulkScheduler>(<BulkScheduler {...p} />);
-    const wrapper = shallow(panel.instance().TimeSelection());
-    const currentTimeBtn = wrapper.find(".fa-clock-o").first();
-    currentTimeBtn.simulate("click");
+    const { ref } = renderWithRef(p);
+    const { container } = render(<>{ref.current?.TimeSelection()}</>);
+    fireEvent.click(container.querySelector(".fa-clock-o") as Element);
     expect(p.dispatch).toHaveBeenCalledWith({
       payload: expect.any(Number),
       type: Actions.SET_TIME_OFFSET
@@ -78,10 +85,8 @@ describe("<BulkScheduler />", () => {
   it("changes sequence", () => {
     const p = fakeProps();
     p.dispatch = jest.fn();
-    const panel = shallow<BulkScheduler>(<BulkScheduler {...p} />);
-    const wrapper = shallow(panel.instance().SequenceSelectBox());
-    const sequenceInput = wrapper.find("FBSelect").first();
-    sequenceInput.simulate("change", { value: "Sequence" });
+    const { ref } = renderWithRef(p);
+    ref.current?.onChange({ value: "Sequence" } as never);
     expect(p.dispatch).toHaveBeenCalledWith({
       payload: "Sequence",
       type: Actions.SET_SEQUENCE
@@ -91,10 +96,8 @@ describe("<BulkScheduler />", () => {
   it("doesn't change sequence", () => {
     const p = fakeProps();
     p.dispatch = jest.fn();
-    const panel = shallow<BulkScheduler>(<BulkScheduler {...p} />);
-    const wrapper = shallow(panel.instance().SequenceSelectBox());
-    const sequenceInput = wrapper.find("FBSelect").first();
-    const change = () => sequenceInput.simulate("change", { value: 4 });
+    const { ref } = renderWithRef(p);
+    const change = () => ref.current?.onChange({ value: 4 } as never);
     expect(change).toThrow("WARNING: Not a sequence UUID.");
     expect(p.dispatch).not.toHaveBeenCalled();
   });
@@ -104,15 +107,14 @@ describe("<BulkScheduler />", () => {
     p.dispatch = jest.fn();
     p.device.body.ota_hour = 3;
     p.dailyOffsetMs = 10800000;
-    const panel = shallow<BulkScheduler>(<BulkScheduler {...p} />);
-    const wrapper = shallow(panel.instance().TimeSelection());
-    const timeInput = wrapper.find("BlurableInput").first();
-    timeInput.simulate("commit", { currentTarget: { value: "03:00" } });
+    const { ref } = renderWithRef(p);
+    const { container } = render(<>{ref.current?.TimeSelection()}</>);
+    changeBlurableInput(container, "03:00");
     expect(p.dispatch).toHaveBeenCalledWith({
       payload: 10800000,
       type: Actions.SET_TIME_OFFSET
     });
-    expect(wrapper.html()).toContain("class=\" error\"");
+    expect(container.querySelector("input")?.classList.contains("error")).toBeTruthy();
   });
 
   it("doesn't show warning", () => {
@@ -120,15 +122,14 @@ describe("<BulkScheduler />", () => {
     p.dispatch = jest.fn();
     p.device.body.ota_hour = undefined;
     p.dailyOffsetMs = 10800000;
-    const panel = shallow<BulkScheduler>(<BulkScheduler {...p} />);
-    const wrapper = shallow(panel.instance().TimeSelection());
-    const timeInput = wrapper.find("BlurableInput").first();
-    timeInput.simulate("commit", { currentTarget: { value: "03:00" } });
+    const { ref } = renderWithRef(p);
+    const { container } = render(<>{ref.current?.TimeSelection()}</>);
+    changeBlurableInput(container, "03:00");
     expect(p.dispatch).toHaveBeenCalledWith({
       payload: 10800000,
       type: Actions.SET_TIME_OFFSET
     });
-    expect(wrapper.html()).not.toContain("class=\" error\"");
+    expect(container.querySelector("input")?.classList.contains("error")).toBeFalsy();
   });
 });
 

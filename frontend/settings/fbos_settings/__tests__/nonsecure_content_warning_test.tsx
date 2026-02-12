@@ -1,6 +1,6 @@
 import React from "react";
 import { allAreHttps, NonsecureContentWarning } from "../nonsecure_content_warning";
-import { shallow } from "enzyme";
+import { render } from "@testing-library/react";
 
 describe("allUrlsAreSafe", () => {
   const HTTP = "http://farm.bot";
@@ -17,16 +17,16 @@ describe("allUrlsAreSafe", () => {
   });
 
   it("Shows children if URLs are insecure", () => {
-    const el = shallow(<NonsecureContentWarning urls={[HTTP]}>
+    const { container } = render(<NonsecureContentWarning urls={[HTTP]}>
       Hello
     </NonsecureContentWarning>);
-    expect(el.text()).toContain("Hello");
+    expect(container.textContent).toContain("Hello");
   });
 
   it("Hies children if URLs are secure", () => {
-    const el = shallow(<NonsecureContentWarning urls={[HTTPS]}>
+    const { container } = render(<NonsecureContentWarning urls={[HTTPS]}>
       Hello
     </NonsecureContentWarning>);
-    expect(el.text()).not.toContain("Hello");
+    expect(container.textContent).not.toContain("Hello");
   });
 });

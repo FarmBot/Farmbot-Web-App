@@ -3,7 +3,7 @@ const mockStorj: Dictionary<number | boolean> = {};
 let mockDev = false;
 
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import { LogsSettingsMenu } from "../settings_menu";
 import { ConfigurationName, Dictionary } from "farmbot";
 import { NumericSetting } from "../../../session_keys";
@@ -65,25 +65,25 @@ describe("<LogsSettingsMenu />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<LogsSettingsMenu {...fakeProps()} />);
+    const { container } = render(<LogsSettingsMenu {...fakeProps()} />);
     ["begin", "steps", "complete"].map(string =>
-      expect(wrapper.text().toLowerCase()).toContain(string));
-    expect(wrapper.find("a").length).toEqual(0);
-    expect(wrapper.text().toLowerCase()).not.toContain("firmware");
+      expect(container.textContent?.toLowerCase()).toContain(string));
+    expect(container.querySelectorAll("a").length).toEqual(0);
+    expect(container.textContent?.toLowerCase()).not.toContain("firmware");
   });
 
   it("doesn't update", () => {
     const p = fakeProps();
     p.sourceFbosConfig = () => ({ value: false, consistent: true });
-    const wrapper = mount<LogsSettingsMenu>(<LogsSettingsMenu {...p} />);
-    expect(wrapper.instance().shouldComponentUpdate(p)).toBeFalsy();
+    const instance = new LogsSettingsMenu(p);
+    expect(instance.shouldComponentUpdate(p)).toBeFalsy();
   });
 
   it("updates", () => {
     const p = fakeProps();
     p.sourceFbosConfig = () => ({ value: true, consistent: true });
-    const wrapper = mount<LogsSettingsMenu>(<LogsSettingsMenu {...p} />);
-    expect(wrapper.instance().shouldComponentUpdate(fakeProps())).toBeTruthy();
+    const instance = new LogsSettingsMenu(p);
+    expect(instance.shouldComponentUpdate(fakeProps())).toBeTruthy();
   });
 
   it("deletes all logs", async () => {
@@ -93,8 +93,11 @@ describe("<LogsSettingsMenu />", () => {
     });
     const p = fakeProps();
     p.dispatch = jest.fn(() => Promise.resolve());
-    const wrapper = mount<LogsSettingsMenu>(<LogsSettingsMenu {...p} />);
-    await wrapper.find("button").last().simulate("click");
+    const { container } = render(<LogsSettingsMenu {...p} />);
+    const buttons = container.querySelectorAll("button");
+    fireEvent.click(buttons[buttons.length - 1] as Element);
+    await Promise.resolve();
+    await Promise.resolve();
     expect(crud.destroyAll).toHaveBeenCalledWith(
       "Log", false, Content.DELETE_ALL_LOGS_CONFIRMATION);
     expect(window.location.assign).toHaveBeenCalled();
@@ -104,9 +107,10 @@ describe("<LogsSettingsMenu />", () => {
     it(`toggles ${setting} setting`, () => {
       const p = fakeProps();
       p.sourceFbosConfig = () => ({ value: false, consistent: true });
-      const wrapper = mount(<LogsSettingsMenu {...p} />);
-      wrapper.find("fieldset.row.half-gap.grid-exp-2 button")
-        .at(position - 1).simulate("click");
+      const { container } = render(<LogsSettingsMenu {...p} />);
+      const buttons = container
+        .querySelectorAll("fieldset.row.half-gap.grid-exp-2 button");
+      fireEvent.click(buttons[position - 1] as Element);
       expect(p.dispatch).toHaveBeenCalled();
     });
   }
@@ -118,15 +122,15 @@ describe("<LogsSettingsMenu />", () => {
     const p = fakeProps();
     const setFilterLevel = jest.fn();
     p.setFilterLevel = () => setFilterLevel;
-    const wrapper = mount(<LogsSettingsMenu {...p} />);
+    const { container } = render(<LogsSettingsMenu {...p} />);
     mockStorj[NumericSetting.busy_log] = 0;
-    wrapper.find("fieldset.row.half-gap.grid-exp-2 button")
-      .first().simulate("click");
+    const buttons = container
+      .querySelectorAll("fieldset.row.half-gap.grid-exp-2 button");
+    fireEvent.click(buttons[0] as Element);
     expect(setFilterLevel).toHaveBeenCalledWith(2);
     jest.clearAllMocks();
     mockStorj[NumericSetting.busy_log] = 3;
-    wrapper.find("fieldset.row.half-gap.grid-exp-2 button")
-      .first().simulate("click");
+    fireEvent.click(buttons[0] as Element);
     expect(setFilterLevel).not.toHaveBeenCalled();
   });
 
@@ -135,10 +139,11 @@ describe("<LogsSettingsMenu />", () => {
     p.sourceFbosConfig = () => ({ value: true, consistent: true });
     const setFilterLevel = jest.fn();
     p.setFilterLevel = () => setFilterLevel;
-    const wrapper = mount(<LogsSettingsMenu {...p} />);
+    const { container } = render(<LogsSettingsMenu {...p} />);
     mockStorj[NumericSetting.busy_log] = 0;
-    wrapper.find("fieldset.row.half-gap.grid-exp-2 button")
-      .first().simulate("click");
+    const buttons = container
+      .querySelectorAll("fieldset.row.half-gap.grid-exp-2 button");
+    fireEvent.click(buttons[0] as Element);
     expect(setFilterLevel).not.toHaveBeenCalled();
   });
 
@@ -146,8 +151,9 @@ describe("<LogsSettingsMenu />", () => {
     mockDev = true;
     const p = fakeProps();
     p.bot.hardware.informational_settings.private_ip = "10.0.0.1";
-    const wrapper = mount(<LogsSettingsMenu {...p} />);
-    expect(wrapper.find("a").last().props().href)
+    const { container } = render(<LogsSettingsMenu {...p} />);
+    const links = container.querySelectorAll("a");
+    expect((links[links.length - 1] as HTMLAnchorElement).href)
       .toEqual("http://10.0.0.1/logger");
   });
 });

@@ -1,5 +1,5 @@
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import {
   RawDesignerFarmwareList as DesignerFarmwareList,
   DesignerFarmwareListProps,
@@ -17,7 +17,6 @@ import {
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
-import { SearchField } from "../../../ui/search_field";
 import { Actions } from "../../../constants";
 
 describe("<DesignerFarmwareList />", () => {
@@ -29,25 +28,31 @@ describe("<DesignerFarmwareList />", () => {
   });
 
   it("renders empty farmware list panel", () => {
-    const wrapper = mount(<DesignerFarmwareList {...fakeProps()} />);
+    const { container } = render(<DesignerFarmwareList {...fakeProps()} />);
     ["no farmware yet", "add a farmware"].map(string =>
-      expect(wrapper.text().toLowerCase()).toContain(string));
+      expect(container.textContent?.toLowerCase()).toContain(string));
   });
 
   it("renders farmware list panel", () => {
     const p = fakeProps();
     p.farmwares = { x: fakeFarmware("x"), y: fakeFarmware("y") };
-    const wrapper = mount(<DesignerFarmwareList {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("y");
-    expect(wrapper.text().toLowerCase()).not.toContain("x");
+    const { container } = render(<DesignerFarmwareList {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("y");
+    expect(container.textContent?.toLowerCase()).not.toContain("x");
   });
 
   it("changes search term", () => {
-    const wrapper = shallow<DesignerFarmwareList>(
-      <DesignerFarmwareList {...fakeProps()} />);
-    expect(wrapper.state().searchTerm).toEqual("");
-    wrapper.find(SearchField).simulate("change", "my farmware");
-    expect(wrapper.state().searchTerm).toEqual("my farmware");
+    const p = fakeProps();
+    p.farmwares = { "my farmware": fakeFarmware("my farmware") };
+    const { container } = render(<DesignerFarmwareList {...p} />);
+    const input = container.querySelector("input") as HTMLInputElement;
+    expect(input.value).toEqual("");
+    fireEvent.change(input, {
+      target: { value: "my farmware" },
+      currentTarget: { value: "my farmware" },
+    });
+    expect((container.querySelector("input") as HTMLInputElement).value)
+      .toEqual("my farmware");
   });
 });
 
@@ -72,14 +77,14 @@ describe("<FarmwareListItem />", () => {
   });
 
   it("renders list item", () => {
-    const wrapper = mount(<FarmwareListItem {...fakeProps()} />);
-    expect(wrapper.text()).toContain("My Farmware");
+    const { container } = render(<FarmwareListItem {...fakeProps()} />);
+    expect(container.textContent).toContain("My Farmware");
   });
 
   it("navigates", () => {
     const p = fakeProps();
-    const wrapper = mount(<FarmwareListItem {...p} />);
-    wrapper.simulate("click");
+    const { container } = render(<FarmwareListItem {...p} />);
+    fireEvent.click(container.querySelector("a") as Element);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SELECT_FARMWARE,
       payload: "My Farmware"

@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import {
   FwParamExportMenu, condenseFwConfig, uncondenseFwConfig, importParameters,
   resendParameters,
@@ -30,13 +30,13 @@ afterEach(() => {
 describe("<FwParamExportMenu />", () => {
   it("lists all params", () => {
     const config = fakeFirmwareConfig().body;
-    const wrapper = mount(<FwParamExportMenu firmwareConfig={config} />);
-    expect(wrapper.text()).toContain(
+    const { container } = render(<FwParamExportMenu firmwareConfig={config} />);
+    expect(container.textContent).toContain(
       "\"encoder_enabled\": {\"x\": 1, \"y\": 1, \"z\": 0 },");
-    expect(wrapper.text()).toContain(
+    expect(container.textContent).toContain(
       "\"pin_guard_1\": {\"active_state\": 1, " +
       "\"pin_nr\": 0, \"time_out\": 60 },");
-    expect(wrapper.text()).toContain(
+    expect(container.textContent).toContain(
       "\"param_mov_nr_retry\": {\"\": 3 },");
   });
 });

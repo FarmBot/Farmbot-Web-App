@@ -1,5 +1,5 @@
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import {
   ParameterManagement, ParameterImport, ParameterImportProps,
 } from "../parameter_management";
@@ -9,6 +9,26 @@ import { Content } from "../../../constants";
 import * as exportMenu from "../export_menu";
 import * as configStorageActions from "../../../config_storage/actions";
 import { BooleanSetting } from "../../../session_keys";
+
+jest.mock("../../../photos/data_management/toggle_highlight_modified", () => ({
+  ToggleHighlightModified: () => <div />,
+}));
+
+jest.mock("../../../ui", () => {
+  const actual = jest.requireActual("../../../ui");
+  return {
+    ...actual,
+    BlurableInput: (props: {
+      value?: string,
+      onCommit?: (e: React.SyntheticEvent<HTMLInputElement>) => void,
+    }) =>
+      <input
+        value={props.value || ""}
+        onChange={e => props.onCommit?.(e as never)} />,
+    ToggleButton: (props: { toggleAction: () => void }) =>
+      <button data-testid="toggle-button" onClick={props.toggleAction} />,
+  };
+});
 
 beforeEach(() => {
   jest.spyOn(exportMenu, "importParameters")
@@ -43,34 +63,35 @@ describe("<ParameterManagement />", () => {
   it("renders", () => {
     const p = fakeProps();
     p.settingsPanelState.parameter_management = true;
-    const wrapper = mount(<ParameterManagement {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("reset");
+    const { container } = render(<ParameterManagement {...p} />);
+    expect((container.textContent || "").toLowerCase()).toContain("reset");
   });
 
   it("resends", () => {
     const p = fakeProps();
     p.settingsPanelState.parameter_management = true;
-    const wrapper = mount(<ParameterManagement {...p} />);
-    wrapper.find("button.yellow").first().simulate("click");
+    render(<ParameterManagement {...p} />);
+    fireEvent.click(screen.getByTitle("RESEND"));
     expect(exportMenu.resendParameters).toHaveBeenCalled();
   });
 
   it("imports", () => {
-    window.confirm = jest.fn(() => true);
+    const confirmSpy = jest.spyOn(window, "confirm").mockReturnValue(true);
     const p = fakeProps();
     p.settingsPanelState.parameter_management = true;
-    const wrapper = mount(<ParameterManagement {...p} />);
-    wrapper.find("input").simulate("submit", { currentTarget: { value: "" } });
-    wrapper.find("button.yellow").last().simulate("click");
+    render(<ParameterManagement {...p} />);
+    fireEvent.change(screen.getByRole("textbox"), { target: { value: "" } });
+    fireEvent.click(screen.getByTitle("IMPORT"));
     expect(confirm).toHaveBeenCalledWith(Content.PARAMETER_IMPORT_CONFIRM);
     expect(exportMenu.importParameters).toHaveBeenCalledWith("");
+    confirmSpy.mockRestore();
   });
 
   it("toggles advanced settings", () => {
     const p = fakeProps();
     p.settingsPanelState.parameter_management = true;
-    const wrapper = mount(<ParameterManagement {...p} />);
-    wrapper.find(".fb-toggle-button").at(1).simulate("click");
+    render(<ParameterManagement {...p} />);
+    fireEvent.click(screen.getAllByTestId("toggle-button")[0] as HTMLElement);
     expect(configStorageActions.setWebAppConfigValue).toHaveBeenCalledWith(
       BooleanSetting.show_advanced_settings, true);
   });
@@ -83,11 +104,10 @@ describe("<ParameterImport />", () => {
   });
 
   it("updates", () => {
-    const wrapper = shallow<ParameterImport>(<ParameterImport {...fakeProps()} />);
-    expect(wrapper.state().input).toEqual("");
-    wrapper.find("BlurableInput").simulate("commit", {
-      currentTarget: { value: "{}" }
-    });
-    expect(wrapper.state().input).toEqual("{}");
+    render(<ParameterImport {...fakeProps()} />);
+    const input = screen.getByRole("textbox") as HTMLInputElement;
+    expect(input.value).toEqual("");
+    fireEvent.change(input, { target: { value: "{}" } });
+    expect(input.value).toEqual("{}");
   });
 });

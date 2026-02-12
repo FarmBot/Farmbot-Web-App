@@ -2,7 +2,6 @@ const mockEditStep = jest.fn();
 jest.mock("../../../../api/crud", () => ({ editStep: mockEditStep }));
 
 import React from "react";
-import { shallow } from "enzyme";
 import { SequencePart } from "../sequence_part";
 import { SequenceSelectBox } from "../../../sequence_select_box";
 import { fakeAssertProps } from "../test_fixtures";
@@ -15,8 +14,10 @@ afterAll(() => {
 describe("<SequencePart />", () => {
   it("renders default verbiage and props", () => {
     const p = fakeAssertProps();
-    const el = shallow(<SequencePart {...p} />);
-    el.find(SequenceSelectBox).simulate("change", { value: 246, label: "y" });
+    const rendered = SequencePart(p);
+    const children = rendered.props.children as JSX.Element[];
+    const selector = children.find(child => child.type === SequenceSelectBox);
+    selector?.props.onChange({ value: 246, label: "y" });
     expect(editStep).toHaveBeenCalled();
     const step = cloneDeep(p.currentStep);
     mockEditStep.mock.calls[0][0].executor(step);

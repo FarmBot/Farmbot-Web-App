@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { BoxTop } from "../box_top";
 import { BoxTopProps } from "../interfaces";
 import {
@@ -29,16 +29,18 @@ describe("<BoxTop />", () => {
   it("renders 2D box", () => {
     const p = fakeProps();
     p.threeDimensions = false;
-    const wrapper = mount(<BoxTop {...p} />);
-    expect(wrapper.find(".box-top-2d-wrapper").length).toEqual(1);
-    expect(wrapper.find(".electronics-box-3d-model").length).toEqual(0);
+    const { container } = render(<BoxTop {...p} />);
+    expect(container.querySelectorAll(".box-top-2d-wrapper").length).toEqual(1);
+    expect(container.querySelectorAll(".electronics-box-3d-model").length)
+      .toEqual(0);
   });
 
   it("renders 3D box", () => {
     const p = fakeProps();
     p.threeDimensions = true;
-    const wrapper = mount(<BoxTop {...p} />);
-    expect(wrapper.find(".box-top-2d-wrapper").length).toEqual(0);
-    expect(wrapper.find(".electronics-box-3d-model").length).toEqual(1);
+    const { container } = render(<BoxTop {...p} />);
+    expect(container.querySelectorAll(".box-top-2d-wrapper").length).toEqual(0);
+    expect(container.querySelectorAll(".electronics-box-3d-model").length)
+      .toEqual(1);
   });
 });

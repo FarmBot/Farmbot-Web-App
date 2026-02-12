@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import {
   RawDesignerSensors as DesignerSensors,
   DesignerSensorsProps,
@@ -20,9 +20,9 @@ describe("<DesignerSensors />", () => {
   });
 
   it("renders sensors panel", () => {
-    const wrapper = mount(<DesignerSensors {...fakeProps()} />);
+    const { container } = render(<DesignerSensors {...fakeProps()} />);
     ["sensors", "history"].map(string =>
-      expect(wrapper.text().toLowerCase()).toContain(string));
+      expect(container.textContent?.toLowerCase()).toContain(string));
   });
 });
 

@@ -12,7 +12,7 @@ jest.mock("../../../settings/dev/dev_support", () => {
 });
 
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { ImagingDataManagement } from "../index";
 import { ImagingDataManagementProps } from "../interfaces";
 
@@ -28,21 +28,21 @@ describe("<ImagingDataManagement />", () => {
   });
 
   it("renders toggle", () => {
-    const wrapper = mount(<ImagingDataManagement {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("highlight");
+    render(<ImagingDataManagement {...fakeProps()} />);
+    expect(screen.getByText(/highlight/i)).toBeInTheDocument();
   });
 
   it("doesn't render advanced", () => {
     mockDev = false;
-    const wrapper = mount(<ImagingDataManagement {...fakeProps()} />);
-    expect(wrapper.text()).not.toContain("Advanced");
+    render(<ImagingDataManagement {...fakeProps()} />);
+    expect(screen.queryByText("Advanced")).toBeNull();
   });
 
   it("toggles advanced", () => {
     mockDev = true;
-    const wrapper = mount(<ImagingDataManagement {...fakeProps()} />);
-    expect(wrapper.find(".farmware-env-editor").length).toEqual(0);
-    wrapper.find(".expandable-header").simulate("click");
-    expect(wrapper.find(".farmware-env-editor").length).toEqual(1);
+    const { container } = render(<ImagingDataManagement {...fakeProps()} />);
+    expect(container.querySelector(".farmware-env-editor")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: /advanced/i }));
+    expect(container.querySelector(".farmware-env-editor")).toBeTruthy();
   });
 });

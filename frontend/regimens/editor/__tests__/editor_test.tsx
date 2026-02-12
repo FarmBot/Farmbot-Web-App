@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render, fireEvent } from "@testing-library/react";
 import {
   RawDesignerRegimenEditor as DesignerRegimenEditor,
 } from "../../editor/editor";
@@ -47,18 +47,18 @@ describe("<DesignerRegimenEditor />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<DesignerRegimenEditor {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("save");
+    const { container } = render(<DesignerRegimenEditor {...fakeProps()} />);
+    expect(container.textContent?.toLowerCase()).toContain("save");
   });
 
   it("handles missing regimen", () => {
     const p = fakeProps();
     p.current = undefined;
-    const wrapper = mount(<DesignerRegimenEditor {...p} />);
+    const { container } = render(<DesignerRegimenEditor {...p} />);
     expect(activeRegimen.setActiveRegimenByName).toHaveBeenCalled();
-    expect(wrapper.text().toLowerCase()).toContain("no regimen selected");
-    expect(wrapper.html()).not.toContain("select color");
-    wrapper.find("button").first().simulate("click");
+    expect(container.textContent?.toLowerCase()).toContain("no regimen selected");
+    expect(container.innerHTML).not.toContain("select color");
+    fireEvent.click(container.querySelector("button") as Element);
     expect(addRegimenModule.addRegimen).toHaveBeenCalled();
   });
 
@@ -67,22 +67,22 @@ describe("<DesignerRegimenEditor />", () => {
     const regimen = fakeRegimen();
     regimen.body.color = "" as Color;
     p.current = regimen;
-    const wrapper = mount(<DesignerRegimenEditor {...p} />);
-    wrapper.find(".color-picker-item-wrapper").first().simulate("click");
+    const { container } = render(<DesignerRegimenEditor {...p} />);
+    fireEvent.click(container.querySelector(".color-picker-item-wrapper") as Element);
     expect(crud.edit).toHaveBeenCalledWith(p.current, { color: "blue" });
   });
 
   it("active editor", () => {
-    const wrapper = mount(<DesignerRegimenEditor {...fakeProps()} />);
+    const { container } = render(<DesignerRegimenEditor {...fakeProps()} />);
     ["Foo", "Saved", "Schedule item"].map(string =>
-      expect(wrapper.text()).toContain(string));
+      expect(container.textContent).toContain(string));
   });
 
   it("empty editor", () => {
     const props = fakeProps();
     props.current = undefined;
-    const wrapper = mount(<DesignerRegimenEditor {...props} />);
+    const { container } = render(<DesignerRegimenEditor {...props} />);
     ["No Regimen selected."].map(string =>
-      expect(wrapper.text()).toContain(string));
+      expect(container.textContent).toContain(string));
   });
 });

@@ -5,14 +5,49 @@ import { MotorsProps } from "../interfaces";
 import {
   Motors, motorCurrentMaToPercent, motorCurrentPercentToMa,
 } from "../motors";
-import { render, mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import {
   settingsPanelState as fakeSettingsPanelState,
 } from "../../../__test_support__/panel_state";
-import { SingleSettingRow } from "../single_setting_row";
 import { range } from "lodash";
 import * as defaultValues from "../default_values";
 import * as deviceActions from "../../../devices/actions";
+
+const singleSettingRowMock = jest.fn((props: {
+  label: string, tooltip: string, children: React.ReactNode
+}) => <div>{props.label}{props.tooltip}{props.children}</div>);
+const toggleButtonMock = jest.fn((props: { toggleAction: () => void }) =>
+  <button onClick={props.toggleAction} />);
+const numericGroupMock = jest.fn((props: {
+  label: string, warning?: { x?: string, y?: string, z?: string }
+}) =>
+  <div className={props.warning &&
+    (props.warning.x || props.warning.y || props.warning.z)
+    ? "input-error"
+    : ""}>
+    {props.label}
+  </div>);
+const booleanGroupMock = jest.fn((props: { label: string }) => <div>{props.label}</div>);
+
+jest.mock("../single_setting_row", () => ({
+  SingleSettingRow: (props: unknown) => singleSettingRowMock(props as never),
+}));
+
+jest.mock("../numeric_mcu_input_group", () => ({
+  NumericMCUInputGroup: (props: unknown) => numericGroupMock(props as never),
+}));
+
+jest.mock("../boolean_mcu_input_group", () => ({
+  BooleanMCUInputGroup: (props: unknown) => booleanGroupMock(props as never),
+}));
+
+jest.mock("../../../ui", () => {
+  const actual = jest.requireActual("../../../ui");
+  return {
+    ...actual,
+    ToggleButton: (props: unknown) => toggleButtonMock(props as never),
+  };
+});
 
 let getDefaultFwConfigValueSpy: jest.SpyInstance;
 let getModifiedClassNameSpy: jest.SpyInstance;
@@ -20,6 +55,10 @@ let settingToggleSpy: jest.SpyInstance;
 const TOGGLE_ACTION = { type: "TOGGLE_MCU" };
 
 beforeEach(() => {
+  singleSettingRowMock.mockClear();
+  toggleButtonMock.mockClear();
+  numericGroupMock.mockClear();
+  booleanGroupMock.mockClear();
   getDefaultFwConfigValueSpy = jest.spyOn(defaultValues, "getDefaultFwConfigValue")
     .mockImplementation(jest.fn(() => () => mockDefaultValue) as never);
   getModifiedClassNameSpy = jest.spyOn(defaultValues, "getModifiedClassName")
@@ -49,46 +88,48 @@ describe("<Motors />", () => {
   };
 
   it("renders the base case", () => {
-    const wrapper = render(<Motors {...fakeProps()} />);
+    const { container } = render(<Motors {...fakeProps()} />);
     ["Enable 2nd X Motor",
       "Max Speed (mm/s)",
     ].map(string =>
-      expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));
+      expect((container.textContent || "").toLowerCase()).toContain(string.toLowerCase()));
   });
 
   it("shows TMC parameters", () => {
     const p = fakeProps();
     p.firmwareHardware = "express_k10";
-    const wrapper = render(<Motors {...p} />);
-    expect(wrapper.text()).toContain("Motor Current");
+    const { container } = render(<Motors {...p} />);
+    expect(container.textContent).toContain("Motor Current");
   });
 
   it("doesn't show TMC parameters", () => {
     const p = fakeProps();
     p.firmwareHardware = "farmduino";
-    const wrapper = render(<Motors {...p} />);
-    expect(wrapper.text()).not.toContain("Motor Current");
+    const { container } = render(<Motors {...p} />);
+    expect(container.textContent).not.toContain("Motor Current");
   });
 
   it("shows default value", () => {
     mockDefaultValue = 1;
-    const wrapper = shallow(<Motors {...fakeProps()} />);
-    expect(wrapper.find(SingleSettingRow).first().props().tooltip)
+    render(<Motors {...fakeProps()} />);
+    const props = singleSettingRowMock.mock.calls[0]?.[0] as { tooltip: string };
+    expect(props.tooltip)
       .toContain("enabled");
   });
 
   it("shows different default value", () => {
     mockDefaultValue = 0;
-    const wrapper = shallow(<Motors {...fakeProps()} />);
-    expect(wrapper.find(SingleSettingRow).first().props().tooltip)
+    render(<Motors {...fakeProps()} />);
+    const props = singleSettingRowMock.mock.calls[0]?.[0] as { tooltip: string };
+    expect(props.tooltip)
       .toContain("disabled");
   });
 
   it("shows microstep warning", () => {
     const p = fakeProps();
     p.sourceFwConfig = () => ({ value: 2, consistent: true });
-    const wrapper = shallow(<Motors {...p} />);
-    expect(wrapper.html()).toContain("input-error");
+    const { container } = render(<Motors {...p} />);
+    expect(container.innerHTML).toContain("input-error");
   });
 
   const testParamToggle = (
@@ -100,15 +141,17 @@ describe("<Motors />", () => {
       const p = fakeProps();
       p.settingsPanelState.motors = true;
       p.sourceFwConfig = () => ({ value: 1, consistent: true });
-      const wrapper = mount(<Motors {...p} />);
-      wrapper.find("button").at(position).simulate("click");
+      render(<Motors {...p} />);
+      const callProps = toggleButtonMock.mock.calls[position]?.[0] as
+        { toggleAction: () => void };
+      callProps.toggleAction();
       expect(deviceActions.settingToggle)
         .toHaveBeenCalledWith(parameter, p.sourceFwConfig);
       expect(p.dispatch).toHaveBeenCalledWith(TOGGLE_ACTION);
     });
   };
-  testParamToggle("toggles enable X2", "movement_secondary_motor_x", 9);
-  testParamToggle("toggles invert X2", "movement_secondary_motor_invert_x", 10);
+  testParamToggle("toggles enable X2", "movement_secondary_motor_x", 0);
+  testParamToggle("toggles invert X2", "movement_secondary_motor_invert_x", 1);
 });
 
 describe("motorCurrentMaToPercent()", () => {

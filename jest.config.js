@@ -14,7 +14,6 @@ module.exports = {
     TextDecoder: require('util').TextDecoder,
   },
   setupFiles: [
-    "./frontend/__test_support__/setup_enzyme.ts",
     "./frontend/__test_support__/localstorage.js",
     "./frontend/__test_support__/mock_fbtoaster.ts",
     "./frontend/__test_support__/mock_i18next.ts",

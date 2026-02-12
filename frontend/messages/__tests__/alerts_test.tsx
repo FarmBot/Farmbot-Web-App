@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { FirmwareAlerts, sortAlerts, Alerts } from "../alerts";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { AlertsProps, FirmwareAlertsProps } from "../interfaces";
@@ -43,8 +43,8 @@ describe("<Alerts />", () => {
   });
 
   it("renders no alerts", () => {
-    const wrapper = mount(<Alerts {...fakeProps()} />);
-    expect(wrapper.html()).toContain(
+    const { container } = render(<Alerts {...fakeProps()} />);
+    expect(container.innerHTML).toContain(
       "<div class=\"problem-alerts\">"
       + "<div class=\"problem-alerts-content grid double-gap\"></div>"
       + "</div>");
@@ -53,16 +53,16 @@ describe("<Alerts />", () => {
   it("renders alerts", () => {
     const p = fakeProps();
     p.alerts = [FIRMWARE_MISSING_ALERT, SEED_DATA_MISSING_ALERT];
-    const wrapper = mount(<Alerts {...p} />);
-    expect(wrapper.text()).not.toContain("Your device has no firmware");
-    expect(wrapper.text()).toContain("Choose your FarmBot");
+    const { container } = render(<Alerts {...p} />);
+    expect(container.textContent).not.toContain("Your device has no firmware");
+    expect(container.textContent).toContain("Choose your FarmBot");
   });
 
   it("renders unknown alert", () => {
     const p = fakeProps();
     p.alerts = [FIRMWARE_MISSING_ALERT, UNKNOWN_ALERT];
-    const wrapper = mount(<Alerts {...p} />);
-    expect(wrapper.text()).toContain("firmware: alert");
+    const { container } = render(<Alerts {...p} />);
+    expect(container.textContent).toContain("firmware: alert");
   });
 });
 
@@ -77,16 +77,16 @@ describe("<FirmwareAlerts />", () => {
   it("renders no alerts", () => {
     const p = fakeProps();
     p.alerts = [];
-    const wrapper = mount(<FirmwareAlerts {...p} />);
-    expect(wrapper.html()).toEqual("<div class=\"firmware-alerts\"></div>");
+    const { container } = render(<FirmwareAlerts {...p} />);
+    expect(container.innerHTML).toEqual("<div class=\"firmware-alerts\"></div>");
   });
 
   it("renders alerts", () => {
     const p = fakeProps();
     p.alerts = [FIRMWARE_MISSING_ALERT, UNKNOWN_ALERT];
-    const wrapper = mount(<FirmwareAlerts {...p} />);
-    expect(wrapper.text()).toContain("1");
-    expect(wrapper.text()).toContain("Your device has no firmware");
+    const { container } = render(<FirmwareAlerts {...p} />);
+    expect(container.textContent).toContain("1");
+    expect(container.textContent).toContain("Your device has no firmware");
   });
 });
 

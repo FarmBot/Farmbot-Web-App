@@ -1,5 +1,5 @@
 import React from "react";
-import { shallow } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import { BotConfigInputBox, BotConfigInputBoxProps } from "../bot_config_input_box";
 import * as deviceActions from "../../../devices/actions";
 
@@ -15,6 +15,14 @@ afterEach(() => {
 });
 
 describe("<BotConfigInputBox />", () => {
+  const commit = (container: HTMLElement, value: string) => {
+    const input = container.querySelector("input");
+    if (!input) { throw new Error("Expected config input"); }
+    fireEvent.focus(input);
+    fireEvent.change(input, { target: { value } });
+    fireEvent.blur(input);
+  };
+
   const fakeProps = (): BotConfigInputBoxProps => ({
     setting: "safe_height",
     dispatch: jest.fn(),
@@ -24,25 +32,25 @@ describe("<BotConfigInputBox />", () => {
   it("renders value: number", () => {
     const p = fakeProps();
     p.sourceFbosConfig = () => ({ value: 10, consistent: true });
-    const wrapper = shallow(<BotConfigInputBox {...p} />);
-    const inputBoxProps = wrapper.find("BlurableInput").props();
-    expect(inputBoxProps.value).toEqual("10");
-    expect(inputBoxProps.className).toEqual("");
+    const { container } = render(<BotConfigInputBox {...p} />);
+    const input = container.querySelector("input");
+    expect(input?.value).toEqual("10");
+    expect(input?.className).toEqual("");
   });
 
   it("doesn't render value: string", () => {
     const p = fakeProps();
     p.sourceFbosConfig = () => ({ value: "bad", consistent: true });
-    const wrapper = shallow(<BotConfigInputBox {...p} />);
-    expect(wrapper.find("BlurableInput").props().value).toEqual("");
+    const { container } = render(<BotConfigInputBox {...p} />);
+    const input = container.querySelector("input");
+    expect(input?.value).toEqual("");
   });
 
   it("updates value", () => {
     const p = fakeProps();
     p.sourceFbosConfig = () => ({ value: 0, consistent: true });
-    const wrapper = shallow(<BotConfigInputBox {...p} />);
-    wrapper.find("BlurableInput")
-      .simulate("commit", { currentTarget: { value: "10" } });
+    const { container } = render(<BotConfigInputBox {...p} />);
+    commit(container, "10");
     expect(updateConfigSpy).toHaveBeenCalledWith({ safe_height: 10 });
     expect(p.dispatch).toHaveBeenCalledWith(updateConfigSpy.mock.results[0].value);
   });
@@ -50,9 +58,8 @@ describe("<BotConfigInputBox />", () => {
   it("doesn't update value: same value", () => {
     const p = fakeProps();
     p.sourceFbosConfig = () => ({ value: 10, consistent: true });
-    const wrapper = shallow(<BotConfigInputBox {...p} />);
-    wrapper.find("BlurableInput")
-      .simulate("commit", { currentTarget: { value: "10" } });
+    const { container } = render(<BotConfigInputBox {...p} />);
+    commit(container, "10");
     expect(updateConfigSpy).not.toHaveBeenCalled();
     expect(p.dispatch).not.toHaveBeenCalled();
   });
@@ -60,9 +67,8 @@ describe("<BotConfigInputBox />", () => {
   it("doesn't update value: NaN", () => {
     const p = fakeProps();
     p.sourceFbosConfig = () => ({ value: 10, consistent: true });
-    const wrapper = shallow(<BotConfigInputBox {...p} />);
-    wrapper.find("BlurableInput")
-      .simulate("commit", { currentTarget: { value: "x" } });
+    const { container } = render(<BotConfigInputBox {...p} />);
+    commit(container, "x");
     expect(updateConfigSpy).not.toHaveBeenCalled();
     expect(p.dispatch).not.toHaveBeenCalled();
   });
@@ -70,7 +76,8 @@ describe("<BotConfigInputBox />", () => {
   it("not consistent", () => {
     const p = fakeProps();
     p.sourceFbosConfig = () => ({ value: 10, consistent: false });
-    const wrapper = shallow(<BotConfigInputBox {...p} />);
-    expect(wrapper.find("BlurableInput").props().className).toEqual("dim");
+    const { container } = render(<BotConfigInputBox {...p} />);
+    const input = container.querySelector("input");
+    expect(input?.className).toEqual("dim");
   });
 });

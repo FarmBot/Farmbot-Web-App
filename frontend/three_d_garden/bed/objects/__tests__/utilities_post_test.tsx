@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { UtilitiesPost, UtilitiesPostProps } from "../utilities_post";
 import { INITIAL } from "../../../config";
 import { clone } from "lodash";
@@ -11,7 +11,7 @@ describe("<UtilitiesPost />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<UtilitiesPost {...fakeProps()} />);
-    expect(wrapper.html()).toContain("utilities-post");
+    const { container } = render(<UtilitiesPost {...fakeProps()} />);
+    expect(container.innerHTML).toContain("utilities-post");
   });
 });

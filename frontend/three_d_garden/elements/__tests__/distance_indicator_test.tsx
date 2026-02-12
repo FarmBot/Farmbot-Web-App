@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { DistanceIndicator, DistanceIndicatorProps } from "../distance_indicator";
 
 describe("<DistanceIndicator />", () => {
@@ -9,11 +9,11 @@ describe("<DistanceIndicator />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<DistanceIndicator {...fakeProps()} />);
-    expect(wrapper.html()).toContain("box");
-    expect(wrapper.html()).toContain("text");
-    expect(wrapper.html()).toContain("arrow");
-    expect(wrapper.html()).toContain("100mm");
-    expect(wrapper.html()).toContain("extrude");
+    const { container } = render(<DistanceIndicator {...fakeProps()} />);
+    expect(container.innerHTML).toContain("box");
+    expect(container.innerHTML).toContain("text");
+    expect(container.innerHTML).toContain("arrow");
+    expect(container.innerHTML).toContain("100mm");
+    expect(container.innerHTML).toContain("extrude");
   });
 });

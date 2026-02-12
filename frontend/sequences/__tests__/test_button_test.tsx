@@ -1,11 +1,11 @@
 let mockHasParameters = false;
 
 import React from "react";
+import { render, fireEvent, act } from "@testing-library/react";
 import { TestButton, TestBtnProps, setMenuOpen } from "../test_button";
 import {
   SpecialStatus, ParameterApplication, ParameterDeclaration, Coordinate,
 } from "farmbot";
-import { mount } from "enzyme";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { warning } from "../../toast/toast";
 import { fakeVariableNameSet } from "../../__test_support__/fake_variables";
@@ -14,6 +14,19 @@ import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { fakeMenuOpenState } from "../../__test_support__/fake_designer_state";
 import * as deviceActions from "../../devices/actions";
 import * as isParameterizedModule from "../locals_list/is_parameterized";
+
+jest.mock("../../ui", () => ({
+  ...jest.requireActual("../../ui"),
+  Popover: (props: {
+    className?: string;
+    target: React.ReactNode;
+    content?: React.ReactNode;
+    isOpen?: boolean;
+  }) => <div className={props.className}>
+    {props.target}
+    {props.isOpen && props.content}
+  </div>,
+}));
 
 describe("<TestButton />", () => {
   let execSequenceSpy: jest.SpyInstance;
@@ -46,10 +59,10 @@ describe("<TestButton />", () => {
   it("doesn't fire if unsaved", () => {
     const props = fakeProps();
     props.sequence.specialStatus = SpecialStatus.DIRTY;
-    const result = mount(<TestButton {...props} />);
-    const btn = result.find("button");
-    btn.simulate("click");
-    expect(btn.hasClass("pseudo-disabled")).toBeTruthy();
+    const { container } = render(<TestButton {...props} />);
+    const btn = container.querySelector("button") as HTMLButtonElement;
+    fireEvent.click(btn);
+    expect(btn.classList.contains("pseudo-disabled")).toBeTruthy();
     expect(warning).toHaveBeenCalled();
     expect(deviceActions.execSequence).not.toHaveBeenCalled();
   });
@@ -59,10 +72,10 @@ describe("<TestButton />", () => {
     props.syncStatus = "sync_now";
     props.sequence.specialStatus = SpecialStatus.SAVED;
     props.sequence.body.id = 1;
-    const result = mount(<TestButton {...props} />);
-    const btn = result.find("button");
-    btn.simulate("click");
-    expect(btn.hasClass("pseudo-disabled")).toBeTruthy();
+    const { container } = render(<TestButton {...props} />);
+    const btn = container.querySelector("button") as HTMLButtonElement;
+    fireEvent.click(btn);
+    expect(btn.classList.contains("pseudo-disabled")).toBeTruthy();
     expect(warning).toHaveBeenCalled();
     expect(deviceActions.execSequence).not.toHaveBeenCalled();
   });
@@ -72,10 +85,10 @@ describe("<TestButton />", () => {
     props.syncStatus = "synced";
     props.sequence.specialStatus = SpecialStatus.SAVED;
     props.sequence.body.id = 1;
-    const result = mount(<TestButton {...props} />);
-    const btn = result.find("button");
-    btn.simulate("click");
-    expect(btn.hasClass("orange")).toBeTruthy();
+    const { container } = render(<TestButton {...props} />);
+    const btn = container.querySelector("button") as HTMLButtonElement;
+    fireEvent.click(btn);
+    expect(btn.classList.contains("orange")).toBeTruthy();
     expect(warning).not.toHaveBeenCalled();
     expect(deviceActions.execSequence)
       .toHaveBeenCalledWith(props.sequence.body.id);
@@ -87,10 +100,10 @@ describe("<TestButton />", () => {
     props.sequence.specialStatus = SpecialStatus.SAVED;
     props.sequence.body.id = 1;
     mockHasParameters = true;
-    const result = mount(<TestButton {...props} />);
-    const btn = result.find("button").first();
-    btn.simulate("click");
-    expect(btn.hasClass("orange")).toBeTruthy();
+    const { container } = render(<TestButton {...props} />);
+    const btn = container.querySelector("button") as HTMLButtonElement;
+    fireEvent.click(btn);
+    expect(btn.classList.contains("orange")).toBeTruthy();
     expect(warning).not.toHaveBeenCalled();
     expect(deviceActions.execSequence).not.toHaveBeenCalled();
     expect(props.dispatch).toHaveBeenCalledWith(setMenuOpen({
@@ -103,11 +116,11 @@ describe("<TestButton />", () => {
     mockHasParameters = true;
     props.menuOpen.component = "list";
     props.menuOpen.uuid = props.sequence.uuid;
-    const result = mount(<TestButton {...props} />);
-    const btn = result.find("button").first();
-    expect(btn.hasClass("gray")).toBeTruthy();
-    expect(btn.text()).toEqual("Close");
-    expect(result.find("Popover").length).toEqual(1);
+    const { container } = render(<TestButton {...props} />);
+    const btn = container.querySelector("button") as HTMLButtonElement;
+    expect(btn.classList.contains("gray")).toBeTruthy();
+    expect(btn.textContent).toEqual("Close");
+    expect(container.querySelector(".parameter-assignment-menu")).toBeTruthy();
   });
 
   it("closes parameter assignment menu", () => {
@@ -118,10 +131,10 @@ describe("<TestButton />", () => {
     p.sequence.specialStatus = SpecialStatus.SAVED;
     p.sequence.body.id = 1;
     mockHasParameters = true;
-    const result = mount(<TestButton {...p} />);
-    const btn = result.find("button").first();
-    btn.simulate("click");
-    expect(btn.hasClass("gray")).toBeTruthy();
+    const { container } = render(<TestButton {...p} />);
+    const btn = container.querySelector("button") as HTMLButtonElement;
+    fireEvent.click(btn);
+    expect(btn.classList.contains("gray")).toBeTruthy();
     expect(warning).not.toHaveBeenCalled();
     expect(deviceActions.execSequence).not.toHaveBeenCalled();
     expect(p.dispatch).toHaveBeenCalledWith(setMenuOpen(fakeMenuOpenState()));
@@ -137,9 +150,10 @@ describe("<TestButton />", () => {
       }
     };
     const props = fakeProps();
-    const wrapper = mount<TestButton>(<TestButton {...props} />);
-    wrapper.instance().editBodyVariables(variable);
-    expect(wrapper.state().bodyVariables).toEqual([variable]);
+    const ref = React.createRef<TestButton>();
+    render(<TestButton {...props} ref={ref} />);
+    act(() => { ref.current?.editBodyVariables(variable); });
+    expect(ref.current?.state.bodyVariables).toEqual([variable]);
   });
 
   const COORDINATE: Coordinate = {
@@ -161,10 +175,12 @@ describe("<TestButton />", () => {
     const varData = fakeVariableNameSet("label");
     (varData["label"] as SequenceMeta).celeryNode = declaration;
     props.resources.sequenceMetas[props.sequence.uuid] = varData;
-    const wrapper = mount<TestButton>(<TestButton {...props} />);
-    const content = wrapper.find("Popover").props().content as React.ReactElement;
-    const contentWrapper = mount(<div>{content}</div>);
-    contentWrapper.find("button").first().simulate("click");
+    props.menuOpen.component = "list";
+    props.menuOpen.uuid = props.sequence.uuid;
+    const { container } = render(<TestButton {...props} />);
+    const runButton = container.querySelector(
+      ".parameter-assignment-menu .test-button-div button") as Element;
+    fireEvent.click(runButton);
     expect(deviceActions.execSequence)
       .toHaveBeenCalledWith(props.sequence.body.id, [{
         kind: "parameter_application",
@@ -188,10 +204,12 @@ describe("<TestButton />", () => {
     const varData = fakeVariableNameSet("label");
     (varData["label"] as SequenceMeta).celeryNode = declaration;
     props.resources.sequenceMetas[props.sequence.uuid] = varData;
-    const wrapper = mount<TestButton>(<TestButton {...props} />);
-    const content = wrapper.find("Popover").props().content as React.ReactElement;
-    const contentWrapper = mount(<div>{content}</div>);
-    contentWrapper.find("button").first().simulate("click");
+    props.menuOpen.component = "list";
+    props.menuOpen.uuid = props.sequence.uuid;
+    const { container } = render(<TestButton {...props} />);
+    const runButton = container.querySelector(
+      ".parameter-assignment-menu .test-button-div button") as Element;
+    fireEvent.click(runButton);
     expect(deviceActions.execSequence).not.toHaveBeenCalled();
     expect(warning).toHaveBeenCalled();
   });
@@ -201,8 +219,8 @@ describe("<TestButton />", () => {
     mockHasParameters = true;
     props.menuOpen.component = "list";
     props.menuOpen.uuid = props.sequence.uuid;
-    const wrapper = mount(<TestButton {...props} />);
-    wrapper.unmount();
+    const { unmount } = render(<TestButton {...props} />);
+    unmount();
     expect(props.dispatch).toHaveBeenCalledWith(setMenuOpen(fakeMenuOpenState()));
   });
 });

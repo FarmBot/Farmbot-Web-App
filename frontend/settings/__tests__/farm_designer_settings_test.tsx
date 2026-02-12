@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import { PlainDesignerSettings, Setting } from "../farm_designer_settings";
 import { DesignerSettingsPropsBase, SettingProps } from "../interfaces";
 import { BooleanSetting } from "../../session_keys";
@@ -27,29 +27,33 @@ describe("<PlainDesignerSettings />", () => {
 
   it("renders", () => {
     const firmwareConfig = fakeFirmwareConfig().body;
-    const wrapper = mount(<div>
+    const { container } = render(<div>
       {PlainDesignerSettings(fakeProps(), firmwareConfig)}
     </div>);
-    expect(wrapper.text().toLowerCase()).toContain("plant animations");
+    expect(container.textContent?.toLowerCase()).toContain("plant animations");
   });
 
   it("doesn't call callback", () => {
     const firmwareConfig = fakeFirmwareConfig().body;
-    const wrapper = mount(<div>
+    const { container } = render(<div>
       {PlainDesignerSettings(fakeProps(), firmwareConfig)}
     </div>);
-    expect(wrapper.find("label").at(0).text()).toContain("animations");
-    wrapper.find("button").at(0).simulate("click");
+    const labels = container.querySelectorAll("label");
+    const buttons = container.querySelectorAll("button");
+    expect(labels[0]?.textContent).toContain("animations");
+    fireEvent.click(buttons[0] as Element);
     expect(resetVirtualTrailSpy).not.toHaveBeenCalled();
   });
 
   it("calls callback", () => {
     const firmwareConfig = fakeFirmwareConfig().body;
-    const wrapper = mount(<div>
+    const { container } = render(<div>
       {PlainDesignerSettings(fakeProps(), firmwareConfig)}
     </div>);
-    expect(wrapper.find("label").at(1).text()).toContain("Trail");
-    wrapper.find("button").at(1).simulate("click");
+    const labels = container.querySelectorAll("label");
+    const buttons = container.querySelectorAll("button");
+    expect(labels[1]?.textContent).toContain("Trail");
+    fireEvent.click(buttons[1] as Element);
     expect(resetVirtualTrailSpy).toHaveBeenCalled();
   });
 });
@@ -77,8 +81,8 @@ describe("<Setting />", () => {
 
   it("toggles upon confirmation", () => {
     window.confirm = jest.fn(() => true);
-    const wrapper = mount(<Setting {...fakeProps()} />);
-    wrapper.find("ToggleButton").simulate("click");
+    const { container } = render(<Setting {...fakeProps()} />);
+    fireEvent.click(container.querySelector("button") as Element);
     expect(window.confirm).toHaveBeenCalledWith("confirmation message");
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       BooleanSetting.show_farmbot, true);
@@ -86,8 +90,8 @@ describe("<Setting />", () => {
 
   it("doesn't toggle upon cancel", () => {
     window.confirm = jest.fn(() => false);
-    const wrapper = mount(<Setting {...fakeProps()} />);
-    wrapper.find("ToggleButton").simulate("click");
+    const { container } = render(<Setting {...fakeProps()} />);
+    fireEvent.click(container.querySelector("button") as Element);
     expect(window.confirm).toHaveBeenCalledWith("confirmation message");
     expect(setWebAppConfigValueSpy).not.toHaveBeenCalled();
   });

@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { CropSearchResults, SearchResultProps } from "../crop_search_results";
 import { fakePlant } from "../../__test_support__/fake_state/resources";
 import { Path } from "../../internal_urls";
@@ -30,39 +30,36 @@ describe("<CropSearchResults />", () => {
 
   it("renders CropSearchResults", () => {
     const p = fakeProps();
-    const wrapper = mount(<CropSearchResults {...p} />);
-    const text = wrapper.text();
-    expect(text).toContain("Mint");
-    expect(wrapper.find("Link").length).toEqual(1);
-    expect(wrapper.find("Link").first().prop("to")).toContain("mint");
+    render(<CropSearchResults {...p} />);
+    expect(screen.getByText("Mint")).toBeInTheDocument();
+    const links = screen.getAllByRole("link");
+    expect(links.length).toEqual(1);
+    expect(links[0]).toHaveAttribute("href", expect.stringContaining("mint"));
   });
 
   it("renders for plant type change", () => {
     const p = fakeProps();
     p.plant = fakePlant();
     p.plant.body.id = 1;
-    const wrapper = mount(<CropSearchResults {...p} />);
-    expect(wrapper.text()).toContain("Mint");
-    expect(wrapper.find("Link").first().prop("to"))
-      .toEqual(Path.plants(1));
-    const icon = wrapper.find("img");
-    expect(icon.hasClass("center")).toBeFalsy();
+    const { container } = render(<CropSearchResults {...p} />);
+    expect(screen.getByText("Mint")).toBeInTheDocument();
+    expect(screen.getByRole("link")).toHaveAttribute("href", Path.plants(1));
+    expect(container.querySelector("img")?.classList.contains("center")).toBeFalsy();
   });
 
   it("renders without image", () => {
     const p = fakeProps();
     p.searchTerm = "foo-bar";
-    const wrapper = mount(<CropSearchResults {...p} />);
-    const icon = wrapper.find("img");
-    expect(icon.hasClass("center")).toBeTruthy();
+    const { container } = render(<CropSearchResults {...p} />);
+    expect(container.querySelector("img")?.classList.contains("center")).toBeTruthy();
   });
 
   it("changes plant type", () => {
     const p = fakeProps();
     p.plant = fakePlant();
     p.plant.body.id = 1;
-    const wrapper = mount(<CropSearchResults {...p} />);
-    wrapper.find("Link").first().simulate("click");
+    render(<CropSearchResults {...p} />);
+    fireEvent.click(screen.getByRole("link"));
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_PLANT_TYPE_CHANGE_ID,
       payload: undefined,
@@ -79,8 +76,8 @@ describe("<CropSearchResults />", () => {
     p.plant = fakePlant();
     p.plant.body.id = 1;
     p.hoveredPlant = { plantUUID: p.plant.uuid };
-    const wrapper = mount(<CropSearchResults {...p} />);
-    wrapper.find("Link").first().simulate("click");
+    render(<CropSearchResults {...p} />);
+    fireEvent.click(screen.getByRole("link"));
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_HOVERED_PLANT,
       payload: { plantUUID: p.plant.uuid },
@@ -90,10 +87,10 @@ describe("<CropSearchResults />", () => {
   it("sets bulk slug", () => {
     const p = fakeProps();
     p.bulkPlantSlug = "slug";
-    const wrapper = mount(<CropSearchResults {...p} />);
-    const link = wrapper.find("Link").first();
-    expect(link.prop("to")).toEqual(Path.plants("select"));
-    link.simulate("click");
+    render(<CropSearchResults {...p} />);
+    const link = screen.getByRole("link");
+    expect(link).toHaveAttribute("href", Path.plants("select"));
+    fireEvent.click(link);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_SLUG_BULK,
       payload: "mint",

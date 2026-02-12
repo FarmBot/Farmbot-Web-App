@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { TileEmergencyStop } from "../tile_emergency_stop";
 import { StepParams } from "../../interfaces";
 import { Content } from "../../../constants";
@@ -12,7 +12,8 @@ describe("<TileEmergencyStop />", () => {
   });
 
   it("renders step", () => {
-    const step = mount(<TileEmergencyStop {...fakeProps()} />);
-    expect(step.text().replace(/\s+/g, " ").trim()).toContain(Content.ESTOP_STEP);
+    const { container } = render(<TileEmergencyStop {...fakeProps()} />);
+    expect((container.textContent || "")
+      .replace(/\s+/g, " ").trim()).toContain(Content.ESTOP_STEP);
   });
 });

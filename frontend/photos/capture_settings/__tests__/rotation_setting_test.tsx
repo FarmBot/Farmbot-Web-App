@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import {
   RotationSetting, DISABLE_ROTATE_AT_CAPTURE_KEY,
 } from "../rotation_setting";
@@ -15,8 +15,8 @@ describe("<RotationSetting />", () => {
 
   it("toggles setting on", () => {
     const p = fakeProps();
-    const wrapper = mount(<RotationSetting {...p} />);
-    wrapper.find("button").last().simulate("click");
+    render(<RotationSetting {...p} />);
+    fireEvent.click(screen.getByRole("button"));
     expect(p.saveFarmwareEnv).toHaveBeenCalledWith(
       DISABLE_ROTATE_AT_CAPTURE_KEY, "1");
   });
@@ -24,8 +24,8 @@ describe("<RotationSetting />", () => {
   it("toggles setting off", () => {
     const p = fakeProps();
     p.env = { [DISABLE_ROTATE_AT_CAPTURE_KEY]: "1" };
-    const wrapper = mount(<RotationSetting {...p} />);
-    wrapper.find("button").last().simulate("click");
+    render(<RotationSetting {...p} />);
+    fireEvent.click(screen.getByRole("button"));
     expect(p.saveFarmwareEnv).toHaveBeenCalledWith(
       DISABLE_ROTATE_AT_CAPTURE_KEY, "0");
   });
@@ -44,9 +44,9 @@ describe("<RotationSetting />", () => {
       const p = fakeProps();
       p.version = version;
       p.env = { [DISABLE_ROTATE_AT_CAPTURE_KEY]: envValue };
-      const wrapper = mount(<RotationSetting {...p} />);
+      const { container } = render(<RotationSetting {...p} />);
       label
-        ? expect(wrapper.find("button").last().text()).toEqual(label)
-        : expect(wrapper.find(".capture-rotate-setting").length).toEqual(0);
+        ? expect(screen.getByRole("button").textContent).toEqual(label)
+        : expect(container.querySelector(".capture-rotate-setting")).toBeNull();
     });
 });

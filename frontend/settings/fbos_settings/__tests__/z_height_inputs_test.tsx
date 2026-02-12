@@ -3,7 +3,7 @@ jest.mock("../../default_values", () => ({
 }));
 
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { GantryHeight, SafeHeight, SoilHeight } from "../z_height_inputs";
 import { ZHeightInputProps } from "../interfaces";
 import { bot } from "../../../__test_support__/fake_state/bot";
@@ -25,17 +25,19 @@ describe("<GantryHeight />", () => {
   ])("renders: %s", (firmwareHardware, value) => {
     bot.hardware.configuration.firmware_hardware = firmwareHardware;
     bot.hardware.configuration.gantry_height = value;
-    const wrapper = mount(<GantryHeight {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("gantry height");
-    expect(wrapper.find(".input").hasClass("modified")).toBeFalsy();
+    const { container } = render(<GantryHeight {...fakeProps()} />);
+    expect((container.textContent || "").toLowerCase()).toContain("gantry height");
+    expect(container.querySelector(".input")?.className.includes("modified"))
+      .toBeFalsy();
   });
 
   it("renders: modified", () => {
     bot.hardware.configuration.firmware_hardware = "arduino";
     bot.hardware.configuration.gantry_height = 100;
-    const wrapper = mount(<GantryHeight {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("gantry height");
-    expect(wrapper.find(".input").hasClass("modified")).toBeTruthy();
+    const { container } = render(<GantryHeight {...fakeProps()} />);
+    expect((container.textContent || "").toLowerCase()).toContain("gantry height");
+    expect(container.querySelector(".input")?.className.includes("modified"))
+      .toBeTruthy();
   });
 });
 
@@ -46,8 +48,8 @@ describe("<SafeHeight />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<SafeHeight {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("safe height");
+    const { container } = render(<SafeHeight {...fakeProps()} />);
+    expect((container.textContent || "").toLowerCase()).toContain("safe height");
   });
 });
 
@@ -58,7 +60,7 @@ describe("<SoilHeight />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<SoilHeight {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("soil height");
+    const { container } = render(<SoilHeight {...fakeProps()} />);
+    expect((container.textContent || "").toLowerCase()).toContain("soil height");
   });
 });

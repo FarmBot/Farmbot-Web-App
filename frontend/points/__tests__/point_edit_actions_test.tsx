@@ -1,5 +1,22 @@
+jest.mock("../../ui", () => {
+  const React = require("react");
+  const actual = jest.requireActual("../../ui");
+  return {
+    ...actual,
+    BlurableInput: (props: any) => <input
+      name={props.name}
+      min={props.min}
+      value={props.value}
+      onChange={() => { }}
+      onBlur={e => props.onCommit?.(e)} />,
+    ColorPicker: (props: any) => <button
+      className={"mock-color-picker"}
+      onClick={() => props.onChange?.("blue")} />,
+  };
+});
+
 import React from "react";
-import { shallow, mount } from "enzyme";
+import { render, fireEvent } from "@testing-library/react";
 import {
   EditPointLocation, EditPointLocationProps,
   EditPointRadius, EditPointRadiusProps,
@@ -16,6 +33,7 @@ import {
 import * as crud from "../../api/crud";
 import * as soilHeight from "../soil_height";
 import { fakeMovementState } from "../../__test_support__/fake_bot_data";
+import { changeBlurableInput } from "../../__test_support__/helpers";
 
 let editSpy: jest.SpyInstance;
 let saveSpy: jest.SpyInstance;
@@ -61,10 +79,8 @@ describe("<EditPointName />", () => {
 
   it("edits name", () => {
     const p = fakeProps();
-    const wrapper = shallow(<EditPointName {...p} />);
-    wrapper.find("BlurableInput").first().simulate("commit", {
-      currentTarget: { value: "new point name" }
-    });
+    const view = render(<EditPointName {...p} />);
+    changeBlurableInput(view, "new point name");
     expect(p.updatePoint).toHaveBeenCalledWith({ name: "new point name" });
   });
 });
@@ -83,18 +99,18 @@ describe("<EditPointLocation />", () => {
 
   it("edits location", () => {
     const p = fakeProps();
-    const wrapper = shallow(<EditPointLocation {...p} />);
-    wrapper.find("BlurableInput").first().simulate("commit", {
-      currentTarget: { value: 3 }
-    });
+    const view = render(<EditPointLocation {...p} />);
+    changeBlurableInput(view, "3", 0);
     expect(p.updatePoint).toHaveBeenCalledWith({ x: 3 });
   });
 
   it("allows negative z values", () => {
     const p = fakeProps();
-    const wrapper = shallow(<EditPointLocation {...p} />);
-    expect(wrapper.find("BlurableInput").first().props().min).toEqual(0);
-    expect(wrapper.find("BlurableInput").last().props().min).toEqual(undefined);
+    const { container } = render(<EditPointLocation {...p} />);
+    expect((container.querySelector("input[name='x']") as HTMLInputElement).min)
+      .toEqual("0");
+    expect((container.querySelector("input[name='z']") as HTMLInputElement)
+      .getAttribute("min")).toEqual(null);
   });
 });
 
@@ -106,10 +122,8 @@ describe("<EditPointRadius />", () => {
 
   it("edits radius", () => {
     const p = fakeProps();
-    const wrapper = shallow(<EditPointRadius {...p} />);
-    wrapper.find("BlurableInput").first().simulate("commit", {
-      currentTarget: { value: 300 }
-    });
+    const view = render(<EditPointRadius {...p} />);
+    changeBlurableInput(view, "300");
     expect(p.updatePoint).toHaveBeenCalledWith({ radius: 300 });
   });
 });
@@ -122,16 +136,16 @@ describe("<EditPointColor />", () => {
 
   it("edits color", () => {
     const p = fakeProps();
-    const wrapper = shallow(<EditPointColor {...p} />);
-    wrapper.find("ColorPicker").first().simulate("change", "blue");
+    const { container } = render(<EditPointColor {...p} />);
+    fireEvent.click(container.querySelector(".mock-color-picker") as Element);
     expect(p.updatePoint).toHaveBeenCalledWith({ meta: { color: "blue" } });
   });
 
   it("edits color from default", () => {
     const p = fakeProps();
     p.color = "";
-    const wrapper = shallow(<EditPointColor {...p} />);
-    wrapper.find("ColorPicker").first().simulate("change", "blue");
+    const { container } = render(<EditPointColor {...p} />);
+    fireEvent.click(container.querySelector(".mock-color-picker") as Element);
     expect(p.updatePoint).toHaveBeenCalledWith({ meta: { color: "blue" } });
   });
 });
@@ -144,8 +158,8 @@ describe("<EditPointSoilHeightTag />", () => {
 
   it("edits soil height flag", () => {
     const p = fakeProps();
-    const wrapper = shallow(<EditPointSoilHeightTag {...p} />);
-    wrapper.find("input").first().simulate("change");
+    const { container } = render(<EditPointSoilHeightTag {...p} />);
+    fireEvent.click(container.querySelector("input") as Element);
     expect(soilHeight.toggleSoilHeight).toHaveBeenCalledWith(p.point);
   });
 });
@@ -168,16 +182,16 @@ describe("<AdditionalWeedProperties />", () => {
       meta_key: "meta value", created_by: undefined, key: undefined,
       color: "red", type: "weed",
     };
-    const wrapper = mount(<EditWeedProperties {...p} />);
-    expect(wrapper.text()).toContain("unknown");
-    expect(wrapper.text()).toContain("meta value");
+    const { container } = render(<EditWeedProperties {...p} />);
+    expect(container.textContent).toContain("unknown");
+    expect(container.textContent).toContain("meta value");
   });
 
   it("changes method", () => {
     const p = fakeProps();
     p.weed.body.meta = { removal_method: "automatic" };
-    const wrapper = shallow(<EditWeedProperties {...p} />);
-    wrapper.find("input").last().simulate("change");
+    const { container } = render(<EditWeedProperties {...p} />);
+    fireEvent.click(container.querySelectorAll("input[type='radio']")[1]);
     expect(p.updatePoint).toHaveBeenCalledWith({
       meta: { removal_method: "manual" }
     });

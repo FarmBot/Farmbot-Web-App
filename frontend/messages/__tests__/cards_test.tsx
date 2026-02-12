@@ -12,19 +12,37 @@ const fakeBulletin: Bulletin = {
 let mockData: Bulletin | undefined = fakeBulletin;
 const mockSeedAccount = jest.fn();
 
+jest.mock("../../ui", () => {
+  const React = require("react");
+  const actual = jest.requireActual("../../ui");
+  return {
+    ...actual,
+    FBSelect: (props: {
+      list: unknown[];
+      selectedItem?: { label?: string };
+      customNullLabel?: string;
+      onChange?: (item: { label: string; value: string }) => void;
+    }) =>
+      React.createElement("button", {
+        className: "fb-select-mock",
+        "data-list": JSON.stringify(props.list),
+        onClick: () => props.onChange?.({ label: "", value: "selection" }),
+      }, props.selectedItem?.label || props.customNullLabel || ""),
+  };
+});
+
 import { fakeState } from "../../__test_support__/fake_state";
 import { store } from "../../redux/store";
 const mockState = fakeState();
 
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import axios from "axios";
 import {
   AlertCard, changeFirmwareHardware, ReSeedAccount, SEED_DATA_OPTIONS,
 } from "../cards";
 import { AlertCardProps, Bulletin } from "../interfaces";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
-import { FBSelect } from "../../ui";
 import * as crud from "../../api/crud";
 import * as deviceActions from "../../devices/actions";
 import * as shouldDisplay from "../../devices/should_display";
@@ -102,9 +120,9 @@ describe("<AlertCard />", () => {
     const p = fakeProps();
     p.alert.id = 1;
     p.findApiAlertById = () => "uuid";
-    const wrapper = mount(<AlertCard {...p} />);
-    expect(wrapper.text()).toContain("noun: verb (author)");
-    wrapper.find(".fa-times").simulate("click");
+    const { container } = render(<AlertCard {...p} />);
+    expect(container.textContent).toContain("noun: verb (author)");
+    fireEvent.click(container.querySelector(".fa-times") as Element);
     expect(crud.destroy).toHaveBeenCalledWith("uuid");
   });
 
@@ -114,12 +132,12 @@ describe("<AlertCard />", () => {
     p.alert.created_at = 1555555555;
     p.timeSettings.hour24 = false;
     p.timeSettings.utcOffset = 0;
-    const wrapper = mount(<AlertCard {...p} />);
-    expect(wrapper.text()).toContain("Your device has no firmware");
-    expect(wrapper.find(".fa-times").length).toEqual(0);
-    expect(wrapper.text()).toContain("Apr");
-    expect(wrapper.text()).toContain("2019");
-    expect(wrapper.text()).toContain("Select one");
+    const { container } = render(<AlertCard {...p} />);
+    expect(container.textContent).toContain("Your device has no firmware");
+    expect(container.querySelectorAll(".fa-times").length).toEqual(0);
+    expect(container.textContent).toContain("Apr");
+    expect(container.textContent).toContain("2019");
+    expect(container.textContent).toContain("Select one");
   });
 
   it("renders firmware card with pre-filled selection", () => {
@@ -129,13 +147,13 @@ describe("<AlertCard />", () => {
     p.timeSettings.hour24 = false;
     p.timeSettings.utcOffset = 0;
     p.apiFirmwareValue = "arduino";
-    const wrapper = mount(<AlertCard {...p} />);
-    expect(wrapper.text()).toContain("Your device has no firmware");
-    expect(wrapper.find(".fa-times").length).toEqual(0);
-    expect(wrapper.text()).toContain("Apr");
-    expect(wrapper.text()).not.toContain("Select one");
-    expect(wrapper.text()).toContain("Arduino/RAMPS (Genesis v1.2)");
-    expect(JSON.stringify(wrapper.find(FBSelect).props().list))
+    const { container } = render(<AlertCard {...p} />);
+    expect(container.textContent).toContain("Your device has no firmware");
+    expect(container.querySelectorAll(".fa-times").length).toEqual(0);
+    expect(container.textContent).toContain("Apr");
+    expect(container.textContent).not.toContain("Select one");
+    expect(container.textContent).toContain("Arduino/RAMPS (Genesis v1.2)");
+    expect(container.querySelector(".fb-select-mock")?.getAttribute("data-list"))
       .toContain("v1.1");
   });
 
@@ -147,39 +165,39 @@ describe("<AlertCard />", () => {
     p.timeSettings.hour24 = false;
     p.timeSettings.utcOffset = 0;
     p.apiFirmwareValue = "arduino";
-    const wrapper = mount(<AlertCard {...p} />);
-    expect(wrapper.text()).toContain("Your device has no firmware");
-    expect(JSON.stringify(wrapper.find(FBSelect).props().list))
+    const { container } = render(<AlertCard {...p} />);
+    expect(container.textContent).toContain("Your device has no firmware");
+    expect(container.querySelector(".fb-select-mock")?.getAttribute("data-list"))
       .toContain("v1.1");
   });
 
   it("renders seed data card", () => {
     const p = fakeProps();
     p.alert.problem_tag = "api.seed_data.missing";
-    const wrapper = mount(<AlertCard {...p} />);
-    expect(wrapper.text()).toContain("FarmBot");
-    expect(JSON.stringify(wrapper.find(FBSelect).props().list))
+    const { container } = render(<AlertCard {...p} />);
+    expect(container.textContent).toContain("FarmBot");
+    expect(container.querySelector(".fb-select-mock")?.getAttribute("data-list"))
       .toContain("v1.1");
-    wrapper.find(FBSelect).simulate("change");
+    fireEvent.click(container.querySelector(".fb-select-mock") as Element);
   });
 
   it("renders seed data card with new models", () => {
     const p = fakeProps();
     p.alert.problem_tag = "api.seed_data.missing";
-    const wrapper = mount(<AlertCard {...p} />);
-    expect(wrapper.text()).toContain("FarmBot");
-    expect(JSON.stringify(wrapper.find(FBSelect).props().list))
+    const { container } = render(<AlertCard {...p} />);
+    expect(container.textContent).toContain("FarmBot");
+    expect(container.querySelector(".fb-select-mock")?.getAttribute("data-list"))
       .toContain("v1.1");
   });
 
   it("renders setup card", () => {
     const p = fakeProps();
     p.alert.problem_tag = "api.setup.not_completed";
-    const wrapper = mount(<AlertCard {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("wizard");
-    wrapper.find("a").simulate("click");
+    const { container } = render(<AlertCard {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("wizard");
+    fireEvent.click(container.querySelector("a") as Element);
     expect(mockNavigate).toHaveBeenCalledWith(Path.setup());
-    expect(wrapper.text().toLowerCase()).toContain("get started");
+    expect(container.textContent?.toLowerCase()).toContain("get started");
   });
 
   it("renders setup card: partially complete", () => {
@@ -188,58 +206,61 @@ describe("<AlertCard />", () => {
     mockState.resources = buildResourceIndex([stepResult]);
     const p = fakeProps();
     p.alert.problem_tag = "api.setup.not_completed";
-    const wrapper = mount(<AlertCard {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("continue setup");
+    const { container } = render(<AlertCard {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("continue setup");
   });
 
   it("navigates to tours page", () => {
     const p = fakeProps();
     p.alert.problem_tag = "api.tour.not_taken";
-    const wrapper = mount(<AlertCard {...p} />);
-    expect(wrapper.text()).toContain("tour");
-    wrapper.find(".link-button").first().simulate("click");
+    const { container } = render(<AlertCard {...p} />);
+    expect(container.textContent).toContain("tour");
+    fireEvent.click(container.querySelector(".link-button") as Element);
     expect(mockNavigate).toHaveBeenCalledWith(Path.tours());
   });
 
   it("renders welcome card", () => {
     const p = fakeProps();
     p.alert.problem_tag = "api.user.not_welcomed";
-    const wrapper = mount(<AlertCard {...p} />);
-    expect(wrapper.text()).toContain("Welcome");
+    const { container } = render(<AlertCard {...p} />);
+    expect(container.textContent).toContain("Welcome");
   });
 
   it("renders documentation card", () => {
     const p = fakeProps();
     p.alert.problem_tag = "api.documentation.unread";
-    const wrapper = mount(<AlertCard {...p} />);
-    expect(wrapper.text()).toContain("Learn");
+    const { container } = render(<AlertCard {...p} />);
+    expect(container.textContent).toContain("Learn");
   });
 
   it("renders demo account card", () => {
     const p = fakeProps();
     p.alert.problem_tag = "api.demo_account.in_use";
-    const wrapper = mount(<AlertCard {...p} />);
-    expect(wrapper.text()).toContain("currently using");
-    wrapper.find("a").first().simulate("click");
-    wrapper.find("a").last().simulate("click");
+    const { container } = render(<AlertCard {...p} />);
+    expect(container.textContent).toContain("currently using");
+    const links = container.querySelectorAll("a");
+    fireEvent.click(links[0] as Element);
+    fireEvent.click(links[links.length - 1] as Element);
     expect(Session.clear).toHaveBeenCalledTimes(2);
   });
 
   it("renders loading bulletin card", () => {
     const p = fakeProps();
     p.alert.problem_tag = "api.bulletin.unread";
-    const wrapper = mount(<AlertCard {...p} />);
+    const { container } = render(<AlertCard {...p} />);
     ["Loading", "Slug"].map(string =>
-      expect(wrapper.text()).toContain(string));
+      expect(container.textContent).toContain(string));
   });
 
   it("has no content to load for bulletin card", async () => {
     mockData = undefined;
     const p = fakeProps();
     p.alert.problem_tag = "api.bulletin.unread";
-    const wrapper = await mount(<AlertCard {...p} />);
+    const { container } = render(<AlertCard {...p} />);
+    await waitFor(() =>
+      expect(container.textContent).toContain("Unable to load content."));
     ["Unable to load content.", "Slug"].map(string =>
-      expect(wrapper.text()).toContain(string));
+      expect(container.textContent).toContain(string));
   });
 
   it("renders loaded bulletin card", async () => {
@@ -248,11 +269,13 @@ describe("<AlertCard />", () => {
     mockData = fakeBulletin;
     mockData.href_label = "See more";
     mockData.type = "info";
-    const wrapper = await mount(<AlertCard {...p} />);
+    const { container } = render(<AlertCard {...p} />);
+    await waitFor(() =>
+      expect(container.textContent).toContain("Announcement"));
     ["Loading...", "Slug"].map(string =>
-      expect(wrapper.text()).not.toContain(string));
+      expect(container.textContent).not.toContain(string));
     ["Announcement", "Alert content.", "See more"].map(string =>
-      expect(wrapper.text()).toContain(string));
+      expect(container.textContent).toContain(string));
   });
 
   it("renders loaded bulletin card with missing fields", async () => {
@@ -261,8 +284,9 @@ describe("<AlertCard />", () => {
     mockData = fakeBulletin;
     mockData.href_label = undefined;
     mockData.type = "unknown";
-    const wrapper = await mount(<AlertCard {...p} />);
-    expect(wrapper.text()).toContain("Find out more");
+    const { container } = render(<AlertCard {...p} />);
+    await waitFor(() =>
+      expect(container.textContent).toContain("Find out more"));
   });
 
   it("hides incorrect time", () => {
@@ -271,8 +295,8 @@ describe("<AlertCard />", () => {
     p.alert.created_at = 0;
     p.timeSettings.hour24 = false;
     p.timeSettings.utcOffset = 0;
-    const wrapper = mount(<AlertCard {...p} />);
-    expect(wrapper.text()).not.toContain("Jan 1, 12:00am");
+    const { container } = render(<AlertCard {...p} />);
+    expect(container.textContent).not.toContain("Jan 1, 12:00am");
   });
 
   it("doesn't show current year", () => {
@@ -281,9 +305,9 @@ describe("<AlertCard />", () => {
     p.alert.created_at = Date.now().valueOf() / 1000;
     p.timeSettings.hour24 = false;
     p.timeSettings.utcOffset = 0;
-    const wrapper = mount(<AlertCard {...p} />);
+    const { container } = render(<AlertCard {...p} />);
     const currentYear = moment().format("YYYY");
-    expect(wrapper.text()).not.toContain(currentYear);
+    expect(container.textContent).not.toContain(currentYear);
   });
 });
 
@@ -320,9 +344,13 @@ describe("SEED_DATA_OPTIONS()", () => {
 describe("<ReSeedAccount />", () => {
   it("changes selection", () => {
     window.confirm = () => true;
-    const wrapper = shallow(<ReSeedAccount />);
-    wrapper.find(FBSelect).simulate("change", { label: "", value: "selection" });
-    wrapper.find("button").last().simulate("click");
-    expect(mockSeedAccount).toHaveBeenCalledWith({ label: "", value: "selection" });
+    const { container } = render(<ReSeedAccount />);
+    fireEvent.click(container.querySelector(".fb-select-mock") as Element);
+    const buttons = container.querySelectorAll("button");
+    fireEvent.click(buttons[buttons.length - 1] as Element);
+    expect(mockSeedAccount).toHaveBeenCalledWith({
+      label: "",
+      value: "selection",
+    });
   });
 });

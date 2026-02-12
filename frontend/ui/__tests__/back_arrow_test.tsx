@@ -1,26 +1,25 @@
 import React from "react";
-import { shallow } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import { BackArrow } from "../back_arrow";
 
 describe("<BackArrow />", () => {
   it("renders", () => {
-    const wrapper = shallow(<BackArrow />);
-    expect(wrapper.hasClass("back-arrow")).toBeTruthy();
-    expect(wrapper.find("i").at(0).hasClass("fa-arrow-left"))
-      .toBeTruthy();
+    const { container } = render(<BackArrow />);
+    expect(container.querySelector(".back-arrow")).toBeTruthy();
+    expect(container.querySelector(".fa-arrow-left")).toBeTruthy();
   });
 
   it("triggers callbacks", () => {
     const cb = jest.fn();
-    const element = shallow(<BackArrow onClick={cb} />);
-    element.simulate("click");
+    const { container } = render(<BackArrow onClick={cb} />);
+    fireEvent.click(container.querySelector(".back-arrow") as Element);
     expect(cb).toHaveBeenCalled();
   });
 
   it("doesn't trigger callback", () => {
     history.back = jest.fn();
-    const element = shallow(<BackArrow />);
-    element.simulate("click");
+    const { container } = render(<BackArrow />);
+    fireEvent.click(container.querySelector(".back-arrow") as Element);
     expect(history.back).toHaveBeenCalled();
   });
 });

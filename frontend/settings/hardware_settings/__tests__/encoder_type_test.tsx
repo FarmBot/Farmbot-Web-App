@@ -2,9 +2,18 @@ import React from "react";
 import {
   EncoderType, EncoderTypeProps, LOOKUP, findByType, isEncoderValue,
 } from "../encoder_type";
-import { shallow } from "enzyme";
-import { FBSelect } from "../../../ui";
+import { render } from "@testing-library/react";
 import { Encoder } from "farmbot";
+
+const fbSelectMock = jest.fn((_: unknown) => <div />);
+
+jest.mock("../../../ui", () => {
+  const actual = jest.requireActual("../../../ui");
+  return {
+    ...actual,
+    FBSelect: (props: unknown) => fbSelectMock(props),
+  };
+});
 
 describe("<EncoderType/>", () => {
   const fakeProps = (): EncoderTypeProps => ({
@@ -17,22 +26,30 @@ describe("<EncoderType/>", () => {
   });
 
   it("renders default content", () => {
-    const wrapper = shallow(<EncoderType {...fakeProps()} />);
-    expect(wrapper.find(FBSelect).length).toEqual(3);
+    fbSelectMock.mockClear();
+    render(<EncoderType {...fakeProps()} />);
+    expect(fbSelectMock.mock.calls.length).toEqual(3);
   });
 
   it("changes encoder type", () => {
+    fbSelectMock.mockClear();
     const p = fakeProps();
-    const wrapper = shallow(<EncoderType {...p} />);
-    wrapper.find(FBSelect).first().simulate("change", { label: "", value: 1 });
+    render(<EncoderType {...p} />);
+    const props = fbSelectMock.mock.calls[0]?.[0] as {
+      onChange: (ddi: { label: string, value: number }) => void,
+    };
+    props.onChange({ label: "", value: 1 });
     expect(p.onChange).toHaveBeenCalledWith("encoder_type_x", 1);
   });
 
   it("handles bad encoder type", () => {
+    fbSelectMock.mockClear();
     const p = fakeProps();
-    const wrapper = shallow(<EncoderType {...p} />);
-    const selection = wrapper.find(FBSelect).first();
-    const change = () => selection.simulate("change", { label: "", value: 2 });
+    render(<EncoderType {...p} />);
+    const props = fbSelectMock.mock.calls[0]?.[0] as {
+      onChange: (ddi: { label: string, value: number }) => void,
+    };
+    const change = () => props.onChange({ label: "", value: 2 });
     expect(change).toThrow("Got bad encoder type in device panel.");
     expect(p.onChange).not.toHaveBeenCalled();
   });

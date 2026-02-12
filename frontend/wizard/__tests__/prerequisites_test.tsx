@@ -1,6 +1,7 @@
 let mockOnlineValue = true;
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
+import TestRenderer from "react-test-renderer";
 import { botOnlineReq, ProductRegistration } from "../prerequisites";
 import { WizardStepComponentProps } from "../interfaces";
 import {
@@ -34,10 +35,9 @@ describe("<ProductRegistration />", () => {
   });
 
   it("updates value", () => {
-    const wrapper = shallow(<ProductRegistration {...fakeProps()} />);
-    wrapper.find("BlurableInput").simulate("commit", {
-      currentTarget: { value: "123" }
-    });
+    const wrapper = TestRenderer.create(<ProductRegistration {...fakeProps()} />);
+    const input = wrapper.root.findByType("input");
+    input.props.onBlur({ currentTarget: { value: "123" } });
     expect(setOrderNumberSpy).toHaveBeenCalledWith(expect.any(Object), "123");
   });
 });
@@ -45,13 +45,13 @@ describe("<ProductRegistration />", () => {
 describe("botOnlineReq()", () => {
   it("returns offline message", () => {
     mockOnlineValue = false;
-    const wrapper = mount(<botOnlineReq.indicator />);
-    expect(wrapper.text().toLowerCase()).toContain("unable");
+    const { container } = render(<botOnlineReq.indicator />);
+    expect(container.textContent?.toLowerCase()).toContain("unable");
   });
 
   it("returns online message", () => {
     mockOnlineValue = true;
-    const wrapper = mount(<botOnlineReq.indicator />);
-    expect(wrapper.text().toLowerCase()).not.toContain("unable");
+    const { container } = render(<botOnlineReq.indicator />);
+    expect(container.textContent?.toLowerCase()).not.toContain("unable");
   });
 });

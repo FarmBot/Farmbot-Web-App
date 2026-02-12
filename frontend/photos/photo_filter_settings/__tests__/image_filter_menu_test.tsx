@@ -1,12 +1,39 @@
+import React from "react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import {
   fakeImage,
   fakeWebAppConfig,
 } from "../../../__test_support__/fake_state/resources";
 const mockConfig = fakeWebAppConfig();
 
-import React from "react";
-import { ImageFilterMenu } from "../image_filter_menu";
-import { shallow, mount } from "enzyme";
+jest.mock("../../../ui", () => {
+  const React = require("react");
+  const actual = jest.requireActual("../../../ui");
+  return {
+    ...actual,
+    MarkedSlider: (props: {
+      min: number;
+      max: number;
+      value: number;
+      onChange: (value: number) => void;
+      onRelease: (value: number) => void;
+      labelRenderer: (value: number) => string;
+    }) => <div data-testid={"marked-slider"}>
+      <button onClick={() => props.onChange(1)}>
+        change slider
+      </button>
+      <button onClick={() => props.onRelease(1)}>
+        release slider
+      </button>
+      <span data-testid={"slider-value"}>{props.value}</span>
+      {Array.from(
+        { length: props.max - props.min + 1 },
+        (_, index) => props.min + index,
+      ).map(day => <span key={day}>{props.labelRenderer(day)}</span>)}
+    </div>,
+  };
+});
+
 import { StringConfigKey } from "farmbot/dist/resources/configs/web_app";
 import {
   fakeTimeSettings,
@@ -16,9 +43,9 @@ import { fakeState } from "../../../__test_support__/fake_state";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
-import { ImageFilterMenuProps } from "../interfaces";
+import { ImageFilterMenuProps, ImageFilterMenuState } from "../interfaces";
 import { StringSetting } from "../../../session_keys";
-import { MarkedSlider } from "../../../ui";
+import { ImageFilterMenu } from "../image_filter_menu";
 
 let editSpy: jest.SpyInstance;
 let saveSpy: jest.SpyInstance;
@@ -35,9 +62,6 @@ afterEach(() => {
 });
 
 describe("<ImageFilterMenu />", () => {
-  mockConfig.body.photo_filter_begin = "";
-  mockConfig.body.photo_filter_end = "";
-
   const fakeProps = (): ImageFilterMenuProps => ({
     timeSettings: fakeTimeSettings(),
     dispatch: jest.fn(),
@@ -45,97 +69,100 @@ describe("<ImageFilterMenu />", () => {
     imageAgeInfo: { newestDate: "", toOldest: 1 },
   });
 
+  const setStateSync = (instance: ImageFilterMenu) => {
+    instance.setState = (((update: Partial<ImageFilterMenuState>) => {
+      instance.state = { ...instance.state, ...update };
+    }) as unknown) as typeof instance.setState;
+  };
+
+  const setConfigDispatch = (
+    p: ImageFilterMenuProps,
+    configs: ReturnType<typeof fakeWebAppConfig>[],
+  ) => {
+    const state = fakeState();
+    state.resources = buildResourceIndex(configs);
+    p.dispatch = jest.fn(action => action(jest.fn(), () => state));
+  };
+
+  const inputEvent = (value: string) =>
+    ({ currentTarget: { value } } as React.SyntheticEvent<HTMLInputElement>);
+
   it("renders", () => {
-    const p = fakeProps();
-    const wrapper = shallow(<ImageFilterMenu {...p} />);
-    ["Date", "Time", "Newer than", "Older than"].map(string =>
-      expect(wrapper.text()).toContain(string));
+    render(<ImageFilterMenu {...fakeProps()} />);
+    ["Date", "Time", "Newer than", "Older than"].map(text =>
+      expect(screen.getByText(text)).toBeInTheDocument());
   });
 
   it.each<[
-    "beginDate" | "endDate", StringConfigKey, number
+    "beginDate" | "endDate", StringConfigKey
   ]>([
-    ["beginDate", StringSetting.photo_filter_begin, 0],
-    ["endDate", StringSetting.photo_filter_end, 2],
-  ])("sets date filter: %s", (filter, key, i) => {
+    ["beginDate", StringSetting.photo_filter_begin],
+    ["endDate", StringSetting.photo_filter_end],
+  ])("sets date filter: %s", (filter, key) => {
     const p = fakeProps();
-    const state = fakeState();
     const config = fakeWebAppConfig();
-    state.resources = buildResourceIndex([config]);
-    p.dispatch = jest.fn(x => x(jest.fn(), () => state));
-    const wrapper = shallow<ImageFilterMenu>(<ImageFilterMenu {...p} />);
-    wrapper.find("BlurableInput").at(i).simulate("commit", {
-      currentTarget: { value: "2001-01-03" }
-    });
-    expect(wrapper.instance().state[filter]).toEqual("2001-01-03");
+    setConfigDispatch(p, [config]);
+    const instance = new ImageFilterMenu(p);
+    setStateSync(instance);
+    instance.setDatetime(filter)(inputEvent("2001-01-03"));
+    expect(instance.state[filter]).toEqual("2001-01-03");
     expect(editSpy).toHaveBeenCalledWith(config, {
-      [key]: "2001-01-03T00:00:00.000Z"
+      [key]: "2001-01-03T00:00:00.000Z",
     });
     expect(saveSpy).toHaveBeenCalledWith(config.uuid);
   });
 
   it.each<[
-    "beginTime" | "endTime", StringConfigKey, number
+    "beginTime" | "endTime", StringConfigKey
   ]>([
-    ["beginTime", StringSetting.photo_filter_begin, 1],
-    ["endTime", StringSetting.photo_filter_end, 3],
-  ])("sets time filter: %s", (filter, key, i) => {
+    ["beginTime", StringSetting.photo_filter_begin],
+    ["endTime", StringSetting.photo_filter_end],
+  ])("sets time filter: %s", (filter, key) => {
     const p = fakeProps();
-    const state = fakeState();
     const config = fakeWebAppConfig();
-    state.resources = buildResourceIndex([config]);
-    p.dispatch = jest.fn(x => x(jest.fn(), () => state));
-    const wrapper = shallow<ImageFilterMenu>(<ImageFilterMenu {...p} />);
-    wrapper.setState({ beginDate: "2001-01-03", endDate: "2001-01-03" });
-    wrapper.find("BlurableInput").at(i).simulate("commit", {
-      currentTarget: { value: "05:00" }
-    });
-    expect(wrapper.instance().state[filter]).toEqual("05:00");
+    setConfigDispatch(p, [config]);
+    const instance = new ImageFilterMenu(p);
+    setStateSync(instance);
+    instance.state = { ...instance.state, beginDate: "2001-01-03", endDate: "2001-01-03" };
+    instance.setDatetime(filter)(inputEvent("05:00"));
+    expect(instance.state[filter]).toEqual("05:00");
     expect(editSpy).toHaveBeenCalledWith(config, {
-      [key]: "2001-01-03T05:00:00.000Z"
+      [key]: "2001-01-03T05:00:00.000Z",
     });
     expect(saveSpy).toHaveBeenCalledWith(config.uuid);
   });
 
   it.each<[
-    "beginDate" | "endDate",
-    StringConfigKey,
-    number
+    "beginDate" | "endDate", StringConfigKey
   ]>([
-    ["beginDate", StringSetting.photo_filter_begin, 0],
-    ["endDate", StringSetting.photo_filter_end, 2],
-  ])("unsets filter: %s", (filter, key, i) => {
+    ["beginDate", StringSetting.photo_filter_begin],
+    ["endDate", StringSetting.photo_filter_end],
+  ])("unsets filter: %s", (filter, key) => {
     const p = fakeProps();
-    const state = fakeState();
     const config = fakeWebAppConfig();
-    state.resources = buildResourceIndex([config]);
-    p.dispatch = jest.fn(x => x(jest.fn(), () => state));
-    const wrapper = shallow<ImageFilterMenu>(<ImageFilterMenu {...p} />);
-    wrapper.setState({ beginDate: "2001-01-03", endDate: "2001-01-03" });
-    wrapper.find("BlurableInput").at(i).simulate("commit", {
-      currentTarget: { value: "" }
-    });
-    expect(wrapper.instance().state[filter]).toEqual(undefined);
+    setConfigDispatch(p, [config]);
+    const instance = new ImageFilterMenu(p);
+    setStateSync(instance);
+    instance.state = { ...instance.state, beginDate: "2001-01-03", endDate: "2001-01-03" };
+    instance.setDatetime(filter)(inputEvent(""));
+    expect(instance.state[filter]).toEqual(undefined);
     expect(editSpy).toHaveBeenCalledWith(config, { [key]: undefined });
     expect(saveSpy).toHaveBeenCalledWith(config.uuid);
   });
 
   it.each<[
-    "beginTime" | "endTime", number
+    "beginTime" | "endTime"
   ]>([
-    ["beginTime", 1],
-    ["endTime", 3],
-  ])("doesn't set filter: %s", (filter, i) => {
+    ["beginTime"],
+    ["endTime"],
+  ])("doesn't set filter: %s", filter => {
     const p = fakeProps();
-    const state = fakeState();
     const config = fakeWebAppConfig();
-    state.resources = buildResourceIndex([config]);
-    p.dispatch = jest.fn(x => x(jest.fn(), () => state));
-    const wrapper = shallow<ImageFilterMenu>(<ImageFilterMenu {...p} />);
-    wrapper.find("BlurableInput").at(i).simulate("commit", {
-      currentTarget: { value: "05:00" }
-    });
-    expect(wrapper.instance().state[filter]).toEqual("05:00");
+    setConfigDispatch(p, [config]);
+    const instance = new ImageFilterMenu(p);
+    setStateSync(instance);
+    instance.setDatetime(filter)(inputEvent("05:00"));
+    expect(instance.state[filter]).toEqual("05:00");
     expect(editSpy).not.toHaveBeenCalled();
     expect(saveSpy).not.toHaveBeenCalled();
   });
@@ -143,8 +170,10 @@ describe("<ImageFilterMenu />", () => {
   it("loads values from config", () => {
     mockConfig.body.photo_filter_begin = "2001-01-03T05:00:00.000Z";
     mockConfig.body.photo_filter_end = "2001-01-03T06:00:00.000Z";
-    const wrapper = shallow(<ImageFilterMenu {...fakeProps()} />);
-    expect(wrapper.state()).toEqual({
+    const instance = new ImageFilterMenu(fakeProps());
+    setStateSync(instance);
+    instance.updateState();
+    expect(instance.state).toEqual({
       beginDate: "2001-01-03", beginTime: "05:00",
       endDate: "2001-01-03", endTime: "06:00",
     });
@@ -152,15 +181,14 @@ describe("<ImageFilterMenu />", () => {
 
   it("commits slider change", () => {
     const p = fakeProps();
-    const state = fakeState();
     const config = fakeWebAppConfig();
-    state.resources = buildResourceIndex([config]);
-    p.dispatch = jest.fn(x => x(jest.fn(), () => state));
+    setConfigDispatch(p, [config]);
     p.getConfigValue = () => undefined;
     p.imageAgeInfo.newestDate = "2001-01-03T05:00:00.000Z";
-    const wrapper = shallow<ImageFilterMenu>(<ImageFilterMenu {...p} />);
-    wrapper.instance().sliderChange(1);
-    expect(wrapper.instance().state.slider).toEqual(undefined);
+    const instance = new ImageFilterMenu(p);
+    setStateSync(instance);
+    instance.sliderChange(1);
+    expect(instance.state.slider).toEqual(undefined);
     expect(editSpy).toHaveBeenCalledWith(config, {
       photo_filter_begin: "2001-01-03T00:00:00.000Z",
       photo_filter_end: "2001-01-04T00:00:00.000Z",
@@ -170,14 +198,13 @@ describe("<ImageFilterMenu />", () => {
 
   it("doesn't update config", () => {
     const p = fakeProps();
-    const state = fakeState();
-    state.resources = buildResourceIndex([]);
-    p.dispatch = jest.fn(x => x(jest.fn(), () => state));
+    setConfigDispatch(p, []);
     p.getConfigValue = () => 1;
     p.imageAgeInfo.newestDate = "2001-01-03T05:00:00.000Z";
-    const wrapper = shallow<ImageFilterMenu>(<ImageFilterMenu {...p} />);
-    wrapper.instance().sliderChange(1);
-    expect(wrapper.instance().state.slider).toEqual(undefined);
+    const instance = new ImageFilterMenu(p);
+    setStateSync(instance);
+    instance.sliderChange(1);
+    expect(instance.state.slider).toEqual(undefined);
     expect(editSpy).not.toHaveBeenCalled();
     expect(saveSpy).not.toHaveBeenCalled();
   });
@@ -187,8 +214,10 @@ describe("<ImageFilterMenu />", () => {
     mockConfig.body.photo_filter_end = "";
     const p = fakeProps();
     p.imageAgeInfo = { newestDate: "2001-01-10T00:00:00.000Z", toOldest: 1 };
-    const wrapper = shallow<ImageFilterMenu>(<ImageFilterMenu {...p} />);
-    expect(wrapper.instance().imageAgeInfo).toEqual({
+    const instance = new ImageFilterMenu(p);
+    setStateSync(instance);
+    instance.updateState();
+    expect(instance.imageAgeInfo).toEqual({
       newestDate: "2001-01-10T00:00:00.000Z", toOldest: 9,
     });
   });
@@ -198,8 +227,10 @@ describe("<ImageFilterMenu />", () => {
     mockConfig.body.photo_filter_end = "";
     const p = fakeProps();
     p.imageAgeInfo = { newestDate: "2001-01-10T00:00:00.000Z", toOldest: 1 };
-    const wrapper = shallow<ImageFilterMenu>(<ImageFilterMenu {...p} />);
-    expect(wrapper.instance().imageAgeInfo).toEqual({
+    const instance = new ImageFilterMenu(p);
+    setStateSync(instance);
+    instance.updateState();
+    expect(instance.imageAgeInfo).toEqual({
       newestDate: "2001-01-21T00:00:00.000Z", toOldest: 13,
     });
   });
@@ -207,12 +238,12 @@ describe("<ImageFilterMenu />", () => {
   it("steps date", () => {
     mockConfig.body.photo_filter_begin = "2001-01-03T05:00:00.000Z";
     const p = fakeProps();
-    const state = fakeState();
     const config = fakeWebAppConfig();
-    state.resources = buildResourceIndex([config]);
-    p.dispatch = jest.fn(x => x(jest.fn(), () => state));
-    const wrapper = shallow<ImageFilterMenu>(<ImageFilterMenu {...p} />);
-    wrapper.instance().dateStep(1)();
+    setConfigDispatch(p, [config]);
+    const instance = new ImageFilterMenu(p);
+    setStateSync(instance);
+    instance.updateState();
+    instance.dateStep(1)();
     expect(editSpy).toHaveBeenCalledWith(config, {
       photo_filter_begin: "2001-01-04T00:00:00.000Z",
       photo_filter_end: "2001-01-05T00:00:00.000Z",
@@ -224,12 +255,11 @@ describe("<ImageFilterMenu />", () => {
     mockConfig.body.photo_filter_begin = "";
     const p = fakeProps();
     p.imageAgeInfo = { newestDate: "2001-01-10T00:00:00.000Z", toOldest: 1 };
-    const state = fakeState();
     const config = fakeWebAppConfig();
-    state.resources = buildResourceIndex([config]);
-    p.dispatch = jest.fn(x => x(jest.fn(), () => state));
-    const wrapper = shallow<ImageFilterMenu>(<ImageFilterMenu {...p} />);
-    wrapper.instance().newest();
+    setConfigDispatch(p, [config]);
+    const instance = new ImageFilterMenu(p);
+    setStateSync(instance);
+    instance.newest();
     expect(editSpy).toHaveBeenCalledWith(config, {
       photo_filter_begin: "2001-01-10T00:00:00.000Z",
       photo_filter_end: "2001-01-11T00:00:00.000Z",
@@ -241,12 +271,11 @@ describe("<ImageFilterMenu />", () => {
     mockConfig.body.photo_filter_begin = "";
     const p = fakeProps();
     p.imageAgeInfo = { newestDate: "2001-01-10T00:00:00.000Z", toOldest: 3 };
-    const state = fakeState();
     const config = fakeWebAppConfig();
-    state.resources = buildResourceIndex([config]);
-    p.dispatch = jest.fn(x => x(jest.fn(), () => state));
-    const wrapper = shallow<ImageFilterMenu>(<ImageFilterMenu {...p} />);
-    wrapper.instance().oldest();
+    setConfigDispatch(p, [config]);
+    const instance = new ImageFilterMenu(p);
+    setStateSync(instance);
+    instance.oldest();
     expect(editSpy).toHaveBeenCalledWith(config, {
       photo_filter_begin: "2001-01-06T00:00:00.000Z",
       photo_filter_end: "2001-01-07T00:00:00.000Z",
@@ -257,28 +286,27 @@ describe("<ImageFilterMenu />", () => {
   it("gets image index", () => {
     const p = fakeProps();
     p.imageAgeInfo = { newestDate: "2001-01-10T00:00:00.000Z", toOldest: 3 };
-    const wrapper = shallow<ImageFilterMenu>(<ImageFilterMenu {...p} />);
+    const instance = new ImageFilterMenu(p);
     const image = fakeImage();
     image.body.created_at = "2001-01-08T00:00:00.000Z";
-    const index = wrapper.instance().getImageOffset(image);
-    expect(index).toEqual(1);
+    expect(instance.getImageOffset(image)).toEqual(1);
   });
 
   it("changes slider", () => {
     const p = fakeProps();
-    p.imageAgeInfo = { newestDate: "2001-01-10T00:00:00.000Z", toOldest: 1 };
-    const wrapper = shallow<ImageFilterMenu>(<ImageFilterMenu {...p} />);
-    expect(wrapper.state().slider).toEqual(undefined);
-    wrapper.find(MarkedSlider).simulate("change", 1);
-    expect(wrapper.state().slider).toEqual(1);
+    p.imageAgeInfo = { newestDate: "2001-01-10T00:00:00.000Z", toOldest: 2 };
+    render(<ImageFilterMenu {...p} />);
+    expect(screen.getByTestId("slider-value")).toHaveTextContent("2");
+    fireEvent.click(screen.getByText("change slider"));
+    expect(screen.getByTestId("slider-value")).toHaveTextContent("1");
   });
 
   it("displays slider labels", () => {
     mockConfig.body.photo_filter_begin = "2001-01-03T05:00:00.000Z";
     const p = fakeProps();
     p.imageAgeInfo.newestDate = "2001-01-03T00:00:00.000Z";
-    const wrapper = mount(<ImageFilterMenu {...p} />);
+    render(<ImageFilterMenu {...p} />);
     ["Jan-1", "Jan-2", "Jan-3"].map(date =>
-      expect(wrapper.text()).toContain(date));
+      expect(screen.getByText(date)).toBeInTheDocument());
   });
 });

@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import { TileLua } from "../tile_lua";
 import { StepParams } from "../../interfaces";
 import { Lua } from "farmbot";
@@ -22,26 +22,28 @@ describe("<TileLua />", () => {
   });
 
   it("renders with textarea", () => {
-    const wrapper = mount(<TileLua {...fakeProps()} />);
-    expect(wrapper.text()).toContain("lua");
-    expect(wrapper.html()).toContain("textarea");
+    const { container } = render(<TileLua {...fakeProps()} />);
+    expect(container.textContent).toContain("lua");
+    expect(container.querySelector("textarea")).not.toBeNull();
   });
 
   it("changes editor", () => {
-    const wrapper = mount(<TileLua {...fakeProps()} />);
-    const before = wrapper.find(".fallback-lua-editor").length;
-    const toggle = wrapper.find(".fa-font").length
-      ? wrapper.find(".fa-font").first()
-      : wrapper.find(".fa-code").first();
-    toggle.simulate("click");
-    wrapper.update();
-    expect(wrapper.find(".fallback-lua-editor").length).not.toEqual(before);
+    const { container } = render(<TileLua {...fakeProps()} />);
+    const before = container.querySelectorAll(".fallback-lua-editor").length;
+    const toggle = container.querySelector(".fa-font")
+      || container.querySelector(".fa-code");
+    expect(toggle).not.toBeNull();
+    fireEvent.click(toggle as Element);
+    const after = container.querySelectorAll(".fallback-lua-editor").length;
+    expect(after).not.toEqual(before);
   });
 
   it("toggles expanded view", () => {
-    const wrapper = mount(<TileLua {...fakeProps()} />);
-    expect(wrapper.find(".expanded").length).toEqual(0);
-    wrapper.find(".fa-expand").simulate("click");
-    expect(wrapper.find(".expanded").length).toEqual(1);
+    const { container } = render(<TileLua {...fakeProps()} />);
+    expect(container.querySelectorAll(".expanded").length).toEqual(0);
+    const toggle = container.querySelector(".fa-expand");
+    expect(toggle).not.toBeNull();
+    fireEvent.click(toggle as Element);
+    expect(container.querySelectorAll(".expanded").length).toEqual(1);
   });
 });

@@ -7,7 +7,7 @@ jest.mock("../../../../devices/should_display", () => ({
 }));
 
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { MarkAs } from "../component";
 import { UpdateResourceValue } from "../interfaces";
 import { UpdateResource, Identifier, Resource, resource_type } from "farmbot";
@@ -23,6 +23,17 @@ import { StepParams } from "../../../interfaces";
 import {
   fakeStepParams,
 } from "../../../../__test_support__/fake_sequence_step_data";
+
+const setStateSync = (instance: MarkAs) => {
+  instance.setState = ((state, callback) => {
+    const update = typeof state == "function"
+      ? state(instance.state, instance.props)
+      : state;
+    instance.state = { ...instance.state, ...update };
+    callback?.();
+  }) as MarkAs["setState"];
+  return instance;
+};
 
 describe("<MarkAs/>", () => {
   beforeEach(() => {
@@ -48,15 +59,15 @@ describe("<MarkAs/>", () => {
   });
 
   it("renders the basic parts", () => {
-    const wrapper = mount(<MarkAs {...fakeProps()} />);
+    const { container } = render(<MarkAs {...fakeProps()} />);
     ["Mark", "Tool Mount", "property", "Mounted Tool", "as", "None"].map(string =>
-      expect(wrapper.text()).toContain(string));
+      expect(container.textContent).toContain(string));
   });
 
   it("resets step", () => {
     const p = fakeProps();
-    const wrapper = mount<MarkAs>(<MarkAs {...p} />);
-    wrapper.instance().resetStep();
+    const instance = setStateSync(new MarkAs(p));
+    instance.resetStep();
     expect(editStep).toHaveBeenCalled();
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual({
@@ -68,15 +79,15 @@ describe("<MarkAs/>", () => {
 
   it("edits step", () => {
     const p = fakeProps();
-    const wrapper = mount<MarkAs>(<MarkAs {...p} />);
-    wrapper.setState({
+    const instance = setStateSync(new MarkAs(p));
+    instance.setState({
       resource: {
         kind: "resource",
         args: { resource_type: "Plant", resource_id: 1 }
       },
       fieldsAndValues: [{ field: "plant_stage", value: "planted" }],
     });
-    wrapper.instance().commitSelection();
+    instance.commitSelection();
     expect(editStep).toHaveBeenCalled();
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual(
@@ -85,12 +96,12 @@ describe("<MarkAs/>", () => {
 
   it("doesn't edit step", () => {
     const p = fakeProps();
-    const wrapper = mount<MarkAs>(<MarkAs {...p} />);
-    wrapper.setState({
+    const instance = setStateSync(new MarkAs(p));
+    instance.setState({
       resource: { kind: "nothing", args: {} },
       fieldsAndValues: [{ field: "plant_stage", value: "planted" }],
     });
-    wrapper.instance().commitSelection();
+    instance.commitSelection();
     expect(editStep).toHaveBeenCalled();
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual(
@@ -99,8 +110,8 @@ describe("<MarkAs/>", () => {
 
   it("doesn't save partial pairs", () => {
     const p = fakeProps();
-    const wrapper = mount<MarkAs>(<MarkAs {...p} />);
-    wrapper.setState({
+    const instance = setStateSync(new MarkAs(p));
+    instance.setState({
       resource: {
         kind: "resource",
         args: { resource_type: "Plant", resource_id: 1 }
@@ -111,7 +122,7 @@ describe("<MarkAs/>", () => {
         { field: "y", value: undefined },
       ],
     });
-    wrapper.instance().commitSelection();
+    instance.commitSelection();
     expect(editStep).toHaveBeenCalled();
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     const expectedStep =
@@ -124,12 +135,12 @@ describe("<MarkAs/>", () => {
 
   it("edits step to use identifier", () => {
     const p = fakeProps();
-    const wrapper = mount<MarkAs>(<MarkAs {...p} />);
-    wrapper.setState({
+    const instance = setStateSync(new MarkAs(p));
+    instance.setState({
       resource: { kind: "identifier", args: { label: "var" } },
       fieldsAndValues: [{ field: "plant_stage", value: "planted" }],
     });
-    wrapper.instance().commitSelection();
+    instance.commitSelection();
     expect(editStep).toHaveBeenCalled();
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual(
@@ -138,26 +149,26 @@ describe("<MarkAs/>", () => {
 
   it("updates resource", () => {
     const p = fakeProps();
-    const wrapper = mount<MarkAs>(<MarkAs {...p} />);
-    expect(wrapper.state().resource).toEqual(p.currentStep.args.resource);
-    expect(wrapper.state().fieldsAndValues)
+    const instance = setStateSync(new MarkAs(p));
+    expect(instance.state.resource).toEqual(p.currentStep.args.resource);
+    expect(instance.state.fieldsAndValues)
       .toEqual([{ field: "mounted_tool_id", value: 0 }]);
     const newResource: Resource =
       ({ kind: "resource", args: { resource_type: "Weed", resource_id: 2 } });
-    wrapper.instance().updateResource(newResource);
-    expect(wrapper.state().resource).toEqual(newResource);
-    expect(wrapper.state().fieldsAndValues)
+    instance.updateResource(newResource);
+    expect(instance.state.resource).toEqual(newResource);
+    expect(instance.state.fieldsAndValues)
       .toEqual([{ field: undefined, value: undefined }]);
   });
 
   it("updates field", () => {
     const p = fakeProps();
     p.currentStep.body = undefined;
-    const wrapper = mount<MarkAs>(<MarkAs {...p} />);
-    expect(wrapper.state().fieldsAndValues)
+    const instance = setStateSync(new MarkAs(p));
+    expect(instance.state.fieldsAndValues)
       .toEqual([{ field: undefined, value: undefined }]);
-    wrapper.instance().updateFieldOrValue(0)({ field: "plant_stage" });
-    expect(wrapper.state().fieldsAndValues)
+    instance.updateFieldOrValue(0)({ field: "plant_stage" });
+    expect(instance.state.fieldsAndValues)
       .toEqual([{ field: "plant_stage", value: undefined }]);
     expect(p.dispatch).toHaveBeenCalled();
   });
@@ -167,14 +178,14 @@ describe("<MarkAs/>", () => {
     p.currentStep.body && p.currentStep.body.push({
       kind: "pair", args: { label: "plant_stage", value: "planned" }
     });
-    const wrapper = mount<MarkAs>(<MarkAs {...p} />);
-    expect(wrapper.state().fieldsAndValues).toEqual([
+    const instance = setStateSync(new MarkAs(p));
+    expect(instance.state.fieldsAndValues).toEqual([
       { field: "mounted_tool_id", value: 0 },
       { field: "plant_stage", value: "planned" },
     ]);
     const callback = jest.fn();
-    wrapper.instance().updateFieldOrValue(1)({ value: "planted" }, callback);
-    expect(wrapper.state().fieldsAndValues).toEqual([
+    instance.updateFieldOrValue(1)({ value: "planted" }, callback);
+    expect(instance.state.fieldsAndValues).toEqual([
       { field: "mounted_tool_id", value: 0 },
       { field: "plant_stage", value: "planted" },
     ]);
@@ -188,13 +199,13 @@ describe("<MarkAs/>", () => {
     p.currentStep.body = [{
       kind: "pair", args: { label: "plant_stage", value: "planned" }
     }];
-    const wrapper = mount<MarkAs>(<MarkAs {...p} />);
-    expect(wrapper.state().fieldsAndValues).toEqual([
+    const instance = setStateSync(new MarkAs(p));
+    expect(instance.state.fieldsAndValues).toEqual([
       { field: "plant_stage", value: "planned" },
     ]);
     const callback = jest.fn();
-    wrapper.instance().updateFieldOrValue(0)({ value: "planted" }, callback);
-    expect(wrapper.state().fieldsAndValues).toEqual([
+    instance.updateFieldOrValue(0)({ value: "planted" }, callback);
+    expect(instance.state.fieldsAndValues).toEqual([
       { field: "plant_stage", value: "planted" },
       { field: "planted_at", value: "{{ timeNow }}" },
     ]);
@@ -209,14 +220,14 @@ describe("<MarkAs/>", () => {
       { kind: "pair", args: { label: "plant_stage", value: "planted" } },
       { kind: "pair", args: { label: "planted_at", value: "{{ timeNow }}" } },
     ];
-    const wrapper = mount<MarkAs>(<MarkAs {...p} />);
-    expect(wrapper.state().fieldsAndValues).toEqual([
+    const instance = setStateSync(new MarkAs(p));
+    expect(instance.state.fieldsAndValues).toEqual([
       { field: "plant_stage", value: "planted" },
       { field: "planted_at", value: "{{ timeNow }}" },
     ]);
     const callback = jest.fn();
-    wrapper.instance().updateFieldOrValue(0)({ value: "planned" }, callback);
-    expect(wrapper.state().fieldsAndValues).toEqual([
+    instance.updateFieldOrValue(0)({ value: "planned" }, callback);
+    expect(instance.state.fieldsAndValues).toEqual([
       { field: "plant_stage", value: "planned" },
     ]);
     expect(callback).toHaveBeenCalled();

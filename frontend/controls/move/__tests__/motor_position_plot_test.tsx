@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import {
   MotorPositionPlot, MotorPositionHistory, MotorPositionPlotProps,
   updateMotorHistoryArray,
@@ -33,9 +33,9 @@ describe("<MotorPositionPlot />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<MotorPositionPlot {...fakeProps()} />);
+    const { container } = render(<MotorPositionPlot {...fakeProps()} />);
     ["x", "y", "z", "position", "seconds ago", "120", "100"].map(string =>
-      expect(wrapper.text().toLowerCase()).toContain(string));
+      expect(container.textContent?.toLowerCase()).toContain(string));
   });
 
   it("renders motor position", () => {
@@ -46,9 +46,9 @@ describe("<MotorPositionPlot />", () => {
       { timestamp: 1000000, locationData: location1 },
       { timestamp: 1010000, locationData: location2 },
     ]));
-    const wrapper = mount(<MotorPositionPlot {...fakeProps()} />);
-    expect(wrapper.html()).toContain("M 120,-12.5 L 120,-12.5 L 110,0");
-    expect(wrapper.html()).toContain("M 120,0 L 120,0 L 110,0");
+    const { container } = render(<MotorPositionPlot {...fakeProps()} />);
+    expect(container.innerHTML).toContain("M 120,-12.5 L 120,-12.5 L 110,0");
+    expect(container.innerHTML).toContain("M 120,0 L 120,0 L 110,0");
   });
 
   it("renders motor load", () => {
@@ -68,10 +68,10 @@ describe("<MotorPositionPlot />", () => {
     p.firmwareSettings.encoder_missed_steps_max_x = 100;
     p.firmwareSettings.encoder_missed_steps_max_y = 100;
     p.firmwareSettings.encoder_missed_steps_max_z = 100;
-    const wrapper = mount(<MotorPositionPlot {...p} />);
-    expect(wrapper.html()).toContain("M 120,-25 L 120,-50 L 110,0");
-    expect(wrapper.html()).toContain("M 120,0 L 120,0 L 110,0");
-    expect(wrapper.html()).toContain("line x1=\"0\" y1=\"-50\" x2=\"120\"");
+    const { container } = render(<MotorPositionPlot {...p} />);
+    expect(container.innerHTML).toContain("M 120,-25 L 120,-50 L 110,0");
+    expect(container.innerHTML).toContain("M 120,0 L 120,0 L 110,0");
+    expect(container.innerHTML).toContain("line x1=\"0\" y1=\"-50\" x2=\"120\"");
   });
 
   it("handles undefined data", () => {
@@ -82,9 +82,9 @@ describe("<MotorPositionPlot />", () => {
       { timestamp: 1000000, locationData: location1 },
       { timestamp: 1010000, locationData: location2 },
     ]));
-    const wrapper = mount(<MotorPositionPlot {...fakeProps()} />);
-    expect(wrapper.html()).not.toContain("M 120,-12.5 L 120,-12.5 L 110,0");
-    expect(wrapper.html()).toContain("M 120,0 L 120,0 L 110,0");
+    const { container } = render(<MotorPositionPlot {...fakeProps()} />);
+    expect(container.innerHTML).not.toContain("M 120,-12.5 L 120,-12.5 L 110,0");
+    expect(container.innerHTML).toContain("M 120,0 L 120,0 L 110,0");
   });
 });
 

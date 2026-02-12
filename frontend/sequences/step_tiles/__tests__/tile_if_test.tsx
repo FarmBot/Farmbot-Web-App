@@ -1,6 +1,6 @@
 import React from "react";
 import { TileIf } from "../tile_if";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { If } from "farmbot";
 import { StepParams } from "../../interfaces";
 import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
@@ -24,8 +24,9 @@ describe("<TileIf />", () => {
   };
 
   it("renders if step", () => {
-    const wrapper = mount(<TileIf {...fakeProps()} />);
+    const { container } = render(<TileIf {...fakeProps()} />);
+    const text = container.textContent || "";
     ["Variable", "Operator", "Value", "Then Execute", "Else Execute"]
-      .map(string => expect(wrapper.text()).toContain(string));
+      .map(string => expect(text).toContain(string));
   });
 });

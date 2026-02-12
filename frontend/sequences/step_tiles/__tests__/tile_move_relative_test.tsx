@@ -1,6 +1,6 @@
 import React from "react";
 import { TileMoveRelative } from "../tile_move_relative";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { StepParams } from "../../interfaces";
 import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 
@@ -18,19 +18,19 @@ describe("<TileMoveRelative/>", () => {
   });
 
   it("renders inputs", () => {
-    const block = mount(<TileMoveRelative {...fakeProps()} />);
-    const inputs = block.find("input");
-    const labels = block.find("label");
+    const { container } = render(<TileMoveRelative {...fakeProps()} />);
+    const inputs = container.querySelectorAll("input");
+    const labels = container.querySelectorAll("label");
     expect(inputs.length).toEqual(5);
     expect(labels.length).toEqual(4);
-    expect(inputs.first().props().placeholder).toEqual("Move Relative");
-    expect(labels.at(0).text().toLowerCase()).toEqual("x (mm)");
-    expect(inputs.at(1).props().value).toEqual(1.1);
-    expect(labels.at(1).text().toLowerCase()).toEqual("y (mm)");
-    expect(inputs.at(2).props().value).toEqual(2);
-    expect(labels.at(2).text().toLowerCase()).toEqual("z (mm)");
-    expect(inputs.at(3).props().value).toEqual(3);
-    expect(labels.at(3).text().toLowerCase()).toEqual("speed (%)");
-    expect(inputs.at(4).props().value).toEqual(100);
+    expect(inputs[0]?.placeholder).toEqual("Move Relative");
+    expect(labels[0]?.textContent?.toLowerCase()).toEqual("x (mm)");
+    expect(inputs[1]?.value).toEqual("1.1");
+    expect(labels[1]?.textContent?.toLowerCase()).toEqual("y (mm)");
+    expect(inputs[2]?.value).toEqual("2");
+    expect(labels[2]?.textContent?.toLowerCase()).toEqual("z (mm)");
+    expect(inputs[3]?.value).toEqual("3");
+    expect(labels[3]?.textContent?.toLowerCase()).toEqual("speed (%)");
+    expect(inputs[4]?.value).toEqual("100");
   });
 });

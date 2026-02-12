@@ -1,5 +1,5 @@
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import {
   FrontPage, setField, PartialFormEvent, DEFAULT_APP_PAGE,
 } from "../front_page";
@@ -11,9 +11,9 @@ import { Content } from "../../constants";
 import { AuthState } from "../../auth/interfaces";
 import { auth } from "../../__test_support__/fake_state/token";
 import { formEvent } from "../../__test_support__/fake_html_events";
-import { changeBlurableInput } from "../../__test_support__/helpers";
-import { CreateAccount } from "../create_account";
-import { ForgotPassword } from "../forgot_password";
+import {
+  changeBlurableInput, changeBlurableInputRTL,
+} from "../../__test_support__/helpers";
 import { store } from "../../redux/store";
 import { fakeState } from "../../__test_support__/fake_state";
 
@@ -26,6 +26,13 @@ let fetchBrowserLocationSpy: jest.SpyInstance;
 let getStateSpy: jest.SpyInstance;
 let originalTosUrl: string;
 let originalPrivUrl: string;
+
+const setStateSync = (instance: FrontPage) => {
+  instance.setState = ((state: Partial<FrontPage["state"]>) => {
+    instance.state = { ...instance.state, ...state };
+  }) as FrontPage["setState"];
+  return instance;
+};
 
 describe("<FrontPage />", () => {
   const flushPromises = async () => {
@@ -66,71 +73,74 @@ describe("<FrontPage />", () => {
   const fakeFormEvent = formEvent();
 
   it("shows forgot password box", () => {
-    const el = mount(<FrontPage />);
-    expect(el.text()).not.toContain("Reset Password");
-    el.find("a.forgot-password").first().simulate("click");
-    expect(el.text()).toContain("Reset Password");
+    render(<FrontPage />);
+    expect(screen.queryByText("Reset Password")).toBeNull();
+    fireEvent.click(screen.getByText("Forgot password?"));
+    expect(screen.getAllByText("Reset Password").length).toBeGreaterThan(0);
   });
 
   it("shows TOS and Privacy links", () => {
-    const el = mount(<FrontPage />);
-    ["Privacy Policy", "Terms of Use"].map(string =>
-      expect(el.text()).toContain(string));
-    ["https://farm.bot/privacy/", "https://farm.bot/tos/"]
-      .map(string => expect(el.html()).toContain(string));
+    render(<FrontPage />);
+    expect(screen.getByText("Privacy Policy")).toBeTruthy();
+    expect(screen.getByText("Terms of Use")).toBeTruthy();
+    expect(screen.getByText("Privacy Policy").closest("a")?.href)
+      .toContain("https://farm.bot/privacy/");
+    expect(screen.getByText("Terms of Use").closest("a")?.href)
+      .toContain("https://farm.bot/tos/");
   });
 
   it("doesn't show TOS and Privacy links", () => {
     globalConfig.TOS_URL = "";
-    const wrapper = mount(<FrontPage />);
-    ["Privacy Policy", "Terms of Use"].map(string =>
-      expect(wrapper.text().toLowerCase()).not.toContain(string.toLowerCase()));
+    render(<FrontPage />);
+    expect(screen.queryByText("Privacy Policy")).toBeNull();
+    expect(screen.queryByText("Terms of Use")).toBeNull();
   });
 
   it("redirects when already logged in", () => {
     mockAuth = auth;
-    const el = mount(<FrontPage />);
-    el.mount();
+    render(<FrontPage />);
     expect(location.assign).toHaveBeenCalledWith(DEFAULT_APP_PAGE);
   });
 
   it("updates state", () => {
-    const wrapper = mount<FrontPage>(<FrontPage />);
-    wrapper.setState({ activePanel: "forgotPassword" });
-    changeBlurableInput(wrapper, "email", 0);
-    expect(wrapper.state().email).toEqual("email");
+    const { container } = render(<FrontPage />);
+    fireEvent.click(screen.getByText("Forgot password?"));
+    changeBlurableInput({ container }, "email", 0);
+    const input = container.querySelector(
+      "input[type='email']") as HTMLInputElement | null;
+    expect(input?.value).toEqual("email");
   });
 
   it("inputs username", () => {
-    const wrapper = shallow<FrontPage>(<FrontPage />);
-    expect(wrapper.state().regName).toEqual("");
-    wrapper.find(CreateAccount).props().set("regName", "name");
-    expect(wrapper.state().regName).toEqual("name");
+    const { container } = render(<FrontPage />);
+    const nameInput = container.querySelector("#Name") as HTMLInputElement;
+    changeBlurableInputRTL(nameInput, "name");
+    expect(nameInput.value).toEqual("name");
   });
 
   it("goes back to login panel", () => {
-    const wrapper = mount<FrontPage>(<FrontPage />);
-    wrapper.setState({ activePanel: "forgotPassword" });
-    wrapper.find(ForgotPassword).props().onGoBack();
-    expect(wrapper.state().activePanel).toEqual("login");
+    render(<FrontPage />);
+    fireEvent.click(screen.getByText("Forgot password?"));
+    fireEvent.click(screen.getByText("BACK"));
+    expect(screen.getByRole("button", { name: "Login" })).toBeTruthy();
   });
 
   it("updates", async () => {
     mockAxiosResponse = Promise.reject({ response: { status: 403 } });
-    const wrapper = mount<FrontPage>(<FrontPage />);
-    wrapper.setState({ email: "foo@bar.io", loginPassword: "password" });
-    wrapper.instance().update = jest.fn();
-    wrapper.instance().submitLogin(fakeFormEvent);
+    const instance = setStateSync(new FrontPage({}));
+    instance.setState({ email: "foo@bar.io", loginPassword: "password" });
+    instance.update = jest.fn();
+    instance.submitLogin(fakeFormEvent);
     await flushPromises();
     expect(Session.replaceToken).not.toHaveBeenCalled();
-    expect(wrapper.instance().update).toHaveBeenCalled();
+    expect(instance.update).toHaveBeenCalled();
   });
 
   it("submits login: success", async () => {
     mockAxiosResponse = Promise.resolve({ data: "new data" });
-    const el = mount<FrontPage>(<FrontPage />);
-    el.setState({ email: "foo@bar.io", loginPassword: "password" });
-    el.instance().submitLogin(fakeFormEvent);
+    const instance = setStateSync(new FrontPage({}));
+    instance.setState({ email: "foo@bar.io", loginPassword: "password" });
+    instance.submitLogin(fakeFormEvent);
     await flushPromises();
     expect(fetchBrowserLocationSpy).toHaveBeenCalled();
     expect(axios.post).toHaveBeenCalledWith(
@@ -143,9 +153,9 @@ describe("<FrontPage />", () => {
   it("submits login: not verified", async () => {
     jest.useFakeTimers();
     mockAxiosResponse = Promise.reject({ response: { status: 403 } });
-    const el = mount<FrontPage>(<FrontPage />);
-    el.setState({ email: "foo@bar.io", loginPassword: "password" });
-    el.instance().submitLogin(fakeFormEvent);
+    const instance = setStateSync(new FrontPage({}));
+    instance.setState({ email: "foo@bar.io", loginPassword: "password" });
+    instance.submitLogin(fakeFormEvent);
     await flushPromises();
     expect(fetchBrowserLocationSpy).toHaveBeenCalled();
     expect(axios.post).toHaveBeenCalledWith(
@@ -153,15 +163,15 @@ describe("<FrontPage />", () => {
       { user: { email: "foo@bar.io", password: "password" } });
     expect(Session.replaceToken).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith("Account Not Verified");
-    expect(el.instance().state.activePanel).toEqual("resendVerificationEmail");
+    expect(instance.state.activePanel).toEqual("resendVerificationEmail");
     jest.runAllTimers();
   });
 
   it("submits login: TOS update", async () => {
     mockAxiosResponse = Promise.reject({ response: { status: 451 } });
-    const el = mount<FrontPage>(<FrontPage />);
-    el.setState({ email: "foo@bar.io", loginPassword: "password" });
-    el.instance().submitLogin(fakeFormEvent);
+    const instance = setStateSync(new FrontPage({}));
+    instance.setState({ email: "foo@bar.io", loginPassword: "password" });
+    instance.submitLogin(fakeFormEvent);
     await flushPromises();
     expect(fetchBrowserLocationSpy).toHaveBeenCalled();
     expect(axios.post).toHaveBeenCalledWith(
@@ -175,9 +185,9 @@ describe("<FrontPage />", () => {
     mockAxiosResponse = Promise.reject({
       response: { status: 400, data: "error" }
     });
-    const wrapper = mount<FrontPage>(<FrontPage />);
-    wrapper.setState({ email: "foo@bar.io", loginPassword: "password" });
-    wrapper.instance().submitLogin(fakeFormEvent);
+    const instance = setStateSync(new FrontPage({}));
+    instance.setState({ email: "foo@bar.io", loginPassword: "password" });
+    instance.submitLogin(fakeFormEvent);
     await flushPromises();
     expect(fetchBrowserLocationSpy).toHaveBeenCalled();
     expect(axios.post).toHaveBeenCalledWith(
@@ -189,15 +199,15 @@ describe("<FrontPage />", () => {
 
   it("submits registration: success", async () => {
     mockAxiosResponse = Promise.resolve({ data: "new data" });
-    const el = mount<FrontPage>(<FrontPage />);
-    el.setState({
+    const instance = setStateSync(new FrontPage({}));
+    instance.setState({
       regEmail: "foo@bar.io",
       regName: "Foo Bar",
       regPassword: "password",
       regConfirmation: "password",
       agreeToTerms: true
     });
-    el.instance().submitRegistration(fakeFormEvent);
+    instance.submitRegistration(fakeFormEvent);
     await flushPromises();
     expect(axios.post).toHaveBeenCalledWith(
       "http://localhost:3000/api/users/", {
@@ -208,20 +218,20 @@ describe("<FrontPage />", () => {
       });
     expect(success).toHaveBeenCalledWith(
       expect.stringContaining("Almost done!"));
-    expect(el.instance().state.registrationSent).toEqual(true);
+    expect(instance.state.registrationSent).toEqual(true);
   });
 
   it("submits registration: failure", async () => {
     mockAxiosResponse = Promise.reject({ response: { data: ["failure"] } });
-    const el = mount<FrontPage>(<FrontPage />);
-    el.setState({
+    const instance = setStateSync(new FrontPage({}));
+    instance.setState({
       regEmail: "foo@bar.io",
       regName: "Foo Bar",
       regPassword: "password",
       regConfirmation: "password",
       agreeToTerms: true
     });
-    el.instance().submitRegistration(fakeFormEvent);
+    instance.submitRegistration(fakeFormEvent);
     await flushPromises();
     expect(axios.post).toHaveBeenCalledWith(
       "http://localhost:3000/api/users/", {
@@ -230,61 +240,63 @@ describe("<FrontPage />", () => {
           password: "password", password_confirmation: "password"
         },
       });
-    expect(error).toHaveBeenCalledWith(
-      expect.stringContaining("failure"));
-    expect(el.instance().state.registrationSent).toEqual(false);
+    expect(error).toHaveBeenCalledWith(expect.stringContaining("failure"));
+    expect(instance.state.registrationSent).toEqual(false);
   });
 
   it("submits forgot password: success", async () => {
     mockAxiosResponse = Promise.resolve({ data: "" });
-    const el = mount<FrontPage>(<FrontPage />);
-    el.setState({ email: "foo@bar.io", activePanel: "forgotPassword" });
-    el.instance().submitForgotPassword(fakeFormEvent);
+    const instance = setStateSync(new FrontPage({}));
+    instance.setState({ email: "foo@bar.io", activePanel: "forgotPassword" });
+    instance.submitForgotPassword(fakeFormEvent);
     await flushPromises();
     expect(axios.post).toHaveBeenCalledWith(
       "http://localhost:3000/api/password_resets/",
       { email: "foo@bar.io" });
     expect(success).toHaveBeenCalledWith(
       "Email has been sent.", { title: "Forgot Password" });
-    expect(el.instance().state.activePanel).toEqual("login");
+    expect(instance.state.activePanel).toEqual("login");
   });
 
   it("submits forgot password: error", async () => {
     mockAxiosResponse = Promise.reject({ response: { data: ["failure"] } });
-    const el = mount<FrontPage>(<FrontPage />);
-    el.setState({ email: "foo@bar.io", activePanel: "forgotPassword" });
-    el.instance().submitForgotPassword(fakeFormEvent);
+    const instance = setStateSync(new FrontPage({}));
+    instance.setState({ email: "foo@bar.io", activePanel: "forgotPassword" });
+    instance.submitForgotPassword(fakeFormEvent);
     await flushPromises();
     expect(axios.post).toHaveBeenCalledWith(
       "http://localhost:3000/api/password_resets/",
       { email: "foo@bar.io" });
-    expect(error).toHaveBeenCalledWith(
-      expect.stringContaining("failure"));
-    expect(el.instance().state.activePanel).toEqual("forgotPassword");
+    expect(error).toHaveBeenCalledWith(expect.stringContaining("failure"));
+    expect(instance.state.activePanel).toEqual("forgotPassword");
   });
 
   it("submits forgot password: no email error", async () => {
     mockAxiosResponse = Promise.reject({ response: { data: ["not found"] } });
-    const el = mount<FrontPage>(<FrontPage />);
-    el.setState({ email: "foo@bar.io", activePanel: "forgotPassword" });
-    el.instance().submitForgotPassword(fakeFormEvent);
+    const instance = setStateSync(new FrontPage({}));
+    instance.setState({ email: "foo@bar.io", activePanel: "forgotPassword" });
+    instance.submitForgotPassword(fakeFormEvent);
     await flushPromises();
     expect(axios.post).toHaveBeenCalledWith(
       "http://localhost:3000/api/password_resets/",
       { email: "foo@bar.io" });
     expect(error).toHaveBeenCalledWith(expect.stringContaining(
       "not associated with an account"));
-    expect(el.instance().state.activePanel).toEqual("forgotPassword");
+    expect(instance.state.activePanel).toEqual("forgotPassword");
   });
 
   it("renders proper panels", () => {
-    const el = mount(<FrontPage />);
-    el.setState({ activePanel: "resendVerificationEmail" });
-    expect(el.text()).toContain("Account Not Verified");
-    el.setState({ activePanel: "forgotPassword" });
-    expect(el.text()).toContain("Reset Password");
-    el.setState({ activePanel: "login" });
-    expect(el.text()).toContain("Login");
+    const instance = setStateSync(new FrontPage({}));
+    const { container, rerender } = render(<div>{instance.activePanel()}</div>);
+    instance.setState({ activePanel: "resendVerificationEmail" });
+    rerender(<div>{instance.activePanel()}</div>);
+    expect(container.textContent).toContain("Account Not Verified");
+    instance.setState({ activePanel: "forgotPassword" });
+    rerender(<div>{instance.activePanel()}</div>);
+    expect(container.textContent).toContain("Reset Password");
+    instance.setState({ activePanel: "login" });
+    rerender(<div>{instance.activePanel()}</div>);
+    expect(container.textContent).toContain("Login");
   });
 
   it("has a generalized form field setter fn", () => {
@@ -317,30 +329,28 @@ describe("<FrontPage />", () => {
   });
 
   it("resendVerificationPanel(): ok()", () => {
-    const wrapper = mount<FrontPage>(<FrontPage />);
-    const component = shallow(<div>
-      {wrapper.instance().resendVerificationPanel()}
-    </div>);
-    wrapper.instance().setState({ activePanel: "resendVerificationEmail" });
-    expect(wrapper.instance().state.activePanel)
-      .toEqual("resendVerificationEmail");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (component.find("ResendVerification").props() as any).ok();
+    const instance = setStateSync(new FrontPage({}));
+    instance.setState({ activePanel: "resendVerificationEmail" });
+    expect(instance.state.activePanel).toEqual("resendVerificationEmail");
+    const panel = instance.resendVerificationPanel() as React.ReactElement<{
+      ok: (resp: unknown) => void;
+      no: (err: unknown) => void;
+    }>;
+    panel.props.ok({});
     expect(success).toHaveBeenCalledWith(Content.VERIFICATION_EMAIL_RESENT);
-    expect(wrapper.instance().state.activePanel).toEqual("login");
+    expect(instance.state.activePanel).toEqual("login");
   });
 
   it("resendVerificationPanel(): no()", () => {
-    const wrapper = mount<FrontPage>(<FrontPage />);
-    const component = shallow(<div>
-      {wrapper.instance().resendVerificationPanel()}
-    </div>);
-    wrapper.instance().setState({ activePanel: "resendVerificationEmail" });
-    expect(wrapper.instance().state.activePanel)
-      .toEqual("resendVerificationEmail");
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (component.find("ResendVerification").props() as any).no();
+    const instance = setStateSync(new FrontPage({}));
+    instance.setState({ activePanel: "resendVerificationEmail" });
+    expect(instance.state.activePanel).toEqual("resendVerificationEmail");
+    const panel = instance.resendVerificationPanel() as React.ReactElement<{
+      ok: (resp: unknown) => void;
+      no: (err: unknown) => void;
+    }>;
+    panel.props.no({});
     expect(error).toHaveBeenCalledWith(Content.VERIFICATION_EMAIL_RESEND_ERROR);
-    expect(wrapper.instance().state.activePanel).toEqual("login");
+    expect(instance.state.activePanel).toEqual("login");
   });
 });

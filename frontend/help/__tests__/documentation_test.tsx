@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import {
   DocumentationPanel,
   DocumentationPanelProps,
@@ -11,8 +11,8 @@ describe("<DocumentationPanel />", () => {
   });
 
   it("renders iframe", () => {
-    const wrapper = mount(<DocumentationPanel {...fakeProps()} />);
-    expect(wrapper.find("iframe").props().src)
-      .toContain("fake url");
+    const { container } = render(<DocumentationPanel {...fakeProps()} />);
+    const iframe = container.querySelector("iframe");
+    expect(iframe?.getAttribute("src")).toContain("fake url");
   });
 });

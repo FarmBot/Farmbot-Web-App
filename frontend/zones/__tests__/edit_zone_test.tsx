@@ -1,5 +1,5 @@
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import {
   RawEditZone as EditZone, EditZoneProps, mapStateToProps,
 } from "../edit_zone";
@@ -32,15 +32,15 @@ describe("<EditZone />", () => {
 
   it("redirects", () => {
     location.pathname = Path.mock(Path.zones("nope"));
-    const wrapper = mount(<EditZone {...fakeProps()} />);
-    expect(wrapper.text()).toContain("Redirecting...");
+    const { container } = render(<EditZone {...fakeProps()} />);
+    expect(container.textContent).toContain("Redirecting...");
     expect(mockNavigate).toHaveBeenCalledWith(Path.zones());
   });
 
   it("doesn't redirect", () => {
     location.pathname = Path.mock(Path.logs());
-    const wrapper = mount(<EditZone {...fakeProps()} />);
-    expect(wrapper.text()).toContain("Redirecting...");
+    const { container } = render(<EditZone {...fakeProps()} />);
+    expect(container.textContent).toContain("Redirecting...");
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 
@@ -48,8 +48,8 @@ describe("<EditZone />", () => {
     location.pathname = Path.mock(Path.zones(1));
     const p = fakeProps();
     p.findZone = () => fakePointGroup();
-    const wrapper = mount(<EditZone {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("edit");
+    const { container } = render(<EditZone {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("edit");
   });
 
   it("changes name", () => {
@@ -57,9 +57,12 @@ describe("<EditZone />", () => {
     const p = fakeProps();
     const group = fakePointGroup();
     p.findZone = () => group;
-    const wrapper = shallow(<EditZone {...p} />);
-    wrapper.find("input").first().simulate("blur", {
-      currentTarget: { value: "new name" }
+    const { container } = render(<EditZone {...p} />);
+    const input = container.querySelector("input");
+    expect(input).toBeTruthy();
+    fireEvent.blur(input as Element, {
+      currentTarget: { value: "new name" },
+      target: { value: "new name" },
     });
     expect(crud.edit).toHaveBeenCalledWith(group, { name: "new name" });
     expect(crud.save).toHaveBeenCalledWith(group.uuid);

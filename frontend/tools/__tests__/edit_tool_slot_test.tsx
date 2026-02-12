@@ -1,5 +1,6 @@
 import React from "react";
-import { mount, shallow } from "enzyme";
+import TestRenderer from "react-test-renderer";
+import { cleanup, render } from "@testing-library/react";
 import { RawEditToolSlot as EditToolSlot } from "../edit_tool_slot";
 import { fakeState } from "../../__test_support__/fake_state";
 import {
@@ -30,6 +31,20 @@ afterEach(() => {
   jest.restoreAllMocks();
 });
 describe("<EditToolSlot />", () => {
+  const mountedWrappers: TestRenderer.ReactTestRenderer[] = [];
+
+  afterEach(() => {
+    mountedWrappers.splice(0).forEach(wrapper =>
+      TestRenderer.act(() => wrapper.unmount()));
+    cleanup();
+  });
+
+  const createWrapper = (p = fakeProps()) => {
+    const wrapper = TestRenderer.create(<EditToolSlot {...p} />);
+    mountedWrappers.push(wrapper);
+    return wrapper;
+  };
+
   const fakeProps = (): EditToolSlotProps => ({
     findToolSlot: jest.fn(),
     tools: [],
@@ -47,15 +62,15 @@ describe("<EditToolSlot />", () => {
 
   it("redirects", () => {
     location.pathname = Path.mock(Path.toolSlots("nope"));
-    const wrapper = mount(<EditToolSlot {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("redirecting");
+    const { container } = render(<EditToolSlot {...fakeProps()} />);
+    expect(container.textContent?.toLowerCase()).toContain("redirecting");
     expect(mockNavigate).toHaveBeenCalledWith(Path.tools());
   });
 
   it("doesn't redirect", () => {
     location.pathname = Path.mock(Path.logs());
-    const wrapper = mount(<EditToolSlot {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("redirecting");
+    const { container } = render(<EditToolSlot {...fakeProps()} />);
+    expect(container.textContent?.toLowerCase()).toContain("redirecting");
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 
@@ -64,15 +79,16 @@ describe("<EditToolSlot />", () => {
     const toolSlot = fakeToolSlot();
     toolSlot.body.meta = { meta_key: "meta value", tool_direction: "standard" };
     p.findToolSlot = () => toolSlot;
-    const wrapper = mount(<EditToolSlot {...p} />);
-    const text = wrapper.text().toLowerCase();
+    const { container } = render(<EditToolSlot {...p} />);
+    const text = container.textContent?.toLowerCase() || "";
     ["edit slot", "x (mm)", "y (mm)", "z (mm)", "tool or seed container",
       "gantry-mounted", "meta value",
     ].map(string => expect(text).toContain(string));
     expect(text.includes("direction")
       || text.includes("rotate tool 180 degrees")).toEqual(true);
     expect(text).not.toContain("standard");
-    expect(wrapper.find(".fa-exclamation-triangle").length).toEqual(0);
+    expect(container.querySelectorAll(".fa-exclamation-triangle").length)
+      .toEqual(0);
   });
 
   it("renders save error", () => {
@@ -80,12 +96,13 @@ describe("<EditToolSlot />", () => {
     const toolSlot = fakeToolSlot();
     toolSlot.specialStatus = SpecialStatus.DIRTY;
     p.findToolSlot = () => toolSlot;
-    const wrapper = mount(<EditToolSlot {...p} />);
-    expect(wrapper.find(".fa-exclamation-triangle").length).toEqual(1);
+    const { container } = render(<EditToolSlot {...p} />);
+    expect(container.querySelectorAll(".fa-exclamation-triangle").length)
+      .toEqual(1);
   });
 
   it("unhovers tool slot on unmount", () => {
-    const wrapper = mount(<EditToolSlot {...fakeProps()} />);
+    const wrapper = createWrapper();
     wrapper.unmount();
     expect(toolGraphics.setToolHover).toHaveBeenCalledWith(undefined);
   });
@@ -94,30 +111,35 @@ describe("<EditToolSlot />", () => {
     const p = fakeProps();
     p.dispatch = jest.fn(() => Promise.resolve());
     const slot = fakeToolSlot();
-    const wrapper = mount<EditToolSlot>(<EditToolSlot {...p} />);
-    await wrapper.instance().updateSlot(slot)({ x: 123 });
+    const wrapper = createWrapper(p);
+    const instance = wrapper.getInstance() as EditToolSlot;
+    await instance.updateSlot(slot)({ x: 123 });
     expect(crud.edit).toHaveBeenCalledWith(slot, { x: 123 });
     expect(crud.save).toHaveBeenCalledWith(slot.uuid);
-    expect(wrapper.state().saveError).toEqual(false);
+    expect(instance.state.saveError).toEqual(false);
   });
 
   it("errors while updating tool slot", async () => {
     const p = fakeProps();
     p.dispatch = jest.fn(x => x?.() == "mockSave" ? Promise.reject() : undefined);
     const slot = fakeToolSlot();
-    const wrapper = mount<EditToolSlot>(<EditToolSlot {...p} />);
-    await wrapper.instance().updateSlot(slot)({ x: 123 });
+    const wrapper = createWrapper(p);
+    const instance = wrapper.getInstance() as EditToolSlot;
+    await instance.updateSlot(slot)({ x: 123 });
     expect(crud.edit).toHaveBeenCalledWith(slot, { x: 123 });
     expect(crud.save).toHaveBeenCalledWith(slot.uuid);
-    expect(wrapper.state().saveError).toEqual(true);
+    expect(instance.state.saveError).toEqual(true);
   });
 
   it("removes tool slot", () => {
     const p = fakeProps();
     const toolSlot = fakeToolSlot();
     p.findToolSlot = () => toolSlot;
-    const wrapper = shallow(<EditToolSlot {...p} />);
-    wrapper.find(".fa-trash").first().simulate("click");
+    const wrapper = createWrapper(p);
+    wrapper.root.findAll(node =>
+      typeof node.props.className == "string"
+      && node.props.className.includes("fa-trash"))[0]
+      ?.props.onClick();
     expect(crud.destroy).toHaveBeenCalledWith(toolSlot.uuid);
   });
 
@@ -127,8 +149,8 @@ describe("<EditToolSlot />", () => {
     p.findToolSlot = () => toolSlot;
     const tool = fakeTool();
     p.findTool = () => tool;
-    const wrapper = mount(<EditToolSlot {...p} />);
-    expect(wrapper.find(SlotEditRows).props().tool).toEqual(tool);
+    const wrapper = createWrapper(p);
+    expect(wrapper.root.findAllByType(SlotEditRows)[0]?.props.tool).toEqual(tool);
   });
 });
 

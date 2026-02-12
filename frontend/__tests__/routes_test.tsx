@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { store } from "../redux/store";
 import { AuthState } from "../auth/interfaces";
 import { auth } from "../__test_support__/fake_state/token";
@@ -34,19 +34,17 @@ describe("<RootComponent />", () => {
     mockAuth = auth;
     globalConfig.ROLLBAR_CLIENT_TOKEN = "abc";
     window.location.pathname = Path.mock(Path.logs());
-    const wrapper = mount(<RootComponent store={store} />);
+    const { container } = render(<RootComponent store={store} />);
     expect(Session.clear).not.toHaveBeenCalled();
-    expect(wrapper.html()).toContain("rollbar");
-    wrapper.unmount();
+    expect(container.innerHTML).toContain("rollbar");
   });
 
   it("doesn't add rollbar", () => {
     mockAuth = auth;
     globalConfig.ROLLBAR_CLIENT_TOKEN = "";
     window.location.pathname = Path.mock(Path.logs());
-    const wrapper = mount(<RootComponent store={store} />);
+    const { container } = render(<RootComponent store={store} />);
     expect(Session.clear).not.toHaveBeenCalled();
-    expect(wrapper.html()).not.toContain("rollbar");
-    wrapper.unmount();
+    expect(container.innerHTML).not.toContain("rollbar");
   });
 });

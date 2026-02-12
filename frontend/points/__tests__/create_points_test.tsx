@@ -1,5 +1,5 @@
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { render, fireEvent, act } from "@testing-library/react";
 import {
   createPoint,
   CreatePointProps,
@@ -9,7 +9,10 @@ import {
 } from "../create_points";
 import * as crud from "../../api/crud";
 import { Actions } from "../../constants";
-import { clickButton } from "../../__test_support__/helpers";
+import {
+  changeBlurableInput,
+  clickButton,
+} from "../../__test_support__/helpers";
 import { fakeState } from "../../__test_support__/fake_state";
 import { inputEvent } from "../../__test_support__/fake_html_events";
 import { Path } from "../../internal_urls";
@@ -24,6 +27,7 @@ beforeEach(() => {
 afterEach(() => {
   jest.restoreAllMocks();
 });
+
 describe("mapStateToProps", () => {
   it("maps state to props: drawn point", () => {
     const state = fakeState();
@@ -106,31 +110,37 @@ describe("<CreatePoints />", () => {
     xySwap: false,
   });
 
+  const renderCreatePoints = (props: CreatePointsProps) => {
+    const ref = React.createRef<CreatePoints>();
+    const view = render(<CreatePoints ref={ref} {...props} />);
+    return { ref, ...view };
+  };
+
   it("renders for points", () => {
     location.pathname = Path.mock(Path.points("add"));
     const p = fakeProps();
     p.drawnPoint = fakeDrawnPoint();
-    const wrapper = mount(<CreatePoints {...p} />);
+    const { container } = render(<CreatePoints {...p} />);
     ["add point", "x", "y", "z", "radius"]
-      .map(string => expect(wrapper.text().toLowerCase()).toContain(string));
+      .map(string => expect(container.textContent?.toLowerCase()).toContain(string));
   });
 
   it("renders for weeds", () => {
     location.pathname = Path.mock(Path.weeds("add"));
     const p = fakeProps();
     p.drawnPoint = fakeDrawnPoint();
-    const wrapper = mount(<CreatePoints {...p} />);
+    const { container } = render(<CreatePoints {...p} />);
     ["add weed", "x", "y", "z", "radius"]
-      .map(string => expect(wrapper.text().toLowerCase()).toContain(string));
+      .map(string => expect(container.textContent?.toLowerCase()).toContain(string));
   });
 
   it("updates specific fields", () => {
     const p = fakeProps();
     p.drawnPoint = fakeDrawnPoint();
-    const wrapper = mount<CreatePoints>(<CreatePoints {...p} />);
-    wrapper.instance().updateValue("color")(inputEvent("cheerful hue"));
-    expect(wrapper.instance().props.drawnPoint).toBeTruthy();
-    expect(wrapper.instance().props.dispatch).toHaveBeenCalledWith({
+    const { ref } = renderCreatePoints(p);
+    act(() => ref.current?.updateValue("color")(inputEvent("cheerful hue")));
+    expect(ref.current?.props.drawnPoint).toBeTruthy();
+    expect(ref.current?.props.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_DRAWN_POINT_DATA,
       payload: { ...p.drawnPoint, color: "cheerful hue" },
     });
@@ -139,10 +149,10 @@ describe("<CreatePoints />", () => {
   it("updates radius", () => {
     const p = fakeProps();
     p.drawnPoint = fakeDrawnPoint();
-    const wrapper = mount<CreatePoints>(<CreatePoints {...p} />);
-    wrapper.instance().updateValue("r")(inputEvent("100"));
-    expect(wrapper.instance().props.drawnPoint).toBeTruthy();
-    expect(wrapper.instance().props.dispatch).toHaveBeenCalledWith({
+    const { ref } = renderCreatePoints(p);
+    act(() => ref.current?.updateValue("r")(inputEvent("100")));
+    expect(ref.current?.props.drawnPoint).toBeTruthy();
+    expect(ref.current?.props.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_DRAWN_POINT_DATA,
       payload: { ...p.drawnPoint, r: 100 },
     });
@@ -150,9 +160,9 @@ describe("<CreatePoints />", () => {
 
   it("doesn't update fields without current point", () => {
     const p = fakeProps();
-    const wrapper = mount<CreatePoints>(<CreatePoints {...p} />);
+    const { ref } = renderCreatePoints(p);
     jest.clearAllMocks();
-    wrapper.instance().updateValue("r")(inputEvent("1"));
+    act(() => ref.current?.updateValue("r")(inputEvent("1")));
     expect(p.dispatch).not.toHaveBeenCalled();
   });
 
@@ -160,12 +170,11 @@ describe("<CreatePoints />", () => {
     location.pathname = Path.mock(Path.points("add"));
     const p = fakeProps();
     p.drawnPoint = fakeDrawnPoint();
-    const panel = mount<CreatePoints>(<CreatePoints {...p} />);
-    const wrapper = shallow(panel.instance()
-      .PointProperties({ drawnPoint: p.drawnPoint }));
-    wrapper.find("input").last().simulate("change", {
-      currentTarget: { checked: true }
-    });
+    const { ref } = renderCreatePoints(p);
+    const panel = render(ref.current?.PointProperties({ drawnPoint: p.drawnPoint }));
+    const soilLevelInput =
+      panel.container.querySelector("input[name='at_soil_level']") as Element;
+    fireEvent.click(soilLevelInput);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_DRAWN_POINT_DATA,
       payload: { ...p.drawnPoint, at_soil_level: true }
@@ -178,9 +187,8 @@ describe("<CreatePoints />", () => {
     const point = fakeDrawnPoint();
     point.at_soil_level = true;
     p.drawnPoint = point;
-    const wrapper = mount<CreatePoints>(<CreatePoints {...p} />);
-    wrapper.update();
-    clickButton(wrapper, 0, "save");
+    const view = render(<CreatePoints {...p} />);
+    clickButton(view, 0, "save");
     expect(crud.initSave).toHaveBeenCalledWith("Point", {
       meta: {
         color: "green", created_by: "farm-designer", type: "point",
@@ -201,8 +209,8 @@ describe("<CreatePoints />", () => {
     const p = fakeProps();
     p.drawnPoint = fakeDrawnPoint();
     p.botPosition = { x: 1, y: 2, z: 3 };
-    const wrapper = mount<CreatePoints>(<CreatePoints {...p} />);
-    clickButton(wrapper, 1, "", { icon: "fa-crosshairs" });
+    const view = render(<CreatePoints {...p} />);
+    clickButton(view, 1, "", { icon: "fa-crosshairs" });
     expect(p.dispatch).toHaveBeenCalledWith({
       payload: {
         name: pointName,
@@ -218,9 +226,9 @@ describe("<CreatePoints />", () => {
     const p = fakeProps();
     p.drawnPoint = fakeDrawnPoint();
     p.botPosition = { x: undefined, y: undefined, z: undefined };
-    const wrapper = mount<CreatePoints>(<CreatePoints {...p} />);
+    const view = render(<CreatePoints {...p} />);
     jest.clearAllMocks();
-    clickButton(wrapper, 1, "", { icon: "fa-crosshairs" });
+    clickButton(view, 1, "", { icon: "fa-crosshairs" });
     expect(p.dispatch).not.toHaveBeenCalled();
   });
 
@@ -228,12 +236,9 @@ describe("<CreatePoints />", () => {
     location.pathname = Path.mock(Path.weeds("add"));
     const p = fakeProps();
     p.drawnPoint = fakeDrawnPoint();
-    const panel = mount<CreatePoints>(<CreatePoints {...p} />);
-    const wrapper = shallow(panel.instance()
-      .PointProperties({ drawnPoint: p.drawnPoint }));
-    wrapper.find("BlurableInput").first().simulate("commit", {
-      currentTarget: { value: "new name" }
-    });
+    const { ref } = renderCreatePoints(p);
+    const panel = render(ref.current?.PointProperties({ drawnPoint: p.drawnPoint }));
+    changeBlurableInput(panel, "new name", 0);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_DRAWN_POINT_DATA,
       payload: { ...p.drawnPoint, name: "new name" },
@@ -244,8 +249,8 @@ describe("<CreatePoints />", () => {
     location.pathname = Path.mock(Path.points("add"));
     const p = fakeProps();
     p.drawnPoint = fakeDrawnPoint();
-    const wrapper = mount(<CreatePoints {...p} />);
-    clickButton(wrapper, 0, "save");
+    const view = render(<CreatePoints {...p} />);
+    clickButton(view, 0, "save");
     expect(crud.initSave).toHaveBeenCalledWith("Point", {
       meta: { color: "green", created_by: "farm-designer", type: "point" },
       name: p.drawnPoint.name,
@@ -258,10 +263,8 @@ describe("<CreatePoints />", () => {
   it("changes point color", () => {
     const p = fakeProps();
     p.drawnPoint = fakeDrawnPoint();
-    const wrapper = mount<CreatePoints>(<CreatePoints {...p} />);
-    const PP = wrapper.instance().PointProperties;
-    const component = shallow(<PP drawnPoint={p.drawnPoint} />);
-    component.find("ColorPicker").simulate("change", "blue");
+    const { ref } = renderCreatePoints(p);
+    act(() => ref.current?.updateAttr("color", "blue"));
     expect(p.dispatch).toHaveBeenCalledWith({
       payload: { ...p.drawnPoint, color: "blue" },
       type: Actions.SET_DRAWN_POINT_DATA
@@ -273,12 +276,9 @@ describe("<CreatePoints />", () => {
     p.drawnPoint = fakeDrawnPoint();
     p.drawnPoint.cx = undefined;
     p.drawnPoint.cy = undefined;
-    const wrapper = shallow<CreatePoints>(<CreatePoints {...p} />);
-    const PP = wrapper.instance().PointProperties;
-    const component = shallow(<PP drawnPoint={p.drawnPoint} />);
-    component.find("BlurableInput[name='cx']").simulate("commit", {
-      currentTarget: { value: "100" }
-    });
+    const { ref } = renderCreatePoints(p);
+    const panel = render(ref.current?.PointProperties({ drawnPoint: p.drawnPoint }));
+    changeBlurableInput(panel, "100", 2);
     expect(p.dispatch).toHaveBeenCalledWith({
       payload: { ...p.drawnPoint, cx: 100 },
       type: Actions.SET_DRAWN_POINT_DATA
@@ -288,16 +288,17 @@ describe("<CreatePoints />", () => {
   it("closes panel", () => {
     location.pathname = Path.mock(Path.points("add"));
     const p = fakeProps();
-    const wrapper = mountWithContext(<CreatePoints {...p} />);
-    wrapper.find<CreatePoints>(CreatePoints).instance().closePanel();
+    const ref = React.createRef<CreatePoints>();
+    mountWithContext(<CreatePoints ref={ref} {...p} />);
+    act(() => ref.current?.closePanel());
     expect(mockNavigate).toHaveBeenCalledWith(Path.points());
   });
 
   it("unmounts", () => {
     const p = fakeProps();
-    const wrapper = shallow(<CreatePoints {...p} />);
+    const view = render(<CreatePoints {...p} />);
     jest.clearAllMocks();
-    wrapper.unmount();
+    view.unmount();
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_DRAWN_POINT_DATA,
       payload: undefined

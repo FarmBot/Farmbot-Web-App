@@ -8,7 +8,7 @@ import {
 } from "farmbot/dist/resources/api_resources";
 
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
@@ -69,10 +69,10 @@ describe("<PinBindingsList/>", () => {
   }
 
   it("renders", () => {
-    const wrapper = mount(<PinBindingsList {...fakeProps()} />);
+    const { container } = render(<PinBindingsList {...fakeProps()} />);
     ["pi gpio 10", "sequence", "pi gpio 11", "sequence"].map(string =>
-      expect(wrapper.text().toLowerCase()).toContain(string));
-    const buttons = wrapper.find("button");
+      expect((container.textContent || "").toLowerCase()).toContain(string));
+    const buttons = container.querySelectorAll("button");
     expect(buttons.length).toBe(2);
   });
 
@@ -83,9 +83,9 @@ describe("<PinBindingsList/>", () => {
     const b = fakePinBinding();
     p.resources = buildResourceIndex([b, s]).index;
     p.pinBindings = [{ pin_number: 10, sequence_id: 1, uuid: b.uuid }];
-    const wrapper = mount(<PinBindingsList {...p} />);
-    const buttons = wrapper.find("button");
-    buttons.first().simulate("click");
+    const { container } = render(<PinBindingsList {...p} />);
+    const button = container.querySelectorAll("button").item(0);
+    button && fireEvent.click(button);
     expect(mockDevice.unregisterGpio).not.toHaveBeenCalled();
     expect(crud.destroy).toHaveBeenCalledWith(expect.stringContaining("PinBinding"));
   });
@@ -93,9 +93,9 @@ describe("<PinBindingsList/>", () => {
   it("restricts deletion of built-in bindings", () => {
     const p = fakeProps();
     p.pinBindings = sysBtnBindingData;
-    const wrapper = mount(<PinBindingsList {...p} />);
-    const buttons = wrapper.find("button");
-    buttons.first().simulate("click");
+    const { container } = render(<PinBindingsList {...p} />);
+    const button = container.querySelectorAll("button").item(0);
+    button && fireEvent.click(button);
     expect(mockDevice.unregisterGpio).not.toHaveBeenCalled();
     expect(crud.destroy).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith(

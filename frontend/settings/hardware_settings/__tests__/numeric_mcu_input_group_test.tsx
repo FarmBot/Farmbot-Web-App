@@ -1,5 +1,5 @@
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import { NumericMCUInputGroup } from "../numeric_mcu_input_group";
 import { NumericMCUInputGroupProps } from "../interfaces";
 import { DeviceSetting } from "../../../constants";
@@ -18,9 +18,9 @@ describe("<NumericMCUInputGroup />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<NumericMCUInputGroup {...fakeProps()} />);
-    expect(wrapper.text()).toContain(DeviceSetting.motors);
-    expect(wrapper.find(".error").length).toEqual(0);
+    const { container } = render(<NumericMCUInputGroup {...fakeProps()} />);
+    expect(container.textContent).toContain(DeviceSetting.motors);
+    expect(container.querySelectorAll(".error").length).toEqual(0);
   });
 
   it("overrides advanced hide", () => {
@@ -30,8 +30,9 @@ describe("<NumericMCUInputGroup />", () => {
     bot.hardware.mcu_params.encoder_enabled_x = 1;
     bot.hardware.mcu_params.encoder_enabled_y = 1;
     bot.hardware.mcu_params.encoder_enabled_z = 0;
-    const wrapper = shallow(<NumericMCUInputGroup {...p} />);
-    expect(wrapper.find("Highlight").props().hidden).toEqual(false);
+    const { container } = render(<NumericMCUInputGroup {...p} />);
+    expect(container.querySelector(".setting")?.hasAttribute("hidden"))
+      .toEqual(false);
   });
 
   it("overrides advanced hide: scaling function", () => {
@@ -42,8 +43,9 @@ describe("<NumericMCUInputGroup />", () => {
     bot.hardware.mcu_params.encoder_enabled_x = 0;
     bot.hardware.mcu_params.encoder_enabled_y = 1;
     bot.hardware.mcu_params.encoder_enabled_z = undefined;
-    const wrapper = shallow(<NumericMCUInputGroup {...p} />);
-    expect(wrapper.find("Highlight").props().hidden).toEqual(false);
+    const { container } = render(<NumericMCUInputGroup {...p} />);
+    expect(container.querySelector(".setting")?.hasAttribute("hidden"))
+      .toEqual(false);
   });
 
   it("shows limit warnings", () => {
@@ -52,8 +54,8 @@ describe("<NumericMCUInputGroup />", () => {
     bot.hardware.mcu_params.encoder_enabled_y = 1;
     bot.hardware.mcu_params.encoder_enabled_z = 0;
     p.warnMin = { x: 2, y: 2, z: 0 };
-    const wrapper = mount(<NumericMCUInputGroup {...p} />);
-    expect(wrapper.find(".error").length).toEqual(2);
+    const { container } = render(<NumericMCUInputGroup {...p} />);
+    expect(container.querySelectorAll(".error").length).toEqual(2);
   });
 
   it("shows other warnings", () => {
@@ -64,8 +66,8 @@ describe("<NumericMCUInputGroup />", () => {
     p.advanced = true;
     p.showAdvanced = false;
     p.warning = { x: undefined, y: undefined, z: "error" };
-    const wrapper = mount(<NumericMCUInputGroup {...p} />);
-    expect(wrapper.find(".error").length).toEqual(1);
+    const { container } = render(<NumericMCUInputGroup {...p} />);
+    expect(container.querySelectorAll(".error").length).toEqual(1);
   });
 
   it("handles undefined values", () => {
@@ -75,7 +77,8 @@ describe("<NumericMCUInputGroup />", () => {
     p.xScale = undefined;
     p.advanced = true;
     p.showAdvanced = false;
-    const wrapper = shallow(<NumericMCUInputGroup {...p} />);
-    expect(wrapper.find("Highlight").props().hidden).toEqual(false);
+    const { container } = render(<NumericMCUInputGroup {...p} />);
+    expect(container.querySelector(".setting")?.hasAttribute("hidden"))
+      .toEqual(false);
   });
 });

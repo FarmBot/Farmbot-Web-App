@@ -1,10 +1,10 @@
 let mockIsMobile = false;
 
 import React from "react";
+import { render, fireEvent } from "@testing-library/react";
 import {
   RawSequences as Sequences, SequenceBackButtonProps, SequenceBackButton,
 } from "../sequences";
-import { shallow, mount } from "enzyme";
 import { SequencesProps } from "../interfaces";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
@@ -59,22 +59,22 @@ describe("<Sequences />", () => {
   });
 
   it("renders", () => {
-    const wrapper = shallow(<Sequences {...fakeProps()} />);
-    expect(wrapper.html()).toContain("Sequences");
+    const { container } = render(<Sequences {...fakeProps()} />);
+    expect(container.innerHTML).toContain("Sequences");
   });
 
   it("step command cluster is hidden", () => {
     const p = fakeProps();
     p.sequence = undefined;
-    const wrapper = shallow(<Sequences {...p} />);
-    expect(wrapper.text()).not.toContain("Commands");
+    const { container } = render(<Sequences {...p} />);
+    expect(container.textContent).not.toContain("Commands");
   });
 
   it("makes inserting step mode active", () => {
     const p = fakeProps();
     p.sequencesState.stepIndex = 2;
-    const wrapper = shallow(<Sequences {...p} />);
-    expect(wrapper.html()).toContain("inserting-step");
+    const { container } = render(<Sequences {...p} />);
+    expect(container.innerHTML).toContain("inserting-step");
   });
 
   it("redirects to mobile interface", () => {
@@ -82,7 +82,7 @@ describe("<Sequences />", () => {
     mockIsMobile = true;
     const p = fakeProps();
     p.sequence = undefined;
-    mount(<Sequences {...p} />);
+    render(<Sequences {...p} />);
     expect(mockNavigate).toHaveBeenCalledWith(Path.designerSequences());
   });
 
@@ -91,7 +91,7 @@ describe("<Sequences />", () => {
     mockIsMobile = true;
     const p = fakeProps();
     p.sequence = fakeSequence();
-    mount(<Sequences {...p} />);
+    render(<Sequences {...p} />);
     expect(mockNavigate).toHaveBeenCalledWith(Path.designerSequences("fake"));
   });
 });
@@ -105,8 +105,8 @@ describe("<SequenceBackButton />", () => {
   it("goes back to sequence", () => {
     const p = fakeProps();
     p.className = "inserting-step";
-    const wrapper = mount(<SequenceBackButton {...p} />);
-    wrapper.find("i").first().simulate("click");
+    const { container } = render(<SequenceBackButton {...p} />);
+    fireEvent.click(container.querySelector("i") as Element);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_SEQUENCE_STEP_POSITION, payload: undefined
     });
@@ -116,8 +116,8 @@ describe("<SequenceBackButton />", () => {
   it("goes back to sequence list", () => {
     const p = fakeProps();
     p.className = "";
-    const wrapper = mount(<SequenceBackButton {...p} />);
-    wrapper.find("i").first().simulate("click");
+    const { container } = render(<SequenceBackButton {...p} />);
+    fireEvent.click(container.querySelector("i") as Element);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SELECT_SEQUENCE, payload: undefined
     });

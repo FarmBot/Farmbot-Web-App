@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { SetupWizardSettings } from "../settings";
 import { SetupWizardSettingsProps } from "../interfaces";
 import * as wizardActions from "../actions";
@@ -30,15 +30,15 @@ describe("<SetupWizardSettings />", () => {
   });
 
   it("resets setup", () => {
-    const wrapper = mount(<SetupWizardSettings {...fakeProps()} />);
-    clickButton(wrapper, 0, "restart");
+    const { container } = render(<SetupWizardSettings {...fakeProps()} />);
+    clickButton(container, 0, "restart");
     expect(destroyAllWizardStepResultsSpy).toHaveBeenCalled();
     expect(resetSetupSpy).toHaveBeenCalled();
   });
 
   it("completes setup", () => {
-    const wrapper = mount(<SetupWizardSettings {...fakeProps()} />);
-    clickButton(wrapper, 1, "complete");
+    const { container } = render(<SetupWizardSettings {...fakeProps()} />);
+    clickButton(container, 1, "complete");
     expect(completeSetupSpy).toHaveBeenCalled();
   });
 });

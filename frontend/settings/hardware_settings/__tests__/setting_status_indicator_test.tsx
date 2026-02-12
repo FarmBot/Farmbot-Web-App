@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import {
   SettingStatusIndicator,
   SettingStatusIndicatorProps,
@@ -27,8 +27,9 @@ describe("<SettingStatusIndicator />", () => {
     const p = fakeProps();
     p.wasSyncing = false;
     p.isSyncing = true;
-    const wrapper = mount(<SettingStatusIndicator {...p} />);
-    wrapper.find(".fa-exclamation-triangle").simulate("click");
+    const { container } = render(<SettingStatusIndicator {...p} />);
+    const icon = container.querySelector(".fa-exclamation-triangle");
+    icon && fireEvent.click(icon);
     expect(exportMenu.resendParameters).toHaveBeenCalled();
   });
 
@@ -36,15 +37,15 @@ describe("<SettingStatusIndicator />", () => {
     const p = fakeProps();
     p.wasSyncing = true;
     p.isSyncing = true;
-    const wrapper = mount(<SettingStatusIndicator {...p} />);
-    expect(wrapper.find(".fa-spinner").length).toEqual(1);
+    const { container } = render(<SettingStatusIndicator {...p} />);
+    expect(container.querySelectorAll(".fa-spinner").length).toEqual(1);
   });
 
   it("displays check", () => {
     const p = fakeProps();
     p.wasSyncing = true;
     p.isSyncing = false;
-    const wrapper = mount(<SettingStatusIndicator {...p} />);
-    expect(wrapper.find(".fa-check").length).toEqual(1);
+    const { container } = render(<SettingStatusIndicator {...p} />);
+    expect(container.querySelectorAll(".fa-check").length).toEqual(1);
   });
 });

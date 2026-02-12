@@ -1,10 +1,11 @@
 import React from "react";
-import { shallow } from "enzyme";
+import { render, screen } from "@testing-library/react";
 import { OrderNumberRow } from "../order_number_row";
 import { OrderNumberRowProps } from "../interfaces";
 import * as crud from "../../../api/crud";
 import { fakeDevice } from "../../../__test_support__/resource_index_builder";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
+import { changeBlurableInputRTL } from "../../../__test_support__/helpers";
 
 let editSpy: jest.SpyInstance;
 let saveSpy: jest.SpyInstance;
@@ -27,10 +28,8 @@ describe("<OrderNumberRow />", () => {
   it("sets order number", () => {
     const p = fakeProps();
     const newOrderNumber = "FB1234";
-    const osSettings = shallow(<OrderNumberRow {...p} />);
-    osSettings.find("BlurableInput").simulate("commit", {
-      currentTarget: { value: newOrderNumber }
-    });
+    render(<OrderNumberRow {...p} />);
+    changeBlurableInputRTL(screen.getByRole("textbox"), newOrderNumber);
     expect(crud.edit).toHaveBeenCalledWith(p.device, {
       fb_order_number: newOrderNumber
     });

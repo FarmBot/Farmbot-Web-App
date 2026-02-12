@@ -1,17 +1,15 @@
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { render, fireEvent } from "@testing-library/react";
 import {
   mapStateToProps,
   RawDesignerRegimenScheduler as DesignerRegimenScheduler,
 } from "../scheduler";
-import { DesignerPanelHeader } from "../../../farm_designer/designer_panel";
 import {
-  fakeRegimen,
+  fakeRegimen, fakeSequence,
 } from "../../../__test_support__/fake_state/resources";
 import {
   buildResourceIndex, fakeDevice,
 } from "../../../__test_support__/resource_index_builder";
-import { AddButton } from "../../bulk_scheduler/add_button";
 import { RegimenSchedulerProps } from "../interfaces";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { Path } from "../../../internal_urls";
@@ -31,23 +29,24 @@ describe("<DesignerRegimenScheduler />", () => {
   it("renders", () => {
     const p = fakeProps();
     p.current = fakeRegimen();
-    const wrapper = mount(<DesignerRegimenScheduler {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("schedule");
+    const { container } = render(<DesignerRegimenScheduler {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("schedule");
   });
 
   it("handles missing regimen", () => {
     const p = fakeProps();
     p.current = undefined;
-    const wrapper = shallow(<DesignerRegimenScheduler {...p} />);
-    expect(wrapper.find(DesignerPanelHeader).props().backTo)
-      .toEqual(Path.regimens());
+    const { container } = render(<DesignerRegimenScheduler {...p} />);
+    fireEvent.click(container.querySelector(".back-arrow") as Element);
+    expect(mockNavigate).toHaveBeenCalledWith(Path.regimens());
   });
 
   it("commits bulk editor", () => {
     const p = fakeProps();
     p.dispatch = jest.fn();
-    const panel = shallow(<DesignerRegimenScheduler {...p} />);
-    panel.find(AddButton).first().simulate("click");
+    p.sequences = [fakeSequence()];
+    const { container } = render(<DesignerRegimenScheduler {...p} />);
+    fireEvent.click(container.querySelector(".bulk-scheduler-add") as Element);
     expect(p.dispatch).toHaveBeenCalledWith(expect.any(Function));
   });
 });

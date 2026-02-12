@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import {
   seqDropDown, InnerIf, IfBlockDropDownHandler, LHSOptions, ThenElseParams,
 } from "../index";
@@ -76,31 +76,31 @@ describe("LHSOptions()", () => {
 
 describe("<InnerIf />", () => {
   it("renders", () => {
-    const wrapper = mount(<InnerIf {...fakeProps()} />);
-    const inputs = wrapper.find("input");
-    const labels = wrapper.find("label");
-    const buttons = wrapper.find("button");
+    const { container } = render(<InnerIf {...fakeProps()} />);
+    const inputs = container.querySelectorAll("input");
+    const labels = container.querySelectorAll("label");
+    const buttons = container.querySelectorAll("button");
     expect(inputs.length).toEqual(2);
     expect(labels.length).toEqual(5);
     expect(buttons.length).toEqual(4);
-    expect(inputs.first().props().placeholder).toEqual("If ...");
-    expect(labels.at(0).text()).toEqual("Variable");
-    expect(buttons.at(0).text()).toEqual("Pin 0");
-    expect(labels.at(1).text()).toEqual("Operator");
-    expect(buttons.at(1).text()).toEqual("is");
-    expect(labels.at(2).text()).toEqual("Value");
-    expect(inputs.at(1).props().value).toEqual(0);
-    expect(labels.at(3).text()).toEqual("Then Execute");
-    expect(buttons.at(2).text()).toEqual("None");
-    expect(labels.at(4).text()).toEqual("Else Execute");
-    expect(buttons.at(3).text()).toEqual("None");
+    expect((inputs[0] as HTMLInputElement).placeholder).toEqual("If ...");
+    expect(labels[0]?.textContent).toEqual("Variable");
+    expect(buttons[0]?.textContent).toEqual("Pin 0");
+    expect(labels[1]?.textContent).toEqual("Operator");
+    expect(buttons[1]?.textContent).toEqual("is");
+    expect(labels[2]?.textContent).toEqual("Value");
+    expect((inputs[1] as HTMLInputElement).value).toEqual("0");
+    expect(labels[3]?.textContent).toEqual("Then Execute");
+    expect(buttons[2]?.textContent).toEqual("None");
+    expect(labels[4]?.textContent).toEqual("Else Execute");
+    expect(buttons[3]?.textContent).toEqual("None");
   });
 
   it("is recursive", () => {
     const p = fakeProps();
     p.currentStep.args._then = execute;
-    const wrapper = mount(<InnerIf {...p} />);
-    expect(wrapper.html()).toContain("fa-exclamation-triangle");
+    const { container } = render(<InnerIf {...p} />);
+    expect(container.innerHTML).toContain("fa-exclamation-triangle");
   });
 });
 

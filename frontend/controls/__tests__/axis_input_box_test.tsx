@@ -1,36 +1,36 @@
 import React from "react";
 import { AxisInputBox } from "../axis_input_box";
-import { mount, shallow } from "enzyme";
+import { render, screen } from "@testing-library/react";
 import { Xyz } from "farmbot";
+import { changeBlurableInputRTL } from "../../__test_support__/helpers";
 
 describe("<AxisInputBox/>", () => {
   function inputBoxWithValue(value: number | undefined) {
     const axis: Xyz = "x";
     const props = { axis, value, onChange: jest.fn() };
-    return mount(<AxisInputBox {...props} />);
+    return render(<AxisInputBox {...props} />);
   }
 
   it("renders 0 if 0", () => {
     // HISTORIC CONTEXT: We hit a bug where entering "0" resulting in -1.
-    const el = inputBoxWithValue(0);
-    expect(el.find("input").first().props().value).toBe(0);
+    inputBoxWithValue(0);
+    expect(screen.getByRole("spinbutton")).toHaveValue(0);
   });
 
   it("renders '' if undefined", () => {
-    const el = inputBoxWithValue(undefined);
-    expect(el.find("input").first().props().value).toBe("");
+    inputBoxWithValue(undefined);
+    expect(screen.getByRole("spinbutton")).toHaveValue(null);
   });
 
   it("tests inputs", () => {
-    const onChange = jest.fn();
-    const wrapper = shallow(<AxisInputBox
-      axis={"x"} value={undefined} onChange={onChange} />);
-
     function testInput(input: string, expected: number | undefined) {
-      jest.clearAllMocks();
-      wrapper.find("BlurableInput")
-        .simulate("commit", { currentTarget: { value: input } });
+      const onChange = jest.fn();
+      const view =
+        render(<AxisInputBox axis={"x"} value={undefined} onChange={onChange} />);
+      const el = view.getByRole("spinbutton");
+      changeBlurableInputRTL(el, input);
       expect(onChange).toHaveBeenCalledWith("x", expected);
+      view.unmount();
     }
     testInput("", undefined);
     testInput("1", 1);

@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import {
   BoxTopButtons,
   BoxTopGpioDiagram,
@@ -55,46 +55,49 @@ describe("<BoxTopGpioDiagram />", () => {
   it("renders", () => {
     const p = fakeProps();
     p.boundPins = undefined;
-    const wrapper = mount(<BoxTopGpioDiagram {...p} />);
-    expect(wrapper.find("circle").length).toEqual(18);
+    const { container } = render(<BoxTopGpioDiagram {...p} />);
+    expect(container.querySelectorAll("circle").length).toEqual(18);
   });
 
   it("renders: express", () => {
     const p = fakeProps();
     p.firmwareHardware = "express_k10";
-    const wrapper = mount(<BoxTopGpioDiagram {...p} />);
-    expect(wrapper.find("circle").length).toEqual(8);
+    const { container } = render(<BoxTopGpioDiagram {...p} />);
+    expect(container.querySelectorAll("circle").length).toEqual(8);
   });
 
   it("pin hover", () => {
-    const wrapper = mount<BoxTopGpioDiagram>(<BoxTopGpioDiagram
-      {...fakeProps()} />);
-    wrapper.find("#button").at(0).simulate("mouseEnter");
-    expect(wrapper.instance().state.hoveredPin).toEqual(20);
+    const ref = React.createRef<BoxTopGpioDiagram>();
+    const { container } = render(<BoxTopGpioDiagram {...fakeProps()} ref={ref} />);
+    const button = container.querySelectorAll("#button")[0];
+    button && fireEvent.mouseEnter(button);
+    expect(ref.current?.state.hoveredPin).toEqual(20);
   });
 
   it("doesn't hover pin", () => {
-    const wrapper = mount<BoxTopGpioDiagram>(<BoxTopGpioDiagram
-      {...fakeProps()} />);
-    wrapper.find("#button").at(6).simulate("mouseEnter");
-    expect(wrapper.instance().state.hoveredPin).toEqual(undefined);
+    const ref = React.createRef<BoxTopGpioDiagram>();
+    const { container } = render(<BoxTopGpioDiagram {...fakeProps()} ref={ref} />);
+    const button = container.querySelectorAll("#button")[6];
+    button && fireEvent.mouseEnter(button);
+    expect(ref.current?.state.hoveredPin).toEqual(undefined);
   });
 
   it("pin click", () => {
     const p = fakeProps();
-    const wrapper = mount(<BoxTopGpioDiagram {...p} />);
-    wrapper.find("#button").at(0).simulate("click");
+    const { container } = render(<BoxTopGpioDiagram {...p} />);
+    const button = container.querySelectorAll("#button")[0];
+    button && fireEvent.click(button);
     expect(p.setSelectedPin).toHaveBeenCalledWith(20);
   });
 });
 
 describe("<BoxTopButtons />", () => {
-  const clickFirstButton = (wrapper: ReturnType<typeof mount>) => {
-    const button = wrapper.find("#button").first();
-    if (!button.exists()) {
+  const clickFirstButton = (container: ParentNode) => {
+    const button = container.querySelectorAll("#button").item(0);
+    if (!button) {
       return false;
     }
-    button.simulate("click");
+    fireEvent.click(button);
     return true;
   };
 
@@ -123,56 +126,53 @@ describe("<BoxTopButtons />", () => {
   it("renders: genesis", () => {
     const p = fakeProps();
     p.firmwareHardware = "farmduino_k17";
-    const wrapper = mount(<BoxTopButtons {...p} />);
-    wrapper.update();
-    if (wrapper.find("#button").length > 0) {
-      expect(wrapper.find("p").length).toBeGreaterThan(0);
+    const { container } = render(<BoxTopButtons {...p} />);
+    if (container.querySelectorAll("#button").length > 0) {
+      expect(container.querySelectorAll("p").length).toBeGreaterThan(0);
     } else {
-      expect(wrapper.exists()).toBeTruthy();
+      expect(container).toBeTruthy();
     }
   });
 
   it("renders: express", () => {
     const p = fakeProps();
     p.firmwareHardware = "express_k10";
-    const wrapper = mount(<BoxTopButtons {...p} />);
-    wrapper.update();
-    expect(wrapper.exists()).toBeTruthy();
+    const { container } = render(<BoxTopButtons {...p} />);
+    expect(container).toBeTruthy();
   });
 
   it("renders: not editing", () => {
     const p = fakeProps();
     p.isEditing = false;
-    const wrapper = mount(<BoxTopButtons {...p} />);
-    if (wrapper.find("#button").length < 1) {
+    const { container } = render(<BoxTopButtons {...p} />);
+    if (container.querySelectorAll("#button").length < 1) {
       return;
     }
-    expect(wrapper.find("p").length).toBeGreaterThan(0);
-    expect(wrapper.find(".fast-blink").length).toEqual(0);
-    expect(wrapper.find(".slow-blink").length).toEqual(0);
+    expect(container.querySelectorAll("p").length).toBeGreaterThan(0);
+    expect(container.querySelectorAll(".fast-blink").length).toEqual(0);
+    expect(container.querySelectorAll(".slow-blink").length).toEqual(0);
   });
 
   it("renders: blinking", () => {
     const p = fakeProps();
     p.bot.hardware.informational_settings.sync_status = "syncing";
     p.bot.hardware.informational_settings.locked = true;
-    const wrapper = mount(<BoxTopButtons {...p} />);
-    wrapper.update();
-    const hasFastBlink = wrapper.find(".fast-blink").length > 0;
-    const hasSlowBlink = wrapper.find(".slow-blink").length > 0;
-    const markup = wrapper.html() || "";
+    const { container } = render(<BoxTopButtons {...p} />);
+    const hasFastBlink = container.querySelectorAll(".fast-blink").length > 0;
+    const hasSlowBlink = container.querySelectorAll(".slow-blink").length > 0;
+    const markup = container.innerHTML || "";
     const hasBlinkClassInMarkup =
       markup.includes("fast-blink") || markup.includes("slow-blink");
     if (!(hasFastBlink || hasSlowBlink || hasBlinkClassInMarkup)) {
-      expect(wrapper.exists()).toBeTruthy();
+      expect(container).toBeTruthy();
       return;
     }
     expect(hasFastBlink || hasSlowBlink || hasBlinkClassInMarkup).toBeTruthy();
   });
 
   it("executes sequence", () => {
-    const wrapper = mount(<BoxTopButtons {...fakeProps()} />);
-    if (!clickFirstButton(wrapper)) {
+    const { container } = render(<BoxTopButtons {...fakeProps()} />);
+    if (!clickFirstButton(container)) {
       return;
     }
     expect(deviceActions.execSequence).toHaveBeenCalledWith(1);
@@ -181,8 +181,8 @@ describe("<BoxTopButtons />", () => {
   it("doesn't execute sequence", () => {
     const p = fakeProps();
     p.botOnline = false;
-    const wrapper = mount(<BoxTopButtons {...p} />);
-    if (!clickFirstButton(wrapper)) {
+    const { container } = render(<BoxTopButtons {...p} />);
+    if (!clickFirstButton(container)) {
       return;
     }
     expect(deviceActions.execSequence).not.toHaveBeenCalled();
@@ -196,27 +196,27 @@ describe("<BoxTopButtons />", () => {
     (pinBinding.body as SpecialPinBinding).special_action =
       PinBindingSpecialAction.sync;
     p.resources = buildResourceIndex([pinBinding]).index;
-    const wrapper = mount(<BoxTopButtons {...p} />);
-    if (!clickFirstButton(wrapper)) {
+    const { container } = render(<BoxTopButtons {...p} />);
+    if (!clickFirstButton(container)) {
       return;
     }
     expect(deviceActions.sendRPC).toHaveBeenCalledWith({ kind: "sync", args: {} });
   });
 
   it("hovers", () => {
-    const wrapper = mount<BoxTopButtons>(<BoxTopButtons {...fakeProps()} />);
-    const button = wrapper.find("#button").first();
-    if (!button.exists()) { return; }
-    button.simulate("mouseEnter");
-    expect(wrapper.find("circle").length).toBeGreaterThan(0);
+    const { container } = render(<BoxTopButtons {...fakeProps()} />);
+    const button = container.querySelectorAll("#button").item(0);
+    if (!button) { return; }
+    fireEvent.mouseEnter(button);
+    expect(container.querySelectorAll("circle").length).toBeGreaterThan(0);
   });
 
   it("un-hovers", () => {
-    const wrapper = mount<BoxTopButtons>(<BoxTopButtons {...fakeProps()} />);
-    const button = wrapper.find("#button").first();
-    if (!button.exists()) { return; }
-    button.simulate("mouseEnter");
-    button.simulate("mouseLeave");
-    expect(wrapper.find("circle").length).toBeGreaterThan(0);
+    const { container } = render(<BoxTopButtons {...fakeProps()} />);
+    const button = container.querySelectorAll("#button").item(0);
+    if (!button) { return; }
+    fireEvent.mouseEnter(button);
+    fireEvent.mouseLeave(button);
+    expect(container.querySelectorAll("circle").length).toBeGreaterThan(0);
   });
 });

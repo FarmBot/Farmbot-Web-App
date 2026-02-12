@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import {
   SeedTroughAssembly, SeedTroughAssemblyFull,
 } from "../seed_trough_assembly";
@@ -11,8 +11,8 @@ describe("<SeedTroughAssembly />", () => {
     const model = useGLTF(
       ASSETS.models.seedTroughAssembly) as SeedTroughAssemblyFull;
     const Component = SeedTroughAssembly(model);
-    const wrapper = mount(<Component name={"name"} />);
-    expect(wrapper.html()).toContain("name");
-    expect(wrapper.html()).toContain("mesh");
+    const { container } = render(<Component name={"name"} />);
+    expect(container.innerHTML).toContain("name");
+    expect(container.innerHTML).toContain("mesh");
   });
 });

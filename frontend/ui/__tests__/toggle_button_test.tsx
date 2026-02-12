@@ -1,5 +1,6 @@
 import React from "react";
-import { mount } from "enzyme";
+import TestRenderer from "react-test-renderer";
+import { fireEvent, render } from "@testing-library/react";
 import { ToggleButton, ToggleButtonProps } from "../toggle_button";
 
 describe("<ToggleButton />", () => {
@@ -10,63 +11,65 @@ describe("<ToggleButton />", () => {
 
   it("calls toggle action", () => {
     const p = fakeProps();
-    const toggleButton = mount(<ToggleButton {...p} />);
-    toggleButton.simulate("click");
+    const { container } = render(<ToggleButton {...p} />);
+    fireEvent.click(container.querySelector("button") as Element);
     expect(p.toggleAction).toHaveBeenCalledTimes(1);
   });
 
   it("displays no", () => {
-    const toggleButton = mount(<ToggleButton {...fakeProps()} />);
-    expect(toggleButton.text()).toBe("no");
+    const { container } = render(<ToggleButton {...fakeProps()} />);
+    expect(container.querySelector("button")?.textContent).toBe("no");
   });
 
   it("displays yes", () => {
     const p = fakeProps();
     p.toggleValue = 1;
-    const toggleButton = mount(<ToggleButton {...p} />);
-    expect(toggleButton.text()).toBe("yes");
+    const { container } = render(<ToggleButton {...p} />);
+    expect(container.querySelector("button")?.textContent).toBe("yes");
   });
 
   it("displays off", () => {
     const p = fakeProps();
     p.customText = { textFalse: "off", textTrue: "on" };
-    const toggleButton = mount(<ToggleButton {...p} />);
-    expect(toggleButton.text()).toEqual("off");
+    const { container } = render(<ToggleButton {...p} />);
+    expect(container.querySelector("button")?.textContent).toEqual("off");
   });
 
   it("displays on", () => {
     const p = fakeProps();
     p.toggleValue = 1;
     p.customText = { textFalse: "off", textTrue: "on" };
-    const toggleButton = mount(<ToggleButton {...p} />);
-    expect(toggleButton.text()).toEqual("on");
+    const { container } = render(<ToggleButton {...p} />);
+    expect(container.querySelector("button")?.textContent).toEqual("on");
   });
 
   it("displays 🚫", () => {
     const p = fakeProps();
     p.toggleValue = undefined;
     p.customText = { textFalse: "off", textTrue: "on" };
-    const toggleButton = mount(<ToggleButton {...p} />);
-    expect(toggleButton.text()).toEqual("🚫");
+    const { container } = render(<ToggleButton {...p} />);
+    expect(container.querySelector("button")?.textContent).toEqual("🚫");
   });
 
   it("displays dim", () => {
     const p = fakeProps();
     p.dim = true;
-    const toggleButton = mount(<ToggleButton {...p} />);
-    expect(toggleButton.html()).toContain("dim");
+    const { container } = render(<ToggleButton {...p} />);
+    expect(container.querySelector("button")?.className).toContain("dim");
   });
 
   it("updates status", () => {
     jest.useFakeTimers();
     const p = fakeProps();
     p.dim = true;
-    const wrapper = mount<ToggleButton>(<ToggleButton {...p} />);
-    wrapper.instance().componentDidUpdate();
-    expect(wrapper.state().syncing).toEqual(true);
+    const wrapper = TestRenderer.create(<ToggleButton {...p} />);
+    const instance = wrapper.getInstance() as ToggleButton;
+    instance.componentDidUpdate();
+    expect(instance.state.syncing).toEqual(true);
     jest.runAllTimers();
-    expect(wrapper.state().syncing).toEqual(false);
-    wrapper.setState({ inconsistent: false });
-    wrapper.instance().componentDidUpdate();
+    expect(instance.state.syncing).toEqual(false);
+    instance.setState({ inconsistent: false });
+    instance.componentDidUpdate();
+    wrapper.unmount();
   });
 });

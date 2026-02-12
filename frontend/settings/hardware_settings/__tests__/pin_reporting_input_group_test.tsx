@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { PinReportingMCUInputGroup } from "../pin_reporting_input_group";
 import { PinReportingMCUInputGroupProps } from "../interfaces";
 import { bot } from "../../../__test_support__/fake_state/bot";
@@ -21,7 +21,7 @@ describe("<PinReportingMCUInputGroup />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<PinReportingMCUInputGroup {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("reporting");
+    const { container } = render(<PinReportingMCUInputGroup {...fakeProps()} />);
+    expect((container.textContent || "").toLowerCase()).toContain("reporting");
   });
 });
