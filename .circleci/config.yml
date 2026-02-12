@@ -84,7 +84,7 @@ commands:
       - run:
           name: After cache update
           command: |
-            mkdir -p /tmp/test-results
+            mkdir -p test-results
             git clean -xdn
             ls docker_cache
             #sudo docker images
@@ -100,7 +100,7 @@ commands:
       - run:
           name: Run Ruby Tests
           command: |
-            sudo docker compose run web bundle exec rspec spec --format progress --format RspecJunitFormatter --out /tmp/test-results/rspec/rspec.xml
+            sudo docker compose run web bundle exec rspec spec --format progress --format RspecJunitFormatter --out test-results/rspec.xml
       - run:
           name: Check app coverage status
           command: |
@@ -117,13 +117,12 @@ commands:
             shasum -a 256 -c codecov.SHA256SUM
             chmod +x codecov
             ./codecov -t $CODECOV_TOKEN -f coverage_api/coverage.xml
-  jest-commands:
+  js-test-commands:
     steps:
       - run:
           name: Run JS tests
           command: |
-            mkdir -p /tmp/test-results/jest
-            sudo docker compose run web bun test --reporter=junit --reporter-outfile=/tmp/test-results/jest/junit.xml
+            sudo docker compose run web bun test --reporter=junit --reporter-outfile=test-results/junit.xml
             echo 'export COVERAGE_AVAILABLE=true' >> $BASH_ENV
   lint-commands:
     steps:
@@ -333,9 +332,9 @@ jobs:
       - build-commands
       - rspec-commands
       - lint-commands
-      - jest-commands
+      - js-test-commands
       - store_test_results:
-         path: /tmp/test-results
+         path: test-results
       - coverage-commands
       - render-commands
       - end-commands
@@ -345,7 +344,7 @@ jobs:
       - build-commands
       - rspec-commands
       - store_test_results:
-          path: /tmp/test-results
+          path: test-results
   run-linters:
     executor: build-executor
     steps:
@@ -360,7 +359,6 @@ jobs:
           name: Run JS Tests
           command: |
             circleci tests glob **/__tests__/**/*.ts* | circleci tests split > /tmp/tests-to-run
-            mkdir -p /tmp/test-results/jest
-            sudo docker compose run web bun test --reporter=junit --reporter-outfile=/tmp/test-results/jest/junit.xml $(cat /tmp/tests-to-run)
+            sudo docker compose run web bun test --reporter=junit --reporter-outfile=test-results/junit.xml $(cat /tmp/tests-to-run)
       - store_test_results:
-          path: /tmp/test-results
+          path: test-results
