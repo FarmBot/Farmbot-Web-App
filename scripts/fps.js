@@ -15,7 +15,7 @@ async function main() {
         ],
     });
     const page = await browser.newPage();
-    page.setDefaultTimeout(5_000);
+    page.setDefaultTimeout(15_000);
     try {
         await page.goto(url, { waitUntil: 'domcontentloaded' });
         await page.waitForFunction(() => {
@@ -45,7 +45,7 @@ async function main() {
         await page.screenshot({
             path: screenshotPath,
             fullPage: true,
-            timeout: 30_000,
+            timeout: 60_000,
         });
         console.log(`FPS_SCREENSHOT=${screenshotPath}`);
     } catch (err) {
