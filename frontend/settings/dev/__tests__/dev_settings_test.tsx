@@ -1,7 +1,6 @@
 const mockDevSettings: { [key: string]: string } = {};
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
-import { mount, shallow } from "enzyme";
+import { render, fireEvent } from "@testing-library/react";
 import {
   DevWidgetFERow, DevWidgetFBOSRow, DevWidgetDelModeRow,
   DevWidgetShowInternalEnvsRow,
@@ -66,21 +65,23 @@ afterEach(() => {
 
 describe("<DevWidgetFBOSRow />", () => {
   it("changes override value", () => {
-    const wrapper = shallow(<DevWidgetFBOSRow />);
-    wrapper.find("BlurableInput").simulate("commit",
-      { currentTarget: { value: "1.2.3" } });
+    const { container } = render(<DevWidgetFBOSRow />);
+    const input = container.querySelector("input") as HTMLInputElement;
+    fireEvent.focus(input);
+    fireEvent.change(input, { target: { value: "1.2.3" } });
+    fireEvent.blur(input);
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith("internal_use",
       JSON.stringify({ [DevSettings.FBOS_VERSION_OVERRIDE]: "1.2.3" }));
-    wrapper.find(".fa-times").simulate("click");
+    fireEvent.click(container.querySelector(".fa-times") as Element);
     expectRemovedFromInternalUse(DevSettings.FBOS_VERSION_OVERRIDE);
   });
 
   it("increases override value", () => {
-    const wrapper = mount(<DevWidgetFBOSRow />);
-    wrapper.find(".fa-angle-double-up").simulate("click");
+    const { container } = render(<DevWidgetFBOSRow />);
+    fireEvent.click(container.querySelector(".fa-angle-double-up") as Element);
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith("internal_use",
       JSON.stringify({ [DevSettings.FBOS_VERSION_OVERRIDE]: "1000.0.0" }));
-    wrapper.find(".fa-times").simulate("click");
+    fireEvent.click(container.querySelector(".fa-times") as Element);
     expectRemovedFromInternalUse(DevSettings.FBOS_VERSION_OVERRIDE);
   });
 });
@@ -91,8 +92,8 @@ describe("<DevWidgetFERow />", () => {
       .mockReturnValue(false);
     const enableSpy = jest.spyOn(DevSettings, "enableFutureFeatures")
       .mockImplementation(jest.fn());
-    const wrapper = mount(<DevWidgetFERow />);
-    wrapper.find("button").simulate("click");
+    const { container } = render(<DevWidgetFERow />);
+    fireEvent.click(toggleButton(container));
     expect(enableSpy).toHaveBeenCalled();
     enabledSpy.mockRestore();
     enableSpy.mockRestore();
@@ -104,8 +105,8 @@ describe("<DevWidgetFERow />", () => {
       .mockReturnValue(true);
     const disableSpy = jest.spyOn(DevSettings, "disableFutureFeatures")
       .mockImplementation(jest.fn());
-    const wrapper = mount(<DevWidgetFERow />);
-    wrapper.find("button").simulate("click");
+    const { container } = render(<DevWidgetFERow />);
+    fireEvent.click(toggleButton(container));
     expect(disableSpy).toHaveBeenCalled();
     disableSpy.mockRestore();
     enabledSpy.mockRestore();
@@ -116,25 +117,27 @@ describe("<DevWidget3dCameraRow />", () => {
   const MOCK_CAMERA_VALUE = "{\"position\": [0, 0, 0], \"target\": [0, 0, 0]}";
 
   it("changes dev camera value", () => {
-    const wrapper = shallow(<DevWidget3dCameraRow />);
-    wrapper.find("BlurableInput").simulate("commit",
-      { currentTarget: { value: MOCK_CAMERA_VALUE } });
+    const { container } = render(<DevWidget3dCameraRow />);
+    const input = container.querySelector("input") as HTMLInputElement;
+    fireEvent.focus(input);
+    fireEvent.change(input, { target: { value: MOCK_CAMERA_VALUE } });
+    fireEvent.blur(input);
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith("internal_use",
       JSON.stringify({ [DevSettings.CAMERA3D]: MOCK_CAMERA_VALUE }));
-    wrapper.find(".fa-times").simulate("click");
+    fireEvent.click(container.querySelector(".fa-times") as Element);
     expectRemovedFromInternalUse(DevSettings.CAMERA3D);
     delete mockDevSettings[DevSettings.CAMERA3D];
   });
 
   it("handles invalid dev camera value", () => {
     mockDevSettings[DevSettings.CAMERA3D] = "{";
-    mount(<DevWidget3dCameraRow />);
+    render(<DevWidget3dCameraRow />);
     delete mockDevSettings[DevSettings.CAMERA3D];
   });
 
   it("enables dev camera position", () => {
-    const wrapper = mount(<DevWidget3dCameraRow />);
-    wrapper.find(".fa-angle-double-up").simulate("click");
+    const { container } = render(<DevWidget3dCameraRow />);
+    fireEvent.click(container.querySelector(".fa-angle-double-up") as Element);
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith("internal_use",
       JSON.stringify({
         [DevSettings.CAMERA3D]: JSON.stringify(
@@ -145,8 +148,8 @@ describe("<DevWidget3dCameraRow />", () => {
 
   it("disables dev camera position", () => {
     mockDevSettings[DevSettings.CAMERA3D] = MOCK_CAMERA_VALUE;
-    const wrapper = mount(<DevWidget3dCameraRow />);
-    wrapper.find(".fa-times").simulate("click");
+    const { container } = render(<DevWidget3dCameraRow />);
+    fireEvent.click(container.querySelector(".fa-times") as Element);
     expectRemovedFromInternalUse(DevSettings.CAMERA3D);
     delete mockDevSettings[DevSettings.CAMERA3D];
   });
@@ -154,8 +157,8 @@ describe("<DevWidget3dCameraRow />", () => {
 
 describe("<DevWidgetDelModeRow />", () => {
   it("enables delete mode", () => {
-    const wrapper = mount(<DevWidgetDelModeRow />);
-    wrapper.find("button").simulate("click");
+    const { container } = render(<DevWidgetDelModeRow />);
+    fireEvent.click(toggleButton(container));
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith("internal_use",
       JSON.stringify({ [DevSettings.QUICK_DELETE_MODE]: "true" }));
     delete mockDevSettings[DevSettings.QUICK_DELETE_MODE];
@@ -166,8 +169,8 @@ describe("<DevWidgetDelModeRow />", () => {
       .mockReturnValue(true);
     const disableSpy = jest.spyOn(DevSettings, "disableQuickDelete")
       .mockImplementation(jest.fn());
-    const wrapper = mount(<DevWidgetDelModeRow />);
-    wrapper.find("button").simulate("click");
+    const { container } = render(<DevWidgetDelModeRow />);
+    fireEvent.click(toggleButton(container));
     expect(disableSpy).toHaveBeenCalled();
     disableSpy.mockRestore();
     enabledSpy.mockRestore();
@@ -180,8 +183,8 @@ describe("<DevWidgetShowInternalEnvsRow />", () => {
       .mockReturnValue(false);
     const enableSpy = jest.spyOn(DevSettings, "enableShowInternalEnvs")
       .mockImplementation(jest.fn());
-    const wrapper = mount(<DevWidgetShowInternalEnvsRow />);
-    wrapper.find("button").simulate("click");
+    const { container } = render(<DevWidgetShowInternalEnvsRow />);
+    fireEvent.click(toggleButton(container));
     expect(enableSpy).toHaveBeenCalled();
     enableSpy.mockRestore();
     enabledSpy.mockRestore();
@@ -191,8 +194,8 @@ describe("<DevWidgetShowInternalEnvsRow />", () => {
     mockDevSettings[DevSettings.SHOW_INTERNAL_ENVS] = "true";
     const enabledSpy = jest.spyOn(DevSettings, "showInternalEnvsEnabled")
       .mockReturnValue(true);
-    const wrapper = mount(<DevWidgetShowInternalEnvsRow />);
-    wrapper.find("button").simulate("click");
+    const { container } = render(<DevWidgetShowInternalEnvsRow />);
+    fireEvent.click(toggleButton(container));
     expectRemovedFromInternalUse(DevSettings.SHOW_INTERNAL_ENVS);
     enabledSpy.mockRestore();
     delete mockDevSettings[DevSettings.SHOW_INTERNAL_ENVS];
@@ -235,15 +238,26 @@ describe("<DevWidgetChunkingDisabledRow />", () => {
 });
 
 describe("<Dev3dDebugSettings />", () => {
-  const toggleFor = (key: string) => {
-    const label = screen.getByText(key);
-    return label.closest(".row")?.querySelector("button") as HTMLButtonElement;
+  const toggleFor = (container: HTMLElement, key: string) => {
+    const keyLabel = Array.from(container.querySelectorAll("label"))
+      .find(label => label.textContent?.trim() === key);
+    if (!keyLabel) {
+      throw new Error(`Unable to locate row for ${key}`);
+    }
+    const sibling = keyLabel.nextElementSibling;
+    const button = sibling?.tagName.toLowerCase() === "button"
+      ? sibling
+      : sibling?.querySelector<HTMLButtonElement>("button");
+    if (!(button instanceof HTMLButtonElement)) {
+      throw new Error(`Unable to locate toggle for ${key}`);
+    }
+    return button;
   };
 
   it("adds env", () => {
     mockState.resources = buildResourceIndex([]);
-    render(<Dev3dDebugSettings />);
-    const toggle = toggleFor("3D_eventDebug");
+    const { container } = render(<Dev3dDebugSettings />);
+    const toggle = toggleFor(container, "3D_eventDebug");
     fireEvent.click(toggle);
     expect(initSaveSpy).toHaveBeenCalledWith("FarmwareEnv", {
       key: "3D_eventDebug",
@@ -258,8 +272,8 @@ describe("<Dev3dDebugSettings />", () => {
     env.body.key = "3D_eventDebug";
     env.body.value = 0;
     mockState.resources = buildResourceIndex([env]);
-    render(<Dev3dDebugSettings />);
-    const toggle = toggleFor("3D_eventDebug");
+    const { container } = render(<Dev3dDebugSettings />);
+    const toggle = toggleFor(container, "3D_eventDebug");
     fireEvent.click(toggle);
     expect(initSaveSpy).not.toHaveBeenCalled();
     expect(editSpy).toHaveBeenCalledWith(env, { value: 1 });
@@ -271,8 +285,8 @@ describe("<Dev3dDebugSettings />", () => {
     env.body.key = "3D_eventDebug";
     env.body.value = 1;
     mockState.resources = buildResourceIndex([env]);
-    render(<Dev3dDebugSettings />);
-    const toggle = toggleFor("3D_eventDebug");
+    const { container } = render(<Dev3dDebugSettings />);
+    const toggle = toggleFor(container, "3D_eventDebug");
     fireEvent.click(toggle);
     expect(initSaveSpy).not.toHaveBeenCalled();
     expect(editSpy).toHaveBeenCalledWith(env, { value: 0 });

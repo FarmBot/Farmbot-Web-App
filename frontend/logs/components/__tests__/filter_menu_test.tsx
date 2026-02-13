@@ -5,6 +5,7 @@ import { LogsFilterMenuProps, LogsState } from "../../interfaces";
 import { MESSAGE_TYPES } from "../../../sequences/interfaces";
 
 jest.mock("@blueprintjs/core", () => ({
+  ...jest.requireActual("@blueprintjs/core"),
   Slider: (props: {
     onChange?: (value: number) => void;
     onRelease?: (value: number) => void;

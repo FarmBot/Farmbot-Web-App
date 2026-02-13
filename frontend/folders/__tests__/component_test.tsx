@@ -15,6 +15,7 @@ jest.mock("../actions", () => ({
 }));
 
 jest.mock("@blueprintjs/core", () => ({
+  ...jest.requireActual("@blueprintjs/core"),
   Position: jest.fn(),
   PopoverInteractionKind: jest.fn(),
   Button: jest.fn(p => <button>{p.text}</button>),

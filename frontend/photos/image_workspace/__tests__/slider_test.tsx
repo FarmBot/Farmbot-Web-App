@@ -5,6 +5,7 @@ import {
 import { fireEvent, render, screen } from "@testing-library/react";
 
 jest.mock("@blueprintjs/core", () => ({
+  ...jest.requireActual("@blueprintjs/core"),
   RangeSlider: (props: {
     onRelease?: (values: [number, number]) => void;
   }) =>

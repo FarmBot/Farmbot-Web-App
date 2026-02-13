@@ -1,6 +1,5 @@
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { mount } from "enzyme";
 import {
   FormField, sendEmail, DidRegister, MustRegister, CreateAccount,
   FormFieldProps, CreateAccountProps,
@@ -33,9 +32,9 @@ describe("<FormField />", () => {
 
   it("renders correct props", () => {
     const p = fakeProps();
-    render(<FormField {...p} />);
+    const { container } = render(<FormField {...p} />);
     expect(screen.getByDisplayValue("my val")).toBeInTheDocument();
-    const input = screen.getByLabelText("My Label");
+    const input = container.querySelector("input") as HTMLInputElement;
     changeBlurableInputRTL(input, "foo");
     expect(p.onCommit).toHaveBeenCalledWith("foo");
   });
@@ -95,8 +94,9 @@ describe("<MustRegister />", () => {
 
   it("inputs username", () => {
     const p = fakeCreateAccountProps();
-    const wrapper = mount(<MustRegister {...p} />);
-    wrapper.find(FormField).at(1).props().onCommit("name");
+    render(<MustRegister {...p} />);
+    const input = screen.getAllByTestId("blurable-undefined")[1];
+    fireEvent.blur(input, { target: { value: "name" } });
     expect(p.set).toHaveBeenCalledWith("regName", "name");
   });
 

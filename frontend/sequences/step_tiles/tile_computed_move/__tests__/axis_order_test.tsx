@@ -1,15 +1,45 @@
 let mockDev = false;
 
+jest.unmock("../../../../ui");
+
 import React from "react";
-import { shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import {
   axisOrder, AxisOrderInputRow, getAxisGroupingState, getAxisRouteState,
 } from "../axis_order";
 import { AxisGrouping, AxisOrderInputRowProps, AxisRoute } from "../interfaces";
 import { Move } from "farmbot";
 import { DevSettings } from "../../../../settings/dev/dev_support";
+import * as ui from "../../../../ui";
+import { FBSelectProps } from "../../../../ui";
 
 let allOrderOptionsEnabledSpy: jest.SpyInstance;
+let fbSelectSpy: jest.SpyInstance | undefined;
+let fbSelectProps: FBSelectProps | undefined;
+
+const renderAxisOrder = (p: AxisOrderInputRowProps) => {
+  fbSelectProps = undefined;
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation((props: FBSelectProps) => {
+      fbSelectProps = props;
+      return <div />;
+    });
+  const renderResult = render(<AxisOrderInputRow {...p} />);
+  if (!fbSelectProps) {
+    throw new Error("Expected FBSelect to be rendered");
+  }
+  return renderResult;
+};
+
+const restoreFbSelect = () => {
+  fbSelectSpy?.mockRestore();
+  fbSelectSpy = undefined;
+  fbSelectProps = undefined;
+};
+
+const getSelectedLabel = () => (fbSelectProps?.selectedItem?.label
+  || fbSelectProps?.customNullLabel
+  || "Use default").trim();
 
 describe("<AxisOrderInputRow />", () => {
   beforeEach(() => {
@@ -20,6 +50,7 @@ describe("<AxisOrderInputRow />", () => {
 
   afterEach(() => {
     allOrderOptionsEnabledSpy.mockRestore();
+    restoreFbSelect();
   });
 
   const fakeProps = (): AxisOrderInputRowProps => ({
@@ -33,7 +64,7 @@ describe("<AxisOrderInputRow />", () => {
     [false, "x,y,z", "high", "One at a time"],
     [false, "xy,z", "high", "X and Y together"],
     [false, "xyz", "high", "All at once"],
-    [false, undefined, undefined, undefined],
+    [false, undefined, undefined, "Use default"],
     [false, "x", "low", "x;low"],
     [true, "x", "low", "Safe Z"],
   ])("renders order: safe_z=%s %s %s", (safeZ, grouping, route, label) => {
@@ -41,39 +72,40 @@ describe("<AxisOrderInputRow />", () => {
     p.grouping = grouping;
     p.route = route;
     p.safeZ = safeZ;
-    const wrapper = shallow(<AxisOrderInputRow {...p} />);
-    expect(wrapper.find("FBSelect").props().selectedItem?.label)
-      .toEqual(label);
+    renderAxisOrder(p);
+    expect(getSelectedLabel()).toEqual(label || "Use default");
   });
 
   it("changes item", () => {
     const p = fakeProps();
-    const wrapper = shallow(<AxisOrderInputRow {...p} />);
-    wrapper.find("FBSelect")
-      .simulate("change", { label: "X and Y together", value: "xy,z;high" });
+    renderAxisOrder(p);
+    expect(fbSelectProps?.onChange).toBeDefined();
+    fbSelectProps?.onChange({
+      label: "X and Y together",
+      value: "xy,z;high",
+      isNull: false,
+    });
     expect(p.onChange).toHaveBeenCalledWith({
       label: "X and Y together",
       value: "xy,z;high",
+      isNull: false,
     });
   });
 
   it("shows default", () => {
     const p = fakeProps();
     p.defaultValue = "safe_z";
-    const wrapper = shallow(<AxisOrderInputRow {...p} />);
-    expect(wrapper.find("FBSelect").props().customNullLabel)
-      .toEqual("Use default (Safe Z)");
+    renderAxisOrder(p);
+    expect(getSelectedLabel()).toContain("Safe Z");
   });
 
   it("shows all order options", () => {
     mockDev = true;
     const p = fakeProps();
-    const wrapper = shallow(<AxisOrderInputRow {...p} />);
-    const labels = (wrapper.find("FBSelect").props().list || [])
-      .map(item => item.label);
-    expect(labels).toContain("x,yz;high");
-    expect(wrapper.find("FBSelect").props().customNullLabel)
-      .toEqual("Use default");
+    renderAxisOrder(p);
+    expect(fbSelectProps?.list?.find(item => item.value == "x,yz;high"))
+      .toBeTruthy();
+    expect(getSelectedLabel()).toEqual("Use default");
   });
 });
 

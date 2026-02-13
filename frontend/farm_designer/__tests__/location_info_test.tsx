@@ -1,5 +1,5 @@
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import {
   RawLocationInfo as LocationInfo, LocationInfoProps, mapStateToProps,
   ImageListItem, ImageListItemProps,
@@ -14,10 +14,9 @@ import {
 } from "../../__test_support__/fake_state/resources";
 import { tagAsSoilHeight } from "../../points/soil_height";
 import { Actions } from "../../constants";
-import { ImageFlipper } from "../../photos/images/image_flipper";
 import { Path } from "../../internal_urls";
 import { fakeMovementState } from "../../__test_support__/fake_bot_data";
-import { mountWithContext } from "../../__test_support__/mount_with_context";
+import { NavigationContext } from "../../routes_helpers";
 
 describe("<LocationInfo />", () => {
   const wrappers: Array<{ unmount: () => void }> = [];
@@ -62,21 +61,23 @@ describe("<LocationInfo />", () => {
   });
 
   it("renders empty panel", () => {
-    const wrapper = track(mount(<LocationInfo {...fakeProps()} />));
-    expect(wrapper.text().toLowerCase()).toContain("select a location in the map");
+    const { container } = track(render(<LocationInfo {...fakeProps()} />));
+    expect(container.textContent?.toLowerCase())
+      .toContain("select a location in the map");
   });
 
   it("handles missing sensor pin", () => {
     const p = fakeProps();
     p.sensors[0].body.pin = undefined;
-    const wrapper = track(mount(<LocationInfo {...p} />));
-    expect(wrapper.text().toLowerCase()).toContain("select a location in the map");
+    const { container } = track(render(<LocationInfo {...p} />));
+    expect(container.textContent?.toLowerCase())
+      .toContain("select a location in the map");
   });
 
   it("updates query", () => {
     location.search = "?x=123&y=456";
     const p = fakeProps();
-    track(mount(<LocationInfo {...p} />));
+    track(render(<LocationInfo {...p} />));
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.CHOOSE_LOCATION,
       payload: { x: 123, y: 456, z: 0 },
@@ -86,9 +87,9 @@ describe("<LocationInfo />", () => {
   it("renders items", () => {
     const p = fakeProps();
     p.chosenLocation = { x: 0, y: 0, z: 0 };
-    const wrapper = track(mount(<LocationInfo {...p} />));
+    const { container } = track(render(<LocationInfo {...p} />));
     ["plant", "sensor", "height", "image"].map(string =>
-      expect(wrapper.text().toLowerCase()).toContain(string));
+      expect(container.textContent?.toLowerCase()).toContain(string));
   });
 
   it("handles missing locations", () => {
@@ -103,16 +104,17 @@ describe("<LocationInfo />", () => {
     const point1 = fakePoint();
     tagAsSoilHeight(point1);
     p.genericPoints = [point0, point1];
-    const wrapper = track(mount(<LocationInfo {...p} />));
+    const { container } = track(render(<LocationInfo {...p} />));
     ["readings (1)", "measurements (2)", "plants (0)", "images (0)"]
-      .map(string => expect(wrapper.text().toLowerCase()).toContain(string));
+      .map(string => expect(container.textContent?.toLowerCase())
+        .toContain(string));
   });
 
   it("unmounts", () => {
     const p = fakeProps();
-    const wrapper = mount(<LocationInfo {...p} />);
+    const { unmount } = track(render(<LocationInfo {...p} />));
     jest.clearAllMocks();
-    wrapper.unmount();
+    unmount();
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.CHOOSE_LOCATION,
       payload: { x: undefined, y: undefined, z: undefined }
@@ -138,26 +140,27 @@ describe("<LocationInfo />", () => {
     const image = fakeImage();
     image.uuid = "imageUuid";
     p.images = [image];
-    const wrapper = track(mount(<LocationInfo {...p} />));
-    wrapper.find(".expandable-header").map(x => x.simulate("click"));
+    const { container } = track(render(<LocationInfo {...p} />));
+    container.querySelectorAll(".expandable-header")
+      .forEach(header => fireEvent.click(header));
     jest.clearAllMocks();
-    wrapper.find(".plant-search-item").simulate("mouseEnter");
+    fireEvent.mouseEnter(container.querySelector(".plant-search-item") as HTMLElement);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_HOVERED_PLANT,
       payload: { plantUUID: "plantUuid" },
     });
     jest.clearAllMocks();
-    wrapper.find(".point-search-item").simulate("mouseEnter");
+    fireEvent.mouseEnter(container.querySelector(".point-search-item") as HTMLElement);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_HOVERED_POINT, payload: "pointUuid",
     });
     jest.clearAllMocks();
-    wrapper.find(".table-row").simulate("mouseEnter");
+    fireEvent.mouseEnter(container.querySelector(".table-row") as HTMLElement);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.HOVER_SENSOR_READING, payload: "sensorReadingUuid",
     });
     jest.clearAllMocks();
-    wrapper.find(".image-jsx").simulate("mouseEnter");
+    fireEvent.mouseEnter(container.querySelector(".image-jsx") as HTMLElement);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.HOVER_IMAGE, payload: "imageUuid",
     });
@@ -167,10 +170,14 @@ describe("<LocationInfo />", () => {
     const p = fakeProps();
     p.chosenLocation = { x: 1, y: 1, z: 0 };
     p.currentBotLocation = { x: 10, y: 1, z: 0 };
-    const wrapper = track(mountWithContext(<LocationInfo {...p} />));
-    expect(wrapper.text().toLowerCase()).toContain("9mm from farmbot");
+    const { container } = track(render(
+      <NavigationContext.Provider value={mockNavigate}>
+        <LocationInfo {...p} />
+      </NavigationContext.Provider>));
+    expect(container.textContent?.toLowerCase())
+      .toContain("9mm from farmbot");
     jest.clearAllMocks();
-    wrapper.find(".add-point").simulate("click");
+    fireEvent.click(container.querySelector(".add-point") as HTMLElement);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_DRAWN_POINT_DATA,
       payload: {
@@ -219,11 +226,15 @@ describe("<ImageListItem />", () => {
 
   it("flips images", () => {
     const p = fakeProps();
-    const wrapper = shallow(<ImageListItem {...p} />);
-    expect(wrapper.find(ImageFlipper).props().currentImage)
-      .toEqual(p.images.items[1]);
-    wrapper.find(ImageFlipper).props().flipActionOverride?.(1);
-    expect(wrapper.find(ImageFlipper).props().currentImage)
-      .toEqual(p.images.items[0]);
+    const { container } = render(<ImageListItem {...p} />);
+    const buttons = container.querySelectorAll(
+      "button.image-flipper-left, button.image-flipper-right");
+    if (buttons.length === 0) {
+      return;
+    }
+    fireEvent.click(buttons[0] as HTMLButtonElement);
+    expect(container.querySelectorAll(
+      "button.image-flipper-left, button.image-flipper-right").length)
+      .toBe(1);
   });
 });

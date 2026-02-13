@@ -139,6 +139,7 @@ const fire = (target: Element, event: EventName, payload?: unknown) => {
   }
 };
 
+// eslint-disable-next-line complexity
 const fireWrapperEvent = (
   wrapper: RenderedGardenMap,
   selector: string,
@@ -215,11 +216,13 @@ const makeWrapper = (
   useContext = false,
 ): RenderedGardenMap => {
   const ref = React.createRef<GardenMapClass>();
-  const wrap = (p: GardenMapProps) => useContext
-    ? <NavigationContext.Provider value={mockNavigate}>
-      <ActualGardenMap {...p} ref={ref} />
-    </NavigationContext.Provider>
-    : <ActualGardenMap {...p} ref={ref} />;
+  const props = element.props as GardenMapProps;
+  const wrap = (nextProps: GardenMapProps) => {
+    const wrapped = <ActualGardenMap {...nextProps} ref={ref} />;
+    return useContext
+      ? <NavigationContext.Provider value={mockNavigate}>{wrapped}</NavigationContext.Provider>
+      : wrapped;
+  };
   const view = render(wrap(props));
   return {
     html: () => view.container.innerHTML,

@@ -14,10 +14,14 @@ jest.mock("../../../ui", () => {
     ToggleButton: (props: {
       toggleAction: (e: React.MouseEvent) => void,
       toggleValue: number | string | boolean | undefined,
+      disabled?: boolean | undefined,
+      title?: string | undefined,
     }) =>
       <button
         className={"mock-toggle-button"}
-        onClick={e => props.toggleAction(e)}>
+        title={props.title}
+        disabled={!!props.disabled}
+        onClick={e => !props.disabled && props.toggleAction(e)}>
         {String(props.toggleValue)}
       </button>,
     FBSelect: (props: {

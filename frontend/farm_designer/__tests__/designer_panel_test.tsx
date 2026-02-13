@@ -2,7 +2,7 @@ jest.unmock("../designer_panel");
 jest.unmock("../designer_panel.tsx");
 
 import React, { act } from "react";
-import { mount } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import {
   DesignerPanel,
   DesignerPanelHeader,
@@ -36,9 +36,9 @@ describe("<DesignerPanel />", () => {
   });
 
   it("renders default panel", () => {
-    const wrapper = track(mount(
+    const { container } = track(render(
       <DesignerPanel panelName={"test-panel"} />));
-    const className = wrapper.getDOMNode<HTMLDivElement>().className;
+    const className = container.firstElementChild?.className || "";
     expect(className.includes("panel-container")
       || className.includes("designer-panel")).toBeTruthy();
     if (className.includes("panel-container")) {
@@ -52,13 +52,13 @@ describe("<DesignerPanel />", () => {
       {},
       "",
       "/app/designer?tour=gettingStarted&tourStep=plants");
-    const wrapper = track(mount(
+    const { container, rerender } = track(render(
       <DesignerPanel panelName={"plants"} />));
     const hasBeaconClass = () =>
-      wrapper.getDOMNode<HTMLDivElement>().className.split(" ").includes("beacon");
+      (container.firstElementChild?.className || "").split(" ").includes("beacon");
     const initiallyHasBeacon = hasBeaconClass();
     act(() => { jest.runAllTimers(); });
-    wrapper.update();
+    rerender(<DesignerPanel panelName={"plants"} />);
     if (initiallyHasBeacon) {
       expect(hasBeaconClass()).toBeFalsy();
     } else {
@@ -69,27 +69,24 @@ describe("<DesignerPanel />", () => {
 
 describe("<DesignerPanelHeader />", () => {
   it("renders default panel header", () => {
-    const wrapper = mount(<DesignerPanelHeader
+    const { container } = render(<DesignerPanelHeader
       panelName={"test-panel"} />);
-    expect(wrapper.find("div").first().hasClass("gray-panel")).toBeTruthy();
-    wrapper.unmount();
+    expect(container.querySelector("div")?.className || "").toContain("gray-panel");
   });
 
   it("renders saving indicator", () => {
-    const wrapper = mount(<DesignerPanelHeader
+    const { container } = render(<DesignerPanelHeader
       panelName={"test-panel"}
       specialStatus={SpecialStatus.DIRTY} />);
-    expect(wrapper.text().toLowerCase()).toContain("saving");
-    wrapper.unmount();
+    expect(container.textContent?.toLowerCase()).toContain("saving");
   });
 
   it("goes back", () => {
-    const wrapper = mount(<DesignerPanelHeader
+    const { container } = render(<DesignerPanelHeader
       panelName={"test-panel"} />);
     history.back = jest.fn();
-    wrapper.find("i").first().simulate("click");
+    fireEvent.click(container.querySelector("i.back-arrow") as HTMLElement);
     expect(history.back).toHaveBeenCalled();
-    wrapper.unmount();
   });
 });
 
@@ -99,22 +96,20 @@ describe("<DesignerPanelTop />", () => {
   });
 
   it("doesn't have with-button class", () => {
-    const wrapper = mount(<DesignerPanelTop {...fakeProps()} />);
-    const className = wrapper.getDOMNode<HTMLDivElement>().className;
+    const { container } = render(<DesignerPanelTop {...fakeProps()} />);
+    const className = container.firstElementChild?.className || "";
     expect(className).toContain("panel-top");
     expect(className).not.toContain("with-button");
-    wrapper.unmount();
   });
 
   it("has with-button class", () => {
     const p = fakeProps();
     p.onClick = jest.fn();
-    const wrapper = mount(<DesignerPanelTop {...p} />);
-    const className = wrapper.getDOMNode<HTMLDivElement>().className;
+    const { container } = render(<DesignerPanelTop {...p} />);
+    const className = container.firstElementChild?.className || "";
     expect(className).toContain("panel-top");
     expect(className.includes("with-button") ||
       className.includes("designer-panel-top")).toBeTruthy();
-    wrapper.unmount();
   });
 });
 
@@ -125,7 +120,7 @@ describe("<DesignerPanelContent />", () => {
 
   const clearPanelContentNodes = () =>
     document.querySelectorAll(".panel-content")
-      .forEach(node => node.parentElement?.removeChild(node));
+      .forEach(node => node.remove());
 
   const _addExistingPanelContent = (scrollTop: number) => {
     const existing = document.createElement("div");
@@ -150,22 +145,23 @@ describe("<DesignerPanelContent />", () => {
   it("doesn't show content scroll indicator", () => {
     jest.spyOn(document, "getElementsByClassName")
       .mockReturnValue([{ scrollTop: 0 }] as unknown as HTMLCollectionOf<Element>);
-    const wrapper = mount(<DesignerPanelContent {...fakeProps()} />);
-    expect(wrapper.getDOMNode<HTMLDivElement>().className).not.toContain("scrolled");
-    wrapper.unmount();
+    const { container, unmount } = render(<DesignerPanelContent {...fakeProps()} />);
+    unmount();
+    const className = container.firstElementChild?.getAttribute("class") || "";
+    expect(className).not.toContain("scrolled");
   });
 
   it("shows content scroll indicator", () => {
     jest.spyOn(document, "getElementsByClassName")
       .mockReturnValue([{ scrollTop: 100 }] as unknown as HTMLCollectionOf<Element>);
-    const wrapper = mount(<DesignerPanelContent {...fakeProps()} />);
-    const className = wrapper.getDOMNode<HTMLDivElement>().className;
+    const { container, unmount } = render(<DesignerPanelContent {...fakeProps()} />);
+    const className = container.firstElementChild?.className || "";
     const lowerClassName = className.toLowerCase();
     expect(className).toContain("panel-content");
     expect(
       lowerClassName.includes("controls-panel-content") ||
       lowerClassName.includes("designer-panel-content"))
       .toBeTruthy();
-    wrapper.unmount();
+    unmount();
   });
 });

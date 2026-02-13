@@ -1,34 +1,18 @@
-const mockDeletePoints = jest.fn();
-const mockScanImage = jest.fn();
-
-jest.mock("../../image_workspace", () => ({
-  ImageWorkspace: (props: {
-    onChange: (key: string, value: number) => void;
-    onProcessPhoto: (index: number) => void;
-  }) => <div>
-    <span>hue</span>
-    <span>saturation</span>
-    <span>value</span>
-    <button onClick={() => props.onChange("H_LO", 3)}>
-      workspace change
-    </button>
-    <button onClick={() => props.onProcessPhoto(1)}>
-      scan current image
-    </button>
-  </div>,
-}));
-
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { WeedDetector } from "../index";
 import { API } from "../../../api";
+import { fakePhotosPanelState } from "../../../__test_support__/fake_camera_data";
+import { fakeImage } from "../../../__test_support__/fake_state/resources";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import * as actions from "../actions";
 import * as deletePointsModule from "../../../api/delete_points";
 import { error } from "../../../toast/toast";
 import { Content, ToolTips } from "../../../constants";
 import { WeedDetectorProps } from "../interfaces";
-import { fakePhotosPanelState } from "../../../__test_support__/fake_camera_data";
+import { WeedDetector } from "../index";
+
+const mockDeletePoints = jest.fn();
+const mockScanImage = jest.fn();
 
 let deletePointsSpy: jest.SpyInstance;
 let scanImageSpy: jest.SpyInstance;
@@ -116,15 +100,36 @@ describe("<WeedDetector />", () => {
 
   it("saves ImageWorkspace changes: API", () => {
     const p = fakeProps();
+    p.showAdvanced = true;
+    p.photosPanelState.detectionPP = true;
+    const action = { type: "SAVE_FARMWARE_ENV", payload: "payload" };
+    p.saveFarmwareEnv = jest.fn().mockReturnValue(action);
     render(<WeedDetector {...p} />);
-    fireEvent.click(screen.getByRole("button", { name: "workspace change" }));
-    expect(p.saveFarmwareEnv)
-      .toHaveBeenCalledWith("WEED_DETECTOR_H_LO", "3");
+    const blurInput = document.querySelector<HTMLInputElement>(".advanced input");
+    if (!blurInput) {
+      throw new Error("Expected advanced blur input");
+    }
+    fireEvent.focus(blurInput);
+    fireEvent.change(blurInput, {
+      target: { value: "23" },
+      currentTarget: { value: "23" },
+    });
+    fireEvent.blur(blurInput, {
+      target: { value: "23" },
+      currentTarget: { value: "23" },
+    });
+    expect(p.saveFarmwareEnv).toHaveBeenCalledWith("WEED_DETECTOR_blur", "23");
+    expect(p.dispatch).toHaveBeenCalledWith(action);
   });
 
   it("calls scanImage", () => {
-    render(<WeedDetector {...fakeProps()} />);
-    fireEvent.click(screen.getByRole("button", { name: "scan current image" }));
+    const p = fakeProps();
+    const photo = fakeImage();
+    photo.body.id = 1;
+    p.images = [photo];
+    p.currentImage = photo;
+    render(<WeedDetector {...p} />);
+    fireEvent.click(screen.getByRole("button", { name: /scan current image/i }));
     expect(actions.scanImage).toHaveBeenCalledWith(0);
     expect(mockScanImage).toHaveBeenCalledWith(1);
   });
@@ -132,8 +137,12 @@ describe("<WeedDetector />", () => {
   it("calls scanImage with calibration", () => {
     const p = fakeProps();
     p.wDEnv.CAMERA_CALIBRATION_coord_scale = 0.5;
+    const photo = fakeImage();
+    photo.body.id = 1;
+    p.images = [photo];
+    p.currentImage = photo;
     render(<WeedDetector {...p} />);
-    fireEvent.click(screen.getByRole("button", { name: "scan current image" }));
+    fireEvent.click(screen.getByRole("button", { name: /scan current image/i }));
     expect(actions.scanImage).toHaveBeenCalledWith(0.5);
     expect(mockScanImage).toHaveBeenCalledWith(1);
   });
