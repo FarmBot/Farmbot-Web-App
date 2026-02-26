@@ -94,8 +94,10 @@ describe("<FlipperImage />", () => {
     const img = container.querySelector(".no-flipper-image-container img");
     if (img) {
       expect(img.getAttribute("src")).toEqual(PLACEHOLDER_FARMBOT);
-      expect(img.getAttribute("width")).toEqual(undefined);
-      expect(img.getAttribute("height")).toEqual(undefined);
+      // eslint-disable-next-line no-null/no-null
+      expect(img.getAttribute("width")).toEqual(null);
+      // eslint-disable-next-line no-null/no-null
+      expect(img.getAttribute("height")).toEqual(null);
     } else {
       expect(hasMockedRender(container)).toBeTruthy();
     }
