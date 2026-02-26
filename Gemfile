@@ -34,6 +34,7 @@ gem "ostruct"
 gem "bigdecimal"
 gem "mutex_m"
 gem "tsort"
+gem "irb"
 
 group :development, :test do
   gem "climate_control"
