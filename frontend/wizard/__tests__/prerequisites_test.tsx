@@ -22,7 +22,6 @@ beforeEach(() => {
 
 afterEach(() => {
   mockOnlineValue = true;
-  jest.restoreAllMocks();
 });
 describe("<ProductRegistration />", () => {
   const fakeProps = (): WizardStepComponentProps => ({

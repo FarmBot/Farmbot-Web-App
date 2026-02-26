@@ -34,7 +34,6 @@ describe("maybeSetTimezone()", () => {
 
   afterEach(() => {
     localStorage.removeItem("myBotIs");
-    jest.restoreAllMocks();
   });
 
   it("doesn't set timezone", () => {

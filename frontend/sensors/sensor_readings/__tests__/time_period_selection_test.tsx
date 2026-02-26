@@ -6,26 +6,38 @@ import {
 import { fakeSensorReading } from "../../../__test_support__/fake_state/resources";
 import { TimePeriodSelectionProps, DateDisplayProps } from "../interfaces";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
+import * as ui from "../../../ui";
 
-jest.mock("../../../ui", () => ({
-  ...jest.requireActual("../../../ui"),
-  FBSelect: (props: {
-    selectedItem?: { label: string };
-    onChange: (ddi: { label: string; value: number }) => void;
-  }) =>
-    <button className="fb-select-mock"
-      onClick={() => props.onChange({ label: "", value: 100 })}>
-      {props.selectedItem?.label}
-    </button>,
-  BlurableInput: (props: {
-    value: string;
-    onCommit: (e: { currentTarget: { value: string } }) => void;
-  }) =>
-    <input className="blurable-input-mock"
-      defaultValue={props.value}
-      onBlur={e => props.onCommit({ currentTarget: { value: e.currentTarget.value } })}
-      onChange={() => { }} />,
-}));
+let fbSelectSpy: jest.SpyInstance;
+let blurableInputSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation((props: {
+      selectedItem?: { label: string };
+      onChange: (ddi: { label: string; value: number }) => void;
+    }) =>
+      <button className="fb-select-mock"
+        onClick={() => props.onChange({ label: "", value: 100 })}>
+        {props.selectedItem?.label}
+      </button>);
+  blurableInputSpy = jest.spyOn(ui, "BlurableInput")
+    .mockImplementation((props: {
+      value: string;
+      onCommit: (e: { currentTarget: { value: string } }) => void;
+    }) =>
+      <input className="blurable-input-mock"
+        defaultValue={props.value}
+        onBlur={e => props.onCommit({
+          currentTarget: { value: e.currentTarget.value }
+        })}
+        onChange={() => { }} />);
+});
+
+afterEach(() => {
+  fbSelectSpy.mockRestore();
+  blurableInputSpy.mockRestore();
+});
 
 describe("<TimePeriodSelection />", () => {
   function fakeProps(): TimePeriodSelectionProps {

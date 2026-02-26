@@ -9,9 +9,6 @@ beforeEach(() => {
   jest.spyOn(screenSize, "isMobile").mockImplementation(() => mockIsMobile);
 });
 
-afterEach(() => {
-  jest.restoreAllMocks();
-});
 
 const text = (computer: string) =>
   `Your FarmBot's internal computer is the Raspberry Pi ${computer}`;

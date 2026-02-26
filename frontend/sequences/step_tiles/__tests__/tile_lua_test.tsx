@@ -6,9 +6,6 @@ import { Lua } from "farmbot";
 import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 import * as screenSize from "../../../screen_size";
 
-jest.unmock("../../step_ui");
-jest.unmock("../../../ui");
-
 let isMobileSpy: jest.SpyInstance;
 
 beforeEach(() => {

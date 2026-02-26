@@ -1,23 +1,26 @@
 let mockDev = false;
-jest.mock("../../../settings/dev/dev_support", () => {
-  const actual = jest.requireActual("../../../settings/dev/dev_support");
-  return {
-    ...actual,
-    DevSettings: {
-      ...actual.DevSettings,
-      showInternalEnvsEnabled: () => mockDev,
-      overriddenFbosVersion: jest.fn(),
-    },
-  };
-});
+import * as devSupport from "../../../settings/dev/dev_support";
 
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { ImagingDataManagement } from "../index";
 import { ImagingDataManagementProps } from "../interfaces";
 
-afterAll(() => {
-  jest.unmock("../../../settings/dev/dev_support");
+let showInternalEnvsEnabledSpy: jest.SpyInstance;
+let overriddenFbosVersionSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  showInternalEnvsEnabledSpy =
+    jest.spyOn(devSupport.DevSettings, "showInternalEnvsEnabled")
+      .mockImplementation(() => mockDev);
+  overriddenFbosVersionSpy =
+    jest.spyOn(devSupport.DevSettings, "overriddenFbosVersion")
+      .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  showInternalEnvsEnabledSpy.mockRestore();
+  overriddenFbosVersionSpy.mockRestore();
 });
 
 describe("<ImagingDataManagement />", () => {

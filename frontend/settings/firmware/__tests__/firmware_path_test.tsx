@@ -5,12 +5,16 @@ import {
   FirmwarePathRow, FirmwarePathRowProps,
 } from "../firmware_path";
 import * as deviceActions from "../../../devices/actions";
+import * as ui from "../../../ui";
 
-jest.mock("../../../ui", () => {
-  const actual = jest.requireActual("../../../ui");
-  return {
-    ...actual,
-    FBSelect: (props: {
+let updateConfigSpy: jest.SpyInstance;
+let fbSelectSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  updateConfigSpy = jest.spyOn(deviceActions, "updateConfig")
+    .mockImplementation(jest.fn());
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation((props: {
       onChange: (ddi: { label: string, value: string }) => void,
     }) =>
       <div>
@@ -20,19 +24,11 @@ jest.mock("../../../ui", () => {
         <button onClick={() => props.onChange({ label: "", value: "manual" })}>
           select-manual
         </button>
-      </div>,
-  };
-});
-
-let updateConfigSpy: jest.SpyInstance;
-
-beforeEach(() => {
-  updateConfigSpy = jest.spyOn(deviceActions, "updateConfig")
-    .mockImplementation(jest.fn());
+      </div>);
 });
 
 afterEach(() => {
-  jest.restoreAllMocks();
+  fbSelectSpy.mockRestore();
 });
 
 describe("<FirmwarePathRow />", () => {

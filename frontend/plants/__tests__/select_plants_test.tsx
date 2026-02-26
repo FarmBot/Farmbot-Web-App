@@ -1,32 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-jest.mock("../../ui", () => {
-  const React = require("react");
-  const actual = jest.requireActual("../../ui");
-  return {
-    ...actual,
-    FBSelect: (props: any) => {
-      const value = props.selectedItem ? String(props.selectedItem.value) : "";
-      return <select
-        className={"mock-fb-select"}
-        value={value}
-        onChange={e => {
-          const nextValue = e.currentTarget.value;
-          const selected = nextValue === ""
-            ? props.list.find((item: any) => item.isNull)
-            || props.list.find((item: any) => String(item.value) === "")
-            : props.list.find((item: any) => String(item.value) === nextValue);
-          selected && props.onChange(selected);
-        }}>
-        <option value={""} />
-        {props.list.map((item: any, index: number) =>
-          <option key={`${item.value}-${index}`} value={String(item.value)}>
-            {item.label}
-          </option>)}
-      </select>;
-    },
-  };
-});
-
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import {
@@ -58,6 +30,37 @@ import * as plantActions from "../../farm_designer/map/layers/plants/plant_actio
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { Path } from "../../internal_urls";
 import * as mapActions from "../../farm_designer/map/actions";
+import * as ui from "../../ui";
+
+let fbSelectSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation((props: any) => {
+      const value = props.selectedItem ? String(props.selectedItem.value) : "";
+      return <select
+        className={"mock-fb-select"}
+        value={value}
+        onChange={e => {
+          const nextValue = e.currentTarget.value;
+          const selected = nextValue === ""
+            ? props.list.find((item: any) => item.isNull)
+            || props.list.find((item: any) => String(item.value) === "")
+            : props.list.find((item: any) => String(item.value) === nextValue);
+          selected && props.onChange(selected);
+        }}>
+        <option value={""} />
+        {props.list.map((item: any, index: number) =>
+          <option key={`${item.value}-${index}`} value={String(item.value)}>
+            {item.label}
+          </option>)}
+      </select>;
+    });
+});
+
+afterEach(() => {
+  fbSelectSpy.mockRestore();
+});
 
 describe("<SelectPlants />", () => {
   let createGroupSpy: jest.SpyInstance;
@@ -530,8 +533,4 @@ describe("<SelectModeLink />", () => {
       payload: true,
     });
   });
-});
-
-afterAll(() => {
-  jest.unmock("../../ui");
 });

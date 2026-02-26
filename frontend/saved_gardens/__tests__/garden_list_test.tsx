@@ -1,14 +1,20 @@
-jest.mock("../actions", () => ({ openSavedGarden: jest.fn() }));
-
 import React from "react";
 import { render, fireEvent } from "@testing-library/react";
 import { GardenInfo, SavedGardenList } from "../garden_list";
 import { fakeSavedGarden } from "../../__test_support__/fake_state/resources";
 import { SavedGardenInfoProps, SavedGardenListProps } from "../interfaces";
 import { openSavedGarden } from "../actions";
+import * as savedGardenActions from "../actions";
 
-afterAll(() => {
-  jest.unmock("../actions");
+let openSavedGardenSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  openSavedGardenSpy = jest.spyOn(savedGardenActions, "openSavedGarden")
+    .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  openSavedGardenSpy.mockRestore();
 });
 describe("<GardenInfo />", () => {
   const fakeProps = (): SavedGardenInfoProps => ({

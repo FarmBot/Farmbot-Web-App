@@ -5,11 +5,6 @@ import { createRequire } from "module";
 import { TextEncoder } from "util";
 import fs from "fs";
 import path from "path";
-import { auth } from "./fake_state/token";
-import { bot } from "./fake_state/bot";
-import { config } from "./fake_state/config";
-import { draggable } from "./fake_state/draggable";
-import { app } from "./fake_state/app";
 import { cleanup } from "@testing-library/react";
 
 const globalAny = globalThis as typeof globalThis & {
@@ -99,6 +94,7 @@ const patchThreeStdlib = () => {
 patchThreeStdlib();
 
 const nativeRequire = createRequire(import.meta.url);
+
 const stackToPath = (line: string): string | undefined => {
   const withParens = line.match(/\((.+):\d+:\d+\)$/);
   if (withParens?.[1]) {
@@ -157,12 +153,19 @@ if (globalAny.jest) {
 }
 
 await import("./localstorage");
+await import("./additional_mocks");
 await import("./mock_fbtoaster");
 await import("./mock_i18next");
-await import("./additional_mocks");
 await import("./three_d_mocks");
+const threeFiber = await import("@react-three/fiber");
+const THREE = await import("three");
 await import("jest-canvas-mock");
 await import("./setup_tests");
+const { auth } = await import("./fake_state/token");
+const { bot } = await import("./fake_state/bot");
+const { config } = await import("./fake_state/config");
+const { draggable } = await import("./fake_state/draggable");
+const { app } = await import("./fake_state/app");
 
 const cloneForReset = <T>(value: T): T => structuredClone(value);
 const resetMutableFixture = <T extends Record<string, unknown>>(
@@ -182,8 +185,40 @@ const draggableBaseline = cloneForReset(draggable);
 const appBaseline = cloneForReset(app);
 const globalConfigBaseline = cloneForReset(globalAny.globalConfig ?? {});
 
+const defaultThreeFiberState = () => ({
+  clock: { getElapsedTime: jest.fn(() => 0) },
+  camera: new THREE.PerspectiveCamera(),
+  gl: {
+    info: {
+      render: { calls: 0, triangles: 0, points: 0, lines: 0 },
+      memory: { geometries: 0, textures: 0 },
+    },
+  },
+  scene: { traverse: jest.fn() },
+  size: { width: 800, height: 600 },
+  pointer: { x: 0, y: 0 },
+});
+
+type MockLike = {
+  mockImplementation: (impl: (...args: unknown[]) => unknown) => unknown;
+};
+
+const asMockLike = (value: unknown): MockLike | undefined =>
+  globalAny.jest?.isMockFunction?.(value)
+    ? value as MockLike
+    : undefined;
+
+const resetThreeFiberHookMocks = () => {
+  asMockLike(threeFiber.useFrame)?.mockImplementation(
+    (callback: (state: ReturnType<typeof defaultThreeFiberState>) => unknown) =>
+      callback(defaultThreeFiberState()));
+  asMockLike(threeFiber.useThree)?.mockImplementation(
+    () => defaultThreeFiberState());
+};
+
 beforeEach(() => {
   bunJest.clearAllMocks();
+  resetThreeFiberHookMocks();
   resetMutableFixture(auth, authBaseline);
   resetMutableFixture(bot, botBaseline);
   resetMutableFixture(config, configBaseline);
@@ -211,7 +246,6 @@ beforeEach(() => {
 
 afterEach(() => {
   bunJest.restoreAllMocks?.();
-  bunMock.restore?.();
   bunJest.useRealTimers?.();
   cleanup();
 });

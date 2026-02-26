@@ -30,9 +30,6 @@ beforeEach(() => {
     .mockImplementation(jest.fn());
 });
 
-afterEach(() => {
-  jest.restoreAllMocks();
-});
 
 describe("<SetupWizard />", () => {
   const fakeProps = (): SetupWizardProps => ({

@@ -5,8 +5,6 @@ import { ReadPin } from "farmbot";
 import { StepParams } from "../../interfaces";
 import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 
-jest.unmock("../../../ui");
-
 describe("<TileReadPin />", () => {
   const fakeProps = (): StepParams<ReadPin> => ({
     ...fakeStepParams({
@@ -33,11 +31,9 @@ describe("<TileReadPin />", () => {
     ]));
     expect(inputs[1]?.value).toEqual("pinlabel");
 
-    const text = (container.textContent || "").toLowerCase();
-    const mockedSelectCount = (text.match(/mock-scene-select/g) || []).length;
-    const hasModeSelection =
-      (text.includes("analog") && text.includes("digital"))
-      || mockedSelectCount >= 2;
-    expect(hasModeSelection).toBeTruthy();
+    const selectButtons = container.querySelectorAll(".filter-search button");
+    expect(selectButtons.length).toBeGreaterThanOrEqual(2);
+    const modeText = (selectButtons[1]?.textContent || "").toLowerCase();
+    expect(modeText).toContain("analog");
   });
 });

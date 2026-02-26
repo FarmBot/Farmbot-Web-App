@@ -1,6 +1,3 @@
-jest.unmock("../crud");
-jest.unmock("../maybe_start_tracking");
-
 const mockBody: Partial<TaggedUser["body"]> = { id: 23 };
 
 import axios from "axios";
@@ -34,7 +31,6 @@ describe("AJAX data tracking", () => {
   };
 
   beforeEach(() => {
-    jest.restoreAllMocks();
     jest.clearAllMocks();
     appIsReadonlySpy = jest.spyOn(readOnlyMode, "appIsReadonly")
       .mockImplementation(() => false);
@@ -52,7 +48,6 @@ describe("AJAX data tracking", () => {
 
   afterEach(() => {
     appIsReadonlySpy?.mockRestore();
-    jest.restoreAllMocks();
   });
 
   it("sets consistency when calling destroy()", async () => {

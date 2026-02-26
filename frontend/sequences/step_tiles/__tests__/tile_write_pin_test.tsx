@@ -1,5 +1,4 @@
 const mockEditStep = jest.fn();
-jest.mock("../../../api/crud", () => ({ editStep: mockEditStep }));
 
 import React from "react";
 import { render } from "@testing-library/react";
@@ -7,6 +6,7 @@ import { TileWritePin } from "../tile_write_pin";
 import { WritePin } from "farmbot";
 import { StepParams } from "../../interfaces";
 import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
+import * as crud from "../../../api/crud";
 
 const fakeProps = (): StepParams<WritePin> => ({
   ...fakeStepParams({
@@ -16,8 +16,15 @@ const fakeProps = (): StepParams<WritePin> => ({
   showPins: false,
 });
 
-afterAll(() => {
-  jest.unmock("../../../api/crud");
+let editStepSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  editStepSpy = jest.spyOn(crud, "editStep")
+    .mockImplementation(mockEditStep);
+});
+
+afterEach(() => {
+  editStepSpy.mockRestore();
 });
 describe("<TileWritePin />", () => {
   it("renders inputs: Analog", () => {

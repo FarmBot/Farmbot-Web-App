@@ -25,16 +25,11 @@ const HOST = "local.dev";
 const PORT = "2323";
 
 beforeEach(() => {
-  jest.restoreAllMocks();
   jest.clearAllMocks();
   mockGet = defaultMockGet();
   ({ generateUrl, getUserLang, generateI18nConfig, detectLanguage } =
     jest.requireActual("../i18n"));
   jest.spyOn(axios, "get").mockImplementation((_url: string) => mockGet);
-});
-
-afterEach(() => {
-  jest.restoreAllMocks();
 });
 
 describe("generateUrl", () => {

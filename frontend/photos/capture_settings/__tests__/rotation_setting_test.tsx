@@ -16,7 +16,7 @@ describe("<RotationSetting />", () => {
   it("toggles setting on", () => {
     const p = fakeProps();
     render(<RotationSetting {...p} />);
-    fireEvent.click(screen.getByRole("button"));
+    fireEvent.click(screen.getByRole("button", { hidden: true }));
     expect(p.saveFarmwareEnv).toHaveBeenCalledWith(
       DISABLE_ROTATE_AT_CAPTURE_KEY, "1");
   });
@@ -25,7 +25,7 @@ describe("<RotationSetting />", () => {
     const p = fakeProps();
     p.env = { [DISABLE_ROTATE_AT_CAPTURE_KEY]: "1" };
     render(<RotationSetting {...p} />);
-    fireEvent.click(screen.getByRole("button"));
+    fireEvent.click(screen.getByRole("button", { hidden: true }));
     expect(p.saveFarmwareEnv).toHaveBeenCalledWith(
       DISABLE_ROTATE_AT_CAPTURE_KEY, "0");
   });
@@ -49,7 +49,7 @@ describe("<RotationSetting />", () => {
         expect(container.querySelector(".capture-rotate-setting")).toBeNull();
         return;
       }
-      const text = (screen.getByRole("button").textContent || "").toLowerCase();
+      const text = (screen.getByRole("button", { hidden: true }).textContent || "").toLowerCase();
       const expected = label.toLowerCase();
       const equivalent = expected === "yes" ? "true" : "false";
       expect([expected, equivalent]).toContain(text);

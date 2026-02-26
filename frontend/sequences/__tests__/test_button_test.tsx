@@ -14,23 +14,12 @@ import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { fakeMenuOpenState } from "../../__test_support__/fake_designer_state";
 import * as deviceActions from "../../devices/actions";
 import * as isParameterizedModule from "../locals_list/is_parameterized";
-
-jest.mock("../../ui", () => ({
-  ...jest.requireActual("../../ui"),
-  Popover: (props: {
-    className?: string;
-    target: React.ReactNode;
-    content?: React.ReactNode;
-    isOpen?: boolean;
-  }) => <div className={props.className}>
-    {props.target}
-    {props.isOpen && props.content}
-  </div>,
-}));
+import * as ui from "../../ui";
 
 describe("<TestButton />", () => {
   let execSequenceSpy: jest.SpyInstance;
   let isParameterizedSpy: jest.SpyInstance;
+  let popoverSpy: jest.SpyInstance;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -39,11 +28,22 @@ describe("<TestButton />", () => {
       .mockImplementation(() => mockHasParameters);
     execSequenceSpy = jest.spyOn(deviceActions, "execSequence")
       .mockImplementation(jest.fn());
+    popoverSpy = jest.spyOn(ui, "Popover")
+      .mockImplementation((props: {
+        className?: string;
+        target: React.ReactNode;
+        content?: React.ReactNode;
+        isOpen?: boolean;
+      }) => <div className={props.className}>
+        {props.target}
+        {props.isOpen && props.content}
+      </div>);
   });
 
   afterEach(() => {
     isParameterizedSpy.mockRestore();
     execSequenceSpy.mockRestore();
+    popoverSpy.mockRestore();
     document.body.innerHTML = "";
   });
 
@@ -223,8 +223,4 @@ describe("<TestButton />", () => {
     unmount();
     expect(props.dispatch).toHaveBeenCalledWith(setMenuOpen(fakeMenuOpenState()));
   });
-});
-
-afterAll(() => {
-  jest.unmock("../../ui");
 });

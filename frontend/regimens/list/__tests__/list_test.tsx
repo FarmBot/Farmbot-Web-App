@@ -1,16 +1,9 @@
 import React from "react";
 import { render, fireEvent, act } from "@testing-library/react";
+import * as designerPanel from "../../../farm_designer/designer_panel";
 const mockDesignerPanelTop = jest.fn(
   ({ children, onClick }: { children: React.ReactNode; onClick?: () => void }) =>
     <div className="mock-panel-top" onClick={onClick}>{children}</div>);
-jest.mock("../../../farm_designer/designer_panel", () => ({
-  DesignerPanel: ({ children }: { children: React.ReactNode }) =>
-    <div>{children}</div>,
-  DesignerPanelContent: ({ children }: { children: React.ReactNode }) =>
-    <div>{children}</div>,
-  DesignerPanelTop: (props: { children: React.ReactNode; onClick?: () => void }) =>
-    mockDesignerPanelTop(props),
-}));
 import {
   mapStateToProps,
   RawDesignerRegimenList as DesignerRegimenList,
@@ -25,15 +18,30 @@ import {
 
 describe("<DesignerRegimenList />", () => {
   let addRegimenSpy: jest.SpyInstance;
+  let designerPanelSpy: jest.SpyInstance;
+  let designerPanelContentSpy: jest.SpyInstance;
+  let designerPanelTopSpy: jest.SpyInstance;
 
   beforeEach(() => {
     addRegimenSpy = jest.spyOn(addRegimenModule, "addRegimen")
       .mockImplementation(jest.fn());
+    designerPanelSpy = jest.spyOn(designerPanel, "DesignerPanel")
+      .mockImplementation(({ children }: { children: React.ReactNode }) =>
+        <div>{children}</div>);
+    designerPanelContentSpy = jest.spyOn(designerPanel, "DesignerPanelContent")
+      .mockImplementation(({ children }: { children: React.ReactNode }) =>
+        <div>{children}</div>);
+    designerPanelTopSpy = jest.spyOn(designerPanel, "DesignerPanelTop")
+      .mockImplementation((props: { children: React.ReactNode; onClick?: () => void }) =>
+        mockDesignerPanelTop(props));
     mockDesignerPanelTop.mockClear();
   });
 
   afterEach(() => {
     addRegimenSpy.mockRestore();
+    designerPanelSpy.mockRestore();
+    designerPanelContentSpy.mockRestore();
+    designerPanelTopSpy.mockRestore();
   });
 
   const fakeProps = (): RegimensListProps => ({

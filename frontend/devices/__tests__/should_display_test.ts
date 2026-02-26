@@ -6,7 +6,6 @@ import { DevSettings } from "../../settings/dev/dev_support";
 let overriddenFbosVersionSpy: jest.SpyInstance;
 
 beforeEach(() => {
-  jest.restoreAllMocks();
   overriddenFbosVersionSpy =
     jest.spyOn(DevSettings, "overriddenFbosVersion").mockReturnValue(undefined);
 });

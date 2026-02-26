@@ -13,9 +13,6 @@ beforeEach(() => {
     .mockImplementation(jest.fn());
 });
 
-afterEach(() => {
-  jest.restoreAllMocks();
-});
 
 describe("<FilterNearTime />", () => {
   const fakeProps = (): ImageFilterProps => ({

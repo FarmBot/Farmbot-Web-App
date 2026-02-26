@@ -13,9 +13,6 @@ beforeEach(() => {
   jest.spyOn(deviceActions, "flashFirmware").mockImplementation(jest.fn());
 });
 
-afterEach(() => {
-  jest.restoreAllMocks();
-});
 describe("<FirmwareHardwareStatusDetails />", () => {
   const fakeProps = (): FirmwareHardwareStatusDetailsProps => ({
     alerts: [],

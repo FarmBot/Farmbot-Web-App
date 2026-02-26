@@ -1,10 +1,17 @@
 const mockDevice = { execScript: jest.fn((..._) => Promise.resolve({})) };
-jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
+import * as deviceModule from "../../../device";
 
 import { calibrate, scanImage } from "../actions";
 
-afterAll(() => {
-  jest.unmock("../../../device");
+let getDeviceSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  getDeviceSpy = jest.spyOn(deviceModule, "getDevice")
+    .mockImplementation(() => mockDevice as never);
+});
+
+afterEach(() => {
+  getDeviceSpy.mockRestore();
 });
 describe("scanImage()", () => {
   it.each<[boolean, string]>([

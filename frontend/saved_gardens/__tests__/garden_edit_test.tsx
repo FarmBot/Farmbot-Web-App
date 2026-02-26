@@ -29,9 +29,6 @@ beforeEach(() => {
   jest.spyOn(crud, "save").mockImplementation(jest.fn());
 });
 
-afterEach(() => {
-  jest.restoreAllMocks();
-});
 describe("<EditGarden />", () => {
   const fakeProps = (): EditGardenProps => ({
     savedGarden: undefined,

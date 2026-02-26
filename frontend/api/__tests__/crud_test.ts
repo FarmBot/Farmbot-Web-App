@@ -1,5 +1,3 @@
-jest.unmock("../crud");
-
 import { API } from "../api";
 import { ResourceName } from "farmbot";
 import { fakePlant } from "../../__test_support__/fake_state/resources";
@@ -16,12 +14,7 @@ const loadCrud = (): Partial<typeof import("../crud")> => {
 };
 
 beforeEach(() => {
-  jest.restoreAllMocks();
   jest.clearAllMocks();
-});
-
-afterEach(() => {
-  jest.restoreAllMocks();
 });
 
 describe("urlFor()", () => {

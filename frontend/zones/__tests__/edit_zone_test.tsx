@@ -16,9 +16,6 @@ beforeEach(() => {
   jest.spyOn(crud, "save").mockImplementation(jest.fn());
 });
 
-afterEach(() => {
-  jest.restoreAllMocks();
-});
 describe("<EditZone />", () => {
   const fakeProps = (): EditZoneProps => ({
     dispatch: jest.fn(),

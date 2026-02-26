@@ -1,35 +1,30 @@
 import React from "react";
 import { render } from "@testing-library/react";
-import { useFrame, useThree } from "@react-three/fiber";
+import * as threeFiber from "@react-three/fiber";
 import { countSceneObjects, FPSProbe } from "../fps_probe";
 
-jest.mock("@react-three/fiber", () => ({
-  useFrame: jest.fn(),
-  useThree: jest.fn(),
-}));
-
-const mockUseFrame = useFrame as jest.Mock;
-const mockUseThree = useThree as jest.Mock;
-
-afterAll(() => {
-  jest.unmock("@react-three/fiber");
-});
 describe("FPSProbe", () => {
+  let useFrameSpy: jest.SpyInstance;
+  let useThreeSpy: jest.SpyInstance;
+
   beforeEach(() => {
-    mockUseFrame.mockReset();
-    mockUseThree.mockReset();
-    mockUseThree.mockReturnValue({
-      gl: {
-        info: {
-          render: { calls: 0, triangles: 0, points: 0, lines: 0 },
-          memory: { geometries: 0, textures: 0 },
+    useFrameSpy = jest.spyOn(threeFiber, "useFrame")
+      .mockImplementation(jest.fn());
+    useThreeSpy = jest.spyOn(threeFiber, "useThree")
+      .mockReturnValue({
+        gl: {
+          info: {
+            render: { calls: 0, triangles: 0, points: 0, lines: 0 },
+            memory: { geometries: 0, textures: 0 },
+          },
         },
-      },
-      pointer: { x: 0, y: 0 },
-      camera: {},
-      size: { width: 800, height: 600 },
-      scene: { traverse: jest.fn() },
-    });
+        scene: { traverse: jest.fn() },
+      });
+  });
+
+  afterEach(() => {
+    useFrameSpy.mockRestore();
+    useThreeSpy.mockRestore();
   });
 
   it("sets window.__fps", () => {
@@ -57,7 +52,7 @@ describe("FPSProbe", () => {
       { type: "Mesh", name: "tool" },
       { name: "mystery" },
     ];
-    mockUseThree.mockReturnValue({
+    useThreeSpy.mockReturnValue({
       gl: {
         info: {
           render: { calls: 5, triangles: 8, points: 13, lines: 21 },
@@ -76,7 +71,7 @@ describe("FPSProbe", () => {
     const logSpy = jest.spyOn(console, "log")
       .mockImplementation(() => undefined);
     render(<FPSProbe />);
-    const frameHandler = mockUseFrame.mock.calls[0][0] as () => void;
+    const frameHandler = useFrameSpy.mock.calls[0][0] as () => void;
     frameHandler();
     [
       "Calls: 5",

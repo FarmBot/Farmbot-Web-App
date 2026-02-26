@@ -9,12 +9,19 @@ import { OtaTimeSelectorProps, OtaTimeSelectorRowProps } from "../interfaces";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import * as crud from "../../../api/crud";
 import * as deviceActions from "../../../devices/actions";
+import * as ui from "../../../ui";
 
-jest.mock("../../../ui", () => {
-  const actual = jest.requireActual("../../../ui");
-  return {
-    ...actual,
-    FBSelect: (props: {
+let editSpy: jest.SpyInstance;
+let updateConfigSpy: jest.SpyInstance;
+let fbSelectSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  jest.spyOn(crud, "save").mockImplementation(jest.fn());
+  updateConfigSpy = jest.spyOn(deviceActions, "updateConfig")
+    .mockImplementation(jest.fn());
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation((props: {
       list: Array<{ label: string, value: number | string }>,
       selectedItem?: { label: string, value: number | string },
       onChange: (ddi: { label: string, value: number | string } | undefined) => void,
@@ -35,22 +42,11 @@ jest.mock("../../../ui", () => {
           props.onChange({ label: "", value: "never" })}>
           select-never
         </button>
-      </div>,
-  };
-});
-
-let editSpy: jest.SpyInstance;
-let updateConfigSpy: jest.SpyInstance;
-
-beforeEach(() => {
-  editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
-  jest.spyOn(crud, "save").mockImplementation(jest.fn());
-  updateConfigSpy = jest.spyOn(deviceActions, "updateConfig")
-    .mockImplementation(jest.fn());
+      </div>);
 });
 
 afterEach(() => {
-  jest.restoreAllMocks();
+  fbSelectSpy.mockRestore();
 });
 
 describe("localHourToUtcHour()", () => {

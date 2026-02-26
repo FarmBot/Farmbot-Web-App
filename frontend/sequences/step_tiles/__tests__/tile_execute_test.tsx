@@ -1,17 +1,7 @@
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 let mockSequence = fakeSequence();
-jest.mock("../../../resources/selectors_by_id", () => ({
-  findSequenceById: () => mockSequence,
-}));
 
 const mockEditStep = jest.fn();
-jest.mock("../../../api/crud", () => ({
-  editStep: mockEditStep,
-}));
-
-jest.unmock("../../../ui");
-jest.unmock("../../step_ui");
-jest.unmock("../../sequence_select_box");
 
 import React from "react";
 import { TileExecute } from "../tile_execute";
@@ -22,6 +12,8 @@ import { StepParams } from "../../interfaces";
 import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 import { StepWrapper } from "../../step_ui";
 import { ToolTips } from "../../../constants";
+import * as crud from "../../../api/crud";
+import * as selectorsById from "../../../resources/selectors_by_id";
 
 const coordinate = (x = 0, y = 0, z = 0): Coordinate =>
   ({ kind: "coordinate", args: { x, y, z } });
@@ -56,14 +48,13 @@ const findByType = <C extends React.ComponentType<unknown>>(
 
 beforeEach(() => {
   jest.clearAllMocks();
+  jest.spyOn(crud, "editStep").mockImplementation(mockEditStep);
+  jest.spyOn(selectorsById, "findSequenceById")
+    .mockImplementation(() => mockSequence as never);
   mockEditStep.mockClear();
   mockSequence = fakeSequence();
 });
 
-afterAll(() => {
-  jest.unmock("../../../resources/selectors_by_id");
-  jest.unmock("../../../api/crud");
-});
 
 describe("<TileExecute />", () => {
   it("renders inputs", () => {

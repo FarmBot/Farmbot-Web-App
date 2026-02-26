@@ -5,13 +5,9 @@ import { alertsReducer } from "../reducer";
 import { Actions } from "../../constants";
 
 beforeEach(() => {
-  jest.restoreAllMocks();
   jest.clearAllMocks();
 });
 
-afterEach(() => {
-  jest.restoreAllMocks();
-});
 
 describe("Contextual `Alert` creation", () => {
   it("toggles on", () => {

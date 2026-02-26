@@ -1,14 +1,4 @@
 let mockDev = false;
-jest.mock("../../dev/dev_support", () => {
-  const actual = jest.requireActual("../../dev/dev_support");
-  return {
-    ...actual,
-    DevSettings: {
-      ...actual.DevSettings,
-      futureFeaturesEnabled: () => mockDev,
-    },
-  };
-});
 
 import React from "react";
 import { render } from "@testing-library/react";
@@ -16,21 +6,15 @@ import { EncodersOrStallDetection } from "../encoders_or_stall_detection";
 import { EncodersOrStallDetectionProps } from "../interfaces";
 import { settingsPanelState } from "../../../__test_support__/panel_state";
 import { bot } from "../../../__test_support__/fake_state/bot";
+import * as booleanGroup from "../boolean_mcu_input_group";
+import * as numericGroup from "../numeric_mcu_input_group";
+import * as devSupport from "../../dev/dev_support";
 
 const booleanGroupMock = jest.fn((props: { label: string }) => <div>{props.label}</div>);
 const numericGroupMock = jest.fn((props: { label: string }) => <div>{props.label}</div>);
-
-jest.mock("../boolean_mcu_input_group", () => ({
-  BooleanMCUInputGroup: (props: { label: string }) => booleanGroupMock(props),
-}));
-
-jest.mock("../numeric_mcu_input_group", () => ({
-  NumericMCUInputGroup: (props: { label: string }) => numericGroupMock(props),
-}));
-
-afterAll(() => {
-  jest.unmock("../../dev/dev_support");
-});
+let booleanGroupSpy: jest.SpyInstance;
+let numericGroupSpy: jest.SpyInstance;
+let futureFeaturesEnabledSpy: jest.SpyInstance;
 
 describe("<EncodersOrStallDetection />", () => {
   const fakeProps = (): EncodersOrStallDetectionProps => ({
@@ -44,8 +28,21 @@ describe("<EncodersOrStallDetection />", () => {
   });
 
   beforeEach(() => {
+    booleanGroupSpy = jest.spyOn(booleanGroup, "BooleanMCUInputGroup")
+      .mockImplementation((props: { label: string }) => booleanGroupMock(props));
+    numericGroupSpy = jest.spyOn(numericGroup, "NumericMCUInputGroup")
+      .mockImplementation((props: { label: string }) => numericGroupMock(props));
+    futureFeaturesEnabledSpy =
+      jest.spyOn(devSupport.DevSettings, "futureFeaturesEnabled")
+        .mockImplementation(() => mockDev);
     booleanGroupMock.mockClear();
     numericGroupMock.mockClear();
+  });
+
+  afterEach(() => {
+    booleanGroupSpy.mockRestore();
+    numericGroupSpy.mockRestore();
+    futureFeaturesEnabledSpy.mockRestore();
   });
 
   it("shows encoder labels", () => {

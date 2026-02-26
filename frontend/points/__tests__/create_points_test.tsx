@@ -24,9 +24,6 @@ beforeEach(() => {
   jest.spyOn(crud, "initSave").mockImplementation(jest.fn());
 });
 
-afterEach(() => {
-  jest.restoreAllMocks();
-});
 
 describe("mapStateToProps", () => {
   it("maps state to props: drawn point", () => {

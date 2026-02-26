@@ -1,5 +1,3 @@
-jest.unmock("../actions");
-
 let mockTimeout = Promise.resolve({ token: "fake token data" });
 
 import { ready, storeToken } from "../actions";
@@ -43,7 +41,6 @@ describe("ready()", () => {
     fetchStoredTokenSpy.mockRestore();
     clearSpy.mockRestore();
     consoleWarnSpy.mockRestore();
-    jest.restoreAllMocks();
   });
 
   it("uses new token", async () => {
@@ -100,7 +97,6 @@ describe("storeToken()", () => {
 
   afterEach(() => {
     consoleWarnSpy.mockRestore();
-    jest.restoreAllMocks();
   });
 
   it("stores token", () => {

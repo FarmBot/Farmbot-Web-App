@@ -3,19 +3,26 @@ import { fireEvent, render } from "@testing-library/react";
 import { LogsFilterMenu, NON_FILTER_SETTINGS } from "../filter_menu";
 import { LogsFilterMenuProps, LogsState } from "../../interfaces";
 import { MESSAGE_TYPES } from "../../../sequences/interfaces";
+import * as blueprintCore from "@blueprintjs/core";
 
-jest.mock("@blueprintjs/core", () => ({
-  ...jest.requireActual("@blueprintjs/core"),
-  Slider: (props: {
-    onChange?: (value: number) => void;
-    onRelease?: (value: number) => void;
-  }) =>
-    <button className={"mock-slider"}
-      onClick={() => {
-        props.onChange?.(2);
-        props.onRelease?.(2);
-      }} />,
-}));
+let sliderSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  sliderSpy = jest.spyOn(blueprintCore, "Slider")
+    .mockImplementation((props: {
+      onChange?: (value: number) => void;
+      onRelease?: (value: number) => void;
+    }) =>
+      <button className={"mock-slider"}
+        onClick={() => {
+          props.onChange?.(2);
+          props.onRelease?.(2);
+        }} />);
+});
+
+afterEach(() => {
+  sliderSpy.mockRestore();
+});
 
 const logTypes = MESSAGE_TYPES;
 

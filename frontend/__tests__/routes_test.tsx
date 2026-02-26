@@ -17,10 +17,6 @@ describe("<RootComponent />", () => {
     jest.spyOn(Session, "clear").mockImplementation(jest.fn());
   });
 
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
   it("clears session when not authorized", () => {
     mockAuth = undefined;
     globalConfig.ROLLBAR_CLIENT_TOKEN = "abc";

@@ -1,9 +1,6 @@
 import { syncFail } from "../actions";
 import { Session } from "../../session";
 
-afterEach(() => {
-  jest.restoreAllMocks();
-});
 
 describe("syncFail", () => {
   it("tells you why you've been logged out", () => {

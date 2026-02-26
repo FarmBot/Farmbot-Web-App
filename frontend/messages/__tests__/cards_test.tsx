@@ -12,25 +12,6 @@ const fakeBulletin: Bulletin = {
 let mockData: Bulletin | undefined = fakeBulletin;
 const mockSeedAccount = jest.fn();
 
-jest.mock("../../ui", () => {
-  const React = require("react");
-  const actual = jest.requireActual("../../ui");
-  return {
-    ...actual,
-    FBSelect: (props: {
-      list: unknown[];
-      selectedItem?: { label?: string };
-      customNullLabel?: string;
-      onChange?: (item: { label: string; value: string }) => void;
-    }) =>
-      React.createElement("button", {
-        className: "fb-select-mock",
-        "data-list": JSON.stringify(props.list),
-        onClick: () => props.onChange?.({ label: "", value: "selection" }),
-      }, props.selectedItem?.label || props.customNullLabel || ""),
-  };
-});
-
 import { fakeState } from "../../__test_support__/fake_state";
 import { store } from "../../redux/store";
 const mockState = fakeState();
@@ -53,6 +34,7 @@ import { fakeWizardStepResult } from "../../__test_support__/fake_state/resource
 import { Path } from "../../internal_urls";
 import { API } from "../../api";
 import moment from "moment";
+import * as ui from "../../ui";
 
 API.setBaseUrl("");
 
@@ -65,6 +47,7 @@ let fetchBulletinContentSpy: jest.SpyInstance;
 let seedAccountSpy: jest.SpyInstance;
 let axiosDeleteSpy: jest.SpyInstance;
 let sessionClearSpy: jest.SpyInstance;
+let fbSelectSpy: jest.SpyInstance;
 
 beforeEach(() => {
   mockFeatureBoolean = false;
@@ -87,6 +70,18 @@ beforeEach(() => {
     .mockImplementation(() => mockSeedAccount as never);
   axiosDeleteSpy = jest.spyOn(axios, "delete").mockResolvedValue({} as never);
   sessionClearSpy = jest.spyOn(Session, "clear").mockImplementation(jest.fn());
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation((props: {
+      list: unknown[];
+      selectedItem?: { label?: string };
+      customNullLabel?: string;
+      onChange?: (item: { label: string; value: string }) => void;
+    }) =>
+      React.createElement("button", {
+        className: "fb-select-mock",
+        "data-list": JSON.stringify(props.list),
+        onClick: () => props.onChange?.({ label: "", value: "selection" }),
+      }, props.selectedItem?.label || props.customNullLabel || ""));
 });
 
 afterEach(() => {
@@ -101,6 +96,7 @@ afterEach(() => {
   seedAccountSpy.mockRestore();
   axiosDeleteSpy.mockRestore();
   sessionClearSpy.mockRestore();
+  fbSelectSpy.mockRestore();
 });
 
 describe("<AlertCard />", () => {
@@ -353,8 +349,4 @@ describe("<ReSeedAccount />", () => {
       value: "selection",
     });
   });
-});
-
-afterAll(() => {
-  jest.unmock("../../ui");
 });

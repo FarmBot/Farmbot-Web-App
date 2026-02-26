@@ -1,6 +1,3 @@
-jest.unmock("../crud");
-jest.unmock("../crud.ts");
-
 const mockDevice = { on: jest.fn(() => Promise.resolve()) };
 
 import axios from "axios";
@@ -25,14 +22,9 @@ const loadCrud = (): Partial<typeof import("../crud")> => {
 };
 
 beforeEach(() => {
-  jest.restoreAllMocks();
   jest.clearAllMocks();
   jest.spyOn(deviceModule, "getDevice")
     .mockImplementation(() => mockDevice as never);
-});
-
-afterEach(() => {
-  jest.restoreAllMocks();
 });
 
 describe("refresh()", () => {

@@ -1,6 +1,4 @@
 jest.unmock("lodash");
-jest.unmock("../request_auto_generation");
-jest.unmock("../request_auto_generation.ts");
 
 import { fakeState } from "../../__test_support__/fake_state";
 import { store } from "../../redux/store";
@@ -45,7 +43,6 @@ describe("requestAutoGeneration()", () => {
     (store as unknown as { getState: typeof store.getState }).getState =
       originalGetState;
     global.fetch = originalFetch;
-    jest.restoreAllMocks();
   });
 
   const fakeProps = () => ({
@@ -113,9 +110,6 @@ describe("retrievePrompt()", () => {
       .mockImplementation(<T>(items: T[]) => items[0]);
   });
 
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
 
   it("returns prompt", () => {
     const result = retrievePrompt({

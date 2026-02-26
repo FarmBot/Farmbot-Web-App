@@ -10,9 +10,6 @@ describe("readOnlyInterceptor", () => {
     jest.clearAllMocks();
   });
 
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
 
   it("resolves the config when app is not read-only", async () => {
     jest.spyOn(readonlyMode, "appIsReadonly")

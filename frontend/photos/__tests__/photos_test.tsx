@@ -37,7 +37,6 @@ beforeEach(() => {
 
 afterEach(() => {
   mockDev = false;
-  jest.restoreAllMocks();
 });
 
 describe("<DesignerPhotos />", () => {

@@ -14,24 +14,12 @@ import { fakeFarmwareEnv } from "../../__test_support__/fake_state/resources";
 import { FarmwareName } from "../../sequences/step_tiles/tile_execute_script";
 import * as crud from "../../api/crud";
 import * as deviceModule from "../../device";
-
-jest.mock("../../ui", () => {
-  const React = require("react");
-  const actual = jest.requireActual("../../ui");
-  return {
-    ...actual,
-    FBSelect: (props: {
-      onChange: (ddi: { label: string; value: number }) => void;
-    }) => <button
-      data-testid={"fb-select"}
-      onClick={() => props.onChange({ label: "", value: 1 })} />,
-    ExpandableHeader: (props: { title: string; onClick: () => void }) =>
-      <button onClick={props.onClick}>{props.title}</button>,
-  };
-});
+import * as ui from "../../ui";
 
 let destroySpy: jest.SpyInstance;
 let getDeviceSpy: jest.SpyInstance;
+let fbSelectSpy: jest.SpyInstance;
+let expandableHeaderSpy: jest.SpyInstance;
 
 beforeEach(() => {
   mockDevice.execScript = jest.fn((..._) => Promise.resolve({}));
@@ -39,11 +27,24 @@ beforeEach(() => {
     .mockImplementation(() => mockDevice as never);
   destroySpy = jest.spyOn(crud, "destroy")
     .mockImplementation(jest.fn());
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation((props: {
+      onChange: (ddi: { label: string; value: number }) => void;
+    }) => <button
+      data-testid={"fb-select"}
+      onClick={() => props.onChange({ label: "", value: 1 })} />);
+  expandableHeaderSpy = jest.spyOn(ui, "ExpandableHeader")
+    .mockImplementation((props: { title: string; onClick: () => void }) =>
+      <button className={"expandable-header"} onClick={props.onClick}>
+        {props.title}
+      </button>);
 });
 
 afterEach(() => {
   getDeviceSpy.mockRestore();
   destroySpy.mockRestore();
+  fbSelectSpy.mockRestore();
+  expandableHeaderSpy.mockRestore();
 });
 
 describe("getConfigEnvName()", () => {
@@ -322,8 +323,4 @@ describe("<FarmwareForm />", () => {
     expect(confirm).toHaveBeenCalledWith("Reset 2 values?");
     expect(destroySpy).not.toHaveBeenCalled();
   });
-});
-
-afterAll(() => {
-  jest.unmock("../../ui");
 });

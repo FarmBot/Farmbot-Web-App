@@ -3,13 +3,10 @@ jest.mock("bowser", () => ({
   getParser: () => ({ satisfies: () => mockSatisfies }),
 }));
 
-jest.mock("../hotkeys", () => ({
-  HotKeys: () => <div />,
-}));
-
 import React from "react";
 import { RawApp as App, AppProps, mapStateToProps } from "../app";
 import { render, screen } from "@testing-library/react";
+import * as hotkeysModule from "../hotkeys";
 import { bot } from "../__test_support__/fake_state/bot";
 import {
   fakeUser, fakeWebAppConfig, fakeFarmwareEnv,
@@ -66,17 +63,21 @@ const fakeProps = (): AppProps => ({
   designer: fakeDesignerState(),
 });
 
+let hotKeysSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  hotKeysSpy = jest.spyOn(hotkeysModule, "HotKeys")
+    .mockImplementation(() => <div />);
+});
+
 afterEach(() => {
   try {
     jest.runOnlyPendingTimers();
   } catch { /* noop */ }
   jest.useRealTimers();
+  hotKeysSpy.mockRestore();
 });
 
-afterAll(() => {
-  jest.unmock("../hotkeys");
-  jest.unmock("bowser");
-});
 describe("<App />: Loading", () => {
   beforeEach(() => {
     jest.clearAllMocks();

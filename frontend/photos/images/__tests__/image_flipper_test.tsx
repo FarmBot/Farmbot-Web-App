@@ -1,5 +1,3 @@
-jest.unmock("../image_flipper");
-
 import React from "react";
 import { fireEvent, render } from "@testing-library/react";
 import { fakeImage } from "../../../__test_support__/fake_state/resources";
@@ -8,15 +6,10 @@ import { defensiveClone } from "../../../util";
 import { ImageFlipperProps } from "../interfaces";
 import { Actions } from "../../../constants";
 import { UUID } from "../../../resources/interfaces";
+import * as flipperImageModule from "../flipper_image";
 
 let flipperImageProps: { onImageLoad?: (img: HTMLImageElement) => void } | undefined;
-
-jest.mock("../flipper_image", () => ({
-  FlipperImage: (props: { onImageLoad?: (img: HTMLImageElement) => void }) => {
-    flipperImageProps = props;
-    return <div className={"flipper-image-mock"} />;
-  },
-}));
+let flipperImageSpy: jest.SpyInstance;
 
 const {
   ImageFlipper,
@@ -35,6 +28,15 @@ describe("<ImageFlipper/>", () => {
   beforeEach(() => {
     flipperImageProps = undefined;
     jest.clearAllMocks();
+    flipperImageSpy = jest.spyOn(flipperImageModule, "FlipperImage")
+      .mockImplementation((props: { onImageLoad?: (img: HTMLImageElement) => void }) => {
+        flipperImageProps = props;
+        return <div className={"flipper-image-mock"} />;
+      });
+  });
+
+  afterEach(() => {
+    flipperImageSpy.mockRestore();
   });
 
   const prepareImages = (data: TaggedImage[]): TaggedImage[] =>

@@ -10,63 +10,57 @@ import { error } from "../../../toast/toast";
 import { Content, ToolTips } from "../../../constants";
 import { SPECIAL_VALUES } from "../../remote_env/constants";
 import { fakePhotosPanelState } from "../../../__test_support__/fake_camera_data";
-
-jest.mock("../../image_workspace", () => ({
-  ImageWorkspace: (props: {
-    onChange: (key: "H_LO", value: number) => void;
-    onProcessPhoto: (imageId: number) => void;
-  }) =>
-    <div>
-      <span>hue</span>
-      <span>saturation</span>
-      <span>value</span>
-      <button onClick={() => props.onChange("H_LO", 3)}>
-        update workspace
-      </button>
-      <button onClick={() => props.onProcessPhoto(1)}>
-        scan current image
-      </button>
-    </div>,
-}));
-
-jest.mock("../config", () => {
-  const actual = jest.requireActual("../config");
-  return {
-    ...actual,
-    CameraCalibrationConfig: (props: {
-      onChange: (key: string, value: number) => void;
-    }) =>
-      <div>
-        <button onClick={() =>
-          props.onChange("CAMERA_CALIBRATION_camera_offset_x", 10)}>
-          change camera offset x
-        </button>
-        <button onClick={() =>
-          props.onChange("CAMERA_CALIBRATION_image_bot_origin_location", 4)}>
-          change image origin
-        </button>
-      </div>,
-  };
-});
+import * as imageWorkspaceModule from "../../image_workspace";
+import * as configModule from "../config";
 
 let calibrateSpy: jest.SpyInstance;
 let scanImageSpy: jest.SpyInstance;
+let imageWorkspaceSpy: jest.SpyInstance;
+let cameraCalibrationConfigSpy: jest.SpyInstance;
 
 beforeEach(() => {
   mockScanImage.mockClear();
   calibrateSpy = jest.spyOn(actions, "calibrate").mockImplementation(jest.fn());
   scanImageSpy = jest.spyOn(actions, "scanImage")
     .mockImplementation(jest.fn(() => mockScanImage) as never);
+  imageWorkspaceSpy = jest.spyOn(imageWorkspaceModule, "ImageWorkspace")
+    .mockImplementation((props: {
+      onChange: (key: "H_LO", value: number) => void;
+      onProcessPhoto: (imageId: number) => void;
+    }) =>
+      <div>
+        <span>hue</span>
+        <span>saturation</span>
+        <span>value</span>
+        <button onClick={() => props.onChange("H_LO", 3)}>
+          update workspace
+        </button>
+        <button onClick={() => props.onProcessPhoto(1)}>
+          scan current image
+        </button>
+      </div>);
+  cameraCalibrationConfigSpy =
+    jest.spyOn(configModule, "CameraCalibrationConfig")
+      .mockImplementation((props: {
+        onChange: (key: string, value: number) => void;
+      }) =>
+        <div>
+          <button onClick={() =>
+            props.onChange("CAMERA_CALIBRATION_camera_offset_x", 10)}>
+            change camera offset x
+          </button>
+          <button onClick={() =>
+            props.onChange("CAMERA_CALIBRATION_image_bot_origin_location", 4)}>
+            change image origin
+          </button>
+        </div>);
 });
 
 afterEach(() => {
   calibrateSpy.mockRestore();
   scanImageSpy.mockRestore();
-});
-
-afterAll(() => {
-  jest.unmock("../config");
-  jest.unmock("../../image_workspace");
+  imageWorkspaceSpy.mockRestore();
+  cameraCalibrationConfigSpy.mockRestore();
 });
 
 describe("<CameraCalibration/>", () => {

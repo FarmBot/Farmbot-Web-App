@@ -32,10 +32,6 @@ beforeEach(() => {
     .mockImplementation(() => ({ stepSize: 100 }));
 });
 
-afterEach(() => {
-  jest.restoreAllMocks();
-});
-
 const queryCount = (container: HTMLElement, selector: string) =>
   container.querySelectorAll(selector).length;
 

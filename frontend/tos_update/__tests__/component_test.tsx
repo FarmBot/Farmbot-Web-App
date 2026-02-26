@@ -21,7 +21,6 @@ const createWrapper = () => {
 };
 
 beforeEach(() => {
-  jest.restoreAllMocks();
   jest.clearAllMocks();
   jest.useFakeTimers();
   globalConfig.TOS_URL = globalConfig.TOS_URL || "https://farm.bot/tos/";
@@ -42,7 +41,6 @@ afterEach(() => {
     wrapper && TestRenderer.act(() => wrapper.unmount());
   }
   jest.useRealTimers();
-  jest.restoreAllMocks();
   mockPostResponse = Promise.resolve({ data: mockToken });
 });
 

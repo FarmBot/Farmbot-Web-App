@@ -75,11 +75,9 @@ describe("<Tools />", () => {
   afterEach(() => {
     history.replaceState(undefined, "", Path.mock(originalPathname));
     jest.useRealTimers();
-    jest.restoreAllMocks();
   });
 
   beforeEach(() => {
-    jest.restoreAllMocks();
     jest.spyOn(pointGroupActions, "createGroup")
       .mockImplementation(jest.fn());
     jest.spyOn(crud, "edit").mockImplementation(jest.fn());
@@ -354,7 +352,6 @@ describe("<ToolSlotInventoryItem />", () => {
   let getModeSpy: jest.SpyInstance;
 
   beforeEach(() => {
-    jest.restoreAllMocks();
     jest.clearAllMocks();
     history.replaceState(undefined, "", Path.mock(originalPathname));
     jest.useRealTimers();

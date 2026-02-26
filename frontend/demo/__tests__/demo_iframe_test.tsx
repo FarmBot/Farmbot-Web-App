@@ -15,24 +15,13 @@ import { DemoIframe, WAITING_ON_API, EASTER_EGG, MQTT_CHAN } from "../demo_ifram
 import { tourPath } from "../../help/tours";
 import { Path } from "../../internal_urls";
 import * as messageCards from "../../messages/cards";
-
-jest.mock("../../ui", () => {
-  const actual = jest.requireActual("../../ui");
-  return {
-    ...actual,
-    FBSelect: (props: { onChange: (ddi: { value: string }) => void }) =>
-      <button
-        data-testid="seed-data-select"
-        onClick={() => props.onChange({ value: "express_1.2" })}>
-        select
-      </button>,
-  };
-});
+import * as ui from "../../ui";
 
 describe("<DemoIframe />", () => {
   const originalConsoleError = console.error;
   let seedDataOptionsSpy: jest.SpyInstance;
   let seedDataOptionsDdiSpy: jest.SpyInstance;
+  let fbSelectSpy: jest.SpyInstance;
 
   beforeEach(() => {
     seedDataOptionsSpy = jest.spyOn(messageCards, "SEED_DATA_OPTIONS")
@@ -46,6 +35,13 @@ describe("<DemoIframe />", () => {
         "genesis_1.8": { label: "Genesis", value: "genesis_1.8" },
         "express_1.2": { label: "Express", value: "express_1.2" },
       });
+    fbSelectSpy = jest.spyOn(ui, "FBSelect")
+      .mockImplementation((props: { onChange: (ddi: { value: string }) => void }) =>
+        <button
+          data-testid="seed-data-select"
+          onClick={() => props.onChange({ value: "express_1.2" })}>
+          select
+        </button>);
     mockPost = jest.fn(() =>
       typeof mockResponse === "string"
         ? Promise.resolve(mockResponse)
@@ -62,6 +58,7 @@ describe("<DemoIframe />", () => {
   afterEach(() => {
     seedDataOptionsSpy.mockRestore();
     seedDataOptionsDdiSpy.mockRestore();
+    fbSelectSpy.mockRestore();
     console.error = originalConsoleError;
   });
 
@@ -125,8 +122,4 @@ describe("<DemoIframe />", () => {
     expect(on).toHaveBeenCalledWith("message", i.handleMessage);
     expect(on).toHaveBeenCalledWith("connect", expect.any(Function));
   });
-});
-
-afterAll(() => {
-  jest.unmock("../../ui");
 });

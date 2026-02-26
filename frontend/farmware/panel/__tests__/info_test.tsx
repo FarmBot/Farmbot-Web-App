@@ -1,18 +1,7 @@
-jest.mock("../../../farm_designer/designer_panel", () => ({
-  DesignerPanel: (props: { children: unknown; }) =>
-    <div className={"designer-panel"}>{props.children}</div>,
-  DesignerPanelTop: (props: { children: unknown; }) =>
-    <div className={"designer-panel-top"}>{props.children}</div>,
-  DesignerPanelContent: (props: { children: unknown; }) =>
-    <div className={"designer-panel-content"}>{props.children}</div>,
-}));
-
-jest.mock("../../set_active_farmware_by_name", () => ({
-  setActiveFarmwareByName: jest.fn(),
-}));
-
 import React from "react";
 import { render } from "@testing-library/react";
+import * as designerPanel from "../../../farm_designer/designer_panel";
+import * as activeFarmware from "../../set_active_farmware_by_name";
 import {
   RawDesignerFarmwareInfo as DesignerFarmwareInfo,
   DesignerFarmwareInfoProps,
@@ -29,10 +18,32 @@ import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 
-afterAll(() => {
-  jest.unmock("../../../farm_designer/designer_panel");
-  jest.unmock("../../set_active_farmware_by_name");
+let designerPanelSpy: jest.SpyInstance;
+let designerPanelTopSpy: jest.SpyInstance;
+let designerPanelContentSpy: jest.SpyInstance;
+let activeFarmwareSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  designerPanelSpy = jest.spyOn(designerPanel, "DesignerPanel")
+    .mockImplementation((props: { children: unknown; }) =>
+      <div className={"designer-panel"}>{props.children}</div>);
+  designerPanelTopSpy = jest.spyOn(designerPanel, "DesignerPanelTop")
+    .mockImplementation((props: { children: unknown; }) =>
+      <div className={"designer-panel-top"}>{props.children}</div>);
+  designerPanelContentSpy = jest.spyOn(designerPanel, "DesignerPanelContent")
+    .mockImplementation((props: { children: unknown; }) =>
+      <div className={"designer-panel-content"}>{props.children}</div>);
+  activeFarmwareSpy = jest.spyOn(activeFarmware, "setActiveFarmwareByName")
+    .mockImplementation(jest.fn());
 });
+
+afterEach(() => {
+  designerPanelSpy.mockRestore();
+  designerPanelTopSpy.mockRestore();
+  designerPanelContentSpy.mockRestore();
+  activeFarmwareSpy.mockRestore();
+});
+
 describe("<DesignerFarmwareInfo />", () => {
   const fakeProps = (): DesignerFarmwareInfoProps => ({
     dispatch: jest.fn(),

@@ -11,9 +11,6 @@ beforeEach(() => {
     .mockImplementation(() => mockDevice as never);
 });
 
-afterEach(() => {
-  jest.restoreAllMocks();
-});
 describe("<BasicFarmwarePage />", () => {
   const fakeProps = (): BasicFarmwarePageProps => ({
     farmwareName: "My Farmware",

@@ -1,5 +1,3 @@
-jest.unmock("../selectors");
-
 import {
   buildResourceIndex, fakeDevice,
 } from "../../__test_support__/resource_index_builder";
@@ -39,7 +37,6 @@ const fakeSlot: TaggedToolSlotPointer = arrayUnwrap(newTaggedResource("Point",
 const fakeIndex = buildResourceIndex().index;
 
 beforeEach(() => {
-  jest.restoreAllMocks();
 });
 
 describe("findSlotByToolId", () => {

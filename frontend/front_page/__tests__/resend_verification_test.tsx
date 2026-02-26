@@ -1,17 +1,14 @@
 let mockPost = Promise.resolve({ data: "whatever" });
-jest.mock("axios", () => ({ post: () => mockPost }));
 
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { ResendVerification } from "../resend_verification";
 import { get } from "lodash";
 import { API } from "../../api/index";
-
-afterAll(() => {
-  jest.unmock("axios");
-});
+import axios from "axios";
 describe("<ResendVerification />", () => {
   API.setBaseUrl("http://localhost:3000");
+  let axiosPostSpy: jest.SpyInstance;
   const flushPromises = async () => {
     await Promise.resolve();
     await Promise.resolve();
@@ -19,6 +16,12 @@ describe("<ResendVerification />", () => {
 
   beforeEach(() => {
     mockPost = Promise.resolve({ data: "whatever" });
+    axiosPostSpy = jest.spyOn(axios, "post")
+      .mockImplementation(() => mockPost as never);
+  });
+
+  afterEach(() => {
+    axiosPostSpy.mockRestore();
   });
 
   const props = () => ({

@@ -17,9 +17,6 @@ beforeEach(() => {
     .mockImplementation(jest.fn());
 });
 
-afterEach(() => {
-  jest.restoreAllMocks();
-});
 describe("<TimeTravelTarget />", () => {
   const fakeProps = (): TimeTravelTargetProps => {
     const device = fakeDevice().body;

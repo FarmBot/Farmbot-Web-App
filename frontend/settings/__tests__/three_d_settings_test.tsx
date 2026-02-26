@@ -8,7 +8,6 @@ import { fakeFarmwareEnv } from "../../__test_support__/fake_state/resources";
 import { fireEvent, render, within } from "@testing-library/react";
 
 beforeEach(() => {
-  jest.restoreAllMocks();
   jest.clearAllMocks();
   jest.useRealTimers();
   jest.spyOn(crud, "initSave").mockImplementation(jest.fn());
@@ -16,9 +15,6 @@ beforeEach(() => {
   jest.spyOn(crud, "save").mockImplementation(jest.fn());
 });
 
-afterEach(() => {
-  jest.restoreAllMocks();
-});
 
 describe("<ThreeDSettings />", () => {
   const fakeProps = (): ThreeDSettingsProps => {

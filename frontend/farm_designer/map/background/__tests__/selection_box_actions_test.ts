@@ -28,10 +28,6 @@ beforeEach(() => {
     .mockImplementation(jest.fn());
 });
 
-afterEach(() => {
-  jest.restoreAllMocks();
-});
-
 describe("getSelected", () => {
   it("returns some", () => {
     const result = getSelected(

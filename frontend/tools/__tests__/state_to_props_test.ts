@@ -8,7 +8,6 @@ import {
 import { mapStateToProps } from "../state_to_props";
 
 beforeEach(() => {
-  jest.restoreAllMocks();
   jest.clearAllMocks();
   jest.useRealTimers();
 });

@@ -18,7 +18,6 @@ beforeEach(() => {
 
 describe("generateFilename()", () => {
   it("generates a filename", () => {
-    jest.unmock("../request_account_export");
     const { generateFilename } = jest.requireActual("../request_account_export");
     const device = fakeDevice().body;
     device.name = "FOO";
@@ -30,7 +29,6 @@ describe("generateFilename()", () => {
 
 describe("requestAccountExport()", () => {
   it("pops toast on completion (when API has email support)", async () => {
-    jest.unmock("../request_account_export");
     const { requestAccountExport } = jest.requireActual("../request_account_export");
     mockData = undefined;
     await requestAccountExport();
@@ -41,7 +39,6 @@ describe("requestAccountExport()", () => {
 
   it("downloads the data synchronously (when API has no email support)",
     async () => {
-      jest.unmock("../request_account_export");
       const { requestAccountExport } = jest.requireActual("../request_account_export");
       mockData = {};
       await requestAccountExport();

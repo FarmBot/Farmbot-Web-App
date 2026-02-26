@@ -1,17 +1,19 @@
-jest.mock("../../../device", () => {
-  return {
-    fetchNewDevice: jest.fn(() => Promise.resolve({}))
-  };
-});
-
 import { fetchNewDevice } from "../../../device";
+import * as deviceModule from "../../../device";
 import { connectDevice } from "../../connect_device";
 import { DeepPartial } from "../../../redux/interfaces";
 import { AuthState } from "../../../auth/interfaces";
 import { fakeState } from "../../../__test_support__/fake_state";
 
-afterAll(() => {
-  jest.unmock("../../../device");
+let fetchNewDeviceSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  fetchNewDeviceSpy = jest.spyOn(deviceModule, "fetchNewDevice")
+    .mockImplementation(jest.fn(() => Promise.resolve({})));
+});
+
+afterEach(() => {
+  fetchNewDeviceSpy.mockRestore();
 });
 describe("connectDevice()", () => {
   it("connects a FarmBot to the network", async () => {

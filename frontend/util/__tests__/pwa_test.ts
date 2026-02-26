@@ -2,19 +2,6 @@ import {
   registerServiceWorker, initPWA,
 } from "../pwa";
 
-jest.mock("../../toast/toast", () => ({
-  warning: jest.fn(),
-  error: jest.fn(),
-  success: jest.fn(),
-  info: jest.fn(),
-  busy: jest.fn(),
-  fun: jest.fn(),
-  removeToast: jest.fn(),
-}));
-
-afterAll(() => {
-  jest.unmock("../../toast/toast");
-});
 describe("registerServiceWorker()", () => {
   it("registers service worker", () => {
     window.addEventListener = jest.fn();

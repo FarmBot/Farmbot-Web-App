@@ -13,10 +13,6 @@ beforeEach(() => {
   jest.spyOn(crud, "initSaveGetId").mockImplementation(jest.fn());
 });
 
-afterEach(() => {
-  jest.restoreAllMocks();
-});
-
 describe("<Zones> />", () => {
   const fakeProps = (): ZonesProps => ({
     dispatch: jest.fn(),

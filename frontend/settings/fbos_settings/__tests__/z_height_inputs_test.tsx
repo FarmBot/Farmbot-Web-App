@@ -1,7 +1,3 @@
-jest.mock("../../default_values", () => ({
-  getModifiedClassNameSpecifyModified: jest.fn((x: boolean) => x ? "modified" : ""),
-}));
-
 import React from "react";
 import { render } from "@testing-library/react";
 import { GantryHeight, SafeHeight, SoilHeight } from "../z_height_inputs";
@@ -11,14 +7,19 @@ import { FirmwareHardware } from "farmbot";
 import { cloneDeep } from "lodash";
 import * as defaultValues from "../../default_values";
 
-const modifiedClassNameSpy =
-  defaultValues.getModifiedClassNameSpecifyModified as jest.Mock;
-
-afterAll(() => {
-  jest.unmock("../../default_values");
-});
+let modifiedClassNameSpy: jest.SpyInstance;
 
 describe("<GantryHeight />", () => {
+  beforeEach(() => {
+    modifiedClassNameSpy =
+      jest.spyOn(defaultValues, "getModifiedClassNameSpecifyModified")
+        .mockImplementation((x: boolean) => x ? "modified" : "");
+  });
+
+  afterEach(() => {
+    modifiedClassNameSpy.mockRestore();
+  });
+
   const fakeProps = (
     configuration = cloneDeep(bot.hardware.configuration),
   ): ZHeightInputProps => ({

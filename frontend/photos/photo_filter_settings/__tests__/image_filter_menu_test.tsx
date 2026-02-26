@@ -6,12 +6,31 @@ import {
 } from "../../../__test_support__/fake_state/resources";
 const mockConfig = fakeWebAppConfig();
 
-jest.mock("../../../ui", () => {
-  const React = require("react");
-  const actual = jest.requireActual("../../../ui");
-  return {
-    ...actual,
-    MarkedSlider: (props: {
+import { StringConfigKey } from "farmbot/dist/resources/configs/web_app";
+import {
+  fakeTimeSettings,
+} from "../../../__test_support__/fake_time_settings";
+import * as crud from "../../../api/crud";
+import { fakeState } from "../../../__test_support__/fake_state";
+import {
+  buildResourceIndex,
+} from "../../../__test_support__/resource_index_builder";
+import { ImageFilterMenuProps, ImageFilterMenuState } from "../interfaces";
+import { StringSetting } from "../../../session_keys";
+import { ImageFilterMenu } from "../image_filter_menu";
+import * as ui from "../../../ui";
+
+let editSpy: jest.SpyInstance;
+let saveSpy: jest.SpyInstance;
+let markedSliderSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  mockConfig.body.photo_filter_begin = "";
+  mockConfig.body.photo_filter_end = "";
+  editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+  markedSliderSpy = jest.spyOn(ui, "MarkedSlider")
+    .mockImplementation((props: {
       min: number;
       max: number;
       value: number;
@@ -30,35 +49,13 @@ jest.mock("../../../ui", () => {
         { length: props.max - props.min + 1 },
         (_, index) => props.min + index,
       ).map(day => <span key={day}>{props.labelRenderer(day)}</span>)}
-    </div>,
-  };
-});
-
-import { StringConfigKey } from "farmbot/dist/resources/configs/web_app";
-import {
-  fakeTimeSettings,
-} from "../../../__test_support__/fake_time_settings";
-import * as crud from "../../../api/crud";
-import { fakeState } from "../../../__test_support__/fake_state";
-import {
-  buildResourceIndex,
-} from "../../../__test_support__/resource_index_builder";
-import { ImageFilterMenuProps, ImageFilterMenuState } from "../interfaces";
-import { StringSetting } from "../../../session_keys";
-import { ImageFilterMenu } from "../image_filter_menu";
-
-let editSpy: jest.SpyInstance;
-let saveSpy: jest.SpyInstance;
-
-beforeEach(() => {
-  mockConfig.body.photo_filter_begin = "";
-  mockConfig.body.photo_filter_end = "";
-  editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
-  saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+    </div>);
 });
 
 afterEach(() => {
-  jest.restoreAllMocks();
+  markedSliderSpy.mockRestore();
+  editSpy.mockRestore();
+  saveSpy.mockRestore();
 });
 
 describe("<ImageFilterMenu />", () => {

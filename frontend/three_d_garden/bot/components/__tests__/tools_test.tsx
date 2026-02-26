@@ -67,7 +67,6 @@ describe("<Tools />", () => {
 
   afterEach(() => {
     getModeSpy.mockRestore();
-    jest.restoreAllMocks();
     mockRotation.z = 0;
   });
 

@@ -1,32 +1,4 @@
 let mockExceeded = false;
-jest.unmock("../index");
-jest.unmock("../../ui");
-jest.unmock("../../../ui");
-jest.unmock("../../../ui/expandable_header");
-jest.unmock("../tile_assertion");
-jest.unmock("../tile_lua");
-jest.unmock("../tile_if");
-jest.unmock("../tile_execute_script");
-jest.unmock("../tile_execute");
-jest.unmock("../tile_computed_move");
-jest.unmock("../tile_move_absolute");
-jest.unmock("../tile_send_message");
-jest.unmock("../tile_take_photo");
-jest.unmock("../tile_wait");
-jest.unmock("../tile_mark_as");
-jest.unmock("../tile_old_mark_as");
-jest.unmock("../tile_set_servo_angle");
-jest.unmock("../tile_toggle_pin");
-jest.unmock("../tile_find_home");
-jest.unmock("../tile_set_zero");
-jest.unmock("../tile_calibrate");
-jest.unmock("../tile_move_home");
-jest.unmock("../tile_emergency_stop");
-jest.unmock("../tile_reboot");
-jest.unmock("../tile_firmware_action");
-jest.unmock("../tile_system_action");
-jest.unmock("../tile_shutdown");
-jest.unmock("../tile_unknown");
 
 import React from "react";
 import {
@@ -79,7 +51,6 @@ let overwriteSpy: jest.SpyInstance;
 let sequenceLengthExceededSpy: jest.SpyInstance;
 
 beforeEach(() => {
-  jest.restoreAllMocks();
   mockExceeded = false;
   overwriteSpy = jest.spyOn(crud, "overwrite").mockImplementation(jest.fn());
   sequenceLengthExceededSpy = jest.spyOn(sequenceActions, "sequenceLengthExceeded")

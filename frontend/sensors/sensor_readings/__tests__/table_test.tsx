@@ -1,7 +1,3 @@
-jest.mock("../../../api/crud", () => ({
-  destroy: jest.fn(),
-}));
-
 import React from "react";
 import { render, fireEvent } from "@testing-library/react";
 import { SensorReadingsTable } from "../table";
@@ -11,10 +7,19 @@ import {
 } from "../../../__test_support__/fake_state/resources";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { destroy } from "../../../api/crud";
+import * as crud from "../../../api/crud";
 
-afterAll(() => {
-  jest.unmock("../../../api/crud");
+let destroySpy: jest.SpyInstance;
+
+beforeEach(() => {
+  destroySpy = jest.spyOn(crud, "destroy")
+    .mockImplementation(jest.fn());
 });
+
+afterEach(() => {
+  destroySpy.mockRestore();
+});
+
 describe("<SensorReadingsTable />", () => {
   const fakeProps = (sr = fakeSensorReading()): SensorReadingsTableProps => ({
     readingsForPeriod: () => [sr],

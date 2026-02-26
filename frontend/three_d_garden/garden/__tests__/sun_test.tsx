@@ -39,9 +39,6 @@ beforeEach(() => {
   jest.clearAllMocks();
 });
 
-afterEach(() => {
-  jest.restoreAllMocks();
-});
 
 describe("<Sun />", () => {
   const fakeProps = (): SunProps => ({

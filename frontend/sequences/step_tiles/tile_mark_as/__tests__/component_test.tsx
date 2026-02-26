@@ -1,10 +1,6 @@
 const mockEditStep = jest.fn();
-jest.mock("../../../../api/crud", () => ({ editStep: mockEditStep }));
 
 let mockShouldDisplay = false;
-jest.mock("../../../../devices/should_display", () => ({
-  shouldDisplayFeature: () => mockShouldDisplay,
-}));
 
 import React from "react";
 import { render } from "@testing-library/react";
@@ -17,7 +13,8 @@ import {
 import {
   buildResourceIndex,
 } from "../../../../__test_support__/resource_index_builder";
-import { editStep } from "../../../../api/crud";
+import * as crud from "../../../../api/crud";
+import * as shouldDisplayModule from "../../../../devices/should_display";
 import { NOTHING_SELECTED } from "../../../step_button_cluster";
 import { StepParams } from "../../../interfaces";
 import {
@@ -36,15 +33,22 @@ const setStateSync = (instance: MarkAs) => {
 };
 
 describe("<MarkAs/>", () => {
+  let editStepSpy: jest.SpyInstance;
+  let shouldDisplayFeatureSpy: jest.SpyInstance;
+
   beforeEach(() => {
     jest.clearAllMocks();
     mockEditStep.mockClear();
     mockShouldDisplay = false;
+    editStepSpy = jest.spyOn(crud, "editStep")
+      .mockImplementation(mockEditStep);
+    shouldDisplayFeatureSpy = jest.spyOn(shouldDisplayModule, "shouldDisplayFeature")
+      .mockImplementation(() => mockShouldDisplay);
   });
 
-  afterAll(() => {
-    jest.unmock("../../../../api/crud");
-    jest.unmock("../../../../devices/should_display");
+  afterEach(() => {
+    editStepSpy.mockRestore();
+    shouldDisplayFeatureSpy.mockRestore();
   });
 
   const plant = fakePlant();
@@ -61,7 +65,7 @@ describe("<MarkAs/>", () => {
   it("renders the basic parts", () => {
     const { container } = render(<MarkAs {...fakeProps()} />);
     const text = (container.textContent || "").toLowerCase();
-    ["mark", "property", "mounted_tool_id", "as", "0"].map(string =>
+    ["mark", "property", "mounted tool", "as", "none"].map(string =>
       expect(text).toContain(string));
   });
 
@@ -69,7 +73,7 @@ describe("<MarkAs/>", () => {
     const p = fakeProps();
     const instance = setStateSync(new MarkAs(p));
     instance.resetStep();
-    expect(editStep).toHaveBeenCalled();
+    expect(editStepSpy).toHaveBeenCalled();
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual({
       kind: "update_resource",
@@ -89,7 +93,7 @@ describe("<MarkAs/>", () => {
       fieldsAndValues: [{ field: "plant_stage", value: "planted" }],
     });
     instance.commitSelection();
-    expect(editStep).toHaveBeenCalled();
+    expect(editStepSpy).toHaveBeenCalled();
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual(
       ResourceUpdateResourceStep("Plant", 1, "plant_stage", "planted"));
@@ -103,7 +107,7 @@ describe("<MarkAs/>", () => {
       fieldsAndValues: [{ field: "plant_stage", value: "planted" }],
     });
     instance.commitSelection();
-    expect(editStep).toHaveBeenCalled();
+    expect(editStepSpy).toHaveBeenCalled();
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual(
       ResourceUpdateResourceStep("Device", 1, "mounted_tool_id", 0));
@@ -124,7 +128,7 @@ describe("<MarkAs/>", () => {
       ],
     });
     instance.commitSelection();
-    expect(editStep).toHaveBeenCalled();
+    expect(editStepSpy).toHaveBeenCalled();
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     const expectedStep =
       ResourceUpdateResourceStep("Plant", 1, "plant_stage", "planted");
@@ -142,7 +146,7 @@ describe("<MarkAs/>", () => {
       fieldsAndValues: [{ field: "plant_stage", value: "planted" }],
     });
     instance.commitSelection();
-    expect(editStep).toHaveBeenCalled();
+    expect(editStepSpy).toHaveBeenCalled();
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual(
       IdentifierUpdateResourceStep("var", "plant_stage", "planted"));

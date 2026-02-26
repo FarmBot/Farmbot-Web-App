@@ -5,9 +5,6 @@ import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { Actions } from "../../../constants";
 import { fireEvent, render, screen } from "@testing-library/react";
 
-jest.unmock("../../image_workspace");
-jest.unmock("../index");
-
 const renderImageWorkspace = (props: ImageWorkspaceProps) => {
   const index = jest.requireActual("../index");
   return render(<index.ImageWorkspace {...props} />);

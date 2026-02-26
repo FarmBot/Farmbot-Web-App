@@ -46,7 +46,6 @@ afterEach(() => {
   updateMCUSpy.mockRestore();
   blurableInputSpy.mockRestore();
   settingStatusIndicatorSpy.mockRestore();
-  jest.restoreAllMocks();
 });
 
 describe("McuInputBox", () => {

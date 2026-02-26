@@ -24,10 +24,6 @@ beforeEach(() => {
     .mockImplementation(jest.fn());
 });
 
-afterEach(() => {
-  jest.restoreAllMocks();
-});
-
 describe("<FarmwareInfo />", () => {
   const fakeProps = (): FarmwareInfoProps => ({
     farmware: fakeFarmware(),

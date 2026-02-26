@@ -18,9 +18,6 @@ beforeEach(() => {
     .mockImplementation(() => mockDelMode);
 });
 
-afterEach(() => {
-  jest.restoreAllMocks();
-});
 
 describe("<GroupInventoryItem />", () => {
   const fakeProps = (): GroupInventoryItemProps => ({

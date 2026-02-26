@@ -1,6 +1,3 @@
-jest.unmock("../designer_panel");
-jest.unmock("../designer_panel.tsx");
-
 import React, { act } from "react";
 import { fireEvent, render } from "@testing-library/react";
 import {
@@ -138,7 +135,6 @@ describe("<DesignerPanelContent />", () => {
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
     clearPanelContentNodes();
   });
 

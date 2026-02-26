@@ -1,5 +1,3 @@
-jest.unmock("../terminal_session");
-
 const mockClient = {
   once: jest.fn((_: string, fn: Function) => { fn(); }),
   on: jest.fn(),
@@ -8,24 +6,26 @@ const mockClient = {
 };
 const mockConnect = jest.fn(() => mockClient);
 
-jest.mock("mqtt", () => {
-  return {
-    __esModule: true,
-    connect: mockConnect,
-    default: { connect: mockConnect },
-  };
-});
+import mqtt from "mqtt";
 
 import { Terminal } from "@xterm/xterm";
 const { TerminalSession } =
   jest.requireActual("../terminal_session");
 
 type FakeTerminal = Pick<Terminal, "write" | "onKey">;
-
-afterAll(() => {
-  jest.unmock("mqtt");
-});
 describe("TerminalSession", () => {
+  let mqttConnectSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    mqttConnectSpy = jest.spyOn(mqtt, "connect")
+      .mockImplementation(mockConnect as never);
+    jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    mqttConnectSpy.mockRestore();
+  });
+
   const FAKE_USERNAME = "device_123";
   const FAKE_PASSWORD = "password";
   const FAKE_URL = "ws://localhost:3000/wow";
@@ -100,7 +100,4 @@ describe("TerminalSession", () => {
     expect(mockClient.on).toHaveBeenCalledWith("message", ts.terminalMessageHandler);
     expect(mockClient.once).toHaveBeenCalledWith("connect", expect.any(Function));
   });
-});
-beforeEach(() => {
-  jest.clearAllMocks();
 });

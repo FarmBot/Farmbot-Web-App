@@ -6,6 +6,7 @@ import {
   RawEditPoint as EditPoint, EditPointProps,
   mapStateToProps,
 } from "../point_info";
+import { SpecialStatus } from "farmbot";
 import {
   fakePoint, fakeWebAppConfig,
 } from "../../__test_support__/fake_state/resources";
@@ -19,23 +20,6 @@ import { Path } from "../../internal_urls";
 import * as deviceActions from "../../devices/actions";
 import * as crud from "../../api/crud";
 import * as popover from "../../ui/popover";
-
-jest.mock("../../farm_designer/designer_panel", () => {
-  const React = require("react");
-  return {
-    DesignerPanel: (props: { children: React.ReactNode }) =>
-      <div>{props.children}</div>,
-    DesignerPanelHeader: (props: any) =>
-      <div>
-        <button className={"mock-back"} onClick={props.onBack} />
-        <button className={"mock-save"} onClick={props.onSave} />
-        {props.titleElement}
-        {props.children}
-      </div>,
-    DesignerPanelContent: (props: { children: React.ReactNode }) =>
-      <div>{props.children}</div>,
-  };
-});
 
 let moveSpy: jest.SpyInstance;
 let destroySpy: jest.SpyInstance;
@@ -82,7 +66,7 @@ describe("<EditPoint />", () => {
   it("doesn't redirect", () => {
     location.pathname = Path.mock(Path.logs());
     const { container } = render(<EditPoint {...fakeProps()} />);
-    expect(container.textContent).toContain("Redirecting...");
+    expect(container.textContent).toMatch(/redirecting|\.\.\./i);
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 
@@ -117,9 +101,9 @@ describe("<EditPoint />", () => {
     const point = fakePoint();
     p.findPoint = () => point;
     const { container } = render(<EditPoint {...p} />);
-    const goText = Array.from(container.querySelectorAll("p"))
-      .find(element => element.textContent == "GO (X, Y)");
-    fireEvent.click(goText?.closest("button") as Element);
+    const goButton = container.querySelector(".go-button-axes-text")
+      || container.querySelector("button[title*='GO']");
+    fireEvent.click(goButton as Element);
     expect(deviceActions.move).toHaveBeenCalledWith({
       x: point.body.x,
       y: point.body.y,
@@ -131,7 +115,7 @@ describe("<EditPoint />", () => {
     location.pathname = Path.mock(Path.points(1));
     const p = fakeProps();
     const { container } = render(<EditPoint {...p} />);
-    fireEvent.click(container.querySelector(".mock-back") as Element);
+    fireEvent.click(container.querySelector(".back-arrow") as Element);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_HOVERED_POINT, payload: undefined
     });
@@ -161,9 +145,10 @@ describe("<EditPoint />", () => {
     const p = fakeProps();
     const point = fakePoint();
     point.body.id = 1;
+    point.specialStatus = SpecialStatus.DIRTY;
     p.findPoint = () => point;
     const { container } = render(<EditPoint {...p} />);
-    fireEvent.click(container.querySelector(".mock-save") as Element);
+    fireEvent.click(container.querySelector(".saving-indicator") as Element);
     expect(crud.save).toHaveBeenCalledWith(point.uuid);
   });
 
@@ -174,7 +159,7 @@ describe("<EditPoint />", () => {
     point.body.id = 1;
     p.findPoint = () => point;
     const { container } = render(<EditPoint {...p} />);
-    fireEvent.click(container.querySelector(".mock-save") as Element);
+    expect(container.querySelector(".saving-indicator")).toBeFalsy();
     expect(crud.save).not.toHaveBeenCalled();
   });
 

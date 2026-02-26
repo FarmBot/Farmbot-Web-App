@@ -1,6 +1,3 @@
-jest.unmock("../crud");
-jest.unmock("../crud.ts");
-
 interface MockResponse {
   kind: string;
   body: {

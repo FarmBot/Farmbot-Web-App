@@ -14,7 +14,6 @@ import * as device from "../../../device";
 import { renderWithContext } from "../../../__test_support__/mount_with_context";
 
 beforeEach(() => {
-  jest.restoreAllMocks();
   jest.clearAllMocks();
   jest.useRealTimers();
   mockDevice.rebootFirmware.mockClear();
@@ -22,9 +21,6 @@ beforeEach(() => {
     .mockImplementation(() => mockDevice as never);
 });
 
-afterEach(() => {
-  jest.restoreAllMocks();
-});
 
 describe("<PowerAndReset/>", () => {
   const fakeConfig = fakeFbosConfig();

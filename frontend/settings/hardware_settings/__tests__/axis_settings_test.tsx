@@ -25,23 +25,23 @@ import {
 import * as crud from "../../../api/crud";
 import { FbosConfig } from "farmbot/dist/resources/configs/fbos";
 import { cloneDeep } from "lodash";
+import * as calibrationRowModule from "../calibration_row";
 
 const calibrationRowMock = jest.fn((_: unknown) => <div />);
-
-jest.mock("../calibration_row", () => ({
-  CalibrationRow: (props: unknown) => calibrationRowMock(props),
-}));
 
 describe("<AxisSettings />", () => {
   let getDeviceSpy: jest.SpyInstance;
   let editSpy: jest.SpyInstance;
   let saveSpy: jest.SpyInstance;
+  let calibrationRowSpy: jest.SpyInstance;
 
   beforeEach(() => {
     getDeviceSpy = jest.spyOn(deviceModule, "getDevice")
       .mockImplementation(() => mockDevice);
     editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
     saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+    calibrationRowSpy = jest.spyOn(calibrationRowModule, "CalibrationRow")
+      .mockImplementation((props: unknown) => calibrationRowMock(props));
     calibrationRowMock.mockClear();
     (error as jest.Mock).mockClear();
     (warning as jest.Mock).mockClear();
@@ -51,6 +51,7 @@ describe("<AxisSettings />", () => {
     getDeviceSpy.mockRestore();
     editSpy.mockRestore();
     saveSpy.mockRestore();
+    calibrationRowSpy.mockRestore();
   });
 
   const state = fakeState();

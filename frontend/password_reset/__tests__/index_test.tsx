@@ -2,9 +2,6 @@ import * as util from "../../util";
 import { PasswordReset } from "../password_reset";
 
 describe("PasswordReset loader", () => {
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
 
   it("calls entryPoint", async () => {
     const entryPointSpy = jest.spyOn(util, "entryPoint")

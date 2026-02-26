@@ -9,10 +9,6 @@ interface FakeProps {
 }
 
 describe("<TimezoneSelector/>", () => {
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
   const fakeProps = (): FakeProps => ({
     currentTimezone: undefined,
     onUpdate: jest.fn(),

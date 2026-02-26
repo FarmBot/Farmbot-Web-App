@@ -1,14 +1,5 @@
 let mockDev = false;
-jest.mock("../../../../settings/dev/dev_support", () => {
-  const actual = jest.requireActual("../../../../settings/dev/dev_support");
-  return {
-    ...actual,
-    DevSettings: {
-      ...actual.DevSettings,
-      futureFeaturesEnabled: () => mockDev,
-    },
-  };
-});
+import * as devSupport from "../../../../settings/dev/dev_support";
 
 import React from "react";
 import { fireEvent, render } from "@testing-library/react";
@@ -25,8 +16,16 @@ import { resource_type, Resource } from "farmbot";
 import { UPDATE_RESOURCE_DDIS } from "../field_selection";
 import { changeBlurableInput } from "../../../../__test_support__/helpers";
 
-afterAll(() => {
-  jest.unmock("../../../../settings/dev/dev_support");
+let futureFeaturesEnabledSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  futureFeaturesEnabledSpy =
+    jest.spyOn(devSupport.DevSettings, "futureFeaturesEnabled")
+      .mockImplementation(() => mockDev);
+});
+
+afterEach(() => {
+  futureFeaturesEnabledSpy.mockRestore();
 });
 
 const DDI = UPDATE_RESOURCE_DDIS();

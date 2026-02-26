@@ -1,7 +1,3 @@
-jest.mock("../../../api/crud", () => ({
-  overwrite: jest.fn(),
-}));
-
 import React from "react";
 import {
   generateNewVariableLabel,
@@ -22,19 +18,22 @@ import { LocalsListProps, AllowedVariableNodes } from "../locals_list_support";
 import { VariableNameSet } from "../../../resources/interfaces";
 import { error } from "../../../toast/toast";
 import { overwrite } from "../../../api/crud";
+import * as crud from "../../../api/crud";
 import { fakeVariableNameSet } from "../../../__test_support__/fake_variables";
 import { cloneDeep } from "lodash";
+import * as variableForm from "../variable_form";
 
-jest.mock("../variable_form", () => ({
-  VariableForm: () => <div className={"variable-form"} />,
-}));
+let variableFormSpy: jest.SpyInstance;
 
 beforeEach(() => {
   jest.clearAllMocks();
+  jest.spyOn(crud, "overwrite").mockImplementation(jest.fn());
+  variableFormSpy = jest.spyOn(variableForm, "VariableForm")
+    .mockImplementation(() => <div className={"variable-form"} />);
 });
 
-afterAll(() => {
-  jest.unmock("../../../api/crud");
+afterEach(() => {
+  variableFormSpy.mockRestore();
 });
 
 describe("<LocalsList/>", () => {

@@ -31,9 +31,6 @@ beforeEach(() => {
     .mockImplementation(((_method, pts) => pts) as typeof pointGroupSort.sortGroupBy);
 });
 
-afterEach(() => {
-  jest.restoreAllMocks();
-});
 
 describe("<GroupOrderVisual />", () => {
   const fakeProps = (): GroupOrderVisualProps => ({

@@ -24,7 +24,6 @@ afterEach(() => {
     configurable: true,
     value: originalAssign,
   });
-  jest.restoreAllMocks();
   document.querySelectorAll("#root").forEach(root => root.remove());
 });
 

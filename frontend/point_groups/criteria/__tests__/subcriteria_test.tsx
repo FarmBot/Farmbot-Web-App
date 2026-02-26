@@ -14,9 +14,6 @@ beforeEach(() => {
     .mockImplementation(jest.fn());
 });
 
-afterEach(() => {
-  jest.restoreAllMocks();
-});
 
 describe("<SubCriteriaSection />", () => {
   const fakeProps = (): SubCriteriaSectionProps => ({

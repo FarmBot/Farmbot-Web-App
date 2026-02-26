@@ -20,9 +20,6 @@ beforeEach(() => {
   jest.spyOn(crud, "destroy").mockImplementation(jest.fn());
 });
 
-afterEach(() => {
-  jest.restoreAllMocks();
-});
 
 describe("<PointInventoryItem> />", () => {
   const fakeProps = (): PointInventoryItemProps => ({

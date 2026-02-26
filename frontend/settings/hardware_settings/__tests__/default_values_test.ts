@@ -6,9 +6,6 @@ describe("getModifiedClassName()", () => {
     jest.clearAllMocks();
   });
 
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
 
   it("returns class name", () => {
     const modifiedSpy = jest.spyOn(defaultValues, "getModifiedClassNameSpecifyDefault")

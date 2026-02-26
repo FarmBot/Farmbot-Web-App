@@ -2,10 +2,6 @@ import React from "react";
 import { LoadingPlant } from "../loading_plant";
 import { render, screen } from "@testing-library/react";
 
-afterEach(() => {
-  jest.restoreAllMocks();
-});
-
 describe("<LoadingPlant/>", () => {
   it("renders loading text", () => {
     const { container } = render(<LoadingPlant animate={false} />);

@@ -1,5 +1,3 @@
-jest.unmock("../session");
-
 import {
   isNumericSetting,
   safeNumericSetting,

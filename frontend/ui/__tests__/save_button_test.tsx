@@ -9,7 +9,6 @@ describe("<SaveBtn />", () => {
     jest.spyOn(I18n, "t")
       .mockImplementation((input: string) => input);
   });
-  afterEach(() => jest.restoreAllMocks());
 
   const fakeProps = (): SaveBtnProps => ({
     status: SpecialStatus.SAVED,

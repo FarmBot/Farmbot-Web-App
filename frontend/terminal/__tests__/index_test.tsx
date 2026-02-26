@@ -7,9 +7,6 @@ describe("index page", () => {
     delete (window as unknown as { terminal_session?: unknown }).terminal_session;
   });
 
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
 
   it("loads the terminal", async () => {
     const client = {

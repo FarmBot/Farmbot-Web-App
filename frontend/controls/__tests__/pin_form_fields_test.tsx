@@ -3,8 +3,6 @@ import { fakeSensor } from "../../__test_support__/fake_state/resources";
 import { Actions } from "../../constants";
 import * as crud from "../../api/crud";
 
-jest.unmock("../pin_form_fields");
-
 const getPinFormFields = () =>
   jest.requireActual("../pin_form_fields");
 
@@ -21,10 +19,6 @@ beforeEach(() => {
     type: "EDIT_RESOURCE",
     payload: { update },
   }) as never);
-});
-
-afterEach(() => {
-  jest.restoreAllMocks();
 });
 
 describe("<NameInputBox />", () => {

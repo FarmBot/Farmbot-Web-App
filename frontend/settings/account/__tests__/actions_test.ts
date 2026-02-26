@@ -1,24 +1,32 @@
-jest.mock("../../../toast_errors", () => ({ toastErrors: jest.fn() }));
-
 let mockPost = Promise.resolve();
 let mockDelete = Promise.resolve();
-jest.mock("axios", () => ({
-  post: jest.fn(() => mockPost),
-  delete: jest.fn(() => mockDelete),
-}));
 
 import { API } from "../../../api/api";
 import { deleteUser, resetAccount } from "../actions";
-import { toastErrors } from "../../../toast_errors";
+import * as toastErrorsModule from "../../../toast_errors";
 import axios from "axios";
+
+let toastErrorsSpy: jest.SpyInstance;
+let axiosPostSpy: jest.SpyInstance;
+let axiosDeleteSpy: jest.SpyInstance;
 
 API.setBaseUrl("http://localhost:3000");
 const data = { password: "Foo!" };
 const errorResponse = { response: { data: "error" } };
 
-afterAll(() => {
-  jest.unmock("axios");
-  jest.unmock("../../../toast_errors");
+beforeEach(() => {
+  toastErrorsSpy = jest.spyOn(toastErrorsModule, "toastErrors")
+    .mockImplementation(jest.fn());
+  axiosPostSpy = jest.spyOn(axios, "post")
+    .mockImplementation(() => mockPost as never);
+  axiosDeleteSpy = jest.spyOn(axios, "delete")
+    .mockImplementation(() => mockDelete as never);
+});
+
+afterEach(() => {
+  toastErrorsSpy.mockRestore();
+  axiosPostSpy.mockRestore();
+  axiosDeleteSpy.mockRestore();
 });
 describe("deleteUser()", () => {
   it("deletes user", async () => {
@@ -30,7 +38,7 @@ describe("deleteUser()", () => {
     await deleteUser(data)(dispatch, getState);
     expect(axios.delete).toHaveBeenCalledWith("http://localhost:3000/api/users/",
       { data, params: { force: true } });
-    expect(toastErrors).not.toHaveBeenCalled();
+    expect(toastErrorsSpy).not.toHaveBeenCalled();
     expect(alert).toHaveBeenCalledWith("We're sorry to see you go. :(");
   });
 
@@ -44,7 +52,7 @@ describe("deleteUser()", () => {
     await expect(axios.delete).toHaveBeenCalledWith(
       "http://localhost:3000/api/users/",
       { data, params: { force: true } });
-    expect(toastErrors).toHaveBeenCalledWith({ err: errorResponse });
+    expect(toastErrorsSpy).toHaveBeenCalledWith({ err: errorResponse });
     expect(alert).not.toHaveBeenCalled();
   });
 });
@@ -59,7 +67,7 @@ describe("resetAccount()", () => {
     await resetAccount(data)(dispatch, getState);
     expect(axios.post).toHaveBeenCalledWith(
       "http://localhost:3000/api/device/reset", data);
-    expect(toastErrors).not.toHaveBeenCalled();
+    expect(toastErrorsSpy).not.toHaveBeenCalled();
     expect(alert).toHaveBeenCalledWith("Account has been reset.");
   });
 
@@ -72,7 +80,7 @@ describe("resetAccount()", () => {
     await resetAccount(data)(dispatch, getState);
     expect(axios.post).toHaveBeenCalledWith(
       "http://localhost:3000/api/device/reset", data);
-    expect(toastErrors).toHaveBeenCalledWith({ err: errorResponse });
+    expect(toastErrorsSpy).toHaveBeenCalledWith({ err: errorResponse });
     expect(alert).not.toHaveBeenCalled();
   });
 });

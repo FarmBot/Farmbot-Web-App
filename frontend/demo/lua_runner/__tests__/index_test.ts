@@ -1,7 +1,3 @@
-jest.unmock("..");
-jest.unmock("../actions");
-jest.unmock("../../../resources/selectors");
-
 import {
   buildResourceIndex,
   fakeDevice,

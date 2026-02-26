@@ -1,5 +1,3 @@
-jest.unmock("../bot_figure");
-
 import React from "react";
 import { render, fireEvent } from "@testing-library/react";
 import { BotOriginQuadrant } from "../../../../interfaces";

@@ -20,9 +20,6 @@ beforeEach(() => {
   jest.spyOn(crud, "save").mockImplementation(jest.fn());
 });
 
-afterEach(() => {
-  jest.restoreAllMocks();
-});
 describe("toggleSoilHeight()", () => {
   it("returns update", () => {
     const point = fakePoint();

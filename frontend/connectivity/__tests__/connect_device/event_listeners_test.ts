@@ -21,10 +21,6 @@ describe("attachEventListeners", () => {
       .mockImplementation(() => Promise.resolve());
   });
 
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
   it("attaches relevant callbacks", () => {
     const dev = mockBot;
     attachEventListeners(dev, jest.fn(), jest.fn());

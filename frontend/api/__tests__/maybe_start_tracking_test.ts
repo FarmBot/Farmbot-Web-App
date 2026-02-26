@@ -6,10 +6,6 @@ describe("maybeStartTracking()", () => {
     jest.clearAllMocks();
   });
 
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
   it("starts tracking", () => {
     const startTrackingSpy = jest.spyOn(dataConsistency, "startTracking")
       .mockImplementation(jest.fn());

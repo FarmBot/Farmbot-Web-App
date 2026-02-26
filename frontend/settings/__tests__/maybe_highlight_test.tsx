@@ -1,5 +1,3 @@
-jest.unmock("../maybe_highlight");
-
 import { fakeState } from "../../__test_support__/fake_state";
 let mockState = fakeState();
 

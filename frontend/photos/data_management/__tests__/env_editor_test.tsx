@@ -1,38 +1,39 @@
-jest.mock("../../../api/crud", () => ({
-  initSave: jest.fn(),
-  edit: jest.fn(),
-  save: jest.fn(),
-  destroy: jest.fn(),
-}));
-
 let mockDev = false;
-jest.mock("../../../settings/dev/dev_support", () => {
-  const actual = jest.requireActual("../../../settings/dev/dev_support");
-  return {
-    ...actual,
-    DevSettings: {
-      ...actual.DevSettings,
-      showInternalEnvsEnabled: () => mockDev,
-    },
-  };
-});
+import * as devSupport from "../../../settings/dev/dev_support";
 
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { EnvEditor } from "../env_editor";
 import { EnvEditorProps } from "../interfaces";
 import { destroy, edit, initSave, save } from "../../../api/crud";
+import * as crud from "../../../api/crud";
 import { fakeFarmwareEnv } from "../../../__test_support__/fake_state/resources";
 import { error } from "../../../toast/toast";
+
+let showInternalEnvsEnabledSpy: jest.SpyInstance;
+let initSaveSpy: jest.SpyInstance;
+let editSpy: jest.SpyInstance;
+let saveSpy: jest.SpyInstance;
+let destroySpy: jest.SpyInstance;
 
 beforeEach(() => {
   jest.clearAllMocks();
   mockDev = false;
+  showInternalEnvsEnabledSpy =
+    jest.spyOn(devSupport.DevSettings, "showInternalEnvsEnabled")
+      .mockImplementation(() => mockDev);
+  initSaveSpy = jest.spyOn(crud, "initSave").mockImplementation(jest.fn());
+  editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+  destroySpy = jest.spyOn(crud, "destroy").mockImplementation(jest.fn());
 });
 
-afterAll(() => {
-  jest.unmock("../../../api/crud");
-  jest.unmock("../../../settings/dev/dev_support");
+afterEach(() => {
+  showInternalEnvsEnabledSpy.mockRestore();
+  initSaveSpy.mockRestore();
+  editSpy.mockRestore();
+  saveSpy.mockRestore();
+  destroySpy.mockRestore();
 });
 
 describe("<EnvEditor />", () => {

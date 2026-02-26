@@ -9,10 +9,6 @@ describe("deleteAllIds()", () => {
       .mockImplementation(() => Promise.resolve());
   });
 
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
   it("deletes points", () => {
     window.confirm = () => true;
     const points = [fakePoint(), fakePoint()];

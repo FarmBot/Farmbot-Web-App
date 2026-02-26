@@ -1,30 +1,14 @@
-jest.mock("../../../api/crud", () => ({
-  edit: jest.fn(),
-  save: jest.fn(),
-}));
-
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import {
   RpiModel, RpiModelProps, StatusDetails, StatusDetailsProps,
 } from "../rpi_model";
 import { edit, save } from "../../../api/crud";
+import * as crud from "../../../api/crud";
 import { fakeDevice } from "../../../__test_support__/resource_index_builder";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { FirmwareHardware } from "farmbot";
-
-jest.mock("../../../ui", () => {
-  const actual = jest.requireActual("../../../ui");
-  return {
-    ...actual,
-    FBSelect: (props: {
-      onChange: (ddi: { label: string, value: string }) => void,
-    }) =>
-      <button onClick={() => props.onChange({ label: "", value: "3" })}>
-        select-rpi3
-      </button>,
-  };
-});
+import * as ui from "../../../ui";
 
 type TestCase = [string, string, FirmwareHardware, string];
 
@@ -38,8 +22,26 @@ const TEST_CASES: TestCase[] = [
   ["02", "rpi3", "express_k12", "zero 2 w"],
 ];
 
-afterAll(() => {
-  jest.unmock("../../../api/crud");
+let fbSelectSpy: jest.SpyInstance;
+let editSpy: jest.SpyInstance;
+let saveSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation((props: {
+      onChange: (ddi: { label: string, value: string }) => void,
+    }) =>
+      <button onClick={() => props.onChange({ label: "", value: "3" })}>
+        select-rpi3
+      </button>);
+});
+
+afterEach(() => {
+  fbSelectSpy.mockRestore();
+  editSpy.mockRestore();
+  saveSpy.mockRestore();
 });
 describe("<RpiModel />", () => {
   const fakeProps = (): RpiModelProps => ({

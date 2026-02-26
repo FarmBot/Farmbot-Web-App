@@ -12,6 +12,10 @@ import {
 import { range } from "lodash";
 import * as defaultValues from "../default_values";
 import * as deviceActions from "../../../devices/actions";
+import * as ui from "../../../ui";
+import * as booleanGroup from "../boolean_mcu_input_group";
+import * as numericGroup from "../numeric_mcu_input_group";
+import * as singleSettingRow from "../single_setting_row";
 
 const singleSettingRowMock = jest.fn((props: {
   label: string, tooltip: string, children: React.ReactNode
@@ -29,29 +33,13 @@ const numericGroupMock = jest.fn((props: {
   </div>);
 const booleanGroupMock = jest.fn((props: { label: string }) => <div>{props.label}</div>);
 
-jest.mock("../single_setting_row", () => ({
-  SingleSettingRow: (props: unknown) => singleSettingRowMock(props as never),
-}));
-
-jest.mock("../numeric_mcu_input_group", () => ({
-  NumericMCUInputGroup: (props: unknown) => numericGroupMock(props as never),
-}));
-
-jest.mock("../boolean_mcu_input_group", () => ({
-  BooleanMCUInputGroup: (props: unknown) => booleanGroupMock(props as never),
-}));
-
-jest.mock("../../../ui", () => {
-  const actual = jest.requireActual("../../../ui");
-  return {
-    ...actual,
-    ToggleButton: (props: unknown) => toggleButtonMock(props as never),
-  };
-});
-
 let getDefaultFwConfigValueSpy: jest.SpyInstance;
 let getModifiedClassNameSpy: jest.SpyInstance;
 let settingToggleSpy: jest.SpyInstance;
+let toggleButtonSpy: jest.SpyInstance;
+let booleanGroupSpy: jest.SpyInstance;
+let numericGroupSpy: jest.SpyInstance;
+let singleSettingRowSpy: jest.SpyInstance;
 const TOGGLE_ACTION = { type: "TOGGLE_MCU" };
 
 beforeEach(() => {
@@ -65,12 +53,24 @@ beforeEach(() => {
     .mockImplementation(jest.fn() as never);
   settingToggleSpy = jest.spyOn(deviceActions, "settingToggle")
     .mockImplementation(() => TOGGLE_ACTION as never);
+  toggleButtonSpy = jest.spyOn(ui, "ToggleButton")
+    .mockImplementation((props: unknown) => toggleButtonMock(props as never));
+  singleSettingRowSpy = jest.spyOn(singleSettingRow, "SingleSettingRow")
+    .mockImplementation((props: unknown) => singleSettingRowMock(props as never));
+  booleanGroupSpy = jest.spyOn(booleanGroup, "BooleanMCUInputGroup")
+    .mockImplementation((props: unknown) => booleanGroupMock(props as never));
+  numericGroupSpy = jest.spyOn(numericGroup, "NumericMCUInputGroup")
+    .mockImplementation((props: unknown) => numericGroupMock(props as never));
 });
 
 afterEach(() => {
   getDefaultFwConfigValueSpy.mockRestore();
   getModifiedClassNameSpy.mockRestore();
   settingToggleSpy.mockRestore();
+  toggleButtonSpy.mockRestore();
+  singleSettingRowSpy.mockRestore();
+  booleanGroupSpy.mockRestore();
+  numericGroupSpy.mockRestore();
 });
 
 describe("<Motors />", () => {

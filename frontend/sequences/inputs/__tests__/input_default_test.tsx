@@ -7,23 +7,23 @@ import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { StepInputProps } from "../../interfaces";
 import * as stepTiles from "../../step_tiles";
 import { Wait } from "farmbot";
+import * as ui from "../../../ui";
 let updateStepSpy: jest.SpyInstance;
-
-jest.mock("../../../ui", () => ({
-  ...jest.requireActual("../../../ui"),
-  BlurableInput: (props: {
-    value: string | number;
-    onCommit: (e: React.SyntheticEvent<HTMLInputElement>) => void;
-  }) => <input value={props.value} onBlur={e => props.onCommit(e)} />,
-}));
+let blurableInputSpy: jest.SpyInstance;
 
 beforeEach(() => {
   updateStepSpy = jest.spyOn(stepTiles, "updateStep")
     .mockImplementation(() => mockUpdateArg);
+  blurableInputSpy = jest.spyOn(ui, "BlurableInput")
+    .mockImplementation((props: {
+      value: string | number;
+      onCommit: (e: React.SyntheticEvent<HTMLInputElement>) => void;
+    }) => <input value={props.value} onBlur={e => props.onCommit(e)} />);
 });
 
 afterEach(() => {
   updateStepSpy.mockRestore();
+  blurableInputSpy.mockRestore();
   mockUpdateArg.mockClear();
 });
 describe("<InputDefault />", () => {

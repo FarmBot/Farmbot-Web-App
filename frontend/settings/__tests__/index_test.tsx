@@ -53,7 +53,6 @@ describe("<DesignerSettings />", () => {
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
     mockHighlightName = "";
   });
 

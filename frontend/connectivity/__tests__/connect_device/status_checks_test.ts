@@ -1,30 +1,27 @@
-jest.mock("../../slow_down", () => ({
-  slowDown: jest.fn((fn: Function) => fn)
-}));
-
 import {
   onStatus,
   incomingStatus,
 } from "../../connect_device";
-import { slowDown } from "../../slow_down";
+import * as slowDownModule from "../../slow_down";
 import { fakeState } from "../../../__test_support__/fake_state";
 import * as deviceActions from "../../../devices/actions";
 import { Actions } from "../../../constants";
 
 let badVersionSpy: jest.SpyInstance;
+let slowDownSpy: jest.SpyInstance;
 
-afterAll(() => {
-  jest.unmock("../../slow_down");
-});
 describe("onStatus()", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     delete globalConfig.MINIMUM_FBOS_VERSION;
+    slowDownSpy = jest.spyOn(slowDownModule, "slowDown")
+      .mockImplementation((fn: Function) => fn as never);
     badVersionSpy =
       jest.spyOn(deviceActions, "badVersion").mockImplementation(jest.fn());
   });
 
   afterEach(() => {
+    slowDownSpy.mockRestore();
     badVersionSpy.mockRestore();
   });
 
@@ -69,7 +66,7 @@ describe("onStatus()", () => {
     const getState = jest.fn(() => state);
     const dispatch = jest.fn();
     const fake = state.bot.hardware;
-    expect(slowDown).not.toHaveBeenCalled();
+    expect(slowDownSpy).not.toHaveBeenCalled();
     onStatus(dispatch, getState)(fake);
     expect(dispatch)
       .toHaveBeenCalledWith(incomingStatus(state.bot.hardware));

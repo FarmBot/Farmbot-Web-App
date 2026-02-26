@@ -1,36 +1,35 @@
 let mockResponse: string | Error = "12345";
-jest.mock("axios", () => ({
-  ...jest.requireActual("axios"),
-  post: jest.fn(() =>
-    typeof mockResponse === "string"
-      ? Promise.resolve(mockResponse)
-      : Promise.reject(mockResponse)),
-}));
 
 const mockMqttClient = {
   on: jest.fn((ev: string, cb: Function) => ev == "connect" && cb()),
   subscribe: jest.fn(),
 };
 
-jest.mock("mqtt", () => ({ connect: () => mockMqttClient }));
-
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import { DemoLoginOption } from "../demo_login_option";
+import axios from "axios";
+import mqtt from "mqtt";
 
 describe("<DemoLoginOption />", () => {
+  let axiosPostSpy: jest.SpyInstance;
+  let mqttConnectSpy: jest.SpyInstance;
+
   beforeEach(() => {
     jest.clearAllMocks();
     mockResponse = "12345";
+    mqttConnectSpy = jest.spyOn(mqtt, "connect")
+      .mockImplementation(() => mockMqttClient as never);
+    axiosPostSpy = jest.spyOn(axios, "post")
+      .mockImplementation(() =>
+        typeof mockResponse === "string"
+          ? Promise.resolve(mockResponse)
+          : Promise.reject(mockResponse) as never);
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
-  afterAll(() => {
-    jest.unmock("axios");
-    jest.unmock("mqtt");
+    mqttConnectSpy.mockRestore();
+    axiosPostSpy.mockRestore();
   });
 
   it("renders demo controls", () => {

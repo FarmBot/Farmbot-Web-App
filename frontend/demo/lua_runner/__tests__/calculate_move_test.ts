@@ -840,5 +840,4 @@ describe("calculateMove()", () => {
 
 afterAll(() => {
   (store as unknown as { getState: Function }).getState = originalGetState;
-  jest.restoreAllMocks();
 });

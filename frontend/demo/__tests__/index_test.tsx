@@ -7,9 +7,6 @@ beforeEach(() => {
   entryPointSpy = jest.spyOn(page, "entryPoint").mockImplementation(jest.fn());
 });
 
-afterEach(() => {
-  jest.restoreAllMocks();
-});
 describe("DemoIframe loader", () => {
   it("calls entryPoint", async () => {
     await import("../index");

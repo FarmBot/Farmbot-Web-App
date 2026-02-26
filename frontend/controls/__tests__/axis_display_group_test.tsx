@@ -1,21 +1,20 @@
 let mockDev = false;
-jest.mock("../../settings/dev/dev_support", () => {
-  const actual = jest.requireActual("../../settings/dev/dev_support");
-  return {
-    ...actual,
-    DevSettings: {
-      ...actual.DevSettings,
-      futureFeaturesEnabled: () => mockDev,
-    },
-  };
-});
+import * as devSupport from "../../settings/dev/dev_support";
 
 import { render, screen } from "@testing-library/react";
 import { AxisDisplayGroup } from "../axis_display_group";
 import { AxisDisplayGroupProps } from "../interfaces";
 
-afterAll(() => {
-  jest.unmock("../../settings/dev/dev_support");
+let futureFeaturesEnabledSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  futureFeaturesEnabledSpy =
+    jest.spyOn(devSupport.DevSettings, "futureFeaturesEnabled")
+      .mockImplementation(() => mockDev);
+});
+
+afterEach(() => {
+  futureFeaturesEnabledSpy.mockRestore();
 });
 
 describe("<AxisDisplayGroup />", () => {

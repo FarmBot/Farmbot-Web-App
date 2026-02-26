@@ -11,12 +11,16 @@ import {
 import { TaggedFirmwareConfig } from "farmbot";
 import * as deviceActions from "../../../devices/actions";
 import { DeviceSetting } from "../../../constants";
+import * as ui from "../../../ui";
 
-jest.mock("../../../ui", () => {
-  const actual = jest.requireActual("../../../ui");
-  return {
-    ...actual,
-    FBSelect: (props: {
+let updateMCUSpy: jest.SpyInstance;
+let fbSelectSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  updateMCUSpy = jest.spyOn(deviceActions, "updateMCU")
+    .mockImplementation(jest.fn());
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation((props: {
       selectedItem?: { label: string, value: number | string },
       customNullLabel?: string,
       extraClass?: string,
@@ -30,19 +34,11 @@ jest.mock("../../../ui", () => {
         <button onClick={() => props.onChange({ label: "", value: 2 })}>
           change-pin
         </button>
-      </div>,
-  };
-});
-
-let updateMCUSpy: jest.SpyInstance;
-
-beforeEach(() => {
-  updateMCUSpy = jest.spyOn(deviceActions, "updateMCU")
-    .mockImplementation(jest.fn());
+      </div>);
 });
 
 afterEach(() => {
-  jest.restoreAllMocks();
+  fbSelectSpy.mockRestore();
 });
 
 describe("<PinNumberDropdown />", () => {

@@ -1,5 +1,3 @@
-jest.unmock("../crud");
-
 let mockPost = Promise.resolve({ data: { id: 1 } });
 
 import * as crud from "../crud";

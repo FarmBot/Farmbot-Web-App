@@ -1,5 +1,3 @@
-jest.mock("../auto_sync_handle_inbound", () => ({ handleInbound: jest.fn() }));
-
 import {
   dispatchNetworkUp, dispatchNetworkDown, dispatchQosStart,
   networkUptimeThrottleStats,
@@ -7,20 +5,27 @@ import {
 import { GetState } from "../../redux/interfaces";
 import { autoSync, routeMqttData } from "../auto_sync";
 import { handleInbound } from "../auto_sync_handle_inbound";
+import * as autoSyncHandleInboundModule from "../auto_sync_handle_inbound";
 import { store } from "../../redux/store";
 import { Actions } from "../../constants";
 
 const NOW = new Date();
 const SHORT_TIME_LATER = new Date(NOW.getTime() + 500).getTime();
 const LONGER_TIME_LATER = new Date(NOW.getTime() + 5000).getTime();
+let handleInboundSpy: jest.SpyInstance;
 const resetStats = () => {
   networkUptimeThrottleStats["user.api"] = 0;
   networkUptimeThrottleStats["user.mqtt"] = 0;
   networkUptimeThrottleStats["bot.mqtt"] = 0;
 };
 
-afterAll(() => {
-  jest.unmock("../auto_sync_handle_inbound");
+beforeEach(() => {
+  handleInboundSpy = jest.spyOn(autoSyncHandleInboundModule, "handleInbound")
+    .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  handleInboundSpy.mockRestore();
 });
 describe("dispatchNetworkUp", () => {
   beforeEach(() => {

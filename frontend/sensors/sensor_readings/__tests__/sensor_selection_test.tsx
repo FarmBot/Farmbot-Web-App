@@ -3,20 +3,27 @@ import { render, fireEvent } from "@testing-library/react";
 import { SensorSelection } from "../sensor_selection";
 import { fakeSensor } from "../../../__test_support__/fake_state/resources";
 import { SensorSelectionProps } from "../interfaces";
+import * as ui from "../../../ui";
 
-jest.mock("../../../ui", () => ({
-  ...jest.requireActual("../../../ui"),
-  FBSelect: (props: {
-    selectedItem?: { label?: string };
-    list?: { value: string }[];
-    onChange: (ddi: { label: string; value: string }) => void;
-  }) =>
-    <button className="fb-select-mock"
-      onClick={() =>
-        props.onChange({ label: "", value: props.list?.[0]?.value ?? "" })}>
-      {props.selectedItem?.label}
-    </button>,
-}));
+let fbSelectSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation((props: {
+      selectedItem?: { label?: string };
+      list?: { value: string }[];
+      onChange: (ddi: { label: string; value: string }) => void;
+    }) =>
+      <button className="fb-select-mock"
+        onClick={() =>
+          props.onChange({ label: "", value: props.list?.[0]?.value ?? "" })}>
+        {props.selectedItem?.label}
+      </button>);
+});
+
+afterEach(() => {
+  fbSelectSpy.mockRestore();
+});
 
 describe("<SensorSelection />", () => {
   const fakeProps = (): SensorSelectionProps => ({

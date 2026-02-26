@@ -18,10 +18,6 @@ beforeEach(() => {
     .mockImplementation(() => mockResponse);
 });
 
-afterEach(() => {
-  jest.restoreAllMocks();
-});
-
 describe("<FormField />", () => {
   const fakeProps = (): FormFieldProps => ({
     label: "My Label",
@@ -95,8 +91,8 @@ describe("<MustRegister />", () => {
   it("inputs username", () => {
     const p = fakeCreateAccountProps();
     render(<MustRegister {...p} />);
-    const input = screen.getAllByTestId("blurable-undefined")[1];
-    fireEvent.blur(input, { target: { value: "name" } });
+    const input = screen.getByLabelText("Name");
+    changeBlurableInputRTL(input, "name");
     expect(p.set).toHaveBeenCalledWith("regName", "name");
   });
 

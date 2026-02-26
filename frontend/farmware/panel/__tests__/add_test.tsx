@@ -1,5 +1,3 @@
-jest.mock("../../../api/crud", () => ({ initSave: jest.fn() }));
-
 import React from "react";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import {
@@ -8,12 +6,19 @@ import {
   mapStateToProps,
 } from "../add";
 import { initSave } from "../../../api/crud";
+import * as crud from "../../../api/crud";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { error } from "../../../toast/toast";
 import { Path } from "../../../internal_urls";
 
-afterAll(() => {
-  jest.unmock("../../../api/crud");
+let initSaveSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  initSaveSpy = jest.spyOn(crud, "initSave").mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  initSaveSpy.mockRestore();
 });
 describe("<DesignerFarmwareAdd />", () => {
   const fakeProps = (): DesignerFarmwareAddProps => ({

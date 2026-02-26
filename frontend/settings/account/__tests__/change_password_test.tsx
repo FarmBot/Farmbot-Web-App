@@ -1,16 +1,9 @@
 let mockPatch = () => Promise.resolve();
-jest.mock("axios", () => ({
-  patch: jest.fn(() => mockPatch()),
-}));
 
 interface MockRef {
   current: { querySelectorAll(): [{ value: string }] } | undefined;
 }
 let mockRef: MockRef = { current: { querySelectorAll: () => [{ value: "" }] } };
-jest.mock("react", () => ({
-  ...jest.requireActual("react"),
-  useRef: () => mockRef,
-}));
 
 import React from "react";
 import {
@@ -20,9 +13,20 @@ import { ChangePassword } from "../change_password";
 import { API } from "../../../api/api";
 import { error, success } from "../../../toast/toast";
 import axios from "axios";
+let axiosPatchSpy: jest.SpyInstance;
+let reactUseRefSpy: jest.SpyInstance;
 
 afterEach(() => {
+  axiosPatchSpy.mockRestore();
+  reactUseRefSpy.mockRestore();
   mockRef = { current: { querySelectorAll: () => [{ value: "" }] } };
+});
+
+beforeEach(() => {
+  axiosPatchSpy = jest.spyOn(axios, "patch")
+    .mockImplementation(() => mockPatch() as never);
+  reactUseRefSpy = jest.spyOn(React, "useRef")
+    .mockImplementation(() => mockRef as never);
 });
 
 const setFields = (
@@ -43,10 +47,6 @@ const setFields = (
   fireEvent.click(button);
 };
 
-afterAll(() => {
-  jest.unmock("axios");
-  jest.unmock("react");
-});
 describe("<ChangePassword />", () => {
   it("rejects new == old password case", () => {
     const { container } = render(<ChangePassword />);

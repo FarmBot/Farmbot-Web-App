@@ -34,18 +34,8 @@ let mockRefImpl = (): MockRef => ({ current: undefined });
 let refQueue: MockRef[] = [];
 let allRefs: MockRef[] = [];
 let allowImperativeHandle = true;
-jest.mock("react", () => ({
-  ...jest.requireActual("react"),
-  useRef: () => {
-    const nextRef = refQueue.shift() || mockRefImpl();
-    allRefs.push(nextRef);
-    return nextRef;
-  },
-  useImperativeHandle: (ref: unknown, init: Function) =>
-    allowImperativeHandle
-      ? jest.requireActual("react").useImperativeHandle(ref, init)
-      : undefined,
-}));
+let reactUseRefSpy: jest.SpyInstance;
+let reactUseImperativeHandleSpy: jest.SpyInstance;
 
 let getModeSpy: jest.SpyInstance;
 
@@ -75,10 +65,28 @@ const queueMeshRef = (override?: Partial<MockRef["current"]>) => {
 
 describe("<ThreeDPlantLabel />", () => {
   beforeEach(() => {
+    reactUseRefSpy = jest.spyOn(React, "useRef")
+      .mockImplementation(() => {
+        const nextRef = refQueue.shift() || mockRefImpl();
+        allRefs.push(nextRef);
+        return nextRef as never;
+      });
+    const actualUseImperativeHandle = jest.requireActual("react")
+      .useImperativeHandle as typeof React.useImperativeHandle;
+    reactUseImperativeHandleSpy = jest.spyOn(React, "useImperativeHandle")
+      .mockImplementation((ref, init, deps) =>
+        allowImperativeHandle
+          ? actualUseImperativeHandle(ref, init, deps)
+          : undefined);
     location.pathname = Path.mock(Path.designer());
     refQueue = [{ current: undefined }];
     allRefs = [];
     mockRefImpl = () => ({ current: undefined });
+  });
+
+  afterEach(() => {
+    reactUseRefSpy.mockRestore();
+    reactUseImperativeHandleSpy.mockRestore();
   });
 
   const fakeProps = (): ThreeDPlantLabelProps => {
@@ -117,8 +125,24 @@ describe("<ThreeDPlantLabel />", () => {
 
 describe("<ThreeDPlantSpread />", () => {
   beforeEach(() => {
+    reactUseRefSpy = jest.spyOn(React, "useRef")
+      .mockImplementation(() => {
+        const nextRef = refQueue.shift() || mockRefImpl();
+        allRefs.push(nextRef);
+        return nextRef as never;
+      });
+    const actualUseImperativeHandle = jest.requireActual("react")
+      .useImperativeHandle as typeof React.useImperativeHandle;
+    reactUseImperativeHandleSpy = jest.spyOn(React, "useImperativeHandle")
+      .mockImplementation((ref, init, deps) =>
+        allowImperativeHandle
+          ? actualUseImperativeHandle(ref, init, deps)
+          : undefined);
     location.pathname = Path.mock(Path.designer());
     (useFrame as jest.Mock).mockClear();
+    (useFrame as jest.Mock).mockImplementation((frameFn: Function) => frameFn({
+      camera: { quaternion: new Quaternion() },
+    }));
     refQueue = [];
     allRefs = [];
     getModeSpy = jest.spyOn(mapUtil, "getMode").mockReturnValue(Mode.none);
@@ -126,6 +150,8 @@ describe("<ThreeDPlantSpread />", () => {
   });
 
   afterEach(() => {
+    reactUseRefSpy.mockRestore();
+    reactUseImperativeHandleSpy.mockRestore();
     getModeSpy?.mockRestore();
   });
 
@@ -232,18 +258,11 @@ describe("<ThreeDPlantSpread />", () => {
   });
 
   it("handles missing mesh in layout effect", () => {
-    const actualReact = jest.requireActual("react");
-    const imperativeHandleSpy = jest
-      .spyOn(actualReact, "useImperativeHandle")
-      .mockImplementation(() => { });
-    const useRefSpy = jest
-      .spyOn(React, "useRef")
-      .mockImplementation(() => ({ current: undefined }));
+    reactUseImperativeHandleSpy.mockImplementation(() => undefined);
+    reactUseRefSpy.mockImplementation(() => ({ current: undefined }) as never);
     allowImperativeHandle = false;
     const p = fakeProps();
     render(<PlantSpreadInstances {...p} />);
-    imperativeHandleSpy.mockRestore();
-    useRefSpy.mockRestore();
     allowImperativeHandle = true;
     const meshRef = getMeshRef();
     expect(meshRef?.current).toBeUndefined();

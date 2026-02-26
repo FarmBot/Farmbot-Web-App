@@ -20,9 +20,6 @@ beforeEach(() => {
     .mockImplementation(jest.fn());
 });
 
-afterEach(() => {
-  jest.restoreAllMocks();
-});
 describe("<ThreeDGarden />", () => {
   const fakeProps = (): ThreeDGardenProps => ({
     config: clone(INITIAL),

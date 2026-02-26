@@ -1,20 +1,26 @@
 const mockEditStep = jest.fn();
-jest.mock("../../../api/crud", () => ({
-  editStep: mockEditStep
-}));
 
 import React from "react";
 import { fireEvent, render } from "@testing-library/react";
 import { TileOldMarkAs } from "../tile_old_mark_as";
 import { StepParams } from "../../interfaces";
 import { editStep } from "../../../api/crud";
+import * as crud from "../../../api/crud";
 import { SequenceBodyItem } from "farmbot";
 import { cloneDeep } from "lodash";
 import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 
-afterAll(() => {
-  jest.unmock("../../../api/crud");
+let editStepSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  editStepSpy = jest.spyOn(crud, "editStep")
+    .mockImplementation(mockEditStep);
 });
+
+afterEach(() => {
+  editStepSpy.mockRestore();
+});
+
 describe("<TileOldMarkAs />", () => {
   const currentStep = {
     kind: "resource_update",

@@ -1,5 +1,3 @@
-jest.unmock("../../config_storage/actions");
-
 import { fakeState } from "../../__test_support__/fake_state";
 import {
   buildResourceIndex,

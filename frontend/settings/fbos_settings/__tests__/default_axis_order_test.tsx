@@ -3,12 +3,16 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import { DefaultAxisOrder } from "../default_axis_order";
 import { DefaultAxisOrderProps } from "../interfaces";
 import * as deviceActions from "../../../devices/actions";
+import * as ui from "../../../ui";
 
-jest.mock("../../../ui", () => {
-  const actual = jest.requireActual("../../../ui");
-  return {
-    ...actual,
-    FBSelect: (props: {
+let updateConfigSpy: jest.SpyInstance;
+let fbSelectSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  updateConfigSpy = jest.spyOn(deviceActions, "updateConfig")
+    .mockImplementation(jest.fn());
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation((props: {
       selectedItem?: { label?: string },
       onChange: (ddi: { label: string, value: string }) => void,
     }) =>
@@ -18,19 +22,12 @@ jest.mock("../../../ui", () => {
           props.onChange({ label: "X and Y together", value: "xy,z;high" })}>
           mock-select
         </button>
-      </div>,
-  };
-});
-
-let updateConfigSpy: jest.SpyInstance;
-
-beforeEach(() => {
-  updateConfigSpy = jest.spyOn(deviceActions, "updateConfig")
-    .mockImplementation(jest.fn());
+      </div>);
 });
 
 afterEach(() => {
   updateConfigSpy.mockRestore();
+  fbSelectSpy.mockRestore();
 });
 
 describe("<DefaultAxisOrder />", () => {

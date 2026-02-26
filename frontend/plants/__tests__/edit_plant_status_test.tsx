@@ -1,39 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-jest.mock("../../ui", () => {
-  const React = require("react");
-  const actual = jest.requireActual("../../ui");
-  return {
-    ...actual,
-    FBSelect: (props: any) => {
-      const value = props.selectedItem ? String(props.selectedItem.value) : "";
-      return <select
-        className={"mock-fb-select"}
-        value={value}
-        onChange={e => {
-          const nextValue = e.currentTarget.value;
-          const selected = nextValue === ""
-            ? props.list.find((item: any) => item.isNull)
-            || props.list.find((item: any) => String(item.value) === "")
-            : props.list.find((item: any) => String(item.value) === nextValue);
-          selected && props.onChange(selected);
-        }}>
-        <option value={""} />
-        {props.list.map((item: any, index: number) =>
-          <option key={`${item.value}-${index}`} value={String(item.value)}>
-            {item.label}
-          </option>)}
-      </select>;
-    },
-    BlurableInput: (props: any) => <input
-      className={"mock-blurable-input"}
-      defaultValue={props.value}
-      onBlur={e => props.onCommit(e)} />,
-    ColorPicker: (props: any) => <button
-      className={"mock-color-picker"}
-      onClick={() => props.onChange("green")} />,
-  };
-});
-
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { EditPlantStatusProps } from "../plant_panel";
@@ -67,15 +32,52 @@ import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { Actions } from "../../constants";
 import { Path } from "../../internal_urls";
 import { CurveType } from "../../curves/templates";
+import * as ui from "../../ui";
+
+let fbSelectSpy: jest.SpyInstance;
+let blurableInputSpy: jest.SpyInstance;
+let colorPickerSpy: jest.SpyInstance;
 
 beforeEach(() => {
   jest.clearAllMocks();
   jest.spyOn(crud, "edit").mockImplementation(jest.fn());
   jest.spyOn(crud, "save").mockImplementation(jest.fn());
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation((props: any) => {
+      const value = props.selectedItem ? String(props.selectedItem.value) : "";
+      return <select
+        className={"mock-fb-select"}
+        value={value}
+        onChange={e => {
+          const nextValue = e.currentTarget.value;
+          const selected = nextValue === ""
+            ? props.list.find((item: any) => item.isNull)
+            || props.list.find((item: any) => String(item.value) === "")
+            : props.list.find((item: any) => String(item.value) === nextValue);
+          selected && props.onChange(selected);
+        }}>
+        <option value={""} />
+        {props.list.map((item: any, index: number) =>
+          <option key={`${item.value}-${index}`} value={String(item.value)}>
+            {item.label}
+          </option>)}
+      </select>;
+    });
+  blurableInputSpy = jest.spyOn(ui, "BlurableInput")
+    .mockImplementation((props: any) => <input
+      className={"mock-blurable-input"}
+      defaultValue={props.value}
+      onBlur={e => props.onCommit(e)} />);
+  colorPickerSpy = jest.spyOn(ui, "ColorPicker")
+    .mockImplementation((props: any) => <button
+      className={"mock-color-picker"}
+      onClick={() => props.onChange("green")} />);
 });
 
 afterEach(() => {
-  jest.restoreAllMocks();
+  fbSelectSpy.mockRestore();
+  blurableInputSpy.mockRestore();
+  colorPickerSpy.mockRestore();
 });
 
 describe("<EditPlantStatus />", () => {
@@ -471,8 +473,4 @@ describe("<EditWeedStatus />", () => {
       { target: { value: "removed" } });
     expect(p.updateWeed).toHaveBeenCalledWith({ plant_stage: "removed" });
   });
-});
-
-afterAll(() => {
-  jest.unmock("../../ui");
 });

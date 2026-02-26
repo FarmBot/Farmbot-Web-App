@@ -1,7 +1,3 @@
-jest.mock("../../../api/crud", () => ({
-  batchInitDirty: jest.fn(),
-}));
-
 import React from "react";
 import {
   render, screen, fireEvent, waitFor, act,
@@ -11,16 +7,14 @@ import * as thunks from "../thunks";
 import { error, success } from "../../../toast/toast";
 import { PlantGridProps } from "../interfaces";
 import { batchInitDirty } from "../../../api/crud";
+import * as crud from "../../../api/crud";
 import { Actions } from "../../../constants";
 import { fakeDesignerState } from "../../../__test_support__/fake_designer_state";
-
-afterAll(() => {
-  jest.unmock("../../../api/crud");
-});
 
 describe("<PlantGrid />", () => {
   let saveGridSpy: jest.SpyInstance;
   let stashGridSpy: jest.SpyInstance;
+  let batchInitDirtySpy: jest.SpyInstance;
 
   beforeEach(() => {
     console.debug = jest.fn();
@@ -28,11 +22,14 @@ describe("<PlantGrid />", () => {
       .mockImplementation(() => "SAVE_GRID_MOCK" as never);
     stashGridSpy = jest.spyOn(thunks, "stashGrid")
       .mockImplementation(() => "STASH_GRID_MOCK" as never);
+    batchInitDirtySpy = jest.spyOn(crud, "batchInitDirty")
+      .mockImplementation(jest.fn());
   });
 
   afterEach(() => {
     saveGridSpy.mockRestore();
     stashGridSpy.mockRestore();
+    batchInitDirtySpy.mockRestore();
   });
 
   const fakeProps = (): PlantGridProps => ({

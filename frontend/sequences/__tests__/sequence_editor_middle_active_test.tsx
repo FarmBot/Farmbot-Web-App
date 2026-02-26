@@ -18,6 +18,8 @@ import {
   SequenceSettingsMenuProps,
   SequenceShareMenuProps,
 } from "../interfaces";
+import * as ui from "../../ui";
+import * as blueprintCore from "@blueprintjs/core";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import * as crud from "../../api/crud";
@@ -47,60 +49,7 @@ import * as requestAutoGenerationModule from "../request_auto_generation";
 import { emptyState } from "../../resources/reducer";
 import { Path } from "../../internal_urls";
 import * as sequenceActions from "../actions";
-
-jest.mock("@blueprintjs/core", () => ({
-  ...jest.requireActual("@blueprintjs/core"),
-  Collapse: (props: { isOpen: boolean; children: React.ReactNode }) =>
-    props.isOpen ? <div>{props.children}</div> : <div />,
-}));
-
-jest.mock("../../ui", () => ({
-  ...jest.requireActual("../../ui"),
-  Popover: (props: {
-    className?: string;
-    target: React.ReactNode;
-    content?: React.ReactNode;
-  }) => <div className={props.className}>
-    {props.target}
-    {props.content}
-  </div>,
-  BlurableInput: (props: {
-    className?: string;
-    value?: string;
-    placeholder?: string;
-    onCommit?: (e: React.FocusEvent<HTMLInputElement>) => void;
-  }) => <input
-    className={props.className}
-    defaultValue={props.value}
-    placeholder={props.placeholder}
-    onBlur={e => props.onCommit?.(e)} />,
-  ToggleButton: (props: {
-    className?: string;
-    toggleAction: () => void;
-  }) => <button className={props.className} onClick={props.toggleAction} />,
-  FBSelect: (props: {
-    selectedItem?: { label: string };
-    list?: { label: string; value: number }[];
-    onChange?: (ddi: { label: string; value: number }) => void;
-  }) => <button
-    className={"fb-select-mock"}
-    onClick={e => {
-      e.stopPropagation();
-      props.list?.[0] && props.onChange?.(props.list[0]);
-    }}>
-    {props.selectedItem?.label}
-  </button>,
-  ColorPickerCluster: (props: { onChange: (color: string) => void }) =>
-    <button
-      className={"color-picker-mock"}
-      onClick={() => props.onChange("blue")} />,
-}));
-
-jest.mock("../step_button_cluster", () => ({
-  StepButtonCluster: (props: { close: () => void }) =>
-    <button className={"step-button-cluster-close"}
-      onClick={props.close} />,
-}));
+import * as stepButtonClusterModule from "../step_button_cluster";
 
 let spliceSpy: jest.SpyInstance;
 let moveSpy: jest.SpyInstance;
@@ -126,8 +75,57 @@ let pinSequenceToggleSpy: jest.SpyInstance;
 let publishSequenceSpy: jest.SpyInstance;
 let unpublishSequenceSpy: jest.SpyInstance;
 let upgradeSequenceSpy: jest.SpyInstance;
+let collapseSpy: jest.SpyInstance;
+let popoverSpy: jest.SpyInstance;
+let blurableInputSpy: jest.SpyInstance;
+let toggleButtonSpy: jest.SpyInstance;
+let fbSelectSpy: jest.SpyInstance;
+let colorPickerClusterSpy: jest.SpyInstance;
 
 beforeEach(() => {
+  collapseSpy = jest.spyOn(blueprintCore, "Collapse")
+    .mockImplementation((props: { isOpen: boolean; children: React.ReactNode }) =>
+      props.isOpen ? <div>{props.children}</div> : <div />);
+  popoverSpy = jest.spyOn(ui, "Popover")
+    .mockImplementation((props: {
+      className?: string;
+      target: React.ReactNode;
+      content?: React.ReactNode;
+    }) => <div className={props.className}>{props.target}{props.content}</div>);
+  blurableInputSpy = jest.spyOn(ui, "BlurableInput")
+    .mockImplementation((props: {
+      className?: string;
+      value?: string;
+      placeholder?: string;
+      onCommit?: (e: React.FocusEvent<HTMLInputElement>) => void;
+    }) => <input
+        className={props.className}
+        defaultValue={props.value}
+        placeholder={props.placeholder}
+        onBlur={e => props.onCommit?.(e)} />);
+  toggleButtonSpy = jest.spyOn(ui, "ToggleButton")
+    .mockImplementation((props: {
+      className?: string;
+      toggleAction: () => void;
+    }) => <button className={props.className} onClick={props.toggleAction} />);
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation((props: {
+      selectedItem?: { label: string };
+      list?: { label: string; value: number }[];
+      onChange?: (ddi: { label: string; value: number }) => void;
+    }) => <button
+      className={"fb-select-mock"}
+      onClick={e => {
+        e.stopPropagation();
+        props.list?.[0] && props.onChange?.(props.list[0]);
+      }}>
+        {props.selectedItem?.label}
+      </button>);
+  colorPickerClusterSpy = jest.spyOn(ui, "ColorPickerCluster")
+    .mockImplementation((props: { onChange: (color: string) => void }) =>
+      <button
+        className={"color-picker-mock"}
+        onClick={() => props.onChange("blue")} />);
   spliceSpy = jest.spyOn(stepTiles, "splice").mockImplementation(jest.fn());
   moveSpy = jest.spyOn(stepTiles, "move").mockImplementation(jest.fn());
   renderCeleryNodeSpy = jest.spyOn(stepTiles, "renderCeleryNode")
@@ -203,10 +201,12 @@ afterEach(() => {
   publishSequenceSpy.mockRestore();
   unpublishSequenceSpy.mockRestore();
   upgradeSequenceSpy.mockRestore();
-});
-
-afterAll(() => {
-  jest.unmock("../step_button_cluster");
+  collapseSpy.mockRestore();
+  popoverSpy.mockRestore();
+  blurableInputSpy.mockRestore();
+  toggleButtonSpy.mockRestore();
+  fbSelectSpy.mockRestore();
+  colorPickerClusterSpy.mockRestore();
 });
 
 describe("<SequenceEditorMiddleActive />", () => {
@@ -825,9 +825,24 @@ describe("<SequenceName />", () => {
 });
 
 describe("<AddCommandButton />", () => {
-  const getAddCommandButton = async () =>
-    (await import(`../sequence_editor_middle_active.tsx?m=${Math.random()}`))
+  let stepButtonClusterSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    stepButtonClusterSpy =
+      jest.spyOn(stepButtonClusterModule, "StepButtonCluster")
+        .mockImplementation((props: { close: () => void }) =>
+          <button className={"step-button-cluster-close"}
+            onClick={props.close} /> as never);
+  });
+
+  afterEach(() => {
+    stepButtonClusterSpy.mockRestore();
+  });
+
+  const getAddCommandButton = async () => {
+    return (await import(`../sequence_editor_middle_active.tsx?m=${Math.random()}`))
       .AddCommandButton;
+  };
 
   const fakeProps = (): AddCommandButtonProps => ({
     dispatch: jest.fn(),
@@ -1055,7 +1070,6 @@ const restoreModule = (modulePath: string) => {
       // Some exports may be readonly in this runtime.
     }
   });
-  jest.unmock(modulePath);
 };
 
 afterAll(() => {
@@ -1068,8 +1082,4 @@ afterAll(() => {
   restoreModule("../panel/preview_support");
   restoreModule("../request_auto_generation");
   restoreModule("../../ui/popover");
-});
-
-afterAll(() => {
-  jest.unmock("../../ui");
 });

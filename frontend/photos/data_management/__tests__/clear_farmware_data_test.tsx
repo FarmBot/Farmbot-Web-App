@@ -1,18 +1,23 @@
 let mockDestroyAllPromise: Promise<void> =
   Promise.reject("error").catch(() => { });
-jest.mock("../../../api/crud", () => ({
-  destroyAll: jest.fn(() => mockDestroyAllPromise)
-}));
 
 import React from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { ClearFarmwareData } from "../clear_farmware_data";
 import { destroyAll } from "../../../api/crud";
+import * as crud from "../../../api/crud";
 import { success, error } from "../../../toast/toast";
 import { ClearFarmwareDataProps } from "../interfaces";
 
-afterAll(() => {
-  jest.unmock("../../../api/crud");
+let destroyAllSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  destroyAllSpy = jest.spyOn(crud, "destroyAll")
+    .mockImplementation(jest.fn(() => mockDestroyAllPromise) as never);
+});
+
+afterEach(() => {
+  destroyAllSpy.mockRestore();
 });
 describe("<ClearFarmwareData />", () => {
   const fakeProps = (): ClearFarmwareDataProps => ({

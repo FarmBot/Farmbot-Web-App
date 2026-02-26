@@ -1,17 +1,21 @@
-jest.mock("../../../../api/crud", () => ({ overwrite: jest.fn() }));
-
 import React from "react";
 import { render } from "@testing-library/react";
 import { If_ } from "../if";
 import { If } from "farmbot";
-import { overwrite } from "../../../../api/crud";
+import * as crud from "../../../../api/crud";
 import { StepParams } from "../../../interfaces";
 import {
   fakeStepParams,
 } from "../../../../__test_support__/fake_sequence_step_data";
 
-afterAll(() => {
-  jest.unmock("../../../../api/crud");
+let overwriteSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  overwriteSpy = jest.spyOn(crud, "overwrite").mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  overwriteSpy.mockRestore();
 });
 describe("<If_/>", () => {
   function fakeProps(): StepParams<If> {
@@ -52,7 +56,7 @@ describe("<If_/>", () => {
     operatorInput.props.onChange({
       label: "is not", value: "not"
     });
-    expect(overwrite).toHaveBeenCalledWith(expect.any(Object),
+    expect(overwriteSpy).toHaveBeenCalledWith(expect.any(Object),
       expect.objectContaining({
         body: [{ kind: "_if", args: expect.objectContaining({ op: "not" }) }]
       }));

@@ -1,7 +1,4 @@
 const mockEditStep = jest.fn();
-jest.mock("../../../../api/crud", () => ({
-  editStep: mockEditStep
-}));
 
 import { WritePin } from "farmbot";
 import {
@@ -14,14 +11,19 @@ import {
   fakeStepParams,
 } from "../../../../__test_support__/fake_sequence_step_data";
 import { Slider } from "@blueprintjs/core";
+import * as crud from "../../../../api/crud";
+
+let editStepSpy: jest.SpyInstance;
 
 beforeEach(() => {
   jest.clearAllMocks();
   mockEditStep.mockClear();
+  editStepSpy = jest.spyOn(crud, "editStep")
+    .mockImplementation(mockEditStep);
 });
 
-afterAll(() => {
-  jest.unmock("../../../../api/crud");
+afterEach(() => {
+  editStepSpy.mockRestore();
 });
 
 describe("<PinValueField />", () => {

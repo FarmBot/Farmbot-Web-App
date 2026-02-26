@@ -18,12 +18,17 @@ import {
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import * as deviceActions from "../../../devices/actions";
 import { FirmwareHardware } from "farmbot";
+import * as ui from "../../../ui";
 
-jest.mock("../../../ui", () => {
-  const actual = jest.requireActual("../../../ui");
-  return {
-    ...actual,
-    FBSelect: (props: {
+let updateConfigSpy: jest.SpyInstance;
+let confirmSpy: jest.SpyInstance | undefined;
+let fbSelectSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  updateConfigSpy = jest.spyOn(deviceActions, "updateConfig")
+    .mockImplementation(jest.fn());
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation((props: {
       list: Array<{ label: string, value: number | string }>,
       selectedItem?: { label: string, value: number | string },
       onChange: (ddi: { label: string, value: number | string }) => void,
@@ -45,22 +50,14 @@ jest.mock("../../../ui", () => {
           onClick={() => props.onChange({ label: "stable", value: "stable" })}>
           select-stable
         </button>
-      </div>,
-  };
-});
-
-let updateConfigSpy: jest.SpyInstance;
-let confirmSpy: jest.SpyInstance | undefined;
-
-beforeEach(() => {
-  updateConfigSpy = jest.spyOn(deviceActions, "updateConfig")
-    .mockImplementation(jest.fn());
+      </div>);
 });
 
 afterEach(() => {
   confirmSpy?.mockRestore();
   confirmSpy = undefined;
   updateConfigSpy.mockRestore();
+  fbSelectSpy.mockRestore();
 });
 
 describe("<FbosDetails />", () => {

@@ -1,5 +1,3 @@
-jest.mock("../../../../api/crud", () => ({ overwrite: jest.fn() }));
-
 import {
   buildResourceIndex,
 } from "../../../../__test_support__/resource_index_builder";
@@ -9,10 +7,16 @@ import { cloneDeep } from "lodash";
 import {
   fakeSequence, fakePeripheral,
 } from "../../../../__test_support__/fake_state/resources";
-import { overwrite } from "../../../../api/crud";
+import * as crud from "../../../../api/crud";
 
-afterAll(() => {
-  jest.unmock("../../../../api/crud");
+let overwriteSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  overwriteSpy = jest.spyOn(crud, "overwrite").mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  overwriteSpy.mockRestore();
 });
 describe("updateLhs()", () => {
   const fakeProps = (): LhsUpdateProps => ({
@@ -47,7 +51,7 @@ describe("updateLhs()", () => {
       kind: "named_pin", args: { pin_type: "Peripheral", pin_id: 1 },
     };
     expectedSequence.body = [p.currentStep];
-    expect(overwrite).toHaveBeenCalledWith(p.currentSequence, expectedSequence);
+    expect(overwriteSpy).toHaveBeenCalledWith(p.currentSequence, expectedSequence);
   });
 
   it("handles pins", () => {
@@ -60,7 +64,7 @@ describe("updateLhs()", () => {
     const expectedSequence = cloneDeep(p.currentSequence.body);
     p.currentStep.args.lhs = "pin5";
     expectedSequence.body = [p.currentStep];
-    expect(overwrite).toHaveBeenCalledWith(p.currentSequence, expectedSequence);
+    expect(overwriteSpy).toHaveBeenCalledWith(p.currentSequence, expectedSequence);
   });
 
   it("handles positions", () => {
@@ -73,7 +77,7 @@ describe("updateLhs()", () => {
     const expectedSequence = cloneDeep(p.currentSequence.body);
     p.currentStep.args.lhs = "x";
     expectedSequence.body = [p.currentStep];
-    expect(overwrite).toHaveBeenCalledWith(p.currentSequence, expectedSequence);
+    expect(overwriteSpy).toHaveBeenCalledWith(p.currentSequence, expectedSequence);
   });
 
   it("handles malformed data: bad heading id", () => {

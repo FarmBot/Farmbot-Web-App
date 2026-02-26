@@ -1,15 +1,20 @@
-jest.mock("../../../api/crud", () => ({ initSave: jest.fn() }));
-
 import React from "react";
 import { fireEvent, render } from "@testing-library/react";
 import {
   StockPinBindingsButton, StockPinBindingsButtonProps,
 } from "../tagged_pin_binding_init";
 import { initSave } from "../../../api/crud";
+import * as crud from "../../../api/crud";
 import { stockPinBindings } from "../list_and_label_support";
 
-afterAll(() => {
-  jest.unmock("../../../api/crud");
+let initSaveSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  initSaveSpy = jest.spyOn(crud, "initSave").mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  initSaveSpy.mockRestore();
 });
 describe("<StockPinBindingsButton />", () => {
   const fakeProps = (): StockPinBindingsButtonProps => ({

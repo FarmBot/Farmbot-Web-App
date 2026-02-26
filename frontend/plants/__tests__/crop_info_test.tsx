@@ -1,35 +1,3 @@
-jest.mock("../../ui", () => {
-  const React = require("react");
-  const actual = jest.requireActual("../../ui");
-  return {
-    ...actual,
-    FBSelect: (props: {
-      list: { label: string; value: string }[];
-      selectedItem?: { label: string; value: string };
-      onChange: (item: { label: string; value: string }) => void;
-    }) => <select
-      value={props.selectedItem?.value || ""}
-      onChange={e => {
-        const item = props.list.find(
-          item => item.value == e.currentTarget.value,
-        );
-        item && props.onChange(item);
-      }}>
-      <option value={""} />
-      {props.list.map(item =>
-        <option key={item.value} value={item.value}>
-          {item.label}
-        </option>)}
-    </select>,
-    BlurableInput: (props: {
-      value: string | number;
-      onCommit: (e: React.SyntheticEvent<HTMLInputElement>) => void;
-    }) => <input
-      value={props.value}
-      onChange={e => props.onCommit(e as React.SyntheticEvent<HTMLInputElement>)} />,
-  };
-});
-
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import {
@@ -51,11 +19,14 @@ import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
 import { CurveType } from "../../curves/templates";
 import { changeCurve, findCurve } from "../curve_info";
 import { mockDispatch } from "../../__test_support__/fake_dispatch";
+import * as ui from "../../ui";
 
 let initSaveSpy: jest.SpyInstance;
 let initSpy: jest.SpyInstance;
 let unselectPlantSpy: jest.SpyInstance;
 let setDragIconSpy: jest.SpyInstance;
+let fbSelectSpy: jest.SpyInstance;
+let blurableInputSpy: jest.SpyInstance;
 
 beforeEach(() => {
   initSaveSpy = jest.spyOn(crud, "initSave").mockImplementation(jest.fn());
@@ -64,6 +35,33 @@ beforeEach(() => {
     .mockImplementation(jest.fn(() => jest.fn()));
   setDragIconSpy = jest.spyOn(mapActions, "setDragIcon")
     .mockImplementation(jest.fn());
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation((props: {
+      list: { label: string; value: string }[];
+      selectedItem?: { label: string; value: string };
+      onChange: (item: { label: string; value: string }) => void;
+    }) => <select
+      value={props.selectedItem?.value || ""}
+      onChange={e => {
+        const item = props.list.find(
+          item => item.value == e.currentTarget.value,
+        );
+        item && props.onChange(item);
+      }}>
+      <option value={""} />
+      {props.list.map(item =>
+        <option key={item.value} value={item.value}>
+          {item.label}
+        </option>)}
+    </select>);
+  blurableInputSpy = jest.spyOn(ui, "BlurableInput")
+    .mockImplementation((props: {
+      value: string | number;
+      onCommit: (e: React.SyntheticEvent<HTMLInputElement>) => void;
+    }) => <input
+      value={props.value}
+      onChange={e =>
+        props.onCommit(e as React.SyntheticEvent<HTMLInputElement>)} />);
 });
 
 afterEach(() => {
@@ -71,6 +69,8 @@ afterEach(() => {
   initSpy.mockRestore();
   unselectPlantSpy.mockRestore();
   setDragIconSpy.mockRestore();
+  fbSelectSpy.mockRestore();
+  blurableInputSpy.mockRestore();
 });
 
 describe("<CropInfo />", () => {
@@ -343,8 +343,4 @@ describe("changeCurve()", () => {
       type: Actions.SET_CROP_WATER_CURVE_ID, payload: 1,
     });
   });
-});
-
-afterAll(() => {
-  jest.unmock("../../ui");
 });

@@ -25,10 +25,6 @@ describe("<MapSizeInputs />", () => {
       .mockImplementation(jest.fn());
   });
 
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
   const fakeProps = (config: WebAppConfig): MapSizeInputsProps => ({
     getConfigValue: key => config[key],
     dispatch: jest.fn(),

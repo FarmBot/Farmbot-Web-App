@@ -1,9 +1,21 @@
-jest.mock("../../ui", () => {
-  const React = require("react");
-  const actual = jest.requireActual("../../ui");
-  return {
-    ...actual,
-    FBSelect: (props: {
+import React from "react";
+import { CurveInfo } from "../curve_info";
+import { fireEvent, render, screen } from "@testing-library/react";
+import {
+  fakeCurve, fakePlant,
+} from "../../__test_support__/fake_state/resources";
+import { fakeBotSize } from "../../__test_support__/fake_bot_data";
+import { CurveInfoProps } from "../../curves/interfaces";
+import { CurveType } from "../../curves/templates";
+import { formatPlantInfo } from "../map_state_to_props";
+import { Path } from "../../internal_urls";
+import * as ui from "../../ui";
+
+let fbSelectSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation((props: {
       selectedItem?: { label: string };
       onChange: (item: {
         label: string;
@@ -27,21 +39,12 @@ jest.mock("../../ui", () => {
           value: "",
           isNull: true,
         })} />
-    </div>,
-  };
+    </div>);
 });
 
-import React from "react";
-import { CurveInfo } from "../curve_info";
-import { fireEvent, render, screen } from "@testing-library/react";
-import {
-  fakeCurve, fakePlant,
-} from "../../__test_support__/fake_state/resources";
-import { fakeBotSize } from "../../__test_support__/fake_bot_data";
-import { CurveInfoProps } from "../../curves/interfaces";
-import { CurveType } from "../../curves/templates";
-import { formatPlantInfo } from "../map_state_to_props";
-import { Path } from "../../internal_urls";
+afterEach(() => {
+  fbSelectSpy.mockRestore();
+});
 
 describe("<CurveInfo />", () => {
   const fakeProps = (): CurveInfoProps => ({
@@ -114,8 +117,4 @@ describe("<CurveInfo />", () => {
     fireEvent.click(container.querySelector(".remove-curve") as Element);
     expect(p.onChange).toHaveBeenCalledWith(undefined, CurveType.water);
   });
-});
-
-afterAll(() => {
-  jest.unmock("../../ui");
 });

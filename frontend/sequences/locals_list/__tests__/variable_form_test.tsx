@@ -22,49 +22,61 @@ import { fakeVariableNameSet } from "../../../__test_support__/fake_variables";
 import { error } from "../../../toast/toast";
 import { changeBlurableInput } from "../../../__test_support__/helpers";
 import { SequenceMeta } from "../../../resources/sequence_meta";
+import * as ui from "../../../ui";
 
 let mockSelectChangeArg: unknown;
 let mockKeyCallback = { key: "", buffer: "" };
+let fbSelectSpy: jest.SpyInstance;
+let blurableInputSpy: jest.SpyInstance;
+let helpSpy: jest.SpyInstance;
 
-jest.mock("../../../ui", () => ({
-  ...jest.requireActual("../../../ui"),
-  FBSelect: (props: {
-    list: unknown[];
-    selectedItem: unknown;
-    onChange: (ddi: unknown) => void;
-  }) => <button
-    className={"fb-select-mock"}
-    data-list={JSON.stringify(props.list)}
-    data-selected-item={JSON.stringify(props.selectedItem)}
-    onClick={() => props.onChange(mockSelectChangeArg)} />,
-  BlurableInput: (props: {
-    className?: string;
-    value: string | number;
-    disabled?: boolean;
-    onCommit?: (e: React.SyntheticEvent<HTMLInputElement>) => void;
-    keyCallback?: (key: string, buffer: string) => void;
-  }) => {
-    const [value, setValue] = React.useState(String(props.value));
-    React.useEffect(() => setValue(String(props.value)), [props.value]);
-    return <div>
-      <input
-        className={props.className}
-        disabled={props.disabled}
-        value={value}
-        onChange={e => setValue(e.currentTarget.value)}
-        onBlur={e => props.onCommit?.({
-          ...e, currentTarget: {
-            ...e.currentTarget, value
-          }
-        } as React.SyntheticEvent<HTMLInputElement>)} />
-      <button
-        className={"blurable-key-callback"}
-        onClick={() =>
-          props.keyCallback?.(mockKeyCallback.key, mockKeyCallback.buffer)} />
-    </div>;
-  },
-  Help: () => <div className={"help-mock"} />,
-}));
+beforeEach(() => {
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation((props: {
+      list: unknown[];
+      selectedItem: unknown;
+      onChange: (ddi: unknown) => void;
+    }) => <button
+      className={"fb-select-mock"}
+      data-list={JSON.stringify(props.list)}
+      data-selected-item={JSON.stringify(props.selectedItem)}
+      onClick={() => props.onChange(mockSelectChangeArg)} />);
+  blurableInputSpy = jest.spyOn(ui, "BlurableInput")
+    .mockImplementation((props: {
+      className?: string;
+      value: string | number;
+      disabled?: boolean;
+      onCommit?: (e: React.SyntheticEvent<HTMLInputElement>) => void;
+      keyCallback?: (key: string, buffer: string) => void;
+    }) => {
+      const [value, setValue] = React.useState(String(props.value));
+      React.useEffect(() => setValue(String(props.value)), [props.value]);
+      return <div>
+        <input
+          className={props.className}
+          disabled={props.disabled}
+          value={value}
+          onChange={e => setValue(e.currentTarget.value)}
+          onBlur={e => props.onCommit?.({
+            ...e, currentTarget: {
+              ...e.currentTarget, value
+            }
+          } as React.SyntheticEvent<HTMLInputElement>)} />
+        <button
+          className={"blurable-key-callback"}
+          onClick={() =>
+            props.keyCallback?.(mockKeyCallback.key, mockKeyCallback.buffer)} />
+      </div>;
+    });
+  helpSpy = jest.spyOn(ui, "Help")
+    .mockImplementation(() => <div className={"help-mock"} />);
+});
+
+afterEach(() => {
+  fbSelectSpy.mockRestore();
+  blurableInputSpy.mockRestore();
+  helpSpy.mockRestore();
+});
 
 const listAt = (container: ParentNode, index = 0) =>
   JSON.parse(

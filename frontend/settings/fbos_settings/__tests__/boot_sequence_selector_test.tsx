@@ -12,15 +12,20 @@ import {
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import * as crud from "../../../api/crud";
+import * as ui from "../../../ui";
 
-jest.mock("../../../ui", () => {
-  const actual = jest.requireActual("../../../ui");
-  return {
-    ...actual,
-    FBSelect: (props: {
-      list: Array<{ label: string, value: number | string }>,
-      selectedItem: unknown,
-      onChange: (item: { label: string, value: number | string }) => void,
+let editSpy: jest.SpyInstance;
+let saveSpy: jest.SpyInstance;
+let fbSelectSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation((props: {
+      list: Array<{ label: string, value: number | string }>;
+      selectedItem: unknown;
+      onChange: (item: { label: string, value: number | string }) => void;
     }) =>
       <div>
         <span data-testid="selected-item">
@@ -30,21 +35,13 @@ jest.mock("../../../ui", () => {
           props.onChange(props.list[0] || { label: "", value: "" })}>
           mock-select
         </button>
-      </div>,
-  };
-});
-
-let editSpy: jest.SpyInstance;
-let saveSpy: jest.SpyInstance;
-
-beforeEach(() => {
-  editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
-  saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+      </div>);
 });
 
 afterEach(() => {
   editSpy.mockRestore();
   saveSpy.mockRestore();
+  fbSelectSpy.mockRestore();
 });
 
 describe("sequence2ddi()", () => {

@@ -21,7 +21,6 @@ import { fakeMovementState } from "../../__test_support__/fake_bot_data";
 const originalConfirm = window.confirm;
 
 beforeEach(() => {
-  jest.restoreAllMocks();
   jest.clearAllMocks();
   jest.useRealTimers();
   window.confirm = originalConfirm;
@@ -37,7 +36,6 @@ beforeEach(() => {
 
 afterEach(() => {
   window.confirm = originalConfirm;
-  jest.restoreAllMocks();
 });
 
 describe("<AddToolSlot />", () => {

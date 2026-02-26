@@ -94,7 +94,6 @@ afterEach(() => {
   axiosGetSpy.mockRestore();
   editSpy.mockRestore();
   saveSpy.mockRestore();
-  jest.restoreAllMocks();
 });
 
 describe("sendRPC()", () => {

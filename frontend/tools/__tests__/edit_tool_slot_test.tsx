@@ -27,9 +27,6 @@ beforeEach(() => {
   jest.spyOn(toolGraphics, "ToolSlotSVG").mockImplementation(() => <div />);
 });
 
-afterEach(() => {
-  jest.restoreAllMocks();
-});
 describe("<EditToolSlot />", () => {
   const mountedWrappers: TestRenderer.ReactTestRenderer[] = [];
 

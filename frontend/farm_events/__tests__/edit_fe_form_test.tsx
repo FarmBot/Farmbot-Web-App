@@ -45,10 +45,6 @@ beforeEach(() => {
     .mockImplementation(() => mockTzMismatch);
 });
 
-afterEach(() => {
-  jest.restoreAllMocks();
-});
-
 describe("<EditFEForm />", () => {
   const fakeProps = (): EditFEProps => ({
     deviceTimezone: undefined,

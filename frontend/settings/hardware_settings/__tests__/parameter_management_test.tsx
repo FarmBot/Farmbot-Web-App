@@ -9,26 +9,12 @@ import { Content } from "../../../constants";
 import * as exportMenu from "../export_menu";
 import * as configStorageActions from "../../../config_storage/actions";
 import { BooleanSetting } from "../../../session_keys";
+import * as ui from "../../../ui";
+import * as toggleHighlightModified from "../../../photos/data_management/toggle_highlight_modified";
 
-jest.mock("../../../photos/data_management/toggle_highlight_modified", () => ({
-  ToggleHighlightModified: () => <div />,
-}));
-
-jest.mock("../../../ui", () => {
-  const actual = jest.requireActual("../../../ui");
-  return {
-    ...actual,
-    BlurableInput: (props: {
-      value?: string,
-      onCommit?: (e: React.SyntheticEvent<HTMLInputElement>) => void,
-    }) =>
-      <input
-        value={props.value || ""}
-        onChange={e => props.onCommit?.(e as never)} />,
-    ToggleButton: (props: { toggleAction: () => void }) =>
-      <button data-testid="toggle-button" onClick={props.toggleAction} />,
-  };
-});
+let blurableInputSpy: jest.SpyInstance;
+let toggleButtonSpy: jest.SpyInstance;
+let toggleHighlightModifiedSpy: jest.SpyInstance;
 
 beforeEach(() => {
   jest.spyOn(exportMenu, "importParameters")
@@ -41,10 +27,26 @@ beforeEach(() => {
     .mockImplementation(() => () => false);
   jest.spyOn(configStorageActions, "setWebAppConfigValue")
     .mockImplementation(jest.fn());
+  toggleHighlightModifiedSpy =
+    jest.spyOn(toggleHighlightModified, "ToggleHighlightModified")
+      .mockImplementation(() => <div />);
+  blurableInputSpy = jest.spyOn(ui, "BlurableInput")
+    .mockImplementation((props: {
+      value?: string,
+      onCommit?: (e: React.SyntheticEvent<HTMLInputElement>) => void,
+    }) =>
+      <input
+        value={props.value || ""}
+        onChange={e => props.onCommit?.(e as never)} />);
+  toggleButtonSpy = jest.spyOn(ui, "ToggleButton")
+    .mockImplementation((props: { toggleAction: () => void }) =>
+      <button data-testid="toggle-button" onClick={props.toggleAction} />);
 });
 
 afterEach(() => {
-  jest.restoreAllMocks();
+  blurableInputSpy.mockRestore();
+  toggleButtonSpy.mockRestore();
+  toggleHighlightModifiedSpy.mockRestore();
 });
 describe("<ParameterManagement />", () => {
   const fakeProps = (): ParameterManagementProps => ({
@@ -80,7 +82,7 @@ describe("<ParameterManagement />", () => {
     const p = fakeProps();
     p.settingsPanelState.parameter_management = true;
     render(<ParameterManagement {...p} />);
-    fireEvent.change(screen.getByRole("textbox"), { target: { value: "" } });
+    fireEvent.change(screen.getByRole("textbox", { hidden: true }), { target: { value: "" } });
     fireEvent.click(screen.getByTitle("IMPORT"));
     expect(confirm).toHaveBeenCalledWith(Content.PARAMETER_IMPORT_CONFIRM);
     expect(exportMenu.importParameters).toHaveBeenCalledWith("");
@@ -105,7 +107,7 @@ describe("<ParameterImport />", () => {
 
   it("updates", () => {
     render(<ParameterImport {...fakeProps()} />);
-    const input = screen.getByRole("textbox");
+    const input = screen.getByRole("textbox", { hidden: true }) as HTMLInputElement;
     expect(input.value).toEqual("");
     fireEvent.change(input, { target: { value: "{}" } });
     expect(input.value).toEqual("{}");

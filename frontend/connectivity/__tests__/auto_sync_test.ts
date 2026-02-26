@@ -1,6 +1,3 @@
-jest.unmock("../../api/crud");
-jest.unmock("../../api/crud.ts");
-
 import {
   decodeBinary,
   routeMqttData,
@@ -38,12 +35,7 @@ const payload = (): UpdateMqttData<TaggedSequence> => ({
 });
 
 beforeEach(() => {
-  jest.restoreAllMocks();
   jest.clearAllMocks();
-});
-
-afterEach(() => {
-  jest.restoreAllMocks();
 });
 
 describe("handleCreateOrUpdate", () => {

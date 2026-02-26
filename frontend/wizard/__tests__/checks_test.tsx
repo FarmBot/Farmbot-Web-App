@@ -130,7 +130,6 @@ const findNodeByType = (
 };
 
 beforeEach(() => {
-  jest.restoreAllMocks();
   jest.clearAllMocks();
   jest.useRealTimers();
   mockState = fakeState();
@@ -141,8 +140,10 @@ beforeEach(() => {
   (store as unknown as { dispatch: jest.Mock }).dispatch = jest.fn();
   editSpy = jest.spyOn(crud, "edit")
     .mockImplementation((resource: Record<string, unknown>, update: Record<string, unknown>) =>
-      ({ type: Actions.EDIT_RESOURCE,
-        payload: { resource, update } }) as never);
+      ({
+        type: Actions.EDIT_RESOURCE,
+        payload: { resource, update }
+      }) as never);
   saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
   initSaveSpy = jest.spyOn(crud, "initSave").mockImplementation(jest.fn());
   destroySpy = jest.spyOn(crud, "destroy").mockImplementation(jest.fn());
@@ -506,10 +507,12 @@ describe("<FirmwareHardwareSelection />", () => {
     p.resources = buildResourceIndex([config, device]).index;
     const dispatchState = { ...state, resources: { index: p.resources } as never };
     p.dispatch = mockDispatch(jest.fn(), () => dispatchState);
-    const fbSelectProps: Array<{ onChange: (ddi: {
-      label: string;
-      value: string;
-    }) => void }> = [];
+    const fbSelectProps: Array<{
+      onChange: (ddi: {
+        label: string;
+        value: string;
+      }) => void
+    }> = [];
     fbSelectSpy = jest.spyOn(ui, "FBSelect")
       .mockImplementation((props: {
         onChange: {
@@ -528,10 +531,12 @@ describe("<FirmwareHardwareSelection />", () => {
 
   it("seeds account", () => {
     const p = fakeProps();
-    const fbSelectProps: Array<{ onChange: (ddi: {
-      label: string;
-      value: string;
-    }) => void }> = [];
+    const fbSelectProps: Array<{
+      onChange: (ddi: {
+        label: string;
+        value: string;
+      }) => void
+    }> = [];
     fbSelectSpy = jest.spyOn(ui, "FBSelect")
       .mockImplementation((props: {
         onChange: {
@@ -575,10 +580,12 @@ describe("<FirmwareHardwareSelection />", () => {
     p.resources = buildResourceIndex([config, device]).index;
     const dispatchState = { ...state, resources: { index: p.resources } as never };
     p.dispatch = mockDispatch(jest.fn(), () => dispatchState);
-    const fbSelectProps: Array<{ onChange: (ddi: {
-      label: string;
-      value: string;
-    }) => void }> = [];
+    const fbSelectProps: Array<{
+      onChange: (ddi: {
+        label: string;
+        value: string;
+      }) => void
+    }> = [];
     fbSelectSpy = jest.spyOn(ui, "FBSelect")
       .mockImplementation((props: {
         onChange: {
@@ -618,10 +625,12 @@ describe("<RpiSelection />", () => {
     const state = fakeState();
     state.resources = p.resources;
     p.dispatch = jest.fn();
-    const fbSelectProps: Array<{ onChange: (ddi: {
-      label: string;
-      value: string;
-    }) => void }> = [];
+    const fbSelectProps: Array<{
+      onChange: (ddi: {
+        label: string;
+        value: string;
+      }) => void
+    }> = [];
     fbSelectSpy = jest.spyOn(ui, "FBSelect")
       .mockImplementation((props: {
         onChange: {

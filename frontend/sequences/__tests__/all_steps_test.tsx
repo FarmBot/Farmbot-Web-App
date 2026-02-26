@@ -5,22 +5,26 @@ import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { maybeTagStep, getStepTag } from "../../resources/sequence_tagging";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { emptyState } from "../../resources/reducer";
+import * as sequenceEditorMiddleActive from "../sequence_editor_middle_active";
+import * as stepTiles from "../step_tiles/index";
 
-jest.mock("../sequence_editor_middle_active", () => ({
-  AddCommandButton: () => <div className="add-command-button-mock" />,
-}));
-
-jest.mock("../step_tiles/index", () => ({
-  renderCeleryNode: (props: { currentStep: { kind: string } }) =>
-    <div className={`${props.currentStep.kind.replace(/_/g, "-")}-step`} />,
-}));
-
-afterAll(() => {
-  jest.unmock("../sequence_editor_middle_active");
-  jest.unmock("../step_tiles/index");
-});
+let addCommandButtonSpy: jest.SpyInstance;
+let renderCeleryNodeSpy: jest.SpyInstance;
 
 describe("<AllSteps />", () => {
+  beforeEach(() => {
+    addCommandButtonSpy = jest.spyOn(sequenceEditorMiddleActive, "AddCommandButton")
+      .mockImplementation(() => <div className="add-command-button-mock" />);
+    renderCeleryNodeSpy = jest.spyOn(stepTiles, "renderCeleryNode")
+      .mockImplementation((props: { currentStep: { kind: string } }) =>
+        <div className={`${props.currentStep.kind.replace(/_/g, "-")}-step`} />);
+  });
+
+  afterEach(() => {
+    addCommandButtonSpy.mockRestore();
+    renderCeleryNodeSpy.mockRestore();
+  });
+
   const fakeProps = (): AllStepsProps => ({
     sequence: fakeSequence(),
     sequences: [],

@@ -13,6 +13,7 @@
   },
   "scripts": {
     "test-slow": "bun test --bail && bun run coverage-html",
+    "test-iso": "bash scripts/test_isolated.sh",
     "test": "bun test",
     "coverage-html": "genhtml -q coverage_fe/lcov.info --output-directory coverage_fe",
     "graph-modules-dot": "bunx madge --dot ./frontend > module_graph.dot",

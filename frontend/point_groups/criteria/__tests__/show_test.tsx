@@ -1,33 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-jest.mock("../../../ui", () => {
-  const React = require("react");
-  const actual = jest.requireActual("../../../ui");
-  return {
-    ...actual,
-    FBSelect: (props: any) => {
-      const value = props.selectedItem ? String(props.selectedItem.value) : "";
-      return <select
-        className={"mock-fb-select"}
-        value={value}
-        onChange={e => {
-          const nextValue = e.currentTarget.value;
-          const selected = nextValue === ""
-            ? props.list.find((item: any) => item.isNull)
-            || props.list.find((item: any) => String(item.value) === "")
-            : props.list.find((item: any) =>
-              String(item.value) === nextValue);
-          props.onChange(selected || { label: "", value: nextValue });
-        }}>
-        <option value={""} />
-        {props.list.map((item: any, index: number) =>
-          <option key={`${item.value}-${index}`} value={String(item.value)}>
-            {item.label}
-          </option>)}
-      </select>;
-    },
-  };
-});
-
 import React from "react";
 import { render, fireEvent } from "@testing-library/react";
 import {
@@ -50,11 +21,13 @@ import {
 } from "../../../__test_support__/fake_state/resources";
 import { Actions } from "../../../constants";
 import * as criteriaEdit from "../edit";
+import * as ui from "../../../ui";
 
 let removeEqCriteriaValueSpy: jest.SpyInstance;
 let clearCriteriaFieldSpy: jest.SpyInstance;
 let editCriteriaSpy: jest.SpyInstance;
 let editGtLtCriteriaFieldSpy: jest.SpyInstance;
+let fbSelectSpy: jest.SpyInstance;
 
 beforeEach(() => {
   removeEqCriteriaValueSpy = jest.spyOn(criteriaEdit, "removeEqCriteriaValue")
@@ -65,10 +38,32 @@ beforeEach(() => {
     .mockImplementation(jest.fn());
   editGtLtCriteriaFieldSpy = jest.spyOn(criteriaEdit, "editGtLtCriteriaField")
     .mockImplementation(() => jest.fn());
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation((props: any) => {
+      const value = props.selectedItem ? String(props.selectedItem.value) : "";
+      return <select
+        className={"mock-fb-select"}
+        value={value}
+        onChange={e => {
+          const nextValue = e.currentTarget.value;
+          const selected = nextValue === ""
+            ? props.list.find((item: any) => item.isNull)
+            || props.list.find((item: any) => String(item.value) === "")
+            : props.list.find((item: any) =>
+              String(item.value) === nextValue);
+          props.onChange(selected || { label: "", value: nextValue });
+        }}>
+        <option value={""} />
+        {props.list.map((item: any, index: number) =>
+          <option key={`${item.value}-${index}`} value={String(item.value)}>
+            {item.label}
+          </option>)}
+      </select>;
+    });
 });
 
 afterEach(() => {
-  jest.restoreAllMocks();
+  fbSelectSpy.mockRestore();
 });
 
 describe("<EqCriteriaSelection<string> />", () => {

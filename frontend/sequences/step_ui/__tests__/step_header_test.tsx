@@ -1,31 +1,27 @@
-jest.mock("../../request_auto_generation", () => ({
-  requestAutoGeneration: jest.fn(),
-  PLACEHOLDER_PROMPTS: ["1", "2", "3"],
-  retrievePrompt: () => "",
-}));
-
 import React from "react";
 import { fireEvent, render } from "@testing-library/react";
 import { StepHeader, StepHeaderProps } from "../step_header";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { API } from "../../../api";
-import { requestAutoGeneration } from "../../request_auto_generation";
+import * as requestAutoGenerationModule from "../../request_auto_generation";
 import { emptyState } from "../../../resources/reducer";
 import axios from "axios";
 
 let postSpy: jest.SpyInstance;
+let requestAutoGenerationSpy: jest.SpyInstance;
 
 beforeEach(() => {
   postSpy = jest.spyOn(axios, "post")
     .mockImplementation(() => Promise.resolve({}) as never);
+  requestAutoGenerationSpy = jest.spyOn(
+    requestAutoGenerationModule,
+    "requestAutoGeneration",
+  ).mockImplementation(jest.fn());
 });
 
 afterEach(() => {
   postSpy.mockRestore();
-});
-
-afterAll(() => {
-  jest.unmock("../../request_auto_generation");
+  requestAutoGenerationSpy.mockRestore();
 });
 describe("<StepHeader />", () => {
   API.setBaseUrl("");
@@ -119,8 +115,8 @@ describe("<StepHeader />", () => {
     if (!button) { throw new Error("Expected prompt button"); }
     fireEvent.click(button);
     expect(instance.state.isProcessing).toEqual(true);
-    expect(requestAutoGeneration).toHaveBeenCalled();
-    const { mock } = requestAutoGeneration as jest.Mock;
+    expect(requestAutoGenerationSpy).toHaveBeenCalled();
+    const { mock } = requestAutoGenerationSpy;
     mock.calls[0][0].onUpdate("code");
     expect(p.setKey).toHaveBeenCalledWith("code");
     mock.calls[0][0].onSuccess("code");

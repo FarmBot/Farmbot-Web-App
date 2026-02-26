@@ -1,26 +1,24 @@
-jest.unmock("../dangerous_delete_widget");
-
 interface MockRef {
   current: { value: string } | undefined;
 }
 let mockRef: MockRef = { current: { value: "" } };
-jest.mock("react", () => ({
-  ...jest.requireActual("react"),
-  useRef: () => mockRef,
-}));
 
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { DangerousDeleteWidget } from "../dangerous_delete_widget";
 import { DangerousDeleteProps } from "../interfaces";
 
+let reactUseRefSpy: jest.SpyInstance;
+
 beforeEach(() => {
   jest.clearAllMocks();
   mockRef = { current: { value: "" } };
+  reactUseRefSpy = jest.spyOn(React, "useRef")
+    .mockImplementation(() => mockRef as never);
 });
 
-afterAll(() => {
-  jest.unmock("react");
+afterEach(() => {
+  reactUseRefSpy.mockRestore();
 });
 describe("<DangerousDeleteWidget />", () => {
   const fakeProps = (): DangerousDeleteProps => ({

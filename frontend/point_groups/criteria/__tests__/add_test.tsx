@@ -16,9 +16,6 @@ beforeEach(() => {
     .mockImplementation(jest.fn());
 });
 
-afterEach(() => {
-  jest.restoreAllMocks();
-});
 
 describe("<AddEqCriteria<string> />", () => {
   const fakeProps = (): AddEqCriteriaProps<string> => ({

@@ -18,10 +18,6 @@ import { MapImage } from "../map_image";
 describe("<ImageLayer/>", () => {
   let mockConfig = fakeWebAppConfig();
 
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
   beforeEach(() => {
     jest.spyOn(MapImage.prototype, "render")
       .mockImplementation(() => <g className={"map-image"} />);

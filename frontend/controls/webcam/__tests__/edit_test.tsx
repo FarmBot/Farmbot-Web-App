@@ -4,33 +4,41 @@ import { SpecialStatus } from "farmbot";
 import { Edit } from "../edit";
 import { fakeWebcamFeed } from "../../../__test_support__/fake_state/resources";
 import { WebcamPanelProps } from "../interfaces";
+import * as keyValEditRow from "../key_val_edit_row";
 
-jest.mock("../key_val_edit_row", () => ({
-  KeyValEditRow: (props: {
-    label: string;
-    value: string;
-    onClick: () => void;
-    onLabelChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    onValueChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  }) =>
-    <div className="key-value-edit-row-mock">
-      <span>{props.label}</span>
-      <span>{props.value}</span>
-      <input
-        name="label"
-        value={props.label}
-        onChange={props.onLabelChange} />
-      <input
-        name="value"
-        value={props.value}
-        onChange={props.onValueChange} />
-      <button title="Delete" onClick={props.onClick}>
-        Delete
-      </button>
-    </div>
-}));
+let keyValEditRowSpy: jest.SpyInstance;
 
 describe("<Edit />", () => {
+  beforeEach(() => {
+    keyValEditRowSpy = jest.spyOn(keyValEditRow, "KeyValEditRow")
+      .mockImplementation((props: {
+        label: string;
+        value: string;
+        onClick: () => void;
+        onLabelChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+        onValueChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+      }) =>
+        <div className="key-value-edit-row-mock">
+          <span>{props.label}</span>
+          <span>{props.value}</span>
+          <input
+            name="label"
+            value={props.label}
+            onChange={props.onLabelChange} />
+          <input
+            name="value"
+            value={props.value}
+            onChange={props.onValueChange} />
+          <button title="Delete" onClick={props.onClick}>
+            Delete
+          </button>
+        </div>);
+  });
+
+  afterEach(() => {
+    keyValEditRowSpy.mockRestore();
+  });
+
   const fakeProps = (): WebcamPanelProps => {
     const feed1 = fakeWebcamFeed();
     const feed2 = fakeWebcamFeed();

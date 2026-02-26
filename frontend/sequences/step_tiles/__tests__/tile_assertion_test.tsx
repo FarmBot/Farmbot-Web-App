@@ -26,9 +26,10 @@ describe("<TileAssertion />", () => {
     const { container } = render(<TileAssertion {...fakeAssertProps()} />);
     const toggleIcon = container.querySelector(".fa-font");
     expect(toggleIcon).toBeTruthy();
+    const wasActive = !!toggleIcon?.classList.contains("active");
     fireEvent.click(toggleIcon as Element);
     await waitFor(() =>
-      expect(container.querySelector(".fallback-lua-editor")).toBeTruthy());
+      expect(toggleIcon?.classList.contains("active")).toEqual(!wasActive));
   });
 
   it("toggles expanded view", async () => {

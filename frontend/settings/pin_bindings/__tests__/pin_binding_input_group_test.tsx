@@ -2,9 +2,7 @@ const mockDevice = {
   registerGpio: jest.fn(() => Promise.resolve()),
   unregisterGpio: jest.fn(() => Promise.resolve()),
 };
-jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
-
-jest.mock("../../../api/crud", () => ({ initSave: jest.fn() }));
+import * as deviceModule from "../../../device";
 
 import React from "react";
 import TestRenderer, { act } from "react-test-renderer";
@@ -17,6 +15,7 @@ import {
   fakeSequence,
 } from "../../../__test_support__/fake_state/resources";
 import { initSave } from "../../../api/crud";
+import * as crud from "../../../api/crud";
 import { PinBindingInputGroupProps } from "../interfaces";
 import {
   PinBindingInputGroup,
@@ -31,15 +30,21 @@ import {
 import { error, warning } from "../../../toast/toast";
 import { FBSelect } from "../../../ui";
 
+let getDeviceSpy: jest.SpyInstance;
+let initSaveSpy: jest.SpyInstance;
+
 beforeEach(() => {
   jest.clearAllMocks();
+  getDeviceSpy = jest.spyOn(deviceModule, "getDevice")
+    .mockImplementation(() => mockDevice as never);
+  initSaveSpy = jest.spyOn(crud, "initSave").mockImplementation(jest.fn());
   mockDevice.registerGpio = jest.fn(() => Promise.resolve());
   mockDevice.unregisterGpio = jest.fn(() => Promise.resolve());
 });
 
-afterAll(() => {
-  jest.unmock("../../../device");
-  jest.unmock("../../../api/crud");
+afterEach(() => {
+  getDeviceSpy.mockRestore();
+  initSaveSpy.mockRestore();
 });
 
 const AVAILABLE_PIN = 18;

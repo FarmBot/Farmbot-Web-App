@@ -1,7 +1,4 @@
 let mockPut = Promise.resolve();
-jest.mock("axios", () => ({
-  put: jest.fn(() => mockPut),
-}));
 
 import { API } from "../../api";
 import { error } from "../../toast/toast";
@@ -9,20 +6,21 @@ import { formEvent, inputEvent } from "../../__test_support__/fake_html_events";
 import { PasswordReset } from "../password_reset";
 import axios from "axios";
 
-afterAll(() => {
-  jest.unmock("axios");
-});
 describe("<PasswordReset/>", () => {
   API.setBaseUrl("");
   let originalPathname: string;
+  let axiosPutSpy: jest.SpyInstance;
 
   beforeEach(() => {
     originalPathname = location.pathname;
     location.pathname = "/password_resets/";
+    axiosPutSpy = jest.spyOn(axios, "put")
+      .mockImplementation(() => mockPut as never);
   });
 
   afterEach(() => {
     location.pathname = originalPathname;
+    axiosPutSpy.mockRestore();
   });
 
   it("handles form submission errors", async () => {

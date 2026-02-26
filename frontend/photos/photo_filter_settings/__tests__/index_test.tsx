@@ -34,7 +34,6 @@ beforeEach(() => {
 
 afterEach(() => {
   cleanup();
-  jest.restoreAllMocks();
 });
 
 describe("<PhotoFilterSettings />", () => {

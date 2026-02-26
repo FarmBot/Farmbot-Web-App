@@ -9,16 +9,10 @@ import {
 } from "../image_flipper";
 import { MapImage } from "../../../farm_designer/map/layers/images/map_image";
 
-jest.unmock("../flipper_image");
-jest.unmock("../image_flipper");
-
 let mapImageCallback:
   ((img: HTMLImageElement) => void) | undefined = undefined;
 
 describe("<FlipperImage />", () => {
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
 
   beforeEach(() => {
     mapImageCallback = undefined;
@@ -100,8 +94,8 @@ describe("<FlipperImage />", () => {
     const img = container.querySelector(".no-flipper-image-container img");
     if (img) {
       expect(img.getAttribute("src")).toEqual(PLACEHOLDER_FARMBOT);
-      expect(img.getAttribute("width")).toEqual(undefined);
-      expect(img.getAttribute("height")).toEqual(undefined);
+      expect(img.getAttribute("width")).toEqual(null);
+      expect(img.getAttribute("height")).toEqual(null);
     } else {
       expect(hasMockedRender(container)).toBeTruthy();
     }

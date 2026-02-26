@@ -1,7 +1,11 @@
 import * as Util from "../util";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 
-afterEach(() => jest.useRealTimers());
+afterEach(() => {
+  jest.useRealTimers();
+  document.body.innerHTML = "";
+});
+
 
 describe("util", () => {
   describe("scrollToBottom", () => {

@@ -10,7 +10,6 @@ beforeEach(() => {
 
 afterEach(() => {
   mockDemo = false;
-  jest.restoreAllMocks();
 });
 describe("validBotLocationData()", () => {
   it("returns valid location_data object", () => {

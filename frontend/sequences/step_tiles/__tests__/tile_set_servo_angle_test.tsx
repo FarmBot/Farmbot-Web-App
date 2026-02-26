@@ -1,5 +1,3 @@
-jest.mock("../../../api/crud", () => ({ editStep: jest.fn() }));
-
 import React from "react";
 import { render } from "@testing-library/react";
 import {
@@ -8,12 +6,21 @@ import {
 import { SetServoAngle } from "farmbot";
 import { StepParams } from "../../interfaces";
 import { editStep } from "../../../api/crud";
+import * as crud from "../../../api/crud";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 
-afterAll(() => {
-  jest.unmock("../../../api/crud");
+let editStepSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  editStepSpy = jest.spyOn(crud, "editStep")
+    .mockImplementation(jest.fn());
 });
+
+afterEach(() => {
+  editStepSpy.mockRestore();
+});
+
 describe("<TileSetServoAngle/>", () => {
   const fakeProps = (): StepParams<SetServoAngle> => ({
     ...fakeStepParams({

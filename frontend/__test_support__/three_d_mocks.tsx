@@ -185,9 +185,25 @@ jest.mock("@react-three/fiber", () => ({
   applyProps: jest.fn(),
   useFrame: jest.fn(x => x({
     clock: { getElapsedTime: jest.fn(() => 0) },
-    camera: { quaternion: {} },
+    camera: new THREE.PerspectiveCamera(),
+    gl: {
+      info: {
+        render: { calls: 0, triangles: 0, points: 0, lines: 0 },
+        memory: { geometries: 0, textures: 0 },
+      },
+    },
+    scene: { traverse: jest.fn() },
+    size: { width: 800, height: 600 },
+    pointer: { x: 0, y: 0 },
   })),
   useThree: jest.fn(() => ({
+    gl: {
+      info: {
+        render: { calls: 0, triangles: 0, points: 0, lines: 0 },
+        memory: { geometries: 0, textures: 0 },
+      },
+    },
+    scene: { traverse: jest.fn() },
     pointer: { x: 0, y: 0 },
     camera: new THREE.PerspectiveCamera(),
     size: { width: 800, height: 600 },

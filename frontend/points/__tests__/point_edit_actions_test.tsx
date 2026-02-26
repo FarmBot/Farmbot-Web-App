@@ -1,21 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-jest.mock("../../ui", () => {
-  const React = require("react");
-  const actual = jest.requireActual("../../ui");
-  return {
-    ...actual,
-    BlurableInput: (props: any) => <input
-      name={props.name}
-      min={props.min}
-      value={props.value}
-      onChange={() => { }}
-      onBlur={e => props.onCommit?.(e)} />,
-    ColorPicker: (props: any) => <button
-      className={"mock-color-picker"}
-      onClick={() => props.onChange?.("blue")} />,
-  };
-});
-
 import React from "react";
 import { render, fireEvent } from "@testing-library/react";
 import {
@@ -35,11 +18,14 @@ import * as crud from "../../api/crud";
 import * as soilHeight from "../soil_height";
 import { fakeMovementState } from "../../__test_support__/fake_bot_data";
 import { changeBlurableInput } from "../../__test_support__/helpers";
+import * as ui from "../../ui";
 
 let editSpy: jest.SpyInstance;
 let saveSpy: jest.SpyInstance;
 let toggleSoilHeightSpy: jest.SpyInstance;
 let soilHeightPointSpy: jest.SpyInstance;
+let blurableInputSpy: jest.SpyInstance;
+let colorPickerSpy: jest.SpyInstance;
 
 beforeEach(() => {
   editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
@@ -48,6 +34,17 @@ beforeEach(() => {
     .mockImplementation(jest.fn());
   soilHeightPointSpy = jest.spyOn(soilHeight, "soilHeightPoint")
     .mockImplementation(jest.fn());
+  blurableInputSpy = jest.spyOn(ui, "BlurableInput")
+    .mockImplementation((props: any) => <input
+      name={props.name}
+      min={props.min}
+      defaultValue={props.value}
+      onChange={() => { }}
+      onBlur={e => props.onCommit?.(e)} />);
+  colorPickerSpy = jest.spyOn(ui, "ColorPicker")
+    .mockImplementation((props: any) => <button
+      className={"mock-color-picker"}
+      onClick={() => props.onChange?.("blue")} />);
 });
 
 afterEach(() => {
@@ -55,6 +52,8 @@ afterEach(() => {
   saveSpy.mockRestore();
   toggleSoilHeightSpy.mockRestore();
   soilHeightPointSpy.mockRestore();
+  blurableInputSpy.mockRestore();
+  colorPickerSpy.mockRestore();
 });
 
 describe("updatePoint()", () => {
@@ -197,8 +196,4 @@ describe("<AdditionalWeedProperties />", () => {
       meta: { removal_method: "manual" }
     });
   });
-});
-
-afterAll(() => {
-  jest.unmock("../../ui");
 });

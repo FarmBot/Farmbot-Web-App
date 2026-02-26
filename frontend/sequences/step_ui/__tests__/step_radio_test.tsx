@@ -1,16 +1,21 @@
 let mockStep = {};
-jest.mock("../../../api/crud", () => ({
-  editStep: jest.fn(x => x.executor(mockStep)),
-}));
 
 import React from "react";
 import { fireEvent, render } from "@testing-library/react";
 import { AxisStepRadio, AxisStepRadioProps } from "../step_radio";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { FindHome, Calibrate, Zero } from "farmbot";
+import * as crud from "../../../api/crud";
 
-afterAll(() => {
-  jest.unmock("../../../api/crud");
+let editStepSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  editStepSpy = jest.spyOn(crud, "editStep")
+    .mockImplementation(jest.fn(x => x.executor(mockStep)));
+});
+
+afterEach(() => {
+  editStepSpy.mockRestore();
 });
 describe("<StepRadio />", () => {
   const findHomeStep: FindHome = {

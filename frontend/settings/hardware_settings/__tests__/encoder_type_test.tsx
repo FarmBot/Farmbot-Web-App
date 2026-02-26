@@ -4,15 +4,18 @@ import {
 } from "../encoder_type";
 import { render } from "@testing-library/react";
 import { Encoder } from "farmbot";
+import * as ui from "../../../ui";
 
 const fbSelectMock = jest.fn((_: unknown) => <div />);
+let fbSelectSpy: jest.SpyInstance;
 
-jest.mock("../../../ui", () => {
-  const actual = jest.requireActual("../../../ui");
-  return {
-    ...actual,
-    FBSelect: (props: unknown) => fbSelectMock(props),
-  };
+beforeEach(() => {
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation((props: unknown) => fbSelectMock(props));
+});
+
+afterEach(() => {
+  fbSelectSpy.mockRestore();
 });
 
 describe("<EncoderType/>", () => {

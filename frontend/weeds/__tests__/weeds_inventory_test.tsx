@@ -41,7 +41,6 @@ const createWrapper = (element: React.ReactElement) => {
 };
 
 beforeEach(() => {
-  jest.restoreAllMocks();
   jest.clearAllMocks();
   jest.useRealTimers();
   window.confirm = originalConfirm;
@@ -59,7 +58,6 @@ afterEach(() => {
     wrapper && TestRenderer.act(() => wrapper.unmount());
   }
   window.confirm = originalConfirm;
-  jest.restoreAllMocks();
 });
 
 describe("<Weeds> />", () => {

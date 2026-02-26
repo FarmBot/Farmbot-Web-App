@@ -1,4 +1,3 @@
-jest.unmock("../external_urls");
 import { ExternalUrl } from "../external_urls";
 
 /* eslint-disable max-len */

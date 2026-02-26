@@ -1,32 +1,32 @@
-jest.mock("../../../api/crud", () => ({ editStep: jest.fn() }));
-
 let mockDev = false;
-jest.mock("../../../settings/dev/dev_support", () => {
-  const actual = jest.requireActual("../../../settings/dev/dev_support");
-  return {
-    ...actual,
-    DevSettings: {
-      ...actual.DevSettings,
-      futureFeaturesEnabled: () => mockDev,
-    },
-  };
-});
+import * as devSupport from "../../../settings/dev/dev_support";
 
 import React from "react";
 import { render } from "@testing-library/react";
 import { TileReboot, editTheRebootStep, rebootExecutor } from "../tile_reboot";
 import { StepParams } from "../../interfaces";
 import { editStep } from "../../../api/crud";
+import * as crud from "../../../api/crud";
 import { Reboot } from "farmbot";
 import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 
-afterAll(() => {
-  jest.unmock("../../../api/crud");
-  jest.unmock("../../../settings/dev/dev_support");
-});
-
 describe("<TileReboot />", () => {
-  beforeEach(() => { mockDev = false; });
+  let futureFeaturesEnabledSpy: jest.SpyInstance;
+  let editStepSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    mockDev = false;
+    futureFeaturesEnabledSpy =
+      jest.spyOn(devSupport.DevSettings, "futureFeaturesEnabled")
+        .mockImplementation(() => mockDev);
+    editStepSpy = jest.spyOn(crud, "editStep")
+      .mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    futureFeaturesEnabledSpy.mockRestore();
+    editStepSpy.mockRestore();
+  });
 
   const fakeProps = (): StepParams<Reboot> => ({
     ...fakeStepParams({

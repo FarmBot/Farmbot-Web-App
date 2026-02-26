@@ -8,16 +8,14 @@ import { CameraCalibrationConfigProps } from "../interfaces";
 import { SPECIAL_VALUES } from "../../remote_env/constants";
 import { DeviceSetting } from "../../../constants";
 import { DropDownItem } from "../../../ui/fb_select";
+import * as ui from "../../../ui";
 
 let fbSelectOnChange: ((item: DropDownItem) => void) | undefined;
+let fbSelectSpy: jest.SpyInstance;
 
-afterEach(() => cleanup());
-
-jest.mock("../../../ui", () => {
-  const actual = jest.requireActual("../../../ui");
-  return {
-    ...actual,
-    FBSelect: (props: {
+beforeEach(() => {
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation((props: {
       selectedItem?: DropDownItem;
       onChange: (item: DropDownItem) => void;
     }) => {
@@ -29,8 +27,12 @@ jest.mock("../../../ui", () => {
             select number
           </button>
         </div>);
-    },
-  };
+    });
+});
+
+afterEach(() => {
+  fbSelectSpy.mockRestore();
+  cleanup();
 });
 
 describe("<CameraCalibrationConfig />", () => {

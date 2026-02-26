@@ -4,10 +4,6 @@ import { TileFirmwareAction } from "../tile_firmware_action";
 import { StepParams } from "../../interfaces";
 import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 
-jest.unmock("../../step_ui");
-jest.unmock("../inputs/step_input_box");
-jest.unmock("../../../ui");
-
 describe("<TileFirmwareAction/>", () => {
   const fakeProps = (): StepParams => ({
     ...fakeStepParams({ kind: "reboot", args: { package: "farmbot_os" } }),

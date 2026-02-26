@@ -22,7 +22,6 @@ import { fakeMovementState } from "../../__test_support__/fake_bot_data";
 import { Path } from "../../internal_urls";
 
 beforeEach(() => {
-  jest.restoreAllMocks();
   jest.clearAllMocks();
   jest.useRealTimers();
   jest.spyOn(crud, "save").mockImplementation(jest.fn());
@@ -31,11 +30,6 @@ beforeEach(() => {
   jest.spyOn(popover, "Popover").mockImplementation(
     jest.fn(({ target, content }: { target: JSX.Element; content: JSX.Element }) =>
       <div>{target}{content}</div>) as never);
-});
-
-afterEach(() => {
-  cleanup();
-  jest.restoreAllMocks();
 });
 
 describe("<EditWeed />", () => {

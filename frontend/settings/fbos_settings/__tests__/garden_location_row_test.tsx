@@ -6,12 +6,26 @@ import { fakeDevice } from "../../../__test_support__/resource_index_builder";
 import * as crud from "../../../api/crud";
 import { fakeFarmwareEnv } from "../../../__test_support__/fake_state/resources";
 import { namespace3D } from "../../three_d_settings";
+import * as ui from "../../../ui";
 
-jest.mock("../../../ui", () => {
-  const actual = jest.requireActual("../../../ui");
-  return {
-    ...actual,
-    ToggleButton: (props: {
+let initSaveSpy: jest.SpyInstance;
+let editSpy: jest.SpyInstance;
+let saveSpy: jest.SpyInstance;
+let originalGeolocation: Geolocation | undefined;
+let toggleButtonSpy: jest.SpyInstance;
+let fbSelectSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  originalGeolocation = navigator.geolocation;
+  Object.defineProperty(navigator, "geolocation", {
+    value: undefined,
+    configurable: true,
+  });
+  initSaveSpy = jest.spyOn(crud, "initSave").mockImplementation(jest.fn());
+  editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+  toggleButtonSpy = jest.spyOn(ui, "ToggleButton")
+    .mockImplementation((props: {
       toggleAction: (e: React.MouseEvent) => void,
       toggleValue: number | string | boolean | undefined,
       disabled?: boolean | undefined,
@@ -23,31 +37,15 @@ jest.mock("../../../ui", () => {
         disabled={!!props.disabled}
         onClick={e => !props.disabled && props.toggleAction(e)}>
         {String(props.toggleValue)}
-      </button>,
-    FBSelect: (props: {
+      </button>);
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation((props: {
       onChange: (ddi: { label: string, value: number | string }) => void,
     }) =>
       <button
         onClick={() => props.onChange({ label: "Outdoor", value: 0 })}>
         mock-scene-select
-      </button>,
-  };
-});
-
-let initSaveSpy: jest.SpyInstance;
-let editSpy: jest.SpyInstance;
-let saveSpy: jest.SpyInstance;
-let originalGeolocation: Geolocation | undefined;
-
-beforeEach(() => {
-  originalGeolocation = navigator.geolocation;
-  Object.defineProperty(navigator, "geolocation", {
-    value: undefined,
-    configurable: true,
-  });
-  initSaveSpy = jest.spyOn(crud, "initSave").mockImplementation(jest.fn());
-  editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
-  saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+      </button>);
 });
 
 afterEach(() => {
@@ -58,10 +56,8 @@ afterEach(() => {
   initSaveSpy.mockRestore();
   editSpy.mockRestore();
   saveSpy.mockRestore();
-});
-
-afterAll(() => {
-  jest.unmock("../../../ui");
+  toggleButtonSpy.mockRestore();
+  fbSelectSpy.mockRestore();
 });
 
 describe("<GardenLocationRow />", () => {

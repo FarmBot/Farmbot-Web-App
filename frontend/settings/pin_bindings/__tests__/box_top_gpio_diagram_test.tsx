@@ -24,7 +24,6 @@ import * as firmwareHardwareSupport from "../../firmware/firmware_hardware_suppo
 let btnIndexListSpy: jest.SpyInstance;
 
 beforeEach(() => {
-  jest.restoreAllMocks();
   jest.clearAllMocks();
   jest.useRealTimers();
   jest.spyOn(deviceActions, "execSequence")
@@ -39,7 +38,6 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-  jest.restoreAllMocks();
   btnIndexListSpy?.mockRestore();
   document.body.innerHTML = "";
 });

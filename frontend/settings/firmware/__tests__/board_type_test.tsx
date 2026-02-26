@@ -10,12 +10,19 @@ import {
 } from "../../../__test_support__/fake_time_settings";
 import * as shouldDisplay from "../../../devices/should_display";
 import * as deviceActions from "../../../devices/actions";
+import * as ui from "../../../ui";
 
-jest.mock("../../../ui", () => {
-  const actual = jest.requireActual("../../../ui");
-  return {
-    ...actual,
-    FBSelect: (props: {
+let shouldDisplayFeatureSpy: jest.SpyInstance;
+let updateConfigSpy: jest.SpyInstance;
+let fbSelectSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  shouldDisplayFeatureSpy = jest.spyOn(shouldDisplay, "shouldDisplayFeature")
+    .mockImplementation(() => mockFeatureBoolean);
+  updateConfigSpy = jest.spyOn(deviceActions, "updateConfig")
+    .mockImplementation(jest.fn() as never);
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation((props: {
       selectedItem?: { label: string, value: string },
       list: Array<{ label: string, value: string }>,
       extraClass?: string,
@@ -33,24 +40,14 @@ jest.mock("../../../ui", () => {
         })}>
           select-farmduino
         </button>
-      </div>,
-  };
-});
-
-let shouldDisplayFeatureSpy: jest.SpyInstance;
-let updateConfigSpy: jest.SpyInstance;
-
-beforeEach(() => {
-  shouldDisplayFeatureSpy = jest.spyOn(shouldDisplay, "shouldDisplayFeature")
-    .mockImplementation(() => mockFeatureBoolean);
-  updateConfigSpy = jest.spyOn(deviceActions, "updateConfig")
-    .mockImplementation(jest.fn() as never);
+      </div>);
 });
 
 afterEach(() => {
   mockFeatureBoolean = false;
   shouldDisplayFeatureSpy.mockRestore();
   updateConfigSpy.mockRestore();
+  fbSelectSpy.mockRestore();
 });
 
 describe("<BoardType/>", () => {

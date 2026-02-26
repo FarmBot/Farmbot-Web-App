@@ -5,8 +5,6 @@ import { StepParams } from "../../interfaces";
 import { TogglePin } from "farmbot";
 import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 
-jest.unmock("../../../ui");
-
 describe("<TileTogglePin/>", () => {
   const fakeProps = (): StepParams<TogglePin> => ({
     ...fakeStepParams({ kind: "toggle_pin", args: { pin_number: 13 } }),

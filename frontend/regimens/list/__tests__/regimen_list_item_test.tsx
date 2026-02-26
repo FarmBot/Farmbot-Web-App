@@ -1,5 +1,4 @@
 import React from "react";
-jest.unmock("../regimen_list_item");
 import { RegimenListItemProps } from "../../interfaces";
 import { RegimenListItem } from "../regimen_list_item";
 import { render, fireEvent } from "@testing-library/react";

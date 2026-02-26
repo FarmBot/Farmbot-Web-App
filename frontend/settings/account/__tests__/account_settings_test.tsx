@@ -1,7 +1,6 @@
 let mockDev = false;
 import React from "react";
 import { fireEvent, render } from "@testing-library/react";
-import TestRenderer from "react-test-renderer";
 import {
   AccountSettings, ActivityBeepSetting, ActivityBeepSettingProps,
   LandingPageSetting, LandingPageSettingProps,
@@ -16,39 +15,15 @@ import * as configStorageActions from "../../../config_storage/actions";
 import { NumericSetting, StringSetting } from "../../../session_keys";
 import * as requestAccountExportModule from "../request_account_export";
 import * as devSupport from "../../../settings/dev/dev_support";
-
-jest.mock("../../../ui", () => {
-  const actual = jest.requireActual("../../../ui");
-  return {
-    ...actual,
-    BlurableInput: (props: {
-      name?: string,
-      value?: string | number,
-      type?: string,
-      onCommit: (event: React.FormEvent<HTMLInputElement>) => void,
-    }) =>
-      <input
-        name={props.name}
-        defaultValue={props.value as string | undefined}
-        type={props.type}
-        onBlur={e => props.onCommit(e)}
-        onChange={() => { }} />,
-    FBSelect: ({ onChange, selectedItem }: {
-      onChange: (item: { label: string, value: string }) => void,
-      selectedItem: { label: string } | undefined,
-    }) =>
-      <button className="mock-fb-select"
-        onClick={() => onChange({ label: "Map", value: "map" })}>
-        {selectedItem?.label}
-      </button>,
-  };
-});
+import * as ui from "../../../ui";
 
 let editSpy: jest.SpyInstance;
 let saveSpy: jest.SpyInstance;
 let setWebAppConfigValueSpy: jest.SpyInstance;
 let getWebAppConfigValueSpy: jest.SpyInstance;
 let futureFeaturesEnabledSpy: jest.SpyInstance;
+let blurableInputSpy: jest.SpyInstance;
+let fbSelectSpy: jest.SpyInstance;
 
 beforeEach(() => {
   mockDev = false;
@@ -60,6 +35,28 @@ beforeEach(() => {
     .mockImplementation(() => () => true);
   futureFeaturesEnabledSpy = jest.spyOn(devSupport.DevSettings, "futureFeaturesEnabled")
     .mockImplementation(() => mockDev);
+  blurableInputSpy = jest.spyOn(ui, "BlurableInput")
+    .mockImplementation((props: {
+      name?: string,
+      value?: string | number,
+      type?: string,
+      onCommit: (event: React.FormEvent<HTMLInputElement>) => void,
+    }) =>
+      <input
+        name={props.name}
+        defaultValue={props.value as string | undefined}
+        type={props.type}
+        onBlur={e => props.onCommit(e)}
+        onChange={() => { }} />);
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation(({ onChange, selectedItem }: {
+      onChange: (item: { label: string, value: string }) => void,
+      selectedItem: { label: string } | undefined,
+    }) =>
+      <button className="mock-fb-select"
+        onClick={() => onChange({ label: "Map", value: "map" })}>
+        {selectedItem?.label}
+      </button>);
 });
 
 afterEach(() => {
@@ -68,10 +65,8 @@ afterEach(() => {
   setWebAppConfigValueSpy.mockRestore();
   getWebAppConfigValueSpy.mockRestore();
   futureFeaturesEnabledSpy.mockRestore();
-});
-
-afterAll(() => {
-  jest.unmock("../../../ui");
+  blurableInputSpy.mockRestore();
+  fbSelectSpy.mockRestore();
 });
 
 describe("<AccountSettings />", () => {
@@ -96,15 +91,10 @@ describe("<AccountSettings />", () => {
   const commitField = (
     props: AccountSettingsProps, name: string, value: string,
   ) => {
-    const wrapper = TestRenderer.create(<AccountSettings {...props} />);
-    const input = wrapper.root.find(node =>
-      node.props.name == name
-      && typeof node.props.onCommit == "function");
-    input.props.onCommit({
-      currentTarget: { value },
-      target: { value },
-    });
-    wrapper.unmount();
+    const { container } = render(<AccountSettings {...props} />);
+    const input = container.querySelector(`input[name="${name}"]`);
+    if (!input) { throw new Error(`Expected input for ${name}`); }
+    fireEvent.blur(input, { currentTarget: { value }, target: { value } });
   };
 
   it("changes name", () => {

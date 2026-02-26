@@ -22,10 +22,6 @@ beforeEach(() => {
   jest.spyOn(crud, "destroy").mockImplementation(jest.fn());
 });
 
-afterEach(() => {
-  jest.restoreAllMocks();
-});
-
 describe("<AddTool />", () => {
   const createWrapper = (p = fakeProps()) =>
     TestRenderer.create(<AddTool {...p} />);

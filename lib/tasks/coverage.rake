@@ -249,7 +249,7 @@ def print_lib_progress
         counts["line"]["enzyme"] += 1
         includesEnzyme = true
       end
-      if line.include?("render(<")
+      if line.include?("render(<") or line.include?("svgMount(")
         counts["line"]["rtl"] += 1
         includesRTL = true
       end

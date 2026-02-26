@@ -4,15 +4,6 @@ import * as i18n from "../../i18n";
 import * as i18next from "i18next";
 import * as reactDomClient from "react-dom/client";
 
-beforeEach(() => {
-  jest.useRealTimers();
-});
-
-afterEach(() => {
-  jest.useRealTimers();
-  jest.restoreAllMocks();
-});
-
 describe("updatePageInfo()", () => {
   it("sets page title", () => {
     updatePageInfo("page name");

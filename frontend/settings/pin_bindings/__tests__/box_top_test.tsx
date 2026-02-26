@@ -6,16 +6,25 @@ import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import { bot } from "../../../__test_support__/fake_state/bot";
+import * as model from "../model";
+import * as boxTopGpioDiagram from "../box_top_gpio_diagram";
 
-jest.mock("../model", () => ({
-  ElectronicsBoxModel: () => <div className={"electronics-box-3d-model"} />,
-}));
-
-jest.mock("../box_top_gpio_diagram", () => ({
-  BoxTopButtons: () => <div className={"box-top-2d-wrapper"} />,
-}));
+let electronicsBoxModelSpy: jest.SpyInstance;
+let boxTopButtonsSpy: jest.SpyInstance;
 
 describe("<BoxTop />", () => {
+  beforeEach(() => {
+    electronicsBoxModelSpy = jest.spyOn(model, "ElectronicsBoxModel")
+      .mockImplementation(() => <div className={"electronics-box-3d-model"} />);
+    boxTopButtonsSpy = jest.spyOn(boxTopGpioDiagram, "BoxTopButtons")
+      .mockImplementation(() => <div className={"box-top-2d-wrapper"} />);
+  });
+
+  afterEach(() => {
+    electronicsBoxModelSpy.mockRestore();
+    boxTopButtonsSpy.mockRestore();
+  });
+
   const fakeProps = (): BoxTopProps => ({
     threeDimensions: false,
     firmwareHardware: "arduino",

@@ -5,7 +5,6 @@ import { findSequenceById, selectAllSequences } from "../../resources/selectors"
 
 describe("<SequenceSelectBox />", () => {
   beforeEach(() => {
-    jest.restoreAllMocks();
     jest.clearAllMocks();
   });
 

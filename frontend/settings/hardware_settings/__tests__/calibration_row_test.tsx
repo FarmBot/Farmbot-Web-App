@@ -24,7 +24,7 @@ describe("<CalibrationRow />", () => {
     p.mcuParams.encoder_enabled_z = 0;
     render(<CalibrationRow {...p} />);
     const enabledAxes: string[] = [];
-    screen.getAllByRole("button").map(button => {
+    screen.getAllByRole("button", { hidden: true }).map(button => {
       if (!(button as HTMLButtonElement).disabled) {
         enabledAxes.push((button.textContent || "").split(" ").pop() as string);
         fireEvent.click(button);
@@ -42,7 +42,7 @@ describe("<CalibrationRow />", () => {
     p.mcuParams.encoder_enabled_y = 1;
     p.mcuParams.encoder_enabled_z = 0;
     render(<CalibrationRow {...p} />);
-    screen.getAllByRole("button").map(button => fireEvent.click(button));
+    screen.getAllByRole("button", { hidden: true }).map(button => fireEvent.click(button));
     expect(p.action).toHaveBeenCalledTimes(3);
     ["x", "y", "z"].map(x => expect(p.action).toHaveBeenCalledWith(x));
   });
@@ -58,7 +58,7 @@ describe("<CalibrationRow />", () => {
     p.mcuParams.movement_enable_endpoints_z = 0;
     p.stallUseDisabled = true;
     render(<CalibrationRow {...p} />);
-    const buttons = screen.getAllByRole("button");
+    const buttons = screen.getAllByRole("button", { hidden: true });
     [0, 1].map(i =>
       expect((buttons[i] as HTMLButtonElement).disabled).toEqual(false));
     expect((buttons[2] as HTMLButtonElement).disabled).toEqual(true);

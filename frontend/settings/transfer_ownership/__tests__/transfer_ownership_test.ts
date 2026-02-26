@@ -1,15 +1,12 @@
-jest.unmock("../transfer_ownership");
-jest.unmock("../change_ownership_form");
-
 const mockDevice = { send: jest.fn(() => Promise.resolve()) };
-jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
+import * as deviceModule from "../../../device";
 
 let mockPost = Promise.resolve(({ data: "FAKE CERT" }));
-jest.mock("axios", () => ({ post: jest.fn(() => mockPost) }));
 
 import { getDevice } from "../../../device";
 import { API } from "../../../api";
 import { error } from "../../../toast/toast";
+import axios from "axios";
 const { transferOwnership } =
   jest.requireActual("../transfer_ownership");
 import { TransferProps } from "../transfer_ownership";
@@ -20,15 +17,14 @@ API.setBaseUrl("http://foo.bar");
 
 beforeEach(() => {
   jest.clearAllMocks();
+  jest.spyOn(deviceModule, "getDevice")
+    .mockImplementation(() => mockDevice as never);
+  jest.spyOn(axios, "post")
+    .mockImplementation(() => mockPost as never);
   mockPost = Promise.resolve(({ data: "FAKE CERT" }));
 });
 
-afterAll(() => {
-  jest.unmock("../../../device");
-});
-afterAll(() => {
-  jest.unmock("axios");
-});
+
 describe("transferOwnership", () => {
   const fakeProps = (): TransferProps => ({
     email: "admin@admin.com",

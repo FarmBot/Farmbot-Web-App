@@ -5,27 +5,34 @@ import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import { Coordinate, ParameterApplication } from "farmbot";
+import * as variableForm from "../variable_form";
 
 let mockVariableFormOnChangeArg: ParameterApplication;
-
-jest.mock("../variable_form", () => ({
-  VariableForm: (props: {
-    variable: { celeryNode: ParameterApplication };
-    onChange: (value: ParameterApplication) => void;
-  }) => {
-    const value = props.variable.celeryNode.args.data_value;
-    const text = value.kind === "coordinate"
-      ? `Coordinate (${value.args.x}, ${value.args.y}, ${value.args.z})`
-      : "";
-    return <div>
-      <span>{text}</span>
-      <button className={"variable-form-change"}
-        onClick={() => props.onChange(mockVariableFormOnChangeArg)} />
-    </div>;
-  },
-}));
+let variableFormSpy: jest.SpyInstance;
 
 describe("<DefaultValueForm />", () => {
+  beforeEach(() => {
+    variableFormSpy = jest.spyOn(variableForm, "VariableForm")
+      .mockImplementation((props: {
+        variable: { celeryNode: ParameterApplication };
+        onChange: (value: ParameterApplication) => void;
+      }) => {
+        const value = props.variable.celeryNode.args.data_value;
+        const text = value.kind === "coordinate"
+          ? `Coordinate (${value.args.x}, ${value.args.y}, ${value.args.z})`
+          : "";
+        return <div>
+          <span>{text}</span>
+          <button className={"variable-form-change"}
+            onClick={() => props.onChange(mockVariableFormOnChangeArg)} />
+        </div>;
+      });
+  });
+
+  afterEach(() => {
+    variableFormSpy.mockRestore();
+  });
+
   const COORDINATE: Coordinate =
     ({ kind: "coordinate", args: { x: 1, y: 2, z: 3 } });
 

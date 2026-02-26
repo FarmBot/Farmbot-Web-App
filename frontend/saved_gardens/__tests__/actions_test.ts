@@ -95,7 +95,6 @@ let initSaveSpy: jest.SpyInstance;
 let initSaveGetIdSpy: jest.SpyInstance;
 
 beforeEach(() => {
-  jest.restoreAllMocks();
   API.setBaseUrl("example.io");
   postSpy = jest.spyOn(axios, "post")
     .mockImplementation(jest.fn(() => Promise.resolve()));

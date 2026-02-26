@@ -98,7 +98,6 @@ describe("<Bed />", () => {
   let getModeSpy: jest.SpyInstance;
 
   beforeEach(() => {
-    jest.restoreAllMocks();
     jest.clearAllMocks();
     jest.useRealTimers();
     mockIsMobile = false;
@@ -128,7 +127,6 @@ describe("<Bed />", () => {
 
   afterEach(() => {
     history.replaceState(undefined, "", originalPathname);
-    jest.restoreAllMocks();
   });
 
   const fakeProps = (): BedProps => ({

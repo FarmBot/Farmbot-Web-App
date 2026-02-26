@@ -16,7 +16,6 @@ beforeEach(() => {
 
 afterEach(() => {
   mockDemo = false;
-  jest.restoreAllMocks();
 });
 describe("<FbosMetricHistoryTable />", () => {
   const fakeProps = (): FbosMetricHistoryTableProps => {

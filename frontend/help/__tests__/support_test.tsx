@@ -16,20 +16,13 @@ import {
   buildResourceIndex, fakeDevice,
 } from "../../__test_support__/resource_index_builder";
 import { Path } from "../../internal_urls";
-
-jest.mock("../../ui", () => {
-  const actual = jest.requireActual("../../ui");
-  return {
-    ...actual,
-    Help: (props: { links?: React.ReactNode[] }) =>
-      <div data-testid={"help-links"}>{props.links}</div>,
-  };
-});
+import * as ui from "../../ui";
 
 let originalGetState: typeof store.getState;
 let originalDispatch: typeof store.dispatch;
 let futureFeaturesEnabledSpy: jest.SpyInstance;
 let axiosPostSpy: jest.SpyInstance;
+let helpSpy: jest.SpyInstance;
 
 beforeEach(() => {
   originalGetState = store.getState;
@@ -37,6 +30,9 @@ beforeEach(() => {
   futureFeaturesEnabledSpy = jest.spyOn(DevSettings, "futureFeaturesEnabled")
     .mockImplementation(() => mockDev);
   axiosPostSpy = jest.spyOn(axios, "post").mockImplementation(() => Promise.resolve({}));
+  helpSpy = jest.spyOn(ui, "Help")
+    .mockImplementation((props: { links?: React.ReactNode[] }) =>
+      <div data-testid={"help-links"}>{props.links}</div>);
   (store as unknown as { getState: () => typeof mockState }).getState =
     () => mockState;
   (store as unknown as { dispatch: jest.Mock }).dispatch = jest.fn();
@@ -46,6 +42,7 @@ afterEach(() => {
   mockDev = false;
   futureFeaturesEnabledSpy.mockRestore();
   axiosPostSpy.mockRestore();
+  helpSpy.mockRestore();
   (store as unknown as { getState: typeof store.getState }).getState =
     originalGetState;
   (store as unknown as { dispatch: typeof store.dispatch }).dispatch =
@@ -93,6 +90,9 @@ describe("<Feedback />", () => {
 
   it("sends but keeps feedback", async () => {
     API.setBaseUrl("");
+    const device = fakeDevice();
+    device.body.fb_order_number = "FB1234";
+    mockState.resources = buildResourceIndex([device]);
     const { container } = render(<Feedback keep={true} />);
     fireEvent.change(screen.getByRole("textbox"), {
       target: { value: "abc" }
@@ -120,8 +120,4 @@ describe("<Feedback />", () => {
     expect(mockNavigate)
       .toHaveBeenCalledWith(Path.settings("order_number"));
   });
-});
-
-afterAll(() => {
-  jest.unmock("../../ui");
 });

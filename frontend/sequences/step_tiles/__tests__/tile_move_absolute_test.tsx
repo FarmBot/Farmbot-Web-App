@@ -20,15 +20,11 @@ import * as crud from "../../../api/crud";
 import { cloneDeep } from "lodash";
 import * as screenSize from "../../../screen_size";
 import { ExpandableHeader } from "../../../ui/expandable_header";
-
-jest.mock("@blueprintjs/core", () => ({
-  ...jest.requireActual("@blueprintjs/core"),
-  Collapse: (props: { isOpen: boolean, children: React.ReactNode }) =>
-    props.isOpen ? <>{props.children}</> : <></>,
-}));
+import * as blueprintCore from "@blueprintjs/core";
 
 let overwriteSpy: jest.SpyInstance;
 let isDesktopSpy: jest.SpyInstance;
+let collapseSpy: jest.SpyInstance;
 let originalInnerWidth = window.innerWidth;
 
 const setInnerWidth = (innerWidth: number) => {
@@ -45,12 +41,16 @@ beforeEach(() => {
   overwriteSpy = jest.spyOn(crud, "overwrite").mockImplementation(jest.fn());
   isDesktopSpy = jest.spyOn(screenSize, "isDesktop")
     .mockImplementation(() => window.innerWidth >= 768);
+  collapseSpy = jest.spyOn(blueprintCore, "Collapse")
+    .mockImplementation((props: { isOpen: boolean, children: React.ReactNode }) =>
+      props.isOpen ? <>{props.children}</> : <></>);
 });
 
 afterEach(() => {
   setInnerWidth(originalInnerWidth);
   overwriteSpy.mockRestore();
   isDesktopSpy.mockRestore();
+  collapseSpy.mockRestore();
 });
 
 describe("<TileMoveAbsolute />", () => {

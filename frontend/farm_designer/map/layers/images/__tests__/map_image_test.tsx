@@ -1,5 +1,3 @@
-jest.unmock("../map_image");
-
 import React from "react";
 import { act } from "@testing-library/react";
 import {

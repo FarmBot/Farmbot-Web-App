@@ -1,5 +1,3 @@
-jest.unmock("../actions");
-
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";

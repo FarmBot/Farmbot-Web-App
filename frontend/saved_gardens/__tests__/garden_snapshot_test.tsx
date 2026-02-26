@@ -1,23 +1,33 @@
-jest.mock("axios", () => ({
-  post: jest.fn(() => Promise.resolve()),
-}));
-
-jest.mock("../actions", () => ({
-  snapshotGarden: jest.fn(),
-  newSavedGarden: jest.fn(),
-  copySavedGarden: jest.fn(),
-}));
-
 import React from "react";
 import { render, fireEvent } from "@testing-library/react";
 import { GardenSnapshotProps, GardenSnapshot } from "../garden_snapshot";
 import { clickButton } from "../../__test_support__/helpers";
 import { snapshotGarden, newSavedGarden, copySavedGarden } from "../actions";
+import * as savedGardenActions from "../actions";
 import { fakeSavedGarden } from "../../__test_support__/fake_state/resources";
+import axios from "axios";
 
-afterAll(() => {
-  jest.unmock("axios");
-  jest.unmock("../actions");
+let snapshotGardenSpy: jest.SpyInstance;
+let newSavedGardenSpy: jest.SpyInstance;
+let copySavedGardenSpy: jest.SpyInstance;
+let axiosPostSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  axiosPostSpy = jest.spyOn(axios, "post")
+    .mockImplementation(() => Promise.resolve({}) as never);
+  snapshotGardenSpy = jest.spyOn(savedGardenActions, "snapshotGarden")
+    .mockImplementation(jest.fn());
+  newSavedGardenSpy = jest.spyOn(savedGardenActions, "newSavedGarden")
+    .mockImplementation(jest.fn());
+  copySavedGardenSpy = jest.spyOn(savedGardenActions, "copySavedGarden")
+    .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  axiosPostSpy.mockRestore();
+  snapshotGardenSpy.mockRestore();
+  newSavedGardenSpy.mockRestore();
+  copySavedGardenSpy.mockRestore();
 });
 describe("<GardenSnapshot />", () => {
   const fakeProps = (): GardenSnapshotProps => ({

@@ -5,6 +5,7 @@ import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { error } from "../../../toast/toast";
 import { fakeSensor } from "../../../__test_support__/fake_state/resources";
 import { PinMode } from "../../../sequences/step_tiles/pin_support";
+import * as ui from "../../../ui";
 
 const blurableInputMock = jest.fn((props: {
   className?: string,
@@ -22,13 +23,7 @@ const blurableInputMock = jest.fn((props: {
     onChange={() => { }} />,
 );
 
-jest.mock("../../../ui", () => {
-  const actual = jest.requireActual("../../../ui");
-  return {
-    ...actual,
-    BlurableInput: (props: unknown) => blurableInputMock(props as never),
-  };
-});
+let blurableInputSpy: jest.SpyInstance;
 
 describe("<AddSensorReadingMenu />", () => {
   const fakeProps = (): AddSensorReadingMenuProps => ({
@@ -47,10 +42,12 @@ describe("<AddSensorReadingMenu />", () => {
 
   beforeEach(() => {
     blurableInputMock.mockClear();
+    blurableInputSpy = jest.spyOn(ui, "BlurableInput")
+      .mockImplementation((props: unknown) => blurableInputMock(props as never));
   });
 
-  afterAll(() => {
-    jest.unmock("../../../ui");
+  afterEach(() => {
+    blurableInputSpy.mockRestore();
   });
 
   it("changes sensor", () => {

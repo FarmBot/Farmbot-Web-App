@@ -5,6 +5,8 @@ import {
 import { fireEvent, render } from "@testing-library/react";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { DropDownItem } from "../../ui";
+import * as ui from "../../ui";
+import * as eventTimePicker from "../event_time_picker";
 
 let mockFBSelectProps: {
   disabled?: boolean;
@@ -12,56 +14,10 @@ let mockFBSelectProps: {
   onChange: (ddi: DropDownItem) => void;
 } | undefined;
 
-jest.mock("../../ui", () => {
-  const React = require("react");
-  return {
-    Row: ({ children, className }: {
-      children: React.ReactNode;
-      className?: string;
-    }) => <div className={className}>{children}</div>,
-    BlurableInput: (props: {
-      name: string;
-      disabled?: boolean;
-      value: string;
-      onCommit: (e: React.SyntheticEvent<HTMLInputElement>) => void;
-    }) => <input
-      data-testid={`blurable-${props.name}`}
-      name={props.name}
-      defaultValue={props.value}
-      disabled={props.disabled}
-      onChange={() => { }}
-      onBlur={e => props.onCommit(e)} />,
-    FBSelect: (props: {
-      disabled?: boolean;
-      selectedItem?: DropDownItem;
-      onChange: (ddi: DropDownItem) => void;
-    }) => {
-      mockFBSelectProps = props;
-      return <button
-        data-testid={"time-unit"}
-        disabled={props.disabled}
-        onClick={() => props.onChange({ label: "Daily", value: "daily" })} />;
-    },
-  };
-});
-
-jest.mock("../event_time_picker", () => {
-  const React = require("react");
-  return {
-    EventTimePicker: (props: {
-      name: string;
-      disabled?: boolean;
-      value: string;
-      onCommit: (e: React.SyntheticEvent<HTMLInputElement>) => void;
-    }) => <input
-      data-testid={`event-time-${props.name}`}
-      name={props.name}
-      defaultValue={props.value}
-      disabled={props.disabled}
-      onChange={() => { }}
-      onBlur={e => props.onCommit(e)} />,
-  };
-});
+let rowSpy: jest.SpyInstance;
+let blurableInputSpy: jest.SpyInstance;
+let fbSelectSpy: jest.SpyInstance;
+let eventTimePickerSpy: jest.SpyInstance;
 
 const fakeProps = (): FarmEventRepeatFormProps => ({
   disabled: false,
@@ -83,6 +39,56 @@ enum Selectors {
 describe("<FarmEventRepeatForm/>", () => {
   beforeEach(() => {
     mockFBSelectProps = undefined;
+    rowSpy = jest.spyOn(ui, "Row")
+      .mockImplementation((props: {
+        children: React.ReactNode;
+        className?: string;
+      }) => <div className={props.className}>{props.children}</div>);
+    blurableInputSpy = jest.spyOn(ui, "BlurableInput")
+      .mockImplementation((props: {
+        name: string;
+        disabled?: boolean;
+        value: string;
+        onCommit: (e: React.SyntheticEvent<HTMLInputElement>) => void;
+      }) => <input
+        data-testid={`blurable-${props.name}`}
+        name={props.name}
+        defaultValue={props.value}
+        disabled={props.disabled}
+        onChange={() => { }}
+        onBlur={e => props.onCommit(e)} />);
+    fbSelectSpy = jest.spyOn(ui, "FBSelect")
+      .mockImplementation((props: {
+        disabled?: boolean;
+        selectedItem?: DropDownItem;
+        onChange: (ddi: DropDownItem) => void;
+      }) => {
+        mockFBSelectProps = props;
+        return <button
+          data-testid={"time-unit"}
+          disabled={props.disabled}
+          onClick={() => props.onChange({ label: "Daily", value: "daily" })} />;
+      });
+    eventTimePickerSpy = jest.spyOn(eventTimePicker, "EventTimePicker")
+      .mockImplementation((props: {
+        name: string;
+        disabled?: boolean;
+        value: string;
+        onCommit: (e: React.SyntheticEvent<HTMLInputElement>) => void;
+      }) => <input
+        data-testid={`event-time-${props.name}`}
+        name={props.name}
+        defaultValue={props.value}
+        disabled={props.disabled}
+        onChange={() => { }}
+        onBlur={e => props.onCommit(e)} />);
+  });
+
+  afterEach(() => {
+    rowSpy.mockRestore();
+    blurableInputSpy.mockRestore();
+    fbSelectSpy.mockRestore();
+    eventTimePickerSpy.mockRestore();
   });
 
   it("shows proper values", () => {
@@ -163,8 +169,4 @@ describe("<FarmEventRepeatForm/>", () => {
   it("changes end time", () => {
     testBlurable(Selectors.END_TIME, "endTime", "08:57");
   });
-});
-
-afterAll(() => {
-  jest.unmock("../../ui");
 });

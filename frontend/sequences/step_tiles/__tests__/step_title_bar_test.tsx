@@ -6,8 +6,6 @@ import { Wait } from "farmbot";
 import { StepTitleBarProps } from "../../interfaces";
 import { FarmwareName } from "../tile_execute_script";
 
-jest.unmock("../../../ui");
-
 describe("<StepTitleBar/>", () => {
   const fakeProps = (): StepTitleBarProps => ({
     step: { kind: "wait", args: { milliseconds: 100 } } as Wait,

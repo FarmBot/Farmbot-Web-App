@@ -8,25 +8,21 @@ import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import { DeviceSetting } from "../../../constants";
-
-jest.mock("../../../ui", () => {
-  const actual = jest.requireActual("../../../ui");
-  return {
-    ...actual,
-    ToggleButton: (props: { toggleAction: () => void }) =>
-      <button data-testid="toggle-button" onClick={props.toggleAction} />,
-  };
-});
+import * as ui from "../../../ui";
 
 let settingToggleSpy: jest.SpyInstance;
+let toggleButtonSpy: jest.SpyInstance;
 
 beforeEach(() => {
   settingToggleSpy = jest.spyOn(deviceActions, "settingToggle")
     .mockImplementation(jest.fn());
+  toggleButtonSpy = jest.spyOn(ui, "ToggleButton")
+    .mockImplementation((props: { toggleAction: () => void }) =>
+      <button data-testid="toggle-button" onClick={props.toggleAction} />);
 });
 
 afterEach(() => {
-  jest.restoreAllMocks();
+  toggleButtonSpy.mockRestore();
 });
 describe("<PinGuardMCUInputGroup />", () => {
   const fakeProps = (): PinGuardMCUInputGroupProps => ({

@@ -1,8 +1,4 @@
 let mockStep = {} as SendMessage;
-jest.mock("../../../api/crud", () => ({
-  editStep: jest.fn(x => x.executor(mockStep)),
-}));
-jest.unmock("../../../ui");
 
 import React from "react";
 import { TileSendMessage } from "../tile_send_message";
@@ -11,10 +7,19 @@ import { SendMessage, Channel } from "farmbot";
 import { channel } from "../tile_send_message_support";
 import { MessageType, StepParams } from "../../interfaces";
 import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
+import * as crud from "../../../api/crud";
 
-afterAll(() => {
-  jest.unmock("../../../api/crud");
+let editStepSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  editStepSpy = jest.spyOn(crud, "editStep")
+    .mockImplementation(jest.fn(x => x.executor(mockStep)));
 });
+
+afterEach(() => {
+  editStepSpy.mockRestore();
+});
+
 describe("<TileSendMessage/>", () => {
   const fakeProps = (): StepParams<SendMessage> => {
     const currentStep: SendMessage = {

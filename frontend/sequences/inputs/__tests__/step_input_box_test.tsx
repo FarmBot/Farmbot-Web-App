@@ -3,14 +3,23 @@ import { render } from "@testing-library/react";
 import { StepInputBox } from "../step_input_box";
 import { StepInputProps } from "../../interfaces";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
+import * as inputDefaultModule from "../input_default";
+import * as inputUnknownModule from "../input_unknown";
 
-jest.mock("../input_default", () => ({
-  InputDefault: () => <div className={"input-default"} />,
-}));
+let inputDefaultSpy: jest.SpyInstance;
+let inputUnknownSpy: jest.SpyInstance;
 
-jest.mock("../input_unknown", () => ({
-  InputUnknown: () => <div className={"input-unknown"} />,
-}));
+beforeEach(() => {
+  inputDefaultSpy = jest.spyOn(inputDefaultModule, "InputDefault")
+    .mockImplementation(() => <div className={"input-default"} />);
+  inputUnknownSpy = jest.spyOn(inputUnknownModule, "InputUnknown")
+    .mockImplementation(() => <div className={"input-unknown"} />);
+});
+
+afterEach(() => {
+  inputDefaultSpy.mockRestore();
+  inputUnknownSpy.mockRestore();
+});
 
 describe("<StepInputBox />", () => {
   const fakeProps = (): StepInputProps => ({

@@ -23,10 +23,6 @@ describe("handleInbound()", () => {
     jest.spyOn(resourceActions, "destroyOK").mockImplementation(jest.fn());
   });
 
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
   it("handles SKIP", () => {
     const fixtr: SkipMqttData = { status: "SKIP" };
     const result = handleInbound()(dispatch, getState, fixtr);

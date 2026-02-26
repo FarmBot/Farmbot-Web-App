@@ -13,9 +13,6 @@ beforeEach(() => {
     .mockImplementation(() => mockDevice as never);
 });
 
-afterEach(() => {
-  jest.restoreAllMocks();
-});
 describe("<SensorList/>", function () {
   const fakeProps = (): SensorListProps => {
     const pins: Pins = {

@@ -9,7 +9,6 @@ let overwriteSpy: jest.SpyInstance;
 let findSequenceByIdSpy: jest.SpyInstance;
 
 beforeEach(() => {
-  jest.restoreAllMocks();
   jest.clearAllMocks();
   jest.useRealTimers();
   overwriteSpy = jest.spyOn(crud, "overwrite").mockImplementation(jest.fn());

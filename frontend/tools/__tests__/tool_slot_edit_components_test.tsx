@@ -50,7 +50,6 @@ afterEach(() => {
     const wrapper = wrappers.pop();
     wrapper && TestRenderer.act(() => wrapper.unmount());
   }
-  jest.restoreAllMocks();
 });
 
 describe("<GantryMountedInput />", () => {

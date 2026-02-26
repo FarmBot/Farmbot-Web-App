@@ -4,18 +4,22 @@ const mockMqttClient = {
 };
 const mockConnect = jest.fn(() => mockMqttClient);
 
-jest.mock("mqtt", () => ({
-  __esModule: true,
-  connect: mockConnect,
-  default: { connect: mockConnect },
-}));
+import mqtt from "mqtt";
 
 import React from "react";
 import { render } from "@testing-library/react";
 import { DEMO_LOADING, TryFarmbot } from "../try_farmbot";
 
+let mqttConnectSpy: jest.SpyInstance;
+
 beforeEach(() => {
+  mqttConnectSpy = jest.spyOn(mqtt, "connect")
+    .mockImplementation(mockConnect as never);
   jest.clearAllMocks();
+});
+
+afterEach(() => {
+  mqttConnectSpy.mockRestore();
 });
 describe("<TryFarmbot />", () => {
   it("renders OK", () => {

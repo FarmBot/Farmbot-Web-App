@@ -3,16 +3,20 @@ import { render, screen } from "@testing-library/react";
 import { CaptureSettings } from "../index";
 import { CaptureSettingsProps } from "../interfaces";
 import { DropDownItem } from "../../../ui/fb_select";
+import * as ui from "../../../ui";
 
-jest.mock("../../../ui", () => {
-  const actual = jest.requireActual("../../../ui");
-  return {
-    ...actual,
-    FBSelect: (props: { selectedItem?: DropDownItem }) =>
+let fbSelectSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation((props: { selectedItem?: DropDownItem }) =>
       <span data-testid={"fb-select-value"}>
         {"" + props.selectedItem?.value}
-      </span>,
-  };
+      </span>);
+});
+
+afterEach(() => {
+  fbSelectSpy.mockRestore();
 });
 
 describe("<CaptureSettings />", () => {

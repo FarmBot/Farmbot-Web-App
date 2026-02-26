@@ -1,6 +1,6 @@
 import React from "react";
 import { render, fireEvent } from "@testing-library/react";
-import { StepButtonCluster, StepButtonProps } from "../step_button_cluster";
+import type { StepButtonProps } from "../step_button_cluster";
 import { Actions } from "../../constants";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { fakeFarmwareData } from "../../__test_support__/fake_sequence_step_data";
@@ -12,6 +12,11 @@ import { StepButton } from "../step_buttons";
 import { stepPut } from "../../draggable/actions";
 import { NULL_DRAGGER_ID } from "../../draggable/step_dragger";
 import { SequenceBodyItem } from "farmbot";
+
+let StepButtonCluster: typeof import("../step_button_cluster").StepButtonCluster;
+const getStepButtonCluster = async () =>
+  (await import(`../step_button_cluster.tsx?m=${Math.random()}`))
+    .StepButtonCluster;
 
 const findElement = (
   node: unknown,
@@ -34,6 +39,10 @@ const findElement = (
 };
 
 describe("<StepButtonCluster />", () => {
+  beforeEach(async () => {
+    StepButtonCluster = await getStepButtonCluster();
+  });
+
   const COMMANDS = ["move", "control peripheral", "read sensor",
     "control servo", "wait", "send message", "reboot", "shutdown", "e-stop",
     "find home", "set home", "find axis length", "if statement",

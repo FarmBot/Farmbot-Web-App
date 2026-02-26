@@ -1,10 +1,6 @@
 let mockIsMobile = false;
 import { PopoverProps } from "../../../ui/popover";
 const mockAddNewSequenceToFolder = jest.fn();
-jest.mock("../../../folders/actions", () => ({
-  addNewSequenceToFolder: (...args: unknown[]) =>
-    mockAddNewSequenceToFolder(...args),
-}));
 
 import React from "react";
 import { render, fireEvent, waitFor } from "@testing-library/react";
@@ -34,6 +30,7 @@ import { emptyState } from "../../../resources/reducer";
 import { renderWithContext } from "../../../__test_support__/mount_with_context";
 import * as screenSize from "../../../screen_size";
 import * as popoverModule from "../../../ui/popover";
+import * as folderActions from "../../../folders/actions";
 
 let isMobileSpy: jest.SpyInstance;
 let setActiveSequenceByNameSpy: jest.SpyInstance;
@@ -41,6 +38,7 @@ let editSpy: jest.SpyInstance;
 let saveSpy: jest.SpyInstance;
 let requestAutoGenerationSpy: jest.SpyInstance;
 let popoverSpy: jest.SpyInstance;
+let addNewSequenceToFolderSpy: jest.SpyInstance;
 
 beforeEach(() => {
   mockIsMobile = false;
@@ -56,6 +54,9 @@ beforeEach(() => {
     requestAutoGenerationModule,
     "requestAutoGeneration",
   ).mockImplementation(jest.fn());
+  addNewSequenceToFolderSpy = jest.spyOn(folderActions, "addNewSequenceToFolder")
+    .mockImplementation((...args: unknown[]) =>
+      mockAddNewSequenceToFolder(...args) as never);
   mockAddNewSequenceToFolder.mockClear();
   popoverSpy = jest.spyOn(popoverModule, "Popover").mockImplementation(
     ({ target, content }: PopoverProps) => <div>{target}{content}</div>);
@@ -67,6 +68,7 @@ afterEach(() => {
   editSpy.mockRestore();
   saveSpy.mockRestore();
   requestAutoGenerationSpy.mockRestore();
+  addNewSequenceToFolderSpy.mockRestore();
   popoverSpy.mockRestore();
 });
 

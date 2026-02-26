@@ -3,16 +3,19 @@ import {
   WeedDetectorSlider, SliderProps, onHslChange, OnHslChangeProps,
 } from "../slider";
 import { fireEvent, render, screen } from "@testing-library/react";
+import * as blueprintCore from "@blueprintjs/core";
 
-jest.mock("@blueprintjs/core", () => ({
-  ...jest.requireActual("@blueprintjs/core"),
-  RangeSlider: (props: {
-    onRelease?: (values: [number, number]) => void;
-  }) =>
-    <button onClick={() => props.onRelease?.([1, 5])}>
-      release slider
-    </button>,
-}));
+let rangeSliderSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  rangeSliderSpy = jest.spyOn(blueprintCore, "RangeSlider")
+    .mockImplementation((props: {
+      onRelease?: (values: [number, number]) => void;
+    }) =>
+      <button onClick={() => props.onRelease?.([1, 5])}>
+        release slider
+      </button>);
+});
 
 describe("<WeedDetectorSlider />", () => {
   beforeEach(() => {
@@ -38,6 +41,10 @@ describe("<WeedDetectorSlider />", () => {
     fireEvent.click(screen.getByRole("button", { name: /release slider/i }));
     expect(p.onRelease).toHaveBeenCalledWith([1, 5]);
   });
+});
+
+afterEach(() => {
+  rangeSliderSpy.mockRestore();
 });
 
 describe("onHslChange()", () => {

@@ -1,35 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-jest.mock("../../ui", () => {
-  const React = require("react");
-  const actual = jest.requireActual("../../ui");
-  return {
-    ...actual,
-    BlurableInput: (props: any) => <input
-      value={props.value}
-      onChange={e => props.onCommit(e)} />,
-    FBSelect: (props: any) => {
-      const value = props.selectedItem ? String(props.selectedItem.value) : "";
-      return <select
-        className={"mock-fb-select"}
-        value={value}
-        onChange={e => {
-          const nextValue = e.currentTarget.value;
-          const selected = nextValue === ""
-            ? props.list.find((item: any) => item.isNull)
-            || props.list.find((item: any) => String(item.value) === "")
-            : props.list.find((item: any) => String(item.value) === nextValue);
-          selected && props.onChange(selected);
-        }}>
-        <option value={""} />
-        {props.list.map((item: any, index: number) =>
-          <option key={`${item.value}-${index}`} value={String(item.value)}>
-            {item.label}
-          </option>)}
-      </select>;
-    },
-  };
-});
-
 import React from "react";
 import {
   PlantPanel,
@@ -61,19 +30,49 @@ import {
   fakeMovementState,
 } from "../../__test_support__/fake_bot_data";
 import * as help from "../../ui/help";
+import * as ui from "../../ui";
 
 let moveSpy: jest.SpyInstance;
 let helpSpy: jest.SpyInstance;
+let blurableInputSpy: jest.SpyInstance;
+let fbSelectSpy: jest.SpyInstance;
 
 beforeEach(() => {
   moveSpy = jest.spyOn(deviceActions, "move").mockImplementation(jest.fn());
   helpSpy = jest.spyOn(help, "Help").mockImplementation(
     jest.fn(({ text }: { text: string }) => <p>{text}</p>) as never);
+  blurableInputSpy = jest.spyOn(ui, "BlurableInput")
+    .mockImplementation((props: any) => <input
+      value={props.value}
+      onChange={e => props.onCommit(e)} />);
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation((props: any) => {
+      const value = props.selectedItem ? String(props.selectedItem.value) : "";
+      return <select
+        className={"mock-fb-select"}
+        value={value}
+        onChange={e => {
+          const nextValue = e.currentTarget.value;
+          const selected = nextValue === ""
+            ? props.list.find((item: any) => item.isNull)
+            || props.list.find((item: any) => String(item.value) === "")
+            : props.list.find((item: any) => String(item.value) === nextValue);
+          selected && props.onChange(selected);
+        }}>
+        <option value={""} />
+        {props.list.map((item: any, index: number) =>
+          <option key={`${item.value}-${index}`} value={String(item.value)}>
+            {item.label}
+          </option>)}
+      </select>;
+    });
 });
 
 afterEach(() => {
   moveSpy.mockRestore();
   helpSpy.mockRestore();
+  blurableInputSpy.mockRestore();
+  fbSelectSpy.mockRestore();
 });
 
 describe("<PlantPanel />", () => {
@@ -295,8 +294,4 @@ describe("<EditPlantDepth />", () => {
       depth: 100,
     });
   });
-});
-
-afterAll(() => {
-  jest.unmock("../../ui");
 });

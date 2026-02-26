@@ -29,9 +29,6 @@ describe("<SuctionAnimation />", () => {
     mockScaleSet.mockClear();
   });
 
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
 
   const fakeProps = (): SuctionAnimationProps => ({
     z: -100,

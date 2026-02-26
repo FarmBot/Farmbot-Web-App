@@ -1,13 +1,7 @@
 import * as lodash from "lodash";
 
 describe("slowDown", () => {
-  beforeEach(() => {
-    jest.unmock("../../slow_down");
-    jest.unmock("lodash");
-  });
-
   afterEach(() => {
-    jest.restoreAllMocks();
     jest.clearAllMocks();
   });
 

@@ -1,5 +1,3 @@
-jest.mock("../../../api/crud", () => ({ refresh: jest.fn() }));
-
 import React from "react";
 import {
   LastSeen, lastSeenNumber, LastSeenNumberProps, LastSeenProps,
@@ -8,13 +6,21 @@ import { fireEvent, render } from "@testing-library/react";
 import { SpecialStatus } from "farmbot";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { refresh } from "../../../api/crud";
+import * as crud from "../../../api/crud";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { fakeDevice } from "../../../__test_support__/resource_index_builder";
 import { cloneDeep } from "lodash";
 
-afterAll(() => {
-  jest.unmock("../../../api/crud");
+let refreshSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  refreshSpy = jest.spyOn(crud, "refresh").mockImplementation(jest.fn());
 });
+
+afterEach(() => {
+  refreshSpy.mockRestore();
+});
+
 describe("<LastSeen />", () => {
   const fakeProps = (): LastSeenProps => ({
     device: fakeDevice(),

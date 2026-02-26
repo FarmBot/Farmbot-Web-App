@@ -5,26 +5,23 @@ import { ErrorHandlingProps } from "../interfaces";
 import { settingsPanelState } from "../../../__test_support__/panel_state";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import * as deviceActions from "../../../devices/actions";
-
-jest.mock("../../../ui", () => {
-  const actual = jest.requireActual("../../../ui");
-  return {
-    ...actual,
-    ToggleButton: (props: { toggleAction: () => void }) =>
-      <button data-testid="toggle-button" onClick={props.toggleAction} />,
-  };
-});
+import * as ui from "../../../ui";
 
 let settingToggleSpy: jest.SpyInstance;
+let toggleButtonSpy: jest.SpyInstance;
 const TOGGLE_ACTION = { type: "TOGGLE_MCU" };
 
 beforeEach(() => {
   settingToggleSpy = jest.spyOn(deviceActions, "settingToggle")
     .mockImplementation(() => TOGGLE_ACTION as never);
+  toggleButtonSpy = jest.spyOn(ui, "ToggleButton")
+    .mockImplementation((props: { toggleAction: () => void }) =>
+      <button data-testid="toggle-button" onClick={props.toggleAction} />);
 });
 
 afterEach(() => {
   settingToggleSpy.mockRestore();
+  toggleButtonSpy.mockRestore();
 });
 
 describe("<ErrorHandling />", () => {

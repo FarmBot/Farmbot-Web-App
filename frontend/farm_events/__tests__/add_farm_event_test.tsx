@@ -33,10 +33,6 @@ describe("<AddFarmEvent />", () => {
       .mockImplementation(jest.fn());
   });
 
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
   function fakeProps(): AddEditFarmEventProps {
     const sequence = fakeSequence();
     sequence.body.id = 1;

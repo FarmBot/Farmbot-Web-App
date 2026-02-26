@@ -37,7 +37,6 @@ describe("ping util", () => {
 
   afterEach(() => {
     jest.useRealTimers();
-    jest.restoreAllMocks();
   });
 
   it("binds event handlers with startPinging()", async () => {
@@ -62,7 +61,6 @@ describe("sendOutboundPing()", () => {
 
   afterEach(() => {
     jest.useRealTimers();
-    jest.restoreAllMocks();
   });
 
   it("handles failure", async () => {

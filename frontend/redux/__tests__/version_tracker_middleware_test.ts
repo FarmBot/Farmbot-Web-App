@@ -12,9 +12,6 @@ describe("version tracker middleware", () => {
       .mockImplementation(jest.fn());
   });
 
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
 
   it("Calls Rollbar.configure", async () => {
     const { versionChangeMiddleware } = await import("../version_tracker_middleware");

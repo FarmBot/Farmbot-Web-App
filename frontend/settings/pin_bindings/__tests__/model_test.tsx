@@ -1,12 +1,4 @@
 let mockElapsedTime = 0;
-jest.mock("@react-three/fiber", () => ({
-  Canvas: () => <div />,
-  ThreeEvent: jest.fn(),
-  useFrame: jest.fn(x => x({
-    clock: { getElapsedTime: jest.fn(() => mockElapsedTime) }
-  })),
-  addEffect: jest.fn(),
-}));
 
 jest.mock("lodash", () => {
   const actual = jest.requireActual("lodash");
@@ -17,23 +9,11 @@ jest.mock("lodash", () => {
 });
 
 const mockSetColor = jest.fn();
-jest.mock("react", () => {
-  const originReact = jest.requireActual("react");
-  const mockRef = jest.fn(() => ({
-    current: {
-      material: { color: { set: mockSetColor } },
-      setOptions: jest.fn(),
-    }
-  }));
-  return {
-    ...originReact,
-    useRef: mockRef,
-  };
-});
 
-import React from "react";
+import React, * as ReactModule from "react";
 import TestRenderer from "react-test-renderer";
-import { ThreeEvent } from "@react-three/fiber";
+import type { ThreeEvent } from "@react-three/fiber";
+import * as threeFiber from "@react-three/fiber";
 import { IColor, Model, setZForAllInGroup } from "../model";
 import {
   buildResourceIndex,
@@ -50,10 +30,6 @@ import { ButtonPin } from "../list_and_label_support";
 import { BoxTopBaseProps } from "../interfaces";
 import { FirmwareHardware } from "farmbot";
 
-afterAll(() => {
-  jest.unmock("react");
-  jest.unmock("@react-three/fiber");
-});
 describe("setZForAllInGroup()", () => {
   it("sets z", () => {
     const e = {
@@ -72,10 +48,23 @@ describe("setZForAllInGroup()", () => {
 
 describe("<ElectronicsBoxModel />", () => {
   let execSequenceSpy: jest.SpyInstance;
+  let useFrameSpy: jest.SpyInstance;
+  let reactUseRefSpy: jest.SpyInstance;
 
   beforeEach(() => {
     jest.useFakeTimers();
     document.body.style.cursor = "default";
+    reactUseRefSpy = jest.spyOn(ReactModule, "useRef")
+      .mockImplementation(() => ({
+        current: {
+          material: { color: { set: mockSetColor } },
+          setOptions: jest.fn(),
+        }
+      }) as never);
+    useFrameSpy = jest.spyOn(threeFiber, "useFrame")
+      .mockImplementation(callback => callback({
+        clock: { getElapsedTime: jest.fn(() => mockElapsedTime) }
+      } as never));
     execSequenceSpy = jest.spyOn(deviceActions, "execSequence")
       .mockImplementation(jest.fn());
   });
@@ -84,7 +73,8 @@ describe("<ElectronicsBoxModel />", () => {
     jest.runOnlyPendingTimers();
     jest.useRealTimers();
     document.body.style.cursor = "default";
-    jest.restoreAllMocks();
+    reactUseRefSpy.mockRestore();
+    useFrameSpy.mockRestore();
   });
 
   const fakeProps = (): BoxTopBaseProps => {

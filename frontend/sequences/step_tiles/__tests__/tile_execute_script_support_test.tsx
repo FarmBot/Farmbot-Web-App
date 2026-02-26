@@ -4,8 +4,6 @@ import {
   FarmwareInputsProps, FarmwareInputs,
 } from "../tile_execute_script_support";
 
-jest.unmock("../../../ui");
-
 describe("<FarmwareInputs />", () => {
   const fakeProps = (): FarmwareInputsProps => {
     return {

@@ -1,37 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-jest.mock("../actions", () => ({
-  updateSearchTerm: jest.fn(),
-  toggleAll: jest.fn(),
-  moveSequence: jest.fn(),
-  dropSequence: jest.fn(() => jest.fn()),
-  sequenceEditMaybeSave: jest.fn(),
-  deleteFolder: jest.fn(),
-  toggleFolderEditState: jest.fn(),
-  createFolder: jest.fn(),
-  addNewSequenceToFolder: jest.fn(),
-  setFolderName: jest.fn(),
-  toggleFolderOpenState: jest.fn(),
-  setFolderColor: jest.fn(),
-}));
-
-jest.mock("@blueprintjs/core", () => ({
-  ...jest.requireActual("@blueprintjs/core"),
-  Position: jest.fn(),
-  PopoverInteractionKind: jest.fn(),
-  Button: jest.fn(p => <button>{p.text}</button>),
-  Classes: jest.fn(),
-  MenuItem: jest.fn(),
-  Alignment: jest.fn(),
-}));
 import * as popover from "../../ui/popover";
 const defaultMockPopover = ({ target, content }: popover.PopoverProps) =>
   <div>{target}{content}</div>;
 let mockPopover = defaultMockPopover;
-
-jest.mock("@blueprintjs/select", () => ({
-  Select: { ofType: jest.fn() },
-  ItemRenderer: jest.fn(),
-}));
 
 import React from "react";
 import { fireEvent, render, waitFor } from "@testing-library/react";
@@ -58,6 +29,7 @@ import {
   toggleFolderOpenState,
   setFolderColor,
 } from "../actions";
+import * as folderActions from "../actions";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { SpecialStatus, Color, SequenceBodyItem } from "farmbot";
 import { Path } from "../../internal_urls";
@@ -65,27 +37,81 @@ import * as sequenceActions from "../../sequences/actions";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { fakeMenuOpenState } from "../../__test_support__/fake_designer_state";
 import { changeBlurableInput } from "../../__test_support__/helpers";
+import * as blueprintCore from "@blueprintjs/core";
 
 let copySequenceSpy: jest.SpyInstance;
 let popoverSpy: jest.SpyInstance;
+let buttonSpy: jest.SpyInstance;
+let updateSearchTermSpy: jest.SpyInstance;
+let toggleAllSpy: jest.SpyInstance;
+let moveSequenceSpy: jest.SpyInstance;
+let dropSequenceSpy: jest.SpyInstance;
+let sequenceEditMaybeSaveSpy: jest.SpyInstance;
+let deleteFolderSpy: jest.SpyInstance;
+let toggleFolderEditStateSpy: jest.SpyInstance;
+let createFolderSpy: jest.SpyInstance;
+let addNewSequenceToFolderSpy: jest.SpyInstance;
+let setFolderNameSpy: jest.SpyInstance;
+let toggleFolderOpenStateSpy: jest.SpyInstance;
+let setFolderColorSpy: jest.SpyInstance;
 
 beforeEach(() => {
   mockPopover = defaultMockPopover;
   popoverSpy = jest.spyOn(popover, "Popover")
     .mockImplementation((p: popover.PopoverProps) => mockPopover(p));
+  buttonSpy = jest.spyOn(blueprintCore, "Button")
+    .mockImplementation((p: { text?: string }) => <button>{p.text}</button>);
   copySequenceSpy = jest.spyOn(sequenceActions, "copySequence")
+    .mockImplementation(jest.fn());
+  updateSearchTermSpy = jest.spyOn(folderActions, "updateSearchTerm")
+    .mockImplementation(jest.fn());
+  toggleAllSpy = jest.spyOn(folderActions, "toggleAll")
+    .mockImplementation(jest.fn());
+  moveSequenceSpy = jest.spyOn(folderActions, "moveSequence")
+    .mockImplementation(jest.fn());
+  dropSequenceSpy = jest.spyOn(folderActions, "dropSequence")
+    .mockImplementation(() => jest.fn());
+  sequenceEditMaybeSaveSpy =
+    jest.spyOn(folderActions, "sequenceEditMaybeSave")
+      .mockImplementation(jest.fn());
+  deleteFolderSpy = jest.spyOn(folderActions, "deleteFolder")
+    .mockImplementation(jest.fn());
+  toggleFolderEditStateSpy =
+    jest.spyOn(folderActions, "toggleFolderEditState")
+      .mockImplementation(jest.fn());
+  createFolderSpy = jest.spyOn(folderActions, "createFolder")
+    .mockImplementation(jest.fn());
+  addNewSequenceToFolderSpy =
+    jest.spyOn(folderActions, "addNewSequenceToFolder")
+      .mockImplementation(jest.fn());
+  setFolderNameSpy = jest.spyOn(folderActions, "setFolderName")
+    .mockImplementation(jest.fn());
+  toggleFolderOpenStateSpy =
+    jest.spyOn(folderActions, "toggleFolderOpenState")
+      .mockImplementation(jest.fn());
+  setFolderColorSpy = jest.spyOn(folderActions, "setFolderColor")
     .mockImplementation(jest.fn());
 });
 
 afterEach(() => {
   popoverSpy.mockRestore();
+  buttonSpy.mockRestore();
   copySequenceSpy.mockRestore();
+  updateSearchTermSpy.mockRestore();
+  toggleAllSpy.mockRestore();
+  moveSequenceSpy.mockRestore();
+  dropSequenceSpy.mockRestore();
+  sequenceEditMaybeSaveSpy.mockRestore();
+  deleteFolderSpy.mockRestore();
+  toggleFolderEditStateSpy.mockRestore();
+  createFolderSpy.mockRestore();
+  addNewSequenceToFolderSpy.mockRestore();
+  setFolderNameSpy.mockRestore();
+  toggleFolderOpenStateSpy.mockRestore();
+  setFolderColorSpy.mockRestore();
 });
 
 afterAll(() => {
-  jest.unmock("../actions");
-  jest.unmock("@blueprintjs/core");
-  jest.unmock("@blueprintjs/select");
 });
 
 const fakeRootFolder = (): FolderNodeInitial => ({

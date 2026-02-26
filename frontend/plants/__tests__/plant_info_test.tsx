@@ -18,9 +18,6 @@ beforeEach(() => {
   jest.spyOn(crud, "destroy").mockImplementation(jest.fn());
 });
 
-afterEach(() => {
-  jest.restoreAllMocks();
-});
 
 describe("<PlantInfo />", () => {
   const fakeProps = (): EditPlantInfoProps => ({

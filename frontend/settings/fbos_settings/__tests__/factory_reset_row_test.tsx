@@ -4,7 +4,6 @@ import { FactoryResetRows } from "../factory_reset_row";
 import { FactoryResetRowsProps } from "../interfaces";
 
 beforeEach(() => {
-  jest.restoreAllMocks();
   jest.clearAllMocks();
   jest.useRealTimers();
 });
