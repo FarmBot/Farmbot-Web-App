@@ -98,7 +98,8 @@ beforeEach(() => {
       value?: string;
       placeholder?: string;
       onCommit?: (e: React.FocusEvent<HTMLInputElement>) => void;
-    }) => <input
+    }) =>
+      <input
         className={props.className}
         defaultValue={props.value}
         placeholder={props.placeholder}
@@ -118,9 +119,7 @@ beforeEach(() => {
       onClick={e => {
         e.stopPropagation();
         props.list?.[0] && props.onChange?.(props.list[0]);
-      }}>
-        {props.selectedItem?.label}
-      </button>);
+      }}>{props.selectedItem?.label}</button>);
   colorPickerClusterSpy = jest.spyOn(ui, "ColorPickerCluster")
     .mockImplementation((props: { onChange: (color: string) => void }) =>
       <button

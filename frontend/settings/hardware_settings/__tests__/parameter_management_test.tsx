@@ -10,7 +10,8 @@ import * as exportMenu from "../export_menu";
 import * as configStorageActions from "../../../config_storage/actions";
 import { BooleanSetting } from "../../../session_keys";
 import * as ui from "../../../ui";
-import * as toggleHighlightModified from "../../../photos/data_management/toggle_highlight_modified";
+import * as toggleHighlightModified
+  from "../../../photos/data_management/toggle_highlight_modified";
 
 let blurableInputSpy: jest.SpyInstance;
 let toggleButtonSpy: jest.SpyInstance;
@@ -107,7 +108,7 @@ describe("<ParameterImport />", () => {
 
   it("updates", () => {
     render(<ParameterImport {...fakeProps()} />);
-    const input = screen.getByRole("textbox", { hidden: true }) as HTMLInputElement;
+    const input = screen.getByRole("textbox", { hidden: true });
     expect(input.value).toEqual("");
     fireEvent.change(input, { target: { value: "{}" } });
     expect(input.value).toEqual("{}");
