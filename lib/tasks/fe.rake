@@ -61,7 +61,7 @@ end
 def fetch_available_upgrades()
   latest_json = {}
   begin
-    output = `bun pm outdated --json`
+    output = `npm outdated --json`
     return {} if output.nil? || output.strip.empty?
     latest_json = JSON.parse(output)
   rescue JSON::ParserError
