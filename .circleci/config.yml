@@ -50,25 +50,13 @@ commands:
                   fi
   build-commands:
     steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - cache-v1-{{ .Revision }}-{{ .Environment.CIRCLE_WORKFLOW_ID }}
-      - run:
-          name: After cache restore
-          command: |
-            git clean -xdn
-            mkdir -p docker_cache
-            ls docker_cache
-            #sudo docker images
-            #if [ -f docker_cache/images.tar.gz ]; then gunzip -c docker_cache/images.tar.gz | sudo docker load; fi
       - run:
           name: Build and Install Deps
           command: |
             mv .circleci/circle_envs .env
             echo -e '\ndocker_volumes/db/pg_wal/*' >> .dockerignore
             sudo docker compose build web
-            if sudo docker compose run web bash -lc '\
+            if sudo docker compose run --rm web bash -lc '\
               gem install bundler && \
               bundle install && \
               bun install && \
@@ -81,30 +69,20 @@ commands:
               echo "export SETUP_OK=false" >> "$BASH_ENV"
               exit 1
             fi
-      - run:
-          name: After cache update
-          command: |
-            mkdir -p test-results
-            git clean -xdn
-            ls docker_cache
-            #sudo docker images
-            #if [ ! -f docker_cache/images.tar.gz ]; then sudo docker save $(sudo docker images ruby -q) | gzip > docker_cache/images.tar.gz; fi
-      # - save_cache:
-      #     key: cache-v1-{{ .Revision }}-{{ .Environment.CIRCLE_WORKFLOW_ID }}
-      #     paths:
-      #       - docker_volumes
-      #       - node_modules
-      #       - docker_cache
   rspec-commands:
     steps:
       - run:
           name: Run Ruby Tests
           command: |
-            sudo docker compose run web bundle exec rspec spec --format progress --format RspecJunitFormatter --out test-results/rspec.xml
+            sudo docker compose run --rm web bundle exec rspec spec --format progress --format RspecJunitFormatter --out test-results/rspec.xml
       - run:
           name: Check app coverage status
           command: |
-            sudo docker compose run web bundle exec rake check_file_coverage:api || [ $CIRCLE_BRANCH == "staging" ]
+            if [ "$SETUP_OK" != "true" ]; then
+              echo "skipping"
+              exit 0
+            fi
+            sudo docker compose run --rm web bundle exec rake check_file_coverage:api || [ $CIRCLE_BRANCH == "staging" ]
           when: always
       - run:
           name: Upload app coverage to Codecov
@@ -122,21 +100,29 @@ commands:
       - run:
           name: Run JS tests
           command: |
-            sudo docker compose run web bun test --reporter=junit --reporter-outfile=test-results/junit.xml
+            sudo docker compose run --rm web bun test --reporter=junit --reporter-outfile=test-results/junit.xml
             echo 'export COVERAGE_AVAILABLE=true' >> $BASH_ENV
   lint-commands:
     steps:
       - run:
           name: Run JS Linters
           command: |
-            sudo docker compose run web bun run linters
+            if [ "$SETUP_OK" != "true" ]; then
+              echo "skipping"
+              exit 0
+            fi
+            sudo docker compose run --rm web bun run linters
           when: always
   bun-build-commands:
     steps:
       - run:
           name: Check bun build
           command: |
-            sudo docker compose run web bundle exec rake assets:precompile 2>&1 | tee assets_precompile.log
+            if [ "$SETUP_OK" != "true" ]; then
+              echo "skipping"
+              exit 0
+            fi
+            sudo docker compose run --rm web bundle exec rake assets:precompile 2>&1 | tee assets_precompile.log
             printf -- '-%.0s' {1..50}; printf '\n'
             if grep -Ei '^(warn|error):' assets_precompile.log; then
               exit 1
@@ -147,13 +133,21 @@ commands:
       - run:
           name: Check frontend coverage status
           command: |
-            sudo docker compose run -e CIRCLE_SHA1="$CIRCLE_SHA1" -e CIRCLE_BRANCH="$CIRCLE_BRANCH" -e CIRCLE_PULL_REQUEST="$CIRCLE_PULL_REQUEST" web bundle exec rake coverage:run || [ $CIRCLE_BRANCH == "staging" ]
+            if [ "$SETUP_OK" != "true" ]; then
+              echo "skipping"
+              exit 0
+            fi
+            sudo docker compose run --rm -e CIRCLE_SHA1="$CIRCLE_SHA1" -e CIRCLE_BRANCH="$CIRCLE_BRANCH" -e CIRCLE_PULL_REQUEST="$CIRCLE_PULL_REQUEST" web bundle exec rake coverage:run || [ $CIRCLE_BRANCH == "staging" ]
           when: always
       - run:
           name: Check frontend file coverage status
           command: |
+            if [ "$SETUP_OK" != "true" ]; then
+              echo "skipping"
+              exit 0
+            fi
             changed=$(git diff --name-only staging...HEAD | tr '\n' ',' | sed 's/,$//') || true
-            sudo docker compose run -e CHANGED_FILES="$changed" web bundle exec rake check_file_coverage:fe || true
+            sudo docker compose run --rm -e CHANGED_FILES="$changed" web bundle exec rake check_file_coverage:fe || true
           when: always
       - run:
           name: Report frontend coverage to Coveralls
@@ -283,6 +277,10 @@ commands:
           name: On failure
           when: on_fail
           command: |
+            if [ "$SETUP_OK" != "true" ]; then
+              echo "setup failed"
+              exit 0
+            fi
             sudo docker compose ps
             sudo docker compose logs --no-color --tail=500
       - store_artifacts:
@@ -317,61 +315,24 @@ commands:
 workflows:
   version: 2
   build_and_test:
-    max_auto_reruns: 1
+    # max_auto_reruns: 1
     jobs:
-      #- build
       - all
-      #- test-api:
-      #    requires:
-      #      - build
-      #- run-linters:
-      #    requires:
-      #      - build
-      #- test-fe:
-      #    requires:
-      #      - build
 
 jobs:
-  build:
-    executor: build-executor
-    steps:
-      - build-commands
   all:
     executor: build-executor
     steps:
       - start-commands
+      - checkout
+      - run: mkdir -p test-results
       - build-commands
       - rspec-commands
       - lint-commands
       - bun-build-commands
       - js-test-commands
       - store_test_results:
-         path: test-results
+          path: test-results
       - coverage-commands
       - render-commands
       - end-commands
-  test-api:
-    executor: build-executor
-    steps:
-      - build-commands
-      - rspec-commands
-      - store_test_results:
-          path: test-results
-  run-linters:
-    executor: build-executor
-    steps:
-      - build-commands
-      - lint-commands
-      - bun-build-commands
-  test-fe:
-    executor: build-executor
-    parallelism: 4
-    steps:
-      - build-commands
-      - run:
-          name: Run JS Tests
-          command: |
-            circleci tests glob **/__tests__/**/*.ts* | circleci tests split > /tmp/tests-to-run
-            sudo docker compose run web bun test --reporter=junit --reporter-outfile=test-results/junit.xml $(cat /tmp/tests-to-run)
-      - store_test_results:
-          path: test-results
