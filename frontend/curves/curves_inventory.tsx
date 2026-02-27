@@ -153,7 +153,6 @@ export class RawCurves extends React.Component<CurvesProps, CurvesState> {
 }
 
 export const Curves = connect(mapStateToProps)(RawCurves);
-// eslint-disable-next-line import/no-default-export
 export default Curves;
 
 const CurveInventoryItem = (props: CurveInventoryItemProps) => {

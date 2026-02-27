@@ -22,63 +22,72 @@ interface SectionProps {
   title: string;
   configKey: keyof Config;
   options: Record<string, string>;
+  config: Config;
+  setConfig(config: Config): void;
+  toolTip: ToolTip;
+  setToolTip(tooltip: ToolTip): void;
   startTimeRef?: React.RefObject<number>;
 }
 
+const PublicOverlaySection = (props: SectionProps) => {
+  const {
+    title, configKey, options, config, setConfig, toolTip, setToolTip, startTimeRef,
+  } = props;
+  return <div className={"setting-section"}>
+    <div className="setting-title">{title}</div>
+    <div className={"row"}>
+      {Object.entries(options).map(([preset, label]) => {
+        const active = label == config[configKey];
+        const disabled = label == "Mobile"
+          && config.sizePreset == "Genesis XL";
+        const className = [
+          preset,
+          active ? "active" : "",
+          disabled ? "disabled" : "",
+        ].join(" ");
+        const update = { [configKey]: label };
+        return <button key={preset} className={className}
+          onClick={() => {
+            if (startTimeRef && configKey == "plants") {
+              startTimeRef.current = performance.now() / 1000;
+            }
+            clearTimeout(toolTip.timeoutId);
+            if (disabled) {
+              const text =
+                "Mobile beds are not recommended for Genesis XL machines";
+              const timeoutId = setTimeout(() =>
+                setToolTip({ timeoutId: 0, text: "" }), 3000);
+              setToolTip(({ timeoutId: timeoutId as unknown as number, text }));
+              return;
+            } else {
+              setToolTip({ timeoutId: 0, text: "" });
+            }
+            setConfig(modifyConfig(config, update));
+          }}>
+          {label}
+        </button>;
+      })}
+    </div>
+  </div>;
+};
+
 export const PublicOverlay = (props: OverlayProps) => {
   const { config, setConfig, toolTip, setToolTip } = props;
-
-  const Section = (sectionProps: SectionProps) => {
-    const { title, configKey, options } = sectionProps;
-    return <div className={"setting-section"}>
-      <div className="setting-title">{title}</div>
-      <div className={"row"}>
-        {Object.entries(options).map(([preset, label]) => {
-          const active = label == config[configKey];
-          const disabled = label == "Mobile"
-            && config.sizePreset == "Genesis XL";
-          const className = [
-            preset,
-            active ? "active" : "",
-            disabled ? "disabled" : "",
-          ].join(" ");
-          const update = { [configKey]: label };
-          return <button key={preset} className={className}
-            onClick={() => {
-              if (props.startTimeRef && configKey == "plants") {
-                props.startTimeRef.current = performance.now() / 1000;
-              }
-              clearTimeout(toolTip.timeoutId);
-              if (disabled) {
-                const text =
-                  "Mobile beds are not recommended for Genesis XL machines";
-                const timeoutId = setTimeout(() =>
-                  setToolTip({ timeoutId: 0, text: "" }), 3000);
-                setToolTip(({ timeoutId: timeoutId as unknown as number, text }));
-                return;
-              } else {
-                setToolTip({ timeoutId: 0, text: "" });
-              }
-              setConfig(modifyConfig(config, update));
-            }}>
-            {label}
-          </button>;
-        })}
-      </div>
-    </div>;
-  };
+  const commonSectionProps = { config, setConfig, toolTip, setToolTip };
 
   return <div className={"overlay"}>
     {config.settingsBar && !props.activeFocus &&
       <div className={"settings-bar"}>
-        <Section
+        <PublicOverlaySection
+          {...commonSectionProps}
           title={"FarmBot"}
           configKey={"sizePreset"}
           options={{
             "genesis": "Genesis",
             "genesis-xl": "Genesis XL",
           }} />
-        <Section
+        <PublicOverlaySection
+          {...commonSectionProps}
           title={"Season"}
           configKey={"plants"}
           startTimeRef={props.startTimeRef}
@@ -88,14 +97,16 @@ export const PublicOverlay = (props: OverlayProps) => {
             "summer": "Summer",
             "fall": "Fall",
           }} />
-        <Section
+        <PublicOverlaySection
+          {...commonSectionProps}
           title={"Bed Type"}
           configKey={"bedType"}
           options={{
             "standard": "Standard",
             "mobile": "Mobile",
           }} />
-        <Section
+        <PublicOverlaySection
+          {...commonSectionProps}
           title={"Environment"}
           configKey={"scene"}
           options={{
@@ -254,10 +265,10 @@ interface RadioProps extends OverlayProps {
 }
 
 const Radio = (props: RadioProps) => {
-  const { config, setConfig, configKey, options } = props;
+  const { config, setConfig, configKey, options, startTimeRef } = props;
   const change = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (props.startTimeRef && configKey == "plants") {
-      props.startTimeRef.current = performance.now() / 1000;
+    if (startTimeRef && configKey == "plants") {
+      startTimeRef.current = performance.now() / 1000;
     }
     const newValue = e.target.value;
     const update = { [configKey]: newValue };

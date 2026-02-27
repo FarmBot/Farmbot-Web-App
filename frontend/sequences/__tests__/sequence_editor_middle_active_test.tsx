@@ -1066,6 +1066,8 @@ describe("<SequenceSetting />", () => {
 });
 
 const restoreModule = (modulePath: string) => {
+  // Runtime restore helper intentionally uses require for currently-loaded module.
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const mockedModule = require(modulePath) as Record<string, unknown>;
   const actualModule = jest.requireActual<Record<string, unknown>>(modulePath);
   Object.keys(actualModule).map(key => {

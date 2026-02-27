@@ -77,6 +77,7 @@ export class TourStepContainer
   componentWillUnmount = () => this.state.activeBeacons.map(beacon =>
     document.querySelector(`.${beacon}`)?.classList.remove("beacon"));
 
+  // eslint-disable-next-line complexity
   render() {
     const { urlTourSlug, urlTourStepSlug } = this.tourState;
 
@@ -189,7 +190,7 @@ const TourStepNavigation = (props: TourStepNavigationProps) => {
 export const maybeBeacon = (
   compareSlug: string,
   beaconType: "soft" | "hard",
-  helpState?: HelpState | undefined,
+  helpState?: HelpState,
 ) =>
   getCurrentTourStepBeacons(helpState)?.includes(compareSlug)
     ? `beacon ${beaconType}`

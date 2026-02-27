@@ -29,7 +29,7 @@ export namespace Session {
       } else {
         throw new Error("Expected object or undefined"); // unreachable?
       }
-    } catch (error) {
+    } catch {
       return undefined;
     }
   }

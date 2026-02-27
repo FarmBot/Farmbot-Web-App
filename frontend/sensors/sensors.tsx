@@ -73,5 +73,4 @@ export class RawDesignerSensors
 }
 
 export const DesignerSensors = connect(mapStateToProps)(RawDesignerSensors);
-// eslint-disable-next-line import/no-default-export
 export default DesignerSensors;

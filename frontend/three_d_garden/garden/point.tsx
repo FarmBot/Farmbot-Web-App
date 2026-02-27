@@ -106,46 +106,48 @@ interface PointBaseProps {
 }
 
 const PointBase = (props: PointBaseProps) => {
-  const { config, radius } = props;
+  const {
+    pointName, position, onClick, color, alpha, config, radius, torusRef,
+  } = props;
   return <Group
-    name={"point-" + props.pointName}
+    name={"point-" + pointName}
     renderOrder={RenderOrder.default}
     rotation={[Math.PI / 2, 0, 0]}
-    position={props.position
+    position={position
       ? [
-        threeSpace(props.position.x, config.bedLengthOuter) + config.bedXOffset,
-        threeSpace(props.position.y, config.bedWidthOuter) + config.bedYOffset,
-        zeroFunc(config).z + props.position.z,
+        threeSpace(position.x, config.bedLengthOuter) + config.bedXOffset,
+        threeSpace(position.y, config.bedWidthOuter) + config.bedYOffset,
+        zeroFunc(config).z + position.z,
       ]
       : [0, 0, 0]}>
     <Group name={"marker"}
-      onClick={props.onClick}>
+      onClick={onClick}>
       <Cylinder
         args={[POINT_PIN_RADIUS, 0, POINT_PIN_HEIGHT, 16, 2, true]}
         position={[0, POINT_PIN_HEIGHT / 2, 0]}>
         <MeshPhongMaterial
-          color={props.color}
+          color={color}
           side={DoubleSide}
           transparent={true}
-          opacity={1 * props.alpha} />
+          opacity={1 * alpha} />
       </Cylinder>
       <Sphere
         args={[POINT_PIN_RADIUS, 16, 16]}
         position={[0, POINT_PIN_HEIGHT, 0]}>
         <MeshPhongMaterial
-          color={props.color}
+          color={color}
           side={DoubleSide}
           transparent={true}
-          opacity={1 * props.alpha} />
+          opacity={1 * alpha} />
       </Sphere>
     </Group>
     {radius > 0 &&
       <HollowCylinder
-        torusRef={props.torusRef}
+        torusRef={torusRef}
         radius={radius}
         thickness={10}
-        color={props.color}
-        alpha={0.5 * props.alpha} />}
+        color={color}
+        alpha={0.5 * alpha} />}
   </Group>;
 };
 
@@ -157,25 +159,27 @@ interface HollowCylinderProps {
   torusRef?: TorusRef;
 }
 
-const HollowCylinder = (props: HollowCylinderProps) => {
-  return props.torusRef
+const HollowCylinder = (
+  { radius, color, alpha, torusRef }: HollowCylinderProps,
+) => {
+  return torusRef
     ? <Torus
-      ref={props.torusRef}
-      scale={[props.radius, props.radius, POINT_CYLINDER_SCALE_FACTOR]}
+      ref={torusRef}
+      scale={[radius, radius, POINT_CYLINDER_SCALE_FACTOR]}
       rotation={[-Math.PI / 2, 0, 0]}
       args={[1, POINT_CYLINDER_TUBE_SIZE, SEGMENTS, SEGMENTS]}>
       <MeshPhongMaterial
-        color={props.color}
+        color={color}
         transparent={true}
-        opacity={props.alpha} />
+        opacity={alpha} />
     </Torus>
     : <Torus
       rotation={[-Math.PI / 2, 0, 0]}
       scale={[1, 1, POINT_CYLINDER_HEIGHT / 5]}
-      args={[props.radius, 5, SEGMENTS, SEGMENTS]}>
+      args={[radius, 5, SEGMENTS, SEGMENTS]}>
       <MeshPhongMaterial
-        color={props.color}
+        color={color}
         transparent={true}
-        opacity={props.alpha} />
+        opacity={alpha} />
     </Torus>;
 };

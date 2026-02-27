@@ -34,5 +34,4 @@ export class RawMessagesPanel
 }
 
 export const MessagesPanel = connect(mapStateToProps)(RawMessagesPanel);
-// eslint-disable-next-line import/no-default-export
 export default MessagesPanel;

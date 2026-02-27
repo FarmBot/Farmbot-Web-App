@@ -55,11 +55,10 @@ export function PlantLayer(props: PlantLayerProps) {
       const wrapperProps = {
         className: "plant-link-wrapper",
         style,
-        key: p.uuid,
       };
       return (getMode() === Mode.editGroup || getMode() === Mode.boxSelect)
-        ? <g {...wrapperProps}>{plant}</g>
-        : <Link {...wrapperProps}
+        ? <g key={p.uuid} {...wrapperProps}>{plant}</g>
+        : <Link key={p.uuid} {...wrapperProps}
           onClick={() => dispatch(setPanelOpen(true))}
           to={path(p.body.id)}>
           {plant}

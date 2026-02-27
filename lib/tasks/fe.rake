@@ -2,36 +2,6 @@ PACKAGE_JSON_FILE = "./package.json"
 DEPS_KEY          = "dependencies"
 DEV_DEPS_KEY      = "devDependencies"
 EXCLUDE = [
-  {
-    packages: ["punycode"],
-    reason: "dependency needs",
-    version: "1.4.1",
-  },
-  {
-    packages: ["eslint"],
-    reason: "breaking changes in",
-    version: "9",
-  },
-  {
-    packages: ["eslint-plugin-react-hooks"],
-    reason: "breaking changes in",
-    version: "6",
-  },
-  {
-    packages: ["@typescript-eslint/eslint-plugin"],
-    reason: "breaking changes in",
-    version: "8",
-  },
-  {
-    packages: ["@typescript-eslint/parser"],
-    reason: "breaking changes in",
-    version: "8",
-  },
-  {
-    packages: ["jest", "jest-cli", "jest-environment-jsdom"],
-    reason: "breaking changes (jsdom window.location) in",
-    version: "30",
-  }
 ]
 
 # Load package.json as JSON.

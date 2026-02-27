@@ -23,12 +23,12 @@ export function ZonesLayer(props: ZonesLayerProps) {
     ? { cursor: "pointer" }
     : { pointerEvents: "none" }} onMouseDown={props.startDrag}>
     {groups.map(group => visible(group) &&
-      <Zones2D {...commonProps} key={group.uuid} group={group} />)}
+      <Zones2D key={group.uuid} {...commonProps} group={group} />)}
     {groups.map(group => visible(group) &&
       getZoneType(group) === ZoneType.lines &&
-      <Zones1D {...commonProps} key={group.uuid} group={group} />)}
+      <Zones1D key={group.uuid} {...commonProps} group={group} />)}
     {groups.map(group => visible(group) &&
       getZoneType(group) === ZoneType.points &&
-      <Zones0D {...commonProps} key={group.uuid} group={group} />)}
+      <Zones0D key={group.uuid} {...commonProps} group={group} />)}
   </g>;
 }

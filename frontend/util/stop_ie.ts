@@ -40,7 +40,7 @@ export function stopIE() {
     }
 
     if (!Object.entries) { flunk(); }
-  } catch (error) {
+  } catch {
     flunk();
   }
 }

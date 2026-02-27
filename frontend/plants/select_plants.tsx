@@ -418,7 +418,6 @@ export class RawSelectPlants
 }
 
 export const SelectPlants = connect(mapStateToProps)(RawSelectPlants);
-// eslint-disable-next-line import/no-default-export
 export default SelectPlants;
 
 export interface GetFilteredPointsProps {

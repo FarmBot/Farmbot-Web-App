@@ -322,5 +322,4 @@ export class RawFarmDesigner
 }
 
 export const FarmDesigner = connect(mapStateToProps)(RawFarmDesigner);
-// eslint-disable-next-line import/no-default-export
 export default FarmDesigner;

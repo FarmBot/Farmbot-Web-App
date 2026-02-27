@@ -284,6 +284,7 @@ export const Model = (props: BoxTopBaseProps) => {
       geometry={box.nodes.Electronics_Box_Lid.geometry}
       material={box.materials[ElectronicsBoxMaterial.lid]}
       scale={SCALE} />
+    {/* eslint-disable-next-line react-hooks/refs */}
     {BUTTONS
       .filter((_, i) => btnIndexList(props.firmwareHardware).btns.includes(i))
       .map(button => {
@@ -357,6 +358,7 @@ export const Model = (props: BoxTopBaseProps) => {
           </Group>
         </Group>;
       })}
+    {/* eslint-disable-next-line react-hooks/refs */}
     {LEDS
       .filter((_, i) => btnIndexList(props.firmwareHardware).leds.includes(i))
       .map(ledIndicator => {

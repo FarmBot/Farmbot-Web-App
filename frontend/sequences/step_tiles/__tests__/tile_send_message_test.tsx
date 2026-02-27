@@ -41,6 +41,7 @@ describe("<TileSendMessage/>", () => {
     };
   };
 
+  // eslint-disable-next-line complexity
   it("renders inputs", () => {
     const { container } = render(<TileSendMessage {...fakeProps()} />);
     const inputs = container.querySelectorAll("input");

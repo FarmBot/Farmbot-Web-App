@@ -12,7 +12,7 @@ import { NavigateFunction } from "react-router";
 /** Save all Plant to PlantTemplates in a new SavedGarden. */
 export const snapshotGarden = (
   navigate: Function,
-  gardenName?: string | undefined,
+  gardenName?: string,
   gardenNotes?: string,
 ) => {
   return axios.post<void>(API.current.snapshotPath,

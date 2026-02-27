@@ -2,14 +2,21 @@ import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { BooleanSetting } from "../../../session_keys";
 import {
-  moveWidgetSetting, MoveWidgetSettingsMenu, MoveWidgetSettingsMenuProps,
+  Setting, SettingProps, MoveWidgetSettingsMenu, MoveWidgetSettingsMenuProps,
 } from "../settings_menu";
 import { DeviceSetting } from "../../../constants";
 import * as configStorageActions from "../../../config_storage/actions";
 
 let toggleWebAppBoolSpy: jest.SpyInstance;
 
-describe("moveWidgetSetting()", () => {
+describe("<Setting />", () => {
+  const fakeProps = (): SettingProps => ({
+    label: DeviceSetting.invertJogButtonXAxis,
+    setting: BooleanSetting.xy_swap,
+    dispatch: jest.fn(),
+    getConfigValue: jest.fn(() => true),
+  });
+
   beforeEach(() => {
     toggleWebAppBoolSpy = jest.spyOn(configStorageActions, "toggleWebAppBool")
       .mockImplementation(jest.fn());
@@ -20,10 +27,7 @@ describe("moveWidgetSetting()", () => {
   });
 
   it("toggles setting", () => {
-    const Setting = moveWidgetSetting(jest.fn(), jest.fn(() => true));
-    const { container } = render(<Setting
-      label={DeviceSetting.invertJogButtonXAxis}
-      setting={BooleanSetting.xy_swap} />);
+    const { container } = render(<Setting {...fakeProps()} />);
     const text = container.textContent?.toLowerCase();
     expect(text).toContain("x axis");
     expect(text).toMatch(/yes|true/);

@@ -51,7 +51,7 @@ export function move({ step, sequence, to, from }: MoveParams) {
     seq.body = arrayMover(seq.body, from, to);
   } else {
     seq.body.splice(to, 0, defensiveClone(copy));
-    delete seq.body[from];
+    seq.body.splice(from, 1);
   }
   seq.body = compact(seq.body);
   return overwrite(sequence, next.body);
@@ -76,7 +76,7 @@ export function remove(props: RemoveParams) {
     const original = sequence;
     const update = defensiveClone(original);
     update.body.body = (update.body.body || []);
-    delete update.body.body[index];
+    update.body.body.splice(index, 1);
     update.body.body = compact(update.body.body);
     dispatch(overwrite(original, update.body));
   }

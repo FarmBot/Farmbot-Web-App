@@ -226,5 +226,4 @@ export class RawAddTool extends React.Component<AddToolProps, AddToolState> {
 }
 
 export const AddTool = connect(mapStateToProps)(RawAddTool);
-// eslint-disable-next-line import/no-default-export
 export default AddTool;

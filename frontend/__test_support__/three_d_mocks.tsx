@@ -768,17 +768,25 @@ jest.mock("@react-three/drei", () => {
     PerspectiveCamera: ({ name }: { name: string }) =>
       <div className={"perspective-camera"}>{name}</div>,
     useCursor: jest.fn(),
-    useTexture: jest.fn(url => ({
-      wrapS: "",
-      wrapT: "",
-      repeat: { set: jest.fn() },
-      image: url == "mock_load_error"
-        ? undefined
-        : { height: 2, width: 2 },
-      source: url == "mock_load_error"
-        ? undefined
-        : { data: { height: 2, width: 2 } },
-    })),
+    useTexture: jest.fn(url => {
+      const makeTexture = () => {
+        const texture = {
+          wrapS: "",
+          wrapT: "",
+          rotation: 0,
+          repeat: { set: jest.fn() },
+          image: url == "mock_load_error"
+            ? undefined
+            : { height: 2, width: 2 },
+          source: url == "mock_load_error"
+            ? undefined
+            : { data: { height: 2, width: 2 } },
+          clone: () => makeTexture(),
+        };
+        return texture;
+      };
+      return makeTexture();
+    }),
     RenderTexture: ({ children }: { children: ReactNode }) =>
       <div className={"render-texture"}>{children}</div>,
     GizmoHelper: ({ name }: { name: string }) =>

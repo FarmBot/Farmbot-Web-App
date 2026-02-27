@@ -155,7 +155,7 @@ describe("<CameraCalibration/>", () => {
     const p = fakeProps();
     p.wDEnv = { CAMERA_CALIBRATION_easy_calibration: SPECIAL_VALUES.FALSE };
     render(<CameraCalibration {...p} />);
-    fireEvent.click(screen.getByRole("checkbox"));
+    fireEvent.click(screen.getByRole("checkbox", { hidden: true }));
     expect(p.saveFarmwareEnv).toHaveBeenCalledWith(
       "CAMERA_CALIBRATION_easy_calibration", "\"TRUE\"",
     );
@@ -165,7 +165,7 @@ describe("<CameraCalibration/>", () => {
     const p = fakeProps();
     p.wDEnv = { CAMERA_CALIBRATION_easy_calibration: SPECIAL_VALUES.TRUE };
     render(<CameraCalibration {...p} />);
-    fireEvent.click(screen.getByRole("checkbox"));
+    fireEvent.click(screen.getByRole("checkbox", { hidden: true }));
     expect(p.saveFarmwareEnv).toHaveBeenCalledWith(
       "CAMERA_CALIBRATION_easy_calibration", "\"FALSE\"",
     );

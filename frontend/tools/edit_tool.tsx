@@ -202,5 +202,4 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
 }
 
 export const EditTool = connect(mapStateToProps)(RawEditTool);
-// eslint-disable-next-line import/no-default-export
 export default EditTool;

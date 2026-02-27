@@ -16,10 +16,16 @@ export const useWaterFlowTexture = (waterFlow: boolean): Texture | undefined => 
     waterTexture.wrapS = waterTexture.wrapT = RepeatWrapping;
     return waterTexture;
   }, [waterFlow]);
+  const animatedTextureRef = React.useRef<Texture | undefined>(undefined);
+
+  React.useEffect(() => {
+    animatedTextureRef.current = texture;
+  }, [texture]);
 
   threeFiber.useFrame((_, delta) => {
-    if (texture) {
-      texture.offset.x -= delta * 0.05;
+    const animatedTexture = animatedTextureRef.current;
+    if (animatedTexture) {
+      animatedTexture.offset.x -= delta * 0.05;
     }
   });
 

@@ -65,7 +65,7 @@ export function betterParseNum(num: string | undefined,
       return maybe;
     }
     // eslint-disable-next-line no-empty
-  } catch (_) {
+  } catch {
   }
   return fallback;
 }

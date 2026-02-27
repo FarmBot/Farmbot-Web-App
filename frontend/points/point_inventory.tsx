@@ -309,5 +309,4 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
 }
 
 export const Points = connect(mapStateToProps)(RawPoints);
-// eslint-disable-next-line import/no-default-export
 export default Points;

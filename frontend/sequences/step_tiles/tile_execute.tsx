@@ -56,6 +56,7 @@ export class TileExecute
     }));
   };
 
+  // eslint-disable-next-line complexity
   render() {
     const { currentStep, currentSequence, resources,
     } = this.props;

@@ -7,7 +7,7 @@ import { isExpress } from "../../settings/firmware/firmware_hardware_support";
 import { Path } from "../../internal_urls";
 
 export const TOURS = (
-  firmwareHardware?: FirmwareHardware | undefined,
+  firmwareHardware?: FirmwareHardware,
 ): Record<string, Tour> => ({
   gettingStarted: {
     title: t("Getting Started"),

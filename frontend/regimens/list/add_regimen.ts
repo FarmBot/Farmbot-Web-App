@@ -7,7 +7,7 @@ import { Path } from "../../internal_urls";
 import { NavigateFunction } from "react-router";
 
 const emptyRegimenBody = (regimenCount: number): TaggedRegimen["body"] => ({
-  name: (t("New Regimen ") + (regimenCount++)),
+  name: (t("New Regimen ") + regimenCount),
   color: "gray",
   regimen_items: [],
   body: [],

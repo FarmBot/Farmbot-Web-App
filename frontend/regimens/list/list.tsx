@@ -68,5 +68,4 @@ export class RawDesignerRegimenList
 
 export const DesignerRegimenList =
   connect(mapStateToProps)(RawDesignerRegimenList);
-// eslint-disable-next-line import/no-default-export
 export default DesignerRegimenList;

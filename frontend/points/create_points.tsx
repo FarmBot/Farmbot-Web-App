@@ -290,5 +290,4 @@ export class RawCreatePoints extends React.Component<CreatePointsProps> {
 }
 
 export const CreatePoints = connect(mapStateToProps)(RawCreatePoints);
-// eslint-disable-next-line import/no-default-export
 export default CreatePoints;

@@ -100,5 +100,4 @@ export class RawEditToolSlot
 }
 
 export const EditToolSlot = connect(mapStateToPropsEdit)(RawEditToolSlot);
-// eslint-disable-next-line import/no-default-export
 export default EditToolSlot;

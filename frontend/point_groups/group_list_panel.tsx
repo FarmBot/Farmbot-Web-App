@@ -76,5 +76,4 @@ export const RawGroupListPanel = (props: GroupListPanelProps) => {
 };
 
 export const GroupListPanel = connect(mapStateToProps)(RawGroupListPanel);
-// eslint-disable-next-line import/no-default-export
 export default GroupListPanel;

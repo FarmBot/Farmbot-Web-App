@@ -419,7 +419,7 @@ export function beforeEach(state: RestResources,
   }
   const fail = (place: string) => {
     // Lazy load to avoid circular dependency on module initialization.
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { warning } = require("../toast/toast");
     warning(`(${place}) Can't modify account data when in read-only mode.`);
   };

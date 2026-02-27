@@ -229,5 +229,4 @@ export const AutoGenerateButton = (props: AutoGenerateButtonProps) => {
 
 export const DesignerSequenceEditor =
   connect(mapStateToProps)(RawDesignerSequenceEditor);
-// eslint-disable-next-line import/no-default-export
 export default DesignerSequenceEditor;

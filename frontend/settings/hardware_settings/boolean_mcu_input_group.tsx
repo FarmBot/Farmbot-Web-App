@@ -9,6 +9,7 @@ import {
 } from "./default_values";
 import { McuParamName } from "farmbot";
 
+// eslint-disable-next-line complexity
 export const BooleanMCUInputGroup = (props: BooleanMCUInputGroupProps) => {
 
   const wrapperClassName = (key: McuParamName, value: number | undefined) => {

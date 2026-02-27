@@ -82,7 +82,6 @@ export class RawDesignerFarmwareList
 
 export const DesignerFarmwareList =
   connect(mapStateToProps)(RawDesignerFarmwareList);
-// eslint-disable-next-line import/no-default-export
 export default DesignerFarmwareList;
 
 export interface FarmwareListItemProps {

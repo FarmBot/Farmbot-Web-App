@@ -234,5 +234,4 @@ const showByEveryTerm = (term: string, searchTerm: string) =>
   queryMatch(term) && searchTermMatch(term, searchTerm);
 
 export const DesignerSettings = connect(mapStateToProps)(RawDesignerSettings);
-// eslint-disable-next-line import/no-default-export
 export default DesignerSettings;

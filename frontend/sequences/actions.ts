@@ -34,7 +34,7 @@ export const sequenceLengthExceeded = (sequence: TaggedSequence): boolean => {
 export function pushStep(step: SequenceBodyItem,
   dispatch: Function,
   sequence: TaggedSequence,
-  index?: number | undefined) {
+  index?: number) {
   if (sequenceLengthExceeded(sequence)) {
     return;
   }

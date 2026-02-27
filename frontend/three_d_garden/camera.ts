@@ -4,7 +4,7 @@ import { Camera } from "./zoom_beacons_constants";
 
 export const cameraInit = (topDown: boolean): Camera => {
   const devCameraString = DevSettings.get3dCamera();
-  let devCamera = undefined;
+  let devCamera;
   try {
     devCamera = JSON.parse(devCameraString);
   } catch {

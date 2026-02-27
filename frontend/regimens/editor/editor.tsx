@@ -80,5 +80,4 @@ export class RawDesignerRegimenEditor
 
 export const DesignerRegimenEditor =
   connect(mapStateToProps)(RawDesignerRegimenEditor);
-// eslint-disable-next-line import/no-default-export
 export default DesignerRegimenEditor;

@@ -81,5 +81,4 @@ export class RawAddPlant extends React.Component<AddPlantProps, {}> {
 }
 
 export const AddPlant = connect(mapStateToProps)(RawAddPlant);
-// eslint-disable-next-line import/no-default-export
 export default AddPlant;

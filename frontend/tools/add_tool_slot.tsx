@@ -99,5 +99,4 @@ export class RawAddToolSlot
 }
 
 export const AddToolSlot = connect(mapStateToPropsAdd)(RawAddToolSlot);
-// eslint-disable-next-line import/no-default-export
 export default AddToolSlot;

@@ -94,6 +94,7 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
     if (this.stringyID) {
       return this.props.findCurve(parseInt(this.stringyID));
     }
+    return undefined;
   }
 
   toggle = (key: keyof EditCurveState) => () =>
@@ -221,7 +222,6 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
 }
 
 export const EditCurve = connect(mapStateToProps)(RawEditCurve);
-// eslint-disable-next-line import/no-default-export
 export default EditCurve;
 
 export const ScaleMenu = (props: ActionMenuProps) => {

@@ -57,7 +57,7 @@ const formatTopCounts = (
 
 export const FPSProbe = () => {
   const frameCount = React.useRef(0);
-  const lastTime = React.useRef(performance.now());
+  const lastTime = React.useRef<number | undefined>(undefined);
   const { gl, scene } = useThree();
 
   React.useEffect(() => {
@@ -69,6 +69,10 @@ export const FPSProbe = () => {
 
   useFrame(() => {
     const now = performance.now();
+    if (lastTime.current === undefined) {
+      lastTime.current = now;
+      return;
+    }
     frameCount.current += 1;
     if (now - lastTime.current >= 1000) {
       const elapsed = (now - lastTime.current) / 1000;

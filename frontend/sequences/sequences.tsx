@@ -89,5 +89,4 @@ export class RawSequences extends React.Component<SequencesProps, {}> {
 }
 
 export const Sequences = connect(mapStateToProps)(RawSequences);
-// eslint-disable-next-line import/no-default-export
 export default Sequences;

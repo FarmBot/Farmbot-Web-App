@@ -11,7 +11,7 @@ import { detectLanguage } from "../i18n";
 import { init } from "i18next";
 
 /** Dynamically change the meta title of the page. */
-export function updatePageInfo(pageName: string, panel?: string | undefined) {
+export function updatePageInfo(pageName: string, panel?: string) {
   if (pageName === "designer") {
     pageName = "Farm Designer";
     if (panel) {

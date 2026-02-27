@@ -73,5 +73,4 @@ export const RawZones = (props: ZonesProps) => {
 };
 
 export const Zones = connect(mapStateToProps)(RawZones);
-// eslint-disable-next-line import/no-default-export
 export default Zones;

@@ -221,7 +221,9 @@ export interface SoilPointerMoveProps extends AllRefs {
   activePositionRef: ActivePositionRef;
 }
 
+// eslint-disable-next-line complexity
 export const soilPointerMove = (props: SoilPointerMoveProps) =>
+  // eslint-disable-next-line complexity
   (e: ThreeEvent<MouseEvent>) => {
     const {
       config, addPlantProps,

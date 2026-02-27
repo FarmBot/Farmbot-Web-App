@@ -153,5 +153,4 @@ export class RawFarmEvents
 }
 
 export const FarmEvents = connect(mapStateToProps)(RawFarmEvents);
-// eslint-disable-next-line import/no-default-export
 export default FarmEvents;

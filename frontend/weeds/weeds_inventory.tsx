@@ -277,5 +277,4 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
 }
 
 export const Weeds = connect(mapStateToProps)(RawWeeds);
-// eslint-disable-next-line import/no-default-export
 export default Weeds;

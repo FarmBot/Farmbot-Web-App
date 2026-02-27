@@ -110,5 +110,4 @@ export const RawEditWeed = (props: EditWeedProps) => {
 };
 
 export const EditWeed = connect(mapStateToProps)(RawEditWeed);
-// eslint-disable-next-line import/no-default-export
 export default EditWeed;

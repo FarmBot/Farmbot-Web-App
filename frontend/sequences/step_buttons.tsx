@@ -11,7 +11,7 @@ export const stepClick =
   (dispatch: Function,
     step: SequenceBodyItem,
     seq: TaggedSequence | undefined,
-    index?: number | undefined) =>
+    index?: number) =>
     () => {
       seq
         ? pushStep(step, dispatch, seq, index)
@@ -19,9 +19,18 @@ export const stepClick =
       dispatch(closeCommandMenu());
     };
 
-export function StepButton({ label, step, color, dispatch, current, index }:
-  StepButtonParams) {
-  const Dragger = () => <StepDragger
+interface StepButtonDraggerProps {
+  label: string;
+  step: SequenceBodyItem;
+  color: string;
+  dispatch: Function;
+  current: TaggedSequence | undefined;
+  index?: number;
+}
+
+const StepButtonDragger = (props: StepButtonDraggerProps) => {
+  const { label, step, color, dispatch, current, index } = props;
+  return <StepDragger
     dispatch={dispatch}
     step={step}
     intent="step_splice"
@@ -39,12 +48,15 @@ export function StepButton({ label, step, color, dispatch, current, index }:
       </div>
     </button>
   </StepDragger>;
+};
+
+export const StepButton = (props: StepButtonParams) => {
   return Path.inDesigner()
-    ? <Dragger />
+    ? <StepButtonDragger {...props} />
     : <div
       className={"step-block-wrapper"}>
       <div className="block">
-        <Dragger />
+        <StepButtonDragger {...props} />
       </div>
     </div>;
-}
+};

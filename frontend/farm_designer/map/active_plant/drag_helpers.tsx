@@ -22,7 +22,7 @@ enum Line {
 function getAlignment(
   activeXYZ: BotPosition | undefined,
   plantXYZ: BotPosition,
-  swappedXY: Boolean,
+  swappedXY: boolean,
 ): Alignment {
   if (activeXYZ && !isUndefined(activeXYZ.x) && !isUndefined(activeXYZ.y)) {
     // Plant editing (dragging) is occurring

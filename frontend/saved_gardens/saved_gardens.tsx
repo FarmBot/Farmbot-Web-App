@@ -84,5 +84,4 @@ export const SavedGardenHUD = (props: { dispatch: Function }) => {
 };
 
 export const SavedGardens = connect(mapStateToProps)(RawSavedGardens);
-// eslint-disable-next-line import/no-default-export
 export default SavedGardens;

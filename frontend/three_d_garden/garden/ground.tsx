@@ -9,6 +9,21 @@ export interface GroundProps {
   config: Config;
 }
 
+interface GroundWrapperProps {
+  sceneName: string;
+  groundZ: number;
+  geometry: CircleGeometry;
+  children: React.ReactElement;
+}
+
+const GroundWrapper = (props: GroundWrapperProps) =>
+  <Mesh name={`ground ${props.sceneName}`}
+    receiveShadow={true}
+    geometry={props.geometry}
+    position={[0, 0, -props.groundZ]}>
+    {props.children}
+  </Mesh>;
+
 const groundFade = 1;
 const buildGroundGeometry = (radius: number, segments: number) => {
   const geometry = new CircleGeometry(radius, segments);
@@ -29,18 +44,30 @@ export const Ground = (props: GroundProps) => {
   const { config } = props;
   const groundZ = config.bedZOffset + config.bedHeight;
 
-  const grassTexture = useTexture(ASSETS.textures.grass + "?=grass");
-  grassTexture.wrapS = RepeatWrapping;
-  grassTexture.wrapT = RepeatWrapping;
-  grassTexture.repeat.set(24, 24);
-  const labFloorTexture = useTexture(ASSETS.textures.concrete + "?=labFloor");
-  labFloorTexture.wrapS = RepeatWrapping;
-  labFloorTexture.wrapT = RepeatWrapping;
-  labFloorTexture.repeat.set(16, 24);
-  const brickTexture = useTexture(ASSETS.textures.bricks + "?=bricks");
-  brickTexture.wrapS = RepeatWrapping;
-  brickTexture.wrapT = RepeatWrapping;
-  brickTexture.repeat.set(30, 30);
+  const grassTextureBase = useTexture(ASSETS.textures.grass + "?=grass");
+  const grassTexture = React.useMemo(() => {
+    const texture = grassTextureBase.clone();
+    texture.wrapS = RepeatWrapping;
+    texture.wrapT = RepeatWrapping;
+    texture.repeat.set(24, 24);
+    return texture;
+  }, [grassTextureBase]);
+  const labFloorTextureBase = useTexture(ASSETS.textures.concrete + "?=labFloor");
+  const labFloorTexture = React.useMemo(() => {
+    const texture = labFloorTextureBase.clone();
+    texture.wrapS = RepeatWrapping;
+    texture.wrapT = RepeatWrapping;
+    texture.repeat.set(16, 24);
+    return texture;
+  }, [labFloorTextureBase]);
+  const brickTextureBase = useTexture(ASSETS.textures.bricks + "?=bricks");
+  const brickTexture = React.useMemo(() => {
+    const texture = brickTextureBase.clone();
+    texture.wrapS = RepeatWrapping;
+    texture.wrapT = RepeatWrapping;
+    texture.repeat.set(30, 30);
+    return texture;
+  }, [brickTextureBase]);
 
   const getGroundProperties = (sceneName: string) => {
     switch (sceneName) {
@@ -63,31 +90,18 @@ export const Ground = (props: GroundProps) => {
     () => buildGroundGeometry(BigDistance.ground, 16),
     [],
   );
-
-  const GroundWrapper = ({
-    geometry,
-    children,
-  }: {
-    geometry: CircleGeometry;
-    children: React.ReactElement;
-  }) =>
-    <Mesh name={`ground ${config.scene}`}
-      receiveShadow={true}
-      geometry={geometry}
-      position={[0, 0, -groundZ]}>
-      {children}
-    </Mesh>;
+  const common = { sceneName: config.scene, groundZ };
 
   return <Detailed distances={detailLevels(config)}
     visible={config.ground}>
-    <GroundWrapper geometry={highDetailGeometry}>
+    <GroundWrapper {...common} geometry={highDetailGeometry}>
       <MeshPhongMaterial
         map={groundProperties.texture}
         color={groundProperties.color}
         shininess={0}
         vertexColors={true} />
     </GroundWrapper>
-    <GroundWrapper geometry={lowDetailGeometry}>
+    <GroundWrapper {...common} geometry={lowDetailGeometry}>
       <MeshPhongMaterial
         color={groundProperties.lowDetailColor}
         shininess={0}

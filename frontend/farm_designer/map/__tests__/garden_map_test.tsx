@@ -139,7 +139,7 @@ const fire = (target: Element, event: EventName, payload?: unknown) => {
   }
 };
 
-// eslint-disable-next-line complexity
+/* eslint-disable complexity */
 const fireWrapperEvent = (
   wrapper: RenderedGardenMap,
   selector: string,
@@ -210,6 +210,7 @@ const fireWrapperEvent = (
   }
   fire(target, event, payload);
 };
+/* eslint-enable complexity */
 
 const makeWrapper = (
   element: React.ReactElement,

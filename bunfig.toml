@@ -7,7 +7,7 @@ coverageReporter = ["text", "lcov"]
 coverageDir = "coverage_fe"
 coverage = true
 onlyFailures = true
-randomize = false
+randomize = true
 coveragePathIgnorePatterns = [
   "**/__test_support__/**",
 ]

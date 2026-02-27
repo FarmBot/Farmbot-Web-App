@@ -112,7 +112,7 @@ export class Connectivity
         <ConnectivityRow from={t("from")} to={t("to")} header={true} />
         {this.props.rowData
           .map((statusRowProps, index) =>
-            <ConnectivityRow {...statusRowProps} key={index}
+            <ConnectivityRow key={index} {...statusRowProps}
               syncStatus={statusRowProps.connectionName == "botAPI"
                 ? sync_status
                 : undefined}

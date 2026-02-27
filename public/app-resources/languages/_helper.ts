@@ -301,7 +301,7 @@ namespace Helper {
           console.log("For example: bun _helper.js en");
           return;
         }
-      } catch (e) {
+      } catch {
         if (!metricsOnly) {
           console.log(`New file created: '${lang}.json'`);
         }

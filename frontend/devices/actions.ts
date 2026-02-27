@@ -346,7 +346,7 @@ export function MCUFactoryReset() {
 export function settingToggle(
   key: ConfigKey,
   sourceFwConfig: SourceFwConfig,
-  displayAlert?: string | undefined,
+  displayAlert?: string,
 ) {
   return function (dispatch: Function, getState: () => Everything) {
     if (displayAlert) { alert(trim(displayAlert)); }

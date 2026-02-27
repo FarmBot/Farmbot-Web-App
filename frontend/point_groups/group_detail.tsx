@@ -135,5 +135,4 @@ export class RawGroupDetail extends React.Component<GroupDetailProps, {}> {
   }
 }
 export const GroupDetail = connect(mapStateToProps)(RawGroupDetail);
-// eslint-disable-next-line import/no-default-export
 export default GroupDetail;

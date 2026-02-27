@@ -135,7 +135,7 @@ const UNITS: { [x: string]: string } = {
 
 export const importParameters = (input: string) =>
   (dispatch: Function, getState: GetState) => {
-    let parsedInput = {};
+    let parsedInput: CondensedFwConfig;
     try {
       parsedInput = JSON.parse(input);
     } catch {

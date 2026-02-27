@@ -25,6 +25,7 @@ public/assets/
 public/direct_upload/temp/*.jpg
 public/dist
 core
+core.*
 upgrade_deps.sh
 # ActiveStorage blobs:
 storage/*

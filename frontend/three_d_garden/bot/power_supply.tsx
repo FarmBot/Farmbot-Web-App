@@ -30,10 +30,14 @@ export const PowerSupply = (props: PowerSupplyProps) => {
   } = props.config;
   const zGround = -bedHeight - bedZOffset;
 
-  const powerSupplyTexture = useTexture(ASSETS.textures.aluminum + "?=powerSupply");
-  powerSupplyTexture.wrapS = RepeatWrapping;
-  powerSupplyTexture.wrapT = RepeatWrapping;
-  powerSupplyTexture.repeat.set(0.01, 0.003);
+  const powerSupplyTextureBase = useTexture(ASSETS.textures.aluminum + "?=powerSupply");
+  const powerSupplyTexture = React.useMemo(() => {
+    const texture = powerSupplyTextureBase.clone();
+    texture.wrapS = RepeatWrapping;
+    texture.wrapT = RepeatWrapping;
+    texture.repeat.set(0.01, 0.003);
+    return texture;
+  }, [powerSupplyTextureBase]);
 
   const combinedCablePath = new THREE.CurvePath<THREE.Vector3>();
 

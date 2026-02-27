@@ -23,7 +23,7 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, State> {
       }
     }
     // eslint-disable-next-line no-empty
-    try { catchErrors(error); } catch (e) { }
+    try { catchErrors(error); } catch { }
     this.setState({ hasError: true });
   }
 

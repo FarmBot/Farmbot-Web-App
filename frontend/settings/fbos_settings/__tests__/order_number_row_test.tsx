@@ -29,9 +29,12 @@ describe("<OrderNumberRow />", () => {
     const p = fakeProps();
     const newOrderNumber = "FB1234";
     render(<OrderNumberRow {...p} />);
-    changeBlurableInputRTL(screen.getByRole("textbox"), newOrderNumber);
+    changeBlurableInputRTL(
+      screen.getByRole("textbox", { hidden: true }),
+      newOrderNumber,
+    );
     expect(crud.edit).toHaveBeenCalledWith(p.device, {
-      fb_order_number: newOrderNumber
+      fb_order_number: newOrderNumber,
     });
     expect(crud.save).toHaveBeenCalledWith(p.device.uuid);
   });

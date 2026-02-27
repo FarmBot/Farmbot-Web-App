@@ -29,7 +29,7 @@ export const generalizedError = (payload: GeneralizedError) => {
   }
   toastErrors(payload);
   // Lazy-load to avoid circular dependencies during test runs.
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   const { stopTracking } = require("../connectivity/data_consistency");
   stopTracking(payload.uuid);
   return { type: Actions._RESOURCE_NO, payload };

@@ -41,6 +41,7 @@ export function StepUpDownButtonPopover(
     </div>} />;
 }
 
+// eslint-disable-next-line complexity
 export function StepIconGroup(props: StepIconBarProps) {
   const {
     index, dispatch, step, sequence, helpText, confirmStepDeletion, readOnly,

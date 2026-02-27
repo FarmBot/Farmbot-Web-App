@@ -1,6 +1,4 @@
-import { GlobalRegistrator } from "@happy-dom/global-registrator";
-// eslint-disable-next-line import/no-unresolved
-import { afterAll, afterEach, beforeEach, jest as bunJest, mock as bunMock } from "bun:test";
+import { afterEach, beforeEach, jest as bunJest, mock as bunMock } from "bun:test";
 import { createRequire } from "module";
 import { TextEncoder } from "util";
 import fs from "fs";
@@ -279,10 +277,4 @@ afterEach(() => {
   bunJest.restoreAllMocks?.();
   bunJest.useRealTimers?.();
   cleanup();
-});
-
-afterAll(async () => {
-  if (GlobalRegistrator.isRegistered) {
-    await GlobalRegistrator.unregister();
-  }
 });

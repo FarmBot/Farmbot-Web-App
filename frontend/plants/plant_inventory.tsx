@@ -244,7 +244,6 @@ export class RawPlants
 }
 
 export const Plants = connect(mapStateToProps)(RawPlants);
-// eslint-disable-next-line import/no-default-export
 export default Plants;
 
 export interface PanelSectionProps {

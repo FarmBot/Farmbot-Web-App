@@ -21,13 +21,21 @@ const deskWoodDarkness = "#666";
 export const Desk = (props: DeskProps) => {
   const { config } = props;
   const zGround = -config.bedZOffset - config.bedHeight;
-  const deskWoodTexture = useTexture(ASSETS.textures.wood + "?=desk");
-  deskWoodTexture.wrapS = RepeatWrapping;
-  deskWoodTexture.wrapT = RepeatWrapping;
-  deskWoodTexture.repeat.set(0.3, 0.3);
-  const screenTexture = useTexture(ASSETS.textures.screen + "?=screen");
-  screenTexture.rotation = Math.PI / 2;
-  screenTexture.wrapT = RepeatWrapping;
+  const deskWoodTextureBase = useTexture(ASSETS.textures.wood + "?=desk");
+  const deskWoodTexture = React.useMemo(() => {
+    const texture = deskWoodTextureBase.clone();
+    texture.wrapS = RepeatWrapping;
+    texture.wrapT = RepeatWrapping;
+    texture.repeat.set(0.3, 0.3);
+    return texture;
+  }, [deskWoodTextureBase]);
+  const screenTextureBase = useTexture(ASSETS.textures.screen + "?=screen");
+  const screenTexture = React.useMemo(() => {
+    const texture = screenTextureBase.clone();
+    texture.rotation = Math.PI / 2;
+    texture.wrapT = RepeatWrapping;
+    return texture;
+  }, [screenTextureBase]);
   return <Group name={"desk"}
     visible={props.config.desk && props.activeFocus == ""}
     position={[

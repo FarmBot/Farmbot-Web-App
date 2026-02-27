@@ -39,7 +39,6 @@ export const RawDesignerControls = (props: DesignerControlsProps) => {
 };
 
 export const DesignerControls = connect(mapStateToProps)(RawDesignerControls);
-// eslint-disable-next-line import/no-default-export
 export default DesignerControls;
 
 export interface ControlsPanelProps {

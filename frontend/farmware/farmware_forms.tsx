@@ -226,7 +226,7 @@ export class FarmwareForm
 }
 
 /** Determine if a Farmware has requested inputs. */
-export function needsFarmwareForm(farmware: FarmwareManifestInfo): Boolean {
+export function needsFarmwareForm(farmware: FarmwareManifestInfo): boolean {
   const needsWidget = farmware.config?.length > 0;
   return needsWidget;
 }

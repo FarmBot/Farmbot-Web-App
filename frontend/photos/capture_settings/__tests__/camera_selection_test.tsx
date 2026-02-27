@@ -54,7 +54,10 @@ describe("<CameraSelection />", () => {
   it("stores config in API", () => {
     const p = fakeProps();
     render(<CameraSelection {...p} />);
-    fireEvent.click(screen.getByRole("button", { name: /change camera/i }));
+    fireEvent.click(screen.getByRole("button", {
+      name: /change camera/i,
+      hidden: true,
+    }));
     expect(p.saveFarmwareEnv).toHaveBeenCalledWith("camera", "\"mycamera\"");
   });
 });

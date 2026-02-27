@@ -11,18 +11,24 @@ import {
   GetWebAppConfigValue, toggleWebAppBool,
 } from "../../config_storage/actions";
 
-export const moveWidgetSetting =
-  (dispatch: Function, getConfigValue: GetWebAppConfigValue) =>
-    ({ label, setting }: { label: DeviceSetting, setting: BooleanConfigKey }) =>
-      <fieldset>
-        <label>
-          {t(label)}
-        </label>
-        <ToggleButton
-          className={getModifiedClassName(setting)}
-          toggleAction={() => dispatch(toggleWebAppBool(BooleanSetting[setting]))}
-          toggleValue={!!getConfigValue(setting)} />
-      </fieldset>;
+export interface SettingProps {
+  label: DeviceSetting;
+  setting: BooleanConfigKey;
+  dispatch: Function;
+  getConfigValue: GetWebAppConfigValue;
+}
+
+export const Setting =
+  ({ label, setting, dispatch, getConfigValue }: SettingProps) =>
+    <fieldset>
+      <label>
+        {t(label)}
+      </label>
+      <ToggleButton
+        className={getModifiedClassName(setting)}
+        toggleAction={() => dispatch(toggleWebAppBool(BooleanSetting[setting]))}
+        toggleValue={!!getConfigValue(setting)} />
+    </fieldset>;
 
 export interface MoveWidgetSettingsMenuProps {
   dispatch: Function;
@@ -33,38 +39,38 @@ export interface MoveWidgetSettingsMenuProps {
 export const MoveWidgetSettingsMenu = (
   { dispatch, getConfigValue, firmwareHardware }: MoveWidgetSettingsMenuProps,
 ) => {
-  const Setting = moveWidgetSetting(dispatch, getConfigValue);
+  const common = { dispatch, getConfigValue };
   return <div className="move-settings-menu">
     <p>{t("Invert Jog Buttons")}</p>
-    <Setting label={DeviceSetting.invertJogButtonXAxis}
+    <Setting {...common} label={DeviceSetting.invertJogButtonXAxis}
       setting={BooleanSetting.x_axis_inverted} />
-    <Setting label={DeviceSetting.invertJogButtonYAxis}
+    <Setting {...common} label={DeviceSetting.invertJogButtonYAxis}
       setting={BooleanSetting.y_axis_inverted} />
-    <Setting label={DeviceSetting.invertJogButtonZAxis}
+    <Setting {...common} label={DeviceSetting.invertJogButtonZAxis}
       setting={BooleanSetting.z_axis_inverted} />
 
     {hasEncoders(firmwareHardware) &&
       <div className="display-encoder-data">
         <p>{t("Display Encoder Data")}</p>
-        <Setting
+        <Setting {...common}
           label={DeviceSetting.displayScaledEncoderPosition}
           setting={BooleanSetting.scaled_encoders} />
-        <Setting
+        <Setting {...common}
           label={DeviceSetting.displayRawEncoderPosition}
           setting={BooleanSetting.raw_encoders} />
       </div>}
 
     <p>{t("Swap jog buttons (and rotate map)")}</p>
-    <Setting label={DeviceSetting.swapJogButtonsXAndYAxis}
+    <Setting {...common} label={DeviceSetting.swapJogButtonsXAndYAxis}
       setting={BooleanSetting.xy_swap} />
 
     <div className={"motor-position-plot-setting-row"}>
       <p>{t("Plots")}</p>
-      <Setting
+      <Setting {...common}
         label={DeviceSetting.showMotorPositionPlot}
         setting={BooleanSetting.show_motor_plot} />
       {!hasEncoders(firmwareHardware) &&
-        <Setting
+        <Setting {...common}
           label={DeviceSetting.showMotorLoadPlot}
           setting={BooleanSetting.show_missed_step_plot} />}
     </div>

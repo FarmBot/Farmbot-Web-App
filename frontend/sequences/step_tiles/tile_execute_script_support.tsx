@@ -68,7 +68,7 @@ const executorRemoveAll = (s: ExecuteScript) => {
 };
 
 /** Check if the current step already has a Farmware input. */
-const hasPair = (step: ExecuteScript, envName: string): Boolean => {
+const hasPair = (step: ExecuteScript, envName: string): boolean => {
   // A list of Farmware input pair names in the current step.
   const inputNames: string[] = (step.body || []).map(x => x.args.label);
   return inputNames.includes(envName);
@@ -205,7 +205,7 @@ export function FarmwareInputs(props: FarmwareInputsProps) {
   };
 
   /** Check if a value is the default input value. */
-  const isDefault = (envName: string, value: string): Boolean =>
+  const isDefault = (envName: string, value: string): boolean =>
     defaultValues()[envName] === value;
 
   /** All requested inputs (namespaced, only if connected to bot). */

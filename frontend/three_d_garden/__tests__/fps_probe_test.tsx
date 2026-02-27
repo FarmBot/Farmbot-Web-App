@@ -73,6 +73,7 @@ describe("FPSProbe", () => {
     render(<FPSProbe />);
     const frameHandler = useFrameSpy.mock.calls[0][0] as () => void;
     frameHandler();
+    frameHandler();
     [
       "Calls: 5",
       "Triangles: 8",

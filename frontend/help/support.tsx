@@ -124,5 +124,4 @@ export const Feedback = (props: FeedbackProps) => {
   </div>;
 };
 
-// eslint-disable-next-line import/no-default-export
 export default SupportPanel;

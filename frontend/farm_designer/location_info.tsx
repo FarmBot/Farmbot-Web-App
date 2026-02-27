@@ -194,7 +194,6 @@ export class RawLocationInfo extends React.Component<LocationInfoProps, {}> {
 }
 
 export const LocationInfo = connect(mapStateToProps)(RawLocationInfo);
-// eslint-disable-next-line import/no-default-export
 export default LocationInfo;
 
 type Item = TaggedPlantPointer

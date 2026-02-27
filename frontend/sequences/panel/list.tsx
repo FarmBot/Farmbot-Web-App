@@ -125,7 +125,6 @@ export class RawDesignerSequenceList
 
 export const DesignerSequenceList =
   connect(mapStateToProps)(RawDesignerSequenceList);
-// eslint-disable-next-line import/no-default-export
 export default DesignerSequenceList;
 
 interface SequenceListActionsProps {

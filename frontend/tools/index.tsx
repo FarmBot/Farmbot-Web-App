@@ -292,5 +292,4 @@ const ToolInventoryItem = (props: ToolInventoryItemProps) => {
 };
 
 export const Tools = connect(mapStateToProps)(RawTools);
-// eslint-disable-next-line import/no-default-export
 export default Tools;

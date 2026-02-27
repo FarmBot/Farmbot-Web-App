@@ -108,6 +108,8 @@ export class PointGroupItem
         return svgToUrl(genericWeedIcon(weedColor));
       case "ToolSlot":
         return svgToUrl("<svg xmlns='http://www.w3.org/2000/svg'></svg>");
+      default:
+        return undefined;
     }
   }
 

@@ -131,6 +131,17 @@ commands:
           command: |
             sudo docker compose run web bun run linters
           when: always
+  bun-build-commands:
+    steps:
+      - run:
+          name: Check bun build
+          command: |
+            sudo docker compose run web bundle exec rake assets:precompile 2>&1 | tee assets_precompile.log
+            printf -- '-%.0s' {1..50}; printf '\n'
+            if grep -Ei '^(warn|error):' assets_precompile.log; then
+              exit 1
+            fi
+          when: always
   coverage-commands:
     steps:
       - run:
@@ -245,7 +256,7 @@ commands:
             echo "Previous value: $PREV fps"
             echo "export PREV_VALUE=$PREV" >> $BASH_ENV
       - run:
-          name: Compare
+          name: Compare value
           when: always
           command: |
             percent_change=$(python -c 'import os; fps=float(os.environ.get("FPS_VALUE","0") or 0); prev=float(os.environ.get("PREV_VALUE","0") or 0); print("n/a" if prev==0 else f"{((fps-prev)/prev)*100:.2f}")')
@@ -332,6 +343,7 @@ jobs:
       - build-commands
       - rspec-commands
       - lint-commands
+      - bun-build-commands
       - js-test-commands
       - store_test_results:
          path: test-results
@@ -350,6 +362,7 @@ jobs:
     steps:
       - build-commands
       - lint-commands
+      - bun-build-commands
   test-fe:
     executor: build-executor
     parallelism: 4
