@@ -3,12 +3,17 @@ import { store } from "../../redux/store";
 const mockState = fakeState();
 
 import React from "react";
-import TestRenderer from "react-test-renderer";
 import { render } from "@testing-library/react";
 import { Toast, ToastContainer, Toasts } from "../fb_toast";
 import { ToastProps, ToastsProps } from "../interfaces";
 import { fakeToasts } from "../../__test_support__/fake_toasts";
 import { Path } from "../../internal_urls";
+import {
+  actRenderer,
+  createRenderer,
+  getRendererInstance,
+  unmountRenderer,
+} from "../../__test_support__/test_renderer";
 
 let originalGetState: typeof store.getState;
 let originalDispatch: typeof store.dispatch;
@@ -29,11 +34,11 @@ afterEach(() => {
 });
 
 describe("<Toast />", () => {
-  const mountedWrappers: TestRenderer.ReactTestRenderer[] = [];
+  const mountedWrappers: ReturnType<typeof createRenderer>[] = [];
 
   afterEach(() => {
     mountedWrappers.splice(0).forEach(wrapper =>
-      TestRenderer.act(() => wrapper.unmount()));
+      unmountRenderer(wrapper));
   });
 
   const fakeProps = (): ToastProps => ({
@@ -48,16 +53,22 @@ describe("<Toast />", () => {
   });
 
   const createWrapper = (p = fakeProps()) => {
-    const wrapper = TestRenderer.create(<Toast {...p} />);
+    const wrapper = createRenderer(
+      <Toast {...p} />,
+      "Failed to create Toast test wrapper.",
+    );
     mountedWrappers.push(wrapper);
     return wrapper;
   };
 
-  const getRootToast = (wrapper: TestRenderer.ReactTestRenderer) =>
+  const getInstance = (wrapper: ReturnType<typeof createRenderer>) =>
+    getRendererInstance<Toast>(wrapper, Toast);
+
+  const getRootToast = (wrapper: ReturnType<typeof createRenderer>) =>
     wrapper.root.findAll(
       node => node.type == "div" && node.props.className?.includes("toast "))[0];
 
-  const getSpinner = (wrapper: TestRenderer.ReactTestRenderer) =>
+  const getSpinner = (wrapper: ReturnType<typeof createRenderer>) =>
     wrapper.root.findAll(
       node => node.type == "div" && node.props.className == "toast-loader-spinner")[0];
 
@@ -68,19 +79,25 @@ describe("<Toast />", () => {
 
   it("advances timer", () => {
     const wrapper = createWrapper();
-    const instance = wrapper.getInstance() as Toast;
+    const instance = getInstance(wrapper);
     expect(instance.state.timeout).toEqual(7);
-    instance.advanceTimer();
+    actRenderer(() => {
+      instance.advanceTimer();
+    });
     expect(instance.state.timeout).toEqual(6.9);
   });
 
   it("dismisses", () => {
     const wrapper = createWrapper();
-    const instance = wrapper.getInstance() as Toast;
+    const instance = getInstance(wrapper);
     expect(instance.state.dismissed).toEqual(false);
     expect(instance.state.detached).toEqual(false);
-    instance.setState({ timeout: 0.5 });
-    instance.advanceTimer();
+    actRenderer(() => {
+      instance.setState({ timeout: 0.5 });
+    });
+    actRenderer(() => {
+      instance.advanceTimer();
+    });
     expect(instance.state.timeout).toEqual(0.4);
     expect(instance.state.dismissed).toEqual(true);
     expect(instance.state.detached).toEqual(true);
@@ -88,11 +105,15 @@ describe("<Toast />", () => {
 
   it("detaches", () => {
     const wrapper = createWrapper();
-    const instance = wrapper.getInstance() as Toast;
+    const instance = getInstance(wrapper);
     expect(instance.state.dismissed).toEqual(false);
     expect(instance.state.detached).toEqual(false);
-    instance.setState({ timeout: -1 });
-    instance.advanceTimer();
+    actRenderer(() => {
+      instance.setState({ timeout: -1 });
+    });
+    actRenderer(() => {
+      instance.advanceTimer();
+    });
     expect(instance.state.timeout).toEqual(-1.1);
     expect(instance.state.dismissed).toEqual(true);
     expect(instance.state.detached).toEqual(true);
@@ -102,18 +123,24 @@ describe("<Toast />", () => {
     const wrapper = createWrapper();
     expect(getSpinner(wrapper)?.props.style?.animationPlayState)
       .toEqual("running");
-    getRootToast(wrapper)?.props.onMouseEnter();
+    actRenderer(() => {
+      getRootToast(wrapper)?.props.onMouseEnter();
+    });
     expect(getSpinner(wrapper)?.props.style?.animationPlayState)
       .toEqual("paused");
   });
 
   it("handles mouse leave events", () => {
     const wrapper = createWrapper();
-    const instance = wrapper.getInstance() as Toast;
-    instance.setState({ isHovered: true });
+    const instance = getInstance(wrapper);
+    actRenderer(() => {
+      instance.setState({ isHovered: true });
+    });
     expect(getSpinner(wrapper)?.props.style?.animationPlayState)
       .toEqual("paused");
-    getRootToast(wrapper)?.props.onMouseLeave();
+    actRenderer(() => {
+      getRootToast(wrapper)?.props.onMouseLeave();
+    });
     expect(getSpinner(wrapper)?.props.style?.animationPlayState)
       .toEqual("running");
   });
@@ -121,9 +148,13 @@ describe("<Toast />", () => {
   it("handles clicks", () => {
     jest.useFakeTimers();
     const wrapper = createWrapper();
-    const instance = wrapper.getInstance() as Toast;
-    getRootToast(wrapper)?.props.onClick();
-    jest.advanceTimersByTime(200 * 1.1);
+    const instance = getInstance(wrapper);
+    actRenderer(() => {
+      getRootToast(wrapper)?.props.onClick();
+    });
+    actRenderer(() => {
+      jest.advanceTimersByTime(200 * 1.1);
+    });
     expect(getRootToast(wrapper)?.props.className).toContain("poof");
     expect(instance.state.dismissed).toBeTruthy();
   });
@@ -132,10 +163,12 @@ describe("<Toast />", () => {
     const p = fakeProps();
     p.noDismiss = true;
     const wrapper = createWrapper(p);
-    const instance = wrapper.getInstance() as Toast;
+    const instance = getInstance(wrapper);
     expect(instance.state.dismissed).toBeFalsy();
     expect(getRootToast(wrapper)?.props.className).toContain("no-timer");
-    getRootToast(wrapper)?.props.onClick();
+    actRenderer(() => {
+      getRootToast(wrapper)?.props.onClick();
+    });
     expect(getRootToast(wrapper)?.props.className).not.toContain("poof");
     expect(instance.state.dismissed).toBeFalsy();
   });
@@ -149,9 +182,11 @@ describe("<Toast />", () => {
 
   it("unmounts", () => {
     const wrapper = createWrapper();
-    const instance = wrapper.getInstance() as Toast;
-    instance.setState({ intervalId: 1 });
-    wrapper.unmount();
+    const instance = getInstance(wrapper);
+    actRenderer(() => {
+      instance.setState({ intervalId: 1 });
+    });
+    unmountRenderer(wrapper);
   });
 
   it("redirects", () => {

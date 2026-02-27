@@ -6,7 +6,7 @@ import { ASSETS } from "../../../constants";
 
 describe("<VacuumPumpCover />", () => {
   it("renders", () => {
-    const model = useGLTF(ASSETS.models.vacuumPumpCover) as VacuumPumpCoverFull;
+    const model = useGLTF(ASSETS.models.vacuumPumpCover) as unknown as VacuumPumpCoverFull;
     const Component = VacuumPumpCover(model);
     const { container } = render(<Component name={"name"} />);
     expect(container.innerHTML).toContain("name");

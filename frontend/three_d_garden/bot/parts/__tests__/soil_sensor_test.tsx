@@ -6,7 +6,7 @@ import { ASSETS } from "../../../constants";
 
 describe("<SoilSensor />", () => {
   it("renders", () => {
-    const model = useGLTF(ASSETS.models.soilSensor) as SoilSensorFull;
+    const model = useGLTF(ASSETS.models.soilSensor) as unknown as SoilSensorFull;
     const Component = SoilSensor(model);
     const { container } = render(<Component name={"name"} />);
     expect(container.innerHTML).toContain("name");

@@ -6,7 +6,11 @@ let mockPopover = defaultMockPopover;
 
 import React from "react";
 import { fireEvent, render, waitFor } from "@testing-library/react";
-import TestRenderer from "react-test-renderer";
+import {
+  actRenderer,
+  createRenderer,
+  unmountRenderer,
+} from "../../__test_support__/test_renderer";
 import {
   Folders, FolderPanelTop, SequenceDropArea, FolderNameEditor,
   FolderButtonCluster, FolderListItem, FolderNameInput,
@@ -453,13 +457,18 @@ describe("<FolderListItem />", () => {
     p.sequence.body.id = undefined;
     p.sequence.body.name = "";
     p.sequence.body.color = "" as Color;
-    const wrapper = TestRenderer.create(<FolderListItem {...p} />);
+    const wrapper = createRenderer(
+      <FolderListItem {...p} />,
+      "Failed to create FolderListItem test wrapper.",
+    );
     const colorPicker = wrapper.root.find(node =>
       node.props.current === p.sequence.body.color
       && typeof node.props.onChange == "function");
-    colorPicker.props.onChange("green");
+    actRenderer(() => {
+      colorPicker.props.onChange("green");
+    });
     expect(sequenceEditMaybeSave).toHaveBeenCalledWith(p.sequence, { color: "green" });
-    wrapper.unmount();
+    unmountRenderer(wrapper);
   });
 
   it("starts sequence move: drag start", () => {

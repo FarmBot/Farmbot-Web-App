@@ -1,8 +1,12 @@
 import React from "react";
 import { render } from "@testing-library/react";
-import TestRenderer from "react-test-renderer";
 import { LocationSelection, LocationDisplay } from "../location_selection";
 import { LocationSelectionProps } from "../interfaces";
+import {
+  actRenderer,
+  createRenderer,
+  unmountRenderer,
+} from "../../../__test_support__/test_renderer";
 
 describe("<LocationSelection />", () => {
   function fakeProps(): LocationSelectionProps {
@@ -24,40 +28,46 @@ describe("<LocationSelection />", () => {
   it("changes location", () => {
     const p = fakeProps();
     p.xyzLocation = { x: 10, y: 20, z: 30 };
-    const wrapper = TestRenderer.create(<LocationSelection {...p} />);
+    const wrapper = createRenderer(<LocationSelection {...p} />);
     const axisInput = wrapper.root.find(node =>
       node.props.axis == "x"
       && typeof node.props.onChange == "function");
-    axisInput.props.onChange("x", 10);
+    actRenderer(() => {
+      axisInput.props.onChange("x", 10);
+    });
     expect(p.setLocation).toHaveBeenCalledWith({ x: 10, y: 20, z: 30 });
-    wrapper.unmount();
+    unmountRenderer(wrapper);
   });
 
   it("changes location: undefined", () => {
     const p = fakeProps();
     p.xyzLocation = undefined;
-    const wrapper = TestRenderer.create(<LocationSelection {...p} />);
+    const wrapper = createRenderer(<LocationSelection {...p} />);
     const axisInput = wrapper.root.find(node =>
       node.props.axis == "x"
       && typeof node.props.onChange == "function");
-    axisInput.props.onChange("x", undefined);
+    actRenderer(() => {
+      axisInput.props.onChange("x", undefined);
+    });
     expect(p.setLocation).toHaveBeenCalledWith({ x: undefined });
-    wrapper.unmount();
+    unmountRenderer(wrapper);
   });
 
   it("changes deviation", () => {
     const p = fakeProps();
-    const wrapper = TestRenderer.create(<LocationSelection {...p} />);
+    const wrapper = createRenderer(<LocationSelection {...p} />);
     const input = wrapper.root.find(node =>
       node.props.type == "number"
       && typeof node.props.onCommit == "function"
       && node.props.value === 0);
-    input.props.onCommit({
-      currentTarget: { value: "100" },
-      target: { value: "100" },
+    actRenderer(() => {
+      input.props.onCommit({
+        currentTarget: { value: "100" },
+        target: { value: "100" },
+      });
     });
     expect(p.setDeviation).toHaveBeenCalledWith(100);
-    wrapper.unmount();
+    unmountRenderer(wrapper);
   });
 });
 

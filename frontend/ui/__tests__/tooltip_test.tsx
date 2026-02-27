@@ -1,7 +1,11 @@
 import React from "react";
-import TestRenderer from "react-test-renderer";
 import { fireEvent, render, RenderResult } from "@testing-library/react";
 import { ToolTip, ToolTipProps } from "../tooltip";
+import {
+  actRenderer,
+  createRenderer,
+  unmountRenderer,
+} from "../../__test_support__/test_renderer";
 
 describe("<ToolTip />", () => {
   const fakeProps = (): ToolTipProps => ({
@@ -54,9 +58,11 @@ describe("<ToolTip />", () => {
 
   it("stops propagation", () => {
     const e = { stopPropagation: jest.fn() };
-    const testWrapper = TestRenderer.create(<ToolTip {...fakeProps()} />);
-    testWrapper.root.findByProps({ className: "title-help" }).props.onClick(e);
+    const testWrapper = createRenderer(<ToolTip {...fakeProps()} />);
+    actRenderer(() => {
+      testWrapper.root.findByProps({ className: "title-help" }).props.onClick(e);
+    });
     expect(e.stopPropagation).toHaveBeenCalled();
-    testWrapper.unmount();
+    unmountRenderer(testWrapper);
   });
 });

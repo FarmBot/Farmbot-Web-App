@@ -2,7 +2,6 @@ const mockToken = { token: { unencoded: {}, encoded: "========" } };
 let mockPostResponse = Promise.resolve({ data: mockToken });
 
 import React from "react";
-import TestRenderer from "react-test-renderer";
 import { cleanup, render } from "@testing-library/react";
 import { TosUpdate } from "../component";
 import axios from "axios";
@@ -11,13 +10,34 @@ import { Session } from "../../session";
 import { error } from "../../toast/toast";
 import { formEvent, inputEvent } from "../../__test_support__/fake_html_events";
 import { TermsCheckbox } from "../../front_page/terms_checkbox";
+import {
+  actRenderer,
+  createRenderer,
+  getRendererInstance,
+  unmountRenderer,
+} from "../../__test_support__/test_renderer";
 import * as i18n from "../../i18n";
 
-const wrappers: TestRenderer.ReactTestRenderer[] = [];
+const wrappers: ReturnType<typeof createRenderer>[] = [];
 const createWrapper = () => {
-  const wrapper = TestRenderer.create(<TosUpdate />);
+  const wrapper = createRenderer(
+    <TosUpdate />,
+    "Failed to create TosUpdate test wrapper.",
+  );
   wrappers.push(wrapper);
   return wrapper;
+};
+
+const getInstance = (wrapper: ReturnType<typeof createRenderer>) =>
+  getRendererInstance<TosUpdate>(wrapper, TosUpdate);
+
+const createTosFormWrapper = (instance: TosUpdate) => {
+  const tosForm = createRenderer(
+    instance.tosForm(),
+    "Failed to create TosUpdate form test wrapper.",
+  );
+  wrappers.push(tosForm);
+  return tosForm;
 };
 
 beforeEach(() => {
@@ -38,7 +58,7 @@ afterEach(() => {
   cleanup();
   while (wrappers.length > 0) {
     const wrapper = wrappers.pop();
-    wrapper && TestRenderer.act(() => wrapper.unmount());
+    wrapper && unmountRenderer(wrapper);
   }
   jest.useRealTimers();
   mockPostResponse = Promise.resolve({ data: mockToken });
@@ -58,7 +78,7 @@ describe("<TosUpdate />", () => {
   });
 
   it("has a setter", () => {
-    const tosUpdate = createWrapper().getInstance() as TosUpdate;
+    const tosUpdate = getInstance(createWrapper());
     tosUpdate.setState = jest.fn();
     tosUpdate.set("email")(inputEvent("foo@bar.com"));
     expect(tosUpdate.setState).toHaveBeenCalledWith({ email: "foo@bar.com" });
@@ -73,8 +93,10 @@ describe("<TosUpdate />", () => {
   const fakeFormEvent = formEvent();
 
   it("submits a form", async () => {
-    const instance = createWrapper().getInstance() as TosUpdate;
-    instance.setState(fake);
+    const instance = getInstance(createWrapper());
+    actRenderer(() => {
+      instance.setState(fake);
+    });
     instance.submit(fakeFormEvent);
     await mockPostResponse;
     expect(fakeFormEvent.preventDefault).toHaveBeenCalled();
@@ -83,8 +105,10 @@ describe("<TosUpdate />", () => {
 
   it("errors while submitting", async () => {
     mockPostResponse = Promise.reject({ response: { data: ["error"] } });
-    const instance = createWrapper().getInstance() as TosUpdate;
-    instance.setState(fake);
+    const instance = getInstance(createWrapper());
+    actRenderer(() => {
+      instance.setState(fake);
+    });
     instance.submit(fakeFormEvent);
     await mockPostResponse.catch(() => undefined);
     jest.runAllTimers();
@@ -104,44 +128,50 @@ describe("<TosUpdate />", () => {
 
   it("accepts terms", () => {
     const wrapper = createWrapper();
-    const instance = wrapper.getInstance() as TosUpdate;
-    const tosForm = TestRenderer.create(instance.tosForm());
-    wrappers.push(tosForm);
+    const instance = getInstance(wrapper);
+    const tosForm = createTosFormWrapper(instance);
     expect(instance.state.agree_to_terms).toBeFalsy();
-    tosForm.root.findByType(TermsCheckbox).props.onChange({
-      currentTarget: { checked: true },
+    actRenderer(() => {
+      tosForm.root.findByType(TermsCheckbox).props.onChange({
+        currentTarget: { checked: true },
+      });
     });
     expect(instance.state.agree_to_terms).toBeTruthy();
   });
 
   it("errors on click", () => {
     const wrapper = createWrapper();
-    const instance = wrapper.getInstance() as TosUpdate;
+    const instance = getInstance(wrapper);
     expect(instance.state.agree_to_terms).toBeFalsy();
-    const tosForm = TestRenderer.create(instance.tosForm());
-    wrappers.push(tosForm);
-    tosForm.root.findByType("button").props.onClick();
+    const tosForm = createTosFormWrapper(instance);
+    actRenderer(() => {
+      tosForm.root.findByType("button").props.onClick();
+    });
     expect(error).toHaveBeenCalledWith("Please agree to the terms.");
   });
 
   it("updates", () => {
     const wrapper = createWrapper();
-    const instance = wrapper.getInstance() as TosUpdate;
+    const instance = getInstance(wrapper);
     instance.update = jest.fn();
-    const tosForm = TestRenderer.create(instance.tosForm());
-    wrappers.push(tosForm);
-    tosForm.root.findByType("button").props.onClick();
+    const tosForm = createTosFormWrapper(instance);
+    actRenderer(() => {
+      tosForm.root.findByType("button").props.onClick();
+    });
     expect(instance.update).toHaveBeenCalled();
   });
 
   it("doesn't error on click", () => {
     const wrapper = createWrapper();
-    const instance = wrapper.getInstance() as TosUpdate;
-    instance.setState({ agree_to_terms: true });
+    const instance = getInstance(wrapper);
+    actRenderer(() => {
+      instance.setState({ agree_to_terms: true });
+    });
     expect(instance.state.agree_to_terms).toBeTruthy();
-    const tosForm = TestRenderer.create(instance.tosForm());
-    wrappers.push(tosForm);
-    tosForm.root.findByType("button").props.onClick();
+    const tosForm = createTosFormWrapper(instance);
+    actRenderer(() => {
+      tosForm.root.findByType("button").props.onClick();
+    });
     expect(error).not.toHaveBeenCalled();
   });
 });

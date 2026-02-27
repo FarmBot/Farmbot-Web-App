@@ -1,6 +1,5 @@
 import React from "react";
 import { fireEvent, render, within } from "@testing-library/react";
-import { act, create as createRenderer } from "react-test-renderer";
 import {
   PeripheralList, AnalogSlider, AnalogSliderProps,
 } from "../peripheral_list";
@@ -12,6 +11,12 @@ import { Slider } from "@blueprintjs/core";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import * as deviceActions from "../../../devices/actions";
 import * as mustBeOnline from "../../../devices/must_be_online";
+import {
+  actRenderer,
+  createRenderer,
+  getRendererInstance,
+  unmountRenderer,
+} from "../../../__test_support__/test_renderer";
 
 let pinToggleSpy: jest.SpyInstance;
 let writePinSpy: jest.SpyInstance;
@@ -161,11 +166,12 @@ describe("<AnalogSlider />", () => {
   it("changes value", () => {
     const renderer = createRenderer(<AnalogSlider {...fakeProps()} />);
     const slider = renderer.root.findByType(Slider);
-    act(() => {
+    actRenderer(() => {
       slider.props.onChange(128);
     });
-    const instance = renderer.getInstance() as AnalogSlider;
+    const instance = getRendererInstance<AnalogSlider>(renderer, AnalogSlider);
     expect(instance.state.value).toEqual(128);
+    unmountRenderer(renderer);
   });
 
   it("sends value", () => {
@@ -173,19 +179,21 @@ describe("<AnalogSlider />", () => {
     p.pin = 13;
     const renderer = createRenderer(<AnalogSlider {...p} />);
     const slider = renderer.root.findByType(Slider);
-    act(() => {
+    actRenderer(() => {
       slider.props.onRelease(128);
     });
     expect(deviceActions.writePin).toHaveBeenCalledWith(13, 128, ANALOG);
+    unmountRenderer(renderer);
   });
 
   it("doesn't send value", () => {
     const renderer = createRenderer(<AnalogSlider {...fakeProps()} />);
     const slider = renderer.root.findByType(Slider);
-    act(() => {
+    actRenderer(() => {
       slider.props.onRelease(128);
     });
     expect(deviceActions.writePin).not.toHaveBeenCalled();
+    unmountRenderer(renderer);
   });
 
   it("renders read value", () => {
@@ -194,10 +202,11 @@ describe("<AnalogSlider />", () => {
     const renderer = createRenderer(<AnalogSlider {...p} />);
     const initialSlider = renderer.root.findByType(Slider);
     expect(initialSlider.props.value).toEqual(255);
-    act(() => {
+    actRenderer(() => {
       initialSlider.props.onChange(128);
     });
     const nextSlider = renderer.root.findByType(Slider);
     expect(nextSlider.props.value).toEqual(128);
+    unmountRenderer(renderer);
   });
 });

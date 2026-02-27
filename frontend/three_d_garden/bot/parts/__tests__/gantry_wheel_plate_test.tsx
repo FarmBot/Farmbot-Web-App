@@ -6,7 +6,7 @@ import { ASSETS } from "../../../constants";
 
 describe("<GantryWheelPlate />", () => {
   it("renders", () => {
-    const model = useGLTF(ASSETS.models.gantryWheelPlate) as GantryWheelPlateFull;
+    const model = useGLTF(ASSETS.models.gantryWheelPlate) as unknown as GantryWheelPlateFull;
     const Component = GantryWheelPlate(model);
     const { container } = render(<Component name={"name"} />);
     expect(container.innerHTML).toContain("name");

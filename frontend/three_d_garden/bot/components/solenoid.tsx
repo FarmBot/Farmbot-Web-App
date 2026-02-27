@@ -24,7 +24,7 @@ export const Solenoid = (props: SolenoidProps) => {
     columnLength, zGantryOffset,
   } = config;
   const zDir = zDirFunc(config);
-  const solenoid = useGLTF(ASSETS.models.solenoid, LIB_DIR) as SolenoidPart;
+  const solenoid = useGLTF(ASSETS.models.solenoid, LIB_DIR) as unknown as SolenoidPart;
   return <Group>
     <WaterTube tubeName={"lower-solenoid-water-tube"}
       waterFlow={config.waterFlow}

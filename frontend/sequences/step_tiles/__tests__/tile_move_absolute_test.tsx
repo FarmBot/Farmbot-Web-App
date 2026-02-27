@@ -1,7 +1,6 @@
 import React from "react";
 import { TileMoveAbsolute } from "../tile_move_absolute";
 import { render } from "@testing-library/react";
-import TestRenderer from "react-test-renderer";
 import {
   fakeSequence, fakeTool, fakeToolSlot,
 } from "../../../__test_support__/fake_state/resources";
@@ -21,6 +20,10 @@ import { cloneDeep } from "lodash";
 import * as screenSize from "../../../screen_size";
 import { ExpandableHeader } from "../../../ui/expandable_header";
 import * as blueprintCore from "@blueprintjs/core";
+import {
+  actRenderer,
+  createRenderer,
+} from "../../../__test_support__/test_renderer";
 
 let overwriteSpy: jest.SpyInstance;
 let isDesktopSpy: jest.SpyInstance;
@@ -111,7 +114,7 @@ describe("<TileMoveAbsolute />", () => {
   it("renders options on wide screens", () => {
     const p = fakeProps();
     isDesktopSpy.mockReturnValue(true);
-    const rendered = TestRenderer.create(<TileMoveAbsolute {...p} />);
+    const rendered = createRenderer(<TileMoveAbsolute {...p} />);
     const header = rendered.root.findByType(ExpandableHeader);
     expect(header.props.title).toEqual("Options");
   });
@@ -119,7 +122,7 @@ describe("<TileMoveAbsolute />", () => {
   it("doesn't render options on narrow screens", () => {
     const p = fakeProps();
     isDesktopSpy.mockReturnValue(false);
-    const rendered = TestRenderer.create(<TileMoveAbsolute {...p} />);
+    const rendered = createRenderer(<TileMoveAbsolute {...p} />);
     const header = rendered.root.findByType(ExpandableHeader);
     expect(header.props.title).toEqual("");
   });
@@ -129,17 +132,19 @@ describe("<TileMoveAbsolute />", () => {
     p.expandStepOptions = false;
     p.currentStep.args.offset.args = { x: 0, y: 0, z: 0 };
     p.currentStep.args.speed = 100;
-    const rendered = TestRenderer.create(<TileMoveAbsolute {...p} />);
+    const rendered = createRenderer(<TileMoveAbsolute {...p} />);
     const header = rendered.root.findByType(ExpandableHeader);
     expect(header.props.expanded).toBeFalsy();
-    header.props.onClick();
+    actRenderer(() => {
+      header.props.onClick();
+    });
     expect(rendered.root.findByType(ExpandableHeader).props.expanded).toBeTruthy();
   });
 
   it("expands form by default", () => {
     const p = fakeProps();
     p.expandStepOptions = true;
-    const rendered = TestRenderer.create(<TileMoveAbsolute {...p} />);
+    const rendered = createRenderer(<TileMoveAbsolute {...p} />);
     expect(rendered.root.findByType(ExpandableHeader).props.expanded).toBeTruthy();
   });
 
@@ -147,7 +152,7 @@ describe("<TileMoveAbsolute />", () => {
     const p = fakeProps();
     p.expandStepOptions = false;
     p.currentStep.args.offset.args.z = 100;
-    const rendered = TestRenderer.create(<TileMoveAbsolute {...p} />);
+    const rendered = createRenderer(<TileMoveAbsolute {...p} />);
     expect(rendered.root.findByType(ExpandableHeader).props.expanded).toBeTruthy();
   });
 
@@ -156,7 +161,7 @@ describe("<TileMoveAbsolute />", () => {
     p.expandStepOptions = false;
     p.currentStep.args.offset.args = { x: 0, y: 0, z: 0 };
     p.currentStep.args.speed = 100;
-    const rendered = TestRenderer.create(<TileMoveAbsolute {...p} />);
+    const rendered = createRenderer(<TileMoveAbsolute {...p} />);
     expect(rendered.root.findByType(ExpandableHeader).props.expanded).toBeFalsy();
   });
 
@@ -165,7 +170,7 @@ describe("<TileMoveAbsolute />", () => {
     p.expandStepOptions = false;
     p.currentStep.args.offset.args = { x: 0, y: 0, z: 0 };
     p.currentStep.args.speed = 50;
-    const rendered = TestRenderer.create(<TileMoveAbsolute {...p} />);
+    const rendered = createRenderer(<TileMoveAbsolute {...p} />);
     expect(rendered.root.findByType(ExpandableHeader).props.expanded).toBeTruthy();
   });
 

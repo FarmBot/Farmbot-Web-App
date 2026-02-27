@@ -62,7 +62,7 @@ export type SoilSensorFull = GLTF & {
 }
 
 export const SoilSensor = (model: SoilSensorFull) =>
-  (props: ThreeElements["group"]) => {
+  (props: Omit<ThreeElements["group"], "ref">) => {
     const { nodes, materials } = model;
     // eslint-disable-next-line no-null/no-null
     return <Group {...props} dispose={null}>

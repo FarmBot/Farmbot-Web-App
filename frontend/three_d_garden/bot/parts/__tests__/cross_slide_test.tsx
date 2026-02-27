@@ -6,7 +6,7 @@ import { ASSETS } from "../../../constants";
 
 describe("<CrossSlide />", () => {
   it("renders", () => {
-    const model = useGLTF(ASSETS.models.crossSlide) as CrossSlideFull;
+    const model = useGLTF(ASSETS.models.crossSlide) as unknown as CrossSlideFull;
     const Component = CrossSlide(model);
     const { container } = render(<Component name={"name"} />);
     expect(container.innerHTML).toContain("name");

@@ -17,6 +17,27 @@ const globalAny = globalThis as typeof globalThis & {
   };
 };
 
+const originalDocumentQuerySelector = document.querySelector.bind(document);
+const originalSyntaxError = globalThis.SyntaxError;
+const ensureSyntaxError = () => {
+  const assign = (target: Record<string, unknown> | undefined) => {
+    if (!target) { return; }
+    Object.defineProperty(target, "SyntaxError", {
+      value: originalSyntaxError,
+      configurable: true,
+      writable: true,
+    });
+  };
+  assign(globalThis as unknown as Record<string, unknown>);
+  assign(globalAny.window as unknown as Record<string, unknown> | undefined);
+  const windowCtor = globalAny.window?.constructor as
+    | { prototype?: Record<string, unknown> }
+    | undefined;
+  assign(windowCtor?.prototype);
+};
+
+ensureSyntaxError();
+
 if (!globalAny.globalConfig) {
   globalAny.globalConfig = {
     NODE_ENV: "development",
@@ -242,9 +263,19 @@ beforeEach(() => {
   } else {
     globalWithMocks.mockNavigate = jest.fn(() => jest.fn());
   }
+  Object.defineProperty(document, "querySelector", {
+    value: originalDocumentQuerySelector,
+    configurable: true,
+  });
+  ensureSyntaxError();
 });
 
 afterEach(() => {
+  Object.defineProperty(document, "querySelector", {
+    value: originalDocumentQuerySelector,
+    configurable: true,
+  });
+  ensureSyntaxError();
   bunJest.restoreAllMocks?.();
   bunJest.useRealTimers?.();
   cleanup();

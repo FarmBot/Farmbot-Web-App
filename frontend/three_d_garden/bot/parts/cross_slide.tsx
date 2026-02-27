@@ -147,7 +147,7 @@ export type CrossSlideFull = GLTF & {
 }
 
 export const CrossSlide = (model: CrossSlideFull) =>
-  (props: ThreeElements["group"]) => {
+  (props: Omit<ThreeElements["group"], "ref">) => {
     const { nodes, materials } = model;
     return <Group {...props}>
       <MeshComponent

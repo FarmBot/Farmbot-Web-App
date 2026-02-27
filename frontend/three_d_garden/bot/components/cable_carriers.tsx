@@ -158,10 +158,8 @@ export const CableCarrierSupportVertical =
     const zZero = zZeroFunc(props.config);
     const zDir = zDirFunc(props.config);
     const ccSupportVertical =
-      useGLTF(ASSETS.models.ccSupportVertical, LIB_DIR) as CCSupportVertical;
-    const verticalInstances = React.useMemo(() =>
-      range((zAxisLength - 350) / 200),
-    [zAxisLength]);
+      useGLTF(ASSETS.models.ccSupportVertical, LIB_DIR) as unknown as CCSupportVertical;
+    const verticalInstances = React.useMemo(() => range((zAxisLength - 350) / 200), [zAxisLength]);
     const verticalRef = React.useRef<THREE.InstancedMesh | undefined>(undefined);
     React.useEffect(() => {
       if (!verticalRef.current || verticalInstances.length === 0) { return; }
@@ -253,10 +251,8 @@ export const CableCarrierSupportHorizontal =
       columnLength, kitVersion,
     } = props.config;
     const ccSupportHorizontal =
-      useGLTF(ASSETS.models.ccSupportHorizontal, LIB_DIR) as CCSupportHorizontal;
-    const horizontalInstances = React.useMemo(() =>
-      range((botSizeY - 10) / 300),
-    [botSizeY]);
+      useGLTF(ASSETS.models.ccSupportHorizontal, LIB_DIR) as unknown as CCSupportHorizontal;
+    const horizontalInstances = React.useMemo(() => range((botSizeY - 10) / 300), [botSizeY]);
     const horizontalRef =
       React.useRef<THREE.InstancedMesh | undefined>(undefined);
     React.useEffect(() => {

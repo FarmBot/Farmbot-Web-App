@@ -2,7 +2,7 @@ const mockDevice = { readPin: jest.fn((_) => Promise.resolve()) };
 
 import React from "react";
 import { act, fireEvent, render } from "@testing-library/react";
-import TestRenderer from "react-test-renderer";
+import type { ReactTestInstance } from "react-test-renderer";
 import {
   RawTools as Tools,
   ToolSlotInventoryItem,
@@ -27,6 +27,10 @@ import { Path } from "../../internal_urls";
 import * as deviceModule from "../../device";
 import { NavigationContext } from "../../routes_helpers";
 import { FBSelect } from "../../ui/new_fb_select";
+import {
+  createRenderer,
+  unmountRenderer,
+} from "../../__test_support__/test_renderer";
 
 const originalPathname = location.pathname;
 
@@ -55,7 +59,7 @@ const findNodeByType = (
   }
   if (React.isValidElement(node)) {
     if (matcher(node.type)) {
-      return TestRenderer.create(node).root;
+      return createRenderer(node as React.ReactElement).root;
     }
     let found: ReactTestInstance | undefined;
     React.Children.forEach(node.props.children, (child: React.ReactNode) => {
@@ -380,9 +384,9 @@ describe("<ToolSlotInventoryItem />", () => {
 
   it("changes tool", () => {
     const p = fakeProps();
-    let wrapper: TestRenderer.ReactTestRenderer | undefined;
+    let wrapper: ReturnType<typeof createRenderer> | undefined;
     act(() => {
-      wrapper = TestRenderer.create(<ToolSlotInventoryItem {...p} />);
+      wrapper = createRenderer(<ToolSlotInventoryItem {...p} />);
     });
     act(() => {
       wrapper?.root.findByType(FBSelect).props.onChange({ value: "1" });
@@ -392,7 +396,7 @@ describe("<ToolSlotInventoryItem />", () => {
     expect(crud.save).toHaveBeenCalledWith(p.toolSlot.uuid);
     if (wrapper) {
       act(() => {
-        wrapper?.unmount();
+        unmountRenderer(wrapper);
       });
     }
   });

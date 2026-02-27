@@ -1,5 +1,4 @@
 import React from "react";
-import TestRenderer from "react-test-renderer";
 import { cleanup, fireEvent, render } from "@testing-library/react";
 import {
   RawWeeds as Weeds,
@@ -31,14 +30,22 @@ import * as deletePoints from "../../api/delete_points";
 import { renderWithContext } from "../../__test_support__/mount_with_context";
 import { API } from "../../api";
 import { ToggleButton } from "../../ui";
+import {
+  actRenderer,
+  createRenderer,
+  getRendererInstance,
+  unmountRenderer,
+} from "../../__test_support__/test_renderer";
 
 const originalConfirm = window.confirm;
-const wrappers: TestRenderer.ReactTestRenderer[] = [];
+const wrappers: ReturnType<typeof createRenderer>[] = [];
 const createWrapper = (element: React.ReactElement) => {
-  const wrapper = TestRenderer.create(element);
+  const wrapper = createRenderer(element);
   wrappers.push(wrapper);
   return wrapper;
 };
+const getInstance = (wrapper: ReturnType<typeof createRenderer>) =>
+  getRendererInstance<Weeds>(wrapper, Weeds);
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -55,7 +62,7 @@ afterEach(() => {
   cleanup();
   while (wrappers.length > 0) {
     const wrapper = wrappers.pop();
-    wrapper && TestRenderer.act(() => wrapper.unmount());
+    wrapper && unmountRenderer(wrapper);
   }
   window.confirm = originalConfirm;
 });
@@ -129,14 +136,16 @@ describe("<Weeds> />", () => {
 
   it("changes search term", () => {
     const wrapper = createWrapper(<Weeds {...fakeProps()} />);
-    wrapper.root.findByType(SearchField).props.onChange("0");
-    expect((wrapper.getInstance() as Weeds).state.searchTerm).toEqual("0");
+    actRenderer(() => {
+      wrapper.root.findByType(SearchField).props.onChange("0");
+    });
+    expect(getInstance(wrapper).state.searchTerm).toEqual("0");
   });
 
   it("closes section", () => {
     const p = fakeProps();
     const wrapper = createWrapper(<Weeds {...p} />);
-    (wrapper.getInstance() as Weeds).toggleOpen("pending")();
+    getInstance(wrapper).toggleOpen("pending")();
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_WEEDS_PANEL_OPTION,
       payload: "pending",
@@ -145,7 +154,7 @@ describe("<Weeds> />", () => {
 
   it("navigates to group", () => {
     const wrapper = createWrapper(<Weeds {...fakeProps()} />);
-    const instance = wrapper.getInstance() as Weeds;
+    const instance = getInstance(wrapper);
     instance.navigate = jest.fn();
     instance.navigateById(1)();
     expect(instance.navigate).toHaveBeenCalledWith(Path.groups(1));
@@ -170,14 +179,16 @@ describe("<Weeds> />", () => {
     const wrapper = createWrapper(<Weeds {...fakeProps()} />);
     const menu = wrapper.root.findByType(SearchField).props.customLeftIcon;
     const menuWrapper = createWrapper(<div>{menu}</div>);
-    expect((wrapper.getInstance() as Weeds).state.sortBy).toEqual("radius");
-    expect((wrapper.getInstance() as Weeds).state.reverse).toEqual(true);
-    menuWrapper.root.findByType(PointSortMenu).props.onChange({
-      sortBy: undefined,
-      reverse: false,
+    expect(getInstance(wrapper).state.sortBy).toEqual("radius");
+    expect(getInstance(wrapper).state.reverse).toEqual(true);
+    actRenderer(() => {
+      menuWrapper.root.findByType(PointSortMenu).props.onChange({
+        sortBy: undefined,
+        reverse: false,
+      });
     });
-    expect((wrapper.getInstance() as Weeds).state.sortBy).toEqual(undefined);
-    expect((wrapper.getInstance() as Weeds).state.reverse).toEqual(false);
+    expect(getInstance(wrapper).state.sortBy).toEqual(undefined);
+    expect(getInstance(wrapper).state.reverse).toEqual(false);
   });
 
   it("filters points", () => {
@@ -187,8 +198,7 @@ describe("<Weeds> />", () => {
     p.weeds[0].body.plant_stage = "removed";
     p.weeds[1].body.name = "weed 1";
     const wrapper = createWrapper(<Weeds {...p} />);
-    TestRenderer.act(() => (wrapper.getInstance() as Weeds)
-      .setState({ searchTerm: "0" }));
+    actRenderer(() => getInstance(wrapper).setState({ searchTerm: "0" }));
     const text = JSON.stringify(wrapper.toJSON()).toLowerCase();
     expect(text).toContain("weed 0");
     expect(text).not.toContain("weed 1");

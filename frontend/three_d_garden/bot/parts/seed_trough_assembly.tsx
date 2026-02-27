@@ -20,7 +20,7 @@ export type SeedTroughAssemblyFull = GLTF & {
 }
 
 export const SeedTroughAssembly = (model: SeedTroughAssemblyFull) =>
-  (props: ThreeElements["group"]) => {
+  (props: Omit<ThreeElements["group"], "ref">) => {
     const { nodes, materials } = model;
     // eslint-disable-next-line no-null/no-null
     return <Group {...props} dispose={null}>

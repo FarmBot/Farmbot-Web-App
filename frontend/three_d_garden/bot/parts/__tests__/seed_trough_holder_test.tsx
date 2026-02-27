@@ -6,7 +6,7 @@ import { ASSETS } from "../../../constants";
 
 describe("<SeedTroughHolder />", () => {
   it("renders", () => {
-    const model = useGLTF(ASSETS.models.seedTroughHolder) as SeedTroughHolderFull;
+    const model = useGLTF(ASSETS.models.seedTroughHolder) as unknown as SeedTroughHolderFull;
     const Component = SeedTroughHolder(model);
     const { container } = render(<Component name={"name"} />);
     expect(container.innerHTML).toContain("name");

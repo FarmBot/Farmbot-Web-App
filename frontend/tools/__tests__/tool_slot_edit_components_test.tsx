@@ -1,5 +1,4 @@
 import React from "react";
-import TestRenderer from "react-test-renderer";
 import { cleanup, fireEvent, render } from "@testing-library/react";
 import {
   GantryMountedInput,
@@ -31,10 +30,14 @@ import {
 import * as deviceActions from "../../devices/actions";
 import { fakeMovementState } from "../../__test_support__/fake_bot_data";
 import { ToolSlotSVG } from "../../farm_designer/map/layers/tool_slots/tool_graphics";
+import {
+  createRenderer,
+  unmountRenderer,
+} from "../../__test_support__/test_renderer";
 
-const wrappers: TestRenderer.ReactTestRenderer[] = [];
+const wrappers: ReturnType<typeof createRenderer>[] = [];
 const createWrapper = (element: React.ReactElement) => {
-  const wrapper = TestRenderer.create(element);
+  const wrapper = createRenderer(element);
   wrappers.push(wrapper);
   return wrapper;
 };
@@ -48,7 +51,7 @@ afterEach(() => {
   cleanup();
   while (wrappers.length > 0) {
     const wrapper = wrappers.pop();
-    wrapper && TestRenderer.act(() => wrapper.unmount());
+    wrapper && unmountRenderer(wrapper);
   }
 });
 

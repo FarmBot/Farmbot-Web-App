@@ -112,27 +112,27 @@ export const Bot = (props: FarmbotModelProps) => {
   const zZero = zZeroFunc(config);
   const zDir = zDirFunc(config);
   const gantryWheelPlate =
-    useGLTF(ASSETS.models.gantryWheelPlate, LIB_DIR) as GantryWheelPlateFull;
+    useGLTF(ASSETS.models.gantryWheelPlate, LIB_DIR) as unknown as GantryWheelPlateFull;
   const GantryWheelPlateComponent = GantryWheelPlate(gantryWheelPlate);
-  const leftBracket = useGLTF(ASSETS.models.leftBracket, LIB_DIR) as LeftBracket;
-  const rightBracket = useGLTF(ASSETS.models.rightBracket, LIB_DIR) as RightBracket;
-  const crossSlide = useGLTF(ASSETS.models.crossSlide, LIB_DIR) as CrossSlideFull;
+  const leftBracket = useGLTF(ASSETS.models.leftBracket, LIB_DIR) as unknown as LeftBracket;
+  const rightBracket = useGLTF(ASSETS.models.rightBracket, LIB_DIR) as unknown as RightBracket;
+  const crossSlide = useGLTF(ASSETS.models.crossSlide, LIB_DIR) as unknown as CrossSlideFull;
   const CrossSlideComponent = CrossSlide(crossSlide);
-  const beltClip = useGLTF(ASSETS.models.beltClip, LIB_DIR) as BeltClip;
-  const zStop = useGLTF(ASSETS.models.zStop, LIB_DIR) as ZStop;
-  const utm = useGLTF(ASSETS.models.utm, LIB_DIR) as UTM;
+  const beltClip = useGLTF(ASSETS.models.beltClip, LIB_DIR) as unknown as BeltClip;
+  const zStop = useGLTF(ASSETS.models.zStop, LIB_DIR) as unknown as ZStop;
+  const utm = useGLTF(ASSETS.models.utm, LIB_DIR) as unknown as UTM;
   const housingVertical = useGLTF(
-    ASSETS.models.housingVertical, LIB_DIR) as HousingVertical;
+    ASSETS.models.housingVertical, LIB_DIR) as unknown as HousingVertical;
   const horizontalMotorHousing = useGLTF(
-    ASSETS.models.horizontalMotorHousing, LIB_DIR) as HorizontalMotorHousing;
+    ASSETS.models.horizontalMotorHousing, LIB_DIR) as unknown as HorizontalMotorHousing;
   const zAxisMotorMount = useGLTF(
-    ASSETS.models.zAxisMotorMount, LIB_DIR) as ZAxisMotorMount;
+    ASSETS.models.zAxisMotorMount, LIB_DIR) as unknown as ZAxisMotorMount;
   const vacuumPumpCover = useGLTF(
-    ASSETS.models.vacuumPumpCover, LIB_DIR) as VacuumPumpCoverFull;
+    ASSETS.models.vacuumPumpCover, LIB_DIR) as unknown as VacuumPumpCoverFull;
   const VacuumPumpCoverComponent = VacuumPumpCover(vacuumPumpCover);
   const cameraMountHalf = useGLTF(
-    ASSETS.models.cameraMountHalf, LIB_DIR) as CameraMountHalf;
-  const xAxisCCMount = useGLTF(ASSETS.models.xAxisCCMount, LIB_DIR) as XAxisCCMount;
+    ASSETS.models.cameraMountHalf, LIB_DIR) as unknown as CameraMountHalf;
+  const xAxisCCMount = useGLTF(ASSETS.models.xAxisCCMount, LIB_DIR) as unknown as XAxisCCMount;
   const [trackShape, setTrackShape] = useState<Shape>();
   const [beamShape, setBeamShape] = useState<Shape>();
   const [columnShape, setColumnShape] = useState<Shape>();

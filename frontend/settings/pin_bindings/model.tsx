@@ -119,9 +119,9 @@ interface ButtonOrLedItem {
 }
 
 export const Model = (props: BoxTopBaseProps) => {
-  const box = useGLTF(ASSETS.models.box, LIB_DIR) as Box;
-  const btn = useGLTF(ASSETS.models.btn, LIB_DIR) as Btn;
-  const led = useGLTF(ASSETS.models.led, LIB_DIR) as Led;
+  const box = useGLTF(ASSETS.models.box, LIB_DIR) as unknown as Box;
+  const btn = useGLTF(ASSETS.models.btn, LIB_DIR) as unknown as Btn;
+  const led = useGLTF(ASSETS.models.led, LIB_DIR) as unknown as Led;
   const SCALE = 1000;
 
   const syncLed = useRef<MeshObject>(null);

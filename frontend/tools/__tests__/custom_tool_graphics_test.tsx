@@ -5,7 +5,6 @@ import { store } from "../../redux/store";
 const mockState = fakeState();
 
 import React from "react";
-import TestRenderer from "react-test-renderer";
 import { render } from "@testing-library/react";
 import {
   CustomToolGraphicsInput,
@@ -21,6 +20,11 @@ import { buildResourceIndex } from "../../__test_support__/resource_index_builde
 import { svgMount } from "../../__test_support__/svg_mount";
 import { DevSettings } from "../../settings/dev/dev_support";
 import { BlurableInput } from "../../ui";
+import {
+  actRenderer,
+  createRenderer,
+  unmountRenderer,
+} from "../../__test_support__/test_renderer";
 
 let originalGetState: typeof store.getState;
 let futureFeaturesEnabledSpy: jest.SpyInstance;
@@ -62,15 +66,17 @@ describe("<CustomToolGraphicsInput />", () => {
   it("edits inputs", () => {
     mockDev = true;
     const p = fakeProps();
-    const wrapper = TestRenderer.create(<CustomToolGraphicsInput {...p} />);
-    wrapper.root.findAllByType(BlurableInput)[0]?.props.onCommit({
-      currentTarget: { value: "abc" }
+    const wrapper = createRenderer(<CustomToolGraphicsInput {...p} />);
+    actRenderer(() => {
+      wrapper.root.findAllByType(BlurableInput)[0]?.props.onCommit({
+        currentTarget: { value: "abc" }
+      });
     });
     expect(p.saveFarmwareEnv).toHaveBeenCalledWith(
       "custom_tool_graphics_tool",
       "{\"top\":\"abc\"}",
     );
-    wrapper.unmount();
+    unmountRenderer(wrapper);
   });
 });
 

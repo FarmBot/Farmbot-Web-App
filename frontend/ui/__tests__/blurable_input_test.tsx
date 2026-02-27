@@ -1,14 +1,19 @@
 import React from "react";
-import TestRenderer from "react-test-renderer";
 import { BlurableInput, BIProps } from "../blurable_input";
 import { error } from "../../toast/toast";
 import {
   focusEvent,
   keyboardEvent,
 } from "../../__test_support__/fake_html_events";
+import {
+  actRenderer,
+  createRenderer,
+  getRendererInstance,
+  unmountRenderer,
+} from "../../__test_support__/test_renderer";
 
 describe("<BlurableInput />", () => {
-  const wrappers: TestRenderer.ReactTestRenderer[] = [];
+  const wrappers: ReturnType<typeof createRenderer>[] = [];
 
   const fakeProps = (): BIProps => ({
     onCommit: jest.fn(),
@@ -16,17 +21,20 @@ describe("<BlurableInput />", () => {
   });
 
   const createWrapper = (p = fakeProps()) => {
-    const wrapper = TestRenderer.create(<BlurableInput {...p} />);
+    const wrapper = createRenderer(<BlurableInput {...p} />);
     wrappers.push(wrapper);
     return wrapper;
   };
+
+  const getInstance = (wrapper: ReturnType<typeof createRenderer>) =>
+    getRendererInstance<BlurableInput>(wrapper, BlurableInput);
 
   beforeEach(() => jest.clearAllMocks());
 
   afterEach(() => {
     while (wrappers.length > 0) {
       const wrapper = wrappers.pop();
-      wrapper && TestRenderer.act(() => wrapper.unmount());
+      wrapper && unmountRenderer(wrapper);
     }
   });
 
@@ -34,9 +42,11 @@ describe("<BlurableInput />", () => {
     const p = fakeProps();
     p.value = "1";
     const wrapper = createWrapper(p);
-    wrapper.root.findByType("input").props.onFocus();
-    expect((wrapper.getInstance() as BlurableInput).state.buffer).toEqual("1");
-    expect((wrapper.getInstance() as BlurableInput).state.isEditing).toEqual(true);
+    actRenderer(() => {
+      wrapper.root.findByType("input").props.onFocus();
+    });
+    expect(getInstance(wrapper).state.buffer).toEqual("1");
+    expect(getInstance(wrapper).state.isEditing).toEqual(true);
   });
 
   it("out of bounds: under", () => {
@@ -44,9 +54,13 @@ describe("<BlurableInput />", () => {
     p.type = "number";
     p.min = 0;
     const wrapper = createWrapper(p);
-    (wrapper.getInstance() as BlurableInput).setState({ buffer: "-100" });
-    wrapper.root.findByType("input").props.onSubmit({});
-    expect((wrapper.getInstance() as BlurableInput).state.buffer).toEqual("");
+    actRenderer(() => {
+      getInstance(wrapper).setState({ buffer: "-100" });
+    });
+    actRenderer(() => {
+      wrapper.root.findByType("input").props.onSubmit({});
+    });
+    expect(getInstance(wrapper).state.buffer).toEqual("");
     expect(p.onCommit).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith(
       "Value must be greater than or equal to 0.");
@@ -57,9 +71,13 @@ describe("<BlurableInput />", () => {
     p.type = "number";
     p.max = 100;
     const wrapper = createWrapper(p);
-    (wrapper.getInstance() as BlurableInput).setState({ buffer: "101" });
-    wrapper.root.findByType("input").props.onSubmit({});
-    expect((wrapper.getInstance() as BlurableInput).state.buffer).toEqual("");
+    actRenderer(() => {
+      getInstance(wrapper).setState({ buffer: "101" });
+    });
+    actRenderer(() => {
+      wrapper.root.findByType("input").props.onSubmit({});
+    });
+    expect(getInstance(wrapper).state.buffer).toEqual("");
     expect(p.onCommit).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith(
       "Value must be less than or equal to 100.");
@@ -69,13 +87,17 @@ describe("<BlurableInput />", () => {
     const p = fakeProps();
     p.type = "number";
     const wrapper = createWrapper(p);
-    wrapper.root.findByType("input").props.onChange({
-      currentTarget: { value: "" },
+    actRenderer(() => {
+      wrapper.root.findByType("input").props.onChange({
+        currentTarget: { value: "" },
+      });
     });
-    expect((wrapper.getInstance() as BlurableInput).state.buffer).toEqual("");
-    expect((wrapper.getInstance() as BlurableInput).state.error)
+    expect(getInstance(wrapper).state.buffer).toEqual("");
+    expect(getInstance(wrapper).state.error)
       .toEqual("Please enter a number.");
-    wrapper.root.findByType("input").props.onSubmit({});
+    actRenderer(() => {
+      wrapper.root.findByType("input").props.onSubmit({});
+    });
     expect(p.onCommit).not.toHaveBeenCalled();
     expect(error).not.toHaveBeenCalled();
   });
@@ -85,12 +107,16 @@ describe("<BlurableInput />", () => {
     p.type = "number";
     p.allowEmpty = true;
     const wrapper = createWrapper(p);
-    wrapper.root.findByType("input").props.onChange({
-      currentTarget: { value: "" },
+    actRenderer(() => {
+      wrapper.root.findByType("input").props.onChange({
+        currentTarget: { value: "" },
+      });
     });
-    expect((wrapper.getInstance() as BlurableInput).state.buffer).toEqual("");
-    expect((wrapper.getInstance() as BlurableInput).state.error).toEqual(undefined);
-    wrapper.root.findByType("input").props.onSubmit({});
+    expect(getInstance(wrapper).state.buffer).toEqual("");
+    expect(getInstance(wrapper).state.error).toEqual(undefined);
+    actRenderer(() => {
+      wrapper.root.findByType("input").props.onSubmit({});
+    });
     expect(p.onCommit).toHaveBeenCalled();
     expect(error).not.toHaveBeenCalled();
   });
@@ -100,11 +126,15 @@ describe("<BlurableInput />", () => {
     p.type = "number";
     const wrapper = createWrapper(p);
     const e = { currentTarget: { value: "-1.1e+2" } };
-    (wrapper.getInstance() as BlurableInput).setState({
-      buffer: e.currentTarget.value,
+    actRenderer(() => {
+      getInstance(wrapper).setState({
+        buffer: e.currentTarget.value,
+      });
     });
-    wrapper.root.findByType("input").props.onChange(e);
-    expect((wrapper.getInstance() as BlurableInput).state.buffer)
+    actRenderer(() => {
+      wrapper.root.findByType("input").props.onChange(e);
+    });
+    expect(getInstance(wrapper).state.buffer)
       .toEqual(e.currentTarget.value);
   });
 
@@ -113,9 +143,13 @@ describe("<BlurableInput />", () => {
     p.clearBtn = true;
     p.keyCallback = undefined;
     const wrapper = createWrapper(p);
-    (wrapper.getInstance() as BlurableInput).setState({ buffer: "1" });
-    (wrapper.getInstance() as BlurableInput).keyUp(keyboardEvent(""));
-    expect((wrapper.getInstance() as BlurableInput).state.buffer).toEqual("1");
+    actRenderer(() => {
+      getInstance(wrapper).setState({ buffer: "1" });
+    });
+    actRenderer(() => {
+      getInstance(wrapper).keyUp(keyboardEvent(""));
+    });
+    expect(getInstance(wrapper).state.buffer).toEqual("1");
   });
 
   it("clears input", () => {
@@ -123,9 +157,13 @@ describe("<BlurableInput />", () => {
     p.clearBtn = true;
     p.keyCallback = undefined;
     const wrapper = createWrapper(p);
-    (wrapper.getInstance() as BlurableInput).setState({ buffer: "1" });
-    wrapper.root.findByProps({ className: "fa fa-undo" }).props.onClick();
-    expect((wrapper.getInstance() as BlurableInput).state.buffer).toEqual("");
+    actRenderer(() => {
+      getInstance(wrapper).setState({ buffer: "1" });
+    });
+    actRenderer(() => {
+      wrapper.root.findByProps({ className: "fa fa-undo" }).props.onClick();
+    });
+    expect(getInstance(wrapper).state.buffer).toEqual("");
   });
 
   it("clears input with callback", () => {
@@ -133,9 +171,13 @@ describe("<BlurableInput />", () => {
     p.clearBtn = true;
     p.keyCallback = jest.fn();
     const wrapper = createWrapper(p);
-    (wrapper.getInstance() as BlurableInput).setState({ buffer: "1" });
-    wrapper.root.findByProps({ className: "fa fa-undo" }).props.onClick();
-    expect((wrapper.getInstance() as BlurableInput).state.buffer).toEqual("");
+    actRenderer(() => {
+      getInstance(wrapper).setState({ buffer: "1" });
+    });
+    actRenderer(() => {
+      wrapper.root.findByProps({ className: "fa fa-undo" }).props.onClick();
+    });
+    expect(getInstance(wrapper).state.buffer).toEqual("");
     expect(p.keyCallback).toHaveBeenCalled();
   });
 
@@ -144,7 +186,9 @@ describe("<BlurableInput />", () => {
     p.autoSelect = true;
     const wrapper = createWrapper(p);
     const e = focusEvent("text");
-    (wrapper.getInstance() as BlurableInput).focus(e);
+    actRenderer(() => {
+      getInstance(wrapper).focus(e);
+    });
     expect(e.target.setSelectionRange).toHaveBeenCalledWith(0, 4);
   });
 });

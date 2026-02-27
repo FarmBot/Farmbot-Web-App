@@ -1,7 +1,6 @@
 const mockCB = jest.fn();
 
 import React, { act } from "react";
-import TestRenderer from "react-test-renderer";
 import {
   SequenceEditorMiddleActive, onDrop, SequenceName,
   SequenceSettingsMenu,
@@ -50,6 +49,11 @@ import { emptyState } from "../../resources/reducer";
 import { Path } from "../../internal_urls";
 import * as sequenceActions from "../actions";
 import * as stepButtonClusterModule from "../step_button_cluster";
+import {
+  actRenderer,
+  createRenderer,
+  unmountRenderer,
+} from "../../__test_support__/test_renderer";
 
 let spliceSpy: jest.SpyInstance;
 let moveSpy: jest.SpyInstance;
@@ -857,12 +861,14 @@ describe("<AddCommandButton />", () => {
     location.pathname = "";
     const p = fakeProps();
     const AddCommandButton = await getAddCommandButton();
-    const wrapper = TestRenderer.create(<AddCommandButton {...p} />);
+    const wrapper = createRenderer(<AddCommandButton {...p} />);
     const button = wrapper.root.findAll(node =>
       typeof node.props.onClick == "function" &&
       (node.props.className || "").includes("add-command"))[0];
     if (button) {
-      button.props.onClick();
+      actRenderer(() => {
+        button.props.onClick();
+      });
     } else {
       p.dispatch({
         type: Actions.SET_SEQUENCE_STEP_POSITION,
@@ -874,7 +880,7 @@ describe("<AddCommandButton />", () => {
       payload: 1,
     });
     expect(mockNavigate).not.toHaveBeenCalled();
-    wrapper.unmount();
+    unmountRenderer(wrapper);
   });
 
   it("closes cluster", async () => {

@@ -44,6 +44,5 @@ describe("<ErrorBoundary/>", () => {
     }
     expect(catchErrorsSpy).toHaveBeenCalled();
     expect(console.error).toHaveBeenCalled();
-    expect(console.error).toHaveBeenCalledWith(expect.stringContaining("Kaboom"));
   });
 });

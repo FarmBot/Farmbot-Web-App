@@ -79,7 +79,7 @@ const bedStructure2D = (
   return shape;
 };
 
-type MeshProps = ThreeElements["mesh"];
+type MeshProps = Omit<ThreeElements["mesh"], "ref">;
 
 interface SurfaceProps extends MeshProps {
   config: Config;

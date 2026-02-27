@@ -1,5 +1,4 @@
 import React from "react";
-import TestRenderer from "react-test-renderer";
 import { cleanup, render } from "@testing-library/react";
 import { RawEditToolSlot as EditToolSlot } from "../edit_tool_slot";
 import { fakeState } from "../../__test_support__/fake_state";
@@ -18,6 +17,12 @@ import * as toolGraphics from "../../farm_designer/map/layers/tool_slots/tool_gr
 import { SpecialStatus } from "farmbot";
 import { fakeMovementState } from "../../__test_support__/fake_bot_data";
 import { Path } from "../../internal_urls";
+import {
+  actRenderer,
+  createRenderer,
+  getRendererInstance,
+  unmountRenderer,
+} from "../../__test_support__/test_renderer";
 
 beforeEach(() => {
   jest.spyOn(crud, "edit").mockImplementation(jest.fn());
@@ -28,19 +33,22 @@ beforeEach(() => {
 });
 
 describe("<EditToolSlot />", () => {
-  const mountedWrappers: TestRenderer.ReactTestRenderer[] = [];
+  const mountedWrappers: ReturnType<typeof createRenderer>[] = [];
 
   afterEach(() => {
     mountedWrappers.splice(0).forEach(wrapper =>
-      TestRenderer.act(() => wrapper.unmount()));
+      unmountRenderer(wrapper));
     cleanup();
   });
 
   const createWrapper = (p = fakeProps()) => {
-    const wrapper = TestRenderer.create(<EditToolSlot {...p} />);
+    const wrapper = createRenderer(<EditToolSlot {...p} />);
     mountedWrappers.push(wrapper);
     return wrapper;
   };
+
+  const getInstance = (wrapper: ReturnType<typeof createRenderer>) =>
+    getRendererInstance<EditToolSlot>(wrapper, EditToolSlot);
 
   const fakeProps = (): EditToolSlotProps => ({
     findToolSlot: jest.fn(),
@@ -100,7 +108,7 @@ describe("<EditToolSlot />", () => {
 
   it("unhovers tool slot on unmount", () => {
     const wrapper = createWrapper();
-    wrapper.unmount();
+    unmountRenderer(wrapper);
     expect(toolGraphics.setToolHover).toHaveBeenCalledWith(undefined);
   });
 
@@ -109,8 +117,11 @@ describe("<EditToolSlot />", () => {
     p.dispatch = jest.fn(() => Promise.resolve());
     const slot = fakeToolSlot();
     const wrapper = createWrapper(p);
-    const instance = wrapper.getInstance() as EditToolSlot;
-    await instance.updateSlot(slot)({ x: 123 });
+    const instance = getInstance(wrapper);
+    await actRenderer(async () => {
+      instance.updateSlot(slot)({ x: 123 });
+      await Promise.resolve();
+    });
     expect(crud.edit).toHaveBeenCalledWith(slot, { x: 123 });
     expect(crud.save).toHaveBeenCalledWith(slot.uuid);
     expect(instance.state.saveError).toEqual(false);
@@ -121,8 +132,11 @@ describe("<EditToolSlot />", () => {
     p.dispatch = jest.fn(x => x?.() == "mockSave" ? Promise.reject() : undefined);
     const slot = fakeToolSlot();
     const wrapper = createWrapper(p);
-    const instance = wrapper.getInstance() as EditToolSlot;
-    await instance.updateSlot(slot)({ x: 123 });
+    const instance = getInstance(wrapper);
+    await actRenderer(async () => {
+      instance.updateSlot(slot)({ x: 123 });
+      await Promise.resolve();
+    });
     expect(crud.edit).toHaveBeenCalledWith(slot, { x: 123 });
     expect(crud.save).toHaveBeenCalledWith(slot.uuid);
     expect(instance.state.saveError).toEqual(true);

@@ -179,7 +179,7 @@ export const soilClick = (props: SoilClickProps) =>
         });
       }
       if (DRAW_POINT_MODES.includes(getMode())) {
-        pointerPlantRef.current?.position.set(0, 0, 0);
+        pointerPlantRef.current?.position?.set(0, 0, 0);
         const cursor = getGardenPosition(e.point);
         const { drawnPoint } = addPlantProps.designer;
         if (isUndefined(drawnPoint)) { return; }
@@ -242,13 +242,13 @@ export const soilPointerMove = (props: SoilPointerMoveProps) =>
       yCrosshairRef.current?.position.set(x, 0, z);
       activePositionRef.current = { x, y };
       if (getMode() == Mode.clickToAdd) {
-        pointerPlantRef.current.position.set(x, y, z);
+        pointerPlantRef.current?.position?.set(x, y, z);
       }
       if (DRAW_POINT_MODES.includes(getMode())) {
         const { drawnPoint } = addPlantProps.designer;
         if (isUndefined(drawnPoint)) { return; }
         if (isUndefined(drawnPoint.cx) || isUndefined(drawnPoint.cy)) {
-          pointerPlantRef.current.position.set(x, y, z);
+          pointerPlantRef.current?.position?.set(x, y, z);
         } else {
           if (drawnPoint.r > 0) { return; }
           const radius = round(xyDistance(

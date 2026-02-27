@@ -1,7 +1,12 @@
 import React from "react";
-import TestRenderer from "react-test-renderer";
 import { fireEvent, render } from "@testing-library/react";
 import { ToggleButton, ToggleButtonProps } from "../toggle_button";
+import {
+  actRenderer,
+  createRenderer,
+  getRendererInstance,
+  unmountRenderer,
+} from "../../__test_support__/test_renderer";
 
 describe("<ToggleButton />", () => {
   const fakeProps = (): ToggleButtonProps => ({
@@ -62,14 +67,23 @@ describe("<ToggleButton />", () => {
     jest.useFakeTimers();
     const p = fakeProps();
     p.dim = true;
-    const wrapper = TestRenderer.create(<ToggleButton {...p} />);
-    const instance = wrapper.getInstance() as ToggleButton;
-    instance.componentDidUpdate();
+    const wrapper = createRenderer(<ToggleButton {...p} />);
+    const instance = getRendererInstance<ToggleButton>(wrapper, ToggleButton);
+    actRenderer(() => {
+      instance.componentDidUpdate();
+    });
     expect(instance.state.syncing).toEqual(true);
-    jest.runAllTimers();
+    actRenderer(() => {
+      jest.runAllTimers();
+    });
     expect(instance.state.syncing).toEqual(false);
-    instance.setState({ inconsistent: false });
-    instance.componentDidUpdate();
-    wrapper.unmount();
+    actRenderer(() => {
+      instance.setState({ inconsistent: false });
+    });
+    actRenderer(() => {
+      instance.componentDidUpdate();
+    });
+    unmountRenderer(wrapper);
+    jest.useRealTimers();
   });
 });

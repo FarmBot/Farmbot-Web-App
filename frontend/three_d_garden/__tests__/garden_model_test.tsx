@@ -2,7 +2,6 @@ let mockIsDesktop = false;
 let mockIsMobile = false;
 
 import React from "react";
-import TestRenderer from "react-test-renderer";
 import { GardenModelProps, GardenModel } from "../garden_model";
 import { clone } from "lodash";
 import { INITIAL, SurfaceDebugOption } from "../config";
@@ -16,11 +15,16 @@ import { Path } from "../../internal_urls";
 import { fakeDrawnPoint } from "../../__test_support__/fake_designer_state";
 import { convertPlants } from "../../farm_designer/three_d_garden_map";
 import * as screenSize from "../../screen_size";
+import {
+  actRenderer,
+  createRenderer,
+  unmountRenderer,
+} from "../../__test_support__/test_renderer";
 
 let isDesktopSpy: jest.SpyInstance;
 let isMobileSpy: jest.SpyInstance;
 const originalPathname = location.pathname;
-const mountedWrappers: TestRenderer.ReactTestRenderer[] = [];
+const mountedWrappers: ReturnType<typeof createRenderer>[] = [];
 
 describe("<GardenModel />", () => {
   beforeEach(() => {
@@ -34,7 +38,7 @@ describe("<GardenModel />", () => {
 
   afterEach(() => {
     mountedWrappers.splice(0).forEach(wrapper =>
-      TestRenderer.act(() => wrapper.unmount()));
+      unmountRenderer(wrapper));
     isDesktopSpy.mockRestore();
     isMobileSpy.mockRestore();
     location.pathname = originalPathname;
@@ -49,7 +53,7 @@ describe("<GardenModel />", () => {
   });
 
   const createWrapper = (p: GardenModelProps) => {
-    const wrapper = TestRenderer.create(<GardenModel {...p} />);
+    const wrapper = createRenderer(<GardenModel {...p} />);
     mountedWrappers.push(wrapper);
     return wrapper;
   };
@@ -181,7 +185,9 @@ describe("<GardenModel />", () => {
       intersections: [{ object: { name: "obj" } }],
     };
     const plants = wrapper.root.findAll(node => node.props.name == "plants")[0];
-    plants?.props.onPointerEnter(e);
+    actRenderer(() => {
+      plants?.props.onPointerEnter(e);
+    });
     expect(e.stopPropagation).toHaveBeenCalled();
   });
 
@@ -197,7 +203,9 @@ describe("<GardenModel />", () => {
       }],
     };
     const plants = wrapper.root.findAll(node => node.props.name == "plants")[0];
-    plants?.props.onPointerEnter(e);
+    actRenderer(() => {
+      plants?.props.onPointerEnter(e);
+    });
     expect(e.stopPropagation).toHaveBeenCalled();
   });
 
@@ -210,7 +218,9 @@ describe("<GardenModel />", () => {
       buttons: true,
     };
     const plants = wrapper.root.findAll(node => node.props.name == "plants")[0];
-    plants?.props.onPointerEnter(e);
+    actRenderer(() => {
+      plants?.props.onPointerEnter(e);
+    });
     expect(e.stopPropagation).toHaveBeenCalled();
   });
 
@@ -223,7 +233,9 @@ describe("<GardenModel />", () => {
       intersections: [{ object: { name: "obj" } }],
     };
     const plants = wrapper.root.findAll(node => node.props.name == "plants")[0];
-    plants?.props.onPointerLeave(e);
+    actRenderer(() => {
+      plants?.props.onPointerLeave(e);
+    });
     expect(e.stopPropagation).toHaveBeenCalled();
   });
 
@@ -234,7 +246,9 @@ describe("<GardenModel />", () => {
     const wrapper = createWrapper(p);
     const e = { stopPropagation: jest.fn() };
     const plants = wrapper.root.findAll(node => node.props.name == "plants")[0];
-    plants?.props.onPointerEnter && plants.props.onPointerEnter(e);
+    actRenderer(() => {
+      plants?.props.onPointerEnter && plants.props.onPointerEnter(e);
+    });
     expect(e.stopPropagation).not.toHaveBeenCalled();
   });
 
@@ -245,11 +259,13 @@ describe("<GardenModel />", () => {
     p.config.eventDebug = true;
     const wrapper = createWrapper(p);
     const root = wrapper.root.findAll(node => !!node.props.onPointerMove)[0];
-    root?.props.onPointerMove({
-      intersections: [
-        { object: { name: "1" } },
-        { object: { name: "2" } },
-      ],
+    actRenderer(() => {
+      root?.props.onPointerMove({
+        intersections: [
+          { object: { name: "1" } },
+          { object: { name: "2" } },
+        ],
+      });
     });
     expect(consoleLogSpy).toHaveBeenCalledWith(["1", "2"]);
     consoleLogSpy.mockRestore();

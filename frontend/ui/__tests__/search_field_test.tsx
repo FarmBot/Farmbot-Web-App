@@ -1,8 +1,12 @@
 import React from "react";
 import { fireEvent, render } from "@testing-library/react";
-import TestRenderer from "react-test-renderer";
 import { SearchField, SearchFieldProps } from "../search_field";
 import { keyboardEvent } from "../../__test_support__/fake_html_events";
+import {
+  actRenderer,
+  createRenderer,
+  unmountRenderer,
+} from "../../__test_support__/test_renderer";
 
 describe("<SearchField />", () => {
   const fakeProps = (): SearchFieldProps => ({
@@ -31,22 +35,26 @@ describe("<SearchField />", () => {
   it("changes search term on key press", () => {
     const p = fakeProps();
     p.onKeyPress = jest.fn();
-    const wrapper = TestRenderer.create(<SearchField {...p} />);
+    const wrapper = createRenderer(<SearchField {...p} />);
     const e = keyboardEvent("new");
     e.currentTarget.value = "new";
-    wrapper.root.findByType("input").props.onKeyPress(e);
+    actRenderer(() => {
+      wrapper.root.findByType("input").props.onKeyPress(e);
+    });
     expect(p.onKeyPress).toHaveBeenCalledWith("new");
-    wrapper.unmount();
+    unmountRenderer(wrapper);
   });
 
   it("doesn't change search term on key press", () => {
     const p = fakeProps();
     p.onKeyPress = undefined;
-    const wrapper = TestRenderer.create(<SearchField {...p} />);
+    const wrapper = createRenderer(<SearchField {...p} />);
     const e = keyboardEvent("new");
-    wrapper.root.findByType("input").props.onKeyPress(e);
+    actRenderer(() => {
+      wrapper.root.findByType("input").props.onKeyPress(e);
+    });
     expect(p.onChange).not.toHaveBeenCalled();
-    wrapper.unmount();
+    unmountRenderer(wrapper);
   });
 
   it("clears search term", () => {
@@ -60,19 +68,23 @@ describe("<SearchField />", () => {
   it("calls callback upon enter key press", () => {
     const p = fakeProps();
     p.onEnter = jest.fn();
-    const wrapper = TestRenderer.create(<SearchField {...p} />);
+    const wrapper = createRenderer(<SearchField {...p} />);
     const e = keyboardEvent("Enter");
-    wrapper.root.findByType("input").props.onKeyPress(e);
+    actRenderer(() => {
+      wrapper.root.findByType("input").props.onKeyPress(e);
+    });
     expect(p.onEnter).toHaveBeenCalled();
-    wrapper.unmount();
+    unmountRenderer(wrapper);
   });
 
   it("doesn't call callback upon enter key press", () => {
     const p = fakeProps();
     p.onEnter = undefined;
-    const wrapper = TestRenderer.create(<SearchField {...p} />);
+    const wrapper = createRenderer(<SearchField {...p} />);
     const e = keyboardEvent("Enter");
-    wrapper.root.findByType("input").props.onKeyPress(e);
-    wrapper.unmount();
+    actRenderer(() => {
+      wrapper.root.findByType("input").props.onKeyPress(e);
+    });
+    unmountRenderer(wrapper);
   });
 });

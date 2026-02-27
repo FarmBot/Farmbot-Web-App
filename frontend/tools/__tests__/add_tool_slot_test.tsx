@@ -1,5 +1,4 @@
 import React from "react";
-import TestRenderer from "react-test-renderer";
 import { render } from "@testing-library/react";
 import { RawAddToolSlot as AddToolSlot } from "../add_tool_slot";
 import { fakeState } from "../../__test_support__/fake_state";
@@ -17,6 +16,11 @@ import { fakeToolTransformProps } from "../../__test_support__/fake_tool_info";
 import { AddToolSlotProps } from "../interfaces";
 import { Path } from "../../internal_urls";
 import { fakeMovementState } from "../../__test_support__/fake_bot_data";
+import {
+  createRenderer,
+  getRendererInstance,
+  unmountRenderer,
+} from "../../__test_support__/test_renderer";
 
 const originalConfirm = window.confirm;
 
@@ -77,22 +81,22 @@ describe("<AddToolSlot />", () => {
   it("updates tool slot", () => {
     const toolSlot = fakeToolSlot();
     const p = fakeProps();
-    const wrapper = TestRenderer.create(<AddToolSlot {...p} />);
-    const instance = wrapper.getInstance() as AddToolSlot;
+    const wrapper = createRenderer(<AddToolSlot {...p} />);
+    const instance = getRendererInstance<AddToolSlot>(wrapper, AddToolSlot);
     instance.updateSlot(toolSlot)({ x: 123 });
     expect(crud.edit).toHaveBeenCalledWith(toolSlot, { x: 123 });
-    wrapper.unmount();
+    unmountRenderer(wrapper);
   });
 
   it("saves tool slot", () => {
-    const wrapper = TestRenderer.create(<AddToolSlot {...fakeProps()} />);
-    const instance = wrapper.getInstance() as AddToolSlot;
+    const wrapper = createRenderer(<AddToolSlot {...fakeProps()} />);
+    const instance = getRendererInstance<AddToolSlot>(wrapper, AddToolSlot);
     const navigate = jest.fn();
     instance.navigate = navigate;
     instance.save();
     expect(crud.save).toHaveBeenCalled();
     expect(navigate).toHaveBeenCalledWith(Path.tools());
-    wrapper.unmount();
+    unmountRenderer(wrapper);
   });
 
   it("saves on unmount", () => {
@@ -100,9 +104,9 @@ describe("<AddToolSlot />", () => {
     toolSlot.specialStatus = SpecialStatus.DIRTY;
     const p = fakeProps();
     p.findToolSlot = () => toolSlot;
-    const wrapper = TestRenderer.create(<AddToolSlot {...p} />);
+    const wrapper = createRenderer(<AddToolSlot {...p} />);
     window.confirm = () => true;
-    wrapper.unmount();
+    unmountRenderer(wrapper);
     expect(crud.save).toHaveBeenCalledWith("fakeUuid");
   });
 
@@ -111,9 +115,9 @@ describe("<AddToolSlot />", () => {
     toolSlot.specialStatus = SpecialStatus.DIRTY;
     const p = fakeProps();
     p.findToolSlot = () => toolSlot;
-    const wrapper = TestRenderer.create(<AddToolSlot {...p} />);
+    const wrapper = createRenderer(<AddToolSlot {...p} />);
     window.confirm = () => false;
-    wrapper.unmount();
+    unmountRenderer(wrapper);
     expect(crud.destroy).toHaveBeenCalledWith("fakeUuid", true);
   });
 
@@ -122,9 +126,9 @@ describe("<AddToolSlot />", () => {
     toolSlot.specialStatus = SpecialStatus.SAVED;
     const p = fakeProps();
     p.findToolSlot = () => toolSlot;
-    const wrapper = TestRenderer.create(<AddToolSlot {...p} />);
+    const wrapper = createRenderer(<AddToolSlot {...p} />);
     window.confirm = jest.fn();
-    wrapper.unmount();
+    unmountRenderer(wrapper);
     expect(crud.destroy).not.toHaveBeenCalled();
     expect(crud.save).not.toHaveBeenCalled();
   });
@@ -132,10 +136,10 @@ describe("<AddToolSlot />", () => {
   it("can't find tool without tool slot", () => {
     const p = fakeProps();
     p.findToolSlot = () => undefined;
-    const wrapper = TestRenderer.create(<AddToolSlot {...p} />);
-    const instance = wrapper.getInstance() as AddToolSlot;
+    const wrapper = createRenderer(<AddToolSlot {...p} />);
+    const instance = getRendererInstance<AddToolSlot>(wrapper, AddToolSlot);
     expect(instance.tool).toEqual(undefined);
-    wrapper.unmount();
+    unmountRenderer(wrapper);
   });
 
   it("renders for express bots", () => {

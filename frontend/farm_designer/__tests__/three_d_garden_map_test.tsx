@@ -44,6 +44,11 @@ const EMPTY_PROPS = {
 };
 
 describe("<ThreeDGardenMap />", () => {
+  const lastThreeDGardenProps = () => {
+    const calls = (threeDGarden.ThreeDGarden as jest.Mock).mock.calls;
+    return calls[calls.length - 1]?.[0];
+  };
+
   const fakeProps = (): ThreeDGardenMapProps => ({
     mapTransformProps: fakeMapTransformProps(),
     device: fakeDevice().body,
@@ -132,7 +137,8 @@ describe("<ThreeDGardenMap />", () => {
     expectedConfig.imgCenterX = 0;
     expectedConfig.imgCenterY = 0;
 
-    expect(threeDGarden.ThreeDGarden).toHaveBeenCalledWith({
+    const call = lastThreeDGardenProps();
+    expect(call).toEqual(expect.objectContaining({
       config: expectedConfig,
       threeDPlants: [{
         id: expect.any(Number),
@@ -147,7 +153,7 @@ describe("<ThreeDGardenMap />", () => {
       }],
       addPlantProps: expect.any(Object),
       ...EMPTY_PROPS,
-    }, {});
+    }));
   });
 
   it("converts props: unknown position", () => {
@@ -155,12 +161,13 @@ describe("<ThreeDGardenMap />", () => {
     p.botPosition = { x: undefined, y: undefined, z: undefined };
     p.plants = [];
     render(<ThreeDGardenMap {...p} />);
-    expect(threeDGarden.ThreeDGarden).toHaveBeenCalledWith({
+    const call = lastThreeDGardenProps();
+    expect(call).toEqual(expect.objectContaining({
       config: expect.objectContaining({ x: 0, y: 0, z: 0 }),
       threeDPlants: [],
       addPlantProps: expect.any(Object),
       ...EMPTY_PROPS,
-    }, {});
+    }));
   });
 
   it("converts props: negative z", () => {
@@ -169,12 +176,13 @@ describe("<ThreeDGardenMap />", () => {
     p.negativeZ = true;
     p.plants = [];
     render(<ThreeDGardenMap {...p} />);
-    expect(threeDGarden.ThreeDGarden).toHaveBeenCalledWith({
+    const call = lastThreeDGardenProps();
+    expect(call).toEqual(expect.objectContaining({
       config: expect.objectContaining({ negativeZ: true, x: 0, y: 0, z: -100 }),
       threeDPlants: [],
       addPlantProps: expect.any(Object),
       ...EMPTY_PROPS,
-    }, {});
+    }));
   });
 
   it("converts props: real time", () => {
@@ -184,7 +192,8 @@ describe("<ThreeDGardenMap />", () => {
     p.device.lng = 2;
     p.plants = [];
     render(<ThreeDGardenMap {...p} />);
-    expect(threeDGarden.ThreeDGarden).toHaveBeenCalledWith({
+    const callArgs = lastThreeDGardenProps();
+    expect(callArgs).toEqual(expect.objectContaining({
       config: expect.objectContaining({
         sunInclination: expect.any(Number),
         sunAzimuth: expect.any(Number),
@@ -193,8 +202,9 @@ describe("<ThreeDGardenMap />", () => {
       threeDPlants: [],
       addPlantProps: expect.any(Object),
       ...EMPTY_PROPS,
-    }, {});
-    const callArgs = (threeDGarden.ThreeDGarden as jest.Mock).mock.calls[0][0];
+    }));
+    expect(callArgs).toBeTruthy();
+    if (!callArgs) { return; }
     expect(callArgs.config.sunInclination).not.toEqual(-1);
     expect(callArgs.config.sunAzimuth).not.toEqual(-1);
     expect(callArgs.config.sunInclination).toBeGreaterThanOrEqual(-90);
@@ -209,7 +219,8 @@ describe("<ThreeDGardenMap />", () => {
     p.get3DConfigValue = () => -1;
     p.plants = [];
     render(<ThreeDGardenMap {...p} />);
-    expect(threeDGarden.ThreeDGarden).toHaveBeenCalledWith({
+    const call = lastThreeDGardenProps();
+    expect(call).toEqual(expect.objectContaining({
       config: expect.objectContaining({
         sunInclination: -1,
         sunAzimuth: -1,
@@ -218,7 +229,7 @@ describe("<ThreeDGardenMap />", () => {
       threeDPlants: [],
       addPlantProps: expect.any(Object),
       ...EMPTY_PROPS,
-    }, {});
+    }));
   });
 
   it("converts props: logs", () => {
@@ -230,14 +241,15 @@ describe("<ThreeDGardenMap />", () => {
     p.logs = [log];
     p.plants = [];
     render(<ThreeDGardenMap {...p} />);
-    expect(threeDGarden.ThreeDGarden).toHaveBeenCalledWith({
+    const call = lastThreeDGardenProps();
+    expect(call).toEqual(expect.objectContaining({
       config: expect.objectContaining({
         lastImageCapture: 123,
       }),
       threeDPlants: [],
       addPlantProps: expect.any(Object),
       ...EMPTY_PROPS,
-    }, {});
+    }));
   });
 
   it.each<[FirmwareHardware, string]>([
@@ -249,12 +261,13 @@ describe("<ThreeDGardenMap />", () => {
     p.plants = [];
     p.sourceFbosConfig = () => ({ value: firmwareHardware, consistent: true });
     render(<ThreeDGardenMap {...p} />);
-    expect(threeDGarden.ThreeDGarden).toHaveBeenCalledWith({
+    const call = lastThreeDGardenProps();
+    expect(call).toEqual(expect.objectContaining({
       config: expect.objectContaining({ kitVersion }),
       threeDPlants: [],
       addPlantProps: expect.any(Object),
       ...EMPTY_PROPS,
-    }, {});
+    }));
   });
 
   it("shows active peripherals", () => {
@@ -262,12 +275,13 @@ describe("<ThreeDGardenMap />", () => {
     p.peripheralValues = [{ label: "watering nozzle", value: true }];
     p.plants = [];
     render(<ThreeDGardenMap {...p} />);
-    expect(threeDGarden.ThreeDGarden).toHaveBeenCalledWith({
+    const call = lastThreeDGardenProps();
+    expect(call).toEqual(expect.objectContaining({
       config: expect.objectContaining({ waterFlow: true }),
       threeDPlants: [],
       addPlantProps: expect.any(Object),
       ...EMPTY_PROPS,
-    }, {});
+    }));
   });
 
   it.each<[boolean, boolean, number]>([
@@ -283,12 +297,13 @@ describe("<ThreeDGardenMap />", () => {
     ];
     p.plants = [];
     render(<ThreeDGardenMap {...p} />);
-    expect(threeDGarden.ThreeDGarden).toHaveBeenCalledWith({
+    const call = lastThreeDGardenProps();
+    expect(call).toEqual(expect.objectContaining({
       config: expect.objectContaining({ rotary: exp }),
       threeDPlants: [],
       addPlantProps: expect.any(Object),
       ...EMPTY_PROPS,
-    }, {});
+    }));
   });
 });
 

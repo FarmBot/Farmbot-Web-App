@@ -1,6 +1,5 @@
 import React from "react";
 import { render } from "@testing-library/react";
-import TestRenderer from "react-test-renderer";
 import { WizardStepContainer, WizardStepHeader } from "../step";
 import {
   WizardStep, WizardStepContainerProps, WizardStepHeaderProps,
@@ -13,6 +12,10 @@ import {
   fakeTool,
   fakeToolSlot, fakeWizardStepResult,
 } from "../../__test_support__/fake_state/resources";
+import {
+  actRenderer,
+  createRenderer,
+} from "../../__test_support__/test_renderer";
 
 const fakeWizardStep = (): WizardStep => ({
   section: WizardSectionSlug.controls,
@@ -106,11 +109,13 @@ describe("<WizardStepContainer />", () => {
   it("goes to step", () => {
     const p = fakeProps();
     p.step.outcomes[0].goToStep = { text: "goto", step: WizardStepSlug.intro };
-    const wrapper = TestRenderer.create(<WizardStepContainer {...p} />);
+    const wrapper = createRenderer(<WizardStepContainer {...p} />);
     const button = wrapper.root.findByProps({ className: "fb-button" });
     expect(button.children.join("").toLowerCase()).toContain("goto");
     const e = { stopPropagation: jest.fn() };
-    button.props.onClick(e);
+    actRenderer(() => {
+      button.props.onClick(e);
+    });
     expect(e.stopPropagation).toHaveBeenCalled();
     expect(p.openStep).toHaveBeenCalledWith(WizardStepSlug.intro);
   });

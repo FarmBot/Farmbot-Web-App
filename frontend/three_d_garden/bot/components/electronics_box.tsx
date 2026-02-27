@@ -81,11 +81,11 @@ export interface ElectronicsBoxProps {
 export const ElectronicsBox = (props: ElectronicsBoxProps) => {
   const { x, bedXOffset, bedLengthOuter, bedWidthOuter, columnLength } = props.config;
 
-  const box = useGLTF(ASSETS.models.box, LIB_DIR) as Box;
-  const btn = useGLTF(ASSETS.models.btn, LIB_DIR) as Btn;
-  const led = useGLTF(ASSETS.models.led, LIB_DIR) as Led;
-  const pi = useGLTF(ASSETS.models.pi, LIB_DIR) as Pi;
-  const farmduino = useGLTF(ASSETS.models.farmduino, LIB_DIR) as Farmduino;
+  const box = useGLTF(ASSETS.models.box, LIB_DIR) as unknown as Box;
+  const btn = useGLTF(ASSETS.models.btn, LIB_DIR) as unknown as Btn;
+  const led = useGLTF(ASSETS.models.led, LIB_DIR) as unknown as Led;
+  const pi = useGLTF(ASSETS.models.pi, LIB_DIR) as unknown as Pi;
+  const farmduino = useGLTF(ASSETS.models.farmduino, LIB_DIR) as unknown as Farmduino;
 
   return <Group name={"electronics-box"}
     position={new THREE.Vector3(

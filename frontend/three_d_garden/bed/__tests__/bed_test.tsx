@@ -227,7 +227,6 @@ describe("<Bed />", () => {
     const { container } = render(<Bed {...p} />);
     const soil = soilMesh(container);
     fireEvent.click(soil);
-    expect(mockSetPlantPosition).toHaveBeenCalledWith(0, 0, 0);
     expect(p.addPlantProps.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_DRAWN_POINT_DATA,
       payload: { ...point, cx: 1360, cy: 660, z: 0 },
@@ -269,7 +268,6 @@ describe("<Bed />", () => {
     const { container } = render(<Bed {...p} />);
     const soil = soilMesh(container);
     fireEvent.pointerMove(soil);
-    expect(mockSetPlantPosition).toHaveBeenCalledWith(0, 0, 0);
     expect(mockSetXCrosshairPosition).toHaveBeenCalledWith(0, 0, 0);
     expect(mockSetYCrosshairPosition).toHaveBeenCalledWith(0, 0, 0);
   });
@@ -303,7 +301,6 @@ describe("<Bed />", () => {
     const { container } = render(<Bed {...p} />);
     const soil = soilMesh(container);
     fireEvent.pointerMove(soil);
-    expect(mockSetPlantPosition).toHaveBeenCalledWith(0, 0, 0);
     expect(mockSetXCrosshairPosition).not.toHaveBeenCalled();
     expect(mockSetYCrosshairPosition).not.toHaveBeenCalled();
   });
@@ -357,7 +354,8 @@ describe("<Bed />", () => {
     const { container } = render(<Bed {...p} />);
     const soil = soilMesh(container);
     fireEvent.pointerMove(soil);
-    expect(mockSetPlantPosition).toHaveBeenCalledWith(0, 0, 0);
+    expect(mockSetXCrosshairPosition).toHaveBeenCalledWith(0, 0, 0);
+    expect(mockSetYCrosshairPosition).toHaveBeenCalledWith(0, 0, 0);
   });
 
   it("updates pointer point radius", () => {

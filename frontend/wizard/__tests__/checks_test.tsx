@@ -13,7 +13,7 @@ const mockDevice = {
 
 import React from "react";
 import { fireEvent, render } from "@testing-library/react";
-import TestRenderer, { ReactTestInstance } from "react-test-renderer";
+import type { ReactTestInstance } from "react-test-renderer";
 import { bot } from "../../__test_support__/fake_state/bot";
 import {
   buildResourceIndex, fakeDevice,
@@ -92,6 +92,7 @@ import * as messageActions from "../../messages/actions";
 import * as deviceActions from "../../devices/actions";
 import { DropdownConfig } from "../../photos/camera_calibration/config";
 import { PLACEHOLDER_FARMBOT } from "../../photos/images/image_flipper";
+import { createRenderer } from "../../__test_support__/test_renderer";
 
 // Extend globalConfig with missing RPI properties - declared in hacks.d.ts
 declare const globalConfig: Record<string, string>;
@@ -121,7 +122,7 @@ const findNodeByType = (
     return undefined;
   }
   try {
-    return TestRenderer.create(node).root
+    return createRenderer(node).root
       .findAll(element => matcher(element.type))
       .filter(item => matcher(item.type))[0];
   } catch {
@@ -200,7 +201,7 @@ describe("<Language />", () => {
     const user = fakeUser();
     user.body.language = undefined as unknown as string;
     p.resources = buildResourceIndex([user]).index;
-    const input = TestRenderer.create(<Language {...p} />)
+    const input = createRenderer(<Language {...p} />)
       .root.findByType(BlurableInput);
     expect(input?.props.value || "").toEqual("");
     input?.props.onCommit({
@@ -213,7 +214,7 @@ describe("<Language />", () => {
     expect(save).toHaveBeenCalledWith(user.uuid);
     user.body.language = undefined as unknown as string;
     p.resources = buildResourceIndex([user]).index;
-    const updatedInput = TestRenderer.create(<Language {...p} />)
+    const updatedInput = createRenderer(<Language {...p} />)
       .root.findByType(BlurableInput);
     expect(updatedInput?.props.value || "").toEqual("");
   });

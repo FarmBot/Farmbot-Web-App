@@ -1,10 +1,15 @@
 import React from "react";
-import TestRenderer from "react-test-renderer";
 import { allMatchedItems, FilterSearch } from "../filter_search";
 import { DropDownItem } from "../fb_select";
+import {
+  actRenderer,
+  createRenderer,
+  getRendererInstance,
+  unmountRenderer,
+} from "../../__test_support__/test_renderer";
 
 describe("<FilterSearch />", () => {
-  const wrappers: TestRenderer.ReactTestRenderer[] = [];
+  const wrappers: ReturnType<typeof createRenderer>[] = [];
 
   const fakeItem = (extra?: Partial<DropDownItem>): DropDownItem =>
     Object.assign({ label: "label", value: "value" }, extra);
@@ -17,15 +22,18 @@ describe("<FilterSearch />", () => {
   });
 
   const createWrapper = (p = fakeProps()) => {
-    const wrapper = TestRenderer.create(<FilterSearch {...p} />);
+    const wrapper = createRenderer(<FilterSearch {...p} />);
     wrappers.push(wrapper);
     return wrapper;
   };
 
+  const getInstance = (wrapper: ReturnType<typeof createRenderer>) =>
+    getRendererInstance<FilterSearch>(wrapper, FilterSearch);
+
   afterEach(() => {
     while (wrappers.length > 0) {
       const wrapper = wrappers.pop();
-      wrapper && TestRenderer.act(() => wrapper.unmount());
+      wrapper && unmountRenderer(wrapper);
     }
   });
 
@@ -33,16 +41,18 @@ describe("<FilterSearch />", () => {
     const p = fakeProps();
     const wrapper = createWrapper(p);
     const item = fakeItem();
-    (wrapper.getInstance() as FilterSearch | null)
-      ?.["handleValueChange"](item as never);
+    actRenderer(() => {
+      getInstance(wrapper)["handleValueChange"](item as never);
+    });
     expect(p.onChange).toHaveBeenCalledWith(item);
   });
 
   it("doesn't select item", () => {
     const p = fakeProps();
     const wrapper = createWrapper(p);
-    (wrapper.getInstance() as FilterSearch | null)
-      ?.["handleValueChange"](undefined as never);
+    actRenderer(() => {
+      getInstance(wrapper)["handleValueChange"](undefined as never);
+    });
     expect(p.onChange).not.toHaveBeenCalled();
   });
 
@@ -50,16 +60,19 @@ describe("<FilterSearch />", () => {
     const p = fakeProps();
     const wrapper = createWrapper(p);
     const item = fakeItem({ heading: true });
-    (wrapper.getInstance() as FilterSearch | null)
-      ?.["handleValueChange"](item as never);
+    actRenderer(() => {
+      getInstance(wrapper)["handleValueChange"](item as never);
+    });
     expect(p.onChange).not.toHaveBeenCalled();
   });
 
   it("handles empty selection", () => {
     const p = fakeProps();
     const wrapper = createWrapper(p);
-    (wrapper.getInstance() as FilterSearch | null)?.setState({
-      item: undefined,
+    actRenderer(() => {
+      getInstance(wrapper).setState({
+        item: undefined,
+      });
     });
     expect(JSON.stringify(wrapper.toJSON()).toLowerCase())
       .toContain("no selection");
@@ -67,8 +80,7 @@ describe("<FilterSearch />", () => {
 
   it("handles empty item", () => {
     const wrapper = createWrapper();
-    const renderItem = (wrapper.getInstance() as FilterSearch | null)
-      ?.["default"];
+    const renderItem = getInstance(wrapper)["default"];
     const el = renderItem?.({ label: "label" }, {
       handleClick: jest.fn(),
       index: 0,

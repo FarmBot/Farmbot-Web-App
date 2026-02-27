@@ -1,7 +1,6 @@
 let mockSave = () => Promise.resolve();
 
 import React from "react";
-import TestRenderer from "react-test-renderer";
 import { render } from "@testing-library/react";
 import { RawAddTool as AddTool, mapStateToProps } from "../add_tool";
 import { fakeState } from "../../__test_support__/fake_state";
@@ -11,6 +10,12 @@ import { FirmwareHardware } from "farmbot";
 import { AddToolProps } from "../interfaces";
 import { mockDispatch } from "../../__test_support__/fake_dispatch";
 import { Path } from "../../internal_urls";
+import {
+  actRenderer,
+  createRenderer,
+  getRendererInstance,
+  unmountRenderer,
+} from "../../__test_support__/test_renderer";
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -24,7 +29,10 @@ beforeEach(() => {
 
 describe("<AddTool />", () => {
   const createWrapper = (p = fakeProps()) =>
-    TestRenderer.create(<AddTool {...p} />);
+    createRenderer(<AddTool {...p} />);
+
+  const getInstance = (wrapper: ReturnType<typeof createRenderer>) =>
+    getRendererInstance<AddTool>(wrapper, AddTool);
 
   const fakeProps = (): AddToolProps => ({
     dispatch: jest.fn(),
@@ -42,73 +50,87 @@ describe("<AddTool />", () => {
 
   it("renders watering nozzle", () => {
     const wrapper = createWrapper();
-    const instance = wrapper.getInstance() as AddTool;
-    instance.setState({ toolName: "watering nozzle" });
+    const instance = getInstance(wrapper);
+    actRenderer(() => {
+      instance.setState({ toolName: "watering nozzle" });
+    });
     const labels = wrapper.root.findAllByType("label")
       .map(node => node.children.join("").toLowerCase());
     expect(labels.some(label => label.includes("flow rate"))).toBeTruthy();
-    wrapper.unmount();
+    unmountRenderer(wrapper);
   });
 
   it("renders seeder", () => {
     const wrapper = createWrapper();
-    const instance = wrapper.getInstance() as AddTool;
-    instance.setState({ toolName: "seeder" });
+    const instance = getInstance(wrapper);
+    actRenderer(() => {
+      instance.setState({ toolName: "seeder" });
+    });
     const labels = wrapper.root.findAllByType("label")
       .map(node => node.children.join("").toLowerCase());
     expect(labels.some(label => label.includes("tip z offset"))).toBeTruthy();
-    wrapper.unmount();
+    unmountRenderer(wrapper);
   });
 
   it("changes flow rate", () => {
     const wrapper = createWrapper();
-    const instance = wrapper.getInstance() as AddTool;
+    const instance = getInstance(wrapper);
     expect(instance.state.flowRate).toEqual(0);
-    instance.changeFlowRate(1);
+    actRenderer(() => {
+      instance.changeFlowRate(1);
+    });
     expect(instance.state.flowRate).toEqual(1);
-    wrapper.unmount();
+    unmountRenderer(wrapper);
   });
 
   it("changes tip z offset", () => {
     const wrapper = createWrapper();
-    const instance = wrapper.getInstance() as AddTool;
+    const instance = getInstance(wrapper);
     expect(instance.state.tipZOffset).toEqual(80);
-    instance.changeTipZOffset(1);
+    actRenderer(() => {
+      instance.changeTipZOffset(1);
+    });
     expect(instance.state.tipZOffset).toEqual(1);
-    wrapper.unmount();
+    unmountRenderer(wrapper);
   });
 
   it("edits tool name", () => {
     const wrapper = createWrapper();
-    const instance = wrapper.getInstance() as AddTool;
+    const instance = getInstance(wrapper);
     expect(instance.state.toolName).toEqual("");
-    wrapper.root.findAllByType("input")[0]
-      ?.props.onChange({ currentTarget: { value: "new name" } });
+    actRenderer(() => {
+      wrapper.root.findAllByType("input")[0]
+        ?.props.onChange({ currentTarget: { value: "new name" } });
+    });
     expect(instance.state.toolName).toEqual("new name");
-    wrapper.unmount();
+    unmountRenderer(wrapper);
   });
 
   it("disables save until name in entered", () => {
     const wrapper = createWrapper();
-    const instance = wrapper.getInstance() as AddTool;
+    const instance = getInstance(wrapper);
     expect(instance.state.toolName).toEqual("");
     expect(wrapper.root.findAllByType(SaveBtn)[0]?.props.disabled).toBeTruthy();
-    instance.setState({ toolName: "fake tool name" });
+    actRenderer(() => {
+      instance.setState({ toolName: "fake tool name" });
+    });
     expect(wrapper.root.findAllByType(SaveBtn)[0]?.props.disabled).toBeFalsy();
-    wrapper.unmount();
+    unmountRenderer(wrapper);
   });
 
   it("shows name collision message", () => {
     const p = fakeProps();
     p.existingToolNames = ["tool"];
     const wrapper = createWrapper(p);
-    const instance = wrapper.getInstance() as AddTool;
-    instance.setState({ toolName: "tool" });
+    const instance = getInstance(wrapper);
+    actRenderer(() => {
+      instance.setState({ toolName: "tool" });
+    });
     expect(wrapper.root.findAll(
       node => node.props.className == "name-error")[0]?.children.join(""))
       .toEqual("Already added.");
     expect(wrapper.root.findAllByType(SaveBtn)[0]?.props.disabled).toBeTruthy();
-    wrapper.unmount();
+    unmountRenderer(wrapper);
   });
 
   it("saves", async () => {
@@ -116,11 +138,13 @@ describe("<AddTool />", () => {
     const p = fakeProps();
     p.dispatch = mockDispatch();
     const wrapper = createWrapper(p);
-    const instance = wrapper.getInstance() as AddTool;
-    instance.setState({ toolName: "Foo" });
+    const instance = getInstance(wrapper);
+    actRenderer(() => {
+      instance.setState({ toolName: "Foo" });
+    });
     const navigate = jest.fn();
     instance.navigate = navigate;
-    await TestRenderer.act(async () => {
+    await actRenderer(async () => {
       instance.save();
       await Promise.resolve();
     });
@@ -131,7 +155,7 @@ describe("<AddTool />", () => {
     });
     expect(instance.state.uuid).toEqual(undefined);
     expect(navigate).toHaveBeenCalledWith(Path.tools());
-    wrapper.unmount();
+    unmountRenderer(wrapper);
   });
 
   it("removes unsaved tool on exit", async () => {
@@ -139,11 +163,13 @@ describe("<AddTool />", () => {
     const p = fakeProps();
     p.dispatch = mockDispatch();
     const wrapper = createWrapper(p);
-    const instance = wrapper.getInstance() as AddTool;
-    instance.setState({ toolName: "Foo" });
+    const instance = getInstance(wrapper);
+    actRenderer(() => {
+      instance.setState({ toolName: "Foo" });
+    });
     const navigate = jest.fn();
     instance.navigate = navigate;
-    await TestRenderer.act(async () => {
+    await actRenderer(async () => {
       instance.save();
       await Promise.resolve();
     });
@@ -154,7 +180,7 @@ describe("<AddTool />", () => {
     });
     expect(instance.state.uuid).toEqual("fake uuid");
     expect(navigate).not.toHaveBeenCalled();
-    wrapper.unmount();
+    unmountRenderer(wrapper);
     expect(crud.destroy).toHaveBeenCalledWith("fake uuid");
   });
 
@@ -175,11 +201,13 @@ describe("<AddTool />", () => {
     const wrapper = createWrapper(p);
     const buttons = wrapper.root.findAllByType("button");
     const navigate = jest.fn();
-    (wrapper.getInstance() as AddTool).navigate = navigate;
-    buttons[buttons.length - 1]?.props.onClick();
+    getInstance(wrapper).navigate = navigate;
+    actRenderer(() => {
+      buttons[buttons.length - 1]?.props.onClick();
+    });
     expect(crud.initSave).toHaveBeenCalledTimes(expectedAdds);
     expect(navigate).toHaveBeenCalledWith(Path.tools());
-    wrapper.unmount();
+    unmountRenderer(wrapper);
   });
 
   it("doesn't add stock tools twice", () => {
@@ -189,48 +217,58 @@ describe("<AddTool />", () => {
     const wrapper = createWrapper(p);
     const buttons = wrapper.root.findAllByType("button");
     const navigate = jest.fn();
-    (wrapper.getInstance() as AddTool).navigate = navigate;
-    buttons[buttons.length - 1]?.props.onClick();
+    getInstance(wrapper).navigate = navigate;
+    actRenderer(() => {
+      buttons[buttons.length - 1]?.props.onClick();
+    });
     expect(crud.initSave).toHaveBeenCalledTimes(2);
     expect(navigate).toHaveBeenCalledWith(Path.tools());
-    wrapper.unmount();
+    unmountRenderer(wrapper);
   });
 
   it("copies a tool name", () => {
     const p = fakeProps();
     p.firmwareHardware = "express_k10";
     const wrapper = createWrapper(p);
-    const instance = wrapper.getInstance() as AddTool;
+    const instance = getInstance(wrapper);
     const ps = wrapper.root.findAllByType("p");
-    ps[ps.length - 1]?.props.onClick();
+    actRenderer(() => {
+      ps[ps.length - 1]?.props.onClick();
+    });
     expect(instance.state.toolName).toEqual("Seed Trough 2");
-    wrapper.unmount();
+    unmountRenderer(wrapper);
   });
 
   it("deselects a tool", () => {
     const p = fakeProps();
     p.firmwareHardware = "express_k10";
     const wrapper = createWrapper(p);
-    const instance = wrapper.getInstance() as AddTool;
+    const instance = getInstance(wrapper);
     expect(instance.state.toAdd).toEqual([
       "Watering Nozzle", "Seed Trough 1", "Seed Trough 2",
     ]);
     const inputs = wrapper.root.findAllByType("input");
-    inputs[inputs.length - 1]?.props.onChange();
+    actRenderer(() => {
+      inputs[inputs.length - 1]?.props.onChange();
+    });
     expect(instance.state.toAdd).toEqual(["Watering Nozzle", "Seed Trough 1"]);
-    wrapper.unmount();
+    unmountRenderer(wrapper);
   });
 
   it("selects a tool", () => {
     const p = fakeProps();
     p.firmwareHardware = "express_k10";
     const wrapper = createWrapper(p);
-    const instance = wrapper.getInstance() as AddTool;
-    instance.setState({ toAdd: [] });
+    const instance = getInstance(wrapper);
+    actRenderer(() => {
+      instance.setState({ toAdd: [] });
+    });
     const inputs = wrapper.root.findAllByType("input");
-    inputs[inputs.length - 1]?.props.onChange();
+    actRenderer(() => {
+      inputs[inputs.length - 1]?.props.onChange();
+    });
     expect(instance.state.toAdd).toEqual(["Seed Trough 2"]);
-    wrapper.unmount();
+    unmountRenderer(wrapper);
   });
 
   it("disables when all already added", () => {
@@ -241,7 +279,7 @@ describe("<AddTool />", () => {
     const buttons = wrapper.root.findAllByType("button");
     expect(buttons[buttons.length - 1]?.props.className)
       .toContain("pseudo-disabled");
-    wrapper.unmount();
+    unmountRenderer(wrapper);
   });
 
   it("hides when none firmware is selected", () => {
@@ -251,7 +289,7 @@ describe("<AddTool />", () => {
     const addStockTools = wrapper.root.findAll(
       node => node.props.className == "add-stock-tools")[0];
     expect(addStockTools?.props.hidden).toBeTruthy();
-    wrapper.unmount();
+    unmountRenderer(wrapper);
   });
 });
 

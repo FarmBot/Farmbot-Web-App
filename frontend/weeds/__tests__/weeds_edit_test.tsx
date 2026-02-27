@@ -1,5 +1,4 @@
 import React from "react";
-import TestRenderer from "react-test-renderer";
 import { fireEvent, render } from "@testing-library/react";
 import {
   RawEditWeed as EditWeed,
@@ -20,6 +19,11 @@ import * as crud from "../../api/crud";
 import * as popover from "../../ui/popover";
 import { fakeMovementState } from "../../__test_support__/fake_bot_data";
 import { Path } from "../../internal_urls";
+import {
+  actRenderer,
+  createRenderer,
+  unmountRenderer,
+} from "../../__test_support__/test_renderer";
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -74,13 +78,15 @@ describe("<EditWeed />", () => {
     const weed = fakeWeed();
     weed.body.id = 1;
     p.findPoint = () => weed;
-    const wrapper = TestRenderer.create(<EditWeed {...p} />);
-    wrapper.root.findByType(DesignerPanelHeader).props.onBack();
+    const wrapper = createRenderer(<EditWeed {...p} />);
+    actRenderer(() => {
+      wrapper.root.findByType(DesignerPanelHeader).props.onBack();
+    });
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_HOVERED_POINT,
       payload: undefined,
     });
-    wrapper.unmount();
+    unmountRenderer(wrapper);
   });
 
   it("changes color", () => {
@@ -110,10 +116,12 @@ describe("<EditWeed />", () => {
     const weed = fakeWeed();
     weed.body.id = 1;
     p.findPoint = () => weed;
-    const wrapper = TestRenderer.create(<EditWeed {...p} />);
-    wrapper.root.findByType(DesignerPanelHeader).props.onSave();
+    const wrapper = createRenderer(<EditWeed {...p} />);
+    actRenderer(() => {
+      wrapper.root.findByType(DesignerPanelHeader).props.onSave();
+    });
     expect(crud.save).toHaveBeenCalledWith(weed.uuid);
-    wrapper.unmount();
+    unmountRenderer(wrapper);
   });
 
   it("doesn't save", () => {
@@ -122,10 +130,12 @@ describe("<EditWeed />", () => {
     const weed = fakeWeed();
     weed.body.id = 1;
     p.findPoint = () => weed;
-    const wrapper = TestRenderer.create(<EditWeed {...p} />);
-    wrapper.root.findByType(DesignerPanelHeader).props.onSave();
+    const wrapper = createRenderer(<EditWeed {...p} />);
+    actRenderer(() => {
+      wrapper.root.findByType(DesignerPanelHeader).props.onSave();
+    });
     expect(crud.save).not.toHaveBeenCalled();
-    wrapper.unmount();
+    unmountRenderer(wrapper);
   });
 });
 

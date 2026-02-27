@@ -1,7 +1,10 @@
 import React from "react";
-import TestRenderer from "react-test-renderer";
 import { DeleteButton } from "../delete_button";
 import * as crud from "../../api/crud";
+import {
+  createRenderer,
+  unmountRenderer,
+} from "../../__test_support__/test_renderer";
 
 describe("<DeleteButton />", () => {
   const fakeProps = () => ({
@@ -14,12 +17,12 @@ describe("<DeleteButton />", () => {
     const destroyThunk = jest.fn();
     const destroySpy = jest.spyOn(crud, "destroy")
       .mockImplementation(() => destroyThunk as never);
-    const wrapper = TestRenderer.create(<DeleteButton {...p} />);
+    const wrapper = createRenderer(<DeleteButton {...p} />);
     await wrapper.root.findByType("button").props.onClick?.({
       preventDefault: jest.fn(),
     } as unknown as React.MouseEvent<HTMLButtonElement>);
     expect(p.dispatch).toHaveBeenCalledWith(destroyThunk);
-    wrapper.unmount();
+    unmountRenderer(wrapper);
     destroySpy.mockRestore();
   });
 });

@@ -267,12 +267,13 @@ describe("<NavBar />", () => {
     p.firmwareConfig = undefined;
     p.appState.popups.controls = true;
     render(<NavBar {...p} />);
-    expect(controlsPanelSpy).toHaveBeenCalledWith(
-      expect.objectContaining({
-        firmwareSettings: p.bot.hardware.mcu_params,
-      }),
-      expect.any(Object),
-    );
+    const callWithMcuParams = controlsPanelSpy.mock.calls.find(([props]) =>
+      !!props
+      && typeof props == "object"
+      && "firmwareSettings" in props
+      && (props as { firmwareSettings: unknown }).firmwareSettings
+      == p.bot.hardware.mcu_params);
+    expect(callWithMcuParams).toBeTruthy();
     controlsPanelSpy.mockRestore();
   });
 

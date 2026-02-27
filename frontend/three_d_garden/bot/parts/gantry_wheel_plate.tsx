@@ -101,7 +101,7 @@ export type GantryWheelPlateFull = GLTF & {
 }
 
 export const GantryWheelPlate = (model: GantryWheelPlateFull) =>
-  (props: ThreeElements["group"]) => {
+  (props: Omit<ThreeElements["group"], "ref">) => {
     const { nodes, materials } = model;
     return <Group {...props}>
       <MeshComponent
