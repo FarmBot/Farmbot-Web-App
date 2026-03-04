@@ -83,7 +83,10 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
   componentWillUnmount() {
     if (!this.state.uuid) { return; }
     const id = unpackUUID(this.state.uuid).remoteId;
-    if (!id) { return; }
+    if (!id) {
+      this.props.dispatch(crud.save(this.state.uuid));
+      return;
+    }
     const curve = this.props.findCurve(id);
     if (!(curve?.specialStatus == SpecialStatus.DIRTY)) { return; }
     this.props.dispatch(crud.save(this.state.uuid));

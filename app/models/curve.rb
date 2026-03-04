@@ -11,8 +11,4 @@ class Curve < ApplicationRecord
   validates_inclusion_of :type, in: CURVE_TYPES,
                                 message: BAD_TYPE
   serialize :data
-
-  def broadcast?
-    false
-  end
 end
