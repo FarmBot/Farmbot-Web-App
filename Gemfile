@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 ruby "~> 4.0.1"
 
-gem "rails", "~> 7.2.0"
+gem "rails", "~> 8.0.0"
 gem "sprockets-rails"
 gem "active_model_serializers"
 gem "bunny"
