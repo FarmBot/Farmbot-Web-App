@@ -20,9 +20,8 @@ module FarmBot
       "Api::RmqUtilsController#resource_action",
       "Api::RmqUtilsController#topic_action",
     ]
-    config.load_defaults 8.0
+    config.load_defaults 8.1
     config.add_autoload_paths_to_load_path = true
-    config.active_support.to_time_preserves_timezone = :offset
     config.active_storage.service = ConfigHelpers::ActiveStorage.service
     config.cache_store = :redis_cache_store, { url: REDIS_URL, ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE }, pool: false }
     config.middleware.use Rack::Attack
