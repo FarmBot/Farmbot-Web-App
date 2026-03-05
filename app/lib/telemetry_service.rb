@@ -51,10 +51,12 @@ class TelemetryService < AbstractServiceRunner
     })
     Telemetries::Create.run!(telemetry, device: dev)
     msg = (MESSAGE % [data.device_id, device_version])
-    other_stuff = { device: "device_#{data.device_id}",
-                    is_telemetry: true,
-                    message: msg }
-    puts JSON.parse(original_payload).merge(other_stuff).to_json
+    payload = JSON.parse(original_payload)
+    # Overwrite untrusted payload fields with trusted server-side values.
+    payload["device"] = "device_#{data.device_id}"
+    payload["is_telemetry"] = true
+    payload["message"] = msg
+    puts payload.to_json
   rescue => x
     Rollbar.error(x)
   end

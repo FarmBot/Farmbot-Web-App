@@ -6,7 +6,6 @@ require_relative "./config_helpers/active_storage"
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
-Bundler.require(:default, Rails.env)
 Bundler.require(*Rails.groups)
 
 module FarmBot
@@ -21,11 +20,11 @@ module FarmBot
       "Api::RmqUtilsController#resource_action",
       "Api::RmqUtilsController#topic_action",
     ]
-    config.load_defaults 7.0
-    config.active_support.disable_to_s_conversion = true
-    config.active_support.cache_format_version = 7.0
+    config.load_defaults 7.1
+    config.add_autoload_paths_to_load_path = true
+    config.active_support.cache_format_version = 7.1
     config.active_storage.service = ConfigHelpers::ActiveStorage.service
-    config.cache_store = :redis_cache_store, { url: REDIS_URL, ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE } }
+    config.cache_store = :redis_cache_store, { url: REDIS_URL, ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE }, pool: false }
     config.middleware.use Rack::Attack
     config.active_record.schema_format = :sql
     config.active_record.belongs_to_required_by_default = false

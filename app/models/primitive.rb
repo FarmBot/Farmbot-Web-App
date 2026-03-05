@@ -8,7 +8,7 @@ class Primitive < ApplicationRecord
 
   belongs_to :fragment
   has_many :primitive_pairs
-  serialize :value
+  serialize :value, coder: YAML
   validate :primitives_only, :limit_length
 
   def primitives_only

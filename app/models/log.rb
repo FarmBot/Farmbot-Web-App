@@ -18,7 +18,7 @@ class Log < ApplicationRecord
   DISCARD = ["fun", "debug", nil]
   TYPES = CeleryScriptSettingsBag::ALLOWED_MESSAGE_TYPES
   # The means by which the message will be sent. Ex: frontend toast notification
-  serialize :channels
+  serialize :channels, coder: YAML
   belongs_to :device
 
   validates :device, presence: true

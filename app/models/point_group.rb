@@ -15,5 +15,5 @@ class PointGroup < ApplicationRecord
   has_many :point_group_items, dependent: :destroy
   validates_inclusion_of :sort_type, in: SORT_TYPES,
                                      message: BAD_SORT
-  serialize :criteria
+  serialize :criteria, coder: YAML
 end
