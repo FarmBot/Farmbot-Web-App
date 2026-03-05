@@ -20,7 +20,7 @@ module FarmBot
       "Api::RmqUtilsController#resource_action",
       "Api::RmqUtilsController#topic_action",
     ]
-    config.load_defaults 7.1
+    config.load_defaults 7.2
     config.add_autoload_paths_to_load_path = true
     config.active_support.cache_format_version = 7.1
     config.active_storage.service = ConfigHelpers::ActiveStorage.service

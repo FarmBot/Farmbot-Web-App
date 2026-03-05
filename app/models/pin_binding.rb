@@ -6,13 +6,13 @@ class PinBinding < ApplicationRecord
 
   belongs_to :device
   belongs_to :sequence
-  enum special_action: { emergency_lock: "emergency_lock",
-                         emergency_unlock: "emergency_unlock",
-                         power_off: "power_off",
-                         read_status: "read_status",
-                         reboot: "reboot",
-                         sync: "sync",
-                         take_photo: "take_photo" }
+  enum :special_action, { emergency_lock: "emergency_lock",
+                          emergency_unlock: "emergency_unlock",
+                          power_off: "power_off",
+                          read_status: "read_status",
+                          reboot: "reboot",
+                          sync: "sync",
+                          take_photo: "take_photo" }
   validates :pin_num, uniqueness: { scope: :device }
 
   def fancy_name

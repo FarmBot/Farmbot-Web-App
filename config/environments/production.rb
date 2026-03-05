@@ -6,7 +6,6 @@ Rails.application.configure do
     .action_mailer
     .default_url_options = { host: ENV.fetch("API_HOST", "my.farm.bot") }
   config.active_support.deprecation  = :notify
-  config.cache_classes               = true
   config.enable_reloading            = false
   config.consider_all_requests_local = false
   config.eager_load                  = true
@@ -14,7 +13,7 @@ Rails.application.configure do
   config.i18n.fallbacks              = true
   config.log_formatter               = ::Logger::Formatter.new
   config.log_level                   = :info
-  config.perform_caching             = false
+  config.action_controller.perform_caching  = false
   config.public_file_server.enabled  = false
   config.assets.compile              = false
   # HACK AHEAD! Here's why:
