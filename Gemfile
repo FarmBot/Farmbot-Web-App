@@ -34,6 +34,7 @@ gem "bigdecimal"
 gem "mutex_m"
 gem "tsort"
 gem "irb"
+gem "image_processing", "~> 1.2"
 
 group :development, :test do
   gem "climate_control"
