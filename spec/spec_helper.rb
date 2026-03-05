@@ -5,6 +5,7 @@ require "simplecov"
 #Ignore anything with the word "spec" in it. No need to test your tests.
 SimpleCov.start do
   add_filter "/spec/"
+  add_filter "lib/tasks"
   add_filter "config/initializers"
 end
 SimpleCov.coverage_dir("coverage_api")

@@ -1,4 +1,6 @@
-FarmBot::Application.configure do
+require "active_support/core_ext/integer/time"
+
+Rails.application.configure do
 
   config
     .action_mailer
@@ -13,7 +15,6 @@ FarmBot::Application.configure do
   config.log_level                   = :info
   config.perform_caching             = false
   config.public_file_server.enabled  = false
-  config.serve_static_assets         = true
   config.assets.compile              = false
   # HACK AHEAD! Here's why:
   # 1. FarmBot Inc. Uses Sendgrid for email.

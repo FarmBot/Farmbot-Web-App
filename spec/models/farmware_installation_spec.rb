@@ -78,7 +78,27 @@ describe FarmwareInstallation do
   end
 
   it "disallows empty URLs" do
-    x = FarmwareInstallation.create(url: "")
+    x = FarmwareInstallation.create(url: "", device: device)
+    expect(x.errors[:url]).to include("can't be blank")
+  end
+
+  it "allows valid http/https URLs" do
+    x = FarmwareInstallation.new(url: FAKE_URL, device: device)
+    x.validate
+    expect(x.errors[:url]).to be_empty
+  end
+
+  it "rejects non-http URLs" do
+    x = FarmwareInstallation.create(url: "ftp://example.com/manifest.json",
+                                    device: device)
+    expect(x.errors[:url]).to include("is an invalid URL")
+  end
+
+  it "rejects URLs that raise parse errors" do
+    x = FarmwareInstallation.new(url: "https://example.com/manifest.json",
+                                 device: device)
+    allow(URI).to receive(:parse).and_raise(URI::InvalidURIError)
+    x.validate
     expect(x.errors[:url]).to include("is an invalid URL")
   end
 end

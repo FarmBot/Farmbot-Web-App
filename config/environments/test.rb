@@ -1,4 +1,6 @@
-FarmBot::Application.configure do
+require "active_support/core_ext/integer/time"
+
+Rails.application.configure do
   config.action_controller.allow_forgery_protection = false
   config.action_controller.perform_caching = false
   config.action_dispatch.show_exceptions = false

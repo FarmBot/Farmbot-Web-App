@@ -1,7 +1,8 @@
 source "https://rubygems.org"
 ruby "~> 4.0.1"
 
-gem "rails", "~> 6"
+gem "rails", "~> 7.0.0"
+gem "sprockets-rails"
 gem "active_model_serializers"
 gem "bunny"
 gem "delayed_job_active_record"
@@ -17,7 +18,6 @@ gem "pg"
 gem "rabbitmq_http_api_client"
 gem "rack-attack"
 gem "rack-cors"
-gem "rails_12factor"
 gem "redis", "~> 4.0"
 gem "request_store"
 gem "rollbar"
@@ -25,7 +25,6 @@ gem "scenic"
 gem "secure_headers"
 gem "tzinfo" # For validation of user selected timezone names
 gem "tzinfo-data" # For validation of user selected timezone names
-gem "valid_url"
 gem "thwait"
 gem "lograge" # Used to filter repetitive RabbitMQ logs.
 gem "drb"

@@ -4,7 +4,8 @@ require "open-uri"
 # Useful for restoring a device after a re-flash.
 class FarmwareInstallation < ApplicationRecord
   belongs_to :device
-  validates :url, url: true
+  validates :url, presence: true
+  validate :validate_url_format
   validates_uniqueness_of :url, { scope: :device }
   validates_presence_of :device
   # Prevent malice when fetching a farmware manifest
@@ -50,5 +51,23 @@ class FarmwareInstallation < ApplicationRecord
     update!(package: pkg_name, package_error: nil)
   rescue => error
     maybe_recover_from_fetch_error(error)
+  end
+
+  private
+
+  def validate_url_format
+    value = url.to_s.strip
+    return if value.empty?
+
+    begin
+      parsed = URI.parse(value)
+      valid =
+        (parsed.is_a?(URI::HTTP) || parsed.is_a?(URI::HTTPS)) &&
+        parsed.host.present? &&
+        !value.match?(/\s/)
+      errors.add(:url, "is an invalid URL") unless valid
+    rescue URI::InvalidURIError
+      errors.add(:url, "is an invalid URL")
+    end
   end
 end
