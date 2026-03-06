@@ -115,7 +115,7 @@ interface ButtonOrLedItem {
   on?: boolean;
   position: number;
   color: { on: number, off: number };
-  ref?: React.MutableRefObject<MeshObject | null>;
+  ref?: React.RefObject<MeshObject | null>;
 }
 
 export const Model = (props: BoxTopBaseProps) => {
@@ -324,7 +324,7 @@ export const Model = (props: BoxTopBaseProps) => {
             }}>
             <Cylinder ref={ref}
               name={"button-color"}
-              material-color={color}
+              material-color={color.off}
               args={[9, 0, 3.5]}
               position={[-30, btnPosition, Z]}
               rotation={[Math.PI / 2, 0, 0]} />
@@ -372,7 +372,7 @@ export const Model = (props: BoxTopBaseProps) => {
             material-color={0xcccccc}
             scale={SCALE} />
           <Cylinder ref={ref} name={"led-color"}
-            material-color={color}
+            material-color={color.off}
             args={[6.75, 6.75, 3]}
             position={[-50, ledPosition, Z]}
             rotation={[Math.PI / 2, 0, 0]} />
