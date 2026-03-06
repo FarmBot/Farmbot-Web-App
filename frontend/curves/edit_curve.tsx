@@ -165,9 +165,14 @@ export class RawEditCurve extends React.Component<EditCurveProps, EditCurveState
           {curve &&
             <i className={"fa fa-trash fb-icon-button invert"}
               title={t("Delete curve")}
-              onClick={() => this.props.resourceUsage[curve.uuid]
-                ? error(t("Curve in use."))
-                : dispatch(crud.destroy(curve.uuid))} />}
+              onClick={() => {
+                if (this.props.resourceUsage[curve.uuid]) {
+                  error(t("Curve in use."));
+                  return;
+                }
+                this.setState({ uuid: undefined });
+                dispatch(crud.destroy(curve.uuid));
+              }} />}
         </div>
       </DesignerPanelHeader>
       <DesignerPanelContent panelName={"curve-info"}>
