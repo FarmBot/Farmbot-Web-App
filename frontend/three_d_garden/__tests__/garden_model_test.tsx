@@ -23,6 +23,7 @@ import {
 
 let isDesktopSpy: jest.SpyInstance;
 let isMobileSpy: jest.SpyInstance;
+let useStateSpy: jest.SpyInstance;
 const originalPathname = location.pathname;
 const mountedWrappers: ReturnType<typeof createRenderer>[] = [];
 
@@ -30,6 +31,19 @@ describe("<GardenModel />", () => {
   beforeEach(() => {
     mockIsDesktop = false;
     mockIsMobile = false;
+    let useStateCalls = 0;
+    useStateSpy = jest.spyOn(React, "useState")
+      // eslint-disable-next-line comma-spacing
+      .mockImplementation(<S,>(initialState?: S | (() => S)) => {
+        useStateCalls += 1;
+        if (useStateCalls == 2) {
+          return [{} as S, jest.fn()];
+        }
+        const value = typeof initialState == "function"
+          ? (initialState as () => S)()
+          : initialState;
+        return [value as S, jest.fn()];
+      });
     isDesktopSpy = jest.spyOn(screenSize, "isDesktop")
       .mockImplementation(() => mockIsDesktop);
     isMobileSpy = jest.spyOn(screenSize, "isMobile")
@@ -39,6 +53,7 @@ describe("<GardenModel />", () => {
   afterEach(() => {
     mountedWrappers.splice(0).forEach(wrapper =>
       unmountRenderer(wrapper));
+    useStateSpy.mockRestore();
     isDesktopSpy.mockRestore();
     isMobileSpy.mockRestore();
     location.pathname = originalPathname;

@@ -7,7 +7,12 @@ import {
   Sphere,
   StatsGl,
 } from "@react-three/drei";
-import { BackSide, MeshBasicMaterial as ThreeMeshBasicMaterial } from "three";
+import {
+  BackSide,
+  MeshBasicMaterial as ThreeMeshBasicMaterial,
+  OrthographicCamera as ThreeOrthographicCamera,
+  PerspectiveCamera as ThreePerspectiveCamera,
+} from "three";
 import { Bot } from "./bot";
 import { AddPlantProps, Bed } from "./bed";
 import {
@@ -111,6 +116,9 @@ export const GardenModel = (props: GardenModelProps) => {
   const topDown = addPlantProps?.designer.threeDTopDownView;
   const topDownMobile = topDown && isMobile();
   const camera = getCamera(config, props.activeFocus, cameraInit(!!topDown));
+  const [controlsCamera, setControlsCamera] =
+    // eslint-disable-next-line no-null/no-null
+    React.useState<ThreePerspectiveCamera | ThreeOrthographicCamera | null>(null);
 
   const showPlants = !addPlantProps
     || !!addPlantProps.getConfigValue(BooleanSetting.show_plants);
@@ -163,24 +171,29 @@ export const GardenModel = (props: GardenModelProps) => {
     </Sphere>
     <AnimatedGroup
       scale={props.activeFocus ? 1 : scale}>
-      <Camera makeDefault={true} name={"camera"}
+      <Camera
+        ref={setControlsCamera}
+        makeDefault={true}
+        name={"camera"}
         fov={40} near={10} far={BigDistance.far}
         position={camera.position}
         rotation={[0, 0, 0]}
         zoom={topDown ? 0.25 : 1}
         up={[0, 0, 1]} />
     </AnimatedGroup>
-    <OrbitControls
-      maxPolarAngle={Math.PI / 2}
-      minAzimuthAngle={topDownMobile ? Math.PI / 2 : undefined}
-      maxAzimuthAngle={topDownMobile ? Math.PI / 2 : undefined}
-      enableRotate={config.rotate}
-      enableZoom={config.zoom}
-      enablePan={config.pan}
-      dampingFactor={0.2}
-      target={camera.target}
-      minDistance={config.lightsDebug ? 50 : 500}
-      maxDistance={config.lightsDebug ? BigDistance.devZoom : BigDistance.zoom} />
+    {controlsCamera &&
+      <OrbitControls
+        camera={controlsCamera}
+        maxPolarAngle={Math.PI / 2}
+        minAzimuthAngle={topDownMobile ? Math.PI / 2 : undefined}
+        maxAzimuthAngle={topDownMobile ? Math.PI / 2 : undefined}
+        enableRotate={config.rotate}
+        enableZoom={config.zoom}
+        enablePan={config.pan}
+        dampingFactor={0.2}
+        target={camera.target}
+        minDistance={config.lightsDebug ? 50 : 500}
+        maxDistance={config.lightsDebug ? BigDistance.devZoom : BigDistance.zoom} />}
     <AxesHelper args={[5000]} visible={config.threeAxes} />
     {config.viewCube && <GizmoHelper><GizmoViewcube /></GizmoHelper>}
     <Sun
