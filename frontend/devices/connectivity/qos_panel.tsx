@@ -8,6 +8,7 @@ import { t } from "../../i18next_wrapper";
 import { docLinkClick, Saucer } from "../../ui";
 import { Actions } from "../../constants";
 import { NavigationContext } from "../../routes_helpers";
+import { NavigateFunction } from "react-router";
 
 export interface QosPanelProps {
   pings: PingDictionary;
@@ -66,7 +67,7 @@ export class QosPanel extends React.Component<QosPanelProps, {}> {
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = this.context;
+  navigate: NavigateFunction = url => { this.context?.(url as string); };
 
   render() {
     const r = { ...this.latencyReport, ...this.qualityReport };

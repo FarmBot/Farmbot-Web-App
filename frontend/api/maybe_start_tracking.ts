@@ -1,5 +1,5 @@
 import { ResourceName } from "farmbot";
-import { startTracking } from "../connectivity/data_consistency";
+import * as dataConsistency from "../connectivity/data_consistency";
 import { unpackUUID } from "../util";
 
 const IGNORE_LIST: ResourceName[] = [
@@ -22,5 +22,5 @@ const IGNORE_LIST: ResourceName[] = [
 
 export function maybeStartTracking(uuid: string) {
   const ignore = IGNORE_LIST.includes(unpackUUID(uuid).kind);
-  ignore || startTracking(uuid);
+  ignore || dataConsistency.startTracking(uuid);
 }

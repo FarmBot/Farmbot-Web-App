@@ -57,6 +57,7 @@ describe Api::LogsController do
       expect(Log.last.message).to eq("Hello, world!")
       expect(Log.last.device).to eq(user.device)
       expect(Log.last.created_at.to_time.to_s).to eq(now.to_time.to_s)
+      expect(Log.last.created_at.to_time.utc_offset).to eq(now.to_time.utc_offset)
     end
 
     it "creates one log" do

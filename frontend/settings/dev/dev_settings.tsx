@@ -37,6 +37,16 @@ export const DevWidgetFBOSRow = () => {
 };
 
 export const DevWidget3dCameraRow = () => {
+  const [parseError, setParseError] = React.useState(false);
+  const value = DevSettings.get3dCamera();
+  React.useEffect(() => {
+    try {
+      JSON.parse(value);
+      setParseError(false);
+    } catch {
+      setParseError(true);
+    }
+  }, [value]);
   return <Row className="grid-2-col">
     <label>
       {"Change initial 3D camera position"}
@@ -51,7 +61,8 @@ export const DevWidget3dCameraRow = () => {
             target: [-1500, -200, 200],
           }))} />
       <BlurableInput type="text"
-        value={DevSettings.get3dCamera() || ""}
+        error={parseError ? "Invalid JSON" : ""}
+        value={value}
         onCommit={e => DevSettings.set3dCamera(e.currentTarget.value)} />
     </div>
   </Row>;

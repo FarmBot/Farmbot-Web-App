@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { StepWrapper, StepWrapperProps } from "../step_wrapper";
 import {
   fakeSequence, fakeWebAppConfig,
@@ -23,11 +23,22 @@ describe("<StepWrapper />", () => {
     sequencesState: emptyState().consumers.sequences,
   });
 
+  const setStateSync = (instance: StepWrapper) => {
+    instance.setState = ((state, callback) => {
+      const update = typeof state == "function"
+        ? state(instance.state, instance.props)
+        : state;
+      instance.state = { ...instance.state, ...update };
+      callback?.();
+    }) as StepWrapper["setState"];
+    return instance;
+  };
+
   it("renders", () => {
-    const wrapper = mount(<StepWrapper {...fakeProps()} />);
-    const step = wrapper.find("div").first();
-    expect(step.hasClass("step-wrapper")).toBeTruthy();
-    expect(step.hasClass("step-class")).toBeTruthy();
+    const { container } = render(<StepWrapper {...fakeProps()} />);
+    const step = container.querySelector(".step-wrapper");
+    expect(step?.classList.contains("step-wrapper")).toBeTruthy();
+    expect(step?.classList.contains("step-class")).toBeTruthy();
   });
 
   it("renders pinned sequence", () => {
@@ -38,9 +49,9 @@ describe("<StepWrapper />", () => {
     sequence.body.color = "red";
     p.currentStep = { kind: "execute", args: { sequence_id: 1 } };
     p.resources = buildResourceIndex([sequence]).index;
-    const wrapper = mount(<StepWrapper {...p} />);
-    const step = wrapper.find("div").first();
-    expect(step.find(".step-content").hasClass("red")).toBeTruthy();
+    const { container } = render(<StepWrapper {...p} />);
+    expect(container.querySelector(".step-content")?.classList.contains("red"))
+      .toBeTruthy();
   });
 
   it("toggles celery script view", () => {
@@ -48,19 +59,21 @@ describe("<StepWrapper />", () => {
     const config = fakeWebAppConfig();
     config.body.view_celery_script = true;
     p.resources = buildResourceIndex([config]).index;
-    const wrapper = mount<StepWrapper>(<StepWrapper {...p} />);
-    expect(wrapper.state().viewRaw).toEqual(undefined);
-    expect(wrapper.text().toLowerCase()).toContain("args");
-    wrapper.instance().toggleViewRaw?.();
-    expect(wrapper.state().viewRaw).toEqual(false);
-    expect(wrapper.text().toLowerCase()).not.toContain("args");
+    const instance = setStateSync(new StepWrapper(p));
+    expect(instance.state.viewRaw).toEqual(undefined);
+    const { container, rerender } = render(instance.render());
+    expect(container.textContent?.toLowerCase()).toContain("args");
+    instance.toggleViewRaw?.();
+    expect(instance.state.viewRaw).toEqual(false);
+    rerender(instance.render());
+    expect(container.textContent?.toLowerCase()).not.toContain("args");
   });
 
   it("sets element key", () => {
     const p = fakeProps();
-    const wrapper = mount<StepWrapper>(<StepWrapper {...p} />);
-    expect(wrapper.state().updateKey).toEqual(undefined);
-    wrapper.instance().setKey("code");
-    expect(wrapper.state().updateKey).toEqual("code");
+    const instance = setStateSync(new StepWrapper(p));
+    expect(instance.state.updateKey).toEqual(undefined);
+    instance.setKey("code");
+    expect(instance.state.updateKey).toEqual("code");
   });
 });

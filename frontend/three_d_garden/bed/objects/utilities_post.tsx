@@ -41,10 +41,14 @@ export const UtilitiesPost = (props: UtilitiesPostProps) => {
     new THREE.Vector3(barbX, barbY, barbZ),
   );
 
-  const postWoodTexture = useTexture(ASSETS.textures.wood + "?=post");
-  postWoodTexture.wrapS = RepeatWrapping;
-  postWoodTexture.wrapT = RepeatWrapping;
-  postWoodTexture.repeat.set(0.02, 0.05);
+  const postWoodTextureBase = useTexture(ASSETS.textures.wood + "?=post");
+  const postWoodTexture = React.useMemo(() => {
+    const texture = postWoodTextureBase.clone();
+    texture.wrapS = RepeatWrapping;
+    texture.wrapT = RepeatWrapping;
+    texture.repeat.set(0.02, 0.05);
+    return texture;
+  }, [postWoodTextureBase]);
 
   return <Group name={"utilities"}
     visible={utilitiesPost && props.activeFocus != "Planter bed"}

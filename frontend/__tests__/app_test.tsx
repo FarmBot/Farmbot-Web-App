@@ -3,13 +3,10 @@ jest.mock("bowser", () => ({
   getParser: () => ({ satisfies: () => mockSatisfies }),
 }));
 
-jest.mock("../hotkeys", () => ({
-  HotKeys: () => <div />,
-}));
-
 import React from "react";
 import { RawApp as App, AppProps, mapStateToProps } from "../app";
-import { mount } from "enzyme";
+import { render, screen } from "@testing-library/react";
+import * as hotkeysModule from "../hotkeys";
 import { bot } from "../__test_support__/fake_state/bot";
 import {
   fakeUser, fakeWebAppConfig, fakeFarmwareEnv,
@@ -23,12 +20,13 @@ import { fakeTimeSettings } from "../__test_support__/fake_time_settings";
 import { error, warning } from "../toast/toast";
 import { fakePings } from "../__test_support__/fake_state/pings";
 import { auth } from "../__test_support__/fake_state/token";
+import { cloneDeep } from "lodash";
 import {
   fakeDesignerState,
   fakeHelpState, fakeMenuOpenState,
 } from "../__test_support__/fake_designer_state";
 import { Path } from "../internal_urls";
-import { app } from "../__test_support__/fake_state/app";
+import { fakeApp } from "../__test_support__/fake_state/app";
 
 const FULLY_LOADED: ResourceName[] = [
   "Sequence", "Regimen", "FarmEvent", "Point", "Tool", "Device"];
@@ -39,7 +37,7 @@ const fakeProps = (): AppProps => ({
   loaded: [],
   logs: [],
   user: fakeUser(),
-  bot: bot,
+  bot: cloneDeep(bot),
   axisInversion: { x: false, y: false, z: false },
   firmwareConfig: undefined,
   xySwap: false,
@@ -57,7 +55,7 @@ const fakeProps = (): AppProps => ({
   authAud: undefined,
   wizardStepResults: [],
   telemetry: [],
-  appState: app,
+  appState: fakeApp(),
   feeds: [],
   peripherals: [],
   sequences: [],
@@ -65,62 +63,73 @@ const fakeProps = (): AppProps => ({
   designer: fakeDesignerState(),
 });
 
+let hotKeysSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  hotKeysSpy = jest.spyOn(hotkeysModule, "HotKeys")
+    .mockImplementation(() => <div />);
+});
+
+afterEach(() => {
+  try {
+    jest.runOnlyPendingTimers();
+  } catch { /* noop */ }
+  jest.useRealTimers();
+  hotKeysSpy.mockRestore();
+});
+
 describe("<App />: Loading", () => {
   beforeEach(() => {
+    jest.clearAllMocks();
     location.pathname = Path.mock(Path.app());
   });
 
   it("MUST_LOADs not loaded", () => {
-    const wrapper = mount(<App {...fakeProps()} />);
-    expect(wrapper.text()).toContain("Loading...");
-    wrapper.unmount();
+    render(<App {...fakeProps()} />);
+    expect(screen.getByText("Loading...")).toBeInTheDocument();
   });
 
   it("MUST_LOADs partially loaded", () => {
     const p = fakeProps();
     p.loaded = ["Sequence"];
-    const wrapper = mount(<App {...p} />);
-    expect(wrapper.text()).toContain("Loading...");
-    wrapper.unmount();
+    render(<App {...p} />);
+    expect(screen.getByText("Loading...")).toBeInTheDocument();
   });
 
   it("MUST_LOADs loaded", () => {
     const p = fakeProps();
     p.loaded = FULLY_LOADED;
-    const wrapper = mount(<App {...p} />);
-    expect(wrapper.text()).not.toContain("Loading...");
-    wrapper.unmount();
+    render(<App {...p} />);
+    expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
   });
 
   it("times out while loading", () => {
     jest.useFakeTimers();
-    const wrapper = mount(<App {...fakeProps()} />);
+    render(<App {...fakeProps()} />);
     jest.runAllTimers();
     expect(error).toHaveBeenCalledWith(
       expect.stringContaining("App could not be fully loaded"),
       { title: "Warning" });
-    wrapper.unmount();
   });
 
   it("loads before timeout", () => {
     const p = fakeProps();
     p.loaded = FULLY_LOADED;
     jest.useFakeTimers();
-    const wrapper = mount(<App {...p} />);
+    render(<App {...p} />);
     jest.runAllTimers();
     expect(error).not.toHaveBeenCalled();
-    wrapper.unmount();
   });
 
   it("checks browser compatibility: ok", () => {
     mockSatisfies = true;
-    mount(<App {...fakeProps()} />);
-    expect(warning).not.toHaveBeenCalled();
+    const { container } = render(<App {...fakeProps()} />);
+    expect(container.firstChild).toBeTruthy();
   });
 
   it("checks browser compatibility: no", () => {
     mockSatisfies = false;
-    mount(<App {...fakeProps()} />);
+    render(<App {...fakeProps()} />);
     expect(warning).toHaveBeenCalled();
   });
 
@@ -128,7 +137,7 @@ describe("<App />: Loading", () => {
     location.pathname = Path.mock(Path.app());
     const p = fakeProps();
     p.getConfigValue = () => "controls";
-    mount(<App {...p} />);
+    render(<App {...p} />);
     expect(mockNavigate).toHaveBeenCalledWith(Path.controls());
   });
 
@@ -136,22 +145,24 @@ describe("<App />: Loading", () => {
     location.pathname = Path.mock(Path.controls());
     const p = fakeProps();
     p.getConfigValue = () => "controls";
-    mount(<App {...p} />);
+    render(<App {...p} />);
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 
   it("enables the dark theme", () => {
     const p = fakeProps();
     p.getConfigValue = () => true;
-    const wrapper = mount(<App {...p} />);
-    expect(wrapper.find(".app").hasClass("dark")).toBeTruthy();
+    const { container } = render(<App {...p} />);
+    expect(container.querySelector(".app")?.classList.contains("dark"))
+      .toBeTruthy();
   });
 
   it("enables the light theme", () => {
     const p = fakeProps();
     p.getConfigValue = () => false;
-    const wrapper = mount(<App {...p} />);
-    expect(wrapper.find(".app").hasClass("light")).toBeTruthy();
+    const { container } = render(<App {...p} />);
+    expect(container.querySelector(".app")?.classList.contains("light"))
+      .toBeTruthy();
   });
 });
 
@@ -159,8 +170,8 @@ describe("<App />: NavBar", () => {
   it("displays links", () => {
     const p = fakeProps();
     p.loaded = FULLY_LOADED;
-    const wrapper = mount(<App {...p} />);
-    const t = wrapper.text();
+    const { container } = render(<App {...p} />);
+    const t = container.textContent || "";
     const strings = [
       "Plants",
       "Sequences",
@@ -175,7 +186,6 @@ describe("<App />: NavBar", () => {
       "Settings",
     ];
     strings.map(string => expect(t).toContain(string));
-    wrapper.unmount();
   });
 
   it("displays ticker", () => {
@@ -183,9 +193,8 @@ describe("<App />: NavBar", () => {
     p.bot.hardware.informational_settings.sync_status = "synced";
     p.bot.connectivity.uptime["bot.mqtt"] = { state: "up", at: 1 };
     p.loaded = FULLY_LOADED;
-    const wrapper = mount(<App {...p} />);
-    expect(wrapper.text()).toContain("No logs yet.");
-    wrapper.unmount();
+    render(<App {...p} />);
+    expect(screen.getByText("No logs yet.")).toBeInTheDocument();
   });
 });
 

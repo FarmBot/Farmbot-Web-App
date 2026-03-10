@@ -5,34 +5,78 @@ jest.mock("browser-speech", () => ({
 }));
 
 const { ancestorOrigins } = window.location;
-delete (window as { location: Location | undefined }).location;
-window.location = {
+const mockedLocation = {
   assign: jest.fn(),
   reload: jest.fn(),
   replace: jest.fn(),
   ancestorOrigins,
-  pathname: "", href: "http://localhost", hash: "", search: "",
-  hostname: "", origin: "", port: "", protocol: "", host: "",
+  href: "http://localhost/",
+  pathname: "/",
+  hash: "",
+  search: "",
+  hostname: "localhost",
+  origin: "http://localhost",
+  port: "",
+  protocol: "http:",
+  host: "localhost",
+  toString() {
+    return this.href;
+  },
 } as unknown as Location & string;
+const applyLocation = (target: Window, value: typeof mockedLocation) => {
+  try {
+    Object.defineProperty(target, "location", {
+      configurable: true,
+      writable: true,
+      value,
+    });
+  } catch {
+    try {
+      Object.defineProperty(target.location, "pathname", {
+        configurable: true,
+        writable: true,
+        value: value.pathname,
+      });
+    } catch {
+      target.location.pathname = value.pathname;
+    }
+    Object.assign(target.location, value);
+  }
+};
+applyLocation(window, mockedLocation);
+if (globalThis !== window) {
+  applyLocation(globalThis as Window, mockedLocation);
+}
 
-console.error = jest.fn(); // enzyme
+console.error = jest.fn();
 
 window.alert = jest.fn();
+// Ensure unqualified `alert()` calls hit the mock.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+(globalThis as any).alert = window.alert;
+window.addEventListener("error", event => event.preventDefault());
+window.addEventListener("unhandledrejection", event => event.preventDefault());
 
 window.TextDecoder = jest.fn(() => ({
-  decode: jest.fn(x => "" + x), encoding: "", fatal: false, ignoreBOM: false,
+  decode: jest.fn(x => "" + x),
+  encoding: "",
+  fatal: false,
+  ignoreBOM: false,
 }));
 
-jest.mock("../error_boundary", () => ({
-  ErrorBoundary: (p: { children: React.ReactNode }) => <div>{p.children}</div>,
-}));
-
-window.ResizeObserver = (() => ({
-  observe: jest.fn(),
-  unobserve: jest.fn(),
-  disconnect: jest.fn(),
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-})) as any;
+class MockResizeObserver {
+  observe = jest.fn();
+  unobserve = jest.fn();
+  disconnect = jest.fn();
+  constructor(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    _callback?: (entries: any) => void,
+  ) { }
+}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+window.ResizeObserver = MockResizeObserver as any;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+(globalThis as any).ResizeObserver = MockResizeObserver as any;
 
 jest.mock("@rollbar/react", () => ({
   Provider: ({ children }: { children: React.ReactNode }) =>

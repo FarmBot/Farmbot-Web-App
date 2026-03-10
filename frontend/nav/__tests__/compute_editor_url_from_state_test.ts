@@ -4,6 +4,7 @@ import {
   fakeSequence, fakeRegimen, fakeWebAppConfig,
 } from "../../__test_support__/fake_state/resources";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
+import { store } from "../../redux/store";
 const mockState = fakeState();
 const mockSequence = fakeSequence();
 mockSequence.body.name = "Sequence 123";
@@ -15,13 +16,23 @@ mockState.resources.consumers.sequences.current = mockSequence.uuid;
 mockState.resources.consumers.regimens.currentRegimen = mockRegimen.uuid;
 const mockFarmwareName = "Farmware 1";
 mockState.resources.consumers.farmware.currentFarmware = mockFarmwareName;
-jest.mock("../../redux/store", () => {
-  return { store: { getState: jest.fn(() => mockState) } };
-});
 
 import { computeEditorUrlFromState } from "../compute_editor_url_from_state";
 
+let originalGetState: typeof store.getState;
+
 describe("computeEditorUrlFromState", () => {
+  beforeEach(() => {
+    originalGetState = store.getState;
+    (store as unknown as { getState: () => typeof mockState }).getState =
+      () => mockState;
+  });
+
+  afterEach(() => {
+    (store as unknown as { getState: typeof store.getState }).getState =
+      originalGetState;
+  });
+
   it("computes a URL when no sequence is selected", () => {
     mockState.resources.consumers.sequences.current = "";
     const result = computeEditorUrlFromState("Sequence")();

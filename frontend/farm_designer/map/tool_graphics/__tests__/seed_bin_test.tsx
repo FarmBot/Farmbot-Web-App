@@ -21,8 +21,8 @@ describe("<SeedBin />", () => {
   });
 
   it("renders seed bin", () => {
-    const wrapper = svgMount(<SeedBin {...fakeProps()} />);
-    expect(wrapper.html()).toContain("seed-bin");
+    const { container } = svgMount(<SeedBin {...fakeProps()} />);
+    expect(container.innerHTML).toContain("seed-bin");
   });
 });
 
@@ -35,7 +35,7 @@ describe("<SeedBinImplementProfile />", () => {
   });
 
   it("renders seed bin profile", () => {
-    const wrapper = svgMount(<SeedBinImplementProfile {...fakeProps()} />);
-    expect(wrapper.html()).toContain("seed-bin-implement-profile");
+    const { container } = svgMount(<SeedBinImplementProfile {...fakeProps()} />);
+    expect(container.innerHTML).toContain("seed-bin-implement-profile");
   });
 });

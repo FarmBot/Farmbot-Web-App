@@ -1,10 +1,3 @@
-jest.mock("../actions", () => ({
-  addOrUpdateWizardStepResult: jest.fn(),
-  destroyAllWizardStepResults: jest.fn(),
-  completeSetup: jest.fn(),
-  resetSetup: jest.fn(),
-}));
-
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { bot } from "../../__test_support__/fake_state/bot";
@@ -21,11 +14,22 @@ import {
   fakeUser,
   fakeWebAppConfig, fakeWizardStepResult,
 } from "../../__test_support__/fake_state/resources";
-import {
-  addOrUpdateWizardStepResult,
-  completeSetup,
-  destroyAllWizardStepResults,
-} from "../actions";
+import * as wizardActions from "../actions";
+
+let addOrUpdateWizardStepResultSpy: jest.SpyInstance;
+let destroyAllWizardStepResultsSpy: jest.SpyInstance;
+let completeSetupSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  addOrUpdateWizardStepResultSpy = jest.spyOn(wizardActions, "addOrUpdateWizardStepResult")
+    .mockImplementation(jest.fn());
+  destroyAllWizardStepResultsSpy = jest.spyOn(wizardActions, "destroyAllWizardStepResults")
+    .mockImplementation(jest.fn());
+  completeSetupSpy = jest.spyOn(wizardActions, "completeSetup")
+    .mockImplementation(jest.fn());
+});
+
 
 describe("<SetupWizard />", () => {
   const fakeProps = (): SetupWizardProps => ({
@@ -81,7 +85,7 @@ describe("<SetupWizard />", () => {
     render(<SetupWizard {...p} />);
     const reset = screen.getByText("start over");
     fireEvent.click(reset);
-    expect(destroyAllWizardStepResults).toHaveBeenCalledTimes(1);
+    expect(destroyAllWizardStepResultsSpy).toHaveBeenCalledTimes(1);
   });
 
   it("opens and closes step", () => {
@@ -99,7 +103,7 @@ describe("<SetupWizard />", () => {
     expect(screen.getByText("Begin?")).toBeInTheDocument();
     const yes = screen.getByText("yes");
     await fireEvent.click(yes);
-    expect(addOrUpdateWizardStepResult).toHaveBeenCalledWith([],
+    expect(addOrUpdateWizardStepResultSpy).toHaveBeenCalledWith([],
       { answer: true, outcome: undefined, slug: "intro" });
   });
 
@@ -120,7 +124,7 @@ describe("<SetupWizard />", () => {
     fireEvent.click(step);
     const yes = screen.getByText("yes");
     await fireEvent.click(yes);
-    expect(completeSetup).toHaveBeenCalled();
+    expect(completeSetupSpy).toHaveBeenCalled();
   });
 });
 

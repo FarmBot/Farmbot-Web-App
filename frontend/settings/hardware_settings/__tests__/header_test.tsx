@@ -1,7 +1,12 @@
 import React from "react";
 import { Header, HeaderProps } from "../header";
-import { mount } from "enzyme";
+import { ExpandableHeader } from "../../../ui/expandable_header";
 import { DeviceSetting, Actions } from "../../../constants";
+import {
+  actRenderer,
+  createRenderer,
+  unmountRenderer,
+} from "../../../__test_support__/test_renderer";
 
 describe("<Header />", () => {
   const fakeProps = (): HeaderProps => ({
@@ -12,18 +17,24 @@ describe("<Header />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<Header {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("motors");
-    expect(wrapper.find(".fa-minus").length).toBe(1);
+    const wrapper = createRenderer(<Header {...fakeProps()} />);
+    const header = wrapper.root.findByType(ExpandableHeader);
+    expect((header.props.title || "").toLowerCase()).toContain("motors");
+    expect(header.props.expanded).toBe(true);
+    unmountRenderer(wrapper);
   });
 
   it("handles click", () => {
     const p = fakeProps();
-    const wrapper = mount(<Header {...p} />);
-    wrapper.simulate("click");
+    const wrapper = createRenderer(<Header {...p} />);
+    const header = wrapper.root.findByType(ExpandableHeader);
+    actRenderer(() => {
+      header.props.onClick();
+    });
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_SETTINGS_PANEL_OPTION,
       payload: "motors",
     });
+    unmountRenderer(wrapper);
   });
 });

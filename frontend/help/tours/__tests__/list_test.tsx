@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { TourList } from "../list";
 import { TourListProps } from "../interfaces";
 
@@ -9,7 +9,7 @@ describe("<TourList />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<TourList {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("start tour");
+    const { container } = render(<TourList {...fakeProps()} />);
+    expect(container.textContent?.toLowerCase()).toContain("start tour");
   });
 });

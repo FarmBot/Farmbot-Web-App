@@ -1,10 +1,15 @@
 const mockDevice = { execScript: jest.fn((_) => Promise.resolve({})) };
-jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
 
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import { BasicFarmwarePage, BasicFarmwarePageProps } from "../basic_farmware_page";
 import { fakeFarmware } from "../../__test_support__/fake_farmwares";
+import * as deviceModule from "../../device";
+
+beforeEach(() => {
+  jest.spyOn(deviceModule, "getDevice")
+    .mockImplementation(() => mockDevice as never);
+});
 
 describe("<BasicFarmwarePage />", () => {
   const fakeProps = (): BasicFarmwarePageProps => ({
@@ -14,21 +19,21 @@ describe("<BasicFarmwarePage />", () => {
   });
 
   it("renders without inputs", () => {
-    const wrapper = mount(<BasicFarmwarePage {...fakeProps()} />);
-    expect(wrapper.text()).toContain("No inputs provided.");
+    const { container } = render(<BasicFarmwarePage {...fakeProps()} />);
+    expect(container.textContent).toContain("No inputs provided.");
   });
 
   it("runs Farmware", () => {
-    const wrapper = mount(<BasicFarmwarePage {...fakeProps()} />);
-    wrapper.find("button").first().simulate("click");
+    const { container } = render(<BasicFarmwarePage {...fakeProps()} />);
+    fireEvent.click(container.querySelector("button") as Element);
     expect(mockDevice.execScript).toHaveBeenCalledWith("My Farmware", []);
   });
 
   it("renders Farmware pending install", () => {
     const p = fakeProps();
     p.farmware && (p.farmware.installation_pending = true);
-    const wrapper = mount(<BasicFarmwarePage {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("pending installation");
-    expect(wrapper.find("button").first().props().disabled).toEqual(true);
+    const { container } = render(<BasicFarmwarePage {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("pending installation");
+    expect(container.querySelector("button")).toBeDisabled();
   });
 });

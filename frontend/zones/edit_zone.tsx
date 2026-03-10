@@ -68,5 +68,4 @@ export const RawEditZone = (props: EditZoneProps) => {
 };
 
 export const EditZone = connect(mapStateToProps)(RawEditZone);
-// eslint-disable-next-line import/no-default-export
 export default EditZone;

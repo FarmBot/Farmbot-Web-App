@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render, act } from "@testing-library/react";
 import { Sensors } from "../index";
 import { bot } from "../../__test_support__/fake_state/bot";
 import { SensorsProps } from "../interfaces";
@@ -24,19 +24,20 @@ describe("<Sensors />", () => {
   }
 
   it("renders", () => {
-    const wrapper = mount(<Sensors {...fakeProps()} />);
+    const { container } = render(<Sensors {...fakeProps()} />);
     ["Sensors", "Edit", "Save", "Fake Pin", "1"].map(string =>
-      expect(wrapper.text()).toContain(string));
-    const saveButton = wrapper.find("button").at(1);
-    expect(saveButton.text()).toContain("Save");
-    expect(saveButton.props().hidden).toBeTruthy();
+      expect(container.textContent).toContain(string));
+    const saveButton = container.querySelectorAll("button")[1];
+    expect(saveButton.textContent).toContain("Save");
+    expect(saveButton.hidden).toBeTruthy();
   });
 
   it("isEditing", () => {
-    const wrapper = mount<Sensors>(<Sensors {...fakeProps()} />);
-    expect(wrapper.instance().state.isEditing).toBeFalsy();
-    clickButton(wrapper, 0, "edit");
-    expect(wrapper.instance().state.isEditing).toBeTruthy();
+    const ref = React.createRef<Sensors>();
+    const { container } = render(<Sensors ref={ref} {...fakeProps()} />);
+    expect(ref.current?.state.isEditing).toBeFalsy();
+    clickButton(container, 0, "edit");
+    expect(ref.current?.state.isEditing).toBeTruthy();
   });
 
   it("save attempt: pin number too small", () => {
@@ -44,8 +45,8 @@ describe("<Sensors />", () => {
     p.sensors[0].body.pin = 1;
     p.sensors[1].body.pin = 1;
     p.sensors[0].specialStatus = SpecialStatus.DIRTY;
-    const wrapper = mount(<Sensors {...p} />);
-    clickButton(wrapper, 1, "save", { partial_match: true });
+    const { container } = render(<Sensors {...p} />);
+    clickButton(container, 1, "save", { partial_match: true });
     expect(error).toHaveBeenLastCalledWith("Pin numbers must be unique.");
   });
 
@@ -53,60 +54,65 @@ describe("<Sensors />", () => {
     const p = fakeProps();
     p.sensors[0].body.pin = 1;
     p.sensors[0].specialStatus = SpecialStatus.DIRTY;
-    const wrapper = mount(<Sensors {...p} />);
-    clickButton(wrapper, 1, "save", { partial_match: true });
+    const { container } = render(<Sensors {...p} />);
+    clickButton(container, 1, "save", { partial_match: true });
     expect(p.dispatch).toHaveBeenCalled();
   });
 
   it("adds empty sensor", () => {
     const p = fakeProps();
-    const wrapper = mount(<Sensors {...p} />);
-    wrapper.setState({ isEditing: true });
-    clickButton(wrapper, 2, "");
+    const ref = React.createRef<Sensors>();
+    const { container } = render(<Sensors ref={ref} {...p} />);
+    act(() => { ref.current?.setState({ isEditing: true }); });
+    clickButton(container, 2, "");
     expect(p.dispatch).toHaveBeenCalled();
   });
 
   it("adds stock sensors", () => {
     const p = fakeProps();
-    const wrapper = mount(<Sensors {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("stock sensors");
-    wrapper.setState({ isEditing: true });
-    clickButton(wrapper, 3, "stock sensors");
-    expect(wrapper.find("button").at(3).props().hidden).toBeFalsy();
+    const ref = React.createRef<Sensors>();
+    const { container } = render(<Sensors ref={ref} {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("stock sensors");
+    act(() => { ref.current?.setState({ isEditing: true }); });
+    clickButton(container, 3, "stock sensors");
+    const stockButton = container.querySelectorAll("button")[3];
+    expect(stockButton.hidden).toBeFalsy();
     expect(p.dispatch).toHaveBeenCalledTimes(2);
   });
 
   it("doesn't display + stock button", () => {
     const p = fakeProps();
     p.firmwareHardware = "express_k10";
-    const wrapper = mount(<Sensors {...p} />);
-    const btn = wrapper.find("button").at(3);
-    expect(btn.text().toLowerCase()).toContain("stock");
-    expect(btn.props().hidden).toBeTruthy();
+    const { container } = render(<Sensors {...p} />);
+    const btn = container.querySelectorAll("button")[3];
+    expect(btn.textContent?.toLowerCase()).toContain("stock");
+    expect(btn.hidden).toBeTruthy();
   });
 
   it("hides stock button", () => {
     const p = fakeProps();
     p.firmwareHardware = "none";
-    const wrapper = mount(<Sensors {...p} />);
-    wrapper.setState({ isEditing: true });
-    const btn = wrapper.find("button").at(3);
-    expect(btn.text().toLowerCase()).toContain("stock");
-    expect(btn.props().hidden).toBeTruthy();
+    const ref = React.createRef<Sensors>();
+    const { container } = render(<Sensors ref={ref} {...p} />);
+    act(() => { ref.current?.setState({ isEditing: true }); });
+    const btn = container.querySelectorAll("button")[3];
+    expect(btn.textContent?.toLowerCase()).toContain("stock");
+    expect(btn.hidden).toBeTruthy();
   });
 
   it("renders empty state", () => {
     const p = fakeProps();
     p.sensors = [];
-    const wrapper = mount(<Sensors {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("no sensors yet");
+    const { container } = render(<Sensors {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("no sensors yet");
   });
 
   it("doesn't render empty state", () => {
     const p = fakeProps();
     p.sensors = [];
-    const wrapper = mount(<Sensors {...p} />);
-    wrapper.setState({ isEditing: true });
-    expect(wrapper.text().toLowerCase()).not.toContain("no sensors yet");
+    const ref = React.createRef<Sensors>();
+    const { container } = render(<Sensors ref={ref} {...p} />);
+    act(() => { ref.current?.setState({ isEditing: true }); });
+    expect(container.textContent?.toLowerCase()).not.toContain("no sensors yet");
   });
 });

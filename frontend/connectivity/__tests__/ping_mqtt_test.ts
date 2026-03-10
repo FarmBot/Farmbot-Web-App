@@ -1,11 +1,3 @@
-jest.mock("../index", () => ({
-  dispatchNetworkDown: jest.fn(),
-  dispatchNetworkUp: jest.fn(),
-  dispatchQosStart: jest.fn(),
-  pingOK: jest.fn(),
-  pingNO: jest.fn(),
-}));
-
 import {
   startPinging,
   PING_INTERVAL,
@@ -13,7 +5,7 @@ import {
 } from "../ping_mqtt";
 import { Farmbot } from "farmbot";
 import { FarmBotInternalConfig } from "farmbot/dist/config";
-import { pingNO } from "../index";
+import * as connectivity from "../index";
 import { DeepPartial } from "../../redux/interfaces";
 
 const state: Partial<FarmBotInternalConfig> = {
@@ -34,6 +26,19 @@ function fakeBot(): Farmbot {
 }
 
 describe("ping util", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.spyOn(connectivity, "dispatchNetworkDown").mockImplementation(jest.fn());
+    jest.spyOn(connectivity, "dispatchNetworkUp").mockImplementation(jest.fn());
+    jest.spyOn(connectivity, "dispatchQosStart").mockImplementation(jest.fn());
+    jest.spyOn(connectivity, "pingOK").mockImplementation(jest.fn());
+    jest.spyOn(connectivity, "pingNO").mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   it("binds event handlers with startPinging()", async () => {
     jest.useFakeTimers();
     const bot = fakeBot();
@@ -45,13 +50,26 @@ describe("ping util", () => {
 });
 
 describe("sendOutboundPing()", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.spyOn(connectivity, "dispatchNetworkDown").mockImplementation(jest.fn());
+    jest.spyOn(connectivity, "dispatchNetworkUp").mockImplementation(jest.fn());
+    jest.spyOn(connectivity, "dispatchQosStart").mockImplementation(jest.fn());
+    jest.spyOn(connectivity, "pingOK").mockImplementation(jest.fn());
+    jest.spyOn(connectivity, "pingNO").mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   it("handles failure", async () => {
     const fakeBot: DeepPartial<Farmbot> = {
       ping: jest.fn(() => Promise.reject())
     };
-    expect(pingNO).not.toHaveBeenCalled();
+    expect(connectivity.pingNO).not.toHaveBeenCalled();
     await expect(sendOutboundPing(fakeBot as Farmbot)).rejects
       .toThrow(/sendOutboundPing failed/);
-    expect(pingNO).toHaveBeenCalled();
+    expect(connectivity.pingNO).toHaveBeenCalled();
   });
 });

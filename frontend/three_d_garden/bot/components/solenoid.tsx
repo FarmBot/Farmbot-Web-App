@@ -4,7 +4,7 @@ import { Config } from "../../config";
 import { Group, Mesh } from "../../components";
 import { WaterTube } from "./water_tube";
 import { easyCubicBezierCurve3, threeSpace, zDir as zDirFunc } from "../../helpers";
-import { GLTF } from "three-stdlib";
+import type { GLTF } from "three-stdlib";
 import { useGLTF } from "@react-three/drei";
 import { ASSETS, LIB_DIR, PartName } from "../../constants";
 
@@ -24,7 +24,7 @@ export const Solenoid = (props: SolenoidProps) => {
     columnLength, zGantryOffset,
   } = config;
   const zDir = zDirFunc(config);
-  const solenoid = useGLTF(ASSETS.models.solenoid, LIB_DIR) as SolenoidPart;
+  const solenoid = useGLTF(ASSETS.models.solenoid, LIB_DIR) as unknown as SolenoidPart;
   return <Group>
     <WaterTube tubeName={"lower-solenoid-water-tube"}
       waterFlow={config.waterFlow}

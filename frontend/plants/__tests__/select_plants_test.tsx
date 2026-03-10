@@ -1,14 +1,5 @@
-let mockDestroy = jest.fn(() => Promise.resolve());
-jest.mock("../../api/crud", () => ({ destroy: mockDestroy }));
-
-jest.mock("../../point_groups/actions", () => ({ createGroup: jest.fn() }));
-
-jest.mock("../../farm_designer/map/layers/plants/plant_actions", () => ({
-  savePoints: jest.fn(),
-}));
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
-import { mount, shallow } from "enzyme";
 import { render, screen, fireEvent } from "@testing-library/react";
 import {
   RawSelectPlants as SelectPlants, SelectPlantsProps, mapStateToProps,
@@ -24,9 +15,8 @@ import {
   fakePointGroup,
 } from "../../__test_support__/fake_state/resources";
 import { Actions, Content } from "../../constants";
-import { clickButton } from "../../__test_support__/helpers";
-import { destroy } from "../../api/crud";
-import { createGroup } from "../../point_groups/actions";
+import * as crud from "../../api/crud";
+import * as pointGroupActions from "../../point_groups/actions";
 import { fakeState } from "../../__test_support__/fake_state";
 import { error } from "../../toast/toast";
 import { mockDispatch } from "../../__test_support__/fake_dispatch";
@@ -36,11 +26,66 @@ import {
 import { POINTER_TYPES } from "../../point_groups/criteria/interfaces";
 import { fakeToolTransformProps } from "../../__test_support__/fake_tool_info";
 import { SpecialStatus } from "farmbot";
-import { savePoints } from "../../farm_designer/map/layers/plants/plant_actions";
+import * as plantActions from "../../farm_designer/map/layers/plants/plant_actions";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { Path } from "../../internal_urls";
+import * as mapActions from "../../farm_designer/map/actions";
+import * as ui from "../../ui";
+
+let fbSelectSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation((props: any) => {
+      const value = props.selectedItem ? String(props.selectedItem.value) : "";
+      return <select
+        className={"mock-fb-select"}
+        value={value}
+        onChange={e => {
+          const nextValue = e.currentTarget.value;
+          const selected = nextValue === ""
+            ? props.list.find((item: any) => item.isNull)
+            || props.list.find((item: any) => String(item.value) === "")
+            : props.list.find((item: any) => String(item.value) === nextValue);
+          selected && props.onChange(selected);
+        }}>
+        <option value={""} />
+        {props.list.map((item: any, index: number) =>
+          <option key={`${item.value}-${index}`} value={String(item.value)}>
+            {item.label}
+          </option>)}
+      </select>;
+    });
+});
+
+afterEach(() => {
+  fbSelectSpy.mockRestore();
+});
 
 describe("<SelectPlants />", () => {
+  let createGroupSpy: jest.SpyInstance;
+  let destroySpy: jest.SpyInstance;
+  let savePointsSpy: jest.SpyInstance;
+  let unselectPlantSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    createGroupSpy = jest.spyOn(pointGroupActions, "createGroup")
+      .mockImplementation(jest.fn());
+    destroySpy = jest.spyOn(crud, "destroy")
+      .mockImplementation(() => Promise.resolve() as never);
+    savePointsSpy = jest.spyOn(plantActions, "savePoints")
+      .mockImplementation(jest.fn());
+    unselectPlantSpy = jest.spyOn(mapActions, "unselectPlant")
+      .mockImplementation(() => jest.fn());
+  });
+
+  afterEach(() => {
+    createGroupSpy.mockRestore();
+    destroySpy.mockRestore();
+    savePointsSpy.mockRestore();
+    unselectPlantSpy.mockRestore();
+  });
+
   beforeEach(() => {
     location.pathname = Path.mock(Path.plants("select"));
   });
@@ -72,8 +117,8 @@ describe("<SelectPlants />", () => {
   }
 
   it("displays selected plant", () => {
-    const wrapper = mount(<SelectPlants {...fakeProps()} />);
-    expect(wrapper.text()).toContain("Strawberry");
+    render(<SelectPlants {...fakeProps()} />);
+    expect(screen.getByText("Strawberry")).toBeInTheDocument();
   });
 
   it("displays selected point", () => {
@@ -83,8 +128,8 @@ describe("<SelectPlants />", () => {
     p.allPoints = [point];
     p.selected = [point.uuid];
     p.selectionPointType = ["GenericPointer"];
-    const wrapper = mount(<SelectPlants {...p} />);
-    expect(wrapper.text()).toContain(point.body.name);
+    render(<SelectPlants {...p} />);
+    expect(screen.getByText(point.body.name)).toBeInTheDocument();
   });
 
   it("displays selected weed", () => {
@@ -94,8 +139,8 @@ describe("<SelectPlants />", () => {
     p.allPoints = [weed];
     p.selected = [weed.uuid];
     p.selectionPointType = ["Weed"];
-    const wrapper = mount(<SelectPlants {...p} />);
-    expect(wrapper.text()).toContain(weed.body.name);
+    render(<SelectPlants {...p} />);
+    expect(screen.getByText(weed.body.name)).toBeInTheDocument();
   });
 
   it("displays selected points and weeds", () => {
@@ -107,9 +152,9 @@ describe("<SelectPlants />", () => {
     p.allPoints = [point, weed];
     p.selected = [point.uuid, weed.uuid];
     p.selectionPointType = ["GenericPointer", "Weed"];
-    const wrapper = mount(<SelectPlants {...p} />);
-    expect(wrapper.text()).toContain(point.body.name);
-    expect(wrapper.text()).toContain(weed.body.name);
+    render(<SelectPlants {...p} />);
+    expect(screen.getByText(point.body.name)).toBeInTheDocument();
+    expect(screen.getByText(weed.body.name)).toBeInTheDocument();
   });
 
   it("displays selected slot", () => {
@@ -123,16 +168,16 @@ describe("<SelectPlants />", () => {
     p.allPoints = [slot];
     p.selected = [slot.uuid];
     p.selectionPointType = ["ToolSlot"];
-    const wrapper = mount(<SelectPlants {...p} />);
-    expect(wrapper.text()).toContain(tool.body.name);
+    render(<SelectPlants {...p} />);
+    expect(screen.getByText(tool.body.name)).toBeInTheDocument();
   });
 
   it("clears point selection type", () => {
     const p = fakeProps();
     const dispatch = jest.fn();
     p.dispatch = mockDispatch(dispatch);
-    const wrapper = mount(<SelectPlants {...p} />);
-    wrapper.unmount();
+    const { unmount } = render(<SelectPlants {...p} />);
+    unmount();
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_SELECTION_POINT_TYPE,
       payload: undefined,
@@ -142,47 +187,48 @@ describe("<SelectPlants />", () => {
   it("displays multiple selected plants", () => {
     const p = fakeProps();
     p.selected = ["plant.1", "plant.2"];
-    const wrapper = mount(<SelectPlants {...p} />);
-    ["Strawberry", "Blueberry", "Delete"].map(string =>
-      expect(wrapper.text()).toContain(string));
+    render(<SelectPlants {...p} />);
+    expect(screen.getByText("Strawberry")).toBeInTheDocument();
+    expect(screen.getByText("Blueberry")).toBeInTheDocument();
+    expect(screen.getByTitle("Delete")).toBeInTheDocument();
   });
 
   it("displays selected plant count", () => {
     const p = fakeProps();
     p.selected = ["plant.1", "plant.2"];
-    const wrapper = mount(<SelectPlants {...p} />);
-    expect(wrapper.text()).toContain("2 plants selected");
+    render(<SelectPlants {...p} />);
+    expect(screen.getByText("2 plants selected")).toBeInTheDocument();
   });
 
   it("displays selected plant count: none", () => {
     const p = fakeProps();
     p.selected = undefined;
-    const wrapper = mount(<SelectPlants {...p} />);
-    expect(wrapper.text()).toContain("0 plants selected");
+    render(<SelectPlants {...p} />);
+    expect(screen.getByText("0 plants selected")).toBeInTheDocument();
   });
 
   it("displays no selected plants: selection empty", () => {
     const p = fakeProps();
     p.selected = [];
-    const wrapper = mount(<SelectPlants {...p} />);
-    expect(wrapper.text()).not.toContain("Strawberry Plant");
+    render(<SelectPlants {...p} />);
+    expect(screen.queryByText("Strawberry Plant")).not.toBeInTheDocument();
   });
 
   it("displays no selected plants: selection invalid", () => {
     const p = fakeProps();
     p.selected = ["not a uuid"];
-    const wrapper = mount(<SelectPlants {...p} />);
-    expect(wrapper.text()).not.toContain("Strawberry Plant");
+    render(<SelectPlants {...p} />);
+    expect(screen.queryByText("Strawberry Plant")).not.toBeInTheDocument();
   });
 
   it("changes selection type", () => {
     const p = fakeProps();
     const dispatch = jest.fn();
     p.dispatch = mockDispatch(dispatch);
-    const wrapper = mount<SelectPlants>(<SelectPlants {...p} />);
-    const actionsWrapper = shallow(wrapper.instance().ActionButtons());
-    actionsWrapper.find("FBSelect").first().simulate("change",
-      { label: "", value: "All" });
+    const { container } = render(<SelectPlants {...p} />);
+    fireEvent.change(container.querySelectorAll(".mock-fb-select")[0], {
+      target: { value: "All" },
+    });
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_SELECTION_POINT_TYPE,
       payload: ["Plant", "GenericPointer", "Weed", "ToolSlot"],
@@ -193,10 +239,10 @@ describe("<SelectPlants />", () => {
     const p = fakeProps();
     const dispatch = jest.fn();
     p.dispatch = mockDispatch(dispatch);
-    const wrapper = mount<SelectPlants>(<SelectPlants {...p} />);
-    const actionsWrapper = shallow(wrapper.instance().ActionButtons());
-    actionsWrapper.find("FBSelect").first().simulate("change",
-      { label: "", value: "Plant" });
+    const { container } = render(<SelectPlants {...p} />);
+    fireEvent.change(container.querySelectorAll(".mock-fb-select")[0], {
+      target: { value: "Plant" },
+    });
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_SELECTION_POINT_TYPE,
       payload: ["Plant"],
@@ -205,20 +251,22 @@ describe("<SelectPlants />", () => {
 
   it("selects all", () => {
     const p = fakeProps();
-    const wrapper = mount(<SelectPlants {...p} />);
-    const button = wrapper.find('[title="Select all"]');
-    clickButton(button, 0, "select all");
-    expect(p.dispatch).toHaveBeenCalledWith(
-      { payload: ["plant.1", "plant.2"], type: Actions.SELECT_POINT });
+    render(<SelectPlants {...p} />);
+    fireEvent.click(screen.getByTitle("Select all"));
+    expect(p.dispatch).toHaveBeenCalledWith({
+      payload: ["plant.1", "plant.2"],
+      type: Actions.SELECT_POINT,
+    });
   });
 
   it("selects none", () => {
     const p = fakeProps();
-    const wrapper = mount(<SelectPlants {...p} />);
-    const button = wrapper.find('[title="Select none"]');
-    clickButton(button, 0, "select none");
-    expect(p.dispatch).toHaveBeenCalledWith(
-      { payload: undefined, type: Actions.SELECT_POINT });
+    render(<SelectPlants {...p} />);
+    fireEvent.click(screen.getByTitle("Select none"));
+    expect(p.dispatch).toHaveBeenCalledWith({
+      payload: undefined,
+      type: Actions.SELECT_POINT,
+    });
   });
 
   it("selects group items", () => {
@@ -233,13 +281,12 @@ describe("<SelectPlants />", () => {
     p.allPoints = [plant];
     const dispatch = jest.fn();
     p.dispatch = mockDispatch(dispatch);
-    const wrapper = mount<SelectPlants>(<SelectPlants {...p} />);
-    const actionsWrapper = shallow(wrapper.instance().ActionButtons());
-    expect(wrapper.state().group_id).toEqual(undefined);
-    actionsWrapper.find("FBSelect").at(1).simulate("change", {
-      label: "", value: 1
-    });
-    expect(wrapper.state().group_id).toEqual(1);
+    const { container } = render(<SelectPlants {...p} />);
+    const groupSelect =
+      (container.querySelectorAll(".mock-fb-select")[1] as HTMLSelectElement);
+    expect(groupSelect.value).toEqual("");
+    fireEvent.change(groupSelect, { target: { value: "1" } });
+    expect(groupSelect.value).toEqual("1");
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_SELECTION_POINT_TYPE,
       payload: ["Plant"],
@@ -262,10 +309,9 @@ describe("<SelectPlants />", () => {
     p.groups = [group0, group1];
     const dispatch = jest.fn();
     p.dispatch = mockDispatch(dispatch);
-    const wrapper = mount<SelectPlants>(<SelectPlants {...p} />);
-    const actionsWrapper = shallow(wrapper.instance().ActionButtons());
-    actionsWrapper.find("FBSelect").at(1).simulate("change", {
-      label: "", value: 1
+    const { container } = render(<SelectPlants {...p} />);
+    fireEvent.change(container.querySelectorAll(".mock-fb-select")[1], {
+      target: { value: "1" },
     });
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_SELECTION_POINT_TYPE,
@@ -286,10 +332,9 @@ describe("<SelectPlants />", () => {
     p.groups = [group];
     const dispatch = jest.fn();
     p.dispatch = mockDispatch(dispatch);
-    const wrapper = mount<SelectPlants>(<SelectPlants {...p} />);
-    const actionsWrapper = shallow(wrapper.instance().ActionButtons());
-    actionsWrapper.find("FBSelect").at(1).simulate("change", {
-      label: "", value: 1
+    const { container } = render(<SelectPlants {...p} />);
+    fireEvent.change(container.querySelectorAll(".mock-fb-select")[1], {
+      target: { value: "1" },
     });
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_SELECTION_POINT_TYPE,
@@ -297,66 +342,64 @@ describe("<SelectPlants />", () => {
     });
   });
 
-  const DELETE_BTN_INDEX = 4;
-
   it("confirms deletion of selected plants", () => {
     const p = fakeProps();
     p.selected = ["plant.1", "plant.2"];
-    const wrapper = mount(<SelectPlants {...p} />);
+    render(<SelectPlants {...p} />);
     window.confirm = jest.fn();
-    clickButton(wrapper, DELETE_BTN_INDEX, "Delete");
+    fireEvent.click(screen.getByTitle("Delete"));
     expect(window.confirm).toHaveBeenCalledWith(
       "Are you sure you want to delete 2 plants?");
   });
 
   it("deletes selected plants", () => {
     const p = fakeProps();
-    mockDestroy = jest.fn(() => Promise.resolve());
+    destroySpy.mockImplementation(() => Promise.resolve() as never);
     p.selected = ["plant.1", "plant.2"];
-    const wrapper = mount(<SelectPlants {...p} />);
+    render(<SelectPlants {...p} />);
     window.confirm = () => true;
-    clickButton(wrapper, DELETE_BTN_INDEX, "Delete");
-    expect(destroy).toHaveBeenCalledWith("plant.1", true);
-    expect(destroy).toHaveBeenCalledWith("plant.2", true);
+    fireEvent.click(screen.getByTitle("Delete"));
+    expect(crud.destroy).toHaveBeenCalledWith("plant.1", true);
+    expect(crud.destroy).toHaveBeenCalledWith("plant.2", true);
   });
 
   it("does not delete if selection is empty", () => {
     const p = fakeProps();
-    mockDestroy = jest.fn(() => Promise.resolve());
+    destroySpy.mockImplementation(() => Promise.resolve() as never);
     p.selected = undefined;
-    const wrapper = mount(<SelectPlants {...p} />);
-    clickButton(wrapper, DELETE_BTN_INDEX, "Delete");
-    expect(destroy).not.toHaveBeenCalled();
+    render(<SelectPlants {...p} />);
+    fireEvent.click(screen.getByTitle("Delete"));
+    expect(crud.destroy).not.toHaveBeenCalled();
   });
 
   it("errors when deleting selected plants", async () => {
     const p = fakeProps();
-    mockDestroy = jest.fn(() => Promise.reject());
+    destroySpy.mockImplementation(() => Promise.reject() as never);
     p.selected = ["plant.1", "plant.2"];
-    const wrapper = mount(<SelectPlants {...p} />);
+    render(<SelectPlants {...p} />);
     window.confirm = () => true;
-    await clickButton(wrapper, DELETE_BTN_INDEX, "Delete");
-    await expect(destroy).toHaveBeenCalledWith("plant.1", true);
-    await expect(destroy).toHaveBeenCalledWith("plant.2", true);
+    fireEvent.click(screen.getByTitle("Delete"));
+    await expect(crud.destroy).toHaveBeenCalledWith("plant.1", true);
+    await expect(crud.destroy).toHaveBeenCalledWith("plant.2", true);
   });
 
   it("shows other buttons", () => {
-    const wrapper = mount(<SelectPlants {...fakeProps()} />);
-    expect(wrapper.text()).toContain("Create");
+    render(<SelectPlants {...fakeProps()} />);
+    expect(screen.getByTitle("Create group")).toBeInTheDocument();
   });
 
   it("creates group", () => {
-    const wrapper = mount(<SelectPlants {...fakeProps()} />);
-    wrapper.find(".dark-blue").simulate("click");
-    expect(createGroup).toHaveBeenCalled();
+    render(<SelectPlants {...fakeProps()} />);
+    fireEvent.click(screen.getByTitle("Create group"));
+    expect(pointGroupActions.createGroup).toHaveBeenCalled();
   });
 
   it("doesn't create group", () => {
     const p = fakeProps();
     p.gardenOpenId = 1;
-    const wrapper = mount(<SelectPlants {...p} />);
-    wrapper.find(".dark-blue").simulate("click");
-    expect(createGroup).not.toHaveBeenCalled();
+    render(<SelectPlants {...p} />);
+    fireEvent.click(screen.getByTitle("Create group"));
+    expect(pointGroupActions.createGroup).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith(Content.ERROR_PLANT_TEMPLATE_GROUP);
   });
 
@@ -368,11 +411,9 @@ describe("<SelectPlants />", () => {
     point1.specialStatus = SpecialStatus.DIRTY;
     p.selected = [point0.uuid, point1.uuid];
     p.allPoints = [point0, point1];
-    const wrapper = mount(<SelectPlants {...p} />);
-    const saveBtn = wrapper.find(".fb-button.green").first();
-    saveBtn.simulate("click");
-    expect(saveBtn.text().toLowerCase()).toEqual("save");
-    expect(savePoints).toHaveBeenCalledWith({
+    render(<SelectPlants {...p} />);
+    fireEvent.click(screen.getByTitle("Save"));
+    expect(plantActions.savePoints).toHaveBeenCalledWith({
       dispatch: p.dispatch,
       points: p.allPoints,
     });
@@ -382,6 +423,9 @@ describe("<SelectPlants />", () => {
 describe("mapStateToProps", () => {
   it("selects correct props", () => {
     const state = fakeState();
+    const plant1 = fakePlant();
+    const plant2 = fakePlant();
+    state.resources = buildResourceIndex([plant1, plant2]);
     const result = mapStateToProps(state);
     expect(result).toBeTruthy();
     expect(result.selected).toBeUndefined();
@@ -482,8 +526,7 @@ describe("<SelectModeLink />", () => {
     const dispatch = jest.fn();
     p.dispatch = mockDispatch(dispatch);
     render(<SelectModeLink {...p} />);
-    const button = screen.getByTitle("open point select panel");
-    fireEvent.click(button);
+    fireEvent.click(screen.getByTitle("open point select panel"));
     expect(mockNavigate).toHaveBeenCalledWith(Path.plants("select"));
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_PANEL_OPEN,

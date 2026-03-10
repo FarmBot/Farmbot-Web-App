@@ -19,6 +19,7 @@ export interface MiddlewareConfig { fn: MW; env: EnvName; }
  * we keep subscriber functions in this array. */
 const mwConfig: MiddlewareConfig[] = [
   { env: "*", fn: thunk },
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
   { env: "development", fn: require("redux-immutable-state-invariant").default() },
   stateFetchMiddlewareConfig,
   revertToEnglishMiddleware,

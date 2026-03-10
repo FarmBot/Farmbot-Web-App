@@ -32,10 +32,10 @@ import { Panel, setPanelOpen, TAB_ICON } from "../farm_designer/panel_header";
 import { movementPercentRemaining } from "../farm_designer/move_to";
 import { isMobile } from "../screen_size";
 import { NavigationContext } from "../routes_helpers";
-import { NavigateFunction } from "react-router";
 import {
   showTimeTravelButton, TimeTravelContent, TimeTravelTarget,
 } from "../three_d_garden/time_travel";
+import { NavigateFunction } from "react-router";
 
 export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
   state: NavBarState = {
@@ -56,7 +56,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate: NavigateFunction = url => { this.context(url as string); };
+  navigate: NavigateFunction = url => { this.context?.(url as string); };
 
   get isStaff() { return this.props.authAud == "staff"; }
 

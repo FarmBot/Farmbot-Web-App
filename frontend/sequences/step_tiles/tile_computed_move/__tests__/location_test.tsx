@@ -1,5 +1,3 @@
-import React from "react";
-import { shallow } from "enzyme";
 import {
   LocationSelection,
   getLocationState,
@@ -64,8 +62,8 @@ describe("<LocationSelection />", () => {
     ],
   ])("changes location: %s", (ddi, locationNode, locationSelection) => {
     const p = fakeProps();
-    const wrapper = shallow(<LocationSelection {...p} />);
-    wrapper.simulate("change", ddi);
+    const wrapper = LocationSelection(p);
+    wrapper.props.onChange(ddi);
     expect(p.onChange).toHaveBeenCalledWith({
       locationNode, locationSelection,
     });
@@ -106,8 +104,8 @@ describe("<LocationSelection />", () => {
     p.resources = buildResourceIndex([tool, slot]).index;
     p.locationNode = locationNode;
     p.locationSelection = locationSelection;
-    const wrapper = shallow(<LocationSelection {...p} />);
-    expect(wrapper.props().selectedItem).toEqual(ddi);
+    const wrapper = LocationSelection(p);
+    expect(wrapper.props.selectedItem).toEqual(ddi);
   });
 
   it("shows selection: variable", () => {
@@ -117,8 +115,8 @@ describe("<LocationSelection />", () => {
     const variables = fakeVariableNameSet("variable", { x: 10, y: 20, z: 30 });
     p.resources = buildResourceIndex([]).index;
     p.resources.sequenceMetas["uuid"] = variables;
-    const wrapper = shallow(<LocationSelection {...p} />);
-    expect(wrapper.props().selectedItem).toEqual({
+    const wrapper = LocationSelection(p);
+    expect(wrapper.props.selectedItem).toEqual({
       label: "variable - fake variable info label", value: "variable",
     });
   });
@@ -140,8 +138,8 @@ describe("<LocationSelection />", () => {
     p.resources = buildResourceIndex([]).index;
     variables["other"] = undefined;
     p.resources.sequenceMetas["uuid"] = variables;
-    const wrapper = shallow(<LocationSelection {...p} />);
-    expect(wrapper.props().list).toEqual([
+    const wrapper = LocationSelection(p);
+    expect(wrapper.props.list).toEqual([
       {
         headingId: "Coordinate",
         label: "Custom coordinates",

@@ -1,16 +1,29 @@
-jest.mock("../../../devices/actions", () => ({ settingToggle: jest.fn() }));
-
 import React from "react";
 import { PinGuardMCUInputGroup } from "../pin_guard_input_group";
-import { mount } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { PinGuardMCUInputGroupProps } from "../interfaces";
 import { bot } from "../../../__test_support__/fake_state/bot";
-import { settingToggle } from "../../../devices/actions";
+import * as deviceActions from "../../../devices/actions";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import { DeviceSetting } from "../../../constants";
+import * as ui from "../../../ui";
 
+let settingToggleSpy: jest.SpyInstance;
+let toggleButtonSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  settingToggleSpy = jest.spyOn(deviceActions, "settingToggle")
+    .mockImplementation(jest.fn());
+  toggleButtonSpy = jest.spyOn(ui, "ToggleButton")
+    .mockImplementation((props: { toggleAction: () => void }) =>
+      <button data-testid="toggle-button" onClick={props.toggleAction} />);
+});
+
+afterEach(() => {
+  toggleButtonSpy.mockRestore();
+});
 describe("<PinGuardMCUInputGroup />", () => {
   const fakeProps = (): PinGuardMCUInputGroupProps => ({
     label: DeviceSetting.pinGuard1,
@@ -27,9 +40,9 @@ describe("<PinGuardMCUInputGroup />", () => {
 
   it("calls toggle action", () => {
     const p = fakeProps();
-    const wrapper = mount(<PinGuardMCUInputGroup {...p} />);
-    wrapper.find("button").last().simulate("click");
-    expect(settingToggle).toHaveBeenCalledWith("pin_guard_1_active_state",
+    render(<PinGuardMCUInputGroup {...p} />);
+    fireEvent.click(screen.getByTestId("toggle-button"));
+    expect(settingToggleSpy).toHaveBeenCalledWith("pin_guard_1_active_state",
       expect.any(Function));
   });
 });

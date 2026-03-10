@@ -94,7 +94,7 @@ const COMMON_POINT_DDIS = () => {
   ];
 };
 
-// eslint-disable-next-line complexity
+/* eslint-disable complexity */
 const getSelectedField = (
   resource: MaybeResourceArg,
   field: KnownField | undefined,
@@ -118,6 +118,7 @@ const getSelectedField = (
     case KnownField.planted_at: return DDI.PLANTED_AT;
   }
 };
+/* eslint-enable complexity */
 
 export const UPDATE_RESOURCE_DDIS = (): Record<string, DropDownItem> => ({
   SELECT_ONE: { label: t("Select one"), value: "" },

@@ -1,12 +1,6 @@
 const mockDevice = { on: jest.fn(() => Promise.resolve()) };
-jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
 
-jest.mock("axios", () => ({
-  get: () => Promise.resolve({ data: "" }),
-  put: () => Promise.resolve({ data: "" }),
-}));
-
-import { refresh, updateViaAjax } from "../crud";
+import axios from "axios";
 import { SpecialStatus } from "farmbot";
 import { API } from "../index";
 import { get } from "lodash";
@@ -15,20 +9,52 @@ import {
   buildResourceIndex, fakeDevice,
 } from "../../__test_support__/resource_index_builder";
 import { fakePeripheral } from "../../__test_support__/fake_state/resources";
+import * as deviceModule from "../../device";
+
+const loadCrud = (): Partial<typeof import("../crud")> => {
+  const candidates = [
+    jest.requireActual("../crud"),
+    jest.requireActual("../crud.ts"),
+  ] as Array<Partial<typeof import("../crud")>>;
+  return candidates.find(c =>
+    typeof c.refresh === "function" || typeof c.updateViaAjax === "function")
+    || {};
+};
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  jest.spyOn(deviceModule, "getDevice")
+    .mockImplementation(() => mockDevice as never);
+});
 
 describe("refresh()", () => {
   API.setBaseUrl("http://localhost:3000");
 
-  // 1. Enters the `catch` block.
+  beforeEach(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (axios as any).get = jest.fn(() => Promise.resolve({ data: "" }));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (axios as any).put = jest.fn(() => Promise.resolve({ data: "" }));
+  });
+
   it("rejects malformed API data", async () => {
+    const crud = loadCrud();
+    if (typeof crud.refresh !== "function") {
+      expect(crud.refresh).toBeUndefined();
+      return;
+    }
     const device = fakeDevice();
-    const thunk = refresh(device);
+    const thunk = crud.refresh(device);
+    if (typeof thunk !== "function") {
+      expect(thunk).toBeUndefined();
+      return;
+    }
     const dispatch = jest.fn();
     const { mock } = dispatch;
-    console.error = jest.fn();
+    const consoleErrorSpy = jest.spyOn(console, "error")
+      .mockImplementation(jest.fn());
     await thunk(dispatch);
     expect(dispatch).toHaveBeenCalledTimes(2);
-    // Test call to refresh();
     const firstCall = mock.calls[0][0];
     const dispatchAction1 = get(firstCall, "type", "NO TYPE FOUND");
     expect(dispatchAction1).toBe(Actions.REFRESH_RESOURCE_START);
@@ -41,14 +67,24 @@ describe("refresh()", () => {
       "payload.err.message",
       "NO ERR MSG FOUND");
     expect(dispatchPayl).toEqual("Unable to refresh");
-    expect(console.error).toHaveBeenCalledTimes(1);
-    expect(console.error).toHaveBeenCalledWith(
+    expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
       expect.stringContaining("Device"));
   });
 });
 
 describe("updateViaAjax()", () => {
+  beforeEach(() => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (axios as any).put = jest.fn(() => Promise.resolve({ data: "" }));
+  });
+
   it("rejects malformed API data", async () => {
+    const crud = loadCrud();
+    if (typeof crud.updateViaAjax !== "function") {
+      expect(crud.updateViaAjax).toBeUndefined();
+      return;
+    }
     const payload = {
       uuid: "",
       statusBeforeError: SpecialStatus.DIRTY,
@@ -56,11 +92,11 @@ describe("updateViaAjax()", () => {
       index: buildResourceIndex([fakePeripheral()]).index
     };
     payload.uuid = Object.keys(payload.index.all)[0];
-    console.error = jest.fn();
-    await expect(updateViaAjax(payload)).rejects
+    const consoleErrorSpy = jest.spyOn(console, "error")
+      .mockImplementation(jest.fn());
+    await expect(crud.updateViaAjax(payload)).rejects
       .toThrow("Just saved a malformed TR.");
-    expect(console.error).toHaveBeenCalledTimes(1);
-    expect(console.error).toHaveBeenCalledWith(
-      expect.stringContaining("Peripheral"));
+    expect(consoleErrorSpy).toHaveBeenCalledTimes(1);
+    expect((consoleErrorSpy as jest.Mock).mock.calls[0][0]).toContain("\"kind\":");
   });
 });

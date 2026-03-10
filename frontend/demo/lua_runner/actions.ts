@@ -10,7 +10,7 @@ import { store } from "../../redux/store";
 import { Actions } from "../../constants";
 import { TOAST_OPTIONS } from "../../toast/constants";
 import { Action, XyzNumber } from "./interfaces";
-import { edit, init, initSave, save } from "../../api/crud";
+import * as crud from "../../api/crud";
 import { getDeviceAccountSettings } from "../../resources/selectors";
 import { UnknownAction } from "redux";
 import { getFirmwareSettings, getGardenSize } from "./stubs";
@@ -315,7 +315,7 @@ export const runActions = (
             if (channels.includes("toast")) {
               info(msg, TOAST_OPTIONS()[type]);
             }
-            const initAction = init("Log", {
+            const initAction = crud.init("Log", {
               message: msg,
               type: type as ALLOWED_MESSAGE_TYPES,
               ...logPosition,
@@ -325,7 +325,7 @@ export const runActions = (
             store.dispatch(initAction as unknown as UnknownAction);
             setTimeout(() => {
               store.dispatch(
-                save(initAction.payload.uuid) as unknown as UnknownAction);
+                crud.save(initAction.payload.uuid) as unknown as UnknownAction);
             }, 20000);
           };
         case "print":
@@ -335,7 +335,7 @@ export const runActions = (
         case "take_photo":
           return () => {
             const timestamp = (new Date()).toISOString();
-            store.dispatch(initSave("Image", {
+            store.dispatch(crud.initSave("Image", {
               attachment_url: API.current.baseUrl + "/soil.png",
               created_at: timestamp,
               meta: {
@@ -375,7 +375,7 @@ export const runActions = (
           };
         case "sensor_reading":
           return () => {
-            store.dispatch(initSave("SensorReading", {
+            store.dispatch(crud.initSave("SensorReading", {
               pin: action.args[0] as number,
               mode: 1,
               x: action.args[1] as number,
@@ -419,16 +419,16 @@ export const runActions = (
           const point = JSON.parse("" + action.args[0]) as Point;
           point.meta = point.meta || {};
           return () => {
-            store.dispatch(initSave("Point", point) as unknown as UnknownAction);
+            store.dispatch(crud.initSave("Point", point) as unknown as UnknownAction);
           };
         case "update_device":
           return () => {
             const device =
               getDeviceAccountSettings(store.getState().resources.index);
-            store.dispatch(edit(device, {
+            store.dispatch(crud.edit(device, {
               mounted_tool_id: action.args[1] as number,
             }) as unknown as UnknownAction);
-            store.dispatch(save(device.uuid) as unknown as UnknownAction);
+            store.dispatch(crud.save(device.uuid) as unknown as UnknownAction);
           };
       }
     };

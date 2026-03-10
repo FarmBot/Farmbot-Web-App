@@ -1,16 +1,29 @@
 const mockDevice = { send: jest.fn(() => Promise.resolve()) };
-jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
+import * as deviceModule from "../../../device";
 
 let mockPost = Promise.resolve(({ data: "FAKE CERT" }));
-jest.mock("axios", () => ({ post: jest.fn(() => mockPost) }));
 
-import { transferOwnership, TransferProps } from "../transfer_ownership";
 import { getDevice } from "../../../device";
 import { API } from "../../../api";
-import { submitOwnershipChange } from "../change_ownership_form";
 import { error } from "../../../toast/toast";
+import axios from "axios";
+const { transferOwnership } =
+  jest.requireActual("../transfer_ownership");
+import { TransferProps } from "../transfer_ownership";
+const { submitOwnershipChange } =
+  jest.requireActual("../change_ownership_form");
 
 API.setBaseUrl("http://foo.bar");
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  jest.spyOn(deviceModule, "getDevice")
+    .mockImplementation(() => mockDevice as never);
+  jest.spyOn(axios, "post")
+    .mockImplementation(() => mockPost as never);
+  mockPost = Promise.resolve(({ data: "FAKE CERT" }));
+});
+
 
 describe("transferOwnership", () => {
   const fakeProps = (): TransferProps => ({
@@ -28,6 +41,7 @@ describe("transferOwnership", () => {
   it("passes rejected promises down the chain", async () => {
     mockPost = Promise.reject("NOPE");
     await expect(transferOwnership(fakeProps())).rejects.toEqual("NOPE");
+    mockPost = Promise.resolve(({ data: "FAKE CERT" }));
   });
 });
 
@@ -38,6 +52,7 @@ describe("submitOwnershipChange()", () => {
       email: "email", password: "password",
     });
     expect(error).toHaveBeenCalledWith("Bad username or password");
+    mockPost = Promise.resolve(({ data: "FAKE CERT" }));
   });
 
   it("pops a toast when things go wrong: missing fields", () => {

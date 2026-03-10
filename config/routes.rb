@@ -66,7 +66,7 @@ FarmBot::Application.routes.draw do
       get :search, on: :collection
     end
 
-    resource :users, except: [:index] do
+    resource :users, except: [] do
       post :resend_verification, on: :member
       post :control_certificate, on: :collection
     end

@@ -1,19 +1,27 @@
 const mockEditStep = jest.fn();
-jest.mock("../../../../api/crud", () => ({
-  editStep: mockEditStep
-}));
 
-import React from "react";
-import { shallow } from "enzyme";
 import { NamedPin, WritePin, ALLOWED_PIN_MODES, ReadPin } from "farmbot";
 import {
   setPinMode, getPinModes, currentModeSelection, PinModeDropdown,
 } from "../mode";
-import { editStep } from "../../../../api/crud";
+import * as crud from "../../../../api/crud";
 import { FBSelect } from "../../../../ui";
 import {
   fakeStepParams,
 } from "../../../../__test_support__/fake_sequence_step_data";
+
+let editStepSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  mockEditStep.mockClear();
+  editStepSpy = jest.spyOn(crud, "editStep")
+    .mockImplementation(mockEditStep);
+});
+
+afterEach(() => {
+  editStepSpy.mockRestore();
+});
 
 describe("setPinMode()", () => {
   it("sets pin mode", () => {
@@ -131,8 +139,10 @@ describe("<PinModeDropdown />", () => {
       args: { pin_number: 3, pin_value: 0, pin_mode: 0 }
     };
     const p = fakeStepParams(step);
-    const wrapper = shallow(<PinModeDropdown {...p} />);
-    wrapper.find(FBSelect).simulate("change", { label: "", value: 0 });
-    expect(editStep).toHaveBeenCalled();
+    const rendered = PinModeDropdown(p);
+    const children = rendered.props.children as JSX.Element[];
+    const selector = children.find(child => child.type === FBSelect);
+    selector?.props.onChange({ label: "", value: 0 });
+    expect(editStepSpy).toHaveBeenCalled();
   });
 });

@@ -6,11 +6,11 @@
  *   files and generates the `translation_metrics.md` file.
  *
  *
- * Run via: `node _helper.js en`, where "en" is the desired language code.
+ * Run via: `bun _helper.js en`, where "en" is the desired language code.
  *
  *
  * IMPORTANT DEVELOPER NOTE:
- *   Edit `_helper.ts` and generate `_helper.js` via `npx tsc _helper.ts`.
+ *   Edit `_helper.ts` and generate `_helper.js` via `bunx tsc _helper.ts`.
  *   Do not edit `_helper.js` directly; any changes will be overwritten.
  *
  *
@@ -129,7 +129,7 @@ function repl(string: string, character: string): string {
 
 /**
  * For debugging. Replace all translations with a debug string.
- * Example usage: `node _helper.js xx _ n`
+ * Example usage: `bun _helper.js xx _ n`
  */
 function replaceWithDebugString(
   key: string,
@@ -168,10 +168,10 @@ function generateMetrics() {
   markdown += "```bash\nnode public/app-resources/languages/_helper.js en\n```\n\n";
   markdown += "Where `en` is your language code.\n\n";
   markdown += "Translation file format can be checked using:\n\n";
-  markdown += "```bash\nnpm run translation-check\n```\n\n";
+  markdown += "```bash\nbun run translation-check\n```\n\n";
   markdown += "_Note: If using Docker, add `sudo docker compose run web`";
   markdown += " before the commands.\nFor example, `sudo docker compose";
-  markdown += " run web npm run translation-check`._\n\n";
+  markdown += " run web bun run translation-check`._\n\n";
   markdown += "See the [README](https://github.com/FarmBot/Farmbot-Web-App";
   markdown += "#translating-the-web-app) for contribution instructions.\n\n";
   markdown += "Total number of phrases identified by the language helper";
@@ -298,10 +298,10 @@ namespace Helper {
           console.log(`Current file '${lang}.json' content: `);
           console.log(fileContent);
           console.log("Try entering a language code.");
-          console.log("For example: node _helper.js en");
+          console.log("For example: bun _helper.js en");
           return;
         }
-      } catch (e) {
+      } catch {
         if (!metricsOnly) {
           console.log(`New file created: '${lang}.json'`);
         }

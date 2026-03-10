@@ -1,12 +1,13 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { EducationDocsPanel } from "../education";
 import { ExternalUrl } from "../../../external_urls";
 
 describe("<EducationDocsPanel />", () => {
   it("renders education docs", () => {
     location.search = "";
-    const wrapper = mount(<EducationDocsPanel />);
-    expect(wrapper.find("iframe").props().src).toEqual(ExternalUrl.eduDocs);
+    const { container } = render(<EducationDocsPanel />);
+    expect(container.querySelector("iframe")?.getAttribute("src"))
+      .toEqual(ExternalUrl.eduDocs);
   });
 });

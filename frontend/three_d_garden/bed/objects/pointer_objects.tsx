@@ -34,7 +34,7 @@ import { createPoint } from "../../../points/create_points";
 import { Actions } from "../../../constants";
 import { NavigateFunction } from "react-router";
 import { DrawnPointPayl } from "../../../farm_designer/interfaces";
-import { Line2 } from "three/examples/jsm/lines/Line2";
+import { Line2 } from "three/examples/jsm/lines/Line2.js";
 
 export type PointerPlantRef = React.RefObject<GroupType | null>;
 export type RadiusRef = React.RefObject<MeshType | null>;
@@ -179,7 +179,7 @@ export const soilClick = (props: SoilClickProps) =>
         });
       }
       if (DRAW_POINT_MODES.includes(getMode())) {
-        pointerPlantRef.current?.position.set(0, 0, 0);
+        pointerPlantRef.current?.position?.set(0, 0, 0);
         const cursor = getGardenPosition(e.point);
         const { drawnPoint } = addPlantProps.designer;
         if (isUndefined(drawnPoint)) { return; }
@@ -221,7 +221,9 @@ export interface SoilPointerMoveProps extends AllRefs {
   activePositionRef: ActivePositionRef;
 }
 
+// eslint-disable-next-line complexity
 export const soilPointerMove = (props: SoilPointerMoveProps) =>
+  // eslint-disable-next-line complexity
   (e: ThreeEvent<MouseEvent>) => {
     const {
       config, addPlantProps,
@@ -242,13 +244,13 @@ export const soilPointerMove = (props: SoilPointerMoveProps) =>
       yCrosshairRef.current?.position.set(x, 0, z);
       activePositionRef.current = { x, y };
       if (getMode() == Mode.clickToAdd) {
-        pointerPlantRef.current.position.set(x, y, z);
+        pointerPlantRef.current?.position?.set(x, y, z);
       }
       if (DRAW_POINT_MODES.includes(getMode())) {
         const { drawnPoint } = addPlantProps.designer;
         if (isUndefined(drawnPoint)) { return; }
         if (isUndefined(drawnPoint.cx) || isUndefined(drawnPoint.cy)) {
-          pointerPlantRef.current.position.set(x, y, z);
+          pointerPlantRef.current?.position?.set(x, y, z);
         } else {
           if (drawnPoint.r > 0) { return; }
           const radius = round(xyDistance(

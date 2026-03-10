@@ -167,5 +167,4 @@ export const RawEditGarden = (props: EditGardenProps) => {
 };
 
 export const EditGarden = connect(mapStateToProps)(RawEditGarden);
-// eslint-disable-next-line import/no-default-export
 export default EditGarden;

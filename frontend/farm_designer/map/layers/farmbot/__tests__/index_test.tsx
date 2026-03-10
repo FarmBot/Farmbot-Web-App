@@ -1,11 +1,10 @@
 import React from "react";
 import { VirtualFarmBot } from "../index";
-import { shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import { VirtualFarmBotProps } from "../../../interfaces";
 import {
   fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
-import { BotFigure } from "../bot_figure";
 import {
   fakeMountedToolInfo,
 } from "../../../../../__test_support__/fake_tool_info";
@@ -31,21 +30,19 @@ describe("<VirtualFarmBot/>", () => {
   it("shows bot position", () => {
     const p = fakeProps();
     p.getConfigValue = () => false;
-    const wrapper = shallow(<VirtualFarmBot {...p} />);
-    const figures = wrapper.find(BotFigure);
-    expect(figures.length).toEqual(1);
-    expect(figures.last().props().figureName).toEqual("motor-position");
+    const { container } = render(<svg><VirtualFarmBot {...p} /></svg>);
+    expect(container.querySelectorAll("#motor-position").length).toEqual(1);
+    expect(container.querySelectorAll("#encoder-position").length).toEqual(0);
   });
 
   it("shows trail", () => {
-    const wrapper = shallow(<VirtualFarmBot {...fakeProps()} />);
-    expect(wrapper.find("BotTrail").length).toEqual(1);
+    const { container } = render(<svg><VirtualFarmBot {...fakeProps()} /></svg>);
+    expect(container.querySelectorAll(".virtual-bot-trail").length).toEqual(1);
   });
 
   it("shows encoder position", () => {
-    const wrapper = shallow(<VirtualFarmBot {...fakeProps()} />);
-    const figures = wrapper.find(BotFigure);
-    expect(figures.length).toEqual(2);
-    expect(figures.last().props().figureName).toEqual("encoder-position");
+    const { container } = render(<svg><VirtualFarmBot {...fakeProps()} /></svg>);
+    expect(container.querySelectorAll("#motor-position").length).toEqual(1);
+    expect(container.querySelectorAll("#encoder-position").length).toEqual(1);
   });
 });

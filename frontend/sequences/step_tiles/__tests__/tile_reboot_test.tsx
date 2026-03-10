@@ -1,19 +1,33 @@
-jest.mock("../../../api/crud", () => ({ editStep: jest.fn() }));
-
 let mockDev = false;
-jest.mock("../../../settings/dev/dev_support", () => ({
-  DevSettings: { futureFeaturesEnabled: () => mockDev },
-}));
+import * as devSupport from "../../../settings/dev/dev_support";
 
 import React from "react";
-import { render } from "enzyme";
+import { render } from "@testing-library/react";
 import { TileReboot, editTheRebootStep, rebootExecutor } from "../tile_reboot";
 import { StepParams } from "../../interfaces";
 import { editStep } from "../../../api/crud";
+import * as crud from "../../../api/crud";
 import { Reboot } from "farmbot";
 import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
 
 describe("<TileReboot />", () => {
+  let futureFeaturesEnabledSpy: jest.SpyInstance;
+  let editStepSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    mockDev = false;
+    futureFeaturesEnabledSpy =
+      jest.spyOn(devSupport.DevSettings, "futureFeaturesEnabled")
+        .mockImplementation(() => mockDev);
+    editStepSpy = jest.spyOn(crud, "editStep")
+      .mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    futureFeaturesEnabledSpy.mockRestore();
+    editStepSpy.mockRestore();
+  });
+
   const fakeProps = (): StepParams<Reboot> => ({
     ...fakeStepParams({
       kind: "reboot",
@@ -24,14 +38,14 @@ describe("<TileReboot />", () => {
   });
 
   it("renders", () => {
-    const block = render(<TileReboot {...fakeProps()} />);
-    expect(block.text().toLowerCase()).not.toContain("arduino");
+    const { container } = render(<TileReboot {...fakeProps()} />);
+    expect((container.textContent || "").toLowerCase()).not.toContain("arduino");
   });
 
   it("renders package selector", () => {
     mockDev = true;
-    const block = render(<TileReboot {...fakeProps()} />);
-    expect(block.text().toLowerCase()).toContain("arduino");
+    const { container } = render(<TileReboot {...fakeProps()} />);
+    expect((container.textContent || "").toLowerCase()).toContain("arduino");
   });
 
   it("edits the reboot step", () => {

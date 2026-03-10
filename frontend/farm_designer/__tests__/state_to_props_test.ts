@@ -20,6 +20,10 @@ import {
 import { generateUuid } from "../../resources/util";
 
 describe("mapStateToProps()", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it("hovered plantUUID is undefined", () => {
     const state = fakeState();
     state.resources.consumers.farm_designer.hoveredPlant = {

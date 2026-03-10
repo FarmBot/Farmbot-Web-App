@@ -15,7 +15,10 @@ export const getOsReleaseNotesForVersion = (
   version: string | undefined,
 ) => {
   const lastKnownNoteV = "11";
-  const fallbackV = globalConfig.FBOS_END_OF_LIFE_VERSION || lastKnownNoteV;
+  const configuredFallback = globalConfig.FBOS_END_OF_LIFE_VERSION;
+  const fallbackV = configuredFallback && configuredFallback !== "0.0.0"
+    ? configuredFallback
+    : lastKnownNoteV;
   const majorVersion = (version || fallbackV).split(".")[0];
   const stripVersion = (n: string) => n.split("\n\n").slice(1).join("\n");
   const notesByV = (osReleaseNotes || "").split("# v");

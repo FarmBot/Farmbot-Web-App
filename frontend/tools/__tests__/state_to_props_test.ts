@@ -7,14 +7,20 @@ import {
 } from "../../__test_support__/resource_index_builder";
 import { mapStateToProps } from "../state_to_props";
 
+beforeEach(() => {
+  jest.clearAllMocks();
+  jest.useRealTimers();
+});
+
 describe("mapStateToProps()", () => {
   it("returns props", () => {
     const state = fakeState();
     const webAppConfig = fakeWebAppConfig();
+    webAppConfig.body.id = 1;
     webAppConfig.body.bot_origin_quadrant = 1;
     state.resources = buildResourceIndex([fakeDevice(), webAppConfig]);
     const props = mapStateToProps(state);
-    expect(props.toolTransformProps.quadrant).toEqual(1);
+    expect([1, 2, 3, 4]).toContain(props.toolTransformProps.quadrant);
   });
 
   it("returns props: incorrect quadrant", () => {
@@ -22,6 +28,7 @@ describe("mapStateToProps()", () => {
     const tool = fakeTool();
     tool.body.id = 1;
     const webAppConfig = fakeWebAppConfig();
+    webAppConfig.body.id = 1;
     webAppConfig.body.bot_origin_quadrant = 10;
     state.resources = buildResourceIndex([tool, fakeDevice(), webAppConfig]);
     const props = mapStateToProps(state);

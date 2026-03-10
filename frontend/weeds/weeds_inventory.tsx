@@ -36,6 +36,7 @@ import { GroupInventoryItem } from "../point_groups/group_inventory_item";
 import { Path } from "../internal_urls";
 import { deleteAllIds } from "../api/delete_points_handler";
 import { NavigationContext } from "../routes_helpers";
+import { NavigateFunction } from "react-router";
 
 export interface WeedsProps {
   weeds: TaggedWeedPointer[];
@@ -223,7 +224,7 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = this.context;
+  navigate: NavigateFunction = url => { this.context?.(url as string); };
   navigateById = (id: number | undefined) => () => {
     this.navigate(Path.groups(id));
   };
@@ -276,5 +277,4 @@ export class RawWeeds extends React.Component<WeedsProps, WeedsState> {
 }
 
 export const Weeds = connect(mapStateToProps)(RawWeeds);
-// eslint-disable-next-line import/no-default-export
 export default Weeds;

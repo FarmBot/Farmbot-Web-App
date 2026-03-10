@@ -1,6 +1,10 @@
 import React from "react";
-import { shallow } from "enzyme";
 import { DeleteButton } from "../delete_button";
+import * as crud from "../../api/crud";
+import {
+  createRenderer,
+  unmountRenderer,
+} from "../../__test_support__/test_renderer";
 
 describe("<DeleteButton />", () => {
   const fakeProps = () => ({
@@ -8,10 +12,17 @@ describe("<DeleteButton />", () => {
     uuid: "resource uuid",
   });
 
-  it("deletes resource", () => {
+  it("deletes resource", async () => {
     const p = fakeProps();
-    const wrapper = shallow(<DeleteButton {...p} />);
-    wrapper.find("button").simulate("click");
-    expect(p.dispatch).toHaveBeenCalledWith(expect.any(Function));
+    const destroyThunk = jest.fn();
+    const destroySpy = jest.spyOn(crud, "destroy")
+      .mockImplementation(() => destroyThunk as never);
+    const wrapper = createRenderer(<DeleteButton {...p} />);
+    await wrapper.root.findByType("button").props.onClick?.({
+      preventDefault: jest.fn(),
+    } as unknown as React.MouseEvent<HTMLButtonElement>);
+    expect(p.dispatch).toHaveBeenCalledWith(destroyThunk);
+    unmountRenderer(wrapper);
+    destroySpy.mockRestore();
   });
 });

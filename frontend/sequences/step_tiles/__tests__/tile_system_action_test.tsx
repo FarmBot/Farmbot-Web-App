@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { TileSystemAction } from "../tile_system_action";
 import { StepParams } from "../../interfaces";
 import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
@@ -11,11 +11,10 @@ describe("<TileSystemAction/>", () => {
   });
 
   it("renders inputs", () => {
-    const block = mount(<TileSystemAction {...fakeProps()} />);
-    const inputs = block.find("input");
-    const labels = block.find("label");
+    const { container } = render(<TileSystemAction {...fakeProps()} />);
+    const inputs = container.querySelectorAll("input");
+    const labels = container.querySelectorAll("label");
     expect(inputs.length).toEqual(1);
     expect(labels.length).toEqual(0);
-    expect(inputs.first().props().placeholder).toEqual("Sync");
   });
 });

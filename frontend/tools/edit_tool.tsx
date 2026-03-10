@@ -26,9 +26,9 @@ import {
   reduceToolName, ToolName,
 } from "../farm_designer/map/tool_graphics/all_tools";
 import { ToolTips } from "../constants";
-import { sendRPC } from "../devices/actions";
+import * as deviceActions from "../devices/actions";
 import { NavigationContext } from "../routes_helpers";
-import { Navigate } from "react-router";
+import { Navigate, NavigateFunction } from "react-router";
 
 export const isActive = (toolSlots: TaggedToolSlotPointer[]) =>
   (toolId: number | undefined) =>
@@ -52,7 +52,9 @@ export const WaterFlowRateInput = (props: WaterFlowRateInputProps) => {
     {!props.hideTooltip && <Help text={ToolTips.WATER_FLOW_RATE}
       enableMarkdown={true} />}
     <button className={"fb-button orange"}
-      onClick={() => sendRPC({ kind: "lua", args: { lua: LUA_WATER_FLOW_RATE } })}>
+      onClick={() => deviceActions.sendRPC({
+        kind: "lua", args: { lua: LUA_WATER_FLOW_RATE }
+      })}>
       {t("run water for 5 seconds")}
     </button>
     <input
@@ -103,7 +105,7 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = this.context;
+  navigate: NavigateFunction = url => { this.context?.(url as string); };
 
   fallback = () => {
     const toolsPath = Path.tools();
@@ -200,5 +202,4 @@ export class RawEditTool extends React.Component<EditToolProps, EditToolState> {
 }
 
 export const EditTool = connect(mapStateToProps)(RawEditTool);
-// eslint-disable-next-line import/no-default-export
 export default EditTool;

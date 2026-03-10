@@ -1,12 +1,12 @@
 require_relative "../app/models/transport.rb"
-require File.expand_path("../boot", __FILE__)
+require_relative "boot"
 require_relative "../app/lib/celery_script/cs_heap"
 require "rails/all"
 require_relative "./config_helpers/active_storage"
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
-Bundler.require(:default, Rails.env)
+Bundler.require(*Rails.groups)
 
 module FarmBot
   class Application < Rails::Application
@@ -20,9 +20,10 @@ module FarmBot
       "Api::RmqUtilsController#resource_action",
       "Api::RmqUtilsController#topic_action",
     ]
-    config.load_defaults 6.0
+    config.load_defaults 8.1
+    config.add_autoload_paths_to_load_path = true
     config.active_storage.service = ConfigHelpers::ActiveStorage.service
-    config.cache_store = :redis_cache_store, { url: REDIS_URL, ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE } }
+    config.cache_store = :redis_cache_store, { url: REDIS_URL, ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE }, pool: false }
     config.middleware.use Rack::Attack
     config.active_record.schema_format = :sql
     config.active_record.belongs_to_required_by_default = false
@@ -33,8 +34,10 @@ module FarmBot
     config.active_job.queue_adapter = :delayed_job
     config.action_dispatch.perform_deep_munge = false
     I18n.enforce_available_locales = false
-    LOCAL_API_HOST = ENV.fetch("API_HOST", "parcel")
-    PARCELJS_URL = "http://#{LOCAL_API_HOST}:3808"
+    LOCAL_API_HOST = ENV.fetch("API_HOST", "localhost")
+    ASSET_DEV_HOST = ENV.fetch("ASSET_HOST", ENV.fetch("API_HOST", "localhost"))
+    ASSET_DEV_PORT = ENV.fetch("ASSET_PORT", "3808")
+    ASSET_DEV_URL = "http://#{ASSET_DEV_HOST}:#{ASSET_DEV_PORT}"
     config.generators do |g|
       g.template_engine :erb
       g.test_framework :rspec, :fixture_replacement => :factory_bot, :views => false, :helper => false
@@ -44,7 +47,7 @@ module FarmBot
     end
     config.autoload_paths << Rails.root.join("lib")
     config.autoload_paths << Rails.root.join("lib/sequence_migrations")
-    config.middleware.insert_before ActionDispatch::Static, Rack::Cors do
+    config.middleware.insert_before 0, Rack::Cors do
       allow do
         origins "*"
         resource "/api/*",
@@ -84,13 +87,13 @@ module FarmBot
         "api.github.com",
         "raw.githubusercontent.com",
         "api.rollbar.com",
-        PARCELJS_URL,
+        ASSET_DEV_URL,
         ENV["FORCE_SSL"] ? "wss:" : "ws:",
         "localhost:#{API_PORT}",
-        "localhost:3808",
+        "localhost:#{ASSET_DEV_PORT}",
         "browser-http-intake.logs.datadoghq.com",
         "#{ENV.fetch("API_HOST")}:#{API_PORT}",
-        "#{ENV.fetch("API_HOST")}:3808",
+        "#{ENV.fetch("API_HOST")}:#{ASSET_DEV_PORT}",
         "blob:", # 3D
       ]
       config.csp = {
@@ -122,10 +125,10 @@ module FarmBot
         ),
         plugin_types: %w(),
         script_src: [
-          PARCELJS_URL,
+          ASSET_DEV_URL,
           "www.datadoghq-browser-agent.com",
           "cdn.rollbar.com",
-          "localhost:3808",
+          "localhost:#{ASSET_DEV_PORT}",
           "chrome-extension:",
           "cdnjs.cloudflare.com",
           "'unsafe-inline'",

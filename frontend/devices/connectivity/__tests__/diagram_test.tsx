@@ -1,9 +1,5 @@
-let mockIsMobile = false;
-jest.mock("../../../screen_size", () => ({
-  isMobile: () => mockIsMobile,
-}));
-
 import React from "react";
+import { fireEvent } from "@testing-library/react";
 import {
   ConnectivityDiagram,
   ConnectivityDiagramProps,
@@ -18,7 +14,13 @@ import {
 import { Color } from "../../../ui";
 import { svgMount } from "../../../__test_support__/svg_mount";
 
+const setWindowWidth = (width: number) => {
+  Object.defineProperty(window, "innerWidth", { configurable: true, value: width });
+};
+
 describe("<ConnectivityDiagram/>", () => {
+  beforeEach(() => setWindowWidth(1000));
+
   function fakeProps(): ConnectivityDiagramProps {
     const hover = jest.fn();
     return {
@@ -63,23 +65,28 @@ describe("<ConnectivityDiagram/>", () => {
   }
 
   it("renders diagram", () => {
-    const wrapper = svgMount(<ConnectivityDiagram {...fakeProps()} />);
-    expect(wrapper.text())
+    const { container } = svgMount(<ConnectivityDiagram {...fakeProps()} />);
+    expect(container.textContent)
       .toContain("This computerWeb AppMessage BrokerFarmBotRaspberry PiF");
   });
 
   it("renders small diagram", () => {
-    mockIsMobile = true;
-    const wrapper = svgMount(<ConnectivityDiagram {...fakeProps()} />);
-    expect(wrapper.text())
+    setWindowWidth(400);
+    const { container } = svgMount(<ConnectivityDiagram {...fakeProps()} />);
+    expect(container.textContent)
       .toContain("This phoneWeb AppMessage BrokerFarmBotRaspberry PiF");
   });
 
   it("hover", () => {
     const p = fakeProps();
-    const wrapper = svgMount(<ConnectivityDiagram {...p} />);
-    wrapper.find(".connector-hover-area").first().simulate("mouseEnter");
+    const enterSpy = jest.fn();
+    p.hover = jest.fn(() => enterSpy);
+    const { container } = svgMount(<ConnectivityDiagram {...p} />);
+    const hoverAreas = container.querySelectorAll(".connector-hover-area");
+    const target = hoverAreas.item(hoverAreas.length - 1) as SVGLineElement;
+    fireEvent.mouseEnter(target);
     expect(p.hover).toHaveBeenCalledWith("EF");
+    expect(enterSpy).toHaveBeenCalled();
   });
 });
 
@@ -94,10 +101,12 @@ describe("getTextPosition()", () => {
 
 describe("nodeLabel()", () => {
   it("renders", () => {
-    const label = svgMount(nodeLabel("Top Node", "top" as DiagramNodes));
-    expect(label.find("text").text()).toEqual("Top Node");
-    expect(label.find("text").props())
-      .toEqual({ children: "Top Node", textAnchor: "middle", x: 0, y: -75 });
+    const { container } = svgMount(nodeLabel("Top Node", "top" as DiagramNodes));
+    const text = container.querySelector("text");
+    expect(text?.textContent).toEqual("Top Node");
+    expect(text?.getAttribute("text-anchor")).toEqual("middle");
+    expect(text?.getAttribute("x")).toEqual("0");
+    expect(text?.getAttribute("y")).toEqual("-75");
   });
 });
 
@@ -142,31 +151,28 @@ describe("<Connector/>", () => {
   }
 
   it("renders", () => {
-    const wrapper = svgMount(<Connector {...fakeProps()} />);
-    const lines = wrapper.find("line");
+    const { container } = svgMount(<Connector {...fakeProps()} />);
+    const lines = container.querySelectorAll("line");
     expect(lines.length).toEqual(3);
-    expect(lines.at(0).props())
-      .toEqual({
-        id: "connector-border", stroke: Color.darkGray, strokeWidth: 9,
-        x1: -25, x2: -50, y1: -55, y2: -20
-      });
-    expect(lines.at(1).props())
-      .toEqual({
-        id: "connector-color", stroke: Color.red, strokeWidth: 5,
-        x1: -25, x2: -50, y1: -55, y2: -20
-      });
-    expect(lines.at(2).props())
-      .toEqual({
-        className: "connector-hover-area",
-        onMouseEnter: undefined, onMouseLeave: undefined, strokeWidth: 40,
-        x1: -25, x2: -50, y1: -55, y2: -20
-      });
+    expect(lines.item(0).getAttribute("id")).toEqual("connector-border");
+    expect(lines.item(0).getAttribute("stroke")).toEqual(Color.darkGray);
+    expect(lines.item(0).getAttribute("stroke-width")).toEqual("9");
+    expect(lines.item(0).getAttribute("x1")).toEqual("-25");
+    expect(lines.item(0).getAttribute("x2")).toEqual("-50");
+    expect(lines.item(0).getAttribute("y1")).toEqual("-55");
+    expect(lines.item(0).getAttribute("y2")).toEqual("-20");
+    expect(lines.item(1).getAttribute("id")).toEqual("connector-color");
+    expect(lines.item(1).getAttribute("stroke")).toEqual(Color.red);
+    expect(lines.item(1).getAttribute("stroke-width")).toEqual("5");
+    expect(lines.item(2).getAttribute("class")).toEqual("connector-hover-area");
+    expect(lines.item(2).getAttribute("stroke-width")).toEqual("40");
   });
 
   it("renders connected color", () => {
     const p = fakeProps();
     p.connectionData.connectionStatus = true;
-    const wrapper = svgMount(<Connector {...p} />);
-    expect(wrapper.find("line").at(1).props().stroke).toEqual(Color.green);
+    const { container } = svgMount(<Connector {...p} />);
+    expect(container.querySelectorAll("line").item(1).getAttribute("stroke"))
+      .toEqual(Color.green);
   });
 });

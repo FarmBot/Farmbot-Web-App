@@ -1,19 +1,36 @@
 import { fakeState } from "../../__test_support__/fake_state";
-const mockState = fakeState();
-jest.mock("../../redux/store", () => ({
-  store: {
-    dispatch: jest.fn(),
-    getState: () => mockState,
-  }
-}));
+import { store } from "../../redux/store";
 
 import { Actions } from "../../constants";
-import { store } from "../../redux/store";
 import { CreateToastOnceProps } from "../interfaces";
 import { createToastOnce } from "../toast_internal_support";
 import { fakeToasts } from "../../__test_support__/fake_toasts";
 
+let originalGetState: typeof store.getState;
+let originalDispatch: typeof store.dispatch;
+let originalConsoleLog: typeof console.log;
+let mockState = fakeState();
+
 describe("toast internal support files", () => {
+  beforeEach(() => {
+    mockState = fakeState();
+    mockState.app.toasts = {};
+    originalGetState = store.getState;
+    originalDispatch = store.dispatch;
+    originalConsoleLog = console.log;
+    (store as unknown as { getState: () => typeof mockState }).getState =
+      () => mockState;
+    (store as unknown as { dispatch: jest.Mock }).dispatch = jest.fn();
+  });
+
+  afterEach(() => {
+    (store as unknown as { getState: typeof store.getState }).getState =
+      originalGetState;
+    (store as unknown as { dispatch: typeof store.dispatch }).dispatch =
+      originalDispatch;
+    console.log = originalConsoleLog;
+  });
+
   const fakeProps = (): CreateToastOnceProps => ({
     message: "message",
     title: "bar",
@@ -30,19 +47,21 @@ describe("toast internal support files", () => {
     createToastOnce(p);
     jest.runAllTimers();
     expect(p.fallbackLogger).not.toHaveBeenCalled();
-    expect(store.dispatch).toHaveBeenCalledWith({
+    expect(store.dispatch).toHaveBeenCalled();
+    const action = (store.dispatch as jest.Mock).mock.calls[0]?.[0];
+    expect(action).toEqual(expect.objectContaining({
       type: Actions.CREATE_TOAST,
-      payload: {
-        id: expect.stringMatching("^id-prefix-toast-"),
+      payload: expect.objectContaining({
         color: "baz",
-        fallbackLogger: expect.any(Function),
         idPrefix: "id-prefix",
         message: "message",
         noDismiss: false,
         noTimer: false,
         title: "bar",
-      }
-    });
+      })
+    }));
+    expect(action.payload.id).toMatch(/^id-prefix-toast-/);
+    expect(typeof action.payload.fallbackLogger).toBe("function");
   });
 
   it("uses fallback logger", () => {

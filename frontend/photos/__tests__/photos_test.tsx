@@ -1,31 +1,16 @@
 let mockDev = false;
-jest.mock("../../settings/dev/dev_support", () => ({
-  DevSettings: {
-    futureFeaturesEnabled: () => mockDev,
-    overriddenFbosVersion: jest.fn(),
-    showInternalEnvsEnabled: jest.fn(),
-  }
-}));
-
-jest.mock("../../farmware/farmware_info", () => ({
-  requestFarmwareUpdate: jest.fn(),
-}));
-
-jest.mock("../../devices/actions", () => ({
-  takePhoto: jest.fn(),
-}));
 
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import {
   RawDesignerPhotos as DesignerPhotos,
   UpdateImagingPackage,
   UpdateImagingPackageProps,
 } from "../../photos/photos";
+import * as devSupport from "../../settings/dev/dev_support";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
-import { ExpandableHeader, ToggleButton } from "../../ui";
 import { DesignerPhotosProps, PhotosPanelState } from "../interfaces";
-import { requestFarmwareUpdate } from "../../farmware/farmware_info";
+import * as farmwareInfo from "../../farmware/farmware_info";
 import { fakeFarmware } from "../../__test_support__/fake_farmwares";
 import { FarmwareName } from "../../sequences/step_tiles/tile_execute_script";
 import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
@@ -34,9 +19,25 @@ import {
 } from "../../__test_support__/fake_bot_data";
 import { fakePhotosPanelState } from "../../__test_support__/fake_camera_data";
 import { Actions, Content, ToolTips } from "../../constants";
-import { clickButton } from "../../__test_support__/helpers";
-import { takePhoto } from "../../devices/actions";
+import * as deviceActions from "../../devices/actions";
 import { error } from "../../toast/toast";
+
+beforeEach(() => {
+  jest.spyOn(devSupport.DevSettings, "futureFeaturesEnabled")
+    .mockImplementation(() => mockDev);
+  jest.spyOn(devSupport.DevSettings, "overriddenFbosVersion")
+    .mockImplementation(jest.fn());
+  jest.spyOn(devSupport.DevSettings, "showInternalEnvsEnabled")
+    .mockImplementation(jest.fn());
+  jest.spyOn(farmwareInfo, "requestFarmwareUpdate")
+    .mockImplementation(jest.fn());
+  jest.spyOn(deviceActions, "takePhoto")
+    .mockResolvedValue(undefined);
+});
+
+afterEach(() => {
+  mockDev = false;
+});
 
 describe("<DesignerPhotos />", () => {
   const fakeProps = (): DesignerPhotosProps => ({
@@ -64,9 +65,13 @@ describe("<DesignerPhotos />", () => {
   });
 
   it("renders photos panel", () => {
-    const wrapper = mount(<DesignerPhotos {...fakeProps()} />);
-    ["photos", "camera calibration", "weed detection"].map(string =>
-      expect(wrapper.text().toLowerCase()).toContain(string));
+    render(<DesignerPhotos {...fakeProps()} />);
+    expect(screen.getByRole("heading", { name: /^photos$/i }))
+      .toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /camera calibration/i }))
+      .toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /^weed detection/i }))
+      .toBeInTheDocument();
   });
 
   it("expands sections", () => {
@@ -74,52 +79,69 @@ describe("<DesignerPhotos />", () => {
     const p = fakeProps();
     const farmware = fakeFarmware(FarmwareName.MeasureSoilHeight);
     p.farmwares = { [FarmwareName.MeasureSoilHeight]: farmware };
-    const wrapper = shallow(<DesignerPhotos {...p} />);
-    const headers = wrapper.find(ExpandableHeader);
-    Object.keys(p.photosPanelState).filter(k => !k.endsWith("PP"))
-      .map((section: keyof PhotosPanelState, index) => {
-        headers.at(index).simulate("click");
-        expect(p.dispatch).toHaveBeenCalledWith({
-          type: Actions.TOGGLE_PHOTOS_PANEL_OPTION, payload: section,
-        });
+    render(<DesignerPhotos {...p} />);
+    (p.dispatch as jest.Mock).mockClear();
+
+    const sectionTitles: [keyof PhotosPanelState, RegExp][] = [
+      ["filter", /filter map photos/i],
+      ["camera", /camera settings/i],
+      ["calibration", /camera calibration/i],
+      ["detection", /weed detection/i],
+      ["measure", /measure soil height/i],
+      ["manage", /manage data/i],
+    ];
+
+    sectionTitles.map(([section, title]) => {
+      fireEvent.click(screen.getByRole("button", { name: title }));
+      expect(p.dispatch).toHaveBeenCalledWith({
+        type: Actions.TOGGLE_PHOTOS_PANEL_OPTION, payload: section,
       });
+    });
   });
 
   it("toggles highlight modified setting mode", () => {
     mockDev = true;
     const p = fakeProps();
     p.photosPanelState.manage = true;
-    const wrapper = mount(<DesignerPhotos {...p} />);
-    wrapper.find(ToggleButton).last().simulate("click");
+    const { container } = render(<DesignerPhotos {...p} />);
+    (p.dispatch as jest.Mock).mockClear();
+    const label = screen.getByText(/highlight modified settings/i);
+    const row = label.closest(".row") || container;
+    const button = row.querySelector("button")
+      || row.querySelector(".toggle-button-mock")
+      || row.querySelector(".fb-toggle-button-mock");
+    expect(button).toBeTruthy();
+    fireEvent.click(button as Element);
     expect(p.dispatch).toHaveBeenCalled();
   });
 
   it("takes photo", () => {
-    const wrapper = mount(<DesignerPhotos {...fakeProps()} />);
-    const btn = wrapper.find("button").first();
-    expect(btn.props().title).not.toEqual(Content.NO_CAMERA_SELECTED);
-    clickButton(wrapper, 0, "take photo");
-    expect(takePhoto).toHaveBeenCalled();
+    render(<DesignerPhotos {...fakeProps()} />);
+    const button = screen.getByRole("button", { name: /take photo/i });
+    expect(button).toHaveAttribute("title");
+    expect(button).not.toHaveAttribute("title", Content.NO_CAMERA_SELECTED);
+    fireEvent.click(button);
+    expect(deviceActions.takePhoto).toHaveBeenCalled();
   });
 
   it("shows disabled take photo button", () => {
     const p = fakeProps();
     p.env = { camera: "NONE" };
-    const wrapper = mount(<DesignerPhotos {...p} />);
-    const btn = wrapper.find("button").first();
-    expect(btn.text()).toEqual("Take Photo");
-    expect(btn.props().title).toEqual(Content.NO_CAMERA_SELECTED);
-    btn.simulate("click");
+    render(<DesignerPhotos {...p} />);
+    const button = screen.getByRole("button", { name: /take photo/i });
+    expect(button.textContent).toEqual("Take Photo");
+    expect(button).toHaveAttribute("title", Content.NO_CAMERA_SELECTED);
+    fireEvent.click(button);
     expect(error).toHaveBeenCalledWith(
       ToolTips.SELECT_A_CAMERA, { title: Content.NO_CAMERA_SELECTED });
-    expect(takePhoto).not.toHaveBeenCalled();
+    expect(deviceActions.takePhoto).not.toHaveBeenCalled();
   });
 
   it("shows image download progress", () => {
     const p = fakeProps();
     p.imageJobs = [fakePercentJob({ percent: 15 })];
-    const wrapper = mount(<DesignerPhotos {...p} />);
-    expect(wrapper.text()).toContain("uploading photo...15%");
+    render(<DesignerPhotos {...p} />);
+    expect(screen.getByText(/uploading photo\.\.\.15%/i)).toBeInTheDocument();
   });
 });
 
@@ -133,15 +155,18 @@ describe("<UpdateImagingPackage />", () => {
   it("updates", () => {
     const p = fakeProps();
     p.version = "1.0.0";
-    const wrapper = mount(<UpdateImagingPackage {...p} />);
-    wrapper.find("i").simulate("click");
-    expect(requestFarmwareUpdate).toHaveBeenCalledWith("take-photo", true);
+    const { container } = render(<UpdateImagingPackage {...p} />);
+    const updateButton = container.querySelector("i.fa-refresh");
+    expect(updateButton).toBeTruthy();
+    fireEvent.click(updateButton as HTMLElement);
+    expect(farmwareInfo.requestFarmwareUpdate)
+      .toHaveBeenCalledWith("take-photo", true);
   });
 
   it("doesn't render update button", () => {
     const p = fakeProps();
     p.version = undefined;
-    const wrapper = mount(<UpdateImagingPackage {...p} />);
-    expect(wrapper.find("i").length).toEqual(0);
+    const { container } = render(<UpdateImagingPackage {...p} />);
+    expect(container.querySelector("i")).toBeNull();
   });
 });

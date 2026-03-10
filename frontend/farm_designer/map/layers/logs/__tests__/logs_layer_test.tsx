@@ -9,7 +9,6 @@ import {
   fakeCameraCalibrationData, fakeCameraCalibrationDataFull,
 } from "../../../../../__test_support__/fake_camera_data";
 import { fakeLog } from "../../../../../__test_support__/fake_state/resources";
-import { CameraViewArea } from "../../farmbot/bot_figure";
 import { fakeBotLocationData } from "../../../../../__test_support__/fake_bot_data";
 
 describe("<LogsLayer />", () => {
@@ -89,13 +88,11 @@ describe("<LogsLayer />", () => {
   it("removes visuals", () => {
     jest.useFakeTimers();
     const wrapper = svgMount(<LogsLayer {...fakeProps()} />);
-    expect(wrapper.find(CameraViewArea).length).toEqual(4);
+    expect(wrapper.find("#camera-view-area-wrapper").length).toEqual(4);
     act(() => { jest.advanceTimersByTime(10000); });
-    wrapper.update();
-    expect(wrapper.find(CameraViewArea).length).toEqual(3);
+    expect(wrapper.find("#camera-view-area-wrapper").length).toEqual(3);
     act(() => { jest.runAllTimers(); });
-    wrapper.update();
-    expect(wrapper.find(CameraViewArea).length).toEqual(0);
+    expect(wrapper.find("#camera-view-area-wrapper").length).toEqual(0);
   });
 
   it("removes visuals more slowly", () => {
@@ -103,13 +100,11 @@ describe("<LogsLayer />", () => {
     const p = fakeProps();
     p.deviceTarget = "rpi";
     const wrapper = svgMount(<LogsLayer {...p} />);
-    expect(wrapper.find(CameraViewArea).length).toEqual(4);
+    expect(wrapper.find("#camera-view-area-wrapper").length).toEqual(4);
     act(() => { jest.advanceTimersByTime(30000); });
-    wrapper.update();
-    expect(wrapper.find(CameraViewArea).length).toEqual(3);
+    expect(wrapper.find("#camera-view-area-wrapper").length).toEqual(3);
     act(() => { jest.runAllTimers(); });
-    wrapper.update();
-    expect(wrapper.find(CameraViewArea).length).toEqual(0);
+    expect(wrapper.find("#camera-view-area-wrapper").length).toEqual(0);
   });
 
   it("shows full visuals", () => {

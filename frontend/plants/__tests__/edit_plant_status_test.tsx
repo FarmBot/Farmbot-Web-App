@@ -1,19 +1,21 @@
-jest.mock("../../api/crud", () => ({
-  edit: jest.fn(),
-  save: jest.fn(),
-}));
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { EditPlantStatusProps } from "../plant_panel";
-import { shallow } from "enzyme";
 import {
   fakeCurve,
-  fakePlant, fakePoint, fakeWeed,
+  fakePlant,
+  fakePoint,
+  fakeWeed,
 } from "../../__test_support__/fake_state/resources";
-import { edit } from "../../api/crud";
+import * as crud from "../../api/crud";
 import {
-  EditPlantStatus, PlantStatusBulkUpdateProps, PlantStatusBulkUpdate,
-  EditWeedStatus, EditWeedStatusProps, PointSizeBulkUpdate,
+  EditPlantStatus,
+  PlantStatusBulkUpdateProps,
+  PlantStatusBulkUpdate,
+  EditWeedStatus,
+  EditWeedStatusProps,
+  PointSizeBulkUpdate,
   BulkUpdateBaseProps,
   PointColorBulkUpdate,
   PlantDateBulkUpdateProps,
@@ -30,6 +32,53 @@ import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { Actions } from "../../constants";
 import { Path } from "../../internal_urls";
 import { CurveType } from "../../curves/templates";
+import * as ui from "../../ui";
+
+let fbSelectSpy: jest.SpyInstance;
+let blurableInputSpy: jest.SpyInstance;
+let colorPickerSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  jest.spyOn(crud, "save").mockImplementation(jest.fn());
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation((props: any) => {
+      const value = props.selectedItem ? String(props.selectedItem.value) : "";
+      return <select
+        className={"mock-fb-select"}
+        value={value}
+        onChange={e => {
+          const nextValue = e.currentTarget.value;
+          const selected = nextValue === ""
+            ? props.list.find((item: any) => item.isNull)
+            || props.list.find((item: any) => String(item.value) === "")
+            : props.list.find((item: any) => String(item.value) === nextValue);
+          selected && props.onChange(selected);
+        }}>
+        <option value={""} />
+        {props.list.map((item: any, index: number) =>
+          <option key={`${item.value}-${index}`} value={String(item.value)}>
+            {item.label}
+          </option>)}
+      </select>;
+    });
+  blurableInputSpy = jest.spyOn(ui, "BlurableInput")
+    .mockImplementation((props: any) => <input
+      className={"mock-blurable-input"}
+      defaultValue={props.value}
+      onBlur={e => props.onCommit(e)} />);
+  colorPickerSpy = jest.spyOn(ui, "ColorPicker")
+    .mockImplementation((props: any) => <button
+      className={"mock-color-picker"}
+      onClick={() => props.onChange("green")} />);
+});
+
+afterEach(() => {
+  fbSelectSpy.mockRestore();
+  blurableInputSpy.mockRestore();
+  colorPickerSpy.mockRestore();
+});
 
 describe("<EditPlantStatus />", () => {
   const fakeProps = (): EditPlantStatusProps => ({
@@ -40,21 +89,23 @@ describe("<EditPlantStatus />", () => {
 
   it("changes stage to planted", () => {
     const p = fakeProps();
-    const wrapper = shallow(<EditPlantStatus {...p} />);
-    wrapper.find("FBSelect").simulate("change", { value: "planted" });
+    const { container } = render(<EditPlantStatus {...p} />);
+    fireEvent.change(container.querySelector(".mock-fb-select") as Element,
+      { target: { value: "planted" } });
     expect(p.updatePlant).toHaveBeenCalledWith("Plant.0.0", {
       plant_stage: "planted",
-      planted_at: expect.stringContaining("Z")
+      planted_at: expect.stringContaining("Z"),
     });
   });
 
   it("changes stage to planned", () => {
     const p = fakeProps();
-    const wrapper = shallow(<EditPlantStatus {...p} />);
-    wrapper.find("FBSelect").simulate("change", { value: "planned" });
+    const { container } = render(<EditPlantStatus {...p} />);
+    fireEvent.change(container.querySelector(".mock-fb-select") as Element,
+      { target: { value: "planned" } });
     expect(p.updatePlant).toHaveBeenCalledWith("Plant.0.0", {
       plant_stage: "planned",
-      planted_at: undefined
+      planted_at: undefined,
     });
   });
 });
@@ -73,11 +124,12 @@ describe("<PlantStatusBulkUpdate />", () => {
     const plant2 = fakePlant();
     p.allPoints = [plant1, plant2];
     p.selected = [plant1.uuid];
-    const wrapper = shallow(<PlantStatusBulkUpdate {...p} />);
+    const { container } = render(<PlantStatusBulkUpdate {...p} />);
     window.confirm = jest.fn(() => false);
-    wrapper.find("FBSelect").simulate("change", { label: "", value: "planted" });
+    fireEvent.change(container.querySelector(".mock-fb-select") as Element,
+      { target: { value: "planted" } });
     expect(window.confirm).toHaveBeenCalled();
-    expect(edit).not.toHaveBeenCalled();
+    expect(crud.edit).not.toHaveBeenCalled();
   });
 
   it("updates plant statuses", () => {
@@ -87,17 +139,18 @@ describe("<PlantStatusBulkUpdate />", () => {
     const plant3 = fakePlant();
     p.allPoints = [plant1, plant2, plant3];
     p.selected = [plant1.uuid, plant2.uuid];
-    const wrapper = shallow(<PlantStatusBulkUpdate {...p} />);
+    const { container } = render(<PlantStatusBulkUpdate {...p} />);
     window.confirm = jest.fn(() => true);
-    wrapper.find("FBSelect").simulate("change", { label: "", value: "planted" });
+    fireEvent.change(container.querySelector(".mock-fb-select") as Element,
+      { target: { value: "planted" } });
     expect(window.confirm).toHaveBeenCalledWith(
       "Change status to 'planted' for 2 items?");
-    expect(edit).toHaveBeenCalledTimes(2);
-    expect(edit).toHaveBeenCalledWith(plant1, {
+    expect(crud.edit).toHaveBeenCalledTimes(2);
+    expect(crud.edit).toHaveBeenCalledWith(plant1, {
       plant_stage: "planted",
       planted_at: expect.stringContaining("Z"),
     });
-    expect(edit).toHaveBeenCalledWith(plant2, {
+    expect(crud.edit).toHaveBeenCalledWith(plant2, {
       plant_stage: "planted",
       planted_at: expect.stringContaining("Z"),
     });
@@ -111,14 +164,15 @@ describe("<PlantStatusBulkUpdate />", () => {
     const weed3 = fakeWeed();
     p.allPoints = [weed1, weed2, weed3];
     p.selected = [weed1.uuid, weed2.uuid];
-    const wrapper = shallow(<PlantStatusBulkUpdate {...p} />);
+    const { container } = render(<PlantStatusBulkUpdate {...p} />);
     window.confirm = jest.fn(() => true);
-    wrapper.find("FBSelect").simulate("change", { label: "", value: "removed" });
+    fireEvent.change(container.querySelector(".mock-fb-select") as Element,
+      { target: { value: "removed" } });
     expect(window.confirm).toHaveBeenCalledWith(
       "Change status to 'removed' for 2 items?");
-    expect(edit).toHaveBeenCalledTimes(2);
-    expect(edit).toHaveBeenCalledWith(weed1, { plant_stage: "removed" });
-    expect(edit).toHaveBeenCalledWith(weed2, { plant_stage: "removed" });
+    expect(crud.edit).toHaveBeenCalledTimes(2);
+    expect(crud.edit).toHaveBeenCalledWith(weed1, { plant_stage: "removed" });
+    expect(crud.edit).toHaveBeenCalledWith(weed2, { plant_stage: "removed" });
   });
 });
 
@@ -136,12 +190,14 @@ describe("<PlantDateBulkUpdate />", () => {
     const plant2 = fakePlant();
     p.allPoints = [plant1, plant2];
     p.selected = [plant1.uuid];
-    const wrapper = shallow(<PlantDateBulkUpdate {...p} />);
+    const { container } = render(<PlantDateBulkUpdate {...p} />);
     window.confirm = jest.fn(() => false);
-    wrapper.find("BlurableInput").simulate("commit",
-      { currentTarget: { value: "2017-05-29T05:00:00.000Z" } });
+    const input = container.querySelector(".mock-blurable-input") as Element;
+    fireEvent.change(input,
+      { target: { value: "2017-05-29T05:00:00.000Z" } });
+    fireEvent.blur(input);
     expect(window.confirm).toHaveBeenCalled();
-    expect(edit).not.toHaveBeenCalled();
+    expect(crud.edit).not.toHaveBeenCalled();
   });
 
   it("updates plant dates", () => {
@@ -151,17 +207,19 @@ describe("<PlantDateBulkUpdate />", () => {
     const plant3 = fakePlant();
     p.allPoints = [plant1, plant2, plant3];
     p.selected = [plant1.uuid, plant2.uuid];
-    const wrapper = shallow(<PlantDateBulkUpdate {...p} />);
+    const { container } = render(<PlantDateBulkUpdate {...p} />);
     window.confirm = jest.fn(() => true);
-    wrapper.find("BlurableInput").simulate("commit",
-      { currentTarget: { value: "2017-05-29T05:00:00.000Z" } });
+    const input = container.querySelector(".mock-blurable-input") as Element;
+    fireEvent.change(input,
+      { target: { value: "2017-05-29T05:00:00.000Z" } });
+    fireEvent.blur(input);
     expect(window.confirm).toHaveBeenCalledWith(
       "Change start date to 2017-05-29 for 2 items?");
-    expect(edit).toHaveBeenCalledTimes(2);
-    expect(edit).toHaveBeenCalledWith(plant1, {
+    expect(crud.edit).toHaveBeenCalledTimes(2);
+    expect(crud.edit).toHaveBeenCalledWith(plant1, {
       planted_at: "2017-05-29T05:00:00.000Z",
     });
-    expect(edit).toHaveBeenCalledWith(plant2, {
+    expect(crud.edit).toHaveBeenCalledWith(plant2, {
       planted_at: "2017-05-29T05:00:00.000Z",
     });
   });
@@ -180,12 +238,13 @@ describe("<PointSizeBulkUpdate />", () => {
     const plant2 = fakePlant();
     p.allPoints = [plant1, plant2];
     p.selected = [plant1.uuid];
-    const wrapper = shallow(<PointSizeBulkUpdate {...p} />);
+    const { container } = render(<PointSizeBulkUpdate {...p} />);
     window.confirm = jest.fn(() => false);
-    wrapper.find("input").simulate("change", { currentTarget: { value: "1" } });
-    wrapper.find("input").simulate("blur");
+    const input = container.querySelector("input") as Element;
+    fireEvent.change(input, { target: { value: "1" } });
+    fireEvent.blur(input);
     expect(window.confirm).toHaveBeenCalled();
-    expect(edit).not.toHaveBeenCalled();
+    expect(crud.edit).not.toHaveBeenCalled();
   });
 
   it("updates plant sizes", () => {
@@ -195,15 +254,16 @@ describe("<PointSizeBulkUpdate />", () => {
     const plant3 = fakePlant();
     p.allPoints = [plant1, plant2, plant3];
     p.selected = [plant1.uuid, plant2.uuid];
-    const wrapper = shallow(<PointSizeBulkUpdate {...p} />);
+    const { container } = render(<PointSizeBulkUpdate {...p} />);
     window.confirm = jest.fn(() => true);
-    wrapper.find("input").simulate("change", { currentTarget: { value: "1" } });
-    wrapper.find("input").simulate("blur");
+    const input = container.querySelector("input") as Element;
+    fireEvent.change(input, { target: { value: "1" } });
+    fireEvent.blur(input);
     expect(window.confirm).toHaveBeenCalledWith(
       "Change radius to 1mm for 2 items?");
-    expect(edit).toHaveBeenCalledTimes(2);
-    expect(edit).toHaveBeenCalledWith(plant1, { radius: 1 });
-    expect(edit).toHaveBeenCalledWith(plant2, { radius: 1 });
+    expect(crud.edit).toHaveBeenCalledTimes(2);
+    expect(crud.edit).toHaveBeenCalledWith(plant1, { radius: 1 });
+    expect(crud.edit).toHaveBeenCalledWith(plant2, { radius: 1 });
   });
 });
 
@@ -221,26 +281,31 @@ describe("<PlantDepthBulkUpdate />", () => {
     const plant3 = fakePlant();
     p.allPoints = [plant1, plant2, plant3];
     p.selected = [plant1.uuid, plant2.uuid];
-    const wrapper = shallow(<PlantDepthBulkUpdate {...p} />);
+    const { container } = render(<PlantDepthBulkUpdate {...p} />);
     window.confirm = jest.fn(() => true);
-    wrapper.find("input").simulate("change", { currentTarget: { value: "1" } });
-    wrapper.find("input").simulate("blur");
+    const input = container.querySelector("input") as Element;
+    fireEvent.change(input, { target: { value: "1" } });
+    fireEvent.blur(input);
     expect(window.confirm).toHaveBeenCalledWith(
       "Change depth to 1mm for 2 items?");
-    expect(edit).toHaveBeenCalledTimes(2);
-    expect(edit).toHaveBeenCalledWith(plant1, { depth: 1 });
-    expect(edit).toHaveBeenCalledWith(plant2, { depth: 1 });
+    expect(crud.edit).toHaveBeenCalledTimes(2);
+    expect(crud.edit).toHaveBeenCalledWith(plant1, { depth: 1 });
+    expect(crud.edit).toHaveBeenCalledWith(plant2, { depth: 1 });
   });
 });
 
 describe("<PlantCurveBulkUpdate />", () => {
-  const fakeProps = (): PlantCurveBulkUpdateProps => ({
-    allPoints: [],
-    selected: [],
-    dispatch: jest.fn(),
-    curves: [fakeCurve()],
-    curveType: CurveType.water,
-  });
+  const fakeProps = (): PlantCurveBulkUpdateProps => {
+    const curve = fakeCurve();
+    curve.body.id = 1;
+    return {
+      allPoints: [],
+      selected: [],
+      dispatch: jest.fn(),
+      curves: [curve],
+      curveType: CurveType.water,
+    };
+  };
 
   it("updates plant curves", () => {
     const p = fakeProps();
@@ -249,14 +314,15 @@ describe("<PlantCurveBulkUpdate />", () => {
     const plant3 = fakePlant();
     p.allPoints = [plant1, plant2, plant3];
     p.selected = [plant1.uuid, plant2.uuid];
-    const wrapper = shallow(<PlantCurveBulkUpdate {...p} />);
+    const { container } = render(<PlantCurveBulkUpdate {...p} />);
     window.confirm = jest.fn(() => true);
-    wrapper.find("FBSelect").first().simulate("change", { label: "", value: "1" });
+    fireEvent.change(container.querySelector(".mock-fb-select") as Element,
+      { target: { value: "1" } });
     expect(window.confirm).toHaveBeenCalledWith(
       "Change Water curve for 2 items?");
-    expect(edit).toHaveBeenCalledTimes(2);
-    expect(edit).toHaveBeenCalledWith(plant1, { water_curve_id: 1 });
-    expect(edit).toHaveBeenCalledWith(plant2, { water_curve_id: 1 });
+    expect(crud.edit).toHaveBeenCalledTimes(2);
+    expect(crud.edit).toHaveBeenCalledWith(plant1, { water_curve_id: 1 });
+    expect(crud.edit).toHaveBeenCalledWith(plant2, { water_curve_id: 1 });
   });
 
   it("updates plant curves to None", () => {
@@ -266,15 +332,19 @@ describe("<PlantCurveBulkUpdate />", () => {
     const plant3 = fakePlant();
     p.allPoints = [plant1, plant2, plant3];
     p.selected = [plant1.uuid, plant2.uuid];
-    const wrapper = shallow(<PlantCurveBulkUpdate {...p} />);
+    const { container } = render(<PlantCurveBulkUpdate {...p} />);
     window.confirm = jest.fn(() => true);
-    wrapper.find("FBSelect").first().simulate("change",
-      { label: "", value: "", isNull: true });
+    fireEvent.change(container.querySelector(".mock-fb-select") as Element,
+      { target: { value: "" } });
     expect(window.confirm).toHaveBeenCalledWith(
       "Change Water curve for 2 items?");
-    expect(edit).toHaveBeenCalledTimes(2);
-    expect(edit).toHaveBeenCalledWith(plant1, { water_curve_id: undefined });
-    expect(edit).toHaveBeenCalledWith(plant2, { water_curve_id: undefined });
+    expect(crud.edit).toHaveBeenCalledTimes(2);
+    expect(crud.edit).toHaveBeenCalledWith(plant1, {
+      water_curve_id: undefined,
+    });
+    expect(crud.edit).toHaveBeenCalledWith(plant2, {
+      water_curve_id: undefined,
+    });
   });
 });
 
@@ -287,9 +357,9 @@ describe("<PlantCurvesBulkUpdate />", () => {
   });
 
   it("updates plant curves", () => {
-    const p = fakeProps();
-    const wrapper = shallow(<PlantCurvesBulkUpdate {...p} />);
-    expect(wrapper.text()).toContain("PlantCurveBulkUpdate");
+    const { container } = render(<PlantCurvesBulkUpdate {...fakeProps()} />);
+    expect(container.querySelectorAll(".plant-curve-bulk-update").length)
+      .toEqual(3);
   });
 });
 
@@ -306,11 +376,11 @@ describe("<PointColorBulkUpdate />", () => {
     const point2 = fakePlant();
     p.allPoints = [point1, point2];
     p.selected = [point1.uuid];
-    const wrapper = shallow(<PointColorBulkUpdate {...p} />);
+    const { container } = render(<PointColorBulkUpdate {...p} />);
     window.confirm = jest.fn(() => false);
-    wrapper.find("ColorPicker").simulate("change", "green");
+    fireEvent.click(container.querySelector(".mock-color-picker") as Element);
     expect(window.confirm).toHaveBeenCalled();
-    expect(edit).not.toHaveBeenCalled();
+    expect(crud.edit).not.toHaveBeenCalled();
   });
 
   it("updates point colors", () => {
@@ -320,14 +390,14 @@ describe("<PointColorBulkUpdate />", () => {
     const point3 = fakePoint();
     p.allPoints = [point1, point2, point3];
     p.selected = [point1.uuid, point2.uuid];
-    const wrapper = shallow(<PointColorBulkUpdate {...p} />);
+    const { container } = render(<PointColorBulkUpdate {...p} />);
     window.confirm = jest.fn(() => true);
-    wrapper.find("ColorPicker").simulate("change", "green");
+    fireEvent.click(container.querySelector(".mock-color-picker") as Element);
     expect(window.confirm).toHaveBeenCalledWith(
       "Change color to green for 2 items?");
-    expect(edit).toHaveBeenCalledTimes(2);
-    expect(edit).toHaveBeenCalledWith(point1, { meta: { color: "green" } });
-    expect(edit).toHaveBeenCalledWith(point2, { meta: { color: "green" } });
+    expect(crud.edit).toHaveBeenCalledTimes(2);
+    expect(crud.edit).toHaveBeenCalledWith(point1, { meta: { color: "green" } });
+    expect(crud.edit).toHaveBeenCalledWith(point2, { meta: { color: "green" } });
   });
 });
 
@@ -346,20 +416,21 @@ describe("<PlantSlugBulkUpdate />", () => {
     const plant2 = fakePlant();
     p.allPoints = [plant1, plant2];
     p.selected = [plant1.uuid];
-    const wrapper = shallow(<PlantSlugBulkUpdate {...p} />);
+    render(<PlantSlugBulkUpdate {...p} />);
     window.confirm = jest.fn(() => false);
-    wrapper.find("button").simulate("click");
+    fireEvent.click(screen.getByRole("button", { name: "apply" }));
     expect(window.confirm).toHaveBeenCalled();
-    expect(edit).not.toHaveBeenCalled();
+    expect(crud.edit).not.toHaveBeenCalled();
   });
 
   it("sets bulk plant slug", () => {
     const p = fakeProps();
     p.bulkPlantSlug = "slug";
-    const wrapper = shallow(<PlantSlugBulkUpdate {...p} />);
-    wrapper.find(".fa-pencil").simulate("click");
+    const { container } = render(<PlantSlugBulkUpdate {...p} />);
+    fireEvent.click(container.querySelector(".fa-pencil") as Element);
     expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.SET_SLUG_BULK, payload: "slug",
+      type: Actions.SET_SLUG_BULK,
+      payload: "slug",
     });
     expect(mockNavigate).toHaveBeenCalledWith(Path.cropSearch());
   });
@@ -372,17 +443,17 @@ describe("<PlantSlugBulkUpdate />", () => {
     const plant3 = fakePlant();
     p.allPoints = [plant1, plant2, plant3];
     p.selected = [plant1.uuid, plant2.uuid];
-    const wrapper = shallow(<PlantSlugBulkUpdate {...p} />);
+    render(<PlantSlugBulkUpdate {...p} />);
     window.confirm = jest.fn(() => true);
-    wrapper.find("button").simulate("click");
+    fireEvent.click(screen.getByRole("button", { name: "apply" }));
     expect(window.confirm).toHaveBeenCalledWith(
       "Change crop type to slug for 2 plants?");
-    expect(edit).toHaveBeenCalledTimes(2);
-    expect(edit).toHaveBeenCalledWith(plant1, {
+    expect(crud.edit).toHaveBeenCalledTimes(2);
+    expect(crud.edit).toHaveBeenCalledWith(plant1, {
       openfarm_slug: "slug",
       name: "Slug",
     });
-    expect(edit).toHaveBeenCalledWith(plant2, {
+    expect(crud.edit).toHaveBeenCalledWith(plant2, {
       openfarm_slug: "slug",
       name: "Slug",
     });
@@ -397,8 +468,9 @@ describe("<EditWeedStatus />", () => {
 
   it("updates weed status", () => {
     const p = fakeProps();
-    const wrapper = shallow(<EditWeedStatus {...p} />);
-    wrapper.find("FBSelect").simulate("change", { label: "", value: "removed" });
+    const { container } = render(<EditWeedStatus {...p} />);
+    fireEvent.change(container.querySelector(".mock-fb-select") as Element,
+      { target: { value: "removed" } });
     expect(p.updateWeed).toHaveBeenCalledWith({ plant_stage: "removed" });
   });
 });

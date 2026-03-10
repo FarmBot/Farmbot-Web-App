@@ -10,9 +10,5 @@ class Curve < ApplicationRecord
   validates :name, uniqueness: { scope: :device }
   validates_inclusion_of :type, in: CURVE_TYPES,
                                 message: BAD_TYPE
-  serialize :data
-
-  def broadcast?
-    false
-  end
+  serialize :data, coder: YAML
 end

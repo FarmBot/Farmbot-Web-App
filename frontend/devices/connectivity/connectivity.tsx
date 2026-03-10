@@ -27,6 +27,7 @@ import { forceOnline } from "../must_be_online";
 import { isMobile } from "../../screen_size";
 import { NavigationContext } from "../../routes_helpers";
 import { logout } from "../../logout";
+import { NavigateFunction } from "react-router";
 
 export interface ConnectivityProps {
   bot: BotState;
@@ -70,7 +71,7 @@ export class Connectivity
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = this.context;
+  navigate: NavigateFunction = url => { this.context?.(url as string); };
 
   Realtime = () => {
     const { informational_settings } = this.props.bot.hardware;
@@ -111,7 +112,7 @@ export class Connectivity
         <ConnectivityRow from={t("from")} to={t("to")} header={true} />
         {this.props.rowData
           .map((statusRowProps, index) =>
-            <ConnectivityRow {...statusRowProps} key={index}
+            <ConnectivityRow key={index} {...statusRowProps}
               syncStatus={statusRowProps.connectionName == "botAPI"
                 ? sync_status
                 : undefined}

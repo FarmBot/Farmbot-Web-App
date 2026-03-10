@@ -1,20 +1,29 @@
-jest.mock("../../api/crud", () => ({
-  init: jest.fn(() => ({ payload: { uuid: "uuid" } })),
-  save: jest.fn(),
-}));
-
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import { RawCurves as Curves, mapStateToProps } from "../curves_inventory";
 import { fakeState } from "../../__test_support__/fake_state";
 import { fakeCurve } from "../../__test_support__/fake_state/resources";
-import { init, save } from "../../api/crud";
-import { SearchField } from "../../ui/search_field";
+import * as crud from "../../api/crud";
 import { Path } from "../../internal_urls";
 import { curvesPanelState } from "../../__test_support__/panel_state";
 import { CurvesProps } from "../interfaces";
 import { Actions } from "../../constants";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
+
+let initSpy: jest.SpyInstance;
+let saveSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  initSpy = jest.spyOn(crud, "init")
+    .mockImplementation(() => ({ payload: { uuid: "uuid" } } as never));
+  saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  initSpy.mockRestore();
+  saveSpy.mockRestore();
+});
 
 describe("<Curves> />", () => {
   const fakeProps = (): CurvesProps => ({
@@ -24,8 +33,8 @@ describe("<Curves> />", () => {
   });
 
   it("renders no curves", () => {
-    const wrapper = mount(<Curves {...fakeProps()} />);
-    expect(wrapper.text()).toContain("No curves yet.");
+    const { container } = render(<Curves {...fakeProps()} />);
+    expect(container.textContent).toContain("No curves yet.");
   });
 
   it("renders curves", () => {
@@ -39,13 +48,13 @@ describe("<Curves> />", () => {
     p.curves = [curve0, curve1];
     p.curvesPanelState.water = true;
     p.curvesPanelState.spread = true;
-    const wrapper = mount(<Curves {...p} />);
+    const { container } = render(<Curves {...p} />);
     [
       "Water curves (1)",
       "spread curves (1)",
       "height curves (0)",
     ].map(text =>
-      expect(wrapper.text()).toContain(text));
+      expect(container.textContent).toContain(text));
   });
 
   it("navigates to curves info", () => {
@@ -53,10 +62,14 @@ describe("<Curves> />", () => {
     p.curves = [fakeCurve()];
     p.curves[0].body.id = 1;
     p.curvesPanelState.water = true;
-    const wrapper = mount<Curves>(<Curves {...p} />);
+    const ref = React.createRef<Curves>();
+    const { container } = render(<Curves {...p} ref={ref} />);
     const navigate = jest.fn();
-    wrapper.instance().navigate = navigate;
-    wrapper.find(".curve-search-item").first().simulate("click");
+    if (ref.current) {
+      ref.current.navigate = navigate;
+    }
+    const item = container.querySelector(".curve-search-item");
+    item && fireEvent.click(item);
     expect(navigate).toHaveBeenCalledWith(Path.curves(1));
   });
 
@@ -65,10 +78,14 @@ describe("<Curves> />", () => {
     p.curves = [fakeCurve()];
     p.curves[0].body.id = 0;
     p.curvesPanelState.water = true;
-    const wrapper = mount<Curves>(<Curves {...p} />);
+    const ref = React.createRef<Curves>();
+    const { container } = render(<Curves {...p} ref={ref} />);
     const navigate = jest.fn();
-    wrapper.instance().navigate = navigate;
-    wrapper.find(".curve-search-item").first().simulate("click");
+    if (ref.current) {
+      ref.current.navigate = navigate;
+    }
+    const item = container.querySelector(".curve-search-item");
+    item && fireEvent.click(item);
     expect(navigate).toHaveBeenCalledWith(Path.curves(0));
   });
 
@@ -77,15 +94,17 @@ describe("<Curves> />", () => {
     p.curves = [fakeCurve(), fakeCurve()];
     p.curves[0].body.name = "curve 0";
     p.curves[1].body.name = "curve 1";
-    const wrapper = mount(<Curves {...p} />);
-    wrapper.find(SearchField).props().onChange("0");
-    expect(wrapper.text()).not.toContain("curve 1");
+    const { container } = render(<Curves {...p} />);
+    const searchInput = container.querySelector("input");
+    searchInput && fireEvent.change(searchInput, { target: { value: "0" } });
+    expect(container.textContent).not.toContain("curve 1");
   });
 
   it("toggles section", () => {
     const p = fakeProps();
-    const wrapper = mount<Curves>(<Curves {...p} />);
-    wrapper.instance().toggleOpen("water")();
+    const ref = React.createRef<Curves>();
+    render(<Curves {...p} ref={ref} />);
+    ref.current?.toggleOpen("water")();
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_CURVES_PANEL_OPTION, payload: "water"
     });
@@ -99,15 +118,18 @@ describe("<Curves> />", () => {
     curve.body.name = "Water curve 1";
     p.curves = [curve];
     p.dispatch = jest.fn(() => Promise.resolve());
-    const wrapper = mount<Curves>(<Curves {...p} />);
+    const ref = React.createRef<Curves>();
+    render(<Curves {...p} ref={ref} />);
     const navigate = jest.fn();
-    wrapper.instance().navigate = navigate;
-    await wrapper.instance().addNew("water")();
-    expect(init).toHaveBeenCalledWith("Curve", {
+    if (ref.current) {
+      ref.current.navigate = navigate;
+    }
+    await ref.current?.addNew("water")();
+    expect(initSpy).toHaveBeenCalledWith("Curve", {
       name: "Water curve 2", type: "water",
       data: { 1: 1, 30: 500, 45: 500, 60: 250 },
     });
-    expect(save).toHaveBeenCalled();
+    expect(saveSpy).toHaveBeenCalled();
     expect(navigate).toHaveBeenCalledWith(Path.curves(1));
   });
 
@@ -119,15 +141,18 @@ describe("<Curves> />", () => {
     curve.body.name = "Water curve 1";
     p.curves = [curve];
     p.dispatch = jest.fn(() => Promise.resolve());
-    const wrapper = mount<Curves>(<Curves {...p} />);
+    const ref = React.createRef<Curves>();
+    render(<Curves {...p} ref={ref} />);
     const navigate = jest.fn();
-    wrapper.instance().navigate = navigate;
-    await wrapper.instance().addNew("water")();
-    expect(init).toHaveBeenCalledWith("Curve", {
+    if (ref.current) {
+      ref.current.navigate = navigate;
+    }
+    await ref.current?.addNew("water")();
+    expect(initSpy).toHaveBeenCalledWith("Curve", {
       name: "Water curve 2", type: "water",
       data: { 1: 1, 30: 500, 45: 500, 60: 250 },
     });
-    expect(save).toHaveBeenCalled();
+    expect(saveSpy).toHaveBeenCalled();
     expect(navigate).not.toHaveBeenCalled();
   });
 
@@ -138,15 +163,18 @@ describe("<Curves> />", () => {
     curve.body.id = 1;
     p.curves = [curve];
     p.dispatch = jest.fn(() => Promise.resolve());
-    const wrapper = mount<Curves>(<Curves {...p} />);
+    const ref = React.createRef<Curves>();
+    render(<Curves {...p} ref={ref} />);
     const navigate = jest.fn();
-    wrapper.instance().navigate = navigate;
-    await wrapper.instance().addNew("spread")();
-    expect(init).toHaveBeenCalledWith("Curve", {
+    if (ref.current) {
+      ref.current.navigate = navigate;
+    }
+    await ref.current?.addNew("spread")();
+    expect(initSpy).toHaveBeenCalledWith("Curve", {
       name: "Spread curve 1", type: "spread",
       data: { 1: 1, 30: 300, 45: 300, 60: 150 },
     });
-    expect(save).toHaveBeenCalled();
+    expect(saveSpy).toHaveBeenCalled();
     expect(navigate).toHaveBeenCalledWith(Path.curves(1));
   });
 
@@ -155,15 +183,18 @@ describe("<Curves> />", () => {
     p.dispatch = jest.fn()
       .mockImplementationOnce(jest.fn())
       .mockImplementationOnce(() => Promise.reject());
-    const wrapper = mount<Curves>(<Curves {...p} />);
+    const ref = React.createRef<Curves>();
+    render(<Curves {...p} ref={ref} />);
     const navigate = jest.fn();
-    wrapper.instance().navigate = navigate;
-    await wrapper.instance().addNew("water")();
-    expect(init).toHaveBeenCalledWith("Curve", {
+    if (ref.current) {
+      ref.current.navigate = navigate;
+    }
+    await ref.current?.addNew("water")();
+    expect(initSpy).toHaveBeenCalledWith("Curve", {
       name: "Water curve 1", type: "water",
       data: { 1: 1, 30: 500, 45: 500, 60: 250 },
     });
-    expect(save).toHaveBeenCalled();
+    expect(saveSpy).toHaveBeenCalled();
     expect(navigate).not.toHaveBeenCalled();
   });
 });

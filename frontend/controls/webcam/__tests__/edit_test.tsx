@@ -1,13 +1,44 @@
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import { SpecialStatus } from "farmbot";
 import { Edit } from "../edit";
 import { fakeWebcamFeed } from "../../../__test_support__/fake_state/resources";
-import { clickButton } from "../../../__test_support__/helpers";
 import { WebcamPanelProps } from "../interfaces";
-import { KeyValEditRow } from "../key_val_edit_row";
+import * as keyValEditRow from "../key_val_edit_row";
+
+let keyValEditRowSpy: jest.SpyInstance;
 
 describe("<Edit />", () => {
+  beforeEach(() => {
+    keyValEditRowSpy = jest.spyOn(keyValEditRow, "KeyValEditRow")
+      .mockImplementation((props: {
+        label: string;
+        value: string;
+        onClick: () => void;
+        onLabelChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+        onValueChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+      }) =>
+        <div className="key-value-edit-row-mock">
+          <span>{props.label}</span>
+          <span>{props.value}</span>
+          <input
+            name="label"
+            value={props.label}
+            onChange={props.onLabelChange} />
+          <input
+            name="value"
+            value={props.value}
+            onChange={props.onValueChange} />
+          <button title="Delete" onClick={props.onClick}>
+            Delete
+          </button>
+        </div>);
+  });
+
+  afterEach(() => {
+    keyValEditRowSpy.mockRestore();
+  });
+
   const fakeProps = (): WebcamPanelProps => {
     const feed1 = fakeWebcamFeed();
     const feed2 = fakeWebcamFeed();
@@ -24,20 +55,21 @@ describe("<Edit />", () => {
 
   it("renders the list of feeds", () => {
     const p = fakeProps();
-    const wrapper = mount(<Edit {...p} />);
+    const { container } = render(<Edit {...p} />);
     [
       p.feeds[0].body.name,
       p.feeds[0].body.url,
       p.feeds[1].body.name,
       p.feeds[1].body.url,
     ].map(text =>
-      expect(wrapper.html()).toContain(text));
+      expect(container.innerHTML).toContain(text));
   });
 
   it("saves feeds", () => {
     const p = fakeProps();
-    const wrapper = mount(<Edit {...p} />);
-    clickButton(wrapper, -2, "save*");
+    const { container } = render(<Edit {...p} />);
+    const saveButton = container.querySelector("button[title='Save']");
+    saveButton && fireEvent.click(saveButton);
     expect(p.save).toHaveBeenCalledWith(p.feeds[0]);
   });
 
@@ -45,33 +77,34 @@ describe("<Edit />", () => {
     const p = fakeProps();
     p.feeds[0].specialStatus = SpecialStatus.SAVED;
     p.feeds[1].specialStatus = SpecialStatus.SAVED;
-    const wrapper = mount(<Edit {...p} />);
-    const btnCount = wrapper.find("button").length;
-    expect(wrapper.find("button").at(btnCount - 2).text()).toEqual("Save");
+    const { container } = render(<Edit {...p} />);
+    const saveButton = container.querySelector("button[title='Save']");
+    expect(saveButton?.textContent).toEqual("Save");
   });
 
   it("deletes feed", () => {
     const p = fakeProps();
-    const wrapper = shallow(<Edit {...p} />);
-    wrapper.find(KeyValEditRow).first().simulate("click");
+    const { container } = render(<Edit {...p} />);
+    const firstDeleteButton = container.querySelector("button[title='Delete']");
+    firstDeleteButton && fireEvent.click(firstDeleteButton);
     expect(p.destroy).toHaveBeenCalledWith(p.feeds[0]);
   });
 
   it("changes name", () => {
     const p = fakeProps();
-    const wrapper = shallow(<Edit {...p} />);
-    wrapper.find(KeyValEditRow).first().simulate("labelChange", {
-      currentTarget: { value: "new_name" }
-    });
+    const { container } = render(<Edit {...p} />);
+    const firstNameInput = container.querySelector("input[name='label']");
+    firstNameInput &&
+      fireEvent.change(firstNameInput, { target: { value: "new_name" } });
     expect(p.edit).toHaveBeenCalledWith(p.feeds[0], { name: "new_name" });
   });
 
   it("changes url", () => {
     const p = fakeProps();
-    const wrapper = shallow(<Edit {...p} />);
-    wrapper.find(KeyValEditRow).first().simulate("valueChange", {
-      currentTarget: { value: "new_url" }
-    });
+    const { container } = render(<Edit {...p} />);
+    const firstUrlInput = container.querySelectorAll("input[name='value']")[0];
+    firstUrlInput &&
+      fireEvent.change(firstUrlInput, { target: { value: "new_url" } });
     expect(p.edit).toHaveBeenCalledWith(p.feeds[0], { url: "new_url" });
   });
 });

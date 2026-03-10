@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { TileShutdown } from "../tile_shutdown";
 import { StepParams } from "../../interfaces";
 import { Content } from "../../../constants";
@@ -12,7 +12,7 @@ describe("<TileShutdown />", () => {
   });
 
   it("renders step", () => {
-    const block = mount(<TileShutdown {...fakeProps()} />);
-    expect(block.text()).toContain(Content.SHUTDOWN_STEP);
+    const { container } = render(<TileShutdown {...fakeProps()} />);
+    expect(container.textContent).toContain(Content.SHUTDOWN_STEP);
   });
 });

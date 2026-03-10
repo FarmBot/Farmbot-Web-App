@@ -1,6 +1,6 @@
 import React from "react";
 import { SequenceEditorMiddle } from "../sequence_editor_middle";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { SequenceEditorMiddleProps } from "../interfaces";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
@@ -26,14 +26,14 @@ describe("<SequenceEditorMiddle/>", () => {
   }
 
   it("active editor", () => {
-    const wrapper = mount(<SequenceEditorMiddle {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("run");
+    const { container } = render(<SequenceEditorMiddle {...fakeProps()} />);
+    expect(container.textContent?.toLowerCase()).toContain("run");
   });
 
   it("inactive editor", () => {
     const p = fakeProps();
     p.sequence = undefined;
-    const wrapper = mount(<SequenceEditorMiddle {...p} />);
-    expect(wrapper.text()).toContain("No Sequence selected");
+    const { container } = render(<SequenceEditorMiddle {...p} />);
+    expect(container.textContent).toContain("No Sequence selected");
   });
 });

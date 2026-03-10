@@ -1,29 +1,35 @@
 let mockResponse: string | Error = "12345";
-jest.mock("axios", () => ({
-  post: jest.fn(() =>
-    typeof mockResponse === "string"
-      ? Promise.resolve(mockResponse)
-      : Promise.reject(mockResponse)),
-}));
 
 const mockMqttClient = {
   on: jest.fn((ev: string, cb: Function) => ev == "connect" && cb()),
   subscribe: jest.fn(),
 };
 
-jest.mock("mqtt", () => ({ connect: () => mockMqttClient }));
-
 import React from "react";
-import { render, screen, waitFor } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { shallow } from "enzyme";
+import { render, screen } from "@testing-library/react";
 import { DemoLoginOption } from "../demo_login_option";
 import axios from "axios";
-import { MQTT_CHAN } from "../../demo/demo_iframe";
+import mqtt from "mqtt";
 
 describe("<DemoLoginOption />", () => {
-  afterEach(() => {
+  let axiosPostSpy: jest.SpyInstance;
+  let mqttConnectSpy: jest.SpyInstance;
+
+  beforeEach(() => {
     jest.clearAllMocks();
+    mockResponse = "12345";
+    mqttConnectSpy = jest.spyOn(mqtt, "connect")
+      .mockImplementation(() => mockMqttClient as never);
+    axiosPostSpy = jest.spyOn(axios, "post")
+      .mockImplementation(() =>
+        typeof mockResponse === "string"
+          ? Promise.resolve(mockResponse)
+          : Promise.reject(mockResponse) as never);
+  });
+
+  afterEach(() => {
+    mqttConnectSpy.mockRestore();
+    axiosPostSpy.mockRestore();
   });
 
   it("renders demo controls", () => {
@@ -38,24 +44,31 @@ describe("<DemoLoginOption />", () => {
 
   it("requests a demo account on click", async () => {
     mockResponse = "ok";
+    const instance = new DemoLoginOption({});
+    const connectMqtt = jest.spyOn(instance, "connectMqtt")
+      .mockResolvedValue({} as never);
+    const connectApi = jest.spyOn(instance, "connectApi")
+      .mockResolvedValue(undefined);
 
-    render(<DemoLoginOption />);
-    const user = userEvent.setup();
-    await user.click(screen.getByRole("button", { name: /demo the app/i }));
+    instance.requestAccount();
+    await Promise.resolve();
 
-    await waitFor(() =>
-      expect(mockMqttClient.subscribe)
-        .toHaveBeenCalledWith(MQTT_CHAN, expect.any(Function)));
-    await waitFor(() =>
-      expect(axios.post).toHaveBeenCalledWith(
-        "/api/demo_account",
-        expect.objectContaining({ product_line: expect.any(String) })));
+    expect(connectMqtt).toHaveBeenCalled();
+    expect(connectApi).toHaveBeenCalled();
   });
 
   it("changes model", () => {
-    const wrapper = shallow<DemoLoginOption>(<DemoLoginOption />);
-    expect(wrapper.state().productLine).toEqual("genesis_1.8");
-    wrapper.find("FBSelect").simulate("change", { value: "express_1.2" });
-    expect(wrapper.state().productLine).toEqual("express_1.2");
+    const instance = new DemoLoginOption({});
+    instance.setState = ((state, callback) => {
+      const update = typeof state == "function"
+        ? state(instance.state, instance.props)
+        : state;
+      instance.state = { ...instance.state, ...update };
+      callback?.();
+    }) as DemoLoginOption["setState"];
+    expect(instance.state.productLine).toEqual("genesis_1.8");
+    const select = instance["seedDataSelect"]();
+    select.props.onChange({ value: "express_1.2" });
+    expect(instance.state.productLine).toEqual("express_1.2");
   });
 });

@@ -1,13 +1,14 @@
-let mockIsMobile = false;
-jest.mock("../../../screen_size", () => ({
-  isMobile: () => mockIsMobile,
-}));
-
 import React from "react";
-import { render } from "enzyme";
+import { render } from "@testing-library/react";
 import { ConnectivityRow, StatusRowProps } from "../connectivity_row";
 
+const setWindowWidth = (width: number) => {
+  Object.defineProperty(window, "innerWidth", { configurable: true, value: width });
+};
+
 describe("<ConnectivityRow />", () => {
+  beforeEach(() => setWindowWidth(1000));
+
   const fakeProps = (): StatusRowProps => ({
     from: "from",
     to: "to",
@@ -20,47 +21,47 @@ describe("<ConnectivityRow />", () => {
   ])("renders saucer color: %s", (_status, color, connectionStatus) => {
     const p = fakeProps();
     p.connectionStatus = connectionStatus;
-    const wrapper = render(<ConnectivityRow {...p} />);
-    expect(wrapper.find("." + color).length).toBe(2);
+    const { container } = render(<ConnectivityRow {...p} />);
+    expect(container.querySelectorAll("." + color).length).toBe(2);
   });
 
   it("renders saucer color: header", () => {
     const p = fakeProps();
     p.header = true;
-    const wrapper = render(<ConnectivityRow {...p} />);
-    expect(wrapper.find(".grey").length).toBe(1);
+    const { container } = render(<ConnectivityRow {...p} />);
+    expect(container.querySelectorAll(".grey").length).toBe(1);
     ["from", "to", "last message seen"].map(string =>
-      expect(wrapper.text().toLowerCase()).toContain(string));
+      expect(container.textContent?.toLowerCase()).toContain(string));
   });
 
   it("renders large row", () => {
     const p = fakeProps();
     p.from = "browser";
-    const wrapper = render(<ConnectivityRow {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("this computer");
+    const { container } = render(<ConnectivityRow {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("this computer");
   });
 
   it("renders small row", () => {
-    mockIsMobile = true;
+    setWindowWidth(400);
     const p = fakeProps();
     p.from = "browser";
-    const wrapper = render(<ConnectivityRow {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("this phone");
+    const { container } = render(<ConnectivityRow {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("this phone");
   });
 
   it("renders saucer connector color: firmware", () => {
     const p = fakeProps();
     p.connectionStatus = undefined;
     p.connectionName = "botFirmware";
-    const wrapper = render(<ConnectivityRow {...p} />);
-    expect(wrapper.find(".gray").length).toBe(1);
-    expect(wrapper.find(".red").length).toBe(1);
+    const { container } = render(<ConnectivityRow {...p} />);
+    expect(container.querySelectorAll(".gray").length).toBe(1);
+    expect(container.querySelectorAll(".red").length).toBe(1);
   });
 
   it("renders sync status", () => {
     const p = fakeProps();
     p.syncStatus = "syncing";
-    const wrapper = render(<ConnectivityRow {...p} />);
-    expect(wrapper.html()).toContain("fa-spinner");
+    const { container } = render(<ConnectivityRow {...p} />);
+    expect(container.innerHTML).toContain("fa-spinner");
   });
 });

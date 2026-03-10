@@ -1,11 +1,15 @@
-jest.mock("../../util/page", () => ({ entryPoint: jest.fn() }));
-
-import { entryPoint } from "../../util";
+import * as page from "../../util/page";
 import { TryFarmbot } from "../try_farmbot";
+
+let entryPointSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  entryPointSpy = jest.spyOn(page, "entryPoint").mockImplementation(jest.fn());
+});
 
 describe("TryFarmbot loader", () => {
   it("calls entryPoint", async () => {
     await import("../index");
-    expect(entryPoint).toHaveBeenCalledWith(TryFarmbot);
+    expect(entryPointSpy).toHaveBeenCalledWith(TryFarmbot);
   });
 });

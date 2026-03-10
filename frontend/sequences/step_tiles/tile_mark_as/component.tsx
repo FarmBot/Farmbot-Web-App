@@ -89,9 +89,9 @@ export class MarkAs
     };
 
   render() {
+    const selectionKey = JSON.stringify(this.state)
+      + JSON.stringify(this.props.currentSequence.body.args.locals);
     const commonProps = {
-      key: JSON.stringify(this.state)
-        + JSON.stringify(this.props.currentSequence.body.args.locals),
       resource: this.state.resource,
       resources: this.props.resources,
     };
@@ -99,7 +99,9 @@ export class MarkAs
       className={"update-resource-step"}
       helpText={ToolTips.MARK_AS}>
       <Row>
-        <ResourceSelection {...commonProps}
+        <ResourceSelection
+          key={selectionKey}
+          {...commonProps}
           sequenceUuid={this.props.currentSequence.uuid}
           updateResource={this.updateResource} />
       </Row>
@@ -109,11 +111,15 @@ export class MarkAs
           && fieldAndValue.value == UPDATE_RESOURCE_DDIS().NOW.value;
         return <Row key={index}>
           <div className={`update-resource-pair grid ${index == 0 ? "first" : ""}`}>
-            <FieldSelection {...commonProps}
+            <FieldSelection
+              key={selectionKey}
+              {...commonProps}
               field={fieldAndValue.field}
               disabled={isPlantedAtRow}
               update={this.updateFieldOrValue(index)} />
-            <ValueSelection {...commonProps}
+            <ValueSelection
+              key={selectionKey}
+              {...commonProps}
               field={fieldAndValue.field}
               value={fieldAndValue.value}
               update={this.updateFieldOrValue(index)}

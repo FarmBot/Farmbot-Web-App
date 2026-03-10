@@ -1,5 +1,5 @@
 import React from "react";
-import { shallow } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import {
   GardenSensorReading, GardenSensorReadingProps,
 } from "../garden_sensor_reading";
@@ -12,7 +12,6 @@ import {
 import {
   fakeTimeSettings,
 } from "../../../../../__test_support__/fake_time_settings";
-import { svgMount } from "../../../../../__test_support__/svg_mount";
 
 describe("<GardenSensorReading />", () => {
   const fakeProps = (): GardenSensorReadingProps => ({
@@ -23,41 +22,49 @@ describe("<GardenSensorReading />", () => {
     sensorLookup: {},
   });
 
+  const renderReading = (props: GardenSensorReadingProps) =>
+    render(<svg><GardenSensorReading {...props} /></svg>);
+
+  const getFirstCircle = (container: HTMLElement) => {
+    const circle = container.querySelector("circle");
+    if (!circle) { throw new Error("Missing sensor reading circle"); }
+    return circle;
+  };
+
   it("renders", () => {
-    const wrapper = svgMount(<GardenSensorReading {...fakeProps()} />);
-    expect(wrapper.html()).toContain("sensor-reading-");
-    expect(wrapper.find("circle").length).toEqual(2);
+    const { container } = renderReading(fakeProps());
+    expect(container.innerHTML).toContain("sensor-reading-");
+    expect(container.querySelectorAll("circle").length).toEqual(2);
   });
 
   it("doesn't render", () => {
     const p = fakeProps();
     p.sensorReading.body.x = undefined;
-    const wrapper = svgMount(<GardenSensorReading {...p} />);
-    expect(wrapper.find("circle").length).toEqual(0);
+    const { container } = renderReading(p);
+    expect(container.querySelectorAll("circle").length).toEqual(0);
   });
 
   it("renders sensor name", () => {
     const p = fakeProps();
     p.sensorLookup = { 1: "Sensor Name" };
-    const wrapper = svgMount(<GardenSensorReading {...p} />);
-    expect(wrapper.text()).toContain("Sensor Name (pin 1)");
+    const { container } = renderReading(p);
+    expect(container.textContent).toContain("Sensor Name (pin 1)");
   });
 
   it("renders analog reading", () => {
     const p = fakeProps();
     p.sensorReading.body.mode = 1;
-    const wrapper = svgMount(<GardenSensorReading {...p} />);
-    expect(wrapper.text()).toContain("value 0 (analog)");
+    const { container } = renderReading(p);
+    expect(container.textContent).toContain("value 0 (analog)");
   });
 
   it("calls hover", () => {
-    const wrapper = shallow<GardenSensorReading>(
-      <GardenSensorReading {...fakeProps()} />);
-    wrapper.find("circle").first().simulate("mouseEnter");
-    expect(wrapper.find("text").props().visibility).toEqual("visible");
-    expect(wrapper.state().hovered).toEqual(true);
-    wrapper.find("circle").first().simulate("mouseLeave");
-    expect(wrapper.find("text").props().visibility).toEqual("hidden");
-    expect(wrapper.state().hovered).toEqual(false);
+    const { container } = renderReading(fakeProps());
+    const text = container.querySelector("text");
+    if (!text) { throw new Error("Missing sensor reading text"); }
+    fireEvent.mouseEnter(getFirstCircle(container));
+    expect(text.getAttribute("visibility")).toEqual("visible");
+    fireEvent.mouseLeave(getFirstCircle(container));
+    expect(text.getAttribute("visibility")).toEqual("hidden");
   });
 });

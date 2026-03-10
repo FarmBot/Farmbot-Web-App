@@ -1,6 +1,11 @@
 import React from "react";
-import { mount } from "enzyme";
-import { NavigationProvider } from "../routes_helpers";
+import { render } from "@testing-library/react";
+import { NavigationContext } from "../routes_helpers";
 
-export const mountWithContext = (element: React.ReactElement) =>
-  mount<React.ReactElement>(<NavigationProvider>{element}</NavigationProvider>);
+export const renderWithContext = (element: React.ReactElement) => {
+  return render(
+    <NavigationContext.Provider value={mockNavigate}>
+      {element}
+    </NavigationContext.Provider>,
+  );
+};

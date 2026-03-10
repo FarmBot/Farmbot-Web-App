@@ -260,7 +260,7 @@ module Api
       # an active `STAFF` token associated with the account.
       # Such tokens exist for 1 week after requesting staff
       # support.
-      if routing_key_param.include?(".terminal_input") && permission_param == "write"
+      if routing_key_param.to_s.include?(".terminal_input") && permission_param == "write"
         query = { aud: "staff", device_id: device_id_in_topic }
         unless TokenIssuance.where(query).any?
           deny("not_staff")

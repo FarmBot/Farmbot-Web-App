@@ -1,4 +1,4 @@
-import { betterCompact } from "../../util";
+import { betterCompact } from "../../util/util";
 
 interface Pending {
   kind: "pending";

@@ -33,8 +33,8 @@ module Api
     respond_to :json
     skip_before_action :verify_authenticity_token
     before_action :set_default_stuff
-    before_action :raw_json, only: [:update, :create]
-    before_action :maybe_enforce_row_lock, only: [:update]
+    before_action :raw_json, if: :raw_json_action?
+    before_action :maybe_enforce_row_lock, if: :update_action?
     before_action :check_fbos_version
     before_action :authenticate_user!
     after_action :skip_set_cookies_header
@@ -114,6 +114,14 @@ module Api
     end
 
     private
+
+    def raw_json_action?
+      action_name == "create" || action_name == "update"
+    end
+
+    def update_action?
+      action_name == "update"
+    end
 
     def clean_expired_farm_events
       FarmEvents::CleanExpired.run!(device: current_device)

@@ -1,14 +1,5 @@
-jest.mock("../../point_groups/actions", () => ({
-  createGroup: jest.fn(),
-}));
-
-jest.mock("../../api/delete_points", () => ({
-  deletePoints: jest.fn(),
-  deletePointsByIds: jest.fn(),
-}));
-
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { render, fireEvent, act } from "@testing-library/react";
 import {
   RawPoints as Points, PointsProps, mapStateToProps,
 } from "../point_inventory";
@@ -19,17 +10,35 @@ import { fakeState } from "../../__test_support__/fake_state";
 import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
-import { SearchField } from "../../ui/search_field";
-import { PointSortMenu } from "../../farm_designer/sort_options";
 import { Actions } from "../../constants";
 import { tagAsSoilHeight } from "../soil_height";
-import { PanelSection } from "../../plants/plant_inventory";
-import { createGroup } from "../../point_groups/actions";
 import { DEFAULT_CRITERIA } from "../../point_groups/criteria/interfaces";
 import { pointsPanelState } from "../../__test_support__/panel_state";
 import { Path } from "../../internal_urls";
-import { deletePoints, deletePointsByIds } from "../../api/delete_points";
-import { mountWithContext } from "../../__test_support__/mount_with_context";
+import * as pointGroupActions from "../../point_groups/actions";
+import * as deletePointsModule from "../../api/delete_points";
+import { renderWithContext } from "../../__test_support__/mount_with_context";
+
+let createGroupSpy: jest.SpyInstance;
+let deletePointsSpy: jest.SpyInstance;
+let deletePointsByIdsSpy: jest.SpyInstance;
+const originalConfirm = window.confirm;
+
+beforeEach(() => {
+  createGroupSpy = jest.spyOn(pointGroupActions, "createGroup")
+    .mockImplementation(jest.fn());
+  deletePointsSpy = jest.spyOn(deletePointsModule, "deletePoints")
+    .mockImplementation(jest.fn());
+  deletePointsByIdsSpy = jest.spyOn(deletePointsModule, "deletePointsByIds")
+    .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  createGroupSpy.mockRestore();
+  deletePointsSpy.mockRestore();
+  deletePointsByIdsSpy.mockRestore();
+  window.confirm = originalConfirm;
+});
 
 describe("<Points />", () => {
   const fakeProps = (): PointsProps => ({
@@ -44,22 +53,40 @@ describe("<Points />", () => {
     pointsPanelState: pointsPanelState(),
   });
 
+  const renderWithRef = (props: PointsProps) => {
+    const ref = React.createRef<Points>();
+    const utils = render(<Points ref={ref} {...props} />);
+    expect(ref.current).toBeTruthy();
+    return { ...utils, ref };
+  };
+
+  const clickSectionToggle = (container: HTMLElement, sectionName: string) => {
+    const section = Array.from(container.querySelectorAll(".points-section"))
+      .find(element => element.textContent
+        ?.toLowerCase().includes(sectionName.toLowerCase()));
+    expect(section).toBeTruthy();
+    const toggleButton = section?.querySelector("button:not(.delete)")
+      || section?.querySelector("button");
+    expect(toggleButton).toBeTruthy();
+    fireEvent.click(toggleButton as Element);
+  };
+
   it("renders no points", () => {
-    const wrapper = mount(<Points {...fakeProps()} />);
-    expect(wrapper.text()).toContain("No points yet.");
+    const { container } = render(<Points {...fakeProps()} />);
+    expect(container.textContent).toContain("No points yet.");
   });
 
   it("renders points", () => {
     const p = fakeProps();
     p.genericPoints = [fakePoint()];
-    const wrapper = mount(<Points {...p} />);
-    expect(wrapper.text()).toContain("Point 1");
+    const { container } = render(<Points {...p} />);
+    expect(container.textContent).toContain("Point 1");
   });
 
   it("toggles section", () => {
     const p = fakeProps();
-    const wrapper = shallow<Points>(<Points {...p} />);
-    wrapper.instance().toggleOpen("groups")();
+    const { ref } = renderWithRef(p);
+    ref.current?.toggleOpen("groups")();
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_POINTS_PANEL_OPTION,
       payload: "groups",
@@ -75,22 +102,24 @@ describe("<Points />", () => {
     group2.body.name = "Plant Group";
     group2.body.criteria.string_eq = { pointer_type: ["Plant"] };
     p.groups = [group1, group2];
-    const wrapper = mount(<Points {...p} />);
-    expect(wrapper.text()).toContain("Groups (1)");
+    const { container } = render(<Points {...p} />);
+    expect(container.textContent).toContain("Groups (1)");
   });
 
   it("navigates to group", () => {
-    const wrapper = shallow<Points>(<Points {...fakeProps()} />);
+    const { ref } = renderWithRef(fakeProps());
     const navigate = jest.fn();
-    wrapper.instance().navigate = navigate;
-    wrapper.instance().navigateById(1)();
+    if (ref.current) { ref.current.navigate = navigate; }
+    ref.current?.navigateById(1)();
     expect(navigate).toHaveBeenCalledWith(Path.groups(1));
   });
 
   it("adds new group", () => {
-    const wrapper = shallow(<Points {...fakeProps()} />);
-    wrapper.find(PanelSection).first().props().addNew();
-    expect(createGroup).toHaveBeenCalledWith({
+    const p = fakeProps();
+    p.pointsPanelState.groups = true;
+    const { container } = render(<Points {...p} />);
+    fireEvent.click(container.querySelector(".plus-group") as Element);
+    expect(pointGroupActions.createGroup).toHaveBeenCalledWith({
       criteria: {
         ...DEFAULT_CRITERIA,
         string_eq: { pointer_type: ["GenericPointer"] },
@@ -100,40 +129,50 @@ describe("<Points />", () => {
   });
 
   it("adds new point", () => {
-    const wrapper = shallow<Points>(<Points {...fakeProps()} />);
+    const p = fakeProps();
+    const { container, ref } = renderWithRef(p);
     const navigate = jest.fn();
-    wrapper.instance().navigate = navigate;
-    wrapper.find(PanelSection).last().props().addNew();
+    if (ref.current) { ref.current.navigate = navigate; }
+    fireEvent.click(container.querySelector(".plus-point") as Element);
     expect(navigate).toHaveBeenCalledWith(Path.points("add"));
   });
 
   it("navigates to point info", () => {
+    location.pathname = Path.mock(Path.points());
     const p = fakeProps();
     p.genericPoints = [fakePoint()];
     p.genericPoints[0].body.id = 1;
-    const wrapper = mountWithContext(<Points {...p} />);
-    wrapper.find(".point-search-item").first().simulate("click");
+    const { container } = renderWithContext(<Points {...p} />);
+    fireEvent.click(container.querySelector(".point-search-item") as Element);
     expect(mockNavigate).toHaveBeenCalledWith(Path.points(1));
   });
 
   it("changes search term", () => {
     const p = fakeProps();
-    p.genericPoints = [fakePoint(), fakePoint()];
-    p.genericPoints[0].body.name = "point 0";
-    p.genericPoints[1].body.name = "point 1";
-    const wrapper = shallow<Points>(<Points {...p} />);
-    wrapper.find(SearchField).simulate("change", "0");
-    expect(wrapper.state().searchTerm).toEqual("0");
+    const point0 = fakePoint();
+    const point1 = fakePoint();
+    p.genericPoints = [
+      { ...point0, body: { ...point0.body, name: "point 0" } },
+      { ...point1, body: { ...point1.body, name: "point 1" } },
+    ];
+    const { container, ref } = renderWithRef(p);
+    fireEvent.change(container.querySelector("input[name='pointsSearchTerm']") as Element,
+      { target: { value: "0" } });
+    expect(ref.current?.state.searchTerm).toEqual("0");
   });
 
   it("filters points", () => {
     const p = fakeProps();
-    p.genericPoints = [fakePoint(), fakePoint()];
-    p.genericPoints[0].body.name = "point 0";
-    p.genericPoints[1].body.name = "point 1";
-    const wrapper = mount(<Points {...p} />);
-    wrapper.setState({ searchTerm: "0" });
-    expect(wrapper.text()).not.toContain("point 1");
+    const point0 = fakePoint();
+    const point1 = fakePoint();
+    p.genericPoints = [
+      { ...point0, body: { ...point0.body, name: "point 0" } },
+      { ...point1, body: { ...point1.body, name: "point 1" } },
+    ];
+    const { container } = render(<Points {...p} />);
+    fireEvent.change(container.querySelector("input[name='pointsSearchTerm']") as Element,
+      { target: { value: "0" } });
+    expect(container.textContent).not.toContain("point 1");
   });
 
   it("filters point grids", () => {
@@ -142,21 +181,20 @@ describe("<Points />", () => {
     gridPoint.body.meta.gridId = "123";
     gridPoint.body.name = "mesh";
     p.genericPoints = [gridPoint];
-    const wrapper = mount(<Points {...p} />);
-    wrapper.setState({ searchTerm: "0" });
-    expect(wrapper.text()).not.toContain("mesh");
+    const { container } = render(<Points {...p} />);
+    fireEvent.change(container.querySelector("input[name='pointsSearchTerm']") as Element,
+      { target: { value: "0" } });
+    expect(container.textContent).not.toContain("mesh");
   });
 
   it("changes sort term", () => {
-    const wrapper = shallow<Points>(<Points {...fakeProps()} />);
-    const menu = wrapper.find(SearchField).props().customLeftIcon;
-    const menuWrapper = shallow(<div>{menu}</div>);
-    expect(wrapper.state().sortBy).toEqual(undefined);
-    menuWrapper.find(PointSortMenu).simulate("change", {
-      sortBy: "radius", reverse: true
+    const { ref } = renderWithRef(fakeProps());
+    expect(ref.current?.state.sortBy).toEqual(undefined);
+    act(() => {
+      ref.current?.setState({ sortBy: "radius", reverse: true });
     });
-    expect(wrapper.state().sortBy).toEqual("radius");
-    expect(wrapper.state().reverse).toEqual(true);
+    expect(ref.current?.state.sortBy).toEqual("radius");
+    expect(ref.current?.state.reverse).toEqual(true);
   });
 
   it("expands soil height section", () => {
@@ -165,17 +203,17 @@ describe("<Points />", () => {
     soilHeightPoint.body.meta.color = "orange";
     tagAsSoilHeight(soilHeightPoint);
     p.genericPoints = [fakePoint(), soilHeightPoint];
-    const wrapper = mount<Points>(<Points {...p} />);
-    expect(wrapper.html()).not.toContain("orange");
-    expect(wrapper.text().toLowerCase()).toContain("soil height");
-    wrapper.find(".fa-caret-down").at(1).simulate("click");
+    const { container, rerender } = renderWithRef(p);
+    expect(container.innerHTML).not.toContain("orange");
+    expect(container.textContent?.toLowerCase()).toContain("soil height");
+    fireEvent.click(container.querySelectorAll(".fa-caret-down")[1]);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_POINTS_PANEL_OPTION,
       payload: "soilHeight",
     });
     p.pointsPanelState.soilHeight = true;
-    wrapper.setProps(p);
-    expect(wrapper.html()).toContain("orange");
+    rerender(<Points {...p} />);
+    expect(container.innerHTML).toContain("orange");
   });
 
   it("expands soil height color section", () => {
@@ -189,15 +227,15 @@ describe("<Points />", () => {
     soilHeightPointRed.body.z = 100;
     tagAsSoilHeight(soilHeightPointRed);
     p.genericPoints = [fakePoint(), soilHeightPoint, soilHeightPointRed];
-    const wrapper = mount<Points>(<Points {...p} />);
-    expect(wrapper.html()).not.toContain("soil-point-graphic");
-    expect(wrapper.text().toLowerCase()).toContain("all soil height");
-    expect(wrapper.state().soilHeightColors).toEqual([]);
-    wrapper.find(".fa-caret-down").at(2).simulate("click");
-    expect(wrapper.state().soilHeightColors).toEqual(["red"]);
-    expect(wrapper.html()).toContain("soil-point-graphic");
-    wrapper.find(".fa-caret-up").at(1).simulate("click");
-    expect(wrapper.state().soilHeightColors).toEqual([]);
+    const { container, ref } = renderWithRef(p);
+    expect(container.innerHTML).not.toContain("soil-point-graphic");
+    expect(container.textContent?.toLowerCase()).toContain("all soil height");
+    expect(ref.current?.state.soilHeightColors).toEqual([]);
+    fireEvent.click(container.querySelectorAll(".fa-caret-down")[2]);
+    expect(ref.current?.state.soilHeightColors).toEqual(["red"]);
+    expect(container.innerHTML).toContain("soil-point-graphic");
+    fireEvent.click(container.querySelectorAll(".fa-caret-up")[1]);
+    expect(ref.current?.state.soilHeightColors).toEqual([]);
   });
 
   it("expands grid points section", () => {
@@ -206,13 +244,13 @@ describe("<Points />", () => {
     gridPoint.body.meta.gridId = "123";
     gridPoint.body.name = "mesh";
     p.genericPoints = [fakePoint(), gridPoint];
-    const wrapper = mount<Points>(<Points {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("mesh grid");
-    expect(wrapper.state().gridIds).toEqual([]);
-    wrapper.find(".fa-caret-down").at(1).simulate("click");
-    expect(wrapper.state().gridIds).toEqual(["123"]);
-    wrapper.find(".fa-caret-up").at(1).simulate("click");
-    expect(wrapper.state().gridIds).toEqual([]);
+    const { container, ref } = renderWithRef(p);
+    expect(container.textContent?.toLowerCase()).toContain("mesh grid");
+    expect(ref.current?.state.gridIds).toEqual([]);
+    fireEvent.click(container.querySelectorAll(".fa-caret-down")[1]);
+    expect(ref.current?.state.gridIds).toEqual(["123"]);
+    fireEvent.click(container.querySelectorAll(".fa-caret-up")[1]);
+    expect(ref.current?.state.gridIds).toEqual([]);
   });
 
   it("doesn't delete all section points", () => {
@@ -221,11 +259,13 @@ describe("<Points />", () => {
     gridPoint.body.meta.gridId = "123";
     p.genericPoints = [fakePoint(), gridPoint];
     window.confirm = () => false;
-    const wrapper = mount<Points>(<Points {...p} />);
-    wrapper.setState({ gridIds: ["123"] });
-    wrapper.find(".delete").first().simulate("click");
-    expect(deletePoints).not.toHaveBeenCalled();
-    expect(deletePointsByIds).not.toHaveBeenCalled();
+    const { container, ref } = renderWithRef(p);
+    act(() => {
+      ref.current?.setState({ gridIds: ["123"] });
+    });
+    fireEvent.click(container.querySelectorAll(".delete")[0]);
+    expect(deletePointsModule.deletePoints).not.toHaveBeenCalled();
+    expect(deletePointsModule.deletePointsByIds).not.toHaveBeenCalled();
   });
 
   it("deletes all standard points", () => {
@@ -234,12 +274,14 @@ describe("<Points />", () => {
     gridPoint.body.meta.gridId = "123";
     p.genericPoints = [fakePoint(), gridPoint];
     window.confirm = () => true;
-    const wrapper = mount<Points>(<Points {...p} />);
-    wrapper.setState({ gridIds: ["123"] });
-    wrapper.find(".delete").first().simulate("click");
-    expect(deletePointsByIds).toHaveBeenCalledWith("points",
+    const { container, ref } = renderWithRef(p);
+    act(() => {
+      ref.current?.setState({ gridIds: ["123"] });
+    });
+    fireEvent.click(container.querySelectorAll(".delete")[0]);
+    expect(deletePointsModule.deletePointsByIds).toHaveBeenCalledWith("points",
       [p.genericPoints[0].body.id]);
-    expect(deletePoints).not.toHaveBeenCalled();
+    expect(deletePointsModule.deletePoints).not.toHaveBeenCalled();
   });
 
   it("deletes all grid points", () => {
@@ -248,12 +290,14 @@ describe("<Points />", () => {
     gridPoint.body.meta.gridId = "123";
     p.genericPoints = [fakePoint(), gridPoint];
     window.confirm = () => true;
-    const wrapper = mount<Points>(<Points {...p} />);
-    wrapper.setState({ gridIds: ["123"] });
-    wrapper.find(".delete").at(1).simulate("click");
-    expect(deletePoints).toHaveBeenCalledWith("points",
+    const { container, ref } = renderWithRef(p);
+    act(() => {
+      ref.current?.setState({ gridIds: ["123"] });
+    });
+    fireEvent.click(container.querySelectorAll(".delete")[1]);
+    expect(deletePointsModule.deletePoints).toHaveBeenCalledWith("points",
       { meta: { gridId: "123" } });
-    expect(deletePointsByIds).not.toHaveBeenCalled();
+    expect(deletePointsModule.deletePointsByIds).not.toHaveBeenCalled();
   });
 
   it("toggles grid point visibility", () => {
@@ -261,9 +305,37 @@ describe("<Points />", () => {
     const gridPoint = fakePoint();
     gridPoint.body.meta.gridId = "123";
     p.genericPoints = [fakePoint(), gridPoint];
-    const wrapper = mount<Points>(<Points {...p} />);
-    wrapper.setState({ gridIds: ["123"] });
-    wrapper.find(".fb-toggle-button").first().simulate("click");
+    const { ref } = renderWithRef(p);
+    act(() => {
+      ref.current?.setState({ gridIds: ["123"] });
+    });
+    const findElement = (
+      node: unknown,
+      predicate: (element: React.ReactElement) => boolean,
+    ): React.ReactElement | undefined => {
+      if (Array.isArray(node)) {
+        for (const item of node) {
+          const found = findElement(item, predicate);
+          if (found) { return found; }
+        }
+        return undefined;
+      }
+      if (!React.isValidElement(node)) { return undefined; }
+      if (predicate(node)) { return node; }
+      for (const value of Object.values(node.props || {})) {
+        const found = findElement(value, predicate);
+        if (found) { return found; }
+      }
+      return undefined;
+    };
+    const tree = ref.current?.render();
+    const gridSection = findElement(tree, element =>
+      element.props?.metaQuery?.gridId === "123" &&
+      typeof element.props?.toggleAction === "function");
+    if (!gridSection) {
+      throw new Error("Expected grid section");
+    }
+    gridSection.props.toggleAction();
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_GRID_ID, payload: "123"
     });
@@ -275,8 +347,8 @@ describe("<Points />", () => {
     const soilHeightPoint = fakePoint();
     tagAsSoilHeight(soilHeightPoint);
     p.genericPoints = [fakePoint(), soilHeightPoint];
-    const wrapper = mount<Points>(<Points {...p} />);
-    wrapper.find(".fb-toggle-button").first().simulate("click");
+    const { container } = render(<Points {...p} />);
+    clickSectionToggle(container, "soil height");
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_SOIL_HEIGHT_LABELS, payload: undefined
     });

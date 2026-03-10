@@ -1,5 +1,5 @@
-import { ResourceColor, TimeSettings } from "../interfaces";
-import {
+import type { ResourceColor, TimeSettings } from "../interfaces";
+import type {
   TaggedResource,
   TaggedFirmwareConfig,
   TaggedFbosConfig,
@@ -11,7 +11,7 @@ import {
   isNumber,
 } from "lodash";
 import moment from "moment";
-import { BotLocationData } from "../devices/interfaces";
+import type { BotLocationData } from "../devices/interfaces";
 
 export const colors: Array<ResourceColor> = [
   "blue",
@@ -65,7 +65,7 @@ export function betterParseNum(num: string | undefined,
       return maybe;
     }
     // eslint-disable-next-line no-empty
-  } catch (_) {
+  } catch {
   }
   return fallback;
 }

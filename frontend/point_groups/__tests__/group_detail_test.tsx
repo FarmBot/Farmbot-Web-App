@@ -1,15 +1,5 @@
-jest.mock("../group_detail_active", () => ({
-  GroupDetailActive: () => <div />,
-  GroupSortSelection: () => <div />,
-}));
-
-jest.mock("../../api/crud", () => ({
-  destroy: jest.fn(),
-}));
-
 import React from "react";
-import { mount } from "enzyme";
-import { GroupDetailActive } from "../group_detail_active";
+import { render, screen, fireEvent } from "@testing-library/react";
 import {
   RawGroupDetail as GroupDetail, findGroupFromUrl, mapStateToProps,
   GroupDetailProps,
@@ -25,8 +15,18 @@ import {
   fakePointGroup, fakeWebAppConfig,
 } from "../../__test_support__/fake_state/resources";
 import { PointType } from "farmbot";
-import { destroy } from "../../api/crud";
+import * as crud from "../../api/crud";
 import { Path } from "../../internal_urls";
+
+let destroySpy: jest.SpyInstance;
+
+beforeEach(() => {
+  destroySpy = jest.spyOn(crud, "destroy").mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  destroySpy.mockRestore();
+});
 
 describe("<GroupDetail />", () => {
   const fakeProps = (): GroupDetailProps => {
@@ -54,8 +54,8 @@ describe("<GroupDetail />", () => {
     history.back = jest.fn();
     const p = fakeProps();
     p.group = undefined;
-    const wrapper = mount(<GroupDetail {...p} />);
-    expect(wrapper.find(GroupDetailActive).length).toEqual(0);
+    render(<GroupDetail {...p} />);
+    expect(screen.queryByText("GROUP MEMBERS (0)")).not.toBeInTheDocument();
     expect(history.back).toHaveBeenCalled();
   });
 
@@ -64,15 +64,15 @@ describe("<GroupDetail />", () => {
     history.back = jest.fn();
     const p = fakeProps();
     p.group = undefined;
-    mount(<GroupDetail {...p} />);
+    render(<GroupDetail {...p} />);
     expect(history.back).not.toHaveBeenCalled();
   });
 
   it("renders groups", () => {
     location.pathname = Path.mock(Path.groups(1));
     history.back = jest.fn();
-    const wrapper = mount(<GroupDetail {...fakeProps()} />);
-    expect(wrapper.find(GroupDetailActive).length).toEqual(1);
+    const { container } = render(<GroupDetail {...fakeProps()} />);
+    expect(container.querySelectorAll(".group-member-display").length).toEqual(1);
     expect(history.back).not.toHaveBeenCalled();
   });
 
@@ -85,15 +85,15 @@ describe("<GroupDetail />", () => {
     location.pathname = Path.mock(Path.groups(1));
     const p = fakeProps();
     p.group && (p.group.body.criteria.string_eq = { pointer_type: [pointerType] });
-    const wrapper = mount(<GroupDetail {...p} />);
-    expect(wrapper.html()).toContain("go back to " + title);
+    render(<GroupDetail {...p} />);
+    expect(screen.getByTitle("go back to " + title)).toBeInTheDocument();
   });
 
   it("deletes group", () => {
     location.pathname = Path.mock(Path.groups(1));
-    const wrapper = mount(<GroupDetail {...fakeProps()} />);
-    wrapper.find(".fa-trash").first().simulate("click");
-    expect(destroy).toHaveBeenCalled();
+    const { container } = render(<GroupDetail {...fakeProps()} />);
+    fireEvent.click(container.querySelector(".fa-trash") as Element);
+    expect(crud.destroy).toHaveBeenCalled();
   });
 });
 
@@ -102,8 +102,6 @@ describe("findGroupFromUrl()", () => {
     location.pathname = Path.mock(Path.groups(1));
     const group = fakePointGroup();
     group.body.id = 1;
-    const otherGroup = fakePointGroup();
-    otherGroup.body.id = 2;
     expect(findGroupFromUrl([group])).toEqual(group);
   });
 

@@ -1,10 +1,10 @@
 import React from "react";
-import { shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import { Row } from "../row";
 
 describe("<Row />", () => {
   it("renders", () => {
-    const wrapper = shallow(<Row>text</Row>);
-    expect(wrapper.text()).toContain("text");
+    const { container } = render(<Row>text</Row>);
+    expect(container.textContent).toContain("text");
   });
 });

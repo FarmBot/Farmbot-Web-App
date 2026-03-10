@@ -7,8 +7,20 @@ import { fakeWeed } from "../../../__test_support__/fake_state/resources";
 import { Path } from "../../../internal_urls";
 import { Actions } from "../../../constants";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
+import * as mapUtil from "../../../farm_designer/map/util";
+import { Mode } from "../../../farm_designer/map/interfaces";
 
 describe("<Weed />", () => {
+  let getModeSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    getModeSpy = jest.spyOn(mapUtil, "getMode").mockReturnValue(Mode.none);
+  });
+
+  afterEach(() => {
+    getModeSpy.mockRestore();
+  });
+
   const fakeProps = (): WeedProps => ({
     config: clone(INITIAL),
     weed: fakeWeed(),
@@ -27,7 +39,7 @@ describe("<Weed />", () => {
     p.dispatch = mockDispatch(dispatch);
     p.weed.body.id = 1;
     const { container } = render(<Weed {...p} />);
-    const weed = container.querySelector("[name='weed-1'");
+    const weed = container.querySelector("[name='weed-1']");
     weed && fireEvent.click(weed);
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_PANEL_OPEN, payload: true,
@@ -40,7 +52,7 @@ describe("<Weed />", () => {
     p.dispatch = undefined;
     p.weed.body.id = 1;
     const { container } = render(<Weed {...p} />);
-    const weed = container.querySelector("[name='weed'");
+    const weed = container.querySelector("[name='weed']");
     weed && fireEvent.click(weed);
     expect(mockNavigate).not.toHaveBeenCalled();
   });

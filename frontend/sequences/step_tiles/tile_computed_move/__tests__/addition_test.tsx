@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { axisAddition, OffsetInputRow, VarianceInputRow } from "../addition";
 import { OffsetInputRowProps, VarianceInputRowProps } from "../interfaces";
 
@@ -19,8 +19,8 @@ describe("<OffsetInputRow />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<OffsetInputRow {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("offset");
+    const { container } = render(<OffsetInputRow {...fakeProps()} />);
+    expect(container.textContent?.toLowerCase()).toContain("offset");
   });
 });
 
@@ -32,7 +32,7 @@ describe("<VarianceInputRow />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<VarianceInputRow {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("variance");
+    const { container } = render(<VarianceInputRow {...fakeProps()} />);
+    expect(container.textContent?.toLowerCase()).toContain("variance");
   });
 });

@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { Checkbox, CheckboxProps } from "../checkbox";
 
 describe("<Checkbox />", () => {
@@ -10,21 +10,21 @@ describe("<Checkbox />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<Checkbox {...fakeProps()} />);
-    expect(wrapper.html()).toContain("title text");
+    const { container } = render(<Checkbox {...fakeProps()} />);
+    expect(container.innerHTML).toContain("title text");
   });
 
   it("renders: partial", () => {
     const p = fakeProps();
     p.partial = true;
-    const wrapper = mount(<Checkbox {...p} />);
-    expect(wrapper.html()).toContain("partial");
+    const { container } = render(<Checkbox {...p} />);
+    expect(container.innerHTML).toContain("partial");
   });
 
   it("renders: disabled", () => {
     const p = fakeProps();
     p.disabled = true;
-    const wrapper = mount(<Checkbox {...p} />);
-    expect(wrapper.html()).toContain("incompatible");
+    const { container } = render(<Checkbox {...p} />);
+    expect(container.innerHTML).toContain("incompatible");
   });
 });

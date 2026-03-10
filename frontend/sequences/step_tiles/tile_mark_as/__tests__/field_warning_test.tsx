@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import { CustomFieldWarning } from "../field_warning";
 import { CustomFieldWarningProps } from "../interfaces";
 
@@ -13,17 +13,19 @@ describe("<CustomFieldWarning />", () => {
   it("doesn't display warning", () => {
     const p = fakeProps();
     p.field = "";
-    const wrapper = mount(<CustomFieldWarning {...p} />);
-    expect(wrapper.text().toLowerCase()).not.toContain("invalid property");
+    const { container } = render(<CustomFieldWarning {...p} />);
+    expect(container.textContent?.toLowerCase()).not.toContain("invalid property");
   });
 
   it("displays warning", () => {
     const p = fakeProps();
     p.field = "nope";
-    const wrapper = mount(<CustomFieldWarning {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("invalid property");
-    expect(wrapper.text().toLowerCase()).toContain("meta");
-    wrapper.find(".did-you-mean").simulate("click");
+    const { container } = render(<CustomFieldWarning {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("invalid property");
+    expect(container.textContent?.toLowerCase()).toContain("meta");
+    const didYouMean = container.querySelector(".did-you-mean");
+    if (!didYouMean) { throw new Error("Expected did-you-mean button"); }
+    fireEvent.click(didYouMean);
     expect(p.update).toHaveBeenCalledWith({ field: "meta.nope" });
   });
 
@@ -33,9 +35,9 @@ describe("<CustomFieldWarning />", () => {
       kind: "resource", args: { resource_type: "Device", resource_id: 1 }
     };
     p.field = "x";
-    const wrapper = mount(<CustomFieldWarning {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("invalid property");
-    expect(wrapper.text().toLowerCase()).not.toContain("meta");
+    const { container } = render(<CustomFieldWarning {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("invalid property");
+    expect(container.textContent?.toLowerCase()).not.toContain("meta");
   });
 
   it("displays warning: GenericPointer resource", () => {
@@ -44,9 +46,9 @@ describe("<CustomFieldWarning />", () => {
       kind: "resource", args: { resource_type: "GenericPointer", resource_id: 1 }
     };
     p.field = "openfarm_slug";
-    const wrapper = mount(<CustomFieldWarning {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("invalid property");
-    expect(wrapper.text().toLowerCase()).toContain("meta");
+    const { container } = render(<CustomFieldWarning {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("invalid property");
+    expect(container.textContent?.toLowerCase()).toContain("meta");
   });
 
   it("doesn't display warning: Plant resource", () => {
@@ -55,9 +57,9 @@ describe("<CustomFieldWarning />", () => {
       kind: "resource", args: { resource_type: "Plant", resource_id: 1 }
     };
     p.field = "openfarm_slug";
-    const wrapper = mount(<CustomFieldWarning {...p} />);
-    expect(wrapper.text().toLowerCase()).not.toContain("invalid property");
-    expect(wrapper.text().toLowerCase()).not.toContain("meta");
+    const { container } = render(<CustomFieldWarning {...p} />);
+    expect(container.textContent?.toLowerCase()).not.toContain("invalid property");
+    expect(container.textContent?.toLowerCase()).not.toContain("meta");
   });
 
   it("displays warning: Weed resource", () => {
@@ -66,17 +68,17 @@ describe("<CustomFieldWarning />", () => {
       kind: "resource", args: { resource_type: "Weed", resource_id: 1 }
     };
     p.field = "openfarm_slug";
-    const wrapper = mount(<CustomFieldWarning {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("invalid property");
-    expect(wrapper.text().toLowerCase()).toContain("meta");
+    const { container } = render(<CustomFieldWarning {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("invalid property");
+    expect(container.textContent?.toLowerCase()).toContain("meta");
   });
 
   it("displays warning: identifier", () => {
     const p = fakeProps();
     p.resource = { kind: "identifier", args: { label: "var" } };
     p.field = "mounted_tool_id";
-    const wrapper = mount(<CustomFieldWarning {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("invalid property");
-    expect(wrapper.text().toLowerCase()).toContain("meta");
+    const { container } = render(<CustomFieldWarning {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("invalid property");
+    expect(container.textContent?.toLowerCase()).toContain("meta");
   });
 });

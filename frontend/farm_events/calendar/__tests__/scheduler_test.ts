@@ -70,7 +70,7 @@ describe("scheduleForFarmEvent", () => {
       const result = scheduleForFarmEvent(fakeEvent, timeNow);
       expect(result.items.length).toEqual(expected.length);
       expected.map((expectation, index) => {
-        expect(result.items[index]).toBeSameTimeAs(expectation);
+        expect(result.items[index]?.isSame(expectation)).toBeTruthy();
       });
       expect(result.shortenedBy).toEqual(shortenedBy);
     });
@@ -79,7 +79,7 @@ describe("scheduleForFarmEvent", () => {
   const singleFarmEvent: TimeLine = {
     start_time: "2017-08-01T17:00:00.000Z",
     end_time: "2017-08-01T18:00:00.000Z",
-    repeat: 1,
+    repeat: 0,
     time_unit: "never"
   };
 

@@ -6,7 +6,7 @@ import {
 import { Actions } from "../constants";
 import { t } from "../i18next_wrapper";
 import { Path } from "../internal_urls";
-import { edit, save } from "../api/crud";
+import * as crud from "../api/crud";
 import { TaggedPlantPointer } from "farmbot";
 import { setHoveredPlant } from "../farm_designer/map/actions";
 import { HoveredPlantPayl } from "../farm_designer/interfaces";
@@ -36,11 +36,11 @@ export class CropSearchResults extends React.Component<SearchResultProps, {}> {
     };
     const click = (slug: string, crop: Crop) => () => {
       if (plant) {
-        dispatch(edit(plant, {
+        dispatch(crud.edit(plant, {
           name: crop.name,
           openfarm_slug: slug,
         }));
-        dispatch(save(plant.uuid));
+        dispatch(crud.save(plant.uuid));
         dispatch({
           type: Actions.SET_PLANT_TYPE_CHANGE_ID,
           payload: undefined,

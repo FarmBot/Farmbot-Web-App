@@ -1,6 +1,6 @@
 import React from "react";
 import { TileMarkAs } from "../tile_mark_as";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
 import { UpdateResource } from "farmbot";
 import { StepParams } from "../../interfaces";
@@ -32,8 +32,9 @@ describe("<TileMarkAs />", () => {
   };
 
   it("renders if step", () => {
-    const wrapper = mount(<TileMarkAs {...fakeProps()} />);
+    const { container } = render(<TileMarkAs {...fakeProps()} />);
+    const text = container.textContent || "";
     ["Mark", "Strawberry plant 1 (100, 200, 0)", "property", "as"]
-      .map(string => expect(wrapper.text()).toContain(string));
+      .map(string => expect(text).toContain(string));
   });
 });

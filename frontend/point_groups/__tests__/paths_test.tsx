@@ -1,10 +1,5 @@
-jest.mock("../../api/crud", () => ({
-  edit: jest.fn(),
-  save: jest.fn(),
-}));
-
 import React from "react";
-import { shallow, mount } from "enzyme";
+import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
 import {
   PathInfoBar, PathInfoBarProps, Paths, PathsProps,
 } from "../paths";
@@ -12,7 +7,7 @@ import {
   fakePointGroup, fakePoint,
 } from "../../__test_support__/fake_state/resources";
 import { Actions } from "../../constants";
-import { edit } from "../../api/crud";
+import * as crud from "../../api/crud";
 import { SORT_OPTIONS } from "../point_group_sort";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 import { nn } from "../other_sort_methods";
@@ -61,6 +56,19 @@ const pathTestCases = () => {
   };
 };
 
+let editSpy: jest.SpyInstance;
+let saveSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  editSpy.mockRestore();
+  saveSpy.mockRestore();
+});
+
 describe("<PathInfoBar />", () => {
   const fakeProps = (): PathInfoBarProps => ({
     sortTypeKey: "random",
@@ -71,8 +79,8 @@ describe("<PathInfoBar />", () => {
 
   it("hovers path", () => {
     const p = fakeProps();
-    const wrapper = shallow(<PathInfoBar {...p} />);
-    wrapper.simulate("mouseEnter");
+    const { container } = render(<PathInfoBar {...p} />);
+    fireEvent.mouseEnter(container.querySelector(".sort-option-bar") as Element);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TRY_SORT_TYPE, payload: "random"
     });
@@ -80,8 +88,8 @@ describe("<PathInfoBar />", () => {
 
   it("unhovers path", () => {
     const p = fakeProps();
-    const wrapper = shallow(<PathInfoBar {...p} />);
-    wrapper.simulate("mouseLeave");
+    const { container } = render(<PathInfoBar {...p} />);
+    fireEvent.mouseLeave(container.querySelector(".sort-option-bar") as Element);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TRY_SORT_TYPE, payload: undefined
     });
@@ -89,9 +97,9 @@ describe("<PathInfoBar />", () => {
 
   it("selects path", () => {
     const p = fakeProps();
-    const wrapper = shallow(<PathInfoBar {...p} />);
-    wrapper.simulate("click");
-    expect(edit).toHaveBeenCalledWith(p.group, { sort_type: "random" });
+    const { container } = render(<PathInfoBar {...p} />);
+    fireEvent.click(container.querySelector(".sort-option-bar") as Element);
+    expect(crud.edit).toHaveBeenCalledWith(p.group, { sort_type: "random" });
   });
 });
 
@@ -111,13 +119,19 @@ describe("<Paths />", () => {
     group: fakePointGroup(),
   });
 
-  it("generates path data", () => {
+  const renderPaths = (props: PathsProps) => {
+    const ref = React.createRef<Paths>();
+    const view = render(<Paths ref={ref} {...props} />);
+    return { ref, ...view };
+  };
+
+  it("generates path data", async () => {
     const p = fakeProps();
     const cases = pathTestCases();
     p.pathPoints = cases.order.xy_ascending;
-    const wrapper = mount<Paths>(<Paths {...p} />);
-    expect(wrapper.state().pathData).toEqual(cases.distance);
-    expect(wrapper.text().toLowerCase()).toContain("optimized");
+    const { ref } = renderPaths(p);
+    await waitFor(() => expect(ref.current?.state.pathData).toEqual(cases.distance));
+    expect(screen.getByText(/optimized/i)).toBeInTheDocument();
   });
 
   it.each<[PointGroupSortType]>([
@@ -136,18 +150,19 @@ describe("<Paths />", () => {
     const p = fakeProps();
     const cases = pathTestCases();
     p.pathPoints = cases.order.xy_ascending;
-    const wrapper = mount<Paths>(<Paths {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("optimized");
+    renderPaths(p);
+    expect(screen.getByText(/optimized/i)).toBeInTheDocument();
   });
 
-  it("doesn't generate data twice", () => {
+  it("doesn't generate data twice", async () => {
     const p = fakeProps();
     const cases = pathTestCases();
     p.pathPoints = cases.order.xy_ascending;
-    const wrapper = mount<Paths>(<Paths {...p} />);
-    expect(wrapper.state().pathData).toEqual(cases.distance);
-    wrapper.setState({ pathData: { nn: 0 } });
-    wrapper.update();
-    expect(wrapper.state().pathData).toEqual({ nn: 0 });
+    const { ref } = renderPaths(p);
+    await waitFor(() => expect(ref.current?.state.pathData).toEqual(cases.distance));
+    act(() => {
+      ref.current?.setState({ pathData: { nn: 0 } });
+    });
+    expect(ref.current?.state.pathData).toEqual({ nn: 0 });
   });
 });

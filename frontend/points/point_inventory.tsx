@@ -19,7 +19,9 @@ import { SearchField } from "../ui/search_field";
 import {
   SortOptions, PointSortMenu, orderedPoints,
 } from "../farm_designer/sort_options";
-import { compact, isUndefined, mean, round, sortBy, uniq } from "lodash";
+import {
+  compact, isUndefined, mean, round, sortBy, uniq,
+} from "lodash";
 import { Collapse } from "@blueprintjs/core";
 import { UUID } from "../resources/interfaces";
 import { deletePoints } from "../api/delete_points";
@@ -41,6 +43,7 @@ import { Path } from "../internal_urls";
 import { deleteAllIds } from "../api/delete_points_handler";
 import { NavigationContext } from "../routes_helpers";
 import { GetColor } from "../farm_designer/map/layers/points/interpolation_map";
+import { NavigateFunction } from "react-router";
 
 interface PointsSectionProps {
   title: string;
@@ -160,7 +163,7 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = this.context;
+  navigate: NavigateFunction = url => { this.context?.(url as string); };
 
   navigateById = (id: number | undefined) => () => {
     this.navigate(Path.groups(id));
@@ -306,5 +309,4 @@ export class RawPoints extends React.Component<PointsProps, PointsState> {
 }
 
 export const Points = connect(mapStateToProps)(RawPoints);
-// eslint-disable-next-line import/no-default-export
 export default Points;

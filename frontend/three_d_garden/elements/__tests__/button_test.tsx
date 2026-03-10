@@ -1,6 +1,11 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { PresetButton, PresetButtonProps } from "../button";
+import {
+  actRenderer,
+  createRenderer,
+  unmountRenderer,
+} from "../../../__test_support__/test_renderer";
 
 describe("<PresetButton />", () => {
   const fakeProps = (): PresetButtonProps => ({
@@ -13,21 +18,25 @@ describe("<PresetButton />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<PresetButton {...fakeProps()} />);
-    expect(wrapper.html()).toContain("box");
-    expect(wrapper.html()).toContain("text");
+    const { container } = render(<PresetButton {...fakeProps()} />);
+    expect(container.innerHTML).toContain("box");
+    expect(container.innerHTML).toContain("text");
   });
 
   it("clicks wrapper", () => {
     const p = fakeProps();
-    const wrapper = mount(<PresetButton {...p} />);
-    wrapper.find({ name: "preset-button-wrapper" }).first().simulate("click");
+    const wrapper = createRenderer(<PresetButton {...p} />);
+    actRenderer(() => {
+      wrapper.root.findAll(node => node.props.name == "preset-button-wrapper")[0]
+        ?.props.onClick();
+    });
     expect(p.choosePreset).toHaveBeenCalledWith("preset");
+    unmountRenderer(wrapper);
   });
 
   it("depresses button", () => {
     const p = fakeProps();
-    const wrapper = mount(<PresetButton {...p} />);
+    const wrapper = createRenderer(<PresetButton {...p} />);
     const e = {
       object: {
         parent: {
@@ -38,32 +47,44 @@ describe("<PresetButton />", () => {
         }
       }
     };
-    wrapper.find({ name: "preset-button" }).first().simulate("pointerdown", e);
+    actRenderer(() => {
+      wrapper.root.findAll(node => node.props.name == "preset-button")[0]
+        ?.props.onPointerDown(e);
+    });
     expect(e.object.parent.children[0].position.z).toEqual(-10);
     expect(e.object.parent.children[1].position.z).toEqual(16);
+    unmountRenderer(wrapper);
   });
 
   it("hovers button", () => {
     const p = fakeProps();
     p.preset = "preset";
     p.hovered = "preset";
-    const wrapper = mount(<PresetButton {...p} />);
-    wrapper.find({ name: "preset-button" }).first().simulate("pointerover");
+    const wrapper = createRenderer(<PresetButton {...p} />);
+    actRenderer(() => {
+      wrapper.root.findAll(node => node.props.name == "preset-button")[0]
+        ?.props.onPointerOver();
+    });
     expect(p.setHovered).toHaveBeenCalledWith("preset");
     expect(document.body.style.cursor).toEqual("pointer");
+    unmountRenderer(wrapper);
   });
 
   it("un-hovers button", () => {
     const p = fakeProps();
-    const wrapper = mount(<PresetButton {...p} />);
-    wrapper.find({ name: "preset-button" }).first().simulate("pointerleave");
+    const wrapper = createRenderer(<PresetButton {...p} />);
+    actRenderer(() => {
+      wrapper.root.findAll(node => node.props.name == "preset-button")[0]
+        ?.props.onPointerLeave();
+    });
     expect(document.body.style.cursor).toEqual("default");
     expect(p.setHovered).toHaveBeenCalledWith("");
+    unmountRenderer(wrapper);
   });
 
   it("releases button", () => {
     const p = fakeProps();
-    const wrapper = mount(<PresetButton {...p} />);
+    const wrapper = createRenderer(<PresetButton {...p} />);
     const e = {
       object: {
         parent: {
@@ -74,8 +95,12 @@ describe("<PresetButton />", () => {
         }
       }
     };
-    wrapper.find({ name: "preset-button" }).first().simulate("pointerup", e);
+    actRenderer(() => {
+      wrapper.root.findAll(node => node.props.name == "preset-button")[0]
+        ?.props.onPointerUp(e);
+    });
     expect(e.object.parent.children[0].position.z).toEqual(0);
     expect(e.object.parent.children[1].position.z).toEqual(26);
+    unmountRenderer(wrapper);
   });
 });

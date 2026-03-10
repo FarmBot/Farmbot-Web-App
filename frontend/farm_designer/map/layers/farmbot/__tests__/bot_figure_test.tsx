@@ -1,5 +1,5 @@
 import React from "react";
-import { shallow } from "enzyme";
+import { render, fireEvent } from "@testing-library/react";
 import { BotOriginQuadrant } from "../../../../interfaces";
 import { BotFigure, BotFigureProps } from "../bot_figure";
 import { Color } from "../../../../../ui";
@@ -10,7 +10,6 @@ import {
   fakeMountedToolInfo,
 } from "../../../../../__test_support__/fake_tool_info";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
-import { svgMount } from "../../../../../__test_support__/svg_mount";
 import {
   fakeCameraCalibrationDataFull,
 } from "../../../../../__test_support__/fake_camera_data";
@@ -24,6 +23,32 @@ describe("<BotFigure/>", () => {
   });
 
   const EXPECTED_MOTORS_OPACITY = 0.5;
+
+  const renderFigure = (
+    props: BotFigureProps,
+    ref?: React.RefObject<BotFigure | undefined>,
+  ) => render(<svg><BotFigure {...props} ref={ref} /></svg>);
+
+  const requiredElement = (
+    container: HTMLElement,
+    selector: string,
+  ): HTMLElement => {
+    const element = container.querySelector(selector);
+    if (!element) { throw new Error(`Missing element: ${selector}`); }
+    return element as HTMLElement;
+  };
+
+  const getAttribute = (element: Element, key: string) =>
+    element.getAttribute(key) ||
+    element.getAttribute(key.replace(/[A-Z]/g, value => `-${value.toLowerCase()}`));
+
+  const getNumericAttribute = (element: Element, key: string) => {
+    const value = getAttribute(element, key);
+    if (value === undefined || value === undefined) {
+      throw new Error(`Missing attribute ${key}`);
+    }
+    return Number(value);
+  };
 
   it.each<[
     string, BotOriginQuadrant, Record<"x" | "y", number>, boolean, number
@@ -43,102 +68,107 @@ describe("<BotFigure/>", () => {
       p.mapTransformProps.quadrant = quadrant;
       p.mapTransformProps.xySwap = xySwap;
       p.figureName = figureName;
-      const result = svgMount(<BotFigure {...p} />);
+      const { container } = renderFigure(p);
 
-      const expectedGantryProps = expect.objectContaining({
-        id: "gantry",
-        x: xySwap ? -100 : expected.x - 10,
-        y: xySwap ? expected.x - 10 : -100,
-        width: xySwap ? 1700 : 20,
-        height: xySwap ? 20 : 1700,
-        fill: Color.darkGray,
-        fillOpacity: opacity
-      });
-      const gantryProps = result.find("rect").props();
-      expect(gantryProps).toEqual(expectedGantryProps);
+      const gantry = requiredElement(container, "#gantry");
+      expect(getNumericAttribute(gantry, "x")).toEqual(
+        xySwap ? -100 : expected.x - 10);
+      expect(getNumericAttribute(gantry, "y")).toEqual(
+        xySwap ? expected.x - 10 : -100);
+      expect(getNumericAttribute(gantry, "width")).toEqual(
+        xySwap ? 1700 : 20);
+      expect(getNumericAttribute(gantry, "height")).toEqual(
+        xySwap ? 20 : 1700);
+      expect(getAttribute(gantry, "fill")).toEqual(Color.darkGray);
+      expect(getNumericAttribute(gantry, "fillOpacity")).toEqual(opacity);
 
-      const expectedUTMProps = expect.objectContaining({
-        id: "UTM",
-        cx: xySwap ? expected.y : expected.x,
-        cy: xySwap ? expected.x : expected.y,
-        r: 35,
-        fill: Color.darkGray,
-        fillOpacity: opacity
-      });
-      const UTMProps = result.find("circle").props();
-      expect(UTMProps).toEqual(expectedUTMProps);
+      const utm = requiredElement(container, "#UTM");
+      expect(getNumericAttribute(utm, "cx")).toEqual(
+        xySwap ? expected.y : expected.x);
+      expect(getNumericAttribute(utm, "cy")).toEqual(
+        xySwap ? expected.x : expected.y);
+      expect(getNumericAttribute(utm, "r")).toEqual(35);
+      expect(getAttribute(utm, "fill")).toEqual(Color.darkGray);
+      expect(getNumericAttribute(utm, "fillOpacity")).toEqual(opacity);
     });
 
   it("changes location", () => {
     const p = fakeProps();
     p.mapTransformProps.quadrant = 2;
     p.position = { x: 100, y: 200, z: 0 };
-    const result = svgMount(<BotFigure {...p} />);
-    const gantry = result.find("#gantry");
-    expect(gantry.length).toEqual(1);
-    expect(gantry.props().x).toEqual(90);
-    const UTM = result.find("circle").props();
-    expect(UTM.cx).toEqual(100);
-    expect(UTM.cy).toEqual(200);
+    const { container } = renderFigure(p);
+    expect(container.querySelectorAll("#gantry").length).toEqual(1);
+    expect(getNumericAttribute(requiredElement(container, "#gantry"), "x"))
+      .toEqual(90);
+    const utm = requiredElement(container, "circle");
+    expect(getNumericAttribute(utm, "cx")).toEqual(100);
+    expect(getNumericAttribute(utm, "cy")).toEqual(200);
   });
 
   it("changes color on e-stop", () => {
     const p = fakeProps();
     p.eStopStatus = true;
-    const wrapper = svgMount(<BotFigure {...p} />);
-    expect(wrapper.find("#gantry").props().fill).toEqual(Color.virtualRed);
+    const { container } = renderFigure(p);
+    expect(getAttribute(requiredElement(container, "#gantry"), "fill"))
+      .toEqual(Color.virtualRed);
   });
 
   it("shows coordinates on hover", () => {
     const p = fakeProps();
+    const ref = React.createRef<BotFigure>();
     p.position.x = 100;
-    const wrapper = shallow<BotFigure>(<BotFigure {...p} />);
-    expect(wrapper.instance().state.hovered).toBeFalsy();
-    const utm = wrapper.find("#UTM-wrapper");
-    utm.simulate("mouseOver");
-    expect(wrapper.instance().state.hovered).toBeTruthy();
-    expect(wrapper.find("text").props()).toEqual(expect.objectContaining({
-      x: 100, y: 0, dx: 40, dy: 0,
-      textAnchor: "start", visibility: "visible",
-    }));
-    expect(wrapper.find("text").text()).toEqual("(100, 0, 0)");
-    utm.simulate("mouseLeave");
-    expect(wrapper.instance().state.hovered).toBeFalsy();
-    expect(wrapper.find("text").props()).toEqual(
-      expect.objectContaining({ visibility: "hidden" }));
+    const { container } = renderFigure(p, ref);
+    expect(ref.current?.state.hovered).toBeFalsy();
+    const utm = requiredElement(container, "#UTM-wrapper");
+    fireEvent.mouseOver(utm);
+    expect(ref.current?.state.hovered).toBeTruthy();
+    const text = requiredElement(container, "text");
+    expect(getNumericAttribute(text, "x")).toEqual(100);
+    expect(getNumericAttribute(text, "y")).toEqual(0);
+    expect(getNumericAttribute(text, "dx")).toEqual(40);
+    expect(getNumericAttribute(text, "dy")).toEqual(0);
+    expect(getAttribute(text, "textAnchor")).toEqual("start");
+    expect(getAttribute(text, "visibility")).toEqual("visible");
+    expect(text.textContent).toEqual("(100, 0, 0)");
+    fireEvent.mouseLeave(utm);
+    expect(ref.current?.state.hovered).toBeFalsy();
+    expect(getAttribute(text, "visibility")).toEqual("hidden");
   });
 
   it("shows coordinates on hover: X&Y swapped", () => {
     const p = fakeProps();
+    const ref = React.createRef<BotFigure>();
     p.position.x = 100;
     p.mapTransformProps.xySwap = true;
-    const wrapper = shallow<BotFigure>(<BotFigure {...p} />);
-    const utm = wrapper.find("#UTM-wrapper");
-    utm.simulate("mouseOver");
-    expect(wrapper.instance().state.hovered).toBeTruthy();
-    expect(wrapper.find("text").props()).toEqual(expect.objectContaining({
-      x: 0, y: 100, dx: 0, dy: 55,
-      textAnchor: "middle", visibility: "visible",
-    }));
-    expect(wrapper.find("text").text()).toEqual("(100, 0, 0)");
+    const { container } = renderFigure(p, ref);
+    fireEvent.mouseOver(requiredElement(container, "#UTM-wrapper"));
+    expect(ref.current?.state.hovered).toBeTruthy();
+    const text = requiredElement(container, "text");
+    expect(getNumericAttribute(text, "x")).toEqual(0);
+    expect(getNumericAttribute(text, "y")).toEqual(100);
+    expect(getNumericAttribute(text, "dx")).toEqual(0);
+    expect(getNumericAttribute(text, "dy")).toEqual(55);
+    expect(getAttribute(text, "textAnchor")).toEqual("middle");
+    expect(getAttribute(text, "visibility")).toEqual("visible");
+    expect(text.textContent).toEqual("(100, 0, 0)");
   });
 
   it("shows mounted tool", () => {
     const p = fakeProps();
     p.mountedToolInfo = fakeMountedToolInfo();
     p.mountedToolInfo.name = "Seeder";
-    const wrapper = svgMount(<BotFigure {...p} />);
-    expect(wrapper.find("#UTM-wrapper").find("#mounted-tool").length)
+    const { container } = renderFigure(p);
+    expect(container.querySelectorAll("#UTM-wrapper #mounted-tool").length)
       .toEqual(1);
   });
 
   it("gets tool props: mounted tool", () => {
     const p = fakeProps();
+    const ref = React.createRef<BotFigure>();
     p.mountedToolInfo = fakeMountedToolInfo();
     p.mountedToolInfo.pulloutDirection = ToolPulloutDirection.NEGATIVE_X;
-    const wrapper = svgMount(<BotFigure {...p} />);
-    expect(wrapper.find<BotFigure>(BotFigure).instance()
-      .getToolProps({ qx: 0, qy: 0 }))
+    renderFigure(p, ref);
+    expect(ref.current?.getToolProps({ qx: 0, qy: 0 }))
       .toEqual({
         toolName: "fake mounted tool",
         dispatch: expect.any(Function),
@@ -157,10 +187,10 @@ describe("<BotFigure/>", () => {
 
   it("gets tool props: no mounted tool info", () => {
     const p = fakeProps();
+    const ref = React.createRef<BotFigure>();
     p.mountedToolInfo = undefined;
-    const wrapper = svgMount(<BotFigure {...p} />);
-    expect(wrapper.find<BotFigure>(BotFigure).instance()
-      .getToolProps({ qx: 0, qy: 0 }))
+    renderFigure(p, ref);
+    expect(ref.current?.getToolProps({ qx: 0, qy: 0 }))
       .toEqual({
         dispatch: expect.any(Function),
         hovered: false,
@@ -181,10 +211,10 @@ describe("<BotFigure/>", () => {
     p.mountedToolInfo = fakeMountedToolInfo();
     p.mountedToolInfo.noUTM = true;
     p.mountedToolInfo.name = undefined;
-    const wrapper = svgMount(<BotFigure {...p} />);
-    const UTM = wrapper.find("#UTM-wrapper");
-    expect(UTM.find("#mounted-tool").length).toEqual(0);
-    expect(UTM.find("#three-in-one-tool-head").length).toEqual(1);
+    const { container } = renderFigure(p);
+    const utm = requiredElement(container, "#UTM-wrapper");
+    expect(utm.querySelectorAll("#mounted-tool").length).toEqual(0);
+    expect(utm.querySelectorAll("#three-in-one-tool-head").length).toEqual(1);
   });
 
   it("shows camera view area", () => {
@@ -193,15 +223,17 @@ describe("<BotFigure/>", () => {
     p.cameraCalibrationData = fakeCameraCalibrationDataFull();
     p.cameraViewArea = true;
     p.cropPhotos = false;
-    const wrapper = svgMount(<BotFigure {...p} />);
-    const view = wrapper.find("#camera-view-area-wrapper");
-    expect(view.find("#angled-camera-view-area").length)
+    const { container } = renderFigure(p);
+    const view = requiredElement(container, "#camera-view-area-wrapper");
+    expect(view.querySelectorAll("#angled-camera-view-area").length)
       .toBeGreaterThanOrEqual(1);
-    expect(view.find("#angled-camera-view-area").last().props().width)
-      .not.toEqual(0);
-    expect(view.find("#snapped-camera-view-area").length)
+    const angled = view.querySelectorAll("#angled-camera-view-area");
+    const lastAngled = angled[angled.length - 1];
+    expect(getNumericAttribute(lastAngled, "width")).toBeGreaterThan(0);
+    expect(view.querySelectorAll("#snapped-camera-view-area").length)
       .toBeGreaterThanOrEqual(1);
-    expect(view.find("#cropped-camera-view-area").length).toEqual(0);
+    expect(view.querySelectorAll("#cropped-camera-view-area").length)
+      .toEqual(0);
   });
 
   it("doesn't show camera view area", () => {
@@ -209,9 +241,9 @@ describe("<BotFigure/>", () => {
     p.cameraCalibrationData = fakeCameraCalibrationDataFull();
     p.cameraCalibrationData.center.x = "";
     p.cameraViewArea = true;
-    const wrapper = svgMount(<BotFigure {...p} />);
-    expect(wrapper.find("#angled-camera-view-area").first().props().width)
-      .toBeFalsy();
+    const { container } = renderFigure(p);
+    const angled = requiredElement(container, "#angled-camera-view-area");
+    expect(getAttribute(angled, "width")).toBeFalsy();
   });
 
   it("shows small cropped camera view area", () => {
@@ -221,11 +253,11 @@ describe("<BotFigure/>", () => {
     p.cameraViewArea = true;
     p.showUncroppedArea = true;
     p.cropPhotos = true;
-    const wrapper = svgMount(<BotFigure {...p} />);
-    const view = wrapper.find("#camera-view-area-wrapper");
-    expect(view.find("#angled-camera-view-area").length)
+    const { container } = renderFigure(p);
+    const view = requiredElement(container, "#camera-view-area-wrapper");
+    expect(view.querySelectorAll("#angled-camera-view-area").length)
       .toBeGreaterThanOrEqual(1);
-    expect(view.find("#cropped-camera-view-area").length)
+    expect(view.querySelectorAll("#cropped-camera-view-area").length)
       .toBeGreaterThanOrEqual(1);
   });
 
@@ -236,11 +268,11 @@ describe("<BotFigure/>", () => {
     p.cameraViewArea = true;
     p.showUncroppedArea = false;
     p.cropPhotos = true;
-    const wrapper = svgMount(<BotFigure {...p} />);
-    const view = wrapper.find("#camera-view-area-wrapper");
-    expect(view.find("#angled-camera-view-area").length).toEqual(0);
-    expect(view.find("#snapped-camera-view-area").length).toEqual(0);
-    expect(view.find("#cropped-camera-view-area").length)
+    const { container } = renderFigure(p);
+    const view = requiredElement(container, "#camera-view-area-wrapper");
+    expect(view.querySelectorAll("#angled-camera-view-area").length).toEqual(0);
+    expect(view.querySelectorAll("#snapped-camera-view-area").length).toEqual(0);
+    expect(view.querySelectorAll("#cropped-camera-view-area").length)
       .toBeGreaterThanOrEqual(1);
   });
 
@@ -251,13 +283,14 @@ describe("<BotFigure/>", () => {
     p.cameraViewArea = true;
     p.showUncroppedArea = true;
     p.cropPhotos = true;
-    const wrapper = svgMount(<BotFigure {...p} />);
-    const view = wrapper.find("#camera-view-area-wrapper");
-    expect(view.find("#angled-camera-view-area").length)
+    const { container } = renderFigure(p);
+    const view = requiredElement(container, "#camera-view-area-wrapper");
+    expect(view.querySelectorAll("#angled-camera-view-area").length)
       .toBeGreaterThanOrEqual(1);
-    const circle = view.find("#cropped-camera-view-area");
+    const circle = view.querySelectorAll("#cropped-camera-view-area");
     expect(circle.length).toBeGreaterThanOrEqual(1);
-    expect(circle.last().props().style?.transform).not.toEqual(undefined);
+    const style = circle[circle.length - 1].getAttribute("style");
+    expect(style).toContain("transform:");
   });
 
   it("doesn't show large cropped camera view area", () => {
@@ -268,16 +301,17 @@ describe("<BotFigure/>", () => {
     p.cameraViewArea = true;
     p.showUncroppedArea = true;
     p.cropPhotos = true;
-    const wrapper = svgMount(<BotFigure {...p} />);
-    const view = wrapper.find("#camera-view-area-wrapper");
-    const circle = view.find("#cropped-camera-view-area");
+    const { container } = renderFigure(p);
+    const view = requiredElement(container, "#camera-view-area-wrapper");
+    const circle = view.querySelectorAll("#cropped-camera-view-area");
     expect(circle.length).toEqual(0);
   });
 
   it("renders custom color", () => {
     const p = fakeProps();
     p.color = Color.blue;
-    const wrapper = svgMount(<BotFigure {...p} />);
-    expect(wrapper.find("#gantry").props().fill).toEqual(Color.blue);
+    const { container } = renderFigure(p);
+    expect(getAttribute(requiredElement(container, "#gantry"), "fill"))
+      .toEqual(Color.blue);
   });
 });

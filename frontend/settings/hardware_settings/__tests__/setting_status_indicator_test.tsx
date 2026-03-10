@@ -1,12 +1,21 @@
-jest.mock("../export_menu", () => ({ resendParameters: jest.fn() }));
-
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import {
   SettingStatusIndicator,
-  SettingStatusIndicatorProps,
+  type SettingStatusIndicatorProps,
 } from "../setting_status_indicator";
-import { resendParameters } from "../export_menu";
+import * as mustBeOnline from "../../../devices/must_be_online";
+
+let forceOnlineSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  forceOnlineSpy = jest.spyOn(mustBeOnline, "forceOnline")
+    .mockReturnValue(false);
+});
+
+afterEach(() => {
+  forceOnlineSpy.mockRestore();
+});
 
 describe("<SettingStatusIndicator />", () => {
   const fakeProps = (): SettingStatusIndicatorProps => ({
@@ -19,24 +28,30 @@ describe("<SettingStatusIndicator />", () => {
     const p = fakeProps();
     p.wasSyncing = false;
     p.isSyncing = true;
-    const wrapper = mount(<SettingStatusIndicator {...p} />);
-    wrapper.find(".fa-exclamation-triangle").simulate("click");
-    expect(resendParameters).toHaveBeenCalled();
+    const { container } = render(<SettingStatusIndicator {...p} />);
+    const icon = container.querySelector("[title=\"Save error. Click to retry.\"]")
+      || container.querySelector(".fa-exclamation-triangle")
+      || container.querySelector(".setting-status-indicator i");
+    expect(icon).toBeTruthy();
+    fireEvent.click(icon as Element);
+    expect(p.dispatch).toHaveBeenCalledTimes(1);
+    const [action] = (p.dispatch as jest.Mock).mock.calls[0] || [];
+    expect(typeof action).toEqual("function");
   });
 
   it("displays spinner", () => {
     const p = fakeProps();
     p.wasSyncing = true;
     p.isSyncing = true;
-    const wrapper = mount(<SettingStatusIndicator {...p} />);
-    expect(wrapper.find(".fa-spinner").length).toEqual(1);
+    const { container } = render(<SettingStatusIndicator {...p} />);
+    expect(container.querySelectorAll(".fa-spinner").length).toEqual(1);
   });
 
   it("displays check", () => {
     const p = fakeProps();
     p.wasSyncing = true;
     p.isSyncing = false;
-    const wrapper = mount(<SettingStatusIndicator {...p} />);
-    expect(wrapper.find(".fa-check").length).toEqual(1);
+    const { container } = render(<SettingStatusIndicator {...p} />);
+    expect(container.querySelectorAll(".fa-check").length).toEqual(1);
   });
 });

@@ -1,10 +1,10 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render, screen } from "@testing-library/react";
 import { FourOhFour } from "../404";
 
 describe("<FourOhFour />", () => {
   it("renders helpful text", () => {
-    const dom = mount(<FourOhFour />);
-    expect(dom.text()).toContain("Not Found");
+    render(<FourOhFour />);
+    expect(screen.getByText("Not Found")).toBeInTheDocument();
   });
 });

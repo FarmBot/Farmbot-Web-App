@@ -7,6 +7,7 @@ import { t } from "../../i18next_wrapper";
 import { getDefaultFwConfigValue } from "./default_values";
 import { McuParamName } from "farmbot";
 
+// eslint-disable-next-line complexity
 export const NumericMCUInputGroup = (props: NumericMCUInputGroupProps) => {
 
   const getDefault = getDefaultFwConfigValue(props.firmwareHardware);

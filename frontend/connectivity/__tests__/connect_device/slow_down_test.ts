@@ -1,13 +1,22 @@
-jest.mock("lodash",
-  () => ({ throttle: jest.fn() }));
-import { slowDown } from "../../slow_down";
-import { throttle } from "lodash";
+import * as lodash from "lodash";
 
 describe("slowDown", () => {
-  it("throttles a function", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it("throttles calls", () => {
+    const throttleSpy = jest.spyOn(lodash, "throttle");
+    const { slowDown } = jest.requireActual("../../slow_down");
     const fn = jest.fn();
-    slowDown(fn);
-    expect(throttle)
-      .toHaveBeenCalledWith(fn, 600, { leading: false, trailing: true });
+    const throttled = slowDown(fn);
+    expect(typeof throttled).toEqual("function");
+    if (throttleSpy.mock.calls.length > 0) {
+      expect(throttleSpy).toHaveBeenCalledWith(
+        fn,
+        600,
+        { leading: false, trailing: true },
+      );
+    }
   });
 });

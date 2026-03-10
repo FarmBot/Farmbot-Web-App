@@ -23,7 +23,7 @@ import {
 import { oneOf, versionOK, trim } from "../util";
 import { Actions, Content, DeviceSetting } from "../constants";
 import { mcuParamValidator } from "./update_interceptor";
-import { edit, save as apiSave } from "../api/crud";
+import * as crud from "../api/crud";
 import { CONFIG_DEFAULTS } from "farmbot/dist/config";
 import { Log } from "farmbot/dist/resources/api_resources";
 import { FbosConfig } from "farmbot/dist/resources/configs/fbos";
@@ -248,9 +248,9 @@ export function execSequence(
 export function takePhoto() {
   if (forceOnline()) {
     runDemoLuaCode("take_photo()");
-    return;
+    return Promise.resolve();
   }
-  getDevice().takePhoto()
+  return getDevice().takePhoto()
     .then(commandOK("", Content.PROCESSING_PHOTO))
     .catch(() => error(t("Error taking photo")));
 }
@@ -346,15 +346,15 @@ export function MCUFactoryReset() {
 export function settingToggle(
   key: ConfigKey,
   sourceFwConfig: SourceFwConfig,
-  displayAlert?: string | undefined,
+  displayAlert?: string,
 ) {
   return function (dispatch: Function, getState: () => Everything) {
     if (displayAlert) { alert(trim(displayAlert)); }
     const update = { [key]: (sourceFwConfig(key).value === 0) ? ON : OFF };
     const firmwareConfig = getFirmwareConfig(getState().resources.index);
     const toggleFirmwareConfig = (fwConfig: TaggedFirmwareConfig) => {
-      dispatch(edit(fwConfig, update));
-      dispatch(apiSave(fwConfig.uuid));
+      dispatch(crud.edit(fwConfig, update));
+      dispatch(crud.save(fwConfig.uuid));
     };
 
     if (firmwareConfig) {
@@ -525,8 +525,8 @@ export function updateMCU(key: ConfigKey, val: string) {
 
     function proceed() {
       if (firmwareConfig) {
-        dispatch(edit(firmwareConfig, { [key]: val } as Partial<FirmwareConfig>));
-        dispatch(apiSave(firmwareConfig.uuid));
+        dispatch(crud.edit(firmwareConfig, { [key]: val } as Partial<FirmwareConfig>));
+        dispatch(crud.save(firmwareConfig.uuid));
       }
     }
 
@@ -542,8 +542,8 @@ export function updateConfig(config: Partial<FbosConfig>) {
   return function (dispatch: Function, getState: () => Everything) {
     const fbosConfig = getFbosConfig(getState().resources.index);
     if (fbosConfig) {
-      dispatch(edit(fbosConfig, config));
-      dispatch(apiSave(fbosConfig.uuid));
+      dispatch(crud.edit(fbosConfig, config));
+      dispatch(crud.save(fbosConfig.uuid));
     }
   };
 }

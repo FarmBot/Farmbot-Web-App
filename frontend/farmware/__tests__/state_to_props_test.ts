@@ -1,13 +1,3 @@
-jest.mock("../../api/crud", () => ({
-  edit: jest.fn(),
-  save: jest.fn(),
-  initSave: jest.fn(),
-}));
-
-jest.mock("../../devices/actions", () => ({
-  updateConfig: jest.fn(),
-}));
-
 import {
   saveOrEditFarmwareEnv, getEnv, generateFarmwareDictionary,
   isPendingInstallation,
@@ -18,10 +8,30 @@ import {
 import {
   fakeFarmwareEnv, fakeFarmwareInstallation,
 } from "../../__test_support__/fake_state/resources";
-import { edit, initSave, save } from "../../api/crud";
 import { fakeFarmware } from "../../__test_support__/fake_farmwares";
 import { fakeState } from "../../__test_support__/fake_state";
-import { updateConfig } from "../../devices/actions";
+import * as crud from "../../api/crud";
+import * as deviceActions from "../../devices/actions";
+
+let editSpy: jest.SpyInstance;
+let saveSpy: jest.SpyInstance;
+let initSaveSpy: jest.SpyInstance;
+let updateConfigSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+  initSaveSpy = jest.spyOn(crud, "initSave").mockImplementation(jest.fn());
+  updateConfigSpy = jest.spyOn(deviceActions, "updateConfig")
+    .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  editSpy.mockRestore();
+  saveSpy.mockRestore();
+  initSaveSpy.mockRestore();
+  updateConfigSpy.mockRestore();
+});
 
 describe("getEnv()", () => {
   it("returns API farmware env", () => {
@@ -71,8 +81,8 @@ describe("saveOrEditFarmwareEnv()", () => {
     const uuid = Object.keys(ri.all)[0];
     const fwEnv = ri.references[uuid];
     saveOrEditFarmwareEnv(ri)("fake_FarmwareEnv_key", "new_value")(jest.fn());
-    expect(edit).toHaveBeenCalledWith(fwEnv, { value: "new_value" });
-    expect(save).toHaveBeenCalledWith(uuid);
+    expect(editSpy).toHaveBeenCalledWith(fwEnv, { value: "new_value" });
+    expect(saveSpy).toHaveBeenCalledWith(uuid);
   });
 
   it("doesn't edit env var", () => {
@@ -81,14 +91,14 @@ describe("saveOrEditFarmwareEnv()", () => {
     farmwareEnv.body.value = "same_value";
     const ri = buildResourceIndex([farmwareEnv]).index;
     saveOrEditFarmwareEnv(ri)("already_exists", "same_value")(jest.fn());
-    expect(edit).not.toHaveBeenCalled();
-    expect(save).not.toHaveBeenCalled();
+    expect(editSpy).not.toHaveBeenCalled();
+    expect(saveSpy).not.toHaveBeenCalled();
   });
 
   it("saves new env var", () => {
     const ri = buildResourceIndex([]).index;
     saveOrEditFarmwareEnv(ri)("new_key", "new_value")(jest.fn());
-    expect(initSave).toHaveBeenCalledWith("FarmwareEnv",
+    expect(initSaveSpy).toHaveBeenCalledWith("FarmwareEnv",
       { key: "new_key", value: "new_value" });
   });
 
@@ -96,8 +106,8 @@ describe("saveOrEditFarmwareEnv()", () => {
     const ri = buildResourceIndex([]).index;
     saveOrEditFarmwareEnv(ri, true)(
       "measure_soil_height_measured_distance", "100")(jest.fn());
-    expect(initSave).toHaveBeenCalledWith("FarmwareEnv",
+    expect(initSaveSpy).toHaveBeenCalledWith("FarmwareEnv",
       { key: "measure_soil_height_measured_distance", value: "100" });
-    expect(updateConfig).toHaveBeenCalledWith({ soil_height: -100 });
+    expect(updateConfigSpy).toHaveBeenCalledWith({ soil_height: -100 });
   });
 });

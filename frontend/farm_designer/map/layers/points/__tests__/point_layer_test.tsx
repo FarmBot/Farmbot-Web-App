@@ -4,7 +4,6 @@ import { fakePoint } from "../../../../../__test_support__/fake_state/resources"
 import {
   fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
-import { GardenPoint } from "../garden_point";
 import { svgMount } from "../../../../../__test_support__/svg_mount";
 import {
   fakeCameraCalibrationData,
@@ -37,7 +36,7 @@ describe("<PointLayer/>", () => {
     p.interactions = false;
     const wrapper = svgMount(<PointLayer {...p} />);
     const layer = wrapper.find("#point-layer");
-    expect(layer.find(GardenPoint).html()).toContain("r=\"100\"");
+    expect(layer.find(".map-point").html()).toContain("r=\"100\"");
     expect(layer.props().style).toEqual({ pointerEvents: "none" });
   });
 
@@ -46,7 +45,7 @@ describe("<PointLayer/>", () => {
     p.visible = false;
     const wrapper = svgMount(<PointLayer {...p} />);
     const layer = wrapper.find("#point-layer");
-    expect(layer.find(GardenPoint).length).toEqual(0);
+    expect(layer.find(".map-point").length).toEqual(0);
   });
 
   it("allows point mode interaction", () => {
@@ -55,7 +54,7 @@ describe("<PointLayer/>", () => {
     p.interactions = true;
     const wrapper = svgMount(<PointLayer {...p} />);
     const layer = wrapper.find("#point-layer");
-    expect(layer.props().style).toEqual({});
+    expect(layer.props().style || {}).toEqual({});
   });
 
   it("shows grid points", () => {
@@ -66,7 +65,7 @@ describe("<PointLayer/>", () => {
     p.designer.gridIds = [];
     const wrapper = svgMount(<PointLayer {...p} />);
     const layer = wrapper.find("#point-layer");
-    expect(layer.find(GardenPoint).length).toEqual(2);
+    expect(layer.find(".map-point").length).toEqual(2);
   });
 
   it("hides grid points", () => {
@@ -77,7 +76,7 @@ describe("<PointLayer/>", () => {
     p.designer.gridIds = ["123"];
     const wrapper = svgMount(<PointLayer {...p} />);
     const layer = wrapper.find("#point-layer");
-    expect(layer.find(GardenPoint).length).toEqual(1);
+    expect(layer.find(".map-point").length).toEqual(1);
   });
 
   it("shows empty interpolation map", () => {

@@ -1,9 +1,28 @@
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import { LogsFilterMenu, NON_FILTER_SETTINGS } from "../filter_menu";
 import { LogsFilterMenuProps, LogsState } from "../../interfaces";
 import { MESSAGE_TYPES } from "../../../sequences/interfaces";
-import { Slider } from "@blueprintjs/core";
+import * as blueprintCore from "@blueprintjs/core";
+
+let sliderSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  sliderSpy = jest.spyOn(blueprintCore, "Slider")
+    .mockImplementation((props: {
+      onChange?: (value: number) => void;
+      onRelease?: (value: number) => void;
+    }) =>
+      <button className={"mock-slider"}
+        onClick={() => {
+          props.onChange?.(2);
+          props.onRelease?.(2);
+        }} />);
+});
+
+afterEach(() => {
+  sliderSpy.mockRestore();
+});
 
 const logTypes = MESSAGE_TYPES;
 
@@ -22,37 +41,36 @@ describe("<LogsFilterMenu />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<LogsFilterMenu {...fakeProps()} />);
+    const { container } = render(<LogsFilterMenu {...fakeProps()} />);
     logTypes.filter(x => x !== "assertion").map(string =>
-      expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));
+      expect(container.textContent?.toLowerCase()).toContain(string.toLowerCase()));
     NON_FILTER_SETTINGS.map(string =>
-      expect(wrapper.text().toLowerCase()).not.toContain(string));
+      expect(container.textContent?.toLowerCase()).not.toContain(string));
   });
 
   it("renders new types", () => {
     const p = fakeProps();
-    const wrapper = mount(<LogsFilterMenu {...p} />);
+    const { container } = render(<LogsFilterMenu {...p} />);
     logTypes.map(string =>
-      expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));
+      expect(container.textContent?.toLowerCase()).toContain(string.toLowerCase()));
     NON_FILTER_SETTINGS.map(string =>
-      expect(wrapper.text().toLowerCase()).not.toContain(string));
+      expect(container.textContent?.toLowerCase()).not.toContain(string));
   });
 
   it("renders setting on", () => {
     const p = fakeProps();
     p.state.currentFbosOnly = true;
-    const wrapper = mount(<LogsFilterMenu {...p} />);
-    expect(wrapper.find(".fb-toggle-button").first().hasClass("green"))
-      .toBeTruthy();
+    const { container } = render(<LogsFilterMenu {...p} />);
+    expect(container.querySelector(".fb-toggle-button")?.className)
+      .toContain("green");
   });
 
   it("bulk toggles filter levels", () => {
     const setFilterLevel = jest.fn();
     const p = fakeProps();
     p.setFilterLevel = (x) => (v) => setFilterLevel(x, v);
-    const wrapper = shallow(<LogsFilterMenu {...p} />);
-    wrapper.find(Slider).first().simulate("change", 2);
-    wrapper.find(Slider).first().simulate("release", 2);
+    const { container } = render(<LogsFilterMenu {...p} />);
+    fireEvent.click(container.querySelectorAll(".mock-slider")[0]);
     logTypes.map(logType =>
       expect(setFilterLevel).toHaveBeenCalledWith(logType, 2));
   });

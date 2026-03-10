@@ -1,6 +1,6 @@
 import React from "react";
 import { TileComputedMove } from "../tile_computed_move";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
 import { Move } from "farmbot";
 import { StepParams } from "../../interfaces";
@@ -33,8 +33,8 @@ describe("<TileComputedMove />", () => {
   };
 
   it("renders move step", () => {
-    const wrapper = mount(<TileComputedMove {...fakeProps()} />);
+    const { container } = render(<TileComputedMove {...fakeProps()} />);
     ["Location"]
-      .map(string => expect(wrapper.text()).toContain(string));
+      .map(string => expect(container.textContent).toContain(string));
   });
 });

@@ -1,11 +1,13 @@
 import React from "react";
-import { shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import { BotPeripheralsProps, BotPeripherals } from "../bot_peripherals";
 import {
   fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
 
 describe("<BotPeripherals/>", () => {
+  const normalize = (value: string) => value.replace(/\s+/g, " ").trim();
+
   const fakeProps = (): BotPeripheralsProps => ({
     peripheralValues: [{ label: "", value: false }],
     position: { x: 0, y: 0, z: 0 },
@@ -13,6 +15,21 @@ describe("<BotPeripherals/>", () => {
     plantAreaOffset: { x: 100, y: 100 },
     getConfigValue: jest.fn(),
   });
+
+  const renderPeripherals = (props: BotPeripheralsProps) =>
+    render(<svg><BotPeripherals {...props} /></svg>);
+
+  const getAttribute = (element: Element, key: string) =>
+    element.getAttribute(key) ||
+    element.getAttribute(key.replace(/[A-Z]/g, value => `-${value.toLowerCase()}`));
+
+  const getNumericAttribute = (element: Element, key: string) => {
+    const value = getAttribute(element, key);
+    if (value === undefined || value === undefined) {
+      throw new Error(`Missing attribute ${key}`);
+    }
+    return Number(value);
+  };
 
   it.each<[string]>([
     ["lights"],
@@ -23,39 +40,46 @@ describe("<BotPeripherals/>", () => {
     const p = fakeProps();
     p.peripheralValues[0].label = peripheralName;
     p.peripheralValues[0].value = false;
-    const wrapper = shallow(<BotPeripherals {...p} />);
-    expect(wrapper.find(`#${peripheralName}`).length).toEqual(0);
+    const { container } = renderPeripherals(p);
+    expect(container.querySelectorAll(`#${peripheralName}`).length).toEqual(0);
   });
 
   function animationToggle(
     props: BotPeripheralsProps, enabled: number, disabled: number) {
     props.getConfigValue = () => false;
-    const wrapperEnabled = shallow(<BotPeripherals {...props} />);
-    expect(wrapperEnabled.find("use").length).toEqual(enabled);
+    const wrapperEnabled = renderPeripherals(props);
+    expect(wrapperEnabled.container.querySelectorAll("use").length)
+      .toEqual(enabled);
 
     props.getConfigValue = () => true;
-    const wrapperDisabled = shallow(<BotPeripherals {...props} />);
-    expect(wrapperDisabled.find("use").length).toEqual(disabled);
+    const wrapperDisabled = renderPeripherals(props);
+    expect(wrapperDisabled.container.querySelectorAll("use").length)
+      .toEqual(disabled);
   }
 
   it("displays light", () => {
     const p = fakeProps();
     p.peripheralValues[0].label = "lights";
     p.peripheralValues[0].value = true;
-    const wrapper = shallow(<BotPeripherals {...p} />);
-    expect(wrapper.find("#lights").length).toEqual(1);
-    expect(wrapper.find("rect").last().props()).toEqual({
-      fill: "url(#LightingGradient)",
-      height: 1700, width: 400, x: 0, y: -100
-    });
-    expect(wrapper.find("use").first().props()).toEqual({
-      xlinkHref: "#light-half",
-      transform: "rotate(0, 0, 750)"
-    });
-    expect(wrapper.find("use").last().props()).toEqual({
-      xlinkHref: "#light-half",
-      transform: "rotate(180, 0, 750)"
-    });
+    const { container } = renderPeripherals(p);
+    expect(container.querySelectorAll("#lights").length).toEqual(1);
+    const rect = container.querySelectorAll("#lights rect")[0];
+    expect(getAttribute(rect, "fill")).toEqual("url(#LightingGradient)");
+    expect(getNumericAttribute(rect, "height")).toEqual(1700);
+    expect(getNumericAttribute(rect, "width")).toEqual(400);
+    expect(getNumericAttribute(rect, "x")).toEqual(0);
+    expect(getNumericAttribute(rect, "y")).toEqual(-100);
+    const lightUses = container.querySelectorAll("#lights use");
+    expect(lightUses[0].getAttribute("xlink:href") ||
+      lightUses[0].getAttribute("href")).toEqual("#light-half");
+    expect(normalize(String(getAttribute(lightUses[0], "transform"))))
+      .toEqual("rotate(0, 0, 750)");
+    expect(lightUses[lightUses.length - 1].getAttribute("xlink:href") ||
+      lightUses[lightUses.length - 1].getAttribute("href"))
+      .toEqual("#light-half");
+    expect(normalize(String(
+      getAttribute(lightUses[lightUses.length - 1], "transform"))))
+      .toEqual("rotate(180, 0, 750)");
   });
 
   it("displays light: X&Y swapped", () => {
@@ -63,31 +87,39 @@ describe("<BotPeripherals/>", () => {
     p.peripheralValues[0].label = "lights";
     p.peripheralValues[0].value = true;
     p.mapTransformProps.xySwap = true;
-    const wrapper = shallow(<BotPeripherals {...p} />);
-    expect(wrapper.find("#lights").length).toEqual(1);
-    expect(wrapper.find("rect").last().props()).toEqual({
-      fill: "url(#LightingGradient)",
-      height: 1700, width: 400, x: -100, y: 0
-    });
-    expect(wrapper.find("use").first().props()).toEqual({
-      xlinkHref: "#light-half",
-      transform: "rotate(90, 750, 850)"
-    });
-    expect(wrapper.find("use").last().props()).toEqual({
-      xlinkHref: "#light-half",
-      transform: "rotate(270, -100, 0)"
-    });
+    const { container } = renderPeripherals(p);
+    expect(container.querySelectorAll("#lights").length).toEqual(1);
+    const rect = container.querySelectorAll("#lights rect")[0];
+    expect(getAttribute(rect, "fill")).toEqual("url(#LightingGradient)");
+    expect(getNumericAttribute(rect, "height")).toEqual(1700);
+    expect(getNumericAttribute(rect, "width")).toEqual(400);
+    expect(getNumericAttribute(rect, "x")).toEqual(-100);
+    expect(getNumericAttribute(rect, "y")).toEqual(0);
+    const lightUses = container.querySelectorAll("#lights use");
+    expect(lightUses[0].getAttribute("xlink:href") ||
+      lightUses[0].getAttribute("href")).toEqual("#light-half");
+    expect(normalize(String(getAttribute(lightUses[0], "transform"))))
+      .toEqual("rotate(90, 750, 850)");
+    expect(lightUses[lightUses.length - 1].getAttribute("xlink:href") ||
+      lightUses[lightUses.length - 1].getAttribute("href"))
+      .toEqual("#light-half");
+    expect(normalize(String(
+      getAttribute(lightUses[lightUses.length - 1], "transform"))))
+      .toEqual("rotate(270, -100, 0)");
   });
 
   it("displays water", () => {
     const p = fakeProps();
     p.peripheralValues[0].label = "water valve";
     p.peripheralValues[0].value = true;
-    const wrapper = shallow(<BotPeripherals {...p} />);
-    expect(wrapper.find("#water").length).toEqual(1);
-    expect(wrapper.find("circle").last().props()).toEqual({
-      cx: 0, cy: 0, fill: "rgb(11, 83, 148)", fillOpacity: 0.2, r: 55
-    });
+    const { container } = renderPeripherals(p);
+    expect(container.querySelectorAll("#water").length).toEqual(1);
+    const circle = container.querySelectorAll("#water circle")[0];
+    expect(getNumericAttribute(circle, "cx")).toEqual(0);
+    expect(getNumericAttribute(circle, "cy")).toEqual(0);
+    expect(getAttribute(circle, "fill")).toEqual("rgb(11, 83, 148)");
+    expect(getNumericAttribute(circle, "fillOpacity")).toEqual(0.2);
+    expect(getNumericAttribute(circle, "r")).toEqual(55);
     animationToggle(p, 75, 25);
   });
 
@@ -95,11 +127,13 @@ describe("<BotPeripherals/>", () => {
     const p = fakeProps();
     p.peripheralValues[0].label = "vacuum pump";
     p.peripheralValues[0].value = true;
-    const wrapper = shallow(<BotPeripherals {...p} />);
-    expect(wrapper.find("#vacuum").length).toEqual(1);
-    expect(wrapper.find("circle").last().props()).toEqual({
-      fill: "url(#WaveGradient)", cx: 0, cy: 0, r: 100
-    });
+    const { container } = renderPeripherals(p);
+    expect(container.querySelectorAll("#vacuum").length).toEqual(1);
+    const circle = container.querySelectorAll("#vacuum circle")[0];
+    expect(getAttribute(circle, "fill")).toEqual("url(#WaveGradient)");
+    expect(getNumericAttribute(circle, "cx")).toEqual(0);
+    expect(getNumericAttribute(circle, "cy")).toEqual(0);
+    expect(getNumericAttribute(circle, "r")).toEqual(100);
     animationToggle(p, 3, 1);
   });
 
@@ -107,11 +141,13 @@ describe("<BotPeripherals/>", () => {
     const p = fakeProps();
     p.peripheralValues[0].label = "rotary tool";
     p.peripheralValues[0].value = true;
-    const wrapper = shallow(<BotPeripherals {...p} />);
-    expect(wrapper.find("#rotary").length).toEqual(1);
-    expect(wrapper.find("circle").last().props()).toEqual({
-      fill: "url(#WaveGradient)", cx: 0, cy: 0, r: 100
-    });
+    const { container } = renderPeripherals(p);
+    expect(container.querySelectorAll("#rotary").length).toEqual(1);
+    const circle = container.querySelectorAll("#rotary circle")[0];
+    expect(getAttribute(circle, "fill")).toEqual("url(#WaveGradient)");
+    expect(getNumericAttribute(circle, "cx")).toEqual(0);
+    expect(getNumericAttribute(circle, "cy")).toEqual(0);
+    expect(getNumericAttribute(circle, "r")).toEqual(100);
     animationToggle(p, 3, 1);
   });
 });

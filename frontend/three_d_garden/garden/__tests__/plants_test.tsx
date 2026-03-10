@@ -1,37 +1,95 @@
-interface MockRef {
-  current: {
-    scale: { set: Function; };
-    position: { z: number; };
-  } | undefined;
-}
-const mockRef = (): MockRef => ({
-  current: {
-    scale: { set: jest.fn() },
-    position: { z: 0 },
-  }
-});
-jest.mock("react", () => ({
-  ...jest.requireActual("react"),
-  useRef: mockRef,
-}));
-
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { clone } from "lodash";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
+import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import { INITIAL } from "../../config";
-import { ThreeDPlant, ThreeDPlantProps } from "../plants";
+import {
+  PlantSpreadInstances,
+  PlantSpreadInstancesProps,
+  ThreeDPlantLabel,
+  ThreeDPlantLabelProps,
+  outOfBoundsShaderModification,
+} from "../plants";
 import { Path } from "../../../internal_urls";
 import { Actions } from "../../../constants";
-import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import { convertPlants } from "../../../farm_designer/three_d_garden_map";
+import { setMockInstanceId } from "../../../__test_support__/three_d_mocks";
+import { useFrame } from "@react-three/fiber";
+import { Quaternion, WebGLProgramParametersWithUniforms } from "three";
+import { Mode } from "../../../farm_designer/map/interfaces";
+import * as mapUtil from "../../../farm_designer/map/util";
 
-describe("<ThreeDPlant />", () => {
+interface MockRef {
+  current: {
+    setMatrixAt?: Function;
+    setColorAt?: Function;
+    instanceMatrix?: { needsUpdate: boolean };
+    instanceColor?: { needsUpdate: boolean; count?: number };
+    geometry?: { setAttribute: Function; getAttribute: Function };
+    material?: { needsUpdate: boolean } | { needsUpdate: boolean }[];
+  } | undefined;
+}
+let mockRefImpl = (): MockRef => ({ current: undefined });
+let refQueue: MockRef[] = [];
+let allRefs: MockRef[] = [];
+let allowImperativeHandle = true;
+let reactUseRefSpy: jest.SpyInstance;
+let reactUseImperativeHandleSpy: jest.SpyInstance;
+
+let getModeSpy: jest.SpyInstance;
+
+const buildMeshRef = (): MockRef["current"] => ({
+  setMatrixAt: jest.fn(),
+  setColorAt: jest.fn(),
+  instanceMatrix: { needsUpdate: false },
+  instanceColor: { needsUpdate: false, count: 0 },
+  geometry: {
+    setAttribute: jest.fn(),
+    getAttribute: jest.fn(),
+  },
+  material: [{ needsUpdate: false }],
+});
+
+const getMeshRef = () =>
+  allRefs.find(ref => !!ref.current?.setMatrixAt);
+
+const queueMeshRef = (override?: Partial<MockRef["current"]>) => {
+  refQueue = Array.from({ length: 10 }, () => ({
+    current: {
+      ...buildMeshRef(),
+      ...override,
+    },
+  }));
+};
+
+describe("<ThreeDPlantLabel />", () => {
   beforeEach(() => {
+    reactUseRefSpy = jest.spyOn(React, "useRef")
+      .mockImplementation(() => {
+        const nextRef = refQueue.shift() || mockRefImpl();
+        allRefs.push(nextRef);
+        return nextRef as never;
+      });
+    const actualUseImperativeHandle = jest.requireActual("react")
+      .useImperativeHandle as typeof React.useImperativeHandle;
+    reactUseImperativeHandleSpy = jest.spyOn(React, "useImperativeHandle")
+      .mockImplementation((ref, init, deps) =>
+        allowImperativeHandle
+          ? actualUseImperativeHandle(ref, init, deps)
+          : undefined);
     location.pathname = Path.mock(Path.designer());
+    refQueue = [{ current: undefined }];
+    allRefs = [];
+    mockRefImpl = () => ({ current: undefined });
   });
 
-  const fakeProps = (): ThreeDPlantProps => {
+  afterEach(() => {
+    reactUseRefSpy.mockRestore();
+    reactUseImperativeHandleSpy.mockRestore();
+  });
+
+  const fakeProps = (): ThreeDPlantLabelProps => {
     const config = clone(INITIAL);
     const plant = fakePlant();
     plant.body.name = "Beet";
@@ -43,10 +101,7 @@ describe("<ThreeDPlant />", () => {
       i: 0,
       config: config,
       hoveredPlant: undefined,
-      visible: true,
       getZ: () => 0,
-      activePositionRef: { current: { x: 0, y: 0 } },
-      plants: convertPlants(config, [plant, otherPlant]),
     };
   };
 
@@ -54,8 +109,7 @@ describe("<ThreeDPlant />", () => {
     const p = fakeProps();
     p.config.labels = true;
     p.config.labelsOnHover = false;
-    p.labelOnly = true;
-    render(<ThreeDPlant {...p} />);
+    render(<ThreeDPlantLabel {...p} />);
     expect(screen.getByText("Beet")).toBeInTheDocument();
   });
 
@@ -64,100 +118,236 @@ describe("<ThreeDPlant />", () => {
     p.config.labels = true;
     p.config.labelsOnHover = true;
     p.hoveredPlant = 0;
-    p.labelOnly = true;
-    render(<ThreeDPlant {...p} />);
+    render(<ThreeDPlantLabel {...p} />);
     expect(screen.getByText("Beet")).toBeInTheDocument();
   });
+});
 
-  it("renders plant", () => {
-    const p = fakeProps();
-    p.config.labels = false;
-    p.config.labelsOnHover = false;
-    p.labelOnly = false;
-    p.config.light = false;
-    const { container } = render(<ThreeDPlant {...p} />);
-    expect(container).toContainHTML("avif");
+describe("<ThreeDPlantSpread />", () => {
+  beforeEach(() => {
+    reactUseRefSpy = jest.spyOn(React, "useRef")
+      .mockImplementation(() => {
+        const nextRef = refQueue.shift() || mockRefImpl();
+        allRefs.push(nextRef);
+        return nextRef as never;
+      });
+    const actualUseImperativeHandle = jest.requireActual("react")
+      .useImperativeHandle as typeof React.useImperativeHandle;
+    reactUseImperativeHandleSpy = jest.spyOn(React, "useImperativeHandle")
+      .mockImplementation((ref, init, deps) =>
+        allowImperativeHandle
+          ? actualUseImperativeHandle(ref, init, deps)
+          : undefined);
+    location.pathname = Path.mock(Path.designer());
+    (useFrame as jest.Mock).mockClear();
+    (useFrame as jest.Mock).mockImplementation((frameFn: Function) => frameFn({
+      camera: { quaternion: new Quaternion() },
+    }));
+    refQueue = [];
+    allRefs = [];
+    getModeSpy = jest.spyOn(mapUtil, "getMode").mockReturnValue(Mode.none);
+    mockRefImpl = () => ({ current: undefined });
   });
+
+  afterEach(() => {
+    reactUseRefSpy.mockRestore();
+    reactUseImperativeHandleSpy.mockRestore();
+    getModeSpy?.mockRestore();
+  });
+
+  const fakeProps = (): PlantSpreadInstancesProps => {
+    const config = clone(INITIAL);
+    const plant = fakePlant();
+    plant.body.name = "Beet";
+    plant.body.id = 1;
+    const otherPlant = fakePlant();
+    otherPlant.body.id = 2;
+    otherPlant.body.openfarm_slug = "carrot";
+    const plants = convertPlants(config, [plant, otherPlant]);
+    plants[1].icon = "https://example.com/icon-2.avif";
+    return {
+      plants: plants,
+      config: config,
+      visible: true,
+      getZ: () => 0,
+      activePositionRef: { current: { x: 0, y: 0 } },
+      spreadVisible: false,
+    };
+  };
 
   it("renders spread", () => {
     location.pathname = Path.mock(Path.cropSearch("mint"));
+    queueMeshRef();
     const p = fakeProps();
     p.spreadVisible = true;
-    const { container } = render(<ThreeDPlant {...p} />);
-    expect(container).toContainHTML("sphere");
+    const { container } = render(<PlantSpreadInstances {...p} />);
+    expect(container.querySelectorAll("instancedmesh").length).toBe(1);
   });
 
   it("renders spread: edit plant mode", () => {
     location.pathname = Path.mock(Path.plants("1"));
+    queueMeshRef();
     const p = fakeProps();
     p.spreadVisible = false;
-    const { container } = render(<ThreeDPlant {...p} />);
-    expect(container).toContainHTML("sphere");
+    const { container } = render(<PlantSpreadInstances {...p} />);
+    expect(container.querySelectorAll("instancedmesh").length).toBe(1);
   });
 
   it("renders spread: edit plant mode without plant", () => {
     location.pathname = Path.mock(Path.plants("999999"));
+    queueMeshRef();
     const p = fakeProps();
     p.spreadVisible = false;
-    const { container } = render(<ThreeDPlant {...p} />);
-    expect(container).toContainHTML("sphere");
+    const { container } = render(<PlantSpreadInstances {...p} />);
+    expect(container.querySelectorAll("instancedmesh").length).toBe(1);
   });
 
-  it("renders plant: not size animated", () => {
-    const p = fakeProps();
-    p.config.labels = false;
-    p.config.labelsOnHover = false;
-    p.labelOnly = false;
-    p.config.light = false;
-    p.config.animateSeasons = true;
-    p.startTimeRef = undefined;
-    const { container } = render(<ThreeDPlant {...p} />);
-    expect(container).toContainHTML("avif");
-  });
-
-  it("renders plant: size animated", () => {
-    const p = fakeProps();
-    p.config.labels = false;
-    p.config.labelsOnHover = false;
-    p.labelOnly = false;
-    p.config.light = false;
-    p.config.animateSeasons = true;
-    p.startTimeRef = { current: 0 };
-    const { container } = render(<ThreeDPlant {...p} />);
-    expect(container).toContainHTML("avif");
-  });
-
-  it("renders plant under light", () => {
-    const p = fakeProps();
-    p.config.labels = false;
-    p.config.labelsOnHover = false;
-    p.labelOnly = false;
-    p.config.light = true;
-    const { container } = render(<ThreeDPlant {...p} />);
-    expect(container).toContainHTML("avif");
-  });
-
-  it("navigates to plant info", () => {
+  it("handles click on spread part", () => {
+    setMockInstanceId(0);
+    queueMeshRef();
     const p = fakeProps();
     const dispatch = jest.fn();
     p.dispatch = mockDispatch(dispatch);
-    p.plant.id = 1;
-    const { container } = render(<ThreeDPlant {...p} />);
-    const plant = container.querySelector("[name='0'");
-    plant && fireEvent.click(plant);
+    const { container } = render(<PlantSpreadInstances {...p} />);
+    const mesh = container.querySelector("instancedmesh");
+    mesh && fireEvent.click(mesh, { instanceId: 0 });
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_PANEL_OPEN, payload: true,
     });
     expect(mockNavigate).toHaveBeenCalledWith(Path.plants("1"));
   });
 
-  it("doesn't navigate to plant info", () => {
+  it("updates instance colors on frame", () => {
+    let mesh:
+      (MockRef["current"] & { geometry: { setAttribute: Function } }) | undefined;
+    const imperativeHandleSpy = jest
+      .spyOn(React, "useImperativeHandle")
+      .mockImplementation((ref: { current?: unknown }, init: Function) => {
+        const value = init() as MockRef["current"];
+        if (value) {
+          value.instanceColor = { needsUpdate: false, count: 0 };
+          value.geometry = {
+            setAttribute: jest.fn(),
+            getAttribute: jest.fn(),
+          };
+        }
+        ref.current = value;
+        mesh = value as typeof mesh;
+      });
     const p = fakeProps();
-    p.dispatch = undefined;
-    p.plant.id = 1;
-    const { container } = render(<ThreeDPlant {...p} />);
-    const plant = container.querySelector("[name='0'");
-    plant && fireEvent.click(plant);
-    expect(mockNavigate).not.toHaveBeenCalled();
+    p.visible = true;
+    getModeSpy.mockReturnValue(Mode.none);
+    render(<PlantSpreadInstances {...p} />);
+    const frameFn = (useFrame as jest.Mock).mock.calls[0][0];
+    frameFn({ camera: { quaternion: new Quaternion() } });
+    imperativeHandleSpy.mockRestore();
+    expect(mesh).toBeDefined();
+    expect(mesh?.setMatrixAt).toHaveBeenCalled();
+    expect(mesh?.geometry?.setAttribute).toHaveBeenCalled();
+  });
+
+  it("skips frame updates when invisible", () => {
+    queueMeshRef();
+    const p = fakeProps();
+    p.visible = false;
+    render(<PlantSpreadInstances {...p} />);
+    const frameFn = (useFrame as jest.Mock).mock.calls[0][0];
+    frameFn({ camera: { quaternion: new Quaternion() } });
+    const meshRef = getMeshRef();
+    expect(meshRef?.current?.instanceMatrix?.needsUpdate).toBeFalsy();
+  });
+
+  it("handles missing mesh in layout effect", () => {
+    reactUseImperativeHandleSpy.mockImplementation(() => undefined);
+    reactUseRefSpy.mockImplementation(() => ({ current: undefined }) as never);
+    allowImperativeHandle = false;
+    const p = fakeProps();
+    render(<PlantSpreadInstances {...p} />);
+    allowImperativeHandle = true;
+    const meshRef = getMeshRef();
+    expect(meshRef?.current).toBeUndefined();
+  });
+
+  it("uses material object branch", () => {
+    let mesh:
+      (MockRef["current"] & { material: { needsUpdate: boolean } }) | undefined;
+    const imperativeHandleSpy = jest
+      .spyOn(React, "useImperativeHandle")
+      .mockImplementation((ref: { current?: unknown }, init: Function) => {
+        const value = init() as MockRef["current"];
+        if (value) {
+          value.material = { needsUpdate: false };
+        }
+        ref.current = value;
+        mesh = value as typeof mesh;
+      });
+    const p = fakeProps();
+    p.activePositionRef =
+      { current: undefined as unknown as { x: number; y: number } };
+    location.pathname = Path.mock(Path.plants("1"));
+    render(<PlantSpreadInstances {...p} />);
+    const frameFn = (useFrame as jest.Mock).mock.calls[0][0];
+    frameFn({ camera: { quaternion: new Quaternion() } });
+    imperativeHandleSpy.mockRestore();
+    expect(mesh).toBeDefined();
+    const material = mesh?.material as { needsUpdate: boolean };
+    expect(material.needsUpdate).toBe(true);
+  });
+
+  it("handles click with missing instance id", () => {
+    setMockInstanceId(undefined);
+    queueMeshRef();
+    const p = fakeProps();
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
+    const { container } = render(<PlantSpreadInstances {...p} />);
+    const mesh = container.querySelector("instancedmesh");
+    mesh && fireEvent.click(mesh, { instanceId: undefined });
+    expect(dispatch).not.toHaveBeenCalled();
+  });
+
+  it("skips click when plant id missing", () => {
+    setMockInstanceId(0);
+    queueMeshRef();
+    const p = fakeProps();
+    p.plants[0].id = undefined as unknown as number;
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
+    const { container } = render(<PlantSpreadInstances {...p} />);
+    const mesh = container.querySelector("instancedmesh");
+    mesh && fireEvent.click(mesh, { instanceId: 0 });
+    expect(dispatch).not.toHaveBeenCalled();
+  });
+
+  it("skips click when plant is missing", () => {
+    setMockInstanceId(99);
+    queueMeshRef();
+    const p = fakeProps();
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
+    const { container } = render(<PlantSpreadInstances {...p} />);
+    const mesh = container.querySelector("instancedmesh");
+    mesh && fireEvent.click(mesh, { instanceId: 99 });
+    expect(dispatch).not.toHaveBeenCalled();
+  });
+});
+
+describe("outOfBoundsShaderModification", () => {
+  it("uses uInside when instance colors are off", () => {
+    const shader = {
+      vertexShader: [
+        "#include <common>",
+        "#include <color_vertex>",
+        "#include <worldpos_vertex>",
+      ].join("\n"),
+      fragmentShader: [
+        "#include <common>",
+        "#include <color_fragment>",
+      ].join("\n"),
+      uniforms: {},
+    } as unknown as WebGLProgramParametersWithUniforms;
+    outOfBoundsShaderModification(shader, false);
+    expect(shader.fragmentShader).toContain("uInside");
+    expect(shader.vertexShader).not.toContain("vInstanceColor");
   });
 });

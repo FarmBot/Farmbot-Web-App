@@ -1,11 +1,14 @@
 let mockIsMobile = false;
-jest.mock("../../screen_size", () => ({
-  isMobile: () => mockIsMobile,
-}));
-
 import React from "react";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { OsDownloadPage } from "../content";
+import * as screenSize from "../../screen_size";
+
+beforeEach(() => {
+  mockIsMobile = false;
+  jest.spyOn(screenSize, "isMobile").mockImplementation(() => mockIsMobile);
+});
+
 
 const text = (computer: string) =>
   `Your FarmBot's internal computer is the Raspberry Pi ${computer}`;

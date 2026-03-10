@@ -24,7 +24,7 @@ import { SequencesPanelState } from "../../interfaces";
 import { Actions } from "../../constants";
 import { isMobile } from "../../screen_size";
 import { NavigationContext } from "../../routes_helpers";
-import { useNavigate } from "react-router";
+import { NavigateFunction, useNavigate } from "react-router";
 import { Color } from "farmbot";
 
 interface FeaturedSequence {
@@ -65,7 +65,7 @@ export class RawDesignerSequenceList
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = this.context;
+  navigate: NavigateFunction = url => { this.context?.(url as string); };
 
   render() {
     const panelName = "designer-sequence-list";
@@ -125,7 +125,6 @@ export class RawDesignerSequenceList
 
 export const DesignerSequenceList =
   connect(mapStateToProps)(RawDesignerSequenceList);
-// eslint-disable-next-line import/no-default-export
 export default DesignerSequenceList;
 
 interface SequenceListActionsProps {

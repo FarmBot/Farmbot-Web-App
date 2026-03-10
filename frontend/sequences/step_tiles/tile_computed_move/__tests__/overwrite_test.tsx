@@ -1,5 +1,5 @@
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import {
   OverwriteInputRowProps, AxisSelection, LocSelection,
 } from "../interfaces";
@@ -9,8 +9,6 @@ import {
   OVERWRITE_OPTION_LOOKUP,
 } from "../overwrite";
 import { Move } from "farmbot";
-import { MoveStepInput } from "../input";
-import { FBSelect } from "../../../../ui";
 
 describe("overwriteAxis()", () => {
   it("doesn't return node", () => {
@@ -64,8 +62,10 @@ describe("<OverwriteInputRow />", () => {
 
   it("changes overwrite selection", () => {
     const p = fakeProps();
-    const wrapper = shallow(<OverwriteInputRow {...p} />);
-    wrapper.find("FBSelect").first().simulate("change", {
+    const row = OverwriteInputRow(p) as React.ReactElement<{ children?: React.ReactNode }>;
+    const children = React.Children.toArray(row.props.children) as JSX.Element[];
+    const xInput = (children[1]).props.children as JSX.Element;
+    xInput.props.onChange({
       label: "", value: "custom"
     });
     expect(p.setAxisOverwriteState)
@@ -79,8 +79,10 @@ describe("<OverwriteInputRow />", () => {
       y: AxisSelection.custom,
       z: AxisSelection.custom,
     };
-    const wrapper = shallow(<OverwriteInputRow {...p} />);
-    wrapper.find(MoveStepInput).first().simulate("clear");
+    const row = OverwriteInputRow(p) as React.ReactElement<{ children?: React.ReactNode }>;
+    const children = React.Children.toArray(row.props.children) as JSX.Element[];
+    const xInput = (children[1]).props.children as JSX.Element;
+    xInput.props.onClear();
     expect(p.setAxisOverwriteState)
       .toHaveBeenCalledWith("x", AxisSelection.none);
   });
@@ -88,14 +90,16 @@ describe("<OverwriteInputRow />", () => {
   it("renders custom", () => {
     const p = fakeProps();
     p.locationSelection = LocSelection.custom;
-    const wrapper = mount(<OverwriteInputRow {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("x, y, z (mm)");
+    const { container } = render(<OverwriteInputRow {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("x, y, z (mm)");
   });
 
   it("renders options", () => {
     const p = fakeProps();
-    const wrapper = mount(<OverwriteInputRow {...p} />);
-    const items = wrapper.find(FBSelect).last().props().list;
+    const row = OverwriteInputRow(p) as React.ReactElement<{ children?: React.ReactNode }>;
+    const children = React.Children.toArray(row.props.children) as JSX.Element[];
+    const zInput = (children[3]).props.children as JSX.Element;
+    const items = zInput.props.list;
     expect(items)
       .toContainEqual(OVERWRITE_OPTION_LOOKUP()[AxisSelection.safe_height]);
     expect(items)

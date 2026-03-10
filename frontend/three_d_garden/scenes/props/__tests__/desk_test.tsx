@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { Desk, DeskProps } from "../desk";
 import { clone } from "lodash";
 import { INITIAL } from "../../../config";
@@ -11,7 +11,7 @@ describe("<Desk />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<Desk {...fakeProps()} />);
-    expect(wrapper.html()).toContain("desk");
+    const { container } = render(<Desk {...fakeProps()} />);
+    expect(container.innerHTML).toContain("desk");
   });
 });

@@ -1,22 +1,30 @@
-jest.mock("../../../devices/actions", () => ({ changeStepSize: jest.fn() }));
-
 import React from "react";
-import { shallow } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { StepSizeSelector } from "../step_size_selector";
-import { changeStepSize } from "../../../devices/actions";
+import * as deviceActions from "../../../devices/actions";
 import { StepSizeSelectorProps } from "../interfaces";
 
 describe("<StepSizeSelector />", () => {
+  let changeStepSizeSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    changeStepSizeSpy =
+      jest.spyOn(deviceActions, "changeStepSize").mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    changeStepSizeSpy.mockRestore();
+  });
+
   const fakeProps = (): StepSizeSelectorProps => ({
     dispatch: jest.fn(),
     selected: 5,
   });
 
   it("calls changeStepSize", () => {
-    const wrapper = shallow(<StepSizeSelector {...fakeProps()} />);
-    const buttons = wrapper.find("button");
-    expect(buttons.length).toBe(5);
-    buttons.first().simulate("click");
-    expect(changeStepSize).toHaveBeenCalledWith(1);
+    const { container } = render(<StepSizeSelector {...fakeProps()} />);
+    expect(container.querySelectorAll("button").length).toBe(5);
+    fireEvent.click(screen.getByText("1"));
+    expect(deviceActions.changeStepSize).toHaveBeenCalledWith(1);
   });
 });

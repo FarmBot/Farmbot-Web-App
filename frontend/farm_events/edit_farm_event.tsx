@@ -62,5 +62,4 @@ export const RawEditFarmEvent = (props: AddEditFarmEventProps) => {
 };
 
 export const EditFarmEvent = connect(mapStateToPropsAddEdit)(RawEditFarmEvent);
-// eslint-disable-next-line import/no-default-export
 export default EditFarmEvent;

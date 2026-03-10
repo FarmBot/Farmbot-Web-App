@@ -18,10 +18,6 @@ let mockRef: MockRef = {
     },
   }
 };
-jest.mock("react", () => ({
-  ...jest.requireActual("react"),
-  useRef: () => mockRef,
-}));
 
 import React from "react";
 import { render } from "@testing-library/react";
@@ -30,7 +26,18 @@ import { clone } from "lodash";
 import { GantryBeam, GantryBeamProps } from "../gantry_beam";
 import { Shape, Texture } from "three";
 
+let reactUseRefSpy: jest.SpyInstance;
+
 describe("<GantryBeam />", () => {
+  beforeEach(() => {
+    reactUseRefSpy = jest.spyOn(React, "useRef")
+      .mockImplementation(() => mockRef as never);
+  });
+
+  afterEach(() => {
+    reactUseRefSpy.mockRestore();
+  });
+
   const fakeProps = (): GantryBeamProps => ({
     config: clone(INITIAL),
     beamShape: new Shape(),

@@ -24,7 +24,7 @@ import { calculateImageAgeInfo } from "../photos/photo_filter_settings/util";
 import { Xyz } from "farmbot";
 import { ProfileViewer } from "./map/profile";
 import { ThreeDGardenMap } from "./three_d_garden_map";
-import { Outlet } from "react-router";
+import { NavigateFunction, Outlet } from "react-router";
 import { ErrorBoundary } from "../error_boundary";
 import { get3DConfigValueFunction } from "../settings/three_d_settings";
 import { isDesktop, isMobile } from "../screen_size";
@@ -143,7 +143,7 @@ export class RawFarmDesigner
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = this.context;
+  navigate: NavigateFunction = url => { this.context?.(url as string); };
 
   render() {
     const {
@@ -238,6 +238,7 @@ export class RawFarmDesigner
           sensorReadings={this.props.sensorReadings}
           sensors={this.props.sensors}
           farmwareEnvs={this.props.farmwareEnvs}
+          logs={this.props.logs}
           cameraCalibrationData={this.props.cameraCalibrationData}
           getWebAppConfigValue={this.props.getConfigValue} />
         : <div
@@ -321,5 +322,4 @@ export class RawFarmDesigner
 }
 
 export const FarmDesigner = connect(mapStateToProps)(RawFarmDesigner);
-// eslint-disable-next-line import/no-default-export
 export default FarmDesigner;

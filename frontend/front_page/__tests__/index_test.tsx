@@ -1,11 +1,15 @@
-jest.mock("../../util/page", () => ({ entryPoint: jest.fn() }));
-
-import { entryPoint } from "../../util";
+import * as page from "../../util/page";
 import { FrontPage } from "../front_page";
+
+let entryPointSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  entryPointSpy = jest.spyOn(page, "entryPoint").mockImplementation(jest.fn());
+});
 
 describe("FrontPage loader", () => {
   it("calls entryPoint", async () => {
     await import("../index");
-    expect(entryPoint).toHaveBeenCalledWith(FrontPage);
+    expect(entryPointSpy).toHaveBeenCalledWith(FrontPage);
   });
 });

@@ -1,11 +1,13 @@
-jest.mock("../../util/page", () => ({ entryPoint: jest.fn() }));
-
-import { entryPoint } from "../../util";
+import * as util from "../../util";
 import { PasswordReset } from "../password_reset";
 
 describe("PasswordReset loader", () => {
+
   it("calls entryPoint", async () => {
-    await import("../index");
-    expect(entryPoint).toHaveBeenCalledWith(PasswordReset);
+    const entryPointSpy = jest.spyOn(util, "entryPoint")
+      .mockImplementation(jest.fn());
+    const { initPasswordReset } = await import("../index");
+    initPasswordReset();
+    expect(entryPointSpy).toHaveBeenCalledWith(PasswordReset);
   });
 });

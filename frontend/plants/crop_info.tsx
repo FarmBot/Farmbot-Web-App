@@ -136,16 +136,19 @@ const handleDisplay = (
   [field, value]: [string, string | string[] | number],
   i: number,
 ) => {
-  const commonProps: SummaryItemPropsBase = { key: field, i, field };
+  const commonProps = { i, field };
   switch (field) {
     case "spread":
     case "row_spacing":
     case "height":
-      return <CmProperty {...commonProps} value={value as number} />;
+      return <CmProperty key={field} {...commonProps} value={value as number} />;
     case "common_names":
-      return <CommonNames {...commonProps} value={value as string[]} />;
+      return <CommonNames key={field} {...commonProps} value={value as string[]} />;
     default:
-      return <DefaultPropertyDisplay {...commonProps} value={value as string} />;
+      return <DefaultPropertyDisplay
+        key={field}
+        {...commonProps}
+        value={value as string} />;
   }
 };
 
@@ -390,5 +393,4 @@ export const RawCropInfo = (props: CropInfoProps) => {
 };
 
 export const CropInfo = connect(mapStateToProps)(RawCropInfo);
-// eslint-disable-next-line import/no-default-export
 export default CropInfo;

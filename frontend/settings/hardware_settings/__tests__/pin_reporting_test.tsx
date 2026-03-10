@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { PinGuard } from "../pin_guard";
 import { PinGuardProps } from "../interfaces";
 import { settingsPanelState } from "../../../__test_support__/panel_state";
@@ -18,7 +18,7 @@ describe("<PinGuard />", () => {
   it("renders", () => {
     const p = fakeProps();
     p.settingsPanelState.pin_guard = true;
-    const wrapper = mount(<PinGuard {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("select a pin");
+    const { container } = render(<PinGuard {...p} />);
+    expect((container.textContent || "").toLowerCase()).toContain("select a pin");
   });
 });

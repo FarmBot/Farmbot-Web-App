@@ -1,7 +1,3 @@
-jest.mock("../../../api/crud", () => ({
-  overwrite: jest.fn(),
-}));
-
 import React from "react";
 import {
   generateNewVariableLabel,
@@ -14,17 +10,31 @@ import {
   fakeRegimen,
   fakeSequence,
 } from "../../../__test_support__/fake_state/resources";
-import { shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import { LocalsListProps, AllowedVariableNodes } from "../locals_list_support";
 import { VariableNameSet } from "../../../resources/interfaces";
-import { VariableForm } from "../variable_form";
 import { error } from "../../../toast/toast";
 import { overwrite } from "../../../api/crud";
+import * as crud from "../../../api/crud";
 import { fakeVariableNameSet } from "../../../__test_support__/fake_variables";
 import { cloneDeep } from "lodash";
+import * as variableForm from "../variable_form";
+
+let variableFormSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  jest.spyOn(crud, "overwrite").mockImplementation(jest.fn());
+  variableFormSpy = jest.spyOn(variableForm, "VariableForm")
+    .mockImplementation(() => <div className={"variable-form"} />);
+});
+
+afterEach(() => {
+  variableFormSpy.mockRestore();
+});
 
 describe("<LocalsList/>", () => {
   const coordinate: Coordinate = {
@@ -56,15 +66,15 @@ describe("<LocalsList/>", () => {
   };
 
   it("doesn't have any variables to render", () => {
-    const wrapper = shallow(<LocalsList {...fakeProps()} />);
-    expect(wrapper.find(VariableForm).length).toBe(0);
+    const { container } = render(<LocalsList {...fakeProps()} />);
+    expect(container.querySelectorAll(".variable-form").length).toBe(0);
   });
 
   it("shows all variables", () => {
     const p = fakeProps();
     p.variableData = variableData;
-    const wrapper = shallow(<LocalsList {...p} />);
-    expect(wrapper.find(VariableForm).length).toBe(1);
+    const { container } = render(<LocalsList {...p} />);
+    expect(container.querySelectorAll(".variable-form").length).toBe(1);
   });
 
   it("hides already assigned variables", () => {
@@ -72,8 +82,8 @@ describe("<LocalsList/>", () => {
     p.allowedVariableNodes = AllowedVariableNodes.identifier;
     p.bodyVariables = [];
     p.variableData = variableData;
-    const wrapper = shallow(<LocalsList {...p} />);
-    expect(wrapper.find(VariableForm).length).toBe(0);
+    const { container } = render(<LocalsList {...p} />);
+    expect(container.querySelectorAll(".variable-form").length).toBe(0);
   });
 });
 

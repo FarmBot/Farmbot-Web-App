@@ -7,55 +7,91 @@ import {
   VacuumPumpCoverMaterial,
 } from "../three_d_garden/constants";
 import * as THREE from "three";
-import React, { ReactNode } from "react";
-import { TransitionFn, UseSpringProps } from "@react-spring/three";
-import { ThreeElements, ThreeEvent } from "@react-three/fiber";
-import {
-  Cloud, Clouds, Image, Instance, Instances, Plane, Trail, Tube,
+import React, { type ReactNode } from "react";
+import type { UseSpringProps } from "@react-spring/three";
+import type { ThreeElements, ThreeEvent } from "@react-three/fiber";
+import type {
+  Billboard, Cloud, Clouds, Cylinder, Image, Instance, Instances, Plane,
+  Sphere, Torus, Trail, Tube,
 } from "@react-three/drei";
 
 const GroupForTests = (props: ThreeElements["group"]) =>
   // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
   <group {...props} />;
 
+let mockInstanceId: number | undefined = undefined;
+export const setMockInstanceId = (id?: number) => { mockInstanceId = id; };
+
 type Event = ThreeEvent<PointerEvent>;
+
+const injectEvent = (event: Event) => ({
+  // @ts-expect-error: This spread always overwrites this property.
+  stopPropagation: jest.fn(),
+  instanceId: mockInstanceId,
+  // @ts-expect-error: This spread always overwrites this property.
+  point: { x: 0, y: 0 },
+  ...event,
+});
 
 const MeshForTests = (props: ThreeElements["mesh"]) =>
   // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
   <mesh {...props}
-    onPointerMove={(e: Event) =>
-      props.onPointerMove?.({
-        // @ts-expect-error: This spread always overwrites this property.
-        point: { x: 0, y: 0 },
-        ...e,
-      })}
-    onClick={(e: Event) =>
-      props.onClick?.({
-        // @ts-expect-error: This spread always overwrites this property.
-        stopPropagation: jest.fn(),
-        // @ts-expect-error: This spread always overwrites this property.
-        point: { x: 0, y: 0 },
-        ...e,
-      } as unknown as Event)}>
+    onPointerMove={(e: Event) => props.onPointerMove?.(injectEvent(e))}
+    onClick={(e: Event) => props.onClick?.(injectEvent(e))}>
     {props.name}
     {props.children}
     {/* @ts-expect-error Property does not exist on type JSX.IntrinsicElements */}
   </mesh>;
 
+const InstancedMeshForTests =
+  React.forwardRef<unknown, ThreeElements["instancedMesh"]>((props, ref) =>
+    // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
+    <instancedMesh ref={ref} {...props}
+      onPointerMove={(e: Event) => props.onPointerMove?.(injectEvent(e))}
+      onClick={(e: Event) => props.onClick?.(injectEvent(e))}>
+      {props.name}
+      {props.children}
+      {/* @ts-expect-error Property does not exist on type JSX.IntrinsicElements */}
+    </instancedMesh>,
+  );
+
+const Stub = (props: Record<string, unknown>) =>
+  // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
+  <div {...props} />;
+const StubWithRef = React.forwardRef(
+  (props: Record<string, unknown>, ref) =>
+    // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
+    <div ref={ref} {...props} />,
+);
+const AmbientLightForTests = (props: Record<string, unknown>) =>
+  // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
+  <ambientlight {...props} />;
+const DirectionalLightForTests = React.forwardRef(
+  (props: Record<string, unknown>, ref) =>
+    // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
+    <directionallight ref={ref} {...props} />,
+);
+const PointLightForTests = React.forwardRef(
+  (props: Record<string, unknown>, ref) =>
+    // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
+    <pointlight ref={ref} {...props} />,
+);
+const PrimitiveForTests = (props: Record<string, unknown>) =>
+  // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
+  <primitive {...props} />;
+const AxesHelperForTests = (props: Record<string, unknown>) =>
+  // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
+  <axeshelper {...props} />;
+
 jest.mock("../three_d_garden/components", () => ({
-  ...jest.requireActual("../three_d_garden/components"),
-  Mesh: (props: ThreeElements["mesh"]) => <MeshForTests {...props} />,
+  AmbientLight: AmbientLightForTests,
+  DirectionalLight: DirectionalLightForTests,
   Group: (props: ThreeElements["group"]) =>
     props.visible === false
       ? <></>
       : <GroupForTests {...props} />,
-  MeshBasicMaterial: (props: THREE.MeshBasicMaterial) => {
-    // eslint-disable-next-line max-len
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
-    props.onBeforeCompile?.({} as any, {} as any);
-    // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
-    return <div {...props} />;
-  },
+  Mesh: (props: ThreeElements["mesh"]) => <MeshForTests {...props} />,
+  PointLight: PointLightForTests,
   MeshPhongMaterial: (props: THREE.MeshPhongMaterial) => {
     props.onBeforeCompile?.(
       // eslint-disable-next-line max-len
@@ -67,32 +103,127 @@ jest.mock("../three_d_garden/components", () => ({
     // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
     return <div {...props} />;
   },
+  MeshNormalMaterial: Stub,
+  InstancedMesh: React.forwardRef(
+    (props: ThreeElements["instancedMesh"], ref) => {
+      React.useImperativeHandle(ref, () => ({
+        setMatrixAt: jest.fn(),
+        setColorAt: jest.fn(),
+        instanceMatrix: { needsUpdate: false },
+        instanceColor: { needsUpdate: false },
+      }));
+      return <InstancedMeshForTests {...props} />;
+    },
+  ),
+  Primitive: PrimitiveForTests,
+  BoxGeometry: Stub,
+  MeshBasicMaterial: (props: THREE.MeshBasicMaterial) => {
+    // eslint-disable-next-line max-len
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any
+    props.onBeforeCompile?.({} as any, {} as any);
+    // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
+    return <div {...props} />;
+  },
+  AxesHelper: AxesHelperForTests,
+  SpotLight: StubWithRef,
+  MeshStandardMaterial: StubWithRef,
+  Points: Stub,
+  BufferGeometry: Stub,
+  BufferAttribute: Stub,
+  PointsMaterial: StubWithRef,
+  PlaneGeometry: StubWithRef,
+  LineSegments: StubWithRef,
+  LineBasicMaterial: StubWithRef,
+  SphereGeometry: Stub,
 }));
 
 jest.mock("three/examples/jsm/Addons.js", () => ({
   SVGLoader: class {
     static createShapes: unknown = jest.fn(() => [{ holes: { push: jest.fn() } }]);
     load = jest.fn((_, fn) => fn({ paths: [[0], [1], [2], [3], [4]] }));
+  },
+  VertexNormalsHelper: class {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    constructor(_mesh: unknown, _size?: number, _color?: number) { }
+  },
+}));
+
+jest.mock("three/examples/jsm/lines/LineSegments2.js", () => ({
+  LineSegments2: class {
+    name = "";
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    constructor(_geometry: unknown, _material: unknown) { }
+  }
+}));
+
+jest.mock("three/examples/jsm/lines/LineSegmentsGeometry.js", () => ({
+  LineSegmentsGeometry: class {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    setPositions(_positions: number[]) { }
+    dispose = jest.fn();
+  }
+}));
+
+jest.mock("three/examples/jsm/lines/LineMaterial.js", () => ({
+  LineMaterial: class {
+    resolution = { set: jest.fn() };
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    constructor(_options: Record<string, unknown>) { }
+    dispose = jest.fn();
   }
 }));
 
 jest.mock("@react-three/fiber", () => ({
-  Canvas: ({ children }: { children: ReactNode }) => <div>{children}</div>,
+  Canvas: (props: {
+    children: ReactNode,
+    onCreated: Function,
+  }) => {
+    props.onCreated?.({ gl: { localClippingEnabled: false } });
+    return <div>{props.children}</div>;
+  },
   addEffect: jest.fn(),
-  useFrame: jest.fn(x => x({ clock: { getElapsedTime: jest.fn(() => 0) } })),
+  applyProps: jest.fn(),
+  useFrame: jest.fn(x => x({
+    clock: { getElapsedTime: jest.fn(() => 0) },
+    camera: new THREE.PerspectiveCamera(),
+    gl: {
+      info: {
+        render: { calls: 0, triangles: 0, points: 0, lines: 0 },
+        memory: { geometries: 0, textures: 0 },
+      },
+    },
+    scene: { traverse: jest.fn() },
+    size: { width: 800, height: 600 },
+    pointer: { x: 0, y: 0 },
+  })),
   useThree: jest.fn(() => ({
+    gl: {
+      info: {
+        render: { calls: 0, triangles: 0, points: 0, lines: 0 },
+        memory: { geometries: 0, textures: 0 },
+      },
+    },
+    scene: { traverse: jest.fn() },
     pointer: { x: 0, y: 0 },
     camera: new THREE.PerspectiveCamera(),
+    size: { width: 800, height: 600 },
   })),
   extend: jest.fn(),
 }));
 
 jest.mock("@react-spring/three", () => ({
   useSpring: (props: UseSpringProps) => {
-    const next = jest.fn();
-    (props.to as TransitionFn)?.(next);
-    return { ...props, ...props.from };
+    if (typeof props == "function") { (props as Function)(); }
+    const resolvedTo =
+      props.to && typeof props.to == "object"
+        ? props.to
+        : {};
+    const api = {
+      start: jest.fn(() => Promise.resolve()),
+    };
+    return [{ ...props, ...props.from, ...resolvedTo }, api];
   },
+
   // mocks for `<animated.mesh...` and similar:
   //   animated: {
   //     mesh: ({ children }: { children: ReactNode }) =>
@@ -102,9 +233,10 @@ jest.mock("@react-spring/three", () => ({
   //       <div className={"group"}>{children}</div>,
   //     pointLight: () => <div />,
   //   },
+
   // mocks for `const AnimatedMesh = animated(Mesh); ... <AnimatedMesh...`:
-  animated: () => ({ children }: { children?: ReactNode }) =>
-    <div className={"animated"}>{children}</div>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  animated: (P: any) => P,
 }));
 
 jest.mock("@react-three/drei", () => {
@@ -578,7 +710,6 @@ jest.mock("@react-three/drei", () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (useGLTF as any).preload = jest.fn();
   return {
-    ...jest.requireActual("@react-three/drei"),
     useGLTF,
     shaderMaterial: jest.fn(),
     Instances: (props: React.ComponentProps<typeof Instances>) =>
@@ -595,11 +726,23 @@ jest.mock("@react-three/drei", () => {
     Decal: (props: React.ComponentProps<typeof Plane>) =>
       // @ts-expect-error geometry props not assignable to div
       <div className={"decal"} {...props}>{props.name}</div>,
-    Cylinder: ({ name }: { name: string }) =>
-      <div className={"cylinder"}>{name}</div>,
-    Torus: ({ name }: { name: string }) =>
-      <div className={"torus"}>{name}</div>,
-    // Sphere not mocked
+    Cylinder: (props: React.ComponentProps<typeof Cylinder>) =>
+      // @ts-expect-error geometry props not assignable to div
+      <div className={"cylinder"} {...props}>
+        {props.name}
+        {props.children}
+      </div>,
+    Torus: (props: React.ComponentProps<typeof Torus>) =>
+      // @ts-expect-error geometry props not assignable to div
+      <div className={"torus"} {...props}>
+        {props.name}
+        {props.children}
+      </div>,
+    Sphere: (props: React.ComponentProps<typeof Sphere>) =>
+      // @ts-expect-error geometry props not assignable to div
+      <div className={"sphere" + (props.name ?? "")} {...props}>
+        {props.children}
+      </div>,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Box: (props: any) =>
       <div className={"box" + props.name} {...props}>{props.children}</div>,
@@ -607,6 +750,8 @@ jest.mock("@react-three/drei", () => {
       <div className={"extrude"}>{name}</div>,
     Line: ({ name }: { name: string }) =>
       <div className={"line"}>{name}</div>,
+    Edges: ({ name }: { name: string }) =>
+      <div className={"edges"}>{name}</div>,
     Trail: (props: React.ComponentProps<typeof Trail>) =>
       <div className={"trail"}>{props.children} {props.attenuation?.(2)}</div>,
     Tube: (props: React.ComponentProps<typeof Tube>) =>
@@ -623,17 +768,25 @@ jest.mock("@react-three/drei", () => {
     PerspectiveCamera: ({ name }: { name: string }) =>
       <div className={"perspective-camera"}>{name}</div>,
     useCursor: jest.fn(),
-    useTexture: jest.fn(url => ({
-      wrapS: "",
-      wrapT: "",
-      repeat: { set: jest.fn() },
-      image: url == "mock_load_error"
-        ? undefined
-        : { height: 2, width: 2 },
-      source: url == "mock_load_error"
-        ? undefined
-        : { data: { height: 2, width: 2 } },
-    })),
+    useTexture: jest.fn(url => {
+      const makeTexture = () => {
+        const texture = {
+          wrapS: "",
+          wrapT: "",
+          rotation: 0,
+          repeat: { set: jest.fn() },
+          image: url == "mock_load_error"
+            ? undefined
+            : { height: 2, width: 2 },
+          source: url == "mock_load_error"
+            ? undefined
+            : { data: { height: 2, width: 2 } },
+          clone: () => makeTexture(),
+        };
+        return texture;
+      };
+      return makeTexture();
+    }),
     RenderTexture: ({ children }: { children: ReactNode }) =>
       <div className={"render-texture"}>{children}</div>,
     GizmoHelper: ({ name }: { name: string }) =>
@@ -646,8 +799,13 @@ jest.mock("@react-three/drei", () => {
       <div className={"circle" + name}>{children}</div>,
     Stats: ({ name }: { name: string }) =>
       <div className={"stats"}>{name}</div>,
-    Billboard: ({ name, children }: { name: string, children: ReactNode }) =>
-      <div className={"billboard" + name}>{children}</div>,
+    StatsGl: ({ name }: { name: string }) =>
+      <div className={"statsGl"}>{name}</div>,
+    Billboard: (props: React.ComponentProps<typeof Billboard>) =>
+      // @ts-expect-error geometry props not assignable to div
+      <div className={"billboard" + (props.name ?? "")} {...props}>
+        {props.children}
+      </div>,
     Image: (props: React.ComponentProps<typeof Image>) =>
       // @ts-expect-error geometry props not assignable to div
       <div className={"image"} {...props}>{props.name} {props.url}</div>,

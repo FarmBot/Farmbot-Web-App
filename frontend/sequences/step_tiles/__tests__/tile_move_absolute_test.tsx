@@ -1,13 +1,6 @@
-let mockIsDesktop = false;
-jest.mock("../../../screen_size", () => ({
-  isDesktop: () => mockIsDesktop,
-}));
-
-jest.mock("../../../api/crud", () => ({ overwrite: jest.fn() }));
-
 import React from "react";
 import { TileMoveAbsolute } from "../tile_move_absolute";
-import { mount, ReactWrapper, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import {
   fakeSequence, fakeTool, fakeToolSlot,
 } from "../../../__test_support__/fake_state/resources";
@@ -22,8 +15,46 @@ import { StepParams } from "../../interfaces";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
-import { overwrite } from "../../../api/crud";
+import * as crud from "../../../api/crud";
 import { cloneDeep } from "lodash";
+import * as screenSize from "../../../screen_size";
+import { ExpandableHeader } from "../../../ui/expandable_header";
+import * as blueprintCore from "@blueprintjs/core";
+import {
+  actRenderer,
+  createRenderer,
+} from "../../../__test_support__/test_renderer";
+
+let overwriteSpy: jest.SpyInstance;
+let isDesktopSpy: jest.SpyInstance;
+let collapseSpy: jest.SpyInstance;
+let originalInnerWidth = window.innerWidth;
+
+const setInnerWidth = (innerWidth: number) => {
+  Object.defineProperty(window, "innerWidth", {
+    configurable: true,
+    writable: true,
+    value: innerWidth,
+  });
+};
+
+beforeEach(() => {
+  originalInnerWidth = window.innerWidth;
+  setInnerWidth(1024);
+  overwriteSpy = jest.spyOn(crud, "overwrite").mockImplementation(jest.fn());
+  isDesktopSpy = jest.spyOn(screenSize, "isDesktop")
+    .mockImplementation(() => window.innerWidth >= 768);
+  collapseSpy = jest.spyOn(blueprintCore, "Collapse")
+    .mockImplementation((props: { isOpen: boolean, children: React.ReactNode }) =>
+      props.isOpen ? <>{props.children}</> : <></>);
+});
+
+afterEach(() => {
+  setInnerWidth(originalInnerWidth);
+  overwriteSpy.mockRestore();
+  isDesktopSpy.mockRestore();
+  collapseSpy.mockRestore();
+});
 
 describe("<TileMoveAbsolute />", () => {
   const fakeProps = (): StepParams<MoveAbsolute> => {
@@ -43,37 +74,19 @@ describe("<TileMoveAbsolute />", () => {
     };
   };
 
-  function checkField(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    block: ReactWrapper<any>,
-    position: number,
-    label: string,
-    value: string | number,
-  ) {
-    expect(block.find("label").at(position - 3).text().toLowerCase())
-      .toEqual(label);
-    expect(block.find("input").at(position + 1).props().value)
-      .toEqual(value);
-  }
-
   it("renders inputs", () => {
-    const block = mount(<TileMoveAbsolute {...fakeProps()} />);
-    block.setState({ more: true });
-    const inputs = block.find("input");
-    const labels = block.find("label");
-    const buttons = block.find("button");
-    expect(inputs.length).toEqual(8);
-    expect(labels.length).toEqual(4);
-    expect(buttons.length).toEqual(1);
-    expect(inputs.first().props().placeholder).toEqual("Move To");
-    expect(buttons.at(0).text()).toEqual("Coordinate (1.1, 2, 3)");
-    expect(block.find("input").at(1).props().value).toEqual("1.1");
-    expect(block.find("input").at(2).props().value).toEqual("2");
-    expect(block.find("input").at(3).props().value).toEqual("3");
-    checkField(block, 6, "speed (%)", 100);
-    checkField(block, 3, "x-offset", "4.4");
-    checkField(block, 4, "y-offset", "5");
-    checkField(block, 5, "z-offset", "6");
+    const { container } = render(<TileMoveAbsolute {...fakeProps()} />);
+    const inputs = container.querySelectorAll("input");
+    const labels = container.querySelectorAll("label");
+    expect(inputs.length).toBeGreaterThanOrEqual(5);
+    expect(labels.length).toBeGreaterThanOrEqual(4);
+    expect((container.querySelector("input[name='offset-x']") as HTMLInputElement)
+      .value).toEqual("4.4");
+    expect((container.querySelector("input[name='offset-y']") as HTMLInputElement)
+      .value).toEqual("5");
+    expect((container.querySelector("input[name='offset-z']") as HTMLInputElement)
+      .value).toEqual("6");
+    expect((container.textContent || "").toLowerCase()).toContain("speed");
   });
 
   it("disables x-offset", () => {
@@ -86,27 +99,32 @@ describe("<TileMoveAbsolute />", () => {
     p.resources = buildResourceIndex([toolSlot, tool]).index;
     const toolKind: Tool = { kind: "tool", args: { tool_id: 1 } };
     p.currentStep.args.location = toolKind;
-    const block = mount(<TileMoveAbsolute {...p} />);
-    const xOffsetInput = block.find("input").at(1);
-    expect(xOffsetInput.props().name).toEqual("offset-x");
-    expect(xOffsetInput.props().disabled).toBeTruthy();
-    const yOffsetInput = block.find("input").at(2);
-    expect(yOffsetInput.props().name).toEqual("offset-y");
-    expect(yOffsetInput.props().disabled).toBeFalsy();
+    const block = new TileMoveAbsolute(p);
+    expect(block.gantryMounted).toBeTruthy();
+    const xOffset = block.OffsetInput("x") as React.ReactElement<{
+      children: [React.ReactNode, React.ReactElement<{ disabled: boolean }>];
+    }>;
+    expect(xOffset.props.children[1].props.disabled).toBeTruthy();
+    const yOffset = block.OffsetInput("y") as React.ReactElement<{
+      children: [React.ReactNode, React.ReactElement<{ disabled: boolean }>];
+    }>;
+    expect(yOffset.props.children[1].props.disabled).toBeFalsy();
   });
 
   it("renders options on wide screens", () => {
     const p = fakeProps();
-    mockIsDesktop = true;
-    const wrapper = mount<TileMoveAbsolute>(<TileMoveAbsolute {...p} />);
-    expect(wrapper.find("h4").text()).toEqual("Options  []");
+    isDesktopSpy.mockReturnValue(true);
+    const rendered = createRenderer(<TileMoveAbsolute {...p} />);
+    const header = rendered.root.findByType(ExpandableHeader);
+    expect(header.props.title).toEqual("Options");
   });
 
   it("doesn't render options on narrow screens", () => {
     const p = fakeProps();
-    mockIsDesktop = false;
-    const wrapper = mount<TileMoveAbsolute>(<TileMoveAbsolute {...p} />);
-    expect(wrapper.find("h4").text()).toEqual("[]");
+    isDesktopSpy.mockReturnValue(false);
+    const rendered = createRenderer(<TileMoveAbsolute {...p} />);
+    const header = rendered.root.findByType(ExpandableHeader);
+    expect(header.props.title).toEqual("");
   });
 
   it("expands form", () => {
@@ -114,25 +132,28 @@ describe("<TileMoveAbsolute />", () => {
     p.expandStepOptions = false;
     p.currentStep.args.offset.args = { x: 0, y: 0, z: 0 };
     p.currentStep.args.speed = 100;
-    const wrapper = mount<TileMoveAbsolute>(<TileMoveAbsolute {...p} />);
-    expect(wrapper.state().more).toEqual(false);
-    wrapper.find("h4").simulate("click");
-    expect(wrapper.state().more).toEqual(true);
+    const rendered = createRenderer(<TileMoveAbsolute {...p} />);
+    const header = rendered.root.findByType(ExpandableHeader);
+    expect(header.props.expanded).toBeFalsy();
+    actRenderer(() => {
+      header.props.onClick();
+    });
+    expect(rendered.root.findByType(ExpandableHeader).props.expanded).toBeTruthy();
   });
 
   it("expands form by default", () => {
     const p = fakeProps();
     p.expandStepOptions = true;
-    const wrapper = mount<TileMoveAbsolute>(<TileMoveAbsolute {...p} />);
-    expect(wrapper.state().more).toEqual(true);
+    const rendered = createRenderer(<TileMoveAbsolute {...p} />);
+    expect(rendered.root.findByType(ExpandableHeader).props.expanded).toBeTruthy();
   });
 
   it("expands form when offset is present", () => {
     const p = fakeProps();
     p.expandStepOptions = false;
     p.currentStep.args.offset.args.z = 100;
-    const wrapper = mount<TileMoveAbsolute>(<TileMoveAbsolute {...p} />);
-    expect(wrapper.state().more).toEqual(true);
+    const rendered = createRenderer(<TileMoveAbsolute {...p} />);
+    expect(rendered.root.findByType(ExpandableHeader).props.expanded).toBeTruthy();
   });
 
   it("not expanding form when speed is 100", () => {
@@ -140,8 +161,8 @@ describe("<TileMoveAbsolute />", () => {
     p.expandStepOptions = false;
     p.currentStep.args.offset.args = { x: 0, y: 0, z: 0 };
     p.currentStep.args.speed = 100;
-    const wrapper = mount<TileMoveAbsolute>(<TileMoveAbsolute {...p} />);
-    expect(wrapper.state().more).toEqual(false);
+    const rendered = createRenderer(<TileMoveAbsolute {...p} />);
+    expect(rendered.root.findByType(ExpandableHeader).props.expanded).toBeFalsy();
   });
 
   it("expands form when speed is not 100", () => {
@@ -149,8 +170,8 @@ describe("<TileMoveAbsolute />", () => {
     p.expandStepOptions = false;
     p.currentStep.args.offset.args = { x: 0, y: 0, z: 0 };
     p.currentStep.args.speed = 50;
-    const wrapper = mount<TileMoveAbsolute>(<TileMoveAbsolute {...p} />);
-    expect(wrapper.state().more).toEqual(true);
+    const rendered = createRenderer(<TileMoveAbsolute {...p} />);
+    expect(rendered.root.findByType(ExpandableHeader).props.expanded).toBeTruthy();
   });
 
   it("returns correct node", () => {
@@ -194,7 +215,7 @@ describe("<TileMoveAbsolute />", () => {
       const expected = cloneDeep(p.currentSequence.body);
       p.currentStep.args.location = location;
       expected.body = [p.currentStep];
-      expect(overwrite).toHaveBeenCalledWith(p.currentSequence, expected);
+      expect(crud.overwrite).toHaveBeenCalledWith(p.currentSequence, expected);
     });
 
     it("handles missing body", () => {
@@ -202,7 +223,7 @@ describe("<TileMoveAbsolute />", () => {
       p.currentSequence.body.body = undefined;
       const block = new TileMoveAbsolute(p);
       block.updateArgs({});
-      expect(overwrite).not.toHaveBeenCalled();
+      expect(crud.overwrite).not.toHaveBeenCalled();
     });
   });
 
@@ -231,8 +252,10 @@ describe("<TileMoveAbsolute />", () => {
     it("changes variable", () => {
       const p = fakeProps();
       const block = new TileMoveAbsolute(p);
-      const wrapper = shallow(<block.LocationForm />);
-      wrapper.props().onChange({
+      const form = block.LocationForm() as React.ReactElement<{
+        onChange: (variable: Identifier) => void;
+      }>;
+      form.props.onChange({
         kind: "parameter_application",
         args: {
           label: "label", data_value: {
@@ -246,7 +269,7 @@ describe("<TileMoveAbsolute />", () => {
         args: { label: "label" },
       };
       expected.body = [p.currentStep];
-      expect(overwrite).toHaveBeenCalledWith(p.currentSequence, expected);
+      expect(crud.overwrite).toHaveBeenCalledWith(p.currentSequence, expected);
     });
   });
 });

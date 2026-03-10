@@ -1,46 +1,86 @@
 import { fireEvent } from "@testing-library/react";
-import { ReactWrapper, shallow, ShallowWrapper } from "enzyme";
-import { range } from "lodash";
+
+const getContainer = (input: unknown): ParentNode | undefined => {
+  if (!input) { return undefined; }
+  if (input instanceof Document || input instanceof DocumentFragment) {
+    return input;
+  }
+  if (input instanceof Element) {
+    return input;
+  }
+  const container = (input as { container?: unknown }).container;
+  if (container instanceof Element || container instanceof DocumentFragment) {
+    return container;
+  }
+  return undefined;
+};
 
 /** Simulate a click and check button text for a button in a wrapper. */
+// eslint-disable-next-line complexity
 export function clickButton(
-  wrapper: ReactWrapper | ShallowWrapper,
+  wrapper: { container: ParentNode } | ParentNode,
   position: number,
   text: string,
   options?: { partial_match?: boolean, icon?: string }) {
+  const textMatches = (actualText: string) =>
+    options?.partial_match
+      ? actualText.includes(text.toLowerCase())
+      : actualText === text.toLowerCase();
+  const container = getContainer(wrapper);
+  const buttons = Array.from(container?.querySelectorAll("button") ?? []);
   if (position < 0) {
-    position = wrapper.find("button").length + position;
+    position = buttons.length + position;
   }
-  const button = wrapper.find("button").at(position);
+  const initialButton = buttons[position];
+  expect(initialButton).toBeTruthy();
+  if (!initialButton) { return; }
+  let button = initialButton;
   const expectedText = text.toLowerCase();
-  const actualText = button.text().toLowerCase();
+  let actualText = button?.textContent?.toLowerCase().trim() ?? "";
+  if (!textMatches(actualText)) {
+    const match = buttons.find(btn =>
+      textMatches((btn.textContent ?? "").toLowerCase().trim()));
+    if (match) {
+      button = match;
+      actualText = (button.textContent ?? "").toLowerCase().trim();
+    }
+  }
   options?.partial_match
     ? expect(actualText).toContain(expectedText)
     : expect(actualText).toEqual(expectedText);
-  options?.icon && expect(button.html()).toContain(options.icon);
-  button.simulate("click");
+  options?.icon && expect(button?.innerHTML ?? "").toContain(options.icon);
+  fireEvent.click(button);
 }
 
 /** Like `wrapper.text()`, but only includes buttons. */
-export function allButtonText(wrapper: ReactWrapper | ShallowWrapper): string {
-  const buttons = wrapper.find("button");
-  const btnCount = buttons.length;
-  const btnPositions = range(btnCount);
-  const btnTextArray = btnPositions.map(position =>
-    wrapper.find("button").at(position).text());
-  return btnTextArray.join("");
+export function allButtonText(
+  wrapper: { container: ParentNode } | ParentNode,
+): string {
+  const container = getContainer(wrapper);
+  return Array.from(container?.querySelectorAll("button") ?? [])
+    .map(button => button.textContent ?? "")
+    .join("");
 }
 
 /** Simulate BlurableInput commit (when not using shallow). */
 export function changeBlurableInput(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  wrapper: ReactWrapper<any>,
+  wrapper: { container: ParentNode } | ParentNode,
   value: string,
   position = 0,
 ) {
-  const input = shallow(wrapper.find("input").at(position).getElement());
-  input.simulate("change", { currentTarget: { value } });
-  input.simulate("blur", { currentTarget: { value } });
+  const container = getContainer(wrapper);
+  const input = container?.querySelectorAll("input").item(position) as
+    HTMLInputElement | null;
+  expect(input).toBeTruthy();
+  fireEvent.focus(input as Element);
+  fireEvent.change(input as Element, {
+    target: { value },
+    currentTarget: { value },
+  });
+  fireEvent.blur(input as Element, {
+    target: { value },
+    currentTarget: { value },
+  });
 }
 
 /** Simulate BlurableInput commit. */

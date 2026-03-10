@@ -66,7 +66,6 @@ export interface Config {
   solar: boolean;
   utilitiesPost: boolean;
   packaging: boolean;
-  lab: boolean;
   people: boolean;
   scene: string;
   lowDetail: boolean;
@@ -101,6 +100,9 @@ export interface Config {
   interpolationStepSize: number;
   interpolationUseNearest: boolean;
   interpolationPower: number;
+  promoSpread: boolean;
+  cameraView: boolean;
+  lastImageCapture: number;
 }
 
 export enum SurfaceDebugOption {
@@ -177,7 +179,6 @@ export const INITIAL: Config = {
   solar: false,
   utilitiesPost: true,
   packaging: false,
-  lab: false,
   people: false,
   scene: "Outdoor",
   lowDetail: false,
@@ -207,11 +208,14 @@ export const INITIAL: Config = {
   imgOffsetY: 0,
   imgOrigin: "TOP_LEFT",
   imgCalZ: 0,
-  imgCenterX: 0,
-  imgCenterY: 0,
+  imgCenterX: 320,
+  imgCenterY: 240,
   interpolationStepSize: 50,
   interpolationUseNearest: false,
   interpolationPower: 4,
+  promoSpread: false,
+  cameraView: false,
+  lastImageCapture: 0,
 };
 
 export const STRING_KEYS = [
@@ -228,7 +232,7 @@ export const NUMBER_KEYS = [
   "soilSurfacePointCount", "soilSurfaceVariance", "sun", "ambient", "rotary",
   "imgScale", "imgRotation", "imgOffsetX", "imgOffsetY", "imgCalZ",
   "imgCenterX", "imgCenterY", "surfaceDebug", "interpolationStepSize",
-  "interpolationPower",
+  "interpolationPower", "lastImageCapture",
 ];
 
 export const BOOLEAN_KEYS = [
@@ -236,11 +240,12 @@ export const BOOLEAN_KEYS = [
   "tracks", "clouds", "perspective", "bot", "laser", "cableCarriers",
   "viewCube", "stats", "config", "zoom", "pan", "rotate", "bounds", "threeAxes",
   "xyDimensions", "zDimension", "promoInfo", "settingsBar", "zoomBeacons",
-  "solar", "utilitiesPost", "packaging", "lab", "people", "lowDetail",
+  "solar", "utilitiesPost", "packaging", "people", "lowDetail",
   "eventDebug", "cableDebug", "zoomBeaconDebug", "lightsDebug", "moistureDebug",
   "animate", "animateSeasons", "negativeZ",
   "waterFlow", "exaggeratedZ", "showSoilPoints", "urlParamAutoAdd",
-  "light", "vacuum", "north", "desk", "interpolationUseNearest",
+  "light", "vacuum", "north", "desk", "interpolationUseNearest", "promoSpread",
+  "cameraView",
 ];
 
 export const PRESETS: Record<string, Config> = {
@@ -356,7 +361,6 @@ export const PRESETS: Record<string, Config> = {
     solar: false,
     utilitiesPost: false,
     packaging: false,
-    lab: false,
     people: false,
     scene: "Outdoor",
     lowDetail: false,
@@ -417,7 +421,6 @@ export const PRESETS: Record<string, Config> = {
     solar: true,
     utilitiesPost: true,
     packaging: true,
-    lab: true,
     people: true,
     scene: "outdoor",
     lowDetail: false,
@@ -437,6 +440,8 @@ export const PRESETS: Record<string, Config> = {
     exaggeratedZ: true,
     north: true,
     desk: true,
+    promoSpread: true,
+    cameraView: true,
   },
 };
 
@@ -456,7 +461,7 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "tool", "cableCarriers", "viewCube", "stats", "config", "zoom", "bounds",
   "threeAxes", "xyDimensions", "zDimension", "labelsOnHover", "promoInfo",
   "settingsBar", "zoomBeacons", "pan", "rotate",
-  "solar", "utilitiesPost", "packaging", "lab",
+  "solar", "utilitiesPost", "packaging",
   "people", "scene", "lowDetail", "sun", "ambient", "moistureDebug",
   "eventDebug", "cableDebug", "zoomBeaconDebug", "lightsDebug", "surfaceDebug",
   "animate", "distanceIndicator", "kitVersion", "negativeZ", "waterFlow",
@@ -465,7 +470,7 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "showSoilPoints", "urlParamAutoAdd", "north", "desk",
   "imgScale", "imgRotation", "imgOffsetX", "imgOffsetY", "imgOrigin", "imgCalZ",
   "imgCenterX", "imgCenterY", "interpolationStepSize", "interpolationUseNearest",
-  "interpolationPower",
+  "interpolationPower", "promoSpread", "cameraView", "lastImageCapture",
 ];
 
 export const modifyConfig = (config: Config, update: Partial<Config>) => {
@@ -480,7 +485,6 @@ export const modifyConfig = (config: Config, update: Partial<Config>) => {
     }
   }
   if (update.scene) {
-    newConfig.lab = update.scene == "Lab";
     newConfig.clouds = update.scene == "Outdoor";
     newConfig.people = update.scene != "Outdoor";
     newConfig.bedType =

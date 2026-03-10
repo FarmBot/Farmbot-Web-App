@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { WidgetHeader, WidgetHeaderProps } from "../widget_header";
 
 describe("<WidgetHeader />", () => {
@@ -8,21 +8,21 @@ describe("<WidgetHeader />", () => {
   });
 
   it("renders title", () => {
-    const wrapper = mount(<WidgetHeader {...fakeProps()} />);
-    expect(wrapper.html()).toContain("fakeWidget");
+    const { container } = render(<WidgetHeader {...fakeProps()} />);
+    expect(container.innerHTML).toContain("fakeWidget");
   });
 
   it("renders children", () => {
     const p = fakeProps();
     p.children = "children";
-    const wrapper = mount(<WidgetHeader {...p} />);
-    expect(wrapper.html()).toContain("children");
+    const { container } = render(<WidgetHeader {...p} />);
+    expect(container.innerHTML).toContain("children");
   });
 
   it("renders help text", () => {
     const p = fakeProps();
     p.helpText = "fakeHelp";
-    const wrapper = mount(<WidgetHeader {...p} />);
-    expect(wrapper.html()).toContain("fa-question-circle");
+    const { container } = render(<WidgetHeader {...p} />);
+    expect(container.innerHTML).toContain("fakeHelp");
   });
 });

@@ -7,7 +7,7 @@ import {
 } from "./interfaces";
 import { error } from "../../toast/toast";
 import { t } from "../../i18next_wrapper";
-import { overwriteGroup } from "../actions";
+import * as groupActions from "../actions";
 
 /** Update and save group criteria. */
 export const editCriteria =
@@ -20,7 +20,7 @@ export const editCriteria =
         number_gt: update.number_gt || group.body.criteria.number_gt,
         number_lt: update.number_lt || group.body.criteria.number_lt,
       };
-      dispatch(overwriteGroup(group, { ...group.body, criteria }));
+      dispatch(groupActions.overwriteGroup(group, { ...group.body, criteria }));
     };
 
 /** Toggle string or number equal criteria. */

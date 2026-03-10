@@ -1,13 +1,13 @@
 import React from "react";
 import { Config, getSeasonProperties, INITIAL } from "../config";
 import {
-  Vector3, PointLight as ThreePointLight, Mesh,
+  Vector3, DirectionalLight as ThreeDirectionalLight, Mesh,
   MeshBasicMaterial as ThreeMeshBasicMaterial,
   Color,
   Material,
 } from "three";
 import {
-  BufferAttribute, BufferGeometry, Group, MeshBasicMaterial, PointLight,
+  BufferAttribute, BufferGeometry, DirectionalLight, Group, MeshBasicMaterial,
   Points, PointsMaterial,
 } from "../components";
 import { Billboard, Line, Sphere, Text3D, Trail } from "@react-three/drei";
@@ -16,11 +16,13 @@ import SunCalc from "suncalc";
 import { range } from "lodash";
 import moment from "moment";
 import { SEASON_DURATIONS } from "../../promo/constants";
-import { Line2 } from "three/examples/jsm/lines/Line2";
+import { Line2 } from "three/examples/jsm/lines/Line2.js";
 import { ASSETS, BigDistance } from "../constants";
 
-const sunDecay = 0;
-const shadowNormalBias = 100;
+const shadowBias = -0.0005;
+const shadowRadius = 8;
+const shadowBlurSamples = 8;
+const shadowBuffer = 1000;
 const SUN_COLOR = ["#FFD700", "#FFEA00", "#FFF700", "#FFE066"];
 
 export const getCycleLength = (season: string) =>
@@ -30,8 +32,10 @@ export interface SunProps {
   config: Config;
   startTimeRef?: React.RefObject<number>;
   skyRef: React.RefObject<ThreeMeshBasicMaterial | null>;
+  sunFactorRef?: React.MutableRefObject<number>;
 }
 
+const SUN_COUNT = 1;
 const offset = 50;
 const SUN_OFFSETS: [number, number][] = [
   [0, 0],
@@ -137,7 +141,7 @@ export const Sun = (props: SunProps) => {
     config.sunAzimuth,
     BigDistance.sunActual);
 
-  const lightRefs = React.useRef<(ThreePointLight | null)[]>([]);
+  const lightRefs = React.useRef<(ThreeDirectionalLight | null)[]>([]);
   const sphereRefs = React.useRef<(Mesh | null)[]>([]);
   // eslint-disable-next-line no-null/no-null
   const sunRef = React.useRef<Mesh>(null);
@@ -146,17 +150,40 @@ export const Sun = (props: SunProps) => {
   // eslint-disable-next-line no-null/no-null
   const lineRef = React.useRef<Line2>(null);
   const [points, setPoints] = React.useState<Vector3[]>(
-    range(4).map(index => new Vector3(...offsetSunPos(sunPos, index))),
+    range(SUN_COUNT).map(index => new Vector3(...offsetSunPos(sunPos, index))),
   );
-  const sunFactor = React.useRef<number>(1);
+  const localSunFactorRef = React.useRef<number>(1);
+  const sunFactorRef = props.sunFactorRef || localSunFactorRef;
   // eslint-disable-next-line no-null/no-null
   const starsRef = React.useRef<Material>(null);
   const origin = new Vector3(0, 0, 0);
+  const shadowBounds = React.useMemo(() => {
+    const bedXBounds = Math.max(
+      Math.abs(config.bedXOffset),
+      Math.abs(config.bedLengthOuter - config.bedXOffset),
+    );
+    const bedYBounds = Math.max(
+      Math.abs(config.bedYOffset),
+      Math.abs(config.bedWidthOuter - config.bedYOffset),
+    );
+    const bedBounds = Math.max(bedXBounds, bedYBounds) + shadowBuffer;
+    return Math.max(bedBounds, config.botSizeX, config.botSizeY);
+  }, [
+    config.bedXOffset,
+    config.bedLengthOuter,
+    config.bedYOffset,
+    config.bedWidthOuter,
+    config.botSizeX,
+    config.botSizeY,
+  ]);
 
   const setSunSky = (inclination: number, sunValue: number) => {
-    sunFactor.current = calcSunI(inclination);
-    props.skyRef.current?.color?.setRGB(...skyColor(sunFactor.current * sunValue));
-    starsRef.current && (starsRef.current.opacity = (1 - sunFactor.current));
+    sunFactorRef.current = calcSunI(inclination);
+    props.skyRef.current?.color?.setRGB(
+      ...skyColor(sunFactorRef.current * sunValue),
+    );
+    starsRef.current &&
+      (starsRef.current.opacity = (1 - sunFactorRef.current));
   };
 
   React.useEffect(() => {
@@ -184,7 +211,8 @@ export const Sun = (props: SunProps) => {
     lightRefs.current.forEach((light, index) => {
       if (light) {
         light.position?.set(...position(index));
-        light.intensity = sunIntensity * config.sun / 100 * sunFactor.current;
+        light.intensity =
+          sunIntensity * config.sun / 100 * sunFactorRef.current;
       }
     });
 
@@ -200,28 +228,37 @@ export const Sun = (props: SunProps) => {
     sunFlatRef.current?.position?.set(flatPos.x, flatPos.y, flatPos.z);
 
     if (lineRef.current) {
-      // eslint-disable-next-line @react-three/no-new-in-loop
-      const newPoints = range(4).map(index => new Vector3(...position(index)));
+      const newPoints = range(SUN_COUNT)
+        // eslint-disable-next-line @react-three/no-new-in-loop
+        .map(index => new Vector3(...position(index)));
       setPoints(newPoints);
     }
   });
 
   return <Group name={"sun"}>
-    {range(4).map(index => {
+    {range(SUN_COUNT).map(index => {
       const position = offsetSunPos(sunPos, index);
       const color = SUN_COLOR[index];
-      const intensity = sunIntensity * config.sun / 100 * sunFactor.current;
+      const intensity = sunIntensity * config.sun / 100 * sunFactorRef.current;
       return <Group key={index} name={`sun_${index}`}>
-        <PointLight
-          ref={(el: ThreePointLight) => {
+        <DirectionalLight
+          ref={(el: ThreeDirectionalLight) => {
             if (el) { lightRefs.current[index] = el; }
           }}
-          intensity={intensity}
+          intensity={intensity * 4 / SUN_COUNT}
           color={sunColor}
-          distance={BigDistance.sunAffect}
-          decay={sunDecay}
           castShadow={true}
-          shadow-normalBias={shadowNormalBias} // warning: distorts shadows
+          shadow-bias={shadowBias}
+          shadow-radius={shadowRadius}
+          shadow-blurSamples={shadowBlurSamples}
+          shadow-mapSize-width={1024}
+          shadow-mapSize-height={1024}
+          shadow-camera-near={1}
+          shadow-camera-far={BigDistance.sunAffect}
+          shadow-camera-left={-shadowBounds}
+          shadow-camera-right={shadowBounds}
+          shadow-camera-top={shadowBounds}
+          shadow-camera-bottom={-shadowBounds}
           position={position}
         />
         {config.lightsDebug &&
@@ -276,9 +313,7 @@ const OtherSuns = ({ starsRef }: { starsRef: React.RefObject<Material | null> })
     <BufferGeometry>
       <BufferAttribute
         attach={"attributes-position"}
-        count={positions.length / 3}
-        array={positions}
-        itemSize={3} />
+        args={[positions, 3]} />
     </BufferGeometry>
     <PointsMaterial
       ref={starsRef}

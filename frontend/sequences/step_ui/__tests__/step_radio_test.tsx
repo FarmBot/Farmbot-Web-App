@@ -1,14 +1,22 @@
 let mockStep = {};
-jest.mock("../../../api/crud", () => ({
-  editStep: jest.fn(x => x.executor(mockStep)),
-}));
 
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import { AxisStepRadio, AxisStepRadioProps } from "../step_radio";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { FindHome, Calibrate, Zero } from "farmbot";
+import * as crud from "../../../api/crud";
 
+let editStepSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  editStepSpy = jest.spyOn(crud, "editStep")
+    .mockImplementation(jest.fn(x => x.executor(mockStep)));
+});
+
+afterEach(() => {
+  editStepSpy.mockRestore();
+});
 describe("<StepRadio />", () => {
   const findHomeStep: FindHome = {
     kind: "find_home",
@@ -26,16 +34,17 @@ describe("<StepRadio />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<AxisStepRadio {...fakeProps()} />);
-    expect(wrapper.find("input").length).toEqual(4);
-    expect(wrapper.text()).toContain("all");
+    const { container } = render(<AxisStepRadio {...fakeProps()} />);
+    expect(container.querySelectorAll("input").length).toEqual(4);
+    expect(container.textContent).toContain("all");
   });
 
   it("handles update for find_home", () => {
     const p = fakeProps();
     mockStep = p.currentStep;
-    const wrapper = mount(<AxisStepRadio {...p} />);
-    wrapper.find("input").last().simulate("change");
+    const { container } = render(<AxisStepRadio {...p} />);
+    const inputs = container.querySelectorAll("input");
+    fireEvent.click(inputs[inputs.length - 1] as Element);
     const expectedStep: FindHome = {
       kind: "find_home",
       args: { speed: 100, axis: "all" }
@@ -47,8 +56,9 @@ describe("<StepRadio />", () => {
     const p = fakeProps();
     p.currentStep = { kind: "calibrate", args: { axis: "x" } };
     mockStep = p.currentStep;
-    const wrapper = mount(<AxisStepRadio {...p} />);
-    wrapper.find("input").last().simulate("change");
+    const { container } = render(<AxisStepRadio {...p} />);
+    const inputs = container.querySelectorAll("input");
+    fireEvent.click(inputs[inputs.length - 1] as Element);
     const expectedStep: Calibrate = {
       kind: "calibrate",
       args: { axis: "all" }
@@ -60,8 +70,9 @@ describe("<StepRadio />", () => {
     const p = fakeProps();
     p.currentStep = { kind: "zero", args: { axis: "x" } };
     mockStep = p.currentStep;
-    const wrapper = mount(<AxisStepRadio {...p} />);
-    wrapper.find("input").last().simulate("change");
+    const { container } = render(<AxisStepRadio {...p} />);
+    const inputs = container.querySelectorAll("input");
+    fireEvent.click(inputs[inputs.length - 1] as Element);
     const expectedStep: Zero = {
       kind: "zero",
       args: { axis: "all" }

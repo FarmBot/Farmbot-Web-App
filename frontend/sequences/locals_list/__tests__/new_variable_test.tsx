@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { VariableNode, VariableType } from "../locals_list_support";
 import {
   determineVariableType,
@@ -37,7 +37,7 @@ describe("varTypeFromLabel()", () => {
 describe("newVariableDataValue()", () => {
   it("returns location data value", () => {
     expect(newVariableDataValue(VariableType.Location))
-      .toEqual({ kind: "nothing", args: {} });
+      .toMatchObject({ kind: "nothing", args: {} });
   });
 
   it("returns number data value", () => {
@@ -114,28 +114,32 @@ describe("<VariableIcon />", () => {
   });
 
   it("renders location icon", () => {
-    const wrapper = mount(<VariableIcon {...fakeProps()} />);
-    expect(wrapper.find("i").hasClass("fa-crosshairs")).toBeTruthy();
+    const { container } = render(<VariableIcon {...fakeProps()} />);
+    expect(container.querySelector("i")?.classList.contains("fa-crosshairs"))
+      .toBeTruthy();
   });
 
   it("renders numeric icon", () => {
     const p = fakeProps();
     p.variableType = VariableType.Number;
-    const wrapper = mount(<VariableIcon {...p} />);
-    expect(wrapper.find("i").hasClass("fa-hashtag")).toBeTruthy();
+    const { container } = render(<VariableIcon {...p} />);
+    expect(container.querySelector("i")?.classList.contains("fa-hashtag"))
+      .toBeTruthy();
   });
 
   it("renders text icon", () => {
     const p = fakeProps();
     p.variableType = VariableType.Text;
-    const wrapper = mount(<VariableIcon {...p} />);
-    expect(wrapper.find("i").hasClass("fa-font")).toBeTruthy();
+    const { container } = render(<VariableIcon {...p} />);
+    expect(container.querySelector("i")?.classList.contains("fa-font"))
+      .toBeTruthy();
   });
 
   it("renders resource icon", () => {
     const p = fakeProps();
     p.variableType = VariableType.Resource;
-    const wrapper = mount(<VariableIcon {...p} />);
-    expect(wrapper.find("i").hasClass("fa-hdd-o")).toBeTruthy();
+    const { container } = render(<VariableIcon {...p} />);
+    expect(container.querySelector("i")?.classList.contains("fa-hdd-o"))
+      .toBeTruthy();
   });
 });

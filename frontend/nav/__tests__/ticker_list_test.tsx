@@ -1,7 +1,7 @@
 const mockStorj: Dictionary<number | boolean> = {};
 
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import { TickerList } from "../ticker_list";
 import { Dictionary } from "farmbot";
 import { fakeLog } from "../../__test_support__/fake_state/resources";
@@ -11,6 +11,10 @@ import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { Actions } from "../../constants";
 
 describe("<TickerList />", () => {
+  beforeEach(() => {
+    Object.keys(mockStorj).map(key => delete mockStorj[key]);
+  });
+
   const fakeTaggedLog = () => {
     const log = fakeLog();
     log.body.message = "Farmbot is up and Running!";
@@ -33,18 +37,18 @@ describe("<TickerList />", () => {
   }
 
   it("shows log message and datetime", () => {
-    const wrapper = mount(<TickerList {...fakeProps()} />);
-    const labels = wrapper.find("label");
+    const { container } = render(<TickerList {...fakeProps()} />);
+    const labels = container.querySelectorAll("label");
     expect(labels.length).toEqual(2);
-    expect(labels.at(0).text()).toContain("Farmbot is up and Running!");
-    expect(labels.at(1).text()).toEqual("AUG 2, 7:50PM");
-    expectLogOccurrences(wrapper.text(), 1);
+    expect(labels[0]?.textContent).toContain("Farmbot is up and Running!");
+    expect(labels[1]?.textContent).toEqual("AUG 2, 7:50PM");
+    expectLogOccurrences(container.textContent || "", 1);
   });
 
   it("opens logs popup", () => {
     const p = fakeProps();
-    const wrapper = mount(<TickerList {...p} />);
-    wrapper.find(".ticker-list").simulate("click");
+    const { container } = render(<TickerList {...p} />);
+    fireEvent.click(container.querySelector(".ticker-list") as Element);
     expect(p.dispatch).toHaveBeenCalledWith(
       { type: Actions.TOGGLE_POPUP, payload: "jobs" });
   });
@@ -53,43 +57,43 @@ describe("<TickerList />", () => {
     const p = fakeProps();
     p.botOnline = false;
     p.lastSeen = 1501703421000;
-    const wrapper = mount(<TickerList {...p} />);
-    const labels = wrapper.find("label");
+    const { container } = render(<TickerList {...p} />);
+    const labels = container.querySelectorAll("label");
     expect(labels.length).toEqual(2);
-    expect(labels.at(0).text()).toContain("FarmBot is offline");
-    expect(labels.at(1).text()).toEqual("Last seen AUG 2, 7:50PM");
+    expect(labels[0]?.textContent).toContain("FarmBot is offline");
+    expect(labels[1]?.textContent).toEqual("Last seen AUG 2, 7:50PM");
   });
 
   it("shows empty log message", () => {
     const p = fakeProps();
     p.logs = [];
-    const wrapper = mount(<TickerList {...p} />);
-    const labels = wrapper.find("label");
+    const { container } = render(<TickerList {...p} />);
+    const labels = container.querySelectorAll("label");
     expect(labels.length).toEqual(2);
-    expect(labels.at(0).text()).toContain("No logs yet.");
-    expect(labels.at(1).text()).toEqual("");
+    expect(labels[0]?.textContent).toContain("No logs yet.");
+    expect(labels[1]?.textContent).toEqual("");
   });
 
   it("shows 'loading' log message", () => {
     const p = fakeProps();
     p.logs[0].body.message = "";
     p.logs[0].body.created_at = undefined;
-    const wrapper = mount(<TickerList {...p} />);
-    const labels = wrapper.find("label");
+    const { container } = render(<TickerList {...p} />);
+    const labels = container.querySelectorAll("label");
     expect(labels.length).toEqual(2);
-    expect(labels.at(0).text()).toContain("Loading");
-    expect(labels.at(1).text()).toEqual("");
+    expect(labels[0]?.textContent).toContain("Loading");
+    expect(labels[1]?.textContent).toEqual("");
   });
 
   it("all logs filtered out", () => {
     MESSAGE_TYPES.map(logType => mockStorj[logType + "_log"] = 0);
     const p = fakeProps();
     p.logs[0].body.verbosity = 1;
-    const wrapper = mount(<TickerList {...p} />);
-    const labels = wrapper.find("label");
+    const { container } = render(<TickerList {...p} />);
+    const labels = container.querySelectorAll("label");
     expect(labels.length).toEqual(2);
-    expect(labels.at(0).text())
+    expect(labels[0]?.textContent)
       .toContain("No logs to display. Visit Logs page to view filters.");
-    expect(labels.at(1).text()).toEqual("");
+    expect(labels[1]?.textContent).toEqual("");
   });
 });

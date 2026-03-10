@@ -38,6 +38,13 @@ const NewPhotoButtons = (props: NewPhotoButtonsProps) => {
   const { syncStatus, botToMqttStatus } = props;
   const botOnline = isBotOnline(syncStatus, botToMqttStatus);
   const camDisabled = cameraBtnProps(props.env, botOnline);
+  const onTakePhotoClick = () => {
+    if (camDisabled.click) {
+      camDisabled.click();
+      return;
+    }
+    void props.takePhoto();
+  };
   return <div className={"row"}>
     <p>
       {imageUploadJobProgress &&
@@ -50,7 +57,7 @@ const NewPhotoButtons = (props: NewPhotoButtonsProps) => {
       <button
         className={`fb-button green ${camDisabled.class}`}
         title={camDisabled.title}
-        onClick={camDisabled.click || props.takePhoto}>
+        onClick={onTakePhotoClick}>
         {t("Take Photo")}
       </button>
     </MustBeOnline>
@@ -215,7 +222,6 @@ export const RawDesignerPhotos = (props: DesignerPhotosProps) => {
 };
 
 export const DesignerPhotos = connect(mapStateToProps)(RawDesignerPhotos);
-// eslint-disable-next-line import/no-default-export
 export default DesignerPhotos;
 
 export interface UpdateImagingPackageProps {

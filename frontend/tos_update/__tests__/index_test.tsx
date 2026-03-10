@@ -1,11 +1,15 @@
-jest.mock("../../util/page", () => ({ entryPoint: jest.fn() }));
-
-import { entryPoint } from "../../util";
+import * as page from "../../util/page";
 import { TosUpdate } from "../component";
+
+let entryPointSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  entryPointSpy = jest.spyOn(page, "entryPoint").mockImplementation(jest.fn());
+});
 
 describe("TosUpdate loader", () => {
   it("calls entryPoint", async () => {
     await import("../index");
-    expect(entryPoint).toHaveBeenCalledWith(TosUpdate);
+    expect(entryPointSpy).toHaveBeenCalledWith(TosUpdate);
   });
 });

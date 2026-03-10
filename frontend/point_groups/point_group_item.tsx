@@ -13,6 +13,7 @@ import { ToolTransformProps } from "../tools/interfaces";
 import { FilePath, Path } from "../internal_urls";
 import { NavigationContext } from "../routes_helpers";
 import { findIcon } from "../crops/find";
+import { NavigateFunction } from "react-router";
 
 export const svgToUrl = (xml: string): string => {
   const DATA_URI = "data:image/svg+xml;utf8,";
@@ -71,7 +72,7 @@ export class PointGroupItem
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = this.context;
+  navigate: NavigateFunction = url => { this.context?.(url as string); };
 
   click = () => {
     if (this.props.navigate) {
@@ -107,6 +108,8 @@ export class PointGroupItem
         return svgToUrl(genericWeedIcon(weedColor));
       case "ToolSlot":
         return svgToUrl("<svg xmlns='http://www.w3.org/2000/svg'></svg>");
+      default:
+        return undefined;
     }
   }
 

@@ -1,6 +1,6 @@
 import React from "react";
 import { WebcamImg } from "../webcam_img";
-import { mount } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import { WebcamImgProps } from "../interfaces";
 import { PLACEHOLDER_FARMBOT } from "../../../photos/images/image_flipper";
 
@@ -10,33 +10,28 @@ describe("<WebcamImg />", () => {
   });
 
   it("renders img", () => {
-    const wrapper = mount<WebcamImg>(<WebcamImg {...fakeProps()} />);
-    wrapper.setState({ isLoaded: false });
-    wrapper.instance().onLoad();
-    expect(wrapper.state().isLoaded).toBeTruthy();
-    wrapper.update();
-    const content = wrapper.find("img");
-    expect(content.length).toEqual(1);
-    expect(content.props().src).toEqual("url");
+    const { container } = render(<WebcamImg {...fakeProps()} />);
+    const content = container.querySelector(".webcam-stream-valid img[src='url']");
+    expect(content).toBeTruthy();
+    content && fireEvent.load(content);
+    expect(content?.getAttribute("src")).toEqual("url");
   });
 
   it("renders iframe", () => {
     const p = fakeProps();
     p.src = "iframe url";
-    const wrapper = mount(<WebcamImg {...p} />);
-    const content = wrapper.find("iframe");
-    expect(content.length).toEqual(1);
-    expect(content.props().src).toEqual("url");
+    const { container } = render(<WebcamImg {...p} />);
+    const content = container.querySelector("iframe");
+    expect(content).toBeTruthy();
+    expect(content?.getAttribute("src")).toEqual("url");
   });
 
   it("falls back", () => {
-    const wrapper = mount<WebcamImg>(<WebcamImg {...fakeProps()} />);
-    wrapper.setState({ needsFallback: false });
-    wrapper.instance().onError();
-    expect(wrapper.state().needsFallback).toBeTruthy();
-    wrapper.update();
-    const content = wrapper.find("img");
-    expect(content.length).toEqual(1);
-    expect(content.props().src).toEqual(PLACEHOLDER_FARMBOT);
+    const { container } = render(<WebcamImg {...fakeProps()} />);
+    const initialImg = container.querySelector(".webcam-stream-valid img[src='url']");
+    initialImg && fireEvent.error(initialImg);
+    const fallbackImg = container.querySelector(".webcam-stream-unavailable img");
+    expect(fallbackImg).toBeTruthy();
+    expect(fallbackImg?.getAttribute("src")).toEqual(PLACEHOLDER_FARMBOT);
   });
 });

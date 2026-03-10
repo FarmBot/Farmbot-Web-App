@@ -16,6 +16,7 @@ export const calculatePlantPositions = (config: Config): ThreeDGardenPlant[] => 
     const plant = PLANTS[plantKey];
     if (!plant) { return []; }
     const icon = findIcon(kebabCase(plant.label));
+    const spreadMm = plant.spread * 10;
     positions.push({
       ...plant,
       icon,
@@ -26,13 +27,13 @@ export const calculatePlantPositions = (config: Config): ThreeDGardenPlant[] => 
       id: nextId++,
     });
     const plantsPerHalfRow =
-      Math.ceil((config.bedWidthOuter - plant.spread) / 2 / plant.spread);
+      Math.ceil((config.bedWidthOuter - spreadMm) / 2 / spreadMm);
     for (let i = 1; i < plantsPerHalfRow; i++) {
       positions.push({
         ...plant,
         icon,
         x: nextX,
-        y: config.bedWidthOuter / 2 + plant.spread * i,
+        y: config.bedWidthOuter / 2 + spreadMm * i,
         key: plantKey,
         seed: Math.random(),
         id: nextId++,
@@ -41,7 +42,7 @@ export const calculatePlantPositions = (config: Config): ThreeDGardenPlant[] => 
         ...plant,
         icon,
         x: nextX,
-        y: config.bedWidthOuter / 2 - plant.spread * i,
+        y: config.bedWidthOuter / 2 - spreadMm * i,
         key: plantKey,
         seed: Math.random(),
         id: nextId++,
@@ -49,12 +50,14 @@ export const calculatePlantPositions = (config: Config): ThreeDGardenPlant[] => 
     }
     if (index + 1 < gardenPlants.length) {
       const nextPlant = PLANTS[gardenPlants[index + 1]];
-      nextX += (plant.spread / 2) + (nextPlant.spread / 2);
+      const nextSpreadMm = nextPlant.spread * 10;
+      nextX += (spreadMm / 2) + (nextSpreadMm / 2);
       index++;
     } else {
       index = 0;
       const nextPlant = PLANTS[gardenPlants[0]];
-      nextX += (plant.spread / 2) + (nextPlant.spread / 2);
+      const nextSpreadMm = nextPlant.spread * 10;
+      nextX += (spreadMm / 2) + (nextSpreadMm / 2);
     }
   }
   return positions;
@@ -73,212 +76,212 @@ interface Gardens {
 export const PLANTS: Record<string, Plant> = {
   anaheimPepper: {
     label: "Anaheim Pepper",
-    spread: 400,
+    spread: 40,
     size: 150,
   },
   arugula: {
     label: "Arugula",
-    spread: 250,
+    spread: 25,
     size: 180,
   },
   basil: {
     label: "Basil",
-    spread: 250,
+    spread: 25,
     size: 160,
   },
   beet: {
     label: "Beet",
-    spread: 175,
+    spread: 17.5,
     size: 150,
   },
   bibbLettuce: {
     label: "Bibb Lettuce",
-    spread: 250,
+    spread: 25,
     size: 200,
   },
   bokChoy: {
     label: "Bok Choy",
-    spread: 210,
+    spread: 21,
     size: 160,
   },
   broccoli: {
     label: "Broccoli",
-    spread: 375,
+    spread: 37.5,
     size: 250,
   },
   brusselsSprout: {
     label: "Brussels Sprout",
-    spread: 300,
+    spread: 30,
     size: 250,
   },
   carrot: {
     label: "Carrot",
-    spread: 150,
+    spread: 15,
     size: 125,
   },
   cauliflower: {
     label: "Cauliflower",
-    spread: 400,
+    spread: 40,
     size: 250,
   },
   celery: {
     label: "Celery",
-    spread: 350,
+    spread: 35,
     size: 200,
   },
   chard: {
     label: "Swiss Chard",
-    spread: 300,
+    spread: 30,
     size: 300,
   },
   cherryBelleRadish: {
     label: "Cherry Bell Radish",
-    spread: 100,
+    spread: 10,
     size: 100,
   },
   cilantro: {
     label: "Cilantro",
-    spread: 180,
+    spread: 18,
     size: 150,
   },
   collardGreens: {
     label: "Collard Greens",
-    spread: 230,
+    spread: 23,
     size: 230,
   },
   cucumber: {
     label: "Cucumber",
-    spread: 400,
+    spread: 40,
     size: 200,
   },
   eggplant: {
     label: "Eggplant",
-    spread: 400,
+    spread: 40,
     size: 200,
   },
   frenchBreakfastRadish: {
     label: "French Breakfast Radish",
-    spread: 100,
+    spread: 10,
     size: 100,
   },
   garlic: {
     label: "Garlic",
-    spread: 175,
+    spread: 17.5,
     size: 100,
   },
   goldenBeet: {
     label: "Golden Beet",
-    spread: 175,
+    spread: 17.5,
     size: 150,
   },
   hillbillyTomato: {
     label: "Hillbilly Tomato",
-    spread: 400,
+    spread: 40,
     size: 200,
   },
   icicleRadish: {
     label: "Icicle Radish",
-    spread: 100,
+    spread: 10,
     size: 100,
   },
   laciantoKale: {
     label: "Lacianto Kale",
-    spread: 250,
+    spread: 25,
     size: 220,
   },
   leek: {
     label: "Leek",
-    spread: 200,
+    spread: 20,
     size: 200,
   },
   napaCabbage: {
     label: "Napa Cabbage",
-    spread: 400,
+    spread: 40,
     size: 220,
   },
   okra: {
     label: "Okra",
-    spread: 400,
+    spread: 40,
     size: 200,
   },
   parsnip: {
     label: "Parsnip",
-    spread: 180,
+    spread: 18,
     size: 120,
   },
   rainbowChard: {
     label: "Rainbow Chard",
-    spread: 250,
+    spread: 25,
     size: 250,
   },
   redBellPepper: {
     label: "Red Bell Pepper",
-    spread: 350,
+    spread: 35,
     size: 200,
   },
   redCurlyKale: {
     label: "Red Curly Kale",
-    spread: 350,
+    spread: 35,
     size: 220,
   },
   redRussianKale: {
     label: "Red Russian Kale",
-    spread: 250,
+    spread: 25,
     size: 200,
   },
   runnerBean: {
     label: "Runner Bean",
-    spread: 350,
+    spread: 35,
     size: 200,
   },
   rutabaga: {
     label: "Rutabaga",
-    spread: 200,
+    spread: 20,
     size: 150,
   },
   savoyCabbage: {
     label: "Savoy Cabbage",
-    spread: 400,
+    spread: 40,
     size: 250,
   },
   shallot: {
     label: "Shallot",
-    spread: 200,
+    spread: 20,
     size: 140,
   },
   snapPea: {
     label: "Snap Pea",
-    spread: 200,
+    spread: 20,
     size: 150,
   },
   spinach: {
     label: "Spinach",
-    spread: 250,
+    spread: 25,
     size: 200,
   },
   sweetPotato: {
     label: "Sweet Potato",
-    spread: 400,
+    spread: 40,
     size: 180,
   },
   turmeric: {
     label: "Turmeric",
-    spread: 250,
+    spread: 25,
     size: 150,
   },
   turnip: {
     label: "Turnip",
-    spread: 175,
+    spread: 17.5,
     size: 150,
   },
   yellowOnion: {
     label: "Yellow Onion",
-    spread: 200,
+    spread: 20,
     size: 150,
   },
   zucchini: {
     label: "Zucchini",
-    spread: 400,
+    spread: 40,
     size: 250,
   },
 };

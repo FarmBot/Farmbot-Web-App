@@ -1,15 +1,15 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { VacuumPumpCover, VacuumPumpCoverFull } from "../vacuum_pump_cover";
 import { useGLTF } from "@react-three/drei";
 import { ASSETS } from "../../../constants";
 
 describe("<VacuumPumpCover />", () => {
   it("renders", () => {
-    const model = useGLTF(ASSETS.models.vacuumPumpCover) as VacuumPumpCoverFull;
+    const model = useGLTF(ASSETS.models.vacuumPumpCover) as unknown as VacuumPumpCoverFull;
     const Component = VacuumPumpCover(model);
-    const wrapper = mount(<Component name={"name"} />);
-    expect(wrapper.html()).toContain("name");
-    expect(wrapper.html()).toContain("mesh");
+    const { container } = render(<Component name={"name"} />);
+    expect(container.innerHTML).toContain("name");
+    expect(container.innerHTML).toContain("mesh");
   });
 });

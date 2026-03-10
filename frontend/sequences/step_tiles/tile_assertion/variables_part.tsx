@@ -29,10 +29,11 @@ export const VariablesPart = (props: StepParams<Assertion>) => {
         sequenceUuid={props.currentSequence.uuid}
         resources={props.resources}
         onChange={(variable: ParameterApplication) => {
-          _then.body = addOrEditParamApps(_then.body || [], variable);
+          const thenBranch = defensiveClone(_then);
+          thenBranch.body = addOrEditParamApps(thenBranch.body || [], variable);
           const update = defensiveClone(props.currentStep);
           const nextSequence = defensiveClone(props.currentSequence).body;
-          update.args._then = _then;
+          update.args._then = thenBranch;
           nextSequence.body = nextSequence.body || [];
           nextSequence.body[props.index] = update;
           props.dispatch(overwrite(props.currentSequence, nextSequence));

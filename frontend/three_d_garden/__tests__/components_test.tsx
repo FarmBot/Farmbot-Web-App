@@ -3,12 +3,14 @@ jest.mock("../components", () => ({
 }));
 
 import React from "react";
-import { mount } from "enzyme";
 import {
   AmbientLight,
   BoxGeometry,
   DirectionalLight,
   Group,
+  InstancedMesh,
+  LineBasicMaterial,
+  LineSegments,
   Mesh,
   MeshBasicMaterial,
   MeshPhongMaterial,
@@ -16,15 +18,20 @@ import {
   SpotLight,
 } from "../components";
 import { ThreeElements } from "@react-three/fiber";
+import { createRenderer } from "../../__test_support__/test_renderer";
 
+afterAll(() => {
+  jest.unmock("../components");
+});
 describe("<Group />", () => {
   const fakeProps = (): ThreeElements["group"] => ({
     visible: true,
   });
 
   it("adds props", () => {
-    const wrapper = mount(<Group {...fakeProps()} />);
-    expect(wrapper.props().visible).toEqual(true);
+    const wrapper = createRenderer(<Group {...fakeProps()} />);
+    expect((wrapper.toJSON() as { props?: { visible?: boolean } }).props?.visible)
+      .toEqual(true);
   });
 });
 
@@ -34,8 +41,9 @@ describe("<BoxGeometry />", () => {
   });
 
   it("adds props", () => {
-    const wrapper = mount(<BoxGeometry {...fakeProps()} />);
-    expect(wrapper.props().name).toEqual("box");
+    const wrapper = createRenderer(<BoxGeometry {...fakeProps()} />);
+    expect((wrapper.toJSON() as { props?: { name?: string } }).props?.name)
+      .toEqual("box");
   });
 });
 
@@ -45,8 +53,9 @@ describe("<AmbientLight />", () => {
   });
 
   it("adds props", () => {
-    const wrapper = mount(<AmbientLight {...fakeProps()} />);
-    expect(wrapper.props().intensity).toEqual(0.5);
+    const wrapper = createRenderer(<AmbientLight {...fakeProps()} />);
+    expect((wrapper.toJSON() as { props?: { intensity?: number } }).props?.intensity)
+      .toEqual(0.5);
   });
 });
 
@@ -56,8 +65,9 @@ describe("<PointLight />", () => {
   });
 
   it("adds props", () => {
-    const wrapper = mount(<PointLight {...fakeProps()} />);
-    expect(wrapper.props().intensity).toEqual(0.5);
+    const wrapper = createRenderer(<PointLight {...fakeProps()} />);
+    expect((wrapper.toJSON() as { props?: { intensity?: number } }).props?.intensity)
+      .toEqual(0.5);
   });
 });
 
@@ -67,8 +77,9 @@ describe("<DirectionalLight />", () => {
   });
 
   it("adds props", () => {
-    const wrapper = mount(<DirectionalLight {...fakeProps()} />);
-    expect(wrapper.props().intensity).toEqual(0.5);
+    const wrapper = createRenderer(<DirectionalLight {...fakeProps()} />);
+    expect((wrapper.toJSON() as { props?: { intensity?: number } }).props?.intensity)
+      .toEqual(0.5);
   });
 });
 
@@ -78,8 +89,33 @@ describe("<Mesh />", () => {
   });
 
   it("adds props", () => {
-    const wrapper = mount(<Mesh {...fakeProps()} />);
-    expect(wrapper.props().name).toEqual("mesh");
+    const wrapper = createRenderer(<Mesh {...fakeProps()} />);
+    expect((wrapper.toJSON() as { props?: { name?: string } }).props?.name)
+      .toEqual("mesh");
+  });
+});
+
+describe("<LineSegments />", () => {
+  const fakeProps = (): ThreeElements["lineSegments"] => ({
+    name: "lineSegments",
+  });
+
+  it("adds props", () => {
+    const wrapper = createRenderer(<LineSegments {...fakeProps()} />);
+    expect((wrapper.toJSON() as { props?: { name?: string } }).props?.name)
+      .toEqual("lineSegments");
+  });
+});
+
+describe("<InstancedMesh />", () => {
+  const fakeProps = (): ThreeElements["instancedMesh"] => ({
+    name: "instancedMesh",
+  });
+
+  it("adds props", () => {
+    const wrapper = createRenderer(<InstancedMesh {...fakeProps()} />);
+    expect((wrapper.toJSON() as { props?: { name?: string } }).props?.name)
+      .toEqual("instancedMesh");
   });
 });
 
@@ -89,8 +125,21 @@ describe("<MeshBasicMaterial />", () => {
   });
 
   it("adds props", () => {
-    const wrapper = mount(<MeshBasicMaterial {...fakeProps()} />);
-    expect(wrapper.props().name).toEqual("material");
+    const wrapper = createRenderer(<MeshBasicMaterial {...fakeProps()} />);
+    expect((wrapper.toJSON() as { props?: { name?: string } }).props?.name)
+      .toEqual("material");
+  });
+});
+
+describe("<LineBasicMaterial />", () => {
+  const fakeProps = (): ThreeElements["lineBasicMaterial"] => ({
+    name: "lineMaterial",
+  });
+
+  it("adds props", () => {
+    const wrapper = createRenderer(<LineBasicMaterial {...fakeProps()} />);
+    expect((wrapper.toJSON() as { props?: { name?: string } }).props?.name)
+      .toEqual("lineMaterial");
   });
 });
 
@@ -100,8 +149,9 @@ describe("<MeshPhongMaterial />", () => {
   });
 
   it("adds props", () => {
-    const wrapper = mount(<MeshPhongMaterial {...fakeProps()} />);
-    expect(wrapper.props().name).toEqual("material");
+    const wrapper = createRenderer(<MeshPhongMaterial {...fakeProps()} />);
+    expect((wrapper.toJSON() as { props?: { name?: string } }).props?.name)
+      .toEqual("material");
   });
 });
 
@@ -111,7 +161,8 @@ describe("<SpotLight />", () => {
   });
 
   it("adds props", () => {
-    const wrapper = mount(<SpotLight {...fakeProps()} />);
-    expect(wrapper.props().visible).toEqual(true);
+    const wrapper = createRenderer(<SpotLight {...fakeProps()} />);
+    expect((wrapper.toJSON() as { props?: { visible?: boolean } }).props?.visible)
+      .toEqual(true);
   });
 });

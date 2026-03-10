@@ -1,38 +1,39 @@
 import React from "react";
 import { LoadingPlant } from "../loading_plant";
-import { shallow } from "enzyme";
+import { render, screen } from "@testing-library/react";
 
 describe("<LoadingPlant/>", () => {
   it("renders loading text", () => {
-    const wrapper = shallow(<LoadingPlant animate={false} />);
-    expect(wrapper.find(".loading-plant").length).toEqual(0);
-    expect(wrapper.find(".loading-plant-text").props().y).toEqual(150);
-    expect(wrapper.text()).toContain("Loading");
-    expect(wrapper.find(".animate").length).toEqual(0);
-    wrapper.unmount();
+    const { container } = render(<LoadingPlant animate={false} />);
+    expect(container.querySelectorAll(".loading-plant").length).toEqual(0);
+    expect(container.querySelector(".loading-plant-text"))
+      .toHaveAttribute("y", "150");
+    expect(screen.getByText("Loading...")).toBeInTheDocument();
+    expect(container.querySelectorAll(".animate").length).toEqual(0);
   });
 
   it("renders loading animation", () => {
-    const wrapper = shallow(<LoadingPlant animate={true} />);
-    expect(wrapper.find(".loading-plant")).toBeTruthy();
-    const circleProps = wrapper.find(".loading-plant-circle").props();
-    expect(circleProps.r).toEqual(110);
-    expect(circleProps.cx).toEqual(150);
-    expect(circleProps.cy).toEqual(250);
-    expect(wrapper.find(".loading-plant-text").props().y).toEqual(435);
-    expect(wrapper.text()).toContain("Loading");
-    expect(wrapper.find(".animate").length).toEqual(1);
-    wrapper.unmount();
+    const { container } = render(<LoadingPlant animate={true} />);
+    expect(container.querySelector(".loading-plant")).toBeTruthy();
+    const circle = container.querySelector(".loading-plant-circle");
+    expect(circle).toHaveAttribute("r", "110");
+    expect(circle).toHaveAttribute("cx", "150");
+    expect(circle).toHaveAttribute("cy", "250");
+    expect(container.querySelector(".loading-plant-text"))
+      .toHaveAttribute("y", "435");
+    expect(screen.getByText("Loading...")).toBeInTheDocument();
+    expect(container.querySelectorAll(".animate").length).toEqual(1);
   });
 
   it("clears initial loading text", () => {
-    const el = { outerHTML: "hidden" };
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    document.getElementsByClassName = jest.fn(() => ([el] as any));
-    const wrapper = shallow(<LoadingPlant animate={false} />);
-    expect(wrapper.find(".loading-plant").length).toEqual(0);
-    expect(wrapper.text()).toEqual("Loading...");
+    const el = { outerHTML: "hidden" } as Pick<Element, "outerHTML">;
+    const collection =
+      [el as unknown as Element] as unknown as HTMLCollectionOf<Element>;
+    jest.spyOn(document, "getElementsByClassName")
+      .mockReturnValue(collection);
+    const { container } = render(<LoadingPlant animate={false} />);
+    expect(container.querySelectorAll(".loading-plant").length).toEqual(0);
+    expect(screen.getByText("Loading...")).toBeInTheDocument();
     expect(el.outerHTML).toEqual("");
-    wrapper.unmount();
   });
 });

@@ -3,8 +3,6 @@ import { t } from "../../i18next_wrapper";
 import { capitalize, uniq, some, isEqual } from "lodash";
 import {
   NumberLtGtInput,
-  toggleAndEditEqCriteria,
-  clearCriteriaField,
   eqCriteriaSelected,
   criteriaHasKey,
 } from ".";
@@ -23,6 +21,7 @@ import {
 import { DIRECTION_CHOICES } from "../../tools/tool_slot_edit_components";
 import { Checkbox } from "../../ui";
 import { PointType } from "farmbot";
+import * as criteriaEdit from "./edit";
 
 export const SubCriteriaSection = (props: SubCriteriaSectionProps) => {
   const { group, dispatch, disabled } = props;
@@ -62,7 +61,8 @@ export const ClearCategory = (props: ClearCategoryProps) => {
   return <div className="row grid-exp-1">
     <Checkbox
       onChange={() =>
-        dispatch(clearCriteriaField(group, criteriaCategories, criteriaKeys))}
+        dispatch(criteriaEdit.clearCriteriaField(
+          group, criteriaCategories, criteriaKeys))}
       checked={all}
       disabled={all}
       title={t("clear selections")}
@@ -76,7 +76,7 @@ export const CheckboxList =
   <T extends string | number>(props: CheckboxListProps<T>) => {
     const { criteria } = props.group.body;
     const selected = eqCriteriaSelected<T>(criteria);
-    const toggle = toggleAndEditEqCriteria;
+    const toggle = criteriaEdit.toggleAndEditEqCriteria;
     return <div className={"criteria-checkbox-list"}>
       {props.list.map(({ label, value, color }: CheckboxListItem<T>, index) =>
         <div className="criteria-checkbox-list-item" key={index}>

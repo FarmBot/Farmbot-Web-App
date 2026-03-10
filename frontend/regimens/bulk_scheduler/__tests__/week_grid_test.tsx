@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render, fireEvent } from "@testing-library/react";
 import { WeekGrid } from "../week_grid";
 import { WeekGridProps } from "../interfaces";
 import { Actions } from "../../../constants";
@@ -12,19 +12,19 @@ describe("<WeekGrid />", () => {
 
   it("renders", () => {
     const props: WeekGridProps = { weeks, dispatch: jest.fn() };
-    const wrapper = mount(<WeekGrid {...props} />);
-    const buttons = wrapper.find("button");
+    const { container } = render(<WeekGrid {...props} />);
+    const buttons = container.querySelectorAll("button");
     expect(buttons.length).toEqual(4);
     ["Days", "Week 1", "1234567"].map(string =>
-      expect(wrapper.text()).toContain(string));
+      expect(container.textContent).toContain(string));
   });
 
   function checkAction(position: number, text: string, type: Actions) {
     const props: WeekGridProps = { weeks, dispatch: jest.fn() };
-    const wrapper = mount(<WeekGrid {...props} />);
-    const button = wrapper.find("button").at(position);
-    expect(button.text().toLowerCase()).toContain(text.toLowerCase());
-    button.simulate("click");
+    const { container } = render(<WeekGrid {...props} />);
+    const button = container.querySelectorAll("button")[position];
+    expect(button.textContent?.toLowerCase()).toContain(text.toLowerCase());
+    fireEvent.click(button);
     expect(props.dispatch).toHaveBeenCalledWith({ type, payload: undefined });
   }
 

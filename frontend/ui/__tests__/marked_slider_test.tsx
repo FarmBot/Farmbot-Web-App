@@ -1,8 +1,7 @@
 import React from "react";
-import { shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import { MarkedSlider, MarkedSliderProps } from "../marked_slider";
 import { fakeImage } from "../../__test_support__/fake_state/resources";
-import { MultiSlider, Slider } from "@blueprintjs/core";
 import { TaggedImage } from "farmbot";
 
 describe("<MarkedSlider />", () => {
@@ -19,18 +18,18 @@ describe("<MarkedSlider />", () => {
 
   it("displays slider", () => {
     const p = fakeProps();
-    const wrapper = shallow(<MarkedSlider {...p} />);
-    expect(wrapper.html()).not.toContain("vertical");
-    expect(wrapper.find(Slider).length).toEqual(1);
-    expect(wrapper.find(MultiSlider.Handle).length).toEqual(3);
+    const { container } = render(<MarkedSlider {...p} />);
+    expect(container.innerHTML).not.toContain("vertical");
+    expect(container.querySelectorAll(".input-slider").length).toEqual(1);
+    expect(container.querySelectorAll(".slider-image").length).toEqual(3);
   });
 
   it("displays vertical slider", () => {
     const p = fakeProps();
     p.vertical = true;
-    const wrapper = shallow(<MarkedSlider {...p} />);
-    expect(wrapper.html()).toContain("vertical");
-    expect(wrapper.find(Slider).length).toEqual(1);
-    expect(wrapper.find(MultiSlider.Handle).length).toEqual(3);
+    const { container } = render(<MarkedSlider {...p} />);
+    expect(container.innerHTML).toContain("vertical");
+    expect(container.querySelectorAll(".input-slider").length).toEqual(1);
+    expect(container.querySelectorAll(".slider-image").length).toEqual(3);
   });
 });

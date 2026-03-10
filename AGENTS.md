@@ -2,7 +2,7 @@
 
 ## Setup
 ```
-npm install
+bun install
 bundle install
 ```
 

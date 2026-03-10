@@ -1,18 +1,27 @@
-jest.mock("../../devices/actions", () => ({ badVersion: jest.fn() }));
-
-import { fakeState } from "../../__test_support__/fake_state";
-import { versionChangeMiddleware } from "../version_tracker_middleware";
 import {
   buildResourceIndex, fakeDevice,
 } from "../../__test_support__/resource_index_builder";
 import { AnyAction, Dispatch, MiddlewareAPI } from "redux";
+import { bot as fakeBot } from "../../__test_support__/fake_state/bot";
+import { cloneDeep } from "lodash";
+import * as deviceActions from "../../devices/actions";
 
 describe("version tracker middleware", () => {
-  it("Calls Rollbar.configure", () => {
+  beforeEach(() => {
+    jest.spyOn(deviceActions, "badVersion")
+      .mockImplementation(jest.fn());
+  });
+
+
+  it("Calls Rollbar.configure", async () => {
+    const { versionChangeMiddleware } = await import("../version_tracker_middleware");
     const before = window.Rollbar;
     window.Rollbar = { configure: jest.fn() };
-    const state = fakeState();
-    state.resources = buildResourceIndex([fakeDevice()]);
+    const state = {
+      bot: cloneDeep(fakeBot),
+      resources: buildResourceIndex([fakeDevice({ fbos_version: "0.0.0" })]),
+    };
+    state.bot.hardware.informational_settings.controller_version = "0.0.0";
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     type Mw = MiddlewareAPI<Dispatch<AnyAction>, any>;
     const fakeStore: Partial<Mw> = {

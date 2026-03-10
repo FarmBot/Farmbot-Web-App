@@ -26,7 +26,7 @@ import {
   definedPosition, UseCurrentLocation,
 } from "../tools/tool_slot_edit_components";
 import { BotPosition } from "../devices/interfaces";
-import { isUndefined } from "lodash";
+import { clone, isUndefined } from "lodash";
 import { Path } from "../internal_urls";
 import { NavigationContext } from "../routes_helpers";
 import { NavigateFunction } from "react-router";
@@ -124,7 +124,8 @@ export class RawCreatePoints extends React.Component<CreatePointsProps> {
   }
 
   updateAttr = (key: keyof DrawnPointPayl, value: string | boolean) => {
-    const { drawnPoint } = this.props;
+    const { drawnPoint: rawDrawnPoint } = this.props;
+    const drawnPoint = clone(rawDrawnPoint);
     if (drawnPoint) {
       switch (key) {
         case "name":
@@ -154,7 +155,7 @@ export class RawCreatePoints extends React.Component<CreatePointsProps> {
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = (url: string) => this.context(url);
+  navigate: NavigateFunction = url => { this.context?.(url as string); };
 
   closePanel = () => { this.navigate(Path.designer(this.panel)); };
 
@@ -261,7 +262,7 @@ export class RawCreatePoints extends React.Component<CreatePointsProps> {
           title={t("save")}
           onClick={() => createPoint({
             drawnPoint,
-            navigate: this.navigate as NavigateFunction,
+            navigate: this.navigate,
             dispatch: this.props.dispatch,
           })}>
           {t("Save")}
@@ -290,5 +291,4 @@ export class RawCreatePoints extends React.Component<CreatePointsProps> {
 }
 
 export const CreatePoints = connect(mapStateToProps)(RawCreatePoints);
-// eslint-disable-next-line import/no-default-export
 export default CreatePoints;

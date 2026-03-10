@@ -1,4 +1,6 @@
-FarmBot::Application.configure do
+require "active_support/core_ext/integer/time"
+
+Rails.application.configure do
   config.action_controller.allow_forgery_protection = false
   config.action_controller.perform_caching = false
   config.action_dispatch.show_exceptions = false
@@ -6,7 +8,9 @@ FarmBot::Application.configure do
   config.active_job.queue_adapter = :inline
   config.active_support.deprecation = :stderr
   # config.assets.debug                               = true
-  config.cache_classes = true
+  config.enable_reloading = false
+  config.active_support.disallowed_deprecation = :raise
+  config.active_support.disallowed_deprecation_warnings = []
   config.consider_all_requests_local = true
   config.eager_load = true
   config.log_level = :error

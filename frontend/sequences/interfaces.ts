@@ -1,4 +1,4 @@
-import {
+import type {
   SequenceBodyItem,
   LegalArgString,
   SyncStatus,
@@ -10,12 +10,12 @@ import {
   TaggedSequence,
   Color,
 } from "farmbot";
-import { ResourceIndex, UUID } from "../resources/interfaces";
-import { GetWebAppConfigValue } from "../config_storage/actions";
-import { Folders } from "../folders/component";
-import { DeviceSetting } from "../constants";
-import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
-import { SequencesPanelState } from "../interfaces";
+import type { ResourceIndex, UUID } from "../resources/interfaces";
+import type { GetWebAppConfigValue } from "../config_storage/actions";
+import type { Folders } from "../folders/component";
+import type { DeviceSetting } from "../constants";
+import type { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
+import type { SequencesPanelState } from "../interfaces";
 
 export interface HardwareFlags {
   findHomeEnabled: Record<Xyz, boolean>;

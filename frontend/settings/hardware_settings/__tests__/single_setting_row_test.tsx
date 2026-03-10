@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { SingleSettingRow, SingleSettingRowProps } from "../single_setting_row";
 import { DeviceSetting } from "../../../constants";
 
@@ -13,7 +13,7 @@ describe("<SingleSettingRow />", () => {
 
   it("renders", () => {
     const p = fakeProps();
-    const wrapper = mount(<SingleSettingRow {...p} />);
-    expect(wrapper.text()).toContain("child");
+    const { container } = render(<SingleSettingRow {...p} />);
+    expect(container.textContent).toContain("child");
   });
 });

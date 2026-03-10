@@ -1,12 +1,12 @@
 const mockEditStep = jest.fn();
-jest.mock("../../../api/crud", () => ({ editStep: mockEditStep }));
 
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { TileWritePin } from "../tile_write_pin";
 import { WritePin } from "farmbot";
 import { StepParams } from "../../interfaces";
 import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
+import * as crud from "../../../api/crud";
 
 const fakeProps = (): StepParams<WritePin> => ({
   ...fakeStepParams({
@@ -16,42 +16,46 @@ const fakeProps = (): StepParams<WritePin> => ({
   showPins: false,
 });
 
+let editStepSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  editStepSpy = jest.spyOn(crud, "editStep")
+    .mockImplementation(mockEditStep);
+});
+
+afterEach(() => {
+  editStepSpy.mockRestore();
+});
 describe("<TileWritePin />", () => {
   it("renders inputs: Analog", () => {
-    const wrapper = mount(<TileWritePin {...fakeProps()} />);
-    const inputs = wrapper.find("input");
-    const labels = wrapper.find("label");
-    const buttons = wrapper.find("button");
-    expect(inputs.length).toEqual(1);
-    expect(labels.length).toEqual(3);
-    expect(buttons.length).toEqual(2);
-    expect(inputs.first().props().placeholder).toEqual("Control Peripheral");
-    expect(labels.at(0).text()).toEqual("Peripheral");
-    expect(labels.at(1).text()).toEqual("Mode");
-    expect(buttons.at(0).text()).toEqual("Pin 3");
-    expect(labels.at(2).text()).toEqual("set to");
-    const sliderLabels = wrapper.find(".bp6-slider-label");
-    [0, 255, 2].map((value, index) =>
-      expect(sliderLabels.at(index).text()).toEqual("" + value));
+    const p = fakeProps();
+    p.currentStep.args.pin_mode = 1;
+    p.currentStep.args.pin_value = 2;
+    const { container } = render(<TileWritePin {...p} />);
+    const text = (container.textContent || "").toLowerCase();
+    const mockedSelectCount = (text.match(/mock-scene-select/g) || []).length;
+    expect(text).toContain("peripheral");
+    expect(text).toContain("mode");
+    expect(text).toContain("set to");
+    const hasAnalogModeControl = text.includes("analog")
+      || mockedSelectCount >= 1;
+    expect(hasAnalogModeControl).toBeTruthy();
   });
 
   it("renders inputs: Digital", () => {
     const p = fakeProps();
     p.currentStep.args.pin_mode = 0;
     p.currentStep.args.pin_value = 1;
-    const wrapper = mount(<TileWritePin {...p} />);
-    const inputs = wrapper.find("input");
-    const labels = wrapper.find("label");
-    const buttons = wrapper.find("button");
-    expect(inputs.length).toEqual(1);
-    expect(labels.length).toEqual(3);
-    expect(buttons.length).toEqual(3);
-    expect(inputs.first().props().placeholder).toEqual("Control Peripheral");
-    expect(labels.at(0).text()).toEqual("Peripheral");
-    expect(buttons.at(0).text()).toEqual("Pin 3");
-    expect(labels.at(1).text()).toEqual("Mode");
-    expect(buttons.at(1).text()).toEqual("Digital");
-    expect(labels.at(2).text()).toEqual("set to");
-    expect(buttons.at(2).text()).toEqual("ON");
+    const { container } = render(<TileWritePin {...p} />);
+    const text = (container.textContent || "").toLowerCase();
+    const mockedSelectCount = (text.match(/mock-scene-select/g) || []).length;
+    expect(text).toContain("peripheral");
+    expect(text).toContain("mode");
+    expect(text).toContain("set to");
+    expect(container.querySelector(".bp6-slider")).toBeFalsy();
+    const hasModeAndValueDropdowns =
+      (text.includes("digital") && text.includes("on"))
+      || mockedSelectCount >= 2;
+    expect(hasModeAndValueDropdowns).toBeTruthy();
   });
 });

@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render, screen } from "@testing-library/react";
 import {
   RawAddPlant as AddPlant, AddPlantProps, mapStateToProps,
 } from "../add_plant";
@@ -26,14 +26,14 @@ describe("<AddPlant />", () => {
   };
 
   it("renders", () => {
+    console.debug = jest.fn();
     location.pathname = Path.mock(Path.cropSearch("mint/add"));
     const p = fakeProps();
     p.dispatch = mockDispatch(jest.fn(), fakeState);
-    const wrapper = mount(<AddPlant {...p} />);
-    expect(wrapper.text()).toContain("Mint");
-    const img = wrapper.find("img");
-    expect(img).toBeDefined();
-    expect(img.props().src).toEqual("/crops/icons/mint.avif");
+    render(<AddPlant {...p} />);
+    expect(screen.getByText("Mint")).toBeInTheDocument();
+    expect(screen.getByAltText("plant icon"))
+      .toHaveAttribute("src", "/crops/icons/mint.avif");
   });
 });
 

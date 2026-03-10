@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { Actions } from "../../../constants";
 import { fakeImage } from "../../../__test_support__/fake_state/resources";
 import { ImageShowMenu, ImageShowMenuTarget } from "../image_show_menu";
@@ -15,33 +15,34 @@ describe("<ImageShowMenu />", () => {
   });
 
   it("renders as shown in map", () => {
-    const wrapper = mount(<ImageShowMenu {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).not.toContain("not shown in map");
+    render(<ImageShowMenu {...fakeProps()} />);
+    expect(screen.queryByText(/not shown in map/i)).toBeNull();
   });
 
   it("handles missing image", () => {
     const p = fakeProps();
     p.image = undefined;
-    const wrapper = mount(<ImageShowMenu {...p} />);
-    expect(wrapper.text().toLowerCase()).not.toContain("not shown in map");
+    render(<ImageShowMenu {...p} />);
+    expect(screen.queryByText(/not shown in map/i)).toBeNull();
   });
 
   it("renders as not shown in map", () => {
     const p = fakeProps();
     p.flags.inRange = false;
-    const wrapper = mount(<ImageShowMenu {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("not shown in map");
+    render(<ImageShowMenu {...p} />);
+    expect(screen.getByText(/not shown in map/i)).toBeInTheDocument();
   });
 
   it("sets map image highlight", () => {
     const p = fakeProps();
     p.image && (p.image.body.id = 1);
-    const wrapper = mount(<ImageShowMenu {...p} />);
-    wrapper.find(".shown-in-map-details").simulate("mouseEnter");
+    const { container } = render(<ImageShowMenu {...p} />);
+    const section = container.querySelector(".shown-in-map-details");
+    fireEvent.mouseEnter(section as HTMLElement);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.HIGHLIGHT_MAP_IMAGE, payload: 1,
     });
-    wrapper.find(".shown-in-map-details").simulate("mouseLeave");
+    fireEvent.mouseLeave(section as HTMLElement);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.HIGHLIGHT_MAP_IMAGE, payload: undefined,
     });
@@ -50,8 +51,9 @@ describe("<ImageShowMenu />", () => {
   it("doesn't set map image highlight", () => {
     const p = fakeProps();
     p.image = undefined;
-    const wrapper = mount(<ImageShowMenu {...p} />);
-    wrapper.find(".shown-in-map-details").simulate("mouseEnter");
+    const { container } = render(<ImageShowMenu {...p} />);
+    const section = container.querySelector(".shown-in-map-details");
+    fireEvent.mouseEnter(section as HTMLElement);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.HIGHLIGHT_MAP_IMAGE, payload: undefined,
     });
@@ -60,9 +62,9 @@ describe("<ImageShowMenu />", () => {
   it("hides map image", () => {
     const p = fakeProps();
     p.image && (p.image.body.id = 1);
-    const wrapper = mount(<ImageShowMenu {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("hide");
-    wrapper.find(".hide-single-image-section").find("button").simulate("click");
+    render(<ImageShowMenu {...p} />);
+    expect(screen.getByRole("button", { name: /hide/i })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: /hide/i }));
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.HIDE_MAP_IMAGE, payload: 1,
     });
@@ -71,9 +73,8 @@ describe("<ImageShowMenu />", () => {
   it("doesn't hide map image", () => {
     const p = fakeProps();
     p.image = undefined;
-    const wrapper = mount(<ImageShowMenu {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("hide");
-    wrapper.find(".hide-single-image-section").find("button").simulate("click");
+    render(<ImageShowMenu {...p} />);
+    fireEvent.click(screen.getByRole("button", { name: /hide/i }));
     expect(p.dispatch).not.toHaveBeenCalled();
   });
 
@@ -81,9 +82,8 @@ describe("<ImageShowMenu />", () => {
     const p = fakeProps();
     p.image && (p.image.body.id = 1);
     p.flags.notHidden = false;
-    const wrapper = mount(<ImageShowMenu {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("show");
-    wrapper.find(".hide-single-image-section").find("button").simulate("click");
+    render(<ImageShowMenu {...p} />);
+    fireEvent.click(screen.getByRole("button", { name: /show/i }));
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.UN_HIDE_MAP_IMAGE, payload: 1,
     });
@@ -100,9 +100,10 @@ describe("<ImageShowMenuTarget />", () => {
 
   it("handles missing image", () => {
     const p = fakeProps();
-    const wrapper = mount(<ImageShowMenuTarget {...p} />);
-    expect(wrapper.html()).toContain("fa-eye");
-    wrapper.simulate("mouseEnter");
+    const { container } = render(<ImageShowMenuTarget {...p} />);
+    const icon = container.querySelector("i");
+    expect(icon?.className).toContain("fa-eye");
+    fireEvent.mouseEnter(icon as HTMLElement);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.HIGHLIGHT_MAP_IMAGE, payload: undefined,
     });

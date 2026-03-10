@@ -1,7 +1,6 @@
 module Api
   class UsersController < Api::AbstractController
     skip_before_action :authenticate_user!, only: [:create,
-                                                   :verify,
                                                    :resend_verification]
 
     def create

@@ -5,6 +5,18 @@ describe DashboardController do
   let(:user) { FactoryBot.create(:user, confirmed_at: nil) }
 
   describe "dashboard endpoint" do
+    it "maps js assets to flattened entry names" do
+      expect(DashboardController::JS_OUTPUTS.fetch(:main_app))
+        .to eq("/assets/dist/main_app-index.js")
+      expect(DashboardController::JS_OUTPUTS.fetch(:front_page))
+        .to eq("/assets/dist/front_page-index.js")
+    end
+
+    it "keeps root entry names flat" do
+      expect(DashboardController.js_output_file("/index.tsx"))
+        .to eq("index.js")
+    end
+
     it "renders the terms of service" do
       get :tos_update
       expect(response.status).to eq(200)

@@ -1,7 +1,5 @@
-jest.mock("../../devices/actions", () => ({ move: jest.fn() }));
-
 import React from "react";
-import { shallow, mount } from "enzyme";
+import { cleanup, fireEvent, render } from "@testing-library/react";
 import {
   GantryMountedInput,
   SlotDirectionInputRow,
@@ -17,7 +15,7 @@ import {
 import {
   fakeTool, fakeToolSlot,
 } from "../../__test_support__/fake_state/resources";
-import { FBSelect, NULL_CHOICE } from "../../ui";
+import { BlurableInput, FBSelect, NULL_CHOICE } from "../../ui";
 import { fakeToolTransformProps } from "../../__test_support__/fake_tool_info";
 import { ToolPulloutDirection } from "farmbot/dist/resources/api_resources";
 import {
@@ -29,8 +27,33 @@ import {
   SlotEditRowsProps,
   EditToolSlotMetaProps,
 } from "../interfaces";
-import { move } from "../../devices/actions";
+import * as deviceActions from "../../devices/actions";
 import { fakeMovementState } from "../../__test_support__/fake_bot_data";
+import { ToolSlotSVG } from "../../farm_designer/map/layers/tool_slots/tool_graphics";
+import {
+  createRenderer,
+  unmountRenderer,
+} from "../../__test_support__/test_renderer";
+
+const wrappers: ReturnType<typeof createRenderer>[] = [];
+const createWrapper = (element: React.ReactElement) => {
+  const wrapper = createRenderer(element);
+  wrappers.push(wrapper);
+  return wrapper;
+};
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  jest.spyOn(deviceActions, "move").mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  cleanup();
+  while (wrappers.length > 0) {
+    const wrapper = wrappers.pop();
+    wrapper && unmountRenderer(wrapper);
+  }
+});
 
 describe("<GantryMountedInput />", () => {
   const fakeProps = (): GantryMountedInputProps => ({
@@ -39,14 +62,14 @@ describe("<GantryMountedInput />", () => {
   });
 
   it("renders", () => {
-    const wrapper = shallow(<GantryMountedInput {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("gantry-mounted");
+    const { container } = render(<GantryMountedInput {...fakeProps()} />);
+    expect(container.textContent?.toLowerCase()).toContain("gantry-mounted");
   });
 
   it("changes value", () => {
     const p = fakeProps();
-    const wrapper = shallow(<GantryMountedInput {...p} />);
-    wrapper.find("input").simulate("change");
+    const { container } = render(<GantryMountedInput {...p} />);
+    fireEvent.click(container.querySelector("input") as Element);
     expect(p.onChange).toHaveBeenCalledWith({ gantry_mounted: true });
   });
 });
@@ -70,26 +93,26 @@ describe("<FlipToolDirection />", () => {
   });
 
   it("renders", () => {
-    const wrapper = shallow(<FlipToolDirection {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("rotate");
+    const { container } = render(<FlipToolDirection {...fakeProps()} />);
+    expect(container.textContent?.toLowerCase()).toContain("rotate");
   });
 
   it("changes value to flipped", () => {
     const p = fakeProps();
-    const wrapper = shallow(<FlipToolDirection {...p} />);
-    wrapper.find("input").simulate("change");
+    const { container } = render(<FlipToolDirection {...p} />);
+    fireEvent.click(container.querySelector("input") as Element);
     expect(p.onChange).toHaveBeenCalledWith({
-      meta: { tool_direction: "flipped" }
+      meta: { tool_direction: "flipped" },
     });
   });
 
   it("changes value from flipped", () => {
     const p = fakeProps();
     p.toolSlotMeta = { tool_direction: "flipped" };
-    const wrapper = shallow(<FlipToolDirection {...p} />);
-    wrapper.find("input").simulate("change");
+    const { container } = render(<FlipToolDirection {...p} />);
+    fireEvent.click(container.querySelector("input") as Element);
     expect(p.onChange).toHaveBeenCalledWith({
-      meta: { tool_direction: "standard" }
+      meta: { tool_direction: "standard" },
     });
   });
 });
@@ -109,30 +132,31 @@ describe("<SlotDirectionInputRow />", () => {
   ])("renders: direction %s", (toolPulloutDirection, expected) => {
     const p = fakeProps();
     p.toolPulloutDirection = toolPulloutDirection;
-    const wrapper = mount(<SlotDirectionInputRow {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("direction");
-    expect(wrapper.find("i").first().hasClass(expected)).toBeTruthy();
+    const { container } = render(<SlotDirectionInputRow {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("direction");
+    expect(container.querySelector(".direction-icon")?.className)
+      .toContain(expected);
   });
 
   it("changes value by click", () => {
     const p = fakeProps();
-    const wrapper = shallow(<SlotDirectionInputRow {...p} />);
-    wrapper.find("i").first().simulate("click");
+    const { container } = render(<SlotDirectionInputRow {...p} />);
+    fireEvent.click(container.querySelector(".direction-icon") as Element);
     expect(p.onChange).toHaveBeenCalledWith({ pullout_direction: 1 });
   });
 
   it("changes value by click: handles rollover", () => {
     const p = fakeProps();
     p.toolPulloutDirection = ToolPulloutDirection.NEGATIVE_Y;
-    const wrapper = shallow(<SlotDirectionInputRow {...p} />);
-    wrapper.find("i").first().simulate("click");
+    const { container } = render(<SlotDirectionInputRow {...p} />);
+    fireEvent.click(container.querySelector(".direction-icon") as Element);
     expect(p.onChange).toHaveBeenCalledWith({ pullout_direction: 0 });
   });
 
   it("changes value by selection", () => {
     const p = fakeProps();
-    const wrapper = shallow(<SlotDirectionInputRow {...p} />);
-    wrapper.find("FBSelect").simulate("change", { label: "", value: 1 });
+    const wrapper = createWrapper(<SlotDirectionInputRow {...p} />);
+    wrapper.root.findByType(FBSelect).props.onChange({ label: "", value: 1 });
     expect(p.onChange).toHaveBeenCalledWith({ pullout_direction: 1 });
   });
 });
@@ -149,8 +173,11 @@ describe("<ToolSelection />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<ToolSelection {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("none");
+    const wrapper = createWrapper(<ToolSelection {...fakeProps()} />);
+    expect(wrapper.root.findByType(FBSelect).props.selectedItem)
+      .toEqual(NULL_CHOICE);
+    expect(wrapper.root.findByType(FBSelect).props.list)
+      .toEqual([NULL_CHOICE]);
   });
 
   it("handles missing tool data", () => {
@@ -161,8 +188,8 @@ describe("<ToolSelection />", () => {
     tool.body.name = undefined;
     tool.body.id = undefined;
     p.tools = [tool];
-    const wrapper = shallow(<ToolSelection {...p} />);
-    expect(wrapper.find("FBSelect").props().list).toEqual([NULL_CHOICE]);
+    const wrapper = createWrapper(<ToolSelection {...p} />);
+    expect(wrapper.root.findByType(FBSelect).props.list).toEqual([NULL_CHOICE]);
   });
 
   it("shows available items", () => {
@@ -178,8 +205,8 @@ describe("<ToolSelection />", () => {
     otherTool.body.name = undefined;
     p.tools = [trough, tool, otherTool];
     p.noUTM = true;
-    const wrapper = shallow(<ToolSelection {...p} />);
-    expect(wrapper.find("FBSelect").props().list).toEqual([
+    const wrapper = createWrapper(<ToolSelection {...p} />);
+    expect(wrapper.root.findByType(FBSelect).props.list).toEqual([
       NULL_CHOICE,
       { label: "seed trough", value: 1 },
     ]);
@@ -190,22 +217,25 @@ describe("<ToolSelection />", () => {
     const tool = fakeTool();
     tool.body.name = undefined;
     p.selectedTool = tool;
-    const wrapper = shallow(<ToolSelection {...p} />);
-    expect(wrapper.find(FBSelect).props().selectedItem)
+    const wrapper = createWrapper(<ToolSelection {...p} />);
+    expect(wrapper.root.findByType(FBSelect).props.selectedItem)
       .toEqual(expect.objectContaining({ label: "untitled" }));
   });
 
   it("shows selected tool", () => {
     const p = fakeProps();
     p.selectedTool = fakeTool();
-    const wrapper = mount(<ToolSelection {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("foo");
+    const wrapper = createWrapper(<ToolSelection {...p} />);
+    expect(wrapper.root.findByType(FBSelect).props.selectedItem)
+      .toEqual(expect.objectContaining({
+        label: p.selectedTool.body.name || "untitled",
+      }));
   });
 
   it("changes value", () => {
     const p = fakeProps();
-    const wrapper = shallow(<ToolSelection {...p} />);
-    wrapper.find("FBSelect").simulate("change", { label: "", value: 1 });
+    const wrapper = createWrapper(<ToolSelection {...p} />);
+    wrapper.root.findByType(FBSelect).props.onChange({ label: "", value: 1 });
     expect(p.onChange).toHaveBeenCalledWith({ tool_id: 1 });
   });
 });
@@ -220,22 +250,23 @@ describe("<ToolInputRow />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<ToolInputRow {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("tool");
+    const { container } = render(<ToolInputRow {...fakeProps()} />);
+    expect(container.textContent?.toLowerCase()).toContain("tool");
   });
 
   it("shows selected tool", () => {
     const p = fakeProps();
     p.selectedTool = fakeTool();
-    const wrapper = mount(<ToolInputRow {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("foo");
+    const wrapper = createWrapper(<ToolInputRow {...p} />);
+    expect(wrapper.root.findByType(ToolSelection).props.selectedTool)
+      .toEqual(p.selectedTool);
   });
 
   it("renders for express bots", () => {
     const p = fakeProps();
     p.noUTM = true;
-    const wrapper = mount(<ToolInputRow {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("seed container");
+    const { container } = render(<ToolInputRow {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("seed container");
   });
 });
 
@@ -253,30 +284,29 @@ describe("<SlotLocationInputRow />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<SlotLocationInputRow {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("x (mm)y (mm)z (mm)");
-    expect(wrapper.find("input").first().props().value).toEqual(0);
+    const { container } = render(<SlotLocationInputRow {...fakeProps()} />);
+    expect(container.querySelectorAll("label"))
+      .toHaveLength(3);
+    expect(container.textContent?.toLowerCase()).toContain("(mm)");
+    expect((container.querySelector("input") as HTMLInputElement).value)
+      .toEqual("0");
   });
 
   it("renders gantry-mounted slot", () => {
     const p = fakeProps();
     p.gantryMounted = true;
-    const wrapper = mount(<SlotLocationInputRow {...p} />);
-    expect(wrapper.find("input").first().props().value).toEqual("Gantry");
+    const { container } = render(<SlotLocationInputRow {...p} />);
+    expect((container.querySelector("input") as HTMLInputElement).value)
+      .toEqual("Gantry");
   });
 
   it("changes value", () => {
     const p = fakeProps();
-    const wrapper = shallow(<SlotLocationInputRow {...p} />);
-    wrapper.find("BlurableInput").at(0).simulate("commit", {
-      currentTarget: { value: 1 }
-    });
-    wrapper.find("BlurableInput").at(1).simulate("commit", {
-      currentTarget: { value: 2 }
-    });
-    wrapper.find("BlurableInput").at(2).simulate("commit", {
-      currentTarget: { value: 3 }
-    });
+    const wrapper = createWrapper(<SlotLocationInputRow {...p} />);
+    const inputs = wrapper.root.findAllByType(BlurableInput);
+    inputs[0]?.props.onCommit({ currentTarget: { value: 1 } });
+    inputs[1]?.props.onCommit({ currentTarget: { value: 2 } });
+    inputs[2]?.props.onCommit({ currentTarget: { value: 3 } });
     expect(p.onChange).toHaveBeenCalledWith({ x: 1 });
     expect(p.onChange).toHaveBeenCalledWith({ y: 2 });
     expect(p.onChange).toHaveBeenCalledWith({ z: 3 });
@@ -288,9 +318,9 @@ describe("<SlotLocationInputRow />", () => {
     p.slotLocation.y = 2;
     p.slotLocation.z = 3;
     p.gantryMounted = false;
-    const wrapper = mount(<SlotLocationInputRow {...p} />);
-    wrapper.find("button").at(1).simulate("click");
-    expect(move).toHaveBeenCalledWith({ x: 1, y: 2, z: 3 });
+    const { container } = render(<SlotLocationInputRow {...p} />);
+    fireEvent.click(container.querySelectorAll("button")[1] as Element);
+    expect(deviceActions.move).toHaveBeenCalledWith({ x: 1, y: 2, z: 3 });
   });
 
   it("moves to gantry-mounted tool slot", () => {
@@ -300,9 +330,9 @@ describe("<SlotLocationInputRow />", () => {
     p.slotLocation.y = 2;
     p.slotLocation.z = 3;
     p.gantryMounted = true;
-    const wrapper = mount(<SlotLocationInputRow {...p} />);
-    wrapper.find("button").at(1).simulate("click");
-    expect(move).toHaveBeenCalledWith({ x: 10, y: 2, z: 3 });
+    const { container } = render(<SlotLocationInputRow {...p} />);
+    fireEvent.click(container.querySelectorAll("button")[1] as Element);
+    expect(deviceActions.move).toHaveBeenCalledWith({ x: 10, y: 2, z: 3 });
   });
 
   it("falls back to tool slot when moving to gantry-mounted tool slot", () => {
@@ -312,9 +342,9 @@ describe("<SlotLocationInputRow />", () => {
     p.slotLocation.y = 2;
     p.slotLocation.z = 3;
     p.gantryMounted = true;
-    const wrapper = mount(<SlotLocationInputRow {...p} />);
-    wrapper.find("button").at(1).simulate("click");
-    expect(move).toHaveBeenCalledWith({ x: 1, y: 2, z: 3 });
+    const { container } = render(<SlotLocationInputRow {...p} />);
+    fireEvent.click(container.querySelectorAll("button")[1] as Element);
+    expect(deviceActions.move).toHaveBeenCalledWith({ x: 1, y: 2, z: 3 });
   });
 });
 
@@ -326,16 +356,16 @@ describe("<UseCurrentLocation />", () => {
 
   it("doesn't use current coordinates", () => {
     const p = fakeProps();
-    const wrapper = shallow(<UseCurrentLocation {...p} />);
-    wrapper.find("button").simulate("click");
+    const { container } = render(<UseCurrentLocation {...p} />);
+    fireEvent.click(container.querySelector("button") as Element);
     expect(p.onChange).not.toHaveBeenCalled();
   });
 
   it("uses current coordinates", () => {
     const p = fakeProps();
     p.botPosition = { x: 0, y: 1, z: 2 };
-    const wrapper = shallow(<UseCurrentLocation {...p} />);
-    wrapper.find("button").simulate("click");
+    const { container } = render(<UseCurrentLocation {...p} />);
+    fireEvent.click(container.querySelector("button") as Element);
     expect(p.onChange).toHaveBeenCalledWith(p.botPosition);
   });
 });
@@ -360,7 +390,7 @@ describe("<SlotEditRows />", () => {
   it("handles missing tool", () => {
     const p = fakeProps();
     p.tool = undefined;
-    const wrapper = mount(<SlotEditRows {...p} />);
-    expect(wrapper.text()).toContain("None");
+    const wrapper = createWrapper(<SlotEditRows {...p} />);
+    expect(wrapper.root.findByType(ToolSlotSVG).props.toolName).toEqual("Empty");
   });
 });

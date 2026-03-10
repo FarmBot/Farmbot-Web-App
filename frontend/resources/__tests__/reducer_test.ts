@@ -1,5 +1,4 @@
 import { fakeState } from "../../__test_support__/fake_state";
-import { overwrite, refreshStart, refreshOK, refreshNO } from "../../api/crud";
 import {
   SpecialStatus,
   TaggedSequence,
@@ -9,7 +8,7 @@ import {
   TaggedTool,
   TaggedPlantPointer,
 } from "farmbot";
-import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
+import { buildResourceIndex, fakeDevice } from "../../__test_support__/resource_index_builder";
 import { GeneralizedError } from "../actions";
 import { Actions } from "../../constants";
 import { fakeResource } from "../../__test_support__/fake_resource";
@@ -23,6 +22,12 @@ import {
 import { PlantPointer } from "farmbot/dist/resources/api_resources";
 
 describe("resource reducer", () => {
+  const originalConsoleError = console.error;
+
+  afterEach(() => {
+    console.error = originalConsoleError;
+  });
+
   it("marks resources as DIRTY when reducing OVERWRITE_RESOURCE", () => {
     const state = fakeState().resources;
     const uuid = Object.keys(state.index.byKind.Sequence)[0];
@@ -32,7 +37,14 @@ describe("resource reducer", () => {
     expect(sequence.kind).toBe("Sequence");
     const sequenceBodyUpdate = fakeSequence().body;
     sequenceBodyUpdate.forked = false;
-    const next = resourceReducer(state, overwrite(sequence, sequenceBodyUpdate));
+    const next = resourceReducer(state, {
+      type: Actions.OVERWRITE_RESOURCE,
+      payload: {
+        uuid: sequence.uuid,
+        update: sequenceBodyUpdate,
+        specialStatus: SpecialStatus.DIRTY,
+      },
+    });
     const seq2 = next.index.references[uuid] as TaggedSequence;
     expect(seq2.specialStatus).toBe(SpecialStatus.DIRTY);
     expect(seq2.body.forked).toBeFalsy();
@@ -48,25 +60,38 @@ describe("resource reducer", () => {
     sequence.body.sequence_version_id = 1;
     const sequenceBodyUpdate = fakeSequence().body;
     sequenceBodyUpdate.forked = false;
-    const next = resourceReducer(state, overwrite(sequence, sequenceBodyUpdate));
+    const next = resourceReducer(state, {
+      type: Actions.OVERWRITE_RESOURCE,
+      payload: {
+        uuid: sequence.uuid,
+        update: sequenceBodyUpdate,
+        specialStatus: SpecialStatus.DIRTY,
+      },
+    });
     const seq2 = next.index.references[uuid] as TaggedSequence;
     expect(seq2.specialStatus).toBe(SpecialStatus.DIRTY);
     expect(seq2.body.forked).toEqual(true);
   });
 
   it("marks resources as SAVING when reducing REFRESH_RESOURCE_START", () => {
-    const state = fakeState().resources;
-    const uuid = Object.keys(state.index.byKind.Device)[0];
-    const device = state.index.references[uuid] as TaggedDevice;
+    const device = fakeDevice();
+    const state = buildResourceIndex([device]);
+    const uuid = device.uuid;
     expect(device).toBeTruthy();
 
     expect(device.kind).toBe("Device");
-    const afterStart = resourceReducer(state, refreshStart(device.uuid));
+    const afterStart = resourceReducer(state, {
+      type: Actions.REFRESH_RESOURCE_START,
+      payload: device.uuid,
+    });
     const dev2 = afterStart.index.references[uuid] as TaggedDevice;
     expect(dev2.specialStatus).toBe(SpecialStatus.SAVING);
 
     // SCENARIO: REFRESH_START ===> REFRESH_OK
-    const afterOk = resourceReducer(afterStart, refreshOK(device));
+    const afterOk = resourceReducer(afterStart, {
+      type: Actions.REFRESH_RESOURCE_OK,
+      payload: device,
+    });
     const dev3 = afterOk.index.references[uuid] as TaggedDevice;
     expect(dev3.specialStatus).toBe(SpecialStatus.SAVED);
     const payl: GeneralizedError = {
@@ -75,8 +100,10 @@ describe("resource reducer", () => {
       statusBeforeError: SpecialStatus.DIRTY
     };
     // SCENARIO: REFRESH_START ===> REFRESH_NO
-    const afterNo =
-      resourceReducer(afterStart, refreshNO(payl));
+    const afterNo = resourceReducer(afterStart, {
+      type: Actions.REFRESH_RESOURCE_NO,
+      payload: payl,
+    });
     const dev4 = afterNo.index.references[uuid] as TaggedDevice;
     expect(dev4.specialStatus).toBe(SpecialStatus.SAVED);
   });
@@ -87,9 +114,10 @@ describe("resource reducer", () => {
     "Point", "Regimen", "SavedGarden", "Sensor"];
 
   it("EDITs a _RESOURCE", () => {
-    const startingState = fakeState().resources;
+    const tool = fakeResource("Tool", { id: 1, name: "before" });
+    const startingState = buildResourceIndex([tool]);
     const { index } = startingState;
-    const uuid = Object.keys(index.byKind.Tool)[0];
+    const uuid = tool.uuid;
     const update: Partial<TaggedTool["body"]> = { name: "after" };
     const payload: EditResourceParams = {
       uuid,
@@ -128,15 +156,16 @@ describe("resource reducer", () => {
   });
 
   it("handles resource failures", () => {
-    const startingState = fakeState().resources;
-    const uuid = Object.keys(startingState.index.byKind.Tool)[0];
+    const tool = fakeResource("Tool", { id: 1, name: "before" });
+    const startingState = buildResourceIndex([tool]);
+    const uuid = tool.uuid;
     const action = {
       type: Actions._RESOURCE_NO,
       payload: { uuid, err: "Whatever", statusBeforeError: SpecialStatus.DIRTY }
     };
     const newState = resourceReducer(startingState, action);
-    const tool = newState.index.references[uuid] as TaggedTool;
-    expect(tool.specialStatus).toBe(SpecialStatus.DIRTY);
+    const updatedTool = newState.index.references[uuid] as TaggedTool;
+    expect(updatedTool.specialStatus).toBe(SpecialStatus.DIRTY);
   });
 
   it("handles unknown resource kinds", () => {

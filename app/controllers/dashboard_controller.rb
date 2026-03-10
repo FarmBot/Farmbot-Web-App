@@ -17,8 +17,8 @@ class DashboardController < ApplicationController
                         :promo,
                       ]
 
-  OUTPUT_URL = "/" + File.join("assets", "parcel") # <= served from public/ dir
-                                                   # <= See PUBLIC_OUTPUT_DIR
+  OUTPUT_URL = "/" + File.join("assets", "dist") # <= served from public/ dir
+                                                 # <= See PUBLIC_OUTPUT_DIR
   CACHE_DIR = File.join(".cache")
 
   CSS_INPUTS = {
@@ -27,7 +27,7 @@ class DashboardController < ApplicationController
   }.with_indifferent_access
 
   JS_INPUTS = {
-    main_app: "/entry.tsx",
+    main_app: "/main_app/index.tsx",
     front_page: "/front_page/index.tsx",
     password_reset: "/password_reset/index.tsx",
     tos_update: "/tos_update/index.tsx",
@@ -52,22 +52,19 @@ class DashboardController < ApplicationController
     acc
   end.with_indifferent_access
 
+  def self.js_output_file(path)
+    clean = path.sub(%r{\A/}, "")
+    dir = File.dirname(clean)
+    base = File.basename(clean, ".*")
+    file = dir == "." ? "#{base}.js" : "#{dir}-#{base}.js"
+    file
+  end
+
   JS_OUTPUTS = JS_INPUTS.reduce({}) do |acc, (k, v)|
-    file = v.gsub(/\.tsx?$/, ".js")
-    acc[k] = File.join(OUTPUT_URL, file)
+    acc[k] = File.join(OUTPUT_URL, js_output_file(v))
     acc
   end.with_indifferent_access
 
-  PARCEL_ASSET_LIST = (CSS_INPUTS.values + JS_INPUTS.values)
-                                                    .sort
-                                                    .uniq
-                                                    .map { |x| File.join("frontend", x) }
-                                                    .join(" ")
-
-  PARCEL_HMR_OPTS = [
-    "--no-hmr",
-    "--no-cache",
-  ].join(" ")
 
   EVERY_STATIC_PAGE.map do |actn|
     define_method(actn) do

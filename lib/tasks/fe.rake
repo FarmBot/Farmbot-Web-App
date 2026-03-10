@@ -2,51 +2,6 @@ PACKAGE_JSON_FILE = "./package.json"
 DEPS_KEY          = "dependencies"
 DEV_DEPS_KEY      = "devDependencies"
 EXCLUDE = [
-  {
-    packages: ["@types/enzyme"],
-    reason: "@types/react",
-    version: "3.10.12 (latest working)",
-  },
-  {
-    packages: ["punycode"],
-    reason: "dependency needs",
-    version: "1.4.1",
-  },
-  {
-    packages: ["eslint"],
-    reason: "breaking changes in",
-    version: "9",
-  },
-  {
-    packages: ["eslint-plugin-react-hooks"],
-    reason: "breaking changes in",
-    version: "6",
-  },
-  {
-    packages: ["@typescript-eslint/eslint-plugin"],
-    reason: "breaking changes in",
-    version: "8",
-  },
-  {
-    packages: ["@typescript-eslint/parser"],
-    reason: "breaking changes in",
-    version: "8",
-  },
-  {
-    packages: ["react", "react-dom", "react-test-renderer"],
-    reason: "not compatible with enzyme",
-    version: "3",
-  },
-  {
-    packages: ["@react-three/drei", "@react-three/fiber"],
-    reason: "v9 fiber and v10 drei require react",
-    version: "19",
-  },
-  {
-    packages: ["jest", "jest-cli", "jest-environment-jsdom"],
-    reason: "breaking changes (jsdom window.location) in",
-    version: "30",
-  }
 ]
 
 # Load package.json as JSON.
@@ -64,9 +19,12 @@ end
 
 # Fetch latest versions for outdated dependencies.
 def fetch_available_upgrades()
+  latest_json = {}
   begin
-    latest_json = JSON.parse(`npm outdated --json`)
-  rescue JSON::ParserError => exception
+    output = `npm outdated --json`
+    return {} if output.nil? || output.strip.empty?
+    latest_json = JSON.parse(output)
+  rescue JSON::ParserError
     latest_json = {}
   end
   latest_versions = {}
@@ -92,7 +50,7 @@ end
 
 # Install dependency updates.
 def install_updates
-  sh "sudo docker compose run web npm install"
+  sh "sudo docker compose run web bun install"
 end
 
 namespace :fe do
@@ -111,10 +69,10 @@ namespace :fe do
       bash_file_string += "check_dep() {\n"
       bash_file_string += "    okay=0\n"
       bash_file_string += "    title \"Installing $1\"\n"
-      bash_file_string += "    sudo docker compose run web npm install $1\n"
+      bash_file_string += "    sudo docker compose run web bun add $1\n"
       bash_file_string += "    if [ $? -ne 0 ]; then okay=1; fi\n"
       bash_file_string += "    title \"Typechecking with $1\"\n"
-      bash_file_string += "    sudo docker compose run web npm run typecheck\n"
+      bash_file_string += "    sudo docker compose run web bun run typecheck\n"
       bash_file_string += "    if [ $? -ne 0 ]; then okay=1; fi\n"
       bash_file_string += "    title \"Building with $1\"\n"
       bash_file_string += "    sudo docker compose run web rake assets:precompile\n"
@@ -149,7 +107,7 @@ namespace :fe do
       puts "Type 'save' to update #{PACKAGE_JSON_FILE}, enter to abort."
       if user_typed?("save")
         save_package_json(package_json)
-        puts "Saved. Use 'sudo docker compose run web npm install' to upgrade."
+        puts "Saved. Use 'sudo docker compose run web bun install' to upgrade."
       else
         puts "Aborted. No changes made."
         puts "Run the following script to upgrade incrementally: `bash scripts/upgrade_deps.sh`"

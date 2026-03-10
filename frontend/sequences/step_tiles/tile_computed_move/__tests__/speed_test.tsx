@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { speedOverwrite, SpeedInputRow, getSpeedNode } from "../speed";
 import { SpeedInputRowProps } from "../interfaces";
 
@@ -19,8 +19,8 @@ describe("<SpeedInputRow />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<SpeedInputRow {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("speed");
+    const { container } = render(<SpeedInputRow {...fakeProps()} />);
+    expect(container.textContent?.toLowerCase()).toContain("speed");
   });
 });
 

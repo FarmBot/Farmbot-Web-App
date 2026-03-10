@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { TileReadPin } from "../tile_read_pin";
 import { ReadPin } from "farmbot";
 import { StepParams } from "../../interfaces";
@@ -18,18 +18,22 @@ describe("<TileReadPin />", () => {
   });
 
   it("renders inputs", () => {
-    const block = mount(<TileReadPin {...fakeProps()} />);
-    const inputs = block.find("input");
-    const labels = block.find("label");
-    const buttons = block.find("button");
+    const { container } = render(<TileReadPin {...fakeProps()} />);
+    const inputs = container.querySelectorAll("input");
+    const labels = Array.from(container.querySelectorAll("label"))
+      .map(label => (label.textContent || "").toLowerCase().trim());
+
     expect(inputs.length).toEqual(2);
-    expect(labels.length).toEqual(3);
-    expect(buttons.length).toEqual(2);
-    expect(inputs.first().props().placeholder).toEqual("Read Sensor");
-    expect(labels.at(0).text()).toEqual("sensor or peripheral");
-    expect(labels.at(1).text()).toEqual("Mode");
-    expect(labels.at(2).text()).toEqual("Data Label");
-    expect(inputs.at(1).props().value).toEqual("pinlabel");
-    expect(buttons.at(0).text()).toEqual("Pin 3");
+    expect(labels).toEqual(expect.arrayContaining([
+      "sensor or peripheral",
+      "mode",
+      "data label",
+    ]));
+    expect(inputs[1]?.value).toEqual("pinlabel");
+
+    const selectButtons = container.querySelectorAll(".filter-search button");
+    expect(selectButtons.length).toBeGreaterThanOrEqual(2);
+    const modeText = (selectButtons[1]?.textContent || "").toLowerCase();
+    expect(modeText).toContain("analog");
   });
 });

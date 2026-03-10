@@ -15,6 +15,7 @@ import { mapStateToPropsAdd } from "./state_to_props";
 import { AddToolSlotState, AddToolSlotProps } from "./interfaces";
 import { Path } from "../internal_urls";
 import { NavigationContext } from "../routes_helpers";
+import { NavigateFunction } from "react-router";
 
 export class RawAddToolSlot
   extends React.Component<AddToolSlotProps, AddToolSlotState> {
@@ -56,7 +57,7 @@ export class RawAddToolSlot
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = this.context;
+  navigate: NavigateFunction = url => { this.context?.(url as string); };
 
   save = () => {
     this.state.uuid && this.props.dispatch(save(this.state.uuid));
@@ -98,5 +99,4 @@ export class RawAddToolSlot
 }
 
 export const AddToolSlot = connect(mapStateToPropsAdd)(RawAddToolSlot);
-// eslint-disable-next-line import/no-default-export
 export default AddToolSlot;

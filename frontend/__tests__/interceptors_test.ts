@@ -1,37 +1,40 @@
-jest.mock("../connectivity/data_consistency", () => {
-  return {
-    startTracking: jest.fn(),
-    outstandingRequests: { last: "abc" }
-  };
-});
-
-jest.mock("../connectivity/index", () => {
-  return {
-    dispatchNetworkUp: jest.fn(),
-    dispatchNetworkDown: jest.fn(),
-  };
-});
-
-jest.mock("../session", () => ({
-  Session: {
-    clear: jest.fn()
-  }
-}));
-
 import {
   responseFulfilled, isLocalRequest, requestFulfilled, responseRejected,
 } from "../interceptors";
 import { AxiosResponse, InternalAxiosRequestConfig, Method } from "axios";
 import { uuid } from "farmbot";
-import { startTracking } from "../connectivity/data_consistency";
+import * as consistency from "../connectivity/data_consistency";
 import { SafeError } from "../interceptor_support";
 import { API } from "../api";
 import { auth } from "../__test_support__/fake_state/token";
-import { dispatchNetworkUp, dispatchNetworkDown } from "../connectivity";
+import * as connectivity from "../connectivity";
 import { Session } from "../session";
 import { error } from "../toast/toast";
 
 const ANY_NUMBER = expect.any(Number);
+let startTrackingSpy: jest.SpyInstance;
+let dispatchNetworkUpSpy: jest.SpyInstance;
+let dispatchNetworkDownSpy: jest.SpyInstance;
+let sessionClearSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  consistency.outstandingRequests.last = "abc";
+  startTrackingSpy =
+    jest.spyOn(consistency, "startTracking").mockImplementation(jest.fn());
+  dispatchNetworkUpSpy =
+    jest.spyOn(connectivity, "dispatchNetworkUp").mockImplementation(jest.fn());
+  dispatchNetworkDownSpy =
+    jest.spyOn(connectivity, "dispatchNetworkDown").mockImplementation(jest.fn());
+  sessionClearSpy = jest.spyOn(Session, "clear").mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  startTrackingSpy.mockRestore();
+  dispatchNetworkUpSpy.mockRestore();
+  dispatchNetworkDownSpy.mockRestore();
+  sessionClearSpy.mockRestore();
+});
 
 interface FakeProps {
   uuid: string;
@@ -59,15 +62,19 @@ describe("responseFulfilled", () => {
       url: "https://staging.farm.bot/api/webcam_feeds/"
     });
     responseFulfilled(resp);
-    expect(startTracking).not.toHaveBeenCalled();
+    expect(startTrackingSpy).not.toHaveBeenCalled();
   });
 });
 
 describe("responseRejected", () => {
+  beforeEach(() => {
+    jest.useRealTimers();
+  });
+
   it("undefined error", async () => {
     await expect(responseRejected(undefined)).rejects.toEqual(undefined);
-    expect(dispatchNetworkUp).not.toHaveBeenCalled();
-    expect(dispatchNetworkDown).toHaveBeenCalledWith("user.api", ANY_NUMBER);
+    expect(dispatchNetworkUpSpy).not.toHaveBeenCalled();
+    expect(dispatchNetworkDownSpy).toHaveBeenCalledWith("user.api", ANY_NUMBER);
   });
 
   it("safe error", async () => {
@@ -76,8 +83,8 @@ describe("responseRejected", () => {
       response: { status: 400 }
     };
     await expect(responseRejected(safeError)).rejects.toEqual(safeError);
-    expect(dispatchNetworkDown).not.toHaveBeenCalled();
-    expect(dispatchNetworkUp).toHaveBeenCalledWith("user.api", ANY_NUMBER);
+    expect(dispatchNetworkDownSpy).not.toHaveBeenCalled();
+    expect(dispatchNetworkUpSpy).toHaveBeenCalledWith("user.api", ANY_NUMBER);
   });
 
   it("throws error", () => {
@@ -85,11 +92,13 @@ describe("responseRejected", () => {
       request: { responseURL: "" },
       response: { status: 400 }
     };
-    jest.useFakeTimers();
-    expect(() => {
-      responseRejected(safeError).then(() => { }, () => { });
-      jest.runAllTimers();
-    }).toThrow("Bad response: 400 {\"status\":400}");
+    const setTimeoutSpy = jest.spyOn(globalThis, "setTimeout");
+    responseRejected(safeError).then(() => { }, () => { });
+    const callback = setTimeoutSpy.mock.calls[0]?.[0];
+    expect(typeof callback).toEqual("function");
+    expect(() => (callback as () => void)())
+      .toThrow("Bad response: 400 {\"status\":400}");
+    setTimeoutSpy.mockRestore();
   });
 
   it("handles 500", async () => {

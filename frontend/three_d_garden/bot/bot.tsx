@@ -11,7 +11,7 @@ import {
   zZero as zZeroFunc,
 } from "../helpers";
 import { Config } from "../config";
-import { GLTF } from "three-stdlib";
+import type { GLTF } from "three-stdlib";
 import { ASSETS, LIB_DIR, PartName } from "../constants";
 import { SVGLoader } from "three/examples/jsm/Addons.js";
 import { range } from "lodash";
@@ -30,6 +30,7 @@ import {
   CableCarrierY,
   CableCarrierSupportHorizontal,
   GantryBeam,
+  CameraView,
 } from "./components";
 import { SlotWithTool } from "../../resources/interfaces";
 import { WateringAnimations } from "./components/watering_animations";
@@ -37,6 +38,15 @@ import { WateringAnimations } from "./components/watering_animations";
 export const extrusionWidth = 20;
 const utmRadius = 35;
 export const utmHeight = 35;
+export const cameraMountOffset = {
+  x: extrusionWidth + 3,
+  y: utmRadius,
+};
+export const cameraMountToLensOffset = new THREE.Vector3(
+  0,
+  extrusionWidth + 9,
+  0,
+);
 const xTrackPadding = 280;
 export const distinguishableBlack = "#333";
 
@@ -102,27 +112,27 @@ export const Bot = (props: FarmbotModelProps) => {
   const zZero = zZeroFunc(config);
   const zDir = zDirFunc(config);
   const gantryWheelPlate =
-    useGLTF(ASSETS.models.gantryWheelPlate, LIB_DIR) as GantryWheelPlateFull;
+    useGLTF(ASSETS.models.gantryWheelPlate, LIB_DIR) as unknown as GantryWheelPlateFull;
   const GantryWheelPlateComponent = GantryWheelPlate(gantryWheelPlate);
-  const leftBracket = useGLTF(ASSETS.models.leftBracket, LIB_DIR) as LeftBracket;
-  const rightBracket = useGLTF(ASSETS.models.rightBracket, LIB_DIR) as RightBracket;
-  const crossSlide = useGLTF(ASSETS.models.crossSlide, LIB_DIR) as CrossSlideFull;
+  const leftBracket = useGLTF(ASSETS.models.leftBracket, LIB_DIR) as unknown as LeftBracket;
+  const rightBracket = useGLTF(ASSETS.models.rightBracket, LIB_DIR) as unknown as RightBracket;
+  const crossSlide = useGLTF(ASSETS.models.crossSlide, LIB_DIR) as unknown as CrossSlideFull;
   const CrossSlideComponent = CrossSlide(crossSlide);
-  const beltClip = useGLTF(ASSETS.models.beltClip, LIB_DIR) as BeltClip;
-  const zStop = useGLTF(ASSETS.models.zStop, LIB_DIR) as ZStop;
-  const utm = useGLTF(ASSETS.models.utm, LIB_DIR) as UTM;
+  const beltClip = useGLTF(ASSETS.models.beltClip, LIB_DIR) as unknown as BeltClip;
+  const zStop = useGLTF(ASSETS.models.zStop, LIB_DIR) as unknown as ZStop;
+  const utm = useGLTF(ASSETS.models.utm, LIB_DIR) as unknown as UTM;
   const housingVertical = useGLTF(
-    ASSETS.models.housingVertical, LIB_DIR) as HousingVertical;
+    ASSETS.models.housingVertical, LIB_DIR) as unknown as HousingVertical;
   const horizontalMotorHousing = useGLTF(
-    ASSETS.models.horizontalMotorHousing, LIB_DIR) as HorizontalMotorHousing;
+    ASSETS.models.horizontalMotorHousing, LIB_DIR) as unknown as HorizontalMotorHousing;
   const zAxisMotorMount = useGLTF(
-    ASSETS.models.zAxisMotorMount, LIB_DIR) as ZAxisMotorMount;
+    ASSETS.models.zAxisMotorMount, LIB_DIR) as unknown as ZAxisMotorMount;
   const vacuumPumpCover = useGLTF(
-    ASSETS.models.vacuumPumpCover, LIB_DIR) as VacuumPumpCoverFull;
+    ASSETS.models.vacuumPumpCover, LIB_DIR) as unknown as VacuumPumpCoverFull;
   const VacuumPumpCoverComponent = VacuumPumpCover(vacuumPumpCover);
   const cameraMountHalf = useGLTF(
-    ASSETS.models.cameraMountHalf, LIB_DIR) as CameraMountHalf;
-  const xAxisCCMount = useGLTF(ASSETS.models.xAxisCCMount, LIB_DIR) as XAxisCCMount;
+    ASSETS.models.cameraMountHalf, LIB_DIR) as unknown as CameraMountHalf;
+  const xAxisCCMount = useGLTF(ASSETS.models.xAxisCCMount, LIB_DIR) as unknown as XAxisCCMount;
   const [trackShape, setTrackShape] = useState<Shape>();
   const [beamShape, setBeamShape] = useState<Shape>();
   const [columnShape, setColumnShape] = useState<Shape>();
@@ -241,6 +251,12 @@ export const Bot = (props: FarmbotModelProps) => {
         ];
     }
   };
+
+  const cameraMountPosition = new THREE.Vector3(
+    threeSpace(x + cameraMountOffset.x, bedLengthOuter) + bedXOffset,
+    threeSpace(y + cameraMountOffset.y, bedWidthOuter) + bedYOffset,
+    zZero - zDir * z - 140 + zGantryOffset + 20,
+  );
 
   return <Group name={"bot"}
     visible={props.config.bot && props.activeFocus != "Planter bed"}>
@@ -548,11 +564,7 @@ export const Bot = (props: FarmbotModelProps) => {
       position={vacuumPumpCoverPosition(config.kitVersion)} />
     <Group name={"camera"}
       rotation={[Math.PI, 0, 0]}
-      position={[
-        threeSpace(x + 23, bedLengthOuter) + bedXOffset,
-        threeSpace(y + 25 + extrusionWidth / 2, bedWidthOuter) + bedYOffset,
-        zZero - zDir * z - 140 + zGantryOffset + 20,
-      ]}>
+      position={cameraMountPosition}>
       <Mesh name={"cameraMount"}
         rotation={[0, 0, 0]}
         position={[0, 0, -40]}
@@ -567,6 +579,10 @@ export const Bot = (props: FarmbotModelProps) => {
         <MeshPhongMaterial color={"silver"} />
       </Mesh>
     </Group>
+    <CameraView
+      config={config}
+      cameraMountPosition={cameraMountPosition}
+      distanceToSoil={distanceToSoil} />
     <Trail
       width={trail ? defaultTrailWidth : 0}
       attenuation={t => Math.pow(t, 3)}

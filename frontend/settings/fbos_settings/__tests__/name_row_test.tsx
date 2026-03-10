@@ -1,15 +1,22 @@
-jest.mock("../../../api/crud", () => ({
-  edit: jest.fn(),
-  save: jest.fn(),
-}));
-
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { NameRow } from "../name_row";
 import { NameRowProps } from "../interfaces";
 import { edit, save } from "../../../api/crud";
+import * as crud from "../../../api/crud";
 import { fakeDevice } from "../../../__test_support__/resource_index_builder";
+let editSpy: jest.SpyInstance;
+let saveSpy: jest.SpyInstance;
 
+beforeEach(() => {
+  editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  editSpy.mockRestore();
+  saveSpy.mockRestore();
+});
 describe("<NameRow />", () => {
   const fakeProps = (): NameRowProps => ({
     device: fakeDevice(),

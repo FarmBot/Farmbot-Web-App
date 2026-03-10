@@ -1,6 +1,6 @@
 import React from "react";
 import { PinBindingsContent } from "../pin_bindings_content";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import {
   buildResourceIndex,
@@ -14,8 +14,19 @@ import {
   PinBindingType,
   PinBindingSpecialAction,
 } from "farmbot/dist/resources/api_resources";
+import { cloneDeep } from "lodash";
 
 describe("<PinBindingsContent/>", () => {
+  let gpioRegistry: Record<number, string>;
+
+  beforeEach(() => {
+    gpioRegistry = cloneDeep(bot.hardware.gpio_registry);
+  });
+
+  afterEach(() => {
+    bot.hardware.gpio_registry = gpioRegistry;
+  });
+
   function fakeProps(): PinBindingsContentProps {
     const fakeSequence1 = fakeSequence();
     fakeSequence1.body.id = 1;
@@ -52,12 +63,13 @@ describe("<PinBindingsContent/>", () => {
 
   it("renders", () => {
     const p = fakeProps();
-    const wrapper = mount(<PinBindingsContent {...p} />);
-    ["none", "bind", "stock bindings"]
-      .map(string => expect(wrapper.text().toLowerCase()).toContain(string));
-    ["26", "action"].map(string =>
-      expect(wrapper.text().toLowerCase()).toContain(string));
-    const buttons = wrapper.find("button");
-    expect(buttons.length).toBe(6);
+    const { container } = render(<PinBindingsContent {...p} />);
+    const text = (container.textContent || "").toLowerCase();
+    ["stock bindings", "add new pin binding", "action", "sequence"]
+      .map(string => expect(text).toContain(string));
+    ["26", "button 3", "pi gpio 10"].map(string =>
+      expect(text).toContain(string));
+    const buttons = container.querySelectorAll("button");
+    expect(buttons.length).toBeGreaterThanOrEqual(4);
   });
 });

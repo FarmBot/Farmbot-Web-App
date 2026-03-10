@@ -1,14 +1,18 @@
 import { Calendar } from "../index";
-import { occurrence } from "../occurrence";
 import {
-  TIME,
   fakeFarmEventWithExecutable,
 } from "../../../__test_support__/farm_event_calendar_support";
-import moment from "moment";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
+
+const moment: typeof import("moment") = jest.requireActual("moment");
+const { occurrence }: typeof import("../occurrence") =
+  jest.requireActual("../occurrence");
+const MONDAY = moment("2017-06-19T06:30:00.000-05:00");
+const TUESDAY = moment("2017-06-20T06:30:00.000-05:00");
+const FRIDAY = moment("2017-06-23T06:30:00.000-05:00");
 
 describe("calendar", () => {
   const fe = fakeFarmEventWithExecutable();
@@ -23,8 +27,8 @@ describe("calendar", () => {
 
   it("inserts dates", () => {
     const calendar = new Calendar();
-    calendar.insert(occurrence(TIME.MONDAY, fe, timeSettings, ri));
-    calendar.insert(occurrence(TIME.TUESDAY, fe, timeSettings, ri));
+    calendar.insert(occurrence(MONDAY, fe, timeSettings, ri));
+    calendar.insert(occurrence(TUESDAY, fe, timeSettings, ri));
     expect(calendar.value).toEqual(expect.objectContaining({
       "061917": expect.any(Array),
       "062017": expect.any(Array)
@@ -33,10 +37,10 @@ describe("calendar", () => {
 
   it("finds by date", () => {
     const calendar = new Calendar();
-    const wow = occurrence(TIME.MONDAY, fe, timeSettings, ri);
+    const wow = occurrence(MONDAY, fe, timeSettings, ri);
     calendar.insert(wow);
-    expect(calendar.findByDate(TIME.FRIDAY)).toBeInstanceOf(Array);
-    expect(calendar.findByDate(TIME.MONDAY)).toContain(wow);
+    expect(calendar.findByDate(FRIDAY)).toBeInstanceOf(Array);
+    expect(calendar.findByDate(MONDAY)).toContain(wow);
   });
 
   it("sorts CalendarDay", () => {
@@ -51,7 +55,7 @@ describe("calendar", () => {
 
   it("formats a date", () => {
     const calendar = new Calendar();
-    calendar.insert(occurrence(TIME.MONDAY, fe, timeSettings, ri));
+    calendar.insert(occurrence(MONDAY, fe, timeSettings, ri));
     const day = calendar.getAll()[0];
     expect(day).toEqual(expect.objectContaining({
       day: 19,

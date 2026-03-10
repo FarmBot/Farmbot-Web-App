@@ -1,6 +1,6 @@
 import React from "react";
+import { render } from "@testing-library/react";
 import { ActivePlantDragHelper } from "../active_plant_drag_helper";
-import { shallow } from "enzyme";
 import { fakePlant } from "../../../../__test_support__/fake_state/resources";
 import {
   fakeMapTransformProps,
@@ -22,19 +22,20 @@ describe("<ActivePlantDragHelper/>", () => {
 
   it("shows drag helpers", () => {
     const p = fakeProps();
-    const wrapper = shallow(<ActivePlantDragHelper {...p} />);
+    const { container } = render(<svg><ActivePlantDragHelper {...p} /></svg>);
     ["drag-helpers",
       "coordinates-tooltip",
       "long-crosshair",
       "short-crosshair"]
       .map(string =>
-        expect(wrapper.html()).toContain(string));
+        expect(container.innerHTML).toContain(string));
   });
 
   it("doesn't show drag helpers", () => {
     const p = fakeProps();
     p.editing = false;
-    const wrapper = shallow(<ActivePlantDragHelper {...p} />);
-    expect(wrapper.html()).toEqual("<g id=\"active-plant-drag-helper\"></g>");
+    const { container } = render(<svg><ActivePlantDragHelper {...p} /></svg>);
+    expect(container.innerHTML)
+      .toContain("<g id=\"active-plant-drag-helper\"></g>");
   });
 });

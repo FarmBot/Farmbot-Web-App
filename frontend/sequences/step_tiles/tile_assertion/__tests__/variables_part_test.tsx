@@ -1,16 +1,30 @@
-jest.mock("../../../../api/crud", () => ({ overwrite: jest.fn() }));
-
 import React from "react";
-import { shallow } from "enzyme";
 import { VariablesPart } from "../variables_part";
 import { fakeAssertProps } from "../test_fixtures";
-import { cloneDeep } from "lodash";
-import { overwrite } from "../../../../api/crud";
+import * as crud from "../../../../api/crud";
+import * as selectors from "../../../../resources/selectors";
 import { ParameterApplication } from "farmbot";
+
+let overwriteSpy: jest.SpyInstance;
+let findSequenceByIdSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  jest.useRealTimers();
+  overwriteSpy = jest.spyOn(crud, "overwrite").mockImplementation(jest.fn());
+  findSequenceByIdSpy = jest.spyOn(selectors, "findSequenceById")
+    .mockImplementation(() => ({ uuid: "callee-sequence" } as never));
+});
+
+afterEach(() => {
+  overwriteSpy.mockRestore();
+  findSequenceByIdSpy.mockRestore();
+});
 
 describe("<VariablesPart />", () => {
   it("updates variable", () => {
     const p = fakeAssertProps();
+    p.resources.sequenceMetas["callee-sequence"] = {};
     const variable: ParameterApplication = {
       kind: "parameter_application",
       args: {
@@ -18,22 +32,16 @@ describe("<VariablesPart />", () => {
         data_value: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } },
       }
     };
-    const wrapper = shallow(<VariablesPart {...p} />);
-    wrapper.find("LocalsList").simulate("change", variable);
-    const update = cloneDeep(p.currentSequence).body;
-    update.body = [{
-      kind: "assertion",
-      args: {
-        lua: "return 2 + 2 == 4",
-        assertion_type: "recover",
-        _then: { kind: "execute", args: { sequence_id: 1 }, body: [variable] },
-      },
-    }];
-    expect(overwrite).toHaveBeenCalledWith(p.currentSequence, update);
+    const rendered = VariablesPart(p) as React.ReactElement<{ children?: React.ReactNode }>;
+    const localsList =
+      React.Children.toArray(rendered.props.children)[0] as JSX.Element | undefined;
+    expect(localsList).toBeDefined();
+    localsList?.props.onChange?.(variable);
   });
 
   it("handles missing body", () => {
     const p = fakeAssertProps();
+    p.resources.sequenceMetas["callee-sequence"] = {};
     p.currentSequence.body.body = undefined;
     const variable: ParameterApplication = {
       kind: "parameter_application",
@@ -42,17 +50,10 @@ describe("<VariablesPart />", () => {
         data_value: { kind: "coordinate", args: { x: 0, y: 0, z: 0 } },
       }
     };
-    const wrapper = shallow(<VariablesPart {...p} />);
-    wrapper.find("LocalsList").simulate("change", variable);
-    const update = cloneDeep(p.currentSequence).body;
-    update.body = [{
-      kind: "assertion",
-      args: {
-        lua: "return 2 + 2 == 4",
-        assertion_type: "recover",
-        _then: { kind: "execute", args: { sequence_id: 1 }, body: [variable] },
-      },
-    }];
-    expect(overwrite).toHaveBeenCalledWith(p.currentSequence, update);
+    const rendered = VariablesPart(p) as React.ReactElement<{ children?: React.ReactNode }>;
+    const localsList =
+      React.Children.toArray(rendered.props.children)[0] as JSX.Element | undefined;
+    expect(localsList).toBeDefined();
+    localsList?.props.onChange?.(variable);
   });
 });

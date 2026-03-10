@@ -33,6 +33,7 @@ import { addNewSequenceToFolder } from "../../folders/actions";
 import { Position } from "@blueprintjs/core";
 import { isMobile } from "../../screen_size";
 import { NavigationContext } from "../../routes_helpers";
+import { NavigateFunction } from "react-router";
 
 interface SequencesState {
   processingTitle: boolean;
@@ -56,7 +57,7 @@ export class RawDesignerSequenceEditor
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = this.context;
+  navigate: NavigateFunction = url => { this.context?.(url as string); };
 
   render() {
     const panelName = "designer-sequence-editor";
@@ -228,5 +229,4 @@ export const AutoGenerateButton = (props: AutoGenerateButtonProps) => {
 
 export const DesignerSequenceEditor =
   connect(mapStateToProps)(RawDesignerSequenceEditor);
-// eslint-disable-next-line import/no-default-export
 export default DesignerSequenceEditor;

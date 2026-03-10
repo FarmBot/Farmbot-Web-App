@@ -7,6 +7,7 @@ import { HelpState } from "../reducer";
 import { TourStepContainerProps, TourStepContainerState } from "./interfaces";
 import { TOURS } from "./data";
 import { NavigationContext } from "../../routes_helpers";
+import { NavigateFunction } from "react-router";
 
 export const tourPath = (
   stepUrl: string | undefined,
@@ -26,7 +27,7 @@ export class TourStepContainer
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = this.context;
+  navigate: NavigateFunction = url => { this.context?.(url as string); };
 
   updateTourState = (
     tour: string | undefined,
@@ -76,6 +77,7 @@ export class TourStepContainer
   componentWillUnmount = () => this.state.activeBeacons.map(beacon =>
     document.querySelector(`.${beacon}`)?.classList.remove("beacon"));
 
+  // eslint-disable-next-line complexity
   render() {
     const { urlTourSlug, urlTourStepSlug } = this.tourState;
 
@@ -188,7 +190,7 @@ const TourStepNavigation = (props: TourStepNavigationProps) => {
 export const maybeBeacon = (
   compareSlug: string,
   beaconType: "soft" | "hard",
-  helpState?: HelpState | undefined,
+  helpState?: HelpState,
 ) =>
   getCurrentTourStepBeacons(helpState)?.includes(compareSlug)
     ? `beacon ${beaconType}`

@@ -4,19 +4,28 @@ const mockClient = {
   publish: jest.fn(),
   subscribe: jest.fn(),
 };
+const mockConnect = jest.fn(() => mockClient);
 
-jest.mock("mqtt", () => {
-  return {
-    connect: () => mockClient
-  };
-});
+import mqtt from "mqtt";
 
 import { Terminal } from "@xterm/xterm";
-import { TerminalSession } from "../terminal_session";
+const { TerminalSession } =
+  jest.requireActual("../terminal_session");
 
 type FakeTerminal = Pick<Terminal, "write" | "onKey">;
-
 describe("TerminalSession", () => {
+  let mqttConnectSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    mqttConnectSpy = jest.spyOn(mqtt, "connect")
+      .mockImplementation(mockConnect as never);
+    jest.clearAllMocks();
+  });
+
+  afterEach(() => {
+    mqttConnectSpy.mockRestore();
+  });
+
   const FAKE_USERNAME = "device_123";
   const FAKE_PASSWORD = "password";
   const FAKE_URL = "ws://localhost:3000/wow";

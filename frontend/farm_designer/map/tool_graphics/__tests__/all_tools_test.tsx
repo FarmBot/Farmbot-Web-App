@@ -39,7 +39,7 @@ describe("<Tool />", () => {
 
   it("renders correct tool graphic", () => {
     const wrapper = svgMount(<Tool {...fakeProps()} />);
-    expect(wrapper.html()).toContain("seeder");
+    expect(wrapper.container.innerHTML).toContain("seeder");
   });
 });
 
@@ -54,6 +54,6 @@ describe("<ToolImplementProfile />", () => {
 
   it("renders correct tool profile", () => {
     const wrapper = svgMount(<ToolImplementProfile {...fakeProps()} />);
-    expect(wrapper.html()).toContain("seeder-implement-profile");
+    expect(wrapper.container.innerHTML).toContain("seeder-implement-profile");
   });
 });

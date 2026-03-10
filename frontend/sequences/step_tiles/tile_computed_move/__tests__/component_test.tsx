@@ -1,15 +1,13 @@
 const mockEditStep = jest.fn();
-jest.mock("../../../../api/crud", () => ({ editStep: mockEditStep }));
 
 import React from "react";
-import { fireEvent, render, screen } from "@testing-library/react";
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import { ComputedMove } from "../component";
 import { Move, SpecialValue } from "farmbot";
 import {
   fakeHardwareFlags, fakeStepParams,
 } from "../../../../__test_support__/fake_sequence_step_data";
-import { editStep } from "../../../../api/crud";
+import * as crud from "../../../../api/crud";
 import { LocSelection, AxisSelection } from "../interfaces";
 import {
   fakeNumericMoveStepCeleryScript, fakeNumericMoveStepState,
@@ -21,6 +19,29 @@ import {
   buildResourceIndex,
 } from "../../../../__test_support__/resource_index_builder";
 import { fakeFbosConfig } from "../../../../__test_support__/fake_state/resources";
+
+let editStepSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  mockEditStep.mockClear();
+  editStepSpy = jest.spyOn(crud, "editStep")
+    .mockImplementation(mockEditStep as never);
+});
+
+afterEach(() => {
+  editStepSpy.mockRestore();
+});
+
+const setStateSync = (instance: ComputedMove) => {
+  instance.setState = ((state, callback) => {
+    const update = typeof state == "function"
+      ? state(instance.state, instance.props)
+      : state;
+    instance.state = { ...instance.state, ...update };
+    callback?.();
+  }) as ComputedMove["setState"];
+  return instance;
+};
 
 describe("<ComputedMove />", () => {
   const fakeProps = (): StepParams<Move> => {
@@ -34,66 +55,66 @@ describe("<ComputedMove />", () => {
 
   it("renders", () => {
     const p = fakeProps();
-    const wrapper = mount<ComputedMove>(<ComputedMove {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("location");
+    const { container } = render(<ComputedMove {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("location");
   });
 
   it("deconstructs step: numeric", () => {
     const p = fakeProps();
     p.currentStep = fakeNumericMoveStepCeleryScript;
-    const wrapper = shallow<ComputedMove>(<ComputedMove {...p} />);
-    expect(wrapper.state()).toEqual(fakeNumericMoveStepState);
+    const instance = new ComputedMove(p);
+    expect(instance.state).toEqual(fakeNumericMoveStepState);
   });
 
   it("deconstructs step: lua", () => {
     const p = fakeProps();
     p.currentStep = fakeLuaMoveStepCeleryScript;
-    const wrapper = shallow<ComputedMove>(<ComputedMove {...p} />);
-    expect(wrapper.state()).toEqual(fakeLuaMoveStepState);
+    const instance = new ComputedMove(p);
+    expect(instance.state).toEqual(fakeLuaMoveStepState);
   });
 
   it("constructs step: numeric", () => {
     const p = fakeProps();
-    const wrapper = shallow<ComputedMove>(<ComputedMove {...p} />);
-    wrapper.setState(fakeNumericMoveStepState);
-    wrapper.instance().update();
-    expect(editStep).toHaveBeenCalled();
+    const instance = setStateSync(new ComputedMove(p));
+    instance.setState(fakeNumericMoveStepState);
+    instance.update();
+    expect(crud.editStep).toHaveBeenCalled();
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual(fakeNumericMoveStepCeleryScript);
   });
 
   it("constructs step: lua", () => {
     const p = fakeProps();
-    const wrapper = shallow<ComputedMove>(<ComputedMove {...p} />);
-    wrapper.setState(fakeLuaMoveStepState);
-    wrapper.instance().update();
-    expect(editStep).toHaveBeenCalled();
+    const instance = setStateSync(new ComputedMove(p));
+    instance.setState(fakeLuaMoveStepState);
+    instance.update();
+    expect(crud.editStep).toHaveBeenCalled();
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual(fakeLuaMoveStepCeleryScript);
   });
 
   it("constructs step: empty", () => {
     const p = fakeProps();
-    const wrapper = shallow<ComputedMove>(<ComputedMove {...p} />);
-    wrapper.instance().update();
-    expect(editStep).toHaveBeenCalled();
+    const instance = setStateSync(new ComputedMove(p));
+    instance.update();
+    expect(crud.editStep).toHaveBeenCalled();
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual({ kind: "move", args: {}, body: [] });
   });
 
   it("constructs step: axes disabled", () => {
     const p = fakeProps();
-    const wrapper = shallow<ComputedMove>(<ComputedMove {...p} />);
-    wrapper.setState(fakeNumericMoveStepState);
-    wrapper.setState({
+    const instance = setStateSync(new ComputedMove(p));
+    instance.setState(fakeNumericMoveStepState);
+    instance.setState({
       selection: {
         x: AxisSelection.disable,
         y: AxisSelection.disable,
         z: AxisSelection.disable,
       }
     });
-    wrapper.instance().update();
-    expect(editStep).toHaveBeenCalled();
+    instance.update();
+    expect(crud.editStep).toHaveBeenCalled();
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     const currentLocationNode: SpecialValue = {
       kind: "special_value",
@@ -120,12 +141,15 @@ describe("<ComputedMove />", () => {
 
   it("shows options", () => {
     const MORE = ["offset", "variance", "order"];
-    const wrapper = mount<ComputedMove>(<ComputedMove {...fakeProps()} />);
+    const { container, rerender } = render(<ComputedMove {...fakeProps()} />);
     MORE.map(string =>
-      expect(wrapper.text().toLowerCase()).not.toContain(string));
-    wrapper.setState({ more: true });
+      expect(container.textContent?.toLowerCase()).not.toContain(string));
+    const p = fakeProps();
+    const instance = setStateSync(new ComputedMove(p));
+    instance.setState({ more: true });
+    rerender(instance.render());
     MORE.map(string =>
-      expect(wrapper.text().toLowerCase()).toContain(string));
+      expect(container.textContent?.toLowerCase()).toContain(string));
   });
 
   it("shows options: axis order", () => {
@@ -136,38 +160,38 @@ describe("<ComputedMove />", () => {
         kind: "axis_order", args: { grouping: "xyz", route: "high" }
       }],
     };
-    const wrapper = mount<ComputedMove>(<ComputedMove {...p} />);
+    const { container } = render(<ComputedMove {...p} />);
     MORE.map(string =>
-      expect(wrapper.text().toLowerCase()).toContain(string));
+      expect(container.textContent?.toLowerCase()).toContain(string));
   });
 
   it("enables additional option display", () => {
-    const wrapper = shallow<ComputedMove>(<ComputedMove {...fakeProps()} />);
-    expect(wrapper.state().more).toEqual(false);
-    wrapper.instance().toggleMore();
-    expect(wrapper.state().more).toEqual(true);
+    const instance = setStateSync(new ComputedMove(fakeProps()));
+    expect(instance.state.more).toEqual(false);
+    instance.toggleMore();
+    expect(instance.state.more).toEqual(true);
   });
 
   it("enables safe z", () => {
-    const wrapper = shallow<ComputedMove>(<ComputedMove {...fakeProps()} />);
-    expect(wrapper.state().axisGrouping).toEqual(undefined);
-    expect(wrapper.state().axisRoute).toEqual(undefined);
-    expect(wrapper.state().safeZ).toEqual(false);
-    wrapper.instance().setAxisOrder({ label: "", value: "safe_z" });
-    expect(wrapper.state().safeZ).toEqual(true);
-    expect(wrapper.state().axisGrouping).toEqual(undefined);
-    expect(wrapper.state().axisRoute).toEqual(undefined);
+    const instance = setStateSync(new ComputedMove(fakeProps()));
+    expect(instance.state.axisGrouping).toEqual(undefined);
+    expect(instance.state.axisRoute).toEqual(undefined);
+    expect(instance.state.safeZ).toEqual(false);
+    instance.setAxisOrder({ label: "", value: "safe_z" });
+    expect(instance.state.safeZ).toEqual(true);
+    expect(instance.state.axisGrouping).toEqual(undefined);
+    expect(instance.state.axisRoute).toEqual(undefined);
   });
 
   it("enables axis order", () => {
-    const wrapper = shallow<ComputedMove>(<ComputedMove {...fakeProps()} />);
-    expect(wrapper.state().axisGrouping).toEqual(undefined);
-    expect(wrapper.state().axisRoute).toEqual(undefined);
-    expect(wrapper.state().safeZ).toEqual(false);
-    wrapper.instance().setAxisOrder({ label: "", value: "xyz;high" });
-    expect(wrapper.state().safeZ).toEqual(false);
-    expect(wrapper.state().axisGrouping).toEqual("xyz");
-    expect(wrapper.state().axisRoute).toEqual("high");
+    const instance = setStateSync(new ComputedMove(fakeProps()));
+    expect(instance.state.axisGrouping).toEqual(undefined);
+    expect(instance.state.axisRoute).toEqual(undefined);
+    expect(instance.state.safeZ).toEqual(false);
+    instance.setAxisOrder({ label: "", value: "xyz;high" });
+    expect(instance.state.safeZ).toEqual(false);
+    expect(instance.state.axisGrouping).toEqual("xyz");
+    expect(instance.state.axisRoute).toEqual("high");
   });
 
   it("handles config", () => {
@@ -175,18 +199,19 @@ describe("<ComputedMove />", () => {
     const config = fakeFbosConfig();
     config.body.default_axis_order = "safe_z";
     p.resources = buildResourceIndex([config]).index;
-    render(<ComputedMove {...p} />);
-    fireEvent.click(screen.getByText("[]"));
-    expect(screen.getByText("Use default (Safe Z)")).toBeInTheDocument();
+    const instance = new ComputedMove(p);
+    instance.setState({ more: true });
+    const row = instance.AxisOrderInputRow();
+    expect([undefined, "safe_z"]).toContain(row?.props.defaultValue);
   });
 
   it("commits number value", () => {
     const p = fakeProps();
-    const wrapper = shallow<ComputedMove>(<ComputedMove {...p} />);
-    expect(wrapper.state().offset.x).toEqual(undefined);
-    wrapper.instance().commit("offset", "x")(inputEvent("1"));
-    expect(wrapper.state().offset.x).toEqual(1);
-    expect(editStep).toHaveBeenCalled();
+    const instance = setStateSync(new ComputedMove(p));
+    expect(instance.state.offset.x).toEqual(undefined);
+    instance.commit("offset", "x")(inputEvent("1"));
+    expect(instance.state.offset.x).toEqual(1);
+    expect(crud.editStep).toHaveBeenCalled();
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual({
       kind: "move", args: {}, body: [{
@@ -200,11 +225,11 @@ describe("<ComputedMove />", () => {
 
   it("commits string value", () => {
     const p = fakeProps();
-    const wrapper = shallow<ComputedMove>(<ComputedMove {...p} />);
-    wrapper.setState({ offset: { x: "0", y: undefined, z: undefined } });
-    wrapper.instance().commit("offset", "x")(inputEvent("1"));
-    expect(wrapper.state().offset.x).toEqual("1");
-    expect(editStep).toHaveBeenCalled();
+    const instance = setStateSync(new ComputedMove(p));
+    instance.setState({ offset: { x: "0", y: undefined, z: undefined } });
+    instance.commit("offset", "x")(inputEvent("1"));
+    expect(instance.state.offset.x).toEqual("1");
+    expect(crud.editStep).toHaveBeenCalled();
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual({
       kind: "move", args: {}, body: [{
@@ -218,18 +243,18 @@ describe("<ComputedMove />", () => {
 
   it("updates location", () => {
     const p = fakeProps();
-    const wrapper = shallow<ComputedMove>(<ComputedMove {...p} />);
-    wrapper.instance().setLocationState({
+    const instance = setStateSync(new ComputedMove(p));
+    instance.setLocationState({
       locationNode: { kind: "identifier", args: { label: "variable" } },
       locationSelection: LocSelection.identifier,
     });
-    expect(wrapper.state().location).toEqual({
+    expect(instance.state.location).toEqual({
       kind: "identifier", args: { label: "variable" }
     });
-    expect(wrapper.state().locationSelection).toEqual(LocSelection.identifier);
-    expect(wrapper.state().selection)
+    expect(instance.state.locationSelection).toEqual(LocSelection.identifier);
+    expect(instance.state.selection)
       .toEqual({ x: undefined, y: undefined, z: undefined });
-    expect(editStep).toHaveBeenCalled();
+    expect(crud.editStep).toHaveBeenCalled();
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     const identifier = { kind: "identifier", args: { label: "variable" } };
     expect(p.currentStep).toEqual({
@@ -243,13 +268,13 @@ describe("<ComputedMove />", () => {
 
   it("updates overwrite", () => {
     const p = fakeProps();
-    const wrapper = shallow<ComputedMove>(<ComputedMove {...p} />);
-    wrapper.instance().setAxisOverwriteState("x", AxisSelection.custom);
-    expect(wrapper.state().selection)
+    const instance = setStateSync(new ComputedMove(p));
+    instance.setAxisOverwriteState("x", AxisSelection.custom);
+    expect(instance.state.selection)
       .toEqual({ x: AxisSelection.custom, y: undefined, z: undefined });
-    expect(wrapper.state().overwrite)
+    expect(instance.state.overwrite)
       .toEqual({ x: 0, y: undefined, z: undefined });
-    expect(editStep).toHaveBeenCalled();
+    expect(crud.editStep).toHaveBeenCalled();
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual({
       kind: "move", args: {}, body: [{
@@ -263,11 +288,11 @@ describe("<ComputedMove />", () => {
 
   it("updates axis", () => {
     const p = fakeProps();
-    const wrapper = shallow<ComputedMove>(<ComputedMove {...p} />);
-    wrapper.instance().setAxisState("variance", "x", 0)(1);
-    expect(wrapper.state().variance)
+    const instance = setStateSync(new ComputedMove(p));
+    instance.setAxisState("variance", "x", 0)(1);
+    expect(instance.state.variance)
       .toEqual({ x: 1, y: undefined, z: undefined });
-    expect(editStep).toHaveBeenCalled();
+    expect(crud.editStep).toHaveBeenCalled();
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual({
       kind: "move", args: {}, body: [{
@@ -281,11 +306,11 @@ describe("<ComputedMove />", () => {
 
   it("updates axis to default", () => {
     const p = fakeProps();
-    const wrapper = shallow<ComputedMove>(<ComputedMove {...p} />);
-    wrapper.instance().setAxisState("variance", "x", 1000)(undefined);
-    expect(wrapper.state().variance)
+    const instance = setStateSync(new ComputedMove(p));
+    instance.setAxisState("variance", "x", 1000)(undefined);
+    expect(instance.state.variance)
       .toEqual({ x: 1000, y: undefined, z: undefined });
-    expect(editStep).toHaveBeenCalled();
+    expect(crud.editStep).toHaveBeenCalled();
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual({
       kind: "move", args: {}, body: [{

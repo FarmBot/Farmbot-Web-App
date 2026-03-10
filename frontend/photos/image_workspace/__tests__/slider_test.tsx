@@ -3,9 +3,30 @@ import {
   WeedDetectorSlider, SliderProps, onHslChange, OnHslChangeProps,
 } from "../slider";
 import { fireEvent, render, screen } from "@testing-library/react";
+import * as blueprintCore from "@blueprintjs/core";
 
-jest.useFakeTimers();
+let rangeSliderSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  rangeSliderSpy = jest.spyOn(blueprintCore, "RangeSlider")
+    .mockImplementation((props: {
+      onRelease?: (values: [number, number]) => void;
+    }) =>
+      <button onClick={() => props.onRelease?.([1, 5])}>
+        release slider
+      </button>);
+});
+
 describe("<WeedDetectorSlider />", () => {
+  beforeEach(() => {
+    jest.useFakeTimers();
+  });
+
+  afterEach(() => {
+    jest.runOnlyPendingTimers();
+    jest.useRealTimers();
+  });
+
   const fakeProps = (): SliderProps => ({
     onRelease: jest.fn(),
     highest: 99,
@@ -17,24 +38,13 @@ describe("<WeedDetectorSlider />", () => {
   it("changes the slider", () => {
     const p = fakeProps();
     render(<WeedDetectorSlider {...p} />);
-    const [handle] = screen.getAllByRole("slider");
-    handle.getBoundingClientRect = () => ({
-      top: 100,
-      bottom: 100,
-      right: 100,
-      left: 100,
-      width: 100,
-      height: 100,
-      x: 100,
-      y: 100,
-      toJSON: jest.fn(),
-    });
-    fireEvent.mouseDown(handle);
-    fireEvent.mouseMove(handle, { clientX: 10 });
-    fireEvent.mouseUp(handle);
+    fireEvent.click(screen.getByRole("button", { name: /release slider/i }));
     expect(p.onRelease).toHaveBeenCalledWith([1, 5]);
-    jest.runAllTimers();
   });
+});
+
+afterEach(() => {
+  rangeSliderSpy.mockRestore();
 });
 
 describe("onHslChange()", () => {

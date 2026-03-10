@@ -14,21 +14,26 @@ describe("<DrawnPoint/>", () => {
 
   it("renders point", () => {
     const wrapper = svgMount(<DrawnPoint {...fakeProps()} />);
-    expect(wrapper.find("g").props().stroke).toEqual("green");
-    expect(wrapper.find("circle").first().props()).toEqual({
-      id: "point-radius", strokeDasharray: "4 5",
-      cx: 10, cy: 20, r: 30,
-    });
-    expect(wrapper.find("circle").last().props()).toEqual({
-      id: "point-center",
-      cx: 10, cy: 20, r: 2,
-    });
+    const group = wrapper.container.querySelector("g");
+    const circles = wrapper.container.querySelectorAll("circle");
+    const firstCircle = circles.item(0);
+    const lastCircle = circles.item(circles.length - 1);
+    expect(group?.getAttribute("stroke")).toEqual("green");
+    expect(firstCircle?.getAttribute("id")).toEqual("point-radius");
+    expect(firstCircle?.getAttribute("stroke-dasharray")).toEqual("4 5");
+    expect(firstCircle?.getAttribute("cx")).toEqual("10");
+    expect(firstCircle?.getAttribute("cy")).toEqual("20");
+    expect(firstCircle?.getAttribute("r")).toEqual("30");
+    expect(lastCircle?.getAttribute("id")).toEqual("point-center");
+    expect(lastCircle?.getAttribute("cx")).toEqual("10");
+    expect(lastCircle?.getAttribute("cy")).toEqual("20");
+    expect(lastCircle?.getAttribute("r")).toEqual("2");
   });
 
   it("doesn't render point", () => {
     const p = fakeProps();
     p.data = undefined;
     const wrapper = svgMount(<DrawnPoint {...p} />);
-    expect(wrapper.html()).toContain("<g id=\"current-point\"></g>");
+    expect(wrapper.container.innerHTML).toContain("<g id=\"current-point\"></g>");
   });
 });

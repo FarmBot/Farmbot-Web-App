@@ -1,16 +1,25 @@
 const mockEditStep = jest.fn();
-jest.mock("../../../api/crud", () => ({
-  editStep: mockEditStep
-}));
 
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import { TileOldMarkAs } from "../tile_old_mark_as";
 import { StepParams } from "../../interfaces";
 import { editStep } from "../../../api/crud";
+import * as crud from "../../../api/crud";
 import { SequenceBodyItem } from "farmbot";
 import { cloneDeep } from "lodash";
 import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
+
+let editStepSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  editStepSpy = jest.spyOn(crud, "editStep")
+    .mockImplementation(mockEditStep);
+});
+
+afterEach(() => {
+  editStepSpy.mockRestore();
+});
 
 describe("<TileOldMarkAs />", () => {
   const currentStep = {
@@ -29,17 +38,19 @@ describe("<TileOldMarkAs />", () => {
 
   it("renders deprecation notice and convert button", () => {
     const p = fakeProps();
-    const block = mount(<TileOldMarkAs {...p} />);
-    expect(block.text()).toContain("deprecated");
-    expect(block.text()).toContain("convert");
+    const { container } = render(<TileOldMarkAs {...p} />);
+    const text = container.textContent || "";
+    expect(text).toContain("deprecated");
+    expect(text).toContain("convert");
   });
 
   it("converts set mounted tool step", () => {
     const p = fakeProps();
-    const block = mount(<TileOldMarkAs {...p} />);
-    expect(block.text()).toContain("deprecated");
-    expect(block.text()).toContain("convert");
-    block.find("button").last().simulate("click");
+    const { container } = render(<TileOldMarkAs {...p} />);
+    const text = container.textContent || "";
+    expect(text).toContain("deprecated");
+    expect(text).toContain("convert");
+    fireEvent.click(container.querySelector("button") as HTMLButtonElement);
     expect(editStep).toHaveBeenCalled();
     const step = cloneDeep(p.currentStep);
     mockEditStep.mock.calls[0][0].executor(step);
@@ -68,10 +79,11 @@ describe("<TileOldMarkAs />", () => {
         value: "?",
       }
     } as unknown as SequenceBodyItem;
-    const block = mount(<TileOldMarkAs {...p} />);
-    expect(block.text()).toContain("deprecated");
-    expect(block.text()).toContain("convert");
-    block.find("button").last().simulate("click");
+    const { container } = render(<TileOldMarkAs {...p} />);
+    const text = container.textContent || "";
+    expect(text).toContain("deprecated");
+    expect(text).toContain("convert");
+    fireEvent.click(container.querySelector("button") as HTMLButtonElement);
     expect(editStep).toHaveBeenCalled();
     const step = cloneDeep(p.currentStep);
     mockEditStep.mock.calls[0][0].executor(step);

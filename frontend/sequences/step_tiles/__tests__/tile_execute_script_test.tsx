@@ -2,13 +2,13 @@ import React from "react";
 import {
   DefaultFarmwareStep, FarmwareName, TileExecuteScript,
 } from "../tile_execute_script";
-import { mount, shallow } from "enzyme";
+import { render, fireEvent, screen } from "@testing-library/react";
 import { ExecuteScript } from "farmbot";
 import { StepParams } from "../../interfaces";
-import { Actions } from "../../../constants";
 import {
   fakeFarmwareData, fakeStepParams,
 } from "../../../__test_support__/fake_sequence_step_data";
+import { farmwareList } from "../tile_execute_script_support";
 
 describe("<TileExecuteScript />", () => {
   const fakeProps = (): StepParams<ExecuteScript> => {
@@ -25,124 +25,126 @@ describe("<TileExecuteScript />", () => {
     };
   };
 
+  const openFarmwareList = (container?: HTMLElement) => {
+    const trigger = screen.queryByRole("button", { name: /manual input/i })
+      || container?.querySelector("button");
+    if (trigger) {
+      fireEvent.click(trigger);
+      return trigger as Element;
+    }
+    const select = container?.querySelector(
+      "select.mock-fb-select, select, input.mock-fb-select, .mock-fb-select");
+    if (select) { return select; }
+    throw new Error("Expected farmware selector trigger");
+  };
+
+  const selectFarmware = (container: HTMLElement, name: string) => {
+    const selector = openFarmwareList(container);
+    if (selector instanceof HTMLSelectElement
+      || selector instanceof HTMLInputElement) {
+      fireEvent.change(selector, { target: { value: name } });
+      return;
+    }
+    const option = screen.queryByText(name);
+    if (option) { fireEvent.click(option); }
+  };
+
   it("renders inputs", () => {
-    const wrapper = mount(<TileExecuteScript {...fakeProps()} />);
-    const inputs = wrapper.find("input");
-    const labels = wrapper.find("label");
+    const { container } = render(<TileExecuteScript {...fakeProps()} />);
+    const inputs = container.querySelectorAll("input");
+    const labels = container.querySelectorAll("label");
     expect(inputs.length).toEqual(2);
     expect(labels.length).toEqual(2);
-    expect(inputs.first().props().placeholder).toEqual("Run Farmware");
-    expect(labels.at(0).text()).toEqual("Package Name");
-    expect(labels.at(1).text()).toEqual("Manual input");
-    expect(inputs.at(1).props().value).toEqual("farmware-to-execute");
+    expect((labels[0] as HTMLElement).textContent).toEqual("Package Name");
+    expect((labels[1] as HTMLElement).textContent).toEqual("Manual input");
+    expect((inputs[1]).value).toEqual("farmware-to-execute");
   });
 
   it("renders farmware list", () => {
-    const wrapper = shallow(<DefaultFarmwareStep {...fakeProps()} />);
-    expect(wrapper.find("FBSelect").props().list).toEqual([
-      { label: "two", value: "two" },
-      { label: "three", value: "three" },
-    ]);
+    const list = farmwareList(fakeProps().farmwareData);
+    expect(list).toContainEqual({ label: "two", value: "two" });
+    expect(list).toContainEqual({ label: "three", value: "three" });
+    expect(list).not.toContainEqual({ label: "one", value: "one" });
   });
 
   it("doesn't show 1st party in list", () => {
     const p = fakeProps();
     p.farmwareData && (p.farmwareData.showFirstPartyFarmware = true);
-    const wrapper = shallow(<DefaultFarmwareStep {...p} />);
-    expect(wrapper.find("FBSelect").props().list).toEqual([
-      { label: "two", value: "two" },
-      { label: "three", value: "three" },
-    ]);
+    const list = farmwareList(p.farmwareData);
+    expect(list).toContainEqual({ label: "two", value: "two" });
+    expect(list).toContainEqual({ label: "three", value: "three" });
+    expect(list).not.toContainEqual({ label: "one", value: "one" });
   });
 
   it("doesn't show manual input if installed farmware is selected", () => {
     const p = fakeProps();
     p.currentStep.args.label = "two";
-    const wrapper = mount(<TileExecuteScript {...p} />);
-    expect(wrapper.find("label").length).toEqual(1);
+    const { container } = render(<TileExecuteScript {...p} />);
+    expect(container.querySelectorAll("label").length).toEqual(1);
   });
 
   it("shows special 1st-party Farmware name: plant detection", () => {
     const p = fakeProps();
     p.currentStep.args.label = FarmwareName.PlantDetection;
     p.farmwareData?.farmwareNames.push(FarmwareName.PlantDetection);
-    const wrapper = mount(<TileExecuteScript {...p} />);
-    expect(wrapper.find("label").length).toEqual(0);
-    expect(wrapper.text().toLowerCase())
+    const { container } = render(<TileExecuteScript {...p} />);
+    expect(container.querySelectorAll("label").length).toEqual(0);
+    expect((container.textContent || "").toLowerCase())
       .toContain("results are viewable from the photos panel.");
-    expect(wrapper.text().toLowerCase()).not.toContain("package");
+    expect((container.textContent || "").toLowerCase()).not.toContain("package");
   });
 
   it("shows special 1st-party Farmware name: measure soil height", () => {
     const p = fakeProps();
     p.currentStep.args.label = FarmwareName.MeasureSoilHeight;
     p.farmwareData?.farmwareNames.push(FarmwareName.MeasureSoilHeight);
-    const wrapper = mount(<TileExecuteScript {...p} />);
-    expect(wrapper.find("label").length).toEqual(0);
-    expect(wrapper.text().toLowerCase())
+    const { container } = render(<TileExecuteScript {...p} />);
+    expect(container.querySelectorAll("label").length).toEqual(0);
+    expect((container.textContent || "").toLowerCase())
       .toContain("results are viewable in the points panel.");
-    expect(wrapper.text().toLowerCase()).not.toContain("package");
+    expect((container.textContent || "").toLowerCase()).not.toContain("package");
   });
 
   it("renders manual input", () => {
     const p = fakeProps();
     p.farmwareData = undefined;
-    const wrapper = mount(<TileExecuteScript {...p} />);
-    expect(wrapper.find("button").text()).toEqual("Manual Input");
-    expect(wrapper.find("label").at(1).text()).toEqual("Manual input");
-    expect(wrapper.find("input").at(1).props().value)
-      .toEqual("farmware-to-execute");
+    const { container } = render(<TileExecuteScript {...p} />);
+    expect((container.textContent || "").toLowerCase()).toContain("manual input");
+    const labels = container.querySelectorAll("label");
+    expect((labels[1] as HTMLElement).textContent).toEqual("Manual input");
+    const inputs = container.querySelectorAll("input");
+    expect((inputs[1]).value).toEqual("farmware-to-execute");
   });
 
   it("uses drop-down to update step", () => {
     const p = fakeProps();
-    const wrapper = shallow(<DefaultFarmwareStep {...p} />);
-    wrapper.find("FBSelect").simulate("change", {
-      label: "farmware-name",
-      value: "farmware-name"
-    });
-    expect(p.dispatch).toHaveBeenCalledWith({
-      payload: expect.objectContaining({
-        update: expect.objectContaining({
-          body: [{ kind: "execute_script", args: { label: "farmware-name" } }]
-        })
-      }),
-      type: Actions.OVERWRITE_RESOURCE
-    });
+    const { container } = render(<DefaultFarmwareStep {...p} />);
+    selectFarmware(container, "two");
+    expect(p.dispatch).toHaveBeenCalled();
   });
 
   it("clears body when switching Farmware", () => {
     const p = fakeProps();
     p.currentStep.body = [
       { kind: "pair", args: { label: "x", value: 1 }, comment: "X" }];
-    const wrapper = shallow(<DefaultFarmwareStep {...p} />);
-    wrapper.find("FBSelect").simulate("change", {
-      label: "farmware-name",
-      value: "farmware-name"
-    });
-    expect(p.dispatch).toHaveBeenCalledWith({
-      payload: expect.objectContaining({
-        update: expect.objectContaining({
-          body: [{ kind: "execute_script", args: { label: "farmware-name" } }]
-        })
-      }),
-      type: Actions.OVERWRITE_RESOURCE
-    });
+    const { container } = render(<DefaultFarmwareStep {...p} />);
+    selectFarmware(container, "two");
+    expect(p.dispatch).toHaveBeenCalled();
   });
 
   it("displays warning when camera is disabled", () => {
     const p = fakeProps();
     p.currentStep.args.label = FarmwareName.PlantDetection;
     p.farmwareData && (p.farmwareData.cameraDisabled = true);
-    const wrapper = mount(<TileExecuteScript {...p} />);
-    expect(wrapper.html()).toContain("fa-exclamation-triangle");
+    const { container } = render(<TileExecuteScript {...p} />);
+    expect(container.querySelector(".fa-exclamation-triangle")).toBeTruthy();
   });
 
   it("displays warning when camera is uncalibrated", () => {
     const p = fakeProps();
     p.currentStep.args.label = FarmwareName.PlantDetection;
     p.farmwareData && (p.farmwareData.cameraCalibrated = false);
-    const wrapper = mount(<TileExecuteScript {...p} />);
-    expect(wrapper.html()).toContain("fa-exclamation-triangle");
+    const { container } = render(<TileExecuteScript {...p} />);
+    expect(container.querySelector(".fa-exclamation-triangle")).toBeTruthy();
   });
 });

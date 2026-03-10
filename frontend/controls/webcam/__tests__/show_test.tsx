@@ -1,6 +1,6 @@
 import React from "react";
 import { fakeWebcamFeed } from "../../../__test_support__/fake_state/resources";
-import { mount } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import { Show, IndexIndicator } from "../show";
 import { PLACEHOLDER_FARMBOT } from "../../../photos/images/image_flipper";
 import { WebcamPanelProps } from "../interfaces";
@@ -23,8 +23,8 @@ describe("<Show />", () => {
 
   it("renders feed title", () => {
     const p = fakeProps();
-    const wrapper = mount(<Show {...p} />);
-    expect(wrapper.text()).toContain(p.feeds[0].body.name);
+    const { container } = render(<Show {...p} />);
+    expect(container.textContent).toContain(p.feeds[0].body.name);
     expect(p.feeds[0].body.name).not.toEqual(p.feeds[1].body.name);
   });
 
@@ -33,14 +33,16 @@ describe("<Show />", () => {
     [".image-flipper-left", "Prev", 1, 0],
   ])("navigates %s: %s", (className, btnText, from, to) => {
     const p = fakeProps();
-    const wrapper = mount<Show>(<Show {...p} />);
-    wrapper.setState({ current: from });
-    expect(wrapper.text()).toContain(p.feeds[from].body.name);
-    const prev = wrapper.find(className);
-    expect(prev.text()).toEqual(btnText);
-    prev.simulate("click");
-    expect(wrapper.state().current).toEqual(to);
-    expect(wrapper.text()).toContain(p.feeds[to].body.name);
+    const { container } = render(<Show {...p} />);
+    const rightButton = container.querySelector(".image-flipper-right");
+    if (from === 1) {
+      rightButton && fireEvent.click(rightButton);
+    }
+    expect(container.textContent).toContain(p.feeds[from].body.name);
+    const targetButton = container.querySelector(className);
+    expect(targetButton?.textContent).toEqual(btnText);
+    targetButton && fireEvent.click(targetButton);
+    expect(container.textContent).toContain(p.feeds[to].body.name);
   });
 
   it("returns a PLACEHOLDER_FEED", () => {
@@ -52,19 +54,21 @@ describe("<Show />", () => {
 
 describe("<IndexIndicator/>", () => {
   it("renders index indicator: position 1", () => {
-    const wrapper = mount(<IndexIndicator i={0} total={2} />);
-    expect(wrapper.find("div").props().style)
-      .toEqual({ left: "calc(0 * 50%)", width: "50%" });
+    const { container } = render(<>{IndexIndicator({ i: 0, total: 2 })}</>);
+    const style = (container.querySelector("div") as HTMLDivElement).style;
+    expect(style.left).toEqual("calc(0 * 50%)");
+    expect(style.width).toEqual("50%");
   });
 
   it("renders index indicator: position 2", () => {
-    const wrapper = mount(<IndexIndicator i={1} total={4} />);
-    expect(wrapper.find("div").props().style)
-      .toEqual({ left: "calc(1 * 25%)", width: "25%" });
+    const { container } = render(<>{IndexIndicator({ i: 1, total: 4 })}</>);
+    const style = (container.querySelector("div") as HTMLDivElement).style;
+    expect(style.left).toEqual("calc(1 * 25%)");
+    expect(style.width).toEqual("25%");
   });
 
   it("doesn't render index indicator", () => {
-    const wrapper = mount(<IndexIndicator i={0} total={1} />);
-    expect(wrapper.html()).toEqual("<div class=\"no-index-indicator\"></div>");
+    const { container } = render(<>{IndexIndicator({ i: 0, total: 1 })}</>);
+    expect(container.innerHTML).toEqual("<div class=\"no-index-indicator\"></div>");
   });
 });

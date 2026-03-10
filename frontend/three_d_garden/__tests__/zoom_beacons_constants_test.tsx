@@ -1,7 +1,4 @@
 let mockIsDesktop = false;
-jest.mock("../../screen_size", () => ({
-  isDesktop: () => mockIsDesktop,
-}));
 
 import {
   Camera,
@@ -14,7 +11,18 @@ import {
 } from "../zoom_beacons_constants";
 import { clone } from "lodash";
 import { INITIAL } from "../config";
+import * as screenSize from "../../screen_size";
 
+let isDesktopSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  isDesktopSpy = jest.spyOn(screenSize, "isDesktop")
+    .mockImplementation(() => mockIsDesktop);
+});
+
+afterEach(() => {
+  isDesktopSpy.mockRestore();
+});
 describe("FOCI()", () => {
   it("returns foci", () => {
     const config = clone(INITIAL);
@@ -67,20 +75,35 @@ describe("getCamera()", () => {
 });
 
 describe("setUrlParam()", () => {
-  history.pushState = jest.fn();
+  let pushStateSpy: jest.SpyInstance;
+  const getPushedUrl = () => {
+    const pushedUrl: unknown = pushStateSpy.mock.calls[0]?.[2];
+    if (typeof pushedUrl !== "string") {
+      throw new Error("Expected pushState URL to be a string");
+    }
+    return new URL(pushedUrl);
+  };
+
+  beforeEach(() => {
+    pushStateSpy = jest.spyOn(history, "pushState").mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    pushStateSpy.mockRestore();
+  });
 
   it("sets URL param", () => {
-    window.location.href = "http://localhost:3000/app/designer";
+    history.replaceState(undefined, "", "/app/designer");
     setUrlParam("focus", "What you can grow");
-    expect(history.pushState).toHaveBeenCalledWith(undefined, "",
-      "http://localhost:3000/app/designer?focus=What+you+can+grow");
+    const url = getPushedUrl();
+    expect(url.searchParams.get("focus")).toEqual("What you can grow");
   });
 
   it("removes URL param", () => {
-    window.location.href = "http://localhost:3000/app/designer?focus=What+you+can+grow";
+    history.replaceState(undefined, "", "/app/designer?focus=What+you+can+grow");
     setUrlParam("focus", "");
-    expect(history.pushState).toHaveBeenCalledWith(undefined, "",
-      "http://localhost:3000/app/designer");
+    const url = getPushedUrl();
+    expect(url.searchParams.get("focus")).toBeNull();
   });
 });
 

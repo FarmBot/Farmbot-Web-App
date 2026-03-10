@@ -2,8 +2,8 @@ import { Actions } from "../../constants";
 import { TaggedImage } from "farmbot";
 import { StringValueUpdate } from "./interfaces";
 import { GetState } from "../../redux/interfaces";
-import { getWebAppConfig } from "../../resources/getters";
-import { edit, save } from "../../api/crud";
+import * as resourceGetters from "../../resources/getters";
+import * as crud from "../../api/crud";
 
 export const toggleAlwaysHighlightImage =
   (value: boolean, image: TaggedImage | undefined) => (dispatch: Function) =>
@@ -56,9 +56,10 @@ export const toggleShowHeightImages = (dispatch: Function) => () =>
 
 export const setWebAppConfigValues = (update: StringValueUpdate) =>
   (dispatch: Function, getState: GetState) => {
-    const webAppConfig = getWebAppConfig(getState().resources.index);
+    const webAppConfig =
+      resourceGetters.getWebAppConfig(getState().resources.index);
     if (webAppConfig) {
-      dispatch(edit(webAppConfig, update));
-      dispatch(save(webAppConfig.uuid));
+      dispatch(crud.edit(webAppConfig, update));
+      dispatch(crud.save(webAppConfig.uuid));
     }
   };

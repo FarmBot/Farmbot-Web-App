@@ -121,10 +121,13 @@ export const DEFAULT_FORMATTER: Translation = {
       }
 
     } catch (error) {
-      throw new Error(`An invalid config input caused a crash.
+      const details = `An invalid config input caused a crash.
       This is the value we got: ${val}
       This is the error: ${error}
-      `);
+      `;
+      const err = new Error(details) as Error & { cause?: unknown };
+      err.cause = error;
+      throw err;
     }
   }
 };

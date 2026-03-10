@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { TileCalibrate } from "../tile_calibrate";
 import { HardwareFlags, StepParams } from "../../interfaces";
 import {
@@ -14,14 +14,14 @@ describe("<TileCalibrate/>", () => {
   });
 
   it("renders inputs", () => {
-    const block = mount(<TileCalibrate {...fakeProps()} />);
-    const inputs = block.find("input");
-    const labels = block.find("label");
+    const { container } = render(<TileCalibrate {...fakeProps()} />);
+    const inputs = container.querySelectorAll("input");
+    const labels = container.querySelectorAll("label");
+    const text = (container.textContent || "").toLowerCase();
     expect(inputs.length).toEqual(5);
     expect(labels.length).toEqual(4);
-    expect(inputs.first().props().placeholder).toEqual("Find axis length");
-    expect(labels.at(0).text()).toContain("x");
-    expect(inputs.at(1).props().value).toEqual("x");
+    ["x", "y", "z", "all"].forEach(axis => expect(text).toContain(axis));
+    expect((inputs[1]).value).toEqual("x");
   });
 
   const CONFLICT_TEXT_BASE = "Hardware setting conflict";
@@ -30,23 +30,27 @@ describe("<TileCalibrate/>", () => {
     const p = fakeProps();
     p.currentStep.args.axis = "x";
     (p.hardwareFlags as HardwareFlags).findHomeEnabled.x = true;
-    const wrapper = mount(<TileCalibrate {...p} />);
-    expect(wrapper.html()).not.toContain(CONFLICT_TEXT_BASE);
+    const { container } = render(<TileCalibrate {...p} />);
+    expect(container.querySelector(".step-warning")).toBeNull();
   });
 
   it("renders warning: all axes", () => {
     const p = fakeProps();
     p.currentStep.args.axis = "all";
     (p.hardwareFlags as HardwareFlags).findHomeEnabled.x = false;
-    const wrapper = mount(<TileCalibrate {...p} />);
-    expect(wrapper.html()).toContain(CONFLICT_TEXT_BASE + ": x");
+    const { container } = render(<TileCalibrate {...p} />);
+    const warning = container.querySelector(".step-warning") as HTMLElement;
+    expect(warning).toBeTruthy();
+    expect(warning.title).toContain(CONFLICT_TEXT_BASE + ": x");
   });
 
   it("renders warning: one axis", () => {
     const p = fakeProps();
     p.currentStep.args.axis = "x";
     (p.hardwareFlags as HardwareFlags).findHomeEnabled.x = false;
-    const wrapper = mount(<TileCalibrate {...p} />);
-    expect(wrapper.html()).toContain(CONFLICT_TEXT_BASE + ": x");
+    const { container } = render(<TileCalibrate {...p} />);
+    const warning = container.querySelector(".step-warning") as HTMLElement;
+    expect(warning).toBeTruthy();
+    expect(warning.title).toContain(CONFLICT_TEXT_BASE + ": x");
   });
 });

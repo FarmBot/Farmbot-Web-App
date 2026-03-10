@@ -1,16 +1,7 @@
-jest.mock("../../../api/crud", () => ({ edit: jest.fn() }));
-
-jest.mock("../../../point_groups/actions", () => ({
-  overwriteGroup: jest.fn(),
-}));
-
 import {
   fakePointGroup, fakePlant,
 } from "../../../__test_support__/fake_state/resources";
 const mockGroup = fakePointGroup();
-jest.mock("../../../point_groups/group_detail", () => ({
-  findGroupFromUrl: jest.fn(() => mockGroup)
-}));
 
 import {
   movePoints, closePlantInfo, setDragIcon, clickMapPlant, selectPoint,
@@ -19,16 +10,38 @@ import {
   movePointTo,
 } from "../actions";
 import { MovePointToProps, MovePointsProps } from "../../interfaces";
-import { edit } from "../../../api/crud";
+import * as crud from "../../../api/crud";
 import { Actions } from "../../../constants";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { GetState } from "../../../redux/interfaces";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
-import { overwriteGroup } from "../../../point_groups/actions";
+import * as pointGroupActions from "../../../point_groups/actions";
+import * as groupDetail from "../../../point_groups/group_detail";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import { Path } from "../../../internal_urls";
+
+let editSpy: jest.SpyInstance;
+let overwriteGroupSpy: jest.SpyInstance;
+let findGroupFromUrlSpy: jest.SpyInstance;
+const originalPathname = location.pathname;
+
+beforeEach(() => {
+  location.pathname = Path.mock(Path.plants());
+  editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  overwriteGroupSpy = jest.spyOn(pointGroupActions, "overwriteGroup")
+    .mockImplementation(jest.fn());
+  findGroupFromUrlSpy = jest.spyOn(groupDetail, "findGroupFromUrl")
+    .mockImplementation(() => mockGroup);
+});
+
+afterEach(() => {
+  editSpy.mockRestore();
+  overwriteGroupSpy.mockRestore();
+  findGroupFromUrlSpy.mockRestore();
+  location.pathname = originalPathname;
+});
 
 describe("movePoints", () => {
   it.each<[string, Record<"x" | "y", number>, Record<"x" | "y", number>]>([
@@ -44,7 +57,7 @@ describe("movePoints", () => {
         gridSize: { x: 3000, y: 1500 }
       };
       movePoints(payload)(jest.fn());
-      expect(edit).toHaveBeenCalledWith(
+      expect(editSpy).toHaveBeenCalledWith(
         // Old plant
         expect.objectContaining({
           body: expect.objectContaining({
@@ -67,7 +80,7 @@ describe("movePointTo", () => {
       gridSize: { x: 3000, y: 1500 }
     };
     movePointTo(payload)(jest.fn());
-    expect(edit).toHaveBeenCalledWith(
+    expect(editSpy).toHaveBeenCalledWith(
       expect.objectContaining({
         body: expect.objectContaining({ x: 100, y: 200 })
       }),
@@ -140,7 +153,7 @@ describe("clickMapPlant", () => {
     const dispatch = mockDispatch();
     const getState: GetState = jest.fn(() => state);
     clickMapPlant(plant.uuid)(dispatch, getState);
-    expect(overwriteGroup).toHaveBeenCalledWith(mockGroup,
+    expect(pointGroupActions.overwriteGroup).toHaveBeenCalledWith(mockGroup,
       expect.objectContaining({
         name: "Fake", point_ids: [1, 23]
       }));
@@ -155,7 +168,7 @@ describe("clickMapPlant", () => {
     const dispatch = mockDispatch();
     const getState: GetState = jest.fn(() => state);
     clickMapPlant("missing plant uuid")(dispatch, getState);
-    expect(overwriteGroup).not.toHaveBeenCalled();
+    expect(pointGroupActions.overwriteGroup).not.toHaveBeenCalled();
     expect(dispatch).toHaveBeenCalledTimes(1);
   });
 
@@ -169,7 +182,7 @@ describe("clickMapPlant", () => {
     const dispatch = mockDispatch();
     const getState: GetState = jest.fn(() => state);
     clickMapPlant(plant.uuid)(dispatch, getState);
-    expect(overwriteGroup).toHaveBeenCalledWith(mockGroup,
+    expect(pointGroupActions.overwriteGroup).toHaveBeenCalledWith(mockGroup,
       expect.objectContaining({
         name: "Fake", point_ids: [1]
       }));

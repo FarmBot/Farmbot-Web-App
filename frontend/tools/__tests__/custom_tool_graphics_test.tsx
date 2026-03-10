@@ -1,14 +1,11 @@
 let mockDev = false;
-jest.mock("../../settings/dev/dev_support", () => ({
-  DevSettings: { futureFeaturesEnabled: () => mockDev }
-}));
 
 import { fakeState } from "../../__test_support__/fake_state";
+import { store } from "../../redux/store";
 const mockState = fakeState();
-jest.mock("../../redux/store", () => ({ store: { getState: () => mockState } }));
 
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import {
   CustomToolGraphicsInput,
   CustomToolGraphicsInputProps,
@@ -21,6 +18,30 @@ import {
 import { fakeFarmwareEnv } from "../../__test_support__/fake_state/resources";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { svgMount } from "../../__test_support__/svg_mount";
+import { DevSettings } from "../../settings/dev/dev_support";
+import { BlurableInput } from "../../ui";
+import {
+  actRenderer,
+  createRenderer,
+  unmountRenderer,
+} from "../../__test_support__/test_renderer";
+
+let originalGetState: typeof store.getState;
+let futureFeaturesEnabledSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  futureFeaturesEnabledSpy = jest.spyOn(DevSettings, "futureFeaturesEnabled")
+    .mockImplementation(() => mockDev);
+  originalGetState = store.getState;
+  (store as unknown as { getState: () => typeof mockState }).getState =
+    () => mockState;
+});
+
+afterEach(() => {
+  futureFeaturesEnabledSpy.mockRestore();
+  (store as unknown as { getState: typeof store.getState }).getState =
+    originalGetState;
+});
 
 describe("<CustomToolGraphicsInput />", () => {
   const fakeProps = (): CustomToolGraphicsInputProps => ({
@@ -32,28 +53,30 @@ describe("<CustomToolGraphicsInput />", () => {
 
   it("doesn't render inputs", () => {
     mockDev = false;
-    const wrapper = mount(<CustomToolGraphicsInput {...fakeProps()} />);
-    expect(wrapper.html()).not.toContain("custom-tool-graphics-input");
+    const { container } = render(<CustomToolGraphicsInput {...fakeProps()} />);
+    expect(container.innerHTML).not.toContain("custom-tool-graphics-input");
   });
 
   it("renders inputs", () => {
     mockDev = true;
-    const wrapper = mount(<CustomToolGraphicsInput {...fakeProps()} />);
-    expect(wrapper.html()).toContain("custom-tool-graphics-input");
+    const { container } = render(<CustomToolGraphicsInput {...fakeProps()} />);
+    expect(container.innerHTML).toContain("custom-tool-graphics-input");
   });
 
   it("edits inputs", () => {
     mockDev = true;
     const p = fakeProps();
-    const wrapper = shallow(<CustomToolGraphicsInput {...p} />);
-    wrapper.find("details").simulate("click");
-    wrapper.find("BlurableInput").first().simulate("commit", {
-      currentTarget: { value: "abc" }
+    const wrapper = createRenderer(<CustomToolGraphicsInput {...p} />);
+    actRenderer(() => {
+      wrapper.root.findAllByType(BlurableInput)[0]?.props.onCommit({
+        currentTarget: { value: "abc" }
+      });
     });
     expect(p.saveFarmwareEnv).toHaveBeenCalledWith(
       "custom_tool_graphics_tool",
       "{\"top\":\"abc\"}",
     );
+    unmountRenderer(wrapper);
   });
 });
 
@@ -74,15 +97,15 @@ describe("<CustomToolTop />", () => {
   it("doesn't render custom tool", () => {
     const p = fakeProps();
     p.toolName = undefined;
-    const wrapper = svgMount(<CustomToolTop {...p} />);
-    expect(wrapper.html()).not.toContain("custom-top");
+    const { container } = svgMount(<CustomToolTop {...p} />);
+    expect(container.innerHTML).not.toContain("custom-top");
   });
 
   it("renders custom tool", () => {
     const p = fakeProps();
     p.toolName = "tool";
-    const wrapper = svgMount(<CustomToolTop {...p} />);
-    expect(wrapper.html()).toContain("custom-top");
+    const { container } = svgMount(<CustomToolTop {...p} />);
+    expect(container.innerHTML).toContain("custom-top");
   });
 });
 
@@ -104,17 +127,17 @@ describe("<CustomToolProfile />", () => {
   it("doesn't render custom tool profile", () => {
     const p = fakeProps();
     p.toolName = undefined;
-    const wrapper = svgMount(<CustomToolProfile {...p} />);
-    expect(wrapper.html()).not.toContain("custom-implement-profile");
-    expect(wrapper.html()).not.toContain("h 1234");
+    const { container } = svgMount(<CustomToolProfile {...p} />);
+    expect(container.innerHTML).not.toContain("custom-implement-profile");
+    expect(container.innerHTML).not.toContain("h 1234");
   });
 
   it("renders custom tool profile", () => {
     const p = fakeProps();
     p.toolName = "tool";
-    const wrapper = svgMount(<CustomToolProfile {...p} />);
-    expect(wrapper.html()).toContain("custom-implement-profile");
-    expect(wrapper.html()).toContain("h 1234");
+    const { container } = svgMount(<CustomToolProfile {...p} />);
+    expect(container.innerHTML).toContain("custom-implement-profile");
+    expect(container.innerHTML).toContain("h 1234");
   });
 
   it("renders custom tool profile side view", () => {
@@ -127,10 +150,10 @@ describe("<CustomToolProfile />", () => {
     const p = fakeProps();
     p.toolName = "tool";
     p.sideView = true;
-    const wrapper = svgMount(<CustomToolProfile {...p} />);
-    expect(wrapper.html()).toContain("custom-implement-profile");
-    expect(wrapper.html()).not.toContain("h 1234");
-    expect(wrapper.html()).toContain("v 1234");
-    expect(wrapper.html()).toContain("scale(-1,1)");
+    const { container } = svgMount(<CustomToolProfile {...p} />);
+    expect(container.innerHTML).toContain("custom-implement-profile");
+    expect(container.innerHTML).not.toContain("h 1234");
+    expect(container.innerHTML).toContain("v 1234");
+    expect(container.innerHTML).toContain("scale(-1,1)");
   });
 });

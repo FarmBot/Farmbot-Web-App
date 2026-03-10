@@ -1,12 +1,16 @@
 let mockDemo = false;
-jest.mock("../../devices/must_be_online", () => ({
-  forceOnline: () => mockDemo,
-}));
-
 import { BotLocationData } from "../../devices/interfaces";
 import { validBotLocationData } from "../location";
 import { LocationData } from "farmbot";
+import * as mustBeOnline from "../../devices/must_be_online";
 
+beforeEach(() => {
+  jest.spyOn(mustBeOnline, "forceOnline").mockImplementation(() => mockDemo);
+});
+
+afterEach(() => {
+  mockDemo = false;
+});
 describe("validBotLocationData()", () => {
   it("returns valid location_data object", () => {
     const result = validBotLocationData(undefined);

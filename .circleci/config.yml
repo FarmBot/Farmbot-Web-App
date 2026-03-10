@@ -8,56 +8,81 @@ executors:
     working_directory: /home/circleci/project
 
 commands:
+  start-commands:
+    steps:
+      - send-notification:
+          message: "CI run started"
+      - send-notification:
+          message: "<${CIRCLE_BUILD_URL}|logs>"
+      - run:
+          name: Create compare link
+          command: |
+            DEPLOYS_URL_API="https://api.github.com/repos/Farmbot/Farmbot-Web-App/deployments"
+            COMPARE_URL_WEB="https://github.com/Farmbot/Farmbot-Web-App/compare/"
+            data=$(curl -fsS "$DEPLOYS_URL_API") || data="[]"
+            last_sha=$(printf "%s" "$data" | python -c 'import json,sys; data=json.loads(sys.stdin.read() or "[]"); deploy_index=0; sha=(data[deploy_index] or {}).get("sha"); print(sha or "")')
+            compare_url="$COMPARE_URL_WEB$last_sha...${CIRCLE_SHA1}"
+            echo "$compare_url"
+            echo "export COMPARE_URL='$compare_url'" >> "$BASH_ENV"
+      - send-notification:
+          message: "<$COMPARE_URL|diff>"
+  send-notification:
+    parameters:
+      message:
+        type: string
+      when:
+        type: enum
+        enum: ["on_success", "on_fail", "always"]
+        default: "always"
+    steps:
+      - when:
+          condition:
+            equal: [staging, << pipeline.git.branch >>]
+          steps:
+            - run:
+                name: "Send notification: << parameters.message >>"
+                when: << parameters.when >>
+                command: |
+                  if [ -n "$SLACK_WEBHOOK_URL" ]; then
+                    curl -fsS -X POST -H "Content-Type: application/json" \
+                      --data "{\"text\":\"<< parameters.message >>\",\"channel\":\"#software\"}" \
+                      "$SLACK_WEBHOOK_URL" || true
+                  fi
   build-commands:
     steps:
-      - checkout
-      - restore_cache:
-          keys:
-            - cache-v1-{{ .Revision }}-{{ .Environment.CIRCLE_WORKFLOW_ID }}
-      - run:
-          name: After cache restore
-          command: |
-            git clean -xdn
-            mkdir -p docker_cache
-            ls docker_cache
-            #sudo docker images
-            #if [ -f docker_cache/images.tar.gz ]; then gunzip -c docker_cache/images.tar.gz | sudo docker load; fi
       - run:
           name: Build and Install Deps
           command: |
             mv .circleci/circle_envs .env
             echo -e '\ndocker_volumes/db/pg_wal/*' >> .dockerignore
             sudo docker compose build web
-            sudo docker compose run web gem install bundler
-            sudo docker compose run web bundle install
-            sudo docker compose run web npm install
-            sudo docker compose run web bundle exec rails db:create
-            sudo docker compose run web bundle exec rails db:migrate
-            sudo docker compose run web bundle exec rake keys:generate
-      - run:
-          name: After cache update
-          command: |
-            mkdir -p /tmp/test-results
-            git clean -xdn
-            ls docker_cache
-            #sudo docker images
-            #if [ ! -f docker_cache/images.tar.gz ]; then sudo docker save $(sudo docker images ruby -q) | gzip > docker_cache/images.tar.gz; fi
-      # - save_cache:
-      #     key: cache-v1-{{ .Revision }}-{{ .Environment.CIRCLE_WORKFLOW_ID }}
-      #     paths:
-      #       - docker_volumes
-      #       - node_modules
-      #       - docker_cache
+            if sudo docker compose run --rm web bash -lc '\
+              gem install bundler && \
+              bundle install && \
+              bun install && \
+              bundle exec rails db:create && \
+              bundle exec rails db:migrate && \
+              bundle exec rake keys:generate \
+            '; then
+              echo "export SETUP_OK=true" >> "$BASH_ENV"
+            else
+              echo "export SETUP_OK=false" >> "$BASH_ENV"
+              exit 1
+            fi
   rspec-commands:
     steps:
       - run:
           name: Run Ruby Tests
           command: |
-            sudo docker compose run web bundle exec rspec spec --format progress --format RspecJunitFormatter --out /tmp/test-results/rspec/rspec.xml
+            sudo docker compose run --rm web bundle exec rspec spec --format progress --format RspecJunitFormatter --out test-results/rspec.xml
       - run:
           name: Check app coverage status
           command: |
-            sudo docker compose run web bundle exec rake check_file_coverage:api || [ $CIRCLE_BRANCH == "staging" ]
+            if [ "$SETUP_OK" != "true" ]; then
+              echo "skipping"
+              exit 0
+            fi
+            sudo docker compose run --rm web bundle exec rake check_file_coverage:api || [ $CIRCLE_BRANCH == "staging" ]
           when: always
       - run:
           name: Upload app coverage to Codecov
@@ -70,32 +95,59 @@ commands:
             shasum -a 256 -c codecov.SHA256SUM
             chmod +x codecov
             ./codecov -t $CODECOV_TOKEN -f coverage_api/coverage.xml
-  jest-commands:
+  js-test-commands:
     steps:
       - run:
           name: Run JS tests
           command: |
-            sudo docker compose run web npm run test-slow -- -c .circleci/jest-ci.config.js -w 6
+            sudo docker compose run --rm web bun test --reporter=junit --reporter-outfile=test-results/junit.xml
             echo 'export COVERAGE_AVAILABLE=true' >> $BASH_ENV
   lint-commands:
     steps:
       - run:
           name: Run JS Linters
           command: |
-            sudo docker compose run web npm run linters
+            if [ "$SETUP_OK" != "true" ]; then
+              echo "skipping"
+              exit 0
+            fi
+            sudo docker compose run --rm web bun run linters
+          when: always
+  bun-build-commands:
+    steps:
+      - run:
+          name: Check bun build
+          command: |
+            if [ "$SETUP_OK" != "true" ]; then
+              echo "skipping"
+              exit 0
+            fi
+            sudo docker compose run --rm web bundle exec rake assets:precompile 2>&1 | tee assets_precompile.log
+            printf -- '-%.0s' {1..50}; printf '\n'
+            if grep -Ei '^(warn|error):' assets_precompile.log; then
+              exit 1
+            fi
           when: always
   coverage-commands:
     steps:
       - run:
           name: Check frontend coverage status
           command: |
-            sudo docker compose run -e CIRCLE_SHA1="$CIRCLE_SHA1" -e CIRCLE_BRANCH="$CIRCLE_BRANCH" -e CIRCLE_PULL_REQUEST="$CIRCLE_PULL_REQUEST" web bundle exec rake coverage:run || [ $CIRCLE_BRANCH == "staging" ]
+            if [ "$SETUP_OK" != "true" ]; then
+              echo "skipping"
+              exit 0
+            fi
+            sudo docker compose run --rm -e CIRCLE_SHA1="$CIRCLE_SHA1" -e CIRCLE_BRANCH="$CIRCLE_BRANCH" -e CIRCLE_PULL_REQUEST="$CIRCLE_PULL_REQUEST" web bundle exec rake coverage:run || [ $CIRCLE_BRANCH == "staging" ]
           when: always
       - run:
           name: Check frontend file coverage status
           command: |
+            if [ "$SETUP_OK" != "true" ]; then
+              echo "skipping"
+              exit 0
+            fi
             changed=$(git diff --name-only staging...HEAD | tr '\n' ',' | sed 's/,$//') || true
-            sudo docker compose run -e CHANGED_FILES="$changed" web bundle exec rake check_file_coverage:fe || true
+            sudo docker compose run --rm -e CHANGED_FILES="$changed" web bundle exec rake check_file_coverage:fe || true
           when: always
       - run:
           name: Report frontend coverage to Coveralls
@@ -111,61 +163,176 @@ commands:
             fi
             if [ "$CIRCLE_BRANCH" == "staging" ]; then echo; fi
           when: always # change to `on_success` for a stricter comparison
+  render-commands:
+    steps:
+      - run:
+          name: Start services
+          when: always
+          command: |
+            if [ "$SETUP_OK" != "true" ]; then
+              echo "skipping"
+              exit 0
+            fi
+            sudo docker compose up -d
+            sudo docker compose ps
+      - run:
+          name: Install playwright
+          when: always
+          command: |
+            if [ "$SETUP_OK" != "true" ]; then
+              echo "skipping"
+              exit 0
+            fi
+            sudo docker compose exec -e PLAYWRIGHT_BROWSERS_PATH=0 web bunx playwright install chromium --with-deps
+      - run:
+          name: Wait for load
+          when: always
+          command: |
+            if [ "$SETUP_OK" != "true" ]; then
+              echo "skipping"
+              exit 0
+            fi
+            for i in $(seq 1 90); do
+              if curl -fsS "http://127.0.0.1:3000/promo" >/dev/null; then
+                echo "web is up"
+                exit 0
+              fi
+              sleep 2
+            done
+
+            echo "timeout"
+            sudo docker compose logs --no-color --tail=300 web
+            exit 1
+      - run:
+          name: Run playwright
+          when: always
+          command: |
+            if [ "$SETUP_OK" != "true" ]; then
+              echo "skipping"
+              exit 0
+            fi
+            attempts=2
+            for _ in $(seq 1 "$attempts"); do
+              url="http://localhost:3000/promo?sizePreset=Genesis+XL&promoSpread=true"
+              echo "Attempting FPS check via ${url}"
+              if ! sudo docker compose exec web curl -I "${url}" >/dev/null; then
+                continue
+              fi
+
+              if ! fps_output=$(sudo docker compose exec -e PLAYWRIGHT_BROWSERS_PATH=0 web bun scripts/fps.js "${url}" "tmp/promo.png"); then
+                echo "${fps_output}"
+                continue
+              fi
+              echo "${fps_output}"
+
+              fps_value=$(echo "${fps_output}" | awk -F= '/^FPS_VALUE=/{print $2; exit}')
+              scene_metrics=$(echo "${fps_output}" | awk -F= '/^SCENE_METRICS=/{print $2; exit}')
+              echo "export FPS_VALUE=${fps_value}" >> "$BASH_ENV"
+              echo "export SCENE_METRICS=\"${scene_metrics}\"" >> "$BASH_ENV"
+
+              exit 0
+            done
+
+            echo "FPS check failed for all URLs"
+            exit 1
+      - restore_cache:
+          keys:
+            - fps_value-staging-
+      - run:
+          name: Load previous value
+          when: always
+          command: |
+            if [ -f fps_value.txt ]; then
+              PREV=$(cat fps_value.txt)
+            else
+              PREV=0.75
+            fi
+            echo "Previous value: $PREV fps"
+            echo "export PREV_VALUE=$PREV" >> $BASH_ENV
+      - run:
+          name: Compare value
+          when: always
+          command: |
+            percent_change=$(python -c 'import os; fps=float(os.environ.get("FPS_VALUE","0") or 0); prev=float(os.environ.get("PREV_VALUE","0") or 0); print("n/a" if prev==0 else f"{((fps-prev)/prev)*100:.2f}")')
+            echo "$FPS_VALUE fps ($percent_change% change)"
+            echo "export PERCENT_CHANGE=$percent_change" >> "$BASH_ENV"
+      - run:
+          name: Save new value
+          command: |
+            echo "$FPS_VALUE"
+            echo "$FPS_VALUE" > fps_value.txt
+            if [ ! -f scene_metrics.csv ]; then
+              printf '%s\n' "epoch, FPS, Calls, Triangles, Points, Lines, Geometries, Textures, Objects, Meshes, Instanced meshes" > scene_metrics.csv
+            fi
+            printf '%s\n' "$SCENE_METRICS" >> scene_metrics.csv
+            cat scene_metrics.csv
+      - save_cache:
+          key: fps_value-{{ .Branch }}-{{ epoch }}
+          paths:
+            - fps_value.txt
+            - scene_metrics.csv
+      - send-notification:
+          message: "$FPS_VALUE fps (${PERCENT_CHANGE}% change)"
+      - run:
+          name: On failure
+          when: on_fail
+          command: |
+            if [ "$SETUP_OK" != "true" ]; then
+              echo "setup failed"
+              exit 0
+            fi
+            sudo docker compose ps
+            sudo docker compose logs --no-color --tail=500
+      - store_artifacts:
+          path: tmp/promo.png
+          destination: promo_xl.png
+      - store_artifacts:
+          path: scene_metrics.csv
+          destination: scene_metrics.csv
+  end-commands:
+    steps:
+      - run:
+          name: Fetch first artifact URL
+          command: |
+            project_slug="gh/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}"
+            artifacts_json=$(curl -fsS \
+              -H "Accept: application/json" \
+              "https://circleci.com/api/v2/project/${project_slug}/${CIRCLE_BUILD_NUM}/artifacts")
+            artifact_url=$(printf "%s" "$artifacts_json" | python -c 'import json,sys; data=json.load(sys.stdin); items=data.get("items") or []; print(items[0].get("url","") if items else "")')
+            echo "export ARTIFACT_URL=$artifact_url" >> "$BASH_ENV"
+      - send-notification:
+          message: "CI run succeeded"
+          when: on_success
+      - send-notification:
+          message: "<$ARTIFACT_URL|screenshot>"
+          when: on_success
+      - send-notification:
+          message: "CI run failed"
+          when: on_fail
+
 
 
 workflows:
   version: 2
   build_and_test:
-    max_auto_reruns: 1
+    # max_auto_reruns: 1
     jobs:
-      #- build
       - all
-      #- test-api:
-      #    requires:
-      #      - build
-      #- run-linters:
-      #    requires:
-      #      - build
-      #- test-fe:
-      #    requires:
-      #      - build
 
 jobs:
-  build:
-    executor: build-executor
-    steps:
-      - build-commands
   all:
     executor: build-executor
     steps:
+      - start-commands
+      - checkout
+      - run: mkdir -p test-results
       - build-commands
       - rspec-commands
       - lint-commands
-      - jest-commands
+      - bun-build-commands
+      - js-test-commands
       - store_test_results:
-          path: /tmp/test-results
+          path: test-results
       - coverage-commands
-  test-api:
-    executor: build-executor
-    steps:
-      - build-commands
-      - rspec-commands
-      - store_test_results:
-          path: /tmp/test-results
-  run-linters:
-    executor: build-executor
-    steps:
-      - build-commands
-      - lint-commands
-  test-fe:
-    executor: build-executor
-    parallelism: 4
-    steps:
-      - build-commands
-      - run:
-          name: Run JS Tests
-          command: |
-            circleci tests glob **/__tests__/**/*.ts* | circleci tests split > /tmp/tests-to-run
-            sudo docker compose run web npm run test-very-slow -- -c .circleci/jest-ci.config.js $(cat /tmp/tests-to-run)
-      - store_test_results:
-          path: /tmp/test-results
+      - render-commands
+      - end-commands

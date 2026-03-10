@@ -107,5 +107,4 @@ export class RawPlantInfo extends React.Component<EditPlantInfoProps, {}> {
 }
 
 export const PlantInfo = connect(mapStateToProps)(RawPlantInfo);
-// eslint-disable-next-line import/no-default-export
 export default PlantInfo;

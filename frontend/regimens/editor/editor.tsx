@@ -22,6 +22,7 @@ import { addRegimen } from "../list/add_regimen";
 import { selectAllRegimens } from "../../resources/selectors_by_kind";
 import { RegimenButtonGroup } from "./regimen_edit_components";
 import { NavigationContext } from "../../routes_helpers";
+import { NavigateFunction } from "react-router";
 
 export class RawDesignerRegimenEditor
   extends React.Component<RegimenEditorProps> {
@@ -32,7 +33,7 @@ export class RawDesignerRegimenEditor
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = this.context;
+  navigate: NavigateFunction = url => { this.context?.(url as string); };
 
   render() {
     const panelName = "designer-regimen-editor";
@@ -79,5 +80,4 @@ export class RawDesignerRegimenEditor
 
 export const DesignerRegimenEditor =
   connect(mapStateToProps)(RawDesignerRegimenEditor);
-// eslint-disable-next-line import/no-default-export
 export default DesignerRegimenEditor;

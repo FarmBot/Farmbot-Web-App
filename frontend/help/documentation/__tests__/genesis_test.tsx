@@ -1,12 +1,13 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { GenesisDocsPanel } from "../genesis";
 import { ExternalUrl } from "../../../external_urls";
 
 describe("<GenesisDocsPanel />", () => {
   it("renders genesis docs", () => {
     location.search = "";
-    const wrapper = mount(<GenesisDocsPanel />);
-    expect(wrapper.find("iframe").props().src).toEqual(ExternalUrl.genesisDocs);
+    const { container } = render(<GenesisDocsPanel />);
+    expect(container.querySelector("iframe")?.getAttribute("src"))
+      .toEqual(ExternalUrl.genesisDocs);
   });
 });

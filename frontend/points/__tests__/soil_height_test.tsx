@@ -1,10 +1,5 @@
-jest.mock("../../api/crud", () => ({
-  edit: jest.fn(),
-  save: jest.fn(),
-}));
-
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { render, fireEvent } from "@testing-library/react";
 import {
   fakeFbosConfig, fakePoint,
 } from "../../__test_support__/fake_state/resources";
@@ -12,12 +7,18 @@ import {
   EditSoilHeight, EditSoilHeightProps, getSoilHeightColor,
   tagAsSoilHeight, toggleSoilHeight,
 } from "../soil_height";
-import { edit } from "../../api/crud";
+import * as crud from "../../api/crud";
 import { mockDispatch } from "../../__test_support__/fake_dispatch";
 import { fakeState } from "../../__test_support__/fake_state";
 import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
+import { changeBlurableInput } from "../../__test_support__/helpers";
+
+beforeEach(() => {
+  jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  jest.spyOn(crud, "save").mockImplementation(jest.fn());
+});
 
 describe("toggleSoilHeight()", () => {
   it("returns update", () => {
@@ -58,18 +59,17 @@ describe("<EditSoilHeight />", () => {
   };
 
   it("uses average", () => {
-    const wrapper = mount(<EditSoilHeight {...fakeProps()} />);
-    expect(wrapper.find("input").props().value).toEqual(100);
-    wrapper.find("button").simulate("click");
-    expect(edit).toHaveBeenCalledWith(expect.any(Object), { soil_height: 150 });
+    const { container } = render(<EditSoilHeight {...fakeProps()} />);
+    expect((container.querySelector("input") as HTMLInputElement).value)
+      .toEqual("100");
+    fireEvent.click(container.querySelector("button") as Element);
+    expect(crud.edit).toHaveBeenCalledWith(expect.any(Object), { soil_height: 150 });
   });
 
   it("changes soil height", () => {
-    const wrapper = shallow(<EditSoilHeight {...fakeProps()} />);
-    wrapper.find("BlurableInput").simulate("commit", {
-      currentTarget: { value: "123" }
-    });
-    expect(edit).toHaveBeenCalledWith(expect.any(Object), { soil_height: 123 });
+    const { container } = render(<EditSoilHeight {...fakeProps()} />);
+    changeBlurableInput(container, "123");
+    expect(crud.edit).toHaveBeenCalledWith(expect.any(Object), { soil_height: 123 });
   });
 
   it("doesn't change soil height", () => {
@@ -77,10 +77,8 @@ describe("<EditSoilHeight />", () => {
     const state = fakeState();
     state.resources = buildResourceIndex([]);
     p.dispatch = mockDispatch(jest.fn(), () => state);
-    const wrapper = shallow(<EditSoilHeight {...p} />);
-    wrapper.find("BlurableInput").simulate("commit", {
-      currentTarget: { value: "123" }
-    });
-    expect(edit).not.toHaveBeenCalled();
+    const { container } = render(<EditSoilHeight {...p} />);
+    changeBlurableInput(container, "123");
+    expect(crud.edit).not.toHaveBeenCalled();
   });
 });

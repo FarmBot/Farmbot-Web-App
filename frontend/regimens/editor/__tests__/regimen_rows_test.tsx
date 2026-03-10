@@ -1,14 +1,12 @@
-jest.mock("../../../api/crud", () => ({ overwrite: jest.fn() }));
-
 import React from "react";
-import { mount } from "enzyme";
+import { render, fireEvent } from "@testing-library/react";
 import { RegimenRows } from "../regimen_rows";
 import { RegimenRowsProps } from "../interfaces";
 import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
-import { overwrite } from "../../../api/crud";
+import * as crud from "../../../api/crud";
 import { VariableDeclaration } from "farmbot";
 
 const testVariable: VariableDeclaration = {
@@ -19,6 +17,16 @@ const testVariable: VariableDeclaration = {
     }
   }
 };
+
+let overwriteSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  overwriteSpy = jest.spyOn(crud, "overwrite").mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  overwriteSpy.mockRestore();
+});
 
 describe("<RegimenRows />", () => {
   const fakeProps = (): RegimenRowsProps => {
@@ -47,9 +55,9 @@ describe("<RegimenRows />", () => {
   };
 
   it("renders", () => {
-    const wrapper = mount(<RegimenRows {...fakeProps()} />);
+    const { container } = render(<RegimenRows {...fakeProps()} />);
     ["Day", "Item 0", "10:00"].map(string =>
-      expect(wrapper.text()).toContain(string));
+      expect(container.textContent).toContain(string));
   });
 
   it("removes regimen item", () => {
@@ -57,9 +65,9 @@ describe("<RegimenRows />", () => {
     const p = fakeProps();
     p.calendar[0].items[0].regimen.body.regimen_items =
       [p.calendar[0].items[0].item, keptItem];
-    const wrapper = mount(<RegimenRows {...p} />);
-    wrapper.find("i").last().simulate("click");
-    expect(overwrite).toHaveBeenCalledWith(expect.any(Object),
+    const { container } = render(<RegimenRows {...p} />);
+    fireEvent.click(container.querySelector(".fa-trash.regimen-control") as Element);
+    expect(overwriteSpy).toHaveBeenCalledWith(expect.any(Object),
       expect.objectContaining({ regimen_items: [keptItem] }));
   });
 
@@ -67,8 +75,8 @@ describe("<RegimenRows />", () => {
     const p = fakeProps();
     p.calendar[0].items[0].regimen.body.body = [testVariable];
     p.calendar[0].items[0].variables = [testVariable.args.label];
-    const wrapper = mount(<RegimenRows {...p} />);
-    expect(wrapper.find(".regimen-event-variable").text())
+    const { container } = render(<RegimenRows {...p} />);
+    expect((container.querySelector(".regimen-event-variable") as Element).textContent)
       .toEqual("variable - Coordinate (1, 2, 3)");
   });
 
@@ -76,7 +84,7 @@ describe("<RegimenRows />", () => {
     const p = fakeProps();
     p.calendar[0].items[0].regimen.body.body = [];
     p.calendar[0].items[0].variables = ["variable"];
-    const wrapper = mount(<RegimenRows {...p} />);
-    expect(wrapper.find(".regimen-event-variable").length).toEqual(0);
+    const { container } = render(<RegimenRows {...p} />);
+    expect(container.querySelectorAll(".regimen-event-variable").length).toEqual(0);
   });
 });

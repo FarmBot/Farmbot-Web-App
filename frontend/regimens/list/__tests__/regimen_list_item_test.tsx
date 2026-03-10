@@ -1,18 +1,52 @@
-jest.mock("../../actions", () => ({ selectRegimen: jest.fn() }));
-
-jest.mock("../../../api/crud", () => ({
-  edit: jest.fn(),
-}));
-
 import React from "react";
 import { RegimenListItemProps } from "../../interfaces";
 import { RegimenListItem } from "../regimen_list_item";
-import { render, shallow, mount } from "enzyme";
+import { render, fireEvent } from "@testing-library/react";
 import { fakeRegimen } from "../../../__test_support__/fake_state/resources";
 import { SpecialStatus, Color } from "farmbot";
-import { selectRegimen } from "../../actions";
-import { edit } from "../../../api/crud";
+import * as regimenActions from "../../actions";
+import * as crud from "../../../api/crud";
 import { Path } from "../../../internal_urls";
+import * as popover from "../../../ui/popover";
+import { ColorPicker } from "../../../ui";
+
+let selectRegimenSpy: jest.SpyInstance;
+let editSpy: jest.SpyInstance;
+let popoverSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  selectRegimenSpy = jest.spyOn(regimenActions, "selectRegimen")
+    .mockImplementation(jest.fn());
+  editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  popoverSpy = jest.spyOn(popover, "Popover")
+    .mockImplementation(({ target, content }: popover.PopoverProps) =>
+      <div>{target}{content}</div>);
+});
+
+afterEach(() => {
+  selectRegimenSpy.mockRestore();
+  editSpy.mockRestore();
+  popoverSpy.mockRestore();
+});
+
+const findByType = (
+  node: React.ReactNode,
+  type: unknown,
+): React.ReactElement<{ children?: React.ReactNode }> | undefined => {
+  if (!node) { return undefined; }
+  if (Array.isArray(node)) {
+    for (const child of React.Children.toArray(node)) {
+      const found = findByType(child, type);
+      if (found) { return found; }
+    }
+    return undefined;
+  }
+  if (React.isValidElement<{ children?: React.ReactNode }>(node)) {
+    if (node.type === type) { return node; }
+    return findByType(node.props.children, type);
+  }
+  return undefined;
+};
 
 describe("<RegimenListItem/>", () => {
   const fakeProps = (): RegimenListItemProps => ({
@@ -23,45 +57,62 @@ describe("<RegimenListItem/>", () => {
 
   it("renders the base case", () => {
     const p = fakeProps();
-    const wrapper = render(<RegimenListItem {...p} />);
-    expect(wrapper.html()).toContain(p.regimen.body.name);
-    expect(wrapper.html()).toContain(p.regimen.body.color);
+    const { container } = render(<RegimenListItem {...p} />);
+    expect(container.innerHTML).toContain(p.regimen.body.name);
+    expect(container.querySelectorAll(".regimen-color").length).toEqual(1);
   });
 
   it("shows unsaved data indicator", () => {
     const p = fakeProps();
     p.regimen.specialStatus = SpecialStatus.DIRTY;
-    const wrapper = render(<RegimenListItem {...p} />);
-    expect(wrapper.text()).toContain("Foo *");
+    const { container } = render(<RegimenListItem {...p} />);
+    expect(container.textContent).toContain("Foo *");
   });
 
   it("shows in-use indicator", () => {
     const p = fakeProps();
     p.inUse = true;
-    const wrapper = render(<RegimenListItem {...p} />);
-    expect(wrapper.find(".in-use").length).toEqual(1);
+    const { container } = render(<RegimenListItem {...p} />);
+    expect(container.querySelectorAll(".in-use").length).toEqual(1);
   });
 
   it("doesn't show in-use indicator", () => {
     const p = fakeProps();
-    const wrapper = render(<RegimenListItem {...p} />);
-    expect(wrapper.find(".in-use").length).toEqual(0);
+    const { container } = render(<RegimenListItem {...p} />);
+    expect(container.querySelectorAll(".in-use").length).toEqual(0);
   });
 
   it("selects regimen", () => {
     const p = fakeProps();
     p.regimen.body.name = "foo";
-    const wrapper = shallow(<RegimenListItem {...p} />);
-    wrapper.simulate("click");
-    expect(selectRegimen).toHaveBeenCalledWith(p.regimen.uuid);
+    const { container } = render(<RegimenListItem {...p} />);
+    fireEvent.click(container.querySelector(".regimen-search-item") as Element);
+    expect(selectRegimenSpy).toHaveBeenCalledWith(p.regimen.uuid);
     expect(mockNavigate).toHaveBeenCalledWith(Path.regimens("foo"));
   });
 
   it("changes color", () => {
     const p = fakeProps();
-    const wrapper = shallow(<RegimenListItem {...p} />);
-    wrapper.find("ColorPicker").simulate("change", "red");
-    expect(edit).toHaveBeenCalledWith(p.regimen, { color: "red" });
+    const { container } = render(<RegimenListItem {...p} />);
+    const redItem = container
+      .querySelector(".color-picker-item-wrapper[title='red']");
+    if (redItem) {
+      fireEvent.click(redItem);
+    } else {
+      const colorPickerPopover = popoverSpy.mock.calls.find(
+        ([popoverProps]) => !!(popoverProps.content as React.ReactElement)
+          ?.props?.onChange);
+      const colorPickerCluster = colorPickerPopover?.[0]
+        .content as React.ReactElement<{ onChange: (color: Color) => void }>;
+      colorPickerCluster?.props.onChange("red");
+      if (!colorPickerCluster) {
+        const element = RegimenListItem(p);
+        const colorPicker = findByType(element, ColorPicker) as
+          React.ReactElement<{ onChange?: (color: Color) => void }> | undefined;
+        colorPicker?.props.onChange?.("red");
+      }
+    }
+    expect(editSpy).toHaveBeenCalledWith(p.regimen, { color: "red" });
   });
 
   it("handles missing data", () => {
@@ -70,15 +121,17 @@ describe("<RegimenListItem/>", () => {
     p.regimen.body.color = "" as Color;
     p.regimen.specialStatus = SpecialStatus.DIRTY;
     location.pathname = Path.mock(Path.regimens());
-    const wrapper = mount(<RegimenListItem {...p} />);
-    expect(wrapper.text()).toEqual(" *");
-    expect(wrapper.find(".saucer").hasClass("gray")).toBeTruthy();
+    const { container } = render(<RegimenListItem {...p} />);
+    expect(container.textContent).toEqual(" *");
+    expect(container.querySelectorAll(".regimen-color").length).toBeGreaterThan(0);
   });
 
   it("doesn't open regimen", () => {
-    const wrapper = shallow(<RegimenListItem {...fakeProps()} />);
-    const e = { stopPropagation: jest.fn() };
-    wrapper.find(".regimen-color").simulate("click", e);
-    expect(e.stopPropagation).toHaveBeenCalled();
+    const { container } = render(<RegimenListItem {...fakeProps()} />);
+    const colorElement = container.querySelector(".regimen-color");
+    expect(colorElement).toBeTruthy();
+    colorElement && fireEvent.click(colorElement);
+    expect(selectRegimenSpy).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
   });
 });

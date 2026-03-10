@@ -75,7 +75,7 @@ export namespace Path {
   export const help = (path?: string) => designer("help") + page(path);
   export const developer = (path?: string) => designer("developer") + page(path);
 
-  export const sequenceVersion = (path?: string | number | undefined) =>
+  export const sequenceVersion = (path?: string | number) =>
     app("shared/sequence") + appended(path);
 
   export const location =

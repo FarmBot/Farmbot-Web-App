@@ -1,49 +1,50 @@
-jest.mock("../../../api/crud", () => ({
-  edit: jest.fn(),
-  save: jest.fn(),
-}));
-
 import React from "react";
 import { AutoUpdateRow } from "../auto_update_row";
-import { mount } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import { AutoUpdateRowProps } from "../interfaces";
-import { fakeState } from "../../../__test_support__/fake_state";
-import { edit, save } from "../../../api/crud";
-import { fakeFbosConfig } from "../../../__test_support__/fake_state/resources";
-import {
-  buildResourceIndex,
-} from "../../../__test_support__/resource_index_builder";
+import * as deviceActions from "../../../devices/actions";
+
+let updateConfigSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  updateConfigSpy = jest.spyOn(deviceActions, "updateConfig")
+    .mockImplementation(jest.fn() as never);
+});
+
+afterEach(() => {
+  updateConfigSpy.mockRestore();
+});
 
 describe("<AutoUpdateRow/>", () => {
-  const fakeConfig = fakeFbosConfig();
-  const state = fakeState();
-  state.resources = buildResourceIndex([fakeConfig]);
-
   const fakeProps = (): AutoUpdateRowProps => ({
-    dispatch: jest.fn(x => x(jest.fn(), () => state)),
+    dispatch: jest.fn(),
     sourceFbosConfig: () => ({ value: 1, consistent: true }),
   });
 
   it("renders", () => {
-    const wrapper = mount(<AutoUpdateRow {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("auto update");
+    const { container } = render(<AutoUpdateRow {...fakeProps()} />);
+    expect(container.textContent?.toLowerCase()).toContain("auto update");
   });
 
   it("toggles auto-update on", () => {
     const p = fakeProps();
     p.sourceFbosConfig = () => ({ value: 0, consistent: true });
-    const wrapper = mount(<AutoUpdateRow {...p} />);
-    wrapper.find("button").first().simulate("click");
-    expect(edit).toHaveBeenCalledWith(fakeConfig, { os_auto_update: true });
-    expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
+    const { container } = render(<AutoUpdateRow {...p} />);
+    const toggle = container.querySelector("button");
+    if (!toggle) { throw new Error("Expected auto-update toggle button"); }
+    fireEvent.click(toggle);
+    expect(updateConfigSpy).toHaveBeenCalledWith({ os_auto_update: true });
+    expect(p.dispatch).toHaveBeenCalledWith(updateConfigSpy.mock.results[0].value);
   });
 
   it("toggles auto-update off", () => {
     const p = fakeProps();
     p.sourceFbosConfig = () => ({ value: 1, consistent: true });
-    const wrapper = mount(<AutoUpdateRow {...p} />);
-    wrapper.find("button").first().simulate("click");
-    expect(edit).toHaveBeenCalledWith(fakeConfig, { os_auto_update: false });
-    expect(save).toHaveBeenCalledWith(fakeConfig.uuid);
+    const { container } = render(<AutoUpdateRow {...p} />);
+    const toggle = container.querySelector("button");
+    if (!toggle) { throw new Error("Expected auto-update toggle button"); }
+    fireEvent.click(toggle);
+    expect(updateConfigSpy).toHaveBeenCalledWith({ os_auto_update: false });
+    expect(p.dispatch).toHaveBeenCalledWith(updateConfigSpy.mock.results[0].value);
   });
 });

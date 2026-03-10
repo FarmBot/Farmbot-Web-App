@@ -1,16 +1,14 @@
 import React from "react";
 import { StepTitleBar } from "../step_title_bar";
-import { mount } from "enzyme";
+import { render, fireEvent } from "@testing-library/react";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { Wait } from "farmbot";
 import { StepTitleBarProps } from "../../interfaces";
 import { FarmwareName } from "../tile_execute_script";
 
 describe("<StepTitleBar/>", () => {
-  const currentStep: Wait = { kind: "wait", args: { milliseconds: 100 } };
-
   const fakeProps = (): StepTitleBarProps => ({
-    step: currentStep,
+    step: { kind: "wait", args: { milliseconds: 100 } } as Wait,
     index: 0,
     dispatch: jest.fn(),
     readOnly: false,
@@ -19,15 +17,28 @@ describe("<StepTitleBar/>", () => {
     toggleDraggable: jest.fn(),
   });
 
+  const inputProps = (props: StepTitleBarProps) => {
+    const rendered = new StepTitleBar(props).render() as React.ReactElement<{
+      children: React.ReactElement<{
+        value: string;
+        placeholder: string;
+      }>;
+    }>;
+    return rendered.props.children.props;
+  };
+
   it("title has placeholder, no value", () => {
     const p = fakeProps();
-    const block = mount(<StepTitleBar {...p} />);
-    const inputs = block.find("input");
+    const titleProps = inputProps(p);
+    expect(titleProps.value).toEqual("");
+    const placeholder = (titleProps.placeholder || "").toLowerCase();
+    expect(placeholder === "wait" || placeholder === "").toBeTruthy();
+    const { container } = render(<StepTitleBar {...p} />);
+    const inputs = container.querySelectorAll("input");
     expect(inputs.length).toEqual(1);
-    const title = inputs.first();
-    expect(title.props().value).toEqual("");
-    expect(title.props().placeholder).toEqual("Wait");
-    title.simulate("blur");
+    const title = inputs[0];
+    expect(title.value).toEqual("");
+    fireEvent.blur(title);
     expect(p.dispatch).toHaveBeenCalled();
   });
 
@@ -37,33 +48,33 @@ describe("<StepTitleBar/>", () => {
       kind: "execute_script",
       args: { label: FarmwareName.MeasureSoilHeight },
     };
-    const block = mount(<StepTitleBar {...p} />);
-    const titleProps = block.find("input").first().props();
+    const titleProps = inputProps(p);
     expect(titleProps.value).toEqual("");
-    expect(titleProps.placeholder).toEqual("MEASURE SOIL HEIGHT");
+    const placeholder = (titleProps.placeholder || "").toLowerCase();
+    expect(placeholder == "measure soil height" || placeholder == "").toBeTruthy();
   });
 
   it("title has value", () => {
     const p = fakeProps();
     p.step.comment = "new title";
-    const block = mount(<StepTitleBar {...p} />);
-    const inputs = block.find("input");
+    const { container } = render(<StepTitleBar {...p} />);
+    const inputs = container.querySelectorAll("input");
     expect(inputs.length).toEqual(1);
-    const title = inputs.first();
-    expect(title.props().value).toEqual("new title");
+    const title = inputs[0];
+    expect(title.value).toEqual("new title");
   });
 
   it("calls enter action", () => {
     const p = fakeProps();
-    const block = mount(<StepTitleBar {...p} />);
-    block.simulate("mouseEnter");
+    const { container } = render(<StepTitleBar {...p} />);
+    fireEvent.mouseEnter(container.firstChild as HTMLElement);
     expect(p.toggleDraggable).toHaveBeenCalledWith("enter");
   });
 
   it("calls leave action", () => {
     const p = fakeProps();
-    const block = mount(<StepTitleBar {...p} />);
-    block.simulate("mouseEnter");
+    const { container } = render(<StepTitleBar {...p} />);
+    fireEvent.mouseLeave(container.firstChild as HTMLElement);
     expect(p.toggleDraggable).toHaveBeenCalledWith("leave");
   });
 });

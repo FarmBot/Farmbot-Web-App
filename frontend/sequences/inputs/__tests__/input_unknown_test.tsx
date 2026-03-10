@@ -1,5 +1,5 @@
 import React from "react";
-import { shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import { InputUnknown } from "../input_unknown";
 import { StepInputProps } from "../../interfaces";
 import { LegalArgString } from "farmbot";
@@ -16,16 +16,16 @@ describe("<InputUnknown />", () => {
 
   it("renders input box for unknown field", () => {
     const p = fakeProps();
-    const wrapper = shallow(<InputUnknown {...p} />);
-    expect(wrapper.find("input").props().placeholder)
+    const { container } = render(<InputUnknown {...p} />);
+    expect((container.querySelector("input") as HTMLInputElement).placeholder)
       .toEqual("UNEXPECTED INPUT 'x'");
   });
 
   it("renders input box for missing field", () => {
     const p = fakeProps();
     p.field = undefined as unknown as LegalArgString;
-    const wrapper = shallow(<InputUnknown {...p} />);
-    expect(wrapper.find("input").props().placeholder)
+    const { container } = render(<InputUnknown {...p} />);
+    expect((container.querySelector("input") as HTMLInputElement).placeholder)
       .toEqual("UNEXPECTED INPUT 'empty'");
   });
 });

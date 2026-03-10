@@ -5,6 +5,13 @@ import {
 } from "../session";
 import { auth } from "../__test_support__/fake_state/token";
 
+beforeEach(() => {
+  localStorage.clear();
+  sessionStorage.clear();
+  jest.clearAllMocks();
+  location.assign = jest.fn();
+});
+
 describe("fetchStoredToken", () => {
   it("can't fetch token", () => {
     expect(Session.fetchStoredToken()).toEqual(undefined);
@@ -45,13 +52,13 @@ describe("safeNumericSetting", () => {
 describe("clear()", () => {
   it("clears", () => {
     jest.clearAllMocks();
-    localStorage.foo = "bar";
-    sessionStorage.foo = "bar";
-    expect(localStorage.foo).toBeTruthy();
-    expect(sessionStorage.foo).toBeTruthy();
+    localStorage.setItem("foo", "bar");
+    sessionStorage.setItem("foo", "bar");
+    expect(localStorage.getItem("foo")).toBeTruthy();
+    expect(sessionStorage.getItem("foo")).toBeTruthy();
     expect(Session.clear()).toEqual(undefined);
     expect(location.assign).toHaveBeenCalled();
-    expect(localStorage.foo).toBeFalsy();
-    expect(sessionStorage.foo).toBeFalsy();
+    expect(localStorage.getItem("foo")).toBeFalsy();
+    expect(sessionStorage.getItem("foo")).toBeFalsy();
   });
 });

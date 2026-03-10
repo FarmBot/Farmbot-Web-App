@@ -9,7 +9,7 @@ import {
 } from "../ui/empty_state_wrapper";
 import { t } from "../i18next_wrapper";
 import { Content } from "../constants";
-import { useNavigate } from "react-router";
+import { NavigateFunction, useNavigate } from "react-router";
 import { Row, Help } from "../ui";
 import {
   botPositionLabel,
@@ -160,7 +160,7 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = this.context;
+  navigate: NavigateFunction = url => { this.context?.(url as string); };
   navigateById = (id: number | undefined) => () => {
     this.navigate(Path.groups(id));
   };
@@ -202,7 +202,7 @@ export class RawTools extends React.Component<ToolsProps, ToolsState> {
                     ...DEFAULT_CRITERIA,
                     string_eq: { pointer_type: ["ToolSlot"] },
                   },
-                  navigate: this.navigate,
+                  navigate: this.context,
                 }))}
                 addTitle={t("add new group")}
                 addClassName={"plus-group"}
@@ -292,5 +292,4 @@ const ToolInventoryItem = (props: ToolInventoryItemProps) => {
 };
 
 export const Tools = connect(mapStateToProps)(RawTools);
-// eslint-disable-next-line import/no-default-export
 export default Tools;

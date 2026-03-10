@@ -110,5 +110,4 @@ export class RawDesignerFarmwareInfo
 
 export const DesignerFarmwareInfo =
   connect(mapStateToProps)(RawDesignerFarmwareInfo);
-// eslint-disable-next-line import/no-default-export
 export default DesignerFarmwareInfo;

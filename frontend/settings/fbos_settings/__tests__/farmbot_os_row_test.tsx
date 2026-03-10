@@ -1,8 +1,3 @@
-jest.mock("../os_update_button", () => ({
-  fetchOsUpdateVersion: jest.fn(),
-  OsUpdateButton: () => <div />,
-}));
-
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { FarmbotOsRow, getOsReleaseNotesForVersion } from "../farmbot_os_row";
@@ -10,11 +5,22 @@ import { bot } from "../../../__test_support__/fake_state/bot";
 import { FarmbotOsRowProps } from "../interfaces";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { fakeDevice } from "../../../__test_support__/resource_index_builder";
-import { fetchOsUpdateVersion } from "../os_update_button";
+import * as osUpdateButton from "../os_update_button";
 import { cloneDeep } from "lodash";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 
 describe("<FarmbotOsRow />", () => {
+  let fetchOsUpdateVersionSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    fetchOsUpdateVersionSpy = jest.spyOn(osUpdateButton, "fetchOsUpdateVersion")
+      .mockImplementation(() => jest.fn());
+  });
+
+  afterEach(() => {
+    fetchOsUpdateVersionSpy.mockRestore();
+  });
+
   const fakeProps = (): FarmbotOsRowProps => ({
     bot: cloneDeep(bot),
     dispatch: mockDispatch(),
@@ -38,8 +44,8 @@ describe("<FarmbotOsRow />", () => {
     p.bot.hardware.informational_settings.target = "rpi";
     p.bot.hardware.informational_settings.controller_version = "1.0.0";
     render(<FarmbotOsRow {...p} />);
-    expect(fetchOsUpdateVersion).toHaveBeenCalledWith("rpi");
-    expect(fetchOsUpdateVersion).toHaveBeenCalledTimes(1);
+    expect(fetchOsUpdateVersionSpy).toHaveBeenCalledWith("rpi");
+    expect(fetchOsUpdateVersionSpy).toHaveBeenCalledTimes(1);
   });
 
   it("fetches API OS release info when bot version changes", () => {
@@ -47,13 +53,13 @@ describe("<FarmbotOsRow />", () => {
     p.bot.hardware.informational_settings.target = "rpi";
     p.bot.hardware.informational_settings.controller_version = "1.0.0";
     const { rerender } = render(<FarmbotOsRow {...p} />);
-    expect(fetchOsUpdateVersion).toHaveBeenCalledTimes(1);
+    expect(fetchOsUpdateVersionSpy).toHaveBeenCalledTimes(1);
     p.bot.hardware.informational_settings.controller_version = "1.0.0";
     rerender(<FarmbotOsRow {...p} />);
-    expect(fetchOsUpdateVersion).toHaveBeenCalledTimes(1);
+    expect(fetchOsUpdateVersionSpy).toHaveBeenCalledTimes(1);
     p.bot.hardware.informational_settings.controller_version = "2.0.0";
     rerender(<FarmbotOsRow {...p} />);
-    expect(fetchOsUpdateVersion).toHaveBeenCalledTimes(2);
+    expect(fetchOsUpdateVersionSpy).toHaveBeenCalledTimes(2);
   });
 
   it("uses controller version", () => {

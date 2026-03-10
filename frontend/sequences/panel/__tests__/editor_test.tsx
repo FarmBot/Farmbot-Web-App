@@ -1,32 +1,9 @@
 let mockIsMobile = false;
-jest.mock("../../../screen_size", () => ({
-  isMobile: () => mockIsMobile,
-}));
-
-jest.mock("../../../sequences/set_active_sequence_by_name", () => ({
-  setActiveSequenceByName: jest.fn()
-}));
-
-jest.mock("../../../api/crud", () => ({
-  edit: jest.fn(),
-  save: jest.fn(),
-}));
-
-jest.mock("../../request_auto_generation", () => ({
-  requestAutoGeneration: jest.fn(),
-}));
-
-jest.mock("../../../folders/actions", () => ({
-  addNewSequenceToFolder: jest.fn(),
-}));
-
 import { PopoverProps } from "../../../ui/popover";
-jest.mock("../../../ui/popover", () => ({
-  Popover: ({ target, content }: PopoverProps) => <div>{target}{content}</div>,
-}));
+const mockAddNewSequenceToFolder = jest.fn();
 
 import React from "react";
-import { mount } from "enzyme";
+import { render, fireEvent, waitFor } from "@testing-library/react";
 import {
   RawDesignerSequenceEditor as DesignerSequenceEditor, ResourceTitle,
   ResourceTitleProps,
@@ -41,19 +18,59 @@ import {
 } from "../../../__test_support__/fake_sequence_step_data";
 import { mapStateToFolderProps } from "../../../folders/map_state_to_props";
 import { fakeState } from "../../../__test_support__/fake_state";
-import {
-  setActiveSequenceByName,
-} from "../../set_active_sequence_by_name";
+import * as setActiveSequenceByNameModule from "../../set_active_sequence_by_name";
 import { Path } from "../../../internal_urls";
 import { sequencesPanelState } from "../../../__test_support__/panel_state";
 import { Color } from "farmbot";
-import { edit, save } from "../../../api/crud";
-import { requestAutoGeneration } from "../../request_auto_generation";
+import * as crud from "../../../api/crud";
+import * as requestAutoGenerationModule from "../../request_auto_generation";
 import { API } from "../../../api";
 import { error } from "../../../toast/toast";
-import { addNewSequenceToFolder } from "../../../folders/actions";
 import { emptyState } from "../../../resources/reducer";
-import { mountWithContext } from "../../../__test_support__/mount_with_context";
+import { renderWithContext } from "../../../__test_support__/mount_with_context";
+import * as screenSize from "../../../screen_size";
+import * as popoverModule from "../../../ui/popover";
+import * as folderActions from "../../../folders/actions";
+
+let isMobileSpy: jest.SpyInstance;
+let setActiveSequenceByNameSpy: jest.SpyInstance;
+let editSpy: jest.SpyInstance;
+let saveSpy: jest.SpyInstance;
+let requestAutoGenerationSpy: jest.SpyInstance;
+let popoverSpy: jest.SpyInstance;
+let addNewSequenceToFolderSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  mockIsMobile = false;
+  isMobileSpy = jest.spyOn(screenSize, "isMobile")
+    .mockImplementation(() => mockIsMobile);
+  setActiveSequenceByNameSpy = jest.spyOn(
+    setActiveSequenceByNameModule,
+    "setActiveSequenceByName",
+  ).mockImplementation(jest.fn());
+  editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+  requestAutoGenerationSpy = jest.spyOn(
+    requestAutoGenerationModule,
+    "requestAutoGeneration",
+  ).mockImplementation(jest.fn());
+  addNewSequenceToFolderSpy = jest.spyOn(folderActions, "addNewSequenceToFolder")
+    .mockImplementation((...args: unknown[]) =>
+      mockAddNewSequenceToFolder(...args) as never);
+  mockAddNewSequenceToFolder.mockClear();
+  popoverSpy = jest.spyOn(popoverModule, "Popover").mockImplementation(
+    ({ target, content }: PopoverProps) => <div>{target}{content}</div>);
+});
+
+afterEach(() => {
+  isMobileSpy.mockRestore();
+  setActiveSequenceByNameSpy.mockRestore();
+  editSpy.mockRestore();
+  saveSpy.mockRestore();
+  requestAutoGenerationSpy.mockRestore();
+  addNewSequenceToFolderSpy.mockRestore();
+  popoverSpy.mockRestore();
+});
 
 describe("<DesignerSequenceEditor />", () => {
   API.setBaseUrl("");
@@ -74,19 +91,21 @@ describe("<DesignerSequenceEditor />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<DesignerSequenceEditor {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("save");
+    const { container } = render(<DesignerSequenceEditor {...fakeProps()} />);
+    expect(container.textContent?.toLowerCase()).toContain("save");
   });
 
   it("handles missing sequence", () => {
     const p = fakeProps();
     p.sequence = undefined;
-    const wrapper = mount(<DesignerSequenceEditor {...p} />);
-    expect(setActiveSequenceByName).toHaveBeenCalled();
-    expect(wrapper.text().toLowerCase()).toContain("no sequence selected");
-    expect(wrapper.html()).not.toContain("select color");
-    wrapper.find("button").first().simulate("click");
-    expect(addNewSequenceToFolder).toHaveBeenCalled();
+    const { container } = render(<DesignerSequenceEditor {...p} />);
+    expect(setActiveSequenceByNameSpy).toHaveBeenCalled();
+    expect(container.textContent?.toLowerCase()).toContain("no sequence selected");
+    expect(container.innerHTML).not.toContain("select color");
+    const addButton = container.querySelector("button.fb-button.green");
+    expect(addButton).toBeTruthy();
+    addButton && fireEvent.click(addButton);
+    expect(mockAddNewSequenceToFolder).toHaveBeenCalled();
   });
 
   it("changes color", () => {
@@ -94,33 +113,41 @@ describe("<DesignerSequenceEditor />", () => {
     const sequence = fakeSequence();
     sequence.body.color = "" as Color;
     p.sequence = sequence;
-    const wrapper = mount(<DesignerSequenceEditor {...p} />);
-    wrapper.find(".color-picker-item-wrapper").first().simulate("click");
-    expect(edit).toHaveBeenCalledWith(p.sequence, { color: "blue" });
+    render(<DesignerSequenceEditor {...p} />);
+    const colorPickerPopover = popoverSpy.mock.calls.find(
+      ([popoverProps]) => !!(popoverProps.content as React.ReactElement)
+        ?.props?.onChange);
+    const colorPickerCluster = colorPickerPopover?.[0]
+      .content as React.ReactElement<{ onChange: (color: Color) => void }>;
+    expect(colorPickerCluster).toBeTruthy();
+    colorPickerCluster.props.onChange("blue");
+    expect(editSpy).toHaveBeenCalledWith(p.sequence, { color: "blue" });
   });
 
-  it("generates name and color", () => {
+  it("generates name and color", async () => {
     const p = fakeProps();
-    const wrapper = mount<DesignerSequenceEditor>(
-      <DesignerSequenceEditor {...p} />);
-    expect(wrapper.state().processingTitle).toEqual(false);
-    expect(wrapper.state().processingColor).toEqual(false);
-    wrapper.find(".fa-magic").first().simulate("click");
-    expect(wrapper.state().processingTitle).toEqual(true);
-    expect(wrapper.state().processingColor).toEqual(true);
-    expect(requestAutoGeneration).toHaveBeenCalled();
-    const { mock } = requestAutoGeneration as jest.Mock;
+    const ref = React.createRef<DesignerSequenceEditor>();
+    const { container } = render(<DesignerSequenceEditor ref={ref} {...p} />);
+    expect(ref.current?.state.processingTitle).toEqual(false);
+    expect(ref.current?.state.processingColor).toEqual(false);
+    fireEvent.click(container.querySelector(".fa-magic") as Element);
+    expect(ref.current?.state.processingTitle).toEqual(true);
+    expect(ref.current?.state.processingColor).toEqual(true);
+    expect(requestAutoGenerationSpy).toHaveBeenCalled();
+    const { mock } = requestAutoGenerationSpy;
     mock.calls[0][0].onUpdate("title");
     mock.calls[0][0].onSuccess("title");
-    expect(edit).toHaveBeenCalledWith(p.sequence, { name: "title" });
+    expect(editSpy).toHaveBeenCalledWith(p.sequence, { name: "title" });
     mock.calls[0][0].onError();
     mock.calls[1][0].onSuccess("red");
-    expect(edit).toHaveBeenCalledWith(p.sequence, { color: "red" });
+    expect(editSpy).toHaveBeenCalledWith(p.sequence, { color: "red" });
     mock.calls[1][0].onSuccess("nope");
-    expect(edit).toHaveBeenCalledWith(p.sequence, { color: "gray" });
+    expect(editSpy).toHaveBeenCalledWith(p.sequence, { color: "gray" });
     mock.calls[1][0].onError();
-    expect(wrapper.state().processingTitle).toEqual(false);
-    expect(wrapper.state().processingColor).toEqual(false);
+    await waitFor(() => {
+      expect(ref.current?.state.processingTitle).toEqual(false);
+      expect(ref.current?.state.processingColor).toEqual(false);
+    });
   });
 
   it("doesn't generate name and color", () => {
@@ -128,17 +155,17 @@ describe("<DesignerSequenceEditor />", () => {
     const sequence = fakeSequence();
     sequence.body.id = 0;
     p.sequence = sequence;
-    const wrapper = mount(<DesignerSequenceEditor {...p} />);
-    wrapper.find(".fa-magic").first().simulate("click");
-    expect(requestAutoGeneration).not.toHaveBeenCalled();
+    const { container } = render(<DesignerSequenceEditor {...p} />);
+    fireEvent.click(container.querySelector(".fa-magic") as Element);
+    expect(requestAutoGenerationSpy).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith("Save sequence first.");
   });
 
   it("navigates to full page editor", () => {
     mockIsMobile = false;
     const p = fakeProps();
-    const wrapper = mountWithContext(<DesignerSequenceEditor {...p} />);
-    wrapper.find(".fa-expand").first().simulate("click");
+    const wrapper = renderWithContext(<DesignerSequenceEditor {...p} />);
+    fireEvent.click(wrapper.container.querySelector(".fa-expand") as Element);
     expect(mockNavigate).toHaveBeenCalledWith(Path.sequencePage("fake"));
   });
 });
@@ -151,33 +178,34 @@ describe("<ResourceTitle />", () => {
   });
 
   it("changes name", () => {
-    const wrapper = mount(<ResourceTitle {...fakeProps()} />);
-    expect(wrapper.find("span").first().props().style).toEqual({});
-    wrapper.find("span").first().simulate("click");
-    wrapper.find("input").first().simulate("change",
-      { currentTarget: { value: "abc" } });
-    wrapper.find("input").first().simulate("blur");
-    expect(edit).toHaveBeenCalled();
-    expect(save).not.toHaveBeenCalled();
+    const { container } = render(<ResourceTitle {...fakeProps()} />);
+    const span = container.querySelector("span") as HTMLSpanElement;
+    expect(span.style.pointerEvents).toEqual("");
+    fireEvent.click(span);
+    const input = container.querySelector("input") as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "abc" } });
+    fireEvent.blur(input);
+    expect(editSpy).toHaveBeenCalled();
+    expect(saveSpy).not.toHaveBeenCalled();
   });
 
   it("saves change", () => {
     const p = fakeProps();
     p.save = true;
-    const wrapper = mount(<ResourceTitle {...p} />);
-    wrapper.find("span").first().simulate("click");
-    wrapper.find("input").first().simulate("change",
-      { currentTarget: { value: "abc" } });
-    wrapper.find("input").first().simulate("blur");
-    expect(edit).toHaveBeenCalled();
-    expect(save).toHaveBeenCalled();
+    const { container } = render(<ResourceTitle {...p} />);
+    fireEvent.click(container.querySelector("span") as Element);
+    const input = container.querySelector("input") as HTMLInputElement;
+    fireEvent.change(input, { target: { value: "abc" } });
+    fireEvent.blur(input);
+    expect(editSpy).toHaveBeenCalled();
+    expect(saveSpy).toHaveBeenCalled();
   });
 
   it("is read-only", () => {
     const p = fakeProps();
     p.readOnly = true;
-    const wrapper = mount(<ResourceTitle {...p} />);
-    expect(wrapper.find("span").first().props().style)
-      .toEqual({ pointerEvents: "none" });
+    const { container } = render(<ResourceTitle {...p} />);
+    expect((container.querySelector("span") as HTMLSpanElement).style.pointerEvents)
+      .toEqual("none");
   });
 });

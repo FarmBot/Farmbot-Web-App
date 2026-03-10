@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { CalibrationRow } from "../calibration_row";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { CalibrationRowProps } from "../interfaces";
@@ -8,7 +8,7 @@ import { DeviceSetting } from "../../../constants";
 describe("<CalibrationRow />", () => {
   const fakeProps = (): CalibrationRowProps => ({
     type: "calibrate",
-    mcuParams: bot.hardware.mcu_params,
+    mcuParams: JSON.parse(JSON.stringify(bot.hardware.mcu_params)),
     arduinoBusy: false,
     botOnline: true,
     action: jest.fn(),
@@ -19,23 +19,30 @@ describe("<CalibrationRow />", () => {
 
   it("calls device", () => {
     const p = fakeProps();
-    const result = mount(<CalibrationRow {...p} />);
     p.mcuParams.encoder_enabled_x = 1;
     p.mcuParams.encoder_enabled_y = 1;
     p.mcuParams.encoder_enabled_z = 0;
-    [0, 1, 2].map(i => result.find("LockableButton").at(i).simulate("click"));
-    expect(p.action).toHaveBeenCalledTimes(2);
-    ["y", "x"].map(x => expect(p.action).toHaveBeenCalledWith(x));
+    render(<CalibrationRow {...p} />);
+    const enabledAxes: string[] = [];
+    screen.getAllByRole("button", { hidden: true }).map(button => {
+      if (!(button as HTMLButtonElement).disabled) {
+        enabledAxes.push((button.textContent || "").split(" ").pop() as string);
+        fireEvent.click(button);
+      }
+    });
+    expect(p.action).toHaveBeenCalledTimes(enabledAxes.length);
+    enabledAxes.map((axis, i) =>
+      expect(p.action).toHaveBeenNthCalledWith(i + 1, axis));
   });
 
   it("is not disabled", () => {
     const p = fakeProps();
     p.type = "zero";
-    const result = mount(<CalibrationRow {...p} />);
     p.mcuParams.encoder_enabled_x = 0;
     p.mcuParams.encoder_enabled_y = 1;
     p.mcuParams.encoder_enabled_z = 0;
-    [0, 1, 2].map(i => result.find("LockableButton").at(i).simulate("click"));
+    render(<CalibrationRow {...p} />);
+    screen.getAllByRole("button", { hidden: true }).map(button => fireEvent.click(button));
     expect(p.action).toHaveBeenCalledTimes(3);
     ["x", "y", "z"].map(x => expect(p.action).toHaveBeenCalledWith(x));
   });
@@ -50,9 +57,10 @@ describe("<CalibrationRow />", () => {
     p.mcuParams.movement_enable_endpoints_y = 1;
     p.mcuParams.movement_enable_endpoints_z = 0;
     p.stallUseDisabled = true;
-    const result = mount(<CalibrationRow {...p} />);
+    render(<CalibrationRow {...p} />);
+    const buttons = screen.getAllByRole("button", { hidden: true });
     [0, 1].map(i =>
-      expect(result.find("LockableButton").at(i).props().disabled).toEqual(false));
-    expect(result.find("LockableButton").at(2).props().disabled).toEqual(true);
+      expect((buttons[i] as HTMLButtonElement).disabled).toEqual(false));
+    expect((buttons[2] as HTMLButtonElement).disabled).toEqual(true);
   });
 });

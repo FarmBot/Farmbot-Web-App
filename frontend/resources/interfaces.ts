@@ -1,6 +1,6 @@
-import { SequenceReducerState } from "../sequences/interfaces";
-import { DesignerState } from "../farm_designer/interfaces";
-import {
+import type { SequenceReducerState } from "../sequences/interfaces";
+import type { DesignerState } from "../farm_designer/interfaces";
+import type {
   Dictionary,
   TaggedResource,
   ResourceName,
@@ -8,15 +8,15 @@ import {
   TaggedTool,
   RestResource,
 } from "farmbot";
-import { RegimenState } from "../regimens/reducer";
-import { FarmwareState } from "../farmware/interfaces";
-import { HelpState } from "../help/reducer";
-import { UsageIndex } from "./in_use";
-import { SequenceMeta } from "./sequence_meta";
-import { AlertReducerState } from "../messages/interfaces";
-import { RootFolderNode, FolderMeta } from "../folders/interfaces";
-import { PhotosState } from "../photos/reducer";
-import { PointGroup } from "farmbot/dist/resources/api_resources";
+import type { RegimenState } from "../regimens/reducer";
+import type { FarmwareState } from "../farmware/interfaces";
+import type { HelpState } from "../help/reducer";
+import type { UsageIndex } from "./in_use";
+import type { SequenceMeta } from "./sequence_meta";
+import type { AlertReducerState } from "../messages/interfaces";
+import type { RootFolderNode, FolderMeta } from "../folders/interfaces";
+import type { PhotosState } from "../photos/reducer";
+import type { PointGroup } from "farmbot/dist/resources/api_resources";
 
 export type UUID = string;
 export type VariableNameSet = Record<string, SequenceMeta | undefined>;

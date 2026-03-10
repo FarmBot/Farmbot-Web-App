@@ -6,6 +6,7 @@ export const calcMicrostepsPerMm = (
   steps_per_mm: number | undefined,
   microsteps_per_step: number | undefined) =>
   // The firmware currently interprets steps_per_mm as microsteps_per_mm.
+  // eslint-disable-next-line no-constant-binary-expression
   (steps_per_mm || 1) * (1 || microsteps_per_step || 1);
 
 const calcAxisLength = (

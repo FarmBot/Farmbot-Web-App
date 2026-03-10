@@ -1,20 +1,22 @@
-jest.mock("../fbos_metric_history_plot", () => ({
-  FbosMetricHistoryPlot: () => <div />,
-}));
-
 let mockDemo = false;
-jest.mock("../../must_be_online", () => ({
-  forceOnline: () => mockDemo,
-}));
-
 import React from "react";
-import { mount } from "enzyme";
+import { act, render } from "@testing-library/react";
 import { fakeTelemetry } from "../../../__test_support__/fake_state/resources";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
+import * as historyPlot from "../fbos_metric_history_plot";
+import * as mustBeOnline from "../../must_be_online";
 import {
   FbosMetricHistoryTable, FbosMetricHistoryTableProps,
 } from "../fbos_metric_history_table";
 
+beforeEach(() => {
+  jest.spyOn(historyPlot, "FbosMetricHistoryPlot").mockImplementation(() => <div />);
+  jest.spyOn(mustBeOnline, "forceOnline").mockImplementation(() => mockDemo);
+});
+
+afterEach(() => {
+  mockDemo = false;
+});
 describe("<FbosMetricHistoryTable />", () => {
   const fakeProps = (): FbosMetricHistoryTableProps => {
     const telemetry0 = fakeTelemetry();
@@ -32,47 +34,50 @@ describe("<FbosMetricHistoryTable />", () => {
 
   it("renders", () => {
     const p = fakeProps();
-    const wrapper = mount<FbosMetricHistoryTable>(
-      <FbosMetricHistoryTable {...p} />);
-    expect(wrapper.instance().telemetry.length).toEqual(3);
-    expect(wrapper.text().toLowerCase()).toContain("wifi");
+    const ref = React.createRef<FbosMetricHistoryTable>();
+    const { container } = render(<FbosMetricHistoryTable {...p} ref={ref} />);
+    expect(ref.current?.telemetry.length).toEqual(3);
+    expect(container.textContent?.toLowerCase()).toContain("wifi");
   });
 
   it("renders demo data", () => {
     mockDemo = true;
     const p = fakeProps();
-    const wrapper = mount<FbosMetricHistoryTable>(
-      <FbosMetricHistoryTable {...p} />);
-    expect(wrapper.instance().telemetry.length).toEqual(100);
-    expect(wrapper.text().toLowerCase()).toContain("wifi");
-    mockDemo = false;
+    const ref = React.createRef<FbosMetricHistoryTable>();
+    const { container } = render(<FbosMetricHistoryTable {...p} ref={ref} />);
+    expect(ref.current?.telemetry.length).toEqual(100);
+    expect(container.textContent?.toLowerCase()).toContain("wifi");
   });
 
   it("sets metric hover state", () => {
     const p = fakeProps();
-    const wrapper = mount<FbosMetricHistoryTable>(
-      <FbosMetricHistoryTable {...p} />);
-    const backgroundBefore = wrapper.find("th").last().props().style?.background;
-    expect(backgroundBefore).toEqual(undefined);
-    expect(wrapper.instance().state.hoveredMetric).toEqual(undefined);
-    wrapper.instance().hoverMetric("wifi_level_percent")();
-    expect(wrapper.instance().state.hoveredMetric).toEqual("wifi_level_percent");
-    wrapper.update();
-    const backgroundAfter = wrapper.find("th").last().props().style?.background;
-    expect(backgroundAfter).toEqual("rgba(255,255,255,0.2)");
+    const ref = React.createRef<FbosMetricHistoryTable>();
+    const { container } = render(<FbosMetricHistoryTable {...p} ref={ref} />);
+    const headers = container.querySelectorAll("th");
+    const backgroundBefore = (headers[headers.length - 1])
+      .style.background;
+    expect(backgroundBefore).toEqual("");
+    expect(ref.current?.state.hoveredMetric).toEqual(undefined);
+    act(() => ref.current?.hoverMetric("wifi_level_percent")());
+    expect(ref.current?.state.hoveredMetric).toEqual("wifi_level_percent");
+    const headersAfter = container.querySelectorAll("th");
+    const backgroundAfter = (headersAfter[headersAfter.length - 1])
+      .style.background;
+    expect(backgroundAfter).toEqual("rgba(255, 255, 255, 0.2)");
   });
 
   it("sets time hover state", () => {
     const p = fakeProps();
-    const wrapper = mount<FbosMetricHistoryTable>(
-      <FbosMetricHistoryTable {...p} />);
-    const backgroundBefore = wrapper.find("td").first().props().style?.background;
-    expect(backgroundBefore).toEqual(undefined);
-    expect(wrapper.instance().state.hoveredTime).toEqual(undefined);
-    wrapper.instance().hoverTime(2)();
-    expect(wrapper.instance().state.hoveredTime).toEqual(2);
-    wrapper.update();
-    const backgroundAfter = wrapper.find("td").first().props().style?.background;
-    expect(backgroundAfter).toEqual("rgba(255,255,255,0.2)");
+    const ref = React.createRef<FbosMetricHistoryTable>();
+    const { container } = render(<FbosMetricHistoryTable {...p} ref={ref} />);
+    const firstCell = container.querySelector("td") as HTMLTableCellElement;
+    const backgroundBefore = firstCell.style.background;
+    expect(backgroundBefore).toEqual("");
+    expect(ref.current?.state.hoveredTime).toEqual(undefined);
+    act(() => ref.current?.hoverTime(2)());
+    expect(ref.current?.state.hoveredTime).toEqual(2);
+    const firstCellAfter = container.querySelector("td") as HTMLTableCellElement;
+    const backgroundAfter = firstCellAfter.style.background;
+    expect(backgroundAfter).toEqual("rgba(255, 255, 255, 0.2)");
   });
 });

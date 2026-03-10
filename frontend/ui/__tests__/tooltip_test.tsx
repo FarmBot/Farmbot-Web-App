@@ -1,6 +1,11 @@
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render, RenderResult } from "@testing-library/react";
 import { ToolTip, ToolTipProps } from "../tooltip";
+import {
+  actRenderer,
+  createRenderer,
+  unmountRenderer,
+} from "../../__test_support__/test_renderer";
 
 describe("<ToolTip />", () => {
   const fakeProps = (): ToolTipProps => ({
@@ -9,38 +14,55 @@ describe("<ToolTip />", () => {
     dispatch: jest.fn(),
   });
 
-  const p = fakeProps();
-  const wrapper = mount(<ToolTip {...p} />);
+  let wrapper: RenderResult;
+
+  beforeEach(() => {
+    wrapper = render(<ToolTip {...fakeProps()} />);
+  });
+
+  afterEach(() => {
+    wrapper.unmount();
+  });
 
   it("renders correct text", () => {
-    expect(wrapper.find(".title-help-text").html()).toContain("such help");
+    expect(wrapper.container.querySelector(".title-help-text")?.innerHTML)
+      .toContain("such help");
   });
 
   it("has a closed initial state", () => {
-    expect(wrapper.find(".title-help-text").hasClass("open")).toBeFalsy();
+    expect(wrapper.container.querySelector(".title-help-text")
+      ?.classList.contains("open")).toBeFalsy();
   });
 
   it("doesn't show text when closed", () => {
-    expect(wrapper.find(".title-help-text").length).toEqual(1);
-    expect(wrapper.find(".title-help-text.open").length).toEqual(0);
+    expect(wrapper.container.querySelectorAll(".title-help-text").length)
+      .toEqual(1);
+    expect(wrapper.container.querySelectorAll(".title-help-text.open").length)
+      .toEqual(0);
   });
 
   it("toggles open state", () => {
-    wrapper.find(".fa-question-circle").simulate("click");
-    expect(wrapper.find(".title-help-text").hasClass("open")).toBeTruthy();
+    fireEvent.click(
+      wrapper.container.querySelector(".fa-question-circle") as Element);
+    expect(wrapper.container.querySelector(".title-help-text")
+      ?.classList.contains("open")).toBeTruthy();
   });
 
   it("renders doc link", () => {
-    expect(wrapper.text()).toContain("Documentation");
-    expect(wrapper.find("i").at(2).html()).toContain("fa-external-link");
-    wrapper.find("a").simulate("click");
+    expect(wrapper.container.textContent).toContain("Documentation");
+    expect(wrapper.container.querySelector(".fa-external-link")).toBeTruthy();
+    fireEvent.click(wrapper.container.querySelector("a") as Element);
     expect(mockNavigate).toHaveBeenCalledWith(
       expect.stringContaining("weed-detection"));
   });
 
   it("stops propagation", () => {
     const e = { stopPropagation: jest.fn() };
-    wrapper.find(".title-help").simulate("click", e);
+    const testWrapper = createRenderer(<ToolTip {...fakeProps()} />);
+    actRenderer(() => {
+      testWrapper.root.findByProps({ className: "title-help" }).props.onClick(e);
+    });
     expect(e.stopPropagation).toHaveBeenCalled();
+    unmountRenderer(testWrapper);
   });
 });

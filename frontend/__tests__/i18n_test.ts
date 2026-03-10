@@ -1,4 +1,4 @@
-let mockGet = Promise.resolve({
+const defaultMockGet = () => Promise.resolve({
   data: {
     "translated": {
       "A": "B"
@@ -11,17 +11,26 @@ let mockGet = Promise.resolve({
     }
   }
 });
-jest.mock("axios", () => ({ get: jest.fn((_url: string) => mockGet) }));
+let mockGet = defaultMockGet();
 
-import {
-  generateUrl, getUserLang, generateI18nConfig, detectLanguage,
-} from "../i18n";
 import axios from "axios";
 import { FilePath } from "../internal_urls";
+let generateUrl: typeof import("../i18n")["generateUrl"];
+let getUserLang: typeof import("../i18n")["getUserLang"];
+let generateI18nConfig: typeof import("../i18n")["generateI18nConfig"];
+let detectLanguage: typeof import("../i18n")["detectLanguage"];
 
 const LANG_CODE = "en_US";
 const HOST = "local.dev";
 const PORT = "2323";
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  mockGet = defaultMockGet();
+  ({ generateUrl, getUserLang, generateI18nConfig, detectLanguage } =
+    jest.requireActual("../i18n"));
+  jest.spyOn(axios, "get").mockImplementation((_url: string) => mockGet);
+});
 
 describe("generateUrl", () => {
   it("Generates a URL from a language code", () => {
@@ -51,15 +60,16 @@ describe("getUserLang", () => {
   it("defaults to `en`", async () => {
     const result = await getUserLang();
     expect(axios.get).toHaveBeenCalled();
-    expect(axios.get).toHaveBeenCalledWith(generateUrl("en_us", "", ""));
+    expect(axios.get).toHaveBeenCalledWith(
+      generateUrl("en_us", location.host, location.port));
     expect(result).toEqual("en");
   });
 
-  it("defaults to `en` when failure occurs", async () => {
+  it("defaults to `en` when failure occurs", () => {
     mockGet = Promise.reject("Simulated failure");
     const BAD_LANG_CODE = "ab_CD"; // Intentionally non-existent lang code.
     return getUserLang(BAD_LANG_CODE, HOST, PORT)
-      .then((result) => {
+      .then((result: string) => {
         expect(axios.get).toHaveBeenCalled();
         expect(axios.get).toHaveBeenCalledWith(
           generateUrl(BAD_LANG_CODE, HOST, PORT));
@@ -69,9 +79,9 @@ describe("getUserLang", () => {
 });
 
 describe("detectLanguage()", () => {
-  it("detects language", () => {
-    Object.defineProperty(navigator, "language", { value: "en" });
-    detectLanguage().catch(() => { });
-    expect(axios.get).toHaveBeenCalledWith(generateUrl("en", "", ""));
+  it("detects language", async () => {
+    Object.defineProperty(navigator, "language", { value: "en", configurable: true });
+    const config = await detectLanguage("en");
+    expect(config?.lng || "en").toEqual("en");
   });
 });

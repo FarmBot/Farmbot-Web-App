@@ -1,9 +1,17 @@
 const mockDevice = { execScript: jest.fn((..._) => Promise.resolve({})) };
-jest.mock("../../../device", () => ({ getDevice: () => mockDevice }));
+import * as deviceModule from "../../../device";
 
 import { scanImage, detectPlants } from "../actions";
 import { error } from "../../../toast/toast";
 import { FarmwareName } from "../../../sequences/step_tiles/tile_execute_script";
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  jest.spyOn(deviceModule, "getDevice")
+    .mockImplementation(() => mockDevice as never);
+  mockDevice.execScript = jest.fn((..._) => Promise.resolve({}));
+});
+
 
 describe("scanImage()", () => {
   it("executes with selected image id", () => {

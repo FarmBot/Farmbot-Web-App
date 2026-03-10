@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { useGLTF } from "@react-three/drei";
 import { threeSpace, zDir as zDirFunc, zZero as zZeroFunc } from "../../helpers";
 import { Config } from "../../config";
-import { GLTF } from "three-stdlib";
+import type { GLTF } from "three-stdlib";
 import {
   ASSETS, HOVER_OBJECT_MODES, LIB_DIR, PartName, SeedTroughAssemblyMaterial,
 } from "../../constants";
@@ -122,27 +122,27 @@ export const Tools = (props: ToolsProps) => {
   const zZero = zZeroFunc(props.config);
   const zDir = zDirFunc(props.config);
 
-  const toolbay3 = useGLTF(ASSETS.models.toolbay3, LIB_DIR) as Toolbay3;
-  const toolbay1 = useGLTF(ASSETS.models.toolbay1, LIB_DIR) as Toolbay1;
+  const toolbay3 = useGLTF(ASSETS.models.toolbay3, LIB_DIR) as unknown as Toolbay3;
+  const toolbay1 = useGLTF(ASSETS.models.toolbay1, LIB_DIR) as unknown as Toolbay1;
   const rotaryToolBase =
-    useGLTF(ASSETS.models.rotaryToolBase, LIB_DIR) as Model;
+    useGLTF(ASSETS.models.rotaryToolBase, LIB_DIR) as unknown as Model;
   const rotaryToolImplement =
-    useGLTF(ASSETS.models.rotaryToolImplement, LIB_DIR) as Model;
-  const seedBin = useGLTF(ASSETS.models.seedBin, LIB_DIR) as SeedBin;
-  const seedTray = useGLTF(ASSETS.models.seedTray, LIB_DIR) as SeedTray;
-  const seedTrough = useGLTF(ASSETS.models.seedTrough, LIB_DIR) as SeedTrough;
+    useGLTF(ASSETS.models.rotaryToolImplement, LIB_DIR) as unknown as Model;
+  const seedBin = useGLTF(ASSETS.models.seedBin, LIB_DIR) as unknown as SeedBin;
+  const seedTray = useGLTF(ASSETS.models.seedTray, LIB_DIR) as unknown as SeedTray;
+  const seedTrough = useGLTF(ASSETS.models.seedTrough, LIB_DIR) as unknown as SeedTrough;
   const seedTroughHolder = useGLTF(
-    ASSETS.models.seedTroughHolder, LIB_DIR) as SeedTroughHolderFull;
+    ASSETS.models.seedTroughHolder, LIB_DIR) as unknown as SeedTroughHolderFull;
   const SeedTroughHolderComponent = SeedTroughHolder(seedTroughHolder);
   const seedTroughAssembly = useGLTF(
-    ASSETS.models.seedTroughAssembly, LIB_DIR) as SeedTroughAssemblyFull;
+    ASSETS.models.seedTroughAssembly, LIB_DIR) as unknown as SeedTroughAssemblyFull;
   const SeedTroughAssemblyComponent = SeedTroughAssembly(seedTroughAssembly);
-  const soilSensor = useGLTF(ASSETS.models.soilSensor, LIB_DIR) as SoilSensorFull;
-  const seeder = useGLTF(ASSETS.models.seeder, LIB_DIR) as Seeder;
-  const weeder = useGLTF(ASSETS.models.weeder, LIB_DIR) as Weeder;
+  const soilSensor = useGLTF(ASSETS.models.soilSensor, LIB_DIR) as unknown as SoilSensorFull;
+  const seeder = useGLTF(ASSETS.models.seeder, LIB_DIR) as unknown as Seeder;
+  const weeder = useGLTF(ASSETS.models.weeder, LIB_DIR) as unknown as Weeder;
   const SoilSensorComponent = SoilSensor(soilSensor);
   const wateringNozzle = useGLTF(
-    ASSETS.models.wateringNozzle, LIB_DIR) as WateringNozzle;
+    ASSETS.models.wateringNozzle, LIB_DIR) as unknown as WateringNozzle;
 
   const rotationFactor = (toolPulloutDirection: ToolPulloutDirection) => {
     switch (toolPulloutDirection) {
@@ -412,8 +412,9 @@ const OpacityFilter = (props: OpacityFilterProps) => {
   // eslint-disable-next-line no-null/no-null
   const groupRef = React.useRef<THREE.Group>(null);
   React.useLayoutEffect(() => {
-    if (groupRef.current) {
-      groupRef.current.traverse(child => {
+    const current = groupRef.current as THREE.Group | { traverse?: Function } | null;
+    if (current && typeof current.traverse == "function") {
+      current.traverse((child: THREE.Object3D) => {
         if (child instanceof THREE.Mesh) {
           child.material = child.material.clone();
           child.material.transparent = true;

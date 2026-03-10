@@ -92,7 +92,7 @@ export const runLua =
       try {
         const output = JSON.parse(input);
         jsToLua(L, output);
-      } catch (e) {
+      } catch {
         jsToLua(L, undefined);
       }
       return 1;
@@ -191,7 +191,7 @@ export const runLua =
         }
         if (method == "POST") {
           lua.lua_getfield(L, 1, to_luastring("body"));
-          const body = luaToJs(L, -1) as Object;
+          const body = luaToJs(L, -1) as object;
           lua.lua_pop(L, 1);
           const point = JSON.stringify(body);
           actions.push({ type: "create_point", args: [point] });
@@ -469,7 +469,7 @@ export const runLua =
     lua.lua_setfield(L, envIndex, to_luastring("get_device"));
 
     lua.lua_pushjsfunction(L, () => {
-      const params = luaToJs(L, 1) as Object;
+      const params = luaToJs(L, 1) as object;
       const [key, value] = Object.entries(params)[0];
       actions.push({ type: "update_device", args: [key, value] });
       return 0;

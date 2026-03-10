@@ -1,51 +1,54 @@
 import React from "react";
 import { QosPanel, QosPanelProps, colorFromPercentOK } from "../qos_panel";
 import { fakePings } from "../../../__test_support__/fake_state/pings";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { Actions } from "../../../constants";
 
 describe("<QosPanel />", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   const fakeProps = (): QosPanelProps => ({
     pings: fakePings(),
     dispatch: jest.fn(),
   });
 
   it("renders", () => {
-    const wrapper = mount(<QosPanel {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("percent ok: 50 %");
-    expect(wrapper.html()).toContain("green");
-    expect(wrapper.text()).not.toContain("---");
+    const { container } = render(<QosPanel {...fakeProps()} />);
+    expect(container.textContent?.toLowerCase()).toContain("percent ok: 50 %");
+    expect(container.innerHTML).toContain("green");
+    expect(container.textContent).not.toContain("---");
   });
 
   it("renders slow pings", () => {
     const p = fakeProps();
     p.pings = { "ping": { kind: "complete", start: 0, end: 700 } };
-    const wrapper = mount(<QosPanel {...p} />);
-    expect(wrapper.html()).toContain("yellow");
+    const { container } = render(<QosPanel {...p} />);
+    expect(container.innerHTML).toContain("yellow");
   });
 
   it("renders slower pings", () => {
     const p = fakeProps();
     p.pings = { "ping": { kind: "complete", start: 0, end: 1000 } };
-    const wrapper = mount(<QosPanel {...p} />);
-    expect(wrapper.html()).toContain("red");
+    const { container } = render(<QosPanel {...p} />);
+    expect(container.innerHTML).toContain("red");
   });
 
   it("renders when empty", () => {
     const p = fakeProps();
     p.pings = {};
-    const wrapper = mount(<QosPanel {...p} />);
-    expect(wrapper.text()).toContain("---");
+    const { container } = render(<QosPanel {...p} />);
+    expect(container.textContent).toContain("---");
   });
 
   it("calls onFocus callback", () => {
     const p = fakeProps();
-    const wrapper = mount<QosPanel>(<QosPanel {...p} />);
-    wrapper.mount();
-    wrapper.instance().onFocus();
+    const ref = React.createRef<QosPanel>();
+    render(<QosPanel {...p} ref={ref} />);
+    ref.current?.onFocus();
     expect(p.dispatch).toHaveBeenCalledWith(
       { type: Actions.CLEAR_PINGS, payload: undefined });
-    wrapper.unmount();
   });
 });
 

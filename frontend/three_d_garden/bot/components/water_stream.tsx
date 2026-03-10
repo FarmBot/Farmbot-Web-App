@@ -2,22 +2,30 @@ import React, { useMemo } from "react";
 import { Tube } from "@react-three/drei";
 import { MeshPhongMaterial } from "../../components";
 import { TextureLoader, RepeatWrapping, Texture } from "three";
-import { useFrame } from "@react-three/fiber";
+import * as threeFiber from "@react-three/fiber";
 import { ASSETS } from "../../constants";
-
-const waterTexture = new TextureLoader().load(ASSETS.textures.water);
-waterTexture.wrapS = waterTexture.wrapT = RepeatWrapping;
 
 export interface WaterStreamProps extends React.ComponentProps<typeof Tube> {
   waterFlow: boolean;
 }
 
 export const useWaterFlowTexture = (waterFlow: boolean): Texture | undefined => {
-  const texture = useMemo(() => waterFlow ? waterTexture : undefined, [waterFlow]);
+  const texture = useMemo(() => {
+    if (!waterFlow) { return undefined; }
+    const waterTexture = new TextureLoader().load(ASSETS.textures.water);
+    waterTexture.wrapS = waterTexture.wrapT = RepeatWrapping;
+    return waterTexture;
+  }, [waterFlow]);
+  const animatedTextureRef = React.useRef<Texture | undefined>(undefined);
 
-  useFrame((_, delta) => {
-    if (waterFlow) {
-      waterTexture.offset.x -= delta * 0.05;
+  React.useEffect(() => {
+    animatedTextureRef.current = texture;
+  }, [texture]);
+
+  threeFiber.useFrame((_, delta) => {
+    const animatedTexture = animatedTextureRef.current;
+    if (animatedTexture) {
+      animatedTexture.offset.x -= delta * 0.05;
     }
   });
 

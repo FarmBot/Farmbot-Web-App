@@ -16,7 +16,7 @@ RSpec.describe "layouts/dashboard.html.erb", type: :view do
 
   def render_with_api_host(api_host)
     stub_const('ENV', ENV.to_hash.merge('API_HOST' => api_host))
-    render template: "layouts/dashboard.html.erb"
+    render template: "layouts/dashboard"
   end
 
   def manifest_href_from_rendered_html

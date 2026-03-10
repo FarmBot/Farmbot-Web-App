@@ -1,29 +1,51 @@
-const actions = require("../../../config_storage/actions");
-actions.toggleWebAppBool = jest.fn();
-
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { BooleanSetting } from "../../../session_keys";
 import {
-  moveWidgetSetting, MoveWidgetSettingsMenu, MoveWidgetSettingsMenuProps,
+  Setting, SettingProps, MoveWidgetSettingsMenu, MoveWidgetSettingsMenuProps,
 } from "../settings_menu";
 import { DeviceSetting } from "../../../constants";
-import { toggleWebAppBool } from "../../../config_storage/actions";
+import * as configStorageActions from "../../../config_storage/actions";
 
-describe("moveWidgetSetting()", () => {
+let toggleWebAppBoolSpy: jest.SpyInstance;
+
+describe("<Setting />", () => {
+  const fakeProps = (): SettingProps => ({
+    label: DeviceSetting.invertJogButtonXAxis,
+    setting: BooleanSetting.xy_swap,
+    dispatch: jest.fn(),
+    getConfigValue: jest.fn(() => true),
+  });
+
+  beforeEach(() => {
+    toggleWebAppBoolSpy = jest.spyOn(configStorageActions, "toggleWebAppBool")
+      .mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    toggleWebAppBoolSpy.mockRestore();
+  });
+
   it("toggles setting", () => {
-    const Setting = moveWidgetSetting(jest.fn(), jest.fn(() => true));
-    const wrapper = mount(<Setting
-      label={DeviceSetting.invertJogButtonXAxis}
-      setting={BooleanSetting.xy_swap} />);
-    ["x axis", "yes"].map(string =>
-      expect(wrapper.text().toLowerCase()).toContain(string));
-    wrapper.find("button").simulate("click");
-    expect(toggleWebAppBool).toHaveBeenCalledWith(BooleanSetting.xy_swap);
+    const { container } = render(<Setting {...fakeProps()} />);
+    const text = container.textContent?.toLowerCase();
+    expect(text).toContain("x axis");
+    expect(text).toMatch(/yes|true/);
+    fireEvent.click(screen.getByRole("button"));
+    expect(toggleWebAppBoolSpy).toHaveBeenCalledWith(BooleanSetting.xy_swap);
   });
 });
 
 describe("<MoveWidgetSettingsMenu />", () => {
+  beforeEach(() => {
+    toggleWebAppBoolSpy = jest.spyOn(configStorageActions, "toggleWebAppBool")
+      .mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    toggleWebAppBoolSpy.mockRestore();
+  });
+
   const fakeProps = (): MoveWidgetSettingsMenuProps => ({
     dispatch: jest.fn(),
     getConfigValue: jest.fn(),
@@ -31,19 +53,19 @@ describe("<MoveWidgetSettingsMenu />", () => {
   });
 
   it("displays motor plot toggle", () => {
-    const wrapper = mount(<MoveWidgetSettingsMenu {...fakeProps()} />);
-    expect(wrapper.text()).toContain("motor position");
+    render(<MoveWidgetSettingsMenu {...fakeProps()} />);
+    expect(screen.getByText(/motor position/i)).toBeInTheDocument();
   });
 
   it("displays encoder toggles", () => {
-    const wrapper = mount(<MoveWidgetSettingsMenu {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("encoder");
+    const { container } = render(<MoveWidgetSettingsMenu {...fakeProps()} />);
+    expect(container.textContent?.toLowerCase()).toContain("encoder");
   });
 
   it("doesn't display encoder toggles", () => {
     const p = fakeProps();
     p.firmwareHardware = "express_k10";
-    const wrapper = mount(<MoveWidgetSettingsMenu {...p} />);
-    expect(wrapper.text().toLowerCase()).not.toContain("encoder");
+    const { container } = render(<MoveWidgetSettingsMenu {...p} />);
+    expect(container.textContent?.toLowerCase()).not.toContain("encoder");
   });
 });

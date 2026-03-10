@@ -1,4 +1,4 @@
-import { didLogin, setToken } from "../auth/actions";
+import { setToken, didLogin } from "../auth/actions";
 import { Thunk } from "../redux/interfaces";
 import { Session } from "../session";
 import { maybeRefreshToken } from "../refresh_token";

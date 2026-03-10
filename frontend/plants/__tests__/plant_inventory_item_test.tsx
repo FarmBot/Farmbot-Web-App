@@ -1,35 +1,60 @@
-jest.mock("../../farm_designer/map/actions", () => ({
-  mapPointClickAction: jest.fn(() => jest.fn()),
-  setHoveredPlant: jest.fn(),
-  selectPoint: jest.fn(),
-}));
-
 import React from "react";
 import {
   daysOldText,
-  PlantInventoryItem, PlantInventoryItemProps,
+  PlantInventoryItem,
+  PlantInventoryItemProps,
 } from "../plant_inventory_item";
-import { shallow, mount } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import {
-  fakePlant, fakePlantTemplate,
+  fakePlant,
+  fakePlantTemplate,
 } from "../../__test_support__/fake_state/resources";
 import {
-  mapPointClickAction, setHoveredPlant, selectPoint,
+  mapPointClickAction,
+  setHoveredPlant,
+  selectPoint,
 } from "../../farm_designer/map/actions";
+import * as mapActions from "../../farm_designer/map/actions";
 import moment from "moment";
 import { Path } from "../../internal_urls";
 
 describe("<PlantInventoryItem />", () => {
+  let mapPointClickActionSpy: jest.SpyInstance;
+  let setHoveredPlantSpy: jest.SpyInstance;
+  let selectPointSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    mapPointClickActionSpy = jest.spyOn(mapActions, "mapPointClickAction")
+      .mockImplementation(jest.fn(() => jest.fn()));
+    setHoveredPlantSpy = jest.spyOn(mapActions, "setHoveredPlant")
+      .mockImplementation(jest.fn());
+    selectPointSpy = jest.spyOn(mapActions, "selectPoint")
+      .mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    mapPointClickActionSpy.mockRestore();
+    setHoveredPlantSpy.mockRestore();
+    selectPointSpy.mockRestore();
+  });
+
   const fakeProps = (): PlantInventoryItemProps => ({
     plant: fakePlant(),
     dispatch: jest.fn(),
     hovered: false,
   });
 
+  const itemText = (container: HTMLElement) =>
+    (container.textContent || "").toLowerCase().replace(/\s+/g, " ").trim();
+
+  const item = (container: HTMLElement) =>
+    container.querySelector(".plant-search-item") as HTMLDivElement;
+
   it("renders", () => {
-    const wrapper = shallow(<PlantInventoryItem {...fakeProps()} />);
-    expect(wrapper.text()).toEqual("Strawberry Plant 1planned");
-    expect(wrapper.find("div").first().hasClass("hovered")).toBeFalsy();
+    const { container } = render(<PlantInventoryItem {...fakeProps()} />);
+    expect(itemText(container)).toContain("strawberry plant 1");
+    expect(itemText(container)).toContain("planned");
+    expect(item(container).classList.contains("hovered")).toBeFalsy();
   });
 
   it("handles missing plant name", () => {
@@ -38,46 +63,48 @@ describe("<PlantInventoryItem />", () => {
     plant.body.name = "";
     plant.body.planted_at = "" + moment().toISOString();
     p.plant = plant;
-    const wrapper = shallow(<PlantInventoryItem {...p} />);
-    expect(wrapper.text()).toEqual("Unknown plant1 day old");
-    expect(wrapper.find("div").first().hasClass("hovered")).toBeFalsy();
+    const { container } = render(<PlantInventoryItem {...p} />);
+    expect(itemText(container)).toContain("unknown plant");
+    expect(itemText(container)).toContain("1 day old");
+    expect(item(container).classList.contains("hovered")).toBeFalsy();
   });
 
   it("renders hovered", () => {
     const p = fakeProps();
     p.hovered = true;
-    const wrapper = shallow(<PlantInventoryItem {...p} />);
-    expect(wrapper.find("div").first().hasClass("hovered")).toBeTruthy();
+    const { container } = render(<PlantInventoryItem {...p} />);
+    expect(item(container).classList.contains("hovered")).toBeTruthy();
   });
 
   it("hover begin", () => {
     const p = fakeProps();
-    const wrapper = shallow(<PlantInventoryItem {...p} />);
-    wrapper.simulate("mouseEnter");
+    const { container } = render(<PlantInventoryItem {...p} />);
+    fireEvent.mouseEnter(item(container));
     expect(setHoveredPlant).toHaveBeenCalledWith(p.plant.uuid);
   });
 
   it("hover end", () => {
-    const wrapper = shallow(<PlantInventoryItem {...fakeProps()} />);
-    wrapper.simulate("mouseLeave");
+    const { container } = render(<PlantInventoryItem {...fakeProps()} />);
+    fireEvent.mouseLeave(item(container));
     expect(setHoveredPlant).toHaveBeenCalledWith(undefined);
   });
 
   it("selects plant", () => {
     location.pathname = Path.mock(Path.plants());
     const p = fakeProps();
-    const wrapper = shallow(<PlantInventoryItem {...p} />);
-    wrapper.simulate("click");
+    const { container } = render(<PlantInventoryItem {...p} />);
+    fireEvent.click(item(container));
     expect(mapPointClickAction).not.toHaveBeenCalled();
     expect(selectPoint).toHaveBeenCalledWith([p.plant.uuid]);
     expect(mockNavigate).toHaveBeenCalledWith(Path.plants(p.plant.body.id));
   });
 
   it("handles missing plant id", () => {
+    location.pathname = Path.mock(Path.plants());
     const p = fakeProps();
     p.plant.body.id = 0;
-    const wrapper = shallow(<PlantInventoryItem {...p} />);
-    wrapper.simulate("click");
+    const { container } = render(<PlantInventoryItem {...p} />);
+    fireEvent.click(item(container));
     expect(selectPoint).toHaveBeenCalledWith([p.plant.uuid]);
     expect(mockNavigate).toHaveBeenCalledWith(Path.plants("ERR_NO_PLANT_ID"));
   });
@@ -85,8 +112,8 @@ describe("<PlantInventoryItem />", () => {
   it("removes item in box select mode", () => {
     location.pathname = Path.mock(Path.plants("select"));
     const p = fakeProps();
-    const wrapper = shallow(<PlantInventoryItem {...p} />);
-    wrapper.simulate("click");
+    const { container } = render(<PlantInventoryItem {...p} />);
+    fireEvent.click(item(container));
     expect(mapPointClickAction).toHaveBeenCalledWith(
       expect.any(Function),
       expect.any(Function),
@@ -99,8 +126,8 @@ describe("<PlantInventoryItem />", () => {
     location.pathname = Path.mock(Path.plants());
     const p = fakeProps();
     p.plant = fakePlantTemplate();
-    const wrapper = shallow(<PlantInventoryItem {...p} />);
-    wrapper.simulate("click");
+    const { container } = render(<PlantInventoryItem {...p} />);
+    fireEvent.click(item(container));
     expect(selectPoint).toHaveBeenCalledWith([p.plant.uuid]);
     expect(mockNavigate).toHaveBeenCalledWith(
       Path.savedGardens(`templates/${p.plant.body.id}`));
@@ -108,8 +135,8 @@ describe("<PlantInventoryItem />", () => {
 
   it("gets and sets cached icon", () => {
     const p = fakeProps();
-    const wrapper = mount(<PlantInventoryItem {...p} />);
-    wrapper.simulate("mouseEnter");
+    const { container } = render(<PlantInventoryItem {...p} />);
+    fireEvent.mouseEnter(item(container));
     expect(setHoveredPlant).toHaveBeenCalledWith(p.plant.uuid);
   });
 });

@@ -4,7 +4,6 @@ import {
   DiagnosisProps, DiagnosisSaucerProps,
 } from "../diagnosis";
 import { DiagnosticMessages } from "../../../constants";
-import { mount } from "enzyme";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { Path } from "../../../internal_urls";
 
@@ -21,16 +20,18 @@ describe("<Diagnosis/>", () => {
   });
 
   it("renders help text", () => {
-    const el = mount(<Diagnosis {...fakeProps()} />);
-    expect(el.text()).toContain(DiagnosticMessages.OK);
-    expect(el.find(".saucer").hasClass("green")).toBeTruthy();
+    const { container } = render(<Diagnosis {...fakeProps()} />);
+    expect(container.textContent).toContain(DiagnosticMessages.OK);
+    expect(container.querySelector(".saucer")?.classList.contains("green"))
+      .toBeTruthy();
   });
 
   it("renders diagnosis error color", () => {
     const p = fakeProps();
     p.statusFlags.botFirmware = false;
-    const el = mount(<Diagnosis {...p} />);
-    expect(el.find(".saucer").hasClass("red")).toBeTruthy();
+    const { container } = render(<Diagnosis {...p} />);
+    expect(container.querySelector(".saucer")?.classList.contains("red"))
+      .toBeTruthy();
   });
 
   it("navigates on click", () => {
@@ -51,15 +52,16 @@ describe("<DiagnosisSaucer />", () => {
   });
 
   it("renders green", () => {
-    const wrapper = mount(<DiagnosisSaucer {...fakeProps()} />);
-    expect(wrapper.find(".saucer").hasClass("green")).toBeTruthy();
+    const { container } = render(<DiagnosisSaucer {...fakeProps()} />);
+    expect(container.querySelector(".saucer")?.classList.contains("green"))
+      .toBeTruthy();
   });
 
   it("renders sync status", () => {
     const p = fakeProps();
     p.syncStatus = "syncing";
-    const wrapper = mount(<DiagnosisSaucer {...p} />);
-    expect(wrapper.html()).toContain("fa-spinner");
+    const { container } = render(<DiagnosisSaucer {...p} />);
+    expect(container.innerHTML).toContain("fa-spinner");
   });
 });
 

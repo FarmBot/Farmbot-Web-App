@@ -1,23 +1,12 @@
-jest.mock("../edit", () => ({
-  editCriteria: jest.fn(),
-  editGtLtCriteriaField: jest.fn(() => jest.fn()),
-  removeEqCriteriaValue: jest.fn(),
-  clearCriteriaField: jest.fn(),
-  clearLocationCriteria: jest.fn(),
-}));
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { render, fireEvent } from "@testing-library/react";
 import {
   EqCriteriaSelection,
   NumberCriteriaSelection,
   DaySelection,
   LocationSelection,
   NumberLtGtInput,
-  removeEqCriteriaValue,
-  clearCriteriaField,
-  editCriteria,
-  editGtLtCriteriaField,
 } from "..";
 import {
   EqCriteriaSelectionProps,
@@ -30,8 +19,52 @@ import {
 import {
   fakePointGroup,
 } from "../../../__test_support__/fake_state/resources";
-import { FBSelect, Checkbox } from "../../../ui";
 import { Actions } from "../../../constants";
+import * as criteriaEdit from "../edit";
+import * as ui from "../../../ui";
+
+let removeEqCriteriaValueSpy: jest.SpyInstance;
+let clearCriteriaFieldSpy: jest.SpyInstance;
+let editCriteriaSpy: jest.SpyInstance;
+let editGtLtCriteriaFieldSpy: jest.SpyInstance;
+let fbSelectSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  removeEqCriteriaValueSpy = jest.spyOn(criteriaEdit, "removeEqCriteriaValue")
+    .mockImplementation(jest.fn());
+  clearCriteriaFieldSpy = jest.spyOn(criteriaEdit, "clearCriteriaField")
+    .mockImplementation(jest.fn());
+  editCriteriaSpy = jest.spyOn(criteriaEdit, "editCriteria")
+    .mockImplementation(jest.fn());
+  editGtLtCriteriaFieldSpy = jest.spyOn(criteriaEdit, "editGtLtCriteriaField")
+    .mockImplementation(() => jest.fn());
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation((props: any) => {
+      const value = props.selectedItem ? String(props.selectedItem.value) : "";
+      return <select
+        className={"mock-fb-select"}
+        value={value}
+        onChange={e => {
+          const nextValue = e.currentTarget.value;
+          const selected = nextValue === ""
+            ? props.list.find((item: any) => item.isNull)
+            || props.list.find((item: any) => String(item.value) === "")
+            : props.list.find((item: any) =>
+              String(item.value) === nextValue);
+          props.onChange(selected || { label: "", value: nextValue });
+        }}>
+        <option value={""} />
+        {props.list.map((item: any, index: number) =>
+          <option key={`${item.value}-${index}`} value={String(item.value)}>
+            {item.label}
+          </option>)}
+      </select>;
+    });
+});
+
+afterEach(() => {
+  fbSelectSpy.mockRestore();
+});
 
 describe("<EqCriteriaSelection<string> />", () => {
   const fakeProps = (): EqCriteriaSelectionProps<string> => ({
@@ -45,16 +78,16 @@ describe("<EqCriteriaSelection<string> />", () => {
 
   it("renders", () => {
     const p = fakeProps();
-    const wrapper = mount(<EqCriteriaSelection<string> {...p} />);
-    expect(wrapper.text()).toContain("=");
+    const { container } = render(<EqCriteriaSelection<string> {...p} />);
+    expect(container.textContent).toContain("=");
   });
 
   it("removes criteria", () => {
     const p = fakeProps();
     p.eqCriteria = { openfarm_slug: ["slug"] };
-    const wrapper = mount(<EqCriteriaSelection<string> {...p} />);
-    wrapper.find("button").last().simulate("click");
-    expect(removeEqCriteriaValue).toHaveBeenCalledWith(
+    const { container } = render(<EqCriteriaSelection<string> {...p} />);
+    fireEvent.click(container.querySelectorAll("button")[1] as Element);
+    expect(removeEqCriteriaValueSpy).toHaveBeenCalledWith(
       p.group,
       { openfarm_slug: ["slug"] },
       "string_eq",
@@ -75,18 +108,18 @@ describe("<NumberCriteriaSelection />", () => {
   it("renders", () => {
     const p = fakeProps();
     p.criteria.number_lt = { x: 1 };
-    const wrapper = mount(<NumberCriteriaSelection {...p} />);
-    expect(wrapper.text()).toContain("<");
+    const { container } = render(<NumberCriteriaSelection {...p} />);
+    expect(container.textContent).toContain("<");
   });
 
   it("removes criteria", () => {
     const p = fakeProps();
     p.criteriaKey = "number_gt";
     p.criteria.number_gt = { x: 1 };
-    const wrapper = mount(<NumberCriteriaSelection {...p} />);
-    expect(wrapper.text()).toContain(">");
-    wrapper.find("button").last().simulate("click");
-    expect(clearCriteriaField).toHaveBeenCalledWith(
+    const { container } = render(<NumberCriteriaSelection {...p} />);
+    expect(container.textContent).toContain(">");
+    fireEvent.click(container.querySelectorAll("button")[1] as Element);
+    expect(clearCriteriaFieldSpy).toHaveBeenCalledWith(
       p.group,
       ["number_gt"],
       ["x"],
@@ -107,15 +140,17 @@ describe("<DaySelection />", () => {
   it("shows label", () => {
     const p = fakeProps();
     p.advanced = true;
-    const wrapper = shallow(<DaySelection {...p} />);
-    expect(wrapper.html()).toContain("label");
+    const { container } = render(<DaySelection {...p} />);
+    expect(container.querySelector("label")).toBeTruthy();
   });
 
   it("changes operator", () => {
     const p = fakeProps();
-    const wrapper = shallow(<DaySelection {...p} />);
-    wrapper.find(FBSelect).simulate("change", { label: "", value: "<" });
-    expect(editCriteria).toHaveBeenCalledWith(
+    const { container } = render(<DaySelection {...p} />);
+    fireEvent.change(container.querySelector(".mock-fb-select") as Element, {
+      target: { value: "<" }
+    });
+    expect(editCriteriaSpy).toHaveBeenCalledWith(
       p.group,
       { day: { days_ago: 0, op: "<" } },
     );
@@ -123,11 +158,11 @@ describe("<DaySelection />", () => {
 
   it("changes day value", () => {
     const p = fakeProps();
-    const wrapper = shallow(<DaySelection {...p} />);
-    wrapper.find("input").last().simulate("change", {
-      currentTarget: { value: "1" }
+    const { container } = render(<DaySelection {...p} />);
+    fireEvent.change(container.querySelector("input[name='days_ago']") as Element, {
+      target: { value: "1" }
     });
-    expect(editCriteria).toHaveBeenCalledWith(
+    expect(editCriteriaSpy).toHaveBeenCalledWith(
       p.group,
       { day: { days_ago: 1, op: "<" } },
     );
@@ -136,9 +171,9 @@ describe("<DaySelection />", () => {
   it("resets day criteria to default", () => {
     const p = fakeProps();
     p.group.body.criteria.day = { op: ">", days_ago: 1 };
-    const wrapper = shallow(<DaySelection {...p} />);
-    wrapper.find(Checkbox).simulate("change");
-    expect(editCriteria).toHaveBeenCalledWith(p.group, {
+    const { container } = render(<DaySelection {...p} />);
+    fireEvent.click(container.querySelector("input[type='checkbox']") as Element);
+    expect(editCriteriaSpy).toHaveBeenCalledWith(p.group, {
       day: { op: "<", days_ago: 0 }
     });
   });
@@ -153,11 +188,11 @@ describe("<NumberLtGtInput />", () => {
 
   it("changes number_gt", () => {
     const p = fakeProps();
-    const wrapper = shallow(<NumberLtGtInput {...p} />);
-    wrapper.find("input").first().simulate("blur", {
-      currentTarget: { value: "1" }
+    const { container } = render(<NumberLtGtInput {...p} />);
+    fireEvent.blur(container.querySelectorAll("input")[0] as Element, {
+      target: { value: "1" }
     });
-    expect(editGtLtCriteriaField).toHaveBeenCalledWith(
+    expect(editGtLtCriteriaFieldSpy).toHaveBeenCalledWith(
       p.group,
       "number_gt",
       "x",
@@ -166,11 +201,11 @@ describe("<NumberLtGtInput />", () => {
 
   it("changes number_lt", () => {
     const p = fakeProps();
-    const wrapper = shallow(<NumberLtGtInput {...p} />);
-    wrapper.find("input").last().simulate("blur", {
-      currentTarget: { value: "1" }
+    const { container } = render(<NumberLtGtInput {...p} />);
+    fireEvent.blur(container.querySelectorAll("input")[1] as Element, {
+      target: { value: "1" }
     });
-    expect(editGtLtCriteriaField).toHaveBeenCalledWith(
+    expect(editGtLtCriteriaFieldSpy).toHaveBeenCalledWith(
       p.group,
       "number_lt",
       "x",
@@ -193,9 +228,9 @@ describe("<LocationSelection />", () => {
 
   it("clears location criteria", () => {
     const p = fakeProps();
-    const wrapper = mount(<LocationSelection {...p} />);
-    wrapper.find("input").first().simulate("change");
-    expect(clearCriteriaField).toHaveBeenCalledWith(
+    const { container } = render(<LocationSelection {...p} />);
+    fireEvent.click(container.querySelector("input[type='checkbox']") as Element);
+    expect(clearCriteriaFieldSpy).toHaveBeenCalledWith(
       p.group,
       ["number_lt", "number_gt"],
       ["x", "y"],
@@ -204,8 +239,8 @@ describe("<LocationSelection />", () => {
 
   it("toggles selection box behavior", () => {
     const p = fakeProps();
-    const wrapper = mount(<LocationSelection {...p} />);
-    wrapper.find("button").last().simulate("click");
+    const { container } = render(<LocationSelection {...p} />);
+    fireEvent.click(container.querySelector("button") as Element);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.EDIT_GROUP_AREA_IN_MAP,
       payload: true
@@ -216,15 +251,15 @@ describe("<LocationSelection />", () => {
     const p = fakeProps();
     p.group.body.criteria.number_gt = {};
     p.group.body.criteria.number_gt = {};
-    const wrapper = mount(<LocationSelection {...p} />);
-    expect(wrapper.text().toLowerCase()).not.toContain("invalid selection");
+    const { container } = render(<LocationSelection {...p} />);
+    expect(container.textContent?.toLowerCase()).not.toContain("invalid selection");
   });
 
   it("displays selection warning", () => {
     const p = fakeProps();
     p.group.body.criteria.number_lt = { x: 100 };
     p.group.body.criteria.number_gt = { x: 200 };
-    const wrapper = mount(<LocationSelection {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("invalid selection");
+    const { container } = render(<LocationSelection {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("invalid selection");
   });
 });

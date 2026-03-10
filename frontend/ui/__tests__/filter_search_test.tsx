@@ -1,9 +1,16 @@
 import React from "react";
-import { mount, shallow } from "enzyme";
 import { allMatchedItems, FilterSearch } from "../filter_search";
 import { DropDownItem } from "../fb_select";
+import {
+  actRenderer,
+  createRenderer,
+  getRendererInstance,
+  unmountRenderer,
+} from "../../__test_support__/test_renderer";
 
 describe("<FilterSearch />", () => {
+  const wrappers: ReturnType<typeof createRenderer>[] = [];
+
   const fakeItem = (extra?: Partial<DropDownItem>): DropDownItem =>
     Object.assign({ label: "label", value: "value" }, extra);
 
@@ -14,45 +21,76 @@ describe("<FilterSearch />", () => {
     nullChoice: fakeItem(),
   });
 
+  const createWrapper = (p = fakeProps()) => {
+    const wrapper = createRenderer(<FilterSearch {...p} />);
+    wrappers.push(wrapper);
+    return wrapper;
+  };
+
+  const getInstance = (wrapper: ReturnType<typeof createRenderer>) =>
+    getRendererInstance<FilterSearch>(wrapper, FilterSearch);
+
+  afterEach(() => {
+    while (wrappers.length > 0) {
+      const wrapper = wrappers.pop();
+      wrapper && unmountRenderer(wrapper);
+    }
+  });
+
   it("selects item", () => {
     const p = fakeProps();
-    const wrapper = shallow(<FilterSearch {...p} />);
+    const wrapper = createWrapper(p);
     const item = fakeItem();
-    wrapper.simulate("ItemSelect", item);
+    actRenderer(() => {
+      getInstance(wrapper)["handleValueChange"](item as never);
+    });
     expect(p.onChange).toHaveBeenCalledWith(item);
   });
 
   it("doesn't select item", () => {
     const p = fakeProps();
-    const wrapper = shallow(<FilterSearch {...p} />);
-    wrapper.simulate("ItemSelect", undefined);
+    const wrapper = createWrapper(p);
+    actRenderer(() => {
+      getInstance(wrapper)["handleValueChange"](undefined as never);
+    });
     expect(p.onChange).not.toHaveBeenCalled();
   });
 
   it("doesn't select header", () => {
     const p = fakeProps();
-    const wrapper = shallow(<FilterSearch {...p} />);
+    const wrapper = createWrapper(p);
     const item = fakeItem({ heading: true });
-    wrapper.simulate("ItemSelect", item);
+    actRenderer(() => {
+      getInstance(wrapper)["handleValueChange"](item as never);
+    });
     expect(p.onChange).not.toHaveBeenCalled();
   });
 
   it("handles empty selection", () => {
     const p = fakeProps();
-    const wrapper = mount(<FilterSearch {...p} />);
-    wrapper.setState({ item: undefined });
-    expect(wrapper.text().toLowerCase()).toContain("no selection");
+    const wrapper = createWrapper(p);
+    actRenderer(() => {
+      getInstance(wrapper).setState({
+        item: undefined,
+      });
+    });
+    expect(JSON.stringify(wrapper.toJSON()).toLowerCase())
+      .toContain("no selection");
   });
 
   it("handles empty item", () => {
-    const p = fakeProps();
-    const wrapper = shallow(<FilterSearch {...p} />);
-    const el = (wrapper.props()).itemRenderer({ label: "label" }, {});
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    expect(mount(el).text()).toEqual("label");
-    const emptyEl = (wrapper.props()).itemRenderer(undefined, {});
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    expect(mount(emptyEl).text()).toEqual("");
+    const wrapper = createWrapper();
+    const renderItem = getInstance(wrapper)["default"];
+    const el = renderItem?.({ label: "label" }, {
+      handleClick: jest.fn(),
+      index: 0,
+    });
+    expect(el?.props.text).toEqual("label");
+    const emptyEl = renderItem?.(undefined, {
+      handleClick: jest.fn(),
+      index: 0,
+    });
+    expect(emptyEl?.props.text).toEqual("");
   });
 });
 

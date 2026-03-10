@@ -50,8 +50,7 @@ describe Api::SequencesController do
             body: body,
             as: :json
 
-      sequence.reload
-      input = { id: sequence.id }
+      input = { id: s[:id] }
       before = Sequence.count
       delete :destroy, params: input
       after = Sequence.count

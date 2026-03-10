@@ -1,8 +1,29 @@
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { render, fireEvent } from "@testing-library/react";
 import { SensorSelection } from "../sensor_selection";
 import { fakeSensor } from "../../../__test_support__/fake_state/resources";
 import { SensorSelectionProps } from "../interfaces";
+import * as ui from "../../../ui";
+
+let fbSelectSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation((props: {
+      selectedItem?: { label?: string };
+      list?: { value: string }[];
+      onChange: (ddi: { label: string; value: string }) => void;
+    }) =>
+      <button className="fb-select-mock"
+        onClick={() =>
+          props.onChange({ label: "", value: props.list?.[0]?.value ?? "" })}>
+        {props.selectedItem?.label}
+      </button>);
+});
+
+afterEach(() => {
+  fbSelectSpy.mockRestore();
+});
 
 describe("<SensorSelection />", () => {
   const fakeProps = (): SensorSelectionProps => ({
@@ -13,8 +34,8 @@ describe("<SensorSelection />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<SensorSelection {...fakeProps()} />);
-    const txt = wrapper.text().toLowerCase();
+    const { container } = render(<SensorSelection {...fakeProps()} />);
+    const txt = container.textContent?.toLowerCase() || "";
     ["sensor", "all"]
       .map(string => expect(txt).toContain(string));
   });
@@ -24,16 +45,16 @@ describe("<SensorSelection />", () => {
     const p = fakeProps();
     p.selectedSensor = s;
     p.sensors = [s];
-    const wrapper = mount(<SensorSelection {...p} />);
-    expect(wrapper.text()).toContain(s.body.label);
+    const { container } = render(<SensorSelection {...p} />);
+    expect(container.textContent).toContain(s.body.label);
   });
 
   it("selects sensor", () => {
     const s = fakeSensor();
     const p = fakeProps();
     p.sensors = [s];
-    const wrapper = shallow(<SensorSelection {...p} />);
-    wrapper.find("FBSelect").simulate("change", { label: "", value: s.uuid });
+    const { container } = render(<SensorSelection {...p} />);
+    fireEvent.click(container.querySelector(".fb-select-mock") as Element);
     expect(p.setSensor).toHaveBeenCalledWith(s);
   });
 });

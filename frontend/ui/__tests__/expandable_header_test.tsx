@@ -1,5 +1,5 @@
 import React from "react";
-import { shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import { ExpandableHeader, ExpandableHeaderProps } from "../expandable_header";
 
 describe("<ExpandableHeader />", () => {
@@ -10,7 +10,7 @@ describe("<ExpandableHeader />", () => {
   });
 
   it("renders", () => {
-    const wrapper = shallow(<ExpandableHeader {...fakeProps()} />);
-    expect(wrapper.text()).toContain("title");
+    const { container } = render(<ExpandableHeader {...fakeProps()} />);
+    expect(container.textContent).toContain("title");
   });
 });

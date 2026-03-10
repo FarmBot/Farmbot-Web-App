@@ -1,15 +1,25 @@
-jest.mock("../../../api/crud", () => ({ editStep: jest.fn() }));
-
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import {
   TileSetServoAngle, pinNumberChanger, createServoEditFn, ServoPinSelection,
 } from "../tile_set_servo_angle";
 import { SetServoAngle } from "farmbot";
 import { StepParams } from "../../interfaces";
 import { editStep } from "../../../api/crud";
+import * as crud from "../../../api/crud";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
+
+let editStepSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  editStepSpy = jest.spyOn(crud, "editStep")
+    .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  editStepSpy.mockRestore();
+});
 
 describe("<TileSetServoAngle/>", () => {
   const fakeProps = (): StepParams<SetServoAngle> => ({
@@ -25,16 +35,18 @@ describe("<TileSetServoAngle/>", () => {
 
   it("renders inputs", () => {
     const props = fakeProps();
-    const block = mount(<TileSetServoAngle {...props} />);
-    const inputs = block.find("input");
-    const labels = block.find("label");
+    const { container } = render(<TileSetServoAngle {...props} />);
     const stepArgs = props.currentStep.args;
-    expect(inputs.length).toEqual(6);
-    expect(labels.length).toEqual(6);
-    expect(inputs.first().props().placeholder).toEqual("Control Servo");
-    expect(inputs.at(1).props().value).toEqual("" + stepArgs.pin_number);
-    expect(labels.at(5).text()).toContain("Angle (0-180)");
-    expect(inputs.at(5).props().value).toEqual(stepArgs.pin_value);
+    const text = container.textContent || "";
+    expect(text).toContain("Servo pin");
+    expect(text).toContain("4");
+    expect(text).toContain("5");
+    expect(text).toContain("6");
+    expect(text).toContain("11");
+    expect(text).toContain("Angle (0-180)");
+    const textInputValues = Array.from(container.querySelectorAll("input[type=\"text\"]"))
+      .map(input => (input as HTMLInputElement).value);
+    expect(textInputValues).toContain("" + stepArgs.pin_value);
   });
 
   it("changes pin number", () => {

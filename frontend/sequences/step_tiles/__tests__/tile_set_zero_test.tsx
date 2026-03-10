@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { TileSetZero } from "../tile_set_zero";
 import { Zero } from "farmbot";
 import { StepParams } from "../../interfaces";
@@ -11,13 +11,12 @@ describe("<TileSetZero/>", () => {
   });
 
   it("renders inputs", () => {
-    const block = mount(<TileSetZero {...fakeProps()} />);
-    const inputs = block.find("input");
-    const labels = block.find("label");
+    const { container } = render(<TileSetZero {...fakeProps()} />);
+    const inputs = container.querySelectorAll("input");
+    const labels = container.querySelectorAll("label");
     expect(inputs.length).toEqual(5);
     expect(labels.length).toEqual(4);
-    expect(inputs.first().props().placeholder).toEqual("Set home");
-    expect(labels.at(0).text()).toContain("x");
-    expect(inputs.at(1).props().value).toEqual("x");
+    expect(labels[0]?.textContent).toContain("x");
+    expect((inputs[1] as HTMLInputElement | undefined)?.value).toEqual("x");
   });
 });

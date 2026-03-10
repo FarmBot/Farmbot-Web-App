@@ -7,11 +7,11 @@ import {
 import {
   fakeSequence,
 } from "../../../__test_support__/fake_state/resources";
-import { shallow, mount } from "enzyme";
+import { render, fireEvent } from "@testing-library/react";
 import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
-import { FBSelect, BlurableInput, Color, FBSelectProps } from "../../../ui";
+import { Color } from "../../../ui";
 import {
   VariableFormProps, AllowedVariableNodes, VariableType,
 } from "../locals_list_support";
@@ -22,6 +22,73 @@ import { fakeVariableNameSet } from "../../../__test_support__/fake_variables";
 import { error } from "../../../toast/toast";
 import { changeBlurableInput } from "../../../__test_support__/helpers";
 import { SequenceMeta } from "../../../resources/sequence_meta";
+import * as ui from "../../../ui";
+
+let mockSelectChangeArg: unknown;
+let mockKeyCallback = { key: "", buffer: "" };
+let fbSelectSpy: jest.SpyInstance;
+let blurableInputSpy: jest.SpyInstance;
+let helpSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation((props: {
+      list: unknown[];
+      selectedItem: unknown;
+      onChange: (ddi: unknown) => void;
+    }) => <button
+      className={"fb-select-mock"}
+      data-list={JSON.stringify(props.list)}
+      data-selected-item={JSON.stringify(props.selectedItem)}
+      onClick={() => props.onChange(mockSelectChangeArg)} />);
+  blurableInputSpy = jest.spyOn(ui, "BlurableInput")
+    .mockImplementation((props: {
+      className?: string;
+      value: string | number;
+      disabled?: boolean;
+      onCommit?: (e: React.SyntheticEvent<HTMLInputElement>) => void;
+      keyCallback?: (key: string, buffer: string) => void;
+    }) => {
+      const [value, setValue] = React.useState(String(props.value));
+      React.useEffect(() => setValue(String(props.value)), [props.value]);
+      return <div>
+        <input
+          className={props.className}
+          disabled={props.disabled}
+          value={value}
+          onChange={e => setValue(e.currentTarget.value)}
+          onBlur={e => props.onCommit?.({
+            ...e, currentTarget: {
+              ...e.currentTarget, value
+            }
+          } as React.SyntheticEvent<HTMLInputElement>)} />
+        <button
+          className={"blurable-key-callback"}
+          onClick={() =>
+            props.keyCallback?.(mockKeyCallback.key, mockKeyCallback.buffer)} />
+      </div>;
+    });
+  helpSpy = jest.spyOn(ui, "Help")
+    .mockImplementation(() => <div className={"help-mock"} />);
+});
+
+afterEach(() => {
+  fbSelectSpy.mockRestore();
+  blurableInputSpy.mockRestore();
+  helpSpy.mockRestore();
+});
+
+const listAt = (container: ParentNode, index = 0) =>
+  JSON.parse(
+    container.querySelectorAll(".fb-select-mock")
+      .item(index)
+      .getAttribute("data-list") || "[]");
+
+const selectedAt = (container: ParentNode, index = 0) =>
+  JSON.parse(
+    container.querySelectorAll(".fb-select-mock")
+      .item(index)
+      .getAttribute("data-selected-item") || "null");
 
 describe("<VariableForm />", () => {
   const fakeProps = (): VariableFormProps => ({
@@ -46,29 +113,25 @@ describe("<VariableForm />", () => {
 
   it("renders correct UI components", () => {
     const p = fakeProps();
-    const el = shallow(<VariableForm {...p} />);
-    const selects = el.find(FBSelect);
-    const inputs = el.find(BlurableInput);
-
-    expect(selects.length).toBe(1);
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    const select = selects.first().props() as FBSelectProps;
+    const { container } = render(<VariableForm {...p} />);
+    expect(container.querySelectorAll(".fb-select-mock").length).toBe(2);
     const choices = variableFormList(
       p.resources, [], [{ label: "Externally defined", value: "" }], true);
-    const actualLabels = select.list.map(x => x.label).sort();
-    const expectedLabels = choices.map(x => x.label).sort();
+    const actualLabels: string[] = listAt(container).map(x => String(x.label)).sort();
+    const expectedLabels: string[] = choices.map(x => String(x.label)).sort();
     const diff = difference(actualLabels, expectedLabels);
     expect(diff).toEqual([]);
     const dropdown = choices[1];
-    select.onChange(dropdown);
+    mockSelectChangeArg = dropdown;
+    fireEvent.click(container.querySelector(".fb-select-mock") as Element);
     expect(p.onChange)
       .toHaveBeenCalledWith(convertDDItoVariable({
         identifierLabel: "label",
         allowedVariableNodes: p.allowedVariableNodes,
         dropdown
       }), "label");
-    expect(inputs.length).toBe(0);
-    expect(el.html()).not.toContain("fa-exclamation-triangle");
+    expect(container.querySelectorAll(".blurable-key-callback").length).toBe(3);
+    expect(container.innerHTML).not.toContain("fa-exclamation-triangle");
   });
 
   it("uses body variable data", () => {
@@ -81,16 +144,17 @@ describe("<VariableForm />", () => {
         }
       }
     }];
-    const wrapper = mount(<VariableForm {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("add new");
+    const { container } = render(<VariableForm {...p} />);
+    expect(selectedAt(container).label.toLowerCase()).toContain("add new");
   });
 
   it("shows corrected variable label", () => {
     const p = fakeProps();
     p.variable.celeryNode.args.label = "parent";
     p.inUse = true;
-    const wrapper = mount(<VariableForm {...p} />);
-    expect(wrapper.find("input").first().props().value).toEqual("Location");
+    const { container } = render(<VariableForm {...p} />);
+    expect((container.querySelector("input[readonly]") as HTMLInputElement).value)
+      .toEqual("Location");
   });
 
   it("shows variable in dropdown", () => {
@@ -98,8 +162,8 @@ describe("<VariableForm />", () => {
     p.allowedVariableNodes = AllowedVariableNodes.identifier;
     const variableNameSet = fakeVariableNameSet("parent");
     p.resources.sequenceMetas[p.sequenceUuid] = variableNameSet;
-    const wrapper = shallow(<VariableForm {...p} />);
-    expect(wrapper.find(FBSelect).first().props().list)
+    const { container } = render(<VariableForm {...p} />);
+    expect(listAt(container))
       .toEqual(expect.arrayContaining([{
         headingId: "Variable",
         label: "Location - Select a location",
@@ -109,8 +173,8 @@ describe("<VariableForm />", () => {
 
   it("doesn't show variable in dropdown", () => {
     const p = fakeProps();
-    const wrapper = shallow(<VariableForm {...p} />);
-    expect(wrapper.find(FBSelect).first().props().list)
+    const { container } = render(<VariableForm {...p} />);
+    expect(listAt(container))
       .not.toEqual(expect.arrayContaining([{
         headingId: "Variable",
         label: "label",
@@ -121,11 +185,11 @@ describe("<VariableForm />", () => {
   it("shows correct variable label", () => {
     const p = fakeProps();
     p.variable.dropdown.label = "Externally defined";
-    const wrapper = shallow(<VariableForm {...p} />);
-    expect(wrapper.find(FBSelect).props().selectedItem).toEqual({
+    const { container } = render(<VariableForm {...p} />);
+    expect(selectedAt(container)).toEqual({
       label: "Externally defined", value: 0
     });
-    expect(wrapper.find(FBSelect).first().props().list)
+    expect(listAt(container))
       .toEqual(expect.arrayContaining([{
         headingId: "Variable",
         label: "Externally defined",
@@ -137,9 +201,8 @@ describe("<VariableForm />", () => {
     const p = fakeProps();
     p.allowedVariableNodes = AllowedVariableNodes.identifier;
     p.variable.dropdown.isNull = true;
-    const wrapper = shallow(<VariableForm {...p} />);
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-    const list = (wrapper.find(FBSelect).first().props() as FBSelectProps).list;
+    const { container } = render(<VariableForm {...p} />);
+    const list = listAt(container);
     const vars = list.filter(item =>
       item.headingId == "Variable" && !item.heading);
     expect(vars.length).toEqual(1);
@@ -154,8 +217,8 @@ describe("<VariableForm />", () => {
 
   it("shows groups in dropdown", () => {
     const p = fakeProps();
-    const wrapper = shallow(<VariableForm {...p} />);
-    expect(wrapper.find(FBSelect).first().props().list).toContainEqual({
+    const { container } = render(<VariableForm {...p} />);
+    expect(listAt(container)).toContainEqual({
       headingId: "Coordinate",
       label: "Custom coordinates",
       value: ""
@@ -166,19 +229,19 @@ describe("<VariableForm />", () => {
     const p = fakeProps();
     p.removeVariable = jest.fn();
     p.hideWrapper = false;
-    const wrapper = mount(<VariableForm {...p} />);
-    const boxes = wrapper.find(".custom-coordinate-form");
-    expect(boxes.find(".x").length).toEqual(1);
-    expect(boxes.find(".y").length).toEqual(1);
-    expect(boxes.find(".z").length).toEqual(1);
+    const { container } = render(<VariableForm {...p} />);
+    const boxes = container.querySelector(".custom-coordinate-form");
+    expect(boxes?.querySelectorAll(".x").length).toEqual(1);
+    expect(boxes?.querySelectorAll(".y").length).toEqual(1);
+    expect(boxes?.querySelectorAll(".z").length).toEqual(1);
   });
 
   it("renders default value warning", () => {
     const p = fakeProps();
     p.locationDropdownKey = "default_value";
     p.variable.isDefault = true;
-    const wrapper = shallow(<VariableForm {...p} />);
-    expect(wrapper.html()).toContain("fa-exclamation-triangle");
+    const { container } = render(<VariableForm {...p} />);
+    expect(container.querySelectorAll(".help-mock").length).toEqual(3);
   });
 
   it("renders number variable input", () => {
@@ -191,8 +254,8 @@ describe("<VariableForm />", () => {
       }
     };
     p.locationDropdownKey = "default_value";
-    const wrapper = shallow(<VariableForm {...p} />);
-    expect(wrapper.html()).toContain("number-input");
+    const { container } = render(<VariableForm {...p} />);
+    expect(container.innerHTML).toContain("number-input");
   });
 
   it("renders text variable input", () => {
@@ -205,23 +268,23 @@ describe("<VariableForm />", () => {
       }
     };
     p.locationDropdownKey = "default_value";
-    const wrapper = shallow(<VariableForm {...p} />);
-    expect(wrapper.html()).toContain("string-input");
+    const { container } = render(<VariableForm {...p} />);
+    expect(container.innerHTML).toContain("string-input");
   });
 
   it("doesn't change label", () => {
     const p = fakeProps();
     p.inUse = true;
-    const wrapper = mount(<VariableForm {...p} />);
-    wrapper.find("input").first().simulate("click");
+    const { container } = render(<VariableForm {...p} />);
+    fireEvent.click(container.querySelector("input[readonly]") as Element);
     expect(error).toHaveBeenCalledWith("Can't edit variable name while in use.");
   });
 
   it("removes variable", () => {
     const p = fakeProps();
     p.removeVariable = jest.fn();
-    const wrapper = shallow(<VariableForm {...p} />);
-    wrapper.find(".fa-trash").simulate("click");
+    const { container } = render(<VariableForm {...p} />);
+    fireEvent.click(container.querySelector(".fa-trash") as Element);
     expect(p.removeVariable).toHaveBeenCalledWith("label");
   });
 
@@ -229,15 +292,16 @@ describe("<VariableForm />", () => {
     const p = fakeProps();
     p.removeVariable = jest.fn();
     p.inUse = true;
-    const wrapper = shallow(<VariableForm {...p} />);
-    expect(wrapper.find(".fa-trash").props().style).toEqual({ color: Color.gray });
+    const { container } = render(<VariableForm {...p} />);
+    expect((container.querySelector(".fa-trash") as HTMLElement).style.color)
+      .toEqual(Color.gray);
   });
 
   it("doesn't remove variable", () => {
     const p = fakeProps();
     p.removeVariable = undefined;
-    const wrapper = shallow(<VariableForm {...p} />);
-    expect(wrapper.find(".fa-trash").length).toEqual(0);
+    const { container } = render(<VariableForm {...p} />);
+    expect(container.querySelectorAll(".fa-trash").length).toEqual(0);
   });
 
   it("renders number variable", () => {
@@ -249,10 +313,10 @@ describe("<VariableForm />", () => {
         label: "label", data_value: { kind: "numeric", args: { number: 0 } }
       }
     };
-    const wrapper = mount(<VariableForm {...p} />);
-    expect(wrapper.find(".numeric-variable-input").length)
+    const { container } = render(<VariableForm {...p} />);
+    expect(container.querySelectorAll(".numeric-variable-input").length)
       .toBeGreaterThanOrEqual(1);
-    expect(wrapper.find("FBSelect").props().list).toEqual([
+    expect(listAt(container)).toEqual([
       {
         headingId: "Variable",
         label: "Externally defined",
@@ -294,10 +358,10 @@ describe("<VariableForm />", () => {
       vector: { x: 0, y: 0, z: 0 },
     };
     p.resources.sequenceMetas[p.sequenceUuid] = { "label": variable };
-    const wrapper = mount(<VariableForm {...p} />);
-    expect(wrapper.find(".numeric-variable-input").length)
+    const { container } = render(<VariableForm {...p} />);
+    expect(container.querySelectorAll(".numeric-variable-input").length)
       .toEqual(0);
-    expect(wrapper.find("FBSelect").props().list).toEqual([
+    expect(listAt(container)).toEqual([
       {
         headingId: "Variable",
         label: "Externally defined",
@@ -320,9 +384,10 @@ describe("<VariableForm />", () => {
         label: "label", data_value: { kind: "text", args: { string: "" } }
       }
     };
-    const wrapper = mount(<VariableForm {...p} />);
-    expect(wrapper.find(".text-variable-input").length).toBeGreaterThanOrEqual(1);
-    expect(wrapper.find("FBSelect").props().list).toEqual([
+    const { container } = render(<VariableForm {...p} />);
+    expect(container.querySelectorAll(".text-variable-input").length)
+      .toBeGreaterThanOrEqual(1);
+    expect(listAt(container)).toEqual([
       {
         headingId: "Variable",
         label: "Externally defined",
@@ -364,9 +429,9 @@ describe("<VariableForm />", () => {
       vector: { x: 0, y: 0, z: 0 },
     };
     p.resources.sequenceMetas[p.sequenceUuid] = { "label": variable };
-    const wrapper = mount(<VariableForm {...p} />);
-    expect(wrapper.find(".text-variable-input").length).toEqual(0);
-    expect(wrapper.find("FBSelect").props().list).toEqual([
+    const { container } = render(<VariableForm {...p} />);
+    expect(container.querySelectorAll(".text-variable-input").length).toEqual(0);
+    expect(listAt(container)).toEqual([
       {
         headingId: "Variable",
         label: "Externally defined",
@@ -391,8 +456,8 @@ describe("<VariableForm />", () => {
         }
       }
     };
-    const wrapper = mount(<VariableForm {...p} />);
-    expect(wrapper.find("FBSelect").first().props().list).toEqual([
+    const { container } = render(<VariableForm {...p} />);
+    expect(listAt(container)).toEqual([
       {
         headingId: "Variable",
         label: "Externally defined",
@@ -413,8 +478,8 @@ describe("<VariableForm />", () => {
         }
       }
     };
-    const wrapper = mount(<VariableForm {...p} />);
-    expect(wrapper.find("FBSelect").first().props().list).toEqual([
+    const { container } = render(<VariableForm {...p} />);
+    expect(listAt(container)).toEqual([
       {
         headingId: "Sequence",
         label: "Sequence",
@@ -441,8 +506,8 @@ describe("<VariableForm />", () => {
         }
       }
     };
-    const wrapper = mount(<VariableForm {...p} />);
-    expect(wrapper.find("FBSelect").first().props().list).toEqual([
+    const { container } = render(<VariableForm {...p} />);
+    expect(listAt(container)).toEqual([
       {
         headingId: "Peripheral",
         label: "Peripherals",
@@ -469,8 +534,8 @@ describe("<VariableForm />", () => {
         }
       }
     };
-    const wrapper = mount(<VariableForm {...p} />);
-    expect(wrapper.find("FBSelect").first().props().list).toEqual([
+    const { container } = render(<VariableForm {...p} />);
+    expect(listAt(container)).toEqual([
       {
         headingId: "Sensor",
         label: "Sensors",
@@ -509,7 +574,7 @@ describe("<NumericInput />", () => {
         label: "label", data_value: { kind: "numeric", args: { number: 0 } }
       }
     };
-    const wrapper = mount(<NumericInput {...p} />);
+    const wrapper = render(<NumericInput {...p} />);
     changeBlurableInput(wrapper, "1");
     expect(p.onChange).toHaveBeenCalledWith({
       kind: "variable_declaration",
@@ -527,7 +592,7 @@ describe("<NumericInput />", () => {
         label: "label", default_value: { kind: "numeric", args: { number: 0 } }
       }
     };
-    const wrapper = mount(<NumericInput {...p} />);
+    const wrapper = render(<NumericInput {...p} />);
     changeBlurableInput(wrapper, "1");
     expect(p.onChange).toHaveBeenCalledWith({
       kind: "parameter_declaration",
@@ -545,7 +610,7 @@ describe("<NumericInput />", () => {
         label: "label", data_value: { kind: "number_placeholder", args: {} }
       }
     };
-    const wrapper = mount(<NumericInput {...p} />);
+    const wrapper = render(<NumericInput {...p} />);
     changeBlurableInput(wrapper, "1");
     expect(p.onChange).not.toHaveBeenCalled();
   });
@@ -559,8 +624,9 @@ describe("<NumericInput />", () => {
         label: "label", data_value: { kind: "number_placeholder", args: {} }
       }
     };
-    const wrapper = shallow(<NumericInput {...p} />);
-    wrapper.find(BlurableInput).props().keyCallback?.("", "");
+    mockKeyCallback = { key: "", buffer: "" };
+    const { container } = render(<NumericInput {...p} />);
+    fireEvent.click(container.querySelector(".blurable-key-callback") as Element);
     expect(p.onChange).toHaveBeenCalledWith({
       kind: "parameter_application",
       args: {
@@ -578,8 +644,9 @@ describe("<NumericInput />", () => {
         label: "label", data_value: { kind: "numeric", args: { number: 1 } }
       }
     };
-    const wrapper = shallow(<NumericInput {...p} />);
-    wrapper.find(BlurableInput).props().keyCallback?.("", "");
+    mockKeyCallback = { key: "", buffer: "" };
+    const { container } = render(<NumericInput {...p} />);
+    fireEvent.click(container.querySelector(".blurable-key-callback") as Element);
     expect(p.onChange).toHaveBeenCalledWith({
       kind: "parameter_application",
       args: {
@@ -597,8 +664,9 @@ describe("<NumericInput />", () => {
         label: "label", default_value: { kind: "number_placeholder", args: {} }
       }
     };
-    const wrapper = shallow(<NumericInput {...p} />);
-    wrapper.find(BlurableInput).props().keyCallback?.("", "");
+    mockKeyCallback = { key: "", buffer: "" };
+    const { container } = render(<NumericInput {...p} />);
+    fireEvent.click(container.querySelector(".blurable-key-callback") as Element);
     expect(p.onChange).toHaveBeenCalledWith({
       kind: "parameter_declaration",
       args: {
@@ -616,8 +684,9 @@ describe("<NumericInput />", () => {
         label: "label", default_value: { kind: "numeric", args: { number: 1 } }
       }
     };
-    const wrapper = shallow(<NumericInput {...p} />);
-    wrapper.find(BlurableInput).props().keyCallback?.("", "");
+    mockKeyCallback = { key: "", buffer: "" };
+    const { container } = render(<NumericInput {...p} />);
+    fireEvent.click(container.querySelector(".blurable-key-callback") as Element);
     expect(p.onChange).toHaveBeenCalledWith({
       kind: "parameter_declaration",
       args: {
@@ -634,8 +703,9 @@ describe("<NumericInput />", () => {
         label: "label", data_value: { kind: "numeric", args: { number: 1 } }
       }
     };
-    const wrapper = shallow(<NumericInput {...p} />);
-    wrapper.find(BlurableInput).props().keyCallback?.("k", "");
+    mockKeyCallback = { key: "k", buffer: "" };
+    const { container } = render(<NumericInput {...p} />);
+    fireEvent.click(container.querySelector(".blurable-key-callback") as Element);
     expect(p.onChange).not.toHaveBeenCalled();
   });
 });
@@ -663,7 +733,7 @@ describe("<TextInput />", () => {
         label: "label", data_value: { kind: "text", args: { string: "" } }
       }
     };
-    const wrapper = mount(<TextInput {...p} />);
+    const wrapper = render(<TextInput {...p} />);
     changeBlurableInput(wrapper, "1");
     expect(p.onChange).toHaveBeenCalledWith({
       kind: "variable_declaration",
@@ -681,7 +751,7 @@ describe("<TextInput />", () => {
         label: "label", default_value: { kind: "text", args: { string: "" } }
       }
     };
-    const wrapper = mount(<TextInput {...p} />);
+    const wrapper = render(<TextInput {...p} />);
     changeBlurableInput(wrapper, "1");
     expect(p.onChange).toHaveBeenCalledWith({
       kind: "parameter_declaration",
@@ -699,7 +769,7 @@ describe("<TextInput />", () => {
         label: "label", data_value: { kind: "text_placeholder", args: {} }
       }
     };
-    const wrapper = mount(<TextInput {...p} />);
+    const wrapper = render(<TextInput {...p} />);
     changeBlurableInput(wrapper, "1");
     expect(p.onChange).not.toHaveBeenCalled();
   });
@@ -713,8 +783,9 @@ describe("<TextInput />", () => {
         label: "label", data_value: { kind: "text_placeholder", args: {} }
       }
     };
-    const wrapper = shallow(<TextInput {...p} />);
-    wrapper.find(BlurableInput).props().keyCallback?.("", "");
+    mockKeyCallback = { key: "", buffer: "" };
+    const { container } = render(<TextInput {...p} />);
+    fireEvent.click(container.querySelector(".blurable-key-callback") as Element);
     expect(p.onChange).toHaveBeenCalledWith({
       kind: "parameter_application",
       args: {
@@ -732,8 +803,9 @@ describe("<TextInput />", () => {
         label: "label", data_value: { kind: "text", args: { string: "" } }
       }
     };
-    const wrapper = shallow(<TextInput {...p} />);
-    wrapper.find(BlurableInput).props().keyCallback?.("", "");
+    mockKeyCallback = { key: "", buffer: "" };
+    const { container } = render(<TextInput {...p} />);
+    fireEvent.click(container.querySelector(".blurable-key-callback") as Element);
     expect(p.onChange).toHaveBeenCalledWith({
       kind: "parameter_application",
       args: {
@@ -751,8 +823,9 @@ describe("<TextInput />", () => {
         label: "label", default_value: { kind: "text_placeholder", args: {} }
       }
     };
-    const wrapper = shallow(<TextInput {...p} />);
-    wrapper.find(BlurableInput).props().keyCallback?.("", "");
+    mockKeyCallback = { key: "", buffer: "" };
+    const { container } = render(<TextInput {...p} />);
+    fireEvent.click(container.querySelector(".blurable-key-callback") as Element);
     expect(p.onChange).toHaveBeenCalledWith({
       kind: "parameter_declaration",
       args: {
@@ -770,8 +843,9 @@ describe("<TextInput />", () => {
         label: "label", default_value: { kind: "text", args: { string: "" } }
       }
     };
-    const wrapper = shallow(<TextInput {...p} />);
-    wrapper.find(BlurableInput).props().keyCallback?.("", "");
+    mockKeyCallback = { key: "", buffer: "" };
+    const { container } = render(<TextInput {...p} />);
+    fireEvent.click(container.querySelector(".blurable-key-callback") as Element);
     expect(p.onChange).toHaveBeenCalledWith({
       kind: "parameter_declaration",
       args: {
@@ -788,8 +862,9 @@ describe("<TextInput />", () => {
         label: "label", data_value: { kind: "text", args: { string: "" } }
       }
     };
-    const wrapper = shallow(<TextInput {...p} />);
-    wrapper.find(BlurableInput).props().keyCallback?.("k", "");
+    mockKeyCallback = { key: "k", buffer: "" };
+    const { container } = render(<TextInput {...p} />);
+    fireEvent.click(container.querySelector(".blurable-key-callback") as Element);
     expect(p.onChange).not.toHaveBeenCalled();
   });
 });
@@ -816,11 +891,11 @@ describe("<Label />", () => {
 
   it("changes label", () => {
     const p = fakeProps();
-    const wrapper = shallow<LabelProps>(<Label {...p} />);
-    wrapper.find("input").first().simulate("change",
-      { currentTarget: { value: "new label" } });
-    expect(wrapper.state().labelValue).toEqual("new label");
-    wrapper.find("input").first().simulate("blur");
+    const { container } = render(<Label {...p} />);
+    const input = container.querySelector("input") as Element;
+    fireEvent.change(input, { target: { value: "new label" } });
+    expect((input as HTMLInputElement).value).toEqual("new label");
+    fireEvent.blur(input);
     const newVariableNode = cloneDeep(p.variable.celeryNode);
     newVariableNode.args.label = "new label";
     expect(p.onChange).toHaveBeenCalledWith(newVariableNode, "label");
@@ -830,8 +905,8 @@ describe("<Label />", () => {
     const p = fakeProps();
     p.inUse = true;
     p.allowedVariableNodes = AllowedVariableNodes.identifier;
-    const wrapper = shallow<LabelProps>(<Label {...p} />);
-    expect(wrapper.find("input").length).toEqual(0);
+    const { container } = render(<Label {...p} />);
+    expect(container.querySelectorAll("input").length).toEqual(0);
   });
 
   it("doesn't render input: prop", () => {
@@ -839,7 +914,7 @@ describe("<Label />", () => {
     p.inUse = true;
     p.allowedVariableNodes = AllowedVariableNodes.parameter;
     p.labelOnly = true;
-    const wrapper = shallow<LabelProps>(<Label {...p} />);
-    expect(wrapper.find("input").length).toEqual(0);
+    const { container } = render(<Label {...p} />);
+    expect(container.querySelectorAll("input").length).toEqual(0);
   });
 });

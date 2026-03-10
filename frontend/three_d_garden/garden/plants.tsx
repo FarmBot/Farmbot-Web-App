@@ -1,13 +1,16 @@
 import React from "react";
 import { Config } from "../config";
 import { HOVER_OBJECT_MODES, RenderOrder } from "../constants";
-import { Billboard, Plane, Sphere, useTexture } from "@react-three/drei";
+import { Billboard } from "@react-three/drei";
 import {
   Vector3,
-  Mesh,
   Group as GroupType,
   Color,
   WebGLProgramParametersWithUniforms,
+  InstancedMesh as InstancedMeshType,
+  Matrix4,
+  Quaternion,
+  InstancedBufferAttribute,
 } from "three";
 import {
   getGardenPositionFunc,
@@ -21,10 +24,8 @@ import { Path } from "../../internal_urls";
 import { useNavigate } from "react-router";
 import { setPanelOpen } from "../../farm_designer/panel_header";
 import { getMode, round } from "../../farm_designer/map/util";
-import { ThreeElements, useFrame } from "@react-three/fiber";
-import { getSizeAtTime } from "../../promo/plants";
-import { FixedNormalMaterial } from "./fixed_normal_material";
-import { Group, MeshPhongMaterial } from "../components";
+import { ThreeEvent, useFrame } from "@react-three/fiber";
+import { InstancedMesh, MeshPhongMaterial, SphereGeometry } from "../components";
 import {
   getSpreadOverlap, getSpreadRadii,
 } from "../../farm_designer/map/layers/spread/spread_overlap_helper";
@@ -44,25 +45,17 @@ export interface ThreeDGardenPlant {
   seed: number;
 }
 
-export interface ThreeDPlantProps {
+export interface ThreeDPlantLabelProps {
   plant: ThreeDGardenPlant;
   i: number;
-  labelOnly?: boolean;
   config: Config;
   hoveredPlant: number | undefined;
-  dispatch?: Function;
-  visible?: boolean;
-  spreadVisible?: boolean;
   getZ(x: number, y: number): number;
-  startTimeRef?: React.RefObject<number>;
-  activePositionRef: ActivePositionRef;
-  plants: ThreeDGardenPlant[];
 }
 
-export const ThreeDPlant = (props: ThreeDPlantProps) => {
-  const { i, plant, labelOnly, config, hoveredPlant } = props;
+export const ThreeDPlantLabel = (props: ThreeDPlantLabelProps) => {
+  const { i, plant, config, hoveredPlant } = props;
   const alwaysShowLabels = config.labels && !config.labelsOnHover;
-  const navigate = useNavigate();
   // eslint-disable-next-line no-null/no-null
   const billboardRef = React.useRef<GroupType>(null);
   const getPlantZ = (size: number) =>
@@ -77,30 +70,9 @@ export const ThreeDPlant = (props: ThreeDPlantProps) => {
       threeSpace(plant.y, config.bedWidthOuter),
       getPlantZ(plant.size),
     )}>
-    {labelOnly
-      ? <LabelPart
-        visible={alwaysShowLabels || i === hoveredPlant}
-        plant={plant} />
-      : <PlantPart
-        i={i}
-        config={config}
-        plants={props.plants}
-        plant={plant}
-        billboardRef={billboardRef}
-        activePositionRef={props.activePositionRef}
-        getPlantZ={getPlantZ}
-        url={plant.icon}
-        spreadVisible={props.spreadVisible || false}
-        startTimeRef={props.startTimeRef}
-        animateSeasons={props.config.animateSeasons}
-        season={config.plants}
-        onClick={() => {
-          if (plant.id && !isUndefined(props.dispatch) && props.visible &&
-            !HOVER_OBJECT_MODES.includes(getMode())) {
-            props.dispatch(setPanelOpen(true));
-            navigate(Path.plants(plant.id));
-          }
-        }} />}
+    <LabelPart
+      visible={alwaysShowLabels || i === hoveredPlant}
+      plant={plant} />
   </Billboard>;
 };
 
@@ -119,35 +91,79 @@ const LabelPart = (props: LabelPartProps) =>
     {props.plant.label}
   </Text>;
 
-interface PlantPartProps extends CustomImageProps {
-  spreadVisible: boolean;
-  config: Config;
-  activePositionRef: ActivePositionRef;
+export interface PlantSpreadInstancesProps {
   plants: ThreeDGardenPlant[];
+  config: Config;
+  getZ(x: number, y: number): number;
+  visible?: boolean;
+  dispatch?: Function;
+  activePositionRef: ActivePositionRef;
+  spreadVisible: boolean;
 }
 
-const PlantPart = (props: PlantPartProps) => {
-  const { config } = props;
+export const PlantSpreadInstances = (props: PlantSpreadInstancesProps) => {
+  const {
+    config, plants, getZ, visible, dispatch, activePositionRef, spreadVisible,
+  } = props;
+  const navigate = useNavigate();
+  // eslint-disable-next-line no-null/no-null
+  const instancedRef = React.useRef<InstancedMeshType>(null);
+  const tempMatrix = React.useMemo(() => new Matrix4(), []);
+  const tempPosition = React.useMemo(() => new Vector3(), []);
+  const tempScale = React.useMemo(() => new Vector3(), []);
+  const tempQuaternion = React.useMemo(() => new Quaternion(), []);
+  const tempColor = React.useMemo(() => new Color(), []);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const boundsCenter = React.useMemo(getBoundsCenter(config), []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const halfSize = React.useMemo(getHalfSize(config), []);
+  const plantIndexes = React.useMemo(() =>
+    plants.map((_, index) => index), [plants]);
+  const getPlantZ = React.useCallback((size: number, plant: ThreeDGardenPlant) =>
+    zZeroFunc(config)
+    + getZ(plant.x - config.bedXOffset, plant.y - config.bedYOffset)
+    + size / 2, [config, getZ]);
   const editPlantMode =
     Path.getSlug(Path.designer()) == "plants" && Path.lastChunkIsNum();
   const plantId = parseInt(Path.getSlug(Path.plants()));
   const currentPlant =
-    props.plants.filter(p => p.id == plantId)[0] as ThreeDGardenPlant | undefined;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const halfSize = React.useMemo(getHalfSize(config), []);
-  const spreadRadii = getSpreadRadii({
-    activeDragSpread: editPlantMode
-      ? currentPlant?.spread
-      : findCrop(Path.getCropSlug()).spread,
-    inactiveSpread: props.plant.spread,
-    radius: props.plant.size / 2,
-  });
+    plants.filter(p => p.id == plantId)[0] as ThreeDGardenPlant | undefined;
+  const activeDragSpread = editPlantMode
+    ? currentPlant?.spread
+    : findCrop(Path.getCropSlug()).spread;
 
-  const rgb = React.useMemo(() => ({ value: [0, 1, 0] }), []);
-  useFrame(() => {
-    const worldPos = props.activePositionRef.current || { x: -10000, y: -10000 };
+  const ensureInstanceColor = React.useCallback((mesh: InstancedMeshType) => {
+    const needsResize = !mesh.instanceColor
+      || mesh.instanceColor.count != plants.length;
+    if (needsResize) {
+      const colors = new Float32Array(plants.length * 3);
+      colors.fill(1);
+      mesh.instanceColor = new InstancedBufferAttribute(colors, 3);
+      if (mesh.geometry) {
+        mesh.geometry.setAttribute("instanceColor", mesh.instanceColor);
+      }
+      mesh.instanceColor.needsUpdate = true;
+      const material = mesh.material;
+      if (Array.isArray(material)) {
+        material.forEach(entry => { entry.needsUpdate = true; });
+      } else if (material) {
+        material.needsUpdate = true;
+      }
+    }
+  }, [plants.length]);
+
+  React.useLayoutEffect(() => {
+    const mesh = instancedRef.current;
+    if (!mesh) { return; }
+    ensureInstanceColor(mesh);
+  }, [ensureInstanceColor]);
+
+  useFrame(state => {
+    const mesh = instancedRef.current;
+    if (!mesh || visible === false) { return; }
+    ensureInstanceColor(mesh);
+    tempQuaternion.copy(state.camera.quaternion);
+    const worldPos = activePositionRef.current || { x: -10000, y: -10000 };
     const activePointer = getGardenPositionFunc(config)(worldPos);
     const active = editPlantMode
       ? {
@@ -158,40 +174,84 @@ const PlantPart = (props: PlantPartProps) => {
         x: activePointer.x + config.bedXOffset,
         y: activePointer.y + config.bedYOffset,
       };
-    const overlap = getSpreadOverlap({
-      spreadRadii,
-      activeDragXY: {
-        x: round(active.x),
-        y: round(active.y),
-        z: 0,
-      },
-      plantXY: { x: round(props.plant.x), y: round(props.plant.y), z: 0 },
-    });
-    const color = (props.plant.id && (plantId != props.plant.id))
-      ? overlap.color.rgb
-      : [1, 1, 1];
     const clickToAddMode = getMode() == Mode.clickToAdd;
-    rgb.value = (clickToAddMode || editPlantMode) ? color : [0, 1, 0];
+    plants.forEach((plant, index) => {
+      const spreadRadii = getSpreadRadii({
+        activeDragSpread,
+        inactiveSpread: plant.spread,
+        radius: plant.size / 2,
+      });
+      const scale = (spreadVisible || !plant.id || editPlantMode)
+        ? spreadRadii.inactive
+        : 0;
+      tempPosition.set(
+        threeSpace(plant.x, config.bedLengthOuter),
+        threeSpace(plant.y, config.bedWidthOuter),
+        getPlantZ(plant.size, plant),
+      );
+      tempScale.set(scale, scale, scale);
+      tempMatrix.compose(tempPosition, tempQuaternion, tempScale);
+      mesh.setMatrixAt(index, tempMatrix);
+      if (mesh.setColorAt) {
+        const overlap = getSpreadOverlap({
+          spreadRadii,
+          activeDragXY: {
+            x: round(active.x),
+            y: round(active.y),
+            z: 0,
+          },
+          plantXY: {
+            x: round(plant.x),
+            y: round(plant.y),
+            z: 0,
+          },
+        });
+        const color = (plant.id && (plantId != plant.id))
+          ? overlap.color.rgb
+          : [1, 1, 1];
+        const insideColor =
+          (clickToAddMode || editPlantMode) ? color : [0, 1, 0];
+        tempColor.setRGB(insideColor[0], insideColor[1], insideColor[2]);
+        mesh.setColorAt(index, tempColor);
+      }
+    });
+    mesh.instanceMatrix.needsUpdate = true;
+    if (mesh.instanceColor) { mesh.instanceColor.needsUpdate = true; }
   });
-  return <Group>
-    <Image {...props} />
-    {(props.spreadVisible || !props.plant.id || editPlantMode) &&
-      <Sphere args={[spreadRadii.inactive, 32, 32]}>
-        <MeshPhongMaterial
-          color={"green"}
-          transparent={true}
-          opacity={0.4}
-          onBeforeCompile={(shader) => {
-            shader.uniforms.uBoundsCenter = { value: boundsCenter };
-            shader.uniforms.uHalfSize = { value: halfSize };
-            shader.uniforms.uInside = rgb;
-            shader.uniforms.uOutside = { value: new Color("red") };
-            outOfBoundsShaderModification(shader);
-          }}
-          depthWrite={false} />
-      </Sphere>}
-  </Group>;
+
+  const onClick = (event: ThreeEvent<MouseEvent>) => {
+    const instanceId = event.instanceId;
+    if (isUndefined(instanceId)) { return; }
+    const plant = plants[instanceId];
+    if (plant?.id && dispatch && visible &&
+      !HOVER_OBJECT_MODES.includes(getMode())) {
+      dispatch(setPanelOpen(true));
+      navigate(Path.plants(plant.id));
+    }
+  };
+
+  return <InstancedMesh
+    ref={instancedRef}
+    args={[undefined, undefined, plants.length]}
+    userData={{ plantIndexes }}
+    visible={visible}
+    onClick={onClick}>
+    <SphereGeometry args={[1, 32, 32]} />
+    <MeshPhongMaterial
+      color={"white"}
+      transparent={true}
+      opacity={0.4}
+      vertexColors={true}
+      onBeforeCompile={(shader) => {
+        shader.uniforms.uBoundsCenter = { value: boundsCenter };
+        shader.uniforms.uHalfSize = { value: halfSize };
+        shader.uniforms.uOutside = { value: new Color("red") };
+        outOfBoundsShaderModification(shader, true);
+      }}
+      depthWrite={false} />
+  </InstancedMesh>;
 };
+
 
 export const getBoundsCenter = (config: Config) => () =>
   new Vector3(
@@ -207,11 +267,34 @@ export const getHalfSize = (config: Config) => () => new Vector3(
 );
 
 export const outOfBoundsShaderModification =
-  (shader: WebGLProgramParametersWithUniforms) => {
+  (shader: WebGLProgramParametersWithUniforms,
+    useInstanceColor = false) => {
+    const vertexCommon = useInstanceColor
+      ? `#include <common>
+       varying vec3 vInstanceColor;
+       varying vec3 vWorldPosition;`
+      : `#include <common>
+       varying vec3 vWorldPosition;`;
+    const colorVertex = useInstanceColor
+      ? `#include <color_vertex>
+       vInstanceColor = instanceColor;`
+      : "#include <color_vertex>";
+    const fragmentUniforms = useInstanceColor
+      ? `uniform vec3 uBoundsCenter;
+       uniform vec3 uHalfSize;
+       uniform vec3 uOutside;
+       varying vec3 vInstanceColor;`
+      : `uniform vec3 uBoundsCenter;
+       uniform vec3 uHalfSize;
+       uniform vec3 uInside;
+       uniform vec3 uOutside;`;
+    const insideColor = useInstanceColor ? "vInstanceColor" : "uInside";
     shader.vertexShader = shader.vertexShader.replace(
       "#include <common>",
-      `#include <common>
-       varying vec3 vWorldPosition;`,
+      vertexCommon,
+    ).replace(
+      "#include <color_vertex>",
+      colorVertex,
     ).replace(
       "#include <worldpos_vertex>",
       `#include <worldpos_vertex>
@@ -220,10 +303,7 @@ export const outOfBoundsShaderModification =
       "#include <common>",
       `#include <common>
        varying vec3 vWorldPosition;
-       uniform vec3 uBoundsCenter;
-       uniform vec3 uHalfSize;
-       uniform vec3 uInside;
-       uniform vec3 uOutside;`,
+       ${fragmentUniforms}`,
     ).replace(
       "#include <color_fragment>",
       `#include <color_fragment>
@@ -232,55 +312,7 @@ export const outOfBoundsShaderModification =
        p.x > -uHalfSize.x &&
        abs(p.y) <= uHalfSize.y &&
        abs(p.z) <= uHalfSize.z;
-       diffuseColor.rgb = mix(uOutside, uInside, float(inside));
+       diffuseColor.rgb = mix(uOutside, ${insideColor}, float(inside));
       `,
     );
   };
-
-type MeshProps = ThreeElements["mesh"];
-interface CustomImageProps extends MeshProps {
-  url: string;
-  plant: ThreeDGardenPlant;
-  i: number;
-  onClick?: () => void;
-  getPlantZ(size: number): number;
-  season: string;
-  startTimeRef?: React.RefObject<number>;
-  animateSeasons: boolean;
-  billboardRef: React.RefObject<GroupType | null>;
-}
-
-const Image = (props: CustomImageProps) => {
-  const texture = useTexture(props.url);
-
-  const { plant } = props;
-  // eslint-disable-next-line no-null/no-null
-  const imgRef = React.useRef<Mesh>(null);
-
-  useFrame(() => {
-    if (!props.animateSeasons || !props.startTimeRef) { return; }
-
-    if (imgRef.current && props.billboardRef.current) {
-      const currentTime = performance.now() / 1000;
-      const t = currentTime - props.startTimeRef.current;
-      const scale = plant.size * getSizeAtTime(plant, props.season, t);
-      imgRef.current.scale.set(scale, scale, scale);
-      props.billboardRef.current.position.z = props.getPlantZ(scale);
-    }
-  });
-
-  return <Plane {...props}
-    ref={imgRef}
-    scale={(!props.animateSeasons || !props.startTimeRef) ? plant.size : 0}
-    name={"" + props.i}
-    onClick={props.onClick}
-    renderOrder={RenderOrder.plants}
-    args={[1, 1]}>
-    <FixedNormalMaterial
-      key={Math.random()}
-      map={texture}
-      roughness={0}
-      metalness={0}
-      transparent={true} />
-  </Plane>;
-};

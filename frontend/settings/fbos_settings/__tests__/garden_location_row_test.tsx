@@ -1,18 +1,64 @@
-jest.mock("../../../api/crud", () => ({
-  initSave: jest.fn(),
-  edit: jest.fn(),
-  save: jest.fn(),
-}));
-
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { mount, shallow } from "enzyme";
 import { GardenLocationRow } from "../garden_location_row";
 import { GardenLocationRowProps } from "../interfaces";
 import { fakeDevice } from "../../../__test_support__/resource_index_builder";
-import { edit, initSave, save } from "../../../api/crud";
+import * as crud from "../../../api/crud";
 import { fakeFarmwareEnv } from "../../../__test_support__/fake_state/resources";
 import { namespace3D } from "../../three_d_settings";
+import * as ui from "../../../ui";
+
+let initSaveSpy: jest.SpyInstance;
+let editSpy: jest.SpyInstance;
+let saveSpy: jest.SpyInstance;
+let originalGeolocation: Geolocation | undefined;
+let toggleButtonSpy: jest.SpyInstance;
+let fbSelectSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  originalGeolocation = navigator.geolocation;
+  Object.defineProperty(navigator, "geolocation", {
+    value: undefined,
+    configurable: true,
+  });
+  initSaveSpy = jest.spyOn(crud, "initSave").mockImplementation(jest.fn());
+  editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+  toggleButtonSpy = jest.spyOn(ui, "ToggleButton")
+    .mockImplementation((props: {
+      toggleAction: (e: React.MouseEvent) => void,
+      toggleValue: number | string | boolean | undefined,
+      disabled?: boolean | undefined,
+      title?: string | undefined,
+    }) =>
+      <button
+        className={"mock-toggle-button"}
+        title={props.title}
+        disabled={!!props.disabled}
+        onClick={e => !props.disabled && props.toggleAction(e)}>
+        {String(props.toggleValue)}
+      </button>);
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation((props: {
+      onChange: (ddi: { label: string, value: number | string }) => void,
+    }) =>
+      <button
+        onClick={() => props.onChange({ label: "Outdoor", value: 0 })}>
+        mock-scene-select
+      </button>);
+});
+
+afterEach(() => {
+  Object.defineProperty(navigator, "geolocation", {
+    value: originalGeolocation,
+    configurable: true,
+  });
+  initSaveSpy.mockRestore();
+  editSpy.mockRestore();
+  saveSpy.mockRestore();
+  toggleButtonSpy.mockRestore();
+  fbSelectSpy.mockRestore();
+});
 
 describe("<GardenLocationRow />", () => {
   const fakeProps = (): GardenLocationRowProps => ({
@@ -22,63 +68,74 @@ describe("<GardenLocationRow />", () => {
   });
 
   it("doesn't have use location button", () => {
-    const wrapper = mount(<GardenLocationRow {...fakeProps()} />);
-    expect(wrapper.html()).not.toContain("fa-crosshairs");
+    const { container } = render(<GardenLocationRow {...fakeProps()} />);
+    expect(container.innerHTML).not.toContain("fa-crosshairs");
   });
 
   it("changes location", () => {
     Object.defineProperty(navigator, "geolocation", {
-      value: () => ({}), configurable: true
+      value: {
+        getCurrentPosition: (cb: PositionCallback) =>
+          cb({
+            timestamp: 1,
+            coords: {
+              accuracy: 1,
+              altitude: 1,
+              altitudeAccuracy: 1,
+              heading: 1,
+              speed: 1,
+              latitude: 100,
+              longitude: 50,
+              toJSON: jest.fn(),
+            },
+            toJSON: jest.fn(),
+          }),
+      },
+      configurable: true,
     });
-    navigator.geolocation.getCurrentPosition = cb =>
-      cb({
-        timestamp: 1,
-        coords: {
-          accuracy: 1, altitude: 1, altitudeAccuracy: 1, heading: 1, speed: 1,
-          latitude: 100, longitude: 50, toJSON: jest.fn(),
-        }, toJSON: jest.fn(),
-      });
     const p = fakeProps();
-    const wrapper = mount(<GardenLocationRow {...p} />);
-    wrapper.find("button").first().simulate("click");
-    expect(edit).toHaveBeenCalledWith(p.device, { lat: 100, lng: 50 });
-    expect(save).toHaveBeenCalledWith(p.device.uuid);
+    render(<GardenLocationRow {...p} />);
+    fireEvent.click(screen.getByTitle("use current location"));
+    expect(crud.edit).toHaveBeenCalledWith(p.device, { lat: 100, lng: 50 });
+    expect(crud.save).toHaveBeenCalledWith(p.device.uuid);
   });
 
   it("changes latitude", () => {
     const p = fakeProps();
-    const wrapper = shallow(<GardenLocationRow {...p} />);
-    const input = wrapper.find("input").first();
-    input.simulate("change", { currentTarget: { value: 100 } });
-    input.simulate("blur");
-    expect(edit).toHaveBeenCalledWith(p.device, { lat: 100 });
-    expect(save).toHaveBeenCalledWith(p.device.uuid);
+    render(<GardenLocationRow {...p} />);
+    const input = screen.getByTitle("latitude");
+    fireEvent.change(input, { target: { value: "100" } });
+    fireEvent.blur(input);
+    expect(crud.edit).toHaveBeenCalledWith(p.device, { lat: 100 });
+    expect(crud.save).toHaveBeenCalledWith(p.device.uuid);
   });
 
   it("changes longitude", () => {
     const p = fakeProps();
-    const wrapper = shallow(<GardenLocationRow {...p} />);
-    const input = wrapper.find("input").last();
-    input.simulate("change", { currentTarget: { value: 100 } });
-    input.simulate("blur");
-    expect(edit).toHaveBeenCalledWith(p.device, { lng: 100 });
-    expect(save).toHaveBeenCalledWith(p.device.uuid);
+    render(<GardenLocationRow {...p} />);
+    const input = screen.getByTitle("longitude");
+    fireEvent.change(input, { target: { value: "100" } });
+    fireEvent.blur(input);
+    expect(crud.edit).toHaveBeenCalledWith(p.device, { lng: 100 });
+    expect(crud.save).toHaveBeenCalledWith(p.device.uuid);
   });
 
   it("changes indoor setting", () => {
     const p = fakeProps();
-    const wrapper = mount(<GardenLocationRow {...p} />);
-    wrapper.find("button").at(1).simulate("click");
-    expect(edit).toHaveBeenCalledWith(p.device, { indoor: true });
-    expect(save).toHaveBeenCalledWith(p.device.uuid);
+    const { container } = render(<GardenLocationRow {...p} />);
+    const button = container.querySelector("button.mock-toggle-button");
+    expect(button).toBeTruthy();
+    button && fireEvent.click(button);
+    expect(crud.edit).toHaveBeenCalledWith(p.device, { indoor: true });
+    expect(crud.save).toHaveBeenCalledWith(p.device.uuid);
   });
 
   it("shows map link", () => {
     const p = fakeProps();
     p.device.body.lat = 100;
     p.device.body.lng = 50;
-    const wrapper = mount(<GardenLocationRow {...p} />);
-    expect(wrapper.html()).toContain("fa-map");
+    const { container } = render(<GardenLocationRow {...p} />);
+    expect(container.innerHTML).toContain("fa-map");
   });
 
   it("changes scene", () => {
@@ -88,12 +145,9 @@ describe("<GardenLocationRow />", () => {
     fakeEnv.body.value = "1";
     p.farmwareEnvs = [fakeEnv];
     render(<GardenLocationRow {...p} />);
-    const toggle = screen.getByText("Lab");
-    fireEvent.click(toggle);
-    const dropdownItems = screen.getAllByRole("menuitem");
-    fireEvent.click(dropdownItems[0]);
-    expect(initSave).not.toHaveBeenCalled();
-    expect(edit).toHaveBeenCalledWith(fakeEnv, { value: "0" });
-    expect(save).toHaveBeenCalledWith(fakeEnv.uuid);
+    fireEvent.click(screen.getByText("mock-scene-select"));
+    expect(crud.initSave).not.toHaveBeenCalled();
+    expect(crud.edit).toHaveBeenCalledWith(fakeEnv, { value: "0" });
+    expect(crud.save).toHaveBeenCalledWith(fakeEnv.uuid);
   });
 });

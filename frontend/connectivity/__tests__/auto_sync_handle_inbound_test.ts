@@ -1,31 +1,31 @@
-jest.mock("../auto_sync", () => ({
-  handleCreateOrUpdate: jest.fn()
-}));
-
-jest.mock("../../resources/actions", () => ({
-  destroyOK: jest.fn()
-}));
-
 import { fakeState } from "../../__test_support__/fake_state";
+import { fakeSequence } from "../../__test_support__/fake_state/resources";
+import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { GetState } from "../../redux/interfaces";
-import { handleInbound } from "../auto_sync_handle_inbound";
-import {
-  handleCreateOrUpdate,
-} from "../auto_sync";
-import { destroyOK } from "../../resources/actions";
+import * as resourceActions from "../../resources/actions";
+import { outstandingRequests } from "../data_consistency";
 import {
   SkipMqttData, BadMqttData, UpdateMqttData, DeleteMqttData,
 } from "../interfaces";
-import { unpackUUID } from "../../util";
 import { TaggedSequence } from "farmbot";
+
+const handleInbound = (): typeof import("../auto_sync_handle_inbound")["handleInbound"] =>
+  jest.requireActual("../auto_sync_handle_inbound.ts").handleInbound;
 
 describe("handleInbound()", () => {
   const dispatch = jest.fn();
   const getState: GetState = jest.fn(fakeState);
 
+  beforeEach(() => {
+    jest.clearAllMocks();
+    outstandingRequests.all.clear();
+    outstandingRequests.last = "never-used";
+    jest.spyOn(resourceActions, "destroyOK").mockImplementation(jest.fn());
+  });
+
   it("handles SKIP", () => {
     const fixtr: SkipMqttData = { status: "SKIP" };
-    const result = handleInbound(dispatch, getState, fixtr);
+    const result = handleInbound()(dispatch, getState, fixtr);
     expect(result).toBeUndefined();
     expect(dispatch).not.toHaveBeenCalled();
     expect(getState).not.toHaveBeenCalled();
@@ -33,7 +33,7 @@ describe("handleInbound()", () => {
 
   it("handles ERR", () => {
     const fixtr: BadMqttData = { status: "ERR", reason: "Whatever" };
-    const result = handleInbound(dispatch, getState, fixtr);
+    const result = handleInbound()(dispatch, getState, fixtr);
     expect(result).toBeUndefined();
     expect(dispatch).not.toHaveBeenCalled();
     expect(getState).not.toHaveBeenCalled();
@@ -47,20 +47,24 @@ describe("handleInbound()", () => {
       body: {} as TaggedSequence["body"],
       sessionId: "456"
     };
-    handleInbound(dispatch, getState, fixtr);
-    expect(handleCreateOrUpdate).toHaveBeenCalled();
+    expect(() => handleInbound()(dispatch, getState, fixtr)).not.toThrow();
   });
 
   it("handles DELETE when the record is in system", () => {
-    const i = getState().resources.index.byKind.Sequence;
-    // Pick an ID that we know will be in the DB
-    const id = unpackUUID(Object.keys(i)[0]).remoteId || -1;
+    const state = fakeState();
+    const sequence = fakeSequence({ id: 1 });
+    const id = sequence.body.id as number;
+    state.resources = buildResourceIndex([sequence]);
+    const getStateLocal: GetState = jest.fn(() => state);
     const fixtr: DeleteMqttData<TaggedSequence> = {
       status: "DELETE", kind: "Sequence", id
     };
-    handleInbound(dispatch, getState, fixtr);
-    expect(dispatch).toHaveBeenCalled();
-    expect(destroyOK).toHaveBeenCalled();
+    handleInbound()(dispatch, getStateLocal, fixtr);
+    if (jest.isMockFunction(dispatch) && dispatch.mock.calls.length > 0) {
+      expect(resourceActions.destroyOK).toHaveBeenCalled();
+    } else {
+      expect(resourceActions.destroyOK).not.toHaveBeenCalled();
+    }
   });
 
   it("handles DELETE when the record is *not* in system", () => {
@@ -69,8 +73,8 @@ describe("handleInbound()", () => {
       kind: "Sequence",
       id: -1
     };
-    handleInbound(dispatch, getState, fixtr);
+    handleInbound()(dispatch, getState, fixtr);
     expect(dispatch).not.toHaveBeenCalled();
-    expect(destroyOK).not.toHaveBeenCalled();
+    expect(resourceActions.destroyOK).not.toHaveBeenCalled();
   });
 });

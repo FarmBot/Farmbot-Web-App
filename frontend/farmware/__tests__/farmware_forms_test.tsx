@@ -1,23 +1,51 @@
 const mockDevice = {
   execScript: jest.fn((..._) => Promise.resolve({})),
 };
-jest.mock("../../device", () => ({ getDevice: () => mockDevice }));
-
-jest.mock("../../api/crud", () => ({ destroy: jest.fn() }));
 
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import {
   needsFarmwareForm, getConfigEnvName,
   FarmwareForm, FarmwareFormProps, ConfigFields, ConfigFieldsProps,
 } from "../farmware_forms";
 import { fakeFarmware } from "../../__test_support__/fake_farmwares";
-import { changeBlurableInput, clickButton } from "../../__test_support__/helpers";
 import { FarmwareConfig } from "farmbot";
-import { ExpandableHeader, FBSelect } from "../../ui";
 import { fakeFarmwareEnv } from "../../__test_support__/fake_state/resources";
-import { destroy } from "../../api/crud";
 import { FarmwareName } from "../../sequences/step_tiles/tile_execute_script";
+import * as crud from "../../api/crud";
+import * as deviceModule from "../../device";
+import * as ui from "../../ui";
+
+let destroySpy: jest.SpyInstance;
+let getDeviceSpy: jest.SpyInstance;
+let fbSelectSpy: jest.SpyInstance;
+let expandableHeaderSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  mockDevice.execScript = jest.fn((..._) => Promise.resolve({}));
+  getDeviceSpy = jest.spyOn(deviceModule, "getDevice")
+    .mockImplementation(() => mockDevice as never);
+  destroySpy = jest.spyOn(crud, "destroy")
+    .mockImplementation(jest.fn());
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation((props: {
+      onChange: (ddi: { label: string; value: number }) => void;
+    }) => <button
+      data-testid={"fb-select"}
+      onClick={() => props.onChange({ label: "", value: 1 })} />);
+  expandableHeaderSpy = jest.spyOn(ui, "ExpandableHeader")
+    .mockImplementation((props: { title: string; onClick: () => void }) =>
+      <button className={"expandable-header"} onClick={props.onClick}>
+        {props.title}
+      </button>);
+});
+
+afterEach(() => {
+  getDeviceSpy.mockRestore();
+  destroySpy.mockRestore();
+  fbSelectSpy.mockRestore();
+  expandableHeaderSpy.mockRestore();
+});
 
 describe("getConfigEnvName()", () => {
   it("generates correct name", () => {
@@ -57,14 +85,17 @@ describe("<ConfigFields />", () => {
   it("renders fields", () => {
     const p = fakeProps();
     p.farmwareConfigs.push({ name: "config_2", label: "Config 2", value: "2" });
-    const wrapper = mount(<ConfigFields {...fakeProps()} />);
-    expect(wrapper.text()).toEqual("Config 1");
+    const { container } = render(<ConfigFields {...p} />);
+    expect(container.textContent).toContain("Config 1");
   });
 
   it("changes env var in API", () => {
     const p = fakeProps();
-    const wrapper = mount(<ConfigFields {...p} />);
-    changeBlurableInput(wrapper, "1");
+    const { container } = render(<ConfigFields {...p} />);
+    const input = container.querySelector("input") as Element;
+    fireEvent.focus(input);
+    fireEvent.change(input, { target: { value: "1" } });
+    fireEvent.blur(input);
     expect(p.saveFarmwareEnv).toHaveBeenCalledWith(
       "my_fake_farmware_config_1", "1");
   });
@@ -73,9 +104,8 @@ describe("<ConfigFields />", () => {
     const p = fakeProps();
     p.farmwareName = FarmwareName.MeasureSoilHeight;
     p.farmwareConfigs[0].name = "verbose";
-    const wrapper = shallow(<ConfigFields {...p} />);
-    const input = shallow(wrapper.find("FarmwareInputField").getElement());
-    input.find(FBSelect).simulate("change", { label: "", value: 1 });
+    const { container } = render(<ConfigFields {...p} />);
+    fireEvent.click(container.querySelector("[data-testid=\"fb-select\"]") as Element);
     expect(p.saveFarmwareEnv).toHaveBeenCalledWith(
       "measure_soil_height_verbose", "1");
   });
@@ -85,8 +115,8 @@ describe("<ConfigFields />", () => {
     p.getValue = () => "0";
     p.farmwareName = "My Farmware";
     p.userEnv = { my_farmware_config_1: "2" };
-    const wrapper = shallow(<ConfigFields {...p} />);
-    wrapper.find(".fa-refresh").simulate("click");
+    const { container } = render(<ConfigFields {...p} />);
+    fireEvent.click(container.querySelector(".fa-refresh") as Element);
     expect(p.saveFarmwareEnv).toHaveBeenCalledWith("my_farmware_config_1", "2");
   });
 
@@ -95,8 +125,8 @@ describe("<ConfigFields />", () => {
     p.getValue = () => "0";
     p.farmwareName = "My Farmware";
     p.farmwareConfigs = [{ name: "config_1", label: "Config 1", value: "1" }];
-    const wrapper = shallow(<ConfigFields {...p} />);
-    wrapper.find(".fa-times-circle").simulate("click");
+    const { container } = render(<ConfigFields {...p} />);
+    fireEvent.click(container.querySelector(".fa-times-circle") as Element);
     expect(p.saveFarmwareEnv).toHaveBeenCalledWith("my_farmware_config_1", "1");
   });
 });
@@ -113,31 +143,34 @@ describe("<FarmwareForm />", () => {
   });
 
   it("renders form", () => {
-    const wrapper = mount(<FarmwareForm {...fakeProps()} />);
+    const { container } = render(<FarmwareForm {...fakeProps()} />);
     ["Run", "Config 1"].map(string =>
-      expect(wrapper.text()).toContain(string));
-    expect(wrapper.find("label").last().text()).toContain("Config 1");
-    expect(wrapper.find("input").props().value).toEqual("4");
-    expect(wrapper.find(".title-help").length).toEqual(0);
+      expect(container.textContent).toContain(string));
+    expect(container.querySelector("label:last-of-type")?.textContent)
+      .toContain("Config 1");
+    expect((container.querySelector("input") as HTMLInputElement).value)
+      .toEqual("4");
+    expect(container.querySelectorAll(".title-help").length).toEqual(0);
   });
 
   it("has help link", () => {
     const p = fakeProps();
     p.docPage = "farmware";
-    const wrapper = mount(<FarmwareForm {...p} />);
-    expect(wrapper.find(".title-help").length).toEqual(1);
+    const { container } = render(<FarmwareForm {...p} />);
+    expect(container.querySelectorAll(".title-help").length).toEqual(1);
   });
 
   it("renders no fields", () => {
     const p = fakeProps();
     p.farmware.config = [];
-    const wrapper = mount(<FarmwareForm {...p} />);
-    expect(wrapper.text()).toEqual(["Run", "Reset all values"].join(""));
+    const { container } = render(<FarmwareForm {...p} />);
+    const text = container.textContent?.replace(/\s+/g, "");
+    expect(text).toContain("RunResetallvalues");
   });
 
   it("runs farmware", () => {
-    const wrapper = mount(<FarmwareForm {...fakeProps()} />);
-    clickButton(wrapper, 0, "run");
+    const { container } = render(<FarmwareForm {...fakeProps()} />);
+    fireEvent.click(container.querySelector("button") as Element);
     expect(mockDevice.execScript).toHaveBeenCalledWith(
       "My Fake Farmware", [{
         kind: "pair",
@@ -147,8 +180,8 @@ describe("<FarmwareForm />", () => {
 
   it("handles error while running farmware", () => {
     mockDevice.execScript = jest.fn(() => Promise.reject());
-    const wrapper = mount(<FarmwareForm {...fakeProps()} />);
-    clickButton(wrapper, 0, "run");
+    const { container } = render(<FarmwareForm {...fakeProps()} />);
+    fireEvent.click(container.querySelector("button") as Element);
     expect(mockDevice.execScript).toHaveBeenCalledWith(
       "My Fake Farmware", [{
         kind: "pair",
@@ -164,11 +197,11 @@ describe("<FarmwareForm />", () => {
       { name: "calibration_factor", label: "Factor", value: "0" },
     ];
     p.env = {};
-    const wrapper = mount(<FarmwareForm {...p} />);
+    const { container } = render(<FarmwareForm {...p} />);
     ["Input required", "Measured", "Advanced"].map(string =>
-      expect(wrapper.text()).toContain(string));
+      expect(container.textContent).toContain(string));
     ["Run", "Calibrate", "Factor"].map(string =>
-      expect(wrapper.text()).not.toContain(string));
+      expect(container.textContent).not.toContain(string));
   });
 
   it("renders measure soil height form: calibrate", () => {
@@ -179,11 +212,11 @@ describe("<FarmwareForm />", () => {
       { name: "calibration_factor", label: "Factor", value: "0" },
     ];
     p.env = { measure_soil_height_measured_distance: "1" };
-    const wrapper = mount(<FarmwareForm {...p} />);
+    const { container } = render(<FarmwareForm {...p} />);
     ["Calibrate", "Measured", "Advanced"].map(string =>
-      expect(wrapper.text()).toContain(string));
+      expect(container.textContent).toContain(string));
     ["Run", "Input required", "Factor"].map(string =>
-      expect(wrapper.text()).not.toContain(string));
+      expect(container.textContent).not.toContain(string));
   });
 
   it("renders measure soil height form: measure", () => {
@@ -197,11 +230,11 @@ describe("<FarmwareForm />", () => {
       measure_soil_height_measured_distance: "1",
       measure_soil_height_calibration_factor: "1",
     };
-    const wrapper = mount(<FarmwareForm {...p} />);
+    const { container } = render(<FarmwareForm {...p} />);
     ["Measure", "Advanced"].map(string =>
-      expect(wrapper.text()).toContain(string));
+      expect(container.textContent).toContain(string));
     ["Run", "Input required", "Calibrate", "Measured", "Factor"].map(string =>
-      expect(wrapper.text()).not.toContain(string));
+      expect(container.textContent).not.toContain(string));
   });
 
   it("expands configs", () => {
@@ -215,12 +248,11 @@ describe("<FarmwareForm />", () => {
       measure_soil_height_measured_distance: "1",
       measure_soil_height_calibration_factor: "1",
     };
-    const wrapper = shallow<FarmwareForm>(<FarmwareForm {...p} />);
-    expect(wrapper.state().advanced).toEqual(false);
-    expect(wrapper.render().text()).not.toContain("Factor");
-    wrapper.find(ExpandableHeader).simulate("click");
-    expect(wrapper.state().advanced).toEqual(true);
-    expect(wrapper.render().text()).toContain("Factor");
+    const { container } = render(<FarmwareForm {...p} />);
+    expect(container.textContent).not.toContain("Factor");
+    fireEvent.click(Array.from(container.querySelectorAll("button"))
+      .find(button => button.textContent == "Advanced") as Element);
+    expect(container.textContent).toContain("Factor");
   });
 
   it("resets calibration configs", () => {
@@ -237,11 +269,13 @@ describe("<FarmwareForm />", () => {
     const farmwareEnv2 = fakeFarmwareEnv();
     farmwareEnv2.body.key = "measure_soil_height_calibration_factor";
     p.farmwareEnvs = [farmwareEnv1, farmwareEnv2];
-    const wrapper = mount(<FarmwareForm {...p} />);
-    clickButton(wrapper, 1, "reset calibration values");
+    const { container } = render(<FarmwareForm {...p} />);
+    const resetCalibration = Array.from(container.querySelectorAll("button"))
+      .find(button => button.textContent == "Reset calibration values");
+    fireEvent.click(resetCalibration as Element);
     expect(confirm).toHaveBeenCalledWith("Reset 1 values?");
-    expect(destroy).toHaveBeenCalledWith(farmwareEnv2.uuid);
-    expect(destroy).toHaveBeenCalledTimes(1);
+    expect(destroySpy).toHaveBeenCalledWith(farmwareEnv2.uuid);
+    expect(destroySpy).toHaveBeenCalledTimes(1);
   });
 
   it("resets all configs", () => {
@@ -258,12 +292,14 @@ describe("<FarmwareForm />", () => {
     const farmwareEnv2 = fakeFarmwareEnv();
     farmwareEnv2.body.key = "measure_soil_height_calibration_factor";
     p.farmwareEnvs = [farmwareEnv1, farmwareEnv2];
-    const wrapper = mount(<FarmwareForm {...p} />);
-    clickButton(wrapper, 2, "reset all values");
+    const { container } = render(<FarmwareForm {...p} />);
+    const resetAll = Array.from(container.querySelectorAll("button"))
+      .find(button => button.textContent == "Reset all values");
+    fireEvent.click(resetAll as Element);
     expect(confirm).toHaveBeenCalledWith("Reset 2 values?");
-    expect(destroy).toHaveBeenCalledWith(farmwareEnv1.uuid);
-    expect(destroy).toHaveBeenCalledWith(farmwareEnv2.uuid);
-    expect(destroy).toHaveBeenCalledTimes(2);
+    expect(destroySpy).toHaveBeenCalledWith(farmwareEnv1.uuid);
+    expect(destroySpy).toHaveBeenCalledWith(farmwareEnv2.uuid);
+    expect(destroySpy).toHaveBeenCalledTimes(2);
   });
 
   it("doesn't reset configs", () => {
@@ -280,9 +316,11 @@ describe("<FarmwareForm />", () => {
     const farmwareEnv2 = fakeFarmwareEnv();
     farmwareEnv2.body.key = "measure_soil_height_calibration_factor";
     p.farmwareEnvs = [farmwareEnv1, farmwareEnv2];
-    const wrapper = mount(<FarmwareForm {...p} />);
-    clickButton(wrapper, 2, "reset all values");
+    const { container } = render(<FarmwareForm {...p} />);
+    const resetAll = Array.from(container.querySelectorAll("button"))
+      .find(button => button.textContent == "Reset all values");
+    fireEvent.click(resetAll as Element);
     expect(confirm).toHaveBeenCalledWith("Reset 2 values?");
-    expect(destroy).not.toHaveBeenCalled();
+    expect(destroySpy).not.toHaveBeenCalled();
   });
 });

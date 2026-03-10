@@ -1,6 +1,6 @@
 import React from "react";
 import * as THREE from "three";
-import { GLTF } from "three-stdlib";
+import type { GLTF } from "three-stdlib";
 import { Group, Mesh as MeshComponent } from "../../components";
 import { VacuumPumpCoverMaterial } from "../../constants";
 import { ThreeElements } from "@react-three/fiber";
@@ -17,7 +17,7 @@ export type VacuumPumpCoverFull = GLTF & {
 }
 
 export const VacuumPumpCover = (model: VacuumPumpCoverFull) =>
-  (props: ThreeElements["group"]) => {
+  (props: Omit<ThreeElements["group"], "ref">) => {
     const { nodes, materials } = model;
     // eslint-disable-next-line no-null/no-null
     return <Group {...props} dispose={null}>

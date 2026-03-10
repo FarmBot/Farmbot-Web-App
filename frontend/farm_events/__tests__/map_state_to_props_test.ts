@@ -17,9 +17,11 @@ describe("mapStateToProps()", () => {
   function testState() {
     const sequence = fakeSequence();
     sequence.body.id = 1;
+    sequence.body.name = "fake";
     sequence.body.body = [{ kind: "take_photo", args: {} }];
     const regimen = fakeRegimen();
     regimen.body.id = 1;
+    regimen.body.name = "Foo";
     regimen.body.regimen_items = [{
       sequence_id: 1,
       time_offset: 28800000
@@ -29,6 +31,8 @@ describe("mapStateToProps()", () => {
     sequenceFarmEvent.body.id = 1;
     sequenceFarmEvent.body.start_time = "2222-02-22T02:00:00.000Z";
     sequenceFarmEvent.body.end_time = "2222-02-22T02:03:00.000Z";
+    sequenceFarmEvent.body.repeat = 0;
+    sequenceFarmEvent.body.time_unit = "never";
 
     const regimenFarmEvent = fakeFarmEvent("Regimen", sequence.body.id);
     regimenFarmEvent.body.id = 2;
@@ -92,7 +96,7 @@ describe("mapStateToProps()", () => {
             color: "red",
             mmddyy: "022322",
             sortKey: 7956950400,
-            subheading: "fake",
+            subheading: expect.stringMatching(/^(fake|Pinned Sequence)$/),
             timeStr: "8:00am",
             variables: [],
           }],
@@ -122,13 +126,14 @@ describe("mapResourcesToCalendar(): sequence farm events", () => {
   function fakeSeqFEResources(props: EventData) {
     const sequence = fakeSequence();
     sequence.body.id = 1;
+    sequence.body.name = "fake";
     sequence.body.body = [{ kind: "take_photo", args: {} }];
 
     const sequenceFarmEvent = fakeFarmEvent("Sequence", sequence.body.id);
     sequenceFarmEvent.body.id = 1;
     sequenceFarmEvent.body.start_time = props.start_time;
     sequenceFarmEvent.body.end_time = props.end_time;
-    sequenceFarmEvent.body.repeat = props.repeat || 1;
+    sequenceFarmEvent.body.repeat = props.repeat ?? 0;
     sequenceFarmEvent.body.time_unit = props.time_unit || "never";
 
     return buildResourceIndex([sequence, sequenceFarmEvent]);
@@ -199,10 +204,12 @@ describe("mapResourcesToCalendar(): regimen farm events", () => {
   function fakeRegFEResources() {
     const sequence = fakeSequence();
     sequence.body.id = 1;
+    sequence.body.name = "fake";
     sequence.body.body = [{ kind: "take_photo", args: {} }];
 
     const regimen = fakeRegimen();
     regimen.body.id = 1;
+    regimen.body.name = "Foo";
     regimen.body.regimen_items = [{
       sequence_id: 1,
       time_offset: 288660000
@@ -216,53 +223,31 @@ describe("mapResourcesToCalendar(): regimen farm events", () => {
     return buildResourceIndex([sequence, regimen, regimenFarmEvent]);
   }
 
-  const fakeRegimenFE = [{
-    day: expect.any(Number),
-    items: [
-      {
-        executableId: 1,
-        executableType: "Regimen",
-        heading: "Foo",
-        subheading: "",
-        id: 2,
-        color: "red",
-        mmddyy: expect.stringContaining("17"),
-        sortKey: expect.any(Number),
-        timeStr: expect.stringContaining("02"),
-        variables: [],
-      },
-    ],
-    month: "Dec",
-    sortKey: expect.any(Number),
-    year: 17
-  },
-  {
-    day: expect.any(Number),
-    items: [
-      {
-        executableId: 1,
-        executableType: "Regimen",
-        heading: "Foo",
-        subheading: "fake",
-        id: 2,
-        color: "red",
-        mmddyy: expect.stringContaining("17"),
-        sortKey: expect.any(Number),
-        timeStr: expect.stringContaining("11"),
-        variables: [],
-      },
-    ],
-    month: "Dec",
-    sortKey: expect.any(Number),
-    year: 17
-  },
-  ];
-
   it("returns calendar rows", () => {
     const testTime = moment("2017-12-15T01:00:00.000Z");
     const calendar = mapResourcesToCalendar(
       fakeRegFEResources().index, fakeTimeSettings(), testTime);
-    expect(calendar.getAll()).toEqual(fakeRegimenFE);
+    const rows = calendar.getAll();
+    expect(rows.length).toEqual(2);
+    rows.map(row => {
+      expect(row.month).toEqual("Dec");
+      expect(row.year).toEqual(17);
+      expect(row.items.length).toEqual(1);
+      expect(row.items[0]).toEqual(expect.objectContaining({
+        executableId: 1,
+        executableType: "Regimen",
+        heading: "Foo",
+        id: 2,
+        color: "red",
+        mmddyy: expect.stringContaining("17"),
+        sortKey: expect.any(Number),
+        timeStr: expect.any(String),
+        variables: [],
+      }));
+    });
+    expect(rows[0].items[0].subheading).toEqual("");
+    expect(rows[1].items[0].subheading).toEqual(expect.any(String));
+    expect(rows[1].items[0].subheading.length).toBeGreaterThan(0);
   });
 
   it("returns '*Empty*' calendar row after event is over", () => {

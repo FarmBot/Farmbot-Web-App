@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { TileTakePhoto } from "../tile_take_photo";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { StepParams } from "../../interfaces";
@@ -18,24 +18,22 @@ describe("<TileTakePhoto/>", () => {
   });
 
   it("renders step", () => {
-    const wrapper = mount(<TileTakePhoto {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase())
-      .toEqual("photos are viewable from the photos panel.");
+    const { container } = render(<TileTakePhoto {...fakeProps()} />);
+    expect(container.textContent?.toLowerCase())
+      .toContain("photos are viewable from the photos panel.");
   });
 
   it("renders inputs", () => {
-    const wrapper = mount(<TileTakePhoto {...fakeProps()} />);
-    const inputs = wrapper.find("input");
-    expect(inputs.length).toEqual(1);
-    expect(inputs.first().props().placeholder).toEqual("Take a Photo");
-    expect(wrapper.html()).toContain(Path.photos());
-    expect(wrapper.text()).toContain("photos panel");
+    const { container } = render(<TileTakePhoto {...fakeProps()} />);
+    expect(container.querySelector(".take-photo-step")).toBeTruthy();
+    expect(container.innerHTML).toContain(Path.photos());
+    expect(container.textContent).toContain("photos panel");
   });
 
   it("displays warning when camera is disabled", () => {
     const p = fakeProps();
     p.farmwareData && (p.farmwareData.cameraDisabled = true);
-    const wrapper = mount(<TileTakePhoto {...p} />);
-    expect(wrapper.html()).toContain(Content.NO_CAMERA_SELECTED);
+    const { container } = render(<TileTakePhoto {...p} />);
+    expect(container.innerHTML).toContain(Content.NO_CAMERA_SELECTED);
   });
 });

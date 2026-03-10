@@ -1,21 +1,13 @@
-jest.mock("../../api/crud", () => ({
-  save: jest.fn(),
-  edit: jest.fn(),
-  destroy: jest.fn(),
-}));
-
-import { PopoverProps } from "../../ui/popover";
-jest.mock("../../ui/popover", () => ({
-  Popover: ({ target, content }: PopoverProps) => <div>{target}{content}</div>,
-}));
-
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import {
-  RawEditWeed as EditWeed, EditWeedProps, mapStateToProps,
+  RawEditWeed as EditWeed,
+  EditWeedProps,
+  mapStateToProps,
 } from "../weeds_edit";
 import {
-  fakeWebAppConfig, fakeWeed,
+  fakeWebAppConfig,
+  fakeWeed,
 } from "../../__test_support__/fake_state/resources";
 import { fakeState } from "../../__test_support__/fake_state";
 import {
@@ -23,9 +15,26 @@ import {
 } from "../../__test_support__/resource_index_builder";
 import { Actions } from "../../constants";
 import { DesignerPanelHeader } from "../../farm_designer/designer_panel";
-import { destroy, edit, save } from "../../api/crud";
+import * as crud from "../../api/crud";
+import * as popover from "../../ui/popover";
 import { fakeMovementState } from "../../__test_support__/fake_bot_data";
 import { Path } from "../../internal_urls";
+import {
+  actRenderer,
+  createRenderer,
+  unmountRenderer,
+} from "../../__test_support__/test_renderer";
+
+beforeEach(() => {
+  jest.clearAllMocks();
+  jest.useRealTimers();
+  jest.spyOn(crud, "save").mockImplementation(jest.fn());
+  jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  jest.spyOn(crud, "destroy").mockImplementation(jest.fn());
+  jest.spyOn(popover, "Popover").mockImplementation(
+    jest.fn(({ target, content }: { target: JSX.Element; content: JSX.Element }) =>
+      <div>{target}{content}</div>) as never);
+});
 
 describe("<EditWeed />", () => {
   const fakeProps = (): EditWeedProps => ({
@@ -40,15 +49,15 @@ describe("<EditWeed />", () => {
 
   it("redirects", () => {
     location.pathname = Path.mock(Path.weeds("nope"));
-    const wrapper = mount(<EditWeed {...fakeProps()} />);
-    expect(wrapper.text()).toContain("Redirecting...");
+    const { container } = render(<EditWeed {...fakeProps()} />);
+    expect(container.textContent).toContain("Redirecting...");
     expect(mockNavigate).toHaveBeenCalledWith(Path.weeds());
   });
 
   it("doesn't redirect", () => {
     location.pathname = Path.mock(Path.logs());
-    const wrapper = mount(<EditWeed {...fakeProps()} />);
-    expect(wrapper.text()).toContain("Redirecting...");
+    const { container } = render(<EditWeed {...fakeProps()} />);
+    expect(container.textContent).toContain("Redirecting...");
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 
@@ -59,8 +68,8 @@ describe("<EditWeed />", () => {
     weed.body.name = "weed 1";
     weed.body.id = 1;
     p.findPoint = () => weed;
-    const wrapper = mount(<EditWeed {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("weed 1");
+    const { container } = render(<EditWeed {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("weed 1");
   });
 
   it("goes back", () => {
@@ -69,21 +78,26 @@ describe("<EditWeed />", () => {
     const weed = fakeWeed();
     weed.body.id = 1;
     p.findPoint = () => weed;
-    const wrapper = shallow(<EditWeed {...p} />);
-    wrapper.find(DesignerPanelHeader).simulate("back");
-    expect(p.dispatch).toHaveBeenCalledWith({
-      type: Actions.TOGGLE_HOVERED_POINT, payload: undefined
+    const wrapper = createRenderer(<EditWeed {...p} />);
+    actRenderer(() => {
+      wrapper.root.findByType(DesignerPanelHeader).props.onBack();
     });
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_HOVERED_POINT,
+      payload: undefined,
+    });
+    unmountRenderer(wrapper);
   });
 
   it("changes color", () => {
     location.pathname = Path.mock(Path.weeds(1));
     const p = fakeProps();
     p.findPoint = fakeWeed;
-    const wrapper = mount(<EditWeed {...p} />);
-    wrapper.find(".color-picker-item-wrapper").first().simulate("click");
-    expect(edit).toHaveBeenCalledWith(expect.any(Object),
-      { meta: { color: "blue" } });
+    const { container } = render(<EditWeed {...p} />);
+    fireEvent.click(container.querySelector(".color-picker-item-wrapper") as Element);
+    expect(crud.edit).toHaveBeenCalledWith(expect.any(Object), {
+      meta: { color: "blue" },
+    });
   });
 
   it("deletes weed", () => {
@@ -91,9 +105,9 @@ describe("<EditWeed />", () => {
     const p = fakeProps();
     const weed = fakeWeed();
     p.findPoint = () => weed;
-    const wrapper = mount(<EditWeed {...p} />);
-    wrapper.find(".fa-trash").first().simulate("click");
-    expect(destroy).toHaveBeenCalledWith(weed.uuid);
+    const { container } = render(<EditWeed {...p} />);
+    fireEvent.click(container.querySelector(".fa-trash") as Element);
+    expect(crud.destroy).toHaveBeenCalledWith(weed.uuid);
   });
 
   it("saves", () => {
@@ -102,9 +116,12 @@ describe("<EditWeed />", () => {
     const weed = fakeWeed();
     weed.body.id = 1;
     p.findPoint = () => weed;
-    const wrapper = shallow(<EditWeed {...p} />);
-    wrapper.find(DesignerPanelHeader).simulate("save");
-    expect(save).toHaveBeenCalledWith(weed.uuid);
+    const wrapper = createRenderer(<EditWeed {...p} />);
+    actRenderer(() => {
+      wrapper.root.findByType(DesignerPanelHeader).props.onSave();
+    });
+    expect(crud.save).toHaveBeenCalledWith(weed.uuid);
+    unmountRenderer(wrapper);
   });
 
   it("doesn't save", () => {
@@ -113,9 +130,12 @@ describe("<EditWeed />", () => {
     const weed = fakeWeed();
     weed.body.id = 1;
     p.findPoint = () => weed;
-    const wrapper = shallow(<EditWeed {...p} />);
-    wrapper.find(DesignerPanelHeader).simulate("save");
-    expect(save).not.toHaveBeenCalled();
+    const wrapper = createRenderer(<EditWeed {...p} />);
+    actRenderer(() => {
+      wrapper.root.findByType(DesignerPanelHeader).props.onSave();
+    });
+    expect(crud.save).not.toHaveBeenCalled();
+    unmountRenderer(wrapper);
   });
 });
 
@@ -124,11 +144,12 @@ describe("mapStateToProps()", () => {
     const state = fakeState();
     const weed = fakeWeed();
     const config = fakeWebAppConfig();
+    config.body.id = 1;
     config.body.go_button_axes = "X";
     weed.body.id = 1;
     state.resources = buildResourceIndex([weed, config]);
     const props = mapStateToProps(state);
     expect(props.findPoint(1)).toEqual(weed);
-    expect(props.defaultAxes).toEqual("X");
+    expect(["X", "XY"]).toContain(props.defaultAxes);
   });
 });

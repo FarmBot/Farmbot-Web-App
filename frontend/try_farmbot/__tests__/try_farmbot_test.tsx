@@ -1,14 +1,26 @@
-jest.mock("mqtt", () => ({
-  connect: () => ({
-    on: jest.fn(),
-    subscribe: jest.fn(),
-  })
-}));
+const mockMqttClient = {
+  on: jest.fn(),
+  subscribe: jest.fn(),
+};
+const mockConnect = jest.fn(() => mockMqttClient);
+
+import mqtt from "mqtt";
 
 import React from "react";
-import { shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import { DEMO_LOADING, TryFarmbot } from "../try_farmbot";
 
+let mqttConnectSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  mqttConnectSpy = jest.spyOn(mqtt, "connect")
+    .mockImplementation(mockConnect as never);
+  jest.clearAllMocks();
+});
+
+afterEach(() => {
+  mqttConnectSpy.mockRestore();
+});
 describe("<TryFarmbot />", () => {
   it("renders OK", () => {
     const tfb = new TryFarmbot({});
@@ -28,7 +40,7 @@ describe("<TryFarmbot />", () => {
 
   it("renders", () => {
     console.error = jest.fn();
-    const wrapper = shallow(<TryFarmbot />);
-    expect(wrapper.text().toLowerCase()).toContain("loading");
+    const { container } = render(<TryFarmbot />);
+    expect(container.textContent?.toLowerCase()).toContain("loading");
   });
 });

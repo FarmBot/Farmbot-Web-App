@@ -2,7 +2,7 @@ import React from "react";
 import {
   getSelectionBoxArea, SelectionBox, SelectionBoxProps,
 } from "../selection_box";
-import { shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import {
   fakeMapTransformProps,
 } from "../../../../__test_support__/map_transform_props";
@@ -20,31 +20,46 @@ describe("<SelectionBox/>", () => {
     };
   }
 
+  const renderSelectionBox = (props: SelectionBoxProps) =>
+    render(<svg><SelectionBox {...props} /></svg>);
+
+  const getRequiredAttribute = (
+    element: Element,
+    attribute: string,
+  ): number => {
+    const value = element.getAttribute(attribute);
+    if (value === undefined) { throw new Error(`Missing attribute: ${attribute}`); }
+    return Number(value);
+  };
+
   it("renders selection box", () => {
-    const wrapper = shallow(<SelectionBox {...fakeProps()} />);
-    const boxProps = wrapper.find("rect").props();
-    expect(boxProps.x).toEqual(40);
-    expect(boxProps.y).toEqual(30);
-    expect(boxProps.width).toEqual(200);
-    expect(boxProps.height).toEqual(100);
+    const { container } = renderSelectionBox(fakeProps());
+    const box = container.querySelector("rect");
+    if (!box) { throw new Error("Missing selection box rect"); }
+    expect(getRequiredAttribute(box, "x")).toEqual(40);
+    expect(getRequiredAttribute(box, "y")).toEqual(30);
+    expect(getRequiredAttribute(box, "width")).toEqual(200);
+    expect(getRequiredAttribute(box, "height")).toEqual(100);
   });
 
   it("doesn't render selection box: partially undefined", () => {
     const p = fakeProps();
     p.selectionBox = { x0: 1, y0: 2, x1: undefined, y1: 4 };
-    const wrapper = shallow(<SelectionBox {...p} />);
-    expect(wrapper.html()).toEqual("<g id=\"selection-box\"></g>");
+    const { container } = renderSelectionBox(p);
+    expect(container.querySelector("#selection-box")).toBeTruthy();
+    expect(container.querySelector("#selection-box rect")).toBeNull();
   });
 
   it("renders selection box: quadrant 4", () => {
     const p = fakeProps();
     p.mapTransformProps.quadrant = 4;
-    const wrapper = shallow(<SelectionBox {...p} />);
-    const boxProps = wrapper.find("rect").props();
-    expect(boxProps.x).toEqual(2760);
-    expect(boxProps.y).toEqual(1370);
-    expect(boxProps.width).toEqual(200);
-    expect(boxProps.height).toEqual(100);
+    const { container } = renderSelectionBox(p);
+    const box = container.querySelector("rect");
+    if (!box) { throw new Error("Missing selection box rect"); }
+    expect(getRequiredAttribute(box, "x")).toEqual(2760);
+    expect(getRequiredAttribute(box, "y")).toEqual(1370);
+    expect(getRequiredAttribute(box, "width")).toEqual(200);
+    expect(getRequiredAttribute(box, "height")).toEqual(100);
   });
 });
 

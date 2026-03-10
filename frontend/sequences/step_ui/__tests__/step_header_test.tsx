@@ -1,17 +1,28 @@
-jest.mock("../../request_auto_generation", () => ({
-  requestAutoGeneration: jest.fn(),
-  PLACEHOLDER_PROMPTS: ["1", "2", "3"],
-  retrievePrompt: () => "",
-}));
-
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import { StepHeader, StepHeaderProps } from "../step_header";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
 import { API } from "../../../api";
-import { requestAutoGeneration } from "../../request_auto_generation";
+import * as requestAutoGenerationModule from "../../request_auto_generation";
 import { emptyState } from "../../../resources/reducer";
+import axios from "axios";
 
+let postSpy: jest.SpyInstance;
+let requestAutoGenerationSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  postSpy = jest.spyOn(axios, "post")
+    .mockImplementation(() => Promise.resolve({}) as never);
+  requestAutoGenerationSpy = jest.spyOn(
+    requestAutoGenerationModule,
+    "requestAutoGeneration",
+  ).mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  postSpy.mockRestore();
+  requestAutoGenerationSpy.mockRestore();
+});
 describe("<StepHeader />", () => {
   API.setBaseUrl("");
 
@@ -33,16 +44,28 @@ describe("<StepHeader />", () => {
     sequencesState: emptyState().consumers.sequences,
   });
 
+  const setStateSync = (instance: StepHeader) => {
+    instance.setState = ((state, callback) => {
+      const update = typeof state == "function"
+        ? state(instance.state, instance.props)
+        : state;
+      instance.state = { ...instance.state, ...update };
+      callback?.();
+    }) as StepHeader["setState"];
+    return instance;
+  };
+
   it("renders", () => {
-    const wrapper = mount(<StepHeader {...fakeProps()} />);
-    const div = wrapper.find("div").at(1);
-    expect(div.hasClass("step-header")).toBeTruthy();
-    expect(div.hasClass("step-class")).toBeTruthy();
+    const { container } = render(<StepHeader {...fakeProps()} />);
+    const div = container.querySelector(".step-header");
+    if (!div) { throw new Error("Expected .step-header"); }
+    expect(div.classList.contains("step-header")).toBeTruthy();
+    expect(div.classList.contains("step-class")).toBeTruthy();
   });
 
   it("renders with children", () => {
-    const wrapper = mount(<StepHeader {...fakeProps()} />);
-    expect(wrapper.text()).toContain("child");
+    const { container } = render(<StepHeader {...fakeProps()} />);
+    expect(container.textContent).toContain("child");
   });
 
   it("renders pinned sequence", () => {
@@ -50,83 +73,91 @@ describe("<StepHeader />", () => {
     p.executeSequence = fakeSequence().body;
     p.executeSequence.color = "red";
     p.executeSequence.name = "Pinned Sequence";
-    const wrapper = mount(<StepHeader {...p} />);
-    const step = wrapper.find("div").first();
-    expect(step.find(".step-header").hasClass("red")).toBeTruthy();
-    expect(wrapper.html().toLowerCase()).toContain("pinned");
+    const { container } = render(<StepHeader {...p} />);
+    const stepHeader = container.querySelector(".step-header");
+    if (!stepHeader) { throw new Error("Expected .step-header"); }
+    expect(stepHeader.classList.contains("red")).toBeTruthy();
+    const openLinkedSequence = container
+      .querySelector(".fa-external-link[title=\"open linked sequence\"]");
+    expect(openLinkedSequence).toBeTruthy();
   });
 
   it("toggle draggable", () => {
-    const wrapper = mount<StepHeader>(<StepHeader {...fakeProps()} />);
-    expect(wrapper.state().draggable).toEqual(true);
-    wrapper.instance().toggle("enter")();
-    expect(wrapper.state().draggable).toEqual(false);
-    wrapper.instance().toggle("leave")();
-    expect(wrapper.state().draggable).toEqual(true);
+    const instance = setStateSync(new StepHeader(fakeProps()));
+    expect(instance.state.draggable).toEqual(true);
+    instance.toggle("enter")();
+    expect(instance.state.draggable).toEqual(false);
+    instance.toggle("leave")();
+    expect(instance.state.draggable).toEqual(true);
   });
 
   it("toggles prompt", () => {
-    const wrapper = mount<StepHeader>(<StepHeader {...fakeProps()} />);
-    expect(wrapper.state().promptOpen).toEqual(false);
-    wrapper.instance().togglePrompt();
-    expect(wrapper.state().promptOpen).toEqual(true);
-    wrapper.instance().togglePrompt();
-    expect(wrapper.state().promptOpen).toEqual(false);
+    const instance = setStateSync(new StepHeader(fakeProps()));
+    expect(instance.state.promptOpen).toEqual(false);
+    instance.togglePrompt();
+    expect(instance.state.promptOpen).toEqual(true);
+    instance.togglePrompt();
+    expect(instance.state.promptOpen).toEqual(false);
   });
 
   it("prompt succeeds", () => {
     jest.useFakeTimers();
     const p = fakeProps();
-    const wrapper = mount<StepHeader>(<StepHeader {...p} />);
-    expect(wrapper.state().promptText).toEqual("");
-    expect(wrapper.state().isProcessing).toEqual(false);
-    const prompt = mount(wrapper.instance().AutoLuaPrompt());
-    prompt.find("textarea").simulate("change",
-      { currentTarget: { value: "write" } });
-    expect(prompt.text()).toContain("generate code");
-    prompt.find("button").simulate("click");
-    expect(wrapper.state().isProcessing).toEqual(true);
-    expect(requestAutoGeneration).toHaveBeenCalled();
-    const { mock } = requestAutoGeneration as jest.Mock;
+    const instance = setStateSync(new StepHeader(p));
+    expect(instance.state.promptText).toEqual("");
+    expect(instance.state.isProcessing).toEqual(false);
+    const { container } = render(instance.AutoLuaPrompt());
+    const textarea = container.querySelector("textarea");
+    if (!textarea) { throw new Error("Expected prompt textarea"); }
+    fireEvent.change(textarea, { target: { value: "write" } });
+    expect(container.textContent).toContain("generate code");
+    const button = container.querySelector("button");
+    if (!button) { throw new Error("Expected prompt button"); }
+    fireEvent.click(button);
+    expect(instance.state.isProcessing).toEqual(true);
+    expect(requestAutoGenerationSpy).toHaveBeenCalled();
+    const { mock } = requestAutoGenerationSpy;
     mock.calls[0][0].onUpdate("code");
     expect(p.setKey).toHaveBeenCalledWith("code");
     mock.calls[0][0].onSuccess("code");
     jest.runAllTimers();
     expect(p.setKey).toHaveBeenCalledWith("code success");
     mock.calls[0][0].onError();
-    expect(wrapper.state().isProcessing).toEqual(false);
+    expect(instance.state.isProcessing).toEqual(false);
+    jest.useRealTimers();
   });
 
   it("renders while in progress", () => {
     const p = fakeProps();
-    const wrapper = mount<StepHeader>(<StepHeader {...p} />);
-    wrapper.setState({ isProcessing: true });
-    const prompt = mount(wrapper.instance().AutoLuaPrompt());
-    expect(prompt.text()).toContain("generating");
+    const instance = setStateSync(new StepHeader(p));
+    instance.setState({ isProcessing: true });
+    const { container } = render(instance.AutoLuaPrompt());
+    expect(container.textContent).toContain("generating");
   });
 
   it.each<[string, string]>([
     ["good", "fa-thumbs-up"],
     ["bad", "fa-thumbs-down"],
   ])("shows feedback: %s", (reaction, expected) => {
-    const wrapper = mount<StepHeader>(<StepHeader {...fakeProps()} />);
-    wrapper.setState({
+    const instance = setStateSync(new StepHeader(fakeProps()));
+    instance.setState({
       cachedPrompt: "write code", showFeedback: true, reaction,
     });
-    const prompt = mount(wrapper.instance().AutoLuaPrompt());
-    expect(prompt.html()).toContain(expected);
+    const { container } = render(instance.AutoLuaPrompt());
+    expect(container.innerHTML).toContain(expected);
   });
 
   it("submits feedback", () => {
     jest.useFakeTimers();
-    const wrapper = mount<StepHeader>(<StepHeader {...fakeProps()} />);
-    wrapper.setState({
+    const instance = setStateSync(new StepHeader(fakeProps()));
+    instance.setState({
       cachedPrompt: "write code", showFeedback: true, reaction: "good",
     });
-    wrapper.instance().submitFeedback("write code", "good")();
+    instance.submitFeedback("write code", "good")();
     jest.runAllTimers();
-    expect(wrapper.state().cachedPrompt).toEqual("");
-    expect(wrapper.state().showFeedback).toEqual(false);
-    expect(wrapper.state().reaction).toEqual(undefined);
+    expect(instance.state.cachedPrompt).toEqual("");
+    expect(instance.state.showFeedback).toEqual(false);
+    expect(instance.state.reaction).toEqual(undefined);
+    jest.useRealTimers();
   });
 });

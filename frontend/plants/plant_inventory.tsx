@@ -38,6 +38,7 @@ import {
   GetWebAppConfigValue, getWebAppConfigValue,
 } from "../config_storage/actions";
 import { NavigationContext } from "../routes_helpers";
+import { NavigateFunction } from "react-router";
 
 export interface PlantInventoryProps {
   plants: TaggedPlant[];
@@ -102,7 +103,7 @@ export class RawPlants
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate = this.context;
+  navigate: NavigateFunction = url => { this.context?.(url as string); };
 
   navigateById = (id: number | undefined) => () => {
     this.navigate(Path.groups(id));
@@ -243,7 +244,6 @@ export class RawPlants
 }
 
 export const Plants = connect(mapStateToProps)(RawPlants);
-// eslint-disable-next-line import/no-default-export
 export default Plants;
 
 export interface PanelSectionProps {

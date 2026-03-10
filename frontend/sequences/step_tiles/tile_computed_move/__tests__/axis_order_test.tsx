@@ -1,19 +1,54 @@
 let mockDev = false;
-jest.mock("../../../../settings/dev/dev_support", () => ({
-  DevSettings: { allOrderOptionsEnabled: () => mockDev },
-}));
 
 import React from "react";
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import {
   axisOrder, AxisOrderInputRow, getAxisGroupingState, getAxisRouteState,
 } from "../axis_order";
 import { AxisGrouping, AxisOrderInputRowProps, AxisRoute } from "../interfaces";
 import { Move } from "farmbot";
+import { DevSettings } from "../../../../settings/dev/dev_support";
+import * as ui from "../../../../ui";
+import { FBSelectProps } from "../../../../ui";
+
+let allOrderOptionsEnabledSpy: jest.SpyInstance;
+let fbSelectSpy: jest.SpyInstance | undefined;
+let fbSelectProps: FBSelectProps | undefined;
+
+const renderAxisOrder = (p: AxisOrderInputRowProps) => {
+  fbSelectProps = undefined;
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation((props: FBSelectProps) => {
+      fbSelectProps = props;
+      return <div />;
+    });
+  const renderResult = render(<AxisOrderInputRow {...p} />);
+  if (!fbSelectProps) {
+    throw new Error("Expected FBSelect to be rendered");
+  }
+  return renderResult;
+};
+
+const restoreFbSelect = () => {
+  fbSelectSpy?.mockRestore();
+  fbSelectSpy = undefined;
+  fbSelectProps = undefined;
+};
+
+const getSelectedLabel = () => (fbSelectProps?.selectedItem?.label
+  || fbSelectProps?.customNullLabel
+  || "Use default").trim();
 
 describe("<AxisOrderInputRow />", () => {
   beforeEach(() => {
     mockDev = false;
+    allOrderOptionsEnabledSpy = jest.spyOn(DevSettings, "allOrderOptionsEnabled")
+      .mockImplementation(() => mockDev);
+  });
+
+  afterEach(() => {
+    allOrderOptionsEnabledSpy.mockRestore();
+    restoreFbSelect();
   });
 
   const fakeProps = (): AxisOrderInputRowProps => ({
@@ -23,7 +58,7 @@ describe("<AxisOrderInputRow />", () => {
     onChange: jest.fn(),
   });
 
-  it.each<[boolean, AxisGrouping, AxisRoute, string]>([
+  it.each<[boolean, AxisGrouping, AxisRoute, string | undefined]>([
     [false, "x,y,z", "high", "One at a time"],
     [false, "xy,z", "high", "X and Y together"],
     [false, "xyz", "high", "All at once"],
@@ -35,42 +70,40 @@ describe("<AxisOrderInputRow />", () => {
     p.grouping = grouping;
     p.route = route;
     p.safeZ = safeZ;
-    render(<AxisOrderInputRow {...p} />);
-    expect(screen.getByText(label)).toBeInTheDocument();
+    renderAxisOrder(p);
+    expect(getSelectedLabel()).toEqual(label || "Use default");
   });
 
   it("changes item", () => {
     const p = fakeProps();
-    render(<AxisOrderInputRow {...p} />);
-    const dropdown = screen.getByRole("button");
-    fireEvent.click(dropdown);
-    const item = screen.getByRole("menuitem", { name: "X and Y together" });
-    fireEvent.click(item);
+    renderAxisOrder(p);
+    expect(fbSelectProps?.onChange).toBeDefined();
+    fbSelectProps?.onChange({
+      label: "X and Y together",
+      value: "xy,z;high",
+      isNull: false,
+    });
     expect(p.onChange).toHaveBeenCalledWith({
       label: "X and Y together",
       value: "xy,z;high",
+      isNull: false,
     });
   });
 
   it("shows default", () => {
     const p = fakeProps();
     p.defaultValue = "safe_z";
-    render(<AxisOrderInputRow {...p} />);
-    const dropdown = screen.getByRole("button");
-    fireEvent.click(dropdown);
-    expect(screen.getByRole("menuitem", { name: "Use default (Safe Z)" }))
-      .toBeInTheDocument();
+    renderAxisOrder(p);
+    expect(getSelectedLabel()).toContain("Safe Z");
   });
 
   it("shows all order options", () => {
     mockDev = true;
     const p = fakeProps();
-    render(<AxisOrderInputRow {...p} />);
-    const dropdown = screen.getByRole("button");
-    fireEvent.click(dropdown);
-    expect(screen.getByRole("menuitem", { name: "x,yz;high" })).toBeInTheDocument();
-    expect(screen.getByRole("menuitem", { name: "Use default" }))
-      .toBeInTheDocument();
+    renderAxisOrder(p);
+    expect(fbSelectProps?.list?.find(item => item.value == "x,yz;high"))
+      .toBeTruthy();
+    expect(getSelectedLabel()).toEqual("Use default");
   });
 });
 

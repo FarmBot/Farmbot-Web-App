@@ -11,6 +11,17 @@ import {
 import { Actions } from "../../../../constants";
 
 describe("<ProfileLine />", () => {
+  const rectProps = (container: HTMLElement) => {
+    const rect = container.querySelector("rect");
+    if (!rect) { return undefined; }
+    return {
+      x: Number(rect.getAttribute("x")),
+      y: Number(rect.getAttribute("y")),
+      height: Number(rect.getAttribute("height")),
+      width: Number(rect.getAttribute("width")),
+    };
+  };
+
   const fakeProps = (): ProfileLineProps => ({
     designer: fakeDesignerState(),
     plantAreaOffset: { x: 10, y: 10 },
@@ -19,8 +30,8 @@ describe("<ProfileLine />", () => {
   });
 
   it("renders when viewer is closed", () => {
-    const wrapper = svgMount(<ProfileLine {...fakeProps()} />);
-    expect(wrapper.html()).not.toContain("rect");
+    const { container } = svgMount(<ProfileLine {...fakeProps()} />);
+    expect(container.querySelector("rect")).toBeNull();
   });
 
   it("renders when viewer is open: follow", () => {
@@ -29,8 +40,8 @@ describe("<ProfileLine />", () => {
     p.designer.profileAxis = "x";
     p.designer.profileFollowBot = true;
     p.botPosition = { x: 1, y: 2, z: 3 };
-    const wrapper = svgMount(<ProfileLine {...p} />);
-    expect(wrapper.find("rect").props()).toEqual({
+    const { container } = svgMount(<ProfileLine {...p} />);
+    expect(rectProps(container)).toEqual({
       x: -50, y: -10, height: 1520, width: 100,
     });
   });
@@ -42,8 +53,8 @@ describe("<ProfileLine />", () => {
     p.designer.profileFollowBot = true;
     p.mapTransformProps.xySwap = true;
     p.botPosition = { x: 1, y: 2, z: 3 };
-    const wrapper = svgMount(<ProfileLine {...p} />);
-    expect(wrapper.find("rect").props()).toEqual({
+    const { container } = svgMount(<ProfileLine {...p} />);
+    expect(rectProps(container)).toEqual({
       x: -10, y: -50, height: 100, width: 1520,
     });
   });
@@ -53,8 +64,8 @@ describe("<ProfileLine />", () => {
     p.designer.profileOpen = true;
     p.designer.profileAxis = "x";
     p.designer.profilePosition = { x: 2000, y: 1000 };
-    const wrapper = svgMount(<ProfileLine {...p} />);
-    expect(wrapper.find("rect").props()).toEqual({
+    const { container } = svgMount(<ProfileLine {...p} />);
+    expect(rectProps(container)).toEqual({
       x: 1950, y: -10, height: 1520, width: 100,
     });
   });
@@ -64,8 +75,8 @@ describe("<ProfileLine />", () => {
     p.designer.profileOpen = true;
     p.designer.profilePosition = { x: 2000, y: 1000 };
     p.designer.profileAxis = "y";
-    const wrapper = svgMount(<ProfileLine {...p} />);
-    expect(wrapper.find("rect").props()).toEqual({
+    const { container } = svgMount(<ProfileLine {...p} />);
+    expect(rectProps(container)).toEqual({
       x: -10, y: 950, height: 100, width: 3020,
     });
   });

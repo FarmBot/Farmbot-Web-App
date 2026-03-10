@@ -1,10 +1,33 @@
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import {
   CameraSelection, cameraDisabled, cameraCalibrated, cameraBtnProps, Camera,
 } from "../camera_selection";
 import { CameraSelectionProps } from "../interfaces";
 import { error } from "../../../toast/toast";
+import { DropDownItem } from "../../../ui/fb_select";
+import * as ui from "../../../ui";
+
+let fbSelectSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation((props: {
+      selectedItem: DropDownItem;
+      onChange: (ddi: DropDownItem) => void;
+    }) =>
+      <div>
+        <button>{props.selectedItem.label}</button>
+        <button onClick={() =>
+          props.onChange({ label: "My Camera", value: "mycamera" })}>
+          change camera
+        </button>
+      </div>);
+});
+
+afterEach(() => {
+  fbSelectSpy.mockRestore();
+});
 
 describe("<CameraSelection />", () => {
   const fakeProps = (): CameraSelectionProps => ({
@@ -15,22 +38,26 @@ describe("<CameraSelection />", () => {
   });
 
   it("doesn't render camera", () => {
-    const cameraSelection = mount(<CameraSelection {...fakeProps()} />);
-    expect(cameraSelection.find("button").text()).toEqual("USB Camera");
+    render(<CameraSelection {...fakeProps()} />);
+    expect(screen.getByRole("button", { name: "USB Camera" }))
+      .toBeInTheDocument();
   });
 
   it("renders camera", () => {
     const p = fakeProps();
     p.env = { "camera": "\"RPI\"" };
-    const cameraSelection = mount(<CameraSelection {...p} />);
-    expect(cameraSelection.find("button").text()).toEqual("Raspberry Pi Camera");
+    render(<CameraSelection {...p} />);
+    expect(screen.getByRole("button", { name: "Raspberry Pi Camera" }))
+      .toBeInTheDocument();
   });
 
   it("stores config in API", () => {
     const p = fakeProps();
-    const wrapper = shallow(<CameraSelection {...p} />);
-    wrapper.find("FBSelect")
-      .simulate("change", { label: "My Camera", value: "mycamera" });
+    render(<CameraSelection {...p} />);
+    fireEvent.click(screen.getByRole("button", {
+      name: /change camera/i,
+      hidden: true,
+    }));
     expect(p.saveFarmwareEnv).toHaveBeenCalledWith("camera", "\"mycamera\"");
   });
 });
@@ -66,7 +93,7 @@ describe("cameraBtnProps()", () => {
     const env = { camera: Camera.NONE };
     cameraBtnProps(env, true).click?.();
     expect(error).toHaveBeenCalled();
-    jest.resetAllMocks();
+    jest.clearAllMocks();
     cameraBtnProps(env, false).click?.();
     expect(error).not.toHaveBeenCalled();
   });

@@ -1,7 +1,5 @@
-jest.mock("../../../devices/actions", () => ({ updateMCU: jest.fn() }));
-
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { PinNumberDropdown } from "../pin_number_dropdown";
 import { PinGuardMCUInputGroupProps } from "../interfaces";
 import {
@@ -11,9 +9,37 @@ import {
   fakeFirmwareConfig, fakePeripheral,
 } from "../../../__test_support__/fake_state/resources";
 import { TaggedFirmwareConfig } from "farmbot";
-import { FBSelect } from "../../../ui";
-import { updateMCU } from "../../../devices/actions";
+import * as deviceActions from "../../../devices/actions";
 import { DeviceSetting } from "../../../constants";
+import * as ui from "../../../ui";
+
+let updateMCUSpy: jest.SpyInstance;
+let fbSelectSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  updateMCUSpy = jest.spyOn(deviceActions, "updateMCU")
+    .mockImplementation(jest.fn());
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation((props: {
+      selectedItem?: { label: string, value: number | string },
+      customNullLabel?: string,
+      extraClass?: string,
+      onChange: (ddi: { label: string, value: number | string }) => void,
+    }) =>
+      <div>
+        <span data-testid="selected-label">
+          {props.selectedItem?.label || props.customNullLabel || ""}
+        </span>
+        <span data-testid="extra-class">{props.extraClass || ""}</span>
+        <button onClick={() => props.onChange({ label: "", value: 2 })}>
+          change-pin
+        </button>
+      </div>);
+});
+
+afterEach(() => {
+  fbSelectSpy.mockRestore();
+});
 
 describe("<PinNumberDropdown />", () => {
   const fakeProps =
@@ -34,24 +60,24 @@ describe("<PinNumberDropdown />", () => {
     });
 
   it("renders undefined", () => {
-    const wrapper = mount(<PinNumberDropdown {...fakeProps()} />);
-    expect(wrapper.text()).toEqual("Select a pin");
-    expect(wrapper.find(FBSelect).props().extraClass?.trim()).toEqual("");
+    render(<PinNumberDropdown {...fakeProps()} />);
+    expect(screen.getByTestId("selected-label").textContent).toEqual("Select a pin");
+    expect(screen.getByTestId("extra-class").textContent?.trim()).toEqual("");
   });
 
   it("renders disabled", () => {
     const p = fakeProps();
     p.disabled = true;
-    const wrapper = mount(<PinNumberDropdown {...p} />);
-    expect(wrapper.text()).toEqual("Select a pin");
-    expect(wrapper.find(FBSelect).props().extraClass?.trim()).toEqual("disabled");
+    render(<PinNumberDropdown {...p} />);
+    expect(screen.getByTestId("selected-label").textContent).toEqual("Select a pin");
+    expect(screen.getByTestId("extra-class").textContent?.trim()).toEqual("disabled");
   });
 
   it("renders when inconsistent", () => {
     const p = fakeProps();
     p.sourceFwConfig = () => ({ value: 0, consistent: false });
-    const wrapper = mount(<PinNumberDropdown {...p} />);
-    expect(wrapper.find(FBSelect).props().extraClass?.trim()).toEqual("dim");
+    render(<PinNumberDropdown {...p} />);
+    expect(screen.getByTestId("extra-class").textContent?.trim()).toEqual("dim");
   });
 
   it("renders pin label", () => {
@@ -59,8 +85,8 @@ describe("<PinNumberDropdown />", () => {
     firmwareConfig.body.pin_guard_1_pin_nr = 1;
     const p = fakeProps(firmwareConfig);
     p.resources = buildResourceIndex([firmwareConfig]).index;
-    const wrapper = mount(<PinNumberDropdown {...p} />);
-    expect(wrapper.text()).toEqual("Pin 1");
+    render(<PinNumberDropdown {...p} />);
+    expect(screen.getByTestId("selected-label").textContent).toEqual("Pin 1");
   });
 
   it("renders peripheral label", () => {
@@ -71,8 +97,8 @@ describe("<PinNumberDropdown />", () => {
     peripheral.body.pin = 1;
     peripheral.body.label = "Peripheral 1";
     p.resources = buildResourceIndex([firmwareConfig, peripheral]).index;
-    const wrapper = mount(<PinNumberDropdown {...p} />);
-    expect(wrapper.text()).toEqual("Peripheral 1");
+    render(<PinNumberDropdown {...p} />);
+    expect(screen.getByTestId("selected-label").textContent).toEqual("Peripheral 1");
   });
 
   it("changes pin number", () => {
@@ -80,8 +106,8 @@ describe("<PinNumberDropdown />", () => {
     firmwareConfig.body.pin_guard_1_pin_nr = 1;
     const p = fakeProps(firmwareConfig);
     p.resources = buildResourceIndex([firmwareConfig]).index;
-    const wrapper = shallow(<PinNumberDropdown {...p} />);
-    wrapper.find(FBSelect).simulate("change", { label: "", value: 2 });
-    expect(updateMCU).toHaveBeenCalledWith("pin_guard_1_pin_nr", "2");
+    render(<PinNumberDropdown {...p} />);
+    fireEvent.click(screen.getByText("change-pin"));
+    expect(updateMCUSpy).toHaveBeenCalledWith("pin_guard_1_pin_nr", "2");
   });
 });

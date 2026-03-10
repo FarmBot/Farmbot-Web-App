@@ -1,20 +1,10 @@
 import {
   fakeToolSlot, fakePoint,
 } from "../../../__test_support__/fake_state/resources";
-let mockToolSlot: TaggedToolSlotPointer | undefined = fakeToolSlot();
-jest.mock("../../../resources/selectors", () => ({
-  findPointerByTypeAndId: () => fakePoint(),
-  findSlotByToolId: () => mockToolSlot,
-  selectAllPlantPointers: jest.fn(() => []),
-  findUuid: jest.fn(),
-}));
 
 import { fakeVariableNameSet } from "../../../__test_support__/fake_variables";
-let mockVariable = fakeVariableNameSet("var").var;
-jest.mock("../../../resources/sequence_meta", () => ({
-  findVariableByName: () => mockVariable,
-  createSequenceMeta: jest.fn(),
-}));
+import * as selectors from "../../../resources/selectors";
+import * as sequenceMeta from "../../../resources/sequence_meta";
 
 import React from "react";
 import {
@@ -30,6 +20,37 @@ import { maybeTagStep, getStepTag } from "../../../resources/sequence_tagging";
 import { SequenceMeta } from "../../../resources/sequence_meta";
 import { Path } from "../../../internal_urls";
 
+let mockToolSlot: TaggedToolSlotPointer | undefined = fakeToolSlot();
+let mockVariable = fakeVariableNameSet("var").var;
+let findPointerByTypeAndIdSpy: jest.SpyInstance;
+let findSlotByToolIdSpy: jest.SpyInstance;
+let selectAllPlantPointersSpy: jest.SpyInstance;
+let findUuidSpy: jest.SpyInstance;
+let findVariableByNameSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  mockToolSlot = fakeToolSlot();
+  mockVariable = fakeVariableNameSet("var").var;
+  findPointerByTypeAndIdSpy = jest.spyOn(selectors, "findPointerByTypeAndId")
+    .mockImplementation(() => fakePoint());
+  findSlotByToolIdSpy = jest.spyOn(selectors, "findSlotByToolId")
+    .mockImplementation(() => mockToolSlot);
+  selectAllPlantPointersSpy = jest.spyOn(selectors, "selectAllPlantPointers")
+    .mockImplementation(() => []);
+  findUuidSpy = jest.spyOn(selectors, "findUuid")
+    .mockImplementation(jest.fn());
+  findVariableByNameSpy = jest.spyOn(sequenceMeta, "findVariableByName")
+    .mockImplementation(() => mockVariable);
+});
+
+afterEach(() => {
+  findPointerByTypeAndIdSpy.mockRestore();
+  findSlotByToolIdSpy.mockRestore();
+  selectAllPlantPointersSpy.mockRestore();
+  findUuidSpy.mockRestore();
+  findVariableByNameSpy.mockRestore();
+});
+
 const moveAbsolute =
   (location: MoveAbsolute["args"]["location"]): MoveAbsolute => ({
     kind: "move_absolute",
@@ -41,6 +62,9 @@ const moveAbsolute =
   });
 
 describe("<SequenceVisualization />", () => {
+  const elementCount = (container: HTMLElement, selector: string) =>
+    container.querySelectorAll(selector).length;
+
   const fakeProps = (): SequenceVisualizationProps => ({
     visualizedSequenceUUID: undefined,
     visualizedSequenceBody: [],
@@ -75,9 +99,9 @@ describe("<SequenceVisualization />", () => {
     ];
     p.visualizedSequenceBody.map(step => maybeTagStep(step));
     const wrapper = svgMount(<SequenceVisualization {...p} />);
-    expect(wrapper.find("circle").length).toEqual(11);
-    expect(wrapper.find("line").length).toEqual(11);
-    expect(wrapper.find("image").length).toEqual(11);
+    expect(elementCount(wrapper.container, "circle")).toEqual(11);
+    expect(elementCount(wrapper.container, "line")).toEqual(11);
+    expect(elementCount(wrapper.container, "image")).toEqual(11);
   });
 
   it("doesn't find tool slot", () => {
@@ -88,9 +112,9 @@ describe("<SequenceVisualization />", () => {
     ];
     p.visualizedSequenceBody.map(step => maybeTagStep(step));
     const wrapper = svgMount(<SequenceVisualization {...p} />);
-    expect(wrapper.find("circle").length).toEqual(0);
-    expect(wrapper.find("line").length).toEqual(0);
-    expect(wrapper.find("image").length).toEqual(0);
+    expect(elementCount(wrapper.container, "circle")).toEqual(0);
+    expect(elementCount(wrapper.container, "line")).toEqual(0);
+    expect(elementCount(wrapper.container, "image")).toEqual(0);
   });
 
   it("doesn't find variable", () => {
@@ -102,9 +126,9 @@ describe("<SequenceVisualization />", () => {
     ];
     p.visualizedSequenceBody.map(step => maybeTagStep(step));
     const wrapper = svgMount(<SequenceVisualization {...p} />);
-    expect(wrapper.find("circle").length).toEqual(0);
-    expect(wrapper.find("line").length).toEqual(0);
-    expect(wrapper.find("image").length).toEqual(0);
+    expect(elementCount(wrapper.container, "circle")).toEqual(0);
+    expect(elementCount(wrapper.container, "line")).toEqual(0);
+    expect(elementCount(wrapper.container, "image")).toEqual(0);
   });
 
   it("doesn't find variable vector", () => {
@@ -126,9 +150,9 @@ describe("<SequenceVisualization />", () => {
     ];
     p.visualizedSequenceBody.map(step => maybeTagStep(step));
     const wrapper = svgMount(<SequenceVisualization {...p} />);
-    expect(wrapper.find("circle").length).toEqual(0);
-    expect(wrapper.find("line").length).toEqual(0);
-    expect(wrapper.find("image").length).toEqual(0);
+    expect(elementCount(wrapper.container, "circle")).toEqual(0);
+    expect(elementCount(wrapper.container, "line")).toEqual(0);
+    expect(elementCount(wrapper.container, "image")).toEqual(0);
   });
 
   it("shows hover", () => {
@@ -139,12 +163,15 @@ describe("<SequenceVisualization />", () => {
     p.visualizedSequenceBody.map(step => maybeTagStep(step));
     p.hoveredSequenceStep = getStepTag(p.visualizedSequenceBody[0]);
     const wrapper = svgMount(<SequenceVisualization {...p} />);
-    expect(wrapper.find("circle").length).toEqual(1);
-    expect(wrapper.find("circle").props().fillOpacity).toEqual(1);
-    expect(wrapper.find("line").length).toEqual(1);
-    expect(wrapper.find("line").props().strokeOpacity).toEqual(1);
-    expect(wrapper.find("image").length).toEqual(1);
-    expect(wrapper.find("image").props().opacity).toEqual(1);
+    const circle = wrapper.container.querySelector("circle");
+    const line = wrapper.container.querySelector("line");
+    const image = wrapper.container.querySelector("image");
+    expect(elementCount(wrapper.container, "circle")).toEqual(1);
+    expect(circle?.getAttribute("fill-opacity")).toEqual("1");
+    expect(elementCount(wrapper.container, "line")).toEqual(1);
+    expect(line?.getAttribute("stroke-opacity")).toEqual("1");
+    expect(elementCount(wrapper.container, "image")).toEqual(1);
+    expect(image?.getAttribute("opacity")).toEqual("1");
   });
 });
 

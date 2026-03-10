@@ -1,12 +1,21 @@
-jest.mock("../actions", () => ({ openSavedGarden: jest.fn() }));
-
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { render, fireEvent } from "@testing-library/react";
 import { GardenInfo, SavedGardenList } from "../garden_list";
 import { fakeSavedGarden } from "../../__test_support__/fake_state/resources";
 import { SavedGardenInfoProps, SavedGardenListProps } from "../interfaces";
 import { openSavedGarden } from "../actions";
+import * as savedGardenActions from "../actions";
 
+let openSavedGardenSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  openSavedGardenSpy = jest.spyOn(savedGardenActions, "openSavedGarden")
+    .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  openSavedGardenSpy.mockRestore();
+});
 describe("<GardenInfo />", () => {
   const fakeProps = (): SavedGardenInfoProps => ({
     savedGarden: fakeSavedGarden(),
@@ -16,8 +25,8 @@ describe("<GardenInfo />", () => {
 
   it("opens garden", () => {
     const p = fakeProps();
-    const wrapper = shallow(<GardenInfo {...p} />);
-    wrapper.simulate("click");
+    const { container } = render(<GardenInfo {...p} />);
+    fireEvent.click(container.firstChild as Element);
     expect(openSavedGarden).toHaveBeenCalledWith(expect.any(Function),
       p.savedGarden.body.id);
   });
@@ -34,8 +43,8 @@ describe("<SavedGardenList />", () => {
   });
 
   it("renders saved gardens", () => {
-    const wrapper = mount(<SavedGardenList {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("saved garden");
+    const { container } = render(<SavedGardenList {...fakeProps()} />);
+    expect(container.textContent?.toLowerCase()).toContain("saved garden");
   });
 
   it("handles missing name", () => {
@@ -43,7 +52,7 @@ describe("<SavedGardenList />", () => {
     const savedGarden = fakeSavedGarden();
     savedGarden.body.name = "";
     p.savedGardens = [savedGarden];
-    const wrapper = mount(<SavedGardenList {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("0 plants");
+    const { container } = render(<SavedGardenList {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("0 plants");
   });
 });

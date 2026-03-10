@@ -1,8 +1,3 @@
-jest.mock("../../config_storage/actions", () => ({
-  getWebAppConfigValue: jest.fn(() => jest.fn()),
-  setWebAppConfigValue: jest.fn(),
-}));
-
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import {
@@ -13,6 +8,14 @@ import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
 import { Actions } from "../../constants";
 import { fakeDevice } from "../../__test_support__/resource_index_builder";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
+import * as configStorageActions from "../../config_storage/actions";
+
+beforeEach(() => {
+  jest.spyOn(configStorageActions, "getWebAppConfigValue")
+    .mockImplementation(() => () => false);
+  jest.spyOn(configStorageActions, "setWebAppConfigValue")
+    .mockImplementation(jest.fn());
+});
 
 describe("<TimeTravelTarget />", () => {
   const fakeProps = (): TimeTravelTargetProps => {

@@ -1,5 +1,5 @@
-import { DropDownItem } from "../ui";
-import {
+import type { DropDownItem } from "../ui";
+import type {
   TaggedFarmEvent,
   TaggedSequence,
   TaggedRegimen,
@@ -23,25 +23,25 @@ import {
   TaggedCurve,
   PlantStage,
 } from "farmbot";
-import { SlotWithTool, ResourceIndex, UUID } from "../resources/interfaces";
-import {
+import type { SlotWithTool, ResourceIndex, UUID } from "../resources/interfaces";
+import type {
   BotPosition, BotLocationData, SourceFbosConfig,
 } from "../devices/interfaces";
 import { isNumber } from "lodash";
-import {
+import type {
   AxisNumberProperty, BotSize, MapTransformProps, TaggedPlant,
 } from "./map/interfaces";
-import { SelectionBoxData } from "./map/background";
-import { GetWebAppConfigValue } from "../config_storage/actions";
-import {
+import type { SelectionBoxData } from "./map/background";
+import type { GetWebAppConfigValue } from "../config_storage/actions";
+import type {
   DeviceAccountSettings,
   ExecutableType, PlantPointer, ToolPulloutDirection,
 } from "farmbot/dist/resources/api_resources";
-import { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
-import { MovementState, TimeSettings } from "../interfaces";
-import { ExtendedPointGroupSortType } from "../point_groups/paths";
-import { PeripheralValues } from "./map/layers/farmbot/bot_trail";
-import { NavigateFunction } from "react-router";
+import type { BooleanConfigKey } from "farmbot/dist/resources/configs/web_app";
+import type { MovementState, TimeSettings } from "../interfaces";
+import type { ExtendedPointGroupSortType } from "../point_groups/paths";
+import type { PeripheralValues } from "./map/layers/farmbot/bot_trail";
+import type { NavigateFunction } from "react-router";
 
 /* BotOriginQuadrant diagram
 

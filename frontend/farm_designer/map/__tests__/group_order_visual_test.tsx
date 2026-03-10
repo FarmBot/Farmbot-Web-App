@@ -1,4 +1,5 @@
 import React from "react";
+import { render } from "@testing-library/react";
 import {
   GroupOrder, GroupOrderProps,
 } from "../../map/group_order_visual";
@@ -8,9 +9,7 @@ import {
 import {
   fakePlant, fakePoint, fakePointGroup,
 } from "../../../__test_support__/fake_state/resources";
-import { svgMount } from "../../../__test_support__/svg_mount";
 import { ExtendedPointGroupSortType } from "../../../point_groups/paths";
-import { shallow } from "enzyme";
 import { times } from "lodash";
 
 describe("<GroupOrder />", () => {
@@ -37,17 +36,18 @@ describe("<GroupOrder />", () => {
   };
 
   it("renders group order", () => {
-    const wrapper = svgMount(<GroupOrder {...fakeProps()} />);
-    expect(wrapper.find("line").length).toEqual(3);
+    const { container } = render(<svg><GroupOrder {...fakeProps()} /></svg>);
+    expect(container.querySelectorAll("line").length).toEqual(3);
   });
 
   it("updates", () => {
     const p = fakeProps();
-    const wrapper = shallow<GroupOrder>(<GroupOrder {...p} />);
-    expect(wrapper.instance().shouldComponentUpdate(p)).toBeTruthy();
+    const ref = React.createRef<GroupOrder>();
+    const { rerender } = render(<svg><GroupOrder {...p} ref={ref} /></svg>);
+    expect(ref.current?.shouldComponentUpdate(p)).toBeTruthy();
     p.groupPoints = times(51, fakePoint);
-    wrapper.setProps(p);
-    expect(wrapper.instance().shouldComponentUpdate(p)).toBeFalsy();
+    rerender(<svg><GroupOrder {...p} ref={ref} /></svg>);
+    expect(ref.current?.shouldComponentUpdate(p)).toBeFalsy();
   });
 
   it.each<[ExtendedPointGroupSortType]>([
@@ -58,7 +58,7 @@ describe("<GroupOrder />", () => {
     const p = fakeProps();
     p.zoomLvl = 1.5;
     p.tryGroupSortType = sortType;
-    const wrapper = svgMount(<GroupOrder {...p} />);
-    expect(wrapper.find("line").length).toEqual(3);
+    const { container } = render(<svg><GroupOrder {...p} /></svg>);
+    expect(container.querySelectorAll("line").length).toEqual(3);
   });
 });

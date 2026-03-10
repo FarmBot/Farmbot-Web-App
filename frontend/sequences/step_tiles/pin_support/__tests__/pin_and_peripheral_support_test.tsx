@@ -1,7 +1,4 @@
 const mockEditStep = jest.fn();
-jest.mock("../../../../api/crud", () => ({
-  editStep: mockEditStep
-}));
 
 import {
   buildResourceIndex,
@@ -19,7 +16,18 @@ import { chain } from "lodash";
 import {
   fakeStepParams,
 } from "../../../../__test_support__/fake_sequence_step_data";
+import * as crud from "../../../../api/crud";
 
+let editStepSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  editStepSpy = jest.spyOn(crud, "editStep")
+    .mockImplementation(mockEditStep);
+});
+
+afterEach(() => {
+  editStepSpy.mockRestore();
+});
 describe("pinDropdowns()", () => {
   it("has a list of unnamed pins", () => {
     expect(PinSupport.pinDropdowns(n => n).length)

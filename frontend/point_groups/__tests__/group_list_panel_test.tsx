@@ -1,9 +1,5 @@
-jest.mock("../actions", () => ({
-  createGroup: jest.fn(),
-}));
-
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { render, screen, fireEvent } from "@testing-library/react";
 import {
   RawGroupListPanel as GroupListPanel, GroupListPanelProps, mapStateToProps,
 } from "../group_list_panel";
@@ -14,9 +10,7 @@ import { fakeState } from "../../__test_support__/fake_state";
 import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
-import { createGroup } from "../actions";
-import { DesignerPanelTop } from "../../farm_designer/designer_panel";
-import { SearchField } from "../../ui/search_field";
+import * as GroupActions from "../actions";
 import { Path } from "../../internal_urls";
 
 describe("<GroupListPanel />", () => {
@@ -43,52 +37,53 @@ describe("<GroupListPanel />", () => {
   };
 
   it("creates new group", () => {
+    const createGroup = jest.spyOn(GroupActions, "createGroup")
+      .mockImplementation((() => jest.fn()) as typeof GroupActions.createGroup);
     const p = fakeProps();
-    const wrapper = shallow(<GroupListPanel {...p} />);
-    wrapper.find(DesignerPanelTop).simulate("click");
+    render(<GroupListPanel {...p} />);
+    fireEvent.click(screen.getByTitle("Add group"));
     expect(createGroup).toHaveBeenCalledWith({
       pointUuids: [],
       navigate: expect.any(Function),
     });
+    createGroup.mockRestore();
   });
 
   it("changes search term", () => {
-    const p = fakeProps();
-    const wrapper = shallow(<GroupListPanel {...p} />);
-    wrapper.find(SearchField).simulate("change", "one");
-    expect(wrapper.find(SearchField).props().searchTerm).toEqual("one");
+    render(<GroupListPanel {...fakeProps()} />);
+    const input =
+      (screen.getByPlaceholderText("Search your groups..."));
+    fireEvent.change(input, { target: { value: "one" } });
+    expect(input.value).toEqual("one");
   });
 
   it("renders relevant group data as a list", () => {
-    const p = fakeProps();
-    const wrapper = mount(<GroupListPanel {...p} />);
-    ["3 items",
-      "0 items",
-      p.groups[0].body.name,
-      p.groups[1].body.name]
-      .map(string =>
-        expect(wrapper.text()).toContain(string));
+    render(<GroupListPanel {...fakeProps()} />);
+    expect(screen.getByText("3 items")).toBeInTheDocument();
+    expect(screen.getByText("0 items")).toBeInTheDocument();
+    expect(screen.getByText("one")).toBeInTheDocument();
+    expect(screen.getByText("two")).toBeInTheDocument();
   });
 
   it("navigates to group", () => {
-    const wrapper = mount(<GroupListPanel {...fakeProps()} />);
-    wrapper.find(".group-search-item").first().simulate("click");
+    render(<GroupListPanel {...fakeProps()} />);
+    fireEvent.click(screen.getByText("one"));
     expect(mockNavigate).toHaveBeenCalledWith(Path.groups(9));
   });
 
   it("navigates to group: handles missing id", () => {
     const p = fakeProps();
     p.groups[0].body.id = undefined;
-    const wrapper = mount(<GroupListPanel {...p} />);
-    wrapper.find(".group-search-item").first().simulate("click");
+    render(<GroupListPanel {...p} />);
+    fireEvent.click(screen.getByText("one"));
     expect(mockNavigate).toHaveBeenCalledWith(Path.groups());
   });
 
   it("renders no groups", () => {
     const p = fakeProps();
     p.groups = [];
-    const wrapper = mount(<GroupListPanel {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("no groups yet");
+    render(<GroupListPanel {...p} />);
+    expect(screen.getByText("No groups yet.")).toBeInTheDocument();
   });
 });
 

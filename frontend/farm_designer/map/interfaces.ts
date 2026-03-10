@@ -1,4 +1,4 @@
-import {
+import type {
   TaggedPlantPointer,
   TaggedGenericPointer,
   TaggedPlantTemplate,
@@ -7,17 +7,17 @@ import {
   Xyz,
   McuParams,
 } from "farmbot";
-import {
+import type {
   State, BotOriginQuadrant, MountedToolInfo, CameraCalibrationData,
 } from "../interfaces";
-import {
+import type {
   BotPosition, BotLocationData, SourceFbosConfig,
 } from "../../devices/interfaces";
-import { GetWebAppConfigValue } from "../../config_storage/actions";
-import { TimeSettings } from "../../interfaces";
-import { UUID } from "../../resources/interfaces";
-import { PeripheralValues } from "./layers/farmbot/bot_trail";
-import { GetColor } from "./layers/points/interpolation_map";
+import type { GetWebAppConfigValue } from "../../config_storage/actions";
+import type { TimeSettings } from "../../interfaces";
+import type { UUID } from "../../resources/interfaces";
+import type { PeripheralValues } from "./layers/farmbot/bot_trail";
+import type { GetColor } from "./layers/points/interpolation_map";
 
 export type TaggedPlant = TaggedPlantPointer | TaggedPlantTemplate;
 

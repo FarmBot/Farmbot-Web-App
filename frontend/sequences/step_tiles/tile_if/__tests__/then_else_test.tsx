@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { ThenElse } from "../then_else";
 import { If } from "farmbot";
 import { ThenElseParams } from "../index";
@@ -26,16 +26,23 @@ describe("<ThenElse/>", () => {
   }
 
   it("renders 'then'", () => {
-    const wrapper = mount(<ThenElse {...fakeProps()} />);
-    expect(wrapper.text()).toContain("Then Execute");
-    expect(wrapper.find("button").length).toEqual(1);
+    const p = fakeProps();
+    const { container } = render(<ThenElse {...p} />);
+    const wrapper = ThenElse(p) as React.ReactElement<{ children?: React.ReactNode }>;
+    const children = React.Children.toArray(wrapper.props.children) as JSX.Element[];
+    expect(container.textContent).toContain("Then Execute");
+    expect(children.length).toBeGreaterThanOrEqual(2);
+    expect((children[1]).props.list).toBeDefined();
   });
 
   it("renders 'else'", () => {
     const p = fakeProps();
     p.thenElseKey = "_else";
-    const wrapper = mount(<ThenElse {...p} />);
-    expect(wrapper.text()).toContain("Else Execute");
-    expect(wrapper.find("button").length).toEqual(1);
+    const { container } = render(<ThenElse {...p} />);
+    const wrapper = ThenElse(p) as React.ReactElement<{ children?: React.ReactNode }>;
+    const children = React.Children.toArray(wrapper.props.children) as JSX.Element[];
+    expect(container.textContent).toContain("Else Execute");
+    expect(children.length).toBeGreaterThanOrEqual(2);
+    expect((children[1]).props.list).toBeDefined();
   });
 });

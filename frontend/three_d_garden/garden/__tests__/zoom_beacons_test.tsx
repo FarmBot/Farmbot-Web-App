@@ -1,18 +1,35 @@
 let mockIsDesktop = true;
-jest.mock("../../../screen_size", () => ({
-  isDesktop: () => mockIsDesktop,
-}));
 
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { ZoomBeacons, ZoomBeaconsProps } from "../zoom_beacons";
 import { clone } from "lodash";
 import { INITIAL } from "../../config";
+import * as screenSize from "../../../screen_size";
+import {
+  actRenderer,
+  createRenderer,
+  unmountRenderer,
+} from "../../../__test_support__/test_renderer";
+
+const originalDocumentQuerySelector = document.querySelector.bind(document);
+let isDesktopSpy: jest.SpyInstance;
 
 describe("<ZoomBeacons />", () => {
   beforeEach(() => {
+    mockIsDesktop = true;
     window.location.href = "http://localhost:3000/app/designer";
     history.pushState = jest.fn();
+    isDesktopSpy = jest.spyOn(screenSize, "isDesktop")
+      .mockImplementation(() => mockIsDesktop);
+  });
+
+  afterEach(() => {
+    Object.defineProperty(document, "querySelector", {
+      value: originalDocumentQuerySelector,
+      configurable: true,
+    });
+    isDesktopSpy.mockRestore();
   });
 
   const fakeProps = (): ZoomBeaconsProps => ({
@@ -23,11 +40,11 @@ describe("<ZoomBeacons />", () => {
 
   it("renders", async () => {
     jest.useFakeTimers();
-    const wrapper = mount(<ZoomBeacons {...fakeProps()} />);
+    const { container } = render(<ZoomBeacons {...fakeProps()} />);
     await jest.runAllTimers();
-    expect(wrapper.html()).toContain("zoom-beacons");
-    expect(wrapper.html()).not.toContain("debug-group");
-    expect(wrapper.html()).toContain("60,12,12");
+    expect(container.innerHTML).toContain("zoom-beacons");
+    expect(container.innerHTML).not.toContain("debug-group");
+    expect(container.innerHTML).toContain("60,12,12");
     jest.runAllTimers();
   });
 
@@ -36,24 +53,28 @@ describe("<ZoomBeacons />", () => {
     p.config.zoomBeaconDebug = true;
     p.config.sizePreset = "Genesis XL";
     p.config.animate = false;
-    const wrapper = mount(<ZoomBeacons {...p} />);
-    expect(wrapper.html()).toContain("debug-group");
+    const { container } = render(<ZoomBeacons {...p} />);
+    expect(container.innerHTML).toContain("debug-group");
   });
 
   it("renders mobile", () => {
     mockIsDesktop = false;
-    const wrapper = mount(<ZoomBeacons {...fakeProps()} />);
-    expect(wrapper.html()).toContain("80,12,12");
+    const { container } = render(<ZoomBeacons {...fakeProps()} />);
+    expect(container.innerHTML).toContain("80,12,12");
   });
 
   it("shows beacon", () => {
     const p = fakeProps();
-    const wrapper = mount(<ZoomBeacons {...p} />);
-    const sphere = wrapper.find({ name: "beacon-sphere" }).first();
-    sphere.simulate("pointerEnter");
-    sphere.simulate("pointerLeave");
-    sphere.simulate("click");
+    p.config.animate = false;
+    const wrapper = createRenderer(<ZoomBeacons {...p} />);
+    const sphere = wrapper.root.findAll(node => node.props.name == "beacon-sphere")[0];
+    actRenderer(() => {
+      sphere?.props.onPointerEnter();
+      sphere?.props.onPointerLeave();
+      sphere?.props.onClick();
+    });
     expect(p.setActiveFocus).toHaveBeenCalledWith("What you can grow");
+    unmountRenderer(wrapper);
   });
 
   it("changes cursor", () => {
@@ -64,16 +85,23 @@ describe("<ZoomBeacons />", () => {
     });
     const p = fakeProps();
     p.activeFocus = "What you can grow";
-    const wrapper = mount(<ZoomBeacons {...p} />);
-    const sphere = wrapper.find({ name: "beacon-sphere" }).first();
-    sphere.simulate("pointerEnter");
-    expect((document.querySelector("") as HTMLElement).style.cursor)
-      .toEqual("zoom-out");
-    sphere.simulate("pointerLeave");
-    expect((document.querySelector("") as HTMLElement).style.cursor).toEqual("");
-    sphere.simulate("click");
-    expect((document.querySelector("") as HTMLElement).style.cursor).toEqual("");
+    p.config.animate = false;
+    const wrapper = createRenderer(<ZoomBeacons {...p} />);
+    const sphere = wrapper.root.findAll(node => node.props.name == "beacon-sphere")[0];
+    actRenderer(() => {
+      sphere?.props.onPointerEnter();
+    });
+    expect(element.style.cursor).toEqual("zoom-out");
+    actRenderer(() => {
+      sphere?.props.onPointerLeave();
+    });
+    expect(element.style.cursor).toEqual("");
+    actRenderer(() => {
+      sphere?.props.onClick();
+    });
+    expect(element.style.cursor).toEqual("");
     expect(p.setActiveFocus).toHaveBeenCalledWith("");
+    unmountRenderer(wrapper);
   });
 
   it("changes cursor: zoom-in", () => {
@@ -84,22 +112,33 @@ describe("<ZoomBeacons />", () => {
     });
     const p = fakeProps();
     p.activeFocus = "";
-    const wrapper = mount(<ZoomBeacons {...p} />);
-    const sphere = wrapper.find({ name: "beacon-sphere" }).first();
-    sphere.simulate("pointerEnter");
-    expect((document.querySelector("") as HTMLElement).style.cursor)
-      .toEqual("zoom-in");
+    p.config.animate = false;
+    const wrapper = createRenderer(<ZoomBeacons {...p} />);
+    const sphere = wrapper.root.findAll(node => node.props.name == "beacon-sphere")[0];
+    actRenderer(() => {
+      sphere?.props.onPointerEnter();
+    });
+    expect(element.style.cursor).toEqual("zoom-in");
+    unmountRenderer(wrapper);
   });
 
   it("shows pop-up", () => {
     const p = fakeProps();
     p.activeFocus = "What you can grow";
-    const wrapper = mount(<ZoomBeacons {...p} />);
+    p.config.animate = false;
+    const wrapper = createRenderer(<ZoomBeacons {...p} />);
     const e = { stopPropagation: jest.fn() };
-    wrapper.find(".beacon-info").first().simulate("pointerDown", e);
-    wrapper.find(".beacon-info").first().simulate("pointerMove", e);
+    const info = wrapper.root.findAll(node => node.props.className == "beacon-info")[0];
+    actRenderer(() => {
+      info?.props.onPointerDown(e);
+      info?.props.onPointerMove(e);
+    });
     expect(e.stopPropagation).toHaveBeenCalledTimes(2);
-    wrapper.find(".exit-button").first().simulate("click");
+    actRenderer(() => {
+      wrapper.root.findAll(node => node.props.className == "exit-button")[0]
+        ?.props.onClick();
+    });
     expect(p.setActiveFocus).toHaveBeenCalledWith("");
+    unmountRenderer(wrapper);
   });
 });

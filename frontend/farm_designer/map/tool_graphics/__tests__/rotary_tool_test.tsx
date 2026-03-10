@@ -22,7 +22,7 @@ describe("<RotaryTool />", () => {
 
   it("renders rotary tool", () => {
     const wrapper = svgMount(<RotaryTool {...fakeProps()} />);
-    expect(wrapper.html()).toContain("rotary-tool");
+    expect(wrapper.container.innerHTML).toContain("rotary-tool");
   });
 });
 
@@ -36,6 +36,6 @@ describe("<RotaryToolImplementProfile />", () => {
 
   it("renders rotary tool profile", () => {
     const wrapper = svgMount(<RotaryToolImplementProfile {...fakeProps()} />);
-    expect(wrapper.html()).toContain("rotary-tool-implement-profile");
+    expect(wrapper.container.innerHTML).toContain("rotary-tool-implement-profile");
   });
 });

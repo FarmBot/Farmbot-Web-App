@@ -91,7 +91,8 @@ export const ZoomBeacons = (props: ZoomBeaconsProps) => {
               gardenBedDiv.style.cursor = "";
             }
           }}
-          receiveShadow={true}
+          receiveShadow={false}
+          castShadow={false}
           visible={!activeFocus}
           args={[
             beaconSize

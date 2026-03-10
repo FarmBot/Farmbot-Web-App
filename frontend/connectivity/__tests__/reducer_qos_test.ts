@@ -1,10 +1,3 @@
-jest.mock("../../redux/store", () => ({
-  store: {
-    dispatch: jest.fn(),
-    getState: jest.fn(() => ({ NO: "NO" })),
-  }
-}));
-
 import { connectivityReducer, DEFAULT_STATE } from "../reducer";
 import { Actions } from "../../constants";
 import { pingOK, pingNO } from "..";
@@ -12,6 +5,20 @@ import { store } from "../../redux/store";
 import { cloneDeep } from "lodash";
 
 describe("connectivity reducer", () => {
+  let originalDispatch: typeof store.dispatch;
+  let dispatchMock: jest.Mock;
+
+  beforeEach(() => {
+    dispatchMock = jest.fn();
+    originalDispatch = store.dispatch;
+    (store as unknown as { dispatch: jest.Mock }).dispatch = dispatchMock;
+  });
+
+  afterEach(() => {
+    (store as unknown as { dispatch: typeof store.dispatch }).dispatch =
+      originalDispatch;
+  });
+
   const newState = () => {
     const action = { type: Actions.PING_START, payload: { id: "yep" } };
     return connectivityReducer(DEFAULT_STATE, action);
@@ -34,7 +41,7 @@ describe("connectivity reducer", () => {
 
   it("broadcasts PING_OK", () => {
     pingOK("yep", 123);
-    expect(store.dispatch).toHaveBeenCalledWith({
+    expect(dispatchMock).toHaveBeenCalledWith({
       payload: { at: 123, id: "yep" },
       type: "PING_OK",
     });
@@ -42,7 +49,7 @@ describe("connectivity reducer", () => {
 
   it("broadcasts PING_NO", () => {
     pingNO("yep", 123);
-    expect(store.dispatch).toHaveBeenCalledWith({
+    expect(dispatchMock).toHaveBeenCalledWith({
       payload: { id: "yep", at: 123 },
       type: "PING_NO"
     });

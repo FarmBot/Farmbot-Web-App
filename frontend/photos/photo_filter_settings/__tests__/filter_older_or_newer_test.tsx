@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render, screen } from "@testing-library/react";
 import { FilterOlderOrNewer } from "../filter_older_or_newer";
 import { ImageFilterProps } from "../../images/interfaces";
 import { fakeImage } from "../../../__test_support__/fake_state/resources";
@@ -13,7 +13,7 @@ describe("<FilterOlderOrNewer />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<FilterOlderOrNewer {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("newer");
+    render(<FilterOlderOrNewer {...fakeProps()} />);
+    expect(screen.getByText(/newer/i)).toBeInTheDocument();
   });
 });

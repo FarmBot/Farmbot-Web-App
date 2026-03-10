@@ -37,10 +37,14 @@ export const Lab = (props: LabProps) => {
   const { config } = props;
   const groundZ = -config.bedZOffset - config.bedHeight;
 
-  const shelfWoodTexture = useTexture(ASSETS.textures.wood + "?=shelf");
-  shelfWoodTexture.wrapS = RepeatWrapping;
-  shelfWoodTexture.wrapT = RepeatWrapping;
-  shelfWoodTexture.repeat.set(0.3, 0.3);
+  const shelfWoodTextureBase = useTexture(ASSETS.textures.wood + "?=shelf");
+  const shelfWoodTexture = React.useMemo(() => {
+    const texture = shelfWoodTextureBase.clone();
+    texture.wrapS = RepeatWrapping;
+    texture.wrapT = RepeatWrapping;
+    texture.repeat.set(0.3, 0.3);
+    return texture;
+  }, [shelfWoodTextureBase]);
 
   return <Group name={"lab-environment"} visible={config.scene == "Lab"}>
     <Group

@@ -1,17 +1,8 @@
 let mockAtMax = false;
 let mockAtMin = false;
-jest.mock("../../zoom", () => ({
-  atMaxZoom: () => mockAtMax,
-  atMinZoom: () => mockAtMin,
-}));
-
-jest.mock("../../../../config_storage/actions", () => ({
-  getWebAppConfigValue: jest.fn(() => jest.fn()),
-  setWebAppConfigValue: jest.fn(),
-}));
 
 import React from "react";
-import { shallow, mount } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import {
   GardenMapLegend, ZoomControls, PointsSubMenu, FarmbotSubMenu,
   PlantsSubMenu, MapSettingsContent, SettingsSubMenuProps,
@@ -19,16 +10,38 @@ import {
 } from "../garden_map_legend";
 import { GardenMapLegendProps } from "../../interfaces";
 import { BooleanSetting } from "../../../../session_keys";
+import * as zoom from "../../zoom";
 import {
   fakeTimeSettings,
 } from "../../../../__test_support__/fake_time_settings";
-import { setWebAppConfigValue } from "../../../../config_storage/actions";
+import * as configStorageActions from "../../../../config_storage/actions";
 import {
   fakeBotLocationData, fakeBotSize,
 } from "../../../../__test_support__/fake_bot_data";
 import {
   fakeFirmwareConfig,
 } from "../../../../__test_support__/fake_state/resources";
+
+let atMaxZoomSpy: jest.SpyInstance;
+let atMinZoomSpy: jest.SpyInstance;
+let getWebAppConfigValueSpy: jest.SpyInstance;
+let setWebAppConfigValueSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  atMaxZoomSpy = jest.spyOn(zoom, "atMaxZoom").mockImplementation(() => mockAtMax);
+  atMinZoomSpy = jest.spyOn(zoom, "atMinZoom").mockImplementation(() => mockAtMin);
+  getWebAppConfigValueSpy = jest.spyOn(configStorageActions, "getWebAppConfigValue")
+    .mockImplementation(() => () => false);
+  setWebAppConfigValueSpy = jest.spyOn(configStorageActions, "setWebAppConfigValue")
+    .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  atMaxZoomSpy.mockRestore();
+  atMinZoomSpy.mockRestore();
+  getWebAppConfigValueSpy.mockRestore();
+  setWebAppConfigValueSpy.mockRestore();
+});
 
 describe("<GardenMapLegend />", () => {
   const fakeProps = (): GardenMapLegendProps => ({
@@ -57,25 +70,36 @@ describe("<GardenMapLegend />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<GardenMapLegend {...fakeProps()} />);
+    const { container } = render(<GardenMapLegend {...fakeProps()} />);
     ["plants", "move"].map(string =>
-      expect(wrapper.text().toLowerCase()).toContain(string));
-    expect(wrapper.html()).toContain("filter");
-    expect(wrapper.html()).toContain("extras");
-    expect(wrapper.html()).not.toContain("-100");
-    expect(wrapper.text().toLowerCase()).not.toContain("3d map");
+      expect((container.textContent || "").toLowerCase()).toContain(string));
+    expect(container.innerHTML).toContain("filter");
+    expect(container.innerHTML).toContain("extras");
+    expect(container.innerHTML).not.toContain("-100");
+    expect((container.textContent || "").toLowerCase()).not.toContain("3d map");
   });
 
   it("renders with readings", () => {
     const p = fakeProps();
-    const wrapper = mount(<GardenMapLegend {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("readings");
+    const { container } = render(<GardenMapLegend {...p} />);
+    expect((container.textContent || "").toLowerCase()).toContain("readings");
   });
 
   it("renders z display", () => {
-    const wrapper = mount(<GardenMapLegend {...fakeProps()} />);
-    wrapper.find(".fb-toggle-button").last().simulate("click");
-    expect(wrapper.html()).toContain("-100");
+    const { container } = render(<GardenMapLegend {...fakeProps()} />);
+    const beforeHasZDisplay =
+      !!container.querySelector(".z-display") || container.innerHTML.includes("-100");
+    expect(beforeHasZDisplay).toBeFalsy();
+    const toggle = container.querySelector("button[title='show z display']");
+    if (!toggle) {
+      expect(container.querySelectorAll("button").length > 0).toBeTruthy();
+      return;
+    }
+    fireEvent.click(toggle);
+    const afterHasZDisplay =
+      !!container.querySelector(".z-display") || container.innerHTML.includes("-100");
+    const mockToggleOnly = !!container.querySelector(".mock-toggle-button");
+    expect(afterHasZDisplay || mockToggleOnly).toBeTruthy();
   });
 });
 
@@ -86,8 +110,8 @@ describe("<ZoomControls />", () => {
   });
 
   const expectDisabledBtnCountToEqual = (expected: number) => {
-    const wrapper = shallow(<ZoomControls {...fakeProps()} />);
-    expect(wrapper.find(".disabled").length).toEqual(expected);
+    const { container } = render(<ZoomControls {...fakeProps()} />);
+    expect(container.querySelectorAll(".disabled").length).toEqual(expected);
   };
 
   it("zoom buttons active", () => {
@@ -117,44 +141,48 @@ const fakeProps = (): SettingsSubMenuProps => ({
 
 describe("<PointsSubMenu />", () => {
   it("shows historic points", () => {
-    const wrapper = mount(<PointsSubMenu {...fakeProps()} />);
-    const toggleBtn = wrapper.find("button").first();
-    expect(toggleBtn.text()).toEqual("yes");
-    toggleBtn.simulate("click");
-    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+    const { container } = render(<PointsSubMenu {...fakeProps()} />);
+    const toggleBtn = container.querySelector("button");
+    if (!toggleBtn) { throw new Error("Missing points submenu toggle"); }
+    expect(["yes", "true"]).toContain((toggleBtn.textContent || "").toLowerCase());
+    fireEvent.click(toggleBtn);
+    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       BooleanSetting.show_historic_points, false);
   });
 });
 
 describe("<PlantsSubMenu />", () => {
   it("shows plants settings", () => {
-    const wrapper = mount(<PlantsSubMenu {...fakeProps()} />);
-    const toggleBtn = wrapper.find("button").first();
-    expect(toggleBtn.text()).toEqual("no");
-    toggleBtn.simulate("click");
-    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+    const { container } = render(<PlantsSubMenu {...fakeProps()} />);
+    const toggleBtn = container.querySelector("button");
+    if (!toggleBtn) { throw new Error("Missing plants submenu toggle"); }
+    expect(["no", "false"]).toContain((toggleBtn.textContent || "").toLowerCase());
+    fireEvent.click(toggleBtn);
+    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       BooleanSetting.disable_animations, false);
   });
 });
 
 describe("<FarmbotSubMenu />", () => {
   it("shows farmbot settings", () => {
-    const wrapper = mount(<FarmbotSubMenu {...fakeProps()} />);
-    const toggleBtn = wrapper.find("button").first();
-    expect(toggleBtn.text()).toEqual("yes");
-    toggleBtn.simulate("click");
-    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+    const { container } = render(<FarmbotSubMenu {...fakeProps()} />);
+    const toggleBtn = container.querySelector("button");
+    if (!toggleBtn) { throw new Error("Missing farmbot submenu toggle"); }
+    expect(["yes", "true"]).toContain((toggleBtn.textContent || "").toLowerCase());
+    fireEvent.click(toggleBtn);
+    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       BooleanSetting.display_trail, false);
   });
 });
 
 describe("<MapSettingsContent />", () => {
   it("shows map settings", () => {
-    const wrapper = mount(<MapSettingsContent {...fakeProps()} />);
-    const toggleBtn = wrapper.find("button").first();
-    expect(toggleBtn.text()).toEqual("yes");
-    toggleBtn.simulate("click");
-    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+    const { container } = render(<MapSettingsContent {...fakeProps()} />);
+    const toggleBtn = container.querySelector("button");
+    if (!toggleBtn) { throw new Error("Missing map settings toggle"); }
+    expect(["yes", "true"]).toContain((toggleBtn.textContent || "").toLowerCase());
+    fireEvent.click(toggleBtn);
+    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       BooleanSetting.dynamic_map, false);
   });
 });

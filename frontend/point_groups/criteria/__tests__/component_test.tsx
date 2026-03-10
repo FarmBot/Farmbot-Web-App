@@ -1,15 +1,11 @@
-jest.mock("../../actions", () => ({ overwriteGroup: jest.fn() }));
-
-jest.mock("../edit", () => ({ togglePointTypeCriteria: jest.fn() }));
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { render, fireEvent, act } from "@testing-library/react";
 import {
   calcMaxCount,
   GroupCriteria, GroupPointCountBreakdown,
   MoreIndicatorIcon, MoreIndicatorIconProps,
   PointTypeSelection,
-  togglePointTypeCriteria,
 } from "..";
 import {
   GroupCriteriaProps, GroupPointCountBreakdownProps, DEFAULT_CRITERIA,
@@ -19,13 +15,51 @@ import {
   fakePointGroup, fakePoint,
 } from "../../../__test_support__/fake_state/resources";
 import { cloneDeep, times } from "lodash";
-import { Checkbox } from "../../../ui";
 import { Actions } from "../../../constants";
-import { overwriteGroup } from "../../actions";
+import * as groupActions from "../../actions";
+import * as criteriaEdit from "../edit";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import {
   fakeToolTransformProps,
 } from "../../../__test_support__/fake_tool_info";
+import * as ui from "../../../ui";
+
+let overwriteGroupSpy: jest.SpyInstance;
+let togglePointTypeCriteriaSpy: jest.SpyInstance;
+let fbSelectSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  overwriteGroupSpy = jest.spyOn(groupActions, "overwriteGroup")
+    .mockImplementation(jest.fn());
+  togglePointTypeCriteriaSpy = jest.spyOn(criteriaEdit, "togglePointTypeCriteria")
+    .mockImplementation(jest.fn());
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation((props: any) => {
+      const value = props.selectedItem ? String(props.selectedItem.value) : "";
+      return <select
+        className={"mock-fb-select"}
+        value={value}
+        onChange={e => {
+          const nextValue = e.currentTarget.value;
+          const selected = nextValue === ""
+            ? props.list.find((item: any) => item.isNull)
+            || props.list.find((item: any) => String(item.value) === "")
+            : props.list.find((item: any) =>
+              String(item.value) === nextValue);
+          props.onChange(selected || { label: "", value: nextValue });
+        }}>
+        <option value={""} />
+        {props.list.map((item: any, index: number) =>
+          <option key={`${item.value}-${index}`} value={String(item.value)}>
+            {item.label}
+          </option>)}
+      </select>;
+    });
+});
+
+afterEach(() => {
+  fbSelectSpy.mockRestore();
+});
 
 describe("<GroupCriteria />", () => {
   const fakeProps = (): GroupCriteriaProps => ({
@@ -42,9 +76,9 @@ describe("<GroupCriteria />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<GroupCriteria {...fakeProps()} />);
+    const { container } = render(<GroupCriteria {...fakeProps()} />);
     ["filters", "age"].map(string =>
-      expect(wrapper.text().toLowerCase()).toContain(string));
+      expect(container.textContent?.toLowerCase()).toContain(string));
   });
 
   it("mounts", () => {
@@ -52,7 +86,7 @@ describe("<GroupCriteria />", () => {
     const dispatch = jest.fn();
     p.dispatch = mockDispatch(dispatch);
     p.group.body.criteria.string_eq.pointer_type = ["Weed"];
-    mount(<GroupCriteria {...p} />);
+    render(<GroupCriteria {...p} />);
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_SELECTION_POINT_TYPE,
       payload: ["Weed"],
@@ -60,24 +94,31 @@ describe("<GroupCriteria />", () => {
   });
 
   it("toggles advanced view", () => {
-    const wrapper = mount<GroupCriteria>(<GroupCriteria {...fakeProps()} />);
-    expect(wrapper.text()).not.toContain("numbers");
-    const menu = mount(wrapper.instance().AdvancedToggleMenu());
-    menu.find("ToggleButton").first().simulate("click");
-    expect(wrapper.text()).toContain("numbers");
+    const groupRef = React.createRef<GroupCriteria>();
+    const view = render(<GroupCriteria ref={groupRef} {...fakeProps()} />);
+    expect(view.container.textContent).not.toContain("numbers");
+    const menu = render(groupRef.current?.AdvancedToggleMenu());
+    fireEvent.click(menu.container.querySelector("button") as Element);
+    expect(view.container.textContent).toContain("numbers");
   });
 
   it("shows day criteria in advanced view", () => {
-    const wrapper = mount<GroupCriteria>(<GroupCriteria {...fakeProps()} />);
-    wrapper.setState({ advanced: true });
-    expect(wrapper.text()).toContain("day");
+    const groupRef = React.createRef<GroupCriteria>();
+    const view = render(<GroupCriteria ref={groupRef} {...fakeProps()} />);
+    act(() => {
+      groupRef.current?.setState({ advanced: true });
+    });
+    expect(view.container.textContent).toContain("day");
   });
 
   it("changes day criteria", () => {
-    const wrapper = mount<GroupCriteria>(<GroupCriteria {...fakeProps()} />);
-    expect(wrapper.state().dayChanged).toBeFalsy();
-    wrapper.instance().changeDay(true);
-    expect(wrapper.state().dayChanged).toBeTruthy();
+    const groupRef = React.createRef<GroupCriteria>();
+    render(<GroupCriteria ref={groupRef} {...fakeProps()} />);
+    expect(groupRef.current?.state.dayChanged).toBeFalsy();
+    act(() => {
+      groupRef.current?.changeDay(true);
+    });
+    expect(groupRef.current?.state.dayChanged).toBeTruthy();
   });
 });
 
@@ -103,9 +144,9 @@ describe("<GroupPointCountBreakdown />", () => {
     point3.body.id = 3;
     p.pointsSelectedByGroup = [point1, point2, point3];
     p.group.body.point_ids = [1];
-    const wrapper = mount(<GroupPointCountBreakdown {...p} />);
+    const { container } = render(<GroupPointCountBreakdown {...p} />);
     ["1 manually selected", "2 selected by filters"].map(string =>
-      expect(wrapper.text()).toContain(string));
+      expect(container.textContent).toContain(string));
   });
 
   it("renders point counts: undefined ids", () => {
@@ -116,91 +157,98 @@ describe("<GroupPointCountBreakdown />", () => {
     point2.body.id = undefined;
     p.pointsSelectedByGroup = [point1, point2];
     p.group.body.point_ids = [];
-    const wrapper = mount(<GroupPointCountBreakdown {...p} />);
+    const { container } = render(<GroupPointCountBreakdown {...p} />);
     ["0 manually selected", "2 selected by filters"].map(string =>
-      expect(wrapper.text()).toContain(string));
+      expect(container.textContent).toContain(string));
   });
 
   it("clears point ids", () => {
     const p = fakeProps();
     p.group.body.point_ids = [1, 2];
-    const wrapper = mount(<GroupPointCountBreakdown {...p} />);
+    const { container } = render(<GroupPointCountBreakdown {...p} />);
     window.confirm = () => true;
-    wrapper.find("button").first().simulate("click");
+    fireEvent.click(container.querySelectorAll("button")[0] as Element);
     const expectedBody = cloneDeep(p.group.body);
     expectedBody.point_ids = [];
-    expect(overwriteGroup).toHaveBeenCalledWith(p.group, expectedBody);
+    expect(overwriteGroupSpy).toHaveBeenCalledWith(p.group, expectedBody);
   });
 
   it("doesn't clear point ids", () => {
     const p = fakeProps();
     p.group.body.point_ids = [1, 2];
-    const wrapper = mount(<GroupPointCountBreakdown {...p} />);
+    const { container } = render(<GroupPointCountBreakdown {...p} />);
     window.confirm = () => false;
-    wrapper.find("button").first().simulate("click");
-    expect(overwriteGroup).not.toHaveBeenCalled();
+    fireEvent.click(container.querySelectorAll("button")[0] as Element);
+    expect(overwriteGroupSpy).not.toHaveBeenCalled();
   });
 
   it("clears criteria", () => {
     const p = fakeProps();
-    const wrapper = mount(<GroupPointCountBreakdown {...p} />);
+    const { container } = render(<GroupPointCountBreakdown {...p} />);
     window.confirm = () => true;
-    wrapper.find("button").last().simulate("click");
+    fireEvent.click(container.querySelectorAll("button")[1] as Element);
     const expectedBody = cloneDeep(p.group.body);
     expectedBody.criteria = DEFAULT_CRITERIA;
-    expect(overwriteGroup).toHaveBeenCalledWith(p.group, expectedBody);
+    expect(overwriteGroupSpy).toHaveBeenCalledWith(p.group, expectedBody);
   });
 
   it("doesn't clear criteria", () => {
     const p = fakeProps();
-    const wrapper = mount(<GroupPointCountBreakdown {...p} />);
+    const { container } = render(<GroupPointCountBreakdown {...p} />);
     window.confirm = () => false;
-    wrapper.find("button").last().simulate("click");
-    expect(overwriteGroup).not.toHaveBeenCalled();
+    fireEvent.click(container.querySelectorAll("button")[1] as Element);
+    expect(overwriteGroupSpy).not.toHaveBeenCalled();
   });
 
   it("updates", () => {
     const p = fakeProps();
-    const wrapper = mount<GroupPointCountBreakdown>(
-      <GroupPointCountBreakdown {...p} />);
-    expect(wrapper.instance().shouldComponentUpdate(p, { maxCount: 0 }))
+    const breakdownRef = React.createRef<GroupPointCountBreakdown>();
+    const { rerender } = render(
+      <GroupPointCountBreakdown ref={breakdownRef} {...p} />);
+    expect(breakdownRef.current?.shouldComponentUpdate(p, { maxCount: 0 }))
       .toBeTruthy();
     p.pointsSelectedByGroup = times(51, fakePoint);
-    wrapper.setProps(p);
-    expect(wrapper.instance().shouldComponentUpdate(p, { maxCount: 41 }))
+    rerender(<GroupPointCountBreakdown ref={breakdownRef} {...p} />);
+    expect(breakdownRef.current?.shouldComponentUpdate(p, { maxCount: 41 }))
       .toBeFalsy();
   });
 
   it("expands", () => {
-    const wrapper = mount<GroupPointCountBreakdown>(
-      <GroupPointCountBreakdown {...fakeProps()} />);
-    expect(wrapper.state().maxCount).not.toEqual(1000);
-    wrapper.instance().toggleExpand();
-    expect(wrapper.state().maxCount).toEqual(1000);
+    const breakdownRef = React.createRef<GroupPointCountBreakdown>();
+    render(<GroupPointCountBreakdown ref={breakdownRef} {...fakeProps()} />);
+    expect(breakdownRef.current?.state.maxCount).not.toEqual(1000);
+    act(() => {
+      breakdownRef.current?.toggleExpand();
+    });
+    expect(breakdownRef.current?.state.maxCount).toEqual(1000);
   });
 
   it("collapses", () => {
-    const wrapper = mount<GroupPointCountBreakdown>(
-      <GroupPointCountBreakdown {...fakeProps()} />);
-    wrapper.setState({ maxCount: 1000 });
-    wrapper.instance().toggleExpand();
-    expect(wrapper.state().maxCount).not.toEqual(1000);
+    const breakdownRef = React.createRef<GroupPointCountBreakdown>();
+    render(<GroupPointCountBreakdown ref={breakdownRef} {...fakeProps()} />);
+    act(() => {
+      breakdownRef.current?.setState({ maxCount: 1000 });
+    });
+    act(() => {
+      breakdownRef.current?.toggleExpand();
+    });
+    expect(breakdownRef.current?.state.maxCount).not.toEqual(1000);
   });
 });
 
 describe("calcMaxCount()", () => {
   it("calculates max count", () => {
-    Object.defineProperty(document, "querySelector", {
-      value: () => ({ clientWidth: 400 }), configurable: true
-    });
+    const querySelectorSpy = jest.spyOn(document, "querySelector")
+      .mockImplementation(() => ({ clientWidth: 400 } as unknown as Element));
     expect(calcMaxCount()).toEqual(39);
+    querySelectorSpy.mockRestore();
   });
 
   it("handles null", () => {
-    Object.defineProperty(document, "querySelector", {
-      value: () => undefined, configurable: true
-    });
+    const querySelectorSpy = jest.spyOn(document, "querySelector")
+      .mockImplementation(() => undefined);
     expect(calcMaxCount()).toEqual(41);
+    querySelectorSpy.mockRestore();
   });
 });
 
@@ -212,8 +260,8 @@ describe("<MoreIndicatorIcon />", () => {
   });
 
   it("returns indicator", () => {
-    const wrapper = mount(<MoreIndicatorIcon {...fakeProps()} />);
-    expect(wrapper.text()).toEqual("+50");
+    const { container } = render(<MoreIndicatorIcon {...fakeProps()} />);
+    expect(container.textContent).toEqual("+50");
   });
 });
 
@@ -228,9 +276,12 @@ describe("<PointTypeSelection />", () => {
     const p = fakeProps();
     const dispatch = jest.fn();
     p.dispatch = mockDispatch(dispatch);
-    const wrapper = shallow(<PointTypeSelection {...p} />);
-    wrapper.find("FBSelect").simulate("change", { label: "", value: "Plant" });
-    expect(togglePointTypeCriteria).toHaveBeenCalledWith(p.group, "Plant", true);
+    const { container } = render(<PointTypeSelection {...p} />);
+    fireEvent.change(container.querySelector(".mock-fb-select") as Element, {
+      target: { value: "Plant" }
+    });
+    expect(togglePointTypeCriteriaSpy).toHaveBeenCalledWith(
+      p.group, "Plant", true);
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SET_SELECTION_POINT_TYPE,
       payload: ["Plant"],
@@ -239,16 +290,18 @@ describe("<PointTypeSelection />", () => {
 
   it("doesn't select pointer_type", () => {
     const p = fakeProps();
-    const wrapper = shallow(<PointTypeSelection {...p} />);
-    wrapper.find("FBSelect").simulate("change", { label: "", value: "nope" });
-    expect(togglePointTypeCriteria).not.toHaveBeenCalled();
+    const { container } = render(<PointTypeSelection {...p} />);
+    fireEvent.change(container.querySelector(".mock-fb-select") as Element, {
+      target: { value: "nope" }
+    });
+    expect(togglePointTypeCriteriaSpy).not.toHaveBeenCalled();
   });
 
   it("changes pointer_type", () => {
     const p = fakeProps();
     p.pointTypes = ["Plant", "Weed"];
-    const wrapper = shallow(<PointTypeSelection {...p} />);
-    wrapper.find(Checkbox).first().simulate("change");
-    expect(togglePointTypeCriteria).toHaveBeenCalledWith(p.group, "Plant");
+    const { container } = render(<PointTypeSelection {...p} />);
+    fireEvent.click(container.querySelectorAll("input")[0] as Element);
+    expect(togglePointTypeCriteriaSpy).toHaveBeenCalledWith(p.group, "Plant");
   });
 });

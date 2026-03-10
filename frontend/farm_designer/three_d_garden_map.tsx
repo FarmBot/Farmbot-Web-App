@@ -8,7 +8,7 @@ import { clone } from "lodash";
 import { BotPosition, SourceFbosConfig } from "../devices/interfaces";
 import {
   ConfigurationName, TaggedCurve, TaggedFarmwareEnv, TaggedGenericPointer,
-  TaggedImage, TaggedPoint,
+  TaggedImage, TaggedLog, TaggedPoint,
   TaggedPointGroup, TaggedSensor, TaggedSensorReading, TaggedWeedPointer,
 } from "farmbot";
 import { CameraCalibrationData, DesignerState } from "./interfaces";
@@ -24,6 +24,7 @@ import { SCENES } from "../settings/three_d_settings";
 import { get3DTime, latLng } from "../three_d_garden/time_travel";
 import { parseCalibrationData } from "./map/layers/images/map_image";
 import { fetchInterpolationOptions } from "./map/layers/points/interpolation_map";
+import { unpackUUID } from "../util";
 
 export interface ThreeDGardenMapProps {
   botSize: BotSize;
@@ -51,6 +52,7 @@ export interface ThreeDGardenMapProps {
   sensors: TaggedSensor[];
   cameraCalibrationData: CameraCalibrationData;
   farmwareEnvs: TaggedFarmwareEnv[];
+  logs: TaggedLog[];
 }
 
 export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
@@ -63,6 +65,8 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   config.zoomBeacons = false;
   config.trail = !!props.getWebAppConfigValue(BooleanSetting.display_trail);
   config.animate = !props.getWebAppConfigValue(BooleanSetting.disable_animations);
+  config.cameraView =
+    !!props.getWebAppConfigValue(BooleanSetting.show_camera_view_area);
 
   config.kitVersion =
     props.sourceFbosConfig("firmware_hardware").value == "farmduino_k18"
@@ -174,6 +178,15 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   config.pan = true;
   config.rotate = !props.designer.threeDTopDownView;
   config.perspective = !props.designer.threeDTopDownView;
+
+  const lastCaptureTime = React.useMemo(() => {
+    const localIds = props.logs
+      .filter(log => !log.body.id // new logs
+        && Object.values(["Taking photo"]).includes(log.body.message))
+      .map(log => unpackUUID(log.uuid).localId);
+    return Math.max(0, ...localIds);
+  }, [props.logs]);
+  config.lastImageCapture = lastCaptureTime;
 
   const threeDPlants = convertPlants(config, props.plants);
 

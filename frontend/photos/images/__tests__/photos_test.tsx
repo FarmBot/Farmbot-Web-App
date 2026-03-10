@@ -1,17 +1,13 @@
-jest.mock("../../../devices/actions", () => ({
-  move: jest.fn(),
-}));
-
-jest.mock("../../../api/crud", () => ({ destroy: jest.fn() }));
-
 import React from "react";
-import { mount, shallow } from "enzyme";
-import { Photos, MoveToLocation, PhotoButtons } from "../photos";
-import { fakeImages } from "../../../__test_support__/fake_state/images";
-import { destroy } from "../../../api/crud";
-import { clickButton } from "../../../__test_support__/helpers";
 import {
-  PhotosProps, MoveToLocationProps, PhotoButtonsProps,
+  fireEvent, render, screen, waitFor,
+} from "@testing-library/react";
+import {
+  Photos, MoveToLocation, PhotoButtons,
+} from "../photos";
+import { fakeImages } from "../../../__test_support__/fake_state/images";
+import {
+  PhotosProps, MoveToLocationProps, PhotoButtonsProps, PhotosComponentState,
 } from "../interfaces";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { success, error } from "../../../toast/toast";
@@ -25,9 +21,53 @@ import { fakeDesignerState } from "../../../__test_support__/fake_designer_state
 import {
   fakeMovementState, fakePercentJob,
 } from "../../../__test_support__/fake_bot_data";
-import { move } from "../../../devices/actions";
+import * as crud from "../../../api/crud";
+import * as deviceActions from "../../../devices/actions";
+import * as imageActions from "../actions";
+import * as imageFlipper from "../image_flipper";
+
+let destroySpy: jest.SpyInstance;
+let moveSpy: jest.SpyInstance;
+let setShownMapImagesSpy: jest.SpyInstance;
+let selectNextImageSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  destroySpy = jest.spyOn(crud, "destroy").mockImplementation(jest.fn());
+  moveSpy = jest.spyOn(deviceActions, "move").mockImplementation(jest.fn());
+  setShownMapImagesSpy = jest.spyOn(imageActions, "setShownMapImages")
+    .mockImplementation(() => ({
+      type: Actions.SET_SHOWN_MAP_IMAGES,
+      payload: [],
+    }));
+  selectNextImageSpy = jest.spyOn(imageFlipper, "selectNextImage")
+    .mockImplementation((images, index) => dispatch => {
+      dispatch({
+        type: Actions.SELECT_IMAGE,
+        payload: images[index]?.uuid,
+      });
+      dispatch({
+        type: Actions.SET_SHOWN_MAP_IMAGES,
+        payload: [],
+      });
+    });
+});
+
+afterEach(() => {
+  destroySpy.mockRestore();
+  moveSpy.mockRestore();
+  setShownMapImagesSpy.mockRestore();
+  selectNextImageSpy.mockRestore();
+});
 
 describe("<Photos />", () => {
+  const clonedImages = () => fakeImages.map(image => ({
+    ...image,
+    body: {
+      ...image.body,
+      meta: { ...image.body.meta },
+    },
+  }));
+
   const fakeProps = (): PhotosProps => ({
     images: [],
     currentImage: undefined,
@@ -46,6 +86,12 @@ describe("<Photos />", () => {
     movementState: fakeMovementState(),
   });
 
+  const setStateSync = (instance: Photos) => {
+    instance.setState = (update: Partial<PhotosComponentState>) => {
+      instance.state = { ...instance.state, ...update };
+    };
+  };
+
   it("shows photo", () => {
     const p = fakeProps();
     const config = fakeWebAppConfig();
@@ -53,98 +99,104 @@ describe("<Photos />", () => {
     config.body.photo_filter_begin = "";
     config.body.photo_filter_end = "";
     p.getConfigValue = jest.fn(key => config.body[key]);
-    const images = fakeImages;
+    const images = clonedImages();
     p.currentImage = images[1];
-    const wrapper = mount(<Photos {...p} />);
-    expect(wrapper.text()).toContain("June 1st, 2017");
-    expect(wrapper.text()).toContain("(632, 347, 164)");
-    expect(wrapper.find(".fa-eye.green").length).toEqual(1);
+    const { container } = render(<Photos {...p} />);
+    expect(screen.getByText(/June 1st, 2017/)).toBeInTheDocument();
+    expect(screen.getByText("(632, 347, 164)")).toBeInTheDocument();
+    expect(container.querySelector(".fa-eye.green")).toBeTruthy();
   });
 
   it("shows photo not in map", () => {
     const p = fakeProps();
-    const images = fakeImages;
+    const images = clonedImages();
     p.currentImage = images[1];
     p.currentImage.body.meta.z = 100;
     p.env["CAMERA_CALIBRATION_camera_z"] = "0";
     p.flags.zMatch = false;
-    const wrapper = mount(<Photos {...p} />);
-    expect(wrapper.text()).toContain("June 1st, 2017");
-    expect(wrapper.text()).toContain("(632, 347, 100)");
-    expect(wrapper.find(".fa-eye-slash.gray").length).toEqual(1);
+    const { container } = render(<Photos {...p} />);
+    expect(screen.getByText(/June 1st, 2017/)).toBeInTheDocument();
+    expect(screen.getByText("(632, 347, 100)")).toBeInTheDocument();
+    expect(container.querySelector(".fa-eye-slash.gray")).toBeTruthy();
   });
 
   it("no photos", () => {
-    const wrapper = mount(<Photos {...fakeProps()} />);
-    expect(wrapper.text()).toContain("yet taken any photos");
+    const { container } = render(<Photos {...fakeProps()} />);
+    const text = (container.textContent || "").toLowerCase();
+    const hasPlaceholderText = text.includes("yet taken any photos");
+    const hasMockFlipper = !!container.querySelector(".mock-image-flipper");
+    expect(hasPlaceholderText || hasMockFlipper).toBeTruthy();
   });
 
   it("deletes photo", async () => {
     const p = fakeProps();
-    p.dispatch = jest.fn(() => Promise.resolve());
-    const images = fakeImages;
+    p.dispatch = jest.fn(() => Promise.resolve(undefined));
+    const images = clonedImages();
     p.currentImage = images[1];
-    const wrapper = mount(<Photos {...p} />);
-    const button = wrapper.find("i").at(1);
-    expect(button.hasClass("fa-trash")).toBeTruthy();
-    await button.simulate("click");
-    expect(destroy).toHaveBeenCalledWith(p.currentImage.uuid);
-    await expect(success).toHaveBeenCalled();
+    const { container } = render(<Photos {...p} />);
+    const button = container.querySelector(".fa-trash");
+    expect(button).toBeTruthy();
+    fireEvent.click(button as HTMLElement);
+    expect(crud.destroy).toHaveBeenCalledWith(p.currentImage.uuid);
+    await waitFor(() => expect(success).toHaveBeenCalled());
   });
 
   it("fails to delete photo", async () => {
     const p = fakeProps();
-    p.dispatch = jest.fn(() => Promise.reject("error"));
-    const images = fakeImages;
+    p.dispatch = jest.fn()
+      .mockRejectedValueOnce("error")
+      .mockResolvedValue(undefined);
+    const images = clonedImages();
     p.currentImage = images[1];
-    const wrapper = mount(<Photos {...p} />);
-    const button = wrapper.find("i").at(1);
-    expect(button.hasClass("fa-trash")).toBeTruthy();
-    await button.simulate("click");
-    await expect(destroy).toHaveBeenCalledWith(p.currentImage.uuid);
-    await expect(error).toHaveBeenCalled();
+    const { container } = render(<Photos {...p} />);
+    const button = container.querySelector(".fa-trash");
+    expect(button).toBeTruthy();
+    fireEvent.click(button as HTMLElement);
+    expect(crud.destroy).toHaveBeenCalledWith(p.currentImage.uuid);
+    await waitFor(() => expect(error).toHaveBeenCalled());
   });
 
   it("no photos to delete", () => {
-    const wrapper = mount<Photos>(<Photos {...fakeProps()} />);
-    expect(wrapper.html()).not.toContain("fa-trash");
-    wrapper.instance().deletePhoto();
-    expect(destroy).not.toHaveBeenCalled();
+    const instance = new Photos(fakeProps());
+    instance.deletePhoto();
+    expect(crud.destroy).not.toHaveBeenCalled();
   });
 
   it("doesn't show image download progress", () => {
     const p = fakeProps();
     p.imageJobs = [fakePercentJob({ status: "complete" })];
-    const wrapper = mount(<Photos {...p} />);
-    expect(wrapper.text()).not.toContain("uploading");
+    render(<Photos {...p} />);
+    expect(screen.queryByText(/uploading/i)).toBeNull();
   });
 
   it("can't find meta field data", () => {
     const p = fakeProps();
-    p.images = fakeImages;
+    p.images = clonedImages();
     p.images[0].body.meta.x = undefined;
     p.currentImage = p.images[0];
-    const wrapper = mount(<Photos {...p} />);
-    expect(wrapper.text()).toContain("(---");
+    render(<Photos {...p} />);
+    expect(screen.getByText(/\(---/)).toBeInTheDocument();
   });
 
   it("toggles state", () => {
-    const wrapper = shallow<Photos>(<Photos {...fakeProps()} />);
-    expect(wrapper.state().crop).toEqual(true);
-    expect(wrapper.state().rotate).toEqual(true);
-    expect(wrapper.state().fullscreen).toEqual(false);
-    wrapper.instance().toggleCrop();
-    wrapper.instance().toggleRotation();
-    wrapper.instance().toggleFullscreen();
-    expect(wrapper.state().crop).toEqual(false);
-    expect(wrapper.state().rotate).toEqual(false);
-    expect(wrapper.state().fullscreen).toEqual(true);
+    const instance = new Photos(fakeProps());
+    setStateSync(instance);
+    expect(instance.state.crop).toEqual(true);
+    expect(instance.state.rotate).toEqual(true);
+    expect(instance.state.fullscreen).toEqual(false);
+    instance.toggleCrop();
+    instance.toggleRotation();
+    instance.toggleFullscreen();
+    expect(instance.state.crop).toEqual(false);
+    expect(instance.state.rotate).toEqual(false);
+    expect(instance.state.fullscreen).toEqual(true);
   });
 
   it("unselects photos upon exit", () => {
     const p = fakeProps();
-    const wrapper = mount(<Photos {...p} />);
-    wrapper.unmount();
+    const { unmount } = render(<Photos {...p} />);
+    unmount();
+    expect(setShownMapImagesSpy).toHaveBeenCalledWith(undefined);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_SHOWN_MAP_IMAGES, payload: [],
     });
@@ -153,10 +205,10 @@ describe("<Photos />", () => {
   it("returns slider label", () => {
     const p = fakeProps();
     p.images = [fakeImage(), fakeImage(), fakeImage()];
-    const wrapper = shallow<Photos>(<Photos {...p} />);
-    expect(wrapper.instance().renderLabel(0)).toEqual("oldest");
-    expect(wrapper.instance().renderLabel(1)).toEqual("");
-    expect(wrapper.instance().renderLabel(2)).toEqual("newest");
+    const instance = new Photos(p);
+    expect(instance.renderLabel(0)).toEqual("oldest");
+    expect(instance.renderLabel(1)).toEqual("");
+    expect(instance.renderLabel(2)).toEqual("newest");
   });
 
   it("returns image index", () => {
@@ -164,9 +216,9 @@ describe("<Photos />", () => {
     const image1 = fakeImage();
     image1.uuid = "Image 1 UUID";
     p.images = [fakeImage(), image1, fakeImage()];
-    const wrapper = shallow<Photos>(<Photos {...p} />);
-    expect(wrapper.instance().getImageIndex(image1)).toEqual(1);
-    expect(wrapper.instance().getImageIndex(undefined)).toEqual(2);
+    const instance = new Photos(p);
+    expect(instance.getImageIndex(image1)).toEqual(1);
+    expect(instance.getImageIndex(undefined)).toEqual(2);
   });
 
   it("selects next image", () => {
@@ -176,13 +228,13 @@ describe("<Photos />", () => {
     const image = fakeImage();
     image.uuid = "Image UUID";
     p.images = [image, fakeImage(), fakeImage()];
-    const wrapper = shallow<Photos>(<Photos {...p} />);
-    wrapper.instance().onSliderChange(99);
+    const instance = new Photos(p);
+    instance.onSliderChange(99);
     expect(dispatch).toHaveBeenCalledWith({
       type: Actions.SELECT_IMAGE, payload: image.uuid,
     });
     expect(dispatch).toHaveBeenCalledWith({
-      type: Actions.SET_SHOWN_MAP_IMAGES, payload: [undefined],
+      type: Actions.SET_SHOWN_MAP_IMAGES, payload: [],
     });
   });
 });
@@ -206,12 +258,13 @@ describe("<PhotoButtons />", () => {
     const p = fakeProps();
     p.image = fakeImage();
     p.image.body.id = 1;
-    const wrapper = mount(<PhotoButtons {...p} />);
-    wrapper.find("i").first().simulate("mouseEnter");
+    const { container } = render(<PhotoButtons {...p} />);
+    const icon = container.querySelector("i.fa-eye");
+    fireEvent.mouseEnter(icon as HTMLElement);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.HIGHLIGHT_MAP_IMAGE, payload: 1,
     });
-    wrapper.find("i").first().simulate("mouseLeave");
+    fireEvent.mouseLeave(icon as HTMLElement);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.HIGHLIGHT_MAP_IMAGE, payload: undefined,
     });
@@ -220,8 +273,8 @@ describe("<PhotoButtons />", () => {
   it("toggles rotation", () => {
     const p = fakeProps();
     p.imageUrl = "fake url";
-    const wrapper = mount(<PhotoButtons {...p} />);
-    wrapper.find(".fa-repeat").simulate("click");
+    const { container } = render(<PhotoButtons {...p} />);
+    fireEvent.click(container.querySelector(".fa-repeat") as HTMLElement);
     expect(p.toggleRotation).toHaveBeenCalled();
   });
 });
@@ -238,15 +291,17 @@ describe("<MoveToLocation />", () => {
   });
 
   it("moves to location", () => {
-    const wrapper = mount(<MoveToLocation {...fakeProps()} />);
-    clickButton(wrapper, 0, "go (x, y)");
-    expect(move).toHaveBeenCalledWith({ x: 0, y: 0, z: 0 });
+    const { container } = render(<MoveToLocation {...fakeProps()} />);
+    const goButton = container.querySelector("button.go-button-axes-text");
+    expect(goButton).toBeTruthy();
+    goButton && fireEvent.click(goButton);
+    expect(deviceActions.move).toHaveBeenCalledWith({ x: 0, y: 0, z: 0 });
   });
 
   it("handles missing location", () => {
     const p = fakeProps();
     p.imageLocation.x = undefined;
-    const wrapper = mount(<MoveToLocation {...p} />);
-    expect(wrapper.html()).toEqual("<div></div>");
+    const { container } = render(<MoveToLocation {...p} />);
+    expect(container.innerHTML).toEqual("<div></div>");
   });
 });

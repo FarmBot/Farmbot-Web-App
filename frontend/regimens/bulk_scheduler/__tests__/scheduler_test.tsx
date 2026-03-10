@@ -1,20 +1,38 @@
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { render, fireEvent } from "@testing-library/react";
 import {
   mapStateToProps,
   RawDesignerRegimenScheduler as DesignerRegimenScheduler,
 } from "../scheduler";
-import { DesignerPanelHeader } from "../../../farm_designer/designer_panel";
 import {
-  fakeRegimen,
+  fakeRegimen, fakeSequence,
 } from "../../../__test_support__/fake_state/resources";
 import {
   buildResourceIndex, fakeDevice,
 } from "../../../__test_support__/resource_index_builder";
-import { AddButton } from "../../bulk_scheduler/add_button";
 import { RegimenSchedulerProps } from "../interfaces";
 import { fakeState } from "../../../__test_support__/fake_state";
 import { Path } from "../../../internal_urls";
+import { DesignerPanelHeader } from "../../../farm_designer/designer_panel";
+
+const findByType = (
+  node: React.ReactNode,
+  type: unknown,
+): React.ReactElement<{ children?: React.ReactNode }> | undefined => {
+  if (!node) { return undefined; }
+  if (Array.isArray(node)) {
+    for (const child of React.Children.toArray(node)) {
+      const found = findByType(child, type);
+      if (found) { return found; }
+    }
+    return undefined;
+  }
+  if (React.isValidElement<{ children?: React.ReactNode }>(node)) {
+    if (node.type === type) { return node; }
+    return findByType(node.props.children, type);
+  }
+  return undefined;
+};
 
 describe("<DesignerRegimenScheduler />", () => {
   const fakeProps = (): RegimenSchedulerProps => ({
@@ -31,23 +49,30 @@ describe("<DesignerRegimenScheduler />", () => {
   it("renders", () => {
     const p = fakeProps();
     p.current = fakeRegimen();
-    const wrapper = mount(<DesignerRegimenScheduler {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("schedule");
+    const { container } = render(<DesignerRegimenScheduler {...p} />);
+    const text = (container.textContent || "").toLowerCase();
+    expect(container.querySelector(".bulk-scheduler")).toBeTruthy();
+    expect(text).toContain("sequence");
+    expect(text).toContain("days");
   });
 
   it("handles missing regimen", () => {
     const p = fakeProps();
     p.current = undefined;
-    const wrapper = shallow(<DesignerRegimenScheduler {...p} />);
-    expect(wrapper.find(DesignerPanelHeader).props().backTo)
-      .toEqual(Path.regimens());
+    const element = new DesignerRegimenScheduler(p).render();
+    const header = findByType(element, DesignerPanelHeader);
+    expect(header?.props.backTo).toEqual(Path.regimens());
   });
 
   it("commits bulk editor", () => {
     const p = fakeProps();
     p.dispatch = jest.fn();
-    const panel = shallow(<DesignerRegimenScheduler {...p} />);
-    panel.find(AddButton).first().simulate("click");
+    p.sequences = [fakeSequence()];
+    const { container } = render(<DesignerRegimenScheduler {...p} />);
+    const addButton = container.querySelector(".bulk-scheduler-add")
+      || container.querySelector("button.fb-button.green");
+    expect(addButton).toBeTruthy();
+    addButton && fireEvent.click(addButton);
     expect(p.dispatch).toHaveBeenCalledWith(expect.any(Function));
   });
 });

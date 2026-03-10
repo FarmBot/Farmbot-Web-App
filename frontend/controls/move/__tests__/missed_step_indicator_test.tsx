@@ -1,11 +1,15 @@
 import React from "react";
-import { mount } from "enzyme";
+import { act, fireEvent, render } from "@testing-library/react";
 import {
   MissedStepIndicator, MissedStepIndicatorProps, MISSED_STEP_HISTORY_LENGTH,
 } from "../missed_step_indicator";
 import { range } from "lodash";
 
 describe("<MissedStepIndicator />", () => {
+  beforeEach(() => {
+    sessionStorage.clear();
+  });
+
   const fakeProps = (): MissedStepIndicatorProps => ({
     missedSteps: undefined,
     axis: "x",
@@ -26,42 +30,47 @@ describe("<MissedStepIndicator />", () => {
   ) => {
     const p = fakeProps();
     p.missedSteps = missedSteps;
-    const wrapper = mount(<MissedStepIndicator {...p} />);
-    history && wrapper.setState({ history });
-    expect(wrapper.find(".instant").props().style?.width).toEqual(instant);
-    expect(wrapper.find(".instant").hasClass(instantColor)).toEqual(true);
-    expect(wrapper.find(".peak").props().style?.marginLeft).toEqual(peak);
-    expect(wrapper.find(".peak").hasClass(peakColor)).toEqual(true);
+    const ref = React.createRef<MissedStepIndicator>();
+    const { container } = render(<MissedStepIndicator ref={ref} {...p} />);
+    history && act(() => ref.current?.setState({ history }));
+    const instantEl = container.querySelector(".instant");
+    const peakEl = container.querySelector(".peak");
+    expect(instantEl?.getAttribute("style")).toContain(`width: ${instant}`);
+    expect(instantEl?.classList.contains(instantColor)).toEqual(true);
+    expect(peakEl?.getAttribute("style")).toContain(`margin-left: ${peak}`);
+    expect(peakEl?.classList.contains(peakColor)).toEqual(true);
   });
 
   it("updates missed step history", () => {
     const p = fakeProps();
-    const wrapper = mount<MissedStepIndicator>(<MissedStepIndicator {...p} />);
-    expect(wrapper.state().history).toEqual([]);
+    const ref = React.createRef<MissedStepIndicator>();
+    const { rerender } = render(<MissedStepIndicator ref={ref} {...p} />);
+    expect(ref.current?.state.history).toEqual([]);
     p.missedSteps = 10;
-    wrapper.setProps(p);
-    wrapper.instance().componentDidUpdate();
-    expect(wrapper.state().history).toEqual([10]);
+    rerender(<MissedStepIndicator ref={ref} {...p} />);
+    expect(ref.current?.state.history).toEqual([10]);
   });
 
   it("doesn't update missed step history", () => {
     const p = fakeProps();
     p.missedSteps = 10;
-    const wrapper = mount<MissedStepIndicator>(<MissedStepIndicator {...p} />);
-    wrapper.instance().componentDidUpdate();
-    expect(wrapper.state().history).toEqual([10]);
-    wrapper.instance().componentDidUpdate();
-    expect(wrapper.state().history).toEqual([10]);
+    const ref = React.createRef<MissedStepIndicator>();
+    render(<MissedStepIndicator ref={ref} {...p} />);
+    act(() => ref.current?.componentDidUpdate());
+    expect(ref.current?.state.history).toEqual([10]);
+    act(() => ref.current?.componentDidUpdate());
+    expect(ref.current?.state.history).toEqual([10]);
   });
 
   it("limits missed step history length", () => {
     const p = fakeProps();
     p.missedSteps = 10;
-    const wrapper = mount<MissedStepIndicator>(<MissedStepIndicator {...p} />);
-    wrapper.setState({ history: range(30) });
-    wrapper.instance().componentDidUpdate();
+    const ref = React.createRef<MissedStepIndicator>();
+    render(<MissedStepIndicator ref={ref} {...p} />);
+    act(() => ref.current?.setState({ history: range(30) }));
+    act(() => ref.current?.componentDidUpdate());
     const start = 30 - MISSED_STEP_HISTORY_LENGTH + 1;
-    expect(wrapper.state().history).toEqual(range(start, 30).concat([10]));
+    expect(ref.current?.state.history).toEqual(range(start, 30).concat([10]));
   });
 
   it.each<[
@@ -76,32 +85,38 @@ describe("<MissedStepIndicator />", () => {
   ) => {
     const p = fakeProps();
     p.missedSteps = missedSteps;
-    const wrapper = mount(<MissedStepIndicator {...p} />);
-    wrapper.setState({ history });
-    wrapper.find(".bp6-popover-target").simulate("click");
+    const ref = React.createRef<MissedStepIndicator>();
+    const { container } = render(<MissedStepIndicator ref={ref} {...p} />);
+    act(() => ref.current?.setState({ history }));
+    const indicator = container.querySelector(".missed-step-indicator-wrapper");
+    expect(indicator).toBeTruthy();
+    indicator && fireEvent.click(indicator);
     ["motor load", latest, max, average].map(string =>
-      expect(wrapper.text().toLowerCase()).toContain(string.toLowerCase()));
+      expect(container.textContent?.toLowerCase()).toContain(
+        string.toLowerCase()));
   });
 
   it("loads history", () => {
     sessionStorage.setItem("missed_step_history_x", "[1,2,3]");
-    const wrapper = mount<MissedStepIndicator>(
-      <MissedStepIndicator {...fakeProps()} />);
-    expect(wrapper.state().history).toEqual([1, 2, 3]);
+    const ref = React.createRef<MissedStepIndicator>();
+    render(<MissedStepIndicator ref={ref} {...fakeProps()} />);
+    expect(ref.current?.state.history).toEqual([1, 2, 3]);
   });
 
   it("saves history", () => {
-    const wrapper = mount<MissedStepIndicator>(
-      <MissedStepIndicator {...fakeProps()} />);
-    wrapper.setState({ history: [1, 2, 3] });
-    wrapper.unmount();
+    const ref = React.createRef<MissedStepIndicator>();
+    const { unmount } = render(<MissedStepIndicator ref={ref} {...fakeProps()} />);
+    act(() => ref.current?.setState({ history: [1, 2, 3] }));
+    unmount();
     expect(sessionStorage.getItem("missed_step_history_x")).toEqual("[1,2,3]");
   });
 
   it("toggles details", () => {
-    const wrapper = mount<MissedStepIndicator>(
-      <MissedStepIndicator {...fakeProps()} />);
-    wrapper.find(".missed-step-indicator-wrapper").simulate("click");
-    expect(wrapper.state().open).toEqual(true);
+    const ref = React.createRef<MissedStepIndicator>();
+    const { container } = render(<MissedStepIndicator ref={ref} {...fakeProps()} />);
+    const indicator = container.querySelector(".missed-step-indicator-wrapper");
+    expect(indicator).toBeTruthy();
+    indicator && fireEvent.click(indicator);
+    expect(ref.current?.state.open).toEqual(true);
   });
 });

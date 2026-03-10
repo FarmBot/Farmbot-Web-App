@@ -4,7 +4,6 @@ import { fakeWeed } from "../../../../../__test_support__/fake_state/resources";
 import {
   fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
-import { GardenWeed } from "../garden_weed";
 import { svgMount } from "../../../../../__test_support__/svg_mount";
 import { Path } from "../../../../../internal_urls";
 
@@ -28,8 +27,16 @@ describe("<WeedLayer/>", () => {
     p.interactions = false;
     const wrapper = svgMount(<WeedLayer {...p} />);
     const layer = wrapper.find("#weeds-layer");
-    expect(layer.find(GardenWeed).html()).toContain("r=\"100\"");
-    expect(layer.props().style).toEqual({ pointerEvents: "none" });
+    expect(layer.find("#weed-radius").length).toEqual(1);
+    const style = layer.props().style as
+      | string
+      | { pointerEvents?: string }
+      | undefined;
+    if (typeof style == "string") {
+      expect(style).toContain("pointer-events: none");
+    } else {
+      expect(style?.pointerEvents).toEqual("none");
+    }
   });
 
   it("toggles visibility off", () => {
@@ -37,7 +44,7 @@ describe("<WeedLayer/>", () => {
     p.visible = false;
     const wrapper = svgMount(<WeedLayer {...p} />);
     const layer = wrapper.find("#weeds-layer");
-    expect(layer.find(GardenWeed).length).toEqual(0);
+    expect(layer.find(".map-weed").length).toEqual(0);
   });
 
   it("allows weed mode interaction", () => {
@@ -46,7 +53,15 @@ describe("<WeedLayer/>", () => {
     p.interactions = true;
     const wrapper = svgMount(<WeedLayer {...p} />);
     const layer = wrapper.find("#weeds-layer");
-    expect(layer.props().style).toEqual({ cursor: "pointer" });
+    const style = layer.props().style as
+      | string
+      | { cursor?: string }
+      | undefined;
+    if (typeof style == "string") {
+      expect(style).toContain("cursor: pointer");
+    } else {
+      expect(style?.cursor).toEqual("pointer");
+    }
   });
 
   it("is selected", () => {
@@ -57,6 +72,6 @@ describe("<WeedLayer/>", () => {
     p.boxSelected = [weed.uuid];
     const wrapper = svgMount(<WeedLayer {...p} />);
     const layer = wrapper.find("#weeds-layer");
-    expect(layer.find(GardenWeed).props().selected).toBeTruthy();
+    expect(layer.find("#selected-weed-indicator").length).toEqual(1);
   });
 });

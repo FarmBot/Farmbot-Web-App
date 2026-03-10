@@ -1,5 +1,5 @@
 import React from "react";
-import { shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import { FarmbotColorPicker, getHueBoxes } from "../farmbot_picker";
 import { FarmbotPickerProps } from "../interfaces";
 
@@ -11,10 +11,10 @@ describe("<FarmbotColorPicker />", () => {
       v: [100, 255],
       invertHue: false
     };
-    const wrapper = shallow(<FarmbotColorPicker {...props} />);
-    expect(wrapper.find("#farmbot-color-picker").length).toEqual(1);
-    expect(wrapper.find("#hue").length).toEqual(1);
-    expect(wrapper.find("#saturation").length).toEqual(1);
+    const { container } = render(<FarmbotColorPicker {...props} />);
+    expect(container.querySelector("#farmbot-color-picker")).toBeTruthy();
+    expect(container.querySelector("#hue")).toBeTruthy();
+    expect(container.querySelector("#saturation")).toBeTruthy();
   });
 });
 

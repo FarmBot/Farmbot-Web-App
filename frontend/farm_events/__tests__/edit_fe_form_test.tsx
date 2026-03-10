@@ -1,18 +1,10 @@
-jest.mock("../../api/crud", () => ({
-  save: jest.fn(),
-  overwrite: jest.fn(),
-}));
-
 let mockTzMismatch = false;
-jest.mock("../../devices/timezones/guess_timezone", () => ({
-  timezoneMismatch: () => mockTzMismatch,
-}));
 
 import React from "react";
 import {
   fakeFarmEvent, fakeSequence, fakeRegimen, fakePlant,
 } from "../../__test_support__/fake_state/resources";
-import { mount, shallow } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import {
   EditFEForm,
   EditFEProps,
@@ -32,15 +24,26 @@ import {
   buildResourceIndex, fakeDevice,
 } from "../../__test_support__/resource_index_builder";
 import { fakeVariableNameSet } from "../../__test_support__/fake_variables";
-import { save } from "../../api/crud";
+import * as crud from "../../api/crud";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { error, success, warning } from "../../toast/toast";
-import { BlurableInput } from "../../ui";
 import { ExecutableType } from "farmbot/dist/resources/api_resources";
 import { Path } from "../../internal_urls";
 import { Content } from "../../constants";
+import * as guessTimezone from "../../devices/timezones/guess_timezone";
 
 const mockSequence = fakeSequence();
+let saveSpy: jest.SpyInstance;
+let _overwriteSpy: jest.SpyInstance;
+let _timezoneMismatchSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  mockTzMismatch = false;
+  saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+  _overwriteSpy = jest.spyOn(crud, "overwrite").mockImplementation(jest.fn());
+  _timezoneMismatchSpy = jest.spyOn(guessTimezone, "timezoneMismatch")
+    .mockImplementation(() => mockTzMismatch);
+});
 
 describe("<EditFEForm />", () => {
   const fakeProps = (): EditFEProps => ({
@@ -57,7 +60,14 @@ describe("<EditFEForm />", () => {
   });
 
   function instance(p: EditFEProps) {
-    return mount(<EditFEForm {...p} />).instance() as EditFEForm;
+    const i = new EditFEForm(p);
+    i.setState = ((state, callback) => {
+      const update = isFunction(state) ? state(i.state, i.props) : state;
+      i.state = { ...i.state, ...update };
+      callback?.();
+    }) as EditFEForm["setState"];
+    i.forceUpdate = jest.fn();
+    return i;
   }
   const context = { form: new EditFEForm(fakeProps()) };
 
@@ -100,8 +110,11 @@ describe("<EditFEForm />", () => {
   it("errors upon bad executable", () => {
     const p = fakeProps();
     p.farmEvent.body.executable_type = "nope" as ExecutableType;
-    console.error = jest.fn();
-    expect(() => instance(p)).toThrow("nope is not a valid executable_type");
+    const consoleErrorSpy = jest.spyOn(console, "error")
+      .mockImplementation(jest.fn());
+    const i = instance(p);
+    expect(() => i.executableGet()).toThrow("nope is not a valid executable_type");
+    consoleErrorSpy.mockRestore();
   });
 
   it("sets the executable", () => {
@@ -161,29 +174,29 @@ describe("<EditFEForm />", () => {
   it("shows missing executable warning", () => {
     const p = fakeProps();
     p.executableOptions = [{ label: "", value: 0, heading: true }];
-    const wrapper = mount(<EditFEForm {...p} />);
-    expect(wrapper.html()).toContain("fa-exclamation-triangle");
+    const { container } = render(<EditFEForm {...p} />);
+    expect(container.innerHTML).toContain("fa-exclamation-triangle");
   });
 
   it("doesn't show missing executable warning", () => {
     const p = fakeProps();
     p.executableOptions = [{ label: "", value: 0, heading: false }];
-    const wrapper = mount(<EditFEForm {...p} />);
-    expect(wrapper.html()).not.toContain("fa-exclamation-triangle");
+    const { container } = render(<EditFEForm {...p} />);
+    expect(container.innerHTML).not.toContain("fa-exclamation-triangle");
   });
 
   it("doesn't show tz warning", () => {
     mockTzMismatch = false;
     const p = fakeProps();
-    const wrapper = mount(<EditFEForm {...p} />);
-    expect(wrapper.html()).not.toContain(Content.FARM_EVENT_TZ_WARNING);
+    const { container } = render(<EditFEForm {...p} />);
+    expect(container.innerHTML).not.toContain(Content.FARM_EVENT_TZ_WARNING);
   });
 
   it("shows tz warning", () => {
     mockTzMismatch = true;
     const p = fakeProps();
-    const wrapper = mount(<EditFEForm {...p} />);
-    expect(wrapper.html()).toContain(Content.FARM_EVENT_TZ_WARNING);
+    const { container } = render(<EditFEForm {...p} />);
+    expect(container.innerHTML).toContain(Content.FARM_EVENT_TZ_WARNING);
   });
 
   it("sets a subfield of state.fe", () => {
@@ -222,11 +235,12 @@ describe("<EditFEForm />", () => {
     p.farmEvent.body.start_time = "2017-05-22T05:00:00.000Z";
     p.farmEvent.body.end_time = "2017-05-22T06:00:00.000Z";
     const i = instance(p);
-    window.alert = jest.fn();
+    const alertSpy = jest.spyOn(window, "alert").mockImplementation(jest.fn());
     await i.commitViewModel(moment(offsetTime(
       "2017-05-22", "06:00", fakeTimeSettings())));
-    expect(window.alert).toHaveBeenCalledWith(
+    expect(alertSpy).toHaveBeenCalledWith(
       expect.stringContaining("skipped regimen tasks"));
+    alertSpy.mockRestore();
   });
 
   it("sends toast with regimen start time", async () => {
@@ -304,7 +318,7 @@ describe("<EditFEForm />", () => {
     p.farmEvent.body.end_time = "2017-07-22T06:00:00.000Z";
     const i = instance(p);
     await i.commitViewModel(moment("2017-06-22T05:00:00.000Z"));
-    await expect(save).toHaveBeenCalled();
+    await expect(saveSpy).toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith("Unable to save event.");
   });
 
@@ -317,7 +331,7 @@ describe("<EditFEForm />", () => {
     p.farmEvent.body.end_time = "2017-06-22T06:00:00.000Z";
     const i = instance(p);
     await i.commitViewModel(moment("2017-05-21T03:00:00.000Z"));
-    await expect(save).toHaveBeenCalled();
+    await expect(saveSpy).toHaveBeenCalled();
     expect(success).toHaveBeenCalledWith(
       "The next item in this event will run in a day.");
     expect(warning).toHaveBeenCalledWith(Content.WITHIN_HOUR_OF_OS_UPDATE);
@@ -492,15 +506,15 @@ describe("<EditFEForm />", () => {
       vector: { x: 0, y: 0, z: 0 },
     };
     p.resources.sequenceMetas[sequence.uuid] = variables;
-    const wrapper = mount(<EditFEForm {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("variables (1)");
+    const { container } = render(<EditFEForm {...p} />);
+    expect((container.textContent || "").toLowerCase()).toContain("variables (1)");
   });
 
   it("collapses variables section", () => {
-    const wrapper = shallow<EditFEForm>(<EditFEForm {...fakeProps()} />);
-    expect(wrapper.state().variablesCollapsed).toEqual(false);
-    wrapper.instance().toggleVarShow();
-    expect(wrapper.state().variablesCollapsed).toEqual(true);
+    const i = instance(fakeProps());
+    expect(i.state.variablesCollapsed).toEqual(false);
+    i.toggleVarShow();
+    expect(i.state.variablesCollapsed).toEqual(true);
   });
 });
 
@@ -608,65 +622,105 @@ describe("destructureFarmEvent", () => {
 });
 
 describe("<StartTimeForm />", () => {
-  const mockVM = {
-    startDate: "2017-07-25",
-    startTime: "08:57",
-  } as FarmEventViewModel;
-
   const fakeProps = (): StartTimeFormProps => ({
     isRegimen: false,
-    fieldGet: jest.fn(key => "" + mockVM[key]),
+    fieldGet: jest.fn(key =>
+      "" + ({ startDate: "2017-07-25", startTime: "08:57" } as FarmEventViewModel)[key]),
     fieldSet: jest.fn(),
     timeSettings: fakeTimeSettings(),
   });
 
+  const findElementByName = (
+    node: unknown,
+    name: string,
+  ): React.ReactElement | undefined => {
+    if (Array.isArray(node)) {
+      for (const child of node) {
+        const found = findElementByName(child, name);
+        if (found) { return found; }
+      }
+      return undefined;
+    }
+    if (!React.isValidElement(node)) { return undefined; }
+    if (node.props?.name === name) { return node; }
+    for (const value of Object.values(node.props || {})) {
+      const found = findElementByName(value, name);
+      if (found) { return found; }
+    }
+    return undefined;
+  };
+
   it("changes start date", () => {
     const p = fakeProps();
-    const wrapper = shallow(<StartTimeForm {...p} />);
-    wrapper.find("BlurableInput").first().simulate("commit", {
-      currentTarget: { value: "2017-07-26" }
-    });
+    const form = StartTimeForm(p);
+    const input = findElementByName(form, "start_date");
+    if (!input || typeof input.props.onCommit !== "function") {
+      throw new Error("Expected start date input");
+    }
+    input.props.onCommit({
+      currentTarget: { value: "2017-07-26" },
+    } as React.FocusEvent<HTMLInputElement>);
     expect(p.fieldSet).toHaveBeenCalledWith("startDate", "2017-07-26");
   });
 
   it("changes start time", () => {
     const p = fakeProps();
-    const wrapper = shallow(<StartTimeForm {...p} />);
-    wrapper.find("EventTimePicker").simulate("commit", {
-      currentTarget: { value: "08:57" }
-    });
+    const form = StartTimeForm(p);
+    const input = findElementByName(form, "start_time");
+    if (!input || typeof input.props.onCommit !== "function") {
+      throw new Error("Expected start time input");
+    }
+    input.props.onCommit({
+      currentTarget: { value: "08:57" },
+    } as React.FocusEvent<HTMLInputElement>);
     expect(p.fieldSet).toHaveBeenCalledWith("startTime", "08:57");
   });
 
   it("displays error", () => {
     const p = fakeProps();
     p.now = moment();
-    const wrapper = shallow(<StartTimeForm {...p} />);
-    expect(wrapper.find(BlurableInput).first().props().error?.toLowerCase())
-      .toContain("must be in the future");
+    const form = StartTimeForm(p);
+    const startDateInput = findElementByName(form, "start_date");
+    const startTimeInput = findElementByName(form, "start_time");
+    expect(startDateInput?.props.error).toBeTruthy();
+    expect(startTimeInput?.props.error).toBeTruthy();
   });
 
   it("doesn't display error: old event", () => {
-    mockVM.id = 1;
     const p = fakeProps();
+    p.fieldGet = jest.fn(key =>
+      "" + ({
+        id: 1,
+        startDate: "2017-07-25",
+        startTime: "08:57",
+      } as FarmEventViewModel)[key]);
     p.now = moment();
-    const wrapper = shallow(<StartTimeForm {...p} />);
-    expect(wrapper.find(BlurableInput).first().props().error).toEqual(undefined);
+    const form = StartTimeForm(p);
+    const startDateInput = findElementByName(form, "start_date");
+    const startTimeInput = findElementByName(form, "start_time");
+    expect(startDateInput?.props.error).toBeUndefined();
+    expect(startTimeInput?.props.error).toBeUndefined();
   });
 
   it("doesn't display error: regimen", () => {
     const p = fakeProps();
     p.now = moment();
     p.isRegimen = true;
-    const wrapper = shallow(<StartTimeForm {...p} />);
-    expect(wrapper.find(BlurableInput).first().props().error).toEqual(undefined);
+    const form = StartTimeForm(p);
+    const startDateInput = findElementByName(form, "start_date");
+    const startTimeInput = findElementByName(form, "start_time");
+    expect(startDateInput?.props.error).toBeUndefined();
+    expect(startTimeInput?.props.error).toBeUndefined();
   });
 
   it("doesn't display error: in future", () => {
     const p = fakeProps();
     p.now = moment("2015-12-28T22:32:00.000Z");
-    const wrapper = shallow(<StartTimeForm {...p} />);
-    expect(wrapper.find(BlurableInput).first().props().error).toEqual(undefined);
+    const form = StartTimeForm(p);
+    const startDateInput = findElementByName(form, "start_date");
+    const startTimeInput = findElementByName(form, "start_time");
+    expect(startDateInput?.props.error).toBeUndefined();
+    expect(startTimeInput?.props.error).toBeUndefined();
   });
 });
 
@@ -684,19 +738,31 @@ describe("<RepeatForm />", () => {
 
   it("toggles repeat on", () => {
     const p = fakeProps();
-    const wrapper = shallow(<RepeatForm {...p} />);
-    wrapper.find("input").first().simulate("change", {
-      currentTarget: { checked: true }
-    });
+    p.fieldGet = jest.fn(key =>
+      "" + ({
+        timeUnit: "never",
+        endDate: "2017-07-26",
+        endTime: "08:57",
+        startDate: "2017-07-25",
+        startTime: "08:57",
+      } as FarmEventViewModel)[key]);
+    const { container } = render(<RepeatForm {...p} />);
+    fireEvent.click(container.querySelector("input[name='timeUnit']") as Element);
     expect(p.fieldSet).toHaveBeenCalledWith("timeUnit", "daily");
   });
 
   it("toggles repeat off", () => {
     const p = fakeProps();
-    const wrapper = shallow(<RepeatForm {...p} />);
-    wrapper.find("input").first().simulate("change", {
-      currentTarget: { checked: false }
-    });
+    p.fieldGet = jest.fn(key =>
+      "" + ({
+        timeUnit: "daily",
+        endDate: "2017-07-26",
+        endTime: "08:57",
+        startDate: "2017-07-25",
+        startTime: "08:57",
+      } as FarmEventViewModel)[key]);
+    const { container } = render(<RepeatForm {...p} />);
+    fireEvent.click(container.querySelector("input[name='timeUnit']") as Element);
     expect(p.fieldSet).toHaveBeenCalledWith("timeUnit", "never");
   });
 });

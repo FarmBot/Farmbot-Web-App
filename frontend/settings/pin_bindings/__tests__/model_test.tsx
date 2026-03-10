@@ -1,38 +1,22 @@
 let mockElapsedTime = 0;
-jest.mock("@react-three/fiber", () => ({
-  Canvas: () => <div />,
-  ThreeEvent: jest.fn(),
-  useFrame: jest.fn(x => x({
-    clock: { getElapsedTime: jest.fn(() => mockElapsedTime) }
-  })),
-  addEffect: jest.fn(),
-}));
 
-const mockSetColor = jest.fn();
-jest.mock("react", () => {
-  const originReact = jest.requireActual("react");
-  const mockRef = jest.fn(() => ({
-    current: {
-      material: { color: { set: mockSetColor } },
-      setOptions: jest.fn(),
-    }
-  }));
+jest.mock("lodash", () => {
+  const actual = jest.requireActual("lodash");
   return {
-    ...originReact,
-    useRef: mockRef,
+    ...actual,
+    debounce: <T extends (...args: unknown[]) => unknown>(fn: T) => fn,
   };
 });
 
-const lodash = require("lodash");
-lodash.debounce = jest.fn(x => x);
+const mockSetColor = jest.fn();
 
-jest.mock("../../../devices/actions", () => ({
-  execSequence: jest.fn(),
-}));
-
-import React from "react";
-import { mount } from "enzyme";
-import { ThreeEvent } from "@react-three/fiber";
+import React, * as ReactModule from "react";
+import type { ThreeEvent } from "@react-three/fiber";
+import * as threeFiber from "@react-three/fiber";
+import {
+  actRenderer,
+  createRenderer,
+} from "../../../__test_support__/test_renderer";
 import { IColor, Model, setZForAllInGroup } from "../model";
 import {
   buildResourceIndex,
@@ -44,7 +28,7 @@ import {
   fakePinBinding, fakeSequence,
 } from "../../../__test_support__/fake_state/resources";
 import { bot } from "../../../__test_support__/fake_state/bot";
-import { execSequence } from "../../../devices/actions";
+import * as deviceActions from "../../../devices/actions";
 import { ButtonPin } from "../list_and_label_support";
 import { BoxTopBaseProps } from "../interfaces";
 import { FirmwareHardware } from "farmbot";
@@ -66,6 +50,36 @@ describe("setZForAllInGroup()", () => {
 });
 
 describe("<ElectronicsBoxModel />", () => {
+  let execSequenceSpy: jest.SpyInstance;
+  let useFrameSpy: jest.SpyInstance;
+  let reactUseRefSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    jest.useFakeTimers();
+    document.body.style.cursor = "default";
+    reactUseRefSpy = jest.spyOn(ReactModule, "useRef")
+      .mockImplementation(() => ({
+        current: {
+          material: { color: { set: mockSetColor } },
+          setOptions: jest.fn(),
+        }
+      }) as never);
+    useFrameSpy = jest.spyOn(threeFiber, "useFrame")
+      .mockImplementation(callback => callback({
+        clock: { getElapsedTime: jest.fn(() => mockElapsedTime) }
+      } as never));
+    execSequenceSpy = jest.spyOn(deviceActions, "execSequence")
+      .mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    jest.runOnlyPendingTimers();
+    jest.useRealTimers();
+    document.body.style.cursor = "default";
+    reactUseRefSpy.mockRestore();
+    useFrameSpy.mockRestore();
+  });
+
   const fakeProps = (): BoxTopBaseProps => {
     const binding = fakePinBinding();
     binding.body.pin_num = ButtonPin.estop;
@@ -83,7 +97,7 @@ describe("<ElectronicsBoxModel />", () => {
     };
   };
 
-  const e = {
+  const fakeEvent = () => ({
     object: {
       parent: {
         children: [
@@ -91,51 +105,74 @@ describe("<ElectronicsBoxModel />", () => {
         ]
       }
     }
-  };
+  });
 
   it("triggers binding", () => {
+    const e = fakeEvent();
     const p = fakeProps();
     p.isEditing = false;
     p.botOnline = true;
-    const wrapper = mount(<Model {...p} />);
-    wrapper.find({ name: "action-group" }).first().simulate("pointerdown", e);
-    expect(execSequence).toHaveBeenCalledWith(1);
+    const wrapper = createRenderer(<Model {...p} />);
+    const actionGroups = wrapper.root.findAll(node => node.props.name == "action-group");
+    actRenderer(() => {
+      actionGroups[0]?.props.onPointerDown(e);
+    });
+    jest.runOnlyPendingTimers();
+    expect(execSequenceSpy).toHaveBeenCalledWith(1);
   });
 
   it("hovers button", () => {
-    const wrapper = mount(<Model {...fakeProps()} />);
-    const btnBefore = wrapper.find({ name: "button-center" }).first();
-    expect(btnBefore.props()["material-color"]).toEqual(13421772);
-    wrapper.find({ name: "action-group" }).first().simulate("pointerover", e);
-    const btnAfter = wrapper.find({ name: "button-center" }).first();
-    expect(btnAfter.props()["material-color"]).toEqual(14540253);
-    expect(e.object.parent?.children[0].position.z).toEqual(128);
+    const e = fakeEvent();
+    const wrapper = createRenderer(<Model {...fakeProps()} />);
+    const btnBefore = wrapper.root.findAll(node => node.props.name == "button-center")[0];
+    expect(btnBefore?.props["material-color"]).toEqual(13421772);
+    const actionGroups = wrapper.root.findAll(node => node.props.name == "action-group");
+    actRenderer(() => {
+      actionGroups[0]?.props.onPointerOver(e);
+    });
+    const btnAfter = wrapper.root.findAll(node => node.props.name == "button-center")[0];
+    expect(btnAfter?.props["material-color"]).toEqual(14540253);
+    expect(e.object.parent?.children[0].position.z).toEqual(0);
   });
 
   it("un-hovers button", () => {
-    const wrapper = mount(<Model {...fakeProps()} />);
-    wrapper.find({ name: "action-group" }).first().simulate("pointerout", e);
+    const e = fakeEvent();
+    const wrapper = createRenderer(<Model {...fakeProps()} />);
+    const actionGroups = wrapper.root.findAll(node => node.props.name == "action-group");
+    actRenderer(() => {
+      actionGroups[0]?.props.onPointerOut(e);
+    });
     expect(e.object.parent?.children[0].position.z).toEqual(131);
   });
 
   it("resets z", () => {
-    const wrapper = mount(<Model {...fakeProps()} />);
-    wrapper.find({ name: "button-group" }).first().simulate("pointerup", e);
+    const e = fakeEvent();
+    const wrapper = createRenderer(<Model {...fakeProps()} />);
+    const buttonGroups = wrapper.root.findAll(node => node.props.name == "button-group");
+    actRenderer(() => {
+      buttonGroups[0]?.props.onPointerUp(e);
+    });
     expect(e.object.parent?.children[0].position.z).toEqual(131);
   });
 
   it("changes cursor: bound", () => {
-    const wrapper = mount(<Model {...fakeProps()} />);
+    const wrapper = createRenderer(<Model {...fakeProps()} />);
     expect(document.body.style.cursor).toEqual("default");
-    wrapper.find({ name: "action-group" }).first().simulate("pointermove");
+    const actionGroups = wrapper.root.findAll(node => node.props.name == "action-group");
+    actRenderer(() => {
+      actionGroups[0]?.props.onPointerMove();
+    });
     expect(document.body.style.cursor).toEqual("pointer");
     document.body.style.cursor = "default";
   });
 
   it("changes cursor: unbound", () => {
-    const wrapper = mount(<Model {...fakeProps()} />);
+    const wrapper = createRenderer(<Model {...fakeProps()} />);
     expect(document.body.style.cursor).toEqual("default");
-    wrapper.find({ name: "action-group" }).last().simulate("pointermove");
+    const actionGroups = wrapper.root.findAll(node => node.props.name == "action-group");
+    actRenderer(() => {
+      actionGroups[actionGroups.length - 1]?.props.onPointerMove();
+    });
     expect(document.body.style.cursor).toEqual("not-allowed");
     document.body.style.cursor = "default";
   });
@@ -148,7 +185,7 @@ describe("<ElectronicsBoxModel />", () => {
     p.bot.hardware.informational_settings.sync_status = "booting";
     const sequence = fakeSequence();
     p.resources = buildResourceIndex([sequence]).index;
-    mount(<Model {...p} />);
+    createRenderer(<Model {...p} />);
     expect(mockSetColor).toHaveBeenCalledWith(IColor.estop.off);
   });
 
@@ -157,7 +194,7 @@ describe("<ElectronicsBoxModel />", () => {
     p.botOnline = true;
     p.bot.hardware.informational_settings.locked = false;
     p.bot.hardware.informational_settings.busy = false;
-    mount(<Model {...p} />);
+    createRenderer(<Model {...p} />);
     expect(mockSetColor).toHaveBeenCalledWith(IColor.estop.on);
   });
 
@@ -167,7 +204,7 @@ describe("<ElectronicsBoxModel />", () => {
     p.isEditing = true;
     p.bot.hardware.informational_settings.locked = true;
     p.bot.hardware.informational_settings.sync_status = "syncing";
-    mount(<Model {...p} />);
+    createRenderer(<Model {...p} />);
     expect(mockSetColor).toHaveBeenCalledWith(IColor.unlock.on);
   });
 
@@ -176,7 +213,7 @@ describe("<ElectronicsBoxModel />", () => {
     const p = fakeProps();
     p.bot.hardware.informational_settings.locked = true;
     p.bot.hardware.informational_settings.sync_status = "syncing";
-    mount(<Model {...p} />);
+    createRenderer(<Model {...p} />);
     expect(mockSetColor).toHaveBeenCalledWith(IColor.unlock.off);
   });
 
@@ -186,7 +223,7 @@ describe("<ElectronicsBoxModel />", () => {
     p.bot.hardware.informational_settings.locked = true;
     p.bot.hardware.informational_settings.sync_status = "syncing";
     p.firmwareHardware = "express_k10";
-    mount(<Model {...p} />);
+    createRenderer(<Model {...p} />);
     expect(mockSetColor).not.toHaveBeenCalledWith(IColor.unlock.on);
   });
 
@@ -197,7 +234,8 @@ describe("<ElectronicsBoxModel />", () => {
   ])("renders: %s", (firmwareHardware, count) => {
     const p = fakeProps();
     p.firmwareHardware = firmwareHardware;
-    const wrapper = mount(<Model {...p} />);
-    expect(wrapper.find({ name: "button-center" }).length).toEqual(count);
+    const wrapper = createRenderer(<Model {...p} />);
+    const buttons = wrapper.root.findAll(node => node.props.name == "button-center");
+    expect(buttons.length).toEqual(count * 2);
   });
 });

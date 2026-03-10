@@ -4,6 +4,7 @@ describe("API", () => {
   type L = typeof location;
   const fakeLocation = (input: Partial<L>) => input as L;
   it("requires initialization", () => {
+    API.resetBaseUrl();
     expect(() => API.current).toThrow();
     const BASE = "http://localhost:3000";
     API.setBaseUrl(BASE);

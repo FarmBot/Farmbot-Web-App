@@ -1,28 +1,38 @@
-jest.mock("../../farm_designer/map/actions", () => ({
-  setHoveredPlant: jest.fn(),
-}));
-jest.mock("../actions", () => ({ overwriteGroup: jest.fn() }));
-
 import React from "react";
 import {
   PointGroupItem, PointGroupItemProps, genericPointIcon,
   genericWeedIcon,
   svgToUrl,
 } from "../point_group_item";
-import { shallow, mount } from "enzyme";
+import { render } from "@testing-library/react";
 import {
   fakePlant, fakePointGroup, fakePoint, fakeToolSlot, fakeWeed, fakeTool,
   fakePlantTemplate,
 } from "../../__test_support__/fake_state/resources";
-import { setHoveredPlant } from "../../farm_designer/map/actions";
+import * as mapActions from "../../farm_designer/map/actions";
 import { cloneDeep } from "lodash";
 import { error } from "../../toast/toast";
-import { overwriteGroup } from "../actions";
+import * as groupActions from "../actions";
 import { mockDispatch } from "../../__test_support__/fake_dispatch";
 import { fakeToolTransformProps } from "../../__test_support__/fake_tool_info";
 import { FilePath, Path } from "../../internal_urls";
 
 describe("<PointGroupItem/>", () => {
+  let overwriteGroupSpy: jest.SpyInstance;
+  let setHoveredPlantSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    overwriteGroupSpy = jest.spyOn(groupActions, "overwriteGroup")
+      .mockImplementation(jest.fn());
+    setHoveredPlantSpy = jest.spyOn(mapActions, "setHoveredPlant")
+      .mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    overwriteGroupSpy.mockRestore();
+    setHoveredPlantSpy.mockRestore();
+  });
+
   const fakeProps = (): PointGroupItemProps => ({
     dispatch: mockDispatch(),
     point: fakePlant(),
@@ -34,32 +44,34 @@ describe("<PointGroupItem/>", () => {
 
   it("renders", () => {
     const p = fakeProps();
-    const el = shallow<PointGroupItem>(<PointGroupItem {...p} />);
-    const i = el.instance();
-    expect(el.first().prop("onMouseEnter")).toEqual(i.enter);
-    expect(el.first().prop("onMouseLeave")).toEqual(i.leave);
-    expect(el.first().prop("onClick")).toEqual(i.click);
+    const i = new PointGroupItem(p);
+    const element = i.render() as React.ReactElement;
+    expect(element.props.onMouseEnter).toEqual(i.enter);
+    expect(element.props.onMouseLeave).toEqual(i.leave);
+    expect(element.props.onClick).toEqual(i.click);
   });
 
   it("displays default plant icon", () => {
     const p = fakeProps();
     p.point = fakePlant();
-    const wrapper = mount<PointGroupItem>(<PointGroupItem {...p} />);
-    expect(wrapper.find("img").props().src).toEqual("/crops/icons/strawberry.avif");
+    const { container } = render(<PointGroupItem {...p} />);
+    expect((container.querySelector("img") as HTMLImageElement).src)
+      .toContain("/crops/icons/strawberry.avif");
   });
 
   it("displays default plant template icon", () => {
     const p = fakeProps();
     p.point = fakePlantTemplate();
-    const wrapper = mount<PointGroupItem>(<PointGroupItem {...p} />);
-    expect(wrapper.find("img").props().src).toEqual("/crops/icons/mint.avif");
+    const { container } = render(<PointGroupItem {...p} />);
+    expect((container.querySelector("img") as HTMLImageElement).src)
+      .toContain("/crops/icons/mint.avif");
   });
 
   it("displays point icon", () => {
     const p = fakeProps();
     p.point = fakePoint();
-    const wrapper = mount<PointGroupItem>(<PointGroupItem {...p} />);
-    expect(wrapper.find("img").props().src).toEqual(
+    const { container } = render(<PointGroupItem {...p} />);
+    expect((container.querySelector("img") as HTMLImageElement).src).toEqual(
       svgToUrl(genericPointIcon(undefined)));
   });
 
@@ -67,21 +79,21 @@ describe("<PointGroupItem/>", () => {
     const p = fakeProps();
     p.point = fakeWeed();
     p.point.body.meta.color = undefined;
-    const wrapper = mount<PointGroupItem>(<PointGroupItem {...p} />);
-    expect(wrapper.find("img").first().props().src)
-      .toEqual(FilePath.DEFAULT_WEED_ICON);
-    expect(wrapper.find("img").last().props().src).toEqual(
+    const { container } = render(<PointGroupItem {...p} />);
+    const images = container.querySelectorAll("img");
+    expect((images[0]).src).toContain(FilePath.DEFAULT_WEED_ICON);
+    expect((images[1]).src).toEqual(
       svgToUrl(genericWeedIcon(undefined)));
-    expect(wrapper.find(".slot-icon").length).toEqual(0);
+    expect(container.querySelectorAll(".slot-icon").length).toEqual(0);
   });
 
   it("displays tool slot icon", () => {
     const p = fakeProps();
     p.point = fakeToolSlot();
-    const wrapper = mount<PointGroupItem>(<PointGroupItem {...p} />);
-    expect(wrapper.find("img").props().src).toEqual(
+    const { container } = render(<PointGroupItem {...p} />);
+    expect((container.querySelector("img") as HTMLImageElement).src).toEqual(
       svgToUrl("<svg xmlns='http://www.w3.org/2000/svg'></svg>"));
-    expect(wrapper.find(".slot-icon").length).toEqual(1);
+    expect(container.querySelectorAll(".slot-icon").length).toEqual(1);
   });
 
   it("displays named tool slot icon", () => {
@@ -93,17 +105,17 @@ describe("<PointGroupItem/>", () => {
     const toolSlot = fakeToolSlot();
     toolSlot.body.tool_id = 1;
     p.point = toolSlot;
-    const wrapper = mount<PointGroupItem>(<PointGroupItem {...p} />);
-    expect(wrapper.find("img").props().src).toEqual(
+    const { container } = render(<PointGroupItem {...p} />);
+    expect((container.querySelector("img") as HTMLImageElement).src).toEqual(
       svgToUrl("<svg xmlns='http://www.w3.org/2000/svg'></svg>"));
-    expect(wrapper.find(".slot-icon").length).toEqual(1);
+    expect(container.querySelectorAll(".slot-icon").length).toEqual(1);
   });
 
   it("handles mouse enter", () => {
     const i = new PointGroupItem(fakeProps());
     i.enter();
     expect(i.props.dispatch).toHaveBeenCalledTimes(1);
-    expect(setHoveredPlant).toHaveBeenCalledWith(i.props.point.uuid);
+    expect(mapActions.setHoveredPlant).toHaveBeenCalledWith(i.props.point.uuid);
   });
 
   it("handles mouse enter: no action", () => {
@@ -111,14 +123,14 @@ describe("<PointGroupItem/>", () => {
     p.dispatch = undefined;
     const i = new PointGroupItem(p);
     i.enter();
-    expect(setHoveredPlant).not.toHaveBeenCalled();
+    expect(mapActions.setHoveredPlant).not.toHaveBeenCalled();
   });
 
   it("handles mouse exit", () => {
     const i = new PointGroupItem(fakeProps());
     i.leave();
     expect(i.props.dispatch).toHaveBeenCalledTimes(1);
-    expect(setHoveredPlant).toHaveBeenCalledWith(undefined);
+    expect(mapActions.setHoveredPlant).toHaveBeenCalledWith(undefined);
   });
 
   it("handles mouse exit: no action", () => {
@@ -126,7 +138,7 @@ describe("<PointGroupItem/>", () => {
     p.dispatch = undefined;
     const i = new PointGroupItem(p);
     i.leave();
-    expect(setHoveredPlant).not.toHaveBeenCalled();
+    expect(mapActions.setHoveredPlant).not.toHaveBeenCalled();
   });
 
   it("handles clicks", () => {
@@ -138,8 +150,8 @@ describe("<PointGroupItem/>", () => {
     expect(i.props.dispatch).toHaveBeenCalledTimes(2);
     const expectedGroupBody = cloneDeep(p.group?.body || { point_ids: [] });
     expectedGroupBody.point_ids = [];
-    expect(overwriteGroup).toHaveBeenCalledWith(p.group, expectedGroupBody);
-    expect(setHoveredPlant).toHaveBeenCalledWith(undefined);
+    expect(groupActions.overwriteGroup).toHaveBeenCalledWith(p.group, expectedGroupBody);
+    expect(mapActions.setHoveredPlant).toHaveBeenCalledWith(undefined);
   });
 
   it("handles clicks with no id", () => {
@@ -151,8 +163,8 @@ describe("<PointGroupItem/>", () => {
     expect(i.props.dispatch).toHaveBeenCalledTimes(2);
     const expectedGroupBody = cloneDeep(p.group?.body || { point_ids: [] });
     expectedGroupBody.point_ids = [];
-    expect(overwriteGroup).toHaveBeenCalledWith(p.group, expectedGroupBody);
-    expect(setHoveredPlant).toHaveBeenCalledWith(undefined);
+    expect(groupActions.overwriteGroup).toHaveBeenCalledWith(p.group, expectedGroupBody);
+    expect(mapActions.setHoveredPlant).toHaveBeenCalledWith(undefined);
   });
 
   it("errors on click", () => {
@@ -162,8 +174,8 @@ describe("<PointGroupItem/>", () => {
     const i = new PointGroupItem(p);
     i.click();
     expect(i.props.dispatch).not.toHaveBeenCalled();
-    expect(overwriteGroup).not.toHaveBeenCalled();
-    expect(setHoveredPlant).not.toHaveBeenCalled();
+    expect(groupActions.overwriteGroup).not.toHaveBeenCalled();
+    expect(mapActions.setHoveredPlant).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith(
       "Cannot remove points selected by filters.");
   });
@@ -175,8 +187,8 @@ describe("<PointGroupItem/>", () => {
     p.dispatch = undefined;
     const i = new PointGroupItem(p);
     i.click();
-    expect(overwriteGroup).not.toHaveBeenCalled();
-    expect(setHoveredPlant).not.toHaveBeenCalled();
+    expect(groupActions.overwriteGroup).not.toHaveBeenCalled();
+    expect(mapActions.setHoveredPlant).not.toHaveBeenCalled();
   });
 
   it("handles clicks: navigates", () => {
@@ -188,8 +200,8 @@ describe("<PointGroupItem/>", () => {
     const i = new PointGroupItem(p);
     i.navigate = jest.fn();
     i.click();
-    expect(overwriteGroup).not.toHaveBeenCalled();
-    expect(setHoveredPlant).not.toHaveBeenCalled();
+    expect(groupActions.overwriteGroup).not.toHaveBeenCalled();
+    expect(mapActions.setHoveredPlant).not.toHaveBeenCalled();
     expect(i.navigate).toHaveBeenCalledWith(Path.plants(1));
   });
 });

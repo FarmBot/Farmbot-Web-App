@@ -1,6 +1,6 @@
 import React from "react";
 import { Circle, CircleProps } from "../circle";
-import { shallow } from "enzyme";
+import { render } from "@testing-library/react";
 
 describe("<Circle/>", () => {
   function fakeProps(): CircleProps {
@@ -13,18 +13,22 @@ describe("<Circle/>", () => {
   }
 
   it("renders selected plant indicator", () => {
-    const wrapper = shallow(<Circle {...fakeProps()} />);
-    expect(wrapper.props().cx).toEqual(10);
-    expect(wrapper.props().cy).toEqual(20);
-    expect(wrapper.props().r).toEqual(36);
+    const { container } = render(<svg><Circle {...fakeProps()} /></svg>);
+    const circle = container.querySelector("circle");
+    if (!circle) { throw new Error("Missing circle"); }
+    expect(Number(circle.getAttribute("cx"))).toEqual(10);
+    expect(Number(circle.getAttribute("cy"))).toEqual(20);
+    expect(Number(circle.getAttribute("r"))).toEqual(36);
   });
 
   it("hides selected plant indicator", () => {
     const p = fakeProps();
     p.selected = false;
-    const wrapper = shallow(<Circle {...p} />);
-    expect(wrapper.props().cx).toEqual(10);
-    expect(wrapper.props().cy).toEqual(20);
-    expect(wrapper.props().r).toEqual(0);
+    const { container } = render(<svg><Circle {...p} /></svg>);
+    const circle = container.querySelector("circle");
+    if (!circle) { throw new Error("Missing circle"); }
+    expect(Number(circle.getAttribute("cx"))).toEqual(10);
+    expect(Number(circle.getAttribute("cy"))).toEqual(20);
+    expect(Number(circle.getAttribute("r"))).toEqual(0);
   });
 });

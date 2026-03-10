@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { MoveAbsoluteWarningProps } from "../../interfaces";
 import {
   fakeHardwareFlags,
@@ -16,8 +16,8 @@ describe("<MoveAbsoluteWarning/>", () => {
 
   it("doesn't show setting warning", () => {
     const p = fakeProps();
-    const wrapper = mount(<MoveAbsoluteWarning {...p} />);
-    expect(wrapper.text()).not.toContain(CONFLICT_TEXT_BASE);
+    const { container } = render(<MoveAbsoluteWarning {...p} />);
+    expect(container.querySelector(".step-warning")).toBeNull();
   });
 
   it("doesn't show warning: axis length 0", () => {
@@ -27,8 +27,8 @@ describe("<MoveAbsoluteWarning/>", () => {
       p.hardwareFlags.stopAtMax.x = true;
       p.hardwareFlags.axisLength.x = 0;
     }
-    const wrapper = mount(<MoveAbsoluteWarning {...p} />);
-    expect(wrapper.text()).not.toContain(CONFLICT_TEXT_BASE);
+    const { container } = render(<MoveAbsoluteWarning {...p} />);
+    expect(container.querySelector(".step-warning")).toBeNull();
   });
 
   it("shows warning: too high", () => {
@@ -38,8 +38,9 @@ describe("<MoveAbsoluteWarning/>", () => {
       p.hardwareFlags.stopAtMax.x = true;
       p.hardwareFlags.axisLength.x = 100;
     }
-    const wrapper = mount(<MoveAbsoluteWarning {...p} />);
-    expect(wrapper.html()).toContain(CONFLICT_TEXT_BASE + ": x");
+    const { container } = render(<MoveAbsoluteWarning {...p} />);
+    expect(container.querySelector(".step-warning")?.getAttribute("title"))
+      .toContain(CONFLICT_TEXT_BASE + ": x");
   });
 
   it("shows warning: too high (negativeOnly)", () => {
@@ -50,8 +51,9 @@ describe("<MoveAbsoluteWarning/>", () => {
       p.hardwareFlags.negativeOnly.x = true;
       p.hardwareFlags.axisLength.x = 100;
     }
-    const wrapper = mount(<MoveAbsoluteWarning {...p} />);
-    expect(wrapper.html()).toContain(CONFLICT_TEXT_BASE + ": x");
+    const { container } = render(<MoveAbsoluteWarning {...p} />);
+    expect(container.querySelector(".step-warning")?.getAttribute("title"))
+      .toContain(CONFLICT_TEXT_BASE + ": x");
   });
 
   it("shows warning: too low (negativeOnly)", () => {
@@ -61,8 +63,9 @@ describe("<MoveAbsoluteWarning/>", () => {
       p.hardwareFlags.stopAtHome.x = true;
       p.hardwareFlags.negativeOnly.x = true;
     }
-    const wrapper = mount(<MoveAbsoluteWarning {...p} />);
-    expect(wrapper.html()).toContain(CONFLICT_TEXT_BASE + ": x");
+    const { container } = render(<MoveAbsoluteWarning {...p} />);
+    expect(container.querySelector(".step-warning")?.getAttribute("title"))
+      .toContain(CONFLICT_TEXT_BASE + ": x");
   });
 
   it("shows warning: too low", () => {
@@ -72,7 +75,8 @@ describe("<MoveAbsoluteWarning/>", () => {
       p.hardwareFlags.stopAtHome.x = true;
       p.hardwareFlags.stopAtMax.x = true;
     }
-    const wrapper = mount(<MoveAbsoluteWarning {...p} />);
-    expect(wrapper.html()).toContain(CONFLICT_TEXT_BASE + ": x");
+    const { container } = render(<MoveAbsoluteWarning {...p} />);
+    expect(container.querySelector(".step-warning")?.getAttribute("title"))
+      .toContain(CONFLICT_TEXT_BASE + ": x");
   });
 });

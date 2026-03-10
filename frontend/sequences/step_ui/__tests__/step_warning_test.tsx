@@ -1,20 +1,26 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { StepWarning, conflictsString } from "../step_warning";
 
 describe("<StepWarning />", () => {
   it("renders", () => {
-    const wrapper = mount(<StepWarning warning={"warning"} />);
-    expect(wrapper.find("i").hasClass("fa-exclamation-triangle")).toBeTruthy();
-    expect(wrapper.html()).toContain("Hardware setting conflict");
+    const { container } = render(<StepWarning warning={"warning"} />);
+    const warning = container.querySelector(".step-warning");
+    expect(container.querySelectorAll(".step-warning").length).toEqual(1);
+    expect(warning?.getAttribute("title"))
+      .toEqual("Hardware setting conflict");
+    expect(container.innerHTML).toContain("Hardware setting conflict");
   });
 
   it("lists axes", () => {
-    const wrapper = mount(<StepWarning
+    const { container } = render(<StepWarning
       warning={"warning"}
       conflicts={{ x: true, y: true, z: false }} />);
-    expect(wrapper.find("i").hasClass("fa-exclamation-triangle")).toBeTruthy();
-    expect(wrapper.html()).toContain("Hardware setting conflict: x, y");
+    const warning = container.querySelector(".step-warning");
+    expect(container.querySelectorAll(".step-warning").length).toEqual(1);
+    expect(warning?.getAttribute("title"))
+      .toEqual("Hardware setting conflict: x, y");
+    expect(container.innerHTML).toContain("Hardware setting conflict: x, y");
   });
 
   it("conflictsString()", () => {

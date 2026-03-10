@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render, screen } from "@testing-library/react";
 import { PinnedSequences } from "../pinned_sequence_list";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { PinnedSequencesProps } from "../interfaces";
@@ -20,7 +20,7 @@ describe("<PinnedSequences />", () => {
     const sequence = fakeSequence();
     sequence.body.pinned = true;
     p.sequences = [sequence];
-    const wrapper = mount(<PinnedSequences {...p} />);
-    expect(wrapper.text()).toContain("Run");
+    render(<PinnedSequences {...p} />);
+    expect(screen.getByText("Run")).toBeInTheDocument();
   });
 });

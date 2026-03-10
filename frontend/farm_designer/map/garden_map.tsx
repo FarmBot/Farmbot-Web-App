@@ -11,9 +11,10 @@ import {
 import {
   Grid, MapBackground,
   TargetCoordinate,
-  SelectionBox, resizeBox, startNewSelectionBox, maybeUpdateGroup,
+  SelectionBox,
   getSelectionBoxArea,
 } from "./background";
+import * as selectionBoxActions from "./background/selection_box_actions";
 import {
   PlantLayer,
   SpreadLayer,
@@ -49,8 +50,8 @@ import { betterCompact } from "../../util";
 import { Path } from "../../internal_urls";
 import { AddPlantIcon } from "./active_plant/add_plant_icon";
 import { NavigationContext } from "../../routes_helpers";
-import { NavigateFunction } from "react-router";
 import { setPanelOpen } from "../panel_header";
+import { NavigateFunction } from "react-router";
 
 const BOUND_KEYS = ["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"];
 
@@ -64,7 +65,7 @@ export class GardenMap extends
 
   static contextType = NavigationContext;
   context!: React.ContextType<typeof NavigationContext>;
-  navigate: NavigateFunction = url => { this.context(url as string); };
+  navigate: NavigateFunction = url => { this.context?.(url as string); };
 
   componentDidMount = () => {
     document.onkeydown = this.onKeyDown as never;
@@ -117,7 +118,7 @@ export class GardenMap extends
       isDragging: this.state.isDragging,
       dispatch: this.props.dispatch,
     });
-    maybeUpdateGroup({
+    selectionBoxActions.maybeUpdateGroup({
       selectionBox: this.state.selectionBox,
       group: this.group,
       dispatch: this.props.dispatch,
@@ -161,7 +162,7 @@ export class GardenMap extends
             selectedPlant: this.props.selectedPlant,
           });
         } else { // Actions away from plant exit plant edit mode.
-          startNewSelectionBox({
+          selectionBoxActions.startNewSelectionBox({
             gardenCoords,
             setMapState: this.setMapState,
             dispatch: this.props.dispatch,
@@ -170,7 +171,7 @@ export class GardenMap extends
         }
         break;
       case Mode.editGroup:
-        startNewSelectionBox({
+        selectionBoxActions.startNewSelectionBox({
           gardenCoords: this.getGardenCoordinates(e),
           setMapState: this.setMapState,
           dispatch: this.props.dispatch,
@@ -202,7 +203,7 @@ export class GardenMap extends
       case Mode.profile:
         break;
       case Mode.boxSelect:
-        startNewSelectionBox({
+        selectionBoxActions.startNewSelectionBox({
           gardenCoords: this.getGardenCoordinates(e),
           setMapState: this.setMapState,
           dispatch: this.props.dispatch,
@@ -210,7 +211,7 @@ export class GardenMap extends
         });
         break;
       case Mode.editGroup:
-        startNewSelectionBox({
+        selectionBoxActions.startNewSelectionBox({
           gardenCoords: this.getGardenCoordinates(e),
           setMapState: this.setMapState,
           dispatch: this.props.dispatch,
@@ -235,7 +236,7 @@ export class GardenMap extends
           }
         };
         openLocationInfo(e) && this.navigate(Path.plants());
-        startNewSelectionBox({
+        selectionBoxActions.startNewSelectionBox({
           gardenCoords: this.getGardenCoordinates(e),
           setMapState: this.setMapState,
           dispatch: this.props.dispatch,
@@ -354,7 +355,7 @@ export class GardenMap extends
         });
         break;
       case Mode.editGroup:
-        resizeBox({
+        selectionBoxActions.resizeBox({
           navigate: this.navigate,
           selectionBox: this.state.selectionBox,
           plants: this.props.plants,
@@ -372,7 +373,7 @@ export class GardenMap extends
         break;
       case Mode.boxSelect:
       default:
-        resizeBox({
+        selectionBoxActions.resizeBox({
           navigate: this.navigate,
           selectionBox: this.state.selectionBox,
           plants: this.props.plants,

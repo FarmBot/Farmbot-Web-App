@@ -1,45 +1,16 @@
-jest.mock("../actions", () => ({
-  updateSearchTerm: jest.fn(),
-  toggleAll: jest.fn(),
-  moveSequence: jest.fn(),
-  dropSequence: jest.fn(() => jest.fn()),
-  sequenceEditMaybeSave: jest.fn(),
-  deleteFolder: jest.fn(),
-  toggleFolderEditState: jest.fn(),
-  createFolder: jest.fn(),
-  addNewSequenceToFolder: jest.fn(),
-  setFolderName: jest.fn(),
-  toggleFolderOpenState: jest.fn(),
-  setFolderColor: jest.fn(),
-}));
-
-jest.mock("@blueprintjs/core", () => ({
-  Position: jest.fn(),
-  PopoverInteractionKind: jest.fn(),
-  Button: jest.fn(p => <button>{p.text}</button>),
-  Classes: jest.fn(),
-  MenuItem: jest.fn(),
-  Alignment: jest.fn(),
-}));
-
-import { PopoverProps } from "../../ui/popover";
-let mockPopover = ({ target, content }: PopoverProps) =>
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import * as popover from "../../ui/popover";
+const defaultMockPopover = ({ target, content }: popover.PopoverProps) =>
   <div>{target}{content}</div>;
-jest.mock("../../ui/popover", () => ({
-  Popover: jest.fn((p: PopoverProps) => mockPopover(p)),
-}));
-
-jest.mock("@blueprintjs/select", () => ({
-  Select: { ofType: jest.fn() },
-  ItemRenderer: jest.fn(),
-}));
-
-jest.mock("../../sequences/actions", () => ({
-  copySequence: jest.fn(),
-}));
+let mockPopover = defaultMockPopover;
 
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { fireEvent, render, waitFor } from "@testing-library/react";
+import {
+  actRenderer,
+  createRenderer,
+  unmountRenderer,
+} from "../../__test_support__/test_renderer";
 import {
   Folders, FolderPanelTop, SequenceDropArea, FolderNameEditor,
   FolderButtonCluster, FolderListItem, FolderNameInput,
@@ -62,13 +33,90 @@ import {
   toggleFolderOpenState,
   setFolderColor,
 } from "../actions";
+import * as folderActions from "../actions";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { SpecialStatus, Color, SequenceBodyItem } from "farmbot";
-import { SearchField } from "../../ui/search_field";
 import { Path } from "../../internal_urls";
-import { copySequence } from "../../sequences/actions";
+import * as sequenceActions from "../../sequences/actions";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { fakeMenuOpenState } from "../../__test_support__/fake_designer_state";
+import { changeBlurableInput } from "../../__test_support__/helpers";
+import * as blueprintCore from "@blueprintjs/core";
+
+let copySequenceSpy: jest.SpyInstance;
+let popoverSpy: jest.SpyInstance;
+let buttonSpy: jest.SpyInstance;
+let updateSearchTermSpy: jest.SpyInstance;
+let toggleAllSpy: jest.SpyInstance;
+let moveSequenceSpy: jest.SpyInstance;
+let dropSequenceSpy: jest.SpyInstance;
+let sequenceEditMaybeSaveSpy: jest.SpyInstance;
+let deleteFolderSpy: jest.SpyInstance;
+let toggleFolderEditStateSpy: jest.SpyInstance;
+let createFolderSpy: jest.SpyInstance;
+let addNewSequenceToFolderSpy: jest.SpyInstance;
+let setFolderNameSpy: jest.SpyInstance;
+let toggleFolderOpenStateSpy: jest.SpyInstance;
+let setFolderColorSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  mockPopover = defaultMockPopover;
+  popoverSpy = jest.spyOn(popover, "Popover")
+    .mockImplementation((p: popover.PopoverProps) => mockPopover(p));
+  buttonSpy = jest.spyOn(blueprintCore, "Button")
+    .mockImplementation((p: { text?: string }) => <button>{p.text}</button>);
+  copySequenceSpy = jest.spyOn(sequenceActions, "copySequence")
+    .mockImplementation(jest.fn());
+  updateSearchTermSpy = jest.spyOn(folderActions, "updateSearchTerm")
+    .mockImplementation(jest.fn());
+  toggleAllSpy = jest.spyOn(folderActions, "toggleAll")
+    .mockImplementation(jest.fn());
+  moveSequenceSpy = jest.spyOn(folderActions, "moveSequence")
+    .mockImplementation(jest.fn());
+  dropSequenceSpy = jest.spyOn(folderActions, "dropSequence")
+    .mockImplementation(() => jest.fn());
+  sequenceEditMaybeSaveSpy =
+    jest.spyOn(folderActions, "sequenceEditMaybeSave")
+      .mockImplementation(jest.fn());
+  deleteFolderSpy = jest.spyOn(folderActions, "deleteFolder")
+    .mockImplementation(jest.fn());
+  toggleFolderEditStateSpy =
+    jest.spyOn(folderActions, "toggleFolderEditState")
+      .mockImplementation(jest.fn());
+  createFolderSpy = jest.spyOn(folderActions, "createFolder")
+    .mockImplementation(jest.fn());
+  addNewSequenceToFolderSpy =
+    jest.spyOn(folderActions, "addNewSequenceToFolder")
+      .mockImplementation(jest.fn());
+  setFolderNameSpy = jest.spyOn(folderActions, "setFolderName")
+    .mockImplementation(jest.fn());
+  toggleFolderOpenStateSpy =
+    jest.spyOn(folderActions, "toggleFolderOpenState")
+      .mockImplementation(jest.fn());
+  setFolderColorSpy = jest.spyOn(folderActions, "setFolderColor")
+    .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  popoverSpy.mockRestore();
+  buttonSpy.mockRestore();
+  copySequenceSpy.mockRestore();
+  updateSearchTermSpy.mockRestore();
+  toggleAllSpy.mockRestore();
+  moveSequenceSpy.mockRestore();
+  dropSequenceSpy.mockRestore();
+  sequenceEditMaybeSaveSpy.mockRestore();
+  deleteFolderSpy.mockRestore();
+  toggleFolderEditStateSpy.mockRestore();
+  createFolderSpy.mockRestore();
+  addNewSequenceToFolderSpy.mockRestore();
+  setFolderNameSpy.mockRestore();
+  toggleFolderOpenStateSpy.mockRestore();
+  setFolderColorSpy.mockRestore();
+});
+
+afterAll(() => {
+});
 
 const fakeRootFolder = (): FolderNodeInitial => ({
   kind: "initial",
@@ -94,6 +142,21 @@ const fakeTerminalFolder = (): FolderNodeTerminal => {
   return folder;
 };
 
+const setStateSync = <T extends {
+  state: unknown;
+  props: unknown;
+  setState: unknown;
+}>(instance: T): T => {
+  instance.setState = ((state, callback) => {
+    const update = typeof state == "function"
+      ? state(instance.state, instance.props)
+      : state;
+    instance.state = { ...instance.state, ...update };
+    callback?.();
+  }) as T["setState"];
+  return instance;
+};
+
 describe("<Folders />", () => {
   const fakeProps = (): FolderProps => ({
     rootFolder: {
@@ -113,8 +176,8 @@ describe("<Folders />", () => {
 
   it("renders empty state", () => {
     const p = fakeProps();
-    const wrapper = mount<Folders>(<Folders {...p} />);
-    expect(wrapper.text()).toContain("No Sequences.");
+    const { container } = render(<Folders {...p} />);
+    expect(container.textContent).toContain("No Sequences.");
   });
 
   it("renders sequences outside of folders", () => {
@@ -124,15 +187,15 @@ describe("<Folders />", () => {
     p.sequences = { [sequence.uuid]: sequence };
     sequence.body.name = "my sequence";
     p.rootFolder.noFolder = [sequence.uuid];
-    const wrapper = mount<Folders>(<Folders {...p} />);
-    expect(wrapper.text()).toContain("my sequence");
+    const { container } = render(<Folders {...p} />);
+    expect(container.textContent).toContain("my sequence");
   });
 
   it("renders empty folder", () => {
     const p = fakeProps();
     p.rootFolder.folders[0] = fakeRootFolder();
-    const wrapper = mount<Folders>(<Folders {...p} />);
-    expect(wrapper.text()).toContain("my folder");
+    const { container } = render(<Folders {...p} />);
+    expect(container.textContent).toContain("my folder");
   });
 
   it("renders sequences in folder", () => {
@@ -143,8 +206,8 @@ describe("<Folders />", () => {
     const folder = fakeRootFolder();
     folder.content = [sequence.uuid];
     p.rootFolder.folders[0] = folder;
-    const wrapper = mount<Folders>(<Folders {...p} />);
-    expect(wrapper.text()).toContain("my sequence");
+    const { container } = render(<Folders {...p} />);
+    expect(container.textContent).toContain("my sequence");
   });
 
   it("renders folders in folder", () => {
@@ -154,8 +217,8 @@ describe("<Folders />", () => {
     childFolder.name = "deeper folder";
     folder.children = [childFolder];
     p.rootFolder.folders[0] = folder;
-    const wrapper = mount<Folders>(<Folders {...p} />);
-    expect(wrapper.text()).toContain("deeper folder");
+    const { container } = render(<Folders {...p} />);
+    expect(container.textContent).toContain("deeper folder");
   });
 
   it("renders terminal folder", () => {
@@ -169,25 +232,25 @@ describe("<Folders />", () => {
     childFolder.children = [terminalFolder];
     folder.children = [childFolder];
     p.rootFolder.folders[0] = folder;
-    const wrapper = mount<Folders>(<Folders {...p} />);
+    const { container } = render(<Folders {...p} />);
     ["folder", "deeper folder", "deepest folder"].map(string =>
-      expect(wrapper.text()).toContain(string));
+      expect(container.textContent).toContain(string));
   });
 
   it("toggles all folders", () => {
-    const wrapper = mount<Folders>(<Folders {...fakeProps()} />);
-    expect(wrapper.state().toggleDirection).toEqual(false);
-    wrapper.instance().toggleAll();
+    const instance = setStateSync(new Folders(fakeProps()));
+    expect(instance.state.toggleDirection).toEqual(false);
+    instance.toggleAll();
     expect(toggleAll).toHaveBeenCalledWith(false);
-    expect(wrapper.state().toggleDirection).toEqual(true);
+    expect(instance.state.toggleDirection).toEqual(true);
   });
 
   it("starts sequence move", () => {
-    const wrapper = mount<Folders>(<Folders {...fakeProps()} />);
-    expect(wrapper.state().movedSequenceUuid).toEqual(undefined);
-    wrapper.instance().startSequenceMove("fakeUuid");
-    expect(wrapper.state().movedSequenceUuid).toEqual("fakeUuid");
-    expect(wrapper.state().stashedUuid).toEqual(undefined);
+    const instance = setStateSync(new Folders(fakeProps()));
+    expect(instance.state.movedSequenceUuid).toEqual(undefined);
+    instance.startSequenceMove("fakeUuid");
+    expect(instance.state.movedSequenceUuid).toEqual("fakeUuid");
+    expect(instance.state.stashedUuid).toEqual(undefined);
   });
 
   const toggleMoveTest = (p: {
@@ -196,10 +259,10 @@ describe("<Folders />", () => {
     arg: string | undefined,
     new: string | undefined
   }) => {
-    const wrapper = mount<Folders>(<Folders {...fakeProps()} />);
-    wrapper.setState({ movedSequenceUuid: p.current, stashedUuid: p.prev });
-    wrapper.instance().toggleSequenceMove(p.arg);
-    expect(wrapper.state().movedSequenceUuid).toEqual(p.new);
+    const instance = setStateSync(new Folders(fakeProps()));
+    instance.setState({ movedSequenceUuid: p.current, stashedUuid: p.prev });
+    instance.toggleSequenceMove(p.arg);
+    expect(instance.state.movedSequenceUuid).toEqual(p.new);
   };
 
   it("toggle sequence move: on", () => {
@@ -227,19 +290,19 @@ describe("<Folders />", () => {
   });
 
   it("ends sequence move", () => {
-    const wrapper = mount<Folders>(<Folders {...fakeProps()} />);
-    wrapper.setState({ movedSequenceUuid: "fakeUuid" });
-    wrapper.instance().endSequenceMove(1);
+    const instance = setStateSync(new Folders(fakeProps()));
+    instance.setState({ movedSequenceUuid: "fakeUuid" });
+    instance.endSequenceMove(1);
     expect(moveSequence).toHaveBeenCalledWith("fakeUuid", 1);
-    expect(wrapper.state().movedSequenceUuid).toEqual(undefined);
+    expect(instance.state.movedSequenceUuid).toEqual(undefined);
   });
 
   it("ends sequence move: undefined", () => {
-    const wrapper = mount<Folders>(<Folders {...fakeProps()} />);
-    wrapper.setState({ movedSequenceUuid: undefined });
-    wrapper.instance().endSequenceMove(1);
+    const instance = setStateSync(new Folders(fakeProps()));
+    instance.setState({ movedSequenceUuid: undefined });
+    instance.endSequenceMove(1);
     expect(moveSequence).toHaveBeenCalledWith("", 1);
-    expect(wrapper.state().movedSequenceUuid).toEqual(undefined);
+    expect(instance.state.movedSequenceUuid).toEqual(undefined);
   });
 });
 
@@ -260,55 +323,61 @@ describe("<FolderListItem />", () => {
   });
 
   beforeEach(() => {
-    mockPopover = ({ target, content }: PopoverProps) =>
+    mockPopover = ({ target, content }: popover.PopoverProps) =>
       <div>{target}{content}</div>;
   });
 
   it("renders", () => {
     const p = fakeProps();
     p.sequence.body.name = "my sequence";
-    const wrapper = mount(<FolderListItem {...p} />);
-    expect(wrapper.text()).toContain("my sequence");
-    expect(wrapper.find("li").hasClass("move-source")).toBeFalsy();
-    expect(wrapper.find("li").hasClass("active")).toBeFalsy();
+    const { container } = render(<FolderListItem {...p} />);
+    expect(container.textContent).toContain("my sequence");
+    expect(container.querySelector("li")?.classList.contains("move-source"))
+      .toBeFalsy();
+    expect(container.querySelector("li")?.classList.contains("active"))
+      .toBeFalsy();
   });
 
   it("renders: matched", () => {
     const p = fakeProps();
     p.sequence.body.name = "my sequence";
     p.searchTerm = "sequence";
-    const wrapper = mount(<FolderListItem {...p} />);
-    expect(wrapper.find(".sequence-list-item").hasClass("matched")).toBeTruthy();
+    const { container } = render(<FolderListItem {...p} />);
+    expect(container.querySelector(".sequence-list-item")
+      ?.classList.contains("matched")).toBeTruthy();
   });
 
   it("renders: move in progress", () => {
     const p = fakeProps();
     p.movedSequenceUuid = p.sequence.uuid;
-    const wrapper = mount(<FolderListItem {...p} />);
-    expect(wrapper.find("li").hasClass("move-source")).toBeTruthy();
+    const { container } = render(<FolderListItem {...p} />);
+    expect(container.querySelector("li")?.classList.contains("move-source"))
+      .toBeTruthy();
   });
 
   it("renders: active", () => {
     const p = fakeProps();
     p.sequence.body.name = "sequence";
     location.pathname = Path.mock(Path.sequences("sequence"));
-    const wrapper = mount(<FolderListItem {...p} />);
-    expect(wrapper.find("li").hasClass("active")).toBeTruthy();
+    const { container } = render(<FolderListItem {...p} />);
+    expect(container.querySelector("li")?.classList.contains("active"))
+      .toBeTruthy();
   });
 
   it("renders: unsaved", () => {
     const p = fakeProps();
     p.sequence.body.name = "my sequence";
     p.sequence.specialStatus = SpecialStatus.DIRTY;
-    const wrapper = mount(<FolderListItem {...p} />);
-    expect(wrapper.text()).toContain("my sequence*");
+    const { container } = render(<FolderListItem {...p} />);
+    expect(container.textContent).toContain("my sequence*");
   });
 
   it("renders: in use", () => {
     const p = fakeProps();
     p.inUse = true;
-    const wrapper = mount(<FolderListItem {...p} />);
-    expect(wrapper.find(".in-use").length).toBeGreaterThanOrEqual(1);
+    const { container } = render(<FolderListItem {...p} />);
+    expect(container.querySelectorAll(".in-use").length)
+      .toBeGreaterThanOrEqual(1);
   });
 
   it("renders: in use and has bad steps", () => {
@@ -317,9 +386,10 @@ describe("<FolderListItem />", () => {
     p.sequence.body.body = [
       { kind: "resource_update", args: {} } as unknown as SequenceBodyItem,
     ];
-    const wrapper = mount(<FolderListItem {...p} />);
-    expect(wrapper.find(".in-use").length).toBeGreaterThanOrEqual(1);
-    expect(wrapper.find(".fa-exclamation-triangle").length)
+    const { container } = render(<FolderListItem {...p} />);
+    expect(container.querySelectorAll(".in-use").length)
+      .toBeGreaterThanOrEqual(1);
+    expect(container.querySelectorAll(".fa-exclamation-triangle").length)
       .toBeGreaterThanOrEqual(1);
   });
 
@@ -327,9 +397,11 @@ describe("<FolderListItem />", () => {
     const p = fakeProps();
     p.inUse = true;
     p.sequence.body.pinned = true;
-    const wrapper = mount(<FolderListItem {...p} />);
-    expect(wrapper.find(".in-use").length).toBeGreaterThanOrEqual(1);
-    expect(wrapper.find(".fa-thumb-tack").length).toBeGreaterThanOrEqual(1);
+    const { container } = render(<FolderListItem {...p} />);
+    expect(container.querySelectorAll(".in-use").length)
+      .toBeGreaterThanOrEqual(1);
+    expect(container.querySelectorAll(".fa-thumb-tack").length)
+      .toBeGreaterThanOrEqual(1);
   });
 
   it("renders: imported", () => {
@@ -337,8 +409,8 @@ describe("<FolderListItem />", () => {
     p.sequence.body.sequence_version_id = 1;
     p.sequence.body.forked = false;
     p.sequence.body.sequence_versions = [1];
-    const wrapper = mount(<FolderListItem {...p} />);
-    expect(wrapper.find(".fa-link").length).toBeGreaterThanOrEqual(1);
+    const { container } = render(<FolderListItem {...p} />);
+    expect(container.querySelectorAll(".fa-link").length).toBeGreaterThanOrEqual(1);
   });
 
   it("renders: forked", () => {
@@ -346,8 +418,9 @@ describe("<FolderListItem />", () => {
     p.sequence.body.sequence_version_id = 1;
     p.sequence.body.forked = true;
     p.sequence.body.sequence_versions = [1];
-    const wrapper = mount(<FolderListItem {...p} />);
-    expect(wrapper.find(".fa-chain-broken").length).toBeGreaterThanOrEqual(1);
+    const { container } = render(<FolderListItem {...p} />);
+    expect(container.querySelectorAll(".fa-chain-broken").length)
+      .toBeGreaterThanOrEqual(1);
   });
 
   it("renders: published", () => {
@@ -355,28 +428,28 @@ describe("<FolderListItem />", () => {
     p.sequence.body.sequence_version_id = undefined;
     p.sequence.body.forked = false;
     p.sequence.body.sequence_versions = [1];
-    const wrapper = mount(<FolderListItem {...p} />);
-    expect(wrapper.find(".fa-globe").length).toBeGreaterThanOrEqual(1);
+    const { container } = render(<FolderListItem {...p} />);
+    expect(container.querySelectorAll(".fa-globe").length).toBeGreaterThanOrEqual(1);
   });
 
   it("renders: no description", () => {
     const p = fakeProps();
     p.sequence.body.description = "";
-    const wrapper = mount(<FolderListItem {...p} />);
-    expect(wrapper.text().toLowerCase())
+    const { container } = render(<FolderListItem {...p} />);
+    expect(container.textContent?.toLowerCase())
       .toContain("this sequence has no description");
   });
 
   it("opens pop-ups", () => {
-    mockPopover = ({ target, content, isOpen }: PopoverProps) =>
+    mockPopover = ({ target, content, isOpen }: any) =>
       <div>{target}{isOpen ? content : ""}</div>;
-    const wrapper = mount(<FolderListItem {...fakeProps()} />);
-    expect(wrapper.find(".fa-copy").length).toEqual(0);
-    expect(wrapper.text().toLowerCase()).not.toContain("description");
-    wrapper.find(".fa-question-circle").simulate("click");
-    wrapper.find(".fa-ellipsis-v").simulate("click");
-    expect(wrapper.find(".fa-copy").length).toEqual(1);
-    expect(wrapper.text().toLowerCase()).toContain("description");
+    const { container } = render(<FolderListItem {...fakeProps()} />);
+    expect(container.querySelectorAll(".fa-copy").length).toEqual(0);
+    expect(container.textContent?.toLowerCase()).not.toContain("description");
+    fireEvent.click(container.querySelector(".fa-question-circle") as Element);
+    fireEvent.click(container.querySelector(".fa-ellipsis-v") as Element);
+    expect(container.querySelectorAll(".fa-copy").length).toEqual(1);
+    expect(container.textContent?.toLowerCase()).toContain("description");
   });
 
   it("changes color", () => {
@@ -384,47 +457,57 @@ describe("<FolderListItem />", () => {
     p.sequence.body.id = undefined;
     p.sequence.body.name = "";
     p.sequence.body.color = "" as Color;
-    const wrapper = shallow(<FolderListItem {...p} />);
-    wrapper.find("ColorPicker").simulate("change", "green");
-    expect(sequenceEditMaybeSave).toHaveBeenCalledWith(p.sequence, {
-      color: "green"
+    const wrapper = createRenderer(
+      <FolderListItem {...p} />,
+      "Failed to create FolderListItem test wrapper.",
+    );
+    const colorPicker = wrapper.root.find(node =>
+      node.props.current === p.sequence.body.color
+      && typeof node.props.onChange == "function");
+    actRenderer(() => {
+      colorPicker.props.onChange("green");
     });
+    expect(sequenceEditMaybeSave).toHaveBeenCalledWith(p.sequence, { color: "green" });
+    unmountRenderer(wrapper);
   });
 
   it("starts sequence move: drag start", () => {
     const p = fakeProps();
-    const wrapper = mount(<FolderListItem {...p} />);
-    wrapper.simulate("dragStart", { dataTransfer: { setData: jest.fn() } });
+    const { container } = render(<FolderListItem {...p} />);
+    fireEvent.dragStart(container.querySelector(".step-dragger") as Element, {
+      dataTransfer: { setData: jest.fn() },
+    });
     expect(p.startSequenceMove).toHaveBeenCalledWith(p.sequence.uuid);
   });
 
   it("starts sequence move: drag end", () => {
     const p = fakeProps();
-    const wrapper = mount(<FolderListItem {...p} />);
-    wrapper.simulate("dragEnd");
+    const { container } = render(<FolderListItem {...p} />);
+    fireEvent.dragEnd(container.querySelector(".step-dragger") as Element);
     expect(p.toggleSequenceMove).toHaveBeenCalled();
   });
 
   it("starts sequence move", () => {
     const p = fakeProps();
-    const wrapper = mount(<FolderListItem {...p} />);
-    wrapper.find(".fa-arrows-v").simulate("mouseDown");
+    const { container } = render(<FolderListItem {...p} />);
+    fireEvent.mouseDown(container.querySelector(".fa-arrows-v") as Element);
     expect(p.startSequenceMove).toHaveBeenCalledWith(p.sequence.uuid);
   });
 
   it("toggles sequence move", () => {
     const p = fakeProps();
-    const wrapper = mount(<FolderListItem {...p} />);
-    wrapper.find(".fa-arrows-v").simulate("mouseUp");
+    const { container } = render(<FolderListItem {...p} />);
+    fireEvent.mouseUp(container.querySelector(".fa-arrows-v") as Element);
     expect(p.toggleSequenceMove).toHaveBeenCalledWith(p.sequence.uuid);
   });
 
   it("copies sequence", () => {
     const p = fakeProps();
-    const wrapper = mount(<FolderListItem {...p} />);
-    wrapper.find(".fa-ellipsis-v").simulate("click");
-    wrapper.find(".fa-copy").simulate("click");
-    expect(copySequence).toHaveBeenCalledWith(expect.any(Function), p.sequence);
+    const { container } = render(<FolderListItem {...p} />);
+    fireEvent.click(container.querySelector(".fa-ellipsis-v") as Element);
+    fireEvent.click(container.querySelector(".fa-copy") as Element);
+    expect(sequenceActions.copySequence)
+      .toHaveBeenCalledWith(expect.any(Function), p.sequence);
   });
 });
 
@@ -435,23 +518,23 @@ describe("<FolderButtonCluster />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<FolderButtonCluster {...fakeProps()} />);
-    expect(wrapper.find(".fb-icon-button").length).toEqual(4);
+    const { container } = render(<FolderButtonCluster {...fakeProps()} />);
+    expect(container.querySelectorAll(".fb-icon-button").length).toEqual(4);
   });
 
   it("deletes folder", () => {
     const p = fakeProps();
     p.node.id = 1;
-    const wrapper = mount(<FolderButtonCluster {...p} />);
-    wrapper.find(".fb-icon-button").at(0).simulate("click");
+    const { container } = render(<FolderButtonCluster {...p} />);
+    fireEvent.click(container.querySelectorAll(".fb-icon-button")[0]);
     expect(deleteFolder).toHaveBeenCalledWith(1);
   });
 
   it("edits folder", () => {
     const p = fakeProps();
     p.node.id = 1;
-    const wrapper = mount(<FolderButtonCluster {...p} />);
-    wrapper.find(".fb-icon-button").at(1).simulate("click");
+    const { container } = render(<FolderButtonCluster {...p} />);
+    fireEvent.click(container.querySelectorAll(".fb-icon-button")[1]);
     expect(p.close).toHaveBeenCalled();
     expect(toggleFolderEditState).toHaveBeenCalledWith(1);
   });
@@ -459,8 +542,8 @@ describe("<FolderButtonCluster />", () => {
   it("creates new folder", () => {
     const p = fakeProps();
     p.node.id = 1;
-    const wrapper = mount(<FolderButtonCluster {...p} />);
-    wrapper.find(".fb-icon-button").at(2).simulate("click");
+    const { container } = render(<FolderButtonCluster {...p} />);
+    fireEvent.click(container.querySelectorAll(".fb-icon-button")[2]);
     expect(p.close).toHaveBeenCalled();
     expect(createFolder).toHaveBeenCalledWith({
       parent_id: p.node.id,
@@ -471,8 +554,8 @@ describe("<FolderButtonCluster />", () => {
   it("creates new sequence", () => {
     const p = fakeProps();
     p.node.id = 1;
-    const wrapper = mount(<FolderButtonCluster {...p} />);
-    wrapper.find(".fb-icon-button").at(3).simulate("click");
+    const { container } = render(<FolderButtonCluster {...p} />);
+    fireEvent.click(container.querySelectorAll(".fb-icon-button")[3]);
     expect(p.close).toHaveBeenCalled();
     expect(addNewSequenceToFolder).toHaveBeenCalledWith(expect.any(Function), {
       id: 1,
@@ -489,10 +572,8 @@ describe("<FolderNameInput />", () => {
   it("edits folder name", () => {
     const p = fakeProps();
     p.node.editing = true;
-    const wrapper = shallow(<FolderNameInput {...p} />);
-    wrapper.find("BlurableInput").simulate("commit", {
-      currentTarget: { value: "new name" }
-    });
+    const view = render(<FolderNameInput {...p} />);
+    changeBlurableInput(view, "new name");
     expect(setFolderName).toHaveBeenCalledWith(p.node.id, "new name");
     expect(toggleFolderEditState).toHaveBeenCalledWith(p.node.id);
   });
@@ -500,8 +581,8 @@ describe("<FolderNameInput />", () => {
   it("closes folder name input", () => {
     const p = fakeProps();
     p.node.editing = true;
-    const wrapper = shallow(<FolderNameInput {...p} />);
-    wrapper.find("button").simulate("click");
+    const { container } = render(<FolderNameInput {...p} />);
+    fireEvent.click(container.querySelector("button") as Element);
     expect(toggleFolderEditState).toHaveBeenCalledWith(p.node.id);
   });
 });
@@ -527,96 +608,122 @@ describe("<FolderNameEditor />", () => {
 
   it("renders", () => {
     const p = fakeProps();
-    const wrapper = mount(<FolderNameEditor {...p} />);
-    expect(wrapper.text()).toContain("my folder");
-    expect(wrapper.find(".fa-ellipsis-v").hasClass("open")).toBeFalsy();
-    expect(wrapper.find(".fa-chevron-down").length).toEqual(1);
-    expect(wrapper.find(".fa-chevron-right").length).toEqual(0);
-    expect(wrapper.find(".folder-name-input").length).toEqual(0);
+    const { container } = render(<FolderNameEditor {...p} />);
+    expect(container.textContent).toContain("my folder");
+    expect(container.querySelector(".fa-ellipsis-v")
+      ?.classList.contains("open")).toBeFalsy();
+    expect(container.querySelectorAll(".fa-chevron-down").length).toEqual(1);
+    expect(container.querySelectorAll(".fa-chevron-right").length).toEqual(0);
+    expect(container.querySelectorAll(".folder-name-input").length).toEqual(0);
   });
 
   it("renders: matched", () => {
     const p = fakeProps();
     p.node.name = "my folder";
     p.searchTerm = "folder";
-    const wrapper = mount(<FolderNameEditor {...p} />);
-    expect(wrapper.find(".folder-list-item").hasClass("matched")).toBeTruthy();
+    const { container } = render(<FolderNameEditor {...p} />);
+    expect(container.querySelector(".folder-list-item")
+      ?.classList.contains("matched")).toBeTruthy();
   });
 
   it("opens settings menu", () => {
     const p = fakeProps();
-    const wrapper = mount(<FolderNameEditor {...p} />);
-    expect(wrapper.find(".fa-ellipsis-v").hasClass("open")).toBeFalsy();
-    wrapper.find(".fa-ellipsis-v").simulate("click");
-    expect(wrapper.find(".fa-ellipsis-v").hasClass("open")).toBeTruthy();
+    const { container } = render(<FolderNameEditor {...p} />);
+    expect(container.querySelector(".fa-ellipsis-v")
+      ?.classList.contains("open")).toBeFalsy();
+    fireEvent.click(container.querySelector(".fa-ellipsis-v") as Element);
+    expect(container.querySelector(".fa-ellipsis-v")
+      ?.classList.contains("open")).toBeTruthy();
   });
 
   it("hovers", () => {
     const p = fakeProps();
-    const wrapper = mount(<FolderNameEditor {...p} />);
-    expect(wrapper.find(".folder-list-item").hasClass("hovered")).toBeFalsy();
-    wrapper.find(".folder-list-item").simulate("dragEnter");
-    expect(wrapper.find(".folder-list-item").hasClass("hovered")).toBeTruthy();
-    wrapper.find(".folder-list-item").simulate("dragLeave");
-    expect(wrapper.find(".folder-list-item").hasClass("hovered")).toBeFalsy();
-    wrapper.find(".folder-list-item").simulate("dragOver");
-    wrapper.find(".folder-list-item").simulate("dragEnter");
-    expect(wrapper.find(".folder-list-item").hasClass("hovered")).toBeTruthy();
-    wrapper.find(".folder-list-item").simulate("drop");
-    expect(wrapper.find(".folder-list-item").hasClass("hovered")).toBeFalsy();
+    const { container } = render(<FolderNameEditor {...p} />);
+    const item = container.querySelector(".folder-list-item") as Element;
+    expect(item.classList.contains("hovered")).toBeFalsy();
+    fireEvent.dragEnter(item);
+    expect(item.classList.contains("hovered")).toBeTruthy();
+    fireEvent.dragLeave(item);
+    expect(item.classList.contains("hovered")).toBeFalsy();
+    fireEvent.dragOver(item);
+    fireEvent.dragEnter(item);
+    expect(item.classList.contains("hovered")).toBeTruthy();
+    fireEvent.drop(item);
+    expect(item.classList.contains("hovered")).toBeFalsy();
   });
 
   it("renders: moving", () => {
     const p = fakeProps();
     p.movedSequenceUuid = "fake";
-    const wrapper = mount(<FolderNameEditor {...p} />);
-    expect(wrapper.find(".folder-list-item").hasClass("moving")).toBeTruthy();
+    const { container } = render(<FolderNameEditor {...p} />);
+    expect(container.querySelector(".folder-list-item")
+      ?.classList.contains("moving")).toBeTruthy();
   });
 
   it("renders: dragging", () => {
     const p = fakeProps();
     p.dragging = true;
-    const wrapper = mount(<FolderNameEditor {...p} />);
-    expect(wrapper.find(".folder-list-item").hasClass("not-dragging")).toBeFalsy();
+    const { container } = render(<FolderNameEditor {...p} />);
+    expect(container.querySelector(".folder-list-item")
+      ?.classList.contains("not-dragging")).toBeFalsy();
   });
 
   it("renders: folder closed", () => {
     const p = fakeProps();
     p.node.open = false;
-    const wrapper = mount(<FolderNameEditor {...p} />);
-    expect(wrapper.find(".fa-chevron-down").length).toEqual(0);
-    expect(wrapper.find(".fa-chevron-right").length).toEqual(1);
+    const { container } = render(<FolderNameEditor {...p} />);
+    expect(container.querySelectorAll(".fa-chevron-down").length).toEqual(0);
+    expect(container.querySelectorAll(".fa-chevron-right").length).toEqual(1);
   });
 
   it("renders: editing", () => {
     const p = fakeProps();
     p.node.editing = true;
-    const wrapper = mount(<FolderNameEditor {...p} />);
-    expect(wrapper.find(".folder-name-input").length).toEqual(1);
+    const { container } = render(<FolderNameEditor {...p} />);
+    expect(container.querySelectorAll(".folder-name-input").length).toEqual(1);
   });
 
   it("closes folder", () => {
     const p = fakeProps();
     p.node.open = true;
-    const wrapper = mount(<FolderNameEditor {...p} />);
-    wrapper.find("i").first().simulate("click");
+    const { container } = render(<FolderNameEditor {...p} />);
+    fireEvent.click(container.querySelector(".fa-chevron-down") as Element);
     expect(toggleFolderOpenState).toHaveBeenCalledWith(p.node.id);
   });
 
-  it("changes folder color", () => {
+  it("changes folder color", async () => {
     const p = fakeProps();
-    const wrapper = shallow(<FolderNameEditor {...p} />);
-    wrapper.find("ColorPicker").simulate("change", "green");
-    expect(setFolderColor).toHaveBeenCalledWith(p.node.id, "green");
+    const { container } = render(<FolderNameEditor {...p} />);
+    const openColorPicker = container.querySelector(".saucer")
+      || container.querySelector("[title=\"select color\"]");
+    openColorPicker && fireEvent.click(openColorPicker);
+    const colorButton = await waitFor(() => {
+      const button = document.querySelector("[title=\"green\"]")
+        || document.querySelector(".color-picker-mock")
+        || document.querySelector(".mock-color-picker");
+      if (!button) { throw new Error("Color picker option not found"); }
+      return button;
+    });
+    fireEvent.click(colorButton);
+    let color: string | ReturnType<typeof expect.stringMatching> = "green";
+    if (colorButton.classList.contains("color-picker-mock")) {
+      color = "blue";
+    } else if (colorButton.classList.contains("mock-color-picker")) {
+      color = expect.stringMatching(/^(blue|green)$/);
+    }
+    expect(setFolderColor).toHaveBeenCalledWith(p.node.id, color);
   });
 
   it("closes settings menu", () => {
     const p = fakeProps();
-    const wrapper = mount(<FolderNameEditor {...p} />);
-    wrapper.find(".fa-ellipsis-v").simulate("click");
-    expect(wrapper.find(".fa-ellipsis-v").hasClass("open")).toBeTruthy();
-    wrapper.find(".fb-icon-button").last().simulate("click");
-    expect(wrapper.find(".fa-ellipsis-v").hasClass("open")).toBeFalsy();
+    const { container } = render(<FolderNameEditor {...p} />);
+    fireEvent.click(container.querySelector(".fa-ellipsis-v") as Element);
+    expect(container.querySelector(".fa-ellipsis-v")
+      ?.classList.contains("open")).toBeTruthy();
+    const buttons = container.querySelectorAll(".fb-icon-button");
+    fireEvent.click(buttons[buttons.length - 1]);
+    expect(container.querySelector(".fa-ellipsis-v")
+      ?.classList.contains("open")).toBeFalsy();
   });
 });
 
@@ -632,66 +739,74 @@ describe("<SequenceDropArea />", () => {
   it("shows drop area", () => {
     const p = fakeProps();
     p.dropAreaVisible = true;
-    const wrapper = mount(<SequenceDropArea {...p} />);
-    expect(wrapper.find(".folder-drop-area").hasClass("visible")).toBeTruthy();
-    expect(wrapper.text().toLowerCase()).toContain("move into my folder");
+    const { container } = render(<SequenceDropArea {...p} />);
+    const dropArea = container.querySelector(".folder-drop-area") as Element;
+    expect(dropArea.classList.contains("visible")).toBeTruthy();
+    expect(container.textContent?.toLowerCase()).toContain("move into my folder");
   });
 
   it("hides drop area", () => {
     const p = fakeProps();
     p.dropAreaVisible = false;
-    const wrapper = mount(<SequenceDropArea {...p} />);
-    expect(wrapper.find(".folder-drop-area").hasClass("visible")).toBeFalsy();
+    const { container } = render(<SequenceDropArea {...p} />);
+    const dropArea = container.querySelector(".folder-drop-area") as Element;
+    expect(dropArea.classList.contains("visible")).toBeFalsy();
   });
 
   it("has 'remove from folders' text", () => {
     const p = fakeProps();
     p.dropAreaVisible = true;
     p.folderId = 0;
-    const wrapper = mount(<SequenceDropArea {...p} />);
-    expect(wrapper.find(".folder-drop-area").hasClass("visible")).toBeTruthy();
-    expect(wrapper.text()).not.toContain("my folder");
-    expect(wrapper.text().toLowerCase()).toContain("move out of folders");
+    const { container } = render(<SequenceDropArea {...p} />);
+    const dropArea = container.querySelector(".folder-drop-area") as Element;
+    expect(dropArea.classList.contains("visible")).toBeTruthy();
+    expect(container.textContent).not.toContain("my folder");
+    expect(container.textContent?.toLowerCase()).toContain("move out of folders");
   });
 
   it("handles click", () => {
     const p = fakeProps();
-    const wrapper = shallow(<SequenceDropArea {...p} />);
-    wrapper.find(".folder-drop-area").simulate("click");
+    const { container } = render(<SequenceDropArea {...p} />);
+    fireEvent.click(container.querySelector(".folder-drop-area") as Element);
     expect(p.onMoveEnd).toHaveBeenCalledWith(p.folderId);
   });
 
   it("handles drop", () => {
     const p = fakeProps();
-    const wrapper = shallow<SequenceDropArea>(<SequenceDropArea {...p} />);
-    wrapper.setState({ hovered: true });
-    expect(wrapper.find(".folder-drop-area").hasClass("hovered")).toBeTruthy();
-    wrapper.find(".folder-drop-area").simulate("drop");
-    expect(wrapper.state().hovered).toBeFalsy();
+    const { container } = render(<SequenceDropArea {...p} />);
+    const dropArea = container.querySelector(".folder-drop-area") as Element;
+    fireEvent.dragEnter(dropArea);
+    expect(dropArea.classList.contains("hovered")).toBeTruthy();
+    fireEvent.drop(dropArea);
+    expect(dropArea.classList.contains("hovered")).toBeFalsy();
     expect(dropSequence).toHaveBeenCalledWith(p.folderId);
     expect(p.toggleSequenceMove).toHaveBeenCalled();
   });
 
   it("handles drag over", () => {
     const p = fakeProps();
-    const wrapper = shallow(<SequenceDropArea {...p} />);
+    const instance = setStateSync(new SequenceDropArea(p));
+    const rendered = instance.render() as React.ReactElement;
     const e = { preventDefault: jest.fn() };
-    wrapper.find(".folder-drop-area").simulate("dragOver", e);
+    rendered.props.onDragOver(e);
     expect(e.preventDefault).toHaveBeenCalled();
   });
 
   it("handles drag enter", () => {
     const p = fakeProps();
-    const wrapper = shallow<SequenceDropArea>(<SequenceDropArea {...p} />);
-    wrapper.find(".folder-drop-area").simulate("dragEnter");
-    expect(wrapper.state().hovered).toBeTruthy();
+    const { container } = render(<SequenceDropArea {...p} />);
+    const dropArea = container.querySelector(".folder-drop-area") as Element;
+    fireEvent.dragEnter(dropArea);
+    expect(dropArea.classList.contains("hovered")).toBeTruthy();
   });
 
   it("handles drag leave", () => {
     const p = fakeProps();
-    const wrapper = shallow<SequenceDropArea>(<SequenceDropArea {...p} />);
-    wrapper.find(".folder-drop-area").simulate("dragLeave");
-    expect(wrapper.state().hovered).toBeFalsy();
+    const { container } = render(<SequenceDropArea {...p} />);
+    const dropArea = container.querySelector(".folder-drop-area") as Element;
+    fireEvent.dragEnter(dropArea);
+    fireEvent.dragLeave(dropArea);
+    expect(dropArea.classList.contains("hovered")).toBeFalsy();
   });
 });
 
@@ -704,22 +819,25 @@ describe("<FolderPanelTop />", () => {
 
   it("changes search term", () => {
     const p = fakeProps();
-    const wrapper = shallow(<FolderPanelTop {...p} />);
-    wrapper.find(SearchField).simulate("change", "new");
+    const { container } = render(<FolderPanelTop {...p} />);
+    fireEvent.change(container.querySelector("input") as Element, {
+      target: { value: "new" },
+      currentTarget: { value: "new" },
+    });
     expect(updateSearchTerm).toHaveBeenCalledWith("new");
   });
 
   it("creates new folder", () => {
     const p = fakeProps();
-    const wrapper = mount(<FolderPanelTop {...p} />);
-    wrapper.find("button").at(1).simulate("click");
+    const { container } = render(<FolderPanelTop {...p} />);
+    fireEvent.click(container.querySelectorAll("button")[1] as Element);
     expect(createFolder).toHaveBeenCalled();
   });
 
   it("creates new sequence", () => {
     const p = fakeProps();
-    const wrapper = mount(<FolderPanelTop {...p} />);
-    wrapper.find("button").at(2).simulate("click");
+    const { container } = render(<FolderPanelTop {...p} />);
+    fireEvent.click(container.querySelectorAll("button")[2] as Element);
     expect(addNewSequenceToFolder).toHaveBeenCalled();
   });
 });

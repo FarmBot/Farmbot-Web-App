@@ -1,20 +1,28 @@
-jest.mock("axios", () => ({
-  get: jest.fn(() => {
-    return Promise.resolve({
-      data: [
-        { package: "farmware0" },
-        { package: "farmware1" },
-      ]
-    });
-  }),
-  post: jest.fn(() => Promise.resolve()),
-}));
-
 import { getFirstPartyFarmwareList, retryFetchPackageName } from "../actions";
 import { Actions } from "../../constants";
 import axios from "axios";
 import { API } from "../../api";
 
+let axiosGetSpy: jest.SpyInstance;
+let axiosPostSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  axiosGetSpy = jest.spyOn(axios, "get")
+    .mockImplementation(() =>
+      Promise.resolve({
+        data: [
+          { package: "farmware0" },
+          { package: "farmware1" },
+        ]
+      }) as never);
+  axiosPostSpy = jest.spyOn(axios, "post")
+    .mockImplementation(() => Promise.resolve({}) as never);
+});
+
+afterEach(() => {
+  axiosGetSpy.mockRestore();
+  axiosPostSpy.mockRestore();
+});
 describe("getFirstPartyFarmwareList()", () => {
   it("sets list", async () => {
     const dispatch = jest.fn();

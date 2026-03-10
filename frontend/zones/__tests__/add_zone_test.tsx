@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import {
   RawAddZone as AddZone, AddZoneProps, mapStateToProps,
 } from "../add_zone";
@@ -11,8 +11,8 @@ describe("<AddZone />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<AddZone {...fakeProps()} />);
-    expect(wrapper.text()).toContain("Add");
+    const { container } = render(<AddZone {...fakeProps()} />);
+    expect(container.textContent).toContain("Add");
   });
 });
 

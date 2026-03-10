@@ -5,7 +5,7 @@ import {
   Cylinder, Html, PerspectiveCamera, useGLTF,
 } from "@react-three/drei";
 import { Canvas, ThreeEvent, useFrame } from "@react-three/fiber";
-import { GLTF } from "three-stdlib";
+import type { GLTF } from "three-stdlib";
 import { BindingTargetDropdown, pinBindingLabel } from "./pin_binding_input_group";
 import { BoxTopBaseProps, PinBindingListItems } from "./interfaces";
 import { setPinBinding, findBinding, triggerBinding } from "./actions";
@@ -115,13 +115,13 @@ interface ButtonOrLedItem {
   on?: boolean;
   position: number;
   color: { on: number, off: number };
-  ref?: React.MutableRefObject<MeshObject | null>;
+  ref?: React.RefObject<MeshObject | null>;
 }
 
 export const Model = (props: BoxTopBaseProps) => {
-  const box = useGLTF(ASSETS.models.box, LIB_DIR) as Box;
-  const btn = useGLTF(ASSETS.models.btn, LIB_DIR) as Btn;
-  const led = useGLTF(ASSETS.models.led, LIB_DIR) as Led;
+  const box = useGLTF(ASSETS.models.box, LIB_DIR) as unknown as Box;
+  const btn = useGLTF(ASSETS.models.btn, LIB_DIR) as unknown as Btn;
+  const led = useGLTF(ASSETS.models.led, LIB_DIR) as unknown as Led;
   const SCALE = 1000;
 
   const syncLed = useRef<MeshObject>(null);
@@ -284,6 +284,7 @@ export const Model = (props: BoxTopBaseProps) => {
       geometry={box.nodes.Electronics_Box_Lid.geometry}
       material={box.materials[ElectronicsBoxMaterial.lid]}
       scale={SCALE} />
+    {/* eslint-disable-next-line react-hooks/refs */}
     {BUTTONS
       .filter((_, i) => btnIndexList(props.firmwareHardware).btns.includes(i))
       .map(button => {
@@ -323,7 +324,7 @@ export const Model = (props: BoxTopBaseProps) => {
             }}>
             <Cylinder ref={ref}
               name={"button-color"}
-              material-color={color}
+              material-color={color.off}
               args={[9, 0, 3.5]}
               position={[-30, btnPosition, Z]}
               rotation={[Math.PI / 2, 0, 0]} />
@@ -357,6 +358,7 @@ export const Model = (props: BoxTopBaseProps) => {
           </Group>
         </Group>;
       })}
+    {/* eslint-disable-next-line react-hooks/refs */}
     {LEDS
       .filter((_, i) => btnIndexList(props.firmwareHardware).leds.includes(i))
       .map(ledIndicator => {
@@ -370,7 +372,7 @@ export const Model = (props: BoxTopBaseProps) => {
             material-color={0xcccccc}
             scale={SCALE} />
           <Cylinder ref={ref} name={"led-color"}
-            material-color={color}
+            material-color={color.off}
             args={[6.75, 6.75, 3]}
             position={[-50, ledPosition, Z]}
             rotation={[Math.PI / 2, 0, 0]} />

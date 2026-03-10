@@ -16,7 +16,7 @@ const parse = (str: string | undefined) => {
 };
 
 /* Check if the image has been rotated according to the calibration value. */
-const isRotated = (annotation: string | undefined) => {
+export const isRotated = (annotation: string | undefined) => {
   return !!(annotation &&
     (annotation.includes("rotated")
       || annotation.includes("marked")

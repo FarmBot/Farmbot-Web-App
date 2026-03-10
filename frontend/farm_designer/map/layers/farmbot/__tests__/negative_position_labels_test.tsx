@@ -1,5 +1,5 @@
 import React from "react";
-import { shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import {
   NegativePositionLabel, NegativePositionLabelProps,
 } from "../negative_position_labels";
@@ -19,16 +19,20 @@ describe("<NegativePositionLabel />", () => {
   it("shows", () => {
     const p = fakeProps();
     p.position.y = -100;
-    const wrapper = shallow(<NegativePositionLabel {...p} />);
-    expect(wrapper.text()).toContain("(1234, -100, ---)");
-    expect(wrapper.find("text").props().visibility).toEqual("visible");
+    const { container } = render(<svg><NegativePositionLabel {...p} /></svg>);
+    const text = container.querySelector("text");
+    if (!text) { throw new Error("Missing label text"); }
+    expect(text.textContent).toContain("(1234, -100, ---)");
+    expect(text.getAttribute("visibility")).toEqual("visible");
   });
 
   it("doesn't show", () => {
     const p = fakeProps();
     p.position.y = 0;
-    const wrapper = shallow(<NegativePositionLabel {...p} />);
-    expect(wrapper.text()).toContain("(1234, 0, ---)");
-    expect(wrapper.find("text").props().visibility).toEqual("hidden");
+    const { container } = render(<svg><NegativePositionLabel {...p} /></svg>);
+    const text = container.querySelector("text");
+    if (!text) { throw new Error("Missing label text"); }
+    expect(text.textContent).toContain("(1234, 0, ---)");
+    expect(text.getAttribute("visibility")).toEqual("hidden");
   });
 });

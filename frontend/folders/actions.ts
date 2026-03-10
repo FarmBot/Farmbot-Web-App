@@ -9,7 +9,7 @@ import { t } from "../i18next_wrapper";
 import { urlFriendly } from "../util";
 import { setActiveSequenceByName } from "../sequences/set_active_sequence_by_name";
 import { stepGet, STEP_DATATRANSFER_IDENTIFIER } from "../draggable/actions";
-import { joinKindAndId } from "../resources/reducer_support";
+import { joinKindAndId } from "../resources/join_kind_and_id";
 import { maybeGetSequence } from "../resources/selectors";
 import { Path } from "../internal_urls";
 import { UnknownAction } from "redux";

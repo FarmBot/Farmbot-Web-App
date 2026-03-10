@@ -65,5 +65,4 @@ export const RawDesignerFarmwareAdd = (props: DesignerFarmwareAddProps) => {
 };
 
 export const DesignerFarmwareAdd = connect(mapStateToProps)(RawDesignerFarmwareAdd);
-// eslint-disable-next-line import/no-default-export
 export default DesignerFarmwareAdd;

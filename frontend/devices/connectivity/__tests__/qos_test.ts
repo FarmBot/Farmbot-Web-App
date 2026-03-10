@@ -12,6 +12,12 @@ import {
 import { range } from "lodash";
 
 describe("QoS helpers", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.useRealTimers();
+    window.logStore = undefined;
+  });
+
   it("calculates latency", () => {
     const report = calculateLatency({
       "a": { kind: "timeout", start: 111, end: 423 },

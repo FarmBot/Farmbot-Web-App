@@ -1,32 +1,42 @@
-jest.mock("../../api/crud", () => ({
-  save: jest.fn(),
-  edit: jest.fn(),
-}));
-
 import { fakeWebAppConfig } from "../../__test_support__/fake_state/resources";
 let mockConfig = fakeWebAppConfig();
-jest.mock("../../resources/getters", () => ({
-  getWebAppConfig: () => mockConfig,
-}));
 
 import {
   toggleWebAppBool, getWebAppConfigValue, setWebAppConfigValue,
 } from "../actions";
 import { BooleanSetting, NumericSetting } from "../../session_keys";
-import { edit, save } from "../../api/crud";
+import * as crud from "../../api/crud";
+import * as getters from "../../resources/getters";
 import { fakeState } from "../../__test_support__/fake_state";
 import { TaggedWebAppConfig } from "farmbot";
 
+let getWebAppConfigSpy: jest.SpyInstance;
+let editSpy: jest.SpyInstance;
+let saveSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  mockConfig = fakeWebAppConfig();
+  getWebAppConfigSpy = jest.spyOn(getters, "getWebAppConfig")
+    .mockImplementation(() => mockConfig);
+  editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  getWebAppConfigSpy.mockRestore();
+  editSpy.mockRestore();
+  saveSpy.mockRestore();
+});
+
 describe("toggleWebAppBool()", () => {
   it("toggles things", () => {
-    mockConfig = fakeWebAppConfig();
     const action = toggleWebAppBool(BooleanSetting.show_first_party_farmware);
     const dispatch = jest.fn();
     action(dispatch, fakeState);
-    expect(edit).toHaveBeenCalledWith(mockConfig, {
+    expect(crud.edit).toHaveBeenCalledWith(mockConfig, {
       show_first_party_farmware: true
     });
-    expect(save).toHaveBeenCalledWith(mockConfig.uuid);
+    expect(crud.save).toHaveBeenCalledWith(mockConfig.uuid);
   });
 
   it("errors when not loaded", () => {
@@ -42,22 +52,19 @@ describe("getWebAppConfigValue()", () => {
   const getValue = getWebAppConfigValue(fakeState);
 
   it("gets a boolean setting value", () => {
-    mockConfig = fakeWebAppConfig();
     expect(getValue(BooleanSetting.show_first_party_farmware)).toEqual(false);
   });
 
   it("gets a numeric setting value", () => {
-    mockConfig = fakeWebAppConfig();
     expect(getValue(NumericSetting.warn_log)).toEqual(3);
   });
 });
 
 describe("setWebAppConfigValue()", () => {
   it("sets a numeric setting value", () => {
-    mockConfig = fakeWebAppConfig();
     setWebAppConfigValue(NumericSetting.fun_log, 2)(jest.fn(), fakeState);
-    expect(edit).toHaveBeenCalledWith(mockConfig, { fun_log: 2 });
-    expect(save).toHaveBeenCalledWith(mockConfig.uuid);
+    expect(crud.edit).toHaveBeenCalledWith(mockConfig, { fun_log: 2 });
+    expect(crud.save).toHaveBeenCalledWith(mockConfig.uuid);
   });
 
   it("fails to set a value", () => {

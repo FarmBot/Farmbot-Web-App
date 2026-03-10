@@ -1,13 +1,30 @@
 import React from "react";
 import { AllSteps, AllStepsProps } from "../all_steps";
-import { shallow } from "enzyme";
+import { createEvent, render, fireEvent } from "@testing-library/react";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import { maybeTagStep, getStepTag } from "../../resources/sequence_tagging";
-import { DropArea } from "../../draggable/drop_area";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { emptyState } from "../../resources/reducer";
+import * as sequenceEditorMiddleActive from "../sequence_editor_middle_active";
+import * as stepTiles from "../step_tiles/index";
+
+let addCommandButtonSpy: jest.SpyInstance;
+let renderCeleryNodeSpy: jest.SpyInstance;
 
 describe("<AllSteps />", () => {
+  beforeEach(() => {
+    addCommandButtonSpy = jest.spyOn(sequenceEditorMiddleActive, "AddCommandButton")
+      .mockImplementation(() => <div className="add-command-button-mock" />);
+    renderCeleryNodeSpy = jest.spyOn(stepTiles, "renderCeleryNode")
+      .mockImplementation((props: { currentStep: { kind: string } }) =>
+        <div className={`${props.currentStep.kind.replace(/_/g, "-")}-step`} />);
+  });
+
+  afterEach(() => {
+    addCommandButtonSpy.mockRestore();
+    renderCeleryNodeSpy.mockRestore();
+  });
+
   const fakeProps = (): AllStepsProps => ({
     sequence: fakeSequence(),
     sequences: [],
@@ -21,8 +38,8 @@ describe("<AllSteps />", () => {
   it("renders empty sequence", () => {
     const p = fakeProps();
     p.sequence.body.body = undefined;
-    const wrapper = shallow(<AllSteps {...p} />);
-    expect(wrapper.html()).toEqual("<div class=\"grid\"></div>");
+    const { container } = render(<AllSteps {...p} />);
+    expect(container.querySelector(".grid")?.innerHTML).toEqual("");
   });
 
   it("renders steps", () => {
@@ -33,9 +50,10 @@ describe("<AllSteps />", () => {
       { kind: "write_pin", args: { pin_number: 0, pin_value: 0, pin_mode: 0 } },
     ];
     p.sequence.body.body.map(step => maybeTagStep(step));
-    const wrapper = shallow(<AllSteps {...p} />);
+    const { container } = render(<AllSteps {...p} />);
+    const html = container.innerHTML;
     ["move-relative-step", "read-pin-step", "write-pin-step"]
-      .map(stepClass => expect(wrapper.html()).toContain(stepClass));
+      .map(stepClass => expect(html).toContain(stepClass));
   });
 
   it("renders read-only steps", () => {
@@ -47,16 +65,21 @@ describe("<AllSteps />", () => {
       { kind: "write_pin", args: { pin_number: 0, pin_value: 0, pin_mode: 0 } },
     ];
     p.sequence.body.body.map(step => maybeTagStep(step));
-    const wrapper = shallow(<AllSteps {...p} />);
-    expect(wrapper.find(".read-only").length).toEqual(3);
+    const { container } = render(<AllSteps {...p} />);
+    expect(container.querySelectorAll(".read-only").length).toEqual(3);
   });
 
   it("calls onDrop", () => {
     const p = fakeProps();
     p.sequence.body.body = [{ kind: "wait", args: { milliseconds: 0 } }];
     p.sequence.body.body.map(step => maybeTagStep(step));
-    const wrapper = shallow(<AllSteps {...p} />);
-    wrapper.find<DropArea>(DropArea).props().callback?.("fake key");
+    const { container } = render(<AllSteps {...p} />);
+    const dropArea = container.querySelector(".drag-drop-area") as Element;
+    const event = createEvent.drop(dropArea);
+    Object.defineProperty(event, "dataTransfer", {
+      value: { getData: () => "fake key" },
+    });
+    fireEvent(dropArea, event);
     expect(p.onDrop).toHaveBeenCalledWith(0, "fake key");
   });
 
@@ -66,8 +89,8 @@ describe("<AllSteps />", () => {
     p.sequence.body.body = [{ kind: "wait", args: { milliseconds: 0 } }];
     p.sequence.body.body.map(step => maybeTagStep(step));
     p.hoveredStep = getStepTag(p.sequence.body.body[0]);
-    const wrapper = shallow(<AllSteps {...p} />);
-    expect(wrapper.html()).toContain("hovered");
+    const { container } = render(<AllSteps {...p} />);
+    expect(container.innerHTML).toContain("hovered");
   });
 
   it("doesn't display hover highlight", () => {
@@ -76,7 +99,7 @@ describe("<AllSteps />", () => {
     p.sequence.body.body = [{ kind: "wait", args: { milliseconds: 0 } }];
     p.sequence.body.body.map(step => maybeTagStep(step));
     p.hoveredStep = getStepTag(p.sequence.body.body[0]);
-    const wrapper = shallow(<AllSteps {...p} />);
-    expect(wrapper.html()).not.toContain("hovered");
+    const { container } = render(<AllSteps {...p} />);
+    expect(container.innerHTML).not.toContain("hovered");
   });
 });

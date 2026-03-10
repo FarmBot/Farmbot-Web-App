@@ -1,33 +1,50 @@
-const util = require("../util/page");
-util.attachToRoot = jest.fn();
-
 import { fakeState } from "../__test_support__/fake_state";
-jest.mock("../redux/store", () => ({
-  store: {
-    dispatch: jest.fn(),
-    getState: fakeState,
-  },
-}));
-
-jest.mock("../settings/dev/dev_support", () => ({
-  DevSettings: {
-    futureFeaturesEnabled: () => false,
-    overriddenFbosVersion: jest.fn(),
-  }
-}));
-
-jest.mock("../config/actions", () => ({ ready: jest.fn() }));
-
 import { attachAppToDom, RootComponent } from "../routes";
-import { attachToRoot } from "../util";
+import * as utilPage from "../util/page";
 import { store } from "../redux/store";
-import { ready } from "../config/actions";
+import * as configActions from "../config/actions";
+import { DevSettings } from "../settings/dev/dev_support";
 
 describe("attachAppToDom()", () => {
+  let originalDispatch: typeof store.dispatch;
+  let originalGetState: typeof store.getState;
+  let dispatchMock: jest.Mock;
+  let attachToRootSpy: jest.SpyInstance;
+  let readySpy: jest.SpyInstance;
+  let futureFeaturesEnabledSpy: jest.SpyInstance;
+  let overriddenFbosVersionSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    dispatchMock = jest.fn();
+    originalDispatch = store.dispatch;
+    originalGetState = store.getState;
+    (store as unknown as { dispatch: jest.Mock }).dispatch = dispatchMock;
+    (store as unknown as { getState: typeof fakeState }).getState = fakeState;
+    attachToRootSpy = jest.spyOn(utilPage, "attachToRoot")
+      .mockImplementation(jest.fn());
+    readySpy = jest.spyOn(configActions, "ready")
+      .mockReturnValue({ type: "READY" });
+    futureFeaturesEnabledSpy = jest.spyOn(DevSettings, "futureFeaturesEnabled")
+      .mockReturnValue(false);
+    overriddenFbosVersionSpy = jest.spyOn(DevSettings, "overriddenFbosVersion")
+      .mockReturnValue(undefined);
+  });
+
+  afterEach(() => {
+    attachToRootSpy.mockRestore();
+    readySpy.mockRestore();
+    futureFeaturesEnabledSpy.mockRestore();
+    overriddenFbosVersionSpy.mockRestore();
+    (store as unknown as { dispatch: typeof store.dispatch }).dispatch =
+      originalDispatch;
+    (store as unknown as { getState: typeof store.getState }).getState =
+      originalGetState;
+  });
+
   it("attaches RootComponent to the DOM", () => {
     attachAppToDom();
-    expect(attachToRoot).toHaveBeenCalledWith(RootComponent, { store });
-    expect(ready).toHaveBeenCalled();
-    expect(store.dispatch).toHaveBeenCalledWith(ready());
+    expect(attachToRootSpy).toHaveBeenCalledWith(RootComponent, { store });
+    expect(readySpy).toHaveBeenCalled();
+    expect(dispatchMock).toHaveBeenCalledWith({ type: "READY" });
   });
 });

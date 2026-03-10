@@ -1,12 +1,5 @@
-jest.mock("../../api/crud", () => ({
-  overwrite: jest.fn(),
-  init: jest.fn(() => ({ payload: { uuid: "uuid" } })),
-  save: jest.fn(),
-  destroy: jest.fn(),
-}));
-
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { act, fireEvent, render } from "@testing-library/react";
 import {
   RawEditCurve as EditCurve,
   mapStateToProps,
@@ -23,71 +16,91 @@ import { fakeCurve, fakePlant } from "../../__test_support__/fake_state/resource
 import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
-import { destroy, overwrite, init, save } from "../../api/crud";
+import * as crud from "../../api/crud";
 import { mockDispatch } from "../../__test_support__/fake_dispatch";
 import { fakeBotSize } from "../../__test_support__/fake_bot_data";
-import { changeBlurableInput } from "../../__test_support__/helpers";
 import { error } from "../../toast/toast";
-import { SpecialStatus } from "farmbot";
+import { SpecialStatus, TaggedCurve } from "farmbot";
 import { Path } from "../../internal_urls";
 
-describe("<EditCurve />", () => {
-  beforeEach(() => {
-    location.pathname = Path.mock(Path.curves(1));
-  });
+let overwriteSpy: jest.SpyInstance;
+let initSpy: jest.SpyInstance;
+let saveSpy: jest.SpyInstance;
+let destroySpy: jest.SpyInstance;
 
-  const fakeProps = (): EditCurveProps => ({
-    dispatch: mockDispatch(),
-    findCurve: () => undefined,
-    sourceFbosConfig: () => ({ value: 0, consistent: true }),
-    botSize: fakeBotSize(),
-    resourceUsage: {},
-    curves: [],
-    plants: [],
-  });
+beforeEach(() => {
+  jest.clearAllMocks();
+  overwriteSpy = jest.spyOn(crud, "overwrite").mockImplementation(jest.fn());
+  initSpy = jest.spyOn(crud, "init")
+    .mockImplementation(() => ({ payload: { uuid: "uuid" } } as never));
+  saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+  destroySpy = jest.spyOn(crud, "destroy").mockImplementation(jest.fn());
+  location.pathname = Path.mock(Path.curves(1));
+});
+
+afterEach(() => {
+  overwriteSpy.mockRestore();
+  initSpy.mockRestore();
+  saveSpy.mockRestore();
+  destroySpy.mockRestore();
+});
+
+describe("<EditCurve />", () => {
+  const fakeProps = (curve: TaggedCurve | undefined): EditCurveProps => {
+    const state = fakeState();
+    curve && (state.resources = buildResourceIndex([curve]));
+    return {
+      dispatch: mockDispatch(jest.fn(), () => state),
+      findCurve: () => curve,
+      sourceFbosConfig: () => ({ value: 0, consistent: true }),
+      botSize: fakeBotSize(),
+      resourceUsage: {},
+      curves: [],
+      plants: [],
+    };
+  };
 
   it("redirects", () => {
     location.pathname = Path.mock(Path.curves("nope"));
-    const wrapper = mount(<EditCurve {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("redirecting");
+    const { container } = render(<EditCurve {...fakeProps(undefined)} />);
+    expect(container.textContent?.toLowerCase()).toContain("redirecting");
     expect(mockNavigate).toHaveBeenCalledWith(Path.curves());
   });
 
   it("doesn't redirect", () => {
     location.pathname = Path.mock(Path.logs());
-    const wrapper = mount(<EditCurve {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("redirecting");
+    const { container } = render(<EditCurve {...fakeProps(undefined)} />);
+    expect(container.textContent?.toLowerCase()).toContain("redirecting");
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 
   it("renders", () => {
-    const p = fakeProps();
-    p.findCurve = () => fakeCurve();
-    const wrapper = mount(<EditCurve {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("fake");
-    expect(wrapper.text().toLowerCase()).toContain("volume");
-    expect(wrapper.text().toLowerCase()).not.toContain("maximum");
+    const p = fakeProps(fakeCurve());
+    const { container } = render(<EditCurve {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("fake");
+    expect(container.textContent?.toLowerCase()).toContain("volume");
+    expect(container.textContent?.toLowerCase()).not.toContain("maximum");
   });
 
   it("renders: data full", () => {
-    const p = fakeProps();
     const curve = fakeCurve();
     curve.body.data = {
       1: 1, 2: 2, 3: 3, 4: 4, 5: 5, 6: 6, 7: 7, 8: 8, 9: 9, 10: 10,
     };
-    p.findCurve = () => curve;
-    const wrapper = mount(<EditCurve {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("maximum");
+    const p = fakeProps(curve);
+    const { container } = render(<EditCurve {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("maximum");
   });
 
   it("adds data", () => {
-    const p = fakeProps();
     const curve = fakeCurve();
     curve.body.data = { 1: 0, 10: 10, 100: 1000 };
-    p.findCurve = () => curve;
-    const wrapper = mount(<EditCurve {...p} />);
-    wrapper.find("circle").last().simulate("click");
-    expect(overwrite).toHaveBeenCalledWith(curve, {
+    const p = fakeProps(curve);
+    const { container } = render(<EditCurve {...p} />);
+    const circles = container.querySelectorAll("circle");
+    const lastCircle = circles[circles.length - 1];
+    lastCircle && fireEvent.click(lastCircle);
+    expect(overwriteSpy).toHaveBeenCalledWith(curve, {
       name: "Fake",
       type: "water",
       data: { 1: 0, 10: 10, 99: 989, 100: 1000 },
@@ -95,115 +108,116 @@ describe("<EditCurve />", () => {
   });
 
   it("saves data", () => {
-    const p = fakeProps();
     const curve = fakeCurve();
     curve.uuid = "Curve.1.1";
     curve.body.data = { 1: 0, 10: 10, 100: 1000 };
     curve.specialStatus = SpecialStatus.DIRTY;
-    p.findCurve = () => curve;
-    const wrapper = mount(<EditCurve {...p} />);
-    wrapper.setState({ uuid: curve.uuid });
-    wrapper.unmount();
-    expect(save).toHaveBeenCalledWith(curve.uuid);
+    const p = fakeProps(curve);
+    const ref = React.createRef<EditCurve>();
+    const view = render(<EditCurve {...p} ref={ref} />);
+    ref.current?.setState({ uuid: curve.uuid });
+    view.unmount();
+    expect(saveSpy).toHaveBeenCalledWith(curve.uuid);
   });
 
   it("doesn't save data: no uuid", () => {
-    const p = fakeProps();
     const curve = fakeCurve();
     curve.uuid = "Curve.1.1";
     curve.body.data = { 1: 0, 10: 10, 100: 1000 };
     curve.specialStatus = SpecialStatus.DIRTY;
-    p.findCurve = () => curve;
-    const wrapper = mount(<EditCurve {...p} />);
-    wrapper.setState({ uuid: undefined });
-    wrapper.unmount();
-    expect(save).not.toHaveBeenCalledWith();
+    const p = fakeProps(curve);
+    const ref = React.createRef<EditCurve>();
+    const view = render(<EditCurve {...p} ref={ref} />);
+    ref.current?.setState({ uuid: undefined });
+    view.unmount();
+    expect(saveSpy).not.toHaveBeenCalledWith();
   });
 
-  it("doesn't save data: no id", () => {
-    const p = fakeProps();
+  it("saves data: no id", () => {
     const curve = fakeCurve();
     curve.uuid = "Curve.0.1";
     curve.body.data = { 1: 0, 10: 10, 100: 1000 };
     curve.specialStatus = SpecialStatus.DIRTY;
-    p.findCurve = () => curve;
-    const wrapper = mount(<EditCurve {...p} />);
-    wrapper.setState({ uuid: curve.uuid });
-    wrapper.unmount();
-    expect(save).not.toHaveBeenCalledWith();
+    const p = fakeProps(curve);
+    const ref = React.createRef<EditCurve>();
+    const view = render(<EditCurve {...p} ref={ref} />);
+    ref.current?.setState({ uuid: curve.uuid });
+    view.unmount();
+    expect(saveSpy).toHaveBeenCalledWith(curve.uuid);
   });
 
   it("doesn't save data: no curve", () => {
-    const p = fakeProps();
     const curve = fakeCurve();
     curve.uuid = "Curve.1.1";
     curve.body.data = { 1: 0, 10: 10, 100: 1000 };
     curve.specialStatus = SpecialStatus.DIRTY;
+    const p = fakeProps(curve);
     p.findCurve = () => undefined;
-    const wrapper = mount(<EditCurve {...p} />);
-    wrapper.setState({ uuid: curve.uuid });
-    wrapper.unmount();
-    expect(save).not.toHaveBeenCalledWith();
+    const ref = React.createRef<EditCurve>();
+    const view = render(<EditCurve {...p} ref={ref} />);
+    ref.current?.setState({ uuid: curve.uuid });
+    view.unmount();
+    expect(saveSpy).not.toHaveBeenCalled();
   });
 
   it("toggles state", () => {
-    const p = fakeProps();
-    p.findCurve = () => fakeCurve();
-    const wrapper = mount<EditCurve>(<EditCurve {...p} />);
-    wrapper.instance().toggle("scale")();
-    expect(wrapper.text().toLowerCase()).toContain("fake");
-    expect(wrapper.text().toLowerCase()).toContain("volume");
+    const p = fakeProps(fakeCurve());
+    const ref = React.createRef<EditCurve>();
+    const { container } = render(<EditCurve {...p} ref={ref} />);
+    ref.current?.toggle("scale")();
+    expect(container.textContent?.toLowerCase()).toContain("fake");
+    expect(container.textContent?.toLowerCase()).toContain("volume");
   });
 
   it("sets hovered state", () => {
-    const p = fakeProps();
-    p.findCurve = () => fakeCurve();
-    const wrapper = mount<EditCurve>(<EditCurve {...p} />);
-    expect(wrapper.state().hovered).toEqual(undefined);
-    wrapper.instance().setHovered("1");
-    expect(wrapper.state().hovered).toEqual("1");
+    const p = fakeProps(fakeCurve());
+    const ref = React.createRef<EditCurve>();
+    render(<EditCurve {...p} ref={ref} />);
+    expect(ref.current?.state.hovered).toEqual(undefined);
+    act(() => ref.current?.setHovered("1"));
+    expect(ref.current?.state.hovered).toEqual("1");
   });
 
   it("sets maxCount state high", () => {
-    const p = fakeProps();
-    p.findCurve = () => fakeCurve();
-    const wrapper = mount<EditCurve>(<EditCurve {...p} />);
-    expect(wrapper.state().maxCount).toEqual(41);
-    wrapper.instance().toggleExpand();
-    expect(wrapper.state().maxCount).toEqual(1000);
+    const p = fakeProps(fakeCurve());
+    const ref = React.createRef<EditCurve>();
+    render(<EditCurve {...p} ref={ref} />);
+    expect(ref.current?.state.maxCount).toEqual(41);
+    act(() => ref.current?.toggleExpand());
+    expect(ref.current?.state.maxCount).toEqual(1000);
   });
 
   it("sets maxCount state low", () => {
-    const p = fakeProps();
-    p.findCurve = () => fakeCurve();
-    const wrapper = mount<EditCurve>(<EditCurve {...p} />);
-    wrapper.setState({ maxCount: 1000 });
-    expect(wrapper.state().maxCount).toEqual(1000);
-    wrapper.instance().toggleExpand();
-    expect(wrapper.state().maxCount).toEqual(41);
+    const p = fakeProps(fakeCurve());
+    const ref = React.createRef<EditCurve>();
+    render(<EditCurve {...p} ref={ref} />);
+    act(() => ref.current?.setState({ maxCount: 1000 }));
+    expect(ref.current?.state.maxCount).toEqual(1000);
+    act(() => ref.current?.toggleExpand());
+    expect(ref.current?.state.maxCount).toEqual(41);
   });
 
   it("sets iconDisplay state", () => {
-    const p = fakeProps();
-    p.findCurve = () => fakeCurve();
-    const wrapper = mount<EditCurve>(<EditCurve {...p} />);
-    expect(wrapper.state().iconDisplay).toEqual(true);
-    wrapper.instance().toggleIconShow();
-    expect(wrapper.state().iconDisplay).toEqual(false);
+    const p = fakeProps(fakeCurve());
+    const ref = React.createRef<EditCurve>();
+    render(<EditCurve {...p} ref={ref} />);
+    expect(ref.current?.state.iconDisplay).toEqual(true);
+    act(() => ref.current?.toggleIconShow());
+    expect(ref.current?.state.iconDisplay).toEqual(false);
   });
 
   it("renders no icons", () => {
-    const p = fakeProps();
-    p.findCurve = () => undefined;
-    const wrapper = mount<EditCurve>(<EditCurve {...p} />);
-    const elWrapper = mount(wrapper.instance().UsingThisCurve());
-    expect(elWrapper.text()).toContain("(0)");
+    const p = fakeProps(undefined);
+    const ref = React.createRef<EditCurve>();
+    render(<EditCurve {...p} ref={ref} />);
+    const { container } = render(<>{ref.current?.UsingThisCurve()}</>);
+    expect(container.textContent).toContain("(0)");
   });
 
   it("renders icons", () => {
-    const p = fakeProps();
     const curve = fakeCurve();
     curve.body.id = 1;
+    const p = fakeProps(curve);
     const plant0 = fakePlant();
     plant0.body.water_curve_id = 1;
     const plant1 = fakePlant();
@@ -211,66 +225,64 @@ describe("<EditCurve />", () => {
     const plant2 = fakePlant();
     plant2.body.water_curve_id = 2;
     p.plants = [plant0, plant1, plant2];
-    p.findCurve = () => curve;
-    const wrapper = mount<EditCurve>(<EditCurve {...p} />);
-    const elWrapper = mount(wrapper.instance().UsingThisCurve());
-    expect(elWrapper.text()).toContain("(2)");
-    expect(elWrapper.find("img").length).toEqual(2);
+    const ref = React.createRef<EditCurve>();
+    render(<EditCurve {...p} ref={ref} />);
+    const { container } = render(<>{ref.current?.UsingThisCurve()}</>);
+    expect(container.textContent).toContain("(2)");
+    expect(container.querySelectorAll("img").length).toEqual(2);
   });
 
   it("hides icons", () => {
-    const p = fakeProps();
     const curve = fakeCurve();
     curve.body.id = 1;
+    const p = fakeProps(curve);
     const plant0 = fakePlant();
     plant0.body.water_curve_id = 1;
     p.plants = [plant0];
-    p.findCurve = () => curve;
-    const wrapper = mount<EditCurve>(<EditCurve {...p} />);
-    wrapper.setState({ iconDisplay: false });
-    const elWrapper = mount(wrapper.instance().UsingThisCurve());
-    expect(elWrapper.text()).toContain("(1)");
-    expect(elWrapper.find("img").length).toEqual(0);
+    const ref = React.createRef<EditCurve>();
+    render(<EditCurve {...p} ref={ref} />);
+    act(() => ref.current?.setState({ iconDisplay: false }));
+    const { container } = render(<>{ref.current?.UsingThisCurve()}</>);
+    expect(container.textContent).toContain("(1)");
+    expect(container.querySelectorAll("img").length).toEqual(0);
   });
 
   it("deletes curve", () => {
-    const p = fakeProps();
     const curve = fakeCurve();
-    p.findCurve = () => curve;
-    const wrapper = mount(<EditCurve {...p} />);
-    wrapper.find(".fa-trash").first().simulate("click");
-    expect(destroy).toHaveBeenCalledWith(curve.uuid);
+    const p = fakeProps(curve);
+    const { container } = render(<EditCurve {...p} />);
+    const deleteButton = container.querySelector(".fa-trash");
+    deleteButton && fireEvent.click(deleteButton);
+    expect(destroySpy).toHaveBeenCalledWith(curve.uuid);
   });
 
   it("handles curve in use", () => {
-    const p = fakeProps();
     const curve = fakeCurve();
-    p.findCurve = () => curve;
+    const p = fakeProps(curve);
     p.resourceUsage = { [curve.uuid]: true };
-    const wrapper = mount(<EditCurve {...p} />);
-    wrapper.find(".fa-trash").first().simulate("click");
-    expect(destroy).not.toHaveBeenCalled();
+    const { container } = render(<EditCurve {...p} />);
+    const deleteButton = container.querySelector(".fa-trash");
+    deleteButton && fireEvent.click(deleteButton);
+    expect(destroySpy).not.toHaveBeenCalled();
     expect(error).toHaveBeenCalledWith("Curve in use.");
   });
 
   it("renders spread", () => {
-    const p = fakeProps();
     const curve = fakeCurve();
     curve.body.type = "spread";
-    p.findCurve = () => curve;
-    const wrapper = mount(<EditCurve {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("fake");
-    expect(wrapper.text().toLowerCase()).toContain("expected spread");
+    const p = fakeProps(curve);
+    const { container } = render(<EditCurve {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("fake");
+    expect(container.textContent?.toLowerCase()).toContain("expected spread");
   });
 
   it("renders height", () => {
-    const p = fakeProps();
     const curve = fakeCurve();
     curve.body.type = "height";
-    p.findCurve = () => curve;
-    const wrapper = mount(<EditCurve {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("fake");
-    expect(wrapper.text().toLowerCase()).toContain("expected height");
+    const p = fakeProps(curve);
+    const { container } = render(<EditCurve {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("fake");
+    expect(container.textContent?.toLowerCase()).toContain("expected height");
   });
 });
 
@@ -285,12 +297,12 @@ describe("copyCurve()", () => {
       jest.fn(() => Promise.resolve()),
       jest.fn(),
     )();
-    expect(init).toHaveBeenCalledWith("Curve", {
+    expect(initSpy).toHaveBeenCalledWith("Curve", {
       ...curve.body,
       name: "Fake copy 2",
       id: undefined,
     });
-    expect(save).toHaveBeenCalled();
+    expect(saveSpy).toHaveBeenCalled();
     expect(navigate).not.toHaveBeenCalled();
   });
 
@@ -300,7 +312,7 @@ describe("copyCurve()", () => {
       .mockImplementationOnce(() => Promise.reject());
     const navigate = jest.fn();
     await copyCurve([], fakeCurve(), navigate)(dispatch, jest.fn())();
-    expect(save).toHaveBeenCalled();
+    expect(saveSpy).toHaveBeenCalled();
     expect(navigate).not.toHaveBeenCalled();
   });
 
@@ -318,12 +330,12 @@ describe("copyCurve()", () => {
       jest.fn(() => Promise.resolve()),
       () => state,
     )();
-    expect(init).toHaveBeenCalledWith("Curve", {
+    expect(initSpy).toHaveBeenCalledWith("Curve", {
       ...curve.body,
       name: "Fake copy 2",
       id: undefined,
     });
-    expect(save).toHaveBeenCalled();
+    expect(saveSpy).toHaveBeenCalled();
     expect(navigate).toHaveBeenCalledWith(Path.curves(1));
   });
 
@@ -341,12 +353,12 @@ describe("copyCurve()", () => {
       jest.fn(() => Promise.resolve()),
       () => state,
     )();
-    expect(init).toHaveBeenCalledWith("Curve", {
+    expect(initSpy).toHaveBeenCalledWith("Curve", {
       ...curve.body,
       name: "Fake copy 2",
       id: undefined,
     });
-    expect(save).toHaveBeenCalled();
+    expect(saveSpy).toHaveBeenCalled();
     expect(navigate).not.toHaveBeenCalled();
   });
 });
@@ -363,21 +375,22 @@ describe("curveDataTableRow()", () => {
     const p = fakeProps();
     p.curve.body.type = "height";
     p.curve.body.data = { 1: 1, 2: 5, 3: 1, 4: 2 };
-    const wrapper = mount(<table><tbody>
+    const { container } = render(<table><tbody>
       {Object.entries(p.curve.body.data).map((x, i) =>
         curveDataTableRow(p)(x, i))}
     </tbody></table>);
-    expect(wrapper.text()).toEqual("1-2+400%3-80%4+100%");
+    expect(container.textContent).toEqual("1-2+400%3-80%4+100%");
   });
 
   it("sets row as active", () => {
     const p = fakeProps();
     p.curve.body.data = { 1: 0, 5: 5 };
-    const wrapper = mount(<table><tbody>
+    const { container } = render(<table><tbody>
       {curveDataTableRow(p)(["3", 3], 0)}
     </tbody></table>);
-    wrapper.find("button").first().simulate("click");
-    expect(overwrite).toHaveBeenCalledWith(p.curve, {
+    const button = container.querySelector("button");
+    button && fireEvent.click(button);
+    expect(overwriteSpy).toHaveBeenCalledWith(p.curve, {
       name: "Fake",
       type: "water",
       data: { 1: 0, 3: 3, 5: 5 },
@@ -388,11 +401,14 @@ describe("curveDataTableRow()", () => {
     const p = fakeProps();
     p.curve.body.type = "height";
     p.curve.body.data = { 1: 0, 5: 5, 10: 1 };
-    const wrapper = mount(<table><tbody>
+    const { container } = render(<table><tbody>
       {curveDataTableRow(p)(["5", 5], 0)}
     </tbody></table>);
-    changeBlurableInput(wrapper, "6", 0);
-    expect(overwrite).toHaveBeenCalledWith(p.curve, {
+    const input = container.querySelector("input");
+    input && fireEvent.focus(input);
+    input && fireEvent.change(input, { target: { value: "6" } });
+    input && fireEvent.blur(input, { target: { value: "6" } });
+    expect(overwriteSpy).toHaveBeenCalledWith(p.curve, {
       name: "Fake",
       type: "height",
       data: { 1: 0, 5: 6, 10: 1 },
@@ -401,22 +417,24 @@ describe("curveDataTableRow()", () => {
 
   it("hovers row", () => {
     const p = fakeProps();
-    const wrapper = mount(<table><tbody>
+    const { container } = render(<table><tbody>
       {curveDataTableRow(p)(["5", 5], 0)}
     </tbody></table>);
-    wrapper.find("tr").first().simulate("mouseEnter");
+    const row = container.querySelector("tr");
+    row && fireEvent.mouseEnter(row);
     expect(p.setHovered).toHaveBeenCalledWith("5");
-    wrapper.find("tr").first().simulate("mouseLeave");
+    row && fireEvent.mouseLeave(row);
     expect(p.setHovered).toHaveBeenCalledWith(undefined);
   });
 
   it("has hover styling", () => {
     const p = fakeProps();
     p.hovered = "5";
-    const wrapper = mount(<table><tbody>
+    const { container } = render(<table><tbody>
       {curveDataTableRow(p)(["5", 5], 0)}
     </tbody></table>);
-    expect(wrapper.find("tr").hasClass("hovered")).toBeTruthy();
+    expect(container.querySelector("tr")?.classList.contains("hovered"))
+      .toBeTruthy();
   });
 });
 
@@ -438,16 +456,16 @@ describe("<ScaleMenu />", () => {
 
   it("changes curve", () => {
     const p = fakeProps();
-    const wrapper = shallow(<ScaleMenu {...p} />);
-    wrapper.find("input").first().simulate("change",
-      { currentTarget: { value: "100" } });
-    wrapper.find("input").first().simulate("change",
-      { currentTarget: { value: "" } });
-    wrapper.find("input").last().simulate("change",
-      { currentTarget: { value: "100" } });
-    wrapper.find("input").last().simulate("change",
-      { currentTarget: { value: "" } });
-    wrapper.find("button").last().simulate("click");
+    const { container } = render(<ScaleMenu {...p} />);
+    const inputs = container.querySelectorAll("input");
+    const maxValueInput = inputs[0];
+    const maxDayInput = inputs[1];
+    maxValueInput && fireEvent.change(maxValueInput, { target: { value: "100" } });
+    maxValueInput && fireEvent.change(maxValueInput, { target: { value: "" } });
+    maxDayInput && fireEvent.change(maxDayInput, { target: { value: "100" } });
+    maxDayInput && fireEvent.change(maxDayInput, { target: { value: "" } });
+    const button = container.querySelector("button");
+    button && fireEvent.click(button);
     expect(p.click).toHaveBeenCalled();
   });
 });
@@ -461,18 +479,17 @@ describe("<TemplatesMenu />", () => {
 
   it("changes curve", () => {
     const p = fakeProps();
-    const wrapper = shallow(<TemplatesMenu {...p} />);
-    wrapper.find("FBSelect").first().simulate("change",
-      { label: "", value: "linear" });
-    wrapper.find("input").first().simulate("change",
-      { currentTarget: { value: "100" } });
-    wrapper.find("input").first().simulate("change",
-      { currentTarget: { value: "" } });
-    wrapper.find("input").last().simulate("change",
-      { currentTarget: { value: "100" } });
-    wrapper.find("input").last().simulate("change",
-      { currentTarget: { value: "" } });
-    wrapper.find("button").last().simulate("click");
+    const { container } = render(<TemplatesMenu {...p} />);
+    const inputs = container.querySelectorAll("input");
+    const maxValueInput = inputs[0];
+    const maxDayInput = inputs[1];
+    maxValueInput && fireEvent.change(maxValueInput, { target: { value: "100" } });
+    maxValueInput && fireEvent.change(maxValueInput, { target: { value: "" } });
+    maxDayInput && fireEvent.change(maxDayInput, { target: { value: "100" } });
+    maxDayInput && fireEvent.change(maxDayInput, { target: { value: "" } });
+    const buttons = container.querySelectorAll("button");
+    const button = buttons[buttons.length - 1];
+    button && fireEvent.click(button);
     expect(p.click).toHaveBeenCalled();
   });
 });

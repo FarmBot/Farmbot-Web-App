@@ -1,0 +1,22 @@
+[test]
+preload = [
+  "./frontend/__test_support__/happydom.ts",
+  "./frontend/__test_support__/bun_test_setup.ts"
+]
+coverageReporter = ["text", "lcov"]
+coverageDir = "coverage_fe"
+coverage = true
+onlyFailures = true
+randomize = true
+coveragePathIgnorePatterns = [
+  "**/__test_support__/**",
+]
+
+[test.reporter]
+dots = true
+
+[env]
+file = false
+
+[install]
+optional = false

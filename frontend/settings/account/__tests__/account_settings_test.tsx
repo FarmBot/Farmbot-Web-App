@@ -1,24 +1,6 @@
-jest.mock("../../../api/crud", () => ({
-  edit: jest.fn(),
-  save: jest.fn(),
-}));
-
-jest.mock("../../../config_storage/actions", () => ({
-  setWebAppConfigValue: jest.fn(),
-  getWebAppConfigValue: () => () => true,
-}));
-
-jest.mock("../request_account_export", () => ({
-  requestAccountExport: jest.fn(),
-}));
-
 let mockDev = false;
-jest.mock("../../../settings/dev/dev_support", () => ({
-  DevSettings: { futureFeaturesEnabled: () => mockDev }
-}));
-
 import React from "react";
-import { shallow } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import {
   AccountSettings, ActivityBeepSetting, ActivityBeepSettingProps,
   LandingPageSetting, LandingPageSettingProps,
@@ -26,18 +8,79 @@ import {
 import { AccountSettingsProps } from "../interfaces";
 import { settingsPanelState } from "../../../__test_support__/panel_state";
 import { fakeUser } from "../../../__test_support__/fake_state/resources";
-import { edit, save } from "../../../api/crud";
+import * as crud from "../../../api/crud";
 import { success } from "../../../toast/toast";
 import { Content } from "../../../constants";
-import { setWebAppConfigValue } from "../../../config_storage/actions";
+import * as configStorageActions from "../../../config_storage/actions";
 import { NumericSetting, StringSetting } from "../../../session_keys";
-import { Slider } from "@blueprintjs/core";
-import { FBSelect, ToggleButton } from "../../../ui";
-import { clickButton } from "../../../__test_support__/helpers";
-import { requestAccountExport } from "../request_account_export";
-import { changeEvent } from "../../../__test_support__/fake_html_events";
+import * as requestAccountExportModule from "../request_account_export";
+import * as devSupport from "../../../settings/dev/dev_support";
+import * as ui from "../../../ui";
+
+let editSpy: jest.SpyInstance;
+let saveSpy: jest.SpyInstance;
+let setWebAppConfigValueSpy: jest.SpyInstance;
+let getWebAppConfigValueSpy: jest.SpyInstance;
+let futureFeaturesEnabledSpy: jest.SpyInstance;
+let blurableInputSpy: jest.SpyInstance;
+let fbSelectSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  mockDev = false;
+  editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+  setWebAppConfigValueSpy = jest.spyOn(configStorageActions, "setWebAppConfigValue")
+    .mockImplementation(jest.fn());
+  getWebAppConfigValueSpy = jest.spyOn(configStorageActions, "getWebAppConfigValue")
+    .mockImplementation(() => () => true);
+  futureFeaturesEnabledSpy = jest.spyOn(devSupport.DevSettings, "futureFeaturesEnabled")
+    .mockImplementation(() => mockDev);
+  blurableInputSpy = jest.spyOn(ui, "BlurableInput")
+    .mockImplementation((props: {
+      name?: string,
+      value?: string | number,
+      type?: string,
+      onCommit: (event: React.FormEvent<HTMLInputElement>) => void,
+    }) =>
+      <input
+        name={props.name}
+        defaultValue={props.value as string | undefined}
+        type={props.type}
+        onBlur={e => props.onCommit(e)}
+        onChange={() => { }} />);
+  fbSelectSpy = jest.spyOn(ui, "FBSelect")
+    .mockImplementation(({ onChange, selectedItem }: {
+      onChange: (item: { label: string, value: string }) => void,
+      selectedItem: { label: string } | undefined,
+    }) =>
+      <button className="mock-fb-select"
+        onClick={() => onChange({ label: "Map", value: "map" })}>
+        {selectedItem?.label}
+      </button>);
+});
+
+afterEach(() => {
+  editSpy.mockRestore();
+  saveSpy.mockRestore();
+  setWebAppConfigValueSpy.mockRestore();
+  getWebAppConfigValueSpy.mockRestore();
+  futureFeaturesEnabledSpy.mockRestore();
+  blurableInputSpy.mockRestore();
+  fbSelectSpy.mockRestore();
+});
 
 describe("<AccountSettings />", () => {
+  let requestAccountExportSpy: jest.SpyInstance;
+  beforeEach(() => {
+    requestAccountExportSpy = jest.spyOn(
+      requestAccountExportModule, "requestAccountExport")
+      .mockImplementation(jest.fn());
+  });
+
+  afterEach(() => {
+    requestAccountExportSpy.mockRestore();
+  });
+
   const fakeProps = (): AccountSettingsProps => ({
     dispatch: jest.fn(),
     settingsPanelState: settingsPanelState(),
@@ -45,44 +88,52 @@ describe("<AccountSettings />", () => {
     getConfigValue: jest.fn(),
   });
 
+  const commitField = (
+    props: AccountSettingsProps, name: string, value: string,
+  ) => {
+    const { container } = render(<AccountSettings {...props} />);
+    const input = container.querySelector(`input[name="${name}"]`);
+    if (!input) { throw new Error(`Expected input for ${name}`); }
+    fireEvent.blur(input, { currentTarget: { value }, target: { value } });
+  };
+
   it("changes name", () => {
     const p = fakeProps();
     p.user.body.name = "";
-    const wrapper = shallow(<AccountSettings {...p} />);
-    wrapper.find("BlurableInput").first().simulate("commit", {
-      currentTarget: { value: "new name" }
-    });
-    expect(edit).toHaveBeenCalledWith(p.user, { name: "new name" });
-    expect(save).toHaveBeenCalledWith(p.user.uuid);
+    p.settingsPanelState.account = true;
+    commitField(p, "userName", "new name");
+    expect(editSpy).toHaveBeenCalledWith(p.user, { name: "new name" });
+    expect(saveSpy).toHaveBeenCalledWith(p.user.uuid);
   });
 
   it("changes email", () => {
     const p = fakeProps();
     p.user.body.email = "";
-    const wrapper = shallow(<AccountSettings {...p} />);
-    wrapper.find("BlurableInput").at(1).simulate("commit", {
-      currentTarget: { value: "new email" }
-    });
-    expect(edit).toHaveBeenCalledWith(p.user, { email: "new email" });
-    expect(save).toHaveBeenCalledWith(p.user.uuid);
+    p.settingsPanelState.account = true;
+    commitField(p, "email", "new email");
+    expect(editSpy).toHaveBeenCalledWith(p.user, { email: "new email" });
+    expect(saveSpy).toHaveBeenCalledWith(p.user.uuid);
     expect(success).toHaveBeenCalledWith(Content.CHECK_EMAIL_TO_CONFIRM);
   });
 
   it("changes language", () => {
     const p = fakeProps();
     p.user.body.language = "";
-    const wrapper = shallow(<AccountSettings {...p} />);
-    wrapper.find("BlurableInput").at(2).simulate("commit", {
-      currentTarget: { value: "new language" }
-    });
-    expect(edit).toHaveBeenCalledWith(p.user, { language: "new language" });
-    expect(save).toHaveBeenCalledWith(p.user.uuid);
+    p.settingsPanelState.account = true;
+    commitField(p, "language", "new language");
+    expect(editSpy).toHaveBeenCalledWith(p.user, { language: "new language" });
+    expect(saveSpy).toHaveBeenCalledWith(p.user.uuid);
   });
 
   it("requests export", () => {
-    const wrapper = shallow(<AccountSettings {...fakeProps()} />);
-    clickButton(wrapper, 0, "export");
-    expect(requestAccountExport).toHaveBeenCalled();
+    const p = fakeProps();
+    p.settingsPanelState.account = true;
+    const { container } = render(<AccountSettings {...p} />);
+    const button = Array.from(container.querySelectorAll("button"))
+      .find(el => el.textContent?.toLowerCase() == "export");
+    if (!button) { throw new Error("Expected export button"); }
+    fireEvent.click(button);
+    expect(requestAccountExportModule.requestAccountExport).toHaveBeenCalled();
   });
 });
 
@@ -92,26 +143,33 @@ describe("<ActivityBeepSetting />", () => {
     dispatch: jest.fn(),
   });
 
+  const getActivityBeepChildren = (props: ActivityBeepSettingProps) => {
+    const wrapper =
+      ActivityBeepSetting(props) as React.ReactElement<{ children?: React.ReactNode }>;
+    const row = wrapper.props.children as React.ReactElement<{ children?: React.ReactNode }>;
+    return React.Children.toArray(row.props.children) as JSX.Element[];
+  };
+
   it("sets setting: toggles off", () => {
-    const wrapper = shallow(<ActivityBeepSetting {...fakeProps()} />);
-    wrapper.find(ToggleButton).props().toggleAction({} as React.MouseEvent);
-    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+    const children = getActivityBeepChildren(fakeProps());
+    children[2]?.props.toggleAction({} as React.MouseEvent);
+    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       NumericSetting.beep_verbosity, 0);
   });
 
   it("sets setting: toggles on", () => {
     const p = fakeProps();
     p.getConfigValue = () => 0;
-    const wrapper = shallow(<ActivityBeepSetting {...p} />);
-    wrapper.find(ToggleButton).props().toggleAction({} as React.MouseEvent);
-    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+    const children = getActivityBeepChildren(p);
+    children[2]?.props.toggleAction({} as React.MouseEvent);
+    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       NumericSetting.beep_verbosity, 1);
   });
 
   it("sets setting: slider", () => {
-    const wrapper = shallow(<ActivityBeepSetting {...fakeProps()} />);
-    wrapper.find(Slider).simulate("change", 2);
-    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+    const children = getActivityBeepChildren(fakeProps());
+    children[3]?.props.onChange(2);
+    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       NumericSetting.beep_verbosity, 2);
   });
 });
@@ -124,20 +182,23 @@ describe("<LandingPageSetting />", () => {
 
   it("changes value", () => {
     const p = fakeProps();
-    const wrapper = shallow(<LandingPageSetting {...p} />);
-    wrapper.find(FBSelect).props().onChange({ label: "", value: "map" });
-    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+    const { container } = render(<LandingPageSetting {...p} />);
+    const button = container.querySelector(".mock-fb-select");
+    if (!button) { throw new Error("Expected landing page select button"); }
+    fireEvent.click(button);
+    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       StringSetting.landing_page, "map");
   });
 
   it("changes value: developer", () => {
     mockDev = true;
     const p = fakeProps();
-    const wrapper = shallow(<LandingPageSetting {...p} />);
-    const e = changeEvent("x");
-    wrapper.find("input").props().onChange?.(e);
-    wrapper.find("input").props().onBlur?.({} as React.FocusEvent);
-    expect(setWebAppConfigValue).toHaveBeenCalledWith(
+    const { container } = render(<LandingPageSetting {...p} />);
+    const input = container.querySelector("input");
+    if (!input) { throw new Error("Expected developer landing page input"); }
+    fireEvent.change(input, { target: { value: "x" } });
+    fireEvent.blur(input);
+    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       StringSetting.landing_page, "x");
   });
 });

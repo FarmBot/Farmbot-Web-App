@@ -1,7 +1,3 @@
-jest.mock("../../toast_errors", () => {
-  return { toastErrors: jest.fn() };
-});
-
 import {
   generalizedError,
   GeneralizedError,
@@ -9,9 +5,19 @@ import {
 } from "../actions";
 import { fakeUser } from "../../__test_support__/fake_state/resources";
 import { Actions } from "../../constants";
-import { toastErrors } from "../../toast_errors";
+import * as toastErrorsModule from "../../toast_errors";
 import { SpecialStatus } from "farmbot";
 
+let toastErrorsSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  toastErrorsSpy = jest.spyOn(toastErrorsModule, "toastErrors")
+    .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  toastErrorsSpy.mockRestore();
+});
 describe("updateOK()", () => {
   it("creates an action", () => {
     const result = saveOK(fakeUser());
@@ -30,7 +36,7 @@ describe("generalizedError()", () => {
     const result = generalizedError(payl);
     expect(result).toBeDefined();
     expect(result.type).toEqual(Actions._RESOURCE_NO);
-    expect(toastErrors).toHaveBeenCalledWith(payl);
+    expect(toastErrorsSpy).toHaveBeenCalledWith(payl);
   });
 
   it("handles bad statuses", () => {

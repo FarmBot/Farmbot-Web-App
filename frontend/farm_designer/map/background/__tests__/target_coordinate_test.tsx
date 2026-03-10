@@ -1,13 +1,12 @@
 import React from "react";
 import { TargetCoordinate, TargetCoordinateProps } from "../target_coordinate";
-import { shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import {
   fakeMapTransformProps,
 } from "../../../../__test_support__/map_transform_props";
 import {
   fakeImage, fakePlant, fakePoint, fakeSensorReading,
 } from "../../../../__test_support__/fake_state/resources";
-import { svgMount } from "../../../../__test_support__/svg_mount";
 import {
   TaggedPlantPointer, TaggedGenericPointer, TaggedImage, TaggedSensorReading,
 } from "farmbot";
@@ -27,21 +26,34 @@ describe("<TargetCoordinate/>", () => {
     zoomLvl: 1,
   });
 
+  const renderTarget = (props: TargetCoordinateProps) =>
+    render(<svg><TargetCoordinate {...props} /></svg>);
+
+  const getRequiredAttribute = (
+    element: Element,
+    attribute: string,
+  ): number => {
+    const value = element.getAttribute(attribute);
+    if (value === undefined) { throw new Error(`Missing attribute: ${attribute}`); }
+    return Number(value);
+  };
+
   it("renders target", () => {
-    const wrapper = shallow(<TargetCoordinate {...fakeProps()} />);
-    const boxProps = wrapper.find("rect").first().props();
-    expect(boxProps.x).toEqual(78);
-    expect(boxProps.y).toEqual(195.6);
-    expect(boxProps.width).toEqual(22);
-    expect(boxProps.height).toEqual(8.8);
-    expect(wrapper.find("use").length).toEqual(8);
+    const { container } = renderTarget(fakeProps());
+    const box = container.querySelector("#target-coordinate-crosshair-segment rect");
+    if (!box) { throw new Error("Missing target crosshair segment"); }
+    expect(getRequiredAttribute(box, "x")).toEqual(78);
+    expect(getRequiredAttribute(box, "y")).toEqual(195.6);
+    expect(getRequiredAttribute(box, "width")).toEqual(22);
+    expect(getRequiredAttribute(box, "height")).toEqual(8.8);
+    expect(container.querySelectorAll("use").length).toEqual(8);
   });
 
   it("doesn't render target", () => {
     const p = fakeProps();
     p.chosenLocation = undefined;
-    const wrapper = shallow(<TargetCoordinate {...p} />);
-    expect(wrapper.html()).not.toContain("use");
+    const { container } = renderTarget(p);
+    expect(container.querySelector("use")).toBeNull();
   });
 
   it.each<[string,
@@ -60,14 +72,14 @@ describe("<TargetCoordinate/>", () => {
     p.hoveredPoint = point;
     p.hoveredSensorReading = sensorReading;
     p.hoveredImage = image;
-    const wrapper = svgMount(<TargetCoordinate {...p} />);
-    expect(wrapper.find("use").length).toEqual(8);
-    expect(wrapper.find("line").length).toEqual(1);
+    const { container } = renderTarget(p);
+    expect(container.querySelectorAll("use").length).toEqual(8);
+    expect(container.querySelectorAll("#target-line").length).toEqual(1);
   });
 
   it("doesn't render target line", () => {
-    const wrapper = svgMount(<TargetCoordinate {...fakeProps()} />);
-    expect(wrapper.find("use").length).toEqual(8);
-    expect(wrapper.find("line").length).toEqual(0);
+    const { container } = renderTarget(fakeProps());
+    expect(container.querySelectorAll("use").length).toEqual(8);
+    expect(container.querySelectorAll("#target-line").length).toEqual(0);
   });
 });

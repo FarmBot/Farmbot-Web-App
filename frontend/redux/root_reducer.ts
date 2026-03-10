@@ -1,7 +1,7 @@
 import { combineReducers } from "redux";
-import { ReduxAction, Reducers } from "./interfaces";
+import type { ReduxAction, Reducers } from "./interfaces";
 import { Session } from "../session";
-import { Everything } from "../interfaces";
+import type { Everything } from "../interfaces";
 import { Actions } from "../constants";
 import { authReducer as auth } from "../auth/reducer";
 import { botReducer as bot } from "../devices/reducer";
@@ -10,14 +10,22 @@ import { draggableReducer as draggable } from "../draggable/reducer";
 import { resourceReducer as resources } from "../resources/reducer";
 import { appReducer as app } from "../reducer";
 
-export const reducers: Reducers = combineReducers({
-  auth,
-  bot,
-  config,
-  draggable,
-  resources,
-  app,
-});
+let cachedReducers: Reducers | undefined;
+
+const getReducers = (): Reducers => {
+  cachedReducers ??= combineReducers({
+    auth,
+    bot,
+    config,
+    draggable,
+    resources,
+    app,
+  });
+  return cachedReducers;
+};
+
+export const reducers: Reducers =
+  (state, action) => getReducers()(state, action);
 
 /** This is the topmost reducer in the application. If you need to preempt a
  * "normal" reducer this is the place to do it */

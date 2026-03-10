@@ -1,16 +1,25 @@
-jest.mock("../../../api/crud", () => ({ refresh: jest.fn() }));
-
 import React from "react";
 import {
   LastSeen, lastSeenNumber, LastSeenNumberProps, LastSeenProps,
 } from "../last_seen_row";
-import { mount } from "enzyme";
+import { fireEvent, render } from "@testing-library/react";
 import { SpecialStatus } from "farmbot";
 import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import { refresh } from "../../../api/crud";
+import * as crud from "../../../api/crud";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { fakeDevice } from "../../../__test_support__/resource_index_builder";
 import { cloneDeep } from "lodash";
+
+let refreshSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  refreshSpy = jest.spyOn(crud, "refresh").mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  refreshSpy.mockRestore();
+});
 
 describe("<LastSeen />", () => {
   const fakeProps = (): LastSeenProps => ({
@@ -23,31 +32,33 @@ describe("<LastSeen />", () => {
   it("blinks when loading", () => {
     const p = fakeProps();
     p.device.specialStatus = SpecialStatus.SAVING;
-    const wrapper = mount(<LastSeen {...p} />);
-    expect(wrapper.text()).toContain("Loading");
+    const { container } = render(<LastSeen {...p} />);
+    expect(container.textContent).toContain("Loading");
   });
 
   it("tells you the device has never been seen", () => {
     const p = fakeProps();
     p.device.body.last_saw_api = undefined;
     p.bot.connectivity.uptime["bot.mqtt"] = undefined;
-    const wrapper = mount(<LastSeen {...p} />);
-    expect(wrapper.text()).toContain("network connectivity issue");
+    const { container } = render(<LastSeen {...p} />);
+    expect(container.textContent).toContain("network connectivity issue");
   });
 
   it("tells you when the device was last seen", () => {
     const p = fakeProps();
     p.device.body.last_saw_api = "2017-08-07T19:40:01.487Z";
     p.bot.connectivity.uptime["bot.mqtt"] = undefined;
-    const wrapper = mount(<LastSeen {...p} />);
-    expect(wrapper.text().toLowerCase())
+    const { container } = render(<LastSeen {...p} />);
+    expect((container.textContent || "").toLowerCase())
       .toEqual("farmbot was last seen august 7, 2017 7:40pm");
   });
 
   it("handles a click", () => {
     const p = fakeProps();
-    const wrapper = mount(<LastSeen {...p} />);
-    wrapper.find("i").simulate("click");
+    const { container } = render(<LastSeen {...p} />);
+    const icon = container.querySelector("i.fa-refresh");
+    expect(icon).toBeTruthy();
+    icon && fireEvent.click(icon);
     expect(refresh).toHaveBeenCalled();
   });
 });

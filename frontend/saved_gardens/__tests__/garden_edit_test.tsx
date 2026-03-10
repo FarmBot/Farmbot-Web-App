@@ -1,32 +1,33 @@
-jest.mock("../actions", () => ({
-  applyGarden: jest.fn(),
-  destroySavedGarden: jest.fn(),
-  openOrCloseGarden: jest.fn(),
-  closeSavedGarden: jest.fn(),
-}));
-
-jest.mock("../../api/crud", () => ({
-  edit: jest.fn(),
-  save: jest.fn(),
-}));
-
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { render, fireEvent } from "@testing-library/react";
 import { RawEditGarden as EditGarden, mapStateToProps } from "../garden_edit";
 import { EditGardenProps } from "../interfaces";
 import {
   fakePlantTemplate, fakeSavedGarden,
 } from "../../__test_support__/fake_state/resources";
-import { clickButton } from "../../__test_support__/helpers";
-import { applyGarden, destroySavedGarden } from "../actions";
+import { clickButton, changeBlurableInput } from "../../__test_support__/helpers";
+import * as savedGardenActions from "../actions";
 import { error } from "../../toast/toast";
-import { edit } from "../../api/crud";
+import * as crud from "../../api/crud";
 import { fakeState } from "../../__test_support__/fake_state";
 import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
 import { Path } from "../../internal_urls";
 import { times } from "lodash";
+
+beforeEach(() => {
+  jest.spyOn(savedGardenActions, "applyGarden")
+    .mockImplementation(jest.fn());
+  jest.spyOn(savedGardenActions, "destroySavedGarden")
+    .mockImplementation(jest.fn());
+  jest.spyOn(savedGardenActions, "openOrCloseGarden")
+    .mockImplementation(jest.fn());
+  jest.spyOn(savedGardenActions, "closeSavedGarden")
+    .mockImplementation(jest.fn());
+  jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  jest.spyOn(crud, "save").mockImplementation(jest.fn());
+});
 
 describe("<EditGarden />", () => {
   const fakeProps = (): EditGardenProps => ({
@@ -40,20 +41,19 @@ describe("<EditGarden />", () => {
   it("edits garden name", () => {
     const p = fakeProps();
     p.savedGarden = fakeSavedGarden();
-    const wrapper = shallow(<EditGarden {...p} />);
-    wrapper.find("BlurableInput").simulate("commit",
-      { currentTarget: { value: "new name" } });
-    expect(edit).toHaveBeenCalledWith(expect.any(Object), { name: "new name" });
+    const { container } = render(<EditGarden {...p} />);
+    changeBlurableInput(container, "new name");
+    expect(crud.edit).toHaveBeenCalledWith(expect.any(Object), { name: "new name" });
   });
 
   it("edits garden notes", () => {
     const p = fakeProps();
     p.savedGarden = fakeSavedGarden();
-    const wrapper = shallow(<EditGarden {...p} />);
-    wrapper.find("textarea").simulate("change",
-      { currentTarget: { value: "notes" } });
-    wrapper.find("textarea").simulate("blur");
-    expect(edit).toHaveBeenCalledWith(expect.any(Object), { notes: "notes" });
+    const { container } = render(<EditGarden {...p} />);
+    fireEvent.change(container.querySelector("textarea") as Element,
+      { currentTarget: { value: "notes" }, target: { value: "notes" } });
+    fireEvent.blur(container.querySelector("textarea") as Element);
+    expect(crud.edit).toHaveBeenCalledWith(expect.any(Object), { notes: "notes" });
   });
 
   it("applies garden", () => {
@@ -61,17 +61,18 @@ describe("<EditGarden />", () => {
     p.savedGarden = fakeSavedGarden();
     p.savedGarden.body.id = 1;
     p.plantPointerCount = 0;
-    const wrapper = mount(<EditGarden {...p} />);
-    clickButton(wrapper, 0, "apply");
-    expect(applyGarden).toHaveBeenCalledWith(expect.any(Function), 1);
+    const { container } = render(<EditGarden {...p} />);
+    clickButton(container, 0, "apply");
+    expect(savedGardenActions.applyGarden)
+      .toHaveBeenCalledWith(expect.any(Function), 1);
   });
 
   it("plants still in garden", () => {
     const p = fakeProps();
     p.savedGarden = fakeSavedGarden();
     p.plantPointerCount = 1;
-    const wrapper = mount(<EditGarden {...p} />);
-    clickButton(wrapper, 0, "apply");
+    const { container } = render(<EditGarden {...p} />);
+    clickButton(container, 0, "apply");
     expect(error).toHaveBeenCalledWith(expect.stringContaining(
       "Please clear current garden first"));
   });
@@ -79,23 +80,23 @@ describe("<EditGarden />", () => {
   it("destroys garden", () => {
     const p = fakeProps();
     p.savedGarden = fakeSavedGarden();
-    const wrapper = mount(<EditGarden {...p} />);
-    wrapper.find(".fa-trash").first().simulate("click");
-    expect(destroySavedGarden).toHaveBeenCalledWith(expect.any(Function),
+    const { container } = render(<EditGarden {...p} />);
+    fireEvent.click(container.querySelector(".fa-trash") as Element);
+    expect(savedGardenActions.destroySavedGarden).toHaveBeenCalledWith(expect.any(Function),
       p.savedGarden.uuid);
   });
 
   it("shows garden not found", () => {
     location.pathname = Path.mock(Path.savedGardens("nope"));
-    const wrapper = mount(<EditGarden {...fakeProps()} />);
-    expect(wrapper.text()).toContain("not found");
+    const { container } = render(<EditGarden {...fakeProps()} />);
+    expect(container.textContent).toContain("not found");
     expect(mockNavigate).toHaveBeenCalledWith(Path.plants());
   });
 
   it("doesn't redirect", () => {
     location.pathname = Path.mock(Path.logs());
-    const wrapper = mount(<EditGarden {...fakeProps()} />);
-    expect(wrapper.text()).toContain("not found");
+    const { container } = render(<EditGarden {...fakeProps()} />);
+    expect(container.textContent).toContain("not found");
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 
@@ -103,8 +104,8 @@ describe("<EditGarden />", () => {
     const p = fakeProps();
     p.savedGarden = fakeSavedGarden();
     p.gardenIsOpen = true;
-    const wrapper = mount(<EditGarden {...p} />);
-    expect(wrapper.text()).toContain("exit");
+    const { container } = render(<EditGarden {...p} />);
+    expect(container.textContent).toContain("exit");
   });
 
   it("renders with missing data", () => {
@@ -112,18 +113,18 @@ describe("<EditGarden />", () => {
     p.savedGarden = fakeSavedGarden();
     p.savedGarden.body.id = undefined;
     p.savedGarden.body.name = undefined;
-    const wrapper = mount(<EditGarden {...p} />);
-    expect(wrapper.text().toLowerCase()).toContain("edit garden");
+    const { container } = render(<EditGarden {...p} />);
+    expect(container.textContent?.toLowerCase()).toContain("edit garden");
   });
 
   it("expands", () => {
     const p = fakeProps();
     p.savedGarden = fakeSavedGarden();
     p.gardenPlants = times(100, fakePlantTemplate);
-    const wrapper = mount(<EditGarden {...p} />);
-    expect(wrapper.find(".group-item-icon").length).toEqual(63);
-    wrapper.find(".more-indicator").simulate("click");
-    expect(wrapper.find(".group-item-icon").length).toEqual(100);
+    const { container } = render(<EditGarden {...p} />);
+    expect(container.querySelectorAll(".group-item-icon").length).toEqual(63);
+    fireEvent.click(container.querySelector(".more-indicator") as Element);
+    expect(container.querySelectorAll(".group-item-icon").length).toEqual(100);
   });
 });
 

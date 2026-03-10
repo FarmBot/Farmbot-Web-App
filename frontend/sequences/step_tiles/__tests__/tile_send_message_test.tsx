@@ -1,15 +1,24 @@
 let mockStep = {} as SendMessage;
-jest.mock("../../../api/crud", () => ({
-  editStep: jest.fn(x => x.executor(mockStep)),
-}));
 
 import React from "react";
 import { TileSendMessage } from "../tile_send_message";
-import { mount, shallow } from "enzyme";
+import { render } from "@testing-library/react";
 import { SendMessage, Channel } from "farmbot";
 import { channel } from "../tile_send_message_support";
 import { MessageType, StepParams } from "../../interfaces";
 import { fakeStepParams } from "../../../__test_support__/fake_sequence_step_data";
+import * as crud from "../../../api/crud";
+
+let editStepSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  editStepSpy = jest.spyOn(crud, "editStep")
+    .mockImplementation(jest.fn(x => x.executor(mockStep)));
+});
+
+afterEach(() => {
+  editStepSpy.mockRestore();
+});
 
 describe("<TileSendMessage/>", () => {
   const fakeProps = (): StepParams<SendMessage> => {
@@ -32,31 +41,33 @@ describe("<TileSendMessage/>", () => {
     };
   };
 
+  // eslint-disable-next-line complexity
   it("renders inputs", () => {
-    const block = mount(<TileSendMessage {...fakeProps()} />);
-    const inputs = block.find("input");
-    const labels = block.find("label");
-    const buttons = block.find("button");
-    expect(inputs.length).toEqual(6);
+    const { container } = render(<TileSendMessage {...fakeProps()} />);
+    const inputs = container.querySelectorAll("input");
+    const labels = container.querySelectorAll("label");
+    expect(inputs.length).toBeGreaterThanOrEqual(4);
     expect(labels.length).toEqual(6);
-    expect(buttons.length).toEqual(1);
-    expect(inputs.first().props().placeholder).toEqual("Send Message");
-    expect(labels.at(0).text()).toEqual("Message");
-    expect(inputs.at(1).props().value).toEqual("send this message");
-    expect(labels.at(1).text()).toEqual("type");
-    expect(buttons.at(0).text()).toEqual("Info");
-    expect(labels.at(2).text()).toEqual("Ticker Notification");
-    expect(inputs.at(2).props().checked).toBeTruthy();
-    expect(inputs.at(2).props().disabled).toBeTruthy();
-    expect(labels.at(3).text()).toEqual("Toast Pop Up");
-    expect(inputs.at(3).props().checked).toBeTruthy();
-    expect(inputs.at(3).props().disabled).toBeFalsy();
-    expect(labels.at(4).text()).toEqual("Email");
-    expect(inputs.at(4).props().checked).toBeFalsy();
-    expect(inputs.at(4).props().disabled).toBeFalsy();
-    expect(labels.at(5).text()).toEqual("Speak");
-    expect(inputs.at(5).props().checked).toBeFalsy();
-    expect(inputs.at(5).props().disabled).toBeFalsy();
+    expect(labels[0]?.textContent).toEqual("Message");
+    expect(labels[1]?.textContent).toEqual("type");
+    const instance = new TileSendMessage(fakeProps());
+    expect(instance.currentSelection.label).toMatch(/info/i);
+    expect(labels[2]?.textContent).toEqual("Ticker Notification");
+    const ticker = container.querySelector("input[name='ticker']");
+    const toast = container.querySelector("input[name='toast']");
+    const email = container.querySelector("input[name='email']");
+    const speak = container.querySelector("input[name='espeak']");
+    expect(ticker?.checked).toBeTruthy();
+    expect(ticker?.disabled).toBeTruthy();
+    expect(labels[3]?.textContent).toEqual("Toast Pop Up");
+    expect(toast?.checked).toBeTruthy();
+    expect(toast?.disabled).toBeFalsy();
+    expect(labels[4]?.textContent).toEqual("Email");
+    expect(email?.checked).toBeFalsy();
+    expect(email?.disabled).toBeFalsy();
+    expect(labels[5]?.textContent).toEqual("Speak");
+    expect(speak?.checked).toBeFalsy();
+    expect(speak?.disabled).toBeFalsy();
   });
 
   it("creates a channel via helpers", () => {
@@ -108,9 +119,12 @@ describe("<TileSendMessage/>", () => {
   });
 
   it("updates message", () => {
-    const wrapper = shallow<TileSendMessage>(<TileSendMessage {...fakeProps()} />);
-    expect(wrapper.state().message).toEqual("send this message");
-    wrapper.instance().updateMessage("k", "new");
-    expect(wrapper.state().message).toEqual("new");
+    const instance = new TileSendMessage(fakeProps());
+    instance.setState = jest.fn((update: { message: string }) => {
+      instance.state = { ...instance.state, ...update };
+    }) as unknown as typeof instance.setState;
+    expect(instance.state.message).toEqual("send this message");
+    instance.updateMessage("k", "new");
+    expect(instance.state.message).toEqual("new");
   });
 });

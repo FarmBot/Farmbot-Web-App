@@ -27,7 +27,6 @@ export const RawLogs = (props: LogsPanelProps) => {
 };
 
 export const Logs = connect(mapStateToProps)(RawLogs);
-// eslint-disable-next-line import/no-default-export
 export default Logs;
 
 export class LogsPanel extends React.Component<LogsProps, Partial<LogsState>> {

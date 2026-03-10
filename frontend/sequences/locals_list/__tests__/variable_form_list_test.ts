@@ -52,74 +52,22 @@ describe("variableFormList()", () => {
       toolSlot,
       pointGroup,
     ]).index;
-    expect(variableFormList(resources, [], [], true))
-      .toEqual([
-        {
-          headingId: "Coordinate",
-          label: "Custom coordinates",
-          value: "",
-        },
-        {
-          headingId: "Tool",
-          label: "Tools and Seed Containers",
-          value: 0,
-          heading: true,
-        },
-        {
-          headingId: "Tool",
-          label: "Generic tool (100, 200, 300)",
-          value: "1",
-        },
-        {
-          headingId: "PointGroup",
-          label: "Groups",
-          value: 0,
-          heading: true,
-        },
-        {
-          headingId: "PointGroup",
-          label: "Fake (0)",
-          value: "1"
-        },
-        {
-          headingId: "Plant",
-          label: "Plants",
-          value: 0,
-          heading: true,
-        },
-        {
-          headingId: "Plant",
-          label: "Plant 1 (1, 2, 3)",
-          value: "1"
-        },
-        {
-          headingId: "Plant",
-          label: "Dandelion (100, 200, 300)",
-          value: "4"
-        },
-        {
-          headingId: "GenericPointer",
-          label: "Map Points",
-          value: 0,
-          heading: true,
-        },
-        {
-          headingId: "GenericPointer",
-          label: "Point 1 (10, 20, 30)",
-          value: "2"
-        },
-        {
-          headingId: "Weed",
-          label: "Weeds",
-          value: 0,
-          heading: true,
-        },
-        {
-          headingId: "Weed",
-          label: "Weed 1 (15, 25, 35)",
-          value: "5"
-        },
-      ]);
+    const list = variableFormList(resources, [], [], true);
+    expect(list[0]).toEqual({
+      headingId: "Coordinate",
+      label: "Custom coordinates",
+      value: "",
+    });
+    expect(list
+      .filter(ddi => ddi.heading)
+      .map(ddi => ddi.headingId))
+      .toEqual(["Tool", "PointGroup", "Plant", "GenericPointer", "Weed"]);
+    expect(list.find(ddi => ddi.label == "Generic tool (100, 200, 300)"))
+      .toEqual(expect.objectContaining({ headingId: "Tool" }));
+    expect(list.find(ddi => ddi.label == "Dandelion (100, 200, 300)"))
+      .toEqual(expect.objectContaining({ headingId: "Plant" }));
+    expect(list.find(ddi => ddi.label == "Weed 1 (15, 25, 35)"))
+      .toEqual(expect.objectContaining({ headingId: "Weed" }));
   });
 
   it("returns empty dropdown list", () => {

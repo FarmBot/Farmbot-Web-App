@@ -1,5 +1,5 @@
 import { ReduxAction } from "./interfaces";
-import { defensiveClone } from "../util";
+import { defensiveClone } from "../util/util";
 import { Actions } from "../constants";
 import { Dictionary } from "farmbot";
 

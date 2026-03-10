@@ -1,9 +1,5 @@
-jest.mock("../../../api/crud", () => ({
-  edit: jest.fn(),
-}));
-
 import React from "react";
-import { shallow } from "enzyme";
+import { render, fireEvent } from "@testing-library/react";
 import {
   License,
   LicenseProps,
@@ -13,11 +9,21 @@ import {
   buildResourceIndex,
 } from "../../../__test_support__/resource_index_builder";
 import { fakeState } from "../../../__test_support__/fake_state";
-import { BooleanSetting } from "../../../session_keys";
-import { edit } from "../../../api/crud";
+import * as crud from "../../../api/crud";
 import {
   fakeSequence, fakeWebAppConfig,
 } from "../../../__test_support__/fake_state/resources";
+import { getWebAppConfig } from "../../../resources/getters";
+
+let editSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  editSpy.mockRestore();
+});
 
 describe("mapStateToProps()", () => {
   it("returns props", () => {
@@ -26,7 +32,7 @@ describe("mapStateToProps()", () => {
     config.body.show_pins = true;
     state.resources = buildResourceIndex([config]);
     const props = mapStateToProps(state);
-    expect(props.getWebAppConfigValue(BooleanSetting.show_pins)).toEqual(true);
+    expect(getWebAppConfig(props.resources)?.body.show_pins).toEqual(true);
   });
 });
 
@@ -43,8 +49,11 @@ describe("<License />", () => {
     p.sequence.body.sequence_version_id = undefined;
     p.sequence.body.forked = false;
     p.sequence.body.sequence_versions = [1];
-    const wrapper = shallow(<License {...p} />);
-    wrapper.find("input").simulate("change", { currentTarget: { value: "c" } });
-    expect(edit).toHaveBeenCalledWith(p.sequence, { copyright: "c" });
+    const { container } = render(<License {...p} />);
+    fireEvent.change(
+      container.querySelector("input") as Element,
+      { target: { value: "c" } },
+    );
+    expect(crud.edit).toHaveBeenCalledWith(p.sequence, { copyright: "c" });
   });
 });

@@ -1,8 +1,7 @@
 import React from "react";
-import { mount } from "enzyme";
+import { fireEvent, render, screen } from "@testing-library/react";
 import { JogControlsGroup } from "../jog_controls_group";
 import { JogControlsGroupProps } from "../interfaces";
-import { clickButton } from "../../../__test_support__/helpers";
 import { Actions } from "../../../constants";
 import { fakeMovementState } from "../../../__test_support__/fake_bot_data";
 
@@ -24,8 +23,8 @@ describe("<JogControlsGroup />", () => {
 
   it("changes step size", () => {
     const p = fakeProps();
-    const wrapper = mount(<JogControlsGroup {...p} />);
-    clickButton(wrapper, 0, "1");
+    render(<JogControlsGroup {...p} />);
+    fireEvent.click(screen.getByText("1"));
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.CHANGE_STEP_SIZE,
       payload: 1

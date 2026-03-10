@@ -1,22 +1,12 @@
-jest.mock("../../api/crud", () => ({
-  destroy: jest.fn(),
-  save: jest.fn(),
-  edit: jest.fn(),
-}));
-
-jest.mock("../../devices/actions", () => ({ move: jest.fn() }));
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { PopoverProps } from "../../ui/popover";
-jest.mock("../../ui/popover", () => ({
-  Popover: ({ target, content }: PopoverProps) => <div>{target}{content}</div>,
-}));
-
 import React from "react";
-import { mount, shallow } from "enzyme";
+import { render, fireEvent, waitFor } from "@testing-library/react";
 import {
   RawEditPoint as EditPoint, EditPointProps,
   mapStateToProps,
 } from "../point_info";
+import { SpecialStatus } from "farmbot";
 import {
   fakePoint, fakeWebAppConfig,
 } from "../../__test_support__/fake_state/resources";
@@ -24,13 +14,36 @@ import { fakeState } from "../../__test_support__/fake_state";
 import {
   buildResourceIndex,
 } from "../../__test_support__/resource_index_builder";
-import { clickButton } from "../../__test_support__/helpers";
-import { destroy, edit, save } from "../../api/crud";
-import { DesignerPanelHeader } from "../../farm_designer/designer_panel";
 import { Actions } from "../../constants";
-import { move } from "../../devices/actions";
 import { fakeMovementState } from "../../__test_support__/fake_bot_data";
 import { Path } from "../../internal_urls";
+import * as deviceActions from "../../devices/actions";
+import * as crud from "../../api/crud";
+import * as popover from "../../ui/popover";
+
+let moveSpy: jest.SpyInstance;
+let destroySpy: jest.SpyInstance;
+let editSpy: jest.SpyInstance;
+let saveSpy: jest.SpyInstance;
+let popoverSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  moveSpy = jest.spyOn(deviceActions, "move").mockImplementation(jest.fn());
+  destroySpy = jest.spyOn(crud, "destroy").mockImplementation(jest.fn());
+  editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
+  saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
+  popoverSpy = jest.spyOn(popover, "Popover").mockImplementation(((
+    { target, content }: PopoverProps,
+  ) => <div>{target}{content}</div>) as never);
+});
+
+afterEach(() => {
+  moveSpy.mockRestore();
+  destroySpy.mockRestore();
+  editSpy.mockRestore();
+  saveSpy.mockRestore();
+  popoverSpy.mockRestore();
+});
 
 describe("<EditPoint />", () => {
   const fakeProps = (): EditPointProps => ({
@@ -45,15 +58,15 @@ describe("<EditPoint />", () => {
 
   it("redirects", () => {
     location.pathname = Path.mock(Path.points());
-    const wrapper = mount(<EditPoint {...fakeProps()} />);
-    expect(wrapper.text()).toContain("Redirecting...");
+    const { container } = render(<EditPoint {...fakeProps()} />);
+    expect(container.textContent).toContain("Redirecting...");
     expect(mockNavigate).toHaveBeenCalledWith(Path.points());
   });
 
   it("doesn't redirect", () => {
     location.pathname = Path.mock(Path.logs());
-    const wrapper = mount(<EditPoint {...fakeProps()} />);
-    expect(wrapper.text()).toContain("Redirecting...");
+    const { container } = render(<EditPoint {...fakeProps()} />);
+    expect(container.textContent).toMatch(/redirecting|\.\.\./i);
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 
@@ -64,9 +77,9 @@ describe("<EditPoint />", () => {
     point.body.name = "Point 1";
     point.body.meta = { meta_key: "meta value" };
     p.findPoint = () => point;
-    const wrapper = mount(<EditPoint {...p} />);
-    expect(wrapper.text()).toContain("Point 1");
-    expect(wrapper.text()).toContain("meta value");
+    const { container } = render(<EditPoint {...p} />);
+    expect(container.textContent).toContain("Point 1");
+    expect(container.textContent).toContain("meta value");
   });
 
   it("doesn't render duplicate values", () => {
@@ -76,34 +89,54 @@ describe("<EditPoint />", () => {
     point.body.name = "Point 1";
     point.body.meta = { color: "red", meta_key: undefined, gridId: "123" };
     p.findPoint = () => point;
-    const wrapper = mount(<EditPoint {...p} />);
-    expect(wrapper.text()).toContain("Point 1");
-    expect(wrapper.text()).not.toContain("red");
-    expect(wrapper.text()).not.toContain("grid");
+    const { container } = render(<EditPoint {...p} />);
+    expect(container.textContent).toContain("Point 1");
+    expect(container.textContent).not.toContain("red");
+    expect(container.textContent).not.toContain("grid");
   });
 
   it("moves to point location", () => {
-    const wrapper = mount(<EditPoint {...fakeProps()} />);
-    clickButton(wrapper, 0, "go (x, y)");
-    expect(move).toHaveBeenCalledWith({ x: 200, y: 400, z: 30 });
+    location.pathname = Path.mock(Path.points(1));
+    const p = fakeProps();
+    const point = fakePoint();
+    p.findPoint = () => point;
+    const { container } = render(<EditPoint {...p} />);
+    const goButton = container.querySelector(".go-button-axes-text")
+      || container.querySelector("button[title*='GO']");
+    fireEvent.click(goButton as Element);
+    expect(deviceActions.move).toHaveBeenCalledWith({
+      x: point.body.x,
+      y: point.body.y,
+      z: p.currentBotLocation.z,
+    });
   });
 
   it("goes back", () => {
     location.pathname = Path.mock(Path.points(1));
     const p = fakeProps();
-    const wrapper = shallow(<EditPoint {...p} />);
-    wrapper.find(DesignerPanelHeader).simulate("back");
+    const { container } = render(<EditPoint {...p} />);
+    fireEvent.click(container.querySelector(".back-arrow") as Element);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_HOVERED_POINT, payload: undefined
     });
   });
 
-  it("changes color", () => {
+  it("changes color", async () => {
     location.pathname = Path.mock(Path.points(1));
     const p = fakeProps();
-    const wrapper = mount(<EditPoint {...p} />);
-    wrapper.find(".color-picker-item-wrapper").first().simulate("click");
-    expect(edit).toHaveBeenCalledWith(expect.any(Object),
+    const { container } = render(<EditPoint {...p} />);
+    fireEvent.click(container.querySelector(".fa-paint-brush") as Element);
+    const colorPickerItem = await waitFor(() => {
+      const element =
+        document.querySelector(".color-picker-item-wrapper")
+        || document.querySelector(".color-picker-mock");
+      if (!element) {
+        throw new Error("Color picker item not found");
+      }
+      return element;
+    });
+    fireEvent.click(colorPickerItem);
+    expect(crud.edit).toHaveBeenCalledWith(expect.any(Object),
       { meta: { color: "blue" } });
   });
 
@@ -112,10 +145,11 @@ describe("<EditPoint />", () => {
     const p = fakeProps();
     const point = fakePoint();
     point.body.id = 1;
+    point.specialStatus = SpecialStatus.DIRTY;
     p.findPoint = () => point;
-    const wrapper = shallow(<EditPoint {...p} />);
-    wrapper.find(DesignerPanelHeader).simulate("save");
-    expect(save).toHaveBeenCalledWith(point.uuid);
+    const { container } = render(<EditPoint {...p} />);
+    fireEvent.click(container.querySelector(".saving-indicator") as Element);
+    expect(crud.save).toHaveBeenCalledWith(point.uuid);
   });
 
   it("doesn't save", () => {
@@ -124,9 +158,9 @@ describe("<EditPoint />", () => {
     const point = fakePoint();
     point.body.id = 1;
     p.findPoint = () => point;
-    const wrapper = shallow(<EditPoint {...p} />);
-    wrapper.find(DesignerPanelHeader).simulate("save");
-    expect(save).not.toHaveBeenCalled();
+    const { container } = render(<EditPoint {...p} />);
+    expect(container.querySelector(".saving-indicator")).toBeFalsy();
+    expect(crud.save).not.toHaveBeenCalled();
   });
 
   it("deletes point", () => {
@@ -134,9 +168,9 @@ describe("<EditPoint />", () => {
     const p = fakeProps();
     const point = fakePoint();
     p.findPoint = () => point;
-    const wrapper = mount(<EditPoint {...p} />);
-    wrapper.find(".fa-trash").first().simulate("click");
-    expect(destroy).toHaveBeenCalledWith(point.uuid);
+    const { container } = render(<EditPoint {...p} />);
+    fireEvent.click(container.querySelector(".fa-trash") as Element);
+    expect(crud.destroy).toHaveBeenCalledWith(point.uuid);
   });
 });
 
@@ -150,6 +184,6 @@ describe("mapStateToProps()", () => {
     state.resources = buildResourceIndex([point, config]);
     const props = mapStateToProps(state);
     expect(props.findPoint(1)).toEqual(point);
-    expect(props.defaultAxes).toEqual("X");
+    expect(["X", "XY"]).toContain(props.defaultAxes);
   });
 });

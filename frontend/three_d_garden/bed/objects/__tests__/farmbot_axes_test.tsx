@@ -1,5 +1,5 @@
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { FarmbotAxes, FarmbotAxesProps } from "../farmbot_axes";
 import { clone } from "lodash";
 import { INITIAL } from "../../../config";
@@ -10,7 +10,7 @@ describe("<FarmbotAxes />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<FarmbotAxes {...fakeProps()} />);
-    expect(wrapper.html()).toContain("extrude");
+    const { container } = render(<FarmbotAxes {...fakeProps()} />);
+    expect(container.innerHTML).toContain("extrude");
   });
 });

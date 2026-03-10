@@ -3,20 +3,12 @@ import {
   fakeToolSlot,
   fakeWeed,
 } from "../../__test_support__/fake_state/resources";
+import * as groupDetail from "../../point_groups/group_detail";
+import * as criteriaApply from "../../point_groups/criteria/apply";
+import * as pointGroupSort from "../../point_groups/point_group_sort";
 
 let mockGroup: TaggedPointGroup | undefined = fakePointGroup();
-jest.mock("../../point_groups/group_detail", () => ({
-  findGroupFromUrl: () => mockGroup,
-}));
-
 let mockGroupPoints = [fakePlant(), fakeToolSlot(), fakePoint(), fakeWeed()];
-jest.mock("../../point_groups/criteria/apply", () => ({
-  pointsSelectedByGroup: () => mockGroupPoints,
-}));
-
-jest.mock("../../point_groups/point_group_sort", () => ({
-  sortGroupBy: jest.fn((_method, pts) => pts),
-}));
 
 import React from "react";
 import { render } from "@testing-library/react";
@@ -29,7 +21,16 @@ import {
 import { INITIAL } from "../config";
 import { clone } from "lodash";
 import { TaggedPointGroup } from "farmbot";
-import { sortGroupBy } from "../../point_groups/point_group_sort";
+let sortGroupBySpy: jest.SpyInstance;
+
+beforeEach(() => {
+  jest.spyOn(groupDetail, "findGroupFromUrl").mockImplementation(() => mockGroup);
+  jest.spyOn(criteriaApply, "pointsSelectedByGroup")
+    .mockImplementation(() => mockGroupPoints);
+  sortGroupBySpy = jest.spyOn(pointGroupSort, "sortGroupBy")
+    .mockImplementation(((_method, pts) => pts) as typeof pointGroupSort.sortGroupBy);
+});
+
 
 describe("<GroupOrderVisual />", () => {
   const fakeProps = (): GroupOrderVisualProps => ({
@@ -48,7 +49,7 @@ describe("<GroupOrderVisual />", () => {
     p.tryGroupSortType = undefined;
     const { container } = render(<GroupOrderVisual {...p} />);
     expect(container).toContainHTML("group-order");
-    expect(sortGroupBy).toHaveBeenCalledWith("random", mockGroupPoints);
+    expect(sortGroupBySpy).toHaveBeenCalledWith("random", mockGroupPoints);
   });
 
   it("renders order visual: sort preview", () => {
@@ -59,7 +60,7 @@ describe("<GroupOrderVisual />", () => {
     p.tryGroupSortType = "nn";
     const { container } = render(<GroupOrderVisual {...p} />);
     expect(container).toContainHTML("group-order");
-    expect(sortGroupBy).toHaveBeenCalledWith("nn", mockGroupPoints);
+    expect(sortGroupBySpy).toHaveBeenCalledWith("nn", mockGroupPoints);
   });
 
   it("doesn't render order visual when no group is found", () => {

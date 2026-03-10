@@ -1,18 +1,29 @@
-jest.mock("../../default_values", () => ({
-  getModifiedClassNameSpecifyModified: (x: boolean) => x ? "modified" : "",
-}));
-
 import React from "react";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { GantryHeight, SafeHeight, SoilHeight } from "../z_height_inputs";
 import { ZHeightInputProps } from "../interfaces";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { FirmwareHardware } from "farmbot";
+import { cloneDeep } from "lodash";
+import * as defaultValues from "../../default_values";
+
+let modifiedClassNameSpy: jest.SpyInstance;
 
 describe("<GantryHeight />", () => {
-  const fakeProps = (): ZHeightInputProps => ({
-    sourceFbosConfig: x =>
-      ({ value: bot.hardware.configuration[x], consistent: true }),
+  beforeEach(() => {
+    modifiedClassNameSpy =
+      jest.spyOn(defaultValues, "getModifiedClassNameSpecifyModified")
+        .mockImplementation((x: boolean) => x ? "modified" : "");
+  });
+
+  afterEach(() => {
+    modifiedClassNameSpy.mockRestore();
+  });
+
+  const fakeProps = (
+    configuration = cloneDeep(bot.hardware.configuration),
+  ): ZHeightInputProps => ({
+    sourceFbosConfig: x => ({ value: configuration[x], consistent: true }),
     dispatch: jest.fn(),
   });
 
@@ -20,19 +31,23 @@ describe("<GantryHeight />", () => {
     ["arduino", 120],
     ["express_k10", 140],
   ])("renders: %s", (firmwareHardware, value) => {
-    bot.hardware.configuration.firmware_hardware = firmwareHardware;
-    bot.hardware.configuration.gantry_height = value;
-    const wrapper = mount(<GantryHeight {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("gantry height");
-    expect(wrapper.find(".input").hasClass("modified")).toBeFalsy();
+    modifiedClassNameSpy.mockClear();
+    const configuration = cloneDeep(bot.hardware.configuration);
+    configuration.firmware_hardware = firmwareHardware;
+    configuration.gantry_height = value;
+    const { container } = render(<GantryHeight {...fakeProps(configuration)} />);
+    expect((container.textContent || "").toLowerCase()).toContain("gantry height");
+    expect(modifiedClassNameSpy).toHaveBeenCalledWith(false);
   });
 
   it("renders: modified", () => {
-    bot.hardware.configuration.firmware_hardware = "arduino";
-    bot.hardware.configuration.gantry_height = 100;
-    const wrapper = mount(<GantryHeight {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("gantry height");
-    expect(wrapper.find(".input").hasClass("modified")).toBeTruthy();
+    modifiedClassNameSpy.mockClear();
+    const configuration = cloneDeep(bot.hardware.configuration);
+    configuration.firmware_hardware = "arduino";
+    configuration.gantry_height = 100;
+    const { container } = render(<GantryHeight {...fakeProps(configuration)} />);
+    expect((container.textContent || "").toLowerCase()).toContain("gantry height");
+    expect(modifiedClassNameSpy).toHaveBeenCalledWith(true);
   });
 });
 
@@ -43,8 +58,8 @@ describe("<SafeHeight />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<SafeHeight {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("safe height");
+    const { container } = render(<SafeHeight {...fakeProps()} />);
+    expect((container.textContent || "").toLowerCase()).toContain("safe height");
   });
 });
 
@@ -55,7 +70,7 @@ describe("<SoilHeight />", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<SoilHeight {...fakeProps()} />);
-    expect(wrapper.text().toLowerCase()).toContain("soil height");
+    const { container } = render(<SoilHeight {...fakeProps()} />);
+    expect((container.textContent || "").toLowerCase()).toContain("soil height");
   });
 });

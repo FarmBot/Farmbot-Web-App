@@ -59,43 +59,46 @@ interface WeedBaseProps {
 }
 
 export const WeedBase = (props: WeedBaseProps) => {
-  const { config } = props;
-  const weedSize = props.radius == 0 ? 50 : props.radius;
+  const {
+    pointName, position, onClick, color, radius, alpha, config,
+    radiusRef, billboardRef, imageRef,
+  } = props;
+  const weedSize = radius == 0 ? 50 : radius;
   const iconSize = weedSize * WEED_IMG_SIZE_FRACTION;
   return <Group
-    name={"weed-" + props.pointName}
-    position={props.position
+    name={"weed-" + pointName}
+    position={position
       ? [
-        threeSpace(props.position.x, config.bedLengthOuter) + config.bedXOffset,
-        threeSpace(props.position.y, config.bedWidthOuter) + config.bedYOffset,
-        zeroFunc(config).z + props.position.z,
+        threeSpace(position.x, config.bedLengthOuter) + config.bedXOffset,
+        threeSpace(position.y, config.bedWidthOuter) + config.bedYOffset,
+        zeroFunc(config).z + position.z,
       ]
       : [0, 0, 0]}
-    onClick={props.onClick}>
+    onClick={onClick}>
     <Billboard
-      ref={props.billboardRef}
+      ref={billboardRef}
       follow={true}
       position={[0, 0, iconSize / 2]}>
       <Image
-        ref={props.imageRef}
+        ref={imageRef}
         renderOrder={RenderOrder.weedImages}
         url={ASSETS.other.weed}
         scale={iconSize}
         transparent={true}
-        opacity={1 * props.alpha}
+        opacity={1 * alpha}
         position={[0, 0, 0]} />
     </Billboard>
     <Sphere
-      ref={props.radiusRef}
+      ref={radiusRef}
       scale={weedSize}
       renderOrder={RenderOrder.weedSpheres}
       args={[1, 32, 32]}
       position={[0, 0, iconSize / 2]}>
       <MeshPhongMaterial
-        color={props.color}
+        color={color}
         depthWrite={false}
         transparent={true}
-        opacity={0.5 * props.alpha} />
+        opacity={0.5 * alpha} />
     </Sphere>
   </Group>;
 };

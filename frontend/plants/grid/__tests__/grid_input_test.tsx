@@ -1,6 +1,6 @@
 import React from "react";
 import { GridInput, InputCell } from "../grid_input";
-import { mount, shallow } from "enzyme";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { GridInputProps, InputCellProps, PlantGridData } from "../interfaces";
 
 const testGridInputs = (): PlantGridData => ({
@@ -24,30 +24,31 @@ describe("<GridInput/>", () => {
   });
 
   it("renders", () => {
-    const wrapper = mount(<GridInput {...fakeProps()} />);
-    ["XYStart", "# of plants", "Spacing (MM)"]
-      .map(string => expect(wrapper.text()).toContain(string));
+    const { container } = render(<GridInput {...fakeProps()} />);
+    expect(container.textContent).toContain("XYStart");
+    expect(container.textContent).toContain("# of plants");
+    expect(container.textContent).toContain("Spacing (MM)");
   });
 
   it("renders for points", () => {
     const p = fakeProps();
     p.itemType = "points";
-    const wrapper = mount(<GridInput {...p} />);
-    expect(wrapper.text()).toContain("# of points");
+    render(<GridInput {...p} />);
+    expect(screen.getByText("# of points")).toBeInTheDocument();
   });
 
   it("uses current location", () => {
     const p = fakeProps();
     p.botPosition = { x: 1, y: 2, z: 3 };
-    const wrapper = mount(<GridInput {...p} />);
-    wrapper.find("button").first().simulate("click");
+    render(<GridInput {...p} />);
+    fireEvent.click(screen.getByRole("button"));
     expect(p.onUseCurrentPosition).toHaveBeenCalledWith({ x: 1, y: 2, z: 3 });
   });
 
   it("doesn't use current location", () => {
     const p = fakeProps();
-    const wrapper = mount(<GridInput {...p} />);
-    wrapper.find("button").first().simulate("click");
+    render(<GridInput {...p} />);
+    fireEvent.click(screen.getByRole("button"));
     expect(p.onChange).not.toHaveBeenCalled();
   });
 });
@@ -63,40 +64,38 @@ describe("<InputCell/>", () => {
 
   it("calls onChange", () => {
     const p = fakeProps();
-    const wrapper = shallow(<InputCell {...p} />);
-    wrapper.find("input").first().simulate("change", {
-      currentTarget: { value: "6" }
-    });
+    render(<InputCell {...p} />);
+    const input = screen.getByRole("spinbutton");
+    fireEvent.change(input, { target: { value: "6" } });
     expect(p.onChange).not.toHaveBeenCalled();
-    expect(wrapper.find("input").props().value).toEqual("6");
+    expect(input.value).toEqual("6");
   });
 
   it("calls onChange with no value", () => {
     const p = fakeProps();
-    const wrapper = shallow(<InputCell {...p} />);
-    wrapper.find("input").first().simulate("change", {
-      currentTarget: { value: "" }
-    });
+    render(<InputCell {...p} />);
+    const input = screen.getByRole("spinbutton");
+    fireEvent.change(input, { target: { value: "" } });
     expect(p.onChange).not.toHaveBeenCalled();
-    expect(wrapper.find("input").props().value).toEqual("");
+    expect(input.value).toEqual("");
   });
 
   it("calls onBlur", () => {
     const p = fakeProps();
-    const wrapper = shallow(<InputCell {...p} />);
-    wrapper.find("input").first().simulate("blur");
+    render(<InputCell {...p} />);
+    const input = screen.getByRole("spinbutton");
+    fireEvent.blur(input);
     expect(p.onChange).toHaveBeenCalledWith(p.gridKey, 2);
-    expect(wrapper.find("input").props().value).toEqual("2");
+    expect(input.value).toEqual("2");
   });
 
   it("calls onBlur with no value", () => {
     const p = fakeProps();
-    const wrapper = shallow(<InputCell {...p} />);
-    wrapper.find("input").first().simulate("change", {
-      currentTarget: { value: "" }
-    });
-    expect(wrapper.find("input").props().value).toEqual("");
-    wrapper.find("input").first().simulate("blur");
-    expect(wrapper.find("input").props().value).toEqual("2");
+    render(<InputCell {...p} />);
+    const input = screen.getByRole("spinbutton");
+    fireEvent.change(input, { target: { value: "" } });
+    expect(input.value).toEqual("");
+    fireEvent.blur(input);
+    expect(input.value).toEqual("2");
   });
 });

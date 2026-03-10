@@ -8,17 +8,32 @@ import {
 let mockFirmwareConfig = fakeFirmwareConfig();
 let mockWebAppConfig = fakeWebAppConfig();
 let mockFbosConfig: TaggedFbosConfig | undefined = fakeFbosConfig();
-jest.mock("../../../resources/getters", () => ({
-  getFirmwareConfig: () => mockFirmwareConfig,
-  getWebAppConfig: () => mockWebAppConfig,
-  getFbosConfig: () => mockFbosConfig,
-}));
 
 import {
   getDefaultAxisOrder,
   getGardenSize,
   getSafeZ,
 } from "../stubs";
+import * as getters from "../../../resources/getters";
+
+let getFirmwareConfigSpy: jest.SpyInstance;
+let getWebAppConfigSpy: jest.SpyInstance;
+let getFbosConfigSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  getFirmwareConfigSpy = jest.spyOn(getters, "getFirmwareConfig")
+    .mockImplementation(() => mockFirmwareConfig);
+  getWebAppConfigSpy = jest.spyOn(getters, "getWebAppConfig")
+    .mockImplementation(() => mockWebAppConfig);
+  getFbosConfigSpy = jest.spyOn(getters, "getFbosConfig")
+    .mockImplementation(() => mockFbosConfig);
+});
+
+afterEach(() => {
+  getFirmwareConfigSpy.mockRestore();
+  getWebAppConfigSpy.mockRestore();
+  getFbosConfigSpy.mockRestore();
+});
 
 describe("getGardenSize()", () => {
   it("gets garden size: axis lengths", () => {

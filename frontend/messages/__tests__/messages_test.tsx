@@ -1,6 +1,6 @@
 import React from "react";
 import { RawMessagesPanel as MessagesPanel } from "../messages";
-import { mount } from "enzyme";
+import { render } from "@testing-library/react";
 import { MessagesProps } from "../interfaces";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 
@@ -14,8 +14,8 @@ describe("<MessagesPanel />", () => {
   });
 
   it("renders page", () => {
-    const wrapper = mount(<MessagesPanel {...fakeProps()} />);
-    expect(wrapper.text()).toContain("No messages");
+    const { container } = render(<MessagesPanel {...fakeProps()} />);
+    expect(container.textContent).toContain("No messages");
   });
 
   it("renders content", () => {
@@ -26,7 +26,7 @@ describe("<MessagesPanel />", () => {
       priority: 100,
       slug: "slug",
     }];
-    const wrapper = mount(<MessagesPanel {...p} />);
-    expect(wrapper.text()).toContain("No more messages");
+    const { container } = render(<MessagesPanel {...p} />);
+    expect(container.textContent).toContain("No more messages");
   });
 });

@@ -1,14 +1,52 @@
-jest.mock("../../../devices/actions", () => ({ updateMCU: jest.fn() }));
-
 import React from "react";
 import { McuInputBox } from "../mcu_input_box";
-import { shallow, mount } from "enzyme";
+import { render, screen } from "@testing-library/react";
 import { McuInputBoxProps } from "../interfaces";
 import { bot } from "../../../__test_support__/fake_state/bot";
-import { updateMCU } from "../../../devices/actions";
+import * as deviceActions from "../../../devices/actions";
 import { warning } from "../../../toast/toast";
-import { SettingStatusIndicator } from "../setting_status_indicator";
-import { BlurableInput } from "../../../ui";
+import * as ui from "../../../ui";
+import * as statusIndicator from "../setting_status_indicator";
+
+const settingStatusIndicatorMock = jest.fn((_: unknown) => <div />);
+const blurableInputMock = jest.fn((props: {
+  value?: string,
+  onCommit: (e: React.SyntheticEvent<HTMLInputElement>) => void,
+  min?: number,
+  max?: number,
+  error?: string,
+}) =>
+  <div>
+    <input
+      data-testid="mcu-input"
+      readOnly={true}
+      value={props.value || ""}
+      min={props.min}
+      max={props.max} />
+    {props.error && <div className="error">{props.error}</div>}
+  </div>,
+);
+
+let updateMCUSpy: jest.SpyInstance;
+let blurableInputSpy: jest.SpyInstance;
+let settingStatusIndicatorSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  blurableInputMock.mockClear();
+  settingStatusIndicatorMock.mockClear();
+  updateMCUSpy = jest.spyOn(deviceActions, "updateMCU")
+    .mockImplementation(jest.fn());
+  blurableInputSpy = jest.spyOn(ui, "BlurableInput")
+    .mockImplementation((props: unknown) => blurableInputMock(props as never));
+  settingStatusIndicatorSpy = jest.spyOn(statusIndicator, "SettingStatusIndicator")
+    .mockImplementation((props: unknown) => settingStatusIndicatorMock(props));
+});
+
+afterEach(() => {
+  updateMCUSpy.mockRestore();
+  blurableInputSpy.mockRestore();
+  settingStatusIndicatorSpy.mockRestore();
+});
 
 describe("McuInputBox", () => {
   const fakeProps = (): McuInputBoxProps => ({
@@ -20,11 +58,14 @@ describe("McuInputBox", () => {
   });
 
   it("renders inconsistency", () => {
+    settingStatusIndicatorMock.mockClear();
     const p = fakeProps();
     p.sourceFwConfig = x =>
       ({ value: bot.hardware.mcu_params[x], consistent: false });
-    const wrapper = shallow(<McuInputBox {...p} />);
-    expect(wrapper.find(SettingStatusIndicator).props().isSyncing).toBeTruthy();
+    render(<McuInputBox {...p} />);
+    const props = settingStatusIndicatorMock.mock.calls[0]?.[0] as
+      { isSyncing: boolean };
+    expect(props.isSyncing).toBeTruthy();
   });
 
   it("clamps negative numbers", () => {
@@ -52,82 +93,105 @@ describe("McuInputBox", () => {
   });
 
   it("handles float", () => {
+    blurableInputMock.mockClear();
     const p = fakeProps();
     p.float = true;
-    const wrapper = shallow(<McuInputBox {...p} />);
-    wrapper.find("BlurableInput").simulate("commit",
-      { currentTarget: { value: "5.5" } });
-    expect(updateMCU).toHaveBeenCalledWith("encoder_enabled_x", "5.5");
+    render(<McuInputBox {...p} />);
+    const props = blurableInputMock.mock.calls[0]?.[0] as {
+      onCommit: (e: React.SyntheticEvent<HTMLInputElement>) => void,
+    };
+    props.onCommit({ currentTarget: { value: "5.5" } } as never);
+    expect(updateMCUSpy).toHaveBeenCalledWith("encoder_enabled_x", "5.5");
   });
 
   it("handles int", () => {
+    blurableInputMock.mockClear();
     const p = fakeProps();
     p.float = false;
-    const wrapper = shallow(<McuInputBox {...p} />);
-    wrapper.find("BlurableInput").simulate("commit",
-      { currentTarget: { value: "5.5" } });
-    expect(updateMCU).toHaveBeenCalledWith("encoder_enabled_x", "5");
+    render(<McuInputBox {...p} />);
+    const props = blurableInputMock.mock.calls[0]?.[0] as {
+      onCommit: (e: React.SyntheticEvent<HTMLInputElement>) => void,
+    };
+    props.onCommit({ currentTarget: { value: "5.5" } } as never);
+    expect(updateMCUSpy).toHaveBeenCalledWith("encoder_enabled_x", "5");
   });
 
   it("scales values", () => {
+    blurableInputMock.mockClear();
     const p = fakeProps();
     p.scale = 10;
     bot.hardware.mcu_params.encoder_enabled_x = 7;
-    const wrapper = shallow(<McuInputBox {...p} />);
-    expect(wrapper.find(BlurableInput).props().value).toEqual("0.7");
-    wrapper.find("BlurableInput").simulate("commit",
-      { currentTarget: { value: "5.5" } });
-    expect(updateMCU).toHaveBeenCalledWith("encoder_enabled_x", "55");
+    render(<McuInputBox {...p} />);
+    const props = blurableInputMock.mock.calls[0]?.[0] as {
+      value: string,
+      onCommit: (e: React.SyntheticEvent<HTMLInputElement>) => void,
+    };
+    expect(props.value).toEqual("0.7");
+    props.onCommit({ currentTarget: { value: "5.5" } } as never);
+    expect(updateMCUSpy).toHaveBeenCalledWith("encoder_enabled_x", "55");
   });
 
   it("doesn't update when values match", () => {
+    blurableInputMock.mockClear();
     const p = fakeProps();
     bot.hardware.mcu_params.encoder_enabled_x = 1;
-    const wrapper = shallow(<McuInputBox {...p} />);
-    wrapper.find("BlurableInput").simulate("commit",
-      { currentTarget: { value: "1" } });
-    expect(updateMCU).not.toHaveBeenCalled();
+    render(<McuInputBox {...p} />);
+    const props = blurableInputMock.mock.calls[0]?.[0] as {
+      onCommit: (e: React.SyntheticEvent<HTMLInputElement>) => void,
+    };
+    props.onCommit({ currentTarget: { value: "1" } } as never);
+    expect(updateMCUSpy).not.toHaveBeenCalled();
   });
 
   it("doesn't update when values match after scaling function", () => {
+    blurableInputMock.mockClear();
     const p = fakeProps();
     bot.hardware.mcu_params.encoder_enabled_x = 1;
     p.fromInput = () => 1;
-    const wrapper = shallow(<McuInputBox {...p} />);
-    wrapper.find("BlurableInput").simulate("commit",
-      { currentTarget: { value: "0" } });
-    expect(updateMCU).not.toHaveBeenCalled();
+    render(<McuInputBox {...p} />);
+    const props = blurableInputMock.mock.calls[0]?.[0] as {
+      onCommit: (e: React.SyntheticEvent<HTMLInputElement>) => void,
+    };
+    props.onCommit({ currentTarget: { value: "0" } } as never);
+    expect(updateMCUSpy).not.toHaveBeenCalled();
   });
 
   it("restricts values to min and max", () => {
     const p = fakeProps();
     p.min = -10;
     p.max = 10;
-    const wrapper = mount(<McuInputBox {...p} />);
-    const input = wrapper.find("input");
-    expect(input.props().min).toEqual(-10);
-    expect(input.props().max).toEqual(10);
-    expect(wrapper.find(".error").length).toEqual(0);
+    const { container } = render(<McuInputBox {...p} />);
+    const input = screen.getByTestId("mcu-input");
+    expect(input.min).toEqual("-10");
+    expect(input.max).toEqual("10");
+    expect(container.querySelectorAll(".error").length).toEqual(0);
   });
 
   it("shows warning", () => {
     const p = fakeProps();
     p.warnMin = 10;
     bot.hardware.mcu_params.encoder_enabled_x = 7;
-    const wrapper = mount(<McuInputBox {...p} />);
-    expect(wrapper.find(".error").length).toEqual(1);
+    const { container } = render(<McuInputBox {...p} />);
+    expect(container.querySelectorAll(".error").length).toEqual(1);
   });
 
   it("updates status", () => {
     jest.useFakeTimers();
     const p = fakeProps();
     p.sourceFwConfig = () => ({ value: 1, consistent: false });
-    const wrapper = mount<McuInputBox>(<McuInputBox {...p} />);
-    wrapper.instance().componentDidUpdate();
-    expect(wrapper.state().syncing).toEqual(true);
+    const mib = new McuInputBox(p);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    mib.setState = ((update: any) => {
+      const next = typeof update == "function" ? update(mib.state) : update;
+      mib.state = { ...mib.state, ...next };
+      return undefined;
+    }) as never;
+    mib.componentDidUpdate();
+    expect(mib.state.syncing).toEqual(true);
     jest.runAllTimers();
-    expect(wrapper.state().syncing).toEqual(false);
-    wrapper.setState({ inconsistent: false });
-    wrapper.instance().componentDidUpdate();
+    expect(mib.state.syncing).toEqual(false);
+    mib.state = { ...mib.state, inconsistent: false };
+    mib.componentDidUpdate();
+    jest.useRealTimers();
   });
 });

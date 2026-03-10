@@ -146,16 +146,15 @@ export const csToLua = (command: RpcRequestBodyItem): string => {
       const jsonString = JSON.stringify(JSON.stringify(body || []));
       return `_move(${jsonString})`;
     case "write_pin":
-      let pin = undefined;
       if (typeof args.pin_number == "object") {
         const namedPin = maybeFindPeripheralById(
           store.getState().resources.index,
           args.pin_number.args.pin_id);
         if (!namedPin) { return ""; }
-        pin = namedPin.body.pin;
-      } else {
-        pin = args.pin_number;
+        const mode = args.pin_mode ? "analog" : "digital";
+        return `write_pin(${namedPin.body.pin}, "${mode}", ${args.pin_value})`;
       }
+      const pin = args.pin_number;
       const mode = args.pin_mode ? "analog" : "digital";
       return `write_pin(${pin}, "${mode}", ${args.pin_value})`;
     case "toggle_pin":
@@ -167,12 +166,12 @@ export const csToLua = (command: RpcRequestBodyItem): string => {
   }
 };
 
-export const clean = (data: Object | undefined): Object | undefined =>
-  data
-    ? Object.fromEntries(
-      Object.entries(data).map(([key, value]) => [key, value ?? undefined]),
-    )
-    : undefined;
+export const clean = <T>(data: T): T => {
+  if (!data || typeof data !== "object") { return data; }
+  return Object.fromEntries(
+    Object.entries(data).map(([key, value]) => [key, value ?? undefined]),
+  ) as T;
+};
 
 type AllPoint = Omit<GenericPointer, "pointer_type">
   & Omit<PlantPointer, "pointer_type">

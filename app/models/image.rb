@@ -3,7 +3,7 @@ require "open-uri"
 class Image < ApplicationRecord
   belongs_to :device
   validates :device, presence: true
-  serialize :meta
+  serialize :meta, coder: YAML
 
   # http://stackoverflow.com/a/5127684/1064917
   after_initialize :set_defaults

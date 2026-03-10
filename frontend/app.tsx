@@ -237,5 +237,4 @@ export class RawApp extends React.Component<AppProps, {}> {
 
 export const App = connect(mapStateToProps)(
   RawApp) as ConnectedComponent<typeof RawApp, { children?: React.ReactNode }>;
-// eslint-disable-next-line import/no-default-export
 export default App;

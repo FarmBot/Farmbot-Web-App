@@ -1,18 +1,31 @@
-const mockTerminal: Pick<Terminal, "open" | "resize"> = {
+import * as xterm from "@xterm/xterm";
+import { attachTerminal, getCredentials } from "../support";
+
+const mockTerminal = {
   open: jest.fn(),
   resize: jest.fn(),
 };
+let originalAssign: Location["assign"];
 
-jest.mock("@xterm/xterm", () => {
-  return {
-    Terminal: function () {
-      return mockTerminal;
-    }
-  };
+beforeEach(() => {
+  jest.clearAllMocks();
+  originalAssign = window.location.assign;
+  Object.defineProperty(window.location, "assign", {
+    configurable: true,
+    value: jest.fn(),
+  });
+  localStorage.clear();
+  document.querySelectorAll("#root").forEach(root => root.remove());
+  jest.spyOn(xterm, "Terminal").mockImplementation(() => mockTerminal as never);
 });
 
-import { Terminal } from "@xterm/xterm";
-import { attachTerminal, getCredentials } from "../support";
+afterEach(() => {
+  Object.defineProperty(window.location, "assign", {
+    configurable: true,
+    value: originalAssign,
+  });
+  document.querySelectorAll("#root").forEach(root => root.remove());
+});
 
 describe("getCredentials", () => {
   it("returns credentials whe possible", () => {
@@ -43,16 +56,20 @@ describe("attachTerminal", () => {
   it("attaches to the DOM if possible", () => {
     const root = document.createElement("DIV");
     root.id = "root";
-    document.body.appendChild(root);
+    const getByIdSpy = jest.spyOn(document, "getElementById")
+      .mockImplementation(id => id === "root" ? root : undefined);
     const terminal = attachTerminal();
     expect(terminal).toBe(mockTerminal);
     expect(terminal.open).toHaveBeenCalledWith(root);
-    root.remove();
+    getByIdSpy.mockRestore();
   });
 
   it("ignores the DOM if missing", () => {
-    expect(document.getElementById("root")).toBeFalsy();
+    const getByIdSpy = jest.spyOn(document, "getElementById")
+      .mockImplementation(() => undefined);
     const terminal = attachTerminal();
     expect(terminal).toBe(mockTerminal);
+    expect(terminal.open).not.toHaveBeenCalled();
+    getByIdSpy.mockRestore();
   });
 });

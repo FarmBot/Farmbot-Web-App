@@ -3,12 +3,17 @@ import {
   fakePoint, fakePlant, fakePointGroup,
 } from "../../../__test_support__/fake_state/resources";
 import moment from "moment";
-import { DEFAULT_CRITERIA, PointGroupCriteria } from "../interfaces";
+import { PointGroupCriteria } from "../interfaces";
 import { cloneDeep } from "lodash";
 
 describe("selectPointsByCriteria()", () => {
-  const fakeCriteria = (): PointGroupCriteria =>
-    cloneDeep(DEFAULT_CRITERIA);
+  const fakeCriteria = (): PointGroupCriteria => cloneDeep({
+    day: { op: "<", days_ago: 0 },
+    number_eq: {},
+    number_gt: {},
+    number_lt: {},
+    string_eq: {},
+  });
 
   it("matches color", () => {
     const criteria = fakeCriteria();

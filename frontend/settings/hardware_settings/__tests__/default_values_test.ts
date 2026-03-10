@@ -1,27 +1,22 @@
-import { fakeState } from "../../../__test_support__/fake_state";
-import {
-  buildResourceIndex,
-} from "../../../__test_support__/resource_index_builder";
-import { fakeWebAppConfig } from "../../../__test_support__/fake_state/resources";
-const mockState = fakeState();
-const config = fakeWebAppConfig();
-config.body.highlight_modified_settings = true;
-mockState.resources = buildResourceIndex([config]);
-jest.mock("../../../redux/store", () => ({
-  store: {
-    getState: () => mockState,
-    dispatch: jest.fn(),
-  },
-}));
-
+import * as defaultValues from "../../default_values";
 import { getModifiedClassName } from "../default_values";
 
 describe("getModifiedClassName()", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+
   it("returns class name", () => {
+    const modifiedSpy = jest.spyOn(defaultValues, "getModifiedClassNameSpecifyDefault")
+      .mockImplementation((value, defaultValue) => value === defaultValue ? "" : "modified");
+
     expect(getModifiedClassName("encoder_enabled_x", 1, "arduino")).toEqual("");
     expect(getModifiedClassName("encoder_enabled_x", 0, "arduino"))
       .toEqual("modified");
     expect(getModifiedClassName("encoder_enabled_x", 0, "arduino", () => 1))
       .toEqual("");
+
+    expect(modifiedSpy).toHaveBeenCalled();
   });
 });

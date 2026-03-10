@@ -20,6 +20,27 @@ export interface PointInventoryItemProps {
   distance?: number;
 }
 
+interface PointGraphicProps {
+  hovered: boolean;
+  colorOverride?: string;
+  color: string;
+}
+
+const PointGraphic = ({ hovered, colorOverride, color }: PointGraphicProps) => {
+  if (DevSettings.quickDeleteEnabled()) {
+    return <div className={`quick-delete ${hovered ? "hovered" : ""}`}>X</div>;
+  }
+  return <img
+    className={colorOverride ? "soil-point-graphic" : "point-graphic"}
+    src={svgToUrl(
+      `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50'
+         fill='none' stroke-width='1.5' stroke='${color}'>
+         <circle cx='25' cy='25' r='18' fill='${colorOverride || "none"}' />
+         <circle cx='25' cy='25' r='2' />
+         </svg>`)}
+    width={32} height={32} />;
+};
+
 // The individual points that show up in the farm designer sub nav.
 export const PointInventoryItem = (props: PointInventoryItemProps) => {
   const navigate = useNavigate();
@@ -50,28 +71,13 @@ export const PointInventoryItem = (props: PointInventoryItemProps) => {
     }
   };
 
-  const Graphic = () => {
-    if (DevSettings.quickDeleteEnabled()) {
-      return <div className={`quick-delete ${hovered ? "hovered" : ""}`}>X</div>;
-    }
-    return <img
-      className={colorOverride ? "soil-point-graphic" : "point-graphic"}
-      src={svgToUrl(
-        `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50'
-           fill='none' stroke-width='1.5' stroke='${color}'>
-           <circle cx='25' cy='25' r='18' fill='${colorOverride || "none"}' />
-           <circle cx='25' cy='25' r='2' />
-           </svg>`)}
-      width={32} height={32} />;
-  };
-
   return <div
     className={`row grid-exp-2 point-search-item ${hovered ? "hovered" : ""}`}
     key={pointId}
     onMouseEnter={() => toggle("enter")}
     onMouseLeave={() => toggle("leave")}
     onClick={click}>
-    <Graphic />
+    <PointGraphic hovered={hovered} colorOverride={colorOverride} color={color} />
     <span className="point-search-item-name">
       {point.name || t("Untitled point")}
     </span>

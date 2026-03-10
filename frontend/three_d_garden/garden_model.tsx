@@ -5,17 +5,25 @@ import {
   OrbitControls, PerspectiveCamera,
   Stats, Image, OrthographicCamera,
   Sphere,
+  StatsGl,
 } from "@react-three/drei";
-import { BackSide, MeshBasicMaterial as ThreeMeshBasicMaterial } from "three";
+import {
+  BackSide,
+  MeshBasicMaterial as ThreeMeshBasicMaterial,
+  OrthographicCamera as ThreeOrthographicCamera,
+  PerspectiveCamera as ThreePerspectiveCamera,
+} from "three";
 import { Bot } from "./bot";
 import { AddPlantProps, Bed } from "./bed";
 import {
   Sky, Solar, Sun, sunPosition, ZoomBeacons,
-  ThreeDPlant,
+  PlantInstances,
+  PlantSpreadInstances,
   Point, Grid, Clouds, Ground, Weed,
   ThreeDGardenPlant,
   NorthArrow,
   skyColor,
+  ThreeDPlantLabel,
 } from "./garden";
 import { Config } from "./config";
 import { useSpring, animated } from "@react-spring/three";
@@ -25,6 +33,7 @@ import {
   AmbientLight, AxesHelper, Group, MeshBasicMaterial,
 } from "./components";
 import { ICON_URLS } from "../crops/constants";
+import { isUndefined } from "lodash";
 import {
   TaggedGenericPointer, TaggedImage, TaggedPoint, TaggedPointGroup,
   TaggedSensor,
@@ -41,6 +50,7 @@ import { getZFunc } from "./triangle_functions";
 import { Visualization } from "./visualization";
 import { GroupOrderVisual } from "./group_order_visual";
 import { MoistureReadings } from "./garden/moisture_texture";
+import { FPSProbe } from "./fps_probe";
 
 const AnimatedGroup = animated(Group);
 
@@ -71,8 +81,19 @@ export const GardenModel = (props: GardenModelProps) => {
   const [hoveredPlant, setHoveredPlant] =
     React.useState<number | undefined>(undefined);
 
-  const getI = (e: ThreeEvent<PointerEvent>) =>
-    e.buttons ? -1 : parseInt(e.intersections[0].object.name);
+  const getI = (e: ThreeEvent<PointerEvent>) => {
+    if (e.buttons) { return -1; }
+    const intersection = e.intersections[0];
+    const instanceId = intersection.instanceId;
+    if (!isUndefined(instanceId)) {
+      const plantIndexes =
+        intersection.object.userData.plantIndexes as number[] | undefined;
+      if (plantIndexes) {
+        return plantIndexes[instanceId];
+      }
+    }
+    return parseInt(intersection.object.name);
+  };
 
   const setHover = (active: boolean) => {
     return config.labelsOnHover
@@ -95,6 +116,9 @@ export const GardenModel = (props: GardenModelProps) => {
   const topDown = addPlantProps?.designer.threeDTopDownView;
   const topDownMobile = topDown && isMobile();
   const camera = getCamera(config, props.activeFocus, cameraInit(!!topDown));
+  const [controlsCamera, setControlsCamera] =
+    // eslint-disable-next-line no-null/no-null
+    React.useState<ThreePerspectiveCamera | ThreeOrthographicCamera | null>(null);
 
   const showPlants = !addPlantProps
     || !!addPlantProps.getConfigValue(BooleanSetting.show_plants);
@@ -122,6 +146,7 @@ export const GardenModel = (props: GardenModelProps) => {
 
   // eslint-disable-next-line no-null/no-null
   const skyRef = React.useRef<ThreeMeshBasicMaterial>(null);
+  const sunFactorRef = React.useRef<number>(1);
   // eslint-disable-next-line no-null/no-null
   const activePositionRef = React.useRef<{ x: number, y: number }>(null);
 
@@ -130,6 +155,8 @@ export const GardenModel = (props: GardenModelProps) => {
     onPointerMove={config.eventDebug
       ? e => console.log(e.intersections.map(x => x.object.name))
       : undefined}>
+    <FPSProbe />
+    {config.stats && <StatsGl className={"stats-gl"} />}
     {config.stats && <Stats />}
     {config.zoomBeacons && <ZoomBeacons
       config={config}
@@ -144,27 +171,36 @@ export const GardenModel = (props: GardenModelProps) => {
     </Sphere>
     <AnimatedGroup
       scale={props.activeFocus ? 1 : scale}>
-      <Camera makeDefault={true} name={"camera"}
+      <Camera
+        ref={setControlsCamera}
+        makeDefault={true}
+        name={"camera"}
         fov={40} near={10} far={BigDistance.far}
         position={camera.position}
         rotation={[0, 0, 0]}
         zoom={topDown ? 0.25 : 1}
         up={[0, 0, 1]} />
     </AnimatedGroup>
-    <OrbitControls
-      maxPolarAngle={Math.PI / 2}
-      minAzimuthAngle={topDownMobile ? Math.PI / 2 : undefined}
-      maxAzimuthAngle={topDownMobile ? Math.PI / 2 : undefined}
-      enableRotate={config.rotate}
-      enableZoom={config.zoom}
-      enablePan={config.pan}
-      dampingFactor={0.2}
-      target={camera.target}
-      minDistance={config.lightsDebug ? 50 : 500}
-      maxDistance={config.lightsDebug ? BigDistance.devZoom : BigDistance.zoom} />
+    {controlsCamera &&
+      <OrbitControls
+        camera={controlsCamera}
+        maxPolarAngle={Math.PI / 2}
+        minAzimuthAngle={topDownMobile ? Math.PI / 2 : undefined}
+        maxAzimuthAngle={topDownMobile ? Math.PI / 2 : undefined}
+        enableRotate={config.rotate}
+        enableZoom={config.zoom}
+        enablePan={config.pan}
+        dampingFactor={0.2}
+        target={camera.target}
+        minDistance={config.lightsDebug ? 50 : 500}
+        maxDistance={config.lightsDebug ? BigDistance.devZoom : BigDistance.zoom} />}
     <AxesHelper args={[5000]} visible={config.threeAxes} />
     {config.viewCube && <GizmoHelper><GizmoViewcube /></GizmoHelper>}
-    <Sun config={config} skyRef={skyRef} startTimeRef={props.startTimeRef} />
+    <Sun
+      config={config}
+      skyRef={skyRef}
+      startTimeRef={props.startTimeRef}
+      sunFactorRef={sunFactorRef} />
     <AmbientLight intensity={config.ambient / 100} />
     <Ground config={config} />
     <Clouds config={config} />
@@ -202,13 +238,10 @@ export const GardenModel = (props: GardenModelProps) => {
     </Group>
     <Group name={"plant-labels"} visible={!props.activeFocus}>
       {threeDPlants.map((plant, i) =>
-        <ThreeDPlant key={i} i={i}
+        <ThreeDPlantLabel key={i} i={i}
           plant={plant}
-          plants={threeDPlants}
-          labelOnly={true}
           config={config}
           getZ={getZ}
-          activePositionRef={activePositionRef}
           hoveredPlant={hoveredPlant} />)}
     </Group>
     <Grid
@@ -220,18 +253,22 @@ export const GardenModel = (props: GardenModelProps) => {
       onPointerEnter={setHover(true)}
       onPointerMove={setHover(true)}
       onPointerLeave={setHover(false)}>
-      {threeDPlants.map((plant, i) =>
-        <ThreeDPlant key={i} i={i}
-          plant={plant}
-          plants={threeDPlants}
-          visible={plantsVisible}
-          spreadVisible={showSpread}
-          config={config}
-          hoveredPlant={hoveredPlant}
-          activePositionRef={activePositionRef}
-          getZ={getZ}
-          startTimeRef={props.startTimeRef}
-          dispatch={dispatch} />)}
+      <PlantInstances
+        plants={threeDPlants}
+        config={config}
+        getZ={getZ}
+        visible={plantsVisible}
+        startTimeRef={props.startTimeRef}
+        dispatch={dispatch}
+        sunFactorRef={sunFactorRef} />
+      <PlantSpreadInstances
+        plants={threeDPlants}
+        visible={plantsVisible}
+        spreadVisible={showSpread}
+        config={config}
+        activePositionRef={activePositionRef}
+        getZ={getZ}
+        dispatch={dispatch} />
     </Group>
     <Group name={"points"}
       visible={showPoints}>
