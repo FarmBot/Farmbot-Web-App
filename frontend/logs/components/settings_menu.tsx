@@ -130,8 +130,7 @@ export class LogsSettingsMenu extends React.Component<LogsSettingsMenuProps> {
       <fieldset className={"delete-all row"}>
         <button className={"fb-button red"}
           onClick={() => {
-            this.props.dispatch(destroyAll("Log", false,
-              t(Content.DELETE_ALL_LOGS_CONFIRMATION)))
+            destroyAll("Log", false, t(Content.DELETE_ALL_LOGS_CONFIRMATION))
               .then(() => location.assign(window.location.origin));
           }}>
           {t("Delete all logs")}

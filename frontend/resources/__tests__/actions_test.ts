@@ -1,6 +1,7 @@
 import {
   generalizedError,
   GeneralizedError,
+  sanitizeError,
   saveOK,
 } from "../actions";
 import { fakeUser } from "../../__test_support__/fake_state/resources";
@@ -47,5 +48,32 @@ describe("generalizedError()", () => {
     };
     const result = generalizedError(payl);
     expect(result.payload.statusBeforeError).toEqual(SpecialStatus.DIRTY);
+    expect(payl.statusBeforeError).toEqual(SpecialStatus.SAVING);
+  });
+});
+
+describe("sanitizeError()", () => {
+  it("removes mutable event references", () => {
+    const event = { currentTarget: { value: "123" } };
+    const err = {
+      message: "nope",
+      event,
+      response: {
+        data: { error: "bad" },
+        status: 422,
+        statusText: "Unprocessable Entity",
+        request: { mutable: true },
+      },
+    };
+    const result = sanitizeError(err);
+    expect(result).toEqual({
+      message: "nope",
+      response: {
+        data: { error: "bad" },
+        status: 422,
+        statusText: "Unprocessable Entity",
+      },
+    });
+    expect(result.event).toBeUndefined();
   });
 });
