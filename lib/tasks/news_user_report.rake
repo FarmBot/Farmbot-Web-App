@@ -1,11 +1,15 @@
 require_relative "../../app/lib/key_gen"
 
-class NewUserReportMailer < ApplicationMailer
+class NewUserReportMailer < ActionMailer::Base
   SUBJECT = "Daily Report: New FarmBot Setups"
+  HOST = ENV.fetch("API_HOST")
+
+  default from: "farmbot-mailer@#{HOST}"
+  layout "mailer"
 
   def daily_report(message, emails)
     mail(
-      from: "do-not-reply@#{ENV["API_HOST"]}",
+      from: "do-not-reply@#{HOST}",
       to: emails,
       subject: SUBJECT,
       body: message,

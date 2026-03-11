@@ -3,6 +3,7 @@ require "rake"
 
 Rake.application = Rake::Application.new
 Rake::Task.define_task("environment")
+ENV["API_HOST"] ||= "example.com"
 load Rails.root.join("lib/tasks/news_user_report.rake").to_s
 
 describe "news_user_report.rake" do
