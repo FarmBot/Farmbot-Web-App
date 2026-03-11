@@ -4,11 +4,8 @@ import { SoftwareDocsPanel } from "../software";
 import { ExternalUrl } from "../../../external_urls";
 
 describe("<SoftwareDocsPanel />", () => {
-  beforeEach(() => {
-    location.search = "";
-  });
-
   it("renders software docs", () => {
+    location.search = "";
     const { container } = render(<SoftwareDocsPanel />);
     expect(container.querySelector("iframe")?.getAttribute("src"))
       .toEqual(ExternalUrl.softwareDocs);

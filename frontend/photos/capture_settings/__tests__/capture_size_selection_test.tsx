@@ -112,17 +112,12 @@ describe("<CaptureSizeSelection />", () => {
     p.env = { take_photo_width: "200", take_photo_height: "100" };
     render(<CaptureSizeSelection {...p} />);
     expect(screen.getByTestId("selected-size")).toHaveTextContent("custom");
-    fireEvent.click(screen.getByRole("button", {
-      name: /select custom/i,
-      hidden: true,
-    }));
+    fireEvent.click(screen.getByRole("button", { name: /select custom/i }));
     expect(p.saveFarmwareEnv).not.toHaveBeenCalled();
-    const sizeInputs = screen.queryAllByRole("spinbutton", {
-      hidden: true,
-    });
+    const sizeInputs = screen.queryAllByRole("spinbutton");
     const [widthInput, heightInput] = sizeInputs.length >= 2
       ? sizeInputs
-      : screen.getAllByRole("textbox", { hidden: true });
+      : screen.getAllByRole("textbox");
     fireEvent.focus(widthInput);
     fireEvent.change(widthInput, {
       target: { value: "400" },
@@ -150,10 +145,7 @@ describe("<CaptureSizeSelection />", () => {
     p.env = {};
     render(<CaptureSizeSelection {...p} />);
     expect(screen.getByTestId("selected-size")).toHaveTextContent("640x480");
-    fireEvent.click(screen.getByRole("button", {
-      name: /select 320x240/i,
-      hidden: true,
-    }));
+    fireEvent.click(screen.getByRole("button", { name: /select 320x240/i }));
     expect(p.saveFarmwareEnv).toHaveBeenCalledWith("take_photo_width", "320");
     expect(p.saveFarmwareEnv).toHaveBeenCalledWith("take_photo_height", "240");
   });
@@ -169,7 +161,6 @@ describe("<CaptureSizeSelection />", () => {
       expect(screen.getByTestId("selected-size")).toHaveTextContent(selection);
       fireEvent.click(screen.getByRole("button", {
         name: new RegExp(`select ${selection}`),
-        hidden: true,
       }));
       expect(p.saveFarmwareEnv).toHaveBeenCalledWith(
         "take_photo_width", "" + expectedWidth);

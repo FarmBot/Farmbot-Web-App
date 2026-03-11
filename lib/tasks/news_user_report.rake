@@ -1,5 +1,22 @@
 require_relative "../../app/lib/key_gen"
 
+class NewUserReportMailer < ActionMailer::Base
+  SUBJECT = "Daily Report: New FarmBot Setups"
+  HOST = ENV.fetch("API_HOST")
+
+  default from: "farmbot-mailer@#{HOST}"
+  layout "mailer"
+
+  def daily_report(message, emails)
+    mail(
+      from: "do-not-reply@#{HOST}",
+      to: emails,
+      subject: SUBJECT,
+      body: message,
+    )
+  end
+end
+
 class NewUserReport
   EMAILS = (ENV["CUSTOMER_SUPPORT_SUBSCRIBERS"] || "").split(",").map(&:strip)
   TPL = <<~HEREDOC
@@ -55,12 +72,7 @@ class NewUserReport
 
   def deliver
     puts message
-    ActionMailer::Base.mail(
-      from: "do-not-reply@#{ENV["API_HOST"]}",
-      to: EMAILS,
-      subject: "Daily Report: New FarmBot Setups",
-      body: message,
-    ).deliver
+    NewUserReportMailer.daily_report(message, EMAILS).deliver_now
   end
 end
 

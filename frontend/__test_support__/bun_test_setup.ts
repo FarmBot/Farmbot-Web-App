@@ -238,6 +238,7 @@ const resetThreeFiberHookMocks = () => {
 beforeEach(() => {
   bunJest.clearAllMocks();
   resetThreeFiberHookMocks();
+  location.search = "";
   resetMutableFixture(auth, authBaseline);
   resetMutableFixture(bot, botBaseline);
   resetMutableFixture(config, configBaseline);

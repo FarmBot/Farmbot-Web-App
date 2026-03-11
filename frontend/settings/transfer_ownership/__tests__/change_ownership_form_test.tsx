@@ -26,7 +26,7 @@ describe("<ChangeOwnershipForm />", () => {
 
   it("renders", () => {
     const { getByRole, container } = render(<ChangeOwnershipForm />);
-    const header = getByRole("button", { name: /Change Ownership/, hidden: true });
+    const header = getByRole("button", { name: /Change Ownership/ });
     fireEvent.click(header);
     expect(container.textContent).toContain("Email");
     expect(container.textContent).toContain("Password");
@@ -36,7 +36,7 @@ describe("<ChangeOwnershipForm />", () => {
 
   it("submits", () => {
     const { getByRole, getByText, container } = render(<ChangeOwnershipForm />);
-    const header = getByRole("button", { name: /Change Ownership/, hidden: true });
+    const header = getByRole("button", { name: /Change Ownership/ });
     fireEvent.click(header);
     const email = container.querySelectorAll("input")[0];
     expect(email).toBeTruthy();
@@ -60,7 +60,7 @@ describe("<ChangeOwnershipForm />", () => {
     const useRefSpy = jest.spyOn(React, "useRef").mockReturnValue({ current: undefined });
     try {
       const { getByRole, getByText, container } = render(<ChangeOwnershipForm />);
-      const header = getByRole("button", { name: /Change Ownership/, hidden: true });
+      const header = getByRole("button", { name: /Change Ownership/ });
       fireEvent.click(header);
       const email = container.querySelectorAll("input")[0];
       expect(email).toBeTruthy();
