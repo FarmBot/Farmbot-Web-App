@@ -475,16 +475,16 @@ export const Highlight = (props: HighlightProps) => {
     }));
   };
 
-  const searchMatch = () => {
-    return searchTerm &&
+  const searchMatch = (): boolean => {
+    return !!searchTerm &&
       // if searching, look for setting name match
       (some(ALTERNATE_NAMES[settingName].map(s => s.toLowerCase()
         .includes(searchTerm.toLowerCase())))
         // if match not found, look for section content match
-        || (isSectionHeader && inContent(searchTerm)));
+        || (!!isSectionHeader && inContent(searchTerm)));
   };
 
-  const hidden = () => {
+  const hidden = (): boolean => {
     const isolateName = getUrlQuery("only");
     if (isolateName) {
       const inSection = isSectionHeader && inContent(isolateName, true);

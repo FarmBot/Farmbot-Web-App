@@ -66,13 +66,6 @@ afterEach(() => {
 });
 
 describe("round()", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-    mockIsMobile = false;
-    mockState = fakeState();
-    location.search = "";
-  });
-
   it("rounds a number", () => {
     expect(round(44)).toEqual(40);
     expect(round(98)).toEqual(100);

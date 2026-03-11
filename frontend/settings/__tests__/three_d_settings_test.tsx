@@ -70,7 +70,7 @@ describe("<ThreeDSettings />", () => {
 
   it("toggles setting on", () => {
     const { container } = render(<ThreeDSettings {...fakeProps()} />);
-    const toggle = within(container).getByRole("button", { name: "no", hidden: true });
+    const toggle = within(container).getByRole("button", { name: "no" });
     fireEvent.click(toggle);
     expect(crud.initSave).toHaveBeenCalledWith("FarmwareEnv", {
       key: namespace3D("bounds"),
@@ -87,7 +87,7 @@ describe("<ThreeDSettings />", () => {
     fakeEnv.body.value = "1";
     p.farmwareEnvs = [fakeEnv];
     const { container } = render(<ThreeDSettings {...p} />);
-    const toggle = within(container).getByRole("button", { name: "yes", hidden: true });
+    const toggle = within(container).getByRole("button", { name: "yes" });
     fireEvent.click(toggle);
     expect(crud.initSave).not.toHaveBeenCalled();
     expect(crud.edit).toHaveBeenCalledWith(fakeEnv, { value: "0" });

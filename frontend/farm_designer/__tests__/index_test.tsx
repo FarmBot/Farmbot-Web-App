@@ -43,7 +43,6 @@ describe("<FarmDesigner />", () => {
 
   beforeEach(() => {
     setWindowWidth(1000);
-    location.search = "";
     lastLegendProps = undefined;
     lastGardenMapProps = undefined;
     editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());

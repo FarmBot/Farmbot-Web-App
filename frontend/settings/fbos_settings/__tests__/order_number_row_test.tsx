@@ -30,7 +30,7 @@ describe("<OrderNumberRow />", () => {
     const newOrderNumber = "FB1234";
     render(<OrderNumberRow {...p} />);
     changeBlurableInputRTL(
-      screen.getByRole("textbox", { hidden: true }),
+      screen.getByRole("textbox"),
       newOrderNumber,
     );
     expect(crud.edit).toHaveBeenCalledWith(p.device, {

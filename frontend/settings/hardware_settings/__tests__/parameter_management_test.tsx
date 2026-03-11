@@ -83,7 +83,7 @@ describe("<ParameterManagement />", () => {
     const p = fakeProps();
     p.settingsPanelState.parameter_management = true;
     render(<ParameterManagement {...p} />);
-    fireEvent.change(screen.getByRole("textbox", { hidden: true }), { target: { value: "" } });
+    fireEvent.change(screen.getByRole("textbox"), { target: { value: "" } });
     fireEvent.click(screen.getByTitle("IMPORT"));
     expect(confirm).toHaveBeenCalledWith(Content.PARAMETER_IMPORT_CONFIRM);
     expect(exportMenu.importParameters).toHaveBeenCalledWith("");
@@ -108,7 +108,7 @@ describe("<ParameterImport />", () => {
 
   it("updates", () => {
     render(<ParameterImport {...fakeProps()} />);
-    const input = screen.getByRole("textbox", { hidden: true });
+    const input = screen.getByRole("textbox");
     expect(input.value).toEqual("");
     fireEvent.change(input, { target: { value: "{}" } });
     expect(input.value).toEqual("{}");
