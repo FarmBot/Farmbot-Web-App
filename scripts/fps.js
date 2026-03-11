@@ -15,7 +15,7 @@ async function main() {
         ],
     });
     const page = await browser.newPage();
-    page.setDefaultTimeout(30_000);
+    page.setDefaultTimeout(120_000);
     try {
         await page.goto(url, { waitUntil: 'domcontentloaded' });
         await page.waitForFunction(() => {
