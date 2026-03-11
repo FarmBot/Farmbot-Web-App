@@ -59,7 +59,22 @@ commands:
             if sudo docker compose run --rm web bash -lc '\
               gem install bundler && \
               bundle install && \
-              bun install && \
+              bun install \
+            '; then
+              echo "export SETUP_OK=true" >> "$BASH_ENV"
+            else
+              echo "export SETUP_OK=false" >> "$BASH_ENV"
+              exit 1
+            fi
+      - run:
+          name: Run setup tasks
+          command: |
+            if [ "$SETUP_OK" != "true" ]; then
+              echo "export SETUP_OK=false" >> "$BASH_ENV"
+              exit 1
+            fi
+
+            if sudo docker compose run --rm web bash -lc '\
               bundle exec rails db:create && \
               bundle exec rails db:migrate && \
               bundle exec rake keys:generate \
