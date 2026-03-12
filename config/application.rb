@@ -1,5 +1,13 @@
 require_relative "boot"
-require "rails/all"
+require "active_model/railtie"
+require "active_job/railtie"
+require "active_record/railtie"
+require "active_storage/engine"
+require "action_controller/railtie"
+require "action_mailer/railtie"
+require "action_view/railtie"
+require "action_dispatch/railtie"
+require "rails/test_unit/railtie"
 require_relative "./config_helpers/active_storage"
 
 # Require the gems listed in Gemfile, including any gems
@@ -20,6 +28,7 @@ module FarmBot
     ]
     config.load_defaults 8.1
     config.active_storage.service = ConfigHelpers::ActiveStorage.service
+    config.active_storage.variant_processor = :disabled
     config.cache_store = :redis_cache_store, { url: REDIS_URL, ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE }, pool: false }
     config.middleware.use Rack::Attack
     config.active_record.schema_format = :sql

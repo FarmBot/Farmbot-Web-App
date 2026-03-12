@@ -1,6 +1,6 @@
 import React from "react";
 import { FBSelect, DropDownItem } from "../../ui";
-import { list } from "./tz_list";
+import list from "./tz_list.json";
 import { inferTimezone } from "./guess_timezone";
 import { isString } from "lodash";
 import { getModifiedClassNameDefaultFalse } from "../../settings/default_values";

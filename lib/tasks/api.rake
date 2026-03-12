@@ -258,5 +258,11 @@ namespace :api do
     trim_logs
   end
 end
-Rake::Task["assets:precompile"].enhance ["api:assets_compile"]
-Rake::Task["assets:clean"].enhance ["api:assets_clean"]
+
+namespace :assets do
+  desc "Compile frontend assets."
+  task precompile: "api:assets_compile"
+
+  desc "Clean frontend build artifacts."
+  task clean: "api:assets_clean"
+end

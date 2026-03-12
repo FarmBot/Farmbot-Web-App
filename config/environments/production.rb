@@ -15,7 +15,6 @@ Rails.application.configure do
   config.log_level                   = :info
   config.action_controller.perform_caching  = false
   config.public_file_server.enabled  = false
-  config.assets.compile              = false
   config.active_record.dump_schema_after_migration = false
   # HACK AHEAD! Here's why:
   # 1. FarmBot Inc. Uses Sendgrid for email.

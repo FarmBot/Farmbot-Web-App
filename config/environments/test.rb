@@ -7,7 +7,6 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :test
   config.active_job.queue_adapter = :inline
   config.active_support.deprecation = :stderr
-  # config.assets.debug                               = true
   config.enable_reloading = false
   config.active_support.disallowed_deprecation = :raise
   config.active_support.disallowed_deprecation_warnings = []

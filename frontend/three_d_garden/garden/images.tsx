@@ -129,7 +129,7 @@ const Images = (props: ImagesProps) => {
     {props.images.map(image => {
       const { x, y } = image.body.meta;
       if (isNumber(x) && isNumber(y)) {
-        return <React.Suspense>
+        return <React.Suspense key={image.uuid}>
           <ImageWrapper
             image={image}
             x={x}
