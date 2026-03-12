@@ -1,4 +1,3 @@
-require_relative "./cs_heap.rb"
 # ORIGINAL IMPLEMENTATION HERE: https://github.com/FarmBot-Labs/Celery-Slicer
 # Take a nested ("canonical") representation of a CeleryScript sequence and
 # transforms it to a flat/homogenous intermediate representation which is better

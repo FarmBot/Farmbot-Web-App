@@ -1,5 +1,3 @@
-require_relative "./cs_heap"
-
 # ABOUT THIS CLASS:
 #   CsHeap creates an in memory representation of a Flat IR tree using array
 #   indexes (HeapAddress instances, really). This class takes a flat IR tree
