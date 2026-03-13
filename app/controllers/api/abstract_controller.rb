@@ -1,5 +1,3 @@
-require "./app/lib/celery_script/checker"
-
 module Api
   # A controller that contains all of the helper methods and shared logic for
   # all API endpoints.

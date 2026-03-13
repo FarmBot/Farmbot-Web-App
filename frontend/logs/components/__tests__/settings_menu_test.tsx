@@ -92,7 +92,7 @@ describe("<LogsSettingsMenu />", () => {
       value: jest.fn(),
     });
     const p = fakeProps();
-    p.dispatch = jest.fn(() => Promise.resolve());
+    p.dispatch = jest.fn();
     const { container } = render(<LogsSettingsMenu {...p} />);
     const buttons = container.querySelectorAll("button");
     fireEvent.click(buttons[buttons.length - 1] as Element);
@@ -100,6 +100,7 @@ describe("<LogsSettingsMenu />", () => {
     await Promise.resolve();
     expect(crud.destroyAll).toHaveBeenCalledWith(
       "Log", false, Content.DELETE_ALL_LOGS_CONFIRMATION);
+    expect(p.dispatch).not.toHaveBeenCalled();
     expect(window.location.assign).toHaveBeenCalled();
   });
 

@@ -1,5 +1,3 @@
-require_relative "../../lib/mutations/hstore_filter.rb"
-
 module Points
   class Create < Mutations::Command
     include Points::Helpers

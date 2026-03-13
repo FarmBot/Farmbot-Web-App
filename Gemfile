@@ -2,7 +2,6 @@ source "https://rubygems.org"
 ruby "~> 4.0.1"
 
 gem "rails", "~> 8"
-gem "sprockets-rails"
 gem "active_model_serializers"
 gem "bunny"
 gem "delayed_job_active_record"
@@ -34,7 +33,6 @@ gem "bigdecimal"
 gem "mutex_m"
 gem "tsort"
 gem "irb"
-gem "image_processing", "~> 1.2"
 
 group :development, :test do
   gem "climate_control"

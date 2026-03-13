@@ -1,5 +1,3 @@
-require_relative "../../lib/mutations/hstore_filter"
-
 module Api
   class PointsController < Api::AbstractController
     # NOTE: Soft deleted points will be destroyed

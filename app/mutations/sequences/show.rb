@@ -1,5 +1,3 @@
-require_relative "../../lib/celery_script/cs_heap"
-
 # Service object that:
 # 1. Pulls out all PrimaryNodes and EdgeNodes for a sequence node (AST Flat IR form)
 # 2. Stitches the nodes back together in their "canonical" (nested) AST
@@ -65,8 +63,8 @@ module Sequences
     def sequence_publication
       # Cache the association if it's already loaded
       return @sequence_publication if defined?(@sequence_publication)
-      @sequence_publication = sequence.association(:sequence_publication).loaded? ? 
-        sequence.sequence_publication : 
+      @sequence_publication = sequence.association(:sequence_publication).loaded? ?
+        sequence.sequence_publication :
         SequencePublication.find_by(author_sequence_id: sequence.id)
     end
 
@@ -77,7 +75,7 @@ module Sequences
     def sequence_version
       # Cache the association if it's already loaded
       return @sequence_version if defined?(@sequence_version)
-      @sequence_version = sequence.association(:sequence_version).loaded? ? 
+      @sequence_version = sequence.association(:sequence_version).loaded? ?
         sequence.sequence_version :
         SequenceVersion.find_by(id: sequence_version_id)
     end

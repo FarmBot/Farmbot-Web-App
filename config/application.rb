@@ -1,7 +1,13 @@
-require_relative "../app/models/transport.rb"
 require_relative "boot"
-require_relative "../app/lib/celery_script/cs_heap"
-require "rails/all"
+require "active_model/railtie"
+require "active_job/railtie"
+require "active_record/railtie"
+require "active_storage/engine"
+require "action_controller/railtie"
+require "action_mailer/railtie"
+require "action_view/railtie"
+require "action_dispatch/railtie"
+require "rails/test_unit/railtie"
 require_relative "./config_helpers/active_storage"
 
 # Require the gems listed in Gemfile, including any gems
@@ -21,8 +27,8 @@ module FarmBot
       "Api::RmqUtilsController#topic_action",
     ]
     config.load_defaults 8.1
-    config.add_autoload_paths_to_load_path = true
     config.active_storage.service = ConfigHelpers::ActiveStorage.service
+    config.active_storage.variant_processor = :disabled
     config.cache_store = :redis_cache_store, { url: REDIS_URL, ssl_params: { verify_mode: OpenSSL::SSL::VERIFY_NONE }, pool: false }
     config.middleware.use Rack::Attack
     config.active_record.schema_format = :sql
@@ -45,8 +51,6 @@ module FarmBot
       g.helper_specs false
       g.fixture_replacement :factory_bot, :dir => "spec/factories"
     end
-    config.autoload_paths << Rails.root.join("lib")
-    config.autoload_paths << Rails.root.join("lib/sequence_migrations")
     config.middleware.insert_before 0, Rack::Cors do
       allow do
         origins "*"

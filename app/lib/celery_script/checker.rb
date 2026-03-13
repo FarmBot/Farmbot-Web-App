@@ -4,8 +4,6 @@
 module CeleryScript
   UNBOUND_VAR = "Unbound variable: %s"
 
-  class TypeCheckError < StandardError; end
-
   class Checker
     MISSING_ARG = "Expected node '%s' to have a '%s', but got: %s."
     EXTRA_ARGS = "'%s' has unexpected arguments: %s. Allowed arguments: %s"
