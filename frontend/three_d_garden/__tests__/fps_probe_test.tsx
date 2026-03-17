@@ -1,13 +1,14 @@
 import React from "react";
 import { render } from "@testing-library/react";
 import * as threeFiber from "@react-three/fiber";
-import { countSceneObjects, FPSProbe } from "../fps_probe";
+import { countSceneObjects, FPSProbe, REPORT_EVERY_N } from "../fps_probe";
 
 describe("FPSProbe", () => {
   let useFrameSpy: jest.SpyInstance;
   let useThreeSpy: jest.SpyInstance;
 
   beforeEach(() => {
+    window.logStore = undefined;
     useFrameSpy = jest.spyOn(threeFiber, "useFrame")
       .mockImplementation(jest.fn());
     useThreeSpy = jest.spyOn(threeFiber, "useThree")
@@ -89,6 +90,27 @@ describe("FPSProbe", () => {
       );
     });
     logSpy.mockRestore();
+    nowSpy.mockRestore();
+  });
+
+  it("logs an fps report every nth probe", () => {
+    let t = 0;
+    const nowSpy = jest.spyOn(performance, "now").mockImplementation(() => {
+      t += 2000;
+      return t;
+    });
+    window.logStore = { log: jest.fn() };
+    render(<FPSProbe />);
+    const frameHandler = useFrameSpy.mock.calls[0][0] as () => void;
+    for (let i = 0; i < 100; i++) {
+      frameHandler();
+      frameHandler();
+    }
+    expect(window.logStore.log).toHaveBeenCalledWith(
+      "3D Garden FPS",
+      { average: 1, best: 1, total: REPORT_EVERY_N, worst: 1 },
+      "info",
+    );
     nowSpy.mockRestore();
   });
 
