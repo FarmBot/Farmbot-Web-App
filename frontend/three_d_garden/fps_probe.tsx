@@ -55,9 +55,13 @@ const formatTopCounts = (
   return entries.map(([key, value]) => `${key}: ${value}`).join(", ");
 };
 
+export const REPORT_EVERY_N = 60;
+
 export const FPSProbe = () => {
   const frameCount = React.useRef(0);
   const lastTime = React.useRef<number | undefined>(undefined);
+  const reportCount = React.useRef(0);
+  const samples = React.useRef<number[]>([]);
   const { gl, scene } = useThree();
 
   React.useEffect(() => {
@@ -77,6 +81,7 @@ export const FPSProbe = () => {
     if (now - lastTime.current >= 1000) {
       const elapsed = (now - lastTime.current) / 1000;
       const fps = frameCount.current / elapsed;
+      samples.current.push(fps);
       const { calls, triangles, points, lines } = gl.info.render;
       const { geometries, textures } = gl.info.memory;
       const sceneCounts = countSceneObjects(scene as Scene);
@@ -103,6 +108,18 @@ export const FPSProbe = () => {
         .map(([key, value]) => `${key}: ${value}`)
         .join("\n");
       console.log(linesToLog);
+      reportCount.current += 1;
+      const doReport = !(reportCount.current % REPORT_EVERY_N);
+      const average = Math.round(samples.current
+        .reduce((sum, sample) => sum + sample, 0) / samples.current.length);
+      const report = {
+        best: Math.round(Math.max(...samples.current)),
+        worst: Math.round(Math.min(...samples.current)),
+        average,
+        total: samples.current.length,
+      };
+      doReport && window.logStore?.log("3D Garden FPS", report, "info");
+      console.log(report);
       frameCount.current = 0;
       lastTime.current = now;
     }

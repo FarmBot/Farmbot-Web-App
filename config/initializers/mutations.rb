@@ -1,3 +1,5 @@
+require Rails.root.join("app/lib/mutations/hstore_filter")
+
 MUTATIONS_DEFAULTS = Mutations::DefaultErrorMessageCreator::MESSAGES
 
 # I don't like the errors that mutations provides for :before and :after,
