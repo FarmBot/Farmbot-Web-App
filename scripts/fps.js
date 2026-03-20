@@ -12,6 +12,7 @@ async function main() {
             '--no-sandbox',
             '--disable-setuid-sandbox',
             '--disable-dev-shm-usage',
+            '--enable-gpu',
         ],
     });
     const page = await browser.newPage();
