@@ -130,14 +130,18 @@ export const GardenModel = (props: GardenModelProps) => {
   const showWeeds = !!addPlantProps?.getConfigValue(BooleanSetting.show_weeds);
   const showSpread = !!addPlantProps?.getConfigValue(BooleanSetting.show_spread);
 
-  const soilPoints = filterSoilPoints({ points: props.mapPoints, config });
+  const soilPoints = React.useMemo(
+    () => filterSoilPoints({ points: props.mapPoints, config }),
+    [props.mapPoints, config]);
   const soilSurface = React.useMemo(() =>
     getSurface(soilPoints), [soilPoints]);
   React.useEffect(() => {
     sessionStorage.setItem("soilSurfaceTriangles",
       JSON.stringify(soilSurface.triangles));
   }, [soilSurface.triangles]);
-  const getZ = getZFunc(soilSurface.triangles, -config.soilHeight);
+  const getZ = React.useMemo(
+    () => getZFunc(soilSurface.triangles, -config.soilHeight),
+    [soilSurface.triangles, config.soilHeight]);
 
   const showMoistureMap = !!props.addPlantProps?.getConfigValue(
     BooleanSetting.show_moisture_interpolation_map);
@@ -149,6 +153,35 @@ export const GardenModel = (props: GardenModelProps) => {
   const sunFactorRef = React.useRef<number>(1);
   // eslint-disable-next-line no-null/no-null
   const activePositionRef = React.useRef<{ x: number, y: number }>(null);
+
+  const plantLabelNodes = React.useMemo(
+    () => threeDPlants.map((plant, i) =>
+      <ThreeDPlantLabel key={i} i={i}
+        plant={plant}
+        config={config}
+        getZ={getZ}
+        hoveredPlant={hoveredPlant} />),
+    [threeDPlants, config, getZ, hoveredPlant]);
+
+  const pointNodes = React.useMemo(
+    () => props.mapPoints?.map(point =>
+      <Point key={point.uuid}
+        point={point}
+        visible={showPoints}
+        config={config}
+        getZ={getZ}
+        dispatch={dispatch} />),
+    [props.mapPoints, showPoints, config, getZ, dispatch]);
+
+  const weedNodes = React.useMemo(
+    () => props.weeds?.map(weed =>
+      <Weed key={weed.uuid}
+        weed={weed}
+        visible={showWeeds}
+        config={config}
+        getZ={getZ}
+        dispatch={dispatch} />),
+    [props.weeds, showWeeds, config, getZ, dispatch]);
 
   // eslint-disable-next-line no-null/no-null
   return <Group dispose={null}
@@ -223,7 +256,7 @@ export const GardenModel = (props: GardenModelProps) => {
         color={"green"}
         radius={50}
         applyOffset={true}
-        config={props.config}
+        config={config}
         readings={props.sensorReadings || []} />}
     {showFarmbot &&
       <Bot
@@ -237,12 +270,7 @@ export const GardenModel = (props: GardenModelProps) => {
       {ICON_URLS.map((url, i) => <Image key={i} url={url} />)}
     </Group>
     <Group name={"plant-labels"} visible={!props.activeFocus}>
-      {threeDPlants.map((plant, i) =>
-        <ThreeDPlantLabel key={i} i={i}
-          plant={plant}
-          config={config}
-          getZ={getZ}
-          hoveredPlant={hoveredPlant} />)}
+      {plantLabelNodes}
     </Group>
     <Grid
       config={config}
@@ -272,23 +300,11 @@ export const GardenModel = (props: GardenModelProps) => {
     </Group>
     <Group name={"points"}
       visible={showPoints}>
-      {props.mapPoints?.map(point =>
-        <Point key={point.uuid}
-          point={point}
-          visible={showPoints}
-          config={config}
-          getZ={getZ}
-          dispatch={dispatch} />)}
+      {pointNodes}
     </Group>
     <Group name={"weeds"}
       visible={showWeeds}>
-      {props.weeds?.map(weed =>
-        <Weed key={weed.uuid}
-          weed={weed}
-          visible={showWeeds}
-          config={config}
-          getZ={getZ}
-          dispatch={dispatch} />)}
+      {weedNodes}
     </Group>
     <GroupOrderVisual
       allPoints={props.allPoints || []}
