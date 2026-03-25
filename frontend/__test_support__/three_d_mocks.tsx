@@ -16,7 +16,6 @@ import type {
 } from "@react-three/drei";
 
 const GroupForTests = (props: ThreeElements["group"]) =>
-  // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
   <group {...props} />;
 
 let mockInstanceId: number | undefined = undefined;
@@ -33,30 +32,33 @@ const injectEvent = (event: Event) => ({
   ...event,
 });
 
+// eslint-disable-next-line comma-spacing
+const invokeHandler = <E,>(handler: unknown, event: E) => {
+  if (typeof handler === "function") {
+    (handler as (event: E) => void)(event);
+  }
+};
+
 const MeshForTests = (props: ThreeElements["mesh"]) =>
-  // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
   <mesh {...props}
-    onPointerMove={(e: Event) => props.onPointerMove?.(injectEvent(e))}
-    onClick={(e: Event) => props.onClick?.(injectEvent(e))}>
+    onPointerMove={(e: Event) => invokeHandler(props.onPointerMove, injectEvent(e))}
+    onClick={(e: Event) => invokeHandler(props.onClick, injectEvent(e))}>
     {props.name}
     {props.children}
-    {/* @ts-expect-error Property does not exist on type JSX.IntrinsicElements */}
   </mesh>;
 
 const InstancedMeshForTests =
-  React.forwardRef<unknown, ThreeElements["instancedMesh"]>((props, ref) =>
-    // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
-    <instancedMesh ref={ref} {...props}
-      onPointerMove={(e: Event) => props.onPointerMove?.(injectEvent(e))}
-      onClick={(e: Event) => props.onClick?.(injectEvent(e))}>
-      {props.name}
-      {props.children}
-      {/* @ts-expect-error Property does not exist on type JSX.IntrinsicElements */}
-    </instancedMesh>,
+  React.forwardRef<THREE.InstancedMesh, ThreeElements["instancedMesh"]>(
+    (props, ref) =>
+      <instancedMesh ref={ref} {...props}
+        onPointerMove={(e: Event) => invokeHandler(props.onPointerMove, injectEvent(e))}
+        onClick={(e: Event) => invokeHandler(props.onClick, injectEvent(e))}>
+        {props.name}
+        {props.children}
+      </instancedMesh>,
   );
 
 const Stub = (props: Record<string, unknown>) =>
-  // @ts-expect-error Property does not exist on type JSX.IntrinsicElements
   <div {...props} />;
 const StubWithRef = React.forwardRef(
   (props: Record<string, unknown>, ref) =>
@@ -104,15 +106,21 @@ jest.mock("../three_d_garden/components", () => ({
     return <div {...props} />;
   },
   MeshNormalMaterial: Stub,
-  InstancedMesh: React.forwardRef(
+  InstancedMesh: React.forwardRef<THREE.InstancedMesh, ThreeElements["instancedMesh"]>(
     (props: ThreeElements["instancedMesh"], ref) => {
-      React.useImperativeHandle(ref, () => ({
-        setMatrixAt: jest.fn(),
-        setColorAt: jest.fn(),
-        instanceMatrix: { needsUpdate: false },
-        instanceColor: { needsUpdate: false },
-      }));
-      return <InstancedMeshForTests {...props} />;
+      const { ref: _ref, ...rest } = props as ThreeElements["instancedMesh"] & {
+        ref?: unknown;
+      };
+      React.useImperativeHandle(ref, () =>
+        ({
+          setMatrixAt: jest.fn(),
+          setColorAt: jest.fn(),
+          instanceMatrix: { needsUpdate: false },
+          instanceColor: { needsUpdate: false },
+        }) as unknown as THREE.InstancedMesh);
+      return <InstancedMeshForTests
+        ref={ref as React.Ref<THREE.InstancedMesh>}
+        {...rest} />;
     },
   ),
   Primitive: PrimitiveForTests,

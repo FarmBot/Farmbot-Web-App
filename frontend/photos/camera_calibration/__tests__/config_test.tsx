@@ -9,16 +9,14 @@ import { SPECIAL_VALUES } from "../../remote_env/constants";
 import { DeviceSetting } from "../../../constants";
 import { DropDownItem } from "../../../ui/fb_select";
 import * as ui from "../../../ui";
+import { FBSelectProps } from "../../../ui/new_fb_select";
 
 let fbSelectOnChange: ((item: DropDownItem) => void) | undefined;
 let fbSelectSpy: jest.SpyInstance;
 
 beforeEach(() => {
   fbSelectSpy = jest.spyOn(ui, "FBSelect")
-    .mockImplementation((props: {
-      selectedItem?: DropDownItem;
-      onChange: (item: DropDownItem) => void;
-    }) => {
+    .mockImplementation(((props: FBSelectProps) => {
       fbSelectOnChange = props.onChange;
       return (
         <div>
@@ -27,7 +25,7 @@ beforeEach(() => {
             select number
           </button>
         </div>);
-    });
+    }) as never);
 });
 
 afterEach(() => {

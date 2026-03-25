@@ -7,6 +7,8 @@ import * as crud from "../../../api/crud";
 import { fakeFarmwareEnv } from "../../../__test_support__/fake_state/resources";
 import { namespace3D } from "../../three_d_settings";
 import * as ui from "../../../ui";
+import { FBSelectProps } from "../../../ui";
+import { ToggleButtonProps } from "../../../ui/toggle_button";
 
 let initSaveSpy: jest.SpyInstance;
 let editSpy: jest.SpyInstance;
@@ -25,27 +27,20 @@ beforeEach(() => {
   editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
   saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
   toggleButtonSpy = jest.spyOn(ui, "ToggleButton")
-    .mockImplementation((props: {
-      toggleAction: (e: React.MouseEvent) => void,
-      toggleValue: number | string | boolean | undefined,
-      disabled?: boolean | undefined,
-      title?: string | undefined,
-    }) =>
+    .mockImplementation(((props: ToggleButtonProps) =>
       <button
         className={"mock-toggle-button"}
         title={props.title}
         disabled={!!props.disabled}
         onClick={e => !props.disabled && props.toggleAction(e)}>
         {String(props.toggleValue)}
-      </button>);
+      </button>) as never);
   fbSelectSpy = jest.spyOn(ui, "FBSelect")
-    .mockImplementation((props: {
-      onChange: (ddi: { label: string, value: number | string }) => void,
-    }) =>
+    .mockImplementation(((props: FBSelectProps) =>
       <button
         onClick={() => props.onChange({ label: "Outdoor", value: 0 })}>
         mock-scene-select
-      </button>);
+      </button>) as never);
 });
 
 afterEach(() => {

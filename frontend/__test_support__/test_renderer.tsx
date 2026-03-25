@@ -2,7 +2,7 @@ import { type ComponentType, type ReactElement } from "react";
 import TestRenderer from "react-test-renderer";
 
 export const actRenderer = (callback: () => void | Promise<void>) =>
-  TestRenderer.act(callback);
+  TestRenderer.act(callback as never);
 
 export const createRenderer = (
   element: ReactElement,

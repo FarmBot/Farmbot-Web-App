@@ -18,7 +18,10 @@ import { DesignerPanelHeader } from "../../../farm_designer/designer_panel";
 const findByType = (
   node: React.ReactNode,
   type: unknown,
-): React.ReactElement<{ children?: React.ReactNode }> | undefined => {
+): React.ReactElement<{
+  children?: React.ReactNode;
+  backTo?: string;
+}> | undefined => {
   if (!node) { return undefined; }
   if (Array.isArray(node)) {
     for (const child of React.Children.toArray(node)) {
@@ -27,9 +30,15 @@ const findByType = (
     }
     return undefined;
   }
-  if (React.isValidElement<{ children?: React.ReactNode }>(node)) {
-    if (node.type === type) { return node; }
-    return findByType(node.props.children, type);
+  if (React.isValidElement(node)) {
+    if (node.type === type) {
+      return node as React.ReactElement<{
+        children?: React.ReactNode;
+        backTo?: string;
+      }>;
+    }
+    return findByType(
+      (node.props as { children?: React.ReactNode }).children, type);
   }
   return undefined;
 };

@@ -41,9 +41,13 @@ describe("<PinValueField />", () => {
     const p = fakeProps();
     p.currentStep.args.pin_mode = 0;
     p.currentStep.args.pin_value = 1;
-    const rendered = PinValueField(p) as JSX.Element;
-    const children = rendered.props.children as JSX.Element[];
-    const selector = children.find(child => child.type === FBSelect);
+    const rendered = PinValueField(p) as React.ReactElement<{
+      children: React.ReactElement[];
+    }>;
+    const children = rendered.props.children;
+    const selector = children.find(child => child.type === FBSelect) as
+      React.ReactElement<{ onChange: (item: { label: string; value: number }) => void }>
+      | undefined;
     selector?.props.onChange({ label: "123", value: 123 });
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep.args.pin_value).toEqual(123);
@@ -53,10 +57,14 @@ describe("<PinValueField />", () => {
     const p = fakeProps();
     p.currentStep.args.pin_mode = 1;
     p.currentStep.args.pin_value = 1;
-    const rendered = PinValueField(p) as JSX.Element;
-    const children = rendered.props.children as JSX.Element[];
-    const sliderContainer = children.find(child => child.type === "div");
-    const slider = sliderContainer?.props.children;
+    const rendered = PinValueField(p) as React.ReactElement<{
+      children: React.ReactElement[];
+    }>;
+    const children = rendered.props.children;
+    const sliderContainer = children.find(child => child.type === "div") as
+      React.ReactElement<{ children: React.ReactElement }> | undefined;
+    const slider = sliderContainer?.props.children as
+      React.ReactElement<{ onChange: (value: number) => void }> | undefined;
     (slider?.type === Slider) && slider.props.onChange(2);
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep.args.pin_value).toEqual(2);

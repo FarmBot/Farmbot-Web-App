@@ -57,7 +57,8 @@ describe("attachTerminal", () => {
     const root = document.createElement("DIV");
     root.id = "root";
     const getByIdSpy = jest.spyOn(document, "getElementById")
-      .mockImplementation(id => id === "root" ? root : undefined);
+      // eslint-disable-next-line no-null/no-null
+      .mockImplementation(id => id === "root" ? root : null);
     const terminal = attachTerminal();
     expect(terminal).toBe(mockTerminal);
     expect(terminal.open).toHaveBeenCalledWith(root);
@@ -66,7 +67,8 @@ describe("attachTerminal", () => {
 
   it("ignores the DOM if missing", () => {
     const getByIdSpy = jest.spyOn(document, "getElementById")
-      .mockImplementation(() => undefined);
+      // eslint-disable-next-line no-null/no-null
+      .mockImplementation(() => null);
     const terminal = attachTerminal();
     expect(terminal).toBe(mockTerminal);
     expect(terminal.open).not.toHaveBeenCalled();

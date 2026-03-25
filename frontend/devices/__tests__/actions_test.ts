@@ -351,7 +351,7 @@ describe("takePhoto()", () => {
     getDeviceSpy.mockImplementation(() => ({
       ...mockDeviceDefault,
       takePhoto,
-    }) as Farmbot);
+    }) as unknown as Farmbot);
     await deviceActions().takePhoto();
     expect(takePhoto).toHaveBeenCalled();
     expect(success).toHaveBeenCalledWith(Content.PROCESSING_PHOTO,
@@ -364,7 +364,7 @@ describe("takePhoto()", () => {
     getDeviceSpy.mockImplementation(() => ({
       ...mockDeviceDefault,
       takePhoto,
-    }) as Farmbot);
+    }) as unknown as Farmbot);
     localStorage.setItem("myBotIs", "online");
     await deviceActions().takePhoto();
     expect(takePhoto).not.toHaveBeenCalled();
@@ -377,7 +377,7 @@ describe("takePhoto()", () => {
     getDeviceSpy.mockImplementation(() => ({
       ...mockDeviceDefault,
       takePhoto,
-    }) as Farmbot);
+    }) as unknown as Farmbot);
     await deviceActions().takePhoto();
     await expect(takePhoto).toHaveBeenCalled();
     expect(success).not.toHaveBeenCalled();

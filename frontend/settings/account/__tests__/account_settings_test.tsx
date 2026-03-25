@@ -16,6 +16,8 @@ import { NumericSetting, StringSetting } from "../../../session_keys";
 import * as requestAccountExportModule from "../request_account_export";
 import * as devSupport from "../../../settings/dev/dev_support";
 import * as ui from "../../../ui";
+import { BIProps } from "../../../ui/blurable_input";
+import { FBSelectProps } from "../../../ui/new_fb_select";
 
 let editSpy: jest.SpyInstance;
 let saveSpy: jest.SpyInstance;
@@ -36,27 +38,19 @@ beforeEach(() => {
   futureFeaturesEnabledSpy = jest.spyOn(devSupport.DevSettings, "futureFeaturesEnabled")
     .mockImplementation(() => mockDev);
   blurableInputSpy = jest.spyOn(ui, "BlurableInput")
-    .mockImplementation((props: {
-      name?: string,
-      value?: string | number,
-      type?: string,
-      onCommit: (event: React.FormEvent<HTMLInputElement>) => void,
-    }) =>
+    .mockImplementation(((props: BIProps) =>
       <input
         name={props.name}
         defaultValue={props.value as string | undefined}
         type={props.type}
         onBlur={e => props.onCommit(e)}
-        onChange={() => { }} />);
+        onChange={() => { }} />) as never);
   fbSelectSpy = jest.spyOn(ui, "FBSelect")
-    .mockImplementation(({ onChange, selectedItem }: {
-      onChange: (item: { label: string, value: string }) => void,
-      selectedItem: { label: string } | undefined,
-    }) =>
+    .mockImplementation((({ onChange, selectedItem }: FBSelectProps) =>
       <button className="mock-fb-select"
         onClick={() => onChange({ label: "Map", value: "map" })}>
         {selectedItem?.label}
-      </button>);
+      </button>) as never);
 });
 
 afterEach(() => {
@@ -147,7 +141,12 @@ describe("<ActivityBeepSetting />", () => {
     const wrapper =
       ActivityBeepSetting(props) as React.ReactElement<{ children?: React.ReactNode }>;
     const row = wrapper.props.children as React.ReactElement<{ children?: React.ReactNode }>;
-    return React.Children.toArray(row.props.children) as JSX.Element[];
+    return React.Children.toArray(row.props.children) as [
+      React.ReactElement,
+      React.ReactElement,
+      React.ReactElement<{ toggleAction: (e: React.MouseEvent) => void }>,
+      React.ReactElement<{ onChange: (value: number) => void }>,
+    ];
   };
 
   it("sets setting: toggles off", () => {

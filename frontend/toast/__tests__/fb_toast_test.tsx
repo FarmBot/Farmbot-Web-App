@@ -62,7 +62,7 @@ describe("<Toast />", () => {
   };
 
   const getInstance = (wrapper: ReturnType<typeof createRenderer>) =>
-    getRendererInstance<Toast>(wrapper, Toast);
+    getRendererInstance<Toast, ToastProps>(wrapper, Toast);
 
   const getRootToast = (wrapper: ReturnType<typeof createRenderer>) =>
     wrapper.root.findAll(
@@ -183,10 +183,12 @@ describe("<Toast />", () => {
   it("unmounts", () => {
     const wrapper = createWrapper();
     const instance = getInstance(wrapper);
+    const intervalId = setInterval(() => undefined, 100);
     actRenderer(() => {
-      instance.setState({ intervalId: 1 });
+      instance.setState({ intervalId });
     });
     unmountRenderer(wrapper);
+    clearInterval(intervalId);
   });
 
   it("redirects", () => {

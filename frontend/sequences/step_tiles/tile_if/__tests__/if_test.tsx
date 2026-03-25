@@ -41,17 +41,19 @@ describe("<If_/>", () => {
       expect(container.textContent).toContain(string));
     const wrapper = If_(fakeProps()) as React.ReactElement<{ children?: React.ReactNode }>;
     const children =
-      React.Children.toArray(wrapper.props.children) as JSX.Element[];
+      React.Children.toArray(wrapper.props.children) as
+      React.ReactElement<{ children?: React.ReactNode }>[];
     expect(children.length).toEqual(3);
   });
 
   it("updates op", () => {
     const wrapper = If_(fakeProps()) as React.ReactElement<{ children?: React.ReactNode }>;
     const children =
-      React.Children.toArray(wrapper.props.children) as JSX.Element[];
+      React.Children.toArray(wrapper.props.children) as
+      React.ReactElement<{ children?: React.ReactNode }>[];
     const operatorChildren = React.Children.toArray(
       (children[1] as React.ReactElement<{ children?: React.ReactNode }>).props.children,
-    ) as JSX.Element[];
+    ) as React.ReactElement<{ onChange: (item: { label: string; value: string }) => void }>[];
     const operatorInput = operatorChildren[1];
     operatorInput.props.onChange({
       label: "is not", value: "not"

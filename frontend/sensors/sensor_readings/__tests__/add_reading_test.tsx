@@ -6,14 +6,9 @@ import { error } from "../../../toast/toast";
 import { fakeSensor } from "../../../__test_support__/fake_state/resources";
 import { PinMode } from "../../../sequences/step_tiles/pin_support";
 import * as ui from "../../../ui";
+import { BIProps } from "../../../ui/blurable_input";
 
-const blurableInputMock = jest.fn((props: {
-  className?: string,
-  value?: string | number,
-  type?: string,
-  name?: string,
-  onCommit: (event: React.FormEvent<HTMLInputElement>) => void,
-}) =>
+const blurableInputMock = jest.fn((props: BIProps) =>
   <input
     className={props.className}
     defaultValue={props.value as string | undefined}
@@ -43,7 +38,7 @@ describe("<AddSensorReadingMenu />", () => {
   beforeEach(() => {
     blurableInputMock.mockClear();
     blurableInputSpy = jest.spyOn(ui, "BlurableInput")
-      .mockImplementation((props: unknown) => blurableInputMock(props as never));
+      .mockImplementation(((props: BIProps) => blurableInputMock(props)) as never);
   });
 
   afterEach(() => {

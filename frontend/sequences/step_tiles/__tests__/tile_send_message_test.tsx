@@ -13,7 +13,8 @@ let editStepSpy: jest.SpyInstance;
 
 beforeEach(() => {
   editStepSpy = jest.spyOn(crud, "editStep")
-    .mockImplementation(jest.fn(x => x.executor(mockStep)));
+    .mockImplementation(((x: { executor: (step: SendMessage) => void }) =>
+      x.executor(mockStep)) as unknown as typeof crud.editStep);
 });
 
 afterEach(() => {
@@ -53,10 +54,14 @@ describe("<TileSendMessage/>", () => {
     const instance = new TileSendMessage(fakeProps());
     expect(instance.currentSelection.label).toMatch(/info/i);
     expect(labels[2]?.textContent).toEqual("Ticker Notification");
-    const ticker = container.querySelector("input[name='ticker']");
-    const toast = container.querySelector("input[name='toast']");
-    const email = container.querySelector("input[name='email']");
-    const speak = container.querySelector("input[name='espeak']");
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    const ticker = container.querySelector("input[name='ticker']") as HTMLInputElement | null;
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    const toast = container.querySelector("input[name='toast']") as HTMLInputElement | null;
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    const email = container.querySelector("input[name='email']") as HTMLInputElement | null;
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    const speak = container.querySelector("input[name='espeak']") as HTMLInputElement | null;
     expect(ticker?.checked).toBeTruthy();
     expect(ticker?.disabled).toBeTruthy();
     expect(labels[3]?.textContent).toEqual("Toast Pop Up");

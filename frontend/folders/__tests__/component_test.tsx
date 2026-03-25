@@ -147,11 +147,15 @@ const setStateSync = <T extends {
   props: unknown;
   setState: unknown;
 }>(instance: T): T => {
-  instance.setState = ((state, callback) => {
+  instance.setState = ((state: unknown, callback?: () => void) => {
     const update = typeof state == "function"
-      ? state(instance.state, instance.props)
+      ? (state as (prev: unknown, props: unknown) => unknown)(
+        instance.state, instance.props)
       : state;
-    instance.state = { ...instance.state, ...update };
+    instance.state = {
+      ...(instance.state as Record<string, unknown>),
+      ...(update as Record<string, unknown>),
+    };
     callback?.();
   }) as T["setState"];
   return instance;
@@ -786,7 +790,9 @@ describe("<SequenceDropArea />", () => {
   it("handles drag over", () => {
     const p = fakeProps();
     const instance = setStateSync(new SequenceDropArea(p));
-    const rendered = instance.render() as React.ReactElement;
+    const rendered = instance.render() as React.ReactElement<{
+      onDragOver: (e: { preventDefault: () => void }) => void;
+    }>;
     const e = { preventDefault: jest.fn() };
     rendered.props.onDragOver(e);
     expect(e.preventDefault).toHaveBeenCalled();

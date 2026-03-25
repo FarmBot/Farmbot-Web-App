@@ -139,9 +139,13 @@ describe("<PinModeDropdown />", () => {
       args: { pin_number: 3, pin_value: 0, pin_mode: 0 }
     };
     const p = fakeStepParams(step);
-    const rendered = PinModeDropdown(p);
-    const children = rendered.props.children as JSX.Element[];
-    const selector = children.find(child => child.type === FBSelect);
+    const rendered = PinModeDropdown(p) as React.ReactElement<{
+      children: React.ReactElement[];
+    }>;
+    const children = rendered.props.children;
+    const selector = children.find(child => child.type === FBSelect) as
+      React.ReactElement<{ onChange: (item: { label: string; value: number }) => void }>
+      | undefined;
     selector?.props.onChange({ label: "", value: 0 });
     expect(editStepSpy).toHaveBeenCalled();
   });

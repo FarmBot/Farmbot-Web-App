@@ -69,19 +69,17 @@ beforeEach(() => {
   seedAccountSpy = jest.spyOn(messageActions, "seedAccount")
     .mockImplementation(() => mockSeedAccount as never);
   axiosDeleteSpy = jest.spyOn(axios, "delete").mockResolvedValue({} as never);
-  sessionClearSpy = jest.spyOn(Session, "clear").mockImplementation(jest.fn());
+  sessionClearSpy = jest.spyOn(Session, "clear")
+    .mockImplementation(() => undefined as never);
   fbSelectSpy = jest.spyOn(ui, "FBSelect")
-    .mockImplementation((props: {
-      list: unknown[];
-      selectedItem?: { label?: string };
+    .mockImplementation(((props: import("../../ui/new_fb_select").FBSelectProps & {
       customNullLabel?: string;
-      onChange?: (item: { label: string; value: string }) => void;
     }) =>
       React.createElement("button", {
         className: "fb-select-mock",
         "data-list": JSON.stringify(props.list),
         onClick: () => props.onChange?.({ label: "", value: "selection" }),
-      }, props.selectedItem?.label || props.customNullLabel || ""));
+      }, props.selectedItem?.label || props.customNullLabel || "")) as never);
 });
 
 afterEach(() => {

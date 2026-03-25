@@ -31,12 +31,14 @@ import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { Path } from "../../internal_urls";
 import * as mapActions from "../../farm_designer/map/actions";
 import * as ui from "../../ui";
+import { FBSelectProps } from "../../ui/new_fb_select";
+import { DropDownItem } from "../../ui/fb_select";
 
 let fbSelectSpy: jest.SpyInstance;
 
 beforeEach(() => {
   fbSelectSpy = jest.spyOn(ui, "FBSelect")
-    .mockImplementation((props: any) => {
+    .mockImplementation(((props: FBSelectProps) => {
       const value = props.selectedItem ? String(props.selectedItem.value) : "";
       return <select
         className={"mock-fb-select"}
@@ -44,18 +46,20 @@ beforeEach(() => {
         onChange={e => {
           const nextValue = e.currentTarget.value;
           const selected = nextValue === ""
-            ? props.list.find((item: any) => item.isNull)
-            || props.list.find((item: any) => String(item.value) === "")
-            : props.list.find((item: any) => String(item.value) === nextValue);
+            ? props.list.find((item: DropDownItem) => item.isNull)
+            || props.list.find((item: DropDownItem) =>
+              String(item.value) === "")
+            : props.list.find((item: DropDownItem) =>
+              String(item.value) === nextValue);
           selected && props.onChange(selected);
         }}>
         <option value={""} />
-        {props.list.map((item: any, index: number) =>
+        {props.list.map((item: DropDownItem, index: number) =>
           <option key={`${item.value}-${index}`} value={String(item.value)}>
             {item.label}
           </option>)}
       </select>;
-    });
+    }) as never);
 });
 
 afterEach(() => {

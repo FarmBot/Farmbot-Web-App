@@ -58,7 +58,9 @@ beforeEach(() => {
       ? value(store.dispatch, store.getState)
       : value);
   stepGetSpy = jest.spyOn(draggableActions, "stepGet")
-    .mockImplementation(() => () => mockStepGetResult);
+    .mockImplementation(() =>
+      (() => mockStepGetResult) as unknown as
+        ReturnType<typeof draggableActions.stepGet>);
   destroySpy = jest.spyOn(crudModule, "destroy").mockImplementation(jest.fn());
   editSpy = jest.spyOn(crudModule, "edit").mockImplementation(jest.fn());
   initSpy = jest.spyOn(crudModule, "init").mockImplementation(jest.fn());
@@ -357,7 +359,7 @@ describe("moveSequence", () => {
 
 describe("dropSequence()", () => {
   beforeEach(() => {
-    mockStepGetResult.value.args.sequence_id = mockSequence.body.id;
+    mockStepGetResult.value.args.sequence_id = mockSequence.body.id as number;
     mockStepGetResult.resourceUuid = "";
   });
 

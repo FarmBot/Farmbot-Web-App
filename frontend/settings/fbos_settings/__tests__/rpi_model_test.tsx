@@ -9,6 +9,7 @@ import { fakeDevice } from "../../../__test_support__/resource_index_builder";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { FirmwareHardware } from "farmbot";
 import * as ui from "../../../ui";
+import { FBSelectProps } from "../../../ui";
 
 type TestCase = [string, string, FirmwareHardware, string];
 
@@ -30,12 +31,10 @@ beforeEach(() => {
   editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
   saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
   fbSelectSpy = jest.spyOn(ui, "FBSelect")
-    .mockImplementation((props: {
-      onChange: (ddi: { label: string, value: string }) => void,
-    }) =>
+    .mockImplementation(((props: FBSelectProps) =>
       <button onClick={() => props.onChange({ label: "", value: "3" })}>
         select-rpi3
-      </button>);
+      </button>) as never);
 });
 
 afterEach(() => {

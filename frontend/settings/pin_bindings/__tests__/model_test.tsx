@@ -65,9 +65,13 @@ describe("<ElectronicsBoxModel />", () => {
         }
       }) as never);
     useFrameSpy = jest.spyOn(threeFiber, "useFrame")
-      .mockImplementation(callback => callback({
-        clock: { getElapsedTime: jest.fn(() => mockElapsedTime) }
-      } as never));
+      .mockImplementation(((callback, _renderPriority) => {
+        callback({
+          clock: { getElapsedTime: jest.fn(() => mockElapsedTime) }
+        } as never, 0, undefined as never);
+        // eslint-disable-next-line no-null/no-null
+        return null;
+      }) as typeof threeFiber.useFrame);
     execSequenceSpy = jest.spyOn(deviceActions, "execSequence")
       .mockImplementation(jest.fn());
   });

@@ -2,7 +2,7 @@ import React from "react";
 import { render, fireEvent, act } from "@testing-library/react";
 import * as designerPanel from "../../../farm_designer/designer_panel";
 const mockDesignerPanelTop = jest.fn(
-  ({ children, onClick }: { children: React.ReactNode; onClick?: () => void }) =>
+  ({ children, onClick }: React.ComponentProps<typeof designerPanel.DesignerPanelTop>) =>
     <div className="mock-panel-top" onClick={onClick}>{children}</div>);
 import {
   mapStateToProps,
@@ -26,14 +26,17 @@ describe("<DesignerRegimenList />", () => {
     addRegimenSpy = jest.spyOn(addRegimenModule, "addRegimen")
       .mockImplementation(jest.fn());
     designerPanelSpy = jest.spyOn(designerPanel, "DesignerPanel")
-      .mockImplementation(({ children }: { children: React.ReactNode }) =>
-        <div>{children}</div>);
+      .mockImplementation(((
+        { children }: React.ComponentProps<typeof designerPanel.DesignerPanel>) =>
+        <div>{children}</div>) as never);
     designerPanelContentSpy = jest.spyOn(designerPanel, "DesignerPanelContent")
-      .mockImplementation(({ children }: { children: React.ReactNode }) =>
-        <div>{children}</div>);
+      .mockImplementation(((
+        { children }: React.ComponentProps<typeof designerPanel.DesignerPanelContent>) =>
+        <div>{children}</div>) as never);
     designerPanelTopSpy = jest.spyOn(designerPanel, "DesignerPanelTop")
-      .mockImplementation((props: { children: React.ReactNode; onClick?: () => void }) =>
-        mockDesignerPanelTop(props));
+      .mockImplementation(((
+        props: React.ComponentProps<typeof designerPanel.DesignerPanelTop>) =>
+        mockDesignerPanelTop(props)) as never);
     mockDesignerPanelTop.mockClear();
   });
 

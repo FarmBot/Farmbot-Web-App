@@ -26,7 +26,7 @@ describe("<BotFigure/>", () => {
 
   const renderFigure = (
     props: BotFigureProps,
-    ref?: React.RefObject<BotFigure | undefined>,
+    ref?: React.RefObject<BotFigure | null>,
   ) => render(<svg><BotFigure {...props} ref={ref} /></svg>);
 
   const requiredElement = (

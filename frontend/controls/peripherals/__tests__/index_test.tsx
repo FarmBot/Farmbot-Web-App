@@ -24,7 +24,9 @@ describe("<Peripherals />", () => {
     const { container } = render(<Peripherals {...fakeProps()} />);
     ["Edit", "Save", "Fake Pin", "1"].map(string =>
       expect(container.textContent).toContain(string));
-    const saveButton = container.querySelector("button[title='save']");
+    const saveButton =
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+      container.querySelector("button[title='save']") as HTMLButtonElement | null;
     expect(saveButton?.textContent).toContain("Save");
     expect(saveButton?.hidden).toBeTruthy();
   });
@@ -32,10 +34,13 @@ describe("<Peripherals />", () => {
   it("isEditing", () => {
     const { container } = render(<Peripherals {...fakeProps()} />);
     const editButton = container.querySelector("button[title='Edit']");
-    expect(container.querySelector("button[title='add peripheral']")?.hidden)
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    const addButton = container.querySelector(
+      "button[title='add peripheral']") as HTMLButtonElement | null;
+    expect(addButton?.hidden)
       .toBeTruthy();
     editButton && fireEvent.click(editButton);
-    expect(container.querySelector("button[title='add peripheral']")?.hidden)
+    expect(addButton?.hidden)
       .toBeFalsy();
   });
 
@@ -112,8 +117,9 @@ describe("<Peripherals />", () => {
     const { container } = render(<Peripherals {...p} />);
     const editButton = container.querySelector("button[title='Edit']");
     editButton && fireEvent.click(editButton);
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     const stockButton = container.querySelector(
-      "button[title='add stock peripherals']");
+      "button[title='add stock peripherals']") as HTMLButtonElement | null;
     expect(stockButton?.textContent?.toLowerCase()).toContain("stock");
     expect(stockButton?.hidden).toBeTruthy();
   });

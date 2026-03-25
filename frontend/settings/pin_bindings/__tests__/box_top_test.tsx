@@ -17,7 +17,8 @@ describe("<BoxTop />", () => {
     electronicsBoxModelSpy = jest.spyOn(model, "ElectronicsBoxModel")
       .mockImplementation(() => <div className={"electronics-box-3d-model"} />);
     boxTopButtonsSpy = jest.spyOn(boxTopGpioDiagram, "BoxTopButtons")
-      .mockImplementation(() => <div className={"box-top-2d-wrapper"} />);
+      .mockImplementation(((_: BoxTopProps) =>
+        <div className={"box-top-2d-wrapper"} />) as never);
   });
 
   afterEach(() => {

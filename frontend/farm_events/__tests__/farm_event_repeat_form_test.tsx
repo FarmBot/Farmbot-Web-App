@@ -7,6 +7,10 @@ import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
 import { DropDownItem } from "../../ui";
 import * as ui from "../../ui";
 import * as eventTimePicker from "../event_time_picker";
+import { BIProps } from "../../ui/blurable_input";
+import { FBSelectProps } from "../../ui/new_fb_select";
+
+type TestFBSelectProps = FBSelectProps & { disabled?: boolean };
 
 let mockFBSelectProps: {
   disabled?: boolean;
@@ -45,43 +49,30 @@ describe("<FarmEventRepeatForm/>", () => {
         className?: string;
       }) => <div className={props.className}>{props.children}</div>);
     blurableInputSpy = jest.spyOn(ui, "BlurableInput")
-      .mockImplementation((props: {
-        name: string;
-        disabled?: boolean;
-        value: string;
-        onCommit: (e: React.SyntheticEvent<HTMLInputElement>) => void;
-      }) => <input
+      .mockImplementation(((props: BIProps) => <input
         data-testid={`blurable-${props.name}`}
         name={props.name}
         defaultValue={props.value}
         disabled={props.disabled}
         onChange={() => { }}
-        onBlur={e => props.onCommit(e)} />);
+        onBlur={e => props.onCommit(e)} />) as never);
     fbSelectSpy = jest.spyOn(ui, "FBSelect")
-      .mockImplementation((props: {
-        disabled?: boolean;
-        selectedItem?: DropDownItem;
-        onChange: (ddi: DropDownItem) => void;
-      }) => {
+      .mockImplementation(((props: TestFBSelectProps) => {
         mockFBSelectProps = props;
         return <button
           data-testid={"time-unit"}
           disabled={props.disabled}
           onClick={() => props.onChange({ label: "Daily", value: "daily" })} />;
-      });
+      }) as never);
     eventTimePickerSpy = jest.spyOn(eventTimePicker, "EventTimePicker")
-      .mockImplementation((props: {
-        name: string;
-        disabled?: boolean;
-        value: string;
-        onCommit: (e: React.SyntheticEvent<HTMLInputElement>) => void;
-      }) => <input
-        data-testid={`event-time-${props.name}`}
-        name={props.name}
-        defaultValue={props.value}
-        disabled={props.disabled}
-        onChange={() => { }}
-        onBlur={e => props.onCommit(e)} />);
+      .mockImplementation(((props: Parameters<typeof eventTimePicker.EventTimePicker>[0]) =>
+        <input
+          data-testid={`event-time-${props.name}`}
+          name={props.name}
+          defaultValue={props.value}
+          disabled={props.disabled}
+          onChange={() => { }}
+          onBlur={e => props.onCommit(e)} />) as never);
   });
 
   afterEach(() => {
@@ -93,8 +84,7 @@ describe("<FarmEventRepeatForm/>", () => {
 
   it("shows proper values", () => {
     const p = fakeProps();
-    const { container } = render<FarmEventRepeatFormProps>(
-      <FarmEventRepeatForm {...p} />);
+    const { container } = render(<FarmEventRepeatForm {...p} />);
     expect((container.querySelector(
       `[data-testid="${Selectors.REPEAT}"]`) as HTMLInputElement).value)
       .toEqual(p.repeat);
@@ -111,8 +101,7 @@ describe("<FarmEventRepeatForm/>", () => {
   it("defaults to `daily` when a bad input it passed", () => {
     const p = fakeProps();
     p.timeUnit = "never" as "daily";
-    const { container } = render<FarmEventRepeatFormProps>(
-      <FarmEventRepeatForm {...p} />);
+    const { container } = render(<FarmEventRepeatForm {...p} />);
     expect((container.querySelector(
       `[data-testid="${Selectors.REPEAT}"]`) as HTMLInputElement).value)
       .toEqual(p.repeat);
@@ -122,8 +111,7 @@ describe("<FarmEventRepeatForm/>", () => {
   it("disables all inputs via the `disabled` prop", () => {
     const p = fakeProps();
     p.disabled = true;
-    const { container } = render<FarmEventRepeatFormProps>(
-      <FarmEventRepeatForm {...p} />);
+    const { container } = render(<FarmEventRepeatForm {...p} />);
     expect(container.querySelector(`[data-testid="${Selectors.END_DATE}"]`))
       .toBeDisabled();
     expect(container.querySelector(`[data-testid="${Selectors.END_TIME}"]`))

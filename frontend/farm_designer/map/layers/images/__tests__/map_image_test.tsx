@@ -11,7 +11,10 @@ import { trim } from "../../../../../util";
 import {
   fakeMapTransformProps,
 } from "../../../../../__test_support__/map_transform_props";
-import { svgMount } from "../../../../../__test_support__/svg_mount";
+import {
+  SvgComponentWrapper,
+  svgMount,
+} from "../../../../../__test_support__/svg_mount";
 import {
   fakeCameraCalibrationData,
 } from "../../../../../__test_support__/fake_camera_data";
@@ -52,7 +55,8 @@ describe("<MapImage />", () => {
     const p = fakeProps();
     p.image.body.meta = { x: 0, y: 0, z: 0 };
     const wrapper = svgMount(<MapImage {...p} />);
-    wrapper.find(MapImage).setState({ imageWidth: 100, imageHeight: 100 });
+    (wrapper.find(MapImage) as SvgComponentWrapper)
+      .setState({ imageWidth: 100, imageHeight: 100 });
     expect(wrapper.html().includes("image_url")
       || wrapper.html().includes("map-image-mock")).toBeTruthy();
   });
@@ -61,15 +65,16 @@ describe("<MapImage />", () => {
     const p = fakeProps();
     p.image.body.meta = { x: 0, y: 0, z: 0 };
     const wrapper = svgMount(<MapImage {...p} />);
-    expect(wrapper.find(MapImage).state())
+    expect((wrapper.find(MapImage) as SvgComponentWrapper).state())
       .toEqual({ imageWidth: 0, imageHeight: 0 });
     const img = new Image();
     img.width = 100;
     img.height = 200;
     act(() => {
-      wrapper.find<MapImage>(MapImage).instance().imageCallback(img)();
+      (((wrapper.find(MapImage) as SvgComponentWrapper).instance() as unknown) as MapImage)
+        ?.imageCallback(img)();
     });
-    const state = wrapper.find(MapImage).state() as
+    const state = (wrapper.find(MapImage) as SvgComponentWrapper).state() as
       { imageWidth?: number; imageHeight?: number };
     const updated = state.imageWidth === 100 && state.imageHeight === 200;
     const untouched = state.imageWidth === 0 && state.imageHeight === 0;
@@ -104,8 +109,22 @@ describe("<MapImage />", () => {
       const normalize = (input: string) => input.replace(/\s+/g, " ").trim();
       it(`renders image: INPUT_SET_${num}`, () => {
         const wrapper = svgMount(<MapImage {...inputData[num]} />);
-        wrapper.find(MapImage).setState({ imageWidth: 480, imageHeight: 640 });
-        const imageProps = wrapper.find("image").props();
+        (wrapper.find(MapImage) as SvgComponentWrapper)
+          .setState({ imageWidth: 480, imageHeight: 640 });
+        const imageProps = wrapper.find("image").props() as Record<string, unknown> & {
+          xlinkHref?: string;
+          x?: number;
+          y?: number;
+          width?: number;
+          height?: number;
+          clipPath?: string;
+          opacity?: number;
+          style?: {
+            transformOrigin?: string;
+            transform?: string;
+          };
+          ["data-comment"]?: unknown;
+        };
         expect(imageProps.xlinkHref).toEqual("image_url");
         expect(imageProps.x).toEqual(0);
         expect(imageProps.y).toEqual(0);
@@ -350,7 +369,8 @@ describe("<MapImage />", () => {
     p.hoveredMapImage = 1;
     p.image.body.id = 1;
     const wrapper = svgMount(<MapImage {...p} />);
-    wrapper.find(MapImage).setState({ imageWidth: 480, imageHeight: 640 });
+    (wrapper.find(MapImage) as SvgComponentWrapper)
+      .setState({ imageWidth: 480, imageHeight: 640 });
     expect(wrapper.find("image").props().opacity).toEqual(1);
     expect(wrapper.find("#highlight-border").length).toEqual(1);
   });
@@ -360,7 +380,8 @@ describe("<MapImage />", () => {
     p.hoveredMapImage = 100;
     p.image.body.id = 1;
     const wrapper = svgMount(<MapImage {...p} />);
-    wrapper.find(MapImage).setState({ imageWidth: 480, imageHeight: 640 });
+    (wrapper.find(MapImage) as SvgComponentWrapper)
+      .setState({ imageWidth: 480, imageHeight: 640 });
     expect(wrapper.find("image").props().opacity).toEqual(0.3);
     expect(wrapper.find("#highlight-border").length).toEqual(0);
   });
@@ -371,7 +392,8 @@ describe("<MapImage />", () => {
     const wrapper = svgMount(<MapImage {...p} />);
     const img = new Image();
     act(() => {
-      wrapper.find<MapImage>(MapImage).instance().imageCallback(img)();
+      (((wrapper.find(MapImage) as SvgComponentWrapper).instance() as unknown) as MapImage)
+        ?.imageCallback(img)();
     });
     expect(p.callback).toHaveBeenCalledWith(img);
   });
@@ -381,7 +403,8 @@ describe("<MapImage />", () => {
     p.disableTranslation = true;
     const wrapper = svgMount(<MapImage {...p} />);
     act(() => {
-      wrapper.find(MapImage).setState({ imageWidth: 480, imageHeight: 640 });
+      (wrapper.find(MapImage) as SvgComponentWrapper)
+        .setState({ imageWidth: 480, imageHeight: 640 });
     });
     expect(wrapper.html()).toContain("scale(-1, -1)  rotate(0deg)");
   });

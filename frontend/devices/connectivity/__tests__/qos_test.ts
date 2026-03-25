@@ -15,7 +15,7 @@ describe("QoS helpers", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useRealTimers();
-    window.logStore = undefined;
+    window.logStore = undefined as unknown as LogStore;
   });
 
   it("calculates latency", () => {

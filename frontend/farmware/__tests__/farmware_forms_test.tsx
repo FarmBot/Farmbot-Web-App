@@ -15,6 +15,7 @@ import { FarmwareName } from "../../sequences/step_tiles/tile_execute_script";
 import * as crud from "../../api/crud";
 import * as deviceModule from "../../device";
 import * as ui from "../../ui";
+import { FBSelectProps } from "../../ui/new_fb_select";
 
 let destroySpy: jest.SpyInstance;
 let getDeviceSpy: jest.SpyInstance;
@@ -28,11 +29,9 @@ beforeEach(() => {
   destroySpy = jest.spyOn(crud, "destroy")
     .mockImplementation(jest.fn());
   fbSelectSpy = jest.spyOn(ui, "FBSelect")
-    .mockImplementation((props: {
-      onChange: (ddi: { label: string; value: number }) => void;
-    }) => <button
+    .mockImplementation(((props: FBSelectProps) => <button
       data-testid={"fb-select"}
-      onClick={() => props.onChange({ label: "", value: 1 })} />);
+      onClick={() => props.onChange({ label: "", value: 1 })} />) as never);
   expandableHeaderSpy = jest.spyOn(ui, "ExpandableHeader")
     .mockImplementation((props: { title: string; onClick: () => void }) =>
       <button className={"expandable-header"} onClick={props.onClick}>

@@ -5,6 +5,7 @@ import { AnyAction, Dispatch, MiddlewareAPI } from "redux";
 import { bot as fakeBot } from "../../__test_support__/fake_state/bot";
 import { cloneDeep } from "lodash";
 import * as deviceActions from "../../devices/actions";
+import { Everything } from "../../interfaces";
 
 describe("version tracker middleware", () => {
   beforeEach(() => {
@@ -22,12 +23,12 @@ describe("version tracker middleware", () => {
       resources: buildResourceIndex([fakeDevice({ fbos_version: "0.0.0" })]),
     };
     state.bot.hardware.informational_settings.controller_version = "0.0.0";
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    type Mw = MiddlewareAPI<Dispatch<AnyAction>, any>;
-    const fakeStore: Partial<Mw> = {
-      getState: () => state
+    const fakeStore: Partial<MiddlewareAPI<Dispatch<AnyAction>, Everything>> = {
+      getState: () => state as unknown as Everything
     };
-    versionChangeMiddleware.fn(fakeStore as Mw)(jest.fn())({
+    versionChangeMiddleware.fn(fakeStore as unknown as import("redux").Store<
+      Everything
+    >)(jest.fn())({
       type: "ANY", payload: {}
     });
     expect(window.Rollbar.configure)

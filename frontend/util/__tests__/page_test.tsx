@@ -66,8 +66,9 @@ describe("entryPoint()", () => {
       react: { useSuspense: false },
     });
     const initSpy = jest.spyOn(i18next, "init")
-      .mockImplementation((conf, cb) => {
-        cb?.();
+      .mockImplementation((_conf, cb) => {
+        // eslint-disable-next-line no-null/no-null
+        cb?.(null as never, (() => "") as never);
         return {} as unknown as ReturnType<typeof i18next.init>;
       });
     const result = entryPoint(Foo) as Promise<unknown> | undefined;

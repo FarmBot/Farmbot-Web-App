@@ -19,6 +19,7 @@ import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import * as deviceActions from "../../../devices/actions";
 import { FirmwareHardware } from "farmbot";
 import * as ui from "../../../ui";
+import { FBSelectProps } from "../../../ui";
 
 let updateConfigSpy: jest.SpyInstance;
 let confirmSpy: jest.SpyInstance | undefined;
@@ -28,11 +29,7 @@ beforeEach(() => {
   updateConfigSpy = jest.spyOn(deviceActions, "updateConfig")
     .mockImplementation(jest.fn());
   fbSelectSpy = jest.spyOn(ui, "FBSelect")
-    .mockImplementation((props: {
-      list: Array<{ label: string, value: number | string }>,
-      selectedItem?: { label: string, value: number | string },
-      onChange: (ddi: { label: string, value: number | string }) => void,
-    }) =>
+    .mockImplementation(((props: FBSelectProps) =>
       <div>
         <span data-testid="selected-item">
           {JSON.stringify(props.selectedItem)}
@@ -50,7 +47,7 @@ beforeEach(() => {
           onClick={() => props.onChange({ label: "stable", value: "stable" })}>
           select-stable
         </button>
-      </div>);
+      </div>) as never);
 });
 
 afterEach(() => {

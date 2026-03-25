@@ -1,7 +1,44 @@
 import React from "react";
-import { act, render } from "@testing-library/react";
+import { act, render, type RenderResult } from "@testing-library/react";
 
 type NodeLike = Element;
+type WrapperNode = {
+  prop: (name: string) => unknown;
+  props: () => Record<string, unknown>;
+};
+
+export type SvgNodeWrapper = {
+  length: number;
+  first: () => SvgNodeWrapper;
+  last: () => SvgNodeWrapper;
+  at: (index: number) => SvgNodeWrapper;
+  find: (selector: unknown) => SvgNodeWrapper;
+  props: () => Record<string, unknown>;
+  prop: (name: string) => unknown;
+  filterWhere: (predicate: (node: WrapperNode) => boolean) => SvgNodeWrapper;
+  hasClass: (className: string) => boolean;
+  text: () => string;
+  html: () => string;
+  container: HTMLElement;
+};
+
+export type SvgComponentWrapper = {
+  setState: (state: unknown, callback?: () => void) => void;
+  state: () => unknown;
+  instance: () => Record<string, unknown> | undefined;
+  props: () => Record<string, unknown>;
+  html: () => string;
+  first: () => SvgComponentWrapper;
+  last: () => SvgComponentWrapper;
+  at: () => SvgComponentWrapper;
+  find: (subSelector: unknown) => SvgNodeWrapper;
+};
+
+type SvgMountResult = RenderResult & {
+  html: () => string;
+  find(selector: string): SvgNodeWrapper;
+  find(selector: unknown): SvgNodeWrapper | SvgComponentWrapper;
+};
 
 const toCamel = (key: string) =>
   key
@@ -48,7 +85,7 @@ const propsOf = (node?: NodeLike) => {
   return props;
 };
 
-const makeWrapper = (nodes: NodeLike[], root: HTMLElement) => ({
+const makeWrapper = (nodes: NodeLike[], root: HTMLElement): SvgNodeWrapper => ({
   length: nodes.length,
   first: () => makeWrapper(nodes.length ? [nodes[0]] : [], root),
   last: () => makeWrapper(nodes.length ? [nodes[nodes.length - 1]] : [], root),
@@ -68,10 +105,7 @@ const makeWrapper = (nodes: NodeLike[], root: HTMLElement) => ({
   prop: (name: string) => (propsOf(nodes[0]))[name],
   filterWhere: (
     predicate: (
-      node: {
-        prop: (name: string) => unknown;
-        props: () => Record<string, unknown>;
-      }
+      node: WrapperNode
     ) => boolean,
   ) => {
     const filtered = nodes.filter(node => predicate({
@@ -105,7 +139,7 @@ export function svgMount(element: React.ReactNode) {
 
   const view = render(<svg>{withRef}</svg>);
   const root = view.container;
-  const findComponent = (selector: unknown) => {
+  const findComponent = (selector: unknown): SvgComponentWrapper => {
     const instance = classInstances.get(selector);
     return {
       setState: (state: unknown, callback?: () => void) => {
@@ -114,7 +148,7 @@ export function svgMount(element: React.ReactNode) {
       },
       state: () => (instance?.state) || {},
       instance: () => instance,
-      props: () => (instance?.props) || {},
+      props: () => (instance?.props as Record<string, unknown> | undefined) || {},
       html: () => root.innerHTML,
       first: () => findComponent(selector),
       last: () => findComponent(selector),
@@ -137,5 +171,5 @@ export function svgMount(element: React.ReactNode) {
       }
       return makeWrapper(Array.from(root.querySelectorAll("svg > *")), root);
     },
-  };
+  } as SvgMountResult;
 }

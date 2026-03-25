@@ -9,6 +9,7 @@ import {
 } from "../../../__test_support__/resource_index_builder";
 import { DeviceSetting } from "../../../constants";
 import * as ui from "../../../ui";
+import { ToggleButtonProps } from "../../../ui/toggle_button";
 
 let settingToggleSpy: jest.SpyInstance;
 let toggleButtonSpy: jest.SpyInstance;
@@ -17,8 +18,8 @@ beforeEach(() => {
   settingToggleSpy = jest.spyOn(deviceActions, "settingToggle")
     .mockImplementation(jest.fn());
   toggleButtonSpy = jest.spyOn(ui, "ToggleButton")
-    .mockImplementation((props: { toggleAction: () => void }) =>
-      <button data-testid="toggle-button" onClick={props.toggleAction} />);
+    .mockImplementation(((props: ToggleButtonProps) =>
+      <button data-testid="toggle-button" onClick={props.toggleAction} />) as never);
 });
 
 afterEach(() => {

@@ -9,16 +9,16 @@ let attachAppToDomSpy: jest.SpyInstance;
 let initSpy: jest.SpyInstance;
 
 beforeEach(() => {
-  stopIESpy = jest.spyOn(stopIe, "stopIE").mockImplementation(jest.fn());
+  stopIESpy = jest.spyOn(stopIe, "stopIE").mockImplementation(() => { });
   detectLanguageSpy = jest.spyOn(i18n, "detectLanguage")
     .mockImplementation(() => Promise.resolve({}));
   attachAppToDomSpy = jest.spyOn(routes, "attachAppToDom")
-    .mockImplementation(jest.fn());
+    .mockImplementation(() => { });
   initSpy = jest.spyOn(i18next, "init")
-    .mockImplementation(((_, cb) => {
+    .mockImplementation((((_: unknown, cb?: () => void) => {
       cb?.();
       return undefined as never;
-    }) as typeof i18next.init);
+    }) as unknown) as typeof i18next.init);
 });
 
 afterEach(() => {

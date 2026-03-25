@@ -6,6 +6,7 @@ import {
 } from "../firmware_path";
 import * as deviceActions from "../../../devices/actions";
 import * as ui from "../../../ui";
+import { FBSelectProps } from "../../../ui";
 
 let updateConfigSpy: jest.SpyInstance;
 let fbSelectSpy: jest.SpyInstance;
@@ -14,9 +15,7 @@ beforeEach(() => {
   updateConfigSpy = jest.spyOn(deviceActions, "updateConfig")
     .mockImplementation(jest.fn());
   fbSelectSpy = jest.spyOn(ui, "FBSelect")
-    .mockImplementation((props: {
-      onChange: (ddi: { label: string, value: string }) => void,
-    }) =>
+    .mockImplementation(((props: FBSelectProps) =>
       <div>
         <button onClick={() => props.onChange({ label: "", value: "path" })}>
           select-path
@@ -24,7 +23,7 @@ beforeEach(() => {
         <button onClick={() => props.onChange({ label: "", value: "manual" })}>
           select-manual
         </button>
-      </div>);
+      </div>) as never);
 });
 
 afterEach(() => {

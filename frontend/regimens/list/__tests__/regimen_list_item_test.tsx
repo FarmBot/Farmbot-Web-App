@@ -32,7 +32,10 @@ afterEach(() => {
 const findByType = (
   node: React.ReactNode,
   type: unknown,
-): React.ReactElement<{ children?: React.ReactNode }> | undefined => {
+): React.ReactElement<{
+  children?: React.ReactNode;
+  onChange?: (color: Color) => void;
+}> | undefined => {
   if (!node) { return undefined; }
   if (Array.isArray(node)) {
     for (const child of React.Children.toArray(node)) {
@@ -41,9 +44,15 @@ const findByType = (
     }
     return undefined;
   }
-  if (React.isValidElement<{ children?: React.ReactNode }>(node)) {
-    if (node.type === type) { return node; }
-    return findByType(node.props.children, type);
+  if (React.isValidElement(node)) {
+    if (node.type === type) {
+      return node as React.ReactElement<{
+        children?: React.ReactNode;
+        onChange?: (color: Color) => void;
+      }>;
+    }
+    return findByType(
+      (node.props as { children?: React.ReactNode }).children, type);
   }
   return undefined;
 };
@@ -100,7 +109,9 @@ describe("<RegimenListItem/>", () => {
       fireEvent.click(redItem);
     } else {
       const colorPickerPopover = popoverSpy.mock.calls.find(
-        ([popoverProps]) => !!(popoverProps.content as React.ReactElement)
+        ([popoverProps]) => !!(popoverProps.content as React.ReactElement<{
+          onChange?: (color: Color) => void;
+        }>)
           ?.props?.onChange);
       const colorPickerCluster = colorPickerPopover?.[0]
         .content as React.ReactElement<{ onChange: (color: Color) => void }>;

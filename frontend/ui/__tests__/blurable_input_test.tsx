@@ -27,7 +27,7 @@ describe("<BlurableInput />", () => {
   };
 
   const getInstance = (wrapper: ReturnType<typeof createRenderer>) =>
-    getRendererInstance<BlurableInput>(wrapper, BlurableInput);
+    getRendererInstance<BlurableInput, BIProps>(wrapper, BlurableInput);
 
   beforeEach(() => jest.clearAllMocks());
 

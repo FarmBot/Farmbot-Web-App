@@ -22,7 +22,7 @@ describe("attachEventListeners", () => {
   });
 
   it("attaches relevant callbacks", () => {
-    const dev = mockBot;
+    const dev = mockBot as unknown as import("farmbot").Farmbot;
     attachEventListeners(dev, jest.fn(), jest.fn());
     [
       FbjsEventName.status,

@@ -29,6 +29,11 @@ afterEach(() => {
 });
 
 const DDI = UPDATE_RESOURCE_DDIS();
+type ValueSelect = React.ReactElement<{
+  list: unknown[];
+  selectedItem: { label?: string; value?: unknown };
+  onChange: (item: { label: string; value: string | number }) => void;
+}>;
 
 describe("<ValueSelection />", () => {
   const fakeProps = (): ValueSelectionProps => ({
@@ -45,9 +50,9 @@ describe("<ValueSelection />", () => {
     const wrapper =
       ValueSelection(props) as React.ReactElement<{ children?: React.ReactNode }>;
     const children = React.Children.toArray(wrapper.props.children) as
-      JSX.Element[];
+      React.ReactElement<{ children?: React.ReactNode }>[];
     const knownValue = children[1];
-    return (knownValue.type as (props: unknown) => JSX.Element)(
+    return (knownValue.type as (props: unknown) => ValueSelect)(
       knownValue.props);
   };
 

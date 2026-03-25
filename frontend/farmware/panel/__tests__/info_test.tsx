@@ -25,14 +25,14 @@ let activeFarmwareSpy: jest.SpyInstance;
 
 beforeEach(() => {
   designerPanelSpy = jest.spyOn(designerPanel, "DesignerPanel")
-    .mockImplementation((props: { children: unknown; }) =>
-      <div className={"designer-panel"}>{props.children}</div>);
+    .mockImplementation(((props: React.PropsWithChildren) =>
+      <div className={"designer-panel"}>{props.children}</div>) as never);
   designerPanelTopSpy = jest.spyOn(designerPanel, "DesignerPanelTop")
-    .mockImplementation((props: { children: unknown; }) =>
-      <div className={"designer-panel-top"}>{props.children}</div>);
+    .mockImplementation(((props: React.PropsWithChildren) =>
+      <div className={"designer-panel-top"}>{props.children}</div>) as never);
   designerPanelContentSpy = jest.spyOn(designerPanel, "DesignerPanelContent")
-    .mockImplementation((props: { children: unknown; }) =>
-      <div className={"designer-panel-content"}>{props.children}</div>);
+    .mockImplementation(((props: React.PropsWithChildren) =>
+      <div className={"designer-panel-content"}>{props.children}</div>) as never);
   activeFarmwareSpy = jest.spyOn(activeFarmware, "setActiveFarmwareByName")
     .mockImplementation(jest.fn());
 });

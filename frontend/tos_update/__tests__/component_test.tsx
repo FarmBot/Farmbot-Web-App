@@ -29,7 +29,7 @@ const createWrapper = () => {
 };
 
 const getInstance = (wrapper: ReturnType<typeof createRenderer>) =>
-  getRendererInstance<TosUpdate>(wrapper, TosUpdate);
+  getRendererInstance<TosUpdate, Record<string, never>>(wrapper, TosUpdate);
 
 const createTosFormWrapper = (instance: TosUpdate) => {
   const tosForm = createRenderer(

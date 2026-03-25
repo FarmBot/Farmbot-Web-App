@@ -34,14 +34,12 @@ import * as guessTimezone from "../../devices/timezones/guess_timezone";
 
 const mockSequence = fakeSequence();
 let saveSpy: jest.SpyInstance;
-let _overwriteSpy: jest.SpyInstance;
-let _timezoneMismatchSpy: jest.SpyInstance;
 
 beforeEach(() => {
   mockTzMismatch = false;
   saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
-  _overwriteSpy = jest.spyOn(crud, "overwrite").mockImplementation(jest.fn());
-  _timezoneMismatchSpy = jest.spyOn(guessTimezone, "timezoneMismatch")
+  jest.spyOn(crud, "overwrite").mockImplementation(jest.fn());
+  jest.spyOn(guessTimezone, "timezoneMismatch")
     .mockImplementation(() => mockTzMismatch);
 });
 
@@ -633,7 +631,11 @@ describe("<StartTimeForm />", () => {
   const findElementByName = (
     node: unknown,
     name: string,
-  ): React.ReactElement | undefined => {
+  ): React.ReactElement<{
+    name?: string;
+    onCommit?: (e: React.FocusEvent<HTMLInputElement>) => void;
+    error?: string;
+  }> | undefined => {
     if (Array.isArray(node)) {
       for (const child of node) {
         const found = findElementByName(child, name);
@@ -642,8 +644,15 @@ describe("<StartTimeForm />", () => {
       return undefined;
     }
     if (!React.isValidElement(node)) { return undefined; }
-    if (node.props?.name === name) { return node; }
-    for (const value of Object.values(node.props || {})) {
+    const element = node as React.ReactElement<Record<string, unknown>>;
+    if (element.props?.name === name) {
+      return element as React.ReactElement<{
+        name?: string;
+        onCommit?: (e: React.FocusEvent<HTMLInputElement>) => void;
+        error?: string;
+      }>;
+    }
+    for (const value of Object.values(element.props || {})) {
       const found = findElementByName(value, name);
       if (found) { return found; }
     }

@@ -8,6 +8,7 @@ import { StepInputProps } from "../../interfaces";
 import * as stepTiles from "../../step_tiles";
 import { Wait } from "farmbot";
 import * as ui from "../../../ui";
+import { BIProps } from "../../../ui/blurable_input";
 let updateStepSpy: jest.SpyInstance;
 let blurableInputSpy: jest.SpyInstance;
 
@@ -15,10 +16,8 @@ beforeEach(() => {
   updateStepSpy = jest.spyOn(stepTiles, "updateStep")
     .mockImplementation(() => mockUpdateArg);
   blurableInputSpy = jest.spyOn(ui, "BlurableInput")
-    .mockImplementation((props: {
-      value: string | number;
-      onCommit: (e: React.SyntheticEvent<HTMLInputElement>) => void;
-    }) => <input value={props.value} onBlur={e => props.onCommit(e)} />);
+    .mockImplementation(((props: BIProps) =>
+      <input value={props.value} onBlur={e => props.onCommit(e)} />) as never);
 });
 
 afterEach(() => {

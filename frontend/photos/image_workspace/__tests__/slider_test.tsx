@@ -4,17 +4,16 @@ import {
 } from "../slider";
 import { fireEvent, render, screen } from "@testing-library/react";
 import * as blueprintCore from "@blueprintjs/core";
+import { RangeSliderProps } from "@blueprintjs/core";
 
 let rangeSliderSpy: jest.SpyInstance;
 
 beforeEach(() => {
   rangeSliderSpy = jest.spyOn(blueprintCore, "RangeSlider")
-    .mockImplementation((props: {
-      onRelease?: (values: [number, number]) => void;
-    }) =>
+    .mockImplementation(((props: RangeSliderProps) =>
       <button onClick={() => props.onRelease?.([1, 5])}>
         release slider
-      </button>);
+      </button>) as never);
 });
 
 describe("<WeedDetectorSlider />", () => {

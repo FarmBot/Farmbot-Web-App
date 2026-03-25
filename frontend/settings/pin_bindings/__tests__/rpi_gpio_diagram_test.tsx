@@ -22,7 +22,8 @@ describe("<RpiGpioDiagram />", () => {
   it("pin hover", () => {
     const wrapper = createRenderer(<RpiGpioDiagram {...fakeProps()} />);
     const instance =
-      getRendererInstance<RpiGpioDiagram>(wrapper, RpiGpioDiagram);
+      getRendererInstance<RpiGpioDiagram, RpiGpioDiagramProps>(
+        wrapper, RpiGpioDiagram);
     const rects = wrapper.root.findAllByType("rect");
     actRenderer(() => {
       rects[5]?.props.onMouseEnter();

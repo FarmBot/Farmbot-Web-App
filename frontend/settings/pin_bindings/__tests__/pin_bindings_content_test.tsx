@@ -17,7 +17,7 @@ import {
 import { cloneDeep } from "lodash";
 
 describe("<PinBindingsContent/>", () => {
-  let gpioRegistry: Record<number, string>;
+  let gpioRegistry: typeof bot.hardware.gpio_registry;
 
   beforeEach(() => {
     gpioRegistry = cloneDeep(bot.hardware.gpio_registry);

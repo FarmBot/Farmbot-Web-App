@@ -9,7 +9,7 @@ let fetchNewDeviceSpy: jest.SpyInstance;
 
 beforeEach(() => {
   fetchNewDeviceSpy = jest.spyOn(deviceModule, "fetchNewDevice")
-    .mockImplementation(jest.fn(() => Promise.resolve({})));
+    .mockImplementation(() => Promise.resolve({} as unknown as import("farmbot").Farmbot));
 });
 
 afterEach(() => {

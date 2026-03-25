@@ -3,7 +3,7 @@ import { fireEvent, render } from "@testing-library/react";
 import { fakeImage } from "../../../__test_support__/fake_state/resources";
 import { TaggedImage } from "farmbot";
 import { defensiveClone } from "../../../util";
-import { ImageFlipperProps } from "../interfaces";
+import { ImageFlipperProps, FlipperImageProps } from "../interfaces";
 import { Actions } from "../../../constants";
 import { UUID } from "../../../resources/interfaces";
 import * as flipperImageModule from "../flipper_image";
@@ -29,10 +29,10 @@ describe("<ImageFlipper/>", () => {
     flipperImageProps = undefined;
     jest.clearAllMocks();
     flipperImageSpy = jest.spyOn(flipperImageModule, "FlipperImage")
-      .mockImplementation((props: { onImageLoad?: (img: HTMLImageElement) => void }) => {
+      .mockImplementation(((props: FlipperImageProps) => {
         flipperImageProps = props;
         return <div className={"flipper-image-mock"} />;
-      });
+      }) as never);
   });
 
   afterEach(() => {

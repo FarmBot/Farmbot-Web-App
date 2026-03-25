@@ -82,7 +82,8 @@ describe("<AddToolSlot />", () => {
     const toolSlot = fakeToolSlot();
     const p = fakeProps();
     const wrapper = createRenderer(<AddToolSlot {...p} />);
-    const instance = getRendererInstance<AddToolSlot>(wrapper, AddToolSlot);
+    const instance = getRendererInstance<AddToolSlot, AddToolSlotProps>(
+      wrapper, AddToolSlot);
     instance.updateSlot(toolSlot)({ x: 123 });
     expect(crud.edit).toHaveBeenCalledWith(toolSlot, { x: 123 });
     unmountRenderer(wrapper);
@@ -90,7 +91,8 @@ describe("<AddToolSlot />", () => {
 
   it("saves tool slot", () => {
     const wrapper = createRenderer(<AddToolSlot {...fakeProps()} />);
-    const instance = getRendererInstance<AddToolSlot>(wrapper, AddToolSlot);
+    const instance = getRendererInstance<AddToolSlot, AddToolSlotProps>(
+      wrapper, AddToolSlot);
     const navigate = jest.fn();
     instance.navigate = navigate;
     instance.save();
@@ -137,7 +139,8 @@ describe("<AddToolSlot />", () => {
     const p = fakeProps();
     p.findToolSlot = () => undefined;
     const wrapper = createRenderer(<AddToolSlot {...p} />);
-    const instance = getRendererInstance<AddToolSlot>(wrapper, AddToolSlot);
+    const instance = getRendererInstance<AddToolSlot, AddToolSlotProps>(
+      wrapper, AddToolSlot);
     expect(instance.tool).toEqual(undefined);
     unmountRenderer(wrapper);
   });

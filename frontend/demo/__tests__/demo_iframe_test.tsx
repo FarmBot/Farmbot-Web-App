@@ -16,6 +16,7 @@ import { tourPath } from "../../help/tours";
 import { Path } from "../../internal_urls";
 import * as messageCards from "../../messages/cards";
 import * as ui from "../../ui";
+import { FBSelectProps } from "../../ui/new_fb_select";
 
 describe("<DemoIframe />", () => {
   const originalConsoleError = console.error;
@@ -36,12 +37,15 @@ describe("<DemoIframe />", () => {
         "express_1.2": { label: "Express", value: "express_1.2" },
       });
     fbSelectSpy = jest.spyOn(ui, "FBSelect")
-      .mockImplementation((props: { onChange: (ddi: { value: string }) => void }) =>
+      .mockImplementation(((props: FBSelectProps) =>
         <button
           data-testid="seed-data-select"
-          onClick={() => props.onChange({ value: "express_1.2" })}>
+          onClick={() => props.onChange({
+            label: "Express",
+            value: "express_1.2",
+          })}>
           select
-        </button>);
+        </button>) as never);
     mockPost = jest.fn(() =>
       typeof mockResponse === "string"
         ? Promise.resolve(mockResponse)

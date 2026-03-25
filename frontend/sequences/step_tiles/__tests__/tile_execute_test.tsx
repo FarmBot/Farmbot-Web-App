@@ -181,7 +181,7 @@ describe("<TileExecute />", () => {
       }
     };
     const localsList = findByType(element, LocalsList);
-    localsList?.props.onChange(variable);
+    localsList?.props.onChange(variable, variable.args.label);
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual({
       kind: "execute", args: { sequence_id: 1 }, body: [variable]
@@ -251,7 +251,7 @@ describe("<TileExecute />", () => {
       }
     };
     const localsList = findByType(element, LocalsList);
-    localsList?.props.onChange(variable);
+    localsList?.props.onChange(variable, variable.args.label);
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual({
       kind: "execute", args: { sequence_id: 1 },

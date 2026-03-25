@@ -467,7 +467,7 @@ describe("<GardenMap/>", () => {
     mockGroup.body.criteria.string_eq = { pointer_type: ["Plant"] };
     const p = fakeProps();
     p.getConfigValue = () => false;
-    const wrapper = renderMap<GardenMap>(<GardenMap {...p} />);
+    const wrapper = renderMap<GardenMapClass>(<GardenMap {...p} />);
     expect(wrapper.instance().animate).toBeTruthy();
     p.allPoints = lodash.times(101, fakePlant);
     wrapper.setProps(p);
@@ -494,7 +494,7 @@ describe("<GardenMap/>", () => {
 
   it("ends drag", () => {
     mockMode = Mode.editPlant;
-    const wrapper = renderMap<GardenMap>(<GardenMap {...fakeProps()} />);
+    const wrapper = renderMap<GardenMapClass>(<GardenMap {...fakeProps()} />);
     wrapper.setState({ isDragging: true });
     fireWrapperEvent(wrapper, ".drop-area-svg", "mouseUp", DEFAULT_EVENT);
     expect(maybeSavePlantLocationSpy).toHaveBeenCalled();
@@ -609,7 +609,7 @@ describe("<GardenMap/>", () => {
     p.designer.hoveredPlant = { plantUUID: undefined };
     p.designer.hoveredPoint = undefined;
     p.designer.hoveredToolSlot = undefined;
-    const wrapper = renderMap<GardenMap>(<GardenMap {...p} />);
+    const wrapper = renderMap<GardenMapClass>(<GardenMap {...p} />);
     const e = { pageX: 1000, pageY: 2000 } as React.DragEvent<SVGElement>;
     wrapper.instance().startDragOnBackground(e);
     fireWrapperEvent(wrapper, ".drop-area-background", "mouseDown", e);
@@ -714,7 +714,7 @@ describe("<GardenMap/>", () => {
 
   it("sets cursor position", () => {
     mockMode = Mode.clickToAdd;
-    const wrapper = renderMap<GardenMap>(<GardenMap {...fakeProps()} />);
+    const wrapper = renderMap<GardenMapClass>(<GardenMap {...fakeProps()} />);
     fireWrapperEvent(wrapper, ".drop-area-svg", "mouseMove", {
       pageX: 10, pageY: 20
     });
@@ -724,7 +724,7 @@ describe("<GardenMap/>", () => {
   it("lays eggs", () => {
     setEggStatus(EggKeys.BRING_ON_THE_BUGS, "");
     setEggStatus(EggKeys.BUGS_ARE_STILL_ALIVE, "");
-    const wrapper = renderMap<GardenMap>(<GardenMap {...fakeProps()} />);
+    const wrapper = renderMap<GardenMapClass>(<GardenMap {...fakeProps()} />);
     expect(wrapper.instance().Bugs()).toEqual(<g />);
     setEggStatus(EggKeys.BRING_ON_THE_BUGS, "true");
     setEggStatus(EggKeys.BUGS_ARE_STILL_ALIVE, "");
@@ -772,14 +772,14 @@ describe("<GardenMap/>", () => {
     mockMode = Mode.boxSelect;
     const p = fakeProps();
     p.designer.selectedPoints = undefined;
-    const wrapper = renderMap<GardenMap>(<GardenMap {...p} />);
+    const wrapper = renderMap<GardenMapClass>(<GardenMap {...p} />);
     wrapper.instance().closePanel()();
     expect(mapActions.closePlantInfo).toHaveBeenCalled();
   });
 
   it("closes panel when not in select mode", () => {
     mockMode = Mode.none;
-    const wrapper = renderMap<GardenMap>(<GardenMap {...fakeProps()} />);
+    const wrapper = renderMap<GardenMapClass>(<GardenMap {...fakeProps()} />);
     wrapper.instance().closePanel()();
     expect(mapActions.closePlantInfo).toHaveBeenCalled();
   });
@@ -788,7 +788,7 @@ describe("<GardenMap/>", () => {
     mockMode = Mode.boxSelect;
     const p = fakeProps();
     p.designer.selectedPoints = [fakePlant().uuid];
-    const wrapper = renderMap<GardenMap>(<GardenMap {...p} />);
+    const wrapper = renderMap<GardenMapClass>(<GardenMap {...p} />);
     wrapper.instance().closePanel()();
     expect(mapActions.closePlantInfo).not.toHaveBeenCalled();
   });
@@ -797,7 +797,7 @@ describe("<GardenMap/>", () => {
     mockMode = Mode.locationInfo;
     const p = fakeProps();
     p.designer.selectedPoints = [fakePlant().uuid];
-    const wrapper = renderMap<GardenMap>(<GardenMap {...p} />);
+    const wrapper = renderMap<GardenMapClass>(<GardenMap {...p} />);
     wrapper.instance().closePanel()();
     expect(mapActions.closePlantInfo).not.toHaveBeenCalled();
   });
@@ -806,7 +806,7 @@ describe("<GardenMap/>", () => {
     mockMode = Mode.profile;
     const p = fakeProps();
     p.designer.selectedPoints = [fakePlant().uuid];
-    const wrapper = renderMap<GardenMap>(<GardenMap {...p} />);
+    const wrapper = renderMap<GardenMapClass>(<GardenMap {...p} />);
     wrapper.instance().closePanel()();
     expect(mapActions.closePlantInfo).not.toHaveBeenCalled();
   });
@@ -814,7 +814,7 @@ describe("<GardenMap/>", () => {
   it("closes panel: location active", () => {
     mockMode = Mode.none;
     const p = fakeProps();
-    const wrapper = renderMap<GardenMap>(<GardenMap {...p} />);
+    const wrapper = renderMap<GardenMapClass>(<GardenMap {...p} />);
     wrapper.setState({
       toLocation: { x: 100, y: 100, z: 0 }, previousSelectionBoxArea: 0,
     });
@@ -829,7 +829,7 @@ describe("<GardenMap/>", () => {
   it("closes panel: location and selection box active", () => {
     mockMode = Mode.none;
     const p = fakeProps();
-    const wrapper = renderMap<GardenMap>(<GardenMap {...p} />);
+    const wrapper = renderMap<GardenMapClass>(<GardenMap {...p} />);
     wrapper.setState({
       toLocation: { x: 100, y: 100, z: 0 }, previousSelectionBoxArea: 1000,
     });
@@ -848,7 +848,7 @@ describe("<GardenMap/>", () => {
   });
 
   it("doesn't return plant in wrong mode", () => {
-    const wrapper = renderMap<GardenMap>(<GardenMap {...fakeProps()} />);
+    const wrapper = renderMap<GardenMapClass>(<GardenMap {...fakeProps()} />);
     mockMode = Mode.locationInfo;
     expect(wrapper.instance().getPlant()).toEqual(undefined);
     mockMode = Mode.boxSelect;
@@ -863,19 +863,19 @@ describe("<GardenMap/>", () => {
     const point = fakePoint();
     p.allPoints = [point];
     p.designer.selectedPoints = [point.uuid];
-    const wrapper = renderMap<GardenMap>(<GardenMap {...p} />);
+    const wrapper = renderMap<GardenMapClass>(<GardenMap {...p} />);
     expect(wrapper.instance().currentSelection).toEqual([point]);
   });
 
   it("doesn't return point in wrong mode", () => {
     mockInteractionAllow = false;
-    const wrapper = renderMap<GardenMap>(<GardenMap {...fakeProps()} />);
+    const wrapper = renderMap<GardenMapClass>(<GardenMap {...fakeProps()} />);
     expect(wrapper.instance().currentSelection).toEqual([]);
     mockInteractionAllow = true;
   });
 
   it("sets state", () => {
-    const wrapper = renderMap<GardenMap>(<GardenMap {...fakeProps()} />);
+    const wrapper = renderMap<GardenMapClass>(<GardenMap {...fakeProps()} />);
     expect(wrapper.instance().state.isDragging).toBeFalsy();
     act(() => wrapper.instance().setMapState({ isDragging: true }));
     expect(wrapper.instance().state.isDragging).toBe(true);
@@ -886,7 +886,7 @@ describe("<GardenMap/>", () => {
     mockInteractionAllow = true;
     const p = fakeProps();
     p.designer.selectionPointType = undefined;
-    const wrapper = renderMap<GardenMap>(<GardenMap {...p} />);
+    const wrapper = renderMap<GardenMapClass>(<GardenMap {...p} />);
     const allowed = wrapper.instance().interactions("Plant");
     expect(allowed).toBeTruthy();
   });
@@ -896,7 +896,7 @@ describe("<GardenMap/>", () => {
     mockInteractionAllow = true;
     const p = fakeProps();
     p.designer.selectionPointType = undefined;
-    const wrapper = renderMap<GardenMap>(<GardenMap {...p} />);
+    const wrapper = renderMap<GardenMapClass>(<GardenMap {...p} />);
     const allowed = wrapper.instance().interactions("Plant");
     expect(allowed).toBeTruthy();
   });
@@ -906,7 +906,7 @@ describe("<GardenMap/>", () => {
     mockInteractionAllow = true;
     const p = fakeProps();
     p.designer.selectionPointType = undefined;
-    const wrapper = renderMap<GardenMap>(<GardenMap {...p} />);
+    const wrapper = renderMap<GardenMapClass>(<GardenMap {...p} />);
     const allowed = wrapper.instance().interactions("Plant");
     expect(allowed).toBeTruthy();
   });
@@ -916,7 +916,7 @@ describe("<GardenMap/>", () => {
     mockInteractionAllow = false;
     const p = fakeProps();
     p.designer.selectionPointType = undefined;
-    const wrapper = renderMap<GardenMap>(<GardenMap {...p} />);
+    const wrapper = renderMap<GardenMapClass>(<GardenMap {...p} />);
     const allowed = wrapper.instance().interactions("Plant");
     expect(allowed).toBeFalsy();
   });
@@ -926,7 +926,7 @@ describe("<GardenMap/>", () => {
     mockInteractionAllow = true;
     const p = fakeProps();
     p.designer.selectionPointType = ["Plant"];
-    const wrapper = renderMap<GardenMap>(<GardenMap {...p} />);
+    const wrapper = renderMap<GardenMapClass>(<GardenMap {...p} />);
     const allowed = wrapper.instance().interactions("Weed");
     expect(allowed).toBeFalsy();
   });
@@ -938,7 +938,7 @@ describe("<GardenMap/>", () => {
     const point = fakePoint();
     point.body.id = 1;
     p.allPoints = [point];
-    const wrapper = renderMap<GardenMap>(<GardenMap {...p} />);
+    const wrapper = renderMap<GardenMapClass>(<GardenMap {...p} />);
     expect(wrapper.instance().pointsSelectedByGroup).toEqual([point]);
   });
 });

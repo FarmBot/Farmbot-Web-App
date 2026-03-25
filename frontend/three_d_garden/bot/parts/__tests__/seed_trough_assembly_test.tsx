@@ -9,7 +9,7 @@ import { useGLTF } from "@react-three/drei";
 describe("<SeedTroughAssembly />", () => {
   it("renders", () => {
     const model = useGLTF(
-      ASSETS.models.seedTroughAssembly) as SeedTroughAssemblyFull;
+      ASSETS.models.seedTroughAssembly) as unknown as SeedTroughAssemblyFull;
     const Component = SeedTroughAssembly(model);
     const { container } = render(<Component name={"name"} />);
     expect(container.innerHTML).toContain("name");

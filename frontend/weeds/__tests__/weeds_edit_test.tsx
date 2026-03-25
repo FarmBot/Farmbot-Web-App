@@ -32,8 +32,10 @@ beforeEach(() => {
   jest.spyOn(crud, "edit").mockImplementation(jest.fn());
   jest.spyOn(crud, "destroy").mockImplementation(jest.fn());
   jest.spyOn(popover, "Popover").mockImplementation(
-    jest.fn(({ target, content }: { target: JSX.Element; content: JSX.Element }) =>
-      <div>{target}{content}</div>) as never);
+    jest.fn(({ target, content }: {
+      target: React.ReactElement;
+      content: React.ReactElement;
+    }) => <div>{target}{content}</div>) as never);
 });
 
 describe("<EditWeed />", () => {

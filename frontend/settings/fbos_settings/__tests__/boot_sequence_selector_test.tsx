@@ -13,6 +13,7 @@ import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import * as crud from "../../../api/crud";
 import * as ui from "../../../ui";
+import { FBSelectProps } from "../../../ui/new_fb_select";
 
 let editSpy: jest.SpyInstance;
 let saveSpy: jest.SpyInstance;
@@ -22,11 +23,7 @@ beforeEach(() => {
   editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
   saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
   fbSelectSpy = jest.spyOn(ui, "FBSelect")
-    .mockImplementation((props: {
-      list: Array<{ label: string, value: number | string }>;
-      selectedItem: unknown;
-      onChange: (item: { label: string, value: number | string }) => void;
-    }) =>
+    .mockImplementation(((props: FBSelectProps) =>
       <div>
         <span data-testid="selected-item">
           {JSON.stringify(props.selectedItem)}
@@ -35,7 +32,7 @@ beforeEach(() => {
           props.onChange(props.list[0] || { label: "", value: "" })}>
           mock-select
         </button>
-      </div>);
+      </div>) as never);
 });
 
 afterEach(() => {

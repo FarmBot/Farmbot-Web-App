@@ -12,7 +12,8 @@ describe("logout()", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockDelete = jest.fn(() => Promise.resolve());
-    clearSpy = jest.spyOn(Session, "clear").mockImplementation(jest.fn());
+    clearSpy = jest.spyOn(Session, "clear")
+      .mockImplementation(() => undefined as never);
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (axios as any).delete = mockDelete;
   });

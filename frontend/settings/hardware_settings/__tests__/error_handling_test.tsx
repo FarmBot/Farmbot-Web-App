@@ -6,6 +6,7 @@ import { settingsPanelState } from "../../../__test_support__/panel_state";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import * as deviceActions from "../../../devices/actions";
 import * as ui from "../../../ui";
+import { ToggleButtonProps } from "../../../ui/toggle_button";
 
 let settingToggleSpy: jest.SpyInstance;
 let toggleButtonSpy: jest.SpyInstance;
@@ -15,8 +16,8 @@ beforeEach(() => {
   settingToggleSpy = jest.spyOn(deviceActions, "settingToggle")
     .mockImplementation(() => TOGGLE_ACTION as never);
   toggleButtonSpy = jest.spyOn(ui, "ToggleButton")
-    .mockImplementation((props: { toggleAction: () => void }) =>
-      <button data-testid="toggle-button" onClick={props.toggleAction} />);
+    .mockImplementation(((props: ToggleButtonProps) =>
+      <button data-testid="toggle-button" onClick={props.toggleAction} />) as never);
 });
 
 afterEach(() => {

@@ -3,6 +3,7 @@ import { fireEvent, render } from "@testing-library/react";
 import { BotConfigInputBox, BotConfigInputBoxProps } from "../bot_config_input_box";
 import * as deviceActions from "../../../devices/actions";
 import * as ui from "../../../ui";
+import { BIProps } from "../../../ui/blurable_input";
 
 let updateConfigSpy: jest.SpyInstance;
 
@@ -76,8 +77,8 @@ describe("<BotConfigInputBox />", () => {
 
   it("not consistent", () => {
     const blurableInputSpy = jest.spyOn(ui, "BlurableInput")
-      .mockImplementation((props: { className?: string }) =>
-        <input className={props.className} />);
+      .mockImplementation(((props: BIProps) =>
+        <input className={props.className} />) as never);
     try {
       blurableInputSpy.mockClear();
       const p = fakeProps();

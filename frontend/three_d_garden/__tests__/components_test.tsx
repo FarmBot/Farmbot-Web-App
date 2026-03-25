@@ -29,7 +29,8 @@ describe("<Group />", () => {
   });
 
   it("adds props", () => {
-    const wrapper = createRenderer(<Group {...fakeProps()} />);
+    const wrapper = createRenderer(React.createElement(
+      Group as never, fakeProps() as never));
     expect((wrapper.toJSON() as { props?: { visible?: boolean } }).props?.visible)
       .toEqual(true);
   });
@@ -65,7 +66,8 @@ describe("<PointLight />", () => {
   });
 
   it("adds props", () => {
-    const wrapper = createRenderer(<PointLight {...fakeProps()} />);
+    const wrapper = createRenderer(React.createElement(
+      PointLight as never, fakeProps() as never));
     expect((wrapper.toJSON() as { props?: { intensity?: number } }).props?.intensity)
       .toEqual(0.5);
   });
@@ -77,7 +79,8 @@ describe("<DirectionalLight />", () => {
   });
 
   it("adds props", () => {
-    const wrapper = createRenderer(<DirectionalLight {...fakeProps()} />);
+    const wrapper = createRenderer(React.createElement(
+      DirectionalLight as never, fakeProps() as never));
     expect((wrapper.toJSON() as { props?: { intensity?: number } }).props?.intensity)
       .toEqual(0.5);
   });
@@ -89,7 +92,8 @@ describe("<Mesh />", () => {
   });
 
   it("adds props", () => {
-    const wrapper = createRenderer(<Mesh {...fakeProps()} />);
+    const wrapper = createRenderer(React.createElement(
+      Mesh as never, fakeProps() as never));
     expect((wrapper.toJSON() as { props?: { name?: string } }).props?.name)
       .toEqual("mesh");
   });
@@ -101,7 +105,8 @@ describe("<LineSegments />", () => {
   });
 
   it("adds props", () => {
-    const wrapper = createRenderer(<LineSegments {...fakeProps()} />);
+    const wrapper = createRenderer(React.createElement(
+      LineSegments as never, fakeProps() as never));
     expect((wrapper.toJSON() as { props?: { name?: string } }).props?.name)
       .toEqual("lineSegments");
   });
@@ -109,11 +114,13 @@ describe("<LineSegments />", () => {
 
 describe("<InstancedMesh />", () => {
   const fakeProps = (): ThreeElements["instancedMesh"] => ({
+    args: [undefined as never, undefined as never, 1],
     name: "instancedMesh",
   });
 
   it("adds props", () => {
-    const wrapper = createRenderer(<InstancedMesh {...fakeProps()} />);
+    const wrapper = createRenderer(React.createElement(
+      InstancedMesh as never, fakeProps() as never));
     expect((wrapper.toJSON() as { props?: { name?: string } }).props?.name)
       .toEqual("instancedMesh");
   });
@@ -125,7 +132,8 @@ describe("<MeshBasicMaterial />", () => {
   });
 
   it("adds props", () => {
-    const wrapper = createRenderer(<MeshBasicMaterial {...fakeProps()} />);
+    const wrapper = createRenderer(React.createElement(
+      MeshBasicMaterial as never, fakeProps() as never));
     expect((wrapper.toJSON() as { props?: { name?: string } }).props?.name)
       .toEqual("material");
   });
@@ -137,7 +145,8 @@ describe("<LineBasicMaterial />", () => {
   });
 
   it("adds props", () => {
-    const wrapper = createRenderer(<LineBasicMaterial {...fakeProps()} />);
+    const wrapper = createRenderer(React.createElement(
+      LineBasicMaterial as never, fakeProps() as never));
     expect((wrapper.toJSON() as { props?: { name?: string } }).props?.name)
       .toEqual("lineMaterial");
   });
@@ -161,7 +170,8 @@ describe("<SpotLight />", () => {
   });
 
   it("adds props", () => {
-    const wrapper = createRenderer(<SpotLight {...fakeProps()} />);
+    const wrapper = createRenderer(React.createElement(
+      SpotLight as never, fakeProps() as never));
     expect((wrapper.toJSON() as { props?: { visible?: boolean } }).props?.visible)
       .toEqual(true);
   });

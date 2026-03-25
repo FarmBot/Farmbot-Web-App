@@ -45,7 +45,11 @@ describe("<PointGroupItem/>", () => {
   it("renders", () => {
     const p = fakeProps();
     const i = new PointGroupItem(p);
-    const element = i.render() as React.ReactElement;
+    const element = i.render() as React.ReactElement<{
+      onMouseEnter: () => void;
+      onMouseLeave: () => void;
+      onClick: () => void;
+    }>;
     expect(element.props.onMouseEnter).toEqual(i.enter);
     expect(element.props.onMouseLeave).toEqual(i.leave);
     expect(element.props.onClick).toEqual(i.click);

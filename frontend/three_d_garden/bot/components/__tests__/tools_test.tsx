@@ -55,14 +55,17 @@ describe("<Tools />", () => {
 
   beforeEach(() => {
     getModeSpy = jest.spyOn(mapUtil, "getMode").mockReturnValue(Mode.none);
-    jest.spyOn(threeFiber, "useFrame").mockImplementation(callback => {
-      callback({} as never, 0);
-    });
+    jest.spyOn(threeFiber, "useFrame")
+      .mockImplementation(((callback, _renderPriority) => {
+        callback({} as never, 0, undefined as never);
+        // eslint-disable-next-line no-null/no-null
+        return null;
+      }) as typeof threeFiber.useFrame);
     suctionAnimationSpy = jest.spyOn(suctionAnimationModule, "SuctionAnimation")
-      .mockImplementation(() => undefined);
+      .mockImplementation((() => <></>) as never);
     wateringAnimationsSpy = jest.spyOn(
       wateringAnimationsModule, "WateringAnimations")
-      .mockImplementation(() => undefined);
+      .mockImplementation((() => <></>) as never);
   });
 
   afterEach(() => {

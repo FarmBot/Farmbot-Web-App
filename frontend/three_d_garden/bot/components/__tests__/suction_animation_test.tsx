@@ -13,9 +13,12 @@ type MockRef = {
 
 describe("<SuctionAnimation />", () => {
   beforeEach(() => {
-    jest.spyOn(threeFiber, "useFrame").mockImplementation(callback => {
-      callback({} as never, 0);
-    });
+    jest.spyOn(threeFiber, "useFrame")
+      .mockImplementation(((callback, _renderPriority) => {
+        callback({} as never, 0, undefined as never);
+        // eslint-disable-next-line no-null/no-null
+        return null;
+      }) as typeof threeFiber.useFrame);
     jest.spyOn(React, "useRef").mockReturnValue({
       current: {
         position: mockPosition,

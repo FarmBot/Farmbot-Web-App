@@ -37,7 +37,9 @@ describe("<AxisSettings />", () => {
 
   beforeEach(() => {
     getDeviceSpy = jest.spyOn(deviceModule, "getDevice")
-      .mockImplementation(() => mockDevice);
+      .mockImplementation((() =>
+        mockDevice as unknown as import("farmbot").Farmbot) as
+        typeof deviceModule.getDevice);
     editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
     saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
     calibrationRowSpy = jest.spyOn(calibrationRowModule, "CalibrationRow")

@@ -16,8 +16,18 @@ import * as popover from "../../../ui/popover";
 
 const findByPredicate = (
   node: React.ReactNode,
-  predicate: (element: React.ReactElement<{ children?: React.ReactNode }>) => boolean,
-): React.ReactElement<{ children?: React.ReactNode }> | undefined => {
+  predicate: (element: React.ReactElement<{
+    children?: React.ReactNode;
+    title?: string;
+    onClick?: () => void;
+    onChange?: (color: Color) => void;
+  }>) => boolean,
+): React.ReactElement<{
+  children?: React.ReactNode;
+  title?: string;
+  onClick?: () => void;
+  onChange?: (color: Color) => void;
+}> | undefined => {
   if (!node) { return undefined; }
   if (Array.isArray(node)) {
     for (const child of React.Children.toArray(node)) {
@@ -26,11 +36,26 @@ const findByPredicate = (
     }
     return undefined;
   }
-  if (!React.isValidElement<{ children?: React.ReactNode }>(node)) {
+  if (!React.isValidElement(node)) {
     return undefined;
   }
-  if (predicate(node)) { return node; }
-  return findByPredicate(node.props.children, predicate);
+  if (predicate(node as React.ReactElement<{
+    children?: React.ReactNode;
+    title?: string;
+    onClick?: () => void;
+    onChange?: (color: Color) => void;
+  }>)) {
+    return node as React.ReactElement<{
+      children?: React.ReactNode;
+      title?: string;
+      onClick?: () => void;
+      onChange?: (color: Color) => void;
+    }>;
+  }
+  return findByPredicate(
+    (node.props as { children?: React.ReactNode }).children,
+    predicate,
+  );
 };
 
 let setActiveRegimenByNameSpy: jest.SpyInstance;
@@ -82,7 +107,7 @@ describe("<DesignerRegimenEditor />", () => {
       found.type === "button"
       && (found.props as { title?: string }).title === "add new regimen");
     expect(addButton?.props.onClick).toEqual(expect.any(Function));
-    addButton?.props.onClick();
+    addButton?.props.onClick?.();
     expect(addRegimenModule.addRegimen).toHaveBeenCalled();
   });
 
@@ -94,7 +119,9 @@ describe("<DesignerRegimenEditor />", () => {
     render(<DesignerRegimenEditor {...p} />);
     const colorPickerPopover = popoverSpy.mock.calls.find(
       ([popoverProps]) =>
-        !!(popoverProps.content as React.ReactElement)?.props?.onChange);
+        !!(popoverProps.content as React.ReactElement<{
+          onChange?: (color: Color) => void;
+        }>)?.props?.onChange);
     const colorPickerCluster = colorPickerPopover?.[0]
       .content as React.ReactElement<{ onChange: (color: Color) => void }>;
     expect(colorPickerCluster).toBeTruthy();

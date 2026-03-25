@@ -8,6 +8,7 @@ import { store } from "../../redux/store";
 import * as testButton from "../test_button";
 import { Path } from "../../internal_urls";
 import { setActiveSequenceByName } from "../set_active_sequence_by_name";
+import { Actions } from "../../constants";
 
 describe("setActiveSequenceByName()", () => {
   let selectSequenceSpy: jest.SpyInstance;
@@ -25,11 +26,17 @@ describe("setActiveSequenceByName()", () => {
     (store as unknown as { getState: () => { resources: { index: {} } } }).getState =
       () => ({ resources: { index: {} } });
     selectSequenceSpy = jest.spyOn(sequenceActions, "selectSequence")
-      .mockImplementation(() => ({ type: "SELECT_SEQUENCE", payload: undefined }));
+      .mockImplementation((() => ({
+        type: Actions.SELECT_SEQUENCE,
+        payload: undefined,
+      })) as unknown as typeof sequenceActions.selectSequence);
     selectAllSequencesSpy = jest.spyOn(selectors, "selectAllSequences")
       .mockReturnValue(mockSequences);
     setMenuOpenSpy = jest.spyOn(testButton, "setMenuOpen")
-      .mockReturnValue({ type: "SET_SEQUENCE_POPUP_STATE", payload: {} as never });
+      .mockReturnValue({
+        type: Actions.SET_SEQUENCE_POPUP_STATE,
+        payload: {} as never,
+      });
   });
 
   afterEach(() => {

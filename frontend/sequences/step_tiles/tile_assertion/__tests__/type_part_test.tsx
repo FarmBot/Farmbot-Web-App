@@ -20,8 +20,10 @@ describe("<TypePart />", () => {
   it("renders default verbiage and props", () => {
     const p = fakeAssertProps();
     const rendered = TypePart(p);
-    const children = rendered.props.children as JSX.Element[];
-    const selector = children.find(child => child.type === FBSelect);
+    const children = rendered.props.children as React.ReactElement[];
+    const selector = children.find(child => child.type === FBSelect) as
+      React.ReactElement<{ onChange: (item: { value: string; label: string }) => void }>
+      | undefined;
     selector?.props.onChange({ value: "abort", label: "y" });
     expect(editStepSpy).toHaveBeenCalled();
     const step = cloneDeep(p.currentStep);

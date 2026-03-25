@@ -67,7 +67,7 @@ describe("<EncodersOrStallDetection />", () => {
     p.firmwareHardware = "arduino";
     render(<EncodersOrStallDetection {...p} />);
     const firstProps = booleanGroupMock.mock.calls[0]?.[0] as
-      { disabled: boolean };
+      unknown as { disabled: boolean };
     expect(firstProps.disabled).toEqual(false);
   });
 
@@ -77,7 +77,7 @@ describe("<EncodersOrStallDetection />", () => {
     p.firmwareHardware = "express_k10";
     render(<EncodersOrStallDetection {...p} />);
     const firstProps = booleanGroupMock.mock.calls[0]?.[0] as
-      { disabled: boolean };
+      unknown as { disabled: boolean };
     expect(firstProps.disabled).toEqual(false);
   });
 

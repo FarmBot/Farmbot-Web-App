@@ -6,6 +6,7 @@ import { bot } from "../../../__test_support__/fake_state/bot";
 import { BooleanMCUInputGroupProps } from "../interfaces";
 import { DeviceSetting } from "../../../constants";
 import * as ui from "../../../ui";
+import { ToggleButtonProps } from "../../../ui/toggle_button";
 
 let settingToggleSpy: jest.SpyInstance;
 let toggleButtonSpy: jest.SpyInstance;
@@ -14,16 +15,12 @@ beforeEach(() => {
   settingToggleSpy = jest.spyOn(deviceActions, "settingToggle")
     .mockImplementation(jest.fn());
   toggleButtonSpy = jest.spyOn(ui, "ToggleButton")
-    .mockImplementation((props: {
-      grayscale?: boolean,
-      disabled?: boolean,
-      toggleAction: () => void,
-    }) =>
+    .mockImplementation(((props: ToggleButtonProps) =>
       <button
         data-testid="toggle-button"
         data-grayscale={props.grayscale ? "true" : "false"}
         disabled={props.disabled}
-        onClick={props.toggleAction} />);
+        onClick={props.toggleAction} />) as never);
 });
 
 afterEach(() => {

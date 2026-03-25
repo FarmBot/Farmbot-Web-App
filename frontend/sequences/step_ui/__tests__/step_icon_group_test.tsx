@@ -47,9 +47,10 @@ describe("<StepIconGroup />", () => {
     const wrapper =
       StepIconGroup(props) as React.ReactElement<{ children?: React.ReactNode }>;
     const children = React.Children.toArray(wrapper.props.children) as
-      JSX.Element[];
+      React.ReactElement<{ onMove: (delta: number) => () => void }>[];
     return children.find(child =>
-      child.type === StepUpDownButtonPopover) as JSX.Element;
+      child.type === StepUpDownButtonPopover) as
+      React.ReactElement<{ onMove: (delta: number) => () => void }>;
   };
 
   it("renders", () => {

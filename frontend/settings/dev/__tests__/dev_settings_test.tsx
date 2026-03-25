@@ -30,7 +30,8 @@ let originalGetState: typeof store.getState;
 const toggleButton = (container: HTMLElement) =>
   container.querySelector("button") as HTMLButtonElement;
 const expectRemovedFromInternalUse = (key: string) => {
-  const latestCall = setWebAppConfigValueSpy.mock.calls.at(-1) as [string, string];
+  const calls = setWebAppConfigValueSpy.mock.calls;
+  const latestCall = calls[calls.length - 1] as [string, string];
   expect(latestCall?.[0]).toEqual("internal_use");
   const savedConfig = JSON.parse(latestCall?.[1] || "{}") as Record<string, string>;
   expect(savedConfig[key]).toBeUndefined();

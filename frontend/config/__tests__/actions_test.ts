@@ -24,17 +24,19 @@ describe("ready()", () => {
     jest.clearAllMocks();
     mockTimeout = Promise.resolve({ token: "fake token data" });
     setTokenSpy = jest.spyOn(authActions, "setToken")
-      .mockImplementation(jest.fn());
+      .mockImplementation(auth =>
+        ({ type: "REPLACE_TOKEN", payload: auth }) as ReturnType<typeof authActions.setToken>);
     didLoginSpy = jest.spyOn(authActions, "didLogin")
-      .mockImplementation(jest.fn());
+      .mockImplementation(() => { });
     maybeRefreshTokenSpy = jest.spyOn(refreshToken, "maybeRefreshToken")
       .mockImplementation(() => Promise.resolve(undefined) as never);
     timeoutSpy = jest.spyOn(promiseTimeoutModule, "timeout")
       .mockImplementation(() => mockTimeout as never);
     fetchStoredTokenSpy = jest.spyOn(Session, "fetchStoredToken")
       .mockReturnValue(undefined);
-    clearSpy = jest.spyOn(Session, "clear").mockImplementation(jest.fn());
-    consoleWarnSpy = jest.spyOn(console, "warn").mockImplementation(jest.fn());
+    clearSpy = jest.spyOn(Session, "clear")
+      .mockImplementation(() => undefined as never);
+    consoleWarnSpy = jest.spyOn(console, "warn").mockImplementation(() => { });
   });
 
   afterEach(() => {
@@ -89,10 +91,11 @@ describe("ready()", () => {
 describe("storeToken()", () => {
   beforeEach(() => {
     setTokenSpy = jest.spyOn(authActions, "setToken")
-      .mockImplementation(jest.fn());
+      .mockImplementation(auth =>
+        ({ type: "REPLACE_TOKEN", payload: auth }) as ReturnType<typeof authActions.setToken>);
     didLoginSpy = jest.spyOn(authActions, "didLogin")
-      .mockImplementation(jest.fn());
-    consoleWarnSpy = jest.spyOn(console, "warn").mockImplementation(jest.fn());
+      .mockImplementation(() => { });
+    consoleWarnSpy = jest.spyOn(console, "warn").mockImplementation(() => { });
   });
 
   afterEach(() => {

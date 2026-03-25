@@ -18,7 +18,7 @@ const loadRequestAutoGeneration = () => {
   ] as Array<Partial<typeof import("../request_auto_generation")>>;
   return candidates
     .map(c => c.requestAutoGeneration)
-    .find(fn => typeof fn === "function" && !(fn as jest.Mock)._isMockFunction)
+    .find(fn => typeof fn === "function" && !jest.isMockFunction(fn))
     || candidates.map(c => c.requestAutoGeneration)
       .find(fn => typeof fn === "function");
 };
@@ -55,18 +55,19 @@ describe("requestAutoGeneration()", () => {
   it("succeeds", async () => {
     const actualRequestAutoGeneration = loadRequestAutoGeneration();
     if (typeof actualRequestAutoGeneration !== "function") { return; }
-    global.fetch = jest.fn(() => Promise.resolve(fetchResponse(
+    const fetchMock = jest.fn(() => Promise.resolve(fetchResponse(
       jest.fn()
         .mockResolvedValue({ done: true, value: undefined })
         .mockResolvedValueOnce({ done: false, value: new Uint8Array([114]) })
         .mockResolvedValueOnce({ done: false, value: new Uint8Array([101]) })
         .mockResolvedValueOnce({ done: false, value: new Uint8Array([100]) }),
     )));
+    global.fetch = fetchMock as unknown as typeof fetch;
     const p = fakeProps();
     p.contextKey = "color";
     actualRequestAutoGeneration(p);
     for (let i = 0; i < 5; i++) { await Promise.resolve(); }
-    const fetchCalls = jest.isMockFunction(global.fetch) ? global.fetch.mock.calls.length : 0;
+    const fetchCalls = fetchMock.mock.calls.length;
     const updateCalls = jest.isMockFunction(p.onUpdate) ? p.onUpdate.mock.calls : [];
     if (fetchCalls > 0 && updateCalls.length > 0) {
       const finalUpdate = updateCalls[updateCalls.length - 1]?.[0];
@@ -85,16 +86,17 @@ describe("requestAutoGeneration()", () => {
     const actualRequestAutoGeneration = loadRequestAutoGeneration();
     if (typeof actualRequestAutoGeneration !== "function") { return; }
     mockState.auth = undefined;
-    global.fetch = jest.fn(() => Promise.resolve(fetchResponse(
+    const fetchMock = jest.fn(() => Promise.resolve(fetchResponse(
       jest.fn().mockResolvedValue({ done: true, value: "" }),
       { ok: false, body: undefined },
     )));
+    global.fetch = fetchMock as unknown as typeof fetch;
     const p = fakeProps();
     p.contextKey = "lua";
     actualRequestAutoGeneration(p);
     await Promise.resolve();
     expect(p.onSuccess).not.toHaveBeenCalled();
-    const fetchCalls = (global.fetch as jest.Mock).mock.calls.length;
+    const fetchCalls = fetchMock.mock.calls.length;
     if (fetchCalls > 0) {
       expect(fetchCalls).toBeGreaterThan(0);
     }

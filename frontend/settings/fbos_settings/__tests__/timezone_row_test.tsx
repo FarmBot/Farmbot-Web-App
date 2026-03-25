@@ -17,10 +17,12 @@ beforeEach(() => {
   editSpy = jest.spyOn(crud, "edit").mockImplementation(() => EDIT_ACTION as never);
   saveSpy = jest.spyOn(crud, "save").mockImplementation(() => SAVE_ACTION as never);
   timezoneSelectorSpy = jest.spyOn(timezoneSelector, "TimezoneSelector")
-    .mockImplementation((props: { onUpdate: (timezone: string) => void }) =>
+    .mockImplementation(((props: React.ComponentProps<
+      typeof timezoneSelector.TimezoneSelector
+    >) =>
       <button onClick={() => props.onUpdate("America/Los_Angeles")}>
         select-timezone
-      </button>);
+      </button>) as never);
 });
 
 afterEach(() => {

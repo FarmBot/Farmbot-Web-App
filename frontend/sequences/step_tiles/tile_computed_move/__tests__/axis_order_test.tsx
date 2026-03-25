@@ -18,10 +18,10 @@ let fbSelectProps: FBSelectProps | undefined;
 const renderAxisOrder = (p: AxisOrderInputRowProps) => {
   fbSelectProps = undefined;
   fbSelectSpy = jest.spyOn(ui, "FBSelect")
-    .mockImplementation((props: FBSelectProps) => {
+    .mockImplementation(((props: FBSelectProps) => {
       fbSelectProps = props;
       return <div />;
-    });
+    }) as never);
   const renderResult = render(<AxisOrderInputRow {...p} />);
   if (!fbSelectProps) {
     throw new Error("Expected FBSelect to be rendered");
@@ -81,12 +81,10 @@ describe("<AxisOrderInputRow />", () => {
     fbSelectProps?.onChange({
       label: "X and Y together",
       value: "xy,z;high",
-      isNull: false,
     });
     expect(p.onChange).toHaveBeenCalledWith({
       label: "X and Y together",
       value: "xy,z;high",
-      isNull: false,
     });
   });
 

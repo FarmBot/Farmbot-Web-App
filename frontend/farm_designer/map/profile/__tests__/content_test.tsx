@@ -29,7 +29,8 @@ beforeEach(() => {
   jest.spyOn(interpolationMap, "getInterpolationData")
     .mockImplementation(() => [{ x: 111, y: 112, z: 113 }]);
   jest.spyOn(interpolationMap, "fetchInterpolationOptions")
-    .mockImplementation(() => ({ stepSize: 100 }));
+    .mockImplementation(() => ({ stepSize: 100 }) as
+      ReturnType<typeof interpolationMap.fetchInterpolationOptions>);
 });
 
 const queryCount = (container: HTMLElement, selector: string) =>

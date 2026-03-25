@@ -63,8 +63,10 @@ describe("<OverwriteInputRow />", () => {
   it("changes overwrite selection", () => {
     const p = fakeProps();
     const row = OverwriteInputRow(p) as React.ReactElement<{ children?: React.ReactNode }>;
-    const children = React.Children.toArray(row.props.children) as JSX.Element[];
-    const xInput = (children[1]).props.children as JSX.Element;
+    const children = React.Children.toArray(row.props.children) as
+      React.ReactElement<{ children?: React.ReactNode }>[];
+    const xInput = (children[1]).props.children as
+      React.ReactElement<{ onChange: (item: { label: string; value: string }) => void }>;
     xInput.props.onChange({
       label: "", value: "custom"
     });
@@ -80,8 +82,10 @@ describe("<OverwriteInputRow />", () => {
       z: AxisSelection.custom,
     };
     const row = OverwriteInputRow(p) as React.ReactElement<{ children?: React.ReactNode }>;
-    const children = React.Children.toArray(row.props.children) as JSX.Element[];
-    const xInput = (children[1]).props.children as JSX.Element;
+    const children = React.Children.toArray(row.props.children) as
+      React.ReactElement<{ children?: React.ReactNode }>[];
+    const xInput = (children[1]).props.children as
+      React.ReactElement<{ onClear: () => void }>;
     xInput.props.onClear();
     expect(p.setAxisOverwriteState)
       .toHaveBeenCalledWith("x", AxisSelection.none);
@@ -97,8 +101,10 @@ describe("<OverwriteInputRow />", () => {
   it("renders options", () => {
     const p = fakeProps();
     const row = OverwriteInputRow(p) as React.ReactElement<{ children?: React.ReactNode }>;
-    const children = React.Children.toArray(row.props.children) as JSX.Element[];
-    const zInput = (children[3]).props.children as JSX.Element;
+    const children = React.Children.toArray(row.props.children) as
+      React.ReactElement<{ children?: React.ReactNode }>[];
+    const zInput = (children[3]).props.children as
+      React.ReactElement<{ list: unknown[] }>;
     const items = zInput.props.list;
     expect(items)
       .toContainEqual(OVERWRITE_OPTION_LOOKUP()[AxisSelection.safe_height]);

@@ -11,6 +11,7 @@ import {
 import * as shouldDisplay from "../../../devices/should_display";
 import * as deviceActions from "../../../devices/actions";
 import * as ui from "../../../ui";
+import { FBSelectProps } from "../../../ui";
 
 let shouldDisplayFeatureSpy: jest.SpyInstance;
 let updateConfigSpy: jest.SpyInstance;
@@ -22,12 +23,7 @@ beforeEach(() => {
   updateConfigSpy = jest.spyOn(deviceActions, "updateConfig")
     .mockImplementation(jest.fn() as never);
   fbSelectSpy = jest.spyOn(ui, "FBSelect")
-    .mockImplementation((props: {
-      selectedItem?: { label: string, value: string },
-      list: Array<{ label: string, value: string }>,
-      extraClass?: string,
-      onChange: (ddi: { label: string, value: string }) => void,
-    }) =>
+    .mockImplementation(((props: FBSelectProps) =>
       <div>
         <span data-testid="selected-item">
           {props.selectedItem ? JSON.stringify(props.selectedItem) : ""}
@@ -40,7 +36,7 @@ beforeEach(() => {
         })}>
           select-farmduino
         </button>
-      </div>);
+      </div>) as never);
 });
 
 afterEach(() => {

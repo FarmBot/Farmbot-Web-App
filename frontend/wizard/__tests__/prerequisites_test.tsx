@@ -39,7 +39,7 @@ describe("<ProductRegistration />", () => {
       .find(child =>
         React.isValidElement<{ onCommit?: unknown }>(child)
         && typeof child.props.onCommit == "function");
-    if (!input || !React.isValidElement(input)) {
+    if (!input || !React.isValidElement<{ onCommit: Function }>(input)) {
       throw new Error("Expected order number input");
     }
     input.props.onCommit({

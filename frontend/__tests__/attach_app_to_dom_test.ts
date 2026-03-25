@@ -21,9 +21,10 @@ describe("attachAppToDom()", () => {
     (store as unknown as { dispatch: jest.Mock }).dispatch = dispatchMock;
     (store as unknown as { getState: typeof fakeState }).getState = fakeState;
     attachToRootSpy = jest.spyOn(utilPage, "attachToRoot")
-      .mockImplementation(jest.fn());
+      .mockImplementation(() => { });
     readySpy = jest.spyOn(configActions, "ready")
-      .mockReturnValue({ type: "READY" });
+      .mockImplementation(() =>
+        ({ type: "READY" }) as unknown as ReturnType<typeof configActions.ready>);
     futureFeaturesEnabledSpy = jest.spyOn(DevSettings, "futureFeaturesEnabled")
       .mockReturnValue(false);
     overriddenFbosVersionSpy = jest.spyOn(DevSettings, "overriddenFbosVersion")
@@ -45,6 +46,7 @@ describe("attachAppToDom()", () => {
     attachAppToDom();
     expect(attachToRootSpy).toHaveBeenCalledWith(RootComponent, { store });
     expect(readySpy).toHaveBeenCalled();
-    expect(dispatchMock).toHaveBeenCalledWith({ type: "READY" });
+    expect(dispatchMock).toHaveBeenCalledWith(
+      ({ type: "READY" }) as unknown as ReturnType<typeof configActions.ready>);
   });
 });

@@ -7,15 +7,10 @@ import * as deviceActions from "../../../devices/actions";
 import { warning } from "../../../toast/toast";
 import * as ui from "../../../ui";
 import * as statusIndicator from "../setting_status_indicator";
+import { BIProps } from "../../../ui/blurable_input";
 
 const settingStatusIndicatorMock = jest.fn((_: unknown) => <div />);
-const blurableInputMock = jest.fn((props: {
-  value?: string,
-  onCommit: (e: React.SyntheticEvent<HTMLInputElement>) => void,
-  min?: number,
-  max?: number,
-  error?: string,
-}) =>
+const blurableInputMock = jest.fn((props: BIProps) =>
   <div>
     <input
       data-testid="mcu-input"
@@ -37,7 +32,7 @@ beforeEach(() => {
   updateMCUSpy = jest.spyOn(deviceActions, "updateMCU")
     .mockImplementation(jest.fn());
   blurableInputSpy = jest.spyOn(ui, "BlurableInput")
-    .mockImplementation((props: unknown) => blurableInputMock(props as never));
+    .mockImplementation(((props: BIProps) => blurableInputMock(props)) as never);
   settingStatusIndicatorSpy = jest.spyOn(statusIndicator, "SettingStatusIndicator")
     .mockImplementation((props: unknown) => settingStatusIndicatorMock(props));
 });
@@ -161,7 +156,8 @@ describe("McuInputBox", () => {
     p.min = -10;
     p.max = 10;
     const { container } = render(<McuInputBox {...p} />);
-    const input = screen.getByTestId("mcu-input");
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    const input = screen.getByTestId("mcu-input") as HTMLInputElement;
     expect(input.min).toEqual("-10");
     expect(input.max).toEqual("10");
     expect(container.querySelectorAll(".error").length).toEqual(0);

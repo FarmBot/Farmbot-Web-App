@@ -20,7 +20,7 @@ describe("stopIE()", () => {
     if (originalObjectEntriesDescriptor) {
       Object.defineProperty(Object, "entries", originalObjectEntriesDescriptor);
     } else {
-      delete (Object as Record<string, unknown>).entries;
+      delete (Object as unknown as Record<string, unknown>).entries;
     }
   });
 

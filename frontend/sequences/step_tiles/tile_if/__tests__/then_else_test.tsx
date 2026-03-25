@@ -29,7 +29,8 @@ describe("<ThenElse/>", () => {
     const p = fakeProps();
     const { container } = render(<ThenElse {...p} />);
     const wrapper = ThenElse(p) as React.ReactElement<{ children?: React.ReactNode }>;
-    const children = React.Children.toArray(wrapper.props.children) as JSX.Element[];
+    const children = React.Children.toArray(wrapper.props.children) as
+      React.ReactElement<{ list?: unknown[] }>[];
     expect(container.textContent).toContain("Then Execute");
     expect(children.length).toBeGreaterThanOrEqual(2);
     expect((children[1]).props.list).toBeDefined();
@@ -40,7 +41,8 @@ describe("<ThenElse/>", () => {
     p.thenElseKey = "_else";
     const { container } = render(<ThenElse {...p} />);
     const wrapper = ThenElse(p) as React.ReactElement<{ children?: React.ReactNode }>;
-    const children = React.Children.toArray(wrapper.props.children) as JSX.Element[];
+    const children = React.Children.toArray(wrapper.props.children) as
+      React.ReactElement<{ list?: unknown[] }>[];
     expect(container.textContent).toContain("Else Execute");
     expect(children.length).toBeGreaterThanOrEqual(2);
     expect((children[1]).props.list).toBeDefined();

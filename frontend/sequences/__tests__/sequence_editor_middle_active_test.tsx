@@ -19,6 +19,7 @@ import {
 } from "../interfaces";
 import * as ui from "../../ui";
 import * as blueprintCore from "@blueprintjs/core";
+import { CollapseProps } from "@blueprintjs/core";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { fakeSequence } from "../../__test_support__/fake_state/resources";
 import * as crud from "../../api/crud";
@@ -54,6 +55,9 @@ import {
   createRenderer,
   unmountRenderer,
 } from "../../__test_support__/test_renderer";
+import { BIProps } from "../../ui/blurable_input";
+import { ToggleButtonProps } from "../../ui/toggle_button";
+import { FBSelectProps } from "../../ui/new_fb_select";
 
 let spliceSpy: jest.SpyInstance;
 let moveSpy: jest.SpyInstance;
@@ -88,8 +92,8 @@ let colorPickerClusterSpy: jest.SpyInstance;
 
 beforeEach(() => {
   collapseSpy = jest.spyOn(blueprintCore, "Collapse")
-    .mockImplementation((props: { isOpen: boolean; children: React.ReactNode }) =>
-      props.isOpen ? <div>{props.children}</div> : <div />);
+    .mockImplementation(((props: CollapseProps) =>
+      props.isOpen ? <div>{props.children}</div> : <div />) as never);
   popoverSpy = jest.spyOn(ui, "Popover")
     .mockImplementation((props: {
       className?: string;
@@ -97,33 +101,22 @@ beforeEach(() => {
       content?: React.ReactNode;
     }) => <div className={props.className}>{props.target}{props.content}</div>);
   blurableInputSpy = jest.spyOn(ui, "BlurableInput")
-    .mockImplementation((props: {
-      className?: string;
-      value?: string;
-      placeholder?: string;
-      onCommit?: (e: React.FocusEvent<HTMLInputElement>) => void;
-    }) =>
+    .mockImplementation(((props: BIProps) =>
       <input
         className={props.className}
-        defaultValue={props.value}
+        defaultValue={String(props.value ?? "")}
         placeholder={props.placeholder}
-        onBlur={e => props.onCommit?.(e)} />);
+        onBlur={e => props.onCommit?.(e)} />) as never);
   toggleButtonSpy = jest.spyOn(ui, "ToggleButton")
-    .mockImplementation((props: {
-      className?: string;
-      toggleAction: () => void;
-    }) => <button className={props.className} onClick={props.toggleAction} />);
+    .mockImplementation(((props: ToggleButtonProps) =>
+      <button className={props.className} onClick={props.toggleAction} />) as never);
   fbSelectSpy = jest.spyOn(ui, "FBSelect")
-    .mockImplementation((props: {
-      selectedItem?: { label: string };
-      list?: { label: string; value: number }[];
-      onChange?: (ddi: { label: string; value: number }) => void;
-    }) => <button
+    .mockImplementation(((props: FBSelectProps) => <button
       className={"fb-select-mock"}
       onClick={e => {
         e.stopPropagation();
         props.list?.[0] && props.onChange?.(props.list[0]);
-      }}>{props.selectedItem?.label}</button>);
+      }}>{props.selectedItem?.label}</button>) as never);
   colorPickerClusterSpy = jest.spyOn(ui, "ColorPickerCluster")
     .mockImplementation((props: { onChange: (color: string) => void }) =>
       <button

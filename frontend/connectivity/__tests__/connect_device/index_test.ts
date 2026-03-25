@@ -20,7 +20,9 @@ import {
 } from "../../connect_device";
 import { Actions, Content } from "../../../constants";
 import { Log } from "farmbot/dist/resources/api_resources";
-import { ALLOWED_CHANNEL_NAMES, ALLOWED_MESSAGE_TYPES, Farmbot } from "farmbot";
+import {
+  ALLOWED_CHANNEL_NAMES, ALLOWED_MESSAGE_TYPES, Farmbot, TaggedLog,
+} from "farmbot";
 import * as connectivity from "../../index";
 import * as browserSpeech from "browser-speech";
 import { MessageType } from "../../../sequences/interfaces";
@@ -211,8 +213,9 @@ describe("initLog", () => {
   it("creates a Redux action (new log)", () => {
     const log = fakeLog(MessageType.error);
     const action = initLog(log);
+    const payload = action.payload as TaggedLog;
     expect(action.payload.kind).toBe("Log");
-    expect(action.payload.body.message).toBe(log.message);
+    expect(payload.body.message).toBe(log.message);
   });
 });
 
