@@ -81,6 +81,7 @@ export const GardenModel = (props: GardenModelProps) => {
 
   const [hoveredPlant, setHoveredPlant] =
     React.useState<number | undefined>(undefined);
+  const hoveredPlantRef = React.useRef<number | undefined>(undefined);
 
   const getI = (e: ThreeEvent<PointerEvent>) => {
     if (e.buttons) { return -1; }
@@ -100,7 +101,10 @@ export const GardenModel = (props: GardenModelProps) => {
     return config.labelsOnHover
       ? (e: ThreeEvent<PointerEvent>) => {
         e.stopPropagation();
-        setHoveredPlant(active ? getI(e) : undefined);
+        const nextHover = active ? getI(e) : undefined;
+        if (hoveredPlantRef.current === nextHover) { return; }
+        hoveredPlantRef.current = nextHover;
+        setHoveredPlant(nextHover);
       }
       : undefined;
   };
@@ -160,12 +164,24 @@ export const GardenModel = (props: GardenModelProps) => {
   const activePositionRef = React.useRef<{ x: number, y: number }>(null);
 
   const plantLabelNodes = React.useMemo(
-    () => threeDPlants.map((plant, i) =>
-      <ThreeDPlantLabel key={i} i={i}
-        plant={plant}
-        config={config}
-        getZ={getZ}
-        hoveredPlant={hoveredPlant} />),
+    () => {
+      if (config.labelsOnHover) {
+        if (hoveredPlant === undefined) { return undefined; }
+        const plant = threeDPlants[hoveredPlant];
+        return plant &&
+          <ThreeDPlantLabel key={hoveredPlant} i={hoveredPlant}
+            plant={plant}
+            config={config}
+            getZ={getZ}
+            hoveredPlant={hoveredPlant} />;
+      }
+      return threeDPlants.map((plant, i) =>
+        <ThreeDPlantLabel key={i} i={i}
+          plant={plant}
+          config={config}
+          getZ={getZ}
+          hoveredPlant={hoveredPlant} />);
+    },
     [threeDPlants, config, getZ, hoveredPlant]);
 
   const pointNodes = React.useMemo(

@@ -223,8 +223,7 @@ export interface SoilPointerMoveProps extends AllRefs {
 
 // eslint-disable-next-line complexity
 export const soilPointerMove = (props: SoilPointerMoveProps) =>
-  // eslint-disable-next-line complexity
-  (e: ThreeEvent<MouseEvent>) => {
+  (() => {
     const {
       config, addPlantProps,
       pointerPlantRef,
@@ -233,35 +232,57 @@ export const soilPointerMove = (props: SoilPointerMoveProps) =>
     } = props;
     const getGardenPosition = getGardenPositionFunc(config);
     const get3DPosition = get3DPositionFunc(config);
-    if (addPlantProps
-      && HOVER_OBJECT_MODES.includes(getMode())
-      && !isMobile()
-      && pointerPlantRef.current) {
-      const gardenPosition = getGardenPosition(e.point);
+    let frame = 0;
+    let pendingGardenPosition: ReturnType<typeof getGardenPosition> | undefined;
+    let lastRenderedPosition: { x: number, y: number } | undefined;
+
+    // eslint-disable-next-line complexity
+    const updatePointer = () => {
+      frame = 0;
+      const gardenPosition = pendingGardenPosition;
+      pendingGardenPosition = undefined;
+      if (!gardenPosition
+        || !addPlantProps
+        || !HOVER_OBJECT_MODES.includes(getMode())
+        || isMobile()
+        || !pointerPlantRef.current) { return; }
       const { x, y } = get3DPosition(gardenPosition);
       const z = zZero(config) + props.getZ(gardenPosition.x, gardenPosition.y);
+      if (lastRenderedPosition?.x === x && lastRenderedPosition.y === y) {
+        return;
+      }
       xCrosshairRef.current?.position.set(0, y, z);
       yCrosshairRef.current?.position.set(x, 0, z);
       activePositionRef.current = { x, y };
+      lastRenderedPosition = { x, y };
       if (getMode() == Mode.clickToAdd) {
-        pointerPlantRef.current?.position?.set(x, y, z);
+        pointerPlantRef.current.position?.set(x, y, z);
       }
       if (DRAW_POINT_MODES.includes(getMode())) {
         const { drawnPoint } = addPlantProps.designer;
         if (isUndefined(drawnPoint)) { return; }
         if (isUndefined(drawnPoint.cx) || isUndefined(drawnPoint.cy)) {
-          pointerPlantRef.current?.position?.set(x, y, z);
+          pointerPlantRef.current.position?.set(x, y, z);
         } else {
           if (drawnPoint.r > 0) { return; }
           const radius = round(xyDistance(
             { x: drawnPoint.cx, y: drawnPoint.cy },
-            getGardenPosition(e.point)));
+            gardenPosition));
           radiusRef.current?.scale.set(radius, radius, radius);
-          torusRef.current?.scale.set(radius, radius, POINT_CYLINDER_SCALE_FACTOR);
+          torusRef.current?.scale.set(
+            radius, radius, POINT_CYLINDER_SCALE_FACTOR);
           const imgSize = mathRound(radius * WEED_IMG_SIZE_FRACTION);
           billboardRef.current?.position.set(0, 0, imgSize / 2);
           imageRef.current?.scale.set(imgSize, imgSize, imgSize);
         }
       }
-    }
-  };
+    };
+
+    // eslint-disable-next-line complexity
+    return (e: ThreeEvent<MouseEvent>) => {
+      pendingGardenPosition = getGardenPosition(e.point);
+      if (!frame) {
+        frame = requestAnimationFrame(updatePointer);
+      }
+    };
+  })();

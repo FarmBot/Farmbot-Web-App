@@ -109,6 +109,47 @@ describe("<GardenModel />", () => {
     expect(plantLabels.length).toEqual(1);
   });
 
+  it("doesn't render hover labels without a hovered plant", () => {
+    const p = fakeProps();
+    const plant = fakePlant();
+    plant.body.name = "Beet";
+    p.config.labels = true;
+    p.config.labelsOnHover = true;
+    p.threeDPlants = convertPlants(p.config, [plant]);
+    const { queryAllByText } = render(<GardenModel {...p} />);
+    const plantLabels = queryAllByText("Beet");
+    expect(plantLabels.length).toEqual(0);
+  });
+
+  it("renders only the hovered label when labels on hover are enabled", () => {
+    useStateSpy.mockRestore();
+    let useStateCalls = 0;
+    useStateSpy = jest.spyOn(React, "useState")
+      // eslint-disable-next-line comma-spacing
+      .mockImplementation(<S,>(initialState?: S | (() => S)) => {
+        useStateCalls += 1;
+        if (useStateCalls == 1) {
+          return [0 as S, jest.fn()];
+        }
+        if (useStateCalls == 2) {
+          return [{} as S, jest.fn()];
+        }
+        const value = typeof initialState == "function"
+          ? (initialState as () => S)()
+          : initialState;
+        return [value as S, jest.fn()];
+      });
+    const p = fakeProps();
+    const plant = fakePlant();
+    plant.body.name = "Beet";
+    p.config.labels = true;
+    p.config.labelsOnHover = true;
+    p.threeDPlants = convertPlants(p.config, [plant]);
+    const { queryAllByText } = render(<GardenModel {...p} />);
+    const plantLabels = queryAllByText("Beet");
+    expect(plantLabels.length).toEqual(1);
+  });
+
   it("renders points and weeds", () => {
     const p = fakeProps();
     p.mapPoints = [fakePoint()];
