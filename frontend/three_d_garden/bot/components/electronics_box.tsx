@@ -2,7 +2,7 @@ import React from "react";
 import * as THREE from "three";
 import { Cylinder, useGLTF } from "@react-three/drei";
 import { threeSpace } from "../../helpers";
-import { Config } from "../../config";
+import { Config, PositionConfig } from "../../config";
 import type { GLTF } from "three-stdlib";
 import { ASSETS, ElectronicsBoxMaterial, LIB_DIR, PartName } from "../../constants";
 import { Group, Mesh } from "../../components";
@@ -76,10 +76,12 @@ const ledsPresent = (kitVersion: string) => {
 
 export interface ElectronicsBoxProps {
   config: Config;
+  configPosition: PositionConfig;
 }
 
 export const ElectronicsBox = (props: ElectronicsBoxProps) => {
-  const { x, bedXOffset, bedLengthOuter, bedWidthOuter, columnLength } = props.config;
+  const { bedXOffset, bedLengthOuter, bedWidthOuter, columnLength } = props.config;
+  const { x } = props.configPosition;
 
   const box = useGLTF(ASSETS.models.box, LIB_DIR) as unknown as Box;
   const btn = useGLTF(ASSETS.models.btn, LIB_DIR) as unknown as Btn;

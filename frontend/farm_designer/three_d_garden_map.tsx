@@ -1,6 +1,6 @@
 import React from "react";
 import { ThreeDGarden } from "../three_d_garden";
-import { Config, INITIAL } from "../three_d_garden/config";
+import { Config, INITIAL, INITIAL_POSITION } from "../three_d_garden/config";
 import {
   BotSize, MapTransformProps, AxisNumberProperty, TaggedPlant,
 } from "./map/interfaces";
@@ -76,9 +76,10 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   config.negativeZ = props.negativeZ;
   config.exaggeratedZ = props.designer.threeDExaggeratedZ;
 
-  config.x = props.botPosition.x || 0;
-  config.y = props.botPosition.y || 0;
-  config.z = props.botPosition.z || 0;
+  const position = clone(INITIAL_POSITION);
+  position.x = props.botPosition.x || 0;
+  position.y = props.botPosition.y || 0;
+  position.z = props.botPosition.z || 0;
 
   const { designer } = props;
   config.distanceIndicator = designer.distanceIndicator;
@@ -192,6 +193,7 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
 
   return <ThreeDGarden
     config={config}
+    configPosition={position}
     threeDPlants={threeDPlants}
     mapPoints={props.mapPoints}
     weeds={props.weeds}

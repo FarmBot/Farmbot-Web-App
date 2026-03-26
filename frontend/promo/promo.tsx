@@ -1,6 +1,6 @@
 import React from "react";
 import {
-  Config, INITIAL, modifyConfigsFromUrlParams,
+  Config, ConfigWithPosition, INITIAL, modifyConfigsFromUrlParams,
   PRESETS,
 } from "../three_d_garden/config";
 import { GardenModel } from "../three_d_garden/garden_model";
@@ -56,7 +56,7 @@ export const getSeasonTimings = (currentSeason: string, step = 0) => {
 };
 
 export const Promo = () => {
-  const [config, setConfig] = React.useState<Config>(INITIAL);
+  const [config, setConfig] = React.useState<ConfigWithPosition>(INITIAL);
   const [toolTip, setToolTip] = React.useState<ToolTip>({ timeoutId: 0, text: "" });
   const [activeFocus, setActiveFocus] = React.useState("");
   const common = {
@@ -138,6 +138,7 @@ export const Promo = () => {
             gl.localClippingEnabled = true;
           }}>
           <GardenModel {...common}
+            configPosition={{ x: config.x, y: config.y, z: config.z }}
             startTimeRef={startTimeRef}
             threeDPlants={getPlants()}
             mapPoints={mapPoints} />

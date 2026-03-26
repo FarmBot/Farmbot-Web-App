@@ -10,7 +10,7 @@ import {
   zDir as zDirFunc,
   zZero as zZeroFunc,
 } from "../helpers";
-import { Config } from "../config";
+import { Config, PositionConfig } from "../config";
 import type { GLTF } from "three-stdlib";
 import { ASSETS, LIB_DIR, PartName } from "../constants";
 import { SVGLoader } from "three/examples/jsm/Addons.js";
@@ -95,6 +95,7 @@ Object.values(ASSETS.models).map(model => useGLTF.preload(model, LIB_DIR));
 
 export interface FarmbotModelProps {
   config: Config;
+  configPosition: PositionConfig;
   activeFocus: string;
   getZ(x: number, y: number): number;
   toolSlots?: SlotWithTool[];
@@ -104,11 +105,11 @@ export interface FarmbotModelProps {
 
 export const Bot = (props: FarmbotModelProps) => {
   const config = props.config;
-  const {
-    x, y, z, botSizeX, botSizeY, botSizeZ, trail, laser,
+  const { botSizeX, botSizeY, botSizeZ, trail, laser,
     bedXOffset, bedYOffset, bedLengthOuter, bedWidthOuter, tracks,
     columnLength, zAxisLength, zGantryOffset,
   } = props.config;
+  const { x, y, z } = props.configPosition;
   const zZero = zZeroFunc(config);
   const zDir = zDirFunc(config);
   const gantryWheelPlate =
@@ -408,7 +409,7 @@ export const Bot = (props: FarmbotModelProps) => {
       geometry={xAxisCCMount.nodes[PartName.xAxisCCMount].geometry}>
       <MeshPhongMaterial color={"silver"} />
     </Mesh>
-    <CableCarrierX config={config} />
+    <CableCarrierX config={config} configPosition={props.configPosition} />
     <CrossSlideComponent name={"crossSlide"}
       position={[
         threeSpace(x - 1.5, bedLengthOuter) + bedXOffset,
@@ -505,8 +506,10 @@ export const Bot = (props: FarmbotModelProps) => {
         zZero - zDir * z + zAxisLength / 2,
       ]}
       rotation={[Math.PI / 2, 0, 0]} />
-    <CableCarrierSupportVertical config={config} />
-    <CableCarrierZ config={config} />
+    <CableCarrierSupportVertical
+      config={config}
+      configPosition={props.configPosition} />
+    <CableCarrierZ config={config} configPosition={props.configPosition} />
     <Mesh name={"zStopMax"}
       position={[
         threeSpace(x - 5, bedLengthOuter) + bedXOffset,
@@ -581,6 +584,7 @@ export const Bot = (props: FarmbotModelProps) => {
     </Group>
     <CameraView
       config={config}
+      configPosition={props.configPosition}
       cameraMountPosition={cameraMountPosition}
       distanceToSoil={distanceToSoil} />
     <Trail
@@ -619,10 +623,13 @@ export const Bot = (props: FarmbotModelProps) => {
       rotation={[Math.PI / 2, 0, 0]} />
     <GantryBeam
       config={config}
+      configPosition={props.configPosition}
       aluminumTexture={aluminumTexture}
       beamShape={beamShape} />
-    <CableCarrierSupportHorizontal config={config} />
-    <CableCarrierY config={config} />
+    <CableCarrierSupportHorizontal
+      config={config}
+      configPosition={props.configPosition} />
+    <CableCarrierY config={config} configPosition={props.configPosition} />
     <Mesh name={"yStopMin"}
       position={[
         threeSpace(x - extrusionWidth + 2, bedLengthOuter) + bedXOffset,
@@ -658,11 +665,12 @@ export const Bot = (props: FarmbotModelProps) => {
       geometry={beltClip.nodes[PartName.beltClip].geometry}>
       <MeshPhongMaterial color={"silver"} />
     </Mesh>
-    <Solenoid config={config} />
-    <ElectronicsBox config={config} />
+    <Solenoid config={config} configPosition={props.configPosition} />
+    <ElectronicsBox config={config} configPosition={props.configPosition} />
     <Tools
       dispatch={props.dispatch}
       config={config}
+      configPosition={props.configPosition}
       getZ={props.getZ}
       toolSlots={props.toolSlots}
       mountedToolName={props.mountedToolName} />
@@ -670,9 +678,10 @@ export const Bot = (props: FarmbotModelProps) => {
       <WateringAnimations
         waterFlow={config.waterFlow}
         config={config}
+        configPosition={props.configPosition}
         getZ={props.getZ} />}
     <PowerSupply config={config} />
     <XAxisWaterTube config={config} />
-    <Bounds config={config} />
+    <Bounds config={config} configPosition={props.configPosition} />
   </Group>;
 };

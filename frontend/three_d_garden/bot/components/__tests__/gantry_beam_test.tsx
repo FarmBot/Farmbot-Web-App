@@ -21,7 +21,7 @@ let mockRef: MockRef = {
 
 import React from "react";
 import { render } from "@testing-library/react";
-import { INITIAL } from "../../../config";
+import { INITIAL, INITIAL_POSITION } from "../../../config";
 import { clone } from "lodash";
 import { GantryBeam, GantryBeamProps } from "../gantry_beam";
 import { Shape, Texture } from "three";
@@ -40,6 +40,7 @@ describe("<GantryBeam />", () => {
 
   const fakeProps = (): GantryBeamProps => ({
     config: clone(INITIAL),
+    configPosition: clone(INITIAL_POSITION),
     beamShape: new Shape(),
     aluminumTexture: new Texture(),
   });

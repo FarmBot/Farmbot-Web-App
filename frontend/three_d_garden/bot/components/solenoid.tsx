@@ -1,6 +1,6 @@
 import React from "react";
 import * as THREE from "three";
-import { Config } from "../../config";
+import { Config, PositionConfig } from "../../config";
 import { Group, Mesh } from "../../components";
 import { WaterTube } from "./water_tube";
 import { easyCubicBezierCurve3, threeSpace, zDir as zDirFunc } from "../../helpers";
@@ -15,14 +15,16 @@ type SolenoidPart = GLTF & {
 
 export interface SolenoidProps {
   config: Config;
+  configPosition: PositionConfig;
 }
 
 export const Solenoid = (props: SolenoidProps) => {
   const { config } = props;
   const {
-    x, y, z, bedLengthOuter, bedWidthOuter, bedXOffset, bedYOffset,
+    bedLengthOuter, bedWidthOuter, bedXOffset, bedYOffset,
     columnLength, zGantryOffset,
   } = config;
+  const { x, y, z } = props.configPosition;
   const zDir = zDirFunc(config);
   const solenoid = useGLTF(ASSETS.models.solenoid, LIB_DIR) as unknown as SolenoidPart;
   return <Group>

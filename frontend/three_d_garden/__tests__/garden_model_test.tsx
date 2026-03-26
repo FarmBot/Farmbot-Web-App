@@ -4,7 +4,7 @@ let mockIsMobile = false;
 import React from "react";
 import { GardenModelProps, GardenModel } from "../garden_model";
 import { clone } from "lodash";
-import { INITIAL, SurfaceDebugOption } from "../config";
+import { INITIAL, INITIAL_POSITION, SurfaceDebugOption } from "../config";
 import { render } from "@testing-library/react";
 import {
   fakePlant, fakePoint, fakeSensor, fakeSensorReading, fakeWeed,
@@ -61,6 +61,7 @@ describe("<GardenModel />", () => {
 
   const fakeProps = (): GardenModelProps => ({
     config: clone(INITIAL),
+    configPosition: clone(INITIAL_POSITION),
     activeFocus: "",
     setActiveFocus: jest.fn(),
     addPlantProps: fakeAddPlantProps(),

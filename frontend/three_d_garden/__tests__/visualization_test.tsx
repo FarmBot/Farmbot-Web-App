@@ -7,7 +7,7 @@ let mockResources = buildResourceIndex([]);
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import { Visualization, VisualizationProps } from "../visualization";
-import { INITIAL } from "../config";
+import { INITIAL, INITIAL_POSITION } from "../config";
 import { clone } from "lodash";
 import {
   fakeFbosConfig, fakeFirmwareConfig, fakeSequence,
@@ -31,6 +31,7 @@ describe("<Visualization />", () => {
 
   const fakeProps = (): VisualizationProps => ({
     config: clone(INITIAL),
+    configPosition: clone(INITIAL_POSITION),
     visualizedSequenceUUID: undefined,
   });
 

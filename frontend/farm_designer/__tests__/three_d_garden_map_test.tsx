@@ -87,9 +87,6 @@ describe("<ThreeDGardenMap />", () => {
     expectedConfig.bedWidthOuter = 1660;
     expectedConfig.botSizeX = 3000;
     expectedConfig.botSizeY = 1500;
-    expectedConfig.x = 1;
-    expectedConfig.y = 2;
-    expectedConfig.z = 3;
     expectedConfig.ccSupportSize = 1;
     expectedConfig.beamLength = 1;
     expectedConfig.columnLength = 1;
@@ -140,6 +137,7 @@ describe("<ThreeDGardenMap />", () => {
     const call = lastThreeDGardenProps();
     expect(call).toEqual(expect.objectContaining({
       config: expectedConfig,
+      configPosition: { x: 1, y: 2, z: 3 },
       threeDPlants: [{
         id: expect.any(Number),
         icon: expect.any(String),
@@ -163,7 +161,7 @@ describe("<ThreeDGardenMap />", () => {
     render(<ThreeDGardenMap {...p} />);
     const call = lastThreeDGardenProps();
     expect(call).toEqual(expect.objectContaining({
-      config: expect.objectContaining({ x: 0, y: 0, z: 0 }),
+      configPosition: { x: 0, y: 0, z: 0 },
       threeDPlants: [],
       addPlantProps: expect.any(Object),
       ...EMPTY_PROPS,
@@ -178,7 +176,8 @@ describe("<ThreeDGardenMap />", () => {
     render(<ThreeDGardenMap {...p} />);
     const call = lastThreeDGardenProps();
     expect(call).toEqual(expect.objectContaining({
-      config: expect.objectContaining({ negativeZ: true, x: 0, y: 0, z: -100 }),
+      config: expect.objectContaining({ negativeZ: true }),
+      configPosition: { x: 0, y: 0, z: -100 },
       threeDPlants: [],
       addPlantProps: expect.any(Object),
       ...EMPTY_PROPS,

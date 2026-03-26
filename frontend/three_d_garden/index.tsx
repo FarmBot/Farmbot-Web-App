@@ -1,6 +1,6 @@
 import { Canvas } from "@react-three/fiber";
 import React from "react";
-import { Config } from "./config";
+import { Config, PositionConfig } from "./config";
 import { GardenModel } from "./garden_model";
 import { noop } from "lodash";
 import { AddPlantProps } from "./bed";
@@ -27,6 +27,7 @@ import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
 
 export interface ThreeDGardenProps {
   config: Config;
+  configPosition: PositionConfig;
   threeDPlants: ThreeDGardenPlant[];
   addPlantProps: AddPlantProps;
   mapPoints: TaggedGenericPointer[];
@@ -60,6 +61,7 @@ export const ThreeDGarden = (props: ThreeDGardenProps) => {
           }}>
           <GardenModel
             config={props.config}
+            configPosition={props.configPosition}
             threeDPlants={props.threeDPlants}
             activeFocus={""}
             setActiveFocus={noop}

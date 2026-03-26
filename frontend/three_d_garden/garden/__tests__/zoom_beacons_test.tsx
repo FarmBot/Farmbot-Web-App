@@ -4,7 +4,7 @@ import React from "react";
 import { render } from "@testing-library/react";
 import { ZoomBeacons, ZoomBeaconsProps } from "../zoom_beacons";
 import { clone } from "lodash";
-import { INITIAL } from "../../config";
+import { INITIAL, INITIAL_POSITION } from "../../config";
 import * as screenSize from "../../../screen_size";
 import {
   actRenderer,
@@ -34,6 +34,7 @@ describe("<ZoomBeacons />", () => {
 
   const fakeProps = (): ZoomBeaconsProps => ({
     config: clone(INITIAL),
+    configPosition: clone(INITIAL_POSITION),
     activeFocus: "",
     setActiveFocus: jest.fn(),
   });

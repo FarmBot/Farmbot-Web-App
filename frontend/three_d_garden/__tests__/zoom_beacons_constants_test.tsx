@@ -10,7 +10,7 @@ import {
   setUrlParam,
 } from "../zoom_beacons_constants";
 import { clone } from "lodash";
-import { INITIAL } from "../config";
+import { INITIAL, INITIAL_POSITION } from "../config";
 import * as screenSize from "../../screen_size";
 
 let isDesktopSpy: jest.SpyInstance;
@@ -26,22 +26,25 @@ afterEach(() => {
 describe("FOCI()", () => {
   it("returns foci", () => {
     const config = clone(INITIAL);
-    expect(FOCI(config)[0].label).toEqual("What you can grow");
-    expect(FOCI(config)[0].info.scale).toEqual(3000);
+    const configPosition = clone(INITIAL_POSITION);
+    expect(FOCI(config, configPosition)[0].label).toEqual("What you can grow");
+    expect(FOCI(config, configPosition)[0].info.scale).toEqual(3000);
   });
 
   it("returns FOCI(): XL", () => {
     const config = clone(INITIAL);
     config.sizePreset = "Genesis XL";
-    expect(FOCI(config)[0].label).toEqual("What you can grow");
-    expect(FOCI(config)[0].info.scale).toEqual(6000);
+    const configPosition = clone(INITIAL_POSITION);
+    expect(FOCI(config, configPosition)[0].label).toEqual("What you can grow");
+    expect(FOCI(config, configPosition)[0].info.scale).toEqual(6000);
   });
 });
 
 describe("getFocus()", () => {
   it("returns focus", () => {
     const config = clone(INITIAL);
-    expect(getFocus(config, "What you can grow").label)
+    const configPosition = clone(INITIAL_POSITION);
+    expect(getFocus(config, configPosition, "What you can grow").label)
       .toEqual("What you can grow");
   });
 });
@@ -50,14 +53,16 @@ describe("getCameraOffset()", () => {
   it("returns camera offset: wide", () => {
     mockIsDesktop = true;
     const config = clone(INITIAL);
-    const focus = FOCI(config)[0];
+    const configPosition = clone(INITIAL_POSITION);
+    const focus = FOCI(config, configPosition)[0];
     expect(getCameraOffset(focus).position[1]).toEqual(0);
   });
 
   it("returns camera offset: narrow", () => {
     mockIsDesktop = false;
     const config = clone(INITIAL);
-    const focus = FOCI(config)[0];
+    const configPosition = clone(INITIAL_POSITION);
+    const focus = FOCI(config, configPosition)[0];
     expect(getCameraOffset(focus).position[1]).toEqual(-1000);
   });
 });
@@ -65,11 +70,12 @@ describe("getCameraOffset()", () => {
 describe("getCamera()", () => {
   it("returns camera", () => {
     const config = clone(INITIAL);
+    const configPosition = clone(INITIAL_POSITION);
     const fallback: Camera = {
       position: [0, 0, 0],
       target: [0, 0, 0],
     };
-    expect(getCamera(config, "What you can grow", fallback).position[0])
+    expect(getCamera(config, configPosition, "What you can grow", fallback).position[0])
       .toEqual(0);
   });
 });

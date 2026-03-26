@@ -2,7 +2,7 @@ import { Cylinder, Extrude, useHelper } from "@react-three/drei";
 import React from "react";
 import { threeSpace } from "../../helpers";
 import { Group, MeshPhongMaterial, SpotLight } from "../../components";
-import { Config } from "../../config";
+import { Config, PositionConfig } from "../../config";
 import {
   DoubleSide, Shape, SpotLightHelper, Texture, SpotLight as ThreeSpotLight, Vector3,
 } from "three";
@@ -12,6 +12,7 @@ import { range } from "lodash";
 
 export interface GantryBeamProps {
   config: Config;
+  configPosition: PositionConfig;
   beamShape: Shape | undefined;
   aluminumTexture: Texture;
 }
@@ -20,9 +21,10 @@ export const GantryBeam = (props: GantryBeamProps) => {
   const {
     beamLength, columnLength, bedXOffset, bedLengthOuter, bedWidthOuter,
   } = props.config;
+  const { x } = props.configPosition;
   return <Group name={"gantry-beam"}
     position={[
-      threeSpace(props.config.x - extrusionWidth - 8, bedLengthOuter) + bedXOffset,
+      threeSpace(x - extrusionWidth - 8, bedLengthOuter) + bedXOffset,
       threeSpace((bedWidthOuter + beamLength) / 2, bedWidthOuter) - 50,
       columnLength + 40,
     ]}

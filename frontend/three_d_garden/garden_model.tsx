@@ -25,7 +25,7 @@ import {
   skyColor,
   ThreeDPlantLabel,
 } from "./garden";
-import { Config } from "./config";
+import { Config, PositionConfig } from "./config";
 import { useSpring, animated } from "@react-spring/three";
 import { Lab, Greenhouse } from "./scenes";
 import { getCamera } from "./zoom_beacons_constants";
@@ -56,6 +56,7 @@ const AnimatedGroup = animated(Group);
 
 export interface GardenModelProps {
   config: Config;
+  configPosition: PositionConfig;
   activeFocus: string;
   setActiveFocus(focus: string): void;
   threeDPlants: ThreeDGardenPlant[];
@@ -115,7 +116,11 @@ export const GardenModel = (props: GardenModelProps) => {
 
   const topDown = addPlantProps?.designer.threeDTopDownView;
   const topDownMobile = topDown && isMobile();
-  const camera = getCamera(config, props.activeFocus, cameraInit(!!topDown));
+  const camera = getCamera(
+    config,
+    props.configPosition,
+    props.activeFocus,
+    cameraInit(!!topDown));
   const [controlsCamera, setControlsCamera] =
     // eslint-disable-next-line no-null/no-null
     React.useState<ThreePerspectiveCamera | ThreeOrthographicCamera | null>(null);
@@ -193,6 +198,7 @@ export const GardenModel = (props: GardenModelProps) => {
     {config.stats && <Stats />}
     {config.zoomBeacons && <ZoomBeacons
       config={config}
+      configPosition={props.configPosition}
       activeFocus={props.activeFocus}
       setActiveFocus={props.setActiveFocus} />}
     <Sky sunPosition={sunPosition(0, 0, 0)} />
@@ -262,6 +268,7 @@ export const GardenModel = (props: GardenModelProps) => {
       <Bot
         dispatch={dispatch}
         config={config}
+        configPosition={props.configPosition}
         getZ={getZ}
         activeFocus={props.activeFocus}
         mountedToolName={props.mountedToolName}
@@ -314,7 +321,8 @@ export const GardenModel = (props: GardenModelProps) => {
       getZ={getZ} />
     <Visualization
       visualizedSequenceUUID={props.addPlantProps?.designer.visualizedSequence}
-      config={config} />
+      config={config}
+      configPosition={props.configPosition} />
     <Solar config={config} activeFocus={props.activeFocus} />
     <Lab config={config} activeFocus={props.activeFocus} />
     <Greenhouse config={config} activeFocus={props.activeFocus} />

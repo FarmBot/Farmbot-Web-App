@@ -3,7 +3,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import {
   ThreeDGardenProps, ThreeDGarden, ThreeDGardenToggle, ThreeDGardenToggleProps,
 } from "../index";
-import { INITIAL } from "../config";
+import { INITIAL, INITIAL_POSITION } from "../config";
 import { clone } from "lodash";
 import { fakeAddPlantProps } from "../../__test_support__/fake_props";
 import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
@@ -23,6 +23,7 @@ beforeEach(() => {
 describe("<ThreeDGarden />", () => {
   const fakeProps = (): ThreeDGardenProps => ({
     config: clone(INITIAL),
+    configPosition: clone(INITIAL_POSITION),
     addPlantProps: fakeAddPlantProps(),
     mapPoints: [],
     weeds: [],

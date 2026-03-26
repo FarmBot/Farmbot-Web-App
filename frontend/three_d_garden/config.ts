@@ -9,9 +9,6 @@ export interface Config {
   bedWallThickness: number;
   bedHeight: number;
   ccSupportSize: number;
-  x: number;
-  y: number;
-  z: number;
   beamLength: number;
   columnLength: number;
   zAxisLength: number;
@@ -105,13 +102,21 @@ export interface Config {
   lastImageCapture: number;
 }
 
+export interface PositionConfig {
+  x: number;
+  y: number;
+  z: number;
+}
+
+export interface ConfigWithPosition extends Config, PositionConfig { }
+
 export enum SurfaceDebugOption {
   none,
   normals,
   height,
 }
 
-export const INITIAL: Config = {
+export const INITIAL: ConfigWithPosition = {
   sizePreset: "Genesis",
   bedType: "Standard",
   otherPreset: "Initial",
@@ -218,6 +223,12 @@ export const INITIAL: Config = {
   lastImageCapture: 0,
 };
 
+export const INITIAL_POSITION: PositionConfig = {
+  x: 300,
+  y: 700,
+  z: 200,
+};
+
 export const STRING_KEYS = [
   "sizePreset", "bedType", "otherPreset", "label", "plants", "tool", "scene",
   "distanceIndicator", "kitVersion", "soilSurface", "imgOrigin",
@@ -225,7 +236,7 @@ export const STRING_KEYS = [
 
 export const NUMBER_KEYS = [
   "botSizeX", "botSizeY", "botSizeZ", "bedWallThickness", "bedHeight",
-  "ccSupportSize", "x", "y", "z", "beamLength", "columnLength", "zAxisLength",
+  "ccSupportSize", "beamLength", "columnLength", "zAxisLength",
   "bedXOffset", "bedYOffset", "bedZOffset", "zGantryOffset", "bedWidthOuter",
   "bedLengthOuter", "legSize", "extraLegsX", "extraLegsY", "bedBrightness",
   "soilBrightness", "soilHeight", "sunInclination", "sunAzimuth", "heading",
@@ -320,9 +331,6 @@ export const PRESETS: Record<string, Config> = {
     ...INITIAL,
     bedWallThickness: 40,
     bedHeight: 300,
-    x: 300,
-    y: 200,
-    z: 200,
     ccSupportSize: 50,
     legSize: 100,
     legsFlush: false,
@@ -377,9 +385,6 @@ export const PRESETS: Record<string, Config> = {
     ...INITIAL,
     bedWallThickness: 40,
     bedHeight: 300,
-    x: 300,
-    y: 200,
-    z: 200,
     ccSupportSize: 50,
     legSize: 100,
     legsFlush: true,
@@ -453,7 +458,7 @@ const SIZE_CONFIG_KEYS: (keyof Config)[] = [
 ];
 
 const OTHER_CONFIG_KEYS: (keyof Config)[] = [
-  "bedWallThickness", "bedHeight", "x", "y", "z",
+  "bedWallThickness", "bedHeight",
   "ccSupportSize", "legSize", "legsFlush",
   "bedBrightness", "soilBrightness", "plants", "labels", "ground", "grid", "axes",
   "trail", "clouds", "sunInclination", "sunAzimuth", "heading",
@@ -473,45 +478,46 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "interpolationPower", "promoSpread", "cameraView", "lastImageCapture",
 ];
 
-export const modifyConfig = (config: Config, update: Partial<Config>) => {
-  const newConfig: Config = { ...config, ...update };
-  if (update.sizePreset) {
-    const presetConfig = PRESETS[update.sizePreset];
-    SIZE_CONFIG_KEYS.map(key => newConfig[key] = presetConfig[key] as never);
-    if (update.sizePreset == "Jr") {
-      newConfig.x = 100;
-      newConfig.y = 100;
-      newConfig.z = 50;
+export const modifyConfig =
+  (config: ConfigWithPosition, update: Partial<ConfigWithPosition>) => {
+    const newConfig: ConfigWithPosition = { ...config, ...update };
+    if (update.sizePreset) {
+      const presetConfig = PRESETS[update.sizePreset];
+      SIZE_CONFIG_KEYS.map(key => newConfig[key] = presetConfig[key] as never);
+      if (update.sizePreset == "Jr") {
+        newConfig.x = 100;
+        newConfig.y = 100;
+        newConfig.z = 50;
+      }
     }
-  }
-  if (update.scene) {
-    newConfig.clouds = update.scene == "Outdoor";
-    newConfig.people = update.scene != "Outdoor";
-    newConfig.bedType =
-      (update.scene != "Outdoor" && newConfig.sizePreset != "Genesis XL")
-        ? "Mobile"
-        : "Standard";
-  }
-  if (update.bedType || (newConfig.bedType != config.bedType)) {
-    newConfig.bedZOffset = newConfig.bedType == "Mobile" ? 500 : 0;
-    newConfig.legsFlush = newConfig.bedType != "Mobile";
-  }
-  if (update.otherPreset) {
-    if (update.otherPreset == "Reset all") {
-      Object.keys(config).map(key => {
-        const configKey = key as keyof Config;
-        newConfig[configKey] = INITIAL[configKey] as never;
-      });
-      const url = new URL(window.location.href);
-      url.search = "";
-      history.pushState(undefined, "", url.toString());
-    } else {
-      const presetConfig = PRESETS[update.otherPreset];
-      OTHER_CONFIG_KEYS.map(key => newConfig[key] = presetConfig[key] as never);
+    if (update.scene) {
+      newConfig.clouds = update.scene == "Outdoor";
+      newConfig.people = update.scene != "Outdoor";
+      newConfig.bedType =
+        (update.scene != "Outdoor" && newConfig.sizePreset != "Genesis XL")
+          ? "Mobile"
+          : "Standard";
     }
-  }
-  return newConfig;
-};
+    if (update.bedType || (newConfig.bedType != config.bedType)) {
+      newConfig.bedZOffset = newConfig.bedType == "Mobile" ? 500 : 0;
+      newConfig.legsFlush = newConfig.bedType != "Mobile";
+    }
+    if (update.otherPreset) {
+      if (update.otherPreset == "Reset all") {
+        Object.keys(config).map(key => {
+          const configKey = key as keyof ConfigWithPosition;
+          newConfig[configKey] = INITIAL[configKey] as never;
+        });
+        const url = new URL(window.location.href);
+        url.search = "";
+        history.pushState(undefined, "", url.toString());
+      } else {
+        const presetConfig = PRESETS[update.otherPreset];
+        OTHER_CONFIG_KEYS.map(key => newConfig[key] = presetConfig[key] as never);
+      }
+    }
+    return newConfig;
+  };
 
 export const KIT_LOOKUP: { [x: string]: string } = {
   "genesis": "Genesis",
@@ -519,8 +525,8 @@ export const KIT_LOOKUP: { [x: string]: string } = {
   "jr": "Jr",
 };
 
-export const modifyConfigsFromUrlParams = (config: Config) => {
-  let newConfig: Config = { ...config };
+export const modifyConfigsFromUrlParams = (config: ConfigWithPosition) => {
+  let newConfig: ConfigWithPosition = { ...config };
   const urlParams = new URLSearchParams(window.location.search);
   const kit = urlParams.get("kit")?.toLowerCase();
   if (kit) {
@@ -535,7 +541,7 @@ export const modifyConfigsFromUrlParams = (config: Config) => {
       newConfig = modifyConfig(newConfig, { [key]: value });
     }
   });
-  NUMBER_KEYS.map(key => {
+  NUMBER_KEYS.concat(["x", "y", "z"]).map(key => {
     const value = urlParams.get(key);
     if (value) {
       newConfig = modifyConfig(newConfig, { [key]: parseInt(value) });

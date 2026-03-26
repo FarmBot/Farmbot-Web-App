@@ -33,7 +33,7 @@ const mockRotaryRef = () => {
 };
 
 import { fireEvent, render } from "@testing-library/react";
-import { INITIAL } from "../../../config";
+import { INITIAL, INITIAL_POSITION } from "../../../config";
 import { clone } from "lodash";
 import { Tools, ToolsProps } from "../tools";
 import {
@@ -75,6 +75,7 @@ describe("<Tools />", () => {
 
   const fakeProps = (): ToolsProps => ({
     config: clone(INITIAL),
+    configPosition: clone(INITIAL_POSITION),
     getZ: jest.fn(),
   });
 

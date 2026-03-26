@@ -7,7 +7,7 @@ import {
   zDir as zDirFunc,
   zZero as zZeroFunc,
 } from "../../helpers";
-import { Config } from "../../config";
+import { Config, PositionConfig } from "../../config";
 import type { GLTF } from "three-stdlib";
 import { ASSETS, LIB_DIR, PartName } from "../../constants";
 import { range } from "lodash";
@@ -57,13 +57,15 @@ const ccPath =
 
 interface CableCarrierXProps {
   config: Config;
+  configPosition: PositionConfig;
 }
 
 export const CableCarrierX = (props: CableCarrierXProps) => {
   const {
-    x, bedHeight, cableCarriers, botSizeX, bedLengthOuter, bedXOffset,
+    bedHeight, cableCarriers, botSizeX, bedLengthOuter, bedXOffset,
     tracks, bedWidthOuter
   } = props.config;
+  const { x } = props.configPosition;
   const bedCCSupportHeight = Math.min(150, bedHeight / 2);
   return <Extrude name={"xCC"} visible={cableCarriers}
     castShadow={true}
@@ -86,13 +88,15 @@ export const CableCarrierX = (props: CableCarrierXProps) => {
 
 interface CableCarrierYProps {
   config: Config;
+  configPosition: PositionConfig;
 }
 
 export const CableCarrierY = (props: CableCarrierYProps) => {
   const {
-    x, y, columnLength, cableCarriers, botSizeY, bedLengthOuter, bedYOffset,
+    columnLength, cableCarriers, botSizeY, bedLengthOuter, bedYOffset,
     bedXOffset, bedWidthOuter, kitVersion,
   } = props.config;
+  const { x, y } = props.configPosition;
   const ccDepth = (kitVersion: string) => {
     switch (kitVersion) {
       case "v1.7":
@@ -120,13 +124,15 @@ export const CableCarrierY = (props: CableCarrierYProps) => {
 
 interface CableCarrierZProps {
   config: Config;
+  configPosition: PositionConfig;
 }
 
 export const CableCarrierZ = (props: CableCarrierZProps) => {
   const {
-    x, y, z, cableCarriers, botSizeZ, zGantryOffset, bedLengthOuter, bedYOffset,
+    cableCarriers, botSizeZ, zGantryOffset, bedLengthOuter, bedYOffset,
     bedXOffset, bedWidthOuter,
   } = props.config;
+  const { x, y, z } = props.configPosition;
   const zZero = zZeroFunc(props.config);
   const zDir = zDirFunc(props.config);
   return <Extrude name={"zCC"} visible={cableCarriers}
@@ -147,14 +153,16 @@ export const CableCarrierZ = (props: CableCarrierZProps) => {
 
 export interface CableCarrierSupportVerticalProps {
   config: Config;
+  configPosition: PositionConfig;
 }
 
 export const CableCarrierSupportVertical =
   (props: CableCarrierSupportVerticalProps) => {
     const {
-      x, y, z, bedLengthOuter, bedYOffset, bedXOffset, bedWidthOuter, zAxisLength,
+      bedLengthOuter, bedYOffset, bedXOffset, bedWidthOuter, zAxisLength,
       kitVersion,
     } = props.config;
+    const { x, y, z } = props.configPosition;
     const zZero = zZeroFunc(props.config);
     const zDir = zDirFunc(props.config);
     const ccSupportVertical =
@@ -242,14 +250,16 @@ export const CableCarrierSupportVertical =
 
 export interface CableCarrierSupportHorizontalProps {
   config: Config;
+  configPosition: PositionConfig;
 }
 
 export const CableCarrierSupportHorizontal =
   (props: CableCarrierSupportHorizontalProps) => {
     const {
-      x, bedLengthOuter, bedYOffset, bedXOffset, bedWidthOuter, botSizeY,
+      bedLengthOuter, bedYOffset, bedXOffset, bedWidthOuter, botSizeY,
       columnLength, kitVersion,
     } = props.config;
+    const { x } = props.configPosition;
     const ccSupportHorizontal =
       useGLTF(ASSETS.models.ccSupportHorizontal, LIB_DIR) as unknown as CCSupportHorizontal;
     const horizontalInstances = React.useMemo(() => range((botSizeY - 10) / 300), [botSizeY]);

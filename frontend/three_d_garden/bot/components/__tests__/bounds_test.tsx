@@ -1,12 +1,13 @@
 import React from "react";
 import { render } from "@testing-library/react";
-import { INITIAL } from "../../../config";
+import { INITIAL, INITIAL_POSITION } from "../../../config";
 import { clone } from "lodash";
 import { Bounds, BoundsProps } from "../bounds";
 
 describe("<Bounds />", () => {
   const fakeProps = (): BoundsProps => ({
     config: clone(INITIAL),
+    configPosition: clone(INITIAL_POSITION),
   });
 
   it("renders bounds", () => {
