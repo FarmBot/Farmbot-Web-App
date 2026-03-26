@@ -4,6 +4,7 @@ import { TextEncoder } from "util";
 import fs from "fs";
 import path from "path";
 import { cleanup } from "@testing-library/react";
+import * as THREE from "three";
 
 const globalAny = globalThis as typeof globalThis & {
   globalConfig?: Record<string, string>;
@@ -182,7 +183,6 @@ nativeRequire("./mock_i18next");
 nativeRequire("./three_d_mocks");
 const threeFiber = nativeRequire("@react-three/fiber") as
   typeof import("@react-three/fiber");
-const THREE = nativeRequire("three") as typeof import("three");
 nativeRequire("jest-canvas-mock");
 nativeRequire("./setup_tests");
 const { auth } = nativeRequire("./fake_state/token") as
