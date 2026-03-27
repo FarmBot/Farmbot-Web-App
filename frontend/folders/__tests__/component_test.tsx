@@ -64,7 +64,7 @@ beforeEach(() => {
   popoverSpy = jest.spyOn(popover, "Popover")
     .mockImplementation((p: popover.PopoverProps) => mockPopover(p));
   buttonSpy = jest.spyOn(blueprintCore, "Button")
-    .mockImplementation((p: { text?: string }) => <button>{p.text}</button>);
+    .mockImplementation((p: blueprintCore.ButtonProps) => <button>{p.text}</button>);
   copySequenceSpy = jest.spyOn(sequenceActions, "copySequence")
     .mockImplementation(jest.fn());
   updateSearchTermSpy = jest.spyOn(folderActions, "updateSearchTerm")

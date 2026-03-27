@@ -329,7 +329,7 @@ export const NetworkRequirementsLink = () =>
     {t("FarmBot Network Requirements")}
   </a>;
 
-export const FlashFirmware = (props: WizardStepComponentProps) => {
+export const FlashFirmware = (props: WizardOutcomeComponentProps) => {
   const firmwareHardware = getFwHardwareValue(getFbosConfig(props.resources));
   const botOnline = isBotOnlineFromState(props.bot);
   return <FlashFirmwareBtn
@@ -624,7 +624,7 @@ export const PinBinding = (props: PinBindingProps) => {
     </div>;
 };
 
-export const FindHome = (axis: Xyz) => (props: WizardStepComponentProps) => {
+export const FindHome = (axis: Xyz) => (props: WizardOutcomeComponentProps) => {
   const botOnline = isBotOnlineFromState(props.bot);
   const firmwareSettings = getFirmwareConfig(props.resources);
   const hardwareDisabled = disabledAxisMap(firmwareSettings?.body
@@ -638,7 +638,7 @@ export const FindHome = (axis: Xyz) => (props: WizardStepComponentProps) => {
   </LockableButton>;
 };
 
-export const SetHome = (axis: Xyz) => (props: WizardStepComponentProps) => {
+export const SetHome = (axis: Xyz) => (props: WizardOutcomeComponentProps) => {
   const botOnline = isBotOnlineFromState(props.bot);
   return <LockableButton
     disabled={!botOnline}
@@ -694,7 +694,7 @@ export const BootSequence = () => {
   return <BootSequenceSelector />;
 };
 
-export const CameraOffset = (props: WizardStepComponentProps) => {
+export const CameraOffset = (props: WizardOutcomeComponentProps) => {
   const helpText = t(ToolTips.CAMERA_OFFSET, {
     defaultX: WD_KEY_DEFAULTS["CAMERA_CALIBRATION_camera_offset_x"],
     defaultY: WD_KEY_DEFAULTS["CAMERA_CALIBRATION_camera_offset_y"],
@@ -719,7 +719,7 @@ export const CameraOffset = (props: WizardStepComponentProps) => {
   </Row>;
 };
 
-export const CameraImageOrigin = (props: WizardStepComponentProps) => {
+export const CameraImageOrigin = (props: WizardOutcomeComponentProps) => {
   const env = getEnv(props.resources);
   const wDEnv = prepopulateEnv(env);
   return <Row>

@@ -1,13 +1,13 @@
 import React from "react";
 import { full as emoji } from "markdown-it-emoji";
-import markdownit from "markdown-it";
+import markdownit, { PluginSimple } from "markdown-it";
 
 const md = markdownit({
   breaks: true,
   linkify: true,
   typographer: true,
 })
-  .use(emoji as markdownit.PluginSimple);
+  .use(emoji as PluginSimple);
 
 const md_with_html = markdownit({
   /** Enable HTML tags in source */
@@ -19,7 +19,7 @@ const md_with_html = markdownit({
   /** Enable some language-neutral replacement + quotes beautification */
   typographer: true,
 })
-  .use(emoji as markdownit.PluginSimple);
+  .use(emoji as PluginSimple);
 
 const defaultRenderer = md.renderer.rules.link_open ||
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -35,6 +35,7 @@ md.renderer.rules.link_open =
     } else {
       tokens[index].attrs[attributeIndex][1] = "_blank";
     }
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     return defaultRenderer(tokens, index, options, env, self);
   };
 

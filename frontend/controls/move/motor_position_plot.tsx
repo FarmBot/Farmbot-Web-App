@@ -8,6 +8,7 @@ import {
 import { t } from "../../i18next_wrapper";
 import { ValidLocationData } from "../../util/location";
 import { BotLocationData } from "../../devices/interfaces";
+import { XYZ } from "../../devices/constants";
 
 const HEIGHT = 50;
 const HISTORY_LENGTH_SECONDS = 120;
@@ -52,7 +53,7 @@ const findYLimit = (props: PlotContentProps): number => {
   const keys = getKeys(props);
   const arrayAbsMax = max(array.map(entry =>
     max(keys.map((key: LocationName) =>
-      max(["x", "y", "z"].map((axis: Xyz) =>
+      max(XYZ.map((axis: Xyz) =>
         Math.abs(entry.locationData[key][axis] || 0) + 1))))));
   return Math.max(ceil(arrayAbsMax || 0, -2), DEFAULT_Y_MAX);
 };
@@ -101,7 +102,7 @@ const getPaths = (props: PlotContentProps): Paths => {
   if (last) {
     getReversedArray().map(entry => {
       keys.map((key: EveryLocationName) => {
-        ["x", "y", "z"].map((axis: Xyz) => {
+        XYZ.map((axis: Xyz) => {
           const lastPos = getValue(key, axis, last);
           const pos = getValue(key, axis, entry);
           if (isNumber(lastPos) && isFinite(lastPos)
@@ -217,7 +218,7 @@ const PlotLines = (props: MotorPositionPlotProps) => {
   const plotY = calcY(props);
   return <g id="plot_lines">
     {keys.map((key: LocationName) =>
-      ["x", "y", "z"].map((axis: Xyz) => {
+      XYZ.map((axis: Xyz) => {
         const color = COLOR_LOOKUP[axis];
         const settingNameLookup: Record<Xyz, McuParamName> = {
           x: "encoder_missed_steps_max_x",

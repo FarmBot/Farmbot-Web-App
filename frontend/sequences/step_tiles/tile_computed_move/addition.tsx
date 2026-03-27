@@ -5,6 +5,7 @@ import { t } from "../../../i18next_wrapper";
 import { VarianceInputRowProps, OffsetInputRowProps } from "./interfaces";
 import { MoveStepInput } from "./input";
 import { isUndefined } from "lodash";
+import { XYZ } from "../../../devices/constants";
 
 export const axisAddition = (
   axis: Xyz,
@@ -47,7 +48,7 @@ export const OffsetInputRow = (props: OffsetInputRowProps) =>
     <label>
       {t("offset")}
     </label>
-    {["x", "y", "z"].map((axis: Xyz) =>
+    {XYZ.map((axis: Xyz) =>
       <div key={axis}>
         <MoveStepInput field={"offset"} axis={axis}
           value={props.offset[axis]}
@@ -83,7 +84,7 @@ export const VarianceInputRow = (props: VarianceInputRowProps) =>
     <label>
       {t("Variance")}
     </label>
-    {["x", "y", "z"].map((axis: Xyz) =>
+    {XYZ.map((axis: Xyz) =>
       <div key={axis}>
         <BlurableInput
           type={"number"}

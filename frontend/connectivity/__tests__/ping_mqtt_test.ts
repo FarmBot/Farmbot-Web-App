@@ -18,7 +18,7 @@ function fakeBot(): Farmbot {
     setConfig: jest.fn(),
     publish: jest.fn(),
     on: jest.fn(),
-    ping: jest.fn((_timeout: number, _now: number) => Promise.resolve(1)),
+    ping: jest.fn((_timeout?: number, _now?: number) => Promise.resolve(1)),
     getConfig: jest.fn(key => state[key] as never),
   };
 

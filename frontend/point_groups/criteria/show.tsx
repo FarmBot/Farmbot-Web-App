@@ -28,7 +28,7 @@ export class EqCriteriaSelection<T extends string | number>
         type={this.props.type} eqCriteria={eqCriteria}
         criteriaKey={criteriaKey} />
       {eqCriteria && Object.entries(eqCriteria)
-        .map(([key, values]: [string, T[]], keyIndex) =>
+        .map(([key, values], keyIndex) =>
           values && values.length > 0 &&
           <div key={keyIndex} className="row advanced-group-criteria">
             <code>{key}</code>
@@ -194,7 +194,7 @@ export const LocationSelection = (props: LocationSelectionProps) =>
         <i className="fa fa-exclamation-triangle" />
         <p>{t("Invalid selection.")}</p>
       </div>}
-    {["x", "y"].map((axis: "x" | "y") =>
+    {(["x", "y"] as const).map((axis: "x" | "y") =>
       <NumberLtGtInput
         key={axis}
         criteriaKey={axis}

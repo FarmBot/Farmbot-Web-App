@@ -70,7 +70,7 @@ export function generateReducer<State>(initialState: State) {
     }) as GeneratedReducer;
 
   reducer.add = <X>(name: string, fn: ActionHandler<State, X>) => {
-    priv.actionHandlers[name] = fn;
+    priv.actionHandlers[name] = fn as ActionHandler<State>;
     return reducer;
   };
 

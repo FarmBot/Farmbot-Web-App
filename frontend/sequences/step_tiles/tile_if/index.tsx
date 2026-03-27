@@ -21,6 +21,7 @@ import {
 } from "../../locals_list/variable_support";
 import { t } from "../../../i18next_wrapper";
 import { StepParams } from "../../interfaces";
+import { VariableNode } from "../../locals_list/locals_list_support";
 
 export interface ThenElseParams extends StepParams<If> {
   thenElseKey: "_then" | "_else";
@@ -144,7 +145,8 @@ export const IfBlockDropDownHandler = (props: ThenElseParams) => {
 
   /** Replaces the execute step body with a new array of bodyVariables. */
   const assignVariable = (bodyVariables: ParameterApplication[]) =>
-    (variable: ParameterApplication) => {
+    (variable: VariableNode | undefined) => {
+      if (!variable || variable.kind !== "parameter_application") { return; }
       block.body = addOrEditParamApps(bodyVariables, variable);
       overwriteStep(block);
     };

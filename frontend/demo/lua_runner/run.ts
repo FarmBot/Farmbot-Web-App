@@ -27,6 +27,7 @@ import {
 import { error } from "../../toast/toast";
 import { collectDemoSequenceActions } from "./index";
 import { last } from "lodash";
+import { XYZ } from "../../devices/constants";
 
 export const runLua =
   (depth: number, luaCode: string, variables: ParameterApplication[]): Action[] => {
@@ -380,7 +381,7 @@ export const runLua =
       const n = lua.lua_gettop(L);
       if (n == 1) {
         const params = luaToJs(L, 1) as XyzNumber;
-        ["x", "y", "z"].map((axis: Xyz) => args.push(params[axis]));
+        XYZ.map((axis: Xyz) => args.push(params[axis]));
       } else {
         for (let i = 1; i <= n; i++) {
           args.push(luaToJs(L, i) as number);

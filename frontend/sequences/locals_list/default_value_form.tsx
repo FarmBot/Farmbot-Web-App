@@ -40,7 +40,8 @@ export const DefaultValueForm = (props: DefaultValueFormProps) => {
 
 const change =
   (onChange: OnChange, variable: VariableNode) =>
-    (formResponse: ParameterApplication) => {
+    (formResponse: VariableNode | undefined) => {
+      if (!formResponse || formResponse.kind !== "parameter_application") { return; }
       const { data_value } = formResponse.args;
       if (data_value.kind !== "point_group") {
         onChange({

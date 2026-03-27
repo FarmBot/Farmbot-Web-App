@@ -1,7 +1,7 @@
 import {
   buildResourceIndex, fakeDevice,
 } from "../../__test_support__/resource_index_builder";
-import { AnyAction, Dispatch, MiddlewareAPI } from "redux";
+import { Action, Dispatch, MiddlewareAPI } from "redux";
 import { bot as fakeBot } from "../../__test_support__/fake_state/bot";
 import { cloneDeep } from "lodash";
 import * as deviceActions from "../../devices/actions";
@@ -23,7 +23,7 @@ describe("version tracker middleware", () => {
       resources: buildResourceIndex([fakeDevice({ fbos_version: "0.0.0" })]),
     };
     state.bot.hardware.informational_settings.controller_version = "0.0.0";
-    const fakeStore: Partial<MiddlewareAPI<Dispatch<AnyAction>, Everything>> = {
+    const fakeStore: Partial<MiddlewareAPI<Dispatch<Action>, Everything>> = {
       getState: () => state as unknown as Everything
     };
     versionChangeMiddleware.fn(fakeStore as unknown as import("redux").Store<

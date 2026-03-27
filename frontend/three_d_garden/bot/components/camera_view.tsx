@@ -67,13 +67,13 @@ export const CameraView = (props: CameraViewProps) => {
   const TUR = [-lensSize, lensSize, 0];
   const TLL = [lensSize, -lensSize, 0];
   const TLR = [lensSize, lensSize, 0];
-  const TOP = [TUL, TUR, TLL, TLR].map(rotateTop);
+  const TOP = ([TUL, TUR, TLL, TLR] as V3[]).map(rotateTop);
 
   const BUL = [xCenter - xEdgeAtSoil, yCenter - yEdgeAtSoil, -distanceToSoil];
   const BUR = [xCenter - xEdgeAtSoil, yCenter + yEdgeAtSoil, -distanceToSoil];
   const BLL = [xCenter + xEdgeAtSoil, yCenter - yEdgeAtSoil, -distanceToSoil];
   const BLR = [xCenter + xEdgeAtSoil, yCenter + yEdgeAtSoil, -distanceToSoil];
-  const BOTTOM = [BUL, BUR, BLL, BLR].map(rotateBottom);
+  const BOTTOM = ([BUL, BUR, BLL, BLR] as V3[]).map(rotateBottom);
 
   const VERTICES = [
     ...TOP,

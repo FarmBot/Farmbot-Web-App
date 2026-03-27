@@ -12,7 +12,7 @@ describe("<Promo />", () => {
 
   beforeEach(() => {
     canvasSpy = jest.spyOn(reactThreeFiber, "Canvas")
-      .mockImplementation(({ children }: { children: React.ReactNode }) =>
+      .mockImplementation(({ children }: { children?: React.ReactNode }) =>
         <div>{children}</div>);
     gardenModelSpy = jest.spyOn(gardenModelModule, "GardenModel")
       .mockImplementation(({ config }: { config: { promoSpread?: boolean } }) =>

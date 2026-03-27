@@ -17,6 +17,7 @@ import {
 import { daysOldText } from "../plants/plant_inventory_item";
 import { GoToThisLocationButton } from "../farm_designer/move_to";
 import { BotPosition } from "../devices/interfaces";
+import { XYZ } from "../devices/constants";
 
 type PointUpdate =
   Partial<TaggedGenericPointer["body"] | TaggedWeedPointer["body"]>;
@@ -192,7 +193,7 @@ export interface EditPointLocationProps extends EditPointLocationBaseProps {
 
 export const EditPointLocation = (props: EditPointLocationProps) =>
   <Row className={"edit-point-location"}>
-    {["x", "y", "z"].map((axis: Xyz) =>
+    {XYZ.map((axis: Xyz) =>
       <div key={axis}>
         <label style={{ marginTop: 0 }}>{t("{{axis}} (mm)", { axis })}</label>
         <BlurableInput

@@ -35,6 +35,7 @@ import {
 } from "../sequences/locals_list/variable_support";
 import {
   AllowedVariableNodes,
+  VariableNode,
 } from "../sequences/locals_list/locals_list_support";
 import { t } from "../i18next_wrapper";
 import { TimeSettings } from "../interfaces";
@@ -215,7 +216,8 @@ export class EditFEForm extends React.Component<EditFEProps, EditFEFormState> {
   };
 
   editBodyVariables = (bodyVariables: ParameterApplication[]) =>
-    (variable: ParameterApplication) => {
+    (variable: VariableNode | undefined) => {
+      if (!variable || variable.kind !== "parameter_application") { return; }
       const body = addOrEditParamApps(bodyVariables, variable);
       this.overwriteStateFEBody(body);
       this.props.setSpecialStatus(SpecialStatus.DIRTY);

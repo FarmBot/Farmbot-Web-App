@@ -38,10 +38,10 @@ export const filterStateKeys = (state: LogsState) =>
 export const LogsFilterMenu = (props: LogsFilterMenuProps) => {
   /** Set the filter level to the same value for all log message types. */
   const setAll = (level: number) => () => {
-    MESSAGE_TYPES.map((x: keyof Filters) => props.setFilterLevel(x)(level));
+    MESSAGE_TYPES.map(x => props.setFilterLevel(x as keyof Filters)(level));
   };
   const values = filterStateKeys(props.state)
-    .map((key: keyof LogsState) => props.state[key]);
+    .map(key => props.state[key as keyof LogsState]);
   const [value, setValue] = React.useState(round(mean(values)));
   return <div className={"logs-filter-menu grid half-gap"}>
     <div className={"lines"}>
@@ -65,7 +65,7 @@ export const LogsFilterMenu = (props: LogsFilterMenuProps) => {
         value={value} />
     </fieldset>
     {filterStateKeys(props.state).sort(menuSort)
-      .map((logType: keyof Filters) =>
+      .map(logType =>
         <fieldset key={logType} className="row log-filters-grid">
           <label className="row grid-exp-2 half-gap">
             <div className={`saucer ${logType}`} />
@@ -73,8 +73,8 @@ export const LogsFilterMenu = (props: LogsFilterMenuProps) => {
           </label>
           <Slider min={0} max={3} stepSize={1} labelRenderer={false}
             className={getModifiedClassName(logType + "_log" as keyof WebAppConfig)}
-            onChange={props.setFilterLevel(logType)}
-            value={props.state[logType]} />
+            onChange={props.setFilterLevel(logType as keyof Filters)}
+            value={props.state[logType as keyof LogsState] as number} />
         </fieldset>)}
     <fieldset className="row grid-exp-1 current-version-only">
       <label>

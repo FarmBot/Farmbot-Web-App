@@ -11,18 +11,21 @@
     "experimentalDecorators": true,
     "jsx": "react",
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
+    "types": [
+      "node"
+    ],
     "esModuleInterop": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "pretty": true,
-    "removeComments": true,
+    "removeComments": false,
     "skipLibCheck": true,
-    "sourceMap": true,
+    "sourceMap": false,
     "strictNullChecks": true,
-    "target": "es5",
+    "target": "es6",
   },
   "include": [
     "public/app-resources/languages"

@@ -1,6 +1,8 @@
 import React from "react";
 import { t } from "../../i18next_wrapper";
-import { addOrEditDeclarationLocals } from "../locals_list/handle_select";
+import {
+  addOrEditDeclarationLocals, isScopeDeclarationBodyItem,
+} from "../locals_list/handle_select";
 import {
   isParameterDeclaration, LocalsListProps, VariableNode,
 } from "../locals_list/locals_list_support";
@@ -33,9 +35,10 @@ interface LocalListCbProps {
 export const localListCallback =
   ({ dispatch, sequence }: LocalListCbProps) =>
     (declarations: ScopeDeclarationBodyItem[]) =>
-      (declaration: ScopeDeclarationBodyItem,
+      (declaration: VariableNode | undefined,
         variableKey: string,
       ) => {
+        if (!declaration || !isScopeDeclarationBodyItem(declaration)) { return; }
         const clone = defensiveClone(sequence.body); // unfortunate
         clone.args.locals = addOrEditDeclarationLocals(
           declarations, declaration, variableKey);

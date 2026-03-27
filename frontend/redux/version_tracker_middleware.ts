@@ -2,14 +2,8 @@ import { EnvName } from "./interfaces";
 import { determineInstalledOsVersion, FbosVersionFallback } from "../util/index";
 import { maybeGetDevice } from "../resources/selectors";
 import { Everything } from "../interfaces";
-import { Store, Action, Dispatch } from "redux";
+import { Store, Middleware } from "redux";
 import { createReminderFn } from "./upgrade_reminder";
-
-type MW =
-  (store: Store<Everything>) =>
-    (dispatch: Dispatch<Action<string>>) =>
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (action: any) => unknown;
 
 const maybeRemindUserToUpdate = createReminderFn();
 
@@ -21,12 +15,11 @@ function getVersionFromState(state: Everything) {
   return version;
 }
 
-const fn: MW =
-  (store: Store<Everything>) =>
-    (dispatch: Dispatch<Action<string>>) =>
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (action: any) => {
-        const fbos = getVersionFromState(store.getState());
+const fn: Middleware =
+  store =>
+    dispatch =>
+      action => {
+        const fbos = getVersionFromState((store as Store<Everything>).getState());
         window.Rollbar?.configure({ payload: { fbos } });
         return dispatch(action);
       };

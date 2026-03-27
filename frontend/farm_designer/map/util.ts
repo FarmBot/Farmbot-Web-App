@@ -137,7 +137,7 @@ export function translateScreenToGarden(
   const { xySwap } = mapTransformProps;
   const mapPadding = getMapPadding(panelStatus);
   const screenXY = page;
-  const mapXY = ["x", "y"].reduce<XYCoordinate>(
+  const mapXY = (["x", "y"] as const).reduce<XYCoordinate>(
     (result: XYCoordinate, axis: "x" | "y") => {
       const unscrolled = screenXY[axis] + scroll[leftOrTop[axis]];
       const map = unscrolled - mapPadding[leftOrTop[axis]];
@@ -183,7 +183,7 @@ interface QuadTransformParams {
 function quadTransform(params: QuadTransformParams): XYCoordinate {
   const { coordinate, mapTransformProps } = params;
   const { gridSize, quadrant } = mapTransformProps;
-  return ["x", "y"].reduce<XYCoordinate>(
+  return (["x", "y"] as const).reduce<XYCoordinate>(
     (result: XYCoordinate, axis: "x" | "y") => {
       switch (quadrant) {
         case MIRRORED_QUADRANTS[axis][0]:

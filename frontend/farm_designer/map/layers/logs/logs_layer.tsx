@@ -25,8 +25,8 @@ const LOG_MESSAGE_LOOKUP: Record<RenderedLog, string> = {
 
 const LOG_VISUAL_LOOKUP: Record<string, RenderedLog> = {};
 Object.entries(LOG_MESSAGE_LOOKUP)
-  .map(([visual, message]: [RenderedLog, string]) =>
-    LOG_VISUAL_LOOKUP[message] = visual);
+  .map(([visual, message]) =>
+    LOG_VISUAL_LOOKUP[message] = visual as RenderedLog);
 
 const ANIMATION_CLASS_LOOKUP: Record<RenderedLog, AnimationClass> = {
   [RenderedLog.imageCapture]: AnimationClass.capture,

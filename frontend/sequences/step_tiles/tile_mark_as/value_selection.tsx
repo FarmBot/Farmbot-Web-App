@@ -71,9 +71,8 @@ const valuesList = (
       DDI.NONE,
       ...selectAllTools(resources).filter(x => !!x.body.id)
         .map(x => ({ toolName: x.body.name, toolId: x.body.id }))
-        .map(({ toolName, toolId }:
-          { toolName: string | undefined, toolId: number }) =>
-          ({ label: toolName || t("Untitled tool"), value: toolId })),
+        .map(({ toolName, toolId }) =>
+          ({ label: toolName || t("Untitled tool"), value: toolId as number })),
     ];
     case "GenericPointer": return [DDI.PENDING, DDI.ACTIVE, DDI.REMOVED];
     case "Weed": return [DDI.PENDING, DDI.ACTIVE, DDI.REMOVED];

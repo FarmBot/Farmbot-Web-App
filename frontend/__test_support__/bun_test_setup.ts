@@ -5,6 +5,7 @@ import fs from "fs";
 import path from "path";
 import { cleanup } from "@testing-library/react";
 import * as THREE from "three";
+import { RootState } from "@react-three/fiber";
 
 const globalAny = globalThis as typeof globalThis & {
   globalConfig?: Record<string, string>;
@@ -51,6 +52,7 @@ if (!globalAny.globalConfig) {
 }
 
 if (!globalAny.jest) {
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   globalAny.jest = bunJest as typeof globalAny.jest;
 }
 globalThis.TextEncoder = TextEncoder;
@@ -229,21 +231,34 @@ const defaultThreeFiberState = () => ({
   pointer: { x: 0, y: 0 },
 });
 
-type MockLike = {
-  mockImplementation: (impl: (...args: unknown[]) => unknown) => unknown;
+type MockLike<TArgs extends unknown[] = unknown[], TResult = unknown> = {
+  mockImplementation: (impl: (...args: TArgs) => TResult) => unknown;
 };
 
-const asMockLike = (value: unknown): MockLike | undefined =>
-  globalAny.jest?.isMockFunction?.(value)
-    ? value as MockLike
-    : undefined;
+const asMockLike =
+  <TArgs extends unknown[], TResult>(
+    value: unknown,
+  ): MockLike<TArgs, TResult> | undefined =>
+    globalAny.jest?.isMockFunction?.(value)
+      ? value as MockLike<TArgs, TResult>
+      : undefined;
 
 const resetThreeFiberHookMocks = () => {
-  asMockLike(threeFiber.useFrame)?.mockImplementation(
-    (callback: (state: ReturnType<typeof defaultThreeFiberState>) => unknown) =>
-      callback(defaultThreeFiberState()));
-  asMockLike(threeFiber.useThree)?.mockImplementation(
-    () => defaultThreeFiberState());
+  const state = defaultThreeFiberState();
+
+  asMockLike<
+    Parameters<typeof threeFiber.useFrame>,
+    ReturnType<typeof threeFiber.useFrame>
+  >(threeFiber.useFrame)?.mockImplementation((callback) => {
+    callback(state as unknown as RootState, 0);
+    // eslint-disable-next-line no-null/no-null
+    return null;
+  });
+
+  asMockLike<
+    Parameters<typeof threeFiber.useThree>,
+    ReturnType<typeof threeFiber.useThree>
+  >(threeFiber.useThree)?.mockImplementation(() => state);
 };
 
 beforeEach(() => {

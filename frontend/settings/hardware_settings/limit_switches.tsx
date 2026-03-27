@@ -24,11 +24,11 @@ export const LimitSwitches = (props: LimitSwitchesProps) => {
     firmwareHardware,
   };
 
-  const anyModified = some([
+  const anyModified = some(([
     "movement_enable_endpoints_x",
     "movement_enable_endpoints_y",
     "movement_enable_endpoints_z",
-  ].map((key: McuParamName) =>
+  ] as McuParamName[]).map(key =>
     getDefaultFwConfigValue(props.firmwareHardware)(key)
     != props.sourceFwConfig(key).value));
 

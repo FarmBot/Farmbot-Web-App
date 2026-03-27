@@ -21,8 +21,8 @@ interface ResourceAction {
 }
 
 // Refresh logs only when a log related WebAppConfig is changed
-export const fn: Middleware = () => (dispatch) => (action: ResourceAction) => {
-  const { type, payload } = action;
+export const fn: Middleware = () => (dispatch) => action => {
+  const { type, payload } = action as ResourceAction;
 
   // Only proceed for WebAppConfig save actions
   if (type !== Actions.SAVE_RESOURCE_OK || payload.kind !== WEB_APP_CONFIG) {

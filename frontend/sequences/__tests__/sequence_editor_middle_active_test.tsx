@@ -26,7 +26,7 @@ import * as crud from "../../api/crud";
 import {
   fakeHardwareFlags, fakeFarmwareData,
 } from "../../__test_support__/fake_sequence_step_data";
-import { SpecialStatus, ParameterDeclaration } from "farmbot";
+import { SpecialStatus, ParameterDeclaration, Color } from "farmbot";
 import * as stepTiles from "../step_tiles";
 import {
   copySequence, editCurrentSequence, pinSequenceToggle, publishSequence,
@@ -118,7 +118,7 @@ beforeEach(() => {
         props.list?.[0] && props.onChange?.(props.list[0]);
       }}>{props.selectedItem?.label}</button>) as never);
   colorPickerClusterSpy = jest.spyOn(ui, "ColorPickerCluster")
-    .mockImplementation((props: { onChange: (color: string) => void }) =>
+    .mockImplementation((props: { onChange: (color: Color) => void }) =>
       <button
         className={"color-picker-mock"}
         onClick={() => props.onChange("blue")} />);

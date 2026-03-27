@@ -110,7 +110,7 @@ export class RawFarmDesigner
   };
 
   componentDidUpdate() {
-    const filterZoom = (_val: unknown, key: keyof State) => key != "zoom_level";
+    const filterZoom = (_val: unknown, key: string) => key != "zoom_level";
     if (!isEqual(
       filter(this.state, filterZoom),
       filter(this.getState(), filterZoom))) {

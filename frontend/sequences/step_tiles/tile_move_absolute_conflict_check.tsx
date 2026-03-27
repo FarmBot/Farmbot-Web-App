@@ -7,6 +7,7 @@ import { some } from "lodash";
 import { Vector3, Xyz } from "farmbot";
 import { betterMerge } from "../../util";
 import { t } from "../../i18next_wrapper";
+import { XYZ } from "../../devices/constants";
 
 /** Check if a planned movement will extend beyond a defined axis home. */
 const checkHomeConflict =
@@ -66,7 +67,7 @@ const settingConflicts = (
   hardwareFlags: HardwareFlags | undefined,
 ): Record<Xyz, boolean> => {
   const conflicts =
-    ["x", "y", "z"].map(conflictForAxis(coordinate, hardwareFlags));
+    XYZ.map(conflictForAxis(coordinate, hardwareFlags));
   return { x: !!conflicts[0], y: !!conflicts[1], z: !!conflicts[2] };
 };
 

@@ -109,7 +109,7 @@ describe("requestAutoGeneration()", () => {
 describe("retrievePrompt()", () => {
   beforeEach(() => {
     jest.spyOn(lodash, "first")
-      .mockImplementation(<T>(items: T[]) => items[0]);
+      .mockImplementation(items => items?.[0]);
   });
 
 

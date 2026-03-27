@@ -45,7 +45,7 @@ describe("<FarmEventRepeatForm/>", () => {
     mockFBSelectProps = undefined;
     rowSpy = jest.spyOn(ui, "Row")
       .mockImplementation((props: {
-        children: React.ReactNode;
+        children?: React.ReactNode;
         className?: string;
       }) => <div className={props.className}>{props.children}</div>);
     blurableInputSpy = jest.spyOn(ui, "BlurableInput")

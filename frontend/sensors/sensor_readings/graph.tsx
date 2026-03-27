@@ -133,7 +133,7 @@ const DataPoints = ({ plotProps, parentProps }: {
   plotProps: PlotProps, parentProps: SensorReadingPlotProps
 }) =>
   <g id="sensor-readings">
-    {["previous", "current"].map((period: "current" | "previous") =>
+    {(["previous", "current"] as const).map(period =>
       <g id={period} key={period}>
         {parentProps.readingsForPeriod(period).map(r => {
           const read_at =

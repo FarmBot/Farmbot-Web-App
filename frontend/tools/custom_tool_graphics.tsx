@@ -69,8 +69,8 @@ export const CustomToolGraphicsInput =
       ? <details className={"custom-tool-graphics-input"}>
         <summary><label>{t("custom tool graphics")}</label></summary>
         <p>path = M0,0 ______</p>
-        {Object.entries(INPUTS())
-          .map(([view, placeholder]: [keyof CustomToolGraphics, string]) =>
+        {(Object.entries(INPUTS()) as [keyof CustomToolGraphics, string][])
+          .map(([view, placeholder]) =>
             <div className={"graphics-input"} key={view}>
               <label>{t(view)}</label>
               <BlurableInput

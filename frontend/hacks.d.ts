@@ -33,3 +33,5 @@ declare namespace jest {
 declare var mockNavigate: jest.Mock;
 
 declare module 'fengari-web';
+
+declare module "*.css";

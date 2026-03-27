@@ -147,7 +147,7 @@ export interface TroubleshootingTipsProps extends WizardOutcomeComponentProps {
 }
 
 export interface CameraCheckBaseProps extends WizardStepComponentProps {
-  component: React.ComponentType<WizardStepComponentProps>;
+  component: React.ComponentType<CameraCheckBaseProps>;
   longDuration?: boolean;
 }
 

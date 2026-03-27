@@ -51,8 +51,8 @@ describe("<DesignerSettings />", () => {
   });
 
   const fakePanelState = settingsPanelState();
-  Object.keys(fakePanelState).map((key: keyof SettingsPanelState) =>
-    fakePanelState[key] = true);
+  Object.keys(fakePanelState).map(key =>
+    fakePanelState[key as keyof SettingsPanelState] = true);
 
   const fakeProps = (): DesignerSettingsProps => ({
     dispatch: jest.fn(),

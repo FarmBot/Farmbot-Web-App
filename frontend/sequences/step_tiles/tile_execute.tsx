@@ -13,13 +13,15 @@ import {
 } from "../locals_list/variable_support";
 import {
   AllowedVariableNodes, isParameterDeclaration,
+  VariableNode,
 } from "../locals_list/locals_list_support";
 import { isNumber } from "lodash";
 
 /** Replaces the execute step body with a new array of variables. */
 const assignVariable = (props: StepParams<Execute>) =>
   (variables: ParameterApplication[]) =>
-    (variable: ParameterApplication) => {
+    (variable: VariableNode | undefined) => {
+      if (!variable || variable.kind !== "parameter_application") { return; }
       const { dispatch, currentSequence, currentStep, index } = props;
 
       dispatch(editStep({

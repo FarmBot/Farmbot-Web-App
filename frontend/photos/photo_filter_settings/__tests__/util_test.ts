@@ -112,8 +112,8 @@ describe("getImageShownStatusFlags()", () => {
     p.image = fakeImage();
     const flags = getImageShownStatusFlags(p);
     const expectedFlags = fakeImageShowFlags();
-    Object.keys(expectedFlags).map((key: keyof ImageShowFlags) => {
-      expectedFlags[key] = true;
+    Object.keys(expectedFlags).map(key => {
+      expectedFlags[key as keyof ImageShowFlags] = true;
     });
     expect(flags).toEqual(expectedFlags);
   });
@@ -123,8 +123,8 @@ describe("getImageShownStatusFlags()", () => {
     p.image = undefined;
     const flags = getImageShownStatusFlags(p);
     const expectedFlags = fakeImageShowFlags();
-    Object.keys(expectedFlags).map((key: keyof ImageShowFlags) => {
-      expectedFlags[key] = true;
+    Object.keys(expectedFlags).map(key => {
+      expectedFlags[key as keyof ImageShowFlags] = true;
     });
     expectedFlags.inRange = false;
     expect(flags).toEqual(expectedFlags);
@@ -149,8 +149,8 @@ describe("getImageShownStatusFlags()", () => {
     p.designer.showCalibrationImages = false;
     const flags = getImageShownStatusFlags(p);
     const expectedFlags = fakeImageShowFlags();
-    Object.keys(expectedFlags).map((key: keyof ImageShowFlags) => {
-      expectedFlags[key] = false;
+    Object.keys(expectedFlags).map(key => {
+      expectedFlags[key as keyof ImageShowFlags] = false;
     });
     expect(flags).toEqual(expectedFlags);
   });

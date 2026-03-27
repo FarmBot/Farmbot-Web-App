@@ -198,7 +198,7 @@ describe("<Connectivity />", () => {
     const p = fakeProps();
     p.metricPanelState.realtime = true;
     p.apiFirmwareValue = "arduino";
-    Object.keys(p.flags).map((key: ConnectionName) => p.flags[key] = true);
+    Object.keys(p.flags).map(key => p.flags[key as ConnectionName] = true);
     p.flags.botFirmware = false;
     const { container } = render(<Connectivity {...p} />);
     expect(container.querySelectorAll(".fix-firmware-buttons").length).toBeGreaterThan(0);
@@ -210,7 +210,7 @@ describe("<Connectivity />", () => {
     const p = fakeProps();
     p.metricPanelState.realtime = true;
     p.apiFirmwareValue = undefined;
-    Object.keys(p.flags).map((key: ConnectionName) => p.flags[key] = true);
+    Object.keys(p.flags).map(key => p.flags[key as ConnectionName] = true);
     p.flags.botFirmware = false;
     const { container } = render(<Connectivity {...p} />);
     expect(container.querySelectorAll(".fix-firmware-buttons").length).toEqual(0);

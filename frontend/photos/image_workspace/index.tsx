@@ -79,7 +79,7 @@ export const ImageWorkspace = (props: ImageWorkspaceProps) => {
     getModifiedClassNameSpecifyModified(getDefault(key) != props[key]);
 
   const anyAdvancedModified =
-    some(["blur", "morph", "iteration"]
+    some((["blur", "morph", "iteration"] as NumericKeyName[])
       .map((key: NumericKeyName) => getDefault(key) != props[key]));
 
   const { H_LO, H_HI, S_LO, S_HI, V_LO, V_HI } = props;

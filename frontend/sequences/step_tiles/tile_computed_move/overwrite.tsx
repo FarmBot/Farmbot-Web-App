@@ -7,6 +7,7 @@ import { isUndefined } from "lodash";
 import { FBSelect, Row } from "../../../ui";
 import { MoveStepInput } from "./input";
 import { LOCATION_NODES } from "./location";
+import { XYZ } from "../../../devices/constants";
 
 export const overwriteAxis = (
   axis: Axis,
@@ -77,7 +78,7 @@ export const OverwriteInputRow = (props: OverwriteInputRowProps) =>
         ? t("X, Y, Z (mm)")
         : t("override")}
     </label>
-    {["x", "y", "z"].map((axis: Xyz) =>
+    {XYZ.map((axis: Xyz) =>
       <div key={axis}>
         {showDropdown(props.selection[axis])
           ? <FBSelect

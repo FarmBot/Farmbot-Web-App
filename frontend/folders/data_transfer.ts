@@ -7,7 +7,7 @@ import {
 } from "./interfaces";
 import { sortBy } from "lodash";
 
-type FoldersIndexedByParentId = Record<number, FolderNode[]>;
+type FoldersIndexedByParentId = Record<number, FolderNode[] | undefined>;
 
 /** Set empty `parent_id` to -1 to increase index simplicity. */
 const setDefaultParentId = (input: FolderNode): Required<FolderNode> => {
@@ -69,7 +69,7 @@ export const ingest: IngestFn = ({ folders, localMetaAttributes }) => {
     };
   };
 
-  childrenOf(-1).map((root) => {
+  childrenOf(-1).map((root: FolderNode) => {
     const children = childrenOf(root.id).map(medial);
     const folderMeta: Partial<FolderMeta> = localMetaAttributes[root.id] || {};
     return output.folders.push({
