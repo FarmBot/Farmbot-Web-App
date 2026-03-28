@@ -368,13 +368,13 @@ commands:
   end-commands:
     steps:
       - run:
-          name: Fetch first artifact URL
+          name: Fetch image artifact URL
           command: |
             project_slug="gh/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}"
             artifacts_json=$(curl -fsS \
               -H "Accept: application/json" \
               "https://circleci.com/api/v2/project/${project_slug}/${CIRCLE_BUILD_NUM}/artifacts")
-            artifact_url=$(printf "%s" "$artifacts_json" | python -c 'import json,sys; data=json.load(sys.stdin); items=data.get("items") or []; print(items[0].get("url","") if items else "")')
+            artifact_url=$(printf "%s" "$artifacts_json" | python -c 'import json,sys; data=json.load(sys.stdin); items=data.get("items") or []; print(next((item.get("url","") for item in items if item.get("url","").endswith(".png")), ""))')
             echo "export ARTIFACT_URL=$artifact_url" >> "$BASH_ENV"
       - send-notification:
           message: "CI run succeeded"
