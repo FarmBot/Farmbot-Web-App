@@ -21,15 +21,15 @@ module SavedGardens
       PlantTemplate.create!(device
         .plants
         .map do |plant|
-        { saved_garden_id: @garden.id,
-          device_id: device.id,
-          radius: plant.radius,
-          x: plant.x,
-          y: plant.y,
-          z: plant.z,
-          name: plant.name,
-          openfarm_slug: plant.openfarm_slug }
-      end)
+          { saved_garden_id: @garden.id,
+            device_id: device.id,
+            radius: plant.radius,
+            x: plant.x,
+            y: plant.y,
+            z: plant.z,
+            name: plant.name,
+            openfarm_slug: plant.openfarm_slug }
+        end)
     end
   end
 end

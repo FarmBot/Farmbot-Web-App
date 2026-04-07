@@ -1,5 +1,6 @@
 module Fragments
-  class Cache # CeleryScript Fragment cache, not the other kind.
+  # CeleryScript Fragment cache, not the other kind.
+  class Cache
     def initialize(fragment)
       @fragment = fragment
       @nodes_by_id = fragment.nodes.index_by(&:id)
@@ -9,15 +10,15 @@ module Fragments
       @std_pair_by_arg_set_id = fragment.standard_pairs.group_by(&:arg_set_id)
     end
 
-    def get_primitive_pairs(node) # Return Hash<string, number|boolean|string>
+    # Return Hash<string, number|boolean|string>
+    def get_primitive_pairs(node)
       arg_set = @arg_set_by_node_id.fetch(node.id)
       @pri_pair_by_arg_set_id
         .fetch(arg_set.id, [])
-        .map do |x|
+        .to_h do |x|
         [ArgName.cached_by_id(x.arg_name_id).value,
          @primitive_by_id.fetch(x.primitive_id).value]
       end
-        .to_h
     end
 
     # node.arg_set.standard_pairs

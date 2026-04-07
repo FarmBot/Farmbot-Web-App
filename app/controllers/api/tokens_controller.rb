@@ -27,16 +27,16 @@ module Api
       end
 
       if_properly_formatted do |auth_params|
-        klass = (auth_params[:credentials]) ? CREDS : NO_CREDS
-        mutate klass
+        klass = auth_params[:credentials] ? CREDS : NO_CREDS
+        mutate(klass
                  .run(auth_params)
                  .tap { |result| maybe_halt_login(result) }
-                 .tap { |result| mark_as_seen(result.result[:user].device) if result.result }
+                 .tap { |result| mark_as_seen(result.result[:user].device) if result.result })
       end
     end
 
     def destroy
-      token = SessionToken.decode!(request.headers["Authorization"].split(" ").last)
+      token = SessionToken.decode!(request.headers["Authorization"].split.last)
       claims = token.unencoded
       device_id = claims["bot"].gsub("device_", "").to_i
       TokenIssuance
@@ -49,8 +49,8 @@ module Api
 
     def needs_validation?(email)
       !User::SKIP_EMAIL_VALIDATION &&
-      email &&
-      User.find_by(email: email, confirmed_at: nil)
+        email &&
+        User.find_by(email: email, confirmed_at: nil)
     end
 
     # Don't proceed with login if they need to sign the EULA
@@ -61,10 +61,12 @@ module Api
     def guess_aud_claim
       when_farmbot_os { return AbstractJwtToken::BOT_AUD }
       return AbstractJwtToken::HUMAN_AUD if xhr?
+
       AbstractJwtToken::UNKNOWN_AUD
     end
 
-    def xhr? # I only wrote this because `request.xhr?` refused to be stubbed
+    # I only wrote this because `request.xhr?` refused to be stubbed
+    def xhr?
       request.xhr?
     end
 

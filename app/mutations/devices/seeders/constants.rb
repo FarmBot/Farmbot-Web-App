@@ -42,7 +42,7 @@ module Devices
         "app/mutations/devices/seeders/sequence_fixtures.yml"
 
       module SequenceSeeds
-        ALL = YAML.load(File.read(SEQUENCE_FIXTURE_PATH))
+        ALL = YAML.load_file(SEQUENCE_FIXTURE_PATH)
         PICK_UP_SEED_EXPRESS = ALL.fetch(:PICK_UP_SEED_EXPRESS)
         PLANT_SEED_GENESIS = ALL.fetch(:PLANT_SEED_GENESIS)
         PLANT_SEED_EXPRESS = ALL.fetch(:PLANT_SEED_EXPRESS)

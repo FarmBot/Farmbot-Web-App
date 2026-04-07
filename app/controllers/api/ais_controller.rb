@@ -34,7 +34,7 @@ module Api
         response.headers["Content-Type"] = "text/event-stream"
         response.headers["Last-Modified"] = Time.now.httpdate
         result = make_request(system_prompt, user_prompt, response.stream)
-        if !result.dig("error").nil?
+        unless result.dig("error").nil?
           render json: result, status: 422
         end
       end
@@ -108,7 +108,6 @@ module Api
     end
 
     def make_request(system_prompt, user_prompt, stream)
-      url = "https://api.openai.com/v1/chat/completions"
       context_key = raw_json[:context_key]
       lua_request = context_key == "lua"
       model_lua = ENV["OPENAI_MODEL_LUA"] || "gpt-3.5-turbo"
@@ -116,8 +115,8 @@ module Api
       payload = {
         "model" => lua_request ? model_lua : model_other,
         "messages" => [
-          {role: "system", content: system_prompt},
-          {role: "user", content: user_prompt},
+          { role: "system", content: system_prompt },
+          { role: "user", content: user_prompt },
         ],
         "temperature" => (ENV["OPENAI_API_TEMPERATURE"] || 1).to_f,
         "stream" => true,
@@ -131,12 +130,12 @@ module Api
           },
         )
         full = ""
-        response = conn.post("") do |req|
+        conn.post("") do |req|
           req.body = payload
           buffer = ""
           total = 0
           missed = false
-          req.options.on_data = Proc.new do |chunk, size|
+          req.options.on_data = proc do |chunk, size|
             buffer += chunk
             total += chunk.bytes.length
             diff = size - total
@@ -152,11 +151,11 @@ module Api
               puts "AI #{context_key} error:" \
                   " (#{err_msg})" unless Rails.env.test?
               current_device.tell("Please try again", ["toast"], "error")
-              return {"error" => {"message" => err_msg}}
+              return { "error" => { "message" => err_msg } }
             rescue JSON::ParserError
               nil
             end
-            while not boundary.nil?
+            until boundary.nil?
               data_str = buffer.slice(0, boundary)
               buffer = buffer.slice(boundary + 2, buffer.length)
               json_string = data_str.split("data: ")[1]
@@ -183,7 +182,7 @@ module Api
              " (#{exception.message})" unless Rails.env.test?
         current_device.tell("Please try again", ["toast"], "error")
         stream.close
-        return {"error" => {"message" => exception.message}}
+        return { "error" => { "message" => exception.message } }
       end
     end
 
@@ -201,7 +200,7 @@ module Api
 
     def clean_sequence(sequence_cs, remove_field)
       cleaned = sequence_cs.except("created_at", "updated_at", remove_field)
-      cleaned.to_json.gsub(/\s+/, " ").slice(0, 10000)
+      cleaned.to_json.gsub(/\s+/, " ").slice(0, 10_000)
     end
 
     def user
@@ -211,30 +210,30 @@ module Api
     def named_resources
       {
         peripherals: Peripheral.where(device: current_device)
-          .map{ |p| { name: p.label, pin_number: p.pin } },
+          .map { |p| { name: p.label, pin_number: p.pin } },
         sensors: Sensor.where(device: current_device)
-          .map{ |s| { name: s.label, pin_number: s.pin } },
+          .map { |s| { name: s.label, pin_number: s.pin } },
         tools: Tool.where(device: current_device)
-          .map{ |t| { name: t.name, id: t.id } },
-    }.to_json
+          .map { |t| { name: t.name, id: t.id } },
+      }.to_json
     end
 
-    PAGE_NAMES = [
-      "advanced",
-      "api",
-      "configuration",
-      "coordinates",
-      "curves",
-      "e-stop-and-unlock",
-      "images",
-      "jobs",
-      "messages",
-      "movements",
-      "pins",
-      "time",
-      "tools",
-      "uart",
-      "variables",
+    PAGE_NAMES = %w[
+      advanced
+      api
+      configuration
+      coordinates
+      curves
+      e-stop-and-unlock
+      images
+      jobs
+      messages
+      movements
+      pins
+      time
+      tools
+      uart
+      variables
     ]
 
     REMOVE = [
@@ -258,30 +257,32 @@ module Api
     def shorten_docs(docs)
       functions = docs.split("\n# ")
       keep = []
-      for function_section in functions
+      functions.each do |function_section|
         function_name = function_section.split("\n")[0] || ""
         if REMOVE.any? { |remove| function_name.start_with?(remove) }
           next
         end
+
         clean = function_section
-          .split("\n").map{ |line| line.strip() }.join("\n")
+          .split("\n").map(&:strip).join("\n")
           # .split("\n").filter{ |line| !line.start_with?("--") }.join("\n")
           .gsub(/\{%\ninclude callout.html([\s\S]*)content="/, " ")
-          .gsub(/\"\n%}/, " ")
-          .gsub(/\n\n/, "\n")
-          .strip()
+          .gsub(/"\n%}/, " ")
+          .gsub("\n\n", "\n")
+          .strip
         keep.push("# " + clean)
       end
       keep.join("\n")
     end
 
-    def get_docs()
+    def get_docs
       function_docs = ""
-      for page_name in PAGE_NAMES
+      PAGE_NAMES.each do |page_name|
         page_data = get_page_data(page_name)
         if page_data.nil?
           return ""
         end
+
         page_content = page_data.split("---").slice(2, page_data.length).join("---")
         function_docs += page_content
       end
@@ -292,9 +293,8 @@ module Api
 
     def lua_function_docs
       Rails.cache.fetch("lua_function_docs_#{ENV["DOCS_CACHE_NUM"]}", expires_in: EXPIRY) do
-        get_docs()
+        get_docs
       end
     end
-
   end
 end

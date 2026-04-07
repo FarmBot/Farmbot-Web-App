@@ -16,11 +16,10 @@ class ToolSlot < Point
            " before reassigning."
 
   belongs_to :tool
-  validates_uniqueness_of :tool,
-    allow_blank: true,
-    allow_nil: true,
-    message: IN_USE
+  validates :tool,
+            uniqueness: { allow_blank: true,
+                          message: IN_USE }
   validates :pullout_direction,
-    presence: true,
-    inclusion: { in: PULLOUT_DIRECTIONS, message: PULLOUT_ERR }
+            presence: true,
+            inclusion: { in: PULLOUT_DIRECTIONS, message: PULLOUT_ERR }
 end

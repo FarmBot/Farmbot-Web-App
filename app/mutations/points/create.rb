@@ -1,6 +1,7 @@
 module Points
   class Create < Mutations::Command
     include Points::Helpers
+
     # WHY 1000?:
     #  * This limit is placed for _technical_
     #    reasons, not business reasons. If it were
@@ -62,12 +63,12 @@ module Points
 
     def validate
       return unless safe_pointer_kind? # Security critical always goes first.
+
       validate_resource_count
       validate_tool if klass_ == ToolSlot
       validate_water_curve_id
       validate_spread_curve_id
       validate_height_curve_id
-      name ||= default_name
     end
 
     def execute
@@ -83,7 +84,7 @@ module Points
       case actual
       when POINT_SOFT_LIMIT
         device.points.discarded.delete_all
-        device.tell(GETTING_CLOSE % { actual: actual }, ["fatal_email"])
+        device.tell(format(GETTING_CLOSE, actual: actual), ["fatal_email"])
       when POINT_HARD_LIMIT...nil
         device.points.discarded.delete_all
         add_error(:point_limit, :point_limit, TOO_MANY)
@@ -94,8 +95,9 @@ module Points
       DEFAULT_NAME % klass_.model_name.human.downcase
     end
 
-    def safe_pointer_kind? # Security critical code!
-                           # Prevent malicious `.constantize` calls.
+    # Security critical code!
+    # Prevent malicious `.constantize` calls.
+    def safe_pointer_kind?
       if Point::POINTER_KINDS.include?(pointer_type) && klass_
         true
       else
@@ -109,7 +111,7 @@ module Points
     end
 
     def bad_tool_id?
-      tool_id.present? && !device.tools.where(id: tool_id).any?
+      tool_id.present? && device.tools.where(id: tool_id).none?
     end
 
     def validate_tool

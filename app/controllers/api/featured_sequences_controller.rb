@@ -18,8 +18,8 @@ module Api
       Rails.cache.fetch("farmbot_featured_sequences", expires_in: 10.minutes) do
         SequenceVersion
           .joins(JOIN)
-          .where("sequence_publications.cached_author_email = ?", publisher_email)
-          .where("sequence_publications.published = ?", true)
+          .where(sequence_publications: { cached_author_email: publisher_email })
+          .where(sequence_publications: { published: true })
           .order(updated_at: :desc)
           .uniq(&:sequence_publication_id)
           .map do |x|

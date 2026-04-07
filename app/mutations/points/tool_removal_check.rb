@@ -24,8 +24,8 @@ module Points
 
     def is_removal_attempt
       (attempting_change && # Wants to make a change
-       (next_tool_id === nil) && # Wants to remove tool_id
-       point.tool_id)            # Currently has a tool_id
+       (next_tool_id.nil?) && # Wants to remove tool_id
+       point.tool_id) # Currently has a tool_id
     end
 
     def still_in_use?
@@ -33,7 +33,7 @@ module Points
     end
 
     def nope!
-      add_error :in_use, :in_use, (IN_USE % [deps.join(", ")])
+      add_error :in_use, :in_use, (format(IN_USE, deps.join(", ")))
     end
 
     def deps

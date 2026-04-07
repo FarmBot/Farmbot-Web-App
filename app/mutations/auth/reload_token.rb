@@ -1,6 +1,7 @@
 module Auth
   class ReloadToken < Mutations::Command
     attr_reader :user
+
     BAD_SUB = "Please log out and try again."
 
     required do
@@ -16,13 +17,12 @@ module Auth
       security_critical_danger = claims["exp"] # Stop infinite sessions
       token = SessionToken.issue_to(user,
                                     aud: claims["aud"],
-                                    exp: security_critical_danger,
-                                    fbos_version: fbos_version)
+                                    exp: security_critical_danger)
       return { token: token }
     end
 
     def claims
-      @claims ||= SessionToken.decode!(jwt.split(" ").last).unencoded
+      @claims ||= SessionToken.decode!(jwt.split.last).unencoded
     end
   end
 end

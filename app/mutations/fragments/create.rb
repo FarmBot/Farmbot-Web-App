@@ -34,19 +34,19 @@ module Fragments
       flat_ast.each_with_index do |flat_node, index|
         node = nodes.fetch(index)
         flat_node.without(KIND).map do |(k, v)|
-          if k.starts_with?(US)
-            case k
-            when PARENT then nodes.fetch(index).parent = nodes.fetch(v.value)
-            when NEXT then nodes.fetch(index).next = nodes.fetch(v.value)
-            when BODY then nodes.fetch(index).body = nodes.fetch(v.value)
-            when COMMENT then node.comment = flat_node.fetch(COMMENT)
-            else
-              arg_name = ArgName.cached_by_value(k.gsub(US, BLANK))
-              new_standard_pair(fragment: fragment,
-                                arg_set: node.arg_set,
-                                arg_name: arg_name,
-                                node: nodes.fetch(flat_node.fetch(k).value))
-            end
+          next unless k.starts_with?(US)
+
+          case k
+          when PARENT then nodes.fetch(index).parent = nodes.fetch(v.value)
+          when NEXT then nodes.fetch(index).next = nodes.fetch(v.value)
+          when BODY then nodes.fetch(index).body = nodes.fetch(v.value)
+          when COMMENT then node.comment = flat_node.fetch(COMMENT)
+          else
+            arg_name = ArgName.cached_by_value(k.gsub(US, BLANK))
+            new_standard_pair(fragment: fragment,
+                              arg_set: node.arg_set,
+                              arg_name: arg_name,
+                              node: nodes.fetch(flat_node.fetch(k).value))
           end
         end
       end
@@ -71,17 +71,17 @@ module Fragments
                              body: entry_node)
         arg_set = ArgSet.new(node: real_node, fragment: fragment)
         flat_node.without(KIND, INSTANCE).map do |(k, v)|
-          if !k.starts_with?(US)
-            arg_name = ArgName.cached_by_value(k.gsub(US, BLANK))
-            primitive = primitives.fetch(v) do
-              primitives[v] = Primitive.find_or_create_by(value: v,
-                                                          fragment: fragment)
-            end
-            new_primitive_pair(arg_name: arg_name,
-                               arg_set: arg_set,
-                               primitive: primitive,
-                               fragment: fragment)
+          next if k.starts_with?(US)
+
+          arg_name = ArgName.cached_by_value(k.gsub(US, BLANK))
+          primitive = primitives.fetch(v) do
+            primitives[v] = Primitive.find_or_create_by(value: v,
+                                                        fragment: fragment)
           end
+          new_primitive_pair(arg_name: arg_name,
+                             arg_set: arg_set,
+                             primitive: primitive,
+                             fragment: fragment)
         end
         real_node
       end

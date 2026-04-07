@@ -13,6 +13,7 @@ module FarmEvents
     }
     def self.occurrences(start_time:, end_time:, time_unit:, repeat:)
       return 1 if time_unit == "never"
+
       minutes = [(end_time - start_time) / 60, 1].max.to_f
       t = CONVERSION_TABLE.fetch(time_unit)
       repeat_interval_in_minutes = [t * repeat, 1].max.to_f
@@ -25,7 +26,7 @@ module FarmEvents
                                                         time_unit: time_unit,
                                                         repeat: repeat)
       if count > MAX_OCCURRENCES
-        add_error(:occurrences, :too_many, TOO_MANY % [count])
+        add_error(:occurrences, :too_many, format(TOO_MANY, count))
       end
     end
   end

@@ -19,7 +19,7 @@ module Curves
 
     def human_readable_error
       point_list = points.join(", ")
-      STILL_IN_USE % { data_users: point_list }
+      format(STILL_IN_USE, data_users: point_list)
     end
 
     def point_ids

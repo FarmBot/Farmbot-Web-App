@@ -1,0 +1,255 @@
+plugins:
+  - rubocop-rails
+
+AllCops:
+  Include:
+    - app/**/*.rb
+    # - config/**/*.rb
+    # - lib/**/*.rb
+    # - spec/**/*.rb
+  Exclude:
+    - docker_volumes/**/*
+  NewCops: enable
+
+Style/StringLiterals:
+  Enabled: false
+
+Style/MutableConstant:
+  Enabled: false
+
+Style/TrailingCommaInHashLiteral:
+  Enabled: false
+
+Style/TrailingCommaInArrayLiteral:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Style/PercentLiteralDelimiters:
+  Enabled: false
+
+Style/SymbolArray:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Metrics/MethodLength:
+  Enabled: false
+
+Bundler/OrderedGems:
+  Enabled: false
+
+Metrics/ClassLength:
+  Enabled: false
+
+Rails/HttpStatus:
+  Enabled: false
+
+Metrics/AbcSize:
+  Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Enabled: false
+
+Metrics/PerceivedComplexity:
+  Enabled: false
+
+Rails/Output:
+  Enabled: false
+
+Metrics/BlockLength:
+  Enabled: false
+
+Naming/VariableNumber:
+  Enabled: false
+
+Naming/VariableName:
+  Enabled: false
+
+Style/ParenthesesAroundCondition:
+  Enabled: false
+
+Style/RedundantSelf:
+  Enabled: false
+
+Rails/TimeZone:
+  Enabled: false
+
+Style/LineEndConcatenation:
+  Enabled: false
+
+Style/FetchEnvVar:
+  Enabled: false
+
+Rails/TopLevelHashWithIndifferentAccess:
+  Enabled: false
+
+Rails/RedundantPresenceValidationOnBelongsTo:
+  Enabled: false
+
+Rails/I18nLocaleTexts:
+  Enabled: false
+
+Rails/FindByOrAssignmentMemoization:
+  Enabled: false
+
+Rails/DeprecatedActiveModelErrorsMethods:
+  Enabled: false
+
+Rails/ActionOrder:
+  Enabled: false
+
+Naming/PredicateMethod:
+  Enabled: false
+
+Lint/UselessConstantScoping:
+  Enabled: false
+
+Layout/CommentIndentation:
+  Enabled: false
+
+Layout/LineContinuationLeadingSpace:
+  Enabled: false
+
+Layout/LineEndStringConcatenationIndentation:
+  Enabled: false
+
+Lint/AmbiguousOperatorPrecedence:
+  Enabled: false
+
+Lint/DuplicateBranch:
+  Enabled: false
+
+Lint/EmptyClass:
+  Enabled: false
+
+Lint/NoReturnInBeginEndBlocks:
+  Enabled: false
+
+Layout/MultilineMethodCallBraceLayout:
+  Enabled: false
+
+Layout/MultilineMethodCallIndentation:
+  Enabled: false
+
+Metrics/BlockNesting:
+  Enabled: false
+
+Metrics/ModuleLength:
+  Enabled: false
+
+Metrics/ParameterLists:
+  Enabled: false
+
+Naming/AccessorMethodName:
+  Enabled: false
+
+Naming/BinaryOperatorParameterName:
+  Enabled: false
+
+Naming/HeredocDelimiterNaming:
+  Enabled: false
+
+Naming/MemoizedInstanceVariableName:
+  Enabled: false
+
+Naming/MethodName:
+  Enabled: false
+
+Naming/MethodParameterName:
+  Enabled: false
+
+Naming/PredicatePrefix:
+  Enabled: false
+
+Naming/RescuedExceptionsVariableName:
+  Enabled: false
+
+Rails/ApplicationRecord:
+  Enabled: false
+
+Rails/BelongsTo:
+  Enabled: false
+
+Rails/Delegate:
+  Enabled: false
+
+Rails/HasManyOrHasOneDependent:
+  Enabled: false
+
+Rails/InverseOf:
+  Enabled: false
+
+Rails/SkipsModelValidations:
+  Enabled: false
+
+Lint/MissingSuper:
+  Enabled: false
+
+Style/TrailingCommaInArguments:
+  Enabled: false
+
+Style/FormatStringToken:
+  Enabled: false
+
+Style/GlobalVars:
+  Enabled: false
+
+Style/NumericLiterals:
+  Enabled: false
+
+Style/GuardClause: # 73
+  Enabled: false
+
+Style/IfUnlessModifier: # 37
+  Enabled: false
+
+Style/KeywordParametersOrder: # 3
+  Enabled: false
+
+Style/Lambda: # 13
+  Enabled: false
+
+Style/MultilineBlockChain: # 9
+  Enabled: false
+
+Style/MultilineIfModifier: # 11
+  Enabled: false
+
+Style/MultilineTernaryOperator: # 8
+  Enabled: false
+
+Style/RedundantParentheses: # 35
+  Enabled: false
+
+Style/RedundantRegexpEscape:
+  Enabled: true
+
+Style/RedundantReturn: # 40
+  Enabled: false
+
+Style/RescueStandardError: # 4
+  Enabled: false
+
+Style/SafeNavigation: # 15
+  Enabled: false
+
+Style/SingleArgumentDig: # 4
+  Enabled: false
+
+Style/SingleLineMethods: # 3
+  Enabled: false
+
+Style/SoleNestedConditional: # 3
+  Enabled: false
+
+Style/StringConcatenation: # 20
+  Enabled: false
+
+Style/StringLiteralsInInterpolation: # 13
+  Enabled: false
+
+Style/TrivialAccessors: # 4
+  Enabled: false

@@ -26,48 +26,42 @@ module Devices
       end
 
       def tool_slots_slot_1
-        add_tool_slot(name: ToolNames::SEEDER,
-                      x: TOOL_X,
+        add_tool_slot(x: TOOL_X,
                       y: TOOL_Y + 1 * TOOL_SPACING,
                       z: TOOL_Z,
                       tool: tools_seeder)
       end
 
       def tool_slots_slot_2
-        add_tool_slot(name: ToolNames::SEED_BIN,
-                      x: TOOL_X,
+        add_tool_slot(x: TOOL_X,
                       y: TOOL_Y + 2 * TOOL_SPACING,
                       z: TOOL_Z,
                       tool: tools_seed_bin)
       end
 
       def tool_slots_slot_3
-        add_tool_slot(name: ToolNames::SEED_TRAY,
-                      x: TOOL_X,
+        add_tool_slot(x: TOOL_X,
                       y: TOOL_Y + 3 * TOOL_SPACING,
                       z: TOOL_Z,
                       tool: tools_seed_tray)
       end
 
       def tool_slots_slot_4
-        add_tool_slot(name: ToolNames::WATERING_NOZZLE,
-                      x: TOOL_X,
+        add_tool_slot(x: TOOL_X,
                       y: TOOL_Y + 5 * TOOL_SPACING,
                       z: TOOL_Z,
                       tool: tools_watering_nozzle)
       end
 
       def tool_slots_slot_5
-        add_tool_slot(name: ToolNames::SOIL_SENSOR,
-                      x: TOOL_X,
+        add_tool_slot(x: TOOL_X,
                       y: TOOL_Y + 6 * TOOL_SPACING,
                       z: TOOL_Z,
                       tool: tools_soil_sensor)
       end
 
       def tool_slots_slot_6
-        add_tool_slot(name: ToolNames::WEEDER,
-                      x: TOOL_X,
+        add_tool_slot(x: TOOL_X,
                       y: TOOL_Y + 7 * TOOL_SPACING,
                       z: TOOL_Z,
                       tool: tools_weeder)
@@ -109,7 +103,7 @@ module Devices
 
       def sequences_mount_tool
         success = install_sequence_version_by_name(PublicSequenceNames::MOUNT_TOOL)
-        if !success
+        unless success
           s = SequenceSeeds::MOUNT_TOOL.deep_dup
           Sequences::Create.run!(s, device: device)
         end
@@ -117,7 +111,7 @@ module Devices
 
       def sequences_dismount_tool
         success = install_sequence_version_by_name(PublicSequenceNames::DISMOUNT_TOOL)
-        if !success
+        unless success
           s = SequenceSeeds::DISMOUNT_TOOL.deep_dup
           Sequences::Create.run!(s, device: device)
         end
@@ -125,7 +119,7 @@ module Devices
 
       def sequences_pick_from_seed_tray
         success = install_sequence_version_by_name(PublicSequenceNames::PICK_FROM_SEED_TRAY)
-        if !success
+        unless success
           s = SequenceSeeds::PICK_FROM_SEED_TRAY.deep_dup
           Sequences::Create.run!(s, device: device)
         end
@@ -133,7 +127,7 @@ module Devices
 
       def sequences_pick_from_seed_trough
         success = install_sequence_version_by_name(PublicSequenceNames::PICK_FROM_SEED_TROUGH)
-        if !success
+        unless success
           s = SequenceSeeds::PICK_FROM_SEED_TROUGH.deep_dup
           Sequences::Create.run!(s, device: device)
         end
@@ -141,7 +135,7 @@ module Devices
 
       def sequences_pick_from_seed_bin
         success = install_sequence_version_by_name(PublicSequenceNames::PICK_FROM_SEED_BIN)
-        if !success
+        unless success
           s = SequenceSeeds::PICK_FROM_SEED_BIN.deep_dup
           Sequences::Create.run!(s, device: device)
         end

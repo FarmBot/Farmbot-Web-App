@@ -43,14 +43,15 @@ class TelemetryService < AbstractServiceRunner
   end
 
   def deliver(data, original_payload)
-    dev, dev_telemetry = [data.device, data.payload]
+    dev = data.device
+    dev_telemetry = data.payload
     device_version = dev.fbos_version || NO_VERSION
     telemetry = dev_telemetry.merge({
-      fbos_version: device_version,
-      firmware_hardware: dev.fbos_config.firmware_hardware,
-    })
+                                      fbos_version: device_version,
+                                      firmware_hardware: dev.fbos_config.firmware_hardware,
+                                    })
     Telemetries::Create.run!(telemetry, device: dev)
-    msg = (MESSAGE % [data.device_id, device_version])
+    msg = (format(MESSAGE, data.device_id, device_version))
     payload = JSON.parse(original_payload)
     payload["device"] = "device_#{data.device_id}"
     payload["is_telemetry"] = true

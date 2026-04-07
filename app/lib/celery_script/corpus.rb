@@ -21,7 +21,7 @@ module CeleryScript
         if allowed.include?(value)
           return true
         else
-          msg = spec.error_template % [value, allowed]
+          msg = format(spec.error_template, value, allowed)
           raise CeleryScript::TypeCheckError, msg
         end
       end
@@ -29,7 +29,7 @@ module CeleryScript
 
     class Value < ArgAtom
       def initialize(tag)
-        super(tag)
+        super
         @name = @name.capitalize
       end
 
@@ -65,8 +65,7 @@ module CeleryScript
     end
 
     def fetchNode(name)
-      n = @node_def_list[name]
-      n ? n : raise(TypeCheckError, BAD_NODE_NAME + name.to_s)
+      @node_def_list[name] || raise(TypeCheckError, BAD_NODE_NAME + name.to_s)
     end
 
     def enum(name, allowed, error_template_string)

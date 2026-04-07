@@ -13,12 +13,10 @@ module Mutations
         .uniq
         .include?(false)
       return [input, :not_hash] if not_hash
+
       output = input
         .map { |x| Pair.new(*x) }
-        .inject({}) do |hash, pair|
-        hash[pair.head.to_sym] = pair.tail.to_s
-        hash
-      end
+        .to_h { |pair| [pair.head.to_sym, pair.tail.to_s] }
       [output, nil]
     end
   end

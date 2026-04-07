@@ -23,7 +23,7 @@ module Devices
     end
 
     def eligible_devices
-      @eligible_devices ||= Device.where("first_saw_api < ?", lower_limit)
+      @eligible_devices ||= Device.where(first_saw_api: ...lower_limit)
     end
 
     def devices

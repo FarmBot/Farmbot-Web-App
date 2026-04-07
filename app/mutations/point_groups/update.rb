@@ -1,6 +1,7 @@
 module PointGroups
   class Update < Mutations::Command
     include PointGroups::Helpers
+
     EXCLUDED_FIELDS = [:device, :point_ids, :point_group]
 
     required do

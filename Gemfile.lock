@@ -80,16 +80,20 @@ GEM
       securerandom (>= 0.3)
       tzinfo (~> 2.0, >= 2.0.5)
       uri (>= 0.13.1)
-    addressable (2.8.9)
+    addressable (2.9.0)
       public_suffix (>= 2.0.2, < 8.0)
-    amq-protocol (2.5.1)
+    amq-protocol (2.7.0)
+    ast (2.4.3)
     base64 (0.3.0)
     bcrypt (3.1.22)
     benchmark (0.5.0)
-    bigdecimal (4.0.1)
+    bigdecimal (4.1.1)
+    brakeman (8.0.4)
+      racc
     builder (3.3.0)
-    bunny (2.24.0)
-      amq-protocol (~> 2.3)
+    bunny (3.1.0)
+      amq-protocol (~> 2.7)
+      logger (~> 1, >= 1.7)
       sorted_set (~> 1, >= 1.0.2)
     case_transform (0.2)
       activesupport
@@ -212,6 +216,8 @@ GEM
       activerecord
       kaminari-core (= 1.2.2)
     kaminari-core (1.2.2)
+    language_server-protocol (3.17.0.5)
+    lint_roller (1.1.0)
     logger (1.7.0)
     lograge (0.14.0)
       actionpack (>= 4)
@@ -230,7 +236,7 @@ GEM
     marcel (1.1.0)
     method_source (1.1.0)
     mini_mime (1.1.5)
-    minitest (6.0.2)
+    minitest (6.0.3)
       drb (~> 2.0)
       prism (~> 1.5)
     multi_json (1.19.1)
@@ -256,6 +262,10 @@ GEM
     orm_adapter (0.5.0)
     os (1.1.4)
     ostruct (0.6.3)
+    parallel (1.28.0)
+    parser (3.3.11.1)
+      ast (~> 2.4.1)
+      racc
     passenger (6.1.2)
       logger (>= 1.7.0)
       rack (>= 1.6.13)
@@ -284,7 +294,7 @@ GEM
       hashie (>= 4.1)
       multi_json (~> 1.15)
     racc (1.8.1)
-    rack (3.2.5)
+    rack (3.2.6)
     rack-attack (6.8.0)
       rack (>= 1.0, < 4)
     rack-cors (3.0.0)
@@ -327,6 +337,7 @@ GEM
       thor (~> 1.0, >= 1.2.2)
       tsort (>= 0.2)
       zeitwerk (~> 2.6)
+    rainbow (3.1.1)
     rake (13.3.1)
     rbtree (0.4.6)
     rdoc (7.2.0)
@@ -334,6 +345,7 @@ GEM
       psych (>= 4.0.0)
       tsort
     redis (4.8.1)
+    regexp_parser (2.12.0)
     reline (0.6.3)
       io-console (~> 0.5)
     representable (3.2.0)
@@ -371,6 +383,27 @@ GEM
     rspec-support (3.13.7)
     rspec_junit_formatter (0.6.0)
       rspec-core (>= 2, < 4, != 2.12.0)
+    rubocop (1.86.0)
+      json (~> 2.3)
+      language_server-protocol (~> 3.17.0.2)
+      lint_roller (~> 1.1.0)
+      parallel (~> 1.10)
+      parser (>= 3.3.0.2)
+      rainbow (>= 2.2.2, < 4.0)
+      regexp_parser (>= 2.9.3, < 3.0)
+      rubocop-ast (>= 1.49.0, < 2.0)
+      ruby-progressbar (~> 1.7)
+      unicode-display_width (>= 2.4.0, < 4.0)
+    rubocop-ast (1.49.1)
+      parser (>= 3.3.7.2)
+      prism (~> 1.7)
+    rubocop-rails (2.34.3)
+      activesupport (>= 4.2.0)
+      lint_roller (~> 1.1)
+      rack (>= 1.1)
+      rubocop (>= 1.75.0, < 2.0)
+      rubocop-ast (>= 1.44.0, < 2.0)
+    ruby-progressbar (1.13.0)
     scenic (1.9.0)
       activerecord (>= 4.0.0)
       railties (>= 4.0.0)
@@ -405,6 +438,9 @@ GEM
     tzinfo-data (1.2026.1)
       tzinfo (>= 1.0.0)
     uber (0.1.0)
+    unicode-display_width (3.2.0)
+      unicode-emoji (~> 4.1)
+    unicode-emoji (4.2.0)
     uri (1.1.1)
     useragent (0.16.11)
     warden (1.2.9)
@@ -427,6 +463,7 @@ DEPENDENCIES
   active_model_serializers
   benchmark
   bigdecimal
+  brakeman
   bunny
   climate_control
   database_cleaner
@@ -461,6 +498,8 @@ DEPENDENCIES
   rspec
   rspec-rails
   rspec_junit_formatter
+  rubocop
+  rubocop-rails
   scenic
   secure_headers
   simplecov
@@ -475,4 +514,4 @@ RUBY VERSION
   ruby 4.0.2
 
 BUNDLED WITH
-  4.0.4
+  4.0.9

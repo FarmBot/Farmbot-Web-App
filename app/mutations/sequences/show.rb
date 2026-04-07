@@ -12,21 +12,21 @@ module Sequences
     # Eg: color, id, etc.
     def misc_fields
       return {
-               id: sequence.id,
-               created_at: sequence.created_at,
-               updated_at: sequence.updated_at,
-               args: Sequence::DEFAULT_ARGS,
-               color: sequence.color,
-               folder_id: sequence.folder_id,
-               forked: is_owner? ? false : sequence.forked,
-               name: sequence.name,
-               pinned: sequence.pinned,
-               copyright: copyright,
-               description: description,
-               sequence_versions: available_version_ids,
-               # This is the parent sequence that this sequence was forked from.
-               sequence_version_id: is_owner? ? nil : sequence_version_id,
-             }
+        id: sequence.id,
+        created_at: sequence.created_at,
+        updated_at: sequence.updated_at,
+        args: Sequence::DEFAULT_ARGS,
+        color: sequence.color,
+        folder_id: sequence.folder_id,
+        forked: is_owner? ? false : sequence.forked,
+        name: sequence.name,
+        pinned: sequence.pinned,
+        copyright: copyright,
+        description: description,
+        sequence_versions: available_version_ids,
+        # This is the parent sequence that this sequence was forked from.
+        sequence_version_id: is_owner? ? nil : sequence_version_id,
+      }
     end
 
     required do
@@ -34,11 +34,11 @@ module Sequences
     end
 
     def execute
-      if use_upstream_version?
-        celery = Fragments::Show.run!(owner: sequence_version)
-      else
-        celery = LegacyRenderer.new(sequence).run
-      end
+      celery = if use_upstream_version?
+                 Fragments::Show.run!(owner: sequence_version)
+               else
+                 LegacyRenderer.new(sequence).run
+               end
       canonical_form = misc_fields.merge!(celery)
       s = canonical_form.with_indifferent_access
       # HISTORICAL NOTE:
@@ -63,6 +63,7 @@ module Sequences
     def sequence_publication
       # Cache the association if it's already loaded
       return @sequence_publication if defined?(@sequence_publication)
+
       @sequence_publication = sequence.association(:sequence_publication).loaded? ?
         sequence.sequence_publication :
         SequencePublication.find_by(author_sequence_id: sequence.id)
@@ -75,6 +76,7 @@ module Sequences
     def sequence_version
       # Cache the association if it's already loaded
       return @sequence_version if defined?(@sequence_version)
+
       @sequence_version = sequence.association(:sequence_version).loaded? ?
         sequence.sequence_version :
         SequenceVersion.find_by(id: sequence_version_id)

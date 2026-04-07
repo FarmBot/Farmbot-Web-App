@@ -3,6 +3,7 @@ module FarmEvents
     include FarmEvents::ExecutableHelpers
     include FarmEvents::FragmentHelpers
     include FarmEvents::OccurrenceHelpers
+
     using Sequences::CanonicalCeleryHelpers
 
     has_executable_fields

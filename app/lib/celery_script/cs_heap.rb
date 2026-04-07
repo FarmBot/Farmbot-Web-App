@@ -20,6 +20,7 @@ module CeleryScript
 
     def initialize(value)
       raise "BAD INPUT" unless value.is_a?(Integer)
+
       @value = value.to_i
     end
 
@@ -44,7 +45,7 @@ module CeleryScript
     end
 
     def +(val)
-      HeapAddress[@value + 1]
+      HeapAddress[@value + val]
     end
 
     def is_address?
@@ -61,7 +62,7 @@ module CeleryScript
   end
 
   class CsHeap
-    class BadAddress < Exception; end
+    class BadAddress < StandardError; end
 
     BAD_ADDR = "Bad node address: "
     # Nodes that point to other nodes rather than primitive data types (eg:
@@ -117,11 +118,11 @@ module CeleryScript
       @entries = { @here => NOTHING }
     end
 
-    # Grow the heap and fill it was a CS node of type `__KIND__`.
+    # Grow the heap and fill it with a CS node of type `__KIND__`.
     # Returns the new value of `@here` after expansion.
     # "Create a new empty heap object and return its address for access later"
-    def allot(__KIND__)
-      entries[@here += 1] = { KIND => __KIND__ }
+    def allot(kind)
+      entries[@here += 1] = { KIND => kind }
       return @here
     end
 

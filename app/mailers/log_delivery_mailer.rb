@@ -27,7 +27,7 @@ class LogDeliveryMailer < ApplicationMailer
       .map { |(t, m)| [timestamp(t, timezone), m] }
       .map { |(x, y)| "[#{x}]: #{y}" }
     @device_name = device.name
-    mail(to: @emails, subject: SUBJECT % [@device_name])
+    mail(to: @emails, subject: format(SUBJECT, @device_name))
     unsent.update_all(sent_at: Time.now)
   end
 end

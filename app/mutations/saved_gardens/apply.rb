@@ -24,15 +24,15 @@ module SavedGardens
         .create!(garden
           .plant_templates
           .map do |template|
-          { device_id: device.id,
-            name: template.name,
-            openfarm_slug: template.openfarm_slug,
-            plant_stage: "planned",
-            radius: template.radius,
-            x: template.x,
-            y: template.y,
-            z: template.z }
-        end)
+            { device_id: device.id,
+              name: template.name,
+              openfarm_slug: template.openfarm_slug,
+              plant_stage: "planned",
+              radius: template.radius,
+              x: template.x,
+              y: template.y,
+              z: template.z }
+          end)
     end
 
     def clean_out_plants
@@ -42,7 +42,7 @@ module SavedGardens
     def plant_safety_check
       add_error :whoops,
                 :whoops,
-                plant_error_message if in_use_plants.count > 0
+                plant_error_message if in_use_plants.any?
     end
 
     def plant_error_message

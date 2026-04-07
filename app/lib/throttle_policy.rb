@@ -28,7 +28,7 @@ class ThrottlePolicy
       return nil
     else
       period, limit = v.max_by { |(unit)| TTL.fetch(unit) }
-      message = VIOLATION_TPL % { period: period, limit: limit }
+      message = format(VIOLATION_TPL, period: period, limit: limit)
       return Violation.new(next_window(period), message)
     end
   end
@@ -47,8 +47,8 @@ class ThrottlePolicy
     Rails.cache.redis
   end
 
-  def the_time_part(period, now = Time.now)
-    [period, next_window(period).to_i].map(&:to_s).join()
+  def the_time_part(period)
+    [period, next_window(period).to_i].join
   end
 
   def cache_key(id, period)
@@ -69,13 +69,13 @@ class ThrottlePolicy
     key = cache_key(id, period)
     redis.incr(key)
 
-    if (redis.ttl(key) < 0)
+    if (redis.ttl(key).negative?)
       ttl = (next_window(period) - Time.now).seconds.to_i
       redis.expire(key, ttl)
     end
   end
 
   def all_violations(id)
-    each_rule { |k, v| (get(id, k) > v) ? [k, v] : nil }.compact
+    each_rule { |k, v| get(id, k) > v ? [k, v] : nil }.compact
   end
 end

@@ -22,7 +22,7 @@ module Users
     def email
       @email ||= ["guest_",
                   SecureRandom.alphanumeric.downcase,
-                  "@farmbot.guest"].join("")
+                  "@farmbot.guest"].join
     end
 
     def user

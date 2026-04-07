@@ -15,7 +15,7 @@ module PinBindings
     end
 
     def exactly_one_choice
-      false_xor_sequence_id_special_actn if !(sequence_id || special_action)
+      false_xor_sequence_id_special_actn unless (sequence_id || special_action)
     end
 
     def not_both_actions

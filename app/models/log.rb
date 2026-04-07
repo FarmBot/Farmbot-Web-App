@@ -2,6 +2,7 @@
 # read by clients. Logs are only created by devices.
 class Log < ApplicationRecord
   include LogDeliveryStuff
+
   # We use log.type to store the log's type.
   # Rails wants to use that name for single table inheritance, which we don't
   # need for this table.
@@ -30,7 +31,8 @@ class Log < ApplicationRecord
     self.channels ||= []
   end
 
-  def broadcast? # Logs get their own special channel. Don't echo twice!
+  # Logs get their own special channel. Don't echo twice!
+  def broadcast?
     false
   end
 end

@@ -10,7 +10,7 @@ class KeyGen
 
   def self.generate_new_key(path = SAVE_PATH)
     rsa = OpenSSL::PKey::RSA.generate(2048)
-    File.open(path, "w") { |f| f.write(rsa.to_pem) }
+    File.write(path, rsa.to_pem)
     return rsa
   end
 

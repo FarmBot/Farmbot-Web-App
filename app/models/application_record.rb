@@ -8,15 +8,15 @@ class ApplicationRecord < ActiveRecord::Base
     attr_reader :auto_sync_paused
   end
 
-  DONT_BROADCAST = ["created_at",
-                    "last_saw_api",
-                    "last_sign_in_at",
-                    "last_sign_in_ip",
-                    "sign_in_count",
-                    "updated_at",
-                    "current_sign_in_ip",
-                    "current_sign_in_at",
-                    "fbos_version"]
+  DONT_BROADCAST = %w[created_at
+                      last_saw_api
+                      last_sign_in_at
+                      last_sign_in_ip
+                      sign_in_count
+                      updated_at
+                      current_sign_in_ip
+                      current_sign_in_at
+                      fbos_version]
 
   def gone?
     destroyed? || self.try(:discarded?)
@@ -47,6 +47,7 @@ class ApplicationRecord < ActiveRecord::Base
     return false if self.class.auto_sync_paused
     return false unless current_device
     return false unless (gone? || notable_changes?)
+
     return true
   end
 
@@ -54,7 +55,8 @@ class ApplicationRecord < ActiveRecord::Base
     self.broadcast! if broadcast?
   end
 
-  def body_as_json # REMEMBER: Subclasses might override this! - RC
+  # REMEMBER: Subclasses might override this! - RC
+  def body_as_json
     gone? ? nil : force_serialization
   end
 

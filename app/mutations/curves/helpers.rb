@@ -9,7 +9,7 @@ module Curves
     def bad_curve_type!
       add_error :curve_type,
                 :curve_type_bad,
-                Curve::BAD_TYPE % { value: type }
+                format(Curve::BAD_TYPE, value: type)
     end
 
     def valid_curve_type?

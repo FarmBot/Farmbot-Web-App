@@ -1,6 +1,7 @@
 module Sequences
   class Update < Mutations::Command
     include CeleryScriptValidators
+
     using CanonicalCeleryHelpers
     EXCLUDE = [:sequence, :device, :args, :body, :folder_id]
     BASE = "Can't add 'parent' to sequence because "

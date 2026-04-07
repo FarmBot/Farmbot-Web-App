@@ -2,6 +2,7 @@ module Regimens
   class Update < Mutations::Command
     include FarmEvents::FragmentHelpers
     include Regimens::Helpers
+
     using Sequences::CanonicalCeleryHelpers
     BAD_RECORD = "Failed to instantiate nested RegimenItem. Offending item: "
 
@@ -29,7 +30,7 @@ module Regimens
         ActiveRecord::Base.transaction do
           regimen.regimen_items.destroy_all
           inputs[:regimen_items].map! do |ri|
-            RegimenItem.new(ri).tap { |r| r.validate! }
+            RegimenItem.new(ri).tap(&:validate!)
           end
           handle_body_field
           regimen.update!(inputs.slice(:name, :color, :regimen_items))
@@ -42,5 +43,3 @@ module Regimens
     end
   end
 end
-
-Regimina ||= Regimens # Lol, inflection errors

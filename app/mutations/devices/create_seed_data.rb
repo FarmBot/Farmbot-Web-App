@@ -37,6 +37,7 @@ module Devices
       if device.account_seeded_at
         return { done: "Device already has seed data." }
       end
+
       device.update(account_seeded_at: Time.now)
       self.delay.run_seeds!
       { done: "Loading resources now." }

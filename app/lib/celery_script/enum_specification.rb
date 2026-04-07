@@ -8,7 +8,7 @@ module CeleryScript
       @error_template = error_template_string
     end
 
-    def as_json(optns)
+    def as_json(*)
       {
         "name" => name,
         "allowed_values" => allowed_values.uniq,

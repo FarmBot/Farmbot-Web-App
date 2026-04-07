@@ -2,6 +2,7 @@ module Regimens
   class Create < Mutations::Command
     include FarmEvents::FragmentHelpers
     include Regimens::Helpers
+
     using Sequences::CanonicalCeleryHelpers
 
     required do
@@ -34,5 +35,3 @@ module Regimens
     end
   end
 end
-
-Regimina ||= Regimens # Lol, inflection errors

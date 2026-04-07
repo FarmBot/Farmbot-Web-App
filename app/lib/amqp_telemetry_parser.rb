@@ -27,15 +27,14 @@ class AmqpTelemetryParser < Mutations::Command
   class DeliveryInfo
     attr_accessor :payload,   # Telemetry message as Ruby hash, NOT string / Telemetry class
                   :device_id, # Integer
-                  :problems,  # String[] - Let's you know *why* it's invalid.
-                  :device     # Device
+                  :problems   # String[] - Let's you know *why* it's invalid.
 
     def initialize
       @problems = []
     end
 
     def valid?
-      !problems.present?
+      problems.blank?
     end
 
     # Prevents "runaway" bots from flooding the server with frivolous database

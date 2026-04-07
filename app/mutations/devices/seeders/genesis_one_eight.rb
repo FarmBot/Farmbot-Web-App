@@ -16,16 +16,14 @@ module Devices
       end
 
       def tool_slots_slot_6
-        add_tool_slot(name: ToolNames::ROTARY_TOOL,
-                      x: TOOL_X,
+        add_tool_slot(x: TOOL_X,
                       y: TOOL_Y + 7 * TOOL_SPACING,
                       z: TOOL_Z,
                       tool: tools_rotary)
       end
 
       def tool_slots_slot_7
-        add_tool_slot(name: ToolNames::SEED_TROUGH_1,
-                      x: 0,
+        add_tool_slot(x: 0,
                       y: TROUGH_Y,
                       z: TROUGH_Z,
                       tool: tools_seed_trough_1,
@@ -34,8 +32,7 @@ module Devices
       end
 
       def tool_slots_slot_8
-        add_tool_slot(name: ToolNames::SEED_TROUGH_2,
-                      x: 0,
+        add_tool_slot(x: 0,
                       y: TROUGH_Y + TROUGH_SPACING,
                       z: TROUGH_Z,
                       tool: tools_seed_trough_2,
@@ -64,7 +61,7 @@ module Devices
 
       def sequences_mow_all_weeds
         success = install_sequence_version_by_name(PublicSequenceNames::MOW_ALL_WEEDS)
-        if !success
+        unless success
           s = SequenceSeeds::MOW_ALL_WEEDS.deep_dup
           Sequences::Create.run!(s, device: device)
         end

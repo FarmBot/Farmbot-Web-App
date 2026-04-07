@@ -1,8 +1,13 @@
 class Folder < ApplicationRecord
   belongs_to :device
 
-  has_many :sub_folders, class_name: "Folder",
-                         foreign_key: "parent_id"
+  has_many :sub_folders,
+           class_name: "Folder",
+           foreign_key: "parent_id",
+           inverse_of: :parent
 
-  belongs_to :parent, class_name: "Folder", optional: true
+  belongs_to :parent,
+             class_name: "Folder",
+             optional: true,
+             inverse_of: :sub_folders
 end

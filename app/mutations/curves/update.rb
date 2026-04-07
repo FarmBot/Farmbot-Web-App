@@ -1,6 +1,7 @@
 module Curves
   class Update < Mutations::Command
     include Curves::Helpers
+
     EXCLUDED_FIELDS = [:device, :curve]
 
     required do

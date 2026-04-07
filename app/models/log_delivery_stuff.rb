@@ -13,6 +13,7 @@ module LogDeliveryStuff
 
     def send_fatal_emails(log, device)
       return unless (log.channels || []).include?("fatal_email")
+
       FatalErrorMailer.fatal_error(device, log).deliver_later
     end
   end

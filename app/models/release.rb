@@ -9,19 +9,19 @@ class Release < ApplicationRecord
     RPI4 = "rpi4",
   ]
   # Version string, as it appears in Github.
-  VERSION_INPUT_FORMAT = /v\d*\.\d*\.\d*(\-rc\d*)?/
+  VERSION_INPUT_FORMAT = /\Av\d+\.\d+\.\d+(-rc\d+)?\z/
   # Version string, as it appears in our database.
-  VERSION_STORAGE_FORMAT = /\d*\.\d*\.\d*(\-rc\d*)?/
+  VERSION_STORAGE_FORMAT = /\A\d+\.\d+\.\d+(-rc\d+)?\z/
   before_update :readonly!
 
-  validates_inclusion_of :channel, in: CHANNEL
-  validates_inclusion_of :platform, in: PLATFORMS
+  validates :channel, inclusion: { in: CHANNEL }
+  validates :platform, inclusion: { in: PLATFORMS }
   validates :version, presence: true, format: { with: VERSION_STORAGE_FORMAT }
   validates :image_url, presence: true
 
   def self.transload(url, gcs = Google::Cloud::Storage.new)
     file_name = url.split("/").last
-    tempdir = "#{Rails.root.join("tmp").to_s}/#{file_name}"
+    tempdir = Rails.root.join("tmp", file_name).to_s
     download = URI.parse(url).open
     IO.copy_stream(download, tempdir)
     bucket = gcs.bucket(ENV.fetch("GCS_BUCKET"))

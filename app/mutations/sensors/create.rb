@@ -11,8 +11,8 @@ module Sensors
     end
 
     def validate
-      if !MODES.include?(mode)
-        msg = BAD_MODE % [mode.to_s, MODES]
+      if MODES.exclude?(mode)
+        msg = format(BAD_MODE, mode.to_s, MODES)
         add_error :mode, :not_allowed, msg
       end
     end

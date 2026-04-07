@@ -21,9 +21,10 @@ module PlantTemplates
     private
 
     def creation_params
-      @creation_params ||= inputs.except(:saved_garden_id).merge({
-        saved_garden: device.saved_gardens.find(saved_garden_id),
-      })
+      @creation_params ||= inputs.except(:saved_garden_id)
+        .merge({
+                 saved_garden: device.saved_gardens.find(saved_garden_id),
+               })
     end
   end
 end

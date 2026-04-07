@@ -16,27 +16,29 @@ module CeleryScript
 
     def self.find_all_with_arg(node, arg_name)
       results = []
-      filter = ->(n) { results.push(n) if n.args.has_key?(arg_name) }
+      filter = ->(n) { results.push(n) if n.args.key?(arg_name) }
       travel(node, filter)
       results
     end
 
-    private
+    class << self
+      private
 
-    def self.visit_node(node, callable)
-      if node.is_a?(AstNode) # Keep recursing if it's not a leaf.
-        callable.call(node)
-        visit_each_arg(node, callable)
-        visit_each_body_item(node, callable)
+      def visit_node(node, callable)
+        if node.is_a?(AstNode) # Keep recursing if it's not a leaf.
+          callable.call(node)
+          visit_each_arg(node, callable)
+          visit_each_body_item(node, callable)
+        end
       end
-    end
 
-    def self.visit_each_arg(origin, callable)
-      origin.args.map { |_, node| visit_node(node, callable) }
-    end
+      def visit_each_arg(origin, callable)
+        origin.args.map { |_, node| visit_node(node, callable) }
+      end
 
-    def self.visit_each_body_item(origin, callable)
-      origin.body.map { |node| visit_node(node, callable) } if origin.body
+      def visit_each_body_item(origin, callable)
+        origin.body.map { |node| visit_node(node, callable) } if origin.body
+      end
     end
   end
 end

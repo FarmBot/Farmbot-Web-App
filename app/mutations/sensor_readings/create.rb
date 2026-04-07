@@ -12,8 +12,8 @@ module SensorReadings
     optional do
       time :read_at
       integer :mode,
-        in: CeleryScriptSettingsBag::ALLOWED_PIN_MODES,
-        default: CeleryScriptSettingsBag::DIGITAL
+              in: CeleryScriptSettingsBag::ALLOWED_PIN_MODES,
+              default: CeleryScriptSettingsBag::DIGITAL
     end
 
     def execute

@@ -10,7 +10,7 @@ module CeleryScriptSettingsBag
       "Raspberry Pi Box LED"
     end
 
-    def self.exists?(id)
+    def self.exists?(_id)
       true # Not super important right now. - RC 22 JUL 18
     end
   end
@@ -30,7 +30,7 @@ module CeleryScriptSettingsBag
   ALLOWED_ROUTE = %w(high low in_order)
   ALLOWED_CHANGES = %w(add remove update)
   ALLOWED_CHANNEL_NAMES = %w(ticker toast email espeak)
-  ALLOWED_LHS_STRINGS = [*(0..69)].map { |x| "pin#{x}" }.concat(%w(x y z))
+  ALLOWED_LHS_STRINGS = [*(0..69)].map { |x| "pin#{x}" }.push("x", "y", "z")
   ALLOWED_LHS_TYPES = [String, :named_pin]
   ALLOWED_MESSAGE_TYPES = %w(assertion busy debug error fun info success warn)
   ALLOWED_OPS = %w(< > is not is_undefined)
@@ -139,6 +139,7 @@ module CeleryScriptSettingsBag
 
   def self.e(symbol)
     raise "Missing symbol: #{symbol}" unless CORPUS_ENUM.key?(symbol)
+
     CeleryScript::Corpus::Enum.new(symbol)
   end
 
@@ -180,12 +181,12 @@ module CeleryScriptSettingsBag
     point_group_id: {
       defn: [v(:integer)],
       blk: ->(node, device) do
-        bad_node = !PointGroup.where(id: node.value, device_id: device.id).exists?
+        bad_node = !PointGroup.exists?(id: node.value, device_id: device.id)
         node.invalidate!(BAD_POINT_GROUP_ID % node.value) if bad_node
       end,
     },
     pointer_id: { defn: [v(:integer)], blk: ->(node, device) do
-      bad_node = !Point.where(id: node.value, device_id: device.id).exists?
+      bad_node = !Point.exists?(id: node.value, device_id: device.id)
       node.invalidate!(BAD_POINTER_ID % node.value) if bad_node
     end },
     pin_value: { defn: [v(:integer)] },
@@ -200,11 +201,11 @@ module CeleryScriptSettingsBag
     sequence_id: {
       defn: [v(:integer)],
       blk: ->(node) do
-        if (node.value == 0)
+        if (node.value.zero?)
           node.invalidate!(NO_SUB_SEQ)
         else
           missing = !Sequence.exists?(node.value)
-          node.invalidate!(BAD_SUB_SEQ % [node.value]) if missing
+          node.invalidate!(format(BAD_SUB_SEQ, node.value)) if missing
         end
       end,
     },
@@ -232,7 +233,7 @@ module CeleryScriptSettingsBag
     tool_id: {
       defn: [v(:integer)],
       blk: ->(node) do
-        node.invalidate!(BAD_TOOL_ID % node.value) if !Tool.exists?(node.value)
+        node.invalidate!(BAD_TOOL_ID % node.value) unless Tool.exists?(node.value)
       end,
     },
     package: {
@@ -261,7 +262,7 @@ module CeleryScriptSettingsBag
       defn: [v(:string)],
       blk: ->(node) do
         notString = !node.value.is_a?(String)
-        tooShort = notString || node.value.length == 0
+        tooShort = notString || node.value.empty?
         tooLong = notString || node.value.length > 300
         node.invalidate! BAD_MESSAGE if (tooShort || tooLong)
       end,
@@ -289,7 +290,7 @@ module CeleryScriptSettingsBag
     change_ownership: {
       body: [:pair],
       tags: [:function, :network_user, :disk_user, :cuts_power, :api_writer],
-      blk: ->(node) { raise "Never." }, # Security critical.
+      blk: ->(_node) { raise "Never." }, # Security critical.
       docs: "Not a commonly used node. May be removed without notice.",
     },
     channel: {
@@ -479,7 +480,7 @@ module CeleryScriptSettingsBag
         args = HashWithIndifferentAccess.new(node.args)
         klass = PIN_TYPE_MAP.fetch(args[:pin_type].value)
         id = args[:pin_id].value
-        node.invalidate!(NO_PIN_ID % [klass.name]) if (id == 0)
+        node.invalidate!(format(NO_PIN_ID, klass.name)) if (id.zero?)
         bad_node = !klass.exists?(id)
         no_resource(node, klass, id) if bad_node
       end,
@@ -595,11 +596,12 @@ module CeleryScriptSettingsBag
   Corpus.enum(:LegalKindString, ANY_NODE_NAME.map(&:camelize), MISC_ENUM_ERR)
 
   def self.no_resource(node, klass, resource_id)
-    node.invalidate!(BAD_RESOURCE_ID % [klass.name, resource_id])
+    node.invalidate!(format(BAD_RESOURCE_ID, klass.name, resource_id))
   end
 
   def self.check_resource_type(node, resource_type, resource_id, owner)
     raise "OPPS!" unless owner
+
     case resource_type # <= Security critical code (for const_get'ing)
     when "Device"
       # When "resource_type" is "Device", resource_id always refers to
@@ -620,7 +622,7 @@ module CeleryScriptSettingsBag
   def self.manual_enum(array, node, tpl)
     val = node.try(:value)
     unless array.include?(val)
-      node.invalidate!(tpl % [val.to_s, array.inspect])
+      node.invalidate!(format(tpl, val.to_s, array.inspect))
     end
   end
 

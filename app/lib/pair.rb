@@ -4,6 +4,7 @@ class Pair
   attr_accessor :head, :tail
 
   def initialize(h, t)
-    @head, @tail = h, t
+    @head = h
+    @tail = t
   end
 end

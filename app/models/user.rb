@@ -2,8 +2,8 @@
 class User < ApplicationRecord
   class AlreadyVerified < StandardError; end
 
-  ENFORCE_TOS = ENV.fetch("TOS_URL") { false }
-  SKIP_EMAIL_VALIDATION = ENV.fetch("NO_EMAILS") { false }
+  ENFORCE_TOS = ENV.fetch("TOS_URL", false)
+  SKIP_EMAIL_VALIDATION = ENV.fetch("NO_EMAILS", false)
   validates :email, uniqueness: true
 
   belongs_to :device, dependent: :destroy
@@ -16,7 +16,7 @@ class User < ApplicationRecord
 
   def self.try_auth(email, password)
     user = User.where(email: email).first
-    (user && user.valid_password?(password)) ? yield(user) : yield(nil)
+    user && user.valid_password?(password) ? yield(user) : yield(nil)
   end
 
   def set_defaults
@@ -33,6 +33,7 @@ class User < ApplicationRecord
 
   def require_consent!
     raise Errors::LegalConsent if must_consent?
+
     self
   end
 
@@ -41,7 +42,7 @@ class User < ApplicationRecord
   end
 
   def update_tracked_fields!(request)
-    super(request) unless FbosDetector.is_fbos_ua?(request)
+    super unless FbosDetector.is_fbos_ua?(request)
   end
 
   def self.refresh_everyones_ui

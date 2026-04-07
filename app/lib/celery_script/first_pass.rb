@@ -52,12 +52,12 @@ module CeleryScript
         end
           .map do |node|
           # Step 3- Set edge nodes
-          pairs = node
+          node
             .to_a
             .select do |x|
-            key = x.first.to_s
-            (x.first != I) && !key.starts_with?(L)
-          end
+              key = x.first.to_s
+              (x.first != I) && !key.starts_with?(L)
+            end
             .map do |(key, value)|
             EdgeNode.create!(kind: key,
                              value: value,
@@ -66,10 +66,10 @@ module CeleryScript
           end
           node[:instance]
         end
-          .map { |x|
+          .map do |x|
           x.save! if x.changed?
           x
-        }
+        end
       end
     end
 
@@ -80,12 +80,12 @@ module CeleryScript
     def every_primary_link
       @every_primary_link ||= flat_ir
         .map do |x|
-        x
-          .except(B, C, I, K, L, N, P)
-          .invert
-          .to_a
-          .select { |(k, v)| k.is_a?(HeapAddress) }
-      end
+          x
+            .except(B, C, I, K, L, N, P)
+            .invert
+            .to_a
+            .select { |(k, _v)| k.is_a?(HeapAddress) }
+        end
         .map(&:to_h)
         .reduce({}, :merge)
     end

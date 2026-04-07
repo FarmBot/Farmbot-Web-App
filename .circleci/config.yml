@@ -120,6 +120,15 @@ commands:
   lint-commands:
     steps:
       - run:
+          name: Run Ruby Linters
+          command: |
+            if [ "$SETUP_OK" != "true" ]; then
+              echo "skipping"
+              exit 0
+            fi
+            sudo docker compose run --rm web bun run ruby-check
+          when: always
+      - run:
           name: Run JS Linters
           command: |
             if [ "$SETUP_OK" != "true" ]; then

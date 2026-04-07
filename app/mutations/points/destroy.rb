@@ -23,18 +23,17 @@ module Points
       problems = (tool_seq + point_seq + resource_update_seq)
         .group_by(&:sequence_name)
         .to_a
-        .reduce({ S => [], P => [] }) do |total, (seq_name, data)|
+        .each_with_object({ S => [], P => [] }) do |(seq_name, data), total|
         total[S].push(seq_name)
         total[P].push(*(data || []).map(&:fancy_name))
-        total
       end
 
       p = problems[P].sort.uniq.join(", ")
 
       if p.present?
         sequences = problems[S].sort.uniq.join(", ")
-        message = (point_ids.count > 1) ? STILL_IN_USE : JUST_ONE
-        problems = message % [p, sequences]
+        message = point_ids.many? ? STILL_IN_USE : JUST_ONE
+        problems = format(message, p, sequences)
 
         add_error :whoops, :in_use, problems
       end
@@ -112,6 +111,7 @@ module Points
 
     def maybe_wrap_ids
       raise "NO" unless (point || point_ids)
+
       inputs[:point_ids] = [point.id] if point
     end
   end

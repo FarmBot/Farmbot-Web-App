@@ -22,7 +22,7 @@ class TokenIssuance < ApplicationRecord
   #     Kick _everyone_ off the broker. The clients with the revoked token will
   #     not be able to reconnect.
   def maybe_evict_clients
-    Timeout::timeout(API_TIMEOUT) do
+    Timeout.timeout(API_TIMEOUT) do
       id = "device_#{device_id}"
       Transport::Mgmt.try(:close_connections_for_username, id)
     end
@@ -31,7 +31,7 @@ class TokenIssuance < ApplicationRecord
   end
 
   def self.expired
-    self.where("exp < ?", Time.now.to_i)
+    self.where(exp: ...Time.now.to_i)
   end
 
   def self.any_expired?

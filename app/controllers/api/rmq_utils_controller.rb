@@ -35,7 +35,7 @@ module Api
           cache.expire(key, TTL) if needs_ttl
           yield
         else
-          Device.delay.connection_warning(username) if !is_guest
+          Device.delay.connection_warning(username) unless is_guest
           raise RateLimit, username
         end
       end
@@ -68,22 +68,25 @@ module Api
 
     MALFORMED_TOPIC = "malformed topic. Must match #{DEVICE_SPECIFIC_CHANNELS.inspect}"
     VHOST = ENV.fetch("MQTT_VHOST") { "/" }
-    RESOURCES = ["queue", "exchange"]
-    PERMISSIONS = ["configure", "read", "write"]
+    RESOURCES = %w[queue exchange]
+    PERMISSIONS = %w[configure read write]
     FARMBOT_DEMO_USER = "farmbot_demo"
     DEMO_REGISTRY_ROOT = "demos"
 
-    class PasswordFailure < Exception; end
+    class PasswordFailure < StandardError; end
 
     rescue_from PasswordFailure, with: :report_suspicious_behavior
     rescue_from BrokerConnectionLimiter::RateLimit, with: :do_rate_limit
 
-    skip_before_action :check_fbos_version, except: []
-    skip_before_action :authenticate_user!, except: []
+    skip_before_action :check_fbos_version,
+                       only: [:user_action, :vhost_action, :resource_action, :topic_action]
+    skip_before_action :authenticate_user!,
+                       only: [:user_action, :vhost_action, :resource_action, :topic_action]
 
     before_action :always_allow_admin, except: [:user_action]
 
-    def user_action # Session entrypoint - Part I
+    # Session entrypoint - Part I
+    def user_action
       # Example JSON:
       #   "username"  => "foo@bar.com",
       #   "password"  => "******",
@@ -104,7 +107,8 @@ module Api
       end
     end
 
-    def vhost_action # Session entrypoint - Part II
+    # Session entrypoint - Part II
+    def vhost_action
       # Example JSON:
       #   "username" => "admin",
       #   "vhost"    => "/",
@@ -123,7 +127,8 @@ module Api
       ok ? allow : deny("Bad resource action")
     end
 
-    def topic_action # Called during subscribe
+    # Called during subscribe
+    def topic_action
       # Example JSON:
       #   "name"        => "amq.topic",
       #   "permission"  => "read",
@@ -149,6 +154,7 @@ module Api
 
     def always_allow_admin
       raise "NEVER" if action_name == "user" # Security failsafe
+
       allow if admin?
     end
 
@@ -222,12 +228,12 @@ module Api
       if farmbot_demo?
         a, b, c = (routing_key_param || "").split(".")
 
-        if !(permission_param == "read")
+        if permission_param != "read"
           deny("!(permission_param == read)")
           return
         end
 
-        if !(a == DEMO_REGISTRY_ROOT)
+        if a != DEMO_REGISTRY_ROOT
           deny("!(a == DEMO_REGISTRY_ROOT)")
           return
         end
@@ -268,7 +274,7 @@ module Api
         end
       end
 
-      if !!DEVICE_SPECIFIC_CHANNELS.match(routing_key_param)
+      if DEVICE_SPECIFIC_CHANNELS.match?(routing_key_param)
         yield
         return
       end
@@ -284,19 +290,19 @@ module Api
         .gsub("bot.device_", "") # "9.logs"
         .split(".") # ["9", "logs"]
         .first # "9"
-        .to_i || 0 # 9
+        .to_i # 9
     end
 
-    def with_rate_limit
+    def with_rate_limit(&)
       # TODO: Replace this with `ThrottlePolicy`.
       BrokerConnectionLimiter
         .current
-        .maybe_continue(username_param) { yield }
+        .maybe_continue(username_param, &)
     end
 
     def current_device
       @current_device ||= Auth::FromJwt.run!(jwt: password_param).device
-    rescue Mutations::ValidationException => e
+    rescue Mutations::ValidationException
       raise JWT::VerificationError, "RMQ Provided bad token"
     end
 
@@ -307,7 +313,7 @@ module Api
     def maybe_alert_user(reason)
       msg = "MQTT ACCESS DENIED #{reason} #{username_param || "unknown"}"
       puts msg unless Rails.env.test?
-      if device_id_in_username > 0
+      if device_id_in_username.positive?
         dev = Device.find_by(id: device_id_in_username)
         dev && dev.delay.tell(msg)
       end

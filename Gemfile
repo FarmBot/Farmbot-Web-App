@@ -48,6 +48,9 @@ group :development, :test do
   gem "simplecov"
   gem "simplecov-cobertura"
   gem "webmock"
+  gem "rubocop"
+  gem "rubocop-rails"
+  gem "brakeman"
 end
 
 gem "passenger"

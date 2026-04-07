@@ -1,6 +1,7 @@
 module Sequences
   class Create < Mutations::Command
     include CeleryScriptValidators
+
     using CanonicalCeleryHelpers
 
     required do
@@ -29,9 +30,9 @@ module Sequences
             .without(:body, :args, "body", "args")
             .merge(folder: device.folders.find_by(id: folder_id))
           seq = Sequence.create!(p)
-          x = CeleryScript::FirstPass.run!(sequence: seq,
-                                           args: args || {},
-                                           body: body || [])
+          CeleryScript::FirstPass.run!(sequence: seq,
+                                       args: args || {},
+                                       body: body || [])
           scope_hoist[:result] = Sequences::Show.run!(sequence: seq)
           seq
         end

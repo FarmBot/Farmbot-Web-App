@@ -21,7 +21,7 @@ module Devices
 
       def settings_three_d
         FarmwareEnvs::Create.run(
-          {key: "3D_beamLength", value: "3000"},
+          { key: "3D_beamLength", value: "3000" },
           device: device)
       end
     end

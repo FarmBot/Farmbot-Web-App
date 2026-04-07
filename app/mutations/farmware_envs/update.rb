@@ -1,8 +1,8 @@
 module FarmwareEnvs
   class Update < Mutations::Command
-    required {
+    required do
       model :farmware_env, class: FarmwareEnv
-    }
+    end
 
     optional do
       string :key

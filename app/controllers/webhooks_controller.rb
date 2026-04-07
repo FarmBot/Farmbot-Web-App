@@ -1,5 +1,4 @@
 class WebhooksController < ApplicationController
-
   skip_before_action :verify_authenticity_token
 
   def create
@@ -31,18 +30,18 @@ class WebhooksController < ApplicationController
           details = commit_desc
         end
         payload = {
-          "mrkdwn": true,
-          "text": notification_text,
-          "blocks": [
+          mrkdwn: true,
+          text: notification_text,
+          blocks: [
             {
-              "type": "section",
-              "text": {
-                "type": "mrkdwn",
-                "text": "#{notification_text}\n#{details}",
+              type: "section",
+              text: {
+                type: "mrkdwn",
+                text: "#{notification_text}\n#{details}",
               }
             }
           ],
-          "channel": "#software",
+          channel: "#software",
         }.to_json
         Faraday.post(webhook_url,
                      payload,

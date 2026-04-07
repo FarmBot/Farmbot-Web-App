@@ -21,7 +21,8 @@ class UserMailer < ApplicationMailer
   # Much like welcome_email, it is used to check email validity.
   # Triggered after the user tries update the `email` attr in Users#update.
   def email_update(user)
-    raise NOTHING_TO_CONFIRM unless user.unconfirmed_email.present?
+    raise NOTHING_TO_CONFIRM if user.unconfirmed_email.blank?
+
     @user = user
     @the_url = UserMailer.reset_url(user)
 
