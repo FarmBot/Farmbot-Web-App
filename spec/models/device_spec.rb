@@ -116,4 +116,29 @@ describe Device do
                                                           "from_clients")
     device.send_upgrade_request
   end
+
+  it "reports unknown location in feedback payload when coordinates are missing" do
+    expect(Faraday).to receive(:post) do |_url, payload, _headers|
+      text = JSON.parse(payload)["text"]
+      expect(text).to include("`Location`: unknown")
+    end
+
+    with_modified_env FEEDBACK_WEBHOOK_URL: "https://localhost:3000/" do
+      device.update!(lat: nil, lng: nil)
+      device.provide_feedback("Example message", "Example slug")
+    end
+  end
+
+  it "reports mapped location in feedback payload when coordinates are present" do
+    device.update!(lat: 40.7128, lng: -74.0060)
+
+    expect(Faraday).to receive(:post) do |_url, payload, _headers|
+      text = JSON.parse(payload)["text"]
+      expect(text).to include("`Location`: <https://www.openstreetmap.org/?mlat=40.7128&mlon=-74.006&zoom=10|40.7128,-74.006>")
+    end
+
+    with_modified_env FEEDBACK_WEBHOOK_URL: "https://localhost:3000/" do
+      device.provide_feedback("Example message", "Example slug")
+    end
+  end
 end

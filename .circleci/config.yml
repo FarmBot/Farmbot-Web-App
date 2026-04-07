@@ -114,7 +114,12 @@ commands:
     steps:
       - run:
           name: Run JS tests
+          when: always
           command: |
+            if [ "$SETUP_OK" != "true" ]; then
+              echo "skipping"
+              exit 0
+            fi
             sudo docker compose run --rm web bun test --reporter=junit --reporter-outfile=test-results/junit.xml
             echo 'export COVERAGE_AVAILABLE=true' >> $BASH_ENV
   lint-commands:

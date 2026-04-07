@@ -91,10 +91,6 @@ module Points
       end
     end
 
-    def default_name
-      DEFAULT_NAME % klass_.model_name.human.downcase
-    end
-
     # Security critical code!
     # Prevent malicious `.constantize` calls.
     def safe_pointer_kind?
