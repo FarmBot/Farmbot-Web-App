@@ -61,11 +61,17 @@ describe("dispatchNetworkUp", () => {
     expect(networkUptimeThrottleStats["user.mqtt"]).toEqual(LONGER_TIME_LATER);
   });
 
-  it("ignores `bot.mqtt`, now handled by the QoS Ping system", () => {
+  it("updates `bot.mqtt` status", () => {
     const dispatch = store.dispatch as unknown as jest.Mock;
-    dispatchNetworkUp("bot.mqtt", 123);
-    expect(dispatch).not.toHaveBeenCalled();
-    expect(networkUptimeThrottleStats["bot.mqtt"]).toEqual(0);
+    dispatchNetworkUp("bot.mqtt", NOW.getTime());
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.NETWORK_EDGE_CHANGE,
+      payload: {
+        name: "bot.mqtt",
+        status: { state: "up", at: NOW.getTime() }
+      }
+    });
+    expect(networkUptimeThrottleStats["bot.mqtt"]).toEqual(NOW.getTime());
   });
 });
 
@@ -76,11 +82,17 @@ describe("dispatchNetworkDown", () => {
     resetStats();
   });
 
-  it("ignores `bot.mqtt`, now handled by the QoS Ping system", () => {
+  it("updates `bot.mqtt` status", () => {
     const dispatch = store.dispatch as unknown as jest.Mock;
-    dispatchNetworkDown("bot.mqtt", 123);
-    expect(dispatch).not.toHaveBeenCalled();
-    expect(networkUptimeThrottleStats["bot.mqtt"]).toEqual(0);
+    dispatchNetworkDown("bot.mqtt", NOW.getTime());
+    expect(dispatch).toHaveBeenCalledWith({
+      type: Actions.NETWORK_EDGE_CHANGE,
+      payload: {
+        name: "bot.mqtt",
+        status: { state: "down", at: NOW.getTime() }
+      }
+    });
+    expect(networkUptimeThrottleStats["bot.mqtt"]).toEqual(NOW.getTime());
   });
 
   it("calls redux directly", () => {
