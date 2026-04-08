@@ -33,7 +33,7 @@ import {
   AmbientLight, AxesHelper, Group, MeshBasicMaterial,
 } from "./components";
 import { ICON_URLS } from "../crops/constants";
-import { isUndefined } from "lodash";
+import { isUndefined, uniq } from "lodash";
 import {
   TaggedGenericPointer, TaggedImage, TaggedPoint, TaggedPointGroup,
   TaggedSensor,
@@ -204,6 +204,10 @@ export const GardenModel = (props: GardenModelProps) => {
         dispatch={dispatch} />),
     [props.weeds, showWeeds, config, getZ, dispatch]);
 
+  const iconUrls = addPlantProps
+    ? uniq(threeDPlants.map(p => p.icon))
+    : ICON_URLS;
+
   // eslint-disable-next-line no-null/no-null
   return <Group dispose={null}
     onPointerMove={config.eventDebug
@@ -289,10 +293,9 @@ export const GardenModel = (props: GardenModelProps) => {
         activeFocus={props.activeFocus}
         mountedToolName={props.mountedToolName}
         toolSlots={props.toolSlots} />}
-    {!addPlantProps &&
-      <Group name={"plant-icon-preload"} visible={false}>
-        {ICON_URLS.map((url, i) => <Image key={i} url={url} />)}
-      </Group>}
+    <Group name={"plant-icon-preload"} visible={false}>
+      {iconUrls.map((url, i) => <Image key={i} url={url} />)}
+    </Group>
     <Group name={"plant-labels"} visible={!props.activeFocus}>
       {plantLabelNodes}
     </Group>
