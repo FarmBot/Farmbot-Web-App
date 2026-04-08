@@ -289,9 +289,10 @@ export const GardenModel = (props: GardenModelProps) => {
         activeFocus={props.activeFocus}
         mountedToolName={props.mountedToolName}
         toolSlots={props.toolSlots} />}
-    <Group name={"plant-icon-preload"} visible={false}>
-      {ICON_URLS.map((url, i) => <Image key={i} url={url} />)}
-    </Group>
+    {!addPlantProps &&
+      <Group name={"plant-icon-preload"} visible={false}>
+        {ICON_URLS.map((url, i) => <Image key={i} url={url} />)}
+      </Group>}
     <Group name={"plant-labels"} visible={!props.activeFocus}>
       {plantLabelNodes}
     </Group>

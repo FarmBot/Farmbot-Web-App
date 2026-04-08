@@ -139,7 +139,7 @@
       &:focus {
         background: transparent !important;
       }
-      &::-webkit-input-placeholder {
+      &::placeholder {
         color: $placeholder_gray;
       }
     }
@@ -290,9 +290,9 @@
 
 .plant-link-wrapper {
   &.is-chosen-true.is-editing-true {
-    cursor: -webkit-grab !important;
+    cursor: grab !important;
     &:active {
-      cursor: -webkit-grabbing !important;
+      cursor: grabbing !important;
     }
   }
 }

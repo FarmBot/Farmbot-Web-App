@@ -23,8 +23,7 @@ input[type=date]::-webkit-outer-spin-button,
 input[type=time]::-webkit-inner-spin-button,
 input[type=time]::-webkit-outer-spin-button,
 input[type=time] {
-  -webkit-appearance: none;
-  -moz-appearance: textfield;
+  appearance: none;
   margin: 0;
 }
 
@@ -68,7 +67,7 @@ input:not([role="combobox"]) {
     color: $red;
   }
   &:not([type="checkbox"]):not([type="radio"]) {
-    -moz-appearance: textfield;
+    appearance: none;
   }
 }
 
@@ -214,7 +213,7 @@ select {
 
 .fb-checkbox {
   input[type="checkbox"] {
-    -webkit-appearance: none;
+    appearance: none;
     background: $translucent9_white;
     border-radius: 0;
     border-radius: 3px;
