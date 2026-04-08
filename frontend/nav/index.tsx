@@ -1,8 +1,9 @@
 import React from "react";
+import { connect } from "react-redux";
 import { NavBarProps, NavBarState } from "./interfaces";
 import { EStopButton } from "./e_stop_btn";
 import { Popover } from "../ui";
-import { updatePageInfo } from "../util";
+import { updatePageInfo, validFbosConfig, validFwConfig } from "../util";
 import { validBotLocationData } from "../util/location";
 import { NavLinks } from "./nav_links";
 import { demoAccountLog, TickerList } from "./ticker_list";
@@ -24,10 +25,10 @@ import {
   botPositionLabel,
 } from "../farm_designer/map/layers/farmbot/bot_position_label";
 import { jobNameLookup, JobsAndLogs, sortJobs } from "../devices/jobs";
-import { round } from "lodash";
+import { round, uniq } from "lodash";
 import { ControlsPanel } from "../controls/controls";
 import { Actions } from "../constants";
-import { PopupsState } from "../interfaces";
+import { PopupsState, Everything, TimeSettings } from "../interfaces";
 import { Panel, setPanelOpen, TAB_ICON } from "../farm_designer/panel_header";
 import { movementPercentRemaining } from "../farm_designer/move_to";
 import { isMobile } from "../screen_size";
@@ -36,8 +37,243 @@ import {
   showTimeTravelButton, TimeTravelContent, TimeTravelTarget,
 } from "../three_d_garden/time_travel";
 import { NavigateFunction } from "react-router";
+import {
+  maybeFetchUser,
+  maybeGetTimeSettings,
+  getDeviceAccountSettings,
+  selectAllWizardStepResults,
+  selectAllTelemetry,
+  selectAllPeripherals,
+  selectAllSequences,
+  selectAllWebcamFeeds,
+} from "../resources/selectors";
+import { getWebAppConfigValue } from "../config_storage/actions";
+import { takeSortedLogs } from "../logs/state_to_props";
+import { getFirmwareConfig, getFbosConfig } from "../resources/getters";
+import { getAllAlerts } from "../messages/state_to_props";
+import { getEnv } from "../farmware/state_to_props";
+import {
+  sourceFbosConfigValue, sourceFwConfigValue,
+} from "../settings/source_config_value";
+import { ResourceIndex } from "../resources/interfaces";
+import { getFwHardwareValue } from "../settings/firmware/firmware_hardware_support";
+import { filterAlerts } from "../messages/alerts";
+import { BotState } from "../devices/interfaces";
+import { Alert, TaggedTelemetry } from "farmbot";
+import { PingDictionary } from "../devices/connectivity/qos";
 
-export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
+const createCachedSelector =
+  <Input, Output>(selector: (input: Input) => Output) => {
+    let lastInput: Input | undefined = undefined;
+    let lastOutput: Output | undefined = undefined;
+    return (input: Input): Output => {
+      if (input === lastInput && lastOutput !== undefined) {
+        return lastOutput;
+      }
+      lastInput = input;
+      lastOutput = selector(input);
+      return lastOutput;
+    };
+  };
+
+const cachedTimeSettings =
+  createCachedSelector((index: ResourceIndex): TimeSettings =>
+    maybeGetTimeSettings(index));
+const cachedUser =
+  createCachedSelector((index: ResourceIndex) => maybeFetchUser(index));
+const cachedLogs =
+  createCachedSelector((index: ResourceIndex) => takeSortedLogs(250, index));
+const cachedFirmwareConfig = createCachedSelector((index: ResourceIndex) =>
+  validFwConfig(getFirmwareConfig(index)));
+const cachedAlerts =
+  createCachedSelector((resources: Everything["resources"]) =>
+    getAllAlerts(resources));
+const cachedEnv = createCachedSelector((index: ResourceIndex) => getEnv(index));
+const cachedWizardStepResults =
+  createCachedSelector((index: ResourceIndex) =>
+    selectAllWizardStepResults(index));
+const cachedTelemetry =
+  createCachedSelector((index: ResourceIndex) => selectAllTelemetry(index));
+const cachedFeeds =
+  createCachedSelector((index: ResourceIndex) => selectAllWebcamFeeds(index));
+const cachedPeripherals =
+  createCachedSelector((index: ResourceIndex) =>
+    uniq(selectAllPeripherals(index)));
+const cachedSequences =
+  createCachedSelector((index: ResourceIndex) => selectAllSequences(index));
+
+const cachedBotWithoutConnectivity = (() => {
+  let lastBot: BotState | undefined = undefined;
+  let lastResult: BotState | undefined = undefined;
+  // eslint-disable-next-line complexity
+  return (bot: BotState): BotState => {
+    if (lastBot
+      && lastResult
+      && bot.statusStash === lastBot.statusStash
+      && bot.stepSize === lastBot.stepSize
+      && bot.osUpdateVersion === lastBot.osUpdateVersion
+      && bot.minOsFeatureData === lastBot.minOsFeatureData
+      && bot.osReleaseNotes === lastBot.osReleaseNotes
+      && bot.dirty === lastBot.dirty
+      && bot.hardware === lastBot.hardware
+      && bot.isUpdating === lastBot.isUpdating
+      && bot.consistent === lastBot.consistent
+      && bot.needVersionCheck === lastBot.needVersionCheck
+      && bot.alreadyToldUserAboutMalformedMsg
+      === lastBot.alreadyToldUserAboutMalformedMsg
+      && bot.demoQueueLength === lastBot.demoQueueLength) {
+      lastBot = bot;
+      return lastResult;
+    }
+    lastBot = bot;
+    lastResult = bot;
+    return bot;
+  };
+})();
+
+interface TickerListPropsFromState {
+  dispatch: Function;
+  logs: ReturnType<typeof cachedLogs>;
+  timeSettings: TimeSettings;
+  getConfigValue: ReturnType<typeof getWebAppConfigValue>;
+  botOnline: boolean;
+  lastSeen: number;
+}
+
+const mapTickerListStateToProps =
+  (props: Everything): TickerListPropsFromState => {
+    const { index } = props.resources;
+    const logs = cachedLogs(index);
+    return {
+      dispatch: props.dispatch,
+      logs: logs.concat(forceOnline() ? [demoAccountLog()] : []),
+      timeSettings: cachedTimeSettings(index),
+      getConfigValue: getWebAppConfigValue(() => props),
+      botOnline: isBotOnlineFromState(props.bot),
+      lastSeen: lastSeenNumber({
+        bot: props.bot,
+        device: getDeviceAccountSettings(index),
+      }),
+    };
+  };
+
+const ConnectedTickerList = connect(mapTickerListStateToProps)(TickerList);
+
+interface ConnectionStatusProps {
+  bot: BotState;
+  dispatch: Function;
+  device: ReturnType<typeof getDeviceAccountSettings>;
+  pings: PingDictionary;
+  alerts: Alert[];
+  apiFirmwareValue: ReturnType<typeof getFwHardwareValue>;
+  telemetry: TaggedTelemetry[];
+  metricPanelState: Everything["app"]["metricPanelState"];
+  timeSettings: TimeSettings;
+  isOpen: boolean;
+}
+
+const mapConnectionStatusStateToProps =
+  (props: Everything): ConnectionStatusProps => {
+    const { resources } = props;
+    const { index } = resources;
+    return {
+      bot: props.bot,
+      dispatch: props.dispatch,
+      device: getDeviceAccountSettings(index),
+      pings: props.bot.connectivity.pings,
+      alerts: cachedAlerts(resources),
+      apiFirmwareValue: getFwHardwareValue(getFbosConfig(index)),
+      telemetry: cachedTelemetry(index),
+      metricPanelState: props.app.metricPanelState,
+      timeSettings: cachedTimeSettings(index),
+      isOpen: props.app.popups.connectivity,
+    };
+  };
+
+const ConnectionStatus = (props: ConnectionStatusProps) => {
+  const data = connectivityData({
+    bot: props.bot,
+    device: props.device,
+    apiFirmwareValue: props.apiFirmwareValue,
+  });
+  const { sync_status } = props.bot.hardware.informational_settings;
+  return <div className={"connection-status-popover nav-popup-button-wrapper"}>
+    <ErrorBoundary>
+      <Popover position={Position.BOTTOM_RIGHT}
+        portalClassName={"connectivity-popover-portal"}
+        popoverClassName={"connectivity-popover"}
+        isOpen={props.isOpen}
+        enforceFocus={false}
+        target={<button type="button"
+          className={`connectivity-button ${props.isOpen ? "hover" : ""}`}
+          onClick={() => props.dispatch({
+            type: Actions.TOGGLE_POPUP,
+            payload: "connectivity",
+          })}
+          aria-expanded={props.isOpen}>
+          <DiagnosisSaucer {...data.flags}
+            className={"nav"}
+            syncStatus={sync_status} />
+          {!isMobile() && <p>{props.device.body.name || t("FarmBot")}</p>}
+        </button>}
+        content={<ErrorBoundary>
+          <Connectivity
+            bot={props.bot}
+            rowData={data.rowData}
+            flags={data.flags}
+            dispatch={props.dispatch}
+            device={props.device}
+            pings={props.pings}
+            alerts={props.alerts}
+            apiFirmwareValue={props.apiFirmwareValue}
+            telemetry={props.telemetry}
+            metricPanelState={props.metricPanelState}
+            timeSettings={props.timeSettings} />
+        </ErrorBoundary>} />
+    </ErrorBoundary>
+  </div>;
+};
+
+const ConnectedConnectionStatus =
+  connect(mapConnectionStatusStateToProps)(ConnectionStatus);
+
+export function mapStateToProps(props: Everything): NavBarProps {
+  const { resources } = props;
+  const { index } = resources;
+  const webAppConfigValue = getWebAppConfigValue(() => props);
+  const firmwareConfig = cachedFirmwareConfig(index);
+  const alerts = cachedAlerts(resources);
+  return {
+    logs: cachedLogs(index),
+    bot: cachedBotWithoutConnectivity(props.bot),
+    user: cachedUser(index),
+    dispatch: props.dispatch,
+    timeSettings: cachedTimeSettings(index),
+    getConfigValue: webAppConfigValue,
+    sourceFwConfig: sourceFwConfigValue(firmwareConfig,
+      props.bot.hardware.mcu_params),
+    sourceFbosConfig: sourceFbosConfigValue(
+      validFbosConfig(getFbosConfig(index)),
+      props.bot.hardware.configuration),
+    firmwareConfig,
+    resources: index,
+    device: getDeviceAccountSettings(index),
+    alertCount: alerts.filter(filterAlerts).length,
+    apiFirmwareValue: getFwHardwareValue(getFbosConfig(index)),
+    authAud: props.auth?.token.unencoded.aud,
+    wizardStepResults: cachedWizardStepResults(index),
+    helpState: resources.consumers.help,
+    appState: props.app,
+    menuOpen: resources.consumers.sequences.menuOpen,
+    env: cachedEnv(index),
+    feeds: cachedFeeds(index),
+    peripherals: cachedPeripherals(index),
+    sequences: cachedSequences(index),
+    designer: resources.consumers.farm_designer,
+  };
+}
+
+export class RawNavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
   state: NavBarState = {
     mobileMenuOpen: false,
     documentTitle: "",
@@ -155,49 +391,6 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
           BooleanSetting.disable_emergency_unlock_confirmation)} />
     </div>;
 
-  ConnectionStatus = () => {
-    const data = connectivityData({
-      bot: this.props.bot,
-      device: this.props.device,
-      apiFirmwareValue: this.props.apiFirmwareValue,
-    });
-    const { sync_status } = this.props.bot.hardware.informational_settings;
-    const click = this.togglePopup("connectivity");
-    const isOpen = this.props.appState.popups.connectivity;
-    return <div className={"connection-status-popover nav-popup-button-wrapper"}>
-      <ErrorBoundary>
-        <Popover position={Position.BOTTOM_RIGHT}
-          portalClassName={"connectivity-popover-portal"}
-          popoverClassName={"connectivity-popover"}
-          isOpen={isOpen}
-          enforceFocus={false}
-          target={<button type="button"
-            className={`connectivity-button ${isOpen ? "hover" : ""}`}
-            onClick={click}
-            aria-expanded={isOpen}>
-            <DiagnosisSaucer {...data.flags}
-              className={"nav"}
-              syncStatus={sync_status} />
-            {!isMobile() && <p>{this.props.device.body.name || t("FarmBot")}</p>}
-          </button>}
-          content={<ErrorBoundary>
-            <Connectivity
-              bot={this.props.bot}
-              rowData={data.rowData}
-              flags={data.flags}
-              dispatch={this.props.dispatch}
-              device={this.props.device}
-              pings={this.props.pings}
-              alerts={this.props.alerts}
-              apiFirmwareValue={this.props.apiFirmwareValue}
-              telemetry={this.props.telemetry}
-              metricPanelState={this.props.appState.metricPanelState}
-              timeSettings={this.props.timeSettings} />
-          </ErrorBoundary>} />
-      </ErrorBoundary>
-    </div>;
-  };
-
   SetupButton = () => {
     const firmwareHardware = this.props.apiFirmwareValue;
     const { wizardStepResults, device } = this.props;
@@ -281,13 +474,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
     </div>;
 
   TickerList = () =>
-    <TickerList
-      dispatch={this.props.dispatch}
-      logs={this.logs}
-      timeSettings={this.props.timeSettings}
-      getConfigValue={this.props.getConfigValue}
-      lastSeen={lastSeenNumber({ bot: this.props.bot, device: this.props.device })}
-      botOnline={isBotOnlineFromState(this.props.bot)} />;
+    <ConnectedTickerList />;
 
   render() {
     /** Change document meta title on every route change. */
@@ -312,7 +499,7 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
                 <ErrorBoundary>
                   <this.ReadOnlyStatus />
                   <this.EstopButton />
-                  <this.ConnectionStatus />
+                  <ConnectedConnectionStatus />
                   <this.SetupButton />
                   <this.TimeTravel />
                   <this.Coordinates />
@@ -326,3 +513,5 @@ export class NavBar extends React.Component<NavBarProps, Partial<NavBarState>> {
     </ErrorBoundary>;
   }
 }
+
+export const NavBar = connect(mapStateToProps)(RawNavBar);

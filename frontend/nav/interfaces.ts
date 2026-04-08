@@ -2,16 +2,14 @@ import {
   BotState, SourceFbosConfig, SourceFwConfig, UserEnv,
 } from "../devices/interfaces";
 import {
-  TaggedUser, TaggedLog, TaggedDevice, Alert, FirmwareHardware,
+  TaggedUser, TaggedLog, TaggedDevice, FirmwareHardware,
   TaggedWizardStepResult,
-  TaggedTelemetry,
   TaggedPeripheral,
   TaggedSequence,
   TaggedWebcamFeed,
 } from "farmbot";
 import { GetWebAppConfigValue } from "../config_storage/actions";
 import { TimeSettings } from "../interfaces";
-import { PingDictionary } from "../devices/connectivity/qos";
 import { HelpState } from "../help/reducer";
 import { AppState } from "../reducer";
 import { ResourceIndex } from "../resources/interfaces";
@@ -32,13 +30,10 @@ export interface NavBarProps {
   resources: ResourceIndex;
   device: TaggedDevice;
   alertCount: number;
-  pings: PingDictionary;
-  alerts: Alert[];
   apiFirmwareValue: FirmwareHardware | undefined;
   authAud: string | undefined;
   wizardStepResults: TaggedWizardStepResult[];
   helpState: HelpState;
-  telemetry: TaggedTelemetry[];
   appState: AppState;
   menuOpen: RunButtonMenuOpen;
   env: UserEnv;

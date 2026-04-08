@@ -19,12 +19,22 @@ export interface PingComplete {
 
 export type Ping = PingComplete | Pending | Timeout;
 export type PingDictionary = Record<string, Ping | undefined>;
+export const MAX_SAVED_PINGS = 100;
 
 export const now = () => (new Date()).getTime();
 
+const trimPingHistory = (s: PingDictionary): PingDictionary => {
+  const ids = Object.keys(s);
+  if (ids.length <= MAX_SAVED_PINGS) { return s; }
+  const nextState = { ...s };
+  ids.slice(0, ids.length - MAX_SAVED_PINGS)
+    .map(id => delete nextState[id]);
+  return nextState;
+};
+
 export const startPing =
   (s: PingDictionary, id: string): PingDictionary => {
-    return { ...s, [id]: { kind: "pending", start: now() } };
+    return trimPingHistory({ ...s, [id]: { kind: "pending", start: now() } });
   };
 
 export const failPing =
@@ -36,7 +46,7 @@ export const failPing =
         start: failure.start,
         end: now(),
       };
-      return { ...s, [id]: nextFailure };
+      return trimPingHistory({ ...s, [id]: nextFailure });
     }
 
     return s;
@@ -46,14 +56,14 @@ export const completePing =
   (s: PingDictionary, id: string, end = now()): PingDictionary => {
     const failure = s[id];
     if (failure && failure.kind == "pending") {
-      return {
+      return trimPingHistory({
         ...s,
         [id]: {
           kind: "complete",
           start: failure.start,
           end
         }
-      };
+      });
     }
     return s;
   };

@@ -1,10 +1,13 @@
 import { Farmbot, uuid } from "farmbot";
 import {
   dispatchQosStart,
+  dispatchNetworkDown,
+  dispatchNetworkUp,
   pingOK,
   pingNO,
 } from "./index";
 import { now } from "../devices/connectivity/qos";
+import { store } from "../redux/store";
 
 export const PING_INTERVAL = 2000;
 /**
@@ -15,6 +18,11 @@ export const PING_INTERVAL = 2000;
  */
 const PING_TIMEOUT = 5500;
 
+const shouldTrackQoS = () => {
+  const { app } = store.getState();
+  return app.popups.connectivity && app.metricPanelState.network;
+};
+
 export function sendOutboundPing(bot: Farmbot) {
   return new Promise((resolve, reject) => {
     const id = uuid();
@@ -24,7 +32,13 @@ export function sendOutboundPing(bot: Farmbot) {
     const ok = () => {
       if (!x.done) {
         x.done = true;
-        pingOK(id, now());
+        const endedAt = now();
+        if (shouldTrackQoS()) {
+          pingOK(id, endedAt);
+        } else {
+          dispatchNetworkUp("bot.mqtt", endedAt);
+          dispatchNetworkUp("user.mqtt", endedAt);
+        }
         resolve("");
       }
     };
@@ -32,12 +46,17 @@ export function sendOutboundPing(bot: Farmbot) {
     const no = () => {
       if (!x.done) {
         x.done = true;
-        pingNO(id, now());
+        const endedAt = now();
+        if (shouldTrackQoS()) {
+          pingNO(id, endedAt);
+        } else {
+          dispatchNetworkDown("bot.mqtt", endedAt);
+        }
         reject(new Error("sendOutboundPing failed: " + id));
       }
     };
 
-    dispatchQosStart(id);
+    shouldTrackQoS() && dispatchQosStart(id);
     setTimeout(no, PING_TIMEOUT);
     bot.ping().then(ok, no);
   });
