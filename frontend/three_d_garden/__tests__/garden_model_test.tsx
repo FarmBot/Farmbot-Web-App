@@ -2,6 +2,7 @@ let mockIsDesktop = false;
 let mockIsMobile = false;
 
 import React from "react";
+import { useTexture } from "@react-three/drei";
 import { GardenModelProps, GardenModel } from "../garden_model";
 import { clone } from "lodash";
 import { INITIAL, INITIAL_POSITION, SurfaceDebugOption } from "../config";
@@ -20,6 +21,7 @@ import {
   createRenderer,
   unmountRenderer,
 } from "../../__test_support__/test_renderer";
+import { PLANT_ICON_ATLAS } from "../garden/plant_icon_atlas";
 
 let isDesktopSpy: jest.SpyInstance;
 let isMobileSpy: jest.SpyInstance;
@@ -56,6 +58,7 @@ describe("<GardenModel />", () => {
     useStateSpy.mockRestore();
     isDesktopSpy.mockRestore();
     isMobileSpy.mockRestore();
+    delete PLANT_ICON_ATLAS["/crops/icons/beet.avif"];
     location.pathname = originalPathname;
   });
 
@@ -107,6 +110,26 @@ describe("<GardenModel />", () => {
     const { queryAllByText } = render(<GardenModel {...p} />);
     const plantLabels = queryAllByText("Beet");
     expect(plantLabels.length).toEqual(1);
+  });
+
+  it("preloads the atlas texture for mapped plant icons", () => {
+    PLANT_ICON_ATLAS["/crops/icons/beet.avif"] = {
+      atlasUrl: "/crops/icons/atlas.avif",
+      textureWidth: 256,
+      textureHeight: 256,
+      x: 0,
+      y: 0,
+      width: 64,
+      height: 64,
+    };
+    const p = fakeProps();
+    const plant = fakePlant();
+    plant.body.name = "Beet";
+    p.threeDPlants = convertPlants(p.config, [plant]);
+
+    render(<GardenModel {...p} />);
+
+    expect(useTexture).toHaveBeenCalledWith("/crops/icons/atlas.avif");
   });
 
   it("doesn't render hover labels without a hovered plant", () => {

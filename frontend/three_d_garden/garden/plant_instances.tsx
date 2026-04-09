@@ -19,6 +19,10 @@ import { getSizeAtTime } from "../../promo/plants";
 import { threeSpace, zZero as zZeroFunc } from "../helpers";
 import { ThreeDGardenPlant } from "./plants";
 import { PlaneGeometry, InstancedMesh, MeshBasicMaterial } from "../components";
+import {
+  getPlantIconTexture,
+  getPlantIconTextureUrl,
+} from "./plant_icon_atlas";
 
 export interface PlantInstancesProps {
   plants: ThreeDGardenPlant[];
@@ -44,7 +48,11 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
     config, plants, icon, visible, startTimeRef, dispatch, getZ, plantIndexes,
   } = props;
   const navigate = useNavigate();
-  const texture = useTexture(icon);
+  const textureUrl = getPlantIconTextureUrl(icon);
+  const baseTexture = useTexture(textureUrl);
+  const texture = React.useMemo(
+    () => getPlantIconTexture(baseTexture, icon),
+    [baseTexture, icon]);
   // eslint-disable-next-line no-null/no-null
   const instancedRef = React.useRef<InstancedMeshType>(null);
   // eslint-disable-next-line no-null/no-null

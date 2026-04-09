@@ -20,6 +20,7 @@ import React from "react";
 import { fireEvent, render } from "@testing-library/react";
 import { clone } from "lodash";
 import { useFrame } from "@react-three/fiber";
+import { useTexture } from "@react-three/drei";
 import { Quaternion } from "three";
 import { fakePlant } from "../../../__test_support__/fake_state/resources";
 import { INITIAL } from "../../config";
@@ -33,6 +34,7 @@ import { Actions } from "../../../constants";
 import { convertPlants } from "../../../farm_designer/three_d_garden_map";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import { setMockInstanceId } from "../../../__test_support__/three_d_mocks";
+import { PLANT_ICON_ATLAS } from "../plant_icon_atlas";
 
 describe("<PlantInstances />", () => {
   let reactUseRefSpy: jest.SpyInstance;
@@ -42,6 +44,7 @@ describe("<PlantInstances />", () => {
       .mockImplementation(() => mockRefImpl() as never);
     location.pathname = Path.mock(Path.designer());
     (useFrame as jest.Mock).mockClear();
+    (useTexture as unknown as jest.Mock).mockClear();
     (useFrame as jest.Mock).mockImplementation((frameFn: Function) => frameFn({
       clock: { getElapsedTime: jest.fn(() => 0) },
       camera: { quaternion: new Quaternion() },
@@ -50,6 +53,7 @@ describe("<PlantInstances />", () => {
 
   afterEach(() => {
     reactUseRefSpy.mockRestore();
+    delete PLANT_ICON_ATLAS["/crops/icons/beet.avif"];
   });
 
   const fakeProps = (): PlantInstancesProps => {
@@ -74,6 +78,20 @@ describe("<PlantInstances />", () => {
     const { container } = render(<PlantInstances {...fakeProps()} />);
     const meshes = container.querySelectorAll("instancedmesh");
     expect(meshes.length).toBe(2);
+  });
+
+  it("loads the atlas texture when an icon is mapped", () => {
+    PLANT_ICON_ATLAS["/crops/icons/beet.avif"] = {
+      atlasUrl: "/crops/icons/atlas.avif",
+      textureWidth: 256,
+      textureHeight: 256,
+      x: 0,
+      y: 0,
+      width: 64,
+      height: 64,
+    };
+    render(<PlantInstances {...fakeProps()} />);
+    expect(useTexture).toHaveBeenCalledWith("/crops/icons/atlas.avif");
   });
 
   it("clamps plant icon brightness", () => {

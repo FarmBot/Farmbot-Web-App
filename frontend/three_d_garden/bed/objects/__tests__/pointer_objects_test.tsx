@@ -1,5 +1,6 @@
 let mockIsMobile = false;
 import React from "react";
+import { useTexture } from "@react-three/drei";
 import {
   ActivePositionRef,
   BillboardRef,
@@ -22,6 +23,7 @@ import { Vector3 } from "three";
 import { ThreeEvent } from "@react-three/fiber";
 import * as plantActions from "../../../../farm_designer/map/layers/plants/plant_actions";
 import * as screenSize from "../../../../screen_size";
+import { PLANT_ICON_ATLAS } from "../../../garden/plant_icon_atlas";
 
 let dropPlantSpy: jest.SpyInstance;
 let isMobileSpy: jest.SpyInstance;
@@ -44,6 +46,7 @@ afterEach(() => {
   dropPlantSpy.mockRestore();
   isMobileSpy.mockRestore();
   requestAnimationFrameSpy.mockRestore();
+  delete PLANT_ICON_ATLAS["/crops/icons/mint.avif"];
 });
 
 describe("<PointerObjects />", () => {
@@ -65,7 +68,25 @@ describe("<PointerObjects />", () => {
     location.pathname = Path.mock(Path.cropSearch("mint"));
     mockIsMobile = false;
     const { container } = render(<PointerObjects {...fakeProps()} />);
-    expect(container).toContainHTML("mint");
+    expect(container).toContainHTML("pointerPlant");
+  });
+
+  it("loads the atlas texture for the pointer plant preview", () => {
+    PLANT_ICON_ATLAS["/crops/icons/mint.avif"] = {
+      atlasUrl: "/crops/icons/atlas.avif",
+      textureWidth: 256,
+      textureHeight: 256,
+      x: 0,
+      y: 0,
+      width: 64,
+      height: 64,
+    };
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    mockIsMobile = false;
+
+    render(<PointerObjects {...fakeProps()} />);
+
+    expect(useTexture).toHaveBeenCalledWith("/crops/icons/atlas.avif");
   });
 });
 

@@ -1,6 +1,8 @@
 import React from "react";
-import { Group, MeshPhongMaterial } from "../../components";
-import { Billboard, Line, Image, Sphere } from "@react-three/drei";
+import {
+  Group, MeshPhongMaterial, Mesh, PlaneGeometry, MeshBasicMaterial,
+} from "../../components";
+import { Billboard, Line, Sphere, useTexture } from "@react-three/drei";
 import { findCrop, findIcon } from "../../../crops/find";
 import { Mode } from "../../../farm_designer/map/interfaces";
 import { getMode, round, xyDistance } from "../../../farm_designer/map/util";
@@ -35,6 +37,10 @@ import { Actions } from "../../../constants";
 import { NavigateFunction } from "react-router";
 import { DrawnPointPayl } from "../../../farm_designer/interfaces";
 import { Line2 } from "three/examples/jsm/lines/Line2.js";
+import {
+  getPlantIconTexture,
+  getPlantIconTextureUrl,
+} from "../../garden/plant_icon_atlas";
 
 export type PointerPlantRef = React.RefObject<GroupType | null>;
 export type RadiusRef = React.RefObject<MeshType | null>;
@@ -71,6 +77,11 @@ export const PointerObjects = (props: PointerObjectsProps) => {
   const zero = zeroFunc(config);
   const extents = extentsFunc(config);
   const iconSize = (addPlantProps.designer.cropRadius || DEFAULT_PLANT_RADIUS) * 2;
+  const icon = findIcon(Path.getCropSlug());
+  const baseTexture = useTexture(getPlantIconTextureUrl(icon));
+  const plantIconTexture = React.useMemo(
+    () => getPlantIconTexture(baseTexture, icon),
+    [baseTexture, icon]);
 
   const { drawnPoint } = addPlantProps.designer;
   const settingRadius =
@@ -127,12 +138,15 @@ export const PointerObjects = (props: PointerObjectsProps) => {
           {getMode() == Mode.clickToAdd &&
             <Group>
               <Billboard follow={true} position={[0, 0, iconSize / 2]}>
-                <Image
+                <Mesh
                   name={"pointerPlant"}
-                  url={findIcon(Path.getCropSlug())}
-                  scale={iconSize}
-                  transparent={true}
-                  renderOrder={RenderOrder.pointerPlant} />
+                  renderOrder={RenderOrder.pointerPlant}>
+                  <PlaneGeometry args={[iconSize, iconSize]} />
+                  <MeshBasicMaterial
+                    map={plantIconTexture}
+                    alphaTest={0.1}
+                    transparent={true} />
+                </Mesh>
               </Billboard>
               <Sphere args={[findCrop(Path.getCropSlug()).spread / 2 * 10, 32, 32]}>
                 <MeshPhongMaterial
