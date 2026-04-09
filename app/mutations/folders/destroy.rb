@@ -29,15 +29,15 @@ module Folders
 
     def check_sequences
       count = sequences.count
-      if count > 0
-        add_error :in_use, :in_use, IN_USE % [count, "sequence"]
+      if count.positive?
+        add_error :in_use, :in_use, format(IN_USE, count, "sequence")
       end
     end
 
     def check_subfolders
       count = subfolders.count
-      if count > 0
-        add_error :in_use, :in_use, IN_USE % [count, "subfolder"]
+      if count.positive?
+        add_error :in_use, :in_use, format(IN_USE, count, "subfolder")
       end
     end
   end

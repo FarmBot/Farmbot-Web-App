@@ -64,6 +64,7 @@ const publicPath = process.env.ASSET_PUBLIC_PATH || "/assets/dist/";
 const isProd =
   process.env.NODE_ENV === "production" ||
   process.env.RAILS_ENV === "production";
+const nodeEnv = isProd ? "production" : "development";
 
 const ensureDir = (path: string) => {
   mkdirSync(path, { recursive: true });
@@ -86,6 +87,8 @@ const bunArgs = [
   "--splitting",
   "--public-path",
   publicPath,
+  "--define",
+  `process.env.NODE_ENV="${nodeEnv}"`,
   "--entry-naming",
   "[dir]-[name].[ext]",
   "--chunk-naming",
@@ -99,6 +102,8 @@ if (!isProd) {
 if (isProd) {
   bunArgs.push("--minify");
 }
+
+console.log(`bun ${bunArgs.join(" ")}`);
 
 const bunProc = Bun.spawn(["bun", ...bunArgs], {
   cwd: frontendRoot,

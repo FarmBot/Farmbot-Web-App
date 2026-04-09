@@ -20,6 +20,8 @@ import { CurveType } from "../../curves/templates";
 import { changeCurve, findCurve } from "../curve_info";
 import { mockDispatch } from "../../__test_support__/fake_dispatch";
 import * as ui from "../../ui";
+import { FBSelectProps } from "../../ui/new_fb_select";
+import { BIProps } from "../../ui/blurable_input";
 
 let initSaveSpy: jest.SpyInstance;
 let initSpy: jest.SpyInstance;
@@ -36,11 +38,7 @@ beforeEach(() => {
   setDragIconSpy = jest.spyOn(mapActions, "setDragIcon")
     .mockImplementation(jest.fn());
   fbSelectSpy = jest.spyOn(ui, "FBSelect")
-    .mockImplementation((props: {
-      list: { label: string; value: string }[];
-      selectedItem?: { label: string; value: string };
-      onChange: (item: { label: string; value: string }) => void;
-    }) => <select
+    .mockImplementation(((props: FBSelectProps) => <select
       value={props.selectedItem?.value || ""}
       onChange={e => {
         const item = props.list.find(
@@ -53,15 +51,12 @@ beforeEach(() => {
         <option key={item.value} value={item.value}>
           {item.label}
         </option>)}
-    </select>);
+    </select>) as never);
   blurableInputSpy = jest.spyOn(ui, "BlurableInput")
-    .mockImplementation((props: {
-      value: string | number;
-      onCommit: (e: React.SyntheticEvent<HTMLInputElement>) => void;
-    }) => <input
+    .mockImplementation(((props: BIProps) => <input
       value={props.value}
       onChange={e =>
-        props.onCommit(e as React.SyntheticEvent<HTMLInputElement>)} />);
+        props.onCommit(e as React.SyntheticEvent<HTMLInputElement>)} />) as never);
 });
 
 afterEach(() => {

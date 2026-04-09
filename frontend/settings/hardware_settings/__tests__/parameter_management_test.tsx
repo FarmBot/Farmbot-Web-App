@@ -12,6 +12,8 @@ import { BooleanSetting } from "../../../session_keys";
 import * as ui from "../../../ui";
 import * as toggleHighlightModified
   from "../../../photos/data_management/toggle_highlight_modified";
+import { BIProps } from "../../../ui/blurable_input";
+import { ToggleButtonProps } from "../../../ui/toggle_button";
 
 let blurableInputSpy: jest.SpyInstance;
 let toggleButtonSpy: jest.SpyInstance;
@@ -32,16 +34,13 @@ beforeEach(() => {
     jest.spyOn(toggleHighlightModified, "ToggleHighlightModified")
       .mockImplementation(() => <div />);
   blurableInputSpy = jest.spyOn(ui, "BlurableInput")
-    .mockImplementation((props: {
-      value?: string,
-      onCommit?: (e: React.SyntheticEvent<HTMLInputElement>) => void,
-    }) =>
+    .mockImplementation(((props: BIProps) =>
       <input
         value={props.value || ""}
-        onChange={e => props.onCommit?.(e as never)} />);
+        onChange={e => props.onCommit?.(e as never)} />) as never);
   toggleButtonSpy = jest.spyOn(ui, "ToggleButton")
-    .mockImplementation((props: { toggleAction: () => void }) =>
-      <button data-testid="toggle-button" onClick={props.toggleAction} />);
+    .mockImplementation(((props: ToggleButtonProps) =>
+      <button data-testid="toggle-button" onClick={props.toggleAction} />) as never);
 });
 
 afterEach(() => {
@@ -108,7 +107,8 @@ describe("<ParameterImport />", () => {
 
   it("updates", () => {
     render(<ParameterImport {...fakeProps()} />);
-    const input = screen.getByRole("textbox");
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    const input = screen.getByRole("textbox") as HTMLInputElement;
     expect(input.value).toEqual("");
     fireEvent.change(input, { target: { value: "{}" } });
     expect(input.value).toEqual("{}");

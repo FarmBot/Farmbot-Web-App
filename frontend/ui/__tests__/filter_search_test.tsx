@@ -1,6 +1,7 @@
 import React from "react";
 import { allMatchedItems, FilterSearch } from "../filter_search";
 import { DropDownItem } from "../fb_select";
+import { ItemRendererProps } from "@blueprintjs/select";
 import {
   actRenderer,
   createRenderer,
@@ -28,7 +29,8 @@ describe("<FilterSearch />", () => {
   };
 
   const getInstance = (wrapper: ReturnType<typeof createRenderer>) =>
-    getRendererInstance<FilterSearch>(wrapper, FilterSearch);
+    getRendererInstance<FilterSearch, React.ComponentProps<typeof FilterSearch>>(
+      wrapper, FilterSearch);
 
   afterEach(() => {
     while (wrappers.length > 0) {
@@ -81,15 +83,17 @@ describe("<FilterSearch />", () => {
   it("handles empty item", () => {
     const wrapper = createWrapper();
     const renderItem = getInstance(wrapper)["default"];
-    const el = renderItem?.({ label: "label" }, {
+    const item = { label: "label", value: "" };
+    const renderProps = {
       handleClick: jest.fn(),
       index: 0,
-    });
+      modifiers: { active: false, disabled: false, matchesPredicate: true },
+      query: "",
+      ref: jest.fn(),
+    } as ItemRendererProps<HTMLLIElement>;
+    const el = renderItem?.(item, renderProps);
     expect(el?.props.text).toEqual("label");
-    const emptyEl = renderItem?.(undefined, {
-      handleClick: jest.fn(),
-      index: 0,
-    });
+    const emptyEl = renderItem?.(undefined, renderProps);
     expect(emptyEl?.props.text).toEqual("");
   });
 });

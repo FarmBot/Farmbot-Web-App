@@ -4,8 +4,8 @@
 #    3. Could possibly change at runtime (If not, use a hardcoded constant)
 #    4. Are not security sensitive (If not, use ENV vars or secrets mgmt)
 class GlobalConfig < ApplicationRecord
-  validates_uniqueness_of :key
-  validates_presence_of :key
+  validates :key, uniqueness: true
+  validates :key, presence: true
 
   # Bootstrap these values, but NEVER clobber pre-existing ones:
   {

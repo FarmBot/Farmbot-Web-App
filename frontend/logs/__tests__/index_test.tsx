@@ -40,7 +40,7 @@ describe("<Logs />", () => {
     logs: fakeLogs(),
     timeSettings: fakeTimeSettings(),
     dispatch: jest.fn(),
-    sourceFbosConfig: () => ({ value: "farmduino_k14" }),
+    sourceFbosConfig: () => ({ value: "farmduino_k14", consistent: true }),
     getConfigValue: x => mockStorj[x],
     bot: bot,
     fbosVersion: undefined,

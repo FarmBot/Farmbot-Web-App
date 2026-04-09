@@ -3,6 +3,7 @@
   "compilerOptions": {
     "noEmit": true,
     "types": [
+      "bun",
       "jest",
       "@testing-library/jest-dom"
     ]

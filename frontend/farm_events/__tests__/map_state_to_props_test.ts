@@ -247,7 +247,7 @@ describe("mapResourcesToCalendar(): regimen farm events", () => {
     });
     expect(rows[0].items[0].subheading).toEqual("");
     expect(rows[1].items[0].subheading).toEqual(expect.any(String));
-    expect(rows[1].items[0].subheading.length).toBeGreaterThan(0);
+    expect(rows[1].items[0].subheading?.length).toBeGreaterThan(0);
   });
 
   it("returns '*Empty*' calendar row after event is over", () => {

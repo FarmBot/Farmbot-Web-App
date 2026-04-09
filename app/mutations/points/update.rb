@@ -1,6 +1,7 @@
 module Points
   class Update < Mutations::Command
     include Points::Helpers
+
     required do
       model :device, class: Device
       model :point, class: Point

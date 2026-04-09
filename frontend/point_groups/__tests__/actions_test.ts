@@ -26,16 +26,19 @@ let findUuidSpy: jest.SpyInstance;
 
 beforeEach(() => {
   initSpy = jest.spyOn(crud, "init")
-    .mockImplementation(jest.fn(() => ({ payload: { uuid: "???" } })));
+    .mockImplementation((() =>
+      ({ payload: { uuid: "???" } })) as unknown as typeof crud.init);
   saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
   overwriteSpy = jest.spyOn(crud, "overwrite").mockImplementation(jest.fn());
   findPointGroupSpy = jest.spyOn(selectors, "findPointGroup")
-    .mockImplementation(jest.fn(() => mockPointGroup));
+    .mockImplementation((() =>
+      mockPointGroup) as unknown as typeof selectors.findPointGroup);
   selectAllRegimensSpy = jest.spyOn(selectors, "selectAllRegimens")
     .mockImplementation(jest.fn());
   selectAllPlantPointersSpy = jest.spyOn(selectors, "selectAllPlantPointers")
     .mockImplementation(jest.fn(() => []));
-  findUuidSpy = jest.spyOn(selectors, "findUuid").mockImplementation(jest.fn());
+  findUuidSpy = jest.spyOn(selectors, "findUuid")
+    .mockImplementation((() => "PointGroup.0.0") as typeof selectors.findUuid);
 });
 
 afterEach(() => {

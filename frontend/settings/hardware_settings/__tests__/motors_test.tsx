@@ -16,11 +16,12 @@ import * as ui from "../../../ui";
 import * as booleanGroup from "../boolean_mcu_input_group";
 import * as numericGroup from "../numeric_mcu_input_group";
 import * as singleSettingRow from "../single_setting_row";
+import { ToggleButtonProps } from "../../../ui/toggle_button";
 
 const singleSettingRowMock = jest.fn((props: {
   label: string, tooltip: string, children: React.ReactNode
 }) => <div>{props.label}{props.tooltip}{props.children}</div>);
-const toggleButtonMock = jest.fn((props: { toggleAction: () => void }) =>
+const toggleButtonMock = jest.fn((props: ToggleButtonProps) =>
   <button onClick={props.toggleAction} />);
 const numericGroupMock = jest.fn((props: {
   label: string, warning?: { x?: string, y?: string, z?: string }
@@ -54,7 +55,8 @@ beforeEach(() => {
   settingToggleSpy = jest.spyOn(deviceActions, "settingToggle")
     .mockImplementation(() => TOGGLE_ACTION as never);
   toggleButtonSpy = jest.spyOn(ui, "ToggleButton")
-    .mockImplementation((props: unknown) => toggleButtonMock(props as never));
+    .mockImplementation(((props: ToggleButtonProps) =>
+      toggleButtonMock(props)) as never);
   singleSettingRowSpy = jest.spyOn(singleSettingRow, "SingleSettingRow")
     .mockImplementation((props: unknown) => singleSettingRowMock(props as never));
   booleanGroupSpy = jest.spyOn(booleanGroup, "BooleanMCUInputGroup")
@@ -142,9 +144,8 @@ describe("<Motors />", () => {
       p.settingsPanelState.motors = true;
       p.sourceFwConfig = () => ({ value: 1, consistent: true });
       render(<Motors {...p} />);
-      const callProps = toggleButtonMock.mock.calls[position]?.[0] as
-        { toggleAction: () => void };
-      callProps.toggleAction();
+      const callProps = toggleButtonMock.mock.calls[position]?.[0];
+      callProps.toggleAction({} as React.MouseEvent);
       expect(deviceActions.settingToggle)
         .toHaveBeenCalledWith(parameter, p.sourceFwConfig);
       expect(p.dispatch).toHaveBeenCalledWith(TOGGLE_ACTION);

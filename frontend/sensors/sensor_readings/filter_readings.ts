@@ -2,6 +2,7 @@ import { TaggedSensorReading, Xyz } from "farmbot";
 import { SensorReadingsState } from "./interfaces";
 import { every, isNumber } from "lodash";
 import moment from "moment";
+import { XYZ } from "../../devices/constants";
 
 /** One day in seconds. */
 const oneDay = 3600 * 24;
@@ -42,7 +43,7 @@ export const filterSensorReadings =
         .filter(sensorReading => {
           if (xyzLocation) {
             const { body } = sensorReading;
-            return every(["x", "y", "z"].map((axis: Xyz) => {
+            return every(XYZ.map((axis: Xyz) => {
               const a = body[axis];
               const input = xyzLocation[axis];
               return isNumber(a) && isNumber(input)

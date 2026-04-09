@@ -65,7 +65,8 @@ describe("<InputCell/>", () => {
   it("calls onChange", () => {
     const p = fakeProps();
     render(<InputCell {...p} />);
-    const input = screen.getByRole("spinbutton");
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    const input = screen.getByRole("spinbutton") as HTMLInputElement;
     fireEvent.change(input, { target: { value: "6" } });
     expect(p.onChange).not.toHaveBeenCalled();
     expect(input.value).toEqual("6");
@@ -74,7 +75,8 @@ describe("<InputCell/>", () => {
   it("calls onChange with no value", () => {
     const p = fakeProps();
     render(<InputCell {...p} />);
-    const input = screen.getByRole("spinbutton");
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    const input = screen.getByRole("spinbutton") as HTMLInputElement;
     fireEvent.change(input, { target: { value: "" } });
     expect(p.onChange).not.toHaveBeenCalled();
     expect(input.value).toEqual("");
@@ -83,7 +85,8 @@ describe("<InputCell/>", () => {
   it("calls onBlur", () => {
     const p = fakeProps();
     render(<InputCell {...p} />);
-    const input = screen.getByRole("spinbutton");
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    const input = screen.getByRole("spinbutton") as HTMLInputElement;
     fireEvent.blur(input);
     expect(p.onChange).toHaveBeenCalledWith(p.gridKey, 2);
     expect(input.value).toEqual("2");
@@ -92,7 +95,8 @@ describe("<InputCell/>", () => {
   it("calls onBlur with no value", () => {
     const p = fakeProps();
     render(<InputCell {...p} />);
-    const input = screen.getByRole("spinbutton");
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    const input = screen.getByRole("spinbutton") as HTMLInputElement;
     fireEvent.change(input, { target: { value: "" } });
     expect(input.value).toEqual("");
     fireEvent.blur(input);

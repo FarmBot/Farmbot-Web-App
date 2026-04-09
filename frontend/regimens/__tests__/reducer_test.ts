@@ -7,8 +7,8 @@ import { defensiveClone } from "../../util";
 import { Week } from "../bulk_scheduler/interfaces";
 
 const week = newWeek();
-Object.entries(week.days).map(([day, _]: [keyof Week["days"], boolean]) => {
-  week.days[day] = true;
+Object.entries(week.days).map(([day, _]) => {
+  week.days[day as keyof Week["days"]] = true;
 });
 week.days.day7 = false;
 

@@ -19,6 +19,7 @@ import { ImageFilterMenuProps, ImageFilterMenuState } from "../interfaces";
 import { StringSetting } from "../../../session_keys";
 import { ImageFilterMenu } from "../image_filter_menu";
 import * as ui from "../../../ui";
+import { MarkedSliderProps } from "../../../ui/marked_slider";
 
 let editSpy: jest.SpyInstance;
 let saveSpy: jest.SpyInstance;
@@ -30,26 +31,20 @@ beforeEach(() => {
   editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
   saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
   markedSliderSpy = jest.spyOn(ui, "MarkedSlider")
-    .mockImplementation((props: {
-      min: number;
-      max: number;
-      value: number;
-      onChange: (value: number) => void;
-      onRelease: (value: number) => void;
-      labelRenderer: (value: number) => string;
-    }) => <div data-testid={"marked-slider"}>
-      <button onClick={() => props.onChange(1)}>
-        change slider
-      </button>
-      <button onClick={() => props.onRelease(1)}>
-        release slider
-      </button>
-      <span data-testid={"slider-value"}>{props.value}</span>
-      {Array.from(
-        { length: props.max - props.min + 1 },
-        (_, index) => props.min + index,
-      ).map(day => <span key={day}>{props.labelRenderer(day)}</span>)}
-    </div>);
+    .mockImplementation(((props: MarkedSliderProps<unknown>) =>
+      <div data-testid={"marked-slider"}>
+        <button onClick={() => props.onChange?.(1)}>
+          change slider
+        </button>
+        <button onClick={() => props.onRelease?.(1)}>
+          release slider
+        </button>
+        <span data-testid={"slider-value"}>{props.value}</span>
+        {Array.from(
+          { length: props.max - props.min + 1 },
+          (_, index) => props.min + index,
+        ).map(day => <span key={day}>{props.labelRenderer(day)}</span>)}
+      </div>) as never);
 });
 
 afterEach(() => {

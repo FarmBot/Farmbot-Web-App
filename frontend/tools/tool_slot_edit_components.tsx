@@ -15,6 +15,7 @@ import {
 } from "./interfaces";
 import { betterMerge } from "../util";
 import { GoToThisLocationButton } from "../farm_designer/move_to";
+import { XYZ } from "../devices/constants";
 
 export const GantryMountedInput = (props: GantryMountedInputProps) =>
   <fieldset className="row grid-exp-1">
@@ -117,7 +118,7 @@ export const SlotLocationInputRow = (props: SlotLocationInputRowProps) => {
   const { y, z } = props.slotLocation;
   return <div className="tool-slot-location-input">
     <Row className="tool-slot-location-grid">
-      {["x", "y", "z"].map((axis: Xyz) =>
+      {XYZ.map((axis: Xyz) =>
         <div key={axis}>
           <label>{t("{{axis}} (mm)", { axis })}</label>
           {axis == "x" && props.gantryMounted

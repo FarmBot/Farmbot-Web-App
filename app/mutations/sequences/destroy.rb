@@ -77,10 +77,11 @@ module Sequences
     end
 
     def format_dep_list(klass, items)
-      (SPECIAL_CASES[klass] || THE_FOLLOWING) % {
+      format(
+        (SPECIAL_CASES[klass] || THE_FOLLOWING),
         resource: klass.table_name.humanize.downcase,
         items: items.map(&:fancy_name).uniq.join(", "),
-      } unless items.empty?
+      ) unless items.empty?
     end
 
     def all_deps
@@ -91,7 +92,7 @@ module Sequences
         .concat(sibling_sequences) # Sequence
         .concat(fbos_config)
         .compact
-        .group_by { |x| x.class }
+        .group_by(&:class)
         .to_a
         .map { |(klass, items)| format_dep_list(klass, items) }
         .compact

@@ -1,5 +1,3 @@
-let mockHighlightName = "";
-
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { RawDesignerSettings as DesignerSettings } from "../index";
@@ -37,28 +35,24 @@ const getSetting =
 
 describe("<DesignerSettings />", () => {
   let maybeOpenPanelSpy: jest.SpyInstance;
-  let _getHighlightNameSpy: jest.SpyInstance;
   let setWebAppConfigValueSpy: jest.SpyInstance;
 
   beforeEach(() => {
     jest.clearAllMocks();
     jest.spyOn(bootSequenceSelector, "BootSequenceSelector")
-      .mockImplementation(() => <div />);
+      .mockImplementation((() => <div />) as never);
     maybeOpenPanelSpy = jest.spyOn(maybeHighlight, "maybeOpenPanel")
       .mockImplementation(() => jest.fn());
-    _getHighlightNameSpy = jest.spyOn(maybeHighlight, "getHighlightName")
-      .mockImplementation(() => mockHighlightName);
     setWebAppConfigValueSpy = jest.spyOn(configStorageActions, "setWebAppConfigValue")
       .mockImplementation(jest.fn());
   });
 
   afterEach(() => {
-    mockHighlightName = "";
   });
 
   const fakePanelState = settingsPanelState();
-  Object.keys(fakePanelState).map((key: keyof SettingsPanelState) =>
-    fakePanelState[key] = true);
+  Object.keys(fakePanelState).map(key =>
+    fakePanelState[key as keyof SettingsPanelState] = true);
 
   const fakeProps = (): DesignerSettingsProps => ({
     dispatch: jest.fn(),
@@ -94,7 +88,6 @@ describe("<DesignerSettings />", () => {
   });
 
   it("renders all settings", () => {
-    mockHighlightName = "pin_reporting";
     const p = fakeProps();
     p.searchTerm = "pin reporting";
     const { container } = render(<DesignerSettings {...p} />);

@@ -11,7 +11,7 @@ module Devices
     def execute
       RESOURCES.each do |name|
         model = device.send(name)
-        output[name] = model.try(:map) { |x| x.body_as_json } || x.body_as_json
+        output[name] = model.try(:map, &:body_as_json) || x.body_as_json
       end
       output
     end

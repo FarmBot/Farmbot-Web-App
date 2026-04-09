@@ -5,11 +5,12 @@ import {
   CableCarrierSupportHorizontal, CableCarrierSupportHorizontalProps,
 } from "../cable_carriers";
 import { clone } from "lodash";
-import { INITIAL } from "../../../config";
+import { INITIAL, INITIAL_POSITION } from "../../../config";
 
 describe("<CableCarrierVertical />", () => {
   const fakeProps = (): CableCarrierSupportVerticalProps => ({
     config: clone(INITIAL),
+    configPosition: clone(INITIAL_POSITION),
   });
 
   it("renders v1.7", () => {
@@ -32,6 +33,7 @@ describe("<CableCarrierVertical />", () => {
 describe("<CableCarrierHorizontal />", () => {
   const fakeProps = (): CableCarrierSupportHorizontalProps => ({
     config: clone(INITIAL),
+    configPosition: clone(INITIAL_POSITION),
   });
 
   it("renders v1.7", () => {

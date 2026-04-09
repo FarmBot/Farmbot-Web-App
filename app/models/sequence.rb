@@ -17,7 +17,6 @@ class Sequence < ApplicationRecord
 
   belongs_to :device
   belongs_to :folder
-  belongs_to :fbos_config, foreign_key: :boot_sequence_id
   has_one :sequence_usage_report
   has_many :farm_events, as: :executable
   has_many :regimen_items
@@ -59,13 +58,13 @@ class Sequence < ApplicationRecord
     union = pins & types # DO NOT USE &&, I ACTUALLY MEANT TO `&` not `&&`!
     all = PrimaryNode.includes(:sequence).where(id: union).pluck(:sequence_id)
     sequences = Sequence.where(id: all)
-    yield(sequences) if sequences.count > 0
+    yield(sequences) if sequences.any?
   end
 
   # THIS IS AN OVERRIDE - See Sequence#body_as_json
   # Use `#manually_sync!` for most use cases.
   def broadcast?
-    if destroyed? then true else false end
+    destroyed?
   end
 
   # Eagerly load edge_node, primary_node and usage_report. This is a big deal
@@ -90,7 +89,7 @@ class Sequence < ApplicationRecord
   end
 
   def self.parameterized?(id)
-    PrimaryNode.where(kind: "parameter_declaration", sequence_id: id).exists?
+    PrimaryNode.exists?(kind: "parameter_declaration", sequence_id: id)
   end
 
   def kind; "sequence" end

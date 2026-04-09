@@ -88,7 +88,6 @@ export class FrontPage extends React.Component<{}, Partial<FrontPageState>> {
         Session.replaceToken(resp.data);
         window.location.assign(DEFAULT_APP_PAGE);
       }).catch((error: Error) => {
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
         switch (get(error, "response.status") as unknown) {
           case 451: // TOS was updated; User must agree to terms.
             window.location.assign("/tos_update");

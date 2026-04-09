@@ -31,7 +31,6 @@ nav {
 }
 
 .time-travel-button {
-  font-style: bold;
   img {
     height: 1.5rem;
     width: 1.5rem;
@@ -158,7 +157,7 @@ nav {
     }
     div {
       vertical-align: middle;
-      &:after{
+      &:after {
         content: attr(data-title);
         display: block;
         font-weight: bold;
@@ -194,7 +193,6 @@ nav {
     font-weight: bold;
     padding-left: 0.8rem;
     padding-right: 0.8rem;
-    font-weight: bold;
     font-size: 1.1rem;
     line-height: 3rem;
     color: $off_white;

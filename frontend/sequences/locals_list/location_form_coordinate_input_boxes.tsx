@@ -4,6 +4,7 @@ import { OnChange, VariableNode } from "../locals_list/locals_list_support";
 import { defensiveClone } from "../../util/util";
 import { Xyz, Vector3 } from "farmbot";
 import { determineEditable } from "../../resources/sequence_meta";
+import { XYZ } from "../../devices/constants";
 
 export interface AxisEditProps {
   axis: Xyz;
@@ -40,7 +41,7 @@ export const CoordinateInputBoxes = (props: CoordinateInputBoxesProps) => {
   const editableVariable = defensiveClone(variableNode);
   return (vector && visible)
     ? <Row className={"custom-coordinate-form"}>
-      {["x", "y", "z"].map((axis: Xyz) =>
+      {XYZ.map((axis: Xyz) =>
         <div className={`${axis} no-pad`} key={axis}>
           <BlurableInput type="number"
             onCommit={manuallyEditAxis({ axis, onChange, editableVariable })}

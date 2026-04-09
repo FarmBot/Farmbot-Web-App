@@ -54,7 +54,9 @@ describe("<MoveToForm />", () => {
   });
 
   const getZInput = (container: HTMLElement): HTMLInputElement => {
-    const fromWrapper = container.querySelector(".input input");
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    const fromWrapper = container.querySelector(".input input") as
+      HTMLInputElement | null;
     if (fromWrapper) {
       return fromWrapper;
     }
@@ -242,7 +244,9 @@ describe("<GoToThisLocationButton />", () => {
     p.movementState.start = { x: 0, y: 0, z: 0 };
     p.movementState.distance = { x: 100, y: 100, z: 0 };
     const { container } = render(<GoToThisLocationButton {...p} />);
-    expect(container.querySelector(".movement-progress")?.style.width)
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    expect((container.querySelector(".movement-progress") as HTMLElement | null)
+      ?.style.width)
       .toEqual("50%");
   });
 

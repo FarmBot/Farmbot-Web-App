@@ -12,15 +12,15 @@ module Api
       .to_a
       .each_with_index
       .map do |(package, url), id|
-      {
-        id: (id + 1),
-        created_at: UPDATED_AT,
-        updated_at: UPDATED_AT,
-        url: url,
-        package: package,
-        package_error: nil,
-      }.with_indifferent_access
-    end.index_by { |x| x.fetch(:id).to_s }
+        {
+          id: (id + 1),
+          created_at: UPDATED_AT,
+          updated_at: UPDATED_AT,
+          url: url,
+          package: package,
+          package_error: nil,
+        }.with_indifferent_access
+      end.index_by { |x| x.fetch(:id).to_s }
 
     def index
       render json: STUBS.values

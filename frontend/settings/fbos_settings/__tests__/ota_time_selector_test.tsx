@@ -10,6 +10,7 @@ import { fakeTimeSettings } from "../../../__test_support__/fake_time_settings";
 import * as crud from "../../../api/crud";
 import * as deviceActions from "../../../devices/actions";
 import * as ui from "../../../ui";
+import { FBSelectProps } from "../../../ui";
 
 let editSpy: jest.SpyInstance;
 let updateConfigSpy: jest.SpyInstance;
@@ -21,11 +22,7 @@ beforeEach(() => {
   updateConfigSpy = jest.spyOn(deviceActions, "updateConfig")
     .mockImplementation(jest.fn());
   fbSelectSpy = jest.spyOn(ui, "FBSelect")
-    .mockImplementation((props: {
-      list: Array<{ label: string, value: number | string }>,
-      selectedItem?: { label: string, value: number | string },
-      onChange: (ddi: { label: string, value: number | string } | undefined) => void,
-    }) =>
+    .mockImplementation(((props: FBSelectProps) =>
       <div>
         <span data-testid="selected-item">
           {props.selectedItem ? JSON.stringify(props.selectedItem) : ""}
@@ -35,14 +32,15 @@ beforeEach(() => {
           props.onChange({ label: "at 5 PM", value: 17 })}>
           select-17
         </button>
-        <button onClick={() => props.onChange(undefined)}>
+        <button onClick={() => props.onChange(
+          undefined as unknown as Parameters<FBSelectProps["onChange"]>[0])}>
           select-none
         </button>
         <button onClick={() =>
           props.onChange({ label: "", value: "never" })}>
           select-never
         </button>
-      </div>);
+      </div>) as never);
 });
 
 afterEach(() => {

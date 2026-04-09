@@ -4,6 +4,8 @@ import { TextEncoder } from "util";
 import fs from "fs";
 import path from "path";
 import { cleanup } from "@testing-library/react";
+import * as THREE from "three";
+import { RootState } from "@react-three/fiber";
 
 const globalAny = globalThis as typeof globalThis & {
   globalConfig?: Record<string, string>;
@@ -50,7 +52,8 @@ if (!globalAny.globalConfig) {
 }
 
 if (!globalAny.jest) {
-  globalAny.jest = bunJest;
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+  globalAny.jest = bunJest as typeof globalAny.jest;
 }
 globalThis.TextEncoder = TextEncoder;
 
@@ -72,8 +75,11 @@ const withAxiosDefaultExport = (factory: () => unknown) => () => {
 if (globalAny.jest?.mock) {
   const originalMock = globalAny.jest.mock.bind(globalAny.jest);
   globalAny.jest.mock = ((specifier: string, factory?: unknown) => {
+    const moduleFactory =
+      typeof factory === "function" ? factory as () => unknown : undefined;
     return specifier === "axios" && typeof factory === "function"
-      ? originalMock(specifier, withAxiosDefaultExport(factory))
+      ? originalMock(specifier,
+        withAxiosDefaultExport(moduleFactory as () => unknown))
       : originalMock(specifier, factory as never);
   }) as typeof globalAny.jest.mock;
 }
@@ -160,39 +166,46 @@ if (globalAny.jest) {
     };
   }
   if (!globalAny.jest.unmock) {
-    globalAny.jest.unmock = (specifier: string) => {
+    globalAny.jest.unmock = ((specifier: string) => {
       const resolved = resolveFromCaller(specifier);
       bunMock.module(specifier, () => nativeRequire(resolved));
-    };
+    }) as typeof globalAny.jest.unmock;
   }
   if (!globalAny.jest.isMockFunction) {
-    globalAny.jest.isMockFunction = (fn: unknown) =>
-      typeof fn === "function" && "mock" in fn;
+    globalAny.jest.isMockFunction = ((fn: unknown) =>
+      typeof fn === "function" && "mock" in fn) as
+      typeof globalAny.jest.isMockFunction;
   }
 }
 
-await import("./localstorage");
-await import("./additional_mocks");
-await import("./mock_fbtoaster");
-await import("./mock_i18next");
-await import("./three_d_mocks");
-const threeFiber = await import("@react-three/fiber");
-const THREE = await import("three");
-await import("jest-canvas-mock");
-await import("./setup_tests");
-const { auth } = await import("./fake_state/token");
-const { bot } = await import("./fake_state/bot");
-const { config } = await import("./fake_state/config");
-const { draggable } = await import("./fake_state/draggable");
-const { app } = await import("./fake_state/app");
+nativeRequire("./localstorage");
+nativeRequire("./additional_mocks");
+nativeRequire("./mock_fbtoaster");
+nativeRequire("./mock_i18next");
+nativeRequire("./three_d_mocks");
+const threeFiber = nativeRequire("@react-three/fiber") as
+  typeof import("@react-three/fiber");
+nativeRequire("jest-canvas-mock");
+nativeRequire("./setup_tests");
+const { auth } = nativeRequire("./fake_state/token") as
+  typeof import("./fake_state/token");
+const { bot } = nativeRequire("./fake_state/bot") as
+  typeof import("./fake_state/bot");
+const { config } = nativeRequire("./fake_state/config") as
+  typeof import("./fake_state/config");
+const { draggable } = nativeRequire("./fake_state/draggable") as
+  typeof import("./fake_state/draggable");
+const { app } = nativeRequire("./fake_state/app") as
+  typeof import("./fake_state/app");
 
 const cloneForReset = <T>(value: T): T => structuredClone(value);
-const resetMutableFixture = <T extends Record<string, unknown>>(
+const resetMutableFixture = <T extends object>(
   fixture: T,
   baseline: T,
 ) => {
-  Object.keys(fixture).forEach(key => {
-    delete fixture[key as keyof T];
+  const mutableFixture = fixture as Record<string, unknown>;
+  Object.keys(mutableFixture).forEach(key => {
+    delete mutableFixture[key];
   });
   Object.assign(fixture, cloneForReset(baseline));
 };
@@ -218,21 +231,34 @@ const defaultThreeFiberState = () => ({
   pointer: { x: 0, y: 0 },
 });
 
-type MockLike = {
-  mockImplementation: (impl: (...args: unknown[]) => unknown) => unknown;
+type MockLike<TArgs extends unknown[] = unknown[], TResult = unknown> = {
+  mockImplementation: (impl: (...args: TArgs) => TResult) => unknown;
 };
 
-const asMockLike = (value: unknown): MockLike | undefined =>
-  globalAny.jest?.isMockFunction?.(value)
-    ? value as MockLike
-    : undefined;
+const asMockLike =
+  <TArgs extends unknown[], TResult>(
+    value: unknown,
+  ): MockLike<TArgs, TResult> | undefined =>
+    globalAny.jest?.isMockFunction?.(value)
+      ? value as MockLike<TArgs, TResult>
+      : undefined;
 
 const resetThreeFiberHookMocks = () => {
-  asMockLike(threeFiber.useFrame)?.mockImplementation(
-    (callback: (state: ReturnType<typeof defaultThreeFiberState>) => unknown) =>
-      callback(defaultThreeFiberState()));
-  asMockLike(threeFiber.useThree)?.mockImplementation(
-    () => defaultThreeFiberState());
+  const state = defaultThreeFiberState();
+
+  asMockLike<
+    Parameters<typeof threeFiber.useFrame>,
+    ReturnType<typeof threeFiber.useFrame>
+  >(threeFiber.useFrame)?.mockImplementation((callback) => {
+    callback(state as unknown as RootState, 0);
+    // eslint-disable-next-line no-null/no-null
+    return null;
+  });
+
+  asMockLike<
+    Parameters<typeof threeFiber.useThree>,
+    ReturnType<typeof threeFiber.useThree>
+  >(threeFiber.useThree)?.mockImplementation(() => state);
 };
 
 beforeEach(() => {

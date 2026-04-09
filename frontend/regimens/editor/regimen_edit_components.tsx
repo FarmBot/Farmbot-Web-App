@@ -3,10 +3,10 @@ import { RegimenProps } from "../interfaces";
 import { SaveBtn, Popover, ColorPickerCluster } from "../../ui";
 import { t } from "../../i18next_wrapper";
 import { VariableNode } from "../../sequences/locals_list/locals_list_support";
-import { ScopeDeclarationBodyItem } from "farmbot";
 import { defensiveClone } from "../../util";
 import {
   addOrEditBodyVariables,
+  isScopeDeclarationBodyItem,
 } from "../../sequences/locals_list/handle_select";
 import { overwrite, save, destroy, edit } from "../../api/crud";
 import { CopyButton } from "./copy_button";
@@ -16,7 +16,8 @@ import { Position } from "@blueprintjs/core";
 
 export const editRegimenVariables = (props: RegimenProps) =>
   (bodyVariables: VariableNode[]) =>
-    (variable: ScopeDeclarationBodyItem) => {
+    (variable: VariableNode | undefined) => {
+      if (!variable || !isScopeDeclarationBodyItem(variable)) { return; }
       const copy = defensiveClone(props.regimen);
       copy.body.body = addOrEditBodyVariables(
         bodyVariables, variable, variable.args.label);

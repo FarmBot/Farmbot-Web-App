@@ -7,13 +7,13 @@ describe Releases::Create do
     expect(Release).to receive(:transload).with(any_args).and_return(url).exactly(2).times
     ClimateControl.modify GCS_BUCKET: "whatever" do
       rel = Releases::Create.run!(image_url: url,
-                                  version: "v7.6.5-rc4",
+                                  version: "7.6.5-rc4",
                                   platform: "rpi",
                                   channel: "beta")
       expect(rel.channel).to eq("beta")
       expect(rel.image_url).to eq("http://foo.bar/baz.fw")
       expect(rel.platform).to eq("rpi")
-      expect(rel.version).to eq("v7.6.5-rc4")
+      expect(rel.version).to eq("7.6.5-rc4")
     end
   end
 
@@ -23,14 +23,14 @@ describe Releases::Create do
     expect(Release).not_to receive(:transload).with(any_args) #.and_return(url)
     ClimateControl.modify GCS_BUCKET: nil do
       rel = Releases::Create.run!(image_url: url,
-                                  version: "v7.6.5-rc4",
+                                  version: "7.6.5-rc4",
                                   platform: "rpi",
                                   channel: "beta")
       expect(rel.channel).to eq("beta")
       expect(rel.image_url).to eq("http://foo.bar/baz.fw")
       expect(rel.dot_img_url).to eq("http://foo.bar/baz.img")
       expect(rel.platform).to eq("rpi")
-      expect(rel.version).to eq("v7.6.5-rc4")
+      expect(rel.version).to eq("7.6.5-rc4")
     end
   end
 end

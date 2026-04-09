@@ -13,20 +13,25 @@ let variableFormSpy: jest.SpyInstance;
 describe("<DefaultValueForm />", () => {
   beforeEach(() => {
     variableFormSpy = jest.spyOn(variableForm, "VariableForm")
-      .mockImplementation((props: {
-        variable: { celeryNode: ParameterApplication };
-        onChange: (value: ParameterApplication) => void;
-      }) => {
-        const value = props.variable.celeryNode.args.data_value;
+      .mockImplementation(((
+        props: React.ComponentProps<typeof variableForm.VariableForm>,
+      ) => {
+        const args = props.variable.celeryNode.args;
+        const value = "default_value" in args
+          ? args.default_value
+          : args.data_value;
         const text = value.kind === "coordinate"
           ? `Coordinate (${value.args.x}, ${value.args.y}, ${value.args.z})`
           : "";
         return <div>
           <span>{text}</span>
           <button className={"variable-form-change"}
-            onClick={() => props.onChange(mockVariableFormOnChangeArg)} />
+            onClick={() => props.onChange(
+              mockVariableFormOnChangeArg,
+              mockVariableFormOnChangeArg.args.label,
+            )} />
         </div>;
-      });
+      }) as never);
   });
 
   afterEach(() => {

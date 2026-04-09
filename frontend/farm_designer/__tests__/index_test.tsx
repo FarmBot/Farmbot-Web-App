@@ -3,7 +3,7 @@ import {
   getDefaultAxisLength, getGridSize, RawFarmDesigner as FarmDesigner,
 } from "../index";
 import { render } from "@testing-library/react";
-import { FarmDesignerProps } from "../interfaces";
+import { FarmDesignerProps, GardenMapProps } from "../interfaces";
 import { bot } from "../../__test_support__/fake_state/bot";
 import {
   fakeImage, fakeWebAppConfig,
@@ -28,9 +28,10 @@ import { WebAppConfig } from "farmbot/dist/resources/configs/web_app";
 import { Path } from "../../internal_urls";
 import * as mapLegend from "../map/legend/garden_map_legend";
 import * as gardenMap from "../map/garden_map";
+import { GardenMapLegendProps } from "../map/interfaces";
 
-let lastLegendProps: Record<string, unknown> | undefined;
-let lastGardenMapProps: Record<string, unknown> | undefined;
+let lastLegendProps: GardenMapLegendProps | undefined;
+let lastGardenMapProps: GardenMapProps | undefined;
 
 const setWindowWidth = (width: number) => {
   Object.defineProperty(window, "innerWidth", { configurable: true, value: width });
@@ -47,15 +48,15 @@ describe("<FarmDesigner />", () => {
     lastGardenMapProps = undefined;
     editSpy = jest.spyOn(crud, "edit").mockImplementation(jest.fn());
     legendSpy = jest.spyOn(mapLegend, "GardenMapLegend")
-      .mockImplementation((props: Record<string, unknown>) => {
+      .mockImplementation(((props: GardenMapLegendProps) => {
         lastLegendProps = props;
         return <div className="mock-garden-map-legend" />;
-      });
+      }) as never);
     gardenMapSpy = jest.spyOn(gardenMap, "GardenMap")
-      .mockImplementation((props: Record<string, unknown>) => {
+      .mockImplementation(((props: GardenMapProps) => {
         lastGardenMapProps = props;
         return <div className="mock-garden-map" />;
-      });
+      }) as never);
   });
 
   afterEach(() => {

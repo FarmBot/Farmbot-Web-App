@@ -5,13 +5,14 @@ import {
 import { render } from "@testing-library/react";
 import { Encoder } from "farmbot";
 import * as ui from "../../../ui";
+import { FBSelectProps } from "../../../ui";
 
-const fbSelectMock = jest.fn((_: unknown) => <div />);
+const fbSelectMock = jest.fn((_: FBSelectProps) => <div />);
 let fbSelectSpy: jest.SpyInstance;
 
 beforeEach(() => {
   fbSelectSpy = jest.spyOn(ui, "FBSelect")
-    .mockImplementation((props: unknown) => fbSelectMock(props));
+    .mockImplementation(((props: FBSelectProps) => fbSelectMock(props)) as never);
 });
 
 afterEach(() => {
@@ -38,9 +39,7 @@ describe("<EncoderType/>", () => {
     fbSelectMock.mockClear();
     const p = fakeProps();
     render(<EncoderType {...p} />);
-    const props = fbSelectMock.mock.calls[0]?.[0] as {
-      onChange: (ddi: { label: string, value: number }) => void,
-    };
+    const props = fbSelectMock.mock.calls[0]?.[0];
     props.onChange({ label: "", value: 1 });
     expect(p.onChange).toHaveBeenCalledWith("encoder_type_x", 1);
   });
@@ -49,9 +48,7 @@ describe("<EncoderType/>", () => {
     fbSelectMock.mockClear();
     const p = fakeProps();
     render(<EncoderType {...p} />);
-    const props = fbSelectMock.mock.calls[0]?.[0] as {
-      onChange: (ddi: { label: string, value: number }) => void,
-    };
+    const props = fbSelectMock.mock.calls[0]?.[0];
     const change = () => props.onChange({ label: "", value: 2 });
     expect(change).toThrow("Got bad encoder type in device panel.");
     expect(p.onChange).not.toHaveBeenCalled();

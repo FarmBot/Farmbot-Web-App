@@ -2,7 +2,7 @@ import React from "react";
 import * as THREE from "three";
 import { useGLTF } from "@react-three/drei";
 import { threeSpace, zDir as zDirFunc, zZero as zZeroFunc } from "../../helpers";
-import { Config } from "../../config";
+import { Config, PositionConfig } from "../../config";
 import type { GLTF } from "three-stdlib";
 import {
   ASSETS, HOVER_OBJECT_MODES, LIB_DIR, PartName, SeedTroughAssemblyMaterial,
@@ -71,6 +71,7 @@ type Weeder = GLTF & {
 
 export interface ToolsProps {
   config: Config;
+  configPosition: PositionConfig;
   toolSlots?: SlotWithTool[];
   mountedToolName?: string | undefined;
   dispatch?: Function;
@@ -112,9 +113,9 @@ export const Tools = (props: ToolsProps) => {
     bedXOffset, bedYOffset, bedLengthOuter, bedWidthOuter, bedWallThickness,
   } = props.config;
   const botPosition = {
-    x: props.config.x,
-    y: props.config.y,
-    z: props.config.z,
+    x: props.configPosition.x,
+    y: props.configPosition.y,
+    z: props.configPosition.z,
   };
   const mountedToolName = isUndefined(props.toolSlots)
     ? props.config.tool
@@ -363,7 +364,7 @@ export const Tools = (props: ToolsProps) => {
   };
 
   const tools = isUndefined(props.toolSlots)
-    ? PROMO_TOOLS(props.config)
+    ? PROMO_TOOLS(props.config, props.configPosition)
     : convertSlotsWithTools(props.toolSlots);
 
   return <Group name={"tools"}>

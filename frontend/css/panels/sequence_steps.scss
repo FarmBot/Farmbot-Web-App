@@ -34,17 +34,7 @@
   .step-comment {
     display: inline;
     width: 100%;
-    ::-webkit-input-placeholder {
-      color: $dark_gray;
-      font-weight: bold;
-      text-transform: uppercase;
-    }
-    ::-moz-placeholder {
-      color: $dark_gray;
-      font-weight: bold;
-      text-transform: uppercase;
-    }
-    :-ms-input-placeholder {
+    ::placeholder {
       color: $dark_gray;
       font-weight: bold;
       text-transform: uppercase;

@@ -20,8 +20,14 @@ const getStepButtonCluster = async () =>
 
 const findElement = (
   node: unknown,
-  predicate: (element: React.ReactElement) => boolean,
-): React.ReactElement | undefined => {
+  predicate: (element: React.ReactElement<{
+    label?: string;
+    step?: SequenceBodyItem;
+  }>) => boolean,
+): React.ReactElement<{
+  label?: string;
+  step?: SequenceBodyItem;
+}> | undefined => {
   if (Array.isArray(node)) {
     for (const item of node) {
       const found = findElement(item, predicate);
@@ -30,7 +36,15 @@ const findElement = (
     return undefined;
   }
   if (!React.isValidElement(node)) { return undefined; }
-  if (predicate(node)) { return node; }
+  if (predicate(node as React.ReactElement<{
+    label?: string;
+    step?: SequenceBodyItem;
+  }>)) {
+    return node as React.ReactElement<{
+      label?: string;
+      step?: SequenceBodyItem;
+    }>;
+  }
   for (const value of Object.values(node.props || {})) {
     const found = findElement(value, predicate);
     if (found) { return found; }
@@ -85,7 +99,7 @@ describe("<StepButtonCluster />", () => {
     if (!takePhotoButton) {
       throw new Error("Expected take photo step button");
     }
-    expect(takePhotoButton.props.label.toLowerCase()).toEqual("take photo");
+    expect((takePhotoButton.props.label || "").toLowerCase()).toEqual("take photo");
     const dragEvent = {
       dataTransfer: { setData: jest.fn() },
     } as unknown as React.DragEvent<HTMLElement>;

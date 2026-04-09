@@ -7,7 +7,7 @@ module CeleryScript
       @values = values
     end
 
-    def as_json(optns)
+    def as_json(*)
       { "name" => name }
     end
   end

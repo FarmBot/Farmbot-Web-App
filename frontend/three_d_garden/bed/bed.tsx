@@ -294,22 +294,30 @@ export const Bed = (props: BedProps) => {
       getZ: props.getZ,
     })
     : undefined;
-  const onSoilPointerMove = props.addPlantProps
-    // eslint-disable-next-line react-hooks/refs
-    ? soilPointerMove({
-      addPlantProps: props.addPlantProps,
-      config: props.config,
-      pointerPlantRef,
-      radiusRef,
-      torusRef,
-      billboardRef,
-      imageRef,
-      xCrosshairRef,
-      yCrosshairRef,
-      activePositionRef: props.activePositionRef,
-      getZ: props.getZ,
-    })
-    : undefined;
+  const onSoilPointerMove = React.useMemo(
+    () =>
+      props.addPlantProps
+        // eslint-disable-next-line react-hooks/refs
+        ? soilPointerMove({
+          addPlantProps: props.addPlantProps,
+          config: props.config,
+          pointerPlantRef,
+          radiusRef,
+          torusRef,
+          billboardRef,
+          imageRef,
+          xCrosshairRef,
+          yCrosshairRef,
+          activePositionRef: props.activePositionRef,
+          getZ: props.getZ,
+        })
+        : undefined,
+    [
+      props.addPlantProps,
+      props.config,
+      props.activePositionRef,
+      props.getZ,
+    ]);
   const commonSoilLayerProps = {
     config: props.config,
     geometry: props.soilSurfaceGeometry,

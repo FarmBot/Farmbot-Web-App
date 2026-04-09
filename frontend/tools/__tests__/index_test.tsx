@@ -58,11 +58,12 @@ const findNodeByType = (
     return undefined;
   }
   if (React.isValidElement(node)) {
-    if (matcher(node.type)) {
+    const element = node as React.ReactElement<{ children?: React.ReactNode }>;
+    if (matcher(element.type as React.ElementType)) {
       return createRenderer(node as React.ReactElement).root;
     }
     let found: ReactTestInstance | undefined;
-    React.Children.forEach(node.props.children, (child: React.ReactNode) => {
+    React.Children.forEach(element.props.children, (child: React.ReactNode) => {
       if (found) {
         return;
       }
@@ -384,21 +385,19 @@ describe("<ToolSlotInventoryItem />", () => {
 
   it("changes tool", () => {
     const p = fakeProps();
-    let wrapper: ReturnType<typeof createRenderer> | undefined;
+    let wrapper: ReturnType<typeof createRenderer>;
     act(() => {
       wrapper = createRenderer(<ToolSlotInventoryItem {...p} />);
     });
     act(() => {
-      wrapper?.root.findByType(FBSelect).props.onChange({ value: "1" });
+      wrapper.root.findByType(FBSelect).props.onChange({ value: "1" });
     });
     expect(p.dispatch).toHaveBeenCalledTimes(2);
     expect(crud.edit).toHaveBeenCalledWith(p.toolSlot, { tool_id: 1 });
     expect(crud.save).toHaveBeenCalledWith(p.toolSlot.uuid);
-    if (wrapper) {
-      act(() => {
-        unmountRenderer(wrapper);
-      });
-    }
+    act(() => {
+      unmountRenderer(wrapper);
+    });
   });
 
   it("doesn't open tool slot", () => {

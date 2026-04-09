@@ -1,5 +1,5 @@
 import React from "react";
-import { Config } from "../../config";
+import { Config, PositionConfig } from "../../config";
 import { Box, Edges } from "@react-three/drei";
 import { Group, MeshBasicMaterial } from "../../components";
 import {
@@ -12,14 +12,16 @@ import { BackSide } from "three";
 
 export interface BoundsProps {
   config: Config;
+  configPosition: PositionConfig;
 }
 
 export const Bounds = (props: BoundsProps) => {
   const {
-    bedLengthOuter, bedWidthOuter, x, y, z,
+    bedLengthOuter, bedWidthOuter,
     zAxisLength, columnLength, beamLength, bounds,
     bedXOffset, bedYOffset, botSizeX, botSizeY, botSizeZ,
   } = props.config;
+  const { x, y, z } = props.configPosition;
   const zDir = zDirFunc(props.config);
   const zero = zeroFunc(props.config);
   return <Group name={"bounds-and-distances"}>

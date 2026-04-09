@@ -96,6 +96,7 @@ describe("<Bed />", () => {
   const actualUseRef = jest.requireActual("react")
     .useRef as typeof React.useRef;
   let getModeSpy: jest.SpyInstance;
+  let requestAnimationFrameSpy: jest.SpyInstance;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -113,6 +114,11 @@ describe("<Bed />", () => {
       .mockImplementation(jest.fn());
     jest.spyOn(screenSize, "isMobile")
       .mockImplementation(() => mockIsMobile);
+    requestAnimationFrameSpy = jest.spyOn(window, "requestAnimationFrame")
+      .mockImplementation(callback => {
+        callback(0);
+        return 1;
+      });
     jest.spyOn(React, "useRef")
       .mockImplementationOnce(() => mockPlantRef)
       .mockImplementationOnce(() => mockRadiusRef)
@@ -126,6 +132,7 @@ describe("<Bed />", () => {
   });
 
   afterEach(() => {
+    requestAnimationFrameSpy.mockRestore();
     history.replaceState(undefined, "", originalPathname);
   });
 
@@ -251,7 +258,8 @@ describe("<Bed />", () => {
     const soil = soilMesh(container);
     fireEvent.click(soil);
     expect(p.addPlantProps.dispatch).toHaveBeenCalled();
-    expect(p.addPlantProps.dispatch.mock.calls[0]?.[0]).toBeDefined();
+    expect((p.addPlantProps.dispatch as jest.Mock).mock.calls[0]?.[0])
+      .toBeDefined();
     expect(innerDispatch.mock.calls.length).toBeGreaterThanOrEqual(0);
   });
 

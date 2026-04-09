@@ -21,12 +21,13 @@ beforeEach(() => {
   jest.clearAllMocks();
   consistency.outstandingRequests.last = "abc";
   startTrackingSpy =
-    jest.spyOn(consistency, "startTracking").mockImplementation(jest.fn());
+    jest.spyOn(consistency, "startTracking").mockImplementation(() => { });
   dispatchNetworkUpSpy =
-    jest.spyOn(connectivity, "dispatchNetworkUp").mockImplementation(jest.fn());
+    jest.spyOn(connectivity, "dispatchNetworkUp").mockImplementation(() => { });
   dispatchNetworkDownSpy =
-    jest.spyOn(connectivity, "dispatchNetworkDown").mockImplementation(jest.fn());
-  sessionClearSpy = jest.spyOn(Session, "clear").mockImplementation(jest.fn());
+    jest.spyOn(connectivity, "dispatchNetworkDown").mockImplementation(() => { });
+  sessionClearSpy = jest.spyOn(Session, "clear")
+    .mockImplementation(() => undefined as never);
 });
 
 afterEach(() => {

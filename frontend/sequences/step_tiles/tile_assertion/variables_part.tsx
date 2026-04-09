@@ -1,12 +1,12 @@
 import React from "react";
 import { overwrite } from "../../../api/crud";
-import { Assertion, ParameterApplication } from "farmbot/dist/corpus";
+import { Assertion } from "farmbot/dist/corpus";
 import { StepParams } from "../../interfaces";
 import { findSequenceById } from "../../../resources/selectors";
 import { Row } from "../../../ui";
 import { LocalsList } from "../../locals_list/locals_list";
 import { addOrEditParamApps } from "../../locals_list/variable_support";
-import { AllowedVariableNodes } from "../../locals_list/locals_list_support";
+import { AllowedVariableNodes, VariableNode } from "../../locals_list/locals_list_support";
 import { defensiveClone } from "../../../util";
 
 export const VariablesPart = (props: StepParams<Assertion>) => {
@@ -28,7 +28,8 @@ export const VariablesPart = (props: StepParams<Assertion>) => {
         variableData={calledSequenceVariableData}
         sequenceUuid={props.currentSequence.uuid}
         resources={props.resources}
-        onChange={(variable: ParameterApplication) => {
+        onChange={(variable: VariableNode | undefined) => {
+          if (!variable || variable.kind !== "parameter_application") { return; }
           const thenBranch = defensiveClone(_then);
           thenBranch.body = addOrEditParamApps(thenBranch.body || [], variable);
           const update = defensiveClone(props.currentStep);

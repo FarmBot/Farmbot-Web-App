@@ -11,7 +11,7 @@
     "experimentalDecorators": true,
     "jsx": "react",
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "esModuleInterop": true,
     "noImplicitAny": true,
     "noImplicitThis": true,
@@ -22,7 +22,7 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "strictNullChecks": true,
-    "target": "es5",
+    "target": "es6",
     "resolveJsonModule": true
   },
   "include": [

@@ -1,19 +1,12 @@
 import { thunk } from "redux-thunk";
-import { Store, Middleware, applyMiddleware, compose, StoreEnhancer } from "redux";
-import { EnvName, ReduxAction } from "./interfaces";
+import { Middleware, applyMiddleware, compose, StoreEnhancer } from "redux";
+import { EnvName } from "./interfaces";
 import { stateFetchMiddlewareConfig } from "./state_fetch_middleware";
 import { revertToEnglishMiddleware } from "./revert_to_english_middleware";
 import { versionChangeMiddleware } from "./version_tracker_middleware";
-import { Everything } from "../interfaces";
 import { refilterLogsMiddleware } from "./refilter_logs_middleware";
 
-export interface MW extends Middleware {
-  (store: Store<Everything>):
-    (dispatch: Function) =>
-      (action: ReduxAction<object>) => void;
-}
-
-export interface MiddlewareConfig { fn: MW; env: EnvName; }
+export interface MiddlewareConfig { fn: Middleware; env: EnvName; }
 
 /** To make it easier to manage all things watching the state tree,
  * we keep subscriber functions in this array. */

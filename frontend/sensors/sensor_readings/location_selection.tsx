@@ -7,6 +7,7 @@ import { LocationSelectionProps } from "./interfaces";
 import { parseIntInput } from "../../util";
 import { t } from "../../i18next_wrapper";
 import { Xyz } from "farmbot";
+import { XYZ } from "../../devices/constants";
 
 /** Select a location filter for sensor readings. */
 export const LocationSelection =
@@ -20,7 +21,7 @@ export const LocationSelection =
         <label>{t("Deviation")}</label>
       </Row>
       <Row className="grid-4-col">
-        {["x", "y", "z"].map((axis: Xyz) =>
+        {XYZ.map((axis: Xyz) =>
           <AxisInputBox
             key={axis}
             axis={axis}
@@ -43,7 +44,7 @@ export const LocationDisplay = ({ xyzLocation, deviation }: {
   deviation: number
 }) => {
   return <div className="location">
-    {["x", "y", "z"].map((axis: Xyz) => {
+    {XYZ.map((axis: Xyz) => {
       const axisString = () => {
         if (xyzLocation) {
           const axisValue = xyzLocation[axis];

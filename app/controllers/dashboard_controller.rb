@@ -5,17 +5,17 @@ class DashboardController < ApplicationController
 
   # === THESE CONSTANTS ARE CONFIGURABLE: ===
   EVERY_STATIC_PAGE = [
-                        :demo,
-                        :front_page,
-                        :main_app,
-                        :os_download,
-                        :featured,
-                        :password_reset,
-                        :terminal,
-                        :tos_update,
-                        :try_farmbot,
-                        :promo,
-                      ]
+    :demo,
+    :front_page,
+    :main_app,
+    :os_download,
+    :featured,
+    :password_reset,
+    :terminal,
+    :tos_update,
+    :try_farmbot,
+    :promo,
+  ]
 
   OUTPUT_URL = "/" + File.join("assets", "dist") # <= served from public/ dir
                                                  # <= See PUBLIC_OUTPUT_DIR
@@ -46,40 +46,34 @@ class DashboardController < ApplicationController
   CACHE_BUST_STRING = "?version=#{RELEASE_CHUNK}"
   PUBLIC_OUTPUT_DIR = File.join("public", OUTPUT_URL)
 
-  CSS_OUTPUTS = CSS_INPUTS.reduce({}) do |acc, (k, v)|
+  CSS_OUTPUTS = CSS_INPUTS.each_with_object({}) do |(k, v), acc|
     file = v.gsub(/\.scss$/, ".css")
     acc[k] = File.join(OUTPUT_URL, file)
-    acc
   end.with_indifferent_access
 
   def self.js_output_file(path)
     clean = path.sub(%r{\A/}, "")
     dir = File.dirname(clean)
     base = File.basename(clean, ".*")
-    file = dir == "." ? "#{base}.js" : "#{dir}-#{base}.js"
-    file
+    dir == "." ? "#{base}.js" : "#{dir}-#{base}.js"
   end
 
-  JS_OUTPUTS = JS_INPUTS.reduce({}) do |acc, (k, v)|
+  JS_OUTPUTS = JS_INPUTS.each_with_object({}) do |(k, v), acc|
     acc[k] = File.join(OUTPUT_URL, js_output_file(v))
-    acc
   end.with_indifferent_access
-
 
   EVERY_STATIC_PAGE.map do |actn|
     define_method(actn) do
-      begin
         # If you don't do this, you will hit hard to debug
         # CSP errors on local when changing API_HOST.
-        response.headers["Cache-Control"] = "no-cache, no-store"
-        response.headers["Pragma"] = "no-cache"
-        response.headers["Expires"] = "0"
-        load_css_assets
-        load_js_assets
-        render actn
-      rescue ActionView::MissingTemplate => q
-        raise ActionController::RoutingError, "Bad URL in dashboard. -Rick"
-      end
+      response.headers["Cache-Control"] = "no-cache, no-store"
+      response.headers["Pragma"] = "no-cache"
+      response.headers["Expires"] = "0"
+      load_css_assets
+      load_js_assets
+      render actn
+    rescue ActionView::MissingTemplate
+      raise ActionController::RoutingError, "Bad URL in dashboard. -Rick"
     end
   end
 
@@ -120,16 +114,14 @@ class DashboardController < ApplicationController
     render json: ""
   end
 
-  def logout
-  end
+  def logout; end
 
   private
 
   def load_css_assets
-    @css_assets ||= [action_name, :default].reduce([]) do |list, action|
+    @css_assets ||= [action_name, :default].each_with_object([]) do |action, list|
       asset = CSS_OUTPUTS[action] # Not every endpoint has custom CSS.
       list.push(asset + CACHE_BUST_STRING) if asset
-      list
     end
   end
 

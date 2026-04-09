@@ -19,6 +19,8 @@ import * as soilHeight from "../soil_height";
 import { fakeMovementState } from "../../__test_support__/fake_bot_data";
 import { changeBlurableInput } from "../../__test_support__/helpers";
 import * as ui from "../../ui";
+import { BIProps } from "../../ui/blurable_input";
+import { ColorPickerProps } from "../../ui/color_picker";
 
 let editSpy: jest.SpyInstance;
 let saveSpy: jest.SpyInstance;
@@ -35,16 +37,16 @@ beforeEach(() => {
   soilHeightPointSpy = jest.spyOn(soilHeight, "soilHeightPoint")
     .mockImplementation(jest.fn());
   blurableInputSpy = jest.spyOn(ui, "BlurableInput")
-    .mockImplementation((props: any) => <input
+    .mockImplementation(((props: BIProps) => <input
       name={props.name}
       min={props.min}
       defaultValue={props.value}
       onChange={() => { }}
-      onBlur={e => props.onCommit?.(e)} />);
+      onBlur={e => props.onCommit?.(e)} />) as never);
   colorPickerSpy = jest.spyOn(ui, "ColorPicker")
-    .mockImplementation((props: any) => <button
+    .mockImplementation(((props: ColorPickerProps) => <button
       className={"mock-color-picker"}
-      onClick={() => props.onChange?.("blue")} />);
+      onClick={() => props.onChange?.("blue")} />) as never);
 });
 
 afterEach(() => {

@@ -22,10 +22,11 @@ const fakeProps = (): StepParams<Execute> => ({
   ...fakeStepParams({ kind: "execute", args: { sequence_id: 0 } }),
 });
 
-const findByType = <C extends React.ComponentType<unknown>>(
+// eslint-disable-next-line comma-spacing
+const findByType = <P,>(
   node: React.ReactNode,
-  type: C,
-): React.ReactElement<React.ComponentProps<C>> | undefined => {
+  type: React.ComponentType<P>,
+): React.ReactElement<P> | undefined => {
   if (!node) { return undefined; }
   if (Array.isArray(node)) {
     for (const child of React.Children.toArray(node)) {
@@ -36,7 +37,7 @@ const findByType = <C extends React.ComponentType<unknown>>(
   }
   if (React.isValidElement(node)) {
     if (node.type === type) {
-      return node as React.ReactElement<React.ComponentProps<C>>;
+      return node as React.ReactElement<P>;
     }
     const elementWithChildren = node as React.ReactElement<{
       children?: React.ReactNode;
@@ -181,7 +182,7 @@ describe("<TileExecute />", () => {
       }
     };
     const localsList = findByType(element, LocalsList);
-    localsList?.props.onChange(variable);
+    localsList?.props.onChange(variable, variable.args.label);
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual({
       kind: "execute", args: { sequence_id: 1 }, body: [variable]
@@ -251,7 +252,7 @@ describe("<TileExecute />", () => {
       }
     };
     const localsList = findByType(element, LocalsList);
-    localsList?.props.onChange(variable);
+    localsList?.props.onChange(variable, variable.args.label);
     mockEditStep.mock.calls[0][0].executor(p.currentStep);
     expect(p.currentStep).toEqual({
       kind: "execute", args: { sequence_id: 1 },

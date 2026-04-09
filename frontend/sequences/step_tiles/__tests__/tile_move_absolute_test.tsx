@@ -20,6 +20,7 @@ import { cloneDeep } from "lodash";
 import * as screenSize from "../../../screen_size";
 import { ExpandableHeader } from "../../../ui/expandable_header";
 import * as blueprintCore from "@blueprintjs/core";
+import { CollapseProps } from "@blueprintjs/core";
 import {
   actRenderer,
   createRenderer,
@@ -45,8 +46,8 @@ beforeEach(() => {
   isDesktopSpy = jest.spyOn(screenSize, "isDesktop")
     .mockImplementation(() => window.innerWidth >= 768);
   collapseSpy = jest.spyOn(blueprintCore, "Collapse")
-    .mockImplementation((props: { isOpen: boolean, children: React.ReactNode }) =>
-      props.isOpen ? <>{props.children}</> : <></>);
+    .mockImplementation(((props: CollapseProps) =>
+      props.isOpen ? <>{props.children}</> : <></>) as never);
 });
 
 afterEach(() => {
@@ -253,7 +254,7 @@ describe("<TileMoveAbsolute />", () => {
       const p = fakeProps();
       const block = new TileMoveAbsolute(p);
       const form = block.LocationForm() as React.ReactElement<{
-        onChange: (variable: Identifier) => void;
+        onChange: (variable: import("farmbot").ParameterApplication) => void;
       }>;
       form.props.onChange({
         kind: "parameter_application",

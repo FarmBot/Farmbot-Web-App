@@ -12,7 +12,7 @@ class Image < ApplicationRecord
     self.meta ||= {}
   end
 
-  PLACEHOLDER = "/placeholder_farmbot.jpg\?text=Processing..."
+  PLACEHOLDER = "/placeholder_farmbot.jpg?text=Processing..."
   PROTO = ENV["FORCE_SSL"] ? "https:" : "http:"
   DEFAULT_URL = "#{PROTO}#{$API_URL}#{PLACEHOLDER}"
   RMAGICK_STYLES = {
@@ -86,12 +86,13 @@ class Image < ApplicationRecord
   end
 
   def legacy_url(size)
-    url = image_url_tpl % {
+    url = format(
+      image_url_tpl,
       chunks: id.to_s.rjust(9, "0").scan(/.{3}/).join("/"),
       filename: attachment_file_name,
       size: size,
       timestamp: attachment_updated_at.to_i,
-    }
+    )
     return ENV["GCS_KEY"].present? ? url.gsub("http://", "https://") : url
   end
 
@@ -109,6 +110,7 @@ class Image < ApplicationRecord
 
   def self.self_hosted_image_upload(key:, file:)
     raise "No." unless Api::ImagesController.store_locally?
+
     name = key.split("/").last
     src = file.tempfile.path
     dest = File.join("public", "direct_upload", "temp", name)

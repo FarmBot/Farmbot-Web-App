@@ -21,7 +21,7 @@ module PointGroups
     def human_readable_error
       sequence_list = sequences.join(", ")
       fragment_users_list = fragment_users.join(", ")
-      STILL_IN_USE % { data_users: sequence_list + fragment_users_list }
+      format(STILL_IN_USE, data_users: sequence_list + fragment_users_list)
     end
 
     def sequence_ids

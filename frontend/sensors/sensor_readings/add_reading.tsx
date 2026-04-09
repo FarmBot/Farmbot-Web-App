@@ -11,6 +11,7 @@ import { TimeSettings } from "../../interfaces";
 import { error } from "../../toast/toast";
 import { BlurableInput, Row } from "../../ui";
 import { SensorSelection } from "./sensor_selection";
+import { XYZ } from "../../devices/constants";
 
 export interface AddSensorReadingMenuProps {
   closeMenu(): void;
@@ -93,7 +94,7 @@ export class AddSensorReadingMenu
             </div>)}
         </Row>
         <Row>
-          {["x", "y", "z"].map((axis: Xyz) =>
+          {XYZ.map((axis: Xyz) =>
             <AxisInputBox
               key={axis}
               axis={axis}

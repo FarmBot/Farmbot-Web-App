@@ -17,14 +17,14 @@ module Api
       limit = current_device.max_log_count || Device::DEFAULT_MAX_LOGS
 
       # Build conditions once
-      type_conditions = mt.map.with_index do |type, i|
+      type_conditions = mt.map do |type|
         verbosity = conf.send("#{type}_log")
         ["(type = ? AND verbosity <= ?)", type, verbosity]
       end
 
       # Combine conditions efficiently
       where_clause = type_conditions.map(&:first).join(" OR ")
-      where_values = type_conditions.flat_map { |c| c[1..-1] }
+      where_values = type_conditions.flat_map { |c| c[1..] }
 
       # Single query with all conditions
       logs = current_device
@@ -61,12 +61,11 @@ module Api
     end
 
     def search_params
-      SEARCH_FIELDS.reduce({}) do |acc, (k, v)|
+      SEARCH_FIELDS.each_with_object({}) do |(k, v), acc|
         search_term = params[k]
         if search_term
           acc[k] = search_term.send(v)
         end
-        acc
       end
     end
   end

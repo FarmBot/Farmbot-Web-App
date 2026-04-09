@@ -3,9 +3,6 @@
 # Water cabbage three times per day during first month, then
 # once daily for the next month.
 class Regimen < ApplicationRecord
-  # Rails inflector does a poor job of pluralizing this word,
-  # such as "regimans" or "regimina". This is the workaround.
-  # PRs welcome.
   self.table_name = "regimens"
 
   belongs_to :device

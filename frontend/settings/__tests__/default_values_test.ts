@@ -17,6 +17,7 @@ describe("getModifiedClassName()", () => {
 
   beforeEach(() => {
     mockState = fakeState();
+    if (!mockState.auth) { throw new Error("Expected auth state"); }
     mockState.auth.token.unencoded.aud = "staff";
     originalGetState = store.getState;
     (store as unknown as { getState: () => typeof mockState }).getState = () => mockState;

@@ -12,7 +12,7 @@ describe("<Promo />", () => {
 
   beforeEach(() => {
     canvasSpy = jest.spyOn(reactThreeFiber, "Canvas")
-      .mockImplementation(({ children }: { children: React.ReactNode }) =>
+      .mockImplementation(({ children }: { children?: React.ReactNode }) =>
         <div>{children}</div>);
     gardenModelSpy = jest.spyOn(gardenModelModule, "GardenModel")
       .mockImplementation(({ config }: { config: { promoSpread?: boolean } }) =>
@@ -41,7 +41,9 @@ describe("<Promo />", () => {
     expect(container).toContainHTML("three-d-garden");
     const configBtn = container.querySelector(".gear") as HTMLElement;
     fireEvent.click(configBtn);
-    const config = screen.getAllByTitle("animateSeasons").at(-1) as HTMLElement;
+    const configs = screen.getAllByTitle("animateSeasons");
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    const config = configs[configs.length - 1] as HTMLElement;
     fireEvent.click(config);
     jest.runAllTimers();
     unmount();

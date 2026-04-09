@@ -4,21 +4,18 @@ import { SensorSelection } from "../sensor_selection";
 import { fakeSensor } from "../../../__test_support__/fake_state/resources";
 import { SensorSelectionProps } from "../interfaces";
 import * as ui from "../../../ui";
+import { FBSelectProps } from "../../../ui/new_fb_select";
 
 let fbSelectSpy: jest.SpyInstance;
 
 beforeEach(() => {
   fbSelectSpy = jest.spyOn(ui, "FBSelect")
-    .mockImplementation((props: {
-      selectedItem?: { label?: string };
-      list?: { value: string }[];
-      onChange: (ddi: { label: string; value: string }) => void;
-    }) =>
+    .mockImplementation(((props: FBSelectProps) =>
       <button className="fb-select-mock"
         onClick={() =>
           props.onChange({ label: "", value: props.list?.[0]?.value ?? "" })}>
         {props.selectedItem?.label}
-      </button>);
+      </button>) as never);
 });
 
 afterEach(() => {

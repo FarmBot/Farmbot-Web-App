@@ -22,13 +22,16 @@ describe("<SensorForm/>", function () {
   it("renders a list of editable sensors, in sorted order", () => {
     const form = SensorForm(fakeProps());
     const typedForm = form as React.ReactElement<{ children?: React.ReactNode }>;
-    const rows = React.Children.toArray(typedForm.props.children) as JSX.Element[];
+    const rows = React.Children.toArray(typedForm.props.children) as
+      React.ReactElement<{ children?: React.ReactNode }>[];
     const firstRow = rows[0] as React.ReactElement<{ children?: React.ReactNode }>;
     const secondRow = rows[1] as React.ReactElement<{ children?: React.ReactNode }>;
     const firstRowChildren = React.Children
-      .toArray(firstRow?.props.children) as JSX.Element[];
+      .toArray(firstRow?.props.children) as
+      React.ReactElement<Record<string, unknown>>[];
     const secondRowChildren = React.Children
-      .toArray(secondRow?.props.children) as JSX.Element[];
+      .toArray(secondRow?.props.children) as
+      React.ReactElement<Record<string, unknown>>[];
     expect(firstRowChildren[0]?.props.value).toEqual("GPIO 51");
     expect(secondRowChildren[0]?.props.value).toEqual("GPIO 50 - Moisture");
     expect(firstRowChildren[1]?.props.value).toEqual(51);

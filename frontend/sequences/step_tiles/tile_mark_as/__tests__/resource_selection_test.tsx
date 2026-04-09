@@ -11,6 +11,15 @@ import {
 import { Resource } from "farmbot";
 
 describe("<ResourceSelection />", () => {
+  type ResourceSelect = React.ReactElement<{
+    list?: unknown[];
+    selectedItem?: { label?: string; value?: unknown };
+    onChange?: (item: {
+      label: string;
+      value: string;
+      headingId?: string;
+    }) => void;
+  }>;
   const plant = fakePlant();
   plant.body.id = 1;
 
@@ -24,7 +33,7 @@ describe("<ResourceSelection />", () => {
   const getSelect = (p: ResourceSelectionProps) => {
     const wrapper =
       ResourceSelection(p) as React.ReactElement<{ children?: React.ReactNode }>;
-    const children = React.Children.toArray(wrapper.props.children) as JSX.Element[];
+    const children = React.Children.toArray(wrapper.props.children) as ResourceSelect[];
     return children[1];
   };
 
@@ -45,8 +54,7 @@ describe("<ResourceSelection />", () => {
     p.resources = buildResourceIndex([fbosConfig]).index;
     const wrapper =
       ResourceSelection(p) as React.ReactElement<{ children?: React.ReactNode }>;
-    const children = React.Children.toArray(wrapper.props.children) as
-      JSX.Element[];
+    const children = React.Children.toArray(wrapper.props.children) as ResourceSelect[];
     const select = children[1];
     expect(select.props.list).toEqual([
       { headingId: "Identifier", label: "Variables", heading: true, value: 0 },
@@ -66,8 +74,7 @@ describe("<ResourceSelection />", () => {
     p.resources = buildResourceIndex([fbosConfig]).index;
     const wrapper =
       ResourceSelection(p) as React.ReactElement<{ children?: React.ReactNode }>;
-    const children = React.Children.toArray(wrapper.props.children) as
-      JSX.Element[];
+    const children = React.Children.toArray(wrapper.props.children) as ResourceSelect[];
     const select = children[1];
     expect(select.props.list).toEqual([
       { headingId: "Identifier", label: "Variables", heading: true, value: 0 },
@@ -88,7 +95,7 @@ describe("<ResourceSelection />", () => {
     const { container } = render(<ResourceSelection {...p} />);
     const select = getSelect(p);
     expect(container.textContent).toContain("Mark");
-    expect(select.props.selectedItem.label).toContain("Strawberry plant 1");
+    expect(select.props.selectedItem?.label).toContain("Strawberry plant 1");
   });
 
   it("renders point", () => {
@@ -100,7 +107,7 @@ describe("<ResourceSelection />", () => {
     const { container } = render(<ResourceSelection {...p} />);
     const select = getSelect(p);
     expect(container.textContent).toContain("Mark");
-    expect(select.props.selectedItem.label).toContain("Strawberry plant 1");
+    expect(select.props.selectedItem?.label).toContain("Strawberry plant 1");
   });
 
   it("renders identifier", () => {
@@ -112,7 +119,7 @@ describe("<ResourceSelection />", () => {
     const { container } = render(<ResourceSelection {...p} />);
     const select = getSelect(p);
     expect(container.textContent).toContain("Mark");
-    expect(select.props.selectedItem.label).toContain("Add new");
+    expect(select.props.selectedItem?.label).toContain("Add new");
   });
 
   it("renders identifier with label", () => {
@@ -138,17 +145,16 @@ describe("<ResourceSelection />", () => {
     const { container } = render(<ResourceSelection {...p} />);
     const select = getSelect(p);
     expect(container.textContent).toContain("Mark");
-    expect((select.props.selectedItem.label || "").toLowerCase()).toContain("label");
+    expect((select.props.selectedItem?.label || "").toLowerCase()).toContain("label");
   });
 
   it("changes resource", () => {
     const p = fakeProps();
     const wrapper =
       ResourceSelection(p) as React.ReactElement<{ children?: React.ReactNode }>;
-    const children = React.Children.toArray(wrapper.props.children) as
-      JSX.Element[];
+    const children = React.Children.toArray(wrapper.props.children) as ResourceSelect[];
     const select = children[1];
-    select.props.onChange({
+    select.props.onChange?.({
       label: "", value: "1", headingId: "Plant",
     });
     expect(p.updateResource).toHaveBeenCalledWith({
@@ -161,10 +167,9 @@ describe("<ResourceSelection />", () => {
     const p = fakeProps();
     const wrapper =
       ResourceSelection(p) as React.ReactElement<{ children?: React.ReactNode }>;
-    const children = React.Children.toArray(wrapper.props.children) as
-      JSX.Element[];
+    const children = React.Children.toArray(wrapper.props.children) as ResourceSelect[];
     const select = children[1];
-    select.props.onChange({
+    select.props.onChange?.({
       label: "Variable", value: "label", headingId: "Identifier",
     });
     expect(p.updateResource).toHaveBeenCalledWith({

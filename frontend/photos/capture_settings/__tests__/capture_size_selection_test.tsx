@@ -4,17 +4,14 @@ import {
   CaptureSizeSelection, PhotoResolutionSettingChanged,
 } from "../capture_size_selection";
 import { CaptureSizeSelectionProps } from "../interfaces";
-import { DropDownItem } from "../../../ui/fb_select";
 import * as ui from "../../../ui";
+import { FBSelectProps } from "../../../ui/new_fb_select";
 
 let fbSelectSpy: jest.SpyInstance;
 
 beforeEach(() => {
   fbSelectSpy = jest.spyOn(ui, "FBSelect")
-    .mockImplementation((props: {
-      selectedItem?: DropDownItem;
-      onChange: (ddi: DropDownItem) => void;
-    }) =>
+    .mockImplementation(((props: FBSelectProps) =>
       <div>
         <span data-testid={"selected-size"}>
           {"" + props.selectedItem?.value}
@@ -32,7 +29,7 @@ beforeEach(() => {
         <button onClick={() => props.onChange({ label: "", value: "maximum" })}>
           select maximum
         </button>
-      </div>);
+      </div>) as never);
 });
 
 afterEach(() => {

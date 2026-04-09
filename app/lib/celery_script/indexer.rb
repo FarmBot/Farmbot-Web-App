@@ -14,7 +14,7 @@ module CeleryScript
     # We pick the correct struct based on the class of the collection passed to
     # the constructor.
     KLASS_LOOKUP = { PrimaryNode => Struct.new(*PRIMARY_FIELDS),
-                    EdgeNode => Struct.new(*EDGE_FIELDS) }
+                     EdgeNode => Struct.new(*EDGE_FIELDS) }
 
     # Example: index_object.by.primary_node_id[6]
     attr_reader :by
@@ -22,7 +22,7 @@ module CeleryScript
     # Pass in a collection of EdgeNode or PrimaryNode objects.
     def initialize(collection)
       struct_class = KLASS_LOOKUP[collection.klass]
-      struct = struct_class.new()
+      struct = struct_class.new
       struct
         .members
         .each do |key|

@@ -154,7 +154,7 @@ export const PlantDateBulkUpdate = (props: PlantDateBulkUpdateProps) => {
   const plants = props.allPoints.filter(point =>
     props.selected.includes(point.uuid) && point.kind === "Point" &&
     point.body.pointer_type == "Plant")
-    .map((p: TaggedPlantPointer) => p);
+    .map(p => p as TaggedPlantPointer);
   return <div className={"plant-date-bulk-update row grid-2-col"}>
     <p>{t("Update start to")}</p>
     <BlurableInput
@@ -182,7 +182,7 @@ export const PointSizeBulkUpdate = (props: BulkUpdateBaseProps) => {
   const points = props.allPoints.filter(point =>
     props.selected.includes(point.uuid) && point.kind === "Point" &&
     point.body.pointer_type != "ToolSlot")
-    .map((p: TaggedPlantPointer | TaggedWeedPointer | TaggedGenericPointer) => p);
+    .map(p => p as TaggedPlantPointer | TaggedWeedPointer | TaggedGenericPointer);
   const averageSize = round(mean(points.map(p => p.body.radius)));
   const [radius, setRadius] = React.useState("" + (averageSize || 25));
   return <div className={"point-size-bulk-update row grid-2-col"}>
@@ -209,7 +209,7 @@ export const PlantDepthBulkUpdate = (props: BulkUpdateBaseProps) => {
   const points = props.allPoints.filter(point =>
     props.selected.includes(point.uuid) && point.kind === "Point" &&
     point.body.pointer_type == "Plant")
-    .map((p: TaggedPlantPointer) => p);
+    .map(p => p as TaggedPlantPointer);
   const averageDepth = round(mean(points.map(p => p.body.depth)));
   const [depth, setDepth] = React.useState("" + (averageDepth || 0));
   return <div className={"plant-depth-bulk-update row grid-2-col"}>
@@ -243,7 +243,7 @@ export const PlantCurveBulkUpdate = (props: PlantCurveBulkUpdateProps) => {
   const points = props.allPoints.filter(point =>
     props.selected.includes(point.uuid) && point.kind === "Point" &&
     point.body.pointer_type == "Plant")
-    .map((p: TaggedPlantPointer) => p);
+    .map(p => p as TaggedPlantPointer);
   const curveName = CURVE_TYPES()[props.curveType];
   const curveKey = CURVE_KEY_LOOKUP[props.curveType];
   return <div className={"plant-curve-bulk-update row grid-2-col"}>
@@ -284,7 +284,7 @@ export const PointColorBulkUpdate = (props: BulkUpdateBaseProps) => {
   const points = props.allPoints.filter(point =>
     props.selected.includes(point.uuid) && point.kind === "Point" &&
     point.body.pointer_type != "ToolSlot")
-    .map((p: TaggedWeedPointer | TaggedGenericPointer) => p);
+    .map(p => p as TaggedWeedPointer | TaggedGenericPointer);
   return <div className={"point-color-bulk-update row grid-2-col"}>
     <p>{t("Update color to")}</p>
     <ColorPicker
@@ -310,7 +310,7 @@ export const PlantSlugBulkUpdate = (props: PlantSlugBulkUpdateProps) => {
   const plants = props.allPoints.filter(point =>
     props.selected.includes(point.uuid) && point.kind === "Point" &&
     point.body.pointer_type == "Plant")
-    .map((p: TaggedPlantPointer) => p);
+    .map(p => p as TaggedPlantPointer);
   const slug = props.bulkPlantSlug || plants[0]?.body.openfarm_slug;
   const navigate = useNavigate();
   return <div className={"plant-slug-bulk-update row grid-2-col"}>

@@ -2,7 +2,7 @@
 # Eg: Which arguments does it take? Which nodes can be placed in the body field?
 module CeleryScript
   class NodeSpecification
-    NOOP = ->(*_) { }
+    NOOP = ->(*_) {}
 
     attr_reader :name, :allowed_args, :allowed_body_types,
                 :additional_validation, :tags, :docs

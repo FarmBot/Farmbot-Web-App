@@ -79,7 +79,7 @@ export class MoveToForm extends React.Component<MoveToFormProps, MoveToFormState
         <input disabled name="x" value={isNumber(x) ? x : "---"} />
         <input disabled name="y" value={isNumber(y) ? y : "---"} />
         <AxisInputBox
-          onChange={(_, val: number) => this.setState({ z: val })}
+          onChange={(_, val: number | undefined) => this.setState({ z: val })}
           axis={"z"}
           value={this.state.z} />
         <button
@@ -303,7 +303,8 @@ export const movementPercentRemaining =
   (botPosition: BotPosition, movementState: MovementState) => {
     const { start, distance } = movementState;
     const absDistanceArray: number[] = [];
-    const all = ["x", "y", "z"].map((axis: Xyz) => {
+    const axes = ["x", "y", "z"] as Xyz[];
+    const all = axes.map((axis: Xyz) => {
       const axisPosition = botPosition[axis];
       const axisStart = start[axis];
       if (!isNumber(axisPosition) || !isNumber(axisStart) || distance[axis] == 0) {

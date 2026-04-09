@@ -93,7 +93,7 @@ describe("initPlantGrid", () => {
 describe("vectorGrid", () => {
   it("handles zeros (edge case)", () => {
     const gridInputs = testGridInputs();
-    Object.keys(gridInputs).map((input: PlantGridKey) => gridInputs[input] = 0);
+    Object.keys(gridInputs).map(input => gridInputs[input as PlantGridKey] = 0);
     const results = vectorGrid(gridInputs, false);
     expect(results).toEqual([]);
   });

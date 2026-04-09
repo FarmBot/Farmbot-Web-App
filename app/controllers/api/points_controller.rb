@@ -6,15 +6,15 @@ module Api
     HARD_DELETE_AFTER = 2.months
     # "?filter=all", "?filter=old", "?filter=kept"
     ARCHIVAL_SCOPES = {
-                        "all" => Point.all,
-                        "old" => Point.discarded,
-                        "kept" => Point.kept,
-                      }
+      "all" => Point.all,
+      "old" => Point.discarded,
+      "kept" => Point.kept,
+    }
 
     def index
       Point
         .discarded
-        .where("discarded_at < ?", Time.now - HARD_DELETE_AFTER)
+        .where(discarded_at: ...(Time.now - HARD_DELETE_AFTER))
         .destroy_all
 
       maybe_paginate points(params.fetch(:filter) { "kept" })

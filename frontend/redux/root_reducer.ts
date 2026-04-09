@@ -12,7 +12,7 @@ import { appReducer as app } from "../reducer";
 
 let cachedReducers: Reducers | undefined;
 
-const getReducers = (): Reducers => {
+const getReducers = () => {
   cachedReducers ??= combineReducers({
     auth,
     bot,
@@ -20,7 +20,7 @@ const getReducers = (): Reducers => {
     draggable,
     resources,
     app,
-  });
+  }) as Reducers;
   return cachedReducers;
 };
 
@@ -30,7 +30,9 @@ export const reducers: Reducers =
 /** This is the topmost reducer in the application. If you need to preempt a
  * "normal" reducer this is the place to do it */
 export function rootReducer(
-  state: Omit<Everything, "dispatch">, action: ReduxAction<{}>) {
+  state: Omit<Everything, "dispatch"> | undefined,
+  action: ReduxAction<unknown>,
+) {
   (action.type === Actions.LOGOUT) && Session.clear();
   return reducers(state, action);
 }

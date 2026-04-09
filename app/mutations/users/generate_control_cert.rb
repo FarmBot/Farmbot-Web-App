@@ -13,13 +13,13 @@ module Users
     end
 
     def execute
-      return Base64.encode64(cipher_text)
+      Base64.encode64(cipher_text)
     end
 
     private
 
     def cipher_text
-      cipher_text ||= KeyGen.current.public_encrypt(secret)
+      KeyGen.current.public_encrypt(secret)
     end
 
     def secret

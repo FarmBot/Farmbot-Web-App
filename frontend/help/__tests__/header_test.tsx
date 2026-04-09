@@ -14,7 +14,7 @@ describe("<HelpHeader />", () => {
   beforeEach(() => {
     setWindowWidth(1000);
     toggleHotkeyHelpOverlaySpy = jest.spyOn(hotkeys, "toggleHotkeyHelpOverlay")
-      .mockImplementation(jest.fn(() => jest.fn()));
+      .mockImplementation(() => false);
   });
 
   afterEach(() => {

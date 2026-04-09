@@ -73,7 +73,7 @@ enum SystemPins {
   reset_2560 = 19,
 }
 
-const toPinNum = (n: string) => parseInt(n);
+const toPinNum = (n: string | LEDPin | SystemPins) => parseInt("" + n);
 
 const sysLedBindings: number[] = Object.values(LEDPin).map(toPinNum);
 const otherSysBindings: number[] = Object.values(SystemPins).map(toPinNum);

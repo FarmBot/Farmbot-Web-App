@@ -7,7 +7,7 @@
 # "EdgeNode" types on the edge of the tree.
 class PrimaryNode < ApplicationRecord
   belongs_to :sequence
-  validates_presence_of :sequence
+  validates :sequence, presence: true
   has_many :edge_nodes
   BAD_KIND = "`kind` must be one of: " +
              CeleryScriptSettingsBag::ANY_NODE_NAME.join(", ")

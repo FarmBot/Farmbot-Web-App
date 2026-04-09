@@ -12,6 +12,7 @@ import { SPECIAL_VALUES } from "../../remote_env/constants";
 import { fakePhotosPanelState } from "../../../__test_support__/fake_camera_data";
 import * as imageWorkspaceModule from "../../image_workspace";
 import * as configModule from "../config";
+import { WD_ENV } from "../../remote_env/interfaces";
 
 let calibrateSpy: jest.SpyInstance;
 let scanImageSpy: jest.SpyInstance;
@@ -42,7 +43,7 @@ beforeEach(() => {
   cameraCalibrationConfigSpy =
     jest.spyOn(configModule, "CameraCalibrationConfig")
       .mockImplementation((props: {
-        onChange: (key: string, value: number) => void;
+        onChange: (key: keyof WD_ENV, value: number) => void;
       }) =>
         <div>
           <button onClick={() =>

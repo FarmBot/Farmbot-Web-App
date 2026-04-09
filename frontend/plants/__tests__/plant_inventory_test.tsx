@@ -29,6 +29,7 @@ import { NumericSetting } from "../../session_keys";
 import * as popover from "../../ui/popover";
 import { NavigationContext } from "../../routes_helpers";
 import { WebAppNumberSetting } from "../../settings/farm_designer_settings";
+import { WebAppNumberSettingProps } from "../../settings/interfaces";
 
 const findElement = (
   node: unknown,
@@ -70,11 +71,11 @@ describe("<PlantInventory />", () => {
       .mockImplementation(jest.fn());
     setWebAppConfigValueSpy = jest.spyOn(configStorageActions,
       "setWebAppConfigValue").mockImplementation(jest.fn());
-    getWebAppConfigValueSpy = jest.spyOn(configStorageActions,
-      "getWebAppConfigValue").mockImplementation((getState: Function) => {
-      getState();
-      return () => mockValue;
-    });
+    getWebAppConfigValueSpy = jest.spyOn(configStorageActions, "getWebAppConfigValue")
+      .mockImplementation((getState: Function) => {
+        getState();
+        return () => mockValue;
+      });
   });
 
   afterEach(() => {
@@ -118,7 +119,8 @@ describe("<PlantInventory />", () => {
     if (!setting) {
       throw new Error("Expected default plant depth setting control");
     }
-    const blurableInput = WebAppNumberSetting(setting.props);
+    const blurableInput = WebAppNumberSetting(
+      setting.props as WebAppNumberSettingProps);
     blurableInput.props.onCommit({
       currentTarget: { value: "100" },
     });
@@ -235,9 +237,10 @@ describe("<PlantInventory />", () => {
 
   it("changes search term", () => {
     render(<Plants {...fakeProps()} />);
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
     const input = screen.getByPlaceholderText(
       "Search your plants...",
-    );
+    ) as HTMLInputElement;
     expect(input.value).toEqual("");
     fireEvent.change(input, { target: { value: "mint" } });
     expect(input.value).toEqual("mint");
@@ -245,8 +248,10 @@ describe("<PlantInventory />", () => {
 
   it("displays no results state", () => {
     render(<Plants {...fakeProps()} />);
-    fireEvent.change(screen.getByPlaceholderText("Search your plants..."),
-      { target: { value: "mint" } });
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    fireEvent.change(screen.getByPlaceholderText(
+      "Search your plants...",
+    ) as HTMLInputElement, { target: { value: "mint" } });
     expect(screen.getByText("No results in your garden")).toBeInTheDocument();
     expect(screen.getByText("search all crops?")).toBeInTheDocument();
   });
@@ -259,8 +264,10 @@ describe("<PlantInventory />", () => {
         <Plants {...p} />
       </NavigationContext.Provider>,
     );
-    fireEvent.change(screen.getByPlaceholderText("Search your plants..."),
-      { target: { value: "mint" } });
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+    fireEvent.change(screen.getByPlaceholderText(
+      "Search your plants...",
+    ) as HTMLInputElement, { target: { value: "mint" } });
     fireEvent.click(screen.getByText("search all crops?"));
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SEARCH_QUERY_CHANGE,

@@ -1,5 +1,5 @@
 import React from "react";
-import { Config, modifyConfig } from "./config";
+import { ConfigWithPosition, modifyConfig } from "./config";
 import { setUrlParam } from "./zoom_beacons_constants";
 import { ExternalUrl } from "../external_urls";
 
@@ -9,8 +9,8 @@ export interface ToolTip {
 }
 
 export interface OverlayProps {
-  config: Config;
-  setConfig(config: Config): void;
+  config: ConfigWithPosition;
+  setConfig(config: ConfigWithPosition): void;
   toolTip: ToolTip;
   setToolTip(tooltip: ToolTip): void;
   activeFocus: string;
@@ -20,10 +20,10 @@ export interface OverlayProps {
 
 interface SectionProps {
   title: string;
-  configKey: keyof Config;
+  configKey: keyof ConfigWithPosition;
   options: Record<string, string>;
-  config: Config;
-  setConfig(config: Config): void;
+  config: ConfigWithPosition;
+  setConfig(config: ConfigWithPosition): void;
   toolTip: ToolTip;
   setToolTip(tooltip: ToolTip): void;
   startTimeRef?: React.RefObject<number>;
@@ -173,14 +173,14 @@ const PromoInfo = (props: PromoInfoProps) => {
 };
 
 interface ConfigRowProps {
-  configKey: keyof Config;
+  configKey: keyof ConfigWithPosition;
   children: React.ReactNode;
   addLabel?: string;
 }
 
 const ConfigRow = (props: ConfigRowProps) => {
   const { configKey } = props;
-  const urlHasParam = (key: keyof Config) =>
+  const urlHasParam = (key: keyof ConfigWithPosition) =>
     !!(new URLSearchParams(window.location.search)).get(key);
   const removeParam = () => {
     setHasParam(false);
@@ -208,7 +208,7 @@ export const maybeAddParam =
     setUrlParam(configKey, value);
 
 interface SliderProps extends OverlayProps {
-  configKey: keyof Config;
+  configKey: keyof ConfigWithPosition;
   min: number;
   max: number;
   addLabel?: string;
@@ -237,7 +237,7 @@ const Slider = (props: SliderProps) => {
 };
 
 interface ToggleProps extends OverlayProps {
-  configKey: keyof Config;
+  configKey: keyof ConfigWithPosition;
   addLabel?: string;
 }
 
@@ -259,7 +259,7 @@ const Toggle = (props: ToggleProps) => {
 };
 
 interface RadioProps extends OverlayProps {
-  configKey: keyof Config;
+  configKey: keyof ConfigWithPosition;
   options: string[];
   addLabel?: string;
 }

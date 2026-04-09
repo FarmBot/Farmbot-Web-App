@@ -41,8 +41,8 @@ const REPORT_KEYS: (keyof FirmwareConfig)[] = [
 /** Track firmware configuration adoption by FarmBot OS. */
 export const SettingLoadProgress = (props: SettingLoadProgressProps) => {
   const { firmwareHardware } = props;
-  const keys = Object.keys(props.firmwareConfig || {})
-    .filter((k: keyof FirmwareConfig) => !UNTRACKED_KEYS
+  const keys = (Object.keys(props.firmwareConfig || {}) as McuParamName[])
+    .filter(k => !UNTRACKED_KEYS
       .concat(isTMCBoard(firmwareHardware) ? [] : TMC_KEYS)
       .concat(REPORT_KEYS)
       .includes(k));

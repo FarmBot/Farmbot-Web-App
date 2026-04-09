@@ -65,12 +65,12 @@ module Devices
         end
         broccoli_row_count = product_line.include?("xl") ? 9 : 4
         broccoli_col_count = if product_line.include?("genesis_xl")
-            3
-          elsif product_line.include?("xl")
-            2
-          else
-            1
-          end
+                               3
+                             elsif product_line.include?("xl")
+                               2
+                             else
+                               1
+                             end
         (0..(broccoli_row_count - 1)).map do |i|
           (0..(broccoli_col_count - 1)).map do |j|
             Points::Create.run!(device: device,
@@ -81,12 +81,12 @@ module Devices
                                 planted_at: Time.now,
                                 water_curve_id: broccoli_curve.id,
                                 x: 600 + i * 600,
-                                y: 700 + j * 600 + (j > 0 ? 300 : 0),
+                                y: 700 + j * 600 + (j.positive? ? 300 : 0),
                                 z: 0)
           end
         end
         beet_row_count = product_line.include?("xl") ? 57 : 27
-        beet_col_count = product_line.include?("xl") ? 2 : 2
+        beet_col_count = 2
         (0..(beet_row_count - 1)).map do |i|
           (0..(beet_col_count - 1)).map do |j|
             Points::Create.run!(device: device,
@@ -102,16 +102,16 @@ module Devices
       end
 
       def add_soil_height_points(product_line)
-        (0..3).each do |i|
-          (0..3).each do |j|
+        4.times do
+          4.times do
             Points::Create.run!(device: device,
-                      pointer_type: "GenericPointer",
-                      name: "Soil Height",
-                      x: rand(0..(product_line.include?("xl") ? 5700 : 2700)),
-                      y: rand(0..(product_line.include?("xl") ? 2700 : 1200)),
-                      z: rand(-550..-450),
-                      radius: 0,
-                      meta: { color: "gray", at_soil_level: "true" })
+                                pointer_type: "GenericPointer",
+                                name: "Soil Height",
+                                x: rand(0..(product_line.include?("xl") ? 5700 : 2700)),
+                                y: rand(0..(product_line.include?("xl") ? 2700 : 1200)),
+                                z: rand(-550..-450),
+                                radius: 0,
+                                meta: { color: "gray", at_soil_level: "true" })
           end
         end
       end
@@ -124,9 +124,9 @@ module Devices
 
       def add_envs
         [
-          ["CAMERA_CALIBRATION_coord_scale", "1"],
-          ["CAMERA_CALIBRATION_center_pixel_location_x", "320"],
-          ["CAMERA_CALIBRATION_center_pixel_location_y", "240"],
+          %w[CAMERA_CALIBRATION_coord_scale 1],
+          %w[CAMERA_CALIBRATION_center_pixel_location_x 320],
+          %w[CAMERA_CALIBRATION_center_pixel_location_y 240],
         ].each do |key, value|
           FarmwareEnvs::Create.run(
             { key: key, value: value },
@@ -146,7 +146,7 @@ module Devices
             " learn more about our various products. We offer FarmBots at",
             " all different price points, sizes, and capabilities so you'",
             "re sure to find one that suits your needs.",
-          ].join("")
+          ].join
         end
       end
 
@@ -157,10 +157,10 @@ module Devices
       ]
 
       DEMO_LOGS = [
-        {message: "Your FarmBot says hi!", type: "fun", verbosity: 3},
+        { message: "Your FarmBot says hi!", type: "fun", verbosity: 3 },
       ]
 
-      # Note: At the time of publish, FBOS v8.0.0
+      # NOTE: At the time of publish, FBOS v8.0.0
       # was the latest release. We are setting
       # demo accounts to v100 because:
       #  * We don't want to update this value
@@ -182,7 +182,7 @@ module Devices
           .update!(
             safe_height: -150,
           )
-          add_curves
+        add_curves
       end
 
       def after_product_line_seeder(product_line)

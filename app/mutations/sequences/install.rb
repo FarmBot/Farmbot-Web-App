@@ -3,6 +3,7 @@ module Sequences
   # the user's account.
   class Install < Mutations::Command
     include CeleryScriptValidators
+
     NOT_PUBLISHED = "Can't install unpublished sequences"
 
     required do

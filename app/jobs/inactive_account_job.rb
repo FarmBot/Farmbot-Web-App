@@ -28,12 +28,12 @@ class InactiveAccountJob < ApplicationJob
 
   def inactive_no_device
     no_device
-      .where("last_sign_in_at < ?", INACTIVE_NO_DEVICE.ago)
+      .where(last_sign_in_at: ...INACTIVE_NO_DEVICE.ago)
   end
 
   def inactive_with_device
     ok_device
-      .where("last_sign_in_at < ?", INACTIVE_WITH_DEVICE.ago)
+      .where(last_sign_in_at: ...INACTIVE_WITH_DEVICE.ago)
   end
 
   # Returns a Map. Key is the number of warnings sent, value is a User object
@@ -52,7 +52,7 @@ class InactiveAccountJob < ApplicationJob
     all_inactive
       .where
       .not(inactivity_warning_sent_at: nil)
-      .where("inactivity_warning_sent_at < ?", WARNING_TIME.ago)
+      .where(inactivity_warning_sent_at: ...WARNING_TIME.ago)
       .map(&:deactivate_account)
   end
 

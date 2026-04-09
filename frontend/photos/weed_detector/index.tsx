@@ -56,7 +56,7 @@ export const WeedDetector = (props: WeedDetectorProps) => {
   };
 
   const anyAdvancedModified =
-    some(["save_detected_plants"].map((key: NumericKeyName) =>
+    some((["save_detected_plants"] as WEED_DETECTOR_KEY_PART[]).map(key =>
       getDefault(key) != wdEnvGet(namespace(key))));
 
   const wDEnvGet = (key: WDENVKey) => envGet(key, props.wDEnv);

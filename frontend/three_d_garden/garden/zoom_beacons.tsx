@@ -1,6 +1,6 @@
 import { Sphere, Html, Line } from "@react-three/drei";
 import React from "react";
-import { Config } from "../config";
+import { Config, PositionConfig } from "../config";
 import { FOCI, getCameraOffset, setUrlParam } from "../zoom_beacons_constants";
 import { useSpring, animated } from "@react-spring/three";
 import { Group, Mesh, MeshPhongMaterial } from "../components";
@@ -14,6 +14,7 @@ const AnimatedMeshPhongMaterial = animated(MeshPhongMaterial);
 
 export interface ZoomBeaconsProps {
   config: Config;
+  configPosition: PositionConfig;
   activeFocus: string;
   setActiveFocus(focus: string): void;
 }
@@ -57,7 +58,7 @@ export const ZoomBeacons = (props: ZoomBeaconsProps) => {
 
   const beaconSize = isDesktop() ? 60 : 80;
   return <Group name={"zoom-beacons"}>
-    {FOCI(props.config).map(focus => {
+    {FOCI(props.config, props.configPosition).map(focus => {
       const camera = getCameraOffset(focus);
       return <Group name={"zoom-beacon"} key={focus.label}
         position={focus.position}>

@@ -115,7 +115,9 @@ describe("<DesignerSequenceEditor />", () => {
     p.sequence = sequence;
     render(<DesignerSequenceEditor {...p} />);
     const colorPickerPopover = popoverSpy.mock.calls.find(
-      ([popoverProps]) => !!(popoverProps.content as React.ReactElement)
+      ([popoverProps]) => !!(popoverProps.content as React.ReactElement<{
+        onChange?: (color: Color) => void;
+      }>)
         ?.props?.onChange);
     const colorPickerCluster = colorPickerPopover?.[0]
       .content as React.ReactElement<{ onChange: (color: Color) => void }>;

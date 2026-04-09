@@ -1,5 +1,5 @@
 class FatalErrorMailer < ApplicationMailer
-  def fatal_error(device, log)
+  def fatal_error(device, _log)
     Log.transaction do
       @emails = device.users.pluck(:email)
       @logs = device
@@ -8,6 +8,7 @@ class FatalErrorMailer < ApplicationMailer
         .where(sent_at: nil)
         .order(created_at: :desc)
       return if @logs.empty?
+
       @message = @logs
         .pluck(:created_at, :message)
         .map { |(t, m)| [t.in_time_zone(device.timezone || "UTC"), m] }

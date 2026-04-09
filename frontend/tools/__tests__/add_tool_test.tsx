@@ -32,7 +32,7 @@ describe("<AddTool />", () => {
     createRenderer(<AddTool {...p} />);
 
   const getInstance = (wrapper: ReturnType<typeof createRenderer>) =>
-    getRendererInstance<AddTool>(wrapper, AddTool);
+    getRendererInstance<AddTool, AddToolProps>(wrapper, AddTool);
 
   const fakeProps = (): AddToolProps => ({
     dispatch: jest.fn(),

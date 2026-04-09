@@ -26,6 +26,7 @@ import { AllCurveInfo, CURVE_KEY_LOOKUP } from "./curve_info";
 import { BotSize } from "../farm_designer/map/interfaces";
 import { UpdatePlant } from "./plant_info";
 import { ALIASED_SLUG_LOOKUP } from "../crops/constants";
+import { XYZ } from "../devices/constants";
 
 export interface PlantPanelProps {
   info: FormattedPlantInfo;
@@ -87,7 +88,7 @@ export const EditPlantLocation = (props: EditPlantLocationProps) => {
     farmwareEnvs: props.farmwareEnvs,
   });
   return <div className="row">
-    {["x", "y", "z"].map((axis: Xyz) =>
+    {XYZ.map((axis: Xyz) =>
       <div key={axis} className="grid half-gap">
         <div className="row grid-exp-2 half-gap">
           <label style={{ marginTop: 0 }}>{t("{{axis}} (mm)", { axis })}</label>

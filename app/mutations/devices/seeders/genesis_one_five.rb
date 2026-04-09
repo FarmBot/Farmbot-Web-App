@@ -8,8 +8,7 @@ module Devices
       end
 
       def tool_slots_slot_7
-        add_tool_slot(name: ToolNames::SEED_TROUGH_1,
-                      x: 0,
+        add_tool_slot(x: 0,
                       y: TROUGH_Y,
                       z: TROUGH_Z,
                       tool: tools_seed_trough_1,
@@ -18,8 +17,7 @@ module Devices
       end
 
       def tool_slots_slot_8
-        add_tool_slot(name: ToolNames::SEED_TROUGH_2,
-                      x: 0,
+        add_tool_slot(x: 0,
                       y: TROUGH_Y + TROUGH_SPACING,
                       z: TROUGH_Z,
                       tool: tools_seed_trough_2,

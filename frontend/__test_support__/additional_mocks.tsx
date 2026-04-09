@@ -20,7 +20,7 @@ const mockedLocation = {
   protocol: "http:",
   host: "localhost",
   toString() {
-    return this.href;
+    return mockedLocation.href;
   },
 } as unknown as Location & string;
 const applyLocation = (target: Window, value: typeof mockedLocation) => {
@@ -45,7 +45,7 @@ const applyLocation = (target: Window, value: typeof mockedLocation) => {
 };
 applyLocation(window, mockedLocation);
 if (globalThis !== window) {
-  applyLocation(globalThis as Window, mockedLocation);
+  applyLocation(globalThis as unknown as Window, mockedLocation);
 }
 
 console.error = jest.fn();

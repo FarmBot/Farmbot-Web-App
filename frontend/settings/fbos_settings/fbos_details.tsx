@@ -274,7 +274,7 @@ export const ThrottleIndicator = (props: ThrottleIndicatorProps) => {
 /** Visual representation of throttle state. */
 const ThrottleDisplay = (dataString: string | undefined) =>
   <div className="throttle-display">
-    {Object.keys(THROTTLE_BIT_LOOKUP).map((key: ThrottleType) =>
+    {(Object.keys(THROTTLE_BIT_LOOKUP) as ThrottleType[]).map(key =>
       <div className="throttle-row" key={key}>
         <ThrottleIndicator throttleDataString={dataString} throttleType={key} />
         <p><b>{key}</b></p>

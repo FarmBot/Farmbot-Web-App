@@ -4,7 +4,7 @@ import {
   WateringAnimations, WateringAnimationsProps,
 } from "../watering_animations";
 import { clone } from "lodash";
-import { INITIAL } from "../../../config";
+import { INITIAL, INITIAL_POSITION } from "../../../config";
 
 describe("<WateringAnimations />", () => {
   afterEach(() => {
@@ -14,6 +14,7 @@ describe("<WateringAnimations />", () => {
   const fakeProps = (): WateringAnimationsProps => ({
     waterFlow: true,
     config: clone(INITIAL),
+    configPosition: clone(INITIAL_POSITION),
     getZ: () => 0,
   });
 

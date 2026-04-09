@@ -59,7 +59,7 @@ export class LogsPanel extends React.Component<LogsProps, Partial<LogsState>> {
   };
 
   /** Toggle display of a log type. Verbosity level 0 hides all, 3 shows all.*/
-  toggle = (key: keyof Filters) => {
+  toggle = (key: keyof LogsState) => {
     // If log type is off, set it to verbosity level 1, otherwise turn it off
     const newSetting = this.state[key] === 0 ? 1 : 0;
     return () => {
@@ -70,7 +70,7 @@ export class LogsPanel extends React.Component<LogsProps, Partial<LogsState>> {
   };
 
   /** Set log type filter level. i.e., level 2 shows verbosity 2 and lower.*/
-  setFilterLevel = (key: keyof Filters) => {
+  setFilterLevel = (key: keyof LogsState) => {
     return (value: number) => {
       this.setState({ [key]: value });
       this.props.dispatch(
@@ -85,7 +85,7 @@ export class LogsPanel extends React.Component<LogsProps, Partial<LogsState>> {
   get filterActive() {
     const filterKeys = filterStateKeys(this.state);
     const filterValues = filterKeys
-      .map((key: keyof Filters) => this.state[key]);
+      .map(key => this.state[key as keyof Filters]);
     // Filters active if every log type level is not equal to 3 (max verbosity)
     return !filterValues.every(x => x == 3) || this.state.currentFbosOnly;
   }

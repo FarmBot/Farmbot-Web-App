@@ -7,7 +7,7 @@ describe Api::RegimensController do
   describe '#index' do
     let(:user) { FactoryBot.create(:user) }
 
-    it 'retrieves all regimina' do
+    it 'retrieves all regimens' do
       sign_in user
       regimen = Regimen.create!(name: SecureRandom.hex, device: user.device)
       fe      = FactoryBot.create(:farm_event, executable: regimen)

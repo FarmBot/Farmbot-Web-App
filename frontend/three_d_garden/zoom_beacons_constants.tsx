@@ -1,6 +1,6 @@
 import React from "react";
 import { findIndex } from "lodash";
-import { Config } from "./config";
+import { Config, PositionConfig } from "./config";
 import { threeSpace, zDir, zZero } from "./helpers";
 import { ExternalUrl } from "../external_urls";
 import { isDesktop } from "../screen_size";
@@ -26,7 +26,7 @@ interface Focus {
   };
 }
 
-export const FOCI = (config: Config): Focus[] => [
+export const FOCI = (config: Config, configPosition: PositionConfig): Focus[] => [
   {
     label: "What you can grow",
     info: {
@@ -175,9 +175,9 @@ export const FOCI = (config: Config): Focus[] => [
       scale: 400,
     },
     position: [
-      threeSpace(config.x, config.bedLengthOuter) + config.bedXOffset,
-      threeSpace(config.y + 150, config.bedWidthOuter) + config.bedYOffset,
-      zZero(config) - zDir(config) * config.z,
+      threeSpace(configPosition.x, config.bedLengthOuter) + config.bedXOffset,
+      threeSpace(configPosition.y + 150, config.bedWidthOuter) + config.bedYOffset,
+      zZero(config) - zDir(config) * configPosition.z,
     ],
     camera: {
       narrow: {
@@ -230,7 +230,7 @@ export const FOCI = (config: Config): Focus[] => [
       scale: 550,
     },
     position: [
-      threeSpace(config.x, config.bedLengthOuter) + config.bedXOffset - 50,
+      threeSpace(configPosition.x, config.bedLengthOuter) + config.bedXOffset - 50,
       threeSpace(-200, config.bedWidthOuter),
       config.columnLength - 150,
     ],
@@ -382,8 +382,13 @@ export const FOCI = (config: Config): Focus[] => [
   },
 ];
 
-export const getFocus = (config: Config, activeFocus: string) =>
-  FOCI(config)[findIndex(FOCI(config), ["label", activeFocus])];
+export const getFocus = (
+  config: Config,
+  configPosition: PositionConfig,
+  activeFocus: string,
+) =>
+  FOCI(config, configPosition)[findIndex(FOCI(config, configPosition),
+    ["label", activeFocus])];
 
 export const getCameraOffset = (focus: Focus) =>
   isDesktop()
@@ -392,10 +397,11 @@ export const getCameraOffset = (focus: Focus) =>
 
 export const getCamera = (
   config: Config,
+  configPosition: PositionConfig,
   activeFocus: string,
   fallback: Camera,
 ): Camera => {
-  const focus = getFocus(config, activeFocus);
+  const focus = getFocus(config, configPosition, activeFocus);
   if (!focus) { return fallback; }
   const camera = getCameraOffset(focus);
   return {

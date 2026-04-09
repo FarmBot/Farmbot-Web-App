@@ -1,7 +1,7 @@
 import React from "react";
 import { render } from "@testing-library/react";
 import { Bot, FarmbotModelProps } from "../bot";
-import { INITIAL } from "../../config";
+import { INITIAL, INITIAL_POSITION } from "../../config";
 import { clone } from "lodash";
 import { SVGLoader } from "three/examples/jsm/Addons.js";
 
@@ -17,6 +17,7 @@ describe("<Bot />", () => {
     config.cableCarriers = true;
     return {
       config,
+      configPosition: clone(INITIAL_POSITION),
       activeFocus: "",
       getZ: jest.fn(),
     };

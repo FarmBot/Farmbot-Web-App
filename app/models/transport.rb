@@ -58,16 +58,16 @@ class Transport
   end
 
   def send_demo_token_to(user, secret)
-    fbos_version = Api::AbstractController::EXPECTED_VER
     routing_key =
       [Api::RmqUtilsController::DEMO_REGISTRY_ROOT, secret].join(".")
     payload =
-      SessionToken.as_json(user, "GUEST", fbos_version).to_json
+      SessionToken.as_json(user, "GUEST").to_json
     raw_amqp_send(payload, routing_key)
   end
 
   def amqp_send(message, id, channel)
     raise "BAD `id`" unless id.is_a?(String) || id.is_a?(Integer)
+
     routing_key = "bot.device_#{id}.#{channel}"
     raw_amqp_send(message, routing_key)
   end
@@ -127,5 +127,5 @@ class Transport
     def self.close_connections_for_username(name)
       find_connection_by_name(name).map { |connect| client.close_connection(connect) }
     end
-  end # Mqmt
-end # Transport
+  end
+end

@@ -1,4 +1,3 @@
-"use strict";
 /**
  *
  * Web App translation file helper
@@ -11,16 +10,15 @@
  *
  *
  * IMPORTANT DEVELOPER NOTE:
- *   Edit `_helper.ts` and generate `_helper.js` via `bunx tsc _helper.ts`.
+ *   Edit `_helper.ts` and generate `_helper.js` via:
+ *     `bunx tsc --project tsconfig.dev.json` from project root.
  *   Do not edit `_helper.js` directly; any changes will be overwritten.
  *
  *
  * */
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.ATTENTION = void 0;
-exports.ATTENTION = "Run `_helper.js`, not `_helper.ts`.";
-var path_1 = require("path");
-var fs_1 = require("fs");
+export const ATTENTION = "Run `_helper.js`, not `_helper.ts`.";
+import { join as pathJoin } from "path";
+import { readdirSync, readFileSync, statSync, writeFileSync } from "fs";
 /**
  * Build a list of all the files that are children of a directory.
  * @param dir The directory to search.
@@ -28,14 +26,14 @@ var fs_1 = require("fs");
  * @param ext A list of file extensions to filter the files.
  */
 function walkSync(dir, fileList, extensions) {
-    var files = (0, fs_1.readdirSync)(dir);
-    files.map(function (file) {
-        if ((0, fs_1.statSync)((0, path_1.join)(dir, file)).isDirectory()) {
-            fileList = walkSync((0, path_1.join)(dir, file), fileList, extensions);
+    const files = readdirSync(dir);
+    files.map((file) => {
+        if (statSync(pathJoin(dir, file)).isDirectory()) {
+            fileList = walkSync(pathJoin(dir, file), fileList, extensions);
         }
         else {
-            if (extensions.some(function (ext) { return file.endsWith(ext); })) {
-                fileList.push((0, path_1.join)(dir, file));
+            if (extensions.some(ext => file.endsWith(ext))) {
+                fileList.push(pathJoin(dir, file));
             }
         }
     });
@@ -46,10 +44,10 @@ function walkSync(dir, fileList, extensions) {
  */
 function searchInFile(path, regex) {
     // load the file
-    var fileContent = (0, fs_1.readFileSync)(path, "utf8");
-    var strArray = [];
+    const fileContent = readFileSync(path, "utf8");
+    const strArray = [];
     // match all the groups
-    var match = regex.exec(fileContent);
+    let match = regex.exec(fileContent);
     while (match != undefined) {
         strArray.push(match[1].replace(/\s+/g, " "));
         match = regex.exec(fileContent);
@@ -61,11 +59,11 @@ function localeSort(a, b) { return a.localeCompare(b); }
 // '.t("")' or '{t("")' or ' t("")' or '(t("")' or '[t("")'
 // '.t(``)' or '{t(``)' or ' t(``)' or '(t(``)' or '[t(``)'
 // Also finds ' t("some {{data}}", \n {data})'
-var T_REGEX = /[.{[(\s]t\(["`]([\w\s{}().,:'\-=\\?/%!]*)["`],*\s*.*\)/g;
+const T_REGEX = /[.{[(\s]t\(["`]([\w\s{}().,:'\-=\\?/%!]*)["`],*\s*.*\)/g;
 // '``'
-var C_REGEX = /[`]([\w\s{}().,*:'\-=/\\?"+!]*)[`].*/g;
+const C_REGEX = /[`]([\w\s{}().,*:'\-=/\\?"+!]*)[`].*/g;
 /** Some additional phrases the regex can't find. */
-var EXTRA_TAGS = [
+const EXTRA_TAGS = [
     "Fun", "Warn", "Map Points", "Row Spacing", "Height", "Taxon",
     "Growing Degree Days", "Svg Icon", "Invalid date",
     "Sequence Editor", "Commands", "back to sequences",
@@ -80,15 +78,15 @@ var EXTRA_TAGS = [
 ];
 /** For debugging. Replace all characters except whitespace and {{ words }}. */
 function repl(string, character) {
-    var parts = string.split("{{");
+    const parts = string.split("{{");
     if (parts.length < 2) {
         return string.replace(/\S/g, character);
     }
-    var insideAndAfter = parts[1].split("}}");
-    var before = parts[0].replace(/\S/g, character);
-    var inside = insideAndAfter[0];
-    var after = insideAndAfter[1].replace(/\S/g, character);
-    var firstPart = [before, inside].join("{{");
+    const insideAndAfter = parts[1].split("}}");
+    const before = parts[0].replace(/\S/g, character);
+    const inside = insideAndAfter[0];
+    const after = insideAndAfter[1].replace(/\S/g, character);
+    const firstPart = [before, inside].join("{{");
     return [firstPart, after].join("}}");
 }
 /**
@@ -96,7 +94,7 @@ function repl(string, character) {
  * Example usage: `bun _helper.js xx _ n`
  */
 function replaceWithDebugString(key, debugString, debugStringOption) {
-    var debugChar = debugString[0];
+    const debugChar = debugString[0];
     switch (debugStringOption) {
         case "r": return debugString; // replace with: string as provided
         case "s": return debugChar; // single character
@@ -107,24 +105,25 @@ function replaceWithDebugString(key, debugString, debugStringOption) {
 }
 /** Generate translation summary data for all languages. */
 function generateMetrics() {
-    var languageCodes = walkSync(__dirname, [], [".json"])
-        .filter(function (s) { return !s.includes("metrics.json"); })
-        .filter(function (s) { return !s.includes("en.json"); })
-        .map(function (s) { return s.slice(-"en.json".length, -".json".length); });
-    var metrics = [];
-    languageCodes.map(function (lang) {
-        var summaryData = Helper.createOrUpdateTranslationFile(lang, true);
+    const languageCodes = walkSync(__dirname, [], [".json"])
+        .filter(s => !s.includes("metrics.json"))
+        .filter(s => !s.includes("en.json"))
+        .map(s => s.slice(-"en.json".length, -".json".length))
+        .sort(localeSort);
+    const metrics = [];
+    languageCodes.map(lang => {
+        const summaryData = Helper.createOrUpdateTranslationFile(lang, true);
         summaryData && metrics.push(summaryData);
     });
     // console.log(metrics);
     // const jsonMetrics = JSON.stringify(metrics, undefined, 2);
     // writeFileSync(pathJoin(__dirname, "metrics.json"), jsonMetrics);
-    var markdown = "";
+    let markdown = "";
     markdown += "# Translation summary\n\n";
     markdown += "_This summary was automatically generated by running the";
     markdown += " language helper._\n\n";
     markdown += "Auto-sort and generate translation file contents using:\n\n";
-    markdown += "```bash\nnode public/app-resources/languages/_helper.js en\n```\n\n";
+    markdown += "```bash\nbun public/app-resources/languages/_helper.js en\n```\n\n";
     markdown += "Where `en` is your language code.\n\n";
     markdown += "Translation file format can be checked using:\n\n";
     markdown += "```bash\nbun run translation-check\n```\n\n";
@@ -161,26 +160,26 @@ function generateMetrics() {
     markdown += " by the language helper or phrases that have been changed";
     markdown += "\nor removed from the Web App.";
     markdown += "\n";
-    (0, fs_1.writeFileSync)((0, path_1.join)(__dirname, "translation_metrics.md"), markdown);
+    writeFileSync(pathJoin(__dirname, "translation_metrics.md"), markdown);
 }
 /** Print some translation file metrics. */
 function generateSummary(args) {
-    var current = Object.keys(args.foundTags).length;
-    var orphans = Object.keys(args.unmatchedTags).length;
-    var untranslated = Object.keys(args.untranslated).length;
-    var translated = Object.keys(args.translated).length;
-    var total = untranslated + translated + orphans;
-    var percent = Math.round(translated / current * 100);
-    var existingUntranslated = args.countExisting - translated;
+    const current = Object.keys(args.foundTags).length;
+    const orphans = Object.keys(args.unmatchedTags).length;
+    const untranslated = Object.keys(args.untranslated).length;
+    const translated = Object.keys(args.translated).length;
+    const total = untranslated + translated + orphans;
+    const percent = Math.round(translated / current * 100);
+    const existingUntranslated = args.countExisting - translated;
     if (!args.metricsOnly) {
-        console.log("".concat(current, " strings found."));
-        console.log("  ".concat(args.countExisting, " existing items match."));
-        console.log("    ".concat(translated, " existing translations match."));
-        console.log("    ".concat(existingUntranslated, " existing untranslated items."));
-        console.log("  ".concat(current - args.countExisting, " new items added."));
-        console.log("".concat(percent, "% of found strings translated."));
-        console.log("".concat(orphans, " unused, outdated, or extra items."));
-        console.log("Updated file '".concat(args.langCode, ".js' with ").concat(total, " items."));
+        console.log(`${current} strings found.`);
+        console.log(`  ${args.countExisting} existing items match.`);
+        console.log(`    ${translated} existing translations match.`);
+        console.log(`    ${existingUntranslated} existing untranslated items.`);
+        console.log(`  ${current - args.countExisting} new items added.`);
+        console.log(`${percent}% of found strings translated.`);
+        console.log(`${orphans} unused, outdated, or extra items.`);
+        console.log(`Updated file '${args.langCode}.js' with ${total} items.`);
     }
     return {
         percent: percent, orphans: orphans, total: total, untranslated: untranslated,
@@ -191,18 +190,18 @@ var Helper;
 (function (Helper) {
     /** Get all the tags in the .ts and .tsx files of the current project */
     function getAllTags() {
-        var srcPath = (0, path_1.join)(__dirname, "../../../frontend");
-        var listFilteredFiles = walkSync(srcPath, [], [".ts", ".tsx"]);
-        var allTags = listFilteredFiles.map(function (x) { return searchInFile(x, T_REGEX); });
-        var constantsTags = searchInFile((0, path_1.join)(srcPath, "constants.ts"), C_REGEX);
+        const srcPath = pathJoin(__dirname, "../../../frontend");
+        const listFilteredFiles = walkSync(srcPath, [], [".ts", ".tsx"]);
+        const allTags = listFilteredFiles.map(x => searchInFile(x, T_REGEX));
+        const constantsTags = searchInFile(pathJoin(srcPath, "constants.ts"), C_REGEX);
         // flatten list of list in a simple list
-        var flatAllTags = allTags.flat();
-        var flatConstantsTags = constantsTags.flat();
-        var flatExtraTags = EXTRA_TAGS.flat();
-        var flattenedTags = [flatAllTags, flatConstantsTags, flatExtraTags].flat();
+        const flatAllTags = allTags.flat();
+        const flatConstantsTags = constantsTags.flat();
+        const flatExtraTags = EXTRA_TAGS.flat();
+        const flattenedTags = [flatAllTags, flatConstantsTags, flatExtraTags].flat();
         // distinct
-        var uniq = Array.from(new Set(flattenedTags));
-        var sorted = uniq.sort(localeSort);
+        const uniq = Array.from(new Set(flattenedTags));
+        const sorted = uniq.sort(localeSort);
         return sorted;
     }
     Helper.getAllTags = getAllTags;
@@ -220,96 +219,92 @@ var Helper;
      * @param  langInput The short name of the language, i.e., `en`.
      */
     // eslint-disable-next-line complexity
-    function createOrUpdateTranslationFile(langInput, metricsOnly) {
-        if (langInput === void 0) { langInput = "en"; }
-        var lang = langInput.slice(0, 2);
+    function createOrUpdateTranslationFile(langInput = "en", metricsOnly) {
+        const lang = langInput.slice(0, 2);
         // check current file entry
-        var langFilePath = (0, path_1.join)(__dirname, "".concat(lang, ".json"));
-        var summaryData = undefined;
+        const langFilePath = pathJoin(__dirname, `${lang}.json`);
+        let summaryData = undefined;
         try {
-            var tagsResult = getAllTags();
-            var jsonCurrentTagData_1 = {};
-            tagsResult.map(function (tag) {
-                jsonCurrentTagData_1[tag] = tag;
+            const tagsResult = getAllTags();
+            const jsonCurrentTagData = {};
+            tagsResult.map(tag => {
+                jsonCurrentTagData[tag] = tag;
             });
-            var ordered_1 = {};
-            var translatedKeys_1 = [];
-            var fileContent = void 0;
+            const ordered = {};
+            const translatedKeys = [];
+            let fileContent;
             try {
                 // check the file can be opened
-                (0, fs_1.statSync)(langFilePath);
+                statSync(langFilePath);
                 // load the file
-                fileContent = (0, fs_1.readFileSync)(langFilePath, "utf8");
+                fileContent = readFileSync(langFilePath, "utf8");
                 if (lang == "en") {
-                    console.log("Current file '".concat(lang, ".json' content: "));
+                    console.log(`Current file '${lang}.json' content: `);
                     console.log(fileContent);
                     console.log("Try entering a language code.");
                     console.log("For example: bun _helper.js en");
                     return;
                 }
             }
-            catch (e) {
+            catch (_a) {
                 if (!metricsOnly) {
-                    console.log("New file created: '".concat(lang, ".json'"));
+                    console.log(`New file created: '${lang}.json'`);
                 }
                 // If there is no current file, we will create it.
             }
             try {
                 if (fileContent != undefined) {
-                    var jsonParsed = JSON.parse(fileContent);
-                    translatedKeys_1.push.apply(translatedKeys_1, Object.keys(jsonParsed.translated || []));
-                    var combinedContent_1 = jsonParsed.translated || [];
+                    const jsonParsed = JSON.parse(fileContent);
+                    translatedKeys.push(...Object.keys(jsonParsed.translated || []));
+                    const combinedContent = jsonParsed.translated || [];
                     Object.entries(jsonParsed.untranslated || [])
-                        .map(function (_a) {
-                        var untranslated_key = _a[0], untranslated_value = _a[1];
-                        combinedContent_1[untranslated_key] = untranslated_value;
+                        .map(([untranslated_key, untranslated_value]) => {
+                        combinedContent[untranslated_key] = untranslated_value;
                     });
                     Object.entries(jsonParsed.other_translations || [])
-                        .map(function (_a) {
-                        var other_key = _a[0], other_value = _a[1];
-                        combinedContent_1[other_key] = other_value;
+                        .map(([other_key, other_value]) => {
+                        combinedContent[other_key] = other_value;
                     });
-                    var count = Object.keys(combinedContent_1).length;
+                    const count = Object.keys(combinedContent).length;
                     if (!metricsOnly) {
-                        console.log("Loaded file '".concat(lang, ".json' containing ").concat(count, " items."));
+                        console.log(`Loaded file '${lang}.json' containing ${count} items.`);
                     }
-                    Object.keys(combinedContent_1).sort(localeSort).map(function (key) {
-                        ordered_1[key] = combinedContent_1[key];
+                    Object.keys(combinedContent).sort(localeSort).map(key => {
+                        ordered[key] = combinedContent[key];
                     });
                 }
             }
             catch (e) {
                 if (!metricsOnly) {
-                    console.log("file: ".concat(langFilePath, " contains an error: ").concat(e));
+                    console.log(`file: ${langFilePath} contains an error: ${e}`);
                 }
                 // If there is an error with the current file content, abort.
                 return;
             }
             // For debugging
-            var debug_1 = process.argv[3];
-            var debugOption_1 = process.argv[4];
+            const debug = process.argv[3];
+            const debugOption = process.argv[4];
             // merge new tags with existing translation
-            var untranslated_1 = {};
-            var translated_1 = {};
-            var other_translations_1 = {};
-            var existing_1 = 0;
+            const untranslated = {};
+            const translated = {};
+            const other_translations = {};
+            let existing = 0;
             // all current tags in English
-            Object.keys(jsonCurrentTagData_1).sort(localeSort).map(function (key) {
-                untranslated_1[key] = jsonCurrentTagData_1[key];
-                if (debug_1) {
-                    untranslated_1[key] = replaceWithDebugString(key, debug_1, debugOption_1);
+            Object.keys(jsonCurrentTagData).sort(localeSort).map(key => {
+                untranslated[key] = jsonCurrentTagData[key];
+                if (debug) {
+                    untranslated[key] = replaceWithDebugString(key, debug, debugOption);
                 }
             });
-            Object.entries(ordered_1).map(function (_a) {
-                var key = _a[0], value = _a[1];
+            Object.entries(ordered).map(([key, value]) => {
                 // replace current tag with an existing translation
-                if (untranslated_1.hasOwnProperty(key)) {
-                    existing_1++;
-                    if ((key !== value) || translatedKeys_1.includes(key)) {
-                        delete untranslated_1[key];
-                        translated_1[key] = value;
-                        if (debug_1) {
-                            translated_1[key] = replaceWithDebugString(key, debug_1, debugOption_1);
+                if (untranslated.hasOwnProperty(key)) {
+                    existing++;
+                    if ((key !== value) || translatedKeys.includes(key)) {
+                        delete untranslated[key];
+                        translated[key] = value;
+                        if (debug) {
+                            translated[key] = replaceWithDebugString(key, debug, debugOption);
                         }
                     }
                 }
@@ -317,35 +312,35 @@ var Helper;
                     if (key !== value) {
                         // if the tag doesn't exist but a translation exists,
                         // put the key/value at the end of the json
-                        other_translations_1[key] = value;
+                        other_translations[key] = value;
                     }
                 }
             });
             summaryData = generateSummary({
-                langCode: lang, untranslated: untranslated_1,
-                foundTags: jsonCurrentTagData_1, unmatchedTags: other_translations_1,
-                translated: translated_1, countExisting: existing_1,
+                langCode: lang, untranslated: untranslated,
+                foundTags: jsonCurrentTagData, unmatchedTags: other_translations,
+                translated: translated, countExisting: existing,
                 metricsOnly: metricsOnly
             });
-            var jsonContent = {
-                translated: translated_1,
-                untranslated: untranslated_1,
-                other_translations: other_translations_1,
+            const jsonContent = {
+                translated: translated,
+                untranslated: untranslated,
+                other_translations: other_translations,
             };
-            var stringJson = JSON.stringify(jsonContent, undefined, 2) + "\n";
+            const stringJson = JSON.stringify(jsonContent, undefined, 2) + "\n";
             if (!metricsOnly) {
-                (0, fs_1.writeFileSync)(langFilePath, stringJson);
+                writeFileSync(langFilePath, stringJson);
             }
         }
         catch (e) {
             if (!metricsOnly) {
-                console.log("file: ".concat(langFilePath, ". error append: ").concat(e));
+                console.log(`file: ${langFilePath}. error append: ${e}`);
             }
         }
         return summaryData;
     }
     Helper.createOrUpdateTranslationFile = createOrUpdateTranslationFile;
 })(Helper || (Helper = {}));
-var language = process.argv[2];
+const language = process.argv[2];
 Helper.createOrUpdateTranslationFile(language);
 generateMetrics();

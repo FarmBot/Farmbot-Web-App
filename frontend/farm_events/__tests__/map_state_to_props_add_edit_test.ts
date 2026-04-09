@@ -89,7 +89,8 @@ describe("mapStateToPropsAddEdit()", () => {
       const s = fakeSequence();
       state.resources = buildResourceIndex([s, fakeDevice()]);
       const { findExecutable } = mapStateToPropsAddEdit(state);
-      expect(findExecutable("Sequence", s.body.id).kind).toEqual("Sequence");
+      expect(findExecutable("Sequence", s.body.id as number).kind)
+        .toEqual("Sequence");
     });
 
     it("finds regimen", () => {
@@ -97,7 +98,8 @@ describe("mapStateToPropsAddEdit()", () => {
       const r = fakeRegimen();
       state.resources = buildResourceIndex([r, fakeDevice()]);
       const { findExecutable } = mapStateToPropsAddEdit(state);
-      expect(findExecutable("Regimen", r.body.id).kind).toEqual("Regimen");
+      expect(findExecutable("Regimen", r.body.id as number).kind)
+        .toEqual("Regimen");
     });
   });
 

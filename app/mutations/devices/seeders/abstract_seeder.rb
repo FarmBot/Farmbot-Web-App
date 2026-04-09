@@ -2,6 +2,7 @@ module Devices
   module Seeders
     class AbstractSeeder
       include Constants
+
       attr_reader :device
 
       # DO NOT ALPHABETIZE. ORDER MATTERS! - RC
@@ -156,7 +157,7 @@ module Devices
 
       def sequences_water_all
         success = install_sequence_version_by_name(PublicSequenceNames::WATER_ALL)
-        if !success
+        unless success
           s = SequenceSeeds::WATER_ALL.deep_dup
           Sequences::Create.run!(s, device: device)
         end
@@ -164,7 +165,7 @@ module Devices
 
       def sequences_photo_grid
         success = install_sequence_version_by_name(PublicSequenceNames::PHOTO_GRID)
-        if !success
+        unless success
           s = SequenceSeeds::PHOTO_GRID.deep_dup
           Sequences::Create.run!(s, device: device)
         end
@@ -172,7 +173,7 @@ module Devices
 
       def sequences_weed_detection_grid
         success = install_sequence_version_by_name(PublicSequenceNames::WEED_DETECTION_GRID)
-        if !success
+        unless success
           s = SequenceSeeds::WEED_DETECTION_GRID.deep_dup
           Sequences::Create.run!(s, device: device)
         end
@@ -180,7 +181,7 @@ module Devices
 
       def sequences_soil_height_grid
         success = install_sequence_version_by_name(PublicSequenceNames::SOIL_HEIGHT_GRID)
-        if !success
+        unless success
           s = SequenceSeeds::SOIL_HEIGHT_GRID.deep_dup
           Sequences::Create.run!(s, device: device)
         end
@@ -188,7 +189,7 @@ module Devices
 
       def sequences_grid
         success = install_sequence_version_by_name(PublicSequenceNames::GRID)
-        if !success
+        unless success
           s = SequenceSeeds::GRID.deep_dup
           Sequences::Create.run!(s, device: device)
         end
@@ -196,7 +197,7 @@ module Devices
 
       def sequences_dispense_water
         success = install_sequence_version_by_name(PublicSequenceNames::DISPENSE_WATER)
-        if !success
+        unless success
           s = SequenceSeeds::DISPENSE_WATER.deep_dup
           Sequences::Create.run!(s, device: device)
         end
@@ -224,10 +225,12 @@ module Devices
       def tools_seed_trough_2; end
       def tools_seeder; end
       def tools_soil_sensor; end
+
       def tools_watering_nozzle
         @tools_watering_nozzle ||=
           add_tool(ToolNames::WATERING_NOZZLE)
       end
+
       def tools_weeder; end
       def tools_rotary; end
 
@@ -236,9 +239,8 @@ module Devices
       def install_sequence_version_by_name(name)
         sv = SequenceVersion
         .joins(Api::FeaturedSequencesController::JOIN)
-        .where("sequence_publications.cached_author_email = ?",
-          ENV["AUTHORIZED_PUBLISHER"])
-        .where("sequence_publications.published = ?", true)
+        .where(sequence_publications: { cached_author_email: ENV["AUTHORIZED_PUBLISHER"] })
+        .where(sequence_publications: { published: true })
         .order(updated_at: :desc)
         .uniq(&:sequence_publication_id)
         .filter { |x| x.name == name }[0]
@@ -280,8 +282,7 @@ module Devices
                              mode: mode)
       end
 
-      def add_tool_slot(name:,
-                        x:,
+      def add_tool_slot(x:,
                         y:,
                         z:,
                         tool:,

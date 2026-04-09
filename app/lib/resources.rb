@@ -18,10 +18,7 @@ module Resources
                         Tool,
                         WebcamFeed]
   # Map stringy class names to real classes
-  RESOURCES = ELIGIBLE_RESOURCES.reduce({}) do |acc, klass|
-    acc[klass.to_s] = klass
-    acc
-  end
+  RESOURCES = ELIGIBLE_RESOURCES.index_by(&:to_s)
 
   # Map ActiveRecord class to a Mutations::Command class.
   MUTATION_MAPPING = {
@@ -48,4 +45,4 @@ module Resources
     ToolSlot => Points,
     Weed => Points,
   }
-end # Resources
+end

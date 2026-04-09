@@ -37,7 +37,9 @@ module CeleryScript
 
     def initialize(tree, corpus, device)
       # Device is required for security / permission checks.
-      @tree, @corpus, @device = tree, corpus, device
+      @tree = tree
+      @corpus = corpus
+      @device = device
       self.freeze
     end
 
@@ -74,16 +76,15 @@ module CeleryScript
     private
 
     def validate(node)
-      p = node.try(:parent).try(:kind) || "root"
       validate_body(node)
       validate_node(node)
     end
 
     def validate_body(node)
-      (node.body || []).each_with_index do |inner_node, i|
+      (node.body || []).each do |inner_node|
         allowed = corpus.bodies(node)
         body_ok = allowed.include?(inner_node.kind.to_sym)
-        bad_body_kind(node, inner_node, i, allowed) unless body_ok
+        bad_body_kind(node, inner_node, allowed) unless body_ok
       end
     end
 
@@ -96,19 +97,19 @@ module CeleryScript
     def check_arity(node)
       allowed = corpus.args(node)
       allowed.map do |arg|
-        has_key = node.args.has_key?(arg) || node.args.has_key?(arg.to_s)
-        unless has_key
-          msgs = node.args.keys.join(", ")
-          msgs = "nothing" if msgs.length < 1
-          msg = MISSING_ARG % [node.kind, arg, msgs]
-          raise TypeCheckError, msg
-        end
+        has_key = node.args.key?(arg) || node.args.key?(arg.to_s)
+        next if has_key
+
+        msgs = node.args.keys.join(", ")
+        msgs = "nothing" if msgs.empty?
+        msg = format(MISSING_ARG, node.kind, arg, msgs)
+        raise TypeCheckError, msg
       end
       has = node.args.keys.map(&:to_sym) # Either bigger or equal.
       required = corpus.args(node) # Always smallest.
-      if !(has.length === required.length)
+      unless (has.length == required.length)
         extras = has - required
-        raise TypeCheckError, (EXTRA_ARGS % [node.kind, extras, allowed])
+        raise TypeCheckError, (format(EXTRA_ARGS, node.kind, extras, allowed))
       end
     end
 
@@ -138,8 +139,8 @@ module CeleryScript
       maybe_bad_leaf(value, key)
     end
 
-    def bad_body_kind(prnt, child, i, ok)
-      raise TypeCheckError, (BAD_BODY % [prnt.kind, child.kind, ok.inspect])
+    def bad_body_kind(prnt, child, ok)
+      raise TypeCheckError, (format(BAD_BODY, prnt.kind, child.kind, ok.inspect))
     end
 
     def malformed_node!(expectation)
@@ -149,6 +150,7 @@ module CeleryScript
     def run_additional_validations(node, expectation)
       blk = corpus.arg_validator(expectation)
       return if blk == NOOP
+
       blk.call(*[node, device].first(blk.arity))
     end
   end

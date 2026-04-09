@@ -15,7 +15,7 @@ let mockResponse: Promise<unknown>;
 beforeEach(() => {
   mockResponse = Promise.resolve("");
   resendEmailSpy = jest.spyOn(resendVerification, "resendEmail")
-    .mockImplementation(() => mockResponse);
+    .mockImplementation(() => mockResponse as never);
 });
 
 describe("<FormField />", () => {

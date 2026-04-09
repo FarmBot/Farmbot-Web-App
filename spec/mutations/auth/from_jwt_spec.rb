@@ -1,10 +1,9 @@
 require "spec_helper"
 
 describe Auth::FromJwt do
-  FAKE_VERS = Gem::Version.new("99.9.9")
   let(:user) { FactoryBot.create(:user) }
   let(:token) do
-    SessionToken.issue_to(user, fbos_version: FAKE_VERS).encoded
+    SessionToken.issue_to(user).encoded
   end
 
   fake = ->(sub) {

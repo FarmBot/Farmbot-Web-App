@@ -57,10 +57,10 @@ module Users
     # Send a `factory_reset` RPC over AMQP/MQTT to all connected devices.
     # Locks everyone out after a password reset.
     def maybe_perform_password_reset
-      if inputs[:password]
-        SendFactoryResetJob.perform_later(user.device)
-        delete_all_tokens_except_this_one
-      end
+      return unless inputs[:password]
+
+      SendFactoryResetJob.perform_later(user.device)
+      delete_all_tokens_except_this_one
     end
 
     def set_unconfirmed_email

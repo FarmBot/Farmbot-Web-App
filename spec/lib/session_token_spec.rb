@@ -33,8 +33,7 @@ describe SessionToken do
     user.update!(confirmed_at: Time.now)
     token = SessionToken.issue_to(user, iat: 000,
                                         exp: 1,
-                                        iss: "//lycos.com:9867",
-                                        fbos_version: Gem::Version.new("9.9.9"))
+                                        iss: "//lycos.com:9867")
     result = Auth::FromJwt.run(jwt: token.encoded)
     expect(result.success?).to be(false)
     expect(result.errors.values.first.message).to eq(Auth::ReloadToken::BAD_SUB)
@@ -46,8 +45,7 @@ describe SessionToken do
       expect {
         SessionToken.issue_to(user, iat: 000,
                                     exp: 1,
-                                    iss: "//lycos.com:9867",
-                                    fbos_version: Gem::Version.new("9.9.9"))
+                                    iss: "//lycos.com:9867")
       }.to raise_error(Errors::Forbidden)
     end
   else

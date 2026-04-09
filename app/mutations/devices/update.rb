@@ -41,7 +41,7 @@ module Devices
     end
 
     def better_tool_id
-      @better_tool_id ||= ((mounted_tool_id || 0) > 0) ? mounted_tool_id : nil
+      @better_tool_id ||= (mounted_tool_id || 0).positive? ? mounted_tool_id : nil
     end
 
     def mounted_tool_data

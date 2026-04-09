@@ -19,7 +19,6 @@
       left: 17rem;
       bottom: -0.8rem;
       z-index: 999;
-      padding: 2px;
       font-style: normal;
       background-color: $dark_gray;
       color: $off_white;
@@ -90,7 +89,7 @@
     a:active {
       color: $black;
     }
-    &.open{
+    &.open {
       max-height: 16rem;
       color: unset; // sass-lint:disable-line variable-for-property
       transition: all 0.5s ease;

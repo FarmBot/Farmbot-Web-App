@@ -29,11 +29,11 @@ module Api
       mutate policy_class.run
     end
 
-    private
-
     def self.store_locally?
       !ENV["GCS_BUCKET"]
     end
+
+    private
 
     def policy_class
       if ImagesController.store_locally?

@@ -20,8 +20,10 @@ describe("<SequencePart />", () => {
   it("renders default verbiage and props", () => {
     const p = fakeAssertProps();
     const rendered = SequencePart(p);
-    const children = rendered.props.children as JSX.Element[];
-    const selector = children.find(child => child.type === SequenceSelectBox);
+    const children = rendered.props.children as React.ReactElement[];
+    const selector = children.find(child => child.type === SequenceSelectBox) as
+      React.ReactElement<{ onChange: (item: { value: number; label: string }) => void }>
+      | undefined;
     selector?.props.onChange({ value: 246, label: "y" });
     expect(editStepSpy).toHaveBeenCalled();
     const step = cloneDeep(p.currentStep);

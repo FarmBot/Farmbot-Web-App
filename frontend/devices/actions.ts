@@ -47,7 +47,6 @@ const BAD_WORDS = ["WPA", "PSK", "PASSWORD", "NERVES"];
 const MESSAGE: keyof Log = "message";
 
 export function isLog(x: unknown): x is Log {
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const msg = get(x, MESSAGE) as unknown;
   const yup = isObject(x) && isString(msg);
   if (yup) {

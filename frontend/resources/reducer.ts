@@ -118,10 +118,11 @@ export const resourceReducer =
       merge(target, { body: update });
       // apply non-nested undefined values in update that merge() ignores
       Object.entries(update)
-        .map(([key, value]: [keyof typeof target.body, unknown]) => {
+        .map(([key, value]) => {
           if (isUndefined(value)) {
-            // eslint-disable-next-line no-null/no-null
-            target.body[key] = null as unknown as undefined;
+            target.body[key as keyof typeof target.body] =
+              // eslint-disable-next-line no-null/no-null
+              null as unknown as undefined;
           }
         });
       const didChange = !equals(before, target.body);

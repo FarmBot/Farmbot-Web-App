@@ -140,11 +140,12 @@ beforeEach(() => {
     () => mockState;
   (store as unknown as { dispatch: jest.Mock }).dispatch = jest.fn();
   editSpy = jest.spyOn(crud, "edit")
-    .mockImplementation((resource: Record<string, unknown>, update: Record<string, unknown>) =>
+    .mockImplementation(((resource: Record<string, unknown>,
+      update: Record<string, unknown>) =>
       ({
         type: Actions.EDIT_RESOURCE,
         payload: { resource, update }
-      }) as never);
+      }) as never) as unknown as typeof crud.edit);
   saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
   initSaveSpy = jest.spyOn(crud, "initSave").mockImplementation(jest.fn());
   destroySpy = jest.spyOn(crud, "destroy").mockImplementation(jest.fn());
@@ -373,7 +374,7 @@ describe("<SwitchCameraCalibrationMethod />", () => {
     farmwareEnv.body.value = "\"TRUE\"";
     p.resources = buildResourceIndex([farmwareEnv]).index;
     const state = fakeState();
-    state.resources = p.resources;
+    state.resources.index = p.resources;
     const dispatch = jest.fn();
     p.dispatch = mockDispatch(dispatch, () => state);
     const { container } = render(<SwitchCameraCalibrationMethod {...p} />);
@@ -498,7 +499,7 @@ describe("<FirmwareHardwareSelection />", () => {
   const state = fakeState();
   const config = fakeFbosConfig();
   config.body.id = 1;
-  state.resources.index = buildResourceIndex([config]);
+  state.resources.index = buildResourceIndex([config]).index;
 
   it("selects model", () => {
     const p = fakeProps();
@@ -506,7 +507,10 @@ describe("<FirmwareHardwareSelection />", () => {
     config.body.id = 1;
     const device = fakeDevice();
     p.resources = buildResourceIndex([config, device]).index;
-    const dispatchState = { ...state, resources: { index: p.resources } as never };
+    const dispatchState = {
+      ...state,
+      resources: { ...state.resources, index: p.resources },
+    };
     p.dispatch = mockDispatch(jest.fn(), () => dispatchState);
     const fbSelectProps: Array<{
       onChange: (ddi: {
@@ -515,16 +519,12 @@ describe("<FirmwareHardwareSelection />", () => {
       }) => void
     }> = [];
     fbSelectSpy = jest.spyOn(ui, "FBSelect")
-      .mockImplementation((props: {
-        onChange: {
-          (ddi: { label: string; value: string; }): void;
-        };
-      }) => {
+      .mockImplementation(((props: ui.FBSelectProps) => {
         fbSelectProps.push(props);
         return <div />;
-      });
+      }) as never);
     render(<FirmwareHardwareSelection {...p} />);
-    const select = fbSelectProps.at(-1);
+    const select = fbSelectProps[fbSelectProps.length - 1];
     expect(select).toBeTruthy();
     select?.onChange({ label: "Genesis v1.2", value: "genesis_1.2" });
     expect(editSpy).toHaveBeenCalledWith(expect.any(Object), { rpi: "3" });
@@ -539,14 +539,10 @@ describe("<FirmwareHardwareSelection />", () => {
       }) => void
     }> = [];
     fbSelectSpy = jest.spyOn(ui, "FBSelect")
-      .mockImplementation((props: {
-        onChange: {
-          (ddi: { label: string; value: string; }): void;
-        };
-      }) => {
+      .mockImplementation(((props: ui.FBSelectProps) => {
         fbSelectProps.push(props);
         return <div />;
-      });
+      }) as never);
     const alert = fakeAlert();
     alert.body.id = 1;
     alert.body.problem_tag = "api.seed_data.missing";
@@ -554,17 +550,20 @@ describe("<FirmwareHardwareSelection />", () => {
     config.body.id = 1;
     const device = fakeDevice();
     p.resources = buildResourceIndex([alert, config, device]).index;
-    const dispatchState = { ...state, resources: { index: p.resources } as never };
+    const dispatchState = {
+      ...state,
+      resources: { ...state.resources, index: p.resources },
+    };
     p.dispatch = mockDispatch(jest.fn(), () => dispatchState);
     const { rerender } = render(<FirmwareHardwareSelection {...p} />);
-    const select = fbSelectProps.at(-1);
+    const select = fbSelectProps[fbSelectProps.length - 1];
     select?.onChange({ label: "Genesis v1.2", value: "genesis_1.2" });
     expect(editSpy).toHaveBeenCalledWith(expect.any(Object), { rpi: "3" });
     expect(save).toHaveBeenCalledWith(device.uuid);
     expect(destroy).toHaveBeenCalledTimes(1);
     expect(messageActions.seedAccount).toHaveBeenCalledTimes(1);
     rerender(<FirmwareHardwareSelection {...p} />);
-    const selectAfterReselect = fbSelectProps.at(-1);
+    const selectAfterReselect = fbSelectProps[fbSelectProps.length - 1];
     selectAfterReselect?.onChange({ label: "Genesis v1.3", value: "genesis_1.3" });
     expect(editSpy).toHaveBeenCalledWith(expect.any(Object), { rpi: "3" });
     expect(save).toHaveBeenCalledWith(device.uuid);
@@ -579,7 +578,10 @@ describe("<FirmwareHardwareSelection />", () => {
     const device = fakeDevice();
     device.body.account_seeded_at = "2023-01-01T11:22:33.000Z";
     p.resources = buildResourceIndex([config, device]).index;
-    const dispatchState = { ...state, resources: { index: p.resources } as never };
+    const dispatchState = {
+      ...state,
+      resources: { ...state.resources, index: p.resources },
+    };
     p.dispatch = mockDispatch(jest.fn(), () => dispatchState);
     const fbSelectProps: Array<{
       onChange: (ddi: {
@@ -588,16 +590,12 @@ describe("<FirmwareHardwareSelection />", () => {
       }) => void
     }> = [];
     fbSelectSpy = jest.spyOn(ui, "FBSelect")
-      .mockImplementation((props: {
-        onChange: {
-          (ddi: { label: string; value: string; }): void;
-        };
-      }) => {
+      .mockImplementation(((props: ui.FBSelectProps) => {
         fbSelectProps.push(props);
         return <div />;
-      });
+      }) as never);
     render(<FirmwareHardwareSelection {...p} />);
-    const select = fbSelectProps.at(-1);
+    const select = fbSelectProps[fbSelectProps.length - 1];
     expect(select).toBeTruthy();
     select?.onChange({ label: "Genesis v1.2", value: "genesis_1.2" });
     expect(editSpy).toHaveBeenCalledWith(expect.any(Object), { rpi: "3" });
@@ -624,7 +622,7 @@ describe("<RpiSelection />", () => {
   it("changes rpi model", () => {
     const p = fakeProps();
     const state = fakeState();
-    state.resources = p.resources;
+    state.resources.index = p.resources;
     p.dispatch = jest.fn();
     const fbSelectProps: Array<{
       onChange: (ddi: {
@@ -633,16 +631,12 @@ describe("<RpiSelection />", () => {
       }) => void
     }> = [];
     fbSelectSpy = jest.spyOn(ui, "FBSelect")
-      .mockImplementation((props: {
-        onChange: {
-          (ddi: { label: string; value: string; }): void;
-        };
-      }) => {
+      .mockImplementation(((props: ui.FBSelectProps) => {
         fbSelectProps.push(props);
         return <div />;
-      });
+      }) as never);
     render(<RpiSelection {...p} />);
-    const select = fbSelectProps.at(-1);
+    const select = fbSelectProps[fbSelectProps.length - 1];
     expect(select).toBeTruthy();
     select?.onChange({ label: "", value: "3" });
     expect(editSpy).toHaveBeenCalledWith(expect.any(Object), { rpi: "3" });
@@ -685,7 +679,7 @@ describe("<DisableStallDetection />", () => {
   const state = fakeState();
   const config = fakeFirmwareConfig();
   config.body.id = 1;
-  state.resources = buildResourceIndex([config]);
+  state.resources.index = buildResourceIndex([config]).index;
 
   it("disables stall detection", () => {
     const p = fakeProps();
@@ -704,11 +698,11 @@ describe("<InvertJogButton />", () => {
   const state = fakeState();
   const config = fakeWebAppConfig();
   config.body.x_axis_inverted = false;
-  state.resources = buildResourceIndex([config]);
+  state.resources.index = buildResourceIndex([config]).index;
 
   it("inverts button", () => {
     const p = fakeProps();
-    p.resources = state.resources;
+    p.resources = state.resources.index;
     p.dispatch = mockDispatch(jest.fn(), () => state);
     const { container } = render(InvertJogButton("x")(p));
     fireEvent.click(container.querySelector("button") as Element);
@@ -729,11 +723,11 @@ describe("<SwapJogButton />", () => {
   const state = fakeState();
   const config = fakeWebAppConfig();
   config.body.xy_swap = false;
-  state.resources = buildResourceIndex([config]);
+  state.resources.index = buildResourceIndex([config]).index;
 
   it("swaps buttons", () => {
     const p = fakeProps();
-    p.resources = state.resources;
+    p.resources = state.resources.index;
     p.dispatch = mockDispatch(jest.fn(), () => state);
     const { container } = render(<SwapJogButton {...p} />);
     fireEvent.click(container.querySelector("button") as Element);
@@ -745,11 +739,11 @@ describe("<RotateMapToggle />", () => {
   const state = fakeState();
   const config = fakeWebAppConfig();
   config.body.xy_swap = false;
-  state.resources = buildResourceIndex([config]);
+  state.resources.index = buildResourceIndex([config]).index;
 
   it("rotates map", () => {
     const p = fakeProps();
-    p.resources = state.resources;
+    p.resources = state.resources.index;
     p.dispatch = mockDispatch(jest.fn(), () => state);
     const { container } = render(<RotateMapToggle {...p} />);
     fireEvent.click(container.querySelector("button") as Element);
@@ -761,11 +755,11 @@ describe("<DynamicMapToggle />", () => {
   const state = fakeState();
   const config = fakeWebAppConfig();
   config.body.xy_swap = false;
-  state.resources = buildResourceIndex([config]);
+  state.resources.index = buildResourceIndex([config]).index;
 
   it("toggles dynamic map size", () => {
     const p = fakeProps();
-    p.resources = state.resources;
+    p.resources = state.resources.index;
     p.dispatch = mockDispatch(jest.fn(), () => state);
     const { container } = render(<DynamicMapToggle {...p} />);
     fireEvent.click(container.querySelector("button") as Element);

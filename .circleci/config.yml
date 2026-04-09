@@ -114,11 +114,25 @@ commands:
     steps:
       - run:
           name: Run JS tests
+          when: always
           command: |
+            if [ "$SETUP_OK" != "true" ]; then
+              echo "skipping"
+              exit 0
+            fi
             sudo docker compose run --rm web bun test --reporter=junit --reporter-outfile=test-results/junit.xml
             echo 'export COVERAGE_AVAILABLE=true' >> $BASH_ENV
   lint-commands:
     steps:
+      - run:
+          name: Run Ruby Linters
+          command: |
+            if [ "$SETUP_OK" != "true" ]; then
+              echo "skipping"
+              exit 0
+            fi
+            sudo docker compose run --rm web bun run ruby-check
+          when: always
       - run:
           name: Run JS Linters
           command: |
@@ -178,6 +192,67 @@ commands:
             fi
             if [ "$CIRCLE_BRANCH" == "staging" ]; then echo; fi
           when: always # change to `on_success` for a stricter comparison
+      - restore_cache:
+          keys:
+            - fe-coverage-staging-
+      - run:
+          name: Get current frontend coverage value
+          when: always
+          command: |
+            if [ -z "$COVERAGE_AVAILABLE" ]; then
+              echo "skipping"
+              exit 0
+            fi
+            eval "$(awk -F: '/^LH:/ { covered += $2 } /^LF:/ { total += $2 } END { printf "COVERED=%d\nTOTAL=%d\n", covered, total }' coverage_fe/lcov.info)"
+            FE_VALUE=$(awk "BEGIN { printf \"%.2f\", ($COVERED / $TOTAL) * 100 }")
+            echo "Covered lines: $COVERED, Total lines: $TOTAL, Coverage: $FE_VALUE%"
+            echo "export COVERED=$COVERED" >> "$BASH_ENV"
+            echo "export TOTAL=$TOTAL" >> "$BASH_ENV"
+            echo "export FE_VALUE=$FE_VALUE" >> "$BASH_ENV"
+      - run:
+          name: Load previous frontend coverage value
+          when: always
+          command: |
+            if [ -f fe_coverage.csv ]; then
+              PREV_FE=$(python -c 'import csv; f=open("fe_coverage.csv", newline=""); r=csv.reader(f); next(r, None); rows=[float(row[0]) for row in r if row and row[0]]; print(f"{rows[-1]:.2f}" if rows else "98.7")')
+            else
+              PREV_FE=98.7
+            fi
+            echo "Previous value: $PREV_FE%"
+            echo "export PREV_FE_VALUE=$PREV_FE" >> $BASH_ENV
+      - run:
+          name: Compare frontend coverage value
+          when: always
+          command: |
+            if [ -z "$COVERAGE_AVAILABLE" ]; then
+              echo "skipping"
+              exit 0
+            fi
+            percent_change=$(python -c 'import os; fe=float(os.environ.get("FE_VALUE","0") or 0); prev=float(os.environ.get("PREV_FE_VALUE","0") or 0); print("n/a" if prev==0 else f"{((fe-prev)/prev)*100:.2f}")')
+            echo "$FE_VALUE% ($percent_change% change)"
+            echo "export PERCENT_FE_CHANGE=$percent_change" >> "$BASH_ENV"
+      - run:
+          name: Save new frontend coverage value
+          when: always
+          command: |
+            if [ -z "$COVERAGE_AVAILABLE" ]; then
+              echo "skipping"
+              exit 0
+            fi
+            echo "$FE_VALUE"
+            if [ ! -f fe_coverage.csv ]; then
+              printf '%s\n' "percent,covered lines,total lines,percent change" > fe_coverage.csv
+            fi
+            printf '%s\n' "$FE_VALUE,$COVERED,$TOTAL,$PERCENT_FE_CHANGE" >> fe_coverage.csv
+            cat fe_coverage.csv
+      - save_cache:
+          key: fe-coverage-{{ .Branch }}-{{ epoch }}
+          paths:
+            - fe_coverage.csv
+          when: always
+      - store_artifacts:
+          path: fe_coverage.csv
+          destination: fe_coverage.csv
   render-commands:
     steps:
       - run:
@@ -254,7 +329,7 @@ commands:
           keys:
             - fps_value-staging-
       - run:
-          name: Load previous value
+          name: Load previous fps value
           when: always
           command: |
             if [ -f fps_value.txt ]; then
@@ -265,14 +340,14 @@ commands:
             echo "Previous value: $PREV fps"
             echo "export PREV_VALUE=$PREV" >> $BASH_ENV
       - run:
-          name: Compare value
+          name: Compare fps value
           when: always
           command: |
             percent_change=$(python -c 'import os; fps=float(os.environ.get("FPS_VALUE","0") or 0); prev=float(os.environ.get("PREV_VALUE","0") or 0); print("n/a" if prev==0 else f"{((fps-prev)/prev)*100:.2f}")')
             echo "$FPS_VALUE fps ($percent_change% change)"
             echo "export PERCENT_CHANGE=$percent_change" >> "$BASH_ENV"
       - run:
-          name: Save new value
+          name: Save new fps value
           command: |
             echo "$FPS_VALUE"
             echo "$FPS_VALUE" > fps_value.txt
@@ -307,13 +382,13 @@ commands:
   end-commands:
     steps:
       - run:
-          name: Fetch first artifact URL
+          name: Fetch image artifact URL
           command: |
             project_slug="gh/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}"
             artifacts_json=$(curl -fsS \
               -H "Accept: application/json" \
               "https://circleci.com/api/v2/project/${project_slug}/${CIRCLE_BUILD_NUM}/artifacts")
-            artifact_url=$(printf "%s" "$artifacts_json" | python -c 'import json,sys; data=json.load(sys.stdin); items=data.get("items") or []; print(items[0].get("url","") if items else "")')
+            artifact_url=$(printf "%s" "$artifacts_json" | python -c 'import json,sys; data=json.load(sys.stdin); items=data.get("items") or []; print(next((item.get("url","") for item in items if item.get("url","").endswith(".png")), ""))')
             echo "export ARTIFACT_URL=$artifact_url" >> "$BASH_ENV"
       - send-notification:
           message: "CI run succeeded"

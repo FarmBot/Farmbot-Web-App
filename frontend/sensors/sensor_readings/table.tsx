@@ -102,7 +102,7 @@ export class SensorReadingsTable
       <TableHeader />
       <table className="sensor-history-table-contents">
         <tbody>
-          {["current", "previous"].map((period: "current" | "previous") => {
+          {(["current", "previous"] as const).map(period => {
             return this.props.readingsForPeriod(period).reverse()
               .map(sensorReading => {
                 const pin = sensorReading.body.pin;

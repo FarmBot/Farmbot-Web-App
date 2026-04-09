@@ -2,9 +2,10 @@ let mockIsDesktop = false;
 let mockIsMobile = false;
 
 import React from "react";
+import { useTexture } from "@react-three/drei";
 import { GardenModelProps, GardenModel } from "../garden_model";
 import { clone } from "lodash";
-import { INITIAL, SurfaceDebugOption } from "../config";
+import { INITIAL, INITIAL_POSITION, SurfaceDebugOption } from "../config";
 import { render } from "@testing-library/react";
 import {
   fakePlant, fakePoint, fakeSensor, fakeSensorReading, fakeWeed,
@@ -20,6 +21,7 @@ import {
   createRenderer,
   unmountRenderer,
 } from "../../__test_support__/test_renderer";
+import { PLANT_ICON_ATLAS } from "../garden/plant_icon_atlas";
 
 let isDesktopSpy: jest.SpyInstance;
 let isMobileSpy: jest.SpyInstance;
@@ -56,11 +58,13 @@ describe("<GardenModel />", () => {
     useStateSpy.mockRestore();
     isDesktopSpy.mockRestore();
     isMobileSpy.mockRestore();
+    delete PLANT_ICON_ATLAS["/crops/icons/beet.avif"];
     location.pathname = originalPathname;
   });
 
   const fakeProps = (): GardenModelProps => ({
     config: clone(INITIAL),
+    configPosition: clone(INITIAL_POSITION),
     activeFocus: "",
     setActiveFocus: jest.fn(),
     addPlantProps: fakeAddPlantProps(),
@@ -102,6 +106,67 @@ describe("<GardenModel />", () => {
     const p = fakeProps();
     const plant = fakePlant();
     plant.body.name = "Beet";
+    p.threeDPlants = convertPlants(p.config, [plant]);
+    const { queryAllByText } = render(<GardenModel {...p} />);
+    const plantLabels = queryAllByText("Beet");
+    expect(plantLabels.length).toEqual(1);
+  });
+
+  it("preloads the atlas texture for mapped plant icons", () => {
+    PLANT_ICON_ATLAS["/crops/icons/beet.avif"] = {
+      atlasUrl: "/crops/icons/atlas.avif",
+      textureWidth: 256,
+      textureHeight: 256,
+      x: 0,
+      y: 0,
+      width: 64,
+      height: 64,
+    };
+    const p = fakeProps();
+    const plant = fakePlant();
+    plant.body.name = "Beet";
+    p.threeDPlants = convertPlants(p.config, [plant]);
+
+    render(<GardenModel {...p} />);
+
+    expect(useTexture).toHaveBeenCalledWith("/crops/icons/atlas.avif");
+  });
+
+  it("doesn't render hover labels without a hovered plant", () => {
+    const p = fakeProps();
+    const plant = fakePlant();
+    plant.body.name = "Beet";
+    p.config.labels = true;
+    p.config.labelsOnHover = true;
+    p.threeDPlants = convertPlants(p.config, [plant]);
+    const { queryAllByText } = render(<GardenModel {...p} />);
+    const plantLabels = queryAllByText("Beet");
+    expect(plantLabels.length).toEqual(0);
+  });
+
+  it("renders only the hovered label when labels on hover are enabled", () => {
+    useStateSpy.mockRestore();
+    let useStateCalls = 0;
+    useStateSpy = jest.spyOn(React, "useState")
+      // eslint-disable-next-line comma-spacing
+      .mockImplementation(<S,>(initialState?: S | (() => S)) => {
+        useStateCalls += 1;
+        if (useStateCalls == 1) {
+          return [0 as S, jest.fn()];
+        }
+        if (useStateCalls == 2) {
+          return [{} as S, jest.fn()];
+        }
+        const value = typeof initialState == "function"
+          ? (initialState as () => S)()
+          : initialState;
+        return [value as S, jest.fn()];
+      });
+    const p = fakeProps();
+    const plant = fakePlant();
+    plant.body.name = "Beet";
+    p.config.labels = true;
+    p.config.labelsOnHover = true;
     p.threeDPlants = convertPlants(p.config, [plant]);
     const { queryAllByText } = render(<GardenModel {...p} />);
     const plantLabels = queryAllByText("Beet");

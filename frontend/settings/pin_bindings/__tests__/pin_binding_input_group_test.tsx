@@ -93,7 +93,8 @@ describe("<PinBindingInputGroup/>", () => {
     const button = buttons[buttons.length - 1];
     expect(button?.props.title).toEqual("BIND");
     const instance =
-      getRendererInstance<PinBindingInputGroup>(wrapper, PinBindingInputGroup);
+      getRendererInstance<PinBindingInputGroup, PinBindingInputGroupProps>(
+        wrapper, PinBindingInputGroup);
     actRenderer(() => instance.setState({ pinNumberInput: AVAILABLE_PIN }));
     actRenderer(() => button?.props.onClick());
     expect(error).toHaveBeenCalledWith("Please select a sequence or action.");
@@ -107,7 +108,8 @@ describe("<PinBindingInputGroup/>", () => {
     const button = buttons[buttons.length - 1];
     expect(button?.props.title).toEqual("BIND");
     const instance =
-      getRendererInstance<PinBindingInputGroup>(wrapper, PinBindingInputGroup);
+      getRendererInstance<PinBindingInputGroup, PinBindingInputGroupProps>(
+        wrapper, PinBindingInputGroup);
     actRenderer(() => instance.setState({ pinNumberInput: 1, sequenceIdInput: 2 }));
     actRenderer(() => button?.props.onClick());
     expect(mockDevice.registerGpio).not.toHaveBeenCalled();
@@ -127,7 +129,8 @@ describe("<PinBindingInputGroup/>", () => {
     const button = buttons[buttons.length - 1];
     expect(button?.props.title).toEqual("BIND");
     const instance =
-      getRendererInstance<PinBindingInputGroup>(wrapper, PinBindingInputGroup);
+      getRendererInstance<PinBindingInputGroup, PinBindingInputGroupProps>(
+        wrapper, PinBindingInputGroup);
     actRenderer(() => instance.setState({
       pinNumberInput: 0,
       bindingType: PinBindingType.special,
@@ -151,7 +154,8 @@ describe("<PinBindingInputGroup/>", () => {
     const id = s?.body.id;
     const wrapper = createRenderer(<PinBindingInputGroup {...p} />);
     const instance =
-      getRendererInstance<PinBindingInputGroup>(wrapper, PinBindingInputGroup);
+      getRendererInstance<PinBindingInputGroup, PinBindingInputGroupProps>(
+        wrapper, PinBindingInputGroup);
     expect(instance.state.sequenceIdInput).toEqual(undefined);
     actRenderer(() => instance.changeBinding({
       label: "label", value: "" + id,
@@ -163,7 +167,8 @@ describe("<PinBindingInputGroup/>", () => {
   it("attempts to set pin 99", () => {
     const wrapper = createRenderer(<PinBindingInputGroup {...fakeProps()} />);
     const instance =
-      getRendererInstance<PinBindingInputGroup>(wrapper, PinBindingInputGroup);
+      getRendererInstance<PinBindingInputGroup, PinBindingInputGroupProps>(
+        wrapper, PinBindingInputGroup);
     expect(instance.state.pinNumberInput).toEqual(undefined);
     actRenderer(() => instance.setSelectedPin(99));
     expect(error).toHaveBeenCalledWith(
@@ -176,7 +181,8 @@ describe("<PinBindingInputGroup/>", () => {
     expect(validGpioPins.length).toBeGreaterThan(0);
     const wrapper = createRenderer(<PinBindingInputGroup {...fakeProps()} />);
     const instance =
-      getRendererInstance<PinBindingInputGroup>(wrapper, PinBindingInputGroup);
+      getRendererInstance<PinBindingInputGroup, PinBindingInputGroupProps>(
+        wrapper, PinBindingInputGroup);
     expect(instance.state.pinNumberInput).toEqual(undefined);
     actRenderer(() => instance.setSelectedPin(1));
     expect(error).not.toHaveBeenCalled();
@@ -189,7 +195,8 @@ describe("<PinBindingInputGroup/>", () => {
     const p = fakeProps();
     const wrapper = createRenderer(<PinBindingInputGroup {...p} />);
     const instance =
-      getRendererInstance<PinBindingInputGroup>(wrapper, PinBindingInputGroup);
+      getRendererInstance<PinBindingInputGroup, PinBindingInputGroupProps>(
+        wrapper, PinBindingInputGroup);
     expect(instance.state.pinNumberInput).toEqual(undefined);
     const { pin_number } = p.pinBindings[0];
     actRenderer(() => instance.setSelectedPin(pin_number));
@@ -203,7 +210,8 @@ describe("<PinBindingInputGroup/>", () => {
     expect(validGpioPins.length).toBeGreaterThan(0);
     const wrapper = createRenderer(<PinBindingInputGroup {...fakeProps()} />);
     const instance =
-      getRendererInstance<PinBindingInputGroup>(wrapper, PinBindingInputGroup);
+      getRendererInstance<PinBindingInputGroup, PinBindingInputGroupProps>(
+        wrapper, PinBindingInputGroup);
     expect(instance.state.pinNumberInput).toEqual(undefined);
     actRenderer(() => instance.setSelectedPin(AVAILABLE_PIN));
     expect(error).not.toHaveBeenCalled();
@@ -214,7 +222,8 @@ describe("<PinBindingInputGroup/>", () => {
   it("changes special action", () => {
     const wrapper = createRenderer(<PinBindingInputGroup {...fakeProps()} />);
     const instance =
-      getRendererInstance<PinBindingInputGroup>(wrapper, PinBindingInputGroup);
+      getRendererInstance<PinBindingInputGroup, PinBindingInputGroupProps>(
+        wrapper, PinBindingInputGroup);
     actRenderer(() => instance.changeBinding({
       label: "",
       value: PinBindingSpecialAction.sync,

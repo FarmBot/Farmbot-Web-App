@@ -5,18 +5,20 @@ import { ASSETS } from "../../constants";
 import { Cloud, Clouds } from "@react-three/drei";
 import { WaterStream } from "./water_stream";
 import { easyCubicBezierCurve3, threeSpace, zDir, zZero } from "../../helpers";
-import { Config } from "../../config";
+import { Config, PositionConfig } from "../../config";
 import { utmHeight } from "../bot";
 
 export interface WateringAnimationsProps {
   waterFlow: boolean;
   config: Config;
+  configPosition: PositionConfig;
   getZ(x: number, y: number): number;
 }
 
 export const WateringAnimations = (props: WateringAnimationsProps) => {
   const { waterFlow, getZ, config } = props;
-  const { x, y, z, bedLengthOuter, bedWidthOuter, bedXOffset, bedYOffset } = config;
+  const { bedLengthOuter, bedWidthOuter, bedXOffset, bedYOffset } = config;
+  const { x, y, z } = props.configPosition;
   const utmZ = -zDir(config) * z + utmHeight / 2 - 15;
   const nozzleToSoil = getZ(x, y) - utmZ;
   const [visible, setVisible] = React.useState(false);

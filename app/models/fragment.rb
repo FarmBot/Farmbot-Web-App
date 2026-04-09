@@ -66,7 +66,7 @@ class Fragment < ApplicationRecord
     Node.where(fragment_id: self.id).destroy_all
   end
 
-  def serialize(*x)
+  def serialize(*)
     Rails
       .cache
       .fetch(json_cache_key) { Fragments::Show.run!(owner: self.owner) }
@@ -89,6 +89,6 @@ class Fragment < ApplicationRecord
   end
 
   def self.remove_old_fragments_for_device(dev)
-    dev.fragments.select { |x| x.owner == nil }.map { |x| x.destroy! }
+    dev.fragments.select { |x| x.owner.nil? }.map(&:destroy!)
   end
 end

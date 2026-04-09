@@ -5,16 +5,18 @@ import { store } from "../redux/store";
 import { findSequence } from "../resources/selectors_by_kind";
 import { expandActions } from "../demo/lua_runner/actions";
 import { threeSpace, zZero as zZeroFunc } from "./helpers";
-import { Config } from "./config";
+import { Config, PositionConfig } from "./config";
 
 export interface VisualizationProps {
   visualizedSequenceUUID: string | undefined;
   config: Config;
+  configPosition: PositionConfig;
 }
 
 export const Visualization = (props: VisualizationProps) => {
   const { visualizedSequenceUUID, config } = props;
-  const { bedLengthOuter, bedWidthOuter, bedXOffset, bedYOffset, x, y, z } = config;
+  const { bedLengthOuter, bedWidthOuter, bedXOffset, bedYOffset } = config;
+  const { x, y, z } = props.configPosition;
   const zZero = zZeroFunc(config);
   const visualizationPoints = React.useMemo(() => {
     if (!visualizedSequenceUUID) { return []; }

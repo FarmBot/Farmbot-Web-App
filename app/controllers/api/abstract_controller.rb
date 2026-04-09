@@ -4,9 +4,9 @@ module Api
   class AbstractController < ApplicationController
     # This error is thrown when you try to use a non-JSON request body on an
     # endpoint that requires JSON.
-    class OnlyJson < Exception; end
+    class OnlyJson < StandardError; end
 
-    class BadAuth < Exception
+    class BadAuth < StandardError
       attr_reader :error_hash
 
       def initialize(error_hash)
@@ -41,19 +41,20 @@ module Api
     rescue_from(ActionDispatch::Http::Parameters::ParseError) { sorry NOT_JSON }
     rescue_from(ActiveModel::RangeError) { sorry OUT_OF_RANGE }
     rescue_from(ActiveRecord::RecordInvalid) { |exc| render json: { error: exc.message }, status: 422 }
-    rescue_from(ActiveRecord::RecordNotFound) { |exc| sorry "Document not found.", 404 }
+    rescue_from(ActiveRecord::RecordNotFound) { sorry "Document not found.", 404 }
     rescue_from(ActiveRecord::ValueTooLong) { sorry "Please use reasonable lengths on string inputs" }
     rescue_from(BadAuth) { |err| render json: err.error_hash, status: 401 }
     rescue_from(CeleryScript::TypeCheckError) { |err| sorry err.message }
     rescue_from(Errors::Forbidden) { |exc| sorry("You can't perform that action. #{exc.message}", 403) }
-    rescue_from(Errors::LegalConsent) { |exc| render json: { error: CONSENT_REQUIRED }, status: 451 }
+    rescue_from(Errors::LegalConsent) { render json: { error: CONSENT_REQUIRED }, status: 451 }
     rescue_from(JSON::ParserError) { sorry NOT_JSON }
-    rescue_from(JWT::VerificationError) { |e| auth_err }
-    rescue_from(OnlyJson) { |e| sorry ONLY_JSON }
+    rescue_from(JWT::VerificationError) { auth_err }
+    rescue_from(OnlyJson) { sorry ONLY_JSON }
     rescue_from(PG::ProgramLimitExceeded) { sorry TOO_MUCH_DATA }
     rescue_from(User::AlreadyVerified) { sorry "Already verified.", 409 }
 
-    def resource # OVERRIDE THIS IN CHILD
+    # OVERRIDE THIS IN CHILD
+    def resource
       nil
     end
 
@@ -72,12 +73,11 @@ module Api
             raw_json
               .except(*IRRELEVANT_ROW_LOCK_FIELDS)
               .slice(*resource.class.column_names.map(&:to_sym))
-              .to_a
-              .each do |(key, value)|
-              if resource[key] != raw_json[key]
-                diff_count += 1
+              .each_key do |key|
+                if resource[key] != raw_json[key]
+                  diff_count += 1
+                end
               end
-            end
             return true if diff_count > 1
           end
         end
@@ -114,7 +114,7 @@ module Api
     private
 
     def raw_json_action?
-      action_name == "create" || action_name == "update"
+      %w[create update].include?(action_name)
     end
 
     def update_action?
@@ -143,6 +143,7 @@ module Api
       body = request.body.read
       json = body.present? ? JSON.parse(body, symbolize_names: true) : nil
       raise OnlyJson unless json.is_a?(Hash) || json.is_a?(Array)
+
       json
     end
 
@@ -204,17 +205,18 @@ module Api
       else
         e = outcome.errors.message
         when_farmbot_os do
-          puts TPL % [
+          puts format(
+            TPL,
             e.to_json,
             params.to_json,
             self.class.inspect,
-          ]
+          )
         end
         render options.merge(json: e, status: 422)
       end
     end
 
-    EXPECTED_VER = Gem::Version::new(GlobalConfig.dump["MINIMUM_FBOS_VERSION"])
+    EXPECTED_VER = Gem::Version.new(GlobalConfig.dump["MINIMUM_FBOS_VERSION"])
 
     def bad_version
       render json: { error: "Upgrade to latest FarmBot OS" }, status: 426
@@ -234,7 +236,7 @@ module Api
       #   If the UA includes FbosDetector::FARMBOT_UA_STRING at this point, we can be certain
       #   we have a have an FBOS client.
       if ua.include?(FbosDetector::FARMBOT_UA_STRING)
-        return Gem::Version::new(ua[10, 12].split(" ").first)
+        return Gem::Version.new(ua[10, 12].split.first)
       else
         # Attempt 3:
         #   Pass NOT_FBOS if all other attempts fail.
@@ -267,7 +269,7 @@ module Api
           bot.last_saw_api = Time.now
           # Do _not_ set the FBOS version to 0.0.0 if the UA header is missing.
           if v > NULL && v < NOT_FBOS
-            bot.fbos_version = (v.to_s || "").first(17)
+            bot.fbos_version = v.to_s.first(17)
             bot.save!
           end
         end

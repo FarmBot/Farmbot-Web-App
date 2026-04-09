@@ -73,11 +73,11 @@ export class FilterSearch
     };
 
   private filter = (items: DropDownItem[]) =>
-    (query: string, item: DropDownItem): boolean => {
+    (query: string, item: DropDownItem | undefined): boolean => {
       const matchedItems = allMatchedItems(items, query);
-      return item.heading
+      return item && item.heading
         ? sectionHasItems(item.headingId, matchedItems)
-        : isMatch(item, query);
+        : isMatch(item || { label: "", value: "" }, query);
     };
 
   private handleValueChange = (item: DropDownItem | undefined) => {

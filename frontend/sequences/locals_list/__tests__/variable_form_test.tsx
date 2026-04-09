@@ -23,6 +23,9 @@ import { error } from "../../../toast/toast";
 import { changeBlurableInput } from "../../../__test_support__/helpers";
 import { SequenceMeta } from "../../../resources/sequence_meta";
 import * as ui from "../../../ui";
+import { FBSelectProps } from "../../../ui/new_fb_select";
+import { BIProps } from "../../../ui/blurable_input";
+import { DropDownItem } from "../../../ui/fb_select";
 
 let mockSelectChangeArg: unknown;
 let mockKeyCallback = { key: "", buffer: "" };
@@ -32,23 +35,13 @@ let helpSpy: jest.SpyInstance;
 
 beforeEach(() => {
   fbSelectSpy = jest.spyOn(ui, "FBSelect")
-    .mockImplementation((props: {
-      list: unknown[];
-      selectedItem: unknown;
-      onChange: (ddi: unknown) => void;
-    }) => <button
+    .mockImplementation(((props: FBSelectProps) => <button
       className={"fb-select-mock"}
       data-list={JSON.stringify(props.list)}
       data-selected-item={JSON.stringify(props.selectedItem)}
-      onClick={() => props.onChange(mockSelectChangeArg)} />);
+      onClick={() => props.onChange(mockSelectChangeArg as DropDownItem)} />) as never);
   blurableInputSpy = jest.spyOn(ui, "BlurableInput")
-    .mockImplementation((props: {
-      className?: string;
-      value: string | number;
-      disabled?: boolean;
-      onCommit?: (e: React.SyntheticEvent<HTMLInputElement>) => void;
-      keyCallback?: (key: string, buffer: string) => void;
-    }) => {
+    .mockImplementation(((props: BIProps) => {
       const [value, setValue] = React.useState(String(props.value));
       React.useEffect(() => setValue(String(props.value)), [props.value]);
       return <div>
@@ -67,7 +60,7 @@ beforeEach(() => {
           onClick={() =>
             props.keyCallback?.(mockKeyCallback.key, mockKeyCallback.buffer)} />
       </div>;
-    });
+    }) as never);
   helpSpy = jest.spyOn(ui, "Help")
     .mockImplementation(() => <div className={"help-mock"} />);
 });
@@ -117,7 +110,8 @@ describe("<VariableForm />", () => {
     expect(container.querySelectorAll(".fb-select-mock").length).toBe(2);
     const choices = variableFormList(
       p.resources, [], [{ label: "Externally defined", value: "" }], true);
-    const actualLabels: string[] = listAt(container).map(x => String(x.label)).sort();
+    const actualLabels: string[] = listAt(container)
+      .map((x: { label: string }) => String(x.label)).sort();
     const expectedLabels: string[] = choices.map(x => String(x.label)).sort();
     const diff = difference(actualLabels, expectedLabels);
     expect(diff).toEqual([]);
@@ -203,7 +197,7 @@ describe("<VariableForm />", () => {
     p.variable.dropdown.isNull = true;
     const { container } = render(<VariableForm {...p} />);
     const list = listAt(container);
-    const vars = list.filter(item =>
+    const vars = list.filter((item: { headingId?: string; heading?: boolean }) =>
       item.headingId == "Variable" && !item.heading);
     expect(vars.length).toEqual(1);
     expect(vars[0].value).toEqual("Location 1");

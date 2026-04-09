@@ -36,7 +36,7 @@ export class LuaTextArea<Step extends Lua | Assertion>
     }));
   }, 500);
 
-  onChange = (value: string) => {
+  onChange = (value: string | undefined) => {
     this.setState({ controlled: true });
     this.setLua(value || "");
     this.updateStep(value || "");

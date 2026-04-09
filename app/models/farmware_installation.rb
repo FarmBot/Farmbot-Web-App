@@ -6,8 +6,8 @@ class FarmwareInstallation < ApplicationRecord
   belongs_to :device
   validates :url, presence: true
   validate :validate_url_format
-  validates_uniqueness_of :url, { scope: :device }
-  validates_presence_of :device
+  validates :url, uniqueness: { scope: :device }
+  validates :device, presence: true
   # Prevent malice when fetching a farmware manifest
   MAX_JSON_SIZE = 5000
   OTHER_PROBLEM = "Unknown error: %s"
@@ -36,7 +36,7 @@ class FarmwareInstallation < ApplicationRecord
     known_error = KNOWN_PROBLEMS[error.class]
     description = known_error || (OTHER_PROBLEM % error.class)
     update!(package_error: description, package: nil)
-    unless known_error.present?
+    if known_error.blank?
       raise error
     end
   end

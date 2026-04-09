@@ -2,7 +2,9 @@ class PinBinding < ApplicationRecord
   OFF_LIMITS = [
     2, 3, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 17, 19, 21, 23, 24, 25, 27,
   ]
-  BAD_PIN_NUM = "The following pin numbers cannot be used: %s" % OFF_LIMITS.join(", ")
+  BAD_PIN_NUM = format(
+    "The following pin numbers cannot be used: %s",
+    OFF_LIMITS.join(", "))
 
   belongs_to :device
   belongs_to :sequence

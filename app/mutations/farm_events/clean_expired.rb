@@ -20,7 +20,7 @@ module FarmEvents
         .farm_events
         .where
         .not(executable_type: "Regimen")
-        .where("end_time < ?", DateTime.now)
+        .where(end_time: ...DateTime.now)
         .map(&:destroy!)
     end
 
@@ -47,7 +47,7 @@ module FarmEvents
         should_destroy = a && b
         Info.new(x, x.executable, should_destroy)
       end
-        .select { |x| x.should_destroy? }
+        .select(&:should_destroy?)
         .map { |x| x.fe.destroy! }
     end
   end

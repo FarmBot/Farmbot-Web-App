@@ -11,24 +11,29 @@
 @use "global/sliders";
 @use "global/tables";
 @use "global/tooltips";
+
 // Animations
 @use "animations/animations";
 @use "animations/loading_plant";
 @use "animations/spinner";
+
 // App
 @use "app/navbar";
 @use "app/static_pages";
 @use "app/status_ticker";
 @use "app/toastr";
+
 // Components
 @use "components/go_button";
 @use "components/image_flipper";
 @use "components/widgets";
+
 // Farm Designer
 @use "farm_designer/farm_designer_panels";
 @use "farm_designer/farm_designer";
 @use "farm_designer/profile_viewer";
 @use "farm_designer/three_d_garden";
+
 // Panels
 @use "panels/connectivity";
 @use "panels/controls";
@@ -54,6 +59,7 @@
 @use "panels/setup_wizard";
 @use "panels/tools";
 @use "panels/webcams";
+
 // Other
 @use "blueprint_overrides";
 @use "mobile";

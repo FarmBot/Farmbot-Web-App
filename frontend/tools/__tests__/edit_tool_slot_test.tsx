@@ -48,7 +48,7 @@ describe("<EditToolSlot />", () => {
   };
 
   const getInstance = (wrapper: ReturnType<typeof createRenderer>) =>
-    getRendererInstance<EditToolSlot>(wrapper, EditToolSlot);
+    getRendererInstance<EditToolSlot, EditToolSlotProps>(wrapper, EditToolSlot);
 
   const fakeProps = (): EditToolSlotProps => ({
     findToolSlot: jest.fn(),

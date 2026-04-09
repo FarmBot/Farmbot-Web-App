@@ -11,5 +11,5 @@ class Alert < ApplicationRecord
 
   PROBLEM_TAGS = DEFAULTS.map { |x| x.fetch(:problem_tag) }
 
-  validates_inclusion_of :problem_tag, in: PROBLEM_TAGS
+  validates :problem_tag, inclusion: { in: PROBLEM_TAGS }
 end

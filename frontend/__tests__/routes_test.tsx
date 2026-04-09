@@ -14,7 +14,7 @@ describe("<RootComponent />", () => {
     jest.clearAllMocks();
     mockAuth = undefined;
     jest.spyOn(Session, "fetchStoredToken").mockImplementation(() => mockAuth);
-    jest.spyOn(Session, "clear").mockImplementation(jest.fn());
+    jest.spyOn(Session, "clear").mockImplementation(() => undefined as never);
   });
 
   it("clears session when not authorized", () => {

@@ -44,20 +44,20 @@ class Device < ApplicationRecord
   has_many :in_use_tools
   has_many :users
 
-  validates_presence_of :name
+  validates :name, presence: true
   validates :timezone, inclusion: {
-                         in: TIMEZONES,
-                         message: BAD_TZ,
-                         allow_nil: true,
-                       }
+    in: TIMEZONES,
+    message: BAD_TZ,
+    allow_nil: true,
+  }
   validates :ota_hour,
-    inclusion: { in: [*0..23], message: BAD_OTA_HOUR, allow_nil: true }
+            inclusion: { in: [*0..23], message: BAD_OTA_HOUR, allow_nil: true }
   validates :fb_order_number,
-    uniqueness: { message: ORDER_NUMBER_TAKEN, allow_nil: true }
+            uniqueness: { message: ORDER_NUMBER_TAKEN, allow_nil: true }
   before_validation :perform_gradual_upgrade
 
   def max_seq_count
-    if max_sequence_count > 0
+    if max_sequence_count.positive?
       max_sequence_count
     else
       DEFAULT_MAX_SEQUENCE_COUNT
@@ -65,7 +65,7 @@ class Device < ApplicationRecord
   end
 
   def max_seq_length
-    if max_sequence_length > 0
+    if max_sequence_length.positive?
       max_sequence_length
     else
       DEFAULT_MAX_SEQUENCE_LENGTH
@@ -73,7 +73,7 @@ class Device < ApplicationRecord
   end
 
   def max_log_age
-    if max_log_age_in_days > 0
+    if max_log_age_in_days.positive?
       max_log_age_in_days
     else
       DEFAULT_MAX_LOG_AGE_IN_DAYS
@@ -146,6 +146,7 @@ class Device < ApplicationRecord
   def self.current=(dev)
     RequestStore.store[:device] = dev
   end
+
   # Sets Device.current to `self` and returns it to the previous value when
   #  finished running block. Usually this is unnecessary, but may be required in
   # background jobs. If you are not receiving auto_sync data on your client,
@@ -215,7 +216,7 @@ class Device < ApplicationRecord
 
   def cooldown_notice(message, throttle_time, type, now = Time.current)
     hours = ((throttle_time - now) / 1.hour).round
-    channels = [(hours > 2) ? "email" : "toast"]
+    channels = [hours > 2 ? "email" : "toast"]
     tell(message, channels, type).save
   end
 
@@ -227,7 +228,8 @@ class Device < ApplicationRecord
   #     `duck :device, methods [:id, :is_device]`
   #
   # This method is not required, but adds a layer of safety.
-  def is_device # SEE: Hack in Log::Create. TODO: Fix low level caching bug.
+  # SEE: Hack in Log::Create. TODO: Fix low level caching bug.
+  def is_device
     true
   end
 
@@ -244,7 +246,7 @@ class Device < ApplicationRecord
   # Used by sys admins to debug problems without performing a password reset.
   def help_customer
     Rollbar.error("Someone is creating a debug user token", { device: self.id })
-    t = SessionToken.as_json(users.first, "staff", fbos_version)
+    t = SessionToken.as_json(users.first, "staff")
     jti = t[:token].unencoded[:jti]
     # Auto expire after 1 week.
     TokenIssuance.find_by!(jti: jti).update!(exp: (Time.now + 168.hours).to_i)
@@ -257,7 +259,7 @@ class Device < ApplicationRecord
     "Please review the documentation provided at " +
     "https://software.farm.bot/docs/connecting-farmbot-to-the-internet"
   def self.connection_warning(username)
-    device_id = username.split("_").last.to_i || 0
+    device_id = username.split("_").last.to_i
     device = self.find_by(id: device_id)
     return unless device
 
@@ -326,7 +328,7 @@ class Device < ApplicationRecord
         "`Name`: #{name}",
         "`User since`: #{since}",
         "`Timezone`: #{timezone}",
-        "`Location`: #{(!lat.nil? && !lng.nil?) ? location_url : "unknown"}",
+        "`Location`: #{!lat.nil? && !lng.nil? ? location_url : "unknown"}",
         "`Order Number`: #{fb_order_number}",
         "`Model`: #{firmware_kind}",
         "`Slug`: #{slug}",
@@ -334,25 +336,25 @@ class Device < ApplicationRecord
         "`Token:`",
       ].join("\n")
       payload = {
-        "mrkdwn": true,
-        "text": info,
-        "blocks": [
+        mrkdwn: true,
+        text: info,
+        blocks: [
           {
-            "type": "section",
-            "text": {
-              "type": "mrkdwn",
-              "text": info,
+            type: "section",
+            text: {
+              type: "mrkdwn",
+              text: info,
             }
           }
         ],
-        "attachments": [
+        attachments: [
           {
-            "blocks": [
+            blocks: [
               {
-                "type": "section",
-                "text": {
-                  "type": "mrkdwn",
-                  "text": "```" + help_customer + "```",
+                type: "section",
+                text: {
+                  type: "mrkdwn",
+                  text: "```" + help_customer + "```",
                 },
               },
             ],

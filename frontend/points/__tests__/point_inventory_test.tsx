@@ -311,8 +311,14 @@ describe("<Points />", () => {
     });
     const findElement = (
       node: unknown,
-      predicate: (element: React.ReactElement) => boolean,
-    ): React.ReactElement | undefined => {
+      predicate: (element: React.ReactElement<{
+        metaQuery?: { gridId?: string };
+        toggleAction?: () => void;
+      }>) => boolean,
+    ): React.ReactElement<{
+      metaQuery?: { gridId?: string };
+      toggleAction?: () => void;
+    }> | undefined => {
       if (Array.isArray(node)) {
         for (const item of node) {
           const found = findElement(item, predicate);
@@ -321,7 +327,15 @@ describe("<Points />", () => {
         return undefined;
       }
       if (!React.isValidElement(node)) { return undefined; }
-      if (predicate(node)) { return node; }
+      if (predicate(node as React.ReactElement<{
+        metaQuery?: { gridId?: string };
+        toggleAction?: () => void;
+      }>)) {
+        return node as React.ReactElement<{
+          metaQuery?: { gridId?: string };
+          toggleAction?: () => void;
+        }>;
+      }
       for (const value of Object.values(node.props || {})) {
         const found = findElement(value, predicate);
         if (found) { return found; }
@@ -335,7 +349,7 @@ describe("<Points />", () => {
     if (!gridSection) {
       throw new Error("Expected grid section");
     }
-    gridSection.props.toggleAction();
+    gridSection.props.toggleAction?.();
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.TOGGLE_GRID_ID, payload: "123"
     });

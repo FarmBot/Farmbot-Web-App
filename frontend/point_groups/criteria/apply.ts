@@ -55,8 +55,8 @@ export const selectPointsByCriteria = (
   if (isEqual(criteria, DEFAULT_CRITERIA)) { return []; }
   const check = checkCriteria(criteria, now);
   return allPoints.filter(point =>
-    every(Object.keys(criteria).map((key: keyof PointGroupCriteria) =>
-      check(point, key))));
+    every(Object.keys(criteria).map(key =>
+      check(point, key as keyof PointGroupCriteria))));
 };
 
 /** Return all points selected by group manual additions and criteria. */

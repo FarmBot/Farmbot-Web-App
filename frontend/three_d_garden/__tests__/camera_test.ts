@@ -10,7 +10,7 @@ let isDesktopSpy: jest.SpyInstance;
 
 beforeEach(() => {
   get3dCameraSpy = jest.spyOn(devSupport.DevSettings, "get3dCamera")
-    .mockImplementation(() => mockDev);
+    .mockImplementation((() => mockDev || "") as typeof devSupport.DevSettings.get3dCamera);
   isDesktopSpy = jest.spyOn(screenSize, "isDesktop")
     .mockImplementation(() => mockIsDesktop);
 });

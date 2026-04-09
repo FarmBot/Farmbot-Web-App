@@ -15,7 +15,8 @@ module Auth
       return :already_connected if user
       return :jwt if jwt
       return :bot if bot_token
-      return nil                # Failure case- can't determine.
+
+      return nil # Failure case- can't determine.
     end
   end
 end

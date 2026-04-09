@@ -16,7 +16,7 @@ export class AxisInputBoxGroup extends
     this.state = {};
   }
 
-  change = (axis: keyof Vector3, val: number) => {
+  change = (axis: keyof Vector3, val: number | undefined) => {
     this.setState({ [axis]: val });
   };
 

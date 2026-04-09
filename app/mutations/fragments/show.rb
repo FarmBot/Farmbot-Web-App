@@ -21,9 +21,8 @@ module Fragments
 
     def node2cs(node)
       standard = cache.get_standard_pairs(node)
-                      .reduce({}) do |acc, (key, value)|
+                      .each_with_object({}) do |(key, value), acc|
         acc[key] = node2cs(value)
-        acc
       end
       result = {
         comment: node.comment,
@@ -31,18 +30,16 @@ module Fragments
         args: cache.get_primitive_pairs(node).merge(standard),
         body: recurse_into_body(cache.get_body(node)),
       }
-      result.delete(:body) if result[:body].length == 0
-      result.delete(:comment) unless result[:comment].present?
+      result.delete(:body) if result[:body].empty?
+      result.delete(:comment) if result[:comment].blank?
       result
     end
 
     def recurse_into_body(node, body = [])
-      unless [Kind.nothing, Kind.entry_point].include?(cache.kind(node))
-        body.push(node2cs(node))
-        recurse_into_body(cache.get_next(node), body)
-      else
-        body
-      end
+      return body if [Kind.nothing, Kind.entry_point].include?(cache.kind(node))
+
+      body.push(node2cs(node))
+      recurse_into_body(cache.get_next(node), body)
     end
 
     def fragment

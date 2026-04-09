@@ -6,7 +6,7 @@ module Tools
                     "still in a slot. Please remove it from the slot first."
 
     # CeleryScript Arguments that might still be using the current tool:
-    SUSPECTS = ["pointer_id", "resource_id", "value"]
+    SUSPECTS = %w[pointer_id resource_id value]
 
     required do
       model :tool, class: Tool
@@ -33,17 +33,18 @@ module Tools
       query = { sequence_id: sequence_ids, kind: SUSPECTS, value: tool.id }
       ids = EdgeNode.where(**query).pluck(:primary_node_id)
       PrimaryNode.includes(:edge_nodes).where(id: ids).map do |node|
-        node.edge_nodes.pluck(:kind, :value).to_h.symbolize_keys.merge({
-          kind: node.kind,
-          sequence_id: node.sequence_id,
-        })
+        node.edge_nodes.pluck(:kind, :value).to_h.symbolize_keys
+          .merge({
+                   kind: node.kind,
+                   sequence_id: node.sequence_id,
+                 })
       end.each_with_object(Set.new) do |i, results|
         kind = i.fetch(:kind)
-        if kind == "pair" &&
-           i.fetch(:label) == "mounted_tool_id" &&
-           i.fetch(:value) == tool.id
-          results.add(i.fetch(:sequence_id))
-        end
+        next unless kind == "pair" &&
+                    i.fetch(:label) == "mounted_tool_id" &&
+                    i.fetch(:value) == tool.id
+
+        results.add(i.fetch(:sequence_id))
       end
                  .to_a
                  .map { |x| Sequence.find(x).name }
@@ -58,16 +59,16 @@ module Tools
     end
 
     def any_deps?
-      add_error :tool, :in_use, STILL_IN_USE % [names] if names.present?
+      add_error :tool, :in_use, format(STILL_IN_USE, names) if names.present?
     end
 
     def names
       @names ||= InUseTool
-        .where(tool_id: tool.id)
-        .pluck(:sequence_name)
-        .concat(other_names)
-        .uniq
-        .join(", ")
+                 .where(tool_id: tool.id)
+                 .pluck(:sequence_name)
+                 .concat(other_names)
+                 .uniq
+                 .join(", ")
     end
 
     def maybe_unmount_tool

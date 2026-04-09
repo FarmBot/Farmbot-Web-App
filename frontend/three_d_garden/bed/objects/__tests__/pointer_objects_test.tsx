@@ -1,5 +1,6 @@
 let mockIsMobile = false;
 import React from "react";
+import { useTexture } from "@react-three/drei";
 import {
   ActivePositionRef,
   BillboardRef,
@@ -22,20 +23,30 @@ import { Vector3 } from "three";
 import { ThreeEvent } from "@react-three/fiber";
 import * as plantActions from "../../../../farm_designer/map/layers/plants/plant_actions";
 import * as screenSize from "../../../../screen_size";
+import { PLANT_ICON_ATLAS } from "../../../garden/plant_icon_atlas";
 
 let dropPlantSpy: jest.SpyInstance;
 let isMobileSpy: jest.SpyInstance;
+let requestAnimationFrameSpy: jest.SpyInstance;
+type AnimationFrameHandler = Parameters<typeof window.requestAnimationFrame>[0];
 
 beforeEach(() => {
   mockIsMobile = false;
   dropPlantSpy = jest.spyOn(plantActions, "dropPlant").mockImplementation(jest.fn());
   isMobileSpy = jest.spyOn(screenSize, "isMobile")
     .mockImplementation(() => mockIsMobile);
+  requestAnimationFrameSpy = jest.spyOn(window, "requestAnimationFrame")
+    .mockImplementation(callback => {
+      callback(0);
+      return 1;
+    });
 });
 
 afterEach(() => {
   dropPlantSpy.mockRestore();
   isMobileSpy.mockRestore();
+  requestAnimationFrameSpy.mockRestore();
+  delete PLANT_ICON_ATLAS["/crops/icons/mint.avif"];
 });
 
 describe("<PointerObjects />", () => {
@@ -57,7 +68,25 @@ describe("<PointerObjects />", () => {
     location.pathname = Path.mock(Path.cropSearch("mint"));
     mockIsMobile = false;
     const { container } = render(<PointerObjects {...fakeProps()} />);
-    expect(container).toContainHTML("mint");
+    expect(container).toContainHTML("pointerPlant");
+  });
+
+  it("loads the atlas texture for the pointer plant preview", () => {
+    PLANT_ICON_ATLAS["/crops/icons/mint.avif"] = {
+      atlasUrl: "/crops/icons/atlas.avif",
+      textureWidth: 256,
+      textureHeight: 256,
+      x: 0,
+      y: 0,
+      width: 64,
+      height: 64,
+    };
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    mockIsMobile = false;
+
+    render(<PointerObjects {...fakeProps()} />);
+
+    expect(useTexture).toHaveBeenCalledWith("/crops/icons/atlas.avif");
   });
 });
 
@@ -87,6 +116,13 @@ describe("soilClick()", () => {
 });
 
 describe("soilPointerMove()", () => {
+  const flushAnimationFrame = (callback: AnimationFrameHandler | null) => {
+    if (!callback) {
+      throw new Error("Missing animation frame callback");
+    }
+    callback(0);
+  };
+
   const fakeProps = (): SoilPointerMoveProps => ({
     config: clone(INITIAL),
     addPlantProps: fakeAddPlantProps(),
@@ -113,5 +149,61 @@ describe("soilPointerMove()", () => {
     soilPointerMove(p)(e);
     expect(p.pointerPlantRef.current?.position.set)
       .toHaveBeenCalledWith(100, 200, 0);
+  });
+
+  it("coalesces pointer updates into one animation frame", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    mockIsMobile = false;
+    // eslint-disable-next-line no-null/no-null
+    let frameCallback: AnimationFrameHandler | null = null;
+    requestAnimationFrameSpy.mockImplementation(callback => {
+      frameCallback = callback;
+      return 1;
+    });
+    const p = fakeProps();
+    p.config.columnLength = 100;
+    const handler = soilPointerMove(p);
+    handler({
+      stopPropagation: jest.fn(),
+      point: { x: 100, y: 200 },
+    } as unknown as ThreeEvent<MouseEvent>);
+    handler({
+      stopPropagation: jest.fn(),
+      point: { x: 110, y: 210 },
+    } as unknown as ThreeEvent<MouseEvent>);
+    expect(window.requestAnimationFrame).toHaveBeenCalledTimes(1);
+    flushAnimationFrame(frameCallback);
+    expect(p.pointerPlantRef.current?.position.set)
+      .toHaveBeenCalledTimes(1);
+    expect(p.pointerPlantRef.current?.position.set)
+      .toHaveBeenCalledWith(110, 210, 0);
+  });
+
+  it("skips re-rendering the same pointer position", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    mockIsMobile = false;
+    // eslint-disable-next-line no-null/no-null
+    let frameCallback: AnimationFrameHandler | null = null;
+    requestAnimationFrameSpy.mockImplementation(callback => {
+      frameCallback = callback;
+      return 1;
+    });
+    const p = fakeProps();
+    p.config.columnLength = 100;
+    const handler = soilPointerMove(p);
+    const event = {
+      stopPropagation: jest.fn(),
+      point: { x: 100, y: 200 },
+    } as unknown as ThreeEvent<MouseEvent>;
+    handler(event);
+    flushAnimationFrame(frameCallback);
+    handler(event);
+    flushAnimationFrame(frameCallback);
+    expect(p.pointerPlantRef.current?.position.set)
+      .toHaveBeenCalledTimes(1);
+    expect(p.xCrosshairRef.current?.position.set)
+      .toHaveBeenCalledTimes(1);
+    expect(p.yCrosshairRef.current?.position.set)
+      .toHaveBeenCalledTimes(1);
   });
 });

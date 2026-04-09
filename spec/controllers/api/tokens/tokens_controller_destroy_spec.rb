@@ -8,7 +8,6 @@ describe Api::TokensController do
     let(:device) { FactoryBot.create(:device) }
     let(:auth_token) do
       SessionToken.issue_to(user,
-                            fbos_version: Gem::Version.new("9.9.9"),
                             iat: Time.now.to_i,
                             exp: 40.days.from_now.to_i)
     end

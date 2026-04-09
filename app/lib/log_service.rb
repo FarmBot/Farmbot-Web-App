@@ -18,7 +18,7 @@ class LogService < AbstractServiceRunner
     m.device.trim_excess_logs if rand(0..TIDY_RATE) == TIDY_RATE
     maybe_deliver(m)
   rescue Mutations::ValidationException => e
-    msg = ERR_TPL % [params.merge({ e: e }).to_json]
+    msg = format(ERR_TPL, params.merge({ e: e }).to_json)
     puts msg unless Rails.env.test?
     raise e
   end
@@ -38,12 +38,15 @@ class LogService < AbstractServiceRunner
   end
 
   def deliver(data)
-    dev, log = [data.device, data.payload]
+    dev = data.device
+    log = data.payload
     dev.maybe_unthrottle
     Log.deliver(Logs::Create.run!(log, device: dev).id)
-    print LOG_TPL % [data.device_id,
-                     dev.fbos_version || "?",
-                     data.payload["message"] || "??"]
+    print format(
+      LOG_TPL,
+      data.device_id,
+      dev.fbos_version || "?",
+      data.payload["message"] || "??")
   rescue => x
     Rollbar.error(x)
   end

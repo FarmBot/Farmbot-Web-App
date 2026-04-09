@@ -1,6 +1,8 @@
 import React from "react";
-import { Group, MeshPhongMaterial } from "../../components";
-import { Billboard, Line, Image, Sphere } from "@react-three/drei";
+import {
+  Group, MeshPhongMaterial, Mesh, PlaneGeometry, MeshBasicMaterial,
+} from "../../components";
+import { Billboard, Line, Sphere, useTexture } from "@react-three/drei";
 import { findCrop, findIcon } from "../../../crops/find";
 import { Mode } from "../../../farm_designer/map/interfaces";
 import { getMode, round, xyDistance } from "../../../farm_designer/map/util";
@@ -35,6 +37,10 @@ import { Actions } from "../../../constants";
 import { NavigateFunction } from "react-router";
 import { DrawnPointPayl } from "../../../farm_designer/interfaces";
 import { Line2 } from "three/examples/jsm/lines/Line2.js";
+import {
+  getPlantIconTexture,
+  getPlantIconTextureUrl,
+} from "../../garden/plant_icon_atlas";
 
 export type PointerPlantRef = React.RefObject<GroupType | null>;
 export type RadiusRef = React.RefObject<MeshType | null>;
@@ -71,6 +77,11 @@ export const PointerObjects = (props: PointerObjectsProps) => {
   const zero = zeroFunc(config);
   const extents = extentsFunc(config);
   const iconSize = (addPlantProps.designer.cropRadius || DEFAULT_PLANT_RADIUS) * 2;
+  const icon = findIcon(Path.getCropSlug());
+  const baseTexture = useTexture(getPlantIconTextureUrl(icon));
+  const plantIconTexture = React.useMemo(
+    () => getPlantIconTexture(baseTexture, icon),
+    [baseTexture, icon]);
 
   const { drawnPoint } = addPlantProps.designer;
   const settingRadius =
@@ -127,12 +138,15 @@ export const PointerObjects = (props: PointerObjectsProps) => {
           {getMode() == Mode.clickToAdd &&
             <Group>
               <Billboard follow={true} position={[0, 0, iconSize / 2]}>
-                <Image
+                <Mesh
                   name={"pointerPlant"}
-                  url={findIcon(Path.getCropSlug())}
-                  scale={iconSize}
-                  transparent={true}
-                  renderOrder={RenderOrder.pointerPlant} />
+                  renderOrder={RenderOrder.pointerPlant}>
+                  <PlaneGeometry args={[iconSize, iconSize]} />
+                  <MeshBasicMaterial
+                    map={plantIconTexture}
+                    alphaTest={0.1}
+                    transparent={true} />
+                </Mesh>
               </Billboard>
               <Sphere args={[findCrop(Path.getCropSlug()).spread / 2 * 10, 32, 32]}>
                 <MeshPhongMaterial
@@ -223,8 +237,7 @@ export interface SoilPointerMoveProps extends AllRefs {
 
 // eslint-disable-next-line complexity
 export const soilPointerMove = (props: SoilPointerMoveProps) =>
-  // eslint-disable-next-line complexity
-  (e: ThreeEvent<MouseEvent>) => {
+  (() => {
     const {
       config, addPlantProps,
       pointerPlantRef,
@@ -233,35 +246,57 @@ export const soilPointerMove = (props: SoilPointerMoveProps) =>
     } = props;
     const getGardenPosition = getGardenPositionFunc(config);
     const get3DPosition = get3DPositionFunc(config);
-    if (addPlantProps
-      && HOVER_OBJECT_MODES.includes(getMode())
-      && !isMobile()
-      && pointerPlantRef.current) {
-      const gardenPosition = getGardenPosition(e.point);
+    let frame = 0;
+    let pendingGardenPosition: ReturnType<typeof getGardenPosition> | undefined;
+    let lastRenderedPosition: { x: number, y: number } | undefined;
+
+    // eslint-disable-next-line complexity
+    const updatePointer = () => {
+      frame = 0;
+      const gardenPosition = pendingGardenPosition;
+      pendingGardenPosition = undefined;
+      if (!gardenPosition
+        || !addPlantProps
+        || !HOVER_OBJECT_MODES.includes(getMode())
+        || isMobile()
+        || !pointerPlantRef.current) { return; }
       const { x, y } = get3DPosition(gardenPosition);
       const z = zZero(config) + props.getZ(gardenPosition.x, gardenPosition.y);
+      if (lastRenderedPosition?.x === x && lastRenderedPosition.y === y) {
+        return;
+      }
       xCrosshairRef.current?.position.set(0, y, z);
       yCrosshairRef.current?.position.set(x, 0, z);
       activePositionRef.current = { x, y };
+      lastRenderedPosition = { x, y };
       if (getMode() == Mode.clickToAdd) {
-        pointerPlantRef.current?.position?.set(x, y, z);
+        pointerPlantRef.current.position?.set(x, y, z);
       }
       if (DRAW_POINT_MODES.includes(getMode())) {
         const { drawnPoint } = addPlantProps.designer;
         if (isUndefined(drawnPoint)) { return; }
         if (isUndefined(drawnPoint.cx) || isUndefined(drawnPoint.cy)) {
-          pointerPlantRef.current?.position?.set(x, y, z);
+          pointerPlantRef.current.position?.set(x, y, z);
         } else {
           if (drawnPoint.r > 0) { return; }
           const radius = round(xyDistance(
             { x: drawnPoint.cx, y: drawnPoint.cy },
-            getGardenPosition(e.point)));
+            gardenPosition));
           radiusRef.current?.scale.set(radius, radius, radius);
-          torusRef.current?.scale.set(radius, radius, POINT_CYLINDER_SCALE_FACTOR);
+          torusRef.current?.scale.set(
+            radius, radius, POINT_CYLINDER_SCALE_FACTOR);
           const imgSize = mathRound(radius * WEED_IMG_SIZE_FRACTION);
           billboardRef.current?.position.set(0, 0, imgSize / 2);
           imageRef.current?.scale.set(imgSize, imgSize, imgSize);
         }
       }
-    }
-  };
+    };
+
+    // eslint-disable-next-line complexity
+    return (e: ThreeEvent<MouseEvent>) => {
+      pendingGardenPosition = getGardenPosition(e.point);
+      if (!frame) {
+        frame = requestAnimationFrame(updatePointer);
+      }
+    };
+  })();

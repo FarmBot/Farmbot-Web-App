@@ -29,6 +29,7 @@
   transition: 0.3s ease;
   &.panel-open {
     padding: 9rem 2rem 2rem 47.5rem;
+
     @media screen and (max-width: $mobile_max_width) {
       padding: 18rem 2rem 2rem 47.5rem;
     }
@@ -139,7 +140,7 @@
       &:focus {
         background: transparent !important;
       }
-      &::-webkit-input-placeholder {
+      &::placeholder {
         color: $placeholder_gray;
       }
     }
@@ -151,7 +152,7 @@
     font-size: 1rem;
   }
   .group-search-item {
-    grid-template-columns: 1fr auto!important;
+    grid-template-columns: 1fr auto !important;
   }
   .plant-search-item,
   .group-search-item,
@@ -194,6 +195,7 @@
   }
   .group-item-count {
     @extend %panel-item-base;
+
     padding-top: 0.6rem;
     line-height: 1rem;
   }
@@ -290,9 +292,9 @@
 
 .plant-link-wrapper {
   &.is-chosen-true.is-editing-true {
-    cursor: -webkit-grab !important;
+    cursor: grab !important;
     &:active {
-      cursor: -webkit-grabbing !important;
+      cursor: grabbing !important;
     }
   }
 }
@@ -632,6 +634,7 @@
   }
   .move-to-mode {
     display: none;
+
     @media screen and (max-width: $mobile_max_width) {
       display: block;
     }
@@ -665,7 +668,6 @@
       position: absolute;
       top: 0.6rem;
       left: -4.6rem;
-      transition-delay: 0.6s;
       transition: all 0.4s ease;
       opacity: 0;
     }

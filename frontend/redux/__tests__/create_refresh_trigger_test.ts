@@ -10,7 +10,8 @@ describe("createRefreshTrigger", () => {
     changeLastClientConnectedSpy = jest.spyOn(connectDevice, "changeLastClientConnected")
       .mockImplementation(jest.fn(() => jest.fn()));
     maybeGetDeviceSpy = jest.spyOn(deviceModule, "maybeGetDevice")
-      .mockImplementation(jest.fn(() => ({})));
+      .mockImplementation((() =>
+        ({} as import("farmbot").Farmbot)) as typeof deviceModule.maybeGetDevice);
   });
 
   afterEach(() => {

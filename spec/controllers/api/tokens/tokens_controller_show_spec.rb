@@ -6,7 +6,7 @@ describe Api::TokensController do
   describe "#show" do
     let(:user) { FactoryBot.create(:user, password: "password") }
     let(:auth_token) do
-      SessionToken.issue_to(user, fbos_version: Gem::Version.new("9.9.9"))
+      SessionToken.issue_to(user)
     end
 
     it "creates a new token", :slow do

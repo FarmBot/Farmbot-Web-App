@@ -1,5 +1,5 @@
 import { FirmwareHardware } from "farmbot";
-import { AnyAction } from "redux";
+import { UnknownAction } from "redux";
 import { HelpState } from "../reducer";
 
 export interface TourListProps {
@@ -35,7 +35,7 @@ export interface TourStep {
   activeBeacons?: ActiveBeacons[];
   url: string | undefined;
   extraContent?: React.ReactNode;
-  dispatchActions?: AnyAction[];
+  dispatchActions?: UnknownAction[];
 }
 
 export interface Tour {

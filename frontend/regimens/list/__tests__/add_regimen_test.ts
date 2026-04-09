@@ -10,8 +10,10 @@ describe("addRegimen()", () => {
 
   beforeEach(() => {
     initSpy = jest.spyOn(crud, "init")
-      .mockImplementation(jest.fn(
-        () => ({ type: "INIT_RESOURCE", payload: { kind: "Regimen" } })));
+      .mockImplementation((() => ({
+        type: "INIT_RESOURCE",
+        payload: { kind: "Regimen" },
+      })) as unknown as typeof crud.init);
     setActiveRegimenByNameSpy = jest.spyOn(activeRegimen, "setActiveRegimenByName")
       .mockImplementation(jest.fn());
   });

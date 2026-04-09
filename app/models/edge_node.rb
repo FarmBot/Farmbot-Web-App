@@ -10,7 +10,7 @@ class EdgeNode < ApplicationRecord
   belongs_to :primary_node
   belongs_to :sequence
   serialize :value, coder: JSON
-  validates_presence_of :sequence
+  validates :sequence, presence: true
 
   def broadcast?
     false

@@ -78,7 +78,7 @@ export type CAMERA_CALIBRATION_KEY_PART =
 /** The runtime equivalent for WeedDetectorENVKey.
  *  Good for iterating and whatnot. */
 export const EVERY_WD_KEY: WDENVKey[] =
-  Object.keys(WD_KEY_DEFAULTS).map((x: WDENVKey) => x);
+  Object.keys(WD_KEY_DEFAULTS).map(x => x as WDENVKey);
 
 const isWDENVKey = (key: unknown): key is WDENVKey =>
   (EVERY_WD_KEY as string[]).includes("" + key);
@@ -142,7 +142,6 @@ export function getSpecialValue(key: string | number):
   SPECIAL_VALUES {
 
   const k = snakeCase(("" + key).toUpperCase()).toUpperCase();
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
   const v = get(SPECIAL_VALUES, k, NaN) as number | undefined;
 
   if (isUndefined(v) || isNaN(v)) {

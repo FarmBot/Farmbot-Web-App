@@ -11,18 +11,21 @@ module CeleryScript
     attr_reader :kind, :value, :parent
 
     def initialize(parent, value, kind)
-      @parent, @value, @kind = parent, value, kind
+      @parent = parent
+      @value = value
+      @kind = kind
     end
 
     def cross_check(corpus, _key = nil)
       allowed = corpus.fetchArg(kind).allowed_values
       unless allowed.any? { |spec| spec.valid?(self, corpus) }
-        message = (FRIENDLY_ERRORS.dig(kind, parent.kind) || BAD_LEAF) % {
+        message = format(
+          (FRIENDLY_ERRORS.dig(kind, parent.kind) || BAD_LEAF),
           kind: kind,
           parent_kind: parent.kind,
           allowed: "[#{allowed.map(&:name).join(", ")}]",
           actual: value.class,
-        }
+        )
         raise TypeCheckError, message
       end
     end

@@ -5,6 +5,7 @@ import { ToggleHighlightModifiedProps } from "../interfaces";
 import * as configStorageActions from "../../../config_storage/actions";
 import { BooleanSetting } from "../../../session_keys";
 import { ToggleButton } from "../../../ui";
+import { ToggleButtonProps } from "../../../ui/toggle_button";
 
 let setWebAppConfigValueSpy: jest.SpyInstance;
 let getWebAppConfigValueSpy: jest.SpyInstance;
@@ -24,7 +25,7 @@ afterEach(() => {
 const findByType = (
   node: React.ReactNode,
   type: unknown,
-): React.ReactElement<{ children?: React.ReactNode }> | undefined => {
+): React.ReactElement<ToggleButtonProps> | undefined => {
   if (!node) { return undefined; }
   if (Array.isArray(node)) {
     for (const child of React.Children.toArray(node)) {
@@ -33,9 +34,11 @@ const findByType = (
     }
     return undefined;
   }
-  if (React.isValidElement<{ children?: React.ReactNode }>(node)) {
-    if (node.type === type) { return node; }
-    return findByType(node.props.children, type);
+  if (React.isValidElement(node)) {
+    if (node.type === type) {
+      return node as React.ReactElement<ToggleButtonProps>;
+    }
+    return findByType((node.props as { children?: React.ReactNode }).children, type);
   }
   return undefined;
 };
@@ -54,7 +57,7 @@ describe("<ToggleHighlightModified />", () => {
       expect(container.firstChild).toBeTruthy();
       return;
     }
-    toggleButton?.props.toggleAction();
+    toggleButton?.props.toggleAction({} as React.MouseEvent);
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       BooleanSetting.highlight_modified_settings, true);
   });
@@ -69,7 +72,7 @@ describe("<ToggleHighlightModified />", () => {
       expect(container.firstChild).toBeTruthy();
       return;
     }
-    toggleButton?.props.toggleAction();
+    toggleButton?.props.toggleAction({} as React.MouseEvent);
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       BooleanSetting.highlight_modified_settings, false);
   });

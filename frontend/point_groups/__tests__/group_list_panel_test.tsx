@@ -52,7 +52,8 @@ describe("<GroupListPanel />", () => {
   it("changes search term", () => {
     render(<GroupListPanel {...fakeProps()} />);
     const input =
-      (screen.getByPlaceholderText("Search your groups..."));
+      // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+      (screen.getByPlaceholderText("Search your groups...") as HTMLInputElement);
     fireEvent.change(input, { target: { value: "one" } });
     expect(input.value).toEqual("one");
   });

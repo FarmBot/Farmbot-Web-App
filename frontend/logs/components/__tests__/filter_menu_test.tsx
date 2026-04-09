@@ -9,7 +9,7 @@ let sliderSpy: jest.SpyInstance;
 
 beforeEach(() => {
   sliderSpy = jest.spyOn(blueprintCore, "Slider")
-    .mockImplementation((props: {
+    .mockImplementation(((props: {
       onChange?: (value: number) => void;
       onRelease?: (value: number) => void;
     }) =>
@@ -17,7 +17,7 @@ beforeEach(() => {
         onClick={() => {
           props.onChange?.(2);
           props.onRelease?.(2);
-        }} />);
+        }} />) as never);
 });
 
 afterEach(() => {

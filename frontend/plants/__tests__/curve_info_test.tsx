@@ -10,20 +10,13 @@ import { CurveType } from "../../curves/templates";
 import { formatPlantInfo } from "../map_state_to_props";
 import { Path } from "../../internal_urls";
 import * as ui from "../../ui";
+import { FBSelectProps } from "../../ui/new_fb_select";
 
 let fbSelectSpy: jest.SpyInstance;
 
 beforeEach(() => {
   fbSelectSpy = jest.spyOn(ui, "FBSelect")
-    .mockImplementation((props: {
-      selectedItem?: { label: string };
-      onChange: (item: {
-        label: string;
-        value: number | string;
-        headingId?: string;
-        isNull?: true;
-      }) => void;
-    }) => <div>
+    .mockImplementation(((props: FBSelectProps) => <div>
       <span>{props.selectedItem?.label || "None"}</span>
       <button
         className={"change-curve"}
@@ -39,7 +32,7 @@ beforeEach(() => {
           value: "",
           isNull: true,
         })} />
-    </div>);
+    </div>) as never);
 });
 
 afterEach(() => {

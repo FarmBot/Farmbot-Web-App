@@ -50,8 +50,6 @@
   color: $medium_gray;
   font-weight: bold;
   height: 2.5rem;
-  padding-top: auto;
-  padding-bottom: auto;
   padding-left: 0;
   padding-right: 0;
   text-align: center;
@@ -378,6 +376,7 @@
 
 .controls-popup {
   color: $off_white;
+
   @media screen and (max-width: $mobile_max_width) {
     &.panel-open {
       display: none;

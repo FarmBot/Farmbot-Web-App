@@ -22,6 +22,7 @@
       transform: translateY(21rem);
     }
   }
+
   @media screen and (max-width: $mobile_max_width) {
     &.panel-open {
       display: none;
@@ -107,7 +108,7 @@
       padding-top: 1rem;
       padding-bottom: 1rem;
       background: #f2f2f2;
-      box-shadow: 0px 0px 1px 0px #666666;
+      box-shadow: 0px 0px 1px 0px #666;
       button {
         display: inline;
         float: none;

@@ -27,6 +27,7 @@ module FarmEvents
       if ActiveRecord::Base.connection.open_transactions.zero?
         raise TRANSACTION_REQUIRED
       end
+
       create_fragment_for(owner)
       owner.manually_sync!
     end
@@ -53,10 +54,10 @@ module FarmEvents
 
     def owner
       options = {
-        FarmEvents => ->() { farm_event },
-        Regimens => ->() { regimen },
+        FarmEvents => -> { farm_event },
+        Regimens => -> { regimen },
       }
-      options.fetch(self.class.module_parent).call()
+      options.fetch(self.class.module_parent).call
     end
   end
 end

@@ -1,5 +1,4 @@
 import { McuParams, Xyz } from "farmbot";
-import { transform } from "lodash";
 
 interface AxisStatus {
   axis: Xyz;
@@ -24,7 +23,7 @@ export function axisTrackingStatus(
 ): AxisStatus[] {
   const stats = enabledAxisMap(mcuParams, disableEncoderUse);
   const mapper = (a: keyof typeof stats) => ({ axis: a, disabled: !stats[a] });
-  return Object.keys(stats).map(mapper);
+  return (Object.keys(stats) as Xyz[]).map(mapper);
 }
 
 export function enabledAxisMap(
@@ -42,9 +41,11 @@ export function enabledAxisMap(
   };
 }
 
-export function disabledAxisMap(h: McuParams): Record<Xyz, boolean> {
-  return transform<boolean, Record<Xyz, boolean>>(
-    enabledAxisMap(h),
-    (d: Record<Xyz, boolean>, value: boolean, key: Xyz) => { d[key] = !value; },
-    { x: false, y: false, z: false });
-}
+export const disabledAxisMap = (h: McuParams): Record<Xyz, boolean> => {
+  const enabled = enabledAxisMap(h);
+  return {
+    x: !enabled.x,
+    y: !enabled.y,
+    z: !enabled.z,
+  };
+};

@@ -57,7 +57,15 @@ describe("<ChangeOwnershipForm />", () => {
   });
 
   it("handles missing ref", () => {
-    const useRefSpy = jest.spyOn(React, "useRef").mockReturnValue({ current: undefined });
+    const originalUseRef = React.useRef;
+    const refs: Array<React.RefObject<unknown>> = [];
+    const useRefSpy = jest.spyOn(React, "useRef")
+      // eslint-disable-next-line comma-spacing
+      .mockImplementation(<T,>(initialValue: T) => {
+        const ref = originalUseRef(initialValue);
+        refs.push(ref as React.RefObject<unknown>);
+        return ref;
+      });
     try {
       const { getByRole, getByText, container } = render(<ChangeOwnershipForm />);
       const header = getByRole("button", { name: /Change Ownership/ });
@@ -72,6 +80,12 @@ describe("<ChangeOwnershipForm />", () => {
         target: { value: "password" },
         currentTarget: { value: "password" },
       });
+      const passwordRef = refs.find(ref =>
+        ref.current instanceof HTMLInputElement &&
+        ref.current.id === "password");
+      expect(passwordRef).toBeTruthy();
+      (passwordRef as React.RefObject<HTMLInputElement | undefined>).current =
+        undefined;
       fireEvent.click(getByText("submit"));
       expect(transferOwnershipSpy).toHaveBeenCalledWith({
         device: mockDevice,

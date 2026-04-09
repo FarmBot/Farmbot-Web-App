@@ -5,6 +5,7 @@ import { Row } from "../../../ui";
 import { t } from "../../../i18next_wrapper";
 import { MoveStepInput } from "./input";
 import { isUndefined } from "lodash";
+import { XYZ } from "../../../devices/constants";
 
 export const speedOverwrite = (
   axis: Xyz,
@@ -45,7 +46,7 @@ export const SpeedInputRow = (props: SpeedInputRowProps) =>
     <label>
       {t("Speed (%)")}
     </label>
-    {["x", "y", "z"].map((axis: Xyz) =>
+    {XYZ.map((axis: Xyz) =>
       <div key={axis}>
         <MoveStepInput field={"speed"} axis={axis}
           value={props.speed[axis]}

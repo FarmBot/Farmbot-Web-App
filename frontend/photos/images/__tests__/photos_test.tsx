@@ -87,9 +87,17 @@ describe("<Photos />", () => {
   });
 
   const setStateSync = (instance: Photos) => {
-    instance.setState = (update: Partial<PhotosComponentState>) => {
-      instance.state = { ...instance.state, ...update };
-    };
+    instance.setState = ((state, callback) => {
+      const update = typeof state == "function"
+        ? state(instance.state, instance.props)
+        : state;
+      instance.state = {
+        ...instance.state,
+        ...(update as Partial<PhotosComponentState>),
+      };
+      callback?.();
+    }) as Photos["setState"];
+    return instance;
   };
 
   it("shows photo", () => {

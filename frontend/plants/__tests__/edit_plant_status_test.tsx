@@ -33,6 +33,10 @@ import { Actions } from "../../constants";
 import { Path } from "../../internal_urls";
 import { CurveType } from "../../curves/templates";
 import * as ui from "../../ui";
+import { FBSelectProps } from "../../ui/new_fb_select";
+import { BIProps } from "../../ui/blurable_input";
+import { ColorPickerProps } from "../../ui/color_picker";
+import { DropDownItem } from "../../ui/fb_select";
 
 let fbSelectSpy: jest.SpyInstance;
 let blurableInputSpy: jest.SpyInstance;
@@ -43,7 +47,7 @@ beforeEach(() => {
   jest.spyOn(crud, "edit").mockImplementation(jest.fn());
   jest.spyOn(crud, "save").mockImplementation(jest.fn());
   fbSelectSpy = jest.spyOn(ui, "FBSelect")
-    .mockImplementation((props: any) => {
+    .mockImplementation(((props: FBSelectProps) => {
       const value = props.selectedItem ? String(props.selectedItem.value) : "";
       return <select
         className={"mock-fb-select"}
@@ -51,27 +55,29 @@ beforeEach(() => {
         onChange={e => {
           const nextValue = e.currentTarget.value;
           const selected = nextValue === ""
-            ? props.list.find((item: any) => item.isNull)
-            || props.list.find((item: any) => String(item.value) === "")
-            : props.list.find((item: any) => String(item.value) === nextValue);
+            ? props.list.find((item: DropDownItem) => item.isNull)
+            || props.list.find((item: DropDownItem) =>
+              String(item.value) === "")
+            : props.list.find((item: DropDownItem) =>
+              String(item.value) === nextValue);
           selected && props.onChange(selected);
         }}>
         <option value={""} />
-        {props.list.map((item: any, index: number) =>
+        {props.list.map((item: DropDownItem, index: number) =>
           <option key={`${item.value}-${index}`} value={String(item.value)}>
             {item.label}
           </option>)}
       </select>;
-    });
+    }) as never);
   blurableInputSpy = jest.spyOn(ui, "BlurableInput")
-    .mockImplementation((props: any) => <input
+    .mockImplementation(((props: BIProps) => <input
       className={"mock-blurable-input"}
       defaultValue={props.value}
-      onBlur={e => props.onCommit(e)} />);
+      onBlur={e => props.onCommit(e)} />) as never);
   colorPickerSpy = jest.spyOn(ui, "ColorPicker")
-    .mockImplementation((props: any) => <button
+    .mockImplementation(((props: ColorPickerProps) => <button
       className={"mock-color-picker"}
-      onClick={() => props.onChange("green")} />);
+      onClick={() => props.onChange?.("green")} />) as never);
 });
 
 afterEach(() => {

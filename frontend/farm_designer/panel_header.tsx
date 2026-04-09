@@ -130,8 +130,8 @@ const ALT_PANEL_SLUG: Record<string, string[]> = {
 };
 
 export const PANEL_BY_SLUG: Record<string, Panel> = {};
-Object.entries(PANEL_SLUG).map(([panel, slug]: [Panel, string]) =>
-  PANEL_BY_SLUG[slug] = panel);
+Object.entries(PANEL_SLUG).map(([panel, slug]) =>
+  PANEL_BY_SLUG[slug] = panel as Panel);
 
 const PANEL_PATH: Partial<Record<Panel, () => string>> = {
   [Panel.Map]: Path.designer,

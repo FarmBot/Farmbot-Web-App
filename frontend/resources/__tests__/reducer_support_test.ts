@@ -8,7 +8,7 @@ import { buildResourceIndex } from "../../__test_support__/resource_index_builde
 import { cloneDeep } from "lodash";
 
 describe("beforeEach()", () => {
-  const emptyHandler = <T>(s: T, _a: ReduxAction<{}>): T => s;
+  const emptyHandler = <T>(s: T, _a: ReduxAction<unknown>): T => s;
 
   const readonlyState = () => {
     const config = fakeWebAppConfig();

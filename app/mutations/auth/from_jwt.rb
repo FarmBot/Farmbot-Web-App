@@ -28,7 +28,7 @@ module Auth
       # "Authorization: Bearer <INSERT_TOKEN_HERE>"
       # This helper method strips out the use "Bearer " text from a token, if it
       # managed to sneak in.
-      jwt.split(" ").last
+      jwt.split.last
     end
   end
 end

@@ -45,8 +45,9 @@ class RmqConfigWriter
 
   def self.do_render
     raise BAD_PASSWORD if ADMIN_PASSWORD.length < 5
+
     FileUtils.mkdir_p CONFIG_PATH
-    File.open(CONFIG_OUTPUT, "w+") { |f| f.write(TEMPLATE % CFG_DATA) }
+    File.write(CONFIG_OUTPUT, TEMPLATE % CFG_DATA)
   end
 
   def self.dont_render

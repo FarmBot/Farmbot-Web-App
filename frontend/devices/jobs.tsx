@@ -187,7 +187,7 @@ export const sortJobs =
   } => {
     const jobsWithTitle = betterCompact(Object.entries(jobs)
       .filter(([_title, job]) => job))
-      .map(addTitleToJobProgress);
+      .map(([title, job]) => addTitleToJobProgress([title, job as JobProgress]));
     const activeJobs = sortBy(
       jobsWithTitle.filter(job => !isJobDone(job)),
       job => moment.now() - moment(job.time).unix()).reverse();

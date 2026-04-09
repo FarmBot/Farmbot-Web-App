@@ -17,32 +17,64 @@ def save_package_json(json)
   }
 end
 
+# Parse bun output.
+def parse_bun_outdated(output)
+  latest_json = {}
+  ansi_escape = /(?:\e|\\e)\[[0-9;]*m/
+
+  output.each_line do |line|
+    cleaned_line = line.gsub(ansi_escape, "").strip
+    next if cleaned_line.empty?
+
+    if cleaned_line.start_with?("│")
+      columns = cleaned_line.split("│").map(&:strip)
+      next unless columns.length >= 5
+      next if columns[1] == "Package"
+
+      package = columns[1].sub(/\s+\(dev\)\z/, "")
+      latest_json[package] = columns[4]
+      next
+    end
+
+    next unless cleaned_line.include?(" => ")
+
+    package, latest = cleaned_line.split(" => ", 2)
+    package = package.delete_prefix('"').delete_suffix('"')
+    latest = latest.delete_prefix('"').delete_suffix('"')
+    next if package == "Package"
+
+    latest_json[package.sub(/\s+\(dev\)\z/, "")] = latest
+  end
+
+  latest_json
+end
+
 # Fetch latest versions for outdated dependencies.
 def fetch_available_upgrades()
   latest_json = {}
   begin
-    output = `npm outdated --json`
+    output = `bun outdated`
     return {} if output.nil? || output.strip.empty?
-    latest_json = JSON.parse(output)
-  rescue JSON::ParserError
+    latest_json = parse_bun_outdated(output)
+  rescue Errno::ENOENT
     latest_json = {}
   end
   latest_versions = {}
-  latest_json.each do |dep, data|
+  latest_json.each do |dep, latest|
     any_excluded = false
     for exclude in EXCLUDE
       excluded = exclude[:packages].include?(dep)
       if excluded
         any_excluded = true
-        puts "excluding #{dep} v#{data["latest"]} because of " \
+        puts "excluding #{dep} v#{latest} because of " \
               "#{exclude[:reason]} v#{exclude[:version]}\n"
       end
       if exclude[:reason].include?(dep)
-        puts "  #{dep} latest v#{data["latest"]}\n"
+        puts "  #{dep} latest v#{latest}\n"
       end
     end
-    unless any_excluded || data["latest"].nil? || data["latest"].include?("beta")
-      latest_versions[dep] = data["latest"]
+    unless any_excluded || latest.nil? || latest.include?("beta")
+      latest_versions[dep] = latest
     end
   end
   return latest_versions

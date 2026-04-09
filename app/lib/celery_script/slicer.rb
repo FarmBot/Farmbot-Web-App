@@ -8,16 +8,17 @@ module CeleryScript
 
     def run!(node)
       raise "Not a hash" unless node.is_a?(Hash)
+
       @nesting_level = 0
       @root_node = node
-      heap = CsHeap.new()
+      heap = CsHeap.new
       allocate(heap, node, CsHeap::NULL)
       @heap_values = heap.values
       @heap_values.map do |x|
         x[CsHeap::BODY] ||= CsHeap::NULL
         x[CsHeap::NEXT] ||= CsHeap::NULL
       end
-      heap.dump()
+      heap.dump
     end
 
     def is_celery_script(node)
@@ -60,7 +61,7 @@ module CeleryScript
 
     def recurse_into_body(heap, canonical_list, previous_address, index = 0)
       if canonical_list[index]
-        is_head = index == 0
+        is_head = index.zero?
         # BE CAREFUL EDITING THIS LINE, YOU MIGHT BREAK `BODY` NODES:
         heap # See note above!
           .put(previous_address, CsHeap::BODY, previous_address + 1) if is_head

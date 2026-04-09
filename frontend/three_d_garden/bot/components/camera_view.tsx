@@ -1,6 +1,6 @@
 import React from "react";
 import * as THREE from "three";
-import { Config } from "../../config";
+import { Config, PositionConfig } from "../../config";
 import { Mesh, MeshStandardMaterial } from "../../components";
 import { Edges } from "@react-three/drei";
 import { zDir } from "../../helpers";
@@ -32,6 +32,7 @@ const rotatePoint = (
 
 export interface CameraViewProps {
   config: Config;
+  configPosition: PositionConfig;
   distanceToSoil: number;
   cameraMountPosition: THREE.Vector3;
 }
@@ -40,7 +41,7 @@ export const CameraView = (props: CameraViewProps) => {
   const { config, distanceToSoil, cameraMountPosition } = props;
   const cameraLensPosition = cameraMountPosition.clone()
     .add(cameraMountToLensOffset);
-  const soilZ = distanceToSoil + zDir(config) * config.z;
+  const soilZ = distanceToSoil + zDir(config) * props.configPosition.z;
 
   const widthAtSoilFromZero = config.imgCenterX * 2 * config.imgScale;
   const heightAtSoilFromZero = config.imgCenterY * 2 * config.imgScale;
@@ -66,13 +67,13 @@ export const CameraView = (props: CameraViewProps) => {
   const TUR = [-lensSize, lensSize, 0];
   const TLL = [lensSize, -lensSize, 0];
   const TLR = [lensSize, lensSize, 0];
-  const TOP = [TUL, TUR, TLL, TLR].map(rotateTop);
+  const TOP = ([TUL, TUR, TLL, TLR] as V3[]).map(rotateTop);
 
   const BUL = [xCenter - xEdgeAtSoil, yCenter - yEdgeAtSoil, -distanceToSoil];
   const BUR = [xCenter - xEdgeAtSoil, yCenter + yEdgeAtSoil, -distanceToSoil];
   const BLL = [xCenter + xEdgeAtSoil, yCenter - yEdgeAtSoil, -distanceToSoil];
   const BLR = [xCenter + xEdgeAtSoil, yCenter + yEdgeAtSoil, -distanceToSoil];
-  const BOTTOM = [BUL, BUR, BLL, BLR].map(rotateBottom);
+  const BOTTOM = ([BUL, BUR, BLL, BLR] as V3[]).map(rotateBottom);
 
   const VERTICES = [
     ...TOP,

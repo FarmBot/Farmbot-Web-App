@@ -4,6 +4,7 @@
 module CeleryScript
   class AstNode < AstBase
     attr_reader :args, :body, :comment, :kind, :parent
+
     BODY_HAS_NON_NODES = "The `body` of a node can only contain nodes- " \
                          "no leaves here."
     LEAVES_NEED_KEYS = "Tried to initialize a leaf without a key."
@@ -11,37 +12,43 @@ module CeleryScript
     FRIENDLY_ERRORS = CeleryScript::Checker::FRIENDLY_ERRORS
     BAD_LEAF = CeleryScript::Checker::BAD_LEAF
 
+    # rubocop:disable Lint/UnusedMethodArgument
     def initialize(parent = nil, args:, body: nil, comment: "", kind:, uuid: nil)
-      @comment, @kind, @parent = comment, kind, parent
+      @comment = comment
+      @kind = kind
+      @parent = parent
 
-      @args = args.map do |key, value|
+      @args = args.to_h do |key, value|
         [key.to_sym, maybe_initialize(self, value, key)]
-      end.to_h if args
+      end if args
 
       @body = body.map do |e|
         raise TypeCheckError, BODY_HAS_NON_NODES unless is_node?(e)
+
         maybe_initialize(self, e)
       end if body
     end
+    # rubocop:enable Lint/UnusedMethodArgument
 
     def maybe_initialize(parent, leaf_or_node, key = NEVER)
       if is_node?(leaf_or_node)
         AstNode.new(parent, **leaf_or_node)
       else
         raise TypeCheckError, LEAVES_NEED_KEYS if key == NEVER
+
         AstLeaf.new(parent, leaf_or_node, key)
       end
     end
 
     def is_node?(hash)
       hash.is_a?(Hash) &&
-      hash.symbolize_keys! &&
-      hash.has_key?(:kind) &&
-      hash.has_key?(:args) &&
-      (hash[:body].is_a?(Array) || hash[:body] == nil) &&
-      (hash[:comment].is_a?(String) || hash[:comment] == nil) &&
-      (hash[:args].is_a?(Hash)) &&
-      (hash[:kind].is_a?(String))
+        hash.symbolize_keys! &&
+        hash.key?(:kind) &&
+        hash.key?(:args) &&
+        (hash[:body].is_a?(Array) || hash[:body].nil?) &&
+        (hash[:comment].is_a?(String) || hash[:comment].nil?) &&
+        (hash[:args].is_a?(Hash)) &&
+        (hash[:kind].is_a?(String))
     end
 
     # Calling this method with only one parameter
@@ -49,7 +56,7 @@ module CeleryScript
     def resolve_variable!(origin = self)
       locals = args[:locals]
 
-      if locals&.kind === "scope_declaration"
+      if locals&.kind == "scope_declaration"
         label = origin.args[:label]&.value
         result = (locals.body || []).select do |x|
           x.args[:label]&.value == label
@@ -68,7 +75,6 @@ module CeleryScript
     end
 
     def todo
-
       # Don't delete this- it is currently unreachable code, but as soon as we
       # allow identifiers other than `point`, `tool` and `coordinate` we will
       # need it again (and can write tests)
@@ -79,7 +85,6 @@ module CeleryScript
       allowed = corpus.fetchArg(key).allowed_values
       # It would be safe to run type checking here.
       if (actual == "identifier")
-        allowed_types = allowed.filter { |x| x.tag == :identifier }
         var = resolve_variable!
         case var.kind
         when "parameter_declaration" then todo
@@ -90,12 +95,13 @@ module CeleryScript
       end
 
       unless allowed.map(&:name).include?(actual)
-        message = (FRIENDLY_ERRORS.dig(kind, parent.kind) || BAD_LEAF) % {
+        message = format(
+          (FRIENDLY_ERRORS.dig(kind, parent.kind) || BAD_LEAF),
           kind: kind,
           parent_kind: parent.kind,
           allowed: allowed.map(&:name),
           actual: actual,
-        }
+        )
 
         raise TypeCheckError, message
       end

@@ -4,6 +4,7 @@ import { DefaultAxisOrder } from "../default_axis_order";
 import { DefaultAxisOrderProps } from "../interfaces";
 import * as deviceActions from "../../../devices/actions";
 import * as ui from "../../../ui";
+import { FBSelectProps } from "../../../ui";
 
 let updateConfigSpy: jest.SpyInstance;
 let fbSelectSpy: jest.SpyInstance;
@@ -12,17 +13,14 @@ beforeEach(() => {
   updateConfigSpy = jest.spyOn(deviceActions, "updateConfig")
     .mockImplementation(jest.fn());
   fbSelectSpy = jest.spyOn(ui, "FBSelect")
-    .mockImplementation((props: {
-      selectedItem?: { label?: string },
-      onChange: (ddi: { label: string, value: string }) => void,
-    }) =>
+    .mockImplementation(((props: FBSelectProps) =>
       <div>
         <span data-testid="selected-label">{props.selectedItem?.label}</span>
         <button onClick={() =>
           props.onChange({ label: "X and Y together", value: "xy,z;high" })}>
           mock-select
         </button>
-      </div>);
+      </div>) as never);
 });
 
 afterEach(() => {

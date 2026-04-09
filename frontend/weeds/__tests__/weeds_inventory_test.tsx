@@ -45,7 +45,7 @@ const createWrapper = (element: React.ReactElement) => {
   return wrapper;
 };
 const getInstance = (wrapper: ReturnType<typeof createRenderer>) =>
-  getRendererInstance<Weeds>(wrapper, Weeds);
+  getRendererInstance<Weeds, WeedsProps>(wrapper, Weeds);
 
 beforeEach(() => {
   jest.clearAllMocks();

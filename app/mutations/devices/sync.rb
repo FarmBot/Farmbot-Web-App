@@ -43,13 +43,13 @@ module Devices
         acc.update(key => conn.execute(value + device.id.to_s).values)
       end
       real_stuff.merge({
-        first_party_farmwares: STUB_FARMWARES,
-        sensor_readings: [],
-      })
+                         first_party_farmwares: STUB_FARMWARES,
+                         sensor_readings: [],
+                       })
     end
 
     def maybe_mark_first_contact
-      if !device.first_saw_api
+      unless device.first_saw_api
         device.update!(first_saw_api: Time.now)
       end
     end

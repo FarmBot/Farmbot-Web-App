@@ -171,10 +171,10 @@ export const getModifiedClassName = (
   key: McuParamName,
   valueRaw: number | undefined,
   firmwareHardware: FirmwareHardware | undefined,
-  func?: (n: number | undefined) => number,
+  func?: (n: number) => number,
 ) => {
   const defaultValueRaw = getDefaultFwConfigValue(firmwareHardware)(key);
   const defaultValue = func ? func(defaultValueRaw) : defaultValueRaw;
-  const value = func ? func(valueRaw) : valueRaw;
+  const value = (func && valueRaw !== undefined) ? func(valueRaw) : valueRaw;
   return defaultValues.getModifiedClassNameSpecifyDefault(value, defaultValue);
 };

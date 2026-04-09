@@ -1,7 +1,7 @@
 import React from "react";
 import { render } from "@testing-library/react";
 import { NumericMCUInputGroup } from "../numeric_mcu_input_group";
-import { NumericMCUInputGroupProps } from "../interfaces";
+import { McuInputBoxProps, NumericMCUInputGroupProps } from "../interfaces";
 import { DeviceSetting } from "../../../constants";
 import { bot } from "../../../__test_support__/fake_state/bot";
 import { cloneDeep } from "lodash";
@@ -41,7 +41,8 @@ describe("<NumericMCUInputGroup />", () => {
   beforeEach(() => {
     mcuInputBoxMock.mockClear();
     mcuInputBoxSpy = jest.spyOn(mcuInputBoxModule, "McuInputBox")
-      .mockImplementation((props: unknown) => mcuInputBoxMock(props as never));
+      .mockImplementation(((props: McuInputBoxProps) =>
+        mcuInputBoxMock(props)) as never);
   });
 
   afterEach(() => {
@@ -83,7 +84,7 @@ describe("<NumericMCUInputGroup />", () => {
 
   it("shows limit warnings", () => {
     const mcuInputBoxSpy = jest.spyOn(mcuInputBoxModule, "McuInputBox")
-      .mockImplementation(() => <div />);
+      .mockImplementation((() => <div />) as never);
     const mcuParams = cloneDeep(bot.hardware.mcu_params);
     mcuParams.encoder_enabled_x = 1;
     mcuParams.encoder_enabled_y = 1;
@@ -99,7 +100,7 @@ describe("<NumericMCUInputGroup />", () => {
 
   it("shows other warnings", () => {
     const mcuInputBoxSpy = jest.spyOn(mcuInputBoxModule, "McuInputBox")
-      .mockImplementation(() => <div />);
+      .mockImplementation((() => <div />) as never);
     const mcuParams = cloneDeep(bot.hardware.mcu_params);
     mcuParams.encoder_enabled_x = 1;
     mcuParams.encoder_enabled_y = 1;

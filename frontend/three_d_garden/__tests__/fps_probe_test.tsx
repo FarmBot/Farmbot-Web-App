@@ -8,7 +8,8 @@ describe("FPSProbe", () => {
   let useThreeSpy: jest.SpyInstance;
 
   beforeEach(() => {
-    window.logStore = undefined;
+    console.log = jest.fn();
+    window.logStore = undefined as unknown as LogStore;
     useFrameSpy = jest.spyOn(threeFiber, "useFrame")
       .mockImplementation(jest.fn());
     useThreeSpy = jest.spyOn(threeFiber, "useThree")

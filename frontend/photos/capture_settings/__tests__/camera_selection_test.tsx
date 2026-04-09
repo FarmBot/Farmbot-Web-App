@@ -5,24 +5,21 @@ import {
 } from "../camera_selection";
 import { CameraSelectionProps } from "../interfaces";
 import { error } from "../../../toast/toast";
-import { DropDownItem } from "../../../ui/fb_select";
 import * as ui from "../../../ui";
+import { FBSelectProps } from "../../../ui/new_fb_select";
 
 let fbSelectSpy: jest.SpyInstance;
 
 beforeEach(() => {
   fbSelectSpy = jest.spyOn(ui, "FBSelect")
-    .mockImplementation((props: {
-      selectedItem: DropDownItem;
-      onChange: (ddi: DropDownItem) => void;
-    }) =>
+    .mockImplementation(((props: FBSelectProps) =>
       <div>
-        <button>{props.selectedItem.label}</button>
+        <button>{props.selectedItem?.label}</button>
         <button onClick={() =>
           props.onChange({ label: "My Camera", value: "mycamera" })}>
           change camera
         </button>
-      </div>);
+      </div>) as never);
 });
 
 afterEach(() => {

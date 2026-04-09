@@ -15,8 +15,7 @@ class SessionToken < AbstractJwtToken
                     iat: Time.now.to_i,
                     exp: EXPIRY.from_now.to_i,
                     iss: $API_URL,
-                    aud: AbstractJwtToken::UNKNOWN_AUD,
-                    fbos_version:) # Gem::Version
+                    aud: AbstractJwtToken::UNKNOWN_AUD)
     unless user.verified?
       Rollbar.info("Verification Error", email: user.email)
       raise Errors::Forbidden, MUST_VERIFY
@@ -38,10 +37,8 @@ class SessionToken < AbstractJwtToken
                 mqtt_ws: MQTT_WS }])
   end
 
-  def self.as_json(user, aud, fbos_version)
-    { token: SessionToken.issue_to(user, iss: $API_URL,
-                                         aud: aud,
-                                         fbos_version: fbos_version),
+  def self.as_json(user, aud)
+    { token: SessionToken.issue_to(user, iss: $API_URL, aud: aud),
       user: user }
   end
 end

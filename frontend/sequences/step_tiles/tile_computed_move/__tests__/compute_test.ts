@@ -10,6 +10,7 @@ import {
   fakeTool, fakeToolSlot,
 } from "../../../../__test_support__/fake_state/resources";
 import { cloneDeep } from "lodash";
+import { XYZ } from "../../../../devices/constants";
 
 describe("computeCoordinate()", () => {
   it("computes coordinate", () => {
@@ -60,7 +61,7 @@ describe("computeCoordinate()", () => {
     slot.body.y = 200;
     slot.body.z = 300;
     const resourceIndex = buildResourceIndex([tool1, tool2, slot]).index;
-    ["x", "y", "z"].map((axis: Xyz) =>
+    XYZ.map((axis: Xyz) =>
       moveStep.body && moveStep.body.push({
         kind: "axis_overwrite",
         args: {

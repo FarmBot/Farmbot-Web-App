@@ -1,6 +1,7 @@
 module Users
   class Create < Mutations::Command
     include Auth::ConsentHelpers
+
     CANT_USE_SERVER = "You are not authorized to use this server. " \
                       "Please use an official email address."
     ALREADY_REGISTERED = "Already registered"
@@ -27,9 +28,7 @@ module Users
       pw_length_ok = password.length > 7
       pw_match = password == password_confirmation
       pw_invalid = !(pw_match && pw_length_ok)
-      if pw_invalid
-        add_error :password, :*, PASSWORD_PROBLEMS
-      end
+      add_error :password, :*, PASSWORD_PROBLEMS if pw_invalid
     end
 
     def execute
@@ -39,11 +38,9 @@ module Users
                  name: name }
       params[:agreed_to_terms_at] = Time.now
       user = User.new(params)
-      device = Devices::Create.run!(user: user)
+      Devices::Create.run!(user: user)
       user.save!
-      UserMailer
-        .welcome_email(user)
-        .deliver_later unless skip_email
+      UserMailer.welcome_email(user).deliver_later unless skip_email
       { message: "Check your email!" }
     end
 

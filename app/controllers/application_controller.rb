@@ -9,6 +9,7 @@ class ApplicationController < ActionController::Base
 
   def current_device
     return @current_device if @current_device
+
     authenticate_user! unless current_user
     @current_device = current_user.device
     Device.send(:current=, @current_device)

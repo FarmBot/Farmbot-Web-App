@@ -3,7 +3,7 @@ import { SyncStatus, ParameterApplication, TaggedSequence } from "farmbot";
 import { isParameterized } from "./locals_list/is_parameterized";
 import { execSequence } from "../devices/actions";
 import { LocalsList } from "./locals_list/locals_list";
-import { AllowedVariableNodes } from "./locals_list/locals_list_support";
+import { AllowedVariableNodes, VariableNode } from "./locals_list/locals_list_support";
 import {
   addOrEditParamApps, variableList, mergeParameterApplications,
 } from "./locals_list/variable_support";
@@ -41,7 +41,7 @@ interface ParameterAssignmentMenuProps {
   resources: ResourceIndex;
   varData: VariableNameSet | undefined;
   /** Edit a parameter application prepared for a sequence test. */
-  editBodyVariables(variable: ParameterApplication): void;
+  editBodyVariables(variable: VariableNode | undefined): void;
   /** Parameter applications prepared for a sequence test. */
   bodyVariables: ParameterApplication[];
   dispatch: Function;

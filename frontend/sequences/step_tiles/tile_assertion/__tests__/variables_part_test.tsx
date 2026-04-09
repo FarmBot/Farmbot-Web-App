@@ -34,7 +34,8 @@ describe("<VariablesPart />", () => {
     };
     const rendered = VariablesPart(p) as React.ReactElement<{ children?: React.ReactNode }>;
     const localsList =
-      React.Children.toArray(rendered.props.children)[0] as JSX.Element | undefined;
+      React.Children.toArray(rendered.props.children)[0] as
+      React.ReactElement<{ onChange?: (v: ParameterApplication) => void }> | undefined;
     expect(localsList).toBeDefined();
     localsList?.props.onChange?.(variable);
   });
@@ -52,7 +53,8 @@ describe("<VariablesPart />", () => {
     };
     const rendered = VariablesPart(p) as React.ReactElement<{ children?: React.ReactNode }>;
     const localsList =
-      React.Children.toArray(rendered.props.children)[0] as JSX.Element | undefined;
+      React.Children.toArray(rendered.props.children)[0] as
+      React.ReactElement<{ onChange?: (v: ParameterApplication) => void }> | undefined;
     expect(localsList).toBeDefined();
     localsList?.props.onChange?.(variable);
   });

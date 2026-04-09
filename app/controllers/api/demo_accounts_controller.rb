@@ -12,7 +12,7 @@ module Api
       @create_params ||= {
         secret: raw_json.fetch(:secret),
         product_line: raw_json.fetch(:product_line),
-       }
+      }
     end
   end
 end

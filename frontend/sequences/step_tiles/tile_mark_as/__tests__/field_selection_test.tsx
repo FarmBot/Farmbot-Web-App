@@ -10,6 +10,11 @@ import {
 import { changeBlurableInput } from "../../../../__test_support__/helpers";
 
 const DDI = UPDATE_RESOURCE_DDIS();
+type SelectLike = React.ReactElement<{
+  list: unknown[];
+  selectedItem: { label: string };
+  onChange: (item: { label: string; value: string }) => void;
+}>;
 
 describe("<FieldSelection />", () => {
   const fakeProps = (): FieldSelectionProps => ({
@@ -23,9 +28,10 @@ describe("<FieldSelection />", () => {
     const wrapper =
       FieldSelection(props) as React.ReactElement<{ children?: React.ReactNode }>;
     const children =
-      React.Children.toArray(wrapper.props.children) as JSX.Element[];
+      React.Children.toArray(wrapper.props.children) as
+      React.ReactElement<{ children?: React.ReactNode }>[];
     const fieldSelection = children[1];
-    return (fieldSelection.type as (props: unknown) => JSX.Element)(
+    return (fieldSelection.type as (props: unknown) => SelectLike)(
       fieldSelection.props);
   };
 
@@ -34,7 +40,8 @@ describe("<FieldSelection />", () => {
     p.field = undefined;
     const wrapper = FieldSelection(p) as React.ReactElement<{ children?: React.ReactNode }>;
     const children =
-      React.Children.toArray(wrapper.props.children) as JSX.Element[];
+      React.Children.toArray(wrapper.props.children) as
+      React.ReactElement<{ children?: React.ReactNode }>[];
     const select = getKnownFieldSelect(p);
     expect(select.props.list).toEqual([]);
     expect(children[0]?.props.children).toContain("property");
@@ -50,7 +57,8 @@ describe("<FieldSelection />", () => {
     p.field = undefined;
     const wrapper = FieldSelection(p) as React.ReactElement<{ children?: React.ReactNode }>;
     const children =
-      React.Children.toArray(wrapper.props.children) as JSX.Element[];
+      React.Children.toArray(wrapper.props.children) as
+      React.ReactElement<{ children?: React.ReactNode }>[];
     const select = getKnownFieldSelect(p);
     expect(select.props.list).toEqual([
       DDI.PLANT_STAGE,
@@ -100,7 +108,8 @@ describe("<FieldSelection />", () => {
     p.field = "plant_stage";
     const wrapper = FieldSelection(p) as React.ReactElement<{ children?: React.ReactNode }>;
     const children =
-      React.Children.toArray(wrapper.props.children) as JSX.Element[];
+      React.Children.toArray(wrapper.props.children) as
+      React.ReactElement<{ children?: React.ReactNode }>[];
     const select = getKnownFieldSelect(p);
     expect(select.props.list).toEqual([
       DDI.STATUS,
@@ -131,7 +140,8 @@ describe("<FieldSelection />", () => {
     p.field = field;
     const wrapper = FieldSelection(p) as React.ReactElement<{ children?: React.ReactNode }>;
     const children =
-      React.Children.toArray(wrapper.props.children) as JSX.Element[];
+      React.Children.toArray(wrapper.props.children) as
+      React.ReactElement<{ children?: React.ReactNode }>[];
     const select = getKnownFieldSelect(p);
     expect(select.props.list).toEqual([
       DDI.WEED_STATUS,
@@ -155,7 +165,8 @@ describe("<FieldSelection />", () => {
     p.field = "plant_stage";
     const wrapper = FieldSelection(p) as React.ReactElement<{ children?: React.ReactNode }>;
     const children =
-      React.Children.toArray(wrapper.props.children) as JSX.Element[];
+      React.Children.toArray(wrapper.props.children) as
+      React.ReactElement<{ children?: React.ReactNode }>[];
     const select = getKnownFieldSelect(p);
     expect(select.props.list).toEqual([
       DDI.COLOR,
@@ -178,7 +189,8 @@ describe("<FieldSelection />", () => {
     p.field = "planted_at";
     const wrapper = FieldSelection(p) as React.ReactElement<{ children?: React.ReactNode }>;
     const children =
-      React.Children.toArray(wrapper.props.children) as JSX.Element[];
+      React.Children.toArray(wrapper.props.children) as
+      React.ReactElement<{ children?: React.ReactNode }>[];
     const select = getKnownFieldSelect(p);
     expect(select.props.list).toEqual([
       DDI.PLANT_STAGE,
@@ -215,7 +227,8 @@ describe("<FieldSelection />", () => {
     p.field = "mounted_tool_id";
     const wrapper = FieldSelection(p) as React.ReactElement<{ children?: React.ReactNode }>;
     const children =
-      React.Children.toArray(wrapper.props.children) as JSX.Element[];
+      React.Children.toArray(wrapper.props.children) as
+      React.ReactElement<{ children?: React.ReactNode }>[];
     const select = getKnownFieldSelect(p);
     expect(select.props.list).toEqual([
       DDI.MOUNTED_TOOL,

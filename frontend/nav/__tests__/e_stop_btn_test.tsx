@@ -17,11 +17,12 @@ let isMobileSpy: jest.SpyInstance;
 beforeEach(() => {
   mockDevice.emergencyUnlock.mockClear();
   getDeviceSpy = jest.spyOn(deviceModule, "getDevice")
-    .mockImplementation(() => mockDevice);
+    .mockImplementation(() => mockDevice as unknown as import("farmbot").Farmbot);
   maybeGetDeviceSpy = jest.spyOn(deviceModule, "maybeGetDevice")
-    .mockImplementation(() => mockDevice);
+    .mockImplementation(() => mockDevice as unknown as import("farmbot").Farmbot);
   fetchNewDeviceSpy = jest.spyOn(deviceModule, "fetchNewDevice")
-    .mockImplementation(jest.fn(() => Promise.resolve(mockDevice)));
+    .mockImplementation(() =>
+      Promise.resolve(mockDevice as unknown as import("farmbot").Farmbot));
   isMobileSpy = jest.spyOn(screenSize, "isMobile").mockReturnValue(false);
 });
 

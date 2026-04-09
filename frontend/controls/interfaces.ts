@@ -52,7 +52,7 @@ export interface AxisInputBoxGroupState {
 export interface AxisInputBoxProps {
   axis: Xyz;
   value: number | undefined;
-  onChange: (key: string, val: number | undefined) => void;
+  onChange: (key: Xyz, val: number | undefined) => void;
 }
 
 export interface PinnedSequencesProps {

@@ -1,6 +1,6 @@
 import {
   selectImage, highlightMapImage, setShownMapImages,
-} from "../actions.ts";
+} from "../actions";
 
 describe("selectImage()", () => {
   it("selects one image", () => {

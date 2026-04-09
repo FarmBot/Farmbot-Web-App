@@ -31,6 +31,9 @@ import {
 } from "../../__test_support__/fake_bot_data";
 import * as help from "../../ui/help";
 import * as ui from "../../ui";
+import { BIProps } from "../../ui/blurable_input";
+import { FBSelectProps } from "../../ui/new_fb_select";
+import { DropDownItem } from "../../ui/fb_select";
 
 let moveSpy: jest.SpyInstance;
 let helpSpy: jest.SpyInstance;
@@ -42,11 +45,11 @@ beforeEach(() => {
   helpSpy = jest.spyOn(help, "Help").mockImplementation(
     jest.fn(({ text }: { text: string }) => <p>{text}</p>) as never);
   blurableInputSpy = jest.spyOn(ui, "BlurableInput")
-    .mockImplementation((props: any) => <input
+    .mockImplementation(((props: BIProps) => <input
       value={props.value}
-      onChange={e => props.onCommit(e)} />);
+      onChange={e => props.onCommit(e)} />) as never);
   fbSelectSpy = jest.spyOn(ui, "FBSelect")
-    .mockImplementation((props: any) => {
+    .mockImplementation(((props: FBSelectProps) => {
       const value = props.selectedItem ? String(props.selectedItem.value) : "";
       return <select
         className={"mock-fb-select"}
@@ -54,18 +57,20 @@ beforeEach(() => {
         onChange={e => {
           const nextValue = e.currentTarget.value;
           const selected = nextValue === ""
-            ? props.list.find((item: any) => item.isNull)
-            || props.list.find((item: any) => String(item.value) === "")
-            : props.list.find((item: any) => String(item.value) === nextValue);
+            ? props.list.find((item: DropDownItem) => item.isNull)
+            || props.list.find((item: DropDownItem) =>
+              String(item.value) === "")
+            : props.list.find((item: DropDownItem) =>
+              String(item.value) === nextValue);
           selected && props.onChange(selected);
         }}>
         <option value={""} />
-        {props.list.map((item: any, index: number) =>
+        {props.list.map((item: DropDownItem, index: number) =>
           <option key={`${item.value}-${index}`} value={String(item.value)}>
             {item.label}
           </option>)}
       </select>;
-    });
+    }) as never);
 });
 
 afterEach(() => {
@@ -94,7 +99,7 @@ describe("<PlantPanel />", () => {
   const fakeProps = (): PlantPanelProps => ({
     info: {
       ...info,
-      plantedAt: info.plantedAt.clone(),
+      plantedAt: info.plantedAt?.clone(),
       meta: info.meta ? { ...info.meta } : undefined,
     },
     updatePlant: jest.fn(),

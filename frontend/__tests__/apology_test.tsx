@@ -7,7 +7,8 @@ describe("<Apology />", () => {
   let clearSpy: jest.SpyInstance;
 
   beforeEach(() => {
-    clearSpy = jest.spyOn(Session, "clear").mockImplementation(jest.fn());
+    clearSpy = jest.spyOn(Session, "clear")
+      .mockImplementation(() => undefined as never);
   });
 
   afterEach(() => {

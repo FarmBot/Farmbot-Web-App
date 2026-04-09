@@ -3,7 +3,7 @@ import { ThreeEvent } from "@react-three/fiber";
 import {
   GizmoHelper, GizmoViewcube,
   OrbitControls, PerspectiveCamera,
-  Stats, Image, OrthographicCamera,
+  Stats, OrthographicCamera,
   Sphere,
   StatsGl,
 } from "@react-three/drei";
@@ -25,14 +25,13 @@ import {
   skyColor,
   ThreeDPlantLabel,
 } from "./garden";
-import { Config } from "./config";
+import { Config, PositionConfig } from "./config";
 import { useSpring, animated } from "@react-spring/three";
 import { Lab, Greenhouse } from "./scenes";
 import { getCamera } from "./zoom_beacons_constants";
 import {
   AmbientLight, AxesHelper, Group, MeshBasicMaterial,
 } from "./components";
-import { ICON_URLS } from "../crops/constants";
 import { isUndefined } from "lodash";
 import {
   TaggedGenericPointer, TaggedImage, TaggedPoint, TaggedPointGroup,
@@ -56,6 +55,7 @@ const AnimatedGroup = animated(Group);
 
 export interface GardenModelProps {
   config: Config;
+  configPosition: PositionConfig;
   activeFocus: string;
   setActiveFocus(focus: string): void;
   threeDPlants: ThreeDGardenPlant[];
@@ -80,6 +80,7 @@ export const GardenModel = (props: GardenModelProps) => {
 
   const [hoveredPlant, setHoveredPlant] =
     React.useState<number | undefined>(undefined);
+  const hoveredPlantRef = React.useRef<number | undefined>(undefined);
 
   const getI = (e: ThreeEvent<PointerEvent>) => {
     if (e.buttons) { return -1; }
@@ -99,7 +100,10 @@ export const GardenModel = (props: GardenModelProps) => {
     return config.labelsOnHover
       ? (e: ThreeEvent<PointerEvent>) => {
         e.stopPropagation();
-        setHoveredPlant(active ? getI(e) : undefined);
+        const nextHover = active ? getI(e) : undefined;
+        if (hoveredPlantRef.current === nextHover) { return; }
+        hoveredPlantRef.current = nextHover;
+        setHoveredPlant(nextHover);
       }
       : undefined;
   };
@@ -115,7 +119,11 @@ export const GardenModel = (props: GardenModelProps) => {
 
   const topDown = addPlantProps?.designer.threeDTopDownView;
   const topDownMobile = topDown && isMobile();
-  const camera = getCamera(config, props.activeFocus, cameraInit(!!topDown));
+  const camera = getCamera(
+    config,
+    props.configPosition,
+    props.activeFocus,
+    cameraInit(!!topDown));
   const [controlsCamera, setControlsCamera] =
     // eslint-disable-next-line no-null/no-null
     React.useState<ThreePerspectiveCamera | ThreeOrthographicCamera | null>(null);
@@ -130,14 +138,18 @@ export const GardenModel = (props: GardenModelProps) => {
   const showWeeds = !!addPlantProps?.getConfigValue(BooleanSetting.show_weeds);
   const showSpread = !!addPlantProps?.getConfigValue(BooleanSetting.show_spread);
 
-  const soilPoints = filterSoilPoints({ points: props.mapPoints, config });
+  const soilPoints = React.useMemo(
+    () => filterSoilPoints({ points: props.mapPoints, config }),
+    [props.mapPoints, config]);
   const soilSurface = React.useMemo(() =>
     getSurface(soilPoints), [soilPoints]);
   React.useEffect(() => {
     sessionStorage.setItem("soilSurfaceTriangles",
       JSON.stringify(soilSurface.triangles));
   }, [soilSurface.triangles]);
-  const getZ = getZFunc(soilSurface.triangles, -config.soilHeight);
+  const getZ = React.useMemo(
+    () => getZFunc(soilSurface.triangles, -config.soilHeight),
+    [soilSurface.triangles, config.soilHeight]);
 
   const showMoistureMap = !!props.addPlantProps?.getConfigValue(
     BooleanSetting.show_moisture_interpolation_map);
@@ -150,6 +162,47 @@ export const GardenModel = (props: GardenModelProps) => {
   // eslint-disable-next-line no-null/no-null
   const activePositionRef = React.useRef<{ x: number, y: number }>(null);
 
+  const plantLabelNodes = React.useMemo(
+    () => {
+      if (config.labelsOnHover) {
+        if (hoveredPlant === undefined) { return undefined; }
+        const plant = threeDPlants[hoveredPlant];
+        return plant &&
+          <ThreeDPlantLabel key={hoveredPlant} i={hoveredPlant}
+            plant={plant}
+            config={config}
+            getZ={getZ}
+            hoveredPlant={hoveredPlant} />;
+      }
+      return threeDPlants.map((plant, i) =>
+        <ThreeDPlantLabel key={i} i={i}
+          plant={plant}
+          config={config}
+          getZ={getZ}
+          hoveredPlant={hoveredPlant} />);
+    },
+    [threeDPlants, config, getZ, hoveredPlant]);
+
+  const pointNodes = React.useMemo(
+    () => props.mapPoints?.map(point =>
+      <Point key={point.uuid}
+        point={point}
+        visible={showPoints}
+        config={config}
+        getZ={getZ}
+        dispatch={dispatch} />),
+    [props.mapPoints, showPoints, config, getZ, dispatch]);
+
+  const weedNodes = React.useMemo(
+    () => props.weeds?.map(weed =>
+      <Weed key={weed.uuid}
+        weed={weed}
+        visible={showWeeds}
+        config={config}
+        getZ={getZ}
+        dispatch={dispatch} />),
+    [props.weeds, showWeeds, config, getZ, dispatch]);
+
   // eslint-disable-next-line no-null/no-null
   return <Group dispose={null}
     onPointerMove={config.eventDebug
@@ -160,6 +213,7 @@ export const GardenModel = (props: GardenModelProps) => {
     {config.stats && <Stats />}
     {config.zoomBeacons && <ZoomBeacons
       config={config}
+      configPosition={props.configPosition}
       activeFocus={props.activeFocus}
       setActiveFocus={props.setActiveFocus} />}
     <Sky sunPosition={sunPosition(0, 0, 0)} />
@@ -223,26 +277,19 @@ export const GardenModel = (props: GardenModelProps) => {
         color={"green"}
         radius={50}
         applyOffset={true}
-        config={props.config}
+        config={config}
         readings={props.sensorReadings || []} />}
     {showFarmbot &&
       <Bot
         dispatch={dispatch}
         config={config}
+        configPosition={props.configPosition}
         getZ={getZ}
         activeFocus={props.activeFocus}
         mountedToolName={props.mountedToolName}
         toolSlots={props.toolSlots} />}
-    <Group name={"plant-icon-preload"} visible={false}>
-      {ICON_URLS.map((url, i) => <Image key={i} url={url} />)}
-    </Group>
     <Group name={"plant-labels"} visible={!props.activeFocus}>
-      {threeDPlants.map((plant, i) =>
-        <ThreeDPlantLabel key={i} i={i}
-          plant={plant}
-          config={config}
-          getZ={getZ}
-          hoveredPlant={hoveredPlant} />)}
+      {plantLabelNodes}
     </Group>
     <Grid
       config={config}
@@ -272,23 +319,11 @@ export const GardenModel = (props: GardenModelProps) => {
     </Group>
     <Group name={"points"}
       visible={showPoints}>
-      {props.mapPoints?.map(point =>
-        <Point key={point.uuid}
-          point={point}
-          visible={showPoints}
-          config={config}
-          getZ={getZ}
-          dispatch={dispatch} />)}
+      {pointNodes}
     </Group>
     <Group name={"weeds"}
       visible={showWeeds}>
-      {props.weeds?.map(weed =>
-        <Weed key={weed.uuid}
-          weed={weed}
-          visible={showWeeds}
-          config={config}
-          getZ={getZ}
-          dispatch={dispatch} />)}
+      {weedNodes}
     </Group>
     <GroupOrderVisual
       allPoints={props.allPoints || []}
@@ -298,7 +333,8 @@ export const GardenModel = (props: GardenModelProps) => {
       getZ={getZ} />
     <Visualization
       visualizedSequenceUUID={props.addPlantProps?.designer.visualizedSequence}
-      config={config} />
+      config={config}
+      configPosition={props.configPosition} />
     <Solar config={config} activeFocus={props.activeFocus} />
     <Lab config={config} activeFocus={props.activeFocus} />
     <Greenhouse config={config} activeFocus={props.activeFocus} />

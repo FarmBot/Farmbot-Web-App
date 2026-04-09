@@ -16,7 +16,9 @@ describe("<FlipperImage />", () => {
 
   beforeEach(() => {
     mapImageCallback = undefined;
-    jest.spyOn(MapImage.prototype, "render").mockImplementation(function () {
+    jest.spyOn(MapImage.prototype, "render").mockImplementation(function (
+      this: MapImage,
+    ) {
       mapImageCallback =
         (this.props as { callback?: (img: HTMLImageElement) => void }).callback;
       return <g id={"map-image-mock"} />;

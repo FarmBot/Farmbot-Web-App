@@ -169,7 +169,8 @@ describe("<AnalogSlider />", () => {
     actRenderer(() => {
       slider.props.onChange(128);
     });
-    const instance = getRendererInstance<AnalogSlider>(renderer, AnalogSlider);
+    const instance = getRendererInstance<AnalogSlider, AnalogSliderProps>(
+      renderer, AnalogSlider);
     expect(instance.state.value).toEqual(128);
     unmountRenderer(renderer);
   });

@@ -1,4 +1,4 @@
-import { Vector3, Xyz, AxisOverwrite, AxisAddition } from "farmbot";
+import { Vector3, Xyz, AxisOverwrite, AxisAddition, MoveBodyItem } from "farmbot";
 import {
   findPointerByTypeAndId, findSlotByToolId,
 } from "../../../resources/selectors";
@@ -10,6 +10,7 @@ import {
 import { isUndefined } from "lodash";
 import { validFbosConfig } from "../../../util";
 import { getFbosConfig } from "../../../resources/getters";
+import { XYZ } from "../../../devices/constants";
 
 /** Doesn't support lua. Max variance is used. */
 export const computeCoordinate = (props: ComputeCoordinateProps): Vector3 => {
@@ -19,9 +20,10 @@ export const computeCoordinate = (props: ComputeCoordinateProps): Vector3 => {
     y: botPosition.y || 0,
     z: botPosition.z || 0,
   };
-  ["x", "y", "z"].map((axis: Xyz) => {
+  XYZ.map((axis: Xyz) => {
     (props.step.body || [])
-      .filter((item: AxisOverwrite | AxisAddition) => item.args.axis == axis)
+      .filter((item: MoveBodyItem) =>
+        (item as AxisOverwrite | AxisAddition).args.axis == axis)
       .map(item => {
         switch (item.kind) {
           case "axis_overwrite":

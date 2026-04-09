@@ -22,6 +22,7 @@ import { t } from "../../i18next_wrapper";
 import { Collapse } from "@blueprintjs/core";
 import { ExpandableHeader } from "../../ui/expandable_header";
 import { isDesktop } from "../../screen_size";
+import { XYZ } from "../../devices/constants";
 
 export class TileMoveAbsolute
   extends React.Component<StepParams<MoveAbsolute>, MoveAbsState> {
@@ -134,7 +135,7 @@ export class TileMoveAbsolute
 
   OptionsForm = () =>
     <Row className="grid-4-col">
-      {["x", "y", "z"].map(this.OffsetInput)}
+      {XYZ.map(this.OffsetInput)}
       <this.SpeedInput />
     </Row>;
 

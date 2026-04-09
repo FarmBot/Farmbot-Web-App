@@ -13,7 +13,7 @@ class PointGroup < ApplicationRecord
 
   belongs_to :device
   has_many :point_group_items, dependent: :destroy
-  validates_inclusion_of :sort_type, in: SORT_TYPES,
-                                     message: BAD_SORT
+  validates :sort_type, inclusion: { in: SORT_TYPES,
+                                     message: BAD_SORT }
   serialize :criteria, coder: YAML
 end

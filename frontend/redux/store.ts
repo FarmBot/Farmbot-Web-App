@@ -9,7 +9,7 @@ let storeInstance: Store | undefined;
 
 function getStore(envName: EnvName): Store {
   return createStore(rootReducer,
-    {},
+    undefined,
     getMiddleware(envName));
 }
 

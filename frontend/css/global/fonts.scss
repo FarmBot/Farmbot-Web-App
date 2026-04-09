@@ -1,6 +1,5 @@
 @use "../variables" as *;
 @use "sass:color";
-
 @import url("https://fonts.googleapis.com/css?family=Cabin:400,400italic,700,700italic,100,100italic&display=swap");
 @import url("https://fonts.googleapis.com/css?family=Inknut+Antiqua:400,400italic,700,700italic,100,100italic&display=swap");
 
@@ -22,7 +21,7 @@
 }
 
 @font-face {
-  font-family: "FontAwesome";
+  font-family: FontAwesome;
   font-style: normal;
   font-weight: normal;
   font-display: swap;
@@ -31,8 +30,7 @@
   url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/fonts/fontawesome-webfont.ttf?v=4.7.0") format("truetype");
 }
 
-$cabin: 'Cabin', 'Cabin Fallback', Arial, Helvetica, sans-serif;
-
+$cabin: 'Cabin', 'Cabin Fallback', arial, helvetica, sans-serif;
 $inknut: 'Inknut Antiqua', 'Inknut Antiqua Fallback', serif;
 
 body,

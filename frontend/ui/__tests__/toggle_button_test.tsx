@@ -68,7 +68,8 @@ describe("<ToggleButton />", () => {
     const p = fakeProps();
     p.dim = true;
     const wrapper = createRenderer(<ToggleButton {...p} />);
-    const instance = getRendererInstance<ToggleButton>(wrapper, ToggleButton);
+    const instance = getRendererInstance<ToggleButton, ToggleButtonProps>(
+      wrapper, ToggleButton);
     actRenderer(() => {
       instance.componentDidUpdate();
     });

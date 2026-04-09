@@ -2,7 +2,7 @@ import { t } from "../i18next_wrapper";
 import { range, round } from "lodash";
 import { SetupWizardContent, ToolTips } from "../constants";
 import {
-  WizardSection, WizardStepDataProps, WizardSteps, WizardToC, WizardToCSection,
+  WizardSection, WizardStepDataProps, WizardSteps, WizardToC,
 } from "./interfaces";
 import { botOnlineReq, ProductRegistration } from "./prerequisites";
 import {
@@ -1729,6 +1729,6 @@ export const WIZARD_SECTIONS = (props: WizardStepDataProps): WizardSection[] => 
   WIZARD_STEPS(props).map(step => toC[step.section].steps.push(step));
   return Object.entries(toC)
     .filter(([_sectionSlug, sectionData]) => sectionData.steps.length > 0)
-    .map(([sectionSlug, sectionData]: [WizardSectionSlug, WizardToCSection]) =>
-      ({ slug: sectionSlug, ...sectionData }));
+    .map(([sectionSlug, sectionData]) =>
+      ({ slug: sectionSlug as WizardSectionSlug, ...sectionData }));
 };

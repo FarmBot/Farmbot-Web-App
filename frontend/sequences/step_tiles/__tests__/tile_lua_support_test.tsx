@@ -15,9 +15,13 @@ describe("<LuaTextArea />", () => {
 
   const fakeComponent = (p = fakeProps()) => {
     const component = new LuaTextArea<Lua>(p);
-    component.setState =
-      (state: Partial<typeof component.state>) =>
-        Object.assign(component.state, state) as never;
+    component.setState = ((state, callback) => {
+      const update = typeof state == "function"
+        ? state(component.state, component.props)
+        : state;
+      Object.assign(component.state, update);
+      callback?.();
+    }) as LuaTextArea<Lua>["setState"];
     return component;
   };
 

@@ -5,6 +5,7 @@ import {
   startPing,
   failPing,
   PingDictionary,
+  MAX_SAVED_PINGS,
 } from "../qos";
 import {
   fakePings,
@@ -15,7 +16,7 @@ describe("QoS helpers", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useRealTimers();
-    window.logStore = undefined;
+    window.logStore = undefined as unknown as LogStore;
   });
 
   it("calculates latency", () => {
@@ -88,6 +89,17 @@ describe("QoS helpers", () => {
 
     expect(state["x"]).toBeFalsy();
     expect(nextState["x"]).toBeTruthy();
+  });
+
+  it("keeps only the most recent pings", () => {
+    let state: PingDictionary = {};
+    range(MAX_SAVED_PINGS + 5).map(i => state = startPing(state, `${i}`));
+
+    expect(Object.keys(state)).toHaveLength(MAX_SAVED_PINGS);
+    expect(state["0"]).toBeUndefined();
+    expect(state["4"]).toBeUndefined();
+    expect(state["5"]).toBeTruthy();
+    expect(state[`${MAX_SAVED_PINGS + 4}`]).toBeTruthy();
   });
 
   it("fails a ping", () => {

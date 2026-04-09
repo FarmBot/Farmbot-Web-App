@@ -1,5 +1,5 @@
 class GlobalBulletin < ActiveRecord::Base
   self.inheritance_column = "none"
-  validates_uniqueness_of :slug
-  validates_presence_of :content, :slug, :type
+  validates :slug, uniqueness: true
+  validates :content, :slug, :type, presence: true
 end

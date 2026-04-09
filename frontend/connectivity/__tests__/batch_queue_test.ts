@@ -20,13 +20,15 @@ describe("BatchQueue", () => {
   beforeEach(() => {
     jest.clearAllMocks();
     getStateSpy = jest.spyOn(store, "getState").mockImplementation(() => mockState);
-    bothUpSpy = jest.spyOn(connectDevice, "bothUp").mockImplementation(jest.fn());
+    bothUpSpy = jest.spyOn(connectDevice, "bothUp").mockImplementation(() => { });
     batchInitResourcesSpy =
       jest.spyOn(connectDevice, "batchInitResources")
-        .mockImplementation(jest.fn(() => ({ type: "NOOP", payload: undefined })));
+        .mockImplementation(payload =>
+          ({ type: "NOOP", payload }) as unknown as
+            ReturnType<typeof connectDevice.batchInitResources>);
     deviceIsThrottledSpy =
       jest.spyOn(throttling, "deviceIsThrottled")
-        .mockImplementation(jest.fn(() => mockThrottleStatus.value));
+        .mockImplementation(() => mockThrottleStatus.value);
   });
 
   afterEach(() => {

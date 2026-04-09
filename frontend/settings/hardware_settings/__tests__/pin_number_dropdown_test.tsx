@@ -12,6 +12,7 @@ import { TaggedFirmwareConfig } from "farmbot";
 import * as deviceActions from "../../../devices/actions";
 import { DeviceSetting } from "../../../constants";
 import * as ui from "../../../ui";
+import { FBSelectProps } from "../../../ui";
 
 let updateMCUSpy: jest.SpyInstance;
 let fbSelectSpy: jest.SpyInstance;
@@ -20,12 +21,7 @@ beforeEach(() => {
   updateMCUSpy = jest.spyOn(deviceActions, "updateMCU")
     .mockImplementation(jest.fn());
   fbSelectSpy = jest.spyOn(ui, "FBSelect")
-    .mockImplementation((props: {
-      selectedItem?: { label: string, value: number | string },
-      customNullLabel?: string,
-      extraClass?: string,
-      onChange: (ddi: { label: string, value: number | string }) => void,
-    }) =>
+    .mockImplementation(((props: FBSelectProps) =>
       <div>
         <span data-testid="selected-label">
           {props.selectedItem?.label || props.customNullLabel || ""}
@@ -34,7 +30,7 @@ beforeEach(() => {
         <button onClick={() => props.onChange({ label: "", value: 2 })}>
           change-pin
         </button>
-      </div>);
+      </div>) as never);
 });
 
 afterEach(() => {
