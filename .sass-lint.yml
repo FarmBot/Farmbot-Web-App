@@ -3,8 +3,7 @@
 #########################
 # Linter Options
 options:
-  # Don't merge default rules
-  merge-default-rules: false
+  merge-default-rules: true
   # Raise an error if warnings are generated
   max-warnings: 0
 # File Options
@@ -16,9 +15,48 @@ rules:
   extends-before-declarations: 2
   placeholder-in-extend: 2
   mixins-before-declarations: 2
+  property-sort-order: 0
   no-warn: 1
   no-debug: 1
   no-ids: 2
+  zero-unit: 0 # todo
+  border-zero: 0 # todo
+  pseudo-element: 0 # todo
+  no-mergeable-selectors: 0 # todo
+  no-vendor-prefixes: 0 # todo
+  quotes: 0
+  variable-name-format: 0
+  empty-line-between-blocks: 0
+  leading-zero: 0
+  no-color-keywords: 0
+  no-color-literals: 0
+  no-important: 0
+  nesting-depth: 0
+  force-element-nesting: 0
+  force-pseudo-nesting: 0
+  force-attribute-nesting: 0
+  no-qualifying-elements: 0
+  no-transition-all: 0
+  hex-length: 0
+  single-line-per-selector: 0
+  attribute-quotes: 0
+  shorthand-values: 0
+  no-url-domains: 0
+  no-url-protocols: 0
+  no-css-comments: 0
+  no-invalid-hex: 0
+  no-misspelled-properties:
+    - 1
+    -
+      extra-properties:
+        - gap
+        - row-gap
+        - aspect-ratio
+        - ascent-override
+        - descent-override
+        - line-gap-override
+        - text-underline-offset
+        - scrollbar-width
   hex-notation:
     - 2
     -

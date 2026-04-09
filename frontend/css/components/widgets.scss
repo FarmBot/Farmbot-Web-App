@@ -37,10 +37,10 @@
   >*:not(h5):not(.title-help-icon):not(.title-help) {
     margin: 0;
   }
-  .title-help{
+  .title-help {
     display: inline;
     .title-help-text {
-      &.open{
+      &.open {
         display: block;
         opacity: 100;
         padding: 0.5rem 0.3rem;

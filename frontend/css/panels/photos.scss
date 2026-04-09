@@ -25,7 +25,7 @@
         }
         &.single-image-mode,
         &.image-layer-disabled {
-          opacity: 0.40;
+          opacity: 0.4;
           * {
             pointer-events: none;
           }
@@ -38,7 +38,7 @@
             width: 105%;
             padding: 0.5rem;
             background-color: $dark_gray;
-            opacity: 0.90;
+            opacity: 0.9;
             color: $off_white;
             font-size: 1.8rem;
             vertical-align: middle;

@@ -142,7 +142,7 @@
   z-index: 3;
   opacity: 1;
   animation: show-hide 7s steps(1, end);
-  border-radius: 100% 0 0 100%/ 50% 0 0 50%;
+  border-radius: 100% 0 0 100% / 50% 0 0 50%;
 }
 
 .toast-loader-right {
@@ -151,7 +151,7 @@
   background: #666 !important;
   opacity: 0;
   animation: show-hide 7s steps(1, end) reverse;
-  border-radius: 0 100% 100% 0/ 0 50% 50% 0;
+  border-radius: 0 100% 100% 0 / 0 50% 50% 0;
 }
 
 .toast-loader-spinner {
@@ -160,7 +160,7 @@
   background: #666 !important;
   animation: spin 7s linear;
   transform-origin: center right;
-  border-radius: 100% 0 0 100%/ 50% 0 0 50%;
+  border-radius: 100% 0 0 100% / 50% 0 0 50%;
 }
 
 @keyframes spin {

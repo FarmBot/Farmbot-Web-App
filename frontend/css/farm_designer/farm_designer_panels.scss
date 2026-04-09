@@ -10,6 +10,7 @@
   margin-top: 0;
   overflow-y: scroll;
   border-radius: 1rem;
+
   @media screen and (max-width: $mobile_max_width) {
     top: 13rem;
     width: 100vw;
@@ -29,6 +30,7 @@
   display: none;
   overflow-x: scroll;
   z-index: 11;
+
   @media screen and (max-width: $mobile_max_width) {
     display: block;
   }
@@ -96,7 +98,6 @@
   .panel-container {
     width: 100%;
     border-radius: 1rem;
-    overflow-x: hidden;
     font-size: 1.6rem;
     pointer-events: auto;
     overflow: hidden;
@@ -133,7 +134,7 @@
   &.gray-panel {
     background-color: $translucent3;
   }
-  &.light-gray-panel{
+  &.light-gray-panel {
     background-color: $panel_medium_light_gray;
   }
   &.yellow-panel {
@@ -292,7 +293,7 @@
   right: 0;
   width: 2rem;
   height: 100%;
-  background: linear-gradient(-90deg, $translucent, transparent)
+  background: linear-gradient(-90deg, $translucent, transparent);
 }
 
 .panel-header {
@@ -358,7 +359,7 @@
 .weeds-inventory-panel-content,
 .plant-panel-content,
 .points-panel-content {
-  padding: 0!important;
+  padding: 0 !important;
   .non-empty-state {
     margin-bottom: 1rem;
     gap: 0;
@@ -748,6 +749,7 @@
 
 .desktop-hide {
   display: none !important;
+
   @media screen and (max-width: 1075px) {
     display: block !important;
   }

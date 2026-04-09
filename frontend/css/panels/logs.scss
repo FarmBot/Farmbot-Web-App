@@ -112,7 +112,8 @@
     text-align: left;
   }
   td {
-    word-break: break-word;
+    overflow-wrap: break-word;
+    word-break: normal;
     .markdown {
       p {
         display: block;

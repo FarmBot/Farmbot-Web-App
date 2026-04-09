@@ -376,6 +376,7 @@
 
 .controls-popup {
   color: $off_white;
+
   @media screen and (max-width: $mobile_max_width) {
     &.panel-open {
       display: none;

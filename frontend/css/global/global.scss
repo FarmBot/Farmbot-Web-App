@@ -28,7 +28,7 @@ body {
 }
 
 .app.dark {
-  background: hsl(135 10% 20% / 1);
+  background: hsl(135deg 10% 20% / 1);
 }
 
 .app.light {
@@ -122,7 +122,6 @@ a {
     border-width: 2px;
     color: var(--text-color);
     font-weight: bold;
-    font-weight: bold;
     margin: 1rem 0;
     padding: 1.25rem;
     text-align: center;
@@ -208,7 +207,7 @@ a {
   display: inline-block;
   position: relative;
   z-index: 10;
-  opacity: 0.40;
+  opacity: 0.4;
   * {
     pointer-events: none;
   }
@@ -222,7 +221,7 @@ a {
       width: 105%;
       padding: 0.5rem;
       background-color: $dark_gray;
-      opacity: 0.90;
+      opacity: 0.9;
       color: $off_white;
       font-size: 1.8rem;
       vertical-align: middle;
@@ -268,7 +267,7 @@ a {
 
 .empty-state-graphic {
   width: 40%;
-  filter: grayscale(1)
+  filter: grayscale(1);
 }
 
 .empty-state {
@@ -405,7 +404,7 @@ a {
 }
 
 textarea:focus {
-  box-shadow: 0 0 10px rgba(0,0,0,.2);
+  box-shadow: 0 0 10px rgba(0, 0, 0, .2);
 }
 
 .sort-option-bar {

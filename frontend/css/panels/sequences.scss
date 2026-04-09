@@ -37,6 +37,7 @@
   .panel-content {
     .sequence-editor-content {
       overflow: hidden;
+
       @media screen and (max-width: 767px) {
         margin-left: 5px;
         padding-right: 0;
@@ -58,6 +59,7 @@
     label {
       margin-top: 0;
     }
+
     @media screen and (max-width: 767px) {
       padding: 0;
     }
@@ -68,6 +70,7 @@
   background: var(--main-bg);
   height: calc(100vh - 8.5rem);
   overflow: scroll;
+
   @media screen and (max-width: 767px) {
     display: none;
     &.open {
@@ -84,6 +87,7 @@
   .bp6-popover-target .saucer {
     float: left;
   }
+
   @media screen and (max-width: 767px) {
     h3,
     p {
@@ -115,7 +119,7 @@
 .sequence-editor-panel {
   .sequence-section-header {
     &:hover {
-      background: $translucent1!important;
+      background: $translucent1 !important;
     }
   }
 }
@@ -290,7 +294,6 @@
     border-radius: 0.5rem;
     p {
       display: revert;
-      margin: revert;
       width: 100%;
       overflow: revert;
       white-space: revert;
@@ -392,6 +395,7 @@
   .show-on-hover {
     display: none !important;
   }
+
   @media screen and (max-width: $mobile_max_width) {
     .show-on-hover {
       display: flex !important;
@@ -425,7 +429,7 @@
     height: 4rem;
     line-height: 3.75rem;
     &:hover {
-      background: $translucent1!important;
+      background: $translucent1 !important;
     }
     label {
       cursor: pointer;
@@ -551,7 +555,7 @@
   margin-right: 2.5rem;
   .sequence-step {
     &.hovered {
-      box-shadow: 0px 0px 15px #ff7700;
+      box-shadow: 0px 0px 15px #f70;
     }
     &.read-only {
       margin-top: 1rem;
@@ -631,6 +635,7 @@
 .step-button-cluster-panel {
   padding: 1rem;
   background: $dark_gray;
+
   @media screen and (max-width: 767px) {
     display: none;
     margin-left: 15px;
@@ -697,6 +702,7 @@
   margin-left: -30px;
   margin-right: -20px;
   margin-bottom: 4rem;
+
   @media screen and (max-width: 767px) {
     margin-left: -15px;
   }
@@ -839,6 +845,7 @@
         display: block;
       }
     }
+
     @media screen and (max-width: $mobile_max_width) {
       .fa-question-circle,
       .run-btn,
@@ -1021,6 +1028,7 @@
   .empty-state {
     display: none;
   }
+
   @media screen and (max-width: 767px) {
     margin-left: 15px;
     margin-right: 15px;
@@ -1148,6 +1156,7 @@
       margin: 0;
     }
   }
+
   @media screen and (max-width: 767px) {
     display: block;
     .add-command {
@@ -1283,8 +1292,8 @@ $border_width: 1.4px;
   a {
     display: block;
     white-space: normal;
-    word-wrap: break-word;
-    word-break: break-word;
+    overflow-wrap: break-word;
+    word-break: normal;
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 100%;
@@ -1334,7 +1343,6 @@ $border_width: 1.4px;
 }
 
 .celeryscript {
-  font-size: 1.25rem;
   margin: 0;
   background: $dark_gray;
   color: $off_white;

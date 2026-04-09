@@ -145,10 +145,10 @@ select {
     position: absolute;
     right: 1rem;
     line-height: 3rem;
-    color: $dark_gray
+    color: $dark_gray;
   }
   &.dim {
-    Button {
+    button {
       background: color.adjust($white, $lightness: -2%) !important;
       &:hover {
         background: color.adjust($white, $lightness: -2%) !important;
@@ -215,7 +215,6 @@ select {
   input[type="checkbox"] {
     appearance: none;
     background: $translucent9_white;
-    border-radius: 0;
     border-radius: 3px;
     height: 2rem;
     margin: 0;
@@ -286,7 +285,7 @@ textarea {
   border-radius: 0.5rem;
   width: 100%;
   border: 0;
-  outline: none!important;
+  outline: none !important;
   resize: vertical;
   font-size: 1.2rem;
   padding: 1rem;

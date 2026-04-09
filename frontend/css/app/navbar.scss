@@ -157,7 +157,7 @@ nav {
     }
     div {
       vertical-align: middle;
-      &:after{
+      &:after {
         content: attr(data-title);
         display: block;
         font-weight: bold;

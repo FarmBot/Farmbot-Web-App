@@ -192,7 +192,7 @@
 
         &.fall.active {
           background: linear-gradient(15deg, #502402, #c69075);
-          color: $off_white
+          color: $off_white;
         }
 
         &:hover {
@@ -441,7 +441,6 @@
 
   .beacon-info {
     width: 34rem;
-    background: $white;
     background: $translucent8_white;
     color: $black;
     box-shadow: $translucent2 0px 0px 10px;
@@ -509,9 +508,9 @@
       bottom: 0;
       right: 0;
       align-items: end;
-      transform: none!important;
+      transform: none !important;
       * {
-        transform: none!important;
+        transform: none !important;
       }
       .beacon-info {
         width: initial;

@@ -5,7 +5,7 @@
 .static-page {
   min-height: 100vh;
   max-height: 100%;
-  background: url(/app-resources/img/plant-icon-background.png), linear-gradient(#00b685, #003f53);
+  background: url("/app-resources/img/plant-icon-background.png"), linear-gradient(#00b685, #003f53);
   background-size: 600px;
   padding: 8rem 2rem;
   h1,
@@ -36,6 +36,7 @@
   .all-content-wrapper {
     max-width: 60rem;
   }
+
   @media screen and (max-width: 1075px) {
     .all-content-wrapper {
       overflow: scroll;
@@ -58,7 +59,7 @@
     width: 10rem;
     hr {
       width: 100%;
-      border: 1.5px solid rgb(255 255 255 / 50%)
+      border: 1.5px solid rgb(255 255 255 / 50%);
     }
   }
   .front-page-container {

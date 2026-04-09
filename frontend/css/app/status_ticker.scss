@@ -17,7 +17,7 @@
   }
   * {
     color: var(--text-color);
-    text-rendering: optimizeLegibility;
+    text-rendering: optimizelegibility;
     -webkit-font-smoothing: antialiased;
   }
   &:after {
@@ -97,7 +97,6 @@
   letter-spacing: 0.05rem;
   overflow: hidden;
   span {
-    -webkit-animation: flash 1.5s ease-in;
     animation: flash 1.5s ease-in;
   }
 }

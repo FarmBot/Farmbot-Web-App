@@ -3,7 +3,7 @@
 @use "../global/fonts" as *;
 
 .farm-event {
-  align-items: start!important;
+  align-items: start !important;
 }
 
 .farm-event-calendar-rows {
@@ -42,7 +42,7 @@
   grid-template-columns: 6rem 1fr auto;
   padding: 0.5rem 1rem;
   font-size: 1.2rem;
-  align-items: baseline!important;
+  align-items: baseline !important;
   border-radius: 0.5rem;
   overflow: hidden;
   box-shadow: 0 0 1rem $translucent1;
