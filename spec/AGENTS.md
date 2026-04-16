@@ -5,6 +5,10 @@ For changes to files in the `app/` or `spec/` directories.
 - Do not terminate test commands before they are completed.
 
 ### For the files you change
+- Make sure all checks and linters pass:
+   ```
+   bun run ruby-check
+   ```
 - Run tests via `rspec FILES`
    where `FILES` is a space-separated list of spec files for the app files you changed.
    For example, `rspec spec/file_0_spec.rb spec/file_1_spec.rb`.
