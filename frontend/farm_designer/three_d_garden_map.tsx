@@ -75,11 +75,25 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
 
   config.negativeZ = props.negativeZ;
   config.exaggeratedZ = props.designer.threeDExaggeratedZ;
+  const quadrant = props.mapTransformProps.quadrant;
+  config.mirrorX = props.mapTransformProps.xySwap
+    ? [3, 4].includes(quadrant)
+    : [1, 4].includes(quadrant);
+  config.mirrorY = props.mapTransformProps.xySwap
+    ? [1, 4].includes(quadrant)
+    : [3, 4].includes(quadrant);
+
+  const getValue = props.get3DConfigValue;
+  config.bedXOffset = getValue("bedXOffset");
+  config.bedYOffset = getValue("bedYOffset");
+  config.bedZOffset = getValue("bedZOffset");
 
   const position = clone(INITIAL_POSITION);
   position.x = props.botPosition.x || 0;
   position.y = props.botPosition.y || 0;
   position.z = props.botPosition.z || 0;
+  if (config.mirrorY) { position.y = gridSize.y - position.y; }
+  if (config.mirrorX) { position.x = gridSize.x - position.x; }
 
   const { designer } = props;
   config.distanceIndicator = designer.distanceIndicator;
@@ -89,16 +103,12 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   config.zGantryOffset = fbosConfig("gantry_height");
   config.soilHeight = Math.abs(fbosConfig("soil_height"));
 
-  const getValue = props.get3DConfigValue;
   config.bedWallThickness = getValue("bedWallThickness");
   config.bedHeight = getValue("bedHeight");
   config.ccSupportSize = getValue("ccSupportSize");
   config.beamLength = getValue("beamLength");
   config.columnLength = getValue("columnLength");
   config.zAxisLength = getValue("zAxisLength");
-  config.bedXOffset = getValue("bedXOffset");
-  config.bedYOffset = getValue("bedYOffset");
-  config.bedZOffset = getValue("bedZOffset");
   config.legSize = getValue("legSize");
   config.legsFlush = !!getValue("legsFlush");
   config.extraLegsX = getValue("extraLegsX");
@@ -214,15 +224,15 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
 };
 
 export const convertPlants =
-  (config: Config, plants: TaggedPlant[]): ThreeDGardenPlant[] =>
+  (_config: Config, plants: TaggedPlant[]): ThreeDGardenPlant[] =>
     plants.map(plant => ({
       id: plant.body.id,
       label: plant.body.name,
       icon: findIcon(plant.body.openfarm_slug),
       size: plant.body.radius * 2,
       spread: findCrop(plant.body.openfarm_slug).spread,
-      x: plant.body.x + config.bedXOffset,
-      y: plant.body.y + config.bedYOffset,
+      x: plant.body.x,
+      y: plant.body.y,
       key: "",
       seed: 0,
     }));

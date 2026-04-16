@@ -16,7 +16,7 @@ import { Path } from "../../internal_urls";
 import { setPanelOpen } from "../../farm_designer/panel_header";
 import { getMode } from "../../farm_designer/map/util";
 import { getSizeAtTime } from "../../promo/plants";
-import { threeSpace, zZero as zZeroFunc } from "../helpers";
+import { get3DPositionFunc, zZero as zZeroFunc } from "../helpers";
 import { ThreeDGardenPlant } from "./plants";
 import { PlaneGeometry, InstancedMesh, MeshBasicMaterial } from "../components";
 import {
@@ -62,9 +62,10 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
   const tempPosition = React.useMemo(() => new Vector3(), []);
   const tempScale = React.useMemo(() => new Vector3(), []);
   const tempQuaternion = React.useMemo(() => new Quaternion(), []);
+  const get3DPosition = React.useMemo(() => get3DPositionFunc(config), [config]);
   const getPlantZ = React.useCallback((size: number, plant: ThreeDGardenPlant) =>
     zZeroFunc(config)
-    + getZ(plant.x - config.bedXOffset, plant.y - config.bedYOffset)
+    + getZ(plant.x, plant.y)
     + size / 2, [config, getZ]);
 
   useFrame(state => {
@@ -84,9 +85,10 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
       const scale = (config.animateSeasons && startTimeRef)
         ? plant.size * getSizeAtTime(plant, config.plants, t)
         : plant.size;
+      const position = get3DPosition({ x: plant.x, y: plant.y });
       tempPosition.set(
-        threeSpace(plant.x, config.bedLengthOuter),
-        threeSpace(plant.y, config.bedWidthOuter),
+        position.x,
+        position.y,
         getPlantZ(scale, plant),
       );
       tempScale.set(scale, scale, scale);

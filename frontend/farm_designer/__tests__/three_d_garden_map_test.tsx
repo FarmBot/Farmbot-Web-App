@@ -146,8 +146,8 @@ describe("<ThreeDGardenMap />", () => {
         seed: 0,
         size: 50,
         spread: 30,
-        x: 101,
-        y: 201,
+        x: 100,
+        y: 200,
       }],
       addPlantProps: expect.any(Object),
       ...EMPTY_PROPS,
@@ -336,8 +336,8 @@ describe("convertPlants()", () => {
       seed: 0,
       size: 50,
       spread: 20,
-      x: 110,
-      y: 201,
+      x: 100,
+      y: 200,
     },
     {
       icon: CROPS["generic-plant"].icon,
@@ -347,8 +347,8 @@ describe("convertPlants()", () => {
       seed: 0,
       size: 50,
       spread: 0,
-      x: 1010,
-      y: 2001,
+      x: 1000,
+      y: 2000,
     },
     ]);
   });

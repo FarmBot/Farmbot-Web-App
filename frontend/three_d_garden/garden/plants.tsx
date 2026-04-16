@@ -14,9 +14,9 @@ import {
 } from "three";
 import {
   getGardenPositionFunc,
-  threeSpace,
   zZero,
   zZero as zZeroFunc,
+  get3DPositionFunc,
 } from "../helpers";
 import { Text } from "../elements";
 import { isUndefined } from "lodash";
@@ -58,16 +58,18 @@ export const ThreeDPlantLabel = (props: ThreeDPlantLabelProps) => {
   const alwaysShowLabels = config.labels && !config.labelsOnHover;
   // eslint-disable-next-line no-null/no-null
   const billboardRef = React.useRef<GroupType>(null);
+  const get3DPosition = React.useMemo(() => get3DPositionFunc(config), [config]);
   const getPlantZ = (size: number) =>
     zZeroFunc(config)
-    + props.getZ(plant.x - config.bedXOffset, plant.y - config.bedYOffset)
+    + props.getZ(plant.x, plant.y)
     + size / 2;
+  const position = get3DPosition({ x: plant.x, y: plant.y });
   return <Billboard
     ref={billboardRef}
     follow={true}
     position={new Vector3(
-      threeSpace(plant.x, config.bedLengthOuter),
-      threeSpace(plant.y, config.bedWidthOuter),
+      position.x,
+      position.y,
       getPlantZ(plant.size),
     )}>
     <LabelPart
@@ -113,6 +115,7 @@ export const PlantSpreadInstances = (props: PlantSpreadInstancesProps) => {
   const tempScale = React.useMemo(() => new Vector3(), []);
   const tempQuaternion = React.useMemo(() => new Quaternion(), []);
   const tempColor = React.useMemo(() => new Color(), []);
+  const get3DPosition = React.useMemo(() => get3DPositionFunc(config), [config]);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const boundsCenter = React.useMemo(getBoundsCenter(config), []);
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -121,7 +124,7 @@ export const PlantSpreadInstances = (props: PlantSpreadInstancesProps) => {
     plants.map((_, index) => index), [plants]);
   const getPlantZ = React.useCallback((size: number, plant: ThreeDGardenPlant) =>
     zZeroFunc(config)
-    + getZ(plant.x - config.bedXOffset, plant.y - config.bedYOffset)
+    + getZ(plant.x, plant.y)
     + size / 2, [config, getZ]);
   const editPlantMode =
     Path.getSlug(Path.designer()) == "plants" && Path.lastChunkIsNum();
@@ -171,8 +174,8 @@ export const PlantSpreadInstances = (props: PlantSpreadInstancesProps) => {
         y: currentPlant?.y || -10000,
       }
       : {
-        x: activePointer.x + config.bedXOffset,
-        y: activePointer.y + config.bedYOffset,
+        x: activePointer.x,
+        y: activePointer.y,
       };
     const clickToAddMode = getMode() == Mode.clickToAdd;
     plants.forEach((plant, index) => {
@@ -184,9 +187,10 @@ export const PlantSpreadInstances = (props: PlantSpreadInstancesProps) => {
       const scale = (spreadVisible || !plant.id || editPlantMode)
         ? spreadRadii.inactive
         : 0;
+      const position = get3DPosition({ x: plant.x, y: plant.y });
       tempPosition.set(
-        threeSpace(plant.x, config.bedLengthOuter),
-        threeSpace(plant.y, config.bedWidthOuter),
+        position.x,
+        position.y,
         getPlantZ(plant.size, plant),
       );
       tempScale.set(scale, scale, scale);
@@ -246,6 +250,8 @@ export const PlantSpreadInstances = (props: PlantSpreadInstancesProps) => {
         shader.uniforms.uBoundsCenter = { value: boundsCenter };
         shader.uniforms.uHalfSize = { value: halfSize };
         shader.uniforms.uOutside = { value: new Color("red") };
+        shader.uniforms.uMirrorX = { value: config.mirrorX ? -1 : 1 };
+        shader.uniforms.uMirrorY = { value: config.mirrorY ? -1 : 1 };
         outOfBoundsShaderModification(shader, true);
       }}
       depthWrite={false} />
@@ -283,11 +289,15 @@ export const outOfBoundsShaderModification =
       ? `uniform vec3 uBoundsCenter;
        uniform vec3 uHalfSize;
        uniform vec3 uOutside;
+       uniform float uMirrorX;
+       uniform float uMirrorY;
        varying vec3 vInstanceColor;`
       : `uniform vec3 uBoundsCenter;
        uniform vec3 uHalfSize;
        uniform vec3 uInside;
-       uniform vec3 uOutside;`;
+       uniform vec3 uOutside;
+       uniform float uMirrorX;
+       uniform float uMirrorY;`;
     const insideColor = useInstanceColor ? "vInstanceColor" : "uInside";
     shader.vertexShader = shader.vertexShader.replace(
       "#include <common>",
@@ -308,6 +318,8 @@ export const outOfBoundsShaderModification =
       "#include <color_fragment>",
       `#include <color_fragment>
        vec3 p = vWorldPosition - uBoundsCenter;
+       p.x *= uMirrorX;
+       p.y *= uMirrorY;
        bool inside =
        p.x > -uHalfSize.x &&
        abs(p.y) <= uHalfSize.y &&

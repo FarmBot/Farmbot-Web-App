@@ -121,6 +121,12 @@ describe("<ThreeDPlantLabel />", () => {
     render(<ThreeDPlantLabel {...p} />);
     expect(screen.getByText("Beet")).toBeInTheDocument();
   });
+
+  it("keeps plant coordinates in garden space", () => {
+    const p = fakeProps();
+    expect(p.plant.x).toEqual(100);
+    expect(p.plant.y).toEqual(200);
+  });
 });
 
 describe("<ThreeDPlantSpread />", () => {
@@ -335,6 +341,10 @@ describe("outOfBoundsShaderModification", () => {
     } as unknown as WebGLProgramParametersWithUniforms;
     outOfBoundsShaderModification(shader, false);
     expect(shader.fragmentShader).toContain("uInside");
+    expect(shader.fragmentShader).toContain("uMirrorX");
+    expect(shader.fragmentShader).toContain("uMirrorY");
+    expect(shader.fragmentShader).toContain("p.x *= uMirrorX");
+    expect(shader.fragmentShader).toContain("p.y *= uMirrorY");
     expect(shader.vertexShader).not.toContain("vInstanceColor");
   });
 });

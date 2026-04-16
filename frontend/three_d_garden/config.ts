@@ -100,6 +100,8 @@ export interface Config {
   promoSpread: boolean;
   cameraView: boolean;
   lastImageCapture: number;
+  mirrorX: boolean;
+  mirrorY: boolean;
 }
 
 export interface PositionConfig {
@@ -114,6 +116,7 @@ export enum SurfaceDebugOption {
   none,
   normals,
   height,
+  blank,
 }
 
 export const INITIAL: ConfigWithPosition = {
@@ -221,6 +224,8 @@ export const INITIAL: ConfigWithPosition = {
   promoSpread: false,
   cameraView: false,
   lastImageCapture: 0,
+  mirrorX: false,
+  mirrorY: false,
 };
 
 export const INITIAL_POSITION: PositionConfig = {
@@ -256,7 +261,7 @@ export const BOOLEAN_KEYS = [
   "animate", "animateSeasons", "negativeZ",
   "waterFlow", "exaggeratedZ", "showSoilPoints", "urlParamAutoAdd",
   "light", "vacuum", "north", "desk", "interpolationUseNearest", "promoSpread",
-  "cameraView",
+  "cameraView", "mirrorX", "mirrorY",
 ];
 
 export const PRESETS: Record<string, Config> = {
@@ -476,6 +481,7 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "imgScale", "imgRotation", "imgOffsetX", "imgOffsetY", "imgOrigin", "imgCalZ",
   "imgCenterX", "imgCenterY", "interpolationStepSize", "interpolationUseNearest",
   "interpolationPower", "promoSpread", "cameraView", "lastImageCapture",
+  "mirrorX", "mirrorY",
 ];
 
 export const modifyConfig =

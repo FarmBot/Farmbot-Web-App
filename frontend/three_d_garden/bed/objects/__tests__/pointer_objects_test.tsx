@@ -113,6 +113,24 @@ describe("soilClick()", () => {
       gardenCoords: { x: 1360, y: 660 },
     }));
   });
+
+  it("creates plant with mirrored garden coordinates", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    mockIsMobile = false;
+    const p = fakeProps();
+    p.config.mirrorX = true;
+    p.config.mirrorY = true;
+    p.config.botSizeX = 2000;
+    p.config.botSizeY = 1000;
+    const e = {
+      stopPropagation: jest.fn(),
+      point: { x: 1, y: 2 },
+    } as unknown as ThreeEvent<MouseEvent>;
+    soilClick(p)(e);
+    expect(dropPlantSpy).toHaveBeenCalledWith(expect.objectContaining({
+      gardenCoords: { x: 1360, y: 660 },
+    }));
+  });
 });
 
 describe("soilPointerMove()", () => {
@@ -177,6 +195,24 @@ describe("soilPointerMove()", () => {
       .toHaveBeenCalledTimes(1);
     expect(p.pointerPlantRef.current?.position.set)
       .toHaveBeenCalledWith(110, 210, 0);
+  });
+
+  it("updates plant position with mirrored world coordinates", () => {
+    location.pathname = Path.mock(Path.cropSearch("mint"));
+    mockIsMobile = false;
+    const p = fakeProps();
+    p.config.columnLength = 100;
+    p.config.botSizeX = 1000;
+    p.config.botSizeY = 800;
+    p.config.mirrorX = true;
+    p.config.mirrorY = true;
+    const e = {
+      stopPropagation: jest.fn(),
+      point: { x: 100, y: 200 },
+    } as unknown as ThreeEvent<MouseEvent>;
+    soilPointerMove(p)(e);
+    expect(p.pointerPlantRef.current?.position.set)
+      .toHaveBeenCalledWith(100, 200, 0);
   });
 
   it("skips re-rendering the same pointer position", () => {

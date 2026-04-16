@@ -10,6 +10,7 @@ import {
   BufferGeometry,
   Mesh as MeshType,
   BackSide,
+  FrontSide,
   Color,
 } from "three";
 import { range } from "lodash";
@@ -44,6 +45,7 @@ import { ImageTexture } from "../garden";
 import { VertexNormalsHelper } from "three/examples/jsm/Addons.js";
 import { MoistureSurface } from "../garden/moisture_texture";
 import { HeightMaterial } from "../garden/height_material";
+import { soilSurfaceExtents } from "../triangles";
 
 const soil = (
   Type: typeof LinePath | typeof Shape,
@@ -89,7 +91,11 @@ const Surface = (props: SurfaceProps) => {
   // eslint-disable-next-line no-null/no-null
   const ref = React.useRef<MeshType>(null) as React.RefObject<MeshType>;
   useHelper(ref, VertexNormalsHelper, 1000);
-  return <Mesh ref={props.config.surfaceDebug ? ref : undefined} {...props}>
+  const enableHelper = [
+    SurfaceDebugOption.normals,
+    SurfaceDebugOption.height,
+  ].includes(props.config.surfaceDebug);
+  return <Mesh ref={enableHelper ? ref : undefined} {...props}>
     {props.children}
   </Mesh>;
 };
@@ -279,6 +285,41 @@ export const Bed = (props: BedProps) => {
 
   const SurfaceMaterial = getSurfaceMaterial();
   const surfaceTexture = soilTexture;
+  const mirroredAxesCount =
+    Number(props.config.mirrorX) + Number(props.config.mirrorY);
+  const soilSurfaceSide = mirroredAxesCount % 2 == 1 ? FrontSide : BackSide;
+  const renderSoilSurfaceGeometry = React.useMemo(() => {
+    if (!props.config.mirrorX && !props.config.mirrorY) {
+      return props.soilSurfaceGeometry;
+    }
+    const geometry = props.soilSurfaceGeometry.clone();
+    const position = geometry.getAttribute("position");
+    const normal = geometry.getAttribute("normal");
+    const extents = soilSurfaceExtents(props.config);
+    const xMid = (extents.x.min + extents.x.max) / 2;
+    const yMid = (extents.y.min + extents.y.max) / 2;
+    for (let i = 0; i < position.count; i++) {
+      if (props.config.mirrorX) {
+        position.setX(i, 2 * xMid - position.getX(i));
+      }
+      if (props.config.mirrorY) {
+        position.setY(i, 2 * yMid - position.getY(i));
+      }
+      if (normal) {
+        if (props.config.mirrorX) {
+          normal.setX(i, -normal.getX(i));
+        }
+        if (props.config.mirrorY) {
+          normal.setY(i, -normal.getY(i));
+        }
+      }
+    }
+    position.needsUpdate = true;
+    if (normal) { normal.needsUpdate = true; }
+    geometry.computeBoundingBox();
+    geometry.computeBoundingSphere();
+    return geometry;
+  }, [props.soilSurfaceGeometry, props.config]);
   const soilPosition: [number, number, number] = [
     threeSpace(0, bedLengthOuter) + bedXOffset,
     threeSpace(0, bedWidthOuter) + bedYOffset,
@@ -320,7 +361,7 @@ export const Bed = (props: BedProps) => {
     ]);
   const commonSoilLayerProps = {
     config: props.config,
-    geometry: props.soilSurfaceGeometry,
+    geometry: renderSoilSurfaceGeometry,
     position: soilPosition,
     onClick: onSoilClick,
     onPointerMove: onSoilPointerMove,
@@ -434,7 +475,7 @@ export const Bed = (props: BedProps) => {
         <SoilLayer {...commonSoilLayerProps}>
           <SurfaceMaterial
             flatShading={true}
-            side={BackSide}
+            side={soilSurfaceSide}
             shininess={0}
             color={getColorFromBrightness(props.config.soilBrightness)}>
             {surfaceTexture}

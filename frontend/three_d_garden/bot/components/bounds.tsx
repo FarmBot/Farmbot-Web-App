@@ -3,6 +3,7 @@ import { Config, PositionConfig } from "../../config";
 import { Box, Edges } from "@react-three/drei";
 import { Group, MeshBasicMaterial } from "../../components";
 import {
+  get3DPositionNoMirrorFunc,
   threeSpace,
   zero as zeroFunc,
   zDir as zDirFunc,
@@ -19,11 +20,12 @@ export const Bounds = (props: BoundsProps) => {
   const {
     bedLengthOuter, bedWidthOuter,
     zAxisLength, columnLength, beamLength, bounds,
-    bedXOffset, bedYOffset, botSizeX, botSizeY, botSizeZ,
+    bedYOffset, botSizeX, botSizeY, botSizeZ,
   } = props.config;
   const { x, y, z } = props.configPosition;
   const zDir = zDirFunc(props.config);
   const zero = zeroFunc(props.config);
+  const get3DPosition = get3DPositionNoMirrorFunc(props.config);
   return <Group name={"bounds-and-distances"}>
     <Box name={"bounds"}
       visible={bounds}
@@ -63,39 +65,47 @@ export const Bounds = (props: BoundsProps) => {
     <Group visible={props.config.distanceIndicator == "beamLength"}>
       <DistanceIndicator
         start={{
-          x: threeSpace(x + 100, bedLengthOuter) + bedXOffset,
-          y: threeSpace(bedWidthOuter / 2 - beamLength / 2, bedWidthOuter),
+          x: get3DPosition({ x: x + 100,
+            y: bedWidthOuter / 2 - beamLength / 2 - bedYOffset }).x,
+          y: get3DPosition({ x: x + 100,
+            y: bedWidthOuter / 2 - beamLength / 2 - bedYOffset }).y,
           z: columnLength + 200,
         }}
         end={{
-          x: threeSpace(x + 100, bedLengthOuter) + bedXOffset,
-          y: threeSpace(bedWidthOuter / 2 + beamLength / 2, bedWidthOuter),
+          x: get3DPosition({ x: x + 100,
+            y: bedWidthOuter / 2 + beamLength / 2 - bedYOffset }).x,
+          y: get3DPosition({ x: x + 100,
+            y: bedWidthOuter / 2 + beamLength / 2 - bedYOffset }).y,
           z: columnLength + 200,
         }} />
     </Group>
     <Group visible={props.config.distanceIndicator == "columnLength"}>
       <DistanceIndicator
         start={{
-          x: threeSpace(x + 100, bedLengthOuter) + bedXOffset,
-          y: threeSpace(bedWidthOuter + 200, bedWidthOuter),
+          x: get3DPosition({ x: x + 100,
+            y: bedWidthOuter + 200 - bedYOffset }).x,
+          y: get3DPosition({ x: x + 100,
+            y: bedWidthOuter + 200 - bedYOffset }).y,
           z: 30,
         }}
         end={{
-          x: threeSpace(x + 100, bedLengthOuter) + bedXOffset,
-          y: threeSpace(bedWidthOuter + 200, bedWidthOuter),
+          x: get3DPosition({ x: x + 100,
+            y: bedWidthOuter + 200 - bedYOffset }).x,
+          y: get3DPosition({ x: x + 100,
+            y: bedWidthOuter + 200 - bedYOffset }).y,
           z: 30 + columnLength,
         }} />
     </Group>
     <Group visible={props.config.distanceIndicator == "zAxisLength"}>
       <DistanceIndicator
         start={{
-          x: threeSpace(x + 100, bedLengthOuter) + bedXOffset,
-          y: threeSpace(y, bedWidthOuter) + bedYOffset,
+          x: get3DPosition({ x: x + 100, y }).x,
+          y: get3DPosition({ x: x + 100, y }).y,
           z: zero.z - zDir * z,
         }}
         end={{
-          x: threeSpace(x + 100, bedLengthOuter) + bedXOffset,
-          y: threeSpace(y, bedWidthOuter) + bedYOffset,
+          x: get3DPosition({ x: x + 100, y }).x,
+          y: get3DPosition({ x: x + 100, y }).y,
           z: zero.z - zDir * z + zAxisLength,
         }} />
     </Group>

@@ -1,7 +1,13 @@
 import React from "react";
 import * as THREE from "three";
 import { useGLTF } from "@react-three/drei";
-import { threeSpace, zDir as zDirFunc, zZero as zZeroFunc } from "../../helpers";
+import {
+  get3DPositionFunc,
+  get3DPositionNoMirrorFunc,
+  threeSpace,
+  zDir as zDirFunc,
+  zZero as zZeroFunc,
+} from "../../helpers";
 import { Config, PositionConfig } from "../../config";
 import type { GLTF } from "three-stdlib";
 import {
@@ -110,13 +116,13 @@ export const convertSlotsWithTools =
 
 export const Tools = (props: ToolsProps) => {
   const {
-    bedXOffset, bedYOffset, bedLengthOuter, bedWidthOuter, bedWallThickness,
+    bedLengthOuter, bedWidthOuter, bedWallThickness,
   } = props.config;
-  const botPosition = {
-    x: props.configPosition.x,
-    y: props.configPosition.y,
-    z: props.configPosition.z,
-  };
+  const get3DPosition = get3DPositionFunc(props.config);
+  const get3DPositionNoMirror = get3DPositionNoMirrorFunc(props.config);
+  const mirroredBotX = props.config.mirrorX
+    ? props.config.botSizeX - props.configPosition.x
+    : props.configPosition.x;
   const mountedToolName = isUndefined(props.toolSlots)
     ? props.config.tool
     : reduceToolName(props.mountedToolName);
@@ -145,6 +151,31 @@ export const Tools = (props: ToolsProps) => {
   const wateringNozzle = useGLTF(
     ASSETS.models.wateringNozzle, LIB_DIR) as unknown as WateringNozzle;
 
+  const displayedPulloutDirection = (
+    toolPulloutDirection: ToolPulloutDirection,
+  ): ToolPulloutDirection => {
+    switch (toolPulloutDirection) {
+      case ToolPulloutDirection.POSITIVE_X:
+        return props.config.mirrorX
+          ? ToolPulloutDirection.NEGATIVE_X
+          : ToolPulloutDirection.POSITIVE_X;
+      case ToolPulloutDirection.NEGATIVE_X:
+        return props.config.mirrorX
+          ? ToolPulloutDirection.POSITIVE_X
+          : ToolPulloutDirection.NEGATIVE_X;
+      case ToolPulloutDirection.POSITIVE_Y:
+        return props.config.mirrorY
+          ? ToolPulloutDirection.NEGATIVE_Y
+          : ToolPulloutDirection.POSITIVE_Y;
+      case ToolPulloutDirection.NEGATIVE_Y:
+        return props.config.mirrorY
+          ? ToolPulloutDirection.POSITIVE_Y
+          : ToolPulloutDirection.NEGATIVE_Y;
+      default:
+        return toolPulloutDirection;
+    }
+  };
+
   const rotationFactor = (toolPulloutDirection: ToolPulloutDirection) => {
     switch (toolPulloutDirection) {
       case ToolPulloutDirection.POSITIVE_X: return 3;
@@ -165,7 +196,8 @@ export const Tools = (props: ToolsProps) => {
 
   const ToolbaySlot = (slotProps: ToolbaySlotProps) => {
     const { position, children, toolPulloutDirection, mounted } = slotProps;
-    const rotationMultiplier = rotationFactor(toolPulloutDirection);
+    const rotationMultiplier =
+      rotationFactor(displayedPulloutDirection(toolPulloutDirection));
     const navigate = useNavigate();
     return <Group name={slotProps.inToolbay ? "slot" : "utm-tool"}
       position={[
@@ -208,9 +240,16 @@ export const Tools = (props: ToolsProps) => {
   const Tool = (toolProps: ToolProps) => {
     const { toolPulloutDirection, inToolbay, id } = toolProps;
     const mounted = inToolbay && toolProps.toolName == mountedToolName;
+    const mirroredPosition = get3DPosition({ x: toolProps.x, y: toolProps.y });
+    const noMirrorPosition = get3DPositionNoMirror({
+      x: toolProps.x,
+      y: toolProps.y,
+    });
     const position = {
-      x: threeSpace(toolProps.x, bedLengthOuter) + bedXOffset,
-      y: threeSpace(toolProps.y, bedWidthOuter) + bedYOffset,
+      x: inToolbay ? mirroredPosition.x : noMirrorPosition.x,
+      y: inToolbay && !toolProps.gantryMounted
+        ? mirroredPosition.y
+        : noMirrorPosition.y,
       z: zZero - zDir * toolProps.z + (inToolbay ? 0 : (utmHeight / 2 - 15)),
     };
     const common: ToolbaySlotProps = {
@@ -336,14 +375,14 @@ export const Tools = (props: ToolsProps) => {
         return <Group
           position={[
             position.x - 30,
-            position.y - 15,
+            position.y + 2,
             position.z - 40,
           ]}
           rotation={[0, 0, Math.PI / 2]}>
           {toolProps.firstTrough
             ? <Group name={"seedTroughWithAssembly"}>
               <SeedTroughAssemblyComponent name={"seedTroughAssembly"}
-                position={[3, -15, 30]}
+                position={[3, 2, 30]}
                 scale={1000} />
               <SeedTroughHolderComponent name={"seedTroughHolder"}
                 scale={1000} />
@@ -351,7 +390,7 @@ export const Tools = (props: ToolsProps) => {
             : <Mesh name={"seedTrough"}
               position={[
                 15,
-                -15,
+                2,
                 30,
               ]}
               scale={1000}
@@ -369,9 +408,9 @@ export const Tools = (props: ToolsProps) => {
 
   return <Group name={"tools"}>
     <Tool
-      x={botPosition.x}
-      y={botPosition.y}
-      z={botPosition.z + (isUndefined(props.toolSlots) ? 1 : -2)}
+      x={props.configPosition.x}
+      y={props.configPosition.y}
+      z={props.configPosition.z + (isUndefined(props.toolSlots) ? 1 : -2)}
       toolName={mountedToolName}
       toolPulloutDirection={ToolPulloutDirection.NONE}
       inToolbay={false} />
@@ -399,7 +438,10 @@ export const Tools = (props: ToolsProps) => {
     {tools.map((tool, i) =>
       <Tool key={i}
         {...tool}
-        x={tool.gantryMounted ? botPosition.x : tool.x}
+        x={tool.gantryMounted ? mirroredBotX : tool.x}
+        y={tool.gantryMounted
+          ? tool.y - props.config.bedYOffset
+          : tool.y}
         inToolbay={true} />)}
   </Group>;
 };

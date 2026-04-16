@@ -61,9 +61,13 @@ type XY = AxisNumberProperty;
 export const getGardenPositionFunc = (config: Config, snap = true) =>
   (threeDPosition: XY): XY => {
     const { bedLengthOuter, bedWidthOuter, bedXOffset, bedYOffset } = config;
+    const unmirroredPosition = {
+      x: config.mirrorX ? -threeDPosition.x : threeDPosition.x,
+      y: config.mirrorY ? -threeDPosition.y : threeDPosition.y,
+    };
     const position = {
-      x: threeSpace(threeDPosition.x, -bedLengthOuter) - bedXOffset,
-      y: threeSpace(threeDPosition.y, -bedWidthOuter) - bedYOffset,
+      x: threeSpace(unmirroredPosition.x, -bedLengthOuter) - bedXOffset,
+      y: threeSpace(unmirroredPosition.y, -bedWidthOuter) - bedYOffset,
     };
     return snap
       ? { x: round(position.x), y: round(position.y) }
@@ -72,9 +76,30 @@ export const getGardenPositionFunc = (config: Config, snap = true) =>
 
 export const get3DPositionFunc = (config: Config) =>
   (gardenPosition: XY): XY => {
+    const position = get3DPositionNoMirrorFunc(config)(gardenPosition);
+    return {
+      x: config.mirrorX ? -position.x : position.x,
+      y: config.mirrorY ? -position.y : position.y,
+    };
+  };
+
+export const get3DPositionNoMirrorFunc = (config: Config) =>
+  (gardenPosition: XY): XY => {
     const { bedLengthOuter, bedWidthOuter, bedXOffset, bedYOffset } = config;
     return {
       x: threeSpace(gardenPosition.x + bedXOffset, bedLengthOuter),
       y: threeSpace(gardenPosition.y + bedYOffset, bedWidthOuter),
     };
+  };
+
+type XYZ = Record<"x" | "y" | "z", number>;
+
+export const getWorldPositionFunc = (config: Config) =>
+  (gardenPosition: XYZ): [number, number, number] => {
+    const position = get3DPositionFunc(config)(gardenPosition);
+    return [
+      position.x,
+      position.y,
+      zZero(config) + gardenPosition.z,
+    ];
   };

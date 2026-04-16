@@ -1,6 +1,6 @@
 import { Billboard, Cylinder, Line } from "@react-three/drei";
 import React from "react";
-import { threeSpace, zZero as zZeroFunc } from "./helpers";
+import { getWorldPositionFunc } from "./helpers";
 import { Config } from "./config";
 import { PointGroupSortType } from "farmbot/dist/resources/api_resources";
 import { sortGroupBy } from "../point_groups/point_group_sort";
@@ -50,18 +50,24 @@ export const areGroupOrderPropsEqual =
 const GroupOrder = (props: GroupOrderProps) => {
   const { sortType, groupPoints, config, getZ, tryGroupSortType } = props;
   const sortedPoints = sortGroupBy(tryGroupSortType || sortType, groupPoints);
+  const getWorldPosition = getWorldPositionFunc(config);
   const positions: [number, number, number][] = sortedPoints
     .map(p => {
-      const x = threeSpace(p.body.x, config.bedLengthOuter) + config.bedXOffset;
-      const y = threeSpace(p.body.y, config.bedWidthOuter) + config.bedYOffset;
-      const zZero = zZeroFunc(config);
       if (p.body.pointer_type == "ToolSlot") {
-        return [x, y, zZero + p.body.z + 25];
+        return getWorldPosition({ x: p.body.x, y: p.body.y, z: p.body.z + 25 });
       }
       if (p.body.pointer_type == "GenericPointer") {
-        return [x, y, zZero + getZ(p.body.x, p.body.y) + 75];
+        return getWorldPosition({
+          x: p.body.x,
+          y: p.body.y,
+          z: getZ(p.body.x, p.body.y) + 75,
+        });
       }
-      return [x, y, zZero + getZ(p.body.x, p.body.y) + p.body.radius + 10];
+      return getWorldPosition({
+        x: p.body.x,
+        y: p.body.y,
+        z: getZ(p.body.x, p.body.y) + p.body.radius + 10,
+      });
     });
   return <Group name={"group-order"}>
     <Line name={"group-order-line"}

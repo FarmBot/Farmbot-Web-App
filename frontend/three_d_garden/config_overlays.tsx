@@ -342,6 +342,8 @@ export const PrivateOverlay = (props: OverlayProps) => {
       <Toggle {...common} configKey={"bounds"} />
       <Toggle {...common} configKey={"grid"} />
       <Toggle {...common} configKey={"negativeZ"} />
+      <Toggle {...common} configKey={"mirrorX"} />
+      <Toggle {...common} configKey={"mirrorY"} />
       <Toggle {...common} configKey={"xyDimensions"} />
       <Toggle {...common} configKey={"zDimension"} />
       <Toggle {...common} configKey={"axes"} />

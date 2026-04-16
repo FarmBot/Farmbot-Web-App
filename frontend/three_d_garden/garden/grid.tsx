@@ -2,7 +2,7 @@ import React from "react";
 import { Config } from "../config";
 import { Group, Primitive } from "../components";
 import {
-  zero as zeroFunc, extents as extentsFunc, getGardenPositionFunc,
+  get3DPositionFunc, zero as zeroFunc,
 } from "../helpers";
 import { chain, floor, range } from "lodash";
 import { useThree } from "@react-three/fiber";
@@ -29,13 +29,15 @@ const lineSegmentsFor = (
   config: Config,
 ) => {
   const positions: number[] = [];
-  const getGardenPosition = getGardenPositionFunc(config, false);
+  const get3DPosition = get3DPositionFunc(config);
   let prev: { x: number, y: number, z: number } | undefined;
   range(101).forEach(i => {
     const t = i / 100;
-    const x = start.x + (end.x - start.x) * t;
-    const y = start.y + (end.y - start.y) * t;
-    const gardenPosition = getGardenPosition({ x, y });
+    const gardenPosition = {
+      x: start.x + (end.x - start.x) * t,
+      y: start.y + (end.y - start.y) * t,
+    };
+    const { x, y } = get3DPosition(gardenPosition);
     const z = getZ(gardenPosition.x, gardenPosition.y);
     if (prev) {
       positions.push(prev.x, prev.y, prev.z, x, y, z);
@@ -93,7 +95,6 @@ export interface GridProps {
 export const Grid = (props: GridProps) => {
   const { config } = props;
   const zero = zeroFunc(config);
-  const extents = extentsFunc(config);
   const { outerPositions, innerPositions } = React.useMemo(() => {
     const result = {
       outerPositions: [] as number[],
@@ -102,11 +103,11 @@ export const Grid = (props: GridProps) => {
     gridLineOffsets(config.botSizeX).forEach(xOffset => {
       const isOuterLine = xOffset === 0 || xOffset === config.botSizeX;
       const positions = lineSegmentsFor({
-        x: zero.x + xOffset,
-        y: zero.y,
+        x: xOffset,
+        y: 0,
       }, {
-        x: zero.x + xOffset,
-        y: extents.y,
+        x: xOffset,
+        y: config.botSizeY,
       }, props.getZ, config);
       if (isOuterLine) {
         result.outerPositions.push(...positions);
@@ -117,11 +118,11 @@ export const Grid = (props: GridProps) => {
     gridLineOffsets(config.botSizeY).forEach(yOffset => {
       const isOuterLine = yOffset === 0 || yOffset === config.botSizeY;
       const positions = lineSegmentsFor({
-        x: zero.x,
-        y: zero.y + yOffset,
+        x: 0,
+        y: yOffset,
       }, {
-        x: extents.x,
-        y: zero.y + yOffset,
+        x: config.botSizeX,
+        y: yOffset,
       }, props.getZ, config);
       if (isOuterLine) {
         result.outerPositions.push(...positions);
@@ -130,7 +131,7 @@ export const Grid = (props: GridProps) => {
       }
     });
     return result;
-  }, [config, extents.x, extents.y, props.getZ, zero.x, zero.y]);
+  }, [config, props.getZ]);
   return <Group name={"garden-grid"}
     visible={config.grid && props.activeFocus != "Planter bed"}
     position={[0, 0, zero.z]}>

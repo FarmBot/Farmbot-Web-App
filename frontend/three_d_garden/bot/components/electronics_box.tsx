@@ -1,7 +1,7 @@
 import React from "react";
 import * as THREE from "three";
 import { Cylinder, useGLTF } from "@react-three/drei";
-import { threeSpace } from "../../helpers";
+import { get3DPositionNoMirrorFunc } from "../../helpers";
 import { Config, PositionConfig } from "../../config";
 import type { GLTF } from "three-stdlib";
 import { ASSETS, ElectronicsBoxMaterial, LIB_DIR, PartName } from "../../constants";
@@ -80,8 +80,13 @@ export interface ElectronicsBoxProps {
 }
 
 export const ElectronicsBox = (props: ElectronicsBoxProps) => {
-  const { bedXOffset, bedLengthOuter, bedWidthOuter, columnLength } = props.config;
+  const { bedYOffset, columnLength } = props.config;
   const { x } = props.configPosition;
+  const get3DPosition = get3DPositionNoMirrorFunc(props.config);
+  const position = get3DPosition({
+    x: x - 62,
+    y: -20 - bedYOffset,
+  });
 
   const box = useGLTF(ASSETS.models.box, LIB_DIR) as unknown as Box;
   const btn = useGLTF(ASSETS.models.btn, LIB_DIR) as unknown as Btn;
@@ -91,8 +96,8 @@ export const ElectronicsBox = (props: ElectronicsBoxProps) => {
 
   return <Group name={"electronics-box"}
     position={new THREE.Vector3(
-      threeSpace(x - 62, bedLengthOuter) + bedXOffset,
-      threeSpace(-20, bedWidthOuter),
+      position.x,
+      position.y,
       columnLength - 190,
     )}>
     <Group name={"box"}

@@ -4,7 +4,7 @@ import { Config } from "../config";
 import { Group, MeshPhongMaterial } from "../components";
 import { Cylinder, Sphere, Torus } from "@react-three/drei";
 import { DoubleSide } from "three";
-import { zero as zeroFunc, threeSpace } from "../helpers";
+import { getWorldPositionFunc } from "../helpers";
 import { useNavigate } from "react-router";
 import { Path } from "../../internal_urls";
 import { isUndefined, round } from "lodash";
@@ -109,16 +109,13 @@ const PointBase = (props: PointBaseProps) => {
   const {
     pointName, position, onClick, color, alpha, config, radius, torusRef,
   } = props;
+  const getWorldPosition = getWorldPositionFunc(config);
   return <Group
     name={"point-" + pointName}
     renderOrder={RenderOrder.default}
     rotation={[Math.PI / 2, 0, 0]}
     position={position
-      ? [
-        threeSpace(position.x, config.bedLengthOuter) + config.bedXOffset,
-        threeSpace(position.y, config.bedWidthOuter) + config.bedYOffset,
-        zeroFunc(config).z + position.z,
-      ]
+      ? getWorldPosition(position)
       : [0, 0, 0]}>
     <Group name={"marker"}
       onClick={onClick}>

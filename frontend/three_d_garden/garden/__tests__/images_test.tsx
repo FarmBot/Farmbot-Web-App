@@ -1,7 +1,10 @@
 let mockDemo = false;
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import { extraRotation, ImageTexture, ImageTextureProps } from "../images";
+import {
+  extraRotation, getImagePosition, getImageScale, getMirrorTextureProps,
+  ImageTexture, ImageTextureProps,
+} from "../images";
 import { INITIAL } from "../../config";
 import { clone } from "lodash";
 import {
@@ -166,5 +169,40 @@ describe("extraRotation()", () => {
     const config = clone(INITIAL);
     config.imgOrigin = value;
     expect(extraRotation(config)).toEqual(result);
+  });
+});
+
+describe("getImageScale()", () => {
+  it("returns mirrored image scale", () => {
+    const config = clone(INITIAL);
+    config.mirrorX = true;
+    config.mirrorY = true;
+    expect(getImageScale(config, 100, 200)).toEqual([-100, -200, 1000]);
+  });
+});
+
+describe("getMirrorTextureProps()", () => {
+  it("returns mirrored repeat and offset", () => {
+    const config = clone(INITIAL);
+    config.mirrorX = true;
+    config.mirrorY = true;
+    expect(getMirrorTextureProps(config)).toEqual({
+      repeat: [-1, -1],
+      offset: [1, 1],
+    });
+  });
+});
+
+describe("getImagePosition()", () => {
+  it("pre-mirrors image position while keeping offsets", () => {
+    const config = clone(INITIAL);
+    config.botSizeX = 1000;
+    config.botSizeY = 500;
+    config.imgOffsetX = 10;
+    config.imgOffsetY = 20;
+    config.mirrorX = true;
+    config.mirrorY = true;
+    expect(getImagePosition(config, 100, 200, 30, 40, 5))
+      .toEqual([940, 360, 5]);
   });
 });

@@ -15,6 +15,7 @@ let mockRefImpl = (): MockRef => ({
     instanceMatrix: { needsUpdate: false },
   }
 });
+let allRefs: MockRef[] = [];
 
 import React from "react";
 import { fireEvent, render } from "@testing-library/react";
@@ -40,8 +41,21 @@ describe("<PlantInstances />", () => {
   let reactUseRefSpy: jest.SpyInstance;
 
   beforeEach(() => {
+    mockRefImpl = () => ({
+      current: {
+        scale: { set: jest.fn() },
+        position: { z: 0 },
+        setMatrixAt: jest.fn(),
+        instanceMatrix: { needsUpdate: false },
+      }
+    });
+    allRefs = [];
     reactUseRefSpy = jest.spyOn(React, "useRef")
-      .mockImplementation(() => mockRefImpl() as never);
+      .mockImplementation(() => {
+        const ref = mockRefImpl();
+        allRefs.push(ref);
+        return ref as never;
+      });
     location.pathname = Path.mock(Path.designer());
     (useFrame as jest.Mock).mockClear();
     (useTexture as unknown as jest.Mock).mockClear();
@@ -162,6 +176,33 @@ describe("<PlantInstances />", () => {
     const p = fakeProps();
     const { container } = render(<PlantInstances {...p} />);
     expect(container).toBeTruthy();
+  });
+
+  it("uses garden coordinates for getZ", () => {
+    const getZ = jest.fn(() => 0);
+    const p = fakeProps();
+    p.getZ = getZ;
+    p.plants = [p.plants[0]];
+    render(<PlantInstances {...p} />);
+    expect(getZ).toHaveBeenCalledWith(100, 200);
+  });
+
+  it("uses mirrored world placement for plant icons", () => {
+    const p = fakeProps();
+    p.config.mirrorX = true;
+    p.config.mirrorY = true;
+    p.config.botSizeX = 1000;
+    p.config.botSizeY = 500;
+    p.plants = [p.plants[0]];
+    render(<PlantInstances {...p} />);
+    (useFrame as jest.Mock).mock.calls.forEach(([frameFn]) =>
+      frameFn({ camera: { quaternion: new Quaternion() } }));
+    const instancedRef = allRefs.find(ref => !!ref.current?.setMatrixAt);
+    expect(instancedRef?.current?.setMatrixAt).toHaveBeenCalled();
+    const matrix = (instancedRef?.current?.setMatrixAt as jest.Mock)
+      .mock.calls[0][1];
+    expect(matrix.elements[12]).toBeCloseTo(1260);
+    expect(matrix.elements[13]).toBeCloseTo(460);
   });
 
   it("updates material brightness when changed", () => {

@@ -4,7 +4,7 @@ import { Config } from "../config";
 import { ASSETS, HOVER_OBJECT_MODES, RenderOrder } from "../constants";
 import { Group, MeshPhongMaterial } from "../components";
 import { Image, Billboard, Sphere } from "@react-three/drei";
-import { zero as zeroFunc, threeSpace } from "../helpers";
+import { getWorldPositionFunc } from "../helpers";
 import { useNavigate } from "react-router";
 import { Path } from "../../internal_urls";
 import { isUndefined } from "lodash";
@@ -63,16 +63,13 @@ export const WeedBase = (props: WeedBaseProps) => {
     pointName, position, onClick, color, radius, alpha, config,
     radiusRef, billboardRef, imageRef,
   } = props;
+  const getWorldPosition = getWorldPositionFunc(config);
   const weedSize = radius == 0 ? 50 : radius;
   const iconSize = weedSize * WEED_IMG_SIZE_FRACTION;
   return <Group
     name={"weed-" + pointName}
     position={position
-      ? [
-        threeSpace(position.x, config.bedLengthOuter) + config.bedXOffset,
-        threeSpace(position.y, config.bedWidthOuter) + config.bedYOffset,
-        zeroFunc(config).z + position.z,
-      ]
+      ? getWorldPosition(position)
       : [0, 0, 0]}
     onClick={onClick}>
     <Billboard

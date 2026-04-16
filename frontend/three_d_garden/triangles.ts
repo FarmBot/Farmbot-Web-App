@@ -23,7 +23,7 @@ export const filterMoisturePoints = (props: FilterMoisturePointsProps) => {
     .filter(p =>
       !isUndefined(p.body.x) &&
       !isUndefined(p.body.y))
-    .map(p => [p.body.x, p.body.y, p.body.value]) as [number, number, number][];
+    .map(p => [p.body.x, p.body.y, p.body.value]);
   const params = boundaryPoints(props.config);
   const outerPoints = [
     { x: params.outer.x.min, y: params.outer.y.min },

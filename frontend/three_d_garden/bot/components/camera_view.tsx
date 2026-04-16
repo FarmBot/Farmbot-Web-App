@@ -37,7 +37,7 @@ export interface CameraViewProps {
   cameraMountPosition: THREE.Vector3;
 }
 
-export const CameraView = (props: CameraViewProps) => {
+export const getCameraViewPoints = (props: CameraViewProps) => {
   const { config, distanceToSoil, cameraMountPosition } = props;
   const cameraLensPosition = cameraMountPosition.clone()
     .add(cameraMountToLensOffset);
@@ -59,9 +59,10 @@ export const CameraView = (props: CameraViewProps) => {
   const offset = toV([config.imgOffsetX, config.imgOffsetY, 0]);
 
   const rotation = config.imgRotation + extraRotation(config);
-  const rotateTop = (point: V3) => rotatePoint(point, rotation, topCenter);
-  const rotateBottom = (point: V3) => rotatePoint(point, rotation, bottomCenter)
-    .add(offset);
+  const rotateTop = (point: V3) =>
+    rotatePoint(point, rotation, topCenter);
+  const rotateBottom = (point: V3) =>
+    rotatePoint(point, rotation, bottomCenter).add(offset);
 
   const TUL = [-lensSize, -lensSize, 0];
   const TUR = [-lensSize, lensSize, 0];
@@ -75,13 +76,20 @@ export const CameraView = (props: CameraViewProps) => {
   const BLR = [xCenter + xEdgeAtSoil, yCenter + yEdgeAtSoil, -distanceToSoil];
   const BOTTOM = ([BUL, BUR, BLL, BLR] as V3[]).map(rotateBottom);
 
-  const VERTICES = [
-    ...TOP,
-    ...BOTTOM,
-  ];
+  return {
+    cameraLensPosition,
+    points: [
+      ...TOP,
+      ...BOTTOM,
+    ],
+  };
+};
 
+export const CameraView = (props: CameraViewProps) => {
+  const { config } = props;
+  const { cameraLensPosition, points } = getCameraViewPoints(props);
   return config.cameraView
-    ? <Frustum points={VERTICES} position={cameraLensPosition} config={config} />
+    ? <Frustum points={points} position={cameraLensPosition} config={config} />
     : <></>;
 };
 
