@@ -19,11 +19,12 @@ import { isMobile } from "../screen_size";
 import { Help } from "../ui";
 import { BooleanSetting } from "../session_keys";
 import { LayerToggle } from "../farm_designer/map/legend/layer_toggle";
-import { setWebAppConfigValue } from "../config_storage/actions";
+import { GetWebAppConfigValue, setWebAppConfigValue } from "../config_storage/actions";
 import { DesignerState } from "../farm_designer/interfaces";
 import { setPanelOpen } from "../farm_designer/panel_header";
 import { ThreeDGardenPlant } from "./garden";
 import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
+import { isTopDown } from "./helpers";
 
 export interface ThreeDGardenProps {
   config: Config;
@@ -87,12 +88,13 @@ export interface ThreeDGardenToggleProps {
   designer: DesignerState;
   threeDGarden: boolean;
   device: DeviceAccountSettings;
+  getConfigValue: GetWebAppConfigValue;
 }
 
 // eslint-disable-next-line complexity
 export const ThreeDGardenToggle = (props: ThreeDGardenToggleProps) => {
   const { navigate, dispatch, threeDGarden } = props;
-  const topDown = props.designer.threeDTopDownView;
+  const topDown = isTopDown(props.designer, props.getConfigValue);
   const exaggeratedZ = props.designer.threeDExaggeratedZ;
   const description = isMobile()
     ? Content.SHOW_3D_VIEW_DESCRIPTION_MOBILE

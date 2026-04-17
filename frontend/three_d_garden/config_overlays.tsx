@@ -405,6 +405,9 @@ export const PrivateOverlay = (props: OverlayProps) => {
       <Toggle {...common} configKey={"zoom"} />
       <Toggle {...common} configKey={"pan"} />
       <Toggle {...common} configKey={"rotate"} />
+      <Toggle {...common} configKey={"topDown"} />
+      <Slider {...common} configKey={"viewpointHeading"} min={0} max={360} />
+      <Toggle {...common} configKey={"cameraSelectionView"} />
       <Toggle {...common} configKey={"lowDetail"} />
       <label>{"Environment"}</label>
       <Radio {...common} configKey={"scene"}

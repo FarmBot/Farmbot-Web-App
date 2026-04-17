@@ -13,7 +13,7 @@ import {
 } from "farmbot";
 import { CameraCalibrationData, DesignerState } from "./interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
-import { BooleanSetting } from "../session_keys";
+import { BooleanSetting, NumericSetting } from "../session_keys";
 import { SlotWithTool } from "../resources/interfaces";
 import { calcSunCoordinate, ThreeDGardenPlant } from "../three_d_garden/garden";
 import { findCrop, findIcon } from "../crops/find";
@@ -25,6 +25,7 @@ import { get3DTime, latLng } from "../three_d_garden/time_travel";
 import { parseCalibrationData } from "./map/layers/images/map_image";
 import { fetchInterpolationOptions } from "./map/layers/points/interpolation_map";
 import { unpackUUID } from "../util";
+import { isTopDown } from "../three_d_garden/helpers";
 
 export interface ThreeDGardenMapProps {
   botSize: BotSize;
@@ -180,10 +181,14 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   config.interpolationUseNearest = options.useNearest;
   config.interpolationPower = options.power;
 
+  config.topDown = isTopDown(props.designer, props.getWebAppConfigValue);
   config.zoom = true;
   config.pan = true;
-  config.rotate = !props.designer.threeDTopDownView;
-  config.perspective = !props.designer.threeDTopDownView;
+  config.rotate = !config.topDown;
+  config.perspective = !config.topDown;
+  config.viewpointHeading =
+    parseInt("" + props.getWebAppConfigValue(NumericSetting.viewpoint_heading));
+  config.cameraSelectionView = props.designer.threeDCameraSelection;
 
   const lastCaptureTime = React.useMemo(() => {
     const localIds = props.logs

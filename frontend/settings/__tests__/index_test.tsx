@@ -1,5 +1,6 @@
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
+import { changeBlurableInputRTL } from "../../__test_support__/helpers";
 import { RawDesignerSettings as DesignerSettings } from "../index";
 import { DesignerSettingsProps } from "../interfaces";
 import { BooleanSetting, NumericSetting } from "../../session_keys";
@@ -25,12 +26,14 @@ import * as bootSequenceSelector from "../fbos_settings/boot_sequence_selector";
 
 const EMPTY_RESOURCE_INDEX = buildResourceIndex([]).index;
 
-const getSetting =
-  (container: HTMLElement, position: number, containsString: string) => {
-    const setting = container.querySelectorAll(".designer-setting")[position] as HTMLElement;
-    expect(setting.textContent?.toLowerCase())
-      .toContain(containsString.toLowerCase());
-    return setting;
+const getSettingByText =
+  (container: HTMLElement, containsString: string) => {
+    const settings = Array.from(container.querySelectorAll(".designer-setting"))
+      .filter((setting): setting is HTMLElement => setting instanceof HTMLElement);
+    const setting = settings.find(setting =>
+      setting.textContent?.toLowerCase().includes(containsString.toLowerCase()));
+    expect(setting).toBeTruthy();
+    return setting as HTMLElement;
   };
 
 describe("<DesignerSettings />", () => {
@@ -171,7 +174,7 @@ describe("<DesignerSettings />", () => {
     config.body.confirm_plant_deletion = undefined as never;
     p.getConfigValue = key => config.body[key];
     const { container } = render(<DesignerSettings {...p} />);
-    const confirmDeletion = getSetting(container, 12, "confirm plant");
+    const confirmDeletion = getSettingByText(container, "confirm plant");
     expect(confirmDeletion.querySelector("button")?.textContent).toEqual("on");
   });
 
@@ -179,7 +182,7 @@ describe("<DesignerSettings />", () => {
     const p = fakeProps();
     p.settingsPanelState.farm_designer = true;
     const { container } = render(<DesignerSettings {...p} />);
-    const trailSetting = getSetting(container, 1, "trail");
+    const trailSetting = getSettingByText(container, "trail");
     const button = trailSetting.querySelector("button");
     if (!button) { throw new Error("Expected trail toggle button"); }
     fireEvent.click(button);
@@ -192,11 +195,36 @@ describe("<DesignerSettings />", () => {
     p.settingsPanelState.farm_designer = true;
     p.getConfigValue = () => 2;
     const { container } = render(<DesignerSettings {...p} />);
-    const originSetting = getSetting(container, 6, "origin");
+    const originSetting = getSettingByText(container, "origin");
     const quadrants = originSetting.querySelectorAll(".quadrant");
     fireEvent.click(quadrants[quadrants.length - 1]);
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       NumericSetting.bot_origin_quadrant, 4);
+  });
+
+  it("toggles top down view", () => {
+    const p = fakeProps();
+    p.settingsPanelState.farm_designer = true;
+    const { container } = render(<DesignerSettings {...p} />);
+    const topDownSetting = getSettingByText(container, "open in top-down view");
+    const button = topDownSetting.querySelector("button");
+    if (!button) { throw new Error("Expected top down toggle button"); }
+    fireEvent.click(button);
+    expect(setWebAppConfigValueSpy)
+      .toHaveBeenCalledWith(BooleanSetting.top_down_view, true);
+  });
+
+  it("changes viewpoint heading", () => {
+    const p = fakeProps();
+    p.settingsPanelState.farm_designer = true;
+    p.getConfigValue = key => key == NumericSetting.viewpoint_heading ? 0 : 2;
+    const { container } = render(<DesignerSettings {...p} />);
+    const headingSetting = getSettingByText(container, "camera location upon open");
+    const input = headingSetting.querySelector("input");
+    if (!input) { throw new Error("Expected viewpoint heading input"); }
+    changeBlurableInputRTL(input, "270");
+    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
+      NumericSetting.viewpoint_heading, 270);
   });
 
   it("renders env editor", () => {

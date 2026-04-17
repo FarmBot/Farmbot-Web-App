@@ -1015,6 +1015,12 @@ export namespace Content {
     trim(`Select a map origin by clicking on one of the four quadrants to
     adjust the garden map to your viewing angle.`);
 
+  export const TOP_DOWN_VIEW =
+    trim(`Upon open, display the 3D garden map from a top-down perspective.`);
+
+  export const VIEWPOINT_HEADING =
+    trim(`Heading of the camera when the 3D garden map is opened (in degrees).`);
+
   export const CROP_MAP_IMAGES =
     trim(`Crop images displayed in the garden map to remove black borders
     from image rotation. Crop amount determined by CAMERA ROTATION value.`);
@@ -2234,6 +2240,8 @@ export enum DeviceSetting {
   mapSize = `Map size`,
   rotateMap = `Rotate map`,
   mapOrigin = `Map origin`,
+  openInTopDownView = `Open in top-down view`,
+  cameraLocationUponOpen = `Camera location upon open`,
   cropMapImages = `Crop map images`,
   clipPhotosOutOfBounds = `Clip photos out of bounds`,
   cameraView = `Camera view`,
@@ -2562,6 +2570,7 @@ export enum Actions {
   // 3D
   SET_DISTANCE_INDICATOR = "SET_DISTANCE_INDICATOR",
   TOGGLE_3D_TOP_DOWN_VIEW = "TOGGLE_3D_TOP_DOWN_VIEW",
+  TOGGLE_3D_CAMERA_SELECTION = "TOGGLE_3D_CAMERA_SELECTION",
   TOGGLE_3D_EXAGGERATED_Z = "TOGGLE_3D_EXAGGERATED_Z",
   SET_3D_TIME = "RESET_3D_TIME",
 

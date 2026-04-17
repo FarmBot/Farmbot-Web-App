@@ -4,6 +4,7 @@ import {
   getColorFromBrightness,
   get3DPositionFunc,
   getGardenPositionFunc,
+  isTopDown,
   getWorldPositionFunc,
   threeSpace,
   zDir,
@@ -11,6 +12,7 @@ import {
 } from "../helpers";
 import { INITIAL } from "../config";
 import * as THREE from "three";
+import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
 
 describe("threeSpace()", () => {
   it("returns adjusted position", () => {
@@ -96,5 +98,20 @@ describe("mirror-aware position helpers", () => {
     config.mirrorY = true;
     const getWorldPosition = getWorldPositionFunc(config);
     expect(getWorldPosition({ x: 125, y: 250, z: 10 })).toEqual([375, 50, 150]);
+  });
+});
+
+describe("isTopDown()", () => {
+  it("returns local state when defined", () => {
+    const designer = fakeDesignerState();
+    designer.threeDTopDownView = false;
+    expect(isTopDown(designer, () => true)).toEqual(false);
+  });
+
+  it("falls back to saved config when local state is undefined", () => {
+    const designer = fakeDesignerState();
+    designer.threeDTopDownView = undefined;
+    expect(isTopDown(designer, () => true)).toEqual(true);
+    expect(isTopDown(designer, () => false)).toEqual(false);
   });
 });

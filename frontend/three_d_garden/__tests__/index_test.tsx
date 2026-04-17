@@ -43,6 +43,7 @@ describe("<ThreeDGardenToggle />", () => {
     device: fakeDevice().body,
     designer: fakeDesignerState(),
     threeDGarden: true,
+    getConfigValue: jest.fn(),
   });
 
   it("renders off", () => {
@@ -66,6 +67,18 @@ describe("<ThreeDGardenToggle />", () => {
   it("disables top down view", () => {
     const p = fakeProps();
     p.designer.threeDTopDownView = true;
+    render(<ThreeDGardenToggle {...p} />);
+    const isoViewButton = screen.getByTitle("3D View");
+    fireEvent.click(isoViewButton);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_3D_TOP_DOWN_VIEW,
+      payload: false,
+    });
+  });
+
+  it("uses saved top down setting", () => {
+    const p = fakeProps();
+    p.getConfigValue = () => true;
     render(<ThreeDGardenToggle {...p} />);
     const isoViewButton = screen.getByTitle("3D View");
     fireEvent.click(isoViewButton);

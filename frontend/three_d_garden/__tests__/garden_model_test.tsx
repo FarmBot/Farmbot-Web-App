@@ -2,7 +2,7 @@ let mockIsDesktop = false;
 let mockIsMobile = false;
 
 import React from "react";
-import { useTexture } from "@react-three/drei";
+import { OrbitControls, useTexture } from "@react-three/drei";
 import { GardenModelProps, GardenModel } from "../garden_model";
 import { clone } from "lodash";
 import { INITIAL, INITIAL_POSITION, SurfaceDebugOption } from "../config";
@@ -87,11 +87,21 @@ describe("<GardenModel />", () => {
   it("renders top down view", () => {
     mockIsMobile = true;
     const p = fakeProps();
-    const addPlantProps = fakeAddPlantProps();
-    addPlantProps.designer.threeDTopDownView = true;
-    p.addPlantProps = addPlantProps;
+    p.config.topDown = true;
+    p.config.viewpointHeading = 90;
+    const wrapper = createWrapper(p);
+    const orbitControls = wrapper.root.findByType(OrbitControls);
+    expect(orbitControls.props.minAzimuthAngle).toEqual(Math.PI / 2);
+    expect(orbitControls.props.maxAzimuthAngle).toEqual(Math.PI / 2);
+  });
+
+  it("renders camera selection view", () => {
+    const p = fakeProps();
+    p.config.cameraSelectionView = true;
+    p.config.viewpointHeading = 45;
     const { container } = render(<GardenModel {...p} />);
-    expect(container.innerHTML).toContain("darkgreen");
+    expect(container.innerHTML).toContain("camera-selection");
+    expect(container.innerHTML).toContain("person_2.avif");
   });
 
   it("renders no user plants", () => {

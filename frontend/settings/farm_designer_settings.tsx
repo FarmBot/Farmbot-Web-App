@@ -129,6 +129,16 @@ const DESIGNER_SETTINGS =
       children: <OriginSelector {...settingsProps} />
     },
     {
+      title: DeviceSetting.openInTopDownView,
+      description: Content.TOP_DOWN_VIEW,
+      setting: BooleanSetting.top_down_view,
+    },
+    {
+      title: DeviceSetting.cameraLocationUponOpen,
+      description: Content.VIEWPOINT_HEADING,
+      numberSetting: NumericSetting.viewpoint_heading,
+    },
+    {
       title: DeviceSetting.cropMapImages,
       description: Content.CROP_MAP_IMAGES,
       setting: BooleanSetting.crop_images,
@@ -177,6 +187,24 @@ export const OriginSelector = (props: DesignerSettingsPropsBase) => {
         <div key={"quadrant_" + q}
           className={`quadrant ${quadrant === q ? "selected" : ""}`}
           onClick={update(q)} />)}
+    </div>
+  </div>;
+};
+
+export const HeadingSelector = (props: DesignerSettingsPropsBase) => {
+  const settingKey = NumericSetting.viewpoint_heading;
+  const heading = props.getConfigValue(settingKey);
+  const update = (value: number) => () =>
+    props.dispatch(setWebAppConfigValue(settingKey, value));
+  return <div className={[
+    "farmbot-origin",
+    getModifiedClassName(settingKey),
+  ].join(" ")}>
+    <div className="quadrants">
+      {[180, 0, 90, 270].map(angle =>
+        <div key={"heading_" + angle}
+          className={`quadrant ${heading === angle ? "selected" : ""}`}
+          onClick={update(angle)} />)}
     </div>
   </div>;
 };

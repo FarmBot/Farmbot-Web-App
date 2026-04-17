@@ -2,6 +2,9 @@ import { Config } from "./config";
 import * as THREE from "three";
 import { AxisNumberProperty } from "../farm_designer/map/interfaces";
 import { round } from "../farm_designer/map/util";
+import { DesignerState } from "../farm_designer/interfaces";
+import { BooleanSetting } from "../session_keys";
+import { GetWebAppConfigValue } from "../config_storage/actions";
 
 export const threeSpace = (position: number, max: number): number =>
   position - max / 2;
@@ -103,3 +106,12 @@ export const getWorldPositionFunc = (config: Config) =>
       zZero(config) + gardenPosition.z,
     ];
   };
+
+export const isTopDown = (
+  designer: DesignerState,
+  getWebAppConfigValue: GetWebAppConfigValue,
+) => {
+  const state = designer.threeDTopDownView;
+  const db = !!getWebAppConfigValue(BooleanSetting.top_down_view);
+  return state ?? db;
+};

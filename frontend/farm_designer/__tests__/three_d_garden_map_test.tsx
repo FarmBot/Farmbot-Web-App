@@ -59,7 +59,7 @@ describe("<ThreeDGardenMap />", () => {
     designer: fakeDesignerState(),
     plants: [fakePlant()],
     dispatch: jest.fn(),
-    getWebAppConfigValue: jest.fn(),
+    getWebAppConfigValue: () => 0,
     curves: [],
     mapPoints: [],
     weeds: [],
@@ -135,6 +135,7 @@ describe("<ThreeDGardenMap />", () => {
     expectedConfig.imgCenterY = 0;
     expectedConfig.mirrorX = true;
     expectedConfig.mirrorY = true;
+    expectedConfig.viewpointHeading = 0;
 
     const call = lastThreeDGardenProps();
     expect(call).toEqual(expect.objectContaining({

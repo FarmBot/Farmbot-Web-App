@@ -9,7 +9,7 @@ import {
   ZoomControlsProps,
 } from "../garden_map_legend";
 import { GardenMapLegendProps } from "../../interfaces";
-import { BooleanSetting } from "../../../../session_keys";
+import { BooleanSetting, NumericSetting } from "../../../../session_keys";
 import * as zoom from "../../zoom";
 import {
   fakeTimeSettings,
@@ -21,6 +21,8 @@ import {
 import {
   fakeFirmwareConfig,
 } from "../../../../__test_support__/fake_state/resources";
+import { fakeDesignerState } from "../../../../__test_support__/fake_designer_state";
+import { Actions } from "../../../../constants";
 
 let atMaxZoomSpy: jest.SpyInstance;
 let atMinZoomSpy: jest.SpyInstance;
@@ -67,6 +69,7 @@ describe("<GardenMapLegend />", () => {
     firmwareConfig: fakeFirmwareConfig().body,
     botLocationData: fakeBotLocationData(),
     botSize: fakeBotSize(),
+    designer: fakeDesignerState(),
   });
 
   it("renders", () => {
@@ -137,6 +140,7 @@ const fakeProps = (): SettingsSubMenuProps => ({
   dispatch: jest.fn(),
   getConfigValue: () => true,
   firmwareConfig: fakeFirmwareConfig().body,
+  designer: fakeDesignerState(),
 });
 
 describe("<PointsSubMenu />", () => {
@@ -184,5 +188,52 @@ describe("<MapSettingsContent />", () => {
     fireEvent.click(toggleBtn);
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       BooleanSetting.dynamic_map, false);
+  });
+
+  it("shows 2D-only controls", () => {
+    const p = fakeProps();
+    p.getConfigValue = key => key != BooleanSetting.three_d_garden;
+    const { container } = render(<MapSettingsContent {...p} />);
+    expect(container.textContent).toContain("Rotate map");
+    expect(container.textContent).toContain("Map origin");
+    expect(container.textContent).not.toContain("Camera location upon open");
+  });
+
+  it("shows 3D-only controls", () => {
+    const p = fakeProps();
+    p.getConfigValue = key => key == BooleanSetting.three_d_garden;
+    const { container } = render(<MapSettingsContent {...p} />);
+    expect(container.textContent).toContain("Open in top-down view");
+    expect(container.textContent).toContain("Camera location upon open");
+    expect(container.textContent).toContain("Enable camera heading selection view");
+    expect(container.textContent).not.toContain("Rotate map");
+  });
+
+  it("changes viewpoint heading in 3D settings", () => {
+    const p = fakeProps();
+    p.getConfigValue = key => {
+      if (key == BooleanSetting.three_d_garden) { return true; }
+      if (key == NumericSetting.viewpoint_heading) { return 0; }
+      return false;
+    };
+    const { container } = render(<MapSettingsContent {...p} />);
+    const quadrants = container.querySelectorAll(".quadrant");
+    fireEvent.click(quadrants[quadrants.length - 1]);
+    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
+      NumericSetting.viewpoint_heading, 270);
+  });
+
+  it("toggles camera selection view", () => {
+    const p = fakeProps();
+    p.getConfigValue = key => key == BooleanSetting.three_d_garden;
+    const { container } = render(<MapSettingsContent {...p} />);
+    const toggleBtn =
+      container.querySelector("button[title='Enable camera heading selection view']");
+    if (!toggleBtn) { throw new Error("Missing camera selection toggle"); }
+    fireEvent.click(toggleBtn);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_3D_CAMERA_SELECTION,
+      payload: undefined,
+    });
   });
 });

@@ -179,7 +179,8 @@ export interface DesignerState {
   cropRadius: number | undefined;
   distanceIndicator: string;
   panelOpen: boolean;
-  threeDTopDownView: boolean;
+  threeDTopDownView: boolean | undefined;
+  threeDCameraSelection: boolean;
   threeDExaggeratedZ: boolean;
   threeDTime: string | undefined;
 }

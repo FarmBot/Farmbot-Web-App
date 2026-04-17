@@ -9,6 +9,7 @@ import type {
 } from "farmbot";
 import type {
   State, BotOriginQuadrant, MountedToolInfo, CameraCalibrationData,
+  DesignerState,
 } from "../interfaces";
 import type {
   BotPosition, BotLocationData, SourceFbosConfig,
@@ -64,6 +65,7 @@ export interface GardenMapLegendProps {
   firmwareConfig: McuParams;
   botLocationData: BotLocationData;
   botSize: BotSize;
+  designer: DesignerState;
 }
 
 export type MapTransformProps = {

@@ -135,6 +135,15 @@ describe("designer reducer", () => {
     expect(newState.threeDTopDownView).toEqual(true);
   });
 
+  it("sets camera", () => {
+    const action: ReduxAction<boolean> = {
+      type: Actions.TOGGLE_3D_CAMERA_SELECTION,
+      payload: true,
+    };
+    const newState = designer(oldState(), action);
+    expect(newState.threeDCameraSelection).toEqual(true);
+  });
+
   it("sets exaggerated z", () => {
     const action: ReduxAction<boolean> = {
       type: Actions.TOGGLE_3D_EXAGGERATED_Z,

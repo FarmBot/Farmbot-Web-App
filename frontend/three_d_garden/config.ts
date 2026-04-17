@@ -42,6 +42,9 @@ export interface Config {
   sunAzimuth: number;
   heading: number;
   perspective: boolean;
+  topDown: boolean;
+  viewpointHeading: number;
+  cameraSelectionView: boolean;
   bot: boolean;
   laser: boolean;
   tool: string;
@@ -166,6 +169,9 @@ export const INITIAL: ConfigWithPosition = {
   sunAzimuth: 230,
   heading: 0,
   perspective: true,
+  topDown: false,
+  viewpointHeading: 0,
+  cameraSelectionView: false,
   bot: true,
   laser: false,
   tool: "rotaryTool",
@@ -248,12 +254,12 @@ export const NUMBER_KEYS = [
   "soilSurfacePointCount", "soilSurfaceVariance", "sun", "ambient", "rotary",
   "imgScale", "imgRotation", "imgOffsetX", "imgOffsetY", "imgCalZ",
   "imgCenterX", "imgCenterY", "surfaceDebug", "interpolationStepSize",
-  "interpolationPower", "lastImageCapture",
+  "interpolationPower", "lastImageCapture", "viewpointHeading",
 ];
 
 export const BOOLEAN_KEYS = [
   "legsFlush", "labels", "labelsOnHover", "ground", "grid", "axes", "trail",
-  "tracks", "clouds", "perspective", "bot", "laser", "cableCarriers",
+  "tracks", "clouds", "perspective", "topDown", "bot", "laser", "cableCarriers",
   "viewCube", "stats", "config", "zoom", "pan", "rotate", "bounds", "threeAxes",
   "xyDimensions", "zDimension", "promoInfo", "settingsBar", "zoomBeacons",
   "solar", "utilitiesPost", "packaging", "people", "lowDetail",
@@ -261,7 +267,7 @@ export const BOOLEAN_KEYS = [
   "animate", "animateSeasons", "negativeZ",
   "waterFlow", "exaggeratedZ", "showSoilPoints", "urlParamAutoAdd",
   "light", "vacuum", "north", "desk", "interpolationUseNearest", "promoSpread",
-  "cameraView", "mirrorX", "mirrorY",
+  "cameraView", "mirrorX", "mirrorY", "cameraSelectionView",
 ];
 
 export const PRESETS: Record<string, Config> = {
@@ -467,7 +473,7 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "ccSupportSize", "legSize", "legsFlush",
   "bedBrightness", "soilBrightness", "plants", "labels", "ground", "grid", "axes",
   "trail", "clouds", "sunInclination", "sunAzimuth", "heading",
-  "perspective", "bot", "laser",
+  "perspective", "topDown", "bot", "laser", "viewpointHeading",
   "tool", "cableCarriers", "viewCube", "stats", "config", "zoom", "bounds",
   "threeAxes", "xyDimensions", "zDimension", "labelsOnHover", "promoInfo",
   "settingsBar", "zoomBeacons", "pan", "rotate",
@@ -481,7 +487,7 @@ const OTHER_CONFIG_KEYS: (keyof Config)[] = [
   "imgScale", "imgRotation", "imgOffsetX", "imgOffsetY", "imgOrigin", "imgCalZ",
   "imgCenterX", "imgCenterY", "interpolationStepSize", "interpolationUseNearest",
   "interpolationPower", "promoSpread", "cameraView", "lastImageCapture",
-  "mirrorX", "mirrorY",
+  "mirrorX", "mirrorY", "cameraSelectionView",
 ];
 
 export const modifyConfig =
@@ -507,6 +513,10 @@ export const modifyConfig =
     if (update.bedType || (newConfig.bedType != config.bedType)) {
       newConfig.bedZOffset = newConfig.bedType == "Mobile" ? 500 : 0;
       newConfig.legsFlush = newConfig.bedType != "Mobile";
+    }
+    if (Object.keys(update).includes("topDown")) {
+      newConfig.perspective = !update.topDown;
+      newConfig.rotate = !update.topDown;
     }
     if (update.otherPreset) {
       if (update.otherPreset == "Reset all") {

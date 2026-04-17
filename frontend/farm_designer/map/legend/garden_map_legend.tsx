@@ -13,7 +13,7 @@ import {
 import { BooleanSetting } from "../../../session_keys";
 import { t } from "../../../i18next_wrapper";
 import { SelectModeLink } from "../../../plants/select_plants";
-import { DeviceSetting, Content } from "../../../constants";
+import { DeviceSetting, Content, Actions } from "../../../constants";
 import { Help, Popover, ToggleButton } from "../../../ui";
 import {
   BooleanConfigKey as WebAppBooleanConfigKey,
@@ -22,8 +22,9 @@ import { ZDisplay, ZDisplayToggle } from "./z_display";
 import { getModifiedClassName } from "../../../settings/default_values";
 import { Position } from "@blueprintjs/core";
 import { MapSizeInputs } from "../../map_size_setting";
-import { OriginSelector } from "../../../settings/farm_designer_settings";
+import { HeadingSelector, OriginSelector } from "../../../settings/farm_designer_settings";
 import { McuParams } from "farmbot";
+import { DesignerState } from "../../interfaces";
 
 export interface ZoomControlsProps {
   zoom(value: number): () => void;
@@ -89,6 +90,7 @@ export interface SettingsSubMenuProps {
   dispatch: Function;
   getConfigValue: GetWebAppConfigValue;
   firmwareConfig: McuParams;
+  designer: DesignerState;
 }
 
 export const PointsSubMenu = (props: SettingsSubMenuProps) =>
@@ -127,8 +129,8 @@ export const FarmbotSubMenu = (props: SettingsSubMenuProps) =>
 interface LayerTogglesProps extends GardenMapLegendProps { }
 
 const LayerToggles = (props: LayerTogglesProps) => {
-  const { toggle, getConfigValue, dispatch, firmwareConfig } = props;
-  const subMenuProps = { dispatch, getConfigValue, firmwareConfig };
+  const { toggle, getConfigValue, dispatch, firmwareConfig, designer } = props;
+  const subMenuProps = { dispatch, getConfigValue, firmwareConfig, designer };
   const is3D = getConfigValue(BooleanSetting.three_d_garden);
   const only2DClass = is3D ? "disabled" : "";
   return <div className="toggle-buttons">
@@ -236,6 +238,26 @@ export const MapSettingsContent = (props: SettingsSubMenuProps) => {
       helpText={Content.MAP_ORIGIN}>
       <OriginSelector {...props} />
     </NonLayerToggle>}
+    {is3D && <NonLayerToggle {...props}
+      setting={BooleanSetting.top_down_view}
+      label={DeviceSetting.openInTopDownView}
+      helpText={Content.TOP_DOWN_VIEW} />}
+    {is3D && <NonLayerToggle {...props}
+      label={DeviceSetting.cameraLocationUponOpen}
+      helpText={Content.VIEWPOINT_HEADING}>
+      <HeadingSelector {...props} />
+    </NonLayerToggle>}
+    {is3D && <div
+      className={"row grid-exp-1 align-baseline"}>
+      <label>{t("Enable camera heading selection view")}</label>
+      <ToggleButton
+        title={t("Enable camera heading selection view")}
+        toggleAction={() => props.dispatch({
+          type: Actions.TOGGLE_3D_CAMERA_SELECTION,
+          payload: undefined,
+        })}
+        toggleValue={props.designer.threeDCameraSelection} />
+    </div>}
   </div>;
 };
 
@@ -272,6 +294,7 @@ export function GardenMapLegend(props: GardenMapLegendProps) {
         <MapSettings
           getConfigValue={getConfigValue}
           dispatch={props.dispatch}
+          designer={props.designer}
           firmwareConfig={props.firmwareConfig} />
         <SelectModeLink dispatch={props.dispatch} />
         <BugsControls />

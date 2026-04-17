@@ -42,7 +42,6 @@ import {
 import { BooleanSetting } from "../session_keys";
 import { SlotWithTool } from "../resources/interfaces";
 import { cameraInit } from "./camera";
-import { isMobile } from "../screen_size";
 import { filterSoilPoints, getSurface } from "./triangles";
 import { BigDistance } from "./constants";
 import { getZFunc } from "./triangle_functions";
@@ -50,6 +49,7 @@ import { Visualization } from "./visualization";
 import { GroupOrderVisual } from "./group_order_visual";
 import { MoistureReadings } from "./garden/moisture_texture";
 import { FPSProbe } from "./fps_probe";
+import { CameraSelectionUI } from "./camera_selection_ui";
 
 const AnimatedGroup = animated(Group);
 
@@ -117,13 +117,18 @@ export const GardenModel = (props: GardenModelProps) => {
     },
   });
 
-  const topDown = addPlantProps?.designer.threeDTopDownView;
-  const topDownMobile = topDown && isMobile();
+  const baseAngle = 0;
+  const topDownCameraAngle = config.topDown
+    ? baseAngle + config.viewpointHeading * Math.PI / 180
+    : undefined;
   const camera = getCamera(
     config,
     props.configPosition,
     props.activeFocus,
-    cameraInit(!!topDown));
+    cameraInit({
+      topDown: config.topDown,
+      viewpointHeading: config.viewpointHeading,
+    }));
   const [controlsCamera, setControlsCamera] =
     // eslint-disable-next-line no-null/no-null
     React.useState<ThreePerspectiveCamera | ThreeOrthographicCamera | null>(null);
@@ -232,15 +237,15 @@ export const GardenModel = (props: GardenModelProps) => {
         fov={40} near={10} far={BigDistance.far}
         position={camera.position}
         rotation={[0, 0, 0]}
-        zoom={topDown ? 0.25 : 1}
+        zoom={config.topDown ? 0.25 : 1}
         up={[0, 0, 1]} />
     </AnimatedGroup>
     {controlsCamera &&
       <OrbitControls
         camera={controlsCamera}
         maxPolarAngle={Math.PI / 2}
-        minAzimuthAngle={topDownMobile ? Math.PI / 2 : undefined}
-        maxAzimuthAngle={topDownMobile ? Math.PI / 2 : undefined}
+        minAzimuthAngle={topDownCameraAngle}
+        maxAzimuthAngle={topDownCameraAngle}
         enableRotate={config.rotate}
         enableZoom={config.zoom}
         enablePan={config.pan}
@@ -338,5 +343,6 @@ export const GardenModel = (props: GardenModelProps) => {
     <Solar config={config} activeFocus={props.activeFocus} />
     <Lab config={config} activeFocus={props.activeFocus} />
     <Greenhouse config={config} activeFocus={props.activeFocus} />
+    <CameraSelectionUI config={config} dispatch={dispatch} />
   </Group>;
 };
