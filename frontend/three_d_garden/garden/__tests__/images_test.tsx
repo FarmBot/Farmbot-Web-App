@@ -2,7 +2,7 @@ let mockDemo = false;
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import {
-  extraRotation, getImagePosition, getImageScale, getMirrorTextureProps,
+  extraRotation, getImagePosition, getMirrorTextureProps,
   ImageTexture, ImageTextureProps,
 } from "../images";
 import { INITIAL } from "../../config";
@@ -169,15 +169,6 @@ describe("extraRotation()", () => {
     const config = clone(INITIAL);
     config.imgOrigin = value;
     expect(extraRotation(config)).toEqual(result);
-  });
-});
-
-describe("getImageScale()", () => {
-  it("returns mirrored image scale", () => {
-    const config = clone(INITIAL);
-    config.mirrorX = true;
-    config.mirrorY = true;
-    expect(getImageScale(config, 100, 200)).toEqual([-100, -200, 1000]);
   });
 });
 

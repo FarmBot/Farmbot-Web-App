@@ -133,11 +133,13 @@ describe("<ThreeDGardenMap />", () => {
     expectedConfig.imgScale = 0.6;
     expectedConfig.imgCenterX = 0;
     expectedConfig.imgCenterY = 0;
+    expectedConfig.mirrorX = true;
+    expectedConfig.mirrorY = true;
 
     const call = lastThreeDGardenProps();
     expect(call).toEqual(expect.objectContaining({
       config: expectedConfig,
-      configPosition: { x: 1, y: 2, z: 3 },
+      configPosition: { x: 2999, y: 1498, z: 3 },
       threeDPlants: [{
         id: expect.any(Number),
         icon: expect.any(String),
@@ -161,7 +163,7 @@ describe("<ThreeDGardenMap />", () => {
     render(<ThreeDGardenMap {...p} />);
     const call = lastThreeDGardenProps();
     expect(call).toEqual(expect.objectContaining({
-      configPosition: { x: 0, y: 0, z: 0 },
+      configPosition: { x: 3000, y: 1500, z: 0 },
       threeDPlants: [],
       addPlantProps: expect.any(Object),
       ...EMPTY_PROPS,
@@ -177,7 +179,7 @@ describe("<ThreeDGardenMap />", () => {
     const call = lastThreeDGardenProps();
     expect(call).toEqual(expect.objectContaining({
       config: expect.objectContaining({ negativeZ: true }),
-      configPosition: { x: 0, y: 0, z: -100 },
+      configPosition: { x: 3000, y: 1500, z: -100 },
       threeDPlants: [],
       addPlantProps: expect.any(Object),
       ...EMPTY_PROPS,

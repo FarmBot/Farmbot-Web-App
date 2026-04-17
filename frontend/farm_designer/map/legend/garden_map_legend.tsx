@@ -215,8 +215,9 @@ const LayerToggles = (props: LayerTogglesProps) => {
   </div>;
 };
 
-export const MapSettingsContent = (props: SettingsSubMenuProps) =>
-  <div className="grid">
+export const MapSettingsContent = (props: SettingsSubMenuProps) => {
+  const is3D = props.getConfigValue(BooleanSetting.three_d_garden);
+  return <div className="grid">
     <NonLayerToggle {...props}
       setting={BooleanSetting.dynamic_map}
       label={DeviceSetting.dynamicMap}
@@ -226,16 +227,17 @@ export const MapSettingsContent = (props: SettingsSubMenuProps) =>
       helpText={Content.MAP_SIZE}>
       <MapSizeInputs {...props} />
     </NonLayerToggle>
-    <NonLayerToggle {...props}
+    {!is3D && <NonLayerToggle {...props}
       setting={BooleanSetting.xy_swap}
       label={DeviceSetting.rotateMap}
-      helpText={Content.MAP_SWAP_XY} />
-    <NonLayerToggle {...props}
+      helpText={Content.MAP_SWAP_XY} />}
+    {!is3D && <NonLayerToggle {...props}
       label={DeviceSetting.mapOrigin}
       helpText={Content.MAP_ORIGIN}>
       <OriginSelector {...props} />
-    </NonLayerToggle>
+    </NonLayerToggle>}
   </div>;
+};
 
 const MapSettings = (props: SettingsSubMenuProps) =>
   <div className="map-settings">

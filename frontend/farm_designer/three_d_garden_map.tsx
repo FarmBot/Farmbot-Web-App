@@ -75,15 +75,10 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
 
   config.negativeZ = props.negativeZ;
   config.exaggeratedZ = props.designer.threeDExaggeratedZ;
-  const quadrant = props.mapTransformProps.quadrant;
-  config.mirrorX = props.mapTransformProps.xySwap
-    ? [3, 4].includes(quadrant)
-    : [1, 4].includes(quadrant);
-  config.mirrorY = props.mapTransformProps.xySwap
-    ? [1, 4].includes(quadrant)
-    : [3, 4].includes(quadrant);
 
   const getValue = props.get3DConfigValue;
+  config.mirrorX = !!getValue("mirrorX");
+  config.mirrorY = !!getValue("mirrorY");
   config.bedXOffset = getValue("bedXOffset");
   config.bedYOffset = getValue("bedYOffset");
   config.bedZOffset = getValue("bedZOffset");

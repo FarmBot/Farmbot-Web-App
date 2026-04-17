@@ -48,17 +48,6 @@ const PlaneWrapper = (props: PlaneWrapperProps) =>
     {props.children}
   </Plane>;
 
-export const getImageScale = (
-  config: Pick<Config, "mirrorX" | "mirrorY">,
-  width: number,
-  height: number,
-): [number, number, number] =>
-  [
-    config.mirrorY ? -width : width,
-    config.mirrorX ? -height : height,
-    1000,
-  ];
-
 export const getMirrorTextureProps =
   (config: Pick<Config, "mirrorX" | "mirrorY">) => ({
     repeat: [
@@ -215,7 +204,6 @@ const ImageWrapper = (props: ImageWrapperProps) => {
   if (!props.image.highlighted &&
     !imageSizeCheck({ width: i.width, height: i.height },
       { x: "" + config.imgCenterX, y: "" + config.imgCenterY })) { return; }
-  const scale = getImageScale(config, width, height);
 
   const alreadyRotated = isRotated(props.image.body.meta.name);
   const initialRotation = alreadyRotated ? 0 : config.imgRotation;
@@ -230,7 +218,7 @@ const ImageWrapper = (props: ImageWrapperProps) => {
     material-side={DoubleSide}
     depthTest={true}
     rotation={[0, 0, rotation]}
-    scale={scale} />;
+    scale={[width, height, 1000]} />;
 };
 
 export const extraRotation = (config: Config) => {
