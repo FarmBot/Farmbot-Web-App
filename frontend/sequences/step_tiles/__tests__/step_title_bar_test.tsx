@@ -2,13 +2,12 @@ import React from "react";
 import { StepTitleBar } from "../step_title_bar";
 import { render, fireEvent } from "@testing-library/react";
 import { fakeSequence } from "../../../__test_support__/fake_state/resources";
-import { Wait } from "farmbot";
 import { StepTitleBarProps } from "../../interfaces";
 import { FarmwareName } from "../tile_execute_script";
 
 describe("<StepTitleBar/>", () => {
   const fakeProps = (): StepTitleBarProps => ({
-    step: { kind: "wait", args: { milliseconds: 100 } } as Wait,
+    step: { kind: "wait", args: { milliseconds: 100 } },
     index: 0,
     dispatch: jest.fn(),
     readOnly: false,

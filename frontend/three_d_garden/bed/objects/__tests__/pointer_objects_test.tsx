@@ -2,7 +2,6 @@ let mockIsMobile = false;
 import React from "react";
 import { useTexture } from "@react-three/drei";
 import {
-  ActivePositionRef,
   BillboardRef,
   ImageRef,
   PointerObjects, PointerObjectsProps,
@@ -61,7 +60,7 @@ describe("<PointerObjects />", () => {
     imageRef: { current: { scale: new Vector3(0, 0, 0) } } as ImageRef,
     xCrosshairRef: { current: { position: new Vector3(0, 0, 0) } } as XCrosshairRef,
     yCrosshairRef: { current: { position: new Vector3(0, 0, 0) } } as YCrosshairRef,
-    activePositionRef: { current: { x: 0, y: 0 } } as ActivePositionRef,
+    activePositionRef: { current: { x: 0, y: 0 } },
   });
 
   it("renders", () => {
@@ -152,7 +151,7 @@ describe("soilPointerMove()", () => {
     imageRef: { current: { scale: { set: jest.fn() } } } as unknown as ImageRef,
     xCrosshairRef: { current: { position: { set: jest.fn() } } } as unknown as XCrosshairRef,
     yCrosshairRef: { current: { position: { set: jest.fn() } } } as unknown as YCrosshairRef,
-    activePositionRef: { current: { x: 0, y: 0 } } as ActivePositionRef,
+    activePositionRef: { current: { x: 0, y: 0 } },
   });
 
   it("updates plant position", () => {

@@ -28,7 +28,7 @@ const ensureSyntaxError = () => {
       writable: true,
     });
   };
-  assign(globalThis as unknown as Record<string, unknown>);
+  assign(globalThis);
   assign(globalAny.window as unknown as Record<string, unknown> | undefined);
   const windowCtor = globalAny.window?.constructor as
     | { prototype?: Record<string, unknown> }
@@ -74,13 +74,11 @@ const withAxiosDefaultExport = (factory: () => unknown) => () => {
 
 if (globalAny.jest?.mock) {
   const originalMock = globalAny.jest.mock.bind(globalAny.jest);
-  globalAny.jest.mock = ((specifier: string, factory?: unknown) => {
-    const moduleFactory =
-      typeof factory === "function" ? factory as () => unknown : undefined;
+  globalAny.jest.mock = ((specifier: string, factory?: () => unknown) => {
     return specifier === "axios" && typeof factory === "function"
       ? originalMock(specifier,
-        withAxiosDefaultExport(moduleFactory as () => unknown))
-      : originalMock(specifier, factory as never);
+        withAxiosDefaultExport(factory))
+      : originalMock(specifier, factory);
   }) as typeof globalAny.jest.mock;
 }
 
@@ -278,7 +276,7 @@ beforeEach(() => {
     resetMutableFixture(globalAny.globalConfig, globalConfigBaseline);
   } else {
     globalAny.globalConfig =
-      cloneForReset(globalConfigBaseline) as Record<string, string>;
+      cloneForReset(globalConfigBaseline);
   }
   globalThis.localStorage?.clear();
   globalThis.sessionStorage?.clear();

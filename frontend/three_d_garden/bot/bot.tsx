@@ -16,9 +16,9 @@ import { ASSETS, LIB_DIR, PartName } from "../constants";
 import { SVGLoader } from "three/examples/jsm/Addons.js";
 import { range } from "lodash";
 import {
-  CrossSlide, CrossSlideFull,
+  CrossSlideFull, CrossSlideModel,
   GantryWheelPlate, GantryWheelPlateFull,
-  VacuumPumpCover, VacuumPumpCoverFull,
+  VacuumPumpCoverFull, VacuumPumpCoverModel,
 } from "./parts";
 import { PowerSupply } from "./power_supply";
 import { Group, Mesh, MeshPhongMaterial } from "../components";
@@ -125,7 +125,6 @@ export const Bot = (props: FarmbotModelProps) => {
   const leftBracket = useGLTF(ASSETS.models.leftBracket, LIB_DIR) as unknown as LeftBracket;
   const rightBracket = useGLTF(ASSETS.models.rightBracket, LIB_DIR) as unknown as RightBracket;
   const crossSlide = useGLTF(ASSETS.models.crossSlide, LIB_DIR) as unknown as CrossSlideFull;
-  const CrossSlideComponent = CrossSlide(crossSlide);
   const beltClip = useGLTF(ASSETS.models.beltClip, LIB_DIR) as unknown as BeltClip;
   const zStop = useGLTF(ASSETS.models.zStop, LIB_DIR) as unknown as ZStop;
   const utm = useGLTF(ASSETS.models.utm, LIB_DIR) as unknown as UTM;
@@ -137,7 +136,6 @@ export const Bot = (props: FarmbotModelProps) => {
     ASSETS.models.zAxisMotorMount, LIB_DIR) as unknown as ZAxisMotorMount;
   const vacuumPumpCover = useGLTF(
     ASSETS.models.vacuumPumpCover, LIB_DIR) as unknown as VacuumPumpCoverFull;
-  const VacuumPumpCoverComponent = VacuumPumpCover(vacuumPumpCover);
   const cameraMountHalf = useGLTF(
     ASSETS.models.cameraMountHalf, LIB_DIR) as unknown as CameraMountHalf;
   const xAxisCCMount = useGLTF(ASSETS.models.xAxisCCMount, LIB_DIR) as unknown as XAxisCCMount;
@@ -184,10 +182,14 @@ export const Bot = (props: FarmbotModelProps) => {
         });
     }
   });
-  const aluminumTexture = useTexture(ASSETS.textures.aluminum + "?=bot");
-  aluminumTexture.wrapS = RepeatWrapping;
-  aluminumTexture.wrapT = RepeatWrapping;
-  aluminumTexture.repeat.set(0.01, 0.0003);
+  const aluminumTextureBase = useTexture(ASSETS.textures.aluminum + "?=bot");
+  const aluminumTexture = React.useMemo(() => {
+    const texture = aluminumTextureBase.clone();
+    texture.wrapS = RepeatWrapping;
+    texture.wrapT = RepeatWrapping;
+    texture.repeat.set(0.01, 0.0003);
+    return texture;
+  }, [aluminumTextureBase]);
 
   const yBeltPath = () => {
     const radius = 12;
@@ -397,7 +399,9 @@ export const Bot = (props: FarmbotModelProps) => {
       <MeshPhongMaterial color={"silver"} />
     </Mesh>
     <CableCarrierX config={config} configPosition={props.configPosition} />
-    <CrossSlideComponent name={"crossSlide"}
+    <CrossSlideModel
+      model={crossSlide}
+      name={"crossSlide"}
       position={[
         ...gardenXY(x - 1.5, y + 5),
         columnLength + 105,
@@ -535,7 +539,8 @@ export const Bot = (props: FarmbotModelProps) => {
         opacity={0.75}
       />
     </Tube>
-    <VacuumPumpCoverComponent
+    <VacuumPumpCoverModel
+      model={vacuumPumpCover}
       rotation={vacuumPumpCoverRotation(config.kitVersion)}
       scale={1000}
       position={vacuumPumpCoverPosition(config.kitVersion)} />

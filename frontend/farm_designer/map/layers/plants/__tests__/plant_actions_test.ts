@@ -209,8 +209,7 @@ describe("plantActions().dropPlant()", () => {
 
   it("throws error", () => {
     const p = fakeProps();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    p.gardenCoords = undefined as any;
+    p.gardenCoords = undefined;
     expect(() => plantActions().dropPlant(p))
       .toThrow(/while trying to add a plant/);
   });
@@ -349,8 +348,7 @@ describe("plantActions().setActiveSpread()", () => {
 
   it("sets crop spread value", async () => {
     const p = fakeProps();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    p.selectedPlant = undefined as any;
+    p.selectedPlant = undefined;
     await plantActions().setActiveSpread(p);
     expect(p.setMapState).toHaveBeenCalledWith({ activeDragSpread: 75 });
   });
@@ -369,8 +367,7 @@ describe("plantActions().beginPlantDrag()", () => {
 
   it("starts drag: not plant", () => {
     const p = fakeProps();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    p.plant = undefined as any;
+    p.plant = undefined;
     plantActions().beginPlantDrag(p);
   });
 });

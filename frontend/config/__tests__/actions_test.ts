@@ -29,9 +29,9 @@ describe("ready()", () => {
     didLoginSpy = jest.spyOn(authActions, "didLogin")
       .mockImplementation(() => { });
     maybeRefreshTokenSpy = jest.spyOn(refreshToken, "maybeRefreshToken")
-      .mockImplementation(() => Promise.resolve(undefined) as never);
+      .mockImplementation(() => Promise.resolve(undefined));
     timeoutSpy = jest.spyOn(promiseTimeoutModule, "timeout")
-      .mockImplementation(() => mockTimeout as never);
+      .mockImplementation(() => mockTimeout);
     fetchStoredTokenSpy = jest.spyOn(Session, "fetchStoredToken")
       .mockReturnValue(undefined);
     clearSpy = jest.spyOn(Session, "clear")

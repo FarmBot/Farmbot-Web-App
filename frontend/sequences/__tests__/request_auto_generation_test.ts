@@ -62,7 +62,7 @@ describe("requestAutoGeneration()", () => {
         .mockResolvedValueOnce({ done: false, value: new Uint8Array([101]) })
         .mockResolvedValueOnce({ done: false, value: new Uint8Array([100]) }),
     )));
-    global.fetch = fetchMock as unknown as typeof fetch;
+    global.fetch = fetchMock as never;
     const p = fakeProps();
     p.contextKey = "color";
     actualRequestAutoGeneration(p);
@@ -90,7 +90,7 @@ describe("requestAutoGeneration()", () => {
       jest.fn().mockResolvedValue({ done: true, value: "" }),
       { ok: false, body: undefined },
     )));
-    global.fetch = fetchMock as unknown as typeof fetch;
+    global.fetch = fetchMock as never;
     const p = fakeProps();
     p.contextKey = "lua";
     actualRequestAutoGeneration(p);

@@ -69,7 +69,7 @@ describe("<ThreeDPlantLabel />", () => {
       .mockImplementation(() => {
         const nextRef = refQueue.shift() || mockRefImpl();
         allRefs.push(nextRef);
-        return nextRef as never;
+        return nextRef;
       });
     const actualUseImperativeHandle = jest.requireActual("react")
       .useImperativeHandle as typeof React.useImperativeHandle;
@@ -135,7 +135,7 @@ describe("<ThreeDPlantSpread />", () => {
       .mockImplementation(() => {
         const nextRef = refQueue.shift() || mockRefImpl();
         allRefs.push(nextRef);
-        return nextRef as never;
+        return nextRef;
       });
     const actualUseImperativeHandle = jest.requireActual("react")
       .useImperativeHandle as typeof React.useImperativeHandle;
@@ -317,7 +317,7 @@ describe("<ThreeDPlantSpread />", () => {
     setMockInstanceId(0);
     queueMeshRef();
     const p = fakeProps();
-    p.plants[0].id = undefined as unknown as number;
+    p.plants[0].id = undefined;
     const dispatch = jest.fn();
     p.dispatch = mockDispatch(dispatch);
     const { container } = render(<PlantSpreadInstances {...p} />);

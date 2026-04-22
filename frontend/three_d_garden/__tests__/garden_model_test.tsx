@@ -39,12 +39,12 @@ describe("<GardenModel />", () => {
       .mockImplementation(<S,>(initialState?: S | (() => S)) => {
         useStateCalls += 1;
         if (useStateCalls == 2) {
-          return [{} as S, jest.fn()];
+          return [{}, jest.fn()];
         }
         const value = typeof initialState == "function"
           ? (initialState as () => S)()
           : initialState;
-        return [value as S, jest.fn()];
+        return [value, jest.fn()];
       });
     isDesktopSpy = jest.spyOn(screenSize, "isDesktop")
       .mockImplementation(() => mockIsDesktop);
@@ -190,15 +190,15 @@ describe("<GardenModel />", () => {
       .mockImplementation(<S,>(initialState?: S | (() => S)) => {
         useStateCalls += 1;
         if (useStateCalls == 1) {
-          return [0 as S, jest.fn()];
+          return [0, jest.fn()];
         }
         if (useStateCalls == 2) {
-          return [{} as S, jest.fn()];
+          return [{}, jest.fn()];
         }
         const value = typeof initialState == "function"
           ? (initialState as () => S)()
           : initialState;
-        return [value as S, jest.fn()];
+        return [value, jest.fn()];
       });
     const p = fakeProps();
     const plant = fakePlant();

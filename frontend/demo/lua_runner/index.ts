@@ -26,14 +26,14 @@ export const collectDemoSequenceActions = (
   }
   const sequence = findSequenceById(resources, sequenceId);
   const varData = resources.sequenceMetas[sequence.uuid];
-  const sequenceVariables = Object.values(varData || {})
+  const sequenceVariables: ParameterApplication[] = Object.values(varData || {})
     .map(v => v?.celeryNode)
     .filter(v => v?.kind == "variable_declaration")
     .filter(v => !bodyVariables?.map(v => v.args.label).includes(v.args.label))
     .map(v => ({
       kind: "parameter_application",
       args: v.args,
-    } as ParameterApplication));
+    }));
   const variables = [...sequenceVariables, ...(bodyVariables || [])];
   const actions: Action[] = [];
   const firstVarArgs = variables[0]?.args;

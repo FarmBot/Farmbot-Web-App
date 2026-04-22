@@ -198,10 +198,9 @@ describe("<AddFarmEvent />", () => {
     p.findFarmEventByUuid = () => farmEvent;
     const formRef = { current: undefined as unknown as EditFEForm };
     const createRefSpy = jest.spyOn(React, "createRef")
-      .mockReturnValue(formRef as React.RefObject<EditFEForm>);
+      .mockReturnValue(formRef);
     const { container } = render(<AddFarmEvent {...p} />);
-    formRef.current.commitViewModel =
-      mockSave as unknown as EditFEForm["commitViewModel"];
+    formRef.current.commitViewModel = mockSave;
     fireEvent.click(container.querySelector(".save-btn") as Element);
     expect(mockSave).toHaveBeenCalled();
     createRefSpy.mockRestore();

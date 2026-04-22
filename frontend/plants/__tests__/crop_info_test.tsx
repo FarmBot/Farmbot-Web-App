@@ -56,7 +56,7 @@ beforeEach(() => {
     .mockImplementation(((props: BIProps) => <input
       value={props.value}
       onChange={e =>
-        props.onCommit(e as React.SyntheticEvent<HTMLInputElement>)} />) as never);
+        props.onCommit(e)} />) as never);
 });
 
 afterEach(() => {

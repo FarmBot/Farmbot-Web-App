@@ -89,9 +89,9 @@ export const PointerObjects = (props: PointerObjectsProps) => {
   const gridPreview = mapPoints
     .filter(p => p.specialStatus == SpecialStatus.DIRTY && p.body.meta.gridId)
     .length > 0;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
   const boundsCenter = React.useMemo(getBoundsCenter(config), []);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
   const halfSize = React.useMemo(getHalfSize(config), []);
   return HOVER_OBJECT_MODES.includes(getMode()) &&
     !isMobile() &&

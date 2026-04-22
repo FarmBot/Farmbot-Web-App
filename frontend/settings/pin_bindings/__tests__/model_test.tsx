@@ -63,15 +63,15 @@ describe("<ElectronicsBoxModel />", () => {
           material: { color: { set: mockSetColor } },
           setOptions: jest.fn(),
         }
-      }) as never);
+      }));
     useFrameSpy = jest.spyOn(threeFiber, "useFrame")
       .mockImplementation(((callback, _renderPriority) => {
         callback({
           clock: { getElapsedTime: jest.fn(() => mockElapsedTime) }
-        } as never, 0, undefined as never);
+        } as never, 0, undefined);
         // eslint-disable-next-line no-null/no-null
         return null;
-      }) as typeof threeFiber.useFrame);
+      }));
     execSequenceSpy = jest.spyOn(deviceActions, "execSequence")
       .mockImplementation(jest.fn());
   });

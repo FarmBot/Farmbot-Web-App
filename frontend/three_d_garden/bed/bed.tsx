@@ -272,18 +272,6 @@ export const Bed = (props: BedProps) => {
       props.showMoistureMap,
     ]);
 
-  const getSurfaceMaterial = () => {
-    switch (props.config.surfaceDebug) {
-      case SurfaceDebugOption.normals:
-        return MeshNormalMaterial;
-      case SurfaceDebugOption.height:
-        return SurfaceHeightMaterial;
-      default:
-        return MeshPhongMaterial;
-    }
-  };
-
-  const SurfaceMaterial = getSurfaceMaterial();
   const surfaceTexture = soilTexture;
   const mirroredAxesCount =
     Number(props.config.mirrorX) + Number(props.config.mirrorY);
@@ -473,13 +461,27 @@ export const Bed = (props: BedProps) => {
     <React.Suspense>
       <Detailed distances={detailLevels(props.config)}>
         <SoilLayer {...commonSoilLayerProps}>
-          <SurfaceMaterial
-            flatShading={true}
-            side={soilSurfaceSide}
-            shininess={0}
-            color={getColorFromBrightness(props.config.soilBrightness)}>
-            {surfaceTexture}
-          </SurfaceMaterial>
+          <>
+            {props.config.surfaceDebug == SurfaceDebugOption.normals &&
+              <MeshNormalMaterial
+                flatShading={true}
+                side={soilSurfaceSide}>
+                {surfaceTexture}
+              </MeshNormalMaterial>}
+            {props.config.surfaceDebug == SurfaceDebugOption.height &&
+              <SurfaceHeightMaterial>
+                {surfaceTexture}
+              </SurfaceHeightMaterial>}
+            {![SurfaceDebugOption.normals, SurfaceDebugOption.height]
+              .includes(props.config.surfaceDebug) &&
+              <MeshPhongMaterial
+                flatShading={true}
+                side={soilSurfaceSide}
+                shininess={0}
+                color={getColorFromBrightness(props.config.soilBrightness)}>
+                {surfaceTexture}
+              </MeshPhongMaterial>}
+          </>
         </SoilLayer>
         <SoilLayer {...commonSoilLayerProps}>
           <MeshPhongMaterial {...commonSoil} color={"#29231e"} />

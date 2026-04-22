@@ -14,7 +14,7 @@ let axiosPostSpy: jest.SpyInstance;
 
 beforeEach(() => {
   axiosPostSpy = jest.spyOn(axios, "post")
-    .mockImplementation(() => Promise.resolve({}) as never);
+    .mockImplementation(() => Promise.resolve({}));
   snapshotGardenSpy = jest.spyOn(savedGardenActions, "snapshotGarden")
     .mockImplementation(jest.fn());
   newSavedGardenSpy = jest.spyOn(savedGardenActions, "newSavedGarden")
@@ -82,7 +82,7 @@ describe("<GardenSnapshot />", () => {
       currentTarget: { value: "new saved garden" },
       target: { value: "new saved garden" },
     });
-    fireEvent.click(container.querySelectorAll("button")[1] as Element);
+    fireEvent.click(container.querySelectorAll("button")[1]);
     expect(newSavedGarden).toHaveBeenCalledWith(expect.any(Function),
       "new saved garden", "");
   });

@@ -26,7 +26,7 @@ const mockRotaryRef = () => {
           traverse: (cb: (m: {}) => void) => cb(mesh),
           rotation: mockRotation,
         },
-      } as never;
+      };
     }
     return originalUseRef(initialValue);
   });
@@ -57,15 +57,15 @@ describe("<Tools />", () => {
     getModeSpy = jest.spyOn(mapUtil, "getMode").mockReturnValue(Mode.none);
     jest.spyOn(threeFiber, "useFrame")
       .mockImplementation(((callback, _renderPriority) => {
-        callback({} as never, 0, undefined as never);
+        callback({} as never, 0, undefined);
         // eslint-disable-next-line no-null/no-null
         return null;
-      }) as typeof threeFiber.useFrame);
+      }));
     suctionAnimationSpy = jest.spyOn(suctionAnimationModule, "SuctionAnimation")
-      .mockImplementation((() => <></>) as never);
+      .mockImplementation((() => <></>));
     wateringAnimationsSpy = jest.spyOn(
       wateringAnimationsModule, "WateringAnimations")
-      .mockImplementation((() => <></>) as never);
+      .mockImplementation((() => <></>));
   });
 
   afterEach(() => {

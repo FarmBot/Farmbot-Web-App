@@ -127,7 +127,7 @@ describe("<TileSendMessage/>", () => {
     const instance = new TileSendMessage(fakeProps());
     instance.setState = jest.fn((update: { message: string }) => {
       instance.state = { ...instance.state, ...update };
-    }) as unknown as typeof instance.setState;
+    });
     expect(instance.state.message).toEqual("send this message");
     instance.updateMessage("k", "new");
     expect(instance.state.message).toEqual("new");

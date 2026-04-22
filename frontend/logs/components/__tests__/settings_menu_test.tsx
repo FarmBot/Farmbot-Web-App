@@ -95,7 +95,7 @@ describe("<LogsSettingsMenu />", () => {
     p.dispatch = jest.fn();
     const { container } = render(<LogsSettingsMenu {...p} />);
     const buttons = container.querySelectorAll("button");
-    fireEvent.click(buttons[buttons.length - 1] as Element);
+    fireEvent.click(buttons[buttons.length - 1]);
     await Promise.resolve();
     await Promise.resolve();
     expect(crud.destroyAll).toHaveBeenCalledWith(

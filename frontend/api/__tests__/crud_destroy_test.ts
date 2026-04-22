@@ -69,7 +69,7 @@ describe("destroy", () => {
       .mockImplementation(() => mockReadonlyState);
     mockDelete = Promise.resolve({});
     deleteSpy = jest.spyOn(axios, "delete")
-      .mockImplementation(() => mockDelete as never);
+      .mockImplementation(() => mockDelete);
   });
 
   API.setBaseUrl("http://localhost:3000");
@@ -183,11 +183,11 @@ describe("destroyAll", () => {
       .mockImplementation(() => mockReadonlyState);
     mockDelete = Promise.resolve({});
     deleteSpy = jest.spyOn(axios, "delete")
-      .mockImplementation(() => mockDelete as never);
+      .mockImplementation(() => mockDelete);
   });
 
   it("confirmed", async () => {
-    deleteSpy.mockResolvedValueOnce(undefined as never);
+    deleteSpy.mockResolvedValueOnce(undefined);
     const result = fakeDestroyAll("FarmwareEnv", true);
     if (!result) { return; }
     await expect(result).resolves.toEqual(undefined);
@@ -230,7 +230,7 @@ describe("destroyAll", () => {
   });
 
   it("rejected", async () => {
-    deleteSpy.mockRejectedValueOnce("error" as never);
+    deleteSpy.mockRejectedValueOnce("error");
     const result = fakeDestroyAll("FarmwareEnv", true);
     if (!result) { return; }
     await expect(result).rejects.toEqual("error");

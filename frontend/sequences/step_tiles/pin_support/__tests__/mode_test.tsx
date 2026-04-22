@@ -1,6 +1,6 @@
 const mockEditStep = jest.fn();
 
-import { NamedPin, WritePin, ALLOWED_PIN_MODES, ReadPin } from "farmbot";
+import { NamedPin, WritePin, ReadPin } from "farmbot";
 import {
   setPinMode, getPinModes, currentModeSelection, PinModeDropdown,
 } from "../mode";
@@ -92,7 +92,7 @@ describe("setPinMode()", () => {
     const p = fakeStepParams(step);
     setPinMode({
       label: "",
-      value: "bad" as unknown as ALLOWED_PIN_MODES
+      value: "bad",
     }, p);
     const action = () => mockEditStep.mock.calls[0][0].executor(step);
     expect(action).toThrow("pin_mode must be one of ALLOWED_PIN_MODES.");

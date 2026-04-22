@@ -84,7 +84,7 @@ export const FPSProbe = () => {
       samples.current.push(fps);
       const { calls, triangles, points, lines } = gl.info.render;
       const { geometries, textures } = gl.info.memory;
-      const sceneCounts = countSceneObjects(scene as Scene);
+      const sceneCounts = countSceneObjects(scene);
       window.__fps = fps;
       const linesToLogObj: Record<string, number | string> = {
         epoch: Date.now(),

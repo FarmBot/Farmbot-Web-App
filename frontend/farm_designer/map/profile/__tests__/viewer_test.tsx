@@ -131,7 +131,7 @@ describe("<ProfileViewer />", () => {
     p.designer.profilePosition = { x: 1, y: 2 };
     const { container } = render(<ProfileViewer {...p} />);
     const icons = container.querySelectorAll("i");
-    fireEvent.click(icons[icons.length - 1] as Element);
+    fireEvent.click(icons[icons.length - 1]);
     expect(container.querySelector("svg")?.classList.contains("expand"))
       .toBeFalsy();
     fireEvent.click(container.querySelector(".profile-button") as Element);

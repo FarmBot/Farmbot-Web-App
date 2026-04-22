@@ -80,7 +80,6 @@ export const GardenModel = (props: GardenModelProps) => {
 
   const [hoveredPlant, setHoveredPlant] =
     React.useState<number | undefined>(undefined);
-  const hoveredPlantRef = React.useRef<number | undefined>(undefined);
 
   const getI = (e: ThreeEvent<PointerEvent>) => {
     if (e.buttons) { return -1; }
@@ -101,8 +100,6 @@ export const GardenModel = (props: GardenModelProps) => {
       ? (e: ThreeEvent<PointerEvent>) => {
         e.stopPropagation();
         const nextHover = active ? getI(e) : undefined;
-        if (hoveredPlantRef.current === nextHover) { return; }
-        hoveredPlantRef.current = nextHover;
         setHoveredPlant(nextHover);
       }
       : undefined;
@@ -169,7 +166,6 @@ export const GardenModel = (props: GardenModelProps) => {
 
   // eslint-disable-next-line no-null/no-null
   const skyRef = React.useRef<ThreeMeshBasicMaterial>(null);
-  const sunFactorRef = React.useRef<number>(1);
   // eslint-disable-next-line no-null/no-null
   const activePositionRef = React.useRef<{ x: number, y: number }>(null);
 
@@ -266,8 +262,7 @@ export const GardenModel = (props: GardenModelProps) => {
     <Sun
       config={config}
       skyRef={skyRef}
-      startTimeRef={props.startTimeRef}
-      sunFactorRef={sunFactorRef} />
+      startTimeRef={props.startTimeRef} />
     <AmbientLight intensity={config.ambient / 100} />
     <Ground config={config} />
     <Clouds config={config} />
@@ -319,8 +314,7 @@ export const GardenModel = (props: GardenModelProps) => {
         getZ={getZ}
         visible={plantsVisible}
         startTimeRef={props.startTimeRef}
-        dispatch={dispatch}
-        sunFactorRef={sunFactorRef} />
+        dispatch={dispatch} />
       <PlantSpreadInstances
         plants={threeDPlants}
         visible={plantsVisible}

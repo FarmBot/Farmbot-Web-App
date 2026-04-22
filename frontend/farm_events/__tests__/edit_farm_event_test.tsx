@@ -74,10 +74,9 @@ describe("<EditFarmEvent />", () => {
   it("calls farm event save", () => {
     const formRef = { current: undefined as unknown as EditFEForm };
     const createRefSpy = jest.spyOn(React, "createRef")
-      .mockReturnValue(formRef as React.RefObject<EditFEForm>);
+      .mockReturnValue(formRef);
     const { container } = render(<EditFarmEvent {...fakeProps()} />);
-    formRef.current.commitViewModel =
-      mockSave as unknown as EditFEForm["commitViewModel"];
+    formRef.current.commitViewModel = mockSave;
     fireEvent.click(container.querySelector(".save-btn") as Element);
     expect(mockSave).toHaveBeenCalled();
     createRefSpy.mockRestore();
@@ -85,7 +84,7 @@ describe("<EditFarmEvent />", () => {
 
   it("doesn't call farm event save if event is missing", () => {
     const p = fakeProps();
-    p.getFarmEvent = () => undefined as never;
+    p.getFarmEvent = () => undefined;
     location.pathname = Path.mock(Path.farmEvents("nope"));
     const { container } = render(<EditFarmEvent {...p} />);
     fireEvent.click(container.querySelector(".save-btn") as Element);

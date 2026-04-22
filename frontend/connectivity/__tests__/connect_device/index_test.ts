@@ -339,7 +339,7 @@ describe("onPublicBroadcast", () => {
       log.message = "bot xyz is offline";
       const taggedLog = fn(log);
       const getStateSpy =
-        jest.spyOn(store, "getState").mockReturnValue(fakeState() as never);
+        jest.spyOn(store, "getState").mockReturnValue(fakeState());
       globalQueue.maybeWork();
       getStateSpy.mockRestore();
       expect(taggedLog?.kind).toEqual("Log");

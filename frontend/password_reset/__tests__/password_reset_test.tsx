@@ -15,7 +15,7 @@ describe("<PasswordReset/>", () => {
     originalPathname = location.pathname;
     location.pathname = "/password_resets/";
     axiosPutSpy = jest.spyOn(axios, "put")
-      .mockImplementation(() => mockPut as never);
+      .mockImplementation(() => mockPut);
   });
 
   afterEach(() => {

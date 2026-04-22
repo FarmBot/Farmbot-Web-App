@@ -431,37 +431,54 @@ export interface HighlightProps {
   pathPrefix?(path?: string): string;
 }
 
+interface HighlightBodyProps extends HighlightProps {
+  highlightMatch: boolean;
+  hidden: boolean;
+}
+
+const HighlightBody = (props: HighlightBodyProps) => {
+  const [hovered, setHovered] = React.useState(false);
+  const [highlightClass, setHighlightClass] = React.useState(
+    props.highlightMatch ? "highlight" : "");
+  const navigate = useNavigate();
+
+  React.useEffect(() => {
+    if (!props.highlightMatch) { return; }
+    const timeout = setTimeout(() => setHighlightClass("unhighlight"), 200);
+    return () => clearTimeout(timeout);
+  }, [props.highlightMatch]);
+
+  return <div
+    className={[
+      "setting",
+      props.className,
+      highlightClass,
+    ].join(" ")}
+    onMouseEnter={() => setHovered(true)}
+    onMouseLeave={() => setHovered(false)}
+    hidden={props.hidden}>
+    {props.settingName &&
+      <i
+        className={[
+          "fa fa-anchor",
+          props.className,
+          hovered ? "hovered" : "",
+        ].join(" ")}
+        onClick={() => {
+          navigate(linkToSetting(props.settingName, props.pathPrefix));
+        }} />}
+    {props.children}
+  </div>;
+};
+
 /** Wrap highlight-able settings. */
 export const Highlight = (props: HighlightProps) => {
   const { settingName } = props;
-
-  const [hovered, setHovered] = React.useState(false);
-  const [highlightClass, setHighlightClass] = React.useState("");
-  const [highlightTimestamp, setHighlightTimestamp] = React.useState(0);
-
-  const navigate = useNavigate();
   const location = useLocation();
 
   const highlightName = new URLSearchParams(location.search).get("highlight");
   const highlightMatch = highlightName &&
     compareValues(settingName).includes(highlightName.toLowerCase());
-
-  React.useEffect(() => {
-    if (highlightMatch) {
-      setHighlightTimestamp(Date.now());
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location]);
-
-  React.useEffect(() => {
-    if (!highlightMatch) {
-      setHighlightClass("");
-      return;
-    }
-    setHighlightClass("highlight");
-    setTimeout(() => setHighlightClass("unhighlight"), 200);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [highlightTimestamp]);
 
   const searchTerm = store.getState().app.settingsSearchTerm;
 
@@ -501,27 +518,16 @@ export const Highlight = (props: HighlightProps) => {
     return props.hidden ? !highlightInSection : notHighlighted;
   };
 
-  return <div
-    className={[
-      "setting",
-      props.className,
-      highlightClass,
-    ].join(" ")}
-    onMouseEnter={() => setHovered(true)}
-    onMouseLeave={() => setHovered(false)}
-    hidden={searchTerm ? !searchMatch() : hidden()}>
-    {settingName &&
-      <i
-        className={[
-          "fa fa-anchor",
-          props.className,
-          hovered ? "hovered" : "",
-        ].join(" ")}
-        onClick={() => {
-          navigate(linkToSetting(settingName, props.pathPrefix));
-        }} />}
-    {props.children}
-  </div>;
+  const highlightKey = highlightMatch
+    ? `${location.pathname}:${location.search}:${location.hash}`
+    : "no-highlight";
+
+  return <HighlightBody
+    key={highlightKey}
+    {...props}
+    settingName={settingName}
+    highlightMatch={!!highlightMatch}
+    hidden={searchTerm ? !searchMatch() : hidden()} />;
 };
 
 export const linkToSetting =

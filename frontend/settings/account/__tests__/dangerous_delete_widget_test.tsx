@@ -14,7 +14,7 @@ beforeEach(() => {
   jest.clearAllMocks();
   mockRef = { current: { value: "" } };
   reactUseRefSpy = jest.spyOn(React, "useRef")
-    .mockImplementation(() => mockRef as never);
+    .mockImplementation(() => mockRef);
 });
 
 afterEach(() => {

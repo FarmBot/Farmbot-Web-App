@@ -17,7 +17,7 @@ describe("<ResendVerification />", () => {
   beforeEach(() => {
     mockPost = Promise.resolve({ data: "whatever" });
     axiosPostSpy = jest.spyOn(axios, "post")
-      .mockImplementation(() => mockPost as never);
+      .mockImplementation(() => mockPost);
   });
 
   afterEach(() => {

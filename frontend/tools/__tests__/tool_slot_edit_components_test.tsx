@@ -319,7 +319,7 @@ describe("<SlotLocationInputRow />", () => {
     p.slotLocation.z = 3;
     p.gantryMounted = false;
     const { container } = render(<SlotLocationInputRow {...p} />);
-    fireEvent.click(container.querySelectorAll("button")[1] as Element);
+    fireEvent.click(container.querySelectorAll("button")[1]);
     expect(deviceActions.move).toHaveBeenCalledWith({ x: 1, y: 2, z: 3 });
   });
 
@@ -331,7 +331,7 @@ describe("<SlotLocationInputRow />", () => {
     p.slotLocation.z = 3;
     p.gantryMounted = true;
     const { container } = render(<SlotLocationInputRow {...p} />);
-    fireEvent.click(container.querySelectorAll("button")[1] as Element);
+    fireEvent.click(container.querySelectorAll("button")[1]);
     expect(deviceActions.move).toHaveBeenCalledWith({ x: 10, y: 2, z: 3 });
   });
 
@@ -343,7 +343,7 @@ describe("<SlotLocationInputRow />", () => {
     p.slotLocation.z = 3;
     p.gantryMounted = true;
     const { container } = render(<SlotLocationInputRow {...p} />);
-    fireEvent.click(container.querySelectorAll("button")[1] as Element);
+    fireEvent.click(container.querySelectorAll("button")[1]);
     expect(deviceActions.move).toHaveBeenCalledWith({ x: 1, y: 2, z: 3 });
   });
 });

@@ -27,7 +27,7 @@ describe("prettyPrintApiErrors", () => {
 
 describe("catchErrors", () => {
   const e = new Error("TEST");
-  const windowWithRollbar = window as typeof window & { Rollbar?: unknown };
+  const windowWithRollbar = window;
 
   beforeEach(() => { delete windowWithRollbar.Rollbar; });
   afterEach(() => { delete windowWithRollbar.Rollbar; });

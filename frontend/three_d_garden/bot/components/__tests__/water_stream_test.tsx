@@ -45,7 +45,7 @@ describe("<WaterStream />", () => {
 
 describe("useWaterFlowTexture", () => {
   beforeEach(() => {
-    frameCallback = jest.fn() as unknown as
+    frameCallback = jest.fn() as
       (state: unknown, delta: number) => void;
     loadTextureSpy = jest.spyOn(TextureLoader.prototype, "load")
       .mockImplementation(() => new Texture());

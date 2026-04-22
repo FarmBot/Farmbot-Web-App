@@ -11,7 +11,7 @@ describe("createRefreshTrigger", () => {
       .mockImplementation(jest.fn(() => jest.fn()));
     maybeGetDeviceSpy = jest.spyOn(deviceModule, "maybeGetDevice")
       .mockImplementation((() =>
-        ({} as import("farmbot").Farmbot)) as typeof deviceModule.maybeGetDevice);
+        ({} as import("farmbot").Farmbot)));
   });
 
   afterEach(() => {

@@ -24,9 +24,9 @@ afterEach(() => {
 
 beforeEach(() => {
   axiosPatchSpy = jest.spyOn(axios, "patch")
-    .mockImplementation(() => mockPatch() as never);
+    .mockImplementation(() => mockPatch());
   reactUseRefSpy = jest.spyOn(React, "useRef")
-    .mockImplementation(() => mockRef as never);
+    .mockImplementation(() => mockRef);
 });
 
 const setFields = (

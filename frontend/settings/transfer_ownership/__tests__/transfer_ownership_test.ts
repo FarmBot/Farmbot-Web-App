@@ -20,7 +20,7 @@ beforeEach(() => {
   jest.spyOn(deviceModule, "getDevice")
     .mockImplementation(() => mockDevice as never);
   jest.spyOn(axios, "post")
-    .mockImplementation(() => mockPost as never);
+    .mockImplementation(() => mockPost);
   mockPost = Promise.resolve(({ data: "FAKE CERT" }));
 });
 

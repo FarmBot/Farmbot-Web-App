@@ -25,7 +25,7 @@ beforeEach(() => {
   getPositionSpy = jest.spyOn(suncalc, "getPosition").mockReturnValue({
     altitude: 0.5,
     azimuth: 1.0,
-  } as never);
+  });
 });
 
 afterEach(() => {

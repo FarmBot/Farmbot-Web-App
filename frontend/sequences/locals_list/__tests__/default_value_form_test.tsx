@@ -31,7 +31,7 @@ describe("<DefaultValueForm />", () => {
               mockVariableFormOnChangeArg.args.label,
             )} />
         </div>;
-      }) as never);
+      }));
   });
 
   afterEach(() => {

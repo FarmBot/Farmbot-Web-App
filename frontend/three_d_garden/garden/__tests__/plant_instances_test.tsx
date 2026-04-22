@@ -57,7 +57,7 @@ describe("<PlantInstances />", () => {
       .mockImplementation(() => {
         const ref = mockRefImpl();
         allRefs.push(ref);
-        return ref as never;
+        return ref;
       });
     location.pathname = Path.mock(Path.designer());
     (useFrame as jest.Mock).mockClear();
@@ -238,15 +238,15 @@ describe("<PlantInstances />", () => {
     const actualUseRef = reactUseRefSpy.getMockImplementation();
     reactUseRefSpy
       .mockImplementationOnce(() =>
-        instancedRef as unknown as ReturnType<typeof React.useRef>)
+        instancedRef)
       .mockImplementationOnce(() =>
-        materialRef as unknown as ReturnType<typeof React.useRef>)
+        materialRef)
       .mockImplementationOnce(() =>
-        lastBrightnessRef as unknown as ReturnType<typeof React.useRef>)
+        lastBrightnessRef)
       .mockImplementation(actualUseRef as never);
     const p = fakeProps();
+    p.config.sunInclination = 0;
     p.plants = [p.plants[0]];
-    p.sunFactorRef = { current: 0.5 };
     render(<PlantInstances {...p} />);
     materialRef.current = { color: { setScalar } };
     (useFrame as jest.Mock).mock.calls.forEach(([frameFn]) =>

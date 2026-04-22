@@ -72,7 +72,7 @@ describe("<FarmEventRepeatForm/>", () => {
           defaultValue={props.value}
           disabled={props.disabled}
           onChange={() => { }}
-          onBlur={e => props.onCommit(e)} />) as never);
+          onBlur={e => props.onCommit(e)} />));
   });
 
   afterEach(() => {
@@ -100,7 +100,7 @@ describe("<FarmEventRepeatForm/>", () => {
 
   it("defaults to `daily` when a bad input it passed", () => {
     const p = fakeProps();
-    p.timeUnit = "never" as "daily";
+    p.timeUnit = "never";
     const { container } = render(<FarmEventRepeatForm {...p} />);
     expect((container.querySelector(
       `[data-testid="${Selectors.REPEAT}"]`) as HTMLInputElement).value)

@@ -30,7 +30,7 @@ describe("<StepWrapper />", () => {
         : state;
       instance.state = { ...instance.state, ...update };
       callback?.();
-    }) as StepWrapper["setState"];
+    });
     return instance;
   };
 

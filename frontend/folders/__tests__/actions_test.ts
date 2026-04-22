@@ -60,7 +60,7 @@ beforeEach(() => {
   stepGetSpy = jest.spyOn(draggableActions, "stepGet")
     .mockImplementation(() =>
       (() => mockStepGetResult) as unknown as
-        ReturnType<typeof draggableActions.stepGet>);
+      ReturnType<typeof draggableActions.stepGet>);
   destroySpy = jest.spyOn(crudModule, "destroy").mockImplementation(jest.fn());
   editSpy = jest.spyOn(crudModule, "edit").mockImplementation(jest.fn());
   initSpy = jest.spyOn(crudModule, "init").mockImplementation(jest.fn());
@@ -340,7 +340,7 @@ describe("moveSequence", () => {
         index: {
           references: { [sequence.uuid]: sequence },
         }
-      } as Everything["resources"],
+      },
     };
     (store as unknown as { getState: () => DeepPartial<Everything> }).getState =
       () => localState;

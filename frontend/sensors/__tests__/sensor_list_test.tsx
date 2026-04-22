@@ -89,9 +89,9 @@ describe("<SensorList/>", function () {
   it("reads sensors", () => {
     const { container } = render(<SensorList {...fakeProps()} />);
     const readSensorBtn = container.querySelectorAll("button");
-    fireEvent.click(readSensorBtn[0] as Element);
+    fireEvent.click(readSensorBtn[0]);
     expect(mockDevice.readPin).toHaveBeenCalledWith(expectedPayload(51, 0));
-    fireEvent.click(readSensorBtn[1] as Element);
+    fireEvent.click(readSensorBtn[1]);
     expect(mockDevice.readPin).toHaveBeenLastCalledWith(expectedPayload(50, 1));
     expect(mockDevice.readPin).toHaveBeenCalledTimes(2);
   });
@@ -101,8 +101,8 @@ describe("<SensorList/>", function () {
     p.disabled = true;
     const { container } = render(<SensorList {...p} />);
     const readSensorBtn = container.querySelectorAll("button");
-    fireEvent.click(readSensorBtn[0] as Element);
-    fireEvent.click(readSensorBtn[readSensorBtn.length - 1] as Element);
+    fireEvent.click(readSensorBtn[0]);
+    fireEvent.click(readSensorBtn[readSensorBtn.length - 1]);
     expect(mockDevice.readPin).not.toHaveBeenCalled();
   });
 

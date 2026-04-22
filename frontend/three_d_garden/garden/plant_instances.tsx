@@ -24,6 +24,8 @@ import {
   getPlantIconTextureUrl,
 } from "./plant_icon_atlas";
 import { Mode } from "../../farm_designer/map/interfaces";
+import moment from "moment";
+import { calcSunCoordinate, calcSunI, getCycleLength } from "./sun";
 
 export interface PlantInstancesProps {
   plants: ThreeDGardenPlant[];
@@ -32,7 +34,6 @@ export interface PlantInstancesProps {
   visible?: boolean;
   startTimeRef?: React.RefObject<number>;
   dispatch?: Function;
-  sunFactorRef?: React.MutableRefObject<number>;
 }
 
 interface PlantIconInstancesProps extends PlantInstancesProps {
@@ -72,7 +73,16 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
   useFrame(state => {
     const mesh = instancedRef.current;
     if (!mesh) { return; }
-    const brightness = plantIconBrightness(props.sunFactorRef?.current);
+    let sunFactor = calcSunI(config.sunInclination);
+    if (config.animateSeasons && startTimeRef) {
+      const totalCycle = getCycleLength(config.plants);
+      const currentTime = performance.now() / 1000;
+      const t = currentTime - (startTimeRef.current || 0);
+      const timeOffset = Math.min(t / totalCycle, 1) * 24 * 60 * 60;
+      const date = moment().utc().startOf("day").add(timeOffset, "seconds").toDate();
+      sunFactor = calcSunI(calcSunCoordinate(date, 0, 52, 0).inclination);
+    }
+    const brightness = plantIconBrightness(sunFactor);
     if (materialRef.current &&
       materialRef.current.color &&
       brightness != lastBrightness.current) {

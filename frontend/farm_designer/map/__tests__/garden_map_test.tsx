@@ -68,9 +68,9 @@ interface RenderedGardenMap {
 
 // eslint-disable-next-line complexity
 const fire = (target: Element, event: EventName, payload?: unknown) => {
-  const eventPayload = {
+  const eventPayload: Record<string, unknown> = {
     ...((typeof payload === "object" && payload) ? payload : {}),
-  } as Record<string, unknown>;
+  };
   if (!("clientX" in eventPayload) && "pageX" in eventPayload) {
     eventPayload.clientX = eventPayload.pageX;
   }
@@ -171,16 +171,16 @@ const fireWrapperEvent = (
       dragStart?: (event: unknown) => void;
     };
     if ((selector == ".drop-area-svg" || selector == "svg") && event == "click") {
-      instance.click?.(payload as never);
+      instance.click?.(payload);
       return;
     }
     if (selector == ".drop-area-svg" || selector == "svg") {
       if (event == "mouseDown") {
-        instance.startDrag?.(payload as never);
+        instance.startDrag?.(payload);
         return;
       }
       if (event == "mouseMove") {
-        instance.drag?.(payload as never);
+        instance.drag?.(payload);
         return;
       }
       if (event == "mouseUp") {
@@ -189,20 +189,20 @@ const fireWrapperEvent = (
       }
     }
     if (selector == ".drop-area-background" && event == "mouseDown") {
-      instance.startDragOnBackground?.(payload as never);
+      instance.startDragOnBackground?.(payload);
       return;
     }
     if (selector == ".drop-area") {
       if (event == "dragOver") {
-        instance.handleDragOver?.(payload as never);
+        instance.handleDragOver?.(payload);
         return;
       }
       if (event == "dragEnter") {
-        instance.handleDragEnter?.(payload as never);
+        instance.handleDragEnter?.(payload);
         return;
       }
       if (event == "dragStart") {
-        instance.dragStart?.(payload as never);
+        instance.dragStart?.(payload);
         return;
       }
     }
@@ -244,8 +244,10 @@ const makeWrapper = (
   };
 };
 
-const renderMap = <T, >(element: React.ReactElement<T>) => makeWrapper(element);
-const renderMapWithContext = <T, >(element: React.ReactElement<T>) =>
+// eslint-disable-next-line comma-spacing
+const renderMap = <T,>(element: React.ReactElement<T>) => makeWrapper(element);
+// eslint-disable-next-line comma-spacing
+const renderMapWithContext = <T,>(element: React.ReactElement<T>) =>
   makeWrapper(element, true);
 
 const DEFAULT_EVENT = { preventDefault: jest.fn(), pageX: NaN, pageY: NaN };

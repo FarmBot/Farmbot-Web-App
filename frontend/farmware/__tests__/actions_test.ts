@@ -14,9 +14,9 @@ beforeEach(() => {
           { package: "farmware0" },
           { package: "farmware1" },
         ]
-      }) as never);
+      }));
   axiosPostSpy = jest.spyOn(axios, "post")
-    .mockImplementation(() => Promise.resolve({}) as never);
+    .mockImplementation(() => Promise.resolve({}));
 });
 
 afterEach(() => {

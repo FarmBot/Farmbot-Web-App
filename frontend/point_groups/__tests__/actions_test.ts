@@ -38,7 +38,7 @@ beforeEach(() => {
   selectAllPlantPointersSpy = jest.spyOn(selectors, "selectAllPlantPointers")
     .mockImplementation(jest.fn(() => []));
   findUuidSpy = jest.spyOn(selectors, "findUuid")
-    .mockImplementation((() => "PointGroup.0.0") as typeof selectors.findUuid);
+    .mockImplementation(() => "PointGroup.0.0");
 });
 
 afterEach(() => {

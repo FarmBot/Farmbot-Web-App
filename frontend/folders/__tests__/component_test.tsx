@@ -157,7 +157,7 @@ const setStateSync = <T extends {
       ...(update as Record<string, unknown>),
     };
     callback?.();
-  }) as T["setState"];
+  });
   return instance;
 };
 
@@ -836,14 +836,14 @@ describe("<FolderPanelTop />", () => {
   it("creates new folder", () => {
     const p = fakeProps();
     const { container } = render(<FolderPanelTop {...p} />);
-    fireEvent.click(container.querySelectorAll("button")[1] as Element);
+    fireEvent.click(container.querySelectorAll("button")[1]);
     expect(createFolder).toHaveBeenCalled();
   });
 
   it("creates new sequence", () => {
     const p = fakeProps();
     const { container } = render(<FolderPanelTop {...p} />);
-    fireEvent.click(container.querySelectorAll("button")[2] as Element);
+    fireEvent.click(container.querySelectorAll("button")[2]);
     expect(addNewSequenceToFolder).toHaveBeenCalled();
   });
 });

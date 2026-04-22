@@ -78,7 +78,6 @@ import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import { fakePoint } from "../../../__test_support__/fake_state/resources";
 import { SpecialStatus } from "farmbot";
 import { BufferGeometry, Float32BufferAttribute } from "three";
-import { ActivePositionRef } from "../objects/pointer_objects";
 import { Mode } from "../../../farm_designer/map/interfaces";
 import * as mapUtil from "../../../farm_designer/map/util";
 import * as plantActions from "../../../farm_designer/map/layers/plants/plant_actions";
@@ -146,7 +145,7 @@ describe("<Bed />", () => {
     sensors: [],
     sensorReadings: [],
     showMoistureReadings: true,
-    activePositionRef: { current: { x: 0, y: 0 } } as ActivePositionRef,
+    activePositionRef: { current: { x: 0, y: 0 } },
   });
 
   it("renders bed", () => {

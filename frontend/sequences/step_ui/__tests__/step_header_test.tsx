@@ -12,7 +12,7 @@ let requestAutoGenerationSpy: jest.SpyInstance;
 
 beforeEach(() => {
   postSpy = jest.spyOn(axios, "post")
-    .mockImplementation(() => Promise.resolve({}) as never);
+    .mockImplementation(() => Promise.resolve({}));
   requestAutoGenerationSpy = jest.spyOn(
     requestAutoGenerationModule,
     "requestAutoGeneration",
@@ -51,7 +51,7 @@ describe("<StepHeader />", () => {
         : state;
       instance.state = { ...instance.state, ...update };
       callback?.();
-    }) as StepHeader["setState"];
+    });
     return instance;
   };
 

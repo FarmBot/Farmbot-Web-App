@@ -27,7 +27,6 @@ import * as crud from "../api/crud";
 import { CONFIG_DEFAULTS } from "farmbot/dist/config";
 import { Log } from "farmbot/dist/resources/api_resources";
 import { FbosConfig } from "farmbot/dist/resources/configs/fbos";
-import { FirmwareConfig } from "farmbot/dist/resources/configs/firmware";
 import { getFirmwareConfig, getFbosConfig } from "../resources/getters";
 import { isObject, isString, get, noop } from "lodash";
 import { t } from "../i18next_wrapper";
@@ -524,7 +523,7 @@ export function updateMCU(key: ConfigKey, val: string) {
 
     function proceed() {
       if (firmwareConfig) {
-        dispatch(crud.edit(firmwareConfig, { [key]: val } as Partial<FirmwareConfig>));
+        dispatch(crud.edit(firmwareConfig, { [key]: val }));
         dispatch(crud.save(firmwareConfig.uuid));
       }
     }

@@ -49,7 +49,7 @@ describe("<ColorPickerCluster />", () => {
   it("changes color", () => {
     const p = fakeProps();
     const { container } = render(<ColorPickerCluster {...p} />);
-    fireEvent.click(container.querySelectorAll("div")[1] as Element);
+    fireEvent.click(container.querySelectorAll("div")[1]);
     expect(p.onChange).toHaveBeenCalledWith("blue");
   });
 });

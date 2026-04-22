@@ -423,7 +423,7 @@ export function beforeEach(state: RestResources,
     const { warning } = require("../toast/toast");
     warning(`(${place}) Can't modify account data when in read-only mode.`);
   };
-  const { kind } = unpackUUID(get(action, "payload.uuid", "x.y.z") as string);
+  const { kind } = unpackUUID(get(action, "payload.uuid", "x.y.z"));
 
   switch (action.type) {
     case Actions.EDIT_RESOURCE:

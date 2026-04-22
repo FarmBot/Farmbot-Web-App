@@ -12,7 +12,7 @@ import {
   unmountRenderer,
 } from "../../__test_support__/test_renderer";
 import * as threeFiber from "@react-three/fiber";
-import { Object3D, PerspectiveCamera } from "three";
+import { PerspectiveCamera } from "three";
 
 describe("<CameraSelectionUI />", () => {
   let setWebAppConfigValueSpy: jest.SpyInstance;
@@ -87,7 +87,7 @@ describe("<CameraSelectionUI />", () => {
         node.props.ref({
           userData: node.props.userData,
           uuid: `mesh-${index}`,
-        } as Object3D);
+        });
       });
   };
 

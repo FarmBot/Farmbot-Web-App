@@ -49,7 +49,7 @@ describe("<StepRadio />", () => {
     mockStep = p.currentStep;
     const { container } = render(<AxisStepRadio {...p} />);
     const inputs = container.querySelectorAll("input");
-    fireEvent.click(inputs[inputs.length - 1] as Element);
+    fireEvent.click(inputs[inputs.length - 1]);
     const expectedStep: FindHome = {
       kind: "find_home",
       args: { speed: 100, axis: "all" }
@@ -63,7 +63,7 @@ describe("<StepRadio />", () => {
     mockStep = p.currentStep;
     const { container } = render(<AxisStepRadio {...p} />);
     const inputs = container.querySelectorAll("input");
-    fireEvent.click(inputs[inputs.length - 1] as Element);
+    fireEvent.click(inputs[inputs.length - 1]);
     const expectedStep: Calibrate = {
       kind: "calibrate",
       args: { axis: "all" }
@@ -77,7 +77,7 @@ describe("<StepRadio />", () => {
     mockStep = p.currentStep;
     const { container } = render(<AxisStepRadio {...p} />);
     const inputs = container.querySelectorAll("input");
-    fireEvent.click(inputs[inputs.length - 1] as Element);
+    fireEvent.click(inputs[inputs.length - 1]);
     const expectedStep: Zero = {
       kind: "zero",
       args: { axis: "all" }

@@ -46,7 +46,7 @@ beforeEach(() => {
   overwriteSpy = jest.spyOn(crud, "overwrite")
     .mockImplementation(jest.fn());
   axiosPostSpy = jest.spyOn(axios, "post")
-    .mockImplementation(() => mockPost as never);
+    .mockImplementation(() => mockPost);
   setActiveSequenceByNameSpy = jest.spyOn(
     activeSequenceByName, "setActiveSequenceByName")
     .mockImplementation(jest.fn());

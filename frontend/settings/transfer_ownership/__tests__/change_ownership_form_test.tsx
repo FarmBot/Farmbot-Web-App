@@ -63,7 +63,7 @@ describe("<ChangeOwnershipForm />", () => {
       // eslint-disable-next-line comma-spacing
       .mockImplementation(<T,>(initialValue: T) => {
         const ref = originalUseRef(initialValue);
-        refs.push(ref as React.RefObject<unknown>);
+        refs.push(ref);
         return ref;
       });
     try {

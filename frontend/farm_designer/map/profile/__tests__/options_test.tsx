@@ -61,7 +61,7 @@ describe("<ProfileOptions />", () => {
     const p = fakeProps();
     const { container } = render(<ProfileOptions {...p} />);
     const buttons = container.querySelectorAll("button");
-    fireEvent.click(buttons[buttons.length - 1] as Element);
+    fireEvent.click(buttons[buttons.length - 1]);
     expect(p.dispatch).toHaveBeenCalledWith({
       type: Actions.SET_PROFILE_FOLLOW_BOT,
       payload: true,

@@ -124,7 +124,7 @@ describe("<FarmEvents />", () => {
         : state;
       instance.state = { ...instance.state, ...update };
       callback?.();
-    }) as FarmEvents["setState"];
+    });
     instance.setState({ searchTerm: "farm events" });
     instance.resetCalendar();
     expect(mockScrollTo).toHaveBeenCalledWith(0, 0);
@@ -142,7 +142,7 @@ describe("<FarmEvents />", () => {
         : state;
       instance.state = { ...instance.state, ...update };
       callback?.();
-    }) as FarmEvents["setState"];
+    });
     instance.setState({ searchTerm: "farm events" });
     instance.resetCalendar();
     expect(instance.state.searchTerm).toEqual("");

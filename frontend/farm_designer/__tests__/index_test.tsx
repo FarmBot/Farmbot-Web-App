@@ -51,7 +51,7 @@ describe("<FarmDesigner />", () => {
       .mockImplementation(((props: GardenMapLegendProps) => {
         lastLegendProps = props;
         return <div className="mock-garden-map-legend" />;
-      }) as never);
+      }));
     gardenMapSpy = jest.spyOn(gardenMap, "GardenMap")
       .mockImplementation(((props: GardenMapProps) => {
         lastGardenMapProps = props;

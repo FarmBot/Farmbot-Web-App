@@ -170,7 +170,7 @@ export const determineDropdown =
           label: get({
             "SavedGarden": t("Garden"),
             "PointGroup": t("Group"),
-          }, resourceType, resourceType) as string,
+          }, resourceType, resourceType),
           value: data_value.args.resource_type,
           headingId: "Resource",
         };

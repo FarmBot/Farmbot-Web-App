@@ -33,7 +33,7 @@ beforeEach(() => {
       data: [
         { id: 1, name: "name", description: "", path: "", color: "gray" },
       ]
-    }) as never);
+    }));
 });
 
 afterEach(() => {

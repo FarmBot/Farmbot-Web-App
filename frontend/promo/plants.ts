@@ -7,11 +7,11 @@ import { Season, SEASON_DURATIONS } from "./constants";
 export const calculatePlantPositions = (config: Config): ThreeDGardenPlant[] => {
   const gardenPlants = GARDENS[config.plants] || [];
   const positions: ThreeDGardenPlant[] = [];
-  const startX = 350;
+  const startX = 200;
   let nextX = startX;
   let index = 0;
   let nextId = 1;
-  while (nextX <= config.bedLengthOuter - 100) {
+  while (nextX <= config.bedLengthOuter - 250) {
     const plantKey = gardenPlants[index];
     const plant = PLANTS[plantKey];
     if (!plant) { return []; }

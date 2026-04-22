@@ -116,9 +116,9 @@ export const PlantSpreadInstances = (props: PlantSpreadInstancesProps) => {
   const tempQuaternion = React.useMemo(() => new Quaternion(), []);
   const tempColor = React.useMemo(() => new Color(), []);
   const get3DPosition = React.useMemo(() => get3DPositionFunc(config), [config]);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
   const boundsCenter = React.useMemo(getBoundsCenter(config), []);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
   const halfSize = React.useMemo(getHalfSize(config), []);
   const plantIndexes = React.useMemo(() =>
     plants.map((_, index) => index), [plants]);

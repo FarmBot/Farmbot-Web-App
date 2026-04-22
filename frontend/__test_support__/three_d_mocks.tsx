@@ -119,7 +119,7 @@ jest.mock("../three_d_garden/components", () => ({
           instanceColor: { needsUpdate: false },
         }) as unknown as THREE.InstancedMesh);
       return <InstancedMeshForTests
-        ref={ref as React.Ref<THREE.InstancedMesh>}
+        ref={ref}
         {...rest} />;
     },
   ),

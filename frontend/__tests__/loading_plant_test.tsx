@@ -26,7 +26,7 @@ describe("<LoadingPlant/>", () => {
   });
 
   it("clears initial loading text", () => {
-    const el = { outerHTML: "hidden" } as Pick<Element, "outerHTML">;
+    const el = { outerHTML: "hidden" };
     const collection =
       [el as unknown as Element] as unknown as HTMLCollectionOf<Element>;
     jest.spyOn(document, "getElementsByClassName")

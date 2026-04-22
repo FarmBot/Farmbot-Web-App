@@ -56,7 +56,7 @@ describe("AJAX data tracking", () => {
     if (!destroy) { return; }
     const thunk = destroy(uuid);
     if (typeof thunk !== "function") { return; }
-    await thunk(dispatch as unknown as Function, () =>
+    await thunk(dispatch, () =>
       ({ resources: { index: resourceIndex() } }));
     expect(maybeStartTrackingModule.maybeStartTracking).toHaveBeenCalled();
   });
@@ -69,7 +69,7 @@ describe("AJAX data tracking", () => {
     });
     const saveAllAction = loadCrud().saveAll?.(r);
     if (typeof saveAllAction !== "function") { return; }
-    await saveAllAction(dispatch as unknown as Function);
+    await saveAllAction(dispatch);
     expect(maybeStartTrackingModule.maybeStartTracking).toHaveBeenCalled();
   });
 
@@ -94,7 +94,7 @@ describe("AJAX data tracking", () => {
         email: "test@test.com"
       });
       if (typeof initSaveGetIdAction !== "function") { return; }
-      const result = initSaveGetIdAction(statefulDispatch as unknown as Function);
+      const result = initSaveGetIdAction(statefulDispatch);
       if (result && typeof result === "object" && result && "catch" in result) {
         await (result as Promise<unknown>).catch(() => { });
       }
@@ -107,7 +107,7 @@ describe("AJAX data tracking", () => {
       email: "test@test.com"
     });
     if (typeof action !== "function") { return; }
-    await action(dispatch as unknown as Function);
+    await action(dispatch);
     expect(maybeStartTrackingModule.maybeStartTracking).toHaveBeenCalled();
   });
 });

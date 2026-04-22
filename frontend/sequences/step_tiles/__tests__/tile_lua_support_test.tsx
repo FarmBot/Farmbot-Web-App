@@ -21,7 +21,7 @@ describe("<LuaTextArea />", () => {
         : state;
       Object.assign(component.state, update);
       callback?.();
-    }) as LuaTextArea<Lua>["setState"];
+    });
     return component;
   };
 
@@ -45,7 +45,7 @@ describe("<LuaTextArea />", () => {
     const component = fakeComponent(p);
     const updateStep = Object.assign(jest.fn(), { cancel: jest.fn(), flush: jest.fn() });
     component.updateStep = updateStep;
-    component.onChange(undefined as unknown as string);
+    component.onChange(undefined);
     expect(updateStep).toHaveBeenCalledWith("");
     expect(component.state.lua).toEqual("");
   });

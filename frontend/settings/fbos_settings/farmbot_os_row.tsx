@@ -36,9 +36,9 @@ export const getOsReleaseNotesForVersion = (
 };
 
 export const FarmbotOsRow = (props: FarmbotOsRowProps) => {
-  const [version, setVersion] = React.useState(
+  const versionRef = React.useRef(
     props.bot.hardware.informational_settings.controller_version);
-  const [channel, setChannel] = React.useState(
+  const channelRef = React.useRef(
     "" + props.sourceFbosConfig("update_channel").value);
 
   const { dispatch, bot, sourceFbosConfig } = props;
@@ -53,21 +53,22 @@ export const FarmbotOsRow = (props: FarmbotOsRowProps) => {
   }, []);
 
   React.useEffect(() => {
-    const versionChange = controller_version && version != controller_version;
-    const channelChange = configChannel && channel != configChannel;
+    const versionChange =
+      controller_version && versionRef.current != controller_version;
+    const channelChange = configChannel && channelRef.current != configChannel;
     if (versionChange || channelChange) {
-      setVersion(controller_version);
-      setChannel(configChannel);
+      versionRef.current = controller_version;
+      channelRef.current = configChannel;
       dispatch(fetchOsUpdateVersion(target));
     }
     if (versionChange) {
       removeToast("EOL");
     }
-  }, [dispatch, controller_version, target, configChannel, version, channel]);
+  }, [dispatch, controller_version, target, configChannel]);
 
   const releaseNotes = getOsReleaseNotesForVersion(
     props.bot.osReleaseNotes,
-    version || props.device.body.fbos_version);
+    controller_version || props.device.body.fbos_version);
 
   return <Highlight settingName={DeviceSetting.farmbotOS}
     hidden={!props.showAdvanced}
@@ -86,7 +87,7 @@ export const FarmbotOsRow = (props: FarmbotOsRowProps) => {
         <Popover position={Position.BOTTOM_LEFT}
           target={<p>
             {t("Version {{ version }}",
-              { version: version || t("unknown (offline)") })}
+              { version: controller_version || t("unknown (offline)") })}
           </p>}
           content={<ErrorBoundary>
             <FbosDetails

@@ -65,10 +65,10 @@ beforeEach(() => {
   shouldDisplayFeatureSpy = jest.spyOn(shouldDisplay, "shouldDisplayFeature")
     .mockImplementation(() => mockFeatureBoolean);
   fetchBulletinContentSpy = jest.spyOn(messageActions, "fetchBulletinContent")
-    .mockImplementation(() => Promise.resolve(mockData) as never);
+    .mockImplementation(() => Promise.resolve(mockData));
   seedAccountSpy = jest.spyOn(messageActions, "seedAccount")
     .mockImplementation(() => mockSeedAccount as never);
-  axiosDeleteSpy = jest.spyOn(axios, "delete").mockResolvedValue({} as never);
+  axiosDeleteSpy = jest.spyOn(axios, "delete").mockResolvedValue({});
   sessionClearSpy = jest.spyOn(Session, "clear")
     .mockImplementation(() => undefined as never);
   fbSelectSpy = jest.spyOn(ui, "FBSelect")
@@ -233,8 +233,8 @@ describe("<AlertCard />", () => {
     const { container } = render(<AlertCard {...p} />);
     expect(container.textContent).toContain("currently using");
     const links = container.querySelectorAll("a");
-    fireEvent.click(links[0] as Element);
-    fireEvent.click(links[links.length - 1] as Element);
+    fireEvent.click(links[0]);
+    fireEvent.click(links[links.length - 1]);
     expect(Session.clear).toHaveBeenCalledTimes(2);
   });
 
@@ -341,7 +341,7 @@ describe("<ReSeedAccount />", () => {
     const { container } = render(<ReSeedAccount />);
     fireEvent.click(container.querySelector(".fb-select-mock") as Element);
     const buttons = container.querySelectorAll("button");
-    fireEvent.click(buttons[buttons.length - 1] as Element);
+    fireEvent.click(buttons[buttons.length - 1]);
     expect(mockSeedAccount).toHaveBeenCalledWith({
       label: "",
       value: "selection",

@@ -273,10 +273,6 @@ export function mapStateToProps(props: Everything): CropInfoProps {
 export const RawCropInfo = (props: CropInfoProps) => {
   const [gridOpen, setGridOpen] = React.useState(false);
   const toggleOpen = () => setGridOpen(!gridOpen);
-  React.useEffect(() => {
-    selectMostUsedCurves(Path.getCropSlug());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const selectMostUsedCurves = (slug: string) => {
     const findCurve = findMostUsedCurveForCrop({
@@ -289,6 +285,10 @@ export const RawCropInfo = (props: CropInfoProps) => {
       changeCurve(props.dispatch)(id, curveType);
     });
   };
+  React.useEffect(() => {
+    selectMostUsedCurves(Path.getCropSlug());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const { dispatch, designer } = props;
   const slug = Path.getCropSlug();

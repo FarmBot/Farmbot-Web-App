@@ -6,25 +6,20 @@ import * as threeFiber from "@react-three/fiber";
 import { render } from "@testing-library/react";
 import { SuctionAnimation, SuctionAnimationProps } from "../suction_animation";
 
-type MockRef = {
-  position: typeof mockPosition;
-  scale: { set: typeof mockScaleSet };
-};
-
 describe("<SuctionAnimation />", () => {
   beforeEach(() => {
     jest.spyOn(threeFiber, "useFrame")
       .mockImplementation(((callback, _renderPriority) => {
-        callback({} as never, 0, undefined as never);
+        callback({} as never, 0, undefined);
         // eslint-disable-next-line no-null/no-null
         return null;
-      }) as typeof threeFiber.useFrame);
+      }));
     jest.spyOn(React, "useRef").mockReturnValue({
       current: {
         position: mockPosition,
         scale: { set: mockScaleSet },
       },
-    } as React.RefObject<MockRef>);
+    });
     mockPosition.x = 0;
     mockPosition.y = 0;
     mockPosition.z = 0;

@@ -17,19 +17,27 @@ export type SeedTroughHolderFull = GLTF & {
   };
 }
 
+interface SeedTroughHolderProps extends Omit<ThreeElements["group"], "ref"> {
+  model: SeedTroughHolderFull;
+}
+
+export const SeedTroughHolderModel = (props: SeedTroughHolderProps) => {
+  const { model, ...groupProps } = props;
+  const { nodes, materials } = model;
+  // eslint-disable-next-line no-null/no-null
+  return <Group {...groupProps} dispose={null}>
+    <MeshComponent
+      geometry={nodes.Seed_Trough_Holder_Mount_Plate.geometry}
+      material={materials[SeedTroughHolderMaterial.zero]}
+      position={[-0.002, 0.023, 0]} />
+    <MeshComponent
+      geometry={nodes.M5_x_10mm_Screw.geometry}
+      material={materials[SeedTroughHolderMaterial.one]}
+      position={[0.003, 0.013, 0.03]}
+      rotation={[Math.PI / 2, Math.PI / 2, 0]} />
+  </Group>;
+};
+
 export const SeedTroughHolder = (model: SeedTroughHolderFull) =>
-  (props: Omit<ThreeElements["group"], "ref">) => {
-    const { nodes, materials } = model;
-    // eslint-disable-next-line no-null/no-null
-    return <Group {...props} dispose={null}>
-      <MeshComponent
-        geometry={nodes.Seed_Trough_Holder_Mount_Plate.geometry}
-        material={materials[SeedTroughHolderMaterial.zero]}
-        position={[-0.002, 0.023, 0]} />
-      <MeshComponent
-        geometry={nodes.M5_x_10mm_Screw.geometry}
-        material={materials[SeedTroughHolderMaterial.one]}
-        position={[0.003, 0.013, 0.03]}
-        rotation={[Math.PI / 2, Math.PI / 2, 0]} />
-    </Group>;
-  };
+  (props: Omit<ThreeElements["group"], "ref">) =>
+    <SeedTroughHolderModel {...props} model={model} />;

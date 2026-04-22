@@ -170,7 +170,7 @@ describe("<GroupPointCountBreakdown />", () => {
     p.group.body.point_ids = [1, 2];
     const { container } = render(<GroupPointCountBreakdown {...p} />);
     window.confirm = () => true;
-    fireEvent.click(container.querySelectorAll("button")[0] as Element);
+    fireEvent.click(container.querySelectorAll("button")[0]);
     const expectedBody = cloneDeep(p.group.body);
     expectedBody.point_ids = [];
     expect(overwriteGroupSpy).toHaveBeenCalledWith(p.group, expectedBody);
@@ -181,7 +181,7 @@ describe("<GroupPointCountBreakdown />", () => {
     p.group.body.point_ids = [1, 2];
     const { container } = render(<GroupPointCountBreakdown {...p} />);
     window.confirm = () => false;
-    fireEvent.click(container.querySelectorAll("button")[0] as Element);
+    fireEvent.click(container.querySelectorAll("button")[0]);
     expect(overwriteGroupSpy).not.toHaveBeenCalled();
   });
 
@@ -189,7 +189,7 @@ describe("<GroupPointCountBreakdown />", () => {
     const p = fakeProps();
     const { container } = render(<GroupPointCountBreakdown {...p} />);
     window.confirm = () => true;
-    fireEvent.click(container.querySelectorAll("button")[1] as Element);
+    fireEvent.click(container.querySelectorAll("button")[1]);
     const expectedBody = cloneDeep(p.group.body);
     expectedBody.criteria = DEFAULT_CRITERIA;
     expect(overwriteGroupSpy).toHaveBeenCalledWith(p.group, expectedBody);
@@ -199,7 +199,7 @@ describe("<GroupPointCountBreakdown />", () => {
     const p = fakeProps();
     const { container } = render(<GroupPointCountBreakdown {...p} />);
     window.confirm = () => false;
-    fireEvent.click(container.querySelectorAll("button")[1] as Element);
+    fireEvent.click(container.querySelectorAll("button")[1]);
     expect(overwriteGroupSpy).not.toHaveBeenCalled();
   });
 
@@ -305,7 +305,7 @@ describe("<PointTypeSelection />", () => {
     const p = fakeProps();
     p.pointTypes = ["Plant", "Weed"];
     const { container } = render(<PointTypeSelection {...p} />);
-    fireEvent.click(container.querySelectorAll("input")[0] as Element);
+    fireEvent.click(container.querySelectorAll("input")[0]);
     expect(togglePointTypeCriteriaSpy).toHaveBeenCalledWith(p.group, "Plant");
   });
 });

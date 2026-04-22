@@ -28,15 +28,15 @@ describe("<DesignerRegimenList />", () => {
     designerPanelSpy = jest.spyOn(designerPanel, "DesignerPanel")
       .mockImplementation(((
         { children }: React.ComponentProps<typeof designerPanel.DesignerPanel>) =>
-        <div>{children}</div>) as never);
+        <div>{children}</div>));
     designerPanelContentSpy = jest.spyOn(designerPanel, "DesignerPanelContent")
       .mockImplementation(((
         { children }: React.ComponentProps<typeof designerPanel.DesignerPanelContent>) =>
-        <div>{children}</div>) as never);
+        <div>{children}</div>));
     designerPanelTopSpy = jest.spyOn(designerPanel, "DesignerPanelTop")
       .mockImplementation(((
         props: React.ComponentProps<typeof designerPanel.DesignerPanelTop>) =>
-        mockDesignerPanelTop(props)) as never);
+        mockDesignerPanelTop(props)));
     mockDesignerPanelTop.mockClear();
   });
 
