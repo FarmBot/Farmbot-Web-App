@@ -188,6 +188,7 @@ export class RawFarmDesigner
         showZones={show_zones}
         showSensorReadings={show_sensor_readings}
         showMoistureInterpolationMap={show_moisture_interpolation_map}
+        designer={this.props.designer}
         dispatch={this.props.dispatch}
         timeSettings={this.props.timeSettings}
         getConfigValue={this.props.getConfigValue}
@@ -316,6 +317,7 @@ export class RawFarmDesigner
         dispatch={this.props.dispatch}
         device={this.props.device}
         designer={this.props.designer}
+        getConfigValue={this.props.getConfigValue}
         threeDGarden={threeDGarden} />
     </div>;
   }

@@ -114,7 +114,7 @@ describe("<LineSegments />", () => {
 
 describe("<InstancedMesh />", () => {
   const fakeProps = (): ThreeElements["instancedMesh"] => ({
-    args: [undefined as never, undefined as never, 1],
+    args: [undefined, undefined, 1],
     name: "instancedMesh",
   });
 

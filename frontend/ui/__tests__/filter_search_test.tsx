@@ -44,7 +44,7 @@ describe("<FilterSearch />", () => {
     const wrapper = createWrapper(p);
     const item = fakeItem();
     actRenderer(() => {
-      getInstance(wrapper)["handleValueChange"](item as never);
+      getInstance(wrapper)["handleValueChange"](item);
     });
     expect(p.onChange).toHaveBeenCalledWith(item);
   });
@@ -53,7 +53,7 @@ describe("<FilterSearch />", () => {
     const p = fakeProps();
     const wrapper = createWrapper(p);
     actRenderer(() => {
-      getInstance(wrapper)["handleValueChange"](undefined as never);
+      getInstance(wrapper)["handleValueChange"](undefined);
     });
     expect(p.onChange).not.toHaveBeenCalled();
   });
@@ -63,7 +63,7 @@ describe("<FilterSearch />", () => {
     const wrapper = createWrapper(p);
     const item = fakeItem({ heading: true });
     actRenderer(() => {
-      getInstance(wrapper)["handleValueChange"](item as never);
+      getInstance(wrapper)["handleValueChange"](item);
     });
     expect(p.onChange).not.toHaveBeenCalled();
   });

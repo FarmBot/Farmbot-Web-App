@@ -63,7 +63,7 @@ describe("mapStateToProps()", () => {
     const varData = fakeVariableNameSet();
     state.resources.index.sequenceMetas[seq.uuid] = varData;
     const findSequenceByIdSpy = jest.spyOn(selectors, "findSequenceById")
-      .mockReturnValue(seq as never);
+      .mockReturnValue(seq);
     try {
       const props = mapStateToProps(state);
       expect(props.variableData).toEqual(expect.objectContaining(varData));

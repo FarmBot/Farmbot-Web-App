@@ -44,7 +44,7 @@ describe("<ProductRegistration />", () => {
     }
     input.props.onCommit({
       currentTarget: { value: "123" },
-    } as React.FocusEvent<HTMLInputElement>);
+    });
     expect(setOrderNumberSpy).toHaveBeenCalledWith(expect.any(Object), "123");
   });
 });

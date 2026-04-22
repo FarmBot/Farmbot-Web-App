@@ -41,7 +41,7 @@ describe("attachToRoot()", () => {
     clear();
     const render = jest.fn();
     jest.spyOn(reactDomClient, "createRoot").mockImplementation(() =>
-      ({ render, unmount: jest.fn() }) as unknown as ReturnType<typeof reactDomClient.createRoot>);
+      ({ render, unmount: jest.fn() }));
     expect(() => attachToRoot(Foo, { text: "Bar" })).not.toThrow();
     expect(reactDomClient.createRoot).toHaveBeenCalledWith(
       document.getElementById("root"));
@@ -56,7 +56,7 @@ describe("entryPoint()", () => {
     const { entryPoint } = jest.requireActual<typeof import("../page")>("../page");
     const render = jest.fn();
     jest.spyOn(reactDomClient, "createRoot").mockImplementation(() =>
-      ({ render, unmount: jest.fn() }) as unknown as ReturnType<typeof reactDomClient.createRoot>);
+      ({ render, unmount: jest.fn() }));
     jest.spyOn(i18n, "detectLanguage").mockResolvedValue({
       lng: "en",
       fallbackLng: "en",
@@ -68,7 +68,7 @@ describe("entryPoint()", () => {
     const initSpy = jest.spyOn(i18next, "init")
       .mockImplementation((_conf, cb) => {
         // eslint-disable-next-line no-null/no-null
-        cb?.(null as never, (() => "") as never);
+        cb?.(null, (() => "") as never);
         return {} as unknown as ReturnType<typeof i18next.init>;
       });
     const result = entryPoint(Foo) as Promise<unknown> | undefined;

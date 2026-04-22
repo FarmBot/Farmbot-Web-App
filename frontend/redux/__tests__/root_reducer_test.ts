@@ -9,7 +9,7 @@ describe("rootReducer()", () => {
 
   beforeEach(() => {
     clearSpy = jest.spyOn(Session, "clear")
-      .mockImplementation((() => undefined as never) as typeof Session.clear);
+      .mockImplementation((() => undefined) as typeof Session.clear);
   });
 
   afterEach(() => {

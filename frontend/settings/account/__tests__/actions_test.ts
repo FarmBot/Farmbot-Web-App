@@ -18,9 +18,9 @@ beforeEach(() => {
   toastErrorsSpy = jest.spyOn(toastErrorsModule, "toastErrors")
     .mockImplementation(jest.fn());
   axiosPostSpy = jest.spyOn(axios, "post")
-    .mockImplementation(() => mockPost as never);
+    .mockImplementation(() => mockPost);
   axiosDeleteSpy = jest.spyOn(axios, "delete")
-    .mockImplementation(() => mockDelete as never);
+    .mockImplementation(() => mockDelete);
 });
 
 afterEach(() => {

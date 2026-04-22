@@ -77,8 +77,7 @@ import { fakeDrawnPoint } from "../../../__test_support__/fake_designer_state";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import { fakePoint } from "../../../__test_support__/fake_state/resources";
 import { SpecialStatus } from "farmbot";
-import { BufferGeometry } from "three";
-import { ActivePositionRef } from "../objects/pointer_objects";
+import { BufferGeometry, Float32BufferAttribute } from "three";
 import { Mode } from "../../../farm_designer/map/interfaces";
 import * as mapUtil from "../../../farm_designer/map/util";
 import * as plantActions from "../../../farm_designer/map/layers/plants/plant_actions";
@@ -146,7 +145,7 @@ describe("<Bed />", () => {
     sensors: [],
     sensorReadings: [],
     showMoistureReadings: true,
-    activePositionRef: { current: { x: 0, y: 0 } } as ActivePositionRef,
+    activePositionRef: { current: { x: 0, y: 0 } },
   });
 
   it("renders bed", () => {
@@ -442,5 +441,43 @@ describe("<Bed />", () => {
     expect(mockSetTorusScale).not.toHaveBeenCalled();
     expect(mockSetBillboardPosition).not.toHaveBeenCalled();
     expect(mockSetImageScale).not.toHaveBeenCalled();
+  });
+
+  it("mirrors the rendered soil surface geometry", () => {
+    const p = fakeProps();
+    p.config.mirrorX = true;
+    p.config.mirrorY = true;
+    p.config.bedLengthOuter = 1000;
+    p.config.bedWidthOuter = 800;
+    p.config.bedWallThickness = 100;
+    p.config.bedXOffset = 50;
+    p.config.bedYOffset = 25;
+    const geometry = new BufferGeometry();
+    geometry.setAttribute("position", new Float32BufferAttribute([
+      150, 200, 10,
+      300, 400, 20,
+    ], 3));
+    geometry.setAttribute("normal", new Float32BufferAttribute([
+      1, 2, 3,
+      4, 5, 6,
+    ], 3));
+    p.soilSurfaceGeometry = geometry;
+    const cloneSpy = jest.spyOn(geometry, "clone");
+
+    render(<Bed {...p} />);
+
+    const mirroredGeometry = cloneSpy.mock.results[0]?.value as BufferGeometry;
+    const position = mirroredGeometry.getAttribute("position");
+    const normal = mirroredGeometry.getAttribute("normal");
+    expect(position.getX(0)).toEqual(750);
+    expect(position.getY(0)).toEqual(550);
+    expect(position.getX(1)).toEqual(600);
+    expect(position.getY(1)).toEqual(350);
+    expect(normal.getX(0)).toEqual(-1);
+    expect(normal.getY(0)).toEqual(-2);
+    expect(normal.getZ(0)).toEqual(3);
+    expect(normal.getX(1)).toEqual(-4);
+    expect(normal.getY(1)).toEqual(-5);
+    expect(normal.getZ(1)).toEqual(6);
   });
 });

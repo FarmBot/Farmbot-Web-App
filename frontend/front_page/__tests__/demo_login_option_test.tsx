@@ -24,7 +24,7 @@ describe("<DemoLoginOption />", () => {
       .mockImplementation(() =>
         typeof mockResponse === "string"
           ? Promise.resolve(mockResponse)
-          : Promise.reject(mockResponse) as never);
+          : Promise.reject(mockResponse));
   });
 
   afterEach(() => {
@@ -65,7 +65,7 @@ describe("<DemoLoginOption />", () => {
         : state;
       instance.state = { ...instance.state, ...update };
       callback?.();
-    }) as DemoLoginOption["setState"];
+    });
     expect(instance.state.productLine).toEqual("genesis_1.8");
     const select = instance["seedDataSelect"]() as React.ReactElement<{
       onChange: (ddi: { value: string }) => void;

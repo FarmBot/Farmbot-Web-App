@@ -448,6 +448,18 @@ describe("getMode()", () => {
     location.pathname = Path.mock(Path.app());
     expect(getMode()).toEqual(Mode.none);
   });
+
+  it("returns camera selection mode", () => {
+    const state = fakeState();
+    state.resources.consumers.farm_designer = fakeDesignerState();
+    state.resources.consumers.farm_designer.threeDCameraSelection = true;
+    const originalGetState = store.getState;
+    (store as unknown as { getState: () => typeof state }).getState = () => state;
+    location.pathname = Path.mock(Path.app());
+    expect(getMode()).toEqual(Mode.cameraSelection);
+    (store as unknown as { getState: typeof originalGetState }).getState =
+      originalGetState;
+  });
 });
 
 describe("savedGardenOpen", () => {

@@ -1,6 +1,6 @@
 import React from "react";
 import { TaggedImage, TaggedSensor, TaggedSensorReading } from "farmbot";
-import { Config } from "../config";
+import { Config, SurfaceDebugOption } from "../config";
 import { isNumber } from "lodash";
 import {
   Decal, OrthographicCamera, Plane, RenderTexture, useTexture,
@@ -48,6 +48,36 @@ const PlaneWrapper = (props: PlaneWrapperProps) =>
     {props.children}
   </Plane>;
 
+export const getMirrorTextureProps =
+  (config: Pick<Config, "mirrorX" | "mirrorY">) => ({
+    repeat: [
+      config.mirrorX ? -1 : 1,
+      config.mirrorY ? -1 : 1,
+    ] as [number, number],
+    offset: [
+      config.mirrorX ? 1 : 0,
+      config.mirrorY ? 1 : 0,
+    ] as [number, number],
+  });
+
+export const getImagePosition = (
+  config: Pick<Config,
+    "mirrorX" | "mirrorY" | "botSizeX" | "botSizeY" | "imgOffsetX" | "imgOffsetY">,
+  x: number,
+  y: number,
+  xOffset: number,
+  yOffset: number,
+  z: number,
+): [number, number, number] => {
+  const baseX = config.mirrorX ? config.botSizeX - x : x;
+  const baseY = config.mirrorY ? config.botSizeY - y : y;
+  return [
+    baseX + config.imgOffsetX + xOffset,
+    baseY + config.imgOffsetY + yOffset,
+    z,
+  ];
+};
+
 export interface ImageTextureProps extends BaseProps {
   images?: TaggedImage[];
   addPlantProps?: AddPlantProps;
@@ -61,6 +91,17 @@ export const ImageTexture = (props: ImageTextureProps) => {
   const extents = soilSurfaceExtents(props.config);
   const width = extents.x.max - extents.x.min;
   const height = extents.y.max - extents.y.min;
+  const textureSize = 1024;
+  const textureWidth = width >= height
+    ? textureSize
+    : Math.max(1, Math.round(textureSize * width / height));
+  const textureHeight = height >= width
+    ? textureSize
+    : Math.max(1, Math.round(textureSize * height / width));
+  const textureKey = [
+    extents.x.min, extents.x.max,
+    extents.y.min, extents.y.max,
+  ].join(":");
   const { bedXOffset, bedYOffset, bedWallThickness } = props.config;
   const soilTexture = useTexture(ASSETS.textures.soil + "?=soilT");
   const color = getColorFromBrightness(props.config.soilBrightness);
@@ -79,7 +120,14 @@ export const ImageTexture = (props: ImageTextureProps) => {
   const lastImageArray = filteredImages.filter(img => img.highlighted);
   const highlightActive = lastImageArray[0]?.highlighted;
   const commonProps = { width, height, bedWallThickness };
-  return <RenderTexture attach={"map"} width={width} height={height}>
+  const mirrorTextureProps = getMirrorTextureProps(props.config);
+  return <RenderTexture
+    key={textureKey}
+    attach={"map"}
+    width={textureWidth}
+    height={textureHeight}
+    repeat={mirrorTextureProps.repeat}
+    offset={mirrorTextureProps.offset}>
     <OrthographicCamera makeDefault near={10} far={10000}
       left={extents.x.min}
       right={extents.x.max}
@@ -88,10 +136,12 @@ export const ImageTexture = (props: ImageTextureProps) => {
       position={[bedXOffset, bedYOffset, 4000]}
       rotation={[0, 0, 0]}
       zoom={1}
-      scale={[1, 1, 1]}
       up={[0, 0, 1]} />
     <PlaneWrapper {...commonProps} z={0}>
-      <MeshBasicMaterial side={DoubleSide} color={color} map={soilTexture} />
+      <MeshBasicMaterial side={DoubleSide} color={color}
+        map={props.config.surfaceDebug == SurfaceDebugOption.blank
+          ? undefined
+          : soilTexture} />
       <Images {...props} images={imageArray} />
     </PlaneWrapper>
     {highlightActive &&
@@ -169,7 +219,6 @@ const ImageWrapper = (props: ImageWrapperProps) => {
   if (!props.image.highlighted &&
     !imageSizeCheck({ width: i.width, height: i.height },
       { x: "" + config.imgCenterX, y: "" + config.imgCenterY })) { return; }
-  const scale: [number, number, number] = [width, height, 1000];
 
   const alreadyRotated = isRotated(props.image.body.meta.name);
   const initialRotation = alreadyRotated ? 0 : config.imgRotation;
@@ -178,16 +227,13 @@ const ImageWrapper = (props: ImageWrapperProps) => {
   return <Decal
     name={"image"}
     map={texture}
-    position={[
-      props.x + config.imgOffsetX + props.xOffset,
-      props.y + config.imgOffsetY + props.yOffset,
-      props.z,
-    ]}
+    position={getImagePosition(
+      config, props.x, props.y, props.xOffset, props.yOffset, props.z)}
     debug={config.lightsDebug}
     material-side={DoubleSide}
     depthTest={true}
     rotation={[0, 0, rotation]}
-    scale={scale} />;
+    scale={[width, height, 1000]} />;
 };
 
 export const extraRotation = (config: Config) => {

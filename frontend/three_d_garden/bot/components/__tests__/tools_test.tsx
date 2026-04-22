@@ -26,7 +26,7 @@ const mockRotaryRef = () => {
           traverse: (cb: (m: {}) => void) => cb(mesh),
           rotation: mockRotation,
         },
-      } as never;
+      };
     }
     return originalUseRef(initialValue);
   });
@@ -57,15 +57,15 @@ describe("<Tools />", () => {
     getModeSpy = jest.spyOn(mapUtil, "getMode").mockReturnValue(Mode.none);
     jest.spyOn(threeFiber, "useFrame")
       .mockImplementation(((callback, _renderPriority) => {
-        callback({} as never, 0, undefined as never);
+        callback({} as never, 0, undefined);
         // eslint-disable-next-line no-null/no-null
         return null;
-      }) as typeof threeFiber.useFrame);
+      }));
     suctionAnimationSpy = jest.spyOn(suctionAnimationModule, "SuctionAnimation")
-      .mockImplementation((() => <></>) as never);
+      .mockImplementation((() => <></>));
     wateringAnimationsSpy = jest.spyOn(
       wateringAnimationsModule, "WateringAnimations")
-      .mockImplementation((() => <></>) as never);
+      .mockImplementation((() => <></>));
   });
 
   afterEach(() => {
@@ -137,6 +137,72 @@ describe("<Tools />", () => {
     p.mountedToolName = "weeder";
     const { container } = render(<Tools {...p} />);
     expect(container).not.toContainHTML("toolbay3");
+  });
+
+  it("uses mirrored xy position for tool slots", () => {
+    const p = fakeProps();
+    p.config.mirrorX = true;
+    p.config.mirrorY = true;
+    p.config.botSizeX = 1000;
+    p.config.botSizeY = 500;
+    const tool = fakeTool();
+    tool.body.name = "soil sensor";
+    tool.body.id = 2;
+    const toolSlot = fakeToolSlot();
+    toolSlot.body.x = 100;
+    toolSlot.body.y = 200;
+    toolSlot.body.id = 1;
+    toolSlot.body.tool_id = tool.body.id;
+    p.toolSlots = [{ toolSlot, tool }];
+    const { container } = render(<Tools {...p} />);
+    expect(container).toContainHTML("position=\"1265,460,391\"");
+  });
+
+  it("flips rendered pullout direction for mirrored axis", () => {
+    const p = fakeProps();
+    p.config.mirrorX = true;
+    const tool = fakeTool();
+    tool.body.name = "soil sensor";
+    tool.body.id = 2;
+    const toolSlot = fakeToolSlot();
+    toolSlot.body.id = 1;
+    toolSlot.body.tool_id = tool.body.id;
+    toolSlot.body.pullout_direction = ToolPulloutDirection.POSITIVE_X;
+    p.toolSlots = [{ toolSlot, tool }];
+    const { container } = render(<Tools {...p} />);
+    expect(container).toContainHTML(`rotation="0,0,${Math.PI / 2}"`);
+  });
+
+  it("uses mirrored bot x for gantry-mounted tools when mirrorX is active", () => {
+    const p = fakeProps();
+    p.config.mirrorX = true;
+    p.configPosition.x = p.config.botSizeX - p.configPosition.x;
+    const tool = fakeTool();
+    tool.body.name = "soil sensor";
+    tool.body.id = 2;
+    const toolSlot = fakeToolSlot();
+    toolSlot.body.id = 1;
+    toolSlot.body.tool_id = tool.body.id;
+    toolSlot.body.gantry_mounted = true;
+    p.toolSlots = [{ toolSlot, tool }];
+    const { container } = render(<Tools {...p} />);
+    expect(container).toContainHTML("position=\"1065,-680,391\"");
+  });
+
+  it("doesn't mirror gantry-mounted tool y when mirrorY is active", () => {
+    const p = fakeProps();
+    p.config.mirrorY = true;
+    p.configPosition.y = p.config.botSizeY - p.configPosition.y;
+    const tool = fakeTool();
+    tool.body.name = "soil sensor";
+    tool.body.id = 2;
+    const toolSlot = fakeToolSlot();
+    toolSlot.body.id = 1;
+    toolSlot.body.tool_id = tool.body.id;
+    toolSlot.body.gantry_mounted = true;
+    p.toolSlots = [{ toolSlot, tool }];
+    const { container } = render(<Tools {...p} />);
+    expect(container).toContainHTML("position=\"-1055,-680,391\"");
   });
 
   it("renders vacuum animation when not in toolbay and vacuum", () => {

@@ -96,7 +96,7 @@ describe("<Photos />", () => {
         ...(update as Partial<PhotosComponentState>),
       };
       callback?.();
-    }) as Photos["setState"];
+    });
     return instance;
   };
 

@@ -61,146 +61,154 @@ export type SoilSensorFull = GLTF & {
   };
 }
 
+interface SoilSensorProps extends Omit<ThreeElements["group"], "ref"> {
+  model: SoilSensorFull;
+}
+
+export const SoilSensorModel = (props: SoilSensorProps) => {
+  const { model, ...groupProps } = props;
+  const { nodes, materials } = model;
+  // eslint-disable-next-line no-null/no-null
+  return <Group {...groupProps} dispose={null}>
+    <MeshComponent
+      geometry={nodes.Soil_Sensor.geometry}
+      material={materials.PaletteMaterial001}
+      position={[0, 0, -0.015]} />
+    <InstancedMesh
+      args={[nodes.mesh0_mesh.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh0_mesh.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh0_mesh_1.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh0_mesh_1.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh0_mesh_2.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh0_mesh_2.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh0_mesh_3.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh0_mesh_3.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh0_mesh_4.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh0_mesh_4.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh0_mesh_5.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh0_mesh_5.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh0_mesh_6.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh0_mesh_6.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh0_mesh_7.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh0_mesh_7.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh0_mesh_8.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh0_mesh_8.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh0_mesh_9.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh0_mesh_9.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh0_mesh_10.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh0_mesh_10.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh0_mesh_11.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh0_mesh_11.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh0_mesh_12.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh0_mesh_12.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh0_mesh_13.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh0_mesh_13.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh0_mesh_14.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh0_mesh_14.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh0_mesh_15.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh0_mesh_15.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh0_mesh_16.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh0_mesh_16.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh0_mesh_17.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh0_mesh_17.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh0_mesh_18.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh0_mesh_18.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh0_mesh_19.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh0_mesh_19.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh0_mesh_20.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh0_mesh_20.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh0_mesh_21.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh0_mesh_21.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh0_mesh_22.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh0_mesh_22.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh0_mesh_23.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh0_mesh_23.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh0_mesh_24.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh0_mesh_24.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh0_mesh_25.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh0_mesh_25.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh584_mesh.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh584_mesh.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh584_mesh_1.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh584_mesh_1.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh584_mesh_2.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh584_mesh_2.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh584_mesh_3.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh584_mesh_3.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh584_mesh_4.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh584_mesh_4.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh584_mesh_5.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh584_mesh_5.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh584_mesh_6.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh584_mesh_6.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh584_mesh_7.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh584_mesh_7.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh584_mesh_8.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh584_mesh_8.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh584_mesh_9.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh584_mesh_9.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh584_mesh_10.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh584_mesh_10.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh584_mesh_11.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh584_mesh_11.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh584_mesh_12.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh584_mesh_12.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh584_mesh_13.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh584_mesh_13.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh584_mesh_14.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh584_mesh_14.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh584_mesh_15.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh584_mesh_15.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh584_mesh_16.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh584_mesh_16.instanceMatrix} />
+    <InstancedMesh
+      args={[nodes.mesh584_mesh_17.geometry, materials.PaletteMaterial001, 8]}
+      instanceMatrix={nodes.mesh584_mesh_17.instanceMatrix} />
+  </Group>;
+};
+
 export const SoilSensor = (model: SoilSensorFull) =>
-  (props: Omit<ThreeElements["group"], "ref">) => {
-    const { nodes, materials } = model;
-    // eslint-disable-next-line no-null/no-null
-    return <Group {...props} dispose={null}>
-      <MeshComponent
-        geometry={nodes.Soil_Sensor.geometry}
-        material={materials.PaletteMaterial001}
-        position={[0, 0, -0.015]} />
-      <InstancedMesh
-        args={[nodes.mesh0_mesh.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh0_mesh.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh0_mesh_1.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh0_mesh_1.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh0_mesh_2.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh0_mesh_2.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh0_mesh_3.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh0_mesh_3.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh0_mesh_4.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh0_mesh_4.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh0_mesh_5.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh0_mesh_5.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh0_mesh_6.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh0_mesh_6.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh0_mesh_7.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh0_mesh_7.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh0_mesh_8.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh0_mesh_8.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh0_mesh_9.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh0_mesh_9.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh0_mesh_10.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh0_mesh_10.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh0_mesh_11.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh0_mesh_11.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh0_mesh_12.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh0_mesh_12.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh0_mesh_13.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh0_mesh_13.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh0_mesh_14.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh0_mesh_14.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh0_mesh_15.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh0_mesh_15.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh0_mesh_16.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh0_mesh_16.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh0_mesh_17.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh0_mesh_17.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh0_mesh_18.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh0_mesh_18.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh0_mesh_19.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh0_mesh_19.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh0_mesh_20.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh0_mesh_20.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh0_mesh_21.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh0_mesh_21.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh0_mesh_22.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh0_mesh_22.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh0_mesh_23.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh0_mesh_23.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh0_mesh_24.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh0_mesh_24.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh0_mesh_25.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh0_mesh_25.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh584_mesh.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh584_mesh.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh584_mesh_1.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh584_mesh_1.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh584_mesh_2.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh584_mesh_2.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh584_mesh_3.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh584_mesh_3.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh584_mesh_4.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh584_mesh_4.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh584_mesh_5.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh584_mesh_5.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh584_mesh_6.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh584_mesh_6.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh584_mesh_7.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh584_mesh_7.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh584_mesh_8.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh584_mesh_8.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh584_mesh_9.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh584_mesh_9.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh584_mesh_10.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh584_mesh_10.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh584_mesh_11.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh584_mesh_11.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh584_mesh_12.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh584_mesh_12.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh584_mesh_13.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh584_mesh_13.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh584_mesh_14.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh584_mesh_14.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh584_mesh_15.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh584_mesh_15.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh584_mesh_16.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh584_mesh_16.instanceMatrix} />
-      <InstancedMesh
-        args={[nodes.mesh584_mesh_17.geometry, materials.PaletteMaterial001, 8]}
-        instanceMatrix={nodes.mesh584_mesh_17.instanceMatrix} />
-    </Group>;
-  };
+  (props: Omit<ThreeElements["group"], "ref">) =>
+    <SoilSensorModel {...props} model={model} />;

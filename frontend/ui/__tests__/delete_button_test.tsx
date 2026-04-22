@@ -20,7 +20,7 @@ describe("<DeleteButton />", () => {
     const wrapper = createRenderer(<DeleteButton {...p} />);
     await wrapper.root.findByType("button").props.onClick?.({
       preventDefault: jest.fn(),
-    } as unknown as React.MouseEvent<HTMLButtonElement>);
+    });
     expect(p.dispatch).toHaveBeenCalledWith(destroyThunk);
     unmountRenderer(wrapper);
     destroySpy.mockRestore();

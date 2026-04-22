@@ -1,4 +1,3 @@
-import React from "react";
 import { fakeSensor } from "../../__test_support__/fake_state/resources";
 import { Actions } from "../../constants";
 import * as crud from "../../api/crud";
@@ -34,7 +33,7 @@ describe("<NameInputBox />", () => {
     const input = NameInputBox(p);
     input.props.onChange({
       currentTarget: { value: "GPIO 3" },
-    } as React.ChangeEvent<HTMLInputElement>);
+    });
     expect(p.dispatch).toHaveBeenCalledWith(
       expectedPayload({ label: "GPIO 3" }));
   });

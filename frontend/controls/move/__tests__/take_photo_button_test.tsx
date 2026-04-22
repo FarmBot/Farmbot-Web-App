@@ -18,7 +18,7 @@ describe("<TakePhotoButton />", () => {
     mockPhotoOutcome = Promise.resolve();
     takePhotoSpy =
       jest.spyOn(deviceActions, "takePhoto")
-        .mockImplementation(() => mockPhotoOutcome as never);
+        .mockImplementation(() => mockPhotoOutcome);
   });
 
   afterEach(() => {

@@ -19,9 +19,9 @@ import {
 import {
   zero as zeroFunc,
   extents as extentsFunc,
-  zZero,
   getGardenPositionFunc,
   get3DPositionFunc,
+  getWorldPositionFunc,
 } from "../../helpers";
 import { Config } from "../../config";
 import { SpecialStatus, TaggedGenericPointer } from "farmbot";
@@ -89,9 +89,9 @@ export const PointerObjects = (props: PointerObjectsProps) => {
   const gridPreview = mapPoints
     .filter(p => p.specialStatus == SpecialStatus.DIRTY && p.body.meta.gridId)
     .length > 0;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
   const boundsCenter = React.useMemo(getBoundsCenter(config), []);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
   const halfSize = React.useMemo(getHalfSize(config), []);
   return HOVER_OBJECT_MODES.includes(getMode()) &&
     !isMobile() &&
@@ -158,6 +158,8 @@ export const PointerObjects = (props: PointerObjectsProps) => {
                     shader.uniforms.uHalfSize = { value: halfSize };
                     shader.uniforms.uInside = { value: new Color("white") };
                     shader.uniforms.uOutside = { value: new Color("red") };
+                    shader.uniforms.uMirrorX = { value: config.mirrorX ? -1 : 1 };
+                    shader.uniforms.uMirrorY = { value: config.mirrorY ? -1 : 1 };
                     outOfBoundsShaderModification(shader);
                   }}
                   depthWrite={false} />
@@ -246,6 +248,7 @@ export const soilPointerMove = (props: SoilPointerMoveProps) =>
     } = props;
     const getGardenPosition = getGardenPositionFunc(config);
     const get3DPosition = get3DPositionFunc(config);
+    const getWorldPosition = getWorldPositionFunc(config);
     let frame = 0;
     let pendingGardenPosition: ReturnType<typeof getGardenPosition> | undefined;
     let lastRenderedPosition: { x: number, y: number } | undefined;
@@ -261,7 +264,10 @@ export const soilPointerMove = (props: SoilPointerMoveProps) =>
         || isMobile()
         || !pointerPlantRef.current) { return; }
       const { x, y } = get3DPosition(gardenPosition);
-      const z = zZero(config) + props.getZ(gardenPosition.x, gardenPosition.y);
+      const [, , z] = getWorldPosition({
+        ...gardenPosition,
+        z: props.getZ(gardenPosition.x, gardenPosition.y),
+      });
       if (lastRenderedPosition?.x === x && lastRenderedPosition.y === y) {
         return;
       }

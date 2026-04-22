@@ -54,6 +54,14 @@ describe("modifyConfig()", () => {
     const result = modifyConfig(initial, { otherPreset: "Initial" });
     expect(result.bedHeight).toEqual(300);
   });
+
+  it("modifies config: top down", () => {
+    const initial = clone(INITIAL);
+    const result = modifyConfig(initial, { topDown: true });
+    expect(result.topDown).toEqual(true);
+    expect(result.perspective).toEqual(false);
+    expect(result.rotate).toEqual(false);
+  });
 });
 
 describe("modifyConfigsFromUrlParams()", () => {

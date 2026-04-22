@@ -39,7 +39,7 @@ const setStateSync = (instance: ComputedMove) => {
       : state;
     instance.state = { ...instance.state, ...update };
     callback?.();
-  }) as ComputedMove["setState"];
+  });
   return instance;
 };
 

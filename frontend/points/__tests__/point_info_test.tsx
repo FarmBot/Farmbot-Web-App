@@ -34,7 +34,7 @@ beforeEach(() => {
   saveSpy = jest.spyOn(crud, "save").mockImplementation(jest.fn());
   popoverSpy = jest.spyOn(popover, "Popover").mockImplementation(((
     { target, content }: PopoverProps,
-  ) => <div>{target}{content}</div>) as never);
+  ) => <div>{target}{content}</div>));
 });
 
 afterEach(() => {

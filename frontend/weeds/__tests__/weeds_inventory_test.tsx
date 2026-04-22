@@ -277,7 +277,7 @@ describe("<WeedsSection />", () => {
     const wrapper = createWrapper(<WeedsSection {...p} />);
     wrapper.root.findByType(ToggleButton).props.toggleAction({
       stopPropagation: jest.fn(),
-    } as unknown as React.MouseEvent<HTMLElement>);
+    });
     expect(p.dispatch).toHaveBeenCalled();
   });
 

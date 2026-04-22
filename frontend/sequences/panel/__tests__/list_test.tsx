@@ -52,7 +52,7 @@ beforeEach(() => {
         color: "gray",
       },
     ]
-  }) as never);
+  }));
   installSequenceSpy = jest.spyOn(sequenceActions, "installSequence")
     .mockImplementation(() => jest.fn() as never);
   addNewSequenceToFolderSpy = jest.spyOn(foldersActions, "addNewSequenceToFolder")

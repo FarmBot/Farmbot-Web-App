@@ -30,6 +30,18 @@ describe("<Point />", () => {
     expect(container).toContainHTML("opacity=\"1\"");
   });
 
+  it("renders mirrored position", () => {
+    const p = fakeProps();
+    p.config.mirrorX = true;
+    p.config.mirrorY = true;
+    p.config.botSizeX = 1000;
+    p.config.botSizeY = 500;
+    p.point.body.x = 100;
+    p.point.body.y = 200;
+    const { container } = render(<Point {...p} />);
+    expect(container).toContainHTML("position=\"1260,460,400\"");
+  });
+
   it("renders: unsaved", () => {
     const p = fakeProps();
     p.point.specialStatus = SpecialStatus.DIRTY;

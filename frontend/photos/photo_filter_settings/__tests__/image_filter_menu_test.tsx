@@ -44,7 +44,7 @@ beforeEach(() => {
           { length: props.max - props.min + 1 },
           (_, index) => props.min + index,
         ).map(day => <span key={day}>{props.labelRenderer(day)}</span>)}
-      </div>) as never);
+      </div>));
 });
 
 afterEach(() => {
@@ -64,7 +64,7 @@ describe("<ImageFilterMenu />", () => {
   const setStateSync = (instance: ImageFilterMenu) => {
     instance.setState = (((update: Partial<ImageFilterMenuState>) => {
       instance.state = { ...instance.state, ...update };
-    }) as unknown) as typeof instance.setState;
+    }));
   };
 
   const setConfigDispatch = (

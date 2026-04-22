@@ -2,7 +2,7 @@ let mockIsDesktop = false;
 let mockIsMobile = false;
 
 import React from "react";
-import { useTexture } from "@react-three/drei";
+import { OrbitControls, useTexture } from "@react-three/drei";
 import { GardenModelProps, GardenModel } from "../garden_model";
 import { clone } from "lodash";
 import { INITIAL, INITIAL_POSITION, SurfaceDebugOption } from "../config";
@@ -39,12 +39,12 @@ describe("<GardenModel />", () => {
       .mockImplementation(<S,>(initialState?: S | (() => S)) => {
         useStateCalls += 1;
         if (useStateCalls == 2) {
-          return [{} as S, jest.fn()];
+          return [{}, jest.fn()];
         }
         const value = typeof initialState == "function"
           ? (initialState as () => S)()
           : initialState;
-        return [value as S, jest.fn()];
+        return [value, jest.fn()];
       });
     isDesktopSpy = jest.spyOn(screenSize, "isDesktop")
       .mockImplementation(() => mockIsDesktop);
@@ -87,11 +87,49 @@ describe("<GardenModel />", () => {
   it("renders top down view", () => {
     mockIsMobile = true;
     const p = fakeProps();
-    const addPlantProps = fakeAddPlantProps();
-    addPlantProps.designer.threeDTopDownView = true;
-    p.addPlantProps = addPlantProps;
+    p.config.topDown = true;
+    p.config.viewpointHeading = 90;
+    const wrapper = createWrapper(p);
+    const orbitControls = wrapper.root.findByType(OrbitControls);
+    expect(orbitControls.props.minAzimuthAngle).toEqual(Math.PI / 2);
+    expect(orbitControls.props.maxAzimuthAngle).toEqual(Math.PI / 2);
+  });
+
+  it("rounds top down heading up to the nearest 90 degrees", () => {
+    mockIsMobile = true;
+    const p = fakeProps();
+    p.config.topDown = true;
+    p.config.viewpointHeading = 1;
+    const wrapper = createWrapper(p);
+    const orbitControls = wrapper.root.findByType(OrbitControls);
+    expect(orbitControls.props.minAzimuthAngle).toEqual(Math.PI / 2);
+    expect(orbitControls.props.maxAzimuthAngle).toEqual(Math.PI / 2);
+  });
+
+  it("scales top down zoom by bed length", () => {
+    const p = fakeProps();
+    p.config.topDown = true;
+    p.config.bedLengthOuter = 6000;
+    const wrapper = createWrapper(p);
+    const camera = wrapper.root.findAll(node => node.props.name == "camera")[0];
+    expect(camera?.props.zoom).toEqual(0.125);
+  });
+
+  it("increases top down zoom for shorter beds", () => {
+    const p = fakeProps();
+    p.config.topDown = true;
+    p.config.bedLengthOuter = 1500;
+    const wrapper = createWrapper(p);
+    const camera = wrapper.root.findAll(node => node.props.name == "camera")[0];
+    expect(camera?.props.zoom).toEqual(0.5);
+  });
+
+  it("renders camera selection view", () => {
+    const p = fakeProps();
+    p.config.cameraSelectionView = true;
+    p.config.viewpointHeading = 45;
     const { container } = render(<GardenModel {...p} />);
-    expect(container.innerHTML).toContain("darkgreen");
+    expect(container.innerHTML).toContain("camera-selection");
   });
 
   it("renders no user plants", () => {
@@ -152,15 +190,15 @@ describe("<GardenModel />", () => {
       .mockImplementation(<S,>(initialState?: S | (() => S)) => {
         useStateCalls += 1;
         if (useStateCalls == 1) {
-          return [0 as S, jest.fn()];
+          return [0, jest.fn()];
         }
         if (useStateCalls == 2) {
-          return [{} as S, jest.fn()];
+          return [{}, jest.fn()];
         }
         const value = typeof initialState == "function"
           ? (initialState as () => S)()
           : initialState;
-        return [value as S, jest.fn()];
+        return [value, jest.fn()];
       });
     const p = fakeProps();
     const plant = fakePlant();

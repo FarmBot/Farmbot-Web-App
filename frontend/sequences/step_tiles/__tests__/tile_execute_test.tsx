@@ -51,7 +51,7 @@ beforeEach(() => {
   jest.clearAllMocks();
   jest.spyOn(crud, "editStep").mockImplementation(mockEditStep);
   jest.spyOn(selectorsById, "findSequenceById")
-    .mockImplementation(() => mockSequence as never);
+    .mockImplementation(() => mockSequence);
   mockEditStep.mockClear();
   mockSequence = fakeSequence();
 });

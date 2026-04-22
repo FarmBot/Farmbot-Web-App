@@ -42,7 +42,6 @@ import {
 import { BooleanSetting } from "../session_keys";
 import { SlotWithTool } from "../resources/interfaces";
 import { cameraInit } from "./camera";
-import { isMobile } from "../screen_size";
 import { filterSoilPoints, getSurface } from "./triangles";
 import { BigDistance } from "./constants";
 import { getZFunc } from "./triangle_functions";
@@ -50,6 +49,7 @@ import { Visualization } from "./visualization";
 import { GroupOrderVisual } from "./group_order_visual";
 import { MoistureReadings } from "./garden/moisture_texture";
 import { FPSProbe } from "./fps_probe";
+import { CameraSelectionUI } from "./camera_selection_ui";
 
 const AnimatedGroup = animated(Group);
 
@@ -80,7 +80,6 @@ export const GardenModel = (props: GardenModelProps) => {
 
   const [hoveredPlant, setHoveredPlant] =
     React.useState<number | undefined>(undefined);
-  const hoveredPlantRef = React.useRef<number | undefined>(undefined);
 
   const getI = (e: ThreeEvent<PointerEvent>) => {
     if (e.buttons) { return -1; }
@@ -101,8 +100,6 @@ export const GardenModel = (props: GardenModelProps) => {
       ? (e: ThreeEvent<PointerEvent>) => {
         e.stopPropagation();
         const nextHover = active ? getI(e) : undefined;
-        if (hoveredPlantRef.current === nextHover) { return; }
-        hoveredPlantRef.current = nextHover;
         setHoveredPlant(nextHover);
       }
       : undefined;
@@ -117,13 +114,20 @@ export const GardenModel = (props: GardenModelProps) => {
     },
   });
 
-  const topDown = addPlantProps?.designer.threeDTopDownView;
-  const topDownMobile = topDown && isMobile();
+  const baseAngle = 0;
+  const heading = Math.ceil(config.viewpointHeading / 90) * 90;
+  const topDownCameraAngle = config.topDown
+    ? baseAngle + heading * Math.PI / 180
+    : undefined;
   const camera = getCamera(
     config,
     props.configPosition,
     props.activeFocus,
-    cameraInit(!!topDown));
+    cameraInit({
+      topDown: config.topDown,
+      viewpointHeading: config.viewpointHeading,
+      bedSize: { x: config.bedLengthOuter, y: config.bedWidthOuter },
+    }));
   const [controlsCamera, setControlsCamera] =
     // eslint-disable-next-line no-null/no-null
     React.useState<ThreePerspectiveCamera | ThreeOrthographicCamera | null>(null);
@@ -156,9 +160,12 @@ export const GardenModel = (props: GardenModelProps) => {
   const showMoistureReadings = !!props.addPlantProps?.getConfigValue(
     BooleanSetting.show_sensor_readings);
 
+  const topDownAtStart = !!props.addPlantProps?.getConfigValue(
+    BooleanSetting.top_down_view);
+  const topDownZoomLevel = 0.25 * 3000 / config.bedLengthOuter;
+
   // eslint-disable-next-line no-null/no-null
   const skyRef = React.useRef<ThreeMeshBasicMaterial>(null);
-  const sunFactorRef = React.useRef<number>(1);
   // eslint-disable-next-line no-null/no-null
   const activePositionRef = React.useRef<{ x: number, y: number }>(null);
 
@@ -232,20 +239,22 @@ export const GardenModel = (props: GardenModelProps) => {
         fov={40} near={10} far={BigDistance.far}
         position={camera.position}
         rotation={[0, 0, 0]}
-        zoom={topDown ? 0.25 : 1}
+        zoom={config.topDown ? topDownZoomLevel : 1}
         up={[0, 0, 1]} />
     </AnimatedGroup>
     {controlsCamera &&
       <OrbitControls
         camera={controlsCamera}
         maxPolarAngle={Math.PI / 2}
-        minAzimuthAngle={topDownMobile ? Math.PI / 2 : undefined}
-        maxAzimuthAngle={topDownMobile ? Math.PI / 2 : undefined}
+        minAzimuthAngle={topDownCameraAngle}
+        maxAzimuthAngle={topDownCameraAngle}
         enableRotate={config.rotate}
         enableZoom={config.zoom}
         enablePan={config.pan}
         dampingFactor={0.2}
         target={camera.target}
+        minZoom={config.lightsDebug ? 0 : 0.05}
+        maxZoom={10}
         minDistance={config.lightsDebug ? 50 : 500}
         maxDistance={config.lightsDebug ? BigDistance.devZoom : BigDistance.zoom} />}
     <AxesHelper args={[5000]} visible={config.threeAxes} />
@@ -253,8 +262,7 @@ export const GardenModel = (props: GardenModelProps) => {
     <Sun
       config={config}
       skyRef={skyRef}
-      startTimeRef={props.startTimeRef}
-      sunFactorRef={sunFactorRef} />
+      startTimeRef={props.startTimeRef} />
     <AmbientLight intensity={config.ambient / 100} />
     <Ground config={config} />
     <Clouds config={config} />
@@ -306,8 +314,7 @@ export const GardenModel = (props: GardenModelProps) => {
         getZ={getZ}
         visible={plantsVisible}
         startTimeRef={props.startTimeRef}
-        dispatch={dispatch}
-        sunFactorRef={sunFactorRef} />
+        dispatch={dispatch} />
       <PlantSpreadInstances
         plants={threeDPlants}
         visible={plantsVisible}
@@ -338,5 +345,10 @@ export const GardenModel = (props: GardenModelProps) => {
     <Solar config={config} activeFocus={props.activeFocus} />
     <Lab config={config} activeFocus={props.activeFocus} />
     <Greenhouse config={config} activeFocus={props.activeFocus} />
+    {config.cameraSelectionView &&
+      <CameraSelectionUI
+        config={config}
+        dispatch={dispatch}
+        topDownAtStart={topDownAtStart} />}
   </Group>;
 };

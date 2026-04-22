@@ -84,7 +84,7 @@ export const FPSProbe = () => {
       samples.current.push(fps);
       const { calls, triangles, points, lines } = gl.info.render;
       const { geometries, textures } = gl.info.memory;
-      const sceneCounts = countSceneObjects(scene as Scene);
+      const sceneCounts = countSceneObjects(scene);
       window.__fps = fps;
       const linesToLogObj: Record<string, number | string> = {
         epoch: Date.now(),
@@ -107,7 +107,8 @@ export const FPSProbe = () => {
       const linesToLog = Object.entries(linesToLogObj)
         .map(([key, value]) => `${key}: ${value}`)
         .join("\n");
-      console.log(linesToLog);
+      const doLog = (localStorage.getItem("FPS_LOGS") ?? "true") == "true";
+      doLog && console.log(linesToLog);
       reportCount.current += 1;
       const doReport = !(reportCount.current % REPORT_EVERY_N);
       const average = Math.round(samples.current
@@ -119,7 +120,7 @@ export const FPSProbe = () => {
         total: samples.current.length,
       };
       doReport && window.logStore?.log("3D Garden FPS", report, "info");
-      console.log(report);
+      doLog && console.log(report);
       frameCount.current = 0;
       lastTime.current = now;
     }

@@ -28,7 +28,7 @@ beforeEach(() => {
   jest.spyOn(criteriaApply, "pointsSelectedByGroup")
     .mockImplementation(() => mockGroupPoints);
   sortGroupBySpy = jest.spyOn(pointGroupSort, "sortGroupBy")
-    .mockImplementation(((_method, pts) => pts) as typeof pointGroupSort.sortGroupBy);
+    .mockImplementation(((_method, pts) => pts));
 });
 
 

@@ -41,7 +41,7 @@ describe("<PlainDesignerSettings />", () => {
     const labels = container.querySelectorAll("label");
     const buttons = container.querySelectorAll("button");
     expect(labels[0]?.textContent).toContain("animations");
-    fireEvent.click(buttons[0] as Element);
+    fireEvent.click(buttons[0]);
     expect(resetVirtualTrailSpy).not.toHaveBeenCalled();
   });
 
@@ -53,7 +53,7 @@ describe("<PlainDesignerSettings />", () => {
     const labels = container.querySelectorAll("label");
     const buttons = container.querySelectorAll("button");
     expect(labels[1]?.textContent).toContain("Trail");
-    fireEvent.click(buttons[1] as Element);
+    fireEvent.click(buttons[1]);
     expect(resetVirtualTrailSpy).toHaveBeenCalled();
   });
 });

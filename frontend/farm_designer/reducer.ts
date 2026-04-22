@@ -59,7 +59,8 @@ export const initialState: DesignerState = {
   cropRadius: undefined,
   distanceIndicator: "",
   panelOpen: true,
-  threeDTopDownView: false,
+  threeDTopDownView: undefined,
+  threeDCameraSelection: false,
   threeDExaggeratedZ: false,
   threeDTime: undefined,
 };
@@ -244,6 +245,10 @@ export const designer = generateReducer<DesignerState>(initialState)
   })
   .add<boolean>(Actions.TOGGLE_3D_TOP_DOWN_VIEW, (s, { payload }) => {
     s.threeDTopDownView = payload;
+    return s;
+  })
+  .add<never>(Actions.TOGGLE_3D_CAMERA_SELECTION, (s) => {
+    s.threeDCameraSelection = !s.threeDCameraSelection;
     return s;
   })
   .add<boolean>(Actions.TOGGLE_3D_EXAGGERATED_Z, (s, { payload }) => {

@@ -69,7 +69,7 @@ import {
 } from "farmbot/dist/resources/configs/web_app";
 import { GetWebAppConfigValue, toggleWebAppBool } from "../config_storage/actions";
 import { PLACEHOLDER_FARMBOT } from "../photos/images/image_flipper";
-import { OriginSelector } from "../settings/farm_designer_settings";
+import { CameraStartingLocationButton, OriginSelector } from "../settings/farm_designer_settings";
 import { Sensors } from "../sensors";
 import {
   DropdownConfig,
@@ -568,11 +568,18 @@ export const SelectMapOrigin = (props: WizardOutcomeComponentProps) =>
       getConfigValue={props.getConfigValue} />
   </fieldset>;
 
-export const MapOrientation = (props: WizardOutcomeComponentProps) =>
-  <div className={"map-orientation"}>
-    <RotateMapToggle {...props} />
-    <SelectMapOrigin {...props} />
+export const MapOrientation = (props: WizardOutcomeComponentProps) => {
+  const is3D = !!props.getConfigValue(BooleanSetting.three_d_garden);
+  return <div className={"map-orientation"}>
+    {!is3D && <RotateMapToggle {...props} />}
+    {!is3D && <SelectMapOrigin {...props} />}
+    {is3D && <div
+      className={"row grid-exp-1 align-baseline"}>
+      <label>{t(DeviceSetting.setCameraStartingLocation)}</label>
+      <CameraStartingLocationButton dispatch={props.dispatch} />
+    </div>}
   </div>;
+};
 
 export const PeripheralsCheck = (props: WizardStepComponentProps) => {
   const peripherals = uniq(selectAllPeripherals(props.resources));

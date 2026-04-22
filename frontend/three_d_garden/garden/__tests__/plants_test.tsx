@@ -69,7 +69,7 @@ describe("<ThreeDPlantLabel />", () => {
       .mockImplementation(() => {
         const nextRef = refQueue.shift() || mockRefImpl();
         allRefs.push(nextRef);
-        return nextRef as never;
+        return nextRef;
       });
     const actualUseImperativeHandle = jest.requireActual("react")
       .useImperativeHandle as typeof React.useImperativeHandle;
@@ -121,6 +121,12 @@ describe("<ThreeDPlantLabel />", () => {
     render(<ThreeDPlantLabel {...p} />);
     expect(screen.getByText("Beet")).toBeInTheDocument();
   });
+
+  it("keeps plant coordinates in garden space", () => {
+    const p = fakeProps();
+    expect(p.plant.x).toEqual(100);
+    expect(p.plant.y).toEqual(200);
+  });
 });
 
 describe("<ThreeDPlantSpread />", () => {
@@ -129,7 +135,7 @@ describe("<ThreeDPlantSpread />", () => {
       .mockImplementation(() => {
         const nextRef = refQueue.shift() || mockRefImpl();
         allRefs.push(nextRef);
-        return nextRef as never;
+        return nextRef;
       });
     const actualUseImperativeHandle = jest.requireActual("react")
       .useImperativeHandle as typeof React.useImperativeHandle;
@@ -217,6 +223,20 @@ describe("<ThreeDPlantSpread />", () => {
     expect(mockNavigate).toHaveBeenCalledWith(Path.plants("1"));
   });
 
+  it("doesn't navigate on spread click in camera selection mode", () => {
+    setMockInstanceId(0);
+    getModeSpy.mockReturnValue(Mode.cameraSelection);
+    queueMeshRef();
+    const p = fakeProps();
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
+    const { container } = render(<PlantSpreadInstances {...p} />);
+    const mesh = container.querySelector("instancedmesh");
+    mesh && fireEvent.click(mesh, { instanceId: 0 });
+    expect(dispatch).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
   it("updates instance colors on frame", () => {
     queueMeshRef();
     const p = fakeProps();
@@ -297,7 +317,7 @@ describe("<ThreeDPlantSpread />", () => {
     setMockInstanceId(0);
     queueMeshRef();
     const p = fakeProps();
-    p.plants[0].id = undefined as unknown as number;
+    p.plants[0].id = undefined;
     const dispatch = jest.fn();
     p.dispatch = mockDispatch(dispatch);
     const { container } = render(<PlantSpreadInstances {...p} />);
@@ -335,6 +355,10 @@ describe("outOfBoundsShaderModification", () => {
     } as unknown as WebGLProgramParametersWithUniforms;
     outOfBoundsShaderModification(shader, false);
     expect(shader.fragmentShader).toContain("uInside");
+    expect(shader.fragmentShader).toContain("uMirrorX");
+    expect(shader.fragmentShader).toContain("uMirrorY");
+    expect(shader.fragmentShader).toContain("p.x *= uMirrorX");
+    expect(shader.fragmentShader).toContain("p.y *= uMirrorY");
     expect(shader.vertexShader).not.toContain("vInstanceColor");
   });
 });

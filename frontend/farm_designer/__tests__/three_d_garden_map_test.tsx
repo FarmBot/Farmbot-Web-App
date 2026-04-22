@@ -25,7 +25,7 @@ beforeEach(() => {
   getPositionSpy = jest.spyOn(suncalc, "getPosition").mockReturnValue({
     altitude: 0.5,
     azimuth: 1.0,
-  } as never);
+  });
 });
 
 afterEach(() => {
@@ -59,7 +59,7 @@ describe("<ThreeDGardenMap />", () => {
     designer: fakeDesignerState(),
     plants: [fakePlant()],
     dispatch: jest.fn(),
-    getWebAppConfigValue: jest.fn(),
+    getWebAppConfigValue: () => 0,
     curves: [],
     mapPoints: [],
     weeds: [],
@@ -133,11 +133,14 @@ describe("<ThreeDGardenMap />", () => {
     expectedConfig.imgScale = 0.6;
     expectedConfig.imgCenterX = 0;
     expectedConfig.imgCenterY = 0;
+    expectedConfig.mirrorX = true;
+    expectedConfig.mirrorY = true;
+    expectedConfig.viewpointHeading = 0;
 
     const call = lastThreeDGardenProps();
     expect(call).toEqual(expect.objectContaining({
       config: expectedConfig,
-      configPosition: { x: 1, y: 2, z: 3 },
+      configPosition: { x: 2999, y: 1498, z: 3 },
       threeDPlants: [{
         id: expect.any(Number),
         icon: expect.any(String),
@@ -146,8 +149,8 @@ describe("<ThreeDGardenMap />", () => {
         seed: 0,
         size: 50,
         spread: 30,
-        x: 101,
-        y: 201,
+        x: 100,
+        y: 200,
       }],
       addPlantProps: expect.any(Object),
       ...EMPTY_PROPS,
@@ -161,7 +164,7 @@ describe("<ThreeDGardenMap />", () => {
     render(<ThreeDGardenMap {...p} />);
     const call = lastThreeDGardenProps();
     expect(call).toEqual(expect.objectContaining({
-      configPosition: { x: 0, y: 0, z: 0 },
+      configPosition: { x: 3000, y: 1500, z: 0 },
       threeDPlants: [],
       addPlantProps: expect.any(Object),
       ...EMPTY_PROPS,
@@ -177,7 +180,7 @@ describe("<ThreeDGardenMap />", () => {
     const call = lastThreeDGardenProps();
     expect(call).toEqual(expect.objectContaining({
       config: expect.objectContaining({ negativeZ: true }),
-      configPosition: { x: 0, y: 0, z: -100 },
+      configPosition: { x: 3000, y: 1500, z: -100 },
       threeDPlants: [],
       addPlantProps: expect.any(Object),
       ...EMPTY_PROPS,
@@ -336,8 +339,8 @@ describe("convertPlants()", () => {
       seed: 0,
       size: 50,
       spread: 20,
-      x: 110,
-      y: 201,
+      x: 100,
+      y: 200,
     },
     {
       icon: CROPS["generic-plant"].icon,
@@ -347,8 +350,8 @@ describe("convertPlants()", () => {
       seed: 0,
       size: 50,
       spread: 0,
-      x: 1010,
-      y: 2001,
+      x: 1000,
+      y: 2000,
     },
     ]);
   });

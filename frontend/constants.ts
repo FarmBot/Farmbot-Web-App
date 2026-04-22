@@ -1015,6 +1015,12 @@ export namespace Content {
     trim(`Select a map origin by clicking on one of the four quadrants to
     adjust the garden map to your viewing angle.`);
 
+  export const TOP_DOWN_VIEW =
+    trim(`Upon open, display the 3D garden map from a top-down perspective.`);
+
+  export const CAMERA_STARTING_LOCATION =
+    trim(`Location of the camera when the 3D garden map is opened.`);
+
   export const CROP_MAP_IMAGES =
     trim(`Crop images displayed in the garden map to remove black borders
     from image rotation. Crop amount determined by CAMERA ROTATION value.`);
@@ -1773,6 +1779,10 @@ export namespace SetupWizardContent {
     map to your real life FarmBot. The relevant controls are available
     below the video for your convenience.`);
 
+  export const SET_CAMERA_LOCATION =
+    trim(`Press the "SET" button to show camera location options.
+    Select the correct camera angle by clicking on the camera location.`);
+
   export const PRESS_RIGHT_JOG_BUTTON =
     trim(`Standing from where you will normally view the FarmBot,
     **press the right arrow button**.`);
@@ -2234,6 +2244,8 @@ export enum DeviceSetting {
   mapSize = `Map size`,
   rotateMap = `Rotate map`,
   mapOrigin = `Map origin`,
+  topDownView = `Top down view`,
+  setCameraStartingLocation = `Set camera starting location`,
   cropMapImages = `Crop map images`,
   clipPhotosOutOfBounds = `Clip photos out of bounds`,
   cameraView = `Camera view`,
@@ -2562,6 +2574,7 @@ export enum Actions {
   // 3D
   SET_DISTANCE_INDICATOR = "SET_DISTANCE_INDICATOR",
   TOGGLE_3D_TOP_DOWN_VIEW = "TOGGLE_3D_TOP_DOWN_VIEW",
+  TOGGLE_3D_CAMERA_SELECTION = "TOGGLE_3D_CAMERA_SELECTION",
   TOGGLE_3D_EXAGGERATED_Z = "TOGGLE_3D_EXAGGERATED_Z",
   SET_3D_TIME = "RESET_3D_TIME",
 

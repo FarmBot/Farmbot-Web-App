@@ -89,7 +89,7 @@ describe("<EqCriteriaSelection<string> />", () => {
     const p = fakeProps();
     p.eqCriteria = { openfarm_slug: ["slug"] };
     const { container } = render(<EqCriteriaSelection<string> {...p} />);
-    fireEvent.click(container.querySelectorAll("button")[1] as Element);
+    fireEvent.click(container.querySelectorAll("button")[1]);
     expect(removeEqCriteriaValueSpy).toHaveBeenCalledWith(
       p.group,
       { openfarm_slug: ["slug"] },
@@ -121,7 +121,7 @@ describe("<NumberCriteriaSelection />", () => {
     p.criteria.number_gt = { x: 1 };
     const { container } = render(<NumberCriteriaSelection {...p} />);
     expect(container.textContent).toContain(">");
-    fireEvent.click(container.querySelectorAll("button")[1] as Element);
+    fireEvent.click(container.querySelectorAll("button")[1]);
     expect(clearCriteriaFieldSpy).toHaveBeenCalledWith(
       p.group,
       ["number_gt"],
@@ -192,7 +192,7 @@ describe("<NumberLtGtInput />", () => {
   it("changes number_gt", () => {
     const p = fakeProps();
     const { container } = render(<NumberLtGtInput {...p} />);
-    fireEvent.blur(container.querySelectorAll("input")[0] as Element, {
+    fireEvent.blur(container.querySelectorAll("input")[0], {
       target: { value: "1" }
     });
     expect(editGtLtCriteriaFieldSpy).toHaveBeenCalledWith(
@@ -205,7 +205,7 @@ describe("<NumberLtGtInput />", () => {
   it("changes number_lt", () => {
     const p = fakeProps();
     const { container } = render(<NumberLtGtInput {...p} />);
-    fireEvent.blur(container.querySelectorAll("input")[1] as Element, {
+    fireEvent.blur(container.querySelectorAll("input")[1], {
       target: { value: "1" }
     });
     expect(editGtLtCriteriaFieldSpy).toHaveBeenCalledWith(

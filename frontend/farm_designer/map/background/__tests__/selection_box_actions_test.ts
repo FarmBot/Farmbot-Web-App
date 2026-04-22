@@ -89,8 +89,7 @@ describe("resizeBox", () => {
 
   it("doesn't resize box: no location", () => {
     const p = fakeProps();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    p.gardenCoords = undefined as any;
+    p.gardenCoords = undefined;
     resizeBox(p);
     expect(p.setMapState).not.toHaveBeenCalled();
     expect(p.dispatch).not.toHaveBeenCalled();
@@ -98,8 +97,7 @@ describe("resizeBox", () => {
 
   it("doesn't resize box: no box", () => {
     const p = fakeProps();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    p.selectionBox = undefined as any;
+    p.selectionBox = undefined;
     resizeBox(p);
     expect(p.setMapState).not.toHaveBeenCalled();
     expect(p.dispatch).not.toHaveBeenCalled();
@@ -156,8 +154,7 @@ describe("startNewSelectionBox", () => {
 
   it("doesn't start box", () => {
     const p = fakeProps();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    p.gardenCoords = undefined as any;
+    p.gardenCoords = undefined;
     startNewSelectionBox(p);
     expect(p.setMapState).not.toHaveBeenCalled();
     expect(p.dispatch).toHaveBeenCalledWith({

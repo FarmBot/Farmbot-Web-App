@@ -24,8 +24,8 @@ let postSpy: jest.SpyInstance;
 let installSequenceSpy: jest.SpyInstance;
 
 beforeEach(() => {
-  getSpy = jest.spyOn(axios, "get").mockImplementation(() => mockGet as never);
-  postSpy = jest.spyOn(axios, "post").mockResolvedValue({} as never);
+  getSpy = jest.spyOn(axios, "get").mockImplementation(() => mockGet);
+  postSpy = jest.spyOn(axios, "post").mockResolvedValue({});
   installSequenceSpy = jest.spyOn(sequenceActions, "installSequence")
     .mockImplementation(jest.fn(() => () => Promise.resolve()) as never);
 });

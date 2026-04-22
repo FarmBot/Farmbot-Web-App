@@ -2,12 +2,17 @@ import { clone } from "lodash";
 import {
   easyCubicBezierCurve3,
   getColorFromBrightness,
+  get3DPositionFunc,
+  getGardenPositionFunc,
+  isTopDown,
+  getWorldPositionFunc,
   threeSpace,
   zDir,
   zZero,
 } from "../helpers";
 import { INITIAL } from "../config";
 import * as THREE from "three";
+import { fakeDesignerState } from "../../__test_support__/fake_designer_state";
 
 describe("threeSpace()", () => {
   it("returns adjusted position", () => {
@@ -51,5 +56,62 @@ describe("easyCubicBezierCurve3()", () => {
       [100, 0, 0],
     );
     expect(result).toEqual(expected);
+  });
+});
+
+describe("mirror-aware position helpers", () => {
+  const fakeConfig = () => {
+    const config = clone(INITIAL);
+    config.botSizeX = 1000;
+    config.botSizeY = 500;
+    config.bedLengthOuter = 1200;
+    config.bedWidthOuter = 700;
+    config.bedXOffset = 100;
+    config.bedYOffset = 50;
+    return config;
+  };
+
+  it("round trips garden coordinates without mirroring", () => {
+    const config = fakeConfig();
+    const get3DPosition = get3DPositionFunc(config);
+    const getGardenPosition = getGardenPositionFunc(config, false);
+    const world = get3DPosition({ x: 125, y: 250 });
+    expect(getGardenPosition(world)).toEqual({ x: 125, y: 250 });
+  });
+
+  it("round trips garden coordinates with x and y mirroring", () => {
+    const config = fakeConfig();
+    config.mirrorX = true;
+    config.mirrorY = true;
+    const get3DPosition = get3DPositionFunc(config);
+    const getGardenPosition = getGardenPositionFunc(config, false);
+    const world = get3DPosition({ x: 125, y: 250 });
+    expect(world).toEqual({ x: 375, y: 50 });
+    expect(getGardenPosition(world)).toEqual({ x: 125, y: 250 });
+  });
+
+  it("returns world position with mirrored x and y", () => {
+    const config = fakeConfig();
+    config.columnLength = 200;
+    config.zGantryOffset = 100;
+    config.mirrorX = true;
+    config.mirrorY = true;
+    const getWorldPosition = getWorldPositionFunc(config);
+    expect(getWorldPosition({ x: 125, y: 250, z: 10 })).toEqual([375, 50, 150]);
+  });
+});
+
+describe("isTopDown()", () => {
+  it("returns local state when defined", () => {
+    const designer = fakeDesignerState();
+    designer.threeDTopDownView = false;
+    expect(isTopDown(designer, () => true)).toEqual(false);
+  });
+
+  it("falls back to saved config when local state is undefined", () => {
+    const designer = fakeDesignerState();
+    designer.threeDTopDownView = undefined;
+    expect(isTopDown(designer, () => true)).toEqual(true);
+    expect(isTopDown(designer, () => false)).toEqual(false);
   });
 });

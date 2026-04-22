@@ -28,7 +28,7 @@ let originalPrivUrl: string;
 const setStateSync = (instance: FrontPage) => {
   instance.setState = ((state: Partial<FrontPage["state"]>) => {
     instance.state = { ...instance.state, ...state };
-  }) as FrontPage["setState"];
+  });
   return instance;
 };
 
@@ -65,9 +65,9 @@ describe("<FrontPage />", () => {
     originalPrivUrl = globalConfig.PRIV_URL;
     const mockState = fakeState();
     getStateSpy = jest.spyOn(store, "getState")
-      .mockReturnValue(mockState as never);
+      .mockReturnValue(mockState);
     postSpy = jest.spyOn(axios, "post")
-      .mockImplementation(() => mockAxiosResponse as never);
+      .mockImplementation(() => mockAxiosResponse);
     fetchStoredTokenSpy = jest.spyOn(Session, "fetchStoredToken")
       .mockImplementation(() => mockAuth);
     replaceTokenSpy = jest.spyOn(Session, "replaceToken")
@@ -140,8 +140,8 @@ describe("<FrontPage />", () => {
     const content = instance.defaultContent();
     const createAccount = findElement(content,
       element => element.type === CreateAccount) as React.ReactElement<{
-      set: (key: keyof FrontPage["state"], val: string | boolean) => void;
-    }>;
+        set: (key: keyof FrontPage["state"], val: string | boolean) => void;
+      }>;
     if (!createAccount) {
       throw new Error("Expected create account panel");
     }
@@ -241,7 +241,8 @@ describe("<FrontPage />", () => {
     instance.submitRegistration(fakeFormEvent);
     await flushPromises();
     expect(axios.post).toHaveBeenCalledWith(
-      "http://localhost:3000/api/users/", {
+      "http://localhost:3000/api/users/",
+      {
         user: {
           agree_to_terms: true, email: "foo@bar.io", name: "Foo Bar",
           password: "password", password_confirmation: "password"
@@ -265,7 +266,8 @@ describe("<FrontPage />", () => {
     instance.submitRegistration(fakeFormEvent);
     await flushPromises();
     expect(axios.post).toHaveBeenCalledWith(
-      "http://localhost:3000/api/users/", {
+      "http://localhost:3000/api/users/",
+      {
         user: {
           agree_to_terms: true, email: "foo@bar.io", name: "Foo Bar",
           password: "password", password_confirmation: "password"

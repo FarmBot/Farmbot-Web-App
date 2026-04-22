@@ -41,7 +41,7 @@ beforeEach(() => {
     .mockImplementation(((props: BIProps) =>
       <input
         name={props.name}
-        defaultValue={props.value as string | undefined}
+        defaultValue={props.value}
         type={props.type}
         onBlur={e => props.onCommit(e)}
         onChange={() => { }} />) as never);

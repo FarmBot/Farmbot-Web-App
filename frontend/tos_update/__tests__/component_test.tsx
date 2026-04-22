@@ -48,7 +48,7 @@ beforeEach(() => {
   jest.spyOn(i18n, "detectLanguage")
     .mockImplementation(() => Promise.resolve({}));
   jest.spyOn(axios, "post")
-    .mockImplementation(() => mockPostResponse as never);
+    .mockImplementation(() => mockPostResponse);
   jest.spyOn(Session, "replaceToken")
     .mockImplementation(() => { });
 });

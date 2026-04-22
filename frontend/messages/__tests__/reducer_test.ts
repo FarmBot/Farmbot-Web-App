@@ -12,8 +12,7 @@ beforeEach(() => {
 describe("Contextual `Alert` creation", () => {
   it("toggles on", () => {
     const c = fakeFbosConfig();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    c.body.firmware_hardware = undefined as any;
+    c.body.firmware_hardware = undefined;
     const s: AlertReducerState = {
       alerts: {}
     };

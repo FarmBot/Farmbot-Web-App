@@ -33,6 +33,18 @@ describe("<Weed />", () => {
     expect(container).toContainHTML("weed");
   });
 
+  it("renders mirrored position", () => {
+    const p = fakeProps();
+    p.config.mirrorX = true;
+    p.config.mirrorY = true;
+    p.config.botSizeX = 1000;
+    p.config.botSizeY = 500;
+    p.weed.body.x = 100;
+    p.weed.body.y = 200;
+    const { container } = render(<Weed {...p} />);
+    expect(container).toContainHTML("position=\"1260,460,400\"");
+  });
+
   it("navigates to weed info", () => {
     const p = fakeProps();
     const dispatch = jest.fn();

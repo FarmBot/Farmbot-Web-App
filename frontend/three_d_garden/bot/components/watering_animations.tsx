@@ -4,7 +4,9 @@ import { Group } from "../../components";
 import { ASSETS } from "../../constants";
 import { Cloud, Clouds } from "@react-three/drei";
 import { WaterStream } from "./water_stream";
-import { easyCubicBezierCurve3, threeSpace, zDir, zZero } from "../../helpers";
+import {
+  easyCubicBezierCurve3, get3DPositionNoMirrorFunc, zDir, zZero,
+} from "../../helpers";
 import { Config, PositionConfig } from "../../config";
 import { utmHeight } from "../bot";
 
@@ -17,8 +19,8 @@ export interface WateringAnimationsProps {
 
 export const WateringAnimations = (props: WateringAnimationsProps) => {
   const { waterFlow, getZ, config } = props;
-  const { bedLengthOuter, bedWidthOuter, bedXOffset, bedYOffset } = config;
   const { x, y, z } = props.configPosition;
+  const get3DPosition = get3DPositionNoMirrorFunc(config);
   const utmZ = -zDir(config) * z + utmHeight / 2 - 15;
   const nozzleToSoil = getZ(x, y) - utmZ;
   const [visible, setVisible] = React.useState(false);
@@ -28,11 +30,12 @@ export const WateringAnimations = (props: WateringAnimationsProps) => {
     }, 50);
     return () => clearTimeout(timer);
   }, []);
+  const position = get3DPosition({ x, y });
   return <Group name={"watering-animations"}
     visible={visible}
     position={[
-      threeSpace(x, bedLengthOuter) + bedXOffset,
-      threeSpace(y, bedWidthOuter) + bedYOffset,
+      position.x,
+      position.y,
       zZero(config),
     ]}>
     {range(16).map(i => {

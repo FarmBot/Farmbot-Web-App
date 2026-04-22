@@ -37,7 +37,7 @@ beforeEach(() => {
     .mockImplementation(((props: BIProps) =>
       <input
         value={props.value || ""}
-        onChange={e => props.onCommit?.(e as never)} />) as never);
+        onChange={e => props.onCommit?.(e)} />) as never);
   toggleButtonSpy = jest.spyOn(ui, "ToggleButton")
     .mockImplementation(((props: ToggleButtonProps) =>
       <button data-testid="toggle-button" onClick={props.toggleAction} />) as never);

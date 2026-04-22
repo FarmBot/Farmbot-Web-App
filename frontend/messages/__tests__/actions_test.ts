@@ -18,9 +18,9 @@ beforeEach(() => {
   toastErrorsSpy = jest.spyOn(toastErrorsModule, "toastErrors")
     .mockImplementation(jest.fn());
   axiosGetSpy = jest.spyOn(axios, "get")
-    .mockImplementation(() => Promise.resolve({ data: { foo: "bar" } }) as never);
+    .mockImplementation(() => Promise.resolve({ data: { foo: "bar" } }));
   axiosPostSpy = jest.spyOn(axios, "post")
-    .mockImplementation(() => mockPostResponse as never);
+    .mockImplementation(() => mockPostResponse);
 });
 
 afterEach(() => {
@@ -55,7 +55,7 @@ describe("seedAccount()", () => {
   });
 
   it("returns error while trying to seed account", async () => {
-    axiosPostSpy.mockRejectedValueOnce({ response: { data: ["error"] } } as never);
+    axiosPostSpy.mockRejectedValueOnce({ response: { data: ["error"] } });
     const dismiss = jest.fn();
     await seedAccount(dismiss)({ label: "Genesis v1.2", value: "genesis_1.2" });
     expect(axios.post).toHaveBeenCalledWith(API.current.accountSeedPath, {

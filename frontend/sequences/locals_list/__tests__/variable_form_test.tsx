@@ -54,7 +54,7 @@ beforeEach(() => {
             ...e, currentTarget: {
               ...e.currentTarget, value
             }
-          } as React.SyntheticEvent<HTMLInputElement>)} />
+          })} />
         <button
           className={"blurable-key-callback"}
           onClick={() =>

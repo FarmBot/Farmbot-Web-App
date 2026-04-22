@@ -1,6 +1,6 @@
 import { Cylinder, Extrude, useHelper } from "@react-three/drei";
 import React from "react";
-import { threeSpace } from "../../helpers";
+import { get3DPositionNoMirrorFunc } from "../../helpers";
 import { Group, MeshPhongMaterial, SpotLight } from "../../components";
 import { Config, PositionConfig } from "../../config";
 import {
@@ -19,13 +19,18 @@ export interface GantryBeamProps {
 
 export const GantryBeam = (props: GantryBeamProps) => {
   const {
-    beamLength, columnLength, bedXOffset, bedLengthOuter, bedWidthOuter,
+    beamLength, columnLength, bedYOffset, bedWidthOuter,
   } = props.config;
   const { x } = props.configPosition;
+  const get3DPosition = get3DPositionNoMirrorFunc(props.config);
+  const position = get3DPosition({
+    x: x - extrusionWidth - 8,
+    y: (bedWidthOuter + beamLength) / 2 - 50 - bedYOffset,
+  });
   return <Group name={"gantry-beam"}
     position={[
-      threeSpace(x - extrusionWidth - 8, bedLengthOuter) + bedXOffset,
-      threeSpace((bedWidthOuter + beamLength) / 2, bedWidthOuter) - 50,
+      position.x,
+      position.y,
       columnLength + 40,
     ]}
     rotation={[Math.PI / 2, 0, 0]}>

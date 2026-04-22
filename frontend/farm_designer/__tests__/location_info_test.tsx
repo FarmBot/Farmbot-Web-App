@@ -232,7 +232,7 @@ describe("<ImageListItem />", () => {
     if (buttons.length === 0) {
       return;
     }
-    fireEvent.click(buttons[0] as HTMLButtonElement);
+    fireEvent.click(buttons[0]);
     expect(container.querySelectorAll(
       "button.image-flipper-left, button.image-flipper-right").length)
       .toBe(1);

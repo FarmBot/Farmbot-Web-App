@@ -50,7 +50,7 @@ describe("<Logs />", () => {
   const setStateSync = (instance: Logs) => {
     instance.setState = ((state: Partial<Logs["state"]>) => {
       instance.state = { ...instance.state, ...state };
-    }) as Logs["setState"];
+    });
     return instance;
   };
 

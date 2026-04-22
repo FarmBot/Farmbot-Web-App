@@ -16,13 +16,17 @@ import { Path } from "../../internal_urls";
 import { setPanelOpen } from "../../farm_designer/panel_header";
 import { getMode } from "../../farm_designer/map/util";
 import { getSizeAtTime } from "../../promo/plants";
-import { threeSpace, zZero as zZeroFunc } from "../helpers";
+import { get3DPositionFunc, zZero as zZeroFunc } from "../helpers";
 import { ThreeDGardenPlant } from "./plants";
 import { PlaneGeometry, InstancedMesh, MeshBasicMaterial } from "../components";
 import {
   getPlantIconTexture,
   getPlantIconTextureUrl,
 } from "./plant_icon_atlas";
+import { Mode } from "../../farm_designer/map/interfaces";
+import moment from "moment";
+import { calcSunCoordinate, calcSunI, getCycleLength } from "./sun";
+import { instancedMeshKey } from "./instanced_mesh_key";
 
 export interface PlantInstancesProps {
   plants: ThreeDGardenPlant[];
@@ -31,7 +35,6 @@ export interface PlantInstancesProps {
   visible?: boolean;
   startTimeRef?: React.RefObject<number>;
   dispatch?: Function;
-  sunFactorRef?: React.MutableRefObject<number>;
 }
 
 interface PlantIconInstancesProps extends PlantInstancesProps {
@@ -62,15 +65,25 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
   const tempPosition = React.useMemo(() => new Vector3(), []);
   const tempScale = React.useMemo(() => new Vector3(), []);
   const tempQuaternion = React.useMemo(() => new Quaternion(), []);
+  const get3DPosition = React.useMemo(() => get3DPositionFunc(config), [config]);
   const getPlantZ = React.useCallback((size: number, plant: ThreeDGardenPlant) =>
     zZeroFunc(config)
-    + getZ(plant.x - config.bedXOffset, plant.y - config.bedYOffset)
+    + getZ(plant.x, plant.y)
     + size / 2, [config, getZ]);
 
   useFrame(state => {
     const mesh = instancedRef.current;
     if (!mesh) { return; }
-    const brightness = plantIconBrightness(props.sunFactorRef?.current);
+    let sunFactor = calcSunI(config.sunInclination);
+    if (config.animateSeasons && startTimeRef) {
+      const totalCycle = getCycleLength(config.plants);
+      const currentTime = performance.now() / 1000;
+      const t = currentTime - (startTimeRef.current || 0);
+      const timeOffset = Math.min(t / totalCycle, 1) * 24 * 60 * 60;
+      const date = moment().utc().startOf("day").add(timeOffset, "seconds").toDate();
+      sunFactor = calcSunI(calcSunCoordinate(date, 0, 52, 0).inclination);
+    }
+    const brightness = plantIconBrightness(sunFactor);
     if (materialRef.current &&
       materialRef.current.color &&
       brightness != lastBrightness.current) {
@@ -84,9 +97,10 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
       const scale = (config.animateSeasons && startTimeRef)
         ? plant.size * getSizeAtTime(plant, config.plants, t)
         : plant.size;
+      const position = get3DPosition({ x: plant.x, y: plant.y });
       tempPosition.set(
-        threeSpace(plant.x, config.bedLengthOuter),
-        threeSpace(plant.y, config.bedWidthOuter),
+        position.x,
+        position.y,
         getPlantZ(scale, plant),
       );
       tempScale.set(scale, scale, scale);
@@ -101,13 +115,14 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
     if (isUndefined(instanceId)) { return; }
     const plant = plants[instanceId];
     if (plant?.id && dispatch && visible &&
-      !HOVER_OBJECT_MODES.includes(getMode())) {
+      ![...HOVER_OBJECT_MODES, Mode.cameraSelection].includes(getMode())) {
       dispatch(setPanelOpen(true));
       navigate(Path.plants(plant.id));
     }
   };
 
   return <InstancedMesh
+    key={instancedMeshKey(plants)}
     ref={instancedRef}
     args={[undefined, undefined, plants.length]}
     userData={{ plantIndexes }}

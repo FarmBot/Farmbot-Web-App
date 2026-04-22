@@ -1,5 +1,5 @@
 import React from "react";
-import { Content, DeviceSetting } from "../constants";
+import { Actions, Content, DeviceSetting } from "../constants";
 import { t } from "../i18next_wrapper";
 import { setWebAppConfigValue } from "../config_storage/actions";
 import { Help, ToggleButton, BlurableInput } from "../ui";
@@ -124,9 +124,19 @@ const DESIGNER_SETTINGS =
       setting: BooleanSetting.xy_swap,
     },
     {
+      title: DeviceSetting.topDownView,
+      description: Content.TOP_DOWN_VIEW,
+      setting: BooleanSetting.top_down_view,
+    },
+    {
       title: DeviceSetting.mapOrigin,
       description: Content.MAP_ORIGIN,
       children: <OriginSelector {...settingsProps} />
+    },
+    {
+      title: DeviceSetting.setCameraStartingLocation,
+      description: Content.CAMERA_STARTING_LOCATION,
+      children: <CameraStartingLocationButton dispatch={settingsProps.dispatch} />,
     },
     {
       title: DeviceSetting.cropMapImages,
@@ -180,3 +190,18 @@ export const OriginSelector = (props: DesignerSettingsPropsBase) => {
     </div>
   </div>;
 };
+
+export interface CameraStartingLocationButtonProps {
+  dispatch: Function;
+}
+
+export const CameraStartingLocationButton =
+  (props: CameraStartingLocationButtonProps) => <button
+    className={"fb-button green"}
+    title={t("Set camera starting location")}
+    onClick={() => props.dispatch({
+      type: Actions.TOGGLE_3D_CAMERA_SELECTION,
+      payload: undefined,
+    })}>
+    {t("Set")}
+  </button>;

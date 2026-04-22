@@ -209,7 +209,7 @@ describe("<Language />", () => {
       currentTarget: {
         value: "New Language",
       },
-    } as never);
+    });
     expect(edit).toHaveBeenCalledWith(expect.any(Object),
       { language: "New Language" });
     expect(save).toHaveBeenCalledWith(user.uuid);
@@ -779,6 +779,28 @@ describe("<MapOrientation />", () => {
     const { container } = render(<MapOrientation {...fakeProps()} />);
     expect(container.innerHTML).toContain("map-orientation");
   });
+
+  it("renders 3D camera selection controls", () => {
+    const p = fakeProps();
+    p.getConfigValue = key => key == "three_d_garden";
+    const { container } = render(<MapOrientation {...p} />);
+    expect(container.textContent).toContain("Set camera starting location");
+    expect(container.textContent).not.toContain("Map origin");
+  });
+
+  it("opens camera selection from 3D wizard orientation", () => {
+    const p = fakeProps();
+    p.getConfigValue = key => key == "three_d_garden";
+    const { container } = render(<MapOrientation {...p} />);
+    const button =
+      container.querySelector("button[title='Set camera starting location']");
+    if (!button) { throw new Error("Expected camera starting location button"); }
+    fireEvent.click(button);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_3D_CAMERA_SELECTION,
+      payload: undefined,
+    });
+  });
 });
 
 describe("<PeripheralsCheck />", () => {
@@ -914,7 +936,7 @@ describe("<CameraOffset />", () => {
   it("changes offset", () => {
     const { container } = render(<CameraOffset {...fakeProps()} />);
     const inputs = container.querySelectorAll("input");
-    changeBlurableInputRTL(inputs[0] as HTMLElement, "100");
+    changeBlurableInputRTL(inputs[0], "100");
     expect(initSave).toHaveBeenCalledWith("FarmwareEnv", {
       key: "CAMERA_CALIBRATION_camera_offset_x", value: "100",
     });
@@ -1005,7 +1027,7 @@ describe("<SlotCoordinateRows />", () => {
     const { container } = render(<SlotCoordinateRows {...p} />);
     const inputs = container.querySelectorAll("input");
     expect(inputs.length).toEqual(3);
-    changeBlurableInputRTL(inputs[0] as HTMLElement, "100");
+    changeBlurableInputRTL(inputs[0], "100");
     expect(edit).toHaveBeenCalledWith(expect.any(Object), { x: 100 });
     expect(save).toHaveBeenCalledWith(expect.any(String));
     expect(container.textContent).toContain("Slot 1");

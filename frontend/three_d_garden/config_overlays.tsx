@@ -342,6 +342,8 @@ export const PrivateOverlay = (props: OverlayProps) => {
       <Toggle {...common} configKey={"bounds"} />
       <Toggle {...common} configKey={"grid"} />
       <Toggle {...common} configKey={"negativeZ"} />
+      <Toggle {...common} configKey={"mirrorX"} />
+      <Toggle {...common} configKey={"mirrorY"} />
       <Toggle {...common} configKey={"xyDimensions"} />
       <Toggle {...common} configKey={"zDimension"} />
       <Toggle {...common} configKey={"axes"} />
@@ -403,6 +405,9 @@ export const PrivateOverlay = (props: OverlayProps) => {
       <Toggle {...common} configKey={"zoom"} />
       <Toggle {...common} configKey={"pan"} />
       <Toggle {...common} configKey={"rotate"} />
+      <Toggle {...common} configKey={"topDown"} />
+      <Slider {...common} configKey={"viewpointHeading"} min={0} max={360} />
+      <Toggle {...common} configKey={"cameraSelectionView"} />
       <Toggle {...common} configKey={"lowDetail"} />
       <label>{"Environment"}</label>
       <Radio {...common} configKey={"scene"}

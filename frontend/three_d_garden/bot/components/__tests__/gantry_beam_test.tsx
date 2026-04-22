@@ -31,7 +31,7 @@ let reactUseRefSpy: jest.SpyInstance;
 describe("<GantryBeam />", () => {
   beforeEach(() => {
     reactUseRefSpy = jest.spyOn(React, "useRef")
-      .mockImplementation(() => mockRef as never);
+      .mockImplementation(() => mockRef);
   });
 
   afterEach(() => {

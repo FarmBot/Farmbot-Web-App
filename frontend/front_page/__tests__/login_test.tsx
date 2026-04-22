@@ -21,12 +21,12 @@ describe("<Login />", () => {
   it("interacts with login options", () => {
     const p = fakeProps();
     const { container } = render(<Login {...p} />);
-    fireEvent.change(container.querySelectorAll("input")[0] as Element, {
+    fireEvent.change(container.querySelectorAll("input")[0], {
       target: { value: "email" }
     });
     expect(p.onEmailChange).toHaveBeenCalled();
     expect((p.onEmailChange as jest.Mock).mock.calls.length).toEqual(1);
-    fireEvent.change(container.querySelectorAll("input")[1] as Element, {
+    fireEvent.change(container.querySelectorAll("input")[1], {
       target: { value: "password" }
     });
     expect(p.onLoginPasswordChange).toHaveBeenCalled();

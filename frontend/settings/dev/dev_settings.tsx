@@ -37,16 +37,13 @@ export const DevWidgetFBOSRow = () => {
 };
 
 export const DevWidget3dCameraRow = () => {
-  const [parseError, setParseError] = React.useState(false);
   const value = DevSettings.get3dCamera();
-  React.useEffect(() => {
-    try {
-      JSON.parse(value);
-      setParseError(false);
-    } catch {
-      setParseError(true);
-    }
-  }, [value]);
+  let parseError = false;
+  try {
+    JSON.parse(value);
+  } catch {
+    parseError = true;
+  }
   return <Row className="grid-2-col">
     <label>
       {"Change initial 3D camera position"}

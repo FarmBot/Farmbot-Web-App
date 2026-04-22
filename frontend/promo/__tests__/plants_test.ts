@@ -22,7 +22,7 @@ describe("calculatePlantPositions()", () => {
       seed: expect.any(Number),
       size: 150,
       spread: 17.5,
-      x: 350,
+      x: 200,
       y: 680,
     });
     expect(positions.length).toEqual(65);

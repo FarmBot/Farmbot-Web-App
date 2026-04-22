@@ -318,7 +318,7 @@ export const runLua =
 
     lua.lua_pushjsfunction(L, () => {
       const n = lua.lua_gettop(L);
-      const args = [];
+      const args: string[] = [];
       for (let i = 1; i <= n; i++) {
         args.push(luaToJs(L, i) as string);
       }
@@ -377,7 +377,7 @@ export const runLua =
     lua.lua_setfield(L, envIndex, to_luastring("set_job"));
 
     lua.lua_pushjsfunction(L, () => {
-      const args = [];
+      const args: number[] = [];
       const n = lua.lua_gettop(L);
       if (n == 1) {
         const params = luaToJs(L, 1) as XyzNumber;
@@ -394,7 +394,7 @@ export const runLua =
 
     lua.lua_pushjsfunction(L, () => {
       const n = lua.lua_gettop(L);
-      const args = [];
+      const args: number[] = [];
       for (let i = 1; i <= n; i++) {
         args.push(luaToJs(L, i) as number);
       }

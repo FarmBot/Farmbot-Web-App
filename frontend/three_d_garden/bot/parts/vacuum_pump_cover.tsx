@@ -16,18 +16,26 @@ export type VacuumPumpCoverFull = GLTF & {
   };
 }
 
+interface VacuumPumpCoverProps extends Omit<ThreeElements["group"], "ref"> {
+  model: VacuumPumpCoverFull;
+}
+
+export const VacuumPumpCoverModel = (props: VacuumPumpCoverProps) => {
+  const { model, ...groupProps } = props;
+  const { nodes, materials } = model;
+  // eslint-disable-next-line no-null/no-null
+  return <Group {...groupProps} dispose={null}>
+    <MeshComponent geometry={nodes.M5_x_10mm_Screw.geometry}
+      material={materials[VacuumPumpCoverMaterial.zero]}
+      position={[-0.01, -0.013, -0.145]}
+      rotation={[Math.PI / 2, 0, 0]} />
+    <MeshComponent geometry={nodes.Vacuum_Pump_Cover.geometry}
+      material={materials[VacuumPumpCoverMaterial.one]}
+      position={[0.057, -0.008, -0.255]}
+      rotation={[0, 0, Math.PI]} />
+  </Group>;
+};
+
 export const VacuumPumpCover = (model: VacuumPumpCoverFull) =>
-  (props: Omit<ThreeElements["group"], "ref">) => {
-    const { nodes, materials } = model;
-    // eslint-disable-next-line no-null/no-null
-    return <Group {...props} dispose={null}>
-      <MeshComponent geometry={nodes.M5_x_10mm_Screw.geometry}
-        material={materials[VacuumPumpCoverMaterial.zero]}
-        position={[-0.01, -0.013, -0.145]}
-        rotation={[Math.PI / 2, 0, 0]} />
-      <MeshComponent geometry={nodes.Vacuum_Pump_Cover.geometry}
-        material={materials[VacuumPumpCoverMaterial.one]}
-        position={[0.057, -0.008, -0.255]}
-        rotation={[0, 0, Math.PI]} />
-    </Group>;
-  };
+  (props: Omit<ThreeElements["group"], "ref">) =>
+    <VacuumPumpCoverModel {...props} model={model} />;

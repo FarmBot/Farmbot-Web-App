@@ -28,7 +28,7 @@ const setStateSync = (instance: MarkAs) => {
       : state;
     instance.state = { ...instance.state, ...update };
     callback?.();
-  }) as MarkAs["setState"];
+  });
   return instance;
 };
 

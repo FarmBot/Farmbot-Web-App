@@ -12,12 +12,8 @@ export interface DocumentationPanelProps {
 
 export const DocumentationPanel = (props: DocumentationPanelProps) => {
   const location = useLocation();
-  const [src, setSrc] = React.useState("");
-
-  React.useEffect(() => {
-    const page = new URLSearchParams(location.search).get("page");
-    setSrc(page ? `${props.url}/${page}` : props.url);
-  }, [props, location]);
+  const page = new URLSearchParams(location.search).get("page");
+  const src = page ? `${props.url}/${page}` : props.url;
 
   return <DesignerPanel panelName={"documentation"} panel={Panel.Help}>
     <HelpHeader />

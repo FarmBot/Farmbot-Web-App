@@ -305,6 +305,9 @@ export const getMode = (): Mode => {
   if (store.getState().resources.consumers.farm_designer.profileOpen) {
     return Mode.profile;
   }
+  if (store.getState().resources.consumers.farm_designer.threeDCameraSelection) {
+    return Mode.cameraSelection;
+  }
   const panelSlug = Path.getSlug(Path.designer());
   if ((panelSlug === "groups" || panelSlug === "zones")
     && Path.getSlug(Path.groups())) { return Mode.editGroup; }

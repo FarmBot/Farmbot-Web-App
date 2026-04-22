@@ -3,7 +3,9 @@ import * as THREE from "three";
 import { Config, PositionConfig } from "../../config";
 import { Group, Mesh } from "../../components";
 import { WaterTube } from "./water_tube";
-import { easyCubicBezierCurve3, threeSpace, zDir as zDirFunc } from "../../helpers";
+import {
+  easyCubicBezierCurve3, get3DPositionNoMirrorFunc, zDir as zDirFunc,
+} from "../../helpers";
 import type { GLTF } from "three-stdlib";
 import { useGLTF } from "@react-three/drei";
 import { ASSETS, LIB_DIR, PartName } from "../../constants";
@@ -20,27 +22,31 @@ export interface SolenoidProps {
 
 export const Solenoid = (props: SolenoidProps) => {
   const { config } = props;
-  const {
-    bedLengthOuter, bedWidthOuter, bedXOffset, bedYOffset,
-    columnLength, zGantryOffset,
-  } = config;
+  const { bedYOffset, columnLength, zGantryOffset } = config;
   const { x, y, z } = props.configPosition;
   const zDir = zDirFunc(config);
+  const get3DPosition = get3DPositionNoMirrorFunc(config);
+  const outerXY = (gardenX: number, outerY: number): [number, number] => {
+    const position = get3DPosition({ x: gardenX, y: outerY - bedYOffset });
+    return [position.x, position.y];
+  };
+  const gardenXY = (gardenX: number, gardenY: number): [number, number] => {
+    const position = get3DPosition({ x: gardenX, y: gardenY });
+    return [position.x, position.y];
+  };
   const solenoid = useGLTF(ASSETS.models.solenoid, LIB_DIR) as unknown as SolenoidPart;
   return <Group>
     <WaterTube tubeName={"lower-solenoid-water-tube"}
       waterFlow={config.waterFlow}
       tubePath={easyCubicBezierCurve3(
         [
-          threeSpace(x - 45, bedLengthOuter) + bedXOffset,
-          threeSpace(-25, bedWidthOuter),
+          ...outerXY(x - 45, -25),
           -49,
         ],
         [200, -55, 25],
         [5, 10, -250],
         [
-          threeSpace(x - 104.75, bedLengthOuter) + bedXOffset,
-          threeSpace(20, bedWidthOuter),
+          ...outerXY(x - 104.75, 20),
           columnLength - 217,
         ],
       )}
@@ -49,8 +55,7 @@ export const Solenoid = (props: SolenoidProps) => {
       radialSegments={8} />
     <Mesh name={"solenoid"}
       position={[
-        threeSpace(x - 104, bedLengthOuter) + bedXOffset,
-        threeSpace(20, bedWidthOuter),
+        ...outerXY(x - 104, 20),
         columnLength - 200,
       ]}
       rotation={[0, 0, -Math.PI / 2]}
@@ -61,15 +66,13 @@ export const Solenoid = (props: SolenoidProps) => {
       waterFlow={config.waterFlow}
       tubePath={easyCubicBezierCurve3(
         [
-          threeSpace(x - 104.25, bedLengthOuter) + bedXOffset,
-          threeSpace(20, bedWidthOuter),
+          ...outerXY(x - 104.25, 20),
           columnLength - 98,
         ],
         [0, 0, 100],
         [0, -75, 5],
         [
-          threeSpace(x - 70, bedLengthOuter) + bedXOffset,
-          threeSpace(35, bedWidthOuter) + bedYOffset,
+          ...gardenXY(x - 70, 35),
           columnLength + 90,
         ],
       )}
@@ -80,15 +83,13 @@ export const Solenoid = (props: SolenoidProps) => {
       waterFlow={config.waterFlow}
       tubePath={easyCubicBezierCurve3(
         [
-          threeSpace(x - 70, bedLengthOuter) + bedXOffset,
-          threeSpace(y + 80, bedWidthOuter) + bedYOffset,
+          ...gardenXY(x - 70, y + 80),
           columnLength + 140,
         ],
         [0, -50, 0],
         [0, 0, -50],
         [
-          threeSpace(x - 32.5, bedLengthOuter) + bedXOffset,
-          threeSpace(y - 10, bedWidthOuter) + bedYOffset,
+          ...gardenXY(x - 32.5, y - 10),
           columnLength + 180,
         ],
       )}
@@ -99,15 +100,13 @@ export const Solenoid = (props: SolenoidProps) => {
       waterFlow={config.waterFlow}
       tubePath={easyCubicBezierCurve3(
         [
-          threeSpace(x + 32.5, bedLengthOuter) + bedXOffset,
-          threeSpace(y - 10, bedWidthOuter) + bedYOffset,
+          ...gardenXY(x + 32.5, y - 10),
           columnLength - zDir * z - zGantryOffset + 200,
         ],
         [0, 0, -50],
         [0, 0, 50],
         [
-          threeSpace(x + 2, bedLengthOuter) + bedXOffset,
-          threeSpace(y + 15, bedWidthOuter) + bedYOffset,
+          ...gardenXY(x + 2, y + 15),
           columnLength - zDir * z - zGantryOffset + 75,
         ],
       )}

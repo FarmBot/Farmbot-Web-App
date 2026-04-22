@@ -32,7 +32,6 @@ export interface SunProps {
   config: Config;
   startTimeRef?: React.RefObject<number>;
   skyRef: React.RefObject<ThreeMeshBasicMaterial | null>;
-  sunFactorRef?: React.MutableRefObject<number>;
 }
 
 const SUN_COUNT = 1;
@@ -152,11 +151,10 @@ export const Sun = (props: SunProps) => {
   const [points, setPoints] = React.useState<Vector3[]>(
     range(SUN_COUNT).map(index => new Vector3(...offsetSunPos(sunPos, index))),
   );
-  const localSunFactorRef = React.useRef<number>(1);
-  const sunFactorRef = props.sunFactorRef || localSunFactorRef;
   // eslint-disable-next-line no-null/no-null
   const starsRef = React.useRef<Material>(null);
   const origin = new Vector3(0, 0, 0);
+  const renderedSunFactor = calcSunI(config.sunInclination);
   const shadowBounds = React.useMemo(() => {
     const bedXBounds = Math.max(
       Math.abs(config.bedXOffset),
@@ -177,17 +175,16 @@ export const Sun = (props: SunProps) => {
     config.botSizeY,
   ]);
 
-  const setSunSky = (inclination: number, sunValue: number) => {
-    sunFactorRef.current = calcSunI(inclination);
+  const setSunSky = (sunFactor: number, sunValue: number) => {
     props.skyRef.current?.color?.setRGB(
-      ...skyColor(sunFactorRef.current * sunValue),
+      ...skyColor(sunFactor * sunValue),
     );
     starsRef.current &&
-      (starsRef.current.opacity = (1 - sunFactorRef.current));
+      (starsRef.current.opacity = (1 - sunFactor));
   };
 
   React.useEffect(() => {
-    setSunSky(config.sunInclination, config.sun);
+    setSunSky(renderedSunFactor, config.sun);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [config.sunInclination, config.sun]);
 
@@ -201,18 +198,19 @@ export const Sun = (props: SunProps) => {
     const timeOffset = Math.min(t / totalCycle, 1) * 24 * 60 * 60;
     const date = moment().utc().startOf("day").add(timeOffset, "seconds").toDate();
     const { azimuth, inclination } = calcSunCoordinate(date, 0, 52, 0);
+    const sunFactor = calcSunI(inclination);
     const position = (index: number) => {
       const sunPos = sunPosition(inclination, azimuth, BigDistance.sunActual);
       return offsetSunPos(sunPos, index);
     };
 
-    setSunSky(inclination, config.sun);
+    setSunSky(sunFactor, config.sun);
 
     lightRefs.current.forEach((light, index) => {
       if (light) {
         light.position?.set(...position(index));
         light.intensity =
-          sunIntensity * config.sun / 100 * sunFactorRef.current;
+          sunIntensity * config.sun / 100 * sunFactor;
       }
     });
 
@@ -239,7 +237,7 @@ export const Sun = (props: SunProps) => {
     {range(SUN_COUNT).map(index => {
       const position = offsetSunPos(sunPos, index);
       const color = SUN_COLOR[index];
-      const intensity = sunIntensity * config.sun / 100 * sunFactorRef.current;
+      const intensity = sunIntensity * config.sun / 100 * renderedSunFactor;
       return <Group key={index} name={`sun_${index}`}>
         <DirectionalLight
           ref={(el: ThreeDirectionalLight) => {

@@ -3,7 +3,7 @@ import * as THREE from "three";
 import { Extrude, useGLTF } from "@react-three/drei";
 import { Shape } from "three";
 import {
-  threeSpace,
+  get3DPositionNoMirrorFunc,
   zDir as zDirFunc,
   zZero as zZeroFunc,
 } from "../../helpers";
@@ -62,11 +62,15 @@ interface CableCarrierXProps {
 
 export const CableCarrierX = (props: CableCarrierXProps) => {
   const {
-    bedHeight, cableCarriers, botSizeX, bedLengthOuter, bedXOffset,
-    tracks, bedWidthOuter
+    bedHeight, cableCarriers, botSizeX, tracks, bedYOffset,
   } = props.config;
   const { x } = props.configPosition;
   const bedCCSupportHeight = Math.min(150, bedHeight / 2);
+  const get3DPosition = get3DPositionNoMirrorFunc(props.config);
+  const position = get3DPosition({
+    x: botSizeX / 2,
+    y: (tracks ? 0 : extrusionWidth) - 15 - bedYOffset,
+  });
   return <Extrude name={"xCC"} visible={cableCarriers}
     castShadow={true}
     args={[
@@ -77,8 +81,8 @@ export const CableCarrierX = (props: CableCarrierXProps) => {
       { steps: 1, depth: 22, bevelEnabled: false },
     ]}
     position={[
-      threeSpace(botSizeX / 2, bedLengthOuter) + bedXOffset,
-      threeSpace((tracks ? 0 : extrusionWidth) - 15, bedWidthOuter),
+      position.x,
+      position.y,
       -40,
     ]}
     rotation={[-Math.PI / 2, -Math.PI, 0 * Math.PI]}>
@@ -93,10 +97,10 @@ interface CableCarrierYProps {
 
 export const CableCarrierY = (props: CableCarrierYProps) => {
   const {
-    columnLength, cableCarriers, botSizeY, bedLengthOuter, bedYOffset,
-    bedXOffset, bedWidthOuter, kitVersion,
+    columnLength, cableCarriers, botSizeY, kitVersion,
   } = props.config;
   const { x, y } = props.configPosition;
+  const get3DPosition = get3DPositionNoMirrorFunc(props.config);
   const ccDepth = (kitVersion: string) => {
     switch (kitVersion) {
       case "v1.7":
@@ -106,17 +110,17 @@ export const CableCarrierY = (props: CableCarrierYProps) => {
         return 40;
     }
   };
+  const getPosition = (): [number, number, number] => {
+    const position = get3DPosition({ x: x - 28, y: 20 });
+    return [position.x, position.y, columnLength + 150];
+  };
   return <Extrude name={"yCC"} visible={cableCarriers}
     castShadow={true}
     args={[
       ccPath(botSizeY, y + 40, 70),
       { steps: 1, depth: ccDepth(kitVersion), bevelEnabled: false },
     ]}
-    position={[
-      threeSpace(x - 28, bedLengthOuter) + bedXOffset,
-      threeSpace(20, bedWidthOuter) + bedYOffset,
-      columnLength + 150,
-    ]}
+    position={getPosition()}
     rotation={[-Math.PI / 2, -Math.PI / 2, 0]}>
     <MeshPhongMaterial color={distinguishableBlack} />
   </Extrude>;
@@ -129,12 +133,13 @@ interface CableCarrierZProps {
 
 export const CableCarrierZ = (props: CableCarrierZProps) => {
   const {
-    cableCarriers, botSizeZ, zGantryOffset, bedLengthOuter, bedYOffset,
-    bedXOffset, bedWidthOuter,
+    cableCarriers, botSizeZ, zGantryOffset,
   } = props.config;
   const { x, y, z } = props.configPosition;
   const zZero = zZeroFunc(props.config);
   const zDir = zDirFunc(props.config);
+  const get3DPosition = get3DPositionNoMirrorFunc(props.config);
+  const position = get3DPosition({ x: x - 41, y: y - 25 });
   return <Extrude name={"zCC"} visible={cableCarriers}
     castShadow={true}
     args={[
@@ -142,8 +147,8 @@ export const CableCarrierZ = (props: CableCarrierZProps) => {
       { steps: 1, depth: 60, bevelEnabled: false },
     ]}
     position={[
-      threeSpace(x - 41, bedLengthOuter) + bedXOffset,
-      threeSpace(y - 25, bedWidthOuter) + bedYOffset,
+      position.x,
+      position.y,
       zZero - zDir * z + 125,
     ]}
     rotation={[Math.PI / 2, Math.PI, Math.PI / 2]}>
@@ -159,12 +164,12 @@ export interface CableCarrierSupportVerticalProps {
 export const CableCarrierSupportVertical =
   (props: CableCarrierSupportVerticalProps) => {
     const {
-      bedLengthOuter, bedYOffset, bedXOffset, bedWidthOuter, zAxisLength,
-      kitVersion,
+      zAxisLength, kitVersion,
     } = props.config;
     const { x, y, z } = props.configPosition;
     const zZero = zZeroFunc(props.config);
     const zDir = zDirFunc(props.config);
+    const get3DPosition = get3DPositionNoMirrorFunc(props.config);
     const ccSupportVertical =
       useGLTF(ASSETS.models.ccSupportVertical, LIB_DIR) as unknown as CCSupportVertical;
     const verticalInstances = React.useMemo(() => range((zAxisLength - 350) / 200), [zAxisLength]);
@@ -173,9 +178,10 @@ export const CableCarrierSupportVertical =
       if (!verticalRef.current || verticalInstances.length === 0) { return; }
       const temp = new THREE.Object3D();
       verticalInstances.forEach((i, index) => {
+        const position = get3DPosition({ x: x + 20, y: y + 55 });
         temp.position.set(
-          threeSpace(x + 20, bedLengthOuter) + bedXOffset,
-          threeSpace(y + 55, bedWidthOuter) + bedYOffset,
+          position.x,
+          position.y,
           zZero - zDir * z + i * 200 + 125,
         );
         temp.rotation.set(0, 0, Math.PI / 2);
@@ -185,14 +191,11 @@ export const CableCarrierSupportVertical =
       });
       verticalRef.current.instanceMatrix.needsUpdate = true;
     }, [
-      bedLengthOuter,
-      bedXOffset,
-      bedYOffset,
-      bedWidthOuter,
       verticalInstances,
       x,
       y,
       z,
+      get3DPosition,
       zDir,
       zZero,
     ]);
@@ -211,13 +214,13 @@ export const CableCarrierSupportVertical =
             </InstancedMesh>}
         </Group>;
       case "v1.8":
+        const getPosition = (): [number, number, number] => {
+          const position = get3DPosition({ x: x + 20, y: y + 35 });
+          return [position.x, position.y, zZero - zDir * z + 125];
+        };
         return <Group name={"ccSupportVertical"}>
           <Mesh
-            position={[
-              threeSpace(x + 20, bedLengthOuter) + bedXOffset,
-              threeSpace(y + 35, bedWidthOuter) + bedYOffset,
-              zZero - zDir * z + 125,
-            ]}
+            position={getPosition()}
             rotation={[0, 0, 0]}
             geometry={new THREE.ExtrudeGeometry(
               (() => {
@@ -256,10 +259,10 @@ export interface CableCarrierSupportHorizontalProps {
 export const CableCarrierSupportHorizontal =
   (props: CableCarrierSupportHorizontalProps) => {
     const {
-      bedLengthOuter, bedYOffset, bedXOffset, bedWidthOuter, botSizeY,
-      columnLength, kitVersion,
+      botSizeY, columnLength, kitVersion,
     } = props.config;
     const { x } = props.configPosition;
+    const get3DPosition = get3DPositionNoMirrorFunc(props.config);
     const ccSupportHorizontal =
       useGLTF(ASSETS.models.ccSupportHorizontal, LIB_DIR) as unknown as CCSupportHorizontal;
     const horizontalInstances = React.useMemo(() => range((botSizeY - 10) / 300), [botSizeY]);
@@ -269,9 +272,10 @@ export const CableCarrierSupportHorizontal =
       if (!horizontalRef.current || horizontalInstances.length === 0) { return; }
       const temp = new THREE.Object3D();
       horizontalInstances.forEach((i, index) => {
+        const position = get3DPosition({ x: x - 28, y: 50 + i * 300 });
         temp.position.set(
-          threeSpace(x - 28, bedLengthOuter) + bedXOffset,
-          threeSpace(50 + i * 300, bedWidthOuter) + bedYOffset,
+          position.x,
+          position.y,
           columnLength + 60,
         );
         temp.rotation.set(Math.PI / 2, 0, 0);
@@ -281,13 +285,10 @@ export const CableCarrierSupportHorizontal =
       });
       horizontalRef.current.instanceMatrix.needsUpdate = true;
     }, [
-      bedLengthOuter,
-      bedXOffset,
-      bedYOffset,
-      bedWidthOuter,
       columnLength,
       horizontalInstances,
       x,
+      get3DPosition,
     ]);
     switch (kitVersion) {
       case "v1.7":
@@ -307,8 +308,8 @@ export const CableCarrierSupportHorizontal =
         return <Group name={"ccSupportHorizontal"}>
           <Mesh
             position={[
-              threeSpace(x - 28, bedLengthOuter) + bedXOffset,
-              -(threeSpace(20, bedWidthOuter) + bedYOffset),
+              get3DPosition({ x: x - 28, y: 20 }).x,
+              -get3DPosition({ x: x - 28, y: 20 }).y,
               columnLength + 60,
             ]}
             rotation={[Math.PI / 2, 0, 0]}

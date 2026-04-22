@@ -30,7 +30,7 @@ const byId =
       const resources = findAll(index, kind);
       const f = (x: TaggedResource) => (x.kind === kind) && (x.body.id === id);
       // Maybe we should add a throw here?
-      return resources.filter(f)[0] as T | undefined;
+      return resources.filter(f)[0];
     };
 
 export const findFarmEventById = (ri: ResourceIndex, fe_id: number) => {

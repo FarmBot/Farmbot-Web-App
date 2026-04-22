@@ -16,6 +16,7 @@ import { ThreeDGardenPlant } from "../three_d_garden/garden";
 import { TaggedGenericPointer } from "farmbot";
 import { calculatePointPositions } from "./points";
 import { SEASON_TIMINGS, SEASONS } from "./constants";
+import { isMobile } from "../screen_size";
 
 const PROMO_BED_SIZES = [
   {
@@ -29,6 +30,7 @@ const PROMO_BED_SIZES = [
 ];
 
 type ThreeDPlantsCache = Record<string, ThreeDGardenPlant[]>;
+const PLANTS_CACHE: ThreeDPlantsCache = {};
 
 const calcCacheKey = (config: Config): string =>
   `${config.bedLengthOuter}x${config.bedWidthOuter}: ${config.plants}`;
@@ -41,10 +43,37 @@ const calcPlantsCache = (
   if (cache[cacheKey]) {
     return cache;
   }
-  const positions = calculatePlantPositions(config);
-  cache[cacheKey] = positions;
-  return cache;
+  return {
+    ...cache,
+    [cacheKey]: calculatePlantPositions(config),
+  };
 };
+
+const prewarmPlantsCache = () => {
+  let next = PLANTS_CACHE;
+  PROMO_BED_SIZES.map(({ length, width }) => {
+    SEASONS.map(season => {
+      next = calcPlantsCache(next, {
+        ...INITIAL,
+        bedLengthOuter: length,
+        bedWidthOuter: width,
+        plants: season,
+      });
+    });
+  });
+  Object.assign(PLANTS_CACHE, next);
+};
+
+const getCachedPlants = (config: Config) => {
+  const cacheKey = calcCacheKey(config);
+  const cachedPlants = PLANTS_CACHE[cacheKey];
+  if (cachedPlants) { return cachedPlants; }
+
+  Object.assign(PLANTS_CACHE, calcPlantsCache(PLANTS_CACHE, config));
+  return PLANTS_CACHE[cacheKey] || [];
+};
+
+prewarmPlantsCache();
 
 export const getSeasonTimings = (currentSeason: string, step = 0) => {
   const seasons = SEASON_TIMINGS.map(s => s.season);
@@ -56,50 +85,32 @@ export const getSeasonTimings = (currentSeason: string, step = 0) => {
 };
 
 export const Promo = () => {
-  const [config, setConfig] = React.useState<ConfigWithPosition>(INITIAL);
+  const [config, setConfig] = React.useState<ConfigWithPosition>(() => {
+    let next = INITIAL;
+    if (isMobile()) {
+      next = { ...next, viewpointHeading: 80 };
+    }
+    next = modifyConfigsFromUrlParams(next);
+    return next;
+  });
   const [toolTip, setToolTip] = React.useState<ToolTip>({ timeoutId: 0, text: "" });
-  const [activeFocus, setActiveFocus] = React.useState("");
+  const [activeFocus, setActiveFocus] = React.useState(() =>
+    getFocusFromUrlParams());
   const common = {
     config, setConfig,
     toolTip, setToolTip,
     activeFocus, setActiveFocus,
   };
 
-  React.useEffect(() => {
-    setConfig(modifyConfigsFromUrlParams(config));
-    setActiveFocus(getFocusFromUrlParams());
-    PROMO_BED_SIZES.map(({ length, width }) => {
-      SEASONS.map(season => {
-        const tmpConfig = {
-          ...INITIAL,
-          bedLengthOuter: length,
-          bedWidthOuter: width,
-          plants: season,
-        };
-        setPlantsCache(calcPlantsCache(plantsCache, tmpConfig));
-      });
-    });
+  const mapPoints = React.useMemo<TaggedGenericPointer[]>(() =>
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // intentionally empty dependency array
-
-  const [plantsCache, setPlantsCache] = React.useState<ThreeDPlantsCache>({});
-  const [mapPoints, setMapPoints] = React.useState<TaggedGenericPointer[]>([]);
-
-  React.useEffect(() => {
-    setPlantsCache(calcPlantsCache(plantsCache, config));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [config.plants, config.bedLengthOuter, config.bedWidthOuter]);
-
-  React.useEffect(() => {
-    setMapPoints(calculatePointPositions(config));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
+    calculatePointPositions(config), [
     config.soilSurface, config.soilHeight, config.soilSurfacePointCount,
     config.soilSurfaceVariance, config.bedXOffset, config.bedYOffset,
     config.bedWallThickness, config.bedLengthOuter, config.bedWidthOuter,
   ]);
 
-  const startTimeRef = React.useRef<number>(performance.now() / 1000);
+  const startTimeRef = React.useRef<number>(0);
 
   React.useEffect(() => {
     if (!config.animateSeasons) { return; }
@@ -121,13 +132,16 @@ export const Promo = () => {
     startTimeRef.current = performance.now() / 1000;
   }, []);
 
-  const getPlants = () => {
-    const plants = plantsCache[calcCacheKey(config)] || [];
-    if (config.promoSpread) {
-      return plants.map(plant => ({ ...plant, id: 0 }));
-    }
-    return plants;
-  };
+  const plants = React.useMemo(() => {
+    return getCachedPlants(config);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [config.plants, config.bedLengthOuter, config.bedWidthOuter]);
+
+  const threeDPlants = React.useMemo(() => {
+    return config.promoSpread
+      ? plants.map(plant => ({ ...plant, id: 0 }))
+      : plants;
+  }, [plants, config.promoSpread]);
 
   return <div className={"three-d-garden promo"}>
     <div className={"garden-bed-3d-model"}>
@@ -140,7 +154,7 @@ export const Promo = () => {
           <GardenModel {...common}
             configPosition={{ x: config.x, y: config.y, z: config.z }}
             startTimeRef={startTimeRef}
-            threeDPlants={getPlants()}
+            threeDPlants={threeDPlants}
             mapPoints={mapPoints} />
         </Canvas>
       </MemoryRouter>

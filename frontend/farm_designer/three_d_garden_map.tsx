@@ -13,7 +13,7 @@ import {
 } from "farmbot";
 import { CameraCalibrationData, DesignerState } from "./interfaces";
 import { GetWebAppConfigValue } from "../config_storage/actions";
-import { BooleanSetting } from "../session_keys";
+import { BooleanSetting, NumericSetting } from "../session_keys";
 import { SlotWithTool } from "../resources/interfaces";
 import { calcSunCoordinate, ThreeDGardenPlant } from "../three_d_garden/garden";
 import { findCrop, findIcon } from "../crops/find";
@@ -25,6 +25,7 @@ import { get3DTime, latLng } from "../three_d_garden/time_travel";
 import { parseCalibrationData } from "./map/layers/images/map_image";
 import { fetchInterpolationOptions } from "./map/layers/points/interpolation_map";
 import { unpackUUID } from "../util";
+import { isTopDown } from "../three_d_garden/helpers";
 
 export interface ThreeDGardenMapProps {
   botSize: BotSize;
@@ -76,10 +77,19 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   config.negativeZ = props.negativeZ;
   config.exaggeratedZ = props.designer.threeDExaggeratedZ;
 
+  const getValue = props.get3DConfigValue;
+  config.mirrorX = !!getValue("mirrorX");
+  config.mirrorY = !!getValue("mirrorY");
+  config.bedXOffset = getValue("bedXOffset");
+  config.bedYOffset = getValue("bedYOffset");
+  config.bedZOffset = getValue("bedZOffset");
+
   const position = clone(INITIAL_POSITION);
   position.x = props.botPosition.x || 0;
   position.y = props.botPosition.y || 0;
   position.z = props.botPosition.z || 0;
+  if (config.mirrorY) { position.y = gridSize.y - position.y; }
+  if (config.mirrorX) { position.x = gridSize.x - position.x; }
 
   const { designer } = props;
   config.distanceIndicator = designer.distanceIndicator;
@@ -89,16 +99,12 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   config.zGantryOffset = fbosConfig("gantry_height");
   config.soilHeight = Math.abs(fbosConfig("soil_height"));
 
-  const getValue = props.get3DConfigValue;
   config.bedWallThickness = getValue("bedWallThickness");
   config.bedHeight = getValue("bedHeight");
   config.ccSupportSize = getValue("ccSupportSize");
   config.beamLength = getValue("beamLength");
   config.columnLength = getValue("columnLength");
   config.zAxisLength = getValue("zAxisLength");
-  config.bedXOffset = getValue("bedXOffset");
-  config.bedYOffset = getValue("bedYOffset");
-  config.bedZOffset = getValue("bedZOffset");
   config.legSize = getValue("legSize");
   config.legsFlush = !!getValue("legsFlush");
   config.extraLegsX = getValue("extraLegsX");
@@ -175,10 +181,14 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
   config.interpolationUseNearest = options.useNearest;
   config.interpolationPower = options.power;
 
+  config.topDown = isTopDown(props.designer, props.getWebAppConfigValue);
   config.zoom = true;
   config.pan = true;
-  config.rotate = !props.designer.threeDTopDownView;
-  config.perspective = !props.designer.threeDTopDownView;
+  config.rotate = !config.topDown;
+  config.perspective = !config.topDown;
+  config.viewpointHeading =
+    parseInt("" + props.getWebAppConfigValue(NumericSetting.viewpoint_heading));
+  config.cameraSelectionView = props.designer.threeDCameraSelection;
 
   const lastCaptureTime = React.useMemo(() => {
     const localIds = props.logs
@@ -214,15 +224,15 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
 };
 
 export const convertPlants =
-  (config: Config, plants: TaggedPlant[]): ThreeDGardenPlant[] =>
+  (_config: Config, plants: TaggedPlant[]): ThreeDGardenPlant[] =>
     plants.map(plant => ({
       id: plant.body.id,
       label: plant.body.name,
       icon: findIcon(plant.body.openfarm_slug),
       size: plant.body.radius * 2,
       spread: findCrop(plant.body.openfarm_slug).spread,
-      x: plant.body.x + config.bedXOffset,
-      y: plant.body.y + config.bedYOffset,
+      x: plant.body.x,
+      y: plant.body.y,
       key: "",
       seed: 0,
     }));

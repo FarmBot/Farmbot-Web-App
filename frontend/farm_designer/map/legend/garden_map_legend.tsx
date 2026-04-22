@@ -22,8 +22,11 @@ import { ZDisplay, ZDisplayToggle } from "./z_display";
 import { getModifiedClassName } from "../../../settings/default_values";
 import { Position } from "@blueprintjs/core";
 import { MapSizeInputs } from "../../map_size_setting";
-import { OriginSelector } from "../../../settings/farm_designer_settings";
+import {
+  CameraStartingLocationButton, OriginSelector,
+} from "../../../settings/farm_designer_settings";
 import { McuParams } from "farmbot";
+import { DesignerState } from "../../interfaces";
 
 export interface ZoomControlsProps {
   zoom(value: number): () => void;
@@ -89,6 +92,7 @@ export interface SettingsSubMenuProps {
   dispatch: Function;
   getConfigValue: GetWebAppConfigValue;
   firmwareConfig: McuParams;
+  designer: DesignerState;
 }
 
 export const PointsSubMenu = (props: SettingsSubMenuProps) =>
@@ -127,8 +131,8 @@ export const FarmbotSubMenu = (props: SettingsSubMenuProps) =>
 interface LayerTogglesProps extends GardenMapLegendProps { }
 
 const LayerToggles = (props: LayerTogglesProps) => {
-  const { toggle, getConfigValue, dispatch, firmwareConfig } = props;
-  const subMenuProps = { dispatch, getConfigValue, firmwareConfig };
+  const { toggle, getConfigValue, dispatch, firmwareConfig, designer } = props;
+  const subMenuProps = { dispatch, getConfigValue, firmwareConfig, designer };
   const is3D = getConfigValue(BooleanSetting.three_d_garden);
   const only2DClass = is3D ? "disabled" : "";
   return <div className="toggle-buttons">
@@ -215,8 +219,9 @@ const LayerToggles = (props: LayerTogglesProps) => {
   </div>;
 };
 
-export const MapSettingsContent = (props: SettingsSubMenuProps) =>
-  <div className="grid">
+export const MapSettingsContent = (props: SettingsSubMenuProps) => {
+  const is3D = props.getConfigValue(BooleanSetting.three_d_garden);
+  return <div className="grid">
     <NonLayerToggle {...props}
       setting={BooleanSetting.dynamic_map}
       label={DeviceSetting.dynamicMap}
@@ -226,16 +231,22 @@ export const MapSettingsContent = (props: SettingsSubMenuProps) =>
       helpText={Content.MAP_SIZE}>
       <MapSizeInputs {...props} />
     </NonLayerToggle>
-    <NonLayerToggle {...props}
+    {!is3D && <NonLayerToggle {...props}
       setting={BooleanSetting.xy_swap}
       label={DeviceSetting.rotateMap}
-      helpText={Content.MAP_SWAP_XY} />
-    <NonLayerToggle {...props}
+      helpText={Content.MAP_SWAP_XY} />}
+    {!is3D && <NonLayerToggle {...props}
       label={DeviceSetting.mapOrigin}
       helpText={Content.MAP_ORIGIN}>
       <OriginSelector {...props} />
-    </NonLayerToggle>
+    </NonLayerToggle>}
+    {is3D && <div
+      className={"row grid-exp-1 align-baseline"}>
+      <label>{t(DeviceSetting.setCameraStartingLocation)}</label>
+      <CameraStartingLocationButton dispatch={props.dispatch} />
+    </div>}
   </div>;
+};
 
 const MapSettings = (props: SettingsSubMenuProps) =>
   <div className="map-settings">
@@ -270,6 +281,7 @@ export function GardenMapLegend(props: GardenMapLegendProps) {
         <MapSettings
           getConfigValue={getConfigValue}
           dispatch={props.dispatch}
+          designer={props.designer}
           firmwareConfig={props.firmwareConfig} />
         <SelectModeLink dispatch={props.dispatch} />
         <BugsControls />

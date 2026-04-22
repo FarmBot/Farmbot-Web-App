@@ -21,6 +21,8 @@ import {
 import {
   fakeFirmwareConfig,
 } from "../../../../__test_support__/fake_state/resources";
+import { fakeDesignerState } from "../../../../__test_support__/fake_designer_state";
+import { Actions } from "../../../../constants";
 
 let atMaxZoomSpy: jest.SpyInstance;
 let atMinZoomSpy: jest.SpyInstance;
@@ -67,6 +69,7 @@ describe("<GardenMapLegend />", () => {
     firmwareConfig: fakeFirmwareConfig().body,
     botLocationData: fakeBotLocationData(),
     botSize: fakeBotSize(),
+    designer: fakeDesignerState(),
   });
 
   it("renders", () => {
@@ -137,6 +140,7 @@ const fakeProps = (): SettingsSubMenuProps => ({
   dispatch: jest.fn(),
   getConfigValue: () => true,
   firmwareConfig: fakeFirmwareConfig().body,
+  designer: fakeDesignerState(),
 });
 
 describe("<PointsSubMenu />", () => {
@@ -184,5 +188,36 @@ describe("<MapSettingsContent />", () => {
     fireEvent.click(toggleBtn);
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       BooleanSetting.dynamic_map, false);
+  });
+
+  it("shows 2D-only controls", () => {
+    const p = fakeProps();
+    p.getConfigValue = key => key != BooleanSetting.three_d_garden;
+    const { container } = render(<MapSettingsContent {...p} />);
+    expect(container.textContent).toContain("Rotate map");
+    expect(container.textContent).toContain("Map origin");
+    expect(container.textContent).not.toContain("Set camera starting location");
+  });
+
+  it("shows 3D-only controls", () => {
+    const p = fakeProps();
+    p.getConfigValue = key => key == BooleanSetting.three_d_garden;
+    const { container } = render(<MapSettingsContent {...p} />);
+    expect(container.textContent).toContain("Set camera starting location");
+    expect(container.textContent).not.toContain("Rotate map");
+  });
+
+  it("toggles camera selection view", () => {
+    const p = fakeProps();
+    p.getConfigValue = key => key == BooleanSetting.three_d_garden;
+    const { container } = render(<MapSettingsContent {...p} />);
+    const toggleBtn =
+      container.querySelector("button[title='Set camera starting location']");
+    if (!toggleBtn) { throw new Error("Missing camera selection toggle"); }
+    fireEvent.click(toggleBtn);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_3D_CAMERA_SELECTION,
+      payload: undefined,
+    });
   });
 });

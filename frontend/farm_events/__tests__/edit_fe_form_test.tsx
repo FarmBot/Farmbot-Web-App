@@ -63,7 +63,7 @@ describe("<EditFEForm />", () => {
       const update = isFunction(state) ? state(i.state, i.props) : state;
       i.state = { ...i.state, ...update };
       callback?.();
-    }) as EditFEForm["setState"];
+    });
     i.forceUpdate = jest.fn();
     return i;
   }

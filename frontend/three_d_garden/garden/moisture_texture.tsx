@@ -112,6 +112,7 @@ export const MoistureReadings = (props: MoistureReadingsProps) => {
     : [0, 0, 0]}>
     {props.readings.map(reading =>
       <Sphere
+        key={reading.uuid}
         args={[props.radius, 16, 16]}
         position={[
           reading.body.x || 0,
