@@ -2037,7 +2037,9 @@ CREATE TABLE public.web_app_configs (
     show_missed_step_plot boolean DEFAULT false,
     enable_3d_electronics_box_top boolean DEFAULT true,
     three_d_garden boolean DEFAULT false,
-    dark_mode boolean DEFAULT true
+    dark_mode boolean DEFAULT true,
+    top_down_view boolean DEFAULT false,
+    viewpoint_heading integer DEFAULT 30
 );
 
 
@@ -3763,6 +3765,8 @@ ALTER TABLE ONLY public.users
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
+('20260422013033'),
+('20260417190743'),
 ('20260305192457'),
 ('20250930204600'),
 ('20250925195004'),

@@ -90,7 +90,7 @@ const DEFAULT_WEB_APP_CONFIG_VALUES: Record<Key, Value> = {
   three_d_garden: false,
   dark_mode: true,
   ["top_down_view" as Key]: false,
-  ["viewpoint_heading" as Key]: 0,
+  ["viewpoint_heading" as Key]: 30,
 };
 
 const DEFAULT_EXPRESS_WEB_APP_CONFIG_VALUES =

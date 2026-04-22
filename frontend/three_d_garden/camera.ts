@@ -43,8 +43,8 @@ export const cameraInit = (props: CameraInitProps): Camera => {
   return initCamera;
 };
 
-const SMALL_FACTOR = 100;
-const BIG_FACTOR = 500;
+const SMALL_FACTOR = 2000;
+const BIG_FACTOR = 5000;
 
 export interface GetDefaultCameraPositionProps {
   heading: number;
@@ -58,10 +58,12 @@ export const getDefaultCameraPosition =
     const { heading, bedSize, topDown, visual } = props;
     const angle = topDown ? heading : (heading - 45) % 360;
     const radians = angle * Math.PI / 180;
-    const smallX = bedSize.x + SMALL_FACTOR;
-    const smallY = visual ? bedSize.y + SMALL_FACTOR : smallX;
-    const bigX = bedSize.x + BIG_FACTOR;
-    const bigY = visual ? bedSize.y + BIG_FACTOR : bigX;
+    const smallF = Math.min(SMALL_FACTOR, SMALL_FACTOR * (3000 / bedSize.x) ** 2);
+    const bigF = Math.min(BIG_FACTOR, BIG_FACTOR * (3000 / bedSize.x) ** 2);
+    const smallX = bedSize.x / 2 + smallF;
+    const smallY = visual ? bedSize.y / 2 + smallF : smallX;
+    const bigX = bedSize.x / 2 + bigF;
+    const bigY = visual ? bedSize.y / 2 + BIG_FACTOR : bigX;
 
     if (topDown) {
       const phase = Math.PI / 2;

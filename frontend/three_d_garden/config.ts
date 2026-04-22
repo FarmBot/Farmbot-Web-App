@@ -170,7 +170,7 @@ export const INITIAL: ConfigWithPosition = {
   heading: 0,
   perspective: true,
   topDown: false,
-  viewpointHeading: 0,
+  viewpointHeading: 30,
   cameraSelectionView: false,
   bot: true,
   laser: false,

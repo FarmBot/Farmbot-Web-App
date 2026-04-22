@@ -23,6 +23,9 @@ interface Hovered {
   topDown: boolean;
 }
 
+const ORTHOGONAL_ANGLES = [0, 90, 180, 270];
+const ISO_ANGLES = [30, 150, 210, 330];
+
 export const CameraSelectionUI = (props: CameraSelectionUIProps) => {
   const { config } = props;
   const [hovered, setHovered] = React.useState<Hovered | undefined>(undefined);
@@ -69,22 +72,22 @@ export const CameraSelectionUI = (props: CameraSelectionUIProps) => {
   return <Group
     name={"camera-selection"}
     visible={config.cameraSelectionView}>
-    {uniq([0, 90, 180, 270,
-      topDownSelected ? config.viewpointHeading : 0])
+    {uniq(ORTHOGONAL_ANGLES.concat(
+      topDownSelected ? config.viewpointHeading : 0))
       .map(angle =>
         <CameraLocation key={`top-down-${angle}`} {...common}
           angle={angle}
           topDown={true}
           debug={false} />)}
-    {uniq([0, 90, 180, 270, 45, 135, 225, 315,
-      topDownSelected ? 0 : config.viewpointHeading])
+    {uniq(ORTHOGONAL_ANGLES.concat(ISO_ANGLES).concat(
+      topDownSelected ? 0 : config.viewpointHeading))
       .map(angle =>
         <CameraLocation key={`iso-${angle}`} {...common}
           angle={angle}
           topDown={false}
           debug={false} />)}
     {config.lightsDebug &&
-      uniq([0, 90, 180, 270, 45, 135, 225, 315])
+      uniq(ORTHOGONAL_ANGLES.concat(ISO_ANGLES))
         .map(angle =>
           <CameraLocation key={`debug-${angle}`} {...common}
             angle={angle}
@@ -120,9 +123,9 @@ const CameraLocation = (props: CameraLocationProps) => {
     topDown,
     visual: !debug,
   });
-  const baseScaleXY = debug ? 1 : 0.8;
+  const baseScaleXY = debug ? 1 : 0.5;
   const scale = topDown ? 0.1 : baseScaleXY;
-  const baseScaleZ = debug ? 1 : 0.8 * 0.25;
+  const baseScaleZ = debug ? 1 : 0.5 * 0.25;
   const zScale = topDown ? 0 : baseScaleZ;
   const scaledPosition: [number, number, number] = [
     position[0] * scale,

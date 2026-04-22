@@ -66,6 +66,6 @@ export const Person = (props: PersonProps) => {
       side={DoubleSide}
       opacity={0.4}
       raycast={() => undefined}
-      renderOrder={RenderOrder.one} />
+      renderOrder={RenderOrder.clouds} />
   </Group>;
 };

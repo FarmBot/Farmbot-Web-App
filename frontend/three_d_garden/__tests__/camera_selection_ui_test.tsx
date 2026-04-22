@@ -112,7 +112,7 @@ describe("<CameraSelectionUI />", () => {
   it("renders unique heading marker", () => {
     const p = fakeProps();
     p.config.cameraSelectionView = true;
-    p.config.viewpointHeading = 45;
+    p.config.viewpointHeading = 30;
     const { container } = render(<CameraSelectionUI {...p} />);
     expect(container.querySelectorAll(".spherehead").length).toEqual(12);
   });
@@ -153,7 +153,7 @@ describe("<CameraSelectionUI />", () => {
     mountedWrappers.push(wrapper);
     attachMeshRefs(wrapper);
     intersectObjects.mockReturnValue([{
-      object: { userData: { hovered: { angle: 45, topDown: false } } },
+      object: { userData: { hovered: { angle: 30, topDown: false } } },
     }]);
 
     actRenderer(() => {
@@ -162,7 +162,7 @@ describe("<CameraSelectionUI />", () => {
 
     const hoveredSphere = wrapper.root.findAll(node =>
       node.props.name == "head"
-      && node.props.userData?.hovered?.angle == 45
+      && node.props.userData?.hovered?.angle == 30
       && node.props.userData?.hovered?.topDown === false)[0];
     expect(hoveredSphere).toBeTruthy();
     const material = hoveredSphere?.findAll(node =>
@@ -173,6 +173,7 @@ describe("<CameraSelectionUI />", () => {
   it("keeps default color when raycast finds no hovered marker", () => {
     const p = fakeProps();
     p.config.cameraSelectionView = true;
+    p.config.viewpointHeading = 0;
     const wrapper = createRenderer(<CameraSelectionUI {...p} />);
     mountedWrappers.push(wrapper);
     attachMeshRefs(wrapper);
@@ -184,7 +185,7 @@ describe("<CameraSelectionUI />", () => {
 
     const sphere = wrapper.root.findAll(node =>
       node.props.name == "head"
-      && node.props.userData?.hovered?.angle == 45
+      && node.props.userData?.hovered?.angle == 30
       && node.props.userData?.hovered?.topDown === false)[0];
     const material = sphere?.findAll(node =>
       node.props.color !== undefined)[0];
@@ -228,13 +229,13 @@ describe("<CameraSelectionUI />", () => {
     mountedWrappers.push(wrapper);
     const body = wrapper.root.findAll(node =>
       node.props.name == "body"
-      && node.props.userData?.hovered?.angle == 45
+      && node.props.userData?.hovered?.angle == 30
       && node.props.userData?.hovered?.topDown === false)[0];
     actRenderer(() => {
       body?.props.onClick({ stopPropagation: jest.fn() });
     });
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
-      NumericSetting.viewpoint_heading, 45);
+      NumericSetting.viewpoint_heading, 30);
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       BooleanSetting.top_down_view, false);
   });
