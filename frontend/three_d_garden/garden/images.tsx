@@ -91,6 +91,17 @@ export const ImageTexture = (props: ImageTextureProps) => {
   const extents = soilSurfaceExtents(props.config);
   const width = extents.x.max - extents.x.min;
   const height = extents.y.max - extents.y.min;
+  const textureSize = 1024;
+  const textureWidth = width >= height
+    ? textureSize
+    : Math.max(1, Math.round(textureSize * width / height));
+  const textureHeight = height >= width
+    ? textureSize
+    : Math.max(1, Math.round(textureSize * height / width));
+  const textureKey = [
+    extents.x.min, extents.x.max,
+    extents.y.min, extents.y.max,
+  ].join(":");
   const { bedXOffset, bedYOffset, bedWallThickness } = props.config;
   const soilTexture = useTexture(ASSETS.textures.soil + "?=soilT");
   const color = getColorFromBrightness(props.config.soilBrightness);
@@ -110,7 +121,11 @@ export const ImageTexture = (props: ImageTextureProps) => {
   const highlightActive = lastImageArray[0]?.highlighted;
   const commonProps = { width, height, bedWallThickness };
   const mirrorTextureProps = getMirrorTextureProps(props.config);
-  return <RenderTexture attach={"map"} width={width} height={height}
+  return <RenderTexture
+    key={textureKey}
+    attach={"map"}
+    width={textureWidth}
+    height={textureHeight}
     repeat={mirrorTextureProps.repeat}
     offset={mirrorTextureProps.offset}>
     <OrthographicCamera makeDefault near={10} far={10000}
