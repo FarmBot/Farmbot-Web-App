@@ -26,6 +26,7 @@ import {
 import { Mode } from "../../farm_designer/map/interfaces";
 import moment from "moment";
 import { calcSunCoordinate, calcSunI, getCycleLength } from "./sun";
+import { instancedMeshKey } from "./instanced_mesh_key";
 
 export interface PlantInstancesProps {
   plants: ThreeDGardenPlant[];
@@ -121,6 +122,7 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
   };
 
   return <InstancedMesh
+    key={instancedMeshKey(plants)}
     ref={instancedRef}
     args={[undefined, undefined, plants.length]}
     userData={{ plantIndexes }}

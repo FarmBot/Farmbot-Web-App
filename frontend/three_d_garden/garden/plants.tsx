@@ -32,6 +32,7 @@ import {
 import { ActivePositionRef } from "../bed/objects/pointer_objects";
 import { Mode } from "../../farm_designer/map/interfaces";
 import { findCrop } from "../../crops/find";
+import { instancedMeshKey } from "./instanced_mesh_key";
 
 export interface ThreeDGardenPlant {
   id?: number | undefined;
@@ -235,6 +236,7 @@ export const PlantSpreadInstances = (props: PlantSpreadInstancesProps) => {
   };
 
   return <InstancedMesh
+    key={instancedMeshKey(plants)}
     ref={instancedRef}
     args={[undefined, undefined, plants.length]}
     userData={{ plantIndexes }}

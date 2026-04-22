@@ -17,7 +17,7 @@
       .initial-loading-text { position: absolute; top: 385px;
       text-align: center; width: 100%; padding-top: 10%; color: #434343; }
     </style>
-    <%= stylesheet_link_tag *@css_assets %>
+    <%= stylesheet_link_tag(*@css_assets, preload_links_header: false) %>
     <link rel="icon" href="/favicon.ico" type="image/x-icon">
     <link rel="apple-touch-icon" href="/images/favicon.png" type="image/png">
     <% manifest_file =

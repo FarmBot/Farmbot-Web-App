@@ -387,7 +387,7 @@ export const RawCropInfo = (props: CropInfoProps) => {
         findCurve={findCurve(props.curves, designer)}
         plants={props.plants}
         onChange={changeCurve(dispatch)} />
-      <img src={image} />
+      {image && <img src={image} />}
     </DesignerPanelContent>
   </DesignerPanel>;
 };

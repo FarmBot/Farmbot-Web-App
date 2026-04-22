@@ -246,6 +246,7 @@ describe("<CropInfo />", () => {
     const { container } = render(<CropInfo {...p} />);
     expect(normalizedText(container)).toContain("sowingnotavailable");
     expect(normalizedText(container)).toContain("commonnamesnotavailable");
+    expect(container.querySelector("img[src='']")).toBeNull();
   });
 
   it("handles string of names", () => {
