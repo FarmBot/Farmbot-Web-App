@@ -190,6 +190,7 @@ export enum WizardStepSlug {
 // eslint-disable-next-line complexity
 export const WIZARD_STEPS = (props: WizardStepDataProps): WizardSteps => {
   const { firmwareHardware } = props;
+  const is3D = !!props.getConfigValue?.(BooleanSetting.three_d_garden);
   const xySwap = !!props.getConfigValue?.(BooleanSetting.xy_swap);
   const positiveMovementInstruction = (swap: boolean) =>
     swap
@@ -511,18 +512,30 @@ export const WIZARD_STEPS = (props: WizardStepDataProps): WizardSteps => {
       component: MapOrientation,
       question: t("Does the virtual FarmBot match your real life FarmBot?"),
       outcomes: [
-        {
-          slug: "rotated",
-          description: t("The map is rotated incorrectly"),
-          tips: "",
-          component: RotateMapToggle,
-        },
-        {
-          slug: "incorrectOrigin",
-          description: t("The map origin is in a different corner"),
-          tips: t("Select the correct map origin."),
-          component: SelectMapOrigin,
-        },
+        ...(is3D
+          ? []
+          : [{
+            slug: "rotated",
+            description: t("The map is rotated incorrectly"),
+            tips: "",
+            component: RotateMapToggle,
+          }]),
+        ...(is3D
+          ? []
+          : [{
+            slug: "incorrectOrigin",
+            description: t("The map origin is in a different corner"),
+            tips: t("Select the correct map origin."),
+            component: SelectMapOrigin,
+          }]),
+        ...(is3D
+          ? [{
+            slug: "cameraSelection",
+            description: t("The camera location is incorrect"),
+            tips: SetupWizardContent.SET_CAMERA_LOCATION,
+            component: MapOrientation,
+          }]
+          : []),
       ],
     },
     {

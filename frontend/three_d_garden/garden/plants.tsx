@@ -228,7 +228,7 @@ export const PlantSpreadInstances = (props: PlantSpreadInstancesProps) => {
     if (isUndefined(instanceId)) { return; }
     const plant = plants[instanceId];
     if (plant?.id && dispatch && visible &&
-      !HOVER_OBJECT_MODES.includes(getMode())) {
+      ![...HOVER_OBJECT_MODES, Mode.cameraSelection].includes(getMode())) {
       dispatch(setPanelOpen(true));
       navigate(Path.plants(plant.id));
     }

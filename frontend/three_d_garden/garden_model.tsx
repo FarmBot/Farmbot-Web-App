@@ -118,8 +118,9 @@ export const GardenModel = (props: GardenModelProps) => {
   });
 
   const baseAngle = 0;
+  const heading = Math.ceil(config.viewpointHeading / 90) * 90;
   const topDownCameraAngle = config.topDown
-    ? baseAngle + config.viewpointHeading * Math.PI / 180
+    ? baseAngle + heading * Math.PI / 180
     : undefined;
   const camera = getCamera(
     config,
@@ -128,6 +129,7 @@ export const GardenModel = (props: GardenModelProps) => {
     cameraInit({
       topDown: config.topDown,
       viewpointHeading: config.viewpointHeading,
+      bedSize: { x: config.bedLengthOuter, y: config.bedWidthOuter },
     }));
   const [controlsCamera, setControlsCamera] =
     // eslint-disable-next-line no-null/no-null
@@ -160,6 +162,10 @@ export const GardenModel = (props: GardenModelProps) => {
     BooleanSetting.show_moisture_interpolation_map);
   const showMoistureReadings = !!props.addPlantProps?.getConfigValue(
     BooleanSetting.show_sensor_readings);
+
+  const topDownAtStart = !!props.addPlantProps?.getConfigValue(
+    BooleanSetting.top_down_view);
+  const topDownZoomLevel = 0.25 * 3000 / config.bedLengthOuter;
 
   // eslint-disable-next-line no-null/no-null
   const skyRef = React.useRef<ThreeMeshBasicMaterial>(null);
@@ -237,7 +243,7 @@ export const GardenModel = (props: GardenModelProps) => {
         fov={40} near={10} far={BigDistance.far}
         position={camera.position}
         rotation={[0, 0, 0]}
-        zoom={config.topDown ? 0.25 : 1}
+        zoom={config.topDown ? topDownZoomLevel : 1}
         up={[0, 0, 1]} />
     </AnimatedGroup>
     {controlsCamera &&
@@ -343,6 +349,9 @@ export const GardenModel = (props: GardenModelProps) => {
     <Solar config={config} activeFocus={props.activeFocus} />
     <Lab config={config} activeFocus={props.activeFocus} />
     <Greenhouse config={config} activeFocus={props.activeFocus} />
-    <CameraSelectionUI config={config} dispatch={dispatch} />
+    <CameraSelectionUI
+      config={config}
+      dispatch={dispatch}
+      topDownAtStart={topDownAtStart} />
   </Group>;
 };

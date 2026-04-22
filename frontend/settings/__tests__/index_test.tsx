@@ -1,6 +1,5 @@
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
-import { changeBlurableInputRTL } from "../../__test_support__/helpers";
 import { RawDesignerSettings as DesignerSettings } from "../index";
 import { DesignerSettingsProps } from "../interfaces";
 import { BooleanSetting, NumericSetting } from "../../session_keys";
@@ -200,31 +199,6 @@ describe("<DesignerSettings />", () => {
     fireEvent.click(quadrants[quadrants.length - 1]);
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       NumericSetting.bot_origin_quadrant, 4);
-  });
-
-  it("toggles top down view", () => {
-    const p = fakeProps();
-    p.settingsPanelState.farm_designer = true;
-    const { container } = render(<DesignerSettings {...p} />);
-    const topDownSetting = getSettingByText(container, "open in top-down view");
-    const button = topDownSetting.querySelector("button");
-    if (!button) { throw new Error("Expected top down toggle button"); }
-    fireEvent.click(button);
-    expect(setWebAppConfigValueSpy)
-      .toHaveBeenCalledWith(BooleanSetting.top_down_view, true);
-  });
-
-  it("changes viewpoint heading", () => {
-    const p = fakeProps();
-    p.settingsPanelState.farm_designer = true;
-    p.getConfigValue = key => key == NumericSetting.viewpoint_heading ? 0 : 2;
-    const { container } = render(<DesignerSettings {...p} />);
-    const headingSetting = getSettingByText(container, "camera location upon open");
-    const input = headingSetting.querySelector("input");
-    if (!input) { throw new Error("Expected viewpoint heading input"); }
-    changeBlurableInputRTL(input, "270");
-    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
-      NumericSetting.viewpoint_heading, 270);
   });
 
   it("renders env editor", () => {

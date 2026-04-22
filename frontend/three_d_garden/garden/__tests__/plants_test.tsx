@@ -223,6 +223,20 @@ describe("<ThreeDPlantSpread />", () => {
     expect(mockNavigate).toHaveBeenCalledWith(Path.plants("1"));
   });
 
+  it("doesn't navigate on spread click in camera selection mode", () => {
+    setMockInstanceId(0);
+    getModeSpy.mockReturnValue(Mode.cameraSelection);
+    queueMeshRef();
+    const p = fakeProps();
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
+    const { container } = render(<PlantSpreadInstances {...p} />);
+    const mesh = container.querySelector("instancedmesh");
+    mesh && fireEvent.click(mesh, { instanceId: 0 });
+    expect(dispatch).not.toHaveBeenCalled();
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
   it("updates instance colors on frame", () => {
     queueMeshRef();
     const p = fakeProps();

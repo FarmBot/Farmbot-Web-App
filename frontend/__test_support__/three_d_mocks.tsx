@@ -203,6 +203,10 @@ jest.mock("@react-three/fiber", () => ({
     scene: { traverse: jest.fn() },
     size: { width: 800, height: 600 },
     pointer: { x: 0, y: 0 },
+    raycaster: {
+      setFromCamera: jest.fn(),
+      intersectObjects: jest.fn(() => []),
+    },
   })),
   useThree: jest.fn(() => ({
     gl: {
@@ -214,6 +218,10 @@ jest.mock("@react-three/fiber", () => ({
     scene: { traverse: jest.fn() },
     pointer: { x: 0, y: 0 },
     camera: new THREE.PerspectiveCamera(),
+    raycaster: {
+      setFromCamera: jest.fn(),
+      intersectObjects: jest.fn(() => []),
+    },
     size: { width: 800, height: 600 },
   })),
   extend: jest.fn(),

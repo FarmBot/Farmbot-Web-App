@@ -13,7 +13,7 @@ import {
 import { BooleanSetting } from "../../../session_keys";
 import { t } from "../../../i18next_wrapper";
 import { SelectModeLink } from "../../../plants/select_plants";
-import { DeviceSetting, Content, Actions } from "../../../constants";
+import { DeviceSetting, Content } from "../../../constants";
 import { Help, Popover, ToggleButton } from "../../../ui";
 import {
   BooleanConfigKey as WebAppBooleanConfigKey,
@@ -22,7 +22,9 @@ import { ZDisplay, ZDisplayToggle } from "./z_display";
 import { getModifiedClassName } from "../../../settings/default_values";
 import { Position } from "@blueprintjs/core";
 import { MapSizeInputs } from "../../map_size_setting";
-import { HeadingSelector, OriginSelector } from "../../../settings/farm_designer_settings";
+import {
+  CameraStartingLocationButton, OriginSelector,
+} from "../../../settings/farm_designer_settings";
 import { McuParams } from "farmbot";
 import { DesignerState } from "../../interfaces";
 
@@ -238,25 +240,10 @@ export const MapSettingsContent = (props: SettingsSubMenuProps) => {
       helpText={Content.MAP_ORIGIN}>
       <OriginSelector {...props} />
     </NonLayerToggle>}
-    {is3D && <NonLayerToggle {...props}
-      setting={BooleanSetting.top_down_view}
-      label={DeviceSetting.openInTopDownView}
-      helpText={Content.TOP_DOWN_VIEW} />}
-    {is3D && <NonLayerToggle {...props}
-      label={DeviceSetting.cameraLocationUponOpen}
-      helpText={Content.VIEWPOINT_HEADING}>
-      <HeadingSelector {...props} />
-    </NonLayerToggle>}
     {is3D && <div
       className={"row grid-exp-1 align-baseline"}>
-      <label>{t("Enable camera heading selection view")}</label>
-      <ToggleButton
-        title={t("Enable camera heading selection view")}
-        toggleAction={() => props.dispatch({
-          type: Actions.TOGGLE_3D_CAMERA_SELECTION,
-          payload: undefined,
-        })}
-        toggleValue={props.designer.threeDCameraSelection} />
+      <label>{t(DeviceSetting.setCameraStartingLocation)}</label>
+      <CameraStartingLocationButton dispatch={props.dispatch} />
     </div>}
   </div>;
 };

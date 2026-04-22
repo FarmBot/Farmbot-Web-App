@@ -202,4 +202,5 @@ export enum Mode {
   templateView = "templateView",
   editGroup = "editGroup",
   profile = "profile",
+  cameraSelection = "cameraSelection",
 }

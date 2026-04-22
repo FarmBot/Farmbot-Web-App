@@ -1,5 +1,6 @@
 import { uniq } from "lodash";
 import { fakeWizardStepResult } from "../../__test_support__/fake_state/resources";
+import { BooleanSetting } from "../../session_keys";
 import {
   setupProgressString,
   WizardStepSlug, WIZARD_SECTIONS, WIZARD_STEPS, WIZARD_STEP_SLUGS,
@@ -69,5 +70,27 @@ describe("data check", () => {
       firmwareHardware: "express_k10",
     });
     expect(expressSections.length).toEqual(sections.length - 1);
+  });
+
+  it("uses camera selection outcome for 3D map orientation", () => {
+    const steps = WIZARD_STEPS({
+      firmwareHardware: "farmduino_k18",
+      getConfigValue: key => key == BooleanSetting.three_d_garden,
+    });
+    const mapOrientation = steps.find(step =>
+      step.slug == WizardStepSlug.mapOrientation);
+    expect(mapOrientation?.outcomes.map(outcome => outcome.slug))
+      .toEqual(["cameraSelection"]);
+  });
+
+  it("keeps 2D map orientation outcomes when 3D is disabled", () => {
+    const steps = WIZARD_STEPS({
+      firmwareHardware: "farmduino_k18",
+      getConfigValue: () => false,
+    });
+    const mapOrientation = steps.find(step =>
+      step.slug == WizardStepSlug.mapOrientation);
+    expect(mapOrientation?.outcomes.map(outcome => outcome.slug))
+      .toEqual(["rotated", "incorrectOrigin"]);
   });
 });

@@ -3,6 +3,7 @@ let mockIsDesktop = true;
 
 import {
   cameraInit, CameraInitProps, getDefaultCameraPosition,
+  GetDefaultCameraPositionProps,
 } from "../camera";
 import * as devSupport from "../../settings/dev/dev_support";
 import * as screenSize from "../../screen_size";
@@ -26,14 +27,15 @@ afterEach(() => {
 describe("cameraInit()", () => {
   const fakeProps = (): CameraInitProps => ({
     topDown: false,
-    viewpointHeading: 0,
+    viewpointHeading: 45,
+    bedSize: { x: 3000, y: 1500 },
   });
 
   it("initializes camera", () => {
     mockDev = undefined;
     mockIsDesktop = true;
     expect(cameraInit(fakeProps())).toEqual({
-      position: [2000, -4000, 2500],
+      position: [2192, -2192, 2500],
       target: [0, 0, 0],
     });
   });
@@ -51,7 +53,7 @@ describe("cameraInit()", () => {
     mockDev = "{";
     mockIsDesktop = true;
     expect(cameraInit(fakeProps())).toEqual({
-      position: [2000, -4000, 2500],
+      position: [2192, -2192, 2500],
       target: [0, 0, 0],
     });
   });
@@ -60,7 +62,7 @@ describe("cameraInit()", () => {
     mockDev = undefined;
     mockIsDesktop = false;
     expect(cameraInit(fakeProps())).toEqual({
-      position: [5400, -2500, 3400],
+      position: [2475, -2475, 3400],
       target: [0, 0, 0],
     });
   });
@@ -82,25 +84,47 @@ describe("cameraInit()", () => {
     const p = fakeProps();
     p.viewpointHeading = 90;
     expect(cameraInit(p)).toEqual({
-      position: [2000, 4000, 2500],
+      position: [3100, 0, 2500],
       target: [0, 0, 0],
     });
   });
 });
 
 describe("getDefaultCameraPosition()", () => {
+  const fakeProps = (): GetDefaultCameraPositionProps => ({
+    heading: 0,
+    bedSize: { x: 3000, y: 1500 },
+    topDown: false,
+    visual: false,
+  });
+
   it("returns desktop position", () => {
     mockIsDesktop = true;
-    expect(getDefaultCameraPosition(180)).toEqual([-2000, 4000, 2500]);
+    const p = fakeProps();
+    p.heading = 180;
+    expect(getDefaultCameraPosition(p)).toEqual([0, 3100, 2500]);
   });
 
   it("returns mobile position", () => {
     mockIsDesktop = false;
-    expect(getDefaultCameraPosition(270)).toEqual([-5400, -2500, 3400]);
+    const p = fakeProps();
+    p.heading = 270;
+    expect(getDefaultCameraPosition(p)).toEqual([-3500, 0, 3400]);
   });
 
   it("returns top down position", () => {
     mockIsDesktop = true;
-    expect(getDefaultCameraPosition(90, true)).toEqual([5657, 0, 5000]);
+    const p = fakeProps();
+    p.heading = 90;
+    p.topDown = true;
+    expect(getDefaultCameraPosition(p)).toEqual([3100, 0, 5000]);
+  });
+
+  it("returns camera location visual location", () => {
+    mockIsDesktop = true;
+    const p = fakeProps();
+    p.heading = 180;
+    p.visual = true;
+    expect(getDefaultCameraPosition(p)).toEqual([0, 1600, 2500]);
   });
 });

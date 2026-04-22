@@ -36,9 +36,12 @@ import { convertPlants } from "../../../farm_designer/three_d_garden_map";
 import { mockDispatch } from "../../../__test_support__/fake_dispatch";
 import { setMockInstanceId } from "../../../__test_support__/three_d_mocks";
 import { PLANT_ICON_ATLAS } from "../plant_icon_atlas";
+import { Mode } from "../../../farm_designer/map/interfaces";
+import * as mapUtil from "../../../farm_designer/map/util";
 
 describe("<PlantInstances />", () => {
   let reactUseRefSpy: jest.SpyInstance;
+  let getModeSpy: jest.SpyInstance;
 
   beforeEach(() => {
     mockRefImpl = () => ({
@@ -63,10 +66,12 @@ describe("<PlantInstances />", () => {
       clock: { getElapsedTime: jest.fn(() => 0) },
       camera: { quaternion: new Quaternion() },
     }));
+    getModeSpy = jest.spyOn(mapUtil, "getMode").mockReturnValue(Mode.none);
   });
 
   afterEach(() => {
     reactUseRefSpy.mockRestore();
+    getModeSpy.mockRestore();
     delete PLANT_ICON_ATLAS["/crops/icons/beet.avif"];
   });
 
@@ -136,6 +141,19 @@ describe("<PlantInstances />", () => {
     const { container } = render(<PlantInstances {...p} />);
     const mesh = container.querySelector("instancedmesh");
     mesh && fireEvent.click(mesh, { instanceId: 0 });
+    expect(mockNavigate).not.toHaveBeenCalled();
+  });
+
+  it("doesn't navigate in camera selection mode", () => {
+    getModeSpy.mockReturnValue(Mode.cameraSelection);
+    setMockInstanceId(0);
+    const p = fakeProps();
+    const dispatch = jest.fn();
+    p.dispatch = mockDispatch(dispatch);
+    const { container } = render(<PlantInstances {...p} />);
+    const mesh = container.querySelector("instancedmesh");
+    mesh && fireEvent.click(mesh, { instanceId: 0 });
+    expect(dispatch).not.toHaveBeenCalled();
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 

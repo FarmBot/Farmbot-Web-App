@@ -9,7 +9,7 @@ import {
   ZoomControlsProps,
 } from "../garden_map_legend";
 import { GardenMapLegendProps } from "../../interfaces";
-import { BooleanSetting, NumericSetting } from "../../../../session_keys";
+import { BooleanSetting } from "../../../../session_keys";
 import * as zoom from "../../zoom";
 import {
   fakeTimeSettings,
@@ -196,31 +196,15 @@ describe("<MapSettingsContent />", () => {
     const { container } = render(<MapSettingsContent {...p} />);
     expect(container.textContent).toContain("Rotate map");
     expect(container.textContent).toContain("Map origin");
-    expect(container.textContent).not.toContain("Camera location upon open");
+    expect(container.textContent).not.toContain("Set camera starting location");
   });
 
   it("shows 3D-only controls", () => {
     const p = fakeProps();
     p.getConfigValue = key => key == BooleanSetting.three_d_garden;
     const { container } = render(<MapSettingsContent {...p} />);
-    expect(container.textContent).toContain("Open in top-down view");
-    expect(container.textContent).toContain("Camera location upon open");
-    expect(container.textContent).toContain("Enable camera heading selection view");
+    expect(container.textContent).toContain("Set camera starting location");
     expect(container.textContent).not.toContain("Rotate map");
-  });
-
-  it("changes viewpoint heading in 3D settings", () => {
-    const p = fakeProps();
-    p.getConfigValue = key => {
-      if (key == BooleanSetting.three_d_garden) { return true; }
-      if (key == NumericSetting.viewpoint_heading) { return 0; }
-      return false;
-    };
-    const { container } = render(<MapSettingsContent {...p} />);
-    const quadrants = container.querySelectorAll(".quadrant");
-    fireEvent.click(quadrants[quadrants.length - 1]);
-    expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
-      NumericSetting.viewpoint_heading, 270);
   });
 
   it("toggles camera selection view", () => {
@@ -228,7 +212,7 @@ describe("<MapSettingsContent />", () => {
     p.getConfigValue = key => key == BooleanSetting.three_d_garden;
     const { container } = render(<MapSettingsContent {...p} />);
     const toggleBtn =
-      container.querySelector("button[title='Enable camera heading selection view']");
+      container.querySelector("button[title='Set camera starting location']");
     if (!toggleBtn) { throw new Error("Missing camera selection toggle"); }
     fireEvent.click(toggleBtn);
     expect(p.dispatch).toHaveBeenCalledWith({

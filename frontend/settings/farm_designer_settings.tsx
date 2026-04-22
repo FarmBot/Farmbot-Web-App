@@ -1,5 +1,5 @@
 import React from "react";
-import { Content, DeviceSetting } from "../constants";
+import { Actions, Content, DeviceSetting } from "../constants";
 import { t } from "../i18next_wrapper";
 import { setWebAppConfigValue } from "../config_storage/actions";
 import { Help, ToggleButton, BlurableInput } from "../ui";
@@ -124,19 +124,19 @@ const DESIGNER_SETTINGS =
       setting: BooleanSetting.xy_swap,
     },
     {
+      title: DeviceSetting.topDownView,
+      description: Content.TOP_DOWN_VIEW,
+      setting: BooleanSetting.top_down_view,
+    },
+    {
       title: DeviceSetting.mapOrigin,
       description: Content.MAP_ORIGIN,
       children: <OriginSelector {...settingsProps} />
     },
     {
-      title: DeviceSetting.openInTopDownView,
-      description: Content.TOP_DOWN_VIEW,
-      setting: BooleanSetting.top_down_view,
-    },
-    {
-      title: DeviceSetting.cameraLocationUponOpen,
-      description: Content.VIEWPOINT_HEADING,
-      numberSetting: NumericSetting.viewpoint_heading,
+      title: DeviceSetting.setCameraStartingLocation,
+      description: Content.CAMERA_STARTING_LOCATION,
+      children: <CameraStartingLocationButton dispatch={settingsProps.dispatch} />,
     },
     {
       title: DeviceSetting.cropMapImages,
@@ -191,20 +191,17 @@ export const OriginSelector = (props: DesignerSettingsPropsBase) => {
   </div>;
 };
 
-export const HeadingSelector = (props: DesignerSettingsPropsBase) => {
-  const settingKey = NumericSetting.viewpoint_heading;
-  const heading = props.getConfigValue(settingKey);
-  const update = (value: number) => () =>
-    props.dispatch(setWebAppConfigValue(settingKey, value));
-  return <div className={[
-    "farmbot-origin",
-    getModifiedClassName(settingKey),
-  ].join(" ")}>
-    <div className="quadrants">
-      {[180, 0, 90, 270].map(angle =>
-        <div key={"heading_" + angle}
-          className={`quadrant ${heading === angle ? "selected" : ""}`}
-          onClick={update(angle)} />)}
-    </div>
-  </div>;
-};
+export interface CameraStartingLocationButtonProps {
+  dispatch: Function;
+}
+
+export const CameraStartingLocationButton =
+  (props: CameraStartingLocationButtonProps) => <button
+    className={"fb-button green"}
+    title={t("Set camera starting location")}
+    onClick={() => props.dispatch({
+      type: Actions.TOGGLE_3D_CAMERA_SELECTION,
+      payload: undefined,
+    })}>
+    {t("Set")}
+  </button>;

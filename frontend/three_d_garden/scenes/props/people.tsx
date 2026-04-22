@@ -65,6 +65,7 @@ export const Person = (props: PersonProps) => {
       transparent={true}
       side={DoubleSide}
       opacity={0.4}
+      raycast={() => undefined}
       renderOrder={RenderOrder.one} />
   </Group>;
 };

@@ -229,6 +229,10 @@ const defaultThreeFiberState = () => ({
   scene: { traverse: jest.fn() },
   size: { width: 800, height: 600 },
   pointer: { x: 0, y: 0 },
+  raycaster: {
+    setFromCamera: jest.fn(),
+    intersectObjects: jest.fn(() => []),
+  },
 });
 
 type MockLike<TArgs extends unknown[] = unknown[], TResult = unknown> = {

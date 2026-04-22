@@ -95,6 +95,35 @@ describe("<GardenModel />", () => {
     expect(orbitControls.props.maxAzimuthAngle).toEqual(Math.PI / 2);
   });
 
+  it("rounds top down heading up to the nearest 90 degrees", () => {
+    mockIsMobile = true;
+    const p = fakeProps();
+    p.config.topDown = true;
+    p.config.viewpointHeading = 1;
+    const wrapper = createWrapper(p);
+    const orbitControls = wrapper.root.findByType(OrbitControls);
+    expect(orbitControls.props.minAzimuthAngle).toEqual(Math.PI / 2);
+    expect(orbitControls.props.maxAzimuthAngle).toEqual(Math.PI / 2);
+  });
+
+  it("scales top down zoom by bed length", () => {
+    const p = fakeProps();
+    p.config.topDown = true;
+    p.config.bedLengthOuter = 6000;
+    const wrapper = createWrapper(p);
+    const camera = wrapper.root.findAll(node => node.props.name == "camera")[0];
+    expect(camera?.props.zoom).toEqual(0.125);
+  });
+
+  it("increases top down zoom for shorter beds", () => {
+    const p = fakeProps();
+    p.config.topDown = true;
+    p.config.bedLengthOuter = 1500;
+    const wrapper = createWrapper(p);
+    const camera = wrapper.root.findAll(node => node.props.name == "camera")[0];
+    expect(camera?.props.zoom).toEqual(0.5);
+  });
+
   it("renders camera selection view", () => {
     const p = fakeProps();
     p.config.cameraSelectionView = true;

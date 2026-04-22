@@ -23,6 +23,7 @@ import {
   getPlantIconTexture,
   getPlantIconTextureUrl,
 } from "./plant_icon_atlas";
+import { Mode } from "../../farm_designer/map/interfaces";
 
 export interface PlantInstancesProps {
   plants: ThreeDGardenPlant[];
@@ -103,7 +104,7 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
     if (isUndefined(instanceId)) { return; }
     const plant = plants[instanceId];
     if (plant?.id && dispatch && visible &&
-      !HOVER_OBJECT_MODES.includes(getMode())) {
+      ![...HOVER_OBJECT_MODES, Mode.cameraSelection].includes(getMode())) {
       dispatch(setPanelOpen(true));
       navigate(Path.plants(plant.id));
     }

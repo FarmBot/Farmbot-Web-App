@@ -779,6 +779,28 @@ describe("<MapOrientation />", () => {
     const { container } = render(<MapOrientation {...fakeProps()} />);
     expect(container.innerHTML).toContain("map-orientation");
   });
+
+  it("renders 3D camera selection controls", () => {
+    const p = fakeProps();
+    p.getConfigValue = key => key == "three_d_garden";
+    const { container } = render(<MapOrientation {...p} />);
+    expect(container.textContent).toContain("Set camera starting location");
+    expect(container.textContent).not.toContain("Map origin");
+  });
+
+  it("opens camera selection from 3D wizard orientation", () => {
+    const p = fakeProps();
+    p.getConfigValue = key => key == "three_d_garden";
+    const { container } = render(<MapOrientation {...p} />);
+    const button =
+      container.querySelector("button[title='Set camera starting location']");
+    if (!button) { throw new Error("Expected camera starting location button"); }
+    fireEvent.click(button);
+    expect(p.dispatch).toHaveBeenCalledWith({
+      type: Actions.TOGGLE_3D_CAMERA_SELECTION,
+      payload: undefined,
+    });
+  });
 });
 
 describe("<PeripheralsCheck />", () => {
