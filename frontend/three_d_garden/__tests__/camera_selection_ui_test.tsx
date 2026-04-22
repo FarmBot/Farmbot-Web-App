@@ -227,12 +227,12 @@ describe("<CameraSelectionUI />", () => {
     p.config.cameraSelectionView = true;
     const wrapper = createRenderer(<CameraSelectionUI {...p} />);
     mountedWrappers.push(wrapper);
-    const body = wrapper.root.findAll(node =>
-      node.props.name == "body"
+    const head = wrapper.root.findAll(node =>
+      node.props.name == "head"
       && node.props.userData?.hovered?.angle == 30
       && node.props.userData?.hovered?.topDown === false)[0];
     actRenderer(() => {
-      body?.props.onClick({ stopPropagation: jest.fn() });
+      head?.props.onClick({ stopPropagation: jest.fn() });
     });
     expect(setWebAppConfigValueSpy).toHaveBeenCalledWith(
       NumericSetting.viewpoint_heading, 30);

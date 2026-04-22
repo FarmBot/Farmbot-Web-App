@@ -7,8 +7,6 @@ import { Group, MeshPhongMaterial } from "./components";
 import { debounce, uniq } from "lodash";
 import { setWebAppConfigValue } from "../config_storage/actions";
 import { BooleanSetting, NumericSetting } from "../session_keys";
-import { Person } from "./scenes/props";
-import { ASSETS } from "./constants";
 import { Actions } from "../constants";
 import { Object3D } from "three";
 
@@ -132,7 +130,7 @@ const CameraLocation = (props: CameraLocationProps) => {
     position[1] * scale,
     position[2] * zScale,
   ];
-  const height = config.bedHeight + scaledPosition[2];
+  const height = config.bedZOffset + config.bedHeight + scaledPosition[2];
   const click = debounce(() => {
     if (dispatch) {
       dispatch(setWebAppConfigValue(
@@ -167,7 +165,7 @@ const CameraLocation = (props: CameraLocationProps) => {
           opacity={1}
           color={color} />
       </Sphere>
-      {!topDown &&
+      {!topDown && config.lightsDebug &&
         <Cylinder
           ref={setMarkerRef(`${markerId}-body`)}
           userData={{ hovered: hoveredData }}
@@ -181,11 +179,6 @@ const CameraLocation = (props: CameraLocationProps) => {
             opacity={0.9}
             color={color} />
         </Cylinder>}
-      {!topDown &&
-        <Person
-          url={ASSETS.people.person2}
-          position={[0, 0, -height]}
-          rotation={[Math.PI / 2, 0, 0]} />}
     </Group>
     {debug &&
       <Line points={[position, [0, 0, 0]]} color={color} />}

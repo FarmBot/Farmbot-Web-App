@@ -257,6 +257,8 @@ export const GardenModel = (props: GardenModelProps) => {
         enablePan={config.pan}
         dampingFactor={0.2}
         target={camera.target}
+        minZoom={config.lightsDebug ? 0 : 0.05}
+        maxZoom={10}
         minDistance={config.lightsDebug ? 50 : 500}
         maxDistance={config.lightsDebug ? BigDistance.devZoom : BigDistance.zoom} />}
     <AxesHelper args={[5000]} visible={config.threeAxes} />
@@ -349,9 +351,10 @@ export const GardenModel = (props: GardenModelProps) => {
     <Solar config={config} activeFocus={props.activeFocus} />
     <Lab config={config} activeFocus={props.activeFocus} />
     <Greenhouse config={config} activeFocus={props.activeFocus} />
-    <CameraSelectionUI
-      config={config}
-      dispatch={dispatch}
-      topDownAtStart={topDownAtStart} />
+    {config.cameraSelectionView &&
+      <CameraSelectionUI
+        config={config}
+        dispatch={dispatch}
+        topDownAtStart={topDownAtStart} />}
   </Group>;
 };

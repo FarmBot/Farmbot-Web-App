@@ -130,7 +130,6 @@ describe("<GardenModel />", () => {
     p.config.viewpointHeading = 45;
     const { container } = render(<GardenModel {...p} />);
     expect(container.innerHTML).toContain("camera-selection");
-    expect(container.innerHTML).toContain("person_2.avif");
   });
 
   it("renders no user plants", () => {
