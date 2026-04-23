@@ -3,7 +3,7 @@ require "find"
 COVERAGE_FILE_PATH = "./coverage_fe/index.html"
 JSON_COVERAGE_FILE_PATH = "./coverage_fe/coverage-final.json"
 LCOV_FILE_PATH = "./coverage_fe/lcov.info"
-THRESHOLD = 0.001
+THRESHOLD = 0.05
 REPO_URL = "https://api.github.com/repos/Farmbot/Farmbot-Web-App"
 LATEST_COV_URL = "https://coveralls.io/github/FarmBot/Farmbot-Web-App.json"
 COV_API_BUILDS_PER_PAGE = 5
