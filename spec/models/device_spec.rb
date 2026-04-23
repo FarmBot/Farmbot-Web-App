@@ -117,6 +117,58 @@ describe Device do
     device.send_upgrade_request
   end
 
+  it "builds a DB-only subquery for excess sensor readings" do
+    relation = device.excess_sensor_readings
+
+    expect(relation.to_sql).to include("OFFSET #{Device::DEFAULT_MAX_SENSOR_READINGS}")
+    expect(relation.to_sql).to include("\"sensor_readings\".\"id\" IN")
+  end
+
+  it "returns limited sensor readings in reverse chronological order" do
+    const_reassign(Device, :DEFAULT_MAX_SENSOR_READINGS, 2) do
+      oldest = FactoryBot.create(:sensor_reading,
+                                 device: device,
+                                 created_at: 2.seconds.ago,
+                                 updated_at: 2.seconds.ago)
+      tied_time = 1.second.ago
+      older_tied = FactoryBot.create(:sensor_reading,
+                                     device: device,
+                                     created_at: tied_time,
+                                     updated_at: tied_time)
+      newer_tied = FactoryBot.create(:sensor_reading,
+                                     device: device,
+                                     created_at: tied_time,
+                                     updated_at: tied_time)
+
+      expect(device.limited_sensor_readings_list.pluck(:id))
+        .to eq([newer_tied.id, older_tied.id])
+      expect(device.limited_sensor_readings_list.pluck(:id))
+        .not_to include(oldest.id)
+    end
+  end
+
+  it "trims older sensor readings beyond the device limit" do
+    const_reassign(Device, :DEFAULT_MAX_SENSOR_READINGS, 2) do
+      oldest = FactoryBot.create(:sensor_reading,
+                                 device: device,
+                                 created_at: 3.seconds.ago,
+                                 updated_at: 3.seconds.ago)
+      middle = FactoryBot.create(:sensor_reading,
+                                 device: device,
+                                 created_at: 2.seconds.ago,
+                                 updated_at: 2.seconds.ago)
+      newest = FactoryBot.create(:sensor_reading,
+                                 device: device,
+                                 created_at: 1.second.ago,
+                                 updated_at: 1.second.ago)
+
+      device.trim_excess_sensor_readings
+
+      expect(device.sensor_readings.pluck(:id)).to match_array([middle.id, newest.id])
+      expect(SensorReading.exists?(oldest.id)).to be(false)
+    end
+  end
+
   it "reports unknown location in feedback payload when coordinates are missing" do
     expect(Faraday).to receive(:post) do |_url, payload, _headers|
       text = JSON.parse(payload)["text"]
