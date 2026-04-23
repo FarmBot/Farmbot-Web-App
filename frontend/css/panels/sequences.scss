@@ -36,7 +36,8 @@
   }
   .panel-content {
     .sequence-editor-content {
-      overflow: hidden;
+      overflow-x: hidden;
+      overflow-y: visible;
 
       @media screen and (max-width: 767px) {
         margin-left: 5px;
