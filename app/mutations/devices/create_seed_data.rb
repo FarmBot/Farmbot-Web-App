@@ -1,5 +1,11 @@
 module Devices
   class CreateSeedData < Mutations::Command
+    STRESS_DEMO_ONLY =
+      "Stress product lines are only available for demo accounts."
+    STRESS_PRODUCT_LINES =
+      Devices::Seeders::StressData::PRODUCT_LINES
+        .transform_values { Devices::Seeders::GenesisXlOneEight }
+
     PRODUCT_LINES = {
       "express_1.0" => Devices::Seeders::ExpressOneZero,
       "express_1.1" => Devices::Seeders::ExpressOneOne,
@@ -22,7 +28,7 @@ module Devices
       "genesis_xl_1.8" => Devices::Seeders::GenesisXlOneEight,
 
       "none" => Devices::Seeders::None,
-    }
+    }.merge(STRESS_PRODUCT_LINES)
 
     required do
       model :device
@@ -31,6 +37,12 @@ module Devices
 
     optional do
       boolean :demo
+    end
+
+    def validate
+      if Devices::Seeders::StressData.stress?(product_line) && !demo
+        add_error(:product_line, :demo_only, STRESS_DEMO_ONLY)
+      end
     end
 
     def execute

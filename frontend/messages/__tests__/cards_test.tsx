@@ -333,6 +333,18 @@ describe("SEED_DATA_OPTIONS()", () => {
     mockFeatureBoolean = true;
     expect(SEED_DATA_OPTIONS().length).toEqual(19);
   });
+
+  it("returns demo stress options", () => {
+    const labels = SEED_DATA_OPTIONS(true).map(option => option.label);
+
+    expect(SEED_DATA_OPTIONS(true).length).toEqual(23);
+    expect(SEED_DATA_OPTIONS().map(option => option.label))
+      .not.toContain("Stress 1000");
+    expect(labels).toContain("Stress 250");
+    expect(labels).toContain("Stress 500");
+    expect(labels).toContain("Stress 750");
+    expect(labels).toContain("Stress 1000");
+  });
 });
 
 describe("<ReSeedAccount />", () => {

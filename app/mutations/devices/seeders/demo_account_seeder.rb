@@ -187,8 +187,13 @@ module Devices
 
       def after_product_line_seeder(product_line)
         create_webcam_feed(product_line)
-        add_plants(product_line)
-        add_soil_height_points(product_line)
+        stress_count = Devices::Seeders::StressData.count_for(product_line)
+        if stress_count
+          Devices::Seeders::StressData.new(device, stress_count).seed!
+        else
+          add_plants(product_line)
+          add_soil_height_points(product_line)
+        end
         add_point_groups
         tool = device.tools.find_by(name: ToolNames::WATERING_NOZZLE)
         Tools::Update.run(tool: tool, flow_rate_ml_per_s: 100) if tool

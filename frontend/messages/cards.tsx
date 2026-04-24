@@ -255,9 +255,17 @@ const FirmwareMissing = (props: FirmwareMissingProps) =>
     </Row>
   </AlertCardTemplate>;
 
+const DEMO_STRESS_SEED_DATA_OPTIONS: DropDownItem[] = [
+  { label: "Stress 250", value: "genesis_xl_1.8_stress_250" },
+  { label: "Stress 500", value: "genesis_xl_1.8_stress_500" },
+  { label: "Stress 750", value: "genesis_xl_1.8_stress_750" },
+  { label: "Stress 1000", value: "genesis_xl_1.8_stress_1000" },
+];
+
 export const SEED_DATA_OPTIONS = (displayAll = false): DropDownItem[] => [
   { label: "Genesis v1.8", value: "genesis_1.8" },
   { label: "Genesis v1.8 XL", value: "genesis_xl_1.8" },
+  ...(displayAll ? DEMO_STRESS_SEED_DATA_OPTIONS : []),
   { label: "Genesis v1.7", value: "genesis_1.7" },
   { label: "Genesis v1.7 XL", value: "genesis_xl_1.7" },
   { label: "Genesis v1.6", value: "genesis_1.6" },
