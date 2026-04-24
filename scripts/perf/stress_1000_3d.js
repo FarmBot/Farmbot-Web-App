@@ -105,6 +105,39 @@ const createDemoSession = async (browser, baseUrl) => {
   return session;
 };
 
+const authHeader = session => JSON.parse(session).token.encoded;
+
+const apiJson = async (baseUrl, session, endpoint, options = {}) => {
+  const response = await fetch(`${baseUrl}${endpoint}`, {
+    ...options,
+    headers: {
+      Authorization: authHeader(session),
+      "Content-Type": "application/json",
+      ...(options.headers || {}),
+    },
+  });
+  if (!response.ok) {
+    throw new Error(`${response.status} ${response.statusText}: ${endpoint}`);
+  }
+  return response.json();
+};
+
+const setFarmwareEnv = async (baseUrl, session, key, value) => {
+  const envs = await apiJson(baseUrl, session, "/api/farmware_envs");
+  const existing = envs.find(env => env.key == key);
+  if (existing) {
+    await apiJson(baseUrl, session, `/api/farmware_envs/${existing.id}`, {
+      method: "PUT",
+      body: JSON.stringify({ value }),
+    });
+  } else {
+    await apiJson(baseUrl, session, "/api/farmware_envs", {
+      method: "POST",
+      body: JSON.stringify({ key, value }),
+    });
+  }
+};
+
 const waitFor3D = async page => {
   await page.waitForFunction(() => {
     const canvas = document.querySelector(".garden-bed-3d-model canvas");
@@ -203,6 +236,7 @@ const runBenchmark = async args => {
   const runs = Number(args.runs || 5);
   const warmups = Number(args.warmups || 1);
   const out = args.out || "tmp/perf/stress_1000_3d.json";
+  const lowDetail = ["1", "true"].includes(args["low-detail"]);
   const browser = await chromium.launch({
     headless: true,
     args: [
@@ -214,6 +248,9 @@ const runBenchmark = async args => {
   });
   try {
     const session = await createDemoSession(browser, baseUrl);
+    if (lowDetail) {
+      await setFarmwareEnv(baseUrl, session, "3D_lowDetail", "1");
+    }
     const measuredRuns = [];
     for (let i = 0; i < warmups + runs; i++) {
       const run = await collectRun(browser, baseUrl, session, i);
