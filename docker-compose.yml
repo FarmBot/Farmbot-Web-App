@@ -50,7 +50,7 @@ services:
     build:
       context: "."
       dockerfile: docker_configs/api.Dockerfile
-    command: bash -c "rm -f tmp/pids/server.pid && bundle exec passenger start"
+    command: bash -c "rm -f tmp/pids/server.pid && bundle exec passenger start --max-pool-size ${MAX_POOL_SIZE:-1} --max-requests ${MAX_REQUESTS:-1000}"
     ports: ["${API_PORT}:${API_PORT}"]
 
   mqtt:

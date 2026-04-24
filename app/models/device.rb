@@ -124,15 +124,19 @@ class Device < ApplicationRecord
   # Give the user back the amount of sensor readings they are allowed to view.
   def limited_sensor_readings_list
     sensor_readings
-      .order(created_at: :desc)
+      .order(created_at: :desc, id: :desc)
       .limit(DEFAULT_MAX_SENSOR_READINGS)
   end
 
   def excess_sensor_readings
+    sensor_readings.where(id: excess_sensor_reading_ids_subquery)
+  end
+
+  def excess_sensor_reading_ids_subquery
     sensor_readings
-      .where
-      .not(id: limited_sensor_readings_list.pluck(:id))
-      .where(device_id: self.id)
+      .order(created_at: :desc, id: :desc)
+      .offset(DEFAULT_MAX_SENSOR_READINGS)
+      .select(:id)
   end
 
   def trim_excess_sensor_readings

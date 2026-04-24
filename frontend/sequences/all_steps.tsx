@@ -55,15 +55,15 @@ export class AllSteps extends React.Component<AllStepsProps, {}> {
         const hovered = this.props.visualized && this.props.hoveredStep === tag
           ? "hovered"
           : "";
-        return <div className="sequence-steps"
+        return <div className="sequence-steps grid no-gap"
           key={readThatCommentAbove}>
+          <DropArea callback={key => this.props.onDrop(index, key)} />
           {!this.props.readOnly &&
             <AddCommandButton dispatch={dispatch} index={index} stepCount={1}
               sequence={this.props.sequence}
               farmwareData={this.props.farmwareData}
               sequences={this.props.sequences}
               resources={this.props.resources} />}
-          <DropArea callback={key => this.props.onDrop(index, key)} />
           <StepDragger
             dispatch={dispatch}
             step={currentStep}
