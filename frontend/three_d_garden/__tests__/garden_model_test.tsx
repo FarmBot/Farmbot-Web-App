@@ -81,6 +81,7 @@ describe("<GardenModel />", () => {
     expect(container.innerHTML).toContain("zoom-beacons");
     expect(container.innerHTML).not.toContain("stats");
     expect(container.innerHTML).toContain("darkgreen");
+    expect(container.innerHTML).toContain("bed-load-in");
   });
 
   it("renders top down view", () => {

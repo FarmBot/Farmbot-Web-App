@@ -52,6 +52,7 @@ import { CameraSelectionUI } from "./camera_selection_ui";
 import {
   PerfMark, perfMark, usePerfRenderCount,
 } from "../performance/perf";
+import { PopInGroup } from "./progressive_load";
 
 const AnimatedGroup = animated(Group);
 const LazyBot = React.lazy(() =>
@@ -280,19 +281,24 @@ export const GardenModel = (props: GardenModelProps) => {
     </SceneBoundary>
     <SceneBoundary markName={"three_d_bed_ready"}>
       <NorthArrow config={config} />
-      <Bed
-        config={config}
-        soilSurfaceGeometry={soilSurface.geometry}
-        getZ={getZ}
-        images={props.images}
-        activeFocus={props.activeFocus}
-        mapPoints={props.mapPoints || []}
-        showMoistureMap={showMoistureMap}
-        showMoistureReadings={showMoistureReadings}
-        sensors={props.sensors || []}
-        sensorReadings={props.sensorReadings || []}
-        activePositionRef={activePositionRef}
-        addPlantProps={addPlantProps} />
+      <PopInGroup
+        name={"bed-load-in"}
+        delay={120}
+        distance={config.bedHeight + config.bedZOffset}>
+        <Bed
+          config={config}
+          soilSurfaceGeometry={soilSurface.geometry}
+          getZ={getZ}
+          images={props.images}
+          activeFocus={props.activeFocus}
+          mapPoints={props.mapPoints || []}
+          showMoistureMap={showMoistureMap}
+          showMoistureReadings={showMoistureReadings}
+          sensors={props.sensors || []}
+          sensorReadings={props.sensorReadings || []}
+          activePositionRef={activePositionRef}
+          addPlantProps={addPlantProps} />
+      </PopInGroup>
     </SceneBoundary>
     <SceneBoundary markName={"three_d_moisture_debug_ready"}>
       {showMoistureMap && props.config.moistureDebug &&
