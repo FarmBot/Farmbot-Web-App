@@ -7,6 +7,8 @@ const DEFAULT_URL = "http://localhost:3000";
 const PRODUCT_LINE = "genesis_xl_1.8_stress_1000";
 const DEMO_USER = "farmbot_demo";
 const TIMEOUT = 180_000;
+const DEFAULT_VIEWPORT = { width: 3840, height: 2160 };
+const DEFAULT_SAMPLE_MS = 12_000;
 
 const parseArgs = () => {
   const [command = "run", ...rest] = process.argv.slice(2);
@@ -32,6 +34,7 @@ const percentile = (values, p) => {
 const summary = runs => {
   const metric = key => median(runs.map(run => run[key]));
   return {
+    pageReadyMs: metric("pageReadyMs"),
     coreReadyMs: metric("coreReadyMs"),
     fullReadyMs: metric("fullReadyMs"),
     fpsMedian: metric("fpsMedian"),
@@ -39,6 +42,15 @@ const summary = runs => {
     navPlantMs: metric("navPlantMs"),
     navPointMs: metric("navPointMs"),
     navWeedMs: metric("navWeedMs"),
+    togglePlantsMs: metric("togglePlantsMs"),
+    togglePointsMs: metric("togglePointsMs"),
+    toggleWeedsMs: metric("toggleWeedsMs"),
+    toggleSpreadMs: metric("toggleSpreadMs"),
+    toggleFarmbotMs: metric("toggleFarmbotMs"),
+    jsEncodedBytes: metric("jsEncodedBytes"),
+    jsTransferBytes: metric("jsTransferBytes"),
+    jsResourceCount: metric("jsResourceCount"),
+    threeDGardenMapRenders: metric("threeDGardenMapRenders"),
     gardenModelRenders: metric("gardenModelRenders"),
     threeDGardenRenders: metric("threeDGardenRenders"),
     plantInventoryItemRenders: metric("plantInventoryItemRenders"),
@@ -58,6 +70,34 @@ const maxMark = (marks, names) => {
     .filter(Number.isFinite);
   return values.length > 0 ? Math.max(...values) : undefined;
 };
+
+const nextPaint = page =>
+  page.evaluate(() => new Promise(resolve =>
+    requestAnimationFrame(() => requestAnimationFrame(resolve))));
+
+const resourceSummary = async page => page.evaluate(() => {
+  const jsResources = performance.getEntriesByType("resource")
+    .filter(entry => entry.name.match(/\.js(\?|$)/));
+  const sum = key => jsResources
+    .reduce((total, entry) => total + (entry[key] || 0), 0);
+  const largestJs = jsResources
+    .map(entry => ({
+      name: entry.name.split("/").pop(),
+      transferSize: entry.transferSize || 0,
+      encodedBodySize: entry.encodedBodySize || 0,
+      decodedBodySize: entry.decodedBodySize || 0,
+      duration: entry.duration || 0,
+    }))
+    .sort((a, b) => b.encodedBodySize - a.encodedBodySize)
+    .slice(0, 10);
+  return {
+    jsResourceCount: jsResources.length,
+    jsTransferBytes: sum("transferSize"),
+    jsEncodedBytes: sum("encodedBodySize"),
+    jsDecodedBytes: sum("decodedBodySize"),
+    largestJs,
+  };
+});
 
 const createDemoSession = async (browser, baseUrl) => {
   const secret = crypto.randomUUID().replaceAll("-", "");
@@ -148,11 +188,39 @@ const waitFor3D = async page => {
   });
 };
 
-const clickAndMeasure = async (page, route, itemSelector, panelSelector) => {
+const waitForGardenRender = async (page, beforeRenderCount) => {
+  await page.waitForFunction(before => {
+    const count = window.__fbPerf?.counts?.["render.GardenModel"] || 0;
+    return count > before;
+  }, beforeRenderCount, { timeout: 10_000 }).catch(() => undefined);
+  await nextPaint(page);
+};
+
+const openSoilHeightSection = async page => {
+  const section = page.locator(".points-section-header")
+    .filter({ hasText: "Soil Height" })
+    .first();
+  if (await section.count() == 0) { return; }
+  await section.click();
+  await page.locator(".point-search-item").first()
+    .waitFor({ timeout: 10_000 }).catch(() => undefined);
+};
+
+const clickAndMeasure = async (
+  page,
+  route,
+  itemSelector,
+  panelSelector,
+  prepare,
+) => {
   await page.goto(route, { waitUntil: "domcontentloaded" });
   await waitFor3D(page);
   const item = page.locator(itemSelector).first();
-  const count = await item.count();
+  let count = await item.count();
+  if (count == 0 && prepare) {
+    await prepare(page);
+    count = await item.count();
+  }
   if (count == 0) { return undefined; }
   const startedAt = await page.evaluate(() => performance.now());
   await item.click();
@@ -160,9 +228,30 @@ const clickAndMeasure = async (page, route, itemSelector, panelSelector) => {
   return page.evaluate(start => performance.now() - start, startedAt);
 };
 
-const collectRun = async (browser, baseUrl, session, runIndex) => {
+const measureLayerToggle = async (page, labelText) => {
+  const toggle = page.locator("fieldset")
+    .filter({ hasText: labelText })
+    .locator(".fb-layer-toggle")
+    .first();
+  const count = await toggle.count();
+  if (count == 0) { return undefined; }
+  const beforeRenderCount = await page.evaluate(() =>
+    window.__fbPerf?.counts?.["render.GardenModel"] || 0);
+  const startedAt = await page.evaluate(() => performance.now());
+  await toggle.click();
+  await waitForGardenRender(page, beforeRenderCount);
+  const elapsed = await page.evaluate(start => performance.now() - start,
+    startedAt);
+  const beforeRestoreRenderCount = await page.evaluate(() =>
+    window.__fbPerf?.counts?.["render.GardenModel"] || 0);
+  await toggle.click();
+  await waitForGardenRender(page, beforeRestoreRenderCount);
+  return elapsed;
+};
+
+const collectRun = async (browser, baseUrl, session, runIndex, options) => {
   const context = await browser.newContext({
-    viewport: { width: 1440, height: 1000 },
+    viewport: options.viewport,
   });
   await context.addInitScript(value => {
     window.localStorage.setItem("session", value.session);
@@ -174,13 +263,20 @@ const collectRun = async (browser, baseUrl, session, runIndex) => {
   const appUrl = `${baseUrl}/app/designer/plants?fb_perf=1`;
   await page.goto(appUrl, { waitUntil: "domcontentloaded" });
   await waitFor3D(page);
-  await page.waitForTimeout(12_000);
+  await nextPaint(page);
+  const resources = await resourceSummary(page);
+  await page.waitForTimeout(options.sampleMs);
   const perf = await page.evaluate(() => window.__fbPerf);
   const marks = perf?.marks || {};
   const samples = perf?.samples || {};
   const counts = perf?.counts || {};
   const fpsSamples = samples.fps || [];
   const frameSamples = samples.frame_ms || [];
+  const togglePlantsMs = await measureLayerToggle(page, "Plants");
+  const togglePointsMs = await measureLayerToggle(page, "Points");
+  const toggleWeedsMs = await measureLayerToggle(page, "Weeds");
+  const toggleSpreadMs = await measureLayerToggle(page, "Spread");
+  const toggleFarmbotMs = await measureLayerToggle(page, "FarmBot");
   const navPlantMs = await clickAndMeasure(
     page,
     `${baseUrl}/app/designer/plants?fb_perf=1`,
@@ -192,6 +288,7 @@ const collectRun = async (browser, baseUrl, session, runIndex) => {
     `${baseUrl}/app/designer/points?fb_perf=1`,
     ".point-search-item",
     ".point-info-panel",
+    openSoilHeightSection,
   );
   const navWeedMs = await clickAndMeasure(
     page,
@@ -202,6 +299,11 @@ const collectRun = async (browser, baseUrl, session, runIndex) => {
   await context.close();
   return {
     runIndex,
+    pageReadyMs: firstMark(
+      marks,
+      "three_d_map_mounted",
+      "three_d_garden_mounted",
+    ),
     coreReadyMs: firstMark(
       marks,
       "three_d_core_ready",
@@ -210,8 +312,10 @@ const collectRun = async (browser, baseUrl, session, runIndex) => {
     fullReadyMs: maxMark(marks, [
       "three_d_bot_ready",
       "three_d_bed_ready",
-      "three_d_clouds_ready",
+      "three_d_grid_ready",
+      "three_d_core_ready",
       "three_d_decorations_ready",
+      "three_d_details_ready",
       "three_d_visualizations_ready",
       "three_d_camera_ui_ready",
       "three_d_debug_ready",
@@ -225,6 +329,13 @@ const collectRun = async (browser, baseUrl, session, runIndex) => {
     navPlantMs,
     navPointMs,
     navWeedMs,
+    togglePlantsMs,
+    togglePointsMs,
+    toggleWeedsMs,
+    toggleSpreadMs,
+    toggleFarmbotMs,
+    ...resources,
+    threeDGardenMapRenders: counts["render.ThreeDGardenMap"],
     gardenModelRenders: counts["render.GardenModel"],
     threeDGardenRenders: counts["render.ThreeDGarden"],
     plantInventoryItemRenders: counts["render.PlantInventoryItem"],
@@ -237,12 +348,19 @@ const runBenchmark = async args => {
   const warmups = Number(args.warmups || 1);
   const out = args.out || "tmp/perf/stress_1000_3d.json";
   const lowDetail = ["1", "true"].includes(args["low-detail"]);
+  const viewport = {
+    width: Number(args.width || DEFAULT_VIEWPORT.width),
+    height: Number(args.height || DEFAULT_VIEWPORT.height),
+  };
+  const sampleMs = Number(args["sample-ms"] || DEFAULT_SAMPLE_MS);
   const browser = await chromium.launch({
     headless: true,
     args: [
       "--no-sandbox",
       "--disable-setuid-sandbox",
       "--disable-dev-shm-usage",
+      "--disable-frame-rate-limit",
+      "--disable-gpu-vsync",
       "--enable-gpu",
     ],
   });
@@ -253,13 +371,18 @@ const runBenchmark = async args => {
     }
     const measuredRuns = [];
     for (let i = 0; i < warmups + runs; i++) {
-      const run = await collectRun(browser, baseUrl, session, i);
+      const run = await collectRun(browser, baseUrl, session, i, {
+        viewport,
+        sampleMs,
+      });
       console.log(`${i < warmups ? "warmup" : "run"} ${i + 1}`, run);
       if (i >= warmups) { measuredRuns.push(run); }
     }
     const result = {
       productLine: PRODUCT_LINE,
       createdAt: new Date().toISOString(),
+      viewport,
+      sampleMs,
       runs: measuredRuns,
       summary: summary(measuredRuns),
     };

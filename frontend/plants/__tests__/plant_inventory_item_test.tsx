@@ -24,6 +24,8 @@ describe("<PlantInventoryItem />", () => {
   let selectPointSpy: jest.SpyInstance;
 
   beforeEach(() => {
+    window.localStorage.clear();
+    delete window.__fbPerf;
     mapPointClickActionSpy = jest.spyOn(mapActions, "mapPointClickAction")
       .mockImplementation(jest.fn(() => jest.fn()));
     setHoveredPlantSpy = jest.spyOn(mapActions, "setHoveredPlant")
@@ -33,6 +35,8 @@ describe("<PlantInventoryItem />", () => {
   });
 
   afterEach(() => {
+    window.localStorage.clear();
+    delete window.__fbPerf;
     mapPointClickActionSpy.mockRestore();
     setHoveredPlantSpy.mockRestore();
     selectPointSpy.mockRestore();
@@ -76,6 +80,14 @@ describe("<PlantInventoryItem />", () => {
     expect(item(container).classList.contains("hovered")).toBeTruthy();
   });
 
+  it("skips unchanged benchmark rerenders", () => {
+    window.localStorage.setItem("FB_PERF_BENCHMARK", "true");
+    const p = fakeProps();
+    const { rerender } = render(<PlantInventoryItem {...p} />);
+    rerender(<PlantInventoryItem {...p} />);
+    expect(window.__fbPerf?.counts["render.PlantInventoryItem"]).toEqual(1);
+  });
+
   it("hover begin", () => {
     const p = fakeProps();
     const { container } = render(<PlantInventoryItem {...p} />);
@@ -90,6 +102,7 @@ describe("<PlantInventoryItem />", () => {
   });
 
   it("selects plant", () => {
+    window.localStorage.setItem("FB_PERF_BENCHMARK", "true");
     location.pathname = Path.mock(Path.plants());
     const p = fakeProps();
     const { container } = render(<PlantInventoryItem {...p} />);
@@ -97,6 +110,8 @@ describe("<PlantInventoryItem />", () => {
     expect(mapPointClickAction).not.toHaveBeenCalled();
     expect(selectPoint).toHaveBeenCalledWith([p.plant.uuid]);
     expect(mockNavigate).toHaveBeenCalledWith(Path.plants(p.plant.body.id));
+    expect(window.__fbPerf?.marks.plant_inventory_item_click.length)
+      .toEqual(1);
   });
 
   it("handles missing plant id", () => {

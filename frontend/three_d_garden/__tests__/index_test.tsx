@@ -15,10 +15,17 @@ import { BooleanSetting } from "../../session_keys";
 import { fakeDevice } from "../../__test_support__/resource_index_builder";
 
 beforeEach(() => {
+  window.localStorage.clear();
+  delete window.__fbPerf;
   jest.spyOn(configStorageActions, "getWebAppConfigValue")
     .mockImplementation(() => () => false);
   jest.spyOn(configStorageActions, "setWebAppConfigValue")
     .mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  window.localStorage.clear();
+  delete window.__fbPerf;
 });
 
 describe("<ThreeDGarden />", () => {
@@ -45,6 +52,13 @@ describe("<ThreeDGarden />", () => {
       expect.objectContaining({ shadows: false }),
       undefined);
     canvasSpy.mockRestore();
+  });
+
+  it("counts benchmark renders", () => {
+    window.localStorage.setItem("FB_PERF_BENCHMARK", "true");
+    render(<ThreeDGarden {...fakeProps()} />);
+    expect(window.__fbPerf?.counts["render.ThreeDGarden"]).toEqual(1);
+    expect(window.__fbPerf?.marks.three_d_garden_mounted.length).toEqual(1);
   });
 });
 

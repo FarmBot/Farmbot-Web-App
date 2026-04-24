@@ -47,6 +47,9 @@ export interface ThreeDGardenProps {
 
 export const ThreeDGarden = (props: ThreeDGardenProps) => {
   usePerfRenderCount("ThreeDGarden");
+  React.useEffect(() => {
+    perfMark("three_d_garden_mounted");
+  }, []);
   return <div className={"three-d-garden"}>
     <div className={"garden-bed-3d-model"}>
       <Canvas

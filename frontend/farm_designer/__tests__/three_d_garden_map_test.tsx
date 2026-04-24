@@ -20,6 +20,8 @@ let threeDGardenSpy: jest.SpyInstance;
 let getPositionSpy: jest.SpyInstance;
 
 beforeEach(() => {
+  window.localStorage.clear();
+  delete window.__fbPerf;
   threeDGardenSpy = jest.spyOn(threeDGarden, "ThreeDGarden")
     .mockImplementation(jest.fn(() => <div />) as never);
   getPositionSpy = jest.spyOn(suncalc, "getPosition").mockReturnValue({
@@ -29,6 +31,8 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+  window.localStorage.clear();
+  delete window.__fbPerf;
   threeDGardenSpy.mockRestore();
   getPositionSpy.mockRestore();
 });
@@ -169,6 +173,13 @@ describe("<ThreeDGardenMap />", () => {
       addPlantProps: expect.any(Object),
       ...EMPTY_PROPS,
     }));
+  });
+
+  it("counts benchmark renders", () => {
+    window.localStorage.setItem("FB_PERF_BENCHMARK", "true");
+    render(<ThreeDGardenMap {...fakeProps()} />);
+    expect(window.__fbPerf?.counts["render.ThreeDGardenMap"]).toEqual(1);
+    expect(window.__fbPerf?.marks.three_d_map_mounted.length).toEqual(1);
   });
 
   it("keeps garden config stable across bot position updates", () => {

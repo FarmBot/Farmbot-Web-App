@@ -10,6 +10,7 @@ import { mapPointClickAction, selectPoint } from "../farm_designer/map/actions";
 import { round } from "lodash";
 import { edit, save, destroy } from "../api/crud";
 import { FilePath, Path } from "../internal_urls";
+import { perfMark } from "../performance/perf";
 
 export interface WeedInventoryItemProps {
   tpp: TaggedWeedPointer;
@@ -19,7 +20,7 @@ export interface WeedInventoryItemProps {
   maxSize?: number;
 }
 
-export const WeedInventoryItem = (props: WeedInventoryItemProps) => {
+export const WeedInventoryItem = React.memo((props: WeedInventoryItemProps) => {
   const navigate = useNavigate();
   const weed = props.tpp.body;
   const { tpp, dispatch } = props;
@@ -37,6 +38,7 @@ export const WeedInventoryItem = (props: WeedInventoryItemProps) => {
   };
 
   const click = () => {
+    perfMark("weed_inventory_item_click");
     if (getMode() == Mode.boxSelect) {
       mapPointClickAction(navigate, dispatch, tpp.uuid)();
       toggle("leave");
@@ -88,4 +90,6 @@ export const WeedInventoryItem = (props: WeedInventoryItemProps) => {
       <i>{`(${round(weed.x)}, ${round(weed.y)}) r${round(weed.radius)}`}</i>
     </p>
   </div>;
-};
+});
+
+WeedInventoryItem.displayName = "WeedInventoryItem";

@@ -26,6 +26,7 @@ import { parseCalibrationData } from "./map/layers/images/map_image";
 import { fetchInterpolationOptions } from "./map/layers/points/interpolation_map";
 import { unpackUUID } from "../util";
 import { isTopDown } from "../three_d_garden/helpers";
+import { perfMark, usePerfRenderCount } from "../performance/perf";
 
 export interface ThreeDGardenMapProps {
   botSize: BotSize;
@@ -57,6 +58,10 @@ export interface ThreeDGardenMapProps {
 }
 
 export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
+  usePerfRenderCount("ThreeDGardenMap");
+  React.useEffect(() => {
+    perfMark("three_d_map_mounted");
+  }, []);
   const { gridSize } = props.mapTransformProps;
   const getValue = props.get3DConfigValue;
   const { designer } = props;

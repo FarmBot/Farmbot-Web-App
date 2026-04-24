@@ -11,6 +11,8 @@ import * as crud from "../../api/crud";
 import { Path } from "../../internal_urls";
 
 beforeEach(() => {
+  window.localStorage.clear();
+  delete window.__fbPerf;
   jest.clearAllMocks();
   location.pathname = Path.mock(Path.weeds());
   jest.spyOn(mapActions, "mapPointClickAction")
@@ -20,6 +22,11 @@ beforeEach(() => {
   jest.spyOn(crud, "destroy").mockImplementation(jest.fn());
   jest.spyOn(crud, "edit").mockImplementation(jest.fn());
   jest.spyOn(crud, "save").mockImplementation(jest.fn());
+});
+
+afterEach(() => {
+  window.localStorage.clear();
+  delete window.__fbPerf;
 });
 
 
@@ -46,6 +53,7 @@ describe("<WeedInventoryItem /> />", () => {
   });
 
   it("navigates to weed", () => {
+    window.localStorage.setItem("FB_PERF_BENCHMARK", "true");
     const p = fakeProps();
     p.tpp.body.id = 1;
     const { container } = render(<WeedInventoryItem {...p} />);
@@ -56,6 +64,8 @@ describe("<WeedInventoryItem /> />", () => {
       type: Actions.TOGGLE_HOVERED_POINT,
       payload: p.tpp.uuid,
     });
+    expect(window.__fbPerf?.marks.weed_inventory_item_click.length)
+      .toEqual(1);
   });
 
   it("navigates to weed without id", () => {
