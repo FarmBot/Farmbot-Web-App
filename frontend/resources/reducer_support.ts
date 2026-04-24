@@ -286,16 +286,10 @@ export function afterEach(state: RestResources, a: ReduxAction<unknown>) {
   const reducer = consumerReducer || (
     consumerReducer = combineReducers(buildConsumerReducers())
   );
-  state.consumers = reducer({
-    sequences: state.consumers.sequences,
-    regimens: state.consumers.regimens,
-    farm_designer: state.consumers.farm_designer,
-    photos: state.consumers.photos,
-    farmware: state.consumers.farmware,
-    help: state.consumers.help,
-    alerts: state.consumers.alerts
-  }, a);
-  return state;
+  const consumers = reducer(state.consumers, a);
+  return consumers === state.consumers
+    ? state
+    : { ...state, consumers };
 }
 
 /** Helper method to change the `specialStatus` of a resource in the index */

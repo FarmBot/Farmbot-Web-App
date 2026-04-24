@@ -16,8 +16,10 @@ import { updateMotorHistoryArray } from "../controls/move/motor_position_plot";
 import { PercentageProgress, Xyz } from "farmbot";
 
 const afterEach = (state: BotState, a: ReduxAction<unknown>) => {
-  state.connectivity = connectivityReducer(state.connectivity, a);
-  return state;
+  const connectivity = connectivityReducer(state.connectivity, a);
+  return connectivity === state.connectivity
+    ? state
+    : { ...state, connectivity };
 };
 
 export const initialState = (): BotState => ({

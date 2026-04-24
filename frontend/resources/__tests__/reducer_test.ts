@@ -28,6 +28,29 @@ describe("resource reducer", () => {
     console.error = originalConsoleError;
   });
 
+  it("returns the same state reference for unrelated actions", () => {
+    const state = fakeState().resources;
+    const result = resourceReducer(state, {
+      type: Actions.STATUS_UPDATE,
+      payload: undefined,
+    });
+    expect(result).toBe(state);
+  });
+
+  it("updates parent state only when child reducers change", () => {
+    const state = fakeState().resources;
+    const result = resourceReducer(state, {
+      type: Actions.SELECT_POINT,
+      payload: ["Point.1.1"],
+    });
+    expect(result).not.toBe(state);
+    expect(result.index).toBe(state.index);
+    expect(result.consumers).not.toBe(state.consumers);
+    expect(result.consumers.farm_designer).not.toBe(
+      state.consumers.farm_designer);
+    expect(result.consumers.sequences).toBe(state.consumers.sequences);
+  });
+
   it("marks resources as DIRTY when reducing OVERWRITE_RESOURCE", () => {
     const state = fakeState().resources;
     const uuid = Object.keys(state.index.byKind.Sequence)[0];

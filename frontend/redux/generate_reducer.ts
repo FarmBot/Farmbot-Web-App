@@ -55,15 +55,24 @@ export function generateReducer<State>(initialState: State) {
   };
 
   const reducer: GeneratedReducer =
-    ((state = initialState, action: ReduxAction<unknown>): State => {
+    ((currentState: State | undefined = initialState,
+      action: ReduxAction<unknown>): State => {
+      const state = currentState;
 
       // Find the handler in the dictionary, or use the NOOP.
-      const handler = (priv.actionHandlers[action.type] || EMPTY_HANDLER);
+      const hasHandler =
+        Object.prototype.hasOwnProperty.call(priv.actionHandlers, action.type);
+      const handler = hasHandler
+        ? priv.actionHandlers[action.type]
+        : EMPTY_HANDLER;
 
-      // Defensively clone the action and state to avoid accidental mutations.
-      const clonedState = defensiveClone(state);
+      // Defensively clone only when this reducer handles the action directly.
+      // Child reducers in afterEach can still return updated references.
+      const nextState = (hasHandler || currentState === undefined)
+        ? defensiveClone(state)
+        : state;
       // Run main action handler
-      const beforeState = priv.beforeEach(clonedState, action, handler);
+      const beforeState = priv.beforeEach(nextState, action, handler);
 
       // Run `afterEach` (if any). Else, just return the state object as-is.
       return priv.afterEach(beforeState, action);

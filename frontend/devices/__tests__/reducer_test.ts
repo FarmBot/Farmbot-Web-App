@@ -11,6 +11,26 @@ const statusOf = (state: BotState) => {
 };
 
 describe("botReducer", () => {
+  it("returns the same state reference for unrelated actions", () => {
+    const state = initialState();
+    const result = botReducer(state, {
+      type: "NO_HANDLER" as Actions,
+      payload: undefined,
+    });
+    expect(result).toBe(state);
+  });
+
+  it("updates parent state only when connectivity changes", () => {
+    const state = initialState();
+    const result = botReducer(state, {
+      type: Actions.PING_START,
+      payload: { id: "ping" },
+    });
+    expect(result).not.toBe(state);
+    expect(result.hardware).toBe(state.hardware);
+    expect(result.connectivity).not.toBe(state.connectivity);
+  });
+
   it("Starts / stops an update", () => {
     const step1 = botReducer(initialState(), {
       type: Actions.SETTING_UPDATE_START,
