@@ -2,7 +2,6 @@
 @use "sass:color";
 @use "../global/fonts" as *;
 
-.three-d-garden-loading-container,
 .promo-loading-container {
   display: grid;
   align-content: center;
@@ -15,17 +14,10 @@
   z-index: -9999999;
 }
 
-.three-d-garden-loading-container {
-  z-index: unset;
-  width: 100vw;
-  transform: translateX(22.5rem);
-}
-
 .promo-loading-image {
   height: 100vh;
 }
 
-.three-d-garden-loading-text,
 .promo-loading-text {
   font-family: $inknut;
   font-size: 2rem;
@@ -78,6 +70,39 @@
 
     @media screen and (max-width: 768px) {
       width: 100vw;
+    }
+  }
+
+  .three-d-load-progress {
+    position: absolute;
+    left: 50%;
+    bottom: 4rem;
+    transform: translateX(-50%);
+    width: min(36rem, calc(100vw - 3rem));
+    pointer-events: none;
+    color: $off_white;
+    text-align: center;
+    text-shadow: 0 0 1rem $black;
+
+    .three-d-load-progress-bar {
+      height: 0.7rem;
+      overflow: hidden;
+      border-radius: 999px;
+      background: $translucent4;
+      box-shadow: 0 0 0 1px $translucent2_white;
+    }
+
+    .three-d-load-progress-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: $green;
+      transition: width 180ms ease;
+    }
+
+    p {
+      margin-top: 0.8rem;
+      font-size: 1.3rem;
+      font-weight: bold;
     }
   }
 

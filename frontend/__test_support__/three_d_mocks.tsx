@@ -229,15 +229,21 @@ jest.mock("@react-three/fiber", () => ({
 
 jest.mock("@react-spring/three", () => ({
   useSpring: (props: UseSpringProps) => {
-    if (typeof props == "function") { (props as Function)(); }
+    const springProps = typeof props == "function"
+      ? (props as Function)()
+      : props;
+    const onRest = springProps.onRest;
+    React.useEffect(() => {
+      onRest?.();
+    }, [onRest]);
     const resolvedTo =
-      props.to && typeof props.to == "object"
-        ? props.to
+      springProps.to && typeof springProps.to == "object"
+        ? springProps.to
         : {};
     const api = {
       start: jest.fn(() => Promise.resolve()),
     };
-    return [{ ...props, ...props.from, ...resolvedTo }, api];
+    return [{ ...springProps, ...springProps.from, ...resolvedTo }, api];
   },
 
   // mocks for `<animated.mesh...` and similar:

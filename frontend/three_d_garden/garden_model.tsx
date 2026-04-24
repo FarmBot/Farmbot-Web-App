@@ -53,7 +53,9 @@ import {
   PerfMark, perfMark, usePerfRenderCount,
 } from "../performance/perf";
 import {
-  FallInGroup, GridRevealGroup, PopInGroup,
+  FallInGroup, GridRevealGroup, LoadStepReady, PopInGroup,
+  ThreeDLoadProgress, ThreeDLoadProgressOverlay, ThreeDLoadStepId,
+  useThreeDLoadProgress,
 } from "./progressive_load";
 
 const AnimatedGroup = animated(Group);
@@ -62,14 +64,28 @@ const LazyBot = React.lazy(() =>
 
 interface SceneBoundaryProps {
   markName?: string;
+  loadProgress?: ThreeDLoadProgress;
+  loadStep?: ThreeDLoadStepId;
+  markReadyOnMount?: boolean;
   children: React.ReactNode;
 }
 
-const SceneBoundary = (props: SceneBoundaryProps) =>
-  <React.Suspense fallback={undefined}>
+const SceneBoundary = (props: SceneBoundaryProps) => {
+  if (props.loadStep
+    && props.loadProgress
+    && !props.loadProgress.isStepAllowed(props.loadStep)) {
+    return undefined;
+  }
+  const markReadyOnMount = props.markReadyOnMount !== false;
+  return <React.Suspense fallback={undefined}>
     {props.children}
+    {markReadyOnMount && props.loadStep && props.loadProgress &&
+      <LoadStepReady
+        step={props.loadStep}
+        markStep={props.loadProgress.markStep} />}
     {props.markName && <PerfMark name={props.markName} />}
   </React.Suspense>;
+};
 
 export interface GardenModelProps {
   config: Config;
@@ -155,6 +171,7 @@ export const GardenModel = (props: GardenModelProps) => {
   const [controlsCamera, setControlsCamera] =
     // eslint-disable-next-line no-null/no-null
     React.useState<ThreePerspectiveCamera | ThreeOrthographicCamera | null>(null);
+  const loadProgress = useThreeDLoadProgress();
 
   React.useEffect(() => {
     perfMark("garden_model_mounted");
@@ -225,24 +242,6 @@ export const GardenModel = (props: GardenModelProps) => {
       : undefined}>
     <FPSProbe />
     <PerfMark name={"garden_model_rendered"} />
-    <SceneBoundary markName={"three_d_debug_ready"}>
-      {config.stats && <StatsGl className={"stats-gl"} />}
-      {config.stats && <Stats />}
-      {config.zoomBeacons && <ZoomBeacons
-        config={config}
-        configPosition={props.configPosition}
-        activeFocus={props.activeFocus}
-        setActiveFocus={props.setActiveFocus} />}
-      <AxesHelper args={[5000]} visible={config.threeAxes} />
-      {config.viewCube && <GizmoHelper><GizmoViewcube /></GizmoHelper>}
-    </SceneBoundary>
-    <Sky sunPosition={sunPosition(0, 0, 0)} />
-    <Sphere args={[BigDistance.sky, 8, 16]}>
-      <MeshBasicMaterial
-        ref={skyRef}
-        color={skyColor(config.sun)}
-        side={BackSide} />
-    </Sphere>
     <AnimatedGroup
       scale={props.activeFocus ? 1 : scale}>
       <Camera
@@ -270,22 +269,34 @@ export const GardenModel = (props: GardenModelProps) => {
         maxZoom={10}
         minDistance={config.lightsDebug ? 50 : 500}
         maxDistance={config.lightsDebug ? BigDistance.devZoom : BigDistance.zoom} />}
-    <Sun
-      config={config}
-      skyRef={skyRef}
-      startTimeRef={props.startTimeRef} />
-    <AmbientLight intensity={config.ambient / 100} />
-    <SceneBoundary markName={"three_d_ground_ready"}>
+    <ThreeDLoadProgressOverlay progress={loadProgress} />
+    <SceneBoundary
+      loadStep={"environment"}
+      loadProgress={loadProgress}
+      markName={"three_d_ground_ready"}>
+      <Sky sunPosition={sunPosition(0, 0, 0)} />
+      <Sphere args={[BigDistance.sky, 8, 16]}>
+        <MeshBasicMaterial
+          ref={skyRef}
+          color={skyColor(config.sun)}
+          side={BackSide} />
+      </Sphere>
+      <Sun
+        config={config}
+        skyRef={skyRef}
+        startTimeRef={props.startTimeRef} />
+      <AmbientLight intensity={config.ambient / 100} />
       <Ground config={config} />
     </SceneBoundary>
-    <SceneBoundary markName={"three_d_clouds_ready"}>
-      <Clouds config={config} />
-    </SceneBoundary>
-    <SceneBoundary markName={"three_d_bed_ready"}>
+    <SceneBoundary
+      loadStep={"bed"}
+      loadProgress={loadProgress}
+      markReadyOnMount={false}
+      markName={"three_d_bed_ready"}>
       <NorthArrow config={config} />
       <PopInGroup
         name={"bed-load-in"}
-        delay={120}
+        onRest={() => loadProgress.markStep("bed")}
         distance={config.bedHeight + config.bedZOffset}>
         <Bed
           config={config}
@@ -302,52 +313,32 @@ export const GardenModel = (props: GardenModelProps) => {
           addPlantProps={addPlantProps} />
       </PopInGroup>
     </SceneBoundary>
-    <SceneBoundary markName={"three_d_moisture_debug_ready"}>
-      {showMoistureMap && props.config.moistureDebug &&
-        <MoistureReadings
-          color={"green"}
-          radius={50}
-          applyOffset={true}
+    <SceneBoundary
+      loadStep={"grid"}
+      loadProgress={loadProgress}
+      markReadyOnMount={false}
+      markName={"three_d_grid_ready"}>
+      <GridRevealGroup
+        name={"grid-load-in"}
+        onRest={() => loadProgress.markStep("grid")}>
+        <Grid
           config={config}
-          readings={props.sensorReadings || []} />}
+          getZ={getZ}
+          activeFocus={props.activeFocus} />
+      </GridRevealGroup>
     </SceneBoundary>
-    <SceneBoundary markName={"three_d_bot_ready"}>
-      {showFarmbot &&
-        <FallInGroup
-          name={"bot-load-in"}
-          delay={240}
-          distance={config.columnLength + 1500}>
-          <LazyBot
-            dispatch={dispatch}
-            config={config}
-            configPosition={props.configPosition}
-            getZ={getZ}
-            activeFocus={props.activeFocus}
-            mountedToolName={props.mountedToolName}
-            toolSlots={props.toolSlots} />
-        </FallInGroup>}
-    </SceneBoundary>
-    <PopInGroup
-      name={"plants-load-in"}
-      delay={320}
-      distance={200}>
-      <Group name={"plant-labels"} visible={!props.activeFocus}>
-        {plantLabelNodes}
-      </Group>
-    </PopInGroup>
-    <GridRevealGroup
-      name={"grid-load-in"}
-      delay={280}>
-      <Grid
-        config={config}
-        getZ={getZ}
-        activeFocus={props.activeFocus} />
-    </GridRevealGroup>
-    <SceneBoundary markName={"three_d_core_ready"}>
+    <SceneBoundary
+      loadStep={"plants"}
+      loadProgress={loadProgress}
+      markReadyOnMount={false}
+      markName={"three_d_core_ready"}>
       <PopInGroup
-        name={"plant-instances-load-in"}
-        delay={320}
+        name={"plants-load-in"}
+        onRest={() => loadProgress.markStep("plants")}
         distance={200}>
+        <Group name={"plant-labels"} visible={!props.activeFocus}>
+          {plantLabelNodes}
+        </Group>
         <Group name={"plants"}
           visible={plantsVisible}
           onPointerEnter={setHover(true)}
@@ -371,27 +362,14 @@ export const GardenModel = (props: GardenModelProps) => {
         </Group>
       </PopInGroup>
     </SceneBoundary>
-    <SceneBoundary markName={"three_d_points_ready"}>
-      <FallInGroup
-        name={"points-load-in"}
-        delay={360}
-        distance={config.columnLength + 1000}>
-        <Group name={"points"}
-          visible={showPoints}>
-          {(props.mapPoints?.length || 0) > 0 &&
-            <PointInstances
-              points={props.mapPoints || []}
-              visible={showPoints}
-              config={config}
-              getZ={getZ}
-              dispatch={dispatch} />}
-        </Group>
-      </FallInGroup>
-    </SceneBoundary>
-    <SceneBoundary markName={"three_d_weeds_ready"}>
+    <SceneBoundary
+      loadStep={"weeds"}
+      loadProgress={loadProgress}
+      markReadyOnMount={false}
+      markName={"three_d_weeds_ready"}>
       <PopInGroup
         name={"weeds-load-in"}
-        delay={380}
+        onRest={() => loadProgress.markStep("weeds")}
         distance={200}>
         <Group name={"weeds"}
           visible={showWeeds}>
@@ -405,7 +383,68 @@ export const GardenModel = (props: GardenModelProps) => {
         </Group>
       </PopInGroup>
     </SceneBoundary>
-    <SceneBoundary markName={"three_d_visualizations_ready"}>
+    <SceneBoundary
+      loadStep={"points"}
+      loadProgress={loadProgress}
+      markReadyOnMount={false}
+      markName={"three_d_points_ready"}>
+      <FallInGroup
+        name={"points-load-in"}
+        onRest={() => loadProgress.markStep("points")}
+        distance={config.columnLength + 1000}>
+        <Group name={"points"}
+          visible={showPoints}>
+          {(props.mapPoints?.length || 0) > 0 &&
+            <PointInstances
+              points={props.mapPoints || []}
+              visible={showPoints}
+              config={config}
+              getZ={getZ}
+              dispatch={dispatch} />}
+        </Group>
+      </FallInGroup>
+    </SceneBoundary>
+    <SceneBoundary
+      loadStep={"farmbot"}
+      loadProgress={loadProgress}
+      markReadyOnMount={!showFarmbot}
+      markName={"three_d_bot_ready"}>
+      {showFarmbot &&
+        <FallInGroup
+          name={"bot-load-in"}
+          onRest={() => loadProgress.markStep("farmbot")}
+          distance={config.columnLength + 1500}>
+          <LazyBot
+            dispatch={dispatch}
+            config={config}
+            configPosition={props.configPosition}
+            getZ={getZ}
+            activeFocus={props.activeFocus}
+            mountedToolName={props.mountedToolName}
+            toolSlots={props.toolSlots} />
+        </FallInGroup>}
+    </SceneBoundary>
+    <SceneBoundary
+      loadStep={"details"}
+      loadProgress={loadProgress}
+      markName={"three_d_details_ready"}>
+      {config.stats && <StatsGl className={"stats-gl"} />}
+      {config.stats && <Stats />}
+      {config.zoomBeacons && <ZoomBeacons
+        config={config}
+        configPosition={props.configPosition}
+        activeFocus={props.activeFocus}
+        setActiveFocus={props.setActiveFocus} />}
+      <AxesHelper args={[5000]} visible={config.threeAxes} />
+      {config.viewCube && <GizmoHelper><GizmoViewcube /></GizmoHelper>}
+      <Clouds config={config} />
+      {showMoistureMap && props.config.moistureDebug &&
+        <MoistureReadings
+          color={"green"}
+          radius={50}
+          applyOffset={true}
+          config={config}
+          readings={props.sensorReadings || []} />}
       <GroupOrderVisual
         allPoints={props.allPoints || []}
         groups={props.groups || []}
@@ -417,13 +456,9 @@ export const GardenModel = (props: GardenModelProps) => {
           visualizedSequenceUUID={props.addPlantProps?.designer.visualizedSequence}
           config={config}
           configPosition={props.configPosition} />}
-    </SceneBoundary>
-    <SceneBoundary markName={"three_d_decorations_ready"}>
       <Solar config={config} activeFocus={props.activeFocus} />
       <Lab config={config} activeFocus={props.activeFocus} />
       <Greenhouse config={config} activeFocus={props.activeFocus} />
-    </SceneBoundary>
-    <SceneBoundary markName={"three_d_camera_ui_ready"}>
       {config.cameraSelectionView &&
         <CameraSelectionUI
           config={config}

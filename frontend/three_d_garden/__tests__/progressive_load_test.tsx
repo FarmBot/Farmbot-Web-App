@@ -1,7 +1,8 @@
 import React from "react";
-import { render, screen } from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import {
-  FallInGroup, GridRevealGroup, PopInGroup,
+  FallInGroup, GridRevealGroup, LoadStepReady, PopInGroup,
+  THREE_D_LOAD_STEPS, ThreeDLoadProgressOverlay, useThreeDLoadProgress,
 } from "../progressive_load";
 
 describe("<PopInGroup />", () => {
@@ -34,5 +35,47 @@ describe("<GridRevealGroup />", () => {
 
     expect(container.innerHTML).toContain("grid-load-in");
     expect(screen.getByText("grid")).toBeTruthy();
+  });
+});
+
+describe("3D load progress", () => {
+  const ProgressHarness = () => {
+    const progress = useThreeDLoadProgress();
+    const currentStep = progress.currentStep;
+    return <div>
+      <ThreeDLoadProgressOverlay progress={progress} />
+      <p data-testid={"current-step"}>{currentStep?.id || "complete"}</p>
+      <p data-testid={"bed-allowed"}>
+        {"" + progress.isStepAllowed("bed")}
+      </p>
+      <button onClick={() => currentStep && progress.markStep(currentStep.id)}>
+        advance
+      </button>
+    </div>;
+  };
+
+  it("marks ready steps and hides the progress bar when complete", () => {
+    const consoleLog = jest.spyOn(console, "log").mockImplementation(jest.fn());
+    render(<ProgressHarness />);
+
+    expect(screen.getByTestId("current-step").textContent)
+      .toEqual("environment");
+    expect(screen.getByTestId("bed-allowed").textContent).toEqual("false");
+    expect(document.querySelector(".three-d-load-progress")).toBeTruthy();
+    THREE_D_LOAD_STEPS.forEach(step => {
+      expect(screen.getByTestId("current-step").textContent).toEqual(step.id);
+      fireEvent.click(screen.getByText("advance"));
+    });
+
+    expect(screen.getByTestId("current-step").textContent).toEqual("complete");
+    expect(document.querySelector(".three-d-load-progress")).toBeFalsy();
+    expect(consoleLog).toHaveBeenCalledWith(expect.stringContaining("Total"));
+    consoleLog.mockRestore();
+  });
+
+  it("marks one step ready", () => {
+    const markStep = jest.fn();
+    render(<LoadStepReady step={"plants"} markStep={markStep} />);
+    expect(markStep).toHaveBeenCalledWith("plants");
   });
 });

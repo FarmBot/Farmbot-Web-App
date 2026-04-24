@@ -1,8 +1,135 @@
 import React from "react";
 import { animated, useSpring } from "@react-spring/three";
+import { Html } from "@react-three/drei";
 import { Group } from "./components";
 
 const AnimatedGroup = animated(Group);
+
+export const THREE_D_LOAD_STEPS = [
+  { id: "environment", label: "Loading environment" },
+  { id: "bed", label: "Loading bed and soil" },
+  { id: "grid", label: "Loading grid" },
+  { id: "plants", label: "Loading plants" },
+  { id: "weeds", label: "Loading weeds" },
+  { id: "points", label: "Loading points" },
+  { id: "farmbot", label: "Loading FarmBot" },
+  { id: "details", label: "Loading scene details" },
+] as const;
+
+export type ThreeDLoadStepId = typeof THREE_D_LOAD_STEPS[number]["id"];
+type ReadyStepTimes = Partial<Record<ThreeDLoadStepId, number>>;
+
+interface ReadyAction {
+  step: ThreeDLoadStepId;
+  elapsed: number;
+}
+
+const readyStepReducer =
+  (state: ReadyStepTimes, action: ReadyAction): ReadyStepTimes =>
+    state[action.step] === undefined
+      ? { ...state, [action.step]: action.elapsed }
+      : state;
+
+const now = () =>
+  typeof performance == "undefined" ? Date.now() : performance.now();
+
+export interface ThreeDLoadProgress {
+  readyStepTimes: ReadyStepTimes;
+  currentStep: typeof THREE_D_LOAD_STEPS[number] | undefined;
+  progress: number;
+  complete: boolean;
+  markStep(step: ThreeDLoadStepId): void;
+  isStepAllowed(step: ThreeDLoadStepId): boolean;
+}
+
+const rounded = (value: number | undefined) => Math.round(value || 0);
+
+export const useThreeDLoadProgress = (): ThreeDLoadProgress => {
+  const startTimeRef = React.useRef(now());
+  const loggedRef = React.useRef(false);
+  const [readyStepTimes, dispatch] =
+    React.useReducer(readyStepReducer, {} as ReadyStepTimes);
+
+  const markStep = React.useCallback((step: ThreeDLoadStepId) => {
+    dispatch({ step, elapsed: now() - startTimeRef.current });
+  }, []);
+
+  const isStepAllowed = React.useCallback((step: ThreeDLoadStepId) => {
+    const index = THREE_D_LOAD_STEPS.findIndex(item => item.id == step);
+    return THREE_D_LOAD_STEPS
+      .slice(0, index)
+      .every(item => readyStepTimes[item.id] !== undefined);
+  }, [readyStepTimes]);
+
+  const readyStepCount =
+    THREE_D_LOAD_STEPS.filter(step => readyStepTimes[step.id] !== undefined)
+      .length;
+  const currentStep =
+    THREE_D_LOAD_STEPS.find(step => readyStepTimes[step.id] === undefined);
+  const complete = readyStepCount == THREE_D_LOAD_STEPS.length;
+  const progress = readyStepCount / THREE_D_LOAD_STEPS.length * 100;
+
+  React.useEffect(() => {
+    if (!complete || loggedRef.current) { return; }
+    loggedRef.current = true;
+    let previousElapsed = 0;
+    THREE_D_LOAD_STEPS.forEach(step => {
+      const elapsed = readyStepTimes[step.id] || 0;
+      const duration = elapsed - previousElapsed;
+      previousElapsed = elapsed;
+      console.log(`[3D load] ${step.label}: ${rounded(duration)}ms`);
+    });
+    console.log(`[3D load] Total: ${rounded(previousElapsed)}ms`);
+  }, [complete, readyStepTimes]);
+
+  return React.useMemo(() => ({
+    readyStepTimes,
+    currentStep,
+    progress,
+    complete,
+    markStep,
+    isStepAllowed,
+  }), [
+    complete,
+    currentStep,
+    isStepAllowed,
+    markStep,
+    progress,
+    readyStepTimes,
+  ]);
+};
+
+interface LoadStepReadyProps {
+  step: ThreeDLoadStepId;
+  markStep(step: ThreeDLoadStepId): void;
+}
+
+export const LoadStepReady = (props: LoadStepReadyProps) => {
+  const { markStep, step } = props;
+  React.useEffect(() => {
+    markStep(step);
+  }, [markStep, step]);
+  return undefined;
+};
+
+interface ThreeDLoadProgressOverlayProps {
+  progress: ThreeDLoadProgress;
+}
+
+export const ThreeDLoadProgressOverlay =
+  (props: ThreeDLoadProgressOverlayProps) => {
+    if (props.progress.complete) { return undefined; }
+    return <Html fullscreen={true}>
+      <div className={"three-d-load-progress"}>
+        <div className={"three-d-load-progress-bar"}
+          aria-hidden={true}>
+          <div className={"three-d-load-progress-fill"}
+            style={{ width: `${props.progress.progress}%` }} />
+        </div>
+        <p>{props.progress.currentStep?.label}</p>
+      </div>
+    </Html>;
+  };
 
 const loadInConfig = {
   tension: 220,
@@ -13,6 +140,7 @@ interface LoadInGroupProps {
   name: string;
   children: React.ReactNode;
   delay?: number;
+  onRest?: () => void;
   fromPosition?: [number, number, number];
   toPosition?: [number, number, number];
   fromScale?: number | [number, number, number];
@@ -30,6 +158,7 @@ export const LoadInGroup = (props: LoadInGroupProps) => {
       scale: props.toScale || 1,
     },
     delay: props.delay,
+    onRest: props.onRest,
     config: loadInConfig,
   });
 
@@ -45,6 +174,7 @@ interface PopInGroupProps {
   name: string;
   children: React.ReactNode;
   delay?: number;
+  onRest?: () => void;
   distance?: number;
 }
 
@@ -52,6 +182,7 @@ export const PopInGroup = (props: PopInGroupProps) =>
   <LoadInGroup
     name={props.name}
     delay={props.delay}
+    onRest={props.onRest}
     fromPosition={[0, 0, -(props.distance || 300)]}
     fromScale={[0.96, 0.96, 0.05]}
     toScale={[1, 1, 1]}>
@@ -62,6 +193,7 @@ interface FallInGroupProps {
   name: string;
   children: React.ReactNode;
   delay?: number;
+  onRest?: () => void;
   distance?: number;
 }
 
@@ -69,6 +201,7 @@ export const FallInGroup = (props: FallInGroupProps) =>
   <LoadInGroup
     name={props.name}
     delay={props.delay}
+    onRest={props.onRest}
     fromPosition={[0, 0, props.distance || 3000]}
     fromScale={1.02}
     toScale={1}>
@@ -79,12 +212,14 @@ interface GridRevealGroupProps {
   name: string;
   children: React.ReactNode;
   delay?: number;
+  onRest?: () => void;
 }
 
 export const GridRevealGroup = (props: GridRevealGroupProps) =>
   <LoadInGroup
     name={props.name}
     delay={props.delay}
+    onRest={props.onRest}
     fromScale={[0.001, 0.001, 1]}
     toScale={[1, 1, 1]}>
     {props.children}

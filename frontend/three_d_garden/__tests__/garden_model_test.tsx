@@ -32,12 +32,11 @@ describe("<GardenModel />", () => {
   beforeEach(() => {
     mockIsDesktop = false;
     mockIsMobile = false;
-    let useStateCalls = 0;
     useStateSpy = jest.spyOn(React, "useState")
       // eslint-disable-next-line comma-spacing
       .mockImplementation(<S,>(initialState?: S | (() => S)) => {
-        useStateCalls += 1;
-        if (useStateCalls == 2) {
+        // eslint-disable-next-line no-null/no-null
+        if (initialState === null) {
           return [{}, jest.fn()];
         }
         const value = typeof initialState == "function"
@@ -83,7 +82,7 @@ describe("<GardenModel />", () => {
     expect(container.innerHTML).toContain("darkgreen");
     expect(container.innerHTML).toContain("bed-load-in");
     expect(container.innerHTML).toContain("grid-load-in");
-    expect(container.innerHTML).toContain("plant-instances-load-in");
+    expect(container.innerHTML).toContain("plants-load-in");
     expect(container.innerHTML).toContain("points-load-in");
     expect(container.innerHTML).toContain("weeds-load-in");
   });
@@ -188,15 +187,14 @@ describe("<GardenModel />", () => {
 
   it("renders only the hovered label when labels on hover are enabled", () => {
     useStateSpy.mockRestore();
-    let useStateCalls = 0;
     useStateSpy = jest.spyOn(React, "useState")
       // eslint-disable-next-line comma-spacing
       .mockImplementation(<S,>(initialState?: S | (() => S)) => {
-        useStateCalls += 1;
-        if (useStateCalls == 1) {
+        if (initialState === undefined) {
           return [0, jest.fn()];
         }
-        if (useStateCalls == 2) {
+        // eslint-disable-next-line no-null/no-null
+        if (initialState === null) {
           return [{}, jest.fn()];
         }
         const value = typeof initialState == "function"
