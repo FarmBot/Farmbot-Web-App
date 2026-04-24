@@ -25,8 +25,8 @@ async function main() {
         });
         await page.waitForFunction(() => typeof window.__fps !== 'undefined');
 
-        const samples = 10;
-        const takeSample = 5;
+        const samples = 20;
+        const takeSample = 15;
         let lastSample = 0;
         let validCount = 0;
         for (let i = 0; i < samples; i++) {
