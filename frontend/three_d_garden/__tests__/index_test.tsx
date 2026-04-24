@@ -34,7 +34,6 @@ describe("<ThreeDGarden />", () => {
   it("renders", () => {
     const { container } = render(<ThreeDGarden {...fakeProps()} />);
     expect(container).toContainHTML("three-d-garden");
-    expect(container.textContent).not.toContain("Loading interactive 3D FarmBot");
   });
 
   it("disables canvas shadows in low-detail mode", () => {

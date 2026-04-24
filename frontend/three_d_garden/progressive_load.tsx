@@ -18,6 +18,18 @@ export const THREE_D_LOAD_STEPS = [
 
 export type ThreeDLoadStepId = typeof THREE_D_LOAD_STEPS[number]["id"];
 type ReadyStepTimes = Partial<Record<ThreeDLoadStepId, number>>;
+type StepDependencies = Record<ThreeDLoadStepId, ThreeDLoadStepId[]>;
+
+export const THREE_D_LOAD_STEP_DEPENDENCIES: StepDependencies = {
+  environment: [],
+  bed: ["environment"],
+  grid: ["bed"],
+  plants: ["grid"],
+  weeds: ["grid"],
+  points: ["grid"],
+  farmbot: ["grid"],
+  details: ["farmbot"],
+};
 
 interface ReadyAction {
   step: ThreeDLoadStepId;
@@ -55,10 +67,8 @@ export const useThreeDLoadProgress = (): ThreeDLoadProgress => {
   }, []);
 
   const isStepAllowed = React.useCallback((step: ThreeDLoadStepId) => {
-    const index = THREE_D_LOAD_STEPS.findIndex(item => item.id == step);
-    return THREE_D_LOAD_STEPS
-      .slice(0, index)
-      .every(item => readyStepTimes[item.id] !== undefined);
+    return THREE_D_LOAD_STEP_DEPENDENCIES[step]
+      .every(stepId => readyStepTimes[stepId] !== undefined);
   }, [readyStepTimes]);
 
   const readyStepCount =
@@ -72,14 +82,13 @@ export const useThreeDLoadProgress = (): ThreeDLoadProgress => {
   React.useEffect(() => {
     if (!complete || loggedRef.current) { return; }
     loggedRef.current = true;
-    let previousElapsed = 0;
+    let totalElapsed = 0;
     THREE_D_LOAD_STEPS.forEach(step => {
       const elapsed = readyStepTimes[step.id] || 0;
-      const duration = elapsed - previousElapsed;
-      previousElapsed = elapsed;
-      console.log(`[3D load] ${step.label}: ${rounded(duration)}ms`);
+      totalElapsed = Math.max(totalElapsed, elapsed);
+      console.log(`[3D load] ${step.label}: ${rounded(elapsed)}ms`);
     });
-    console.log(`[3D load] Total: ${rounded(previousElapsed)}ms`);
+    console.log(`[3D load] Total: ${rounded(totalElapsed)}ms`);
   }, [complete, readyStepTimes]);
 
   return React.useMemo(() => ({
@@ -139,7 +148,6 @@ const loadInConfig = {
 interface LoadInGroupProps {
   name: string;
   children: React.ReactNode;
-  delay?: number;
   onRest?: () => void;
   fromPosition?: [number, number, number];
   toPosition?: [number, number, number];
@@ -157,7 +165,6 @@ export const LoadInGroup = (props: LoadInGroupProps) => {
       position: props.toPosition || [0, 0, 0],
       scale: props.toScale || 1,
     },
-    delay: props.delay,
     onRest: props.onRest,
     config: loadInConfig,
   });
@@ -173,7 +180,6 @@ export const LoadInGroup = (props: LoadInGroupProps) => {
 interface PopInGroupProps {
   name: string;
   children: React.ReactNode;
-  delay?: number;
   onRest?: () => void;
   distance?: number;
 }
@@ -181,7 +187,6 @@ interface PopInGroupProps {
 export const PopInGroup = (props: PopInGroupProps) =>
   <LoadInGroup
     name={props.name}
-    delay={props.delay}
     onRest={props.onRest}
     fromPosition={[0, 0, -(props.distance || 300)]}
     fromScale={[0.96, 0.96, 0.05]}
@@ -192,7 +197,6 @@ export const PopInGroup = (props: PopInGroupProps) =>
 interface FallInGroupProps {
   name: string;
   children: React.ReactNode;
-  delay?: number;
   onRest?: () => void;
   distance?: number;
 }
@@ -200,7 +204,6 @@ interface FallInGroupProps {
 export const FallInGroup = (props: FallInGroupProps) =>
   <LoadInGroup
     name={props.name}
-    delay={props.delay}
     onRest={props.onRest}
     fromPosition={[0, 0, props.distance || 3000]}
     fromScale={1.02}
@@ -211,14 +214,12 @@ export const FallInGroup = (props: FallInGroupProps) =>
 interface GridRevealGroupProps {
   name: string;
   children: React.ReactNode;
-  delay?: number;
   onRest?: () => void;
 }
 
 export const GridRevealGroup = (props: GridRevealGroupProps) =>
   <LoadInGroup
     name={props.name}
-    delay={props.delay}
     onRest={props.onRest}
     fromScale={[0.001, 0.001, 1]}
     toScale={[1, 1, 1]}>

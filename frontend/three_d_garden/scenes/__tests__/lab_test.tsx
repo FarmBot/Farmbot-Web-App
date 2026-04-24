@@ -40,4 +40,14 @@ describe("<Lab />", () => {
     expect(container).toContainHTML("shelf");
     expect(container).toContainHTML("people");
   });
+
+  it("animates scene details in", () => {
+    const p = fakeProps();
+    const onDetailsLoadInRest = jest.fn();
+    p.config.scene = "Lab";
+    const { container } = render(<Lab {...p}
+      onDetailsLoadInRest={onDetailsLoadInRest} />);
+    expect(container).toContainHTML("lab-scene-details-load-in");
+    expect(onDetailsLoadInRest).toHaveBeenCalled();
+  });
 });

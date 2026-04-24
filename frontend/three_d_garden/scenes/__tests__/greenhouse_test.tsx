@@ -51,4 +51,14 @@ describe("<Greenhouse />", () => {
     expect(container).toContainHTML("greenhouse-environment");
     expect(container).not.toContainHTML("people");
   });
+
+  it("animates scene details in", () => {
+    const p = fakeProps();
+    const onDetailsLoadInRest = jest.fn();
+    p.config.scene = "Greenhouse";
+    const { container } = render(<Greenhouse {...p}
+      onDetailsLoadInRest={onDetailsLoadInRest} />);
+    expect(container).toContainHTML("greenhouse-scene-details-load-in");
+    expect(onDetailsLoadInRest).toHaveBeenCalled();
+  });
 });

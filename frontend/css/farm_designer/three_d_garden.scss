@@ -2,36 +2,6 @@
 @use "sass:color";
 @use "../global/fonts" as *;
 
-.promo-loading-container {
-  display: grid;
-  align-content: center;
-  justify-content: center;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: -9999999;
-}
-
-.promo-loading-image {
-  height: 100vh;
-}
-
-.promo-loading-text {
-  font-family: $inknut;
-  font-size: 2rem;
-  font-weight: bold;
-  color: $off_white;
-  text-shadow: 0 0 3.5rem #000, 0 0 1rem #000;
-  text-align: center;
-  margin: 0;
-  position: absolute;
-  width: 100vw;
-  height: 100vh;
-  align-content: center;
-}
-
 .promo {
   &.three-d-garden {
     .garden-bed-3d-model {
@@ -76,7 +46,7 @@
   .three-d-load-progress {
     position: absolute;
     left: 50%;
-    bottom: 4rem;
+    bottom: 6rem;
     transform: translateX(-50%);
     width: min(36rem, calc(100vw - 3rem));
     pointer-events: none;
@@ -95,7 +65,7 @@
     .three-d-load-progress-fill {
       height: 100%;
       border-radius: inherit;
-      background: $green;
+      background: rgba(255, 255, 255, 0.75);
       transition: width 180ms ease;
     }
 

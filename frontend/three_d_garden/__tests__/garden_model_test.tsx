@@ -6,7 +6,7 @@ import { OrbitControls, useTexture } from "@react-three/drei";
 import { GardenModelProps, GardenModel } from "../garden_model";
 import { clone } from "lodash";
 import { INITIAL, INITIAL_POSITION, SurfaceDebugOption } from "../config";
-import { render } from "@testing-library/react";
+import { render, waitFor } from "@testing-library/react";
 import {
   fakePlant, fakePoint, fakeSensor, fakeSensorReading, fakeWeed,
 } from "../../__test_support__/fake_state/resources";
@@ -85,6 +85,7 @@ describe("<GardenModel />", () => {
     expect(container.innerHTML).toContain("plants-load-in");
     expect(container.innerHTML).toContain("points-load-in");
     expect(container.innerHTML).toContain("weeds-load-in");
+    expect(container.innerHTML).toContain("zoom-beacons-load-in");
   });
 
   it("renders top down view", () => {
@@ -127,12 +128,13 @@ describe("<GardenModel />", () => {
     expect(camera?.props.zoom).toEqual(0.5);
   });
 
-  it("renders camera selection view", () => {
+  it("renders camera selection view", async () => {
     const p = fakeProps();
     p.config.cameraSelectionView = true;
     p.config.viewpointHeading = 45;
     const { container } = render(<GardenModel {...p} />);
-    expect(container.innerHTML).toContain("camera-selection");
+    await waitFor(() =>
+      expect(container.innerHTML).toContain("camera-selection"));
   });
 
   it("renders no user plants", () => {

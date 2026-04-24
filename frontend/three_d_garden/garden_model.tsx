@@ -172,6 +172,10 @@ export const GardenModel = (props: GardenModelProps) => {
     // eslint-disable-next-line no-null/no-null
     React.useState<ThreePerspectiveCamera | ThreeOrthographicCamera | null>(null);
   const loadProgress = useThreeDLoadProgress();
+  const markLoadStep = loadProgress.markStep;
+  const markDetailsLoaded = React.useCallback(() => {
+    markLoadStep("details");
+  }, [markLoadStep]);
 
   React.useEffect(() => {
     perfMark("garden_model_mounted");
@@ -204,6 +208,9 @@ export const GardenModel = (props: GardenModelProps) => {
     BooleanSetting.show_moisture_interpolation_map);
   const showMoistureReadings = !!props.addPlantProps?.getConfigValue(
     BooleanSetting.show_sensor_readings);
+  const sceneDetailsLoadIn =
+    config.scene == "Lab" || config.scene == "Greenhouse";
+  const animatedDetailsLoadIn = sceneDetailsLoadIn || config.zoomBeacons;
 
   const topDownAtStart = !!props.addPlantProps?.getConfigValue(
     BooleanSetting.top_down_view);
@@ -427,14 +434,21 @@ export const GardenModel = (props: GardenModelProps) => {
     <SceneBoundary
       loadStep={"details"}
       loadProgress={loadProgress}
+      markReadyOnMount={false}
       markName={"three_d_details_ready"}>
       {config.stats && <StatsGl className={"stats-gl"} />}
       {config.stats && <Stats />}
-      {config.zoomBeacons && <ZoomBeacons
-        config={config}
-        configPosition={props.configPosition}
-        activeFocus={props.activeFocus}
-        setActiveFocus={props.setActiveFocus} />}
+      {config.zoomBeacons &&
+        <PopInGroup
+          name={"zoom-beacons-load-in"}
+          onRest={!sceneDetailsLoadIn ? markDetailsLoaded : undefined}
+          distance={300}>
+          <ZoomBeacons
+            config={config}
+            configPosition={props.configPosition}
+            activeFocus={props.activeFocus}
+            setActiveFocus={props.setActiveFocus} />
+        </PopInGroup>}
       <AxesHelper args={[5000]} visible={config.threeAxes} />
       {config.viewCube && <GizmoHelper><GizmoViewcube /></GizmoHelper>}
       <Clouds config={config} />
@@ -457,13 +471,27 @@ export const GardenModel = (props: GardenModelProps) => {
           config={config}
           configPosition={props.configPosition} />}
       <Solar config={config} activeFocus={props.activeFocus} />
-      <Lab config={config} activeFocus={props.activeFocus} />
-      <Greenhouse config={config} activeFocus={props.activeFocus} />
+      <Lab
+        config={config}
+        activeFocus={props.activeFocus}
+        onDetailsLoadInRest={config.scene == "Lab"
+          ? markDetailsLoaded
+          : undefined} />
+      <Greenhouse
+        config={config}
+        activeFocus={props.activeFocus}
+        onDetailsLoadInRest={config.scene == "Greenhouse"
+          ? markDetailsLoaded
+          : undefined} />
       {config.cameraSelectionView &&
         <CameraSelectionUI
           config={config}
           dispatch={dispatch}
           topDownAtStart={topDownAtStart} />}
+      {!animatedDetailsLoadIn &&
+        <LoadStepReady
+          step={"details"}
+          markStep={loadProgress.markStep} />}
     </SceneBoundary>
   </Group>;
 };
