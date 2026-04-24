@@ -124,6 +124,7 @@ describe("<NavBar />", () => {
     const { container } = renderNavBar();
     const navWrapper = container.querySelector(".nav-wrapper");
     expect(navWrapper).toBeTruthy();
+    expect(navWrapper?.classList.contains("nav-load-in")).toBeTruthy();
     expect(navWrapper?.classList.contains("red")).toBeFalsy();
     expect(container.querySelector(".connectivity-button.hover")).toBeFalsy();
   });

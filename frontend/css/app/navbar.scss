@@ -10,6 +10,23 @@
   background: linear-gradient(0deg, transparent, $translucent3 60%, $translucent5), linear-gradient(0deg, transparent 30%, $translucent3);
 }
 
+@keyframes nav-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .nav-load-in {
+    animation: nav-slide-in 320ms ease-out both;
+  }
+}
+
 .skip-nav-link {
   display: none;
 }

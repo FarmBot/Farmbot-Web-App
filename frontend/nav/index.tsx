@@ -483,6 +483,7 @@ export class RawNavBar extends React.Component<NavBarProps, Partial<NavBarState>
     return <ErrorBoundary>
       <div className={[
         "nav-wrapper",
+        "nav-load-in",
         this.isStaff ? "red" : "",
       ].join(" ")}>
         <a href="#main-content" className="skip-nav-link">
