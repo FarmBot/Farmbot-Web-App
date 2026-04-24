@@ -3,6 +3,7 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import {
   ThreeDGardenProps, ThreeDGarden, ThreeDGardenToggle, ThreeDGardenToggleProps,
 } from "../index";
+import * as reactThreeFiber from "@react-three/fiber";
 import { INITIAL, INITIAL_POSITION } from "../config";
 import { clone } from "lodash";
 import { fakeAddPlantProps } from "../../__test_support__/fake_props";
@@ -33,6 +34,17 @@ describe("<ThreeDGarden />", () => {
   it("renders", () => {
     const { container } = render(<ThreeDGarden {...fakeProps()} />);
     expect(container).toContainHTML("three-d-garden");
+  });
+
+  it("disables canvas shadows in low-detail mode", () => {
+    const canvasSpy = jest.spyOn(reactThreeFiber, "Canvas");
+    const p = fakeProps();
+    p.config.lowDetail = true;
+    render(<ThreeDGarden {...p} />);
+    expect(canvasSpy).toHaveBeenCalledWith(
+      expect.objectContaining({ shadows: false }),
+      undefined);
+    canvasSpy.mockRestore();
   });
 });
 

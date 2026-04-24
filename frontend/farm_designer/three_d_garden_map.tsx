@@ -7,7 +7,7 @@ import {
 import { clone } from "lodash";
 import { BotPosition, SourceFbosConfig } from "../devices/interfaces";
 import {
-  ConfigurationName, TaggedCurve, TaggedFarmwareEnv, TaggedGenericPointer,
+  TaggedCurve, TaggedFarmwareEnv, TaggedGenericPointer,
   TaggedImage, TaggedLog, TaggedPoint,
   TaggedPointGroup, TaggedSensor, TaggedSensorReading, TaggedWeedPointer,
 } from "farmbot";
@@ -57,138 +57,88 @@ export interface ThreeDGardenMapProps {
 }
 
 export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
-  const config = clone(INITIAL);
   const { gridSize } = props.mapTransformProps;
-  config.botSizeX = gridSize.x;
-  config.botSizeY = gridSize.y;
-  config.bedWidthOuter = gridSize.y + 160;
-  config.bedLengthOuter = gridSize.x + 280;
-  config.zoomBeacons = false;
-  config.trail = !!props.getWebAppConfigValue(BooleanSetting.display_trail);
-  config.animate = !props.getWebAppConfigValue(BooleanSetting.disable_animations);
-  config.cameraView =
-    !!props.getWebAppConfigValue(BooleanSetting.show_camera_view_area);
-
-  config.kitVersion =
-    props.sourceFbosConfig("firmware_hardware").value == "farmduino_k18"
-      ? "v1.8"
-      : "v1.7";
-
-  config.negativeZ = props.negativeZ;
-  config.exaggeratedZ = props.designer.threeDExaggeratedZ;
-
   const getValue = props.get3DConfigValue;
-  config.mirrorX = !!getValue("mirrorX");
-  config.mirrorY = !!getValue("mirrorY");
-  config.bedXOffset = getValue("bedXOffset");
-  config.bedYOffset = getValue("bedYOffset");
-  config.bedZOffset = getValue("bedZOffset");
-
-  const position = clone(INITIAL_POSITION);
-  position.x = props.botPosition.x || 0;
-  position.y = props.botPosition.y || 0;
-  position.z = props.botPosition.z || 0;
-  if (config.mirrorY) { position.y = gridSize.y - position.y; }
-  if (config.mirrorX) { position.x = gridSize.x - position.x; }
-
   const { designer } = props;
-  config.distanceIndicator = designer.distanceIndicator;
-
-  const fbosConfig = (key: ConfigurationName) =>
-    props.sourceFbosConfig(key).value as number;
-  config.zGantryOffset = fbosConfig("gantry_height");
-  config.soilHeight = Math.abs(fbosConfig("soil_height"));
-
-  config.bedWallThickness = getValue("bedWallThickness");
-  config.bedHeight = getValue("bedHeight");
-  config.ccSupportSize = getValue("ccSupportSize");
-  config.beamLength = getValue("beamLength");
-  config.columnLength = getValue("columnLength");
-  config.zAxisLength = getValue("zAxisLength");
-  config.legSize = getValue("legSize");
-  config.legsFlush = !!getValue("legsFlush");
-  config.extraLegsX = getValue("extraLegsX");
-  config.extraLegsY = getValue("extraLegsY");
-  config.bedBrightness = getValue("bedBrightness");
-  config.soilBrightness = getValue("soilBrightness");
-  config.clouds = !!getValue("clouds");
-  config.laser = !!getValue("laser");
-  config.stats = !!getValue("stats");
-  config.threeAxes = !!getValue("threeAxes");
-  config.solar = !!getValue("solar");
-  config.lowDetail = !!getValue("lowDetail");
-  config.eventDebug = !!getValue("eventDebug");
-  config.cableDebug = !!getValue("cableDebug");
-  config.lightsDebug = !!getValue("lightsDebug");
-  config.moistureDebug = !!getValue("moistureDebug");
-  config.surfaceDebug = getValue("surfaceDebug");
-  config.sun = getValue("sun");
-  config.ambient = getValue("ambient");
-  config.heading = getValue("heading");
-  config.bounds = !!getValue("bounds");
-  config.grid = !!getValue("grid");
-  config.tracks = !!getValue("tracks");
-  config.cableCarriers = !!getValue("cableCarriers");
-  config.axes = !!getValue("axes");
-  config.xyDimensions = !!getValue("xyDimensions");
-  config.zDimension = !!getValue("zDimension");
-
-  config.scene = SCENES[getValue("scene")];
-  config.people = !!getValue("people");
-
-  config.north = true;
-  config.desk = !!getValue("desk");
-  config.plants = "";
-
+  const configValues = {
+    mirrorX: getValue("mirrorX"),
+    mirrorY: getValue("mirrorY"),
+    bedXOffset: getValue("bedXOffset"),
+    bedYOffset: getValue("bedYOffset"),
+    bedZOffset: getValue("bedZOffset"),
+    bedWallThickness: getValue("bedWallThickness"),
+    bedHeight: getValue("bedHeight"),
+    ccSupportSize: getValue("ccSupportSize"),
+    beamLength: getValue("beamLength"),
+    columnLength: getValue("columnLength"),
+    zAxisLength: getValue("zAxisLength"),
+    legSize: getValue("legSize"),
+    legsFlush: getValue("legsFlush"),
+    extraLegsX: getValue("extraLegsX"),
+    extraLegsY: getValue("extraLegsY"),
+    bedBrightness: getValue("bedBrightness"),
+    soilBrightness: getValue("soilBrightness"),
+    clouds: getValue("clouds"),
+    laser: getValue("laser"),
+    stats: getValue("stats"),
+    threeAxes: getValue("threeAxes"),
+    solar: getValue("solar"),
+    lowDetail: getValue("lowDetail"),
+    eventDebug: getValue("eventDebug"),
+    cableDebug: getValue("cableDebug"),
+    lightsDebug: getValue("lightsDebug"),
+    moistureDebug: getValue("moistureDebug"),
+    surfaceDebug: getValue("surfaceDebug"),
+    sun: getValue("sun"),
+    ambient: getValue("ambient"),
+    heading: getValue("heading"),
+    bounds: getValue("bounds"),
+    grid: getValue("grid"),
+    tracks: getValue("tracks"),
+    cableCarriers: getValue("cableCarriers"),
+    axes: getValue("axes"),
+    xyDimensions: getValue("xyDimensions"),
+    zDimension: getValue("zDimension"),
+    scene: getValue("scene"),
+    people: getValue("people"),
+    desk: getValue("desk"),
+    sunAzimuth: getValue("sunAzimuth"),
+    sunInclination: getValue("sunInclination"),
+  };
+  const mirrorX = !!configValues.mirrorX;
+  const mirrorY = !!configValues.mirrorY;
+  const firmwareHardware = props.sourceFbosConfig("firmware_hardware").value;
+  const zGantryOffset =
+    props.sourceFbosConfig("gantry_height").value as number;
+  const soilHeight =
+    Math.abs(props.sourceFbosConfig("soil_height").value as number);
+  const displayTrail =
+    !!props.getWebAppConfigValue(BooleanSetting.display_trail);
+  const animate =
+    !props.getWebAppConfigValue(BooleanSetting.disable_animations);
+  const cameraView =
+    !!props.getWebAppConfigValue(BooleanSetting.show_camera_view_area);
+  const topDown = isTopDown(props.designer, props.getWebAppConfigValue);
+  const viewpointHeading = parseInt(
+    "" + props.getWebAppConfigValue(NumericSetting.viewpoint_heading));
   const { latitude, longitude, valid } = latLng(props.device);
-  if (valid) {
-    const date = get3DTime(props.designer.threeDTime).toDate();
-    const { azimuth, inclination } = calcSunCoordinate(
-      date, config.heading, latitude, longitude);
-    config.sunAzimuth = azimuth;
-    config.sunInclination = inclination;
-  } else {
-    config.sunAzimuth = getValue("sunAzimuth");
-    config.sunInclination = getValue("sunInclination");
-  }
-
   const isPeripheralActive = isPeripheralActiveFunc(props.peripheralValues);
-
-  config.waterFlow = isPeripheralActive("water");
-  config.light = isPeripheralActive("light");
-  config.vacuum = isPeripheralActive("vacuum");
-  const rotarySpeed = () => {
+  const waterFlow = isPeripheralActive("water");
+  const light = isPeripheralActive("light");
+  const vacuum = isPeripheralActive("vacuum");
+  const rotary = (() => {
     const fwd = isPeripheralActive("rotary", "reverse");
     const rev = isPeripheralActive("reverse");
     if (rev && !fwd) { return -1; }
     if (fwd && !rev) { return 1; }
     return 0;
-  };
-  config.rotary = rotarySpeed();
-
-  const camCalData = parseCalibrationData(props.cameraCalibrationData);
-  config.imgScale = camCalData.imageScale;
-  config.imgRotation = camCalData.imageRotation;
-  config.imgOffsetX = camCalData.imageOffsetX;
-  config.imgOffsetY = camCalData.imageOffsetY;
-  config.imgOrigin = camCalData.imageOrigin;
-  config.imgCalZ = camCalData.calibrationZ;
-  config.imgCenterX = camCalData.centerX;
-  config.imgCenterY = camCalData.centerY;
-
-  const options = fetchInterpolationOptions(props.farmwareEnvs);
-  config.interpolationStepSize = options.stepSize;
-  config.interpolationUseNearest = options.useNearest;
-  config.interpolationPower = options.power;
-
-  config.topDown = isTopDown(props.designer, props.getWebAppConfigValue);
-  config.zoom = true;
-  config.pan = true;
-  config.rotate = !config.topDown;
-  config.perspective = !config.topDown;
-  config.viewpointHeading =
-    parseInt("" + props.getWebAppConfigValue(NumericSetting.viewpoint_heading));
-  config.cameraSelectionView = props.designer.threeDCameraSelection;
+  })();
+  const camCalData = React.useMemo(
+    () => parseCalibrationData(props.cameraCalibrationData),
+    [props.cameraCalibrationData]);
+  const options = React.useMemo(
+    () => fetchInterpolationOptions(props.farmwareEnvs),
+    [props.farmwareEnvs]);
 
   const lastCaptureTime = React.useMemo(() => {
     const localIds = props.logs
@@ -197,9 +147,214 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
       .map(log => unpackUUID(log.uuid).localId);
     return Math.max(0, ...localIds);
   }, [props.logs]);
-  config.lastImageCapture = lastCaptureTime;
+  const sunPositionConfig = valid
+    ? calcSunCoordinate(
+      get3DTime(props.designer.threeDTime).toDate(),
+      configValues.heading,
+      latitude,
+      longitude)
+    : {
+      azimuth: configValues.sunAzimuth,
+      inclination: configValues.sunInclination,
+    };
+  const stableGridSize = React.useMemo(
+    () => ({ x: gridSize.x, y: gridSize.y }),
+    [gridSize.x, gridSize.y]);
 
-  const threeDPlants = convertPlants(config, props.plants);
+  const config = React.useMemo(() => {
+    const nextConfig = clone(INITIAL);
+    nextConfig.botSizeX = stableGridSize.x;
+    nextConfig.botSizeY = stableGridSize.y;
+    nextConfig.bedWidthOuter = stableGridSize.y + 160;
+    nextConfig.bedLengthOuter = stableGridSize.x + 280;
+    nextConfig.zoomBeacons = false;
+    nextConfig.trail = displayTrail;
+    nextConfig.animate = animate;
+    nextConfig.cameraView = cameraView;
+    nextConfig.kitVersion =
+      firmwareHardware == "farmduino_k18" ? "v1.8" : "v1.7";
+    nextConfig.negativeZ = props.negativeZ;
+    nextConfig.exaggeratedZ = designer.threeDExaggeratedZ;
+    nextConfig.mirrorX = mirrorX;
+    nextConfig.mirrorY = mirrorY;
+    nextConfig.bedXOffset = configValues.bedXOffset;
+    nextConfig.bedYOffset = configValues.bedYOffset;
+    nextConfig.bedZOffset = configValues.bedZOffset;
+    nextConfig.distanceIndicator = designer.distanceIndicator;
+    nextConfig.zGantryOffset = zGantryOffset;
+    nextConfig.soilHeight = soilHeight;
+    nextConfig.bedWallThickness = configValues.bedWallThickness;
+    nextConfig.bedHeight = configValues.bedHeight;
+    nextConfig.ccSupportSize = configValues.ccSupportSize;
+    nextConfig.beamLength = configValues.beamLength;
+    nextConfig.columnLength = configValues.columnLength;
+    nextConfig.zAxisLength = configValues.zAxisLength;
+    nextConfig.legSize = configValues.legSize;
+    nextConfig.legsFlush = !!configValues.legsFlush;
+    nextConfig.extraLegsX = configValues.extraLegsX;
+    nextConfig.extraLegsY = configValues.extraLegsY;
+    nextConfig.bedBrightness = configValues.bedBrightness;
+    nextConfig.soilBrightness = configValues.soilBrightness;
+    nextConfig.clouds = !!configValues.clouds;
+    nextConfig.laser = !!configValues.laser;
+    nextConfig.stats = !!configValues.stats;
+    nextConfig.threeAxes = !!configValues.threeAxes;
+    nextConfig.solar = !!configValues.solar;
+    nextConfig.lowDetail = !!configValues.lowDetail;
+    nextConfig.eventDebug = !!configValues.eventDebug;
+    nextConfig.cableDebug = !!configValues.cableDebug;
+    nextConfig.lightsDebug = !!configValues.lightsDebug;
+    nextConfig.moistureDebug = !!configValues.moistureDebug;
+    nextConfig.surfaceDebug = configValues.surfaceDebug;
+    nextConfig.sun = configValues.sun;
+    nextConfig.ambient = configValues.ambient;
+    nextConfig.heading = configValues.heading;
+    nextConfig.bounds = !!configValues.bounds;
+    nextConfig.grid = !!configValues.grid;
+    nextConfig.tracks = !!configValues.tracks;
+    nextConfig.cableCarriers = !!configValues.cableCarriers;
+    nextConfig.axes = !!configValues.axes;
+    nextConfig.xyDimensions = !!configValues.xyDimensions;
+    nextConfig.zDimension = !!configValues.zDimension;
+    nextConfig.scene = SCENES[configValues.scene];
+    nextConfig.people = !!configValues.people;
+    nextConfig.north = true;
+    nextConfig.desk = !!configValues.desk;
+    nextConfig.plants = "";
+    nextConfig.sunAzimuth = sunPositionConfig.azimuth;
+    nextConfig.sunInclination = sunPositionConfig.inclination;
+    nextConfig.waterFlow = waterFlow;
+    nextConfig.light = light;
+    nextConfig.vacuum = vacuum;
+    nextConfig.rotary = rotary;
+    nextConfig.imgScale = camCalData.imageScale;
+    nextConfig.imgRotation = camCalData.imageRotation;
+    nextConfig.imgOffsetX = camCalData.imageOffsetX;
+    nextConfig.imgOffsetY = camCalData.imageOffsetY;
+    nextConfig.imgOrigin = camCalData.imageOrigin;
+    nextConfig.imgCalZ = camCalData.calibrationZ;
+    nextConfig.imgCenterX = camCalData.centerX;
+    nextConfig.imgCenterY = camCalData.centerY;
+    nextConfig.interpolationStepSize = options.stepSize;
+    nextConfig.interpolationUseNearest = options.useNearest;
+    nextConfig.interpolationPower = options.power;
+    nextConfig.topDown = topDown;
+    nextConfig.zoom = true;
+    nextConfig.pan = true;
+    nextConfig.rotate = !topDown;
+    nextConfig.perspective = !topDown;
+    nextConfig.viewpointHeading = viewpointHeading;
+    nextConfig.cameraSelectionView = designer.threeDCameraSelection;
+    nextConfig.lastImageCapture = lastCaptureTime;
+    return nextConfig;
+  }, [
+    animate,
+    camCalData.calibrationZ,
+    camCalData.centerX,
+    camCalData.centerY,
+    camCalData.imageOffsetX,
+    camCalData.imageOffsetY,
+    camCalData.imageOrigin,
+    camCalData.imageRotation,
+    camCalData.imageScale,
+    cameraView,
+    configValues.ambient,
+    configValues.axes,
+    configValues.beamLength,
+    configValues.bedBrightness,
+    configValues.bedHeight,
+    configValues.bedWallThickness,
+    configValues.bedXOffset,
+    configValues.bedYOffset,
+    configValues.bedZOffset,
+    configValues.bounds,
+    configValues.cableCarriers,
+    configValues.cableDebug,
+    configValues.ccSupportSize,
+    configValues.clouds,
+    configValues.columnLength,
+    configValues.desk,
+    configValues.eventDebug,
+    configValues.extraLegsX,
+    configValues.extraLegsY,
+    configValues.grid,
+    configValues.heading,
+    configValues.laser,
+    configValues.legSize,
+    configValues.legsFlush,
+    configValues.lightsDebug,
+    configValues.lowDetail,
+    configValues.moistureDebug,
+    configValues.people,
+    configValues.scene,
+    configValues.soilBrightness,
+    configValues.solar,
+    configValues.stats,
+    configValues.sun,
+    configValues.surfaceDebug,
+    configValues.threeAxes,
+    configValues.tracks,
+    configValues.xyDimensions,
+    configValues.zAxisLength,
+    configValues.zDimension,
+    designer.distanceIndicator,
+    designer.threeDCameraSelection,
+    designer.threeDExaggeratedZ,
+    displayTrail,
+    firmwareHardware,
+    lastCaptureTime,
+    light,
+    mirrorX,
+    mirrorY,
+    options.power,
+    options.stepSize,
+    options.useNearest,
+    props.negativeZ,
+    rotary,
+    soilHeight,
+    stableGridSize.x,
+    stableGridSize.y,
+    sunPositionConfig.azimuth,
+    sunPositionConfig.inclination,
+    topDown,
+    vacuum,
+    viewpointHeading,
+    waterFlow,
+    zGantryOffset,
+  ]);
+
+  const position = React.useMemo(() => {
+    const nextPosition = clone(INITIAL_POSITION);
+    nextPosition.x = props.botPosition.x || 0;
+    nextPosition.y = props.botPosition.y || 0;
+    nextPosition.z = props.botPosition.z || 0;
+    if (mirrorY) { nextPosition.y = stableGridSize.y - nextPosition.y; }
+    if (mirrorX) { nextPosition.x = stableGridSize.x - nextPosition.x; }
+    return nextPosition;
+  }, [
+    mirrorX,
+    mirrorY,
+    props.botPosition.x,
+    props.botPosition.y,
+    props.botPosition.z,
+    stableGridSize.x,
+    stableGridSize.y,
+  ]);
+  const threeDPlants = React.useMemo(() =>
+    convertPlantResources(props.plants), [props.plants]);
+  const addPlantProps = React.useMemo(() => ({
+    gridSize: stableGridSize,
+    dispatch: props.dispatch,
+    getConfigValue: props.getWebAppConfigValue,
+    curves: props.curves,
+    designer: props.designer,
+  }), [
+    props.curves,
+    props.designer,
+    props.dispatch,
+    props.getWebAppConfigValue,
+    stableGridSize,
+  ]);
 
   return <ThreeDGarden
     config={config}
@@ -214,25 +369,22 @@ export const ThreeDGardenMap = (props: ThreeDGardenMapProps) => {
     images={props.images}
     sensorReadings={props.sensorReadings}
     sensors={props.sensors}
-    addPlantProps={{
-      gridSize: props.mapTransformProps.gridSize,
-      dispatch: props.dispatch,
-      getConfigValue: props.getWebAppConfigValue,
-      curves: props.curves,
-      designer: props.designer,
-    }} />;
+    addPlantProps={addPlantProps} />;
 };
+
+const convertPlantResources = (plants: TaggedPlant[]): ThreeDGardenPlant[] =>
+  plants.map(plant => ({
+    id: plant.body.id,
+    label: plant.body.name,
+    icon: findIcon(plant.body.openfarm_slug),
+    size: plant.body.radius * 2,
+    spread: findCrop(plant.body.openfarm_slug).spread,
+    x: plant.body.x,
+    y: plant.body.y,
+    key: "",
+    seed: 0,
+  }));
 
 export const convertPlants =
   (_config: Config, plants: TaggedPlant[]): ThreeDGardenPlant[] =>
-    plants.map(plant => ({
-      id: plant.body.id,
-      label: plant.body.name,
-      icon: findIcon(plant.body.openfarm_slug),
-      size: plant.body.radius * 2,
-      spread: findCrop(plant.body.openfarm_slug).spread,
-      x: plant.body.x,
-      y: plant.body.y,
-      key: "",
-      seed: 0,
-    }));
+    convertPlantResources(plants);

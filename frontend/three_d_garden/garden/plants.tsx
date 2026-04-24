@@ -32,7 +32,6 @@ import {
 import { ActivePositionRef } from "../bed/objects/pointer_objects";
 import { Mode } from "../../farm_designer/map/interfaces";
 import { findCrop } from "../../crops/find";
-import { instancedMeshKey } from "./instanced_mesh_key";
 
 export interface ThreeDGardenPlant {
   id?: number | undefined;
@@ -104,7 +103,15 @@ export interface PlantSpreadInstancesProps {
   spreadVisible: boolean;
 }
 
-export const PlantSpreadInstances = (props: PlantSpreadInstancesProps) => {
+interface PlantSpreadUpdateState {
+  needsInstanceUpdate: boolean;
+}
+
+const newPlantSpreadUpdateState = (): PlantSpreadUpdateState => ({
+  needsInstanceUpdate: true,
+});
+
+export const PlantSpreadInstances = React.memo((props: PlantSpreadInstancesProps) => {
   const {
     config, plants, getZ, visible, dispatch, activePositionRef, spreadVisible,
   } = props;
@@ -116,6 +123,16 @@ export const PlantSpreadInstances = (props: PlantSpreadInstancesProps) => {
   const tempScale = React.useMemo(() => new Vector3(), []);
   const tempQuaternion = React.useMemo(() => new Quaternion(), []);
   const tempColor = React.useMemo(() => new Color(), []);
+  const updateStateRef =
+    React.useRef<PlantSpreadUpdateState>(newPlantSpreadUpdateState());
+  const getUpdateState = () => {
+    const current =
+      updateStateRef.current as Partial<PlantSpreadUpdateState> | undefined;
+    if (typeof current?.needsInstanceUpdate != "boolean") {
+      updateStateRef.current = newPlantSpreadUpdateState();
+    }
+    return updateStateRef.current;
+  };
   const get3DPosition = React.useMemo(() => get3DPositionFunc(config), [config]);
   // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/use-memo
   const boundsCenter = React.useMemo(getBoundsCenter(config), []);
@@ -135,6 +152,8 @@ export const PlantSpreadInstances = (props: PlantSpreadInstancesProps) => {
   const activeDragSpread = editPlantMode
     ? currentPlant?.spread
     : findCrop(Path.getCropSlug()).spread;
+  const hasTransientPlant = React.useMemo(() =>
+    plants.some(plant => !plant.id), [plants]);
 
   const ensureInstanceColor = React.useCallback((mesh: InstancedMeshType) => {
     const needsResize = !mesh.instanceColor
@@ -162,9 +181,20 @@ export const PlantSpreadInstances = (props: PlantSpreadInstancesProps) => {
     ensureInstanceColor(mesh);
   }, [ensureInstanceColor]);
 
+  React.useEffect(() => {
+    const updateState = getUpdateState();
+    updateState.needsInstanceUpdate = true;
+  });
+
+  // eslint-disable-next-line complexity
   useFrame(state => {
     const mesh = instancedRef.current;
     if (!mesh || visible === false) { return; }
+    const updateState = getUpdateState();
+    const clickToAddMode = getMode() == Mode.clickToAdd;
+    const spreadActive =
+      spreadVisible || editPlantMode || clickToAddMode || hasTransientPlant;
+    if (!spreadActive && !updateState.needsInstanceUpdate) { return; }
     ensureInstanceColor(mesh);
     tempQuaternion.copy(state.camera.quaternion);
     const worldPos = activePositionRef.current || { x: -10000, y: -10000 };
@@ -178,7 +208,6 @@ export const PlantSpreadInstances = (props: PlantSpreadInstancesProps) => {
         x: activePointer.x,
         y: activePointer.y,
       };
-    const clickToAddMode = getMode() == Mode.clickToAdd;
     plants.forEach((plant, index) => {
       const spreadRadii = getSpreadRadii({
         activeDragSpread,
@@ -222,6 +251,7 @@ export const PlantSpreadInstances = (props: PlantSpreadInstancesProps) => {
     });
     mesh.instanceMatrix.needsUpdate = true;
     if (mesh.instanceColor) { mesh.instanceColor.needsUpdate = true; }
+    updateState.needsInstanceUpdate = false;
   });
 
   const onClick = (event: ThreeEvent<MouseEvent>) => {
@@ -236,7 +266,7 @@ export const PlantSpreadInstances = (props: PlantSpreadInstancesProps) => {
   };
 
   return <InstancedMesh
-    key={instancedMeshKey(plants)}
+    key={`plant-spread-${plants.length}`}
     ref={instancedRef}
     args={[undefined, undefined, plants.length]}
     userData={{ plantIndexes }}
@@ -258,7 +288,7 @@ export const PlantSpreadInstances = (props: PlantSpreadInstancesProps) => {
       }}
       depthWrite={false} />
   </InstancedMesh>;
-};
+});
 
 
 export const getBoundsCenter = (config: Config) => () =>

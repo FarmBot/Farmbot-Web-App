@@ -56,7 +56,7 @@ export const ThreeDGarden = (props: ThreeDGardenProps) => {
             </h1>
           </div>}>
         <Canvas
-          shadows={"variance"}
+          shadows={props.config.lowDetail ? false : "variance"}
           onCreated={({ gl }) => {
             gl.localClippingEnabled = true;
           }}>

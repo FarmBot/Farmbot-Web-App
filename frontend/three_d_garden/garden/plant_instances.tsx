@@ -26,7 +26,6 @@ import {
 import { Mode } from "../../farm_designer/map/interfaces";
 import moment from "moment";
 import { calcSunCoordinate, calcSunI, getCycleLength } from "./sun";
-import { instancedMeshKey } from "./instanced_mesh_key";
 
 export interface PlantInstancesProps {
   plants: ThreeDGardenPlant[];
@@ -42,6 +41,18 @@ interface PlantIconInstancesProps extends PlantInstancesProps {
   plants: ThreeDGardenPlant[];
   plantIndexes: number[];
 }
+
+interface PlantIconUpdateState {
+  lastCameraQuaternion: Quaternion;
+  hasCameraQuaternion: boolean;
+  needsMatrixUpdate: boolean;
+}
+
+const newPlantIconUpdateState = (): PlantIconUpdateState => ({
+  lastCameraQuaternion: new Quaternion(),
+  hasCameraQuaternion: false,
+  needsMatrixUpdate: true,
+});
 
 export const plantIconBrightness = (sunFactor?: number) =>
   Math.max(0.25, sunFactor ?? 1);
@@ -61,6 +72,16 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
   // eslint-disable-next-line no-null/no-null
   const materialRef = React.useRef<ThreeMeshBasicMaterial>(null);
   const lastBrightness = React.useRef<number | undefined>(undefined);
+  const updateStateRef =
+    React.useRef<PlantIconUpdateState>(newPlantIconUpdateState());
+  const getUpdateState = () => {
+    const current =
+      updateStateRef.current as Partial<PlantIconUpdateState> | undefined;
+    if (!current?.lastCameraQuaternion) {
+      updateStateRef.current = newPlantIconUpdateState();
+    }
+    return updateStateRef.current;
+  };
   const tempMatrix = React.useMemo(() => new Matrix4(), []);
   const tempPosition = React.useMemo(() => new Vector3(), []);
   const tempScale = React.useMemo(() => new Vector3(), []);
@@ -71,11 +92,22 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
     + getZ(plant.x, plant.y)
     + size / 2, [config, getZ]);
 
+  React.useEffect(() => {
+    const updateState = getUpdateState();
+    updateState.needsMatrixUpdate = true;
+    lastBrightness.current = undefined;
+  });
+
+  // eslint-disable-next-line complexity
   useFrame(state => {
     const mesh = instancedRef.current;
-    if (!mesh) { return; }
+    if (!mesh || visible === false) { return; }
+    const updateState = getUpdateState();
+    const seasonAnimating = !!(config.animateSeasons && startTimeRef);
+    const cameraChanged = !updateState.hasCameraQuaternion
+      || !updateState.lastCameraQuaternion.equals(state.camera.quaternion);
     let sunFactor = calcSunI(config.sunInclination);
-    if (config.animateSeasons && startTimeRef) {
+    if (seasonAnimating) {
       const totalCycle = getCycleLength(config.plants);
       const currentTime = performance.now() / 1000;
       const t = currentTime - (startTimeRef.current || 0);
@@ -89,6 +121,9 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
       brightness != lastBrightness.current) {
       materialRef.current.color.setScalar(brightness);
       lastBrightness.current = brightness;
+    }
+    if (!updateState.needsMatrixUpdate && !seasonAnimating && !cameraChanged) {
+      return;
     }
     tempQuaternion.copy(state.camera.quaternion);
     const currentTime = performance.now() / 1000;
@@ -108,6 +143,9 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
       mesh.setMatrixAt(index, tempMatrix);
     });
     mesh.instanceMatrix.needsUpdate = true;
+    updateState.lastCameraQuaternion.copy(state.camera.quaternion);
+    updateState.hasCameraQuaternion = true;
+    updateState.needsMatrixUpdate = false;
   });
 
   const onClick = (event: ThreeEvent<MouseEvent>) => {
@@ -122,7 +160,6 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
   };
 
   return <InstancedMesh
-    key={instancedMeshKey(plants)}
     ref={instancedRef}
     args={[undefined, undefined, plants.length]}
     userData={{ plantIndexes }}
@@ -138,7 +175,7 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
   </InstancedMesh>;
 };
 
-export const PlantInstances = (props: PlantInstancesProps) => {
+export const PlantInstances = React.memo((props: PlantInstancesProps) => {
   const instances = React.useMemo(() => {
     const iconInstances: Record<string, PlantIconInstancesProps> = {};
     props.plants.forEach((plant, index) => {
@@ -148,20 +185,31 @@ export const PlantInstances = (props: PlantInstancesProps) => {
         instance.plantIndexes.push(index);
       } else {
         iconInstances[plant.icon] = {
-          ...props,
+          config: props.config,
+          dispatch: props.dispatch,
+          getZ: props.getZ,
           icon: plant.icon,
           plants: [plant],
           plantIndexes: [index],
+          startTimeRef: props.startTimeRef,
+          visible: props.visible,
         };
       }
     });
     return Object.values(iconInstances);
-  }, [props]);
+  }, [
+    props.config,
+    props.dispatch,
+    props.getZ,
+    props.plants,
+    props.startTimeRef,
+    props.visible,
+  ]);
 
   return <>
     {instances.map(instance =>
       <PlantIconInstances
-        key={instance.icon}
+        key={`${instance.icon}-${instance.plants.length}`}
         {...instance} />)}
   </>;
-};
+});

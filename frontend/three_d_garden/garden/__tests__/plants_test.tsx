@@ -19,6 +19,7 @@ import { useFrame } from "@react-three/fiber";
 import { Quaternion, WebGLProgramParametersWithUniforms } from "three";
 import { Mode } from "../../../farm_designer/map/interfaces";
 import * as mapUtil from "../../../farm_designer/map/util";
+import * as meshKey from "../instanced_mesh_key";
 
 interface MockRef {
   current: {
@@ -190,6 +191,14 @@ describe("<ThreeDPlantSpread />", () => {
     expect(container.querySelectorAll("instancedmesh").length).toBe(1);
   });
 
+  it("doesn't build per-plant spread mesh keys while rendering", () => {
+    const keySpy = jest.spyOn(meshKey, "instancedMeshKey");
+    queueMeshRef();
+    render(<PlantSpreadInstances {...fakeProps()} />);
+    expect(keySpy).not.toHaveBeenCalled();
+    keySpy.mockRestore();
+  });
+
   it("renders spread: edit plant mode", () => {
     location.pathname = Path.mock(Path.plants("1"));
     queueMeshRef();
@@ -270,6 +279,23 @@ describe("<ThreeDPlantSpread />", () => {
     expect(meshRef?.current?.instanceMatrix?.needsUpdate).toBeFalsy();
   });
 
+  it("skips repeated inactive spread frame updates", () => {
+    queueMeshRef();
+    const p = fakeProps();
+    p.spreadVisible = false;
+    render(<PlantSpreadInstances {...p} />);
+    const meshRef = allRefs[0];
+    meshRef.current = buildMeshRef();
+    const mesh = meshRef.current;
+    const setMatrixAt = mesh?.setMatrixAt as jest.Mock;
+    const frameFn = (useFrame as jest.Mock).mock.calls[0][0];
+    const state = { camera: { quaternion: new Quaternion() } };
+    frameFn(state);
+    setMatrixAt.mockClear();
+    frameFn(state);
+    expect(setMatrixAt).not.toHaveBeenCalled();
+  });
+
   it("handles missing mesh in layout effect", () => {
     reactUseImperativeHandleSpy.mockImplementation(() => undefined);
     reactUseRefSpy.mockImplementation(() => ({ current: undefined }) as never);
@@ -288,7 +314,9 @@ describe("<ThreeDPlantSpread />", () => {
       { current: undefined as unknown as { x: number; y: number } };
     location.pathname = Path.mock(Path.plants("1"));
     render(<PlantSpreadInstances {...p} />);
-    const mesh = getMeshRef()?.current as
+    const meshRef = allRefs[0];
+    meshRef.current = buildMeshRef();
+    const mesh = meshRef.current as
       (MockRef["current"] & { material: { needsUpdate: boolean } }) | undefined;
     if (mesh) {
       mesh.instanceColor = { needsUpdate: false, count: 0 };

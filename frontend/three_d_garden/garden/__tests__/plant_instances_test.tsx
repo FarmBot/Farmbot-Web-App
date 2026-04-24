@@ -38,6 +38,7 @@ import { setMockInstanceId } from "../../../__test_support__/three_d_mocks";
 import { PLANT_ICON_ATLAS } from "../plant_icon_atlas";
 import { Mode } from "../../../farm_designer/map/interfaces";
 import * as mapUtil from "../../../farm_designer/map/util";
+import * as meshKey from "../instanced_mesh_key";
 
 describe("<PlantInstances />", () => {
   let reactUseRefSpy: jest.SpyInstance;
@@ -97,6 +98,13 @@ describe("<PlantInstances />", () => {
     const { container } = render(<PlantInstances {...fakeProps()} />);
     const meshes = container.querySelectorAll("instancedmesh");
     expect(meshes.length).toBe(2);
+  });
+
+  it("doesn't build per-plant mesh keys while rendering", () => {
+    const keySpy = jest.spyOn(meshKey, "instancedMeshKey");
+    render(<PlantInstances {...fakeProps()} />);
+    expect(keySpy).not.toHaveBeenCalled();
+    keySpy.mockRestore();
   });
 
   it("loads the atlas texture when an icon is mapped", () => {
@@ -221,6 +229,24 @@ describe("<PlantInstances />", () => {
       .mock.calls[0][1];
     expect(matrix.elements[12]).toBeCloseTo(1260);
     expect(matrix.elements[13]).toBeCloseTo(460);
+  });
+
+  it("skips repeated icon matrix updates until camera changes", () => {
+    const p = fakeProps();
+    p.plants = [p.plants[0]];
+    render(<PlantInstances {...p} />);
+    const frameFn = (useFrame as jest.Mock).mock.calls[0][0];
+    const instancedRef = allRefs.find(ref => !!ref.current?.setMatrixAt);
+    const setMatrixAt = instancedRef?.current?.setMatrixAt as jest.Mock;
+    const state = { camera: { quaternion: new Quaternion() } };
+    frameFn(state);
+    setMatrixAt.mockClear();
+    frameFn(state);
+    expect(setMatrixAt).not.toHaveBeenCalled();
+    frameFn({
+      camera: { quaternion: new Quaternion(0, 0, 0.1, 1).normalize() },
+    });
+    expect(setMatrixAt).toHaveBeenCalled();
   });
 
   it("updates material brightness when changed", () => {

@@ -119,15 +119,20 @@ export const GardenModel = (props: GardenModelProps) => {
   const topDownCameraAngle = config.topDown
     ? baseAngle + heading * Math.PI / 180
     : undefined;
-  const camera = getCamera(
-    config,
-    props.configPosition,
-    props.activeFocus,
-    cameraInit({
+  const defaultCamera = React.useMemo(
+    () => cameraInit({
       topDown: config.topDown,
       viewpointHeading: config.viewpointHeading,
       bedSize: { x: config.bedLengthOuter, y: config.bedWidthOuter },
-    }));
+    }), [
+      config.bedLengthOuter,
+      config.bedWidthOuter,
+      config.topDown,
+      config.viewpointHeading,
+    ]);
+  const camera = props.activeFocus
+    ? getCamera(config, props.configPosition, props.activeFocus, defaultCamera)
+    : defaultCamera;
   const [controlsCamera, setControlsCamera] =
     // eslint-disable-next-line no-null/no-null
     React.useState<ThreePerspectiveCamera | ThreeOrthographicCamera | null>(null);
@@ -338,10 +343,11 @@ export const GardenModel = (props: GardenModelProps) => {
       config={config}
       tryGroupSortType={props.addPlantProps?.designer.tryGroupSortType}
       getZ={getZ} />
-    <Visualization
-      visualizedSequenceUUID={props.addPlantProps?.designer.visualizedSequence}
-      config={config}
-      configPosition={props.configPosition} />
+    {props.addPlantProps?.designer.visualizedSequence &&
+      <Visualization
+        visualizedSequenceUUID={props.addPlantProps?.designer.visualizedSequence}
+        config={config}
+        configPosition={props.configPosition} />}
     <Solar config={config} activeFocus={props.activeFocus} />
     <Lab config={config} activeFocus={props.activeFocus} />
     <Greenhouse config={config} activeFocus={props.activeFocus} />

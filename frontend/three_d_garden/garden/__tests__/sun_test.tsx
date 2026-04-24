@@ -97,6 +97,14 @@ describe("<Sun />", () => {
     expect(left).toBeLessThanOrEqual(-minBound);
   });
 
+  it("disables shadows in low-detail mode", () => {
+    const p = fakeProps();
+    p.config.lowDetail = true;
+    const { container } = render(<Sun {...p} />);
+    const light = container.querySelector("directionallight");
+    expect(light?.getAttribute("castshadow")).not.toEqual("true");
+  });
+
   it("renders animated without ref", () => {
     const p = fakeProps();
     p.config.animateSeasons = true;

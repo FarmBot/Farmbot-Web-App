@@ -238,6 +238,7 @@ export const Sun = (props: SunProps) => {
       const position = offsetSunPos(sunPos, index);
       const color = SUN_COLOR[index];
       const intensity = sunIntensity * config.sun / 100 * renderedSunFactor;
+      const castShadow = !config.lowDetail;
       return <Group key={index} name={`sun_${index}`}>
         <DirectionalLight
           ref={(el: ThreeDirectionalLight) => {
@@ -245,7 +246,7 @@ export const Sun = (props: SunProps) => {
           }}
           intensity={intensity * 4 / SUN_COUNT}
           color={sunColor}
-          castShadow={true}
+          castShadow={castShadow}
           shadow-bias={shadowBias}
           shadow-radius={shadowRadius}
           shadow-blurSamples={shadowBlurSamples}
