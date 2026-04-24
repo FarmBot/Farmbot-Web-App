@@ -83,6 +83,7 @@ describe("<GardenModel />", () => {
     expect(container.innerHTML).toContain("darkgreen");
     expect(container.innerHTML).toContain("bed-load-in");
     expect(container.innerHTML).toContain("plant-instances-load-in");
+    expect(container.innerHTML).toContain("points-load-in");
     expect(container.innerHTML).toContain("weeds-load-in");
   });
 

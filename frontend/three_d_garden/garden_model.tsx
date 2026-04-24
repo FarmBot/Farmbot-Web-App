@@ -366,16 +366,21 @@ export const GardenModel = (props: GardenModelProps) => {
       </PopInGroup>
     </SceneBoundary>
     <SceneBoundary markName={"three_d_points_ready"}>
-      <Group name={"points"}
-        visible={showPoints}>
-        {(props.mapPoints?.length || 0) > 0 &&
-          <PointInstances
-            points={props.mapPoints || []}
-            visible={showPoints}
-            config={config}
-            getZ={getZ}
-            dispatch={dispatch} />}
-      </Group>
+      <FallInGroup
+        name={"points-load-in"}
+        delay={360}
+        distance={config.columnLength + 1000}>
+        <Group name={"points"}
+          visible={showPoints}>
+          {(props.mapPoints?.length || 0) > 0 &&
+            <PointInstances
+              points={props.mapPoints || []}
+              visible={showPoints}
+              config={config}
+              getZ={getZ}
+              dispatch={dispatch} />}
+        </Group>
+      </FallInGroup>
     </SceneBoundary>
     <SceneBoundary markName={"three_d_weeds_ready"}>
       <PopInGroup
