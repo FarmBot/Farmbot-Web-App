@@ -50,6 +50,9 @@ import { GroupOrderVisual } from "./group_order_visual";
 import { MoistureReadings } from "./garden/moisture_texture";
 import { FPSProbe } from "./fps_probe";
 import { CameraSelectionUI } from "./camera_selection_ui";
+import {
+  PerfMark, perfMark, usePerfRenderCount,
+} from "../performance/perf";
 
 const AnimatedGroup = animated(Group);
 
@@ -74,6 +77,7 @@ export interface GardenModelProps {
 
 // eslint-disable-next-line complexity
 export const GardenModel = (props: GardenModelProps) => {
+  usePerfRenderCount("GardenModel");
   const { config, addPlantProps, threeDPlants } = props;
   const dispatch = addPlantProps?.dispatch;
   const Camera = config.perspective ? PerspectiveCamera : OrthographicCamera;
@@ -136,6 +140,10 @@ export const GardenModel = (props: GardenModelProps) => {
   const [controlsCamera, setControlsCamera] =
     // eslint-disable-next-line no-null/no-null
     React.useState<ThreePerspectiveCamera | ThreeOrthographicCamera | null>(null);
+
+  React.useEffect(() => {
+    perfMark("garden_model_mounted");
+  }, []);
 
   const showPlants = !addPlantProps
     || !!addPlantProps.getConfigValue(BooleanSetting.show_plants);
@@ -201,6 +209,7 @@ export const GardenModel = (props: GardenModelProps) => {
       ? e => console.log(e.intersections.map(x => x.object.name))
       : undefined}>
     <FPSProbe />
+    <PerfMark name={"garden_model_rendered"} />
     {config.stats && <StatsGl className={"stats-gl"} />}
     {config.stats && <Stats />}
     {config.zoomBeacons && <ZoomBeacons

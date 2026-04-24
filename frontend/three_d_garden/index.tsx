@@ -25,6 +25,7 @@ import { setPanelOpen } from "../farm_designer/panel_header";
 import { ThreeDGardenPlant } from "./garden";
 import { DeviceAccountSettings } from "farmbot/dist/resources/api_resources";
 import { isTopDown } from "./helpers";
+import { perfMark, usePerfRenderCount } from "../performance/perf";
 
 export interface ThreeDGardenProps {
   config: Config;
@@ -43,6 +44,7 @@ export interface ThreeDGardenProps {
 }
 
 export const ThreeDGarden = (props: ThreeDGardenProps) => {
+  usePerfRenderCount("ThreeDGarden");
   return <div className={"three-d-garden"}>
     <div className={"garden-bed-3d-model"}>
       <React.Suspense
@@ -59,6 +61,7 @@ export const ThreeDGarden = (props: ThreeDGardenProps) => {
           shadows={props.config.lowDetail ? false : "variance"}
           onCreated={({ gl }) => {
             gl.localClippingEnabled = true;
+            perfMark("canvas_created");
           }}>
           <GardenModel
             config={props.config}

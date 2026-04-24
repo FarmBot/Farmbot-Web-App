@@ -22,6 +22,12 @@ interface Window {
   logStore: LogStore;
   __fps?: number;
   __scene_metrics?: string;
+  __fbPerf?: {
+    startedAt: number;
+    marks: Record<string, number[]>;
+    counts: Record<string, number>;
+    samples: Record<string, number[]>;
+  };
 }
 
 declare namespace jest {

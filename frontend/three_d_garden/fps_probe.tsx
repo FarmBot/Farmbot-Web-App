@@ -1,5 +1,6 @@
 import React from "react";
 import { useFrame, useThree } from "@react-three/fiber";
+import { perfSample } from "../performance/perf";
 
 type SceneObject = {
   isMesh?: boolean;
@@ -86,6 +87,8 @@ export const FPSProbe = () => {
       const { geometries, textures } = gl.info.memory;
       const sceneCounts = countSceneObjects(scene);
       window.__fps = fps;
+      perfSample("fps", fps);
+      perfSample("frame_ms", 1000 / fps);
       const linesToLogObj: Record<string, number | string> = {
         epoch: Date.now(),
         FPS: fps.toFixed(2),

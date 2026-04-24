@@ -11,6 +11,7 @@ import { isUndefined, round } from "lodash";
 import { Path } from "../internal_urls";
 import { useNavigate } from "react-router";
 import { findIcon } from "../crops/find";
+import { usePerfRenderCount } from "../performance/perf";
 
 export interface PlantInventoryItemProps {
   plant: TaggedPlant;
@@ -21,6 +22,7 @@ export interface PlantInventoryItemProps {
 
 // The individual plants that show up in the farm designer sub nav.
 export const PlantInventoryItem = (props: PlantInventoryItemProps) => {
+  usePerfRenderCount("PlantInventoryItem");
   const navigate = useNavigate();
 
   const { plant, dispatch } = props;
