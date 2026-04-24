@@ -87,6 +87,33 @@ export interface ImageTextureProps extends BaseProps {
   showMoistureMap: boolean;
 }
 
+export const getImageTextureKey = (props: ImageTextureProps) => {
+  const extents = soilSurfaceExtents(props.config);
+  const moistureVisible = props.showMoistureMap || props.showMoistureReadings;
+  return [
+    extents.x.min, extents.x.max,
+    extents.y.min, extents.y.max,
+    props.showMoistureMap,
+    props.showMoistureReadings,
+    moistureVisible && props.sensors.map(sensor => [
+      sensor.uuid,
+      sensor.body.label,
+      sensor.body.mode,
+      sensor.body.pin,
+    ].join(",")).join("|"),
+    moistureVisible && props.sensorReadings.map(reading => [
+      reading.uuid,
+      reading.body.x,
+      reading.body.y,
+      reading.body.z,
+      reading.body.value,
+      reading.body.mode,
+      reading.body.pin,
+      reading.body.read_at,
+    ].join(",")).join("|"),
+  ].join(":");
+};
+
 export const ImageTexture = (props: ImageTextureProps) => {
   const extents = soilSurfaceExtents(props.config);
   const width = extents.x.max - extents.x.min;
@@ -98,10 +125,7 @@ export const ImageTexture = (props: ImageTextureProps) => {
   const textureHeight = height >= width
     ? textureSize
     : Math.max(1, Math.round(textureSize * height / width));
-  const textureKey = [
-    extents.x.min, extents.x.max,
-    extents.y.min, extents.y.max,
-  ].join(":");
+  const textureKey = getImageTextureKey(props);
   const { bedXOffset, bedYOffset, bedWallThickness } = props.config;
   const soilTexture = useTexture(ASSETS.textures.soil + "?=soilT");
   const color = getColorFromBrightness(props.config.soilBrightness);

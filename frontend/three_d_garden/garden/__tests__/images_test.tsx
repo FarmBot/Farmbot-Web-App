@@ -2,13 +2,13 @@ let mockDemo = false;
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import {
-  extraRotation, getImagePosition, getMirrorTextureProps,
+  extraRotation, getImagePosition, getImageTextureKey, getMirrorTextureProps,
   ImageTexture, ImageTextureProps,
 } from "../images";
 import { INITIAL } from "../../config";
 import { clone } from "lodash";
 import {
-  fakeImage, fakeWebAppConfig,
+  fakeImage, fakeSensorReading, fakeWebAppConfig,
 } from "../../../__test_support__/fake_state/resources";
 import { fakeAddPlantProps } from "../../../__test_support__/fake_props";
 import * as mustBeOnline from "../../../devices/must_be_online";
@@ -156,6 +156,22 @@ describe("<ImageTexture />", () => {
     p.addPlantProps = apProps;
     render(<ImageTexture {...p} />);
     expect(screen.queryAllByText("image").length).toEqual(1);
+  });
+
+  it("changes texture key when moisture visibility changes", () => {
+    const p = fakeProps();
+    const key = getImageTextureKey(p);
+    p.showMoistureMap = false;
+    expect(getImageTextureKey(p)).not.toEqual(key);
+  });
+
+  it("changes texture key when moisture data changes", () => {
+    const p = fakeProps();
+    const reading = fakeSensorReading();
+    p.sensorReadings = [reading];
+    const key = getImageTextureKey(p);
+    reading.body.value = 800;
+    expect(getImageTextureKey(p)).not.toEqual(key);
   });
 });
 
