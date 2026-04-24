@@ -52,7 +52,7 @@ import { CameraSelectionUI } from "./camera_selection_ui";
 import {
   PerfMark, perfMark, usePerfRenderCount,
 } from "../performance/perf";
-import { PopInGroup } from "./progressive_load";
+import { FallInGroup, PopInGroup } from "./progressive_load";
 
 const AnimatedGroup = animated(Group);
 const LazyBot = React.lazy(() =>
@@ -311,14 +311,19 @@ export const GardenModel = (props: GardenModelProps) => {
     </SceneBoundary>
     <SceneBoundary markName={"three_d_bot_ready"}>
       {showFarmbot &&
-        <LazyBot
-          dispatch={dispatch}
-          config={config}
-          configPosition={props.configPosition}
-          getZ={getZ}
-          activeFocus={props.activeFocus}
-          mountedToolName={props.mountedToolName}
-          toolSlots={props.toolSlots} />}
+        <FallInGroup
+          name={"bot-load-in"}
+          delay={240}
+          distance={config.columnLength + 1500}>
+          <LazyBot
+            dispatch={dispatch}
+            config={config}
+            configPosition={props.configPosition}
+            getZ={getZ}
+            activeFocus={props.activeFocus}
+            mountedToolName={props.mountedToolName}
+            toolSlots={props.toolSlots} />
+        </FallInGroup>}
     </SceneBoundary>
     <Group name={"plant-labels"} visible={!props.activeFocus}>
       {plantLabelNodes}

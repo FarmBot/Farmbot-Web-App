@@ -57,3 +57,20 @@ export const PopInGroup = (props: PopInGroupProps) =>
     toScale={[1, 1, 1]}>
     {props.children}
   </LoadInGroup>;
+
+interface FallInGroupProps {
+  name: string;
+  children: React.ReactNode;
+  delay?: number;
+  distance?: number;
+}
+
+export const FallInGroup = (props: FallInGroupProps) =>
+  <LoadInGroup
+    name={props.name}
+    delay={props.delay}
+    fromPosition={[0, 0, props.distance || 3000]}
+    fromScale={1.02}
+    toScale={1}>
+    {props.children}
+  </LoadInGroup>;
