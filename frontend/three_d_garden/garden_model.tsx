@@ -13,7 +13,6 @@ import {
   OrthographicCamera as ThreeOrthographicCamera,
   PerspectiveCamera as ThreePerspectiveCamera,
 } from "three";
-import { Bot } from "./bot";
 import { AddPlantProps, Bed } from "./bed";
 import {
   Sky, Solar, Sun, sunPosition, ZoomBeacons,
@@ -55,6 +54,19 @@ import {
 } from "../performance/perf";
 
 const AnimatedGroup = animated(Group);
+const LazyBot = React.lazy(() =>
+  import("./bot").then(module => ({ default: module.Bot })));
+
+interface SceneBoundaryProps {
+  markName?: string;
+  children: React.ReactNode;
+}
+
+const SceneBoundary = (props: SceneBoundaryProps) =>
+  <React.Suspense fallback={undefined}>
+    {props.children}
+    {props.markName && <PerfMark name={props.markName} />}
+  </React.Suspense>;
 
 export interface GardenModelProps {
   config: Config;
@@ -210,13 +222,17 @@ export const GardenModel = (props: GardenModelProps) => {
       : undefined}>
     <FPSProbe />
     <PerfMark name={"garden_model_rendered"} />
-    {config.stats && <StatsGl className={"stats-gl"} />}
-    {config.stats && <Stats />}
-    {config.zoomBeacons && <ZoomBeacons
-      config={config}
-      configPosition={props.configPosition}
-      activeFocus={props.activeFocus}
-      setActiveFocus={props.setActiveFocus} />}
+    <SceneBoundary markName={"three_d_debug_ready"}>
+      {config.stats && <StatsGl className={"stats-gl"} />}
+      {config.stats && <Stats />}
+      {config.zoomBeacons && <ZoomBeacons
+        config={config}
+        configPosition={props.configPosition}
+        activeFocus={props.activeFocus}
+        setActiveFocus={props.setActiveFocus} />}
+      <AxesHelper args={[5000]} visible={config.threeAxes} />
+      {config.viewCube && <GizmoHelper><GizmoViewcube /></GizmoHelper>}
+    </SceneBoundary>
     <Sky sunPosition={sunPosition(0, 0, 0)} />
     <Sphere args={[BigDistance.sky, 8, 16]}>
       <MeshBasicMaterial
@@ -251,45 +267,53 @@ export const GardenModel = (props: GardenModelProps) => {
         maxZoom={10}
         minDistance={config.lightsDebug ? 50 : 500}
         maxDistance={config.lightsDebug ? BigDistance.devZoom : BigDistance.zoom} />}
-    <AxesHelper args={[5000]} visible={config.threeAxes} />
-    {config.viewCube && <GizmoHelper><GizmoViewcube /></GizmoHelper>}
     <Sun
       config={config}
       skyRef={skyRef}
       startTimeRef={props.startTimeRef} />
     <AmbientLight intensity={config.ambient / 100} />
-    <Ground config={config} />
-    <Clouds config={config} />
-    <NorthArrow config={config} />
-    <Bed
-      config={config}
-      soilSurfaceGeometry={soilSurface.geometry}
-      getZ={getZ}
-      images={props.images}
-      activeFocus={props.activeFocus}
-      mapPoints={props.mapPoints || []}
-      showMoistureMap={showMoistureMap}
-      showMoistureReadings={showMoistureReadings}
-      sensors={props.sensors || []}
-      sensorReadings={props.sensorReadings || []}
-      activePositionRef={activePositionRef}
-      addPlantProps={addPlantProps} />
-    {showMoistureMap && props.config.moistureDebug &&
-      <MoistureReadings
-        color={"green"}
-        radius={50}
-        applyOffset={true}
+    <SceneBoundary markName={"three_d_ground_ready"}>
+      <Ground config={config} />
+    </SceneBoundary>
+    <SceneBoundary markName={"three_d_clouds_ready"}>
+      <Clouds config={config} />
+    </SceneBoundary>
+    <SceneBoundary markName={"three_d_bed_ready"}>
+      <NorthArrow config={config} />
+      <Bed
         config={config}
-        readings={props.sensorReadings || []} />}
-    {showFarmbot &&
-      <Bot
-        dispatch={dispatch}
-        config={config}
-        configPosition={props.configPosition}
+        soilSurfaceGeometry={soilSurface.geometry}
         getZ={getZ}
+        images={props.images}
         activeFocus={props.activeFocus}
-        mountedToolName={props.mountedToolName}
-        toolSlots={props.toolSlots} />}
+        mapPoints={props.mapPoints || []}
+        showMoistureMap={showMoistureMap}
+        showMoistureReadings={showMoistureReadings}
+        sensors={props.sensors || []}
+        sensorReadings={props.sensorReadings || []}
+        activePositionRef={activePositionRef}
+        addPlantProps={addPlantProps} />
+    </SceneBoundary>
+    <SceneBoundary markName={"three_d_moisture_debug_ready"}>
+      {showMoistureMap && props.config.moistureDebug &&
+        <MoistureReadings
+          color={"green"}
+          radius={50}
+          applyOffset={true}
+          config={config}
+          readings={props.sensorReadings || []} />}
+    </SceneBoundary>
+    <SceneBoundary markName={"three_d_bot_ready"}>
+      {showFarmbot &&
+        <LazyBot
+          dispatch={dispatch}
+          config={config}
+          configPosition={props.configPosition}
+          getZ={getZ}
+          activeFocus={props.activeFocus}
+          mountedToolName={props.mountedToolName}
+          toolSlots={props.toolSlots} />}
+    </SceneBoundary>
     <Group name={"plant-labels"} visible={!props.activeFocus}>
       {plantLabelNodes}
     </Group>
@@ -297,65 +321,77 @@ export const GardenModel = (props: GardenModelProps) => {
       config={config}
       getZ={getZ}
       activeFocus={props.activeFocus} />
-    <Group name={"plants"}
-      visible={plantsVisible}
-      onPointerEnter={setHover(true)}
-      onPointerMove={setHover(true)}
-      onPointerLeave={setHover(false)}>
-      <PlantInstances
-        plants={threeDPlants}
-        config={config}
-        getZ={getZ}
+    <SceneBoundary markName={"three_d_core_ready"}>
+      <Group name={"plants"}
         visible={plantsVisible}
-        startTimeRef={props.startTimeRef}
-        dispatch={dispatch} />
-      <PlantSpreadInstances
-        plants={threeDPlants}
-        visible={plantsVisible}
-        spreadVisible={showSpread}
-        config={config}
-        activePositionRef={activePositionRef}
-        getZ={getZ}
-        dispatch={dispatch} />
-    </Group>
-    <Group name={"points"}
-      visible={showPoints}>
-      {(props.mapPoints?.length || 0) > 0 &&
-        <PointInstances
-          points={props.mapPoints || []}
-          visible={showPoints}
+        onPointerEnter={setHover(true)}
+        onPointerMove={setHover(true)}
+        onPointerLeave={setHover(false)}>
+        <PlantInstances
+          plants={threeDPlants}
           config={config}
           getZ={getZ}
-          dispatch={dispatch} />}
-    </Group>
-    <Group name={"weeds"}
-      visible={showWeeds}>
-      {(props.weeds?.length || 0) > 0 &&
-        <WeedInstances
-          weeds={props.weeds || []}
-          visible={showWeeds}
+          visible={plantsVisible}
+          startTimeRef={props.startTimeRef}
+          dispatch={dispatch} />
+        <PlantSpreadInstances
+          plants={threeDPlants}
+          visible={plantsVisible}
+          spreadVisible={showSpread}
           config={config}
+          activePositionRef={activePositionRef}
           getZ={getZ}
-          dispatch={dispatch} />}
-    </Group>
-    <GroupOrderVisual
-      allPoints={props.allPoints || []}
-      groups={props.groups || []}
-      config={config}
-      tryGroupSortType={props.addPlantProps?.designer.tryGroupSortType}
-      getZ={getZ} />
-    {props.addPlantProps?.designer.visualizedSequence &&
-      <Visualization
-        visualizedSequenceUUID={props.addPlantProps?.designer.visualizedSequence}
+          dispatch={dispatch} />
+      </Group>
+    </SceneBoundary>
+    <SceneBoundary markName={"three_d_points_ready"}>
+      <Group name={"points"}
+        visible={showPoints}>
+        {(props.mapPoints?.length || 0) > 0 &&
+          <PointInstances
+            points={props.mapPoints || []}
+            visible={showPoints}
+            config={config}
+            getZ={getZ}
+            dispatch={dispatch} />}
+      </Group>
+    </SceneBoundary>
+    <SceneBoundary markName={"three_d_weeds_ready"}>
+      <Group name={"weeds"}
+        visible={showWeeds}>
+        {(props.weeds?.length || 0) > 0 &&
+          <WeedInstances
+            weeds={props.weeds || []}
+            visible={showWeeds}
+            config={config}
+            getZ={getZ}
+            dispatch={dispatch} />}
+      </Group>
+    </SceneBoundary>
+    <SceneBoundary markName={"three_d_visualizations_ready"}>
+      <GroupOrderVisual
+        allPoints={props.allPoints || []}
+        groups={props.groups || []}
         config={config}
-        configPosition={props.configPosition} />}
-    <Solar config={config} activeFocus={props.activeFocus} />
-    <Lab config={config} activeFocus={props.activeFocus} />
-    <Greenhouse config={config} activeFocus={props.activeFocus} />
-    {config.cameraSelectionView &&
-      <CameraSelectionUI
-        config={config}
-        dispatch={dispatch}
-        topDownAtStart={topDownAtStart} />}
+        tryGroupSortType={props.addPlantProps?.designer.tryGroupSortType}
+        getZ={getZ} />
+      {props.addPlantProps?.designer.visualizedSequence &&
+        <Visualization
+          visualizedSequenceUUID={props.addPlantProps?.designer.visualizedSequence}
+          config={config}
+          configPosition={props.configPosition} />}
+    </SceneBoundary>
+    <SceneBoundary markName={"three_d_decorations_ready"}>
+      <Solar config={config} activeFocus={props.activeFocus} />
+      <Lab config={config} activeFocus={props.activeFocus} />
+      <Greenhouse config={config} activeFocus={props.activeFocus} />
+    </SceneBoundary>
+    <SceneBoundary markName={"three_d_camera_ui_ready"}>
+      {config.cameraSelectionView &&
+        <CameraSelectionUI
+          config={config}
+          dispatch={dispatch}
+          topDownAtStart={topDownAtStart} />}
+    </SceneBoundary>
   </Group>;
 };

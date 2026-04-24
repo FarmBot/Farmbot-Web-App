@@ -45,6 +45,20 @@ const summary = runs => {
   };
 };
 
+const firstMark = (marks, ...names) => {
+  for (const name of names) {
+    const value = marks[name]?.[0];
+    if (Number.isFinite(value)) { return value; }
+  }
+};
+
+const maxMark = (marks, names) => {
+  const values = names
+    .map(name => marks[name]?.[0])
+    .filter(Number.isFinite);
+  return values.length > 0 ? Math.max(...values) : undefined;
+};
+
 const createDemoSession = async (browser, baseUrl) => {
   const secret = crypto.randomUUID().replaceAll("-", "");
   const page = await browser.newPage();
@@ -155,8 +169,24 @@ const collectRun = async (browser, baseUrl, session, runIndex) => {
   await context.close();
   return {
     runIndex,
-    coreReadyMs: marks.garden_model_rendered?.[0],
-    fullReadyMs: marks.garden_model_mounted?.[0],
+    coreReadyMs: firstMark(
+      marks,
+      "three_d_core_ready",
+      "garden_model_rendered",
+    ),
+    fullReadyMs: maxMark(marks, [
+      "three_d_bot_ready",
+      "three_d_bed_ready",
+      "three_d_clouds_ready",
+      "three_d_decorations_ready",
+      "three_d_visualizations_ready",
+      "three_d_camera_ui_ready",
+      "three_d_debug_ready",
+      "three_d_ground_ready",
+      "three_d_moisture_debug_ready",
+      "three_d_points_ready",
+      "three_d_weeds_ready",
+    ]) || marks.garden_model_mounted?.[0],
     fpsMedian: median(fpsSamples),
     frameP95Ms: percentile(frameSamples, 95),
     navPlantMs,

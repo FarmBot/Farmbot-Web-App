@@ -91,8 +91,6 @@ type XAxisCCMount = GLTF & {
   materials: never;
 }
 
-Object.values(ASSETS.models).map(model => useGLTF.preload(model, LIB_DIR));
-
 export interface FarmbotModelProps {
   config: Config;
   configPosition: PositionConfig;
