@@ -48,4 +48,24 @@ describe("getZFunc()", () => {
       y3: 2,
     }], -100)(1, 1)).toEqual(25);
   });
+
+  it("caches Z by coordinate and invalidates with a new function", () => {
+    const triangle = {
+      a: [0, 0, 10] as [number, number, number],
+      b: [2, 0, 20] as [number, number, number],
+      c: [0, 2, 30] as [number, number, number],
+      det: 4,
+      x1: 0,
+      x2: 2,
+      x3: 0,
+      y1: 0,
+      y2: 0,
+      y3: 2,
+    };
+    const getZ = getZFunc([triangle], -100);
+    expect(getZ(1, 1)).toEqual(25);
+    triangle.c[2] = 300;
+    expect(getZ(1, 1)).toEqual(25);
+    expect(getZFunc([triangle], -100)(1, 1)).toEqual(160);
+  });
 });

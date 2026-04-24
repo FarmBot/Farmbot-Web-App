@@ -11,7 +11,6 @@ import {
   fakePlant, fakePoint, fakeSensor, fakeSensorReading, fakeWeed,
 } from "../../__test_support__/fake_state/resources";
 import { fakeAddPlantProps } from "../../__test_support__/fake_props";
-import { ASSETS } from "../constants";
 import { Path } from "../../internal_urls";
 import { fakeDrawnPoint } from "../../__test_support__/fake_designer_state";
 import { convertPlants } from "../../farm_designer/three_d_garden_map";
@@ -216,8 +215,8 @@ describe("<GardenModel />", () => {
     p.mapPoints = [fakePoint()];
     p.weeds = [fakeWeed()];
     const { container } = render(<GardenModel {...p} />);
-    expect(container.innerHTML).toContain("cylinder");
-    expect(container.innerHTML).toContain(ASSETS.other.weed);
+    expect(container.innerHTML).toContain("marker");
+    expect(container.innerHTML).toContain("weed-icons");
   });
 
   it("renders drawn point", () => {

@@ -19,7 +19,7 @@ import {
   Sky, Solar, Sun, sunPosition, ZoomBeacons,
   PlantInstances,
   PlantSpreadInstances,
-  Point, Grid, Clouds, Ground, Weed,
+  PointInstances, Grid, Clouds, Ground, WeedInstances,
   ThreeDGardenPlant,
   NorthArrow,
   skyColor,
@@ -195,26 +195,6 @@ export const GardenModel = (props: GardenModelProps) => {
     },
     [threeDPlants, config, getZ, hoveredPlant]);
 
-  const pointNodes = React.useMemo(
-    () => props.mapPoints?.map(point =>
-      <Point key={point.uuid}
-        point={point}
-        visible={showPoints}
-        config={config}
-        getZ={getZ}
-        dispatch={dispatch} />),
-    [props.mapPoints, showPoints, config, getZ, dispatch]);
-
-  const weedNodes = React.useMemo(
-    () => props.weeds?.map(weed =>
-      <Weed key={weed.uuid}
-        weed={weed}
-        visible={showWeeds}
-        config={config}
-        getZ={getZ}
-        dispatch={dispatch} />),
-    [props.weeds, showWeeds, config, getZ, dispatch]);
-
   // eslint-disable-next-line no-null/no-null
   return <Group dispose={null}
     onPointerMove={config.eventDebug
@@ -331,11 +311,23 @@ export const GardenModel = (props: GardenModelProps) => {
     </Group>
     <Group name={"points"}
       visible={showPoints}>
-      {pointNodes}
+      {(props.mapPoints?.length || 0) > 0 &&
+        <PointInstances
+          points={props.mapPoints || []}
+          visible={showPoints}
+          config={config}
+          getZ={getZ}
+          dispatch={dispatch} />}
     </Group>
     <Group name={"weeds"}
       visible={showWeeds}>
-      {weedNodes}
+      {(props.weeds?.length || 0) > 0 &&
+        <WeedInstances
+          weeds={props.weeds || []}
+          visible={showWeeds}
+          config={config}
+          getZ={getZ}
+          dispatch={dispatch} />}
     </Group>
     <GroupOrderVisual
       allPoints={props.allPoints || []}
