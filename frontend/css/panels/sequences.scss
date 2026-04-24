@@ -45,14 +45,9 @@
       }
     }
     .add-command-button-container {
-      display: block;
-      height: 0;
-      .bp6-collapse {
-        padding: 0;
-      }
-      .bp6-collapse-body {
-        padding: 0;
-      }
+      align-items: start;
+      justify-content: right;
+      grid-template-columns: 1fr auto;
     }
     .drag-drop-area {
       display: none;
@@ -259,7 +254,6 @@
 
 .sequence-editor-sections {
   .bp6-collapse {
-    padding: 0 1rem;
     .bp6-collapse-body {
       padding-bottom: 1rem;
     }
@@ -552,8 +546,11 @@
   }
 }
 
+.sequence-step-components {
+  padding: 0 1rem;
+}
+
 .sequence-steps {
-  margin-right: 2.5rem;
   .sequence-step {
     &.hovered {
       box-shadow: 0px 0px 15px #f70;
@@ -572,10 +569,20 @@
   }
 }
 
+.sequence-steps > .step-dragger {
+  margin-right: 2.5rem;
+}
+
+.sequence-page {
+  .step-dragger {
+    margin-right: 0;
+  }
+  .add-command-button-container {
+    display: none;
+  }
+}
+
 .step-button-cluster {
-  overflow-y: auto;
-  overflow-x: hidden;
-  max-height: calc(100vh - 8rem);
   .text-input-wrapper {
     input {
       padding: 0;
@@ -608,7 +615,6 @@
   &.designer-cluster {
     margin: 0;
     background: $dark_gray;
-    margin-bottom: 1rem;
     border-radius: 5px;
     overflow: unset;
     padding: 0.75rem;
@@ -1088,11 +1094,9 @@
 }
 
 .add-command-button-container {
-  display: none;
-  position: absolute;
-  z-index: 9;
-  width: 100%;
-  height: 0;
+  .bp6-collapse {
+    transition-duration: 0ms !important;
+  }
   button {
     margin: 0;
   }
@@ -1104,6 +1108,8 @@
       height: 20px;
       padding: 0.25rem;
       border-radius: 2rem;
+      margin-bottom: -.75rem;
+      right: -2.5rem;
       box-shadow: none !important;
       background: $dark_gray !important;
       i {
@@ -1131,7 +1137,6 @@
   &.last {
     .bp6-collapse {
       margin-top: 1rem;
-      margin-right: 2.5rem;
     }
     .add-command {
       margin-top: -2rem;
@@ -1146,10 +1151,6 @@
     }
   }
   &.only {
-    position: relative;
-    margin: auto;
-    text-align: center;
-    height: 3rem;
     .add-command {
       display: none;
     }
@@ -1157,18 +1158,8 @@
       margin: 0;
     }
   }
-
-  @media screen and (max-width: 767px) {
-    display: block;
-    .add-command {
-      display: block;
-    }
-  }
   &.open {
-    position: relative;
     .add-command {
-      position: absolute;
-      right: -2.5rem;
       transform: rotate(-45deg);
       i {
         transform: rotate(0);

@@ -8,6 +8,7 @@ import {
   SequenceBtnGroup,
   SequenceShareMenu,
   SequencePublishMenu,
+  AddCommandButton,
   isSequencePublished,
   AddCommandButtonProps,
 } from "../sequence_editor_middle_active";
@@ -835,11 +836,6 @@ describe("<AddCommandButton />", () => {
     stepButtonClusterSpy.mockRestore();
   });
 
-  const getAddCommandButton = async () => {
-    return (await import(`../sequence_editor_middle_active.tsx?m=${Math.random()}`))
-      .AddCommandButton;
-  };
-
   const fakeProps = (): AddCommandButtonProps => ({
     dispatch: jest.fn(),
     index: 1,
@@ -850,10 +846,9 @@ describe("<AddCommandButton />", () => {
     resources: buildResourceIndex().index,
   });
 
-  it("dispatches new step position", async () => {
+  it("dispatches new step position", () => {
     location.pathname = "";
     const p = fakeProps();
-    const AddCommandButton = await getAddCommandButton();
     const wrapper = createRenderer(<AddCommandButton {...p} />);
     const button = wrapper.root.findAll(node =>
       typeof node.props.onClick == "function" &&
@@ -876,12 +871,13 @@ describe("<AddCommandButton />", () => {
     unmountRenderer(wrapper);
   });
 
-  it("closes cluster", async () => {
-    const AddCommandButton = await getAddCommandButton();
+  it("closes cluster", () => {
     const { container } = render(<AddCommandButton {...fakeProps()} />);
     const cluster = container.querySelector(".add-command-button-container");
     const close = container.querySelector(".step-button-cluster-close");
     if (cluster && close) {
+      expect(cluster.classList.contains("row")).toBeTruthy();
+      expect(cluster.classList.contains("half-gap")).toBeTruthy();
       expect(cluster.classList.contains("open")).toBeTruthy();
       fireEvent.click(close);
       expect(cluster.classList.contains("open")).toBeFalsy();

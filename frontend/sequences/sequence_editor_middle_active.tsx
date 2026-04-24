@@ -849,7 +849,19 @@ export const AddCommandButton = (props: AddCommandButtonProps) => {
     "add-command-button-container",
     getPositionClass(),
     collapsed ? "" : "open",
+    "row",
+    "half-gap",
   ].join(" ")}>
+    <Collapse isOpen={!collapsed}>
+      <StepButtonCluster
+        close={() => setCollapsed(true)}
+        current={props.sequence}
+        dispatch={dispatch}
+        farmwareData={props.farmwareData}
+        sequences={props.sequences}
+        resources={props.resources}
+        stepIndex={index} />
+    </Collapse>
     <button
       className={"add-command fb-button gray"}
       title={t("add sequence step")}
@@ -862,16 +874,6 @@ export const AddCommandButton = (props: AddCommandButtonProps) => {
       }}>
       <i className={"fa fa-plus"} />
     </button>
-    <Collapse isOpen={!collapsed}>
-      <StepButtonCluster
-        close={() => setCollapsed(true)}
-        current={props.sequence}
-        dispatch={dispatch}
-        farmwareData={props.farmwareData}
-        sequences={props.sequences}
-        resources={props.resources}
-        stepIndex={index} />
-    </Collapse>
   </div>;
 };
 
