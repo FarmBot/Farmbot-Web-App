@@ -82,7 +82,8 @@ describe("<GardenModel />", () => {
     expect(container.innerHTML).not.toContain("stats");
     expect(container.innerHTML).toContain("darkgreen");
     expect(container.innerHTML).toContain("bed-load-in");
-    expect(container.innerHTML).toContain("bot-load-in");
+    expect(container.innerHTML).toContain("plant-instances-load-in");
+    expect(container.innerHTML).toContain("weeds-load-in");
   });
 
   it("renders top down view", () => {

@@ -325,35 +325,45 @@ export const GardenModel = (props: GardenModelProps) => {
             toolSlots={props.toolSlots} />
         </FallInGroup>}
     </SceneBoundary>
-    <Group name={"plant-labels"} visible={!props.activeFocus}>
-      {plantLabelNodes}
-    </Group>
+    <PopInGroup
+      name={"plants-load-in"}
+      delay={320}
+      distance={200}>
+      <Group name={"plant-labels"} visible={!props.activeFocus}>
+        {plantLabelNodes}
+      </Group>
+    </PopInGroup>
     <Grid
       config={config}
       getZ={getZ}
       activeFocus={props.activeFocus} />
     <SceneBoundary markName={"three_d_core_ready"}>
-      <Group name={"plants"}
-        visible={plantsVisible}
-        onPointerEnter={setHover(true)}
-        onPointerMove={setHover(true)}
-        onPointerLeave={setHover(false)}>
-        <PlantInstances
-          plants={threeDPlants}
-          config={config}
-          getZ={getZ}
+      <PopInGroup
+        name={"plant-instances-load-in"}
+        delay={320}
+        distance={200}>
+        <Group name={"plants"}
           visible={plantsVisible}
-          startTimeRef={props.startTimeRef}
-          dispatch={dispatch} />
-        <PlantSpreadInstances
-          plants={threeDPlants}
-          visible={plantsVisible}
-          spreadVisible={showSpread}
-          config={config}
-          activePositionRef={activePositionRef}
-          getZ={getZ}
-          dispatch={dispatch} />
-      </Group>
+          onPointerEnter={setHover(true)}
+          onPointerMove={setHover(true)}
+          onPointerLeave={setHover(false)}>
+          <PlantInstances
+            plants={threeDPlants}
+            config={config}
+            getZ={getZ}
+            visible={plantsVisible}
+            startTimeRef={props.startTimeRef}
+            dispatch={dispatch} />
+          <PlantSpreadInstances
+            plants={threeDPlants}
+            visible={plantsVisible}
+            spreadVisible={showSpread}
+            config={config}
+            activePositionRef={activePositionRef}
+            getZ={getZ}
+            dispatch={dispatch} />
+        </Group>
+      </PopInGroup>
     </SceneBoundary>
     <SceneBoundary markName={"three_d_points_ready"}>
       <Group name={"points"}
@@ -368,16 +378,21 @@ export const GardenModel = (props: GardenModelProps) => {
       </Group>
     </SceneBoundary>
     <SceneBoundary markName={"three_d_weeds_ready"}>
-      <Group name={"weeds"}
-        visible={showWeeds}>
-        {(props.weeds?.length || 0) > 0 &&
-          <WeedInstances
-            weeds={props.weeds || []}
-            visible={showWeeds}
-            config={config}
-            getZ={getZ}
-            dispatch={dispatch} />}
-      </Group>
+      <PopInGroup
+        name={"weeds-load-in"}
+        delay={380}
+        distance={200}>
+        <Group name={"weeds"}
+          visible={showWeeds}>
+          {(props.weeds?.length || 0) > 0 &&
+            <WeedInstances
+              weeds={props.weeds || []}
+              visible={showWeeds}
+              config={config}
+              getZ={getZ}
+              dispatch={dispatch} />}
+        </Group>
+      </PopInGroup>
     </SceneBoundary>
     <SceneBoundary markName={"three_d_visualizations_ready"}>
       <GroupOrderVisual
