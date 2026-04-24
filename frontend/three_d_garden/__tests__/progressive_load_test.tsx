@@ -1,6 +1,8 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import { FallInGroup, PopInGroup } from "../progressive_load";
+import {
+  FallInGroup, GridRevealGroup, PopInGroup,
+} from "../progressive_load";
 
 describe("<PopInGroup />", () => {
   it("renders children inside a named load-in group", () => {
@@ -21,5 +23,16 @@ describe("<FallInGroup />", () => {
 
     expect(container.innerHTML).toContain("bot-load-in");
     expect(screen.getByText("bot")).toBeTruthy();
+  });
+});
+
+describe("<GridRevealGroup />", () => {
+  it("renders children inside a named load-in group", () => {
+    const { container } = render(<GridRevealGroup name={"grid-load-in"}>
+      <span>grid</span>
+    </GridRevealGroup>);
+
+    expect(container.innerHTML).toContain("grid-load-in");
+    expect(screen.getByText("grid")).toBeTruthy();
   });
 });

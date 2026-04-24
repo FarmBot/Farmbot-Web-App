@@ -74,3 +74,18 @@ export const FallInGroup = (props: FallInGroupProps) =>
     toScale={1}>
     {props.children}
   </LoadInGroup>;
+
+interface GridRevealGroupProps {
+  name: string;
+  children: React.ReactNode;
+  delay?: number;
+}
+
+export const GridRevealGroup = (props: GridRevealGroupProps) =>
+  <LoadInGroup
+    name={props.name}
+    delay={props.delay}
+    fromScale={[0.001, 0.001, 1]}
+    toScale={[1, 1, 1]}>
+    {props.children}
+  </LoadInGroup>;

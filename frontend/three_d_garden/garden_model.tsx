@@ -52,7 +52,9 @@ import { CameraSelectionUI } from "./camera_selection_ui";
 import {
   PerfMark, perfMark, usePerfRenderCount,
 } from "../performance/perf";
-import { FallInGroup, PopInGroup } from "./progressive_load";
+import {
+  FallInGroup, GridRevealGroup, PopInGroup,
+} from "./progressive_load";
 
 const AnimatedGroup = animated(Group);
 const LazyBot = React.lazy(() =>
@@ -333,10 +335,14 @@ export const GardenModel = (props: GardenModelProps) => {
         {plantLabelNodes}
       </Group>
     </PopInGroup>
-    <Grid
-      config={config}
-      getZ={getZ}
-      activeFocus={props.activeFocus} />
+    <GridRevealGroup
+      name={"grid-load-in"}
+      delay={280}>
+      <Grid
+        config={config}
+        getZ={getZ}
+        activeFocus={props.activeFocus} />
+    </GridRevealGroup>
     <SceneBoundary markName={"three_d_core_ready"}>
       <PopInGroup
         name={"plant-instances-load-in"}
