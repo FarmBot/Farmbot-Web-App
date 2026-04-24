@@ -309,7 +309,7 @@ commands:
                 continue
               fi
 
-              if ! fps_output=$(sudo docker compose exec -e PLAYWRIGHT_BROWSERS_PATH=0 web bun scripts/fps.js "${url}" "tmp/promo.png"); then
+              if ! fps_output=$(sudo docker compose exec -e PLAYWRIGHT_BROWSERS_PATH=0 web bun scripts/fps.js "${url}" "tmp/promo.png" "tmp/fps_plot.png"); then
                 echo "${fps_output}"
                 continue
               fi
@@ -377,6 +377,9 @@ commands:
           path: tmp/promo.png
           destination: promo_xl.png
       - store_artifacts:
+          path: tmp/fps_plot.png
+          destination: fps_plot.png
+      - store_artifacts:
           path: scene_metrics.csv
           destination: scene_metrics.csv
   end-commands:
@@ -388,13 +391,24 @@ commands:
             artifacts_json=$(curl -fsS \
               -H "Accept: application/json" \
               "https://circleci.com/api/v2/project/${project_slug}/${CIRCLE_BUILD_NUM}/artifacts")
-            artifact_url=$(printf "%s" "$artifacts_json" | python -c 'import json,sys; data=json.load(sys.stdin); items=data.get("items") or []; print(next((item.get("url","") for item in items if item.get("url","").endswith(".png")), ""))')
-            echo "export ARTIFACT_URL=$artifact_url" >> "$BASH_ENV"
+            mapfile -t artifact_urls < <(printf "%s" "$artifacts_json" | python -c 'import json,sys; print("\n".join(item.get("url", "") for item in (json.load(sys.stdin).get("items") or [])))')
+            url_for() {
+              for url in "${artifact_urls[@]}"; do [[ "$url" == *$1 ]] && { echo "$url"; return; }; done
+            }
+            screenshot_url="$(url_for "promo*.png")"
+            fps_plot_url="$(url_for "fps_plot.png")"
+            echo $screenshot_url
+            echo $fps_plot_url
+            echo "export SCREENSHOT_URL='$screenshot_url'" >> "$BASH_ENV"
+            echo "export FPS_PLOT_URL='$fps_plot_url'" >> "$BASH_ENV"
       - send-notification:
           message: "CI run succeeded"
           when: on_success
       - send-notification:
-          message: "<$ARTIFACT_URL|screenshot>"
+          message: "<$SCREENSHOT_URL|screenshot>"
+          when: on_success
+      - send-notification:
+          message: "<$FPS_PLOT_URL|fps>"
           when: on_success
       - send-notification:
           message: "CI run failed"
