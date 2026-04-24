@@ -40,6 +40,7 @@ describe("<DemoIframe />", () => {
       .mockImplementation(((props: FBSelectProps) =>
         <button
           data-testid="seed-data-select"
+          data-has-query-filter={"" + !!props.itemListFilter}
           onClick={() => props.onChange({
             label: "Express",
             value: "express_1.2",
@@ -95,6 +96,13 @@ describe("<DemoIframe />", () => {
     expect(ref.current?.state.productLine).toEqual("express_1.2");
   });
 
+  it("uses query-gated stress seed options", () => {
+    const { getByTestId } = render(<DemoIframe />);
+    expect(seedDataOptionsSpy).toHaveBeenCalledWith(true);
+    expect(getByTestId("seed-data-select").dataset.hasQueryFilter)
+      .toEqual("true");
+  });
+
   it("handles MQTT messages", () => {
     const ref = React.createRef<DemoIframe>();
     render(<DemoIframe ref={ref} />);
@@ -125,5 +133,19 @@ describe("<DemoIframe />", () => {
     expect(subscribe).toHaveBeenCalledWith(MQTT_CHAN, i.setError);
     expect(on).toHaveBeenCalledWith("message", i.handleMessage);
     expect(on).toHaveBeenCalledWith("connect", expect.any(Function));
+  });
+
+  it("requests an account after connecting", async () => {
+    const i = new DemoIframe({});
+    const connectMqtt = jest.spyOn(i, "connectMqtt")
+      .mockResolvedValue({} as never);
+    const connectApi = jest.spyOn(i, "connectApi")
+      .mockResolvedValue(undefined);
+
+    i.requestAccount();
+    await Promise.resolve();
+
+    expect(connectMqtt).toHaveBeenCalled();
+    expect(connectApi).toHaveBeenCalled();
   });
 });

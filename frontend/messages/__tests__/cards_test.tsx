@@ -20,7 +20,8 @@ import React from "react";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import axios from "axios";
 import {
-  AlertCard, changeFirmwareHardware, ReSeedAccount, SEED_DATA_OPTIONS,
+  AlertCard, changeFirmwareHardware, maybeShowStressSeedOptions,
+  ReSeedAccount, SEED_DATA_OPTIONS,
 } from "../cards";
 import { AlertCardProps, Bulletin } from "../interfaces";
 import { fakeTimeSettings } from "../../__test_support__/fake_time_settings";
@@ -31,6 +32,7 @@ import * as messageActions from "../actions";
 import { Session } from "../../session";
 import { buildResourceIndex } from "../../__test_support__/resource_index_builder";
 import { fakeWizardStepResult } from "../../__test_support__/fake_state/resources";
+import { FBSelectProps } from "../../ui/new_fb_select";
 import { Path } from "../../internal_urls";
 import { API } from "../../api";
 import moment from "moment";
@@ -169,9 +171,12 @@ describe("<AlertCard />", () => {
     const p = fakeProps();
     p.alert.problem_tag = "api.seed_data.missing";
     const { container } = render(<AlertCard {...p} />);
+    const selectProps = fbSelectSpy.mock.calls[0][0] as FBSelectProps;
+
     expect(container.textContent).toContain("FarmBot");
     expect(container.querySelector(".fb-select-mock")?.getAttribute("data-list"))
       .toContain("v1.1");
+    expect(selectProps.itemListFilter).toEqual(maybeShowStressSeedOptions);
     fireEvent.click(container.querySelector(".fb-select-mock") as Element);
   });
 
@@ -334,16 +339,24 @@ describe("SEED_DATA_OPTIONS()", () => {
     expect(SEED_DATA_OPTIONS().length).toEqual(19);
   });
 
-  it("returns demo stress options", () => {
-    const labels = SEED_DATA_OPTIONS(true).map(option => option.label);
+  it("shows stress options only after a stress search", () => {
+    const defaultLabels = maybeShowStressSeedOptions(
+      SEED_DATA_OPTIONS(true), "").map(option => option.label);
+    const stressLabels = maybeShowStressSeedOptions(
+      SEED_DATA_OPTIONS(), "stress").map(option => option.label);
+    const upperCaseLabels = maybeShowStressSeedOptions(
+      SEED_DATA_OPTIONS(), "Stress").map(option => option.label);
 
-    expect(SEED_DATA_OPTIONS(true).length).toEqual(23);
     expect(SEED_DATA_OPTIONS().map(option => option.label))
       .not.toContain("Stress 1000");
-    expect(labels).toContain("Stress 250");
-    expect(labels).toContain("Stress 500");
-    expect(labels).toContain("Stress 750");
-    expect(labels).toContain("Stress 1000");
+    expect(defaultLabels).not.toContain("Stress 1000");
+    expect(stressLabels).toEqual(expect.arrayContaining([
+      "Stress 250",
+      "Stress 500",
+      "Stress 750",
+      "Stress 1000",
+    ]));
+    expect(upperCaseLabels).toContain("Stress 1000");
   });
 });
 
@@ -351,6 +364,9 @@ describe("<ReSeedAccount />", () => {
   it("changes selection", () => {
     window.confirm = () => true;
     const { container } = render(<ReSeedAccount />);
+    const selectProps = fbSelectSpy.mock.calls[0][0] as FBSelectProps;
+
+    expect(selectProps.itemListFilter).toEqual(maybeShowStressSeedOptions);
     fireEvent.click(container.querySelector(".fb-select-mock") as Element);
     const buttons = container.querySelectorAll("button");
     fireEvent.click(buttons[buttons.length - 1]);

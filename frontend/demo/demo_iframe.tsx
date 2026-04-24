@@ -7,7 +7,9 @@ import { t } from "../i18next_wrapper";
 import { tourPath } from "../help/tours";
 import { Path } from "../internal_urls";
 import { FBSelect } from "../ui";
-import { SEED_DATA_OPTIONS, SEED_DATA_OPTIONS_DDI } from "../messages/cards";
+import {
+  maybeShowStressSeedOptions, SEED_DATA_OPTIONS, SEED_DATA_OPTIONS_DDI,
+} from "../messages/cards";
 
 export interface DemoAccountState {
   error: Error | undefined;
@@ -76,6 +78,7 @@ export abstract class DemoAccountBase<P = {}>
       key={selection}
       extraClass={"demo-options"}
       list={SEED_DATA_OPTIONS(true).filter(x => x.value != "none")}
+      itemListFilter={maybeShowStressSeedOptions}
       customNullLabel={t("Select a model")}
       selectedItem={SEED_DATA_OPTIONS_DDI()[selection]}
       onChange={ddi => this.setState({ productLine: "" + ddi.value })} />;

@@ -16,6 +16,8 @@ export interface FBSelectProps {
   extraClass?: string;
   /** Custom label for NULL_CHOICE instead of "None". */
   customNullLabel?: string;
+  /** Optionally filter the list with access to the current search query. */
+  itemListFilter?: (items: DropDownItem[], query: string) => DropDownItem[];
 }
 
 export class FBSelect extends React.Component<FBSelectProps, {}> {
@@ -36,7 +38,8 @@ export class FBSelect extends React.Component<FBSelectProps, {}> {
   }
 
   shouldComponentUpdate(nextProps: FBSelectProps) {
-    return !equals(this.props, nextProps);
+    return this.props.itemListFilter !== nextProps.itemListFilter ||
+      !equals(this.props, nextProps);
   }
 
   render() {
@@ -49,6 +52,7 @@ export class FBSelect extends React.Component<FBSelectProps, {}> {
       <FilterSearch
         selectedItem={this.item}
         items={this.list}
+        itemListFilter={this.props.itemListFilter}
         onChange={this.props.onChange}
         nullChoice={this.NULL_CHOICE} />
     </div>;

@@ -1,5 +1,7 @@
 import React from "react";
-import { allMatchedItems, FilterSearch } from "../filter_search";
+import {
+  allMatchedItems, FilterSearch, FilterSearchProps,
+} from "../filter_search";
 import { DropDownItem } from "../fb_select";
 import { ItemRendererProps } from "@blueprintjs/select";
 import {
@@ -15,7 +17,7 @@ describe("<FilterSearch />", () => {
   const fakeItem = (extra?: Partial<DropDownItem>): DropDownItem =>
     Object.assign({ label: "label", value: "value" }, extra);
 
-  const fakeProps = () => ({
+  const fakeProps = (): FilterSearchProps => ({
     items: [],
     selectedItem: fakeItem(),
     onChange: jest.fn(),
@@ -95,6 +97,35 @@ describe("<FilterSearch />", () => {
     expect(el?.props.text).toEqual("label");
     const emptyEl = renderItem?.(undefined, renderProps);
     expect(emptyEl?.props.text).toEqual("");
+  });
+
+  it("filters list with the search query", () => {
+    const p = fakeProps();
+    p.items = [
+      fakeItem({ label: "Genesis v1.8 XL" }),
+      fakeItem({ label: "Stress 1000" }),
+    ];
+    const itemListFilter = jest.fn((items, query) =>
+      query.toLowerCase().includes("stress") ? items : items.slice(0, 1));
+    const wrapper = createWrapper({ ...p, itemListFilter });
+
+    expect(itemListFilter).toHaveBeenCalledWith(p.items, "");
+    actRenderer(() => {
+      getInstance(wrapper)["handleQueryChange"]("stress");
+    });
+    expect(itemListFilter).toHaveBeenLastCalledWith(p.items, "stress");
+  });
+
+  it("shows section headings only when a child item matches", () => {
+    const wrapper = createWrapper();
+    const items = [
+      fakeItem({ label: "--- Plants", heading: true, headingId: "Plant" }),
+      fakeItem({ label: "Mint", headingId: "Plant" }),
+    ];
+    const filter = getInstance(wrapper)["filter"](items);
+
+    expect(filter("plants", items[0])).toBeTruthy();
+    expect(filter("tools", items[0])).toBeFalsy();
   });
 });
 

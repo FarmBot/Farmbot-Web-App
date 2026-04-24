@@ -295,6 +295,27 @@ export const SEED_DATA_OPTIONS_DDI = (): Record<string, DropDownItem> => {
   return options;
 };
 
+const stressQuery = (query: string) => query.toLowerCase().includes("stress");
+
+export const maybeShowStressSeedOptions =
+  (items: DropDownItem[], query: string): DropDownItem[] => {
+    const stressValues = DEMO_STRESS_SEED_DATA_OPTIONS.map(x => x.value);
+    const visibleItems =
+      items.filter(item => !stressValues.includes(item.value));
+    if (!stressQuery(query)) {
+      return visibleItems;
+    }
+    const genesisXlIndex =
+      visibleItems.findIndex(item => item.value == "genesis_xl_1.8");
+    const insertAt =
+      genesisXlIndex < 0 ? visibleItems.length : genesisXlIndex + 1;
+    return [
+      ...visibleItems.slice(0, insertAt),
+      ...DEMO_STRESS_SEED_DATA_OPTIONS,
+      ...visibleItems.slice(insertAt),
+    ];
+  };
+
 class SeedDataMissing
   extends React.Component<SeedDataMissingProps, SeedDataMissingState> {
   state: SeedDataMissingState = { selection: "" };
@@ -320,6 +341,7 @@ class SeedDataMissing
         <FBSelect
           key={this.state.selection}
           list={SEED_DATA_OPTIONS()}
+          itemListFilter={maybeShowStressSeedOptions}
           selectedItem={SEED_DATA_OPTIONS_DDI()[this.state.selection]}
           onChange={seedAccount(this.dismiss)} />
       </Row>
@@ -333,6 +355,7 @@ export const ReSeedAccount = () => {
     <FBSelect
       key={selection}
       list={SEED_DATA_OPTIONS().filter(x => x.value != "none")}
+      itemListFilter={maybeShowStressSeedOptions}
       customNullLabel={t("Select a model")}
       selectedItem={SEED_DATA_OPTIONS_DDI()[selection]}
       onChange={ddi => setSelection("" + ddi.value)} />
