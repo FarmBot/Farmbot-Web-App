@@ -105,6 +105,23 @@ describe("<PrivateOverlay />", () => {
   it("renders", () => {
     const { container } = render(<PrivateOverlay {...fakeProps()} />);
     expect(container.innerHTML).toContain("all-configs");
+    expect(container.querySelector("details")).toBeFalsy();
+  });
+
+  it("focuses the config search", () => {
+    const { getByPlaceholderText } = render(<PrivateOverlay {...fakeProps()} />);
+    expect(document.activeElement).toEqual(getByPlaceholderText("Search configs"));
+  });
+
+  it("filters configs", () => {
+    const { container, getByPlaceholderText } =
+      render(<PrivateOverlay {...fakeProps()} />);
+    fireEvent.change(getByPlaceholderText("Search configs"), {
+      target: { value: "promo" },
+    });
+    expect(container).toContainHTML("promoInfo");
+    expect(container).toContainHTML("promoSpread");
+    expect(container).not.toContainHTML("settingsBar");
   });
 
   it("changes value: number", () => {
@@ -169,6 +186,16 @@ describe("<PrivateOverlay />", () => {
     const { container } = render(<PrivateOverlay {...p} />);
     const close = container.querySelector(".close");
     close && fireEvent.click(close);
+    expect(p.setConfig).toHaveBeenCalledWith({
+      ...p.config,
+      config: false,
+    });
+  });
+
+  it("closes the config menu with Escape", () => {
+    const p = fakeProps();
+    render(<PrivateOverlay {...p} />);
+    fireEvent.keyDown(window, { key: "Escape" });
     expect(p.setConfig).toHaveBeenCalledWith({
       ...p.config,
       config: false,

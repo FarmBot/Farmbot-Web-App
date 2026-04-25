@@ -267,6 +267,7 @@
 
   .all-configs {
     position: absolute;
+    z-index: 2;
     top: 1rem;
     right: 1rem;
     width: 22rem;
@@ -297,25 +298,29 @@
       margin-top: 1rem;
     }
 
-    details {
-      color: $off_white;
-
-      label {
-        font-weight: bold;
-        color: $off_white;
-        text-transform: none;
-        font-size: 0.9rem;
-      }
+    .config-search {
+      width: 100%;
+      height: 2rem;
+      margin-bottom: 0.5rem;
+      padding: 0.2rem 0.5rem;
+      font-size: 0.85rem;
+      box-shadow: none;
     }
 
-    summary {
-      margin: -1rem;
-      cursor: pointer;
-      padding: 1rem;
+    .config-title {
+      color: $off_white;
+      font-weight: bold;
+    }
 
-      &:hover {
-        background: $dark_gray;
-      }
+    label {
+      font-weight: bold;
+      color: $off_white;
+      text-transform: none;
+      font-size: 0.9rem;
+    }
+
+    .config-section:not(:has(.config-row)) {
+      display: none;
     }
 
     .config-row {
