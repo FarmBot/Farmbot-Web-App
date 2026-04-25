@@ -15,7 +15,7 @@ import { useFrame } from "@react-three/fiber";
 import SunCalc from "suncalc";
 import { range } from "lodash";
 import moment from "moment";
-import { SEASON_DURATIONS } from "../../promo/constants";
+import { Season, SEASON_DURATIONS } from "../../promo/constants";
 import { Line2 } from "three/examples/jsm/lines/Line2.js";
 import { ASSETS, BigDistance } from "../constants";
 
@@ -29,6 +29,12 @@ const SUN_TIME_STEP_SECONDS = 60;
 const BELOW_HORIZON_SUN_SPEED = 10;
 const BELOW_HORIZON_SPEED_INCLINATION = -10;
 const sunAnimationCache: Record<string, SunAnimationSample[]> = {};
+const SEASON_SUN_DATES: Record<string, [number, number]> = {
+  [Season.Spring]: [2, 20],
+  [Season.Summer]: [5, 21],
+  [Season.Fall]: [8, 22],
+  [Season.Winter]: [11, 21],
+};
 
 export const getCycleLength = (season: string) =>
   SEASON_DURATIONS[season] || 20;
@@ -80,14 +86,22 @@ export const getAnimatedSeasonDate = (
 ) => {
   const totalCycle = getCycleLength(season);
   const clampedElapsed = Math.min(Math.max(elapsedSeconds, 0), totalCycle);
-  const samples = getSunAnimationSamples(dayStart);
+  const seasonDayStart = getSeasonDayStart(season, dayStart);
+  const samples = getSunAnimationSamples(seasonDayStart);
   const totalAnimationSeconds = samples[samples.length - 1].animationSeconds;
   const targetAnimationSeconds =
     clampedElapsed / totalCycle * totalAnimationSeconds;
   const sample = samples.find(({ animationSeconds }) =>
     animationSeconds >= targetAnimationSeconds) || samples[samples.length - 1];
-  const date = new Date(dayStart.getTime() + sample.sunSeconds * 1000);
+  const date = new Date(seasonDayStart.getTime() + sample.sunSeconds * 1000);
   return date;
+};
+
+const getSeasonDayStart = (season: string, dayStart: Date) => {
+  const seasonDate = SEASON_SUN_DATES[season];
+  if (!seasonDate) { return dayStart; }
+  const [month, day] = seasonDate;
+  return new Date(Date.UTC(2016, month, day));
 };
 
 const getSunAnimationSamples = (dayStart: Date): SunAnimationSample[] => {
@@ -100,7 +114,7 @@ const getSunAnimationSamples = (dayStart: Date): SunAnimationSample[] => {
     sunSeconds += SUN_TIME_STEP_SECONDS) {
     samples.push({ animationSeconds, sunSeconds });
     const date = new Date(dayStart.getTime() + sunSeconds * 1000);
-    const { inclination } = calcSunCoordinate(date, 0, 52, 0);
+    const { inclination } = calcSunCoordinate(date, 0, 35, 0);
     const speed = inclination < BELOW_HORIZON_SPEED_INCLINATION
       ? BELOW_HORIZON_SUN_SPEED
       : 1;
@@ -242,7 +256,7 @@ export const Sun = (props: SunProps) => {
     const currentTime = performance.now() / 1000;
     const t = currentTime - props.startTimeRef.current;
     const date = getAnimatedSeasonDate(config.plants, t);
-    const { azimuth, inclination } = calcSunCoordinate(date, 0, 52, 0);
+    const { azimuth, inclination } = calcSunCoordinate(date, 0, 35, 0);
     const sunFactor = calcSunI(inclination);
     const position = (index: number) => {
       const sunPos = sunPosition(inclination, azimuth, BigDistance.sunActual);
