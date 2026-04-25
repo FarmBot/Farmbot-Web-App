@@ -19,6 +19,10 @@ describe("precomputeTriangles()", () => {
       b: [4, 1, 0],
       c: [2, 3, 0],
       det: 6,
+      maxX: 4,
+      maxY: 3,
+      minX: 1,
+      minY: 1,
       x1: 1,
       x2: 4,
       x3: 2,
@@ -40,6 +44,10 @@ describe("getZFunc()", () => {
       b: [2, 0, 20],
       c: [0, 2, 30],
       det: 4,
+      maxX: 2,
+      maxY: 2,
+      minX: 0,
+      minY: 0,
       x1: 0,
       x2: 2,
       x3: 0,
@@ -55,6 +63,10 @@ describe("getZFunc()", () => {
       b: [2, 0, 20] as [number, number, number],
       c: [0, 2, 30] as [number, number, number],
       det: 4,
+      maxX: 2,
+      maxY: 2,
+      minX: 0,
+      minY: 0,
       x1: 0,
       x2: 2,
       x3: 0,
@@ -67,5 +79,52 @@ describe("getZFunc()", () => {
     triangle.c[2] = 300;
     expect(getZ(1, 1)).toEqual(25);
     expect(getZFunc([triangle], -100)(1, 1)).toEqual(160);
+  });
+
+  it("gets Z through the spatial index", () => {
+    const triangles = precomputeTriangles([
+      [0, 0, 10],
+      [10, 0, 20],
+      [0, 10, 30],
+      [20, 0, 40],
+      [30, 0, 50],
+      [20, 10, 60],
+      [0, 20, 70],
+      [10, 20, 80],
+      [0, 30, 90],
+      [20, 20, 100],
+      [30, 20, 110],
+      [20, 30, 120],
+    ], [
+      0, 1, 2,
+      3, 4, 5,
+      6, 7, 8,
+      9, 10, 11,
+    ]);
+    expect(getZFunc(triangles, -100)(25, 25)).toEqual(115);
+    expect(getZFunc(triangles, -100)(15, 15)).toEqual(-100);
+  });
+
+  it("keeps original triangle priority in indexed buckets", () => {
+    const triangles = precomputeTriangles([
+      [0, 0, 10],
+      [10, 0, 10],
+      [0, 10, 10],
+      [0, 0, 20],
+      [10, 0, 20],
+      [0, 10, 20],
+      [20, 0, 30],
+      [30, 0, 30],
+      [20, 10, 30],
+      [0, 20, 40],
+      [10, 20, 40],
+      [0, 30, 40],
+    ], [
+      0, 1, 2,
+      3, 4, 5,
+      6, 7, 8,
+      9, 10, 11,
+    ]);
+    expect(getZFunc(triangles, -100)(1, 1)).toEqual(10);
   });
 });

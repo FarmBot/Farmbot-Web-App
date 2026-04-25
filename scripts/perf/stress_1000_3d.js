@@ -54,6 +54,18 @@ const summary = runs => {
     gardenModelRenders: metric("gardenModelRenders"),
     threeDGardenRenders: metric("threeDGardenRenders"),
     plantInventoryItemRenders: metric("plantInventoryItemRenders"),
+    drawCalls: metric("drawCalls"),
+    triangles: metric("triangles"),
+    webglGeometries: metric("webglGeometries"),
+    webglTextures: metric("webglTextures"),
+    sceneObjects: metric("sceneObjects"),
+    sceneMeshes: metric("sceneMeshes"),
+    sceneInstancedMeshes: metric("sceneInstancedMeshes"),
+    usedJSHeapSize: metric("usedJSHeapSize"),
+    getZBatchMs: metric("getZBatchMs"),
+    getZCalls: metric("getZCalls"),
+    getZIndexMs: metric("getZIndexMs"),
+    getZP95Ms: metric("getZP95Ms"),
   };
 };
 
@@ -96,6 +108,39 @@ const resourceSummary = async page => page.evaluate(() => {
     jsEncodedBytes: sum("encodedBodySize"),
     jsDecodedBytes: sum("decodedBodySize"),
     largestJs,
+  };
+});
+
+const runtimeSummary = async page => page.evaluate(() => {
+  const parseLegacySceneMetrics = () => {
+    const values = (window.__scene_metrics || "")
+      .split(",")
+      .map(value => Number(value.trim()));
+    return {
+      calls: values[2],
+      triangles: values[3],
+      geometries: values[6],
+      textures: values[7],
+      total: values[8],
+      meshes: values[9],
+      instancedMeshes: values[10],
+    };
+  };
+  const legacy = parseLegacySceneMetrics();
+  const render = window.__threeDRenderMetrics || {};
+  const scene = window.__collectThreeDSceneMetrics?.() || {};
+  const memory = performance.memory || {};
+  return {
+    drawCalls: render.calls ?? legacy.calls,
+    triangles: render.triangles ?? legacy.triangles,
+    webglGeometries: render.geometries ?? legacy.geometries,
+    webglTextures: render.textures ?? legacy.textures,
+    sceneObjects: scene.total ?? legacy.total,
+    sceneMeshes: scene.meshes ?? legacy.meshes,
+    sceneInstancedMeshes: scene.instancedMeshes ?? legacy.instancedMeshes,
+    usedJSHeapSize: memory.usedJSHeapSize,
+    totalJSHeapSize: memory.totalJSHeapSize,
+    jsHeapSizeLimit: memory.jsHeapSizeLimit,
   };
 });
 
@@ -266,12 +311,15 @@ const collectRun = async (browser, baseUrl, session, runIndex, options) => {
   await nextPaint(page);
   const resources = await resourceSummary(page);
   await page.waitForTimeout(options.sampleMs);
+  const runtime = await runtimeSummary(page);
   const perf = await page.evaluate(() => window.__fbPerf);
   const marks = perf?.marks || {};
   const samples = perf?.samples || {};
   const counts = perf?.counts || {};
   const fpsSamples = samples.fps || [];
   const frameSamples = samples.frame_ms || [];
+  const getZSamples = samples.getZMs || [];
+  const getZIndexSamples = samples.getZIndexMs || [];
   const togglePlantsMs = await measureLayerToggle(page, "Plants");
   const togglePointsMs = await measureLayerToggle(page, "Points");
   const toggleWeedsMs = await measureLayerToggle(page, "Weeds");
@@ -326,6 +374,11 @@ const collectRun = async (browser, baseUrl, session, runIndex, options) => {
     ]) || marks.garden_model_mounted?.[0],
     fpsMedian: median(fpsSamples),
     frameP95Ms: percentile(frameSamples, 95),
+    getZBatchMs: getZSamples.reduce((total, value) => total + value, 0),
+    getZCalls: getZSamples.length,
+    getZIndexMs: getZIndexSamples
+      .reduce((total, value) => total + value, 0),
+    getZP95Ms: percentile(getZSamples, 95),
     navPlantMs,
     navPointMs,
     navWeedMs,
@@ -335,6 +388,7 @@ const collectRun = async (browser, baseUrl, session, runIndex, options) => {
     toggleSpreadMs,
     toggleFarmbotMs,
     ...resources,
+    ...runtime,
     threeDGardenMapRenders: counts["render.ThreeDGardenMap"],
     gardenModelRenders: counts["render.GardenModel"],
     threeDGardenRenders: counts["render.ThreeDGarden"],

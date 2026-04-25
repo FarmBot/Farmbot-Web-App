@@ -51,6 +51,16 @@ export const perfSample = (name: string, value: number) => {
   store.samples[name].push(value);
 };
 
+export const perfMeasure = <T>(name: string, fn: () => T): T => {
+  if (!perfEnabled()) { return fn(); }
+  const startedAt = performance.now();
+  try {
+    return fn();
+  } finally {
+    perfSample(name, performance.now() - startedAt);
+  }
+};
+
 export const usePerfRenderCount = (name: string) => {
   perfCount(`render.${name}`);
 };

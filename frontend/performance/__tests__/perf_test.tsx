@@ -1,6 +1,6 @@
 import {
-  PerfMark, perfCount, perfEnabled, perfMark, perfSample, perfStore,
-  usePerfRenderCount,
+  PerfMark, perfCount, perfEnabled, perfMark, perfMeasure, perfSample,
+  perfStore, usePerfRenderCount,
 } from "../perf";
 import React from "react";
 import { render } from "@testing-library/react";
@@ -29,9 +29,11 @@ describe("perf helpers", () => {
     perfMark("ready");
     perfCount("render.Test");
     perfSample("fps", 60);
+    expect(perfMeasure("workMs", () => "done")).toEqual("done");
     expect(perfStore()?.marks.ready.length).toEqual(1);
     expect(perfStore()?.counts["render.Test"]).toEqual(1);
     expect(perfStore()?.samples.fps).toEqual([60]);
+    expect(perfStore()?.samples.workMs.length).toEqual(1);
   });
 
   it("counts renders", () => {
