@@ -121,4 +121,19 @@ describe("getPromoPlantCapacities()", () => {
     plants.map(plant =>
       expect(capacities.iconCapacities[plant.icon]).toBeGreaterThan(0));
   });
+
+  it("precalculates capacities for other seasons", () => {
+    const config = {
+      ...INITIAL,
+      ...PRESETS["Genesis"],
+      plants: "Spring",
+    };
+    const capacities = getPromoPlantCapacities(config);
+    const summerPlants = calculatePlantPositions({
+      ...config,
+      plants: "Summer",
+    });
+    summerPlants.map(plant =>
+      expect(capacities.iconCapacities[plant.icon]).toBeGreaterThan(0));
+  });
 });

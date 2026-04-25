@@ -83,19 +83,22 @@ const getCachedPlants = (config: Config) => {
 export const getPromoPlantCapacities = (config: Config): PromoPlantCapacities => {
   const iconCapacities: Record<string, number> = {};
   let plantInstanceCapacity = 0;
-  PROMO_BED_SIZES.map(({ length, width }) => {
-    const plants = getCachedPlants({
-      ...config,
-      bedLengthOuter: length,
-      bedWidthOuter: width,
-    });
-    plantInstanceCapacity = Math.max(plantInstanceCapacity, plants.length);
-    const iconCounts: Record<string, number> = {};
-    plants.map(plant => {
-      iconCounts[plant.icon] = (iconCounts[plant.icon] || 0) + 1;
-    });
-    Object.entries(iconCounts).map(([icon, count]) => {
-      iconCapacities[icon] = Math.max(iconCapacities[icon] || 0, count);
+  SEASONS.map(season => {
+    PROMO_BED_SIZES.map(({ length, width }) => {
+      const plants = getCachedPlants({
+        ...config,
+        bedLengthOuter: length,
+        bedWidthOuter: width,
+        plants: season,
+      });
+      plantInstanceCapacity = Math.max(plantInstanceCapacity, plants.length);
+      const iconCounts: Record<string, number> = {};
+      plants.map(plant => {
+        iconCounts[plant.icon] = (iconCounts[plant.icon] || 0) + 1;
+      });
+      Object.entries(iconCounts).map(([icon, count]) => {
+        iconCapacities[icon] = Math.max(iconCapacities[icon] || 0, count);
+      });
     });
   });
   return { iconCapacities, plantInstanceCapacity };
@@ -186,8 +189,9 @@ export const Promo = () => {
   }, [plants, config.promoSpread]);
   const plantCapacityConfig = React.useMemo(() => ({
     ...INITIAL,
-    plants: config.plants,
-  }), [config.plants]);
+    bedLengthOuter: config.bedLengthOuter,
+    bedWidthOuter: config.bedWidthOuter,
+  }), [config.bedLengthOuter, config.bedWidthOuter]);
   const plantCapacities = React.useMemo(() =>
     getPromoPlantCapacities(plantCapacityConfig), [plantCapacityConfig]);
 

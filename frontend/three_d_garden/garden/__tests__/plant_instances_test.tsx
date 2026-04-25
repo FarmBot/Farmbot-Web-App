@@ -114,6 +114,21 @@ describe("<PlantInstances />", () => {
     expect(mesh?.getAttribute("count")).toEqual("1");
   });
 
+  it("keeps reserved icon meshes mounted without active plants", () => {
+    const p = fakeProps();
+    p.plants = [p.plants[0]];
+    p.iconCapacities = {
+      [p.plants[0].icon]: 10,
+      "https://example.com/inactive-icon.avif": 5,
+    };
+    const { container } = render(<PlantInstances {...p} />);
+    const meshes = container.querySelectorAll("instancedmesh");
+    expect(meshes.length).toBe(2);
+    expect(meshes.item(1).getAttribute("args")).toContain("5");
+    expect(meshes.item(1).getAttribute("count")).toEqual("0");
+    expect(useTexture).toHaveBeenCalledWith("https://example.com/inactive-icon.avif");
+  });
+
   it("disables frustum culling for billboarded plant icons", () => {
     const wrapper = createRenderer(<PlantInstances {...fakeProps()} />);
     const mesh = wrapper.root.findAll(node =>

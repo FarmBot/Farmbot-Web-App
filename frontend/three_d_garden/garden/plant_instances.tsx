@@ -104,6 +104,7 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
   useFrame(state => {
     const mesh = instancedRef.current;
     if (!mesh || visible === false) { return; }
+    if (plants.length == 0) { return; }
     const updateState = getUpdateState();
     const seasonAnimating = !!(config.animateSeasons && startTimeRef);
     const cameraChanged = !updateState.hasCameraQuaternion
@@ -182,6 +183,19 @@ const PlantIconInstances = (props: PlantIconInstancesProps) => {
 export const PlantInstances = React.memo((props: PlantInstancesProps) => {
   const instances = React.useMemo(() => {
     const iconInstances: Record<string, PlantIconInstancesProps> = {};
+    Object.entries(props.iconCapacities || {}).map(([icon, capacity]) => {
+      iconInstances[icon] = {
+        config: props.config,
+        dispatch: props.dispatch,
+        getZ: props.getZ,
+        icon,
+        plants: [],
+        plantIndexes: [],
+        capacity,
+        startTimeRef: props.startTimeRef,
+        visible: props.visible,
+      };
+    });
     props.plants.forEach((plant, index) => {
       const instance = iconInstances[plant.icon];
       if (instance) {
